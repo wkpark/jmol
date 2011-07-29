@@ -28,7 +28,6 @@ import java.util.BitSet;
 
 import javax.vecmath.Point3f;
 
-import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
 class IsoIntersectReader extends AtomDataReader {
@@ -83,9 +82,6 @@ class IsoIntersectReader extends AtomDataReader {
     if (contactPair == null) {
       BitSet bsA = params.intersection[0];
       BitSet bsB = params.intersection[1];
-      System.out.println("select " + Escape.escape(bsA) + ";color white");
-      System.out.println("select " + Escape.escape(bsB) + ";color yellow");
-      
       BitSet bsSelected = new BitSet();
       bsSelected.or(bsA);
       bsSelected.or(bsB);
@@ -124,9 +120,9 @@ class IsoIntersectReader extends AtomDataReader {
       resetPlane(Float.MAX_VALUE);
       markSphereVoxels(0, params.distance);
     } else {
-      markPlaneVoxels(contactPair.pts[0], contactPair.radii[0]);
+      markPlaneVoxels(contactPair.myAtoms[0], contactPair.radii[0]);
       thisPlane = thisPlaneB;
-      markPlaneVoxels(contactPair.pts[1], contactPair.radii[1]);
+      markPlaneVoxels(contactPair.myAtoms[1], contactPair.radii[1]);
     }
     thisPlane = yzPlanes[x % 2];
     if (!setVoxels())

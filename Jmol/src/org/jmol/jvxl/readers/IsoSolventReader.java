@@ -195,7 +195,7 @@ class IsoSolventReader extends AtomDataReader {
       if (havePlane || !isMapData) {
         setRanges(params.solvent_ptsPerAngstrom, params.solvent_gridMax);
         volumeData.getYzCount();
-        margin = volumeData.maxGrid * 1.8f;
+        margin = volumeData.maxGrid * 2.0f;
       }
       if (bsNearby != null)
         bsMySelected.or(bsNearby);
@@ -1181,7 +1181,7 @@ class IsoSolventReader extends AtomDataReader {
   public float getValueAtPoint(Point3f pt) {
     // mapping sasurface/vdw
     if (contactPair != null)
-      return pt.distance(contactPair.pts[1]) - contactPair.radii[1];
+      return pt.distance(contactPair.myAtoms[1]) - contactPair.radii[1];
     float value = Float.MAX_VALUE;
     for (int iAtom = 0; iAtom < firstNearbyAtom; iAtom++) {
       float r = pt.distance(atomXyz[iAtom]) - atomRadius[iAtom] - solventRadius;
@@ -1206,7 +1206,7 @@ class IsoSolventReader extends AtomDataReader {
       markSphereVoxels(0, params.distance);
       unsetVoxelData();
     } else {
-      markPlaneVoxels(contactPair.pts[0], contactPair.radii[0]);
+      markPlaneVoxels(contactPair.myAtoms[0], contactPair.radii[0]);
     }
     return thisPlane;
   }

@@ -491,7 +491,7 @@ public class Measurement {
   }
 
   public boolean isInRange(RadiusData radiusData, float value) {
-    if (radiusData.type == RadiusData.TYPE_FACTOR) {
+    if (radiusData.factorType == RadiusData.TYPE_FACTOR) {
       Atom atom1 = (Atom) getAtom(1);
       Atom atom2 = (Atom) getAtom(2);
       float d = (atom1.getVanderwaalsRadiusFloat(viewer, radiusData.vdwType)

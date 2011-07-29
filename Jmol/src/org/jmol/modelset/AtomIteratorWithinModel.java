@@ -104,7 +104,7 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
       radiusData = rd;
       atoms = modelSet.atoms;
       viewer = modelSet.viewer;
-      distance = (rd.type == RadiusData.TYPE_OFFSET ? 5f + rd.value : 5f * rd.value);
+      distance = (rd.factorType == RadiusData.TYPE_OFFSET ? 5f + rd.value : 5f * rd.value);
       vdw1 = atoms[atomIndex].getVanderwaalsRadiusFloat(viewer, rd.vdwType);
     }
     checkGreater = (isGreaterOnly && atomIndex != Integer.MAX_VALUE);
@@ -160,7 +160,7 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
         float d;
         if (isVdw) {
           d = atoms[iAtom].getVanderwaalsRadiusFloat(viewer, radiusData.vdwType) + vdw1;
-          switch (radiusData.type) {
+          switch (radiusData.factorType) {
           case RadiusData.TYPE_OFFSET:
             d += radiusData.value * 2;
             break;

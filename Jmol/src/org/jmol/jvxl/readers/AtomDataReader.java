@@ -247,7 +247,7 @@ abstract class AtomDataReader extends VolumeDataReader {
     Logger.info(myAtomCount + " atoms will be used in the surface calculation");
 
     for (int i = 0; i < myAtomCount; i++)
-      setBoundingBox(atomXyz[i], getRadii ? atomRadius[i] : 0);
+      setBoundingBox(atomXyz[i], getRadii ? atomRadius[i] + 0.5f : 0);
     if (!Float.isNaN(params.scale)) {
       Vector3f v = new Vector3f(xyzMax);
       v.sub(xyzMin);

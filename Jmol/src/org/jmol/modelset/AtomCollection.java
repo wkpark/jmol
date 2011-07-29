@@ -1215,7 +1215,7 @@ abstract public class AtomCollection {
   private float getWorkingRadius(Atom atom, AtomData atomData) {
     float r = 0;
     RadiusData rd = atomData.radiusData;
-    switch (rd.type) {
+    switch (rd.factorType) {
     case RadiusData.TYPE_ABSOLUTE:
       r = rd.value;
       break;
@@ -1235,7 +1235,7 @@ abstract public class AtomCollection {
         r = atom.getVanderwaalsRadiusFloat(viewer,
             atomData.radiusData.vdwType);
       }
-      if (rd.type == RadiusData.TYPE_FACTOR)
+      if (rd.factorType == RadiusData.TYPE_FACTOR)
         r *= rd.value;
       else
         r += rd.value;

@@ -509,6 +509,8 @@ final public class JmolConstants {
     return vdwLabels[i % 4];
   }
 
+  public final static String VdwPROBE = "#VDW radii for PROBE;{_H}.vdw = 1.0;{_H and connected(_C) and not connected(within(smiles,'[r6]'))}.vdw = 1.17;{_C}.vdw = 1.75;{_C and connected(3) and connected(_O)}.vdw = 1.65;{_N}.vdw = 1.55;{_O}.vdw = 1.4;{_P}.vdw = 1.8;{_S}.vdw = 1.8;message VDW radii for H, C, N, O, P, and S set according to Word, et al, J. Mol. Biol. (1999) 285, 1711-1733";
+  
   public static int getVdwType(String label) {
     // used by Viewer.getVolume, setDefaultVdw
     // Eval.setAtomShapeSize for "spacefill VDW babel"
@@ -2001,8 +2003,16 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   // GROUP_ID related stuff for special groupIDs
   ////////////////////////////////////////////////////////////////
   
+  public final static int GROUPID_ARGININE          = 2;
+  public final static int GROUPID_ASPARAGINE        = 3;
+  public final static int GROUPID_ASPARTATE         = 4;
   public final static int GROUPID_CYSTEINE          = 5;
+  public final static int GROUPID_GLUTAMINE        =  6;
+  public final static int GROUPID_GLUTAMATE        =  7;
+  public final static int GROUPID_HISTIDINE        =  9;
+  public final static int GROUPID_LYSINE           = 12;
   public final static int GROUPID_PROLINE          = 15;
+  public final static int GROUPID_TRYPTOPHAN       = 19;
   public final static int GROUPID_AMINO_MAX        = 24;
   
   private final static int GROUPID_WATER           = 42;
@@ -2012,26 +2022,25 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static String[] predefinedGroup3Names = {
     // taken from PDB spec
     "", //  0 this is the null group
-    
     "ALA", // 1
-    "ARG",
-    "ASN",
-    "ASP",
+    "ARG", // 2 arginine -- hbond donor
+    "ASN", // 3 asparagine -- hbond donor
+    "ASP", // 4 aspartate -- hbond acceptor
     "CYS",
-    "GLN",
-    "GLU",
+    "GLN", // 6 glutamine -- hbond donor
+    "GLU", // 7 glutamate -- hbond acceptor
     "GLY",
-    "HIS",
+    "HIS", // 9 histidine -- hbond ambiguous
     "ILE",
     "LEU",
-    "LYS",
+    "LYS", // 12 lysine -- hbond donor
     "MET",
     "PHE",
-    "PRO", // 15 Proline
+    "PRO", // 15 proline -- no NH
     "SER",
     "THR",
     "TRP",
-    "TYR",
+    "TYR", // 19 tryptophan -- hbond donor
     "VAL",
     "ASX", // 21 ASP/ASN ambiguous
     "GLX", // 22 GLU/GLN ambiguous

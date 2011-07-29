@@ -965,7 +965,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
    }
    */
 
-  private void discardTempData(boolean discardAll) {
+  protected void discardTempData(boolean discardAll) {
     if (!discardAll)
       return;
     title = null;

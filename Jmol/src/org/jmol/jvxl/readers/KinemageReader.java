@@ -58,6 +58,7 @@ class KinemageReader extends PmeshReader {
   private float vMin = -Float.MAX_VALUE;
   private float vMax = Float.MAX_VALUE;
   private int pointType;
+  private String findString;
 
   /**
    * 
@@ -83,7 +84,8 @@ class KinemageReader extends PmeshReader {
     if (params.parameters != null && params.parameters.length >= 2) {
       vMin = params.parameters[1];
       vMax = (params.parameters.length >= 3 ? params.parameters[2] : vMin);
-      pointType = (params.parameters.length >= 4 ? (int) params.parameters[3] : POINTS_ALL);      
+      pointType = (params.parameters.length >= 4 ? (int) params.parameters[3] : POINTS_ALL);
+      findString = params.calculationType;
     }
   }
 
@@ -151,7 +153,18 @@ class KinemageReader extends PmeshReader {
     }
   }
 
+  private String lastAtom = "";
+  
   private int getPoint(String line, int i, int[] retColor, boolean checkType) {
+    if (findString != null) {
+    String atom = line.substring(0, line.indexOf("}") + 1);
+    if (atom.length() < 4)
+      atom = lastAtom;
+    else
+      lastAtom = atom;
+    if (atom.indexOf(findString) < 0)
+      return -1;
+    }
     String[] tokens = Parser.getTokens(line.substring(line.indexOf("}") + 1));
     float value = assignValueFromGapColorForKin(tokens[0]);
     if (Float.isNaN(value))

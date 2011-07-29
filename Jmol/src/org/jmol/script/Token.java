@@ -437,7 +437,7 @@ public class Token {
   public final static int rna           = predefinedset | 22;
   public final static int solvent       = predefinedset | 24 | deprecatedparam;
   public final static int sidechain     = predefinedset | 26;
-  final static int surface              = predefinedset | 28;
+  public final static int surface              = predefinedset | 28;
   final static int thismodel            = predefinedset | 30;
   public final static int sheet         = predefinedset | 32;
   public final static int spine         = predefinedset | 34;  // 11.9.34
@@ -626,7 +626,7 @@ public class Token {
   public final static int property        = floatproperty | 13 | mathproperty | setparam | settable;
   public final static int selected        = floatproperty | 14 | settable | predefinedset;
   public final static int temperature     = floatproperty | 15 | settable;
-  public final static int vanderwaals     = floatproperty | 16 | settable;
+  public final static int vanderwaals     = floatproperty | 16 | settable | setparam;
   public final static int vectorscale     = floatproperty | 17 | floatparam;
   public final static int vibx            = floatproperty | 18 | settable;
   public final static int viby            = floatproperty | 19 | settable;
@@ -1068,6 +1068,7 @@ public class Token {
   final static int check         = misc  | 54;
   final static int chemical      = misc  | 55;
   final static int circle        = misc  | 56;
+  public final static int clash         = misc  | 57;
   final static int clear         = misc  | 58;
   final static int clipboard     = misc  | 60;
   final static int collapsed     = misc  | 62;
@@ -1153,7 +1154,6 @@ public class Token {
   public final static int mesh    = misc  | 194;
   final static int middle         = misc  | 195;
   final static int minset         = misc  | 196;
-  final static int miscellaneous  = misc  | 197;
   final static int mlp            = misc  | 198;
   final static int mode           = misc  | 199;
   public final static int modify         = misc  | 200;
@@ -1206,6 +1206,7 @@ public class Token {
   final static int pointsperangstrom = misc  | 280;
   final static int polygon        = misc  | 282;
   public final static int prev    = misc  | 284;
+  public final static int probe   = misc  | 285;
   final static int rad            = misc  | 286;
   final static int radical        = misc  | 288;
   public final static int range          = misc  | 290;
@@ -1527,6 +1528,7 @@ public class Token {
       "connect",           new Token(connect),
       "console",           new Token(console),
       "contact",           new Token(contact),
+      "contacts",          null,
       "continue",          new Token(continuecmd),
       "data",              new Token(data),
       "default",           new Token(defaultcmd),
@@ -1751,6 +1753,7 @@ public class Token {
       "cell",            new Token(cell),
       "chain",           new Token(chain),
       "chains",          null,
+      "clash",           new Token(clash),
       "clear",           new Token(clear),
       "clickable",       new Token(clickable),
       "clipboard",       new Token(clipboard),
@@ -1878,6 +1881,7 @@ public class Token {
       "polymerLength",   new Token(polymerlength),
       "previous",        new Token(prev),
       "prev",            null,
+      "probe",           new Token(probe),
       "property",        new Token(property),
       "properties",      null,
       "protein",         new Token(protein),
@@ -2039,8 +2043,6 @@ public class Token {
       "maxSet",          new Token(maxset),
       "menu",            new Token(menu),
       "minSet",          new Token(minset),
-      "miscellaneous",   new Token(miscellaneous),
-      "misc",            null,
       "modelBased",      new Token(modelbased),
       "molecular",       new Token(molecular),
       "mrc",             new Token(mrc),

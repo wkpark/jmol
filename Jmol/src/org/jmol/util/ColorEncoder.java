@@ -430,7 +430,7 @@ import org.jmol.util.ArrayUtil;
       return thisScale.length;
     case BW:
     case WB:
-      return propertyColorEncoder.paletteWB.length;
+      return getPaletteWB().length;
     case ROYGB:
     case BGYOR:
       return propertyColorEncoder.argbsRoygb.length;

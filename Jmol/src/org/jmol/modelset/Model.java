@@ -96,8 +96,8 @@ public final class Model {
   public int modelIndex;   // our 0-based reference
   int fileIndex;   // 0-based file reference
 
-  int hydrogenCount;
-  boolean isPDB;
+  public int hydrogenCount;
+  public boolean isPDB;
   public boolean isPdbWithMultipleBonds;
   
   String loadState = "";

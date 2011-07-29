@@ -755,7 +755,7 @@ public class ActionManager {
         if (dragAtomIndex >= 0
             && (atomPickingMode == PICKING_ASSIGN_ATOM || atomPickingMode == PICKING_INVERT_STEREO)
             && viewer.isAtomAssignable(dragAtomIndex)) {
-          enterMeasurementMode();
+          enterMeasurementMode(dragAtomIndex);
           measurementPending.addPoint(dragAtomIndex, null, false);
         }
         return;
@@ -1028,7 +1028,7 @@ public class ActionManager {
         if (measurementPending != null) {
           measurementPending.setCount(1);
         } else if (measuresEnabled) {
-          enterMeasurementMode();
+          enterMeasurementMode(nearestAtomIndex);
         }
         addToMeasurement(nearestAtomIndex, null, true);
         measurementPending.setColix(Graphics3D.MAGENTA);
@@ -1329,7 +1329,7 @@ public class ActionManager {
           toggleMeasurement();
         } else if (!drawMode && !labelMode && !dragSelectedMode
             && measuresEnabled) {
-          enterMeasurementMode();
+          enterMeasurementMode(nearestAtomIndex);
           addToMeasurement(nearestAtomIndex, nearestPoint, true);
         }
         atomOrPointPicked(nearestAtomIndex, nearestPoint, action);
@@ -1382,7 +1382,9 @@ public class ActionManager {
         : measurementPending.addPoint(atomIndex, nearestPoint, true));
   }
 
-  private void enterMeasurementMode() {
+  private void enterMeasurementMode(int iAtom) {
+    viewer.setPicked(-1);
+    viewer.setPicked(iAtom);
     viewer.setCursor(Viewer.CURSOR_CROSSHAIR);
     viewer.setPendingMeasurement(measurementPending = new MeasurementPending(
         viewer.getModelSet()));
@@ -1736,7 +1738,12 @@ public class ActionManager {
         return;
       if (measurementQueued == null || measurementQueued.getCount() >= n)
         resetMeasurement();
-      if (queueAtom(atomIndex, ptClicked) < n)
+      int i = queueAtom(atomIndex, ptClicked);
+      if (i == 1) {
+        viewer.setPicked(-1);
+        viewer.setPicked(atomIndex);
+      }
+      if (i < n)
         return;
       if (atomPickingMode == PICKING_MEASURE_SEQUENCE) {
         getSequence();

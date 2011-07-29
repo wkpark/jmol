@@ -183,7 +183,7 @@ public class Dots extends AtomShape {
     float setRadius = Float.MAX_VALUE;
     isActive = true;
 
-    switch (rd.type) {
+    switch (rd.factorType) {
     case RadiusData.TYPE_ABSOLUTE:
       if (rd.value == 0)
         isVisible = false;
@@ -193,7 +193,7 @@ public class Dots extends AtomShape {
       break;
     }
 
-    if (rd.type != RadiusData.TYPE_OFFSET)
+    if (rd.factorType != RadiusData.TYPE_OFFSET)
       rd.valueExtended = viewer.getCurrentSolventProbeRadius();
 
     float maxRadius;
@@ -216,7 +216,7 @@ public class Dots extends AtomShape {
 
     // combine current and selected set
     boolean newSet = (rdLast.value != rd.value
-        || rdLast.valueExtended != rd.valueExtended || rdLast.type != rd.type
+        || rdLast.valueExtended != rd.valueExtended || rdLast.factorType != rd.factorType
         || rdLast.vdwType != rd.vdwType || ec.getDotsConvexMax() == 0);
 
     // for an solvent-accessible surface there is no torus/cavity issue.

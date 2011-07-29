@@ -924,6 +924,11 @@ public class SurfaceGenerator {
         processState();
       return true;
     }
+    
+    if ("calculationType" == propertyName) {
+      params.calculationType = (String) value;
+      return true;
+    }
 
     if ("charges" == propertyName) {
       params.theProperty = (float[]) value;

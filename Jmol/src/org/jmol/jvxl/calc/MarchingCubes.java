@@ -201,6 +201,8 @@ public class MarchingCubes extends TriangleData {
   
   public String getEdgeData() {
 
+    if (cubeCountX < 0 || cubeCountY < 0 || cubeCountZ < 0)
+      return "";
     mappingPlane = volumeData.mappingPlane;
 
     // Logger.startTimer();
@@ -221,7 +223,7 @@ public class MarchingCubes extends TriangleData {
     if (isXLowToHigh) {
       // used for progressive plane readers
       x0 = 0;
-      x1 = cubeCountX;
+      x1 = cubeCountX + (colorDensity ? 1 : 0);
       // either this is a bug, or I'm forgetting something, but the
       // progressive readers otherwise will miss the last plane. Added in Jmol 12.1.49:
       // the problem was with the statement below, not this one.
@@ -244,12 +246,12 @@ public class MarchingCubes extends TriangleData {
       // we are starting at the top corner, in the next to last
       // cell on the next to last row of the next to last plane(!)
     }
-    if (cubeCountX < 0 || cubeCountY < 0 || cubeCountZ < 0)
-      return "";
     int cellIndex0 = cubeCountY * cubeCountZ - 1;
     int cellIndex = cellIndex0;
     resetIndexPlane(isoPointIndexPlanes[1]);
     float[][][] voxelData = null;
+    int y1 = cubeCountY;
+    int z1 = cubeCountZ;
     switch (mode) {
     case MODE_PLANES:
       getPlane(x0, false);
@@ -290,8 +292,8 @@ public class MarchingCubes extends TriangleData {
       if (bsExcludedPlanes.get(x) && bsExcludedPlanes.get(x + xStep))
         continue;
       int xCount = 0;
-      for (int y = cubeCountY; --y >= 0; pt--) {        
-        for (int z = cubeCountZ; --z >= 0; pt--, cellIndex--) {
+      for (int y = y1; --y >= 0; pt--) {        
+        for (int z = z1; --z >= 0; pt--, cellIndex--) {
 
           // create the bitset mask indicating which vertices are inside.
           // 0xFF here means "all inside"; 0x00 means "all outside"
@@ -309,7 +311,7 @@ public class MarchingCubes extends TriangleData {
             case MODE_PLANES:
               v = vertexValues[i] = getValue(x + offset.x, y + offset.y, z
                   + offset.z, pti, yzPlanes[yzPlanePts[i]]);
-              isInside = bsVoxels.get(pti);
+              isInside = (allInside || bsVoxels.get(pti));
               break;
             case MODE_BITSET:
               isInside = (allInside || bsVoxels.get(pti));
@@ -356,6 +358,8 @@ public class MarchingCubes extends TriangleData {
           }
           if (colorDensity && (insideMask & 1) == 1) {
             // xyz corner is inside, so add this point
+            // TODO - we are missing the outside edges of these 
+            // in the Y and Z direction 
             addVertex(x, y, z, pti, v);
           }
           if (insideMask == 0xFF) {
@@ -381,7 +385,7 @@ public class MarchingCubes extends TriangleData {
   }
 
   private void getPlane(int i, boolean andSwap) {
-    if (i < 0)
+    if (i < 0 || i > cubeCountX)
       return;
     /*float[] p = */surfaceReader.getPlane(i);
     //dumpPlane(i, p);

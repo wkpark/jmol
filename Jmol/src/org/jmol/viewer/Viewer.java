@@ -7188,7 +7188,7 @@ private void zap(String msg) {
     global.setParameterValue("percentVdwAtom", value);
     global.percentVdwAtom = value;
     rd.value = value / 100f;
-    rd.type = RadiusData.TYPE_FACTOR;
+    rd.factorType = RadiusData.TYPE_FACTOR;
     rd.vdwType = JmolConstants.VDW_AUTO;
     setShapeSize(JmolConstants.SHAPE_BALLS, rd, null);
   }
@@ -9763,9 +9763,14 @@ private void zap(String msg) {
     DataManager.getInlineData(loadScript, strModel, isAppend, null);
   }
 
-  boolean isAtomPDB(int i) {
+  public boolean isAtomPDB(int i) {
     return modelSet.isAtomPDB(i);
   }
+
+  public boolean isModelPDB(int i) {
+    return modelSet.getModels()[i].isPDB;
+  }
+
   boolean isAtomAssignable(int i) {
     return modelSet.isAtomAssignable(i);
   }

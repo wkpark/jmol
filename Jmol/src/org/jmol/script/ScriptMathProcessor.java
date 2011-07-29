@@ -2411,7 +2411,7 @@ class ScriptMathProcessor {
     RadiusData rd = new RadiusData((distance > 10 ? distance / 100 : distance),
         (distance > 10 ? RadiusData.TYPE_FACTOR : RadiusData.TYPE_OFFSET),
         JmolConstants.VDW_AUTO);
-    bsB = eval.setContactBitSets(bsA, bsB, true, Float.NaN, rd);
+    bsB = eval.setContactBitSets(bsA, bsB, true, Float.NaN, rd, false);
     bsB.or(bsA);
     return addX(bsB);
   }

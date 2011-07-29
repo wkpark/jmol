@@ -311,8 +311,8 @@ public class Contact extends Isosurface {
    * @param intramolecularMode
    * @return a list of pairs of atoms to process
    */
-  private List<ContactPair> getPairs(BitSet bsA, BitSet bsB,
-                                     RadiusData rd, int intramolecularMode) {
+  private List<ContactPair> getPairs(BitSet bsA, BitSet bsB, RadiusData rd,
+                                     int intramolecularMode) {
     List<ContactPair> list = new ArrayList<ContactPair>();
     AtomData ad = new AtomData();
     ad.radiusData = rd;
@@ -336,7 +336,8 @@ public class Contact extends Isosurface {
         isMultiModel);
     for (int ia = bsA.nextSetBit(0); ia >= 0; ia = bsA.nextSetBit(ia + 1)) {
       Atom atomA = atoms[ia];
-      float vdwA = atomA.getVanderwaalsRadiusFloat(viewer, JmolConstants.VDW_AUTO);
+      float vdwA = atomA.getVanderwaalsRadiusFloat(viewer,
+          JmolConstants.VDW_AUTO);
       if (isMultiModel)
         viewer.setIteratorForPoint(iter, -1, ad.atomXyz[ia], ad.atomRadius[ia]
             + maxRadius);
@@ -346,8 +347,7 @@ public class Contact extends Isosurface {
         int ib = iter.next();
         Atom atomB = atoms[ib];
         boolean isSameMolecule = (ad.atomMolecule[ia] == ad.atomMolecule[ib]);
-        if (ia == ib || isSameMolecule
-            && atomA.isWithinFourBonds(atomB))
+        if (ia == ib || isSameMolecule && atomA.isWithinFourBonds(atomB))
           continue;
         switch (intramolecularMode) {
         case 0:
@@ -357,26 +357,25 @@ public class Contact extends Isosurface {
           if (isSameMolecule != (intramolecularMode == 1))
             continue;
         }
-        float vdwB = atomB.getVanderwaalsRadiusFloat(viewer, JmolConstants.VDW_AUTO);
+        float vdwB = atomB.getVanderwaalsRadiusFloat(viewer,
+            JmolConstants.VDW_AUTO);
         float ra = ad.atomRadius[ia];
         float rb = ad.atomRadius[ib];
         float d = atomA.distance(atomB);
         if (d > ra + rb)
           continue;
         ContactPair cp = new ContactPair(atoms, ia, ib, ra, rb, vdwA, vdwB);
-                
+
         // check for O--H...N or O...H--N and not considering
         // hydrogens and still have a filter
 
         // return is 1 (donor), -1 (acceptor), -2 (not), or 0 (unknown)
         int typeA = atomA.getHbondDonorAcceptorType();
-        int typeB = (typeA == -2 ? -2 : atomB
-            .getHbondDonorAcceptorType());
-        boolean isHbond = (typeA != -2 && typeB != -2 && typeA * typeB <= 0 
-            && cp.score > hbondCutoff);
+        int typeB = (typeA == -2 ? -2 : atomB.getHbondDonorAcceptorType());
+        boolean isHbond = (typeA != -2 && typeB != -2 && typeA * typeB <= 0 && cp.score > hbondCutoff);
         if (isHbond && cp.score < 0)
           cp.contactType = Token.hbond;
-        
+
         list.add(cp);
       }
     }
@@ -385,21 +384,21 @@ public class Contact extends Isosurface {
     int n = list.size() - 1;
     for (int i = 0; i < n; i++) {
       ContactPair cp1 = list.get(i);
-      for (int j = i + 1; j <= n; j++) {
+      OUT_I: for (int j = i + 1; j <= n; j++) {
         ContactPair cp2 = list.get(j);
-        for (int m = 0; m < 2; m++) {
+        OUT_J: for (int m = 0; m < 2; m++) {
           for (int p = 0; p < 2; p++) {
             switch (checkCp(cp1, cp2, m, p)) {
             case 1:
               list.remove(i);
-              j = n--;
               i--;
-              break;
+              n--;
+              break OUT_I;
             case 2:
               list.remove(j);
               j--;
               n--;
-              break;
+              break OUT_J;
             default:
             }
           }

@@ -15447,7 +15447,7 @@ public class ScriptEvaluator {
           && intramolecular.booleanValue())
         bsB = bsA;
       else
-        bsB = setContactBitSets(bsA, bsB, isPaired, distance, rd1);
+        bsB = setContactBitSets(bsA, bsB, isPaired, distance, rd1, true);
       switch (displayType) {
       case Token.cap:
       case Token.surface:
@@ -15503,7 +15503,7 @@ public class ScriptEvaluator {
   }
 
   BitSet setContactBitSets(BitSet bsA, BitSet bsB, boolean isPaired,
-                           float distance, RadiusData rd) {
+                           float distance, RadiusData rd, boolean warnMultiModel) {
     boolean withinAllModels;
     BitSet bs;
     if (bsB == null) {
@@ -15516,7 +15516,10 @@ public class ScriptEvaluator {
       // two atom sets specified; within ALL MODELS here
       bs = BitSetUtil.copy(bsA);
       bs.or(bsB);
-      withinAllModels = (viewer.getModelBitSet(bs, false).cardinality() > 1);
+      int nModels = viewer.getModelBitSet(bs, false).cardinality();
+      withinAllModels = (nModels > 1);
+      if (warnMultiModel && nModels > 1 && !tQuiet)
+        showString(GT._("Note: More than one model is involved in this contact!"));
     }
     // B always within some possibly extended VDW of A or just A itself
     if (!bsA.equals(bsB)) {

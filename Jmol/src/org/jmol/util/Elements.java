@@ -27,7 +27,6 @@ package org.jmol.util;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.jmol.viewer.JmolConstants;
 
 public class Elements {
 
@@ -196,7 +195,7 @@ public class Elements {
         if (symbol.length() == 2)
           map.put(symbol.toUpperCase(), boxed);
       }
-      for (int i = Elements.altElementMax; --i >= JmolConstants.firstIsotope;) {
+      for (int i = Elements.altElementMax; --i >= firstIsotope;) {
         String symbol = Elements.altElementSymbols[i];
         Integer boxed = Integer.valueOf(Elements.altElementNumbers[i]);
         map.put(symbol, boxed);
@@ -377,7 +376,7 @@ public class Elements {
     return Elements.altElementNumbers[i];
   }
   
-  /**
+  /** 
    * @param i index into altElementSymbols
    * @return elementSymbol
    */
@@ -394,6 +393,23 @@ public class Elements {
     return (code >> 7) + elementSymbolFromNumber(code & 127);
   }
   
+  /**
+   * @param i index into altElementSymbols
+   * @return H2
+   */
+  public final static String altIsotopeSymbolFromIndex2(int i) {
+    int code = Elements.altElementNumbers[i]; 
+    return  elementSymbolFromNumber(code & 127) + (code >> 7);
+  }
+  
+  public final static short getElementNumber(short atomicAndIsotopeNumber) {
+    return (short) (atomicAndIsotopeNumber % 128);
+  }
+
+  public final static short getIsotopeNumber(short atomicAndIsotopeNumber) {
+    return (short) (atomicAndIsotopeNumber >> 7);
+  }
+
   public final static short getAtomicAndIsotopeNumber(int n, int mass) {
     return (short) ((n < 0 ? 0 : n) + (mass <= 0 ? 0 : mass << 7));
   }
@@ -431,6 +447,11 @@ public class Elements {
     return (naturalIsotopes.indexOf(isotopeSymbol + ",") >= 0);      
   }
   
+  /**
+   * first entry of an actual isotope int the altElementSymbols, altElementNames, altElementNumbers arrays
+   */
+  public final static int firstIsotope = 4;
+
   private final static short[] altElementNumbers = {
     0,
     13,
@@ -474,5 +495,5 @@ public class Elements {
     "",
     "",
   };
-  
+
 }

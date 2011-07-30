@@ -718,7 +718,7 @@ public final class ModelLoader {
       checkNewGroup(adapter, iterAtom.getChainID(), group3, iterAtom.getSequenceNumber(), 
           iterAtom.getInsertionCode(), addH);
       short isotope = iterAtom.getElementNumber();
-      if (addH && Atom.elementNumberOf(isotope) == 1)
+      if (addH && Elements.getElementNumber(isotope) == 1)
         jbr.setHaveHsAlready(true);
       String name = iterAtom.getAtomName(); 
       int charge = (addH ? getPdbCharge(group3, name) : iterAtom.getFormalCharge());

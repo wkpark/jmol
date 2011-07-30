@@ -2082,22 +2082,16 @@ public class ScriptEvaluator {
     for (int i = 0; i < JmolConstants.predefinedVariable.length; i++)
       defineAtomSet(JmolConstants.predefinedVariable[i]);
     // Now, define all the elements as predefined sets
-    // hydrogen is handled specially, so don't define it
 
-    int firstIsotope = JmolConstants.firstIsotope;
-    // name ==> e_=n for all standard elements
+    // name ==> elemno=n for all standard elements, isotope-blind
+    // _Xx ==> elemno=n for of all elements, isotope-blind
     for (int i = Elements.elementNumberMax; --i >= 0;) {
-      String definition = "@" + Elements.elementNameFromNumber(i) + " _e=" + i;
-      defineAtomSet(definition);
-    }
-    // _Xx ==> name for of all elements, isotope-blind
-    for (int i = Elements.elementNumberMax; --i >= 0;) {
-      String definition = "@_" + Elements.elementSymbolFromNumber(i) + " "
-          + Elements.elementNameFromNumber(i);
-      defineAtomSet(definition);
+      String definition = " elemno=" + i;
+      defineAtomSet("@" + Elements.elementNameFromNumber(i) + definition);
+      defineAtomSet("@_" + Elements.elementSymbolFromNumber(i) + definition);
     }
     // name ==> _e=nn for each alternative element
-    for (int i = firstIsotope; --i >= 0;) {
+    for (int i = Elements.firstIsotope; --i >= 0;) {
       String definition = "@" + Elements.altElementNameFromIndex(i) + " _e="
           + Elements.altElementNumberFromIndex(i);
       defineAtomSet(definition);
@@ -2106,15 +2100,30 @@ public class ScriptEvaluator {
     // name ==> _isotope=iinn for each isotope
     // _T ==> _isotope=iinn for each isotope
     // _3H ==> _isotope=iinn for each isotope
-    for (int i = Elements.altElementMax; --i >= firstIsotope;) {
-      String def = " element=" + Elements.altElementNumberFromIndex(i);
+    for (int i = Elements.altElementMax; --i >= Elements.firstIsotope;) {
+      short ei = Elements.altElementNumberFromIndex(i);
+      String def = " _e=" + ei;
       String definition = "@_" + Elements.altElementSymbolFromIndex(i);
       defineAtomSet(definition + def);
+      
       definition = "@_" + Elements.altIsotopeSymbolFromIndex(i);
       defineAtomSet(definition + def);
+      definition = "@_" + Elements.altIsotopeSymbolFromIndex2(i);
+      defineAtomSet(definition + def);
+      
       definition = "@" + Elements.altElementNameFromIndex(i);
       if (definition.length() > 1)
         defineAtomSet(definition + def);
+      
+      // @_12C _e=6
+      // @_C12 _e=6
+      short e = Elements.getElementNumber(ei);
+      ei = (short) Elements.getNaturalIsotope(e);
+      if (ei > 0) {
+        def = Elements.elementSymbolFromNumber(e);
+        defineAtomSet("@_" + def + ei + " _e=" + e);
+        defineAtomSet("@_" + ei + def + " _e=" + e);
+      }
     }
     defineAtomSet("# variable");
   }
@@ -3619,7 +3628,7 @@ public class ScriptEvaluator {
         boolean isIntProperty = Token.tokAttr(tokWhat, Token.intproperty);
         boolean isFloatProperty = Token.tokAttr(tokWhat, Token.floatproperty);
         boolean isIntOrFloat = isIntProperty && isFloatProperty;
-        boolean isStringProperty = !isIntProperty
+        boolean isStringProperty= !isIntProperty
             && Token.tokAttr(tokWhat, Token.strproperty);
         if (tokWhat == Token.element)
           isIntProperty = !(isStringProperty = false);
@@ -7637,7 +7646,7 @@ public class ScriptEvaluator {
         return true;
       }
     }
-    for (int i = Elements.altElementMax; --i >= JmolConstants.firstIsotope;) {
+    for (int i = Elements.altElementMax; --i >= Elements.firstIsotope;) {
       if (str.equalsIgnoreCase("_" + Elements.altElementSymbolFromIndex(i))) {
         if (!isSyntaxCheck)
           viewer.setElementArgb(Elements.altElementNumberFromIndex(i), argb);

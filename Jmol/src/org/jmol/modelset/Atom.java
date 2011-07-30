@@ -320,17 +320,13 @@ final public class Atom extends Point3fi implements JmolNode {
   }
 
   public short getElementNumber() {
-    return (short) (atomicAndIsotopeNumber % 128);
+    return Elements.getElementNumber(atomicAndIsotopeNumber);
   }
   
   public short getIsotopeNumber() {
-    return elementNumberOf(atomicAndIsotopeNumber);
+    return Elements.getIsotopeNumber(atomicAndIsotopeNumber);
   }
   
-  static short elementNumberOf(short atomicAndIsotopeNumber) {
-    return (short) (atomicAndIsotopeNumber >> 7);
-  }
-
   public short getAtomicAndIsotopeNumber() {
     return atomicAndIsotopeNumber;
   }
@@ -1162,6 +1158,8 @@ final public class Atom extends Point3fi implements JmolNode {
     case Token.element:
     case Token.elemno:
       return atom.getElementNumber();
+    case Token.elemisono:
+      return atom.atomicAndIsotopeNumber;
     case Token.file:
       return atom.getModelFileIndex() + 1;
     case Token.formalcharge:

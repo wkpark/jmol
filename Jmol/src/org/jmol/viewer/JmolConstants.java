@@ -482,11 +482,6 @@ final public class JmolConstants {
   };
 
   
-  /**
-   * first entry of an actual isotope int the altElementSymbols, altElementNames, altElementNumbers arrays
-   */
-  public final static int firstIsotope = 4;
-  
   public final static int VDW_UNKNOWN = -1;
   public final static int VDW_JMOL = 0;        // OpenBabel-1.0
   public final static int VDW_BABEL = 1;       // OpenBabel-2.2 
@@ -2117,7 +2112,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
           ret[1] = 1;
           break;
         case 'O':
-          isSp2 = !res.equalsIgnoreCase("HOH");
+          isSp2 = ("HOH;DOD;WAT".indexOf(res) < 0);
           break;
         default:
           isSp2 = true;
@@ -2531,8 +2526,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     // solvent
     //
     "@water _g>=" + GROUPID_WATER + " & _g<" + (GROUPID_SOLVENTS)
-        + ", oxygen & connected(2) & connected(2, hydrogen or deuterium or tritium), (hydrogen or deuterium or tritium) & connected(oxygen & connected(2) & connected(2, hydrogen or deuterium or tritium))",
-    "@hoh water",
+        + ", oxygen & connected(2) & connected(2, hydrogen), (hydrogen) & connected(oxygen & connected(2) & connected(2, hydrogen))",
     "@solvent water, (_g>=" + GROUPID_SOLVENTS + " & _g<=" + GROUPID_SULPHATE + ")", // water, other solvent or ions
     "@ligand !(protein | dna | rna | solvent)",
 

@@ -578,6 +578,7 @@ public class Token {
   public final static int cell          = intproperty | 5;
   public final static int configuration = intproperty | 6 | scriptCommand;
   //color: see xxx(a, b, c, d)
+  public final static int elemisono     = intproperty | 7;
   public final static int elemno        = intproperty | 8 | settable;
   //file: see xxx(a)
   public final static int formalcharge  = intproperty | 9 | setparam | settable;
@@ -1776,7 +1777,7 @@ public class Token {
       "DSSP",            new Token(dssp),
       "element",         new Token(element),
       "elemno",          new Token(elemno),
-      "_e",              null,
+      "_e",              new Token(elemisono),
       "error",           new Token(error),
       "fill",            new Token(fill),
       "find",            new Token(find),

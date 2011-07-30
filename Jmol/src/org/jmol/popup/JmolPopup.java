@@ -177,7 +177,7 @@ public class JmolPopup extends SimplePopup {
       String entryName = elementSymbol + " - " + elementName;
       addMenuItem(menu, entryName, "SELECT " + elementName, null);
     }
-    for (int i = JmolConstants.firstIsotope; i < Elements.altElementMax; ++i) {
+    for (int i = Elements.firstIsotope; i < Elements.altElementMax; ++i) {
       int n = Elements.elementNumberMax + i;
       if (elementsPresentBitSet.get(n)) {
         n = Elements.altElementNumberFromIndex(i);

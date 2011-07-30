@@ -214,8 +214,14 @@ public class Group {
     return -1;
   }
 
-  public boolean isProtein() { return false; }
-  public boolean isNucleic() { return false; }
+  public boolean isProtein() { 
+    return (groupID < JmolConstants.GROUPID_AMINO_MAX); 
+  }
+  
+  public boolean isNucleic() { 
+    return (groupID >= JmolConstants.GROUPID_AMINO_MAX 
+        && groupID < JmolConstants.GROUPID_NUCLEIC_MAX); 
+  }
   public boolean isDna() { return false; }
   public boolean isRna() { return false; }
   public boolean isPurine() { return false; }

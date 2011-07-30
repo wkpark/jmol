@@ -74,8 +74,7 @@ public class GromacsReader extends AtomSetCollectionReader {
       }
       Atom atom = new Atom();
       atom.sequenceNumber = parseInt(line, 0, 5);
-      atom.group3 = parseToken(line, 5, 9).trim();  //allowing for 4 characters
-      atom.atomName = line.substring(11, 15).trim();
+      setAtomName(atom, parseToken(line, 5, 9).trim(), line.substring(11, 15).trim());
       atom.atomSerial = parseInt(line, 15, 20);
       atom.x = parseFloat(line, 20, 28) * 10;
       atom.y = parseFloat(line, 28, 36) * 10;
@@ -99,6 +98,13 @@ public class GromacsReader extends AtomSetCollectionReader {
         continue;
       atomSetCollection.addVibrationVector(atom.atomIndex, vx, vy, vz);
     }
+  }
+
+  private void setAtomName(Atom atom, String gname, String aname) {
+    atom.atomName = aname;
+    if (gname.equals("SOL") && aname.length() == 3 && "OW1;HW2;HW3".indexOf(aname) >= 0)
+      gname="WAT";
+    atom.group3 = gname;  //allowing for 4 characters
   }
 
   String deduceElementSymbol(String group3, String atomName) {

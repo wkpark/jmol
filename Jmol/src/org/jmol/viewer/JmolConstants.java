@@ -2009,10 +2009,11 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int GROUPID_PROLINE          = 15;
   public final static int GROUPID_TRYPTOPHAN       = 19;
   public final static int GROUPID_AMINO_MAX        = 24;
-  
+  public final static int GROUPID_NUCLEIC_MAX      = 42;  
   private final static int GROUPID_WATER           = 42;
   private final static int GROUPID_SOLVENTS        = 45;
-  private final static int GROUPID_SULPHATE        = 48;
+  private final static int GROUPID__TRUE__SOLV_MAX = 46;
+  private final static int GROUPID_SOLVENT_MAX     = 48;
   
   public final static String[] predefinedGroup3Names = {
     // taken from PDB spec
@@ -2074,10 +2075,9 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "HOH", // 42 water
     "DOD", // 43
     "WAT", // 44
-    "SOL", // 45 gromacs solvent
-    "UREA",// 46 urea
-    "PO4", // 47 phosphate ions
-    "SO4", // 48 sulphate ions
+    "UREA",// 45 urea, a cosolvent
+    "PO4", // 46 phosphate ions
+    "SO4", // 47 sulphate ions
 
   };
   
@@ -2402,7 +2402,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     ",[FCA],[FCB],[FRU],[FUC],[FUL],[GAL],[GLA],[GLC]" +
     ",[GUP],[LXC],[MAN],[RAM],[RIB],[RIP],[XYP],[XYS]" +
     ",[CBI],[CT3],[CTR],[CTT],[LAT],[MAB],[MAL],[MLR],[MTT]" +
-    ",[SUC],[TRE],[GCU],[MTL],[NAG],[NDG],[RHA],[SOR]" +  
+    ",[SUC],[TRE],[GCU],[MTL],[NAG],[NDG],[RHA],[SOR],[SOL]" +  
     ",[XYL],[A2G],[LBT],[NGA],[SIA],[SLB]" + 
     ",[AFL],[AGC],[GLB],[NAN],[RAA]"; //these 4 are deprecated in PDB
     // from Eric Martz; revision by Angel Herraez
@@ -2527,8 +2527,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     //
     "@water _g>=" + GROUPID_WATER + " & _g<" + (GROUPID_SOLVENTS)
         + ", oxygen & connected(2) & connected(2, hydrogen), (hydrogen) & connected(oxygen & connected(2) & connected(2, hydrogen))",
-    "@solvent water, (_g>=" + GROUPID_SOLVENTS + " & _g<=" + GROUPID_SULPHATE + ")", // water, other solvent or ions
-    "@ligand !(protein | dna | rna | solvent)",
+    "@solvent water, (_g>=" + GROUPID_SOLVENTS + " & _g<" + GROUPID_SOLVENT_MAX + ")", // water, other solvent or ions
+    "@ligand !(protein | dna | rna | solvent&&_g<" + GROUPID__TRUE__SOLV_MAX + ")",
 
     // structure
     "@turn structure=1",
@@ -2593,7 +2593,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     //
     // ions
     //
-    "@ions _g="+(GROUPID_SULPHATE-1)+",_g="+GROUPID_SULPHATE,
+    "@ions _g>="+(GROUPID__TRUE__SOLV_MAX)+"&_g<"+GROUPID_SOLVENT_MAX,
 
     //
     // structure related

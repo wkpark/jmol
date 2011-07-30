@@ -2011,9 +2011,9 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int GROUPID_AMINO_MAX        = 24;
   public final static int GROUPID_NUCLEIC_MAX      = 42;  
   private final static int GROUPID_WATER           = 42;
-  private final static int GROUPID_SOLVENTS        = 45;
-  private final static int GROUPID__TRUE__SOLV_MAX = 46;
-  private final static int GROUPID_SOLVENT_MAX     = 48;
+  private final static int GROUPID_SOLVENT_MIN     = 45; // urea only
+  private final static int GROUPID_ION_MIN         = 46;
+  private final static int GROUPID_ION_MAX         = 48;
   
   public final static String[] predefinedGroup3Names = {
     // taken from PDB spec
@@ -2076,7 +2076,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "DOD", // 43
     "WAT", // 44
     "UREA",// 45 urea, a cosolvent
-    "PO4", // 46 phosphate ions
+    "PO4", // 46 phosphate ions  -- from here on is "ligand"
     "SO4", // 47 sulphate ions
 
   };
@@ -2525,10 +2525,10 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     //
     // solvent
     //
-    "@water _g>=" + GROUPID_WATER + " & _g<" + (GROUPID_SOLVENTS)
+    "@water _g>=" + GROUPID_WATER + " & _g<" + GROUPID_SOLVENT_MIN
         + ", oxygen & connected(2) & connected(2, hydrogen), (hydrogen) & connected(oxygen & connected(2) & connected(2, hydrogen))",
-    "@solvent water, (_g>=" + GROUPID_SOLVENTS + " & _g<" + GROUPID_SOLVENT_MAX + ")", // water, other solvent or ions
-    "@ligand !(protein | dna | rna | solvent&&_g<" + GROUPID__TRUE__SOLV_MAX + ")",
+    "@solvent water, (_g>=" + GROUPID_SOLVENT_MIN + " & _g<" + GROUPID_ION_MAX + ")", // water, other solvent or ions
+    "@ligand !(_g<"+ GROUPID_ION_MIN + ",protein,nucleic,water)",
 
     // structure
     "@turn structure=1",
@@ -2593,7 +2593,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     //
     // ions
     //
-    "@ions _g>="+(GROUPID__TRUE__SOLV_MAX)+"&_g<"+GROUPID_SOLVENT_MAX,
+    "@ions _g>="+GROUPID_ION_MIN+"&_g<"+GROUPID_ION_MAX,
 
     //
     // structure related

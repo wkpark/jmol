@@ -1945,6 +1945,7 @@ abstract public class ModelCollection extends BondCollection {
       }
       for (int i = bsNew.nextSetBit(0); i >= 0; i = bsNew.nextSetBit(i + 1))
         bspf.validate(i, true);
+      bspf.validate(true);
       this.bspf = bspf;
       
   }

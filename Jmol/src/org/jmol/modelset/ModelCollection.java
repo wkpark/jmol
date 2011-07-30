@@ -1921,31 +1921,21 @@ abstract public class ModelCollection extends BondCollection {
   private final static boolean showRebondTimes = true;
 
   protected void initializeBspf() {
-    if (bspf == null) {
+    if (bspf != null && bspf.isInitialized())
+      return;
       if (showRebondTimes && Logger.debugging)
         Logger.startTimer();
-      bspf = new Bspf(3);
-      /*      if (MIX_BSPT_ORDER) {
-       Logger.debug("mixing bspt order");
-       int stride = 3;
-       int step = (atomCount + stride - 1) / stride;
-       for (int i = 0; i < step; ++i)
-       for (int j = 0; j < stride; ++j) {
-       int k = i * stride + j;
-       if (k >= atomCount)
-       continue;
-       Atom atom = atoms[k];
-       bspf.addTuple(atom.modelIndex, atom);
-       }
-       } else {
-       */
+      Bspf bspf = new Bspf(3);
       Logger.debug("sequential bspt order");
+      BitSet bsNew = new BitSet(modelCount);
       for (int i = atomCount; --i >= 0;) {
         // important that we go backward here, because we are going to 
         // use System.arrayCopy to expand the array ONCE only
         Atom atom = atoms[i];
-        if (!atom.isDeleted())
+        if (!atom.isDeleted()) {
           bspf.addTuple(models[atom.modelIndex].trajectoryBaseIndex, atom);
+          bsNew.set(atom.modelIndex);
+        }
       }
       //      }
       if (showRebondTimes && Logger.debugging) {
@@ -1953,7 +1943,10 @@ abstract public class ModelCollection extends BondCollection {
         bspf.stats();
         //        bspf.dump();
       }
-    }
+      for (int i = bsNew.nextSetBit(0); i >= 0; i = bsNew.nextSetBit(i + 1))
+        bspf.validate(i, true);
+      this.bspf = bspf;
+      
   }
 
   protected void initializeBspt(int modelIndex) {
@@ -3887,7 +3880,7 @@ abstract public class ModelCollection extends BondCollection {
      */
     if (modelIndex < 0) {
       //final deletions
-      bspf = null;
+      validateBspf(false);
       bsAll = null;
       resetMolecules();
       isBbcageDefault = false;
@@ -4055,7 +4048,7 @@ abstract public class ModelCollection extends BondCollection {
     if (atomicNumber != 1 && autoBond) {
 
       // 4) clear out all atoms within 1.0 angstrom
-      bspf = null;
+      validateBspf(false);
       bs = getAtomsWithin(1.0f, bsA, false, null);
       bs.andNot(bsA);
       if (bs.nextSetBit(0) >= 0)

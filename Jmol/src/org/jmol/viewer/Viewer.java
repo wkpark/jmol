@@ -8064,10 +8064,12 @@ private void zap(String msg) {
   private boolean movingSelected;
   private boolean showSelected;
 
-  public void moveSelected(int deltaX, int deltaY, int x, int y,
-                           BitSet bsSelected, boolean isTranslation,
-                           boolean asAtoms) {
+  public void moveSelected(int deltaX, int deltaY, int deltaZ, int x,
+                           int y, BitSet bsSelected,
+                           boolean isTranslation, boolean asAtoms) {
     // cannot synchronize this -- it's from the mouse and the event queue
+    if (deltaZ == 0)
+      return;
     if (x == Integer.MIN_VALUE)
       rotateBondIndex = -1;
     if (isJmolDataFrame())
@@ -8098,8 +8100,14 @@ private void zap(String msg) {
         if (isTranslation) {
           Point3f ptCenter = getAtomSetCenter(bsSelected);
           Point3i ptScreen = transformPoint(ptCenter);
-          Point3f ptScreenNew = new Point3f(ptScreen.x + deltaX + 0.5f,
-              ptScreen.y + deltaY + 0.5f, ptScreen.z);
+          Point3f ptScreenNew;
+          if (deltaZ != Integer.MIN_VALUE)
+            ptScreenNew = new Point3f(ptScreen.x,
+              ptScreen.y, ptScreen.z + deltaZ + 0.5f);
+          else
+            ptScreenNew = new Point3f(ptScreen.x + deltaX + 0.5f,
+                ptScreen.y + deltaY + 0.5f, ptScreen.z);
+
           Point3f ptNew = new Point3f();
           transformManager.finalizeTransformParameters();
           unTransformPoint(ptScreenNew, ptNew);
@@ -9728,8 +9736,8 @@ private void zap(String msg) {
     refresh(3, "assignConnect");
   }
 
-  void moveAtomWithHydrogens(int atomIndex, int deltaX, int deltaY,
-                             BitSet bsAtoms) {
+  protected void moveAtomWithHydrogens(int atomIndex, int deltaX, int deltaY,
+                             int deltaZ, BitSet bsAtoms) {
     stopMinimization();
     if (bsAtoms == null) {
       Atom atom = modelSet.atoms[atomIndex];
@@ -9742,8 +9750,8 @@ private void zap(String msg) {
             bsAtoms.set(atom2.index);
         }
     }
-    moveSelected(deltaX, deltaY, Integer.MIN_VALUE, Integer.MIN_VALUE, bsAtoms,
-        true, true);
+    moveSelected(deltaX, deltaY, deltaZ, Integer.MIN_VALUE, Integer.MIN_VALUE,
+        bsAtoms, true, true);
   }
 
   void appendLoadStates(StringBuffer commands) {

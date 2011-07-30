@@ -195,7 +195,7 @@ import javax.vecmath.Vector3f;
     // Clear the Binary Search so that select within(),
     // isosurface, and dots will work properly
     initializeBspf();
-    bspf.clearBspt(baseModel);
+    validateBspf(baseModel, false);
     // Recalculate critical points for cartoons and such
     // note that models[baseModel] and models[modelIndex]
     // point to the same model. So there is only one copy of 
@@ -671,7 +671,7 @@ import javax.vecmath.Vector3f;
 
     // zero out reproducible arrays
 
-    bspf = null;
+    validateBspf(false);
 
     // create a new models array,
     // and pre-calculate Model.bsAtoms and Model.atomCount
@@ -847,7 +847,6 @@ import javax.vecmath.Vector3f;
 
   public void invertSelected(Point3f pt, Point4f plane, int iAtom,
                              BitSet invAtoms, BitSet bs) {
-    bspf = null;
     if (pt != null) {
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
         float x = (pt.x - atoms[i].x) * 2;
@@ -953,7 +952,6 @@ import javax.vecmath.Vector3f;
       mat4t.setTranslation(translation);
       mat4.mul(mat4t, mat4);
     }
-    bspf = null;
     recalculatePositionDependentQuantities(bs, mat4);
   }
 

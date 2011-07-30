@@ -266,7 +266,8 @@ public class Contact extends Isosurface {
         continue;
       int nV = thisMesh.vertexCount;
       thisMesh.nSets++;
-      volume += cp.volume;
+      if (contactType != Token.nada || cp.contactType != Token.vanderwaals)
+        volume += cp.volume;
       setVolumeData(displayType, volumeData, cp, resolution, nContacts);
       switch (displayType) {
       case Token.full:

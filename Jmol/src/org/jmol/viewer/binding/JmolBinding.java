@@ -52,6 +52,7 @@ public class JmolBinding extends Binding {
     bind(SINGLE_CLICK+SHIFT+LEFT, ActionManager.ACTION_spinDrawObjectCW);
 
     bind(SINGLE_CLICK+ALT+SHIFT+LEFT, ActionManager.ACTION_dragSelected);
+    bind(SINGLE_CLICK+SHIFT+LEFT, ActionManager.ACTION_dragZ);
     bind(SINGLE_CLICK+ALT+LEFT, ActionManager.ACTION_rotateSelected);
     bind(SINGLE_CLICK+SHIFT+LEFT, ActionManager.ACTION_rotateBranch);
 

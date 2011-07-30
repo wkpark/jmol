@@ -1423,7 +1423,7 @@ public final class ModelLoader {
 
     modelSet.calcBoundBoxDimensions(null, 1);
     modelSet.resetMolecules();
-    modelSet.bspf = null;
+    modelSet.validateBspf(false);
   }
   
 }

@@ -40,13 +40,33 @@ import org.jmol.util.Logger;
 public final class Bspf {
 
   int dimMax;
-  Bspt bspts[];
-  //SphereIterator[] sphereIterators;
+  Bspt[] bspts;
+  protected boolean isValid = false;
+  boolean[] bsptsValid;
+  
+  public void validate(boolean isValid) {
+    this.isValid = isValid;
+  }
+
+  public void validate(int i, boolean isValid) {
+    bsptsValid[i] = isValid;
+  }
+
+  public boolean isInitialized() {
+    return isValid;
+  }
+
+  public boolean isInitialized(int bsptIndex) {
+    return bspts.length > bsptIndex && bspts[bsptIndex] != null
+        && bsptsValid[bsptIndex];
+  }
+  
   CubeIterator[] cubeIterators;
   
   public Bspf(int dimMax) {
     this.dimMax = dimMax;
     bspts = new Bspt[0];
+    bsptsValid = new boolean[0];
     cubeIterators = new CubeIterator[0];
   }
 
@@ -54,19 +74,14 @@ public final class Bspf {
     return bspts.length;
   }
   
-  public void clearBspt(int bsptIndex) {
-    bspts[bsptIndex] = null;
-  }
-  
-  public boolean isInitialized(int bsptIndex) {
-    return bspts.length > bsptIndex && bspts[bsptIndex] != null;
-  }
-  
   public void addTuple(int bsptIndex, Point3f tuple) {
     if (bsptIndex >= bspts.length) {
       Bspt[] t = new Bspt[bsptIndex + 1];
       System.arraycopy(bspts, 0, t, 0, bspts.length);
       bspts = t;
+      boolean[] b = new boolean[bsptIndex + 1];
+      System.arraycopy(bsptsValid, 0, b, 0, bsptsValid.length);
+      bsptsValid = b;
     }
     Bspt bspt = bspts[bsptIndex];
     if (bspt == null)
@@ -125,9 +140,10 @@ public final class Bspf {
       return bspts[bsptIndex].allocateCubeIterator();
   }
 
-  public void initialize(int modelIndex, Point3f[] atoms, BitSet modelAtomBitSet) {
+  public synchronized void initialize(int modelIndex, Point3f[] atoms, BitSet modelAtomBitSet) {
     for (int i = modelAtomBitSet.nextSetBit(0); i >= 0; i = modelAtomBitSet.nextSetBit(i + 1))
       addTuple(modelIndex, atoms[i]);
+    bsptsValid[modelIndex] = true;
   }
 
 }

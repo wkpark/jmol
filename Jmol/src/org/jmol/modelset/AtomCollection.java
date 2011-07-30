@@ -495,7 +495,6 @@ abstract public class AtomCollection {
   public void setAtomCoord(int atomIndex, float x, float y, float z) {
     if (atomIndex < 0 || atomIndex >= atomCount)
       return;
-    bspf = null;
     atoms[atomIndex].x = x;
     atoms[atomIndex].y = y;
     atoms[atomIndex].z = z;
@@ -505,7 +504,6 @@ abstract public class AtomCollection {
   public void setAtomCoordRelative(int atomIndex, float x, float y, float z) {
     if (atomIndex < 0 || atomIndex >= atomCount)
       return;
-    bspf = null;
     atoms[atomIndex].x += x;
     atoms[atomIndex].y += y;
     atoms[atomIndex].z += z;
@@ -514,7 +512,6 @@ abstract public class AtomCollection {
 
   protected void setAtomCoordRelative(BitSet bs, float x, float y,
                                       float z) {
-    bspf = null;
     if (bs != null)
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i+1))
         setAtomCoordRelative(i, x, y, z);
@@ -869,8 +866,6 @@ abstract public class AtomCollection {
   }
   
   private void loadCoordinates(String data, boolean isVibrationVectors, boolean doTaint) {
-    if (!isVibrationVectors)
-      bspf = null;
     int[] lines = Parser.markLines(data, ';');
     try {
       int nData = Parser.parseInt(data.substring(0, lines[0] - 1));
@@ -897,7 +892,17 @@ abstract public class AtomCollection {
 
   // Binary Space Partitioning Forest
   
-  protected Bspf bspf;
+  protected Bspf bspf = null;
+
+  void validateBspf(boolean isValid) {
+    if (bspf != null)
+      bspf.validate(isValid);
+  }
+
+  void validateBspf(int modelIndex, boolean isValid) {
+    if (bspf != null)
+      bspf.validate(modelIndex, isValid);
+  }
 
   // state tainting
   
@@ -982,6 +987,8 @@ abstract public class AtomCollection {
     if (tainted[type] == null)
       tainted[type] = new BitSet(atomCount);
     tainted[type].set(atomIndex);
+    if (type  == TAINT_COORD)
+      validateBspf(atoms[atomIndex].modelIndex, false);
   }
 
   private void untaint(int atomIndex, byte type) {

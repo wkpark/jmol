@@ -78,29 +78,30 @@ public class ActionManager {
   public final static int ACTION_selectToggleExtended = 21;
   public final static int ACTION_dragSelected = 22;
   public final static int ACTION_selectAndDrag = 23;
-  public final static int ACTION_rotateSelected = 24;
-  public final static int ACTION_rotateBranch = 25;
-  public final static int ACTION_dragAtom = 26;
-  public final static int ACTION_dragMinimize = 27;
-  public final static int ACTION_dragMinimizeMolecule = 28;
-  public final static int ACTION_dragLabel = 29;
-  public final static int ACTION_dragDrawPoint = 30;
-  public final static int ACTION_dragDrawObject = 31;
-  public final static int ACTION_pickAtom = 32;
-  public final static int ACTION_pickPoint = 33;
-  public final static int ACTION_pickLabel = 34;
-  public final static int ACTION_pickMeasure = 35;
-  public final static int ACTION_setMeasure = 36;
-  public final static int ACTION_pickIsosurface = 37;
-  public final static int ACTION_pickNavigate = 38;
-  public final static int ACTION_deleteAtom = 39;
-  public final static int ACTION_deleteBond = 40;
-  public final static int ACTION_connectAtoms = 41;
-  public final static int ACTION_assignNew = 42;
-  public final static int ACTION_reset = 43;
-  public final static int ACTION_stopMotion = 44;
-  public final static int ACTION_multiTouchSimulation = 45;
-  public final static int ACTION_count = 46;
+  public final static int ACTION_dragZ = 24;
+  public final static int ACTION_rotateSelected = 25;
+  public final static int ACTION_rotateBranch = 26;
+  public final static int ACTION_dragAtom = 27;
+  public final static int ACTION_dragMinimize = 28;
+  public final static int ACTION_dragMinimizeMolecule = 29;
+  public final static int ACTION_dragLabel = 30;
+  public final static int ACTION_dragDrawPoint = 31;
+  public final static int ACTION_dragDrawObject = 32;
+  public final static int ACTION_pickAtom = 33;
+  public final static int ACTION_pickPoint = 34;
+  public final static int ACTION_pickLabel = 35;
+  public final static int ACTION_pickMeasure = 36;
+  public final static int ACTION_setMeasure = 37;
+  public final static int ACTION_pickIsosurface = 38;
+  public final static int ACTION_pickNavigate = 39;
+  public final static int ACTION_deleteAtom = 40;
+  public final static int ACTION_deleteBond = 41;
+  public final static int ACTION_connectAtoms = 42;
+  public final static int ACTION_assignNew = 43;
+  public final static int ACTION_reset = 44;
+  public final static int ACTION_stopMotion = 45;
+  public final static int ACTION_multiTouchSimulation = 46;
+  public final static int ACTION_count = 47;
 
   private final static String[] actionInfo = new String[ACTION_count];
   private final static String[] actionNames = new String[ACTION_count];
@@ -135,6 +136,7 @@ public class ActionManager {
     newAction(ACTION_selectToggleExtended,  "_selectToggleOr",       GT._("if all are selected, unselect all, otherwise add this group of atoms to the set of selected atoms (requires {0})", "set pickingStyle DRAG"));
     newAction(ACTION_dragSelected,          "_dragSelected",         GT._("move selected atoms (requires {0})", "set DRAGSELECTED"));
     newAction(ACTION_selectAndDrag,         "_selectAndDrag",        GT._("select and drag atoms (requires {0})", "set DRAGSELECTED"));
+    newAction(ACTION_dragZ,                 "_dragZ",                GT._("drag atoms in Z direction (requires {0})", "set DRAGSELECTED"));
     newAction(ACTION_rotateSelected,        "_rotateSelected",       GT._("rotate selected atoms (requires {0})", "set DRAGSELECTED"));
     newAction(ACTION_rotateBranch,          "_rotateBranch",         GT._("rotate branch around bond (requires {0})", "set picking ROTATEBOND"));
     newAction(ACTION_dragAtom,              "_dragAtom",             GT._("move atom (requires {0})", "set picking DRAGATOM"));
@@ -572,7 +574,7 @@ public class ActionManager {
     switch(i) {
     case KeyEvent.VK_ALT:
       if (dragSelectedMode && isAltKeyReleased)
-        viewer.moveSelected(Integer.MIN_VALUE, 0, Integer.MIN_VALUE, Integer.MIN_VALUE, null, false, false);
+        viewer.moveSelected(Integer.MIN_VALUE, 0, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, null, false, false);
       isAltKeyReleased = false;
       moved.modifiers |= Binding.ALT;
       break;
@@ -612,7 +614,7 @@ public class ActionManager {
     switch(i) {
     case KeyEvent.VK_ALT:
       if (dragSelectedMode)
-        viewer.moveSelected(Integer.MAX_VALUE, 0, Integer.MIN_VALUE, Integer.MIN_VALUE, null, false, false);
+        viewer.moveSelected(Integer.MAX_VALUE, 0, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, null, false, false);
       isAltKeyReleased = true;
       moved.modifiers &= ~Binding.ALT;
       break;
@@ -735,25 +737,30 @@ public class ActionManager {
         isBound = isBound(action, ACTION_assignNew);
         break;
       case PICKING_DRAG_ATOM:
-        isBound = isBound(action, ACTION_dragAtom);
+        isBound = isBound(action, ACTION_dragAtom) 
+            || isBound(action, ACTION_dragZ);
         break;
       case PICKING_DRAG_SELECTED:
       case PICKING_DRAG_MOLECULE:
         isBound = isBound(action, ACTION_dragAtom)
-            || isBound(action, ACTION_rotateSelected);
+            || isBound(action, ACTION_rotateSelected)
+            || isBound(action, ACTION_dragZ);
         break;
       case PICKING_DRAG_MINIMIZE:
-        isBound = isBound(action, ACTION_dragMinimize);
+        isBound = isBound(action, ACTION_dragMinimize)
+            || isBound(action, ACTION_dragZ);
         break;
       case PICKING_DRAG_MINIMIZE_MOLECULE:
         isBound = isBound(action, ACTION_dragMinimizeMolecule)
-            || isBound(action, ACTION_rotateSelected);
+            || isBound(action, ACTION_rotateSelected)
+            || isBound(action, ACTION_dragZ);
         break;
       }
       if (isBound) {
         dragAtomIndex = viewer.findNearestAtomIndex(x, y, true);
         if (dragAtomIndex >= 0
-            && (atomPickingMode == PICKING_ASSIGN_ATOM || atomPickingMode == PICKING_INVERT_STEREO)
+            && (atomPickingMode == PICKING_ASSIGN_ATOM 
+                || atomPickingMode == PICKING_INVERT_STEREO)
             && viewer.isAtomAssignable(dragAtomIndex)) {
           enterMeasurementMode(dragAtomIndex);
           measurementPending.addPoint(dragAtomIndex, null, false);
@@ -766,10 +773,11 @@ public class ActionManager {
           haveSelection = (viewer.findNearestAtomIndex(x, y, true) >= 0);
           // checkPointOrAtomClicked(x, y, mods, pressedCount, true);
         }
-        if (isBound(action, ACTION_dragSelected) && haveSelection) {
+        if (!haveSelection)
+          return;
+        if (isBound(action, ACTION_dragSelected) || isBound(action, ACTION_dragZ))
           viewer.moveSelected(Integer.MIN_VALUE, 0, Integer.MIN_VALUE,
-              Integer.MIN_VALUE, null, false, false);
-        }
+              Integer.MIN_VALUE, Integer.MIN_VALUE, null, false, false);
         return;
       }
       if (isBound(action, ACTION_popupMenu)) {
@@ -877,7 +885,7 @@ public class ActionManager {
       if (dragSelectedMode && isBound(action, ACTION_dragSelected)
           && haveSelection)
         viewer.moveSelected(Integer.MAX_VALUE, 0, Integer.MIN_VALUE,
-            Integer.MIN_VALUE, null, false, false);
+            Integer.MIN_VALUE, Integer.MIN_VALUE, null, false, false);
 
       if (dragRelease && checkUserAction(action, x, y, 0, 0, time, 2))
         return;
@@ -973,7 +981,7 @@ public class ActionManager {
 
     if (viewer.getRotateBondIndex() >= 0) {
       if (isBound(action, ACTION_rotateBranch)) {
-        viewer.moveSelected(deltaX, deltaY, x, y, null, false, false);
+        viewer.moveSelected(deltaX, deltaY, Integer.MIN_VALUE, x, y, null, false, false);
         return;
       }
       if (!isBound(action, ACTION_rotate))
@@ -988,8 +996,10 @@ public class ActionManager {
           viewer.rotateSelected(getDegrees(deltaX, 0), getDegrees(deltaY, 1),
               null);
         } else {
-          viewer.moveSelected(deltaX, deltaY, Integer.MIN_VALUE, Integer.MIN_VALUE, null,
-              true, false);
+          viewer.moveSelected(deltaX, deltaY, 
+              (isBound(action, ACTION_dragZ) ? -deltaY : 
+              Integer.MIN_VALUE), Integer.MIN_VALUE, Integer.MIN_VALUE,
+              null, true, false);
         }
         return;
       case PICKING_DRAG_MOLECULE:
@@ -1011,9 +1021,11 @@ public class ActionManager {
           case PICKING_DRAG_MINIMIZE_MOLECULE:
             bs = viewer.getAtomBits(Token.molecule, BitSetUtil
                 .setBit(dragAtomIndex));
+            viewer.select(bs, false, null, true);
             break;
           }
-          viewer.moveAtomWithHydrogens(dragAtomIndex, deltaX, deltaY, bs);
+          viewer.moveAtomWithHydrogens(dragAtomIndex, deltaX, deltaY, 
+              (isBound(action, ACTION_dragZ) ? -deltaY : Integer.MIN_VALUE), bs);
         }
         // NAH! if (atomPickingMode == PICKING_DRAG_MINIMIZE_MOLECULE && (dragGesture.getPointCount() % 5 == 0))
         //  minimize(false);
@@ -1072,14 +1084,14 @@ public class ActionManager {
       if (dragGesture.getPointCount() == 1)
         viewer.undoAction(iatom, AtomCollection.TAINT_COORD, true);
       else
-        viewer.moveSelected(Integer.MAX_VALUE, 0, Integer.MIN_VALUE, Integer.MIN_VALUE, null, false, false);
+        viewer.moveSelected(Integer.MAX_VALUE, 0, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, null, false, false);
       checkMotion(Viewer.CURSOR_MOVE);
       if (isBound(action, ACTION_rotateSelected) && viewer.allowRotateSelected())
         viewer.rotateSelected(getDegrees(deltaX, 0), getDegrees(deltaY, 1),
             null);
       else
         viewer.moveSelected(deltaX, deltaY, Integer.MIN_VALUE,
-            Integer.MIN_VALUE, null, true, false);
+            Integer.MIN_VALUE, Integer.MIN_VALUE, null, true, false);
       return;
     }
 

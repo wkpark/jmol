@@ -152,7 +152,6 @@ public void initShape() {
       polygon = null;
       nidentifiers = nbitsets = 0;
       vData = new ArrayList<Object[]>();
-      modelCount = viewer.getModelCount();
       bsAllModels = null;
       intersectID = null;
       slabData = null;
@@ -212,7 +211,7 @@ public void initShape() {
     if ("modelIndex" == propertyName) {
       //from saved state -- used to set modelVertices
       indicatedModelIndex = ((Integer) value).intValue();
-      if (indicatedModelIndex < 0 || indicatedModelIndex >= modelCount)
+      if (indicatedModelIndex < 0 || indicatedModelIndex >= viewer.getModelCount())
         return;
       vData.add(new Object[] { Integer.valueOf(PT_MODEL_INDEX),
           (modelInfo = new int[] { indicatedModelIndex, 0 }) });
@@ -533,6 +532,7 @@ public void initShape() {
     if (polygon == null && (lineData != null ? lineData.size() == 0 : (vData.size() == 0) == (connections == null))
         || !isArrow && connections != null)
       return false;  // connections only for arrows at this point
+    int modelCount = viewer.getModelCount();
     if (polygon != null || lineData != null || indicatedModelIndex < 0
         && (isFixed || isArrow || isCurve || isCircle || isCylinder || modelCount == 1)) {
       // make just ONE copy 
@@ -1258,7 +1258,7 @@ public void initShape() {
       if (m.drawType == JmolConstants.DRAW_POLYGON)
         continue;
       if (m.visibilityFlags != 0) {
-        int mCount = (m.modelFlags == null ? 1 : modelCount);
+        int mCount = (m.modelFlags == null ? 1 : viewer.getModelCount());
         for (int iModel = mCount; --iModel >= 0;) {
           if (m.modelFlags != null && !m.modelFlags.get(iModel) 
               || m.polygonIndexes == null 
@@ -1285,7 +1285,6 @@ public void initShape() {
   }
 
   private String getDrawCommand(DrawMesh mesh) {
-    modelCount = viewer.getModelCount();
     if (mesh != null)
       return getDrawCommand(mesh, mesh.modelIndex);
     
@@ -1310,6 +1309,7 @@ public void initShape() {
         && mesh.drawVertexCount == 0 && mesh.drawVertexCounts == null)
       return "";
     StringBuffer str = new StringBuffer();
+    int modelCount = viewer.getModelCount();
     if (!mesh.isFixed && iModel >= 0 && modelCount > 1)
       appendCmd(str, "frame " + viewer.getModelNumberDotted(iModel));
     str.append("  draw ID ").append(Escape.escape(mesh.thisID));
@@ -1468,7 +1468,7 @@ public void initShape() {
       info.put("scale", new Float(mesh.scale));
       if (mesh.drawType == JmolConstants.DRAW_MULTIPLE) {
         List<Map<String, Object>> m = new ArrayList<Map<String,Object>>();
-        modelCount = viewer.getModelCount();
+        int modelCount = viewer.getModelCount();
         for (int k = 0; k < modelCount; k++) {
           if (mesh.ptCenters[k] == null)
             continue;
@@ -1514,7 +1514,7 @@ public void initShape() {
   public String getShapeState() {
     StringBuffer s = new StringBuffer("\n");
     appendCmd(s, "draw delete");
-    modelCount = viewer.getModelCount();
+    int modelCount = viewer.getModelCount();
     for (int i = 0; i < meshCount; i++) {
       DrawMesh mesh = dmeshes[i];
       if (mesh.vertexCount == 0 && mesh.lineData == null)

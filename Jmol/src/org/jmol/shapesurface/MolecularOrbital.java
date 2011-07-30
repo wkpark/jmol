@@ -89,7 +89,7 @@ public class MolecularOrbital extends Isosurface {
       moDebug = false;
       int modelIndex = ((Integer) value).intValue();
       strID = getId(modelIndex);
-      Logger.info("MO init " + strID);
+      //Logger.info("MO init " + strID);
       // overide bitset selection
       super.setProperty("init", null, null);
       super.setProperty("modelIndex", Integer.valueOf(modelIndex), null);
@@ -281,7 +281,7 @@ public class MolecularOrbital extends Isosurface {
   }
 
   private String getId(int modelIndex) {
-    return "mo_model" + viewer.getModelNumber(modelIndex);
+    return "mo_model" + viewer.getModelNumberDotted(modelIndex);
   }
 
   @SuppressWarnings("unchecked")
@@ -440,6 +440,7 @@ public class MolecularOrbital extends Isosurface {
     if (htModels == null)
       return "";
     StringBuffer s = new StringBuffer();
+    int modelCount = viewer.getModelCount();
     for (int i = 0; i < modelCount; i++)
       s.append(getMoState(i));
     //System.out.println("molecular orbital state " + s.length());
@@ -451,6 +452,7 @@ public class MolecularOrbital extends Isosurface {
     if (!getSettings(strID))
       return "";
     StringBuffer s = new StringBuffer();
+    int modelCount = viewer.getModelCount();
     if (modelCount > 1)
       appendCmd(s, "frame " + viewer.getModelNumberDotted(modelIndex));
     if (moCutoff != null)

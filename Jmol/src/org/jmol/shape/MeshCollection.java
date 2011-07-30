@@ -48,7 +48,6 @@ public abstract class MeshCollection extends Shape {
   public int meshCount;
   public Mesh[] meshes = new Mesh[4];
   public Mesh currentMesh;
-  public int modelCount;
   public boolean isFixed;  
   public int nUnnamed;
   public short colix;
@@ -142,7 +141,6 @@ public abstract class MeshCollection extends Shape {
     super.initShape();
     colix = Graphics3D.ORANGE;
     color = 0xFFFFFFFF;
-    modelCount = viewer.getModelCount();
   }
   
  @SuppressWarnings("unchecked")

@@ -213,6 +213,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       setPropertySuper(propertyName, value, bs);
       if (!explicitID)
         nLCAO = nUnnamed = 0;
+      currentMesh = thisMesh = null;
       return;
     }
 
@@ -455,6 +456,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         if (isomeshes[i].bsVdw != null
             && (bs == null || bs.intersects(isomeshes[i].bsVdw)))
           deleteMesh(i);
+       currentMesh = thisMesh = null;
       return;
     }
     if ("mapColor" == propertyName || "readFile" == propertyName) {

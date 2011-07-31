@@ -128,6 +128,7 @@ import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.util.*;
+import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.AtomDataServer;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.jvxl.data.JvxlCoder;
@@ -1404,5 +1405,18 @@ public class SurfaceGenerator {
     return (params.thePlane != null || params.fullyLit);
   }
 
-
+  BitSet bsVdw;
+  
+  public BitSet geVdwBitSet() {
+    return bsVdw;
+  }
+  
+  void fillAtomData(AtomData atomData, int mode) {
+    if ((mode & AtomData.MODE_FILL_RADII) != 0) {
+      if (bsVdw == null)
+        bsVdw = new BitSet();
+      bsVdw.or(atomData.bsSelected);
+    }
+    atomDataServer.fillAtomData(atomData, mode);
+  }
 }

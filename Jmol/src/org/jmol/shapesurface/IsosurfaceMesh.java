@@ -72,6 +72,7 @@ public class IsosurfaceMesh extends Mesh {
 
     assocGridPointMap = null;
     assocGridPointNormals = null;
+    bsVdw = null;
     mergeAssociatedNormalCount = 0;
     centers = null;
     colorEncoder = null;
@@ -396,7 +397,8 @@ public class IsosurfaceMesh extends Mesh {
   short[] contourColixes;
   ColorEncoder colorEncoder;
   
-  public float volumeRenderPointSize = 0.15f;
+  float volumeRenderPointSize = 0.15f;
+  BitSet bsVdw;
 
   public void setDiscreteColixes(float[] values, short[] colixes) {
     if (values != null)

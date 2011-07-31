@@ -23,27 +23,28 @@
  */
 package org.jmol.multitouch.jni;
 
-import org.jmol.multitouch.JmolMultiTouchClient;
+//import org.jmol.multitouch.JmolMultiTouchClient;
 import org.jmol.multitouch.JmolMultiTouchClientAdapter;
-import org.jmol.viewer.Viewer;
+//import org.jmol.viewer.Viewer;
 
 public class JmolJniClientAdapter extends JmolMultiTouchClientAdapter {
 
   // not implemented. A stub only for a potential Java Native Interface.
   // not currently in applet.classes
   // would need to set isServer flag
-
+/*
   static {
     System.loadLibrary("JmolMultiTouchJNI");
   }  
  
   native void nativeMethod(); // should report "In C\nIn Java\n"
-  
+*/  
   @Override
   public void dispose() {
     //TODO
   }
 
+  /*
   @Override
   public boolean setMultiTouchClient(Viewer viewer, JmolMultiTouchClient client,
                                   boolean isSimulation) {
@@ -64,5 +65,5 @@ public class JmolJniClientAdapter extends JmolMultiTouchClientAdapter {
     //TODO
     System.out.println("In Java");
   }
-
+*/
 }

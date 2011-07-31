@@ -192,6 +192,11 @@ public class Contact extends Isosurface {
     thisMesh.setMerged(false);
     thisMesh.jvxlData.vertexDataOnly = true;
     thisMesh.reinitializeLightingAndColor();
+    if (contactType != Token.nci) {
+      thisMesh.bsVdw = new BitSet();
+      thisMesh.bsVdw.or(bsA);
+      thisMesh.bsVdw.or(bsB);
+    }
     super.setProperty("finalize", command, null);
     if (colorDensity) {
       super.setProperty("pointSize", Float.valueOf(ptSize), null);

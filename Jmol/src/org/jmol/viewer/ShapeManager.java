@@ -347,6 +347,13 @@ public class ShapeManager {
     commands.append("  select *;\n");
   }
 
+  public void deleteVdwDependentShapes(BitSet bs) {
+    if (shapes[JmolConstants.SHAPE_ISOSURFACE] != null)
+      shapes[JmolConstants.SHAPE_ISOSURFACE].setShapeProperty("deleteVdw", null, bs);
+    if (shapes[JmolConstants.SHAPE_CONTACT] != null)
+      shapes[JmolConstants.SHAPE_CONTACT].setShapeProperty("deleteVdw", null, bs);
+  }
+
   public void resetBioshapes(BitSet bsAllAtoms) {
     if (shapes == null)
       return;

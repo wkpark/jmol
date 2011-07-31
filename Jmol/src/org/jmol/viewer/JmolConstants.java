@@ -2678,7 +2678,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int SHAPE_MIN_SURFACE = 23; //////////
 
     public final static int SHAPE_ISOSURFACE  = 23;
-    public final static int SHAPE_CONTACT =     24;
+    public final static int SHAPE_CONTACT     = 24;
     public final static int SHAPE_LCAOCARTOON = 25;
     public final static int SHAPE_MO          = 26;  //but no ID for MO
     public final static int SHAPE_PMESH       = 27;

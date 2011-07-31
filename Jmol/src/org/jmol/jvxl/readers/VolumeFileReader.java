@@ -330,7 +330,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
       atomData.modelIndex = -1; // -1 here means fill ALL atoms; any other
       // means "this model only"
       atomData.bsSelected = params.bsSelected;
-      sg.getAtomDataServer().fillAtomData(atomData, AtomData.MODE_FILL_COORDS);
+      sg.fillAtomData(atomData, AtomData.MODE_FILL_COORDS);
       qpc.setupCalculation(volumeData, sg.getBsSelected(), null, null, null,
           atomData.atomXyz, -1, null, null, null, null, null, null, null,
           params.theProperty, true, null, params.parameters, params.testFlags);

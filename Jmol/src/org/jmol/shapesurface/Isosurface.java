@@ -202,8 +202,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
     //System.out.println("isosurface testing " + propertyName + " " + value + (propertyName == "token" ? " " + Token.nameOf(((Integer)value).intValue()) : ""));
-    
-    
+
     //isosurface-only (no calculation required; no calc parameters to set)
 
     if ("navigate" == propertyName) {
@@ -240,7 +239,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
     if ("pointSize" == propertyName) {
       if (thisMesh != null) {
-        thisMesh.volumeRenderPointSize = ((Float)value).floatValue();
+        thisMesh.volumeRenderPointSize = ((Float) value).floatValue();
       }
       return;
     }
@@ -290,7 +289,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         thisMesh.clear(thisMesh.meshType, false);
       return;
     }
-    
+
     if ("refreshTrajectories" == propertyName) {
       for (int i = meshCount; --i >= 0;)
         if (meshes[i].connections != null
@@ -429,7 +428,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
           Mesh m = getMesh((String) data[1]);
           if (m == null)
             return;
-          data[1] = m;  
+          data[1] = m;
           break;
         }
         slabPolygons(slabInfo);
@@ -451,6 +450,13 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         return;
     }
 
+    if ("deleteVdw" == propertyName) {
+      for (int i = meshCount; --i >= 0;)
+        if (isomeshes[i].bsVdw != null
+            && (bs == null || bs.intersects(isomeshes[i].bsVdw)))
+          deleteMesh(i);
+      return;
+    }
     if ("mapColor" == propertyName || "readFile" == propertyName) {
       if (value == null) {
         // ScriptEvaluator has passed the filename to us as the value of the
@@ -510,9 +516,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     } else if ("plane" == propertyName) {
       //allowContourLines = false;
     } else if ("pocket" == propertyName) {
-     // Boolean pocket = (Boolean) value;
-     // lighting = (pocket.booleanValue() ? JmolConstants.FULLYLIT
-     //     : JmolConstants.FRONTLIT);
+      // Boolean pocket = (Boolean) value;
+      // lighting = (pocket.booleanValue() ? JmolConstants.FULLYLIT
+      //     : JmolConstants.FRONTLIT);
     } else if ("scale3d" == propertyName) {
       scale3d = ((Float) value).floatValue();
       if (thisMesh != null) {
@@ -532,7 +538,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       withinPoints = (List<Point3f>) o[3];
       if (withinPoints.size() == 0)
         withinPoints = viewer.getAtomPointVector((BitSet) o[2]);
-    } else if (("nci" == propertyName || "orbital" == propertyName) && sg != null) {
+    } else if (("nci" == propertyName || "orbital" == propertyName)
+        && sg != null) {
       sg.getParams().testFlags = (viewer.getTestFlag(2) ? 2 : 0);
     }
 
@@ -1216,6 +1223,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
   public void notifySurfaceGenerationCompleted() {
     setMesh();
+    setBsVdw();
     thisMesh.insideOut = sg.isInsideOut();
     thisMesh.vertexSource = sg.getVertexSource();
     thisMesh.calculatedArea = null;
@@ -1240,6 +1248,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if (!thisMesh.isMerged)
       thisMesh.initialize(sg.isFullyLit() ? JmolConstants.FULLYLIT
           : JmolConstants.FRONTLIT, null, sg.getPlane());
+    setBsVdw();
     thisMesh.isColorSolid = false;
     thisMesh.colorDensity = jvxlData.colorDensity;
     thisMesh.colorEncoder = sg.getColorEncoder();
@@ -1257,6 +1266,15 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     }
     // may not be the final color scheme, though.
     thisMesh.setColorCommand();
+  }
+
+  private void setBsVdw() {
+    BitSet bs = sg.geVdwBitSet();
+    if (bs == null)
+      return;
+    if (thisMesh.bsVdw == null)
+      thisMesh.bsVdw = new BitSet();
+    thisMesh.bsVdw.or(bs);
   }
 
   public Point3f[] calculateGeodesicSurface(BitSet bsSelected,

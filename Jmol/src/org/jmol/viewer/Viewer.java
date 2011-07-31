@@ -2398,8 +2398,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     try {
       modelSet.createAtomDataSet(tokType, atomSetCollection,
           getSelectionSet(false));
-      if (tokType == Token.vibration)
+      switch  (tokType) {
+      case Token.vibration:
         setStatusFrameChanged(Integer.MIN_VALUE);
+        break;
+      case Token.vanderwaals:
+        shapeManager.deleteVdwDependentShapes(null);
+        break;
+      }
     } catch (Error er) {
       handleError(er, true);
       String errMsg = getShapeErrorState();
@@ -7965,6 +7971,8 @@ private void zap(String msg) {
 
   public void setAtomProperty(BitSet bs, int tok, int iValue, float fValue,
                               String sValue, float[] values, String[] list) {
+    if (tok == Token.vanderwaals)
+      shapeManager.deleteVdwDependentShapes(bs);
     clearMinimization();
     modelSet.setAtomProperty(bs, tok, iValue, fValue, sValue, values, list);
     switch (tok) {

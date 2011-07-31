@@ -1468,7 +1468,7 @@ final public class Atom extends Point3fi implements JmolNode {
     case 8:
       if (this == group.getCarbonylOxygenAtom())
         return -1;
-      if (getCovalentHydrogenCount() > 0)
+      if (getCovalentBondCount() == 0 || getCovalentHydrogenCount() > 0)
         return 0;
       //if (considerHydrogens)
         return -1;

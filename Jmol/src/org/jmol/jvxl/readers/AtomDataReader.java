@@ -82,7 +82,7 @@ abstract class AtomDataReader extends VolumeDataReader {
   protected void setup(boolean isMapData) {
     //CANNOT BE IN HERE IF atomDataServer is not valid
     contactPair = params.contactPair;
-    doAddHydrogens = (atomDataServer != null && params.addHydrogens); //Jvxl cannot do this on its own
+    doAddHydrogens = (sg.getAtomDataServer() != null && params.addHydrogens); //Jvxl cannot do this on its own
     modelIndex = params.modelIndex;
     if (params.bsIgnore != null)
       bsMyIgnored = params.bsIgnore;
@@ -163,7 +163,7 @@ abstract class AtomDataReader extends VolumeDataReader {
     // means "this model only"
     atomData.bsSelected = bsSelected;
     atomData.bsIgnored = bsMyIgnored;
-    atomDataServer.fillAtomData(atomData, AtomData.MODE_FILL_COORDS
+    sg.fillAtomData(atomData, AtomData.MODE_FILL_COORDS
         | (getAllModels ? AtomData.MODE_FILL_MULTIMODEL : 0)
         | (getMolecules ? AtomData.MODE_FILL_MOLECULES : 0)
         | (getRadii ? AtomData.MODE_FILL_RADII : 0));

@@ -45,6 +45,7 @@ import org.jmol.api.JmolEdge;
 import org.jmol.api.JmolMolecule;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.g3d.Graphics3D;
+import org.jmol.modelset.Atom;
 import org.jmol.modelset.MeasurementData;
 import org.jmol.modelset.Bond.BondSet;
 import org.jmol.script.ScriptEvaluator.ScriptException;
@@ -842,21 +843,36 @@ class ScriptMathProcessor {
       if (bs1 == null || bs2 == null)
         return addX("IDENTICAL");
       stddev = eval.getSmilesCorrelation(bs1, bs2, smiles1, null, null, null,
-          null, false);
+          null, false, false);
       return addX(stddev < 0.2f ? "IDENTICAL"
           : "IDENTICAL or CONFORMATIONAL ISOMERS (RMSD=" + stddev + ")");
     } else if (isSmiles) {
       ptsA = new ArrayList<Point3f>();
       ptsB = new ArrayList<Point3f>();
       sOpt = ScriptVariable.sValue(args[2]);
-      isSmiles = sOpt.equalsIgnoreCase("SMILES");
-      boolean isSearch = sOpt.equalsIgnoreCase("SMARTS");
+      boolean isMap = sOpt.equalsIgnoreCase("MAP");
+      isSmiles = (sOpt.equalsIgnoreCase("SMILES"));
+      boolean isSearch = (isMap || sOpt.equalsIgnoreCase("SMARTS"));
       if (isSmiles || isSearch)
         sOpt = (args.length > 3 ? ScriptVariable.sValue(args[3]) : null);
       if (sOpt == null)
         return false;
       stddev = eval.getSmilesCorrelation(bs1, bs2, sOpt, ptsA, ptsB, m, null,
-          !isSmiles);
+          !isSmiles, isMap);
+      if (isMap) {
+        int nAtoms = ptsA.size();
+        if (nAtoms == 0)
+          return addX("");
+        int nMatch = ptsB.size() / nAtoms;
+        List<int[][]> ret = new ArrayList<int[][]>();
+        for (int i = 0, pt = 0; i < nMatch; i++) {
+          int[][] a = new int[nAtoms][];
+          ret.add(a);
+          for (int j = 0; j < nAtoms; j++, pt++)
+            a[j] = new int[] { ((Atom)ptsA.get(j)).index, ((Atom)ptsB.get(pt)).index};
+        }
+        return addX(ret);
+      }
     } else {
       ptsA = eval.getPointVector(args[0], 0);
       ptsB = eval.getPointVector(args[1], 0);

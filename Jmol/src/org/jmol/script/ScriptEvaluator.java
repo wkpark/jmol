@@ -6854,7 +6854,7 @@ public class ScriptEvaluator {
       vAtomSets.add(new BitSet[] { bsAtoms1, bsAtoms2 });
       Matrix4f m4 = new Matrix4f();
       float stddev = getSmilesCorrelation(bsFrom, bsTo, strSmiles, null, null,
-          m4, null, !isSmiles);
+          m4, null, !isSmiles, false);
       if (Float.isNaN(stddev))
         error(ERROR_invalidArgument);
       Vector3f translation = new Vector3f();
@@ -6922,7 +6922,8 @@ public class ScriptEvaluator {
 
   float getSmilesCorrelation(BitSet bsA, BitSet bsB, String smiles,
                              List<Point3f> ptsA, List<Point3f> ptsB,
-                             Matrix4f m, List<BitSet> vReturn, boolean isSmarts)
+                             Matrix4f m, List<BitSet> vReturn, 
+                             boolean isSmarts, boolean asMap)
       throws ScriptException {
     float tolerance = 0.1f; // TODO
     try {
@@ -6949,6 +6950,12 @@ public class ScriptEvaluator {
         evalError(viewer.getSmilesMatcher().getLastException(), null);
       if (maps.length == 0)
         return Float.NaN;
+      if (asMap) {
+        for (int i = 0; i < maps.length; i++)
+          for (int j = 0; j < maps[i].length; j++)
+            ptsB.add(atoms[maps[i][j]]);
+        return 0;
+      }
       float lowestStdDev = Float.MAX_VALUE;
       int[] mapB = null;
       for (int i = 0; i < maps.length; i++) {
@@ -7026,7 +7033,7 @@ public class ScriptEvaluator {
 
       List<BitSet> vReturn = new ArrayList<BitSet>();
       float stddev = getSmilesCorrelation(bsMatch3D, bsSelected, pattern, null,
-          null, null, vReturn, isSmarts);
+          null, null, vReturn, isSmarts, false);
       if (Float.isNaN(stddev)) {
         if (asOneBitset)
           return new BitSet();

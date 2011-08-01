@@ -1126,6 +1126,7 @@ all support for previous versions removed
       </fileset>
       <fileset dir="${jmol.build.dir}">
         <include name="Jmol.jar" />
+        <include name="ChimeToJmol.jar" />
         <include name="JmolData.jar" />
         <include name="JmolSmiles.jar" />
       </fileset>

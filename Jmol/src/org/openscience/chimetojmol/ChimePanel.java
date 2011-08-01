@@ -14,7 +14,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -82,9 +81,8 @@ public class ChimePanel extends JPanel implements ItemListener, ActionListener {
     logArea.setMargin(new Insets(5, 5, 5, 5));
     logArea.setEditable(false);
     logScrollPane = new JScrollPane(logArea);
-    logScrollPane.setBorder(BorderFactory
-        .createTitledBorder("0 files"));
-    
+    logScrollPane.setBorder(BorderFactory.createTitledBorder("0 files"));
+
     lowerPanel.add("South", logScrollPane);
 
     add("South", lowerPanel);
@@ -109,6 +107,30 @@ public class ChimePanel extends JPanel implements ItemListener, ActionListener {
     }
   }
 
+  private void log(String string) {
+    logArea.setText(logArea.getText() + string + "\n");
+  }
+
+  private String oldDir;
+  private List<File> files;
+
+  void getFileList() {
+    logArea.setText("");
+    files = new ArrayList<File>();
+    String dir = chimePath.getText();
+    dir = dir.replace('\\', '/');
+    while (dir.endsWith("/"))
+      dir = dir.substring(0, dir.length() - 1);
+    if (dir.length() < 4)
+      return;
+    oldDir = dir;
+    try {
+      copyDirectory("", new File(oldDir), new File(oldDir + "_jmol"), true);
+    } catch (IOException e) {
+      log(e.getMessage());
+    }
+  }
+
   private void doGo() {
     logArea.setText("");
     try {
@@ -118,33 +140,41 @@ public class ChimePanel extends JPanel implements ItemListener, ActionListener {
     }
   }
 
-  
-  public void copyDirectory(String level, File sourceLocation , File targetLocation, boolean justChecking) throws IOException {
-    
-    if (sourceLocation.isDirectory()) {
-        if (!targetLocation.exists() && !justChecking) {
-            targetLocation.mkdir();
-        }
- 
-        String[] children = sourceLocation.list();
-        for (int i=0; i<children.length; i++) {
-            copyDirectory((level.equals("") ? "." : level.equals(".") ? ".." : level + "/.."),
-                    new File(sourceLocation, children[i]),
-                    new File(targetLocation, children[i]), justChecking);
-        }
-    } else {
-        if (!copyFile(level, sourceLocation, targetLocation, justChecking))
-          log("Hmm..." + sourceLocation + " --> "+ targetLocation);
+  private void doBrowse() {
+    if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+      String dir = chooser.getSelectedFile().toString();
+      chimePath.setText(dir);
+      getFileList();
     }
-}
+  }
+
+  public void copyDirectory(String level, File sourceLocation,
+                            File targetLocation, boolean justChecking)
+      throws IOException {
+
+    if (sourceLocation.isDirectory()) {
+      if (!doSubs && !level.equals(""))
+        return;
+        if (!targetLocation.exists() && !justChecking)
+          targetLocation.mkdir();
+      String[] children = sourceLocation.list();
+      for (int i = 0; i < children.length; i++)
+        copyDirectory((level.equals("") ? "." : level.equals(".") ? ".."
+            : level + "/.."), new File(sourceLocation, children[i]), new File(
+            targetLocation, children[i]), justChecking);
+    } else {
+      if (!copyFile(level, sourceLocation, targetLocation, justChecking))
+        log("Hmm..." + sourceLocation + " --> " + targetLocation);
+    }
+  }
 
   private boolean copyFile(String level, File f1, File f2, boolean justChecking) {
     if (f1.getName().endsWith(".htm") || f1.getName().endsWith(".html")) {
       if (justChecking) {
         files.add(f1);
         log(f1.getAbsolutePath());
-        logScrollPane.setBorder(BorderFactory
-            .createTitledBorder(files.size() + " files"));
+        logScrollPane.setBorder(BorderFactory.createTitledBorder(files.size()
+            + " files"));
         return true;
       }
       log(f1.getAbsolutePath() + " --> " + f2.getAbsolutePath());
@@ -171,7 +201,7 @@ public class ChimePanel extends JPanel implements ItemListener, ActionListener {
 
   private Pattern embed1 = Pattern.compile("<embed", Pattern.CASE_INSENSITIVE);
   private Pattern embed2 = Pattern.compile("</embed", Pattern.CASE_INSENSITIVE);
-  private String oldDir;
+
   private boolean processFile(String level, File f1, File f2) {
     String html = getFileContents(f1);
     if (html == null) {
@@ -183,7 +213,7 @@ public class ChimePanel extends JPanel implements ItemListener, ActionListener {
       String s = opener + " src=\"" + level + "/Jmol.js\"></script>";
       s += opener + ">jmolInitialize('" + level + "')</script>";
       s += opener + " src=\"" + level + "/ChimeToJmol.js\"></script>";
-      int i = html.toLowerCase().indexOf("<head>"); 
+      int i = html.toLowerCase().indexOf("<head>");
       if (i < 0) {
         html = "<head></head>" + html;
         i = 0;
@@ -200,8 +230,18 @@ public class ChimePanel extends JPanel implements ItemListener, ActionListener {
     return true;
   }
 
-  private void log(String string) {
-    logArea.setText(logArea.getText() + string + "\n");
+  private String getFileContents(File f) {
+    StringBuffer sb = new StringBuffer(8192);
+    String line;
+    try {
+      BufferedReader br = new BufferedReader(new FileReader(f));
+      while ((line = br.readLine()) != null)
+        sb.append(line).append('\n');
+      br.close();
+    } catch (IOException e) {
+      return null;
+    }
+    return sb.toString();
   }
 
   private boolean putFileContents(File f, String html) {
@@ -212,105 +252,9 @@ public class ChimePanel extends JPanel implements ItemListener, ActionListener {
       out.write(html);
       out.close();
     } catch (IOException e) {
-      return  false;
+      return false;
     }
     return true;
   }
 
-  private String getFileContents(File f) {
-    StringBuffer sb = new StringBuffer(8192);
-    String line;
-      try {
-        BufferedReader br = new BufferedReader(new FileReader(f));
-        while ((line = br.readLine()) != null)
-          sb.append(line).append('\n');
-        br.close();
-      } catch (IOException e) {
-        return null;
-      }
-    return sb.toString();
-  }
-
-  private void doBrowse() {
-    if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-      String dir = chooser.getSelectedFile().toString();
-      chimePath.setText(dir);
-      getFileList();
-    }
-  }
-
-  List<File> files;
-  
-  void getFileList() {
-    logArea.setText("");
-    files = new ArrayList<File>();
-    String dir = chimePath.getText();
-    dir = dir.replace('\\', '/');
-    while (dir.endsWith("/"))
-      dir = dir.substring(0, dir.length() - 1);
-    if (dir.length() < 4)
-      return;
-    oldDir = dir;
-    try {
-      copyDirectory("", new File(oldDir), new File(oldDir + "_jmol"), true);
-    } catch (IOException e) {
-      log(e.getMessage());
-    }
-  }
-
-  private void getListDir(String level, String dir, ArrayList<ChimeFile> list, boolean doSubs) {
-    
-    FileChecker fileChecker = new FileChecker(".htm");
-    (new File(dir)).list(fileChecker);
-    String newDir = oldDir + "_jmol" + dir.substring(oldDir.length());
-    for (int i = 0; i < fileChecker.v.size(); i++) {
-      String s = fileChecker.v.get(i);
-      list.add(new ChimeFile(newDir, s, level));
-      log(s.toString() + "\n");
-    }
-    logScrollPane.setBorder(BorderFactory.createTitledBorder(list.size() + " files"));
-    if (!doSubs)
-      return;
-    fileChecker = new FileChecker(null);
-    (new File(dir)).list(fileChecker);
-    for (int i = 0; i < fileChecker.v.size(); i++)
-      getListDir((level.equals(".") ? ".." : level + "/.."), fileChecker.v.get(i).replace('\\','/'), list, true);    
-  }
-
-  protected class FileChecker implements FilenameFilter {
-    List<String> v = new ArrayList<String>();
-    private String type;
-    private boolean isNot;
-
-    protected FileChecker(String type) {
-      if (type != null && type.startsWith("!")) {
-        isNot = true;
-        type= type.substring(1);
-      }
-      this.type = type;
-    }
-
-    public boolean accept(File dir, String name) {
-      File f = new File(dir, name);
-      if (f.isDirectory() != (type == null))
-        return true;
-      if (type == null) {
-        if (f.getName().endsWith("_jmol"))
-          return true;
-      } else if ((name.indexOf(type) >= 0) == isNot)
-        return true;
-      v.add(f.toString());
-      return true;
-    }
-
-  }
-/*
-  private void showFiles() {
-    StringBuffer s = new StringBuffer();
-    for (int i = 0; i < files.size(); i++) {
-      s.append(files.get(i).getAbsolutePath()).append('\n');
-    }
-    logArea.setText(s.toString());
-  }
-*/
 }

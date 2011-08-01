@@ -5,7 +5,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 
 
@@ -23,8 +22,6 @@ public class ChimeDirectoryChooser extends JPanel
    }
 
   public void actionPerformed(ActionEvent e) {
-    int result;
-        
   }   
   @Override
   public Dimension getPreferredSize(){

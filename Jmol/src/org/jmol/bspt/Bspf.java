@@ -84,8 +84,9 @@ public final class Bspf {
       bsptsValid = b;
     }
     Bspt bspt = bspts[bsptIndex];
-    if (bspt == null)
-      bspt = bspts[bsptIndex] = new Bspt(dimMax);
+    if (bspt == null) {
+      bspt = bspts[bsptIndex] = new Bspt(dimMax, bsptIndex);
+    }
     bspt.addTuple(tuple);
   }
 
@@ -133,6 +134,7 @@ public final class Bspf {
     if (cubeIterators[bsptIndex] == null &&
         bspts[bsptIndex] != null)
       cubeIterators[bsptIndex] = getNewCubeIterator(bsptIndex);
+    cubeIterators[bsptIndex].set(bspts[bsptIndex]);
     return cubeIterators[bsptIndex];
   }
 
@@ -141,6 +143,8 @@ public final class Bspf {
   }
 
   public synchronized void initialize(int modelIndex, Point3f[] atoms, BitSet modelAtomBitSet) {
+    if (bspts[modelIndex] != null)
+      bspts[modelIndex].reset();
     for (int i = modelAtomBitSet.nextSetBit(0); i >= 0; i = modelAtomBitSet.nextSetBit(i + 1))
       addTuple(modelIndex, atoms[i]);
     bsptsValid[modelIndex] = true;

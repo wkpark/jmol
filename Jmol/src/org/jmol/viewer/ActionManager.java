@@ -1465,6 +1465,7 @@ public class ActionManager {
       return;
     }
     t = new TimeoutThread(name, mSec, script);
+    System.out.println("action man new timeout " + name + " " + mSec + " " + script);
     timeouts.put(name, t);
     t.start();
   }
@@ -1520,6 +1521,7 @@ public class ActionManager {
             //viewer.script(script);
           //else 
           viewer.evalStringQuiet(script);
+          //System.out.println("timeout runnning " + this);
           if (ms > 0)
             break;
         }

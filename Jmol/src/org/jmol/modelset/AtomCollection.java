@@ -2183,7 +2183,7 @@ abstract public class AtomCollection {
    * @return BitSet; or null if we mess up the type
    */
   protected BitSet getAtomBitsMaybeDeleted(int tokType, Object specInfo) {
-    BitSet bs = new BitSet();
+    BitSet bs = new BitSet()  ;
     BitSet bsInfo;
     BitSet bsTemp;
     int iSpec;

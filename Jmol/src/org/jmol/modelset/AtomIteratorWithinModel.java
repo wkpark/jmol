@@ -37,7 +37,7 @@ import org.jmol.viewer.Viewer;
 
 public class AtomIteratorWithinModel implements AtomIndexIterator {
 
-  protected CubeIterator bsptIter;
+  protected CubeIterator cubeIterator;
   protected Bspf bspf;
   private boolean threadSafe;
   private boolean hemisphereOnly;
@@ -78,6 +78,7 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
     this.isZeroBased = isZeroBased;
     this.hemisphereOnly = hemisphereOnly;
     this.threadSafe = threadSafe;
+    cubeIterator = null;
   }
 
   private RadiusData radiusData;
@@ -90,8 +91,8 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
   public void set(ModelCollection modelSet, int modelIndex, int firstModelAtom, int atomIndex, Point3f center, float distance, RadiusData rd) {
     if (threadSafe)
       modelIndex = -1 - modelIndex; // no caching
-    if (modelIndex != this.modelIndex || bsptIter == null) {
-      bsptIter = bspf.getCubeIterator(modelIndex);
+    if (modelIndex != this.modelIndex || cubeIterator == null) {
+      cubeIterator = bspf.getCubeIterator(modelIndex);
       this.modelIndex = modelIndex;
       //bspf.dump();
     }
@@ -112,25 +113,25 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
   }
 
   public void set(Point3f center, float distance) {
-    if (bsptIter == null)
+    if (cubeIterator == null)
       return;
-    bsptIter.initialize(center, distance, hemisphereOnly);
+    cubeIterator.initialize(center, distance, hemisphereOnly);
     distanceSquared = distance * distance;
   }
   
   private int iNext;
   public boolean hasNext() {
     if (atomIndex >= 0)
-      while (bsptIter.hasMoreElements()) {
-        Atom a = (Atom) bsptIter.nextElement();
+      while (cubeIterator.hasMoreElements()) {
+        Atom a = (Atom) cubeIterator.nextElement();
         if ((iNext = a.index) != atomIndex
             && (!checkGreater || iNext > atomIndex)
             && (bsSelected == null || bsSelected.get(iNext))) {
           return true;
         }
       }
-    else if (bsptIter.hasMoreElements()) {
-      Atom a = (Atom) bsptIter.nextElement();
+    else if (cubeIterator.hasMoreElements()) {
+      Atom a = (Atom) cubeIterator.nextElement();
       iNext = a.index;
       return true;
     }
@@ -143,7 +144,7 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
   }
   
   public float foundDistance2() {
-    return (bsptIter == null ? -1 : bsptIter.foundDistance2());
+    return (cubeIterator == null ? -1 : cubeIterator.foundDistance2());
   }
   
   /**
@@ -178,9 +179,9 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
   }
 
   public void release() {
-    if (bsptIter != null) {
-      bsptIter.release();
-      bsptIter = null;
+    if (cubeIterator != null) {
+      cubeIterator.release();
+      cubeIterator = null;
     }
   }
 

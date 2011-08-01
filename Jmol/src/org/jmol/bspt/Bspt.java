@@ -30,44 +30,45 @@ import org.jmol.util.Logger;
 
 /**
  *<p>
- *  a Binary Space Partitioning Tree
+ * a Binary Space Partitioning Tree
  *</p>
  *<p>
- *  The tree partitions n-dimensional space (in our case 3) into little
- *  boxes, facilitating searches for things which are *nearby*.
+ * The tree partitions n-dimensional space (in our case 3) into little boxes,
+ * facilitating searches for things which are *nearby*.
  *</p>
  *<p>
- *  For some useful background info, search the web for "bsp tree faq".
- *  Our application is somewhat simpler because we are storing points instead
- *  of polygons.
+ * For some useful background info, search the web for "bsp tree faq". Our
+ * application is somewhat simpler because we are storing points instead of
+ * polygons.
  *</p>
  *<p>
- *  We are working with three dimensions. For the purposes of the Bspt code
- *  these dimensions are stored as 0, 1, or 2. Each node of the tree splits
- *  along the next dimension, wrapping around to 0.
- *  <pre>
- *    mySplitDimension = (parentSplitDimension + 1) % 3;
- *  </pre>
- *  A split value is stored in the node. Values which are <= splitValue are
- *  stored down the left branch. Values which are >= splitValue are stored
- *  down the right branch. If searchValue == splitValue then the search must
- *  proceed down both branches.
+ * We are working with three dimensions. For the purposes of the Bspt code these
+ * dimensions are stored as 0, 1, or 2. Each node of the tree splits along the
+ * next dimension, wrapping around to 0.
+ * 
+ * <pre>
+ * mySplitDimension = (parentSplitDimension + 1) % 3;
+ * </pre>
+ * 
+ * A split value is stored in the node. Values which are <= splitValue are
+ * stored down the left branch. Values which are >= splitValue are stored down
+ * the right branch. If searchValue == splitValue then the search must proceed
+ * down both branches.
  *</p>
  *<p>
- *  Planar and crystaline substructures can generate values which are == along
- *  one dimension.
+ * Planar and crystaline substructures can generate values which are == along
+ * one dimension.
  *</p>
  *<p>
- *  To get a good picture in your head, first think about it in one dimension,
- *  points on a number line. The tree just partitions the points.
- *  Now think about 2 dimensions. The first node of the tree splits the plane
- *  into two rectangles along the x dimension. The second level of the tree
- *  splits the subplanes (independently) along the y dimension into smaller
- *  rectangles. The third level splits along the x dimension.
- *  In three dimensions, we are doing the same thing, only working with
- *  3-d boxes.
+ * To get a good picture in your head, first think about it in one dimension,
+ * points on a number line. The tree just partitions the points. Now think about
+ * 2 dimensions. The first node of the tree splits the plane into two rectangles
+ * along the x dimension. The second level of the tree splits the subplanes
+ * (independently) along the y dimension into smaller rectangles. The third
+ * level splits along the x dimension. In three dimensions, we are doing the
+ * same thing, only working with 3-d boxes.
  *</p>
- *
+ * 
  * @author Miguel, miguel@jmol.org
  */
 
@@ -78,6 +79,7 @@ public final class Bspt {
   final static int MAX_TREE_DEPTH = 100;
   int treeDepth;
   int dimMax;
+  int index;
   Element eleRoot;
 
   /*
@@ -98,16 +100,24 @@ public final class Bspt {
   /**
    * Create a bspt with the specified number of dimensions. For a 3-dimensional
    * tree (x,y,z) call new Bspt(3).
+   * 
    * @param dimMax
+   * @param index 
    */
-  public Bspt(int dimMax) {
+  public Bspt(int dimMax, int index) {
     this.dimMax = dimMax;
-    this.eleRoot = new Leaf(this);
+    this.index = index;
+    reset();
+  }
+
+  void reset() {
+    eleRoot = new Leaf(this);
     treeDepth = 1;
   }
 
   /**
    * Iterate through all of your data points, calling addTuple
+   * 
    * @param tuple
    */
   public void addTuple(Point3f tuple) {
@@ -118,25 +128,23 @@ public final class Bspt {
    * prints some simple stats to stdout
    */
   public void stats() {
-//    if (Logger.debugging) {
-//      Logger.debug(
-//          "bspt treeDepth=" + treeDepth +
-//          " count=" + eleRoot.count);
-//    }
+    //    if (Logger.debugging) {
+    //      Logger.debug(
+    //          "bspt treeDepth=" + treeDepth +
+    //          " count=" + eleRoot.count);
+    //    }
   }
 
- 
   public void dump() {
     StringBuffer sb = new StringBuffer();
     eleRoot.dump(0, sb);
     Logger.info(sb.toString());
-    }
+  }
 
-    @Override
-    public String toString() {
-      return eleRoot.toString();
-    }
- 
+  //    @Override
+  //    public String toString() {
+  //     return eleRoot.toString();
+  //    }
 
   /*
     Enumeration enum() {
@@ -250,13 +258,12 @@ public final class Bspt {
     }
   */
 
-/*  public SphereIterator allocateSphereIterator() {
-    return new SphereIterator(this);
-  }
-*/
+  /*  public SphereIterator allocateSphereIterator() {
+      return new SphereIterator(this);
+    }
+  */
   public CubeIterator allocateCubeIterator() {
     return new CubeIterator(this);
   }
 
 }
-

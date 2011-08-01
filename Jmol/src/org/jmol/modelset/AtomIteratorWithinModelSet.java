@@ -53,7 +53,7 @@ public class AtomIteratorWithinModelSet extends AtomIteratorWithinModel {
 
   private boolean set(int iModel) {
     if ((modelIndex = bsModels.nextSetBit(iModel)) < 0
-        || (bsptIter = bspf.getCubeIterator(modelIndex)) == null)
+        || (cubeIterator = bspf.getCubeIterator(modelIndex)) == null)
       return false;
     super.set(center, distance);
     return true;

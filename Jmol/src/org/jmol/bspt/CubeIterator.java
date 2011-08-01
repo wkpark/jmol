@@ -55,8 +55,12 @@ public class CubeIterator {
   boolean tHemisphere;
 
   CubeIterator(Bspt bspt) {
-    this.bspt = bspt;
     centerValues = new float[bspt.dimMax];
+    set(bspt);
+  }
+
+  void set(Bspt bspt) {
+    this.bspt = bspt;
     stack = new Element[bspt.treeDepth];
   }
 

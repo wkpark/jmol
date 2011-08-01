@@ -8922,9 +8922,9 @@
   <fah_proj number="7012" name="WW 12 ext/folded 395K" public="y"
     server="129.74.85.15" atoms="596" preferred="8" deadline="11"
     credit="600.0" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75"/>
-  <fah_proj number="7013" name="WW 13 ext/folded 395K" public="y"
+  <fah_proj number="7013" name="WW 13 ext/folded 395K" public="y" file="xyz"
     server="129.74.85.15" atoms="558" preferred="8" deadline="11"
-    credit="600.0" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75"/>
+    credit="600.0" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75" contrib="Danny Nielsen"/>
   <fah_proj number="7014" name="WW 14 ext/folded 395K" public="y"
     server="129.74.85.15" atoms="575" preferred="8" deadline="11"
     credit="600.0" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75"/>
@@ -9159,20 +9159,20 @@
   <fah_proj number="7501" name="ndm" public="y"
     server="128.143.199.97" atoms="77324" preferred="2.2" deadline="3.6"
     credit="494.0" frames="100" code="A3" contact="kasson" kfactor="3.05"/>
-  <fah_proj number="7503" name="magainin/sol" public="n"
+  <fah_proj number="7503" name="magainin/sol" public="y"
     server="128.143.199.97" atoms="29557" preferred="2.7" deadline="4.4"
     credit="552.0" frames="100" code="A3" contact="kasson" kfactor="3.03"/>
-  <fah_proj number="7504" name="kpc2" public="n"
+  <fah_proj number="7504" name="kpc2" public="y"
     server="128.143.199.97" atoms="69867" preferred="3.1" deadline="5.2"
     credit="644.0" frames="100" code="A3" contact="kasson" kfactor="2.99"/>
-  <fah_proj number="7505" name="magainin/popc" public="n"
+  <fah_proj number="7505" name="magainin/popc" public="y"
     server="128.143.199.97" atoms="156434" preferred="13.4" deadline="22.3"
     credit="2774.0" frames="100" code="A3" contact="kasson" kfactor="3.0"/>
 
   <!-- Projects 7600 to 7699 -->
-  <fah_proj number="7600" name="p7600" public="y"
+  <fah_proj number="7600" name="p7600" public="y" file="xyz"
     server="171.64.65.101" atoms="12377" preferred="13.92" deadline="23.2"
-    credit="937.0" frames="100" code="A4" contact="tjlane" kfactor="0.75"/>
+    credit="937.0" frames="100" code="A4" contact="tjlane" kfactor="0.75" contrib="Danny Nielsen"/>
   <fah_proj number="7610" name="p7610" public="y"
     server="171.64.65.104" atoms="13564" preferred="11.71" deadline="19.52"
     credit="788.0" frames="100" code="A4" contact="tjlane" kfactor="0.75"/>
@@ -9234,11 +9234,11 @@
     server="128.113.12.161" atoms="0" preferred="14" deadline="30"
     credit="766.0" frames="100" code="A4" contact="jimenc@rpi.edu" kfactor="0.0"/>
   <fah_proj number="7901" name="p7901" public="n"
-    server="128.113.12.162" atoms="0" preferred="12" deadline="25"
-    credit="626.0" frames="100" code="A4" contact="jimenc@rpi.edu" kfactor="0.0"/>
+    server="128.113.12.162" atoms="60264" preferred="12" deadline="25"
+    credit="626.0" frames="100" code="A4" contact="jimenc@rpi.edu" kfactor="0.58"/>
   <fah_proj number="7902" name="p7902" public="n"
-    server="128.113.12.163" atoms="0" preferred="9" deadline="19"
-    credit="487.0" frames="100" code="A4" contact="jimenc@rpi.edu" kfactor="0.0"/>
+    server="128.113.12.163" atoms="93636" preferred="9" deadline="19"
+    credit="487.0" frames="100" code="A4" contact="jimenc@rpi.edu" kfactor="0.58"/>
 
   <!-- Projects 9900 to 9999 -->
   <fah_proj number="9900" name="p9900_supervillin_e1" public="y"

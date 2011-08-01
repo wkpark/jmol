@@ -17,6 +17,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -83,8 +84,8 @@ public class ChimePanel extends JPanel implements ItemListener, ActionListener {
     checkSigned = new Checkbox("use signed applet");
     checkSigned.addItemListener(this);
     checkPanel.add("North", checkSubs);
-    checkPanel.add("Center", checkSigned);
-    checkPanel.add("South", checkFilenames);
+    checkPanel.add("Center", checkFilenames);
+    checkPanel.add("South", checkSigned);
     add("Center", checkPanel);
 
     JPanel lowerPanel = new JPanel();
@@ -154,7 +155,7 @@ public class ChimePanel extends JPanel implements ItemListener, ActionListener {
   }
 
   private void doGo() {
-    logArea.setText("");
+    getFileList();
     try {
       copyDirectory("", oldDir, new File(oldDir + "_jmol"), false);
     } catch (IOException e) {
@@ -207,22 +208,31 @@ public class ChimePanel extends JPanel implements ItemListener, ActionListener {
 
   private void addJmolFiles(String rootDir) {
     File dir = myDir;
-    if (! new File(dir, "Jmol.js").exists())
+    if (!new File(dir, "Jmol.js").exists())
       dir = oldDir;
     File dest = new File(rootDir);
-    
+
     String[] list = dir.list();
     for (int i = 0; i < list.length; i++) {
       String f = list[i];
-      if (!f.equals("Jmol.js") 
-          && !f.equals("ChimeToJmol.js")
-          && !f.startsWith("chimebtn")) { 
-      if (!f.startsWith("JmolApplet") || !f.endsWith(".jar")
-          || doUseSigned != (f.indexOf("AppletSigned") >= 0))
-        continue;
+      if (!f.equals("Jmol.js")) {
+        if (!f.startsWith("JmolApplet") || !f.endsWith(".jar")
+            || doUseSigned != (f.indexOf("AppletSigned") >= 0))
+          continue;
       }
-      justTransferFile(new File(dir, f), new File(dest, f));
+      justTransferFile(new File(dir, f), new File(dest, f), null);
     }
+    transferResource(dir, "chimebtn16.bin", dest, "chimebtn16.png");
+    transferResource(dir, "ChimeToJmol.js", dest, "ChimeToJmol.js");
+  }
+
+  private void transferResource(File dir, String name, File dest, String nameOut) {
+    File file = new File(dir, name);
+    File fileOut = new File(dest, nameOut);
+    if (file.exists())
+      justTransferFile(file, fileOut, null);
+    else
+      justTransferFile(null, fileOut, getResourceStream(name));
   }
 
   public static boolean deleteDirectory(File directory) {
@@ -274,12 +284,13 @@ public class ChimePanel extends JPanel implements ItemListener, ActionListener {
       log("---\n" + f1.getAbsolutePath() + " --> " + f2.getAbsolutePath());
       return processFile(level, f1, f2, false, true);
     }
-    return justTransferFile(f1, f2);
+    return justTransferFile(f1, f2, null);
   }
 
-  private boolean justTransferFile(File f1, File f2) {
+  private boolean justTransferFile(File f1, File f2, InputStream in) {
     try {
-      InputStream in = new FileInputStream(f1);
+      if (f1 != null)
+        in = new FileInputStream(f1);
       OutputStream out = new FileOutputStream(f2);
 
       byte[] buf = new byte[1024];
@@ -432,6 +443,18 @@ public class ChimePanel extends JPanel implements ItemListener, ActionListener {
       return false;
     }
     return true;
+  }
+
+  static InputStream getResourceStream(String fileName) {
+    URL url = null;
+    fileName = "org/openscience/chimetojmol/" + fileName;
+    try {
+      if ((url = ClassLoader.getSystemResource(fileName)) == null)
+        return null;
+      return (InputStream) url.getContent();
+    } catch (Exception e) {
+      return null;
+    }
   }
 
 }

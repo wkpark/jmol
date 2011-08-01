@@ -621,11 +621,16 @@ public class IsosurfaceMesh extends Mesh {
    * scheme information, and vertex color mappings (as from COLOR ISOSURFACE
    * {hydrophobic} WHITE), returning these settings when the JVXL file is
    * opened.
+   * @param colorRgb 
    */
-  void setColorsFromJvxlData() {
+  void setColorsFromJvxlData(int colorRgb) {
     diameter = jvxlData.diameter;
-    if (jvxlData.color != null)
+    if (colorRgb == -1) {
+    } else if (colorRgb != Integer.MIN_VALUE) {
+      colix = Graphics3D.getColix(colorRgb);
+    } else if (jvxlData.color != null) {
       colix = Graphics3D.getColix(jvxlData.color);
+    }
     if (colix == 0)
       colix = Graphics3D.ORANGE;
     colix = Graphics3D.getColixTranslucent(colix, jvxlData.translucency != 0,

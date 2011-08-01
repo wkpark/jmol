@@ -223,18 +223,22 @@ public class JvxlXmlReader extends VolumeFileReader {
     if (params.isBicolorMap) {
       // TODO -- not quite right, because
       s = XmlReader.getXmlAttrib(data, "colorPositive");
-      if (s.length() > 0 && params.colorPos == Parameters.defaultColorPositive)
+      if (s.length() > 0 && params.colorRgb == Integer.MIN_VALUE 
+          && params.colorPos == Parameters.defaultColorPositive)
         params.colorPos = Graphics3D.getArgbFromString(s);
       s = XmlReader.getXmlAttrib(data, "colorNegative");
-      if (s.length() > 0 && params.colorNeg == Parameters.defaultColorNegative)
+      if (s.length() > 0 && params.colorRgb == Integer.MIN_VALUE
+          && params.colorNeg == Parameters.defaultColorNegative)
         params.colorNeg = Graphics3D.getArgbFromString(s);
     }
     if (params.isBicolorMap || params.colorBySign)
       jvxlCutoff = 0;
-    jvxlDataIsColorMapped = params.isBicolorMap || XmlReader.getXmlAttrib(data, "colorMapped").equals("true");
+    jvxlDataIsColorMapped = 
+      (params.colorRgb == Integer.MIN_VALUE
+    && (params.isBicolorMap || XmlReader.getXmlAttrib(data, "colorMapped").equals("true")));
     //next is for information only -- will be superceded by "encoding" attribute of jvxlColorData
     jvxlData.isJvxlPrecisionColor = XmlReader.getXmlAttrib(data, "precisionColor").equals("true");
-    jvxlData.colorDensity = params.colorDensity = XmlReader.getXmlAttrib(data, "colorDensity").equals("true");
+    jvxlData.colorDensity = params.colorDensity = (params.colorRgb == Integer.MIN_VALUE && XmlReader.getXmlAttrib(data, "colorDensity").equals("true"));
     s = XmlReader.getXmlAttrib(data, "allowVolumeRender");
       jvxlData.allowVolumeRender = params.allowVolumeRender = (s.length() == 0 || s.equalsIgnoreCase("true"));
     s = XmlReader.getXmlAttrib(data, "plane");
@@ -626,7 +630,7 @@ public class JvxlXmlReader extends VolumeFileReader {
     jvxlColorDataRead = JvxlCoder.jvxlUncompressString(XmlReader.getXmlAttrib(data, "data"));
     if (jvxlColorDataRead.length() == 0)
       jvxlColorDataRead = xr.getXmlData("jvxlColorData", data, false, false);
-    jvxlDataIsColorMapped = (jvxlColorDataRead.length() > 0);
+    jvxlDataIsColorMapped = (params.colorRgb == Integer.MIN_VALUE && jvxlColorDataRead.length() > 0);
     if (haveContourData)
       jvxlDecodeContourData(jvxlData, xr.getXmlData("jvxlContourData", null, false, false));
   }

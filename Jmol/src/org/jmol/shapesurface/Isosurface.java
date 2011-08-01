@@ -137,6 +137,7 @@ import org.jmol.jvxl.api.MeshDataServer;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.JvxlData;
 import org.jmol.jvxl.data.MeshData;
+import org.jmol.jvxl.readers.Parameters;
 import org.jmol.jvxl.readers.SurfaceGenerator;
 
 public class Isosurface extends MeshCollection implements MeshDataServer {
@@ -1231,12 +1232,13 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     thisMesh.calculatedArea = null;
     thisMesh.calculatedVolume = null;
     // from JVXL file:
+    Parameters params = sg.getParams();
     if (!thisMesh.isMerged)
       thisMesh.initialize(sg.isFullyLit() ? JmolConstants.FULLYLIT
         : JmolConstants.FRONTLIT, null, sg.getPlane());
-    if (!sg.getParams().allowVolumeRender)
+    if (!params.allowVolumeRender)
       thisMesh.jvxlData.allowVolumeRender = false;
-    thisMesh.setColorsFromJvxlData();
+    thisMesh.setColorsFromJvxlData(sg.getParams().colorRgb);
     if (thisMesh.jvxlData.slabInfo != null)
       viewer.runScriptImmediately("isosurface " + thisMesh.jvxlData.slabInfo);
       

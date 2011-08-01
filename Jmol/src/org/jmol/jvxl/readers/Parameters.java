@@ -210,6 +210,7 @@ public class Parameters {
     colorNegLCAO = defaultColorNegativeLCAO;
     colorPos = defaultColorPositive;
     colorPosLCAO = defaultColorPositiveLCAO;
+    colorRgb = Integer.MIN_VALUE;
     colorSchemeTranslucent = false;
     contactPair = null;
     contourIncrements = null;
@@ -328,6 +329,7 @@ public class Parameters {
   boolean colorBySign;
   boolean colorByPhase;
   boolean colorBySets;
+  public int colorRgb;
   int colorNeg;
   int colorPos;
   int colorPosLCAO;
@@ -774,7 +776,7 @@ public class Parameters {
   float mappedDataMin;
   float mappedDataMax;
   boolean isColorReversed;
-  boolean isBicolorMap;
+  public boolean isBicolorMap;
   public boolean isSquared;
 
   public Point4f thePlane;

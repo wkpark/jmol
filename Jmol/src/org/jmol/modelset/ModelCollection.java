@@ -1516,27 +1516,28 @@ abstract public class ModelCollection extends BondCollection {
       int resnolast = Integer.MAX_VALUE;
       int resnofirst = Integer.MAX_VALUE;
       for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1)) {
-        if (lastGroup == atoms[j].group)
+        Atom atom = atoms[j];
+        if (lastGroup == atom.group)
           continue;
-        lastGroup = atoms[j].group;
-        int resno = atoms[j].getResno();
-        char chain = atoms[j].getChainID();
+        lastGroup = atom.group;
+        int resno = atom.getResno();
+        char chain = atom.getChainID();
         if (resnolast != resno - 1) {
           if (reslist.length() != 0 && resnolast != resnofirst)
             reslist += "-" + resnolast;
           chain = '\1';
           resnofirst = resno;
         }
-        model = "/" + getModelNumberDotted(atoms[j].modelIndex);
+        model = "/" + getModelNumberDotted(atom.modelIndex);
         if (chainlast != '\0' && chain != chainlast)
           reslist += ":" + chainlast + model;
         if (chain == '\1')
           reslist += " " + resno;
         resnolast = resno;
-        chain = atoms[j].getChainID();
-        names += sep + atoms[j].getGroup3(false);
+        chainlast = atom.getChainID();
+        names += sep + atom.getGroup3(false);
         sep = "-";
-      }
+      } 
       reslist += (resnofirst == resnolast ? "" : "-" + resnolast) + (chainlast == '\0' ? "" : ":" + chainlast)
           + model;
       ligand.put("groupNames", names);

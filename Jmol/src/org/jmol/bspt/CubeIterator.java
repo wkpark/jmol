@@ -36,23 +36,20 @@ import javax.vecmath.Point3f;
  * @author Miguel, miguel@jmol.org
  */
 public class CubeIterator {
-  Bspt bspt;
+  private Bspt bspt;
 
-  Element[] stack;
-  int sp;
-  int leafIndex;
-  Leaf leaf;
-
-  //Point3f center;
-  float radius;
-  
-  float[] centerValues;
+  private Element[] stack;
+  private int sp;
+  private int leafIndex;
+  private Leaf leaf;
+  private float radius;  
+  private float[] centerValues;
   private float cx, cy, cz;
-  protected float dx, dy, dz;
+  private float dx, dy, dz;
 
   // when set, only the hemisphere sphere .GE. the point
   // (on the first dim) is returned
-  boolean tHemisphere;
+  private boolean tHemisphere;
 
   CubeIterator(Bspt bspt) {
     centerValues = new float[bspt.dimMax];
@@ -90,8 +87,7 @@ public class CubeIterator {
    * nulls internal references
    */
   public void release() {
-    for (int i = bspt.treeDepth; --i >= 0; )
-      stack[i] = null;
+    set(bspt);
   }
 
   /**

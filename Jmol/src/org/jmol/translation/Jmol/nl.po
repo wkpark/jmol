@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-07-29 23:21+0200\n"
-"PO-Revision-Date: 2011-07-25 07:00+0000\n"
+"PO-Revision-Date: 2011-07-31 07:06+0000\n"
 "Last-Translator: Egon Willighagen <Unknown>\n"
 "Language-Team: Dutch <jmol-developer@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-07-25 17:24+0000\n"
-"X-Generator: Launchpad (build 13503)\n"
+"X-Launchpad-Export-Date: 2011-08-01 07:32+0000\n"
+"X-Generator: Launchpad (build 13543)\n"
 "X-Poedit-Country: The Netherlands\n"
 "X-Poedit-Language: Dutch\n"
 
@@ -66,7 +66,8 @@ msgstr "geen console -- alle uitvoer naar de command line"
 
 #: org/openscience/jmol/app/JmolApp.java:156
 msgid "send only output from print messages to console (implies -i)"
-msgstr "stuur alleen input van print berichten naar de console (impliceert -i)"
+msgstr ""
+"stuur alleen input van print berichten naar de console (impliceert -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:158
 msgid "independent command thread"
@@ -1315,18 +1316,16 @@ msgid "Radians"
 msgstr "Radialen"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
-#, fuzzy
 msgid "Gradians"
-msgstr "Radialen"
+msgstr "Decimale graad"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
-#, fuzzy
 msgid "Circle Fraction"
-msgstr "Collectie"
+msgstr "Boogdeel"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
 msgid "Units of Pi"
-msgstr ""
+msgstr "Eenheden in pi"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:273
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:327
@@ -1770,28 +1769,29 @@ msgstr "Overhalendialoog"
 msgid "unimplemented"
 msgstr "niet geimplementeerd"
 
-#, fuzzy
-#~ msgid "Angle Units"
-#~ msgstr "Hoeken"
-
 #~ msgid "atom set"
 #~ msgstr "atoomset"
 
 #~ msgid "vector"
 #~ msgstr "vector"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Ga naar de eerste {0} in de collectie"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Ga naar de vorige {0} in de collectie"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Speel de hele collectie van {0}'s af"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Ga naar de volgende {0} in de collectie"
 
+#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Ga naar de laatste {0} in de collectie"
 
@@ -1804,6 +1804,7 @@ msgstr "niet geimplementeerd"
 #~ msgid "double-click and drag to reorder"
 #~ msgstr "Dubbelklik en sleep om de volgorde te wijzigen"
 
+#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"
@@ -1817,18 +1818,21 @@ msgstr "niet geimplementeerd"
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "toevoegen JmolPopIn.js"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "toevoegen {0}.png"
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "toevoegen {0}.spt"
 
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 #~ msgstr ""
-#~ "Voeg hier extra uitleg in. Lange teksten worden om het Jmol-model {0} "
-#~ "heen gezet."
+#~ "Voeg hier extra uitleg in. Lange teksten worden om het Jmol-model {0} heen "
+#~ "gezet."
 
 #~ msgid "Clear console button (requires restarting Jmol)"
 #~ msgstr "Leeg console knop (vereist een herstart van Jmol)"
@@ -1841,3 +1845,6 @@ msgstr "niet geimplementeerd"
 
 #~ msgid "stereo off"
 #~ msgstr "stereo uit"
+
+#~ msgid "Angles"
+#~ msgstr "Hoeken"

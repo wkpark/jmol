@@ -3510,11 +3510,16 @@ public class ScriptEvaluator {
         rpn.addX(viewer.getClickableSet());
         break;
       case Token.spec_atom:
-        int atomID = instruction.intValue;
-        if (atomID > 0)
-          rpn.addX(compareInt(Token.atomid, Token.opEQ, atomID));
-        else
-          rpn.addX(getAtomBits(instruction.tok, value));
+        if (viewer.allowSpecAtom()) {
+          int atomID = instruction.intValue;
+          if (atomID > 0)
+            rpn.addX(compareInt(Token.atomid, Token.opEQ, atomID));
+          else
+            rpn.addX(getAtomBits(instruction.tok, value));
+        } else {
+          // Chime legacy hack.  *.C for _C
+          rpn.addX(lookupIdentifierValue("_" + value));
+        }
         break;
       case Token.carbohydrate:
       case Token.dna:
@@ -3628,7 +3633,7 @@ public class ScriptEvaluator {
         boolean isIntProperty = Token.tokAttr(tokWhat, Token.intproperty);
         boolean isFloatProperty = Token.tokAttr(tokWhat, Token.floatproperty);
         boolean isIntOrFloat = isIntProperty && isFloatProperty;
-        boolean isStringProperty= !isIntProperty
+        boolean isStringProperty = !isIntProperty
             && Token.tokAttr(tokWhat, Token.strproperty);
         if (tokWhat == Token.element)
           isIntProperty = !(isStringProperty = false);

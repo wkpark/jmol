@@ -1145,5 +1145,10 @@ import javax.vecmath.Vector3f;
     }    
   }
 
+  public boolean allowSpecAtom() {
+    // old Chime scripts use *.C for _C
+    return modelCount != 1 || models[0].isPDB;
+  }
+
 }
 

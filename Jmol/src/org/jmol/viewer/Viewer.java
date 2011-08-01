@@ -9969,4 +9969,8 @@ private void zap(String msg) {
     return true; 
   }
 
+  public boolean allowSpecAtom() {
+    return modelSet.allowSpecAtom();
+  }
+
 }

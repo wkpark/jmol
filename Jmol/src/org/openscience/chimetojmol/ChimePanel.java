@@ -199,8 +199,8 @@ public class ChimePanel extends JPanel implements ItemListener, ActionListener {
     return true;
   }
 
-  private Pattern embed1 = Pattern.compile("<embed", Pattern.CASE_INSENSITIVE);
-  private Pattern embed2 = Pattern.compile("</embed", Pattern.CASE_INSENSITIVE);
+  private static Pattern embed1 = Pattern.compile("<embed", Pattern.CASE_INSENSITIVE);
+  private static Pattern embed2 = Pattern.compile("</embed", Pattern.CASE_INSENSITIVE);
 
   private boolean processFile(String level, File f1, File f2) {
     String html = getFileContents(f1);
@@ -221,11 +221,10 @@ public class ChimePanel extends JPanel implements ItemListener, ActionListener {
       html = html.substring(0, i + 6) + s + "\n" + html.substring(i + 6);
       html = embed1.matcher(html).replaceAll("<xembed");
       html = embed2.matcher(html).replaceAll("</xembed");
-      if (!putFileContents(f2, html)) {
-        log("?error creating " + f2);
-        return false;
-      }
-      return true;
+    }
+    if (!putFileContents(f2, html)) {
+      log("?error creating " + f2);
+      return false;
     }
     return true;
   }

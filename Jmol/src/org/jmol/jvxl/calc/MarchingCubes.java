@@ -49,12 +49,13 @@ public class MarchingCubes extends TriangleData {
    * inputs: surfaceReader: interface to other methods
    *         volumeData, containing all information relating to origin, axes, etc.
    *         
+   *         MODE_PLANE volume data will be read progressively, by yz planes, starting from x = 0.
+   *            This is a very efficient way to read the data -- only two active planes, 
+   *            which are swapped.
    *         MODE_CUBE volumeData.voxelData possibly with 3D voxel data
-   *         MODE_BITSET bsVoxels -- optional alternative, JVXL-type BitSet indicating which vertices are inside and which outside
-   *            in order for(x 0 to nX){for(y 0 to nY){for(z 0 to nZ){}}}
-   *         MODE_GETXYZ If BOTH voxelData and bsVoxels are null, 
-   *            then we assume we can get the voxelData on the fly
-   *            using surfaceReader.getValue(x, y, z)  
+   *         MODE_JVXL bsVoxels -- optional alternative, JVXL-type BitSet indicating 
+   *            which vertices are inside and which outside
+   *            in the order for(x 0 to nX){for(y 0 to nY){for(z 0 to nZ){}}}
    * 
    * surfaceReader.getSurfacePointIndex gets the actual Point3f vertex points and
    * returns the fraction information. It is exported here, because the JVXL reader may use this
@@ -85,7 +86,6 @@ public class MarchingCubes extends TriangleData {
   protected int yzCount;
   
   protected boolean colorDensity;
-  protected float fractionOutside;
   protected boolean integrateSquared = true;
   protected BitSet bsVoxels;
   protected BitSet bsExcludedVertices;
@@ -123,13 +123,13 @@ public class MarchingCubes extends TriangleData {
     // TODO -- need not be setting up planes for simple value-readers
     
     mode = (volumeData.getVoxelData() != null || volumeData.mappingPlane != null ? MODE_CUBE 
-        : bsVoxels != null ? MODE_BITSET : MODE_PLANES);
+        : bsVoxels != null ? MODE_JVXL : MODE_PLANES);
     setParameters(volumeData, params);
   }
 
   protected void setParameters(VolumeData volumeData, Parameters params) {
     this.volumeData = volumeData;
-    colorDensity = params.colorDensity;
+    colorDensity = params.colorDensity && (mode != MODE_JVXL);
     isContoured = params.thePlane == null && params.isContoured && !colorDensity;
     cutoff = params.cutoff;
     isCutoffAbsolute = params.isCutoffAbsolute;
@@ -153,7 +153,7 @@ public class MarchingCubes extends TriangleData {
 
   protected int mode;
   protected final static int MODE_CUBE = 1;
-  protected final static int MODE_BITSET = 2;
+  protected final static int MODE_JVXL = 2;
   protected final static int MODE_PLANES = 3;
 
   protected final float[] vertexValues = new float[8];
@@ -198,6 +198,10 @@ public class MarchingCubes extends TriangleData {
   }
 
   private Point4f mappingPlane;
+  private boolean allInside;
+  private boolean isInside;
+  private Point3i offset;
+  private float[][][] voxelData;
   
   public String getEdgeData() {
 
@@ -222,49 +226,53 @@ public class MarchingCubes extends TriangleData {
     int x0, x1, xStep, ptStep, pt, ptX;
     if (isXLowToHigh) {
       // used for progressive plane readers
-      x0 = 0;
-      x1 = cubeCountX + (colorDensity ? 1 : 0);
-      // either this is a bug, or I'm forgetting something, but the
-      // progressive readers otherwise will miss the last plane. Added in Jmol 12.1.49:
-      // the problem was with the statement below, not this one.
-      //if (mode == MODE_PLANES)
-        //x1++;
-      xStep = 1;
-      ptStep = yzCount;
-      pt = ptX = (yzCount - 1) - nZ - 1;
       // we are starting at the top corner, in the next to last
       // cell on the next to last row of the first plane
+      x0 = 0;
+      x1 = cubeCountX + (colorDensity ? 1 : 0);
+      if (colorDensity) {
+        x1 = cubeCountX + 1;
+        ptX = yzCount - 1;
+      } else {
+        x1 = cubeCountX;
+        ptX = (yzCount - 1) - nZ - 1;        
+      }
+      xStep = 1;
+      ptStep = yzCount;
     } else {
       // NOTE: isXLowToHigh FALSE is not compatible with progressive plane reading.
       //       One should never need to do that anyway, because one can always
       //       define the cube axes such that they go "from low to high in X"
-      x0 = cubeCountX - 1;
+      // we are starting at the top corner, in the next to last
+      // cell on the next to last row of the next to last plane(!)
+      if (colorDensity) {
+        x0 = cubeCountX;
+        ptX = (cubeCountX + 1) * yzCount - 1;
+      } else {
+        x0 = cubeCountX - 1;
+        ptX = (cubeCountX * yzCount - 1) - nZ - 1;
+      }
       x1 = -1;
       xStep = -1;
       ptStep = -yzCount;
-      pt = ptX = (cubeCountX * yzCount - 1) - nZ - 1;
-      // we are starting at the top corner, in the next to last
-      // cell on the next to last row of the next to last plane(!)
     }
-    int cellIndex0 = cubeCountY * cubeCountZ - 1;
-    int cellIndex = cellIndex0;
+    pt = ptX;
     resetIndexPlane(isoPointIndexPlanes[1]);
-    float[][][] voxelData = null;
-    int y1 = cubeCountY;
-    int z1 = cubeCountZ;
+    voxelData = null;
+    int y1 = cubeCountY + (colorDensity ? 1 : 0);
+    int z1 = cubeCountZ + (colorDensity ? 1 : 0);
     switch (mode) {
     case MODE_PLANES:
       getPlane(x0, false);
       break;
     case MODE_CUBE:
-      voxelData  = volumeData.getVoxelData();
+      voxelData = volumeData.getVoxelData();
       break;
     }
+    allInside = (colorDensity && (cutoff == 0 || bsVoxels.cardinality() == 0));
+    boolean colorDensityAll = (colorDensity && cutoff == 0);
     float v = 0;
-    int pti = 0;
-    boolean allInside = (colorDensity && (cutoff == 0 || bsVoxels.cardinality() == 0));
-
-    for (int x = x0; x != x1; x += xStep, ptX += ptStep, pt = ptX, cellIndex = cellIndex0) {
+    for (int x = x0; x != x1; x += xStep, ptX += ptStep, pt = ptX) {
 
       // we swap planes of grid data when
       // obtaining the grid data point by point
@@ -281,86 +289,51 @@ public class MarchingCubes extends TriangleData {
           getPlane(x + xStep, true);
       }
 
+      // now scan the plane of cubicals
+
+      if (bsExcludedPlanes.get(x) && bsExcludedPlanes.get(x + xStep))
+        continue;
+      
+      if (colorDensity) {
+        // MODE_JVXL not allowed here
+        for (int y = y1; --y >= 0;)
+          for (int z = z1; --z >= 0; pt--) {
+            // 0 cutoff read as "show grid points only"
+            v = getValue(x, y, z, pt, 0);
+            if (colorDensityAll || isInside) {
+              // xyz corner is inside, so add this point
+              // TODO - we are missing the outside edges of these 
+              // in the Y and Z direction 
+              addVertex(x, y, z, pt, v);
+            }
+          }
+        continue;
+      }
+
       // we swap the edge vertex index planes
 
       int[][] indexPlane = isoPointIndexPlanes[0];
       isoPointIndexPlanes[0] = isoPointIndexPlanes[1];
       isoPointIndexPlanes[1] = resetIndexPlane(indexPlane);
 
-      // now scan the plane of cubicals
-      
-      if (bsExcludedPlanes.get(x) && bsExcludedPlanes.get(x + xStep))
-        continue;
-      int xCount = 0;
-      for (int y = y1; --y >= 0; pt--) {        
-        for (int z = z1; --z >= 0; pt--, cellIndex--) {
-
+      boolean noValues = true;
+      for (int y = y1; --y >= 0; pt--) {
+        for (int z = z1; --z >= 0; pt--) {
+          int insideMask = 0;
           // create the bitset mask indicating which vertices are inside.
           // 0xFF here means "all inside"; 0x00 means "all outside"
-
-          int insideMask = 0;
           for (int i = 8; --i >= 0;) {
-
-            // cubeVertexOffsets just gets us the specific grid point relative
-            // to our base x,y,z cube position
-
-            boolean isInside;
-            Point3i offset = cubeVertexOffsets[i];
-            pti = pt + linearOffsets[i];
-            switch (mode) {
-            case MODE_PLANES:
-              v = vertexValues[i] = getValue(x + offset.x, y + offset.y, z
-                  + offset.z, pti, yzPlanes[yzPlanePts[i]]);
-              isInside = (allInside || bsVoxels.get(pti));
-              break;
-            case MODE_BITSET:
-              isInside = (allInside || bsVoxels.get(pti));
-              v = vertexValues[i] = (bsExcludedVertices.get(pti) ? Float.NaN
-                  : isInside ? 1 : 0);
-              break;
-            default:
-            case MODE_CUBE:
-              //if (i == 0 && y == 0 && z == 0)
-                //dumpPlane(x, null);
-              if (mappingPlane == null) {
-                v = vertexValues[i] = voxelData[x + offset.x][y
-                  + offset.y][z + offset.z];
-              } else {
-                volumeData.voxelPtToXYZ(x + offset.x, y + offset.y, z
-                    + offset.z, pt0);
-                v = vertexValues[i] = volumeData.distanceToMappingPlane(pt0);
-              }
-
-              if (isSquared)
-                vertexValues[i] *= vertexValues[i];
-              isInside = (allInside ? true : isInside(vertexValues[i], cutoff, isCutoffAbsolute));
-              if (isInside)
-                bsVoxels.set(pti);
-            }
-            if (isInside) {
+            v = getValue(x, y, z, pt, i);
+            if (isInside)
               insideMask |= Pwr2[i];
-            } else {
-              fractionOutside += (integrateSquared ? vertexValues[i]
-                  * vertexValues[i] : vertexValues[i]);
-            }
           }
-          if (!Float.isNaN(v)) {
-            xCount++;
-          }
-          if (colorDensity && cutoff == 0) {
-            // 0 cutoff read as "show grid points only"
-            addVertex(x, y, z, pti, v);
-              continue;            
-          }
+          // last value for i is 0, the x,y,z point itself
+          // so we need only check it for noValues -- on THIS plane
+          if (noValues && !Float.isNaN(v))
+            noValues = false;
           if (insideMask == 0) {
             ++outsideCount;
             continue;
-          }
-          if (colorDensity && (insideMask & 1) == 1) {
-            // xyz corner is inside, so add this point
-            // TODO - we are missing the outside edges of these 
-            // in the Y and Z direction 
-            addVertex(x, y, z, pti, v);
           }
           if (insideMask == 0xFF) {
             ++insideCount;
@@ -370,18 +343,59 @@ public class MarchingCubes extends TriangleData {
 
           // This cube is straddling the cutoff. We must check all edges
           // Note that we do not process it if it has an NaN values
-          if (processOneCubical(insideMask, x, y, z, pt) 
-              && !isContoured && !colorDensity) {
+          if (processOneCubical(insideMask, x, y, z, pt) && !isContoured
+              && !colorDensity) {
             processTriangles(insideMask);
           }
         }
       }
-      if (xCount == 0) {
+      if (noValues) {
         bsExcludedPlanes.set(x);
       }
     }
 
     return edgeData.toString();
+  }
+
+  private float getValue(int x, int y, int z, int pt, int i) {
+    float v;
+
+    // cubeVertexOffsets just gets us 
+    // the specific grid point relative
+    // to our base x,y,z cube position
+
+    offset = cubeVertexOffsets[i];
+    int pti = pt + linearOffsets[i];
+    switch (mode) {
+    case MODE_PLANES:
+      v = vertexValues[i] = getValue(x + offset.x, y + offset.y, z
+          + offset.z, pti, yzPlanes[yzPlanePts[i]]);
+      isInside = (allInside || bsVoxels.get(pti));
+      break;
+    case MODE_JVXL:
+      isInside = (allInside || bsVoxels.get(pti));
+      v = vertexValues[i] = (bsExcludedVertices.get(pti) ? Float.NaN
+          : isInside ? 1 : 0);
+      break;
+    default:
+    case MODE_CUBE:
+      //if (i == 0 && y == 0 && z == 0)
+        //dumpPlane(x, null);
+      if (mappingPlane == null) {
+        v = vertexValues[i] = voxelData[x + offset.x][y
+          + offset.y][z + offset.z];
+      } else {
+        volumeData.voxelPtToXYZ(x + offset.x, y + offset.y, z
+            + offset.z, pt0);
+        v = vertexValues[i] = volumeData.distanceToMappingPlane(pt0);
+      }
+      if (isSquared)
+        vertexValues[i] *= vertexValues[i];
+      isInside = (allInside ? true : isInside(vertexValues[i], cutoff, isCutoffAbsolute));
+      if (isInside)
+        bsVoxels.set(pti);
+    }
+    return v;
   }
 
   private void getPlane(int i, boolean andSwap) {

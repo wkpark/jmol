@@ -8919,9 +8919,9 @@
   <fah_proj number="7011" name="WW 11 ext/folded 395K" public="y"
     server="129.74.85.15" atoms="596" preferred="8" deadline="11"
     credit="600.0" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75"/>
-  <fah_proj number="7012" name="WW 12 ext/folded 395K" public="y"
+  <fah_proj number="7012" name="WW 12 ext/folded 395K" public="y" file="xyz"
     server="129.74.85.15" atoms="596" preferred="8" deadline="11"
-    credit="600.0" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75"/>
+    credit="600.0" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75" contrib="Danny Nielsen"/>
   <fah_proj number="7013" name="WW 13 ext/folded 395K" public="y" file="xyz"
     server="129.74.85.15" atoms="558" preferred="8" deadline="11"
     credit="600.0" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75" contrib="Danny Nielsen"/>
@@ -8961,9 +8961,9 @@
   <fah_proj number="7025" name="WW 25 ext/folded 395K" public="y"
     server="129.74.85.15" atoms="550" preferred="8" deadline="11"
     credit="600.0" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75"/>
-  <fah_proj number="7026" name="WW 26 ext/folded 395K" public="y"
+  <fah_proj number="7026" name="WW 26 ext/folded 395K" public="y" file="xyz"
     server="129.74.85.15" atoms="546" preferred="8" deadline="11"
-    credit="600.0" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75"/>
+    credit="600.0" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75" contrib="Danny Nielsen"/>
   <fah_proj number="7027" name="WW 27 ext/folded 395K" public="y"
     server="129.74.85.15" atoms="542" preferred="8" deadline="11"
     credit="600.0" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75"/>
@@ -9193,13 +9193,13 @@
   <fah_proj number="7702" name="p7702" public="n"
     server="143.89.28.72" atoms="37345" preferred="12.25" deadline="20.43"
     credit="825.0" frames="100" code="A4" contact="xhuang" kfactor="0.75"/>
-  <fah_proj number="7703" name="p7703" public="n"
+  <fah_proj number="7703" name="p7703" public="y"
     server="143.89.28.72" atoms="37198" preferred="12.25" deadline="20.43"
     credit="825.0" frames="100" code="A4" contact="xhuang" kfactor="0.75"/>
-  <fah_proj number="7704" name="p7704" public="n"
+  <fah_proj number="7704" name="p7704" public="y"
     server="143.89.28.72" atoms="37198" preferred="12.25" deadline="20.43"
     credit="825.0" frames="100" code="A4" contact="xhuang" kfactor="0.75"/>
-  <fah_proj number="7705" name="p7705" public="n"
+  <fah_proj number="7705" name="p7705" public="y"
     server="143.89.28.72" atoms="37198" preferred="12.25" deadline="20.43"
     credit="825.0" frames="100" code="A4" contact="xhuang" kfactor="0.75"/>
 
@@ -9231,8 +9231,8 @@
 
   <!-- Projects 7900 to 7999 -->
   <fah_proj number="7900" name="p7900" public="n"
-    server="128.113.12.161" atoms="0" preferred="14" deadline="30"
-    credit="766.0" frames="100" code="A4" contact="jimenc@rpi.edu" kfactor="0.0"/>
+    server="128.113.12.161" atoms="29334" preferred="14" deadline="30"
+    credit="766.0" frames="100" code="A4" contact="jimenc@rpi.edu" kfactor="0.58"/>
   <fah_proj number="7901" name="p7901" public="n"
     server="128.113.12.162" atoms="60264" preferred="12" deadline="25"
     credit="626.0" frames="100" code="A4" contact="jimenc@rpi.edu" kfactor="0.58"/>

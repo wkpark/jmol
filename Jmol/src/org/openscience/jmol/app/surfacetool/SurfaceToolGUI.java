@@ -47,7 +47,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSlider;
-import javax.swing.JSpinner;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
@@ -110,7 +109,6 @@ class SurfaceToolGUI extends JPanel implements
    *        JmolPanel.SURFACETOOL_WINDOW_NAME
    * @param slicer
    *        (SurfaceTool) the surfaceTool that activated this GUI
-   * @author Jonathan Gutow (gutow@uwosh.edu)
    */
   SurfaceToolGUI(JmolViewer viewer, HistoryFile hfile, String winName,
       SurfaceTool slicer) {

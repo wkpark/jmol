@@ -308,9 +308,6 @@ public class Contact extends Isosurface {
 
   /**
    * 
-   * @param contactType
-   *        Token.vanderwaals, Token.clash, Token.hbond
-   * @param displayType
    * @param bsA
    * @param bsB
    * @param rd

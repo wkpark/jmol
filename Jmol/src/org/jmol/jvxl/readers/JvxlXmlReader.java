@@ -234,7 +234,7 @@ public class JvxlXmlReader extends VolumeFileReader {
     if (params.isBicolorMap || params.colorBySign)
       jvxlCutoff = 0;
     jvxlDataIsColorMapped = 
-      (params.colorRgb == Integer.MIN_VALUE
+      ((params.colorRgb == Integer.MIN_VALUE || params.colorRgb == Integer.MAX_VALUE)
     && (params.isBicolorMap || XmlReader.getXmlAttrib(data, "colorMapped").equals("true")));
     //next is for information only -- will be superceded by "encoding" attribute of jvxlColorData
     jvxlData.isJvxlPrecisionColor = XmlReader.getXmlAttrib(data, "precisionColor").equals("true");
@@ -630,7 +630,7 @@ public class JvxlXmlReader extends VolumeFileReader {
     jvxlColorDataRead = JvxlCoder.jvxlUncompressString(XmlReader.getXmlAttrib(data, "data"));
     if (jvxlColorDataRead.length() == 0)
       jvxlColorDataRead = xr.getXmlData("jvxlColorData", data, false, false);
-    jvxlDataIsColorMapped = (params.colorRgb == Integer.MIN_VALUE && jvxlColorDataRead.length() > 0);
+    jvxlDataIsColorMapped = ((params.colorRgb == Integer.MIN_VALUE || params.colorRgb == Integer.MAX_VALUE) && jvxlColorDataRead.length() > 0);
     if (haveContourData)
       jvxlDecodeContourData(jvxlData, xr.getXmlData("jvxlContourData", null, false, false));
   }

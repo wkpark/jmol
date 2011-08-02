@@ -562,8 +562,11 @@ public class SurfaceGenerator {
     if ("colorRGB" == propertyName) {
       int rgb = ((Integer) value).intValue();
       params.colorRgb = params.colorPos = params.colorPosLCAO = rgb;
-      if (colorPtr++ == 0)
+      if (colorPtr++ == 0) {
         params.colorNeg = params.colorNegLCAO = rgb;
+      } else {
+        params.colorRgb = Integer.MAX_VALUE;
+      }
       return true;
     }
 

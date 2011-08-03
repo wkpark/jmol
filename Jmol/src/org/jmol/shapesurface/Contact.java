@@ -296,6 +296,8 @@ public class Contact extends Isosurface {
         newSurface(displayType, cp, null, null, null, parameters, func,
             isColorDensity, volumeData);
         if (isVdwClash && cp.setForVdwClash(false)) {
+          if (colorByType)
+            nV = setColorByScore(cp, nV);
           cp.score = oldScore;
           newSurface(displayType, cp, null, null, null, parameters, func,
               isColorDensity, volumeData);          
@@ -308,13 +310,19 @@ public class Contact extends Isosurface {
         Logger.setLogLevel(0);
       }
       if (colorByType)
-        for (int iv = thisMesh.vertexCount; --iv >= nV;)
-          thisMesh.vertexValues[iv] = getVertexValueForType(cp.contactType, cp.score);
+        setColorByScore(cp, nV);
     }
     Logger.setLogLevel(logLevel);
     return (float) volume;
   }
   
+  private int setColorByScore(ContactPair cp, int nV) {
+    for (int iv = thisMesh.vertexCount; --iv >= nV;)
+      thisMesh.vertexValues[iv] = getVertexValueForType(cp.contactType,
+          cp.score);
+    return thisMesh.vertexCount;
+  }
+
   private static float getVertexValueForType(int contactType, float score) {
     return (contactType == Token.hbond ? 4 : score);
   }

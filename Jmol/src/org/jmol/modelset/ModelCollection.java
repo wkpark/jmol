@@ -1506,7 +1506,7 @@ abstract public class ModelCollection extends BondCollection {
       BitSet bs = molList[i].atomList;
       Map<String, Object> ligand = new Hashtable<String, Object>();
       ligands.add(ligand);
-      ligand.put("atoms", bs);
+      ligand.put("atoms", Escape.escape(bs));
       String names = "";
       String sep = "";
       Group lastGroup = null;

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-08-01 18:48+0200\n"
+"POT-Creation-Date: 2011-08-03 19:11+0200\n"
 "PO-Revision-Date: 2010-05-24 22:58+0000\n"
 "Last-Translator: Ramesh <rame20002007@yahoo.com>\n"
 "Language-Team: Tamil <ta@li.org>\n"
@@ -348,140 +348,154 @@ msgid "Arabic"
 msgstr "அராபிக்"
 
 #: org/jmol/i18n/GT.java:138
+#, fuzzy
+msgid "Bosnian"
+msgstr "எஸ்டோனியன்"
+
+#: org/jmol/i18n/GT.java:139
 msgid "Catalan"
 msgstr "காட்டலான்"
 
-#: org/jmol/i18n/GT.java:139
+#: org/jmol/i18n/GT.java:140
 msgid "Czech"
 msgstr "செக்"
 
-#: org/jmol/i18n/GT.java:140
+#: org/jmol/i18n/GT.java:141
 msgid "Danish"
 msgstr "டானிஷ்"
 
-#: org/jmol/i18n/GT.java:141
+#: org/jmol/i18n/GT.java:142
 msgid "German"
 msgstr "ஜெர்மன்"
 
-#: org/jmol/i18n/GT.java:142
+#: org/jmol/i18n/GT.java:143
 msgid "Greek"
 msgstr "கிரேக்கம்"
 
-#: org/jmol/i18n/GT.java:143
-msgid "British English"
-msgstr "பிரிட்டிஷ் ஆங்கிலம்"
-
 #: org/jmol/i18n/GT.java:144
-msgid "American English"
+#, fuzzy
+msgid "Australian English"
 msgstr "அமெரிக்க ஆங்கிலம்"
 
 #: org/jmol/i18n/GT.java:145
+msgid "British English"
+msgstr "பிரிட்டிஷ் ஆங்கிலம்"
+
+#: org/jmol/i18n/GT.java:146
+msgid "American English"
+msgstr "அமெரிக்க ஆங்கிலம்"
+
+#: org/jmol/i18n/GT.java:147
 msgid "Spanish"
 msgstr "ஸ்பானிஷ்"
 
-#: org/jmol/i18n/GT.java:146
+#: org/jmol/i18n/GT.java:148
 msgid "Estonian"
 msgstr "எஸ்டோனியன்"
 
-#: org/jmol/i18n/GT.java:147
+#: org/jmol/i18n/GT.java:149
 msgid "Finnish"
 msgstr ""
 
-#: org/jmol/i18n/GT.java:148
+#: org/jmol/i18n/GT.java:150
 msgid "Faroese"
 msgstr ""
 
-#: org/jmol/i18n/GT.java:149
+#: org/jmol/i18n/GT.java:151
 msgid "French"
 msgstr "பிரெஞ்சு"
 
-#: org/jmol/i18n/GT.java:150
+#: org/jmol/i18n/GT.java:152
 #, fuzzy
 msgid "Croatian"
 msgstr "புரதம்"
 
-#: org/jmol/i18n/GT.java:151
+#: org/jmol/i18n/GT.java:153
 msgid "Hungarian"
 msgstr "ஹங்கேரியன்"
 
-#: org/jmol/i18n/GT.java:152
+#: org/jmol/i18n/GT.java:154
 msgid "Indonesian"
 msgstr "இந்தோனேஷியன்"
 
-#: org/jmol/i18n/GT.java:153
+#: org/jmol/i18n/GT.java:155
 msgid "Italian"
 msgstr "இத்தாலியன்"
 
-#: org/jmol/i18n/GT.java:154
+#: org/jmol/i18n/GT.java:156
 msgid "Japanese"
 msgstr "ஜப்பானிய"
 
-#: org/jmol/i18n/GT.java:155
+#: org/jmol/i18n/GT.java:157
 msgid "Javanese"
 msgstr ""
 
-#: org/jmol/i18n/GT.java:156
+#: org/jmol/i18n/GT.java:158
 msgid "Korean"
 msgstr "கொரியன்"
 
-#: org/jmol/i18n/GT.java:157
+#: org/jmol/i18n/GT.java:159
 msgid "Norwegian Bokmal"
 msgstr "நார்வேஜியன் புக்மால்"
 
-#: org/jmol/i18n/GT.java:158
+#: org/jmol/i18n/GT.java:160
 msgid "Dutch"
 msgstr ""
 
-#: org/jmol/i18n/GT.java:159
+#: org/jmol/i18n/GT.java:161
 msgid "Occitan"
 msgstr "ஆக்டிசியன்"
 
-#: org/jmol/i18n/GT.java:160
+#: org/jmol/i18n/GT.java:162
 msgid "Polish"
 msgstr "போலிஷ்"
 
-#: org/jmol/i18n/GT.java:161
+#: org/jmol/i18n/GT.java:163
 msgid "Portuguese"
 msgstr "போர்த்துக்கீசிய"
 
-#: org/jmol/i18n/GT.java:162
+#: org/jmol/i18n/GT.java:164
 msgid "Brazilian Portuguese"
 msgstr "பிரேஸிலிய போர்த்துக்கீசிய"
 
-#: org/jmol/i18n/GT.java:163
+#: org/jmol/i18n/GT.java:165
 msgid "Russian"
 msgstr "ரஷ்யன்"
 
-#: org/jmol/i18n/GT.java:164
+#: org/jmol/i18n/GT.java:166
 msgid "Slovenian"
 msgstr "ஸ்லோவேனியன்"
 
-#: org/jmol/i18n/GT.java:165
+#: org/jmol/i18n/GT.java:167
 #, fuzzy
 msgid "Serbian"
 msgstr "ஸ்லோவேனியன்"
 
-#: org/jmol/i18n/GT.java:166
+#: org/jmol/i18n/GT.java:168
 msgid "Swedish"
 msgstr "சுவீடிஷ்"
 
-#: org/jmol/i18n/GT.java:167
+#: org/jmol/i18n/GT.java:169
 msgid "Tamil"
 msgstr "தமிழ்"
 
-#: org/jmol/i18n/GT.java:168
+#: org/jmol/i18n/GT.java:170
 msgid "Turkish"
 msgstr "துருக்கிய"
 
-#: org/jmol/i18n/GT.java:169
+#: org/jmol/i18n/GT.java:171
+msgid "Uyghur"
+msgstr ""
+
+#: org/jmol/i18n/GT.java:172
 msgid "Ukrainian"
 msgstr "உக்ரேனியன்"
 
-#: org/jmol/i18n/GT.java:170
+#: org/jmol/i18n/GT.java:173
 msgid "Simplified Chinese"
 msgstr "எளிய சைனீஸ்"
 
-#: org/jmol/i18n/GT.java:171
+#: org/jmol/i18n/GT.java:174
 msgid "Traditional Chinese"
 msgstr "பாரம்பரிய சைனீஸ்"
 
@@ -2337,19 +2351,19 @@ msgstr ""
 msgid "simulate multi-touch using the mouse)"
 msgstr ""
 
-#: org/jmol/viewer/ActionManager.java:1926
+#: org/jmol/viewer/ActionManager.java:1928
 msgid "pick one more atom in order to spin the model around an axis"
 msgstr ""
 
-#: org/jmol/viewer/ActionManager.java:1927
+#: org/jmol/viewer/ActionManager.java:1929
 msgid "pick two atoms in order to spin the model around an axis"
 msgstr ""
 
-#: org/jmol/viewer/ActionManager.java:1930
+#: org/jmol/viewer/ActionManager.java:1932
 msgid "pick one more atom in order to display the symmetry relationship"
 msgstr ""
 
-#: org/jmol/viewer/ActionManager.java:1931
+#: org/jmol/viewer/ActionManager.java:1933
 msgid ""
 "pick two atoms in order to display the symmetry relationship between them"
 msgstr ""

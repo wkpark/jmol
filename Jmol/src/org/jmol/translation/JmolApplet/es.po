@@ -2,22 +2,22 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-08-01 18:48+0200\n"
-"PO-Revision-Date: 2011-07-30 12:18+0100\n"
-"Last-Translator: Angel Herráez <aherraez@users.sourceforge.net>\n"
+"POT-Creation-Date: 2011-08-03 19:11+0200\n"
+"PO-Revision-Date: 2011-08-03 09:20+0000\n"
+"Last-Translator: DiegoJ <diegojromerolopez@gmail.com>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-03-17 15:40+0000\n"
-"X-Generator: Launchpad (build 12611)\n"
+"X-Launchpad-Export-Date: 2011-08-03 16:41+0000\n"
+"X-Generator: Launchpad (build 13573)\n"
 "X-Poedit-Country: SPAIN\n"
 "X-Poedit-Language: Spanish\n"
 "X-Poedit-SourceCharset: utf-8\n"
 
 #: org/jmol/applet/AppletConsole.java:199
 msgid "&Help"
-msgstr "A&yuda"
+msgstr "Ay&uda"
 
 #: org/jmol/applet/AppletConsole.java:200
 msgid "&Search..."
@@ -25,7 +25,7 @@ msgstr "&Buscar..."
 
 #: org/jmol/applet/AppletConsole.java:201
 msgid "&Commands"
-msgstr "&Instrucciones"
+msgstr "Ó&rdenes"
 
 #: org/jmol/applet/AppletConsole.java:202
 msgid "Math &Functions"
@@ -33,7 +33,7 @@ msgstr "&Funciones matemáticas"
 
 #: org/jmol/applet/AppletConsole.java:203
 msgid "Set &Parameters"
-msgstr "&Parámetros"
+msgstr "Establecer &parámetros"
 
 #: org/jmol/applet/AppletConsole.java:204
 msgid "&More"
@@ -72,8 +72,8 @@ msgstr "Cargar"
 #: org/jmol/applet/AppletConsole.java:213
 msgid "press CTRL-ENTER for new line or paste model data and press Load"
 msgstr ""
-"pulsa Ctrl+intro para una línea nueva o pega datos de un modelo y luego "
-"pulsa Cargar"
+"pulse Ctrl+Intro para una línea nueva o pegue datos de un modelo y luego "
+"pulse Cargar"
 
 #: org/jmol/applet/AppletConsole.java:215
 msgid ""
@@ -81,9 +81,9 @@ msgid ""
 "console Help menu item for on-line help, which will appear in a new browser "
 "window."
 msgstr ""
-"Aquí aparecerán los mensajes. Escribe las instrucciones en el recuadro de "
-"abajo. Puedes solicitar ayuda en línea usando el menú situado aquí encima; "
-"la ayuda se mostrará en una ventana nueva del navegador."
+"Aquí aparecerán los mensajes. Escriba las instrucciones en el recuadro de "
+"abajo. Puede solicitar ayuda en línea usando el menú situado aquí encima; la "
+"ayuda se mostrará en una ventana nueva del navegador."
 
 #: org/jmol/applet/Jmol.java:709
 #, java-format
@@ -98,7 +98,7 @@ msgstr ""
 "\n"
 "Un proyecto OpenScience.\n"
 "\n"
-"Para más información, vea http://www.jmol.org"
+"Para más información, visite http://www.jmol.org"
 
 #: org/jmol/applet/Jmol.java:961
 msgid "File Error:"
@@ -115,11 +115,11 @@ msgstr "  {0} segundos"
 
 #: org/jmol/console/JmolConsole.java:87
 msgid "Jmol Script Console"
-msgstr "Consola de guiones de Jmol"
+msgstr "Consola de scripts de Jmol"
 
 #: org/jmol/console/ScriptEditor.java:98
 msgid "Jmol Script Editor"
-msgstr "Editor de guiones de Jmol"
+msgstr "Editor de scripts de Jmol"
 
 #: org/jmol/console/ScriptEditor.java:130
 #: org/jmol/popup/MainPopupResourceBundle.java:849
@@ -135,11 +135,11 @@ msgstr "Abrir"
 
 #: org/jmol/console/ScriptEditor.java:133
 msgid "Script"
-msgstr "Guión"
+msgstr "Script"
 
 #: org/jmol/console/ScriptEditor.java:134
 msgid "Check"
-msgstr "Verificar"
+msgstr "Comprobar"
 
 #: org/jmol/console/ScriptEditor.java:135
 msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
@@ -208,7 +208,7 @@ msgstr "No"
 #: org/jmol/export/dialog/Dialog.java:373
 #, java-format
 msgid "Do you want to overwrite file {0}?"
-msgstr "¿Quieres sobreescribir el archivo {0}?"
+msgstr "¿Quiere sobreescribir el archivo {0}?"
 
 #: org/jmol/export/dialog/Dialog.java:374
 msgid "Warning"
@@ -356,138 +356,152 @@ msgid "Arabic"
 msgstr "Árabe"
 
 #: org/jmol/i18n/GT.java:138
+#, fuzzy
+msgid "Bosnian"
+msgstr "Estonio"
+
+#: org/jmol/i18n/GT.java:139
 msgid "Catalan"
 msgstr "Catalán"
 
-#: org/jmol/i18n/GT.java:139
+#: org/jmol/i18n/GT.java:140
 msgid "Czech"
 msgstr "Checo"
 
-#: org/jmol/i18n/GT.java:140
+#: org/jmol/i18n/GT.java:141
 msgid "Danish"
 msgstr "Danés"
 
-#: org/jmol/i18n/GT.java:141
+#: org/jmol/i18n/GT.java:142
 msgid "German"
 msgstr "Alemán"
 
-#: org/jmol/i18n/GT.java:142
+#: org/jmol/i18n/GT.java:143
 msgid "Greek"
 msgstr "Griego"
 
-#: org/jmol/i18n/GT.java:143
-msgid "British English"
-msgstr "Inglés británico"
-
 #: org/jmol/i18n/GT.java:144
-msgid "American English"
+#, fuzzy
+msgid "Australian English"
 msgstr "Inglés de EE.UU."
 
 #: org/jmol/i18n/GT.java:145
+msgid "British English"
+msgstr "Inglés británico"
+
+#: org/jmol/i18n/GT.java:146
+msgid "American English"
+msgstr "Inglés de EE.UU."
+
+#: org/jmol/i18n/GT.java:147
 msgid "Spanish"
 msgstr "Español"
 
-#: org/jmol/i18n/GT.java:146
+#: org/jmol/i18n/GT.java:148
 msgid "Estonian"
 msgstr "Estonio"
 
-#: org/jmol/i18n/GT.java:147
+#: org/jmol/i18n/GT.java:149
 msgid "Finnish"
 msgstr "Finés"
 
-#: org/jmol/i18n/GT.java:148
+#: org/jmol/i18n/GT.java:150
 msgid "Faroese"
 msgstr "Feroés"
 
-#: org/jmol/i18n/GT.java:149
+#: org/jmol/i18n/GT.java:151
 msgid "French"
 msgstr "Francés"
 
-#: org/jmol/i18n/GT.java:150
+#: org/jmol/i18n/GT.java:152
 msgid "Croatian"
 msgstr "Croata"
 
-#: org/jmol/i18n/GT.java:151
+#: org/jmol/i18n/GT.java:153
 msgid "Hungarian"
 msgstr "Húngaro"
 
-#: org/jmol/i18n/GT.java:152
+#: org/jmol/i18n/GT.java:154
 msgid "Indonesian"
 msgstr "Indonesio"
 
-#: org/jmol/i18n/GT.java:153
+#: org/jmol/i18n/GT.java:155
 msgid "Italian"
 msgstr "Italiano"
 
-#: org/jmol/i18n/GT.java:154
+#: org/jmol/i18n/GT.java:156
 msgid "Japanese"
 msgstr "Japonés"
 
-#: org/jmol/i18n/GT.java:155
+#: org/jmol/i18n/GT.java:157
 msgid "Javanese"
 msgstr "Javanés"
 
-#: org/jmol/i18n/GT.java:156
+#: org/jmol/i18n/GT.java:158
 msgid "Korean"
 msgstr "Coreano"
 
-#: org/jmol/i18n/GT.java:157
+#: org/jmol/i18n/GT.java:159
 msgid "Norwegian Bokmal"
 msgstr "Noruego «Bokmål»"
 
-#: org/jmol/i18n/GT.java:158
+#: org/jmol/i18n/GT.java:160
 msgid "Dutch"
 msgstr "Neerlandés"
 
-#: org/jmol/i18n/GT.java:159
+#: org/jmol/i18n/GT.java:161
 msgid "Occitan"
 msgstr "Occitano"
 
-#: org/jmol/i18n/GT.java:160
+#: org/jmol/i18n/GT.java:162
 msgid "Polish"
 msgstr "Polaco"
 
-#: org/jmol/i18n/GT.java:161
+#: org/jmol/i18n/GT.java:163
 msgid "Portuguese"
 msgstr "Portugués"
 
-#: org/jmol/i18n/GT.java:162
+#: org/jmol/i18n/GT.java:164
 msgid "Brazilian Portuguese"
 msgstr "Portugués de Brasil"
 
-#: org/jmol/i18n/GT.java:163
+#: org/jmol/i18n/GT.java:165
 msgid "Russian"
 msgstr "Ruso"
 
-#: org/jmol/i18n/GT.java:164
+#: org/jmol/i18n/GT.java:166
 msgid "Slovenian"
 msgstr "Esloveno"
 
-#: org/jmol/i18n/GT.java:165
+#: org/jmol/i18n/GT.java:167
 msgid "Serbian"
 msgstr "Serbio"
 
-#: org/jmol/i18n/GT.java:166
+#: org/jmol/i18n/GT.java:168
 msgid "Swedish"
 msgstr "Sueco"
 
-#: org/jmol/i18n/GT.java:167
+#: org/jmol/i18n/GT.java:169
 msgid "Tamil"
 msgstr "Tamil"
 
-#: org/jmol/i18n/GT.java:168
+#: org/jmol/i18n/GT.java:170
 msgid "Turkish"
 msgstr "Turco"
 
-#: org/jmol/i18n/GT.java:169
+#: org/jmol/i18n/GT.java:171
+msgid "Uyghur"
+msgstr ""
+
+#: org/jmol/i18n/GT.java:172
 msgid "Ukrainian"
 msgstr "Ucraniano"
 
-#: org/jmol/i18n/GT.java:170
+#: org/jmol/i18n/GT.java:173
 msgid "Simplified Chinese"
 msgstr "Chino simplificado"
 
-#: org/jmol/i18n/GT.java:171
+#: org/jmol/i18n/GT.java:174
 msgid "Traditional Chinese"
 msgstr "Chino tradicional"
 
@@ -2256,9 +2270,9 @@ msgid "select and drag atoms (requires {0})"
 msgstr "seleccionar y arrastrar átomos (requiere {0})"
 
 #: org/jmol/viewer/ActionManager.java:139
-#, fuzzy, java-format
+#, java-format
 msgid "drag atoms in Z direction (requires {0})"
-msgstr "(des)activar la selección (requiere {0})"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:140
 #, java-format
@@ -2370,19 +2384,19 @@ msgstr "detener movimiento (requiere {0})"
 msgid "simulate multi-touch using the mouse)"
 msgstr "simular multitáctil usando el ratón)"
 
-#: org/jmol/viewer/ActionManager.java:1926
+#: org/jmol/viewer/ActionManager.java:1928
 msgid "pick one more atom in order to spin the model around an axis"
 msgstr "elige un átomo más para que el modelo gire en torno a un eje"
 
-#: org/jmol/viewer/ActionManager.java:1927
+#: org/jmol/viewer/ActionManager.java:1929
 msgid "pick two atoms in order to spin the model around an axis"
 msgstr "elige en orden dos átomos para que el modelo gire en torno a un eje"
 
-#: org/jmol/viewer/ActionManager.java:1930
+#: org/jmol/viewer/ActionManager.java:1932
 msgid "pick one more atom in order to display the symmetry relationship"
 msgstr "elige un átomo más para mostrar la relación de simetría"
 
-#: org/jmol/viewer/ActionManager.java:1931
+#: org/jmol/viewer/ActionManager.java:1933
 msgid ""
 "pick two atoms in order to display the symmetry relationship between them"
 msgstr ""

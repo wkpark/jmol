@@ -1,75 +1,75 @@
-# Slovenian translation for jmol
-# Copyright (c) 2008 Rosetta Contributors and Canonical Ltd 2008
+# Bosnian translation for jmol
+# Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
 # This file is distributed under the same license as the jmol package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2008.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-08-03 19:11+0200\n"
-"PO-Revision-Date: 2011-05-21 17:36+0000\n"
-"Last-Translator: Domen <Unknown>\n"
-"Language-Team: Slovenian <sl@li.org>\n"
+"PO-Revision-Date: 2011-08-03 10:19+0000\n"
+"Last-Translator: Kenan Dervišević <kenan3008@gmail.com>\n"
+"Language-Team: Bosnian <bs@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-22 20:40+0000\n"
-"X-Generator: Launchpad (build 13085)\n"
+"X-Launchpad-Export-Date: 2011-08-03 16:40+0000\n"
+"X-Generator: Launchpad (build 13573)\n"
 
 #: org/jmol/applet/AppletConsole.java:199
 msgid "&Help"
-msgstr "&Pomoč"
+msgstr "&Pomoć"
 
 #: org/jmol/applet/AppletConsole.java:200
 msgid "&Search..."
-msgstr "&Iskanje ..."
+msgstr "&Pretraga..."
 
 #: org/jmol/applet/AppletConsole.java:201
 msgid "&Commands"
-msgstr "&Ukazi"
+msgstr "&Naredbe"
 
 #: org/jmol/applet/AppletConsole.java:202
 msgid "Math &Functions"
-msgstr "Matematične &funkcije"
+msgstr ""
 
 #: org/jmol/applet/AppletConsole.java:203
 msgid "Set &Parameters"
-msgstr "Nastavi &parametre"
+msgstr ""
 
 #: org/jmol/applet/AppletConsole.java:204
 msgid "&More"
-msgstr "&Več"
+msgstr "&Više"
 
 #: org/jmol/applet/AppletConsole.java:205
 msgid "Editor"
-msgstr "Urejevalnik"
+msgstr "Uređivač"
 
 #: org/jmol/applet/AppletConsole.java:206
 msgid "State"
-msgstr "Stanje"
+msgstr ""
 
 #: org/jmol/applet/AppletConsole.java:207
 #: org/jmol/console/ScriptEditor.java:137
 msgid "Run"
-msgstr "Zaženi"
+msgstr "Izvrši"
 
 #: org/jmol/applet/AppletConsole.java:208
 msgid "Clear Output"
-msgstr "Počisti izhod"
+msgstr ""
 
 #: org/jmol/applet/AppletConsole.java:209
 msgid "Clear Input"
-msgstr "Počisti vnos"
+msgstr ""
 
 #: org/jmol/applet/AppletConsole.java:210
 #: org/jmol/popup/MainPopupResourceBundle.java:852
 msgid "History"
-msgstr "Zgodovina"
+msgstr "Historija"
 
 #: org/jmol/applet/AppletConsole.java:211
 msgid "Load"
-msgstr "Naloži"
+msgstr "Učitaj"
 
 #: org/jmol/applet/AppletConsole.java:213
 msgid "press CTRL-ENTER for new line or paste model data and press Load"
@@ -94,62 +94,62 @@ msgstr ""
 
 #: org/jmol/applet/Jmol.java:961
 msgid "File Error:"
-msgstr "Napaka datoteke:"
+msgstr ""
 
 #: org/jmol/appletwrapper/AppletWrapper.java:92
 msgid "Loading Jmol applet ..."
-msgstr "Nalaganje programčka Jmol ..."
+msgstr ""
 
 #: org/jmol/appletwrapper/AppletWrapper.java:169
 #, java-format
 msgid "  {0} seconds"
-msgstr "  {0} sekund"
+msgstr ""
 
 #: org/jmol/console/JmolConsole.java:87
 msgid "Jmol Script Console"
-msgstr "Skriptna konzola Jmol"
+msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:98
 msgid "Jmol Script Editor"
-msgstr "Urejevalnik skriptov Jmol"
+msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:130
 #: org/jmol/popup/MainPopupResourceBundle.java:849
 msgid "Console"
-msgstr "Konzola"
+msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:132
 #: org/jmol/export/dialog/Dialog.java:440
 #: org/jmol/export/dialog/Dialog.java:464
 #: org/jmol/export/dialog/Dialog.java:467
 msgid "Open"
-msgstr "Odpri"
+msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:133
 msgid "Script"
-msgstr "Skript"
+msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:134
 msgid "Check"
-msgstr "Preveri"
+msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:135
 msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
-msgstr "Vrh"
+msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:136
 msgid "Step"
-msgstr "Korak"
+msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:138
 #: org/jmol/popup/MainPopupResourceBundle.java:805
 msgid "Pause"
-msgstr "Premor"
+msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:140
 #: org/jmol/popup/MainPopupResourceBundle.java:806
 msgid "Resume"
-msgstr "Nadaljuj"
+msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:142
 msgid "Halt"
@@ -157,88 +157,88 @@ msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:144
 msgid "Clear"
-msgstr "Počisti"
+msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:145
 msgid "Close"
-msgstr "Zapri"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:92
 msgid "File or URL:"
-msgstr "Datoteka ali URL:"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:266
 msgid "Image Type"
-msgstr "Vrsta slike"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:281
 #: org/jmol/export/dialog/Dialog.java:322
 #, java-format
 msgid "JPEG Quality ({0})"
-msgstr "Kakovost JPEG ({0})"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:295
 #, java-format
 msgid "PNG Compression  ({0})"
-msgstr "Stiskanje PNG ({0})"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:325
 #, java-format
 msgid "PNG Quality ({0})"
-msgstr "Kakovost PNG ({0})"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:371
 #: org/jmol/export/dialog/Dialog.java:483
 msgid "Yes"
-msgstr "Da"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:371
 #: org/jmol/export/dialog/Dialog.java:481
 msgid "No"
-msgstr "Ne"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:373
 #, java-format
 msgid "Do you want to overwrite file {0}?"
-msgstr "Želite prepisati datoteko {0}?"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:374
 msgid "Warning"
-msgstr "Opozorilo"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:432
 msgid "All Files"
-msgstr "Vse datoteke"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:433
 #: org/jmol/export/dialog/Dialog.java:480
 msgid "Cancel"
-msgstr "Prekliči"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:435
 msgid "Abort file chooser dialog"
-msgstr "Prekini pogovorno okno izbirnika datoteke"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:437
 #: org/jmol/export/dialog/Dialog.java:438
 msgid "Details"
-msgstr "Podrobnosti"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:439
 msgid "Directory"
-msgstr "Mapa"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:442
 msgid "Open selected directory"
-msgstr "Odpri izbrano mapo"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:443
 msgid "Attributes"
-msgstr "Lastnosti"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:444
 msgid "Modified"
-msgstr "Spremenjeno"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:445
 msgid "Generic File"
@@ -246,27 +246,27 @@ msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:446
 msgid "Name"
-msgstr "Ime"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:447
 msgid "File Name:"
-msgstr "Ime datoteke:"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:448
 msgid "Size"
-msgstr "Velikost"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:449
 msgid "Files of Type:"
-msgstr "Datoteke vrste:"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:450
 msgid "Type"
-msgstr "Vrsta"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:451
 msgid "Help"
-msgstr "Pomoč"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:453
 msgid "FileChooser help"
@@ -275,49 +275,49 @@ msgstr ""
 #: org/jmol/export/dialog/Dialog.java:454
 #: org/jmol/export/dialog/Dialog.java:455
 msgid "Home"
-msgstr "Domov"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:456
 #: org/jmol/export/dialog/Dialog.java:457
 msgid "List"
-msgstr "Seznam"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:458
 msgid "Look In:"
-msgstr "Poglej v:"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:460
 msgid "Error creating new folder"
-msgstr "Napaka pri ustvarjanju nove mape"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:461
 msgid "New Folder"
-msgstr "Nova mapa"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:463
 msgid "Create New Folder"
-msgstr "Ustvari novo mapo"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:466
 msgid "Open selected file"
-msgstr "Odpri izbrano datoteko"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:468
 #: org/jmol/export/dialog/Dialog.java:471
 msgid "Save"
-msgstr "Shrani"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:470
 msgid "Save selected file"
-msgstr "Shrani izbrano datoteko"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:472
 msgid "Save In:"
-msgstr "Shrani v:"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:473
 msgid "Update"
-msgstr "Posodobi"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:475
 msgid "Update directory listing"
@@ -325,19 +325,19 @@ msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:476
 msgid "Up"
-msgstr "Gor"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:477
 msgid "Up One Level"
-msgstr "Eno raven navzgor"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:482
 msgid "OK"
-msgstr "V redu"
+msgstr ""
 
 #: org/jmol/export/dialog/FilePreview.java:71
 msgid "Preview"
-msgstr "Predogled"
+msgstr ""
 
 #: org/jmol/export/dialog/FilePreview.java:91
 msgid "Append models"
@@ -345,57 +345,55 @@ msgstr ""
 
 #: org/jmol/i18n/GT.java:137
 msgid "Arabic"
-msgstr "Arabščina"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:138
-#, fuzzy
 msgid "Bosnian"
-msgstr "Estonščina"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:139
 msgid "Catalan"
-msgstr "Katalonščina"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:140
 msgid "Czech"
-msgstr "Češčina"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:141
 msgid "Danish"
-msgstr "Danščina"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:142
 msgid "German"
-msgstr "Nemščina"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:143
 msgid "Greek"
-msgstr "Grščina"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:144
-#, fuzzy
 msgid "Australian English"
-msgstr "Ameriška angleščina"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:145
 msgid "British English"
-msgstr "Britanska angleščina"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:146
 msgid "American English"
-msgstr "Ameriška angleščina"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:147
 msgid "Spanish"
-msgstr "Španščina"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:148
 msgid "Estonian"
-msgstr "Estonščina"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:149
 msgid "Finnish"
-msgstr "Finščina"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:150
 msgid "Faroese"
@@ -403,27 +401,27 @@ msgstr ""
 
 #: org/jmol/i18n/GT.java:151
 msgid "French"
-msgstr "Francoščina"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:152
 msgid "Croatian"
-msgstr "Hrvaščina"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:153
 msgid "Hungarian"
-msgstr "Madžarščina"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:154
 msgid "Indonesian"
-msgstr "Indonezijščina"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:155
 msgid "Italian"
-msgstr "Italijanščina"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:156
 msgid "Japanese"
-msgstr "Japonščina"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:157
 msgid "Javanese"
@@ -431,7 +429,7 @@ msgstr ""
 
 #: org/jmol/i18n/GT.java:158
 msgid "Korean"
-msgstr "Korejščina"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:159
 msgid "Norwegian Bokmal"
@@ -439,7 +437,7 @@ msgstr ""
 
 #: org/jmol/i18n/GT.java:160
 msgid "Dutch"
-msgstr "Nizozemščina"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:161
 msgid "Occitan"
@@ -447,32 +445,31 @@ msgstr ""
 
 #: org/jmol/i18n/GT.java:162
 msgid "Polish"
-msgstr "Poljščina"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:163
 msgid "Portuguese"
-msgstr "Portugalščina"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:164
 msgid "Brazilian Portuguese"
-msgstr "Brazilska portugalščina"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:165
 msgid "Russian"
-msgstr "Ruščina"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:166
 msgid "Slovenian"
-msgstr "Slovenščina"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:167
-#, fuzzy
 msgid "Serbian"
-msgstr "Slovenščina"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:168
 msgid "Swedish"
-msgstr "Švedščina"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:169
 msgid "Tamil"
@@ -480,7 +477,7 @@ msgstr ""
 
 #: org/jmol/i18n/GT.java:170
 msgid "Turkish"
-msgstr "Turščina"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:171
 msgid "Uyghur"
@@ -488,15 +485,15 @@ msgstr ""
 
 #: org/jmol/i18n/GT.java:172
 msgid "Ukrainian"
-msgstr "Ukrajinščina"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:173
 msgid "Simplified Chinese"
-msgstr "Poenostavljena kitajščina"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:174
 msgid "Traditional Chinese"
-msgstr "Tradicionalna kitajščina"
+msgstr ""
 
 #: org/jmol/minimize/Minimizer.java:206
 #, java-format
@@ -505,12 +502,12 @@ msgstr ""
 
 #: org/jmol/minimize/Minimizer.java:210
 msgid "No atoms selected -- nothing to do!"
-msgstr "Izbran ni noben atom -- ničesar ni za narediti!"
+msgstr ""
 
 #: org/jmol/minimize/Minimizer.java:286
 #, java-format
 msgid "{0} atoms will be minimized."
-msgstr "{0} atomi bodo minimirani."
+msgstr ""
 
 #: org/jmol/minimize/Minimizer.java:374
 #, java-format
@@ -519,19 +516,19 @@ msgstr ""
 
 #: org/jmol/modelkit/ModelKitPopup.java:75
 msgid "Element?"
-msgstr "Element?"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:78
 msgid "new"
-msgstr "novo"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:79
 msgid "undo (CTRL-Z)"
-msgstr "razveljavi (CTRL-Z)"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:80
 msgid "redo (CTRL-Y)"
-msgstr "uveljavi (CTRL-Y)"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:81
 #: org/jmol/viewer/ActionManager.java:115
@@ -540,11 +537,11 @@ msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:82
 msgid "add hydrogens"
-msgstr "dodaj vodike"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:83
 msgid "minimize"
-msgstr "minimiraj"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:84
 msgid "fix hydrogens and minimize"
@@ -552,39 +549,39 @@ msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:85
 msgid "clear"
-msgstr "počisti"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:86
 msgid "save file"
-msgstr "shrani datoteko"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:87
 msgid "save state"
-msgstr "shrani stanje"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:88
 msgid "invert ring stereochemistry"
-msgstr "obrni stereokemijo obroča"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:89
 msgid "delete atom"
-msgstr "izbriši atom"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:90
 msgid "drag to bond"
-msgstr "povleci na vez"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:91
 msgid "drag atom"
-msgstr "povleci atom"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:92
 msgid "drag atom (and minimize)"
-msgstr "povleci atom (in minimiraj)"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:93
 msgid "drag molecule (SHIFT to rotate)"
-msgstr "povleci molekulo (SHIFT za vrtenje)"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:94
 msgid "drag and minimize molecule (docking)"
@@ -592,27 +589,27 @@ msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:103
 msgid "increase charge"
-msgstr "povečaj naboj"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:104
 msgid "decrease charge"
-msgstr "zmanjšaj naboj"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:105
 msgid "delete bond"
-msgstr "izbriši vez"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:106
 msgid "single"
-msgstr "enojna"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:107
 msgid "double"
-msgstr "dvojna"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:108
 msgid "triple"
-msgstr "trojna"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:109
 msgid "increase order"
@@ -624,11 +621,11 @@ msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:111
 msgid "rotate bond (SHIFT-DRAG)"
-msgstr "zavrti vez (SHIFT-VLEČENJE)"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:112
 msgid "exit modelkit mode"
-msgstr "zapusti način modeliranja"
+msgstr ""
 
 #: org/jmol/modelsetbio/AminoPolymer.java:576
 #, java-format
@@ -664,61 +661,61 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:592
 #: org/jmol/popup/MainPopupResourceBundle.java:609
 msgid "All"
-msgstr "Vsi"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:574
 #: org/jmol/popup/MainPopupResourceBundle.java:945
 msgid "Mouse Manual"
-msgstr "Priročnik miške"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:575
 #: org/jmol/popup/MainPopupResourceBundle.java:946
 msgid "Translations"
-msgstr "Prevodi"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:577
 msgid "System"
-msgstr "Sistem"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:583
 msgid "1 processor"
-msgstr "1 procesor"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:584
 #, java-format
 msgid "{0} processors"
-msgstr "{0} procesorjev"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:586
 msgid "unknown processor count"
-msgstr "neznano število procesorjev"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:588
 msgid "Java version:"
-msgstr "Različica Jave:"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:592
 msgid "Java memory usage:"
-msgstr "Uporaba spomina Jave:"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:598
 #, java-format
 msgid "{0} MB total"
-msgstr "{0} MB skupno"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:600
 #, java-format
 msgid "{0} MB free"
-msgstr "{0} MB prosto"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:603
 #, java-format
 msgid "{0} MB maximum"
-msgstr "{0} MB največ"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:606
 msgid "unknown maximum"
-msgstr "neznan maksimum"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:538
 msgid "Configurations"
@@ -726,7 +723,7 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:539
 msgid "Element"
-msgstr "Element"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:540
 msgid "Model/Frame"
@@ -734,7 +731,7 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:541
 msgid "Language"
-msgstr "Jezik"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:542
 #: org/jmol/popup/MainPopupResourceBundle.java:543
@@ -749,31 +746,31 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:546
 #, java-format
 msgid "Molecular Orbitals ({0})"
-msgstr "Molekulske orbitale ({0})"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:547
 #: org/jmol/popup/MainPopupResourceBundle.java:859
 #: org/jmol/popup/MainPopupResourceBundle.java:903
 msgid "Symmetry"
-msgstr "Simetrija"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:549
 msgid "Hide Symmetry"
-msgstr "Skrij simetrijo"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:550
 msgid "Model information"
-msgstr "Informacije o modelu"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:551
 #, java-format
 msgid "Select ({0})"
-msgstr "Izberi ({0})"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:552
 #, java-format
 msgid "All {0} models"
-msgstr "Vseh {0} modelov"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:553
 #, java-format
@@ -783,106 +780,106 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:554
 #, java-format
 msgid "Collection of {0} models"
-msgstr "Zbirka {0} modelov"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:555
 #, java-format
 msgid "atoms: {0}"
-msgstr "atomi: {0}"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:556
 #, java-format
 msgid "bonds: {0}"
-msgstr "vezi: {0}"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:557
 #, java-format
 msgid "groups: {0}"
-msgstr "skupine: {0}"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:558
 #, java-format
 msgid "chains: {0}"
-msgstr "verige: {0}"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:559
 #, java-format
 msgid "polymers: {0}"
-msgstr "polimeri: {0}"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:560
 #, java-format
 msgid "model {0}"
-msgstr "model {0}"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:561
 #, java-format
 msgid "View {0}"
-msgstr "Poglej {0}"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:562
 msgid "Main Menu"
-msgstr "Glavni meni"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:563
 msgid "Biomolecules"
-msgstr "Biomolekule"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:564
 #, java-format
 msgid "biomolecule {0} ({1} atoms)"
-msgstr "biomolekula {0} ({1} atomov)"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:565
 #, java-format
 msgid "load biomolecule {0} ({1} atoms)"
-msgstr "naloži biomolekulo {0} ({1} atomov)"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:570
 #: org/jmol/popup/MainPopupResourceBundle.java:689
 #: org/jmol/popup/MainPopupResourceBundle.java:698
 msgid "None"
-msgstr "Brez"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:571
 msgid "Display Selected Only"
-msgstr "Prikaži samo izbrane"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:572
 msgid "Invert Selection"
-msgstr "Obrni izbor"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:574
 msgid "View"
-msgstr "Pogled"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:575
 msgid "Front"
-msgstr "Spredaj"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:576
 msgid "Left"
-msgstr "Levo"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:577
 msgid "Right"
-msgstr "Desno"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:578
 msgid "Top"
-msgstr "Zgoraj"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:579
 msgid "Bottom"
-msgstr "Spodaj"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:580
 msgid "Back"
-msgstr "Zadaj"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:582
 msgid "Protein"
-msgstr "Beljakovina"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:584
 #: org/jmol/popup/MainPopupResourceBundle.java:595
@@ -893,7 +890,7 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:585
 msgid "Side Chains"
-msgstr "Stranske verige"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:586
 msgid "Polar Residues"
@@ -917,35 +914,35 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:591
 msgid "Nucleic"
-msgstr "Nukleinsko"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:593
 msgid "DNA"
-msgstr "DNA"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:594
 msgid "RNA"
-msgstr "RNA"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:596
 msgid "Bases"
-msgstr "Baze"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:597
 msgid "AT pairs"
-msgstr "Pari AT"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:598
 msgid "GC pairs"
-msgstr "Pari GC"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:599
 msgid "AU pairs"
-msgstr "Pari AU"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:600
 msgid "Hetero"
-msgstr "Hetero"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:601
 msgid "All PDB \"HETATM\""
@@ -969,23 +966,23 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:607
 msgid "Ligand"
-msgstr "Ligand"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:610
 msgid "Carbohydrate"
-msgstr "Ogljikov hidrat"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:611
 msgid "None of the above"
-msgstr "Noben od zgornjih"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:613
 msgid "Style"
-msgstr "Slog"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:614
 msgid "Scheme"
-msgstr "Shema"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:615
 msgid "CPK Spacefill"
@@ -1018,7 +1015,7 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:622
 #: org/jmol/popup/MainPopupResourceBundle.java:711
 msgid "Atoms"
-msgstr "Atomi"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:623
 #: org/jmol/popup/MainPopupResourceBundle.java:632
@@ -1031,7 +1028,7 @@ msgstr "Atomi"
 #: org/jmol/popup/MainPopupResourceBundle.java:834
 #: org/jmol/popup/MainPopupResourceBundle.java:901
 msgid "Off"
-msgstr "Izključeno"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:624
 #: org/jmol/popup/MainPopupResourceBundle.java:625
@@ -1041,12 +1038,12 @@ msgstr "Izključeno"
 #: org/jmol/popup/MainPopupResourceBundle.java:629
 #, java-format
 msgid "{0}% van der Waals"
-msgstr "{0} % van der Waals"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:631
 #: org/jmol/popup/MainPopupResourceBundle.java:753
 msgid "Bonds"
-msgstr "Vezi"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:633
 #: org/jmol/popup/MainPopupResourceBundle.java:643
@@ -1055,7 +1052,7 @@ msgstr "Vezi"
 #: org/jmol/popup/MainPopupResourceBundle.java:678
 #: org/jmol/popup/MainPopupResourceBundle.java:782
 msgid "On"
-msgstr "Vključeno"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:634
 #: org/jmol/popup/MainPopupResourceBundle.java:635
@@ -1081,16 +1078,16 @@ msgstr "Vključeno"
 #: org/jmol/popup/MainPopupResourceBundle.java:929
 #, java-format
 msgid "{0} Å"
-msgstr "{0} Å"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:640
 #: org/jmol/popup/MainPopupResourceBundle.java:754
 msgid "Hydrogen Bonds"
-msgstr "Vodikove vezi"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:642
 msgid "Calculate"
-msgstr "Izračunaj"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:644
 msgid "Set H-Bonds Side Chain"
@@ -1103,7 +1100,7 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:652
 #: org/jmol/popup/MainPopupResourceBundle.java:755
 msgid "Disulfide Bonds"
-msgstr "Disulfidne vezi"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:655
 msgid "Set SS-Bonds Side Chain"
@@ -1116,7 +1113,7 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:663
 #: org/jmol/popup/MainPopupResourceBundle.java:756
 msgid "Structures"
-msgstr "Zgradbe"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:667
 msgid "Cartoon Rockets"
@@ -1144,12 +1141,12 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:676
 #: org/jmol/popup/MainPopupResourceBundle.java:766
 msgid "Vectors"
-msgstr "Vektorji"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:679
 #, java-format
 msgid "{0} pixels"
-msgstr "{0} slikovnih pik"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:682
 #: org/jmol/popup/MainPopupResourceBundle.java:683
@@ -1166,15 +1163,15 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:690
 msgid "Red+Cyan glasses"
-msgstr "Rdeča+cian očala"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:691
 msgid "Red+Blue glasses"
-msgstr "Rdeča+modra očala"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:692
 msgid "Red+Green glasses"
-msgstr "Rdeča+zelena očala"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:693
 msgid "Cross-eyed viewing"
@@ -1187,19 +1184,19 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:696
 #: org/jmol/popup/MainPopupResourceBundle.java:763
 msgid "Labels"
-msgstr "Oznake"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:699
 msgid "With Element Symbol"
-msgstr "S simbolom elementa"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:700
 msgid "With Atom Name"
-msgstr "Z imenom atoma"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:701
 msgid "With Atom Number"
-msgstr "S številom atoma"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:703
 msgid "Position Label on Atom"

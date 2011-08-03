@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-08-01 18:48+0200\n"
+"POT-Creation-Date: 2011-08-03 19:11+0200\n"
 "PO-Revision-Date: 2011-05-14 23:17+0000\n"
 "Last-Translator: Lushih Hsieh <bruce@rssh.kh.edu.tw>\n"
 "Language-Team: Traditional Chinese <zh_TW@li.org>\n"
@@ -356,139 +356,153 @@ msgid "Arabic"
 msgstr "阿拉伯文"
 
 #: org/jmol/i18n/GT.java:138
+#, fuzzy
+msgid "Bosnian"
+msgstr "愛沙尼亞文"
+
+#: org/jmol/i18n/GT.java:139
 msgid "Catalan"
 msgstr "加泰隆文"
 
-#: org/jmol/i18n/GT.java:139
+#: org/jmol/i18n/GT.java:140
 msgid "Czech"
 msgstr "捷克文"
 
-#: org/jmol/i18n/GT.java:140
+#: org/jmol/i18n/GT.java:141
 msgid "Danish"
 msgstr "丹麥文"
 
-#: org/jmol/i18n/GT.java:141
+#: org/jmol/i18n/GT.java:142
 msgid "German"
 msgstr "德文"
 
-#: org/jmol/i18n/GT.java:142
+#: org/jmol/i18n/GT.java:143
 msgid "Greek"
 msgstr "希臘文"
 
-#: org/jmol/i18n/GT.java:143
-msgid "British English"
-msgstr "英式英文"
-
 #: org/jmol/i18n/GT.java:144
-msgid "American English"
+#, fuzzy
+msgid "Australian English"
 msgstr "美語"
 
 #: org/jmol/i18n/GT.java:145
+msgid "British English"
+msgstr "英式英文"
+
+#: org/jmol/i18n/GT.java:146
+msgid "American English"
+msgstr "美語"
+
+#: org/jmol/i18n/GT.java:147
 msgid "Spanish"
 msgstr "西班牙文"
 
-#: org/jmol/i18n/GT.java:146
+#: org/jmol/i18n/GT.java:148
 msgid "Estonian"
 msgstr "愛沙尼亞文"
 
-#: org/jmol/i18n/GT.java:147
+#: org/jmol/i18n/GT.java:149
 msgid "Finnish"
 msgstr "芬蘭語"
 
-#: org/jmol/i18n/GT.java:148
+#: org/jmol/i18n/GT.java:150
 msgid "Faroese"
 msgstr "法羅語"
 
-#: org/jmol/i18n/GT.java:149
+#: org/jmol/i18n/GT.java:151
 msgid "French"
 msgstr "法文"
 
-#: org/jmol/i18n/GT.java:150
+#: org/jmol/i18n/GT.java:152
 msgid "Croatian"
 msgstr "克羅埃西亞語"
 
-#: org/jmol/i18n/GT.java:151
+#: org/jmol/i18n/GT.java:153
 msgid "Hungarian"
 msgstr "匈牙利文"
 
-#: org/jmol/i18n/GT.java:152
+#: org/jmol/i18n/GT.java:154
 msgid "Indonesian"
 msgstr "印尼語"
 
-#: org/jmol/i18n/GT.java:153
+#: org/jmol/i18n/GT.java:155
 msgid "Italian"
 msgstr "義大利文"
 
-#: org/jmol/i18n/GT.java:154
+#: org/jmol/i18n/GT.java:156
 msgid "Japanese"
 msgstr "日語"
 
-#: org/jmol/i18n/GT.java:155
+#: org/jmol/i18n/GT.java:157
 msgid "Javanese"
 msgstr "爪哇語"
 
-#: org/jmol/i18n/GT.java:156
+#: org/jmol/i18n/GT.java:158
 msgid "Korean"
 msgstr "韓文"
 
-#: org/jmol/i18n/GT.java:157
+#: org/jmol/i18n/GT.java:159
 msgid "Norwegian Bokmal"
 msgstr "挪威波克默爾語 (Bokmal)"
 
-#: org/jmol/i18n/GT.java:158
+#: org/jmol/i18n/GT.java:160
 msgid "Dutch"
 msgstr "荷蘭文"
 
-#: org/jmol/i18n/GT.java:159
+#: org/jmol/i18n/GT.java:161
 msgid "Occitan"
 msgstr "歐希特語 (Occitan)"
 
-#: org/jmol/i18n/GT.java:160
+#: org/jmol/i18n/GT.java:162
 msgid "Polish"
 msgstr "波蘭文"
 
-#: org/jmol/i18n/GT.java:161
+#: org/jmol/i18n/GT.java:163
 msgid "Portuguese"
 msgstr "葡萄牙文"
 
-#: org/jmol/i18n/GT.java:162
+#: org/jmol/i18n/GT.java:164
 msgid "Brazilian Portuguese"
 msgstr "巴西葡萄牙文"
 
-#: org/jmol/i18n/GT.java:163
+#: org/jmol/i18n/GT.java:165
 msgid "Russian"
 msgstr "俄羅斯文"
 
-#: org/jmol/i18n/GT.java:164
+#: org/jmol/i18n/GT.java:166
 msgid "Slovenian"
 msgstr "斯洛維尼亞文"
 
-#: org/jmol/i18n/GT.java:165
+#: org/jmol/i18n/GT.java:167
 #, fuzzy
 msgid "Serbian"
 msgstr "斯洛維尼亞文"
 
-#: org/jmol/i18n/GT.java:166
+#: org/jmol/i18n/GT.java:168
 msgid "Swedish"
 msgstr "瑞典文"
 
-#: org/jmol/i18n/GT.java:167
+#: org/jmol/i18n/GT.java:169
 msgid "Tamil"
 msgstr "坦米爾語"
 
-#: org/jmol/i18n/GT.java:168
+#: org/jmol/i18n/GT.java:170
 msgid "Turkish"
 msgstr "土耳其文"
 
-#: org/jmol/i18n/GT.java:169
+#: org/jmol/i18n/GT.java:171
+msgid "Uyghur"
+msgstr ""
+
+#: org/jmol/i18n/GT.java:172
 msgid "Ukrainian"
 msgstr "烏克蘭文"
 
-#: org/jmol/i18n/GT.java:170
+#: org/jmol/i18n/GT.java:173
 msgid "Simplified Chinese"
 msgstr "簡體中文"
 
-#: org/jmol/i18n/GT.java:171
+#: org/jmol/i18n/GT.java:174
 msgid "Traditional Chinese"
 msgstr "繁體中文"
 
@@ -2353,19 +2367,19 @@ msgstr "停止運動 (需要 {0})"
 msgid "simulate multi-touch using the mouse)"
 msgstr "使用滑鼠模擬多點觸碰"
 
-#: org/jmol/viewer/ActionManager.java:1926
+#: org/jmol/viewer/ActionManager.java:1928
 msgid "pick one more atom in order to spin the model around an axis"
 msgstr "請再多選一個原子來使分子可以一個軸旋轉"
 
-#: org/jmol/viewer/ActionManager.java:1927
+#: org/jmol/viewer/ActionManager.java:1929
 msgid "pick two atoms in order to spin the model around an axis"
 msgstr "請選二個原子來使分子可以繞一個軸旋轉"
 
-#: org/jmol/viewer/ActionManager.java:1930
+#: org/jmol/viewer/ActionManager.java:1932
 msgid "pick one more atom in order to display the symmetry relationship"
 msgstr "請選取一個或是多個原子以呈現對稱關係"
 
-#: org/jmol/viewer/ActionManager.java:1931
+#: org/jmol/viewer/ActionManager.java:1933
 msgid ""
 "pick two atoms in order to display the symmetry relationship between them"
 msgstr "請選取兩個原子以呈現兩者的對稱關係"

@@ -135,11 +135,13 @@ public class GT {
     doTranslate = false;
     languageList = new Language[] {
       new Language("ar",    GT._("Arabic"),               "العربية",              false),
+      new Language("bs",    GT._("Bosnian"),              "bosanski jezik",       false),
       new Language("ca",    GT._("Catalan"),              "Català",               true),
       new Language("cs",    GT._("Czech"),                "Čeština",              true),
       new Language("da",    GT._("Danish"),               "Dansk",                true),
       new Language("de",    GT._("German"),               "Deutsch",              true),
       new Language("el",    GT._("Greek"),                "Ελληνικά",             false),
+      new Language("en_AU", GT._("Australian English"),   "Australian English",   false),
       new Language("en_GB", GT._("British English"),      "British English",      true),
       new Language("en_US", GT._("American English"),     "American English",     true), // global default for "en" will be "en_US"
       new Language("es",    GT._("Spanish"),              "Español",              true),
@@ -166,6 +168,7 @@ public class GT {
       new Language("sv",    GT._("Swedish"),              "Svenska",              false),
       new Language("ta",    GT._("Tamil"),                "தமிழ்",                 false),
       new Language("tr",    GT._("Turkish"),              "Türkçe",               true),
+      new Language("ug",    GT._("Uyghur"),               "Uyƣurqə",              false),
       new Language("uk",    GT._("Ukrainian"),            "Українська",           true),
       new Language("zh_CN", GT._("Simplified Chinese"),   "简体中文",             true),
       new Language("zh_TW", GT._("Traditional Chinese"),  "繁體中文",             true),

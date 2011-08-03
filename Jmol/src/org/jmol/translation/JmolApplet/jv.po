@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-08-01 18:48+0200\n"
+"POT-Creation-Date: 2011-08-03 19:11+0200\n"
 "PO-Revision-Date: 2011-01-13 01:50+0000\n"
 "Last-Translator: zaenal arifin <Unknown>\n"
 "Language-Team: Javanese <jv@li.org>\n"
@@ -359,138 +359,150 @@ msgid "Arabic"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:138
-msgid "Catalan"
+msgid "Bosnian"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:139
-msgid "Czech"
+msgid "Catalan"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:140
-msgid "Danish"
+msgid "Czech"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:141
-msgid "German"
+msgid "Danish"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:142
-msgid "Greek"
+msgid "German"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:143
-msgid "British English"
+msgid "Greek"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:144
-msgid "American English"
+msgid "Australian English"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:145
-msgid "Spanish"
+msgid "British English"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:146
-msgid "Estonian"
+msgid "American English"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:147
-msgid "Finnish"
+msgid "Spanish"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:148
-msgid "Faroese"
+msgid "Estonian"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:149
-msgid "French"
+msgid "Finnish"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:150
-msgid "Croatian"
+msgid "Faroese"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:151
-msgid "Hungarian"
+msgid "French"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:152
-msgid "Indonesian"
+msgid "Croatian"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:153
-msgid "Italian"
+msgid "Hungarian"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:154
-msgid "Japanese"
+msgid "Indonesian"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:155
-msgid "Javanese"
+msgid "Italian"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:156
-msgid "Korean"
+msgid "Japanese"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:157
-msgid "Norwegian Bokmal"
+msgid "Javanese"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:158
-msgid "Dutch"
+msgid "Korean"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:159
-msgid "Occitan"
+msgid "Norwegian Bokmal"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:160
-msgid "Polish"
+msgid "Dutch"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:161
-msgid "Portuguese"
+msgid "Occitan"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:162
-msgid "Brazilian Portuguese"
+msgid "Polish"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:163
-msgid "Russian"
+msgid "Portuguese"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:164
-msgid "Slovenian"
+msgid "Brazilian Portuguese"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:165
-msgid "Serbian"
+msgid "Russian"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:166
-msgid "Swedish"
+msgid "Slovenian"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:167
-msgid "Tamil"
+msgid "Serbian"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:168
-msgid "Turkish"
+msgid "Swedish"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:169
-msgid "Ukrainian"
+msgid "Tamil"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:170
-msgid "Simplified Chinese"
+msgid "Turkish"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:171
+msgid "Uyghur"
+msgstr ""
+
+#: org/jmol/i18n/GT.java:172
+msgid "Ukrainian"
+msgstr ""
+
+#: org/jmol/i18n/GT.java:173
+msgid "Simplified Chinese"
+msgstr ""
+
+#: org/jmol/i18n/GT.java:174
 msgid "Traditional Chinese"
 msgstr ""
 
@@ -2346,19 +2358,19 @@ msgstr ""
 msgid "simulate multi-touch using the mouse)"
 msgstr ""
 
-#: org/jmol/viewer/ActionManager.java:1926
+#: org/jmol/viewer/ActionManager.java:1928
 msgid "pick one more atom in order to spin the model around an axis"
 msgstr ""
 
-#: org/jmol/viewer/ActionManager.java:1927
+#: org/jmol/viewer/ActionManager.java:1929
 msgid "pick two atoms in order to spin the model around an axis"
 msgstr ""
 
-#: org/jmol/viewer/ActionManager.java:1930
+#: org/jmol/viewer/ActionManager.java:1932
 msgid "pick one more atom in order to display the symmetry relationship"
 msgstr ""
 
-#: org/jmol/viewer/ActionManager.java:1931
+#: org/jmol/viewer/ActionManager.java:1933
 msgid ""
 "pick two atoms in order to display the symmetry relationship between them"
 msgstr ""

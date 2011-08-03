@@ -575,7 +575,7 @@ public class Contact extends Isosurface {
       double x;
       
       x = f + (g/vvu + vvu) * costheta;
-      System.out.println(d + "\t" + x + "\t" + ((a + x)*(a + x) * (b + 2 * x)) + " = " + c);
+      //System.out.println(d + "\t" + x + "\t" + ((a + x)*(a + x) * (b + 2 * x)) + " = " + c);
       return (x > 0 ? (float) (x / 2) : Float.NaN);
     }
 

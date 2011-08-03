@@ -267,6 +267,14 @@ public class Contact extends Isosurface {
 
     for (int i = nContacts; --i >= 0;) {
       ContactPair cp = pairs.get(i);
+      float oldScore = 0;
+      boolean isVdwClash = (displayType == Token.plane 
+          && (contactType == Token.vanderwaals || contactType == Token.nada) 
+          && cp.setForVdwClash(true));
+      if (isVdwClash) {
+        oldScore = cp.score;
+        cp.score = 0; // for now
+      }
       if (contactType != Token.nada && cp.contactType != contactType)
         continue;
       int nV = thisMesh.vertexCount;
@@ -287,6 +295,11 @@ public class Contact extends Isosurface {
       case Token.connect:
         newSurface(displayType, cp, null, null, null, parameters, func,
             isColorDensity, volumeData);
+        if (isVdwClash && cp.setForVdwClash(false)) {
+          cp.score = oldScore;
+          newSurface(displayType, cp, null, null, null, parameters, func,
+              isColorDensity, volumeData);          
+        }
         break;
       }
       if (i > 0 && (i % 1000) == 0 && logLevel == 4) {

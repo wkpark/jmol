@@ -282,11 +282,6 @@ final public class JmolConstants {
    * axes modes
    */
 
-  public final static int AXES_MODE_BOUNDBOX = 0;
-  public final static int AXES_MODE_MOLECULAR = 1;
-  public final static int AXES_MODE_UNITCELL = 2;
-
-  
   public final static int[] argbsHbondType =
   {
     0xFFFF69B4, // 0  unused - pink

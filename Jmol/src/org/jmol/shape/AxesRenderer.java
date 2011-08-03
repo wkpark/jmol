@@ -29,7 +29,7 @@ import org.jmol.api.SymmetryInterface;
 import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.util.Point3fi;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.EnumAxesMode;
 import org.jmol.viewer.StateManager;
 
 import javax.vecmath.Point3f;
@@ -62,7 +62,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
     int mad = viewer.getObjectMad(StateManager.OBJ_AXIS1);
     if (mad == 0 || !g3d.checkTranslucent(false))
       return;
-    int axesMode = viewer.getAxesMode();
+    EnumAxesMode axesMode = viewer.getAxesMode();
     imageFontScaling = viewer.getImageFontScaling();
     if (viewer.areAxesTainted()) {
       Font3D f = axes.font3d;
@@ -76,7 +76,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
     boolean isXY = (axes.axisXY.z != 0);
     int modelIndex = viewer.getCurrentModelIndex();
     // includes check here for background model present
-    boolean isUnitCell = (axesMode == JmolConstants.AXES_MODE_UNITCELL);
+    boolean isUnitCell = (axesMode == EnumAxesMode.UNITCELL);
     if (viewer.isJmolDataFrame(modelIndex)
         || isUnitCell && modelIndex < 0)
       return;
@@ -89,7 +89,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
     } else if (isXY) {
       nPoints = 3;
       labelPtr = 9;
-    } else if (axesMode == JmolConstants.AXES_MODE_BOUNDBOX) {
+    } else if (axesMode == EnumAxesMode.BOUNDBOX) {
       nPoints = 6;
       labelPtr = (viewer.getAxesOrientationRasmol() ? 15 : 9);
     }

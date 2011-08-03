@@ -6033,14 +6033,14 @@ private void zap(String msg) {
       eval.setDebugging();
       return;
     case Token.axesmode:
-      switch (value) {
-      case JmolConstants.AXES_MODE_MOLECULAR:
+      switch (EnumAxesMode.getAxesMode(value)) {
+      case MOLECULAR:
         setAxesModeMolecular(true);
         return;
-      case JmolConstants.AXES_MODE_BOUNDBOX:
+      case BOUNDBOX:
         setAxesModeMolecular(false);
         return;
-      case JmolConstants.AXES_MODE_UNITCELL:
+      case UNITCELL:
         setAxesModeUnitCell(true);
         return;
       }
@@ -6882,7 +6882,7 @@ private void zap(String msg) {
   public Point3f[] getAxisPoints() {
     // for uccage renderer
     return (getObjectMad(StateManager.OBJ_AXIS1) == 0
-        || getAxesMode() != JmolConstants.AXES_MODE_UNITCELL
+        || getAxesMode() != EnumAxesMode.UNITCELL
         || ((Boolean) getShapeProperty(JmolConstants.SHAPE_AXES, "axesTypeXY"))
             .booleanValue() 
         || getShapeProperty(JmolConstants.SHAPE_AXES, "origin") != null 
@@ -6899,12 +6899,11 @@ private void zap(String msg) {
   }
   
   private void setAxesModeMolecular(boolean TF) {
-    global.axesMode = (TF ? JmolConstants.AXES_MODE_MOLECULAR
-        : JmolConstants.AXES_MODE_BOUNDBOX);
+    global.axesMode = (TF ? EnumAxesMode.MOLECULAR : EnumAxesMode.BOUNDBOX);
     axesAreTainted = true;
     global.removeJmolParameter("axesunitcell");
     global.removeJmolParameter(TF ? "axeswindow" : "axesmolecular");
-    global.setParameterValue("axesMode", global.axesMode);
+    global.setParameterValue("axesMode", global.axesMode.getCode());
     global.setParameterValue(TF ? "axesMolecular" : "axesWindow", true);
 
   }
@@ -6912,16 +6911,15 @@ private void zap(String msg) {
   void setAxesModeUnitCell(boolean TF) {
     // stateManager
     // setBooleanproperty
-    global.axesMode = (TF ? JmolConstants.AXES_MODE_UNITCELL
-        : JmolConstants.AXES_MODE_BOUNDBOX);
+    global.axesMode = (TF ? EnumAxesMode.UNITCELL : EnumAxesMode.BOUNDBOX);
     axesAreTainted = true;
     global.removeJmolParameter("axesmolecular");
     global.removeJmolParameter(TF ? "axeswindow" : "axesunitcell");
     global.setParameterValue(TF ? "axesUnitcell" : "axesWindow", true);
-    global.setParameterValue("axesMode", global.axesMode);
+    global.setParameterValue("axesMode", global.axesMode.getCode());
   }
 
-  public int getAxesMode() {
+  public EnumAxesMode getAxesMode() {
     return global.axesMode;
   }
 

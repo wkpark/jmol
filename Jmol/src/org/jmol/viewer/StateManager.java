@@ -782,7 +782,7 @@ public class StateManager {
       setParameterValue("autoBond", autoBond);
       setParameterValue("autoFps", autoFps);
 //      setParameterValue("autoLoadOrientation", autoLoadOrientation);
-      setParameterValue("axesMode", axesMode);
+      setParameterValue("axesMode", axesMode.getCode());
       setParameterValue("axesScale", axesScale);
       setParameterValue("axesOrientationRasmol", axesOrientationRasmol);
       setParameterValue("bondModeOr", bondModeOr);
@@ -1173,7 +1173,7 @@ public class StateManager {
     boolean allowKeyStrokes = false;
     int animationFps = 10;
     boolean autoFps = false;
-    int axesMode = JmolConstants.AXES_MODE_BOUNDBOX;
+    EnumAxesMode axesMode = EnumAxesMode.BOUNDBOX;
     float axesScale = 2;
     float cameraDepth = 3.0f;
     String dataSeparator = "~~~";
@@ -1595,10 +1595,10 @@ public class StateManager {
         }
       }
       switch (axesMode) {
-      case JmolConstants.AXES_MODE_UNITCELL:
+      case UNITCELL:
         list[n++] = "set axes unitcell";
         break;
-      case JmolConstants.AXES_MODE_BOUNDBOX:
+      case BOUNDBOX:
         list[n++] = "set axes window";
         break;
       default:

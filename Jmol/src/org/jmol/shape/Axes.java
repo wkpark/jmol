@@ -30,6 +30,7 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.api.SymmetryInterface;
 import org.jmol.util.Escape;
+import org.jmol.viewer.EnumAxesMode;
 import org.jmol.viewer.JmolConstants;
 
 public class Axes extends FontLineShape {
@@ -105,12 +106,12 @@ public class Axes extends FontLineShape {
     super.initShape();
     myType = "axes";
     font3d = g3d.getFont3D(JmolConstants.AXES_DEFAULT_FONTSIZE);
-    int axesMode = viewer.getAxesMode();
+    EnumAxesMode axesMode = viewer.getAxesMode();
     if (fixedOrigin == null)
       originPoint.set(0, 0, 0);
     else
       originPoint.set(fixedOrigin);
-    if (axesMode == JmolConstants.AXES_MODE_UNITCELL
+    if (axesMode == EnumAxesMode.UNITCELL
         && modelSet.getCellInfos() != null) {
       SymmetryInterface unitcell = viewer.getCurrentUnitCell();
       if (unitcell != null && unitcell.haveUnitCell()) {
@@ -129,7 +130,7 @@ public class Axes extends FontLineShape {
         axisPoints[2].scaleAdd(scale, vectors[1], offset);
         return;
       }
-    } else if (axesMode == JmolConstants.AXES_MODE_BOUNDBOX) {
+    } else if (axesMode == EnumAxesMode.BOUNDBOX) {
       if (fixedOrigin == null)
         originPoint.set(viewer.getBoundBoxCenter());
     }

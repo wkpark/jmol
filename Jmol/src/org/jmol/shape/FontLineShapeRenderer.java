@@ -34,6 +34,7 @@ import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.TickInfo;
 import org.jmol.util.Point3fi;
 import org.jmol.util.TextFormat;
+import org.jmol.viewer.EnumAxesMode;
 import org.jmol.viewer.JmolConstants;
 
 abstract class FontLineShapeRenderer extends ShapeRenderer {
@@ -177,7 +178,7 @@ abstract class FontLineShapeRenderer extends ShapeRenderer {
     Point3f ptRef = tickInfo.reference; // not implemented
     if (ptRef == null) {
       pointT3.set(viewer.getBoundBoxCenter());
-      if (viewer.getAxesMode() == JmolConstants.AXES_MODE_BOUNDBOX) {
+      if (viewer.getAxesMode() == EnumAxesMode.BOUNDBOX) {
         pointT3.x += 1.0;
         pointT3.y += 1.0;
         pointT3.z += 1.0;

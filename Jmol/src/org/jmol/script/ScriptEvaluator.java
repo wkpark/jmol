@@ -14292,10 +14292,10 @@ public class ScriptEvaluator {
       break;
     case Token.axes:
       switch (viewer.getAxesMode()) {
-      case JmolConstants.AXES_MODE_UNITCELL:
+      case UNITCELL:
         msg = "set axesUnitcell";
         break;
-      case JmolConstants.AXES_MODE_BOUNDBOX:
+      case BOUNDBOX:
         msg = "set axesWindow";
         break;
       default:

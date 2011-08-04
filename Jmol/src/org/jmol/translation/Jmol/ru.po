@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-07-29 23:21+0200\n"
-"PO-Revision-Date: 2010-12-17 01:21+0000\n"
-"Last-Translator: Sergey Basalaev <SBasalaev@gmail.com>\n"
+"PO-Revision-Date: 2011-08-04 16:47+0000\n"
+"Last-Translator: Ilia Lilov <lilovil@gmail.com>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-01-29 19:08+0000\n"
-"X-Generator: Launchpad (build 12274)\n"
+"X-Launchpad-Export-Date: 2011-08-04 16:52+0000\n"
+"X-Generator: Launchpad (build 13604)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
 msgid "Error starting Jmol: the property 'user.home' is not defined."
@@ -343,7 +343,7 @@ msgstr "Расширенный"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:224
 msgid "Checkpoint File: "
-msgstr ""
+msgstr "Файл контрольной точки: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:229
 msgid "Amount of Memory:"
@@ -367,11 +367,11 @@ msgstr "Базисный набор: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:269
 msgid "Density Fitting Basis Set (DFT Only): "
-msgstr ""
+msgstr "Установка базиса подгонки плотности (только DFT): "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:275
 msgid "Job Options: "
-msgstr ""
+msgstr "Опции задания: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:288
 msgid "Molecular Properties"
@@ -387,11 +387,11 @@ msgstr "Мультиплетность: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:308
 msgid "Selection: "
-msgstr ""
+msgstr "Выбор: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:343
 msgid "Gaussian Input File Name"
-msgstr ""
+msgstr "Имя файла гауссовского ввода"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:349
 msgid "File..."
@@ -435,15 +435,15 @@ msgstr "Открыть &URL"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:62
 msgid "&Get PDB"
-msgstr ""
+msgstr "&Получить PDB"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:63
 msgid "Get &MOL"
-msgstr ""
+msgstr "Получить &MOL"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:64
 msgid "&Reload"
-msgstr ""
+msgstr "Пе&резагрузить"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:65
 msgid "Scrip&t Editor..."
@@ -451,7 +451,7 @@ msgstr "Ре&дактор сценариев..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:66
 msgid "Conso&le..."
-msgstr ""
+msgstr "Консо&ль"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:67
 msgid "Jmol Java &Console"
@@ -459,7 +459,7 @@ msgstr "Jmol Явя &Консоль"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:68
 msgid "AtomSet&Chooser..."
-msgstr ""
+msgstr "&Выбор набора атомов..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:69
 msgid "&Save As..."
@@ -727,7 +727,7 @@ msgstr "Измерения"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:150
 msgid "Resi&ze"
-msgstr ""
+msgstr "Изменить ра&змер"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:151
 msgid "&View"
@@ -847,11 +847,11 @@ msgstr "К предыдущему кадру"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:181
 msgid "All &frames"
-msgstr ""
+msgstr "Все &кадры"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:182
 msgid "All frames"
-msgstr ""
+msgstr "Все кадры"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:183
 msgid "Go to &last frame"
@@ -883,11 +883,11 @@ msgstr "&Предыдущая частота"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:190
 msgid "SurfaceTool..."
-msgstr ""
+msgstr "Инструменты поверхности..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:191
 msgid "Control Display of Surfaces"
-msgstr ""
+msgstr "Дисплей управления поверхностями"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:192
 msgid "&Help"
@@ -924,7 +924,7 @@ msgstr "Рамка"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:202
 msgid "RasMol/Chime compatible axes orientation/rotations"
-msgstr ""
+msgstr "Совместимые с RasMol/Chime ориентации/вращения осей"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:204
 msgid "File Preview (requires restarting Jmol)"
@@ -932,7 +932,7 @@ msgstr "Предпросмотр файла (требует перезапуск
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:206
 msgid "Clear history (requires restarting Jmol)"
-msgstr ""
+msgstr "Очистить историю (требуется перезагрузка Jmol)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:207
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:208
@@ -945,7 +945,7 @@ msgstr "Повернуть молекулу."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:211
 msgid "Select a set of atoms using SHIFT-LEFT-DRAG."
-msgstr ""
+msgstr "Выберите набор атомов, используя перетаскивание с зажатой SHIFT."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:213
 msgid "Click atoms to measure distances"
@@ -953,7 +953,7 @@ msgstr "Тыкайте атомы чтобы измерять растояния
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:215
 msgid "Click an atom to center on it"
-msgstr ""
+msgstr "Щёлкните на атоме для центрирования на нём"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:216
 msgid "Return molecule to home position."
@@ -961,7 +961,7 @@ msgstr "Вернуть малекулу на исходную позицию."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:217
 msgid "Open the model kit."
-msgstr ""
+msgstr "Открыть набор инструментов модели."
 
 #: org/openscience/jmol/app/jmolpanel/HelpDialog.java:64
 msgid "Jmol Help"
@@ -1303,24 +1303,20 @@ msgid "What's New in Jmol"
 msgstr "Что Нового в Jmol"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
-#, fuzzy
 msgid "Degrees"
-msgstr "Удалить"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
-#, fuzzy
 msgid "Radians"
-msgstr "Радиус"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
-#, fuzzy
 msgid "Gradians"
-msgstr "Радиус"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
-#, fuzzy
 msgid "Circle Fraction"
-msgstr "Коллекция"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
 msgid "Units of Pi"
@@ -1338,15 +1334,13 @@ msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:141
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:144
-#, fuzzy
 msgid "View Center"
-msgstr "Определить центр"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:142
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:145
-#, fuzzy
 msgid "Absolute"
-msgstr "Направление"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:153
 msgid "Origin"
@@ -1764,20 +1758,10 @@ msgstr ""
 msgid "unimplemented"
 msgstr "не реализовано"
 
-#, fuzzy
-#~ msgid "Angle Units"
-#~ msgstr "Оси"
-
-#~ msgid ""
-#~ "Could not find or open:\n"
-#~ "{0}"
-#~ msgstr ""
-#~ "Не могу найти или открыть:\n"
-#~ "{0}"
-
 #~ msgid "Jmol Script Console"
 #~ msgstr "Консоль сценариев Jmol"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Перейти к следующему {0} в коллекции"
 
@@ -1787,29 +1771,43 @@ msgstr "не реализовано"
 #~ msgid "atom set"
 #~ msgstr "Набор атомов"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Идти к первой {0} в коллекции"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Идти к предыдущей {0} в коллекции"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Смотреть всю коллекцию {0}"
 
+#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Перейти к последней {0} в коллекции"
 
 #~ msgid "Show Selected"
 #~ msgstr "Показать Выбранное"
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "добавление {0}.spt"
 
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "добавление JmolPopIn.js"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "добавление {0}.png"
+
+#, java-format
+#~ msgid ""
+#~ "Could not find or open:\n"
+#~ "{0}"
+#~ msgstr ""
+#~ "Не могу найти или открыть:\n"
+#~ "{0}"
 
 #~ msgid "Clear console button (requires restarting Jmol)"
 #~ msgstr "Кнопка очистки консоли (требует перезапуска Jmol)"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-08-03 19:11+0200\n"
+"POT-Creation-Date: 2011-08-05 00:33+0200\n"
 "PO-Revision-Date: 2011-03-17 09:22+0000\n"
 "Last-Translator: Konki <pavel.konkol@seznam.cz>\n"
 "Language-Team: Czech <Jmol-developers@lists.sf.net>\n"
@@ -90,7 +90,7 @@ msgstr ""
 "Nápověda v konzoli pro on-line nápovědu, která se objeví v novém okně "
 "prohlížeče."
 
-#: org/jmol/applet/Jmol.java:709
+#: org/jmol/applet/Jmol.java:713
 #, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -105,7 +105,7 @@ msgstr ""
 "\n"
 "Pro více informací navštivte  http://www.jmol.org"
 
-#: org/jmol/applet/Jmol.java:961
+#: org/jmol/applet/Jmol.java:966
 msgid "File Error:"
 msgstr "Chyba souboru:"
 
@@ -362,152 +362,165 @@ msgstr "arabština"
 
 #: org/jmol/i18n/GT.java:138
 #, fuzzy
-msgid "Bosnian"
+msgid "Asturian"
 msgstr "Estonština"
 
 #: org/jmol/i18n/GT.java:139
+#, fuzzy
+msgid "Bosnian"
+msgstr "Estonština"
+
+#: org/jmol/i18n/GT.java:140
 msgid "Catalan"
 msgstr "Katalánština"
 
-#: org/jmol/i18n/GT.java:140
+#: org/jmol/i18n/GT.java:141
 msgid "Czech"
 msgstr "Čeština"
 
-#: org/jmol/i18n/GT.java:141
+#: org/jmol/i18n/GT.java:142
 msgid "Danish"
 msgstr "Dánština"
 
-#: org/jmol/i18n/GT.java:142
+#: org/jmol/i18n/GT.java:143
 msgid "German"
 msgstr "Němčina"
 
-#: org/jmol/i18n/GT.java:143
+#: org/jmol/i18n/GT.java:144
 msgid "Greek"
 msgstr "Řečtina"
 
-#: org/jmol/i18n/GT.java:144
+#: org/jmol/i18n/GT.java:145
 #, fuzzy
 msgid "Australian English"
 msgstr "Americká angličtina"
 
-#: org/jmol/i18n/GT.java:145
+#: org/jmol/i18n/GT.java:146
 msgid "British English"
 msgstr "Britská angličtina"
 
-#: org/jmol/i18n/GT.java:146
+#: org/jmol/i18n/GT.java:147
 msgid "American English"
 msgstr "Americká angličtina"
 
-#: org/jmol/i18n/GT.java:147
+#: org/jmol/i18n/GT.java:148
 msgid "Spanish"
 msgstr "Španělština"
 
-#: org/jmol/i18n/GT.java:148
+#: org/jmol/i18n/GT.java:149
 msgid "Estonian"
 msgstr "Estonština"
 
-#: org/jmol/i18n/GT.java:149
+#: org/jmol/i18n/GT.java:150
 msgid "Finnish"
 msgstr "Finština"
 
-#: org/jmol/i18n/GT.java:150
+#: org/jmol/i18n/GT.java:151
 msgid "Faroese"
 msgstr "Faerština"
 
-#: org/jmol/i18n/GT.java:151
+#: org/jmol/i18n/GT.java:152
 msgid "French"
 msgstr "Francouzština"
 
-#: org/jmol/i18n/GT.java:152
+#: org/jmol/i18n/GT.java:153
 msgid "Croatian"
 msgstr "Chorvatština"
 
-#: org/jmol/i18n/GT.java:153
+#: org/jmol/i18n/GT.java:154
 msgid "Hungarian"
 msgstr "Maďarština"
 
-#: org/jmol/i18n/GT.java:154
+#: org/jmol/i18n/GT.java:155
+msgid "Armenian"
+msgstr ""
+
+#: org/jmol/i18n/GT.java:156
 msgid "Indonesian"
 msgstr "Indonéština"
 
-#: org/jmol/i18n/GT.java:155
+#: org/jmol/i18n/GT.java:157
 msgid "Italian"
 msgstr "Italština"
 
-#: org/jmol/i18n/GT.java:156
+#: org/jmol/i18n/GT.java:158
 msgid "Japanese"
 msgstr "Japonština"
 
-#: org/jmol/i18n/GT.java:157
+#: org/jmol/i18n/GT.java:159
 msgid "Javanese"
 msgstr "Javánština"
 
-#: org/jmol/i18n/GT.java:158
+#: org/jmol/i18n/GT.java:160
 msgid "Korean"
 msgstr "Korejština"
 
-#: org/jmol/i18n/GT.java:159
+#: org/jmol/i18n/GT.java:161
 msgid "Norwegian Bokmal"
 msgstr "Norština Bokmal"
 
-#: org/jmol/i18n/GT.java:160
+#: org/jmol/i18n/GT.java:162
 msgid "Dutch"
 msgstr "Nizozemština"
 
-#: org/jmol/i18n/GT.java:161
+#: org/jmol/i18n/GT.java:163
 msgid "Occitan"
 msgstr "Okcitánština"
 
-#: org/jmol/i18n/GT.java:162
+#: org/jmol/i18n/GT.java:164
 msgid "Polish"
 msgstr "Polština"
 
-#: org/jmol/i18n/GT.java:163
+#: org/jmol/i18n/GT.java:165
 msgid "Portuguese"
 msgstr "Portugalština"
 
-#: org/jmol/i18n/GT.java:164
+#: org/jmol/i18n/GT.java:166
 msgid "Brazilian Portuguese"
 msgstr "Brazilská portugalština"
 
-#: org/jmol/i18n/GT.java:165
+#: org/jmol/i18n/GT.java:167
 msgid "Russian"
 msgstr "Ruština"
 
-#: org/jmol/i18n/GT.java:166
+#: org/jmol/i18n/GT.java:168
 msgid "Slovenian"
 msgstr "Slovinština"
 
-#: org/jmol/i18n/GT.java:167
+#: org/jmol/i18n/GT.java:169
 #, fuzzy
 msgid "Serbian"
 msgstr "Slovinština"
 
-#: org/jmol/i18n/GT.java:168
+#: org/jmol/i18n/GT.java:170
 msgid "Swedish"
 msgstr "Švédština"
 
-#: org/jmol/i18n/GT.java:169
+#: org/jmol/i18n/GT.java:171
 msgid "Tamil"
 msgstr "Tamilština"
 
-#: org/jmol/i18n/GT.java:170
+#: org/jmol/i18n/GT.java:172
+msgid "Telugu"
+msgstr ""
+
+#: org/jmol/i18n/GT.java:173
 msgid "Turkish"
 msgstr "Turečtina"
 
-#: org/jmol/i18n/GT.java:171
+#: org/jmol/i18n/GT.java:174
 msgid "Uyghur"
 msgstr ""
 
-#: org/jmol/i18n/GT.java:172
+#: org/jmol/i18n/GT.java:175
 msgid "Ukrainian"
 msgstr "Ukrajinština"
 
-#: org/jmol/i18n/GT.java:173
+#: org/jmol/i18n/GT.java:176
 msgid "Simplified Chinese"
 msgstr "Zjednodušená čínština"
 
-#: org/jmol/i18n/GT.java:174
+#: org/jmol/i18n/GT.java:177
 msgid "Traditional Chinese"
 msgstr "Tradiční čínština"
 
@@ -1791,7 +1804,7 @@ msgid "About..."
 msgstr "O aplikaci..."
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1324
-#: org/jmol/script/ScriptEvaluator.java:2780
+#: org/jmol/script/ScriptEvaluator.java:2781
 msgid "bad argument count"
 msgstr "špatně spočítaný argument"
 
@@ -1801,7 +1814,7 @@ msgid "invalid context for {0}"
 msgstr "chybný kontext pro {0}"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1330
-#: org/jmol/script/ScriptEvaluator.java:2804
+#: org/jmol/script/ScriptEvaluator.java:2805
 msgid "command expected"
 msgstr "očekáván příkaz"
 
@@ -1810,7 +1823,7 @@ msgid "{ number number number } expected"
 msgstr "očekáváno { number number number }"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1336
-#: org/jmol/script/ScriptEvaluator.java:2813
+#: org/jmol/script/ScriptEvaluator.java:2814
 msgid "unexpected end of script command"
 msgstr "neočekávaný konec skriptovacího příkazu"
 
@@ -1845,7 +1858,7 @@ msgid "missing END for {0}"
 msgstr "chybí END pro {0}"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1360
-#: org/jmol/script/ScriptEvaluator.java:2880
+#: org/jmol/script/ScriptEvaluator.java:2881
 msgid "number expected"
 msgstr "očekáváno číslo"
 
@@ -1873,7 +1886,7 @@ msgid "unrecognized expression token: {0}"
 msgstr "nerozpoznaný token výrazu: {0}"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1378
-#: org/jmol/script/ScriptEvaluator.java:2929
+#: org/jmol/script/ScriptEvaluator.java:2930
 #, java-format
 msgid "unrecognized {0} parameter"
 msgstr "neznámý parametr: {0}"
@@ -1887,138 +1900,138 @@ msgstr "nerozpoznaný token: {0}"
 msgid "script compiler ERROR: "
 msgstr "Chyba kompilátoru skriptu ERROR: "
 
-#: org/jmol/script/ScriptEvaluator.java:2626
-#: org/jmol/script/ScriptEvaluator.java:10200
+#: org/jmol/script/ScriptEvaluator.java:2627
+#: org/jmol/script/ScriptEvaluator.java:10201
 msgid "script ERROR: "
 msgstr "Chyba skriptu ERROR: "
 
-#: org/jmol/script/ScriptEvaluator.java:2774
+#: org/jmol/script/ScriptEvaluator.java:2775
 msgid "x y z axis expected"
 msgstr "očekávány osy x y z"
 
-#: org/jmol/script/ScriptEvaluator.java:2777
+#: org/jmol/script/ScriptEvaluator.java:2778
 #, java-format
 msgid "{0} not allowed with background model displayed"
 msgstr "{0} není povoleno se zobrazeným modelem v pozadí"
 
-#: org/jmol/script/ScriptEvaluator.java:2783
+#: org/jmol/script/ScriptEvaluator.java:2784
 msgid "Miller indices cannot all be zero."
 msgstr "všechny Millerovy indexy nemohou být rovny nule"
 
-#: org/jmol/script/ScriptEvaluator.java:2786
+#: org/jmol/script/ScriptEvaluator.java:2787
 msgid "bad [R,G,B] color"
 msgstr "špatné [R,G,B] barvy"
 
-#: org/jmol/script/ScriptEvaluator.java:2789
+#: org/jmol/script/ScriptEvaluator.java:2790
 msgid "boolean expected"
 msgstr "očekáván booleovský parametr"
 
-#: org/jmol/script/ScriptEvaluator.java:2792
+#: org/jmol/script/ScriptEvaluator.java:2793
 msgid "boolean or number expected"
 msgstr "očekáván booleovský parametr nebo číslo"
 
-#: org/jmol/script/ScriptEvaluator.java:2795
+#: org/jmol/script/ScriptEvaluator.java:2796
 #, java-format
 msgid "boolean, number, or {0} expected"
 msgstr "očekáván booleovský parametr, číslo nebo {0}"
 
-#: org/jmol/script/ScriptEvaluator.java:2798
+#: org/jmol/script/ScriptEvaluator.java:2799
 msgid "color expected"
 msgstr "očekávána barva"
 
-#: org/jmol/script/ScriptEvaluator.java:2801
+#: org/jmol/script/ScriptEvaluator.java:2802
 msgid "a color or palette name (Jmol, Rasmol) is required"
 msgstr "je nutné zadání barvy nebo sady barev (Jmol, Rasmol)"
 
-#: org/jmol/script/ScriptEvaluator.java:2807
+#: org/jmol/script/ScriptEvaluator.java:2808
 msgid "{x y z} or $name or (atom expression) required"
 msgstr "{x y z} nebo $name nebo (označení atomů) požadováno"
 
-#: org/jmol/script/ScriptEvaluator.java:2810
+#: org/jmol/script/ScriptEvaluator.java:2811
 msgid "draw object not defined"
 msgstr "nakreslený objekt není definován"
 
-#: org/jmol/script/ScriptEvaluator.java:2816
+#: org/jmol/script/ScriptEvaluator.java:2817
 msgid "valid (atom expression) expected"
 msgstr "očekáváno platné označení atomu"
 
-#: org/jmol/script/ScriptEvaluator.java:2819
+#: org/jmol/script/ScriptEvaluator.java:2820
 msgid "(atom expression) or integer expected"
 msgstr "očekáváno označení atomu nebo celé číslo"
 
-#: org/jmol/script/ScriptEvaluator.java:2822
+#: org/jmol/script/ScriptEvaluator.java:2823
 msgid "filename expected"
 msgstr "očekáván název souboru"
 
-#: org/jmol/script/ScriptEvaluator.java:2825
+#: org/jmol/script/ScriptEvaluator.java:2826
 msgid "file not found"
 msgstr "soubor nenalezen"
 
-#: org/jmol/script/ScriptEvaluator.java:2828
+#: org/jmol/script/ScriptEvaluator.java:2829
 msgid "incompatible arguments"
 msgstr "neslučitelné argumenty"
 
-#: org/jmol/script/ScriptEvaluator.java:2831
+#: org/jmol/script/ScriptEvaluator.java:2832
 msgid "insufficient arguments"
 msgstr "nedostatečné argumenty"
 
-#: org/jmol/script/ScriptEvaluator.java:2834
+#: org/jmol/script/ScriptEvaluator.java:2835
 msgid "integer expected"
 msgstr "očekáváno celé číslo"
 
-#: org/jmol/script/ScriptEvaluator.java:2837
+#: org/jmol/script/ScriptEvaluator.java:2838
 #, java-format
 msgid "integer out of range ({0} - {1})"
 msgstr "celé číslo mimo interval ({0} - {1})"
 
-#: org/jmol/script/ScriptEvaluator.java:2840
+#: org/jmol/script/ScriptEvaluator.java:2841
 msgid "invalid argument"
 msgstr "neplatný argument"
 
-#: org/jmol/script/ScriptEvaluator.java:2843
+#: org/jmol/script/ScriptEvaluator.java:2844
 msgid "invalid parameter order"
 msgstr "neplatný parametrový příkaz"
 
-#: org/jmol/script/ScriptEvaluator.java:2846
+#: org/jmol/script/ScriptEvaluator.java:2847
 msgid "keyword expected"
 msgstr "očekáváno klíčové slovo"
 
-#: org/jmol/script/ScriptEvaluator.java:2849
+#: org/jmol/script/ScriptEvaluator.java:2850
 msgid "no MO coefficient data available"
 msgstr "MO koeficienty nejsou dostupné"
 
-#: org/jmol/script/ScriptEvaluator.java:2852
+#: org/jmol/script/ScriptEvaluator.java:2853
 #, java-format
 msgid "An MO index from 1 to {0} is required"
 msgstr "MO index je požadován od 1 do {0}"
 
-#: org/jmol/script/ScriptEvaluator.java:2855
+#: org/jmol/script/ScriptEvaluator.java:2856
 msgid "no MO basis/coefficient data available for this frame"
 msgstr "žádné MO báze/koeficienty dostupné pro tento snímek"
 
-#: org/jmol/script/ScriptEvaluator.java:2858
+#: org/jmol/script/ScriptEvaluator.java:2859
 msgid "no MO occupancy data available"
 msgstr "žádná data o obsazení MO dostupná"
 
-#: org/jmol/script/ScriptEvaluator.java:2861
+#: org/jmol/script/ScriptEvaluator.java:2862
 msgid "Only one molecular orbital is available in this file"
 msgstr "Pouze jeden molekulární orbital je dostupný pro tento soubor"
 
-#: org/jmol/script/ScriptEvaluator.java:2864
+#: org/jmol/script/ScriptEvaluator.java:2865
 #, java-format
 msgid "{0} require that only one model be displayed"
 msgstr "{0} vyžaduje zobrazení pouze jednoho modelu"
 
-#: org/jmol/script/ScriptEvaluator.java:2867
+#: org/jmol/script/ScriptEvaluator.java:2868
 #, java-format
 msgid "{0} requires that only one model be loaded"
 msgstr "{0} vyžaduje načtení pouze jediného modelu"
 
-#: org/jmol/script/ScriptEvaluator.java:2870
+#: org/jmol/script/ScriptEvaluator.java:2871
 msgid "No data available"
 msgstr "Žádná data nejsou dostupná"
 
-#: org/jmol/script/ScriptEvaluator.java:2874
+#: org/jmol/script/ScriptEvaluator.java:2875
 msgid ""
 "No partial charges were read from the file; Jmol needs these to render the "
 "MEP data."
@@ -2026,25 +2039,25 @@ msgstr ""
 "Nenačteny žádné parciální náboje ze souboru;  Jmol je potřebuje pro "
 "poskytutí MEP dat."
 
-#: org/jmol/script/ScriptEvaluator.java:2877
+#: org/jmol/script/ScriptEvaluator.java:2878
 msgid "No unit cell"
 msgstr "Žádná elementární buňka"
 
-#: org/jmol/script/ScriptEvaluator.java:2883
+#: org/jmol/script/ScriptEvaluator.java:2884
 #, java-format
 msgid "number must be ({0} or {1})"
 msgstr "číslo musí být ({0} nebo {1})"
 
-#: org/jmol/script/ScriptEvaluator.java:2886
+#: org/jmol/script/ScriptEvaluator.java:2887
 #, java-format
 msgid "decimal number out of range ({0} - {1})"
 msgstr "desetinné číslo neleží v intervalu  ({0} - {1})"
 
-#: org/jmol/script/ScriptEvaluator.java:2889
+#: org/jmol/script/ScriptEvaluator.java:2890
 msgid "object name expected after '$'"
 msgstr "očekáván název objektu po '$'"
 
-#: org/jmol/script/ScriptEvaluator.java:2893
+#: org/jmol/script/ScriptEvaluator.java:2894
 #, java-format
 msgid ""
 "plane expected -- either three points or atom expressions or {0} or {1} or "
@@ -2053,99 +2066,99 @@ msgstr ""
 "očekávána rovina -- buď tři body nebo označení atomů nebo {0} nebo {1} nebo "
 "{2}"
 
-#: org/jmol/script/ScriptEvaluator.java:2896
+#: org/jmol/script/ScriptEvaluator.java:2897
 msgid "property name expected"
 msgstr "očekáván název vlastnosti"
 
-#: org/jmol/script/ScriptEvaluator.java:2899
+#: org/jmol/script/ScriptEvaluator.java:2900
 #, java-format
 msgid "space group {0} was not found."
 msgstr "nenalezená prostorová grupa: {0}"
 
-#: org/jmol/script/ScriptEvaluator.java:2902
+#: org/jmol/script/ScriptEvaluator.java:2903
 msgid "quoted string expected"
 msgstr "očekáván citovaný řetězec"
 
-#: org/jmol/script/ScriptEvaluator.java:2905
+#: org/jmol/script/ScriptEvaluator.java:2906
 msgid "quoted string or identifier expected"
 msgstr "očekáván citovaný řetězec nebo identifikátor"
 
-#: org/jmol/script/ScriptEvaluator.java:2908
+#: org/jmol/script/ScriptEvaluator.java:2909
 msgid "too many rotation points were specified"
 msgstr "příliš mnoho specifikovaných bodů rotace"
 
-#: org/jmol/script/ScriptEvaluator.java:2911
+#: org/jmol/script/ScriptEvaluator.java:2912
 msgid "too many script levels"
 msgstr "příliš mnoho úrovní skriptů"
 
-#: org/jmol/script/ScriptEvaluator.java:2914
+#: org/jmol/script/ScriptEvaluator.java:2915
 msgid "unrecognized atom property"
 msgstr "neznámá vlastnost atomu"
 
-#: org/jmol/script/ScriptEvaluator.java:2917
+#: org/jmol/script/ScriptEvaluator.java:2918
 msgid "unrecognized bond property"
 msgstr "nerozpoznaná vlastnost vazby"
 
-#: org/jmol/script/ScriptEvaluator.java:2920
+#: org/jmol/script/ScriptEvaluator.java:2921
 msgid "unrecognized command"
 msgstr "neznámý příkaz"
 
-#: org/jmol/script/ScriptEvaluator.java:2923
+#: org/jmol/script/ScriptEvaluator.java:2924
 msgid "runtime unrecognized expression"
 msgstr "neznámý výraz (označení) v průběhu programu"
 
-#: org/jmol/script/ScriptEvaluator.java:2926
+#: org/jmol/script/ScriptEvaluator.java:2927
 msgid "unrecognized object"
 msgstr "neznámý objekt"
 
-#: org/jmol/script/ScriptEvaluator.java:2933
+#: org/jmol/script/ScriptEvaluator.java:2934
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
 msgstr "nerozpoznaný {0} parameter v Jmol stavovém skriptu (přesto nastavený)"
 
-#: org/jmol/script/ScriptEvaluator.java:2936
+#: org/jmol/script/ScriptEvaluator.java:2937
 #, java-format
 msgid "unrecognized SHOW parameter --  use {0}"
 msgstr "nerozpoznaný SHOW parametr --  použij {0}"
 
-#: org/jmol/script/ScriptEvaluator.java:2942
+#: org/jmol/script/ScriptEvaluator.java:2943
 #, java-format
 msgid "write what? {0} or {1} \"filename\""
 msgstr "Co zapsat? {0} nebo {1} \"název souboru\""
 
-#: org/jmol/script/ScriptEvaluator.java:7320
+#: org/jmol/script/ScriptEvaluator.java:7321
 #, java-format
 msgid "{0} connections deleted"
 msgstr "vymazaná spojení: {0}"
 
-#: org/jmol/script/ScriptEvaluator.java:7341
+#: org/jmol/script/ScriptEvaluator.java:7342
 #, java-format
 msgid "{0} new bonds; {1} modified"
 msgstr "{0} nových vazeb; {1} změněných"
 
-#: org/jmol/script/ScriptEvaluator.java:8822
+#: org/jmol/script/ScriptEvaluator.java:8823
 #, java-format
 msgid "file {0} created"
 msgstr "soubor {0} vytvořen"
 
-#: org/jmol/script/ScriptEvaluator.java:10343
-#: org/jmol/script/ScriptEvaluator.java:10609
+#: org/jmol/script/ScriptEvaluator.java:10344
+#: org/jmol/script/ScriptEvaluator.java:10610
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "{0} atomů smazáno"
 
-#: org/jmol/script/ScriptEvaluator.java:11237
-#: org/jmol/script/ScriptEvaluator.java:11649
+#: org/jmol/script/ScriptEvaluator.java:11238
+#: org/jmol/script/ScriptEvaluator.java:11650
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} vodíkových můstků"
 
-#: org/jmol/script/ScriptEvaluator.java:11603
+#: org/jmol/script/ScriptEvaluator.java:11604
 #, java-format
 msgid "{0} struts added"
 msgstr "{0} podpěr (struts) přidáno"
 
-#: org/jmol/script/ScriptEvaluator.java:15543
+#: org/jmol/script/ScriptEvaluator.java:15544
 msgid "Note: More than one model is involved in this contact!"
 msgstr ""
 
@@ -2383,19 +2396,19 @@ msgstr "zastav pohyb (vyžaduje {0})"
 msgid "simulate multi-touch using the mouse)"
 msgstr "simulovat multi-touch pomocí myši"
 
-#: org/jmol/viewer/ActionManager.java:1928
+#: org/jmol/viewer/ActionManager.java:1934
 msgid "pick one more atom in order to spin the model around an axis"
 msgstr "vybrat jeden či více atomů k rotaci okolo osy"
 
-#: org/jmol/viewer/ActionManager.java:1929
+#: org/jmol/viewer/ActionManager.java:1935
 msgid "pick two atoms in order to spin the model around an axis"
 msgstr "vybrat dva atomy k rotaci okolo osy"
 
-#: org/jmol/viewer/ActionManager.java:1932
+#: org/jmol/viewer/ActionManager.java:1938
 msgid "pick one more atom in order to display the symmetry relationship"
 msgstr "vyber jeden nebo více atomů pro zobrazení vzájemné symetrie"
 
-#: org/jmol/viewer/ActionManager.java:1933
+#: org/jmol/viewer/ActionManager.java:1939
 msgid ""
 "pick two atoms in order to display the symmetry relationship between them"
 msgstr "vyber dva atomy pro zobrazení jejich vzájemné symetrie"
@@ -2411,24 +2424,24 @@ msgstr "skryté atomy: {0}"
 msgid "{0} atoms selected"
 msgstr "{0} atomů vybráno"
 
-#: org/jmol/viewer/Viewer.java:4684
+#: org/jmol/viewer/Viewer.java:4685
 #, java-format
 msgid "{0} hydrogens added"
 msgstr "{0} vodíky přidány"
 
-#: org/jmol/viewer/Viewer.java:4765
+#: org/jmol/viewer/Viewer.java:4766
 msgid "Drag to move label"
 msgstr "Táhni myší pro přesun popisku"
 
-#: org/jmol/viewer/Viewer.java:8406
+#: org/jmol/viewer/Viewer.java:8405
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "schránka není přístupná -- použijte podepsaný applet"
 
-#: org/jmol/viewer/Viewer.java:9182
+#: org/jmol/viewer/Viewer.java:9181
 msgid "Cannot set log file path."
 msgstr "Nemohu nastavit cestu k log souboru."
 
-#: org/jmol/viewer/Viewer.java:9185
+#: org/jmol/viewer/Viewer.java:9184
 #, java-format
 msgid "Setting log file to {0}"
 msgstr "Nastavuji log soubor na {0}"

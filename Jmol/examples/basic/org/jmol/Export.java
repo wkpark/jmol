@@ -39,7 +39,7 @@ import javax.swing.JTextField;
 
 import org.jmol.api.JmolStatusListener;
 import org.jmol.api.JmolViewer;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.constant.EnumCallback;
 import org.openscience.jmol.app.Jmol;
 
 public class Export {
@@ -71,31 +71,34 @@ class MyStatusListener implements JmolStatusListener {
   // JTextField monitor used to broadcast atom tracking out of Jmol
   public JTextField monitor;
   
-  public boolean notifyEnabled(int type) {
+  public boolean notifyEnabled(EnumCallback type) {
     // indicate here any callbacks you will be working with.
     // some of these flags are not tested. See org.jmol.viewer.StatusManager.java
     switch (type) {
-    case JmolConstants.CALLBACK_ECHO:
-    case JmolConstants.CALLBACK_LOADSTRUCT:
-    case JmolConstants.CALLBACK_MESSAGE:
-    case JmolConstants.CALLBACK_PICK:
+    case ECHO:
+    case LOADSTRUCT:
+    case MESSAGE:
+    case PICK:
       return true;
-    case JmolConstants.CALLBACK_ANIMFRAME:
-    case JmolConstants.CALLBACK_APPLETREADY:
-    case JmolConstants.CALLBACK_ATOMMOVED:
-    case JmolConstants.CALLBACK_ERROR:
-    case JmolConstants.CALLBACK_HOVER:
-    case JmolConstants.CALLBACK_MEASURE:
-    case JmolConstants.CALLBACK_MINIMIZATION:
-    case JmolConstants.CALLBACK_RESIZE:
-    case JmolConstants.CALLBACK_SYNC:
-    case JmolConstants.CALLBACK_SCRIPT:
-      return false;
+    case ANIMFRAME:
+    case APPLETREADY:
+    case ATOMMOVED:
+    case ERROR:
+    case HOVER:
+    case MEASURE:
+    case MINIMIZATION:
+    case RESIZE:
+    case SYNC:
+    case SCRIPT:
+    case CLICK:
+    case EVAL:
+      break;
     }
     return false;
   }
   
-  public void notifyCallback(int type, Object[] data) {
+  @SuppressWarnings("incomplete-switch")
+  public void notifyCallback(EnumCallback type, Object[] data) {
     // this method as of 11.5.23 gets all the callback notifications for
     // any embedding application or for the applet.
     // see org.jmol.applet.Jmol.java and org.jmol.openscience.app.Jmol.java
@@ -110,18 +113,18 @@ class MyStatusListener implements JmolStatusListener {
     // etc. 
     
     switch (type) {
-    case JmolConstants.CALLBACK_ECHO:
+    case ECHO:
       sendConsoleEcho((String) data[1]);
       break;
-    case JmolConstants.CALLBACK_LOADSTRUCT:
+    case LOADSTRUCT:
       String strInfo = (String) data[1];
       System.out.println(strInfo);
       monitor.setText(strInfo);
       break;
-    case JmolConstants.CALLBACK_MESSAGE:
+    case MESSAGE:
       sendConsoleMessage(data == null ? null : (String) data[1]);
       break;
-    case JmolConstants.CALLBACK_PICK:
+    case PICK:
       //for example:
       notifyAtomPicked(((Integer) data[2]).intValue(), (String) data[1]);
       break;

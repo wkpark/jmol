@@ -32,6 +32,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.jmol.constant.EnumAxesMode;
+import org.jmol.constant.EnumCallback;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.ModelSet;
@@ -567,7 +568,7 @@ public class StateManager {
         + ";hoverlabel;hydrogen;languagetranslation;measurementunits;navigationdepth;navigationslab"
         + ";picking;pickingstyle;propertycolorschemeoverload;radius;rgbblue;rgbgreen;rgbred"
         + ";scaleangstromsperinch;selectionhalos;showscript;showselections;solvent;strandcount"
-        + ";spinx;spiny;spinz;spinfps;navx;navy;navz;navfps;" + JmolConstants.getCallbackName(-1)
+        + ";spinx;spiny;spinz;spinfps;navx;navy;navz;navfps;" + EnumCallback.getNameList()
         + ";undo;bondpicking;modelkitmode;allowgestures;allowkeystrokes;allowmultitouch;allowmodelkit"
         + ";").toLowerCase();
 
@@ -672,12 +673,8 @@ public class StateManager {
         useArcBall = g.useArcBall;
       }
 
-      for (int i = 0;;i++) {        
-        String callbackName = JmolConstants.getCallbackName(i);
-        if (callbackName == null)
-          break;
-        resetParameterStringValue(callbackName, g);        
-      }
+      for (EnumCallback item : EnumCallback.values())        
+        resetParameterStringValue(item.getName(), g);        
 
       setParameterValue("historyLevel", 0); //deprecated ? doesn't do anything
 

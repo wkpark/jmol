@@ -98,65 +98,11 @@ final public class JmolConstants {
   
   public static final String SCRIPT_EDITOR_IGNORE = "\1## EDITOR_IGNORE ##";
 
-  public final static int CALLBACK_ANIMFRAME = 0;
-  public final static int CALLBACK_APPLETREADY = 1;
-  public final static int CALLBACK_ATOMMOVED = 2;
-  public final static int CALLBACK_CLICK = 3;
-  public final static int CALLBACK_ECHO = 4;
-  public final static int CALLBACK_ERROR = 5;
-  public final static int CALLBACK_EVAL = 6;
-  public final static int CALLBACK_HOVER = 7;
-  public final static int CALLBACK_LOADSTRUCT = 8;
-  public final static int CALLBACK_MEASURE = 9;
-  public final static int CALLBACK_MESSAGE = 10;
-  public final static int CALLBACK_MINIMIZATION = 11;
-  public final static int CALLBACK_PICK = 12;
-  public final static int CALLBACK_RESIZE = 13;
-  public final static int CALLBACK_SCRIPT = 14;
-  public final static int CALLBACK_SYNC = 15;
-  public final static int CALLBACK_COUNT = 16;
-
   public final static int FILE_STATUS_NOT_LOADED = -1;
   public final static int FILE_STATUS_ZAPPED = 0;
   public final static int FILE_STATUS_MODELSET_CREATED = 3;
   public final static int FILE_STATUS_MODELS_DELETED = 5;
 
-  private final static String[] callbackNames = {
-    "animFrameCallback",
-    "appletReadyCallback",
-    "atomMovedCallback",
-    "clickCallback",
-    "echoCallback",
-    "errorCallback",
-    "evalCallback",
-    "hoverCallback", 
-    "loadStructCallback", 
-    "measureCallback",
-    "messageCallback", 
-    "minimizationCallback",
-    "pickCallback", 
-    "resizeCallback", 
-    "scriptCallback",
-    "syncCallback", 
-  };
-  
-  public static int getCallbackId(String callbackName) {
-    for (int i = 0; i < CALLBACK_COUNT; i++)
-      if (callbackNames[i].equalsIgnoreCase(callbackName)) 
-        return i;
-    return -1;
-  }
-
-  public static String getCallbackName(int i) {
-    if (i < 0) {
-      StringBuffer s = new StringBuffer();
-      for (int c = 0; c < CALLBACK_COUNT; c++)
-        s.append(callbackNames[c].toLowerCase()).append(";");
-      return s.toString();
-    }    
-    return (i >= CALLBACK_COUNT ? null : callbackNames[i]);
-  }
- 
   // unit cell parameters
   
   public final static int INFO_A = 0;

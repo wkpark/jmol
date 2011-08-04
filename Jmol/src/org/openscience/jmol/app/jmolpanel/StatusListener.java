@@ -23,16 +23,19 @@
  */
 package org.openscience.jmol.app.jmolpanel;
 
-import org.jmol.api.*;
+import org.jmol.api.JmolAppConsoleInterface;
+import org.jmol.api.JmolCallbackListener;
+import org.jmol.api.JmolStatusListener;
+import org.jmol.api.JmolViewer;
+import org.jmol.constant.EnumCallback;
 import org.jmol.export.dialog.Dialog;
-import org.jmol.util.*;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.util.Logger;
 import org.openscience.jmol.app.webexport.WebExport;
 
 import java.applet.Applet;
 import java.lang.reflect.Method;
 import java.net.URI;
-import java.util.*;
+import java.util.Map;
 
 class StatusListener implements JmolStatusListener {
 
@@ -71,36 +74,41 @@ class StatusListener implements JmolStatusListener {
   }
   
   // / JmolCallbackListener interface ///
-  public boolean notifyEnabled(int type) {
+  public boolean notifyEnabled(EnumCallback type) {
     switch (type) {
-    case JmolConstants.CALLBACK_ANIMFRAME:
-    case JmolConstants.CALLBACK_ECHO:
-    case JmolConstants.CALLBACK_LOADSTRUCT:
-    case JmolConstants.CALLBACK_MEASURE:
-    case JmolConstants.CALLBACK_MESSAGE:
-    case JmolConstants.CALLBACK_PICK:
-    case JmolConstants.CALLBACK_SCRIPT:
+    case ANIMFRAME:
+    case ECHO:
+    case LOADSTRUCT:
+    case MEASURE:
+    case MESSAGE:
+    case PICK:
+    case SCRIPT:
       return true;
-    case JmolConstants.CALLBACK_CLICK:
-    case JmolConstants.CALLBACK_ERROR:
-    case JmolConstants.CALLBACK_HOVER:
-    case JmolConstants.CALLBACK_MINIMIZATION:
-    case JmolConstants.CALLBACK_RESIZE:
-    case JmolConstants.CALLBACK_SYNC:
+    case EVAL:
+    case ATOMMOVED:
+    case CLICK:
+    case ERROR:
+    case HOVER:
+    case MINIMIZATION:
+    case RESIZE:
+    case SYNC:
+    case APPLETREADY:
       // applet only (but you could change this for your listener)
+      break;
     }
     return false;
   }
 
-  public void notifyCallback(int type, Object[] data) {
+  @SuppressWarnings("incomplete-switch")
+  public void notifyCallback(EnumCallback type, Object[] data) {
     String strInfo = (data == null || data[1] == null ? null : data[1]
         .toString());
     switch (type) {
-    case JmolConstants.CALLBACK_LOADSTRUCT:
+    case LOADSTRUCT:
       notifyFileLoaded(strInfo, (String) data[2], (String) data[3],
           (String) data[4]);
       return;
-    case JmolConstants.CALLBACK_ANIMFRAME:
+    case ANIMFRAME:
       int[] iData = (int[]) data[1];
       int modelIndex = iData[0];
       if (modelIndex <= -2)
@@ -114,16 +122,16 @@ class StatusListener implements JmolStatusListener {
           jmol.frame.setTitle(menuName);
       }
       return;
-    case JmolConstants.CALLBACK_SCRIPT:
+    case SCRIPT:
       int msWalltime = ((Integer) data[3]).intValue();
       if (msWalltime == 0) {
         if (data[2] != null && display.haveDisplay)
           display.status.setStatus(1, (String) data[2]);
       }
       return;
-    case JmolConstants.CALLBACK_ECHO:
+    case ECHO:
       break;
-    case JmolConstants.CALLBACK_MEASURE:
+    case MEASURE:
       String mystatus = (String) data[3];
       if (mystatus.indexOf("Sequence") < 0) {
         if (mystatus.indexOf("Pending") < 0 && display.haveDisplay)
@@ -134,23 +142,23 @@ class StatusListener implements JmolStatusListener {
           return;
       }
       break;
-    case JmolConstants.CALLBACK_MESSAGE:
+    case MESSAGE:
       break;
-    //    case JmolConstants.CALLBACK_CLICK:
+    //    case CLICK:
     // x, y, action, int[] {action}
     // the fourth parameter allows an application to change the action
     //      if (display.haveDisplay)
     //        display.status
     //          .setStatus(1, "(" + data[1] + "," + data[2] + ")");
     //      break;
-    case JmolConstants.CALLBACK_PICK:
+    case PICK:
       notifyAtomPicked(strInfo);
       break;
-    case JmolConstants.CALLBACK_ERROR:
-    case JmolConstants.CALLBACK_HOVER:
-    case JmolConstants.CALLBACK_MINIMIZATION:
-    case JmolConstants.CALLBACK_RESIZE:
-    case JmolConstants.CALLBACK_SYNC:
+    case ERROR:
+    case HOVER:
+    case MINIMIZATION:
+    case RESIZE:
+    case SYNC:
       // applet only (but you could change this for your listener)
       return;
     }

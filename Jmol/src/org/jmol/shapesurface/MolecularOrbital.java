@@ -35,7 +35,6 @@ import javax.vecmath.Point4f;
 
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Escape;
-import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.script.Token;
 import org.jmol.shape.Shape;

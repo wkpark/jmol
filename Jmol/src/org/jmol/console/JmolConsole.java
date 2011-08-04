@@ -28,13 +28,13 @@ import org.jmol.api.JmolCallbackListener;
 import org.jmol.api.JmolFrame;
 import org.jmol.api.JmolScriptEditorInterface;
 import org.jmol.api.JmolViewer;
+import org.jmol.constant.EnumCallback;
 import org.jmol.i18n.GT;
 import org.jmol.script.ScriptCompiler;
 import org.jmol.script.Token;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.FileManager;
-import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 
 import java.awt.Container;
@@ -321,14 +321,27 @@ public abstract class JmolConsole implements JmolCallbackListener, ActionListene
   // Allowing for just the callbacks needed to provide status feedback to the console.
   // For applications that embed Jmol, see the example application Integration.java.
 
-  public boolean notifyEnabled(int type) {
+  public boolean notifyEnabled(EnumCallback type) {
     // See org.jmol.viewer.JmolConstants.java for a complete list
     switch (type) {
-    case JmolConstants.CALLBACK_ECHO:
-    case JmolConstants.CALLBACK_MEASURE:
-    case JmolConstants.CALLBACK_MESSAGE:
-    case JmolConstants.CALLBACK_PICK:
+    case ECHO:
+    case MEASURE:
+    case MESSAGE:
+    case PICK:
       return true;
+    case ANIMFRAME:
+    case APPLETREADY:
+    case ATOMMOVED:
+    case CLICK:
+    case ERROR:
+    case EVAL:
+    case HOVER:
+    case LOADSTRUCT:
+    case MINIMIZATION:
+    case RESIZE:
+    case SCRIPT:
+    case SYNC:
+      break;
     }
     return false;
   }
@@ -336,14 +349,15 @@ public abstract class JmolConsole implements JmolCallbackListener, ActionListene
   abstract public void sendConsoleMessage(String info);
   abstract public void sendConsoleEcho(String info);
   
-  public void notifyCallback(int type, Object[] data) {
+  @SuppressWarnings("incomplete-switch")
+  public void notifyCallback(EnumCallback type, Object[] data) {
     String strInfo = (data == null || data[1] == null ? null : data[1]
         .toString());
     switch (type) {
-    case JmolConstants.CALLBACK_ECHO:
+    case ECHO:
       sendConsoleEcho(strInfo);
       break;
-    case JmolConstants.CALLBACK_MEASURE:
+    case MEASURE:
       String mystatus = (String) data[3];
       if (mystatus.indexOf("Picked") >= 0 || mystatus.indexOf("Sequence") >= 0) // picking mode
         sendConsoleMessage(strInfo);
@@ -351,10 +365,10 @@ public abstract class JmolConsole implements JmolCallbackListener, ActionListene
         sendConsoleEcho(strInfo.substring(strInfo.lastIndexOf(",") + 2, strInfo
             .length() - 1));
       break;
-    case JmolConstants.CALLBACK_MESSAGE:
+    case MESSAGE:
       sendConsoleMessage(data == null ? null : strInfo);
       break;
-    case JmolConstants.CALLBACK_PICK:
+    case PICK:
       sendConsoleMessage(strInfo);
       break;
     }

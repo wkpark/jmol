@@ -26,6 +26,7 @@ package org.jmol.applet;
 
 import org.jmol.api.*;
 import org.jmol.appletwrapper.*;
+import org.jmol.constant.EnumCallback;
 import org.jmol.export.JmolFileDropper;
 import org.jmol.i18n.GT;
 import org.jmol.viewer.JmolConstants;
@@ -148,7 +149,7 @@ public class Jmol implements WrappedApplet {
   boolean haveDocumentAccess;
   boolean loading;
 
-  String[] callbacks = new String[JmolConstants.CALLBACK_COUNT];
+  String[] callbacks = new String[EnumCallback.getCallbackCount()];
 
   String language;
   String htmlName;
@@ -356,10 +357,8 @@ public class Jmol implements WrappedApplet {
 
       viewer.setBooleanProperty("frank", true);
       loading = true;
-      for (int i = 0; i < JmolConstants.CALLBACK_COUNT; i++) {
-        String name = JmolConstants.getCallbackName(i);
-        setValue(name, null);
-      }
+      for (EnumCallback item : EnumCallback.values())
+        setValue(item.getName(), null);
       loading = false;
 
       language = getParameter("language");
@@ -374,16 +373,20 @@ public class Jmol implements WrappedApplet {
 
       boolean haveCallback = false;
       // these are set by viewer.setStringProperty() from setValue
-      for (int i = 0; i < JmolConstants.CALLBACK_COUNT && !haveCallback; i++)
-        haveCallback = (callbacks[i] != null);
+      for (EnumCallback item : EnumCallback.values()) {
+        if(callbacks[item.getId()] != null) {
+          haveCallback = true;
+          break;
+        }
+      }
       if (haveCallback || statusForm != null || statusText != null) {
         if (!mayScript)
           Logger
               .warn("MAYSCRIPT missing -- all applet JavaScript calls disabled");
       }
-      if (callbacks[JmolConstants.CALLBACK_SCRIPT] == null
-          && callbacks[JmolConstants.CALLBACK_ERROR] == null)
-        if (callbacks[JmolConstants.CALLBACK_MESSAGE] != null
+      if (callbacks[EnumCallback.SCRIPT.getId()] == null
+          && callbacks[EnumCallback.ERROR.getId()] == null)
+        if (callbacks[EnumCallback.MESSAGE.getId()] != null
             || statusForm != null || statusText != null) {
           if (doTranslate && (getValue("doTranslate", null) == null)) {
             doTranslate = false;
@@ -859,34 +862,37 @@ public class Jmol implements WrappedApplet {
 
   class MyStatusListener implements JmolStatusListener {
 
-    public boolean notifyEnabled(int type) {
+    public boolean notifyEnabled(EnumCallback type) {
       switch (type) {
-      case JmolConstants.CALLBACK_ANIMFRAME:
-      case JmolConstants.CALLBACK_ECHO:
-      case JmolConstants.CALLBACK_ERROR:
-      case JmolConstants.CALLBACK_EVAL:
-      case JmolConstants.CALLBACK_LOADSTRUCT:
-      case JmolConstants.CALLBACK_MEASURE:
-      case JmolConstants.CALLBACK_MESSAGE:
-      case JmolConstants.CALLBACK_PICK:
-      case JmolConstants.CALLBACK_SYNC:
-      case JmolConstants.CALLBACK_SCRIPT:
+      case ANIMFRAME:
+      case ECHO:
+      case ERROR:
+      case EVAL:
+      case LOADSTRUCT:
+      case MEASURE:
+      case MESSAGE:
+      case PICK:
+      case SYNC:
+      case SCRIPT:
         return true;
-      case JmolConstants.CALLBACK_APPLETREADY:  // Jmol 12.1.48
-      case JmolConstants.CALLBACK_ATOMMOVED:  // Jmol 12.1.48
-      case JmolConstants.CALLBACK_CLICK:
-      case JmolConstants.CALLBACK_HOVER:
-      case JmolConstants.CALLBACK_MINIMIZATION:
-      case JmolConstants.CALLBACK_RESIZE:
+      case APPLETREADY:  // Jmol 12.1.48
+      case ATOMMOVED:  // Jmol 12.1.48
+      case CLICK:
+      case HOVER:
+      case MINIMIZATION:
+      case RESIZE:
+        break;
       }
-      return (callbacks[type] != null);
+      return (callbacks[type.getId()] != null);
     }
 
     private boolean haveNotifiedError;
 
-    public void notifyCallback(int type, Object[] data) {
-
-      String callback = (type < callbacks.length ? callbacks[type] : null);
+    @SuppressWarnings("incomplete-switch")
+    public void notifyCallback(EnumCallback type, Object[] data) {
+      int id = type.getId();
+      
+      String callback = (id < callbacks.length ? callbacks[id] : null);
       boolean doCallback = (callback != null && (data == null || data[0] == null));
       boolean toConsole = false;
       if (data != null)
@@ -897,20 +903,20 @@ public class Jmol implements WrappedApplet {
       //System.out.println("Jmol.java notifyCallback " + type + " " + callback
        //+ " " + strInfo);
       switch (type) {
-      case JmolConstants.CALLBACK_MINIMIZATION:
-      case JmolConstants.CALLBACK_RESIZE:
-      case JmolConstants.CALLBACK_EVAL:
-      case JmolConstants.CALLBACK_HOVER:
-      case JmolConstants.CALLBACK_ERROR:
+      case MINIMIZATION:
+      case RESIZE:
+      case EVAL:
+      case HOVER:
+      case ERROR:
         // just send it
         break;
-      case JmolConstants.CALLBACK_CLICK:
+      case CLICK:
         // x, y, action, int[] {action}
         // the fourth parameter allows an application to change the action
         if ("alert".equals(callback))
           strInfo = "x=" + data[1] + " y=" + data[2] + " action=" + data[3] + " clickCount=" + data[4];
         break;
-      case JmolConstants.CALLBACK_ANIMFRAME:
+      case ANIMFRAME:
         // Note: twos-complement. To get actual frame number, use
         // Math.max(frameNo, -2 - frameNo)
         // -1 means all frames are now displayed
@@ -942,32 +948,32 @@ public class Jmol implements WrappedApplet {
               Integer.valueOf(animationDirection), Integer.valueOf(currentDirection) };
         }
         break;
-      case JmolConstants.CALLBACK_ECHO:
+      case ECHO:
         boolean isPrivate = (data.length == 2);
         boolean isScriptQueued = (isPrivate || ((Integer) data[2]).intValue() == 1);
         if (!doCallback) {
           if (isScriptQueued)
             toConsole = true;
           doCallback = (!isPrivate && 
-              (callback = callbacks[type = JmolConstants.CALLBACK_MESSAGE]) != null);
+              (callback = callbacks[(type = EnumCallback.MESSAGE).getId()]) != null);
         }
         if (!toConsole)
           output(strInfo);
         break;
-      case JmolConstants.CALLBACK_LOADSTRUCT:
+      case LOADSTRUCT:
         String errorMsg = (String) data[4];
         if (errorMsg != null) {
           errorMsg = (errorMsg.indexOf("NOTE:") >= 0 ? "" : GT
               ._("File Error:")) + errorMsg;
           showStatus(errorMsg);
-          notifyCallback(JmolConstants.CALLBACK_MESSAGE, new Object[] { "", errorMsg });
+          notifyCallback(EnumCallback.MESSAGE, new Object[] { "", errorMsg });
           return;
         }
         break;
-      case JmolConstants.CALLBACK_MEASURE:
+      case MEASURE:
         // pending, deleted, or completed
         if (!doCallback)
-          doCallback = ((callback = callbacks[type = JmolConstants.CALLBACK_MESSAGE]) != null);
+          doCallback = ((callback = callbacks[(type = EnumCallback.MESSAGE).getId()]) != null);
         String status = (String) data[3];
         if (status.indexOf("Picked") >= 0 || status.indexOf("Sequence") >= 0) {// picking mode
           showStatus(strInfo); // set picking measure distance
@@ -977,17 +983,17 @@ public class Jmol implements WrappedApplet {
           toConsole = true;
         }
         break;
-      case JmolConstants.CALLBACK_MESSAGE:
+      case MESSAGE:
         toConsole = !doCallback;
         doCallback &= (strInfo != null);
         if (!toConsole)
           output(strInfo);
         break;
-      case JmolConstants.CALLBACK_PICK:
+      case PICK:
         showStatus(strInfo);
         toConsole = true;
         break;
-      case JmolConstants.CALLBACK_SCRIPT:
+      case SCRIPT:
         int msWalltime = ((Integer) data[3]).intValue();
         // general message has msWalltime = 0
         // special messages have msWalltime < 0
@@ -999,12 +1005,12 @@ public class Jmol implements WrappedApplet {
           // termination messsage ONLY if script callback enabled -- not to
           // message queue
           // for compatibility reasons
-          doCallback = ((callback = callbacks[type = JmolConstants.CALLBACK_MESSAGE]) != null);
+          doCallback = ((callback = callbacks[(type = EnumCallback.MESSAGE).getId()]) != null);
         }
         output(strInfo);
         showStatus(strInfo);
         break;
-      case JmolConstants.CALLBACK_SYNC:
+      case SYNC:
         sendScript(strInfo, (String) data[2], true, doCallback);
         return;
       }
@@ -1027,7 +1033,7 @@ public class Jmol implements WrappedApplet {
       } catch (Exception e) {
         if (!haveNotifiedError)
           if (Logger.debugging) {
-            Logger.debug(JmolConstants.getCallbackName(type)
+            Logger.debug(type.getName()
                 + " call error to " + callback + ": " + e);
           }
         haveNotifiedError = true;
@@ -1044,7 +1050,7 @@ public class Jmol implements WrappedApplet {
     }
 
     private String notifySync(String info, String appletName) {
-      String syncCallback = callbacks[JmolConstants.CALLBACK_SYNC];
+      String syncCallback = callbacks[EnumCallback.SYNC.getId()];
       if (!mayScript || syncCallback == null)
         return info;
       try {
@@ -1072,15 +1078,12 @@ public class Jmol implements WrappedApplet {
         consoleMessage(null); // show default message
         return;
       }
-      int id = JmolConstants.getCallbackId(callbackName);
-      if (id >= 0 && (loading || id != JmolConstants.CALLBACK_EVAL)) {
-        callbacks[id] = callbackFunction;
+      EnumCallback callback = EnumCallback.getCallbackId(callbackName);
+      if (callback != null && (loading || callback != EnumCallback.EVAL)) {
+        callbacks[callback.getId()] = callbackFunction;
         return;
       }
-      String s = "";
-      for (int i = 0; i < JmolConstants.CALLBACK_COUNT; i++)
-        s += " " + JmolConstants.getCallbackName(i);
-      consoleMessage("Available callbacks include: " + s);
+      consoleMessage("Available callbacks include: " + EnumCallback.getNameList().replace(';',' ').trim());
     }
 
     @Override
@@ -1108,8 +1111,8 @@ public class Jmol implements WrappedApplet {
               + ", " + jsoDocument);
         return "NO EVAL ALLOWED";
       }
-      if (callbacks[JmolConstants.CALLBACK_EVAL] != null) {
-        notifyCallback(JmolConstants.CALLBACK_EVAL, new Object[] { null,
+      if (callbacks[EnumCallback.EVAL.getId()] != null) {
+        notifyCallback(EnumCallback.EVAL, new Object[] { null,
             strEval });
         return "";
       }
@@ -1234,7 +1237,7 @@ public class Jmol implements WrappedApplet {
     }
 
     private void consoleMessage(String message) {
-      notifyCallback(JmolConstants.CALLBACK_ECHO, new Object[] {"", message });
+      notifyCallback(EnumCallback.ECHO, new Object[] {"", message });
     }
 
     private String sendScript(String script, String appletName, boolean isSync,

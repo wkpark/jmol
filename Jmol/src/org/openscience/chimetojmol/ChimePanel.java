@@ -41,7 +41,7 @@ public class ChimePanel extends JPanel implements ItemListener, ActionListener {
   private List<File> pages;
   private int nDir;
   private int nFiles;
-  private int nControls;
+  //private int nControls;
 
   private Checkbox checkSubs, checkFilenames, checkSigned;
   private boolean doSubdirectories;

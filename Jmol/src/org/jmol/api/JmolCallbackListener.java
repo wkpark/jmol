@@ -24,6 +24,8 @@
 
 package org.jmol.api;
 
+import org.jmol.constant.EnumCallback;
+
 public interface JmolCallbackListener {
 /*
  * These methods specifically provide notification from 
@@ -35,8 +37,8 @@ public interface JmolCallbackListener {
 
   public void setCallbackFunction(String callbackType, String callbackFunction);
   
-  public void notifyCallback(int type, Object[] data);
+  public void notifyCallback(EnumCallback message, Object[] data);
 
-  public boolean notifyEnabled(int callback_pick);
+  public boolean notifyEnabled(EnumCallback type);
 
 }

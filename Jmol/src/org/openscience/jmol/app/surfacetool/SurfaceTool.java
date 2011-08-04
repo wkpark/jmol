@@ -363,10 +363,10 @@ private void updateMeshInfo(Shape[] shapes, int kind){
 
   void updateSlices() {
     for (int i = 0; i < surfaceIDs.size(); i++)
-        sliceObject(surfaceIDs.get(i), surfaceKind.get(i));
+        sliceObject(surfaceIDs.get(i), surfaceKind.get(i).intValue());
   }
 
-  void sliceObject(String objectName, Integer kind) {
+  void sliceObject(String objectName, int kind) {
  //   unnecessary already in ID list, which we carefully update
 //    MeshCollection mc = getIsosurfaces(); 
 //    int iMesh = mc.getIndexFromName(objectName);

@@ -33,10 +33,10 @@ import java.util.Map;
 
 import javax.vecmath.Point3f;
 
-import org.jmol.api.JmolMolecule;
-import org.jmol.api.JmolNode;
-import org.jmol.api.JmolEdge;
 import org.jmol.util.Elements;
+import org.jmol.util.JmolEdge;
+import org.jmol.util.JmolMolecule;
+import org.jmol.util.JmolNode;
 import org.jmol.util.Logger;
 import org.jmol.smiles.SmilesSearch.VTemp;
 
@@ -291,7 +291,7 @@ public class SmilesGenerator {
   private char getBondStereochemistry(JmolEdge bond, JmolNode atomFrom) {
     if (bond == null)
       return '\0';
-    int i = bond.getIndex();
+    int i = bond.index;
     boolean isFirst = (atomFrom == null || bond.getAtomIndex1() == atomFrom
         .getIndex());
     return (bsBondsUp.get(i) ? (isFirst ? '/' : '\\')
@@ -317,7 +317,7 @@ public class SmilesGenerator {
       JmolEdge[] bonds = atom1.getEdges();
       for (int k = 0; k < bonds.length; k++) {
         JmolEdge bond = bonds[k];
-        int index = bond.getIndex();
+        int index = bond.index;
         if (bsDone.get(index))
           continue;
         JmolNode atom2 = bond.getOtherAtom(atom1);
@@ -360,7 +360,7 @@ public class SmilesGenerator {
         if (b0 == null) {
           i0 = 0;
           b0 = edges[i0][0];
-          bsBondsUp.set(b0.getIndex());
+          bsBondsUp.set(b0.index);
         }
         
         // The character '/' or '\\' is assigned based on a
@@ -386,7 +386,7 @@ public class SmilesGenerator {
             JmolEdge b1 = edges[j][jj];
             if (b1 == null || b1 == b0)
               continue;
-            int bi = b1.getIndex();
+            int bi = b1.index;
             JmolNode a1 = b1.getOtherAtom(atom12[j]);
             char c1 = getBondStereochemistry(b1, atom12[j]);
 
@@ -514,7 +514,7 @@ public class SmilesGenerator {
         int n = a.getCovalentBondCount() - a.getCovalentHydrogenCount();
         int order = bond.getCovalentOrder();
         if (order == 1 && n == 1 && i < v.size() - (bond0 == null ? 1 : 0)) {
-          bsBranches.set(bond.getIndex());
+          bsBranches.set(bond.index);
         } else if ((order > 1 || n > nMax)
             && !htRings.containsKey(getRingKey(a.getIndex(), atomIndex))) {
           nMax = (order > 1 ? 1000 + order : n);
@@ -546,7 +546,7 @@ public class SmilesGenerator {
     StringBuffer sMore = new StringBuffer();
     for (int i = 0; i < v.size(); i++) {
       JmolEdge bond = v.get(i);
-      if (!bsBranches.get(bond.getIndex()))
+      if (!bsBranches.get(bond.index))
         continue;
       JmolNode a = bond.getOtherAtom(atom);
       StringBuffer s2 = new StringBuffer();
@@ -599,7 +599,7 @@ public class SmilesGenerator {
         continue;
       JmolNode a = bond.getOtherAtom(atom);
       String s = getRingCache(atomIndex, a.getIndex(), htRings);
-      strBond = SmilesBond.getBondOrderString(bond.getOrder());
+      strBond = SmilesBond.getBondOrderString(bond.order);
       if (!deferStereo) {
         chBond = getBondStereochemistry(bond, atom);
         if (chBond != '\0')

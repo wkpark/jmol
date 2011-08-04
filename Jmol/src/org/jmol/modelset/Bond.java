@@ -25,16 +25,16 @@
 
 package org.jmol.modelset;
 
-import org.jmol.api.JmolEdge;
-import org.jmol.api.JmolNode;
 import org.jmol.g3d.Graphics3D;
 
 import java.util.BitSet;
 
 import org.jmol.util.BitSetUtil;
+import org.jmol.util.JmolEdge;
+import org.jmol.util.JmolNode;
 import org.jmol.viewer.JmolConstants;
 
-public class Bond implements JmolEdge {
+public class Bond extends JmolEdge {
 
   public static class BondSet extends BitSet {
 
@@ -60,7 +60,7 @@ public class Bond implements JmolEdge {
 
   Atom atom1;
   Atom atom2;
-  int order;
+
   short mad;
   public short getMad() {
     return mad;
@@ -71,11 +71,6 @@ public class Bond implements JmolEdge {
   
   public short getColix() {
     return colix;
-  }
-  
-  int index = -1;
-  public int getIndex() {
-    return index;
   }
   
   public Bond(Atom atom1, Atom atom2, int order,
@@ -122,10 +117,12 @@ public class Bond implements JmolEdge {
         + atom2.getInfo() + " " + atom1.distance(atom2);
   }
 
+  @Override
   public boolean isCovalent() {
     return (order & BOND_COVALENT_MASK) != 0;
   }
 
+  @Override
   public boolean isHydrogen() {
     return isHydrogen(order);
   }
@@ -202,10 +199,12 @@ public class Bond implements JmolEdge {
     return atom2;
   }
 
+  @Override
   public int getAtomIndex1() {
     return atom1.index;
   }
   
+  @Override
   public int getAtomIndex2() {
     return atom2.index;
   }
@@ -214,20 +213,17 @@ public class Bond implements JmolEdge {
     return mad / 2000f;
   }
 
-  public int getOrder() {
-    return order;
-  }
-
+  @Override
   public int getCovalentOrder() {
-    return JmolConstants.getCovalentBondOrder(order);
+    return JmolEdge.getCovalentBondOrder(order);
   }
 
   String getOrderName() {
-    return JmolConstants.getBondOrderNameFromOrder(order);
+    return JmolEdge.getBondOrderNameFromOrder(order);
   }
 
   String getOrderNumberAsString() {
-    return JmolConstants.getBondOrderNumberFromOrder(order);
+    return JmolEdge.getBondOrderNumberFromOrder(order);
   }
 
   short getColix1() {
@@ -252,6 +248,7 @@ public class Bond implements JmolEdge {
     return (order & ~BOND_NEW) == bondType;
   }
 
+  @Override
   public JmolNode getOtherAtom(JmolNode thisAtom) {
     return (atom1 == thisAtom ? atom2 : atom2 == thisAtom ? atom1 : null);
   }

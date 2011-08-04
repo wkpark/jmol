@@ -23,10 +23,9 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.api;
+package org.jmol.util;
 
 
-import org.jmol.util.Elements;
 
 import java.util.BitSet;
 import java.util.List;

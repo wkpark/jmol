@@ -26,6 +26,7 @@ package org.jmol.viewer;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
+import org.jmol.constant.EnumAnimationMode;
 import org.jmol.modelset.ModelSet;
 
 import java.util.Hashtable;
@@ -181,7 +182,7 @@ class AnimationManager {
     currentDirection = 1;
     setAnimationDirection(1);
     setAnimationFps(10);
-    setAnimationReplayMode(0, 0, 0);
+    setAnimationReplayMode(EnumAnimationMode.ONCE, 0, 0);
     initializePointers(0);
   }
   
@@ -195,7 +196,7 @@ class AnimationManager {
     info.put("displayModelNumber", viewer.getModelNumberDotted(currentModelIndex));
     info.put("displayModelName", (currentModelIndex >=0 ? viewer.getModelName(currentModelIndex) : ""));
     info.put("animationFps", Integer.valueOf(animationFps));
-    info.put("animationReplayMode", getAnimationModeName());
+    info.put("animationReplayMode", animationReplayMode.getName());
     info.put("firstFrameDelay", new Float(firstFrameDelay));
     info.put("lastFrameDelay", new Float(lastFrameDelay));
     info.put("animationOn", Boolean.valueOf(animationOn));
@@ -230,7 +231,7 @@ class AnimationManager {
     StateManager.appendCmd(commands, 
         "animation DIRECTION " + (animationDirection == 1 ? "+1" : "-1"));
     StateManager.appendCmd(commands, "animation FPS " + animationFps);
-    StateManager.appendCmd(commands, "animation MODE " + getAnimationModeName()
+    StateManager.appendCmd(commands, "animation MODE " + animationReplayMode.getName()
         + " " + firstFrameDelay + " " + lastFrameDelay);
     StateManager.appendCmd(commands, "frame " + viewer.getModelNumberDotted(currentModelIndex));
     StateManager.appendCmd(commands, "animation "
@@ -261,20 +262,17 @@ class AnimationManager {
   // 1 = loop
   // 2 = palindrome
   
-  int animationReplayMode = 0;
+  EnumAnimationMode animationReplayMode = EnumAnimationMode.ONCE;
   float firstFrameDelay, lastFrameDelay;
   int firstFrameDelayMs, lastFrameDelayMs;
-  void setAnimationReplayMode(int animationReplayMode,
+  void setAnimationReplayMode(EnumAnimationMode animationReplayMode,
                                      float firstFrameDelay,
                                      float lastFrameDelay) {
     this.firstFrameDelay = firstFrameDelay > 0 ? firstFrameDelay : 0;
     firstFrameDelayMs = (int)(this.firstFrameDelay * 1000);
     this.lastFrameDelay = lastFrameDelay > 0 ? lastFrameDelay : 0;
     lastFrameDelayMs = (int)(this.lastFrameDelay * 1000);
-    if (animationReplayMode >= JmolConstants.ANIMATION_ONCE && animationReplayMode <= JmolConstants.ANIMATION_PALINDROME)
-      this.animationReplayMode = animationReplayMode;
-    else
-      Logger.error("invalid animationReplayMode:" + animationReplayMode);
+    this.animationReplayMode = animationReplayMode;
   }
 
   void setAnimationRange(int framePointer, int framePointer2) {
@@ -382,13 +380,13 @@ class AnimationManager {
         && modelIndexNext < lastModelIndex);    
     if (isDone) {
       switch (animationReplayMode) {
-      case JmolConstants.ANIMATION_ONCE:
+      case ONCE:
         return false;
-      case JmolConstants.ANIMATION_LOOP:
+      case LOOP:
         modelIndexNext = (animationDirection == currentDirection ? firstModelIndex
             : lastModelIndex);
         break;
-      case JmolConstants.ANIMATION_PALINDROME:
+      case PALINDROME:
         currentDirection = -currentDirection;
         modelIndexNext -= 2 * frameStep;
       }
@@ -401,17 +399,6 @@ class AnimationManager {
     return true;
   }
   
-  String getAnimationModeName() {
-    switch (animationReplayMode) {
-    case JmolConstants.ANIMATION_LOOP:
-      return "LOOP";
-    case JmolConstants.ANIMATION_PALINDROME:
-      return "PALINDROME";
-    default:
-      return "ONCE";
-    }
-  }
-
   class AnimationThread extends Thread {
     final int framePointer;
     final int framePointer2;

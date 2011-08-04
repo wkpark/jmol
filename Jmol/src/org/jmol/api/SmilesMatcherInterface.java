@@ -2,6 +2,8 @@ package org.jmol.api;
 
 import java.util.BitSet;
 
+import org.jmol.util.JmolNode;
+
 public interface SmilesMatcherInterface {
 
   public abstract String getLastException();

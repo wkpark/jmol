@@ -30,13 +30,13 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
-import org.jmol.api.JmolEdge;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.HBond;
 import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.Polymer;
 import org.jmol.script.Token;
+import org.jmol.util.JmolEdge;
 import org.jmol.util.Measure;
 import org.jmol.util.OutputStringBuffer;
 import org.jmol.viewer.Viewer;

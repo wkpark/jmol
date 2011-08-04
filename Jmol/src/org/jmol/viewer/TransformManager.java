@@ -32,6 +32,7 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.AxisAngle4f;
 
+import org.jmol.constant.EnumStereoMode;
 import org.jmol.g3d.Text3D;
 import org.jmol.script.Token;
 import org.jmol.util.Escape;
@@ -188,10 +189,9 @@ abstract class TransformManager {
     
     
     StateManager.appendCmd(commands, getMoveToText(0, false));
-    if (stereoMode != JmolConstants.STEREO_NONE)
+    if (stereoMode != EnumStereoMode.NONE)
       StateManager.appendCmd(commands, "stereo "
-          + (stereoColors == null ? 
-              JmolConstants.getStereoModeName(stereoMode)
+          + (stereoColors == null ? stereoMode.getName()
               : Escape.escapeColor(stereoColors[0])
                   + " " + Escape.escapeColor(stereoColors[1]))
           + " " + stereoDegrees);
@@ -2518,15 +2518,15 @@ abstract class TransformManager {
   // stereo support
   ////////////////////////////////////////////////////////////////
 
-  int stereoMode;
+  EnumStereoMode stereoMode = EnumStereoMode.NONE;
   int[] stereoColors;
 
   void setStereoMode(int[] twoColors) {
-    stereoMode = JmolConstants.STEREO_CUSTOM;
+    stereoMode = EnumStereoMode.CUSTOM;
     stereoColors = twoColors;
   }
 
-  void setStereoMode(int stereoMode) {
+  void setStereoMode(EnumStereoMode stereoMode) {
     stereoColors = null;
     this.stereoMode = stereoMode;
   }

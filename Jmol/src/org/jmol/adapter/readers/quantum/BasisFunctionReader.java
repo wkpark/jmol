@@ -151,10 +151,8 @@ abstract class BasisFunctionReader extends AtomSetCollectionReader {
     // we need an array that reads
     //                    [4     0     0     0    -4]
     // meaning add that number to the pointer for this coef.
-    if (dfCoefMaps == null) {
-      dfCoefMaps = new int[][] {new int[1], new int[3], new int[4],
-          new int[5], new int[6], new int[7], new int[10]};
-    }
+    if (dfCoefMaps == null)
+      dfCoefMaps = JmolAdapter.getNewDfCoefMap();
     String[] tokens = getTokens(fileList);
     boolean isOK = true;
     for (int i = 0; i < dfCoefMaps[shellType].length && isOK; i++) {

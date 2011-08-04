@@ -25,8 +25,8 @@ package org.jmol.quantum;
 
 import org.jmol.api.QuantumCalculationInterface;
 import org.jmol.api.VolumeDataInterface;
+import org.jmol.constant.EnumQuantumShell;
 import org.jmol.util.Logger;
-import org.jmol.viewer.JmolConstants;
 
 import javax.vecmath.Point3f;
 
@@ -139,7 +139,7 @@ public class MOCalculation extends QuantumCalculation implements
     havePoints = (points != null);
     this.calculationType = calculationType;
     this.firstAtomOffset = firstAtomOffset;
-    this.shells = shells;
+    setShells(shells);
     this.gaussians = gaussians;
     if (dfCoefMaps != null)
       this.dfCoefMaps = dfCoefMaps;
@@ -160,6 +160,17 @@ public class MOCalculation extends QuantumCalculation implements
     return (slaters != null || checkCalculationType());
   }  
   
+  private EnumQuantumShell[] shellTypes;
+
+  private void setShells(List<int[]> shells) {
+    this.shells = shells;
+    if (shells == null)
+      return;
+    shellTypes = new EnumQuantumShell[shells.size()];
+    for (int i = shells.size(); --i >= 0; )
+      shellTypes[i] = EnumQuantumShell.getItem(shells.get(i)[1]);
+  }
+
   @Override
   protected void initialize(int nX, int nY, int nZ, Point3f[] points) {
     super.initialize(nX, nY, nZ, points);
@@ -244,13 +255,13 @@ public class MOCalculation extends QuantumCalculation implements
 
   private int nGaussians;
   private boolean doShowShellType;
-  private int basisType;
+  private EnumQuantumShell basisType;
   
   private void processShell(int iShell) {
     int lastAtom = atomIndex;
     int[] shell = shells.get(iShell);
     atomIndex = shell[0] + firstAtomOffset;
-    basisType = shell[1];
+    basisType = shellTypes[iShell];
     gaussianPtr = shell[2];
     nGaussians = shell[3];
     doShowShellType = doDebug;
@@ -261,29 +272,29 @@ public class MOCalculation extends QuantumCalculation implements
     if (havePoints)
       setMinMax(-1);
     switch (basisType) {
-    case JmolConstants.SHELL_S:
+    case S:
       addDataS();
       break;
-    case JmolConstants.SHELL_P:
+    case P:
       addDataP();
       break;
-    case JmolConstants.SHELL_SP:
+    case SP:
       addDataSP();
       break;
-    case JmolConstants.SHELL_D_SPHERICAL:
+    case D_SPHERICAL:
       addData5D();
       break;
-    case JmolConstants.SHELL_D_CARTESIAN:
+    case D_CARTESIAN:
         addData6D();
       break;
-    case JmolConstants.SHELL_F_SPHERICAL:
+    case F_SPHERICAL:
       addData7F();
       break;
-    case JmolConstants.SHELL_F_CARTESIAN:
+    case F_CARTESIAN:
         addData10F();
       break;
     default:
-      Logger.warn(" Unsupported basis type for atomno=" + (atomIndex + 1) + ": " + basisType);
+      Logger.warn(" Unsupported basis type for atomno=" + (atomIndex + 1) + ": " + basisType.tag);
       break;
     }
   }
@@ -333,7 +344,7 @@ public class MOCalculation extends QuantumCalculation implements
   
   private boolean setCoeffs() {
     boolean isOK = false;
-    int mapType = basisType;
+    int mapType = basisType.id;
     map = dfCoefMaps[mapType];
     if (thisAtom == null) {
       moCoeff += map.length;
@@ -1199,7 +1210,7 @@ public class MOCalculation extends QuantumCalculation implements
   private void dumpInfo(int shell) {
     if (doShowShellType) {
       Logger.debug("\n\t\t\tprocessShell: " + shell + " type="
-          + JmolConstants.getQuantumShellTag(shell) + " nGaussians="
+          + EnumQuantumShell.getQuantumShellTag(shell) + " nGaussians="
           + nGaussians + " atom=" + atomIndex);
       doShowShellType = false;
     }
@@ -1210,13 +1221,30 @@ public class MOCalculation extends QuantumCalculation implements
         Logger.debug("\t\t\tGaussian " + (ig + 1) + " alpha=" + alpha + " c="
             + c1);
       }
-    String[] so = JmolConstants.getShellOrder(shell);
+    String[] so = getShellOrder(shell);
     for (int i = 0; i < so.length; i++) {
       double c = coeffs[i];
         Logger.debug("MO coeff " + (so == null ? "?" + i : so[i]) + " "
             + (map[i] + moCoeff - map.length + i + 1) + "\t" + c + "\t" + thisAtom.atom);
     }
   }
+  
+  private final static String[][] shellOrder = { 
+    {"S"},
+    {"X", "Y", "Z"},
+    {"S", "X", "Y", "Z"},
+    {"d0/z2", "d1+/xz", "d1-/yz", "d2+/x2-y2", "d2-/xy"},
+    {"XX", "YY", "ZZ", "XY", "XZ", "YZ"},
+    {"f0/2z3-3x2z-3y2z", "f1+/4xz2-x3-xy2", "f1-/4yz2-x2y-y3", 
+      "f2+/x2z-y2z", "f2-/xyz", "f3+/x3-3xy2", "f3-/3x2y-y3"},
+    {"XXX", "YYY", "ZZZ", "XYY", "XXY", "XXZ", "XZZ", "YZZ", "YYZ", "XYZ"},
+  };
+
+  final private static String[] getShellOrder(int i) {
+    return (i < 0 || i > shellOrder.length ? null : shellOrder[i]);
+  }
+  
+
 
   float integration = 0;
 

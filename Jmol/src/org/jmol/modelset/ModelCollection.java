@@ -43,8 +43,6 @@ import org.jmol.api.AtomIndexIterator;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolBioResolver;
-import org.jmol.api.JmolEdge;
-import org.jmol.api.JmolMolecule;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.RadiusData;
@@ -56,6 +54,8 @@ import org.jmol.util.Escape;
 
 import org.jmol.util.BoxInfo;
 import org.jmol.util.Elements;
+import org.jmol.util.JmolEdge;
+import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
 import org.jmol.util.OutputStringBuffer;
 import org.jmol.util.Parser;
@@ -3607,7 +3607,7 @@ abstract public class ModelCollection extends BondCollection {
     getAtomIdentityInfo(atom2.index, infoB);
     info.put("atom1",infoA);
     info.put("atom2",infoB);
-    info.put("order", Float.valueOf(JmolConstants.getBondOrderNumberFromOrder(bonds[i].order)));
+    info.put("order", Float.valueOf(JmolEdge.getBondOrderNumberFromOrder(bonds[i].order)));
     info.put("radius", Float.valueOf((float) (bond.mad/2000.)));
     info.put("length_Ang", Float.valueOf(atom1.distance(atom2)));
     info.put("visible", Boolean.valueOf(bond.shapeVisibilityFlags != 0));
@@ -4156,7 +4156,7 @@ abstract public class ModelCollection extends BondCollection {
         Atom a2 = bond.atom2;
         if (!bsAtoms.get(a1.index) || !bsAtoms.get(a2.index))
           continue;
-        String order = JmolConstants.getCmlOrder(bond.order);
+        String order = JmolEdge.getCmlBondOrder(bond.order);
         if (order == null)
           continue;
         XmlUtil.appendTag(sb, "bond/", new String[] { 

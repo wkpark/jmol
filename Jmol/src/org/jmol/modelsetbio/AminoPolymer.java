@@ -23,7 +23,6 @@
  */
 package org.jmol.modelsetbio;
 
-import org.jmol.api.JmolEdge;
 import org.jmol.i18n.GT;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
@@ -33,6 +32,7 @@ import org.jmol.modelset.Polymer;
 import org.jmol.script.Token;
 //import org.jmol.util.Escape;
 import org.jmol.util.Escape;
+import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.TextFormat;

@@ -27,6 +27,8 @@ package org.jmol.modelset;
 
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
+import org.jmol.util.JmolEdge;
+import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.Quaternion;
@@ -37,8 +39,6 @@ import org.jmol.modelset.Bond.BondSet;
 import org.jmol.script.Token;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
-import org.jmol.api.JmolEdge;
-import org.jmol.api.JmolMolecule;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.shape.Shape;
@@ -564,7 +564,7 @@ import javax.vecmath.Vector3f;
                 .append('\t').append(bond.order & ~JmolEdge.BOND_NEW).append(
                     '\t').append(bond.mad / 1000f).append('\t').append(
                     bond.getEnergy()).append('\t').append(
-                    JmolConstants.getBondOrderNameFromOrder(bond.order))
+                    JmolEdge.getBondOrderNameFromOrder(bond.order))
                 .append(";\n");
           }
       if (sb.length() > 0)

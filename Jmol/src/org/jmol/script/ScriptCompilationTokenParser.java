@@ -27,11 +27,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
-import org.jmol.api.JmolEdge;
 import org.jmol.i18n.GT;
 
 import javax.vecmath.Point3f;
@@ -828,7 +828,7 @@ abstract class ScriptCompilationTokenParser {
         if (!addNextTokenIf(Token.comma))
           break;
         String strOrder = (String) getToken().value;
-        int intType = JmolConstants.getBondOrderFromString(strOrder);        if (intType == JmolEdge.BOND_ORDER_NULL) {
+        int intType = JmolEdge.getBondOrderFromString(strOrder);        if (intType == JmolEdge.BOND_ORDER_NULL) {
           returnToken();
         } else {
           addTokenToPostfix(Token.string, strOrder);

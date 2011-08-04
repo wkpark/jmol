@@ -41,12 +41,12 @@ import org.jmol.modelset.Group;
 import org.jmol.modelset.ModelLoader;
 import org.jmol.modelset.ModelSet;
 import org.jmol.modelset.Polymer;
+import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolBioResolver;
-import org.jmol.api.JmolEdge;
 
 public final class Resolver implements JmolBioResolver {
 
@@ -473,7 +473,7 @@ public final class Resolver implements JmolBioResolver {
       // so this could be RSO4H or RPO3H2 or RCO2H
       Bond[] bonds1 = atom1.getBonds();
       for (int j = 0; j < bonds1.length; j++) {
-        if (bonds1[j].getOrder() == 2) {
+        if (bonds1[j].order == 2) {
           Atom atomO = bonds1[j].getOtherAtom(atom1);
           if (atomO.getElementNumber() == 8) {
             bsAddedHydrogens.set(atomH.index);
@@ -558,7 +558,7 @@ public final class Resolver implements JmolBioResolver {
           && ((value = htKeysBad.get(a2.getGroup3(false) + ":" + a2.getAtomName())) == null))
         continue;
       bonds[i].setOrder(Integer.valueOf(value).intValue());
-      Logger.info("assigning order " + bonds[i].getOrder() + " to bond " + bonds[i]);
+      Logger.info("assigning order " + bonds[i].order + " to bond " + bonds[i]);
     }
   }
 

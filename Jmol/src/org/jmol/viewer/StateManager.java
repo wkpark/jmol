@@ -33,6 +33,7 @@ import java.util.Map;
 
 import org.jmol.constant.EnumAxesMode;
 import org.jmol.constant.EnumCallback;
+import org.jmol.constant.EnumStereoMode;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.ModelSet;
@@ -423,7 +424,7 @@ public class StateManager {
       for (int i = bondCount; --i >= 0;) {
         Bond b = bonds[i];
         connections[i] = new Connection(b.getAtomIndex1(), b.getAtomIndex2(), b
-            .getMad(), b.getColix(), b.getOrder(), b.getEnergy(), b.getShapeVisibilityFlags());
+            .getMad(), b.getColix(), b.order, b.getEnergy(), b.getShapeVisibilityFlags());
       }
     }
 
@@ -724,7 +725,7 @@ public class StateManager {
       setParameterValue("spinY", TransformManager.DEFAULT_SPIN_Y);
       setParameterValue("spinZ", 0);                 // maintained by TransformManager
       setParameterValue("spinFps", TransformManager.DEFAULT_SPIN_FPS);
-      setParameterValue("stereoDegrees", JmolConstants.DEFAULT_STEREO_DEGREES); 
+      setParameterValue("stereoDegrees", EnumStereoMode.DEFAULT_STEREO_DEGREES); 
       setParameterValue("stateversion", 0); // only set by a saved state being recalled
       setParameterValue("windowCentered", true); // maintained by TransformManager
       setParameterValue("zoomEnabled", true);    // maintained by TransformManager

@@ -48,7 +48,9 @@ import org.jmol.api.*;
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.AtomDataServer;
 import org.jmol.atomdata.RadiusData;
+import org.jmol.constant.EnumAnimationMode;
 import org.jmol.constant.EnumAxesMode;
+import org.jmol.constant.EnumStereoMode;
 import org.jmol.g3d.*;
 import org.jmol.util.Base64;
 import org.jmol.util.BitSetUtil;
@@ -58,6 +60,7 @@ import org.jmol.util.ColorEncoder;
 import org.jmol.util.CommandHistory;
 import org.jmol.util.Elements;
 import org.jmol.util.Escape;
+import org.jmol.util.JmolMolecule;
 import org.jmol.util.JpegEncoder;
 import org.jmol.util.Logger;
 import org.jmol.util.OutputStringBuffer;
@@ -3649,18 +3652,15 @@ private void zap(String msg) {
     return animationManager.animationFps;
   }
 
-  public void setAnimationReplayMode(int replay, float firstFrameDelay,
+  public void setAnimationReplayMode(EnumAnimationMode replayMode, float firstFrameDelay,
                                      float lastFrameDelay) {
     // Eval
 
-    // 0 means once
-    // 1 means loop
-    // 2 means palindrome
-    animationManager.setAnimationReplayMode(replay, firstFrameDelay,
+    animationManager.setAnimationReplayMode(replayMode, firstFrameDelay,
         lastFrameDelay);
   }
 
-  int getAnimationReplayMode() {
+  EnumAnimationMode getAnimationReplayMode() {
     return animationManager.animationReplayMode;
   }
 
@@ -4087,7 +4087,8 @@ private void zap(String msg) {
     }
   }
 
-  private Image getStereoImage(int stereoMode) {
+  @SuppressWarnings("incomplete-switch")
+  private Image getStereoImage(EnumStereoMode stereoMode) {
     g3d.beginRendering(transformManager.getStereoRotationMatrix(true));
     render();
     g3d.endRendering();
@@ -4096,17 +4097,18 @@ private void zap(String msg) {
     render();
     g3d.endRendering();
     switch (stereoMode) {
-    case JmolConstants.STEREO_REDCYAN:
+    case REDCYAN:
       g3d.applyCyanAnaglyph();
       break;
-    case JmolConstants.STEREO_CUSTOM:
+    case CUSTOM:
       g3d.applyCustomAnaglyph(transformManager.stereoColors);
       break;
-    case JmolConstants.STEREO_REDBLUE:
+    case REDBLUE:
       g3d.applyBlueAnaglyph();
       break;
-    default:
+    case REDGREEN:
       g3d.applyGreenAnaglyph();
+      break;
     }
     return g3d.getScreenImage();
   }
@@ -4125,8 +4127,8 @@ private void zap(String msg) {
   @Override
   public Image getScreenImage(Graphics g) {
     boolean mergeImages = (g == null && isStereoDouble());
-    Image image = (transformManager.stereoMode <= JmolConstants.STEREO_DOUBLE ? getImage(isStereoDouble())
-        : getStereoImage(transformManager.stereoMode));
+    Image image = (transformManager.stereoMode.isBiColor() ?
+        getStereoImage(transformManager.stereoMode) :  getImage(isStereoDouble()));
     Image image1 = null;
     if (mergeImages) {
       image1 = new BufferedImage(dimScreen.width << 1, dimScreen.height,
@@ -7086,7 +7088,7 @@ private void zap(String msg) {
   private void setTransformManagerDefaults() {
     transformManager.setCameraDepthPercent(global.cameraDepth);
     transformManager.setPerspectiveDepth(global.perspectiveDepth);
-    transformManager.setStereoDegrees(JmolConstants.DEFAULT_STEREO_DEGREES);
+    transformManager.setStereoDegrees(EnumStereoMode.DEFAULT_STEREO_DEGREES);
     transformManager.setVisualRange(global.visualRange);
     transformManager.setSpinOn(false);
     transformManager.setVibrationPeriod(0);
@@ -7582,10 +7584,10 @@ private void zap(String msg) {
   // stereo support
   // //////////////////////////////////////////////////////////////
 
-  public void setStereoMode(int[] twoColors, int stereoMode, float degrees) {
+  public void setStereoMode(int[] twoColors, EnumStereoMode stereoMode, float degrees) {
     setFloatProperty("stereoDegrees", degrees);
     setBooleanProperty("greyscaleRendering",
-        stereoMode > JmolConstants.STEREO_DOUBLE);
+        stereoMode.isBiColor());
     if (twoColors != null)
       transformManager.setStereoMode(twoColors);
     else
@@ -7593,7 +7595,7 @@ private void zap(String msg) {
   }
 
   boolean isStereoDouble() {
-    return transformManager.stereoMode == JmolConstants.STEREO_DOUBLE;
+    return transformManager.stereoMode == EnumStereoMode.DOUBLE;
   }
 
   // //////////////////////////////////////////////////////////////
@@ -8597,7 +8599,7 @@ private void zap(String msg) {
       statusManager.syncSend(TF ? SYNC_GRAPHICS_MESSAGE
           : SYNC_NO_GRAPHICS_MESSAGE, "*");
       if (Float.isNaN(transformManager.stereoDegrees))
-        setFloatProperty("stereoDegrees", JmolConstants.DEFAULT_STEREO_DEGREES);
+        setFloatProperty("stereoDegrees", EnumStereoMode.DEFAULT_STEREO_DEGREES);
       if (TF) {
         setBooleanProperty("_syncMouse", false);
         setBooleanProperty("_syncScript", false);

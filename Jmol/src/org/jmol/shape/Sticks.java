@@ -27,6 +27,7 @@ package org.jmol.shape;
 
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
+import org.jmol.util.JmolEdge;
 import org.jmol.util.Point3fi;
 import org.jmol.viewer.JmolConstants;
 
@@ -37,7 +38,6 @@ import java.util.Map;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
-import org.jmol.api.JmolEdge;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
@@ -140,7 +140,7 @@ public class Sticks extends Shape {
               bond.setColix(setColix(colix, pid, bond));
               bond.setPaletteID(pid);
           } else {
-            bond.setColix(Graphics3D.getColix(JmolConstants.getArgbHbondType(bond.getOrder())));
+            bond.setColix(Graphics3D.getColix(JmolEdge.getArgbHbondType(bond.order)));
           }
         }
         return;
@@ -222,9 +222,9 @@ public class Sticks extends Shape {
       for (int i = i0; i >= 0; i = (reportAll ? i - 1 : bsOrderSet
           .nextSetBit(i + 1))) {
         Bond bond = bonds[i];
-        if (reportAll || (bond.getOrder() & JmolEdge.BOND_NEW) == 0)
+        if (reportAll || (bond.order & JmolEdge.BOND_NEW) == 0)
           setStateInfo(temp, i, "bondOrder "
-              + JmolConstants.getBondOrderNameFromOrder(bond.getOrder()));
+              + JmolEdge.getBondOrderNameFromOrder(bond.order));
       }
     }
     if (bsColixSet != null)
@@ -250,7 +250,7 @@ public class Sticks extends Shape {
     Bond bond = findPickedBond(x, y, bsVisible, pt);
     if (bond == null)
       return false;
-    viewer.highlightBond(bond.getIndex(), true);
+    viewer.highlightBond(bond.index, true);
     return true;
   }
   
@@ -262,7 +262,7 @@ public class Sticks extends Shape {
     Bond bond = findPickedBond(x, y, bsVisible, pt);
     if (bond == null)
       return null;
-    pt.index = bond.getIndex();
+    pt.index = bond.index;
     viewer.setStatusAtomPicked(-3, "[\"bond\",\"" + bond.getIdentity() + "\"," + pt.x + "," + pt.y + "," + pt.z + "]");
     return pt;
   }

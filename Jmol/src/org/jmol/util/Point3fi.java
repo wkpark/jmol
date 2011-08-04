@@ -60,33 +60,4 @@ public class Point3fi extends Point3f {
     super(x, y, z);
   }
 
-  /*
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if ((obj == null) || (obj.getClass() != this.getClass())) {
-      return false;
-    }
-    Point3fi other = (Point3fi) obj;
-    if (modelIndex != other.modelIndex
-        || screenX != other.screenX 
-        || screenY != other.screenY 
-        || screenZ != other.screenZ)
-      return false;
-    return super.equals(other);
-  }
-  */
-  /* (non-Javadoc)
-   * @see javax.vecmath.Tuple3f#hashCode()
-   */
-  /*
-  public int hashCode() {
-    int hash = super.hashCode();
-    hash = 31 * hash + screenX;
-    hash = 31 * hash + screenY;
-    hash = 31 * hash + screenZ;
-    return hash;
-  }
-  */
 }

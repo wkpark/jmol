@@ -32,8 +32,10 @@ import java.util.Map;
 
 import javax.vecmath.Point3f;
 
+import org.jmol.constant.EnumQuantumShell;
 import org.jmol.modelset.Group;
 import org.jmol.util.Elements;
+import org.jmol.util.JmolEdge;
 import org.jmol.viewer.JmolConstants;
 
 /****************************************************************
@@ -73,15 +75,18 @@ public abstract class JmolAdapter {
   public final static short ORDER_PARTIAL32       = JmolEdge.BOND_PARTIAL32;
   public final static short ORDER_UNSPECIFIED     = JmolEdge.BOND_ORDER_UNSPECIFIED;
   
-  public final static int        SHELL_S           = JmolConstants.SHELL_S;
-  public final static int        SHELL_P           = JmolConstants.SHELL_P;
-  public final static int        SHELL_SP          = JmolConstants.SHELL_SP;
-  public final static int        SHELL_L           = JmolConstants.SHELL_L;
-  public final static int        SHELL_D_SPHERICAL = JmolConstants.SHELL_D_SPHERICAL;
-  public final static int        SHELL_D_CARTESIAN = JmolConstants.SHELL_D_CARTESIAN;
-  public final static int        SHELL_F_SPHERICAL = JmolConstants.SHELL_F_SPHERICAL;
-  public final static int        SHELL_F_CARTESIAN = JmolConstants.SHELL_F_CARTESIAN;
-  public static final String SUPPORTED_BASIS_FUNCTIONS = JmolConstants.SUPPORTED_BASIS_FUNCTIONS;
+  public final static EnumQuantumShell getShellEnumeration(int i) { return EnumQuantumShell.getItem(i); }
+  public final static int[][] getNewDfCoefMap() { return EnumQuantumShell.getNewDfCoefMap(); }
+  // We need the shell ids only because we are storing these in the (int) shell[1] spot
+  public final static int        SHELL_S           = EnumQuantumShell.S.id;
+  public final static int        SHELL_P           = EnumQuantumShell.P.id;
+  public final static int        SHELL_SP          = EnumQuantumShell.SP.id;
+  public final static int        SHELL_L           = EnumQuantumShell.SP.id;
+  public final static int        SHELL_D_SPHERICAL = EnumQuantumShell.D_SPHERICAL.id;
+  public final static int        SHELL_D_CARTESIAN = EnumQuantumShell.D_CARTESIAN.id;
+  public final static int        SHELL_F_SPHERICAL = EnumQuantumShell.F_SPHERICAL.id;
+  public final static int        SHELL_F_CARTESIAN = EnumQuantumShell.F_CARTESIAN.id;
+  public static final String SUPPORTED_BASIS_FUNCTIONS = EnumQuantumShell.SUPPORTED_BASIS_FUNCTIONS;
   
   public static String getElementSymbol(int elementNumber) {
     return Elements.elementSymbolFromNumber(elementNumber);
@@ -100,11 +105,11 @@ public abstract class JmolAdapter {
   }
   
   public static int getQuantumShellTagID(String tag) {
-    return JmolConstants.getQuantumShellTagID(tag);
+    return EnumQuantumShell.getQuantumShellTagID(tag);
   }
                                            
   public static int getQuantumShellTagIDSpherical(String tag) {
-    return JmolConstants.getQuantumShellTagIDSpherical(tag);
+    return EnumQuantumShell.getQuantumShellTagIDSpherical(tag);
   }
   
   final public static short lookupGroupID(String group3) {

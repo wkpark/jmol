@@ -29,10 +29,10 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
-import org.jmol.api.JmolEdge;
 import org.jmol.g3d.*;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
+import org.jmol.util.JmolEdge;
 import org.jmol.viewer.JmolConstants;
 
 public class SticksRenderer extends ShapeRenderer {
@@ -100,7 +100,7 @@ public class SticksRenderer extends ShapeRenderer {
   private void renderBond() {
     atomA = bond.getAtom1();
     atomB = bond.getAtom2();
-    int order = bond.getOrder() & ~JmolEdge.BOND_NEW;
+    int order = bond.order & ~JmolEdge.BOND_NEW;
     if (bondsBackbone) {
       if (ssbondsBackbone && (order & JmolEdge.BOND_SULFUR_MASK) != 0) {
         // for ssbonds, always render the sidechain,
@@ -190,8 +190,8 @@ public class SticksRenderer extends ShapeRenderer {
       break;
     default:
       if ((bondOrder & JmolEdge.BOND_PARTIAL_MASK) != 0) {
-        bondOrder = JmolConstants.getPartialBondOrder(order);
-        mask = JmolConstants.getPartialBondDotted(order);
+        bondOrder = JmolEdge.getPartialBondOrder(order);
+        mask = JmolEdge.getPartialBondDotted(order);
       } else if (Bond.isHydrogen(bondOrder)) {
         bondOrder = 1;
         if (!hbondsSolid)

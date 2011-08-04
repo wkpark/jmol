@@ -34,9 +34,9 @@ import java.util.Map;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-import org.jmol.api.JmolEdge;
-import org.jmol.api.JmolMolecule;
-import org.jmol.api.JmolNode;
+import org.jmol.util.JmolEdge;
+import org.jmol.util.JmolMolecule;
+import org.jmol.util.JmolNode;
 import org.jmol.util.Logger;
 
 /**
@@ -398,7 +398,7 @@ public class SmilesSearch extends JmolMolecule {
 
         // BIOSMILES/BIOSMARTS check is by group
 
-        switch (patternBond.bondType) {
+        switch (patternBond.order) {
         case SmilesBond.TYPE_BIO_SEQUENCE:
         case SmilesBond.TYPE_BIO_PAIR:
           if (!checkMatchBond(patternAtom, atom1, patternBond, iAtom,
@@ -527,7 +527,7 @@ public class SmilesSearch extends JmolMolecule {
       // For sequences, we go to the next GROUP, either via
       // the standard sequence or via basepair/cysteine pairing. 
 
-      switch (newPatternBond.bondType) {
+      switch (newPatternBond.order) {
       case SmilesBond.TYPE_BIO_SEQUENCE:
         int nextGroupAtom = jmolAtom.getOffsetResidueAtom(
             newPatternAtom.atomName, 1);
@@ -873,7 +873,7 @@ public class SmilesSearch extends JmolMolecule {
                                      int matchingAtom, JmolEdge bond) {
     boolean bondFound = false;
     
-    switch (patternBond.bondType) {
+    switch (patternBond.order) {
     case SmilesBond.TYPE_BIO_SEQUENCE:
       return (patternBond.isNot != (jmolAtoms[matchingAtom].getOffsetResidueAtom("0", 1)
           == jmolAtoms[iAtom].getOffsetResidueAtom("0", 0)));
@@ -886,7 +886,7 @@ public class SmilesSearch extends JmolMolecule {
     
     int order = bond.getCovalentOrder();
     if (isAromatic && atom1.isAromatic()) {
-      switch (patternBond.bondType) {
+      switch (patternBond.order) {
       case SmilesBond.TYPE_AROMATIC: // :
       case SmilesBond.TYPE_DOUBLE:
       case SmilesBond.TYPE_RING:
@@ -905,7 +905,7 @@ public class SmilesSearch extends JmolMolecule {
         break;
       }
     } else {
-      switch (patternBond.bondType) {
+      switch (patternBond.order) {
       case SmilesBond.TYPE_ANY:
       case SmilesBond.TYPE_UNKNOWN:
         bondFound = true;
@@ -1120,7 +1120,7 @@ public class SmilesSearch extends JmolMolecule {
         for (int j = 0; j < nBonds; j++) {
           b = sAtom1.getBond(j);
           boolean isAtom2 = (b.getAtom2() == sAtom1);
-          int type = b.bondType;
+          int type = b.order;
           switch (type) {
           case SmilesBond.TYPE_ATROPISOMER_1:
           case SmilesBond.TYPE_ATROPISOMER_2:
@@ -1157,7 +1157,7 @@ public class SmilesSearch extends JmolMolecule {
           for (int j = 0; j < nBonds && dir2 == 0; j++) {
             b = sAtom2.getBond(j);
             boolean isAtom2 = (b.getAtom2() == sAtom2);
-            int type = b.bondType;
+            int type = b.order;
             switch (type) {
             case SmilesBond.TYPE_DIRECTIONAL_1:
             case SmilesBond.TYPE_DIRECTIONAL_2:
@@ -1365,7 +1365,7 @@ public class SmilesSearch extends JmolMolecule {
         atom.set(-1, (nBonds++ == 0) ? -1 : 1, 0);
         int mode = (bond.getAtomIndex2() == dbAtom1.getIndex() ? nBonds
             : -nBonds);
-        switch (bond.getOrder()) {
+        switch (bond.order) {
         case JmolEdge.BOND_STEREO_NEAR:
           dir1 = mode;
           break;
@@ -1386,7 +1386,7 @@ public class SmilesSearch extends JmolMolecule {
         atom.set(1, (nBonds++ == 0) ? 1 : -1, 0);
         int mode = (bond.getAtomIndex2() == dbAtom2.getIndex() ? nBonds
             : -nBonds);
-        switch (bond.getOrder()) {
+        switch (bond.order) {
         case JmolEdge.BOND_STEREO_NEAR:
           dir2 = mode;
           break;
@@ -1416,7 +1416,7 @@ public class SmilesSearch extends JmolMolecule {
       for (int k = bonds.length; --k >= 0;) {
         JmolEdge bond = bonds[k];
         if (bond.getOtherAtom(dbAtom1) == dbAtom2) {
-          dir = (bond.getOrder() == JmolEdge.BOND_PARTIAL01 ? 1 : -1);
+          dir = (bond.order == JmolEdge.BOND_PARTIAL01 ? 1 : -1);
           break;
         }
       }
@@ -1706,7 +1706,7 @@ public class SmilesSearch extends JmolMolecule {
         //SmilesBond b;
         if (firstAtom) {
           int order = 1;
-          switch (sBond.bondType) {
+          switch (sBond.order) {
           // these first two are for cis/trans alkene
           // stereochemistry; we co-opt stereo near/far here
           case SmilesBond.TYPE_ATROPISOMER_1:
@@ -1723,7 +1723,7 @@ public class SmilesSearch extends JmolMolecule {
             break;
           case SmilesBond.TYPE_BIO_PAIR:
           case SmilesBond.TYPE_BIO_SEQUENCE:
-            order = sBond.bondType;
+            order = sBond.order;
             break;
           case SmilesBond.TYPE_SINGLE:
             order = JmolEdge.BOND_COVALENT_SINGLE;

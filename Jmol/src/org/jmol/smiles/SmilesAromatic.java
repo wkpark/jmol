@@ -29,8 +29,8 @@ import java.util.BitSet;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-import org.jmol.api.JmolEdge;
-import org.jmol.api.JmolNode;
+import org.jmol.util.JmolEdge;
+import org.jmol.util.JmolNode;
 
 public class SmilesAromatic {
   /** 

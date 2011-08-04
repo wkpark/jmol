@@ -40,10 +40,11 @@ import javax.vecmath.Point4f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
-import org.jmol.api.JmolEdge;
 import org.jmol.api.MinimizerInterface;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
+import org.jmol.constant.EnumAnimationMode;
+import org.jmol.constant.EnumStereoMode;
 import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.i18n.GT;
@@ -66,6 +67,7 @@ import org.jmol.util.Escape;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.Elements;
+import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.MeshSurface;
@@ -2329,7 +2331,7 @@ public class ScriptEvaluator {
           fixed[j] = new Token(Token.integer, ((Integer) v).intValue(), v);
 
         } else if (v instanceof Float) {
-          fixed[j] = new Token(Token.decimal, JmolConstants.modelValue("" + v),
+          fixed[j] = new Token(Token.decimal, JmolConstants.getFloatEncodedInt("" + v),
               v);
         } else if (v instanceof String) {
           if (!forceString) {
@@ -4163,7 +4165,7 @@ public class ScriptEvaluator {
       // model/frame number encoded
       break;
     case Token.string:
-      iFrame = JmolConstants.modelValue(stringParameter(index));
+      iFrame = JmolConstants.getFloatEncodedInt(stringParameter(index));
       break;
     default:
       error(ERROR_invalidArgument);
@@ -6610,16 +6612,16 @@ public class ScriptEvaluator {
     switch (getToken(1).tok) {
     case Token.integer:
     case Token.decimal:
-      if ((order = JmolConstants.getBondOrderFromFloat(floatParameter(1))) == JmolEdge.BOND_ORDER_NULL)
+      if ((order = JmolEdge.getBondOrderFromFloat(floatParameter(1))) == JmolEdge.BOND_ORDER_NULL)
         error(ERROR_invalidArgument);
       break;
     default:
-      if ((order = JmolConstants.getBondOrderFromString(parameterAsString(1))) == JmolEdge.BOND_ORDER_NULL)
+      if ((order = JmolEdge.getBondOrderFromString(parameterAsString(1))) == JmolEdge.BOND_ORDER_NULL)
         error(ERROR_invalidArgument);
       // generic partial can be indicated by "partial n.m"
       if (order == JmolEdge.BOND_PARTIAL01 && tokAt(2) == Token.decimal) {
-        order = JmolConstants
-            .getPartialBondOrderFromInteger(statement[2].intValue);
+        order = JmolEdge
+            .getPartialBondOrderFromFloatEncodedInt(statement[2].intValue);
       }
     }
     setShapeProperty(JmolConstants.SHAPE_STICKS, "bondOrder", Integer
@@ -6674,13 +6676,13 @@ public class ScriptEvaluator {
   }
 
   private void stereo() throws ScriptException {
-    int stereoMode = JmolConstants.STEREO_DOUBLE;
+    EnumStereoMode stereoMode = EnumStereoMode.DOUBLE;
     // see www.usm.maine.edu/~rhodes/0Help/StereoViewing.html
     // stereo on/off
     // stereo color1 color2 6
     // stereo redgreen 5
 
-    float degrees = JmolConstants.DEFAULT_STEREO_DEGREES;
+    float degrees = EnumStereoMode.DEFAULT_STEREO_DEGREES;
     boolean degreesSeen = false;
     int[] colors = null;
     int colorpt = 0;
@@ -6705,7 +6707,7 @@ public class ScriptEvaluator {
         break;
       case Token.off:
         checkLast(iToken = 1);
-        stereoMode = JmolConstants.STEREO_NONE;
+        stereoMode = EnumStereoMode.NONE;
         break;
       case Token.integer:
       case Token.decimal:
@@ -6715,8 +6717,8 @@ public class ScriptEvaluator {
       case Token.identifier:
         if (!degreesSeen)
           degrees = 3;
-        stereoMode = JmolConstants.getStereoMode(parameterAsString(i));
-        if (stereoMode != JmolConstants.STEREO_UNKNOWN)
+        stereoMode = EnumStereoMode.getStereoMode(parameterAsString(i));
+        if (stereoMode != null)
           break;
         // fall into
       default:
@@ -7120,7 +7122,7 @@ public class ScriptEvaluator {
         if (nAtomSets > 0) {
           if (haveType || isColorOrRadius)
             error(ERROR_invalidParameterOrder);
-          bo = JmolConstants.getBondOrderFromFloat(floatParameter(i));
+          bo = JmolEdge.getBondOrderFromFloat(floatParameter(i));
           if (bo == JmolEdge.BOND_ORDER_NULL)
             error(ERROR_invalidArgument);
           bondOrder = bo;
@@ -7220,7 +7222,7 @@ public class ScriptEvaluator {
           }
         }
         String cmd = parameterAsString(i);
-        if ((bo = JmolConstants.getBondOrderFromString(cmd)) == JmolEdge.BOND_ORDER_NULL) {
+        if ((bo = JmolEdge.getBondOrderFromString(cmd)) == JmolEdge.BOND_ORDER_NULL) {
           error(ERROR_invalidArgument);
         }
         // must be bond type
@@ -7231,8 +7233,8 @@ public class ScriptEvaluator {
         case JmolEdge.BOND_PARTIAL01:
           switch (tokAt(i + 1)) {
           case Token.decimal:
-            bo = JmolConstants
-                .getPartialBondOrderFromInteger(statement[++i].intValue);
+            bo = JmolEdge
+                .getPartialBondOrderFromFloatEncodedInt(statement[++i].intValue);
             break;
           case Token.integer:
             bo = (short) intParameter(++i);
@@ -11431,18 +11433,19 @@ public class ScriptEvaluator {
     float startDelay = 1, endDelay = 1;
     if (statementLength > 5)
       error(ERROR_badArgumentCount);
-    int animationMode = JmolConstants.ANIMATION_ONCE;
+    EnumAnimationMode animationMode = null;
     switch (getToken(2).tok) {
-    case Token.loop:
-      animationMode = JmolConstants.ANIMATION_LOOP;
-      break;
     case Token.once:
+      animationMode = EnumAnimationMode.ONCE;
       startDelay = endDelay = 0;
       break;
-    case Token.palindrome:
-      animationMode = JmolConstants.ANIMATION_PALINDROME;
+    case Token.loop:
+      animationMode = EnumAnimationMode.LOOP;
       break;
-    case Token.identifier:
+    case Token.palindrome:
+      animationMode = EnumAnimationMode.PALINDROME;
+      break;
+    default:
       error(ERROR_invalidArgument);
     }
     if (statementLength >= 4) {
@@ -11920,7 +11923,7 @@ public class ScriptEvaluator {
         if (nFrames == 2)
           error(ERROR_invalidArgument);
         int iFrame = (theTok == Token.string ? JmolConstants
-            .modelValue((String) theToken.value) : theToken.intValue);
+            .getFloatEncodedInt((String) theToken.value) : theToken.intValue);
         if (iFrame == Integer.MAX_VALUE)
           iFrame = 0; // frame 0.0
         if (iFrame == -1) {
@@ -12308,7 +12311,7 @@ public class ScriptEvaluator {
           modelNumber = Parser.parseInt(modelDotted);
           useModelNumber = true;
         } else {
-          modelNumber = JmolConstants.modelValue(modelDotted);
+          modelNumber = JmolConstants.getFloatEncodedInt(modelDotted);
         }
         if (isSyntaxCheck)
           return;

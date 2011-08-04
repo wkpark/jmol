@@ -434,7 +434,7 @@ public class SmilesParser {
     SmilesBond bond = null;
     while (pattern != null && pattern.length() != 0) {
       int index = 0;
-      if (currentAtom == null || bond != null && bond.bondType == SmilesBond.TYPE_NONE)
+      if (currentAtom == null || bond != null && bond.order == SmilesBond.TYPE_NONE)
         index = checkBioType(pattern, 0);
       ch = getChar(pattern, index);
       boolean haveOpen = checkBrace(molecule, ch, '{');
@@ -473,16 +473,16 @@ public class SmilesParser {
             .substring(pt, index), null, currentAtom, false, isBranchAtom);
 
 
-        if (haveOpen && bond.bondType != SmilesBond.TYPE_UNKNOWN)
+        if (haveOpen && bond.order != SmilesBond.TYPE_UNKNOWN)
           index = pt;
         ch = getChar(pattern, index);
         if (checkBrace(molecule, ch, '{'))
           ch = getChar(pattern, ++index);
-        if (ch == '~' && bond.bondType == SmilesBond.TYPE_NONE) {
+        if (ch == '~' && bond.order == SmilesBond.TYPE_NONE) {
           index = checkBioType(pattern, index);
           ch = getChar(pattern, index);
         }
-        if (ch == '\0' && bond.bondType == SmilesBond.TYPE_NONE)
+        if (ch == '\0' && bond.order == SmilesBond.TYPE_NONE)
           return;
         boolean isRing = (Character.isDigit(ch) || ch == '%');
         boolean isAtom = (!isRing && (ch == '_' || ch == '[' || ch == '*' || Character
@@ -525,8 +525,8 @@ public class SmilesParser {
               subPattern += ".0";
             currentAtom = parseAtom(molecule, null, subPattern, currentAtom,
                 bond, ch == '[', false, isBranchAtom);
-            if (bond.bondType != SmilesBond.TYPE_UNKNOWN
-                && bond.bondType != SmilesBond.TYPE_NONE)
+            if (bond.order != SmilesBond.TYPE_UNKNOWN
+                && bond.order != SmilesBond.TYPE_NONE)
               bond.set(null, currentAtom);
             break;
           default:
@@ -962,19 +962,19 @@ public class SmilesParser {
 
     // Final check
 
-    if (currentAtom != null && bond.bondType == SmilesBond.TYPE_NONE) {
+    if (currentAtom != null && bond.order == SmilesBond.TYPE_NONE) {
       newAtom.notBondedIndex = currentAtom.index;
     }
-    if (currentAtom != null && bond.bondType != SmilesBond.TYPE_NONE) {
-      if (bond.bondType == SmilesBond.TYPE_UNKNOWN)
-        bond.bondType = (isBioSequence && isBranchAtom ? SmilesBond.TYPE_BIO_PAIR
+    if (currentAtom != null && bond.order != SmilesBond.TYPE_NONE) {
+      if (bond.order == SmilesBond.TYPE_UNKNOWN)
+        bond.order = (isBioSequence && isBranchAtom ? SmilesBond.TYPE_BIO_PAIR
             : isSmarts || currentAtom.isAromatic() && newAtom.isAromatic() ? SmilesBond.TYPE_ANY
                 : SmilesBond.TYPE_SINGLE);
       if (!isBracketed)
         bond.set(null, newAtom);
       if (branchLevel == 0 && 
-          (bond.bondType == SmilesBond.TYPE_AROMATIC 
-              || bond.bondType == SmilesBond.TYPE_BIO_PAIR))
+          (bond.order == SmilesBond.TYPE_AROMATIC 
+              || bond.order == SmilesBond.TYPE_BIO_PAIR))
         branchLevel++;
     }
     // if (Logger.debugging)
@@ -1015,22 +1015,22 @@ public class SmilesParser {
     // (4) or "SINGLE"
     // we must check for C1......C/1....
     // in which case the "/" is referring to "second to first" not "first to second"
-    switch (bond.bondType) {
+    switch (bond.order) {
     case SmilesBond.TYPE_UNKNOWN:
-      bond.bondType = (bond0.bondType != SmilesBond.TYPE_UNKNOWN ? bond0.bondType
+      bond.order = (bond0.order != SmilesBond.TYPE_UNKNOWN ? bond0.order
           : isSmarts || currentAtom.isAromatic()
               && bond0.getAtom1().isAromatic() ? SmilesBond.TYPE_ANY
               : SmilesBond.TYPE_SINGLE);
       break;
     case SmilesBond.TYPE_DIRECTIONAL_1:
-      bond.bondType = SmilesBond.TYPE_DIRECTIONAL_2;
+      bond.order = SmilesBond.TYPE_DIRECTIONAL_2;
       break;
     case SmilesBond.TYPE_DIRECTIONAL_2:
-      bond.bondType = SmilesBond.TYPE_DIRECTIONAL_1;
+      bond.order = SmilesBond.TYPE_DIRECTIONAL_1;
       break;
     }
-    if (bond0.bondType != SmilesBond.TYPE_UNKNOWN
-        && bond0.bondType != bond.bondType)
+    if (bond0.order != SmilesBond.TYPE_UNKNOWN
+        && bond0.order != bond.order)
       throw new InvalidSmilesException("Incoherent bond type for ring");
     bond0.set(bond);
     currentAtom.bondCount--;

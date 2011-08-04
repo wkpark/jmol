@@ -24,8 +24,6 @@
  */
 package org.jmol.viewer;
 
-import org.jmol.api.JmolEdge;
-import org.jmol.modelset.Bond;
 import org.jmol.script.Token;
 import org.jmol.util.Elements;
 import org.jmol.util.Logger;
@@ -161,174 +159,6 @@ final public class JmolConstants {
   public final static byte MULTIBOND_ALWAYS =    3;
 
   public final static short madMultipleBondSmallMaximum = 500;
-
-  public final static int[] argbsHbondType = {
-    0xFFFF69B4, // 0  unused - pink
-    0xFFFFFF00, // 1  regular yellow
-    0xFFFFFF00, // 2  calc -- unspecified; yellow
-    0xFFFFFFFF, // 3  +2 white
-    0xFFFF00FF, // 4  +3 magenta
-    0xFFFF0000, // 5  +4 red
-    0xFFFFA500, // 6  +5 orange
-    0xFF00FFFF, // 7  -3 cyan
-    0xFF00FF00, // 8  -4 green
-    0xFFFF8080, // 9  nucleotide
-  };
-
-  public static int getArgbHbondType(int order) {
-    int argbIndex = ((order & JmolEdge.BOND_HYDROGEN_MASK) >> JmolEdge.BOND_HBOND_SHIFT);
-    return argbsHbondType[argbIndex];
-  }
-
-  private final static String[] bondOrderNames = {
-    "single", "double", "triple", "quadruple", 
-    "aromatic", "struts",
-    "hbond", "partial", "partialDouble",
-    "partialTriple", "partialTriple2", 
-    "aromaticSingle", "aromaticDouble",
-    "unspecified"
-  };
-
-  private final static String[] bondOrderNumbers = {
-    "1", "2", "3", "4", 
-    "1.5", "1",
-    "1", "0.5", "1.5", 
-    "2.5", "2.5", 
-    "1", "2", 
-    "1"
-  };
-
-  private final static int[] bondOrderValues = {
-    JmolEdge.BOND_COVALENT_SINGLE, JmolEdge.BOND_COVALENT_DOUBLE, JmolEdge.BOND_COVALENT_TRIPLE, JmolEdge.BOND_COVALENT_QUADRUPLE,
-    JmolEdge.BOND_AROMATIC, JmolEdge.BOND_STRUT,
-    JmolEdge.BOND_H_REGULAR, JmolEdge.BOND_PARTIAL01, JmolEdge.BOND_PARTIAL12, 
-    JmolEdge.BOND_PARTIAL23, JmolEdge.BOND_PARTIAL32, 
-    JmolEdge.BOND_AROMATIC_SINGLE, JmolEdge.BOND_AROMATIC_DOUBLE,
-    JmolEdge.BOND_ORDER_UNSPECIFIED
-  };
-
-  public final static int getBondOrderFromString(String bondOrderString) {
-    for (int i = 0; i < bondOrderNumbers.length; i++) {
-      if (bondOrderNames[i].equalsIgnoreCase(bondOrderString))
-        return bondOrderValues[i];
-    }
-    if (bondOrderString.toLowerCase().indexOf("partial ") == 0)
-      return getPartialBondOrderFromInteger(modelValue(bondOrderString.substring(8).trim()));
-    return JmolEdge.BOND_ORDER_NULL;
-  }
-  
-  /**
-   * reads standard n.m float-as-integer n*1000000 + m
-   * and returns (n % 6) << 5 + (m % 0x1F)
-   * @param bondOrderInteger
-   * @return Bond order partial mask
-   */
-  public final static int getPartialBondOrderFromInteger(int bondOrderInteger) {
-    return ((((bondOrderInteger / 1000000) % 6) << 5)
-    + ((bondOrderInteger % 1000000) & 0x1F));
-  }
-
-  public final static int getCovalentBondOrder(int order) {
-    if ((order & JmolEdge.BOND_COVALENT_MASK) == 0)
-      return 0;
-    order &= ~JmolEdge.BOND_NEW; 
-    if ((order & JmolEdge.BOND_PARTIAL_MASK) != 0)
-      return getPartialBondOrder(order);
-    if ((order & JmolEdge.BOND_SULFUR_MASK) != 0)
-      order &= ~JmolEdge.BOND_SULFUR_MASK;
-    if ((order & 0xF8) != 0) // "ANY"
-      order = 1;
-    return order & 7;
-  }
-  
-  public final static int getPartialBondOrder(int order) {
-    return ((order & ~JmolEdge.BOND_NEW) >> 5);
-  }
-  
-  public final static int getPartialBondDotted(int order) {
-    return (order & 0x1F);
-  }
-  
-  public final static int getBondOrderFromFloat(float fOrder) {
-    for (int i = 0; i < bondOrderNumbers.length; i++) {
-      if (Float.valueOf(bondOrderNumbers[i]).floatValue() == Math.abs(fOrder)) {
-        if (fOrder > 0)
-          return bondOrderValues[i];
-        fOrder = -fOrder;
-      }
-    }
-    return JmolEdge.BOND_ORDER_NULL;
-  }
-  
-  public final static String getBondOrderNameFromOrder(int order) {
-    order &= ~JmolEdge.BOND_NEW;
-    switch (order) {
-    case JmolEdge.BOND_ORDER_ANY:
-    case JmolEdge.BOND_ORDER_NULL:
-      return "";
-    case JmolEdge.BOND_STRUT:
-      return "strut";
-    case JmolEdge.BOND_COVALENT_SINGLE:
-      return "single";
-    case JmolEdge.BOND_COVALENT_DOUBLE:
-      return "double";
-    }
-    if ((order & JmolEdge.BOND_PARTIAL_MASK) != 0)
-      return "partial " + getBondOrderNumberFromOrder(order);
-    if (Bond.isHydrogen(order))
-      return "hbond";
-    if ((order & JmolEdge.BOND_SULFUR_MASK) != 0)
-      return "single";
-    for (int i = bondOrderValues.length; --i >= 0;) {
-      if (bondOrderValues[i] == order)
-        return bondOrderNames[i];
-    }
-    return "?";
-  }
-
-  public static String getCmlOrder(int order) {
-    String sname = getBondOrderNameFromOrder(order);
-    switch (sname.charAt(0)) {
-    case 's':
-    case 'd':
-    case 't':
-      return "" + sname.toUpperCase().charAt(0);
-    case 'a':
-      if (sname.indexOf("Double") >= 0)
-        return "D";
-      else if (sname.indexOf("Single") >= 0)
-        return "S";
-      return "aromatic";
-    case 'p':
-      if (sname.indexOf(" ") >= 0)
-        return sname.substring(sname.indexOf(" ") + 1);
-      return "partial12";
-    }
-    return null;
-  }
-
-  /**
-   * used for formatting labels and in the connect PARTIAL command
-   *  
-   * @param order
-   * @return a string representation to preserve float n.m
-   */
-  public final static String getBondOrderNumberFromOrder(int order) {
-    order &= ~JmolEdge.BOND_NEW;
-    if (order == JmolEdge.BOND_ORDER_NULL || order == JmolEdge.BOND_ORDER_ANY)
-      return "0"; // I don't think this is possible
-    if (Bond.isHydrogen(order))
-      return "1";
-    if ((order & JmolEdge.BOND_SULFUR_MASK) != 0)
-      return "1";
-    if ((order & JmolEdge.BOND_PARTIAL_MASK) != 0)
-      return (order >> 5) + "." + (order & 0x1F);
-    for (int i = bondOrderValues.length; --i >= 0; ) {
-      if (bondOrderValues[i] == order)
-        return bondOrderNumbers[i];
-    }
-    return "?";
-  }
 
   /* .cube files need this */
   public final static float ANGSTROMS_PER_BOHR = 0.5291772f;
@@ -2594,7 +2424,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   static {
     if (shapeClassBases.length != SHAPE_MAX) {
       Logger.error("the shapeClassBases array has the wrong length");
-      throw new NullPointerException();
+       throw new NullPointerException();
     }
   }
 
@@ -2724,34 +2554,6 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
       | getShapeVisibilityFlag(SHAPE_RIBBONS);
 
   
-  ////////////////////////////////////////////////////////////////
-  // Stereo modes
-  ////////////////////////////////////////////////////////////////
-
-  public final static int DEFAULT_STEREO_DEGREES = -5;
-
-  public final static int STEREO_UNKNOWN  = -1;
-  public final static int STEREO_NONE     = 0;
-  public final static int STEREO_DOUBLE   = 1;
-  public final static int STEREO_REDCYAN  = 2;
-  public final static int STEREO_REDBLUE  = 3;
-  public final static int STEREO_REDGREEN = 4;
-  public final static int STEREO_CUSTOM   = 5;
-  
-  private final static String[] stereoModes = 
-     { "OFF", "", "REDCYAN", "REDBLUE", "REDGREEN" };
-
-  public static int getStereoMode(String id) {
-    for (int i = 0; i < STEREO_CUSTOM; i++)
-      if (id.equalsIgnoreCase(stereoModes[i]))
-        return i;
-    return STEREO_UNKNOWN;
-  }
-
-  static String getStereoModeName(int mode) {
-    return stereoModes[mode];
-  }
-  
   // all of these things are compile-time constants
   // if they are false then the compiler should take them away
   static {
@@ -2777,120 +2579,20 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     }
   }
 
-  //   quantum MO calculation constants need to be here so quantum class is not opened
-  
-  //   Don't change the order here unless all supporting arrays are 
-  //   also modified. 
-  
-  final public static int SHELL_S = 0;
-  final public static int SHELL_P = 1;
-  final public static int SHELL_SP = 2;
-  final public static int SHELL_L = 2;
-  
-  // these next in cartesian/spherical pairs:
-  
-  final public static int SHELL_D_SPHERICAL = 3;
-  final public static int SHELL_D_CARTESIAN = 4;
-  final public static int SHELL_F_SPHERICAL = 5;
-  final public static int SHELL_F_CARTESIAN = 6;
-  final public static int SHELL_G_SPHERICAL = 7;
-  final public static int SHELL_G_CARTESIAN = 8;
-  final public static int SHELL_H_SPHERICAL = 9;
-  final public static int SHELL_H_CARTESIAN = 10;
-  
-  final public static String SUPPORTED_BASIS_FUNCTIONS = "SPLDF";
-  
-  final private static String[] quantumShellTags = {
-    "S", "P", "SP", "L", 
-    "5D", "D", "7F", "F",
-    "9G", "G", "10H", "H",
-    };
-  
-  final private static int[] quantumShellIDs = {
-    SHELL_S, SHELL_P, SHELL_SP, SHELL_L, 
-    SHELL_D_SPHERICAL, SHELL_D_CARTESIAN, 
-    SHELL_F_SPHERICAL, SHELL_F_CARTESIAN, 
-    SHELL_G_SPHERICAL, SHELL_G_CARTESIAN, SHELL_H_SPHERICAL, SHELL_H_CARTESIAN, 
-  };
-  
-  // the following is for reference only and only for debugging purposes:
-  // the actual ordering is set in adapter.quantum.BasisFunctionReader
-  // note that Jmol will adjust for 6D and 10F, but not the others.
-  
-  public static final String SUPPORTED_BASES = "SPDLF";
-  
-  private final static String[][] shellOrder = { 
-    {"S"},
-    {"X", "Y", "Z"},
-    {"S", "X", "Y", "Z"},
-    {"d0/z2", "d1+/xz", "d1-/yz", "d2+/x2-y2", "d2-/xy"},
-    {"XX", "YY", "ZZ", "XY", "XZ", "YZ"},
-    {"f0/2z3-3x2z-3y2z", "f1+/4xz2-x3-xy2", "f1-/4yz2-x2y-y3", 
-      "f2+/x2z-y2z", "f2-/xyz", "f3+/x3-3xy2", "f3-/3x2y-y3"},
-    {"XXX", "YYY", "ZZZ", "XYY", "XXY", "XXZ", "XZZ", "YZZ", "YYZ", "XYZ"},
-  };
-
-  final public static String[] getShellOrder(int i) {
-    return (i < 0 || i > shellOrder.length ? null : shellOrder[i]);
-  }
-  
-  final public static int getQuantumShellTagID(String tag) {
-    for (int i = quantumShellTags.length; --i >= 0;)
-      if (tag.equals(quantumShellTags[i]))
-        return quantumShellIDs[i];
-    return -1;
-  }
-
-  final public static int getQuantumShellTagIDSpherical(String tag) {
-    final int tagID = getQuantumShellTagID(tag);
-    switch (tagID) {
-    case SHELL_D_CARTESIAN:
-      return SHELL_D_SPHERICAL;
-    case SHELL_F_CARTESIAN:
-      return SHELL_F_SPHERICAL;
-    case SHELL_G_CARTESIAN:
-      return SHELL_G_SPHERICAL;
-    case SHELL_H_CARTESIAN:
-      return SHELL_H_SPHERICAL;
-    }
-    return tagID;
-  }
-
-  final public static String getQuantumShellTag(int shell) {
-    for (int i = quantumShellTags.length; --i >= 0;)
-      if (shell == quantumShellIDs[i])
-        return quantumShellTags[i];
-    return "" + shell;
-  }
-  
-  final public static String getMOString(float[] lc) {
-    StringBuffer sb = new StringBuffer();
-    if (lc.length == 2)
-      return "" + (int)(lc[0] < 0 ? -lc[1] : lc[1]);
-    sb.append('[');
-    for (int i = 0; i < lc.length; i += 2) {
-      if (i > 0)
-        sb.append(", ");
-      sb.append(lc[i]).append(" ").append((int) lc[i + 1]);
-    }
-    sb.append(']');
-    return sb.toString();
-  }
-
-  //////////////////////////////////
-  
   public static final String LOAD_ATOM_DATA_TYPES = "xyz;vxyz;vibration;temperature;occupancy;partialcharge";
 
-  public final static int ANIMATION_ONCE = 0;
-  public final static int ANIMATION_LOOP = 1;
-  public final static int ANIMATION_PALINDROME = 2;
-  
   public final static float radiansPerDegree = (float) (Math.PI / 180);
 
-  public static int modelValue(String strDecimal) {
-    //this will overflow, but it doesn't matter -- it's only for file.model
-    //2147483647 is maxvalue, so this allows loading
-    //simultaneously up to 2147 files.
+  /**
+   * encodes a string such as "2.10" as an integer instead of a float
+   * so as to distinguish "2.1" from "2.10"
+   * used for model numbers and partial bond orders.
+   * 2147483647 is maxvalue, so this allows loading
+   * simultaneously up to 2147 files.
+   * @param strDecimal
+   * @return float encoded as an integer
+   */
+  public static int getFloatEncodedInt(String strDecimal) {
     int pt = strDecimal.indexOf(".");
     if (pt < 1 || strDecimal.charAt(0) == '-'
         || strDecimal.endsWith(".") 

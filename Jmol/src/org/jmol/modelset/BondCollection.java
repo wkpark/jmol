@@ -32,11 +32,11 @@ import java.util.List;
 
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
+import org.jmol.util.JmolEdge;
+import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
 
 import org.jmol.viewer.JmolConstants;
-import org.jmol.api.JmolEdge;
-import org.jmol.api.JmolMolecule;
 import org.jmol.modelset.Bond.BondSet;
 import org.jmol.script.Token;
 
@@ -97,7 +97,7 @@ abstract public class BondCollection extends AtomCollection {
   }
 
   public int getBondOrder(int i) {
-    return bonds[i].getOrder();
+    return bonds[i].order;
   }
 
   public short getBondColix1(int i) {
@@ -818,7 +818,7 @@ abstract public class BondCollection extends AtomCollection {
       break;
     case 'p':
     case 'm':
-      bondOrder = JmolConstants.getBondOrderNumberFromOrder(
+      bondOrder = JmolEdge.getBondOrderNumberFromOrder(
           bond.getCovalentOrder()).charAt(0)
           - '0' + (type == 'p' ? 1 : -1);
       if (bondOrder > 3)

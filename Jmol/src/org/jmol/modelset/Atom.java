@@ -29,12 +29,12 @@ package org.jmol.modelset;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.script.Token;
 import org.jmol.viewer.Viewer;
-import org.jmol.api.JmolEdge;
-import org.jmol.api.JmolNode;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.util.Elements;
+import org.jmol.util.JmolEdge;
+import org.jmol.util.JmolNode;
 import org.jmol.util.Point3fi;
 
 import java.util.BitSet;

@@ -35,9 +35,9 @@ import javax.vecmath.Point4f;
 
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Escape;
-import org.jmol.viewer.JmolConstants;
 import org.jmol.script.Token;
 import org.jmol.shape.Shape;
+import org.jmol.constant.EnumQuantumShell;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.readers.Parameters;
 
@@ -483,7 +483,7 @@ public class MolecularOrbital extends Isosurface {
     if (moLinearCombination == null) {
       appendCmd(s, "mo " + moNumber);
     } else {
-      appendCmd(s, "mo " + JmolConstants.getMOString(moLinearCombination));
+      appendCmd(s, "mo " + EnumQuantumShell.getMOString(moLinearCombination));
     }
     if (moTranslucency != null)
       appendCmd(s, "mo translucent " + moTranslucentLevel);

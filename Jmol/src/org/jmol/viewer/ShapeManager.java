@@ -32,7 +32,6 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
-import org.jmol.api.JmolMolecule;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
@@ -40,6 +39,7 @@ import org.jmol.modelset.Group;
 import org.jmol.modelset.ModelSet;
 import org.jmol.script.Token;
 import org.jmol.shape.Shape;
+import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
 import org.jmol.util.Point3fi;
 

@@ -30,9 +30,9 @@ import java.util.List;
 
 import javax.vecmath.Point3f;
 
-import org.jmol.api.JmolEdge;
-import org.jmol.api.JmolNode;
 import org.jmol.util.Elements;
+import org.jmol.util.JmolEdge;
+import org.jmol.util.JmolNode;
 import org.jmol.util.Logger;
 
 //import org.jmol.util.Logger;
@@ -225,13 +225,13 @@ public class SmilesAtom extends Point3f implements JmolNode {
 
     if (elementNumber == 7 && isAromatic && bondCount == 2) {
       // is it -N= or -NH- ? 
-      if (bonds[0].bondType == SmilesBond.TYPE_SINGLE
-           && bonds[1].bondType == SmilesBond.TYPE_SINGLE)
+      if (bonds[0].order == SmilesBond.TYPE_SINGLE
+           && bonds[1].order == SmilesBond.TYPE_SINGLE)
         count++;
     }
     for (int i = 0; i < bondCount; i++) {
       SmilesBond bond = bonds[i];
-      switch (bond.bondType) {
+      switch (bond.order) {
       case SmilesBond.TYPE_ANY: // for aromatics
         if (elementNumber == 7) {
           Logger.info("Ambiguous bonding to aromatic N found -- MF may be in error");
@@ -559,8 +559,8 @@ public class SmilesAtom extends Point3f implements JmolNode {
       primitives = tmp;
     }
     for (int i = 0; i < bonds.length; i++) {
-      if (isBioAtom && bonds[i].bondType == SmilesBond.TYPE_AROMATIC)
-        bonds[i].bondType = SmilesBond.TYPE_BIO_PAIR;
+      if (isBioAtom && bonds[i].order == SmilesBond.TYPE_AROMATIC)
+        bonds[i].order = SmilesBond.TYPE_BIO_PAIR;
       if (bonds[i].getAtom1().index > bonds[i].getAtom2().index) {
         // it is possible, particularly for a connection to a an atom 
         // with a branch:   C(CCCN1)1
@@ -683,7 +683,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
     if (isBioAtom)
       for (int k = 0; k < bonds.length; k++)
         if (bonds[k].getAtomIndex1() == index
-            && bonds[k].bondType == SmilesBond.TYPE_BIO_SEQUENCE)
+            && bonds[k].order == SmilesBond.TYPE_BIO_SEQUENCE)
           return bonds[k].getOtherAtom(this).index;
     return -1;
   }
@@ -700,7 +700,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
 
   public boolean getCrossLinkLeadAtomIndexes(List<Integer> vLinks) {
     for (int k = 0; k < bonds.length; k++)
-      if (bonds[k].bondType == SmilesBond.TYPE_BIO_PAIR)
+      if (bonds[k].order == SmilesBond.TYPE_BIO_PAIR)
         vLinks.add(Integer.valueOf(bonds[k].getOtherAtom(this).index));
     return true;
   }

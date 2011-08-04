@@ -199,6 +199,7 @@ class SpartanArchive {
   //private static String DC_LIST = "DXX   DXY   DYY   DXZ   DYZ   DZZ";
   //private static String FC_LIST = "XXX   XXY   XYY   YYY   XXZ   XYZ   YYZ   XZZ   YZZ   ZZZ";
 
+  @SuppressWarnings("incomplete-switch")
   void readBasis() throws Exception {
     /*
      * standard Gaussian format:
@@ -262,11 +263,11 @@ class SpartanArchive {
       data[0] = alpha;
       //we put D and F into coef 1. This may change if I find that Gaussian output
       //lists D and F in columns 3 and 4 as well.
-      switch (typeArray[i]) {
-      case JmolAdapter.SHELL_S:
+      switch (JmolAdapter.getShellEnumeration(typeArray[i])) {
+      case S:
         data[1] = parseFloat(tokens[0]);
         break;
-      case JmolAdapter.SHELL_SP:
+      case SP:
         data[1] = parseFloat(tokens[0]);
         data[2] = parseFloat(tokens[1]);
         if (data[1] == 0) {
@@ -274,12 +275,12 @@ class SpartanArchive {
           typeArray[i] = JmolAdapter.SHELL_P;
         }
         break;
-      case JmolAdapter.SHELL_D_CARTESIAN:
-      case JmolAdapter.SHELL_D_SPHERICAL:
+      case D_CARTESIAN:
+      case D_SPHERICAL:
         data[1] = parseFloat(tokens[2]);
         break;
-      case JmolAdapter.SHELL_F_CARTESIAN:
-      case JmolAdapter.SHELL_F_SPHERICAL:
+      case F_CARTESIAN:
+      case F_SPHERICAL:
         data[1] = parseFloat(tokens[3]);
         break;
       }
@@ -288,27 +289,27 @@ class SpartanArchive {
     int nCoeff = 0;
     for (int i = 0; i < shellCount; i++) {
       int[] slater = shells.get(i);
-      switch(typeArray[slater[2]]) {
-      case JmolAdapter.SHELL_S:
+      switch(JmolAdapter.getShellEnumeration(typeArray[slater[2]])) {
+      case S:
         nCoeff++;
         break;
-      case JmolAdapter.SHELL_P:
+      case P:
         slater[1] = JmolAdapter.SHELL_P;
         nCoeff += 3;
         break;
-      case JmolAdapter.SHELL_SP:
+      case SP:
         nCoeff += 4;
         break;
-      case JmolAdapter.SHELL_D_SPHERICAL:
+      case D_SPHERICAL:
         nCoeff += 5;
         break;
-      case JmolAdapter.SHELL_D_CARTESIAN:
+      case D_CARTESIAN:
         nCoeff += 6;
         break;
-      case JmolAdapter.SHELL_F_SPHERICAL:
+      case F_SPHERICAL:
         nCoeff += 7;
         break;
-      case JmolAdapter.SHELL_F_CARTESIAN:
+      case F_CARTESIAN:
         nCoeff += 10;
         break;
       }
@@ -317,11 +318,11 @@ class SpartanArchive {
     if (isD5F7)
     for (int i = 0; i < shellCount; i++) {
       int[] slater = shells.get(i);
-      switch (typeArray[i]) {
-      case JmolAdapter.SHELL_D_CARTESIAN:
+      switch (JmolAdapter.getShellEnumeration(typeArray[i])) {
+      case D_CARTESIAN:
         slater[1] = JmolAdapter.SHELL_D_SPHERICAL;
         break;
-      case JmolAdapter.SHELL_F_CARTESIAN:
+      case F_CARTESIAN:
         slater[1] = JmolAdapter.SHELL_F_SPHERICAL;
         break;
       }

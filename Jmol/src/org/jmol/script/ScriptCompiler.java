@@ -1070,13 +1070,9 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       return CONTINUE;
     }
     if (lookingAtDecimal()) {
-      value =
-      // can't use parseFloat with jvm 1.1
-      // Float.parseFloat(script.substring(ichToken, ichToken +
-      // cchToken));
-      Float.valueOf(script.substring(ichToken, ichToken + cchToken))
+      value =  Float.valueOf(script.substring(ichToken, ichToken + cchToken))
           .floatValue();
-      int intValue = (JmolConstants.modelValue(script.substring(ichToken,
+      int intValue = (JmolConstants.getFloatEncodedInt(script.substring(ichToken,
           ichToken + cchToken)));
       addTokenToPrefix(new Token(Token.decimal, intValue, new Float(value)));
       return CONTINUE;

@@ -34,10 +34,10 @@ import javax.vecmath.Vector3f;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.TextFormat;
-import org.jmol.viewer.JmolConstants;
 import org.jmol.api.Interface;
 import org.jmol.api.QuantumCalculationInterface;
 import org.jmol.api.QuantumPlaneCalculationInterface;
+import org.jmol.constant.EnumQuantumShell;
 import org.jmol.jvxl.data.VolumeData;
 
 class IsoMOReader extends AtomDataReader {
@@ -141,7 +141,7 @@ class IsoMOReader extends AtomDataReader {
     if (line.indexOf("%F") >= 0)
       line = TextFormat.formatString(line, "F", params.fileName);
     if (line.indexOf("%I") >= 0)
-      line = TextFormat.formatString(line, "I", params.qm_moLinearCombination == null ? "" + params.qm_moNumber : JmolConstants.getMOString(params.qm_moLinearCombination));
+      line = TextFormat.formatString(line, "I", params.qm_moLinearCombination == null ? "" + params.qm_moNumber : EnumQuantumShell.getMOString(params.qm_moLinearCombination));
     if (line.indexOf("%N") >= 0)
       line = TextFormat.formatString(line, "N", "" + params.qmOrbitalCount);
     if (line.indexOf("%E") >= 0)

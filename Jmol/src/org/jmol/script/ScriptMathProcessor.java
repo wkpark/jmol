@@ -41,8 +41,6 @@ import javax.vecmath.Point4f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
-import org.jmol.api.JmolEdge;
-import org.jmol.api.JmolMolecule;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
@@ -54,6 +52,8 @@ import org.jmol.util.BitSetUtil;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
+import org.jmol.util.JmolEdge;
+import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.Parser;
@@ -2531,7 +2531,7 @@ class ScriptMathProcessor {
         if (type.equalsIgnoreCase("hbond"))
           order = JmolEdge.BOND_HYDROGEN_MASK;
         else
-          order = JmolConstants.getBondOrderFromString(type);
+          order = JmolEdge.getBondOrderFromString(type);
         if (order == JmolEdge.BOND_ORDER_NULL)
           return false;
         break;

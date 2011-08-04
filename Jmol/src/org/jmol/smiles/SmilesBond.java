@@ -24,13 +24,13 @@
 
 package org.jmol.smiles;
 
-import org.jmol.api.JmolEdge;
-import org.jmol.api.JmolNode;
+import org.jmol.util.JmolEdge;
+import org.jmol.util.JmolNode;
 
 /**
  * Bond in a SmilesMolecule
  */
-public class SmilesBond implements JmolEdge {
+public class SmilesBond extends JmolEdge {
 
   // Bond orders
   public final static int TYPE_UNKNOWN = -1;
@@ -66,13 +66,6 @@ public class SmilesBond implements JmolEdge {
   private SmilesAtom atom1;
   private SmilesAtom atom2;
 
-  int bondType;
-  int index = -1;
-
-  public int getIndex() {
-    return index;
-  }
-
   boolean isNot;
   JmolEdge matchingBond;
 
@@ -83,7 +76,7 @@ public class SmilesBond implements JmolEdge {
 
   public void set(SmilesBond bond) {
     // not the atoms.
-    bondType = bond.bondType;
+    order = bond.order;
     isNot = bond.isNot;
     primitives = bond.primitives;
     nPrimitives = bond.nPrimitives;
@@ -121,7 +114,7 @@ public class SmilesBond implements JmolEdge {
 
   @Override
   public String toString() {
-    return atom1 + " -" + (isNot ? "!" : "") + bondType + "- " + atom2;
+    return atom1 + " -" + (isNot ? "!" : "") + order + "- " + atom2;
   }
 
   /**
@@ -143,7 +136,7 @@ public class SmilesBond implements JmolEdge {
   }
 
   void set(int bondType, boolean isNot) {
-    this.bondType = bondType;
+    this.order = bondType;
     this.isNot = isNot;
   }
 
@@ -222,61 +215,63 @@ public class SmilesBond implements JmolEdge {
   }
 
   public int getBondType() {
-    return bondType;
+    return order;
   }
 
   public SmilesAtom getOtherAtom(SmilesAtom a) {
     return (atom1 == a ? atom2 : atom1);
   }
 
+  @Override
   public int getAtomIndex1() {
     return atom1.index;
   }
 
+  @Override
   public int getAtomIndex2() {
     return atom2.index;
   }
 
+  @Override
   public int getCovalentOrder() {
-    return bondType;
+    return order;
   }
 
-  public int getOrder() {
-    return bondType;
-  }
-
+  @Override
   public JmolNode getOtherAtom(JmolNode atom) {
     return (atom == atom1 ? atom2 : atom == atom2 ? atom1 : null);
   }
 
+  @Override
   public boolean isCovalent() {
-    return bondType != TYPE_BIO_PAIR;
+    return order != TYPE_BIO_PAIR;
   }
 
   public int getValence() {
-    return (bondType & 7);
+    return (order & 7);
   }
 
+  @Override
   public boolean isHydrogen() {
-    return bondType == TYPE_BIO_PAIR;
+    return order == TYPE_BIO_PAIR;
   }
 
   void switchAtoms() {
     SmilesAtom a = atom1;
     atom1 = atom2;
     atom2 = a;
-    switch (bondType) {
+    switch (order) {
     case TYPE_ATROPISOMER_1:
-      bondType = TYPE_ATROPISOMER_2;
+      order = TYPE_ATROPISOMER_2;
       break;
     case TYPE_ATROPISOMER_2:
-      bondType = TYPE_ATROPISOMER_1;
+      order = TYPE_ATROPISOMER_1;
       break;
     case TYPE_DIRECTIONAL_1:
-      bondType = TYPE_DIRECTIONAL_2;
+      order = TYPE_DIRECTIONAL_2;
       break;
     case TYPE_DIRECTIONAL_2:
-      bondType = TYPE_DIRECTIONAL_1;
+      order = TYPE_DIRECTIONAL_1;
       break;
     }
   }

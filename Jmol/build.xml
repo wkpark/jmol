@@ -475,11 +475,12 @@ all support for previous versions removed
         <exclude name="**/*.dx" />
         <exclude name="**/Test*.class" />
         <include name="org/openscience/jvxl/*" />
-        <include name="org/jmol/jvxl/**" />
-        <include name="org/jmol/util/**" />
-        <include name="org/jmol/g3d/**" />
         <include name="org/jmol/api/**" />
         <include name="org/jmol/atomdata/**" />
+        <include name="org/jmol/constant/**" />
+        <include name="org/jmol/g3d/**" />
+        <include name="org/jmol/jvxl/**" />
+        <include name="org/jmol/util/**" />
         <include name="org/jmol/viewer/JmolConstants.class" />
       </fileset>
       <fileset dir="${appjars.dir}" includes="**/*"/>
@@ -723,6 +724,7 @@ all support for previous versions removed
         <include name="org/jmol/applet/**" />
         <include name="org/jmol/atomdata/**" />
         <include name="org/jmol/bspt/**" />
+        <include name="org/jmol/constant/**" />
         <include name="org/jmol/g3d/**" />
         <include name="org/jmol/geodesic/**" />
         <include name="org/jmol/i18n/**" />
@@ -892,6 +894,7 @@ all support for previous versions removed
   		<include name="org/jmol/applet/**" />
 		<include name="org/jmol/atomdata/**" />
 		<include name="org/jmol/bspt/**" />
+        <include name="org/jmol/constant/**" />
    		<include name="org/jmol/export/**" />
 		<include name="org/jmol/g3d/**" />
 		<include name="org/jmol/geodesic/**" />
@@ -942,6 +945,7 @@ all support for previous versions removed
         <include name="org/jmol/api/JmolEdge.class" />
         <include name="org/jmol/api/JmolMolecule.class" />
         <include name="org/jmol/api/SmilesMatcherInterface.class" />
+        <include name="org/jmol/constant/**" />
         <include name="org/jmol/util/Elements.class" />
         <include name="org/jmol/util/DefaultLogger.class" />
         <include name="org/jmol/util/Logger.class" />
@@ -1079,6 +1083,7 @@ all support for previous versions removed
         <include name="org/jmol/applet/**" />
         <include name="org/jmol/atomdata/**" />
         <include name="org/jmol/bspt/**" />
+        <include name="org/jmol/constant/**" />
         <include name="org/jmol/g3d/**" />
         <include name="org/jmol/geodesic/**" />
         <include name="org/jmol/i18n/**" />

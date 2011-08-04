@@ -48,6 +48,7 @@ import org.jmol.api.*;
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.AtomDataServer;
 import org.jmol.atomdata.RadiusData;
+import org.jmol.constant.EnumAxesMode;
 import org.jmol.g3d.*;
 import org.jmol.util.Base64;
 import org.jmol.util.BitSetUtil;

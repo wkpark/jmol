@@ -29,8 +29,8 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.api.SymmetryInterface;
+import org.jmol.constant.EnumAxesMode;
 import org.jmol.util.Escape;
-import org.jmol.viewer.EnumAxesMode;
 import org.jmol.viewer.JmolConstants;
 
 public class Axes extends FontLineShape {

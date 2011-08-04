@@ -31,6 +31,7 @@ import java.util.BitSet;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.jmol.constant.EnumAxesMode;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.ModelSet;

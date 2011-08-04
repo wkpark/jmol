@@ -29,12 +29,12 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
+import org.jmol.constant.EnumAxesMode;
 import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.TickInfo;
 import org.jmol.util.Point3fi;
 import org.jmol.util.TextFormat;
-import org.jmol.viewer.EnumAxesMode;
 import org.jmol.viewer.JmolConstants;
 
 abstract class FontLineShapeRenderer extends ShapeRenderer {

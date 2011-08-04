@@ -26,10 +26,10 @@ package org.jmol.shape;
 import java.awt.FontMetrics;
 
 import org.jmol.api.SymmetryInterface;
+import org.jmol.constant.EnumAxesMode;
 import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.util.Point3fi;
-import org.jmol.viewer.EnumAxesMode;
 import org.jmol.viewer.StateManager;
 
 import javax.vecmath.Point3f;

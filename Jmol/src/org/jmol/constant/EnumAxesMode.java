@@ -23,7 +23,7 @@
  *  02110-1301, USA.
  */
 
-package org.jmol.viewer;
+package org.jmol.constant;
 
 /**
  * Enum for axes mode.

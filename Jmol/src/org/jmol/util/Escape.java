@@ -705,7 +705,7 @@ public class Escape {
         sep = ",";
       }
       sb.append("]");
-      return packageReadable(name, "float[" + imax + "]", sb);
+      return packageReadable(name, "point3f[" + imax + "]", sb);
     }
     if (info instanceof int[][]) {
       sb.append("[");

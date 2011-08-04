@@ -12,6 +12,7 @@ public class ContactPair {
   public Atom[] myAtoms = new Atom[2];
   public Point3f pt;
   public double volume = 0;
+  public double vdwVolume = 0; 
   public float score;
   public float d;
   public float chord;
@@ -57,7 +58,7 @@ public class ContactPair {
     volume *= Math.PI * volume
         * (d * d + 2 * d * r - 3 * r * r + 2 * d * R + 6 * r * R - 3 * R * R)
         / 12 / d;
-
+    vdwVolume = (score > 0 ? -volume : volume);
     // chord check:
     double a = (d * d - r * r + R * R);
     chord = (float) Math.sqrt(4 * d * d * R * R - a * a) / d;

@@ -1182,18 +1182,6 @@ abstract public class AtomCollection {
   }
 
   protected void fillAtomData(AtomData atomData, int mode) {
-    if ((mode & AtomData.MODE_FILL_CONTACT) != 0) {
-      atomData.atomCount = atomData.bsSelected.cardinality();
-      atomData.atomXyz = new Point3f[atomData.atomCount];
-      atomData.atomRadius = new float[atomData.atomCount];
-      atomData.atomIndex = new int[atomData.atomCount];
-      for (int pt = 0, i = atomData.bsSelected.nextSetBit(0); i >= 0; i = atomData.bsSelected.nextSetBit(i + 1), pt++) {
-        atomData.atomXyz[pt] = atoms[i];
-        atomData.atomRadius[pt] = getWorkingRadius(atoms[i], atomData);
-        atomData.atomIndex[pt] = i;
-      }
-      return;
-    }
     atomData.atomXyz = atoms;
     atomData.atomCount = atomCount;
     atomData.atomicNumber = new int[atomCount];

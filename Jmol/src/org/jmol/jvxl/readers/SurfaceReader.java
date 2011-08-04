@@ -375,6 +375,8 @@ public abstract class SurfaceReader implements VertexDataServer {
       String s = jvxlFileHeaderBuffer.toString();
       int i = s.indexOf('\n', s.indexOf('\n', s.indexOf('\n') + 1) + 1) + 1;
       jvxlData.jvxlFileTitle = s.substring(0, i);
+    }
+    if (xyzMin != null) {
       setBoundingBox();
       if (!params.isSilent)
         Logger.info("boundbox corners " + Escape.escape(xyzMin) + " "
@@ -1021,25 +1023,6 @@ public abstract class SurfaceReader implements VertexDataServer {
     volumetricOrigin.set(center);
   }
 
-  protected void setBoundingBox(Point3f pt, float margin) {
-    if (xyzMin == null) {
-      xyzMin = new Point3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
-      xyzMax = new Point3f(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
-    }
-    if (pt.x - margin < xyzMin.x)
-      xyzMin.x = pt.x - margin;
-    if (pt.x + margin > xyzMax.x)
-      xyzMax.x = pt.x + margin;
-    if (pt.y - margin < xyzMin.y)
-      xyzMin.y = pt.y - margin;
-    if (pt.y + margin > xyzMax.y)
-      xyzMax.y = pt.y + margin;
-    if (pt.z - margin < xyzMin.z)
-      xyzMin.z = pt.z - margin;
-    if (pt.z + margin > xyzMax.z)
-      xyzMax.z = pt.z + margin;
-  }
-
   private void setBoundingBox() {
     if (meshDataServer != null)
       meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
@@ -1049,6 +1032,14 @@ public abstract class SurfaceReader implements VertexDataServer {
       if (!Float.isNaN(p.x))
         setBoundingBox(p, 0);
     }
+  }
+
+  protected void setBoundingBox(Point3f pt, float margin) {
+    if (xyzMin == null) {
+      xyzMin = new Point3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
+      xyzMax = new Point3f(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
+    }
+    BoxInfo.addPoint(pt, xyzMin, xyzMax, margin);
   }
 
   /**

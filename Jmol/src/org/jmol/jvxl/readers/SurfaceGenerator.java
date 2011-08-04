@@ -1415,7 +1415,8 @@ public class SurfaceGenerator {
   }
   
   void fillAtomData(AtomData atomData, int mode) {
-    if ((mode & AtomData.MODE_FILL_RADII) != 0) {
+    if ((mode & AtomData.MODE_FILL_RADII) != 0 
+        && atomData.bsSelected != null) {
       if (bsVdw == null)
         bsVdw = new BitSet();
       bsVdw.or(atomData.bsSelected);

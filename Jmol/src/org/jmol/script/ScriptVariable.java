@@ -240,7 +240,7 @@ public class ScriptVariable extends Token {
             String key = entry.getKey();
             Object o = entry.getValue();
             x2.put(key, getVariable(isVariableType(o) ? o : Escape.toReadable(
-                key, o)));
+                null, o)));
           }
           x = x2;
         }

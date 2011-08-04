@@ -128,7 +128,6 @@ public class AtomData {
   public final static int MODE_FILL_MOLECULES = 4;
   public final static int MODE_GET_ATTACHED_HYDROGENS = 8;
   public final static int MODE_FILL_MULTIMODEL = 16;
-  public static final int MODE_FILL_CONTACT = 32;
  
   public String programInfo;
   public String fileName;

@@ -1361,36 +1361,45 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     for (int i = 0; i < meshCount; i++) {
       Map<String, Object> info = new Hashtable<String, Object>();
       IsosurfaceMesh mesh = isomeshes[i];
-      if (mesh == null || mesh.vertices == null)
+      if (mesh == null || mesh.vertices == null 
+          || mesh.vertexCount == 0 && mesh.polygonCount == 0)
         continue;
-      info.put("ID", (mesh.thisID == null ? "<noid>" : mesh.thisID));
-      info.put("vertexCount", Integer.valueOf(mesh.vertexCount));
-      if (mesh.ptCenter.x != Float.MAX_VALUE)
-        info.put("center", mesh.ptCenter);
-      if (mesh.ptOffset != null)
-        info.put("offset", mesh.ptOffset);
-      if (mesh.q != null)
-        info.put("rotation", mesh.q.toPoint4f());
-      if (mesh.scale3d != 0)
-        info.put("scale3d", new Float(mesh.scale3d));
-      info.put("xyzMin", mesh.jvxlData.boundingBox[0]);
-      info.put("xyzMax", mesh.jvxlData.boundingBox[1]);
-      String s = JvxlCoder.jvxlGetInfo(mesh.jvxlData);
-      if (s != null)
-        info.put("jvxlInfo", s.replace('\n', ' '));
-      info.put("modelIndex", Integer.valueOf(mesh.modelIndex));
-      info.put("color", Graphics3D.colorPointFromInt2(Graphics3D
-          .getArgb(mesh.colix)));
-      if (mesh.colorEncoder != null)
-        info.put("colorKey", mesh.colorEncoder.getColorKey());
-      if (mesh.title != null)
-        info.put("title", mesh.title);
-      if (mesh.jvxlData.contourValues != null
-          || mesh.jvxlData.contourValuesUsed != null)
-        info.put("contours", mesh.getContourList(viewer));
+      addMeshInfo(mesh, info);
       V.add(info);
     }
     return V;
+  }
+
+  protected void addMeshInfo(IsosurfaceMesh mesh, Map<String, Object> info) {
+    info.put("ID", (mesh.thisID == null ? "<noid>" : mesh.thisID));
+    info.put("vertexCount", Integer.valueOf(mesh.vertexCount));
+    if (mesh.calculatedVolume != null)
+      info.put("volume", mesh.calculatedVolume);
+    if (mesh.calculatedArea != null)
+      info.put("area", mesh.calculatedArea);
+    if (mesh.ptCenter.x != Float.MAX_VALUE)
+      info.put("center", mesh.ptCenter);
+    if (mesh.ptOffset != null)
+      info.put("offset", mesh.ptOffset);
+    if (mesh.q != null)
+      info.put("rotation", mesh.q.toPoint4f());
+    if (mesh.scale3d != 0)
+      info.put("scale3d", new Float(mesh.scale3d));
+    info.put("xyzMin", mesh.jvxlData.boundingBox[0]);
+    info.put("xyzMax", mesh.jvxlData.boundingBox[1]);
+    String s = JvxlCoder.jvxlGetInfo(mesh.jvxlData);
+    if (s != null)
+      info.put("jvxlInfo", s.replace('\n', ' '));
+    info.put("modelIndex", Integer.valueOf(mesh.modelIndex));
+    info.put("color", Graphics3D.colorPointFromInt2(Graphics3D
+        .getArgb(mesh.colix)));
+    if (mesh.colorEncoder != null)
+      info.put("colorKey", mesh.colorEncoder.getColorKey());
+    if (mesh.title != null)
+      info.put("title", mesh.title);
+    if (mesh.jvxlData.contourValues != null
+        || mesh.jvxlData.contourValuesUsed != null)
+      info.put("contours", mesh.getContourList(viewer));
   }
 
   public float[] getPlane(int x) {

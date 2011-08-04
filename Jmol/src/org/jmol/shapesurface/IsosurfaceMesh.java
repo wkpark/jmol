@@ -58,6 +58,7 @@ public class IsosurfaceMesh extends Mesh {
   boolean hasGridPoints;
   Object calculatedArea;
   Object calculatedVolume;
+  Object info;
   
   IsosurfaceMesh(String thisID, Graphics3D g3d, short colix, int index) {
     super(thisID, g3d, colix, index);
@@ -786,8 +787,8 @@ public class IsosurfaceMesh extends Mesh {
           vertexSource[vertexCount] = m.vertexSource[i];
       }
     }
-    polygonCount0 = nP;
-    vertexCount0 = nV;
+    polygonCount = polygonCount0 = nP;
+    vertexCount = vertexCount0 = nV;
     if (nP > 0)
       resetSlab();
     polygonIndexes = newPolygons;
@@ -803,6 +804,7 @@ public class IsosurfaceMesh extends Mesh {
         for (int j = 0; j < 3; j++)
           p[j] += vertexCount;
     }
+    System.out.println("isosurfaceMesh mergePolygons " + m.polygonCount + " " + m.polygonIndexes.length);
     return ipt;
   }
 

@@ -283,18 +283,22 @@ public class BoxInfo {
   
   public void addBoundBoxPoint(Point3f pt) {
     isScaleSet = false;
-    if (pt.x < bbCorner0.x)
-      bbCorner0.x = pt.x;
-    if (pt.x > bbCorner1.x)
-      bbCorner1.x = pt.x;
-    if (pt.y < bbCorner0.y)
-      bbCorner0.y = pt.y;
-    if (pt.y > bbCorner1.y)
-      bbCorner1.y = pt.y;
-    if (pt.z < bbCorner0.z)
-      bbCorner0.z = pt.z;
-    if (pt.z > bbCorner1.z)
-      bbCorner1.z = pt.z;
+    addPoint(pt, bbCorner0, bbCorner1, 0);
+  }
+
+  public static void addPoint(Point3f pt, Point3f xyzMin, Point3f xyzMax, float margin) {
+    if (pt.x - margin < xyzMin.x)
+      xyzMin.x = pt.x - margin;
+    if (pt.x + margin > xyzMax.x)
+      xyzMax.x = pt.x + margin;
+    if (pt.y - margin < xyzMin.y)
+      xyzMin.y = pt.y - margin;
+    if (pt.y + margin > xyzMax.y)
+      xyzMax.y = pt.y + margin;
+    if (pt.z - margin < xyzMin.z)
+      xyzMin.z = pt.z - margin;
+    if (pt.z + margin > xyzMax.z)
+      xyzMax.z = pt.z + margin;
   }
 
   public void setBbcage(float scale) {

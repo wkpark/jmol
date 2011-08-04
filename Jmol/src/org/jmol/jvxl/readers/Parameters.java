@@ -147,7 +147,7 @@ public class Parameters {
   boolean logMessages = false;
   boolean logCompression = false;
   boolean logCube = false;
-  boolean isSilent = false;
+  public boolean isSilent = false;
   
   float assocCutoff = 0.3f; // fraction along the edge to use as a cutoff for averaging of normals  
 

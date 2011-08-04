@@ -1514,7 +1514,6 @@ public void initShape() {
   public String getShapeState() {
     StringBuffer s = new StringBuffer("\n");
     appendCmd(s, "draw delete");
-    int modelCount = viewer.getModelCount();
     for (int i = 0; i < meshCount; i++) {
       DrawMesh mesh = dmeshes[i];
       if (mesh.vertexCount == 0 && mesh.lineData == null)

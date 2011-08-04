@@ -72,6 +72,7 @@ import org.jmol.util.MeshSurface;
 import org.jmol.util.Parser;
 import org.jmol.util.Point3fi;
 import org.jmol.util.Quaternion;
+import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.TextFormat;
 import org.jmol.modelset.TickInfo;
 import org.jmol.viewer.ActionManager;
@@ -15836,7 +15837,7 @@ public class ScriptEvaluator {
         error(ERROR_invalidArgument);
       pts = BoxInfo.getCriticalPoints(unitCell.getUnitCellVertices(), unitCell
           .getCartesianOffset());
-      int iType = (int) unitCell.getUnitCellInfo(JmolConstants.INFO_DIMENSIONS);
+      int iType = (int) unitCell.getUnitCellInfo(SimpleUnitCell.INFO_DIMENSIONS);
       Vector3f v1 = null;
       Vector3f v2 = null;
       switch (iType) {

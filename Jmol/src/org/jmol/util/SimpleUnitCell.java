@@ -28,7 +28,6 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-import org.jmol.viewer.JmolConstants;
 
 /**
  * general-purpose simple unit cell for calculations 
@@ -180,6 +179,13 @@ public class SimpleUnitCell {
 
   protected Matrix4f matrixCtoFAbsolute;
   protected Matrix4f matrixFtoCAbsolute;
+  public final static int INFO_DIMENSIONS = 6;
+  public final static int INFO_GAMMA = 5;
+  public final static int INFO_BETA = 4;
+  public final static int INFO_ALPHA = 3;
+  public final static int INFO_C = 2;
+  public final static int INFO_B = 1;
+  public final static int INFO_A = 0;
 
   public final void toCartesian(Point3f pt, boolean isAbsolute) {
     if (matrixFractionalToCartesian != null)
@@ -225,19 +231,19 @@ public class SimpleUnitCell {
 
   public final float getInfo(int infoType) {
     switch (infoType) {
-    case JmolConstants.INFO_A:
+    case INFO_A:
       return a;
-    case JmolConstants.INFO_B:
+    case INFO_B:
       return b;
-    case JmolConstants.INFO_C:
+    case INFO_C:
       return c;
-    case JmolConstants.INFO_ALPHA:
+    case INFO_ALPHA:
       return alpha;
-    case JmolConstants.INFO_BETA:
+    case INFO_BETA:
       return beta;
-    case JmolConstants.INFO_GAMMA:
+    case INFO_GAMMA:
       return gamma;
-    case JmolConstants.INFO_DIMENSIONS:
+    case INFO_DIMENSIONS:
       return dimension;
     }
     return Float.NaN;

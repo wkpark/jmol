@@ -34,13 +34,13 @@ import javax.vecmath.Vector3f;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.shape.Mesh;
 import org.jmol.shape.MeshRenderer;
+import org.jmol.shapespecial.Draw.EnumDrawType;
 import org.jmol.util.Measure;
 import org.jmol.viewer.ActionManager;
-import org.jmol.viewer.JmolConstants;
 
 public class DrawRenderer extends MeshRenderer {
 
-  private int drawType;
+  private EnumDrawType drawType;
   private DrawMesh dmesh;
 
   private Point3f[] controlHermites;
@@ -106,12 +106,12 @@ public class DrawRenderer extends MeshRenderer {
     }
     boolean isDrawPickMode = (viewer.getPickingMode() == ActionManager.PICKING_DRAW);
     int nPoints = vertexCount;
-    boolean isCurved = ((drawType == JmolConstants.DRAW_CURVE
-        || drawType == JmolConstants.DRAW_ARROW || drawType == JmolConstants.DRAW_ARC) && vertexCount >= 2);
-    boolean isSegments = (drawType == JmolConstants.DRAW_LINE_SEGMENT);
+    boolean isCurved = ((drawType == EnumDrawType.CURVE
+        || drawType == EnumDrawType.ARROW || drawType == EnumDrawType.ARC) && vertexCount >= 2);
+    boolean isSegments = (drawType == EnumDrawType.LINE_SEGMENT);
     if (width > 0 && isCurved) {
       pt1f.set(0, 0, 0);
-      int n = (drawType == JmolConstants.DRAW_ARC ? 2 : vertexCount);
+      int n = (drawType == EnumDrawType.ARC ? 2 : vertexCount);
       for (int i = 0; i < n; i++)
         pt1f.add(vertices[i]);
       pt1f.scale(1f / n);
@@ -141,12 +141,12 @@ public class DrawRenderer extends MeshRenderer {
     default:
       super.render2(false);
       break;
-    case JmolConstants.DRAW_CIRCULARPLANE:
+    case CIRCULARPLANE:
       if (dmesh.scale > 0)
         width *= dmesh.scale;
       super.render2(false);
       break;
-    case JmolConstants.DRAW_CIRCLE:
+    case CIRCLE:
       viewer.transformPoint(vertices[0], pt1i);
       if (diameter == 0 && width == 0)
         width = 1.0f;
@@ -158,11 +158,11 @@ public class DrawRenderer extends MeshRenderer {
         g3d.drawFilledCircle(colix, mesh.fillTriangles ? colix : 0, diameter,
             pt1i.x, pt1i.y, pt1i.z);
       break;
-    case JmolConstants.DRAW_CURVE:
-    case JmolConstants.DRAW_LINE_SEGMENT:
+    case CURVE:
+    case LINE_SEGMENT:
       //unnecessary
       break;
-    case JmolConstants.DRAW_ARC:
+    case ARC:
       //renderArrowHead(controlHermites[nHermites - 2], controlHermites[nHermites - 1], false);
       // 
       // {pt1} {pt2} {ptref} {nDegreesOffset, theta, fractionalOffset}
@@ -216,7 +216,7 @@ public class DrawRenderer extends MeshRenderer {
       }
       pt1f.set(vpt2);
       break;
-    case JmolConstants.DRAW_ARROW:
+    case ARROW:
       if (vertexCount == 2) {
         renderArrowHead(vertices[0], vertices[1], 0, false, true, dmesh.isBarb);
         return;
@@ -424,8 +424,7 @@ public class DrawRenderer extends MeshRenderer {
   private void renderHandles() {
     int diameter = (int) (10 * imageFontScaling);
     switch (drawType) {
-    case JmolConstants.DRAW_NONE:
-    case JmolConstants.DRAW_TRIANGLE:
+    case NONE:
       return;
     default:
       short colixFill = Graphics3D.getColixTranslucent(Graphics3D.GOLD, true,
@@ -460,10 +459,10 @@ public class DrawRenderer extends MeshRenderer {
         if (s.length() > 1 && s.charAt(0) == '>') {
           pt = dmesh.polygonIndexes[i].length - 1;
           s = s.substring(1);
-          if (drawType == JmolConstants.DRAW_ARC)
+          if (drawType == EnumDrawType.ARC)
             pt1f.set(pt2f);
         }
-        if (drawType != JmolConstants.DRAW_ARC)
+        if (drawType != EnumDrawType.ARC)
           pt1f.set(vertices[dmesh.polygonIndexes[i][pt]]);
         viewer.transformPoint(pt1f, pt1i);
         int offset = (int) (5 * imageFontScaling);

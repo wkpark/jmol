@@ -478,7 +478,7 @@ public void initShape() {
     if (property == "command")
       return getDrawCommand(thisMesh);
     if (property == "type")
-      return Integer.valueOf(thisMesh == null ? JmolConstants.DRAW_NONE : thisMesh.drawType);
+      return Integer.valueOf(thisMesh == null ? EnumDrawType.NONE.id : thisMesh.drawType.id);
     return super.getProperty(property, index);
   }
 
@@ -562,7 +562,7 @@ public void initShape() {
             if (thisMesh.polygonIndexes[i][j] >= thisMesh.vertexCount)
               return false;
         }
-        thisMesh.drawType = JmolConstants.DRAW_POLYGON;
+        thisMesh.drawType = EnumDrawType.POLYGON;
         thisMesh.checkByteCount = 1;
       } else if (lineData != null) {
         thisMesh.lineData = lineData;
@@ -578,12 +578,12 @@ public void initShape() {
       thisMesh.setPolygonCount(modelCount);
       thisMesh.ptCenters = new Point3f[modelCount];
       thisMesh.modelFlags = new BitSet();
-      thisMesh.drawTypes = new int[modelCount];
+      thisMesh.drawTypes = new EnumDrawType[modelCount];
       thisMesh.drawVertexCounts = new int[modelCount];
       thisMesh.vertexCount = 0;
       if (indicatedModelIndex >= 0) {
         setPoints(-1, 0);
-        thisMesh.drawType = JmolConstants.DRAW_MULTIPLE;
+        thisMesh.drawType = EnumDrawType.MULTIPLE;
         thisMesh.drawVertexCount = -1;
         thisMesh.modelFlags.set(indicatedModelIndex);
         indicatedModelIndex = -1;
@@ -596,11 +596,11 @@ public void initShape() {
             thisMesh.setCenter(iModel);
             thisMesh.drawTypes[iModel] = thisMesh.drawType;
             thisMesh.drawVertexCounts[iModel] = thisMesh.drawVertexCount;
-            thisMesh.drawType = JmolConstants.DRAW_MULTIPLE;
+            thisMesh.drawType = EnumDrawType.MULTIPLE;
             thisMesh.drawVertexCount = -1;
             thisMesh.modelFlags.set(iModel);
           } else {
-            thisMesh.drawTypes[iModel] = JmolConstants.DRAW_NONE;
+            thisMesh.drawTypes[iModel] = EnumDrawType.NONE;
             thisMesh.polygonIndexes[iModel] = new int[0];
           }
         }
@@ -609,13 +609,13 @@ public void initShape() {
     thisMesh.isVector = isVector;
     thisMesh.noHead = noHead;
     thisMesh.isBarb = isBarb;
-    thisMesh.width= (thisMesh.drawType == JmolConstants.DRAW_CYLINDER || 
-        thisMesh.drawType == JmolConstants.DRAW_CIRCULARPLANE ? -Math.abs(width) : width);
+    thisMesh.width= (thisMesh.drawType == EnumDrawType.CYLINDER || 
+        thisMesh.drawType == EnumDrawType.CIRCULARPLANE ? -Math.abs(width) : width);
     thisMesh.setCenter(-1);
     if (offset != null)
       thisMesh.offset(offset);
     if (thisMesh.thisID == null) {
-      thisMesh.thisID = JmolConstants.getDrawTypeName(thisMesh.drawType) + (++nUnnamed);
+      thisMesh.thisID = thisMesh.drawType.name + (++nUnnamed);
       htObjects.put(thisMesh.thisID, thisMesh);
     }
     clean();
@@ -713,7 +713,8 @@ public void initShape() {
           for (int j = nPoints; j < 3; j++) {
             p[j] = n0 + nPoints - 1;
           }
-          thisMesh.drawTypes[modelIndex] = thisMesh.drawVertexCounts[modelIndex] = nPoints;
+          thisMesh.drawTypes[modelIndex] = EnumDrawType.getType(nPoints);
+          thisMesh.drawVertexCounts[modelIndex] = nPoints;
           thisMesh.modelFlags.set(modelIndex);
         }
         break;
@@ -797,10 +798,10 @@ public void initShape() {
 
   private void setPolygon(int nPoly) {
     int nVertices = nPoints;
-    int drawType = JmolConstants.DRAW_POINT;
+    EnumDrawType drawType = EnumDrawType.POINT;
     if (isArc) {
       if (nVertices >= 2) {
-        drawType = JmolConstants.DRAW_ARC;
+        drawType = EnumDrawType.ARC;
       } else {
         isArc = false;
         isVector = false;
@@ -813,12 +814,12 @@ public void initShape() {
       if (nVertices == 2)
         isPlane = true;
       if (!isPlane)
-        drawType = JmolConstants.DRAW_CIRCLE;
+        drawType = EnumDrawType.CIRCLE;
       if (width == 0)
         width = 1;
     } else if ((isCurve || isArrow) && nVertices >= 2 && !isArc) {
-      drawType = (isLine ? JmolConstants.DRAW_LINE_SEGMENT
-          : isCurve ? JmolConstants.DRAW_CURVE : JmolConstants.DRAW_ARROW);
+      drawType = (isLine ? EnumDrawType.LINE_SEGMENT
+          : isCurve ? EnumDrawType.CURVE : EnumDrawType.ARROW);
     }
     if (isVector && !isArc) {
       if (nVertices > 2)
@@ -850,8 +851,8 @@ public void initShape() {
         }
         vAC.add(ptList[0]);
         ptList[1] = new Point3f(vAC);
-        drawType = (isArrow ? JmolConstants.DRAW_ARROW
-            : isArc ? JmolConstants.DRAW_ARC : JmolConstants.DRAW_CIRCULARPLANE);
+        drawType = (isArrow ? EnumDrawType.ARROW
+            : isArc ? EnumDrawType.ARC : EnumDrawType.CIRCULARPLANE);
       }
       if (isArc) {
         dist = Math.abs(dist);
@@ -874,7 +875,7 @@ public void initShape() {
         nVertices = 4;
       }
       plane = null;
-    } else if (drawType == JmolConstants.DRAW_POINT) {
+    } else if (drawType == EnumDrawType.POINT) {
       Point3f pt;
       Point3f center = new Point3f();
       Vector3f normal = new Vector3f();
@@ -884,7 +885,7 @@ public void initShape() {
         Measure.getPlaneProjection(ptList[1], plane, ptList[1], vTemp);
         nVertices = -2;
         if (isArrow)
-          drawType = JmolConstants.DRAW_ARROW;
+          drawType = EnumDrawType.ARROW;
         plane = null;
       }
       if (nVertices == 3 && isPlane && !isPerpendicular) {
@@ -980,14 +981,14 @@ public void initShape() {
       case 1:
         break;
       case 2:
-        drawType = (isArc ? JmolConstants.DRAW_ARC
-            : isPlane && isCircle ? JmolConstants.DRAW_CIRCULARPLANE
-                : isCylinder ? JmolConstants.DRAW_CYLINDER
-                    : JmolConstants.DRAW_LINE);
+        drawType = (isArc ? EnumDrawType.ARC
+            : isPlane && isCircle ? EnumDrawType.CIRCULARPLANE
+                : isCylinder ? EnumDrawType.CYLINDER
+                    : EnumDrawType.LINE);
         break;
       default:
-        drawType = (thisMesh.connections == null ? JmolConstants.DRAW_PLANE
-            : JmolConstants.DRAW_ARROW);
+        drawType = (thisMesh.connections == null ? EnumDrawType.PLANE
+            : EnumDrawType.ARROW);
       }
     }
     thisMesh.drawType = drawType;
@@ -1019,7 +1020,7 @@ public void initShape() {
       return;
     float f = newScale / mesh.scale;
     mesh.scale = newScale;
-    if (mesh.haveXyPoints || mesh.drawType == JmolConstants.DRAW_ARC || mesh.drawType == JmolConstants.DRAW_CIRCLE || mesh.drawType == JmolConstants.DRAW_CIRCULARPLANE)
+    if (mesh.haveXyPoints || mesh.drawType == EnumDrawType.ARC || mesh.drawType == EnumDrawType.CIRCLE || mesh.drawType == EnumDrawType.CIRCULARPLANE)
       return; // done in renderer
     Vector3f diff = new Vector3f();
     int iptlast = -1;
@@ -1255,7 +1256,7 @@ public void initShape() {
     pickedMesh = null;
     for (int i = 0; i < meshCount; i++) {
       DrawMesh m = dmeshes[i];
-      if (m.drawType == JmolConstants.DRAW_POLYGON)
+      if (m.drawType == EnumDrawType.POLYGON)
         continue;
       if (m.visibilityFlags != 0) {
         int mCount = (m.modelFlags == null ? 1 : viewer.getModelCount());
@@ -1304,7 +1305,7 @@ public void initShape() {
   }
 
   private String getDrawCommand(DrawMesh mesh, int iModel) {
-    if (mesh.drawType == JmolConstants.DRAW_NONE  
+    if (mesh.drawType == EnumDrawType.NONE  
         && mesh.lineData == null
         && mesh.drawVertexCount == 0 && mesh.drawVertexCounts == null)
       return "";
@@ -1322,12 +1323,12 @@ public void initShape() {
     else if (mesh.isBarb)
       str.append(" barb");
     if (mesh.scale != 1
-        && (mesh.haveXyPoints || mesh.drawType == JmolConstants.DRAW_CIRCLE || mesh.drawType == JmolConstants.DRAW_ARC))
+        && (mesh.haveXyPoints || mesh.drawType == EnumDrawType.CIRCLE || mesh.drawType == EnumDrawType.ARC))
       str.append(" scale ").append(mesh.scale);
     if (mesh.width != 0)
       str.append(" diameter ").append(
-          (mesh.drawType == JmolConstants.DRAW_CYLINDER ? Math.abs(mesh.width)
-              : mesh.drawType == JmolConstants.DRAW_CIRCULARPLANE ? Math
+          (mesh.drawType == EnumDrawType.CYLINDER ? Math.abs(mesh.width)
+              : mesh.drawType == EnumDrawType.CIRCULARPLANE ? Math
                   .abs(mesh.width * mesh.scale) : mesh.width));
     else if (mesh.diameter > 0)
       str.append(" diameter ").append(mesh.diameter);
@@ -1347,34 +1348,40 @@ public void initShape() {
       int nVertices = mesh.drawVertexCount > 0  || mesh.drawVertexCounts == null ? mesh.drawVertexCount
           : mesh.drawVertexCounts[iModel >= 0 ? iModel : 0];
       switch (mesh.drawTypes == null ? mesh.drawType : mesh.drawTypes[iModel]) {
-      case JmolConstants.DRAW_POLYGON:
+      case NONE:
+      case MULTIPLE:
+        break;
+      case POLYGON:
         str.append(" POLYGON ").append(nVertices);
         break;
-      case JmolConstants.DRAW_LINE_SEGMENT:
+      case PLANE:
+        str.append(" PLANE");
+        break;
+      case LINE_SEGMENT:
         str.append(" LINE");
         break;
-      case JmolConstants.DRAW_ARC:
+      case ARC:
         str.append(mesh.isVector ? " ARROW ARC" : " ARC");
         break;
-      case JmolConstants.DRAW_ARROW:
+      case ARROW:
         str.append(mesh.isVector ? " VECTOR" : " ARROW");
         if (mesh.connections != null)
           str.append(" connect ").append(Escape.escape(mesh.connections));
         break;
-      case JmolConstants.DRAW_CIRCLE:
+      case CIRCLE:
         str.append(" CIRCLE");
         break;
-      case JmolConstants.DRAW_CURVE:
+      case CURVE:
         str.append(" CURVE");
         break;
-      case JmolConstants.DRAW_CIRCULARPLANE:
-      case JmolConstants.DRAW_CYLINDER:
+      case CIRCULARPLANE:
+      case CYLINDER:
         str.append(" CYLINDER");
         break;
-      case JmolConstants.DRAW_POINT:
+      case POINT:
         nVertices = 1; // because this might be multiple points
         break;
-      case JmolConstants.DRAW_LINE:
+      case LINE:
         nVertices = 2; // because this might be multiple lines
         break;
       }
@@ -1390,7 +1397,7 @@ public void initShape() {
             str.append(s);
             str.append(" ] ");
           }
-      } else if (mesh.drawType == JmolConstants.DRAW_POLYGON) {
+      } else if (mesh.drawType == EnumDrawType.POLYGON) {
         for (int i = 0; i < mesh.vertexCount; i++)
           str.append(" ").append(Escape.escape(mesh.vertices[i]));
         str.append(" ").append(mesh.polygonCount);
@@ -1431,7 +1438,7 @@ public void initShape() {
     try {
       if (iModel >= mesh.polygonIndexes.length)
         iModel = 0; // arrows and curves may not have multiple model representations
-      boolean adjustPt = (mesh.isVector && mesh.drawType != JmolConstants.DRAW_ARC);
+      boolean adjustPt = (mesh.isVector && mesh.drawType != EnumDrawType.ARC);
       for (int i = 0; i < nVertices; i++) {
         Point3f pt = mesh.vertices[mesh.polygonIndexes[iModel][i]];
         if (pt.z == Float.MAX_VALUE || pt.z == -Float.MAX_VALUE) {
@@ -1460,13 +1467,13 @@ public void initShape() {
       Map<String, Object> info = new Hashtable<String, Object>();
       info.put("fixed", mesh.ptCenters == null ? Boolean.TRUE : Boolean.FALSE);
       info.put("ID", (mesh.thisID == null ? "<noid>" : mesh.thisID));
-      info.put("drawType", JmolConstants.getDrawTypeName(mesh.drawType));
+      info.put("drawType", mesh.drawType.name);
       if (mesh.diameter > 0)
         info.put("diameter", Integer.valueOf(mesh.diameter));
       if (mesh.width != 0)
         info.put("width", new Float(mesh.width));
       info.put("scale", new Float(mesh.scale));
-      if (mesh.drawType == JmolConstants.DRAW_MULTIPLE) {
+      if (mesh.drawType == EnumDrawType.MULTIPLE) {
         List<Map<String, Object>> m = new ArrayList<Map<String,Object>>();
         int modelCount = viewer.getModelCount();
         for (int k = 0; k < modelCount; k++) {
@@ -1484,7 +1491,7 @@ public void initShape() {
           for (int ipt = 0; ipt < nPoints; ipt++)
             v.add(mesh.vertices[mesh.polygonIndexes[k][ipt]]);
           mInfo.put("vertices", v);
-          if (mesh.drawTypes[k] == JmolConstants.DRAW_LINE) {
+          if (mesh.drawTypes[k] == EnumDrawType.LINE) {
             float d = mesh.vertices[mesh.polygonIndexes[k][0]]
                 .distance(mesh.vertices[mesh.polygonIndexes[k][1]]);
             mInfo.put("length_Ang", new Float(d));
@@ -1501,7 +1508,7 @@ public void initShape() {
         for (int j = 0; j < mesh.vertexCount; j++)
           v.add(mesh.vertices[j]);
         info.put("vertices", v);
-        if (mesh.drawType == JmolConstants.DRAW_LINE)
+        if (mesh.drawType == EnumDrawType.LINE)
           info.put("length_Ang", new Float(mesh.vertices[0]
               .distance(mesh.vertices[1])));
       }
@@ -1529,4 +1536,42 @@ public void initShape() {
     return new Point3f((float) Math.random(), (float) Math.random(), (float) Math.random());
   }
 
+  enum EnumDrawType {
+    MULTIPLE(-1,"multiple"),
+    NONE(0,"none"),
+    
+    POINT(1,"point"),
+    LINE(2,"line"),
+    PLANE(4,"plane"),
+    
+    CYLINDER(14,"cylinder"),
+    ARROW(15,"arrow"),
+    CIRCLE(16,"circle"),
+    CURVE(17,"curve"),
+    CIRCULARPLANE(18,"circularPlane"),
+    ARC(19,"arc"),
+    LINE_SEGMENT(20,"lineSegment"),
+    POLYGON(21,"polygon");
+
+    final int id;
+    final String name;
+    
+    EnumDrawType(int id, String name) {
+      this.id = id;
+      this.name = name;
+    }
+
+    public static EnumDrawType getType(int nPoints) {
+      switch (nPoints) {
+      case 1:
+        return POINT;
+      case 2:
+        return LINE;
+      case 4:
+        return PLANE;
+      default:
+        return NONE;
+      }
+    }
+  }
 }

@@ -263,11 +263,11 @@ class StatusManager {
     this.jmolCallbackListener = jmolCallbackListener;
   }
   
-  private String[] jmolScriptCallbacks = new String[EnumCallback.getCallbackCount()];
-  
+  Map<EnumCallback, String> jmolScriptCallbacks = new Hashtable<EnumCallback, String>();
+
   private String jmolScriptCallback(EnumCallback callback) {
     //System.out.println("callback " + iCallback + " + " + JmolConstants.getCallbackName(iCallback));
-    String s = jmolScriptCallbacks[callback.getId()];
+    String s = jmolScriptCallbacks.get(callback);
     if (s != null)
       viewer.evalStringQuiet(s, true, false);
     return s;
@@ -276,7 +276,7 @@ class StatusManager {
   synchronized void setCallbackFunction(String callbackType,
                                         String callbackFunction) {
     // menu and language setting also use this route
-    EnumCallback callback = EnumCallback.getCallbackId(callbackType);
+    EnumCallback callback = EnumCallback.getCallback(callbackType);
     if (callback != null) {
       int pt = (callbackFunction == null ? 0
           : callbackFunction.length() > 7
@@ -284,8 +284,10 @@ class StatusManager {
               : callbackFunction.length() > 11
                   && callbackFunction.toLowerCase().indexOf("jmolscript:") == 0 ? 11
                   : 0);
-      jmolScriptCallbacks[callback.getId()] = (pt == 0 ? null : callbackFunction
-          .substring(pt).trim());
+      if (pt == 0)
+        jmolScriptCallbacks.remove(callback);
+      else
+        jmolScriptCallbacks.put(callback, callbackFunction.substring(pt).trim());
     }
     if (jmolCallbackListener != null)
       jmolCallbackListener.setCallbackFunction(callbackType, callbackFunction);

@@ -43,6 +43,10 @@ import javax.vecmath.Vector3f;
 
 final public class JmolConstants {
 
+  // axes mode constants --> org.jmol.constant.EnumAxesMode
+  // callback constants --> org.jmol.constant.EnumCallback
+  // draw constants --> org.jmol.shapespecial.draw.EnumCallback
+  
   public final static String copyright = "(C) 2009 Jmol Development";
   public final static String version;
 
@@ -103,18 +107,6 @@ final public class JmolConstants {
   public final static int FILE_STATUS_MODELSET_CREATED = 3;
   public final static int FILE_STATUS_MODELS_DELETED = 5;
 
-  // unit cell parameters
-  
-  public final static int INFO_A = 0;
-  public final static int INFO_B = 1;
-  public final static int INFO_C = 2;
-  public final static int INFO_ALPHA = 3;
-  public final static int INFO_BETA = 4;
-  public final static int INFO_GAMMA = 5;
-  public final static int INFO_DIMENSIONS = 6;
-
-  // Jmol data frame types
-  
   public final static int JMOL_DATA_OTHER = -1;
   public final static int JMOL_DATA_RAMACHANDRAN = 0;
   public final static int JMOL_DATA_QUATERNION = 1;
@@ -124,51 +116,6 @@ final public class JmolConstants {
   //note: Eval.write() processing requires drivers to be first-letter-capitalized.
   //do not capitalize any other letter in the word. Separate by semicolon.
   public static final String EXPORT_DRIVER_LIST = "Idtf;Maya;Povray;Vrml;X3d;Tachyon;Obj"; 
-
-  public final static int DRAW_MULTIPLE = -1;
-  public final static int DRAW_NONE = 0;
-  //next are same as number of points
-  public final static int DRAW_POINT = 1;
-  public final static int DRAW_LINE = 2;
-  public final static int DRAW_TRIANGLE = 3;
-  public final static int DRAW_PLANE = 4;
-  public static final int DRAW_CYLINDER = 5;
-  //next are special
-  public final static int DRAW_ARROW = 15;
-  public final static int DRAW_CIRCLE = 16;
-  public final static int DRAW_CURVE = 17;
-  public static final int DRAW_CIRCULARPLANE = 18;
-  public final static int DRAW_ARC = 19;
-  public final static int DRAW_LINE_SEGMENT = 20;
-  public final static int DRAW_POLYGON = 21;
-  
-  public static String getDrawTypeName(int drawType) {
-    switch (drawType) {
-    case JmolConstants.DRAW_MULTIPLE:
-      return "multiple";
-    case JmolConstants.DRAW_POINT:
-      return "point";
-    case JmolConstants.DRAW_LINE:
-      return "line";
-    case JmolConstants.DRAW_CYLINDER:
-      return "cylinder";
-    case JmolConstants.DRAW_TRIANGLE:
-      return "triangle";
-    case JmolConstants.DRAW_PLANE:
-      return "plane";
-    case JmolConstants.DRAW_ARROW:
-      return "arrow";
-    case JmolConstants.DRAW_ARC:
-      return "arc";
-    case JmolConstants.DRAW_CIRCLE:
-      return "circle";
-    case JmolConstants.DRAW_CIRCULARPLANE:
-      return "circularPlane";
-    case JmolConstants.DRAW_CURVE:
-      return "curve";
-    }
-    return "drawObject";
-}
 
   public final static Vector3f center = new Vector3f(0, 0, 0);
   public final static Vector3f axisX = new Vector3f(1, 0, 0);
@@ -207,15 +154,6 @@ final public class JmolConstants {
   public final static int CONNECT_IDENTIFY_ONLY    = Token.identify;
 
   public static final int MOUSE_NONE = -1;
-  public static final int MOUSE_ROTATE = 0;
-  public static final int MOUSE_ZOOM = 1;
-  public static final int MOUSE_XLATE = 2;
-  public static final int MOUSE_PICK = 3;
-  public static final int MOUSE_DELETE = 4;
-  public static final int MOUSE_MEASURE = 5;
-  public static final int MOUSE_ROTATE_Z = 6;
-  public static final int MOUSE_SLAB_PLANE = 7;
-  public static final int MOUSE_POPUP_MENU = 8;
 
   public final static byte MULTIBOND_NEVER =     0;
   public final static byte MULTIBOND_WIREFRAME = 1;
@@ -224,12 +162,7 @@ final public class JmolConstants {
 
   public final static short madMultipleBondSmallMaximum = 500;
 
-  /**
-   * axes modes
-   */
-
-  public final static int[] argbsHbondType =
-  {
+  public final static int[] argbsHbondType = {
     0xFFFF69B4, // 0  unused - pink
     0xFFFFFF00, // 1  regular yellow
     0xFFFFFF00, // 2  calc -- unspecified; yellow

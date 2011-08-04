@@ -30,9 +30,9 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.shape.Mesh;
+import org.jmol.shapespecial.Draw.EnumDrawType;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
-import org.jmol.viewer.JmolConstants;
 import org.jmol.g3d.Graphics3D;
 
 public class DrawMesh extends Mesh {
@@ -43,8 +43,8 @@ public class DrawMesh extends Mesh {
 
   BitSet modelFlags;
   
-  int drawType = JmolConstants.DRAW_TRIANGLE;
-  int[] drawTypes;
+  EnumDrawType drawType = EnumDrawType.NONE;
+  EnumDrawType[] drawTypes;
   Point3f ptCenters[];
   Vector3f axis = new Vector3f(1,0,0);
   Vector3f axes[];
@@ -76,7 +76,7 @@ public class DrawMesh extends Mesh {
       if (iModel >=0 && i != iModel || polygonIndexes[i] == null)
         continue;
       iptlast = -1;
-      for (int iV = drawType == JmolConstants.DRAW_POLYGON ? 3 
+      for (int iV = (drawType == EnumDrawType.POLYGON) ? 3 
           : polygonIndexes[i].length; --iV >= 0;) {
         ipt = polygonIndexes[i][iV];
         if (ipt == iptlast)
@@ -114,7 +114,7 @@ public class DrawMesh extends Mesh {
       return;
     polygonCount--;
     polygonIndexes = (int[][]) ArrayUtil.deleteElements(polygonIndexes, modelIndex, 1);
-    drawTypes = (int[]) ArrayUtil.deleteElements(drawTypes, modelIndex, 1);
+    drawTypes = (EnumDrawType[]) ArrayUtil.deleteElements(drawTypes, modelIndex, 1);
     drawVertexCounts = (int[]) ArrayUtil.deleteElements(drawVertexCounts, modelIndex, 1);
     ptCenters = (Point3f[]) ArrayUtil.deleteElements(ptCenters, modelIndex, 1);
     axes = (Vector3f[]) ArrayUtil.deleteElements(axes, modelIndex, 1);

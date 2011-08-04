@@ -552,6 +552,12 @@ public class ActionManager {
     }
   }
 
+  /**
+   * only NONE (-1) is implemented; it just stops the 
+   * hoverWatcher thread so that the viewer references are all removed
+   * 
+   * @param modeMouse
+   */
   public void setModeMouse(int modeMouse) {
     if (modeMouse == JmolConstants.MOUSE_NONE) {
       startHoverWatcher(false);

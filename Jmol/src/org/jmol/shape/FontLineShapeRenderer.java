@@ -34,8 +34,8 @@ import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.TickInfo;
 import org.jmol.util.Point3fi;
+import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.TextFormat;
-import org.jmol.viewer.JmolConstants;
 
 abstract class FontLineShapeRenderer extends ShapeRenderer {
 
@@ -147,11 +147,11 @@ abstract class FontLineShapeRenderer extends ShapeRenderer {
     float d0 = vectorT.length();
     if (tickInfo.scale != null) {
       if (Float.isNaN(tickInfo.scale.x)) { // unitcell
-        float a = viewer.getUnitCellInfo(JmolConstants.INFO_A);
+        float a = viewer.getUnitCellInfo(SimpleUnitCell.INFO_A);
         if (!Float.isNaN(a))
           vectorT.set(vectorT.x / a, vectorT.y
-              / viewer.getUnitCellInfo(JmolConstants.INFO_B), vectorT.z
-              / viewer.getUnitCellInfo(JmolConstants.INFO_C));
+              / viewer.getUnitCellInfo(SimpleUnitCell.INFO_B), vectorT.z
+              / viewer.getUnitCellInfo(SimpleUnitCell.INFO_C));
       } else {
         vectorT.set(vectorT.x * tickInfo.scale.x, vectorT.y * tickInfo.scale.y,
             vectorT.z * tickInfo.scale.z);

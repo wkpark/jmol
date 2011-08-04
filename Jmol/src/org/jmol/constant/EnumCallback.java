@@ -25,9 +25,6 @@
 
 package org.jmol.constant;
 
-/**
- * Enum for axes mode.
- */
 public enum EnumCallback {
 
   ANIMFRAME("animFrameCallback"),
@@ -48,43 +45,16 @@ public enum EnumCallback {
   SYNC("syncCallback");
 
   private final String name;
-  private int id = -1;
-  private static int callbackCount = -1; 
 
   private EnumCallback(String name) {
     this.name = name;
   }
 
-  private static synchronized void setCallbackIds() {
-    if (callbackCount >= 0)
-      return;
-    int n = 0;
-    for (EnumCallback item : values())
-      item.id = n++;
-    callbackCount = n;
-  }
-  /**
-   * @return Name of callback.
-   */
   public String getName() {
     return name;
   }
 
-  public int getId() {
-    setCallbackIds();
-    return id;  
-  }
-  
-  public static int getCallbackCount() {
-    setCallbackIds();
-    return callbackCount;
-  }
-  
-  /**
-   * @param name
-   * @return enumeration item
-   */
-  public static EnumCallback getCallbackId(String name) {
+  public static EnumCallback getCallback(String name) {
     for (EnumCallback item : values())
       if (item.getName().equalsIgnoreCase(name))
         return item;

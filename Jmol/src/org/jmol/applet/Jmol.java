@@ -40,6 +40,7 @@ import java.awt.*;
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.Map;
 
 import javax.swing.UIManager;
@@ -149,7 +150,7 @@ public class Jmol implements WrappedApplet {
   boolean haveDocumentAccess;
   boolean loading;
 
-  String[] callbacks = new String[EnumCallback.getCallbackCount()];
+  Map<EnumCallback, String> callbacks = new Hashtable<EnumCallback, String>();
 
   String language;
   String htmlName;
@@ -374,7 +375,7 @@ public class Jmol implements WrappedApplet {
       boolean haveCallback = false;
       // these are set by viewer.setStringProperty() from setValue
       for (EnumCallback item : EnumCallback.values()) {
-        if(callbacks[item.getId()] != null) {
+        if(callbacks.get(item) != null) {
           haveCallback = true;
           break;
         }
@@ -384,9 +385,9 @@ public class Jmol implements WrappedApplet {
           Logger
               .warn("MAYSCRIPT missing -- all applet JavaScript calls disabled");
       }
-      if (callbacks[EnumCallback.SCRIPT.getId()] == null
-          && callbacks[EnumCallback.ERROR.getId()] == null)
-        if (callbacks[EnumCallback.MESSAGE.getId()] != null
+      if (callbacks.get(EnumCallback.SCRIPT) == null
+          && callbacks.get(EnumCallback.ERROR) == null)
+        if (callbacks.get(EnumCallback.MESSAGE) != null
             || statusForm != null || statusText != null) {
           if (doTranslate && (getValue("doTranslate", null) == null)) {
             doTranslate = false;
@@ -883,16 +884,14 @@ public class Jmol implements WrappedApplet {
       case RESIZE:
         break;
       }
-      return (callbacks[type.getId()] != null);
+      return (callbacks.get(type) != null);
     }
 
     private boolean haveNotifiedError;
 
     @SuppressWarnings("incomplete-switch")
     public void notifyCallback(EnumCallback type, Object[] data) {
-      int id = type.getId();
-      
-      String callback = (id < callbacks.length ? callbacks[id] : null);
+      String callback = callbacks.get(type);
       boolean doCallback = (callback != null && (data == null || data[0] == null));
       boolean toConsole = false;
       if (data != null)
@@ -955,7 +954,7 @@ public class Jmol implements WrappedApplet {
           if (isScriptQueued)
             toConsole = true;
           doCallback = (!isPrivate && 
-              (callback = callbacks[(type = EnumCallback.MESSAGE).getId()]) != null);
+              (callback = callbacks.get((type = EnumCallback.MESSAGE))) != null);
         }
         if (!toConsole)
           output(strInfo);
@@ -973,7 +972,7 @@ public class Jmol implements WrappedApplet {
       case MEASURE:
         // pending, deleted, or completed
         if (!doCallback)
-          doCallback = ((callback = callbacks[(type = EnumCallback.MESSAGE).getId()]) != null);
+          doCallback = ((callback = callbacks.get((type = EnumCallback.MESSAGE))) != null);
         String status = (String) data[3];
         if (status.indexOf("Picked") >= 0 || status.indexOf("Sequence") >= 0) {// picking mode
           showStatus(strInfo); // set picking measure distance
@@ -1005,7 +1004,7 @@ public class Jmol implements WrappedApplet {
           // termination messsage ONLY if script callback enabled -- not to
           // message queue
           // for compatibility reasons
-          doCallback = ((callback = callbacks[(type = EnumCallback.MESSAGE).getId()]) != null);
+          doCallback = ((callback = callbacks.get((type = EnumCallback.MESSAGE))) != null);
         }
         output(strInfo);
         showStatus(strInfo);
@@ -1050,7 +1049,7 @@ public class Jmol implements WrappedApplet {
     }
 
     private String notifySync(String info, String appletName) {
-      String syncCallback = callbacks[EnumCallback.SYNC.getId()];
+      String syncCallback = callbacks.get(EnumCallback.SYNC);
       if (!mayScript || syncCallback == null)
         return info;
       try {
@@ -1078,9 +1077,9 @@ public class Jmol implements WrappedApplet {
         consoleMessage(null); // show default message
         return;
       }
-      EnumCallback callback = EnumCallback.getCallbackId(callbackName);
+      EnumCallback callback = EnumCallback.getCallback(callbackName);
       if (callback != null && (loading || callback != EnumCallback.EVAL)) {
-        callbacks[callback.getId()] = callbackFunction;
+        callbacks.put(callback, callbackFunction);
         return;
       }
       consoleMessage("Available callbacks include: " + EnumCallback.getNameList().replace(';',' ').trim());
@@ -1111,7 +1110,7 @@ public class Jmol implements WrappedApplet {
               + ", " + jsoDocument);
         return "NO EVAL ALLOWED";
       }
-      if (callbacks[EnumCallback.EVAL.getId()] != null) {
+      if (callbacks.get(EnumCallback.EVAL) != null) {
         notifyCallback(EnumCallback.EVAL, new Object[] { null,
             strEval });
         return "";

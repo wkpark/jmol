@@ -44,8 +44,8 @@ import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
+import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.TextFormat;
-import org.jmol.viewer.JmolConstants;
 
 @SuppressWarnings("unchecked")
 public class AtomSetCollection {
@@ -847,7 +847,7 @@ public class AtomSetCollection {
     if (doPackUnitCell || symmetryRange != 0 && maxXYZ.x - minXYZ.x == 1
         && maxXYZ.y - minXYZ.y == 1 && maxXYZ.z - minXYZ.z == 1)
       switch ((int) getSymmetry()
-          .getUnitCellInfo(JmolConstants.INFO_DIMENSIONS)) {
+          .getUnitCellInfo(SimpleUnitCell.INFO_DIMENSIONS)) {
       case 3:
         // standard
         minXYZ.z--;

@@ -29,8 +29,8 @@ import java.text.NumberFormat;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.util.BoxInfo;
+import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.TextFormat;
-import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.StateManager;
 
 public class UccageRenderer extends CageRenderer {
@@ -123,18 +123,18 @@ public class UccageRenderer extends CageRenderer {
     }
     y += lineheight;
     g3d.drawStringNoSlab("a="
-        + nfformat(symmetry.getUnitCellInfo(JmolConstants.INFO_A)) + "\u00C5",
+        + nfformat(symmetry.getUnitCellInfo(SimpleUnitCell.INFO_A)) + "\u00C5",
         null, x, y, 0);
     if (!isPolymer) {
       y += lineheight;
       g3d.drawStringNoSlab(
-          "b=" + nfformat(symmetry.getUnitCellInfo(JmolConstants.INFO_B))
+          "b=" + nfformat(symmetry.getUnitCellInfo(SimpleUnitCell.INFO_B))
               + "\u00C5", null, x, y, 0);
     }
     if (!isPolymer && !isSlab) {
       y += lineheight;
       g3d.drawStringNoSlab(
-          "c=" + nfformat(symmetry.getUnitCellInfo(JmolConstants.INFO_C))
+          "c=" + nfformat(symmetry.getUnitCellInfo(SimpleUnitCell.INFO_C))
               + "\u00C5", null, x, y, 0);
     }
     if (nf != null)
@@ -143,16 +143,16 @@ public class UccageRenderer extends CageRenderer {
       if (!isSlab) {
         y += lineheight;
         g3d.drawStringNoSlab("\u03B1="
-            + nfformat(symmetry.getUnitCellInfo(JmolConstants.INFO_ALPHA))
+            + nfformat(symmetry.getUnitCellInfo(SimpleUnitCell.INFO_ALPHA))
             + "\u00B0", null, x, y, 0);
         y += lineheight;
         g3d.drawStringNoSlab("\u03B2="
-            + nfformat(symmetry.getUnitCellInfo(JmolConstants.INFO_BETA))
+            + nfformat(symmetry.getUnitCellInfo(SimpleUnitCell.INFO_BETA))
             + "\u00B0", null, x, y, 0);
       }
       y += lineheight;
       g3d.drawStringNoSlab("\u03B3="
-          + nfformat(symmetry.getUnitCellInfo(JmolConstants.INFO_GAMMA))
+          + nfformat(symmetry.getUnitCellInfo(SimpleUnitCell.INFO_GAMMA))
           + "\u00B0", null, x, y, 0);
     }
   }

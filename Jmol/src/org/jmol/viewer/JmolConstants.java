@@ -105,10 +105,10 @@ final public class JmolConstants {
   public final static int FILE_STATUS_MODELSET_CREATED = 3;
   public final static int FILE_STATUS_MODELS_DELETED = 5;
 
-  public final static int JMOL_DATA_OTHER = -1;
-  public final static int JMOL_DATA_RAMACHANDRAN = 0;
-  public final static int JMOL_DATA_QUATERNION = 1;
-  
+  public static final String LOAD_ATOM_DATA_TYPES = "xyz;vxyz;vibration;temperature;occupancy;partialcharge";
+
+  public final static float radiansPerDegree = (float) (Math.PI / 180);
+
   public static final String allowedQuaternionFrames = "RC;RP;a;b;c;n;p;q;x;";
 
   //note: Eval.write() processing requires drivers to be first-letter-capitalized.
@@ -2321,10 +2321,6 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
       throw new NullPointerException();
     }
   }
-
-  public static final String LOAD_ATOM_DATA_TYPES = "xyz;vxyz;vibration;temperature;occupancy;partialcharge";
-
-  public final static float radiansPerDegree = (float) (Math.PI / 180);
 
 
   

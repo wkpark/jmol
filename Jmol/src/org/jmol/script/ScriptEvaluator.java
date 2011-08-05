@@ -9230,28 +9230,15 @@ public class ScriptEvaluator {
     String type = optParameterAsString(pt).toLowerCase();
     Point3f minXYZ = null;
     Point3f maxXYZ = null;
-    int plotType = 0;
     int tok = tokAt(pt0, args);
     if (tok == Token.string)
       tok = Token.getTokFromName((String) args[pt0].value);
     switch (tok) {
-    case Token.quaternion:
-    case Token.helix:
-      plotType = JmolConstants.JMOL_DATA_QUATERNION;
-      break;
-    case Token.ramachandran:
-      plotType = JmolConstants.JMOL_DATA_RAMACHANDRAN;
-      break;
-    case Token.property:
-      plotType = JmolConstants.JMOL_DATA_OTHER;
-      iToken = pt0 + 1;
-      break;
     default:
       iToken = 1;
       error(ERROR_invalidArgument);
-    }
-    switch (plotType) {
-    case JmolConstants.JMOL_DATA_OTHER:
+    case Token.property:
+      iToken = pt0 + 1;
       if (!Token.tokAttr(propertyX = tokAt(iToken++), Token.atomproperty)
           || !Token.tokAttr(propertyY = tokAt(iToken++), Token.atomproperty))
         error(ERROR_invalidArgument);
@@ -9274,7 +9261,7 @@ public class ScriptEvaluator {
         bs = viewer.getModelUndeletedAtomsBitSet(modelIndex);
       stateScript = "select " + Escape.escape(bs) + ";\n ";
       break;
-    case JmolConstants.JMOL_DATA_RAMACHANDRAN:
+    case Token.ramachandran:
       if (type.equalsIgnoreCase("draw")) {
         isDraw = true;
         type = optParameterAsString(--pt).toLowerCase();
@@ -9283,7 +9270,8 @@ public class ScriptEvaluator {
       type = "ramachandran" + (isRamachandranRelative ? " r" : "")
           + (tokCmd == Token.draw ? " draw" : "");
       break;
-    case JmolConstants.JMOL_DATA_QUATERNION:
+    case Token.quaternion:
+    case Token.helix:
       qFrame = " \"" + viewer.getQuaternionFrame() + "\"";
       stateScript = "set quaternionFrame" + qFrame + ";\n  ";
       isQuaternion = true;
@@ -9336,7 +9324,7 @@ public class ScriptEvaluator {
 
     float[] dataX = null, dataY = null, dataZ = null;
     Point3f factors = new Point3f(1, 1, 1);
-    if (plotType == JmolConstants.JMOL_DATA_OTHER) {
+    if (tok == Token.property) {
       dataX = getBitsetPropertyFloat(bs, propertyX | Token.selectedfloat,
           (minXYZ == null ? Float.NaN : minXYZ.x), (maxXYZ == null ? Float.NaN
               : maxXYZ.x));
@@ -9420,15 +9408,15 @@ public class ScriptEvaluator {
       return "";
     int modelCount = viewer.getModelCount();
     viewer.setJmolDataFrame(stateScript, modelIndex, modelCount - 1);
-    if (plotType != JmolConstants.JMOL_DATA_OTHER)
+    if (tok != Token.property)
       stateScript += ";\n" + preSelected;
     StateScript ss = viewer.addStateScript(stateScript, true, false);
 
     // get post-processing script
 
     String script;
-    switch (plotType) {
-    case -1:
+    switch (tok) {
+    case Token.property:
       viewer.setFrameTitle(modelCount - 1, type + " plot for model "
           + viewer.getModelNumberDotted(modelIndex));
       float f = 3;
@@ -9443,7 +9431,7 @@ public class ScriptEvaluator {
             + " {-100 -100 100} {-100 -100 -100} \"" + Token.nameOf(propertyZ)
             + "\";";
       break;
-    case JmolConstants.JMOL_DATA_RAMACHANDRAN:
+    case Token.ramachandran:
     default:
       viewer.setFrameTitle(modelCount - 1, "ramachandran plot for model "
           + viewer.getModelNumberDotted(modelIndex));
@@ -9452,7 +9440,8 @@ public class ScriptEvaluator {
           + "draw ramaAxisX" + modelCount + " {100 0 0} {-100 0 0} \"phi\";"
           + "draw ramaAxisY" + modelCount + " {0 100 0} {0 -100 0} \"psi\";";
       break;
-    case JmolConstants.JMOL_DATA_QUATERNION:
+    case Token.quaternion:
+    case Token.helix:
       viewer.setFrameTitle(modelCount - 1, type.replace('w', ' ') + qFrame
           + " for model " + viewer.getModelNumberDotted(modelIndex));
       String color = (Graphics3D

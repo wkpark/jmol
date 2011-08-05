@@ -37,6 +37,7 @@ import javax.vecmath.Vector3f;
 import javax.vecmath.Matrix3f;
 
 import org.jmol.api.JmolRendererInterface;
+import org.jmol.constant.EnumPalette;
 import org.jmol.modelset.Atom;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
@@ -2207,13 +2208,16 @@ final public class Graphics3D implements JmolRendererInterface {
   public static short getColix(Object obj) {
     if (obj == null)
       return INHERIT_ALL;
-    if (obj instanceof Byte)
-      return (((Byte) obj).byteValue() == 0 ? INHERIT_ALL
+    if (obj instanceof EnumPalette)
+      return (((EnumPalette) obj) == EnumPalette.NONE ? INHERIT_ALL
           : USE_PALETTE);
     if (obj instanceof Integer)
       return Colix3D.getColix(((Integer) obj).intValue());
     if (obj instanceof String)
       return getColix((String) obj);
+    if (obj instanceof Byte)
+      return (((Byte) obj).byteValue() == 0 ? INHERIT_ALL
+          : USE_PALETTE);
     if (Logger.debugging) {
       Logger.debug("?? getColix(" + obj + ")");
     }

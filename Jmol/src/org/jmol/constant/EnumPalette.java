@@ -67,7 +67,10 @@ public enum EnumPalette {
   }
   
   public static byte pidOf(Object value) {
-    return (value instanceof Byte ? ((Byte) value).byteValue() : UNKNOWN.id);
+    return (value instanceof EnumPalette ? 
+        ((EnumPalette) value).id 
+        : value instanceof Byte ? ((Byte) value).byteValue() 
+            : UNKNOWN.id);
   }
 
   public static boolean isPaletteVariable(byte pid) {
@@ -77,7 +80,7 @@ public enum EnumPalette {
   public static EnumPalette getPalette(String paletteName) {
     if (paletteName.indexOf('_') < 0)
       for (EnumPalette item : values())
-        if (item.name.equalsIgnoreCase(paletteName))
+        if (paletteName.equalsIgnoreCase(item.name))
           return item;
     return (paletteName.indexOf("property_") == 0 ? PROPERTY : UNKNOWN);
   }
@@ -85,7 +88,7 @@ public enum EnumPalette {
   public final static byte getPaletteID(String paletteName) {
     if (paletteName.indexOf('_') < 0)
       for (EnumPalette item : values())
-        if (item.name.equalsIgnoreCase(paletteName))
+        if (paletteName.equalsIgnoreCase(item.name))
           return item.id;
     return (paletteName.indexOf("property_") == 0 ? PROPERTY.id : UNKNOWN.id);
   }

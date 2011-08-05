@@ -22,9 +22,9 @@
     </move>
     <move todir="${build.dir}/JmolApplet" includeemptydirs="false">
       <fileset dir="${build.dir}/src/org/jmol/translation/JmolApplet">
-        <include name="**/jmol-applet-*.po" />
+        <include name="**/JmolApplet-*.po" />
       </fileset>
-      <mapper type="glob" from="jmol-applet-*.po" to="*.po" />
+      <mapper type="glob" from="JmolApplet-*.po" to="*.po" />
     </move>
     <copy todir="src/org/jmol/translation/Jmol">
       <fileset dir="${build.dir}/Jmol" includes="*.po" />

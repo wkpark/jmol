@@ -31,6 +31,7 @@ import org.jmol.script.Token;
 import org.jmol.viewer.Viewer;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
+import org.jmol.constant.EnumPalette;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.util.Elements;
 import org.jmol.util.JmolEdge;
@@ -69,7 +70,7 @@ final public class Atom extends Point3fi implements JmolNode {
   public short madAtom;
 
   short colixAtom;
-  byte paletteID = JmolConstants.PALETTE_CPK;
+  byte paletteID = EnumPalette.CPK.id;
 
   Bond[] bonds;
   

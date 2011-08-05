@@ -29,7 +29,6 @@ import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Point3fi;
-import org.jmol.viewer.JmolConstants;
 
 import java.util.BitSet;
 import java.util.Hashtable;
@@ -38,6 +37,7 @@ import java.util.Map;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
+import org.jmol.constant.EnumPalette;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
@@ -127,25 +127,25 @@ public class Sticks extends Shape {
       if (bsColixSet == null)
         bsColixSet = new BitSet();
       short colix = Graphics3D.getColix(value);
-      byte pid = JmolConstants.pidOf(value);
-      if (pid == JmolConstants.PALETTE_TYPE || pid == JmolConstants.PALETTE_ENERGY) {
+      EnumPalette pal = (EnumPalette) value;
+      if (pal == EnumPalette.TYPE || pal == EnumPalette.ENERGY) {
         //only for hydrogen bonds
-        boolean isEnergy = (pid == JmolConstants.PALETTE_ENERGY);
+        boolean isEnergy = (pal == EnumPalette.ENERGY);
         BondIterator iter = (selectedBonds != null ? modelSet.getBondIterator(selectedBonds)
             : modelSet.getBondIterator(myMask, bs));
         while (iter.hasNext()) {
           bsColixSet.set(iter.nextIndex());
           Bond bond = iter.next();
           if (isEnergy) {
-              bond.setColix(setColix(colix, pid, bond));
-              bond.setPaletteID(pid);
+              bond.setColix(setColix(colix, pal, bond));
+              bond.setPaletteID(pal.id);
           } else {
             bond.setColix(Graphics3D.getColix(JmolEdge.getArgbHbondType(bond.order)));
           }
         }
         return;
       }
-      if (colix == Graphics3D.USE_PALETTE && pid != JmolConstants.PALETTE_CPK)
+      if (colix == Graphics3D.USE_PALETTE && pal != EnumPalette.CPK)
         return; //palettes not implemented for bonds
       BondIterator iter = (selectedBonds != null ? modelSet.getBondIterator(selectedBonds)
           : modelSet.getBondIterator(myMask, bs));
@@ -233,7 +233,7 @@ public class Sticks extends Shape {
         short colix = bonds[i].getColix();
         if ((colix & Graphics3D.OPAQUE_MASK) == Graphics3D.USE_PALETTE)
           setStateInfo(temp, i, getColorCommand("bonds",
-              JmolConstants.PALETTE_CPK, colix));
+              EnumPalette.CPK.id, colix));
         else
           setStateInfo(temp, i, getColorCommand("bonds", colix));
       }

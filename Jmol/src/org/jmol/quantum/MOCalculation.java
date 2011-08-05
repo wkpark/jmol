@@ -139,7 +139,7 @@ public class MOCalculation extends QuantumCalculation implements
     havePoints = (points != null);
     this.calculationType = calculationType;
     this.firstAtomOffset = firstAtomOffset;
-    setShells(shells);
+    this.shells = shells;
     this.gaussians = gaussians;
     if (dfCoefMaps != null)
       this.dfCoefMaps = dfCoefMaps;
@@ -160,17 +160,6 @@ public class MOCalculation extends QuantumCalculation implements
     return (slaters != null || checkCalculationType());
   }  
   
-  private EnumQuantumShell[] shellTypes;
-
-  private void setShells(List<int[]> shells) {
-    this.shells = shells;
-    if (shells == null)
-      return;
-    shellTypes = new EnumQuantumShell[shells.size()];
-    for (int i = shells.size(); --i >= 0; )
-      shellTypes[i] = EnumQuantumShell.getItem(shells.get(i)[1]);
-  }
-
   @Override
   protected void initialize(int nX, int nY, int nZ, Point3f[] points) {
     super.initialize(nX, nY, nZ, points);
@@ -261,7 +250,7 @@ public class MOCalculation extends QuantumCalculation implements
     int lastAtom = atomIndex;
     int[] shell = shells.get(iShell);
     atomIndex = shell[0] + firstAtomOffset;
-    basisType = shellTypes[iShell];
+    basisType = EnumQuantumShell.getItem(shell[1]);
     gaussianPtr = shell[2];
     nGaussians = shell[3];
     doShowShellType = doDebug;

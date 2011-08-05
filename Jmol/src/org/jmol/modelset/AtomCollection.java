@@ -41,6 +41,7 @@ import javax.vecmath.Vector3f;
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.bspt.Bspf;
+import org.jmol.constant.EnumPalette;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.geodesic.EnvelopeCalculation;
 import org.jmol.util.ArrayUtil;
@@ -644,9 +645,9 @@ abstract public class AtomCollection {
   protected void setElement(Atom atom, int atomicNumber) {
     taint(atom.index, TAINT_ELEMENT);
     atom.setAtomicAndIsotopeNumber(atomicNumber);
-    atom.setPaletteID(JmolConstants.PALETTE_CPK);
+    atom.setPaletteID(EnumPalette.CPK.id);
     atom.setColixAtom(viewer.getColixAtomPalette(atom,
-        JmolConstants.PALETTE_CPK));
+        EnumPalette.CPK.id));
   }
 
   public float getVibrationCoord(int atomIndex, char c) {
@@ -830,8 +831,8 @@ abstract public class AtomCollection {
           break;
         case TAINT_ELEMENT:
           atom.setAtomicAndIsotopeNumber((int)x);
-          atom.setPaletteID(JmolConstants.PALETTE_CPK);
-          atom.setColixAtom(viewer.getColixAtomPalette(atom, JmolConstants.PALETTE_CPK));
+          atom.setPaletteID(EnumPalette.CPK.id);
+          atom.setColixAtom(viewer.getColixAtomPalette(atom, EnumPalette.CPK.id));
           break;
         case TAINT_FORMALCHARGE:
           atom.setFormalCharge((int)x);          

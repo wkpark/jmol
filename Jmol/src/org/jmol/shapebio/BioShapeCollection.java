@@ -30,6 +30,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.jmol.atomdata.RadiusData;
+import org.jmol.constant.EnumPalette;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Group;
@@ -130,7 +131,7 @@ public abstract class BioShapeCollection extends Shape {
 
     initialize();
     if ("color" == propertyName) {
-      byte pid = JmolConstants.pidOf(value);
+      byte pid = EnumPalette.pidOf(value);
       short colix = Graphics3D.getColix(value);
       for (int i = bioShapes.length; --i >= 0;) {
         BioShape bioShape = bioShapes[i];

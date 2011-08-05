@@ -33,6 +33,7 @@ import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
 import org.jmol.atomdata.RadiusData;
+import org.jmol.constant.EnumPalette;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Group;
@@ -362,7 +363,7 @@ public class ShapeManager {
         shapes[i].setModelSet(modelSet);
         shapes[i].setShapeSize(0, null, bsAllAtoms);
         shapes[i].setShapeProperty("color",
-            new Byte(JmolConstants.PALETTE_NONE), bsAllAtoms);
+            EnumPalette.NONE, bsAllAtoms);
       }
   }
 

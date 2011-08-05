@@ -61,15 +61,16 @@ public enum EnumCallback {
     return null;
   }
 
-  private static String nameList;
+  private final static String nameList;
 
+  static {
+    StringBuffer names = new StringBuffer();
+    for (EnumCallback item : values())
+      names.append(item.getName()).append(';');
+    nameList = names.toString();
+  }
+  
   public static synchronized String getNameList() {
-    if (nameList == null) {
-      StringBuffer names = new StringBuffer();
-      for (EnumCallback item : values())
-        names.append(item.getName()).append(';');
-      nameList = names.toString();
-    }
     return nameList;
   }
 }

@@ -24,6 +24,7 @@
 
 package org.jmol.shape;
 
+import org.jmol.constant.EnumPalette;
 import org.jmol.g3d.*;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.LabelToken;
@@ -95,7 +96,7 @@ public class Labels extends AtomShape {
 
     if ("color" == propertyName) {
       isActive = true;
-      byte pid = JmolConstants.pidOf(value);
+      byte pid = EnumPalette.pidOf(value);
       short colix = Graphics3D.getColix(value);
       if (!setDefaults)
         for (int i = atomCount; --i >= 0;)

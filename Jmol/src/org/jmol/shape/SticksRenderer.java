@@ -29,6 +29,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
+import org.jmol.constant.EnumPalette;
 import org.jmol.g3d.*;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
@@ -137,9 +138,9 @@ public class SticksRenderer extends ShapeRenderer {
     if (((colix = bond.getColix()) & Graphics3D.OPAQUE_MASK) == Graphics3D.USE_PALETTE) {
       colix = (short) (colix & ~Graphics3D.OPAQUE_MASK);
       colixA = Graphics3D.getColixInherited((short) (colix | viewer
-          .getColixAtomPalette(atomA, JmolConstants.PALETTE_CPK)), colixA);
+          .getColixAtomPalette(atomA, EnumPalette.CPK.id)), colixA);
       colixB = Graphics3D.getColixInherited((short) (colix | viewer
-          .getColixAtomPalette(atomB, JmolConstants.PALETTE_CPK)), colixB);
+          .getColixAtomPalette(atomB, EnumPalette.CPK.id)), colixB);
     } else {
       colixA = Graphics3D.getColixInherited(colix, colixA);
       colixB = Graphics3D.getColixInherited(colix, colixB);

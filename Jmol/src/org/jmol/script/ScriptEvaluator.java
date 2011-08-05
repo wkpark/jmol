@@ -44,6 +44,7 @@ import org.jmol.api.MinimizerInterface;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumAnimationMode;
+import org.jmol.constant.EnumPalette;
 import org.jmol.constant.EnumStereoMode;
 import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
@@ -7764,19 +7765,19 @@ public class ScriptEvaluator {
         boolean isByElement = (name.indexOf(ColorEncoder.BYELEMENT_PREFIX) == 0);
         boolean isColorIndex = (isByElement || name
             .indexOf(ColorEncoder.BYRESIDUE_PREFIX) == 0);
-        byte pid = (isColorIndex || isIsosurface ? JmolConstants.PALETTE_PROPERTY
-            : tok == Token.spacefill ? JmolConstants.PALETTE_CPK
-                : JmolConstants.getPaletteID(name));
+        EnumPalette pal = (isColorIndex || isIsosurface ? EnumPalette.PROPERTY
+            : tok == Token.spacefill ? EnumPalette.CPK
+                : EnumPalette.getPalette(name));
         // color atoms "cpkScheme"
-        if (pid == JmolConstants.PALETTE_UNKNOWN
-            || (pid == JmolConstants.PALETTE_TYPE || pid == JmolConstants.PALETTE_ENERGY)
+        if (pal == EnumPalette.UNKNOWN
+            || (pal == EnumPalette.TYPE || pal == EnumPalette.ENERGY)
             && shapeType != JmolConstants.SHAPE_HSTICKS)
           error(ERROR_invalidArgument);
         Object data = null;
-        BitSet bsSelected = (pid != JmolConstants.PALETTE_PROPERTY
-            && pid != JmolConstants.PALETTE_VARIABLE
+        BitSet bsSelected = (pal != EnumPalette.PROPERTY
+            && pal != EnumPalette.VARIABLE
             || !viewer.isRangeSelected() ? null : viewer.getSelectionSet(false));
-        if (pid == JmolConstants.PALETTE_PROPERTY) {
+        if (pal == EnumPalette.PROPERTY) {
           if (isColorIndex) {
             if (!isSyntaxCheck) {
               data = getBitsetPropertyFloat(
@@ -7797,15 +7798,15 @@ public class ScriptEvaluator {
               }
             }
           }
-        } else if (pid == JmolConstants.PALETTE_VARIABLE) {
+        } else if (pal == EnumPalette.VARIABLE) {
           index++;
           name = parameterAsString(index++);
           data = new float[viewer.getAtomCount()];
           Parser.parseStringInfestedFloatArray(""
               + getParameter(name, Token.string), null, (float[]) data);
-          pid = JmolConstants.PALETTE_PROPERTY;
+          pal = EnumPalette.PROPERTY;
         }
-        if (pid == JmolConstants.PALETTE_PROPERTY) {
+        if (pal == EnumPalette.PROPERTY) {
           String scheme = null;
           if (tokAt(index) == Token.string) {
             scheme = parameterAsString(index++).toLowerCase();
@@ -7866,7 +7867,7 @@ public class ScriptEvaluator {
           index++;
         }
         checkLength(index);
-        colorvalue = new Byte(pid);
+        colorvalue = pal;
       }
     }
     if (isSyntaxCheck || shapeType < 0)

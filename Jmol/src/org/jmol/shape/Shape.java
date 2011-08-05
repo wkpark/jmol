@@ -31,6 +31,7 @@ import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.StateManager;
 import org.jmol.viewer.Viewer;
 import org.jmol.atomdata.RadiusData;
+import org.jmol.constant.EnumPalette;
 import org.jmol.g3d.*;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
@@ -392,9 +393,9 @@ public abstract class Shape {
         paletteID) : colix);
   }
 
-  protected short setColix(short colix, byte paletteID, Bond bond) {
+  protected short setColix(short colix, EnumPalette pal, Bond bond) {
     return (colix == Graphics3D.USE_PALETTE ? viewer.getColixBondPalette(bond,
-        paletteID) : colix);
+        pal) : colix);
   }
 
   public List<Map<String, Object>> getShapeDetail() {
@@ -445,18 +446,18 @@ public abstract class Shape {
   }
 
   public String getColorCommand(String type, short colix) {
-    return getColorCommand(type, JmolConstants.PALETTE_UNKNOWN, colix);
+    return getColorCommand(type, EnumPalette.UNKNOWN.id, colix);
   }
 
   public String getColorCommand(String type, byte pid, short colix) {
-    if (pid == JmolConstants.PALETTE_UNKNOWN && colix == Graphics3D.INHERIT_ALL)
+    if (pid == EnumPalette.UNKNOWN.id && colix == Graphics3D.INHERIT_ALL)
       return "";
     return "color " + type + " " + encodeTransColor(pid, colix, translucentAllowed);
   }
 
   private static String encodeTransColor(byte pid, short colix,
                                   boolean translucentAllowed) {
-    if (pid == JmolConstants.PALETTE_UNKNOWN && colix == Graphics3D.INHERIT_ALL)
+    if (pid == EnumPalette.UNKNOWN.id && colix == Graphics3D.INHERIT_ALL)
       return "";
     /* nuance here is that some palettes depend upon a
      * point-in-time calculation that takes into account
@@ -467,9 +468,9 @@ public abstract class Shape {
      * anyway. 
      */
     return (translucentAllowed ? getTranslucentLabel(colix) + " " : "")
-        + (pid != JmolConstants.PALETTE_UNKNOWN 
-        && !JmolConstants.isPaletteVariable(pid) 
-        ? JmolConstants.getPaletteName(pid) : encodeColor(colix));
+        + (pid != EnumPalette.UNKNOWN.id 
+        && !EnumPalette.isPaletteVariable(pid) 
+        ? EnumPalette.getPaletteName(pid) : encodeColor(colix));
   }
 
   static String encodeColor(short colix) {

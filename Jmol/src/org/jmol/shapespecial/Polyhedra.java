@@ -25,6 +25,7 @@
 package org.jmol.shapespecial;
 
 import org.jmol.api.AtomIndexIterator;
+import org.jmol.constant.EnumPalette;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
@@ -39,7 +40,6 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.util.Measure;
-import org.jmol.viewer.JmolConstants;
 
 public class Polyhedra extends AtomShape {
 
@@ -221,7 +221,7 @@ public class Polyhedra extends AtomShape {
 
   private void deletePolyhedra() {
     int newCount = 0;
-    byte pid = JmolConstants.pidOf(null);
+    byte pid = EnumPalette.pidOf(null);
     for (int i = 0; i < polyhedronCount; ++i) {
       Polyhedron p = polyhedrons[i];
       int iAtom = p.centralAtom.getIndex();

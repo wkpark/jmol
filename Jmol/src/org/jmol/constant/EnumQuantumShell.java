@@ -89,9 +89,32 @@ public enum EnumQuantumShell {
   }
 
   public static EnumQuantumShell getItem(int id) {
-    for (EnumQuantumShell item : values())
-      if (item.id == id)
-        return item;
+    // Sorry -- The only way to do this efficiently, since we have
+    // encoded the id into shells[] base on its integer value
+    switch(id) {
+    case 0:
+      return S;
+    case 1:
+      return P;
+    case 2:
+      return SP;
+    case 3:
+      return D_SPHERICAL;
+    case 4:
+      return D_CARTESIAN;
+    case 5:
+      return F_SPHERICAL;
+    case 6:
+      return F_CARTESIAN;
+    case 7:
+      return G_SPHERICAL;
+    case 8:
+      return G_CARTESIAN;
+    case 9:
+      return H_SPHERICAL;
+    case 10:
+      return H_CARTESIAN;
+    }
     return null;
   }
 
@@ -101,10 +124,6 @@ public enum EnumQuantumShell {
         return item.tag;
     return "" + id;
   }
-
-  //   Don't change the order here unless all supporting arrays are 
-  //   also modified. 
-  
 
   final public static String getMOString(float[] lc) {
     StringBuffer sb = new StringBuffer();
@@ -119,6 +138,4 @@ public enum EnumQuantumShell {
     sb.append(']');
     return sb.toString();
   }
-
-
 }

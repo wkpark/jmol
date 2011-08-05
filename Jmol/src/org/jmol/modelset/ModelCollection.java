@@ -48,6 +48,7 @@ import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.bspt.Bspf;
 import org.jmol.bspt.CubeIterator;
+import org.jmol.constant.EnumPalette;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
@@ -4263,7 +4264,7 @@ abstract public class ModelCollection extends BondCollection {
       setEllipsoid(atomCount, ellipsoid);
     atom.group = group;
     atom.colixAtom = viewer
-        .getColixAtomPalette(atom, JmolConstants.PALETTE_CPK);
+        .getColixAtomPalette(atom, EnumPalette.CPK.id);
     if (atomName != null) {
       int i;
       if ((i = atomName.indexOf('\0')) >= 0) {

@@ -30,6 +30,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.jmol.atomdata.RadiusData;
+import org.jmol.constant.EnumPalette;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.util.ArrayUtil;
@@ -102,7 +103,7 @@ public abstract class AtomShape extends Shape {
     if ("color" == propertyName) {
       isActive = true;
       short colix = Graphics3D.getColix(value);
-      byte pid = JmolConstants.pidOf(value);
+      byte pid = EnumPalette.pidOf(value);
       if (bsColixSet == null)
         bsColixSet = new BitSet();
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))

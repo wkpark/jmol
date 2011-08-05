@@ -31,6 +31,7 @@ import java.util.Map;
 import javax.vecmath.Point3f;
 
 import org.jmol.viewer.JmolConstants;
+import org.jmol.constant.EnumPalette;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.util.ArrayUtil;
 
@@ -52,7 +53,7 @@ import org.jmol.util.ArrayUtil;
    public ColorEncoder(ColorEncoder propertyColorEncoder) {
     if (propertyColorEncoder == null) {
       schemes = new Hashtable<String, int[]>();
-      argbsCpk = JmolConstants.argbsCpk;
+      argbsCpk = EnumPalette.argbsCpk;
       argbsRoygb = JmolConstants.argbsRoygbScale;
       argbsRwb = JmolConstants.argbsRwbScale;
       argbsShapely = JmolConstants.argbsShapely;
@@ -178,7 +179,7 @@ import org.jmol.util.ArrayUtil;
           argbsRwb = JmolConstants.argbsRwbScale;
           break;
         case JMOL:
-          argbsCpk = JmolConstants.argbsCpk;
+          argbsCpk = EnumPalette.argbsCpk;
           break;
         case RASMOL:
           getRasmolScale();
@@ -554,12 +555,12 @@ import org.jmol.util.ArrayUtil;
   public final static synchronized int[] getRasmolScale() {
     if (rasmolScale != null)
       return rasmolScale;
-    rasmolScale = new int[JmolConstants.argbsCpk.length];
-    int argb = JmolConstants.argbsCpkRasmol[0] | 0xFF000000;
+    rasmolScale = new int[EnumPalette.argbsCpk.length];
+    int argb = EnumPalette.argbsCpkRasmol[0] | 0xFF000000;
     for (int i = rasmolScale.length; --i >= 0;)
       rasmolScale[i] = argb;
-    for (int i = JmolConstants.argbsCpkRasmol.length; --i >= 0;) {
-      argb = JmolConstants.argbsCpkRasmol[i];
+    for (int i = EnumPalette.argbsCpkRasmol.length; --i >= 0;) {
+      argb = EnumPalette.argbsCpkRasmol[i];
       rasmolScale[argb >> 24] = argb | 0xFF000000;
     }
     return rasmolScale;

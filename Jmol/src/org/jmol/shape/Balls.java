@@ -29,6 +29,7 @@ import java.util.BitSet;
 import java.util.Map;
 
 import org.jmol.atomdata.RadiusData;
+import org.jmol.constant.EnumPalette;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.viewer.JmolConstants;
@@ -59,12 +60,12 @@ public class Balls extends AtomShape {
         colix = Graphics3D.USE_PALETTE;
       if (bsColixSet == null)
         bsColixSet = new BitSet();
-      byte pid = JmolConstants.pidOf(value);
+      byte pid = EnumPalette.pidOf(value);
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
         Atom atom = atoms[i];
         atom.setColixAtom(setColix(colix, pid, atom));
         bsColixSet.set(i, colix != Graphics3D.USE_PALETTE
-            || pid != JmolConstants.PALETTE_NONE);
+            || pid != EnumPalette.NONE.id);
         atom.setPaletteID(pid);
       }
       return;
@@ -84,11 +85,11 @@ public class Balls extends AtomShape {
         short colix = Graphics3D.getColix(color);
         if (colix == Graphics3D.INHERIT_ALL)
           colix = Graphics3D.USE_PALETTE;
-        byte pid = JmolConstants.pidOf(color);
+        byte pid = EnumPalette.pidOf(color);
         Atom atom = atoms[i];
         atom.setColixAtom(setColix(colix, pid, atom));
         bsColixSet.set(i, colix != Graphics3D.USE_PALETTE
-            || pid != JmolConstants.PALETTE_NONE);
+            || pid != EnumPalette.NONE.id);
         atom.setPaletteID(pid);
       }
       return;
@@ -154,7 +155,7 @@ public String getShapeState() {
       }
       if (bsColixSet != null && bsColixSet.get(i)) {
         byte pid = atoms[i].getPaletteID();
-        if (pid != JmolConstants.PALETTE_CPK || atoms[i].isTranslucent())
+        if (pid != EnumPalette.CPK.id || atoms[i].isTranslucent())
           setStateInfo(temp, i, getColorCommand("atoms", pid, atoms[i].getColix()));
       }
     }

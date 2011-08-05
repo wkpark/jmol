@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-08-05 00:33+0200\n"
-"PO-Revision-Date: 2011-08-04 13:50+0000\n"
+"PO-Revision-Date: 2011-08-05 14:03+0000\n"
 "Last-Translator: VPablo <villumar@gmail.com>\n"
 "Language-Team: Catalan <Jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-04 16:52+0000\n"
-"X-Generator: Launchpad (build 13604)\n"
+"X-Launchpad-Export-Date: 2011-08-05 17:04+0000\n"
+"X-Generator: Launchpad (build 13613)\n"
 "X-Poedit-Country: ANDORRA\n"
 "X-Poedit-Language: Catalan\n"
 
@@ -147,7 +147,8 @@ msgid "Check"
 msgstr "Comprova"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "A dalt"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -361,13 +362,12 @@ msgid "Arabic"
 msgstr "Àrab"
 
 #: org/jmol/i18n/GT.java:138
-#, fuzzy
 msgid "Asturian"
-msgstr "Estonià"
+msgstr "Asturià"
 
 #: org/jmol/i18n/GT.java:139
 msgid "Bosnian"
-msgstr ""
+msgstr "Bosnià"
 
 #: org/jmol/i18n/GT.java:140
 msgid "Catalan"
@@ -391,7 +391,7 @@ msgstr "Grec"
 
 #: org/jmol/i18n/GT.java:145
 msgid "Australian English"
-msgstr ""
+msgstr "Anglès d'Austràlia"
 
 #: org/jmol/i18n/GT.java:146
 msgid "British English"
@@ -431,7 +431,7 @@ msgstr "Hongarès"
 
 #: org/jmol/i18n/GT.java:155
 msgid "Armenian"
-msgstr ""
+msgstr "Armeni"
 
 #: org/jmol/i18n/GT.java:156
 msgid "Indonesian"
@@ -499,7 +499,7 @@ msgstr "Tàmil"
 
 #: org/jmol/i18n/GT.java:172
 msgid "Telugu"
-msgstr ""
+msgstr "Telugu"
 
 #: org/jmol/i18n/GT.java:173
 msgid "Turkish"
@@ -507,7 +507,7 @@ msgstr "Turc"
 
 #: org/jmol/i18n/GT.java:174
 msgid "Uyghur"
-msgstr ""
+msgstr "Uigur"
 
 #: org/jmol/i18n/GT.java:175
 msgid "Ukrainian"
@@ -1528,7 +1528,7 @@ msgstr "Feu clic per a mesurar la torsió (angle dihèdric)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:826
 msgid "Click two atoms to display a sequence in the console"
-msgstr ""
+msgstr "Fes click en dos àtoms per mostrar una seqüència en la consola"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:827
 msgid "Delete measurements"
@@ -1592,7 +1592,7 @@ msgstr "Selecciona un seti"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:845
 msgid "Show symmetry operation"
-msgstr ""
+msgstr "Mostra operació de simetria"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:848
 msgid "Show"
@@ -1677,7 +1677,7 @@ msgstr "Exporta la imatge {0}"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:876
 msgid "Save all as JMOL file (zip)"
-msgstr ""
+msgstr "Desa tot com un arxiu JMOL (zip)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:877
 msgid "Save JVXL isosurface"
@@ -1701,7 +1701,7 @@ msgstr "Optimitza l'estructura"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:885
 msgid "Model kit"
-msgstr ""
+msgstr "Eina de modelat"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:889
 msgid "Extract MOL data"
@@ -2206,8 +2206,10 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:125
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
+"fes click en dos punts per definir un eix de gir antihorari (requerix {0})"
 
 #: org/jmol/viewer/ActionManager.java:126
 #, java-format
@@ -2378,7 +2380,7 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:159
 msgid "reset (when clicked off the model)"
-msgstr ""
+msgstr "reiniciar (quan es polse fora del model)"
 
 #: org/jmol/viewer/ActionManager.java:160
 #, java-format
@@ -2387,7 +2389,7 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:161
 msgid "simulate multi-touch using the mouse)"
-msgstr ""
+msgstr "simula multitàctil usant el ratolí)"
 
 #: org/jmol/viewer/ActionManager.java:1934
 msgid "pick one more atom in order to spin the model around an axis"
@@ -2399,12 +2401,13 @@ msgstr "trieu dos àtoms per a fer girar el model al voltant d'un eix"
 
 #: org/jmol/viewer/ActionManager.java:1938
 msgid "pick one more atom in order to display the symmetry relationship"
-msgstr ""
+msgstr "tria un àtom més per mostrar la relació de simetria"
 
 #: org/jmol/viewer/ActionManager.java:1939
 msgid ""
 "pick two atoms in order to display the symmetry relationship between them"
 msgstr ""
+"tria en ordre dos àtoms per mostrar la relació de simetria entre ambdós"
 
 #: org/jmol/viewer/SelectionManager.java:95
 #: org/jmol/viewer/SelectionManager.java:115
@@ -2433,7 +2436,7 @@ msgstr ""
 
 #: org/jmol/viewer/Viewer.java:9181
 msgid "Cannot set log file path."
-msgstr ""
+msgstr "No es pot establir la ruta de l'arxiu de registre."
 
 #: org/jmol/viewer/Viewer.java:9184
 #, java-format
@@ -2449,11 +2452,12 @@ msgstr ""
 #~ msgid "About Jmol"
 #~ msgstr "Quant al Jmol"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to string value: {0}"
 #~ msgstr ""
-#~ "ERROR: No s'ha pogut definir el senyal d'un booleà a un valor de cadena: "
-#~ "{0}"
+#~ "ERROR: No s'ha pogut definir el senyal d'un booleà a un valor de cadena: {0}"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 #~ msgstr ""
 #~ "ERROR: No s'ha pogut definir el senyal d'un booleà a un valor numèric: {0}"
@@ -2461,16 +2465,18 @@ msgstr ""
 #~ msgid "File creation failed."
 #~ msgstr "La creació de fitxer ha falalt"
 
+#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 #~ msgstr ""
-#~ "Aquesta miniaplicació no té permisos per a creació de fitxers. Per al "
-#~ "format JPEG Base64, utilitzeu {0}."
+#~ "Aquesta miniaplicació no té permisos per a creació de fitxers. Per al format "
+#~ "JPEG Base64, utilitzeu {0}."
 
+#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "Model 3D {0}"
 
+#, java-format
 #~ msgid "File {0}"
 #~ msgstr "Fitxer {0}"
 
@@ -2486,6 +2492,7 @@ msgstr ""
 #~ msgid "Script with history"
 #~ msgstr "Script amb historial"
 
+#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "Imatge {0}"
 
@@ -2495,6 +2502,7 @@ msgstr ""
 #~ msgid "Minimize"
 #~ msgstr "Minimitza"
 
+#, java-format
 #~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 #~ msgstr ""
 #~ "ERROR: No ha pogut definir-se el valor de la variable com a booleà: {0}"

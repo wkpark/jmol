@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-03-13 20:28+0000\n"
-"X-Generator: Launchpad (build 12568)\n"
+"X-Launchpad-Export-Date: 2011-08-05 17:04+0000\n"
+"X-Generator: Launchpad (build 13613)\n"
 
 #: org/jmol/applet/AppletConsole.java:199
 msgid "&Help"
@@ -142,7 +142,8 @@ msgid "Check"
 msgstr "Tjek"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Toppen"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -356,14 +357,12 @@ msgid "Arabic"
 msgstr "Arabisk"
 
 #: org/jmol/i18n/GT.java:138
-#, fuzzy
 msgid "Asturian"
-msgstr "Estisk"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:139
-#, fuzzy
 msgid "Bosnian"
-msgstr "Estisk"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:140
 msgid "Catalan"
@@ -386,9 +385,8 @@ msgid "Greek"
 msgstr "Græsk"
 
 #: org/jmol/i18n/GT.java:145
-#, fuzzy
 msgid "Australian English"
-msgstr "Amerikansk engelsk"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:146
 msgid "British English"
@@ -483,9 +481,8 @@ msgid "Slovenian"
 msgstr "Slovensk"
 
 #: org/jmol/i18n/GT.java:169
-#, fuzzy
 msgid "Serbian"
-msgstr "Slovensk"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:170
 msgid "Swedish"
@@ -2204,7 +2201,8 @@ msgstr "klik på to punkter for at rotere rundt om akse med uret (kræver {0})"
 
 #: org/jmol/viewer/ActionManager.java:125
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr "klik på to punkter for at rotere rundt om akse mod uret (kræver {0})"
 
 #: org/jmol/viewer/ActionManager.java:126
@@ -2275,9 +2273,9 @@ msgid "select and drag atoms (requires {0})"
 msgstr "vælg og træk atomer (kræver {0})"
 
 #: org/jmol/viewer/ActionManager.java:139
-#, fuzzy, java-format
+#, java-format
 msgid "drag atoms in Z direction (requires {0})"
-msgstr "omvend udvalg (kræver {0})"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:140
 #, java-format
@@ -2451,9 +2449,11 @@ msgstr "Sætter logfil til {0}"
 #~ msgid "Minimize"
 #~ msgstr "Minimér"
 
+#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "{0} 3D model"
 
+#, java-format
 #~ msgid "File {0}"
 #~ msgstr "Fil {0}"
 

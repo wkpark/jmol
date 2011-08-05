@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-27 13:56+0000\n"
-"X-Generator: Launchpad (build 13117)\n"
+"X-Launchpad-Export-Date: 2011-08-05 17:04+0000\n"
+"X-Generator: Launchpad (build 13613)\n"
 
 #: org/jmol/applet/AppletConsole.java:199
 msgid "&Help"
@@ -144,7 +144,8 @@ msgid "Check"
 msgstr "Verifica"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Sopra"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -358,14 +359,12 @@ msgid "Arabic"
 msgstr "Arabo"
 
 #: org/jmol/i18n/GT.java:138
-#, fuzzy
 msgid "Asturian"
-msgstr "Estone"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:139
-#, fuzzy
 msgid "Bosnian"
-msgstr "Estone"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:140
 msgid "Catalan"
@@ -388,9 +387,8 @@ msgid "Greek"
 msgstr "Greco"
 
 #: org/jmol/i18n/GT.java:145
-#, fuzzy
 msgid "Australian English"
-msgstr "Inglese Americano"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:146
 msgid "British English"
@@ -485,9 +483,8 @@ msgid "Slovenian"
 msgstr "Sloveno"
 
 #: org/jmol/i18n/GT.java:169
-#, fuzzy
 msgid "Serbian"
-msgstr "Sloveno"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:170
 msgid "Swedish"
@@ -2112,7 +2109,8 @@ msgstr "oggetto non riconosciuto"
 #: org/jmol/script/ScriptEvaluator.java:2934
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
-msgstr "parametro {0} non riconosciuto in Jmol state script (imposta comunque)"
+msgstr ""
+"parametro {0} non riconosciuto in Jmol state script (imposta comunque)"
 
 #: org/jmol/script/ScriptEvaluator.java:2937
 #, java-format
@@ -2211,7 +2209,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:125
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 "cliccare su due punti a ruotare attorno al proprio asse in senso antiorario "
 "(richiede {0})"
@@ -2287,9 +2286,9 @@ msgid "select and drag atoms (requires {0})"
 msgstr "seleziona e sposta gli atomi (richiede {0})"
 
 #: org/jmol/viewer/ActionManager.java:139
-#, fuzzy, java-format
+#, java-format
 msgid "drag atoms in Z direction (requires {0})"
-msgstr "passa selezione (richiede {0})"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:140
 #, java-format
@@ -2418,7 +2417,8 @@ msgstr "scegliere un altro atomo per visualizzare il rapporto di simmetria"
 #: org/jmol/viewer/ActionManager.java:1939
 msgid ""
 "pick two atoms in order to display the symmetry relationship between them"
-msgstr "scegliere due atomi per visualizzare il rapporto di simmetria fra loro"
+msgstr ""
+"scegliere due atomi per visualizzare il rapporto di simmetria fra loro"
 
 #: org/jmol/viewer/SelectionManager.java:95
 #: org/jmol/viewer/SelectionManager.java:115
@@ -2468,12 +2468,15 @@ msgstr "Impostazione file di log su {0}"
 #~ msgid "Minimize"
 #~ msgstr "Minimizza"
 
+#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "{0} Modello 3D"
 
+#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "{0} Immagine"
 
+#, java-format
 #~ msgid "File {0}"
 #~ msgstr "File {0}"
 
@@ -2483,9 +2486,9 @@ msgstr "Impostazione file di log su {0}"
 #~ msgid "Script with history"
 #~ msgstr "Script con storia"
 
+#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 #~ msgstr ""
 #~ "Non è consentita la creazione di file a questa applet . Per il formato "
 #~ "Base64 JPEG, usa {0}."
@@ -2493,32 +2496,25 @@ msgstr "Impostazione file di log su {0}"
 #~ msgid "JVXL Isosurface"
 #~ msgstr "JVXL Isosurface"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to string value: {0}"
 #~ msgstr ""
-#~ "ERRORE: non riesco ad impostare un flag booleano come valore di stringa: "
-#~ "{0}"
+#~ "ERRORE: non riesco ad impostare un flag booleano come valore di stringa: {0}"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 #~ msgstr ""
 #~ "ERRORE: non riesco ad impostare un flag booleano come valore valore "
 #~ "numerico: {0}"
 
+#, java-format
 #~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 #~ msgstr ""
-#~ "ERRORE: non riesco ad impostare il valore di questa variabile come "
-#~ "booleano: {0}"
+#~ "ERRORE: non riesco ad impostare il valore di questa variabile come booleano: "
+#~ "{0}"
 
 #~ msgid "File from PDB"
 #~ msgstr "File da PDB"
 
 #~ msgid "Script with state"
 #~ msgstr "Script con stato"
-
-#~ msgid ""
-#~ "NOTE: NH hydrogens are present and will not be calculated.\n"
-#~ "Use {0} for a standard DSSP analysis.\n"
-#~ "\n"
-#~ msgstr ""
-#~ "NOTA: gli atomi di idrogeno NH sono presenti e non saranno calcolati.\n"
-#~ "Usa {0} per un'analisi standard DSSP.\n"
-#~ "\n"

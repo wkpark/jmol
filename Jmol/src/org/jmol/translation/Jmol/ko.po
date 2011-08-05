@@ -13,8 +13,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-06-04 08:28+0000\n"
-"X-Generator: Launchpad (build 13144)\n"
+"X-Launchpad-Export-Date: 2011-08-05 17:05+0000\n"
+"X-Generator: Launchpad (build 13613)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
 msgid "Error starting Jmol: the property 'user.home' is not defined."
@@ -1299,24 +1299,20 @@ msgid "What's New in Jmol"
 msgstr "Jmol의 새로와진 점"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
-#, fuzzy
 msgid "Degrees"
-msgstr "지우기"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
-#, fuzzy
 msgid "Radians"
-msgstr "반경"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
-#, fuzzy
 msgid "Gradians"
-msgstr "반경"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
-#, fuzzy
 msgid "Circle Fraction"
-msgstr "콜렉션"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
 msgid "Units of Pi"
@@ -1334,15 +1330,13 @@ msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:141
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:144
-#, fuzzy
 msgid "View Center"
-msgstr "가운데로(&C)"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:142
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:145
-#, fuzzy
 msgid "Absolute"
-msgstr "회전"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:153
 msgid "Origin"
@@ -1754,10 +1748,6 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr ""
-
-#, fuzzy
-#~ msgid "Angle Units"
-#~ msgstr "축"
 
 #~ msgid "atom set"
 #~ msgstr "원자셋"

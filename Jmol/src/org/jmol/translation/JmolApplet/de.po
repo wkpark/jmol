@@ -20,8 +20,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-07-25 17:24+0000\n"
-"X-Generator: Launchpad (build 13503)\n"
+"X-Launchpad-Export-Date: 2011-08-05 17:04+0000\n"
+"X-Generator: Launchpad (build 13613)\n"
 
 #: org/jmol/applet/AppletConsole.java:199
 msgid "&Help"
@@ -364,14 +364,12 @@ msgid "Arabic"
 msgstr "arabisch"
 
 #: org/jmol/i18n/GT.java:138
-#, fuzzy
 msgid "Asturian"
-msgstr "Estnisch"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:139
-#, fuzzy
 msgid "Bosnian"
-msgstr "Estnisch"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:140
 msgid "Catalan"
@@ -394,9 +392,8 @@ msgid "Greek"
 msgstr "Griechisch"
 
 #: org/jmol/i18n/GT.java:145
-#, fuzzy
 msgid "Australian English"
-msgstr "amerikanisches Englisch"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:146
 msgid "British English"
@@ -491,9 +488,8 @@ msgid "Slovenian"
 msgstr "Slowenisch"
 
 #: org/jmol/i18n/GT.java:169
-#, fuzzy
 msgid "Serbian"
-msgstr "Slowenisch"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:170
 msgid "Swedish"
@@ -2297,9 +2293,9 @@ msgid "select and drag atoms (requires {0})"
 msgstr "wähle und verschiebe Atome (benötigt {0})"
 
 #: org/jmol/viewer/ActionManager.java:139
-#, fuzzy, java-format
+#, java-format
 msgid "drag atoms in Z direction (requires {0})"
-msgstr "Auswahl hin- und herschalten (erfordert {0})"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:140
 #, java-format
@@ -2519,45 +2515,3 @@ msgstr "Stelle Log Datei auf {0}"
 
 #~ msgid "Minimize"
 #~ msgstr "Minimieren"
-
-#~ msgid "pick a DRAW point (for measurements)"
-#~ msgstr "einen DRAW punkt auswählen (für Messungen)"
-
-#~ msgid ""
-#~ "click on two points to spin around axis counterclockwise (requires SET "
-#~ "picking SPIN)"
-#~ msgstr ""
-#~ "Klicke auf zwei Punkte um entgegen dem Uhrzeigersinn um die Achse zu "
-#~ "rotieren (benötigt \"SET picking SPIN\")"
-
-#~ msgid ""
-#~ "click on two points to spin around axis clockwise (requires SET picking "
-#~ "SPIN)"
-#~ msgstr ""
-#~ "Klicke auf zwei Punkte um im Uhrzeigersinn um die Achse zu rotieren "
-#~ "(benötigt \"Set picking SPIN\")"
-
-#~ msgid "toggle selection (requires {0} or {1})"
-#~ msgstr "Auswahl umschalten (benötigt {0} oder {1})"
-
-#~ msgid ""
-#~ "pick a point or atom to navigate to (requires SET NAVIGATIONMODE; "
-#~ "undocumented)"
-#~ msgstr ""
-#~ "einen Punkt oder ein Atom auswählen um dorthin zu navigieren (benötigt "
-#~ "SET NAVIGATIONMODE; undokumentiert)"
-
-#~ msgid "pick an ISOSURFACE point"
-#~ msgstr "einen ISOSURFACE Punkt auswählen"
-
-#~ msgid "increase"
-#~ msgstr "erhöhen"
-
-#~ msgid "delete"
-#~ msgstr "löschen"
-
-#~ msgid "save"
-#~ msgstr "speichern"
-
-#~ msgid "decrease"
-#~ msgstr "verringern"

@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-01-29 19:08+0000\n"
-"X-Generator: Launchpad (build 12274)\n"
+"X-Launchpad-Export-Date: 2011-08-05 17:04+0000\n"
+"X-Generator: Launchpad (build 13613)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
 msgid "Error starting Jmol: the property 'user.home' is not defined."
@@ -1304,24 +1304,20 @@ msgid "What's New in Jmol"
 msgstr "Hal Baru di Jmol"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
-#, fuzzy
 msgid "Degrees"
-msgstr "Hapus"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
-#, fuzzy
 msgid "Radians"
-msgstr "Jejari"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
-#, fuzzy
 msgid "Gradians"
-msgstr "Jejari"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
-#, fuzzy
 msgid "Circle Fraction"
-msgstr "Koleksi"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
 msgid "Units of Pi"
@@ -1339,15 +1335,13 @@ msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:141
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:144
-#, fuzzy
 msgid "View Center"
-msgstr "Tentukan Titik Tengah"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:142
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:145
-#, fuzzy
 msgid "Absolute"
-msgstr "Rute"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:153
 msgid "Origin"
@@ -1772,55 +1766,53 @@ msgstr "Tampilan Muaturun"
 msgid "unimplemented"
 msgstr "belum diimplementasi"
 
-#, fuzzy
-#~ msgid "Angle Units"
-#~ msgstr "Sumbu"
-
-#~ msgid ""
-#~ "Could not find or open:\n"
-#~ "{0}"
-#~ msgstr ""
-#~ "Tidak bisa menemukan atau membuka:\n"
-#~ "{0}"
-
 #~ msgid "vector"
 #~ msgstr "vektor"
 
 #~ msgid "atom set"
 #~ msgstr "atom set"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Menuju yang pertama {0} dalam koleksi"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Menuju ke sebelumnya {0} dalam koleksi"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Menjalankan seluruh koleksi dari {0}"
 
+#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Loncat ke terakhir {0} dalam koleksi"
 
 #~ msgid "Jmol Script Console"
 #~ msgstr "Konsul Skrip Jmol"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Ke selanjutnya {0} dalam koleksi"
 
 #~ msgid "Clear console button (requires restarting Jmol)"
 #~ msgstr "Butang bersihkan konsul (Jmol perlu dijalankan ulang)"
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "menambah {0}.spt"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "menambah {0}.png"
 
-#~ msgid "stereo off"
-#~ msgstr "stereo padam"
-
-#~ msgid "Stop"
-#~ msgstr "Henti"
+#, java-format
+#~ msgid ""
+#~ "Could not find or open:\n"
+#~ "{0}"
+#~ msgstr ""
+#~ "Tidak bisa menemukan atau membuka:\n"
+#~ "{0}"
 
 #~ msgid "double-click and drag to reorder"
 #~ msgstr "Klik ganda dan seret untuk pengurutan ulang"
@@ -1834,12 +1826,13 @@ msgstr "belum diimplementasi"
 #~ msgid "The -D options are as follows (defaults in parenthesis):"
 #~ msgstr "Pilihan -D adalah sebagai berikut (bawaan di dalam kurung):"
 
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 #~ msgstr ""
-#~ "Sisipkan tambahan teks penjelasan disini. Teks panjang akan dilipat "
-#~ "sesuai dengan model Jmol {0}."
+#~ "Sisipkan tambahan teks penjelasan disini. Teks panjang akan dilipat sesuai "
+#~ "dengan model Jmol {0}."
 
 #~ msgid "Show Selected"
 #~ msgstr "Tampilkan Pilihan"

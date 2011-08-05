@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-02-14 13:56+0000\n"
-"X-Generator: Launchpad (build 12351)\n"
+"X-Launchpad-Export-Date: 2011-08-05 17:04+0000\n"
+"X-Generator: Launchpad (build 13613)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
 msgid "Error starting Jmol: the property 'user.home' is not defined."
@@ -63,7 +63,8 @@ msgstr "nessuna console -- tutto l'output inviato a sysout"
 
 #: org/openscience/jmol/app/JmolApp.java:156
 msgid "send only output from print messages to console (implies -i)"
-msgstr "inviare l'output di stampa solo dai messaggi alla console (implica -i)"
+msgstr ""
+"inviare l'output di stampa solo dai messaggi alla console (implica -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:158
 msgid "independent command thread"
@@ -79,7 +80,8 @@ msgstr "file di script da eseguire o '-' per System.in"
 
 #: org/openscience/jmol/app/JmolApp.java:170
 msgid "use multitouch interface (requires \"sparshui\" parameter"
-msgstr "l'uso dell'interfaccia multitouch (richiede il parametro \"sparshui\""
+msgstr ""
+"l'uso dell'interfaccia multitouch (richiede il parametro \"sparshui\""
 
 #: org/openscience/jmol/app/JmolApp.java:177
 msgid "Jmol script to execute BEFORE -s option"
@@ -107,8 +109,8 @@ msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
 msgstr ""
-"Qualità delle immagini JPG (1-100; default 75) o compressione delle "
-"immagini  PNG (0-9; default e, compressione massima 9)"
+"Qualità delle immagini JPG (1-100; default 75) o compressione delle immagini "
+" PNG (0-9; default e, compressione massima 9)"
 
 #: org/openscience/jmol/app/JmolApp.java:216
 #, java-format
@@ -1119,7 +1121,8 @@ msgstr "Mostra durante Rendering"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:245
 msgid "Should POV-Ray attempt to display while rendering?"
-msgstr "Deve il POV-Ray tentare di visualizzare durante la fare di rendering?"
+msgstr ""
+"Deve il POV-Ray tentare di visualizzare durante la fare di rendering?"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:268
 msgid "width:"
@@ -1307,24 +1310,20 @@ msgid "What's New in Jmol"
 msgstr "Cosa c'è di nuovo in Jmol"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
-#, fuzzy
 msgid "Degrees"
-msgstr "Cancella"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
-#, fuzzy
 msgid "Radians"
-msgstr "Raggio"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
-#, fuzzy
 msgid "Gradians"
-msgstr "Raggio"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
-#, fuzzy
 msgid "Circle Fraction"
-msgstr "Raccolta"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
 msgid "Units of Pi"
@@ -1342,15 +1341,13 @@ msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:141
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:144
-#, fuzzy
 msgid "View Center"
-msgstr "Definisci &Centro"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:142
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:145
-#, fuzzy
 msgid "Absolute"
-msgstr "Percorso"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:153
 msgid "Origin"
@@ -1777,32 +1774,25 @@ msgstr "Scarica vista"
 msgid "unimplemented"
 msgstr "non implementato"
 
-#, fuzzy
-#~ msgid "Angle Units"
-#~ msgstr "Assi"
-
-#~ msgid ""
-#~ "Could not find or open:\n"
-#~ "{0}"
-#~ msgstr ""
-#~ "Impossibile trovare o aprire:\n"
-#~ "{0}"
-
 #~ msgid "atom set"
 #~ msgstr "atom set"
 
 #~ msgid "vector"
 #~ msgstr "vettore"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Vai al primo {0} nella raccolta"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Vai al precedente {0} nella raccolta"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Riproduci la collezione completa di {0}"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Vai al prossimo {0} nella raccolta"
 
@@ -1818,11 +1808,21 @@ msgstr "non implementato"
 #~ msgid "Show Selected"
 #~ msgstr "Mostra Selezionati."
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "aggiungendo {0}.spt"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "aggiungendo {0}.png"
+
+#, java-format
+#~ msgid ""
+#~ "Could not find or open:\n"
+#~ "{0}"
+#~ msgstr ""
+#~ "Impossibile trovare o aprire:\n"
+#~ "{0}"
 
 #~ msgid "Output Conso&le..."
 #~ msgstr "Output Conso&le..."
@@ -1833,9 +1833,13 @@ msgstr "non implementato"
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "aggiungendo JmolPopIn.js"
 
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 #~ msgstr ""
 #~ "Inserisci una descrizione qui. I testi lunghi saranno avvolti nel modello "
 #~ "jmod {0}"
+
+#~ msgid "independent commmand thread"
+#~ msgstr "comando indipendente"

@@ -15,8 +15,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-01-29 19:08+0000\n"
-"X-Generator: Launchpad (build 12274)\n"
+"X-Launchpad-Export-Date: 2011-08-05 17:04+0000\n"
+"X-Generator: Launchpad (build 13613)\n"
 "X-Poedit-Country: CZECH REPUBLIC\n"
 "X-Poedit-Language: Czech\n"
 
@@ -1309,24 +1309,20 @@ msgid "What's New in Jmol"
 msgstr "Novinky v programu Jmol"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
-#, fuzzy
 msgid "Degrees"
-msgstr "Vymazat"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
-#, fuzzy
 msgid "Radians"
-msgstr "Poloměr"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
-#, fuzzy
 msgid "Gradians"
-msgstr "Poloměr"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
-#, fuzzy
 msgid "Circle Fraction"
-msgstr "Kolekce"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
 msgid "Units of Pi"
@@ -1344,15 +1340,13 @@ msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:141
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:144
-#, fuzzy
 msgid "View Center"
-msgstr "&Určit střed"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:142
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:145
-#, fuzzy
 msgid "Absolute"
-msgstr "Trasa"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:153
 msgid "Origin"
@@ -1501,7 +1495,8 @@ msgstr "Vložte zde titulek pro {0}."
 msgid ""
 "Insert additional explanatory text here. Long text will wrap around Jmol "
 "model {0}."
-msgstr "Zde vlož text s vysvětlením. Dlouhý text bude obtékat Jmol model {0}."
+msgstr ""
+"Zde vlož text s vysvětlením. Dlouhý text bude obtékat Jmol model {0}."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:372
 msgid "Insert your TITLE and INTRODUCTION here."
@@ -1772,35 +1767,29 @@ msgstr "Ulož pohled"
 msgid "unimplemented"
 msgstr "neimplementováno"
 
-#, fuzzy
-#~ msgid "Angle Units"
-#~ msgstr "Osy"
-
-#~ msgid ""
-#~ "Could not find or open:\n"
-#~ "{0}"
-#~ msgstr ""
-#~ "Nemohu najít nebo otevřít:\n"
-#~ "{0}"
-
 #~ msgid "atom set"
 #~ msgstr "sada atomů"
 
 #~ msgid "vector"
 #~ msgstr "vektor"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Přejít na první {0} v kolekci"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Přejít na předchozí {0} v kolekci"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Přehrát celou kolekci {0}"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Přejít na další {0} ve sbírce"
 
+#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Přejít na poslední  {0} ve sbírce"
 
@@ -1822,15 +1811,26 @@ msgstr "neimplementováno"
 #~ msgid "double-click and drag to reorder"
 #~ msgstr "poklepejte a táhněte pro změnu pořadí"
 
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 #~ msgstr ""
 #~ "Zde vložte vysvětlující text. Delší text bude obtékat Jmol model {0}."
 
+#, java-format
+#~ msgid ""
+#~ "Could not find or open:\n"
+#~ "{0}"
+#~ msgstr ""
+#~ "Nemohu najít nebo otevřít:\n"
+#~ "{0}"
+
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "přidávám {0}.spt"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "přidávám {0}.png"
 
@@ -1839,6 +1839,3 @@ msgstr "neimplementováno"
 
 #~ msgid "Clear console button (requires restarting Jmol)"
 #~ msgstr "Vyčistit tlačítka konzole (vyžaduje restart Jmolu)"
-
-#~ msgid "stereo off"
-#~ msgstr "vypnout stereo"

@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-02-17 19:20+0000\n"
-"X-Generator: Launchpad (build 12395)\n"
+"X-Launchpad-Export-Date: 2011-08-05 17:04+0000\n"
+"X-Generator: Launchpad (build 13613)\n"
 
 #: org/jmol/applet/AppletConsole.java:199
 msgid "&Help"
@@ -134,7 +134,8 @@ msgid "Check"
 msgstr "Έλεγχος"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -348,14 +349,12 @@ msgid "Arabic"
 msgstr "Αραβικά"
 
 #: org/jmol/i18n/GT.java:138
-#, fuzzy
 msgid "Asturian"
-msgstr "Εσθονικά"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:139
-#, fuzzy
 msgid "Bosnian"
-msgstr "Εσθονικά"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:140
 msgid "Catalan"
@@ -378,9 +377,8 @@ msgid "Greek"
 msgstr "Ελληνικά"
 
 #: org/jmol/i18n/GT.java:145
-#, fuzzy
 msgid "Australian English"
-msgstr "Αγγλικά (Αμερικής)"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:146
 msgid "British English"
@@ -411,9 +409,8 @@ msgid "French"
 msgstr "Γαλλικά"
 
 #: org/jmol/i18n/GT.java:153
-#, fuzzy
 msgid "Croatian"
-msgstr "Πρωτεΐνη"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:154
 msgid "Hungarian"
@@ -476,9 +473,8 @@ msgid "Slovenian"
 msgstr "Σλοβένικα"
 
 #: org/jmol/i18n/GT.java:169
-#, fuzzy
 msgid "Serbian"
-msgstr "Σλοβένικα"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:170
 msgid "Swedish"
@@ -2183,7 +2179,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:125
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:126
@@ -2252,9 +2249,9 @@ msgid "select and drag atoms (requires {0})"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:139
-#, fuzzy, java-format
+#, java-format
 msgid "drag atoms in Z direction (requires {0})"
-msgstr "διαγραφή ατόμου (απαιτείται {0})"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:140
 #, java-format
@@ -2380,7 +2377,8 @@ msgstr "επιλέξτε ένα ακόμα άτομο για να απεικον
 #: org/jmol/viewer/ActionManager.java:1939
 msgid ""
 "pick two atoms in order to display the symmetry relationship between them"
-msgstr "επιλέξτε δύο άτομα για να απεικονιστεί η σχέση συμμετρίας ανάμεσά τους"
+msgstr ""
+"επιλέξτε δύο άτομα για να απεικονιστεί η σχέση συμμετρίας ανάμεσά τους"
 
 #: org/jmol/viewer/SelectionManager.java:95
 #: org/jmol/viewer/SelectionManager.java:115

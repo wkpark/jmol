@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-01 07:32+0000\n"
-"X-Generator: Launchpad (build 13543)\n"
+"X-Launchpad-Export-Date: 2011-08-05 17:05+0000\n"
+"X-Generator: Launchpad (build 13613)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
 msgid "Error starting Jmol: the property 'user.home' is not defined."
@@ -1853,18 +1853,3 @@ msgstr "не реалізовано"
 
 #~ msgid "The -D options are as follows (defaults in parenthesis):"
 #~ msgstr "Параметри -D (типові значення вказано у дужках):"
-
-#~ msgid "stereo off"
-#~ msgstr "вимкнути стерео"
-
-#~ msgid "Stop"
-#~ msgstr "Зупинити"
-
-#~ msgid "Go to next vecotr in the collection"
-#~ msgstr "Перейти до наступного вектора у збірці"
-
-#~ msgid "Angles"
-#~ msgstr "Кути"
-
-#~ msgid "Angle Units"
-#~ msgstr "Кутові одиниці"

@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-07-29 23:21+0200\n"
-"PO-Revision-Date: 2011-08-04 16:47+0000\n"
+"PO-Revision-Date: 2011-08-04 17:30+0000\n"
 "Last-Translator: Ilia Lilov <lilovil@gmail.com>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-04 16:52+0000\n"
-"X-Generator: Launchpad (build 13604)\n"
+"X-Launchpad-Export-Date: 2011-08-05 17:05+0000\n"
+"X-Generator: Launchpad (build 13613)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
 msgid "Error starting Jmol: the property 'user.home' is not defined."
@@ -977,7 +977,7 @@ msgstr "Инициализация Окна Скрипта..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:227
 msgid "Building Command Hooks..."
-msgstr ""
+msgstr "Построение команд..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:238
 msgid "Building Menubar..."
@@ -1049,7 +1049,7 @@ msgstr "Взять файл MOL по структурному имени или 
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1167
 msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
-msgstr ""
+msgstr "Введите имя или идентификатор (SMILES, InChI, CAS) молекулы"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1333
 msgid "IO Exception:"
@@ -1069,7 +1069,7 @@ msgstr "Удалить все"
 
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:151
 msgid "Dismiss"
-msgstr ""
+msgstr "Отменить"
 
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:202
 msgid "Value"
@@ -1099,11 +1099,11 @@ msgstr "Где .pov файл будет сохранен"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:191
 msgid "POV-Ray Runtime Options"
-msgstr ""
+msgstr "Опции времени выполнения POV-Ray"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:196
 msgid "Run POV-Ray directly"
-msgstr ""
+msgstr "Запустить POV-Ray напрямую"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:198
 msgid "Launch POV-Ray from within Jmol"
@@ -1111,11 +1111,11 @@ msgstr "Запустить POV-Ray в нутри Jmol"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:243
 msgid "Display While Rendering"
-msgstr ""
+msgstr "Отображать во время рендеринга"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:245
 msgid "Should POV-Ray attempt to display while rendering?"
-msgstr ""
+msgstr "Должен POV-Ray пытаться отрисовывать во время рендеринга?"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:268
 msgid "width:"
@@ -1201,7 +1201,7 @@ msgstr "Окончательный размер плитки"
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:452
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:454
 msgid "Location of the POV-Ray Executable"
-msgstr ""
+msgstr "Расположение исполнимого файла POV-Ray"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:491
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:758
@@ -1280,7 +1280,7 @@ msgstr "(Ангстремы)"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:435
 msgid "Bond Tolerance - sum of two covalent radii + this value"
-msgstr ""
+msgstr "Допуск связывания - сумма двух ковалентных радиусов + это значение"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:481
 msgid "Minimum Bonding Distance"
@@ -1304,95 +1304,95 @@ msgstr "Что Нового в Jmol"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
 msgid "Degrees"
-msgstr ""
+msgstr "Градусы"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
 msgid "Radians"
-msgstr ""
+msgstr "Радианы"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
 msgid "Gradians"
-msgstr ""
+msgstr "Грады"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
 msgid "Circle Fraction"
-msgstr ""
+msgstr "Сектор круга"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
 msgid "Units of Pi"
-msgstr ""
+msgstr "Единицы измерения Пи"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:273
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:327
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:350
 msgid "Percentage scaling not implemented yet!"
-msgstr ""
+msgstr "Процентное масштабирование ещё не реализовано!"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:125
 msgid "SurfaceTool"
-msgstr ""
+msgstr "Инструмент поверхности"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:141
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:144
 msgid "View Center"
-msgstr ""
+msgstr "Центер обзора"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:142
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:145
 msgid "Absolute"
-msgstr ""
+msgstr "Абсолютно"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:153
 msgid "Origin"
-msgstr ""
+msgstr "Начало координат"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:156
 msgid "Cap"
-msgstr ""
+msgstr "Предел"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:157
 msgid "Caps slice with opaque surfaces."
-msgstr ""
+msgstr "Верхушки срезаются непрозрачными поверхностями."
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:161
 msgid "Slice Planes"
-msgstr ""
+msgstr "Срезать плоскости"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:162
 msgid "Shows planes at slicing surfaces."
-msgstr ""
+msgstr "Показывать плоскости при срезании поверхностями."
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:170
 msgid "Ghost On"
-msgstr ""
+msgstr "Показывать \"призраки\""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:173
 msgid "Shows an unsliced \"ghost\"."
-msgstr ""
+msgstr "Показывает несрезанные \"призраки\"."
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:193
 msgid "Angle from X-axis in XY plane"
-msgstr ""
+msgstr "Угол с осью X в плоскости XY"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:204
 msgid "Angle from Z-axis"
-msgstr ""
+msgstr "Угол с осью Z"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:215
 msgid "Direction vector of normal to slice"
-msgstr ""
+msgstr "Направление вектора нормали к срезу"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:218
 msgid "Distance of slice from origin"
-msgstr ""
+msgstr "Расстояние от начала координат до среза"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:230
 msgid "Thickness of slice"
-msgstr ""
+msgstr "Толщина среза"
 
 #: org/openscience/jmol/app/webexport/JmolInstance.java:81
 msgid "Attempt to make scratch directory failed."
-msgstr ""
+msgstr "Попытка создать черновой каталог не удалась."
 
 #: org/openscience/jmol/app/webexport/LogPanel.java:56
 msgid "Log and Error Messages:"
@@ -1432,7 +1432,7 @@ msgstr "%в окне аплета ширина:"
 #: org/openscience/jmol/app/webexport/WebExport.java:197
 #: org/openscience/jmol/app/webexport/WebExport.java:274
 msgid "Jmol Web Page Maker"
-msgstr ""
+msgstr "Создатель веб-страниц Jmol"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:106
 msgid "Couldn't find file: {0}"
@@ -1444,11 +1444,11 @@ msgstr "Введение"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:135
 msgid "Pop-In Jmol"
-msgstr ""
+msgstr "Jmol поп-ин"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:136
 msgid "ScriptButton Jmol"
-msgstr ""
+msgstr "Jmol ScriptButton"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:153
 msgid "Log"
@@ -1460,6 +1460,8 @@ msgid ""
 "Page skeleton and JavaScript generated by export to web function using {0} "
 "on {1}."
 msgstr ""
+"Каркас страницы и JavaScript сгенерированы экспортированием в веб-функцию, "
+"применяя {0} к {1}."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:364
 #, java-format
@@ -1467,6 +1469,9 @@ msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
 "be significant the first time the applet is loaded."
 msgstr ""
+"Чтобы получить 3D модель, которой можно манипулировать, щёлкните "
+"{0}здесь{1}. Время загрузки может быть существенным при первой загрузке "
+"апплета."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:366
 msgid "Insert the page TITLE here."
@@ -1487,6 +1492,8 @@ msgid ""
 "Insert additional explanatory text here. Long text will wrap around Jmol "
 "model {0}."
 msgstr ""
+"Вставьте дополнительный поясняющий текст здесь. Длинный текст будет "
+"\"обёрнут\" вокруг Jmol модели {0}."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:372
 msgid "Insert your TITLE and INTRODUCTION here."
@@ -1515,7 +1522,7 @@ msgstr "перетащите для изменения порядка"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:183
 msgid "Add Present Jmol State as Instance..."
-msgstr ""
+msgstr "Добавить представленное состояние Jmol как экземпляр..."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:190
 msgid "Delete Selected"
@@ -1523,7 +1530,7 @@ msgstr "Удалить выбранное"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:222
 msgid "Jmol Instances:"
-msgstr ""
+msgstr "Экземпляры Jmol:"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:228
 msgid "Select widgets:"
@@ -1560,7 +1567,7 @@ msgstr "Заголовок окна браузера для этой веб-ст
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:467
 msgid "Give the occurrence of Jmol a name:"
-msgstr ""
+msgstr "Дайте имя этому экземпляру Jmol:"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:483
 msgid "Error creating new instance containing script(s) and image."
@@ -1570,12 +1577,12 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/WebPanel.java:494
 #, java-format
 msgid "added Instance {0}"
-msgstr ""
+msgstr "добавлен экземпляр {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:497
 #, java-format
 msgid "updated Instance {0}"
-msgstr ""
+msgstr "обновлён экземпляр {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:534
 msgid "Select a directory to create or an HTML file to save"
@@ -1592,7 +1599,7 @@ msgstr "Вызов FileWriter завершился неудачей."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:560
 msgid "Errors occurred during web page creation.  See Log Tab!"
-msgstr ""
+msgstr "При создании веб-страницы произошли ошибки. Смотрите вкладку Журнал!"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:635
 #, java-format
@@ -1630,6 +1637,10 @@ msgid ""
 "Please check that you are using a Jmol.jar that is part of a full Jmol "
 "distribution."
 msgstr ""
+"Не получилось найти или открыть:\n"
+"{0}\n"
+"Пожалуйста, проверьте, что вы используете Jmol.jar, являющийся частью полной "
+"установки Jmol."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:794
 #, java-format
@@ -1648,15 +1659,15 @@ msgstr "сжатие большого файла данных в"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:62
 msgid "Spin on/off"
-msgstr ""
+msgstr "Вращение включено/выключено"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:80
 msgid "enable/disable spin"
-msgstr ""
+msgstr "разрешить/запретить вращение"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:82
 msgid "Spin on"
-msgstr ""
+msgstr "Вращение включено"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:88
 msgid "Background Color"
@@ -1732,11 +1743,11 @@ msgstr "Повторение"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:195
 msgid "Palindrome"
-msgstr ""
+msgstr "Палиндром"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:197
 msgid "Play Once"
-msgstr ""
+msgstr "Проиграть однократно"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:206
 msgid "Open Console Button"
@@ -1752,7 +1763,7 @@ msgstr "Jmol Консоль"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:229
 msgid "Download view"
-msgstr ""
+msgstr "Загрузить вид"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"

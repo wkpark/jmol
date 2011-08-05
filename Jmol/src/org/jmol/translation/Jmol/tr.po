@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-07-16 23:28+0000\n"
-"X-Generator: Launchpad (build 13405)\n"
+"X-Launchpad-Export-Date: 2011-08-05 17:05+0000\n"
+"X-Generator: Launchpad (build 13613)\n"
 "X-Poedit-Language: Turkish\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -1302,24 +1302,20 @@ msgid "What's New in Jmol"
 msgstr "Jmol'daki Yenilikler"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
-#, fuzzy
 msgid "Degrees"
-msgstr "Sil"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
-#, fuzzy
 msgid "Radians"
-msgstr "Yarıçap"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
-#, fuzzy
 msgid "Gradians"
-msgstr "Yarıçap"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
-#, fuzzy
 msgid "Circle Fraction"
-msgstr "Koleksiyon"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
 msgid "Units of Pi"
@@ -1342,9 +1338,8 @@ msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:142
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:145
-#, fuzzy
 msgid "Absolute"
-msgstr "Hat"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:153
 msgid "Origin"
@@ -1764,25 +1759,26 @@ msgstr "İndirme görünümü"
 msgid "unimplemented"
 msgstr ""
 
-#, fuzzy
-#~ msgid "Angle Units"
-#~ msgstr "Eksenler"
-
 #~ msgid "vector"
 #~ msgstr "vektör"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Koleksiyondaki ilk {0} elemanına git"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Koleksiyondaki önceki {0} elemana git"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "{0} elemanının tüm koleksiyonunu oynat"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Koleksiyondaki bir sonraki {0} elemanına git"
 
+#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Koleksiyondaki en son {0} elemanına git"
 
@@ -1803,6 +1799,7 @@ msgstr ""
 #~ msgid "double-click and drag to reorder"
 #~ msgstr "yeniden sıralamak için çift-tıklayıp sürükleyin"
 
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
@@ -1813,15 +1810,18 @@ msgstr ""
 #~ msgid "Show Selected"
 #~ msgstr "Seçilenleri Göster"
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "{0}.spt ekleniyor"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "{0}.png ekleniyor"
 
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "JmolPopIn.js ekleniyor"
 
+#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"
@@ -1831,6 +1831,3 @@ msgstr ""
 
 #~ msgid "atom set"
 #~ msgstr "atom dizisi"
-
-#~ msgid "stereo off"
-#~ msgstr "stereo kapalı"

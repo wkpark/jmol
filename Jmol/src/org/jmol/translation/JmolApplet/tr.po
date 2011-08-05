@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-03-20 20:36+0000\n"
-"X-Generator: Launchpad (build 12617)\n"
+"X-Launchpad-Export-Date: 2011-08-05 17:04+0000\n"
+"X-Generator: Launchpad (build 13613)\n"
 "X-Poedit-Language: Turkish\n"
 
 #: org/jmol/applet/AppletConsole.java:199
@@ -145,7 +145,8 @@ msgid "Check"
 msgstr "Denetle"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Yukarı"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -359,14 +360,12 @@ msgid "Arabic"
 msgstr "Arapça"
 
 #: org/jmol/i18n/GT.java:138
-#, fuzzy
 msgid "Asturian"
-msgstr "Estonyaca"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:139
-#, fuzzy
 msgid "Bosnian"
-msgstr "Estonyaca"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:140
 msgid "Catalan"
@@ -389,9 +388,8 @@ msgid "Greek"
 msgstr "Yunanca"
 
 #: org/jmol/i18n/GT.java:145
-#, fuzzy
 msgid "Australian English"
-msgstr "Amerikan İngilizcesi"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:146
 msgid "British English"
@@ -486,9 +484,8 @@ msgid "Slovenian"
 msgstr "Slovence"
 
 #: org/jmol/i18n/GT.java:169
-#, fuzzy
 msgid "Serbian"
-msgstr "Slovence"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:170
 msgid "Swedish"
@@ -2198,7 +2195,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:125
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:126
@@ -2267,9 +2265,9 @@ msgid "select and drag atoms (requires {0})"
 msgstr "atomları seç ve sürükle ({0} gerektirir)"
 
 #: org/jmol/viewer/ActionManager.java:139
-#, fuzzy, java-format
+#, java-format
 msgid "drag atoms in Z direction (requires {0})"
-msgstr "seçimi değiştir ({0} gerektirir)"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:140
 #, java-format
@@ -2381,7 +2379,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:1934
 msgid "pick one more atom in order to spin the model around an axis"
-msgstr "modeli bir eksen etrafında döndürebilmek için bir tane daha atom seçin"
+msgstr ""
+"modeli bir eksen etrafında döndürebilmek için bir tane daha atom seçin"
 
 #: org/jmol/viewer/ActionManager.java:1935
 msgid "pick two atoms in order to spin the model around an axis"
@@ -2438,22 +2437,25 @@ msgstr "Günlük dosyası {0} olarak ayarlanıyor"
 #~ msgid "About Jmol"
 #~ msgstr "Jmol Hakkında"
 
+#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 #~ msgstr ""
-#~ "Bu programcık tarafından dosya oluşturulmasına izin verilmemektedir. "
-#~ "Base64 JPEG biçimi için {0} kullanın."
+#~ "Bu programcık tarafından dosya oluşturulmasına izin verilmemektedir. Base64 "
+#~ "JPEG biçimi için {0} kullanın."
 
 #~ msgid "File creation failed."
 #~ msgstr "Dosya oluşturulamadı."
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to string value: {0}"
 #~ msgstr "HATA: ikili işaret yazı değerine atanamadı: {0}"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 #~ msgstr "HATA: ikili işaret sayısal değere atanamadı: {0}"
 
+#, java-format
 #~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 #~ msgstr "HATA: Bu değişkenin değeri bir ikiliye atanamadı: {0}"
 
@@ -2463,24 +2465,15 @@ msgstr "Günlük dosyası {0} olarak ayarlanıyor"
 #~ msgid "File or URL"
 #~ msgstr "Dosya ya da URL"
 
+#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "{0} Görsel"
 
+#, java-format
 #~ msgid "File {0}"
 #~ msgstr "Dosya {0}"
 
-#~ msgid "increase"
-#~ msgstr "artır"
-
-#~ msgid "delete"
-#~ msgstr "sil"
-
-#~ msgid "save"
-#~ msgstr "kaydet"
-
-#~ msgid "decrease"
-#~ msgstr "azalt"
-
+#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "{0} 3D Model"
 

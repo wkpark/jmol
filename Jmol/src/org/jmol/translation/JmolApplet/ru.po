@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-01-29 19:08+0000\n"
-"X-Generator: Launchpad (build 12274)\n"
+"X-Launchpad-Export-Date: 2011-08-05 17:04+0000\n"
+"X-Generator: Launchpad (build 13613)\n"
 
 #: org/jmol/applet/AppletConsole.java:199
 msgid "&Help"
@@ -144,7 +144,8 @@ msgid "Check"
 msgstr "Проверить"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Наверх"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -358,14 +359,12 @@ msgid "Arabic"
 msgstr "Арабский"
 
 #: org/jmol/i18n/GT.java:138
-#, fuzzy
 msgid "Asturian"
-msgstr "Эстонский"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:139
-#, fuzzy
 msgid "Bosnian"
-msgstr "Эстонский"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:140
 msgid "Catalan"
@@ -388,9 +387,8 @@ msgid "Greek"
 msgstr "Греческий"
 
 #: org/jmol/i18n/GT.java:145
-#, fuzzy
 msgid "Australian English"
-msgstr "Американский английский"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:146
 msgid "British English"
@@ -421,9 +419,8 @@ msgid "French"
 msgstr "Французский"
 
 #: org/jmol/i18n/GT.java:153
-#, fuzzy
 msgid "Croatian"
-msgstr "Белок"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:154
 msgid "Hungarian"
@@ -486,9 +483,8 @@ msgid "Slovenian"
 msgstr "Словенский"
 
 #: org/jmol/i18n/GT.java:169
-#, fuzzy
 msgid "Serbian"
-msgstr "Словенский"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:170
 msgid "Swedish"
@@ -2203,7 +2199,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:125
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:126
@@ -2434,9 +2431,9 @@ msgstr "Невозможно установить путь к файлу жур�
 msgid "Setting log file to {0}"
 msgstr "Установка файла журнала в {0}"
 
+#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 #~ msgstr ""
 #~ "Этому апплету не позволено создавать файлы. Для формата Base64 JPEG, "
 #~ "используйте {0}."
@@ -2447,11 +2444,14 @@ msgstr "Установка файла журнала в {0}"
 #~ msgid "Java memory usage"
 #~ msgstr "Использование памяти Java"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to string value: {0}"
 #~ msgstr "ОШИБКА: невозможно присвоить булеву флагу строковое значение: {0}"
 
+#, java-format
 #~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 #~ msgstr "ОШИБКА: Невозможно присвоить булево значение этой переменной: {0}"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 #~ msgstr "ОШИБКА: невозможно присвоить булеву флагу числовое значение: {0}"

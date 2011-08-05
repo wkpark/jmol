@@ -376,13 +376,12 @@ public abstract class SurfaceReader implements VertexDataServer {
       int i = s.indexOf('\n', s.indexOf('\n', s.indexOf('\n') + 1) + 1) + 1;
       jvxlData.jvxlFileTitle = s.substring(0, i);
     }
-    if (xyzMin != null) {
+    if (params.contactPair == null)
       setBoundingBox();
-      if (!params.isSilent)
-        Logger.info("boundbox corners " + Escape.escape(xyzMin) + " "
-            + Escape.escape(xyzMax));
-      jvxlData.boundingBox = new Point3f[] { xyzMin, xyzMax };
-    }
+    if (!params.isSilent)
+      Logger.info("boundbox corners " + Escape.escape(xyzMin) + " "
+          + Escape.escape(xyzMax));
+    jvxlData.boundingBox = new Point3f[] { xyzMin, xyzMax };
     jvxlData.dataMin = dataMin;
     jvxlData.dataMax = dataMax;
     jvxlData.cutoff = (isJvxl ? jvxlCutoff : params.cutoff);

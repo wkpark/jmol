@@ -37,6 +37,7 @@ import javax.vecmath.Vector3f;
 import org.jmol.api.AtomIndexIterator;
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.RadiusData;
+import org.jmol.constant.EnumVdw;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.jvxl.data.MeshData;
 import org.jmol.jvxl.data.VolumeData;
@@ -76,7 +77,7 @@ public class Contact extends Isosurface {
   private float minData, maxData;
   //private final static String hbondH = "_H & connected(_O|_N and his and not *.N |_S)";
   //private final static float HBOND_CUTOFF = -0.8f;
-  private final static RadiusData rdVDW =  new RadiusData(1, RadiusData.TYPE_FACTOR, JmolConstants.VDW_AUTO);
+  private final static RadiusData rdVDW =  new RadiusData(1, RadiusData.TYPE_FACTOR, EnumVdw.AUTO);
   
   private void setContacts(Object[] value) {
     Logger.startTimer();
@@ -183,7 +184,7 @@ public class Contact extends Isosurface {
     case Token.trim:
       if (rd == null)
         rd = new RadiusData(0.25f, RadiusData.TYPE_OFFSET,
-            JmolConstants.VDW_AUTO);
+            EnumVdw.AUTO);
       float volume = 0;
       List<ContactPair> pairs = getPairs(bsA, bsB, rd, intramolecularMode);
       thisMesh.info = pairs;
@@ -364,8 +365,7 @@ public class Contact extends Isosurface {
         isMultiModel);
     for (int ia = bsA.nextSetBit(0); ia >= 0; ia = bsA.nextSetBit(ia + 1)) {
       Atom atomA = atoms[ia];
-      float vdwA = atomA.getVanderwaalsRadiusFloat(viewer,
-          JmolConstants.VDW_AUTO);
+      float vdwA = atomA.getVanderwaalsRadiusFloat(viewer, EnumVdw.AUTO);
       if (isMultiModel)
         viewer.setIteratorForPoint(iter, -1, ad.atomXyz[ia], ad.atomRadius[ia]
             + maxRadius);
@@ -386,7 +386,7 @@ public class Contact extends Isosurface {
             continue;
         }
         float vdwB = atomB.getVanderwaalsRadiusFloat(viewer,
-            JmolConstants.VDW_AUTO);
+            EnumVdw.AUTO);
         float ra = ad.atomRadius[ia];
         float rb = ad.atomRadius[ib];
         float d = atomA.distance(atomB);
@@ -482,7 +482,7 @@ public class Contact extends Isosurface {
     case Token.full:
       RadiusData rdA, rdB;
       if (displayType == Token.surface) {
-        rdA = new RadiusData(1, RadiusData.TYPE_FACTOR, JmolConstants.VDW_AUTO);
+        rdA = new RadiusData(1, RadiusData.TYPE_FACTOR, EnumVdw.AUTO);
         rdB = new RadiusData((rd.factorType == RadiusData.TYPE_OFFSET ? rd.value * 2 : (rd.value - 1) * 2 + 1), 
             rd.factorType, rd.vdwType);
       } else {

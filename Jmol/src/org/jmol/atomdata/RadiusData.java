@@ -113,8 +113,7 @@
 
 package org.jmol.atomdata;
 
-import org.jmol.script.Token;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.constant.EnumVdw;
 
 public class RadiusData {
   public String info;
@@ -124,7 +123,7 @@ public class RadiusData {
   public static final int TYPE_SCREEN = 3;
   //private static final String[] typeNames = new String[] { "=", "+", "*", "." };
   public int factorType = TYPE_ABSOLUTE;
-  public int vdwType = JmolConstants.VDW_AUTO;
+  public EnumVdw vdwType = EnumVdw.AUTO;
   public float value = Float.NaN;
   public float valueExtended = 0;
   public float[] values;
@@ -132,7 +131,7 @@ public class RadiusData {
   public RadiusData() {
   }
 
-  public RadiusData(float value, int type, int vdwType) {
+  public RadiusData(float value, int type, EnumVdw vdwType) {
     this.factorType = type;
     this.value = value;
     this.vdwType = vdwType;
@@ -156,18 +155,9 @@ public class RadiusData {
       sb.append(value > 0 ? "+" : "").append(value);
       break;
     case TYPE_FACTOR:
-      sb.append((int)(value * 100)).append("%");
-      switch (vdwType) {
-      case Token.adpmax:
-      case Token.adpmin:
-      case Token.ionic:
-      case Token.temperature:
-        sb.append(Token.nameOf(vdwType));
-        break;
-      default:
-        if (vdwType != JmolConstants.VDW_AUTO)
-          sb.append(JmolConstants.getVdwLabel(vdwType));
-      }
+      sb.append((int) (value * 100)).append("%");
+      if (vdwType != EnumVdw.AUTO)
+        sb.append(vdwType.getVdwLabel());
       break;
     case TYPE_SCREEN:
       sb.append((int) value);

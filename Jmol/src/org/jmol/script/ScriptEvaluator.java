@@ -46,6 +46,7 @@ import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumAnimationMode;
 import org.jmol.constant.EnumPalette;
 import org.jmol.constant.EnumStereoMode;
+import org.jmol.constant.EnumVdw;
 import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.i18n.GT;
@@ -11061,7 +11062,7 @@ public class ScriptEvaluator {
         error(ERROR_invalidArgument);
     }
     if (rd == null)
-      rd = new RadiusData(scale, RadiusData.TYPE_FACTOR, JmolConstants.VDW_AUTO);
+      rd = new RadiusData(scale, RadiusData.TYPE_FACTOR, EnumVdw.AUTO);
     if (isOnly)
       restrictSelected(false, false);
     setShapeSize(shape, rd);
@@ -11086,7 +11087,7 @@ public class ScriptEvaluator {
 
     float value = Float.NaN;
     int factorType = RadiusData.TYPE_ABSOLUTE;
-    int vdwType = 0;
+    EnumVdw vdwType = null;
 
     int tok = (index == -1 ? Token.vanderwaals : getToken(index).tok);
     switch (tok) {
@@ -11098,7 +11099,16 @@ public class ScriptEvaluator {
     case Token.vanderwaals:
       value = 1;
       factorType = RadiusData.TYPE_FACTOR;
-      vdwType = (tok == Token.vanderwaals ? 0 : tok);
+      switch (tok) {
+      case Token.adpmax:
+      case Token.adpmin:
+      case Token.ionic:
+      case Token.hydrophobic:
+      case Token.temperature:
+      case Token.vanderwaals:
+      default:
+      }
+      vdwType = (tok == Token.vanderwaals ? null : EnumVdw.getVdwType2(Token.nameOf(tok)));
       tok = tokAt(++index);
       break;
     }
@@ -11124,7 +11134,7 @@ public class ScriptEvaluator {
         factorType = RadiusData.TYPE_OFFSET;
       } else {
         factorType = RadiusData.TYPE_ABSOLUTE;
-        vdwType = Integer.MAX_VALUE;
+        vdwType = EnumVdw.NADA;
       }
       if (isOnly)
         value = -value;
@@ -11155,11 +11165,11 @@ public class ScriptEvaluator {
       if (value == 1)
         index--;
     }
-    if (vdwType == 0) {
-      vdwType = JmolConstants.getVdwType(optParameterAsString(++iToken));
-      if (vdwType < 0) {
+    if (vdwType == null) {
+      vdwType = EnumVdw.getVdwType(optParameterAsString(++iToken));
+      if (vdwType == null) {
         iToken = index;
-        vdwType = JmolConstants.getVdwType("auto");
+        vdwType = EnumVdw.AUTO;
       }
     }
     return new RadiusData(value, factorType, vdwType);
@@ -11287,7 +11297,6 @@ public class ScriptEvaluator {
         break;
       case Token.integer:
         // diameter Pixels
-        type = RadiusData.TYPE_SCREEN;
         value = intParameter(1, 0, 19);
         break;
       case Token.decimal:
@@ -11305,7 +11314,7 @@ public class ScriptEvaluator {
         return;
       }
     }
-    setShapeSize(JmolConstants.SHAPE_VECTORS, new RadiusData(value, type, 0));
+    setShapeSize(JmolConstants.SHAPE_VECTORS, new RadiusData(value, type, null));
   }
 
   private void dipole() throws ScriptException {
@@ -11635,7 +11644,7 @@ public class ScriptEvaluator {
           float val = viewer.getVolume(null, null);
           showString("" + Math.round(val * 10) / 10f + " A^3; "
               + Math.round(val * 6.02) / 10f + " cm^3/mole (VDW "
-              + viewer.getDefaultVdwTypeNameOrData(Integer.MIN_VALUE) + ")");
+              + viewer.getDefaultVdwTypeNameOrData(Integer.MIN_VALUE, null) + ")");
         }
         return;
       }
@@ -11715,7 +11724,7 @@ public class ScriptEvaluator {
       break;
     }
     RadiusData rd = (Float.isNaN(value) ? encodeRadiusParameter(ipt, false,
-        true) : new RadiusData(value, type, 0));
+        true) : new RadiusData(value, type, EnumVdw.AUTO));
     if (Float.isNaN(rd.value))
       error(ERROR_invalidArgument);
     setShapeSize(iShape, rd);
@@ -12318,7 +12327,7 @@ public class ScriptEvaluator {
           Token.vanderwaals, -1, Float.NaN, null, null, null);
       switch (tokAt(2)) {
       case Token.probe:
-        runScript(JmolConstants.VdwPROBE);
+        runScript(EnumVdw.VdwPROBE);
         return;
       }
       newTok = Token.defaultvdw;
@@ -12327,10 +12336,10 @@ public class ScriptEvaluator {
       // allows unquoted string for known vdw type
       if (statementLength > 2) {
         sval = (statementLength == 3
-            && JmolConstants.getVdwType(parameterAsString(2)) == JmolConstants.VDW_UNKNOWN ? stringSetting(
+            && EnumVdw.getVdwType(parameterAsString(2)) == null ? stringSetting(
             2, false)
             : parameterAsString(2));
-        if (JmolConstants.getVdwType(sval) < 0)
+        if (EnumVdw.getVdwType(sval) == null)
           error(ERROR_invalidArgument);
         setStringProperty(key, sval);
       }
@@ -14191,16 +14200,14 @@ public class ScriptEvaluator {
       }
       break;
     case Token.vanderwaals:
-      if (statementLength == 2) {
-        if (!isSyntaxCheck)
-          showString(viewer.getDefaultVdwTypeNameOrData(-1));
-        return;
+      EnumVdw vdwType = null;
+      if (statementLength > 2) {
+        vdwType = EnumVdw.getVdwType(parameterAsString(2));
+        if (vdwType == null)
+          error(ERROR_invalidArgument);
       }
-      int vdwType = JmolConstants.getVdwType(parameterAsString(2));
-      if (vdwType == JmolConstants.VDW_UNKNOWN)
-        error(ERROR_invalidArgument);
       if (!isSyntaxCheck)
-        showString(viewer.getDefaultVdwTypeNameOrData(vdwType));
+        showString(viewer.getDefaultVdwTypeNameOrData(0, vdwType));
       return;
     case Token.function:
       checkLength23();
@@ -15457,7 +15464,7 @@ public class ScriptEvaluator {
     if (bsA != null) {
       // bond mode, intramolec set here
       RadiusData rd1 = (rd == null ? new RadiusData(0.26f,
-          RadiusData.TYPE_OFFSET, JmolConstants.VDW_AUTO) : rd);
+          RadiusData.TYPE_OFFSET, EnumVdw.AUTO) : rd);
       if (displayType == Token.nci && bsB == null && intramolecular != null
           && intramolecular.booleanValue())
         bsB = bsA;

@@ -73,7 +73,7 @@ public abstract class AtomShape extends Shape {
     if (size == 0)
       setSize(null, bsSelected);
     else
-      setSize(new RadiusData(size, RadiusData.TYPE_SCREEN, 0), bsSelected);
+      setSize(new RadiusData(size, RadiusData.TYPE_SCREEN, null), bsSelected);
   }
 
   @Override

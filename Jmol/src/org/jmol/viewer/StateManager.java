@@ -1046,10 +1046,10 @@ public class StateManager {
       if (defaultLoadScript.length() > 0)
         setParameterValue("defaultLoadScript", defaultLoadScript);
       appendCmd(str, "set defaultStructureDssp " + defaultStructureDSSP);
-      String sMode = viewer.getDefaultVdwTypeNameOrData(Integer.MIN_VALUE);
+      String sMode = viewer.getDefaultVdwTypeNameOrData(Integer.MIN_VALUE, null);
       appendCmd(str, "set defaultVDW " + sMode);
       if (sMode.equals("User"))
-        appendCmd(str, viewer.getDefaultVdwTypeNameOrData(Integer.MAX_VALUE));
+        appendCmd(str, viewer.getDefaultVdwTypeNameOrData(Integer.MAX_VALUE, null));
       appendCmd(str, "set forceAutoBond " + forceAutoBond);
       appendCmd(str, "#set defaultDirectory " + Escape.escape(defaultDirectory));
       appendCmd(str, "#set loadFormat " + Escape.escape(loadFormat));

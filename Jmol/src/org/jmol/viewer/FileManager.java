@@ -1666,4 +1666,23 @@ public class FileManager {
     }
   }
   */
+  
+  enum EnumFileStatus {
+    
+    DELETED(5), 
+    CREATED(3), 
+    CREATING_MODELSET(2), 
+    ZAPPED(0), 
+    NOT_LOADED(-1);
+
+    private int code;
+    int getCode() {
+      return code;
+    }
+    
+    EnumFileStatus(int code) {
+      this.code = code;
+    }
+  }
+
 }

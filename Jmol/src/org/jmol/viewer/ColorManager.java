@@ -31,6 +31,7 @@ import org.jmol.util.Logger;
 import java.util.BitSet;
 
 import org.jmol.constant.EnumPalette;
+import org.jmol.constant.EnumVdw;
 import org.jmol.constant.StaticConstants;
 import org.jmol.g3d.*;
 import org.jmol.modelset.Atom;
@@ -159,7 +160,7 @@ class ColorManager {
           (short) (JmolConstants.PARTIAL_CHARGE_COLIX_RED + index),
           JmolConstants.argbsRwbScale[index]);
     case StaticConstants.PALETTE_FORMAL_CHARGE:
-      index = atom.getFormalCharge() - JmolConstants.FORMAL_CHARGE_MIN;
+      index = atom.getFormalCharge() - EnumVdw.FORMAL_CHARGE_MIN;
       return g3d.getChangeableColix(
           (short) (JmolConstants.FORMAL_CHARGE_COLIX_RED + index),
           JmolConstants.argbsFormalCharge[index]);

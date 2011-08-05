@@ -42,6 +42,7 @@ import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.bspt.Bspf;
 import org.jmol.constant.EnumPalette;
+import org.jmol.constant.EnumVdw;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.geodesic.EnvelopeCalculation;
 import org.jmol.util.ArrayUtil;
@@ -222,8 +223,8 @@ abstract public class AtomCollection {
     return atoms[i].getRadius();
   }
 
-  public float getAtomVdwRadius(int i, int iType) {
-    return atoms[i].getVanderwaalsRadiusFloat(viewer, iType);
+  public float getAtomVdwRadius(int i, EnumVdw type) {
+    return atoms[i].getVanderwaalsRadiusFloat(viewer, type);
   }
 
   public short getAtomColix(int i) {
@@ -284,8 +285,8 @@ abstract public class AtomCollection {
   }
 
   protected float getRadiusVdwJmol(Atom atom) {
-    return JmolConstants.getVanderwaalsMar(atom.getElementNumber(),
-        JmolConstants.VDW_JMOL) / 1000f;
+    return EnumVdw.getVanderwaalsMar(atom.getElementNumber(),
+        EnumVdw.JMOL) / 1000f;
   }
   
   // the maximum BondingRadius seen in this set of atoms
@@ -306,7 +307,7 @@ abstract public class AtomCollection {
       float bondingRadius = atom.getBondingRadiusFloat();
       if (bondingRadius > maxBondingRadius)
         maxBondingRadius = bondingRadius;
-      float vdwRadius = atom.getVanderwaalsRadiusFloat(viewer, JmolConstants.VDW_AUTO);
+      float vdwRadius = atom.getVanderwaalsRadiusFloat(viewer, EnumVdw.AUTO);
       if (vdwRadius > maxVanderwaalsRadius)
         maxVanderwaalsRadius = vdwRadius;
     }
@@ -370,12 +371,12 @@ abstract public class AtomCollection {
     return surfaceDistanceMax;
   }
 
-  public float calculateVolume(BitSet bs, int iType) {
+  public float calculateVolume(BitSet bs, EnumVdw vType) {
     // Eval
     float volume = 0;
     if (bs != null)
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
-        volume += atoms[i].getVolume(viewer, iType);
+        volume += atoms[i].getVolume(viewer, vType);
     return volume;
   }
   
@@ -399,7 +400,7 @@ abstract public class AtomCollection {
     if (envelopeRadius < 0)
       envelopeRadius = EnvelopeCalculation.SURFACE_DISTANCE_FOR_CALCULATION;
     EnvelopeCalculation ec = new EnvelopeCalculation(viewer, atomCount, null);
-    ec.calculate(new RadiusData(envelopeRadius, RadiusData.TYPE_ABSOLUTE, 0), 
+    ec.calculate(new RadiusData(envelopeRadius, RadiusData.TYPE_ABSOLUTE, null), 
         Float.MAX_VALUE, 
         bsSelected, BitSetUtil.copyInvert(bsSelected, atomCount), 
         false, false, false, true);
@@ -1101,7 +1102,7 @@ abstract public class AtomCollection {
           break;
         case TAINT_VANDERWAALS:
           s.append(atoms[i].getVanderwaalsRadiusFloat(viewer,
-              JmolConstants.VDW_AUTO));
+              EnumVdw.AUTO));
           break;
         }
         s.append(" ;\n");
@@ -1218,13 +1219,13 @@ abstract public class AtomCollection {
     case RadiusData.TYPE_FACTOR:
     case RadiusData.TYPE_OFFSET:
       switch (rd.vdwType) {
-      case Token.ionic:
+      case IONIC:
         r = atom.getBondingRadiusFloat();
         break;
-      case Token.adpmax:
+      case ADPMAX:
         r = atom.getADPMinMax(true);
         break;
-      case Token.adpmin:
+      case ADPMIN:
         r = atom.getADPMinMax(false);
         break;
       default:

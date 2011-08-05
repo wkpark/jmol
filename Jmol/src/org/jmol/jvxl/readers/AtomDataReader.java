@@ -36,10 +36,10 @@ import org.jmol.util.ContactPair;
 import org.jmol.util.Logger;
 
 import org.jmol.util.TextFormat;
-import org.jmol.viewer.JmolConstants;
 
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.RadiusData;
+import org.jmol.constant.EnumVdw;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.MeshData;
 
@@ -153,11 +153,11 @@ abstract class AtomDataReader extends VolumeDataReader {
     if (getRadii) {
       if (params.atomRadiusData == null)
         params.atomRadiusData = new RadiusData(1, RadiusData.TYPE_FACTOR,
-            JmolConstants.VDW_AUTO);
+            EnumVdw.AUTO);
       atomData.radiusData = params.atomRadiusData;
       atomData.radiusData.valueExtended = params.solventExtendedAtomRadius;
       if (doAddHydrogens)
-        atomData.radiusData.vdwType = JmolConstants.VDW_NOJMOL;
+        atomData.radiusData.vdwType = EnumVdw.NOJMOL;
     }
     atomData.modelIndex = modelIndex; // -1 here means fill ALL atoms; any other
     // means "this model only"

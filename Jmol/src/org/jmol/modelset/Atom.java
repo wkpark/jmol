@@ -32,6 +32,7 @@ import org.jmol.viewer.Viewer;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumPalette;
+import org.jmol.constant.EnumVdw;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.util.Elements;
 import org.jmol.util.JmolEdge;
@@ -231,19 +232,19 @@ final public class Atom extends Point3fi implements JmolNode {
     case RadiusData.TYPE_OFFSET:
       float r = 0;
       switch (rd.vdwType) {
-      case Token.temperature:
+      case TEMP:
         float tmax = viewer.getBfactor100Hi();
         r = (tmax > 0 ? getBfactor100() / tmax : 0);
         break;
-      case Token.hydrophobic:
+      case HYDRO:
         r = Math.abs(getHydrophobicity());
         break;
-      case Token.ionic:
+      case IONIC:
         r = getBondingRadiusFloat();
         break;
-      case Token.adpmin:
-      case Token.adpmax:
-        r = getADPMinMax(rd.vdwType == Token.adpmax);
+      case ADPMIN:
+      case ADPMAX:
+        r = getADPMinMax(rd.vdwType == EnumVdw.ADPMAX);
         break;
       default:
         r = getVanderwaalsRadiusFloat(viewer, rd.vdwType);
@@ -469,62 +470,63 @@ final public class Atom extends Point3fi implements JmolNode {
     return (dimension == 0 ? x : (dimension == 1 ? y : z));
   }
 
-  public float getVanderwaalsRadiusFloat(Viewer viewer, int iType) {
+  public float getVanderwaalsRadiusFloat(Viewer viewer, EnumVdw type) {
     // called by atomPropertyFloat as VDW_AUTO,
-    // AtomCollection.filAtomData with VDW_AUTO or VDW_NOJMOL
+    // AtomCollection.fillAtomData with VDW_AUTO or VDW_NOJMOL
     // AtomCollection.findMaxRadii with VDW_AUTO
     // AtomCollection.getAtomPropertyState with VDW_AUTO
     // AtomCollection.getVdwRadius with passed on type
     return (Float.isNaN(userDefinedVanDerWaalRadius) 
-        ? viewer.getVanderwaalsMar(atomicAndIsotopeNumber % 128, getVdwType(iType)) / 1000f
+        ? viewer.getVanderwaalsMar(atomicAndIsotopeNumber % 128, getVdwType(type)) / 1000f
         : userDefinedVanDerWaalRadius);
   }
 
   /**
    * 
-   * @param iType
+   * @param type 
    * @return if VDW_AUTO, will return VDW_AUTO_JMOL, VDW_AUTO_RASMOL, or VDW_AUTO_BABEL
    *         based on the model type
    */
-  private int getVdwType(int iType) {
-    switch (iType) {
-    case JmolConstants.VDW_AUTO:
-      iType = group.chain.modelSet.getDefaultVdwType(modelIndex);
+  @SuppressWarnings("incomplete-switch")
+  private EnumVdw getVdwType(EnumVdw type) {
+    switch (type) {
+    case AUTO:
+      type = group.chain.modelSet.getDefaultVdwType(modelIndex);
       break;
-    case JmolConstants.VDW_NOJMOL:
-      iType = group.chain.modelSet.getDefaultVdwType(modelIndex);
-      if (iType == JmolConstants.VDW_AUTO_JMOL)
-        iType = JmolConstants.VDW_AUTO_BABEL;
+    case NOJMOL:
+      type = group.chain.modelSet.getDefaultVdwType(modelIndex);
+      if (type == EnumVdw.AUTO_JMOL)
+        type = EnumVdw.AUTO_BABEL;
       break;
     }
-    return iType;
+    return type;
   }
 
   public float getCovalentRadiusFloat() {
-    return JmolConstants.getBondingRadiusFloat(atomicAndIsotopeNumber % 128, 0);
+    return EnumVdw.getBondingRadiusFloat(atomicAndIsotopeNumber % 128, 0);
   }
 
   public float getBondingRadiusFloat() {
     float[] ionicRadii = group.chain.modelSet.ionicRadii;
     float r = (ionicRadii == null ? 0 : ionicRadii[index]);
-    return (r == 0 ? JmolConstants.getBondingRadiusFloat(atomicAndIsotopeNumber % 128,
+    return (r == 0 ? EnumVdw.getBondingRadiusFloat(atomicAndIsotopeNumber % 128,
         getFormalCharge()) : r);
   }
 
-  float getVolume(Viewer viewer, int iType) {
-    float r1 = (iType < 0 ? userDefinedVanDerWaalRadius : Float.NaN);
+  float getVolume(Viewer viewer, EnumVdw vType) {
+    float r1 = (vType == null ? userDefinedVanDerWaalRadius : Float.NaN);
     if (Float.isNaN(r1))
-      r1 = viewer.getVanderwaalsMar(getElementNumber(), getVdwType(iType)) / 1000f;
+      r1 = viewer.getVanderwaalsMar(getElementNumber(), getVdwType(vType)) / 1000f;
     double volume = 0;
     if (bonds != null)
       for (int j = 0; j < bonds.length; j++) {
         if (!bonds[j].isCovalent())
           continue;
         Atom atom2 = bonds[j].getOtherAtom(this);
-        float r2 = (iType < 0 ? atom2.userDefinedVanDerWaalRadius : Float.NaN);
+        float r2 = (vType == null ? atom2.userDefinedVanDerWaalRadius : Float.NaN);
         if (Float.isNaN(r2))
           r2 = viewer.getVanderwaalsMar(atom2.getElementNumber(), atom2
-              .getVdwType(iType)) / 1000f;
+              .getVdwType(vType)) / 1000f;
         float d = distance(atom2);
         if (d > r1 + r2)
           continue;
@@ -1229,7 +1231,7 @@ final public class Atom extends Point3fi implements JmolNode {
     case Token.hydrophobic:
       return atom.getHydrophobicity();
     case Token.volume:
-      return atom.getVolume(viewer, JmolConstants.VDW_AUTO);
+      return atom.getVolume(viewer, EnumVdw.AUTO);
 
     // these next have to be multiplied by 100 if being compared
     // note that spacefill here is slightly different than radius -- no integer option
@@ -1298,7 +1300,7 @@ final public class Atom extends Point3fi implements JmolNode {
     case Token.unitz:
       return atom.getFractionalUnitCoord('Z');
     case Token.vanderwaals:
-      return atom.getVanderwaalsRadiusFloat(viewer, JmolConstants.VDW_AUTO);
+      return atom.getVanderwaalsRadiusFloat(viewer, EnumVdw.AUTO);
     case Token.vibx:
       return atom.getVibrationCoord('X');
     case Token.viby:

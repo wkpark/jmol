@@ -28,6 +28,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.jmol.constant.EnumVdw;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.script.Token;
 import org.jmol.util.ArrayUtil;
@@ -271,7 +272,7 @@ class DataManager {
     }
     
     if (userVdws != null) {
-      String info = getDefaultVdwNameOrData(JmolConstants.VDW_USER, bsUserVdws);
+      String info = getDefaultVdwNameOrData(0, EnumVdw.USER, bsUserVdws);
       if (info.length() > 0) {
         n++;
         sb.append(info);
@@ -291,69 +292,66 @@ class DataManager {
 
   private float[] userVdws;
   int[] userVdwMars;
-  int defaultVdw = JmolConstants.VDW_JMOL;
+  EnumVdw defaultVdw = EnumVdw.JMOL;
   BitSet bsUserVdws;
   
-  private void setUserVdw(int iMode) {
+  private void setUserVdw(EnumVdw mode) {
     userVdwMars = new int[Elements.elementNumberMax];
     userVdws = new float[Elements.elementNumberMax];
     bsUserVdws = new BitSet();
-    if (iMode == JmolConstants.VDW_USER)
-      iMode = JmolConstants.VDW_JMOL;
+    if (mode == EnumVdw.USER)
+      mode = EnumVdw.JMOL;
     for (int i = 1; i < Elements.elementNumberMax; i++) {
-      userVdwMars[i] = JmolConstants.getVanderwaalsMar(i, iMode);
+      userVdwMars[i] = EnumVdw.getVanderwaalsMar(i, mode);
       userVdws[i] = userVdwMars[i] / 1000f;
     }
   }
 
-  void setDefaultVdw(int iType) {
+  void setDefaultVdw(EnumVdw type) {
     // only allowed types here are VDW_JMOL, VDW_BABEL, VDW_RASMOL, VDW_USER, VDW_AUTO
-    switch (iType) {
-    case JmolConstants.VDW_JMOL:
-    case JmolConstants.VDW_BABEL:
-    case JmolConstants.VDW_RASMOL:
-    case JmolConstants.VDW_AUTO:
-    case JmolConstants.VDW_USER:
+    switch (type) {
+    case JMOL:
+    case BABEL:
+    case RASMOL:
+    case AUTO:
+    case USER:
       break;
     default:
-      iType = JmolConstants.VDW_JMOL;
+      type = EnumVdw.JMOL;
     }
-    if (iType != defaultVdw && iType == JmolConstants.VDW_USER  
+    if (type != defaultVdw && type == EnumVdw.USER  
         && bsUserVdws == null)
       setUserVdw(defaultVdw);
-    defaultVdw = iType;    
+    defaultVdw = type;    
   }
 
-  String getDefaultVdwNameOrData(int iType, BitSet bs) {
+  String getDefaultVdwNameOrData(int mode, EnumVdw type, BitSet bs) {
     // called by getDataState and via Viewer: Eval.calculate,
     // Eval.show, StateManager.getLoadState, Viewer.setDefaultVdw
-    switch (iType) {
+    switch (mode) {
     case Integer.MIN_VALUE:
       // iMode Integer.MIN_VALUE -- just the name
-      return JmolConstants.vdwLabels[defaultVdw];
+      return defaultVdw.getVdwLabel();
     case Integer.MAX_VALUE:
       // iMode = Integer.MAX_VALUE -- user, only selected
       if ((bs = bsUserVdws) == null)
         return "";
-      iType = JmolConstants.VDW_USER;
-      break;
-    case JmolConstants.VDW_AUTO:
-    case JmolConstants.VDW_UNKNOWN:
-      iType = defaultVdw;
+      type = EnumVdw.USER;
       break;
     }
-    if (iType == JmolConstants.VDW_USER && bsUserVdws == null) {
+    if (type == null || type == EnumVdw.AUTO)
+     type = defaultVdw;
+    if (type == EnumVdw.USER && bsUserVdws == null)
       setUserVdw(defaultVdw);
-    }
-    StringBuffer sb = new StringBuffer(JmolConstants.vdwLabels[iType] + "\n");
+    StringBuffer sb = new StringBuffer(type.getVdwLabel() + "\n");
     boolean isAll = (bs == null);
     int i0 = (isAll ? 1 : bs.nextSetBit(0));
     int i1 = (isAll ? Elements.elementNumberMax : bs.length());
     for (int i = i0; i < i1 && i >= 0; i = (isAll ? i + 1 : bs
         .nextSetBit(i + 1)))
       sb.append(i).append('\t').append(
-          iType == JmolConstants.VDW_USER ? userVdws[i] : JmolConstants
-              .getVanderwaalsMar(i, iType) / 1000f).append('\t').append(
+          type == EnumVdw.USER ? userVdws[i] : EnumVdw
+              .getVanderwaalsMar(i, type) / 1000f).append('\t').append(
           Elements.elementSymbolFromNumber(i)).append('\n');
     return (bs == null ? sb.toString() : "\n  DATA \"element_vdw\"\n"
         + sb.append("  end \"element_vdw\";\n\n").toString());

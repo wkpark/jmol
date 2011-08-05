@@ -49,6 +49,7 @@ import org.jmol.atomdata.RadiusData;
 import org.jmol.bspt.Bspf;
 import org.jmol.bspt.CubeIterator;
 import org.jmol.constant.EnumPalette;
+import org.jmol.constant.EnumVdw;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
@@ -398,10 +399,10 @@ abstract public class ModelCollection extends BondCollection {
     return s;
   }
 
-  public int getDefaultVdwType(int modelIndex) {
-    return (!models[modelIndex].isPDB ? JmolConstants.VDW_AUTO_BABEL
-        : models[modelIndex].hydrogenCount == 0 ? JmolConstants.VDW_AUTO_JMOL
-        : JmolConstants.VDW_AUTO_BABEL); // RASMOL is too small
+  public EnumVdw getDefaultVdwType(int modelIndex) {
+    return (!models[modelIndex].isPDB ? EnumVdw.AUTO_BABEL
+        : models[modelIndex].hydrogenCount == 0 ? EnumVdw.AUTO_JMOL
+        : EnumVdw.AUTO_BABEL); // RASMOL is too small
   }
 
   public boolean setRotationRadius(int modelIndex, float angstroms) {

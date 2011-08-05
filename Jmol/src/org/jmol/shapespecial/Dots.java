@@ -24,7 +24,6 @@
 
 package org.jmol.shapespecial;
 
-import org.jmol.script.Token;
 import org.jmol.shape.AtomShape;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
@@ -162,7 +161,7 @@ public class Dots extends AtomShape {
   @Override
   protected void setSize(RadiusData rd, BitSet bsSelected) {
     if (rd == null)
-      rd = new RadiusData(0, RadiusData.TYPE_ABSOLUTE, 0);
+      rd = new RadiusData(0, RadiusData.TYPE_ABSOLUTE, null);
     if (this.bsSelected != null)
       bsSelected = this.bsSelected;
 
@@ -198,13 +197,13 @@ public class Dots extends AtomShape {
 
     float maxRadius;
     switch (rd.vdwType) {
-    case Token.adpmin:
-    case Token.adpmax:
-    case Token.hydrophobic:
-    case Token.temperature:
+    case ADPMIN:
+    case ADPMAX:
+    case HYDRO:
+    case TEMP:
       maxRadius = setRadius;
       break;
-    case Token.ionic:
+    case IONIC:
       maxRadius = modelSet.getMaxVanderwaalsRadius() * 2; // TODO?
       break;
     default:

@@ -51,6 +51,7 @@ import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumAnimationMode;
 import org.jmol.constant.EnumAxesMode;
 import org.jmol.constant.EnumStereoMode;
+import org.jmol.constant.EnumVdw;
 import org.jmol.g3d.*;
 import org.jmol.util.Base64;
 import org.jmol.util.BitSetUtil;
@@ -1780,8 +1781,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   // //////////////// methods that open a file to create a model set ///////////
 
-  private final static int FILE_STATUS_CREATING_MODELSET = 2;
-
   /**
    * opens a file as a model, a script, or a surface via the creation of a
    * script that is queued \t at the beginning disallows script option
@@ -2327,7 +2326,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     if (atomSetCollection instanceof String) {
       errMsg = (String) atomSetCollection;
-      setFileLoadStatus(JmolConstants.FILE_STATUS_NOT_LOADED, fullPathName, null, null,
+      setFileLoadStatus(FileManager.EnumFileStatus.NOT_LOADED, fullPathName, null, null,
           errMsg);
       if (displayLoadErrors && errMsg != null && !isAppend && !errMsg.equals("#CANCELED#"))
         zap(errMsg);
@@ -2337,7 +2336,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       clearAtomSets();
     else if (getModelkitMode() && !fileName.equals("Jmol Model Kit"))
       setModelKitMode(false);
-    setFileLoadStatus(FILE_STATUS_CREATING_MODELSET, fullPathName, fileName,
+    setFileLoadStatus(FileManager.EnumFileStatus.CREATING_MODELSET, fullPathName, fileName,
         null, null);
 
     // null fullPathName implies we are doing a merge
@@ -2374,7 +2373,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     popHoldRepaint("createModelSet");
     errMsg = getErrorMessage();
 
-    setFileLoadStatus(JmolConstants.FILE_STATUS_MODELSET_CREATED, fullPathName, fileName,
+    setFileLoadStatus(FileManager.EnumFileStatus.CREATED, fullPathName, fileName,
         getModelSetName(), errMsg);
     if (isAppend) {
       selectAll();
@@ -2530,10 +2529,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // Eval.calculate(), math function volume({atomExpression},"type")
     if (bs == null)
       bs = getSelectionSet(false);
-    int iType = JmolConstants.getVdwType(type);
-    if (iType == JmolConstants.VDW_UNKNOWN)
-      iType = JmolConstants.VDW_AUTO;
-    return modelSet.calculateVolume(bs, iType);
+    EnumVdw vType = EnumVdw.getVdwType(type);
+    if (vType == null)
+      vType = EnumVdw.AUTO;
+    return modelSet.calculateVolume(bs, vType);
   }
 
   int getSurfaceDistanceMax() {
@@ -2665,7 +2664,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     initializeModel(false);
     if (notify)
-      setFileLoadStatus(JmolConstants.FILE_STATUS_ZAPPED, null, (resetUndo ? "resetUndo"
+      setFileLoadStatus(FileManager.EnumFileStatus.ZAPPED, null, (resetUndo ? "resetUndo"
           : getZapName()), null, null);
     if (Logger.debugging)
       Logger.checkMemory();
@@ -5253,14 +5252,14 @@ private void zap(String msg) {
    * Viewer.createModelSetAndReturnError (-1, 1, 4) Viewer.deleteAtoms (5)
    * Viewer.zap (0)
    */
-  private void setFileLoadStatus(int ptLoad, String fullPathName,
+  private void setFileLoadStatus(FileManager.EnumFileStatus ptLoad, String fullPathName,
                                  String fileName, String modelName,
                                  String strError) {
     setErrorMessage(strError);
-    global.setParameterValue("_loadPoint", ptLoad);
-    boolean doCallback = (ptLoad != FILE_STATUS_CREATING_MODELSET); 
+    global.setParameterValue("_loadPoint", ptLoad.getCode());
+    boolean doCallback = (ptLoad != FileManager.EnumFileStatus.CREATING_MODELSET); 
     statusManager.setFileLoadStatus(fullPathName, fileName, modelName,
-        strError, ptLoad, doCallback);
+        strError, ptLoad.getCode(), doCallback);
   }
 
   public String getZapName() {
@@ -7196,7 +7195,7 @@ private void zap(String msg) {
     global.percentVdwAtom = value;
     rd.value = value / 100f;
     rd.factorType = RadiusData.TYPE_FACTOR;
-    rd.vdwType = JmolConstants.VDW_AUTO;
+    rd.vdwType = EnumVdw.AUTO;
     setShapeSize(JmolConstants.SHAPE_BALLS, rd, null);
   }
 
@@ -8762,43 +8761,46 @@ private void zap(String msg) {
   }
 
   public int getVanderwaalsMar(int i) {
-    return (dataManager.defaultVdw == JmolConstants.VDW_USER ? dataManager.userVdwMars[i]
-        : JmolConstants.getVanderwaalsMar(i, dataManager.defaultVdw));
+    return (dataManager.defaultVdw == EnumVdw.USER ? dataManager.userVdwMars[i]
+        : EnumVdw.getVanderwaalsMar(i, dataManager.defaultVdw));
   }
 
-  public int getVanderwaalsMar(int i, int iType) {
-    switch (iType) {
-    case JmolConstants.VDW_USER:
-      if (dataManager.bsUserVdws == null)
-        iType = dataManager.defaultVdw;
-      else
-        return dataManager.userVdwMars[i];
-      break;
-    case JmolConstants.VDW_UNKNOWN:
-      iType = dataManager.defaultVdw;
-      break;
-    case JmolConstants.VDW_AUTO:
-    case JmolConstants.VDW_AUTO_JMOL:
-    case JmolConstants.VDW_AUTO_BABEL:
-    case JmolConstants.VDW_AUTO_RASMOL:
-      if (dataManager.defaultVdw != JmolConstants.VDW_AUTO)
-        iType = dataManager.defaultVdw;
-      break;
-    }
-    return (JmolConstants.getVanderwaalsMar(i, iType));
+  @SuppressWarnings("incomplete-switch")
+  public int getVanderwaalsMar(int i, EnumVdw type) {
+    if (type == null)
+      type = dataManager.defaultVdw;
+    else
+      switch (type) {
+      case USER:
+        if (dataManager.bsUserVdws == null)
+          type = dataManager.defaultVdw;
+        else
+          return dataManager.userVdwMars[i];
+        break;
+      case AUTO:
+      case JMOL:
+      case BABEL:
+      case RASMOL:
+      // could be a bug here -- why override these
+      // with dataManager's if not AUTO?
+        if (dataManager.defaultVdw != EnumVdw.AUTO)
+          type = dataManager.defaultVdw;
+        break;
+      }
+    return (EnumVdw.getVanderwaalsMar(i, type));
   }
 
   void setDefaultVdw(String type) {
-    int iType = JmolConstants.getVdwType(type);
-    if (iType == JmolConstants.VDW_UNKNOWN)
-      iType = JmolConstants.VDW_AUTO;
-    dataManager.setDefaultVdw(iType);
+    EnumVdw vType = EnumVdw.getVdwType(type);
+    if (vType == null)
+      vType = EnumVdw.AUTO;
+    dataManager.setDefaultVdw(vType);
     global.setParameterValue("defaultVDW",
-        getDefaultVdwTypeNameOrData(Integer.MIN_VALUE));
+        getDefaultVdwTypeNameOrData(Integer.MIN_VALUE, null));
   }
 
-  public String getDefaultVdwTypeNameOrData(int iMode) {
-    return dataManager.getDefaultVdwNameOrData(iMode, null);
+  public String getDefaultVdwTypeNameOrData(int iMode, EnumVdw vType) {
+    return dataManager.getDefaultVdwNameOrData(iMode, vType, null);
   }
 
   public int deleteAtoms(BitSet bs, boolean fullModels) {
@@ -8823,7 +8825,7 @@ private void zap(String msg) {
     if (getModelCount() > 1)
       setCurrentModelIndex(-1, true);
     hoverAtomIndex = -1;
-    setFileLoadStatus(JmolConstants.FILE_STATUS_MODELS_DELETED, null, null, null, null);
+    setFileLoadStatus(FileManager.EnumFileStatus.DELETED, null, null, null, null);
     refreshMeasures(true);
     if (bsD0 != null)
       bsDeleted.andNot(bsD0);

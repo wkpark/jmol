@@ -41,6 +41,7 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolBioResolver;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
+import org.jmol.constant.EnumVdw;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -748,15 +749,15 @@ public final class ModelLoader {
     if (groupCount > 0 && addH)
       jbr.addImplicitHydrogenAtoms(adapter, groupCount - 1);    
     iLast = -1;
-    int vdwtypeLast = -1;
+    EnumVdw vdwtypeLast = null;
     Atom[] atoms = modelSet.atoms;
     for (int i = 0; i < modelSet.atomCount; i++) {
       if (atoms[i].modelIndex != iLast) {
         iLast = atoms[i].modelIndex;
         models[iLast].firstAtomIndex = i;
-        int vdwtype = modelSet.getDefaultVdwType(iLast);
+        EnumVdw vdwtype = modelSet.getDefaultVdwType(iLast);
         if (vdwtype != vdwtypeLast) {
-          Logger.info("Default Van der Waals type for model" + " set to " + JmolConstants.getVdwLabel(vdwtype));
+          Logger.info("Default Van der Waals type for model" + " set to " + vdwtype.getVdwLabel());
           vdwtypeLast = vdwtype;
         }
       }

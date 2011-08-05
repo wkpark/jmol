@@ -34,6 +34,7 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumPalette;
+import org.jmol.constant.EnumVdw;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Group;
@@ -100,7 +101,7 @@ public class ShapeManager {
     if (bsSelected == null && 
         (shapeID != JmolConstants.SHAPE_STICKS || size != Integer.MAX_VALUE))
       bsSelected = viewer.getSelectionSet(false);
-    if (rd != null && rd.value != 0 && rd.vdwType == Token.temperature)
+    if (rd != null && rd.value != 0 && rd.vdwType == EnumVdw.TEMP)
       modelSet.getBfactor100Lo();
     viewer.setShapeErrorState(shapeID, "set size");
     if (rd != null && rd.value != 0 || rd == null && size != 0)

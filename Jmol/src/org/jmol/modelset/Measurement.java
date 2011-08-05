@@ -27,6 +27,7 @@ import org.jmol.util.Escape;
 import org.jmol.util.Point3fi;
 import org.jmol.util.Measure;
 import org.jmol.atomdata.RadiusData;
+import org.jmol.constant.EnumVdw;
 import org.jmol.modelset.TickInfo;
 
 import org.jmol.viewer.JmolConstants;
@@ -315,8 +316,8 @@ public class Measurement {
         int i1 = getAtomIndex(1);
         int i2 = getAtomIndex(2);
         if (i1 >= 0 && i2 >=0) {
-          float vdw = ((Atom) getAtom(1)).getVanderwaalsRadiusFloat(viewer, JmolConstants.VDW_AUTO)
-          + ((Atom) getAtom(2)).getVanderwaalsRadiusFloat(viewer, JmolConstants.VDW_AUTO);
+          float vdw = ((Atom) getAtom(1)).getVanderwaalsRadiusFloat(viewer, EnumVdw.AUTO)
+          + ((Atom) getAtom(2)).getVanderwaalsRadiusFloat(viewer, EnumVdw.AUTO);
           dist /= vdw;
           return (andRound ? (int) (dist * 1000 + 0.5f)/10f : dist * 100);
         }

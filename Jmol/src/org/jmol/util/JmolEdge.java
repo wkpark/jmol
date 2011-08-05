@@ -25,7 +25,6 @@
 package org.jmol.util;
 
 import org.jmol.modelset.Bond;
-import org.jmol.viewer.JmolConstants;
 
 public abstract class JmolEdge {
 
@@ -200,29 +199,6 @@ public abstract class JmolEdge {
     return order & 7;
   }
 
-  /**
-   * reads standard n.m float-as-integer n*1000000 + m
-   * and returns (n % 6) << 5 + (m % 0x1F)
-   * @param bondOrderInteger
-   * @return Bond order partial mask
-   */
-  public final static int getPartialBondOrderFromFloatEncodedInt(int bondOrderInteger) {
-    return ((((bondOrderInteger / 1000000) % 6) << 5)
-    + ((bondOrderInteger % 1000000) & 0x1F));
-  }
-
-  public static int getPartialBondOrderFromString(String s) {
-    return getPartialBondOrderFromFloatEncodedInt(JmolConstants
-        .getFloatEncodedInt(s));
-  }
-
-  public final static int getBondOrderFromString(String s) {
-    return (s.indexOf(' ') < 0 ? EnumBondOrder.getCodeFromName(s)
-        : s.toLowerCase().indexOf("partial ") == 0 ? 
-            getPartialBondOrderFromString(s.substring(8).trim())
-            : BOND_ORDER_NULL);
-  }
-
   public final static int getBondOrderFromFloat(float fOrder) {
     switch ((int) (fOrder * 10)) {
     case 10:
@@ -246,6 +222,10 @@ public abstract class JmolEdge {
       return BOND_COVALENT_QUADRUPLE;
     }
     return BOND_ORDER_NULL;
+  }
+
+  public static int getBondOrderFromString(String name) {
+    return EnumBondOrder.getCodeFromName(name);
   }
 
   private enum EnumBondOrder {
@@ -275,21 +255,21 @@ public abstract class JmolEdge {
       this.name = name;
     }
 
-    static protected int getCodeFromName(String name) {
+    static int getCodeFromName(String name) {
       for (EnumBondOrder item : values())
         if (item.name.equalsIgnoreCase(name))
           return item.code;
       return BOND_ORDER_NULL;
     }
 
-    static protected String getNameFromCode(int code) {
+    static String getNameFromCode(int code) {
       for (EnumBondOrder item: values())
         if (item.code == code)
           return item.name;
       return "?";
     }
 
-    static protected String getNumberFromCode(int code) {
+    static String getNumberFromCode(int code) {
       for (EnumBondOrder item: values())
         if (item.code == code)
           return item.number;
@@ -297,4 +277,5 @@ public abstract class JmolEdge {
     }
 
   }
+
 }

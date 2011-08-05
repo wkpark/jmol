@@ -828,7 +828,7 @@ abstract class ScriptCompilationTokenParser {
         if (!addNextTokenIf(Token.comma))
           break;
         String strOrder = (String) getToken().value;
-        int intType = JmolEdge.getBondOrderFromString(strOrder);        if (intType == JmolEdge.BOND_ORDER_NULL) {
+        int intType = ScriptEvaluator.getBondOrderFromString(strOrder);        if (intType == JmolEdge.BOND_ORDER_NULL) {
           returnToken();
         } else {
           addTokenToPostfix(Token.string, strOrder);

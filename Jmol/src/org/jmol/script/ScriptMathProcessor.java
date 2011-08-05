@@ -2531,7 +2531,7 @@ class ScriptMathProcessor {
         if (type.equalsIgnoreCase("hbond"))
           order = JmolEdge.BOND_HYDROGEN_MASK;
         else
-          order = JmolEdge.getBondOrderFromString(type);
+          order = ScriptEvaluator.getBondOrderFromString(type);
         if (order == JmolEdge.BOND_ORDER_NULL)
           return false;
         break;

@@ -2332,7 +2332,7 @@ public class ScriptEvaluator {
           fixed[j] = new Token(Token.integer, ((Integer) v).intValue(), v);
 
         } else if (v instanceof Float) {
-          fixed[j] = new Token(Token.decimal, JmolConstants.getFloatEncodedInt("" + v),
+          fixed[j] = new Token(Token.decimal, ScriptEvaluator.getFloatEncodedInt("" + v),
               v);
         } else if (v instanceof String) {
           if (!forceString) {
@@ -4166,7 +4166,7 @@ public class ScriptEvaluator {
       // model/frame number encoded
       break;
     case Token.string:
-      iFrame = JmolConstants.getFloatEncodedInt(stringParameter(index));
+      iFrame = ScriptEvaluator.getFloatEncodedInt(stringParameter(index));
       break;
     default:
       error(ERROR_invalidArgument);
@@ -6617,11 +6617,11 @@ public class ScriptEvaluator {
         error(ERROR_invalidArgument);
       break;
     default:
-      if ((order = JmolEdge.getBondOrderFromString(parameterAsString(1))) == JmolEdge.BOND_ORDER_NULL)
+      if ((order = ScriptEvaluator.getBondOrderFromString(parameterAsString(1))) == JmolEdge.BOND_ORDER_NULL)
         error(ERROR_invalidArgument);
       // generic partial can be indicated by "partial n.m"
       if (order == JmolEdge.BOND_PARTIAL01 && tokAt(2) == Token.decimal) {
-        order = JmolEdge
+        order = ScriptEvaluator
             .getPartialBondOrderFromFloatEncodedInt(statement[2].intValue);
       }
     }
@@ -7223,7 +7223,7 @@ public class ScriptEvaluator {
           }
         }
         String cmd = parameterAsString(i);
-        if ((bo = JmolEdge.getBondOrderFromString(cmd)) == JmolEdge.BOND_ORDER_NULL) {
+        if ((bo = ScriptEvaluator.getBondOrderFromString(cmd)) == JmolEdge.BOND_ORDER_NULL) {
           error(ERROR_invalidArgument);
         }
         // must be bond type
@@ -7234,7 +7234,7 @@ public class ScriptEvaluator {
         case JmolEdge.BOND_PARTIAL01:
           switch (tokAt(i + 1)) {
           case Token.decimal:
-            bo = JmolEdge
+            bo = ScriptEvaluator
                 .getPartialBondOrderFromFloatEncodedInt(statement[++i].intValue);
             break;
           case Token.integer:
@@ -11923,7 +11923,7 @@ public class ScriptEvaluator {
       case Token.string:
         if (nFrames == 2)
           error(ERROR_invalidArgument);
-        int iFrame = (theTok == Token.string ? JmolConstants
+        int iFrame = (theTok == Token.string ? ScriptEvaluator
             .getFloatEncodedInt((String) theToken.value) : theToken.intValue);
         if (iFrame == Integer.MAX_VALUE)
           iFrame = 0; // frame 0.0
@@ -12312,7 +12312,7 @@ public class ScriptEvaluator {
           modelNumber = Parser.parseInt(modelDotted);
           useModelNumber = true;
         } else {
-          modelNumber = JmolConstants.getFloatEncodedInt(modelDotted);
+          modelNumber = ScriptEvaluator.getFloatEncodedInt(modelDotted);
         }
         if (isSyntaxCheck)
           return;
@@ -17903,6 +17903,64 @@ public class ScriptEvaluator {
       return new BitSet();
     return viewer.getAtomsWithin(distance, (Point3f[]) data[1],
         (BitSet) data[2]);
+  }
+
+  /**
+   * encodes a string such as "2.10" as an integer instead of a float
+   * so as to distinguish "2.1" from "2.10"
+   * used for model numbers and partial bond orders.
+   * 2147483647 is maxvalue, so this allows loading
+   * simultaneously up to 2147 files.
+   * @param strDecimal
+   * @return float encoded as an integer
+   */
+  public static int getFloatEncodedInt(String strDecimal) {
+    int pt = strDecimal.indexOf(".");
+    if (pt < 1 || strDecimal.charAt(0) == '-'
+        || strDecimal.endsWith(".") 
+        || strDecimal.contains(".0"))
+      return Integer.MAX_VALUE;
+    int i = 0;
+    int j = 0;
+    if (pt > 0) {
+      try {
+        i = Integer.parseInt(strDecimal.substring(0, pt));
+        if (i < 0)
+          i = -i;
+      } catch (NumberFormatException e) {
+        i = -1;
+      }
+    }
+    if (pt < strDecimal.length() - 1)
+      try {
+        j = Integer.parseInt(strDecimal.substring(pt + 1));
+      } catch (NumberFormatException e) {
+        // not a problem
+      }
+    i = i * 1000000 + j;
+    return (i < 0 ? Integer.MAX_VALUE : i);
+  }
+
+  /**
+   * reads standard n.m float-as-integer n*1000000 + m
+   * and returns (n % 6) << 5 + (m % 0x1F)
+   * @param bondOrderInteger
+   * @return Bond order partial mask
+   */
+  public final static int getPartialBondOrderFromFloatEncodedInt(int bondOrderInteger) {
+    return ((((bondOrderInteger / 1000000) % 6) << 5)
+    + ((bondOrderInteger % 1000000) & 0x1F));
+  }
+
+  public final static int getBondOrderFromString(String s) {
+    return (s.indexOf(' ') < 0 ? JmolEdge.getBondOrderFromString(s)
+        : s.toLowerCase().indexOf("partial ") == 0 ? getPartialBondOrderFromString(s
+            .substring(8).trim()) : JmolEdge.BOND_ORDER_NULL);
+  }
+
+  public static int getPartialBondOrderFromString(String s) {
+    return ScriptEvaluator.getPartialBondOrderFromFloatEncodedInt(ScriptEvaluator
+        .getFloatEncodedInt(s));
   }
 
 }

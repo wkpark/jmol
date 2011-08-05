@@ -1072,7 +1072,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     if (lookingAtDecimal()) {
       value =  Float.valueOf(script.substring(ichToken, ichToken + cchToken))
           .floatValue();
-      int intValue = (JmolConstants.getFloatEncodedInt(script.substring(ichToken,
+      int intValue = (ScriptEvaluator.getFloatEncodedInt(script.substring(ichToken,
           ichToken + cchToken)));
       addTokenToPrefix(new Token(Token.decimal, intValue, new Float(value)));
       return CONTINUE;

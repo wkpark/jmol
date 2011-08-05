@@ -393,9 +393,9 @@ public abstract class Shape {
         paletteID) : colix);
   }
 
-  protected short setColix(short colix, EnumPalette pal, Bond bond) {
+  protected short setColix(short colix, int pid, Bond bond) {
     return (colix == Graphics3D.USE_PALETTE ? viewer.getColixBondPalette(bond,
-        pal) : colix);
+        pid) : colix);
   }
 
   public List<Map<String, Object>> getShapeDetail() {

@@ -120,11 +120,10 @@ class ColorManager {
         : Graphics3D.BLACK);
   }
 
-  @SuppressWarnings("incomplete-switch")
-  short getColixBondPalette(Bond bond, EnumPalette pal) {
+  short getColixBondPalette(Bond bond, int pid) {
     int argb = 0;
-    switch (pal) {
-    case ENERGY:
+    switch (pid) {
+    case StaticConstants.PALETTE_ENERGY:
       return propertyColorEncoder.getColorIndexFromPalette(bond.getEnergy(),
           -2.5f, -0.5f, ColorEncoder.BWR, false);
     }

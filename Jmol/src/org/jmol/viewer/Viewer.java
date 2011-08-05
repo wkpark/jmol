@@ -50,7 +50,6 @@ import org.jmol.atomdata.AtomDataServer;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumAnimationMode;
 import org.jmol.constant.EnumAxesMode;
-import org.jmol.constant.EnumPalette;
 import org.jmol.constant.EnumStereoMode;
 import org.jmol.g3d.*;
 import org.jmol.util.Base64;
@@ -1505,8 +1504,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return colorManager.getColixAtomPalette(atom, pid);
   }
 
-  public short getColixBondPalette(Bond bond, EnumPalette pal) {
-    return colorManager.getColixBondPalette(bond, pal);
+  public short getColixBondPalette(Bond bond, int pid) {
+    return colorManager.getColixBondPalette(bond, pid);
   }
 
   public String getColorSchemeList(String colorScheme) {

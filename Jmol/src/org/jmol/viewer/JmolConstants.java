@@ -2326,42 +2326,6 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
   public final static float radiansPerDegree = (float) (Math.PI / 180);
 
-  /**
-   * encodes a string such as "2.10" as an integer instead of a float
-   * so as to distinguish "2.1" from "2.10"
-   * used for model numbers and partial bond orders.
-   * 2147483647 is maxvalue, so this allows loading
-   * simultaneously up to 2147 files.
-   * @param strDecimal
-   * @return float encoded as an integer
-   */
-  public static int getFloatEncodedInt(String strDecimal) {
-    int pt = strDecimal.indexOf(".");
-    if (pt < 1 || strDecimal.charAt(0) == '-'
-        || strDecimal.endsWith(".") 
-        || strDecimal.contains(".0"))
-      return Integer.MAX_VALUE;
-    int i = 0;
-    int j = 0;
-    if (pt > 0) {
-      try {
-        i = Integer.parseInt(strDecimal.substring(0, pt));
-        if (i < 0)
-          i = -i;
-      } catch (NumberFormatException e) {
-        i = -1;
-      }
-    }
-    if (pt < strDecimal.length() - 1)
-      try {
-        j = Integer.parseInt(strDecimal.substring(pt + 1));
-      } catch (NumberFormatException e) {
-        // not a problem
-      }
-    i = i * 1000000 + j;
-    return (i < 0 ? Integer.MAX_VALUE : i);
-  }
-
 
   
 }

@@ -941,13 +941,13 @@ all support for previous versions removed
       <fileset dir="${applet.classes.dir}" >
         <include name="JmolSmiles*" />
         <include name="org/jmol/smiles/**" />
-        <include name="org/jmol/api/JmolNode.class" />
-        <include name="org/jmol/api/JmolEdge.class" />
-        <include name="org/jmol/api/JmolMolecule.class" />
         <include name="org/jmol/api/SmilesMatcherInterface.class" />
         <include name="org/jmol/constant/**" />
-        <include name="org/jmol/util/Elements.class" />
+        <include name="org/jmol/util/JmolEdge.class" />
+        <include name="org/jmol/util/JmolNode.class" />
+        <include name="org/jmol/util/JmolMolecule.class" />
         <include name="org/jmol/util/DefaultLogger.class" />
+        <include name="org/jmol/util/Elements.class" />
         <include name="org/jmol/util/Logger.class" />
         <include name="org/jmol/util/LoggerInterface.class" />
         <include name="org/jmol/util/TextFormat.class" />

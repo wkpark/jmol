@@ -427,7 +427,7 @@ import javax.vecmath.Vector3f;
   public int[] makeConnections(float minDistance, float maxDistance, int order,
                                int connectOperation, BitSet bsA, BitSet bsB,
                                BitSet bsBonds, boolean isBonds, boolean addGroup, float energy) {
-    if (connectOperation == JmolConstants.CONNECT_AUTO_BOND
+    if (connectOperation == Token.auto
         && order != JmolEdge.BOND_H_REGULAR) {
       String stateScript = "connect ";
       if (minDistance != JmolConstants.DEFAULT_MIN_CONNECT_DISTANCE)

@@ -36,7 +36,6 @@ import org.jmol.util.Escape;
 import org.jmol.util.Measure;
 import org.jmol.util.MeshSurface;
 import org.jmol.util.Quaternion;
-import org.jmol.viewer.JmolConstants;
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.g3d.*;
 
@@ -62,7 +61,7 @@ public class Mesh extends MeshSurface {
   public String colorCommand;
   public Point3f lattice;
   public boolean visible = true;
-  public int lighting = JmolConstants.FRONTLIT;
+  public int lighting = Token.frontlit;
   public Quaternion q;
 
   public float scale = 1;
@@ -162,7 +161,7 @@ public class Mesh extends MeshSurface {
     else
       for (int i = normixCount; --i >= 0;)
         normixes[i] = Graphics3D.getNormix(normals[i], bsTemp);
-    this.lighting = JmolConstants.FRONTLIT;
+    this.lighting = Token.frontlit;
     if (insideOut)
       invertNormixes();
     setLighting(lighting);
@@ -187,7 +186,7 @@ public class Mesh extends MeshSurface {
   }
   
   public void setLighting(int lighting) {
-    isTwoSided = (lighting == JmolConstants.FULLYLIT);
+    isTwoSided = (lighting == Token.fullylit);
     if (lighting == this.lighting)
       return;
     flipLighting(this.lighting);
@@ -195,10 +194,10 @@ public class Mesh extends MeshSurface {
   }
   
   private void flipLighting(int lighting) {
-    if (lighting == JmolConstants.FULLYLIT)
+    if (lighting == Token.fullylit)
       for (int i = normixCount; --i >= 0;)
         normixes[i] = (short)~normixes[i];
-    else if ((lighting == JmolConstants.FRONTLIT) == insideOut)
+    else if ((lighting == Token.frontlit) == insideOut)
       invertNormixes();
   }
 
@@ -290,8 +289,7 @@ public class Mesh extends MeshSurface {
       s.append(" contourlines");
     if (showTriangles)
       s.append(" triangles");
-    s.append(lighting == JmolConstants.BACKLIT ? " backlit"
-        : lighting == JmolConstants.FULLYLIT ? " fullylit" : " frontlit");
+    s.append(Token.nameOf(lighting));
     return s.toString();
   }
 

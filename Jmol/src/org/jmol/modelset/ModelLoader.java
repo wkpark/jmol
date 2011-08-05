@@ -41,6 +41,7 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolBioResolver;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
+import org.jmol.constant.EnumProteinStructure;
 import org.jmol.constant.EnumVdw;
 
 import javax.vecmath.Point3f;
@@ -917,7 +918,7 @@ public final class ModelLoader {
         .getStructureIterator(atomSetCollection);
     if (iterStructure != null)
       while (iterStructure.hasNext()) {
-        if (iterStructure.getStructureType() != JmolConstants.PROTEIN_STRUCTURE_TURN) {
+        if (iterStructure.getStructureType() != EnumProteinStructure.TURN.id) {
           defineStructure(iterStructure.getModelIndex(),
               iterStructure.getSubstructureType(),
               iterStructure.getStructureID(), 
@@ -937,7 +938,7 @@ public final class ModelLoader {
     iterStructure = adapter.getStructureIterator(atomSetCollection);
     if (iterStructure != null)
       while (iterStructure.hasNext()) {
-        if (iterStructure.getStructureType() == JmolConstants.PROTEIN_STRUCTURE_TURN)
+        if (iterStructure.getStructureType() == EnumProteinStructure.TURN.id)
           defineStructure(iterStructure.getModelIndex(),
               iterStructure.getSubstructureType(),
               iterStructure.getStructureID(), 1, 1,
@@ -959,7 +960,7 @@ public final class ModelLoader {
                                int endSequenceNumber, char endInsertionCode) {
     byte type = (byte) subType;
     if (type < 0)
-      type = JmolConstants.PROTEIN_STRUCTURE_NONE;
+      type = EnumProteinStructure.NONE.id;
     int startSeqCode = Group.getSeqcode(startSequenceNumber,
         startInsertionCode);
     int endSeqCode = Group.getSeqcode(endSequenceNumber, endInsertionCode);

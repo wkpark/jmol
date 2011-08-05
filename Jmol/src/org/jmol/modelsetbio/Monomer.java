@@ -24,6 +24,7 @@
 package org.jmol.modelsetbio;
 
 
+import org.jmol.constant.EnumProteinStructure;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Chain;
@@ -157,7 +158,7 @@ public abstract class Monomer extends Group {
 
   public ProteinStructure getProteinStructure() { return null; }
   @Override
-  public byte getProteinStructureType() { return JmolConstants.PROTEIN_STRUCTURE_NONE; }
+  public byte getProteinStructureType() { return EnumProteinStructure.NONE.id; }
   public boolean isHelix() { return false; }
   public boolean isSheet() { return false; }
   @Override
@@ -298,7 +299,7 @@ public abstract class Monomer extends Group {
     ProteinStructure structure = getProteinStructure();
     if(structure != null) {
       info.put("structureId", Integer.valueOf(structure.uniqueID));
-      info.put("structureType", JmolConstants.getProteinStructureName(structure.type, false));
+      info.put("structureType", EnumProteinStructure.getProteinStructureName(structure.type, false));
     }
     info.put("shapeVisibilityFlags", Integer.valueOf(shapeVisibilityFlags));
     return info;
@@ -307,7 +308,7 @@ public abstract class Monomer extends Group {
   @Override
   public String getStructureId() {
     ProteinStructure structure = getProteinStructure();
-    return (structure == null ? "" : JmolConstants.getProteinStructureName(structure.type, false));
+    return (structure == null ? "" : EnumProteinStructure.getProteinStructureName(structure.type, false));
   }
 
   /**

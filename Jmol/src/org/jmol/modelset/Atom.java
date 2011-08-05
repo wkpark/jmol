@@ -32,6 +32,7 @@ import org.jmol.viewer.Viewer;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumPalette;
+import org.jmol.constant.EnumProteinStructure;
 import org.jmol.constant.EnumVdw;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.util.Elements;
@@ -226,10 +227,10 @@ final public class Atom extends Point3fi implements JmolNode {
     if (f == 0)
       return 0;
     switch (rd.factorType) {
-    case RadiusData.TYPE_SCREEN:
+    case SCREEN:
        return (short) f;
-    case RadiusData.TYPE_FACTOR:
-    case RadiusData.TYPE_OFFSET:
+    case FACTOR:
+    case OFFSET:
       float r = 0;
       switch (rd.vdwType) {
       case TEMP:
@@ -249,13 +250,12 @@ final public class Atom extends Point3fi implements JmolNode {
       default:
         r = getVanderwaalsRadiusFloat(viewer, rd.vdwType);
       }
-      if (rd.factorType == RadiusData.TYPE_FACTOR)
+      if (rd.factorType == RadiusData.EnumType.FACTOR)
         f *= r;
       else
         f += r;
       break;
-    default:
-    case RadiusData.TYPE_ABSOLUTE:
+    case ABSOLUTE:
       break;
     }
     short mad = (short) (f < 0 ? f: f * 2000);
@@ -503,13 +503,13 @@ final public class Atom extends Point3fi implements JmolNode {
   }
 
   public float getCovalentRadiusFloat() {
-    return EnumVdw.getBondingRadiusFloat(atomicAndIsotopeNumber % 128, 0);
+    return Elements.getBondingRadiusFloat(atomicAndIsotopeNumber % 128, 0);
   }
 
   public float getBondingRadiusFloat() {
     float[] ionicRadii = group.chain.modelSet.ionicRadii;
     float r = (ionicRadii == null ? 0 : ionicRadii[index]);
-    return (r == 0 ? EnumVdw.getBondingRadiusFloat(atomicAndIsotopeNumber % 128,
+    return (r == 0 ? Elements.getBondingRadiusFloat(atomicAndIsotopeNumber % 128,
         getFormalCharge()) : r);
   }
 
@@ -1074,7 +1074,7 @@ final public class Atom extends Point3fi implements JmolNode {
   }
   
   public String getGroupType() {
-    return JmolConstants.getProteinStructureName(getProteinStructureType(), true);
+    return EnumProteinStructure.getProteinStructureName(getProteinStructureType(), true);
   }
   
   public byte getProteinStructureType() {
@@ -1353,9 +1353,9 @@ final public class Atom extends Point3fi implements JmolNode {
         s = "";
       return s;
     case Token.structure:
-      return JmolConstants.getProteinStructureName(atom.getProteinStructureType(), false);
+      return EnumProteinStructure.getProteinStructureName(atom.getProteinStructureType(), false);
     case Token.substructure:
-      return JmolConstants.getProteinStructureName(atom.getProteinStructureSubType(), false);
+      return EnumProteinStructure.getProteinStructureName(atom.getProteinStructureSubType(), false);
     case Token.strucid:
       return atom.getStructureId();
     case Token.shape:

@@ -51,7 +51,6 @@ import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.MeshSurface;
-import org.jmol.viewer.JmolConstants;
 
 public class Contact extends Isosurface {
 
@@ -77,7 +76,7 @@ public class Contact extends Isosurface {
   private float minData, maxData;
   //private final static String hbondH = "_H & connected(_O|_N and his and not *.N |_S)";
   //private final static float HBOND_CUTOFF = -0.8f;
-  private final static RadiusData rdVDW =  new RadiusData(1, RadiusData.TYPE_FACTOR, EnumVdw.AUTO);
+  private final static RadiusData rdVDW =  new RadiusData(1, RadiusData.EnumType.FACTOR, EnumVdw.AUTO);
   
   private void setContacts(Object[] value) {
     Logger.startTimer();
@@ -183,7 +182,7 @@ public class Contact extends Isosurface {
     case Token.plane:
     case Token.trim:
       if (rd == null)
-        rd = new RadiusData(0.25f, RadiusData.TYPE_OFFSET,
+        rd = new RadiusData(0.25f, RadiusData.EnumType.OFFSET,
             EnumVdw.AUTO);
       float volume = 0;
       List<ContactPair> pairs = getPairs(bsA, bsB, rd, intramolecularMode);
@@ -206,7 +205,7 @@ public class Contact extends Isosurface {
     if (colorDensity) {
       super.setProperty("pointSize", Float.valueOf(ptSize), null);
     } else {
-      super.setProperty("token", Integer.valueOf(JmolConstants.FULLYLIT), null);
+      super.setProperty("token", Integer.valueOf(Token.fullylit), null);
     }
     if (thisMesh.slabOptions != null) {
       thisMesh.slabOptions = null;
@@ -482,8 +481,8 @@ public class Contact extends Isosurface {
     case Token.full:
       RadiusData rdA, rdB;
       if (displayType == Token.surface) {
-        rdA = new RadiusData(1, RadiusData.TYPE_FACTOR, EnumVdw.AUTO);
-        rdB = new RadiusData((rd.factorType == RadiusData.TYPE_OFFSET ? rd.value * 2 : (rd.value - 1) * 2 + 1), 
+        rdA = new RadiusData(1, RadiusData.EnumType.FACTOR, EnumVdw.AUTO);
+        rdB = new RadiusData((rd.factorType == RadiusData.EnumType.OFFSET ? rd.value * 2 : (rd.value - 1) * 2 + 1), 
             rd.factorType, rd.vdwType);
       } else {
         rdA = rdB = rd;

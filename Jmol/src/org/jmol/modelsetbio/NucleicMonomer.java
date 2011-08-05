@@ -29,6 +29,7 @@ import java.util.List;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.constant.EnumProteinStructure;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Group;
@@ -192,8 +193,8 @@ public class NucleicMonomer extends PhosphorusMonomer {
   @Override
   public byte getProteinStructureType() {
     return (hasRnaO2Prime
-            ? JmolConstants.PROTEIN_STRUCTURE_RNA
-            : JmolConstants.PROTEIN_STRUCTURE_DNA);
+            ? EnumProteinStructure.PROTEIN_STRUCTURE_RNA
+            : EnumProteinStructure.PROTEIN_STRUCTURE_DNA);
   }
 
     ////////////////////////////////////////////////////////////////

@@ -33,6 +33,7 @@ import java.util.Map;
 
 import org.jmol.constant.EnumAxesMode;
 import org.jmol.constant.EnumCallback;
+import org.jmol.constant.EnumProteinStructure;
 import org.jmol.constant.EnumStereoMode;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Bond;
@@ -1624,9 +1625,9 @@ public class StateManager {
       // structure defaults
       
       if (haveSetStructureList) {
-        commands.append("struture HELIX set " + Escape.escape(structureList[JmolConstants.PROTEIN_STRUCTURE_HELIX]));
-        commands.append("struture SHEET set " + Escape.escape(structureList[JmolConstants.PROTEIN_STRUCTURE_SHEET]));
-        commands.append("struture TURN set " + Escape.escape(structureList[JmolConstants.PROTEIN_STRUCTURE_TURN]));
+        commands.append("struture HELIX set " + Escape.escape(structureList[EnumProteinStructure.PROTEIN_STRUCTURE_HELIX]));
+        commands.append("struture SHEET set " + Escape.escape(structureList[EnumProteinStructure.PROTEIN_STRUCTURE_SHEET]));
+        commands.append("struture TURN set " + Escape.escape(structureList[EnumProteinStructure.PROTEIN_STRUCTURE_TURN]));
       }
       if (sfunc != null)
         commands.append("\n}\n\n");

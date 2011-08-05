@@ -826,8 +826,8 @@ Polyproline 10
    */
   
   private void structure() {
-    int structureType = 0;
-    int substructureType = 0;
+    byte structureType = 0;
+    byte substructureType = 0;
     int startChainIDIndex;
     int startIndex;
     int endChainIDIndex;

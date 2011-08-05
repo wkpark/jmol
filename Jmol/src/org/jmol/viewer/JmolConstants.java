@@ -24,7 +24,6 @@
  */
 package org.jmol.viewer;
 
-import org.jmol.constant.EnumVdw;
 import org.jmol.script.Token;
 import org.jmol.util.Elements;
 import org.jmol.util.Logger;
@@ -110,6 +109,16 @@ final public class JmolConstants {
   //do not capitalize any other letter in the word. Separate by semicolon.
   public static final String EXPORT_DRIVER_LIST = "Idtf;Maya;Povray;Vrml;X3d;Tachyon;Obj"; 
 
+  public final static String VdwPROBE = "#VDW radii for PROBE;{_H}.vdw = 1.0;" +
+  		"{_H and connected(_C) and not connected(within(smiles,'[a]'))}.vdw = 1.17;" +
+  		"{_C}.vdw = 1.75;{_C and connected(3) and connected(_O)}.vdw = 1.65;" +
+  		"{_N}.vdw = 1.55;" +
+  		"{_O}.vdw = 1.4;" +
+  		"{_P}.vdw = 1.8;" +
+  		"{_S}.vdw = 1.8;" +
+  		"message VDW radii for H, C, N, O, P, and S set according to " +
+  		"Word, et al., J. Mol. Biol. (1999) 285, 1711-1733";
+
   public final static Vector3f center = new Vector3f(0, 0, 0);
   public final static Vector3f axisX = new Vector3f(1, 0, 0);
   public final static Vector3f axisY = new Vector3f(0, 1, 0);
@@ -134,18 +143,6 @@ final public class JmolConstants {
   public static final int MINIMIZATION_ATOM_MAX = 200;
   public static final float MINIMIZE_FIXED_RANGE = 5.0f;
 
-  public static boolean isMeasurementUnit(String units) {
-    return Parser.isOneOf(units.toLowerCase(),
-        "angstroms;au;bohr;nanometers;nm;picometers;pm;vanderwaals;vdw");
-  }
-
-  public final static int CONNECT_DELETE_BONDS     = Token.delete;
-  public final static int CONNECT_MODIFY_ONLY      = Token.modify;
-  public final static int CONNECT_CREATE_ONLY      = Token.create;
-  public final static int CONNECT_MODIFY_OR_CREATE = Token.modifyorcreate;
-  public final static int CONNECT_AUTO_BOND        = Token.auto;
-  public final static int CONNECT_IDENTIFY_ONLY    = Token.identify;
-
   public static final int MOUSE_NONE = -1;
 
   public final static byte MULTIBOND_NEVER =     0;
@@ -164,15 +161,6 @@ final public class JmolConstants {
   /* .cube files need this */
   public final static float ANGSTROMS_PER_BOHR = 0.5291772f;
 
-  /*
-   * for mesh lighting
-   * 
-   */
-  
-  public final static int FRONTLIT = Token.frontlit;
-  public final static int BACKLIT = Token.backlit;
-  public final static int FULLYLIT = Token.fullylit;
-
   public final static int[] altArgbsCpk = {
     0xFFFF1493, // Xx 0
     0xFFBFA6A6, // Al 13
@@ -185,96 +173,6 @@ final public class JmolConstants {
     0xFF404040, // 14C  6 - darker still
     0xFF105050, // 15N  7 - darker
   };
-
-  
-  static {
-    // if the length of these tables is all the same then the
-    // java compiler should eliminate all of this code.
-    if ((Elements.elementNames.length != Elements.elementNumberMax) ||
-        (EnumVdw.vanderwaalsMars.length / 4 != Elements.elementNumberMax) ||
-        (EnumVdw.covalentMars.length  != Elements.elementNumberMax)) {
-      Logger.error("ERROR!!! Element table length mismatch:" +
-                         "\n elementSymbols.length=" + Elements.elementSymbols.length +
-                         "\n elementNames.length=" + Elements.elementNames.length +
-                         "\n vanderwaalsMars.length=" + EnumVdw.vanderwaalsMars.length+
-                         "\n covalentMars.length=" +
-                         EnumVdw.covalentMars.length);
-    }
-  }
-
-  /**
-   * Default table of PdbStructure colors
-   */
-  public final static byte PROTEIN_STRUCTURE_NOT = -1;
-  public final static byte PROTEIN_STRUCTURE_NONE = 0;
-  public final static byte PROTEIN_STRUCTURE_TURN = 1;
-  public final static byte PROTEIN_STRUCTURE_SHEET = 2;
-  public final static byte PROTEIN_STRUCTURE_HELIX = 3;
-  public final static byte PROTEIN_STRUCTURE_DNA = 4;
-  public final static byte PROTEIN_STRUCTURE_RNA = 5;
-  public final static byte PROTEIN_STRUCTURE_CARBOHYDRATE = 6;
-  public final static byte PROTEIN_STRUCTURE_HELIX_310 = 7;
-  public final static byte PROTEIN_STRUCTURE_HELIX_ALPHA = 8;
-  public final static byte PROTEIN_STRUCTURE_HELIX_PI = 9;
-
-  private final static String[] proteinStructureNames = {
-    "none", "turn", "sheet", "helix", 
-    "dna", "rna", 
-    "carbohydrate", 
-    "helix310", "helixalpha", "helixpi"
-  };
-  
-  public final static String getProteinStructureName(int itype, boolean isGeneric) {
-    return (itype < 0 || itype > proteinStructureNames.length ? "" 
-        : isGeneric && (itype < 4 || itype > 6) ? "protein" : proteinStructureNames[itype]);
-  }
-  
-  public final static byte getProteinStructureType(String type) {
-    for (byte i = 0; i < proteinStructureNames.length; i++)
-      if (type.equalsIgnoreCase(proteinStructureNames[i]))
-        return (i < 4 || i > 6 ? i : -1);
-    return -1;
-  }
-
-
-  /****************************************************************
-   * In DRuMS, RasMol, and Chime, quoting from
-   * http://www.umass.edu/microbio/rasmol/rascolor.htm
-   *
-   *The RasMol structure color scheme colors the molecule by
-   *protein secondary structure.
-   *
-   *Structure                   Decimal RGB    Hex RGB
-   *Alpha helices  red-magenta  [255,0,128]    FF 00 80  *
-   *Beta strands   yellow       [255,200,0]    FF C8 00  *
-   *
-   *Turns          pale blue    [96,128,255]   60 80 FF
-   *Other          white        [255,255,255]  FF FF FF
-   *
-   **Values given in the 1994 RasMol 2.5 Quick Reference Card ([240,0,128]
-   *and [255,255,0]) are not correct for RasMol 2.6-beta-2a.
-   *This correction was made above on Dec 5, 1998.
-   ****************************************************************/
-  public final static int[] argbsStructure = {
-    0xFF808080, // PROTEIN_STRUCTURE_NOT
-    0xFFFFFFFF, // PROTEIN_STRUCTURE_NONE
-    0xFF6080FF, // PROTEIN_STRUCTURE_TURN
-    0xFFFFC800, // PROTEIN_STRUCTURE_SHEET
-    0xFFFF0080, // PROTEIN_STRUCTURE_HELIX
-    0xFFAE00FE, // PROTEIN_STRUCTURE_DNA
-    0xFFFD0162, // PROTEIN_STRUCTURE_RNA
-    0xFFA6A6FA, // PROTEIN_STRUCTURE_CARBOHYDRATE
-    0xFFA00080, // PROTEIN_STRUCTURE_HELIX_310 -- lighter purple
-    0xFFFF0080, // PROTEIN_STRUCTURE_HELIX_ALPHA
-    0xFF600080, // PROTEIN_STRUCTURE_HELIX_PI  -- dark purple
-  };
-
-  static {
-    if (proteinStructureNames.length != argbsStructure.length - 1) {
-      System.out.println("protineStructureNames.length != argbsStructure.length");
-      throw new NullPointerException();
-    }
-  }
   
   public final static int[] argbsAmino = {
     0xFFBEA06E, // default tan
@@ -1731,7 +1629,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   // all of these things are compile-time constants
   // if they are false then the compiler should take them away
   static {
-    if (argbsFormalCharge.length != EnumVdw.FORMAL_CHARGE_MAX-EnumVdw.FORMAL_CHARGE_MIN+1) {
+    if (argbsFormalCharge.length != Elements.FORMAL_CHARGE_MAX-Elements.FORMAL_CHARGE_MIN+1) {
       Logger.error("formal charge color table length");
       throw new NullPointerException();
     }
@@ -1752,7 +1650,6 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
       throw new NullPointerException();
     }
   }
-
 
   
 }

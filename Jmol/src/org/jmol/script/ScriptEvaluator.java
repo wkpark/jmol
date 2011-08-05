@@ -45,6 +45,7 @@ import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumAnimationMode;
 import org.jmol.constant.EnumPalette;
+import org.jmol.constant.EnumProteinStructure;
 import org.jmol.constant.EnumStereoMode;
 import org.jmol.constant.EnumVdw;
 import org.jmol.g3d.Font3D;
@@ -7086,7 +7087,7 @@ public class ScriptEvaluator {
     int distanceCount = 0;
     int bondOrder = JmolEdge.BOND_ORDER_NULL;
     int bo;
-    int operation = JmolConstants.CONNECT_MODIFY_OR_CREATE;
+    int operation = Token.modifyorcreate;
     boolean isDelete = false;
     boolean haveType = false;
     boolean haveOperation = false;
@@ -7208,7 +7209,7 @@ public class ScriptEvaluator {
           isColorOrRadius = true;
         }
         if (!haveOperation)
-          operation = JmolConstants.CONNECT_MODIFY_OR_CREATE;
+          operation = Token.modifyorcreate;
         haveOperation = true;
         // fall through
       case Token.identifier:
@@ -7260,7 +7261,7 @@ public class ScriptEvaluator {
       case Token.delete:
         if (++i != statementLength)
           error(ERROR_invalidParameterOrder);
-        operation = JmolConstants.CONNECT_DELETE_BONDS;
+        operation = Token.delete;
         // if (isColorOrRadius) / for struts automatic color
         // error(ERROR_invalidArgument);
         isDelete = true;
@@ -7294,7 +7295,7 @@ public class ScriptEvaluator {
       if (!haveType)
         bondOrder = JmolEdge.BOND_ORDER_ANY;
       if (!haveOperation)
-        operation = JmolConstants.CONNECT_MODIFY_ONLY;
+        operation = Token.modify;
     }
     int nNew = 0;
     int nModified = 0;
@@ -11062,7 +11063,7 @@ public class ScriptEvaluator {
         error(ERROR_invalidArgument);
     }
     if (rd == null)
-      rd = new RadiusData(scale, RadiusData.TYPE_FACTOR, EnumVdw.AUTO);
+      rd = new RadiusData(scale, RadiusData.EnumType.FACTOR, EnumVdw.AUTO);
     if (isOnly)
       restrictSelected(false, false);
     setShapeSize(shape, rd);
@@ -11086,7 +11087,7 @@ public class ScriptEvaluator {
       throws ScriptException {
 
     float value = Float.NaN;
-    int factorType = RadiusData.TYPE_ABSOLUTE;
+    RadiusData.EnumType factorType = RadiusData.EnumType.ABSOLUTE;
     EnumVdw vdwType = null;
 
     int tok = (index == -1 ? Token.vanderwaals : getToken(index).tok);
@@ -11098,7 +11099,7 @@ public class ScriptEvaluator {
     case Token.temperature:
     case Token.vanderwaals:
       value = 1;
-      factorType = RadiusData.TYPE_FACTOR;
+      factorType = RadiusData.EnumType.FACTOR;
       switch (tok) {
       case Token.adpmax:
       case Token.adpmin:
@@ -11121,7 +11122,7 @@ public class ScriptEvaluator {
     case Token.babel21:
     case Token.jmol:
       value = 1;
-      factorType = RadiusData.TYPE_FACTOR;
+      factorType = RadiusData.EnumType.FACTOR;
       iToken = index - 1;
       break;
     case Token.plus:
@@ -11131,9 +11132,9 @@ public class ScriptEvaluator {
       value = floatParameter(index,
           (isOnly || !allowAbsolute ? -Atom.RADIUS_MAX : 0), Atom.RADIUS_MAX);
       if (tok == Token.plus || !allowAbsolute) {
-        factorType = RadiusData.TYPE_OFFSET;
+        factorType = RadiusData.EnumType.OFFSET;
       } else {
-        factorType = RadiusData.TYPE_ABSOLUTE;
+        factorType = RadiusData.EnumType.ABSOLUTE;
         vdwType = EnumVdw.NADA;
       }
       if (isOnly)
@@ -11143,7 +11144,7 @@ public class ScriptEvaluator {
       value = intParameter(index);
       if (tokAt(index + 1) == Token.percent) {
         iToken = ++index;
-        factorType = RadiusData.TYPE_FACTOR;
+        factorType = RadiusData.EnumType.FACTOR;
         if (value < 0 || value > 200)
           integerOutOfRange(0, 200);
         value /= 100;
@@ -11155,10 +11156,10 @@ public class ScriptEvaluator {
         integerOutOfRange(-200, 749);
       if (value > 0) {
         value /= 250;
-        factorType = RadiusData.TYPE_ABSOLUTE;
+        factorType = RadiusData.EnumType.ABSOLUTE;
       } else {
         value /= -100;
-        factorType = RadiusData.TYPE_FACTOR;
+        factorType = RadiusData.EnumType.FACTOR;
       }
       break;
     default:
@@ -11176,7 +11177,7 @@ public class ScriptEvaluator {
   }
 
   private void structure() throws ScriptException {
-    byte iType = JmolConstants.getProteinStructureType(parameterAsString(1));
+    byte iType = EnumProteinStructure.getProteinStructureType(parameterAsString(1));
     if (iType < 0)
       error(ERROR_invalidArgument);
     BitSet bs = null;
@@ -11282,7 +11283,7 @@ public class ScriptEvaluator {
   }
 
   private void vector() throws ScriptException {
-    int type = RadiusData.TYPE_SCREEN;
+    RadiusData.EnumType type = RadiusData.EnumType.SCREEN;
     float value = 1;
     checkLength(-3);
     switch (iToken = statementLength) {
@@ -11301,7 +11302,7 @@ public class ScriptEvaluator {
         break;
       case Token.decimal:
         // radius angstroms
-        type = RadiusData.TYPE_ABSOLUTE;
+        type = RadiusData.EnumType.ABSOLUTE;
         value = floatParameter(1, 0, 3);
         break;
       default:
@@ -11690,17 +11691,17 @@ public class ScriptEvaluator {
       shapeManager.loadShape(iShape);
     setShapeProperty(iShape, "init", null);
     float value = Float.NaN;
-    int type = 0;
+    RadiusData.EnumType type = RadiusData.EnumType.ABSOLUTE;
     int ipt = 1;
     switch (getToken(ipt).tok) {
     case Token.only:
       restrictSelected(false, false);
       value = 1;
-      type = RadiusData.TYPE_FACTOR;
+      type = RadiusData.EnumType.FACTOR;
       break;
     case Token.on:
       value = 1;
-      type = RadiusData.TYPE_FACTOR;
+      type = RadiusData.EnumType.FACTOR;
       break;
     case Token.off:
       value = 0;
@@ -12230,7 +12231,7 @@ public class ScriptEvaluator {
 
     switch (tok) {
     case Token.structure:
-      byte iType = JmolConstants.getProteinStructureType(parameterAsString(2));
+      byte iType = EnumProteinStructure.getProteinStructureType(parameterAsString(2));
       if (iType < 1)
         error(ERROR_invalidArgument);
       float[] data = floatParameterSet(3, 0, Integer.MAX_VALUE);
@@ -12327,7 +12328,7 @@ public class ScriptEvaluator {
           Token.vanderwaals, -1, Float.NaN, null, null, null);
       switch (tokAt(2)) {
       case Token.probe:
-        runScript(EnumVdw.VdwPROBE);
+        runScript(JmolConstants.VdwPROBE);
         return;
       }
       newTok = Token.defaultvdw;
@@ -12951,7 +12952,8 @@ public class ScriptEvaluator {
   }
 
   private boolean setMeasurementUnits(String units) throws ScriptException {
-    if (!JmolConstants.isMeasurementUnit(units))
+    if (!Parser.isOneOf(units.toLowerCase(),
+        "angstroms;au;bohr;nanometers;nm;picometers;pm;vanderwaals;vdw"))
       error(ERROR_unrecognizedParameter, "set measurementUnits ", units);
     if (!isSyntaxCheck)
       viewer.setMeasureDistanceUnits(units);
@@ -15464,7 +15466,7 @@ public class ScriptEvaluator {
     if (bsA != null) {
       // bond mode, intramolec set here
       RadiusData rd1 = (rd == null ? new RadiusData(0.26f,
-          RadiusData.TYPE_OFFSET, EnumVdw.AUTO) : rd);
+          RadiusData.EnumType.OFFSET, EnumVdw.AUTO) : rd);
       if (displayType == Token.nci && bsB == null && intramolecular != null
           && intramolecular.booleanValue())
         bsB = bsA;

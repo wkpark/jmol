@@ -26,6 +26,7 @@ package org.jmol.modelsetbio;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.constant.EnumProteinStructure;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Chain;
 import org.jmol.util.Quaternion;
@@ -86,13 +87,13 @@ public class AlphaMonomer extends Monomer {
 
   @Override
   public byte getProteinStructureType() {
-    return proteinStructure == null ? JmolConstants.PROTEIN_STRUCTURE_NONE
+    return proteinStructure == null ? EnumProteinStructure.NONE.id
         : proteinStructure.type;
   }
 
   @Override
   public byte getProteinStructureSubType() {
-    return proteinStructure == null ? JmolConstants.PROTEIN_STRUCTURE_NONE
+    return proteinStructure == null ? EnumProteinStructure.NONE.id
         : proteinStructure.subtype;
   }
 
@@ -104,13 +105,13 @@ public class AlphaMonomer extends Monomer {
   @Override
   public boolean isHelix() {
     return proteinStructure != null &&
-      proteinStructure.type == JmolConstants.PROTEIN_STRUCTURE_HELIX;
+      proteinStructure.type == EnumProteinStructure.PROTEIN_STRUCTURE_HELIX;
   }
 
   @Override
   public boolean isSheet() {
     return proteinStructure != null &&
-      proteinStructure.type == JmolConstants.PROTEIN_STRUCTURE_SHEET;
+      proteinStructure.type == EnumProteinStructure.PROTEIN_STRUCTURE_SHEET;
   }
 
   /**
@@ -128,20 +129,21 @@ public class AlphaMonomer extends Monomer {
         if (nAbandoned > 0)
           getBioPolymer().removeProteinStructure(monomerIndex + 1, nAbandoned);
       }
+      // for switch, we need the "raw" constants
       switch (iType) {
-      case JmolConstants.PROTEIN_STRUCTURE_HELIX:
-      case JmolConstants.PROTEIN_STRUCTURE_HELIX_ALPHA:
-      case JmolConstants.PROTEIN_STRUCTURE_HELIX_310:
-      case JmolConstants.PROTEIN_STRUCTURE_HELIX_PI:
+      case EnumProteinStructure.PROTEIN_STRUCTURE_HELIX:
+      case EnumProteinStructure.PROTEIN_STRUCTURE_HELIX_ALPHA:
+      case EnumProteinStructure.PROTEIN_STRUCTURE_HELIX_310:
+      case EnumProteinStructure.PROTEIN_STRUCTURE_HELIX_PI:
         setStructure(new Helix((AlphaPolymer) bioPolymer, monomerIndex, 1, 0, iType));
         break;
-      case JmolConstants.PROTEIN_STRUCTURE_SHEET:
+      case EnumProteinStructure.PROTEIN_STRUCTURE_SHEET:
         setStructure(new Sheet((AlphaPolymer) bioPolymer, monomerIndex, 1, 0, iType));
         break;
-      case JmolConstants.PROTEIN_STRUCTURE_TURN:
+      case EnumProteinStructure.PROTEIN_STRUCTURE_TURN:
         setStructure(new Turn((AlphaPolymer) bioPolymer, monomerIndex, 1, 0));
         break;
-      case JmolConstants.PROTEIN_STRUCTURE_NONE:
+      case EnumProteinStructure.PROTEIN_STRUCTURE_NONE:
         setStructure(null);
       }
     } else {

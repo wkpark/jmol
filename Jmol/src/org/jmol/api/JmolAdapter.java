@@ -33,7 +33,6 @@ import java.util.Map;
 import javax.vecmath.Point3f;
 
 import org.jmol.constant.EnumQuantumShell;
-import org.jmol.constant.EnumVdw;
 import org.jmol.modelset.Group;
 import org.jmol.util.Elements;
 import org.jmol.util.JmolEdge;
@@ -118,7 +117,7 @@ public abstract class JmolAdapter {
   }
 
   public static float getBondingRadiusFloat(int atomicNumber, int charge) {
-    return EnumVdw.getBondingRadiusFloat(atomicNumber, charge);
+    return Elements.getBondingRadiusFloat(atomicNumber, charge);
   }
 
   //////////////////////////////////////////////////////////////////

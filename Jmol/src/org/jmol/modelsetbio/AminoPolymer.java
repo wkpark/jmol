@@ -23,6 +23,7 @@
  */
 package org.jmol.modelsetbio;
 
+import org.jmol.constant.EnumProteinStructure;
 import org.jmol.i18n.GT;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
@@ -36,7 +37,6 @@ import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.TextFormat;
-import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 
 //import java.util.ArrayList;
@@ -745,19 +745,19 @@ public class AminoPolymer extends AlphaPolymer {
     BitSet bsTurn = new BitSet();
 
     String line4 = findHelixes(4, min, iPolymer,
-        JmolConstants.PROTEIN_STRUCTURE_HELIX_ALPHA, JmolEdge.BOND_H_PLUS_4, bsDone,
+        EnumProteinStructure.PROTEIN_STRUCTURE_HELIX_ALPHA, JmolEdge.BOND_H_PLUS_4, bsDone,
         bsTurn, labels, doReport, setStructure, vHBonds, bsBad);
     String line3 = findHelixes(3, min, iPolymer,
-        JmolConstants.PROTEIN_STRUCTURE_HELIX_310, JmolEdge.BOND_H_PLUS_3,
+        EnumProteinStructure.PROTEIN_STRUCTURE_HELIX_310, JmolEdge.BOND_H_PLUS_3,
         bsDone, bsTurn, labels, doReport, setStructure, vHBonds, bsBad);
     String line5 = findHelixes(5, min, iPolymer,
-        JmolConstants.PROTEIN_STRUCTURE_HELIX_PI, JmolEdge.BOND_H_PLUS_5,
+        EnumProteinStructure.PROTEIN_STRUCTURE_HELIX_PI, JmolEdge.BOND_H_PLUS_5,
         bsDone, bsTurn, labels, doReport, setStructure, vHBonds, bsBad);
 
     // G, H, and I have been set; now set what is left over as turn
 
     if (setStructure)
-      setStructure(bsTurn, JmolConstants.PROTEIN_STRUCTURE_TURN);
+      setStructure(bsTurn, EnumProteinStructure.TURN.id);
     
     if (doReport) {
       setTag(labels, bsTurn, 'T');
@@ -1067,7 +1067,7 @@ public class AminoPolymer extends AlphaPolymer {
         ap.setTag(labels[i], bsSheet, 'E');
       } 
       if (setStructure) { 
-        ap.setStructure(bsSheet, JmolConstants.PROTEIN_STRUCTURE_SHEET);
+        ap.setStructure(bsSheet, EnumProteinStructure.PROTEIN_STRUCTURE_SHEET);
       }
       bsDone[i].or(bsSheet);
       bsDone[i].or(bsBridge);
@@ -1336,7 +1336,7 @@ public class AminoPolymer extends AlphaPolymer {
         }
         end--;
         if (end >= start + 3) {
-          addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_HELIX, null, 0,
+          addSecondaryStructure(EnumProteinStructure.PROTEIN_STRUCTURE_HELIX, null, 0,
               0, start, end);
         }
         start = end;
@@ -1350,7 +1350,7 @@ public class AminoPolymer extends AlphaPolymer {
         }
         end--;
         if (end >= start + 3) {
-          addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_HELIX, null, 0,
+          addSecondaryStructure(EnumProteinStructure.PROTEIN_STRUCTURE_HELIX, null, 0,
               0, start, end);
         }
         start = end;
@@ -1365,7 +1365,7 @@ public class AminoPolymer extends AlphaPolymer {
         }
         end--;
         if (end >= start + 2) {
-          addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_SHEET, null, 0,
+          addSecondaryStructure(EnumProteinStructure.PROTEIN_STRUCTURE_SHEET, null, 0,
               0, start, end);
         }
         start = end;
@@ -1380,7 +1380,7 @@ public class AminoPolymer extends AlphaPolymer {
         }
         end--;
         if (end >= start + 2) {
-          addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_TURN, null, 0,
+          addSecondaryStructure(EnumProteinStructure.TURN.id, null, 0,
               0, start, end);
         }
         start = end;
@@ -1395,17 +1395,17 @@ public class AminoPolymer extends AlphaPolymer {
    * @return whether this corresponds to a helix
    */
   private boolean isTurn(float psi, float phi) {
-    return checkPhiPsi(structureList[JmolConstants.PROTEIN_STRUCTURE_TURN],
+    return checkPhiPsi(structureList[EnumProteinStructure.PROTEIN_STRUCTURE_TURN],
         psi, phi);
   }
 
   private boolean isSheet(float psi, float phi) {
-    return checkPhiPsi(structureList[JmolConstants.PROTEIN_STRUCTURE_SHEET],
+    return checkPhiPsi(structureList[EnumProteinStructure.PROTEIN_STRUCTURE_SHEET],
         psi, phi);
   }
 
   private boolean isHelix(float psi, float phi) {
-    return checkPhiPsi(structureList[JmolConstants.PROTEIN_STRUCTURE_HELIX],
+    return checkPhiPsi(structureList[EnumProteinStructure.PROTEIN_STRUCTURE_HELIX],
         psi, phi);
   }
 

@@ -30,6 +30,7 @@ import java.util.Map;
 
 import javax.vecmath.Vector3f;
 
+import org.jmol.constant.EnumProteinStructure;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.modelsetbio.BioPolymer;
@@ -218,11 +219,11 @@ class BioShape {
       if (mad == -1 && shape.madOn >= 0)
         return shape.madOn;
       switch (monomers[groupIndex].getProteinStructureType()) {
-      case JmolConstants.PROTEIN_STRUCTURE_SHEET:
-      case JmolConstants.PROTEIN_STRUCTURE_HELIX:
+      case EnumProteinStructure.PROTEIN_STRUCTURE_SHEET:
+      case EnumProteinStructure.PROTEIN_STRUCTURE_HELIX:
         return shape.madHelixSheet;
-      case JmolConstants.PROTEIN_STRUCTURE_DNA:
-      case JmolConstants.PROTEIN_STRUCTURE_RNA:
+      case EnumProteinStructure.PROTEIN_STRUCTURE_DNA:
+      case EnumProteinStructure.PROTEIN_STRUCTURE_RNA:
         return shape.madDnaRna;
       default:
         return shape.madTurnRandom;

@@ -29,6 +29,7 @@ import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Quaternion;
 import org.jmol.viewer.JmolConstants;
+import org.jmol.constant.EnumProteinStructure;
 import org.jmol.script.Token;
 
 import java.util.Hashtable;
@@ -196,7 +197,7 @@ public class Group {
   }
   
   public byte getProteinStructureType() {
-    return JmolConstants.PROTEIN_STRUCTURE_NOT;
+    return EnumProteinStructure.NOT.id;
   }
 
   public byte getProteinStructureSubType() {

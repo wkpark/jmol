@@ -26,15 +26,15 @@ package org.jmol.modelsetbio;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.constant.EnumProteinStructure;
 import org.jmol.util.Measure;
-import org.jmol.viewer.JmolConstants;
 
 public class Sheet extends ProteinStructure {
 
   AlphaPolymer alphaPolymer;
 
   Sheet(AlphaPolymer alphaPolymer, int monomerIndex, int monomerCount, int id, byte subtype) {
-    super(alphaPolymer, JmolConstants.PROTEIN_STRUCTURE_SHEET, monomerIndex,
+    super(alphaPolymer, EnumProteinStructure.PROTEIN_STRUCTURE_SHEET, monomerIndex,
         monomerCount, id);
     this.alphaPolymer = alphaPolymer;
     this.subtype = subtype;

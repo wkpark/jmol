@@ -30,6 +30,7 @@ import java.util.List;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.constant.EnumProteinStructure;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.ModelSet;
@@ -37,7 +38,6 @@ import org.jmol.modelset.ModelSet;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.OutputStringBuffer;
-import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 
 
@@ -98,16 +98,16 @@ public class AlphaPolymer extends BioPolymer {
     int structureCount = indexEnd - indexStart + 1;
     ProteinStructure proteinstructure = null;
     switch(type) {
-    case JmolConstants.PROTEIN_STRUCTURE_HELIX:
-    case JmolConstants.PROTEIN_STRUCTURE_HELIX_ALPHA:
-    case JmolConstants.PROTEIN_STRUCTURE_HELIX_310:
-    case JmolConstants.PROTEIN_STRUCTURE_HELIX_PI:
+    case EnumProteinStructure.PROTEIN_STRUCTURE_HELIX:
+    case EnumProteinStructure.PROTEIN_STRUCTURE_HELIX_ALPHA:
+    case EnumProteinStructure.PROTEIN_STRUCTURE_HELIX_310:
+    case EnumProteinStructure.PROTEIN_STRUCTURE_HELIX_PI:
       proteinstructure = new Helix(this, indexStart, structureCount, 0, type);
       break;
-    case JmolConstants.PROTEIN_STRUCTURE_SHEET:
+    case EnumProteinStructure.PROTEIN_STRUCTURE_SHEET:
       proteinstructure = new Sheet(this, indexStart, structureCount, 0, type);
       break;
-    case JmolConstants.PROTEIN_STRUCTURE_TURN:
+    case EnumProteinStructure.PROTEIN_STRUCTURE_TURN:
       proteinstructure = new Turn(this, indexStart, structureCount, 0);
       break;
     default:
@@ -434,10 +434,10 @@ public class AlphaPolymer extends BioPolymer {
         codes[i] = CODE_RIGHT_HELIX;
   }
 
-  private final static byte TAG_NADA  = JmolConstants.PROTEIN_STRUCTURE_NONE;
-  private final static byte TAG_TURN  = JmolConstants.PROTEIN_STRUCTURE_TURN;
-  private final static byte TAG_SHEET = JmolConstants.PROTEIN_STRUCTURE_SHEET;
-  private final static byte TAG_HELIX = JmolConstants.PROTEIN_STRUCTURE_HELIX;
+  private final static byte TAG_NADA  = EnumProteinStructure.NONE.id;
+  private final static byte TAG_TURN  = EnumProteinStructure.TURN.id;
+  private final static byte TAG_SHEET = EnumProteinStructure.SHEET.id;
+  private final static byte TAG_HELIX = EnumProteinStructure.HELIX.id;
 
   private byte[] calculateRunsFourOrMore(byte[] codes) {
     byte[] tags = new byte[monomerCount];

@@ -310,7 +310,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           display.setCursor(transparentCursor);
         }
         actionManager = (ActionManager) Interface
-            .getInterface("multitouch.ActionManagerMT");
+            .getOptionInterface("multitouch.ActionManagerMT");
       } else {
         actionManager = new ActionManager();
       }
@@ -7194,7 +7194,7 @@ private void zap(String msg) {
     global.setParameterValue("percentVdwAtom", value);
     global.percentVdwAtom = value;
     rd.value = value / 100f;
-    rd.factorType = RadiusData.TYPE_FACTOR;
+    rd.factorType = RadiusData.EnumType.FACTOR;
     rd.vdwType = EnumVdw.AUTO;
     setShapeSize(JmolConstants.SHAPE_BALLS, rd, null);
   }
@@ -8762,7 +8762,7 @@ private void zap(String msg) {
 
   public int getVanderwaalsMar(int i) {
     return (dataManager.defaultVdw == EnumVdw.USER ? dataManager.userVdwMars[i]
-        : EnumVdw.getVanderwaalsMar(i, dataManager.defaultVdw));
+        : Elements.getVanderwaalsMar(i, dataManager.defaultVdw));
   }
 
   @SuppressWarnings("incomplete-switch")
@@ -8787,7 +8787,7 @@ private void zap(String msg) {
           type = dataManager.defaultVdw;
         break;
       }
-    return (EnumVdw.getVanderwaalsMar(i, type));
+    return (Elements.getVanderwaalsMar(i, type));
   }
 
   void setDefaultVdw(String type) {

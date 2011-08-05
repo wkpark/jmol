@@ -1234,8 +1234,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     // from JVXL file:
     Parameters params = sg.getParams();
     if (!thisMesh.isMerged)
-      thisMesh.initialize(sg.isFullyLit() ? JmolConstants.FULLYLIT
-        : JmolConstants.FRONTLIT, null, sg.getPlane());
+      thisMesh.initialize(sg.isFullyLit() ? Token.fullylit
+        : Token.frontlit, null, sg.getPlane());
     if (!params.allowVolumeRender)
       thisMesh.jvxlData.allowVolumeRender = false;
     thisMesh.setColorsFromJvxlData(sg.getParams().colorRgb);
@@ -1250,8 +1250,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
   public void notifySurfaceMappingCompleted() {
     if (!thisMesh.isMerged)
-      thisMesh.initialize(sg.isFullyLit() ? JmolConstants.FULLYLIT
-          : JmolConstants.FRONTLIT, null, sg.getPlane());
+      thisMesh.initialize(sg.isFullyLit() ? Token.fullylit
+          : Token.frontlit, null, sg.getPlane());
     setBsVdw();
     thisMesh.isColorSolid = false;
     thisMesh.colorDensity = jvxlData.colorDensity;

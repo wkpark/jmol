@@ -302,7 +302,7 @@ class DataManager {
     if (mode == EnumVdw.USER)
       mode = EnumVdw.JMOL;
     for (int i = 1; i < Elements.elementNumberMax; i++) {
-      userVdwMars[i] = EnumVdw.getVanderwaalsMar(i, mode);
+      userVdwMars[i] = Elements.getVanderwaalsMar(i, mode);
       userVdws[i] = userVdwMars[i] / 1000f;
     }
   }
@@ -350,7 +350,7 @@ class DataManager {
     for (int i = i0; i < i1 && i >= 0; i = (isAll ? i + 1 : bs
         .nextSetBit(i + 1)))
       sb.append(i).append('\t').append(
-          type == EnumVdw.USER ? userVdws[i] : EnumVdw
+          type == EnumVdw.USER ? userVdws[i] : Elements
               .getVanderwaalsMar(i, type) / 1000f).append('\t').append(
           Elements.elementSymbolFromNumber(i)).append('\n');
     return (bs == null ? sb.toString() : "\n  DATA \"element_vdw\"\n"

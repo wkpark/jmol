@@ -26,13 +26,13 @@ package org.jmol.modelsetbio;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.constant.EnumProteinStructure;
 import org.jmol.util.Measure;
-import org.jmol.viewer.JmolConstants;
 
 public class Helix extends ProteinStructure {
 
   Helix(AlphaPolymer apolymer, int monomerIndex, int monomerCount, int id, byte subtype) {
-    super(apolymer, JmolConstants.PROTEIN_STRUCTURE_HELIX, monomerIndex,
+    super(apolymer, EnumProteinStructure.PROTEIN_STRUCTURE_HELIX, monomerIndex,
         monomerCount, id);
     this.subtype = subtype;
   }

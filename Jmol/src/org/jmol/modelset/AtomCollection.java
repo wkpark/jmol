@@ -42,6 +42,7 @@ import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.bspt.Bspf;
 import org.jmol.constant.EnumPalette;
+import org.jmol.constant.EnumProteinStructure;
 import org.jmol.constant.EnumVdw;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.geodesic.EnvelopeCalculation;
@@ -285,7 +286,7 @@ abstract public class AtomCollection {
   }
 
   protected float getRadiusVdwJmol(Atom atom) {
-    return EnumVdw.getVanderwaalsMar(atom.getElementNumber(),
+    return Elements.getVanderwaalsMar(atom.getElementNumber(),
         EnumVdw.JMOL) / 1000f;
   }
   
@@ -400,7 +401,7 @@ abstract public class AtomCollection {
     if (envelopeRadius < 0)
       envelopeRadius = EnvelopeCalculation.SURFACE_DISTANCE_FOR_CALCULATION;
     EnvelopeCalculation ec = new EnvelopeCalculation(viewer, atomCount, null);
-    ec.calculate(new RadiusData(envelopeRadius, RadiusData.TYPE_ABSOLUTE, null), 
+    ec.calculate(new RadiusData(envelopeRadius, RadiusData.EnumType.ABSOLUTE, null), 
         Float.MAX_VALUE, 
         bsSelected, BitSetUtil.copyInvert(bsSelected, atomCount), 
         false, false, false, true);
@@ -1209,15 +1210,16 @@ abstract public class AtomCollection {
   
   ////// hybridization ///////////
 
+  @SuppressWarnings("incomplete-switch")
   private float getWorkingRadius(Atom atom, AtomData atomData) {
     float r = 0;
     RadiusData rd = atomData.radiusData;
     switch (rd.factorType) {
-    case RadiusData.TYPE_ABSOLUTE:
+    case ABSOLUTE:
       r = rd.value;
       break;
-    case RadiusData.TYPE_FACTOR:
-    case RadiusData.TYPE_OFFSET:
+    case FACTOR:
+    case OFFSET:
       switch (rd.vdwType) {
       case IONIC:
         r = atom.getBondingRadiusFloat();
@@ -1232,7 +1234,7 @@ abstract public class AtomCollection {
         r = atom.getVanderwaalsRadiusFloat(viewer,
             atomData.radiusData.vdwType);
       }
-      if (rd.factorType == RadiusData.TYPE_FACTOR)
+      if (rd.factorType == RadiusData.EnumType.FACTOR)
         r *= rd.value;
       else
         r += rd.value;
@@ -2238,8 +2240,8 @@ abstract public class AtomCollection {
       break;
     case Token.helix: // WITHIN -- not ends
     case Token.sheet: // WITHIN -- not ends
-      byte type = (tokType == Token.helix ? JmolConstants.PROTEIN_STRUCTURE_HELIX
-          : JmolConstants.PROTEIN_STRUCTURE_SHEET);
+      byte type = (tokType == Token.helix ? EnumProteinStructure.PROTEIN_STRUCTURE_HELIX
+          : EnumProteinStructure.PROTEIN_STRUCTURE_SHEET);
       for (i = atomCount; --i >= 0;)
         if (atoms[i].isWithinStructure(type))
           bs.set(i);

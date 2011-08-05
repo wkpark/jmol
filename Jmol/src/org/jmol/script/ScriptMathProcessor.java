@@ -1251,7 +1251,7 @@ class ScriptMathProcessor {
       if (vdw != Float.MAX_VALUE && (nBitSets != 2 || nPoints != 2))
           return addX("");
       rd = (vdw == Float.MAX_VALUE ? new RadiusData(rangeMinMax)
-          : new RadiusData(vdw, RadiusData.TYPE_FACTOR, EnumVdw.AUTO));
+          : new RadiusData(vdw, RadiusData.EnumType.FACTOR, EnumVdw.AUTO));
       MeasurementData md = new MeasurementData(points, 0, rd, strFormat, units,
           null, isAllConnected, isNotConnected, null, true);
       return addX(md.getMeasurements(viewer));
@@ -2397,7 +2397,7 @@ class ScriptMathProcessor {
       return addX(viewer.getGroupsWithin((int) distance, bs));
     if (isVdw)
       rd = new RadiusData((distance > 10 ? distance / 100 : distance), 
-          (distance > 10 ? RadiusData.TYPE_FACTOR : RadiusData.TYPE_OFFSET), 
+          (distance > 10 ? RadiusData.EnumType.FACTOR : RadiusData.EnumType.OFFSET), 
           EnumVdw.AUTO);
     return addX(viewer.getAtomsWithin(distance, bs, isWithinModelSet, rd));
   }
@@ -2426,7 +2426,7 @@ class ScriptMathProcessor {
     BitSet bsB = (i < args.length ? BitSetUtil.copy(ScriptVariable
         .bsSelect(args[i])) : null);
     RadiusData rd = new RadiusData((distance > 10 ? distance / 100 : distance),
-        (distance > 10 ? RadiusData.TYPE_FACTOR : RadiusData.TYPE_OFFSET),
+        (distance > 10 ? RadiusData.EnumType.FACTOR : RadiusData.EnumType.OFFSET),
         EnumVdw.AUTO);
     bsB = eval.setContactBitSets(bsA, bsB, true, Float.NaN, rd, false);
     bsB.or(bsA);
@@ -2572,7 +2572,7 @@ class ScriptMathProcessor {
       BitSet bsBonds = new BitSet();
       viewer
           .makeConnections(fmin, fmax, order,
-              JmolConstants.CONNECT_IDENTIFY_ONLY, atoms1, atoms2, bsBonds,
+              Token.identify, atoms1, atoms2, bsBonds,
               isBonds, false, 0);
       return addX(new ScriptVariable(Token.bitset, new BondSet(bsBonds, viewer
           .getAtomIndices(viewer.getAtomBits(Token.bonds, bsBonds)))));

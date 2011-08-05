@@ -161,7 +161,7 @@ public class Dots extends AtomShape {
   @Override
   protected void setSize(RadiusData rd, BitSet bsSelected) {
     if (rd == null)
-      rd = new RadiusData(0, RadiusData.TYPE_ABSOLUTE, null);
+      rd = new RadiusData(0, RadiusData.EnumType.ABSOLUTE, null);
     if (this.bsSelected != null)
       bsSelected = this.bsSelected;
 
@@ -183,17 +183,16 @@ public class Dots extends AtomShape {
     isActive = true;
 
     switch (rd.factorType) {
-    case RadiusData.TYPE_ABSOLUTE:
+    case OFFSET:
+      break;
+    case ABSOLUTE:
       if (rd.value == 0)
         isVisible = false;
       setRadius = rd.value;
-      break;
-    case RadiusData.TYPE_OFFSET:
-      break;
-    }
-
-    if (rd.factorType != RadiusData.TYPE_OFFSET)
+      // fall through
+    default:
       rd.valueExtended = viewer.getCurrentSolventProbeRadius();
+    }
 
     float maxRadius;
     switch (rd.vdwType) {

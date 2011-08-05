@@ -49,6 +49,7 @@ import org.jmol.atomdata.RadiusData;
 import org.jmol.bspt.Bspf;
 import org.jmol.bspt.CubeIterator;
 import org.jmol.constant.EnumPalette;
+import org.jmol.constant.EnumProteinStructure;
 import org.jmol.constant.EnumVdw;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
@@ -2034,7 +2035,7 @@ abstract public class ModelCollection extends BondCollection {
    */
   public int calculateStruts(BitSet bs1, BitSet bs2) {
     // select only ONE model
-    makeConnections(0, Float.MAX_VALUE, JmolEdge.BOND_STRUT, JmolConstants.CONNECT_DELETE_BONDS, bs1, bs2, null, false, false, 0);
+    makeConnections(0, Float.MAX_VALUE, JmolEdge.BOND_STRUT, Token.delete, bs1, bs2, null, false, false, 0);
     int iAtom = bs1.nextSetBit(0);
     if (iAtom < 0)
       return 0;
@@ -2445,22 +2446,22 @@ abstract public class ModelCollection extends BondCollection {
     float minDistanceSquared = minDistance * minDistance;
     float maxDistanceSquared = maxDistance * maxDistance;
     switch (connectOperation) {
-    case JmolConstants.CONNECT_DELETE_BONDS:
+    case Token.delete:
       return deleteConnections(minDistance, maxDistance, order, bsA, bsB,
           isBonds, matchNull, minDistanceSquared, maxDistanceSquared);
-    case JmolConstants.CONNECT_AUTO_BOND:
+    case Token.auto:
       if (order != JmolEdge.BOND_AROMATIC)
         return autoBond(bsA, bsB, bsBonds, isBonds, matchHbond);
       modifyOnly = true;
       autoAromatize = true;
       break;
-    case JmolConstants.CONNECT_IDENTIFY_ONLY:
+    case Token.identify:
       identifyOnly = true;
       break;
-    case JmolConstants.CONNECT_MODIFY_ONLY:
+    case Token.modify:
       modifyOnly = true;
       break;
-    case JmolConstants.CONNECT_CREATE_ONLY:
+    case Token.create:
       createOnly = true;
       break;
     }
@@ -2976,9 +2977,9 @@ abstract public class ModelCollection extends BondCollection {
         id = 0;
         if (i == atomCount || (id = atoms[i].getStrucNo()) != lastId) {
           if (bs != null) {
-            if (itype == JmolConstants.PROTEIN_STRUCTURE_HELIX
-                || itype == JmolConstants.PROTEIN_STRUCTURE_TURN
-                || itype == JmolConstants.PROTEIN_STRUCTURE_SHEET) {
+            if (itype == EnumProteinStructure.HELIX.id
+                || itype == EnumProteinStructure.TURN.id
+                || itype == EnumProteinStructure.SHEET.id) {
               n++;
               if (scriptMode) {
                 int iModel = atoms[iLastAtom].modelIndex;
@@ -2991,7 +2992,7 @@ abstract public class ModelCollection extends BondCollection {
                             iModel, false))).append(comment).append(";\n");
                 }
                 comment += " & (" + res1 + " - " + res2 + ")";
-                String stype = JmolConstants.getProteinStructureName(isubtype,
+                String stype = EnumProteinStructure.getProteinStructureName(isubtype,
                     false);
                   cmd.append("  structure ").append(stype).append(" ").append(
                       Escape.escape(bs)).append(comment).append(";\n");
@@ -3006,7 +3007,7 @@ abstract public class ModelCollection extends BondCollection {
                 // NNN III GGG CRRRR GGG CRRRR
                 // TURN 1 T1 PRO A 41 TYR A 44
                 switch (itype) {
-                case JmolConstants.PROTEIN_STRUCTURE_HELIX:
+                case EnumProteinStructure.PROTEIN_STRUCTURE_HELIX:
                   nx = ++nHelix;
                   if (sid == null || pdbFileMode)
                     sid = TextFormat.formatString("%3N %3N", "N", nx);
@@ -3014,21 +3015,21 @@ abstract public class ModelCollection extends BondCollection {
                   sb = sbHelix;
                   String type = null;
                   switch (isubtype) {
-                  case JmolConstants.PROTEIN_STRUCTURE_HELIX:
-                  case JmolConstants.PROTEIN_STRUCTURE_HELIX_ALPHA:
+                  case EnumProteinStructure.PROTEIN_STRUCTURE_HELIX:
+                  case EnumProteinStructure.PROTEIN_STRUCTURE_HELIX_ALPHA:
                     type = "  1";
                     break;
-                  case JmolConstants.PROTEIN_STRUCTURE_HELIX_310:
+                  case EnumProteinStructure.PROTEIN_STRUCTURE_HELIX_310:
                     type = "  5";
                     break;
-                  case JmolConstants.PROTEIN_STRUCTURE_HELIX_PI:
+                  case EnumProteinStructure.PROTEIN_STRUCTURE_HELIX_PI:
                     type = "  3";
                     break;
                   }
                   if (type != null)
                     str += type;
                   break;
-                case JmolConstants.PROTEIN_STRUCTURE_SHEET:
+                case EnumProteinStructure.PROTEIN_STRUCTURE_SHEET:
                   nx = ++nSheet;
                   if (sid == null || pdbFileMode) {
                     sid = TextFormat.formatString("%3N %3A 0", "N", nx);
@@ -3037,7 +3038,7 @@ abstract public class ModelCollection extends BondCollection {
                   str = "SHEET  %ID %3GROUPA %1CA%4RESA  %3GROUPB %1CB%4RESB";
                   sb = sbSheet;
                   break;
-                case JmolConstants.PROTEIN_STRUCTURE_TURN:
+                case EnumProteinStructure.PROTEIN_STRUCTURE_TURN:
                 default:
                   nx = ++nTurn;
                   if (sid == null || pdbFileMode)
@@ -3462,13 +3463,13 @@ abstract public class ModelCollection extends BondCollection {
         if ((id = atoms[i].getStrucNo()) != lastid && id != 0) {
           lastid = id;
           switch (atoms[i].getProteinStructureType()) {
-          case JmolConstants.PROTEIN_STRUCTURE_HELIX:
+          case EnumProteinStructure.PROTEIN_STRUCTURE_HELIX:
             nH++;
             break;
-          case JmolConstants.PROTEIN_STRUCTURE_SHEET:
+          case EnumProteinStructure.PROTEIN_STRUCTURE_SHEET:
             nS++;
             break;
-          case JmolConstants.PROTEIN_STRUCTURE_TURN:
+          case EnumProteinStructure.PROTEIN_STRUCTURE_TURN:
             nT++;
             break;
           }
@@ -4062,7 +4063,7 @@ abstract public class ModelCollection extends BondCollection {
 
       bs = viewer.getModelUndeletedAtomsBitSet(atom.modelIndex);
       bs.andNot(getAtomBitsMaybeDeleted(Token.hydrogen, null));
-      makeConnections(0.1f, 1.8f, 1, JmolConstants.CONNECT_CREATE_ONLY, bsA,
+      makeConnections(0.1f, 1.8f, 1, Token.create, bsA,
           bs, null, false, false, 0);
 
       // 6) add hydrogen atoms

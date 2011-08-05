@@ -24,11 +24,11 @@
 
 package org.jmol.adapter.smarter;
 
-import org.jmol.viewer.JmolConstants;
+import org.jmol.constant.EnumProteinStructure;
 
 public class Structure {
-  public int structureType;
-  public int substructureType;
+  public byte structureType;
+  public byte substructureType;
   public String structureID;
   public int serialID;
   public int strandCount;
@@ -40,15 +40,15 @@ public class Structure {
   public char endInsertionCode = ' ';
   public int modelIndex;
 
-  public final static byte PROTEIN_STRUCTURE_NONE = JmolConstants.PROTEIN_STRUCTURE_NONE;
-  public final static byte PROTEIN_STRUCTURE_TURN = JmolConstants.PROTEIN_STRUCTURE_TURN;
-  public final static byte PROTEIN_STRUCTURE_SHEET = JmolConstants.PROTEIN_STRUCTURE_SHEET;
-  public final static byte PROTEIN_STRUCTURE_HELIX = JmolConstants.PROTEIN_STRUCTURE_HELIX;
-  public final static byte PROTEIN_STRUCTURE_HELIX_310 = JmolConstants.PROTEIN_STRUCTURE_HELIX_310;
-  public final static byte PROTEIN_STRUCTURE_HELIX_ALPHA = JmolConstants.PROTEIN_STRUCTURE_HELIX_ALPHA;
-  public final static byte PROTEIN_STRUCTURE_HELIX_PI = JmolConstants.PROTEIN_STRUCTURE_HELIX_PI;
+  public final static byte PROTEIN_STRUCTURE_NONE = EnumProteinStructure.NONE.id;
+  public final static byte PROTEIN_STRUCTURE_TURN = EnumProteinStructure.TURN.id;
+  public final static byte PROTEIN_STRUCTURE_SHEET = EnumProteinStructure.SHEET.id;
+  public final static byte PROTEIN_STRUCTURE_HELIX = EnumProteinStructure.HELIX.id;
+  public final static byte PROTEIN_STRUCTURE_HELIX_310 = EnumProteinStructure.HELIX_310.id;
+  public final static byte PROTEIN_STRUCTURE_HELIX_ALPHA = EnumProteinStructure.HELIX_ALPHA.id;
+  public final static byte PROTEIN_STRUCTURE_HELIX_PI = EnumProteinStructure.HELIX_PI.id;
 
-  public static int getHelixType(int type) {
+  public static byte getHelixType(int type) {
     switch (type) {
     case 1:
       return PROTEIN_STRUCTURE_HELIX_ALPHA;
@@ -61,11 +61,11 @@ public class Structure {
   }
   
 
-  public Structure(int type) {
+  public Structure(byte type) {
     structureType = substructureType = type;
   }
 
-  public Structure(int modelIndex, int structureType, int substructureType,
+  public Structure(int modelIndex, byte structureType, byte substructureType,
             String structureID, int serialID, int strandCount,
             char startChainID, int startSequenceNumber, char startInsertionCode,
             char endChainID, int endSequenceNumber, char endInsertionCode) {

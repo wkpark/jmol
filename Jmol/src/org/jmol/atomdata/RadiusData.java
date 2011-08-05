@@ -117,12 +117,11 @@ import org.jmol.constant.EnumVdw;
 
 public class RadiusData {
   public String info;
-  public final static int TYPE_ABSOLUTE = 0;
-  public final static int TYPE_OFFSET = 1;
-  public final static int TYPE_FACTOR = 2;
-  public static final int TYPE_SCREEN = 3;
+  public enum EnumType {
+    ABSOLUTE, OFFSET, FACTOR, SCREEN
+  }
   //private static final String[] typeNames = new String[] { "=", "+", "*", "." };
-  public int factorType = TYPE_ABSOLUTE;
+  public EnumType factorType = EnumType.ABSOLUTE;
   public EnumVdw vdwType = EnumVdw.AUTO;
   public float value = Float.NaN;
   public float valueExtended = 0;
@@ -131,8 +130,8 @@ public class RadiusData {
   public RadiusData() {
   }
 
-  public RadiusData(float value, int type, EnumVdw vdwType) {
-    this.factorType = type;
+  public RadiusData(float value, EnumType factorType, EnumVdw vdwType) {
+    this.factorType = factorType;
     this.value = value;
     this.vdwType = vdwType;
   }
@@ -148,18 +147,18 @@ public class RadiusData {
       return "";
     StringBuffer sb = new StringBuffer("");
     switch (factorType) {
-    case TYPE_ABSOLUTE:
+    case ABSOLUTE:
       sb.append(value);
       break;
-    case TYPE_OFFSET:
+    case OFFSET:
       sb.append(value > 0 ? "+" : "").append(value);
       break;
-    case TYPE_FACTOR:
+    case FACTOR:
       sb.append((int) (value * 100)).append("%");
       if (vdwType != EnumVdw.AUTO)
         sb.append(vdwType.getVdwLabel());
       break;
-    case TYPE_SCREEN:
+    case SCREEN:
       sb.append((int) value);
     }
     return sb.toString();

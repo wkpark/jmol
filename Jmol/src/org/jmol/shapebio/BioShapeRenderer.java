@@ -30,6 +30,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
+import org.jmol.constant.EnumProteinStructure;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.modelsetbio.AlphaMonomer;
@@ -37,10 +38,10 @@ import org.jmol.modelsetbio.CarbohydratePolymer;
 import org.jmol.modelsetbio.Monomer;
 import org.jmol.modelsetbio.NucleicPolymer;
 import org.jmol.modelsetbio.ProteinStructure;
+import org.jmol.script.Token;
 import org.jmol.shape.MeshRenderer;
 import org.jmol.shape.Mesh;
 import org.jmol.util.Logger;
-import org.jmol.viewer.JmolConstants;
 
 import java.util.BitSet;
 
@@ -189,14 +190,14 @@ abstract class BioShapeRenderer extends MeshRenderer {
     structureTypes = viewer.allocTempBytes(monomerCount + 1);
     for (int i = monomerCount; --i >= 0;) {
       structureTypes[i] = monomers[i].getProteinStructureType();
-      if (structureTypes[i] == JmolConstants.PROTEIN_STRUCTURE_TURN)
-        structureTypes[i] = JmolConstants.PROTEIN_STRUCTURE_NONE;
+      if (structureTypes[i] == EnumProteinStructure.TURN.id)
+        structureTypes[i] = EnumProteinStructure.NONE.id;
     }
     structureTypes[monomerCount] = structureTypes[monomerCount - 1];
   }
 
   protected boolean isHelix(int i) {
-    return structureTypes[i] == JmolConstants.PROTEIN_STRUCTURE_HELIX;
+    return structureTypes[i] == EnumProteinStructure.HELIX.id;
   }
 
   protected void calcScreenControlPoints() {
@@ -591,7 +592,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
       for (int k = hermiteLevel * 2; --k >= 0;)
         mesh.addQuad(nPoints - k - 1, nPoints - nPer + (nPer - k) % nPer,
             nPoints - nPer + k + 1, nPoints - nPer + k + 2);
-    mesh.initialize(JmolConstants.FRONTLIT, null, null);
+    mesh.initialize(Token.frontlit, null, null);
     //System.out.sprintln("mesh "+ mesh.thisID + " " + mesh.vertexCount+" "+mesh.vertices.length + " " + mesh.polygonCount + " " + mesh.polygonIndexes.length);
     mesh.setVisibilityFlags(1);
     return (meshReady[i] = true);

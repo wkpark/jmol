@@ -1443,9 +1443,8 @@ public class ActionManager {
     if (timeouts == null)
       return;
     Iterator<TimeoutThread> e = timeouts.values().iterator();
-    while (e.hasNext()) {
+    while (e.hasNext())
       e.next().interrupt();
-    }
     timeouts.clear();    
   }
   
@@ -1471,9 +1470,16 @@ public class ActionManager {
       return;
     }
     t = new TimeoutThread(name, mSec, script);
-    System.out.println("action man new timeout " + name + " " + mSec + " " + script);
+    //System.out.println("action man new timeout " + name + " " + mSec + " " + script);
     timeouts.put(name, t);
     t.start();
+  }
+
+  public void triggerTimeout(String name) {
+    TimeoutThread t;
+    if (timeouts == null || (t = timeouts.get(name)) == null) 
+      return;
+    t.trigger();
   }
 
   private class TimeoutThread extends Thread {
@@ -1482,6 +1488,7 @@ public class ActionManager {
     private long targetTime;
     private int status;
     private String script;
+    private boolean triggered = true;
     
     TimeoutThread(String name, int ms, String script) {
       this.name = name;
@@ -1496,6 +1503,11 @@ public class ActionManager {
         this.script = script; 
     }
 
+    void trigger() {
+      //System.out.println("timeout triggered " + this);
+      triggered = (ms < 0);
+    }
+    
     @Override
     public String toString() {
       return "timeout name=" + name + " executions=" + status + " mSec=" + ms 
@@ -1509,7 +1521,7 @@ public class ActionManager {
       //System.out.println("I am the timeout thread, and my name is " + Thread.currentThread().getName());
       Thread.currentThread().setName("timeout " + name);
       //if (true || Logger.debugging) 
-        //Logger.info(toString());
+      //Logger.info(toString());
       Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
       try {
         while (true) {
@@ -1517,26 +1529,28 @@ public class ActionManager {
           if (targetTime > System.currentTimeMillis())
             continue;
           status++;
+          boolean looping = (ms < 0);
           targetTime += Math.abs(ms);
           if (timeouts.get(name) == null)
             break;
-          if (ms > 0)
+          if (!looping)
             timeouts.remove(name);
-          //System.out.println("I'm going to execute " + script + " now");
-          //if (Logger.debugging)
-            //viewer.script(script);
-          //else 
-          viewer.evalStringQuiet(script);
-          //System.out.println("timeout runnning " + this);
-          if (ms > 0)
+          if (triggered) {
+            triggered = false;
+            //System.out.println("timeout " + name + " executing " + this);
+            viewer.evalStringQuiet(script + (looping ? ";\ntimeout ID \"" + name + "\";" : ""));
+          } else {
+//            System.out.println("timeout " + name + " not triggered " + this);
+          }
+          if (!looping)
             break;
         }
       } catch (InterruptedException ie) {
-        Logger.info("Timeout " + name + " interrupted");
+        Logger.info("Timeout " + this + " interrupted");
       } catch (Exception ie) {
         Logger.info("Timeout " + name + " Exception: " + ie);
       }
-      //System.out.println("I'm done");
+      System.out.println("timeout done:" + name);
       timeouts.remove(name);
     }
   }

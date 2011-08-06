@@ -4265,7 +4265,8 @@ private void zap(String msg) {
 
   @Override
   public String evalStringQuiet(String strScript) {
-    // JmolViewer
+    System.out.println("viewer script " + strScript);
+    // JmolViewer 
     return evalStringQuiet(strScript, true, true);
   }
 
@@ -4529,6 +4530,7 @@ private void zap(String msg) {
   @Override
   public void haltScriptExecution() {
     eval.haltExecution();
+    clearTimeout(null);
   }
 
   public void resumeScriptExecution() {
@@ -9066,6 +9068,11 @@ private void zap(String msg) {
   public void setTimeout(String name, int mSec, String script) {
     if (haveDisplay)
       actionManager.setTimeout(name, mSec, script);
+  }
+
+  public void triggerTimeout(String name) {
+    if (haveDisplay)
+      actionManager.triggerTimeout(name);
   }
 
   public String showTimeout(String name) {

@@ -13127,6 +13127,7 @@ public class ScriptEvaluator {
     // timeout ID "mytimeout" 1000 // milliseconds
     // timeout ID "mytimeout" 0.1 // seconds
     // timeout ID "mytimeout" OFF
+    // timeout ID "mytimeout" // flag to trigger waiting timeout repeat
     // timeout OFF
     String name = null;
     String script = null;
@@ -13139,6 +13140,11 @@ public class ScriptEvaluator {
       switch (getToken(i).tok) {
       case Token.id:
         name = parameterAsString(++i);
+        if (statementLength == 3) {
+          if (!isSyntaxCheck)
+            viewer.triggerTimeout(name);
+          return;
+        }
         break;
       case Token.off:
         break;

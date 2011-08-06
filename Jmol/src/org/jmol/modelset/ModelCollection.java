@@ -49,7 +49,7 @@ import org.jmol.atomdata.RadiusData;
 import org.jmol.bspt.Bspf;
 import org.jmol.bspt.CubeIterator;
 import org.jmol.constant.EnumPalette;
-import org.jmol.constant.EnumProteinStructure;
+import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumVdw;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
@@ -708,7 +708,7 @@ abstract public class ModelCollection extends BondCollection {
         models[i].defaultStructure = getProteinStructureState(models[i].bsAtoms, false, false, 0);
   }
 
-  public void setProteinType(BitSet bs, byte iType) {
+  public void setProteinType(BitSet bs, EnumStructure type) {
     int monomerIndexCurrent = -1;
     int iLast = -1;
     BitSet bsModels = getModelBitSet(bs, false);
@@ -716,7 +716,7 @@ abstract public class ModelCollection extends BondCollection {
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       if (iLast != i - 1)
         monomerIndexCurrent = -1;
-      monomerIndexCurrent = atoms[i].group.setProteinStructureType(iType,
+      monomerIndexCurrent = atoms[i].group.setProteinStructureType(type,
           monomerIndexCurrent);
       int modelIndex = atoms[i].modelIndex;
       proteinStructureTainted = models[modelIndex].structureTainted = true;
@@ -758,11 +758,11 @@ abstract public class ModelCollection extends BondCollection {
     }
   }
   
-  public float[][] getStructureList() {
+  public Map<EnumStructure, float[]> getStructureList() {
     return viewer.getStructureList();
   }
 
-  public void setStructureList(float[][] structureList) {
+  public void setStructureList(Map<EnumStructure, float[]> structureList) {
     for (int iModel = modelCount; --iModel >= 0;) {
       Model m = models[iModel];
       m.bioPolymers = (Polymer[])ArrayUtil.setLength(m.bioPolymers, m.bioPolymerCount);
@@ -2933,6 +2933,7 @@ abstract public class ModelCollection extends BondCollection {
     }
   }
 
+  @SuppressWarnings("incomplete-switch")
   public String getProteinStructureState(BitSet bsAtoms, boolean taintedOnly,
                                          boolean needPhiPsi, int mode) {
     boolean showMode = (mode == 3);
@@ -2943,8 +2944,8 @@ abstract public class ModelCollection extends BondCollection {
     StringBuffer sbTurn = new StringBuffer();
     StringBuffer sbHelix = new StringBuffer();
     StringBuffer sbSheet = new StringBuffer();
-    int itype = 0;
-    int isubtype = 0;
+    EnumStructure type = EnumStructure.NONE;
+    EnumStructure subtype = EnumStructure.NONE;
     int id = 0;
     int iLastAtom = 0;
     int iLastModel = -1;
@@ -2977,9 +2978,10 @@ abstract public class ModelCollection extends BondCollection {
         id = 0;
         if (i == atomCount || (id = atoms[i].getStrucNo()) != lastId) {
           if (bs != null) {
-            if (itype == EnumProteinStructure.HELIX.id
-                || itype == EnumProteinStructure.TURN.id
-                || itype == EnumProteinStructure.SHEET.id) {
+            switch  (type) {
+            case HELIX:
+            case TURN:
+            case SHEET:
               n++;
               if (scriptMode) {
                 int iModel = atoms[iLastAtom].modelIndex;
@@ -2992,8 +2994,7 @@ abstract public class ModelCollection extends BondCollection {
                             iModel, false))).append(comment).append(";\n");
                 }
                 comment += " & (" + res1 + " - " + res2 + ")";
-                String stype = EnumProteinStructure.getProteinStructureName(isubtype,
-                    false);
+                String stype = subtype.getProteinStructureName(false);
                   cmd.append("  structure ").append(stype).append(" ").append(
                       Escape.escape(bs)).append(comment).append(";\n");
               } else {
@@ -3006,30 +3007,30 @@ abstract public class ModelCollection extends BondCollection {
                 // SHEET 1 A 8 ILE A 43 ASP A 45 0
                 // NNN III GGG CRRRR GGG CRRRR
                 // TURN 1 T1 PRO A 41 TYR A 44
-                switch (itype) {
-                case EnumProteinStructure.PROTEIN_STRUCTURE_HELIX:
+                switch (type) {
+                case HELIX:
                   nx = ++nHelix;
                   if (sid == null || pdbFileMode)
                     sid = TextFormat.formatString("%3N %3N", "N", nx);
                   str = "HELIX  %ID %3GROUPA %1CA %4RESA  %3GROUPB %1CB %4RESB";
                   sb = sbHelix;
-                  String type = null;
-                  switch (isubtype) {
-                  case EnumProteinStructure.PROTEIN_STRUCTURE_HELIX:
-                  case EnumProteinStructure.PROTEIN_STRUCTURE_HELIX_ALPHA:
-                    type = "  1";
+                  String stype = null;
+                  switch (subtype) {
+                  case HELIX:
+                  case HELIX_ALPHA:
+                    stype = "  1";
                     break;
-                  case EnumProteinStructure.PROTEIN_STRUCTURE_HELIX_310:
-                    type = "  5";
+                  case HELIX_310:
+                    stype = "  5";
                     break;
-                  case EnumProteinStructure.PROTEIN_STRUCTURE_HELIX_PI:
-                    type = "  3";
+                  case HELIX_PI:
+                    stype = "  3";
                     break;
                   }
-                  if (type != null)
-                    str += type;
+                  if (stype != null)
+                    str += stype;
                   break;
-                case EnumProteinStructure.PROTEIN_STRUCTURE_SHEET:
+                case SHEET:
                   nx = ++nSheet;
                   if (sid == null || pdbFileMode) {
                     sid = TextFormat.formatString("%3N %3A 0", "N", nx);
@@ -3038,7 +3039,7 @@ abstract public class ModelCollection extends BondCollection {
                   str = "SHEET  %ID %3GROUPA %1CA%4RESA  %3GROUPB %1CB%4RESB";
                   sb = sbSheet;
                   break;
-                case EnumProteinStructure.PROTEIN_STRUCTURE_TURN:
+                case TURN:
                 default:
                   nx = ++nTurn;
                   if (sid == null || pdbFileMode)
@@ -3084,8 +3085,8 @@ abstract public class ModelCollection extends BondCollection {
           group1 = atoms[i].getGroup3(false);
           chain1 = "" + ch;
         }
-        itype = atoms[i].getProteinStructureType();
-        isubtype = atoms[i].getProteinStructureSubType();
+        type = atoms[i].getProteinStructureType();
+        subtype = atoms[i].getProteinStructureSubType();
         sid = atoms[i].getProteinStructureTag();
         bs.set(i);
         lastId = id;
@@ -3411,6 +3412,7 @@ abstract public class ModelCollection extends BondCollection {
     sb.append("\n");
   }
   
+  @SuppressWarnings("incomplete-switch")
   @Override
   public String getChimeInfo(int tok, BitSet bs) {
     switch (tok) {
@@ -3463,13 +3465,13 @@ abstract public class ModelCollection extends BondCollection {
         if ((id = atoms[i].getStrucNo()) != lastid && id != 0) {
           lastid = id;
           switch (atoms[i].getProteinStructureType()) {
-          case EnumProteinStructure.PROTEIN_STRUCTURE_HELIX:
+          case HELIX:
             nH++;
             break;
-          case EnumProteinStructure.PROTEIN_STRUCTURE_SHEET:
+          case SHEET:
             nS++;
             break;
-          case EnumProteinStructure.PROTEIN_STRUCTURE_TURN:
+          case TURN:
             nT++;
             break;
           }
@@ -3577,7 +3579,7 @@ abstract public class ModelCollection extends BondCollection {
       info.put("groupID", Integer.valueOf(atom.getGroupID()));
       if (atom.alternateLocationID != '\0')
         info.put("altLocation", "" + atom.alternateLocationID);
-      info.put("structure", Integer.valueOf(atom.getProteinStructureType()));
+      info.put("structure", Integer.valueOf(atom.getProteinStructureType().getId()));
       info.put("polymerLength", Integer.valueOf(atom.getPolymerLength()));
       info.put("occupancy", Integer.valueOf(atom.getOccupancy100()));
       int temp = atom.getBfactor100();

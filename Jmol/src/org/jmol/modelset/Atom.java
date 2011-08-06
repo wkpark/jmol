@@ -32,7 +32,7 @@ import org.jmol.viewer.Viewer;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumPalette;
-import org.jmol.constant.EnumProteinStructure;
+import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumVdw;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.util.Elements;
@@ -1074,14 +1074,14 @@ final public class Atom extends Point3fi implements JmolNode {
   }
   
   public String getGroupType() {
-    return EnumProteinStructure.getProteinStructureName(getProteinStructureType(), true);
+    return getProteinStructureType().getProteinStructureName(true);
   }
   
-  public byte getProteinStructureType() {
+  public EnumStructure getProteinStructureType() {
     return group.getProteinStructureType();
   }
   
-  public byte getProteinStructureSubType() {
+  public EnumStructure getProteinStructureSubType() {
     return group.getProteinStructureSubType();
   }
   
@@ -1196,9 +1196,9 @@ final public class Atom extends Point3fi implements JmolNode {
     case Token.site:
       return atom.getAtomSite();
     case Token.structure:
-      return atom.getProteinStructureType();
+      return atom.getProteinStructureType().getId();
     case Token.substructure:
-      return atom.getProteinStructureSubType();
+      return atom.getProteinStructureSubType().getId();
     case Token.strucno:
       return atom.getStrucNo();
     case Token.valence:
@@ -1353,9 +1353,9 @@ final public class Atom extends Point3fi implements JmolNode {
         s = "";
       return s;
     case Token.structure:
-      return EnumProteinStructure.getProteinStructureName(atom.getProteinStructureType(), false);
+      return atom.getProteinStructureType().getProteinStructureName(false);
     case Token.substructure:
-      return EnumProteinStructure.getProteinStructureName(atom.getProteinStructureSubType(), false);
+      return atom.getProteinStructureSubType().getProteinStructureName(false);
     case Token.strucid:
       return atom.getStructureId();
     case Token.shape:
@@ -1392,7 +1392,7 @@ final public class Atom extends Point3fi implements JmolNode {
     return null;
   }
 
-  boolean isWithinStructure(byte type) {
+  boolean isWithinStructure(EnumStructure type) {
     return group.isWithinStructure(type);
   }
   

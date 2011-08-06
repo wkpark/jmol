@@ -28,7 +28,7 @@ import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-import org.jmol.constant.EnumProteinStructure;
+import org.jmol.constant.EnumStructure;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Chain;
@@ -381,7 +381,7 @@ public class AminoMonomer extends AlphaMonomer {
   }
   
   @Override
-  public boolean isWithinStructure(byte type) {
+  public boolean isWithinStructure(EnumStructure type) {
     ProteinStructure s = (ProteinStructure) getStructure();
     return (s != null && s.isWithin(monomerIndex) && s.type == type);
   }
@@ -400,7 +400,7 @@ public class AminoMonomer extends AlphaMonomer {
     String tag = "%3N %3ID";
     tag = TextFormat.formatString(tag, "N", proteinStructure.serialID);
     tag = TextFormat.formatString(tag, "ID", proteinStructure.structureID);
-    if (proteinStructure.type == EnumProteinStructure.PROTEIN_STRUCTURE_SHEET)
+    if (proteinStructure.type == EnumStructure.SHEET)
       tag += TextFormat.formatString("%2SC", "SC", proteinStructure.strandCount);
     return tag;
   }

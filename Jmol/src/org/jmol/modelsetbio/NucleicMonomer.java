@@ -29,7 +29,7 @@ import java.util.List;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-import org.jmol.constant.EnumProteinStructure;
+import org.jmol.constant.EnumStructure;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Group;
@@ -191,10 +191,10 @@ public class NucleicMonomer extends PhosphorusMonomer {
   public boolean isGuanine() { return offsets[N2] != -1; }
 
   @Override
-  public byte getProteinStructureType() {
+  public EnumStructure getProteinStructureType() {
     return (hasRnaO2Prime
-            ? EnumProteinStructure.PROTEIN_STRUCTURE_RNA
-            : EnumProteinStructure.PROTEIN_STRUCTURE_DNA);
+            ? EnumStructure.RNA
+            : EnumStructure.DNA);
   }
 
     ////////////////////////////////////////////////////////////////

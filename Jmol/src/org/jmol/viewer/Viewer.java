@@ -50,6 +50,7 @@ import org.jmol.atomdata.AtomDataServer;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumAnimationMode;
 import org.jmol.constant.EnumAxesMode;
+import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumStereoMode;
 import org.jmol.constant.EnumVdw;
 import org.jmol.g3d.*;
@@ -2554,11 +2555,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.calculateSurface(bsSelected, envelopeRadius);
   }
 
-  public float[][] getStructureList() {     
+  public Map<EnumStructure, float[]> getStructureList() {     
     return global.getStructureList();
   }
 
-  public void setStructureList(float[] list, int type) {
+  public void setStructureList(float[] list, EnumStructure type) {
     // none, turn, sheet, helix
     global.setStructureList(list, type);
     modelSet.setStructureList(getStructureList());
@@ -7419,13 +7420,13 @@ private void zap(String msg) {
     tempManager.freeTempScreens(tempScreens);
   }
 
-  public byte[] allocTempBytes(int size) {
+  public EnumStructure[] allocTempEnum(int size) {
     // mps renderer
-    return tempManager.allocTempBytes(size);
+    return tempManager.allocTempEnum(size);
   }
 
-  public void freeTempBytes(byte[] tempBytes) {
-    tempManager.freeTempBytes(tempBytes);
+  public void freeTempEnum(EnumStructure[] temp) {
+    tempManager.freeTempEnum(temp);
   }
 
   // //////////////////////////////////////////////////////////////
@@ -8733,9 +8734,9 @@ private void zap(String msg) {
     return potentials;
   }
 
-  public void setProteinType(byte iType, BitSet bs) {
+  public void setProteinType(EnumStructure type, BitSet bs) {
     modelSet.setProteinType(bs == null ? getSelectionSet(false)
-        : bs, iType);
+        : bs, type);
   }
 
   /*

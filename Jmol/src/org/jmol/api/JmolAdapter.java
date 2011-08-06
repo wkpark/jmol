@@ -32,6 +32,7 @@ import java.util.Map;
 
 import javax.vecmath.Point3f;
 
+import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumQuantumShell;
 import org.jmol.modelset.Group;
 import org.jmol.util.Elements;
@@ -462,8 +463,8 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
   public abstract class StructureIterator {
     public abstract boolean hasNext();
     public abstract int getModelIndex();
-    public abstract int getStructureType();
-    public abstract int getSubstructureType();
+    public abstract EnumStructure getStructureType();
+    public abstract EnumStructure getSubstructureType();
     public abstract String getStructureID();
     public abstract int getSerialID();
     public abstract int getStrandCount();

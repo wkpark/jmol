@@ -42,7 +42,7 @@ import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.bspt.Bspf;
 import org.jmol.constant.EnumPalette;
-import org.jmol.constant.EnumProteinStructure;
+import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumVdw;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.geodesic.EnvelopeCalculation;
@@ -2240,8 +2240,8 @@ abstract public class AtomCollection {
       break;
     case Token.helix: // WITHIN -- not ends
     case Token.sheet: // WITHIN -- not ends
-      byte type = (tokType == Token.helix ? EnumProteinStructure.PROTEIN_STRUCTURE_HELIX
-          : EnumProteinStructure.PROTEIN_STRUCTURE_SHEET);
+      EnumStructure type = (tokType == Token.helix ? EnumStructure.HELIX
+          : EnumStructure.SHEET);
       for (i = atomCount; --i >= 0;)
         if (atoms[i].isWithinStructure(type))
           bs.set(i);

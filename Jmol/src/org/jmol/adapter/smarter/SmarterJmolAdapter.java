@@ -26,6 +26,7 @@ package org.jmol.adapter.smarter;
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolFilesReaderInterface;
+import org.jmol.constant.EnumStructure;
 import org.jmol.util.CompoundDocument;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
@@ -782,12 +783,12 @@ public class SmarterJmolAdapter extends JmolAdapter {
     }
 
     @Override
-    public int getStructureType() {
+    public EnumStructure getStructureType() {
       return structure.structureType;
     }
 
     @Override
-    public int getSubstructureType() {
+    public EnumStructure getSubstructureType() {
       return structure.substructureType;
     }
 

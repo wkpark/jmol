@@ -41,7 +41,7 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolBioResolver;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
-import org.jmol.constant.EnumProteinStructure;
+import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumVdw;
 
 import javax.vecmath.Point3f;
@@ -918,7 +918,7 @@ public final class ModelLoader {
         .getStructureIterator(atomSetCollection);
     if (iterStructure != null)
       while (iterStructure.hasNext()) {
-        if (iterStructure.getStructureType() != EnumProteinStructure.TURN.id) {
+        if (iterStructure.getStructureType() != EnumStructure.TURN) {
           defineStructure(iterStructure.getModelIndex(),
               iterStructure.getSubstructureType(),
               iterStructure.getStructureID(), 
@@ -938,7 +938,7 @@ public final class ModelLoader {
     iterStructure = adapter.getStructureIterator(atomSetCollection);
     if (iterStructure != null)
       while (iterStructure.hasNext()) {
-        if (iterStructure.getStructureType() == EnumProteinStructure.TURN.id)
+        if (iterStructure.getStructureType() == EnumStructure.TURN)
           defineStructure(iterStructure.getModelIndex(),
               iterStructure.getSubstructureType(),
               iterStructure.getStructureID(), 1, 1,
@@ -952,15 +952,13 @@ public final class ModelLoader {
   
   private BitSet structuresDefinedInFile = new BitSet();
 
-  private void defineStructure(int modelIndex, int subType,
+  private void defineStructure(int modelIndex, EnumStructure subType,
                                String structureID, int serialID,
                                int strandCount, char startChainID,
                                int startSequenceNumber,
                                char startInsertionCode, char endChainID,
                                int endSequenceNumber, char endInsertionCode) {
-    byte type = (byte) subType;
-    if (type < 0)
-      type = EnumProteinStructure.NONE.id;
+    EnumStructure type = (subType == EnumStructure.NOT ? EnumStructure.NONE : subType);
     int startSeqCode = Group.getSeqcode(startSequenceNumber,
         startInsertionCode);
     int endSeqCode = Group.getSeqcode(endSequenceNumber, endInsertionCode);

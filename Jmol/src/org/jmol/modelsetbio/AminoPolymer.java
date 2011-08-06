@@ -23,7 +23,7 @@
  */
 package org.jmol.modelsetbio;
 
-import org.jmol.constant.EnumProteinStructure;
+import org.jmol.constant.EnumStructure;
 import org.jmol.i18n.GT;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
@@ -745,19 +745,19 @@ public class AminoPolymer extends AlphaPolymer {
     BitSet bsTurn = new BitSet();
 
     String line4 = findHelixes(4, min, iPolymer,
-        EnumProteinStructure.PROTEIN_STRUCTURE_HELIX_ALPHA, JmolEdge.BOND_H_PLUS_4, bsDone,
+        EnumStructure.HELIX_ALPHA, JmolEdge.BOND_H_PLUS_4, bsDone,
         bsTurn, labels, doReport, setStructure, vHBonds, bsBad);
     String line3 = findHelixes(3, min, iPolymer,
-        EnumProteinStructure.PROTEIN_STRUCTURE_HELIX_310, JmolEdge.BOND_H_PLUS_3,
+        EnumStructure.HELIX_310, JmolEdge.BOND_H_PLUS_3,
         bsDone, bsTurn, labels, doReport, setStructure, vHBonds, bsBad);
     String line5 = findHelixes(5, min, iPolymer,
-        EnumProteinStructure.PROTEIN_STRUCTURE_HELIX_PI, JmolEdge.BOND_H_PLUS_5,
+        EnumStructure.HELIX_PI, JmolEdge.BOND_H_PLUS_5,
         bsDone, bsTurn, labels, doReport, setStructure, vHBonds, bsBad);
 
     // G, H, and I have been set; now set what is left over as turn
 
     if (setStructure)
-      setStructure(bsTurn, EnumProteinStructure.TURN.id);
+      setStructure(bsTurn, EnumStructure.TURN);
     
     if (doReport) {
       setTag(labels, bsTurn, 'T');
@@ -770,7 +770,7 @@ public class AminoPolymer extends AlphaPolymer {
   }
 
   private String findHelixes(int pitch, int[][][] min, int thisIndex,
-                             byte subtype, int type, BitSet bsDone,
+                             EnumStructure subtype, int type, BitSet bsDone,
                              BitSet bsTurn, char[] labels, 
                              boolean doReport, boolean setStructure,
                              List<Bond> vHBonds, BitSet bsBad) {
@@ -1067,7 +1067,7 @@ public class AminoPolymer extends AlphaPolymer {
         ap.setTag(labels[i], bsSheet, 'E');
       } 
       if (setStructure) { 
-        ap.setStructure(bsSheet, EnumProteinStructure.PROTEIN_STRUCTURE_SHEET);
+        ap.setStructure(bsSheet, EnumStructure.SHEET);
       }
       bsDone[i].or(bsSheet);
       bsDone[i].or(bsBridge);
@@ -1192,7 +1192,7 @@ public class AminoPolymer extends AlphaPolymer {
       }
   }
 
-  private void setStructure(BitSet bs, byte type) {
+  private void setStructure(BitSet bs, EnumStructure type) {
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       int i2 = bs.nextClearBit(i);
       if (i2 < 0)
@@ -1336,7 +1336,7 @@ public class AminoPolymer extends AlphaPolymer {
         }
         end--;
         if (end >= start + 3) {
-          addSecondaryStructure(EnumProteinStructure.PROTEIN_STRUCTURE_HELIX, null, 0,
+          addSecondaryStructure(EnumStructure.HELIX, null, 0,
               0, start, end);
         }
         start = end;
@@ -1350,7 +1350,7 @@ public class AminoPolymer extends AlphaPolymer {
         }
         end--;
         if (end >= start + 3) {
-          addSecondaryStructure(EnumProteinStructure.PROTEIN_STRUCTURE_HELIX, null, 0,
+          addSecondaryStructure(EnumStructure.HELIX, null, 0,
               0, start, end);
         }
         start = end;
@@ -1365,7 +1365,7 @@ public class AminoPolymer extends AlphaPolymer {
         }
         end--;
         if (end >= start + 2) {
-          addSecondaryStructure(EnumProteinStructure.PROTEIN_STRUCTURE_SHEET, null, 0,
+          addSecondaryStructure(EnumStructure.SHEET, null, 0,
               0, start, end);
         }
         start = end;
@@ -1380,7 +1380,7 @@ public class AminoPolymer extends AlphaPolymer {
         }
         end--;
         if (end >= start + 2) {
-          addSecondaryStructure(EnumProteinStructure.TURN.id, null, 0,
+          addSecondaryStructure(EnumStructure.TURN, null, 0,
               0, start, end);
         }
         start = end;
@@ -1395,17 +1395,17 @@ public class AminoPolymer extends AlphaPolymer {
    * @return whether this corresponds to a helix
    */
   private boolean isTurn(float psi, float phi) {
-    return checkPhiPsi(structureList[EnumProteinStructure.PROTEIN_STRUCTURE_TURN],
+    return checkPhiPsi(structureList.get(EnumStructure.TURN),
         psi, phi);
   }
 
   private boolean isSheet(float psi, float phi) {
-    return checkPhiPsi(structureList[EnumProteinStructure.PROTEIN_STRUCTURE_SHEET],
+    return checkPhiPsi(structureList.get(EnumStructure.SHEET),
         psi, phi);
   }
 
   private boolean isHelix(float psi, float phi) {
-    return checkPhiPsi(structureList[EnumProteinStructure.PROTEIN_STRUCTURE_HELIX],
+    return checkPhiPsi(structureList.get(EnumStructure.HELIX),
         psi, phi);
   }
 
@@ -1417,10 +1417,10 @@ public class AminoPolymer extends AlphaPolymer {
     return false;
   }
 
-  private float[][] structureList; // kept in StateManager.globalSettings
+  private Map<EnumStructure, float[]> structureList; // kept in StateManager.globalSettings
 
   @Override
-  public void setStructureList(float[][] structureList) {
+  public void setStructureList(Map<EnumStructure, float[]> structureList) {
     this.structureList = structureList;
   }
 

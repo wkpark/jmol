@@ -31,6 +31,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 
+import org.jmol.constant.EnumStructure;
 import org.jmol.util.OutputStringBuffer;
 import org.jmol.viewer.Viewer;
 
@@ -106,7 +107,7 @@ abstract public class Polymer {
    * @param endChainID
    * @param endSeqcode
    */
-  public void addSecondaryStructure(byte type, 
+  public void addSecondaryStructure(EnumStructure type, 
                                     String structureID, int serialID, int strandCount,
                                     char startChainID,
                                     int startSeqcode, char endChainID,
@@ -261,7 +262,7 @@ abstract public class Polymer {
   /**
    * @param structureList  protein only -- helix, sheet, turn definitions
    */
-  public void setStructureList(float[][] structureList) {
+  public void setStructureList(Map<EnumStructure, float[]> structureList) {
   }
 
   /**

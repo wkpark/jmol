@@ -30,7 +30,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
-import org.jmol.constant.EnumProteinStructure;
+import org.jmol.constant.EnumStructure;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.modelsetbio.AlphaMonomer;
@@ -77,7 +77,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
   protected Vector3f[] wingVectors;
   protected short[] mads;
   protected short[] colixes;
-  protected byte[] structureTypes;
+  protected EnumStructure[] structureTypes;
 
   protected abstract void renderBioShape(BioShape bioShape);
 
@@ -136,7 +136,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
   private void freeTempArrays() {
     if (haveControlPointScreens)
       viewer.freeTempScreens(controlPointScreens);
-    viewer.freeTempBytes(structureTypes);
+    viewer.freeTempEnum(structureTypes);
   }
 
   private boolean initializePolymer(BioShape bioShape) {
@@ -187,17 +187,17 @@ abstract class BioShapeRenderer extends MeshRenderer {
   }
 
   private void setStructureTypes() {
-    structureTypes = viewer.allocTempBytes(monomerCount + 1);
+    structureTypes = viewer.allocTempEnum(monomerCount + 1);
     for (int i = monomerCount; --i >= 0;) {
       structureTypes[i] = monomers[i].getProteinStructureType();
-      if (structureTypes[i] == EnumProteinStructure.TURN.id)
-        structureTypes[i] = EnumProteinStructure.NONE.id;
+      if (structureTypes[i] == EnumStructure.TURN)
+        structureTypes[i] = EnumStructure.NONE;
     }
     structureTypes[monomerCount] = structureTypes[monomerCount - 1];
   }
 
   protected boolean isHelix(int i) {
-    return structureTypes[i] == EnumProteinStructure.HELIX.id;
+    return structureTypes[i] == EnumStructure.HELIX;
   }
 
   protected void calcScreenControlPoints() {

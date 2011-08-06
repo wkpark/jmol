@@ -30,7 +30,7 @@ import java.util.List;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-import org.jmol.constant.EnumProteinStructure;
+import org.jmol.constant.EnumStructure;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.ModelSet;
@@ -70,7 +70,7 @@ public class AlphaPolymer extends BioPolymer {
   }
 
   @Override
-  public void addSecondaryStructure(byte type,
+  public void addSecondaryStructure(EnumStructure type,
                                     String structureID, int serialID, int strandCount,
                              char startChainID, int startSeqcode,
                              char endChainID, int endSeqcode) {
@@ -82,11 +82,9 @@ public class AlphaPolymer extends BioPolymer {
     addSecondaryStructure(type, structureID, serialID, strandCount, indexStart, indexEnd);
   }
 
-  protected void addSecondaryStructure(byte type, 
+  protected void addSecondaryStructure(EnumStructure type, 
                              String structureID, int serialID, int strandCount,
                              int indexStart, int indexEnd) {
-
-    //System.out.println("alphapolymer add2ndryStruct " + monomers[indexStart].getModelIndex() + " " + type + " " + indexStart + " " + indexEnd);
 
     //these two can be the same if this is a carbon-only polymer
     if (indexEnd < indexStart) {
@@ -98,16 +96,16 @@ public class AlphaPolymer extends BioPolymer {
     int structureCount = indexEnd - indexStart + 1;
     ProteinStructure proteinstructure = null;
     switch(type) {
-    case EnumProteinStructure.PROTEIN_STRUCTURE_HELIX:
-    case EnumProteinStructure.PROTEIN_STRUCTURE_HELIX_ALPHA:
-    case EnumProteinStructure.PROTEIN_STRUCTURE_HELIX_310:
-    case EnumProteinStructure.PROTEIN_STRUCTURE_HELIX_PI:
+    case HELIX:
+    case HELIX_ALPHA:
+    case HELIX_310:
+    case HELIX_PI:
       proteinstructure = new Helix(this, indexStart, structureCount, 0, type);
       break;
-    case EnumProteinStructure.PROTEIN_STRUCTURE_SHEET:
+    case SHEET:
       proteinstructure = new Sheet(this, indexStart, structureCount, 0, type);
       break;
-    case EnumProteinStructure.PROTEIN_STRUCTURE_TURN:
+    case TURN:
       proteinstructure = new Turn(this, indexStart, structureCount, 0);
       break;
     default:
@@ -381,21 +379,17 @@ public class AlphaPolymer extends BioPolymer {
     if (monomerCount < 4)
       return;
     float[] angles = calculateAnglesInDegrees();
-    byte[] codes = calculateCodes(angles);
+    Code[] codes = calculateCodes(angles);
     checkBetaSheetAlphaHelixOverlap(codes, angles);
-    byte[] tags = calculateRunsFourOrMore(codes);
+    EnumStructure[] tags = calculateRunsFourOrMore(codes);
     extendRuns(tags);
     searchForTurns(codes, angles, tags);
     addStructuresFromTags(tags);
   }
 
-  private final static byte CODE_NADA        = 0;
-  private final static byte CODE_RIGHT_HELIX = 1;
-  private final static byte CODE_BETA_SHEET  = 2;
-  private final static byte CODE_LEFT_HELIX  = 3;
-
-  private final static byte CODE_LEFT_TURN  = 4;
-  private final static byte CODE_RIGHT_TURN = 5;
+  private enum Code {
+    NADA, RIGHT_HELIX, BETA_SHEET, LEFT_HELIX, LEFT_TURN, RIGHT_TURN;
+  }
   
   private float[] calculateAnglesInDegrees() {
     float[] angles = new float[monomerCount];
@@ -408,48 +402,43 @@ public class AlphaPolymer extends BioPolymer {
     return angles;
   }
 
-  private byte[] calculateCodes(float[] angles) {
-    byte[] codes = new byte[monomerCount];
+  private Code[] calculateCodes(float[] angles) {
+    Code[] codes = new Code[monomerCount];
     for (int i = monomerCount - 1; --i >= 2; ) {
       float degrees = angles[i];
       codes[i] = ((degrees >= 10 && degrees < 120)
-                  ? CODE_RIGHT_HELIX
+                  ? Code.RIGHT_HELIX
                   : ((degrees >= 120 || degrees < -90)
-                     ? CODE_BETA_SHEET
+                     ? Code.BETA_SHEET
                      : ((degrees >= -90 && degrees < 0)
-                        ? CODE_LEFT_HELIX
-                        : CODE_NADA)));
+                        ? Code.LEFT_HELIX
+                        : Code.NADA)));
     }
     return codes;
   }
 
-  private void checkBetaSheetAlphaHelixOverlap(byte[] codes, float[] angles) {
+  private void checkBetaSheetAlphaHelixOverlap(Code[] codes, float[] angles) {
     for (int i = monomerCount - 2; --i >= 2; )
-      if (codes[i] == CODE_BETA_SHEET &&
+      if (codes[i] == Code.BETA_SHEET &&
           angles[i] <= 140 &&
-          codes[i - 2] == CODE_RIGHT_HELIX &&
-          codes[i - 1] == CODE_RIGHT_HELIX &&
-          codes[i + 1] == CODE_RIGHT_HELIX &&
-          codes[i + 2] == CODE_RIGHT_HELIX)
-        codes[i] = CODE_RIGHT_HELIX;
+          codes[i - 2] == Code.RIGHT_HELIX &&
+          codes[i - 1] == Code.RIGHT_HELIX &&
+          codes[i + 1] == Code.RIGHT_HELIX &&
+          codes[i + 2] == Code.RIGHT_HELIX)
+        codes[i] = Code.RIGHT_HELIX;
   }
 
-  private final static byte TAG_NADA  = EnumProteinStructure.NONE.id;
-  private final static byte TAG_TURN  = EnumProteinStructure.TURN.id;
-  private final static byte TAG_SHEET = EnumProteinStructure.SHEET.id;
-  private final static byte TAG_HELIX = EnumProteinStructure.HELIX.id;
-
-  private byte[] calculateRunsFourOrMore(byte[] codes) {
-    byte[] tags = new byte[monomerCount];
-    byte tag = TAG_NADA;
-    byte code = CODE_NADA;
+  private EnumStructure[] calculateRunsFourOrMore(Code[] codes) {
+    EnumStructure[] tags = new EnumStructure[monomerCount];
+    EnumStructure tag = EnumStructure.NONE;
+    Code code = Code.NADA;
     int runLength = 0;
     for (int i = 0; i < monomerCount; ++i) {
       // throw away the sheets ... their angle technique does not work well
-      if (codes[i] == code && code != CODE_NADA && code != CODE_BETA_SHEET) {
+      if (codes[i] == code && code != Code.NADA && code != Code.BETA_SHEET) {
         ++runLength;
         if (runLength == 4) {
-          tag = (code == CODE_BETA_SHEET ? TAG_SHEET : TAG_HELIX);
+          tag = (code == Code.BETA_SHEET ? EnumStructure.SHEET : EnumStructure.HELIX);
           for (int j = 4; --j >= 0; )
             tags[i - j] = tag;
         } else if (runLength > 4)
@@ -462,40 +451,40 @@ public class AlphaPolymer extends BioPolymer {
     return tags;
   }
 
-  private void extendRuns(byte[] tags) {
+  private void extendRuns(EnumStructure[] tags) {
     for (int i = 1; i < monomerCount - 4; ++i)
-      if (tags[i] == TAG_NADA && tags[i + 1] != TAG_NADA)
+      if (tags[i] == EnumStructure.NONE && tags[i + 1] != EnumStructure.NONE)
         tags[i] = tags[i + 1];
     
     tags[0] = tags[1];
     tags[monomerCount - 1] = tags[monomerCount - 2];
   }
 
-  private void searchForTurns(byte[] codes, float[] angles, byte[] tags) {
+  private void searchForTurns(Code[] codes, float[] angles, EnumStructure[] tags) {
     for (int i = monomerCount - 1; --i >= 2; ) {
-      codes[i] = CODE_NADA;
-      if (tags[i] == TAG_NADA) {
+      codes[i] = Code.NADA;
+      if (tags[i] == EnumStructure.NONE) {
         float angle = angles[i];
         if (angle >= -90 && angle < 0)
-          codes[i] = CODE_LEFT_TURN;
+          codes[i] = Code.LEFT_TURN;
         else if (angle >= 0 && angle < 90)
-          codes[i] = CODE_RIGHT_TURN;
+          codes[i] = Code.RIGHT_TURN;
       }
     }
 
     for (int i = monomerCount - 1; --i >= 0; ) {
-      if (codes[i] != CODE_NADA &&
+      if (codes[i] != Code.NADA &&
           codes[i + 1] == codes[i] &&
-          tags[i] == TAG_NADA)
-        tags[i] = TAG_TURN;
+          tags[i] == EnumStructure.NONE)
+        tags[i] = EnumStructure.TURN;
     }
   }
 
-  private void addStructuresFromTags(byte[] tags) {
+  private void addStructuresFromTags(EnumStructure[] tags) {
     int i = 0;
     while (i < monomerCount) {
-      byte tag = tags[i];
-      if (tag == TAG_NADA) {
+      EnumStructure tag = tags[i];
+      if (tag == EnumStructure.NONE) {
         ++i;
         continue;
       }

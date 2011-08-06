@@ -23,14 +23,14 @@
  */
 package org.jmol.modelsetbio;
 
-import org.jmol.constant.EnumProteinStructure;
+import org.jmol.constant.EnumStructure;
 
 class Turn extends ProteinStructure {
 
   Turn(AlphaPolymer apolymer, int monomerIndex, int monomerCount, int id) {
-    super(apolymer, EnumProteinStructure.PROTEIN_STRUCTURE_TURN,
+    super(apolymer, EnumStructure.TURN,
           monomerIndex, monomerCount, id);
-    this.subtype = EnumProteinStructure.PROTEIN_STRUCTURE_TURN;
+    this.subtype = EnumStructure.TURN;
   }
 }
 

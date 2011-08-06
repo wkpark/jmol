@@ -26,7 +26,7 @@ package org.jmol.modelsetbio;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-import org.jmol.constant.EnumProteinStructure;
+import org.jmol.constant.EnumStructure;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Chain;
 import org.jmol.util.Quaternion;
@@ -95,8 +95,8 @@ public class PhosphorusMonomer extends Monomer {
   public Object getStructure() { return chain; }
 
   @Override
-  public byte getProteinStructureType() {
-    return EnumProteinStructure.NONE.id;
+  public EnumStructure getProteinStructureType() {
+    return EnumStructure.NONE;
   }
 
   @Override

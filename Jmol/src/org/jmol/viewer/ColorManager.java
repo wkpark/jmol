@@ -31,7 +31,6 @@ import org.jmol.util.Logger;
 import java.util.BitSet;
 
 import org.jmol.constant.EnumPalette;
-import org.jmol.constant.EnumProteinStructure;
 import org.jmol.constant.StaticConstants;
 import org.jmol.g3d.*;
 import org.jmol.modelset.Atom;
@@ -243,7 +242,7 @@ class ColorManager {
       argb = getJmolOrRasmolArgb(id, Token.rasmol);
       break;
     case StaticConstants.PALETTE_STRUCTURE:
-      argb = EnumProteinStructure.argbsStructure[atom.getProteinStructureSubType() + 1];
+      argb = atom.getProteinStructureSubType().getColor();
       break;
     case StaticConstants.PALETTE_CHAIN:
       int chain = atom.getChainID() & 0x1F;

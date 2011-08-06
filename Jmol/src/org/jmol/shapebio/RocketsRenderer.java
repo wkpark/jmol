@@ -24,7 +24,7 @@
 
 package org.jmol.shapebio;
 
-import org.jmol.constant.EnumProteinStructure;
+import org.jmol.constant.EnumStructure;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelsetbio.AminoPolymer;
 import org.jmol.modelsetbio.Helix;
@@ -60,7 +60,7 @@ public class RocketsRenderer extends BioShapeRenderer {
   protected Point3f[] cordMidPoints;
 
   protected boolean isSheet(int i) {
-    return structureTypes[i] == EnumProteinStructure.PROTEIN_STRUCTURE_SHEET;
+    return structureTypes[i] == EnumStructure.SHEET;
   }
 
   protected void calcRopeMidPoints(boolean isNewStyle) {

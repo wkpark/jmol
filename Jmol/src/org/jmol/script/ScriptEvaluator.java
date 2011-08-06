@@ -45,7 +45,7 @@ import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumAnimationMode;
 import org.jmol.constant.EnumPalette;
-import org.jmol.constant.EnumProteinStructure;
+import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumStereoMode;
 import org.jmol.constant.EnumVdw;
 import org.jmol.g3d.Font3D;
@@ -11177,8 +11177,8 @@ public class ScriptEvaluator {
   }
 
   private void structure() throws ScriptException {
-    byte iType = EnumProteinStructure.getProteinStructureType(parameterAsString(1));
-    if (iType < 0)
+    EnumStructure type = EnumStructure.getProteinStructureType(parameterAsString(1));
+    if (type == EnumStructure.NOT)
       error(ERROR_invalidArgument);
     BitSet bs = null;
     switch (tokAt(2)) {
@@ -11193,7 +11193,7 @@ public class ScriptEvaluator {
     if (isSyntaxCheck)
       return;
     clearDefinedVariableAtomSets();
-    viewer.setProteinType(iType, bs);
+    viewer.setProteinType(type, bs);
   }
 
   private void wireframe() throws ScriptException {
@@ -12231,13 +12231,13 @@ public class ScriptEvaluator {
 
     switch (tok) {
     case Token.structure:
-      byte iType = EnumProteinStructure.getProteinStructureType(parameterAsString(2));
-      if (iType < 1)
+      EnumStructure type = EnumStructure.getProteinStructureType(parameterAsString(2));
+      if (type == EnumStructure.NOT)
         error(ERROR_invalidArgument);
       float[] data = floatParameterSet(3, 0, Integer.MAX_VALUE);
       if (data.length % 4 != 0)
         error(ERROR_invalidArgument);
-      viewer.setStructureList(data, iType);
+      viewer.setStructureList(data, type);
       checkLast(iToken);
       return;
     case Token.axescolor:

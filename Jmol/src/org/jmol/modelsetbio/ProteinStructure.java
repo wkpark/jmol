@@ -28,15 +28,15 @@ import java.util.Map;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-import org.jmol.constant.EnumProteinStructure;
+import org.jmol.constant.EnumStructure;
 import org.jmol.util.Logger;
 
 public abstract class ProteinStructure {
 
   static int globalSerialID = 1000;
   AlphaPolymer apolymer;
-  byte type;
-  byte subtype;
+  EnumStructure type;
+  EnumStructure subtype;
   int monomerIndexFirst;
   int monomerIndexLast;
   int monomerCount;
@@ -57,7 +57,7 @@ public abstract class ProteinStructure {
    * @param monomerCount
    * @param id              UNUSED
    */
-  ProteinStructure(AlphaPolymer apolymer, byte type,
+  ProteinStructure(AlphaPolymer apolymer, EnumStructure type,
                    int monomerIndex, int monomerCount, int id) {
     uniqueID = ++globalSerialID;
     this.apolymer = apolymer;
@@ -68,7 +68,7 @@ public abstract class ProteinStructure {
     if(Logger.debugging)
       Logger.debug(
           "Creating ProteinStructure " + uniqueID 
-          + " " + EnumProteinStructure.getProteinStructureName(type, false) 
+          + " " + type.getProteinStructureName(false) 
           + " from " + monomerIndexFirst + " through "+ monomerIndexLast
           + " in polymer " + apolymer);
   }
@@ -188,7 +188,7 @@ public abstract class ProteinStructure {
   }
 
   public void getInfo(Map<String, Object> info) {
-    info.put("type", EnumProteinStructure.getProteinStructureName(type, false));
+    info.put("type", type.getProteinStructureName(false));
     int[] leadAtomIndices = apolymer.getLeadAtomIndices();
     int[] iArray = new int[monomerCount];
     System.arraycopy(leadAtomIndices, monomerIndexFirst, iArray, 0, monomerCount);

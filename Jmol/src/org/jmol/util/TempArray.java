@@ -25,6 +25,8 @@ package org.jmol.util;
 
 import javax.vecmath.*;
 
+import org.jmol.constant.EnumStructure;
+
 public class TempArray {
 
   public TempArray() {
@@ -150,68 +152,31 @@ public class TempArray {
   }
 
   ////////////////////////////////////////////////////////////////
-  // temp booleans
+  // temp EnumProteinStructure
   ////////////////////////////////////////////////////////////////
-  /*
-  final static int freeBooleansSize = 2;
-  final int[] lengthsFreeBooleans = new int[freeBooleansSize];
-  final boolean[][] freeBooleans = new boolean[freeBooleansSize][];
+  private final static int freeEnumSize = 2;
+  private final int[] lengthsFreeEnum = new int[freeEnumSize];
+  private final EnumStructure[][] freeEnum = new EnumStructure[freeEnumSize][];
 
-  void clearTempBooleans() {
-    for (int i = 0; i < freeBooleansSize; i++) {
-      lengthsFreeBooleans[i] = 0;
-      freeBooleans[i] = null;
-    }
-  }
-  
-  boolean[] allocTempBooleans(int size) {
-    boolean[] tempBooleans;
-    int iFit = findBestFit(size, lengthsFreeBooleans);
+  public EnumStructure[] allocTempEnum(int size) {
+    EnumStructure[] tempEnum;
+    int iFit = findBestFit(size, lengthsFreeEnum);
     if (iFit > 0) {
-      tempBooleans = freeBooleans[iFit];
+      tempEnum = freeEnum[iFit];
     } else {
-      tempBooleans = new boolean[size];
+      tempEnum = new EnumStructure[size];
     }
-    return tempBooleans;
+    return tempEnum;
   }
 
-  void freeTempBooleans(boolean[] tempBooleans) {
-    for (int i = 0; i < freeBooleans.length; i++)
-      if (freeBooleans[i] == tempBooleans) {
-        lengthsFreeBooleans[i] = tempBooleans.length;
+  public void freeTempEnum(EnumStructure[] tempEnum) {
+    for (int i = 0; i < freeEnum.length; i++)
+      if (freeEnum[i] == tempEnum) {
+        lengthsFreeEnum[i] = tempEnum.length;
         return;
       }
-    int iFree = findShorter(tempBooleans.length, lengthsFreeBooleans);
+    int iFree = findShorter(tempEnum.length, lengthsFreeEnum);
     if (iFree >= 0)
-      freeBooleans[iFree] = tempBooleans;
-  }
-*/
-  ////////////////////////////////////////////////////////////////
-  // temp bytes
-  ////////////////////////////////////////////////////////////////
-  private final static int freeBytesSize = 2;
-  private final int[] lengthsFreeBytes = new int[freeBytesSize];
-  private final byte[][] freeBytes = new byte[freeBytesSize][];
-
-  public byte[] allocTempBytes(int size) {
-    byte[] tempBytes;
-    int iFit = findBestFit(size, lengthsFreeBytes);
-    if (iFit > 0) {
-      tempBytes = freeBytes[iFit];
-    } else {
-      tempBytes = new byte[size];
-    }
-    return tempBytes;
-  }
-
-  public void freeTempBytes(byte[] tempBytes) {
-    for (int i = 0; i < freeBytes.length; i++)
-      if (freeBytes[i] == tempBytes) {
-        lengthsFreeBytes[i] = tempBytes.length;
-        return;
-      }
-    int iFree = findShorter(tempBytes.length, lengthsFreeBytes);
-    if (iFree >= 0)
-      freeBytes[iFree] = tempBytes;
+      freeEnum[iFree] = tempEnum;
   }
 }

@@ -33,7 +33,7 @@ import java.util.Map;
 
 import org.jmol.constant.EnumAxesMode;
 import org.jmol.constant.EnumCallback;
-import org.jmol.constant.EnumProteinStructure;
+import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumStereoMode;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Bond;
@@ -1625,9 +1625,9 @@ public class StateManager {
       // structure defaults
       
       if (haveSetStructureList) {
-        commands.append("struture HELIX set " + Escape.escape(structureList[EnumProteinStructure.PROTEIN_STRUCTURE_HELIX]));
-        commands.append("struture SHEET set " + Escape.escape(structureList[EnumProteinStructure.PROTEIN_STRUCTURE_SHEET]));
-        commands.append("struture TURN set " + Escape.escape(structureList[EnumProteinStructure.PROTEIN_STRUCTURE_TURN]));
+        commands.append("struture HELIX set " + Escape.escape(structureList.get(EnumStructure.HELIX)));
+        commands.append("struture SHEET set " + Escape.escape(structureList.get(EnumStructure.SHEET)));
+        commands.append("struture TURN set " + Escape.escape(structureList.get(EnumStructure.TURN)));
       }
       if (sfunc != null)
         commands.append("\n}\n\n");
@@ -1644,29 +1644,33 @@ public class StateManager {
     }
 
     // static because we don't plan to be changing these
-    private float[][] structureList = new float[][] {
-      null, // none
-      new float[] { // turn
-          30, 90, -15, 95,
-        },
+    private Map<EnumStructure, float[]> structureList = new Hashtable<EnumStructure, float[]>();
+    
+    {
+      structureList.put(EnumStructure.TURN, 
+          new float[] { // turn
+              30, 90, -15, 95,
+          });
+      structureList.put(EnumStructure.SHEET, 
       new float[] { // sheet
           -180, -10,   70,  180, 
           -180, -45, -180, -130, 
            140, 180,   90, 180, 
-        },
+        });
+      structureList.put(EnumStructure.HELIX, 
       new float[] {  // helix
         -160, 0, -100, 45,
-      },
-    };
+      });
+    }
     
     private boolean haveSetStructureList;
     
-    public void setStructureList(float[] list, int type) {
+    public void setStructureList(float[] list, EnumStructure type) {
       haveSetStructureList = true;
-      structureList[type] = list;
+      structureList.put(type, list);
     }
     
-    public float[][] getStructureList() {
+    public Map<EnumStructure, float[]> getStructureList() {
       return structureList;
     }
 

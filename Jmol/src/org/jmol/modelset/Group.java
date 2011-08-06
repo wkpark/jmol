@@ -29,7 +29,7 @@ import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Quaternion;
 import org.jmol.viewer.JmolConstants;
-import org.jmol.constant.EnumProteinStructure;
+import org.jmol.constant.EnumStructure;
 import org.jmol.script.Token;
 
 import java.util.Hashtable;
@@ -196,22 +196,22 @@ public class Group {
     return 0;
   }
   
-  public byte getProteinStructureType() {
-    return EnumProteinStructure.NOT.id;
+  public EnumStructure getProteinStructureType() {
+    return EnumStructure.NOT;
   }
 
-  public byte getProteinStructureSubType() {
+  public EnumStructure getProteinStructureSubType() {
     return getProteinStructureType();
   }
 
 
   /**
    * 
-   * @param iType
+   * @param type
    * @param monomerIndexCurrent
    * @return type
    */
-  public int setProteinStructureType(byte iType, int monomerIndexCurrent) {
+  public int setProteinStructureType(EnumStructure type, int monomerIndexCurrent) {
     return -1;
   }
 
@@ -481,7 +481,7 @@ public class Group {
    * @param type
    * @return T/F
    */
-  public boolean isWithinStructure(byte type) {
+  public boolean isWithinStructure(EnumStructure type) {
     return false;
   }
 

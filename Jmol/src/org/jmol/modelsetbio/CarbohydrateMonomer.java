@@ -23,7 +23,7 @@
  */
 package org.jmol.modelsetbio;
 
-import org.jmol.constant.EnumProteinStructure;
+import org.jmol.constant.EnumStructure;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Chain;
 
@@ -51,8 +51,8 @@ public class CarbohydrateMonomer extends Monomer {
   public boolean isCarbohydrate() { return true; }
 
   @Override
-  public byte getProteinStructureType() {
-    return EnumProteinStructure.PROTEIN_STRUCTURE_CARBOHYDRATE;
+  public EnumStructure getProteinStructureType() {
+    return EnumStructure.CARBOHYDRATE;
   }
 
   @Override

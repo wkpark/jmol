@@ -26,6 +26,7 @@ package org.jmol.adapter.readers.cifpdb;
 import org.jmol.adapter.smarter.*;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolLineReader;
+import org.jmol.constant.EnumStructure;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -1181,16 +1182,16 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         return;
       }
     while (tokenizer.getData()) {
-      Structure structure = new Structure(Structure.PROTEIN_STRUCTURE_HELIX);
+      Structure structure = new Structure(EnumStructure.HELIX);
       for (int i = 0; i < tokenizer.fieldCount; ++i) {
         switch (fieldProperty(i)) {
         case NONE:
           break;
         case CONF_TYPE_ID:
           if (field.startsWith("TURN"))
-            structure.structureType = structure.substructureType = Structure.PROTEIN_STRUCTURE_TURN;
+            structure.structureType = structure.substructureType = EnumStructure.TURN;
           else if (!field.startsWith("HELX"))
-            structure.structureType = structure.substructureType = Structure.PROTEIN_STRUCTURE_NONE;
+            structure.structureType = structure.substructureType = EnumStructure.NONE;
           break;
         case BEG_ASYM_ID:
           structure.startChainID = firstChar;
@@ -1257,7 +1258,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         return;
       }
     while (tokenizer.getData()) {
-      Structure structure = new Structure(Structure.PROTEIN_STRUCTURE_SHEET);
+      Structure structure = new Structure(EnumStructure.SHEET);
       for (int i = 0; i < tokenizer.fieldCount; ++i) {
         switch (fieldProperty(i)) {
         case BEG_ASYM_ID:

@@ -24,11 +24,11 @@
 
 package org.jmol.adapter.smarter;
 
-import org.jmol.constant.EnumProteinStructure;
+import org.jmol.constant.EnumStructure;
 
 public class Structure {
-  public byte structureType;
-  public byte substructureType;
+  public EnumStructure structureType;
+  public EnumStructure substructureType;
   public String structureID;
   public int serialID;
   public int strandCount;
@@ -40,32 +40,24 @@ public class Structure {
   public char endInsertionCode = ' ';
   public int modelIndex;
 
-  public final static byte PROTEIN_STRUCTURE_NONE = EnumProteinStructure.NONE.id;
-  public final static byte PROTEIN_STRUCTURE_TURN = EnumProteinStructure.TURN.id;
-  public final static byte PROTEIN_STRUCTURE_SHEET = EnumProteinStructure.SHEET.id;
-  public final static byte PROTEIN_STRUCTURE_HELIX = EnumProteinStructure.HELIX.id;
-  public final static byte PROTEIN_STRUCTURE_HELIX_310 = EnumProteinStructure.HELIX_310.id;
-  public final static byte PROTEIN_STRUCTURE_HELIX_ALPHA = EnumProteinStructure.HELIX_ALPHA.id;
-  public final static byte PROTEIN_STRUCTURE_HELIX_PI = EnumProteinStructure.HELIX_PI.id;
-
-  public static byte getHelixType(int type) {
+  public static EnumStructure getHelixType(int type) {
     switch (type) {
     case 1:
-      return PROTEIN_STRUCTURE_HELIX_ALPHA;
+      return EnumStructure.HELIX_ALPHA;
     case 3:
-      return PROTEIN_STRUCTURE_HELIX_PI;
+      return EnumStructure.HELIX_PI;
     case 5:
-      return PROTEIN_STRUCTURE_HELIX_310;
+      return EnumStructure.HELIX_310;
     }
-    return PROTEIN_STRUCTURE_HELIX;
+    return EnumStructure.HELIX;
   }
   
 
-  public Structure(byte type) {
+  public Structure(EnumStructure type) {
     structureType = substructureType = type;
   }
 
-  public Structure(int modelIndex, byte structureType, byte substructureType,
+  public Structure(int modelIndex, EnumStructure structureType, EnumStructure substructureType,
             String structureID, int serialID, int strandCount,
             char startChainID, int startSequenceNumber, char startInsertionCode,
             char endChainID, int endSequenceNumber, char endInsertionCode) {

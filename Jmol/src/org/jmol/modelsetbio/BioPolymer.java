@@ -24,6 +24,7 @@
 package org.jmol.modelsetbio;
 
 
+import org.jmol.constant.EnumStructure;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Group;
@@ -117,11 +118,11 @@ public abstract class BioPolymer extends Polymer {
 
   void removeProteinStructure(int monomerIndex, int count) {
     Monomer m = monomers[monomerIndex];
-    byte iType = m.getProteinStructureType();
+    EnumStructure type = m.getProteinStructureType();
     int mLast = -1;
     for (int i = 0, pt = monomerIndex; i < count && pt < monomerCount; i++, pt++) {
       monomers[pt].setStructure(null);
-      mLast = monomers[pt].setProteinStructureType(iType, mLast);
+      mLast = monomers[pt].setProteinStructureType(type, mLast);
     }
   }
 

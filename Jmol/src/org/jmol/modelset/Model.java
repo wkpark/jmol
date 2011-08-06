@@ -28,6 +28,7 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
 
+import org.jmol.constant.EnumStructure;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 
@@ -202,7 +203,7 @@ public final class Model {
     this.nInsertions = nInsertions;  
   }
   
-  void addSecondaryStructure(byte type, 
+  void addSecondaryStructure(EnumStructure type, 
                              String structureID, int serialID, int strandCount,
                              char startChainID, int startSeqcode,
                              char endChainID, int endSeqcode) {

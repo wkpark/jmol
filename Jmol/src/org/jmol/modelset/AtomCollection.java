@@ -772,7 +772,7 @@ abstract public class AtomCollection {
     if (hydrophobicities == null) {
       hydrophobicities = new float[atoms.length];
       for (int i = 0; i < atoms.length; i++)
-        hydrophobicities[i] = JmolConstants.getHydrophobicity(atoms[i].getGroupID());
+        hydrophobicities[i] = Elements.getHydrophobicity(atoms[i].getGroupID());
     }
     hydrophobicities[atomIndex] = value;
     return true;

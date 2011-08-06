@@ -789,10 +789,9 @@ public class Elements {
    ****************************************************************/
   
   public final static int FORMAL_CHARGE_MIN = -4;
-
   public final static int FORMAL_CHARGE_MAX = 7;
 
-  public final static short[] cationLookupTable = {
+  private final static short[] cationLookupTable = {
     (3 << 4) + (1 + 4),   680,  // "Li+1"
     (4 << 4) + (1 + 4),   440,  // "Be+1"
     (4 << 4) + (2 + 4),   350,  // "Be+2"
@@ -957,7 +956,7 @@ public class Elements {
     (95 << 4) + (4 + 4),  920,  // "Am+4"
   };
 
-  public final static short[] anionLookupTable = {
+  private final static short[] anionLookupTable = {
     (1 << 4) + (-1 + 4),  1540, // "H-1"
     (6 << 4) + (-4 + 4),  2600, // "C-4"
     (7 << 4) + (-3 + 4),  1710, // "N-3"
@@ -982,8 +981,8 @@ public class Elements {
     (53 << 4) + (-1 + 4), 2200, // "I-1"
   };
 
-  public final static BitSet bsCations = new BitSet();
-  public final static BitSet bsAnions = new BitSet();
+  private final static BitSet bsCations = new BitSet();
+  private final static BitSet bsAnions = new BitSet();
 
   static {
     for (int i = 0; i < anionLookupTable.length; i+=2)
@@ -1025,6 +1024,40 @@ public class Elements {
     return table[(iMid << 1) + 1] / 1000f;
   }
 
+  public static int getVanderwaalsMar(int i, EnumVdw type) {
+    return vanderwaalsMars[(i << 2) + (type.pt % 4)];
+  }
+
+  public static float getHydrophobicity(int i) {
+    return (i < 1 || i >= Elements.hydrophobicities.length ? 0 : Elements.hydrophobicities[i]);
+  }
+
+
+  private final static float[] hydrophobicities = {
+                0f,
+      /* Ala*/  0.62f,
+      /* Arg*/ -2.53f,
+      /* Asn*/ -0.78f,
+      /* Asp*/ -0.90f,
+      /* Cys*/  0.29f,
+      /* Gln*/ -0.85f,
+      /* Glu*/ -0.74f,
+      /* Gly*/  0.48f,
+      /* His*/ -0.40f,
+      /* Ile*/  1.38f,
+      /* Leu*/  1.06f,
+      /* Lys*/ -1.50f,
+      /* Met*/  0.64f,
+      /* Phe*/  1.19f,
+      /* Pro*/  0.12f,
+      /* Ser*/ -0.18f,
+      /* Thr*/ -0.05f,
+      /* Trp*/  0.81f,
+      /* Tyr*/  0.26f,
+      /* Val*/  1.08f
+  };
+
+
   static {
     // if the length of these tables is all the same then the
     // java compiler should eliminate all of this code.
@@ -1038,10 +1071,6 @@ public class Elements {
                          "\n covalentMars.length=" +
                          covalentMars.length);
     }
-  }
-
-  public static int getVanderwaalsMar(int i, EnumVdw type) {
-    return vanderwaalsMars[(i << 2) + (type.pt % 4)];
   }
 
 }

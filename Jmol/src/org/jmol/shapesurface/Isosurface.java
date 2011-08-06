@@ -562,7 +562,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       String script = (value instanceof String ? (String) value : null);
       int pt = (script == null ? -1 : script.indexOf("# ID="));
       actualID = (pt >= 0 ? Parser.getNextQuotedString(script, pt) : null);
-      setPropertySuper("thisID", JmolConstants.PREVIOUS_MESH_ID, null);
+      setPropertySuper("thisID", MeshCollection.PREVIOUS_MESH_ID, null);
       if (script != null && !(iHaveBitSets = getScriptBitSets(script, null)))
         sg.setParameter("select", bs);
       initializeIsosurface();
@@ -989,22 +989,13 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   // default color stuff (deprecated in 11.2)
   ////////////////////////////////////////////////////////////////
 
-  private int indexColorPositive;
-  private int indexColorNegative;
-
   private short getDefaultColix() {
     if (defaultColix != 0)
       return defaultColix;
     if (!sg.isCubeData())
       return colix; // orange
-    int argb;
-    if (sg.getCutoff() >= 0) {
-      indexColorPositive = (indexColorPositive % JmolConstants.argbsIsosurfacePositive.length);
-      argb = JmolConstants.argbsIsosurfacePositive[indexColorPositive++];
-    } else {
-      indexColorNegative = (indexColorNegative % JmolConstants.argbsIsosurfaceNegative.length);
-      argb = JmolConstants.argbsIsosurfaceNegative[indexColorNegative++];
-    }
+    int argb = (sg.getCutoff() >= 0 ? JmolConstants.argbsIsosurfacePositive
+        : JmolConstants.argbsIsosurfaceNegative);
     return Graphics3D.getColix(argb);
   }
 

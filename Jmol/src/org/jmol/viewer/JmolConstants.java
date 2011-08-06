@@ -414,97 +414,12 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     0xFF0000FF,
   };
 
-  /*
-  public final static int[] argbsBlueRedRainbow = {
-    0xFF0000FF,
-    //0xFF0010FF,
-    0xFF0020FF,
-    //0xFF0030FF,
-    0xFF0040FF,
-    //0xFF0050FF,
-    0xFF0060FF,
-    //0xFF0070FF,
-    0xFF0080FF,
-    //0xFF0090FF,
-    0xFF00A0FF,
-    //0xFF00B0FF,
-    0xFF00C0FF,
-    //0xFF00D0FF,
-    0xFF00E0FF,
-    //0xFF00F0FF,
-
-    0xFF00FFFF,
-    //0xFF00FFF0,
-    0xFF00FFE0,
-    //0xFF00FFD0,
-    0xFF00FFC0,
-    //0xFF00FFB0,
-    0xFF00FFA0,
-    //0xFF00FF90,
-    0xFF00FF80,
-    //0xFF00FF70,
-    0xFF00FF60,
-    //0xFF00FF50,
-    0xFF00FF40,
-    //0xFF00FF30,
-    0xFF00FF20,
-    //0xFF00FF10,
-
-    0xFF00FF00,
-    //0xFF10FF00,
-    0xFF20FF00,
-    //0xFF30FF00,
-    0xFF40FF00,
-    //0xFF50FF00,
-    0xFF60FF00,
-    //0xFF70FF00,
-    0xFF80FF00,
-    //0xFF90FF00,
-    0xFFA0FF00,
-    //0xFFB0FF00,
-    0xFFC0FF00,
-    //0xFFD0FF00,
-    0xFFE0FF00,
-    //0xFFF0FF00,
-
-    0xFFFFFF00,
-    //0xFFFFF000,
-    0xFFFFE000,
-    //0xFFFFD000,
-    0xFFFFC000,
-    //0xFFFFB000,
-    0xFFFFA000,
-    //0xFFFF9000,
-    0xFFFF8000,
-    //0xFFFF7000,
-    0xFFFF6000,
-    //0xFFFF5000,
-    0xFFFF4000,
-    //0xFFFF3000,
-    0xFFFF2000,
-    //0xFFFF1000,
-
-    0xFFFF0000,
-  };
-  */
-
   // positive and negative default colors used for
   // isosurface rendering of .cube files
   // multiple colors removed -- RMH 3/2008 11.1.28
   
-  public final static int[] argbsIsosurfacePositive = {
-    0xFF5020A0,
-  /*  0xFF7040C0,
-    0xFF9060E0,
-    0xFFB080FF,*/
-  };
-  
-  public final static int[] argbsIsosurfaceNegative = {
-    0xFFA02050,
-  /*  0xFFC04070,
-    0xFFE06090,
-    0xFFFF80B0,*/
-  };
+  public final static int argbsIsosurfacePositive = 0xFF5020A0;
+  public final static int argbsIsosurfaceNegative = 0xFFA02050;
 
   private final static String[] specialAtomNames = {
     
@@ -671,7 +586,6 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     return specialAtomNames[atomID];
   }
   
-  public final static int ATOMID_MAX = specialAtomNames.length;
   ////////////////////////////////////////////////////////////////
   // currently, ATOMIDs must be >= 0 && <= 127
   // if we need more then we can go to 255 by:
@@ -684,6 +598,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   // keep this table in order to make it easier to maintain
   ////////////////////////////////////////////////////////////////
 
+  public final static int ATOMID_MAX = specialAtomNames.length;
   // atomID 0 => nothing special, just an ordinary atom
   public final static byte ATOMID_AMINO_NITROGEN  = 1;
   public final static byte ATOMID_ALPHA_CARBON    = 2;
@@ -955,42 +870,6 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   
   private final static String aaPlus = 
     "LYSN";
-
-  public static float getHydrophobicity(int i) {
-    return (i < 1 || i >= hydrophobicities.length ? 0 : hydrophobicities[i]);
-  }
-
-  /*
-   * # Source: http://us.expasy.org/tools/pscale/Hphob.Eisenberg.html
-   * # Amino acid scale: Normalized consensus hydrophobicity scale
-   * # Author(s): Eisenberg D., Schwarz E., Komarony M., Wall R.
-   * # Reference: J. Mol. Biol. 179:125-142 (1984)
-   *
-   */
-
-  private final static float[] hydrophobicities = {
-                0f,
-      /* Ala*/  0.62f,
-      /* Arg*/ -2.53f,
-      /* Asn*/ -0.78f,
-      /* Asp*/ -0.90f,
-      /* Cys*/  0.29f,
-      /* Gln*/ -0.85f,
-      /* Glu*/ -0.74f,
-      /* Gly*/  0.48f,
-      /* His*/ -0.40f,
-      /* Ile*/  1.38f,
-      /* Leu*/  1.06f,
-      /* Lys*/ -1.50f,
-      /* Met*/  0.64f,
-      /* Phe*/  1.19f,
-      /* Pro*/  0.12f,
-      /* Ser*/ -0.18f,
-      /* Thr*/ -0.05f,
-      /* Trp*/  0.81f,
-      /* Tyr*/  0.26f,
-      /* Val*/  1.08f
-  };
 
   public static int getStandardPdbHydrogenCount(int pt) {
     return (pt < 0 || pt >= pdbHydrogenCount.length ? -1 : pdbHydrogenCount[pt]);
@@ -1493,13 +1372,6 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "Echo", "Axes", "Bbcage", "Uccage", "Hover", 
     "Frank"
      };
-  static {
-    if (shapeClassBases.length != SHAPE_MAX) {
-      Logger.error("the shapeClassBases array has the wrong length");
-       throw new NullPointerException();
-    }
-  }
-
   // .hbond and .ssbonds will return a class,
   // but the class is never loaded, so it is skipped in each case.
   // coloring and sizing of hydrogen bonds and S-S bonds is now
@@ -1601,35 +1473,15 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   // but doesn't necessarily mean it is visible
 
   public final static int ATOM_IN_FRAME    = 1;
+  public final static int ATOM_SLABBED     = 2;  // reserved for future use
 
-  // reserved for future use:
-  
-  public final static int ATOM_SLABBED     = 2;
-
-  public final static String PREVIOUS_MESH_ID = "+PREVIOUS_MESH+";
-
-  // these atom flags get tainted with scripts and frame changes
-  // and must be reset with setModelVisibility() prior to rendering
- 
   public final static int getShapeVisibilityFlag(int shapeID) {
     return (4 << shapeID);
   }
 
-  public final static int CARTOON_VISIBILITY_FLAG = getShapeVisibilityFlag(SHAPE_CARTOON);
-  public static final int BACKBONE_VISIBILITY_FLAG = getShapeVisibilityFlag(SHAPE_BACKBONE);
-
-  public final static int ALPHA_CARBON_VISIBILITY_FLAG 
-      = CARTOON_VISIBILITY_FLAG | BACKBONE_VISIBILITY_FLAG
-      | getShapeVisibilityFlag(SHAPE_TRACE)
-      | getShapeVisibilityFlag(SHAPE_STRANDS)
-      | getShapeVisibilityFlag(SHAPE_MESHRIBBON)
-      | getShapeVisibilityFlag(SHAPE_RIBBONS);
-
-  
-  // all of these things are compile-time constants
-  // if they are false then the compiler should take them away
   static {
-    if (argbsFormalCharge.length != Elements.FORMAL_CHARGE_MAX-Elements.FORMAL_CHARGE_MIN+1) {
+    if (argbsFormalCharge.length != Elements.FORMAL_CHARGE_MAX
+        - Elements.FORMAL_CHARGE_MIN + 1) {
       Logger.error("formal charge color table length");
       throw new NullPointerException();
     }
@@ -1649,7 +1501,12 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
       Logger.error("argbsChainHetero wrong length");
       throw new NullPointerException();
     }
+    if (shapeClassBases.length != SHAPE_MAX) {
+      Logger.error("the shapeClassBases array has the wrong length");
+      throw new NullPointerException();
+    }
   }
+
 
   
 }

@@ -91,6 +91,12 @@ class BioShape {
   int bfactorMin, bfactorMax;
   int range;
   float floatRange;
+  public final static int ALPHA_CARBON_VISIBILITY_FLAG 
+  = NucleicMonomer.CARTOON_VISIBILITY_FLAG | Atom.BACKBONE_VISIBILITY_FLAG
+  | JmolConstants.getShapeVisibilityFlag(JmolConstants.SHAPE_TRACE)
+  | JmolConstants.getShapeVisibilityFlag(JmolConstants.SHAPE_STRANDS)
+  | JmolConstants.getShapeVisibilityFlag(JmolConstants.SHAPE_MESHRIBBON)
+  | JmolConstants.getShapeVisibilityFlag(JmolConstants.SHAPE_RIBBONS);
 
   void calcBfactorRange() {
     bfactorMin = bfactorMax =
@@ -326,7 +332,7 @@ class BioShape {
       int iAtom = leadAtomIndices[i];
       if (monomers[i].getModel().isAtomHidden(iAtom))
         continue;
-      shape.atoms[iAtom].setClickable(JmolConstants.ALPHA_CARBON_VISIBILITY_FLAG);
+      shape.atoms[iAtom].setClickable(BioShape.ALPHA_CARBON_VISIBILITY_FLAG);
       if (isNucleicPolymer)
         ((NucleicMonomer) monomers[i]).setModelClickability();
     }

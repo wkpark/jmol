@@ -71,7 +71,7 @@ public class Draw extends MeshCollection {
         g3d, colix, index) : (DrawMesh) m);
     currentMesh.color = color;
     currentMesh.index = index;
-    if (thisID != null && thisID != JmolConstants.PREVIOUS_MESH_ID
+    if (thisID != null && thisID != MeshCollection.PREVIOUS_MESH_ID
         && htObjects != null)
       htObjects.put(thisID.toUpperCase(), currentMesh);
   }
@@ -157,7 +157,7 @@ public void initShape() {
       slabData = null;
       boundBox = null;
       explicitID = false;
-      setPropertySuper("thisID", JmolConstants.PREVIOUS_MESH_ID, null);
+      setPropertySuper("thisID", MeshCollection.PREVIOUS_MESH_ID, null);
       setPropertySuper("init", value, bs);
       return;
     }

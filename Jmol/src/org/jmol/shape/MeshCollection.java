@@ -25,7 +25,6 @@
 package org.jmol.shape;
 
 import org.jmol.g3d.*;
-import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.StateManager;
 import org.jmol.script.ScriptVariable;
 import org.jmol.script.Token;
@@ -81,7 +80,7 @@ public abstract class MeshCollection extends Shape {
     currentMesh = getMesh(thisID);
     if (currentMesh == null) {
       allocMesh(thisID, null);
-    } else if (thisID.equals(JmolConstants.PREVIOUS_MESH_ID)) {
+    } else if (thisID.equals(MeshCollection.PREVIOUS_MESH_ID)) {
       linkedMesh = currentMesh.linkedMesh;
     }
     if (currentMesh.thisID == null) {
@@ -97,6 +96,7 @@ public abstract class MeshCollection extends Shape {
 
   protected Map<String, Mesh> htObjects;
   protected int color;
+  public final static String PREVIOUS_MESH_ID = "+PREVIOUS_MESH+";
   
   public void allocMesh(String thisID, Mesh m) {
     // this particular version is only run from privately;
@@ -309,7 +309,7 @@ public abstract class MeshCollection extends Shape {
   protected void checkExplicit(String id) {
     if (explicitID) // not twice
       return;
-    explicitID = (id != null && !id.equals(JmolConstants.PREVIOUS_MESH_ID));
+    explicitID = (id != null && !id.equals(MeshCollection.PREVIOUS_MESH_ID));
     if (explicitID)
       previousMeshID = id;
   } 
@@ -513,7 +513,7 @@ public abstract class MeshCollection extends Shape {
   
   @Override
   public int getIndexFromName(String thisID) {
-    if (JmolConstants.PREVIOUS_MESH_ID.equals(thisID))
+    if (MeshCollection.PREVIOUS_MESH_ID.equals(thisID))
       return (previousMeshID == null ? meshCount - 1
           : getIndexFromName(previousMeshID));
     if (TextFormat.isWild(thisID)) {

@@ -98,6 +98,7 @@ final public class Atom extends Point3fi implements JmolNode {
   
   int clickabilityFlags;
   int shapeVisibilityFlags;
+  public static final int BACKBONE_VISIBILITY_FLAG = JmolConstants.getShapeVisibilityFlag(JmolConstants.SHAPE_BACKBONE);
 
   public Atom(int modelIndex, int atomIndex,
         float x, float y, float z, float radius,
@@ -401,7 +402,7 @@ final public class Atom extends Point3fi implements JmolNode {
   private float getHydrophobicity() {
     float[] values = group.chain.modelSet.hydrophobicities;
     if (values == null)
-      return JmolConstants.getHydrophobicity(group.getGroupID());
+      return Elements.getHydrophobicity(group.getGroupID());
     return values[index];
   }
 
@@ -990,7 +991,7 @@ final public class Atom extends Point3fi implements JmolNode {
     //  if it does not show up itself as part of the structure
     //  (this will be a difference in terms of *clickability*).
     // except BACKBONE -- in which case we only see the lead atoms
-    if (group.shapeVisibilityFlags != JmolConstants.BACKBONE_VISIBILITY_FLAG
+    if (group.shapeVisibilityFlags != Atom.BACKBONE_VISIBILITY_FLAG
         || isLeadAtom())
       flags |= group.shapeVisibilityFlags;
 

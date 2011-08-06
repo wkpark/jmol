@@ -61,6 +61,7 @@ import org.jmol.modelset.ModelCollection;
 import org.jmol.modelset.ModelSet;
 import org.jmol.modelset.Bond.BondSet;
 import org.jmol.modelset.ModelCollection.StateScript;
+import org.jmol.shape.MeshCollection;
 import org.jmol.shape.Object2d;
 import org.jmol.shape.Shape;
 import org.jmol.util.BitSetUtil;
@@ -7633,7 +7634,7 @@ public class ScriptEvaluator {
       case Token.isosurface:
       case Token.contact:
         setShapeProperty(JmolConstants.shapeTokenIndex(tok), "thisID",
-            JmolConstants.PREVIOUS_MESH_ID);
+            MeshCollection.PREVIOUS_MESH_ID);
         break;
       }
     }
@@ -16187,13 +16188,13 @@ public class ScriptEvaluator {
       iToken += 2;
       if (statementLength > iToken) {
         setShapeProperty(iShape, "init", fullCommand);
-        setShapeProperty(iShape, "thisID", JmolConstants.PREVIOUS_MESH_ID);
+        setShapeProperty(iShape, "thisID", MeshCollection.PREVIOUS_MESH_ID);
       }
       return null;
     }
     iToken = 1;
     if (!setMeshDisplayProperty(iShape, 0, tok1)) {
-      setShapeProperty(iShape, "thisID", JmolConstants.PREVIOUS_MESH_ID);
+      setShapeProperty(iShape, "thisID", MeshCollection.PREVIOUS_MESH_ID);
       if (iShape != JmolConstants.SHAPE_DRAW)
         setShapeProperty(iShape, "title", new String[] { thisCommand });
       if (tok1 != Token.id

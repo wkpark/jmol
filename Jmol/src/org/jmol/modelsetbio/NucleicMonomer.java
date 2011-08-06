@@ -319,12 +319,12 @@ public class NucleicMonomer extends PhosphorusMonomer {
       return;
     for (int i = 6; --i >= 0;) {
       atom = getAtomFromOffsetIndex(ring6OffsetIndexes[i]);
-      atom.setClickable(JmolConstants.CARTOON_VISIBILITY_FLAG);
+      atom.setClickable(NucleicMonomer.CARTOON_VISIBILITY_FLAG);
     }
     if (isPurine)
       for (int i = 4; --i >= 1;) {
         atom = getAtomFromOffsetIndex(ring5OffsetIndexes[i]);
-        atom.setClickable(JmolConstants.CARTOON_VISIBILITY_FLAG);
+        atom.setClickable(NucleicMonomer.CARTOON_VISIBILITY_FLAG);
       }
   }
  
@@ -337,7 +337,8 @@ public class NucleicMonomer extends PhosphorusMonomer {
     return getHelixData2(tokType, qType, mStep);
   }
    
-  Point3f baseCenter;  
+  Point3f baseCenter;
+  public final static int CARTOON_VISIBILITY_FLAG = JmolConstants.getShapeVisibilityFlag(JmolConstants.SHAPE_CARTOON);  
 
   @Override
   Point3f getQuaternionFrameCenter(char qType) {

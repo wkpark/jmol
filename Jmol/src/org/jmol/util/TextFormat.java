@@ -464,6 +464,8 @@ public class TextFormat {
    */
   public static String replaceAllCharacters(String str, String strFrom,
                                             char chTo) {
+    if (str == null)
+      return null;
     for (int i = strFrom.length(); --i >= 0;)
       str = str.replace(strFrom.charAt(i), chTo);
     return str;

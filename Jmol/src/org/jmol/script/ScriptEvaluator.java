@@ -16271,6 +16271,7 @@ public class ScriptEvaluator {
     boolean idSeen = (initIsosurface(iShape) != null);
     boolean isWild = (idSeen && getShapeProperty(iShape, "ID") == null);
     boolean isColorSchemeTranslucent = false;
+    boolean isInline;
     Object onlyOneModel = null;
     String translucency = null;
     String colorScheme = null;
@@ -16284,9 +16285,8 @@ public class ScriptEvaluator {
       String propertyName = null;
       Object propertyValue = null;
       getToken(i);
-      if (theTok == Token.identifier
-          && (str = parameterAsString(i)).equalsIgnoreCase("inline"))
-        theTok = Token.string;
+      if (theTok == Token.identifier)
+        str = parameterAsString(i);
       switch (theTok) {
       // settings only
       case Token.isosurfacepropertysmoothing:
@@ -17107,7 +17107,7 @@ public class ScriptEvaluator {
           name = dName;
         boolean isXYZ = (name.indexOf("data2d_") == 0);
         boolean isXYZV = (name.indexOf("data3d_") == 0);
-        boolean isInline = name.equals("inline");
+        isInline = name.equals("inline");
 
         sbCommand.append(" inline");
         vxy.add(name); // (0) = name
@@ -17367,137 +17367,141 @@ public class ScriptEvaluator {
         propertyValue = Boolean.TRUE;
         sbCommand.append(" squared");
         break;
+      case Token.inline:
       case Token.string:
         String filename = parameterAsString(i);
+        isInline = filename.equalsIgnoreCase("inline");
         String sType = null;
         if (tokAt(i + 1) == Token.string) {
           sType = stringParameter(++i);
-          addShapeProperty(propertyList, "calculationType", sType);
+          if (!isInline)
+            addShapeProperty(propertyList, "calculationType", sType);
         }
         boolean firstPass = (!surfaceObjectSeen && !planeSeen);
-        if (filename.startsWith("=") && filename.length() > 1) {
-          // Uppsala Electron Density Server (default, at least)
-          String[] info = (String[]) viewer.setLoadFormat(filename, '_', false);
-          filename = info[0];
-          String strCutoff = (!firstPass || !Float.isNaN(cutoff) ? null
-              : info[1]);
-          if (strCutoff != null && !isSyntaxCheck) {
-            cutoff = ScriptVariable.fValue(ScriptVariable.getVariable(viewer
-                .evaluateExpression(strCutoff)));
-            if (cutoff > 0) {
-              if (!Float.isNaN(sigma)) {
-                cutoff *= sigma;
-                sigma = Float.NaN;
-                addShapeProperty(propertyList, "sigma", Float.valueOf(sigma));
+        propertyName = (firstPass ? "readFile" : "mapColor");
+        if (isInline) {
+          if (sType == null)
+            error(ERROR_invalidArgument);
+          // inline PMESH data
+          if (isPmesh)
+            sType = TextFormat.replaceAllCharacters(sType, "{,}|", ' ');
+          if (logMessages)
+            Logger.debug("pmesh inline data:\n" + sType);
+          propertyValue = (isSyntaxCheck ? null : sType);
+          addShapeProperty(propertyList, "fileName", "");
+          sbCommand.append(" INLINE");
+          surfaceObjectSeen = true;
+        } else {
+          if (filename.startsWith("=") && filename.length() > 1) {
+            // Uppsala Electron Density Server (default, at least)
+            String[] info = (String[]) viewer.setLoadFormat(filename, '_', false);
+            filename = info[0];
+            String strCutoff = (!firstPass || !Float.isNaN(cutoff) ? null
+                : info[1]);
+            if (strCutoff != null && !isSyntaxCheck) {
+              cutoff = ScriptVariable.fValue(ScriptVariable.getVariable(viewer
+                  .evaluateExpression(strCutoff)));
+              if (cutoff > 0) {
+                if (!Float.isNaN(sigma)) {
+                  cutoff *= sigma;
+                  sigma = Float.NaN;
+                  addShapeProperty(propertyList, "sigma", Float.valueOf(sigma));
+                }
+                addShapeProperty(propertyList, "cutoff", Float.valueOf(cutoff));
+                sbCommand.append(" cutoff ").append(cutoff);
               }
-              addShapeProperty(propertyList, "cutoff", Float.valueOf(cutoff));
-              sbCommand.append(" cutoff ").append(cutoff);
             }
+            if (ptWithin == 0) {
+              onlyOneModel = "=xxxx";
+              if (modelIndex < 0)
+                modelIndex = viewer.getCurrentModelIndex();
+              bs = viewer.getModelUndeletedAtomsBitSet(modelIndex);
+              getWithinDistanceVector(propertyList, 2.0f, null, bs, false);
+              sbCommand.append(" within 2.0 ").append(Escape.escape(bs));
+            }
+            if (firstPass)
+              defaultMesh = true;
           }
-          if (ptWithin == 0) {
-            onlyOneModel = "=xxxx";
+          if (firstPass && viewer.getParameter("_fileType").equals("Pdb")
+              && Float.isNaN(sigma) && Float.isNaN(cutoff)) {
+            // negative sigma just indicates that 
+            addShapeProperty(propertyList, "sigma", Float.valueOf(-1));
+            sbCommand.append(" sigma -1.0");
+          }
+          /*
+           * a file name, optionally followed by an integer file index. OR empty.
+           * In that case, if the model auxiliary info has the data stored in it,
+           * we use that. There are two possible structures:
+           * 
+           * jmolSurfaceInfo jmolMappedDataInfo
+           * 
+           * Both can be present, but if jmolMappedDataInfo is missing, then
+           * jmolSurfaceInfo is used by default.
+           */
+
+          if (filename.equals("TESTDATA") && testData != null) {
+            propertyValue = testData;
+            break;
+          }
+          if (filename.equals("TESTDATA2") && testData2 != null) {
+            propertyValue = testData2;
+            break;
+          }
+          if (filename.length() == 0) {
+            // "" 
             if (modelIndex < 0)
               modelIndex = viewer.getCurrentModelIndex();
-            bs = viewer.getModelUndeletedAtomsBitSet(modelIndex);
-            getWithinDistanceVector(propertyList, 2.0f, null, bs, false);
-            sbCommand.append(" within 2.0 ").append(Escape.escape(bs));
+            if (surfaceObjectSeen || planeSeen)
+              propertyValue = viewer.getModelAuxiliaryInfo(modelIndex,
+                  "jmolMappedDataInfo");
+            if (propertyValue == null)
+              propertyValue = viewer.getModelAuxiliaryInfo(modelIndex,
+                  "jmolSurfaceInfo");
+            surfaceObjectSeen = true;
+            if (propertyValue != null)
+              break;
+            filename = getFullPathName();
           }
-          if (firstPass)
-            defaultMesh = true;
-        }
-        if (firstPass && viewer.getParameter("_fileType").equals("Pdb")
-            && Float.isNaN(sigma) && Float.isNaN(cutoff)) {
-          // negative sigma just indicates that 
-          addShapeProperty(propertyList, "sigma", Float.valueOf(-1));
-          sbCommand.append(" sigma -1.0");
-        }
-        propertyName = (firstPass ? "readFile" : "mapColor");
-        /*
-         * a file name, optionally followed by an integer file index. OR empty.
-         * In that case, if the model auxiliary info has the data stored in it,
-         * we use that. There are two possible structures:
-         * 
-         * jmolSurfaceInfo jmolMappedDataInfo
-         * 
-         * Both can be present, but if jmolMappedDataInfo is missing, then
-         * jmolSurfaceInfo is used by default.
-         */
-
-        if (filename.equals("TESTDATA") && testData != null) {
-          propertyValue = testData;
-          break;
-        }
-        if (filename.equals("TESTDATA2") && testData2 != null) {
-          propertyValue = testData2;
-          break;
-        }
-        if (filename.length() == 0) {
-          // "" 
-          if (modelIndex < 0)
-            modelIndex = viewer.getCurrentModelIndex();
-          if (surfaceObjectSeen || planeSeen)
-            propertyValue = viewer.getModelAuxiliaryInfo(modelIndex,
-                "jmolMappedDataInfo");
-          if (propertyValue == null)
-            propertyValue = viewer.getModelAuxiliaryInfo(modelIndex,
-                "jmolSurfaceInfo");
           surfaceObjectSeen = true;
-          if (propertyValue != null)
-            break;
-          filename = getFullPathName();
-        }
-        surfaceObjectSeen = true;
-        int fileIndex = -1;
-        if (tokAt(i + 1) == Token.integer)
-          addShapeProperty(propertyList, "fileIndex", Integer
-              .valueOf(fileIndex = intParameter(++i)));
-        if (filename.equalsIgnoreCase("INLINE")) {
-          // inline PMESH data
-          if (tokAt(i + 1) != Token.string)
-            error(ERROR_stringExpected);
-          // addShapeProperty(propertyList, "fileType", "Pmesh");
-          String sdata = parameterAsString(++i);
-          if (isPmesh)
-            sdata = TextFormat.replaceAllCharacters(sdata, "{,}|", ' ');
-          if (logMessages)
-            Logger.debug("pmesh inline data:\n" + sdata);
-          propertyValue = (isSyntaxCheck ? null : sdata);
-          addShapeProperty(propertyList, "fileName", "");
-          sbCommand.append(" INLINE ").append(Escape.escape(sdata));
-        } else if (!isSyntaxCheck) {
-          String[] fullPathNameOrError;
-          String localName = null;
-          if (fullCommand.indexOf("# FILE" + nFiles + "=") >= 0) {
-            filename = extractCommandOption("# FILE" + nFiles);
-            if (tokAt(i + 1) == Token.as)
-              i += 2; // skip that
-          } else if (tokAt(i + 1) == Token.as) {
-            localName = viewer.getFilePath(
-                stringParameter(iToken = (i = i + 2)), false);
-            fullPathNameOrError = viewer.getFullPathNameOrError(localName);
-            localName = fullPathNameOrError[0];
-            addShapeProperty(propertyList, "localName", localName);
-            viewer.setPrivateKeyForShape(iShape); // for the "AS" keyword to work
+          int fileIndex = -1;
+          if (tokAt(i + 1) == Token.integer)
+            addShapeProperty(propertyList, "fileIndex", Integer
+                .valueOf(fileIndex = intParameter(++i)));
+          if (!isSyntaxCheck) {
+            String[] fullPathNameOrError;
+            String localName = null;
+            if (fullCommand.indexOf("# FILE" + nFiles + "=") >= 0) {
+              filename = extractCommandOption("# FILE" + nFiles);
+              if (tokAt(i + 1) == Token.as)
+                i += 2; // skip that
+            } else if (tokAt(i + 1) == Token.as) {
+              localName = viewer.getFilePath(
+                  stringParameter(iToken = (i = i + 2)), false);
+              fullPathNameOrError = viewer.getFullPathNameOrError(localName);
+              localName = fullPathNameOrError[0];
+              addShapeProperty(propertyList, "localName", localName);
+              viewer.setPrivateKeyForShape(iShape); // for the "AS" keyword to work
+            }
+            // just checking here, and getting the full path name
+            fullPathNameOrError = viewer.getFullPathNameOrError(filename);
+            filename = fullPathNameOrError[0];
+            if (fullPathNameOrError[1] != null)
+              error(ERROR_fileNotFoundException, filename + ":"
+                  + fullPathNameOrError[1]);
+            Logger.info("reading isosurface data from " + filename);
+            addShapeProperty(propertyList, "fileName", filename);
+            if (localName != null)
+              filename = localName;
+            sbCommand.append(" /*file*/").append(Escape.escape(filename));
+            propertyValue = null;
+            // null value indicates that we need a reader based on the fileName
           }
-          // just checking here, and getting the full path name
-          fullPathNameOrError = viewer.getFullPathNameOrError(filename);
-          filename = fullPathNameOrError[0];
-          if (fullPathNameOrError[1] != null)
-            error(ERROR_fileNotFoundException, filename + ":"
-                + fullPathNameOrError[1]);
-          Logger.info("reading isosurface data from " + filename);
-          addShapeProperty(propertyList, "fileName", filename);
-          if (localName != null)
-            filename = localName;
-          sbCommand.append(" /*file*/").append(Escape.escape(filename));
-          propertyValue = null;
-          // null value indicates that we need a reader based on the fileName
-        }
-        if (fileIndex >= 0)
-          sbCommand.append(" ").append(fileIndex);
+          if (fileIndex >= 0)
+            sbCommand.append(" ").append(fileIndex);
 
+        }
         if (sType != null)
-          sbCommand.append(" ").append(sType);
+          sbCommand.append(" ").append(Escape.escape(sType));
 
         break;
       case Token.connect:

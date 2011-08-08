@@ -95,6 +95,8 @@ public class AlphaPolymer extends BioPolymer {
     }
     int structureCount = indexEnd - indexStart + 1;
     ProteinStructure proteinstructure = null;
+    if (type == null)
+      System.out.println("alhapoly null type");
     switch(type) {
     case HELIX:
     case HELIX_ALPHA:
@@ -463,7 +465,7 @@ public class AlphaPolymer extends BioPolymer {
   private void searchForTurns(Code[] codes, float[] angles, EnumStructure[] tags) {
     for (int i = monomerCount - 1; --i >= 2; ) {
       codes[i] = Code.NADA;
-      if (tags[i] == EnumStructure.NONE) {
+      if (tags[i] == null || tags[i] == EnumStructure.NONE) {
         float angle = angles[i];
         if (angle >= -90 && angle < 0)
           codes[i] = Code.LEFT_TURN;
@@ -484,7 +486,7 @@ public class AlphaPolymer extends BioPolymer {
     int i = 0;
     while (i < monomerCount) {
       EnumStructure tag = tags[i];
-      if (tag == EnumStructure.NONE) {
+      if (tag == null || tag == EnumStructure.NONE) {
         ++i;
         continue;
       }

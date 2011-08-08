@@ -313,7 +313,6 @@ public final class ModelLoader {
 
     // only now can we access all of the atom's properties
 
-    setDefaultRendering(viewer.getSmallMoleculeMaxAtoms());
     if (is2D) {
       applyStereochemistry();
     }
@@ -326,6 +325,8 @@ public final class ModelLoader {
       iterateOverAllNewStructures(adapter, atomSetCollection);
       adapter.finish(atomSetCollection);
     }
+
+    setDefaultRendering(viewer.getSmallMoleculeMaxAtoms());
 
     RadiusData rd = viewer.getDefaultRadiusData();
     int atomCount = modelSet.atomCount;

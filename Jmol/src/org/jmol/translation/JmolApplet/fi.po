@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-08-05 00:33+0200\n"
-"PO-Revision-Date: 2011-03-21 13:00+0000\n"
+"PO-Revision-Date: 2011-08-08 11:04+0000\n"
 "Last-Translator: Johannes Pernaa <Unknown>\n"
 "Language-Team: Finnish <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-05 17:04+0000\n"
-"X-Generator: Launchpad (build 13613)\n"
+"X-Launchpad-Export-Date: 2011-08-08 16:12+0000\n"
+"X-Generator: Launchpad (build 13622)\n"
 "X-Poedit-Country: Finland\n"
 "X-Poedit-Language: Finnish\n"
 
@@ -361,11 +361,11 @@ msgstr "Arabia"
 
 #: org/jmol/i18n/GT.java:138
 msgid "Asturian"
-msgstr ""
+msgstr "Asturia"
 
 #: org/jmol/i18n/GT.java:139
 msgid "Bosnian"
-msgstr ""
+msgstr "Bosnia"
 
 #: org/jmol/i18n/GT.java:140
 msgid "Catalan"
@@ -389,7 +389,7 @@ msgstr "Kreikka"
 
 #: org/jmol/i18n/GT.java:145
 msgid "Australian English"
-msgstr ""
+msgstr "Australian Englanti"
 
 #: org/jmol/i18n/GT.java:146
 msgid "British English"
@@ -429,7 +429,7 @@ msgstr "Unkari"
 
 #: org/jmol/i18n/GT.java:155
 msgid "Armenian"
-msgstr ""
+msgstr "Armenia"
 
 #: org/jmol/i18n/GT.java:156
 msgid "Indonesian"
@@ -485,7 +485,7 @@ msgstr "Slovenia"
 
 #: org/jmol/i18n/GT.java:169
 msgid "Serbian"
-msgstr ""
+msgstr "Serbia"
 
 #: org/jmol/i18n/GT.java:170
 msgid "Swedish"
@@ -497,7 +497,7 @@ msgstr "Tamil"
 
 #: org/jmol/i18n/GT.java:172
 msgid "Telugu"
-msgstr ""
+msgstr "Telugu"
 
 #: org/jmol/i18n/GT.java:173
 msgid "Turkish"
@@ -505,7 +505,7 @@ msgstr "Turkki"
 
 #: org/jmol/i18n/GT.java:174
 msgid "Uyghur"
-msgstr ""
+msgstr "Uiguuri"
 
 #: org/jmol/i18n/GT.java:175
 msgid "Ukrainian"
@@ -2158,7 +2158,7 @@ msgstr "{0} tukia lisätty"
 
 #: org/jmol/script/ScriptEvaluator.java:15544
 msgid "Note: More than one model is involved in this contact!"
-msgstr ""
+msgstr "Huom: Tähän yhteyteen vaikuttaa useampi kuin yksi malli!"
 
 #: org/jmol/shape/Frank.java:76
 msgid "Click for menu..."
@@ -2287,7 +2287,7 @@ msgstr "valitse ja liikuta atomeja (edellyttää {0})"
 #: org/jmol/viewer/ActionManager.java:139
 #, java-format
 msgid "drag atoms in Z direction (requires {0})"
-msgstr ""
+msgstr "liikuta atomeja Z-akselin suuntaisesti (vaatii {0})"
 
 #: org/jmol/viewer/ActionManager.java:140
 #, java-format

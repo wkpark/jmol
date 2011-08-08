@@ -127,7 +127,7 @@ public class Sticks extends Shape {
       if (bsColixSet == null)
         bsColixSet = new BitSet();
       short colix = Graphics3D.getColix(value);
-      EnumPalette pal = (EnumPalette) value;
+      EnumPalette pal = (value instanceof EnumPalette ? (EnumPalette) value : null);
       if (pal == EnumPalette.TYPE || pal == EnumPalette.ENERGY) {
         //only for hydrogen bonds
         boolean isEnergy = (pal == EnumPalette.ENERGY);

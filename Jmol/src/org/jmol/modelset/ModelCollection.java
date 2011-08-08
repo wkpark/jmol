@@ -3538,9 +3538,9 @@ abstract public class ModelCollection extends BondCollection {
     getAtomIdentityInfo(i, info);
     info.put("element", getElementName(i));
     info.put("elemno", Integer.valueOf(getElementNumber(i)));
-    info.put("x", new Float(atoms[i].x));
-    info.put("y", new Float(atoms[i].y));
-    info.put("z", new Float(atoms[i].z));
+    info.put("x", Float.valueOf(atom.x));
+    info.put("y", Float.valueOf(atom.y));
+    info.put("z", Float.valueOf(atom.z));
     info.put("coord", new Point3f(atom));
     if (vibrationVectors != null && vibrationVectors[i] != null) {
       info.put("vibVector", new Vector3f(vibrationVectors[i]));
@@ -3548,10 +3548,11 @@ abstract public class ModelCollection extends BondCollection {
     info.put("bondCount", Integer.valueOf(atom.getCovalentBondCount()));
     info.put("radius", Float.valueOf((float) (atom.getRasMolRadius() / 120.0)));
     info.put("model", atom.getModelNumberForLabel());
-    info.put("visible", Boolean.valueOf(atoms[i].isVisible(0)));
+    info.put("shape", Atom.atomPropertyString(viewer, atom, Token.shape));
+    info.put("visible", Boolean.valueOf(atom.isVisible(0)));
     info.put("clickabilityFlags", Integer.valueOf(atom.clickabilityFlags));
     info.put("visibilityFlags", Integer.valueOf(atom.shapeVisibilityFlags));
-    info.put("spacefill", new Float(atom.getRadius()));
+    info.put("spacefill", Float.valueOf(atom.getRadius()));
     String strColor = Escape.escapeColor(viewer.getColorArgbOrGray(atom.colixAtom));
     if (strColor != null)
       info.put("color", strColor);
@@ -3560,10 +3561,10 @@ abstract public class ModelCollection extends BondCollection {
     if (isTranslucent)
       info.put("translucent", Boolean.valueOf(isTranslucent));
     info.put("formalCharge", Integer.valueOf(atom.getFormalCharge()));
-    info.put("partialCharge", new Float(atom.getPartialCharge()));
+    info.put("partialCharge", Float.valueOf(atom.getPartialCharge()));
     float d = atom.getSurfaceDistance100() / 100f;
     if (d >= 0)
-      info.put("surfaceDistance", new Float(d));
+      info.put("surfaceDistance", Float.valueOf(d));
     if (models[atom.modelIndex].isPDB) {
       info.put("resname", atom.getGroup3(false));
       int seqNum = atom.getSeqNumber();

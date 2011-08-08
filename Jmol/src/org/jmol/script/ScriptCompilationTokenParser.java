@@ -511,8 +511,8 @@ abstract class ScriptCompilationTokenParser {
      * We assume an expression initially and then adjust accordingly
      * if it turns out this is a coordinate. 
      * 
-     * Note that due to tha nuances of how expressions such as (1-4) are
-     * reported as special codes, Eval must still intepret these
+     * Note that due to the nuances of how expressions such as (1-4) are
+     * reported as special codes, Eval must still interpret these
      * carefully. This could be corrected for here, I think.
      * 
      */

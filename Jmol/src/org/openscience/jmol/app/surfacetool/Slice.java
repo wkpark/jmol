@@ -31,8 +31,6 @@ import org.jmol.util.Measure;
 
 class Slice {
 
-  //	Point3f[] vertices = new Point3f[8]; // 8 vertices (ordered to match
-  // boundbox)
   final Point4f leftPlane = new Point4f(); // definition of the left plane, using Jmol format
   final Point4f middle = new Point4f();//plane representing center of slice.
   final Point4f rightPlane = new Point4f(); // definition of the left plane
@@ -45,26 +43,6 @@ class Slice {
   final Point3f boundBoxCenter = new Point3f();
   float diagonal;
 
-  /*
-  	class Plane extends Vector3f {
-  		Vector3f[] basis;
-
-  		Plane(float angleXY, float anglefromZ, float length) {
-  			basis = new Vector3f[2];
-  			basis[0] = new Vector3f();
-  			basis[1] = new Vector3f();
-  			this.z = (float) (Math.cos(anglefromZ) * length);
-  			float projXY = (float) (Math.sin(anglefromZ) * length);
-  			this.y = (float) (projXY * Math.sin(angleXY));
-  			this.x = (float) (projXY * Math.cos(angleXY));
-  			basis[0].x = (float) (-Math.sin(angleXY));
-  			basis[0].y = (float) (Math.cos(angleXY));
-  			basis[0].z = 0;
-  			basis[1].x = (float) (Math.cos(anglefromZ) * Math.cos(angleXY));
-  			basis[1].y = (float) (Math.cos(anglefromZ) * Math.sin(angleXY));
-  			basis[1].z = (float) (-Math.sin(anglefromZ));
-  		}
-    }*/
   /**
    * @param length
    *        (float) length of vector from origin
@@ -73,13 +51,13 @@ class Slice {
    * @param anglefromZ
    *        (float) angle of vector from Z axis (radians)
    * @param result
-   *    (Point4f) meeting the Jmol definition of a plane.
+   *        (Point4f) meeting the Jmol definition of a plane.
    */
-  static void makePlane(float length, float angleXY, float anglefromZ, Point4f result) {
-    result.set((float) (Math.cos(angleXY) * Math.sin(anglefromZ))
-        , (float) (Math.sin(angleXY) * Math.sin(anglefromZ))
-        , (float) (Math.cos(anglefromZ))
-        , -length);
+  static void makePlane(float length, float angleXY, float anglefromZ,
+                        Point4f result) {
+    result.set((float) (Math.cos(angleXY) * Math.sin(anglefromZ)),
+        (float) (Math.sin(angleXY) * Math.sin(anglefromZ)),
+        (float) (Math.cos(anglefromZ)), -length);
   }
 
   /**
@@ -129,7 +107,6 @@ class Slice {
     diagonal = boundBoxPosCorner.distance(boundBoxNegCorner);
     makePlane(position, angleXY, anglefromZ, middle);
     if (!useMolecular) {
-      // I think there's an easier way to do this....
       //correct for the offset between the boundbox center and the origin
       Point3f pt = new Point3f(middle.x, middle.y, middle.z);
       pt.scaleAdd(-middle.w, pt, boundBoxCenter);
@@ -140,7 +117,8 @@ class Slice {
     leftPlane.w += thickness / 2;
     rightPlane.set(middle);
     rightPlane.w -= thickness / 2;
-    System.out.println(thickness + " left:" + leftPlane + " right:" + rightPlane);
+    System.out.println(thickness + " left:" + leftPlane + " right:"
+        + rightPlane);
   }
 
   /**

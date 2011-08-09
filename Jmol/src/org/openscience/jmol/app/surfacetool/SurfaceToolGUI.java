@@ -26,7 +26,9 @@
 package org.openscience.jmol.app.surfacetool;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
@@ -36,22 +38,29 @@ import java.awt.event.WindowFocusListener;
 import java.awt.event.WindowListener;
 import java.net.URL;
 import java.util.Hashtable;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JSlider;
+import javax.swing.JSpinner;
+import javax.swing.ListCellRenderer;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.jmol.api.JmolViewer;
 import org.jmol.export.history.HistoryFile;
@@ -62,14 +71,14 @@ import org.jmol.i18n.GT;
  * 
  * @author Jonathan Gutow (gutow@uwosh.edu)
  */
-class SurfaceToolGUI extends JPanel implements 
-    WindowConstants, WindowListener, WindowFocusListener, ChangeListener,
-    ActionListener {
+class SurfaceToolGUI extends JPanel implements WindowConstants, WindowListener,
+    WindowFocusListener, ChangeListener, ActionListener, ListSelectionListener {
 
   private HistoryFile historyFile;
   private String histWinName;
   private JFrame slicerFrame;
   private SurfaceTool slicer;
+  private JPanel tabPanel;
   private JPanel objectsPanel;
   private JPanel topPanel;
   private JPanel angleUnitsPanel;
@@ -85,16 +94,17 @@ class SurfaceToolGUI extends JPanel implements
   private JPanel sliderPanel;
   private JPanel normAnglePanel;
   private JSlider angleXYSlider;
-//  private JSpinner angleXYSpinner;
+  //  private JSpinner angleXYSpinner;
   private JSlider angleZSlider;
-//  private JSpinner angleZSpinner;
+  //  private JSpinner angleZSpinner;
   private JPanel positionThicknessPanel;
   private JSlider positionSlider;
-//  private JSpinner positionSpinner;
+  //  private JSpinner positionSpinner;
   private JSlider thicknessSlider;
-//  private JSpinner thicknessSpinner;
-  //private JCheckBox[] objectCheckBoxes;
+  //  private JSpinner thicknessSpinner;
   private ButtonGroup whichOrigin;
+  private JScrollPane surfaceScrollPane;
+  private JList surfaceList;
 
   /**
    * Builds and opens a GUI to control slicing. Called automatically when a new
@@ -131,6 +141,9 @@ class SurfaceToolGUI extends JPanel implements
       //Create and set up the content pane.
       setOpaque(true); //content panes must be opaque
 
+      //left tabpanel
+      tabPanel = new JPanel(new BorderLayout());
+
       //Top panel
       topPanel = new JPanel(new GridLayout(1, 0));
       whichOrigin = new ButtonGroup();
@@ -150,23 +163,25 @@ class SurfaceToolGUI extends JPanel implements
       originPanel.add(absoluteButton);
       originPanel.setBorder(BorderFactory.createTitledBorder(GT._("Origin")));
 
-      capPlanesPanel = new JPanel(new GridLayout(0,1));
+      capPlanesPanel = new JPanel(new GridLayout(0, 1));
       capCheck = new JCheckBox(GT._("Cap"));
-      capCheck.setToolTipText(GT._("Caps slice with opaque surfaces."));
+      capCheck
+          .setToolTipText(GT
+              ._("Caps slice with opaque surfaces.\nIgnores MOs and surfaces with interior layers."));
       capCheck.setSelected(slicer.getCapOn());
       capCheck.addActionListener(this);
       capPlanesPanel.add(capCheck);
       boundaryPlaneCheck = new JCheckBox(GT._("Slice Planes"));
-      boundaryPlaneCheck.setToolTipText(GT._("Shows planes at slicing surfaces."));
+      boundaryPlaneCheck.setToolTipText(GT
+          ._("Shows planes at slicing surfaces."));
       boundaryPlaneCheck.setSelected(false);
       slicer.showSliceBoundaryPlanes(false);
       boundaryPlaneCheck.addActionListener(this);
       capPlanesPanel.add(boundaryPlaneCheck);
-      
-      
+
       ghostPanel = new JPanel(new GridLayout(0, 1));
       ghostCheck = new JCheckBox(GT._("Ghost On"));
-      ghostCheck.setSelected(slicer.getGhoston());
+      ghostCheck.setSelected(slicer.getGhostOn());
       ghostCheck.addActionListener(this);
       ghostCheck.setToolTipText(GT._("Shows an unsliced \"ghost\"."));
       ghostPanel.add(ghostCheck);
@@ -181,13 +196,13 @@ class SurfaceToolGUI extends JPanel implements
       normAnglePanel = new JPanel(new GridLayout(0, 1));
       angleUnitsPanel = new JPanel(new BorderLayout());
       JLabel space = new JLabel("   ");
-      angleUnitsPanel.add(space,BorderLayout.WEST);
-      String [] angleUnits = slicer.getAngleUnitsList();
+      angleUnitsPanel.add(space, BorderLayout.WEST);
+      String[] angleUnits = slicer.getAngleUnitsList();
       angleUnitsList = new JComboBox(angleUnits);
       angleUnitsList.setSelectedIndex(slicer.getAngleUnits());
       angleUnitsList.addActionListener(this);
-      angleUnitsPanel.add(angleUnitsList,BorderLayout.EAST);
-      JPanel labelAndUnits = new JPanel(new GridLayout(1,0));
+      angleUnitsPanel.add(angleUnitsList, BorderLayout.EAST);
+      JPanel labelAndUnits = new JPanel(new GridLayout(1, 0));
       JLabel sliderLabel = new JLabel(GT._("Angle from X-axis in XY plane"),
           SwingConstants.CENTER);
       sliderLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -237,13 +252,23 @@ class SurfaceToolGUI extends JPanel implements
       updateThicknessSlider();
       positionThicknessPanel.add(thicknessSlider);
       sliderPanel.add(positionThicknessPanel);
+      tabPanel.add(topPanel, BorderLayout.NORTH);
+      tabPanel.add(sliderPanel, BorderLayout.SOUTH);
 
       //objects panel
       objectsPanel = new JPanel();
+      objectsPanel.setBorder(BorderFactory.createTitledBorder(GT
+          ._("Select Surface(s)")));
+      surfaceList = new JList(new DefaultListModel());
+      surfaceList.setCellRenderer(new SurfaceListCellRenderer());
+      surfaceList.addListSelectionListener(this);
+      updateSurfaceList();
+      surfaceScrollPane = new JScrollPane(surfaceList);
+      surfaceScrollPane.setPreferredSize(new Dimension(120, 300));
+      objectsPanel.add(surfaceScrollPane);
 
       //add everything
-      add(topPanel, BorderLayout.NORTH);
-      add(sliderPanel, BorderLayout.SOUTH);
+      add(tabPanel, BorderLayout.WEST);
       add(objectsPanel, BorderLayout.EAST);
 
       slicerFrame.setContentPane(this);
@@ -264,7 +289,7 @@ class SurfaceToolGUI extends JPanel implements
     if (e.getSource() == angleUnitsList) {
       slicer.setAngleUnits(angleUnitsList.getSelectedIndex());
       updateAngleSliders();
-    }  
+    }
     if (e.getSource() == viewCenterButton || e.getSource() == absoluteButton) {
       if (absoluteButton.isSelected() && !slicer.getUseMolecular()) {
         slicer.setUseMolecular(true);
@@ -278,15 +303,25 @@ class SurfaceToolGUI extends JPanel implements
       }
     }
     if (e.getSource() == ghostCheck) {
-      slicer.setGhostOn(ghostCheck.isSelected());
-      slicer.updateSlices();
+      boolean isOn = ghostCheck.isSelected();
+      slicer.setGhostOn(isOn);
+      if (isOn) {
+        slicer.setCapOn(false);
+        capCheck.setSelected(false);
+      }
+      sliceSelected();
     }
     if (e.getSource() == boundaryPlaneCheck) {
       slicer.showSliceBoundaryPlanes(boundaryPlaneCheck.isSelected());
     }
-    if (e.getSource()==capCheck){
-      slicer.setCapOn(capCheck.isSelected());
-      slicer.updateSlices();
+    if (e.getSource() == capCheck) {
+      boolean isOn = capCheck.isSelected();
+      slicer.setCapOn(isOn);
+      if (isOn) {
+        slicer.setGhostOn(false);
+        ghostCheck.setSelected(false);
+      }
+      sliceSelected();
     }
   }
 
@@ -297,9 +332,8 @@ class SurfaceToolGUI extends JPanel implements
       float tempAngleXY = (float) (Math.PI * angleXYSlider.getValue() / 180);
       slicer.setSliceAnglefromZ(tempAngleZ);
       slicer.setSliceAngleXY(tempAngleXY);
-      if (!source.getValueIsAdjusting()) {
-        slicer.updateSlices();
-      }
+      if (!source.getValueIsAdjusting())
+        sliceSelected();
     }
     if (source == positionSlider || source == thicknessSlider) {
       float tempThickness = thicknessSlider.getValue()
@@ -308,9 +342,55 @@ class SurfaceToolGUI extends JPanel implements
           / 180 + slicer.getPositionMin();
       slicer.setSliceThickness(tempThickness);
       slicer.setSlicePosition(tempPos);
-      if (!source.getValueIsAdjusting()) {
-        slicer.updateSlices();
+      if (!source.getValueIsAdjusting())
+        sliceSelected();
+    }
+  }
+
+  public void valueChanged(ListSelectionEvent e) {
+    if (e.getValueIsAdjusting())
+      return; // wait until done
+    JList whichList = (JList) e.getSource();
+    if (whichList.isSelectionEmpty())
+      return;// nothing selected
+    int[] selected = whichList.getSelectedIndices();
+    if (selected != null) {
+      int lastIndex = selected[(selected.length - 1)];
+      List<SurfaceStatus> surfaces = slicer.getSurfaces();
+      SurfaceStatus lastSurface = surfaces.get(lastIndex);
+      if (lastSurface.beenSliced) {
+        slicer.setSlice(lastSurface.slice.angleXY,
+            lastSurface.slice.anglefromZ, lastSurface.slice.position,
+            lastSurface.slice.thickness);
+        slicer.setCapOn(lastSurface.capOn);
+        capCheck.setSelected(lastSurface.capOn);
+        slicer.setGhostOn(lastSurface.ghostOn);
+        ghostCheck.setSelected(lastSurface.ghostOn);
+        updateAngleSliders();
+        updatePositionSlider();
+        updateThicknessSlider();
       }
+      sliceSelected();
+    }
+  }
+
+  private void sliceSelected() {
+    if (surfaceList == null)
+      return;
+    int[] whichSelected = surfaceList.getSelectedIndices();
+    if (whichSelected == null || whichSelected.length == 0)
+      return;
+    for (int i = 0; i < whichSelected.length; i++) {
+      List<SurfaceStatus> surfaces = slicer.getSurfaces();
+      int k = whichSelected[i];
+      slicer.sliceObject(surfaces.get(k).id, surfaces.get(k).kind);
+      surfaces.get(k).beenSliced = true;
+      surfaces.get(k).capOn = slicer.getCapOn();
+      surfaces.get(k).ghostOn = slicer.getGhostOn();
+      surfaces.get(k).slice.setSlice(slicer.getSliceAngleXY(),
+          slicer.getAnglefromZ(), slicer.getSlicePosition(),
+          slicer.getSliceThickness(), slicer.getCenter(), slicer.getBoxVec(),
+          slicer.getUseMolecular());
     }
   }
 
@@ -395,13 +475,13 @@ class SurfaceToolGUI extends JPanel implements
       break;
     case SurfaceTool.UNITS_PI:
       String piStr = "\u03C0";
-      angleLabels.put(Integer.valueOf(30), new JLabel(piStr+"/6"));
-      angleLabels.put(Integer.valueOf(60), new JLabel(piStr+"/3"));
-      angleLabels.put(Integer.valueOf(90), new JLabel(piStr+"/2"));
-      angleLabels.put(Integer.valueOf(120), new JLabel("2"+piStr+"/3"));
-      angleLabels.put(Integer.valueOf(150), new JLabel("5"+piStr+"/6"));
+      angleLabels.put(Integer.valueOf(30), new JLabel(piStr + "/6"));
+      angleLabels.put(Integer.valueOf(60), new JLabel(piStr + "/3"));
+      angleLabels.put(Integer.valueOf(90), new JLabel(piStr + "/2"));
+      angleLabels.put(Integer.valueOf(120), new JLabel("2" + piStr + "/3"));
+      angleLabels.put(Integer.valueOf(150), new JLabel("5" + piStr + "/6"));
       angleLabels.put(Integer.valueOf(180), new JLabel(piStr));
-      break;      
+      break;
     }
     angleXYSlider.setLabelTable(angleLabels);
     angleXYSlider.setPaintLabels(true);
@@ -411,6 +491,19 @@ class SurfaceToolGUI extends JPanel implements
     angleXYSlider.setValue(tempAngle);
     tempAngle = (int) (180 * slicer.getAnglefromZ() / Math.PI);
     angleZSlider.setValue(tempAngle);
+  }
+
+  void updateSurfaceList() {
+    //TODO - will update the surface list checking color, etc...or should
+    //this just check that the list is complete and other things will be updated
+    //as they change?  For starters, we'll just reset it and make it match the
+    //contents of the slicer.surfaces list.  May only need ID and color...
+    DefaultListModel listModel = (DefaultListModel) surfaceList.getModel();
+    listModel.removeAllElements();
+    int size = slicer.getSurfaces().size();
+    for (int i = 0; i < size; i++) {
+      listModel.addElement(slicer.getSurfaces().get(i));
+    }
   }
 
   void saveHistory() {
@@ -466,6 +559,7 @@ class SurfaceToolGUI extends JPanel implements
     updateAngleSliders();
     updatePositionSlider();
     updateThicknessSlider();
+    updateSurfaceList();
     slicerFrame.setVisible(true);
     slicerFrame.toFront();
   }
@@ -474,11 +568,11 @@ class SurfaceToolGUI extends JPanel implements
    * @see java.awt.event.WindowFocusListener#windowGainedFocus(java.awt.event.WindowEvent)
    */
   public void windowGainedFocus(WindowEvent e) {
-    // TODO This is where the surface list should be updated...
     slicer.toFrontOrGotFocus();
     updateAngleSliders();
     updatePositionSlider();
     updateThicknessSlider();
+    updateSurfaceList();
   }
 
   /* (non-Javadoc)
@@ -493,11 +587,11 @@ class SurfaceToolGUI extends JPanel implements
    * @see java.awt.event.WindowListener#windowOpened(java.awt.event.WindowEvent)
    */
   public void windowOpened(WindowEvent e) {
-    // TODO
     slicer.toFrontOrGotFocus();
     updateAngleSliders();
     updatePositionSlider();
     updateThicknessSlider();
+    updateSurfaceList();
   }
 
   /* (non-Javadoc)
@@ -528,22 +622,22 @@ class SurfaceToolGUI extends JPanel implements
    * @see java.awt.event.WindowListener#windowDeiconified(java.awt.event.WindowEvent)
    */
   public void windowDeiconified(WindowEvent e) {
-    // TODO
     slicer.toFrontOrGotFocus();
     updateAngleSliders();
     updatePositionSlider();
     updateThicknessSlider();
+    updateSurfaceList();
   }
 
   /* (non-Javadoc)
    * @see java.awt.event.WindowListener#windowActivated(java.awt.event.WindowEvent)
    */
   public void windowActivated(WindowEvent e) {
-    // TODO
     slicer.toFrontOrGotFocus();
     updateAngleSliders();
     updatePositionSlider();
     updateThicknessSlider();
+    updateSurfaceList();
   }
 
   /* (non-Javadoc)
@@ -554,4 +648,24 @@ class SurfaceToolGUI extends JPanel implements
 
   }
 
+  class SurfaceListCellRenderer extends JLabel implements ListCellRenderer {
+
+    public Component getListCellRendererComponent(JList list, Object value,
+                                                  int index,
+                                                  boolean isSelected,
+                                                  boolean cellHasFocus) {
+      setText(" " + ((SurfaceStatus) value).id);
+      if (isSelected) {
+        setBackground(list.getSelectionBackground());
+        setForeground(new Color(((SurfaceStatus) value).color));
+      } else {
+        setBackground(list.getBackground());
+        setForeground(new Color(((SurfaceStatus) value).color));
+      }
+      setEnabled(list.isEnabled());
+      setFont(list.getFont());
+      setOpaque(true);
+      return this;
+    }
+  }
 }

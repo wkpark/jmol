@@ -57,14 +57,7 @@ public class SurfaceTool {
   private final Point3f center = new Point3f();
   private final Vector3f boxVec = new Vector3f();
   //surface specific parameters
-  //TODO may want to combine the following into a single object
-  private final List<String> surfaceIDs = new ArrayList<String>();
-  private final List<Integer> surfaceKind = new ArrayList<Integer>();
-  //private String[] surfaceCmds = new String[0];//initially set to basic creation.
-  //private boolean[] surfaceVisible = new boolean[0];
-  //private boolean[] filled = new boolean[0];
-  //private boolean[] meshon = new boolean[0];
-  //TODO fill and mesh color, translucency, frontonly, lighting
+  private final List<SurfaceStatus> surfaces = new ArrayList<SurfaceStatus>();
 
   final static int DEGREES = 0;
   final static int RADIANS = 1;
@@ -73,8 +66,9 @@ public class SurfaceTool {
   final static int UNITS_PI = 4;
   private int angleUnits = DEGREES;
   //Note order of following list must match above.
-  private String [] angleUnitsList = {GT._("Degrees"),GT._("Radians"),GT._("Gradians"),GT._("Circle Fraction"),GT._("Units of Pi")};
-                  
+  private String[] angleUnitsList = { GT._("Degrees"), GT._("Radians"),
+      GT._("Gradians"), GT._("Circle Fraction"), GT._("Units of Pi") };
+
   public SurfaceTool(JmolViewer viewer, HistoryFile hfile, String winName,
       boolean useGUI) {
     this.viewer = viewer;
@@ -103,7 +97,7 @@ public class SurfaceTool {
     //objects that could be sliced.
     //select all atoms and molecules to start as first guess.  Want initialization
     //added to the script so do with call to script
-    
+
     BoxInfo box = new BoxInfo();
     viewer.calcAtomsMinMax(null, box);
     center.set(box.getBoundBoxCenter());
@@ -111,22 +105,21 @@ public class SurfaceTool {
     posCorner.add(center, boxVec);
     negCorner.sub(center, boxVec);
     Shape[] shapes = (Shape[]) viewer.getProperty("DATA_API", "shapeManager",
-    "getShapes");
+        "getShapes");
     //now iterate through all the shapes and get their XYZmin and XYZmax.  Expand
     //Boundbox used by SurfaceTool to encompass these.
-    box = checkMeshBB(shapes,JmolConstants.SHAPE_ISOSURFACE, box);
-    box = checkMeshBB(shapes,JmolConstants.SHAPE_PMESH, box);
-    //TODO
-//    box = checkMeshBB(shapes,JmolConstants.SHAPE_MO, box);
-    if (box!=null){
+    box = checkMeshBB(shapes, JmolConstants.SHAPE_ISOSURFACE, box);
+    box = checkMeshBB(shapes, JmolConstants.SHAPE_PMESH, box);
+    box = checkMeshBB(shapes, JmolConstants.SHAPE_MO, box);
+    if (box != null) {
       center.set(box.getBoundBoxCenter());
       negCorner.sub(center, box.getBoundBoxCornerVector());
       posCorner.add(center, box.getBoundBoxCornerVector());
       boxVec.set(box.getBoundBoxCornerVector());
     }
   }
-  
-  BoxInfo checkMeshBB(Shape [] shapes, int kind, BoxInfo box){
+
+  BoxInfo checkMeshBB(Shape[] shapes, int kind, BoxInfo box) {
     MeshCollection mc = (MeshCollection) shapes[kind];
     if (mc == null)
       return box;
@@ -134,14 +127,15 @@ public class SurfaceTool {
       Mesh m = mc.meshes[i];
       if (!m.isValid || m.vertexCount == 0 && m.polygonCount == 0)
         continue;
-      if (m.thisID.equalsIgnoreCase("_slicerleft") || m.thisID.equalsIgnoreCase("_slicerright"))
+      if (m.thisID.equalsIgnoreCase("_slicerleft")
+          || m.thisID.equalsIgnoreCase("_slicerright"))
         continue;
       Point3f[] bb = m.getBoundingBox();
       if (bb == null)
         continue;
       box.addBoundBoxPoint(bb[0]);
-      box.addBoundBoxPoint(bb[1]);    
-    }   
+      box.addBoundBoxPoint(bb[1]);
+    }
     return box;
   }
 
@@ -162,44 +156,92 @@ public class SurfaceTool {
     } else {
       positionMin = -1 * (boxVec.length());
     }
-    //positionMax = positionMin + thicknessMax;
     position = positionMin + delta;
   }
 
   private void updateSurfaceInfo() {
     Shape[] shapes = (Shape[]) viewer.getProperty("DATA_API", "shapeManager",
         "getShapes");
-    surfaceIDs.clear();
-    surfaceKind.clear();
-    updateMeshInfo(shapes,JmolConstants.SHAPE_ISOSURFACE);
-    updateMeshInfo(shapes,JmolConstants.SHAPE_PMESH);
-    //TODO
-//    updateMeshInfo(shapes,JmolConstants.SHAPE_MO);
+    setSyncStarting();
+    updateMeshInfo(shapes, JmolConstants.SHAPE_ISOSURFACE);
+    updateMeshInfo(shapes, JmolConstants.SHAPE_PMESH);
+    updateMeshInfo(shapes, JmolConstants.SHAPE_MO);
+    syncDone();
   }
 
-private void updateMeshInfo(Shape[] shapes, int kind){
-  if (shapes != null) {
-    MeshCollection mc = (MeshCollection) shapes[kind];
-    if (mc != null) {
-      //check all the meshes
-      for (int i = 0; i < mc.meshCount; i++) {
-        Mesh m = mc.meshes[i];
-          if (!m.isValid || m.vertexCount == 0 && m.polygonCount == 0)
-            continue;
-          if (m.thisID.equalsIgnoreCase("_slicerleft") || m.thisID.equalsIgnoreCase("_slicerright"))
-            continue;
-          surfaceIDs.add(m.thisID);
-          surfaceKind.add(Integer.valueOf(kind));
+  private void setSyncStarting() {
+    for (int i = 0; i < surfaces.size(); i++)
+      surfaces.get(i).foundDuringLastSync = false;
+  }
+
+  private void syncDone() {
+    //delete any surfaces that were not found
+    for (int i = (surfaces.size() - 1); i >= 0; i--) {
+      if (!surfaces.get(i).foundDuringLastSync)
+        surfaces.remove(i);
+    }
+  }
+
+  private void updateMeshInfo(Shape[] shapes, int kind) {
+    if (shapes != null) {
+      MeshCollection mc = (MeshCollection) shapes[kind];
+      if (mc != null) {
+        //check all the meshes
+        int[] meshIndexList = new int[mc.meshCount];
+        for (int i = 0; i < mc.meshCount; i++)
+          meshIndexList[i] = -1;
+        if (!surfaces.isEmpty()) {
+          int[] surfaceIndexList = new int[surfaces.size()];
+          for (int i = 0; i < surfaces.size(); i++)
+            surfaceIndexList[i] = -1;
+          for (int i = 0; i < mc.meshCount; i++) {
+            Mesh m = mc.meshes[i];
+            if (!checkMesh(m)) {
+              meshIndexList[i] = -2;
+            } else {
+              //scan id's and make list of which match which mesh...
+              for (int j = 0; j < surfaces.size(); j++) {
+                if (surfaces.get(j).id == m.thisID) {
+                  surfaceIndexList[j] = i;
+                  meshIndexList[i] = j;
+                }
+              }
+            }
+          }
+          //Now use indices to update things...
+          for (int i = 0; i < surfaceIndexList.length; i++) {
+            if (surfaceIndexList[i] >= 0) {
+              surfaces.get(i).updateExisting(mc.meshes[surfaceIndexList[i]]);
+            }
+          }
+        } else {
+          for (int i = 0; i < mc.meshCount; i++) {
+            Mesh m = mc.meshes[i];
+            if (!checkMesh(m)) {
+              meshIndexList[i] = -2;
+            } else {
+              meshIndexList[i] = -1;
+            }
+          }
+        }
+        for (int i = 0; i < meshIndexList.length; i++) {
+          if (meshIndexList[i] == -1)
+            surfaces.add(new SurfaceStatus(mc.meshes[i], kind));
+        }
       }
     }
-  }  
-}
-//  private MeshCollection getIsosurfaces() {
-//    Shape[] shapes = (Shape[]) viewer.getProperty("DATA_API", "shapeManager",
-//        "getShapes");
-//    return (shapes == null ? null
-//        : (MeshCollection) shapes[JmolConstants.SHAPE_ISOSURFACE]);
-//  }
+  }
+
+  private boolean checkMesh(Mesh m) {
+    if (!m.isValid || m.vertexCount == 0 && m.polygonCount == 0) {
+      return false;
+    }
+    if (m.thisID.equalsIgnoreCase("_slicerleft")
+        || m.thisID.equalsIgnoreCase("_slicerright")) {
+      return false;
+    }
+    return true;
+  }
 
   void setAngleUnits(int units) {
     angleUnits = units;
@@ -217,20 +259,17 @@ private void updateMeshInfo(Shape[] shapes, int kind){
    * 
    */
   private float angleXY;
-  //private float angleXYMax;
   private float anglefromZ;
-  //private float anglefromZMax;
   private float positionMin;
   private float position;
-  //private float positionMax;
   private float thickness;
   private float thicknessMax;
   private Slice slice = new Slice();
 
-  private boolean lefton = false;
-  private boolean righton = false;
-  private boolean ghoston = false;
-  private boolean capon = false;
+  private boolean leftOn = false;
+  private boolean rightOn = false;
+  private boolean ghostOn = false;
+  private boolean capOn = false;
   private boolean useMolecular = false;
   private boolean usePercent = false;
 
@@ -239,13 +278,13 @@ private void updateMeshInfo(Shape[] shapes, int kind){
     angleXY = 0;
     anglefromZ = (float) (Math.PI / 2);
     position = 0;
-    thickness = negCorner.distance(posCorner)/5;
-    slice.setSlice(angleXY, anglefromZ, position, thickness, center,
-        boxVec, useMolecular);
+    thickness = negCorner.distance(posCorner) / 5;
+    slice.setSlice(angleXY, anglefromZ, position, thickness, center, boxVec,
+        useMolecular);
   }
 
   void showSliceBoundaryPlanes(boolean onOrOff) {
-    lefton = righton = onOrOff;
+    leftOn = rightOn = onOrOff;
     StringBuffer cmd = new StringBuffer();
     drawSlicePlane(cmd, Token.left, onOrOff);
     drawSlicePlane(cmd, Token.right, onOrOff);
@@ -265,8 +304,7 @@ private void updateMeshInfo(Shape[] shapes, int kind){
    * @param thickness
    *        (float) thickness of slice in absolute units
    */
-  void setSlice(float angleXY, float anglefromZ, float position,
-                       float thickness) {
+  void setSlice(float angleXY, float anglefromZ, float position, float thickness) {
     if (usePercent) {//convert to absolute units
       //TODO
       JOptionPane.showMessageDialog(null,
@@ -277,8 +315,8 @@ private void updateMeshInfo(Shape[] shapes, int kind){
     this.anglefromZ = anglefromZ;
     this.position = position;
     this.thickness = thickness;
-    slice.setSlice(angleXY, anglefromZ, position, thickness, center,
-        boxVec, useMolecular);
+    slice.setSlice(angleXY, anglefromZ, position, thickness, center, boxVec,
+        useMolecular);
   }
 
   /**
@@ -289,8 +327,8 @@ private void updateMeshInfo(Shape[] shapes, int kind){
   void setSliceAngleXY(float angle) {
     if (angleXY != angle) {
       angleXY = angle;
-      slice.setSlice(angleXY, anglefromZ, position, thickness, center,
-          boxVec, useMolecular);
+      slice.setSlice(angleXY, anglefromZ, position, thickness, center, boxVec,
+          useMolecular);
     }
   }
 
@@ -306,8 +344,8 @@ private void updateMeshInfo(Shape[] shapes, int kind){
   void setSliceAnglefromZ(float angle) {
     if (anglefromZ != angle) {
       anglefromZ = angle;
-      slice.setSlice(angleXY, anglefromZ, position, thickness, center,
-          boxVec, useMolecular);
+      slice.setSlice(angleXY, anglefromZ, position, thickness, center, boxVec,
+          useMolecular);
     }
   }
 
@@ -329,8 +367,8 @@ private void updateMeshInfo(Shape[] shapes, int kind){
     }
     if (position != where) {
       position = where;
-      slice.setSlice(angleXY, anglefromZ, position, thickness, center,
-          boxVec, useMolecular);
+      slice.setSlice(angleXY, anglefromZ, position, thickness, center, boxVec,
+          useMolecular);
     }
   }
 
@@ -352,8 +390,8 @@ private void updateMeshInfo(Shape[] shapes, int kind){
     }
     if (thickness != width) {
       thickness = width;
-      slice.setSlice(angleXY, anglefromZ, position, thickness, center,
-          boxVec, useMolecular);
+      slice.setSlice(angleXY, anglefromZ, position, thickness, center, boxVec,
+          useMolecular);
     }
   }
 
@@ -361,22 +399,20 @@ private void updateMeshInfo(Shape[] shapes, int kind){
     return (thickness);
   }
 
-  void updateSlices() {
-    for (int i = 0; i < surfaceIDs.size(); i++)
-        sliceObject(surfaceIDs.get(i), surfaceKind.get(i).intValue());
+  void updateSlices() {//slices all surfaces...for testing
+    for (int i = 0; i < surfaces.size(); i++) {
+      sliceObject(surfaces.get(i).id, surfaces.get(i).kind);
+    }
   }
 
   void sliceObject(String objectName, int kind) {
- //   unnecessary already in ID list, which we carefully update
-//    MeshCollection mc = getIsosurfaces(); 
-//    int iMesh = mc.getIndexFromName(objectName);
-//    if (iMesh < 0 || !mc.meshes[iMesh].isValid) {
-      // do something here
-//    } else {
-      //valid surface because it is in the updated list and we check
+    //valid surface because it is in the updated list and we check
     //every time the window gains focus to catch changes.
-    String cmdStart ="";
-    switch (kind){
+    String cmdStart = "";
+    String idStr = " ID \"" + objectName + "\"";
+    String slabCapStr = (capOn ? " cap " : " slab ");
+    String ghostStr = (ghostOn ? "translucent 0.8 mesh " : "");
+    switch (kind) {
     case JmolConstants.SHAPE_ISOSURFACE:
       cmdStart = "isosurface";
       break;
@@ -385,33 +421,28 @@ private void updateMeshInfo(Shape[] shapes, int kind){
       break;
     case JmolConstants.SHAPE_MO:
       cmdStart = "mo";
+      idStr = "";//since mo command does not take IDs
+      slabCapStr = " slab ";
       break;
     }
-      String ghostStr = (ghoston ? "translucent 0.8 mesh " : "");
-      //      String cmd = "isosurface " + objectName + " off;";
-      StringBuffer cmd = new StringBuffer();
-      //planes on or off as appropriate
-      drawSlicePlane(cmd, Token.left, lefton);
-      drawSlicePlane(cmd, Token.right, righton);
-      cmd.append(cmdStart);
-      cmd.append(" ID \"").append(objectName).append("\" slab none");
-      getSlabOption(cmd, ghostStr + "-", slice.leftPlane);
-      getSlabOption(cmd, ghostStr, slice.rightPlane);
-      cmd.append(";");
-      //      cmd += " isosurface ").append(objectName).append(" on;";
-
-      viewer.evalStringQuiet(cmd.toString());
-//    }//TODO shouldn't fail silently as it does now.
+    StringBuffer cmd = new StringBuffer();
+    //planes on or off as appropriate
+    drawSlicePlane(cmd, Token.left, leftOn);
+    drawSlicePlane(cmd, Token.right, rightOn);
+    //now handle the surface
+    cmd.append(cmdStart).append(idStr).append(" slab none;");
+    cmd.append(cmdStart).append(idStr);
+    cmd.append(slabCapStr).append(ghostStr).append("-")
+        .append(Escape.escape(slice.leftPlane));
+    cmd.append(";").append(cmdStart).append(idStr);
+    cmd.append(slabCapStr).append(ghostStr)
+        .append(Escape.escape(slice.rightPlane));
+    cmd.append(";");
+    viewer.evalStringQuiet(cmd.toString());
     return;
   }
-  
-  private void getSlabOption(StringBuffer cmd, String prefix, Point4f plane) {
-    String slabCapStr = (capon ? " cap ":" slab ");
-    cmd.append(slabCapStr).append(prefix).append(Escape.escape(plane));
-  }
 
-  private void drawSlicePlane(StringBuffer cmd, int side,
-                                     boolean on) {
+  private void drawSlicePlane(StringBuffer cmd, int side, boolean on) {
     String color;
     String name = Token.nameOf(side);
     Point4f plane;
@@ -436,7 +467,9 @@ private void updateMeshInfo(Shape[] shapes, int kind){
   }
 
   /**
-   * @return (int) possible values: SurfaceTool.RADIANS, SurfaceTool.DEGREES.
+   * @return (int) possible values: SurfaceTool.RADIANS, SurfaceTool.DEGREES,
+   *         SurfaceTool.GRADIANS, SurfaceTool.CIRCLE_FRACTION,
+   *         SurfaceTool.UNITS_PI.
    */
   int getAngleUnits() {
     return angleUnits;
@@ -445,8 +478,8 @@ private void updateMeshInfo(Shape[] shapes, int kind){
   /**
    * @return (boolean) true = ghost showing; false = ghost hiding.
    */
-  boolean getGhoston() {
-    return ghoston;
+  boolean getGhostOn() {
+    return ghostOn;
   }
 
   /**
@@ -454,7 +487,7 @@ private void updateMeshInfo(Shape[] shapes, int kind){
    *        (boolean) true for ghost on.
    */
   void setGhostOn(boolean b) {
-    ghoston = b;
+    ghostOn = b;
   }
 
   /**
@@ -488,16 +521,20 @@ private void updateMeshInfo(Shape[] shapes, int kind){
   Point4f getSliceMiddle() {
     return slice.getMiddle();
   }
-  
-  String[] getAngleUnitsList(){
+
+  String[] getAngleUnitsList() {
     return angleUnitsList;
   }
 
   boolean getCapOn() {
-    return capon;
+    return capOn;
   }
-  
-  void setCapOn(boolean b){
-    capon = b;
+
+  void setCapOn(boolean b) {
+    capOn = b;
+  }
+
+  public List<SurfaceStatus> getSurfaces() {
+    return surfaces;
   }
 }

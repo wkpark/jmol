@@ -1874,6 +1874,9 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     case Token.continuecmd:
       isNew = false;
       ScriptFlowContext f = (flowContext == null ? null : flowContext.getBreakableContext(0));
+      if (tokCommand == Token.continuecmd)
+        while (f != null  && f.token.tok != Token.forcmd && f.token.tok != Token.whilecmd)
+          f = f.getParent();
       if (f == null)
         return error(ERROR_badContext, ident);
       setCommand( new Token(tokCommand, f.pt0, ident)); //copy

@@ -43,7 +43,7 @@ class ModelManager {
 
   ModelSet zap() {
     fullPathName = fileName = null;
-    return (new ModelLoader(viewer, viewer.getZapName())).getModelSet();
+    return (modelSet = (new ModelLoader(viewer, viewer.getZapName())).getModelSet());
   }
   
   String getModelSetFileName() {

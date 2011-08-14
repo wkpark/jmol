@@ -13,15 +13,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-07-29 23:21+0200\n"
-"PO-Revision-Date: 2011-07-25 05:49+0000\n"
+"POT-Creation-Date: 2011-08-14 13:53+0200\n"
+"PO-Revision-Date: 2011-08-12 20:38+0000\n"
 "Last-Translator: Oliver Stueker <Unknown>\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-05 17:04+0000\n"
-"X-Generator: Launchpad (build 13613)\n"
+"X-Launchpad-Export-Date: 2011-08-14 10:36+0000\n"
+"X-Generator: Launchpad (build 13674)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
 msgid "Error starting Jmol: the property 'user.home' is not defined."
@@ -87,8 +87,7 @@ msgstr "Skript Datei zum Ausführen oder '-' für System.in"
 
 #: org/openscience/jmol/app/JmolApp.java:170
 msgid "use multitouch interface (requires \"sparshui\" parameter"
-msgstr ""
-"benutze die Multitouch Schnittstelle (benötigt \"sparshui\" Parameter"
+msgstr "benutze die Multitouch Schnittstelle (benötigt \"sparshui\" Parameter"
 
 #: org/openscience/jmol/app/JmolApp.java:177
 msgid "Jmol script to execute BEFORE -s option"
@@ -898,7 +897,7 @@ msgstr "Oberflächen Tool..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:191
 msgid "Control Display of Surfaces"
-msgstr ""
+msgstr "Steuerung der Darstellung von Oberflächen"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:192
 msgid "&Help"
@@ -1315,93 +1314,99 @@ msgstr "Lade..."
 msgid "What's New in Jmol"
 msgstr "Neues in Jmol"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:69
 msgid "Degrees"
 msgstr "Grad"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:69
 msgid "Radians"
 msgstr "Radian"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:70
 msgid "Gradians"
-msgstr ""
+msgstr "Gon"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:70
 msgid "Circle Fraction"
-msgstr ""
+msgstr "Kreis-Anteil"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:70
 msgid "Units of Pi"
-msgstr ""
+msgstr "Pi-Einheiten"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:273
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:327
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:350
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:311
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:365
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:388
 msgid "Percentage scaling not implemented yet!"
 msgstr "Prozentuale Skalierung ist noch nicht verfügbar!"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:125
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:133
 msgid "SurfaceTool"
 msgstr "Oberflächen Tool"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:141
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:144
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:152
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:155
 msgid "View Center"
-msgstr ""
+msgstr "Zentrum der Ansicht"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:142
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:145
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:153
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:156
 msgid "Absolute"
 msgstr "Absolut"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:153
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:164
 msgid "Origin"
 msgstr "Ursprung"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:156
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:167
 msgid "Cap"
-msgstr ""
-
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:157
-msgid "Caps slice with opaque surfaces."
-msgstr ""
-
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:161
-msgid "Slice Planes"
-msgstr ""
-
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:162
-msgid "Shows planes at slicing surfaces."
-msgstr ""
+msgstr "verschließen"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:170
+msgid ""
+"Caps slice with opaque surfaces.\n"
+"Ignores MOs and surfaces with interior layers."
+msgstr ""
+
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:174
+msgid "Slice Planes"
+msgstr "Schnitt-Ebenen"
+
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:176
+msgid "Shows planes at slicing surfaces."
+msgstr "Zeigt Ebenen an den Schnittflächen."
+
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:183
 msgid "Ghost On"
-msgstr ""
+msgstr "Geisterbild"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:173
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:186
 msgid "Shows an unsliced \"ghost\"."
-msgstr ""
+msgstr "Zeigt ein \"Geisterbild\" ohne Schnitte."
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:193
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:206
 msgid "Angle from X-axis in XY plane"
 msgstr "Winkel zur X-Achse in der XY-Ebene"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:204
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:217
 msgid "Angle from Z-axis"
 msgstr "Winkel zur Z-Achse"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:215
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:228
 msgid "Direction vector of normal to slice"
 msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:218
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:231
 msgid "Distance of slice from origin"
 msgstr "Abstand der Scheibe vom Ursprung"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:230
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:243
 msgid "Thickness of slice"
 msgstr "Dicke der Scheibe"
+
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:261
+msgid "Select Surface(s)"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/JmolInstance.java:81
 msgid "Attempt to make scratch directory failed."
@@ -1784,29 +1789,27 @@ msgstr "Ansicht herunterladen"
 msgid "unimplemented"
 msgstr "nicht implementiert"
 
+#~ msgid "Caps slice with opaque surfaces."
+#~ msgstr "Verschließt die Scheibe mit  undurchsichtigen Flächen."
+
 #~ msgid "atom set"
 #~ msgstr "Atomsatz"
 
 #~ msgid "vector"
 #~ msgstr "Vektor"
 
-#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Springe zum ersten {0} der Sammlung"
 
-#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Springe zum vorherigen {0} der Sammlung"
 
-#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Spiele die gesamte {0}-Sammlung ab"
 
-#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Springe zum nächsten {0} der Sammlung"
 
-#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Springe zum letzten {0} der Sammlung"
 
@@ -1816,7 +1819,6 @@ msgstr "nicht implementiert"
 #~ msgid "double-click and drag to reorder"
 #~ msgstr "Doppelklick und ziehen um neu anzuordnen"
 
-#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"
@@ -1827,7 +1829,6 @@ msgstr "nicht implementiert"
 #~ msgid "Jmol Script Console"
 #~ msgstr "Jmol Skript Konsole"
 
-#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
@@ -1838,14 +1839,12 @@ msgstr "nicht implementiert"
 #~ msgid "Show Selected"
 #~ msgstr "Auswahl anzeigen"
 
-#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "hinzufügen von {0}.png"
 
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "hinzufügen von JmolPopIn.js"
 
-#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "hinzufügen von {0}.spt"
 
@@ -1853,7 +1852,8 @@ msgstr "nicht implementiert"
 #~ msgstr "Konsole leeren Button (benötigt Neustart von Jmol)"
 
 #~ msgid "The -D options are as follows (defaults in parenthesis):"
-#~ msgstr "Folgende -D-Optionen werden unterstützt (Standardwerte in Klammern):"
+#~ msgstr ""
+#~ "Folgende -D-Optionen werden unterstützt (Standardwerte in Klammern):"
 
 #~ msgid "Output Conso&le..."
 #~ msgstr "Skrip&t..."

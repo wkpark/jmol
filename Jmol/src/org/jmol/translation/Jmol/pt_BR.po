@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-07-29 23:21+0200\n"
+"POT-Creation-Date: 2011-08-14 13:53+0200\n"
 "PO-Revision-Date: 2011-01-29 16:06+0000\n"
 "Last-Translator: Thaynã Moretti <Unknown>\n"
 "Language-Team: Brazilian Portuguese <Jmol-developers@lists.sf.net>\n"
@@ -1305,92 +1305,98 @@ msgstr "Carregando..."
 msgid "What's New in Jmol"
 msgstr "Novidades no Jmol"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:69
 msgid "Degrees"
 msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:69
 msgid "Radians"
 msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:70
 msgid "Gradians"
 msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:70
 msgid "Circle Fraction"
 msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:70
 msgid "Units of Pi"
 msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:273
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:327
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:350
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:311
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:365
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:388
 msgid "Percentage scaling not implemented yet!"
 msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:125
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:133
 msgid "SurfaceTool"
 msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:141
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:144
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:152
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:155
 msgid "View Center"
 msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:142
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:145
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:153
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:156
 msgid "Absolute"
 msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:153
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:164
 msgid "Origin"
 msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:156
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:167
 msgid "Cap"
 msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:157
-msgid "Caps slice with opaque surfaces."
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:170
+msgid ""
+"Caps slice with opaque surfaces.\n"
+"Ignores MOs and surfaces with interior layers."
 msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:161
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:174
 msgid "Slice Planes"
 msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:162
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:176
 msgid "Shows planes at slicing surfaces."
 msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:170
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:183
 msgid "Ghost On"
 msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:173
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:186
 msgid "Shows an unsliced \"ghost\"."
 msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:193
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:206
 msgid "Angle from X-axis in XY plane"
 msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:204
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:217
 msgid "Angle from Z-axis"
 msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:215
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:228
 msgid "Direction vector of normal to slice"
 msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:218
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:231
 msgid "Distance of slice from origin"
 msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:230
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:243
 msgid "Thickness of slice"
+msgstr ""
+
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:261
+msgid "Select Surface(s)"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/JmolInstance.java:81
@@ -1776,23 +1782,18 @@ msgstr "não implementado"
 #~ msgid "vector"
 #~ msgstr "vetor"
 
-#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Voltar para o primeiro {0} na coleção"
 
-#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Voltar para o {0} anterior na coleção"
 
-#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Tocar toda a coleção de {0}'s"
 
-#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Avançar para o {0} seguinte na coleção"
 
-#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Avançar para o último {0} na coleção"
 
@@ -1802,7 +1803,6 @@ msgstr "não implementado"
 #~ msgid "Show Selected"
 #~ msgstr "Mostrar selecionado"
 
-#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"
@@ -1813,19 +1813,16 @@ msgstr "não implementado"
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "adicionando JmolPopIn.js"
 
-#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 #~ msgstr ""
-#~ "Insira texto explanatório adicional aqui. Textos longos fluirão ao redor do "
-#~ "modelo Jmol {0}."
+#~ "Insira texto explanatório adicional aqui. Textos longos fluirão ao redor "
+#~ "do modelo Jmol {0}."
 
-#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "adicionando {0}.png"
 
-#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "adicionando {0}.spt"
 

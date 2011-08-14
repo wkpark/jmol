@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-07-29 23:21+0200\n"
+"POT-Creation-Date: 2011-08-14 13:53+0200\n"
 "PO-Revision-Date: 2011-08-04 17:30+0000\n"
 "Last-Translator: Ilia Lilov <lilovil@gmail.com>\n"
 "Language-Team: Russian <ru@li.org>\n"
@@ -1302,93 +1302,99 @@ msgstr "Загрузка..."
 msgid "What's New in Jmol"
 msgstr "Что Нового в Jmol"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:69
 msgid "Degrees"
 msgstr "Градусы"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:69
 msgid "Radians"
 msgstr "Радианы"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:70
 msgid "Gradians"
 msgstr "Грады"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:70
 msgid "Circle Fraction"
 msgstr "Сектор круга"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:70
 msgid "Units of Pi"
 msgstr "Единицы измерения Пи"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:273
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:327
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:350
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:311
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:365
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:388
 msgid "Percentage scaling not implemented yet!"
 msgstr "Процентное масштабирование ещё не реализовано!"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:125
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:133
 msgid "SurfaceTool"
 msgstr "Инструмент поверхности"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:141
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:144
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:152
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:155
 msgid "View Center"
 msgstr "Центер обзора"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:142
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:145
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:153
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:156
 msgid "Absolute"
 msgstr "Абсолютно"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:153
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:164
 msgid "Origin"
 msgstr "Начало координат"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:156
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:167
 msgid "Cap"
 msgstr "Предел"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:157
-msgid "Caps slice with opaque surfaces."
-msgstr "Верхушки срезаются непрозрачными поверхностями."
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:170
+msgid ""
+"Caps slice with opaque surfaces.\n"
+"Ignores MOs and surfaces with interior layers."
+msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:161
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:174
 msgid "Slice Planes"
 msgstr "Срезать плоскости"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:162
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:176
 msgid "Shows planes at slicing surfaces."
 msgstr "Показывать плоскости при срезании поверхностями."
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:170
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:183
 msgid "Ghost On"
 msgstr "Показывать \"призраки\""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:173
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:186
 msgid "Shows an unsliced \"ghost\"."
 msgstr "Показывает несрезанные \"призраки\"."
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:193
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:206
 msgid "Angle from X-axis in XY plane"
 msgstr "Угол с осью X в плоскости XY"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:204
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:217
 msgid "Angle from Z-axis"
 msgstr "Угол с осью Z"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:215
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:228
 msgid "Direction vector of normal to slice"
 msgstr "Направление вектора нормали к срезу"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:218
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:231
 msgid "Distance of slice from origin"
 msgstr "Расстояние от начала координат до среза"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:230
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:243
 msgid "Thickness of slice"
 msgstr "Толщина среза"
+
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:261
+msgid "Select Surface(s)"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/JmolInstance.java:81
 msgid "Attempt to make scratch directory failed."
@@ -1469,9 +1475,8 @@ msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
 "be significant the first time the applet is loaded."
 msgstr ""
-"Чтобы получить 3D модель, которой можно манипулировать, щёлкните "
-"{0}здесь{1}. Время загрузки может быть существенным при первой загрузке "
-"апплета."
+"Чтобы получить 3D модель, которой можно манипулировать, щёлкните {0}здесь"
+"{1}. Время загрузки может быть существенным при первой загрузке апплета."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:366
 msgid "Insert the page TITLE here."
@@ -1492,8 +1497,8 @@ msgid ""
 "Insert additional explanatory text here. Long text will wrap around Jmol "
 "model {0}."
 msgstr ""
-"Вставьте дополнительный поясняющий текст здесь. Длинный текст будет "
-"\"обёрнут\" вокруг Jmol модели {0}."
+"Вставьте дополнительный поясняющий текст здесь. Длинный текст будет \"обёрнут"
+"\" вокруг Jmol модели {0}."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:372
 msgid "Insert your TITLE and INTRODUCTION here."
@@ -1769,10 +1774,12 @@ msgstr "Загрузить вид"
 msgid "unimplemented"
 msgstr "не реализовано"
 
+#~ msgid "Caps slice with opaque surfaces."
+#~ msgstr "Верхушки срезаются непрозрачными поверхностями."
+
 #~ msgid "Jmol Script Console"
 #~ msgstr "Консоль сценариев Jmol"
 
-#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Перейти к следующему {0} в коллекции"
 
@@ -1782,37 +1789,30 @@ msgstr "не реализовано"
 #~ msgid "atom set"
 #~ msgstr "Набор атомов"
 
-#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Идти к первой {0} в коллекции"
 
-#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Идти к предыдущей {0} в коллекции"
 
-#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Смотреть всю коллекцию {0}"
 
-#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Перейти к последней {0} в коллекции"
 
 #~ msgid "Show Selected"
 #~ msgstr "Показать Выбранное"
 
-#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "добавление {0}.spt"
 
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "добавление JmolPopIn.js"
 
-#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "добавление {0}.png"
 
-#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"

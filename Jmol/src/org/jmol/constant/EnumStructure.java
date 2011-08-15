@@ -100,6 +100,6 @@ public enum EnumStructure {
   }
 
   private boolean isProtein() {
-    return id <= 3 || id >= 7;
+    return id >= 0 && id <= 3 || id >= 7;
   }
 }

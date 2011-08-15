@@ -2994,7 +2994,7 @@ abstract public class ModelCollection extends BondCollection {
                             iModel, false))).append(comment).append(";\n");
                 }
                 comment += " & (" + res1 + " - " + res2 + ")";
-                String stype = subtype.getProteinStructureName(false);
+                String stype = subtype.getBioStructureTypeName(false);
                   cmd.append("  structure ").append(stype).append(" ").append(
                       Escape.escape(bs)).append(comment).append(";\n");
               } else {

@@ -95,7 +95,7 @@ public enum EnumStructure {
     return NOT;
   }
 
-  public String getProteinStructureName(boolean isGeneric) {
+  public String getBioStructureTypeName(boolean isGeneric) {
     return (isGeneric && isProtein() ? "protein" : name);
   }
 

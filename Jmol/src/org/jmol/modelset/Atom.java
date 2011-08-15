@@ -1074,8 +1074,8 @@ final public class Atom extends Point3fi implements JmolNode {
     return group.chain.modelSet.getModelFileNumber(modelIndex);
   }
   
-  public String getGroupType() {
-    return getProteinStructureType().getProteinStructureName(true);
+  public String getBioStructureTypeName() {
+    return getProteinStructureType().getBioStructureTypeName(true);
   }
   
   public EnumStructure getProteinStructureType() {
@@ -1354,9 +1354,9 @@ final public class Atom extends Point3fi implements JmolNode {
         s = "";
       return s;
     case Token.structure:
-      return atom.getProteinStructureType().getProteinStructureName(false);
+      return atom.getProteinStructureType().getBioStructureTypeName(false);
     case Token.substructure:
-      return atom.getProteinStructureSubType().getProteinStructureName(false);
+      return atom.getProteinStructureSubType().getBioStructureTypeName(false);
     case Token.strucid:
       return atom.getStructureId();
     case Token.shape:

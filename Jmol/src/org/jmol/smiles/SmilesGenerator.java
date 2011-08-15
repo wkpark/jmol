@@ -109,21 +109,21 @@ public class SmilesGenerator {
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
         JmolNode a = atoms[i];
         String ch = a.getGroup1('?');
-        String groupType = a.getGroupType();
+        String bioStructureName = a.getBioStructureTypeName();
         boolean unknown = (ch.equals("?"));
         if (end != null) {
           if (sb.length() > 0)
             sb.append(end);
           end = null;
           len = 0;
-          if (groupType.length() > 0) {
+          if (bioStructureName.length() > 0) {
             char id = a.getChainID();
             if (id != '\0') {
-              s = "//* chain " + id + " " + groupType + " " + a.getResno() + " *// ";
+              s = "//* chain " + id + " " + bioStructureName + " " + a.getResno() + " *// ";
               len = s.length();
               sb.append(s);
             }
-            sb.append("~").append(groupType.charAt(0)).append("~");
+            sb.append("~").append(bioStructureName.charAt(0)).append("~");
             len++;
           } else {
             s = getSmilesComponent(a, bs, true);
@@ -131,9 +131,9 @@ public class SmilesGenerator {
               end = "";
             } else {
               lastComponent = s;
-              groupType = a.getGroup3(true);
-              if (groupType != null)
-                sb.append("//* ").append(groupType).append(" *//");
+              String groupName = a.getGroup3(true);
+              if (groupName != null)
+                sb.append("//* ").append(groupName).append(" *//");
               sb.append(s);
               end = ".\n";
             }
@@ -145,7 +145,7 @@ public class SmilesGenerator {
           len = 2;
         }
         if (unknown) {
-          addBracketedBioName(sb, a, groupType.length() > 0 ? ".0" : null);
+          addBracketedBioName(sb, a, bioStructureName.length() > 0 ? ".0" : null);
         } else {
           sb.append(ch);
         }
@@ -635,7 +635,7 @@ public class SmilesGenerator {
     int charge = atom.getFormalCharge();
     int isotope = atom.getIsotopeNumber();
     String atomName = atom.getAtomName();
-    String groupType = atom.getGroupType();
+    String groupType = atom.getBioStructureTypeName();
     // for bioSMARTS we provide the connecting atom if 
     // present. For example, in 1BLU we have 
     // .[CYS.SG#16] could match either the atom number or the element number 

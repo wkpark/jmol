@@ -299,7 +299,7 @@ public abstract class Monomer extends Group {
     ProteinStructure structure = getProteinStructure();
     if(structure != null) {
       info.put("structureId", Integer.valueOf(structure.uniqueID));
-      info.put("structureType", structure.type.getProteinStructureName(false));
+      info.put("structureType", structure.type.getBioStructureTypeName(false));
     }
     info.put("shapeVisibilityFlags", Integer.valueOf(shapeVisibilityFlags));
     return info;
@@ -308,7 +308,7 @@ public abstract class Monomer extends Group {
   @Override
   public String getStructureId() {
     ProteinStructure structure = getProteinStructure();
-    return (structure == null ? "" : structure.type.getProteinStructureName(false));
+    return (structure == null ? "" : structure.type.getBioStructureTypeName(false));
   }
 
   /**

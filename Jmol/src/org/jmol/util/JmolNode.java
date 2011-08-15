@@ -51,7 +51,7 @@ public interface JmolNode {
   // BIOSMILES/BIOSMARTS
   
   public String getAtomName();
-  public String getGroupType();
+  public String getBioStructureTypeName();
   public String getGroup1(char c0);
   public String getGroup3(boolean allowNull);
   public int getResno();

@@ -68,7 +68,7 @@ public abstract class ProteinStructure {
     if(Logger.debugging)
       Logger.debug(
           "Creating ProteinStructure " + uniqueID 
-          + " " + type.getProteinStructureName(false) 
+          + " " + type.getBioStructureTypeName(false) 
           + " from " + monomerIndexFirst + " through "+ monomerIndexLast
           + " in polymer " + apolymer);
   }
@@ -188,7 +188,7 @@ public abstract class ProteinStructure {
   }
 
   public void getInfo(Map<String, Object> info) {
-    info.put("type", type.getProteinStructureName(false));
+    info.put("type", type.getBioStructureTypeName(false));
     int[] leadAtomIndices = apolymer.getLeadAtomIndices();
     int[] iArray = new int[monomerCount];
     System.arraycopy(leadAtomIndices, monomerIndexFirst, iArray, 0, monomerCount);

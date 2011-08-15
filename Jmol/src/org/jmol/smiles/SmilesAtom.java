@@ -705,7 +705,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
     return true;
   }
 
-  public String getGroupType() {
+  public String getBioStructureTypeName() {
     return null;
   }
 

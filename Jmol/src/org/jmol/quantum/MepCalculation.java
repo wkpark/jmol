@@ -190,7 +190,7 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
   protected float getTabulatedPotential(Atom atom) {
     String name = atom.getAtomType();
     String g1 = atom.getGroup1('\0');
-    String type = atom.getGroupType();
+    String type = atom.getBioStructureTypeName();
     if (g1.length() == 0) {
       g1 = atom.getGroup3(true);
       if (g1 == null)

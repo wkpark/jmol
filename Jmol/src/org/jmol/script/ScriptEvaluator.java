@@ -5949,6 +5949,8 @@ public class ScriptEvaluator {
           if (isOK) {
             v = ScriptVariable.selectItem(v);
             ScriptVariable t = getContextVariableAsVariable(key);
+            if (t == null)
+              t = viewer.getOrSetNewVariable(key, true);
             t.set(v, false);
           }
         }

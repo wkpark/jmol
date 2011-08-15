@@ -2811,19 +2811,7 @@ class ScriptMathProcessor {
     case Token.opEQ:
       return addX(ScriptVariable.areEqual(x1, x2));
     case Token.opNE:
-      if (x1.tok == Token.string && x2.tok == Token.string)
-        return addX(!(ScriptVariable.sValue(x1).equalsIgnoreCase(ScriptVariable
-            .sValue(x2))));
-      if (x1.tok == Token.point3f && x2.tok == Token.point3f)
-        return addX(((Point3f) x1.value).distance((Point3f) x2.value) >= 0.000001);
-      if (x1.tok == Token.point4f && x2.tok == Token.point4f)
-        return addX(((Point4f) x1.value).distance((Point4f) x2.value) >= 0.000001);
-      {
-        float f1 = ScriptVariable.fValue(x1);
-        float f2 = ScriptVariable.fValue(x2);
-        return addX(Float.isNaN(f1) || Float.isNaN(f2)
-            || Math.abs(f1 - f2) >= 0.000001);
-      }
+      return addX(!ScriptVariable.areEqual(x1, x2));
     case Token.plus:
       switch (x1.tok) {
       default:

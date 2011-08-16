@@ -122,6 +122,7 @@ public class Mesh extends MeshSurface {
     connections = null;
     vertexCount0 = polygonCount0 = vertexCount = polygonCount = 0;
     scale = 1;
+    colix = Graphics3D.GOLD;
     diameter = 0;
     ptOffset = null;
     havePlanarContours = false;

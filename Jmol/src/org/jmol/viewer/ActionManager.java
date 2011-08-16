@@ -1492,14 +1492,13 @@ public class ActionManager {
     
     TimeoutThread(String name, int ms, String script) {
       this.name = name;
-      this.ms = ms;
-      this.script = script;
-      targetTime = System.currentTimeMillis() + Math.abs(ms);
+      set(ms, script);
     }
     
     void set(int ms, String script) {
       this.ms = ms;
-      if (script != null && script.length() != 0)
+      targetTime = System.currentTimeMillis() + Math.abs(ms);
+      if (script != null)
         this.script = script; 
     }
 

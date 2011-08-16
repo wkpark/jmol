@@ -1462,8 +1462,10 @@ abstract public class AtomCollection {
         charge = aaRet[1];
       }
     }
-    if (charge != 0)
+    if (charge != 0) {
       targetValence += (targetValence == 4 ? -Math.abs(charge) : charge);
+      aaRet[0] = targetValence;
+    }
     int n = targetValence - atom.getValence();
     return (n < 0 ? 0 : n);
   }

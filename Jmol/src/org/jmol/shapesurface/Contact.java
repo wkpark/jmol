@@ -68,6 +68,10 @@ public class Contact extends Isosurface {
       setContacts((Object[]) value);
       return;
     }
+    if ("init" == propertyName) {
+      translucentLevel = 0;
+    }
+
     super.setProperty(propertyName, value, bs);
   }
     

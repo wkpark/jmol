@@ -1079,7 +1079,10 @@ public class Jmol implements WrappedApplet {
       }
       EnumCallback callback = EnumCallback.getCallback(callbackName);
       if (callback != null && (loading || callback != EnumCallback.EVAL)) {
-        callbacks.put(callback, callbackFunction);
+        if (callbackFunction == null)
+          callbacks.remove(callback);
+        else         
+          callbacks.put(callback, callbackFunction);
         return;
       }
       consoleMessage("Available callbacks include: " + EnumCallback.getNameList().replace(';',' ').trim());

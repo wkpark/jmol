@@ -661,7 +661,7 @@ public class Jmol implements WrappedApplet {
   public void script(String script) {
     if (script == null || script.length() == 0)
       return;
-    System.out.println("Jmol.java script " + script);
+    //System.out.println("Jmol.java script " + script);
     scriptProcessor(script, null, SCRIPT_NOWAIT);
   }
 

@@ -47,7 +47,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
   private boolean iShowNormals;
   private boolean showNumbers;
   private Boolean showKey;
-  private boolean haveVertexColors;
+  private boolean hasColorRange;
   
 
   @Override
@@ -64,17 +64,16 @@ public class IsosurfaceRenderer extends MeshRenderer {
     isNavigationMode = viewer.getNavigationMode();
     int mySlabValue = Integer.MAX_VALUE;
     int slabValue = g3d.getSlab();
-    showKey = (isosurface.showKey != 0 ? Boolean.TRUE : null); 
+    showKey = (viewer.getIsosurfaceKey() ? Boolean.TRUE : null); 
     if (isNavigationMode)
       mySlabValue = (int) viewer.getNavigationOffset().z;
     isosurface.keyXy = null;
     for (int i = isosurface.meshCount; --i >= 0;) {
       imesh = (IsosurfaceMesh) isosurface.meshes[i];
-      haveVertexColors = false;
+      hasColorRange = false;
       renderMesh(mySlabValue, slabValue);      
-      if (!isExport && haveVertexColors && imesh.colorEncoder != null && Boolean.TRUE == showKey) {
+      if (!isExport && hasColorRange && imesh.colorEncoder != null && Boolean.TRUE == showKey)
         showKey();
-      }
       if (isExport && haveBsSlabGhost) {
         exportPass = 1;
         renderMesh(mySlabValue, slabValue);
@@ -85,19 +84,36 @@ public class IsosurfaceRenderer extends MeshRenderer {
 
   private void showKey() {
     showKey = Boolean.FALSE; // once only
-    int[] colors = imesh.colorEncoder.getColorSchemeArray(imesh.colorEncoder.currentPalette);
-    int height = viewer.getScreenHeight();
-    // todo: antialiasdisplay?
-    int dy = height / 2 / colors.length;
-    int y = height / 4 * 3;
-    int x = 10;
-    int dx = 20;
-    isosurface.keyXy = new int[] { x, 0, x + dx, y + dy, dy };
-    for (int i = 0; i < colors.length; i++, y -= dy) {
-      g3d.setColor(colors[i]);
+    int[] colors = null;
+    List<Object>[] vContours = null;
+    int n = 0;
+    if (imesh.showContourLines) {
+      vContours = imesh.getContours();
+      n = vContours.length;
+    } else {
+      colors = imesh.colorEncoder.getColorSchemeArray(imesh.colorEncoder.currentPalette);
+      n = colors.length;
+    }
+    if (n < 2)
+      return;
+    int factor = (g3d.isAntialiased() ? 2 : 1);
+    int height = viewer.getScreenHeight() * factor;
+    int dy = height / 2 / (n - 1);
+    int y = height / 4 * 3 - dy;
+    int x = 10 * factor;
+    int dx = 20 * factor;
+    
+    isosurface.keyXy = new int[] { x / factor, 0, (x + dx) / factor, (y + dy) / factor, dy / factor };
+    for (int i = 0; i < n; i++, y -= dy) {
+      if (colors == null) {
+        if (!g3d.setColix(((short[]) vContours[i].get(JvxlCoder.CONTOUR_COLIX))[0]))
+          return;
+      } else {
+        g3d.setColor(colors[i]);
+      }
       g3d.fillRect(x, y, 5, 5, dx, dy);
     }
-    isosurface.keyXy[1] = y + dy;
+    isosurface.keyXy[1] = (y + dy) / factor;
   }
   
   private void renderMesh(int mySlabValue, int slabValue) {
@@ -185,6 +201,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     
     if (imesh.jvxlData.vertexDataOnly)
       return;
+    hasColorRange = (imesh.meshColix == 0);
     for (int i = vContours.length; --i >= 0;) {
       List<Object> v = vContours[i];
       if (v.size() < JvxlCoder.CONTOUR_POINTS)
@@ -241,6 +258,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
             || haveBsDisplay && !imesh.bsDisplay.get(i)
             || slabPoints && !bsSlab.get(i))
           continue;
+        hasColorRange = true; // maybe
         if (showNumbers && screens[i].z > 10
             && Math.abs(screens[i].x - cX) < 50
             && Math.abs(screens[i].y - cY) < 50) {
@@ -323,7 +341,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     short[] contourColixes = imesh.jvxlData.contourColixes;
     // two-sided means like a plane, with no front/back distinction
 
-    haveVertexColors = !colorSolid;
+    hasColorRange = !colorSolid && !isBicolorMap;
     for (int i = imesh.polygonCount; --i >= 0;) {
       int[] vertexIndexes = polygonIndexes[i];
       if (vertexIndexes == null || haveBsSlabDisplay && !bsSlab.get(i))

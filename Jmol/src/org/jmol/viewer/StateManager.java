@@ -850,6 +850,7 @@ public class StateManager {
       setParameterValue("highResolution", highResolutionFlag);
       setParameterValue("hoverDelay", hoverDelayMs / 1000f);
       setParameterValue("imageState", imageState);
+      setParameterValue("isosurfaceKey", isosurfaceKey);
       setParameterValue("isosurfacePropertySmoothing",
           isosurfacePropertySmoothing);
       setParameterValue("isosurfacePropertySmoothingPower",
@@ -1124,6 +1125,7 @@ public class StateManager {
     int dotScale = 1;
     boolean dynamicMeasurements = false;
     boolean greyscaleRendering = false;
+    boolean isosurfaceKey = false;
     boolean isosurfacePropertySmoothing = true;
     int isosurfacePropertySmoothingPower = 7;
     int repaintWaitMs = 1000;

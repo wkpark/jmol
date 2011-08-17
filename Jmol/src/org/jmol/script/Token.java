@@ -545,7 +545,7 @@ public class Token {
   public final static int unitxyz   =13 | mathproperty | atomproperty;
   public final static int vibxyz    =14 | mathproperty | atomproperty | settable;
   final static int w                =15 | mathproperty;
-  final static int key              =16 | mathproperty; 
+  final static int keys              =16 | mathproperty; 
   
   // occupancy, radius, and structure are odd, because they takes different meanings when compared
   
@@ -962,7 +962,8 @@ public class Token {
 // see predefinedset  public final static int hydrogen                       = booleanparam | 90;
   public final static int imagestate                     = booleanparam | 92;
   public static final int iskiosk                        = booleanparam | 93; // 11.9.29
-  public final static int isosurfacepropertysmoothing    = booleanparam | 94;
+  public final static int isosurfacekey                  = booleanparam | 94;
+  public final static int isosurfacepropertysmoothing    = booleanparam | 95;
   public final static int justifymeasurements            = booleanparam | 96;
   public final static int languagetranslation            = booleanparam | 97;
   public final static int legacyautobonding              = booleanparam | 98;
@@ -1827,8 +1828,7 @@ public class Token {
       "isAromatic",      new Token(isaromatic),
       "Jmol",            new Token(jmol),
       "join",            new Token(join),
-      "key",             new Token(key),
-      "keys",            null,
+      "keys",            new Token(keys),
       "last",            new Token(last),
       "left",            new Token(left),
       "length",          new Token(length),
@@ -2314,6 +2314,7 @@ public class Token {
       "hydrogens",                                null,
       "imageState",                               new Token(imagestate),
       "isKiosk",                                  new Token(iskiosk),
+      "isosurfaceKey",                            new Token(isosurfacekey),
       "isosurfacePropertySmoothing",              new Token(isosurfacepropertysmoothing),
       "isosurfacePropertySmoothingPower",         new Token(isosurfacepropertysmoothingpower),
       "justifyMeasurements",                      new Token(justifymeasurements),

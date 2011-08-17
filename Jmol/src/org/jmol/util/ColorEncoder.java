@@ -76,6 +76,7 @@ import org.jmol.util.ArrayUtil;
   private final static String BYRESIDUE_SHAPELY = BYRESIDUE_PREFIX + "_shapely"; 
   private final static String BYRESIDUE_AMINO = BYRESIDUE_PREFIX + "_amino"; 
   
+  public final static int CUSTOM = -1;
   public final static int ROYGB = 0;
   public final static int BGYOR = 1;
   public final static int JMOL = 2;
@@ -108,7 +109,7 @@ import org.jmol.util.ArrayUtil;
     for (int i = 0; i < colorSchemes.length; i++)
       if (colorSchemes[i].equalsIgnoreCase(colorScheme))
         return (i >= ALT ? i - ALT : i < -USER ? i : -i);
-    return -1;
+    return CUSTOM;
   }
 
   private final static String fixName(String name) {
@@ -226,7 +227,7 @@ import org.jmol.util.ArrayUtil;
         argbsShapely = thisScale;
         break;
       }
-    return -1;
+    return CUSTOM;
   }
 
   /**
@@ -309,7 +310,7 @@ import org.jmol.util.ArrayUtil;
     }
     
     // return a positive value for a known scheme or ROYGB if a default is ok, or MAX_VALUE
-    return (ipt != -1 ? ipt : defaultToRoygb ? ROYGB 
+    return (ipt != CUSTOM ? ipt : defaultToRoygb ? ROYGB 
         : Integer.MAX_VALUE);
   }
 
@@ -328,18 +329,18 @@ import org.jmol.util.ArrayUtil;
      c = quantizeRgb(val, lo, hi, rgbRed, rgbGreen, rgbBlue);
      break;
      */
-    case -1:
+    case CUSTOM:
       return thisScale;      
     case ROYGB:
       return propertyColorEncoder.argbsRoygb;
     case BGYOR:
       return ArrayUtil.arrayCopy(propertyColorEncoder.argbsRoygb, 0, -1, true);
     case LOW:
-      return ArrayUtil.arrayCopy(propertyColorEncoder.argbsRoygb, 0, ihalf, false);
+      return ArrayUtil.arrayCopy(propertyColorEncoder.argbsRoygb, 0, propertyColorEncoder.ihalf, false);
     case HIGH:
-      int[] a = ArrayUtil.arrayCopy(argbsRoygb, propertyColorEncoder.argbsRoygb.length - 2 * propertyColorEncoder.ihalf, -1, false);
+      int[] a = ArrayUtil.arrayCopy(propertyColorEncoder.argbsRoygb, propertyColorEncoder.argbsRoygb.length - 2 * propertyColorEncoder.ihalf, -1, false);
       b = new int[propertyColorEncoder.ihalf];
-      for (int i = propertyColorEncoder.ihalf, j = propertyColorEncoder.argbsRoygb.length - 1; --i >= 0;j -= 2)
+      for (int i = b.length, j = a.length - 1; --i >= 0;j -= 2)
         b[i] = a[j];
       return b;
     case BW:
@@ -383,56 +384,14 @@ import org.jmol.util.ArrayUtil;
     return colix;
   }
 
-  public int getArgbFromPalette(float val, float lo, float hi, int palette) {
-    if (Float.isNaN(val))
-      return GRAY;
+  public int getPaletteColorCount(int palette) {
     switch (palette) {
-    case -1:
-      if (isColorIndex) {
-        lo = 0;
-        hi = thisScale.length;
-      }
-      return thisScale[quantize(val, lo, hi, thisScale.length)];
-    case BW:
-      return getPaletteBW()[quantize(val, lo, hi, propertyColorEncoder.paletteBW.length)];
-    case WB:
-      return getPaletteWB()[quantize(val, lo, hi, propertyColorEncoder.paletteWB.length)];
-    case ROYGB:
-      return propertyColorEncoder.argbsRoygb[quantize(val, lo, hi, propertyColorEncoder.argbsRoygb.length)];
-    case BGYOR:
-      return propertyColorEncoder.argbsRoygb[quantize(-val, -hi, -lo, propertyColorEncoder.argbsRoygb.length)];
-    case LOW:
-      return propertyColorEncoder.argbsRoygb[quantize(val, lo, hi, propertyColorEncoder.ihalf)];
-    case HIGH:
-      return propertyColorEncoder.argbsRoygb[propertyColorEncoder.ihalf + quantize(val, lo, hi, propertyColorEncoder.ihalf) * 2];
-    case RWB:
-      return propertyColorEncoder.argbsRwb[quantize(val, lo, hi, propertyColorEncoder.argbsRwb.length)];
-    case BWR:
-      return propertyColorEncoder.argbsRwb[quantize(-val, -hi, -lo, propertyColorEncoder.argbsRwb.length)];
-    case USER:
-      return (propertyColorEncoder.userScale.length == 0 ? GRAY : propertyColorEncoder.userScale[quantize(val, lo, hi, userScale.length)]);
-    case RESU:
-      return (propertyColorEncoder.userScale.length == 0 ? GRAY : propertyColorEncoder.userScale[quantize(-val, -hi, -lo, userScale.length)]);
-    case JMOL:
-      return propertyColorEncoder.argbsCpk[colorIndex((int)val, argbsCpk.length)];
-    case RASMOL:
-      return getRasmolScale()[colorIndex((int)val, rasmolScale.length)];
-    case SHAPELY:
-      return propertyColorEncoder.argbsShapely[colorIndex((int)val, propertyColorEncoder.argbsShapely.length)];
-    case AMINO:
-      return propertyColorEncoder.argbsAmino[colorIndex((int)val, propertyColorEncoder.argbsAmino.length)];
-    default:
-      return GRAY;
-    }
-  }
-  
-  private int getSegmentCount(int palette) {
-    switch (palette) {
-    case -1:
+    case CUSTOM:
       return thisScale.length;
     case BW:
     case WB:
-      return getPaletteWB().length;
+      getPaletteBW();
+      return propertyColorEncoder.paletteBW.length;
     case ROYGB:
     case BGYOR:
       return propertyColorEncoder.argbsRoygb.length;
@@ -446,7 +405,7 @@ import org.jmol.util.ArrayUtil;
     case RESU:
       return propertyColorEncoder.userScale.length;
     case JMOL:
-      return propertyColorEncoder.argbsCpk.length;
+      return argbsCpk.length;
     case RASMOL:
       return rasmolScale.length;
     case SHAPELY:
@@ -455,6 +414,50 @@ import org.jmol.util.ArrayUtil;
       return propertyColorEncoder.argbsAmino.length;
     default:
       return 0;
+    }
+  }
+  
+  public int getArgbFromPalette(float val, float lo, float hi, int palette) {
+    if (Float.isNaN(val))
+      return GRAY;
+    int n = getPaletteColorCount(palette);
+    switch (palette) {
+    case CUSTOM:
+      if (isColorIndex) {
+        lo = 0;
+        hi = thisScale.length;
+      }
+      return thisScale[quantize(val, lo, hi, n)];
+    case BW:
+      return getPaletteBW()[quantize(val, lo, hi, n)];
+    case WB:
+      return getPaletteWB()[quantize(val, lo, hi, n)];
+    case ROYGB:
+      return propertyColorEncoder.argbsRoygb[quantize(val, lo, hi, n)];
+    case BGYOR:
+      return propertyColorEncoder.argbsRoygb[quantize(-val, -hi, -lo, n)];
+    case LOW:
+      return propertyColorEncoder.argbsRoygb[quantize(val, lo, hi, n)];
+    case HIGH:
+      return propertyColorEncoder.argbsRoygb[propertyColorEncoder.ihalf + quantize(val, lo, hi, n) * 2];
+    case RWB:
+      return propertyColorEncoder.argbsRwb[quantize(val, lo, hi, n)];
+    case BWR:
+      return propertyColorEncoder.argbsRwb[quantize(-val, -hi, -lo, n)];
+    case USER:
+      return (propertyColorEncoder.userScale.length == 0 ? GRAY : propertyColorEncoder.userScale[quantize(val, lo, hi, n)]);
+    case RESU:
+      return (propertyColorEncoder.userScale.length == 0 ? GRAY : propertyColorEncoder.userScale[quantize(-val, -hi, -lo, n)]);
+    case JMOL:
+      return propertyColorEncoder.argbsCpk[colorIndex((int)val, n)];
+    case RASMOL:
+      return getRasmolScale()[colorIndex((int)val, n)];
+    case SHAPELY:
+      return propertyColorEncoder.argbsShapely[colorIndex((int)val, n)];
+    case AMINO:
+      return propertyColorEncoder.argbsAmino[colorIndex((int)val, n)];
+    default:
+      return GRAY;
     }
   }
 
@@ -482,24 +485,25 @@ import org.jmol.util.ArrayUtil;
 
   public Map<String, Object> getColorKey() {
     Map<String, Object> info = new Hashtable<String, Object>();
+    int segmentCount = getPaletteColorCount(currentPalette);
+    List<Point3f> colors = new ArrayList<Point3f>(segmentCount);
+/*    
     boolean isReverse = isReversed;
-    int segmentCount = getSegmentCount(currentPalette);
+    
     switch (currentPalette) {
     case BGYOR:
     case BWR:
     case RESU:
       isReverse = !isReverse;
       break;
-    default:
-      break;
     }
-    List<Point3f> colors = new ArrayList<Point3f>(segmentCount);
+    */
     float[] values = new float[segmentCount + 1];
-    float quanta = (hi - lo) / segmentCount;
-    float f = quanta * (isReversed ? -0.5f : 0.5f);
+    float quantum = (hi - lo) / segmentCount;
+    float f = quantum * (isReversed ? -0.5f : 0.5f);
 
     for (int i = 0; i < segmentCount; i++) {
-      values[i] = (isReversed ? hi - i * quanta : lo + i * quanta);
+      values[i] = (isReversed ? hi - i * quantum : lo + i * quantum);
       colors.add(Graphics3D.colorPointFromInt2(getArgb(values[i] + f)));
     }
     values[segmentCount] = (isReversed ? lo : hi);
@@ -526,7 +530,7 @@ import org.jmol.util.ArrayUtil;
   public void setRange(float lo, float hi, boolean isReversed) {
     if (hi == Float.MAX_VALUE) {
       lo = 1; 
-      hi = getSegmentCount(currentPalette) + 1;
+      hi = getPaletteColorCount(currentPalette) + 1;
     }
     this.lo = Math.min(lo, hi);
     this.hi = Math.max(lo, hi);
@@ -539,7 +543,7 @@ import org.jmol.util.ArrayUtil;
   
   public String getColorSchemeName(int i) {
     int absi = Math.abs(i);
-    return (i == -1 ? thisName : absi < colorSchemes.length && absi >= 0 ? colorSchemes[absi] : null);  
+    return (i == CUSTOM ? thisName : absi < colorSchemes.length && absi >= 0 ? colorSchemes[absi] : null);  
   }
 
   // legitimate static methods:
@@ -607,7 +611,15 @@ import org.jmol.util.ArrayUtil;
     return propertyColorEncoder.paletteBW = b;
   }
 
-  public float unquantize(float x) {
+  /**
+   * gets the value at the color boundary for this color range fraction 
+   * @param x
+   * @param isLowEnd
+   * @return quantized value
+   */
+  public float quantize(float x, boolean isLowEnd) {
+    int n = getPaletteColorCount(currentPalette);
+    x = (((int) (x * n)) + (isLowEnd ? 0f : 1f)) / n;
     return (x <= 0 ? lo : x >= 1 ? hi : lo + (hi - lo) * x);
   }
   

@@ -197,7 +197,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
   //private boolean allowContourLines;
   boolean allowMesh = true;
-  int showKey;
 
   @SuppressWarnings("unchecked")
   @Override
@@ -209,12 +208,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
     if ("navigate" == propertyName) {
       navigate(((Integer) value).intValue());
-      return;
-    }
-    if ("key" == propertyName) {
-      // assuming LEFT for now
-      int iValue = ((Integer) value).intValue();
-      showKey  = (iValue == Token.off ? 0 : iValue);
       return;
     }
     if ("delete" == propertyName) {
@@ -1431,11 +1424,25 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
   private void hoverKey(int x, int y) {
     try {
+      String s;
       float f = 1 - 1.0f * (y - keyXy[1]) / (keyXy[3] - keyXy[1]);
-      f = thisMesh.colorEncoder.unquantize(f); 
-      float g = 1 - 1.0f * (y - keyXy[1] + keyXy[4]) / (keyXy[3] - keyXy[1]);
-      g = thisMesh.colorEncoder.unquantize(g); 
-      String s = "" + g + " - " + f;
+      if (thisMesh.showContourLines) {
+        List<Object>[] vContours = thisMesh.getContours();
+        if (vContours == null)
+          return;
+        int i = (int) (f * vContours.length);
+        if (i < 0 || i > vContours.length)
+          return;
+        s = "" + ((Float) vContours[i].get(JvxlCoder.CONTOUR_VALUE)).floatValue();
+      } else {
+        float g = thisMesh.colorEncoder.quantize(f, true);
+        f = thisMesh.colorEncoder.quantize(f, false);
+        s = "" + g + " - " + f;
+      }
+      if (g3d.isAntialiased()) {
+        x <<= 1;
+        y <<= 1;
+      }
       viewer.hoverOn(x, y, s);
     } catch (Exception e) {
       // never mind!
@@ -1642,6 +1649,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         continue;
       List<Object>[] vs = m.jvxlData.vContours;
       int ilast = (m.firstRealVertex < 0 ? 0 : m.firstRealVertex);
+      int pickedJ = 0;
       if (vs != null && vs.length > 0) {
         for (int j = 0; j < vs.length; j++) {
           List<Object> vc = vs[j];
@@ -1652,11 +1660,12 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
             if (d2 >= 0) {
               dmin2 = d2;
               pickedContour = vc;
+              pickedJ = j;
             }
           }
         }
         if (pickedContour != null)
-          return pickedContour.get(JvxlCoder.CONTOUR_VALUE).toString();
+          return pickedContour.get(JvxlCoder.CONTOUR_VALUE).toString() + (Logger.debugging ? " " + pickedJ : "");
       } else if (m.jvxlData.jvxlPlane != null && m.vertexValues != null) {
         Point3f[] vertices = (m.ptOffset == null && m.scale3d == 0 
             ? m.vertices : m.getOffsetVertices(m.jvxlData.jvxlPlane)); 

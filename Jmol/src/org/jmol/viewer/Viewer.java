@@ -6161,6 +6161,10 @@ private void zap(String msg) {
   private void setBooleanProperty(String key, int tok, boolean value) {
     boolean doRepaint = true;
     switch (tok) {
+    case Token.isosurfacekey:
+      // 12.2.RC5
+      global.isosurfaceKey = value;
+      break;
     case Token.partialdots:
       // Jmol 12.1.46
       global.partialDots = value;
@@ -6785,6 +6789,10 @@ private void zap(String msg) {
   
   public boolean isRangeSelected() {
     return global.rangeSelected;
+  }
+
+  public boolean getIsosurfaceKey() {
+    return global.isosurfaceKey;
   }
 
   public int getIsosurfacePropertySmoothing(boolean asPower) {

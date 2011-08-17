@@ -1882,6 +1882,7 @@ abstract public class AtomCollection {
     int _90 = 0;
     int _120 = 1;
     int _180 = 2;
+    int n120_atom0 = 0;
     for (int i = 0; i < nAttached - 1; i++)
       for (int j = i + 1; j < nAttached; j++) {
         float angle = Measure
@@ -1891,6 +1892,8 @@ abstract public class AtomCollection {
         typePtrs[itype][ntypes[itype]] = n;
         ntypes[itype]++;
         angles[n++] = new int[] { i, j };
+        if (i == 0 && itype == _120)
+          n120_atom0++;
       }
     // categorization is done simply by listing 
     // the number of 90, 120, and 180 angles.
@@ -1912,31 +1915,33 @@ abstract public class AtomCollection {
         return "bent";
       case 111:
       case 201:
-        return "T-shaped";// -- AX3E or AX3E2 or AX3E3";
+        return "T-shaped";// -- AX3E or AX3E2 or AX3E3
       case 30:
       case 120:
       case 210:
       case 300:
         if (Math.abs(Measure.computeTorsion(attached[0], atom, attached[1], attached[2], true)) > 162)
-            return "trigonal planar";// -- AX3";
-        return "trigonal pyramidal";// -- AX3E";
+            return "trigonal planar";// -- AX3
+        return "trigonal pyramidal";// -- AX3E
       case 330: 
-        return "uncapped trigonal pyramid";// -- AX4E";
+        // may just have a rather distorted tetrahedron, as in "$phosphorus pentoxide"
+        // in that case, each atom will have 1 or 3 120o angles, not 0 or 2, as in trigonal pyramid
+        return (n120_atom0 % 2 == 1 ? "tetrahedral" : "uncapped trigonal pyramid");// -- AX4 or AX4E
       case 60:
       case 150:
       case 240:
-        return "tetrahedral";// -- AX4";
+        return "tetrahedral";// -- AX4
       case 402:
-        return "square planar";// -- AX4E2";
+        return "square planar";// -- AX4E2
       case 411:
       case 501:
-        return "see-saw";// -- AX4E";
+        return "see-saw";// -- AX4E
       case 631:
-        return "trigonal bipyramidal";// -- AX5";
+        return "trigonal bipyramidal";// -- AX5
       case 802:
-        return "uncapped square pyramid";// -- AX5E";
+        return "uncapped square pyramid";// -- AX5E
       case 1203:
-        return "octahedral";// -- AX6";
+        return "octahedral";// -- AX6
       }
     }
 

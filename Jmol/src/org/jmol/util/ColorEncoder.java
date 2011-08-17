@@ -132,6 +132,7 @@ import org.jmol.util.ArrayUtil;
 
 
   public int currentPalette = ROYGB;
+  public int currentSegmentCount = 1;
   public boolean isTranslucent = false;
   public float lo;
   public float hi;
@@ -606,6 +607,10 @@ import org.jmol.util.ArrayUtil;
     return propertyColorEncoder.paletteBW = b;
   }
 
+  public float unquantize(float x) {
+    return (x <= 0 ? lo : x >= 1 ? hi : lo + (hi - lo) * x);
+  }
+  
   public final static int quantize(float val, float lo, float hi, int segmentCount) {
     /* oy! Say you have an array with 10 values, so segmentCount=10
      * then we expect 0,1,2,...,9  EVENLY

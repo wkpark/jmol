@@ -197,6 +197,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
   //private boolean allowContourLines;
   boolean allowMesh = true;
+  int showKey;
 
   @SuppressWarnings("unchecked")
   @Override
@@ -208,6 +209,12 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
     if ("navigate" == propertyName) {
       navigate(((Integer) value).intValue());
+      return;
+    }
+    if ("key" == propertyName) {
+      // assuming LEFT for now
+      int iValue = ((Integer) value).intValue();
+      showKey  = (iValue == Token.off ? 0 : iValue);
       return;
     }
     if ("delete" == propertyName) {
@@ -1404,6 +1411,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   
   @Override
   public boolean checkObjectHovered(int x, int y, BitSet bsVisible) {
+    if (keyXy != null && x >= keyXy[0] && y >= keyXy[1] && x < keyXy[2] && y < keyXy[3]) {
+      hoverKey(x, y);
+      return true;
+    }
     if (!viewer.getDrawHover())
       return false;
     String s = findValue(x, y, false, bsVisible);
@@ -1418,8 +1429,21 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     return true;
   }
 
+  private void hoverKey(int x, int y) {
+    try {
+      float f = 1 - 1.0f * (y - keyXy[1]) / (keyXy[3] - keyXy[1]);
+      f = thisMesh.colorEncoder.unquantize(f); 
+      float g = 1 - 1.0f * (y - keyXy[1] + keyXy[4]) / (keyXy[3] - keyXy[1]);
+      g = thisMesh.colorEncoder.unquantize(g); 
+      String s = "" + g + " - " + f;
+      viewer.hoverOn(x, y, s);
+    } catch (Exception e) {
+      // never mind!
+    }
+  }
   private final static int MAX_OBJECT_CLICK_DISTANCE_SQUARED = 10 * 10;
   private final Point3i ptXY = new Point3i();
+  int[] keyXy;
 
   @Override
   public Point3fi checkObjectClicked(int x, int y, int action, BitSet bsVisible) {

@@ -42,10 +42,13 @@ public class IsosurfaceRenderer extends MeshRenderer {
   protected int nError = 0;
   protected float[] vertexValues;
   protected IsosurfaceMesh imesh;
-
+  private Isosurface isosurface;
   private boolean isNavigationMode;
   private boolean iShowNormals;
   private boolean showNumbers;
+  private Boolean showKey;
+  private boolean haveVertexColors;
+  
 
   @Override
   protected void initRenderer() {
@@ -56,16 +59,22 @@ public class IsosurfaceRenderer extends MeshRenderer {
     iShowNormals = viewer.getTestFlag(4);
     showNumbers = viewer.getTestFlag(3);
     isExport = (exportType != Graphics3D.EXPORT_NOT);
-    Isosurface isosurface = (Isosurface) shape;
+    isosurface = (Isosurface) shape;
     exportPass = (isExport ? 2 : 0);
     isNavigationMode = viewer.getNavigationMode();
     int mySlabValue = Integer.MAX_VALUE;
     int slabValue = g3d.getSlab();
+    showKey = (isosurface.showKey != 0 ? Boolean.TRUE : null); 
     if (isNavigationMode)
       mySlabValue = (int) viewer.getNavigationOffset().z;
+    isosurface.keyXy = null;
     for (int i = isosurface.meshCount; --i >= 0;) {
       imesh = (IsosurfaceMesh) isosurface.meshes[i];
+      haveVertexColors = false;
       renderMesh(mySlabValue, slabValue);      
+      if (!isExport && haveVertexColors && imesh.colorEncoder != null && Boolean.TRUE == showKey) {
+        showKey();
+      }
       if (isExport && haveBsSlabGhost) {
         exportPass = 1;
         renderMesh(mySlabValue, slabValue);
@@ -74,6 +83,23 @@ public class IsosurfaceRenderer extends MeshRenderer {
     }
   }
 
+  private void showKey() {
+    showKey = Boolean.FALSE; // once only
+    int[] colors = imesh.colorEncoder.getColorSchemeArray(imesh.colorEncoder.currentPalette);
+    int height = viewer.getScreenHeight();
+    // todo: antialiasdisplay?
+    int dy = height / 2 / colors.length;
+    int y = height / 4 * 3;
+    int x = 10;
+    int dx = 20;
+    isosurface.keyXy = new int[] { x, 0, x + dx, y + dy, dy };
+    for (int i = 0; i < colors.length; i++, y -= dy) {
+      g3d.setColor(colors[i]);
+      g3d.fillRect(x, y, 5, 5, dx, dy);
+    }
+    isosurface.keyXy[1] = y + dy;
+  }
+  
   private void renderMesh(int mySlabValue, int slabValue) {
     volumeRender = (imesh.jvxlData.colorDensity && imesh.jvxlData.allowVolumeRender);
     if (!isNavigationMode) {
@@ -297,10 +323,10 @@ public class IsosurfaceRenderer extends MeshRenderer {
     short[] contourColixes = imesh.jvxlData.contourColixes;
     // two-sided means like a plane, with no front/back distinction
 
+    haveVertexColors = !colorSolid;
     for (int i = imesh.polygonCount; --i >= 0;) {
       int[] vertexIndexes = polygonIndexes[i];
       if (vertexIndexes == null || haveBsSlabDisplay && !bsSlab.get(i))
-
         continue;
       int iA = vertexIndexes[0];
       int iB = vertexIndexes[1];

@@ -2675,7 +2675,7 @@ class ScriptMathProcessor {
         return addX(ScriptVariable.sizeOf(x2));
       case Token.type:
         return addX(ScriptVariable.typeOf(x2));
-      case Token.keys:
+      case Token.key:
         if (x2.tok != Token.hash)
           return addX("");
         Object[] keys = ((Map<String, ScriptVariable>) x2.value).keySet()

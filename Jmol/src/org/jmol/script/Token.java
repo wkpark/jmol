@@ -545,7 +545,7 @@ public class Token {
   public final static int unitxyz   =13 | mathproperty | atomproperty;
   public final static int vibxyz    =14 | mathproperty | atomproperty | settable;
   final static int w                =15 | mathproperty;
-  final static int keys             =16 | mathproperty; 
+  final static int key              =16 | mathproperty; 
   
   // occupancy, radius, and structure are odd, because they takes different meanings when compared
   
@@ -1827,7 +1827,8 @@ public class Token {
       "isAromatic",      new Token(isaromatic),
       "Jmol",            new Token(jmol),
       "join",            new Token(join),
-      "keys",            new Token(keys),
+      "key",             new Token(key),
+      "keys",            null,
       "last",            new Token(last),
       "left",            new Token(left),
       "length",          new Token(length),

@@ -16318,6 +16318,18 @@ public class ScriptEvaluator {
         propertyName = "scale3d";
         propertyValue = Float.valueOf(floatParameter(++i));
         break;
+      case Token.key:
+        propertyName = "key"; 
+        switch  (getToken(++i).tok) {
+        case Token.on:
+        case Token.off:
+          propertyValue = Integer.valueOf(tokAt(i));
+          break;
+        default:
+          error(ERROR_invalidArgument);
+          break;
+        }
+        break;
       case Token.period:
         sbCommand.append(" periodic");
         propertyName = "periodic";

@@ -8322,7 +8322,7 @@ private void zap(String msg) {
   public void getHelp(String what) {
     if (global.helpPath.indexOf("?") < 0) { 
       if (what.length() > 0 && what.indexOf("?") != 0) 
-        what = "?search=" + what;
+        what = "?search=" + TextFormat.simpleReplace(what, " ", "%20");
       what += (what.length() == 0 ? "?ver=" : "&ver=") + JmolConstants.version;
     } else {
       what = "&" + what;

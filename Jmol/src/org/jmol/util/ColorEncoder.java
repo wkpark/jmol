@@ -340,8 +340,8 @@ import org.jmol.util.ArrayUtil;
     case HIGH:
       int[] a = ArrayUtil.arrayCopy(propertyColorEncoder.argbsRoygb, propertyColorEncoder.argbsRoygb.length - 2 * propertyColorEncoder.ihalf, -1, false);
       b = new int[propertyColorEncoder.ihalf];
-      for (int i = b.length, j = a.length - 1; --i >= 0;j -= 2)
-        b[i] = a[j];
+      for (int i = b.length, j = a.length; --i >= 0 && --j >= 0;)
+        b[i] = a[j--];
       return b;
     case BW:
       return getPaletteBW();

@@ -200,10 +200,10 @@ class MouseManager14 implements MouseWheelListener, MouseListener,
       case 'z': // undo
         switch (modifiers) {
         case Binding.CTRL:
-          viewer.undoAction(Token.undo, 1);
+          viewer.undoMoveAction(Token.undomove, 1);
           break;
         case Binding.CTRL_SHIFT:
-          viewer.undoAction(Token.redo, 1);
+          viewer.undoMoveAction(Token.redomove, 1);
           break;
         }
         break;
@@ -211,7 +211,7 @@ class MouseManager14 implements MouseWheelListener, MouseListener,
       case 'y': // redo
         switch (modifiers) {
         case Binding.CTRL:
-          viewer.undoAction(Token.redo, 1);
+          viewer.undoMoveAction(Token.redomove, 1);
           break;
         }
         break;        

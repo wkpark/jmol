@@ -2157,12 +2157,14 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
 
   private boolean lookingAtLoadFormat() {
     // just allow a simple word or =xxxx or $CCCC
+    // old load formats are simple unneeded words like PDB or XYZ -- no numbers
     int ichT = ichToken;
     char ch = '\0';
     boolean allchar = (ichT < cchScript && ((ch = script.charAt(ichT)) == '$' || ch == '='));
     while (ichT < cchScript
-        && (Character.isLetterOrDigit(ch = script.charAt(ichT)) || allchar
-            && (!eol(ch) && !Character.isWhitespace(ch))))
+        && (Character.isLetterOrDigit(ch = script.charAt(ichT))
+            && (allchar || Character.isLetter(ch))
+            || allchar && (!eol(ch) && !Character.isWhitespace(ch))))
       ++ichT;
     if (!allchar && ichT == ichToken || !isSpaceOrTab(ch))
       return false;

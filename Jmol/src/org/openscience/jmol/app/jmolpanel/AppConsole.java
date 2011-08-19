@@ -315,12 +315,12 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
   void executeCommandAsThread(String strCommand) {
     if (strCommand == null)
       strCommand = console.getCommandString().trim();
-    if (strCommand.equalsIgnoreCase("undoCmd")) {
+    if (strCommand.equalsIgnoreCase("undo")) {
       undoRedo(false);
       console.appendNewline();
       console.setPrompt();
       return;
-    } else if (strCommand.equalsIgnoreCase("redoCmd")) {
+    } else if (strCommand.equalsIgnoreCase("redo")) {
       undoRedo(true);
       console.appendNewline();
       console.setPrompt();
@@ -329,6 +329,7 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
       System.exit(0);
     } else if (strCommand.length() == 0) {
       strCommand = "!resume";
+      undoSetEnabled();
     }
 
     if (strCommand.length() > 0) {
@@ -361,22 +362,24 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
     redoButton.setEnabled(false);
   }
   
-  void undoSetEnabled() {
+  private boolean undoSetEnabled() {
     if (undoButton == null)
-      return;
+      return false;
+    boolean undoAllowed = (viewer.getBooleanProperty("undo") && viewer
+        .getBooleanProperty("preserveState"));
     undoButton
-        .setEnabled(undoPointer > 0 && undoStack[undoPointer - 1] != null);
-    redoButton.setEnabled(undoPointer < MAXUNDO
+        .setEnabled(undoAllowed && undoPointer > 0 && undoStack[undoPointer - 1] != null);
+    redoButton.setEnabled(undoAllowed && undoPointer < MAXUNDO
         && undoStack[undoPointer + 1] != null);
+    return undoAllowed;
   }
 
-  void undoRedo(boolean isRedo) {
+  private void undoRedo(boolean isRedo) {
     if (undoButton == null)
       return;
     // pointer is always left at the undo slot when a command is given
     // redo at CURRENT pointer position
-    if (!viewer.getBooleanProperty("undo")
-        || !viewer.getBooleanProperty("preserveState"))
+    if (!undoSetEnabled())
       return;
     //dumpUndo("undoRedo1");
     int ptr = undoPointer + (isRedo ? 1 : -1);

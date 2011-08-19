@@ -5440,9 +5440,9 @@ public class ScriptEvaluator {
         case Token.prompt:
           prompt();
           break;
-        case Token.redo:
-        case Token.undo:
-          undoRedo();
+        case Token.redomove:
+        case Token.undomove:
+          undoRedoMove();
           break;
         case Token.refresh:
           refresh();
@@ -17884,7 +17884,7 @@ public class ScriptEvaluator {
       viewer.unBindAction(mouseAction, name);
   }
 
-  private void undoRedo() throws ScriptException {
+  private void undoRedoMove() throws ScriptException {
     // Jmol 12.1.46
     int n = 1;
     int len = 2;
@@ -17903,7 +17903,7 @@ public class ScriptEvaluator {
     }
     checkLength(len);
     if (!isSyntaxCheck)
-      viewer.undoAction(tokAt(0), n);
+      viewer.undoMoveAction(tokAt(0), n);
   }
 
   BitSet getAtomsNearSurface(float distance, String surfaceId) {

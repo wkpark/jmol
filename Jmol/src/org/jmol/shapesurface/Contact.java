@@ -37,6 +37,7 @@ import javax.vecmath.Vector3f;
 import org.jmol.api.AtomIndexIterator;
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.RadiusData;
+import org.jmol.constant.EnumHBondType;
 import org.jmol.constant.EnumVdw;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.jvxl.data.MeshData;
@@ -388,8 +389,7 @@ public class Contact extends Isosurface {
           if (isSameMolecule != (intramolecularMode == 1))
             continue;
         }
-        float vdwB = atomB.getVanderwaalsRadiusFloat(viewer,
-            EnumVdw.AUTO);
+        float vdwB = atomB.getVanderwaalsRadiusFloat(viewer, EnumVdw.AUTO);
         float ra = ad.atomRadius[ia];
         float rb = ad.atomRadius[ib];
         float d = atomA.distance(atomB);
@@ -398,16 +398,17 @@ public class Contact extends Isosurface {
         ContactPair cp = new ContactPair(atoms, ia, ib, ra, rb, vdwA, vdwB);
 
         if (cp.score < 0)
-          getVdwClashRadius(cp, ra - vdwA, vdwA, vdwB, d); 
+          getVdwClashRadius(cp, ra - vdwA, vdwA, vdwB, d);
 
         // check for O--H...N or O...H--N and not considering
         // hydrogens and still have a filter
-
-        // return is 1 (donor), -1 (acceptor), -2 (not), or 0 (unknown)
-        int typeA = atomA.getHbondDonorAcceptorType();
-        int typeB = (typeA == -2 ? -2 : atomB.getHbondDonorAcceptorType());
-        boolean isHbond = (typeA != -2 && typeB != -2 && typeA * typeB <= 0 && cp.score > hbondCutoff);
-        if (isHbond && cp.score < 0)
+        // a bit of asymmetry here: set A may or may not have H atoms added.
+        // This is particularly important for amines
+        EnumHBondType typeA = EnumHBondType.getType(atomA, false);
+        EnumHBondType typeB = (typeA == EnumHBondType.NOT ? EnumHBondType.NOT
+            : EnumHBondType.getType(atomB, true));
+        boolean isHBond = (EnumHBondType.isPossibleHBond(typeA, typeB) && cp.score > hbondCutoff);
+        if (isHBond && cp.score < 0)
           cp.contactType = Token.hbond;
 
         list.add(cp);

@@ -8196,7 +8196,7 @@ private void zap(String msg) {
       Bond b = modelSet.getBonds()[rotateBondIndex];
       atom1 = b.getAtom1();
       atom2 = b.getAtom2();
-      undoAction(atom1.index, AtomCollection.TAINT_COORD, true);
+      undoMoveAction(atom1.index, AtomCollection.TAINT_COORD, true);
       Point3f pt = new Point3f(x, y, (atom1.screenZ + atom2.screenZ) / 2);
       transformManager.unTransformPoint(pt, pt);
       if (atom2.getCovalentBondCount() == 1
@@ -9596,31 +9596,31 @@ private void zap(String msg) {
    * @param n        number of steps to go back/forward; 0 for all; -1 for clear; -2 for clear BOTH
    * 
    */
-  public void undoAction(int action, int n) {
+  public void undoMoveAction(int action, int n) {
     switch (action) {
-    case Token.undo:
-    case Token.redo:
+    case Token.undomove:
+    case Token.redomove:
       switch (n) {
       case -2:
         undoClear();
         break;
       case -1:
-        (action == Token.undo ? actionStates : actionStatesRedo).clear();
+        (action == Token.undomove ? actionStates : actionStatesRedo).clear();
         break;
       case 0:
         n = Integer.MAX_VALUE;
         // fall through
       default:
         if (n > MAX_ACTION_UNDO)
-          n = (action == Token.undo ? actionStates : actionStatesRedo).size();
+          n = (action == Token.undomove ? actionStates : actionStatesRedo).size();
         for (int i = 0; i < n; i++)
-          undoAction(0, action, true);
+          undoMoveAction(0, action, true);
       }
       break;
     }
   }
 
-  void undoAction(int taintedAtom, int type, boolean clearRedo) {
+  void undoMoveAction(int taintedAtom, int type, boolean clearRedo) {
     if (!global.preserveState)
       return;
     int modelIndex = (taintedAtom >= 0 ? modelSet.atoms[taintedAtom].modelIndex
@@ -9630,8 +9630,8 @@ private void zap(String msg) {
     //System.out.println(" " + type + " size=" + actionStates.size() + " "
     //    + +actionStatesRedo.size());
     switch (type) {
-    case Token.redo:
-    case Token.undo:
+    case Token.redomove:
+    case Token.undomove:
       // from MouseManager
       // CTRL-Z: type = 1 UNDO
       // CTRL-Y: type = -1 REDO
@@ -9641,11 +9641,11 @@ private void zap(String msg) {
       List<String> list2;
       switch (type) { 
       default:
-      case Token.undo:
+      case Token.undomove:
         list1 = actionStates;
         list2 = actionStatesRedo;            
         break;
-      case Token.redo:
+      case Token.redomove:
         list1 = actionStatesRedo;
         list2 = actionStates;
         if (actionStatesRedo.size() == 1)
@@ -9657,13 +9657,13 @@ private void zap(String msg) {
       undoWorking = true;
       list2.add(0, list1.remove(0));
       s = actionStatesRedo.get(0);
-      if (type == Token.undo && list2.size() == 1) {
+      if (type == Token.undomove && list2.size() == 1) {
         // must save current state, coord, etc.
         // but this destroys actionStatesRedo
         int[] pt = new int[] {1};
         type = Parser.parseInt(s, pt);
         taintedAtom = Parser.parseInt(s, pt);
-        undoAction(taintedAtom, type, false);
+        undoMoveAction(taintedAtom, type, false);
       }
       //System.out.println("redo type = " + type + " size=" + actionStates.size()
       //    + " " + +actionStatesRedo.size());

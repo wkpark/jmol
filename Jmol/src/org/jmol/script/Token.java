@@ -339,7 +339,7 @@ public class Token {
   final static int push         = scriptCommand | 40 | noArgs; //internal only
   final static int quit         = scriptCommand | 41 | noArgs;
   final static int ramachandran = scriptCommand | 42 | expression;
-  public final static int redo  = scriptCommand | 43;
+  public final static int redomove = scriptCommand | 43;
   final static int refresh      = scriptCommand | 44 | noArgs;
   final static int reset        = scriptCommand | 45;
   final static int restore      = scriptCommand | 46;
@@ -359,14 +359,13 @@ public class Token {
   final static int sync         = scriptCommand | 60;
   final static int timeout      = scriptCommand | 62 | setparam;
   final static int translate    = scriptCommand | 64;
-  final static int translateSelected = scriptCommand | 66;
-  final static int unbind       = scriptCommand | 68;
-  public final static int undo  = scriptCommand | 69 | setparam;
+  final static int translateSelected   = scriptCommand | 66;
+  final static int unbind              = scriptCommand | 68;
+  public final static int undomove     = scriptCommand | 69;
   public final static int vibration    = scriptCommand | 70;
   //final static int write   see mathfunc
-  final static int zoom         = scriptCommand | 72;
-  final static int zoomTo       = scriptCommand | 74;
-  public final static int slice = scriptCommand | 75;
+  final static int zoom                = scriptCommand | 72;
+  final static int zoomTo              = scriptCommand | 74;
 
   // shapes:
   
@@ -775,7 +774,8 @@ public class Token {
   public final static int showscript       = setparam | 10;
   public final static int specular         = setparam | 12;
   public final static int trajectory       = setparam | 14;
-  public final static int usercolorscheme  = setparam | 16;
+  public final static int undo             = setparam | 16;
+  public final static int usercolorscheme  = setparam | 18;
 
   // full set of all Jmol "set" parameters
 
@@ -1211,7 +1211,7 @@ public class Token {
   public final static int probe   = misc  | 285;
   final static int rad            = misc  | 286;
   final static int radical        = misc  | 288;
-  public final static int range          = misc  | 290;
+  public final static int range   = misc  | 290;
   public final static int rasmol  = misc  | 292;
   final static int reference      = misc  | 294;
   final static int remove         = misc  | 295;
@@ -1219,7 +1219,7 @@ public class Token {
   final static int resolution     = misc  | 298;
   final static int reversecolor   = misc  | 300;
   public final static int rewind  = misc  | 302;
-  public final static int right          = misc  | 304;
+  public final static int right   = misc  | 304;
   final static int rotate45       = misc  | 306;
   public final static int rotation = misc  | 308;
   final static int rubberband     = misc  | 310;
@@ -1230,10 +1230,9 @@ public class Token {
   final static int sigma          = misc  | 322;
   final static int sign           = misc  | 323;
   final static int silent         = misc  | 324;
-  final static int slicebox       = misc  | 326;
-  final static int solid          = misc  | 327;
+  final static int solid          = misc  | 326;
   final static int spacegroup     = misc  | 328;
-  public final static int sphere         = misc  | 330;
+  public final static int sphere  = misc  | 330;
   final static int squared        = misc  | 332;
   final static int state          = misc  | 334;
   final static int stop           = misc  | 338;
@@ -1649,8 +1648,6 @@ public class Token {
       "sheet",             new Token(sheet),
       "show",              new Token(show),
       "slab",              new Token(slab),
-      "slice",             new Token(slice),
-      "slicebox",          new Token(slicebox),
       "spacefill",         new Token(spacefill),
       "cpk",               null,
       "spin",              new Token(spin),
@@ -2343,7 +2340,7 @@ public class Token {
       "perspectiveDepth",                         new Token(perspectivedepth),
       "preserveState",                            new Token(preservestate),
       "rangeSelected",                            new Token(rangeselected),
-      "redo",                                     new Token(redo),
+      "redoMove",                                 new Token(redomove),
       "refreshing",                               new Token(refreshing),
       "ribbonBorder",                             new Token(ribbonborder),
       "rocketBarrels",                            new Token(rocketbarrels),
@@ -2383,6 +2380,7 @@ public class Token {
       "testFlag4",                                new Token(testflag4),
       "traceAlpha",                               new Token(tracealpha),
       "undo",                                     new Token(undo),
+      "undoMove",                                 new Token(undomove),
       "useArcBall",                               new Token(usearcball),
       "useMinimizationThread",                    new Token(useminimizationthread),
       "useNumberLocalization",                    new Token(usenumberlocalization),

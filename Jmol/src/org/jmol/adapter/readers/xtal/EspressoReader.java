@@ -19,6 +19,7 @@ public class EspressoReader extends AtomSetCollectionReader {
 
   private float[] cellParams;
   private Double totEnergy;
+  private boolean fullGeopt;
 
   @Override
   protected void initializeReader() {
@@ -32,6 +33,8 @@ public class EspressoReader extends AtomSetCollectionReader {
       readAparam();
     } else if (line.contains("crystal axes:")) {
       readCellParam(false);
+    } else if (line.contains(" new unit-cell volume ")){
+      fullGeopt = true;
     } else if (line.contains("CELL_PARAMETERS")) {
       readCellParam(true);
     } else if (line.contains("   Cartesian axes")) {
@@ -149,7 +152,8 @@ public class EspressoReader extends AtomSetCollectionReader {
     atomSetCollection.newAtomSet();
     if (totEnergy != null)
       setEnergy();
-    setCellParams();
+    if(fullGeopt)
+      setCellParams();
   }
 
   private void setCellParams() throws Exception {
@@ -173,10 +177,16 @@ public class EspressoReader extends AtomSetCollectionReader {
         H        0.000000000   0.000000000   0.428733409
         End final coordinates
      */
+    
+    
 
+    // This for coordinates expressed in alat i.e. only function of the a parameter
+    boolean isAlat = line.contains("alat");
     boolean isFractional = !line.contains("bohr");
     setFractionalCoordinates(isFractional);
     float factor = (isFractional ? 1 : ANGSTROMS_PER_BOHR);
+    factor = (isAlat ? aPar : 1); 
+    
     newAtomSet();
     while (readLine() != null && line.length() > 45) {
       String[] tokens = getTokens();

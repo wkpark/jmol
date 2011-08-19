@@ -1041,7 +1041,7 @@ public class ActionManager {
 
     if (dragAtomIndex >= 0 && isBound(action, ACTION_assignNew)
         && atomPickingMode == PICKING_ASSIGN_ATOM) {
-      int nearestAtomIndex = viewer.findNearestAtomIndex(x, y, true);
+      int nearestAtomIndex = viewer.findNearestAtomIndex(x, y, false);
       if (nearestAtomIndex >= 0) {
         if (measurementPending != null) {
           measurementPending.setCount(1);
@@ -1277,7 +1277,7 @@ public class ActionManager {
     if (nearestPoint != null && Float.isNaN(nearestPoint.x))
       return false;
     int nearestAtomIndex = (drawMode || nearestPoint != null ? -1 : viewer
-        .findNearestAtomIndex(x, y, true));
+        .findNearestAtomIndex(x, y, false));
     if (nearestAtomIndex >= 0
         && (clickedCount > 0 || measurementPending == null)
         && !viewer.isInSelectionSubset(nearestAtomIndex))

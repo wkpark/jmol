@@ -276,14 +276,12 @@ public class Contact extends Isosurface {
 
     for (int i = nContacts; --i >= 0;) {
       ContactPair cp = pairs.get(i);
-      float oldScore = 0;
+      float oldScore = cp.score;
       boolean isVdwClash = (displayType == Token.plane 
           && (contactType == Token.vanderwaals || contactType == Token.nada) 
           && cp.setForVdwClash(true));
-      if (isVdwClash) {
-        oldScore = cp.score;
+      if (isVdwClash)
         cp.score = 0; // for now
-      }
       if (contactType != Token.nada && cp.contactType != contactType)
         continue;
       int nV = thisMesh.vertexCount;
@@ -306,8 +304,9 @@ public class Contact extends Isosurface {
             isColorDensity, volumeData);
         if (isVdwClash && cp.setForVdwClash(false)) {
           if (colorByType)
-            nV = setColorByScore(cp, nV);
+            nV = setColorByScore(cp.score, nV);
           cp.score = oldScore;
+          volume += cp.volume;
           newSurface(displayType, cp, null, null, null, parameters, func,
               isColorDensity, volumeData);          
         }
@@ -319,21 +318,16 @@ public class Contact extends Isosurface {
         Logger.setLogLevel(0);
       }
       if (colorByType)
-        setColorByScore(cp, nV);
+        setColorByScore((cp.contactType == Token.hbond ? 4 : cp.score), nV);
     }
     Logger.setLogLevel(logLevel);
     return (float) volume;
   }
   
-  private int setColorByScore(ContactPair cp, int nV) {
+  private int setColorByScore(float score, int nV) {
     for (int iv = thisMesh.vertexCount; --iv >= nV;)
-      thisMesh.vertexValues[iv] = getVertexValueForType(cp.contactType,
-          cp.score);
+      thisMesh.vertexValues[iv] = score;
     return thisMesh.vertexCount;
-  }
-
-  private static float getVertexValueForType(int contactType, float score) {
-    return (contactType == Token.hbond ? 4 : score);
   }
 
   /**
@@ -404,9 +398,9 @@ public class Contact extends Isosurface {
         // hydrogens and still have a filter
         // a bit of asymmetry here: set A may or may not have H atoms added.
         // This is particularly important for amines
-        EnumHBondType typeA = EnumHBondType.getType(atomA, false);
+        EnumHBondType typeA = EnumHBondType.getType(atomA);
         EnumHBondType typeB = (typeA == EnumHBondType.NOT ? EnumHBondType.NOT
-            : EnumHBondType.getType(atomB, true));
+            : EnumHBondType.getType(atomB));
         boolean isHBond = (EnumHBondType.isPossibleHBond(typeA, typeB) && cp.score > hbondCutoff);
         if (isHBond && cp.score < 0)
           cp.contactType = Token.hbond;

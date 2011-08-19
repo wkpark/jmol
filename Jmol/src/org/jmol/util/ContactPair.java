@@ -54,30 +54,38 @@ public class ContactPair {
       radii[0] = R = vdwA;
       radii[1] = r = vdwB;
     }
+    getVolume();
+    // chord check:
+  }
+  
+  private void getVolume() {
+    double R = radii[0];
+    double r = radii[1];
     volume = (R + r - d);
     volume *= Math.PI * volume
         * (d * d + 2 * d * r - 3 * r * r + 2 * d * R + 6 * r * R - 3 * R * R)
         / 12 / d;
     vdwVolume = (score > 0 ? -volume : volume);
-    // chord check:
     double a = (d * d - r * r + R * R);
     chord = (float) Math.sqrt(4 * d * d * R * R - a * a) / d;
   }
-  
-  public boolean setForVdwClash(boolean toVdw) {
+
+  private int oldType = 0;
+  public boolean setForVdwClash(boolean isVdw) {
     if (Float.isNaN(xVdwClash))
       return false;
-    if (toVdw) {
-    radii[0] = vdws[0] + xVdwClash;
-    radii[1] = vdws[1] + xVdwClash;
-    contactType = Token.vanderwaals;
+    if (isVdw) {
+      oldType  = contactType;
+      contactType = Token.vanderwaals;
+      radii[0] = vdws[0] + xVdwClash;
+      radii[1] = vdws[1] + xVdwClash;
     } else {
+      contactType = oldType;
       radii[0] = vdws[0];
       radii[1] = vdws[1];
-      contactType = Token.clash;
     }
+    getVolume();
     return true;
-    
   }
   
   public void switchAtoms() {

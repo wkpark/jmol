@@ -35,9 +35,10 @@ import org.jmol.viewer.JmolConstants;
 public enum EnumHBondType {
   NOT, ACCEPTOR, DONOR, UNKNOWN;
 
-  public static EnumHBondType getType(Atom atom, boolean considerHydrogens) {
+  public static EnumHBondType getType(Atom atom) {
     Group group = atom.getGroup();
     int groupID = group.getGroupID();
+    boolean considerHydrogens = !atom.isHetero();
     switch (atom.getElementNumber()) {
     default:
       return NOT;

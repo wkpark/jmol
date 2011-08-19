@@ -15531,7 +15531,7 @@ public class ScriptEvaluator {
         volume = Float.valueOf((float) v);
       }
       showString(getShapeProperty(JmolConstants.SHAPE_CONTACT, "nSets")
-          + " contacts with volume " + volume + " A^3");
+          + " contacts with net volume " + volume + " A^3");
     }
   }
 

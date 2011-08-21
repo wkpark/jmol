@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-08-14 13:53+0200\n"
-"PO-Revision-Date: 2010-11-08 20:56+0000\n"
-"Last-Translator: Bartosz Kaszubowski <gosimek@gmail.com>\n"
+"PO-Revision-Date: 2011-08-19 15:52+0000\n"
+"Last-Translator: Łukasz Wiśniewski <Unknown>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-05 17:04+0000\n"
-"X-Generator: Launchpad (build 13613)\n"
+"X-Launchpad-Export-Date: 2011-08-21 09:24+0000\n"
+"X-Generator: Launchpad (build 13697)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
 msgid "Error starting Jmol: the property 'user.home' is not defined."
@@ -23,7 +23,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:139
 msgid "transparent background"
-msgstr ""
+msgstr "przezroczyste tło"
 
 #: org/openscience/jmol/app/JmolApp.java:140
 msgid "give this help page"
@@ -31,19 +31,19 @@ msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:142
 msgid "no display (and also exit when done)"
-msgstr ""
+msgstr "bez wyświetlania (oraz wyjdź po zakończeniu)"
 
 #: org/openscience/jmol/app/JmolApp.java:144
 msgid "check script syntax only - no file loading"
-msgstr ""
+msgstr "sprawdź tylko składnię - bez wczytywania pliku"
 
 #: org/openscience/jmol/app/JmolApp.java:146
 msgid "check script syntax only - with file loading"
-msgstr ""
+msgstr "sprawdź tylko składnię - wczytaj plik"
 
 #: org/openscience/jmol/app/JmolApp.java:147
 msgid "debug"
-msgstr ""
+msgstr "debuguj"
 
 #: org/openscience/jmol/app/JmolApp.java:148
 msgid "silent startup operation"
@@ -51,15 +51,15 @@ msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:150
 msgid "list commands during script execution"
-msgstr ""
+msgstr "wyświetlaj komendy w trakcie wywoływania skryptu"
 
 #: org/openscience/jmol/app/JmolApp.java:152
 msgid "start with no splash screen"
-msgstr ""
+msgstr "uruchom skrypt bez ekranu powitalnego"
 
 #: org/openscience/jmol/app/JmolApp.java:154
 msgid "no console -- all output to sysout"
-msgstr ""
+msgstr "bez konsoli -- całe wyjście to wyjścia systemowego"
 
 #: org/openscience/jmol/app/JmolApp.java:156
 msgid "send only output from print messages to console (implies -i)"
@@ -79,7 +79,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:170
 msgid "use multitouch interface (requires \"sparshui\" parameter"
-msgstr ""
+msgstr "użyj interfejsu wielodotykowego ( wymaga parametru \"sparshui\")"
 
 #: org/openscience/jmol/app/JmolApp.java:177
 msgid "Jmol script to execute BEFORE -s option"
@@ -127,15 +127,15 @@ msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:469
 msgid "Executing script 1..."
-msgstr ""
+msgstr "Uruchamiam skrypt 1"
 
 #: org/openscience/jmol/app/JmolApp.java:479
 msgid "Executing script file..."
-msgstr ""
+msgstr "Uruchamiam plik skryptu ..."
 
 #: org/openscience/jmol/app/JmolApp.java:500
 msgid "Executing script 2..."
-msgstr ""
+msgstr "Uruchamiam skrypt 2"
 
 #: org/openscience/jmol/app/jmolpanel/AboutDialog.java:57
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:193
@@ -158,7 +158,7 @@ msgstr "OK"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:164
 msgid "Check"
-msgstr ""
+msgstr "Sprawdź"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:165
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:218
@@ -179,7 +179,7 @@ msgstr "Pomoc"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:169
 msgid "Editor"
-msgstr ""
+msgstr "Edytor"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:170
 msgid "History"
@@ -191,11 +191,11 @@ msgstr "Stan"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:172
 msgid "Step"
-msgstr ""
+msgstr "Krok"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:173
 msgid "Top"
-msgstr ""
+msgstr "Góra"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:174
 msgid "Undo"
@@ -207,7 +207,7 @@ msgstr "Przywróć"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:176
 msgid "Variables"
-msgstr ""
+msgstr "Zmienne"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:165
 msgid "AtomSetChooser"
@@ -275,11 +275,11 @@ msgstr "Kontroler"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:363
 msgid "Go to first atom set in the collection"
-msgstr ""
+msgstr "Idź do pierwszego zestawu atomów w kolekcji"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:364
 msgid "Go to previous atom set in the collection"
-msgstr ""
+msgstr "Idź do popszedniego zestawu atomów w kolekcji"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:365
 msgid "Play the whole collection of atom sets"
@@ -292,19 +292,19 @@ msgstr "Przerwij odtwarzanie"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:367
 msgid "Go to next atom set in the collection"
-msgstr ""
+msgstr "Idź do następnego zestawu atomów w kolekcji"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:368
 msgid "Jump to last atom set in the collection"
-msgstr ""
+msgstr "Skocz do ostatniego zestawu atomów w kolekcji"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:372
 msgid "Go to first vector in the collection"
-msgstr ""
+msgstr "Idź do pierwszego wektora w kolekcji"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:373
 msgid "Go to previous vector in the collection"
-msgstr ""
+msgstr "Idź do popszedniego wektora w kolekcji"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:374
 msgid "Play the whole collection of vectors"
@@ -312,20 +312,20 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:376
 msgid "Go to next vector in the collection"
-msgstr ""
+msgstr "Idź do następnego wektora w kolekcji"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:377
 msgid "Jump to last vector in the collection"
-msgstr ""
+msgstr "Skocz do ostatniego wektora w kolekcji"
 
 #: org/openscience/jmol/app/jmolpanel/ConsoleTextArea.java:87
 #, java-format
 msgid "Error reading from BufferedReader: {0}"
-msgstr ""
+msgstr "Błąd podczas odczytu z BufferedReader: {0}"
 
 #: org/openscience/jmol/app/jmolpanel/DisplayPanel.java:209
 msgid "Delete atoms"
-msgstr ""
+msgstr "Usuń atomy"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:187
 msgid "Export Gaussian Input File"
@@ -333,11 +333,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:194
 msgid "Basic"
-msgstr ""
+msgstr "Podstawowe"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:196
 msgid "Advanced"
-msgstr ""
+msgstr "Zaawansowane"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:224
 msgid "Checkpoint File: "
@@ -345,23 +345,23 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:229
 msgid "Amount of Memory:"
-msgstr ""
+msgstr "Ilość pamięci:"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:235
 msgid "Number of Processors:"
-msgstr ""
+msgstr "Ilość procesorów"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:248
 msgid "Route"
-msgstr ""
+msgstr "Trasa"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:254
 msgid "Method: "
-msgstr ""
+msgstr "Metoda: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:261
 msgid "Basis Set: "
-msgstr ""
+msgstr "Zestaw Bazowy: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:269
 msgid "Density Fitting Basis Set (DFT Only): "
@@ -369,15 +369,15 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:275
 msgid "Job Options: "
-msgstr ""
+msgstr "Opcje Pracy: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:288
 msgid "Molecular Properties"
-msgstr ""
+msgstr "Właściwości Molekularne"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:294
 msgid "Total Charge: "
-msgstr ""
+msgstr "Ładunek Całkowity: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:301
 msgid "Multiplicity: "
@@ -417,7 +417,7 @@ msgstr "&Plik"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:58
 msgid "&New"
-msgstr ""
+msgstr "&Nowy"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:59
 msgid "&Open"
@@ -433,7 +433,7 @@ msgstr "Otwórz &URL"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:62
 msgid "&Get PDB"
-msgstr ""
+msgstr "&Zdobądź PDB"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:63
 msgid "Get &MOL"
@@ -857,7 +857,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:184
 msgid "Go to last frame"
-msgstr ""
+msgstr "Przejdź do ostatniej klatki"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:185
 msgid "Start &vibration"
@@ -1763,18 +1763,22 @@ msgstr ""
 #~ msgid "vector"
 #~ msgstr "wektor"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Idź do pierwszego {0} w kolekcji"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Idź do ostatniego {0} w kolekcji"
 
 #~ msgid "Jmol Script Console"
 #~ msgstr "Konsola skryptów Jmol"
 
+#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Przejdź do ostatniego {0} w kolekcji"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Przejdź do nastepnego {0} w kolekcji"
 

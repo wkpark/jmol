@@ -14,12 +14,12 @@ package org.jmol.adapter.readers.xtal;
 
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
+import org.jmol.util.SimpleUnitCell;
 
 public class EspressoReader extends AtomSetCollectionReader {
 
   private float[] cellParams;
   private Double totEnergy;
-  private boolean fullGeopt;
 
   @Override
   protected void initializeReader() {
@@ -29,20 +29,15 @@ public class EspressoReader extends AtomSetCollectionReader {
 
   @Override
   protected boolean checkLine() throws Exception {
-    if (line.contains("lattice parameter (a_0)")) {
+    if (line.contains("lattice parameter (a_0)") || line.contains("lattice parameter (alat)")) {
       readAparam();
     } else if (line.contains("crystal axes:")) {
       readCellParam(false);
-    } else if (line.contains(" new unit-cell volume ")){
-      fullGeopt = true;
     } else if (line.contains("CELL_PARAMETERS")) {
       readCellParam(true);
-    } else if (line.contains("   Cartesian axes")) {
+    } else if (line.contains("POSITIONS (") || line.contains("positions (")) {
       if (doGetModel(++modelNumber))
-        readAtomsCartesian();
-    } else if (line.contains("ATOMIC_POSITIONS")) {
-      if (doGetModel(++modelNumber))
-        readAtomsFractional();
+        readAtoms();
     } else if (line.contains("!    total energy")) {
       readEnergy();
     }
@@ -52,6 +47,7 @@ public class EspressoReader extends AtomSetCollectionReader {
   private float aPar;
 
   private void readAparam() throws Exception {
+    // lattice parameter (alat)  =       5.3033  a.u.
     aPar = parseFloat(getTokens()[4]) * ANGSTROMS_PER_BOHR;
   }
 
@@ -97,7 +93,7 @@ public class EspressoReader extends AtomSetCollectionReader {
     //The 1st is wrong. 
     // BH: It's just a bad starting geometry, but the program 
     //     very nicely cleans it up in just one step.
-    //PC this is not true as it happens for every single jobs and even for single SCF calculations
+    //PC this is not true as it happens for every 0single jobs and even for single SCF calculations
 
     cellParams = new float[9];
     for (int n = 0, i = 0; n < 3; n++) {
@@ -108,110 +104,79 @@ public class EspressoReader extends AtomSetCollectionReader {
     }
   }
 
-  /*
-  Cartesian axes
-
-    site n.     atom                  positions (a_0 units)
-        1           Ca  tau(  1) = (   0.5000000  -0.2886751  -0.0018296  )
-        2           Ca  tau(  2) = (  -0.5000000   0.2886751   0.3706481  )
-        3           Ca  tau(  3) = (  -0.5000000   0.2886751   0.0001849  )
-        4           Ca  tau(  4) = (   0.5000000  -0.2886751  -0.3722928  )
-        5           Ca  tau(  5) = (   0.2493986  -0.0086855   0.1856962  )
-        6           Ca  tau(  6) = (  -0.2493986   0.0086855  -0.1867815  )
-        7           Ca  tau(  7) = (  -0.1171775   0.2203283   0.1856962  )
-        8           Ca  tau(  8) = (  -0.1322212  -0.2116428   0.1856962  )
-        9           Ca  tau(  9) = (   0.1322212   0.2116428  -0.1867815  )
-       10           Ca  tau( 10) = (   0.1171775  -0.2203283  -0.1867815  )
-   */
-  private void readAtomsCartesian() throws Exception {
-    setFractionalCoordinates(false);
-    newAtomSet();
-    discardLines(2);
-    while (readLine() != null && (line.indexOf("(")) >= 0) {
-      String[] tokens = getTokens();
-      Atom atom = atomSetCollection.addNewAtom();
-      atom.atomName = tokens[1];
-      // here the coordinates are a_lat there fore expressed on base of cube of side a 
-      float x = parseFloat(tokens[tokens.length - 4]) * aPar;
-      float y = parseFloat(tokens[tokens.length - 3]) * aPar;
-      float z = parseFloat(tokens[tokens.length - 2]) * aPar;
-      /* not for now
-      if (x < 0)
-        x += 1;
-      if (y < 0)
-        y += 1;
-      if (z < 0)
-        z += 1;
-       */
-      setAtomCoord(atom, x, y, z);
-    }
-    applySymmetryAndSetTrajectory();
-  }
-
   private void newAtomSet() throws Exception {
     atomSetCollection.newAtomSet();
     if (totEnergy != null)
       setEnergy();
-    if(fullGeopt)
-      setCellParams();
   }
 
+  private float bFactor, cFactor;
   private void setCellParams() throws Exception {
     if (cellParams != null) {
       addPrimitiveLatticeVector(0, cellParams, 0);
       addPrimitiveLatticeVector(1, cellParams, 3);
       addPrimitiveLatticeVector(2, cellParams, 6);
+      float a = symmetry.getUnitCellInfo(SimpleUnitCell.INFO_A);
+      float b = symmetry.getUnitCellInfo(SimpleUnitCell.INFO_B);
+      float c = symmetry.getUnitCellInfo(SimpleUnitCell.INFO_C);
+      bFactor = a / b;
+      cFactor = a / c;
+      // say a=1, b=2, and c=22. Then if we have alat or a_0 format,
+      // then {0.5 0.5 2.45} in alat will be {0.5 0.5/2 2.45/22} in fractional
     }
   }
 
-  private void readAtomsFractional() throws Exception {
+  /*
 
-    /*    
-     * some just end with a blank line; others end with a short phrase:
-     * 
-        O       -0.088707198  -0.347657305   0.434774168
-        O       -0.258950107   0.088707198   0.434774168
-        O        0.000000000   0.000000000  -0.214003341
-        O        0.000000000   0.000000000   0.286225136
-        H        0.000000000   0.000000000  -0.071496337
-        H        0.000000000   0.000000000   0.428733409
-        End final coordinates
-     */
-    
-    
+   some have just atoms...
+   
+    site n.     atom                  positions (a_0 units)
+        1           Ca  tau(  1) = (   0.5000000  -0.2886751  -0.0018296  )
+        2           Ca  tau(  2) = (  -0.5000000   0.2886751   0.3706481  )
 
-    // This for coordinates expressed in alat i.e. only function of the a parameter
-    boolean isAlat = line.contains("alat");
-    boolean isFractional = !line.contains("bohr");
-    setFractionalCoordinates(isFractional);
-    float factor = (isFractional ? 1 : ANGSTROMS_PER_BOHR);
-    factor = (isAlat ? aPar : 1); 
+   ...some have masses...
+   
+     site n.  atom      mass           positions (a_0 units)
+        1        Si  28.0800   tau( 1) = (    0.00000    0.00000    0.00000  )
+        2        Si  28.0800   tau( 2) = (    0.25000    0.25000    0.25000  )
+   
+   ...some just end with a blank line; others end with a short phrase...
     
+      O       -0.088707198  -0.347657305   0.434774168
+      O       -0.258950107   0.088707198   0.434774168
+      O        0.000000000   0.000000000  -0.214003341
+      O        0.000000000   0.000000000   0.286225136
+      H        0.000000000   0.000000000  -0.071496337
+      H        0.000000000   0.000000000   0.428733409
+      End final coordinates
+   */
+  
+  private void readAtoms() throws Exception {
+    // all atom block types are read here -- BH
     newAtomSet();
+    boolean isAlat = (line.contains("alat") || line.contains("a_0"));
+    boolean isFractional = line.contains("crystal");
+    boolean isBohr = line.contains("bohr");
+    if (isAlat || isFractional)
+      setCellParams();
+    setFractionalCoordinates(isAlat || isFractional);
+    
     while (readLine() != null && line.length() > 45) {
       String[] tokens = getTokens();
       Atom atom = atomSetCollection.addNewAtom();
-      atom.atomName = tokens[0];
-      //Here the coordinates are in BOHR
-      float x = parseFloat(tokens[1]) * factor;
-      float y = parseFloat(tokens[2]) * factor;
-      float z = parseFloat(tokens[3]) * factor;
-      // This we can't do, at least not by default....
-      // None of the other readers do this. So let's think
-      // about why you are feeling it is important. 
-      // What's the case that is the problem? This is what
-      // I call "packed" -- it's certainly an option, but
-      // it's not the default. Please see if PACKED gets you
-      // what you want.
-      /*  (for now) 
-      if (x < 0)
-        x += 1;
-      if (y < 0)
-        y += 1;
-      if (z < 0)
-        z += 1;
-       */
-      setAtomCoord(atom, x, y, z);
+      atom.atomName = tokens[(isBohr || tokens.length == 4 ? 0 : 1)];
+      int i1 = (isBohr || tokens.length == 4 ? 1 : tokens.length - 4);
+      float x = parseFloat(tokens[i1++]);
+      float y = parseFloat(tokens[i1++]);
+      float z = parseFloat(tokens[i1++]);
+      atom.set(x, y, z);
+      if (isBohr) {
+        atom.scale(ANGSTROMS_PER_BOHR);
+      } else if (isAlat) {
+        atom.y *= bFactor;
+        atom.z *= cFactor;
+      }
+      setAtomCoord(atom);
     }
     applySymmetryAndSetTrajectory();
   }

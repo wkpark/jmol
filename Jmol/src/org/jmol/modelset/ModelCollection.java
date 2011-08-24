@@ -4089,6 +4089,7 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public void appendLoadStates(StringBuffer commands) {
+    boolean isFirst = true;
     for (int i = 0; i < modelCount; i++) { 
       if (isJmolDataFrame(i) || isTrajectorySubFrame(i))
         continue;
@@ -4106,8 +4107,11 @@ abstract public class ModelCollection extends BondCollection {
         models[i].loadScript = new StringBuffer(); 
         Viewer.getInlineData(commands, getModelExtract(bs, false, true, "MOL"), i > 0);
       } else {
+        if (models[i].loadScript.indexOf("append") >= 0 && isFirst)
+          commands.append("\n  zap;\n");
         commands.append(models[i].loadScript);
       }
+      isFirst = false;
     }
   }
 

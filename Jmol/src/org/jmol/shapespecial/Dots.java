@@ -289,7 +289,7 @@ public class Dots extends AtomShape {
     int atomCount = viewer.getAtomCount();
     String type = (isSurface ? "geoSurface " : "dots ");
     for (int i = 0; i < atomCount; i++) {
-      if (dotsConvexMaps[i] == null || !bsOn.get(i))
+      if (!bsOn.get(i) || dotsConvexMaps[i] == null)
         continue;
       if (bsColixSet != null && bsColixSet.get(i))
         setStateInfo(temp, i, getColorCommand(type, paletteIDs[i], colixes[i]));

@@ -15383,7 +15383,7 @@ public class ScriptEvaluator {
         break;
       case Token.slab:
         okNoAtoms = true;
-        userSlabObject = getCapSlabObject(i, true);
+        userSlabObject = getCapSlabObject(i, false);
         setShapeProperty(JmolConstants.SHAPE_CONTACT, "slab", userSlabObject);
         i = iToken;
         break;

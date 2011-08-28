@@ -15435,18 +15435,17 @@ public class ScriptEvaluator {
         contactType = tok;
         sbCommand.append(" ").append(theToken.value);
         break;
+      case Token.cap:
+      case Token.nci:
+      case Token.surface:
+        isPaired = false;
+        // fall through
       case Token.full:
       case Token.trim:
       case Token.plane:
       case Token.connect:
         displayType = tok;
         sbCommand.append(" ").append(theToken.value);
-        break;
-      case Token.cap:
-      case Token.nci:
-      case Token.surface:
-        isPaired = false;
-        displayType = theTok;
         break;
       case Token.parameters:
         params = floatParameterSet(++i, 1, 10);

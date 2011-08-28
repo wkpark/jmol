@@ -290,7 +290,7 @@ public class Mesh extends MeshSurface {
       s.append(" contourlines");
     if (showTriangles)
       s.append(" triangles");
-    s.append(Token.nameOf(lighting));
+    s.append(" ").append(Token.nameOf(lighting));
     return s.toString();
   }
 

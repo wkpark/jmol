@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-08-14 13:53+0200\n"
-"PO-Revision-Date: 2011-08-03 09:29+0000\n"
-"Last-Translator: Paco Molinero <paco@byasl.com>\n"
+"PO-Revision-Date: 2011-08-29 20:23+0100\n"
+"Last-Translator: Angel Herráez <aherraez@users.sourceforge.net>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -39,11 +39,11 @@ msgstr "sin mostrar (y además salir cuando acabe)"
 
 #: org/openscience/jmol/app/JmolApp.java:144
 msgid "check script syntax only - no file loading"
-msgstr "verificar solo la sintaxis de scripts - sin cargar los archivos"
+msgstr "verificar sólo la sintaxis de guiones - sin cargar los archivos"
 
 #: org/openscience/jmol/app/JmolApp.java:146
 msgid "check script syntax only - with file loading"
-msgstr "verificar solo la sintaxis de scripts - cargando los archivos"
+msgstr "verificar sólo la sintaxis de guiones - cargando los archivos"
 
 #: org/openscience/jmol/app/JmolApp.java:147
 msgid "debug"
@@ -55,7 +55,7 @@ msgstr "operación con comienzo silencioso"
 
 #: org/openscience/jmol/app/JmolApp.java:150
 msgid "list commands during script execution"
-msgstr "listar instrucciones durante la ejecución del script"
+msgstr "listar instrucciones durante la ejecución del guión"
 
 #: org/openscience/jmol/app/JmolApp.java:152
 msgid "start with no splash screen"
@@ -67,7 +67,7 @@ msgstr "sin consola; toda la salida va a sysout"
 
 #: org/openscience/jmol/app/JmolApp.java:156
 msgid "send only output from print messages to console (implies -i)"
-msgstr "enviar solo salida de mensajes de impresión a la consola (implica -i)"
+msgstr "enviar sólo salida de mensajes de impresión a la consola (implica -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:158
 msgid "independent command thread"
@@ -75,11 +75,11 @@ msgstr "hebra de instrucciones independiente"
 
 #: org/openscience/jmol/app/JmolApp.java:160
 msgid "exit after script (implicit with -n)"
-msgstr "salir tras el script (implícito con -n)"
+msgstr "salir tras el guión (implícito con -n)"
 
 #: org/openscience/jmol/app/JmolApp.java:164
 msgid "script file to execute or '-' for System.in"
-msgstr "archivo de script a ejecutar, o bien «-» para System.in"
+msgstr "archivo de guión a ejecutar, o bien «-» para System.in"
 
 #: org/openscience/jmol/app/JmolApp.java:170
 msgid "use multitouch interface (requires \"sparshui\" parameter"
@@ -87,11 +87,11 @@ msgstr "usar interfaz multitáctil (requiere el parámetro «sparshui»)"
 
 #: org/openscience/jmol/app/JmolApp.java:177
 msgid "Jmol script to execute BEFORE -s option"
-msgstr "Script de Jmol que debe ejecutarse antes de la opción -s"
+msgstr "Guión de Jmol que debe ejecutarse antes de la opción -s"
 
 #: org/openscience/jmol/app/JmolApp.java:183
 msgid "Jmol script to execute AFTER -s option"
-msgstr "Script de Jmol que debe ejecutarse tras la opción -s"
+msgstr "Guión de Jmol que debe ejecutarse tras la opción -s"
 
 #: org/openscience/jmol/app/JmolApp.java:192
 msgid "property=value"
@@ -107,12 +107,8 @@ msgid "window width x height, e.g. {0}"
 msgstr "ancho x alto de ventana, p.ej. {0}"
 
 #: org/openscience/jmol/app/JmolApp.java:211
-msgid ""
-"JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
-"2, maximum compression 9)"
-msgstr ""
-"Calidad de imagen JPG (de 1 a 100; 75 predet.) o compresión de imagen PNG "
-"(de 0 a 9; 2 predet.; 9 es la máxima compresión)"
+msgid "JPG image quality (1-100; default 75) or PNG image compression (0-9; default 2, maximum compression 9)"
+msgstr "Calidad de imagen JPG (de 1 a 100; 75 predet.) o compresión de imagen PNG (de 0 a 9; 2 predet.; 9 es la máxima compresión)"
 
 #: org/openscience/jmol/app/JmolApp.java:216
 #, java-format
@@ -124,24 +120,20 @@ msgid "For example:"
 msgstr "Por ejemplo:"
 
 #: org/openscience/jmol/app/JmolApp.java:236
-msgid ""
-"The -D options are as follows (defaults in parenthesis) and must be called "
-"preceding '-jar Jmol.jar':"
-msgstr ""
-"Las opciones -D son estas (valores predeterminados entre paréntesis) y deben "
-"invocarse antes de «-jar Jmol.jar»:"
+msgid "The -D options are as follows (defaults in parenthesis) and must be called preceding '-jar Jmol.jar':"
+msgstr "Las opciones -D son éstas (valores predeterminados entre paréntesis) y deben invocarse antes de «-jar Jmol.jar»:"
 
 #: org/openscience/jmol/app/JmolApp.java:469
 msgid "Executing script 1..."
-msgstr "Ejecutando script 1..."
+msgstr "Ejecutando guión 1..."
 
 #: org/openscience/jmol/app/JmolApp.java:479
 msgid "Executing script file..."
-msgstr "Ejecutando archivo de script..."
+msgstr "Ejecutando archivo de guión..."
 
 #: org/openscience/jmol/app/JmolApp.java:500
 msgid "Executing script 2..."
-msgstr "Ejecutando script 2..."
+msgstr "Ejecutando guión 2..."
 
 #: org/openscience/jmol/app/jmolpanel/AboutDialog.java:57
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:193
@@ -253,7 +245,7 @@ msgstr "Repetir"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:266
 msgid "FPS"
-msgstr "FPS"
+msgstr "Fotogramas/segundo"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:282
 msgid "Vector"
@@ -949,9 +941,7 @@ msgstr "Rotar molécula"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:211
 msgid "Select a set of atoms using SHIFT-LEFT-DRAG."
-msgstr ""
-"Selecciona un grupo de átomos pulsando Mayús. y arrastrando con el botón "
-"principal"
+msgstr "Selecciona un grupo de átomos pulsando Mayús. y arrastrando con el botón principal"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:213
 msgid "Click atoms to measure distances"
@@ -1051,13 +1041,11 @@ msgstr "Escribe un identificador PDB de 4 caracteres"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1166
 msgid "Get MOL file by compound name or ID"
-msgstr ""
-"Consigue el archivo MOL a partir del nombre o identificador del compuesto"
+msgstr "Consigue el archivo MOL a partir del nombre o identificador del compuesto"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1167
 msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
-msgstr ""
-"Escribe el nombre o el identificador (SMILES, InChI, CAS) de una molécula"
+msgstr "Escribe el nombre o el identificador (SMILES, InChI, CAS) de una molécula"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1333
 msgid "IO Exception:"
@@ -1092,8 +1080,7 @@ msgid "File Name:"
 msgstr "Nombre de archivo:"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:159
-msgid ""
-"'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
+msgid "'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
 msgstr "«cafeina.pov» -> «cafeina.pov», «cafeina.pov.ini», «cafeina.pov.spt»"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:169
@@ -1122,8 +1109,7 @@ msgstr "Mostrar mientras se está representando"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:245
 msgid "Should POV-Ray attempt to display while rendering?"
-msgstr ""
-"¿Debe POV-Ray intentar mostrar mientras se está generando la representación?"
+msgstr "¿Debe POV-Ray intentar mostrar mientras se está generando la representación?"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:268
 msgid "width:"
@@ -1363,6 +1349,8 @@ msgid ""
 "Caps slice with opaque surfaces.\n"
 "Ignores MOs and surfaces with interior layers."
 msgstr ""
+"Cierra la sección usando planos opacos.\n"
+"Ignora los orbitales moleculares y las superficies con capas interiores."
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:174
 msgid "Slice Planes"
@@ -1402,7 +1390,7 @@ msgstr "Grosor de la sección"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:261
 msgid "Select Surface(s)"
-msgstr ""
+msgstr "Seleccionar superficie(s)"
 
 #: org/openscience/jmol/app/webexport/JmolInstance.java:81
 msgid "Attempt to make scratch directory failed."
@@ -1470,22 +1458,13 @@ msgstr "Bitácora"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:168
 #, java-format
-msgid ""
-"Page skeleton and JavaScript generated by export to web function using {0} "
-"on {1}."
-msgstr ""
-"Armazón de la página y JavaScript generados por la función exportar a página "
-"web de {0} el {1}."
+msgid "Page skeleton and JavaScript generated by export to web function using {0} on {1}."
+msgstr "Armazón de la página y JavaScript generados por la función exportar a página web de {0} el {1}."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:364
 #, java-format
-msgid ""
-"To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
-"be significant the first time the applet is loaded."
-msgstr ""
-"Para obtener un modelo tridimensional que puedes manejar, pulsa {0}aquí{1}. "
-"El tiempo de descarga puede ser considerable la primera vez que se carga la "
-"miniaplicación."
+msgid "To get a 3-D model you can manipulate, click {0}here{1}. Download time may be significant the first time the applet is loaded."
+msgstr "Para obtener un modelo tridimensional que puedes manejar, pulsa {0}aquí{1}. El tiempo de descarga puede ser considerable la primera vez que se carga la miniaplicación."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:366
 msgid "Insert the page TITLE here."
@@ -1502,12 +1481,8 @@ msgstr "Inserta aquí una leyenda para «{0}»."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:370
 #, java-format
-msgid ""
-"Insert additional explanatory text here. Long text will wrap around Jmol "
-"model {0}."
-msgstr ""
-"Inserta aquí texto explicativo adicional. Si el texto es largo, rodeará al "
-"modelo Jmol \"{0}\"."
+msgid "Insert additional explanatory text here. Long text will wrap around Jmol model {0}."
+msgstr "Inserta aquí texto explicativo adicional. Si el texto es largo, rodeará al modelo Jmol \"{0}\"."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:372
 msgid "Insert your TITLE and INTRODUCTION here."
@@ -1515,12 +1490,8 @@ msgstr "Inserta aquí el TÍTULO y la INTRODUCCIÓN."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:374
 #, java-format
-msgid ""
-"The button {0} will appear in the box below.  Insert information for {0} "
-"here and below."
-msgstr ""
-"El botón «{0}» se mostrará en el recuadro de aquí abajo.  Inserta la "
-"información de «{0}» aquí y también más abajo."
+msgid "The button {0} will appear in the box below.  Insert information for {0} here and below."
+msgstr "El botón «{0}» se mostrará en el recuadro de aquí abajo.  Inserta la información de «{0}» aquí y también más abajo."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:375
 #, java-format
@@ -1613,9 +1584,7 @@ msgstr "Ha fallado la llamada a FileWriter."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:560
 msgid "Errors occurred during web page creation.  See Log Tab!"
-msgstr ""
-"Ha habido errores durante la creación de la página web. Consulta la pestaña "
-"Biitácora."
+msgstr "Ha habido errores durante la creación de la página web. Consulta la pestaña Biitácora."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:635
 #, java-format
@@ -1650,13 +1619,11 @@ msgstr "creando {0}"
 msgid ""
 "Could not find or open:\n"
 "{0}\n"
-"Please check that you are using a Jmol.jar that is part of a full Jmol "
-"distribution."
+"Please check that you are using a Jmol.jar that is part of a full Jmol distribution."
 msgstr ""
 "No se ha podido encontrar o abrir:\n"
 "{0}\n"
-"Comprueba que estás usando un archivo Jmol.jar que forma parte de una "
-"distribución completa de Jmol."
+"Comprueba que estás usando un archivo Jmol.jar que forma parte de una distribución completa de Jmol."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:794
 #, java-format

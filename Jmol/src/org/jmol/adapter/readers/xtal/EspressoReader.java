@@ -204,15 +204,8 @@ public class EspressoReader extends AtomSetCollectionReader {
 
   private void setEnergy() {
 
-    String energyTitle = "";
-
-    if (endFlag)
-      energyTitle = ", FinalRun, ";
-
     atomSetCollection.setAtomSetEnergy("" + totEnergy, totEnergy.floatValue());
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Energy" + energyTitle,
-        totEnergy);
-    atomSetCollection.setAtomSetName("E" + energyTitle + "= " + totEnergy
-        + " Ry");
+    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Energy", totEnergy);
+    atomSetCollection.setAtomSetName("E = " + totEnergy + " Ry");
   }
 }

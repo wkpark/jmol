@@ -133,7 +133,8 @@ public class RadiusData {
   public RadiusData(float value, EnumType factorType, EnumVdw vdwType) {
     this.factorType = factorType;
     this.value = value;
-    this.vdwType = vdwType;
+    if (vdwType != null)
+      this.vdwType = vdwType;
   }
 
   public RadiusData(float[] values) {

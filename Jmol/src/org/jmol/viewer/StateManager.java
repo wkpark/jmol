@@ -697,7 +697,6 @@ public class StateManager {
       setParameterValue("isKiosk", viewer.isKiosk()); // maintained by Viewer
       setParameterValue("logFile", viewer.getLogFile()); // maintained by Viewer
       setParameterValue("logLevel", Logger.getLogLevel());
-
       setParameterValue("mouseWheelFactor", ActionManager.DEFAULT_MOUSE_WHEEL_FACTOR);
       setParameterValue("mouseDragFactor", ActionManager.DEFAULT_MOUSE_DRAG_FACTOR);
       setParameterValue("navFps", TransformManager.DEFAULT_NAV_FPS); 
@@ -867,6 +866,7 @@ public class StateManager {
       setParameterValue("measurementUnits", measureDistanceUnits);
       setParameterValue("messageStyleChime", messageStyleChime);
       setParameterValue("minBondDistance", minBondDistance);
+      setParameterValue("minPixelSelRadius", minPixelSelRadius);
       setParameterValue("minimizationSteps", minimizationSteps);
       setParameterValue("minimizationRefresh", minimizationRefresh);
       setParameterValue("minimizationSilent", minimizationSilent);
@@ -1003,6 +1003,7 @@ public class StateManager {
     String edsUrlCutoff = "load('http://eds.bmc.uu.se/eds/dfs/%LC13/%LCFILE/%LCFILE.sfdat').lines.find('MAP_SIGMA').split(' ')[2]";
     String edsUrlOptions = "within 2.0 {*}";
     float minBondDistance = JmolConstants.DEFAULT_MIN_BOND_DISTANCE;
+    int minPixelSelRadius = 6;
     boolean pdbAddHydrogens = false; // true to add hydrogen atoms
     boolean pdbGetHeader = false; // true to get PDB header in auxiliary info
     boolean pdbSequential = false; // true for no bonding check

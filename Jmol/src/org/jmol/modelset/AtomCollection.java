@@ -1120,9 +1120,7 @@ abstract public class AtomCollection {
     commands.append("  end \"" + dataLabel + "\";\n");
   }
 
-///////////////////////////////////////////
-  
-  private final static int minimumPixelSelectionRadius = 6;
+  ///////////////////////////////////////////
 
   /*
    * generalized; not just balls
@@ -1139,13 +1137,13 @@ abstract public class AtomCollection {
    */
   protected void findNearestAtomIndex(int x, int y, Atom[] closest, BitSet bsNot) {
     Atom champion = null;
-    //int championIndex = -1;
+    int min = viewer.getMinPixelSelRadius();
     for (int i = atomCount; --i >= 0;) {
       if (bsNot != null && bsNot.get(i))
         continue;
       Atom contender = atoms[i];
       if (contender.isClickable()
-          && isCursorOnTopOf(contender, x, y, minimumPixelSelectionRadius,
+          && isCursorOnTopOf(contender, x, y, min,
               champion))
         champion = contender;
     }

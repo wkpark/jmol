@@ -5263,6 +5263,7 @@ private void zap(String msg) {
     boolean doCallback = (ptLoad != FileManager.EnumFileStatus.CREATING_MODELSET); 
     statusManager.setFileLoadStatus(fullPathName, fileName, modelName,
         strError, ptLoad.getCode(), doCallback);
+    System.out.println("nmodels = " + getModelCount() + ptLoad);
   }
 
   public String getZapName() {
@@ -5990,6 +5991,10 @@ private void zap(String msg) {
   
   private void setIntProperty(String key, int tok, int value) {
     switch (tok) {
+    case Token.minpixelselradius:
+      // 12.2.RC6
+      global.minPixelSelRadius = value;
+      break;
     case Token.isosurfacepropertysmoothingpower:
       // 12.1.11
       global.isosurfacePropertySmoothingPower = value;
@@ -9990,6 +9995,10 @@ private void zap(String msg) {
 
   public boolean allowSpecAtom() {
     return modelSet.allowSpecAtom();
+  }
+
+  public int getMinPixelSelRadius() {
+    return global.minPixelSelRadius;
   }
 
 }

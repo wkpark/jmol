@@ -878,7 +878,8 @@ public class Token {
   public final static int isosurfacepropertysmoothingpower=intparam | 21;
   public final static int loglevel                       = intparam | 22;
   public final static int minimizationsteps              = intparam | 23;
-  public final static int percentvdwatom                 = intparam | 24;
+  public final static int minpixelselradius              = intparam | 24;
+  public final static int percentvdwatom                 = intparam | 25;
   public final static int perspectivemodel               = intparam | 26;
   public final static int phongexponent                  = intparam | 28;
   public final static int pickingspinrate                = intparam | 30;

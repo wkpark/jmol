@@ -381,6 +381,8 @@ public class SmilesGenerator {
         
         char c0 = getBondStereochemistry(b0, atom12[i0]);
         a0 = b0.getOtherAtom(atom12[i0]);
+        if (a0 == null)
+          continue;
         for (int j = 0; j < 2; j++)
           for (int jj = 0; jj < 2; jj++) {
             JmolEdge b1 = edges[j][jj];
@@ -388,16 +390,16 @@ public class SmilesGenerator {
               continue;
             int bi = b1.index;
             JmolNode a1 = b1.getOtherAtom(atom12[j]);
+            if (a1 == null)
+              continue;
             char c1 = getBondStereochemistry(b1, atom12[j]);
 
             //   c1 is FROM the double bond:
             //    
-            //    a     b
-            //     \   /
-            //      C=C       /a /b  \c \d
-            //     /   \
-            //    c     d
-
+            //     a0    a1
+            //      \   /
+            //    [i0]=[j]       /a /b  \c \d
+            //   
             boolean isOpposite = SmilesSearch.isDiaxial(atom12[i0], atom12[j],
                 a0, a1, vTemp, 0);
             if (c1 == '\0' || (c1 != c0) == isOpposite) {

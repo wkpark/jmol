@@ -20,6 +20,7 @@ public class EspressoReader extends AtomSetCollectionReader {
 
   private float[] cellParams;
   private Double totEnergy;
+  private boolean endFlag;
 
   @Override
   protected void initializeReader() {
@@ -29,7 +30,8 @@ public class EspressoReader extends AtomSetCollectionReader {
 
   @Override
   protected boolean checkLine() throws Exception {
-    if (line.contains("lattice parameter (a_0)") || line.contains("lattice parameter (alat)")) {
+    if (line.contains("lattice parameter (a_0)")
+        || line.contains("lattice parameter (alat)")) {
       readAparam();
     } else if (line.contains("crystal axes:")) {
       readCellParam(false);
@@ -40,6 +42,8 @@ public class EspressoReader extends AtomSetCollectionReader {
         readAtoms();
     } else if (line.contains("!    total energy")) {
       readEnergy();
+    } else if (line.contains("A final scf")) {
+      endFlag = true;
     }
     return true;
   }
@@ -87,7 +91,7 @@ public class EspressoReader extends AtomSetCollectionReader {
 
     if (andAPar && line.contains("="))
       aPar = parseFloat(line.substring(line.indexOf("=") + 1))
-          * ANGSTROMS_PER_BOHR;
+      * ANGSTROMS_PER_BOHR;
 
     //Can you look at the example HAP_fullopt_40_r1.fullopt from the 2nd model on the representation is correct 
     //The 1st is wrong. 
@@ -111,6 +115,7 @@ public class EspressoReader extends AtomSetCollectionReader {
   }
 
   private float bFactor, cFactor;
+
   private void setCellParams() throws Exception {
     if (cellParams != null) {
       addPrimitiveLatticeVector(0, cellParams, 0);
@@ -123,25 +128,26 @@ public class EspressoReader extends AtomSetCollectionReader {
       cFactor = a / c;
       // say a=1, b=2, and c=22. Then if we have alat or a_0 format,
       // then {0.5 0.5 2.45} in alat will be {0.5 0.5/2 2.45/22} in fractional
+      setSpaceGroupName("P1");
     }
   }
 
   /*
 
    some have just atoms...
-   
+
     site n.     atom                  positions (a_0 units)
         1           Ca  tau(  1) = (   0.5000000  -0.2886751  -0.0018296  )
         2           Ca  tau(  2) = (  -0.5000000   0.2886751   0.3706481  )
 
    ...some have masses...
-   
+
      site n.  atom      mass           positions (a_0 units)
         1        Si  28.0800   tau( 1) = (    0.00000    0.00000    0.00000  )
         2        Si  28.0800   tau( 2) = (    0.25000    0.25000    0.25000  )
-   
+
    ...some just end with a blank line; others end with a short phrase...
-    
+
       O       -0.088707198  -0.347657305   0.434774168
       O       -0.258950107   0.088707198   0.434774168
       O        0.000000000   0.000000000  -0.214003341
@@ -150,17 +156,18 @@ public class EspressoReader extends AtomSetCollectionReader {
       H        0.000000000   0.000000000   0.428733409
       End final coordinates
    */
-  
+
   private void readAtoms() throws Exception {
     // all atom block types are read here -- BH
     newAtomSet();
     boolean isAlat = (line.contains("alat") || line.contains("a_0"));
     boolean isFractional = line.contains("crystal");
     boolean isBohr = line.contains("bohr");
-    if (isAlat || isFractional)
+    boolean isAngstrom = line.contains("angstrom");
+    if (isAlat || isFractional || isAngstrom)
       setCellParams();
     setFractionalCoordinates(isAlat || isFractional);
-    
+
     while (readLine() != null && line.length() > 45) {
       String[] tokens = getTokens();
       Atom atom = atomSetCollection.addNewAtom();
@@ -179,6 +186,13 @@ public class EspressoReader extends AtomSetCollectionReader {
       setAtomCoord(atom);
     }
     applySymmetryAndSetTrajectory();
+
+    //This to avoid error when the class reads the FinalRun task
+    /*    A final scf calculation at the relaxed structure.
+        The G-vectors are recalculated for the final unit cell
+        Results may differ from those at the preceding step*/
+    if (endFlag)
+      discardLinesUntilContains("Harris-Foulkes estimate");
   }
 
   //!    total energy              =   -1668.20791579 Ry
@@ -189,8 +203,16 @@ public class EspressoReader extends AtomSetCollectionReader {
   }
 
   private void setEnergy() {
+
+    String energyTitle = "";
+
+    if (endFlag)
+      energyTitle = ", FinalRun, ";
+
     atomSetCollection.setAtomSetEnergy("" + totEnergy, totEnergy.floatValue());
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Energy", totEnergy);
-    atomSetCollection.setAtomSetName("E = " + totEnergy + " Ry");
+    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Energy" + energyTitle,
+        totEnergy);
+    atomSetCollection.setAtomSetName("E" + energyTitle + "= " + totEnergy
+        + " Ry");
   }
 }

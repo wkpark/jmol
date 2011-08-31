@@ -53,7 +53,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
-import javax.swing.JSpinner;
+//import javax.swing.JSpinner;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;

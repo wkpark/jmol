@@ -148,7 +148,7 @@ public class Contact extends Isosurface {
       func = "a+b";
       break;
     }
-
+    VolumeData volumeData;
     switch (displayType) {
     case Token.nci:
       colorByType = false;
@@ -176,16 +176,32 @@ public class Contact extends Isosurface {
         rd = rdVDW;
       thisMesh.nSets = 1;
       newSurface(Token.slab, null, bsA, bsB, rd, null, null, false, null);
-      VolumeData volumeData = sg.getVolumeData();
+      volumeData = sg.getVolumeData();
       sg.initState();
       newSurface(Token.plane, null, bsA, bsB, rd, parameters, func,
           colorDensity, volumeData);
       mergeMesh(null);
       break;
-    case Token.connect:
     case Token.full:
-    case Token.plane:
     case Token.trim:
+      colorByType = false;
+      if (rd == null)
+        rd = rdVDW;
+      newSurface(Token.trim, null, bsA, bsB, rd, null, null, false, null);
+      if (displayType == Token.full) {
+        sg.initState();
+        newSurface(Token.trim, null, bsB, bsA, rd, parameters, func,
+          colorDensity, null);
+        mergeMesh(null);
+      } else {
+        MeshData meshData = new MeshData();
+        fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
+        meshData.getSurfaceSet();
+        fillMeshData(meshData, MeshData.MODE_PUT_SETS, null);
+      }
+      break;
+    case Token.connect:
+    case Token.plane:
       if (rd == null)
         rd = new RadiusData(0.25f, RadiusData.EnumType.OFFSET,
             EnumVdw.AUTO);

@@ -5263,7 +5263,6 @@ private void zap(String msg) {
     boolean doCallback = (ptLoad != FileManager.EnumFileStatus.CREATING_MODELSET); 
     statusManager.setFileLoadStatus(fullPathName, fileName, modelName,
         strError, ptLoad.getCode(), doCallback);
-    System.out.println("nmodels = " + getModelCount() + ptLoad);
   }
 
   public String getZapName() {

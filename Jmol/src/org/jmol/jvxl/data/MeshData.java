@@ -152,6 +152,8 @@ public class MeshData extends MeshSurface {
     setsSuccessful = true;
     for (int i = 0; i < polygonCount; i++)
       if (polygonIndexes[i] != null) {
+        if (bsSlabDisplay != null && !bsSlabDisplay.get(i))
+          continue;
         int[] p = polygonIndexes[i];
         int pt0 = findSet(p[0]);
         int pt1 = findSet(p[1]);

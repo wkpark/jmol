@@ -15326,7 +15326,7 @@ public class ScriptEvaluator {
     int displayType = Token.plane;
     int contactType = Token.nada;
     float distance = Float.NaN;
-    boolean isPaired = true;
+    boolean localOnly = true;
     Boolean intramolecular = null;
     Object userSlabObject = null;
     int colorpt = 0;
@@ -15438,10 +15438,10 @@ public class ScriptEvaluator {
       case Token.cap:
       case Token.nci:
       case Token.surface:
-        isPaired = false;
+        localOnly = false;
         // fall through
-      case Token.full:
       case Token.trim:
+      case Token.full:
       case Token.plane:
       case Token.connect:
         displayType = tok;
@@ -15479,7 +15479,7 @@ public class ScriptEvaluator {
           && intramolecular.booleanValue())
         bsB = bsA;
       else
-        bsB = setContactBitSets(bsA, bsB, isPaired, distance, rd1, true);
+        bsB = setContactBitSets(bsA, bsB, localOnly, distance, rd1, true);
       switch (displayType) {
       case Token.cap:
       case Token.surface:
@@ -15520,7 +15520,7 @@ public class ScriptEvaluator {
     }
     if (userSlabObject != null && bsA != null)
       setShapeProperty(JmolConstants.SHAPE_CONTACT, "slab", userSlabObject);
-    if (bsA != null && (displayType == Token.nci || isPaired)) {
+    if (bsA != null && (displayType == Token.nci || localOnly)) {
       Object volume = getShapeProperty(JmolConstants.SHAPE_CONTACT, "volume");
       if (volume instanceof double[]) {
         double[] vs = (double[]) volume;
@@ -15529,12 +15529,16 @@ public class ScriptEvaluator {
           v += Math.abs(vs[i]);
         volume = Float.valueOf((float) v);
       }
-      showString(getShapeProperty(JmolConstants.SHAPE_CONTACT, "nSets")
-          + " contacts with net volume " + volume + " A^3");
+      int nsets = ((Integer) getShapeProperty(JmolConstants.SHAPE_CONTACT, "nSets")).intValue();
+      if (displayType == Token.trim) {
+        showString(nsets + " contacts");
+      } else {
+        showString((nsets == 0 ? "" : nsets + " contacts with ") + "net volume " + volume + " A^3");
+      }
     }
   }
 
-  BitSet setContactBitSets(BitSet bsA, BitSet bsB, boolean isPaired,
+  BitSet setContactBitSets(BitSet bsA, BitSet bsB, boolean localOnly,
                            float distance, RadiusData rd, boolean warnMultiModel) {
     boolean withinAllModels;
     BitSet bs;
@@ -15555,13 +15559,13 @@ public class ScriptEvaluator {
     }
     // B always within some possibly extended VDW of A or just A itself
     if (!bsA.equals(bsB)) {
-      boolean setBfirst = (!isPaired || bsA.cardinality() < bsB.cardinality());
+      boolean setBfirst = (!localOnly || bsA.cardinality() < bsB.cardinality());
       if (setBfirst) {
         bs = viewer.getAtomsWithin(distance, bsA, withinAllModels, (Float
             .isNaN(distance) ? rd : null));
         bsB.and(bs);
       }
-      if (isPaired) {
+      if (localOnly) {
         // we can just get the near atoms for A as well.
         bs = viewer.getAtomsWithin(distance, bsB, withinAllModels, (Float
             .isNaN(distance) ? rd : null));

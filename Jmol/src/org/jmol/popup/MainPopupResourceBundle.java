@@ -575,7 +575,7 @@ class MainPopupResourceBundle extends PopupResource {
         "front", GT._("Front"),
         "left", GT._("Left"),
         "right", GT._("Right"),
-        "top", GT._("Top"),
+        "top", GT._("Top[as in \"view from the top, from above\" - (translators: remove this bracketed part]"),
         "bottom", GT._("Bottom"),
         "back", GT._("Back"),
 

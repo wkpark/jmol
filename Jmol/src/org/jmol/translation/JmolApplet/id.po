@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-08-18 21:03+0200\n"
+"POT-Creation-Date: 2011-08-31 16:49+0200\n"
 "PO-Revision-Date: 2011-02-03 23:22+0000\n"
 "Last-Translator: Waluyo Adi Siswanto <Unknown>\n"
 "Language-Team: Indonesian <id@li.org>\n"
@@ -900,8 +900,11 @@ msgid "Right"
 msgstr "Kanan"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:578
-msgid "Top"
-msgstr "Atas"
+#, fuzzy
+msgid ""
+"Top[as in \"view from the top, from above\" - (translators: remove this "
+"bracketed part]"
+msgstr "Paling Atas"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:579
 msgid "Bottom"
@@ -1893,7 +1896,7 @@ msgstr "{0} parameter tidak dikenal"
 msgid "unrecognized token: {0}"
 msgstr "token tidak dikenal: {0}"
 
-#: org/jmol/script/ScriptCompiler.java:2581
+#: org/jmol/script/ScriptCompiler.java:2583
 msgid "script compiler ERROR: "
 msgstr "KESALAHAN kompiler skrip: "
 
@@ -2155,7 +2158,7 @@ msgstr "{0} ikatan hidrogen"
 msgid "{0} struts added"
 msgstr "{0} batang ditambahkan"
 
-#: org/jmol/script/ScriptEvaluator.java:15555
+#: org/jmol/script/ScriptEvaluator.java:15558
 msgid "Note: More than one model is involved in this contact!"
 msgstr ""
 
@@ -2432,18 +2435,21 @@ msgstr "{0} hidrogen ditambahkan"
 msgid "Drag to move label"
 msgstr "Seret untuk memindah label"
 
-#: org/jmol/viewer/Viewer.java:8417
+#: org/jmol/viewer/Viewer.java:8421
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "clipboard tidak bisa diakses -- gunakan aplet yang disetujui"
 
-#: org/jmol/viewer/Viewer.java:9201
+#: org/jmol/viewer/Viewer.java:9205
 msgid "Cannot set log file path."
 msgstr "Tidak bisa menetapkan lokasi berkas log."
 
-#: org/jmol/viewer/Viewer.java:9204
+#: org/jmol/viewer/Viewer.java:9208
 #, java-format
 msgid "Setting log file to {0}"
 msgstr "Tetapkan berkas log menjadi {0}"
+
+#~ msgid "Top"
+#~ msgstr "Atas"
 
 #~ msgid "Molecular Orbitals"
 #~ msgstr "Orbit Molekuler"

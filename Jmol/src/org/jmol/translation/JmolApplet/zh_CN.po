@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-08-18 21:03+0200\n"
+"POT-Creation-Date: 2011-08-31 16:49+0200\n"
 "PO-Revision-Date: 2011-03-30 23:20+0000\n"
 "Last-Translator: Lele Long <schemacs@gmail.com>\n"
 "Language-Team: Simplified Chinese <zh_CN@li.org>\n"
@@ -896,8 +896,11 @@ msgid "Right"
 msgstr "右视"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:578
-msgid "Top"
-msgstr "顶视"
+#, fuzzy
+msgid ""
+"Top[as in \"view from the top, from above\" - (translators: remove this "
+"bracketed part]"
+msgstr "回到顶端"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:579
 msgid "Bottom"
@@ -1889,7 +1892,7 @@ msgstr "无法识别参数：{0}"
 msgid "unrecognized token: {0}"
 msgstr "无法识别标记：{0}"
 
-#: org/jmol/script/ScriptCompiler.java:2581
+#: org/jmol/script/ScriptCompiler.java:2583
 msgid "script compiler ERROR: "
 msgstr "脚本编译器错误： "
 
@@ -2147,7 +2150,7 @@ msgstr "{0} 个氢键"
 msgid "{0} struts added"
 msgstr "已增加 {0} struts"
 
-#: org/jmol/script/ScriptEvaluator.java:15555
+#: org/jmol/script/ScriptEvaluator.java:15558
 msgid "Note: More than one model is involved in this contact!"
 msgstr ""
 
@@ -2414,18 +2417,21 @@ msgstr "{0} 个氢原子已增加"
 msgid "Drag to move label"
 msgstr "拖拽移动标签"
 
-#: org/jmol/viewer/Viewer.java:8417
+#: org/jmol/viewer/Viewer.java:8421
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "不能存取剪贴板——请用使用签署过的小程序 (applet)"
 
-#: org/jmol/viewer/Viewer.java:9201
+#: org/jmol/viewer/Viewer.java:9205
 msgid "Cannot set log file path."
 msgstr "无法设置日志文件路径"
 
-#: org/jmol/viewer/Viewer.java:9204
+#: org/jmol/viewer/Viewer.java:9208
 #, java-format
 msgid "Setting log file to {0}"
 msgstr "设定日志文件为 {0}"
+
+#~ msgid "Top"
+#~ msgstr "顶视"
 
 #~ msgid "Molecular Orbitals"
 #~ msgstr "分子轨道"

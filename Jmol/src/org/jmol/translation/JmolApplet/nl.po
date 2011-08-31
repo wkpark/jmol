@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-08-18 21:03+0200\n"
+"POT-Creation-Date: 2011-08-31 16:49+0200\n"
 "PO-Revision-Date: 2011-07-31 07:51+0000\n"
 "Last-Translator: Egon Willighagen <Unknown>\n"
 "Language-Team: Nederlands <jmol-developers@lists.sourceforge.net>\n"
@@ -895,8 +895,11 @@ msgid "Right"
 msgstr "Rechts"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:578
-msgid "Top"
-msgstr "Bovenkant"
+#, fuzzy
+msgid ""
+"Top[as in \"view from the top, from above\" - (translators: remove this "
+"bracketed part]"
+msgstr "Omhoog"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:579
 msgid "Bottom"
@@ -1888,7 +1891,7 @@ msgstr "onbekende {0} parameter"
 msgid "unrecognized token: {0}"
 msgstr "onbekend woord: {0}"
 
-#: org/jmol/script/ScriptCompiler.java:2581
+#: org/jmol/script/ScriptCompiler.java:2583
 msgid "script compiler ERROR: "
 msgstr "scriptcompiler FOUT: "
 
@@ -2149,7 +2152,7 @@ msgstr "{0} waterstofbruggen"
 msgid "{0} struts added"
 msgstr "{0} stutten toegevoegd"
 
-#: org/jmol/script/ScriptEvaluator.java:15555
+#: org/jmol/script/ScriptEvaluator.java:15558
 msgid "Note: More than one model is involved in this contact!"
 msgstr ""
 
@@ -2423,18 +2426,21 @@ msgstr "{0} waterstofatomen toegevoegd"
 msgid "Drag to move label"
 msgstr "Sleep om de label te verplaatsen"
 
-#: org/jmol/viewer/Viewer.java:8417
+#: org/jmol/viewer/Viewer.java:8421
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "clipboard is niet toegankelijke -- gebruik de gesigneerde applet"
 
-#: org/jmol/viewer/Viewer.java:9201
+#: org/jmol/viewer/Viewer.java:9205
 msgid "Cannot set log file path."
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:9204
+#: org/jmol/viewer/Viewer.java:9208
 #, java-format
 msgid "Setting log file to {0}"
 msgstr "logbestand veranderd naar {0}"
+
+#~ msgid "Top"
+#~ msgstr "Bovenkant"
 
 #~ msgid "Java memory usage"
 #~ msgstr "Geheugengebruik Java"

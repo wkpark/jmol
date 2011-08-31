@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-08-18 21:03+0200\n"
+"POT-Creation-Date: 2011-08-31 16:49+0200\n"
 "PO-Revision-Date: 2011-03-17 09:22+0000\n"
 "Last-Translator: Konki <pavel.konkol@seznam.cz>\n"
 "Language-Team: Czech <Jmol-developers@lists.sf.net>\n"
@@ -904,8 +904,11 @@ msgid "Right"
 msgstr "Zprava"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:578
-msgid "Top"
-msgstr "Shora"
+#, fuzzy
+msgid ""
+"Top[as in \"view from the top, from above\" - (translators: remove this "
+"bracketed part]"
+msgstr "Nahoru"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:579
 msgid "Bottom"
@@ -1897,7 +1900,7 @@ msgstr "neznámý parametr: {0}"
 msgid "unrecognized token: {0}"
 msgstr "nerozpoznaný token: {0}"
 
-#: org/jmol/script/ScriptCompiler.java:2581
+#: org/jmol/script/ScriptCompiler.java:2583
 msgid "script compiler ERROR: "
 msgstr "Chyba kompilátoru skriptu ERROR: "
 
@@ -2159,7 +2162,7 @@ msgstr "{0} vodíkových můstků"
 msgid "{0} struts added"
 msgstr "{0} podpěr (struts) přidáno"
 
-#: org/jmol/script/ScriptEvaluator.java:15555
+#: org/jmol/script/ScriptEvaluator.java:15558
 msgid "Note: More than one model is involved in this contact!"
 msgstr ""
 
@@ -2434,18 +2437,21 @@ msgstr "{0} vodíky přidány"
 msgid "Drag to move label"
 msgstr "Táhni myší pro přesun popisku"
 
-#: org/jmol/viewer/Viewer.java:8417
+#: org/jmol/viewer/Viewer.java:8421
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "schránka není přístupná -- použijte podepsaný applet"
 
-#: org/jmol/viewer/Viewer.java:9201
+#: org/jmol/viewer/Viewer.java:9205
 msgid "Cannot set log file path."
 msgstr "Nemohu nastavit cestu k log souboru."
 
-#: org/jmol/viewer/Viewer.java:9204
+#: org/jmol/viewer/Viewer.java:9208
 #, java-format
 msgid "Setting log file to {0}"
 msgstr "Nastavuji log soubor na {0}"
+
+#~ msgid "Top"
+#~ msgstr "Shora"
 
 #~ msgid "Java memory usage"
 #~ msgstr "Využití Java  paměti"

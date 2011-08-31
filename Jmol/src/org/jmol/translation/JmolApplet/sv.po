@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-08-18 21:03+0200\n"
+"POT-Creation-Date: 2011-08-31 16:49+0200\n"
 "PO-Revision-Date: 2010-06-03 19:53+0000\n"
 "Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -889,8 +889,10 @@ msgid "Right"
 msgstr "Höger"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:578
-msgid "Top"
-msgstr "Överst"
+msgid ""
+"Top[as in \"view from the top, from above\" - (translators: remove this "
+"bracketed part]"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:579
 msgid "Bottom"
@@ -1882,7 +1884,7 @@ msgstr ""
 msgid "unrecognized token: {0}"
 msgstr ""
 
-#: org/jmol/script/ScriptCompiler.java:2581
+#: org/jmol/script/ScriptCompiler.java:2583
 msgid "script compiler ERROR: "
 msgstr ""
 
@@ -2140,7 +2142,7 @@ msgstr ""
 msgid "{0} struts added"
 msgstr ""
 
-#: org/jmol/script/ScriptEvaluator.java:15555
+#: org/jmol/script/ScriptEvaluator.java:15558
 msgid "Note: More than one model is involved in this contact!"
 msgstr ""
 
@@ -2407,18 +2409,21 @@ msgstr ""
 msgid "Drag to move label"
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:8417
+#: org/jmol/viewer/Viewer.java:8421
 msgid "clipboard is not accessible -- use signed applet"
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:9201
+#: org/jmol/viewer/Viewer.java:9205
 msgid "Cannot set log file path."
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:9204
+#: org/jmol/viewer/Viewer.java:9208
 #, java-format
 msgid "Setting log file to {0}"
 msgstr ""
+
+#~ msgid "Top"
+#~ msgstr "Överst"
 
 #~ msgid "Minimize"
 #~ msgstr "Minimera"

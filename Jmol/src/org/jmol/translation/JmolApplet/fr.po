@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-08-18 21:03+0200\n"
+"POT-Creation-Date: 2011-08-31 16:49+0200\n"
 "PO-Revision-Date: 2011-08-18 20:32+0000\n"
 "Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: French <Jmol-developers@lists.sourceforge.net>\n"
@@ -147,8 +147,7 @@ msgid "Check"
 msgstr "Vérifier"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid ""
-"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Retourner en haut"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -906,8 +905,11 @@ msgid "Right"
 msgstr "Droite"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:578
-msgid "Top"
-msgstr "Haut"
+#, fuzzy
+msgid ""
+"Top[as in \"view from the top, from above\" - (translators: remove this "
+"bracketed part]"
+msgstr "Retourner en haut"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:579
 msgid "Bottom"
@@ -1899,7 +1901,7 @@ msgstr "Paramètre {0} non reconnu"
 msgid "unrecognized token: {0}"
 msgstr "élément non reconnu: {0}"
 
-#: org/jmol/script/ScriptCompiler.java:2581
+#: org/jmol/script/ScriptCompiler.java:2583
 msgid "script compiler ERROR: "
 msgstr "Erreur du compilateur de script: "
 
@@ -2162,7 +2164,7 @@ msgstr "{0} liens hydrogène"
 msgid "{0} struts added"
 msgstr "{0} traverse(s) ajoutée(s)"
 
-#: org/jmol/script/ScriptEvaluator.java:15555
+#: org/jmol/script/ScriptEvaluator.java:15558
 msgid "Note: More than one model is involved in this contact!"
 msgstr "Note : plus d'un modèle interagit dans ce contact !"
 
@@ -2217,8 +2219,7 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:125
 #, java-format
-msgid ""
-"click on two points to spin around axis counterclockwise (requires {0})"
+msgid "click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 "Cliquez sur deux points afin de tourner autour de l'axe dans le sens inverse "
 "des aiguilles d'une montre (requiert {0})"
@@ -2270,8 +2271,7 @@ msgstr "Dé-sélectionner ce groupe d''atomes (requiert {0})"
 #: org/jmol/viewer/ActionManager.java:135
 #, java-format
 msgid "add this group of atoms to the set of selected atoms (requires {0})"
-msgstr ""
-"ajouter ce groupe d'atomes au set d'atomes sélectionnés (requiert {0})"
+msgstr "ajouter ce groupe d'atomes au set d'atomes sélectionnés (requiert {0})"
 
 #: org/jmol/viewer/ActionManager.java:136
 #, java-format
@@ -2349,8 +2349,7 @@ msgstr "choisir un point DRAW (pour des mesures) (requiert {0})"
 #: org/jmol/viewer/ActionManager.java:150
 #, java-format
 msgid "pick a label to toggle it hidden/displayed (requires {0})"
-msgstr ""
-"choisir un label afin de basculer entre affiché/masqué (requiert {0})"
+msgstr "choisir un label afin de basculer entre affiché/masqué (requiert {0})"
 
 #: org/jmol/viewer/ActionManager.java:151
 #, java-format
@@ -2419,8 +2418,7 @@ msgstr "Choisir deux atomes pour faire tourner le modèle autour d'un axe"
 
 #: org/jmol/viewer/ActionManager.java:1951
 msgid "pick one more atom in order to display the symmetry relationship"
-msgstr ""
-"choisir un atome supplémentaire afin d'afficher la relation symétrique"
+msgstr "choisir un atome supplémentaire afin d'afficher la relation symétrique"
 
 #: org/jmol/viewer/ActionManager.java:1952
 msgid ""
@@ -2447,18 +2445,21 @@ msgstr "{0} hydrogène(s) ajouté(s)"
 msgid "Drag to move label"
 msgstr "Faire glisser afin de déplacer le label"
 
-#: org/jmol/viewer/Viewer.java:8417
+#: org/jmol/viewer/Viewer.java:8421
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "Le presse-papiers est inacessible -- utiliser l'applet signée"
 
-#: org/jmol/viewer/Viewer.java:9201
+#: org/jmol/viewer/Viewer.java:9205
 msgid "Cannot set log file path."
 msgstr "Impossible de définir le chemin de fichier journal"
 
-#: org/jmol/viewer/Viewer.java:9204
+#: org/jmol/viewer/Viewer.java:9208
 #, java-format
 msgid "Setting log file to {0}"
 msgstr "Configuration du fichier journal dans {0}"
+
+#~ msgid "Top"
+#~ msgstr "Haut"
 
 #~ msgid "Java memory usage"
 #~ msgstr "Utilisation mémoire de Java"
@@ -2472,16 +2473,15 @@ msgstr "Configuration du fichier journal dans {0}"
 #~ msgid "File creation failed."
 #~ msgstr "Création du fichier échoué"
 
-#, java-format
 #~ msgid "File {0}"
 #~ msgstr "Fichier {0}"
 
-#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
+#~ "{0}."
 #~ msgstr ""
-#~ "La création de fichier par cette n''est pas autorisée. Pour le format JPEG "
-#~ "Base64, utiliser {0}."
+#~ "La création de fichier par cette n''est pas autorisée. Pour le format "
+#~ "JPEG Base64, utiliser {0}."
 
 #~ msgid "File or URL"
 #~ msgstr "Fichier ou URL"
@@ -2489,11 +2489,9 @@ msgstr "Configuration du fichier journal dans {0}"
 #~ msgid "Minimize"
 #~ msgstr "Réduire"
 
-#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "{0} Modèle 3D"
 
-#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "{0} Image"
 

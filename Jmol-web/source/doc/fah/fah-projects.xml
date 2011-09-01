@@ -8883,9 +8883,9 @@
     credit="552.0" frames="100" code="A3" contact="kasson" kfactor="3.3"/>
 
   <!-- Projects 7000 to 7099 -->
-  <fah_proj number="7000" name="WW 0 ext/folded 395K" public="y"
+  <fah_proj number="7000" name="WW 0 ext/folded 395K" public="y" file="xyz"
     server="129.74.85.15" atoms="582" preferred="8" deadline="11"
-    credit="600.0" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75"/>
+    credit="600.0" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75" contrib="Danny Nielsen"/>
   <fah_proj number="7001" name="WW 1 ext/folded 395K" public="y" file="xyz"
     server="129.74.85.15" atoms="578" preferred="8" deadline="11"
     credit="600.0" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75" contrib="Danny Nielsen"/>
@@ -8934,9 +8934,9 @@
   <fah_proj number="7016" name="WW 16 ext/folded 395K" public="y"
     server="129.74.85.15" atoms="554" preferred="8" deadline="11"
     credit="600.0" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75"/>
-  <fah_proj number="7017" name="WW 17 ext/folded 395K" public="y"
+  <fah_proj number="7017" name="WW 17 ext/folded 395K" public="y" file="xyz"
     server="129.74.85.15" atoms="572" preferred="8" deadline="11"
-    credit="600.0" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75"/>
+    credit="600.0" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75" contrib="Danny Nielsen"/>
   <fah_proj number="7018" name="WW 18 ext/folded 395K" public="y"
     server="129.74.85.15" atoms="560" preferred="8" deadline="11"
     credit="600.0" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75"/>
@@ -8952,9 +8952,9 @@
   <fah_proj number="7022" name="WW 22 ext/folded 395K" public="y" file="xyz"
     server="129.74.85.15" atoms="568" preferred="8" deadline="11"
     credit="600.0" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75" contrib="Jesse Hathaway"/>
-  <fah_proj number="7023" name="WW 23 ext/folded 395K" public="y"
+  <fah_proj number="7023" name="WW 23 ext/folded 395K" public="y" file="xyz"
     server="129.74.85.15" atoms="547" preferred="8" deadline="11"
-    credit="600.0" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75"/>
+    credit="600.0" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75" contrib="Danny Nielsen"/>
   <fah_proj number="7024" name="WW 24 ext/folded 395K" public="y" file="xyz"
     server="129.74.85.15" atoms="560" preferred="8" deadline="11"
     credit="600.0" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75" contrib="Danny Nielsen"/>
@@ -9570,9 +9570,9 @@
   <fah_proj number="10082" name="ww28" public="y"
     server="129.74.85.15" atoms="543" preferred="8" deadline="11"
     credit="600" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75"/>
-  <fah_proj number="10083" name="ww0" public="y"
+  <fah_proj number="10083" name="ww0" public="y" file="xyz"
     server="129.74.85.15" atoms="583" preferred="8" deadline="11"
-    credit="600.0" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75"/>
+    credit="600.0" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75" contrib="Danny Nielsen"/>
   <fah_proj number="10084" name="ww14" public="y"
     server="129.74.85.15" atoms="576" preferred="8" deadline="11"
     credit="600.0" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75"/>
@@ -9786,6 +9786,18 @@
     server="171.64.65.81" atoms="0" preferred="8" deadline="16"
     credit="412.0" frames="100" code="A4" contact="kyleb" kfactor="0.59"/>
   <fah_proj number="10443" name="p10443" public="y"
+    server="171.64.65.81" atoms="0" preferred="8" deadline="16"
+    credit="412.0" frames="100" code="A4" contact="kyleb" kfactor="0.59"/>
+  <fah_proj number="10444" name="p10444" public="n"
+    server="171.64.65.81" atoms="0" preferred="8" deadline="16"
+    credit="412.0" frames="100" code="A4" contact="kyleb" kfactor="0.59"/>
+  <fah_proj number="10445" name="p10445" public="n"
+    server="171.64.65.81" atoms="0" preferred="8" deadline="16"
+    credit="412.0" frames="100" code="A4" contact="kyleb" kfactor="0.59"/>
+  <fah_proj number="10446" name="p10446" public="n"
+    server="171.64.65.81" atoms="0" preferred="8" deadline="16"
+    credit="412.0" frames="100" code="A4" contact="kyleb" kfactor="0.59"/>
+  <fah_proj number="10447" name="p10447" public="n"
     server="171.64.65.81" atoms="0" preferred="8" deadline="16"
     credit="412.0" frames="100" code="A4" contact="kyleb" kfactor="0.59"/>
 

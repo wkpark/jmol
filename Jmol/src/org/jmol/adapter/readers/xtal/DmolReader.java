@@ -60,7 +60,6 @@ public class DmolReader extends AtomSetCollectionReader {
   }
 
   private void setSymmetry() throws Exception {
-    applySymmetryAndSetTrajectory();
     setSpaceGroupName("P1");
     setFractionalCoordinates(false);
   }
@@ -100,6 +99,7 @@ public class DmolReader extends AtomSetCollectionReader {
       float z = parseFloat(tokens[3]) * ANGSTROMS_PER_BOHR;
       atom.set(x, y, z);
     }
+    applySymmetryAndSetTrajectory();
   }
 
   private void readEnergy() throws Exception {
@@ -138,7 +138,7 @@ public class DmolReader extends AtomSetCollectionReader {
     String newLine = "";
     int lastAtomCount = 0;
     int atomCount = atomSetCollection.getAtomCount();
-
+    /// This removes  extra info in lines like   1:  -16.6    2:   -0.5    3:    
     while (readLine() != null && line.contains(":")) {
       lineFrag += line;
       String[] freqFrag = getTokens(lineFrag);
@@ -175,10 +175,10 @@ public class DmolReader extends AtomSetCollectionReader {
 
       }
       readLine();
-      readLine();
       fillFrequencyData(iAtom0, atomCount, lastAtomCount, ignore, false, 6, 12,
           null);
       readLine();
+      
     }
 
   }

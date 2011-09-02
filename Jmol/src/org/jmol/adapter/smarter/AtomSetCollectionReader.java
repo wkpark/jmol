@@ -543,6 +543,7 @@ public abstract class AtomSetCollectionReader {
   }
 
   protected int cloneLastAtomSet(int atomCount) throws Exception {
+    applySymmetryAndSetTrajectory();
     int lastAtomCount = atomSetCollection.getLastAtomSetAtomCount();
     atomSetCollection.cloneLastAtomSet(atomCount);
     if (atomSetCollection.haveUnitCell) {

@@ -42,7 +42,7 @@ public class BbcageRenderer extends CageRenderer {
         || viewer.isJmolDataFrame())
       return;
     colix = viewer.getObjectColix(StateManager.OBJ_BOUNDBOX);
-    render(bbox.mad, modelSet.getBboxVertices(), null, 0);
+    render(bbox.mad, modelSet.getBboxVertices(), null, 0, 0xFF, 0xFF, 1);
   }
 
 }

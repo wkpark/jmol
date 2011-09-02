@@ -50,8 +50,10 @@ abstract class CageRenderer extends FontLineShapeRenderer {
     setEdges();
   }
   
+  private Point3f pt = new Point3f();
   protected void render(int mad, Point3f[] vertices, Point3f[] axisPoints,
-                        int firstLine) {
+                        int firstLine, int allowedEdges0, int allowedEdges1,
+                        float scale) {
     clearBox();
     g3d.setColix(colix);
     FontLineShape fls = (FontLineShape) shape;
@@ -60,28 +62,28 @@ abstract class CageRenderer extends FontLineShapeRenderer {
 
     float zSum = 0;
     for (int i = 8; --i >= 0;) {
-      viewer.transformPointNoClip(vertices[i], screens[i]);
+      pt.set(vertices[i]);
+      if (scale != 1) {
+        pt.sub(vertices[0]);
+        pt.scaleAdd(scale, pt, vertices[0]);
+      }
+      viewer.transformPointNoClip(pt, screens[i]);
       zSum += screens[i].z;
     }
     
     int diameter = getDiameter((int) (zSum / 8), mad);
     int axisPt = 2;
     char edge = 0;
+    allowedEdges0 &= (isPolymer ? 0x1 : isSlab ? 0x51 : 0xFF);
+    allowedEdges1 &= (isPolymer ? 0x10 : isSlab ? 0x51 : 0xFF);
     for (int i = firstLine * 2; i < 24; i += 2) {
       int edge0 = BoxInfo.edges[i];
       int edge1 = BoxInfo.edges[i + 1];
       if (axisPoints != null && edge0 == 0)
         viewer.transformPointNoClip(axisPoints[axisPt--], screens[0]);
-      if (isPolymer) {
-        if (edge0 != 0 || edge1 != 4)
-          continue;
-      } else if (isSlab) {
-        if (edge0 == 1 || edge1 == 1
-            || edge0 == 5 || edge1 == 5
-            || edge0 == 7 || edge1 == 7
-            || edge0 == 3 || edge1 == 3)
-          continue;
-      }
+      if ((allowedEdges0 & (1 << edge0)) == 0 
+        || (allowedEdges1 & (1 << edge1)) == 0)
+        continue;
       boolean drawTicks = (fls.tickInfos != null && (edge = tickEdges[i >> 1]) != 0);
       if (drawTicks) {
         if (atomA == null) {

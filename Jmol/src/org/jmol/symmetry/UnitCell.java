@@ -108,6 +108,7 @@ class UnitCell extends SimpleUnitCell {
   }
   
   private boolean allFractionalRelative = false;
+  private Point3f unitCellMultiplier = null;
   
   void setAllFractionalRelative(boolean TF) {
     allFractionalRelative = TF;
@@ -117,6 +118,12 @@ class UnitCell extends SimpleUnitCell {
     if (pt == null)
       return;
     // from "unitcell {i j k}" via uccage
+    if (pt.x >= 100 || pt.y >= 100) {
+      unitCellMultiplier = new Point3f(pt);
+      return;
+    }
+    if (pt.x == 0 && pt.y == 0 && pt.z == 0)
+      unitCellMultiplier = null;
     fractionalOffset.set(pt);
     matrixCartesianToFractional.m03 = -pt.x;
     matrixCartesianToFractional.m13 = -pt.y;
@@ -139,27 +146,22 @@ class UnitCell extends SimpleUnitCell {
     // from "unitcell ijk" via uccage
     setOffset(ijkToPoint3f(nnn));
   }
-
-  static Point3f ijkToPoint3f(int nnn) {
-    Point3f cell = new Point3f();
-    cell.x = nnn / 100 - 5;
-    cell.y = (nnn % 100) / 10 - 5;
-    cell.z = (nnn % 10) - 5;
-    return cell;
-  }
   
   void setMinMaxLatticeParameters(Point3i minXYZ, Point3i maxXYZ) {
     if (maxXYZ.x <= 555 && maxXYZ.y >= 555) {
       //alternative format for indicating a range of cells:
       //{111 666}
       //555 --> {0 0 0}
-      minXYZ.x = (maxXYZ.x / 100) - 5;
-      minXYZ.y = (maxXYZ.x % 100) / 10 - 5;
-      minXYZ.z = (maxXYZ.x % 10) - 5;
+      Point3f pt = new Point3f();
+      ijkToPoint3f(maxXYZ.x, pt);
+      minXYZ.x = (int) pt.x;
+      minXYZ.y = (int) pt.y;
+      minXYZ.z = (int) pt.z;
+      ijkToPoint3f(maxXYZ.y, pt);
       //555 --> {1 1 1}
-      maxXYZ.x = (maxXYZ.y / 100) - 4;
-      maxXYZ.z = (maxXYZ.y % 10) - 4;
-      maxXYZ.y = (maxXYZ.y % 100) / 10 - 4;
+      maxXYZ.x = (int) pt.x + 1;
+      maxXYZ.y = (int) pt.y + 1;
+      maxXYZ.z = (int) pt.z + 1;
     }
     switch (dimension) {
     case 1: // polymer
@@ -188,7 +190,7 @@ class UnitCell extends SimpleUnitCell {
   }
   
   Point3f getFractionalOffset() {
-    // no references
+    // no references??
     return fractionalOffset;
   }
   
@@ -382,6 +384,10 @@ class UnitCell extends SimpleUnitCell {
           }
         }
     return false;
+  }
+
+  public Point3f getUnitCellMultiplier() {
+    return unitCellMultiplier ;
   }
 
 }

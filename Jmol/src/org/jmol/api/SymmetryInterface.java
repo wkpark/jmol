@@ -99,7 +99,7 @@ public interface SymmetryInterface {
 
   public abstract void setOffset(int nnn);
 
-  public abstract Point3f getFractionalOffset();
+  public abstract Point3f getUnitCellMultiplier();
 
   public abstract float getUnitCellInfo(int infoType);
 
@@ -143,4 +143,6 @@ public interface SymmetryInterface {
 
   public abstract boolean checkDistance(Point3f f1, Point3f f2, float distance, 
                                         float dx, int iRange, int jRange, int kRange, Point3f ptOffset);
+
+  public abstract Point3f getFractionalOffset();
 }

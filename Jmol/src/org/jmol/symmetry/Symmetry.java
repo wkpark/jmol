@@ -37,6 +37,7 @@ import javax.vecmath.Vector3f;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.modelset.Atom;
 import org.jmol.util.Logger;
+import org.jmol.util.SimpleUnitCell;
 
 public class Symmetry implements SymmetryInterface {
   
@@ -224,7 +225,7 @@ public class Symmetry implements SymmetryInterface {
   }
 
   public Point3f ijkToPoint3f(int nnn) {
-    return UnitCell.ijkToPoint3f(nnn);
+    return SimpleUnitCell.ijkToPoint3f(nnn);
   }
 
   public void toFractional(Point3f pt, boolean isAbsolute) {
@@ -238,6 +239,10 @@ public class Symmetry implements SymmetryInterface {
 
   public Point3f getCartesianOffset() {
     return unitCell.getCartesianOffset();
+  }
+
+  public Point3f getFractionalOffset() {
+    return unitCell.getFractionalOffset();
   }
 
   public float[] getNotionalUnitCell() {
@@ -262,8 +267,8 @@ public class Symmetry implements SymmetryInterface {
     unitCell.setOffset(nnn);
   }
 
-  public Point3f getFractionalOffset() {
-    return unitCell.getFractionalOffset();
+  public Point3f getUnitCellMultiplier() {
+    return unitCell.getUnitCellMultiplier();
   }
 
   public Point3f[] getCanonicalCopy(float scale) {

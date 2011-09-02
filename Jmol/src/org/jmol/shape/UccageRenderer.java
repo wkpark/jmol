@@ -44,7 +44,7 @@ public class UccageRenderer extends CageRenderer {
     tickEdges = BoxInfo.uccageTickEdges;    
   }
 
-  final Point3f[] verticesT = new Point3f[8];  
+  private final Point3f[] verticesT = new Point3f[8];  
   {
     for (int i = 8; --i >= 0; ) {
       verticesT[i] = new Point3f();
@@ -69,6 +69,12 @@ public class UccageRenderer extends CageRenderer {
     render1(mad);
   }
 
+  private Point3f fset0 = new Point3f(555,555,1);
+  private Point3f cell0 = new Point3f();
+  private Point3f cell1 = new Point3f();
+  private Point3f offset = new Point3f();
+  private Point3f offsetT = new Point3f();
+  
   void render1(int mad) {
     SymmetryInterface symmetry = viewer.getCurrentUnitCell();
     if (symmetry == null || !symmetry.haveUnitCell())
@@ -76,15 +82,46 @@ public class UccageRenderer extends CageRenderer {
     isPolymer = symmetry.isPolymer();
     isSlab = symmetry.isSlab();
     Point3f[] vertices = symmetry.getUnitCellVertices();
-    Point3f offset = symmetry.getCartesianOffset();
-    for (int i = 8; --i >= 0;)
-      verticesT[i].add(vertices[i], offset);
+    offset.set(symmetry.getCartesianOffset());
+    Point3f fset = symmetry.getUnitCellMultiplier();
+    boolean haveMultiple = (fset != null);
+    if (!haveMultiple) 
+      fset = fset0;
+
+    SimpleUnitCell.ijkToPoint3f((int) fset.x, cell0);
+    SimpleUnitCell.ijkToPoint3f((int) fset.y, cell1);
+    int firstLine, allow0, allow1;
     Point3f[] axisPoints = viewer.getAxisPoints();
-    boolean drawAllLines = (viewer.getObjectMad(StateManager.OBJ_AXIS1) == 0 
+    boolean drawAllLines = (viewer.getObjectMad(StateManager.OBJ_AXIS1) == 0
         || viewer.getAxesScale() < 2 || axisPoints == null);
-    
-    render(mad, verticesT, axisPoints, drawAllLines ? 0 : 3);
-    if (viewer.getDisplayCellParameters() && !viewer.isPreviewOnly() && !symmetry.isPeriodic())
+    Point3f[] aPoints = axisPoints;
+    for (int x = (int) cell0.x; x <= cell1.x; x++) {
+      for (int y = (int) cell0.y; y <= cell1.y; y++) {
+        for (int z = (int) cell0.z; z <= cell1.z; z++) {
+          if (haveMultiple) {
+            offsetT.set(x, y, z);
+            offsetT.scale(fset.z);
+            symmetry.toCartesian(offsetT, true);
+            offsetT.add(offset);
+            aPoints = (x == 0 && y == 0 && z == 0 ? axisPoints : null);
+            firstLine = (drawAllLines || aPoints == null ? 0 : 3);
+            allow0 = 0xFF;
+            allow1 = 0xFF;            
+          } else {
+            offsetT.set(offset);
+            firstLine = (drawAllLines ? 0 : 3);
+            allow0 = 0xFF;
+            allow1 = 0xFF;
+          }
+          for (int i = 8; --i >= 0;)
+            verticesT[i].add(vertices[i], offsetT);
+          render(mad, verticesT, aPoints, firstLine, allow0, allow1, fset.z);
+        }
+      }
+    }
+
+    if (viewer.getDisplayCellParameters() && !viewer.isPreviewOnly()
+        && !symmetry.isPeriodic())
       renderInfo(symmetry);
   }
   

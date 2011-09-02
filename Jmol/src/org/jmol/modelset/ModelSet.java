@@ -615,6 +615,22 @@ import javax.vecmath.Vector3f;
               + models[i].orientation.getMoveToText(false) + "\n");
       }
 
+      
+      if (unitCells != null)
+      for (int i = 0; i < modelCount; i++) {
+        SymmetryInterface symmetry = getUnitCell(i);
+        if (symmetry == null)
+          continue;
+        commands.append("  frame ").append(getModelNumberDotted(i));
+        Point3f pt = symmetry.getFractionalOffset();
+        if (pt != null)
+          commands.append("; set unitcell ").append(Escape.escape(pt));
+        pt = symmetry.getUnitCellMultiplier();
+        if (pt != null)
+          commands.append("; set unitcell ").append(Escape.escape(pt));
+        commands.append(";\n");
+      }
+
       commands.append("  set fontScaling " + viewer.getFontScaling() + ";\n");
       if (viewer.isModelKitMode())
         commands.append("  set modelKitMode true;\n");

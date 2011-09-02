@@ -3109,8 +3109,6 @@ private void zap(String msg) {
     if (unitCell == null)
       return;
     unitCell.setUnitCellOffset(pt);
-    global.setParameterValue("=frame " + getModelNumberDotted(animationManager.currentModelIndex)
-          + "; set unitcell ", Escape.escape(pt));
   }
 
   public boolean getFractionalRelative() {

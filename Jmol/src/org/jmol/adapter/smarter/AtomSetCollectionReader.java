@@ -543,7 +543,6 @@ public abstract class AtomSetCollectionReader {
   }
 
   protected int cloneLastAtomSet(int atomCount) throws Exception {
-    applySymmetryAndSetTrajectory();
     int lastAtomCount = atomSetCollection.getLastAtomSetAtomCount();
     atomSetCollection.cloneLastAtomSet(atomCount);
     if (atomSetCollection.haveUnitCell) {
@@ -962,10 +961,10 @@ public abstract class AtomSetCollectionReader {
     int nLines = data.length;
     for (int i = 0; i < nLines; i++) {
       discardLinesUntilNonBlank();
-      int nFields = (line.length() - col0) / colWidth;
+      int nFields = (line.length() - col0 + 1) / colWidth; // Dmol reader is one short
       data[i] = new String[nFields];
       for (int j = 0, start = col0; j < nFields; j++, start += colWidth)
-        data[i][j] = line.substring(start, start + colWidth);
+        data[i][j] = line.substring(start, Math.min(line.length(), start + colWidth));
     }
   }
 

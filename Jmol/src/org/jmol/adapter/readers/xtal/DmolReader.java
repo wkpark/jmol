@@ -56,6 +56,7 @@ public class DmolReader extends AtomSetCollectionReader {
   }
 
   private void newAtomSet() throws Exception {
+    applySymmetryAndSetTrajectory();
     atomSetCollection.newAtomSet();
     if (totE != null)
       setEnergy();
@@ -97,7 +98,6 @@ public class DmolReader extends AtomSetCollectionReader {
       atom.set(x, y, z);
       setAtomCoord(atom);
     }
-    applySymmetryAndSetTrajectory();
   }
 
   private void readEnergy() throws Exception {
@@ -132,17 +132,16 @@ public class DmolReader extends AtomSetCollectionReader {
     */
 
   private void readFreq() throws Exception {
-    
     int lastAtomCount = 0;
-    int atomCount = atomSetCollection.getAtomCount();
-
-      String[] tokens = getTokens(readLine());
-      int frequencyCount = tokens.length/2;
+    int atomCount = atomSetCollection.getLastAtomSetAtomCount();
+    while (readLine() != null && line.charAt(1) == ' ') {
+      String[] tokens = getTokens(line);
+      int frequencyCount = tokens.length / 2;
       float[] frequencies = new float[frequencyCount];
-      for (int i = 1, n = 0; i < tokens.length; i+=2) {
-        frequencies[n++] = parseFloat(tokens[i]);
+      for (int i = 1, n = 0; i < tokens.length; i += 2, n++) {
+        frequencies[n] = parseFloat(tokens[i]);
         if (Logger.debugging)
-          Logger.debug((vibrationNumber + i) + " frequency=" + frequencies[i]);
+          Logger.debug((vibrationNumber + n) + " frequency=" + frequencies[n]);
       }
 
       boolean[] ignore = new boolean[frequencyCount];
@@ -152,6 +151,7 @@ public class DmolReader extends AtomSetCollectionReader {
         ignore[i] = (!doGetVibration(++vibrationNumber) || tokens == null);
         if (ignore[i])
           continue;
+        applySymmetryAndSetTrajectory();
         lastAtomCount = cloneLastAtomSet(atomCount);
         if (i == 0)
           iAtom0 = atomSetCollection.getLastAtomSetAtomIndex();
@@ -163,11 +163,11 @@ public class DmolReader extends AtomSetCollectionReader {
 
       }
       readLine();
-      fillFrequencyData(iAtom0, atomCount, lastAtomCount, ignore, false, 6, 12,
+      fillFrequencyData(iAtom0, atomCount, lastAtomCount, ignore, false, 5, 13,
           null);
-      readLine();
-      
+      discardLines(2);
     }
+  }
 
   
 

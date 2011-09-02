@@ -77,6 +77,7 @@ public class TestSmarterJmolAdapter extends TestSuite {
     result.addDirectory(true,  "cube", "cub.gz", "Cube");
     result.addDirectory(true,  "cube", "cube.gz", "Cube");
     result.addDirectory(false,  "dgrid", "adf", "Dgrid");
+    result.addDirectory(true,  "dmol", "outmol", "Dmol");
     result.addDirectory(false, "folding", "xyz", "FoldingXyz");
     result.addDirectory(true,  "folding", "xyz.gz", "FoldingXyz");
     result.addDirectory(false, "../Jmol-FAH/projects", "xyz", "FoldingXyz");
@@ -114,6 +115,9 @@ public class TestSmarterJmolAdapter extends TestSuite {
     result.addDirectory(false, "psi3", "out", "Psi");
     result.addDirectory(false, "qchem", "out", "Qchem");
     result.addDirectory(false, "shelx", "res", "Shelx");
+    result.addDirectory(false, "siesta", "fdf", "Siesta");
+    result.addDirectory(false, "siesta", "out", "Siesta");
+    
     result.addDirectory(false, "spartan", "smol", "SpartanSmol");
     result.addDirectory(false, "spartan", "txt", "Spartan");
     result.addDirectory(false, "spartan", "sp4", "Spartan");

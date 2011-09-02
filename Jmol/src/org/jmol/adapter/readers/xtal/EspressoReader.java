@@ -14,7 +14,6 @@ package org.jmol.adapter.readers.xtal;
 
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
-import org.jmol.util.SimpleUnitCell;
 
 public class EspressoReader extends AtomSetCollectionReader {
 
@@ -25,6 +24,7 @@ public class EspressoReader extends AtomSetCollectionReader {
   @Override
   protected void initializeReader() {
     setSpaceGroupName("P1");
+    doApplySymmetry = true;
     // inputOnly = checkFilter("INPUT");
   }
 
@@ -37,7 +37,11 @@ public class EspressoReader extends AtomSetCollectionReader {
       readCellParam(false);
     } else if (line.contains("CELL_PARAMETERS")) {
       readCellParam(true);
-    } else if (line.contains("POSITIONS (") || line.contains("positions (")) {
+    } else if (line.contains("Cartesian axes")) {
+      discardLinesUntilContains("positions (");
+      if (doGetModel(++modelNumber))
+        readAtoms();
+    } else if (line.contains("POSITIONS (")) {
       if (doGetModel(++modelNumber))
         readAtoms();
     } else if (line.contains("!    total energy")) {
@@ -114,20 +118,11 @@ public class EspressoReader extends AtomSetCollectionReader {
       setEnergy();
   }
 
-  private float bFactor, cFactor;
-
   private void setCellParams() throws Exception {
     if (cellParams != null) {
       addPrimitiveLatticeVector(0, cellParams, 0);
       addPrimitiveLatticeVector(1, cellParams, 3);
       addPrimitiveLatticeVector(2, cellParams, 6);
-      float a = symmetry.getUnitCellInfo(SimpleUnitCell.INFO_A);
-      float b = symmetry.getUnitCellInfo(SimpleUnitCell.INFO_B);
-      float c = symmetry.getUnitCellInfo(SimpleUnitCell.INFO_C);
-      bFactor = a / b;
-      cFactor = a / c;
-      // say a=1, b=2, and c=22. Then if we have alat or a_0 format,
-      // then {0.5 0.5 2.45} in alat will be {0.5 0.5/2 2.45/22} in fractional
       setSpaceGroupName("P1");
     }
   }
@@ -166,7 +161,7 @@ public class EspressoReader extends AtomSetCollectionReader {
     boolean isAngstrom = line.contains("angstrom");
     if (isAlat || isFractional || isAngstrom)
       setCellParams();
-    setFractionalCoordinates(isAlat || isFractional);
+    setFractionalCoordinates(isFractional);
 
     while (readLine() != null && line.length() > 45) {
       String[] tokens = getTokens();
@@ -180,8 +175,7 @@ public class EspressoReader extends AtomSetCollectionReader {
       if (isBohr) {
         atom.scale(ANGSTROMS_PER_BOHR);
       } else if (isAlat) {
-        atom.y *= bFactor;
-        atom.z *= cFactor;
+        atom.scale(aPar);
       }
       setAtomCoord(atom);
     }

@@ -4395,5 +4395,16 @@ abstract public class ModelCollection extends BondCollection {
       if (!models[lastModelIndex].isModelKit || atom.getElementNumber() > 0 && !atom.isDeleted())
         atomNo++;
     }
-  }  
+  }
+  
+  public void setUnitCellOffset(int modelIndex, Point3f pt) {
+    for (int i = modelIndex; i < modelCount; i++) {
+      if (i < 0 || modelIndex >= 0 && i != modelIndex)
+        continue;
+      SymmetryInterface unitCell = getUnitCell(i);
+      if (unitCell == null)
+        continue;
+      unitCell.setUnitCellOffset(pt);
+    }
+  }
 }

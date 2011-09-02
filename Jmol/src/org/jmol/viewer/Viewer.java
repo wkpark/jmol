@@ -3105,10 +3105,7 @@ private void zap(String msg) {
 
   public void setCurrentUnitCellOffset(Point3f pt) {
     // from "unitcell {i j k}" via uccage
-    SymmetryInterface unitCell = getCurrentUnitCell();
-    if (unitCell == null)
-      return;
-    unitCell.setUnitCellOffset(pt);
+    modelSet.setUnitCellOffset(animationManager.currentModelIndex, pt);
   }
 
   public boolean getFractionalRelative() {

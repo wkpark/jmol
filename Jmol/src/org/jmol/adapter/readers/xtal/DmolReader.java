@@ -132,25 +132,15 @@ public class DmolReader extends AtomSetCollectionReader {
     */
 
   private void readFreq() throws Exception {
-    String lineFrag = "";
-    String newLine = "";
+    
     int lastAtomCount = 0;
     int atomCount = atomSetCollection.getAtomCount();
-    /// This removes  extra info in lines like   1:  -16.6    2:   -0.5    3:    
-    while (readLine() != null && line.contains(":")) {
-      lineFrag += line;
-      String[] freqFrag = getTokens(lineFrag);
-      for (int i = 0; i < 18; i++) {
-        if (freqFrag[i].contains(":"))
-          freqFrag[i] = "";
-        newLine += freqFrag[i] + "  ";
-      }
 
-      String[] tokens = getTokens(newLine);
-      float[] frequencies = new float[tokens.length];
-      int frequencyCount = frequencies.length;
-      for (int i = 0; i < frequencyCount; i++) {
-        frequencies[i] = parseFloat(tokens[i]);
+      String[] tokens = getTokens(readLine());
+      int frequencyCount = tokens.length/2;
+      float[] frequencies = new float[frequencyCount];
+      for (int i = 1, n = 0; i < tokens.length; i+=2) {
+        frequencies[n++] = parseFloat(tokens[i]);
         if (Logger.debugging)
           Logger.debug((vibrationNumber + i) + " frequency=" + frequencies[i]);
       }
@@ -179,6 +169,6 @@ public class DmolReader extends AtomSetCollectionReader {
       
     }
 
-  }
+  
 
 }

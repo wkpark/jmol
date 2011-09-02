@@ -53,21 +53,18 @@ public class DmolReader extends AtomSetCollectionReader {
       unitCellData[i++] = parseFloat(tokens[1]) * ANGSTROMS_PER_BOHR;
       unitCellData[i++] = parseFloat(tokens[2]) * ANGSTROMS_PER_BOHR;
     }
-    addPrimitiveLatticeVector(0, unitCellData, 0);
-    addPrimitiveLatticeVector(1, unitCellData, 3);
-    addPrimitiveLatticeVector(2, unitCellData, 6);
-    setSymmetry();
-  }
-
-  private void setSymmetry() throws Exception {
-    setSpaceGroupName("P1");
-    setFractionalCoordinates(false);
   }
 
   private void newAtomSet() throws Exception {
     atomSetCollection.newAtomSet();
     if (totE != null)
       setEnergy();
+    doApplySymmetry = true;
+    addPrimitiveLatticeVector(0, unitCellData, 0);
+    addPrimitiveLatticeVector(1, unitCellData, 3);
+    addPrimitiveLatticeVector(2, unitCellData, 6);
+    setSpaceGroupName("P1");
+    setFractionalCoordinates(false);
   }
 
   /*  
@@ -98,6 +95,7 @@ public class DmolReader extends AtomSetCollectionReader {
       float y = parseFloat(tokens[2]) * ANGSTROMS_PER_BOHR;
       float z = parseFloat(tokens[3]) * ANGSTROMS_PER_BOHR;
       atom.set(x, y, z);
+      setAtomCoord(atom);
     }
     applySymmetryAndSetTrajectory();
   }

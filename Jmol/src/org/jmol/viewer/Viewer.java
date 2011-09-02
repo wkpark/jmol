@@ -4263,7 +4263,6 @@ private void zap(String msg) {
 
   @Override
   public String evalStringQuiet(String strScript) {
-    System.out.println("viewer script " + strScript);
     // JmolViewer 
     return evalStringQuiet(strScript, true, true);
   }

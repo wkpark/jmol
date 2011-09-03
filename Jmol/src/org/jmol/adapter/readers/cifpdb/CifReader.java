@@ -1612,12 +1612,12 @@ _struct_site_gen.details
     if (isMolecular) {
       atomRadius = new float[atomCount];
       for (int i = firstAtom; i < atomCount; i++) {
-        int elemno = atoms[i].elementNumber = JmolAdapter
+        short elemnoWithIsotope = atoms[i].elementNumber = JmolAdapter
             .getElementNumber(atoms[i].getElementSymbol());
         int charge = (atoms[i].formalCharge == Integer.MIN_VALUE ? 0
             : atoms[i].formalCharge);
-        if (elemno > 0)
-          atomRadius[i] = JmolAdapter.getBondingRadiusFloat(elemno, charge);
+        if (elemnoWithIsotope > 0)
+          atomRadius[i] = JmolAdapter.getBondingRadiusFloat(elemnoWithIsotope, charge);
       }
       bsConnected = new BitSet[atomCount];
       for (int i = firstAtom; i < atomCount; i++)

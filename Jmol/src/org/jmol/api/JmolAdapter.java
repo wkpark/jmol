@@ -117,8 +117,8 @@ public abstract class JmolAdapter {
     return Group.lookupGroupID(group3);
   }
 
-  public static float getBondingRadiusFloat(int atomicNumber, int charge) {
-    return Elements.getBondingRadiusFloat(atomicNumber, charge);
+  public static float getBondingRadiusFloat(short atomicNumberWithIsotope, int charge) {
+    return Elements.getBondingRadiusFloat(atomicNumberWithIsotope, charge);
   }
 
   //////////////////////////////////////////////////////////////////

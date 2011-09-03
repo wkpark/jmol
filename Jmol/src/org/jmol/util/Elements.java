@@ -991,7 +991,8 @@ public class Elements {
       bsCations.set(cationLookupTable[i]>>4);
   }
 
-  public static float getBondingRadiusFloat(int atomicNumber, int charge) {
+  public static float getBondingRadiusFloat(short atomicNumberAndIsotope, int charge) {
+    int atomicNumber = getElementNumber(atomicNumberAndIsotope);
     if (charge > 0 && bsCations.get(atomicNumber))
       return getBondingRadiusFloat(atomicNumber, charge, cationLookupTable);
     if (charge < 0 && bsAnions.get(atomicNumber))

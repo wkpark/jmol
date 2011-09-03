@@ -504,13 +504,13 @@ final public class Atom extends Point3fi implements JmolNode {
   }
 
   public float getCovalentRadiusFloat() {
-    return Elements.getBondingRadiusFloat(atomicAndIsotopeNumber % 128, 0);
+    return Elements.getBondingRadiusFloat(atomicAndIsotopeNumber, 0);
   }
 
   public float getBondingRadiusFloat() {
     float[] ionicRadii = group.chain.modelSet.ionicRadii;
     float r = (ionicRadii == null ? 0 : ionicRadii[index]);
-    return (r == 0 ? Elements.getBondingRadiusFloat(atomicAndIsotopeNumber % 128,
+    return (r == 0 ? Elements.getBondingRadiusFloat(atomicAndIsotopeNumber,
         getFormalCharge()) : r);
   }
 

@@ -21,15 +21,22 @@ public class DmolReader extends AtomSetCollectionReader {
 
   private float[] unitCellData;
   private Double totE;
+  private boolean geomOpt;
 
   @Override
   protected boolean checkLine() throws Exception {
     //discardLinesUntilContains("INCOOR, atomic coordinates");
-    if (line.contains("$cell vectors")) {
+    if (line.contains("** GEOMETRY OPTIMIZATION IN DELOCALIZED COORDINATES **")) {
+      geomOpt = true;
+    } else if (line.contains("INCOOR, atomic coordinates")) {
+      geomOpt = false;
+    } else if (!geomOpt ? line.contains("$cell vectors") : line
+        .contains("Lattice:")) {
       readCellParam();
-    } else if (line.contains("$coordinates")) {
-      readIntialCoord();
-    } else if (line.contains("Total Energy")) {
+    } else if (!geomOpt ? line.contains("$coordinates") : line
+        .contains("Input Coordinates")) {
+      readCoord();
+    } else if (line.contains(" Total Energy")) {
       readEnergy();
     } else if (line.contains("Frequencies (cm-1)")) {
       readFreq();
@@ -49,9 +56,12 @@ public class DmolReader extends AtomSetCollectionReader {
     unitCellData = new float[9];
     for (int n = 0, i = 0; n < 3; n++) {
       String[] tokens = getTokens(readLine());
-      unitCellData[i++] = parseFloat(tokens[0]) * ANGSTROMS_PER_BOHR;
-      unitCellData[i++] = parseFloat(tokens[1]) * ANGSTROMS_PER_BOHR;
-      unitCellData[i++] = parseFloat(tokens[2]) * ANGSTROMS_PER_BOHR;
+      unitCellData[i++] = parseFloat(!geomOpt ? tokens[0] : tokens[4])
+      * ANGSTROMS_PER_BOHR;
+      unitCellData[i++] = parseFloat(!geomOpt ? tokens[1] : tokens[5])
+      * ANGSTROMS_PER_BOHR;
+      unitCellData[i++] = parseFloat(!geomOpt ? tokens[2] : tokens[6])
+      * ANGSTROMS_PER_BOHR;
     }
   }
 
@@ -86,15 +96,19 @@ public class DmolReader extends AtomSetCollectionReader {
 
    */
 
-  private void readIntialCoord() throws Exception {
+  private void readCoord() throws Exception {
     newAtomSet();
-    while (readLine() != null && !line.contains("$end")) {
+    if (geomOpt)
+      discardLines(2);
+    while (readLine() != null && !geomOpt ? !line.contains("$end") : !line
+        .contains("-----")) {
       String[] tokens = getTokens();
       Atom atom = atomSetCollection.addNewAtom();
-      atom.atomName = tokens[0];
-      float x = parseFloat(tokens[1]) * ANGSTROMS_PER_BOHR;
-      float y = parseFloat(tokens[2]) * ANGSTROMS_PER_BOHR;
-      float z = parseFloat(tokens[3]) * ANGSTROMS_PER_BOHR;
+      atom.atomName = !geomOpt ? tokens[0] : tokens[1];
+      float factor = (float) (!geomOpt ? ANGSTROMS_PER_BOHR : 1.00);
+      float x = parseFloat(!geomOpt ? tokens[1] : tokens[2]) * factor;
+      float y = parseFloat(!geomOpt ? tokens[2] : tokens[3]) * factor;
+      float z = parseFloat(!geomOpt ? tokens[3] : tokens[4]) * factor;
       atom.set(x, y, z);
       setAtomCoord(atom);
     }
@@ -102,10 +116,8 @@ public class DmolReader extends AtomSetCollectionReader {
 
   private void readEnergy() throws Exception {
     readLine();
-    if (line.contains("Ef")) {
-      totE = Double.valueOf(Double.parseDouble(getTokens(line.substring(line
-          .indexOf("f") + 1, line.indexOf("H") - 1))[0]));
-    }
+    if (line.contains("Ef"))
+      totE = Double.valueOf(Double.parseDouble(getTokens(line.substring(line.indexOf("Ef") +1 , line.indexOf("Ha")  ))[1]));
   }
 
   private void setEnergy() {
@@ -115,7 +127,7 @@ public class DmolReader extends AtomSetCollectionReader {
   }
 
   /*  
-    
+
     Frequencies (cm-1) and normal modes 
     1:  -16.6    2:   -0.5    3:    0.2    4:    0.5    5:   10.0    6:   21.4    7:   22.1    8:   24.2    9:   31.1
 
@@ -129,7 +141,7 @@ public class DmolReader extends AtomSetCollectionReader {
   y     -0.1142       0.0000      -0.0947       0.0000       0.0277       0.0368       0.0096       0.0001       0.0191
   z     -0.0166      -0.0026       0.0004      -0.0947       0.1016       0.0271       0.1004      -0.0962      -0.0305
   C  x     -0.0130   
-    */
+   */
 
   private void readFreq() throws Exception {
     int lastAtomCount = 0;
@@ -154,11 +166,10 @@ public class DmolReader extends AtomSetCollectionReader {
         lastAtomCount = cloneLastAtomSet(atomCount);
         if (i == 0)
           iAtom0 = atomSetCollection.getLastAtomSetAtomIndex();
-        atomSetCollection.setAtomSetFrequency(null, null, String
-            .valueOf(frequencies[i]), null);
+        atomSetCollection.setAtomSetFrequency(null, null,
+            String.valueOf(frequencies[i]), null);
         atomSetCollection.setAtomSetName(TextFormat.formatDecimal(
-            frequencies[i], 2)
-            + " cm-1");
+            frequencies[i], 2) + " cm-1");
 
       }
       readLine();
@@ -167,7 +178,5 @@ public class DmolReader extends AtomSetCollectionReader {
       discardLines(2);
     }
   }
-
-  
 
 }

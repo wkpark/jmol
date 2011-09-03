@@ -192,7 +192,7 @@ public class GamessUKReader extends GamessReader {
   private List<Float> occupancies;
    
    private void readOrbitalSymmetryAndOccupancy() throws Exception {
-     discardLines(4);
+     readLines(4);
      symmetries = new ArrayList<String>();
      occupancies = new ArrayList<Float>();
      while (readLine() != null && line.indexOf("====") < 0) {

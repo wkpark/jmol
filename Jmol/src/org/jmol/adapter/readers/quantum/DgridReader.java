@@ -139,7 +139,7 @@ sym: A1                 1 1s            2 1s            3 1s            4 1s    
                         1 2pz_a         1 2pz_b         1 3dz2          1 3dx2          1 3dy2       
      */
     htFuncMap = new Hashtable<String, Integer>();
-    discardLines(3);
+    readLines(3);
     while (line != null && line.indexOf(":") != 0) {
       discardLinesUntilContains("sym: ");
       String symmetry = line.substring(4, 10).trim();

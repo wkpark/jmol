@@ -811,13 +811,13 @@ public class AtomSetCollection {
   
   private Point3f unitCellOffset;
   
-  private Point3i minXYZ, maxXYZ;
+  private Point3i minXYZ, maxXYZ, minXYZ0, maxXYZ0;
   
-  private static boolean isWithinCell(Point3f pt, int minX, int maxX, int minY, int maxY, int minZ, int maxZ) {
+  private static boolean isWithinCell(int dtype, Point3f pt, int minX, int maxX, int minY, int maxY, int minZ, int maxZ) {
     float slop = 0.02f;
     return (pt.x > minX - slop && pt.x < maxX + slop 
-        && pt.y > minY - slop && pt.y < maxY + slop 
-        && pt.z > minZ - slop && pt.z < maxZ + slop);
+        && (dtype < 2 || pt.y > minY - slop && pt.y < maxY + slop) 
+        && (dtype < 3 || pt.z > minZ - slop && pt.z < maxZ + slop));
   }
 
   private boolean needEllipsoids;
@@ -830,6 +830,8 @@ public class AtomSetCollection {
   public float[] getAnisoBorU(Atom atom) {
     return atom.anisoBorU;
   }
+  
+  private int dtype = 3;
   
   private void applyAllSymmetry() throws Exception {
     int noSymmetryCount = getLastAtomSetAtomCount();
@@ -845,9 +847,12 @@ public class AtomSetCollection {
     int operationCount = symmetry.getSpaceGroupOperationCount();
     getSymmetry().setMinMaxLatticeParameters(minXYZ, maxXYZ);
     if (doPackUnitCell || symmetryRange != 0 && maxXYZ.x - minXYZ.x == 1
-        && maxXYZ.y - minXYZ.y == 1 && maxXYZ.z - minXYZ.z == 1)
-      switch ((int) getSymmetry()
-          .getUnitCellInfo(SimpleUnitCell.INFO_DIMENSIONS)) {
+        && maxXYZ.y - minXYZ.y == 1 && maxXYZ.z - minXYZ.z == 1) {
+      minXYZ0 = new Point3i(minXYZ);
+      maxXYZ0 = new Point3i(maxXYZ);
+      dtype = (int) getSymmetry()
+          .getUnitCellInfo(SimpleUnitCell.INFO_DIMENSIONS);
+      switch (dtype) {
       case 3:
         // standard
         minXYZ.z--;
@@ -863,6 +868,7 @@ public class AtomSetCollection {
         minXYZ.x--;
         maxXYZ.x++;
       }
+    }
     int nCells = (maxXYZ.x - minXYZ.x) * (maxXYZ.y - minXYZ.y)
         * (maxXYZ.z - minXYZ.z);
     int cartesianCount = (checkSpecial ? noSymmetryCount * operationCount
@@ -1053,7 +1059,8 @@ public class AtomSetCollection {
           symmetry.toUnitCell(cartesian, ptOffset);
           ptAtom.set(cartesian);
           symmetry.toFractional(ptAtom, false);
-          if (!isWithinCell(ptAtom, minXYZ.x + 1, maxXYZ.x - 1, minXYZ.y + 1, maxXYZ.y - 1, minXYZ.z + 1, maxXYZ.z - 1))
+          if (!isWithinCell(dtype, ptAtom, minXYZ0.x, maxXYZ0.x, 
+              minXYZ0.y, maxXYZ0.y, minXYZ0.z, maxXYZ0.z))
             continue;
         }
         if (checkSymmetryMinMax)

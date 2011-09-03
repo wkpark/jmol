@@ -235,10 +235,7 @@ public class NWChemReader extends MOReader {
    * @throws Exception If an error occurs.
    */
   private void readSymmetry() throws Exception {
-    discardLines(2);
-    if (readLine() == null)
-      return;
-    String tokens[] = getTokens();
+    String tokens[] = getTokens(readLines(3));
     atomSetCollection.setAtomSetProperties("Symmetry group name",
         tokens[tokens.length - 1], equivalentAtomSets);
   }
@@ -264,8 +261,8 @@ public class NWChemReader extends MOReader {
 
   private void readAtSign() throws Exception {
     if (line.charAt(2) == 'S') {
-      discardLines(1); // skip over the line with the --- in it
-      if (readLine() == null)
+      // skip over the line with the --- in it
+      if (readLines(2) == null)
         return;
     }
     String tokens[] = getTokens();
@@ -299,7 +296,7 @@ public class NWChemReader extends MOReader {
    * @throws Exception If an error occurs.
    **/
   private void readAtoms() throws Exception {
-    discardLines(3); // skip blank line, titles and dashes
+    readLines(3); // skip blank line, titles and dashes
     String tokens[];
     haveEnergy = false;
     atomSetCollection.newAtomSet();
@@ -350,7 +347,7 @@ public class NWChemReader extends MOReader {
    * @throws Exception If an error occurs.
    **/
   private void readGradients() throws Exception {
-    discardLines(3); // skip blank line, titles and dashes
+    readLines(3); // skip blank line, titles and dashes
     String tokens[];
     atomSetCollection.newAtomSet();
     if (equivalentAtomSets > 1)
@@ -476,7 +473,7 @@ public class NWChemReader extends MOReader {
 
     // position myself to read the atom information, i.e., structure
     discardLinesUntilContains("Atom information");
-    discardLines(2);
+    readLines(2);
     atomSetCollection.newAtomSet();
     String tokens[];
     while (readLine() != null && line.indexOf("---") < 0) {
@@ -489,7 +486,7 @@ public class NWChemReader extends MOReader {
     }
 
     discardLinesUntilContains("(Projected Frequencies expressed in cm-1)");
-    discardLines(3); // step over the line with the numbers
+    readLines(3); // step over the line with the numbers
 
     boolean firstTime = true;
     while (readLine() != null && line.indexOf("P.Frequency") >= 0) {
@@ -513,9 +510,9 @@ public class NWChemReader extends MOReader {
         firstTime = false;
         atomSetCollection.setAtomSetFrequency(path, null, tokens[i], null);
       }
-      discardLines(1);
+      readLines(1);
       fillFrequencyData(iAtom0, atomCount, atomCount, ignore, false, 0, 0, null);
-      discardLines(3);
+      readLines(3);
     }
 
     // now set the names and properties of the atomsets associated with
@@ -523,7 +520,7 @@ public class NWChemReader extends MOReader {
     // NB this is not always there: try/catch and possibly set freq value again  
     try {
       discardLinesUntilContains("Projected Infra Red Intensities");
-      discardLines(2);
+      readLines(2);
       for (int i = vibrationNumber, idx = firstFrequencyAtomSetIndex; --i >= 0;) {
         if (readLine() == null)
           return;
@@ -548,7 +545,7 @@ public class NWChemReader extends MOReader {
    */
   void readPartialCharges() throws Exception {
     String tokens[];
-    discardLines(4);
+    readLines(4);
     int atomCount = atomSetCollection.getAtomCount();
     int i0 = atomSetCollection.getLastAtomSetAtomIndex();
     Atom[] atoms = atomSetCollection.getAtoms();
@@ -847,7 +844,7 @@ public class NWChemReader extends MOReader {
       float occupancy = parseFloat(tokens[3]);
       float energy = parseFloat(tokens[5]);
       String symmetry = tokens[7];
-      discardLines(3);
+      readLines(3);
       Map<String, Object> mo = new Hashtable<String, Object>();
       mo.put("occupancy", Float.valueOf(occupancy));
       mo.put("energy", Float.valueOf(energy));
@@ -909,7 +906,7 @@ public class NWChemReader extends MOReader {
     int ptOffset = -1;
     int fieldSize = 0;
     int nThisLine = 0;
-    discardLines(5);
+    readLines(5);
     boolean isBeta = false;
     boolean betaOnly = !filterMO();
     while (readLine() != null) {

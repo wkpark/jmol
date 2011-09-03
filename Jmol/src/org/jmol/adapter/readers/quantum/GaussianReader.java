@@ -277,7 +277,7 @@ public class GaussianReader extends MOReader {
     atomSetCollection.setAtomSetEnergy(energyString, parseFloat(energyString));
 //  atomSetCollection.setAtomSetName("Last read atomset.");
     String path = getTokens()[0]; // path = type of orientation
-    discardLines(4);
+    readLines(4);
     String tokens[];
     while (readLine() != null &&
         !line.startsWith(" --")) {
@@ -560,7 +560,7 @@ but:
   // TODO this really should set the charges for the last nOrientations read
   // being careful about the dummy atoms...
   void readPartialCharges() throws Exception {
-    discardLines(1);
+    readLine();
     int atomCount = atomSetCollection.getAtomCount();
     int i0 = atomSetCollection.getLastAtomSetAtomIndex();
     Atom[] atoms = atomSetCollection.getAtoms();

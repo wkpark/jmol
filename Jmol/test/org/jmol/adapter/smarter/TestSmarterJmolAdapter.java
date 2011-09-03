@@ -18,6 +18,7 @@ import java.util.zip.GZIPInputStream;
 
 import org.jmol.util.JUnitLogger;
 import org.jmol.util.Logger;
+import org.jmol.util.TextFormat;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -57,113 +58,93 @@ public class TestSmarterJmolAdapter extends TestSuite {
     
     //testOne = "csf";
     
-    result.addDirectory(false, "adf", "adf", "Adf");
-    result.addDirectory(false, "adf", "out", "Adf");
-    result.addDirectory(false, "aims", "in", "Aims");
-    result.addDirectory(false, "aminoacids", "mol", "Mol");
-    result.addDirectory(false, "aminoacids", "pdb", "Pdb");
-    result.addDirectory(false, "animations", "cml", "XmlCml");
-    result.addDirectory(false, "animations", "pdb", "Pdb");
-    result.addDirectory(true,  "animations", "pdb.gz", "Pdb");
-    result.addDirectory(false, "animations", "xyz", "Xyz");
-    result.addDirectory(false, "castep", "cell", "Castep");
-    result.addDirectory(false, "cif", "cif", "Cif");
-    result.addDirectory(false, "c3xml", "c3xml", "XmlChem3d");
-    result.addDirectory(false, "cml", "cml", "XmlCml");
-    result.addDirectory(false, "crystal", "out", "Crystal");
-    result.addDirectory(false, "crystals", "mol", "Mol");
-    result.addDirectory(false, "crystals", "pdb", "Pdb");
-    result.addDirectory(false, "csf", "csf", "Csf");
-    result.addDirectory(true,  "cube", "cub.gz", "Cube");
-    result.addDirectory(true,  "cube", "cube.gz", "Cube");
-    result.addDirectory(false,  "dgrid", "adf", "Dgrid");
-    result.addDirectory(true,  "dmol", "outmol", "Dmol");
-    result.addDirectory(false, "folding", "xyz", "FoldingXyz");
-    result.addDirectory(true,  "folding", "xyz.gz", "FoldingXyz");
-    result.addDirectory(false, "../Jmol-FAH/projects", "xyz", "FoldingXyz");
-    result.addDirectory(true,  "../Jmol-FAH/projects", "xyz.gz", "FoldingXyz");
-    result.addDirectory(false, "gamess", "log", ";Gamess;GamessUS;GamessUK;");
-    result.addDirectory(false, "gamess", "out", ";Gamess;GamessUS;GamessUK;");
-    result.addDirectory(false, "gaussian", "log", "Gaussian");
-    result.addDirectory(false, "gaussian", "out", "Gaussian");
-    result.addDirectory(false, "gennbo", "out", "GenNBO");
-    result.addDirectory(false, "gennbo", "36", "GenNBO");
-    result.addDirectory(false, "gennbo", "37", "GenNBO");
-    result.addDirectory(false, "ghemical", "gpr", "GhemicalMM");
-    result.addDirectory(false, "gromacs", "gro", "Gromacs");
-    result.addDirectory(false, "gulp", "gout", "Gulp");
-    result.addDirectory(false, "gulp", "got", "Gulp");
-    result.addDirectory(false, "hin", "hin", "HyperChem");
-    result.addDirectory(false, "jaguar", "out", "Jaguar");
-    result.addDirectory(false, "modifiedGroups", "cif", "Cif");
-    result.addDirectory(false, "modifiedGroups", "pdb", "Pdb");
-    result.addDirectory(false, "mol", "v3000", "Mol");
-    result.addDirectory(false, "mol", "mol", "Mol");
-    result.addDirectory(false, "mol", "sdf", "Mol");
-    result.addDirectory(false, "mol2", "mol2", "Mol2");
-    result.addDirectory(false, "molpro", "xml", "XmlMolpro");
-    result.addDirectory(false, "mopac", "out", "Mopac");
-    result.addDirectory(false, "mopac", "gpt2","MopacGraphf");
-    result.addDirectory(false, "mopac", "mgf","MopacGraphf");
-    result.addDirectory(false, "odyssey", "odydata", "Odyssey");
-    result.addDirectory(false, "odyssey", "xodydata", "XmlOdyssey");
-    result.addDirectory(false, "nwchem", "nwo", "NWChem");
-    result.addDirectory(false, "pdb", "pdb", "Pdb");
-    result.addDirectory(true,  "pdb", "pdb.gz", "Pdb");
+    result.addDirectory("adf", "adf;out", "Adf");
+    result.addDirectory("aims", "in", "Aims");
+    result.addDirectory("aminoacids", "mol", "Mol");
+    result.addDirectory("aminoacids", "pdb", "Pdb");
+    result.addDirectory("animations", "cml", "XmlCml");
+    result.addDirectory("animations", "pdb;pdb.gz", "Pdb");
+    result.addDirectory("animations", "xyz", "Xyz");
+    result.addDirectory("castep", "cell", "Castep");
+    result.addDirectory("cif", "cif", "Cif");
+    result.addDirectory("c3xml", "c3xml", "XmlChem3d");
+    result.addDirectory("cml", "cml", "XmlCml");
+    result.addDirectory("crystal", "out;outp", "Crystal");
+    result.addDirectory("crystals", "mol", "Mol");
+    result.addDirectory("crystals", "pdb", "Pdb");
+    result.addDirectory("csf", "csf", "Csf");
+    result.addDirectory("cube",  "cub.gz;cube.gz", "Cube");
+    result.addDirectory("dgrid",  "adf", "Dgrid");
+    result.addDirectory("dmol",  "outmol", "Dmol");
+    result.addDirectory("folding", "xyz;xyz.gz", "FoldingXyz");
+    result.addDirectory("../Jmol-FAH/projects", "xyz;xyz.gz", "FoldingXyz");
+    result.addDirectory("gamess", "log;out", ";Gamess;GamessUS;GamessUK;");
+    result.addDirectory("gaussian", "log;out", "Gaussian");
+    result.addDirectory("gennbo", "out;36;37", "GenNBO");
+    result.addDirectory("ghemical", "gpr", "GhemicalMM");
+    result.addDirectory("gromacs", "gro", "Gromacs");
+    result.addDirectory("gulp", "gout;got", "Gulp");
+    result.addDirectory("hin", "hin", "HyperChem");
+    result.addDirectory("jaguar", "out", "Jaguar");
+    result.addDirectory("modifiedGroups", "cif", "Cif");
+    result.addDirectory("modifiedGroups", "pdb", "Pdb");
+    result.addDirectory("mol", "v3000;mol;sdf", "Mol");
+    result.addDirectory("mol2", "mol2", "Mol2");
+    result.addDirectory("molpro", "xml", "XmlMolpro");
+    result.addDirectory("mopac", "out", "Mopac");
+    result.addDirectory("mopac", "gpt2", "MopacGraphf");
+    result.addDirectory("mopac", "mgf", "MopacGraphf");
+    result.addDirectory("odyssey", "odydata", "Odyssey");
+    result.addDirectory("odyssey", "xodydata", "XmlOdyssey");
+    result.addDirectory("nwchem", "nwo", "NWChem");
+    result.addDirectory("pdb", "pdb;pdb.gz", "Pdb");
     // result.pmesh files are not molecular data files
-    result.addDirectory(false, "quantumEspresso", "out", "Espresso");
-    result.addDirectory(false, "psi3", "out", "Psi");
-    result.addDirectory(false, "qchem", "out", "Qchem");
-    result.addDirectory(false, "shelx", "res", "Shelx");
-    result.addDirectory(false, "siesta", "fdf", "Siesta");
-    result.addDirectory(false, "siesta", "out", "Siesta");
-    
-    result.addDirectory(false, "spartan", "smol", "SpartanSmol");
-    result.addDirectory(false, "spartan", "txt", "Spartan");
-    result.addDirectory(false, "spartan", "sp4", "Spartan");
-    result.addDirectory(false, "sparchive", "sparchive", "Spartan");
-    result.addDirectory(false, "sparchive", "spartan", "Spartan");
-    result.addDirectory(false, "vasp", "xml", "XmlVasp");
-    result.addDirectory(false, "vasp", "dat", "VaspOutcar");
-    result.addDirectory(false, "wien2k", "struct", "Wien2k");
-    result.addDirectory(false, "webmo", "mo", "WebMO");
-    result.addDirectory(false, "xsd", "xsd", "XmlXsd");
-    result.addDirectory(false, "xyz", "xyz", "Xyz");
+    result.addDirectory("quantumEspresso", "out", "Espresso");
+    result.addDirectory("psi3", "out", "Psi");
+    result.addDirectory("qchem", "out", "Qchem");
+    result.addDirectory("shelx", "res", "Shelx");
+    result.addDirectory("siesta", "fdf;out", "Siesta");    
+    result.addDirectory("spartan", "smol", "SpartanSmol");
+    result.addDirectory("spartan", "txt;sp4", "Spartan");
+    result.addDirectory("sparchive", "sparchive;spartan", "Spartan");
+    result.addDirectory("vasp", "xml", "XmlVasp");
+    result.addDirectory("vasp", "dat", "VaspOutcar");
+    result.addDirectory("wien2k", "struct", "Wien2k");
+    result.addDirectory("webmo", "mo", "WebMO");
+    result.addDirectory("xsd", "xsd", "XmlXsd");
+    result.addDirectory("xyz", "xyz", "Xyz");
     return result;
   }
 
   /**
    * Add tests for each file in a directory.
-   * 
-   * @param gzipped Compressed file ?
-   * @param directory Directory where the files are (relative to Jmol-datafiles)
-   * @param ext Extension
-   * @param typeAllowed Allowed file type
+   * @param directory
+   *        Directory where the files are (relative to Jmol-datafiles)
+   * @param ext
+   *        Extension
+   * @param typeAllowed
+   *        Allowed file type
    */
-  private void addDirectory(boolean gzipped,
-                            String directory,
-                            final String ext,
-                            String typeAllowed) {
+  private void addDirectory(String directory, String ext, String typeAllowed) {
 
     // Checking files
     if (testOne != null && !directory.equals(testOne))
       return;
     File dir = new File(datafileDirectory, directory);
-    String[] files = dir.list(new FilenameFilter() {
-
-      public boolean accept(File dir, String name) {
-        if (name.endsWith("." + ext)) {
-          return true;
+    String[] exts = TextFormat.split(ext, ';');
+    for (int ie = 0; ie < exts.length; ie++) {
+      final String e = exts[ie];
+      String[] files = dir.list(new FilenameFilter() {
+        public boolean accept(File dir, String name) {
+          return name.endsWith("." + e);
         }
-        return false;
-      }
-
-    });
-    if (files == null) {
-      Logger.warn("No files in directory [" + directory + "] for extension [" + ext + "]");
-    } else {
-      for (int i = 0; i < files.length; i++) {
-        addFile(gzipped, directory, files[i], typeAllowed);
+      });
+      if (files == null) {
+        Logger.warn("No files in directory [" + directory + "] for extension ["
+            + e + "]");
+      } else {
+        for (int i = 0; i < files.length; i++)
+          addFile(e.endsWith(".gz"), directory, files[i], typeAllowed);
       }
     }
   }

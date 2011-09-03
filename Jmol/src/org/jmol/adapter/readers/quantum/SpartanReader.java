@@ -107,7 +107,7 @@ public class SpartanReader extends BasisFunctionReader {
       }
       if (lineFreqCount == 0)
         return;
-      discardLines(2);
+      readLines(2);
       for (int i = 0; i < atomCount; ++i) {
         readLine();
         for (int j = 0; j < lineFreqCount; ++j) {

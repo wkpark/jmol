@@ -223,6 +223,12 @@ public class Symmetry implements SymmetryInterface {
   public Object[] getEllipsoid(float[] parBorU) {
     return unitCell.getEllipsoid(parBorU);
   }
+  
+  public Object[] getEllipsoid(Vector3f[] vectors, float a, float b, float c) {
+    return unitCell.getEllipsoid(vectors, a, b, c);
+  }
+
+
 
   public Point3f ijkToPoint3f(int nnn) {
     return SimpleUnitCell.ijkToPoint3f(nnn);

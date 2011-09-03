@@ -25,6 +25,9 @@
 
 package org.jmol.symmetry;
 
+import java.util.Arrays;
+import java.util.Comparator;
+
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
@@ -321,6 +324,32 @@ class UnitCell extends SimpleUnitCell {
       lengths[i] = (float) (factor / lengths[i]);
     return new Object[] { unitVectors, lengths };
   }
+  
+  public Object[] getEllipsoid(Vector3f[] vectors, float a, float b, float c) {
+    //[0] is shortest; [2] is longest
+    Object[][] o = new Object[][] {
+        new Object[] { vectors[0], Float.valueOf(Math.abs(a)) }, 
+        new Object[] { vectors[1], Float.valueOf(Math.abs(b)) },
+        new Object[] { vectors[2], Float.valueOf(Math.abs(c)) } }; 
+    Arrays.sort(o, new Esort());
+    float[] lengths = new float[6];
+    Vector3f[] unitVectors = new Vector3f[3];
+    for (int i = 0; i < 3; i++) {
+      unitVectors[i] = new Vector3f((Vector3f) o[i][0]);
+      unitVectors[i].normalize();
+      lengths[i] = ((Float) o[i][1]).floatValue();
+    }
+    return new Object[] { unitVectors, lengths };
+  }
+
+  protected class Esort implements Comparator<Object[]> {
+    public int compare(Object[] o1, Object[] o2) {
+      float a = ((Float)o1[1]).floatValue();
+      float b = ((Float)o2[1]).floatValue();
+      return (a < b ? -1 : a > b ? 1 : 0);
+    }    
+  }
+
     
   Point3f[] getCanonicalCopy(float scale) {
     Point3f[] pts = new Point3f[8];

@@ -148,7 +148,7 @@ public class QchemReader extends MOReader {
   private void readAtoms() throws Exception {
     atomSetCollection.newAtomSet();
     setMOData(true);
-    discardLines(2);
+    readLines(2);
     String[] tokens;
     while (readLine() != null && !line.startsWith(" --")) {
       tokens = getTokens();
@@ -210,7 +210,7 @@ public class QchemReader extends MOReader {
   }
 
   private void readPartialCharges() throws Exception {
-    discardLines(3);
+    readLines(3);
     Atom[] atoms = atomSetCollection.getAtoms();
     int atomCount = atomSetCollection.getLastAtomSetAtomCount();
     for (int i = 0; i < atomCount && readLine() != null; ++i)

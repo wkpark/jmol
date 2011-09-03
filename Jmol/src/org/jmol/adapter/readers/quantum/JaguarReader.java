@@ -96,7 +96,7 @@ public class JaguarReader extends MOReader {
     // we only take the last set of atoms before the frequencies
     atomSetCollection.discardPreviousAtoms();
     // start parsing the atoms
-    discardLines(2);
+    readLines(2);
     int atomCount = 0;
     while (readLine() != null && line.length() >= 60 && line.charAt(2) != ' ') {
       String[] tokens = getTokens();

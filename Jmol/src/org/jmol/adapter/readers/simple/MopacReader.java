@@ -115,7 +115,7 @@ public class MopacReader extends AtomSetCollectionReader {
    * @throws Exception
    */
 void processAtomicCharges() throws Exception {
-    discardLines(2);
+    readLines(2);
     atomSetCollection.newAtomSet(); // charges before coords, see JavaDoc
     baseAtomIndex = atomSetCollection.getAtomCount();
     int expectedAtomNumber = 0;
@@ -159,7 +159,7 @@ void processAtomicCharges() throws Exception {
    * @throws Exception
    */
   void processCoordinates() throws Exception {
-    discardLines(3);
+    readLines(3);
     int expectedAtomNumber = 0;
     if (!chargesFound) {
       atomSetCollection.newAtomSet();

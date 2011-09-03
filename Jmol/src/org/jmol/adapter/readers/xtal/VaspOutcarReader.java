@@ -220,7 +220,7 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
    */
   private void readPOSITION() throws Exception {
     int counter = 0;
-    discardLines(1);
+    readLines(1);
     while (readLine() != null && line.indexOf("----------") < 0) {
       Atom atom = atomSetCollection.addNewAtom();
       String[] tokens = getTokens();
@@ -299,7 +299,7 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
     tokens = getTokens(readLine());
     kinEne = Double.valueOf(Double.parseDouble(tokens[4]));
     temp = parseFloat(tokens[6]);
-    discardLines(3);
+    readLines(3);
     tokens = getTokens(readLine());
     totEne = Double.valueOf(Double.parseDouble(tokens[4]));
     setAtomSetInfoMd();
@@ -360,10 +360,10 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
     int iAtom0 = atomSetCollection.getAtomCount();
 
     if (isVersion5) {
-      discardLines(3);
+      readLines(3);
     } else {
       discardLinesUntilContains("Eigenvectors after division by SQRT(mass)");
-      discardLines(5);
+      readLines(5);
     }
 
     boolean[] ignore = new boolean[1];

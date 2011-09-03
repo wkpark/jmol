@@ -99,7 +99,7 @@ public class DmolReader extends AtomSetCollectionReader {
   private void readCoord() throws Exception {
     newAtomSet();
     if (geomOpt)
-      discardLines(2);
+      readLines(2);
     while (readLine() != null && !geomOpt ? !line.contains("$end") : !line
         .contains("-----")) {
       String[] tokens = getTokens();
@@ -175,7 +175,7 @@ public class DmolReader extends AtomSetCollectionReader {
       readLine();
       fillFrequencyData(iAtom0, atomCount, lastAtomCount, ignore, false, 5, 13,
           null);
-      discardLines(2);
+      readLines(2);
     }
   }
 

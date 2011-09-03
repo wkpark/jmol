@@ -438,9 +438,9 @@ Orbital energies (a.u.):
         continue;
       atomSetCollection.cloneLastAtomSet();
       atomSetCollection.setAtomSetFrequency(null, null, tokens[1], null);
-      discardLines(2);
+      readLines(2);
       fillFrequencyData(iAtom0, atomCount, atomCount, ignore, true, 0, 0, null);
-      discardLines(1);
+      readLine();
     }
   }
 

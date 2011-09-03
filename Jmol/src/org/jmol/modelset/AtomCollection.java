@@ -245,6 +245,8 @@ abstract public class AtomCollection {
   }
   
   public Object[] getEllipsoid(int i) {
+    // [0]: set of three vectors
+    // [1]: set of six values
     return (i < 0 || ellipsoids == null || i >= ellipsoids.length ? null
         : ellipsoids[i]);
   }

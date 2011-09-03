@@ -88,7 +88,7 @@ public class SiestaReader extends AtomSetCollectionReader {
   }
 
   private void readAtomsCartGeomThenCell() throws Exception {
-    discardLines(1);
+    readLines(1);
     newAtomSet();
     int atom0 = atomSetCollection.getAtomCount();
     for (int i = 0; i < noAtoms; i++) {

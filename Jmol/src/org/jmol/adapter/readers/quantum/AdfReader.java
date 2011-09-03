@@ -217,7 +217,7 @@ OR
         atomSetCollection.cloneLastAtomSet();
         atomSetCollection.setAtomSetFrequency(null, null, frequencies[i], null);
       }
-      discardLines(nXX);
+      readLines(nXX);
       fillFrequencyData(iAtom0, atomCount, atomCount, ignore, true, 0, 0, null);
     }
   }
@@ -324,7 +324,7 @@ OR
     // note, however, that these may continue to the next line as in example adf-2007.out
     
     discardLinesUntilContains("(power of)");
-    discardLines(2);
+    readLines(2);
     while (readLine() != null && line.length() > 2 && line.charAt(2) == ' ') {
       String data = line;
       while (readLine().indexOf("---") < 0)
@@ -406,7 +406,7 @@ OR
  A1            2             2.00       -0.93500325051330E+00       -25.4427
     */
     discardLinesUntilContains("Orbital Energies, all Irreps");
-    discardLines(4);
+    readLines(4);
     while (readLine() != null && line.length() > 10) {
       String[] tokens = getTokens();
       int len = tokens.length;

@@ -1080,9 +1080,10 @@ public abstract class AtomSetCollectionReader {
     }
   }
 
-  protected void discardLines(int nLines) throws Exception {
+  protected String readLines(int nLines) throws Exception {
     for (int i = nLines; --i >= 0;)
       readLine();
+    return line;
   }
 
   protected String discardLinesUntilStartsWith(String startsWith)

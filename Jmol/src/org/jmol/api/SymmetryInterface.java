@@ -79,6 +79,8 @@ public interface SymmetryInterface {
 
   public abstract Object[] getEllipsoid(float[] parBorU);
 
+  public abstract Object[] getEllipsoid(Vector3f[] vectors, float a, float b, float c);
+
   public abstract Point3f ijkToPoint3f(int nnn);
 
   public abstract void toFractional(Point3f pt, boolean isAbsolute);
@@ -145,4 +147,5 @@ public interface SymmetryInterface {
                                         float dx, int iRange, int jRange, int kRange, Point3f ptOffset);
 
   public abstract Point3f getFractionalOffset();
+
 }

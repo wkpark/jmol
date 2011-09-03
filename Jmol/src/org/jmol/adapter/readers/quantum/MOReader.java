@@ -500,7 +500,7 @@ abstract public class MOReader extends BasisFunctionReader {
     case HEADER_GAMESS_UK_MO:
       for (int i = 0; i < nThisLine; i++)
         mos[i].put("energy", new Float(tokens[i]));
-      discardLines(5);
+      readLines(5);
       return;
     case HEADER_GAMESS_ORIGINAL:
       // this is the original functionality
@@ -585,7 +585,7 @@ xxxxxxxxxxxxxxxxxxxxxxxxxx yyyyyyyyyyyyyyyyyyyyyyyyyyy zzzzzzz ....... ffffffff
           new Integer(i + iMo0));
 
     List<String[]> strSecondOrderData = new ArrayList<String[]>();
-    discardLines(5);
+    readLines(5);
     while (readLine() != null && line.indexOf("NBO") < 0) {
       if (line.length() < 5 || line.charAt(4) != '.')
         continue;

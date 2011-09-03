@@ -470,11 +470,44 @@ public class Resolver {
         nLines++;
     }
 
-    String readerName = checkSpecial(nLines, lines, false);
-    
-    if (readerName != null)
+    String readerName;
+    if ((readerName = checkSpecial(nLines, lines, false)) != null)
       return readerName;
 
+    if ((readerName = checkLineStarts(lines)) != null)
+      return readerName;
+
+    if ((readerName = checkHeaderContains(llr.getHeader(0))) != null)
+      return readerName;
+
+    if ((readerName = checkSpecial(nLines, lines, true)) != null)
+      return readerName;
+    
+    return (returnLines ? "\n" + lines[0] + "\n" + lines[1] + "\n" + lines[2] + "\n" : null);
+  }
+
+  private static String checkHeaderContains(String header) throws Exception {
+    for (int i = 0; i < headerContainsRecords.length; ++i) {
+      String[] recordTags = headerContainsRecords[i];
+      for (int j = 1; j < recordTags.length; ++j) {
+        String recordTag = recordTags[j];
+        if (header.indexOf(recordTag) < 0)
+          continue;
+        String type = recordTags[0];
+        // for XML check for an error message from a server -- certainly not XML
+        // but new CML format includes xmlns:xhtml="http://www.w3.org/1999/xhtml" in <cml> tag.
+        return (!type.equals("Xml") ? type 
+            : header.indexOf("<!DOCTYPE HTML PUBLIC") < 0
+              && header.indexOf("XHTML") < 0 
+              && (header.indexOf("xhtml") < 0 || header.indexOf("<cml") >= 0) 
+              ? getXmlType(header) 
+            : null);
+      }
+    }
+    return null;
+  }
+
+  private static String checkLineStarts(String[] lines) {
     for (int i = 0; i < lineStartsWithRecords.length; ++i) {
       String[] recordTags = lineStartsWithRecords[i];
       for (int j = 1; j < recordTags.length; ++j) {
@@ -485,33 +518,7 @@ public class Resolver {
         }
       }
     }
-
-    String header = llr.getHeader(0);
-    String type = null;
-    for (int i = 0; i < containsRecords.length; ++i) {
-      String[] recordTags = containsRecords[i];
-      for (int j = 1; j < recordTags.length; ++j) {
-        String recordTag = recordTags[j];
-        if (header.indexOf(recordTag) != -1) {
-          type = recordTags[0];
-          if (type.equals("Xml")) {
-            // check for an error message from a server -- certainly not XML
-            // but new CML format includes xmlns:xhtml="http://www.w3.org/1999/xhtml" in <cml> tag.
-            if (header.indexOf("<!DOCTYPE HTML PUBLIC") >= 0 || header.indexOf("XHTML") >= 0 || header.indexOf("xhtml") >= 0 && header.indexOf("<cml") < 0)
-              break; 
-            type = getXmlType(header);
-          }
-          return type;
-        }
-      }
-    }
-    
-    readerName = checkSpecial(nLines, lines, true);
-    
-    if (readerName != null)
-      return readerName;
-    
-    return (returnLines ? "\n" + lines[0] + "\n" + lines[1] + "\n" + lines[2] + "\n" : null);
+    return null;
   }
 
   private static String getXmlType(String header) throws Exception  {
@@ -627,7 +634,7 @@ public class Resolver {
       return base;
     if ((base = checkType(lineStartsWithRecords, type)) != null)
       return base;
-    return checkType(containsRecords, type);
+    return checkType(headerContainsRecords, type);
   }
   
   private final static String checkType(String[][] typeTags, String type) {
@@ -1050,7 +1057,7 @@ public class Resolver {
   { "Siesta", "MD.TypeOfRun", "SolutionMethod", "MeshCutoff", 
     "WELCOME TO SIESTA" };
 
-  private final static String[][] containsRecords =
+  private final static String[][] headerContainsRecords =
   { sptContainsRecords, xmlContainsRecords, gaussianContainsRecords, 
     ampacContainsRecords, mopacContainsRecords, qchemContainsRecords, 
     gamessUKContainsRecords, gamessUSContainsRecords,

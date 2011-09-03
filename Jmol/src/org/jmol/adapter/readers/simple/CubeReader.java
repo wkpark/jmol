@@ -61,7 +61,7 @@ public class CubeReader extends AtomSetCollectionReader {
     atomSetCollection.newAtomSet();
     readTitleLines();
     readAtomCountAndOrigin();
-    discardLines(3);
+    readLines(3);
     readAtoms();
     applySymmetryAndSetTrajectory();
     continuing = false;

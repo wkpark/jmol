@@ -105,7 +105,7 @@ public class SiestaReader extends AtomSetCollectionReader {
     setCell();
     Atom[] atoms = atomSetCollection.getAtoms();
     int atomCount = atomSetCollection.getAtomCount();
-    for (int i = atom0; i <= atomCount; i++)
+    for (int i = atom0; i < atomCount; i++)
       setAtomCoord(atoms[i]);
     discardLinesUntilContains("siesta: E_KS(eV) = ");
     String[] tokens = getTokens();

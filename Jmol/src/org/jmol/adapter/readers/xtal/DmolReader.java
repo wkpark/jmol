@@ -71,10 +71,12 @@ public class DmolReader extends AtomSetCollectionReader {
     if (totE != null)
       setEnergy();
     doApplySymmetry = true;
-    addPrimitiveLatticeVector(0, unitCellData, 0);
-    addPrimitiveLatticeVector(1, unitCellData, 3);
-    addPrimitiveLatticeVector(2, unitCellData, 6);
-    setSpaceGroupName("P1");
+    if (unitCellData != null) {
+      addPrimitiveLatticeVector(0, unitCellData, 0);
+      addPrimitiveLatticeVector(1, unitCellData, 3);
+      addPrimitiveLatticeVector(2, unitCellData, 6);
+      setSpaceGroupName("P1");
+    }
     setFractionalCoordinates(false);
   }
 

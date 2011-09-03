@@ -498,7 +498,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       setSpaceGroupName(line.indexOf(":") >= 0 ? line.substring(
           line.indexOf(":") + 1).trim() : "P1");
     }
-    
+
     return true;
   }
 
@@ -622,15 +622,15 @@ public class CrystalReader extends AtomSetCollectionReader {
     boolean doNormalizePrimitive = isPrimitive && !isMolecular && !isPolymer
     && !isSlab && (!doApplySymmetry || latticeCells[2] != 0);
     atomIndexLast = atomSetCollection.getAtomCount();
-   
-    
-    while (readLine() != null && line.length() > 0 && !isPrimitive ? line
-        .indexOf("=") < 0 : line.indexOf("*") < 0) {
+
+    while (readLine() != null && !isProperties ? line.length() > 0
+        : getTokens().length > 1) { ///&& !isPrimitive ? line.indexOf("=") < 0 : line.indexOf("*") < 0 ) 
       Atom atom = atomSetCollection.addNewAtom();
       String[] tokens = getTokens();
-      int atomicNumber = !isProperties ? getAtomicNumber(tokens[2]) : getAtomicNumber(tokens[1]);
-      atom.atomName = !isProperties ? getAtomName(tokens[3]) : getAtomName(tokens[2]);
-      
+      int atomicNumber = !isProperties ? getAtomicNumber(tokens[2])
+          : getAtomicNumber(tokens[1]);
+      atom.atomName = !isProperties ? getAtomName(tokens[3])
+          : getAtomName(tokens[2]);
 
       float x = parseFloat(tokens[4]);
       float y = parseFloat(tokens[5]);
@@ -648,7 +648,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       setAtomCoord(atom, x, y, z);
       atom.elementSymbol = getElementSymbol(atomicNumber);
     }
-    if(isProperties)
+    if (isProperties)
       applySymmetryAndSetTrajectory();
     atomCount = atomSetCollection.getAtomCount() - atomIndexLast;
     return true;
@@ -726,11 +726,11 @@ public class CrystalReader extends AtomSetCollectionReader {
   private void newAtomSet() throws Exception {
     if (atomSetCollection.getAtomCount() == 0)
       return;
-    if(isProperties){
+    if (isProperties) {
       setFractionalCoordinates(false);
       setSpaceGroupName("P1");
-    }else{  
-     applySymmetryAndSetTrajectory();
+    } else {
+      applySymmetryAndSetTrajectory();
     }
     atomSetCollection.newAtomSet();
   }

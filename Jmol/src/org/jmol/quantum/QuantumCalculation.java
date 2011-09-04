@@ -147,9 +147,13 @@ abstract class QuantumCalculation {
     points[0].set(pt);
     voxelData[0][0][0] = 0;
     setXYZBohr(points);
-    process();
+    processPoints();
     //System.out.println("qc pt=" + pt + " " + voxelData[0][0][0]);
     return voxelData[0][0][0];
+  }
+
+  protected void processPoints() {
+    process();
   }
 
   protected void initializeOnePoint() {

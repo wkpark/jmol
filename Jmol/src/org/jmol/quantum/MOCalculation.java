@@ -178,13 +178,24 @@ public class MOCalculation extends QuantumCalculation implements
 
   public void createCube() {
     setXYZBohr(points);
+    processPoints();
+    if (doDebug || testing || isElectronDensity)
+      calculateElectronDensity();
+  }
+
+  double sum = -1;
+  
+  @Override
+  protected void processPoints() {
     if (linearCombination == null) {
       process();
     } else {
-      double sum = 0;
-      for (int i = 0; i < linearCombination.length; i += 2)
-        sum += linearCombination[i] * linearCombination[i];
-      sum = Math.sqrt(sum);
+      if (sum < 0) {
+        sum = 0;
+        for (int i = 0; i < linearCombination.length; i += 2)
+          sum += linearCombination[i] * linearCombination[i];
+        sum = Math.sqrt(sum);
+      }
       if (sum == 0)
         return;
       for (int i = 0; i < linearCombination.length; i += 2) {
@@ -195,8 +206,6 @@ public class MOCalculation extends QuantumCalculation implements
         process();
       }
     }
-    if (doDebug || testing || isElectronDensity)
-      calculateElectronDensity();
   }
 
   @Override

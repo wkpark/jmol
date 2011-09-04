@@ -104,6 +104,8 @@ class IsoMOReader extends AtomDataReader {
             return;
           coefs[j - 1] = (float[]) mos.get(j - 1).get("coefficients");
         }
+        for (int i = params.title.length; --i >= 0;)
+          fixTitleLine(i, null);
       }
       isElectronDensityCalc = (coef == null && linearCombination == null && !isNci);
     }
@@ -129,10 +131,11 @@ class IsoMOReader extends AtomDataReader {
       initializeVolumetricData();
     return true;
   }
+
   private void fixTitleLine(int iLine, Map<String, Object> mo) {
     // see Parameters.Java for defaults here. 
     if (!fixTitleLine(iLine))
-       return;
+      return;
     String line = params.title[iLine];
     int pt = line.indexOf("%");
     if (line.length() == 0 || pt < 0)
@@ -141,21 +144,53 @@ class IsoMOReader extends AtomDataReader {
     if (line.indexOf("%F") >= 0)
       line = TextFormat.formatString(line, "F", params.fileName);
     if (line.indexOf("%I") >= 0)
-      line = TextFormat.formatString(line, "I", params.qm_moLinearCombination == null ? "" + params.qm_moNumber : EnumQuantumShell.getMOString(params.qm_moLinearCombination));
+      line = TextFormat.formatString(line, "I",
+          params.qm_moLinearCombination == null ? "" + params.qm_moNumber
+              : EnumQuantumShell.getMOString(params.qm_moLinearCombination));
     if (line.indexOf("%N") >= 0)
       line = TextFormat.formatString(line, "N", "" + params.qmOrbitalCount);
+    Float energy = null;
+    if (mo == null) {
+      // check to see if all orbitals have the same energy
+      for (int i = 0; i < linearCombination.length; i += 2)
+        if (linearCombination[i] != 0) {
+          mo = mos.get((int) linearCombination[i + 1] - 1);
+          Float e = (Float) mo.get("energy");
+          if (energy == null) { 
+            if (e == null)
+              break;
+            energy = e;
+          } else if (!energy.equals(e)) {
+            energy = null;
+            break;
+          }
+        }
+    } else {
+      if (mo.containsKey("energy"))
+        energy = (Float) mo.get("energy");
+    }
+
     if (line.indexOf("%E") >= 0)
-      line = TextFormat.formatString(line, "E", mo.containsKey("energy") && ++rep != 0 ? "" + mo.get("energy") : "");
+      line = TextFormat.formatString(line, "E",
+          energy != null && ++rep != 0 ? "" + energy : "");
     if (line.indexOf("%U") >= 0)
-      line = TextFormat.formatString(line, "U", params.moData.containsKey("energyUnits") && ++rep != 0 ? (String) params.moData.get("energyUnits") : "");
+      line = TextFormat.formatString(line, "U",
+          energy != null && params.moData.containsKey("energyUnits")
+              && ++rep != 0 ? (String) params.moData.get("energyUnits") : "");
     if (line.indexOf("%S") >= 0)
-      line = TextFormat.formatString(line, "S", mo.containsKey("symmetry") && ++rep != 0 ? "" + mo.get("symmetry") : "");
+      line = TextFormat.formatString(line, "S", mo != null
+          && mo.containsKey("symmetry") && ++rep != 0 ? "" + mo.get("symmetry")
+          : "");
     if (line.indexOf("%O") >= 0)
-      line = TextFormat.formatString(line, "O", mo.containsKey("occupancy") && ++rep != 0  ? "" + mo.get("occupancy") : "");
+      line = TextFormat.formatString(line, "O", mo != null
+          && mo.containsKey("occupancy") && ++rep != 0 ? ""
+          + mo.get("occupancy") : "");
     if (line.indexOf("%T") >= 0)
-      line = TextFormat.formatString(line, "T", mo.containsKey("type") && ++rep != 0  ? "" + mo.get("type") : "");
+      line = TextFormat.formatString(line, "T", mo != null
+          && mo.containsKey("type") && ++rep != 0 ? "" + mo.get("type") : "");
     boolean isOptional = (line.indexOf("?") == 0);
-    params.title[iLine] = (!isOptional ? line : rep > 0 && !line.trim().endsWith("=") ? line.substring(1) : "");
+    params.title[iLine] = (!isOptional ? line : rep > 0
+        && !line.trim().endsWith("=") ? line.substring(1) : "");
   }
   
   private final float[] vDist = new float[3];

@@ -286,7 +286,7 @@ public class MolecularOrbital extends Isosurface {
   @SuppressWarnings("unchecked")
   @Override
   public Object getProperty(String propertyName, int param) {
-    if (propertyName == "list") {
+    if (propertyName.equals("list")) {
       String s = (String) super.getProperty("list", param);
       if (s.length() > 1)
         s += "cutoff = " + super.getProperty("cutoff", 0) + "\n";

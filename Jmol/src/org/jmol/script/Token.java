@@ -2220,6 +2220,7 @@ public class Token {
       "lighting",                                 new Token(lighting),
       "logLevel",                                 new Token(loglevel),
       "minimizationSteps",                        new Token(minimizationsteps),
+      "minPixelSelRadius",                        new Token(minpixelselradius),
       "percentVdwAtom",                           new Token(percentvdwatom),
       "perspectiveModel",                         new Token(perspectivemodel),
       "phongExponent",                            new Token(phongexponent),

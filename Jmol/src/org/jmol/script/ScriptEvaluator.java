@@ -8515,6 +8515,8 @@ public class ScriptEvaluator {
       }
     } else if (getToken(i + 1).tok == Token.leftbrace
         || theTok == Token.point3f || theTok == Token.integer
+        || theTok == Token.varray || theTok == Token.leftsquare
+        || theTok == Token.spacebeforesquare
         || theTok == Token.offset || theTok == Token.range
         || theTok == Token.manifest || theTok == Token.packed
         || theTok == Token.supercell || theTok == Token.filter
@@ -8539,7 +8541,8 @@ public class ScriptEvaluator {
 
       // 1)   n >= 0: model number; n < 0: vibration number
 
-      if (tok == Token.integer) {
+      switch (tok) {
+      case Token.integer:
         int n = intParameter(i);
         sOptions += " " + n;
         if (n < 0)
@@ -8547,8 +8550,24 @@ public class ScriptEvaluator {
         else
           htParams.put("modelNumber", Integer.valueOf(n));
         tok = tokAt(++i);
+        break;
+      case Token.varray:
+      case Token.leftsquare:
+      case Token.spacebeforesquare:
+        float[] data = floatParameterSet(i, 1, Integer.MAX_VALUE);
+        i = iToken;
+        BitSet bs = new BitSet();
+        for (int j = 0; j < data.length; j++) 
+          if (data[j] >= 1 && data[j] == (int) data[j])
+            bs.set((int)data[j] - 1);
+        htParams.put("bsModels", bs);
+        int[] iArray = new int[bs.cardinality()];
+        for (int pt = 0, j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1))
+          iArray[pt++] = j + 1;
+        sOptions += " " + Escape.escapeArray(iArray);
+        tok = tokAt(i);
+        break;
       }
-
       // 2)   {i j k}
 
       Point3f lattice = null;

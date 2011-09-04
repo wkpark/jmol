@@ -117,8 +117,8 @@ public class CrystalReader extends AtomSetCollectionReader {
   protected void initializeReader() throws Exception {
     doProcessLines = false;
     inputOnly = checkFilter("INPUT");
-    addVibrations &= !inputOnly;
     isPrimitive = !inputOnly && !checkFilter("CONV");
+    addVibrations &= !inputOnly && isPrimitive; //
     getLastConventional = (!isPrimitive && desiredModelNumber == 0);
     setFractionalCoordinates(readHeader());
   }
@@ -138,10 +138,8 @@ public class CrystalReader extends AtomSetCollectionReader {
           return true; // just for properties
         // no input coordinates -- continue;
       }
-      if (isPrimitive) {
-        readCellParams(true);
-      } else {
-        readCellParams(true);
+      readCellParams(true);
+      if (!isPrimitive) {
         discardLinesUntilContains(" TRANSFORMATION");
         readTransformationMatrix();
         discardLinesUntilContains(" CRYSTALLOGRAPHIC");
@@ -177,7 +175,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       if (line.startsWith(" SHIFT OF THE ORIGIN"))
         return readShift();
       if (line.startsWith(" INPUT COORDINATES")) {
-        readCrystallographicCoords();
+        readCrystallographicCoords(); // note, these will not be the full set of atoms, so we IGNORE VIBRATIONS
         if (inputOnly)
           continuing = false;
         return true;
@@ -945,6 +943,7 @@ public class CrystalReader extends AtomSetCollectionReader {
         setFreqValue(frequencies[i], tokens);
       }
       readLine();
+      System.out.println(iAtom0 + " " + freqAtomCount + " " + lastAtomCount);
       fillFrequencyData(iAtom0, freqAtomCount, lastAtomCount, ignore, false,
           14, 10, atomFrag);
       readLine();

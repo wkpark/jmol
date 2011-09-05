@@ -112,7 +112,6 @@ public class PdbReader extends AtomSetCollectionReader {
    setIsPDB();
    pdbHeader = (getHeader ? new StringBuffer() : null);
    applySymmetry = !checkFilter("NOSYMMETRY");
-   headerTitle = new StringBuffer();
 
    
    if (checkFilter("CONF ")) {
@@ -276,8 +275,7 @@ public class PdbReader extends AtomSetCollectionReader {
   private void header() {
     if (lineLength < 8)
       return;
-    headerTitle.append(line.substring(7).trim()).append("\n");
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("modelLoadNote", headerTitle.toString());
+    appendLoadNote(line.substring(7).trim());
     if (lineLength >= 66)
       atomSetCollection.setCollectionName(line.substring(62, 66));
     if (lineLength > 50)
@@ -288,8 +286,7 @@ public class PdbReader extends AtomSetCollectionReader {
   private void title() {
     if (lineLength < 10)
       return;
-    headerTitle.append(line.substring(10).trim()).append("\n");
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("modelLoadNote", headerTitle.toString());
+    appendLoadNote(line.substring(10).trim());
   }
 
   private List<Map<String, String>> vCompnds;

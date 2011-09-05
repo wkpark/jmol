@@ -149,7 +149,6 @@ public abstract class AtomSetCollectionReader {
   public boolean iHaveUnitCell;
   public boolean iHaveSymmetryOperators;
   public boolean continuing = true;
-  protected StringBuffer headerTitle;
   
   protected JmolViewer viewer; // used by GenNBOReader and by CifReader
 
@@ -179,6 +178,7 @@ public abstract class AtomSetCollectionReader {
 
   // private state variables
 
+  private StringBuffer loadNote = new StringBuffer();
   private boolean doConvertToFractional;
   private boolean merging;
   private boolean fileCoordinatesAreFractional;
@@ -301,8 +301,14 @@ public abstract class AtomSetCollectionReader {
     return (desiredModelNumber > 0 || modelNumber >= lastModelNumber);
   }
 
+  protected void appendLoadNote(String info) {
+    loadNote.append(info).append("\n");
+  }
+
   protected void finalizeReader() throws Exception {
     applySymmetryAndSetTrajectory();
+    if (loadNote.length() > 0)
+      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("modelLoadNote", loadNote.toString());
   }
 
   /////////////////////////////////////////////////////////////////////////////////////

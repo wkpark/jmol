@@ -44,6 +44,8 @@ import javax.vecmath.Vector3f;
 
 /**
  * 
+ * A reader of OUT and OUTP files for CRYSTAL
+ * 
  * http://www.crystal.unito.it/
  * 
  * @author Pieremanuele Canepa, Room 104, FM Group School of Physical Sciences,
@@ -270,9 +272,14 @@ public class CrystalReader extends AtomSetCollectionReader {
     
     /// From here on we are considering only keywords of properties output files
 
-    if (line.startsWith(" DEFINITION OF TRACELESS")) {
+    if (line.startsWith(" DEFINITION OF TRACELESS"))
       return getPropertyTensors();
+   
+    if (line.startsWith(" MULTIPOLE ANALYSIS BY ATOMS")) {
+      appendLoadNote("Multipole Analysis");
+      return true;
     }
+    
     return true;
   }
 
@@ -652,7 +659,8 @@ public class CrystalReader extends AtomSetCollectionReader {
     int i = atomIndexLast;
     // I turned off normalization -- proper way to do this is to 
     // add the "packed" keyword. As it was, it was impossible to
-    // load the file with its original coordinates
+    // load the file with its original coordinates, which in many
+    // cases are VERY interesting and far better (in my opinion!)
     
     boolean doNormalizePrimitive = 
       false && isPrimitive && !isMolecular && !isPolymer

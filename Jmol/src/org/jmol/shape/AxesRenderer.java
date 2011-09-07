@@ -62,6 +62,9 @@ public class AxesRenderer extends FontLineShapeRenderer {
     int mad = viewer.getObjectMad(StateManager.OBJ_AXIS1);
     if (mad == 0 || !g3d.checkTranslucent(false))
       return;
+    boolean isXY = (axes.axisXY.z != 0);
+    if (!isXY && viewer.isNavigating() && viewer.getNavigationPeriodic())
+      return;
     EnumAxesMode axesMode = viewer.getAxesMode();
     imageFontScaling = viewer.getImageFontScaling();
     if (viewer.areAxesTainted()) {
@@ -73,7 +76,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
     font3d = g3d.getFont3DScaled(axes.font3d, imageFontScaling);
 
     SymmetryInterface[] cellInfos = modelSet.getCellInfos();
-    boolean isXY = (axes.axisXY.z != 0);
+
     int modelIndex = viewer.getCurrentModelIndex();
     // includes check here for background model present
     boolean isUnitCell = (axesMode == EnumAxesMode.UNITCELL);

@@ -63,7 +63,8 @@ public class UccageRenderer extends CageRenderer {
     font3d = g3d.getFont3DScaled(((Uccage)shape).font3d, imageFontScaling);
     int mad = viewer.getObjectMad(StateManager.OBJ_UNITCELL);
     colix = viewer.getObjectColix(StateManager.OBJ_UNITCELL);
-    if (mad == 0 || !g3d.setColix(colix) || viewer.isJmolDataFrame())
+    if (mad == 0 || !g3d.setColix(colix) || viewer.isJmolDataFrame()
+        || viewer.isNavigating() && viewer.getNavigationPeriodic())
       return;
     doLocalize = viewer.getUseNumberLocalization();
     render1(mad);

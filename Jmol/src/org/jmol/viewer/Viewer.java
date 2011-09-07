@@ -7015,7 +7015,7 @@ private void zap(String msg) {
     return global.hideNameInPopup;
   }
 
-  boolean getNavigationPeriodic() {
+  public boolean getNavigationPeriodic() {
     return global.navigationPeriodic;
   }
 

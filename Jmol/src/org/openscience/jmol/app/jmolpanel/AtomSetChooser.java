@@ -577,26 +577,28 @@ ActionListener, ChangeListener, Runnable {
   public void stateChanged(ChangeEvent e) {
     Object src = e.getSource();
     int value = ((JSlider) src).getValue();
+    String cmd = null;
     if (src == selectSlider) {
       showAtomSetIndex(value, false);
     } else if (src == fpsSlider) {
       if (value == 0)
         fpsSlider.setValue(1); // make sure I never set it to 0...
       else
-        viewer.evalStringQuiet("animation fps " + value);
+        cmd = "animation fps " + value;
     } else if (src == radiusSlider) {
       if (value == 0)
         radiusSlider.setValue(1); // make sure I never set it to 0..
       else
-        viewer.evalStringQuiet("vector " + value);
+        cmd = "vector " + value;
     } else if (src == scaleSlider) {
-      viewer.evalStringQuiet("vector scale " + (value * SCALE_PRECISION));
+      cmd = "vector scale " + (value * SCALE_PRECISION);
     } else if (src == amplitudeSlider) {
-      viewer
-          .evalStringQuiet("vibration scale " + (value * AMPLITUDE_PRECISION));
+      cmd = "vibration scale " + (value * AMPLITUDE_PRECISION);
     } else if (src == periodSlider) {
-      viewer.evalStringQuiet("vibration " + (value * PERIOD_PRECISION));
+      cmd = "vibration " + (value * PERIOD_PRECISION);
     }
+    if (cmd != null)
+      viewer.evalStringQuiet(cmd);
   }
   
   /**

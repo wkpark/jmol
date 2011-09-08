@@ -300,6 +300,12 @@ public class JmolPanel extends JPanel implements SplashInterface {
 
     say(GT._("Setting up Drag-and-Drop..."));
     new JmolFileDropper(myStatusListener, viewer);
+    // it's important to set this up first, even though it consumes some memory
+    // otherwise, loading a new model in a script that sets the vibration or vector parameters
+    // can appear to skip those -- they aren't skipped, but creating the atomSetChooser
+    // will run scripts as it loads.
+    atomSetChooser = new AtomSetChooser(viewer, frame);
+    pcs.addPropertyChangeListener(chemFileProperty, atomSetChooser);
     say(GT._("Launching main frame..."));
   }
 

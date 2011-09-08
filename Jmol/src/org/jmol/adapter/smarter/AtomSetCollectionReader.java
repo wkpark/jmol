@@ -1408,4 +1408,24 @@ public abstract class AtomSetCollectionReader {
     }
   */
 
+  protected Vector3f[] readDirectLatticeVectors(boolean isBohr) throws Exception {
+    Vector3f[] vectors = new Vector3f[3];    
+    for (int i = 0; i < 3; i++) {
+      vectors[i] = getPoint3f(null, 0);
+      if (isBohr)
+        vectors[i].scale(ANGSTROMS_PER_BOHR);
+    }
+    return vectors;
+  }
+
+  private Vector3f getPoint3f(float[] f, int pt) throws Exception {
+    if (f == null) {
+      f = new float[3];
+      fillFloatArray(f, null, 0);
+      return new Vector3f(f[0], f[1], f[2]);
+    }
+    return new Vector3f(f[pt++], f[pt++], f[pt]);
+  }
+
+
 }

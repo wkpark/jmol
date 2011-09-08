@@ -313,13 +313,7 @@ public class CrystalReader extends AtomSetCollectionReader {
     boolean isBohr = (line.indexOf("(BOHR") >= 0);
     if (!isBohr)
       readLine();
-    directLatticeVectors = new Vector3f[3];
-    for (int i = 0; i < 3; i++) {
-      directLatticeVectors[i] = getPoint3f(null, 0);
-      if (isBohr)
-        directLatticeVectors[i].scale(ANGSTROMS_PER_BOHR);
-    }
-
+    directLatticeVectors = readDirectLatticeVectors(isBohr);
     if (Logger.debugging) {
       addJmolScript("draw va vector {0 0 0} "
           + Escape.escape(directLatticeVectors[0]) + " color red");
@@ -354,15 +348,6 @@ public class CrystalReader extends AtomSetCollectionReader {
     Logger.info("oriented unit cell is in model "
         + atomSetCollection.getAtomSetCount());
     return !isProperties;
-  }
-
-  private Vector3f getPoint3f(float[] f, int pt) throws Exception {
-    if (f == null) {
-      f = new float[3];
-      fillFloatArray(f, null, 0);
-      return new Vector3f(f[0], f[1], f[2]);
-    }
-    return new Vector3f(f[pt++], f[pt++], f[pt]);
   }
 
   /*
@@ -662,9 +647,7 @@ public class CrystalReader extends AtomSetCollectionReader {
     // load the file with its original coordinates, which in many
     // cases are VERY interesting and far better (in my opinion!)
     
-    boolean doNormalizePrimitive = 
-      false && isPrimitive && !isMolecular && !isPolymer
-        && !isSlab && (!doApplySymmetry || latticeCells[2] != 0);
+    boolean doNormalizePrimitive = false;// && isPrimitive && !isMolecular && !isPolymer && !isSlab && (!doApplySymmetry || latticeCells[2] != 0);
     atomIndexLast = atomSetCollection.getAtomCount();
 
     while (readLine() != null && line.length() > 0 && line.indexOf(isPrimitive ? "*" : "=") < 0) {
@@ -951,7 +934,6 @@ public class CrystalReader extends AtomSetCollectionReader {
         setFreqValue(frequencies[i], tokens);
       }
       readLine();
-      System.out.println(iAtom0 + " " + freqAtomCount + " " + lastAtomCount);
       fillFrequencyData(iAtom0, freqAtomCount, lastAtomCount, ignore, false,
           14, 10, atomFrag);
       readLine();

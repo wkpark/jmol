@@ -727,10 +727,11 @@ public class Resolver {
 
   private static boolean checkCastep(String[] lines) {
     for ( int i = 0; i<lines.length; i++ ) {
-      if ( lines[i].toUpperCase().startsWith("%BLOCK LATTICE_ABC") ) return true;
-      if ( lines[i].toUpperCase().startsWith("%BLOCK LATTICE_CART") ) return true;
-      if ( lines[i].toUpperCase().startsWith("%BLOCK POSITIONS_FRAC") ) return true;
-      if ( lines[i].toUpperCase().startsWith("%BLOCK POSITIONS_ABS") ) return true;
+      if (lines[i].indexOf("Frequencies in         cm-1") == 1
+          || lines[i].toUpperCase().startsWith("%BLOCK LATTICE_ABC")
+          || lines[i].toUpperCase().startsWith("%BLOCK LATTICE_CART")
+          || lines[i].toUpperCase().startsWith("%BLOCK POSITIONS_FRAC")
+          || lines[i].toUpperCase().startsWith("%BLOCK POSITIONS_ABS") ) return true;
     }
     return false;
   }

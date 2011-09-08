@@ -42,8 +42,12 @@
 
 package org.jmol.adapter.readers.xtal;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jmol.adapter.smarter.*;
 import org.jmol.util.Logger;
+import org.jmol.util.TextFormat;
 
 import javax.vecmath.Vector3f;
 
@@ -63,12 +67,14 @@ public class CastepReader extends AtomSetCollectionReader {
   private float a, b, c, alpha, beta, gamma;
   private Vector3f[] abc = new Vector3f[3];
   private boolean iHaveFractionalCoordinates;
+  private boolean isPhonon;
 
   @Override
   public void initializeReader() throws Exception {
     
     while (tokenizeCastepCell() > 0) {
-
+      if (isPhonon)
+        return; // use checkLine
       if ((tokens.length >= 2) && (tokens[0].equalsIgnoreCase("%BLOCK"))) {
 
           /*
@@ -128,8 +134,109 @@ ang
     continuing = false;
   }
   
+  /*
+ Unit cell vectors (A)
+    0.000000    1.819623    1.819623
+    1.819623    0.000000    1.819623
+    1.819623    1.819623    0.000000
+ Fractional Co-ordinates
+     1     0.000000    0.000000    0.000000   B        10.811000
+     2     0.250000    0.250000    0.250000   N        14.006740
+   */
+  @Override
+  protected boolean checkLine() throws Exception {
+    // only for .phonon file
+    if (line.indexOf("Unit cell vectors") == 1) {
+      readPhononUnitCell();
+      return true;
+    }
+    if (line.indexOf("Fractional Co-ordinates") >= 0) {
+      readPhononFractionalCoord();
+      return true;
+    }
+    if (line.indexOf("q-pt") >= 0) {
+      readPhononFrequencies();
+    }
+    return true;
+  }
+  
+  private void readPhononUnitCell() throws Exception {
+    abc = readDirectLatticeVectors(line.indexOf("bohr") >= 0);
+    setSpaceGroupName("P1");
+    setLatticeVectors();
+  }
+
+  private void readPhononFractionalCoord() throws Exception {
+    setFractionalCoordinates(true);
+    while (readLine() != null && line.indexOf("END") < 0) {
+      String[] tokens = getTokens();
+      Atom atom = atomSetCollection.addNewAtom();
+      setAtomCoord(atom, parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3]));
+      atom.elementSymbol = tokens[4];
+    }    
+  }
+  
+
+  /*
+     q-pt=    1    0.000000  0.000000  0.000000      1.000000    1.000000  0.000000  0.000000
+       1      58.268188              0.0000000                                  
+       2      58.268188              0.0000000                                  
+       3      58.292484              0.0000000                                  
+       4    1026.286406             13.9270643                                  
+       5    1026.286406             13.9270643                                  
+       6    1262.072445             13.9271267                                  
+                        Phonon Eigenvectors
+  Mode Ion                X                                   Y                                   Z
+   1   1 -0.188759409143  0.000000000000      0.344150676582  0.000000000000     -0.532910085817  0.000000000000
+   1   2 -0.213788416373  0.000000000000      0.389784162147  0.000000000000     -0.603572578624  0.000000000000
+   2   1 -0.506371267280  0.000000000000     -0.416656077168  0.000000000000     -0.089715190073  0.000000000000
+   2   2 -0.573514781701  0.000000000000     -0.471903590472  0.000000000000     -0.101611191184  0.000000000000
+   3   1  0.381712598768  0.000000000000     -0.381712598812  0.000000000000     -0.381712598730  0.000000000000
+   3   2  0.433161430960  0.000000000000     -0.433161431010  0.000000000000     -0.433161430917  0.000000000000
+   4   1  0.431092607594  0.000000000000     -0.160735361462  0.000000000000      0.591827969056  0.000000000000
+   4   2 -0.380622988260  0.000000000000      0.141917473232  0.000000000000     -0.522540461492  0.000000000000
+   5   1  0.434492641457  0.000000000000      0.590583470288  0.000000000000     -0.156090828832  0.000000000000
+   5   2 -0.383624967478  0.000000000000     -0.521441660837  0.000000000000      0.137816693359  0.000000000000
+   6   1  0.433161430963  0.000000000000     -0.433161430963  0.000000000000     -0.433161430963  0.000000000000
+   6   2 -0.381712598770  0.000000000000      0.381712598770  0.000000000000      0.381712598770  0.000000000000
+   */
+
+  private void readPhononFrequencies() throws Exception {
+    List<Float> freqs = new ArrayList<Float>();
+    while (readLine() != null && line.indexOf("Phonon") < 0) {
+      String[] tokens = getTokens();
+      freqs.add(Float.valueOf(parseFloat(tokens[1])));
+    }
+    readLine();
+    int frequencyCount = freqs.size();
+    int atomCount = atomSetCollection.getAtomCount();
+    for (int i = 0; i < frequencyCount; i++) {
+      if (!doGetVibration(++vibrationNumber)) {
+        for (int j = 0; j < atomCount; j++)
+          readLine();
+        continue;
+      }
+      cloneLastAtomSet(atomCount);
+      int iAtom = atomSetCollection.getLastAtomSetAtomIndex();
+      float freq = freqs.get(i).floatValue();
+      atomSetCollection.setAtomSetFrequency(null, null, "" + freq, null);
+      atomSetCollection.setAtomSetName(TextFormat.formatDecimal(freq, 2)
+          + " cm-1");
+      for (int j = 0; j < atomCount; j++) {
+        String[] tokens = getTokens(readLine());
+        atomSetCollection.addVibrationVector(iAtom++, parseFloat(tokens[2]),
+            parseFloat(tokens[4]), parseFloat(tokens[6]), true);
+      }
+    }
+  }
+
+  
   @Override
   protected void finalizeReader() throws Exception {
+    if (isPhonon) {
+      super.finalizeReader();
+      return;
+    }
       
     doApplySymmetry = true;
     setFractionalCoordinates(iHaveFractionalCoordinates);
@@ -142,12 +249,7 @@ ang
      * from cartesian to fractional coordinates (which are used
      * internally by Jmol)
      */
-    float[] lv = new float[3];
-    for (int n = 0; n < 3; n++) {
-      abc[n].get(lv);
-      addPrimitiveLatticeVector(n, lv, 0);
-    }
-
+    setLatticeVectors();
     int nAtoms = atomSetCollection.getAtomCount();
     /*
      * this needs to be run either way (i.e. even if coordinates are already
@@ -158,6 +260,14 @@ ang
       setAtomCoord(atom);
     }
     super.finalizeReader();
+  }
+
+  private void setLatticeVectors() {
+    float[] lv = new float[3];
+    for (int n = 0; n < 3; n++) {
+      abc[n].get(lv);
+      addPrimitiveLatticeVector(n, lv, 0);
+    }
   }
 
   private void readLatticeAbc() throws Exception {
@@ -278,6 +388,10 @@ ang
         return 0;
       if (line.trim().length() == 0)
         continue;
+      if (line.startsWith(" BEGIN header")) {
+        isPhonon = true;
+        return 1;
+      }
       tokens = getTokens();
       if (line.startsWith("#") || line.startsWith("!") || tokens[0].equals("#")
           || tokens[0].equals("!"))

@@ -53,8 +53,9 @@ import javax.vecmath.Vector3f;
 
 /**
  * CASTEP (http://www.castep.org) .cell file format
- *
  * relevant section of .cell file are included as comments below
+ * 
+ * also .phonon frequency reader -- hansonr@stolaf.edu 9/2011
  *
  * @author Joerg Meyer, FHI Berlin 2009 (meyer@fhi-berlin.mpg.de)
  * @version 1.2

@@ -175,6 +175,7 @@ public abstract class AtomSetCollectionReader {
   protected OutputStream os;
   protected boolean iHaveFractionalCoordinates;
   protected boolean doPackUnitCell;
+  protected String supercell;
 
   // private state variables
 
@@ -190,7 +191,6 @@ public abstract class AtomSetCollectionReader {
   private Point3f fileOffset;
   private Point3f fileOffsetFractional;
   private Point3f unitCellOffset;
-  private String supercell;
   private boolean unitCellOffsetFractional;
 
   /*  

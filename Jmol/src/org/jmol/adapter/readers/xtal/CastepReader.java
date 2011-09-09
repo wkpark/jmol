@@ -55,7 +55,8 @@ import javax.vecmath.Vector3f;
  * CASTEP (http://www.castep.org) .cell file format
  * relevant section of .cell file are included as comments below
  * 
- * also .phonon frequency reader -- hansonr@stolaf.edu 9/2011
+ * preliminary .phonon frequency reader -- hansonr@stolaf.edu 9/2011
+ *   atom's mass is encoded as bfactor
  *
  * @author Joerg Meyer, FHI Berlin 2009 (meyer@fhi-berlin.mpg.de)
  * @version 1.2
@@ -69,6 +70,8 @@ public class CastepReader extends AtomSetCollectionReader {
   private Vector3f[] abc = new Vector3f[3];
   private boolean iHaveFractionalCoordinates;
   private boolean isPhonon;
+
+  private int atomCount;
 
   @Override
   public void initializeReader() throws Exception {
@@ -135,15 +138,6 @@ ang
     continuing = false;
   }
   
-  /*
- Unit cell vectors (A)
-    0.000000    1.819623    1.819623
-    1.819623    0.000000    1.819623
-    1.819623    1.819623    0.000000
- Fractional Co-ordinates
-     1     0.000000    0.000000    0.000000   B        10.811000
-     2     0.250000    0.250000    0.250000   N        14.006740
-   */
   @Override
   protected boolean checkLine() throws Exception {
     // only for .phonon file
@@ -157,80 +151,10 @@ ang
     }
     if (line.indexOf("q-pt") >= 0) {
       readPhononFrequencies();
+      return true;
     }
     return true;
   }
-  
-  private void readPhononUnitCell() throws Exception {
-    abc = readDirectLatticeVectors(line.indexOf("bohr") >= 0);
-    setSpaceGroupName("P1");
-    setLatticeVectors();
-  }
-
-  private void readPhononFractionalCoord() throws Exception {
-    setFractionalCoordinates(true);
-    while (readLine() != null && line.indexOf("END") < 0) {
-      String[] tokens = getTokens();
-      Atom atom = atomSetCollection.addNewAtom();
-      setAtomCoord(atom, parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3]));
-      atom.elementSymbol = tokens[4];
-    }    
-  }
-  
-
-  /*
-     q-pt=    1    0.000000  0.000000  0.000000      1.000000    1.000000  0.000000  0.000000
-       1      58.268188              0.0000000                                  
-       2      58.268188              0.0000000                                  
-       3      58.292484              0.0000000                                  
-       4    1026.286406             13.9270643                                  
-       5    1026.286406             13.9270643                                  
-       6    1262.072445             13.9271267                                  
-                        Phonon Eigenvectors
-  Mode Ion                X                                   Y                                   Z
-   1   1 -0.188759409143  0.000000000000      0.344150676582  0.000000000000     -0.532910085817  0.000000000000
-   1   2 -0.213788416373  0.000000000000      0.389784162147  0.000000000000     -0.603572578624  0.000000000000
-   2   1 -0.506371267280  0.000000000000     -0.416656077168  0.000000000000     -0.089715190073  0.000000000000
-   2   2 -0.573514781701  0.000000000000     -0.471903590472  0.000000000000     -0.101611191184  0.000000000000
-   3   1  0.381712598768  0.000000000000     -0.381712598812  0.000000000000     -0.381712598730  0.000000000000
-   3   2  0.433161430960  0.000000000000     -0.433161431010  0.000000000000     -0.433161430917  0.000000000000
-   4   1  0.431092607594  0.000000000000     -0.160735361462  0.000000000000      0.591827969056  0.000000000000
-   4   2 -0.380622988260  0.000000000000      0.141917473232  0.000000000000     -0.522540461492  0.000000000000
-   5   1  0.434492641457  0.000000000000      0.590583470288  0.000000000000     -0.156090828832  0.000000000000
-   5   2 -0.383624967478  0.000000000000     -0.521441660837  0.000000000000      0.137816693359  0.000000000000
-   6   1  0.433161430963  0.000000000000     -0.433161430963  0.000000000000     -0.433161430963  0.000000000000
-   6   2 -0.381712598770  0.000000000000      0.381712598770  0.000000000000      0.381712598770  0.000000000000
-   */
-
-  private void readPhononFrequencies() throws Exception {
-    List<Float> freqs = new ArrayList<Float>();
-    while (readLine() != null && line.indexOf("Phonon") < 0) {
-      String[] tokens = getTokens();
-      freqs.add(Float.valueOf(parseFloat(tokens[1])));
-    }
-    readLine();
-    int frequencyCount = freqs.size();
-    int atomCount = atomSetCollection.getAtomCount();
-    for (int i = 0; i < frequencyCount; i++) {
-      if (!doGetVibration(++vibrationNumber)) {
-        for (int j = 0; j < atomCount; j++)
-          readLine();
-        continue;
-      }
-      cloneLastAtomSet(atomCount);
-      int iAtom = atomSetCollection.getLastAtomSetAtomIndex();
-      float freq = freqs.get(i).floatValue();
-      atomSetCollection.setAtomSetFrequency(null, null, "" + freq, null);
-      atomSetCollection.setAtomSetName(TextFormat.formatDecimal(freq, 2)
-          + " cm-1");
-      for (int j = 0; j < atomCount; j++) {
-        String[] tokens = getTokens(readLine());
-        atomSetCollection.addVibrationVector(iAtom++, parseFloat(tokens[2]),
-            parseFloat(tokens[4]), parseFloat(tokens[6]), true);
-      }
-    }
-  }
-
   
   @Override
   protected void finalizeReader() throws Exception {
@@ -401,4 +325,97 @@ ang
     }
     return tokens.length;
   }
+  
+  //////////// phonon code ////////////
+  
+  /*
+  Unit cell vectors (A)
+     0.000000    1.819623    1.819623
+     1.819623    0.000000    1.819623
+     1.819623    1.819623    0.000000
+  Fractional Co-ordinates
+      1     0.000000    0.000000    0.000000   B        10.811000
+      2     0.250000    0.250000    0.250000   N        14.006740
+    */
+  private void readPhononUnitCell() throws Exception {
+    abc = readDirectLatticeVectors(line.indexOf("bohr") >= 0);
+    setSpaceGroupName("P1");
+    setLatticeVectors();
+  }
+
+  private void readPhononFractionalCoord() throws Exception {
+    setFractionalCoordinates(true);
+    while (readLine() != null && line.indexOf("END") < 0) {
+      String[] tokens = getTokens();
+      Atom atom = atomSetCollection.addNewAtom();
+      setAtomCoord(atom, parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3]));
+      atom.bfactor = parseFloat(tokens[5]); // mass, actually
+      atom.elementSymbol = tokens[4];
+    }
+    atomCount = atomSetCollection.getAtomCount();
+  }
+  
+
+  /*
+     q-pt=    1    0.000000  0.000000  0.000000      1.000000    1.000000  0.000000  0.000000
+       1      58.268188              0.0000000                                  
+       2      58.268188              0.0000000                                  
+       3      58.292484              0.0000000                                  
+       4    1026.286406             13.9270643                                  
+       5    1026.286406             13.9270643                                  
+       6    1262.072445             13.9271267                                  
+                        Phonon Eigenvectors
+  Mode Ion                X                                   Y                                   Z
+   1   1 -0.188759409143  0.000000000000      0.344150676582  0.000000000000     -0.532910085817  0.000000000000
+   1   2 -0.213788416373  0.000000000000      0.389784162147  0.000000000000     -0.603572578624  0.000000000000
+   2   1 -0.506371267280  0.000000000000     -0.416656077168  0.000000000000     -0.089715190073  0.000000000000
+   2   2 -0.573514781701  0.000000000000     -0.471903590472  0.000000000000     -0.101611191184  0.000000000000
+   3   1  0.381712598768  0.000000000000     -0.381712598812  0.000000000000     -0.381712598730  0.000000000000
+   3   2  0.433161430960  0.000000000000     -0.433161431010  0.000000000000     -0.433161430917  0.000000000000
+   4   1  0.431092607594  0.000000000000     -0.160735361462  0.000000000000      0.591827969056  0.000000000000
+   4   2 -0.380622988260  0.000000000000      0.141917473232  0.000000000000     -0.522540461492  0.000000000000
+   5   1  0.434492641457  0.000000000000      0.590583470288  0.000000000000     -0.156090828832  0.000000000000
+   5   2 -0.383624967478  0.000000000000     -0.521441660837  0.000000000000      0.137816693359  0.000000000000
+   6   1  0.433161430963  0.000000000000     -0.433161430963  0.000000000000     -0.433161430963  0.000000000000
+   6   2 -0.381712598770  0.000000000000      0.381712598770  0.000000000000      0.381712598770  0.000000000000
+   */
+
+  private void readPhononFrequencies() throws Exception {
+    String[] tokens = getTokens();
+    Vector3f qvec = new Vector3f(parseFloat(tokens[2]),parseFloat(tokens[3]),parseFloat(tokens[4]));
+    if (supercell == null && qvec.length() != 0)
+      return;      
+    List<Float> freqs = new ArrayList<Float>();
+    while (readLine() != null && line.indexOf("Phonon") < 0) {
+      tokens = getTokens();
+      freqs.add(Float.valueOf(parseFloat(tokens[1])));
+    }
+    readLine();
+    int frequencyCount = freqs.size();
+    for (int i = 0; i < frequencyCount; i++) {
+      if (!doGetVibration(++vibrationNumber)) {
+        for (int j = 0; j < atomCount; j++)
+          readLine();
+        continue;
+      }
+      if (desiredVibrationNumber <= 0)
+        cloneLastAtomSet(atomCount);
+      int iAtom = atomSetCollection.getLastAtomSetAtomIndex();
+      float freq = freqs.get(i).floatValue();
+      atomSetCollection.setAtomSetFrequency(null, null, "" + freq, null);
+      atomSetCollection.setAtomSetName(TextFormat.formatDecimal(freq, 2)
+          + " cm-1");
+      Atom[] atoms = atomSetCollection.getAtoms();
+      for (int j = 0; j < atomCount; j++) {
+        tokens = getTokens(readLine());
+        float factor = (float) Math.sqrt(1/atoms[iAtom].bfactor);
+        atomSetCollection.addVibrationVector(iAtom++, parseFloat(tokens[2]) * factor,
+            parseFloat(tokens[4]) * factor, parseFloat(tokens[6]) * factor, true);
+      }
+    }
+  }
+
+  
+
+  
 }

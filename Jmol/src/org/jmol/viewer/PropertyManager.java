@@ -95,6 +95,7 @@ public class PropertyManager {
     "errorMessage"    , "", "",
     "mouseInfo"       , "", "",
     "isosurfaceInfo"  , "", "",
+    "consoleText"     , "", "",
   };
 
   private final static int PROP_APPLET_INFO = 0;
@@ -139,7 +140,8 @@ public class PropertyManager {
   private final static int PROP_ERROR_MESSAGE = 33;
   private final static int PROP_MOUSE_INFO = 34;
   private final static int PROP_ISOSURFACE_INFO = 35;
-  private final static int PROP_COUNT = 36;
+  private final static int PROP_CONSOLE_TEXT = 36;
+  private final static int PROP_COUNT = 37;
 
   //// static methods used by Eval and Viewer ////
   
@@ -376,8 +378,18 @@ public class PropertyManager {
       return viewer.getRotationCenter();
     case PROP_CHAIN_INFO:
       return viewer.getAllChainInfo(myParam);
+    case PROP_CONSOLE_TEXT:
+      return viewer.getProperty("DATA_API", "consoleText", null);
+    case PROP_DATA_INFO:
+      return viewer.getData(myParam.toString());
+    case PROP_ERROR_MESSAGE:
+      return viewer.getErrorMessageUntranslated();
+    case PROP_EVALUATE:
+      return ScriptEvaluator.evaluateExpression(viewer, myParam.toString());
     case PROP_EXTRACT_MODEL:
       return viewer.getModelExtract(myParam, true, "MOL");
+    case PROP_FILE_INFO:
+      return getFileInfo(viewer.getFileData(), myParam.toString());
     case PROP_FILENAME:
       return viewer.getFullPathName();
     case PROP_FILEHEADER:
@@ -387,6 +399,24 @@ public class PropertyManager {
       if (iHaveParameter)
         return viewer.getFileAsString(myParam.toString());
       return viewer.getCurrentFileAsString();
+    case PROP_IMAGE:
+      String params = myParam.toString();
+      int height = -1, width = -1;
+      int pt;
+      if ((pt = params.indexOf("height=")) >= 0)
+        height = Parser.parseInt(params.substring(pt + 7));
+      if ((pt = params.indexOf("width=")) >= 0)
+        width = Parser.parseInt(params.substring(pt + 6));
+      if (width < 0 && height < 0)
+        height = width = -1;
+      else if (width < 0)
+        width = height;
+      else
+        height = width;        
+      return viewer.getImageAs(returnType == null ? "JPEG" : "JPG64", -1, width, height,
+          null, null);
+    case PROP_ISOSURFACE_INFO:
+      return viewer.getShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "getInfo");
     case PROP_JMOL_STATUS:
       return viewer.getStatusChanged(myParam.toString());
     case PROP_JMOL_VIEWER:
@@ -405,46 +435,20 @@ public class PropertyManager {
       return viewer.getModelInfo(myParam);
     case PROP_MOLECULE_INFO:
       return viewer.getMoleculeInfo(myParam);
+    case PROP_MOUSE_INFO:
+      return viewer.getMouseInfo();
     case PROP_ORIENTATION_INFO:
       return viewer.getOrientationInfo();
+    case PROP_POINTGROUP_INFO:
+      return viewer.getPointGroupInfo(myParam);
     case PROP_POLYMER_INFO:
       return viewer.getAllPolymerInfo(myParam);
     case PROP_SHAPE_INFO:
       return viewer.getShapeInfo();
     case PROP_STATE_INFO:
       return viewer.getStateInfo(myParam.toString(), 0, 0);
-    case PROP_POINTGROUP_INFO:
-      return viewer.getPointGroupInfo(myParam);
-    case PROP_ISOSURFACE_INFO:
-      return viewer.getShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "getInfo");
-    case PROP_FILE_INFO:
-      return getFileInfo(viewer.getFileData(), myParam.toString());
-    case PROP_ERROR_MESSAGE:
-      return viewer.getErrorMessageUntranslated();
     case PROP_TRANSFORM_INFO:
       return viewer.getMatrixRotate();
-    case PROP_DATA_INFO:
-      return viewer.getData(myParam.toString());
-    case PROP_MOUSE_INFO:
-      return viewer.getMouseInfo();
-    case PROP_EVALUATE:
-      return ScriptEvaluator.evaluateExpression(viewer, myParam.toString());
-    case PROP_IMAGE:
-      String params = myParam.toString();
-      int height = -1, width = -1;
-      int pt;
-      if ((pt = params.indexOf("height=")) >= 0)
-        height = Parser.parseInt(params.substring(pt + 7));
-      if ((pt = params.indexOf("width=")) >= 0)
-        width = Parser.parseInt(params.substring(pt + 6));
-      if (width < 0 && height < 0)
-        height = width = -1;
-      else if (width < 0)
-        width = height;
-      else
-        height = width;        
-      return viewer.getImageAs(returnType == null ? "JPEG" : "JPG64", -1, width, height,
-          null, null);
     }
     String[] data = new String[PROP_COUNT];
     for (int i = 0; i < PROP_COUNT; i++) {

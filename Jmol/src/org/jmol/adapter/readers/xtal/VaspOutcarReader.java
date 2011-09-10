@@ -161,7 +161,7 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
       atomSetCollection.newAtomSet();
       setAtomSetInfo();
     }
-    fillFloatArray(unitCellData, null, 0);
+    fillFloatArray(null, 0, unitCellData);
     setUnitCell();
   }
 
@@ -369,7 +369,8 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
     boolean[] ignore = new boolean[1];
     while (readLine() != null
         && (line.contains("f  = ") || line.contains("f/i= "))) {
-      cloneLastAtomSet(-1);
+      applySymmetryAndSetTrajectory();
+      cloneLastAtomSet(0, null);
       if (!ignore[0]) {
         atomSetCollection.setCurrentAtomSetIndex(++pt);
         atomSetCollection.setAtomSetFrequency(null, null,

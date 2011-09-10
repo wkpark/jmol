@@ -16,4 +16,6 @@ public interface JmolAppConsoleInterface {
 
   public void dispose();
 
+  public String getText();
+
 }

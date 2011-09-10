@@ -118,6 +118,7 @@ public abstract class JmolConsole implements JmolCallbackListener, ActionListene
   
   abstract protected void clearContent(String text);
   abstract protected void execute(String strCommand);
+  abstract public String getText();
   
   public int nTab = 0;
   private String incompleteCmd;

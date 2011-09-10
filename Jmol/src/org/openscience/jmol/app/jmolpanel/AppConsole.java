@@ -750,6 +750,7 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
     return super.completeCommand(thisCmd);
   }
 
+  @Override
   public String getText() {
     return console.getText();
   }

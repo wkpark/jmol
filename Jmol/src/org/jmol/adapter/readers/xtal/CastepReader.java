@@ -49,6 +49,7 @@ import org.jmol.adapter.smarter.*;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 
+import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 /**
@@ -353,6 +354,11 @@ ang
       atom.elementSymbol = tokens[4];
     }
     atomCount = atomSetCollection.getAtomCount();
+    atomPts = new Point3f[atomCount];
+    Atom[] atoms = atomSetCollection.getAtoms();
+    for (int i = 0; i < atomCount; i++)
+      atomPts[i] = new Point3f(atoms[i]);
+
   }
   
 
@@ -380,11 +386,38 @@ ang
    6   2 -0.381712598770  0.000000000000      0.381712598770  0.000000000000      0.381712598770  0.000000000000
    */
 
+  private boolean havePhonons = false;
+
+  private Point3f[] atomPts;
+  
   private void readPhononFrequencies() throws Exception {
     String[] tokens = getTokens();
-    Vector3f qvec = new Vector3f(parseFloat(tokens[2]),parseFloat(tokens[3]),parseFloat(tokens[4]));
-    if (supercell == null && qvec.length() != 0)
-      return;      
+    Vector3f qvec = new Vector3f(parseFloat(tokens[2]), parseFloat(tokens[3]),
+        parseFloat(tokens[4]));
+    boolean isGammaPoint = (qvec.length() == 0);
+    float[] fsc = (supercell == null || !supercell.startsWith("=") ? null : 
+      atomSetCollection.setSuperCell(supercell.substring(1), new float[16]));
+    if (fsc != null) {
+      // only select corresponding phonon vector -- one that has integral dot product
+      float dx = (qvec.x == 0 ? 1 : qvec.x) * fsc[0];
+      float dy = (qvec.y == 0 ? 1 : qvec.y) * fsc[5];
+      float dz = (qvec.z == 0 ? 1 : qvec.z) * fsc[10];
+      if (Math.abs(dx - 1) > 0.001
+          || Math.abs(dy - 1) > 0.001
+          || Math.abs(dz - 1) > 0.001
+          )
+        return;
+    }
+    if (fsc == null || !havePhonons)
+      appendLoadNote("q=" + qvec);
+    if ((fsc == null) == !isGammaPoint)
+      return;
+    if (havePhonons)
+      return;
+    havePhonons = true;
+    applySymmetryAndSetTrajectory();
+    if (isGammaPoint)
+      qvec = null;
     List<Float> freqs = new ArrayList<Float>();
     while (readLine() != null && line.indexOf("Phonon") < 0) {
       tokens = getTokens();
@@ -392,30 +425,73 @@ ang
     }
     readLine();
     int frequencyCount = freqs.size();
+    float[] data = new float[8];
+    Vector3f v = new Vector3f();
     for (int i = 0; i < frequencyCount; i++) {
       if (!doGetVibration(++vibrationNumber)) {
         for (int j = 0; j < atomCount; j++)
           readLine();
         continue;
       }
-      if (desiredVibrationNumber <= 0)
-        cloneLastAtomSet(atomCount);
-      int iAtom = atomSetCollection.getLastAtomSetAtomIndex();
+      if (desiredVibrationNumber <= 0) {
+        cloneLastAtomSet(atomCount, atomPts);
+        applySymmetryAndSetTrajectory();
+      }
+      int iatom = atomSetCollection.getLastAtomSetAtomIndex();
       float freq = freqs.get(i).floatValue();
       atomSetCollection.setAtomSetFrequency(null, null, "" + freq, null);
       atomSetCollection.setAtomSetName(TextFormat.formatDecimal(freq, 2)
           + " cm-1");
       Atom[] atoms = atomSetCollection.getAtoms();
+      int aCount = atomSetCollection.getAtomCount();
       for (int j = 0; j < atomCount; j++) {
-        tokens = getTokens(readLine());
-        float factor = (float) Math.sqrt(1/atoms[iAtom].bfactor);
-        atomSetCollection.addVibrationVector(iAtom++, parseFloat(tokens[2]) * factor,
-            parseFloat(tokens[4]) * factor, parseFloat(tokens[6]) * factor, true);
+        fillFloatArray(null, 0, data);
+        for (int ipt = 0, k = iatom++; k < aCount; k++)
+          if (atoms[k].atomSite == j) {
+            setPhononVector(data, atoms[k], ipt++, qvec, v);
+            atomSetCollection.addVibrationVector(k, v.x, v.y, v.z, true);
+          }
       }
     }
   }
 
-  
+  private final static Vector3f v000 = new Vector3f();
 
+  private static final double TWOPI = Math.PI * 2;
+  /**
+   * transform complex vibration vector to a real vector by
+   * applying the appropriate translation, 
+   * storing the results in v 
+   * 
+   * @param data  from .phonon line parsed for floats
+   * @param atom
+   * @param icell 
+   * @param qvec
+   * @param v     return vector
+   */
+  private void setPhononVector(float[] data, Atom atom, int icell, Vector3f qvec, Vector3f v) {
+    // complex vx = data[2/3], vy = data[4/5], vz = data[6/7]
+    if (qvec == null) {
+      v.set(data[2], data[4], data[6]);
+    } else {
+      Vector3f[] st = atomSetCollection.supercellTranslations;
+      Vector3f t = (icell < 0 ? v000 : st[icell % st.length]);
+      
+      // from CASTEP ceteprouts.pm:
+      //  $phase = $qptx*$$sh[0] + $qpty*$$sh[1] + $qptz*$$sh[2];
+      //  $cosph = cos($twopi*$phase); $sinph = sin($twopi*$phase); 
+      //  push @$pertxo, $cosph*$$pertx_r[$iat] + $sinph*$$pertx_i[$iat];
+      //  push @$pertyo, $cosph*$$perty_r[$iat] + $sinph*$$perty_i[$iat];
+      //  push @$pertzo, $cosph*$$pertz_r[$iat] + $sinph*$$pertz_i[$iat];
+      
+      double phase = qvec.dot(t);
+      double cosph = Math.cos(TWOPI * phase);
+      double sinph = Math.sin(TWOPI * phase);
+      v.x = (float)(cosph * data[2] + sinph * data[3]);
+      v.y = (float)(cosph * data[4] + sinph * data[5]);
+      v.z = (float)(cosph * data[6] + sinph * data[7]);
+    }
+    v.scale((float) Math.sqrt(1 / atom.bfactor)); // mass stored in bfactor
+  }
   
 }

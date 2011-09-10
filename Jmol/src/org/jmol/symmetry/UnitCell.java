@@ -156,15 +156,15 @@ class UnitCell extends SimpleUnitCell {
       //{111 666}
       //555 --> {0 0 0}
       Point3f pt = new Point3f();
-      ijkToPoint3f(maxXYZ.x, pt);
+      ijkToPoint3f(maxXYZ.x, pt, 0);
       minXYZ.x = (int) pt.x;
       minXYZ.y = (int) pt.y;
       minXYZ.z = (int) pt.z;
-      ijkToPoint3f(maxXYZ.y, pt);
+      ijkToPoint3f(maxXYZ.y, pt, 1);
       //555 --> {1 1 1}
-      maxXYZ.x = (int) pt.x + 1;
-      maxXYZ.y = (int) pt.y + 1;
-      maxXYZ.z = (int) pt.z + 1;
+      maxXYZ.x = (int) pt.x;
+      maxXYZ.y = (int) pt.y;
+      maxXYZ.z = (int) pt.z;
     }
     switch (dimension) {
     case 1: // polymer

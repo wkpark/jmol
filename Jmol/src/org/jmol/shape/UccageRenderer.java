@@ -89,19 +89,23 @@ public class UccageRenderer extends CageRenderer {
     if (!haveMultiple) 
       fset = fset0;
 
-    SimpleUnitCell.ijkToPoint3f((int) fset.x, cell0);
-    SimpleUnitCell.ijkToPoint3f((int) fset.y, cell1);
+    SimpleUnitCell.ijkToPoint3f((int) fset.x, cell0, 0);
+    SimpleUnitCell.ijkToPoint3f((int) fset.y, cell1, 1);
     int firstLine, allow0, allow1;
+    if (fset.z < 0) {
+      cell0.scale (-1/fset.z);
+      cell1.scale (-1/fset.z);
+    }
     Point3f[] axisPoints = viewer.getAxisPoints();
     boolean drawAllLines = (viewer.getObjectMad(StateManager.OBJ_AXIS1) == 0
         || viewer.getAxesScale() < 2 || axisPoints == null);
     Point3f[] aPoints = axisPoints;
-    for (int x = (int) cell0.x; x <= cell1.x; x++) {
-      for (int y = (int) cell0.y; y <= cell1.y; y++) {
-        for (int z = (int) cell0.z; z <= cell1.z; z++) {
+    for (int x = (int) cell0.x; x < cell1.x; x++) {
+      for (int y = (int) cell0.y; y < cell1.y; y++) {
+        for (int z = (int) cell0.z; z < cell1.z; z++) {
           if (haveMultiple) {
             offsetT.set(x, y, z);
-            offsetT.scale(fset.z);
+            offsetT.scale(Math.abs(fset.z));
             symmetry.toCartesian(offsetT, true);
             offsetT.add(offset);
             aPoints = (x == 0 && y == 0 && z == 0 ? axisPoints : null);
@@ -116,7 +120,7 @@ public class UccageRenderer extends CageRenderer {
           }
           for (int i = 8; --i >= 0;)
             verticesT[i].add(vertices[i], offsetT);
-          render(mad, verticesT, aPoints, firstLine, allow0, allow1, fset.z);
+          render(mad, verticesT, aPoints, firstLine, allow0, allow1, Math.abs(fset.z));
         }
       }
     }

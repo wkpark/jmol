@@ -183,7 +183,7 @@ public class MopacGraphfReader extends MopacSlaterReader {
       } else {
         data = list[iMo];
       }
-      fillFloatArray(data, line, 15);
+      fillFloatArray(line, 15, data);
     }
     if (invMatrix == null) {
       if (isNewFormat && line.indexOf("MATRIX") < 0)
@@ -191,7 +191,7 @@ public class MopacGraphfReader extends MopacSlaterReader {
       // read lower triangle of symmetric inverse sqrt matrix and multiply
       invMatrix = new float[nCoefficients][];
       for (int iMo = 0; iMo < nCoefficients; iMo++)
-        fillFloatArray(invMatrix[iMo] = new float[iMo + 1], null, 15);
+        fillFloatArray(null, 15, invMatrix[iMo] = new float[iMo + 1]);
     }
     nOrbitals = (orbitalData == null ? nCoefficients : orbitalData.size());
     if (orbitalData != null) {

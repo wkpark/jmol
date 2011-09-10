@@ -251,14 +251,15 @@ public class SimpleUnitCell {
 
   public static Point3f ijkToPoint3f(int nnn) {
     Point3f cell = new Point3f();
-    ijkToPoint3f(nnn, cell);
+    ijkToPoint3f(nnn, cell, 0);
     return cell;
   }
   
-  public static void ijkToPoint3f(int nnn, Point3f cell) {
-    cell.x = nnn / 100 - 5;
-    cell.y = (nnn % 100) / 10 - 5;
-    cell.z = (nnn % 10) - 5;
+  public static void ijkToPoint3f(int nnn, Point3f cell, int c) {
+    c -= 5;
+    cell.x = nnn / 100 + c;
+    cell.y = (nnn % 100) / 10 + c;
+    cell.z = (nnn % 10) + c;
   }
   
 

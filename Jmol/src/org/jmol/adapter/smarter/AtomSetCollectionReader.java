@@ -373,7 +373,8 @@ public abstract class AtomSetCollectionReader {
     viewer = (JmolViewer) htParams.get("viewer");
     htParams.remove("viewer"); // don't pass this on to user
     if (htParams.containsKey("stateScriptVersionInt"))
-      stateScriptVersionInt = ((Integer) htParams.get("stateScriptVersionInt")).intValue();
+      stateScriptVersionInt = ((Integer) htParams.get("stateScriptVersionInt"))
+          .intValue();
     merging = htParams.containsKey("merging");
     getHeader = htParams.containsKey("getHeader");
     isSequential = htParams.containsKey("isSequential");
@@ -429,7 +430,7 @@ public abstract class AtomSetCollectionReader {
     }
     if (bsModels != null && (firstLastStep == null || firstLastStep[1] != -1))
       lastModelNumber = bsModels.length();
-      
+
     symmetryRange = (htParams.containsKey("symmetryRange") ? ((Float) htParams
         .get("symmetryRange")).floatValue() : 0);
     latticeCells = new int[3];
@@ -440,8 +441,7 @@ public abstract class AtomSetCollectionReader {
       latticeCells[2] = (int) pt.z;
       doPackUnitCell = (htParams.containsKey("packed") || latticeCells[2] < 0);
     }
-    if (htParams.containsKey("supercell"))
-      supercell = (String) htParams.get("supercell");
+    supercell = (String) htParams.get("supercell");
     doApplySymmetry = (latticeCells[0] > 0 && latticeCells[1] > 0);
     //allows for {1 1 1} or {1 1 -1} or {555 555 0|1|-1} (-1  being "packed")
     if (!doApplySymmetry) {
@@ -479,7 +479,7 @@ public abstract class AtomSetCollectionReader {
     if (htParams.containsKey("unitcell")) {
       float[] fParams = (float[]) htParams.get("unitcell");
       if (merging)
-        setFractionalCoordinates(true);      
+        setFractionalCoordinates(true);
       if (fParams.length == 9) {
         // these are vectors
         addPrimitiveLatticeVector(0, fParams, 0);
@@ -548,10 +548,9 @@ public abstract class AtomSetCollectionReader {
     Logger.debug(name);
   }
 
-  protected int cloneLastAtomSet(int atomCount) throws Exception {
-    applySymmetryAndSetTrajectory();
+  protected int cloneLastAtomSet(int atomCount, Point3f[] pts) throws Exception {
     int lastAtomCount = atomSetCollection.getLastAtomSetAtomCount();
-    atomSetCollection.cloneLastAtomSet(atomCount);
+    atomSetCollection.cloneLastAtomSet(atomCount, pts);
     if (atomSetCollection.haveUnitCell) {
       iHaveUnitCell = true;
       doCheckUnitCell = true;
@@ -990,33 +989,35 @@ public abstract class AtomSetCollectionReader {
 
   /**
    * fills a float array with string data from a file
-   * @param temp
-   * @param line0 TODO
-   * @param width TODO
+   * @param s     string data containing floats
+   * @param width column width or 0 to read tokens
+   * @param data  result data to be filled
+   * @return      data
    * @throws Exception
    */
-  protected void fillFloatArray(float[] temp, String line0, int width)
+  protected float[] fillFloatArray(String s, int width, float[] data)
       throws Exception {
     String[] tokens = new String[0];
     int pt = 0;
-    for (int i = 0; i < temp.length; i++) {
+    for (int i = 0; i < data.length; i++) {
       while (tokens != null && pt >= tokens.length) {
-        if (line0 == null)
-          line0 = readLine();
+        if (s == null)
+          s = readLine();
         if (width == 0) {
-          tokens = getTokens(line0);
+          tokens = getTokens(s);
         } else {
-          tokens = new String[line0.length() / width];
+          tokens = new String[s.length() / width];
           for (int j = 0; j < tokens.length; j++)
-            tokens[j] = line0.substring(j * width, (j + 1) * width);
+            tokens[j] = s.substring(j * width, (j + 1) * width);
         }
-        line0 = null;
+        s = null;
         pt = 0;
       }
       if (tokens == null)
         break;
-      temp[i] = parseFloat(tokens[pt++]);
+      data[i] = parseFloat(tokens[pt++]);
     }
+    return data;
   }
 
   /**
@@ -1411,20 +1412,15 @@ public abstract class AtomSetCollectionReader {
   protected Vector3f[] readDirectLatticeVectors(boolean isBohr) throws Exception {
     Vector3f[] vectors = new Vector3f[3];    
     for (int i = 0; i < 3; i++) {
-      vectors[i] = getPoint3f(null, 0);
+      vectors[i] = getVector3f(readLine());
       if (isBohr)
         vectors[i].scale(ANGSTROMS_PER_BOHR);
     }
     return vectors;
   }
 
-  private Vector3f getPoint3f(float[] f, int pt) throws Exception {
-    if (f == null) {
-      f = new float[3];
-      fillFloatArray(f, null, 0);
-      return new Vector3f(f[0], f[1], f[2]);
-    }
-    return new Vector3f(f[pt++], f[pt++], f[pt]);
+  private Vector3f getVector3f(String data) throws Exception {
+    return new Vector3f(fillFloatArray(data, 0, new float[3]));
   }
 
 

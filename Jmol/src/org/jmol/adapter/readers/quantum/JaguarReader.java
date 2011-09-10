@@ -384,7 +384,7 @@ public class JaguarReader extends MOReader {
         ignore[i] = !doGetVibration(++vibrationNumber);
         if (ignore[i]) 
           continue;
-        atomSetCollection.cloneFirstAtomSet();
+        atomSetCollection.cloneFirstAtomSet(0);
         atomSetCollection.setAtomSetFrequency(null, symmetries == null ? null : symmetries[i + 1], frequencies[i + 1], null);
         if (intensities != null)
           atomSetCollection.setAtomSetProperty("IRIntensity",

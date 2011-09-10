@@ -7676,6 +7676,7 @@ private void zap(String msg) {
         + "defaultDirectory...." // 180
         + "getPopupMenu........" // 200
         + "shapeManager........" // 220
+        + "consoleText........." // 240
     ).indexOf(infoType)) {
 
     case 0:
@@ -7736,6 +7737,8 @@ private void zap(String msg) {
       return getPopupMenu();
     case 220:
       return shapeManager.getProperty(paramInfo);
+    case 240:
+      return (appConsole == null ? "" : appConsole.getText());
     default:
       Logger.error("ERROR in getProperty DATA_API: " + infoType);
       return null;

@@ -41,7 +41,7 @@ public class SiestaReader extends AtomSetCollectionReader {
   private float[] unitCellData = new float[9];
 
   private void setCell() throws Exception {
-    fillFloatArray(unitCellData, null, 0);
+    fillFloatArray(null, 0, unitCellData);
     addPrimitiveLatticeVector(0, unitCellData, 0);
     addPrimitiveLatticeVector(1, unitCellData, 3);
     addPrimitiveLatticeVector(2, unitCellData, 6);

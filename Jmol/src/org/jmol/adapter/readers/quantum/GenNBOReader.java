@@ -305,8 +305,7 @@ public class GenNBOReader extends MOReader {
 
     for (int j = 0; j < 5; j++) {
       readLine();
-      float[] temp = new float[gaussianCount];
-      fillFloatArray(temp, null, 0);
+      float[] temp = fillFloatArray(null, 0, new float[gaussianCount]);
       for (int i = 0; i < gaussianCount; i++) {
         gaussians[i][j] = temp[i];
         if (j > 1)
@@ -416,7 +415,7 @@ public class GenNBOReader extends MOReader {
         } else {
           line = null;
         }
-        fillFloatArray(coefs, line, 0);
+        fillFloatArray(line, 0, coefs);
         line = null;
         //setMOType(mo, i);
       } else {
@@ -425,7 +424,7 @@ public class GenNBOReader extends MOReader {
     }
     if (moType.equals("NBO")) {
       float[] occupancies = new float[nOrbitals - nOrbitals0];
-      fillFloatArray(occupancies, null, 0);   
+      fillFloatArray(null, 0, occupancies);   
       for (int i = nOrbitals0; i < nOrbitals; i++) {
         Map<String, Object> mo = orbitals.get(i);
         mo.put("occupancy", Float.valueOf((int) (occupancies[i - nOrbitals0] + 0.2f)));

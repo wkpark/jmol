@@ -310,6 +310,11 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
     output(message, null);
   }
 
+  @Override
+  public String getText() {
+    return output.getText();
+  }
+
   private void output(String message, AttributeSet att) {
     //System.out.println("AppletConsole.output " + message + " " + att);
     if (message == null || message.length() == 0) {

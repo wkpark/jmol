@@ -165,7 +165,8 @@ public class DmolReader extends AtomSetCollectionReader {
         ignore[i] = (!doGetVibration(++vibrationNumber) || tokens == null);
         if (ignore[i])
           continue;
-        lastAtomCount = cloneLastAtomSet(atomCount);
+        applySymmetryAndSetTrajectory();
+        lastAtomCount = cloneLastAtomSet(atomCount, null);
         if (i == 0)
           iAtom0 = atomSetCollection.getLastAtomSetAtomIndex();
         atomSetCollection.setAtomSetFrequency(null, null,

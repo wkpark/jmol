@@ -8603,7 +8603,7 @@ public class ScriptEvaluator {
           String supercell;
           if (isPoint3f(++i)) {
             Point3f sc = getPoint3f(i, false);
-            supercell = (int) sc.x + "x," + (int) sc.y + "y," + (int) sc.z
+            supercell = "=" + (int) sc.x + "x," + (int) sc.y + "y," + (int) sc.z
                 + "z";
             i = iToken + 1;
           } else {

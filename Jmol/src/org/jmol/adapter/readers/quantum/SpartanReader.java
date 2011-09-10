@@ -101,7 +101,7 @@ public class SpartanReader extends BasisFunctionReader {
         ignore[lineFreqCount] = !doGetVibration(++vibrationNumber);
         if (!ignore[lineFreqCount]) {
           if (vibrationNumber > 1)
-            atomSetCollection.cloneFirstAtomSet();
+            atomSetCollection.cloneFirstAtomSet(0);
           atomSetCollection.setAtomSetFrequency(null, null, "" + frequency, null);
         }
       }

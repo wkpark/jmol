@@ -171,7 +171,7 @@ public class AtomSetCollection {
     doFixPeriodic = true;
   }
 
-  float[] notionalUnitCell = new float[6]; 
+  public float[] notionalUnitCell = new float[6]; 
   // expands to 22 for cartesianToFractional matrix as array (PDB)
 
   private boolean allowMultiple;
@@ -398,18 +398,20 @@ public class AtomSetCollection {
   // FIX ME This should really also clone the other things pertaining
   // to an atomSet, like the bonds (which probably should be remade...)
   // but also the atomSetProperties and atomSetName...
-  public void cloneFirstAtomSet() throws Exception {
+  public void cloneFirstAtomSet(int atomCount) throws Exception {
     if (!allowMultiple)
       return;
     newAtomSet();
-    for (int i = 0, firstCount = atomSetAtomCounts[0]; i < firstCount; ++i)
+    if (atomCount == 0)
+      atomCount = atomSetAtomCounts[0];
+    for (int i = 0; i < atomCount; ++i)
       newCloneAtom(atoms[i]);
   }
 
   public void cloneFirstAtomSetWithBonds(int nBonds) throws Exception {
     if (!allowMultiple)
       return;
-    cloneFirstAtomSet();
+    cloneFirstAtomSet(0);
     int firstCount = atomSetAtomCounts[0];
     for (int bondNum = 0; bondNum < nBonds; bondNum++) {
       Bond bond = bonds[bondCount - nBonds];
@@ -419,17 +421,20 @@ public class AtomSetCollection {
   }
 
   public void cloneLastAtomSet() throws Exception {
-    cloneLastAtomSet(-1);
+    cloneLastAtomSet(0, null);
   }
   
-  public void cloneLastAtomSet(int atomCount) throws Exception {
+  public void cloneLastAtomSet(int atomCount, Point3f[] pts) throws Exception {
     if (!allowMultiple)
       return;
     int count = (atomCount > 0 ? atomCount : getLastAtomSetAtomCount());
     int atomIndex = getLastAtomSetAtomIndex();
     newAtomSet();
-    for ( ; --count >= 0; ++atomIndex)
-      newCloneAtom(atoms[atomIndex]);
+    for (int i = 0; i < count; ++i) {
+      Atom atom = newCloneAtom(atoms[atomIndex++]);
+      if (pts != null)
+        atom.set(pts[i]);
+    }
   }
   
   public int getFirstAtomSetAtomCount() {
@@ -645,19 +650,30 @@ public class AtomSetCollection {
     this.applySymmetryToBonds = applySymmetryToBonds;
     this.doPackUnitCell = doPackUnitCell;
     if (supercell != null)
-      setSuperCell(supercell);
+      setSuperCell(supercell, null);
   }
   
-  private float[] scTemp;
-  private void setSuperCell(String supercell) {
-    if (scTemp != null)
-      return;
-    scTemp = new float[16];
-    if (getSymmetry().getMatrixFromString(supercell, scTemp, true) == null) {
-      scTemp = null;
-      return;
+  public float[] fmatSuperCell;
+  public float[] setSuperCell(String supercell, float[] fmat) {
+    boolean isLocal = (fmat == null);
+    if (isLocal) {
+      fmat = fmatSuperCell;
+      if (fmat != null)
+        return fmat;
+      if (supercell.startsWith("=")) // negative values only for CASTEP reader 
+        supercell = supercell.substring(1).replace('-',' ');
     }
-    Logger.info("Using supercell \n" + new Matrix4f(scTemp));
+    fmat = new float[16];
+    if (getSymmetry().getMatrixFromString(supercell, fmat, true) == null) {
+      if (isLocal)
+        fmatSuperCell = null;
+      return null;
+    }
+    if (isLocal) {
+      fmatSuperCell = fmat;
+      Logger.info("Using supercell \n" + new Matrix4f(fmat));
+    }
+    return fmat;
   }
  
   SymmetryInterface symmetry;
@@ -717,7 +733,7 @@ public class AtomSetCollection {
   private void applySymmetry(int maxX, int maxY, int maxZ) throws Exception {
     if (!coordinatesAreFractional || !getSymmetry().haveSpaceGroup())
       return;
-    if (scTemp != null) {
+    if (fmatSuperCell != null) {
 
       // supercell:
 
@@ -737,6 +753,7 @@ public class AtomSetCollection {
       minXYZ = new Point3i((int) rminx, (int) rminy, (int) rminz);
       maxXYZ = new Point3i((int) rmaxx, (int) rmaxy, (int) rmaxz);
       applyAllSymmetry();
+      supercellTranslations = unitCellTranslations;
 
       // 2) set all atom coordinates to Cartesians
 
@@ -766,18 +783,17 @@ public class AtomSetCollection {
       
       // ?? TODO
       atomSetAuxiliaryInfo[currentAtomSetIndex].remove("matUnitCellOrientation");
-
     }
 
     minXYZ = new Point3i();
     maxXYZ = new Point3i(maxX, maxY, maxZ);
     applyAllSymmetry();
-    scTemp = null;
+    fmatSuperCell = null;
   }
 
   private Point3f setSym(int i, int j, int k) {
     Point3f pt = new Point3f();
-    pt.set(scTemp[i], scTemp[j], scTemp[k]);
+    pt.set(fmatSuperCell[i], fmatSuperCell[j], fmatSuperCell[k]);
     setSymmetryMinMax(pt);
     symmetry.toCartesian(pt, false);
     return pt;
@@ -807,7 +823,7 @@ public class AtomSetCollection {
 
   private final Point3f ptOffset = new Point3f();
   
-  private Point3f unitCellOffset;
+  public Point3f unitCellOffset;
   
   private Point3i minXYZ, maxXYZ, minXYZ0, maxXYZ0;
   
@@ -830,6 +846,8 @@ public class AtomSetCollection {
   }
   
   private int dtype = 3;
+  public Vector3f[] supercellTranslations;
+  private Vector3f[] unitCellTranslations;
   
   private void applyAllSymmetry() throws Exception {
     int noSymmetryCount = getLastAtomSetAtomCount();
@@ -883,6 +901,7 @@ public class AtomSetCollection {
           * (nCells + 1));
     int pt = 0;
     int[] unitCells = new int[nCells];
+    unitCellTranslations = new Vector3f[nCells];
     int iCell = 0;
     int cell555Count = 0;
     float absRange = Math.abs(symmetryRange);
@@ -904,6 +923,7 @@ public class AtomSetCollection {
     for (int tx = minXYZ.x; tx < maxXYZ.x; tx++)
       for (int ty = minXYZ.y; ty < maxXYZ.y; ty++)
         for (int tz = minXYZ.z; tz < maxXYZ.z; tz++) {
+          unitCellTranslations[iCell] = new Vector3f(tx, ty, tz);
           unitCells[iCell++] = 555 + tx * 100 + ty * 10 + tz;
           if (tx != 0 || ty != 0 || tz != 0 || cartesians.length == 0)
             continue;
@@ -944,7 +964,7 @@ public class AtomSetCollection {
       rmaxz += absRange;
     }
     
-    if (scTemp != null) {
+    if (fmatSuperCell != null) {
       
     }
     // now apply all the translations
@@ -967,6 +987,7 @@ public class AtomSetCollection {
     setAtomSetAuxiliaryInfo("latticeDesignation", symmetry
         .getLatticeDesignation());
     setAtomSetAuxiliaryInfo("unitCellRange", unitCells);
+    setAtomSetAuxiliaryInfo("unitCellTranslations", unitCellTranslations);
     symmetry.setSpaceGroup(null);
     notionalUnitCell = new float[6];
     coordinatesAreFractional = false;
@@ -1209,7 +1230,6 @@ public class AtomSetCollection {
       setSymmetryOps();
     }
     symmetry = null;
-    notionalUnitCell = new float[6];
     coordinatesAreFractional = false; 
     setAtomSetAuxiliaryInfo("hasSymmetry", Boolean.TRUE);
     setGlobalBoolean(GLOBAL_SYMMETRY);

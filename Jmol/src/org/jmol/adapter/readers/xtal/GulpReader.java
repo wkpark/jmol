@@ -226,8 +226,7 @@ public class GulpReader extends AtomSetCollectionReader {
   private void readCellParameters(boolean isLatticeVectors) throws Exception {
     if (isLatticeVectors) {
       readLine();
-      primitiveData = new float[9];
-      fillFloatArray(primitiveData, null, 0);
+      primitiveData = fillFloatArray(null, 0, new float[9]);
       a = 0;
       return;
     }

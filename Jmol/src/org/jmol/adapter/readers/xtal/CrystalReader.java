@@ -358,9 +358,7 @@ public class CrystalReader extends AtomSetCollectionReader {
    */
 
   private void readTransformationMatrix() throws Exception {
-    float[] f = new float[9];
-    fillFloatArray(f, null, 0);
-    primitiveToCryst = new Matrix3f(f);
+    primitiveToCryst = new Matrix3f(fillFloatArray(null, 0, new float[9]));
   }
 
   private boolean readShift() {
@@ -928,7 +926,8 @@ public class CrystalReader extends AtomSetCollectionReader {
         ignore[i] = (!doGetVibration(++vibrationNumber) || tokens == null);
         if (ignore[i])
           continue;
-        lastAtomCount = cloneLastAtomSet(atomCount);
+        applySymmetryAndSetTrajectory();
+        lastAtomCount = cloneLastAtomSet(atomCount, null);
         if (i == 0)
           iAtom0 = atomSetCollection.getLastAtomSetAtomIndex();
         setFreqValue(frequencies[i], tokens);

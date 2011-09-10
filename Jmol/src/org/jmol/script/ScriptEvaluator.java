@@ -13877,7 +13877,7 @@ public class ScriptEvaluator {
         // if (isApplet)
         // evalError(GT._("The {0} command is not available for the applet.",
         // "WRITE CLIPBOARD"));
-      } else if (Parser.isOneOf(val.toLowerCase(), "png;jpg;jpeg;jpg64;jpeg64")
+      } else if (Parser.isOneOf(val.toLowerCase(), "png;pngt;jpg;jpeg;jpg64;jpeg64")
           && tokAt(pt + 1, args) == Token.integer) {
         quality = ScriptVariable.iValue(tokenAt(++pt, args));
       } else if (Parser.isOneOf(val.toLowerCase(),
@@ -13896,7 +13896,7 @@ public class ScriptEvaluator {
 
       if (type.equals("(image)")
           && Parser.isOneOf(val.toUpperCase(),
-              "GIF;JPG;JPG64;JPEG;JPEG64;PNG;PPM")) {
+              "GIF;JPG;JPG64;JPEG;JPEG64;PNG;PNGT;PPM")) {
         type = val.toUpperCase();
         pt++;
       }
@@ -13974,7 +13974,7 @@ public class ScriptEvaluator {
         else
           type = "XYZ";
       }
-      isImage = Parser.isOneOf(type, "GIF;JPEG64;JPEG;JPG64;JPG;PPM;PNG");
+      isImage = Parser.isOneOf(type, "GIF;JPEG64;JPEG;JPG64;JPG;PPM;PNG;PNGT");
       if (isImage && isShow)
         type = "JPG64";
       else if (!isImage
@@ -13987,7 +13987,7 @@ public class ScriptEvaluator {
             ERROR_writeWhat,
             "COORDS|FILE|FUNCTIONS|HISTORY|IMAGE|ISOSURFACE|JMOL|MENU|MO|POINTGROUP|QUATERNION [w,x,y,z] [derivative]"
                 + "|RAMACHANDRAN|SPT|STATE|VAR x|ZIP|ZIPALL  CLIPBOARD",
-            "CML|GIF|JPG|JPG64|JMOL|JVXL|MESH|MOL|PDB|PMESH|PNG|PPM|SDF|V2000|V3000|SPT|XJVXL|XYZ|XYZRN|XYZVIB|ZIP"
+            "CML|GIF|JPG|JPG64|JMOL|JVXL|MESH|MOL|PDB|PMESH|PNG|PNGT|PPM|SDF|V2000|V3000|SPT|XJVXL|XYZ|XYZRN|XYZVIB|ZIP"
                 + driverList.toUpperCase().replace(';', '|'));
       if (isSyntaxCheck)
         return "";

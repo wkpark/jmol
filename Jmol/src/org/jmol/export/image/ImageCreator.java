@@ -212,6 +212,20 @@ public class ImageCreator implements JmolImageCreatorInterface {
               os.write(viewer.getWrappedState(true, image.getWidth(null), image.getHeight(null)).getBytes());
             bytes = null;
           }
+        } else if (type.equalsIgnoreCase("PNGT")) {
+          if (quality < 0)
+            quality = 2;
+          else if (quality > 9)
+            quality = 9;
+          int bgcolor = viewer.getBackgroundArgb();
+          if (asBytes) {
+            bytes = PngEncoder.getBytes(image, quality, bgcolor);
+          } else {
+            PngEncoder.write(image, quality, os, bgcolor);
+            if (appendText == null)
+              os.write(viewer.getWrappedState(true, image.getWidth(null), image.getHeight(null)).getBytes());
+            bytes = null;
+          }
         } else if (type.equalsIgnoreCase("PPM")) {
           if (asBytes) {
             bytes = PpmEncoder.getBytes(image);

@@ -83,9 +83,27 @@ public class PngEncoder extends Object {
     os.write(getBytes(image, quality));
   }
 
+  public static void write(Image image, int quality, OutputStream os,
+                           int bgcolor) throws IOException {
+    os.write(getBytes(image, quality, bgcolor));
+  }
+
   public static byte[] getBytes(Image image, int quality) {
     return (new PngEncoder(image, false, PngEncoder.FILTER_NONE,
         quality)).pngEncode();
+  }
+
+  public static byte[] getBytes(Image image, int quality, int bgcolor) {
+    PngEncoder pg = new PngEncoder(image, false, PngEncoder.FILTER_NONE,
+        quality);
+    pg.setTransparentColor(bgcolor);
+    return pg.pngEncode();
+  }
+
+  private Integer transparentColor;
+
+  private void setTransparentColor(int bgcolor) {
+    transparentColor = Integer.valueOf(bgcolor);
   }
 
   /**
@@ -195,6 +213,8 @@ public class PngEncoder extends Object {
     bytePos = writeBytes(pngIdBytes, 0);
     hdrPos = bytePos;
     writeHeader();
+    if (!encodeAlpha && transparentColor != null) 
+      writeTransparentColor(transparentColor.intValue());
     dataPos = bytePos;
     if (writeImageData()) {
       writeEnd();
@@ -399,16 +419,14 @@ public class PngEncoder extends Object {
    */
   protected void writeHeader() {
 
-    int startPos;
-
-    startPos = bytePos = writeInt4(13, bytePos);
+    int startPos = bytePos = writeInt4(13, bytePos);
     bytePos = writeString("IHDR", bytePos);
     width = image.getWidth(null);
     height = image.getHeight(null);
     bytePos = writeInt4(width, bytePos);
     bytePos = writeInt4(height, bytePos);
     bytePos = writeByte(8, bytePos);      // bit depth
-    bytePos = writeByte((encodeAlpha)
+    bytePos = writeByte((encodeAlpha)     // color type
                         ? 6
                         : 2, bytePos);    // direct model
     bytePos = writeByte(0, bytePos);      // compression method
@@ -419,6 +437,24 @@ public class PngEncoder extends Object {
     crcValue = crc.getValue();
     bytePos = writeInt4((int) crcValue, bytePos);
   }
+
+  /**
+   * Write a PNG "tRNS" chunk into the pngBytes array.
+   * @param icolor 
+   */
+  private void writeTransparentColor(int icolor) {
+    
+    crc.reset();
+    int startPos = bytePos = writeInt4(6, bytePos);
+    bytePos = writeString("tRNS", bytePos);
+    bytePos = writeInt2((icolor >> 16) & 0xFF, bytePos);
+    bytePos = writeInt2((icolor >> 8) & 0xFF, bytePos);
+    bytePos = writeInt2(icolor & 0xFF, bytePos);
+    crc.update(pngBytes, startPos, bytePos - startPos);
+    crcValue = crc.getValue();
+    bytePos = writeInt4((int) crcValue, bytePos);
+  }
+
 
   /**
    * Perform "sub" filtering on the given row.
@@ -588,7 +624,6 @@ public class PngEncoder extends Object {
       crc.update("IDAT".getBytes());
       bytePos = writeBytes(compressedLines, nCompressed, bytePos);
       crc.update(compressedLines, 0, nCompressed);
-
       crcValue = crc.getValue();
       bytePos = writeInt4((int) crcValue, bytePos);
       scrunch.finish();

@@ -45,6 +45,8 @@ import java.io.OutputStream;
  * comments, and bug fixes at:
  *
  *   david@catcode.com
+ *   
+ * Modified by Bob Hanson hansonr@stolaf.edu to include transparent background option
  *
  * @author J. David Eisenberg
  * @author http://catcode.com/pngencoder/

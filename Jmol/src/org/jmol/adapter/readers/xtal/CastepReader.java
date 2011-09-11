@@ -57,7 +57,9 @@ import javax.vecmath.Vector3f;
  * relevant section of .cell file are included as comments below
  * 
  * preliminary .phonon frequency reader -- hansonr@stolaf.edu 9/2011
- *   atom's mass is encoded as bfactor
+ *   -- Many thanks to Keith Refson for his assistance with this implementation
+ *   -- atom's mass is encoded as bfactor
+ *   -- FILTER options include "q=n" where n is an integer (-n for second version), or "q={1/4 1/4 1}"
  *
  * @author Joerg Meyer, FHI Berlin 2009 (meyer@fhi-berlin.mpg.de)
  * @version 1.2
@@ -77,6 +79,8 @@ public class CastepReader extends AtomSetCollectionReader {
   @Override
   public void initializeReader() throws Exception {
     
+    if (filter != null) 
+      filter = filter.replace('(','{').replace(')','}');
     while (tokenizeCastepCell() > 0) {
       if (isPhonon)
         return; // use checkLine
@@ -394,17 +398,33 @@ ang
   
   private void readPhononFrequencies() throws Exception {
     String[] tokens = getTokens();
-    if (tokens[1].equals(lastQPt))
-      return;
-    lastQPt = tokens[1];
     Vector3f qvec = new Vector3f(parseFloat(tokens[2]), parseFloat(tokens[3]),
         parseFloat(tokens[4]));
+    String fcoord = getFractionalCoord(qvec);
+    if (fcoord == null)
+      fcoord = tokens[2] + " " + tokens[3] + " " + tokens[4];
+    fcoord = "{" + fcoord + "}";
+    boolean isOK = false;
+    boolean isSecond = (tokens[1].equals(lastQPt));
+    lastQPt = tokens[1];
+    if (filter != null && checkFilter("Q=")) {
+      // check for an explicit q=n or q={1/4 1/2 1/4}
+      if (!checkFilter("Q=" + (isSecond ? "-" : "") + fcoord) 
+          && !checkFilter("Q=" + (isSecond ? "-" : "") + lastQPt + ";")
+          
+      )
+        return;
+      isOK = true;
+    }
+    if (!isOK && isSecond)
+      return;
     boolean isGammaPoint = (qvec.length() == 0);
     float[] fsc = (supercell == null || !supercell.startsWith("=") ? null : 
       atomSetCollection.setSuperCell(supercell.substring(1), new float[16]));
-    float nx = 0, ny = 0, nz = 0;
-    if (fsc != null) {
-      // only select corresponding phonon vector -- one that has integral dot product
+    float nx = 1, ny = 1, nz = 1;
+    if (fsc != null && !isOK) {
+      // only select corresponding phonon vector 
+      // relating to this supercell -- one that has integral dot product
       float dx = (qvec.x == 0 ? 1 : qvec.x) * (nx = fsc[0]);
       float dy = (qvec.y == 0 ? 1 : qvec.y) * (ny = fsc[5]);
       float dz = (qvec.z == 0 ? 1 : qvec.z) * (nz = fsc[10]);
@@ -413,16 +433,17 @@ ang
           || Math.abs(dz - 1) > 0.001
           )
         return;
+      isOK = true;
     }
     if (fsc == null || !havePhonons)
       appendLoadNote("q=" + qvec);
-    if ((fsc == null) == !isGammaPoint)
+    if (!isOK && (fsc == null) == !isGammaPoint)
       return;
     if (havePhonons)
       return;
     havePhonons = true;
+    String qname = "q=" + lastQPt + " " + fcoord;
     applySymmetryAndSetTrajectory();
-    String qname = "q-pt=" + lastQPt + " (" + atomSetCollection.getSymmetry().fcoord(qvec) + ")";
     if (isGammaPoint)
       qvec = null;
     List<Float> freqs = new ArrayList<Float>();
@@ -458,21 +479,28 @@ ang
         fillFloatArray(null, 0, data);
         for (int k = iatom++; k < aCount; k++)
           if (atoms[k].atomSite == j) {
-            if (qvec != null) {
-              // fractional coordinates now in terms of 
-              // the SUPERCELL need to be multiplied by
-              // the supercell scaling factors
-              t.sub(atoms[k], atoms[atoms[k].atomSite]);
-              t.x *= nx;
-              t.y *= ny;
-              t.z *= nz;
-            }
+            t.sub(atoms[k], atoms[atoms[k].atomSite]);
+            // for supercells, fractional coordinates end up
+            // in terms of the SUPERCELL and need to be 
+            // multiplied by the supercell scaling factors
+            t.x *= nx;
+            t.y *= ny;
+            t.z *= nz;
             setPhononVector(data, atoms[k], t, qvec, v);
             atomSetCollection.addVibrationVector(k, v.x, v.y, v.z, true);
           }
       }
     }
   }
+
+  private String getFractionalCoord(Vector3f qvec) {
+    return (isInt(qvec.x * 12) && isInt(qvec.y * 12) && isInt(qvec.z * 12) ?
+        getSymmetry().fcoord(qvec) : null);
+  }
+
+  private static boolean isInt(float f) {
+    return (Math.abs(f - (int) f) < 0.001f);
+  } 
 
   private static final double TWOPI = Math.PI * 2;
   /**

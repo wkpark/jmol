@@ -753,7 +753,6 @@ public class AtomSetCollection {
       minXYZ = new Point3i((int) rminx, (int) rminy, (int) rminz);
       maxXYZ = new Point3i((int) rmaxx, (int) rmaxy, (int) rmaxz);
       applyAllSymmetry();
-      supercellTranslations = unitCellTranslations;
 
       // 2) set all atom coordinates to Cartesians
 
@@ -847,7 +846,6 @@ public class AtomSetCollection {
   }
   
   private int dtype = 3;
-  public Vector3f[] supercellTranslations;
   private Vector3f[] unitCellTranslations;
   
   private void applyAllSymmetry() throws Exception {

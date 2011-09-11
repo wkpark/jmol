@@ -65,7 +65,7 @@ public class TestSmarterJmolAdapter extends TestSuite {
     result.addDirectory("animations", "cml", "XmlCml");
     result.addDirectory("animations", "pdb;pdb.gz", "Pdb");
     result.addDirectory("animations", "xyz", "Xyz");
-    result.addDirectory("castep", "cell", "Castep");
+    result.addDirectory("castep", "cell;phonon", "Castep");
     result.addDirectory("cif", "cif", "Cif");
     result.addDirectory("c3xml", "c3xml", "XmlChem3d");
     result.addDirectory("cml", "cml", "XmlCml");

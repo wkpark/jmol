@@ -78,11 +78,8 @@ public class CastepReader extends AtomSetCollectionReader {
   public void initializeReader() throws Exception {
     
     while (tokenizeCastepCell() > 0) {
-      if (isPhonon) {
-        if (doPackUnitCell && supercell != null)
-          doPackUnitCell = false;
+      if (isPhonon)
         return; // use checkLine
-      }
       if ((tokens.length >= 2) && (tokens[0].equalsIgnoreCase("%BLOCK"))) {
 
           /*
@@ -405,11 +402,12 @@ ang
     boolean isGammaPoint = (qvec.length() == 0);
     float[] fsc = (supercell == null || !supercell.startsWith("=") ? null : 
       atomSetCollection.setSuperCell(supercell.substring(1), new float[16]));
+    float nx = 0, ny = 0, nz = 0;
     if (fsc != null) {
       // only select corresponding phonon vector -- one that has integral dot product
-      float dx = (qvec.x == 0 ? 1 : qvec.x) * fsc[0];
-      float dy = (qvec.y == 0 ? 1 : qvec.y) * fsc[5];
-      float dz = (qvec.z == 0 ? 1 : qvec.z) * fsc[10];
+      float dx = (qvec.x == 0 ? 1 : qvec.x) * (nx = fsc[0]);
+      float dy = (qvec.y == 0 ? 1 : qvec.y) * (ny = fsc[5]);
+      float dz = (qvec.z == 0 ? 1 : qvec.z) * (nz = fsc[10]);
       if (Math.abs(dx - 1) > 0.001
           || Math.abs(dy - 1) > 0.001
           || Math.abs(dz - 1) > 0.001
@@ -436,6 +434,7 @@ ang
     int frequencyCount = freqs.size();
     float[] data = new float[8];
     Vector3f v = new Vector3f();
+    Vector3f t = new Vector3f();
     atomSetCollection.setCollectionName(qname);
     for (int i = 0; i < frequencyCount; i++) {
       if (!doGetVibration(++vibrationNumber)) {
@@ -447,6 +446,7 @@ ang
         cloneLastAtomSet(atomCount, atomPts);
         applySymmetryAndSetTrajectory();
       }
+      symmetry = atomSetCollection.getSymmetry();
       int iatom = atomSetCollection.getLastAtomSetAtomIndex();
       float freq = freqs.get(i).floatValue();
       atomSetCollection.setAtomSetFrequency(null, null, "" + freq, null);
@@ -456,16 +456,23 @@ ang
       int aCount = atomSetCollection.getAtomCount();
       for (int j = 0; j < atomCount; j++) {
         fillFloatArray(null, 0, data);
-        for (int ipt = 0, k = iatom++; k < aCount; k++)
+        for (int k = iatom++; k < aCount; k++)
           if (atoms[k].atomSite == j) {
-            setPhononVector(data, atoms[k], ipt++, qvec, v);
+            if (qvec != null) {
+              // fractional coordinates now in terms of 
+              // the SUPERCELL need to be multiplied by
+              // the supercell scaling factors
+              t.sub(atoms[k], atoms[atoms[k].atomSite]);
+              t.x *= nx;
+              t.y *= ny;
+              t.z *= nz;
+            }
+            setPhononVector(data, atoms[k], t, qvec, v);
             atomSetCollection.addVibrationVector(k, v.x, v.y, v.z, true);
           }
       }
     }
   }
-
-  private final static Vector3f v000 = new Vector3f();
 
   private static final double TWOPI = Math.PI * 2;
   /**
@@ -473,20 +480,17 @@ ang
    * applying the appropriate translation, 
    * storing the results in v 
    * 
-   * @param data  from .phonon line parsed for floats
+   * @param data   from .phonon line parsed for floats
    * @param atom
-   * @param icell 
-   * @param qvec
-   * @param v     return vector
+   * @param rTrans translation vector in unit fractional coord
+   * @param qvec   q point vector
+   * @param v      return vector
    */
-  private void setPhononVector(float[] data, Atom atom, int icell, Vector3f qvec, Vector3f v) {
-    // complex vx = data[2/3], vy = data[4/5], vz = data[6/7]
+  private void setPhononVector(float[] data, Atom atom, Vector3f rTrans, Vector3f qvec, Vector3f v) {
+    // complex[r/i] vx = data[2/3], vy = data[4/5], vz = data[6/7]
     if (qvec == null) {
       v.set(data[2], data[4], data[6]);
     } else {
-      Vector3f[] st = atomSetCollection.supercellTranslations;
-      Vector3f t = (icell < 0 ? v000 : st[icell % st.length]);
-      
       // from CASTEP ceteprouts.pm:
       //  $phase = $qptx*$$sh[0] + $qpty*$$sh[1] + $qptz*$$sh[2];
       //  $cosph = cos($twopi*$phase); $sinph = sin($twopi*$phase); 
@@ -494,7 +498,7 @@ ang
       //  push @$pertyo, $cosph*$$perty_r[$iat] + $sinph*$$perty_i[$iat];
       //  push @$pertzo, $cosph*$$pertz_r[$iat] + $sinph*$$pertz_i[$iat];
       
-      double phase = qvec.dot(t);
+      double phase = qvec.dot(rTrans);
       double cosph = Math.cos(TWOPI * phase);
       double sinph = Math.sin(TWOPI * phase);
       v.x = (float)(cosph * data[2] + sinph * data[3]);

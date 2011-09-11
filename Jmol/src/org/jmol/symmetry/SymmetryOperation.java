@@ -1177,7 +1177,7 @@ class SymmetryOperation extends Matrix4f {
         .append(" color ").append(color);
   }
 
-  private static String fcoord(Tuple3f p) {
+  static String fcoord(Tuple3f p) {
     return fc(p.x) + " " + fc(p.y) + " " + fc(p.z);
   }
 

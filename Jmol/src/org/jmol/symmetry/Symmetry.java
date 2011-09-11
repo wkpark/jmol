@@ -32,6 +32,7 @@ import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
+import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.api.SymmetryInterface;
@@ -373,6 +374,10 @@ public class Symmetry implements SymmetryInterface {
                                int iRange, int jRange, int kRange, Point3f ptOffset) {
     return (unitCell != null && unitCell.checkDistance(f1, f2, distance, dx, 
         iRange, jRange, kRange, ptOffset));
+  }
+
+  public String fcoord(Tuple3f p) {
+    return SymmetryOperation.fcoord(p);
   }
 
 }  

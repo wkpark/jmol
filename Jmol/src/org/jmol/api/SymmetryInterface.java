@@ -7,6 +7,7 @@ import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
+import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.modelset.Atom;
@@ -147,5 +148,7 @@ public interface SymmetryInterface {
                                         float dx, int iRange, int jRange, int kRange, Point3f ptOffset);
 
   public abstract Point3f getFractionalOffset();
+
+  public abstract String fcoord(Tuple3f p);
 
 }

@@ -390,8 +390,13 @@ ang
 
   private Point3f[] atomPts;
   
+  private String lastQPt;
+  
   private void readPhononFrequencies() throws Exception {
     String[] tokens = getTokens();
+    if (tokens[1].equals(lastQPt))
+      return;
+    lastQPt = tokens[1];
     Vector3f qvec = new Vector3f(parseFloat(tokens[2]), parseFloat(tokens[3]),
         parseFloat(tokens[4]));
     boolean isGammaPoint = (qvec.length() == 0);
@@ -416,6 +421,7 @@ ang
       return;
     havePhonons = true;
     applySymmetryAndSetTrajectory();
+    String qname = "q-pt=" + lastQPt + " (" + getSymmetry().fcoord(qvec) + ")";
     if (isGammaPoint)
       qvec = null;
     List<Float> freqs = new ArrayList<Float>();
@@ -427,6 +433,7 @@ ang
     int frequencyCount = freqs.size();
     float[] data = new float[8];
     Vector3f v = new Vector3f();
+    atomSetCollection.setCollectionName(qname);
     for (int i = 0; i < frequencyCount; i++) {
       if (!doGetVibration(++vibrationNumber)) {
         for (int j = 0; j < atomCount; j++)
@@ -441,7 +448,7 @@ ang
       float freq = freqs.get(i).floatValue();
       atomSetCollection.setAtomSetFrequency(null, null, "" + freq, null);
       atomSetCollection.setAtomSetName(TextFormat.formatDecimal(freq, 2)
-          + " cm-1");
+          + " cm-1 " + qname);
       Atom[] atoms = atomSetCollection.getAtoms();
       int aCount = atomSetCollection.getAtomCount();
       for (int j = 0; j < atomCount; j++) {

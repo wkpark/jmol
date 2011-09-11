@@ -783,6 +783,7 @@ public class AtomSetCollection {
       
       // ?? TODO
       atomSetAuxiliaryInfo[currentAtomSetIndex].remove("matUnitCellOrientation");
+      doPackUnitCell = false; // already done that.
     }
 
     minXYZ = new Point3i();

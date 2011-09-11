@@ -78,8 +78,11 @@ public class CastepReader extends AtomSetCollectionReader {
   public void initializeReader() throws Exception {
     
     while (tokenizeCastepCell() > 0) {
-      if (isPhonon)
+      if (isPhonon) {
+        if (doPackUnitCell && supercell != null)
+          doPackUnitCell = false;
         return; // use checkLine
+      }
       if ((tokens.length >= 2) && (tokens[0].equalsIgnoreCase("%BLOCK"))) {
 
           /*
@@ -421,7 +424,7 @@ ang
       return;
     havePhonons = true;
     applySymmetryAndSetTrajectory();
-    String qname = "q-pt=" + lastQPt + " (" + getSymmetry().fcoord(qvec) + ")";
+    String qname = "q-pt=" + lastQPt + " (" + atomSetCollection.getSymmetry().fcoord(qvec) + ")";
     if (isGammaPoint)
       qvec = null;
     List<Float> freqs = new ArrayList<Float>();

@@ -59,7 +59,13 @@ import javax.vecmath.Vector3f;
  * preliminary .phonon frequency reader -- hansonr@stolaf.edu 9/2011
  *   -- Many thanks to Keith Refson for his assistance with this implementation
  *   -- atom's mass is encoded as bfactor
- *   -- FILTER options include "q=n" where n is an integer (-n for second version), or "q={1/4 1/4 1}"
+ *   -- FILTER options include "q=n" where n is an integer or "q={1/4 1/4 0}"
+ *   -- for non-simple fractions, you must match the q vector with these
+ *   -- for simple fractions, you can also just specify SUPERCELL {a b c} where
+ *   -- the number of cells matches a given wavevector -- SUPERCELL {4 4 1}, for example
+ *   -- following this with ".1" ".2" etc. gives first, second, third, etc. occurance:
+ *   -- load "xxx.phonon" FILTER "q=1.3" ....
+ *   -- load "xxx.phonon" FILTER "{0 0 0}.3" ....
  *
  * @author Joerg Meyer, FHI Berlin 2009 (meyer@fhi-berlin.mpg.de)
  * @version 1.2
@@ -79,8 +85,10 @@ public class CastepReader extends AtomSetCollectionReader {
   @Override
   public void initializeReader() throws Exception {
     
-    if (filter != null) 
+    if (filter != null) {
       filter = filter.replace('(','{').replace(')','}');
+      filter = TextFormat.simpleReplace(filter, "-PT", "");
+    }
     while (tokenizeCastepCell() > 0) {
       if (isPhonon)
         return; // use checkLine
@@ -395,34 +403,38 @@ ang
   private Point3f[] atomPts;
   
   private String lastQPt;
+  private int qpt2;
   
   private void readPhononFrequencies() throws Exception {
     String[] tokens = getTokens();
     Vector3f qvec = new Vector3f(parseFloat(tokens[2]), parseFloat(tokens[3]),
         parseFloat(tokens[4]));
     String fcoord = getFractionalCoord(qvec);
+    String qtoks = "{" + tokens[2] + " " + tokens[3] + " " + tokens[4] + "}";
     if (fcoord == null)
-      fcoord = tokens[2] + " " + tokens[3] + " " + tokens[4];
-    fcoord = "{" + fcoord + "}";
+      fcoord = qtoks;
+    else
+      fcoord = "{" + fcoord + "}";
     boolean isOK = false;
     boolean isSecond = (tokens[1].equals(lastQPt));
+    qpt2 = (isSecond ? qpt2 + 1 : 1);
+      
     lastQPt = tokens[1];
+    //TODO not quite right: can have more than two options. 
     if (filter != null && checkFilter("Q=")) {
       // check for an explicit q=n or q={1/4 1/2 1/4}
-      if (!checkFilter("Q=" + (isSecond ? "-" : "") + fcoord) 
-          && !checkFilter("Q=" + (isSecond ? "-" : "") + lastQPt + ";")
-          
-      )
+      isOK = (checkFilter("Q=" + fcoord + "." + qpt2 + ";") 
+          || checkFilter("Q=" + lastQPt + "." + qpt2 + ";")
+          || !isSecond && checkFilter("Q=" + fcoord + ";")
+          || !isSecond && checkFilter("Q=" + lastQPt + ";"));
+      if (!isOK)
         return;
-      isOK = true;
     }
-    if (!isOK && isSecond)
-      return;
     boolean isGammaPoint = (qvec.length() == 0);
     float[] fsc = (supercell == null || !supercell.startsWith("=") ? null : 
       atomSetCollection.setSuperCell(supercell.substring(1), new float[16]));
     float nx = 1, ny = 1, nz = 1;
-    if (fsc != null && !isOK) {
+    if (fsc != null && !isOK && !isSecond) {
       // only select corresponding phonon vector 
       // relating to this supercell -- one that has integral dot product
       float dx = (qvec.x == 0 ? 1 : qvec.x) * (nx = fsc[0]);
@@ -436,7 +448,9 @@ ang
       isOK = true;
     }
     if (fsc == null || !havePhonons)
-      appendLoadNote("q=" + qvec);
+      appendLoadNote(line);
+    if (!isOK && isSecond)
+      return;
     if (!isOK && (fsc == null) == !isGammaPoint)
       return;
     if (havePhonons)

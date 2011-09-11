@@ -60,7 +60,8 @@ import javax.vecmath.Vector3f;
  *   -- Many thanks to Keith Refson for his assistance with this implementation
  *   -- atom's mass is encoded as bfactor
  *   -- FILTER options include "q=n" where n is an integer or "q={1/4 1/4 0}"
- *   -- for non-simple fractions, you must match the q vector with these
+ *   -- for non-simple fractions, you must use the exact form of the wavevector description:
+ *   -- load "xxx.phonon" FILTER "q=(-0.083333 0.083333 0.500000)
  *   -- for simple fractions, you can also just specify SUPERCELL {a b c} where
  *   -- the number of cells matches a given wavevector -- SUPERCELL {4 4 1}, for example
  *   -- following this with ".1" ".2" etc. gives first, second, third, etc. occurance:
@@ -88,6 +89,7 @@ public class CastepReader extends AtomSetCollectionReader {
     if (filter != null) {
       filter = filter.replace('(','{').replace(')','}');
       filter = TextFormat.simpleReplace(filter, "-PT", "");
+      filter = TextFormat.simpleReplace(filter, "  ", " ");
     }
     while (tokenizeCastepCell() > 0) {
       if (isPhonon)

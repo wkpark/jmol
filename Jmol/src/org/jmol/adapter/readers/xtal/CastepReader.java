@@ -79,9 +79,12 @@ public class CastepReader extends AtomSetCollectionReader {
   private float a, b, c, alpha, beta, gamma;
   private Vector3f[] abc = new Vector3f[3];
   private boolean iHaveFractionalCoordinates;
-  private boolean isPhonon;
-
   private int atomCount;
+  private boolean isPhonon;
+  private Point3f[] atomPts;
+  private boolean havePhonons = false;  
+  private String lastQPt;
+  private int qpt2;
 
   @Override
   public void initializeReader() throws Exception {
@@ -95,12 +98,6 @@ public class CastepReader extends AtomSetCollectionReader {
       if (isPhonon)
         return; // use checkLine
       if ((tokens.length >= 2) && (tokens[0].equalsIgnoreCase("%BLOCK"))) {
-
-          /*
-           * unit cell can only be set later
-           * to get symmetry properly initialized -
-           * see below!
-           */
 
           /*
 %BLOCK LATTICE_ABC
@@ -364,15 +361,16 @@ ang
       String[] tokens = getTokens();
       Atom atom = atomSetCollection.addNewAtom();
       setAtomCoord(atom, parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3]));
-      atom.bfactor = parseFloat(tokens[5]); // mass, actually
       atom.elementSymbol = tokens[4];
+      atom.bfactor = parseFloat(tokens[5]); // mass, actually
     }
     atomCount = atomSetCollection.getAtomCount();
+    // we collect the atom points, because any supercell business
+    // will trash those, and we need the originals
     atomPts = new Point3f[atomCount];
     Atom[] atoms = atomSetCollection.getAtoms();
     for (int i = 0; i < atomCount; i++)
       atomPts[i] = new Point3f(atoms[i]);
-
   }
   
 
@@ -400,13 +398,6 @@ ang
    6   2 -0.381712598770  0.000000000000      0.381712598770  0.000000000000      0.381712598770  0.000000000000
    */
 
-  private boolean havePhonons = false;
-
-  private Point3f[] atomPts;
-  
-  private String lastQPt;
-  private int qpt2;
-  
   private void readPhononFrequencies() throws Exception {
     String[] tokens = getTokens();
     Vector3f qvec = new Vector3f(parseFloat(tokens[2]), parseFloat(tokens[3]),
@@ -538,16 +529,16 @@ ang
       // from CASTEP ceteprouts.pm:
       //  $phase = $qptx*$$sh[0] + $qpty*$$sh[1] + $qptz*$$sh[2];
       //  $cosph = cos($twopi*$phase); $sinph = sin($twopi*$phase); 
-      //  push @$pertxo, $cosph*$$pertx_r[$iat] + $sinph*$$pertx_i[$iat];
-      //  push @$pertyo, $cosph*$$perty_r[$iat] + $sinph*$$perty_i[$iat];
-      //  push @$pertzo, $cosph*$$pertz_r[$iat] + $sinph*$$pertz_i[$iat];
+      //  push @$pertxo, $cosph*$$pertx_r[$iat] - $sinph*$$pertx_i[$iat];
+      //  push @$pertyo, $cosph*$$perty_r[$iat] - $sinph*$$perty_i[$iat];
+      //  push @$pertzo, $cosph*$$pertz_r[$iat] - $sinph*$$pertz_i[$iat];
       
       double phase = qvec.dot(rTrans);
       double cosph = Math.cos(TWOPI * phase);
       double sinph = Math.sin(TWOPI * phase);
-      v.x = (float)(cosph * data[2] + sinph * data[3]);
-      v.y = (float)(cosph * data[4] + sinph * data[5]);
-      v.z = (float)(cosph * data[6] + sinph * data[7]);
+      v.x = (float)(cosph * data[2] - sinph * data[3]);
+      v.y = (float)(cosph * data[4] - sinph * data[5]);
+      v.z = (float)(cosph * data[6] - sinph * data[7]);
     }
     v.scale((float) Math.sqrt(1 / atom.bfactor)); // mass stored in bfactor
   }

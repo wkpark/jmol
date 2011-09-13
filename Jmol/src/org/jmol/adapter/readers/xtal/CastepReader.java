@@ -85,14 +85,18 @@ public class CastepReader extends AtomSetCollectionReader {
   private boolean havePhonons = false;  
   private String lastQPt;
   private int qpt2;
+  private Vector3f desiredQpt;
+  private String desiredQ;
 
   @Override
   public void initializeReader() throws Exception {
     
     if (filter != null) {
       filter = filter.replace('(','{').replace(')','}');
-      filter = TextFormat.simpleReplace(filter, "-PT", "");
       filter = TextFormat.simpleReplace(filter, "  ", " ");
+      if (filter.indexOf("{") >= 0) 
+        setDesiredQpt(filter.substring(filter.indexOf("{")));
+      filter = TextFormat.simpleReplace(filter, "-PT", "");
     }
     while (tokenizeCastepCell() > 0) {
       if (isPhonon)
@@ -150,6 +154,61 @@ ang
     continuing = false;
   }
   
+  private void setDesiredQpt(String s) {
+    desiredQpt = new Vector3f();
+    desiredQ = "";
+    float num = 1;
+    float denom = 1;
+    int ipt = 0;
+    int xyz = 0;
+    boolean useSpace = (s.indexOf(',') < 0);
+    for (int i = 0; i < s.length(); i++) {
+      char c = s.charAt(i);
+      switch (c) {
+      case '{':
+        ipt = i + 1;
+        num = 1;
+        denom = 1;
+        break;
+      case '/':
+        num = parseFloat(s.substring(ipt, i));
+        ipt = i + 1;
+        denom = 0;
+        break;
+      case ',':
+      case ' ':
+      case '}':
+        if (c == '}')
+          desiredQ = s.substring(0, i + 1);
+        else if ((c == ' ') != useSpace)
+          break;
+        if (denom == 0) {
+          denom = parseFloat(s.substring(ipt, i));
+        } else {
+          num = parseFloat(s.substring(ipt, i));
+        }
+        num /= denom;
+        switch (xyz++) {
+        case 0:
+          desiredQpt.x = num;
+          break;
+        case 1:
+          desiredQpt.y = num;
+          break;
+        case 2:
+          desiredQpt.z = num;
+          break;
+        }
+        denom = 1;
+        if (c == '}')
+          i = s.length();
+        ipt = i + 1;
+        break;
+      }
+    }
+    Logger.info("Looking for q-pt=" + desiredQpt);
+  }
+
   @Override
   protected boolean checkLine() throws Exception {
     // only for .phonon file
@@ -400,6 +459,7 @@ ang
 
   private void readPhononFrequencies() throws Exception {
     String[] tokens = getTokens();
+    Vector3f v = new Vector3f();
     Vector3f qvec = new Vector3f(parseFloat(tokens[2]), parseFloat(tokens[3]),
         parseFloat(tokens[4]));
     String fcoord = getFractionalCoord(qvec);
@@ -416,6 +476,11 @@ ang
     //TODO not quite right: can have more than two options. 
     if (filter != null && checkFilter("Q=")) {
       // check for an explicit q=n or q={1/4 1/2 1/4}
+      if (desiredQpt != null) {
+        v.sub(desiredQpt, qvec);
+        if (v.length() < 0.001f)
+          fcoord = desiredQ;
+      }
       isOK = (checkFilter("Q=" + fcoord + "." + qpt2 + ";") 
           || checkFilter("Q=" + lastQPt + "." + qpt2 + ";")
           || !isSecond && checkFilter("Q=" + fcoord + ";")
@@ -461,7 +526,6 @@ ang
     readLine();
     int frequencyCount = freqs.size();
     float[] data = new float[8];
-    Vector3f v = new Vector3f();
     Vector3f t = new Vector3f();
     atomSetCollection.setCollectionName(qname);
     for (int i = 0; i < frequencyCount; i++) {

@@ -65,6 +65,7 @@ class IsoShapeReader extends VolumeDataReader {
 
   private final static double A0 = 0.52918; //x10^-10 meters
   private final static double ROOT2 = 1.414214;
+  private static final float ATOMIC_ORBITAL_ZERO_CUT_OFF = 1e-7f;
 
   private float radius;
   private final Point3f ptPsi = new Point3f();
@@ -178,6 +179,8 @@ class IsoShapeReader extends VolumeDataReader {
               + ptTemp.z * ptTemp.z);
     }
     float value = (float) hydrogenAtomPsi(ptTemp);
+    if (Math.abs(value) < ATOMIC_ORBITAL_ZERO_CUT_OFF)
+      value = 0;
     return (allowNegative || value >= 0 ? value : 0);
   }
 

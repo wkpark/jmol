@@ -1450,10 +1450,10 @@ public class AtomSetCollection {
       return;
     if (trajectoryNames == null) {
       trajectoryNames = new ArrayList<String>();
-      for (int i = 0; i < trajectoryStepCount - 1; i++)
-        trajectoryNames.add(null);
     }
-    trajectoryNames.add(trajectoryStepCount - 1, name);
+    for (int i = trajectoryNames.size(); i < trajectoryStepCount; i++)
+      trajectoryNames.add(null);
+    trajectoryNames.set(trajectoryStepCount - 1, name);
   }
 
   /**

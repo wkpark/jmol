@@ -539,9 +539,7 @@ ang
         continue;
       }
       if (desiredVibrationNumber <= 0) {
-        if (isTrajectory) {
-          atomSetCollection.setTrajectory();
-        } else {
+        if (!isTrajectory) {
           cloneLastAtomSet(atomCount, atomPts);
           applySymmetryAndSetTrajectory();
         }
@@ -549,9 +547,6 @@ ang
       symmetry = atomSetCollection.getSymmetry();
       int iatom = atomSetCollection.getLastAtomSetAtomIndex();
       float freq = freqs.get(i).floatValue();
-      atomSetCollection.setAtomSetFrequency(null, null, "" + freq, null);
-      atomSetCollection.setAtomSetName(TextFormat.formatDecimal(freq, 2)
-          + " cm-1 " + qname);
       Atom[] atoms = atomSetCollection.getAtoms();
       int aCount = atomSetCollection.getAtomCount();
       for (int j = 0; j < atomCount; j++) {
@@ -569,6 +564,11 @@ ang
             atomSetCollection.addVibrationVector(k, v.x, v.y, v.z, true);
           }
       }
+      if (isTrajectory)
+        atomSetCollection.setTrajectory();
+      atomSetCollection.setAtomSetFrequency(null, null, "" + freq, null);
+      atomSetCollection.setAtomSetName(TextFormat.formatDecimal(freq, 2)
+          + " cm-1 " + qname);
     }
   }
 

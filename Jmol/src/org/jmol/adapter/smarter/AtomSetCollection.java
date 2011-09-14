@@ -1450,7 +1450,6 @@ public class AtomSetCollection {
       return;
     if (trajectoryNames == null) {
       trajectoryNames = new ArrayList<String>();
-      setAtomSetCollectionAuxiliaryInfo("trajectoryNames", trajectoryNames);
       for (int i = 0; i < trajectoryStepCount - 1; i++)
         trajectoryNames.add(null);
     }

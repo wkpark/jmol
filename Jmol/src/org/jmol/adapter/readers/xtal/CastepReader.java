@@ -539,8 +539,12 @@ ang
         continue;
       }
       if (desiredVibrationNumber <= 0) {
-        cloneLastAtomSet(atomCount, atomPts);
-        applySymmetryAndSetTrajectory();
+        if (isTrajectory) {
+          atomSetCollection.setTrajectory();
+        } else {
+          cloneLastAtomSet(atomCount, atomPts);
+          applySymmetryAndSetTrajectory();
+        }
       }
       symmetry = atomSetCollection.getSymmetry();
       int iatom = atomSetCollection.getLastAtomSetAtomIndex();

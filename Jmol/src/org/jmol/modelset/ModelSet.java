@@ -187,12 +187,16 @@ import javax.vecmath.Vector3f;
     Point3f[] trajectory = trajectorySteps.get(modelIndex);
     Vector3f[] vibrations = (vibrationSteps == null ? null : vibrationSteps.get(modelIndex));
     BitSet bs = new BitSet();
+    Vector3f vib = new Vector3f();
     int iMax = iFirst + getAtomCountInModel(baseModel);
     for (int pt = 0, i = iFirst; i < iMax && pt < trajectory.length && trajectory[pt]!= null; i++, pt++) {
       atoms[i].setFractionalCoord(trajectory[pt], true);
       atoms[i].modelIndex = (short) modelIndex;
-      if (vibrations != null && vibrations[pt] != null)
-        setVibrationVector(i, vibrations[pt].x, vibrations[pt].y, vibrations[pt].z);
+      if (vibrationSteps != null) {
+        if (vibrations != null && vibrations[pt] != null)
+          vib = vibrations[pt];
+          setVibrationVector(i, vib.x, vib.y, vib.z);
+      }
       bs.set(i);
     }
     // Clear the Binary Search so that select within(),

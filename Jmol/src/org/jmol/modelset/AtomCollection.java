@@ -854,7 +854,7 @@ abstract public class AtomCollection {
           setBFactor(atomIndex, x);
           break;
         case TAINT_VALENCE:
-          atom.setValence((int)x);          
+          atom.setValence((int)x);     
           break;
         case TAINT_VANDERWAALS:
           atom.setRadius(x);          

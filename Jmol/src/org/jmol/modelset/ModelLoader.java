@@ -157,9 +157,12 @@ public final class ModelLoader {
     jmolData = (String) modelSet.getModelSetAuxiliaryInfo("jmolData");
     fileHeader = (String) modelSet.getModelSetAuxiliaryInfo("fileHeader");
     modelSet.trajectorySteps = (List<Point3f[]>) modelSet.getModelSetAuxiliaryInfo("trajectorySteps");
+    modelSet.vibrationSteps = (List<Vector3f[]>) modelSet.getModelSetAuxiliaryInfo("vibrationSteps");
     isTrajectory = (modelSet.trajectorySteps != null);
-    if (isTrajectory)
+    if (isTrajectory) {
       info.remove("trajectorySteps");
+      info.remove("vibrationSteps");
+    }
     doAddHydrogens = jbr != null && !isTrajectory
         && modelSet.getModelSetAuxiliaryInfo("pdbNoHydrogens") == null
         && viewer.getBooleanProperty("pdbAddHydrogens");
@@ -266,11 +269,18 @@ public final class ModelLoader {
       baseTrajectoryCount = mergeModelSet.getTrajectoryCount();
       if (baseTrajectoryCount > 0) {
         if (isTrajectory) {
+          if (mergeModelSet.vibrationSteps == null) {
+            mergeModelSet.vibrationSteps = new ArrayList<Vector3f[]>();
+            for (int i = mergeModelSet.trajectorySteps.size(); --i >= 0; )
+              mergeModelSet.vibrationSteps.add(null);
+          }
           for (int i = 0; i < modelSet.trajectorySteps.size(); i++) {
             mergeModelSet.trajectorySteps.add(modelSet.trajectorySteps.get(i));
+            mergeModelSet.vibrationSteps.add(modelSet.vibrationSteps.get(i));
           }
         }
         modelSet.trajectorySteps = mergeModelSet.trajectorySteps;
+        modelSet.vibrationSteps = mergeModelSet.vibrationSteps;
       }
     }
     initializeAtomBondModelCounts(nAtoms);
@@ -519,9 +529,10 @@ public final class ModelLoader {
       int n = (modelSet.modelCount - ipt + 1);
       Logger.info(n + " trajectory steps read");
       modelSet.setModelAuxiliaryInfo(baseModelCount, "trajectoryStepCount", Integer.valueOf(n));
-      for (int ia = adapterModelCount, i = ipt; i < modelSet.modelCount; i++) {
+      for (int ia = adapterModelCount, i = ipt; i < modelSet.modelCount; i++, ia++) {
         modelSet.models[i] = modelSet.models[baseModelCount];
-        modelSet.modelNumbers[i] = adapter.getAtomSetNumber(atomSetCollection, ia++);
+        modelSet.modelNumbers[i] = adapter.getAtomSetNumber(atomSetCollection, ia);
+        modelSet.modelNames[i] = adapter.getAtomSetName(atomSetCollection, ia);
         structuresDefinedInFile.set(i);
       }
     }

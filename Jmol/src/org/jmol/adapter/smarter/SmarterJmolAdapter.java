@@ -46,6 +46,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 
 public class SmarterJmolAdapter extends JmolAdapter {
 
@@ -247,7 +248,9 @@ public class SmarterJmolAdapter extends JmolAdapter {
       // this is one model with a set of coordinates from a 
       // molecular dynamics calculation
       // all the htParams[] entries point to the same Hashtable
-      asc[0].finalizeTrajectory((List<Point3f[]>) htParams.get("trajectorySteps"));
+      asc[0].finalizeTrajectory(
+          (List<Point3f[]>) htParams.get("trajectorySteps"),
+          (List<Vector3f[]>) htParams.get("vibrationSteps"));
       return asc[0];
     }
     AtomSetCollection result = new AtomSetCollection(asc);

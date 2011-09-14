@@ -164,8 +164,9 @@ public class AtomSetCollection {
   public boolean coordinatesAreFractional;
   private boolean isTrajectory;    
   private int trajectoryStepCount = 0;
-  private Point3f[] trajectoryStep;
   private List<Point3f[]> trajectorySteps;
+  private List<Vector3f[]> vibrationSteps;
+  private List<String> trajectoryNames;
   boolean doFixPeriodic;
   public void setDoFixPeriodic() {
     doFixPeriodic = true;
@@ -174,7 +175,7 @@ public class AtomSetCollection {
   public float[] notionalUnitCell = new float[6]; 
   // expands to 22 for cartesianToFractional matrix as array (PDB)
 
-  private boolean allowMultiple;
+  public boolean allowMultiple;
   
   public AtomSetCollection(String fileTypeName,
       AtomSetCollectionReader atomSetCollectionReader) {
@@ -362,8 +363,8 @@ public class AtomSetCollection {
     symmetry = null;
     structures = new Structure[16];
     structureCount = 0;
-    trajectoryStep = null;
     trajectorySteps = null;
+    vibrationSteps = null;
     vConnect = null;
   }
 
@@ -1331,7 +1332,9 @@ public class AtomSetCollection {
   ////////////////////////////////////////////////////////////////
   
   private void addTrajectoryStep() {
-    trajectoryStep = new Point3f[atomCount];
+    Point3f[] trajectoryStep = new Point3f[atomCount];
+    boolean haveVibrations = (atomCount > 0 && !Float.isNaN(atoms[0].vectorX));
+    Vector3f[] vibrationStep = (haveVibrations ? new Vector3f[atomCount] : null);
     Point3f[] prevSteps = (trajectoryStepCount == 0 ? null 
         : (Point3f[]) trajectorySteps.get(trajectoryStepCount - 1));
     for (int i = 0; i < atomCount; i++) {
@@ -1339,19 +1342,29 @@ public class AtomSetCollection {
       if (doFixPeriodic && prevSteps != null)
         pt = fixPeriodic(pt, prevSteps[i]);
       trajectoryStep[i] = pt;
+      if (haveVibrations) 
+        vibrationStep[i] = new Vector3f(atoms[i].vectorX, atoms[i].vectorY, atoms[i].vectorZ);
+    }
+    if (haveVibrations) {
+      if (vibrationSteps == null) {
+        vibrationSteps = new ArrayList<Vector3f[]>();
+        for (int i = 0; i < trajectoryStepCount; i++)
+          vibrationSteps.add(null);
+      }
+      vibrationSteps.add(vibrationStep);
     }
     trajectorySteps.add(trajectoryStep);
     trajectoryStepCount++;
   }
   
-  private Point3f fixPeriodic(Point3f pt, Point3f pt0) {
+  private static Point3f fixPeriodic(Point3f pt, Point3f pt0) {
     pt.x = fixPoint(pt.x, pt0.x);   
     pt.y = fixPoint(pt.y, pt0.y);   
     pt.z = fixPoint(pt.z, pt0.z);   
     return pt;
   }
 
-  private float fixPoint(float x, float x0) {
+  private static float fixPoint(float x, float x0) {
     while (x - x0 > 0.9) {
       x -= 1;
     }
@@ -1361,8 +1374,9 @@ public class AtomSetCollection {
     return x;
   }
 
-  void finalizeTrajectory(List<Point3f[]> trajectorySteps) {
+  void finalizeTrajectory(List<Point3f[]> trajectorySteps, List<Vector3f[]> vibrationSteps) {
     this.trajectorySteps = trajectorySteps;
+    this.vibrationSteps = vibrationSteps;
     trajectoryStepCount = trajectorySteps.size();
     finalizeTrajectory();
   }
@@ -1372,9 +1386,22 @@ public class AtomSetCollection {
       return;
     //reset atom positions to original trajectory
     Point3f[] trajectory = trajectorySteps.get(0);
-    for (int i = 0; i < atomCount; i++)
+    Vector3f[] vibrations = (vibrationSteps == null ? null : vibrationSteps
+        .get(0));
+    Vector3f v = new Vector3f();
+    for (int i = 0; i < atomCount; i++) {
+      if (vibrationSteps != null) {
+        if (vibrations != null)
+          v = vibrations[i];
+        atoms[i].vectorX = v.x;
+        atoms[i].vectorY = v.y;
+        atoms[i].vectorZ = v.z;
+      }
       atoms[i].set(trajectory[i]);
+    }
     setAtomSetCollectionAuxiliaryInfo("trajectorySteps", trajectorySteps);
+    if (vibrationSteps != null)
+      setAtomSetCollectionAuxiliaryInfo("vibrationSteps", vibrationSteps);
   }
  
   public void newAtomSet() {
@@ -1408,11 +1435,28 @@ public class AtomSetCollection {
   * @param atomSetName The name to be associated with the current AtomSet
   */
   public void setAtomSetName(String atomSetName) {
+    if (isTrajectory) {
+      setTrajectoryName(atomSetName);
+      return;
+    }
     setAtomSetAuxiliaryInfo("name", atomSetName, currentAtomSetIndex);
+    // TODO -- trajectories could have different names. Need this for vibrations?
     if (!allowMultiple)
       setCollectionName(atomSetName);
   }
   
+  private void setTrajectoryName(String name) {
+    if (trajectoryStepCount == 0)
+      return;
+    if (trajectoryNames == null) {
+      trajectoryNames = new ArrayList<String>();
+      setAtomSetCollectionAuxiliaryInfo("trajectoryNames", trajectoryNames);
+      for (int i = 0; i < trajectoryStepCount - 1; i++)
+        trajectoryNames.add(null);
+    }
+    trajectoryNames.add(trajectoryStepCount - 1, name);
+  }
+
   /**
    * Sets the atom set names of the last n atomSets
    * 
@@ -1586,6 +1630,8 @@ public class AtomSetCollection {
   }
 
   String getAtomSetName(int atomSetIndex) {
+    if (trajectoryNames != null && atomSetIndex < trajectoryNames.size())
+      return trajectoryNames.get(atomSetIndex);
     if (atomSetIndex >= atomSetCount)
       atomSetIndex = atomSetCount - 1;
     return (String) getAtomSetAuxiliaryInfo(atomSetIndex, "name");

@@ -67,9 +67,10 @@ public class XyzReader extends AtomSetCollectionReader {
       readLine();
       checkLineForScript();
       atomSetCollection.newAtomSet();
-      atomSetCollection.setAtomSetName(line);
+      String name = line;
       readAtoms(modelAtomCount);
       applySymmetryAndSetTrajectory();
+      atomSetCollection.setAtomSetName(name);
       if (isLastModel(modelNumber)) {
         continuing = false;
         return false;
@@ -79,6 +80,12 @@ public class XyzReader extends AtomSetCollectionReader {
     }
     discardLinesUntilNonBlank();
     return false;
+  }
+
+  @Override
+  protected void finalizeReader() throws Exception {
+    isTrajectory = false;
+    super.finalizeReader();
   }
 
   private void skipAtomSet(int modelAtomCount) throws Exception {

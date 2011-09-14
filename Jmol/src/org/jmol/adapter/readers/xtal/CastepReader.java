@@ -99,8 +99,11 @@ public class CastepReader extends AtomSetCollectionReader {
       filter = TextFormat.simpleReplace(filter, "-PT", "");
     }
     while (tokenizeCastepCell() > 0) {
-      if (isPhonon)
+      if (isPhonon) {
+        if (isTrajectory)
+          atomSetCollection.allowMultiple = false;
         return; // use checkLine
+      }
       if ((tokens.length >= 2) && (tokens[0].equalsIgnoreCase("%BLOCK"))) {
 
           /*
@@ -230,6 +233,7 @@ ang
   @Override
   protected void finalizeReader() throws Exception {
     if (isPhonon) {
+      isTrajectory = false;
       super.finalizeReader();
       return;
     }

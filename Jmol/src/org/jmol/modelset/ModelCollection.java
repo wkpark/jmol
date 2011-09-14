@@ -860,6 +860,7 @@ abstract public class ModelCollection extends BondCollection {
 */
 
   protected List<Point3f[]> trajectorySteps;
+  protected List<Vector3f[]> vibrationSteps;
 
   protected int getTrajectoryCount() {
     return (trajectorySteps == null ? 0 : trajectorySteps.size());

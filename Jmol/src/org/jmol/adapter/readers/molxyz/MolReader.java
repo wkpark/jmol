@@ -172,6 +172,7 @@ public class MolReader extends AtomSetCollectionReader {
       return;
     header += line + "\n";
     dimension = (line.length() < 22 ? "3D" : line.substring(20,22));
+    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("dimension", dimension);
     //line 3: comment
     readLine();
     if (line == null)

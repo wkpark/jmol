@@ -488,6 +488,11 @@ class SpaceGroup {
         .startsWith("hm:") ? NAME_HM : 0);
     if (nameType > 0)
       name = name.substring(nameType);
+    else if (name.contains("[")) {
+      // feeding back "P 1 [P 1]" for example
+      nameType = NAME_HALL;
+      name = name.substring(0, name.indexOf("[")).trim();
+    }
     String nameExt = name;
     int i;
     boolean haveExtension = false;

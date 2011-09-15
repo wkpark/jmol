@@ -731,7 +731,8 @@ public class Resolver {
           || lines[i].toUpperCase().startsWith("%BLOCK LATTICE_ABC")
           || lines[i].toUpperCase().startsWith("%BLOCK LATTICE_CART")
           || lines[i].toUpperCase().startsWith("%BLOCK POSITIONS_FRAC")
-          || lines[i].toUpperCase().startsWith("%BLOCK POSITIONS_ABS") ) return true;
+          || lines[i].toUpperCase().startsWith("%BLOCK POSITIONS_ABS") 
+          || lines[i].contains("<-- E")) return true;
     }
     return false;
   }

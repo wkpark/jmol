@@ -3095,17 +3095,12 @@ private void zap(String msg) {
   }
 
   public void setCurrentUnitCellOffset(int ijk) {
-    SymmetryInterface unitCell = getCurrentUnitCell();
-    if (unitCell == null)
-      return;
-    unitCell.setOffset(ijk);
-    global.setParameterValue("=frame " + getModelNumberDotted(animationManager.currentModelIndex)
-          + "; set unitcell ", ijk);
+    modelSet.setUnitCellOffset(animationManager.currentModelIndex, null, ijk);
   }
 
   public void setCurrentUnitCellOffset(Point3f pt) {
     // from "unitcell {i j k}" via uccage
-    modelSet.setUnitCellOffset(animationManager.currentModelIndex, pt);
+    modelSet.setUnitCellOffset(animationManager.currentModelIndex, pt, 0);
   }
 
   public boolean getFractionalRelative() {

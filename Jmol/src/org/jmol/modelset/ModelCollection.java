@@ -4398,14 +4398,17 @@ abstract public class ModelCollection extends BondCollection {
     }
   }
   
-  public void setUnitCellOffset(int modelIndex, Point3f pt) {
+  public void setUnitCellOffset(int modelIndex, Point3f pt, int ijk) {
     for (int i = modelIndex; i < modelCount; i++) {
-      if (i < 0 || modelIndex >= 0 && i != modelIndex)
+      if (i < 0 || modelIndex >= 0 && i != modelIndex && models[i].trajectoryBaseIndex != modelIndex)
         continue;
       SymmetryInterface unitCell = getUnitCell(i);
       if (unitCell == null)
         continue;
-      unitCell.setUnitCellOffset(pt);
+      if (pt == null)
+        unitCell.setOffset(ijk);
+      else
+        unitCell.setUnitCellOffset(pt);
     }
   }
 }

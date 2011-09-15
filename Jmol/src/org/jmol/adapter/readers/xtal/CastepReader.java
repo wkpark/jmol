@@ -214,7 +214,11 @@ ang
 
   @Override
   protected boolean checkLine() throws Exception {
-    // only for .phonon file
+    // only for .phonon or other BEGIN HEADER type files
+    if (line.contains("<-- E")) {
+      readTrajectories();
+      return true;
+    }
     if (line.indexOf("Unit cell vectors") == 1) {
       readPhononUnitCell();
       return true;
@@ -230,6 +234,41 @@ ang
     return true;
   }
   
+  private void readTrajectories() throws Exception {
+    isTrajectory = true;
+    doApplySymmetry = true;
+    while (line != null && line.contains("<-- E")) {
+      atomSetCollection.newAtomSet();
+      discardLinesUntilContains("<-- h");
+      setSpaceGroupName("P1");
+      addPrimitiveLatticeVector(0, getVectors(line), 0);
+      addPrimitiveLatticeVector(1, getVectors(readLine()), 0);
+      addPrimitiveLatticeVector(2, getVectors(readLine()), 0);
+      setFractionalCoordinates(false);
+      discardLinesUntilContains("<-- R");
+      while (line != null && line.contains("<-- R")) {
+        String[] tokens = getTokens();
+        Atom atom = atomSetCollection.addNewAtom();
+        atom.elementSymbol = tokens[0];
+        setAtomCoord(atom, 
+              parseFloat(tokens[2]) * ANGSTROMS_PER_BOHR,
+            parseFloat(tokens[3]) * ANGSTROMS_PER_BOHR,
+            parseFloat(tokens[4]) * ANGSTROMS_PER_BOHR);
+        readLine();
+      }
+      applySymmetryAndSetTrajectory();
+      discardLinesUntilContains("<-- E");
+    }
+  }
+
+  private float[] getVectors(String line) throws Exception {
+    float[] lv = new float[3];
+    fillFloatArray(line, 0, lv);
+    for (int i = 0; i < 3; i++)
+      lv[i] *= ANGSTROMS_PER_BOHR;
+    return lv;
+  }
+
   @Override
   protected void finalizeReader() throws Exception {
     if (isPhonon) {

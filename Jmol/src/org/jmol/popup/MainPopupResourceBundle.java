@@ -605,7 +605,7 @@ class MainPopupResourceBundle extends PopupResource {
         "nonWaterSolvent",
             GT._("Nonaqueous Solvent") + " (solvent and not water)",
         "exceptWater", GT._("Nonaqueous HETATM") + " (hetero and not water)",
-        "Ligand", GT._("Ligand") + " (hetero and not solvent)",
+        "Ligand", GT._("Ligand"),
 
         "allCarbo", GT._("All"),
         "PDBcarboMenu", GT._("Carbohydrate"),

@@ -175,9 +175,7 @@ public class GaussianReader extends MOReader {
       if (!filterMO())
         return true;
       readMolecularOrbitals();
-      if (Logger.debugging) {
-        Logger.debug(orbitals.size() + " molecular orbitals read");
-      }
+      Logger.info(orbitals.size() + " molecular orbitals read");
       return true;
     }
     if (line.startsWith(" Normal termination of Gaussian")) {
@@ -364,10 +362,8 @@ public class GaussianReader extends MOReader {
       for (int j = 0; j < tokens.length; j++)
         gaussians[i][j] = parseFloat(tokens[j]);
     }
-    if (Logger.debugging) {
-      Logger.debug(shellCount + " slater shells read");
-      Logger.debug(gaussianCount + " gaussian primitives read");
-    }
+    Logger.info(shellCount + " slater shells read");
+    Logger.info(gaussianCount + " gaussian primitives read");
   }
   
   /*
@@ -406,9 +402,9 @@ but:
           data[i] = new ArrayList<String>();
           String sym = tokens[i];
           mos[i].put("symmetry", sym);
-          if (sym.indexOf("--O") >= 0)
+          if (sym.indexOf("O") >= 0)
             mos[i].put("occupancy", new Float(2));
-          else if (sym.indexOf("--V") >= 0)
+          else if (sym.indexOf("V") >= 0)
             mos[i].put("occupancy", new Float(0));
         }
         line = readLine().substring(21);
@@ -418,18 +414,19 @@ but:
         for (int i = 0; i < nThisLine; i++)
           mos[i].put("energy", new Float(tokens[i]));
         continue;
-      } else if (line.length() < 21 || (line.charAt(11) != ' ' 
-                                        && ! Character.isDigit(line.charAt(11)) 
+      } else if (line.length() < 21 || (line.charAt(5) != ' ' 
+                                        && ! Character.isDigit(line.charAt(5)) 
                                         ) ) {
         continue;
       }
       try {
-        String type = line.substring(13, 18).trim();
+        tokens = getTokens();
+        String type = tokens[tokens.length - nThisLine - 1].substring(1);
         if (!isQuantumBasisSupported(type.charAt(0)) && "XYZ".indexOf(type.charAt(0)) >= 0)
           type = (type.length() == 2 ? "D" : "F") + type;
         if (!isQuantumBasisSupported(type.charAt(0)))
           continue;
-        tokens = getStrings(line.substring(21), nThisLine, 10);
+        tokens = getStrings(line.substring(line.length() - 10 * nThisLine), nThisLine, 10);
         for (int i = 0; i < nThisLine; i++)
           data[i].add(tokens[i]);
       } catch (Exception e) {

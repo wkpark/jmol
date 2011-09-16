@@ -62,12 +62,11 @@ class IsoMOReader extends AtomDataReader {
   @Override
   @SuppressWarnings("unchecked")
   protected void setup(boolean isMapData) {
-    moData = params.moData;
-    mos = (List<Map<String, Object>>) moData.get("mos");
+    mos = (List<Map<String, Object>>) params.moData.get("mos");
     linearCombination = params.qm_moLinearCombination;
     Map<String, Object> mo = (mos != null && linearCombination == null ? mos
         .get(params.qm_moNumber - 1) : null);
-    boolean haveVolumeData = moData.containsKey("haveVolumeData");
+    boolean haveVolumeData = params.moData.containsKey("haveVolumeData");
     if (haveVolumeData && mo != null)
       params.volumeData = (VolumeData) mo.get("volumeData");
     super.setup(isMapData);
@@ -282,7 +281,6 @@ class IsoMOReader extends AtomDataReader {
   private Point3f[] points;
   private Vector3f vTemp;
   QuantumCalculationInterface q;
-  Map<String, Object> moData;
   List<Map<String, Object>> mos;
   boolean isNci;
   float[] coef; 
@@ -331,16 +329,16 @@ class IsoMOReader extends AtomDataReader {
     case Parameters.QM_TYPE_VOLUME_DATA:
       break;
     case Parameters.QM_TYPE_GAUSSIAN:
-      return q.setupCalculation(volumeData, bsMySelected, null, null, (String) moData
+      return q.setupCalculation(volumeData, bsMySelected, null, null, (String) params.moData
                       .get("calculationType"),
-          atomData.atomXyz, atomData.firstAtomIndex, (List<int[]>) moData.get("shells"), (float[][]) moData
+          atomData.atomXyz, atomData.firstAtomIndex, (List<int[]>) params.moData.get("shells"), (float[][]) params.moData
                           .get("gaussians"), dfCoefMaps, null,
           coef, linearCombination, coefs, params.theProperty,
-          moData.get("isNormalized") == null, points, params.parameters, params.testFlags);
+          params.moData.get("isNormalized") == null, points, params.parameters, params.testFlags);
     case Parameters.QM_TYPE_SLATER:
-      return q.setupCalculation(volumeData, bsMySelected, null, null, (String) moData
+      return q.setupCalculation(volumeData, bsMySelected, null, null, (String) params.moData
                       .get("calculationType"),
-          atomData.atomXyz, atomData.firstAtomIndex, null, null, null, moData.get("slaters"),
+          atomData.atomXyz, atomData.firstAtomIndex, null, null, null, params.moData.get("slaters"),
           coef, linearCombination, coefs, params.theProperty, true, points, params.parameters, params.testFlags);
     case Parameters.QM_TYPE_NCI_PRO:
       return q.setupCalculation(volumeData, bsMySelected, params.bsSolvent,

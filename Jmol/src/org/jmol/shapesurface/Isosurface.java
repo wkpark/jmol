@@ -1428,12 +1428,21 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       float f = 1 - 1.0f * (y - keyXy[1]) / (keyXy[3] - keyXy[1]);
       if (thisMesh.showContourLines) {
         List<Object>[] vContours = thisMesh.getContours();
-        if (vContours == null)
-          return;
-        int i = (int) (f * vContours.length);
-        if (i < 0 || i > vContours.length)
-          return;
-        s = "" + ((Float) vContours[i].get(JvxlCoder.CONTOUR_VALUE)).floatValue();
+        if (vContours == null) {
+          if (thisMesh.jvxlData.contourValues == null)
+            return;
+          int i = (int) (f * thisMesh.jvxlData.contourValues.length);
+          if (i < 0 || i > thisMesh.jvxlData.contourValues.length)
+            return;
+          s = "" + thisMesh.jvxlData.contourValues[i];
+        } else {
+          int i = (int) (f * vContours.length);
+          if (i < 0 || i > vContours.length)
+            return;
+          s = ""
+              + ((Float) vContours[i].get(JvxlCoder.CONTOUR_VALUE))
+                  .floatValue();
+        }
       } else {
         float g = thisMesh.colorEncoder.quantize(f, true);
         f = thisMesh.colorEncoder.quantize(f, false);

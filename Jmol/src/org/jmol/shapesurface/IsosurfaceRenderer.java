@@ -85,14 +85,25 @@ public class IsosurfaceRenderer extends MeshRenderer {
   private void showKey() {
     showKey = Boolean.FALSE; // once only
     int[] colors = null;
+    short[] colixes = null;
     List<Object>[] vContours = null;
     int n = 0;
+    int type = 0;
     if (imesh.showContourLines) {
       vContours = imesh.getContours();
-      n = vContours.length;
+      if (vContours == null) {
+        colixes = imesh.jvxlData.contourColixes;
+        if (colixes == null)
+          return;
+        n = colixes.length; 
+      } else {
+        n = vContours.length;
+        type = 1;
+      }
     } else {
       colors = imesh.colorEncoder.getColorSchemeArray(imesh.colorEncoder.currentPalette);
       n = colors.length;
+      type = 2;
     }
     if (n < 2)
       return;
@@ -105,11 +116,18 @@ public class IsosurfaceRenderer extends MeshRenderer {
     
     isosurface.keyXy = new int[] { x / factor, 0, (x + dx) / factor, (y + dy) / factor, dy / factor };
     for (int i = 0; i < n; i++, y -= dy) {
-      if (colors == null) {
+      switch (type) {
+      case 0:
+        if (!g3d.setColix(colixes[i]))
+          return;
+        break;
+      case 1:
         if (!g3d.setColix(((short[]) vContours[i].get(JvxlCoder.CONTOUR_COLIX))[0]))
           return;
-      } else {
+        break;
+      case 2:
         g3d.setColor(colors[i]);
+        break;
       }
       g3d.fillRect(x, y, 5, 5, dx, dy);
     }
@@ -196,8 +214,11 @@ public class IsosurfaceRenderer extends MeshRenderer {
   private void renderContourLines() {
     // no check here for within distance
     List<Object>[] vContours = imesh.getContours();
-    if (vContours == null)
+    if (vContours == null) {
+      if (imesh.jvxlData.contourValues != null)
+        hasColorRange = true;
       return;
+    }
     
     if (imesh.jvxlData.vertexDataOnly)
       return;

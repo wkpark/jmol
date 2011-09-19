@@ -8445,11 +8445,13 @@ public class ScriptEvaluator {
       switch (tok) {
       case Token.file:
       case Token.inline:
-      case Token.smiles:
         isInline = (tok == Token.inline);
-        isSmiles = (tok == Token.smiles);
         i++;
         loadScript.append(" " + modelName);
+        break;
+      case Token.smiles:
+        isSmiles = true;
+        i++;
         break;
       case Token.trajectory:
       case Token.model:

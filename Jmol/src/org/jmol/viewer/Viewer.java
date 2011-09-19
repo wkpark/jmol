@@ -4582,7 +4582,7 @@ private void zap(String msg) {
         format = global.smilesUrlFormat;
         break;
       }
-      return (withPrefix ? "MOL::" : "")
+      return (withPrefix ? "MOL3D::" : "")
           + TextFormat.formatString(format, "FILE", f);
     case '_': // isosurface "=...", but we code that type as '-'
       String server = FileManager.fixFileNameVariables(global.edsUrlFormat, f);

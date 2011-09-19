@@ -69,6 +69,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
   boolean isLeadAtom;
   int notBondedIndex = -1;
   boolean notCrossLinked;
+  boolean aromaticAmbiguous = true;
 
   void setBioAtom(char bioType) {
     isBioAtom = (bioType != '\0');
@@ -315,18 +316,22 @@ public class SmilesAtom extends Point3f implements JmolNode {
     hasSymbol = true;
     if (symbol.equals("*")) {
       isAromatic = false;
+      // but isAromaticAmbiguous = true
       elementNumber = -2;
       return true;
     }
-    if (symbol.equals("a") || symbol.equals("A")) {
-      elementNumber = -1;
-      return true;
-    }
     if (symbol.equals("Xx")) {
+      // but isAromaticAmbiguous = true
       elementNumber = 0;
       return true;
     }
-
+    aromaticAmbiguous = false;
+    if (symbol.equals("a") || symbol.equals("A")) {
+      // allow #6a
+      if (elementNumber < 0)
+        elementNumber = -1;
+      return true;
+    }
     if (isAromatic)
       symbol = symbol.substring(0, 1).toUpperCase()
           + (symbol.length() == 1 ? "" : symbol.substring(1));

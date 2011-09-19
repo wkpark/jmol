@@ -75,7 +75,8 @@ public class MolReader extends AtomSetCollectionReader {
 
   boolean is2D;
   private boolean isV3000;
-  private String dimension;
+  protected String dimension;
+  boolean allow2D = true;
   
   @Override
   public void initializeReader() throws Exception {
@@ -172,6 +173,8 @@ public class MolReader extends AtomSetCollectionReader {
       return;
     header += line + "\n";
     dimension = (line.length() < 22 ? "3D" : line.substring(20,22));
+    if (!allow2D && dimension.equals("2D"))
+      throw (new Exception("File is 2D, not 3D"));
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("dimension", dimension);
     //line 3: comment
     readLine();

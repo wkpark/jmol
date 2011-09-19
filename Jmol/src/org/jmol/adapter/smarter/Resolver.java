@@ -46,7 +46,7 @@ public class Resolver {
   private final static String classBase = "org.jmol.adapter.readers.";
   private final static String[] readerSets = new String[] {
     "cifpdb.", ";Cif;Pdb;",
-    "molxyz.", ";Mol;Xyz;",
+    "molxyz.", ";Mol3D;Mol;Xyz;",
     "more.", ";BinaryDcd;Gromacs;MdCrd;MdTop;Mol2;Pqr;P2n;",
     "quantum.", ";Adf;Csf;Dgrid;GamessUK;GamessUS;Gaussian;GausianWfn;Jaguar;" +
                  "Molden;MopacGraphf;GenNBO;NWChem;Odyssey;Psi;Qchem;Spartan;SpartanSmol;" +
@@ -553,7 +553,7 @@ public class Resolver {
 
   private final static int SPECIAL_JME                = 0;
   private final static int SPECIAL_MOPACGRAPHF        = 1;
-//  private final static int SPECIAL_V3000              = 2; // implemented in MOL
+  //private final static int SPECIAL_MOL3D              = 2; // only by MOL3D::
   private final static int SPECIAL_ODYSSEY            = 3;
   private final static int SPECIAL_MOL                = 4;
   private final static int SPECIAL_XYZ                = 5;
@@ -588,7 +588,7 @@ public class Resolver {
   public final static String[][] specialTags = {
     { "Jme" },
     { "MopacGraphf" },
-    { "V3000" },
+    { "Mol3D" },
     { "Odyssey" },
     { "Mol" },
     

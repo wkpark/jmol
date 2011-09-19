@@ -754,7 +754,7 @@ public class SmilesSearch extends JmolMolecule {
 
         // Check aromatic
         boolean isAromatic = patternAtom.isAromatic();
-        if (!noAromatic && patternAtom.elementNumber != -2
+        if (!noAromatic && !patternAtom.aromaticAmbiguous
             && isAromatic != bsAromatic.get(iAtom))
           break;
 

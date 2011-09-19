@@ -82,7 +82,7 @@ public class SmilesSearch extends JmolMolecule {
   boolean haveBondStereochemistry;
   boolean haveAtomStereochemistry;
   boolean needRingData;
-  boolean needAromatic;
+  boolean needAromatic = true; // we just have to always consider aromatic, except in the case of bioSequences.
   boolean needRingMemberships;
   int ringDataMax = Integer.MIN_VALUE;
   List<SmilesMeasure> measures = new ArrayList<SmilesMeasure>();
@@ -192,9 +192,8 @@ public class SmilesSearch extends JmolMolecule {
       if (needAromatic)
         for (int r = v.size(); --r >= 0;) {
           BitSet bs = (BitSet) v.get(r);
-          if (SmilesAromatic.isFlatSp2Ring(
-              jmolAtoms, bsSelected, bs, 0.01f))
-          for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1)) 
+          if (SmilesAromatic.isFlatSp2Ring(jmolAtoms, bsSelected, bs, 0.01f))
+            for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1))
               bsAromatic.set(j);
         }
       if (needRingData) {
@@ -208,7 +207,8 @@ public class SmilesSearch extends JmolMolecule {
       }
     }
     if (needRingData) {
-      for (int i = bsSelected.nextSetBit(0); i >= 0; i = bsSelected.nextSetBit(i + 1)) {
+      for (int i = bsSelected.nextSetBit(0); i >= 0; i = bsSelected
+          .nextSetBit(i + 1)) {
         JmolNode atom = jmolAtoms[i];
         JmolEdge[] bonds = atom.getEdges();
         if (bonds != null)
@@ -857,45 +857,53 @@ public class SmilesSearch extends JmolMolecule {
     }
 
     if (patternBond.primitives == null) {
-      if (!checkPrimitiveBond(patternAtom, atom1, patternBond, iAtom, matchingAtom, bond))
+      if (!checkPrimitiveBond(patternBond, iAtom, matchingAtom, bond))
         return false;
     } else {
       for (int i = 0; i < patternBond.nPrimitives; i++)
-        if (!checkPrimitiveBond(patternAtom, atom1, patternBond.primitives[i], iAtom, matchingAtom, bond))
+        if (!checkPrimitiveBond(patternBond.primitives[i], iAtom, matchingAtom, bond))
           return false;
     }
     patternBond.matchingBond = bond;
     return true;
   }
 
-  private boolean checkPrimitiveBond(SmilesAtom patternAtom, SmilesAtom atom1,
-                                     SmilesBond patternBond, int iAtom,
-                                     int matchingAtom, JmolEdge bond) {
+  private boolean checkPrimitiveBond(SmilesBond patternBond, int iAtom1,
+                                     int iAtom2, JmolEdge bond) {
     boolean bondFound = false;
     
     switch (patternBond.order) {
     case SmilesBond.TYPE_BIO_SEQUENCE:
-      return (patternBond.isNot != (jmolAtoms[matchingAtom].getOffsetResidueAtom("0", 1)
-          == jmolAtoms[iAtom].getOffsetResidueAtom("0", 0)));
+      return (patternBond.isNot != (jmolAtoms[iAtom2].getOffsetResidueAtom("0", 1)
+          == jmolAtoms[iAtom1].getOffsetResidueAtom("0", 0)));
     case SmilesBond.TYPE_BIO_PAIR:
-      return (patternBond.isNot != jmolAtoms[iAtom].isCrossLinked(jmolAtoms[matchingAtom]));
+      return (patternBond.isNot != jmolAtoms[iAtom1].isCrossLinked(jmolAtoms[iAtom2]));
     }
     
-    boolean isAromatic = !noAromatic && patternAtom.isAromatic();
-
-    
+    boolean isAromatic1 = (!noAromatic && bsAromatic.get(iAtom1));
+    boolean isAromatic2 = (!noAromatic && bsAromatic.get(iAtom2));
+    if (pattern.indexOf("*") < 0)
+      System.out.println("testing smilessearch");
     int order = bond.getCovalentOrder();
-    if (isAromatic && atom1.isAromatic()) {
+    if (isAromatic1 && isAromatic2) {
       switch (patternBond.order) {
       case SmilesBond.TYPE_AROMATIC: // :
-      case SmilesBond.TYPE_DOUBLE:
       case SmilesBond.TYPE_RING:
-        bondFound = isRingBond(ringSets, iAtom, matchingAtom);
+        bondFound = isRingBond(ringSets, iAtom1, iAtom2);
         break;
       case SmilesBond.TYPE_SINGLE:
-        // for SMARTS, single bond in aromatic means 
-        // TO ANOTHER RING
-        bondFound = !isSmarts || !isRingBond(ringSets, iAtom, matchingAtom);
+        // for SMARTS, single bond in aromatic means TO ANOTHER RING;
+        // for SMILES, we don't care
+        bondFound = !isSmarts || !isRingBond(ringSets, iAtom1, iAtom2);
+        break;
+      case SmilesBond.TYPE_DOUBLE:
+        // note: Freiburg considers TYPE_DOUBLE to be NOT aromatic
+        // changed for Jmol 12.2.RC8
+        // but this is ambiguous at http://www.daylight.com/dayhtml/doc/theory/theory.smarts.html
+        // see, for example: http://opentox.informatik.uni-freiburg.de/depict?data=[H]C%3D1C%28[H]%29%3DC%28[H]%29C%28%3DC%28C%3D1%28[H]%29%29C%28F%29%28F%29F%29S[H]&smarts=[%236]=[%236]
+        // however, if it is not SMARTS, then we consider this fine -- it does
+        // not matter what the order is for double/single bonds around the ring
+        bondFound = !isSmarts;
         break;
       case SmilesBond.TYPE_ATROPISOMER_1:
       case SmilesBond.TYPE_ATROPISOMER_2:
@@ -931,7 +939,7 @@ public class SmilesSearch extends JmolMolecule {
         bondFound = (order == JmolEdge.BOND_COVALENT_TRIPLE);
         break;
       case SmilesBond.TYPE_RING:
-        bondFound = isRingBond(ringSets, iAtom, matchingAtom);
+        bondFound = isRingBond(ringSets, iAtom1, iAtom2);
         break;
       }
     }

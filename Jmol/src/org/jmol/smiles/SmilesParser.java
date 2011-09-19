@@ -434,8 +434,11 @@ public class SmilesParser {
     SmilesBond bond = null;
     while (pattern != null && pattern.length() != 0) {
       int index = 0;
-      if (currentAtom == null || bond != null && bond.order == SmilesBond.TYPE_NONE)
+      if (currentAtom == null || bond != null && bond.order == SmilesBond.TYPE_NONE) {
+        if (isBioSequence)
+          molecule.parent.needAromatic = false;
         index = checkBioType(pattern, 0);
+      }
       ch = getChar(pattern, index);
       boolean haveOpen = checkBrace(molecule, ch, '{');
       if (haveOpen)
@@ -884,8 +887,8 @@ public class SmilesParser {
               if (isPrimitive)
                 atomSet.hasSymbol = true;
               // indicates we have already assigned an atom number
-              if (!symbol.equals("*"))
-                molecule.parent.needAromatic = true;
+              //if (!symbol.equals("*"))
+                //molecule.parent.needAromatic = true;
               index += symbol.length();
             } else {
               index = getDigits(pattern, index + 1, ret);
@@ -1174,8 +1177,8 @@ public class SmilesParser {
         molecule.haveBondStereochemistry = true;
         break;
       case SmilesBond.TYPE_AROMATIC:
-        if (!isBioSequence)
-          molecule.parent.needAromatic = true;
+        //if (!isBioSequence)
+          //molecule.parent.needAromatic = true;
         break;
       case SmilesBond.TYPE_DOUBLE:
       case SmilesBond.TYPE_SINGLE:

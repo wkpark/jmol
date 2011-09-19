@@ -676,6 +676,10 @@ public class SmilesSearch extends JmolMolecule {
   private boolean checkPrimitiveAtom(SmilesAtom patternAtom, int iAtom) throws InvalidSmilesException {
     JmolNode atom = jmolAtoms[iAtom];
     boolean foundAtom = patternAtom.not;
+    
+    //if (pattern.indexOf("*") < 0)
+      //System.out.println("testing smilessearch");
+
     while (true) {
 
       int n;
@@ -884,8 +888,8 @@ public class SmilesSearch extends JmolMolecule {
     
     boolean isAromatic1 = (!noAromatic && bsAromatic.get(iAtom1));
     boolean isAromatic2 = (!noAromatic && bsAromatic.get(iAtom2));
-    if (pattern.indexOf("*") < 0)
-      System.out.println("testing smilessearch");
+    //if (pattern.indexOf("*") < 0)
+      //System.out.println("testing smilessearch");
     int order = bond.getCovalentOrder();
     if (isAromatic1 && isAromatic2) {
       switch (patternBond.order) {

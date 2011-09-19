@@ -160,6 +160,8 @@ public class SmilesSearch extends JmolMolecule {
 
   @SuppressWarnings("unchecked")
   void setRingData(BitSet bsA) throws InvalidSmilesException {
+    if (needAromatic)
+      needRingData = true;
     needAromatic &= (bsA == null) & !noAromatic;
     // when using "xxx".find("search","....")
     // or $(...), the aromatic set has already been determined

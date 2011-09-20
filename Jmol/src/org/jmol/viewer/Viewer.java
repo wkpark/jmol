@@ -400,7 +400,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private String appletContext;
 
-  String getAppletContext() {
+  public String getAppletContext() {
     return appletContext;
   }
 
@@ -9864,7 +9864,9 @@ private void zap(String msg) {
 
   public String prompt(String label, String data, String[] list,
                        boolean asButtons) {
-    return StatusManager.prompt(label, data, list, asButtons);
+    JmolPromptInterface jpi = (JmolPromptInterface) Interface
+        .getOptionInterface("console.JmolPrompt");
+    return (jpi == null ? "null" : jpi.prompt(label, data, list, asButtons));
   }
 
   String getMenuName(int i) {

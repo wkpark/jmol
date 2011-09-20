@@ -36,9 +36,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAppConsoleInterface;
 import org.jmol.api.JmolCallbackListener;
@@ -659,82 +656,28 @@ class StatusManager {
     return (jmolStatusListener == null ? null : jmolStatusListener.getRegistryInfo());
   }
 
-  String inputFileName;
-  String outputFileName;
-  String dialogType;
-  
-  final protected static String[] imageChoices = { "JPEG", "PNG", "GIF", "PPM" };
-  final protected static String[] imageExtensions = { "jpg", "png", "gif", "ppm" };
-
-  static JmolDialogInterface newDialog(boolean forceNewTranslation) {
-    JmolDialogInterface sd = (JmolDialogInterface) Interface
-        .getOptionInterface("export.dialog.Dialog");
-    sd.setupUI(forceNewTranslation);
-    return sd;
-  }
-
-  int qualityJPG = -1;
-  int qualityPNG = -1;
-  String imageType;
-  int imageQuality;
+  private int qualityJPG = -1;
+  private int qualityPNG = -1;
+  private String imageType;
 
   String dialogAsk(String type, String fileName) {
-    inputFileName = fileName;
-    dialogType = type;
-    //System.out.println("Jvm12 thread: " + Thread.currentThread().getName());
-    try {
-      SwingUtilities.invokeAndWait(new Runnable() {
-        public void run() {
-          if (dialogType.equals("load")) {
-            outputFileName = newDialog(false).getOpenFileNameFromDialog(
-                viewer.getAppletContext(), viewer, inputFileName, null, null, false);
-            return;
-          }
-          JmolDialogInterface sd = newDialog(false);
-          if (dialogType.equals("save")) {
-            outputFileName = sd.getSaveFileNameFromDialog(viewer,
-                inputFileName, null);
-            return;
-          }
-          if (dialogType.startsWith("saveImage")) {
-            outputFileName = sd.getImageFileNameFromDialog(viewer,
-                inputFileName, imageType, imageChoices, imageExtensions,
-                qualityJPG, qualityPNG);
-            qualityJPG = sd.getQuality("JPG");
-            qualityPNG = sd.getQuality("PNG");
-            String sType = sd.getType();
-            if (sType != null)
-              imageType = sType;
-            int iQuality = sd.getQuality(sType);
-            if (iQuality >= 0)
-              imageQuality = iQuality;
-            return;
-          }
-          outputFileName = null;
-        }
-      });
-    } catch (Exception e) {
-      Logger.error(e.getMessage());
+    boolean isImage = (type.startsWith("saveImage"));
+    JmolDialogInterface sd = (JmolDialogInterface) Interface
+    .getOptionInterface("export.dialog.Dialog");
+    if (sd == null)
+      return null;
+    sd.setupUI(false);
+    if (isImage) 
+      sd.setImageInfo(qualityJPG, qualityPNG, imageType);
+    String outputFileName = sd.getFileNameFromDialog(viewer, type, fileName);    
+    if (isImage && outputFileName != null) {
+      qualityJPG = sd.getQuality("JPG");
+      qualityPNG = sd.getQuality("PNG");
+      String sType = sd.getType();
+      if (sType != null)
+        imageType = sType;
     }
     return outputFileName;
-  }
-
-  static String prompt(String label, String data, String[] list,
-                              boolean asButtons) {
-    try {
-      if (!asButtons)
-        return JOptionPane.showInputDialog(label, data);
-      if (data != null)
-        list = TextFormat.split(data, "|");
-      int i = JOptionPane.showOptionDialog(null, label, "Jmol prompt",
-          JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null,
-          list, list[0]);
-      // ESCAPE will close the panel with no option selected.
-      return (data == null ? "" + i : i == JOptionPane.CLOSED_OPTION ? "null"
-          : list[i]);
-    } catch (Throwable e) {
-      return "null";
-    }
   }
 
 }

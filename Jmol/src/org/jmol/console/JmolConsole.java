@@ -25,7 +25,6 @@ package org.jmol.console;
 
 
 import org.jmol.api.JmolCallbackListener;
-import org.jmol.api.JmolFrame;
 import org.jmol.api.JmolScriptEditorInterface;
 import org.jmol.api.JmolViewer;
 import org.jmol.constant.EnumCallback;

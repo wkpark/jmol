@@ -24,6 +24,7 @@
 package org.jmol.modelkit;
 
 import org.jmol.api.*;
+import org.jmol.console.JmolFrame;
 import org.jmol.i18n.GT;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;

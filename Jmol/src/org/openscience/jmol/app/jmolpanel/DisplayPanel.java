@@ -24,6 +24,7 @@
 package org.openscience.jmol.app.jmolpanel;
 
 import org.jmol.api.*;
+import org.jmol.console.JmolFrame;
 import org.jmol.console.KeyJMenuItem;
 import org.jmol.i18n.GT;
 import org.openscience.jmol.app.jmolpanel.GuiMap;

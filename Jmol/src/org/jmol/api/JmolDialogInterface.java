@@ -1,5 +1,7 @@
 package org.jmol.api;
 
+import org.jmol.viewer.Viewer;
+
 public interface JmolDialogInterface {
 
   public abstract void setupUI(boolean forceNewTranslation);
@@ -33,5 +35,11 @@ public interface JmolDialogInterface {
                                                     String[] imageExtensions,
                                                     int qualityJPG,
                                                     int qualityPNG);
+
+  public abstract void setImageInfo(int qualityJPG, int qualityPNG,
+                                    String imageType);
+
+  public abstract String getFileNameFromDialog(Viewer viewer, String dialogType,
+                                               String inputFileName);
 
 }

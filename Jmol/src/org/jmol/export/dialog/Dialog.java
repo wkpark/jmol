@@ -34,6 +34,7 @@ import javax.swing.JPanel;
 import javax.swing.JComboBox;
 import javax.swing.LookAndFeel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.TitledBorder;
@@ -51,7 +52,9 @@ import org.jmol.api.JmolViewer;
 import org.jmol.export.history.HistoryFile;
 import org.jmol.i18n.GT;
 import org.jmol.util.Escape;
+import org.jmol.util.Logger;
 import org.jmol.viewer.FileManager;
+import org.jmol.viewer.Viewer;
 
 public class Dialog extends JPanel implements JmolDialogInterface {
 
@@ -508,4 +511,54 @@ public class Dialog extends JPanel implements JmolDialogInterface {
       fc.updateUI();
     }
   }
+
+  protected String[] imageChoices = { "JPEG", "PNG", "GIF", "PPM" };
+  protected String[] imageExtensions = { "jpg", "png", "gif", "ppm" };
+  protected String outputFileName;
+  protected String dialogType;
+  protected String inputFileName;
+  protected Viewer viewer;
+  protected int qualityJ = -1;
+  protected int qualityP = -1;
+  protected String imageType;
+  
+  public void setImageInfo(int qualityJPG, int qualityPNG, String imageType) {
+    qualityJ = qualityJPG;
+    qualityP = qualityPNG;
+    this.imageType = imageType;
+  }
+  
+  public String getFileNameFromDialog(Viewer v, String dType, String iFileName) {
+    this.viewer = v;
+    this.dialogType = dType;
+    this.inputFileName = iFileName;
+    outputFileName = null;
+    try {
+      SwingUtilities.invokeAndWait(new Runnable() {
+        public void run() {
+          if (dialogType.equals("load")) {
+            outputFileName = getOpenFileNameFromDialog(
+                viewer.getAppletContext(), viewer, inputFileName, null, null, false);
+            return;
+          }
+          if (dialogType.equals("save")) {
+            outputFileName = getSaveFileNameFromDialog(viewer,
+                inputFileName, null);
+            return;
+          }
+          if (dialogType.startsWith("saveImage")) {
+            outputFileName = getImageFileNameFromDialog(viewer,
+                inputFileName, imageType, imageChoices, imageExtensions,
+                qualityJ, qualityP);
+            return;
+          }
+          outputFileName = null;
+        }
+      });
+    } catch (Exception e) {
+      Logger.error(e.getMessage());
+    }
+    return outputFileName;
+  }
+
 }

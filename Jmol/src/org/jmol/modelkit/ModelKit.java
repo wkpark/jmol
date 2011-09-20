@@ -23,7 +23,8 @@
  */
 package org.jmol.modelkit;
 
-import org.jmol.api.*;
+import org.jmol.api.JmolModelKitInterface;
+import org.jmol.api.JmolViewer;
 import org.jmol.console.JmolFrame;
 import org.jmol.i18n.GT;
 import org.jmol.util.Logger;

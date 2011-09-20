@@ -566,6 +566,7 @@ REMARK 290 REMARK: NULL
     atom.sequenceNumber = parseInt(line, 22, 26);
     atom.insertionCode = JmolAdapter.canonizeInsertionCode(line.charAt(26));
     atom.isHetero = line.startsWith("HETATM");
+    atom.elementSymbol = deduceElementSymbol(atom.isHetero);
     if (!filterAtom(atom, iAtom++))
       return;
     
@@ -586,7 +587,6 @@ REMARK 290 REMARK: NULL
       if (atom.group3.equals("UNK"))
         nUNK++;
     }
-    atom.elementSymbol = deduceElementSymbol(atom.isHetero);
     //calculate the charge from cols 79 & 80 (1-based): 2+, 3-, etc
     int charge = 0;
     if (lineLength >= 80) {

@@ -694,6 +694,7 @@ public abstract class AtomSetCollectionReader {
   private boolean filterGroup3;
   private boolean filterChain;
   private boolean filterAtomType;
+  private boolean filterElement;
   protected boolean filterHetero;
   private boolean filterEveryNth;
   private int filterN;
@@ -731,6 +732,7 @@ public abstract class AtomSetCollectionReader {
     if (filter == null)
       return;
     filterAtomType = checkFilter("*.") || checkFilter("!.");
+    filterElement = checkFilter("_");
     filterHetero = checkFilter("HETATM"); // PDB
     filterGroup3 = checkFilter("[");
     filterChain = checkFilter(":");
@@ -740,7 +742,7 @@ public abstract class AtomSetCollectionReader {
       filterN = parseInt(filter.substring(filter.indexOf("/=") + 2));
     if (filterN == Integer.MIN_VALUE)
       filterEveryNth = false;
-    haveAtomFilter = filterAtomType || filterGroup3 || filterChain
+    haveAtomFilter = filterAtomType || filterElement || filterGroup3 || filterChain
         || filterAltLoc || filterHetero || filterEveryNth || checkFilter("/=");
     if (bsFilter == null) {
       // bsFilter is usually null, but from MDTOP it gets set to indicate
@@ -791,6 +793,8 @@ public abstract class AtomSetCollectionReader {
         atom.group3.toUpperCase() + "]"))
         && (!filterAtomType || atom.atomName == null || !filterReject(f, ".",
             atom.atomName.toUpperCase() + ";"))
+        && (!filterElement || atom.elementSymbol == null || !filterReject(f, "_",
+            atom.elementSymbol.toUpperCase() + ";"))
         && (!filterChain || atom.chainID == '\0' || !filterReject(f, ":", ""
             + atom.chainID))
         && (!filterAltLoc || atom.alternateLocationID == '\0' || !filterReject(

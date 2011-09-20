@@ -90,6 +90,14 @@ public class MdTopReader extends ForceFieldReader {
     super.finalizeReader();
     Atom[] atoms = atomSetCollection.getAtoms();
     Atom atom;
+    for (int i = 0; i < atomCount; i++) {
+      atom = atoms[i];
+      atom.isHetero = JmolAdapter.isHetero(atom.group3);
+      String atomType = atomTypes[i];
+      if (!getElementSymbol(atom, atomType))
+        atom.elementSymbol = deducePdbElementSymbol(atom.isHetero,
+            atom.atomName, atom.group3);
+    }
     Atom[] atoms2 = null;
     if (filter == null) {
       nAtoms = atomCount;
@@ -97,20 +105,14 @@ public class MdTopReader extends ForceFieldReader {
       atoms2 = new Atom[atoms.length];
       nAtoms = 0;
       for (int i = 0; i < atomCount; i++)
-        if (filterAtom(atom = atoms[i], i))
-          atoms2[nAtoms++] = atom;
+        if (filterAtom(atoms[i], i))
+          atoms2[nAtoms++] = atoms[i];
     }
     for (int i = 0, j = 0, k = 0; i < atomCount; i++) {
       if (filter == null || bsFilter.get(i)) {
         if (k % 100 == 0)
           j++;
-        atom = atoms[i];
-        setAtomCoord(atom, (i % 100) * 2, j * 2, 0);
-        atom.isHetero = JmolAdapter.isHetero(atom.group3);
-        String atomType = atomTypes[i];
-        if (!getElementSymbol(atom, atomType))
-          atom.elementSymbol = deducePdbElementSymbol(atom.isHetero,
-              atom.atomName, atom.group3);
+        setAtomCoord(atoms[i], (i % 100) * 2, j * 2, 0);
       }
     }
     if (atoms2 != null) {

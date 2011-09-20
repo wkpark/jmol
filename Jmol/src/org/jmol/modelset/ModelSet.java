@@ -34,6 +34,7 @@ import org.jmol.util.Measure;
 import org.jmol.util.Quaternion;
 
 import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.StateManager;
 import org.jmol.viewer.Viewer;
 import org.jmol.modelset.Bond.BondSet;
 import org.jmol.script.Token;
@@ -538,7 +539,8 @@ import javax.vecmath.Vector3f;
     return cmd + commands.toString();
   }
   
-  public String getState(StringBuffer sfunc, boolean isAll, boolean withProteinStructure) {
+  public String getState(StringBuffer sfunc, boolean isAll,
+                         boolean withProteinStructure) {
     StringBuffer commands = new StringBuffer();
     if (isAll && sfunc != null) {
       sfunc.append("  _setModelState;\n");
@@ -567,12 +569,12 @@ import javax.vecmath.Vector3f;
             int index = bond.atom1.index;
             if (bond.atom1.getGroup().isAdded(index))
               index = -1 - index;
-            sb.append(index).append('\t').append(bond.atom2.index)
-                .append('\t').append(bond.order & ~JmolEdge.BOND_NEW).append(
-                    '\t').append(bond.mad / 1000f).append('\t').append(
-                    bond.getEnergy()).append('\t').append(
-                    JmolEdge.getBondOrderNameFromOrder(bond.order))
-                .append(";\n");
+            sb.append(index).append('\t').append(bond.atom2.index).append('\t')
+                .append(bond.order & ~JmolEdge.BOND_NEW).append('\t').append(
+                    bond.mad / 1000f).append('\t').append(bond.getEnergy())
+                .append('\t').append(
+                    JmolEdge.getBondOrderNameFromOrder(bond.order)).append(
+                    ";\n");
           }
       if (sb.length() > 0)
         commands.append("data \"connect_atoms\"\n").append(sb).append(
@@ -591,7 +593,8 @@ import javax.vecmath.Vector3f;
       if (bs.isEmpty())
         haveHiddenBonds = false;
       else
-        commands.append("  hide ").append(Escape.escape(bs, false)).append(";\n");
+        commands.append("  hide ").append(Escape.escape(bs, false)).append(
+            ";\n");
     }
 
     // shape construction
@@ -606,7 +609,7 @@ import javax.vecmath.Vector3f;
     viewer.getShapeState(commands, isAll);
 
     if (isAll) {
-      boolean needOrientations =  false;
+      boolean needOrientations = false;
       for (int i = 0; i < modelCount; i++)
         if (models[i].isJmolDataFrame) {
           needOrientations = true;
@@ -617,27 +620,29 @@ import javax.vecmath.Vector3f;
         if (t != null && t.length() > 0)
           commands.append("  frame " + getModelNumberDotted(i)
               + "; frame title " + Escape.escape(t) + ";\n");
-        if (needOrientations && models[i].orientation != null && !isTrajectorySubFrame(i))
+        if (needOrientations && models[i].orientation != null
+            && !isTrajectorySubFrame(i))
           commands.append("  frame " + getModelNumberDotted(i) + "; "
               + models[i].orientation.getMoveToText(false) + "\n");
       }
 
-      
-      if (unitCells != null)
-      for (int i = 0; i < modelCount; i++) {
-        SymmetryInterface symmetry = getUnitCell(i);
-        if (symmetry == null)
-          continue;
-        commands.append("  frame ").append(getModelNumberDotted(i));
-        Point3f pt = symmetry.getFractionalOffset();
-        if (pt != null)
-          commands.append("; set unitcell ").append(Escape.escape(pt));
-        pt = symmetry.getUnitCellMultiplier();
-        if (pt != null)
-          commands.append("; set unitcell ").append(Escape.escape(pt));
-        commands.append(";\n");
+      if (unitCells != null) {
+        for (int i = 0; i < modelCount; i++) {
+          SymmetryInterface symmetry = getUnitCell(i);
+          if (symmetry == null)
+            continue;
+          commands.append("  frame ").append(getModelNumberDotted(i));
+          Point3f pt = symmetry.getFractionalOffset();
+          if (pt != null)
+            commands.append("; set unitcell ").append(Escape.escape(pt));
+          pt = symmetry.getUnitCellMultiplier();
+          if (pt != null)
+            commands.append("; set unitcell ").append(Escape.escape(pt));
+          commands.append(";\n");
+        }
+        if (viewer.getObjectMad(StateManager.OBJ_UNITCELL) == 0)
+          commands.append("  unitcell OFF;\n");
       }
-
       commands.append("  set fontScaling " + viewer.getFontScaling() + ";\n");
       if (viewer.isModelKitMode())
         commands.append("  set modelKitMode true;\n");

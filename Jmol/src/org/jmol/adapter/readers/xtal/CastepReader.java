@@ -56,7 +56,7 @@ import javax.vecmath.Vector3f;
  * CASTEP (http://www.castep.org) .cell file format relevant section of .cell
  * file are included as comments below
  * 
- * preliminary .phonon frequency reader -- hansonr@stolaf.edu 9/2011 -- Many
+ * preliminary .castep, .phonon frequency reader -- hansonr@stolaf.edu 9/2011 -- Many
  * thanks to Keith Refson for his assistance with this implementation -- atom's
  * mass is encoded as bfactor -- FILTER options include "q=n" where n is an
  * integer or "q={1/4 1/4 0}" -- for non-simple fractions, you must use the

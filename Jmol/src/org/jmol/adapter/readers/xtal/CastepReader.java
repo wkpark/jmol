@@ -259,11 +259,8 @@ public class CastepReader extends AtomSetCollectionReader {
   private void readOutputUnitCell() throws Exception {
     atomSetCollection.newAtomSet();
     setFractionalCoordinates(true);
-    float[] xyz = new float[3];
-    for (int i = 0; i < 3; i++) {
-      fillFloatArray(null, 12, xyz);
-      addPrimitiveLatticeVector(i, xyz, 0);
-    }
+    abc = readDirectLatticeVectors(false, true);
+    setLatticeVectors();
   }
 
   /*
@@ -292,9 +289,8 @@ public class CastepReader extends AtomSetCollectionReader {
       atomSetCollection.newAtomSet();
       discardLinesUntilContains("<-- h");
       setSpaceGroupName("P1");
-      addPrimitiveLatticeVector(0, getVectors(line), 0);
-      addPrimitiveLatticeVector(1, getVectors(readLine()), 0);
-      addPrimitiveLatticeVector(2, getVectors(readLine()), 0);
+      abc = readDirectLatticeVectors(true, false);
+      setLatticeVectors();
       setFractionalCoordinates(false);
       discardLinesUntilContains("<-- R");
       while (line != null && line.contains("<-- R")) {
@@ -311,14 +307,6 @@ public class CastepReader extends AtomSetCollectionReader {
     }
   }
 
-  private float[] getVectors(String line) throws Exception {
-    float[] lv = new float[3];
-    fillFloatArray(line, 0, lv);
-    for (int i = 0; i < 3; i++)
-      lv[i] *= ANGSTROMS_PER_BOHR;
-    return lv;
-  }
-
   @Override
   protected void finalizeReader() throws Exception {
     if (isPhonon || isOutput) {
@@ -328,17 +316,7 @@ public class CastepReader extends AtomSetCollectionReader {
     }
 
     doApplySymmetry = true;
-    // relay length of and angles between cell vectors to Jmol
-    setUnitCell(a, b, c, alpha, beta, gamma);
-    /*
-     * IMPORTANT: 
-     * also hand over (matrix of) unit cell vectors to trigger
-     * the calculation of the correct transformation matrices
-     * from cartesian to fractional coordinates (which are used
-     * internally by Jmol)
-     */
-    if (!iHaveUnitCell)
-      setLatticeVectors();
+    setLatticeVectors();
     int nAtoms = atomSetCollection.getAtomCount();
     /*
      * this needs to be run either way (i.e. even if coordinates are already
@@ -350,10 +328,14 @@ public class CastepReader extends AtomSetCollectionReader {
   }
 
   private void setLatticeVectors() {
+    if (abc[0] == null) {
+      setUnitCell(a, b, c, alpha, beta, gamma);
+      return;
+    }
     float[] lv = new float[3];
-    for (int n = 0; n < 3; n++) {
-      abc[n].get(lv);
-      addPrimitiveLatticeVector(n, lv, 0);
+    for (int i = 0; i < 3; i++) {
+      abc[i].get(lv);
+      addPrimitiveLatticeVector(i, lv, 0);
     }
   }
 
@@ -381,11 +363,6 @@ public class CastepReader extends AtomSetCollectionReader {
       Logger
           .warn("error reading alpha,beta,gamma in %BLOCK LATTICE_ABC in CASTEP .cell file");
     }
-
-    // initialize lattice vectors to NaN - since not present in .cell file
-    for (int n = 0; n < 3; n++) {
-      abc[n] = new Vector3f(Float.NaN, Float.NaN, Float.NaN);
-    }
   }
 
   private void readLatticeCart() throws Exception {
@@ -393,15 +370,15 @@ public class CastepReader extends AtomSetCollectionReader {
       return;
     float factor = readLengthUnit(tokens[0]);
     float x, y, z;
-    for (int n = 0; n < 3; n++) {
+    for (int i = 0; i < 3; i++) {
       if (tokens.length >= 3) {
         x = parseFloat(tokens[0]) * factor;
         y = parseFloat(tokens[1]) * factor;
         z = parseFloat(tokens[2]) * factor;
-        abc[n] = new Vector3f(x, y, z);
+        abc[i] = new Vector3f(x, y, z);
       } else {
         Logger.warn("error reading coordinates of lattice vector "
-            + Integer.toString(n + 1)
+            + Integer.toString(i + 1)
             + " in %BLOCK LATTICE_CART in CASTEP .cell file");
         return;
       }
@@ -502,7 +479,7 @@ public class CastepReader extends AtomSetCollectionReader {
       2     0.250000    0.250000    0.250000   N        14.006740
     */
   private void readPhononUnitCell() throws Exception {
-    abc = readDirectLatticeVectors(line.indexOf("bohr") >= 0);
+    abc = readDirectLatticeVectors(line.indexOf("bohr") >= 0, true);
     setSpaceGroupName("P1");
     setLatticeVectors();
   }

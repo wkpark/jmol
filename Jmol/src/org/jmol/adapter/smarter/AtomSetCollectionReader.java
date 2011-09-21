@@ -1413,10 +1413,14 @@ public abstract class AtomSetCollectionReader {
     }
   */
 
-  protected Vector3f[] readDirectLatticeVectors(boolean isBohr) throws Exception {
+  protected Vector3f[] readDirectLatticeVectors(boolean isBohr, boolean needLine) throws Exception {
     Vector3f[] vectors = new Vector3f[3];    
     for (int i = 0; i < 3; i++) {
-      vectors[i] = getVector3f(readLine());
+      if (needLine)
+        readLine();
+      else
+        needLine = true;
+      vectors[i] = getVector3f(line);
       if (isBohr)
         vectors[i].scale(ANGSTROMS_PER_BOHR);
     }

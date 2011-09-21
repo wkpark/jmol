@@ -53,21 +53,20 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 /**
- * CASTEP (http://www.castep.org) .cell file format
- * relevant section of .cell file are included as comments below
+ * CASTEP (http://www.castep.org) .cell file format relevant section of .cell
+ * file are included as comments below
  * 
- * preliminary .phonon frequency reader -- hansonr@stolaf.edu 9/2011
- *   -- Many thanks to Keith Refson for his assistance with this implementation
- *   -- atom's mass is encoded as bfactor
- *   -- FILTER options include "q=n" where n is an integer or "q={1/4 1/4 0}"
- *   -- for non-simple fractions, you must use the exact form of the wavevector description:
- *   -- load "xxx.phonon" FILTER "q=(-0.083333 0.083333 0.500000)
- *   -- for simple fractions, you can also just specify SUPERCELL {a b c} where
- *   -- the number of cells matches a given wavevector -- SUPERCELL {4 4 1}, for example
- *   -- following this with ".1" ".2" etc. gives first, second, third, etc. occurance:
- *   -- load "xxx.phonon" FILTER "q=1.3" ....
- *   -- load "xxx.phonon" FILTER "{0 0 0}.3" ....
- *
+ * preliminary .phonon frequency reader -- hansonr@stolaf.edu 9/2011 -- Many
+ * thanks to Keith Refson for his assistance with this implementation -- atom's
+ * mass is encoded as bfactor -- FILTER options include "q=n" where n is an
+ * integer or "q={1/4 1/4 0}" -- for non-simple fractions, you must use the
+ * exact form of the wavevector description: -- load "xxx.phonon" FILTER
+ * "q=(-0.083333 0.083333 0.500000) -- for simple fractions, you can also just
+ * specify SUPERCELL {a b c} where -- the number of cells matches a given
+ * wavevector -- SUPERCELL {4 4 1}, for example -- following this with ".1" ".2"
+ * etc. gives first, second, third, etc. occurance: -- load "xxx.phonon" FILTER
+ * "q=1.3" .... -- load "xxx.phonon" FILTER "{0 0 0}.3" ....
+ * 
  * @author Joerg Meyer, FHI Berlin 2009 (meyer@fhi-berlin.mpg.de)
  * @version 1.2
  */
@@ -76,14 +75,17 @@ public class CastepReader extends AtomSetCollectionReader {
 
   private String[] tokens;
 
-  private float a, b, c, alpha, beta, gamma;
-  private Vector3f[] abc = new Vector3f[3];
-  private boolean iHaveFractionalCoordinates;
-  private int atomCount;
   private boolean isPhonon;
   private boolean isOutput;
+  private boolean isCell;
+
+  private float a, b, c, alpha, beta, gamma;
+  private Vector3f[] abc = new Vector3f[3];
+  
+  private int atomCount;
   private Point3f[] atomPts;
-  private boolean havePhonons = false;  
+
+  private boolean havePhonons = false;
   private String lastQPt;
   private int qpt2;
   private Vector3f desiredQpt;
@@ -100,7 +102,7 @@ public class CastepReader extends AtomSetCollectionReader {
     }
     continuing = readFileData();
   }
-  
+
   private void setDesiredQpt(String s) {
     desiredQpt = new Vector3f();
     desiredQ = "";
@@ -158,8 +160,8 @@ public class CastepReader extends AtomSetCollectionReader {
 
   private boolean readFileData() throws Exception {
     while (tokenizeCastepCell() > 0)
-      if ((tokens.length >= 2) && (tokens[0].equalsIgnoreCase("%BLOCK"))) {
-
+      if (tokens.length >= 2 && tokens[0].equalsIgnoreCase("%BLOCK")) {
+        Logger.info(line);
         /*
         %BLOCK LATTICE_ABC
         ang
@@ -191,8 +193,8 @@ public class CastepReader extends AtomSetCollectionReader {
         %ENDBLOCK POSITIONS_FRAC
         */
         if (tokens[1].equalsIgnoreCase("POSITIONS_FRAC")) {
+          setFractionalCoordinates(true);
           readPositionsFrac();
-          iHaveFractionalCoordinates = true;
           continue;
         }
         /*
@@ -202,8 +204,8 @@ public class CastepReader extends AtomSetCollectionReader {
         %ENDBLOCK POSITIONS_ABS
         */
         if (tokens[1].equalsIgnoreCase("POSITIONS_ABS")) {
+          setFractionalCoordinates(false);
           readPositionsAbs();
-          iHaveFractionalCoordinates = false;
           continue;
         }
       }
@@ -246,7 +248,7 @@ public class CastepReader extends AtomSetCollectionReader {
     }
     return true;
   }
-  
+
   /*
         Real Lattice(A)                      Reciprocal Lattice(1/A)
    2.6954645   2.6954645   0.0000000        1.1655107   1.1655107  -1.1655107
@@ -260,7 +262,7 @@ public class CastepReader extends AtomSetCollectionReader {
     float[] xyz = new float[3];
     for (int i = 0; i < 3; i++) {
       fillFloatArray(null, 12, xyz);
-      addPrimitiveLatticeVector(i, xyz, 0);      
+      addPrimitiveLatticeVector(i, xyz, 0);
     }
   }
 
@@ -278,8 +280,9 @@ public class CastepReader extends AtomSetCollectionReader {
       Atom atom = atomSetCollection.addNewAtom();
       tokens = getTokens();
       atom.elementSymbol = tokens[1];
-      setAtomCoord(atom, parseFloat(tokens[3]), parseFloat(tokens[4]), parseFloat(tokens[5]));
-    }    
+      setAtomCoord(atom, parseFloat(tokens[3]), parseFloat(tokens[4]),
+          parseFloat(tokens[5]));
+    }
   }
 
   private void readTrajectories() throws Exception {
@@ -298,10 +301,9 @@ public class CastepReader extends AtomSetCollectionReader {
         String[] tokens = getTokens();
         Atom atom = atomSetCollection.addNewAtom();
         atom.elementSymbol = tokens[0];
-        setAtomCoord(atom, 
-              parseFloat(tokens[2]) * ANGSTROMS_PER_BOHR,
-            parseFloat(tokens[3]) * ANGSTROMS_PER_BOHR,
-            parseFloat(tokens[4]) * ANGSTROMS_PER_BOHR);
+        setAtomCoord(atom, parseFloat(tokens[2]) * ANGSTROMS_PER_BOHR,
+            parseFloat(tokens[3]) * ANGSTROMS_PER_BOHR, parseFloat(tokens[4])
+                * ANGSTROMS_PER_BOHR);
         readLine();
       }
       applySymmetryAndSetTrajectory();
@@ -324,9 +326,8 @@ public class CastepReader extends AtomSetCollectionReader {
       super.finalizeReader();
       return;
     }
-      
+
     doApplySymmetry = true;
-    setFractionalCoordinates(iHaveFractionalCoordinates);
     // relay length of and angles between cell vectors to Jmol
     setUnitCell(a, b, c, alpha, beta, gamma);
     /*
@@ -336,16 +337,15 @@ public class CastepReader extends AtomSetCollectionReader {
      * from cartesian to fractional coordinates (which are used
      * internally by Jmol)
      */
-    setLatticeVectors();
+    if (!iHaveUnitCell)
+      setLatticeVectors();
     int nAtoms = atomSetCollection.getAtomCount();
     /*
      * this needs to be run either way (i.e. even if coordinates are already
      * fractional) - to satisfy the logic in AtomSetCollectionReader()
      */
-    for (int n = 0; n < nAtoms; n++) {
-      Atom atom = atomSetCollection.getAtom(n);
-      setAtomCoord(atom);
-    }
+    for (int i = 0; i < nAtoms; i++)
+      setAtomCoord(atomSetCollection.getAtom(i));
     super.finalizeReader();
   }
 
@@ -360,7 +360,7 @@ public class CastepReader extends AtomSetCollectionReader {
   private void readLatticeAbc() throws Exception {
     if (tokenizeCastepCell() == 0)
       return;
-    float factor = readLengthUnit();
+    float factor = readLengthUnit(tokens[0]);
     if (tokens.length >= 3) {
       a = parseFloat(tokens[0]) * factor;
       b = parseFloat(tokens[1]) * factor;
@@ -391,7 +391,7 @@ public class CastepReader extends AtomSetCollectionReader {
   private void readLatticeCart() throws Exception {
     if (tokenizeCastepCell() == 0)
       return;
-    float factor = readLengthUnit();
+    float factor = readLengthUnit(tokens[0]);
     float x, y, z;
     for (int n = 0; n < 3; n++) {
       if (tokens.length >= 3) {
@@ -425,77 +425,73 @@ public class CastepReader extends AtomSetCollectionReader {
   private void readPositionsAbs() throws Exception {
     if (tokenizeCastepCell() == 0)
       return;
-    float factor = readLengthUnit();
+    float factor = readLengthUnit(tokens[0]);
     readAtomData(factor);
   }
 
   /*
      to be kept in sync with Utilities/io.F90
   */
-  private final static String[] lengthUnitIds = {
-    "bohr", "m", "cm", "nm", "ang", "a0" };
+  private final static String[] lengthUnitIds = { "bohr", "m", "cm", "nm",
+      "ang", "a0" };
 
-  private final static float[] lengthUnitFactors = {
-    ANGSTROMS_PER_BOHR, 1E10f, 1E8f, 1E1f, 1.0f, ANGSTROMS_PER_BOHR };
+  private final static float[] lengthUnitFactors = { ANGSTROMS_PER_BOHR, 1E10f,
+      1E8f, 1E1f, 1.0f, ANGSTROMS_PER_BOHR };
 
-  private final static int lengthUnits = lengthUnitIds.length;
-
-  private float readLengthUnit() throws Exception {
+  private float readLengthUnit(String units) throws Exception {
     float factor = 1.0f;
-    for (int i=0; i<lengthUnits; i++) {
-      if (tokens[0].equalsIgnoreCase(lengthUnitIds[i])) {
+    for (int i = 0; i < lengthUnitIds.length; i++)
+      if (units.equalsIgnoreCase(lengthUnitIds[i])) {
         factor = lengthUnitFactors[i];
         tokenizeCastepCell();
+        break;
       }
-    }
     return factor;
   }
 
   private void readAtomData(float factor) throws Exception {
-    float x, y, z;
     do {
-      if (tokens[0].equalsIgnoreCase("%ENDBLOCK"))
-        break;
       if (tokens.length >= 4) {
         Atom atom = atomSetCollection.addNewAtom();
-        x = parseFloat(tokens[1]) * factor;
-        y = parseFloat(tokens[2]) * factor;
-        z = parseFloat(tokens[3]) * factor;
-        atom.set(x, y, z);
         atom.elementSymbol = tokens[0];
+        atom.set(parseFloat(tokens[1]), parseFloat(tokens[2]),
+            parseFloat(tokens[3]));
+        atom.scale(factor);
       } else {
         Logger.warn("cannot read line with CASTEP atom data: " + line);
       }
-    } while (tokenizeCastepCell() > 0);
+    } while (tokenizeCastepCell() > 0
+        && !tokens[0].equalsIgnoreCase("%ENDBLOCK"));
   }
 
   private int tokenizeCastepCell() throws Exception {
-    while (true) {
-      if (readLine() == null)
-        return 0;
-      if (line.trim().length() == 0)
+    while (readLine() != null) {
+      if ((line = line.trim()).length() == 0 || line.startsWith("#")
+          || line.startsWith("!"))
         continue;
-      if (line.startsWith(" BEGIN header")) {
-        isPhonon = true;
-        Logger.info("reading CASTEP .phonon file");
-        return -1;
+      if (!isCell) {
+        if (line.startsWith("%")) {
+          isCell = true;
+          break;
+        }
+        if (line.startsWith("BEGIN header")) {
+          isPhonon = true;
+          Logger.info("reading CASTEP .phonon file");
+          return -1;
+        }
+        if (line.contains("CASTEP")) {
+          isOutput = true;
+          Logger.info("reading CASTEP .castep file");
+          return -1;
+        }
       }
-      if (line.contains("CASTEP")) {
-        isOutput = true;
-        Logger.info("reading CASTEP .castep file");
-        return -1;
-      }
-      tokens = getTokens();
-      if (line.startsWith("#") || line.startsWith("!") || tokens[0].equals("#")
-          || tokens[0].equals("!"))
-        continue;
       break;
     }
-    return tokens.length;
+    return (line == null ? 0 : (tokens = getTokens()).length);
   }
-  
+
   //////////// phonon code ////////////
-  
+
   /*
   Unit cell vectors (A)
      0.000000    1.819623    1.819623
@@ -516,7 +512,8 @@ public class CastepReader extends AtomSetCollectionReader {
     while (readLine() != null && line.indexOf("END") < 0) {
       String[] tokens = getTokens();
       Atom atom = atomSetCollection.addNewAtom();
-      setAtomCoord(atom, parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3]));
+      setAtomCoord(atom, parseFloat(tokens[1]), parseFloat(tokens[2]),
+          parseFloat(tokens[3]));
       atom.elementSymbol = tokens[4];
       atom.bfactor = parseFloat(tokens[5]); // mass, actually
     }
@@ -528,7 +525,6 @@ public class CastepReader extends AtomSetCollectionReader {
     for (int i = 0; i < atomCount; i++)
       atomPts[i] = new Point3f(atoms[i]);
   }
-  
 
   /*
      q-pt=    1    0.000000  0.000000  0.000000      1.000000    1.000000  0.000000  0.000000
@@ -568,7 +564,7 @@ public class CastepReader extends AtomSetCollectionReader {
     boolean isOK = false;
     boolean isSecond = (tokens[1].equals(lastQPt));
     qpt2 = (isSecond ? qpt2 + 1 : 1);
-      
+
     lastQPt = tokens[1];
     //TODO not quite right: can have more than two options. 
     if (filter != null && checkFilter("Q=")) {
@@ -578,16 +574,16 @@ public class CastepReader extends AtomSetCollectionReader {
         if (v.length() < 0.001f)
           fcoord = desiredQ;
       }
-      isOK = (checkFilter("Q=" + fcoord + "." + qpt2 + ";") 
-          || checkFilter("Q=" + lastQPt + "." + qpt2 + ";")
-          || !isSecond && checkFilter("Q=" + fcoord + ";")
-          || !isSecond && checkFilter("Q=" + lastQPt + ";"));
+      isOK = (checkFilter("Q=" + fcoord + "." + qpt2 + ";")
+          || checkFilter("Q=" + lastQPt + "." + qpt2 + ";") || !isSecond
+          && checkFilter("Q=" + fcoord + ";") || !isSecond
+          && checkFilter("Q=" + lastQPt + ";"));
       if (!isOK)
         return;
     }
     boolean isGammaPoint = (qvec.length() == 0);
-    float[] fsc = (supercell == null || !supercell.startsWith("=") ? null : 
-      atomSetCollection.setSuperCell(supercell.substring(1), new float[16]));
+    float[] fsc = (supercell == null || !supercell.startsWith("=") ? null
+        : atomSetCollection.setSuperCell(supercell.substring(1), new float[16]));
     float nx = 1, ny = 1, nz = 1;
     if (fsc != null && !isOK && !isSecond) {
       // only select corresponding phonon vector 
@@ -595,10 +591,8 @@ public class CastepReader extends AtomSetCollectionReader {
       float dx = (qvec.x == 0 ? 1 : qvec.x) * (nx = fsc[0]);
       float dy = (qvec.y == 0 ? 1 : qvec.y) * (ny = fsc[5]);
       float dz = (qvec.z == 0 ? 1 : qvec.z) * (nz = fsc[10]);
-      if (Math.abs(dx - 1) > 0.001
-          || Math.abs(dy - 1) > 0.001
-          || Math.abs(dz - 1) > 0.001
-          )
+      if (Math.abs(dx - 1) > 0.001 || Math.abs(dy - 1) > 0.001
+          || Math.abs(dz - 1) > 0.001)
         return;
       isOK = true;
     }
@@ -666,27 +660,33 @@ public class CastepReader extends AtomSetCollectionReader {
   }
 
   private String getFractionalCoord(Vector3f qvec) {
-    return (isInt(qvec.x * 12) && isInt(qvec.y * 12) && isInt(qvec.z * 12) ?
-        getSymmetry().fcoord(qvec) : null);
+    return (isInt(qvec.x * 12) && isInt(qvec.y * 12) && isInt(qvec.z * 12) ? getSymmetry()
+        .fcoord(qvec)
+        : null);
   }
 
   private static boolean isInt(float f) {
     return (Math.abs(f - (int) f) < 0.001f);
-  } 
+  }
 
   private static final double TWOPI = Math.PI * 2;
+
   /**
-   * transform complex vibration vector to a real vector by
-   * applying the appropriate translation, 
-   * storing the results in v 
+   * transform complex vibration vector to a real vector by applying the
+   * appropriate translation, storing the results in v
    * 
-   * @param data   from .phonon line parsed for floats
+   * @param data
+   *        from .phonon line parsed for floats
    * @param atom
-   * @param rTrans translation vector in unit fractional coord
-   * @param qvec   q point vector
-   * @param v      return vector
+   * @param rTrans
+   *        translation vector in unit fractional coord
+   * @param qvec
+   *        q point vector
+   * @param v
+   *        return vector
    */
-  private void setPhononVector(float[] data, Atom atom, Vector3f rTrans, Vector3f qvec, Vector3f v) {
+  private void setPhononVector(float[] data, Atom atom, Vector3f rTrans,
+                               Vector3f qvec, Vector3f v) {
     // complex[r/i] vx = data[2/3], vy = data[4/5], vz = data[6/7]
     if (qvec == null) {
       v.set(data[2], data[4], data[6]);
@@ -697,15 +697,15 @@ public class CastepReader extends AtomSetCollectionReader {
       //  push @$pertxo, $cosph*$$pertx_r[$iat] - $sinph*$$pertx_i[$iat];
       //  push @$pertyo, $cosph*$$perty_r[$iat] - $sinph*$$perty_i[$iat];
       //  push @$pertzo, $cosph*$$pertz_r[$iat] - $sinph*$$pertz_i[$iat];
-      
+
       double phase = qvec.dot(rTrans);
       double cosph = Math.cos(TWOPI * phase);
       double sinph = Math.sin(TWOPI * phase);
-      v.x = (float)(cosph * data[2] - sinph * data[3]);
-      v.y = (float)(cosph * data[4] - sinph * data[5]);
-      v.z = (float)(cosph * data[6] - sinph * data[7]);
+      v.x = (float) (cosph * data[2] - sinph * data[3]);
+      v.y = (float) (cosph * data[4] - sinph * data[5]);
+      v.z = (float) (cosph * data[6] - sinph * data[7]);
     }
     v.scale((float) Math.sqrt(1 / atom.bfactor)); // mass stored in bfactor
   }
-  
+
 }

@@ -5575,6 +5575,8 @@ private void zap(String msg) {
       return colorManager.getDefaultColorRasmol();
     if (key.equalsIgnoreCase("frank"))
       return getShowFrank();
+    if (key.equalsIgnoreCase("spinOn"))
+      return getSpinOn();
     if (key.equalsIgnoreCase("showSelections"))
       return modelSet.getSelectionHaloEnabled();
     if (global.htUserVariables.containsKey(key)) {

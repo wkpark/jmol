@@ -81,6 +81,7 @@ public class CastepReader extends AtomSetCollectionReader {
   private boolean iHaveFractionalCoordinates;
   private int atomCount;
   private boolean isPhonon;
+  private boolean isOutput;
   private Point3f[] atomPts;
   private boolean havePhonons = false;  
   private String lastQPt;
@@ -90,71 +91,14 @@ public class CastepReader extends AtomSetCollectionReader {
 
   @Override
   public void initializeReader() throws Exception {
-    
     if (filter != null) {
-      filter = filter.replace('(','{').replace(')','}');
+      filter = filter.replace('(', '{').replace(')', '}');
       filter = TextFormat.simpleReplace(filter, "  ", " ");
-      if (filter.indexOf("{") >= 0) 
+      if (filter.indexOf("{") >= 0)
         setDesiredQpt(filter.substring(filter.indexOf("{")));
       filter = TextFormat.simpleReplace(filter, "-PT", "");
     }
-    while (tokenizeCastepCell() > 0) {
-      if (isPhonon) {
-        if (isTrajectory)
-          atomSetCollection.allowMultiple = false;
-        return; // use checkLine
-      }
-      if ((tokens.length >= 2) && (tokens[0].equalsIgnoreCase("%BLOCK"))) {
-
-          /*
-%BLOCK LATTICE_ABC
-ang
-  16.66566792 8.33283396  16.82438907
-  90.0    90.0    90.0
-%ENDBLOCK LATTICE_ABC
-          */
-        if (tokens[1].equalsIgnoreCase("LATTICE_ABC")) {
-          readLatticeAbc();
-          continue;
-        }
-          /*
-%BLOCK LATTICE_CART
-ang
-  16.66566792 0.0   0.0
-  0.0   8.33283396  0.0
-  0.0   0.0   16.82438907
-%ENDBLOCK LATTICE_CART
-          */
-        if (tokens[1].equalsIgnoreCase("LATTICE_CART")) {
-          readLatticeCart();
-          continue;
-        }
-
-          /* coordinates are set immediately */
-          /*
-%BLOCK POSITIONS_FRAC
-   Pd         0.0 0.0 0.0
-%ENDBLOCK POSITIONS_FRAC
-          */
-        if (tokens[1].equalsIgnoreCase("POSITIONS_FRAC")) {
-          readPositionsFrac();
-          iHaveFractionalCoordinates = true;
-          continue;
-        }
-          /*
-%BLOCK POSITIONS_ABS
-ang
-   Pd         0.00000000         0.00000000       0.00000000 
-%ENDBLOCK POSITIONS_ABS
-          */
-        if (tokens[1].equalsIgnoreCase("POSITIONS_ABS")) {
-          readPositionsAbs();
-          iHaveFractionalCoordinates = false;
-          continue;
-        }
-      }
-    }
-    continuing = false;
+    continuing = readFileData();
   }
   
   private void setDesiredQpt(String s) {
@@ -212,9 +156,78 @@ ang
     Logger.info("Looking for q-pt=" + desiredQpt);
   }
 
+  private boolean readFileData() throws Exception {
+    while (tokenizeCastepCell() > 0)
+      if ((tokens.length >= 2) && (tokens[0].equalsIgnoreCase("%BLOCK"))) {
+
+        /*
+        %BLOCK LATTICE_ABC
+        ang
+        16.66566792 8.33283396  16.82438907
+        90.0    90.0    90.0
+        %ENDBLOCK LATTICE_ABC
+        */
+        if (tokens[1].equalsIgnoreCase("LATTICE_ABC")) {
+          readLatticeAbc();
+          continue;
+        }
+        /*
+        %BLOCK LATTICE_CART
+        ang
+        16.66566792 0.0   0.0
+        0.0   8.33283396  0.0
+        0.0   0.0   16.82438907
+        %ENDBLOCK LATTICE_CART
+        */
+        if (tokens[1].equalsIgnoreCase("LATTICE_CART")) {
+          readLatticeCart();
+          continue;
+        }
+
+        /* coordinates are set immediately */
+        /*
+        %BLOCK POSITIONS_FRAC
+        Pd         0.0 0.0 0.0
+        %ENDBLOCK POSITIONS_FRAC
+        */
+        if (tokens[1].equalsIgnoreCase("POSITIONS_FRAC")) {
+          readPositionsFrac();
+          iHaveFractionalCoordinates = true;
+          continue;
+        }
+        /*
+        %BLOCK POSITIONS_ABS
+        ang
+        Pd         0.00000000         0.00000000       0.00000000 
+        %ENDBLOCK POSITIONS_ABS
+        */
+        if (tokens[1].equalsIgnoreCase("POSITIONS_ABS")) {
+          readPositionsAbs();
+          iHaveFractionalCoordinates = false;
+          continue;
+        }
+      }
+    if (isPhonon || isOutput) {
+      if (isTrajectory)
+        atomSetCollection.allowMultiple = false;
+      return true; // use checkLine
+    }
+    return false;
+  }
+
   @Override
   protected boolean checkLine() throws Exception {
-    // only for .phonon or other BEGIN HEADER type files
+    // only for .phonon, castep output, or other BEGIN HEADER type files
+    if (isOutput) {
+      if (line.contains("Real Lattice(A)")) {
+        readOutputUnitCell();
+      } else if (line.contains("Fractional coordinates of atoms")) {
+        readOutputAtoms();
+      }
+      return true;
+    }
+
+    // phonon only from here
     if (line.contains("<-- E")) {
       readTrajectories();
       return true;
@@ -234,6 +247,41 @@ ang
     return true;
   }
   
+  /*
+        Real Lattice(A)                      Reciprocal Lattice(1/A)
+   2.6954645   2.6954645   0.0000000        1.1655107   1.1655107  -1.1655107
+   2.6954645   0.0000000   2.6954645        1.1655107  -1.1655107   1.1655107
+   0.0000000   2.6954645   2.6954645       -1.1655107   1.1655107   1.1655107
+   */
+
+  private void readOutputUnitCell() throws Exception {
+    atomSetCollection.newAtomSet();
+    setFractionalCoordinates(true);
+    float[] xyz = new float[3];
+    for (int i = 0; i < 3; i++) {
+      fillFloatArray(null, 12, xyz);
+      addPrimitiveLatticeVector(i, xyz, 0);      
+    }
+  }
+
+  /*
+            x  Element    Atom        Fractional coordinates of atoms  x
+            x            Number           u          v          w      x
+            x----------------------------------------------------------x
+            x  Si           1         0.000000   0.000000   0.000000   x
+            x  Si           2         0.250000   0.250000   0.250000   x
+
+   */
+  private void readOutputAtoms() throws Exception {
+    readLines(2);
+    while (readLine().indexOf("xxx") < 0) {
+      Atom atom = atomSetCollection.addNewAtom();
+      tokens = getTokens();
+      atom.elementSymbol = tokens[1];
+      setAtomCoord(atom, parseFloat(tokens[3]), parseFloat(tokens[4]), parseFloat(tokens[5]));
+    }    
+  }
+
   private void readTrajectories() throws Exception {
     isTrajectory = true;
     doApplySymmetry = true;
@@ -271,7 +319,7 @@ ang
 
   @Override
   protected void finalizeReader() throws Exception {
-    if (isPhonon) {
+    if (isPhonon || isOutput) {
       isTrajectory = false;
       super.finalizeReader();
       return;
@@ -429,7 +477,13 @@ ang
         continue;
       if (line.startsWith(" BEGIN header")) {
         isPhonon = true;
-        return 1;
+        Logger.info("reading CASTEP .phonon file");
+        return -1;
+      }
+      if (line.contains("CASTEP")) {
+        isOutput = true;
+        Logger.info("reading CASTEP .castep file");
+        return -1;
       }
       tokens = getTokens();
       if (line.startsWith("#") || line.startsWith("!") || tokens[0].equals("#")

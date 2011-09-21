@@ -728,6 +728,7 @@ public class Resolver {
   private static boolean checkCastep(String[] lines) {
     for ( int i = 0; i<lines.length; i++ ) {
       if (lines[i].indexOf("Frequencies in         cm-1") == 1
+          || lines[i].contains("CASTEP")
           || lines[i].toUpperCase().startsWith("%BLOCK LATTICE_ABC")
           || lines[i].toUpperCase().startsWith("%BLOCK LATTICE_CART")
           || lines[i].toUpperCase().startsWith("%BLOCK POSITIONS_FRAC")

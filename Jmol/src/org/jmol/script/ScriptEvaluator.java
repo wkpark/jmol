@@ -2335,8 +2335,7 @@ public class ScriptEvaluator {
           fixed[j] = new Token(Token.integer, ((Integer) v).intValue(), v);
 
         } else if (v instanceof Float) {
-          fixed[j] = new Token(Token.decimal, ScriptEvaluator.getFloatEncodedInt("" + v),
-              v);
+          fixed[j] = new Token(Token.decimal, getFloatEncodedInt("" + v), v);
         } else if (v instanceof String) {
           if (!forceString) {
             if ((tok != Token.set || j > 1 && statement[1].tok != Token.echo)
@@ -3557,10 +3556,8 @@ public class ScriptEvaluator {
             rpn.addX(getAtomBits(Token.spec_model, Integer.valueOf(iModel)));
             break;
           }
-          if (iModel < 1000)
+          if (iModel < 2147) // file number
             iModel = iModel * 1000000;
-          else
-            iModel = (iModel / 1000) * 1000000 + iModel % 1000;
         }
         rpn.addX(bitSetForModelFileNumber(iModel));
         break;
@@ -4169,7 +4166,7 @@ public class ScriptEvaluator {
       // model/frame number encoded
       break;
     case Token.string:
-      iFrame = ScriptEvaluator.getFloatEncodedInt(stringParameter(index));
+      iFrame = getFloatEncodedInt(stringParameter(index));
       break;
     default:
       error(ERROR_invalidArgument);
@@ -6622,12 +6619,11 @@ public class ScriptEvaluator {
         error(ERROR_invalidArgument);
       break;
     default:
-      if ((order = ScriptEvaluator.getBondOrderFromString(parameterAsString(1))) == JmolEdge.BOND_ORDER_NULL)
+      if ((order = getBondOrderFromString(parameterAsString(1))) == JmolEdge.BOND_ORDER_NULL)
         error(ERROR_invalidArgument);
       // generic partial can be indicated by "partial n.m"
       if (order == JmolEdge.BOND_PARTIAL01 && tokAt(2) == Token.decimal) {
-        order = ScriptEvaluator
-            .getPartialBondOrderFromFloatEncodedInt(statement[2].intValue);
+        order = getPartialBondOrderFromFloatEncodedInt(statement[2].intValue);
       }
     }
     setShapeProperty(JmolConstants.SHAPE_STICKS, "bondOrder", Integer
@@ -7228,7 +7224,7 @@ public class ScriptEvaluator {
           }
         }
         String cmd = parameterAsString(i);
-        if ((bo = ScriptEvaluator.getBondOrderFromString(cmd)) == JmolEdge.BOND_ORDER_NULL) {
+        if ((bo = getBondOrderFromString(cmd)) == JmolEdge.BOND_ORDER_NULL) {
           error(ERROR_invalidArgument);
         }
         // must be bond type
@@ -7239,8 +7235,7 @@ public class ScriptEvaluator {
         case JmolEdge.BOND_PARTIAL01:
           switch (tokAt(i + 1)) {
           case Token.decimal:
-            bo = ScriptEvaluator
-                .getPartialBondOrderFromFloatEncodedInt(statement[++i].intValue);
+            bo = getPartialBondOrderFromFloatEncodedInt(statement[++i].intValue);
             break;
           case Token.integer:
             bo = (short) intParameter(++i);
@@ -11946,8 +11941,7 @@ public class ScriptEvaluator {
       case Token.string:
         if (nFrames == 2)
           error(ERROR_invalidArgument);
-        int iFrame = (theTok == Token.string ? ScriptEvaluator
-            .getFloatEncodedInt((String) theToken.value) : theToken.intValue);
+        int iFrame = (theTok == Token.string ? getFloatEncodedInt((String) theToken.value) : theToken.intValue);
         if (iFrame == Integer.MAX_VALUE)
           iFrame = 0; // frame 0.0
         if (iFrame == -1) {
@@ -12335,7 +12329,7 @@ public class ScriptEvaluator {
           modelNumber = Parser.parseInt(modelDotted);
           useModelNumber = true;
         } else {
-          modelNumber = ScriptEvaluator.getFloatEncodedInt(modelDotted);
+          modelNumber = getFloatEncodedInt(modelDotted);
         }
         if (isSyntaxCheck)
           return;
@@ -17941,11 +17935,12 @@ public class ScriptEvaluator {
   }
 
   /**
-   * encodes a string such as "2.10" as an integer instead of a float
+   * Encodes a string such as "2.10" as an integer instead of a float
    * so as to distinguish "2.1" from "2.10"
    * used for model numbers and partial bond orders.
    * 2147483647 is maxvalue, so this allows loading
-   * simultaneously up to 2147 files.
+   * simultaneously up to 2147 files, each with 999999 models (or trajectories)
+   * 
    * @param strDecimal
    * @return float encoded as an integer
    */
@@ -17977,14 +17972,16 @@ public class ScriptEvaluator {
   }
 
   /**
-   * reads standard n.m float-as-integer n*1000000 + m
-   * and returns (n % 6) << 5 + (m % 0x1F)
+   * reads standard n.m float-as-integer n*1000000 + m and returns (n % 6) << 5
+   * + (m % 0x1F)
+   * 
    * @param bondOrderInteger
    * @return Bond order partial mask
    */
-  public final static int getPartialBondOrderFromFloatEncodedInt(int bondOrderInteger) {
-    return ((((bondOrderInteger / 1000000) % 6) << 5)
-    + ((bondOrderInteger % 1000000) & 0x1F));
+  public final static int getPartialBondOrderFromFloatEncodedInt(
+                                                 int bondOrderInteger) {
+    return (((bondOrderInteger / 1000000) % 6) << 5)
+        + ((bondOrderInteger % 1000000) & 0x1F);
   }
 
   public final static int getBondOrderFromString(String s) {
@@ -17994,8 +17991,7 @@ public class ScriptEvaluator {
   }
 
   public static int getPartialBondOrderFromString(String s) {
-    return ScriptEvaluator.getPartialBondOrderFromFloatEncodedInt(ScriptEvaluator
-        .getFloatEncodedInt(s));
+    return getPartialBondOrderFromFloatEncodedInt(getFloatEncodedInt(s));
   }
 
 }

@@ -76,9 +76,17 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   private Map<String, String> htHetero;
   private boolean isMolecular;
   private String molecularType = "GEOM_BOND default";
+  private char lastAltLoc;
+  private int configurationPtr = Integer.MIN_VALUE;
+  private int conformationIndex;
+
   
   @Override
   public void initializeReader() throws Exception {
+    if (checkFilter("CONF ")) {
+      configurationPtr = parseInt(filter, filter.indexOf("CONF ") + 5);
+    }
+
     isMolecular = (filter != null && filter.indexOf("MOLECUL") >= 0);
     if (isMolecular) {
       if (!doApplySymmetry) {
@@ -441,6 +449,9 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
 
   private Map<String, Float> atomTypes;
   private List<Object[]> bondTypes = new ArrayList<Object[]>();
+
+  private String disorderAssembly = ".";
+  private String lastDisorderAssembly;
   
   final private static byte ATOM_TYPE_SYMBOL = 0;
   final private static byte ATOM_TYPE_OXIDATION_NUMBER = 1;
@@ -512,6 +523,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   final private static byte GROUP_PDB = 16;
   final private static byte MODEL_NO = 17;
   final private static byte DUMMY_ATOM = 18;
+ 
   final private static byte DISORDER_GROUP = 19;
   final private static byte ANISO_LABEL = 20;
   final private static byte ANISO_MMCIF_ID = 21;
@@ -551,6 +563,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   final private static byte CHEM_COMP_AC_X_IDEAL = 55;
   final private static byte CHEM_COMP_AC_Y_IDEAL = 56;
   final private static byte CHEM_COMP_AC_Z_IDEAL = 57;
+  final private static byte DISORDER_ASSEMBLY = 58;
 
 
   final private static String[] atomFields = { 
@@ -612,6 +625,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       "_chem_comp_atom_pdbx_model_Cartn_x_ideal", 
       "_chem_comp_atom_pdbx_model_Cartn_y_ideal", 
       "_chem_comp_atom_pdbx_model_Cartn_z_ideal", 
+      "_atom_site_disorder_assembly"
   };
 
   /* to: hansonr@stolaf.edu
@@ -754,7 +768,10 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
           break;
         case ALT_ID:
           atom.alternateLocationID = firstChar;
-        break;
+          break;
+        case DISORDER_ASSEMBLY:
+          disorderAssembly = field;
+          break;
         case DISORDER_GROUP:          
           if (firstChar == '-' && field.length() > 1) {
             atom.alternateLocationID = field.charAt(1);
@@ -798,7 +815,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         case ANISO_LABEL:
           iAtom = atomSetCollection.getAtomNameIndex(field);
           if (iAtom < 0)
-            return false;
+            continue;
           atom = atomSetCollection.getAtom(iAtom);
           break;
         case ANISO_MMCIF_ID:
@@ -877,6 +894,34 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
     return true;
   }
      
+  
+  @Override
+  protected boolean filterAtom(Atom atom, int iAtom) {
+    if (!super.filterAtom(atom, iAtom))
+      return false;
+    if (configurationPtr > 0) {
+      if (!disorderAssembly.equals(lastDisorderAssembly)) {
+        lastDisorderAssembly = disorderAssembly;
+        lastAltLoc = '\0';
+        conformationIndex = configurationPtr;
+      }
+      // ignore atoms that have no designation
+      if (atom.alternateLocationID != '\0') {
+        // count down until we get the desired index into the list
+        if (conformationIndex >= 0 && atom.alternateLocationID != lastAltLoc) {
+          lastAltLoc = atom.alternateLocationID;
+          conformationIndex--;
+        }
+        if (conformationIndex != 0) {
+          Logger.info("ignoring " + atom.atomName);
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+
   ////////////////////////////////////////////////////////////////
   // bond data
   ////////////////////////////////////////////////////////////////
@@ -1154,6 +1199,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   final private static byte STRUCT_ID = 7;
   final private static byte SERIAL_NO = 8;
   final private static byte HELIX_CLASS = 9;
+
 
   final private static String[] structConfFields = { 
       "_struct_conf_conf_type_id",

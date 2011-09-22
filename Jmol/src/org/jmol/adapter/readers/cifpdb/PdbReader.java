@@ -632,7 +632,7 @@ REMARK 290 REMARK: NULL
   private char lastInsertion;
   private char lastAltLoc;
   private int conformationIndex;
-  StringBuffer sbIgnored, sbSelected;
+  private StringBuffer sbIgnored, sbSelected;
 
   @Override
   protected boolean filterAtom(Atom atom, int iAtom) {

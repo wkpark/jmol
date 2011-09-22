@@ -311,7 +311,9 @@ public class CrystalReader extends AtomSetCollectionReader {
 
   private boolean setDirect() throws Exception {
     boolean isBohr = (line.indexOf("(BOHR") >= 0);
-    directLatticeVectors = readDirectLatticeVectors(isBohr, isBohr);
+    if (!isBohr)
+      readLine();
+    directLatticeVectors = readDirectLatticeVectors(isBohr, true);
     if (Logger.debugging) {
       addJmolScript("draw va vector {0 0 0} "
           + Escape.escape(directLatticeVectors[0]) + " color red");

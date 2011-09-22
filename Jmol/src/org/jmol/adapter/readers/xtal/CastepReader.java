@@ -224,14 +224,18 @@ public class CastepReader extends AtomSetCollectionReader {
       if (line.contains("Real Lattice(A)")) {
         readOutputUnitCell();
       } else if (line.contains("Fractional coordinates of atoms")) {
-        readOutputAtoms();
+        if (doGetModel(++modelNumber)) {
+          readOutputAtoms();
+        }
+      } else if (doProcessLines && line.contains("Atomic Populations (Mulliken)")) {
+        readOutputCharges();
       }
       return true;
     }
 
     // phonon only from here
     if (line.contains("<-- E")) {
-      readTrajectories();
+      readPhononTrajectories();
       return true;
     }
     if (line.indexOf("Unit cell vectors") == 1) {
@@ -280,9 +284,30 @@ public class CastepReader extends AtomSetCollectionReader {
       setAtomCoord(atom, parseFloat(tokens[3]), parseFloat(tokens[4]),
           parseFloat(tokens[5]));
     }
+    applySymmetryAndSetTrajectory();
   }
 
-  private void readTrajectories() throws Exception {
+  /*
+   * 
+     Atomic Populations (Mulliken)
+     -----------------------------
+Species   Ion     s      p      d      f     Total  Charge (e)
+==============================================================
+  O        1     1.90   5.45   0.00   0.00   7.35    -1.35
+  O        2     1.90   5.45   0.00   0.00   7.35    -1.35
+
+   */
+  private void readOutputCharges() throws Exception {
+    readLines(3);
+    Atom[] atoms = atomSetCollection.getAtoms();
+    int atomCount = atomSetCollection.getAtomCount();
+    for (int i = atomSetCollection.getLastAtomSetAtomIndex(); i < atomCount; i++) {
+      tokens = getTokens(readLine());
+      atoms[i].partialCharge = parseFloat(tokens[7]);
+    }
+  }
+
+  private void readPhononTrajectories() throws Exception {
     isTrajectory = true;
     doApplySymmetry = true;
     while (line != null && line.contains("<-- E")) {

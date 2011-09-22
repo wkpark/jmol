@@ -86,6 +86,8 @@ public class SurfaceFileTyper {
     }
     if (line.indexOf("Here is your gzipped map") >= 0)
       return "UPPSALA" + line;
+    if (line.indexOf("! nspins") >= 0)
+      return "CastepDensity";
     if (line.indexOf("<jvxl") >= 0 && line.indexOf("<?xml") >= 0)
       return "JvxlXML";
     if (line.indexOf("#JVXL+") >= 0)

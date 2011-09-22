@@ -183,6 +183,30 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   protected int downsampleFactor;
   private int nSkipX, nSkipY, nSkipZ;
 
+  protected void initializeSurfaceData() {
+    downsampleFactor = params.downsampleFactor;
+    nSkipX = 0;
+    nSkipY = 0;
+    nSkipZ = 0;
+    if (canDownsample && downsampleFactor > 0) {
+      nSkipX = downsampleFactor - 1;
+      nSkipY = downsampleRemainders[2] + (downsampleFactor - 1)
+          * (nSkipZ = (nPointsZ * downsampleFactor + downsampleRemainders[2]));
+      nSkipZ = downsampleRemainders[1] * nSkipZ + (downsampleFactor - 1)
+          * nSkipZ * (nPointsY * downsampleFactor + downsampleRemainders[1]);
+    }
+
+    if (params.thePlane != null) {
+      params.cutoff = 0f;
+    } else if (isJvxl) {
+      params.cutoff = (params.isBicolorMap || params.colorBySign ? 0.01f : 0.5f);
+    }
+    nDataPoints = 0;
+    next[0] = 0;
+    line = "";
+    jvxlNSurfaceInts = 0;
+  }
+
   @Override
   protected void readSurfaceData(boolean isMapData) throws Exception {
     /*
@@ -217,27 +241,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
      * 
      */
 
-    next[0] = 0;
-    downsampleFactor = params.downsampleFactor;
-    nSkipX = 0;
-    nSkipY = 0;
-    nSkipZ = 0;
-    if (canDownsample && downsampleFactor > 0) {
-      nSkipX = downsampleFactor - 1;
-      nSkipY = downsampleRemainders[2] + (downsampleFactor - 1)
-          * (nSkipZ = (nPointsZ * downsampleFactor + downsampleRemainders[2]));
-      nSkipZ = downsampleRemainders[1] * nSkipZ + (downsampleFactor - 1)
-          * nSkipZ * (nPointsY * downsampleFactor + downsampleRemainders[1]);
-    }
-
-    if (params.thePlane != null) {
-      params.cutoff = 0f;
-    } else if (isJvxl) {
-      params.cutoff = (params.isBicolorMap || params.colorBySign ? 0.01f : 0.5f);
-    }
-    nDataPoints = 0;
-    line = "";
-    jvxlNSurfaceInts = 0;
+    initializeSurfaceData();
     if (isProgressive && !isMapData || isJvxl) {
       nDataPoints = volumeData.setVoxelCounts(nPointsX, nPointsY, nPointsZ);
       voxelData = null;

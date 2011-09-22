@@ -657,6 +657,8 @@ public class Resolver {
         return specialTags[SPECIAL_GROMACS][0];
       if (checkCrystal(lines))
         return specialTags[SPECIAL_CRYSTAL][0];
+      if (checkCastep(lines))
+        return specialTags[SPECIAL_CASTEP][0];
     } else {
       if (nLines == 1 && lines[0].length() > 0
           && Character.isDigit(lines[0].charAt(0)))
@@ -677,8 +679,6 @@ public class Resolver {
         return specialTags[SPECIAL_CUBE][0];
       if (checkWien2k(lines))
         return specialTags[SPECIAL_WIEN][0];
-      if (checkCastep(lines))
-        return specialTags[SPECIAL_CASTEP][0];
       if (checkAims(lines))
         return specialTags[SPECIAL_AIMS][0];
       if (checkGenNBO(lines))

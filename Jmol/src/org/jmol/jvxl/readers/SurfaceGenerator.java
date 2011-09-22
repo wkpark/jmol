@@ -1275,6 +1275,8 @@ public class SurfaceGenerator {
       return new MsmsReader(this, params.fileName, br);
     if (fileType.equals("Kinemage"))
       return new KinemageReader(this, br);
+    if (fileType.equals("CastepDensity"))
+      return new CastepDensityReader(this, br);
     return null;
   }
 

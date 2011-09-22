@@ -3879,11 +3879,10 @@ private void zap(String msg) {
     if (!haveDisplay)
       return;
     repaintManager.requestRepaintAndWait();
-    if (statusManager.doSync())
-      statusManager.setSync(null);
+    setSync();
   }
 
-  void setSync() {
+  private void setSync() {
     if (statusManager.doSync())
       statusManager.setSync(null);
   }

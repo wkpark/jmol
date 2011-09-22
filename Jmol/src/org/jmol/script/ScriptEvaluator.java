@@ -3556,7 +3556,7 @@ public class ScriptEvaluator {
             rpn.addX(getAtomBits(Token.spec_model, Integer.valueOf(iModel)));
             break;
           }
-          if (iModel < 2147) // file number
+          if (iModel <= 2147) // file number
             iModel = iModel * 1000000;
         }
         rpn.addX(bitSetForModelFileNumber(iModel));

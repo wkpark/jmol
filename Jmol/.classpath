@@ -13,5 +13,6 @@
 	<classpathentry path="jars/itext-1.4.5.jar" kind="lib"/>
 	<classpathentry path="screensaver/jars/saverbeans-api.jar" kind="lib"/>
 	<classpathentry path="jars/junit.jar" kind="lib"/>
+	<classpathentry path="jars/naga-2_1-r42.jar" kind="lib"/>
 	<classpathentry path="bin" kind="output"/>
 </classpath>

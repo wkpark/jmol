@@ -5,8 +5,63 @@
  * Description: Molecular Playground Jmol interface component/application
  * Author: Adam Williams
  *
- * This class uses the Naga asynchronous socket IO package, the JSON.org JSON package and 
- * Jmol (currently 11.8.2). 
+ * See http://molecularplayground.org/
+ * 
+ * A Java application that listens over a port on the local host for 
+ * instructions on what to display. Instructions come in over the port as JSON strings.
+ * 
+ * Sent from Jmol: 
+ * 
+ *   {"magic" : "JmolApp", "role" : "out"}  (socket initialization for messages TO jmol)
+ *   {"magic" : "JmolApp", "role" : "in"}   (socket initialization for messages FROM jmol)
+ *   {"type" : "script", "event" : "done"}  (script completed)
+ *   
+ * Sent to Jmol:
+ * 
+ *   {"type" : "quit" }                          (shut down request)
+ *   {"type" : "move", "style" : (see below) }   (mouse command request)
+ *   {"type" : "command", "command" : command }  (script command request)
+ *   {"type" : "content", "id" : id }            (load content request)
+ *    
+ *   Content is assumed to be in System.getProperty("user.dir") + "/Content-Cache/<id>/<id>.json";
+ *   This file contains more JSON code:
+ *   
+ *   {"startup_script" : scriptFileName, "banner_text" : text } 
+ *   
+ *   An additional option "banner" : "off" turns off the title banner.
+ *   The startup script must be in the same directory as the .json file, typically as a .spt file
+ *   
+ *   Move commands include:
+ *   
+ *   {"type" : "move", "style" : "rotate", "x" : deltaX, "y", deltaY }
+ *   {"type" : "move", "style" : "translate", "x" : deltaX, "y", deltaY }
+ *   {"type" : "move", "style" : "zoom", "scale" : scale }  (1.0 = 100%)
+ *   {"type" : "move", "style" : "sync", "sync" : syncText }
+ *   
+ *   Note that all these moves utilize the Jmol sync functionality originally intended for
+ *   applets. So any valid sync command may be used with the "sync" style. These include 
+ *   essentially all the actions that a user can make with a mouse, including the
+ *   following, where the notation <....> represents a number of a given type. These
+ *   events interrupt any currently running script, just as with typical mouse actions.
+ *   
+ *   "centerAt <int:x> <int:y> <float:ptx> <float:pty> <float:ptz>"
+ *      -- set {ptx,pty,ptz} at screen (x,y)
+ *   "rotateMolecule <float:deltaX> <float:deltaY>"
+ *   "rotateXYBy <float:deltaX> <float:deltaY>"
+ *   "rotateZBy <int:degrees>"
+ *   "rotateZBy <int:degrees> <int:x> <int:y>" (with center reset)
+ *   "rotateArcBall <int:x> <int:y> <float:factor>"
+ *   "spinXYBy <int:x> <int:y> <float:speed>"
+ *      -- a "flick" gesture
+ *   "translateXYBy <float:deltaX, float:deltaY>"
+ *   "zoomBy <int:pixels>"
+ *   "zoomByFactor <float:factor>"
+ *   "zoomByFactor <float:factor> <int:x> <int:y>" (with center reset)
+ *   
+ * This class uses the Naga asynchronous socket IO package, the JSON.org JSON package and Jmol.
+ * 
+ * Adapted by Bob Hanson for Jmol 12.2
+ *  
  */
 package org.openscience.molecularplayground;
 
@@ -41,20 +96,21 @@ import naga.packetreader.AsciiLinePacketReader;
 
 public class MPJmolApp implements JmolCallbackListener {
 
-  JmolViewer jmolViewer;
-  NIOService service;
-  NIOSocket inSocket;
-  NIOSocket outSocket;
-  int port;
-  boolean halt;
-  JLabel bannerLabel;
-  JFrame bannerFrame;
-  boolean isPaused;
-  long lastMoveTime;
-  boolean wasSpinOn;
+  private static String defaultScript = "set frank off;set antialiasdisplay off";
+  private static final String contentPath = System.getProperty("user.dir") + "/Content-Cache/";
+  
+  private JmolViewer jmolViewer;
+  private NIOService service;
+  private NIOSocket inSocket;
+  private NIOSocket outSocket;
+  private boolean halt;
+  private JLabel bannerLabel;
+  private JFrame bannerFrame;
+  private boolean isPaused;
+  private long lastMoveTime;
+  private boolean wasSpinOn;
 
-  static final String magicWord = "{\"magic\":\"JmolApp\"\r\n";
-  static final String contentPath = "/Content-Cache/";
+  //static final String magicWord = "{\"magic\":\"JmolApp\"\r\n";
 
   public static void main(String args[]) {
     int portArg = 31416;
@@ -66,7 +122,7 @@ public class MPJmolApp implements JmolCallbackListener {
 
   public MPJmolApp(int port) {
     halt = false;
-    this.port = port;
+    //this.port = port;
 
     isPaused = false;
     lastMoveTime = 0;
@@ -96,7 +152,7 @@ public class MPJmolApp implements JmolCallbackListener {
     bannerFrame.setAlwaysOnTop(true);
 
     jmolViewer = jmolPanel.getViewer();
-    jmolViewer.script("set frank off;set antialiasdisplay off;sync on;sync slave");
+    jmolViewer.script(defaultScript  + ";sync on;sync slave");
 
     /*
      * Separate sockets are used for incoming and outgoing messages,
@@ -166,72 +222,77 @@ public class MPJmolApp implements JmolCallbackListener {
           isPaused = false;
           wasSpinOn = false;
         }
-
         Thread.sleep(50);
       }
       inSocket.close();
       outSocket.close();
-      System.exit(0);
     } catch (Exception e) {
       e.printStackTrace();
       service.close();
     }
+    System.exit(0);
   }
 
   void processMessage(byte[] packet) {
     try {
-      String msg = new String(packet);
-      JSONObject json = new JSONObject(msg);
-
-      if (json.getString("type").equals("move")) {
-
-        // Pause the script and save the state when interaction starts
+      JSONObject json = new JSONObject(new String(packet));
+      switch (("move......" 
+             + "command..."
+             + "content..."
+             + "quit......").indexOf(json.getString("type"))) {
+      case 0: // move
         if (!isPaused) {
+          // Pause the script and save the state when interaction starts
           wasSpinOn = jmolViewer.getBooleanProperty("spinOn");
-          jmolViewer.script("pause; save orientation 'playground-save'; spin off");
+          jmolViewer
+              .script("pause; save orientation 'playground-save'; spin off");
           isPaused = true;
         }
-
         lastMoveTime = Calendar.getInstance().getTimeInMillis();
-
-        String style = json.getString("style");
-
-        if (style.equals("zoom")) {
-          float zoomFactor = jmolViewer.getZoomPercentFloat() / 100.0f;
-          zoomFactor = ((float) json.getDouble("scale")) / zoomFactor;
-          jmolViewer.syncScript("Mouse: zoomByFactor " + zoomFactor, "~");
-        } else if (style.equals("rotate")) {
-          jmolViewer.syncScript("Mouse: rotateXYBy " + json.getString("x") + " " + json.getString("y"), "~");
-        } else if (style.equals("translate")) {
-          jmolViewer.syncScript("Mouse: translateXYBy " + json.getString("x") + " " + json.getString("y"), "~");
-        } else if (style.equals("sync")) {
+        switch (("sync......" 
+               + "rotate...."
+               + "translate."
+               + "zoom......").indexOf(json.getString("style"))) {
+        case 0: // sync
           jmolViewer.syncScript("Mouse: " + json.getString("sync"), "~");
-        }
-      } else if (json.getString("type").equals("command")) {
-        String command = json.getString("command");
-        jmolViewer.script(command);
-      } else if (json.getString("type").equals("content")) {
+          break;
+        case 10: // rotate
+          jmolViewer.syncScript("Mouse: rotateXYBy " + json.getString("x")
+              + " " + json.getString("y"), "~");
+          break;
+        case 20: // translate
+          jmolViewer.syncScript("Mouse: translateXYBy " + json.getString("x")
+              + " " + json.getString("y"), "~");
+          break;
+        case 30: // zoom
+          float zoomFactor = (float) (json.getDouble("scale") / (jmolViewer.getZoomPercentFloat() / 100.0f));
+          jmolViewer.syncScript("Mouse: zoomByFactor " + zoomFactor, "~");
+          break;
+        }        
+        break;
+      case 10: // command
+        jmolViewer.script(json.getString("command"));
+        break;
+      case 20: // content
         int id = json.getInt("id");
-        String path = System.getProperty("user.dir") + contentPath + id + "/"
-            + id + ".json";
-        FileInputStream jsonFile = new FileInputStream(path);
+        String path = contentPath + id;
+        FileInputStream jsonFile = new FileInputStream(path + "/" + id + ".json");
         JSONObject contentJSON = new JSONObject(new JSONTokener(jsonFile));
         bannerLabel.setText("<html></html>");
         jmolViewer.script("exit");
-        jmolViewer.script("zap");
-        jmolViewer.script("cd " + System.getProperty("user.dir") + contentPath
-            + id);
-        jmolViewer.script("script " + contentJSON.getString("startup_script"));
-        if (contentJSON.getString("banner").equals("off")) {
+        jmolViewer.script("zap;cd " + path + ";script " + contentJSON.getString("startup_script"));
+        String bannerText = contentJSON.getString("banner_text"); 
+        if (contentJSON.getString("banner").equals("off") || bannerText == null) {
           bannerFrame.setVisible(false);
         } else {
           bannerFrame.setVisible(true);
-          bannerLabel.setText("<html><center>"
-              + contentJSON.getString("banner_text") + "</center></html>");
+          bannerLabel.setText("<html><center>" + bannerText + "</center></html>");
         }
-      } else if (json.getString("type").equals("quit")) {
+        break;
+      case 30: // quit
         halt = true;
         System.out.println("I should quit");
+        break;
       }
     } catch (Exception e) {
       e.printStackTrace();

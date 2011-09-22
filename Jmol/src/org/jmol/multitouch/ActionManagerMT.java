@@ -54,15 +54,21 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
   @Override
   public void setViewer(Viewer viewer, String commandOptions) {
     super.setViewer(viewer, commandOptions);
-    groupID = ((int) (Math.random() * 0xFFFFFF)) << 4;
     mouseWheelFactor = 1.02f;
     boolean isSparsh = (commandOptions.indexOf("-multitouch-sparshui") >= 0);
     boolean isSimulated = (commandOptions.indexOf("-multitouch-sparshui-simulated") >= 0);
     boolean isJNI = (commandOptions.indexOf("-multitouch-jni") >= 0);
+    boolean isMP = (commandOptions.indexOf("-multitouch-mp") >= 0);
+    if (isMP) {
+      haveMultiTouchInput = true;
+      groupID = 0;
+    } else {
+      groupID = ((int) (Math.random() * 0xFFFFFF)) << 4;
+    }
     String className = (isSparsh ? "multitouch.sparshui.JmolSparshClientAdapter" : "multitouch.jni.JmolJniClientAdapter");
-      adapter = (JmolMultiTouchAdapter) Interface
-    .getOptionInterface(className);
+    adapter = (JmolMultiTouchAdapter) Interface.getOptionInterface(className);
     Logger.info("ActionManagerMT SparshUI groupID=" + groupID);
+    Logger.info("ActionManagerMT adapter = " + adapter);
     if (isSparsh) {
       startSparshUIService(isSimulated);
     } else if (isJNI) {
@@ -121,7 +127,8 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     Logger.debug("ActionManagerMT -- dispose");
     // per applet/application instance
     doneHere = true;
-    adapter.dispose();
+    if (adapter != null)
+      adapter.dispose();
     if (simulator != null)
       simulator.dispose();
     super.dispose();
@@ -219,6 +226,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
 
   boolean mouseDown;
   
+  @Override
   public void processEvent(int groupID, int eventType, int touchID, int iData,
                            Point3f pt, long time) {
     if (Logger.debugging)

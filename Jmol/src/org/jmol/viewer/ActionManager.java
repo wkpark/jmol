@@ -318,6 +318,19 @@ public class ActionManager {
     setBinding(jmolBinding = new JmolBinding());   
   }
 
+  /**
+   * @param groupID  
+   * @param eventType 
+   * @param touchID 
+   * @param iData 
+   * @param pt 
+   * @param time 
+   */
+  public void processEvent(int groupID, int eventType, int touchID, int iData,
+                           Point3f pt, long time) {
+    // only for ActionManagerMT
+  }
+
   boolean isBound(int gesture, int action) {
     return binding.isBound(gesture, action);
   }

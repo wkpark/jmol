@@ -893,6 +893,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     mouseEnabled = TF;
   }
 
+  @Override
+  public void processEvent(int groupID, int eventType, int touchID, int iData,
+                           Point3f pt, long time) {
+    // multitouch only
+    actionManager.processEvent(groupID, eventType, touchID, iData, pt, time);
+  }
+  
   void zoomBy(int pixels) {
     // MouseManager.mouseSinglePressDrag
     if (mouseEnabled)

@@ -508,5 +508,9 @@ abstract public class JmolViewer extends JmolSimpleViewer {
    * 
    */
   abstract public void getObjectMap(Map<String, Token> map, boolean b);
+  
+  abstract public void processEvent(int groupID, int eventType, int touchID, int iData,
+                           Point3f pt, long time);
+
 }
 

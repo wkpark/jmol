@@ -10,6 +10,10 @@
  * A Java application that listens over a port on the local host for 
  * instructions on what to display. Instructions come in over the port as JSON strings.
  * 
+ * This class uses the Naga asynchronous socket IO package, the JSON.org JSON package and Jmol.
+ * 
+ * Adapted by Bob Hanson for Jmol 12.2
+ *  
  * Sent from Jmol: 
  * 
  *   {"magic" : "JmolApp", "role" : "out"}  (socket initialization for messages TO jmol)
@@ -22,7 +26,14 @@
  *   {"type" : "move", "style" : (see below) }   (mouse command request)
  *   {"type" : "command", "command" : command }  (script command request)
  *   {"type" : "content", "id" : id }            (load content request)
+ *   {"type" : "touch",                          (a raw touch event)
+ *        "eventType" : eventType,
+ *        "touchID"   : touchID,
+ *        "iData"     : idata,
+ *        "time"      : time,
+ *        "x" : x, "y" : y, "z" : z }
  *    
+ *   For details on the "touch" type, see org.jmol.viewer.ActionManagerMT::processEvent
  *   Content is assumed to be in System.getProperty("user.dir") + "/Content-Cache/<id>/<id>.json";
  *   This file contains more JSON code:
  *   
@@ -58,10 +69,6 @@
  *   "zoomByFactor <float:factor>"
  *   "zoomByFactor <float:factor> <int:x> <int:y>" (with center reset)
  *   
- * This class uses the Naga asynchronous socket IO package, the JSON.org JSON package and Jmol.
- * 
- * Adapted by Bob Hanson for Jmol 12.2
- *  
  */
 package org.openscience.molecularplayground;
 
@@ -79,9 +86,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.vecmath.Point3f;
 
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
-import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolCallbackListener;
 import org.jmol.api.JmolViewer;
 import org.jmol.constant.EnumCallback;
@@ -97,7 +104,7 @@ import naga.packetreader.AsciiLinePacketReader;
 public class MPJmolApp implements JmolCallbackListener {
 
   private static String defaultScript = "set frank off;set antialiasdisplay off";
-  private static final String contentPath = System.getProperty("user.dir") + "/Content-Cache/";
+  private static final String contentPath = System.getProperty("user.dir").replace('\\','/') + "/Content-Cache/";
   
   private JmolViewer jmolViewer;
   private NIOService service;
@@ -123,7 +130,9 @@ public class MPJmolApp implements JmolCallbackListener {
   public MPJmolApp(int port) {
     halt = false;
     //this.port = port;
-
+    System.out.println("MPJmolApp using port " + port);
+    System.out.println("defaultScript=" + defaultScript);
+    System.out.println("contentPath=" + contentPath);
     isPaused = false;
     lastMoveTime = 0;
     wasSpinOn = false;
@@ -233,13 +242,15 @@ public class MPJmolApp implements JmolCallbackListener {
     System.exit(0);
   }
 
-  void processMessage(byte[] packet) {
+  protected void processMessage(byte[] packet) {
     try {
       JSONObject json = new JSONObject(new String(packet));
-      switch (("move......" 
-             + "command..."
-             + "content..."
-             + "quit......").indexOf(json.getString("type"))) {
+      switch (
+           ("move......" 
+          + "command..." 
+          + "content..." 
+          + "quit......"
+          + "touch.....").indexOf(json.getString("type"))) {
       case 0: // move
         if (!isPaused) {
           // Pause the script and save the state when interaction starts
@@ -249,10 +260,11 @@ public class MPJmolApp implements JmolCallbackListener {
           isPaused = true;
         }
         lastMoveTime = Calendar.getInstance().getTimeInMillis();
-        switch (("sync......" 
-               + "rotate...."
-               + "translate."
-               + "zoom......").indexOf(json.getString("style"))) {
+        switch (
+             ("sync......" 
+            + "rotate...." 
+            + "translate." 
+            + "zoom......").indexOf(json.getString("style"))) {
         case 0: // sync
           jmolViewer.syncScript("Mouse: " + json.getString("sync"), "~");
           break;
@@ -265,10 +277,11 @@ public class MPJmolApp implements JmolCallbackListener {
               + " " + json.getString("y"), "~");
           break;
         case 30: // zoom
-          float zoomFactor = (float) (json.getDouble("scale") / (jmolViewer.getZoomPercentFloat() / 100.0f));
+          float zoomFactor = (float) (json.getDouble("scale") / (jmolViewer
+              .getZoomPercentFloat() / 100.0f));
           jmolViewer.syncScript("Mouse: zoomByFactor " + zoomFactor, "~");
           break;
-        }        
+        }
         break;
       case 10: // command
         jmolViewer.script(json.getString("command"));
@@ -276,30 +289,41 @@ public class MPJmolApp implements JmolCallbackListener {
       case 20: // content
         int id = json.getInt("id");
         String path = contentPath + id;
-        FileInputStream jsonFile = new FileInputStream(path + "/" + id + ".json");
+        FileInputStream jsonFile = new FileInputStream(path + "/" + id
+            + ".json");
         JSONObject contentJSON = new JSONObject(new JSONTokener(jsonFile));
         bannerLabel.setText("<html></html>");
         jmolViewer.script("exit");
-        jmolViewer.script("zap;cd " + path + ";script " + contentJSON.getString("startup_script"));
-        String bannerText = contentJSON.getString("banner_text"); 
+        jmolViewer.script("zap;cd " + path + ";script "
+            + contentJSON.getString("startup_script"));
+        String bannerText = contentJSON.getString("banner_text");
         if (contentJSON.getString("banner").equals("off") || bannerText == null) {
           bannerFrame.setVisible(false);
         } else {
           bannerFrame.setVisible(true);
-          bannerLabel.setText("<html><center>" + bannerText + "</center></html>");
+          bannerLabel.setText("<html><center>" + bannerText
+              + "</center></html>");
         }
         break;
       case 30: // quit
         halt = true;
         System.out.println("I should quit");
         break;
+      case 40: // touch
+        // raw touch event
+        jmolViewer.processEvent(0, json.getInt("eventType"), json
+            .getInt("touchID"), json.getInt("iData"), new Point3f((float) json
+            .getDouble("x"), (float) json.getDouble("y"), (float) json
+            .getDouble("z")), json.getLong("time"));
+        break;
+
       }
     } catch (Exception e) {
       e.printStackTrace();
     }
   }
 
-  void sendMessage(JSONObject json) {
+  protected void sendMessage(JSONObject json) {
     try {
       String jsonString = json.toString() + "\r\n";
       outSocket.write(jsonString.getBytes("UTF-8"));
@@ -309,21 +333,20 @@ public class MPJmolApp implements JmolCallbackListener {
   }
 
   static class JmolPanel extends JPanel {
-    JmolViewer viewer;
-    JmolAdapter adapter;
+    private JmolViewer viewer;
 
     JmolPanel(JmolCallbackListener mpJmolApp) {
-      adapter = new SmarterJmolAdapter();
-      viewer = JmolViewer.allocateViewer(this, adapter);
+      viewer = JmolViewer.allocateViewer(this, new SmarterJmolAdapter(), 
+          null, null, null, "-multitouch-mp", null);
       viewer.setJmolCallbackListener(mpJmolApp);
     }
 
-    public JmolViewer getViewer() {
+    JmolViewer getViewer() {
       return viewer;
     }
 
-    final Dimension currentSize = new Dimension();
-    final Rectangle rectClip = new Rectangle();
+    private final Dimension currentSize = new Dimension();
+    private final Rectangle rectClip = new Rectangle();
 
     @Override
     public void paint(Graphics g) {
@@ -333,6 +356,8 @@ public class MPJmolApp implements JmolCallbackListener {
     }
   }
 
+  ///  JmolCallbackListener Interface ///
+  
   public boolean notifyEnabled(EnumCallback type) {
     switch (type) {
     case SCRIPT:

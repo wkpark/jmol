@@ -1413,23 +1413,32 @@ public abstract class AtomSetCollectionReader {
     }
   */
 
-  protected Vector3f[] readDirectLatticeVectors(boolean isBohr, boolean needLine) throws Exception {
-    Vector3f[] vectors = new Vector3f[3];    
+  /**
+   * read three vectors, as for unit cube definitions
+   * allows for non-numeric data preceding the number block
+   * 
+   * @param isBohr 
+   * @return three vectors
+   * @throws Exception 
+   * 
+   */
+  protected Vector3f[] read3Vectors(boolean isBohr) throws Exception {
+    Vector3f[] vectors = new Vector3f[3];   
+    float[] f = new float[3];
     for (int i = 0; i < 3; i++) {
-      if (needLine)
+      if (i > 0 || Float.isNaN(parseFloat(line))) {
         readLine();
-      else
-        needLine = true;
-      vectors[i] = getVector3f(line);
+        if (i == 0 && line != null) {
+          i = -1;
+          continue;
+        }
+      }
+      fillFloatArray(line, 0, f);
+      vectors[i] = new Vector3f(f);
       if (isBohr)
         vectors[i].scale(ANGSTROMS_PER_BOHR);
     }
     return vectors;
   }
-
-  private Vector3f getVector3f(String data) throws Exception {
-    return new Vector3f(fillFloatArray(data, 0, new float[3]));
-  }
-
 
 }

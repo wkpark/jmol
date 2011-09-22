@@ -210,8 +210,10 @@ public class CastepReader extends AtomSetCollectionReader {
         }
       }
     if (isPhonon || isOutput) {
-      if (isTrajectory)
+      if (isPhonon) {
+        isTrajectory = true;
         atomSetCollection.allowMultiple = false;
+      }
       return true; // use checkLine
     }
     return false;
@@ -263,7 +265,7 @@ public class CastepReader extends AtomSetCollectionReader {
   private void readOutputUnitCell() throws Exception {
     atomSetCollection.newAtomSet();
     setFractionalCoordinates(true);
-    abc = readDirectLatticeVectors(false, true);
+    abc = read3Vectors(false);
     setLatticeVectors();
   }
 
@@ -314,7 +316,7 @@ Species   Ion     s      p      d      f     Total  Charge (e)
       atomSetCollection.newAtomSet();
       discardLinesUntilContains("<-- h");
       setSpaceGroupName("P1");
-      abc = readDirectLatticeVectors(true, false);
+      abc = read3Vectors(true);
       setLatticeVectors();
       setFractionalCoordinates(false);
       discardLinesUntilContains("<-- R");
@@ -504,7 +506,7 @@ Species   Ion     s      p      d      f     Total  Charge (e)
       2     0.250000    0.250000    0.250000   N        14.006740
     */
   private void readPhononUnitCell() throws Exception {
-    abc = readDirectLatticeVectors(line.indexOf("bohr") >= 0, true);
+    abc = read3Vectors(line.indexOf("bohr") >= 0);
     setSpaceGroupName("P1");
     setLatticeVectors();
   }

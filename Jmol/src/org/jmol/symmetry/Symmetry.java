@@ -191,109 +191,27 @@ public class Symmetry implements SymmetryInterface {
         ptTemp2);
   }
 
-  // UnitCell methods
-  
-  public boolean haveUnitCell() {
-    return (unitCell != null);
+  public Object[] getSymmetryOperationDescription(int isym,
+                                                  SymmetryInterface cellInfo,
+                                                  Point3f pt1, Point3f pt2,
+                                                  String id) {
+    return spaceGroup.operations[isym].getDescription(cellInfo, pt1, pt2, id);
   }
-
-  public String getUnitsymmetryInfo() {
-    return (unitCell == null ? "no unit cell information" : unitCell.dumpInfo(false));
-  }
-
-  public void setUnitCell(float[] notionalUnitCell) {
-    unitCell = new UnitCell(notionalUnitCell);
-  }
-
-  public void setUnitCellOrientation(Matrix3f matUnitCellOrientation) {
-    if (unitCell != null)
-      unitCell.setOrientation(matUnitCellOrientation);
-  }
-
-  public void toCartesian(Point3f fpt, boolean isAbsolute) {
-    if (unitCell == null)
-      return;
-    unitCell.toCartesian(fpt, isAbsolute);
     
+  public String fcoord(Tuple3f p) {
+    return SymmetryOperation.fcoord(p);
   }
 
-  public Matrix4f getMatrixToCartesians() {
-    return (unitCell == null ? null : unitCell.matrixFractionalToCartesian);
+  public String getMatrixFromString(String xyz, float[] temp, boolean allowScaling) {
+    return SymmetryOperation.getMatrixFromString(xyz, temp, false, allowScaling);
   }
-
-  public Object[] getEllipsoid(float[] parBorU) {
-    return unitCell.getEllipsoid(parBorU);
-  }
-  
-  public Object[] getEllipsoid(Vector3f[] vectors, float a, float b, float c) {
-    return unitCell.getEllipsoid(vectors, a, b, c);
-  }
-
-
 
   public Point3f ijkToPoint3f(int nnn) {
     return SimpleUnitCell.ijkToPoint3f(nnn);
   }
 
-  public void toFractional(Point3f pt, boolean isAbsolute) {
-    if (unitCell != null)
-      unitCell.toFractional(pt, isAbsolute);
-  }
-
-  public Point3f[] getUnitCellVertices() {
-    return unitCell.getVertices();
-  }
-
-  public Point3f getCartesianOffset() {
-    return unitCell.getCartesianOffset();
-  }
-
-  public Point3f getFractionalOffset() {
-    return unitCell.getFractionalOffset();
-  }
-
-  public float[] getNotionalUnitCell() {
-    return unitCell == null ? null : unitCell.getNotionalUnitCell();
-  }
-
-  public float[] getUnitCellAsArray(boolean vectorsOnly) {
-    return unitCell == null ? null : unitCell.getUnitCellAsArray(vectorsOnly);
-  }
-
-  public void toUnitCell(Point3f pt, Point3f offset) {
-    if (/*(symmetryInfo == null || symmetryInfo.isMultiCell)
-        && why that ? should be OK for PDB files as well */ unitCell != null)
-      unitCell.toUnitCell(pt, offset);
-  }
-
-  public void setUnitCellOffset(Point3f pt) {
-    unitCell.setOffset(pt);
-  }
-
-  public void setOffset(int nnn) {
-    unitCell.setOffset(nnn);
-  }
-
-  public Point3f getUnitCellMultiplier() {
-    return unitCell.getUnitCellMultiplier();
-  }
-
-  public Point3f[] getCanonicalCopy(float scale) {
-    return unitCell.getCanonicalCopy(scale);
-  }
-
-  public float getUnitsymmetryInfo(int infoType) {
-    return unitCell.getInfo(infoType);
-  }
-
-  public int getModelIndex() {
-    return symmetryInfo.modelIndex;
-  }
-
-  public void setModelIndex(int i) {
-    symmetryInfo.modelIndex = i;    
-  }
-
+  /// symmetryInfo ////
+  
   public boolean getCoordinatesAreFractional() {
     return symmetryInfo.coordinatesAreFractional;
   }
@@ -316,8 +234,7 @@ public class Symmetry implements SymmetryInterface {
 
   public void setSymmetryInfo(int modelIndex, Map<String, Object> modelAuxiliaryInfo) {
     symmetryInfo = new SymmetryInfo();
-    float[] notionalUnitcell = symmetryInfo.setSymmetryInfo(modelIndex,
-        modelAuxiliaryInfo);
+    float[] notionalUnitcell = symmetryInfo.setSymmetryInfo(modelAuxiliaryInfo);
     if (notionalUnitcell == null)
       return;
     setUnitCell(notionalUnitcell);
@@ -333,51 +250,112 @@ public class Symmetry implements SymmetryInterface {
           .debug("symmetryInfos[" + modelIndex + "]:\n" + unitCell.dumpInfo(true));
   }
 
+  // UnitCell methods
+  
+  public void setUnitCell(float[] notionalUnitCell) {
+    unitCell = new UnitCell(notionalUnitCell);
+  }
+
+  public boolean haveUnitCell() {
+    return (unitCell != null);
+  }
+
+  public String getUnitsymmetryInfo() {
+    // not used in Jmol?
+    return unitCell.dumpInfo(false);
+  }
+
+  public void setUnitCellOrientation(Matrix3f matUnitCellOrientation) {
+      unitCell.setOrientation(matUnitCellOrientation);
+  }
+
+  public void toUnitCell(Point3f pt, Point3f offset) {
+    unitCell.toUnitCell(pt, offset);
+  }
+
+  public void toCartesian(Point3f fpt, boolean isAbsolute) {
+    unitCell.toCartesian(fpt, isAbsolute);    
+  }
+
+  public void toFractional(Point3f pt, boolean isAbsolute) {
+    unitCell.toFractional(pt, isAbsolute);
+  }
+
+  public float[] getNotionalUnitCell() {
+    return unitCell.getNotionalUnitCell();
+  }
+
+  public float[] getUnitCellAsArray(boolean vectorsOnly) {
+    return unitCell.getUnitCellAsArray(vectorsOnly);
+  }
+
+  public Object[] getEllipsoid(float[] parBorU) {
+    return unitCell.getEllipsoid(parBorU);
+  }
+  
+  public Object[] getEllipsoid(Vector3f[] vectors, float a, float b, float c) {
+    return unitCell.getEllipsoid(vectors, a, b, c);
+  }
+
+  public Point3f[] getUnitCellVertices() {
+    return unitCell.getVertices();
+  }
+
+  public Point3f getCartesianOffset() {
+    return unitCell.getCartesianOffset();
+  }
+
+  public Point3f getFractionalOffset() {
+    return unitCell.getFractionalOffset();
+  }
+
+  public void setUnitCellOffset(Point3f pt) {
+    unitCell.setOffset(pt);
+  }
+
+  public void setOffset(int nnn) {
+    unitCell.setOffset(nnn);
+  }
+
+  public Point3f getUnitCellMultiplier() {
+    return unitCell.getUnitCellMultiplier();
+  }
+
+  public Point3f[] getCanonicalCopy(float scale) {
+    return unitCell.getCanonicalCopy(scale);
+  }
+
+  public float getUnitsymmetryInfo(int infoType) {
+    return unitCell.getInfo(infoType);
+  }
+
   public float getUnitCellInfo(int infoType) {
     return unitCell.getInfo(infoType);
   }
 
   public String getUnitCellInfo() {
-    return (unitCell == null ? "no unit cell information" 
-        : unitCell.dumpInfo(false));
+    return unitCell.dumpInfo(false);
   }
 
-  public Object[] getSymmetryOperationDescription(int isym,
-                                                SymmetryInterface cellInfo, 
-                                                Point3f pt1, Point3f pt2, String id) {
-    return spaceGroup.operations[isym].getDescription(cellInfo, pt1, pt2, id);
-  }
-  
   public boolean isSlab() {
-    return (unitCell == null ? false : unitCell.isSlab());
+    return unitCell.isSlab();
   }
 
   public boolean isPolymer() {
-    return (unitCell == null ? false : unitCell.isPolymer());
+    return unitCell.isPolymer();
   }
 
   public void setMinMaxLatticeParameters(Point3i minXYZ, Point3i maxXYZ) {
-    if (unitCell != null)
-      unitCell.setMinMaxLatticeParameters(minXYZ, maxXYZ);
+    unitCell.setMinMaxLatticeParameters(minXYZ, maxXYZ);
   }
 
   public void setUnitCellAllFractionalRelative(boolean TF) {
-    if (unitCell != null)
-      unitCell.setAllFractionalRelative(TF);
-  }
-
-  public String getMatrixFromString(String xyz, float[] temp, boolean allowScaling) {
-    return SymmetryOperation.getMatrixFromString(xyz, temp, false, allowScaling);
+    unitCell.setAllFractionalRelative(TF);
   }
 
   public boolean checkDistance(Point3f f1, Point3f f2, float distance, float dx, 
                                int iRange, int jRange, int kRange, Point3f ptOffset) {
-    return (unitCell != null && unitCell.checkDistance(f1, f2, distance, dx, 
-        iRange, jRange, kRange, ptOffset));
+    return unitCell.checkDistance(f1, f2, distance, dx, 
+        iRange, jRange, kRange, ptOffset);
   }
-
-  public String fcoord(Tuple3f p) {
-    return SymmetryOperation.fcoord(p);
-  }
-
 }  

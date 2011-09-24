@@ -719,50 +719,51 @@ final public class Atom extends Point3fi implements JmolNode {
 
   private Point3f getFractionalCoord(boolean asAbsolute) {
     // asAbsolute TRUE uses the original unshifted matrix
-    SymmetryInterface[] c = group.chain.modelSet.unitCells;
+    SymmetryInterface c = group.chain.modelSet.getUnitCell(modelIndex);
+    if (c == null) 
+      return this;
     Point3f pt = new Point3f(this);
-    if (c != null && c[modelIndex].haveUnitCell())
-      c[modelIndex].toFractional(pt, asAbsolute);
+    c.toFractional(pt, asAbsolute);
     return pt;
   }
   
   public Point3f getFractionalUnitCoord(boolean asCartesian) {
-    SymmetryInterface[] c = group.chain.modelSet.unitCells;
+    SymmetryInterface c = group.chain.modelSet.getUnitCell(modelIndex);
+    if (c == null)
+      return this;
     Point3f pt = new Point3f(this);
-    if (c != null && c[modelIndex].haveUnitCell()) {
-      if (group.chain.model.isJmolDataFrame) {
-        c[modelIndex].toFractional(pt, false);
-        if (asCartesian)
-          c[modelIndex].toCartesian(pt, false);
-      } else {
-        c[modelIndex].toUnitCell(pt, null);
-        if (!asCartesian)
-          c[modelIndex].toFractional(pt, false);
-      }
+    if (group.chain.model.isJmolDataFrame) {
+      c.toFractional(pt, false);
+      if (asCartesian)
+        c.toCartesian(pt, false);
+    } else {
+      c.toUnitCell(pt, null);
+      if (!asCartesian)
+        c.toFractional(pt, false);
     }
     return pt;
   }
   
   public float getFractionalUnitDistance(Point3f pt, Point3f ptTemp1, Point3f ptTemp2) {
-    SymmetryInterface[] c = group.chain.modelSet.unitCells;
+    SymmetryInterface c = group.chain.modelSet.getUnitCell(modelIndex);
     if (c == null) 
       return distance(pt);
     ptTemp1.set(this);
     ptTemp2.set(pt);
     if (group.chain.model.isJmolDataFrame) {
-      c[modelIndex].toFractional(ptTemp1, true);
-      c[modelIndex].toFractional(ptTemp2, true);
+      c.toFractional(ptTemp1, true);
+      c.toFractional(ptTemp2, true);
     } else {
-      c[modelIndex].toUnitCell(ptTemp1, null);
-      c[modelIndex].toUnitCell(ptTemp2, null);
+      c.toUnitCell(ptTemp1, null);
+      c.toUnitCell(ptTemp2, null);
     }
     return ptTemp1.distance(ptTemp2);
   }
   
   void setFractionalCoord(int tok, float fValue, boolean asAbsolute) {
-    SymmetryInterface[] c = group.chain.modelSet.unitCells;
-    if (c != null && c[modelIndex].haveUnitCell())
-      c[modelIndex].toFractional(this, asAbsolute);
+    SymmetryInterface c = group.chain.modelSet.getUnitCell(modelIndex);
+    if (c != null)
+      c.toFractional(this, asAbsolute);
     switch (tok) {
     case Token.fux:
     case Token.fracx:
@@ -777,8 +778,8 @@ final public class Atom extends Point3fi implements JmolNode {
       z = fValue;
       break;
     }
-    if (c != null && c[modelIndex].haveUnitCell())
-      c[modelIndex].toCartesian(this, asAbsolute);
+    if (c != null)
+      c.toCartesian(this, asAbsolute);
   }
   
   void setFractionalCoord(Point3f ptNew, boolean asAbsolute) {
@@ -787,9 +788,9 @@ final public class Atom extends Point3fi implements JmolNode {
   
   void setFractionalCoord(Point3f pt, Point3f ptNew, boolean asAbsolute) {
     pt.set(ptNew);
-    SymmetryInterface[] c = group.chain.modelSet.unitCells;
-    if (c != null && c[modelIndex].haveUnitCell())
-      c[modelIndex].toCartesian(pt, asAbsolute && !group.chain.model.isJmolDataFrame);
+    SymmetryInterface c = group.chain.modelSet.getUnitCell(modelIndex);
+    if (c != null)
+      c.toCartesian(pt, asAbsolute && !group.chain.model.isJmolDataFrame);
   }
 
   boolean isCursorOnTopOf(int xCursor, int yCursor,
@@ -840,7 +841,7 @@ final public class Atom extends Point3fi implements JmolNode {
     if (useChimeFormat) {
       String group3 = getGroup3(true);
       char chainID = getChainID();
-      Point3f pt = (group.chain.modelSet.unitCells == null ? null : getFractionalCoord(true));
+      Point3f pt = getFractionalCoord(true);
       return "Atom: " + (group3 == null ? getElementSymbol() : getAtomName()) + " " + getAtomNumber() 
           + (group3 != null && group3.length() > 0 ? 
               (isHetero() ? " Hetero: " : " Group: ") + group3 + " " + getResno() 

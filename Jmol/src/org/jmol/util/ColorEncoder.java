@@ -407,7 +407,7 @@ import org.jmol.util.ArrayUtil;
     case JMOL:
       return argbsCpk.length;
     case RASMOL:
-      return rasmolScale.length;
+      return getRasmolScale().length;
     case SHAPELY:
       return propertyColorEncoder.argbsShapely.length;
     case AMINO:

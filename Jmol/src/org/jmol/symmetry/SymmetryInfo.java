@@ -38,7 +38,6 @@ class SymmetryInfo {
   String spaceGroup;
   String[] symmetryOperations;
   String symmetryInfoString;
-  int modelIndex;
   int[] cellRange;
   private Point3f periodicOriginXyz;
 
@@ -49,8 +48,7 @@ class SymmetryInfo {
   SymmetryInfo() {    
   }
   
-  float[] setSymmetryInfo(int modelIndex, Map<String, Object> info) {
-    this.modelIndex = modelIndex;
+  float[] setSymmetryInfo(Map<String, Object> info) {
     cellRange = (int[]) info.get("unitCellRange");
     periodicOriginXyz = (Point3f) info.get("periodicOriginXyz");
     spaceGroup = (String) info.get("spaceGroup");

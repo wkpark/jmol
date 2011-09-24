@@ -387,6 +387,8 @@ public class Contact extends Isosurface {
         viewer.setIteratorForAtom(iter, ia, ad.atomRadius[ia] + maxRadius);
       while (iter.hasNext()) {
         int ib = iter.next();
+        if (isMultiModel && !bsB.get(ib))
+          continue;
         Atom atomB = atoms[ib];
         boolean isSameMolecule = (ad.atomMolecule[ia] == ad.atomMolecule[ib]);
         if (ia == ib || isSameMolecule && atomA.isWithinFourBonds(atomB))
@@ -420,36 +422,35 @@ public class Contact extends Isosurface {
         boolean isHBond = (EnumHBondType.isPossibleHBond(typeA, typeB) && cp.score > hbondCutoff);
         if (isHBond && cp.score < 0)
           cp.contactType = Token.hbond;
-
         list.add(cp);
       }
     }
     iter.release();
     iter = null;
     int n = list.size() - 1;
+    BitSet bsBad = new BitSet();
     for (int i = 0; i < n; i++) {
       ContactPair cp1 = list.get(i);
-      OUT_I: for (int j = i + 1; j <= n; j++) {
+      for (int j = i + 1; j <= n; j++) {
         ContactPair cp2 = list.get(j);
-        OUT_J: for (int m = 0; m < 2; m++) {
+        for (int m = 0; m < 2; m++) {
           for (int p = 0; p < 2; p++) {
             switch (checkCp(cp1, cp2, m, p)) {
             case 1:
-              list.remove(i);
-              i--;
-              n--;
-              break OUT_I;
+              bsBad.set(i);
+              break;
             case 2:
-              list.remove(j);
-              j--;
-              n--;
-              break OUT_J;
+              bsBad.set(j);
+              break;
             default:
             }
           }
         }
       }
     }
+    for (int i = bsBad.length(); --i >= 0;)
+      if (bsBad.get(i))
+        list.remove(i);
 
     if (Logger.debugging)
       for (int i = 0; i < list.size(); i++)

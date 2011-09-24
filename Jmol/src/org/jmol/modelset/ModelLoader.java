@@ -994,7 +994,7 @@ public final class ModelLoader {
   }
   
   ////// symmetry ///////
-  
+
   private void initializeUnitCellAndSymmetry() {
     /*
      * really THREE issues here:
@@ -1013,8 +1013,10 @@ public final class ModelLoader {
         if (haveMergeCells && i < baseModelCount) {
           modelSet.unitCells[i] = mergeModelSet.unitCells[i];
         } else {
-          modelSet.unitCells[i] = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
-          modelSet.unitCells[i].setSymmetryInfo(i, modelSet.getModelAuxiliaryInfo(i));
+          modelSet.unitCells[i] = (SymmetryInterface) Interface
+              .getOptionInterface("symmetry.Symmetry");
+          modelSet.unitCells[i].setSymmetryInfo(i, modelSet
+              .getModelAuxiliaryInfo(i));
         }
       }
     }
@@ -1025,8 +1027,10 @@ public final class ModelLoader {
         if (atoms[iAtom].modelIndex != iModel) {
           iModel = atoms[iAtom].modelIndex;
           i0 = baseAtomIndex
-              + modelSet.getModelAuxiliaryInfoInt(iModel, "presymmetryAtomIndex")
-              + modelSet.getModelAuxiliaryInfoInt(iModel, "presymmetryAtomCount");
+              + modelSet.getModelAuxiliaryInfoInt(iModel,
+                  "presymmetryAtomIndex")
+              + modelSet.getModelAuxiliaryInfoInt(iModel,
+                  "presymmetryAtomCount");
         }
         if (iAtom >= i0)
           modelSet.bsSymmetry.set(iAtom);
@@ -1034,13 +1038,15 @@ public final class ModelLoader {
     }
     if (appendNew && modelSet.someModelsHaveFractionalCoordinates) {
       Atom[] atoms = modelSet.atoms;
+      int modelIndex = -1;
+      SymmetryInterface c = null;
       for (int i = baseAtomIndex; i < modelSet.atomCount; i++) {
-        int modelIndex = atoms[i].modelIndex;
-        if (!modelSet.unitCells[modelIndex].getCoordinatesAreFractional())
-          continue;
-        modelSet.unitCells[modelIndex].toCartesian(atoms[i], false);
-        //if (Logger.debugging)
-          //Logger.debug("atom " + i + ": " + (Point3f) atoms[i]);
+        if (atoms[i].modelIndex != modelIndex) {
+          modelIndex = atoms[i].modelIndex;
+          c = modelSet.getUnitCell(modelIndex);
+        }
+        if (c != null && c.getCoordinatesAreFractional())
+          c.toCartesian(atoms[i], false);
       }
     }
   }

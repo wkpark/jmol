@@ -106,10 +106,6 @@ public interface SymmetryInterface {
 
   public abstract float getUnitCellInfo(int infoType);
 
-  public abstract int getModelIndex();
-
-  public abstract void setModelIndex(int i);
-
   public abstract boolean getCoordinatesAreFractional();
 
   public abstract int[] getCellRange();
@@ -141,8 +137,6 @@ public interface SymmetryInterface {
   public abstract void setUnitCellOrientation(Matrix3f matUnitCellOrientation);
 
   public abstract String getMatrixFromString(String xyz, float[] temp, boolean allowScaling);
-
-  public abstract Matrix4f getMatrixToCartesians();
 
   public abstract boolean checkDistance(Point3f f1, Point3f f2, float distance, 
                                         float dx, int iRange, int jRange, int kRange, Point3f ptOffset);

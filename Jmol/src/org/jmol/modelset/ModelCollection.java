@@ -159,8 +159,10 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public SymmetryInterface getUnitCell(int modelIndex) {
-    return (unitCells != null && modelIndex >= 0 && modelIndex < unitCells.length 
-        ? unitCells[modelIndex] : null);
+    return (unitCells == null || modelIndex < 0 
+        || modelIndex >= unitCells.length 
+        || !unitCells[modelIndex].haveUnitCell() ? null 
+            : unitCells[modelIndex]);
   }
 
   /**
@@ -324,8 +326,8 @@ abstract public class ModelCollection extends BondCollection {
    * 
    */
   public float[] getNotionalUnitcell() {
-    return (unitCells == null || unitCells[0] == null ? null : unitCells[0]
-        .getNotionalUnitCell());
+    SymmetryInterface c = getUnitCell(0);
+    return (c == null ? null : c.getNotionalUnitCell());
   }
 
   //new way:
@@ -3692,9 +3694,8 @@ abstract public class ModelCollection extends BondCollection {
     int modelIndex = viewer.getCurrentModelIndex();
     if (modelIndex < 0)
       return "no single current model";
-    if (unitCells == null)
-      return "not applicable";
-    return unitCells[modelIndex].getUnitCellInfo();
+    SymmetryInterface c = getUnitCell(modelIndex);
+    return (c == null ? "not applicable" : c.getUnitCellInfo());
   }
 
   private SymmetryInterface symTemp;
@@ -3707,13 +3708,14 @@ abstract public class ModelCollection extends BondCollection {
     SymmetryInterface cellInfo = null;
     Object[][] infolist = null;
     if (spaceGroup == null) {
+      cellInfo = getUnitCell(modelIndex);
       if (modelIndex <= 0) {
         modelIndex = (pt1 instanceof Atom ? ((Atom) pt1).modelIndex 
             : viewer.getCurrentModelIndex());
       }
       if (modelIndex < 0) {
         strOperations = "no single current model";
-      } else if (unitCells == null || unitCells[modelIndex] == null) {
+      } else if (cellInfo == null) {
         strOperations = "not applicable";
       }
       if (strOperations != null) {
@@ -3731,9 +3733,8 @@ abstract public class ModelCollection extends BondCollection {
       info = new Hashtable<String, Object>();
       if (pt1 == null && drawID == null && symOp == 0)
         setModelAuxiliaryInfo(modelIndex, "spaceGroupInfo", info);
-      cellInfo = unitCells[modelIndex];
       spaceGroup = cellInfo.getSpaceGroupName();
-      String[] list = unitCells[modelIndex].getSymmetryOperations();
+      String[] list = cellInfo.getSymmetryOperations();
       if (list == null) {
         strOperations = "\n no symmetry operations employed";
       } else {
@@ -3928,9 +3929,6 @@ abstract public class ModelCollection extends BondCollection {
 
     //fix cellInfos array
     if (unitCells != null) {
-      for (int i = modelCount; --i > modelIndex;) {
-        unitCells[i].setModelIndex(unitCells[i].getModelIndex() - 1);
-      }
       unitCells = (SymmetryInterface[]) ArrayUtil.deleteElements(unitCells, modelIndex, 1);
     }
 

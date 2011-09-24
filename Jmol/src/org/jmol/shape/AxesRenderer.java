@@ -85,8 +85,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
       return;
     int nPoints = 6;
     int labelPtr = 0;
-    if (isUnitCell && cellInfos != null
-        && cellInfos[modelIndex].haveUnitCell()) {
+    if (isUnitCell && cellInfos != null) {
       nPoints = 3;
       labelPtr = 6;
     } else if (isXY) {

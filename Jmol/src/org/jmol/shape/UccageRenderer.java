@@ -77,14 +77,14 @@ public class UccageRenderer extends CageRenderer {
   private Point3f offsetT = new Point3f();
   
   void render1(int mad) {
-    SymmetryInterface symmetry = viewer.getCurrentUnitCell();
-    if (symmetry == null || !symmetry.haveUnitCell())
+    SymmetryInterface unitcell = viewer.getCurrentUnitCell();
+    if (unitcell == null)
       return;
-    isPolymer = symmetry.isPolymer();
-    isSlab = symmetry.isSlab();
-    Point3f[] vertices = symmetry.getUnitCellVertices();
-    offset.set(symmetry.getCartesianOffset());
-    Point3f fset = symmetry.getUnitCellMultiplier();
+    isPolymer = unitcell.isPolymer();
+    isSlab = unitcell.isSlab();
+    Point3f[] vertices = unitcell.getUnitCellVertices();
+    offset.set(unitcell.getCartesianOffset());
+    Point3f fset = unitcell.getUnitCellMultiplier();
     boolean haveMultiple = (fset != null);
     if (!haveMultiple) 
       fset = fset0;
@@ -106,7 +106,7 @@ public class UccageRenderer extends CageRenderer {
           if (haveMultiple) {
             offsetT.set(x, y, z);
             offsetT.scale(Math.abs(fset.z));
-            symmetry.toCartesian(offsetT, true);
+            unitcell.toCartesian(offsetT, true);
             offsetT.add(offset);
             aPoints = (x == 0 && y == 0 && z == 0 ? axisPoints : null);
             firstLine = (drawAllLines || aPoints == null ? 0 : 3);
@@ -126,8 +126,8 @@ public class UccageRenderer extends CageRenderer {
     }
 
     if (viewer.getDisplayCellParameters() && !viewer.isPreviewOnly()
-        && !symmetry.isPeriodic())
-      renderInfo(symmetry);
+        && !unitcell.isPeriodic())
+      renderInfo(unitcell);
   }
   
   private String nfformat(float x) {

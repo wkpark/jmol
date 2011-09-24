@@ -26,7 +26,8 @@ public class MoldenReader extends MopacSlaterReader {
   private boolean loadVibrations;
   private boolean vibOnly;
   private boolean optOnly;
-  
+ 
+  private String orbitalType = "";
   private int modelAtomCount;
   
   @Override
@@ -46,19 +47,27 @@ public class MoldenReader extends MopacSlaterReader {
 
   @Override
   protected boolean checkLine() throws Exception {
-    if (line.indexOf("[Atoms]") >= 0 || line.indexOf("[ATOMS]") >= 0) {
+    if (!line.contains("["))
+      return true;
+    line = line.toUpperCase().trim();
+    if (!line.startsWith("["))
+      return true;
+    Logger.info(line);
+    if (line.indexOf("[ATOMS]") == 0) {
       readAtoms();
       modelAtomCount = atomSetCollection.getFirstAtomSetAtomCount();
       return false;
     }
-    if (line.indexOf("[GTO]") >= 0)
+    if (line.indexOf("[GTO]") == 0)
       return readGaussianBasis();
-    if (line.indexOf("[MO]") >= 0) 
+    if (line.indexOf("[MO]") == 0) 
       return (!readMolecularOrbitals || readMolecularOrbitals());
-    if (line.indexOf("[FREQ]") >= 0)
+    if (line.indexOf("[FREQ]") == 0)
       return (!loadVibrations || readFreqsAndModes());
-    if (line.indexOf("[GEOCONV]") >= 0)
+    if (line.indexOf("[GEOCONV]") == 0)
       return (!loadGeometries || readGeometryOptimization());
+    if ("[5D][7F][9G]".indexOf(line) >= 0)
+      orbitalType += line;
     return true;
   }
   
@@ -139,6 +148,10 @@ public class MoldenReader extends MopacSlaterReader {
         // Next line has the shell label and a count of the number of primitives
         tokens = getTokens();
         String shellLabel = tokens[0].toUpperCase();
+        if (shellLabel.equals("D") && orbitalType.contains("5D"))
+          shellLabel = "5D";
+        if (shellLabel.equals("F") && orbitalType.contains("7F"))
+          shellLabel = "7F";
         int nPrimitives = parseInt(tokens[1]);
         int[] slater = new int[4];
         

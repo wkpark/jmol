@@ -449,7 +449,7 @@ public class Resolver {
       String[] recordTags = fileStartsWithRecords[i];
       for (int j = 1; j < recordTags.length; ++j) {
         String recordTag = recordTags[j];
-        if (leader.startsWith(recordTag))
+        if (leader.contains(recordTag))
           return recordTags[0];
       }
     }
@@ -910,7 +910,7 @@ public class Resolver {
   private final static int LEADER_CHAR_MAX = 10;
   
   private final static String[] cubeFileStartRecords =
-  {"Cube", "JVXL", "#JVXL"};
+  {"Cube", "JVXL"};
 
   private final static String[] mol2Records =
   {"Mol2", "mol2", "@<TRIPOS>"};

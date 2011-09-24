@@ -443,13 +443,13 @@ public class Resolver {
     
     // first check just the first 10 bytes
     
-    String leader = llr.getHeader(LEADER_CHAR_MAX);
+    String leader = llr.getHeader(LEADER_CHAR_MAX).trim();
 
     for (int i = 0; i < fileStartsWithRecords.length; ++i) {
       String[] recordTags = fileStartsWithRecords[i];
       for (int j = 1; j < recordTags.length; ++j) {
         String recordTag = recordTags[j];
-        if (leader.contains(recordTag))
+        if (leader.startsWith(recordTag))
           return recordTags[0];
       }
     }
@@ -910,7 +910,7 @@ public class Resolver {
   private final static int LEADER_CHAR_MAX = 10;
   
   private final static String[] cubeFileStartRecords =
-  {"Cube", "JVXL"};
+  {"Cube", "JVXL", "#JVXL"};
 
   private final static String[] mol2Records =
   {"Mol2", "mol2", "@<TRIPOS>"};

@@ -38,7 +38,7 @@ import org.jmol.util.TextFormat;
 
 final class JmolAppletRegistry {
 
-  static Map<String, Applet> htRegistry = new Hashtable<String, Applet>();
+  static Map<String, Object> htRegistry = new Hashtable<String, Object>();
 
   synchronized static void checkIn(String name, Applet applet) {
     cleanRegistry();
@@ -47,7 +47,7 @@ final class JmolAppletRegistry {
       htRegistry.put(name, applet);
     }
     if (Logger.debugging) {
-      for (Map.Entry<String, Applet> entry : htRegistry.entrySet()) {
+      for (Map.Entry<String, Object> entry : htRegistry.entrySet()) {
         String theApplet = entry.getKey();
         Logger.debug(theApplet + " " + entry.getValue());
       }
@@ -61,7 +61,7 @@ final class JmolAppletRegistry {
   synchronized private static void cleanRegistry() {
     AppletWrapper app = null;
     boolean closed = true;
-    for (Map.Entry<String, Applet> entry : htRegistry.entrySet()) {
+    for (Map.Entry<String, Object> entry : htRegistry.entrySet()) {
       String theApplet = entry.getKey();
       try {
         app = (AppletWrapper) (entry.getValue());

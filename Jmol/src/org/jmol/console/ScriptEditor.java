@@ -35,7 +35,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JFrame;
 import javax.swing.JSplitPane;
-import javax.swing.JTextPane; //import javax.swing.SwingUtilities;
+import javax.swing.JTextPane; 
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.text.DefaultEditorKit;

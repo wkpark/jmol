@@ -1287,7 +1287,7 @@ public class Jmol implements WrappedApplet {
       return (isSync ? "" : sb.toString());
     }
 
-    public Map<String, Applet>  getRegistryInfo() {
+    public Map<String, Object>  getRegistryInfo() {
       JmolAppletRegistry.checkIn(null, null); //cleans registry
       return JmolAppletRegistry.htRegistry;
     }

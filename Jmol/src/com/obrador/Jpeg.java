@@ -7,9 +7,11 @@
 
 package com.obrador;
 
-import java.awt.*;
-import java.io.*;
-
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class Jpeg
 {

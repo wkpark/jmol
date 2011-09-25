@@ -25,10 +25,12 @@
 
 package org.jmol.shapespecial;
 
-import org.jmol.g3d.*;
-import org.jmol.shape.ShapeRenderer;
+import javax.vecmath.Point3f;
+import javax.vecmath.Point3i;
+import javax.vecmath.Vector3f;
 
-import javax.vecmath.*;
+import org.jmol.g3d.Graphics3D;
+import org.jmol.shape.ShapeRenderer;
 
 public class DipolesRenderer extends ShapeRenderer {
 

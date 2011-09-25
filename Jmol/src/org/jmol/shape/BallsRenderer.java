@@ -27,10 +27,11 @@ package org.jmol.shape;
 
 import java.util.BitSet;
 
-import org.jmol.g3d.*;
+import javax.vecmath.Point3f;
+
+import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 
-import javax.vecmath.*;
 public class BallsRenderer extends ShapeRenderer {
 
   @Override

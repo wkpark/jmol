@@ -43,7 +43,6 @@
  */
 package org.jmol.export.image;
 
-import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -51,7 +50,10 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.awt.Image;
-import java.awt.image.*;
+import java.awt.image.ImageProducer;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 import org.jmol.util.Logger;
 

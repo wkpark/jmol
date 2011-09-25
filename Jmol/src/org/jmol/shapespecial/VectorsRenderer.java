@@ -25,12 +25,14 @@
 
 package org.jmol.shapespecial;
 
-import org.jmol.g3d.*;
+import javax.vecmath.Point3f;
+import javax.vecmath.Point3i;
+import javax.vecmath.Vector3f;
+
+import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.shape.Shape;
 import org.jmol.shape.ShapeRenderer;
-
-import javax.vecmath.*;
 
 public class VectorsRenderer extends ShapeRenderer {
 

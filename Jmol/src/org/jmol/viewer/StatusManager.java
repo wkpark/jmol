@@ -28,7 +28,6 @@ import org.jmol.script.ScriptEvaluator;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 
-import java.applet.Applet;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collections;
@@ -637,7 +636,7 @@ class StatusManager {
       jmolStatusListener.createImage(fileNameOrError, type, text_or_bytes, quality));
   }
 
-  Map<String, Applet> getRegistryInfo() {
+  Map<String, Object> getRegistryInfo() {
     /* 
 
      //note that the following JavaScript retrieves the registry:

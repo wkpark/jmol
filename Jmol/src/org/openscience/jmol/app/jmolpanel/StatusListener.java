@@ -32,7 +32,6 @@ import org.jmol.export.dialog.Dialog;
 import org.jmol.util.Logger;
 import org.openscience.jmol.app.webexport.WebExport;
 
-import java.applet.Applet;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.Map;
@@ -323,7 +322,7 @@ class StatusListener implements JmolStatusListener {
               // hanson)
   }
 
-  public Map<String, Applet> getRegistryInfo() {
+  public Map<String, Object> getRegistryInfo() {
     return null;
   }
 

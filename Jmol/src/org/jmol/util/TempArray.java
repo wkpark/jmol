@@ -23,7 +23,8 @@
  */
 package org.jmol.util;
 
-import javax.vecmath.*;
+import javax.vecmath.Point3f;
+import javax.vecmath.Point3i;
 
 import org.jmol.constant.EnumStructure;
 

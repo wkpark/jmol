@@ -32,10 +32,15 @@
 
 package org.jmol.util;
 
-import java.awt.*;
-import java.awt.image.*;
-import java.io.*;
-
+import java.awt.AWTException;
+import java.awt.Frame;
+import java.awt.Image;
+import java.awt.MediaTracker;
+import java.awt.image.PixelGrabber;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 /*
  * JpegEncoder - The JPEG main program which performs a jpeg compression of

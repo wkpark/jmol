@@ -26,10 +26,16 @@ package org.jmol.adapter.readers.xml;
 import org.jmol.adapter.smarter.*;
 
 
-import org.xml.sax.*;
+import org.xml.sax.Attributes;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.StringReader;
 import java.util.Hashtable;
 import java.util.Map;
 

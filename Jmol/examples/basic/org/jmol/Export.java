@@ -31,7 +31,6 @@ package org.jmol;
  *  ran with: java -classpath `pwd`:/where/ever/jmol-10.2.0/Jmol.jar JmolExportExample
  * */
 
-import java.applet.Applet;
 import java.util.Map;
 
 import javax.swing.JFrame;
@@ -210,7 +209,7 @@ class MyStatusListener implements JmolStatusListener {
   }
 
 
-  public Map<String, Applet> getRegistryInfo() {
+  public Map<String, Object> getRegistryInfo() {
     return null;
   }
 

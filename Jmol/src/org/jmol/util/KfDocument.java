@@ -22,13 +22,11 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 package org.jmol.util;
-/*
-import java.io.DataInputStream;
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream; //import java.io.RandomAccessFile;
-import java.util.Hashtable;
-*/
+// import java.io.DataInputStream;
+// import java.io.BufferedInputStream;
+// import java.io.IOException;
+// import java.io.InputStream; //import java.io.RandomAccessFile;
+// import java.util.Hashtable;
 
 public class KfDocument {
 /*

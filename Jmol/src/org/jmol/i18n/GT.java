@@ -24,7 +24,9 @@
 package org.jmol.i18n;
 
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 import org.jmol.util.Logger;
 

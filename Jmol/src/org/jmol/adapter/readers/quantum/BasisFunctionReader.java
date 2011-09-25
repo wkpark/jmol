@@ -91,6 +91,7 @@ abstract class BasisFunctionReader extends AtomSetCollectionReader {
   
   // Jmol's ordering is based on GAUSSIAN
   
+        
   // We don't modify the coefficients at read time, only create a 
   // map to send to MOCalculation. 
 
@@ -123,6 +124,17 @@ abstract class BasisFunctionReader extends AtomSetCollectionReader {
   protected static String CANONICAL_DS_LIST = "d0    d1+   d1-   d2+   d2-";
   protected static String CANONICAL_FS_LIST = "f0    f1+   f1-   f2+   f2-   f3+   f3-";
 
+  /* Molden -- same as Gaussian, so no need to map these:
+  5D: D 0, D+1, D-1, D+2, D-2
+  6D: xx, yy, zz, xy, xz, yz
+
+  7F: F 0, F+1, F-1, F+2, F-2, F+3, F-3
+ 10F: xxx, yyy, zzz, xyy, xxy, xxz, xzz, yzz, yyz, xyz
+
+  9G: G 0, G+1, G-1, G+2, G-2, G+3, G-3, G+4, G-4
+ 15G: xxxx yyyy zzzz xxxy xxxz yyyx yyyz zzzx zzzy,
+      xxyy xxzz yyzz xxyz yyxz zzxy
+  */
   
   protected boolean isQuantumBasisSupported(char ch) {
     return (JmolAdapter.SUPPORTED_BASIS_FUNCTIONS.indexOf(Character.toUpperCase(ch)) >= 0);

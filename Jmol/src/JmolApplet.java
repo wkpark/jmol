@@ -33,10 +33,11 @@
 
 import java.awt.Graphics;
 
-import org.jmol.api.JmolAppletInterface;
+import org.jmol.applet.JmolAppletInterface;
+
 import netscape.javascript.JSObject;
 
-public class JmolApplet extends org.jmol.appletwrapper.AppletWrapper implements
+public class JmolApplet extends org.jmol.applet.AppletWrapper implements
     JmolAppletInterface {
 
   //protected void finalize() throws Throwable {

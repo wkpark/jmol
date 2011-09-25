@@ -1,12 +1,10 @@
 package org.jmol.api;
 
-import java.awt.Component;
-
 import org.jmol.viewer.Viewer;
 
 public interface JmolModelKitInterface {
 
-  public abstract JmolModelKitInterface getModelKit(Viewer viewer, Component parentFrame);
+  public abstract JmolModelKitInterface getModelKit(Viewer viewer, Object parentFrame);
 
   public abstract void getMenus(boolean doTranslate);
 

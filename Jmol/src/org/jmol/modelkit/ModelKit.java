@@ -30,8 +30,6 @@ import org.jmol.i18n.GT;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
 
-import java.awt.Component;
-
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 
@@ -47,7 +45,7 @@ public class ModelKit extends JDialog implements JmolModelKitInterface {
   /* (non-Javadoc)
    * @see org.jmol.modelkit.JmolModelKitInterface#getModelKit(org.jmol.viewer.Viewer, javax.swing.JFrame)
    */
-  public JmolModelKitInterface getModelKit(Viewer viewer, Component display) {
+  public JmolModelKitInterface getModelKit(Viewer viewer, Object display) {
     return new ModelKit(viewer,  display instanceof JmolFrame ? ((JmolFrame) display).getFrame() 
         : display instanceof JFrame ? (JFrame) display : null);
   }

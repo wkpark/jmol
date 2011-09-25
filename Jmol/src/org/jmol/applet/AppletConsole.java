@@ -69,7 +69,7 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
    * @param externalContainer   a JFrame or JPanel or null
    * 
    */
-  public AppletConsole(JmolViewer viewer, Container externalContainer) {
+  private AppletConsole(JmolViewer viewer, Container externalContainer) {
     this.viewer = viewer;
     Component display = viewer.getDisplay();
     this.viewerFrame = (display instanceof JFrame ? (JFrame) display : null);

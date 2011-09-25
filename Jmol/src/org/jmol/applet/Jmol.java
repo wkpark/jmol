@@ -24,8 +24,11 @@
 
 package org.jmol.applet;
 
-import org.jmol.api.*;
-import org.jmol.appletwrapper.*;
+import org.jmol.api.Interface;
+import org.jmol.api.JmolCallbackListener;
+import org.jmol.api.JmolPromptInterface;
+import org.jmol.api.JmolStatusListener;
+import org.jmol.api.JmolViewer;
 import org.jmol.constant.EnumCallback;
 import org.jmol.export.JmolFileDropper;
 import org.jmol.i18n.GT;
@@ -35,8 +38,10 @@ import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
-import java.applet.Applet;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Event;
+import java.awt.Graphics;
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -144,31 +149,53 @@ import netscape.javascript.JSObject;
 
 public class Jmol implements WrappedApplet {
 
-  boolean mayScript;
-  boolean haveDocumentAccess;
-  boolean loading;
-
-  Map<EnumCallback, String> callbacks = new Hashtable<EnumCallback, String>();
-
-  String language;
-  String htmlName;
-  String fullName;
-  String syncId;
-  String languagePath;
-
-  AppletWrapper appletWrapper;
-  protected JmolViewer viewer;
-
   private final static boolean REQUIRE_PROGRESSBAR = true;
+  private final static int SCRIPT_CHECK = 0;
+  private final static int SCRIPT_WAIT = 1;
+  private final static int SCRIPT_NOWAIT = 2;
+
   private boolean hasProgressBar;
+  private boolean isSigned;
+  private boolean isUpdating;
+  private boolean showPaintTime;
 
-  protected boolean doTranslate = true;
+  private int paintCounter;
+  private int timeLast, timeCount, timeTotal;
+  private int lastMotionEventNumber;
+  private long timeBegin;
 
+  private String language;
   private String statusForm;
   private String statusText;
   private String statusTextarea;
 
-  private int paintCounter;
+  private JmolFileDropper dropper;  
+  
+  protected boolean doTranslate = true;
+  protected boolean haveDocumentAccess;
+  protected boolean isStereoSlave;
+  protected boolean loading;
+  protected boolean mayScript;
+  protected String htmlName;
+  protected String fullName;
+  protected String syncId;
+  protected StringBuffer outputBuffer;
+
+  protected AppletWrapper appletWrapper;
+  protected Graphics gRight;
+  protected JmolViewer viewer;
+  protected Map<EnumCallback, String> callbacks = new Hashtable<EnumCallback, String>();
+  
+  public void paint(Graphics g) {
+    //paint is invoked for system-based updates (obscurring, for example)
+    //Opera has a bug in relation to displaying the Java Console. 
+    update(g, "paint ");
+  }
+
+  public void update(Graphics g) {
+    //update is called in response to repaintManager's repaint() request.
+    update(g, "update");
+  }
 
   /*
    * miguel 2004 11 29
@@ -192,6 +219,29 @@ public class Jmol implements WrappedApplet {
     this.appletWrapper = appletWrapper;
   }
 
+  public void jmolReady() {
+    System.out.println("Jmol applet " + fullName + " ready");
+    viewer.getBooleanProperty("__appletReady");
+  }
+  
+  public void destroy() {
+    gRight = null;
+    JmolAppletRegistry.checkOut(fullName);
+    viewer.setModeMouse(JmolConstants.MOUSE_NONE);
+    viewer.getBooleanProperty("__appletDestroyed");
+    viewer = null;
+    if (dropper != null) {
+      dropper.dispose();
+      dropper = null;
+    }
+    System.out.println("Jmol applet " + fullName + " destroyed");
+  }
+
+  public Graphics setStereoGraphics(boolean isStereo) {
+    isStereoSlave = isStereo;
+    return (isStereo ? appletWrapper.getGraphics() : null);
+  }
+
   //protected void finalize() throws Throwable {
   //  System.out.println("Jmol finalize " + this);
   //  super.finalize();
@@ -211,37 +261,7 @@ public class Jmol implements WrappedApplet {
     initApplication();
   }
 
-  public void jmolReady() {
-    System.out.println("Jmol applet " + fullName + " ready");
-    viewer.getBooleanProperty("__appletReady");
-  }
-  
-  public void destroy() {
-    gRight = null;
-    JmolAppletRegistry.checkOut(fullName);
-    viewer.setModeMouse(JmolConstants.MOUSE_NONE);
-    viewer.getBooleanProperty("__appletDestroyed");
-    viewer = null;
-    if (dropper != null) {
-      dropper.dispose();
-      dropper = null;
-    }
-    System.out.println("Jmol applet " + fullName + " destroyed");
-  }
-
-  String getParameter(String paramName) {
-    return appletWrapper.getParameter(paramName);
-  }
-
-  public Graphics setStereoGraphics(boolean isStereo) {
-    isStereoSlave = isStereo;
-    return (isStereo ? appletWrapper.getGraphics() : null);
-  }
-
-  boolean isSigned;
-
-  public void initWindows() {
-
+  private void initWindows() {
     String options = "-applet";
     isSigned = getBooleanValue("signed", false) || appletWrapper.isSigned();
     if (isSigned)
@@ -308,41 +328,7 @@ public class Jmol implements WrappedApplet {
     }
   }
 
-  private void setLogging() {
-    int iLevel = (getValue("logLevel", (getBooleanValue("debug", false) ? "5"
-        : "4"))).charAt(0) - '0';
-    if (iLevel != 4)
-      System.out.println("setting logLevel=" + iLevel
-          + " -- To change, use script \"set logLevel [0-5]\"");
-    Logger.setLogLevel(iLevel);
-  }
-
-  private boolean getBooleanValue(String propertyName, boolean defaultValue) {
-    String value = getValue(propertyName, defaultValue ? "true" : "");
-    return (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("on") || value
-        .equalsIgnoreCase("yes"));
-  }
-
-  private String getValue(String propertyName, String defaultValue) {
-    String stringValue = getParameter(propertyName);
-    if (stringValue != null)
-      return stringValue;
-    return defaultValue;
-  }
-
-  private String getValueLowerCase(String paramName, String defaultValue) {
-    String value = getValue(paramName, defaultValue);
-    if (value != null) {
-      value = value.trim().toLowerCase();
-      if (value.length() == 0)
-        value = null;
-    }
-    return value;
-  }
-
-  JmolFileDropper dropper;
-  
-  public void initApplication() {
+  private void initApplication() {
     viewer.pushHoldRepaint();
     {
       // REQUIRE that the progressbar be shown
@@ -452,6 +438,42 @@ public class Jmol implements WrappedApplet {
     viewer.popHoldRepaint();
   }
 
+  private void setLogging() {
+    int iLevel = (getValue("logLevel", (getBooleanValue("debug", false) ? "5"
+        : "4"))).charAt(0) - '0';
+    if (iLevel != 4)
+      System.out.println("setting logLevel=" + iLevel
+          + " -- To change, use script \"set logLevel [0-5]\"");
+    Logger.setLogLevel(iLevel);
+  }
+
+  private String getParameter(String paramName) {
+    return appletWrapper.getParameter(paramName);
+  }
+
+  private boolean getBooleanValue(String propertyName, boolean defaultValue) {
+    String value = getValue(propertyName, defaultValue ? "true" : "");
+    return (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("on") || value
+        .equalsIgnoreCase("yes"));
+  }
+
+  private String getValue(String propertyName, String defaultValue) {
+    String stringValue = getParameter(propertyName);
+    if (stringValue != null)
+      return stringValue;
+    return defaultValue;
+  }
+
+  private String getValueLowerCase(String paramName, String defaultValue) {
+    String value = getValue(paramName, defaultValue);
+    if (value != null) {
+      value = value.trim().toLowerCase();
+      if (value.length() == 0)
+        value = null;
+    }
+    return value;
+  }
+
   private void setValue(String name, String defaultValue) {
     setStringProperty(name, getValue(name, defaultValue));
   }
@@ -463,7 +485,7 @@ public class Jmol implements WrappedApplet {
     viewer.setStringProperty(name, value);
   }
 
-  void sendJsTextStatus(String message) {
+  protected void sendJsTextStatus(String message) {
     if (!haveDocumentAccess || statusForm == null || statusText == null)
       return;
     try {
@@ -480,7 +502,7 @@ public class Jmol implements WrappedApplet {
     }
   }
 
-  void sendJsTextareaStatus(String message) {
+  protected void sendJsTextareaStatus(String message) {
     if (!haveDocumentAccess || statusForm == null || statusTextarea == null)
       return;
     try {
@@ -502,23 +524,6 @@ public class Jmol implements WrappedApplet {
     }
   }
 
-  public boolean showPaintTime = false;
-  public void paint(Graphics g) {
-    //paint is invoked for system-based updates (obscurring, for example)
-    //Opera has a bug in relation to displaying the Java Console. 
-    update(g, "paint ");
-  }
-
-  private boolean isUpdating;
-
-  public void update(Graphics g) {
-    //update is called in response to repaintManager's repaint() request.
-    update(g, "update");
-  }
-
-  protected Graphics gRight;
-  protected boolean isStereoSlave;
-  
   /**
    * 
    * @param g
@@ -584,11 +589,6 @@ public class Jmol implements WrappedApplet {
   // code to record last and average times
   // last and average of all the previous times are shown in the status window
 
-  private int timeLast, timeCount, timeTotal;
-  private long timeBegin;
-
-  private int lastMotionEventNumber;
-
   private void startPaintClock() {
     timeBegin = System.currentTimeMillis();
     int motionEventNumber = viewer.getMotionEventNumber();
@@ -624,10 +624,6 @@ public class Jmol implements WrappedApplet {
     g.setColor(Color.green);
     g.drawString(fmt(timeLast) + "ms : " + fmt(timeAverage) + "ms", x, y);
   }
-
-  private final static int SCRIPT_CHECK = 0;
-  private final static int SCRIPT_WAIT = 1;
-  private final static int SCRIPT_NOWAIT = 2;
 
   private String scriptProcessor(String script, String statusParams,
                                  int processType) {
@@ -680,8 +676,6 @@ public class Jmol implements WrappedApplet {
     return scriptProcessor(script, null, SCRIPT_WAIT);
   }
 
-  StringBuffer outputBuffer;
-  
   public String scriptWait(String script, String statusParams) {
     if (script == null || script.length() == 0)
       return "";
@@ -858,6 +852,15 @@ public class Jmol implements WrappedApplet {
   }
 
   class MyStatusListener implements JmolStatusListener {
+
+    public Map<String, Object>  getRegistryInfo() {
+      JmolAppletRegistry.checkIn(null, null); //cleans registry
+      return JmolAppletRegistry.htRegistry;
+    }
+
+    public void resizeInnerPanel(String data) {
+      // application only?
+    }
 
     public boolean notifyEnabled(EnumCallback type) {
       switch (type) {
@@ -1084,12 +1087,6 @@ public class Jmol implements WrappedApplet {
       consoleMessage("Available callbacks include: " + EnumCallback.getNameList().replace(';',' ').trim());
     }
 
-    @Override
-    protected void finalize() throws Throwable {
-      Logger.debug("MyStatusListener finalize " + this);
-      super.finalize();
-    }
-
     public String eval(String strEval) {
       // may be appletName\1script
       int pt = strEval.indexOf("\1");
@@ -1225,6 +1222,12 @@ public class Jmol implements WrappedApplet {
       }
     }
 
+    @Override
+    protected void finalize() throws Throwable {
+      Logger.debug("MyStatusListener finalize " + this);
+      super.finalize();
+    }
+
     private void showStatus(String message) {
       try {
         appletWrapper.showStatus(message);
@@ -1287,13 +1290,5 @@ public class Jmol implements WrappedApplet {
       return (isSync ? "" : sb.toString());
     }
 
-    public Map<String, Object>  getRegistryInfo() {
-      JmolAppletRegistry.checkIn(null, null); //cleans registry
-      return JmolAppletRegistry.htRegistry;
-    }
-
-    public void resizeInnerPanel(String data) {
-      // application only?
-    }
   }
 }

@@ -411,7 +411,6 @@ all support for previous versions removed
         <exclude name="**/Test*.class" />
         <exclude name="**/jmol/jcamp/**" />
         <exclude name="**/jmol/applet/*" />
-        <exclude name="**/jmol/appletwrapper/*" />
         <include name="**/jmol/**" />
         <exclude name="**/app/JmolData.class" />
       </fileset>
@@ -437,7 +436,6 @@ all support for previous versions removed
         <exclude name="**/jmol/_documents/**" />
         <exclude name="**/jmol/jcamp/**" />
         <exclude name="**/jmol/applet/**" />
-        <exclude name="**/jmol/appletwrapper/**" />
         <exclude name="**/jmol/console/**" />
         <exclude name="**/jmol/export/**" />
         <exclude name="**/jmol/shapebio/**" />
@@ -716,7 +714,6 @@ all support for previous versions removed
       <!-- javax/vecmath -->
       <fileset dir="${appletjars.dir}" includes="**/*"/>
       <fileset dir="${applet.classes.dir}">
-        <include name="org/jmol/appletwrapper/*" />
         <include name="JmolApplet*.class" />
         <include name="jmol75x29x8.gif" />
         <include name="org/jmol/adapter/smarter/**" />
@@ -886,7 +883,6 @@ all support for previous versions removed
       <!-- javax/vecmath -->
       <fileset dir="${appletjars.dir}" includes="**/*"/>
       <fileset dir="${applet.classes.dir}">
-        <include name="org/jmol/appletwrapper/*" />
         <include name="JmolApplet*.class" />
         <include name="jmol75x29x8.gif" />
 		<include name="org/jmol/adapter/smarter/**" />
@@ -1075,7 +1071,6 @@ all support for previous versions removed
       <!-- javax/vecmath -->
       <fileset dir="${appletjars.dir}" includes="**/*"/>
       <fileset dir="${applet.classes.dir}">
-        <include name="org/jmol/appletwrapper/*" />
         <include name="JmolApplet*.class" />
         <include name="jmol75x29x8.gif" />
         <include name="org/jmol/adapter/smarter/**" />

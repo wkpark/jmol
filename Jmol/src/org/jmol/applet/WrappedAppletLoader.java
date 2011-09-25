@@ -22,23 +22,22 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.appletwrapper;
+package org.jmol.applet;
 
 import org.jmol.util.Logger;
 
 class WrappedAppletLoader extends Thread {
-    
-  AppletWrapper appletWrapper;
-  String wrappedAppletClassName;
+
+  private AppletWrapper appletWrapper;
+  private String wrappedAppletClassName;
 
   //private final static int minimumLoadSeconds = 0;
 
-  WrappedAppletLoader(AppletWrapper appletWrapper,
-                      String wrappedAppletClassName) {
+  WrappedAppletLoader(AppletWrapper appletWrapper, String wrappedAppletClassName) {
     this.appletWrapper = appletWrapper;
     this.wrappedAppletClassName = wrappedAppletClassName;
   }
-    
+
   @Override
   public void run() {
     long startTime = System.currentTimeMillis();
@@ -50,33 +49,18 @@ class WrappedAppletLoader extends Thread {
     WrappedApplet wrappedApplet = null;
     try {
       Class<?> wrappedAppletClass = Class.forName(wrappedAppletClassName);
-      wrappedApplet = (WrappedApplet)wrappedAppletClass.newInstance();
+      wrappedApplet = (WrappedApplet) wrappedAppletClass.newInstance();
       wrappedApplet.setAppletWrapper(appletWrapper);
       wrappedApplet.init();
     } catch (Exception e) {
-      Logger.error(
-          "Could not instantiate wrappedApplet class" + wrappedAppletClassName,
-          e);
+      Logger.error("Could not instantiate wrappedApplet class"
+          + wrappedAppletClassName, e);
     }
-    long loadTimeSeconds =
-      (System.currentTimeMillis() - startTime + 500) / 1000;
+    long loadTimeSeconds = (System.currentTimeMillis() - startTime + 500) / 1000;
     if (Logger.debugging) {
-      Logger.debug(
-          wrappedAppletClassName + " load time = " + loadTimeSeconds + " seconds");
+      Logger.debug(wrappedAppletClassName + " load time = " + loadTimeSeconds
+          + " seconds");
     }
-/*    if (minimumLoadSeconds != 0) { 
-      // optimizer should eliminate all this code
-      long minimumEndTime = startTime + 1000 * minimumLoadSeconds;
-      int sleepTime = (int)(minimumEndTime - System.currentTimeMillis());
-      if (sleepTime > 0) {
-        Logger.warn("artificial minimum load time engaged");
-        try {
-          Thread.sleep(sleepTime);
-        } catch (InterruptedException ie) {
-        }
-      }
-    }
-*/
     tickerThread.keepRunning = false;
     tickerThread.interrupt();
     appletWrapper.wrappedApplet = wrappedApplet;
@@ -106,4 +90,3 @@ class TickerThread extends Thread {
     } while (keepRunning);
   }
 }
-

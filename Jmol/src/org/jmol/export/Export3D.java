@@ -360,14 +360,14 @@ final public class Export3D implements JmolRendererInterface {
     exporter.plotText(xBaseline, yBaseline, z, colix, str, font3d);
   }
 
-  public void drawImage(Image image, int x, int y, int z, int zSlab,
+  public void drawImage(Object objImage, int x, int y, int z, int zSlab,
                         short bgcolix, int width, int height) {
-    if (image == null || width == 0 || height == 0)
+    if (objImage == null || width == 0 || height == 0)
       return;
     if (isClippedZ(zSlab))
       return;
     z = Math.max(slab, z);
-    exporter.plotImage(x, y, z, image, bgcolix, width, height);
+    exporter.plotImage(x, y, z, (Image) objImage, bgcolix, width, height);
   }
 
   // mostly public drawing methods -- add "public" if you need to

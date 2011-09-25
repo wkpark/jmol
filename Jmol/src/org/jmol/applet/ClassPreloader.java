@@ -22,13 +22,13 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.appletwrapper;
+package org.jmol.applet;
 
 import org.jmol.util.Logger;
 
 class ClassPreloader extends Thread {
     
-  AppletWrapper appletWrapper;
+  private AppletWrapper appletWrapper;
 
   ClassPreloader(AppletWrapper appletWrapper) {
     this.appletWrapper = appletWrapper;

@@ -1,7 +1,5 @@
 package org.jmol.api;
 
-import java.awt.Image;
-
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
@@ -309,7 +307,7 @@ public interface JmolRendererInterface {
   public abstract void fillEllipsoid(Point3f center, Point3f[] points, int x, int y, int z, 
       int diameter, Matrix3f mToEllipsoidal, double[] coef, Matrix4f mDeriv, int selectedOctant, Point3i[] octantPoints);
 
-  public abstract void drawImage(Image image, int x, int y, int z, int zslab, short bgcolix, int width, int height);
+  public abstract void drawImage(Object image, int x, int y, int z, int zslab, short bgcolix, int width, int height);
 
   public abstract String finalizeOutput();
 

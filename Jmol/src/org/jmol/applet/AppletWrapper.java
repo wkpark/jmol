@@ -22,10 +22,18 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.appletwrapper;
+package org.jmol.applet;
 
-import java.applet.*;
-import java.awt.*;
+import java.applet.Applet;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Event;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.MediaTracker;
+import java.awt.Toolkit;
 import java.net.URL;
 
 import org.jmol.i18n.GT;
@@ -33,26 +41,26 @@ import org.jmol.util.Logger;
 
 public class AppletWrapper extends Applet {
 
+  public WrappedApplet wrappedApplet;
+
   private String wrappedAppletClassName;
   private String preloadImageName;
   private String preloadTextMessage;
+  private String previousClassName;
   private int preloadThreadCount;
   private String[] preloadClassNames;
 
   private int preloadClassIndex;
-  private String previousClassName;
 
+  private boolean isSigned;
   private boolean needToCompleteInitialization;
-
   private boolean preloadImageReadyForDisplay;
   private boolean preloadImagePainted;
-  private Image preloadImage;
-  //private int preloadImageHeight;
-  private MediaTracker mediaTracker;
 
   private Color bgcolor;
   private Color textColor;
-  public WrappedApplet wrappedApplet;
+  private Image preloadImage;
+  private MediaTracker mediaTracker;
 
   private long startTime;
   private int clockX;
@@ -186,14 +194,33 @@ public class AppletWrapper extends Applet {
     update(g);
   }
 
-  void repaintClock() {
+  @Override
+  public boolean handleEvent(Event e) {
+    if (wrappedApplet != null)
+      return wrappedApplet.handleEvent(e);
+    return false;
+  }
+  
+  public synchronized String getNextPreloadClassName() {
+    if (preloadClassNames == null ||
+        preloadClassIndex == preloadClassNames.length)
+      return null;
+    String className = preloadClassNames[preloadClassIndex++];
+    if (className.charAt(0) == '.') {
+      int lastDot = previousClassName.lastIndexOf('.');
+      String previousPackageName = previousClassName.substring(0, lastDot);
+      className = previousPackageName + className;
+    }
+    return previousClassName = className;
+  }
+
+  protected void repaintClock() {
     if (! preloadImagePainted || clockBaseline == 0)
       repaint();
     else
       repaint(clockX, clockBaseline - fontAscent, clockWidth, fontHeight);
   }
 
-  private boolean isSigned;
   private boolean completeInitialization(Graphics g, Dimension dim) {
     needToCompleteInitialization = false;
     try {
@@ -285,23 +312,4 @@ public class AppletWrapper extends Applet {
     return grayscale < 128 ? Color.white : Color.black;
   }
   
-  @Override
-  public boolean handleEvent(Event e) {
-    if (wrappedApplet != null)
-      return wrappedApplet.handleEvent(e);
-    return false;
-  }
-  
-  synchronized String getNextPreloadClassName() {
-    if (preloadClassNames == null ||
-        preloadClassIndex == preloadClassNames.length)
-      return null;
-    String className = preloadClassNames[preloadClassIndex++];
-    if (className.charAt(0) == '.') {
-      int lastDot = previousClassName.lastIndexOf('.');
-      String previousPackageName = previousClassName.substring(0, lastDot);
-      className = previousPackageName + className;
-    }
-    return previousClassName = className;
-  }
 }

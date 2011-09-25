@@ -24,8 +24,6 @@
 
 package org.jmol.applet;
 
-import org.jmol.appletwrapper.AppletWrapper;
-
 import java.applet.Applet;
 import java.util.Hashtable;
 import java.util.List;
@@ -58,6 +56,32 @@ final class JmolAppletRegistry {
     htRegistry.remove(name);
   }
 
+  synchronized static void findApplets(String appletName, String mySyncId,
+                                       String excludeName, List<String> apps) {
+    if (appletName != null && appletName.indexOf(",") >= 0) {
+      String[] names = TextFormat.split(appletName, ",");
+      for (int i = 0; i < names.length; i++)
+        findApplets(names[i], mySyncId, excludeName, apps);
+      return;
+    }
+    String ext = "__" + mySyncId + "__";
+    if (appletName == null || appletName.equals("*") || appletName.equals(">")) {
+      for (String appletName2 : htRegistry.keySet()) {
+        if (!appletName2.equals(excludeName) && appletName2.indexOf(ext) > 0) {
+          apps.add(appletName2);
+        }
+      }
+      return;
+    }
+    if (appletName.indexOf("__") < 0)
+      appletName += ext;
+    if (!htRegistry.containsKey(appletName))
+      appletName = "jmolApplet" + appletName;
+    if (!appletName.equals(excludeName) && htRegistry.containsKey(appletName)) {
+      apps.add(appletName);
+    }
+  }
+
   synchronized private static void cleanRegistry() {
     AppletWrapper app = null;
     boolean closed = true;
@@ -87,30 +111,4 @@ final class JmolAppletRegistry {
     }
   }
 
-  synchronized public static void findApplets(String appletName,
-                                              String mySyncId,
-                                              String excludeName, List<String> apps) {
-    if (appletName != null && appletName.indexOf(",") >= 0) {
-      String[] names = TextFormat.split(appletName, ",");
-      for (int i = 0; i < names.length; i++)
-        findApplets(names[i], mySyncId, excludeName, apps);
-      return;
-    }
-    String ext = "__" + mySyncId + "__";
-    if (appletName == null || appletName.equals("*") || appletName.equals(">")) {
-      for (String appletName2 : htRegistry.keySet()) {
-        if (!appletName2.equals(excludeName) && appletName2.indexOf(ext) > 0) {
-          apps.add(appletName2);
-        }
-      }
-      return;
-    }
-    if (appletName.indexOf("__") < 0)
-      appletName += ext;
-    if (!htRegistry.containsKey(appletName))
-      appletName = "jmolApplet" + appletName;
-    if (!appletName.equals(excludeName) && htRegistry.containsKey(appletName)) {
-      apps.add(appletName);
-    }
-  }
 }

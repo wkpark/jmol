@@ -22,11 +22,10 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.appletwrapper;
+package org.jmol.applet;
 
-import java.awt.*;
-
-import org.jmol.api.JmolAppletInterface;
+import java.awt.Event;
+import java.awt.Graphics;
 
 public interface WrappedApplet extends JmolAppletInterface {
   public String getAppletInfo();

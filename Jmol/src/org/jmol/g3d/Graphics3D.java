@@ -1110,13 +1110,13 @@ final public class Graphics3D implements JmolRendererInterface {
         antialiasThisFrame);    
   }
   
-  public void drawImage(Image image, int x, int y, int z, int zSlab, 
+  public void drawImage(Object objImage, int x, int y, int z, int zSlab, 
                         short bgcolix, int width, int height) {
-    if (image == null || width == 0 || height == 0)
+    if (objImage == null || width == 0 || height == 0)
       return;
     if (isClippedZ(zSlab))
       return;
-    plotImage(x, y, z, image, null, bgcolix, width, height);
+    plotImage(x, y, z, (Image) objImage, null, bgcolix, width, height);
   }
 
   public void plotImage(int x, int y, int z, Image image, JmolRendererInterface jmolRenderer,

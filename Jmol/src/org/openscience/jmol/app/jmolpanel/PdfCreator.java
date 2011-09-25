@@ -44,7 +44,8 @@ public class PdfCreator implements JmolPdfCreatorInterface {
    // for Class.forName  
   }
   
-  public String createPdfDocument(String fileName, Image image) {
+  public String createPdfDocument(String fileName, Object objImage) {
+    Image image = (Image) objImage;
     Document document = new Document();
     File file = null;
     try {

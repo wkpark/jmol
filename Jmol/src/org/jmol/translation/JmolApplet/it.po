@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-08-31 16:49+0200\n"
-"PO-Revision-Date: 2011-08-21 14:29+0000\n"
-"Last-Translator: newlife <Unknown>\n"
+"PO-Revision-Date: 2011-09-24 15:37+0000\n"
+"Last-Translator: Marco Buono <Unknown>\n"
 "Language-Team: Italian <it@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-28 05:12+0000\n"
-"X-Generator: Launchpad (build 13794)\n"
+"X-Launchpad-Export-Date: 2011-09-25 08:41+0000\n"
+"X-Generator: Launchpad (build 14012)\n"
 
 #: org/jmol/applet/AppletConsole.java:199
 msgid "&Help"
@@ -144,7 +144,8 @@ msgid "Check"
 msgstr "Verifica"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Sopra"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -900,11 +901,10 @@ msgid "Right"
 msgstr "Destra"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:578
-#, fuzzy
 msgid ""
 "Top[as in \"view from the top, from above\" - (translators: remove this "
 "bracketed part]"
-msgstr "Sopra"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:579
 msgid "Bottom"
@@ -2115,7 +2115,8 @@ msgstr "oggetto non riconosciuto"
 #: org/jmol/script/ScriptEvaluator.java:2940
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
-msgstr "parametro {0} non riconosciuto in Jmol state script (imposta comunque)"
+msgstr ""
+"parametro {0} non riconosciuto in Jmol state script (imposta comunque)"
 
 #: org/jmol/script/ScriptEvaluator.java:2943
 #, java-format
@@ -2214,7 +2215,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:125
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 "cliccare su due punti a ruotare attorno al proprio asse in senso antiorario "
 "(richiede {0})"
@@ -2292,7 +2294,7 @@ msgstr "seleziona e sposta gli atomi (richiede {0})"
 #: org/jmol/viewer/ActionManager.java:139
 #, java-format
 msgid "drag atoms in Z direction (requires {0})"
-msgstr ""
+msgstr "trascina gli atomi nella direzione Z (richiede {0})"
 
 #: org/jmol/viewer/ActionManager.java:140
 #, java-format
@@ -2421,7 +2423,8 @@ msgstr "scegliere un altro atomo per visualizzare il rapporto di simmetria"
 #: org/jmol/viewer/ActionManager.java:1952
 msgid ""
 "pick two atoms in order to display the symmetry relationship between them"
-msgstr "scegliere due atomi per visualizzare il rapporto di simmetria fra loro"
+msgstr ""
+"scegliere due atomi per visualizzare il rapporto di simmetria fra loro"
 
 #: org/jmol/viewer/SelectionManager.java:95
 #: org/jmol/viewer/SelectionManager.java:115
@@ -2456,14 +2459,14 @@ msgstr "Impossibile impostare il percorso del file di registro."
 msgid "Setting log file to {0}"
 msgstr "Impostazione file di log su {0}"
 
-#~ msgid "Top"
-#~ msgstr "In alto"
-
 #~ msgid "Java memory usage"
 #~ msgstr "Utilizzo di memoria Java"
 
 #~ msgid "Molecular Orbitals"
 #~ msgstr "Orbitali Molecolari"
+
+#~ msgid "Top"
+#~ msgstr "In alto"
 
 #~ msgid "About Jmol"
 #~ msgstr "Aproposito di Jmol"
@@ -2474,12 +2477,15 @@ msgstr "Impostazione file di log su {0}"
 #~ msgid "Minimize"
 #~ msgstr "Minimizza"
 
+#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "{0} Modello 3D"
 
+#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "{0} Immagine"
 
+#, java-format
 #~ msgid "File {0}"
 #~ msgstr "File {0}"
 
@@ -2489,9 +2495,9 @@ msgstr "Impostazione file di log su {0}"
 #~ msgid "Script with history"
 #~ msgstr "Script con storia"
 
+#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 #~ msgstr ""
 #~ "Non è consentita la creazione di file a questa applet . Per il formato "
 #~ "Base64 JPEG, usa {0}."
@@ -2499,20 +2505,22 @@ msgstr "Impostazione file di log su {0}"
 #~ msgid "JVXL Isosurface"
 #~ msgstr "JVXL Isosurface"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to string value: {0}"
 #~ msgstr ""
-#~ "ERRORE: non riesco ad impostare un flag booleano come valore di stringa: "
-#~ "{0}"
+#~ "ERRORE: non riesco ad impostare un flag booleano come valore di stringa: {0}"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 #~ msgstr ""
 #~ "ERRORE: non riesco ad impostare un flag booleano come valore valore "
 #~ "numerico: {0}"
 
+#, java-format
 #~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 #~ msgstr ""
-#~ "ERRORE: non riesco ad impostare il valore di questa variabile come "
-#~ "booleano: {0}"
+#~ "ERRORE: non riesco ad impostare il valore di questa variabile come booleano: "
+#~ "{0}"
 
 #~ msgid "File from PDB"
 #~ msgstr "File da PDB"

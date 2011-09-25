@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-08-14 13:53+0200\n"
+"POT-Creation-Date: 2011-09-25 12:23+0200\n"
 "PO-Revision-Date: 2010-12-16 13:15+0000\n"
 "Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: Estonian <Jmol-developers@lists.sf.net>\n"
@@ -325,7 +325,7 @@ msgstr ""
 msgid "Error reading from BufferedReader: {0}"
 msgstr "Viga lugemisel BufferedReader''ist: {0}"
 
-#: org/openscience/jmol/app/jmolpanel/DisplayPanel.java:209
+#: org/openscience/jmol/app/jmolpanel/DisplayPanel.java:210
 msgid "Delete atoms"
 msgstr ""
 
@@ -991,71 +991,71 @@ msgstr "Käivitan ekraani..."
 msgid "Setting up Drag-and-Drop..."
 msgstr "Seadistan Drag-ja-Drop'i..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:303
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:309
 msgid "Launching main frame..."
 msgstr "Käivitan peafreimi..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:307
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:313
 msgid "Initializing Preferences..."
 msgstr "Algväärtustan eelistusi..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:309
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:315
 msgid "Initializing Recent Files..."
 msgstr "Algväärtustan hiljutisi faile..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:344
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:350
 msgid "Jmol Java Console"
 msgstr "Jmol Java konsool"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:364
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:370
 msgid "Could not create ConsoleTextArea: "
 msgstr "Ei saa luua ConsoleTextArea: "
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:411
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:417
 msgid "Creating main window..."
 msgstr "Loon peaakna..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:412
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:418
 msgid "Initializing Swing..."
 msgstr "Algväärtustan Swing'i..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:424
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:430
 msgid "Initializing Jmol..."
 msgstr "Algväärtustan Jmol'i..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:505
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:511
 msgid "Closing Jmol..."
 msgstr "Jmol sulgemine..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1121
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1127
 msgid "Open URL"
 msgstr "Ava URL"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1122
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1128
 msgid "Enter URL of molecular model"
 msgstr "Sisesta molekulaarmudeli URL"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1148
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1154
 msgid "Get PDB file"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1149
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1155
 msgid "Enter a four-digit PDB ID"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1166
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1172
 msgid "Get MOL file by compound name or ID"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1167
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1173
 msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1333
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1339
 msgid "IO Exception:"
 msgstr "IO eriolukord:"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1462
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1468
 msgid "width height?"
 msgstr ""
 
@@ -1757,6 +1757,90 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
+msgstr ""
+
+#: org/openscience/molecularplayground/MPJmolApp.java:253
+msgid "type"
+msgstr ""
+
+#: org/openscience/molecularplayground/MPJmolApp.java:267
+msgid "style"
+msgstr ""
+
+#: org/openscience/molecularplayground/MPJmolApp.java:269
+msgid "sync"
+msgstr ""
+
+#: org/openscience/molecularplayground/MPJmolApp.java:272
+#: org/openscience/molecularplayground/MPJmolApp.java:276
+msgid "x"
+msgstr ""
+
+#: org/openscience/molecularplayground/MPJmolApp.java:273
+#: org/openscience/molecularplayground/MPJmolApp.java:277
+msgid "y"
+msgstr ""
+
+#: org/openscience/molecularplayground/MPJmolApp.java:287
+msgid "command"
+msgstr ""
+
+#: org/openscience/molecularplayground/MPJmolApp.java:298
+msgid "startup_script"
+msgstr ""
+
+#: org/openscience/molecularplayground/MPJmolApp.java:299
+msgid "banner_text"
+msgstr ""
+
+#: org/openscience/molecularplayground/MPJmolApp.java:300
+msgid "banner"
+msgstr ""
+
+#: org/openscience/molecularplayground/json/Cookie.java:121
+#, fuzzy
+msgid "name"
+msgstr "&Nimi"
+
+#: org/openscience/molecularplayground/json/Cookie.java:123
+#, fuzzy
+msgid "value"
+msgstr "Väärtus"
+
+#: org/openscience/molecularplayground/json/Cookie.java:126
+msgid "expires"
+msgstr ""
+
+#: org/openscience/molecularplayground/json/Cookie.java:130
+msgid "domain"
+msgstr ""
+
+#: org/openscience/molecularplayground/json/Cookie.java:134
+#, fuzzy
+msgid "path"
+msgstr "Korda"
+
+#: org/openscience/molecularplayground/json/HTTP.java:132
+#: org/openscience/molecularplayground/json/HTTP.java:144
+msgid "HTTP-Version"
+msgstr ""
+
+#: org/openscience/molecularplayground/json/HTTP.java:134
+#, fuzzy
+msgid "Status-Code"
+msgstr "Olek"
+
+#: org/openscience/molecularplayground/json/HTTP.java:136
+msgid "Reason-Phrase"
+msgstr ""
+
+#: org/openscience/molecularplayground/json/HTTP.java:138
+#, fuzzy
+msgid "Method"
+msgstr "Meetod: "
+
+#: org/openscience/molecularplayground/json/HTTP.java:141
+msgid "Request-URI"
 msgstr ""
 
 #~ msgid "atom set"

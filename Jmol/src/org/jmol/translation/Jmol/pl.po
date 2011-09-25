@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-08-14 13:53+0200\n"
+"POT-Creation-Date: 2011-09-25 12:23+0200\n"
 "PO-Revision-Date: 2011-08-19 15:52+0000\n"
 "Last-Translator: Łukasz Wiśniewski <Unknown>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -323,7 +323,7 @@ msgstr "Skocz do ostatniego wektora w kolekcji"
 msgid "Error reading from BufferedReader: {0}"
 msgstr "Błąd podczas odczytu z BufferedReader: {0}"
 
-#: org/openscience/jmol/app/jmolpanel/DisplayPanel.java:209
+#: org/openscience/jmol/app/jmolpanel/DisplayPanel.java:210
 msgid "Delete atoms"
 msgstr "Usuń atomy"
 
@@ -989,71 +989,71 @@ msgstr "Rozpoczynanie wyświetlania..."
 msgid "Setting up Drag-and-Drop..."
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:303
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:309
 msgid "Launching main frame..."
 msgstr "Tworzenie głównej ramki..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:307
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:313
 msgid "Initializing Preferences..."
 msgstr "Inicjowanie właściwości..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:309
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:315
 msgid "Initializing Recent Files..."
 msgstr "Inicjowanie ostatnich plików..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:344
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:350
 msgid "Jmol Java Console"
 msgstr "Konsola java w Jmol"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:364
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:370
 msgid "Could not create ConsoleTextArea: "
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:411
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:417
 msgid "Creating main window..."
 msgstr "Tworzenie głównego okna..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:412
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:418
 msgid "Initializing Swing..."
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:424
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:430
 msgid "Initializing Jmol..."
 msgstr "Inicjowanie Jmol..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:505
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:511
 msgid "Closing Jmol..."
 msgstr "Zamykanie Jmol..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1121
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1127
 msgid "Open URL"
 msgstr "Otwórz URL"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1122
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1128
 msgid "Enter URL of molecular model"
 msgstr "Wpisz adres URL do modelu molekularnego"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1148
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1154
 msgid "Get PDB file"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1149
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1155
 msgid "Enter a four-digit PDB ID"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1166
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1172
 msgid "Get MOL file by compound name or ID"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1167
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1173
 msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1333
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1339
 msgid "IO Exception:"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1462
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1468
 msgid "width height?"
 msgstr ""
 
@@ -1757,28 +1757,107 @@ msgstr ""
 msgid "unimplemented"
 msgstr ""
 
+#: org/openscience/molecularplayground/MPJmolApp.java:253
+msgid "type"
+msgstr ""
+
+#: org/openscience/molecularplayground/MPJmolApp.java:267
+msgid "style"
+msgstr ""
+
+#: org/openscience/molecularplayground/MPJmolApp.java:269
+msgid "sync"
+msgstr ""
+
+#: org/openscience/molecularplayground/MPJmolApp.java:272
+#: org/openscience/molecularplayground/MPJmolApp.java:276
+msgid "x"
+msgstr ""
+
+#: org/openscience/molecularplayground/MPJmolApp.java:273
+#: org/openscience/molecularplayground/MPJmolApp.java:277
+msgid "y"
+msgstr ""
+
+#: org/openscience/molecularplayground/MPJmolApp.java:287
+msgid "command"
+msgstr ""
+
+#: org/openscience/molecularplayground/MPJmolApp.java:298
+msgid "startup_script"
+msgstr ""
+
+#: org/openscience/molecularplayground/MPJmolApp.java:299
+msgid "banner_text"
+msgstr ""
+
+#: org/openscience/molecularplayground/MPJmolApp.java:300
+msgid "banner"
+msgstr ""
+
+#: org/openscience/molecularplayground/json/Cookie.java:121
+msgid "name"
+msgstr ""
+
+#: org/openscience/molecularplayground/json/Cookie.java:123
+#, fuzzy
+msgid "value"
+msgstr "Wartość"
+
+#: org/openscience/molecularplayground/json/Cookie.java:126
+msgid "expires"
+msgstr ""
+
+#: org/openscience/molecularplayground/json/Cookie.java:130
+msgid "domain"
+msgstr ""
+
+#: org/openscience/molecularplayground/json/Cookie.java:134
+#, fuzzy
+msgid "path"
+msgstr "Powtórz"
+
+#: org/openscience/molecularplayground/json/HTTP.java:132
+#: org/openscience/molecularplayground/json/HTTP.java:144
+msgid "HTTP-Version"
+msgstr ""
+
+#: org/openscience/molecularplayground/json/HTTP.java:134
+#, fuzzy
+msgid "Status-Code"
+msgstr "Stan"
+
+#: org/openscience/molecularplayground/json/HTTP.java:136
+msgid "Reason-Phrase"
+msgstr ""
+
+#: org/openscience/molecularplayground/json/HTTP.java:138
+#, fuzzy
+msgid "Method"
+msgstr "Metoda: "
+
+#: org/openscience/molecularplayground/json/HTTP.java:141
+msgid "Request-URI"
+msgstr ""
+
 #~ msgid "atom set"
 #~ msgstr "zestaw atomów"
 
 #~ msgid "vector"
 #~ msgstr "wektor"
 
-#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Idź do pierwszego {0} w kolekcji"
 
-#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Idź do ostatniego {0} w kolekcji"
 
 #~ msgid "Jmol Script Console"
 #~ msgstr "Konsola skryptów Jmol"
 
-#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Przejdź do ostatniego {0} w kolekcji"
 
-#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Przejdź do nastepnego {0} w kolekcji"
 

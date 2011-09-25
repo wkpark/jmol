@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-08-14 13:53+0200\n"
+"POT-Creation-Date: 2011-09-25 12:23+0200\n"
 "PO-Revision-Date: 2011-01-29 16:06+0000\n"
 "Last-Translator: Thaynã Moretti <Unknown>\n"
 "Language-Team: Brazilian Portuguese <Jmol-developers@lists.sf.net>\n"
@@ -328,7 +328,7 @@ msgstr "Ir para o último vetor na coleção"
 msgid "Error reading from BufferedReader: {0}"
 msgstr "Erro ao ler de \"BufferedReader\": {0}"
 
-#: org/openscience/jmol/app/jmolpanel/DisplayPanel.java:209
+#: org/openscience/jmol/app/jmolpanel/DisplayPanel.java:210
 msgid "Delete atoms"
 msgstr "Apagar átomos"
 
@@ -994,71 +994,71 @@ msgstr "Iniciando a visualização..."
 msgid "Setting up Drag-and-Drop..."
 msgstr "Ativando o \"Drag-and-Drop\"..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:303
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:309
 msgid "Launching main frame..."
 msgstr "Executando o quadro principal..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:307
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:313
 msgid "Initializing Preferences..."
 msgstr "Preparando as Preferências..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:309
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:315
 msgid "Initializing Recent Files..."
 msgstr "Preparando os Arquivos Recentes..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:344
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:350
 msgid "Jmol Java Console"
 msgstr "Console Java do Jmol"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:364
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:370
 msgid "Could not create ConsoleTextArea: "
 msgstr "Não foi possível criar \"ConsoleTextArea\": "
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:411
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:417
 msgid "Creating main window..."
 msgstr "Criando janela principal..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:412
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:418
 msgid "Initializing Swing..."
 msgstr "Preparando o \"Swing\"..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:424
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:430
 msgid "Initializing Jmol..."
 msgstr "Preparando o Jmol..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:505
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:511
 msgid "Closing Jmol..."
 msgstr "Fechando o Jmol..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1121
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1127
 msgid "Open URL"
 msgstr "Abrir URL"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1122
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1128
 msgid "Enter URL of molecular model"
 msgstr "Fornecer a URL de um modelo molecular"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1148
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1154
 msgid "Get PDB file"
 msgstr "Obter arquivo PDB"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1149
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1155
 msgid "Enter a four-digit PDB ID"
 msgstr "Digite quatro digitos do ID PDB"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1166
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1172
 msgid "Get MOL file by compound name or ID"
 msgstr "Obter arquivo MOL pelo nome da mistura ou ID"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1167
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1173
 msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
 msgstr "Digite o nome ou identificador (SMILES, InChi, CAS) de uma molécula"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1333
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1339
 msgid "IO Exception:"
 msgstr "Entrada/saída anormal:"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1462
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1468
 msgid "width height?"
 msgstr "largura e altura?"
 
@@ -1775,6 +1775,90 @@ msgstr "Baixar vista"
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr "não implementado"
+
+#: org/openscience/molecularplayground/MPJmolApp.java:253
+msgid "type"
+msgstr ""
+
+#: org/openscience/molecularplayground/MPJmolApp.java:267
+msgid "style"
+msgstr ""
+
+#: org/openscience/molecularplayground/MPJmolApp.java:269
+msgid "sync"
+msgstr ""
+
+#: org/openscience/molecularplayground/MPJmolApp.java:272
+#: org/openscience/molecularplayground/MPJmolApp.java:276
+msgid "x"
+msgstr ""
+
+#: org/openscience/molecularplayground/MPJmolApp.java:273
+#: org/openscience/molecularplayground/MPJmolApp.java:277
+msgid "y"
+msgstr ""
+
+#: org/openscience/molecularplayground/MPJmolApp.java:287
+msgid "command"
+msgstr ""
+
+#: org/openscience/molecularplayground/MPJmolApp.java:298
+msgid "startup_script"
+msgstr ""
+
+#: org/openscience/molecularplayground/MPJmolApp.java:299
+msgid "banner_text"
+msgstr ""
+
+#: org/openscience/molecularplayground/MPJmolApp.java:300
+msgid "banner"
+msgstr ""
+
+#: org/openscience/molecularplayground/json/Cookie.java:121
+#, fuzzy
+msgid "name"
+msgstr "&Nome"
+
+#: org/openscience/molecularplayground/json/Cookie.java:123
+#, fuzzy
+msgid "value"
+msgstr "Valor"
+
+#: org/openscience/molecularplayground/json/Cookie.java:126
+msgid "expires"
+msgstr ""
+
+#: org/openscience/molecularplayground/json/Cookie.java:130
+msgid "domain"
+msgstr ""
+
+#: org/openscience/molecularplayground/json/Cookie.java:134
+#, fuzzy
+msgid "path"
+msgstr "Repetir"
+
+#: org/openscience/molecularplayground/json/HTTP.java:132
+#: org/openscience/molecularplayground/json/HTTP.java:144
+msgid "HTTP-Version"
+msgstr ""
+
+#: org/openscience/molecularplayground/json/HTTP.java:134
+#, fuzzy
+msgid "Status-Code"
+msgstr "Estado"
+
+#: org/openscience/molecularplayground/json/HTTP.java:136
+msgid "Reason-Phrase"
+msgstr ""
+
+#: org/openscience/molecularplayground/json/HTTP.java:138
+#, fuzzy
+msgid "Method"
+msgstr "Método: "
+
+#: org/openscience/molecularplayground/json/HTTP.java:141
+msgid "Request-URI"
+msgstr ""
 
 #~ msgid "atom set"
 #~ msgstr "conjunto de átomos"

@@ -23,8 +23,6 @@
  */
 package org.jmol.viewer;
 
-import java.awt.Rectangle;
-import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Hashtable;
@@ -34,6 +32,7 @@ import java.util.Map;
 
 import javax.vecmath.Point3f;
 
+import org.jmol.awt.Event;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.i18n.GT;
 import org.jmol.modelset.Atom;
@@ -45,6 +44,7 @@ import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Point3fi;
+import org.jmol.util.Rectangle;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.binding.DragBinding;
 import org.jmol.viewer.binding.Binding;
@@ -579,68 +579,63 @@ public class ActionManager {
 
   /**
    * called by MouseManager.keyPressed
-   * @param ke
+   * @param key
+   * @param modifiers
    */
-  public void keyPressed(KeyEvent ke) {
-    if (viewer.isApplet())
-      ke.consume();
+  public void keyPressed(int key, int modifiers) {
     if (keyProcessing)
       return;
     hoverOff();
     //System.out.println("ActionmManager keyPressed: " + ke.getKeyCode());
     keyProcessing = true;
-    int i = ke.getKeyCode();
-    switch(i) {
-    case KeyEvent.VK_ALT:
+    switch(key) {
+    case Event.VK_ALT:
       if (dragSelectedMode && isAltKeyReleased)
         viewer.moveSelected(Integer.MIN_VALUE, 0, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, null, false, false);
       isAltKeyReleased = false;
       moved.modifiers |= Binding.ALT;
       break;
-    case KeyEvent.VK_SHIFT:
+    case Event.VK_SHIFT:
       dragged.modifiers |= Binding.SHIFT;
       moved.modifiers |= Binding.SHIFT;
       break;
-    case KeyEvent.VK_CONTROL:
+    case Event.VK_CONTROL:
       moved.modifiers |= Binding.CTRL;
     }
     int action = Binding.LEFT+Binding.SINGLE_CLICK+moved.modifiers;
     if(!labelMode && !binding.isUserAction(action) && !isSelectAction(action))
       checkMotionRotateZoom(action, current.x, 0, 0, false);
     if (viewer.getNavigationMode()) {
-      int m = ke.getModifiers();
       // if (viewer.getBooleanProperty("showKeyStrokes", false))
       // viewer.evalStringQuiet("!set echo bottom left;echo "
       // + (i == 0 ? "" : i + " " + m));
-      switch (i) {
-      case KeyEvent.VK_UP:
-      case KeyEvent.VK_DOWN:
-      case KeyEvent.VK_LEFT:
-      case KeyEvent.VK_RIGHT:
-      case KeyEvent.VK_SPACE:
-      case KeyEvent.VK_PERIOD:
-        viewer.navigate(i, m);
+      switch (key) {
+      case Event.VK_UP:
+      case Event.VK_DOWN:
+      case Event.VK_LEFT:
+      case Event.VK_RIGHT:
+      case Event.VK_SPACE:
+      case Event.VK_PERIOD:
+        viewer.navigate(key, modifiers);
         break;
       }
     }
     keyProcessing = false;
   }
 
-  public void keyReleased(KeyEvent ke) {
+  public void keyReleased(int key) {
     //System.out.println("ActionmManager keyReleased: " + ke.getKeyCode());
-    ke.consume();
-    int i = ke.getKeyCode();
-    switch(i) {
-    case KeyEvent.VK_ALT:
+    switch(key) {
+    case Event.VK_ALT:
       if (dragSelectedMode)
         viewer.moveSelected(Integer.MAX_VALUE, 0, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, null, false, false);
       isAltKeyReleased = true;
       moved.modifiers &= ~Binding.ALT;
       break;
-    case KeyEvent.VK_SHIFT:
+    case Event.VK_SHIFT:
       moved.modifiers &= ~Binding.SHIFT;
       break;
-    case KeyEvent.VK_CONTROL:
+    case Event.VK_CONTROL:
       moved.modifiers &= ~Binding.CTRL;
     }
     if (moved.modifiers == 0)
@@ -649,11 +644,11 @@ public class ActionManager {
       return;
     //if (viewer.getBooleanProperty("showKeyStrokes", false))
       //viewer.evalStringQuiet("!set echo bottom left;echo;");
-    switch (i) {
-    case KeyEvent.VK_UP:
-    case KeyEvent.VK_DOWN:
-    case KeyEvent.VK_LEFT:
-    case KeyEvent.VK_RIGHT:
+    switch (key) {
+    case Event.VK_UP:
+    case Event.VK_DOWN:
+    case Event.VK_LEFT:
+    case Event.VK_RIGHT:
       viewer.navigate(0, 0);
       break;
     }
@@ -954,7 +949,7 @@ public class ActionManager {
         );
   }
 
-  public Rectangle getRubberBand() {
+  Rectangle getRubberBand() {
     if (!rubberbandSelectionMode || rectRubber.x == Integer.MAX_VALUE)
       return null;
     return rectRubber;

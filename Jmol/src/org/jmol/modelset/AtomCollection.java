@@ -25,7 +25,6 @@
 
 package org.jmol.modelset;
 
-import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
@@ -53,6 +52,7 @@ import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
+import org.jmol.util.Rectangle;
 
 import org.jmol.util.Measure;
 import org.jmol.util.Quaternion;

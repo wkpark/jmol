@@ -32,6 +32,8 @@ import org.jmol.script.ScriptFunction;
 import org.jmol.script.ScriptVariable;
 import org.jmol.script.Token;
 import org.jmol.shape.Shape;
+import org.jmol.g3d.Font3D;
+import org.jmol.g3d.Graphics3D;
 import org.jmol.i18n.GT;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
@@ -44,7 +46,23 @@ import org.jmol.modelset.Bond.BondSet;
 import org.jmol.modelset.ModelCollection.StateScript;
 
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
-import org.jmol.api.*;
+import org.jmol.api.AtomIndexIterator;
+import org.jmol.api.Interface;
+import org.jmol.api.JmolAdapter;
+import org.jmol.api.JmolAppConsoleInterface;
+import org.jmol.api.JmolCallbackListener;
+import org.jmol.api.JmolImageCreatorInterface;
+import org.jmol.api.JmolModelKitInterface;
+import org.jmol.api.JmolPromptInterface;
+import org.jmol.api.JmolRendererInterface;
+import org.jmol.api.JmolScriptEditorInterface;
+import org.jmol.api.JmolSelectionListener;
+import org.jmol.api.JmolStatusListener;
+import org.jmol.api.JmolViewer;
+import org.jmol.api.MepCalculationInterface;
+import org.jmol.api.MinimizerInterface;
+import org.jmol.api.SmilesMatcherInterface;
+import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.AtomDataServer;
 import org.jmol.atomdata.RadiusData;
@@ -53,7 +71,6 @@ import org.jmol.constant.EnumAxesMode;
 import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumStereoMode;
 import org.jmol.constant.EnumVdw;
-import org.jmol.g3d.*;
 import org.jmol.util.Base64;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.BoxInfo;
@@ -67,6 +84,7 @@ import org.jmol.util.JpegEncoder;
 import org.jmol.util.Logger;
 import org.jmol.util.OutputStringBuffer;
 import org.jmol.util.Parser;
+import org.jmol.util.Rectangle;
 import org.jmol.util.SurfaceFileTyper;
 
 import org.jmol.util.Measure;
@@ -83,7 +101,6 @@ import java.awt.Image;
 import java.awt.Dimension;
 import java.awt.MediaTracker;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.Event;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
@@ -4014,7 +4031,7 @@ private void zap(String msg) {
 
   @Override
   public void renderScreenImage(Graphics gLeft, Graphics gRight,
-                                Dimension size, Rectangle clip) {
+                                Dimension size) {
     // from paint/update event
     // gRight is for second stereo applet
     // when this is the stereoSlave, no rendering occurs through this applet
@@ -4042,7 +4059,7 @@ private void zap(String msg) {
   }
 
   @Override
-  public void renderScreenImage(Graphics g, Dimension size, Rectangle clip) {
+  public void renderScreenImage(Graphics g, Dimension size) {
     /*
      * Jmol repaint/update system:
      * 
@@ -4052,7 +4069,7 @@ private void zap(String msg) {
      * repaintManager.repaintDone()<-- which sets repaintPending false and does
      * notify();
      */
-    renderScreenImage(g, null, size, clip);
+    renderScreenImage(g, null, size);
   }
 
   private Image getImage(boolean isDouble) {

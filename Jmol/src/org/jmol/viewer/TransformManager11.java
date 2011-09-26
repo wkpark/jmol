@@ -23,16 +23,14 @@
  */
 package org.jmol.viewer;
 
+import org.jmol.awt.Event;
+import org.jmol.g3d.Graphics3D;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.InputEvent;
-
-import org.jmol.g3d.Graphics3D;
 
 class TransformManager11 extends TransformManager {
 
@@ -498,22 +496,22 @@ class TransformManager11 extends TransformManager {
     if (nHits % 10 == 0)
       multiplier *= (multiplier == 4 ? 1 : 2);
     boolean navigateSurface = viewer.getNavigateSurface();
-    boolean isShiftKey = ((modifiers & InputEvent.SHIFT_MASK) > 0);
-    boolean isAltKey = ((modifiers & InputEvent.ALT_MASK) > 0);
-    boolean isCtrlKey = ((modifiers & InputEvent.CTRL_MASK) > 0);
+    boolean isShiftKey = ((modifiers & Event.SHIFT_MASK) > 0);
+    boolean isAltKey = ((modifiers & Event.ALT_MASK) > 0);
+    boolean isCtrlKey = ((modifiers & Event.CTRL_MASK) > 0);
     float speed = viewer.getNavigationSpeed() * (isCtrlKey ? 10 : 1);
     // race condition viewer.cancelRendering();
     switch (keyCode) {
-    case KeyEvent.VK_PERIOD:
+    case Event.VK_PERIOD:
       navX = navY = navZ = 0;
       homePosition(true);
       return;
-    case KeyEvent.VK_SPACE:
+    case Event.VK_SPACE:
       if (!navOn)
         return;
       navX = navY = navZ = 0;
       return;
-    case KeyEvent.VK_UP:
+    case Event.VK_UP:
       if (navOn) {
         if (isAltKey) {
           navY += multiplier;
@@ -544,7 +542,7 @@ class TransformManager11 extends TransformManager {
           * (viewer.getNavigationPeriodic() ? 1 : multiplier);
       navMode = NAV_MODE_NEWZ;
       break;
-    case KeyEvent.VK_DOWN:
+    case Event.VK_DOWN:
       if (navOn) {
         if (isAltKey) {
           navY -= multiplier;
@@ -575,7 +573,7 @@ class TransformManager11 extends TransformManager {
           * (viewer.getNavigationPeriodic() ? 1 : multiplier);
       navMode = NAV_MODE_NEWZ;
       break;
-    case KeyEvent.VK_LEFT:
+    case Event.VK_LEFT:
       if (navOn) {
         navX -= multiplier;
         value = navX;
@@ -594,7 +592,7 @@ class TransformManager11 extends TransformManager {
           null);
       navMode = NAV_MODE_NEWXYZ;
       break;
-    case KeyEvent.VK_RIGHT:
+    case Event.VK_RIGHT:
       if (navOn) {
         navX += multiplier;
         value = navX;

@@ -1,6 +1,5 @@
 package org.jmol.viewer.binding;
 
-import java.awt.Event;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
@@ -8,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.jmol.awt.Event;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 

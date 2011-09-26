@@ -224,11 +224,14 @@ class MouseManager14 implements MouseWheelListener, MouseListener,
   }
 
   public void keyPressed(KeyEvent ke) {
-    actionManager.keyPressed(ke);
+    if (viewer.isApplet())
+      ke.consume();
+    actionManager.keyPressed(ke.getKeyCode(), ke.getModifiers());
   }
 
   public void keyReleased(KeyEvent ke) {
-    actionManager.keyReleased(ke);
+    ke.consume();
+    actionManager.keyReleased(ke.getKeyCode());
   }
 
   private String keyBuffer = "";

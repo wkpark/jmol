@@ -29,7 +29,6 @@ import java.awt.Dimension;
 import java.awt.Event;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.Rectangle;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.net.URL;
@@ -134,8 +133,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
    * @param size
    * @param clip
    */
-  abstract public void renderScreenImage(Graphics gLeft, Graphics gRight, Dimension size,
-                                         Rectangle clip);
+  abstract public void renderScreenImage(Graphics gLeft, Graphics gRight, Dimension size);
 
   static public String getJmolVersion() {
     return Viewer.getJmolVersion();

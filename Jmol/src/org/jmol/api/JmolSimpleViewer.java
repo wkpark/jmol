@@ -50,9 +50,17 @@ abstract public class JmolSimpleViewer {
         null, null, null, null, null);
   }
 
-  abstract public void renderScreenImage(Graphics g, Dimension size,
-                                         Rectangle clip);
+  /**
+   * @param g 
+   * @param size 
+   * @param clip  
+   */
+  public void renderScreenImage(Graphics g, Dimension size,
+                                         Rectangle clip) {
+    renderScreenImage(g, size);    
+  }
 
+  abstract protected void renderScreenImage(Graphics g, Dimension size);
   abstract public String evalFile(String strFilename);
   abstract public String evalString(String strScript);
 

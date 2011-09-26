@@ -1,10 +1,8 @@
 package org.jmol.api;
 
-import java.awt.Component;
-
 public interface JmolTouchSimulatorInterface {
 
-  public abstract boolean startSimulator(Component display);
+  public abstract boolean startSimulator(Object display);
 
   public abstract void toggleMode();
 

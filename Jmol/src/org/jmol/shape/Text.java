@@ -23,10 +23,8 @@
  */
 package org.jmol.shape;
 
-import java.awt.FontMetrics;
-import java.awt.Image;
-
 import org.jmol.api.JmolRendererInterface;
+import org.jmol.awt.Image;
 import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.util.Escape;
@@ -49,7 +47,6 @@ public class Text extends Object2d {
   private String[] lines;
 
   Font3D font;
-  private FontMetrics fm;
   private byte fid;
   private int ascent;
   private int descent;
@@ -85,9 +82,8 @@ public class Text extends Object2d {
   }
 
   private void getFontMetrics() {
-    fm = font.fontMetrics;
-    descent = fm.getDescent();
-    ascent = fm.getAscent();
+    descent = font.getDescent();
+    ascent = font.getAscent();
     lineHeight = ascent + descent;
   }
 
@@ -113,8 +109,8 @@ public class Text extends Object2d {
       recalc();
   }
 
-  Image image;
-  public void setImage(Image image) {
+  Object image;
+  public void setImage(Object image) {
     this.image = image;
     // this.text will be file name
     recalc();
@@ -150,8 +146,8 @@ public class Text extends Object2d {
   protected void recalc() {
     if (image != null) {
       textWidth = textHeight = 0;
-      boxWidth = image.getWidth(null) * fontScale;
-      boxHeight = image.getHeight(null) * fontScale;
+      boxWidth = Image.getWidth(image) * fontScale;
+      boxHeight = Image.getHeight(image) * fontScale;
       ascent = 0;
       return;
     }
@@ -161,7 +157,7 @@ public class Text extends Object2d {
       widths = null;
       return;
     }
-    if (fm == null)
+    if (font == null)
       return;
     lines = TextFormat.split(text, '|');
     textWidth = 0;
@@ -365,7 +361,7 @@ public class Text extends Object2d {
     // old static style -- quick, simple, no line breaks, odd alignment?
     // LabelsRenderer only
 
-    float boxWidth = font.fontMetrics.stringWidth(strLabel) + 8;
+    float boxWidth = font.stringWidth(strLabel) + 8;
     float boxHeight = ascent + descent + 8;
     
     int x0 = (int) boxXY[0];
@@ -476,7 +472,7 @@ public class Text extends Object2d {
     if (str == null)
       return 0;
     if (str.indexOf("<su") < 0)
-      return fm.stringWidth(str);
+      return font.stringWidth(str);
     int len = str.length();
     String s;
     for (int i = 0; i < len; i++) {
@@ -496,7 +492,7 @@ public class Text extends Object2d {
           continue;
         }
       }
-      w += fm.stringWidth(str.substring(i, i + 1)) * f;
+      w += font.stringWidth(str.substring(i, i + 1)) * f;
     }
     return w;
   }

@@ -33,7 +33,6 @@ import org.jmol.util.ZipUtil;
 
 import org.jmol.api.JmolFilesReaderInterface;
 import org.jmol.api.JmolViewer;
-import org.jmol.awt.Event;
 import org.jmol.awt.Image;
 
 import java.net.URL;
@@ -778,16 +777,16 @@ public class FileManager {
         retFileNameOrError[0] = "" + ret;
         return null;
       }
-      image = Event.createImage(ret);
+      image = Image.createImage(ret);
     } else if (urlTypeIndex(fullPathName) >= 0) {
       try {
-        image = Event.createImage(new URL(fullPathName));
+        image = Image.createImage(new URL(fullPathName));
       } catch (Exception e) {
         retFileNameOrError[0] = "bad URL: " + fullPathName;
         return null;
       }
     } else {
-      image = Event.createImage(fullPathName);
+      image = Image.createImage(fullPathName);
     }
     try {
       Image.waitForDisplay(viewer.getDisplay(), image);

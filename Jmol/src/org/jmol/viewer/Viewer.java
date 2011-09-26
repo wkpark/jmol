@@ -66,7 +66,11 @@ import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.AtomDataServer;
 import org.jmol.atomdata.RadiusData;
-import org.jmol.awt.Event;
+
+import org.jmol.awt.Display;
+import org.jmol.awt.Image;
+import org.jmol.awt.Mouse;
+
 import org.jmol.constant.EnumAnimationMode;
 import org.jmol.constant.EnumAxesMode;
 import org.jmol.constant.EnumStructure;
@@ -78,10 +82,10 @@ import org.jmol.util.BoxInfo;
 import org.jmol.util.CifDataReader;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.CommandHistory;
+import org.jmol.util.Dimension;
 import org.jmol.util.Elements;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolMolecule;
-import org.jmol.util.JpegEncoder;
 import org.jmol.util.Logger;
 import org.jmol.util.OutputStringBuffer;
 import org.jmol.util.Parser;
@@ -95,11 +99,6 @@ import org.jmol.util.TextFormat;
 import org.jmol.viewer.StateManager.Orientation;
 import org.jmol.viewer.binding.Binding;
 
-import java.awt.Container;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Dimension;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
@@ -173,7 +172,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // these are all private now so we are certain they are not
   // being accesed by any other classes
 
-  private Container display;
+  private Object display;
   private Graphics3D g3d;
   private JmolAdapter modelAdapter;
 
@@ -243,7 +242,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private ShapeManager shapeManager;
   private ModelManager modelManager;
   private ModelSet modelSet;
-  private MouseManager14 mouseManager;
+  private Mouse mouseManager;
   private RepaintManager repaintManager;
   private ScriptManager scriptManager;
   private SelectionManager selectionManager;
@@ -274,14 +273,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // private boolean jvm14orGreater = false;
   private boolean multiTouch = false;
 
-  private Viewer(Container display, JmolAdapter modelAdapter,
+  private Viewer(Object display, JmolAdapter modelAdapter,
       String commandOptions) {
     // use allocateViewer
     if (Logger.debugging) {
       Logger.debug("Viewer constructor " + this);
     }
-    g3d = new Graphics3D(display);
     isDataOnly = (display == null);
+    g3d = new Graphics3D(isDataOnly);
     haveDisplay = (!isDataOnly && (commandOptions == null || commandOptions.indexOf("-n") < 0));
     mustRender = haveDisplay;
     if (!haveDisplay)
@@ -315,14 +314,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (haveDisplay) {
       if (multiTouch) {
         if (commandOptions.indexOf("-multitouch-sparshui-simulated") < 0)
-          Event.setTransparentCursor(display);
+          Display.setTransparentCursor(display);
         actionManager = (ActionManager) Interface
             .getOptionInterface("multitouch.ActionManagerMT");
       } else {
         actionManager = new ActionManager();
       }
       actionManager.setViewer(this, commandOptions);
-      mouseManager = new MouseManager14(this, actionManager);
+      mouseManager = new Mouse(this, actionManager);
     }
     modelManager = new ModelManager(this);
     shapeManager = new ShapeManager(this);
@@ -366,7 +365,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * @return a viewer instance
    */
 
-  public static JmolViewer allocateViewer(Container display,
+  public static JmolViewer allocateViewer(Object display,
                                           JmolAdapter modelAdapter,
                                           String fullName, URL documentBase,
                                           URL codeBase, String commandOptions,
@@ -517,7 +516,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   @Override
-  public Container getDisplay() {
+  public Object getDisplay() {
     return display;
   }
 
@@ -3927,13 +3926,11 @@ private void zap(String msg) {
   }
 
   @Override
-  public void setScreenDimension(Dimension dim) {
+  public void setScreenDimension(int width, int height) {
     // There is a bug in Netscape 4.7*+MacOS 9 when comparing dimension objects
     // so don't try dim1.equals(dim2)
-    dim.height = Math.min(dim.height, maximumSize);
-    dim.width = Math.min(dim.width, maximumSize);
-    int height = dim.height;
-    int width = dim.width;
+    height = Math.min(height, maximumSize);
+    width = Math.min(width, maximumSize);
     if (isStereoDouble())
       width = (width + 1) / 2;
     if (dimScreen.width == width && dimScreen.height == height)
@@ -4019,8 +4016,8 @@ private void zap(String msg) {
   }
 
   @Override
-  public void renderScreenImage(Graphics gLeft, Graphics gRight,
-                                Dimension size) {
+  public void renderScreenImage(Object gLeft, Object gRight,
+                                int width, int height) {
     // from paint/update event
     // gRight is for second stereo applet
     // when this is the stereoSlave, no rendering occurs through this applet
@@ -4033,8 +4030,8 @@ private void zap(String msg) {
       if (isTainted || getSlabEnabled())
         setModelVisibility();
       isTainted = false;
-      if (size != null)
-        setScreenDimension(size);
+      if (width != 0)
+        setScreenDimension(width, height);
       if (gRight == null) {
         getScreenImage(gLeft);
       } else {
@@ -4048,7 +4045,7 @@ private void zap(String msg) {
   }
 
   @Override
-  public void renderScreenImage(Graphics g, Dimension size) {
+  public void renderScreenImage(Object g, int width, int height) {
     /*
      * Jmol repaint/update system:
      * 
@@ -4058,11 +4055,11 @@ private void zap(String msg) {
      * repaintManager.repaintDone()<-- which sets repaintPending false and does
      * notify();
      */
-    renderScreenImage(g, null, size);
+    renderScreenImage(g, null, width, height);
   }
 
-  private Image getImage(boolean isDouble) {
-    Image image = null;
+  private Object getImage(boolean isDouble) {
+    Object image = null;
     try {
       g3d.beginRendering(transformManager.getStereoRotationMatrix(isDouble));
       render();
@@ -4090,7 +4087,7 @@ private void zap(String msg) {
   }
 
   @SuppressWarnings("incomplete-switch")
-  private Image getStereoImage(EnumStereoMode stereoMode) {
+  private Object getStereoImage(EnumStereoMode stereoMode) {
     g3d.beginRendering(transformManager.getStereoRotationMatrix(true));
     render();
     g3d.endRendering();
@@ -4115,10 +4112,10 @@ private void zap(String msg) {
     return g3d.getScreenImage();
   }
 
-  private void render1(Graphics g, Image img, int x, int y) {
+  private void render1(Object g, Object img, int x, int y) {
     if (g != null && img != null) {
       try {
-        g.drawImage(img, x, y, null);
+        Image.drawImage(g, img, x, y);
       } catch (NullPointerException npe) {
         Logger.error("Sun!! ... fix graphics your bugs!");
       }
@@ -4127,15 +4124,14 @@ private void zap(String msg) {
   }
 
   @Override
-  public Image getScreenImage(Graphics g) {
+  public Object getScreenImage(Object g) {
     boolean mergeImages = (g == null && isStereoDouble());
-    Image image = (transformManager.stereoMode.isBiColor() ?
-        getStereoImage(transformManager.stereoMode) :  getImage(isStereoDouble()));
-    Image image1 = null;
+    Object image = (transformManager.stereoMode.isBiColor() ? getStereoImage(transformManager.stereoMode)
+        : getImage(isStereoDouble()));
+    Object image1 = null;
     if (mergeImages) {
-      image1 = new BufferedImage(dimScreen.width << 1, dimScreen.height,
-          ((BufferedImage) image).getType());
-      g = image1.getGraphics();
+      image1 = Image.newBufferedImage(image, dimScreen.width << 1, dimScreen.height);
+      g = Image.getGraphics(image1);
     }
     if (g != null) {
       if (isStereoDouble()) {
@@ -4155,7 +4151,7 @@ private void zap(String msg) {
 
   /**
    * @param type
-   *          "PNG", "JPG", "JPEG", "JPG64", "PPM", "GIF"
+   *        "PNG", "JPG", "JPEG", "JPG64", "PPM", "GIF"
    * @param quality
    * @param width
    * @param height
@@ -4184,22 +4180,16 @@ private void zap(String msg) {
         // and thus will not use os or filename
       }
     if (c == null) {
-      BufferedImage eImage = (BufferedImage) getScreenImage(null);
-      if (eImage != null) {
-        try {
-          if (quality < 0)
-            quality = 75;
-          bytes = JpegEncoder.getBytes(eImage, quality, comment);
-          releaseScreenImage();
-          if (type.equals("jpg64") || type.equals("jpeg64"))
-            bytes = (bytes == null ? "" : Base64.getBase64((byte[]) bytes)
-                .toString());
-        } catch (Error er) {
-          releaseScreenImage();
-          handleError(er, false);
-          setErrorMessage("Error creating image: " + er);
-          bytes = getErrorMessage();
-        }
+      try {
+        bytes = Image.getJpgImage(this, quality, comment);
+        if (type.equals("jpg64") || type.equals("jpeg64"))
+          bytes = (bytes == null ? "" : Base64.getBase64((byte[]) bytes)
+              .toString());
+      } catch (Error er) {
+        releaseScreenImage();
+        handleError(er, false);
+        setErrorMessage("Error creating image: " + er);
+        bytes = getErrorMessage();
       }
     } else {
       c.setViewer(this, privateKey);
@@ -4862,7 +4852,7 @@ private void zap(String msg) {
   public void setCursor(int cursor) {
     if (currentCursor == cursor || multiTouch || !haveDisplay)
       return;
-    Event.setCursor(currentCursor = cursor, display);
+    Display.setCursor(currentCursor = cursor, display);
   }
 
   void setPickingMode(String strMode, int pickingMode) {
@@ -5007,7 +4997,7 @@ private void zap(String msg) {
         + Viewer.getJmolVersion() + "|_GET_MENU|" + type));
   }
 
-  private Container getPopupMenu() {
+  private Object getPopupMenu() {
     if (jmolpopup == null)
       jmolpopup = JmolPopup.newJmolPopup(this, true, menuStructure, true);
     return jmolpopup.getJMenu();
@@ -9072,7 +9062,7 @@ private void zap(String msg) {
   void repaint() {
     // from RepaintManager
     if (haveDisplay)
-      display.repaint();
+      Display.repaint(display);
   }
 
   public OutputStream getOutputStream(String localName, String[] fullPath) {
@@ -9209,12 +9199,12 @@ private void zap(String msg) {
   }
 
   public boolean hasFocus() {
-    return (haveDisplay && (isKiosk || display.hasFocus()));
+    return (haveDisplay && (isKiosk || Display.hasFocus(display)));
   }
 
   public void setFocus() {
-    if (haveDisplay && !display.hasFocus())
-      display.requestFocusInWindow();
+    if (haveDisplay && !Display.hasFocus(display))
+      Display.requestFocusInWindow(display);
   }
 
 
@@ -9841,7 +9831,7 @@ private void zap(String msg) {
   public String prompt(String label, String data, String[] list,
                        boolean asButtons) {
     JmolPromptInterface jpi = (JmolPromptInterface) Interface
-        .getOptionInterface("console.JmolPrompt");
+        .getOptionInterface("awt.console.JmolPrompt");
     return (jpi == null ? "null" : jpi.prompt(label, data, list, asButtons));
   }
 

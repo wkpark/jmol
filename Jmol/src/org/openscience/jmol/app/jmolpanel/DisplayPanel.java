@@ -24,8 +24,8 @@
 package org.openscience.jmol.app.jmolpanel;
 
 import org.jmol.api.*;
-import org.jmol.console.JmolFrame;
-import org.jmol.console.KeyJMenuItem;
+import org.jmol.awt.console.JmolFrame;
+import org.jmol.awt.console.KeyJMenuItem;
 import org.jmol.i18n.GT;
 import org.openscience.jmol.app.jmolpanel.GuiMap;
 import org.openscience.jmol.app.jmolpanel.JmolPanel;
@@ -78,7 +78,7 @@ public class DisplayPanel extends JPanel
 
   void setViewer(JmolViewer viewer) {
     this.viewer = viewer;
-    viewer.setScreenDimension(haveDisplay? getSize(dimSize) : startupDimension);
+    updateSize(false);
   }
 
  
@@ -120,16 +120,23 @@ public class DisplayPanel extends JPanel
 
   public void componentResized(java.awt.event.ComponentEvent e) {
     //System.out.println("DisplayPanel.componentResized");
-    updateSize();
+    updateSize(true);
   }
 
   public void componentShown(java.awt.event.ComponentEvent e) {
     //System.out.println("DisplayPanel.componentShown");
-    updateSize();
+    updateSize(true);
   }
 
-  private void updateSize() {
-    viewer.setScreenDimension(haveDisplay? getSize(dimSize) : startupDimension);
+  private void updateSize(boolean doAll) {
+    if (haveDisplay) {
+      getSize(dimSize);
+      viewer.setScreenDimension(dimSize.width, dimSize.height);
+    } else {
+      viewer.setScreenDimension(startupDimension.width, startupDimension.height);
+    }
+    if (!doAll)
+      return;
     setRotateMode();
     if (haveDisplay)
       status.setStatus(2, dimSize.width + " x " + dimSize.height);
@@ -144,8 +151,7 @@ public class DisplayPanel extends JPanel
       return;
     //System.out.println("DisplayPanel:paint");System.out.flush();
 
-    g.getClipBounds(rectClip);
-    viewer.renderScreenImage(g, dimSize, rectClip);
+    viewer.renderScreenImage(g, dimSize.width, dimSize.height);
     if (border == null)
       border = new Point();
     if (!haveBorder)
@@ -169,7 +175,7 @@ public class DisplayPanel extends JPanel
     rectClip.x = rectClip.y = 0;
     int screenWidth = rectClip.width = viewer.getScreenWidth();
     int screenHeight = rectClip.height = viewer.getScreenHeight();
-    Image image = viewer.getScreenImage(null);
+    Object image = viewer.getScreenImage(null);
     int pageX = (int)pf.getImageableX();
     int pageY = (int)pf.getImageableY();
     int pageWidth = (int)pf.getImageableWidth();
@@ -184,9 +190,9 @@ public class DisplayPanel extends JPanel
                           RenderingHints.VALUE_RENDER_QUALITY);
       g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
                           RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-      g2.drawImage(image, pageX, pageY, width, height, null);
+      g2.drawImage((Image) image, pageX, pageY, width, height, null);
     } else {
-      g2.drawImage(image, pageX, pageY, null);
+      g2.drawImage((Image) image, pageX, pageY, null);
     }
     viewer.releaseScreenImage();
     return Printable.PAGE_EXISTS;

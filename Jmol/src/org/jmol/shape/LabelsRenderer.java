@@ -24,11 +24,10 @@
 
 package org.jmol.shape;
 
-import org.jmol.g3d.*;
+import org.jmol.g3d.Font3D;
+import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Group;
-
-import java.awt.FontMetrics;
 
 public class LabelsRenderer extends ShapeRenderer {
 
@@ -126,9 +125,8 @@ public class LabelsRenderer extends ShapeRenderer {
           fidPrevious = fid;
           font3d = g3d.getFont3DCurrent();
           if (isLeft) {
-            FontMetrics fontMetrics = font3d.fontMetrics;
-            ascent = fontMetrics.getAscent();
-            descent = fontMetrics.getDescent();
+            ascent = font3d.getAscent();
+            descent = font3d.getDescent();
           }
         }
         boolean isSimple = isLeft

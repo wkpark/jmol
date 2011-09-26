@@ -23,17 +23,7 @@
  */
 package org.jmol.g3d;
 
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferInt;
-import java.awt.image.DirectColorModel;
-import java.awt.image.Raster;
-import java.awt.image.SinglePixelPackedSampleModel;
+import org.jmol.awt.Image;
 
 /**
  *<p>
@@ -48,26 +38,25 @@ class Platform3D {
   int windowWidth, windowHeight, windowSize;
   int bufferWidth, bufferHeight, bufferSize, bufferSizeT;
 
-  Image imagePixelBuffer;
+  Object imagePixelBuffer;
   int[] pBuffer, pBufferT;
   int[] zBuffer, zBufferT;
 
   int widthOffscreen, heightOffscreen;
-  Image imageOffscreen;
-  Graphics gOffscreen;
-
+  Object imageOffscreen;
+  Object gOffscreen;
+  Object graphicsOffscreen;
+  
   final static boolean forcePlatformAWT = false;
   final static boolean desireClearingThread = false;
   boolean useClearingThread = true;
 
   ClearingThread clearingThread;
 
-  static Platform3D createInstance(Component awtComponent) {
-    if (awtComponent == null)
-      return null;
+  static Platform3D createInstance() {
     Platform3D platform = new Platform3D();
     platform.initialize(desireClearingThread);
-    platform.graphicsOffscreen = platform.allocateOffscreenImage(1, 1).getGraphics();
+    platform.graphicsOffscreen = Image.getGraphics(platform.allocateOffscreenImage(1, 1));
     return platform;
   }
 
@@ -115,7 +104,7 @@ class Platform3D {
   void releaseBuffers() {
     windowWidth = windowHeight = bufferWidth = bufferHeight = bufferSize = -1;
     if (imagePixelBuffer != null) {
-      imagePixelBuffer.flush();
+      Image.flush(imagePixelBuffer);
       imagePixelBuffer = null;
     }
     pBuffer = null;
@@ -169,14 +158,12 @@ class Platform3D {
   void notifyEndOfRendering() {
   }
 
-  Graphics graphicsOffscreen;
-  
   boolean checkOffscreenSize(int width, int height) {
     if (width <= widthOffscreen && height <= heightOffscreen)
       return true;
     if (imageOffscreen != null) {
-        gOffscreen.dispose();
-        imageOffscreen.flush();
+      Image.disposeGraphics(gOffscreen);
+      Image.flush(imageOffscreen);
     }
     if (width > widthOffscreen)
       widthOffscreen = (width + 63) & ~63;
@@ -185,6 +172,10 @@ class Platform3D {
     imageOffscreen = allocateOffscreenImage(widthOffscreen, heightOffscreen);
     gOffscreen = getGraphics(imageOffscreen);
     return false;
+  }
+
+  void setBackgroundTransparent(boolean tf) {
+    backgroundTransparent = tf;
   }
 
   class ClearingThread extends Thread {
@@ -244,81 +235,18 @@ class Platform3D {
     }
   }
 
-  ////////swing
-  
-  private final static DirectColorModel rgbColorModel =
-    new DirectColorModel(24, 0x00FF0000, 0x0000FF00, 0x000000FF, 0x00000000);
-
-  private final static int[] sampleModelBitMasks =
-  { 0x00FF0000, 0x0000FF00, 0x000000FF };
-/*
-  private final static DirectColorModel rgbColorModelT =
-    new DirectColorModel(32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
-
-  private final static int[] sampleModelBitMasksT =
-  { 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000 };
-*/
-  Image allocateImage() {
-    //backgroundTransparent not working with antialiasDisplay. I have no idea why. BH 9/24/08
-/* DEAD CODE   if (false && backgroundTransparent)
-      return new BufferedImage(
-          rgbColorModelT,
-          Raster.createWritableRaster(
-              new SinglePixelPackedSampleModel(
-                  DataBuffer.TYPE_INT,
-                  windowWidth,
-                  windowHeight,
-                  sampleModelBitMasksT), 
-              new DataBufferInt(pBuffer, windowSize),
-              null),
-          false, 
-          null);
-*/
-    return new BufferedImage(
-        rgbColorModel,
-        Raster.createWritableRaster(
-            new SinglePixelPackedSampleModel(
-                DataBuffer.TYPE_INT,
-                windowWidth,
-                windowHeight,
-                sampleModelBitMasks), 
-            new DataBufferInt(pBuffer, windowSize),
-            null),
-        false, 
-        null);
+  private Object allocateImage() {
+    return org.jmol.awt.Image.allocateRgbImage(windowWidth, windowHeight, pBuffer, windowSize, backgroundTransparent);
   }
 
   private static boolean backgroundTransparent = false;
   
-  void setBackgroundTransparent(boolean tf) {
-    backgroundTransparent = tf;
+  private Object allocateOffscreenImage(int width, int height) {
+    return org.jmol.awt.Image.newBufferedImage(width, height, org.jmol.awt.Image.TYPE_INT_ARGB);
   }
 
-  Image allocateOffscreenImage(int width, int height) {
-    return new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+  private Object getGraphics(Object image) {
+    return org.jmol.awt.Image.getStaticGraphics(image, backgroundTransparent);
   }
-
-  Graphics getGraphics(Image image) {
-    return getStaticGraphics(image);
-  }
-  
-  static Graphics getStaticGraphics(Image image) {
-    Graphics2D g2d = ((BufferedImage) image).createGraphics();
-    if (backgroundTransparent) {
-      // what here?
-    }
-    // miguel 20041122
-    // we need to turn off text antialiasing on OSX when
-    // running in a web browser
-    g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-                         RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-    // I don't know if we need these or not, but cannot hurt to have them
-    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                         RenderingHints.VALUE_ANTIALIAS_OFF);
-    g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
-                         RenderingHints.VALUE_RENDER_SPEED);
-    return g2d;
-  }
-
   
 }

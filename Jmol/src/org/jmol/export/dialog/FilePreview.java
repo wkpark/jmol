@@ -164,10 +164,11 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
 
     @Override
     public void paint(Graphics g) {
-      viewer.setScreenDimension(getSize(currentSize));
+      getSize(currentSize);
+      viewer.setScreenDimension(currentSize.width, currentSize.height);
       Rectangle rectClip = new Rectangle();
       g.getClipBounds(rectClip);
-      viewer.renderScreenImage(g, currentSize, rectClip);
+      viewer.renderScreenImage(g, currentSize.width, currentSize.height);
     }
   }
 }

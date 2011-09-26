@@ -23,7 +23,6 @@
  */
 package org.openscience.jmol.app;
 
-import java.awt.Dimension;
 import org.jmol.api.JmolViewer;
 import org.jmol.util.TextFormat;
 
@@ -57,7 +56,7 @@ public class JmolData {
     this.jmolApp = jmolApp;
     viewer = JmolViewer.allocateViewer(null, null, 
         null, null, null, jmolApp.commandOptions, null);
-    viewer.setScreenDimension(new Dimension(jmolApp.startupWidth, jmolApp.startupHeight));
+    viewer.setScreenDimension(jmolApp.startupWidth, jmolApp.startupHeight);
     jmolApp.startViewer(viewer, null);
   }
   

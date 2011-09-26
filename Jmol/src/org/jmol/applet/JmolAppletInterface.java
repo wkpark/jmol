@@ -23,8 +23,6 @@
  */
 package org.jmol.applet;
 
-import java.awt.Graphics;
-
 import netscape.javascript.JSObject;
 
 /**
@@ -37,7 +35,7 @@ import netscape.javascript.JSObject;
 
 public interface JmolAppletInterface {
 
-  public Graphics setStereoGraphics(boolean isStereo);
+  public Object setStereoGraphics(boolean isStereo);
   public String getPropertyAsString(String infoType);
   public String getPropertyAsString(String infoType, String paramInfo);
   public String getPropertyAsJSON(String infoType);

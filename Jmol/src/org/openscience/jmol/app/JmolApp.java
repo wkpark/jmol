@@ -23,15 +23,18 @@
  */
 package org.openscience.jmol.app;
 
-import org.jmol.api.*;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.io.File;
+import java.util.Scanner;
+
 import org.jmol.export.history.HistoryFile;
 import org.jmol.i18n.GT;
+import org.jmol.util.Escape;
+import org.jmol.util.Logger;
+import org.jmol.util.Parser;
+import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolViewer;
-import org.jmol.util.*;
-
-import java.awt.*;
-import java.io.*;
-import java.util.*;
 
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.CommandLine;

@@ -53,7 +53,7 @@ import javax.swing.JScrollPane;
 
 import org.jmol.api.JmolAppConsoleInterface;
 import org.jmol.api.JmolViewer;
-import org.jmol.console.JmolConsole;
+import org.jmol.awt.console.JmolConsole;
 import org.jmol.i18n.GT;
 import org.jmol.util.CommandHistory;
 import org.jmol.util.Logger;
@@ -78,7 +78,7 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
   public AppConsole(JmolViewer viewer,
       Container externalContainer, String enabledButtons) {
     this.viewer = viewer;
-    Window w = getWindow(viewer.getDisplay());
+    Window w = getWindow((Container) viewer.getDisplay());
     viewerFrame = (w instanceof JFrame ? (JFrame) w : null);
     if (externalContainer == null) {
       jcd = new JDialog(viewerFrame, null, false);

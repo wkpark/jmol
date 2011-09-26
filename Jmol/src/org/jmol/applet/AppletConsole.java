@@ -25,9 +25,9 @@ package org.jmol.applet;
 
 import org.jmol.api.JmolAppConsoleInterface;
 import org.jmol.api.JmolViewer;
-import org.jmol.console.JmolConsole;
-import org.jmol.console.KeyJMenu;
-import org.jmol.console.KeyJMenuItem;
+import org.jmol.awt.console.JmolConsole;
+import org.jmol.awt.console.KeyJMenu;
+import org.jmol.awt.console.KeyJMenuItem;
 import org.jmol.i18n.GT;
 
 import java.awt.Component;
@@ -71,7 +71,7 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
    */
   private AppletConsole(JmolViewer viewer, Container externalContainer) {
     this.viewer = viewer;
-    Component display = viewer.getDisplay();
+    Component display = (Component) viewer.getDisplay();
     this.viewerFrame = (display instanceof JFrame ? (JFrame) display : null);
     if (externalContainer == null) {
       JFrame jf = new JFrame();

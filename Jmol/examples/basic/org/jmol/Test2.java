@@ -2,7 +2,6 @@ package org.jmol;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Rectangle;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -49,13 +48,11 @@ public class Test2 extends JPanel {
   private JmolViewer viewer;
   private JmolAdapter adapter;
   private Dimension currentSize = new Dimension();
-  private Rectangle rectClip = new Rectangle();
 
   @Override
   public void paint(Graphics g) {
     getSize(currentSize);
-    g.getClipBounds(rectClip);
-    viewer.renderScreenImage(g, currentSize, rectClip);
+    viewer.renderScreenImage(g, currentSize.width, currentSize.height);
   }
 
   /**

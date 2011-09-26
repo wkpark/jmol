@@ -24,13 +24,6 @@
 
 package org.jmol.g3d;
 
-import java.awt.AlphaComposite;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.FontMetrics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.image.PixelGrabber;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -86,7 +79,7 @@ public class Text3D {
     if (text.indexOf("<su") >= 0)
       return plotByCharacter(x, y, z, argb, text, font3d, g3d, jmolRenderer,
           antialias);
-    int offset = font3d.fontMetrics.getAscent();
+    int offset = font3d.getAscent();
     //if (antialias)
       //offset += offset;
     y -= offset;
@@ -126,16 +119,15 @@ public class Text3D {
    * @param width
    * @param height
    */
-  public static void plotImage(int x, int y, int z, Image image,
+  public static void plotImage(int x, int y, int z, Object image,
                                Graphics3D g3d,
                                JmolRendererInterface jmolRenderer,
                                boolean antialias, int argbBackground,
                                int width, int height) {
     boolean isBackground = (x == Integer.MIN_VALUE);
-    int width0 = image.getWidth(null);
-    int height0 = image.getHeight(null);
     int bgcolor = (isBackground ? g3d.bgcolor : argbBackground);
     /*
+     *  this was for transparent background, which we have disabled, I think, in Jmol 12
     boolean haveTranslucent = false;
     PixelGrabber pg1 = new PixelGrabber(image, 0, 0, width0, height0, true);
     if (pg1.getColorModel().hasAlpha())
@@ -163,26 +155,8 @@ public class Text3D {
     if (x + width <= 0 || x >= g3d.width || y + height <= 0 || y >= g3d.height)
       return;
     g3d.platform.checkOffscreenSize(width, height);
-    Graphics g = g3d.platform.gOffscreen;
-    if (g instanceof Graphics2D) {
-      ((Graphics2D)g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_IN, 1.0f));
-      g.setColor(isBackground ? new Color(bgcolor) : new Color(0, 0, 0, 0));
-      g.fillRect(0, 0, width, height);
-      ((Graphics2D)g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
-      g.drawImage(image, 0, 0, width, height, 0, 0, width0, height0, null);
-    } else {
-      g.clearRect(0, 0, width, height);
-      g.drawImage(image, 0, 0, width, height, 0, 0, width0, height0, null);
-    }
-    PixelGrabber pixelGrabber = new PixelGrabber(g3d.platform.imageOffscreen,
-        0, 0, width, height, true);
-    try {
-      pixelGrabber.grabPixels();
-    } catch (InterruptedException e) {
-      // impossible?
-      return;
-    }
-    int[] buffer = (int[]) pixelGrabber.getPixels();
+    int[] buffer = org.jmol.awt.Image.drawImageToBuffer(g3d.platform.gOffscreen, g3d.platform.imageOffscreen, image, width, height, 
+        isBackground ? bgcolor : 0);
 /*    
     int n = 0;
     for (int i = 0; i < buffer.length; i++) {
@@ -254,8 +228,8 @@ public class Text3D {
     //int subscale = 1; //could be something less than that
     int w = 0;
     int len = text.length();
-    int suboffset = (int)(font3d.fontMetrics.getHeight() * 0.25);
-    int supoffset = -(int)(font3d.fontMetrics.getHeight() * 0.3);
+    int suboffset = (int)(font3d.getHeight() * 0.25);
+    int supoffset = -(int)(font3d.getHeight() * 0.3);
     for (int i = 0; i < len; i++) {
       if (text.charAt(i) == '<') {
         if (i + 4 < len && text.substring(i, i + 5).equals("<sub>")) {
@@ -358,14 +332,11 @@ public class Text3D {
    * 
    * @param text
    * @param font3d
-   * @param antialias UNUSED
    */
-  private Text3D(String text, Font3D font3d,
-                 boolean antialias) {
-    FontMetrics fontMetrics = font3d.fontMetrics;
-    ascent = fontMetrics.getAscent();
-    height = ascent + fontMetrics.getDescent();
-    width = fontMetrics.stringWidth(text);
+  private Text3D(String text, Font3D font3d) {
+    ascent = font3d.getAscent();
+    height = font3d.getHeight();
+    width = font3d.stringWidth(text);
     if (width == 0)
       return;
     //System.out.println(text + " " + antialias + " "  + ascent + " " + height + " " + width );
@@ -375,38 +346,15 @@ public class Text3D {
 
   /**
    * 
-   * @param text
-   * @param font3d
-   * @param platform
-   * @param antialias UNUSED
-   */
-  private void renderOffscreen(String text, Font3D font3d, Platform3D platform,
-                               boolean antialias) {
-    Graphics g = platform.gOffscreen;
-    g.setColor(Color.black);
-    g.fillRect(0, 0, mapWidth, height);
-    g.setColor(Color.white);
-    g.setFont(font3d.font);
-    g.drawString(text, 0, ascent);
-  }
-
-  /**
-   * 
    * @param platform
    * @param antialias UNUSED
    */
   private void rasterize(Platform3D platform, boolean antialias) {
-    
-    PixelGrabber pixelGrabber = new PixelGrabber(platform.imageOffscreen, 0, 0, 
-                                                 mapWidth, height, true);
-    try {
-      pixelGrabber.grabPixels();
-    } catch (InterruptedException e) {
-      // impossible?
-      return;
-    }
-    int pixels[] = (int[])pixelGrabber.getPixels();
 
+    int[] pixels = org.jmol.awt.Image.grabPixels(platform.imageOffscreen, 0, 0, 
+                                                 mapWidth, height);
+    if (pixels == null)
+      return;
     int bitmapSize = (size + 31) >> 5;
     bitmap = new int[bitmapSize];
 
@@ -480,7 +428,7 @@ public class Text3D {
       newFont = true;
     }
     if (text3d == null) {
-      text3d = new Text3D(text, font3d, antialias);
+      text3d = new Text3D(text, font3d);
       newText = true;
     }
     text3d.isInvalid = (text3d.width == 0 || x + text3d.width <= 0
@@ -501,7 +449,7 @@ public class Text3D {
   private void setBitmap(String text, Font3D font3d, Platform3D platform, boolean antialias) {
     //System.out.println(text + " height=" + height + " setBitmap width= " + width);
     platform.checkOffscreenSize(mapWidth, height);
-    renderOffscreen(text, font3d, platform, antialias);
+    org.jmol.awt.Image.renderOffScreen(text, font3d, platform.gOffscreen, mapWidth, height, ascent);
     rasterize(platform, antialias);
   }
 

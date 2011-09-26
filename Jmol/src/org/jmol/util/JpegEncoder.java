@@ -32,14 +32,12 @@
 
 package org.jmol.util;
 
-import java.awt.Frame;
-import java.awt.Image;
-import java.awt.MediaTracker;
-import java.awt.image.PixelGrabber;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+
+import org.jmol.awt.Image;
 
 /*
  * JpegEncoder - The JPEG main program which performs a jpeg compression of
@@ -49,8 +47,7 @@ import java.io.OutputStream;
  * 
  */
 
-public class JpegEncoder extends Frame
-{
+public class JpegEncoder {
   // A system to allow the full Jmol state -- regardless of length -- 
   // to be encoded in a set of APP1 (FFE1) tags.
   // But we have to be careful about line ends for backward compatibility. 
@@ -73,15 +70,12 @@ public class JpegEncoder extends Frame
   private int Quality;
   //int code;
 
-  public JpegEncoder(Image image, int quality, OutputStream out, String comment)
+  public JpegEncoder(Object image, int quality, OutputStream out, String comment)
   {
-    MediaTracker tracker = new MediaTracker(this);
-    tracker.addImage(image, 0);
     try {
-      tracker.waitForID(0);
-    }
-    catch (InterruptedException e) {
-      // Got to do something?
+      Image.waitForDisplay(null, image);
+    } catch (InterruptedException e) {
+      // ignore
     }
     /*
      * Quality of the image.
@@ -101,7 +95,7 @@ public class JpegEncoder extends Frame
     Huf=new Huffman(JpegObj.imageWidth,JpegObj.imageHeight);
   }
   
-  public static byte[] getBytes(Image image, int quality, String comment) {
+  public static byte[] getBytes(Object image, int quality, String comment) {
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     write(image, quality, os, comment);
     try {
@@ -113,7 +107,7 @@ public class JpegEncoder extends Frame
     return os.toByteArray();
   }
 
-  public static void write(Image image, int quality, OutputStream os, String comment) {
+  public static void write(Object image, int quality, OutputStream os, String comment) {
     (new JpegEncoder(image, quality, os, comment)).Compress();
   }
 
@@ -1213,7 +1207,7 @@ class Huffman
 class JpegInfo
 {
   String Comment;
-  private Image imageobj;
+  private Object imageobj;
   int imageHeight;
   int imageWidth;
   int BlockWidth[];
@@ -1239,7 +1233,7 @@ class JpegInfo
   private int MaxVsampFactor;
   
   
-  public JpegInfo(Image image, String comment)
+  public JpegInfo(Object image, String comment)
   {
     Components = new float[NumberOfComponents][][];
     compWidth = new int[NumberOfComponents];
@@ -1247,8 +1241,8 @@ class JpegInfo
     BlockWidth = new int[NumberOfComponents];
     BlockHeight = new int[NumberOfComponents];
     imageobj = image;
-    imageWidth = image.getWidth(null);
-    imageHeight = image.getHeight(null);
+    imageWidth = Image.getWidth(image);
+    imageHeight = Image.getHeight(image);
     Comment = comment;
     getYCCArray();
   }
@@ -1267,9 +1261,6 @@ class JpegInfo
     // those before going for more.  The time expense may be prohibitive.
     // However, for a situation where memory overhead is a concern, this may be
     // the only choice.
-    PixelGrabber grabber = 
-      new PixelGrabber(imageobj.getSource(), 0, 0, imageWidth, imageHeight, 
-          values, 0, imageWidth);
     MaxHsampFactor = 1;
     MaxVsampFactor = 1;
     for (y = 0; y < NumberOfComponents; y++) {
@@ -1292,18 +1283,7 @@ class JpegInfo
       }
       BlockHeight[y] = (int) Math.ceil(compHeight[y]/8.0);
     }
-    try
-    {
-      if(grabber.grabPixels() != true)
-      {
-        try
-        {
-          throw new Exception("Grabber returned false: " + grabber.status());
-        }
-        catch (Exception e) {}
-      }
-    }
-    catch (InterruptedException e) {}
+    Image.grabPixels(imageobj, imageWidth, imageHeight, values);
     float Y[][] = new float[compHeight[0]][compWidth[0]];
     float Cr1[][] = new float[compHeight[0]][compWidth[0]];
     float Cb1[][] = new float[compHeight[0]][compWidth[0]];

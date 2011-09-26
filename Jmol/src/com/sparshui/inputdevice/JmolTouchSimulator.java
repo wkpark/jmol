@@ -72,8 +72,8 @@ public class JmolTouchSimulator implements JmolTouchSimulatorInterface {
 	/* (non-Javadoc)
    * @see com.sparshui.inputdevice.JmolTouchSimulatorInterface#initialize(java.awt.Component)
    */
-	public boolean startSimulator(Component display) {
-	   _display = display;
+	public boolean startSimulator(Object display) {
+	   _display = (Component) display;
 	   String address = "localhost";
 	    _timer = new Timer();
 	    try {

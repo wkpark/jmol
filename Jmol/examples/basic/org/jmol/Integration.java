@@ -29,7 +29,6 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Rectangle;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -121,7 +120,6 @@ public class Integration {
     JmolViewer viewer;
     
     private final Dimension currentSize = new Dimension();
-    private final Rectangle rectClip = new Rectangle(); // ignored by Jmol
     
     JmolPanel() {
       viewer = JmolViewer.allocateViewer(this, new SmarterJmolAdapter(), 
@@ -131,8 +129,7 @@ public class Integration {
     @Override
     public void paint(Graphics g) {
       getSize(currentSize);
-      g.getClipBounds(rectClip);
-      viewer.renderScreenImage(g, currentSize, rectClip);
+      viewer.renderScreenImage(g, currentSize.width, currentSize.height);
     }
   }
 

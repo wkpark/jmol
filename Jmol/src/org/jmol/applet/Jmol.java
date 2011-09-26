@@ -182,7 +182,7 @@ public class Jmol implements WrappedApplet {
   protected StringBuffer outputBuffer;
 
   protected AppletWrapper appletWrapper;
-  protected Graphics gRight;
+  protected Object gRight;
   protected JmolViewer viewer;
   protected Map<EnumCallback, String> callbacks = new Hashtable<EnumCallback, String>();
   
@@ -237,7 +237,7 @@ public class Jmol implements WrappedApplet {
     System.out.println("Jmol applet " + fullName + " destroyed");
   }
 
-  public Graphics setStereoGraphics(boolean isStereo) {
+  public Object setStereoGraphics(boolean isStereo) {
     isStereoSlave = isStereo;
     return (isStereo ? appletWrapper.getGraphics() : null);
   }
@@ -287,7 +287,7 @@ public class Jmol implements WrappedApplet {
       viewer.getProperty("DATA_API", "setMenu", viewer
           .getFileAsString(menuFile));
     JmolPromptInterface jpi = (JmolPromptInterface) Interface
-    .getOptionInterface("console.JmolPrompt");
+    .getOptionInterface("awt.console.JmolPrompt");
     if (jpi != null)
       jpi.setLookAndFeel();
     if (Logger.debugging) {
@@ -545,7 +545,7 @@ public class Jmol implements WrappedApplet {
       startPaintClock();
     Dimension size = new Dimension();
     appletWrapper.getSize(size);
-    viewer.setScreenDimension(size);
+    viewer.setScreenDimension(size.width, size.height);
     //Rectangle rectClip = jvm12orGreater ? jvm12.getClipBounds(g) : g.getClipRect();
     ++paintCounter;
     if (REQUIRE_PROGRESSBAR && !isSigned && !hasProgressBar
@@ -554,7 +554,7 @@ public class Jmol implements WrappedApplet {
       viewer.notifyViewerRepaintDone();
     } else {
       if (!isStereoSlave)
-        viewer.renderScreenImage(g, gRight, size);
+        viewer.renderScreenImage(g, gRight, size.width, size.height);
     }
 
     if (showPaintTime) {

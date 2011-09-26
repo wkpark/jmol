@@ -31,8 +31,6 @@
  *
  */
 
-import java.awt.Graphics;
-
 import org.jmol.applet.JmolAppletInterface;
 
 import netscape.javascript.JSObject;
@@ -179,7 +177,7 @@ public class JmolApplet extends org.jmol.applet.AppletWrapper implements
       wrappedApplet.syncScript("" + script);
   }
 
-  public Graphics setStereoGraphics(boolean isStereo) {
+  public Object setStereoGraphics(boolean isStereo) {
     return (wrappedApplet == null ? null : 
         wrappedApplet.setStereoGraphics(isStereo));
   }

@@ -78,7 +78,6 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Rectangle;
 import java.io.FileInputStream;
 import java.util.Calendar;
 
@@ -346,13 +345,11 @@ public class MPJmolApp implements JmolCallbackListener {
     }
 
     private final Dimension currentSize = new Dimension();
-    private final Rectangle rectClip = new Rectangle();
 
     @Override
     public void paint(Graphics g) {
       getSize(currentSize);
-      g.getClipBounds(rectClip);
-      viewer.renderScreenImage(g, currentSize, rectClip);
+      viewer.renderScreenImage(g, currentSize.width, currentSize.height);
     }
   }
 

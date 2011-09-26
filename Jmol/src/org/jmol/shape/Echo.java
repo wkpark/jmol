@@ -24,11 +24,10 @@
 
 package org.jmol.shape;
 
+import org.jmol.g3d.Graphics3D;
 import org.jmol.util.Escape;
 import org.jmol.util.TextFormat;
-import org.jmol.g3d.*;
 
-import java.awt.Image;
 import java.util.BitSet;
 import java.util.Iterator;
 
@@ -73,17 +72,16 @@ public class Echo extends TextShape {
     }
 
     if ("image" == propertyName) {
-      Image image = (Image) value;
       if (currentObject == null) {
         if (isAll) {
           Iterator<Text> e = objects.values().iterator();
           while (e.hasNext()) {
-            e.next().setImage(image);
+            e.next().setImage(value);
           }
         }
         return;
       }
-      ((Text) currentObject).setImage(image);
+      ((Text) currentObject).setImage(value);
       return;
     }
     if ("thisID" == propertyName) {

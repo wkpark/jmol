@@ -23,12 +23,8 @@
  */
 package org.jmol.g3d;
 
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.font.TextAttribute;
-import java.text.AttributedCharacterIterator.Attribute;
-import java.util.Hashtable;
-import java.util.Map;
+import org.jmol.awt.Font;
+
 /**
  *<p>
  * Provides font support using a byte fid
@@ -49,12 +45,12 @@ final public class Font3D {
   public final int idFontFace;
   public final int idFontStyle;
   public final float fontSize;
-  public final Font font;
-  public final FontMetrics fontMetrics;
+  public final Object font;
+  public final Object fontMetrics;
 
   private Font3D(byte fid,
                  int idFontFace, int idFontStyle, float fontSize,
-                 float fontSizeNominal, Font font, FontMetrics fontMetrics) {
+                 float fontSizeNominal, Object graphics) {
     this.fid = fid;
     this.fontFace = fontFaces[idFontFace];
     this.fontStyle = fontStyles[idFontStyle];
@@ -62,8 +58,11 @@ final public class Font3D {
     this.idFontStyle = idFontStyle;
     this.fontSize = fontSize;
     this.fontSizeNominal = fontSizeNominal;
-    this.font = font;
-    this.fontMetrics = fontMetrics;
+    font = Font.newFont(fontFaces[idFontFace], 
+        (idFontStyle & FONT_STYLE_BOLD) == FONT_STYLE_BOLD,
+        (idFontStyle & FONT_STYLE_ITALIC) == FONT_STYLE_ITALIC, 
+        fontSize);
+    fontMetrics = Font.getFontMetrics(graphics, font);
     //System.out.println("font3d constructed for fontsizeNominal=" + fontSizeNominal + "  and fontSize=" + fontSize);
   }
 
@@ -74,25 +73,26 @@ final public class Font3D {
   private static int[] fontkeys = new int[FONT_ALLOCATION_UNIT];
   private static Font3D[] font3ds = new Font3D[FONT_ALLOCATION_UNIT];
 
-  static synchronized Font3D getFont3D(int fontface, int fontstyle, float fontsize,
-                          float fontsizeNominal, Platform3D platform) {
+  static synchronized Font3D getFont3D(int fontface, int fontstyle,
+                                       float fontsize, float fontsizeNominal,
+                                       Platform3D platform) {
     if (platform == null)
       return null;
     if (fontsize > 0xFF)
       fontsize = 0xFF;
-    int fontsizeX16 = ((int)fontsize) << 4;
-    int fontkey =
-      ((fontface & 3) | ((fontstyle & 3) << 2) | (fontsizeX16 << 4));
+    int fontsizeX16 = ((int) fontsize) << 4;
+    int fontkey = ((fontface & 3) | ((fontstyle & 3) << 2) | (fontsizeX16 << 4));
     // watch out for race condition here!
-    for (int i = fontkeyCount; --i > 0; )
-      if (fontkey == fontkeys[i] && font3ds[i].fontSizeNominal == fontsizeNominal)
+    for (int i = fontkeyCount; --i > 0;)
+      if (fontkey == fontkeys[i]
+          && font3ds[i].fontSizeNominal == fontsizeNominal)
         return font3ds[i];
     /*
     return allocFont3D(fontkey, fontface, fontstyle, fontsize, 
         fontsizeNominal, platform);
-  }
+    }
 
-  private static synchronized Font3D allocFont3D(int fontkey, int fontface,
+    private static synchronized Font3D allocFont3D(int fontkey, int fontface,
                                                 int fontstyle, float fontsize, float fontsizeNominal,
                                                 Platform3D platform) {
     // recheck in case another process just allocated one
@@ -105,16 +105,13 @@ final public class Font3D {
       int[] t0 = new int[fontIndexNext + FONT_ALLOCATION_UNIT];
       System.arraycopy(fontkeys, 0, t0, 0, fontIndexNext);
       fontkeys = t0;
-      
+
       Font3D[] t1 = new Font3D[fontIndexNext + FONT_ALLOCATION_UNIT];
       System.arraycopy(font3ds, 0, t1, 0, fontIndexNext);
       font3ds = t1;
     }
-    Font font = new Font(getFontMap(fontFaces[fontface], fontstyle, fontsize));
-    FontMetrics fontMetrics = platform.graphicsOffscreen.getFontMetrics(font);
-    Font3D font3d = new Font3D((byte)fontIndexNext,
-                               fontface, fontstyle, fontsize, fontsizeNominal,
-                               font, fontMetrics);
+    Font3D font3d = new Font3D((byte) fontIndexNext, fontface, fontstyle,
+        fontsize, fontsizeNominal, platform.graphicsOffscreen);
     // you must set the font3d before setting the fontkey in order
     // to prevent a race condition with getFont3D
     font3ds[fontIndexNext] = font3d;
@@ -122,17 +119,6 @@ final public class Font3D {
     return font3d;
   }
 
-  private static Map<? extends Attribute, ?> getFontMap(String fontFace, int idFontStyle, float fontSize) {
-    Map<Attribute, Object> fontMap = new Hashtable<Attribute, Object>();
-    fontMap.put(TextAttribute.FAMILY, fontFace);
-    if ((idFontStyle & 1) == 1)
-      fontMap.put(TextAttribute.WEIGHT, TextAttribute.WEIGHT_BOLD);
-    if ((idFontStyle & 2) == 2)
-      fontMap.put(TextAttribute.POSTURE, TextAttribute.POSTURE_OBLIQUE);
-    fontMap.put(TextAttribute.SIZE, new Float(fontSize));
-    return fontMap;
-  }
-  
   public final static int FONT_FACE_SANS  = 0;
   public final static int FONT_FACE_SERIF = 1;
   public final static int FONT_FACE_MONO  = 2;
@@ -157,15 +143,30 @@ final public class Font3D {
   }
 
   public static int getFontStyleID(String fontstyle) {
-    int i = 4;
-    while (--i >= 0)
+    for (int i = 4; --i >= 0; )
       if (fontStyles[i].equalsIgnoreCase(fontstyle))
-        break;
-    return i;
+       return i;
+    return -1;
   }
 
   public static Font3D getFont3D(byte fontID) {
     return font3ds[fontID & 0xFF];
+  }
+
+  public int getAscent() {
+    return Font.getAscent(fontMetrics);
+  }
+  
+  public int getDescent() {
+    return Font.getDescent(fontMetrics);
+  }
+  
+  public int getHeight() {
+    return getAscent() + getDescent();
+  }
+  
+  public int stringWidth(String text) {
+    return Font.stringWidth(fontMetrics, text);
   }
 }
 

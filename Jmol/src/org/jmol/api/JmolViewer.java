@@ -24,10 +24,6 @@
 
 package org.jmol.api;
 
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Image;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.net.URL;
@@ -40,6 +36,7 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.awt.Display;
 import org.jmol.script.Token;
 import org.jmol.util.BoxInfo;
 import org.jmol.viewer.Viewer;
@@ -83,7 +80,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
    * @param statusListener 
    * @return              a JmolViewer object
    */
-  static public JmolViewer allocateViewer(Container container,
+  static public JmolViewer allocateViewer(Object container,
                                           JmolAdapter jmolAdapter,
                                           String htmlName, URL documentBase, 
                                           URL codeBase,
@@ -101,7 +98,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
    * @param jmolAdapter
    * @return             a viewer
    */
-  public static JmolViewer allocateViewer(Container container, JmolAdapter jmolAdapter) {
+  public static JmolViewer allocateViewer(Object container, JmolAdapter jmolAdapter) {
     return Viewer.allocateViewer(container, jmolAdapter, null, null, null, null, null);
   }
   
@@ -129,10 +126,10 @@ abstract public class JmolViewer extends JmolSimpleViewer {
    * 
    * @param gLeft
    * @param gRight
-   * @param size
-   * @param clip
+   * @param width 
+   * @param height 
    */
-  abstract public void renderScreenImage(Graphics gLeft, Graphics gRight, Dimension size);
+  abstract public void renderScreenImage(Object gLeft, Object gRight, int width, int height);
 
   static public String getJmolVersion() {
     return Viewer.getJmolVersion();
@@ -172,15 +169,15 @@ abstract public class JmolViewer extends JmolSimpleViewer {
 
 
   // change this to width, height
-  abstract public void setScreenDimension(Dimension dim);
+  abstract public void setScreenDimension(int width, int height);
   abstract public int getScreenWidth();
   abstract public int getScreenHeight();
 
-  public Image getScreenImage() {
-    return getScreenImage(null);
-  }
+//  public Image getScreenImage() {
+//    return getScreenImage(null);
+//  }
 
-  abstract public Image getScreenImage(Graphics g);
+  abstract public Object getScreenImage(Object g);
   abstract public void releaseScreenImage();
   
   abstract public void writeTextFile(String string, String data);
@@ -257,7 +254,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public String getMeasurementStringValue(int i);
   abstract public int[] getMeasurementCountPlusIndices(int i);
 
-  abstract public Container getDisplay();
+  abstract public Object getDisplay();
 
   abstract public BitSet getElementsPresentBitSet(int modelIndex);
 
@@ -509,6 +506,18 @@ abstract public class JmolViewer extends JmolSimpleViewer {
 
   abstract public boolean handleOldJvm10Event(int id, int x, int y, int modifiers,
                                      long when);
+
+  /**
+   * old -- not used in 12.2
+   * 
+   * @param g 
+   * @param currentSize 
+   * @param rectClip  // unused
+   */
+  public void renderScreenImage(Object g, Object currentSize,
+                                Object rectClip) {
+    Display.renderScreenImage(this, g, currentSize);
+  }
 
 }
 

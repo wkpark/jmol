@@ -23,8 +23,6 @@
  */
 package org.jmol.shape;
 
-import java.awt.FontMetrics;
-
 import org.jmol.api.SymmetryInterface;
 import org.jmol.constant.EnumAxesMode;
 import org.jmol.g3d.Font3D;
@@ -183,9 +181,8 @@ public class AxesRenderer extends FontLineShapeRenderer {
   }
   
   private void renderLabel(String str, float x, float y, float z, float xCenter, float yCenter) {
-    FontMetrics fontMetrics = font3d.fontMetrics;
-    int strAscent = fontMetrics.getAscent();
-    int strWidth = fontMetrics.stringWidth(str);
+    int strAscent = font3d.getAscent();
+    int strWidth = font3d.stringWidth(str);
     float dx = x - xCenter;
     float dy = y - yCenter;
     if ((dx != 0 || dy != 0)) {

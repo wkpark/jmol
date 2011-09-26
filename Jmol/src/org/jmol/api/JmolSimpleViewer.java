@@ -23,11 +23,6 @@
  */
 package org.jmol.api;
 
-import java.awt.Container;
-import java.awt.Graphics;
-import java.awt.Dimension;
-import java.awt.Rectangle;
-
 import org.jmol.viewer.Viewer;
 
 /**
@@ -45,22 +40,12 @@ abstract public class JmolSimpleViewer {
    * @return              a JmolViewer object
    */
   static public JmolSimpleViewer
-    allocateSimpleViewer(Container container, JmolAdapter jmolAdapter) {
+    allocateSimpleViewer(Object container, JmolAdapter jmolAdapter) {
     return Viewer.allocateViewer(container, jmolAdapter, 
         null, null, null, null, null);
   }
 
-  /**
-   * @param g 
-   * @param size 
-   * @param clip  
-   */
-  public void renderScreenImage(Graphics g, Dimension size,
-                                         Rectangle clip) {
-    renderScreenImage(g, size);    
-  }
-
-  abstract protected void renderScreenImage(Graphics g, Dimension size);
+  abstract public void renderScreenImage(Object g, int width, int height);
   abstract public String evalFile(String strFilename);
   abstract public String evalString(String strScript);
 

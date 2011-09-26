@@ -21,7 +21,7 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.jmol.console;
+package org.jmol.awt.console;
 
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
@@ -34,7 +34,7 @@ public class JmolPrompt implements JmolPromptInterface {
 
   /**
    * note: THIS CLASS SHOULD ONLY BE INVOKED USING 
-   * (JmolPromptInterface) Interface.getOptionInterface("console.JmolPrompt")
+   * (JmolPromptInterface) Interface.getOptionInterface("awt.console.JmolPrompt")
    */
   public JmolPrompt() {
     // required for reflection

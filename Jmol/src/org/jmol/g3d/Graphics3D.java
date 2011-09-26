@@ -23,8 +23,6 @@
  */
 package org.jmol.g3d;
 
-import java.awt.Component;
-import java.awt.Image;
 import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.Map;
@@ -257,11 +255,12 @@ final public class Graphics3D implements JmolRendererInterface {
 
   /**
    * Allocates a g3d object
+   * 
+   * @param isDataOnly 
    *
-   * @param awtComponent the java.awt.Component where the image will be drawn
    */
-  public Graphics3D(Component awtComponent) {
-    platform = Platform3D.createInstance(awtComponent);
+  public Graphics3D(boolean isDataOnly) {
+    platform = (isDataOnly ? null : Platform3D.createInstance());
     this.line3d = new Line3D(this);
     this.circle3d = new Circle3D(this);
     this.sphere3d = new Sphere3D(this);
@@ -433,7 +432,7 @@ final public class Graphics3D implements JmolRendererInterface {
     }
   }
   
-  public Image getScreenImage() {
+  public Object getScreenImage() {
     return platform.imagePixelBuffer;
   }
 
@@ -481,7 +480,7 @@ final public class Graphics3D implements JmolRendererInterface {
     return depth;
   }
 
-  public Image backgroundImage;
+  public Object backgroundImage;
   
   public void setBackgroundTransparent(boolean TF) {
     if (platform != null)
@@ -502,7 +501,7 @@ final public class Graphics3D implements JmolRendererInterface {
   }
 
   public void setBackgroundImage(Object image) {
-    backgroundImage = (Image) image;
+    backgroundImage = image;
   }
 
 
@@ -1116,10 +1115,10 @@ final public class Graphics3D implements JmolRendererInterface {
       return;
     if (isClippedZ(zSlab))
       return;
-    plotImage(x, y, z, (Image) objImage, null, bgcolix, width, height);
+    plotImage(x, y, z, objImage, null, bgcolix, width, height);
   }
 
-  public void plotImage(int x, int y, int z, Image image, JmolRendererInterface jmolRenderer,
+  public void plotImage(int x, int y, int z, Object image, JmolRendererInterface jmolRenderer,
                         short bgcolix, int width, int height) {
     setColix(bgcolix);
     if (bgcolix == 0)

@@ -54,7 +54,7 @@ abstract class CageRenderer extends FontLineShapeRenderer {
   protected void render(int mad, Point3f[] vertices, Point3f[] axisPoints,
                         int firstLine, int allowedEdges0, int allowedEdges1,
                         float scale) {
-    clearBox();
+    //clearBox();
     g3d.setColix(colix);
     FontLineShape fls = (FontLineShape) shape;
     imageFontScaling = viewer.getImageFontScaling();

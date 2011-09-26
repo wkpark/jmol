@@ -34,11 +34,11 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JCheckBox;
 
-import org.jmol.console.KeyJMenu;
-import org.jmol.console.KeyJMenuItem;
-import org.jmol.console.KeyJCheckBox;
-import org.jmol.console.KeyJCheckBoxMenuItem;
-import org.jmol.console.KeyJRadioButtonMenuItem;
+import org.jmol.awt.console.KeyJMenu;
+import org.jmol.awt.console.KeyJMenuItem;
+import org.jmol.awt.console.KeyJCheckBox;
+import org.jmol.awt.console.KeyJCheckBoxMenuItem;
+import org.jmol.awt.console.KeyJRadioButtonMenuItem;
 import org.jmol.i18n.GT;
 
 class GuiMap {

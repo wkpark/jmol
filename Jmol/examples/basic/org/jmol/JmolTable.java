@@ -27,7 +27,6 @@ package org.jmol;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Rectangle;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -270,10 +269,11 @@ class JmolPanel extends JPanel {
 
   @Override
   public void paint(Graphics g) {
-    viewer.setScreenDimension(getSize(currentSize));
-    Rectangle rectClip = new Rectangle();
-    g.getClipBounds(rectClip);
-    viewer.renderScreenImage(g, currentSize, rectClip);
+    getSize(currentSize);
+    viewer.setScreenDimension(currentSize.width, currentSize.height);
+    //Rectangle rectClip = new Rectangle();
+    //g.getClipBounds(rectClip);
+    viewer.renderScreenImage(g, currentSize.width, currentSize.height);
   }
  
 }

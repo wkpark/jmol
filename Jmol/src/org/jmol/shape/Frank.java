@@ -27,7 +27,6 @@ package org.jmol.shape;
 import org.jmol.g3d.Font3D;
 import org.jmol.i18n.GT;
 
-import java.awt.FontMetrics;
 import java.util.BitSet;
 
 public class Frank extends FontShape {
@@ -83,10 +82,9 @@ public class Frank extends FontShape {
     if (font3d == currentMetricsFont3d) 
       return;
     currentMetricsFont3d = font3d;
-    FontMetrics fm = font3d.fontMetrics;
-    frankWidth = fm.stringWidth(frankString);
-    frankDescent = fm.getDescent();
-    frankAscent = fm.getAscent();
+    frankWidth = font3d.stringWidth(frankString);
+    frankDescent = font3d.getDescent();
+    frankAscent = font3d.getAscent();
   }
 
   void getFont(float imageFontScaling) {

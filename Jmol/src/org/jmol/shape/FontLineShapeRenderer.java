@@ -23,8 +23,6 @@
  */
 package org.jmol.shape;
 
-import java.awt.Rectangle;
-
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
@@ -56,7 +54,7 @@ abstract class FontLineShapeRenderer extends ShapeRenderer {
   final protected Vector3f vectorT2 = new Vector3f();
   final protected Vector3f vectorT3 = new Vector3f();
 
-  final Rectangle box = new Rectangle();
+  //final Rectangle box = new Rectangle();
 
   protected TickInfo tickInfo;
 
@@ -64,9 +62,9 @@ abstract class FontLineShapeRenderer extends ShapeRenderer {
 
   protected byte endcap = Graphics3D.ENDCAPS_SPHERICAL;
 
-  protected void clearBox() {
-    box.setBounds(0, 0, 0, 0);
-  }
+  //protected void clearBox() {
+  //  box.setBounds(0, 0, 0, 0);
+  //}
   
   protected int getDiameter(int z, int madOrPixels) {
     int diameter;
@@ -239,8 +237,8 @@ abstract class FontLineShapeRenderer extends ShapeRenderer {
                             boolean centerY, int yRef, String sVal) {
     if (sVal == null)
       return;
-    int width = font3d.fontMetrics.stringWidth(sVal);
-    int height = font3d.fontMetrics.getAscent();
+    int width = font3d.stringWidth(sVal);
+    int height = font3d.getAscent();
     int xT = x;
     if (rightJustify)
       xT -= radius / 2 + 2 + width;

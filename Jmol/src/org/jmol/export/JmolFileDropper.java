@@ -78,7 +78,7 @@ public class JmolFileDropper implements DropTargetListener {
         doDrop(evt);
       }
     }));
-    Component display = viewer.getDisplay();
+    Component display = (Component) viewer.getDisplay();
     display.setDropTarget(
         new DropTarget(display, this));
     display.setEnabled(true);

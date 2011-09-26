@@ -50,7 +50,7 @@ public abstract class JmolMultiTouchClientAdapter implements JmolMultiTouchAdapt
   
   public boolean setMultiTouchClient(Viewer viewer, JmolMultiTouchClient client,
                               boolean isSimulation) {
-    this.display = viewer.getDisplay();
+    this.display = (Component) viewer.getDisplay();
     actionManager = client; // ActionManagerMT
     return true;
   }

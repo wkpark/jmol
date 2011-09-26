@@ -51,7 +51,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     renderPendingMeasurement(measures.measurementPending);
     if (!viewer.getShowMeasurements())
       return;
-    clearBox();
+    //clearBox();
     boolean showMeasurementLabels = viewer.getShowMeasurementLabels();
     boolean dynamicMeasurements = viewer.getDynamicMeasurements();
     measures.setVisibilityInfo();

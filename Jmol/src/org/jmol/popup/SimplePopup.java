@@ -111,7 +111,7 @@ public class SimplePopup {
   SimplePopup(JmolViewer viewer) {
     this.viewer = viewer;
     asPopup = true;
-    display = viewer.getDisplay();
+    display = (Component) viewer.getDisplay();
     mil = new MenuItemListener();
     cmil = new CheckboxMenuItemListener();
   }

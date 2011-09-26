@@ -639,7 +639,7 @@ public class ActionManager {
       moved.modifiers &= ~Binding.CTRL;
     }
     if (moved.modifiers == 0)
-      viewer.setCursor(Viewer.CURSOR_DEFAULT);
+      viewer.setCursor(JmolConstants.CURSOR_DEFAULT);
     if (!viewer.getNavigationMode())
       return;
     //if (viewer.getBooleanProperty("showKeyStrokes", false))
@@ -678,8 +678,8 @@ public class ActionManager {
       else if (isZoomArea(x))
         checkMotionRotateZoom(Binding.getMouseAction(1, Binding.LEFT), 0, 0, 0,
             false);
-      else if (viewer.getCursor() == Viewer.CURSOR_ZOOM)//if (dragSelectedMode)
-        viewer.setCursor(Viewer.CURSOR_DEFAULT);
+      else if (viewer.getCursor() == JmolConstants.CURSOR_ZOOM)//if (dragSelectedMode)
+        viewer.setCursor(JmolConstants.CURSOR_DEFAULT);
       return;
     case Binding.WHEELED:
       //System.out.println("actionmanager mouseWheel " + mods);
@@ -815,7 +815,7 @@ public class ActionManager {
       boolean dragRelease = !pressed.check(x, y, modifiers, time,
           Long.MAX_VALUE);
       viewer.setInMotion(false);
-      viewer.setCursor(Viewer.CURSOR_DEFAULT);
+      viewer.setCursor(JmolConstants.CURSOR_DEFAULT);
       action = Binding.getMouseAction(pressedCount, modifiers);
       //System.out.println("actionmanager mouseReleased " + mods + " " + action);
       dragGesture.add(action, x, y, time);
@@ -1005,7 +1005,7 @@ public class ActionManager {
     if (dragAtomIndex >= 0) {
       switch (atomPickingMode) {
       case PICKING_DRAG_SELECTED:
-        checkMotion(Viewer.CURSOR_MOVE);
+        checkMotion(JmolConstants.CURSOR_MOVE);
         if (isBound(action, ACTION_rotateSelected) && viewer.allowRotateSelected()) {
           viewer.rotateSelected(getDegrees(deltaX, 0), getDegrees(deltaY, 1),
               null);
@@ -1022,7 +1022,7 @@ public class ActionManager {
       case PICKING_DRAG_MINIMIZE_MOLECULE:
         if (dragGesture.getPointCount() == 1)
           viewer.undoMoveAction(dragAtomIndex, AtomCollection.TAINT_COORD, true);
-        checkMotion(Viewer.CURSOR_MOVE);
+        checkMotion(JmolConstants.CURSOR_MOVE);
         if (isBound(action, ACTION_rotateSelected)) {
           bs = viewer.getAtomBits(Token.molecule, BitSetUtil
               .setBit(dragAtomIndex));
@@ -1099,7 +1099,7 @@ public class ActionManager {
         viewer.undoMoveAction(iatom, AtomCollection.TAINT_COORD, true);
       else
         viewer.moveSelected(Integer.MAX_VALUE, 0, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, null, false, false);
-      checkMotion(Viewer.CURSOR_MOVE);
+      checkMotion(JmolConstants.CURSOR_MOVE);
       if (isBound(action, ACTION_rotateSelected) && viewer.allowRotateSelected())
         viewer.rotateSelected(getDegrees(deltaX, 0), getDegrees(deltaY, 1),
             null);
@@ -1113,7 +1113,7 @@ public class ActionManager {
         && (isBound(action, ACTION_dragDrawObject) || isBound(action,
             ACTION_dragDrawPoint)) || labelMode
         && isBound(action, ACTION_dragLabel)) {
-      checkMotion(Viewer.CURSOR_MOVE);
+      checkMotion(JmolConstants.CURSOR_MOVE);
       viewer.checkObjectDragged(dragged.x, dragged.y, x, y, action);
       return;
     }
@@ -1137,11 +1137,11 @@ public class ActionManager {
     if (isBound(action, ACTION_rotateZorZoom)) {
       if (Math.abs(deltaY) > 5 * Math.abs(deltaX)) {
         // if (deltaY < 0 && deltaX > deltaY || deltaY > 0 && deltaX < deltaY)
-        checkMotion(Viewer.CURSOR_ZOOM);
+        checkMotion(JmolConstants.CURSOR_ZOOM);
         viewer.zoomBy(deltaY);
       } else if (Math.abs(deltaX) > 5 * Math.abs(deltaY)) {
         // if (deltaX < 0 && deltaY > deltaX || deltaX > 0 && deltaY < deltaX)
-        checkMotion(Viewer.CURSOR_MOVE);
+        checkMotion(JmolConstants.CURSOR_MOVE);
         viewer.rotateZBy(-deltaX, Integer.MAX_VALUE, Integer.MAX_VALUE);
       }
       return;
@@ -1149,7 +1149,7 @@ public class ActionManager {
       zoomByFactor(deltaY, Integer.MAX_VALUE, Integer.MAX_VALUE);
       return;
     } else if (isBound(action, ACTION_rotateZ)) {
-      checkMotion(Viewer.CURSOR_MOVE);
+      checkMotion(JmolConstants.CURSOR_MOVE);
       viewer.rotateZBy(-deltaX, Integer.MAX_VALUE, Integer.MAX_VALUE);
       return;
     }
@@ -1180,7 +1180,7 @@ public class ActionManager {
   protected void zoomByFactor(int dz, int x, int y) {
     if (dz == 0)
       return;
-    checkMotion(Viewer.CURSOR_ZOOM);
+    checkMotion(JmolConstants.CURSOR_ZOOM);
     viewer.zoomByFactor((float) Math.pow(mouseWheelFactor, dz), x, y);
     viewer.setInMotion(false);
   }
@@ -1230,9 +1230,9 @@ public class ActionManager {
     if (!isSlideZoom && !isRotateXY && !isRotateZorZoom) 
       return false;
     boolean isZoom = (isRotateZorZoom && (deltaX == 0 || Math.abs(deltaY) > 5 * Math.abs(deltaX)));
-    int cursor = (isZoom || isZoomArea(moved.x) || isBound(action, ACTION_wheelZoom) ? Viewer.CURSOR_ZOOM 
-        : isRotateXY || isRotateZorZoom ? Viewer.CURSOR_MOVE : Viewer.CURSOR_DEFAULT);
-    if (viewer.getCursor() != Viewer.CURSOR_WAIT)
+    int cursor = (isZoom || isZoomArea(moved.x) || isBound(action, ACTION_wheelZoom) ? JmolConstants.CURSOR_ZOOM 
+        : isRotateXY || isRotateZorZoom ? JmolConstants.CURSOR_MOVE : JmolConstants.CURSOR_DEFAULT);
+    if (viewer.getCursor() != JmolConstants.CURSOR_WAIT)
       viewer.setCursor(cursor);
     if (inMotion)
       viewer.setInMotion(true);
@@ -1390,7 +1390,7 @@ public class ActionManager {
   }
 
   protected void checkMotion(int cursor) {
-    if (viewer.getCursor() != Viewer.CURSOR_WAIT)
+    if (viewer.getCursor() != JmolConstants.CURSOR_WAIT)
       viewer.setCursor(cursor);
     viewer.setInMotion(true);
   }
@@ -1411,7 +1411,7 @@ public class ActionManager {
   private void enterMeasurementMode(int iAtom) {
     viewer.setPicked(-1);
     viewer.setPicked(iAtom);
-    viewer.setCursor(Viewer.CURSOR_CROSSHAIR);
+    viewer.setCursor(JmolConstants.CURSOR_CROSSHAIR);
     viewer.setPendingMeasurement(measurementPending = new MeasurementPending(
         viewer.getModelSet()));
   }
@@ -1420,7 +1420,7 @@ public class ActionManager {
     if (measurementPending == null)
       return;
     viewer.setPendingMeasurement(measurementPending = null);
-    viewer.setCursor(Viewer.CURSOR_DEFAULT);
+    viewer.setCursor(JmolConstants.CURSOR_DEFAULT);
   }
 
   private void toggleMeasurement() {

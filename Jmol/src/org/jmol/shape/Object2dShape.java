@@ -9,7 +9,7 @@ import org.jmol.g3d.Font3D;
 import org.jmol.util.Logger;
 import org.jmol.util.Point3fi;
 import org.jmol.util.TextFormat;
-import org.jmol.viewer.Viewer;
+import org.jmol.viewer.JmolConstants;
 
 public class Object2dShape extends Shape {
 
@@ -240,13 +240,13 @@ public class Object2dShape extends Shape {
       if (s != null) {
         haveScripts = true;
         if (obj.checkObjectClicked(x, y, bsVisible)) {
-          viewer.setCursor(Viewer.CURSOR_HAND);
+          viewer.setCursor(JmolConstants.CURSOR_HAND);
           return true;
         }
       }
     }
     if (haveScripts)
-      viewer.setCursor(Viewer.CURSOR_DEFAULT);
+      viewer.setCursor(JmolConstants.CURSOR_DEFAULT);
     return false;
   }
 

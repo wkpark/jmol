@@ -66,6 +66,7 @@ import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.AtomDataServer;
 import org.jmol.atomdata.RadiusData;
+import org.jmol.awt.Event;
 import org.jmol.constant.EnumAnimationMode;
 import org.jmol.constant.EnumAxesMode;
 import org.jmol.constant.EnumStructure;
@@ -95,15 +96,10 @@ import org.jmol.viewer.StateManager.Orientation;
 import org.jmol.viewer.binding.Binding;
 
 import java.awt.Container;
-import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Dimension;
-import java.awt.MediaTracker;
-import java.awt.Point;
-import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
-import java.awt.image.MemoryImageSource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
@@ -318,14 +314,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     selectionManager = new SelectionManager(this);
     if (haveDisplay) {
       if (multiTouch) {
-        if (commandOptions.indexOf("-multitouch-sparshui-simulated") < 0) {
-          int[] pixels = new int[1];
-          Image image = Toolkit.getDefaultToolkit().createImage(
-              new MemoryImageSource(1, 1, pixels, 0, 1));
-          Cursor transparentCursor = Toolkit.getDefaultToolkit()
-              .createCustomCursor(image, new Point(0, 0), "invisibleCursor");
-          display.setCursor(transparentCursor);
-        }
+        if (commandOptions.indexOf("-multitouch-sparshui-simulated") < 0)
+          Event.setTransparentCursor(display);
         actionManager = (ActionManager) Interface
             .getOptionInterface("multitouch.ActionManagerMT");
       } else {
@@ -1439,7 +1429,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     global.setParameterValue(name + "Color", Escape.escapeColor(argb));
   }
 
-  public void setBackgroundImage(String fileName, Image image) {
+  public void setBackgroundImage(String fileName, Object image) {
     global.backgroundImageFileName = fileName;
     g3d.setBackgroundImage(image);
   }
@@ -4863,14 +4853,7 @@ private void zap(String msg) {
     setTainted(true);
   }
 
-  public final static int CURSOR_DEFAULT = 0;
-  public final static int CURSOR_HAND = 1;
-  public final static int CURSOR_CROSSHAIR = 2;
-  public final static int CURSOR_MOVE = 3;
-  public final static int CURSOR_WAIT = 4;
-  public final static int CURSOR_ZOOM = 5;
-
-  private int currentCursor = CURSOR_DEFAULT;
+  private int currentCursor = JmolConstants.CURSOR_DEFAULT;
 
   public int getCursor() {
     return currentCursor;
@@ -4879,28 +4862,7 @@ private void zap(String msg) {
   public void setCursor(int cursor) {
     if (currentCursor == cursor || multiTouch || !haveDisplay)
       return;
-    int c;
-    switch (currentCursor = cursor) {
-    case CURSOR_HAND:
-      c = Cursor.HAND_CURSOR;
-      break;
-    case CURSOR_MOVE:
-      c = Cursor.MOVE_CURSOR;
-      break;
-    case CURSOR_ZOOM:
-      c = Cursor.N_RESIZE_CURSOR;
-      break;
-    case CURSOR_CROSSHAIR:
-      c = Cursor.CROSSHAIR_CURSOR;
-      break;
-    case CURSOR_WAIT:
-      c = Cursor.WAIT_CURSOR;
-      break;
-    default:
-      display.setCursor(Cursor.getDefaultCursor());
-      return;
-    }
-    display.setCursor(Cursor.getPredefinedCursor(c));
+    Event.setCursor(currentCursor = cursor, display);
   }
 
   void setPickingMode(String strMode, int pickingMode) {
@@ -8912,22 +8874,12 @@ private void zap(String msg) {
     return 0;
   }
 
-  public Image getFileAsImage(String pathName, String[] retFileNameOrError) {
+  public Object getFileAsImage(String pathName, String[] retFileNameOrError) {
     if (!haveDisplay) {
       retFileNameOrError[0] = "no display";
       return null;
     }
-    Image image = fileManager.getFileAsImage(pathName, retFileNameOrError);
-    if (image == null)
-      return null;
-    MediaTracker tracker = new MediaTracker(display);
-    tracker.addImage(image, 0);
-    try {
-      tracker.waitForID(0);
-    } catch (InterruptedException e) {
-      // Got to do something?
-    }
-    return image;
+    return fileManager.getFileAsImage(pathName, retFileNameOrError);
   }
 
   public String cd(String dir) {
@@ -8998,7 +8950,7 @@ private void zap(String msg) {
       undoClear();
       if (Logger.getLogLevel() == 0)
         Logger.setLogLevel(Logger.LEVEL_INFO);
-      setCursor(Viewer.CURSOR_DEFAULT);
+      setCursor(JmolConstants.CURSOR_DEFAULT);
       setBooleanProperty("refreshing", true);
       Logger.error("viewer handling error condition: " + er);
       notifyError("Error", "doClear=" + doClear + "; " + er, "" + er);

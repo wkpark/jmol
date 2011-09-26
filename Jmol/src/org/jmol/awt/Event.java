@@ -25,8 +25,18 @@
 
 package org.jmol.awt;
 
+import java.awt.Container;
+import java.awt.Cursor;
+import java.awt.Image;
+import java.awt.MediaTracker;
+import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.awt.image.MemoryImageSource;
+import java.net.URL;
+
+import org.jmol.viewer.JmolConstants;
 
 public class Event {
 
@@ -44,4 +54,52 @@ public class Event {
   public static final int VK_DOWN = KeyEvent.VK_DOWN;
   public static final int VK_UP = KeyEvent.VK_UP;
   
+  public static void setCursor(int c, Container display) {
+    switch (c) {
+    case JmolConstants.CURSOR_HAND:
+      c = Cursor.HAND_CURSOR;
+      break;
+    case JmolConstants.CURSOR_MOVE:
+      c = Cursor.MOVE_CURSOR;
+      break;
+    case JmolConstants.CURSOR_ZOOM:
+      c = Cursor.N_RESIZE_CURSOR;
+      break;
+    case JmolConstants.CURSOR_CROSSHAIR:
+      c = Cursor.CROSSHAIR_CURSOR;
+      break;
+    case JmolConstants.CURSOR_WAIT:
+      c = Cursor.WAIT_CURSOR;
+      break;
+    default:
+      display.setCursor(Cursor.getDefaultCursor());
+      return;
+    }
+    display.setCursor(Cursor.getPredefinedCursor(c));
+  }
+
+  public static void setTransparentCursor(Container display) {
+    int[] pixels = new int[1];
+    Image image = Toolkit.getDefaultToolkit().createImage(
+        new MemoryImageSource(1, 1, pixels, 0, 1));
+    Cursor transparentCursor = Toolkit.getDefaultToolkit()
+        .createCustomCursor(image, new Point(0, 0), "invisibleCursor");
+    display.setCursor(transparentCursor);
+  }
+
+  public static Image createImage(Object data) {
+    if (data instanceof URL)
+      return Toolkit.getDefaultToolkit().createImage((URL) data);
+    if (data instanceof String)
+      return Toolkit.getDefaultToolkit().createImage((String) data);
+    if (data instanceof byte[])
+      return Toolkit.getDefaultToolkit().createImage((byte[]) data);
+    return null;
+  }
+
+  public static void waitForDisplay(Container display, Image image) throws InterruptedException {
+    MediaTracker mediaTracker = new MediaTracker(display);
+    mediaTracker.addImage(image, 0);
+    mediaTracker.waitForID(0);
+  }
 }

@@ -33,14 +33,13 @@ import org.jmol.util.ZipUtil;
 
 import org.jmol.api.JmolFilesReaderInterface;
 import org.jmol.api.JmolViewer;
+import org.jmol.awt.Event;
+import org.jmol.awt.Image;
 
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.net.MalformedURLException;
-import java.awt.Image;
-import java.awt.MediaTracker;
-import java.awt.Toolkit;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -760,7 +759,7 @@ public class FileManager {
     }
   }
 
-  Image getFileAsImage(String name, String[] retFileNameOrError) {
+  Object getFileAsImage(String name, String[] retFileNameOrError) {
     if (name == null) {
       retFileNameOrError[0] = "";
       return null;
@@ -770,7 +769,7 @@ public class FileManager {
       retFileNameOrError[0] = "cannot read file name: " + name;
       return null;
     }
-    Image image = null;
+    Object image = null;
     //try {
     String fullPathName = names[0].replace('\\', '/');
     if (fullPathName.indexOf("|") > 0) {
@@ -779,21 +778,19 @@ public class FileManager {
         retFileNameOrError[0] = "" + ret;
         return null;
       }
-      image = Toolkit.getDefaultToolkit().createImage((byte[]) ret);
+      image = Event.createImage(ret);
     } else if (urlTypeIndex(fullPathName) >= 0) {
       try {
-        image = Toolkit.getDefaultToolkit().createImage(new URL(fullPathName));
+        image = Event.createImage(new URL(fullPathName));
       } catch (Exception e) {
         retFileNameOrError[0] = "bad URL: " + fullPathName;
         return null;
       }
     } else {
-      image = Toolkit.getDefaultToolkit().createImage(fullPathName);
+      image = Event.createImage(fullPathName);
     }
     try {
-      MediaTracker mediaTracker = new MediaTracker(viewer.getDisplay());
-      mediaTracker.addImage(image, 0);
-      mediaTracker.waitForID(0);
+      Image.waitForDisplay(viewer.getDisplay(), image);
       /* SUN but here for malformed URL - can't trap
        Uncaught error fetching image:
        java.lang.NullPointerException
@@ -810,7 +807,7 @@ public class FileManager {
       retFileNameOrError[0] = e.getMessage() + " opening " + fullPathName;
       return null;
     }
-    if (image.getWidth(null) < 1) {
+    if (Image.getWidth(image) < 1) {
       retFileNameOrError[0] = "invalid or missing image " + fullPathName;
       return null;
     }

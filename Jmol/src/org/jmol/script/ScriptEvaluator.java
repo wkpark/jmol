@@ -23,7 +23,6 @@
  */
 package org.jmol.script;
 
-import java.awt.Image;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -5552,7 +5551,7 @@ public class ScriptEvaluator {
 
   private void setCursorWait(boolean TF) {
     if (!isSyntaxCheck)
-      viewer.setCursor(TF ? Viewer.CURSOR_WAIT : Viewer.CURSOR_DEFAULT);
+      viewer.setCursor(TF ? JmolConstants.CURSOR_WAIT : JmolConstants.CURSOR_DEFAULT);
   }
 
   private void processShapeCommand(int tok) throws ScriptException {
@@ -7394,7 +7393,7 @@ public class ScriptEvaluator {
       if (isSyntaxCheck)
         return;
       String[] retFileName = new String[1];
-      Image image = null;
+      Object image = null;
       if (!file.equalsIgnoreCase("none") && file.length() > 0)
         image = viewer.getFileAsImage(file, retFileName);
       if (image == null)
@@ -8277,7 +8276,7 @@ public class ScriptEvaluator {
     if (viewer.getEchoStateActive()) {
       if (isImage) {
         String[] retFileName = new String[1];
-        Image image = viewer.getFileAsImage(text, retFileName);
+        Object image = viewer.getFileAsImage(text, retFileName);
         if (image == null) {
           text = retFileName[0];
         } else {

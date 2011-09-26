@@ -32,7 +32,6 @@
 
 package org.jmol.util;
 
-import java.awt.AWTException;
 import java.awt.Frame;
 import java.awt.Image;
 import java.awt.MediaTracker;
@@ -1299,7 +1298,7 @@ class JpegInfo
       {
         try
         {
-          throw new AWTException("Grabber returned false: " + grabber.status());
+          throw new Exception("Grabber returned false: " + grabber.status());
         }
         catch (Exception e) {}
       }

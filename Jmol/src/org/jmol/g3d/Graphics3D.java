@@ -501,8 +501,8 @@ final public class Graphics3D implements JmolRendererInterface {
     // when background [0,0,1]. 
   }
 
-  public void setBackgroundImage(Image image) {
-    backgroundImage = image;
+  public void setBackgroundImage(Object image) {
+    backgroundImage = (Image) image;
   }
 
 

@@ -54,7 +54,7 @@ public class JmolApplet extends org.jmol.applet.AppletWrapper implements
       ".Sphere3D", ".Line3D", ".Cylinder3D", ".Colix3D", ".Shade3D",
       "org.jmol.adapter.smarter.SmarterJmolAdapter",
       "org.jmol.adapter.smarter.Atom", ".Bond", ".AtomSetCollection",
-      ".AtomSetCollectionReader", ".Resolver", "org.jmol.popup.JmolPopup", };
+      ".AtomSetCollectionReader", ".Resolver", "org.jmol.awt.popup.JmolPopup", };
 
   public String getPropertyAsString(String infoType) {
     return (wrappedApplet == null ? null : ""

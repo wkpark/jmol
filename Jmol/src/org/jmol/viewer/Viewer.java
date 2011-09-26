@@ -23,7 +23,7 @@
  */
 package org.jmol.viewer;
 
-import org.jmol.popup.JmolPopup;
+import org.jmol.awt.popup.JmolPopup;
 import org.jmol.script.ParallelProcessor;
 import org.jmol.script.ScriptCompiler;
 import org.jmol.script.ScriptContext;

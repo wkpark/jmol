@@ -583,7 +583,7 @@ public class Jmol implements WrappedApplet {
   public boolean handleEvent(Event e) {
     if (viewer == null)
       return false;
-    return viewer.handleOldJvm10Event(e);
+    return viewer.handleOldJvm10Event(e.id, e.x, e.y, e.modifiers, e.when);
   }
 
   // code to record last and average times

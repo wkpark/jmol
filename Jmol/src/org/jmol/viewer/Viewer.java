@@ -101,7 +101,6 @@ import java.awt.Image;
 import java.awt.Dimension;
 import java.awt.MediaTracker;
 import java.awt.Point;
-import java.awt.Event;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.awt.image.MemoryImageSource;
@@ -533,8 +532,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   @Override
-  public boolean handleOldJvm10Event(Event e) {
-    return mouseManager.handleOldJvm10Event(e);
+  public boolean handleOldJvm10Event(int id, int x, int y, int modifiers, long time) {
+    return mouseManager.handleOldJvm10Event(id, x, y, modifiers, time);
   }
 
   public void reset(boolean includingSpin) {

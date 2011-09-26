@@ -69,11 +69,9 @@ class MouseManager14 implements MouseWheelListener, MouseListener,
     display.removeKeyListener(this);
   }
 
-  boolean handleOldJvm10Event(Event e) {
-    int x = e.x, y = e.y, modifiers = e.modifiers;
-    long time = e.when;
+  boolean handleOldJvm10Event(int id, int x, int y, int modifiers, long time) {
     modifiers = applyLeftMouse(modifiers);
-    switch (e.id) {
+    switch (id) {
     case Event.MOUSE_DOWN:
       xWhenPressed = x;
       yWhenPressed = y;

@@ -26,7 +26,6 @@ package org.jmol.api;
 
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.Event;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.io.OutputStream;
@@ -216,8 +215,6 @@ abstract public class JmolViewer extends JmolSimpleViewer {
    * @return base64-encoded or binary version of the image
    */
   abstract public Object getImageAs(String type, int quality, int width, int height, String fileName, OutputStream os);
-
-  abstract public boolean handleOldJvm10Event(Event e);
 
   abstract public int getMotionEventNumber();
 
@@ -509,6 +506,9 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   
   abstract public void processEvent(int groupID, int eventType, int touchID, int iData,
                            Point3f pt, long time);
+
+  abstract public boolean handleOldJvm10Event(int id, int x, int y, int modifiers,
+                                     long when);
 
 }
 

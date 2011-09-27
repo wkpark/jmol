@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-09-25 12:23+0200\n"
+"POT-Creation-Date: 2011-09-27 20:09+0200\n"
 "PO-Revision-Date: 2011-09-25 16:35+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@gmail.com>\n"
 "Language-Team: Ukrainian <translation@linux.org.ua>\n"
@@ -17,96 +17,1406 @@ msgstr ""
 "X-Launchpad-Export-Date: 2011-09-25 19:52+0000\n"
 "X-Generator: Launchpad (build 14012)\n"
 
-#: org/openscience/jmol/app/JmolApp.java:102
+#: com/json/Cookie.java:121
+msgid "name"
+msgstr "назва"
+
+#: com/json/Cookie.java:123
+msgid "value"
+msgstr "значення"
+
+#: com/json/Cookie.java:126
+msgid "expires"
+msgstr "застаріває"
+
+#: com/json/Cookie.java:130
+msgid "domain"
+msgstr "домен"
+
+#: com/json/Cookie.java:134
+msgid "path"
+msgstr "шлях"
+
+#: com/json/HTTP.java:132 com/json/HTTP.java:144
+msgid "HTTP-Version"
+msgstr "Версія HTTP"
+
+#: com/json/HTTP.java:134
+msgid "Status-Code"
+msgstr "Код-стану"
+
+#: com/json/HTTP.java:136
+msgid "Reason-Phrase"
+msgstr "Фраза-причини"
+
+#: com/json/HTTP.java:138
+msgid "Method"
+msgstr "Метод"
+
+#: com/json/HTTP.java:141
+msgid "Request-URI"
+msgstr "Адреса-запиту"
+
+#: org/jmol/awt/popup/JmolPopup.java:141
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:537
+msgid "No atoms loaded"
+msgstr ""
+
+#: org/jmol/awt/popup/JmolPopup.java:354
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:549
+msgid "Space Group"
+msgstr ""
+
+#: org/jmol/awt/popup/JmolPopup.java:416 org/jmol/awt/popup/JmolPopup.java:463
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:570
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:584
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:593
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:610
+#, fuzzy
+msgid "All"
+msgstr "&Всі"
+
+#: org/jmol/awt/popup/JmolPopup.java:566
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:946
+msgid "Mouse Manual"
+msgstr ""
+
+#: org/jmol/awt/popup/JmolPopup.java:567
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:947
+msgid "Translations"
+msgstr ""
+
+#: org/jmol/awt/popup/JmolPopup.java:569
+#, fuzzy
+msgid "System"
+msgstr "Крок"
+
+#: org/jmol/awt/popup/JmolPopup.java:575
+msgid "1 processor"
+msgstr ""
+
+#: org/jmol/awt/popup/JmolPopup.java:576
+#, java-format
+msgid "{0} processors"
+msgstr ""
+
+#: org/jmol/awt/popup/JmolPopup.java:578
+msgid "unknown processor count"
+msgstr ""
+
+#: org/jmol/awt/popup/JmolPopup.java:580
+msgid "Java version:"
+msgstr ""
+
+#: org/jmol/awt/popup/JmolPopup.java:584
+msgid "Java memory usage:"
+msgstr ""
+
+#: org/jmol/awt/popup/JmolPopup.java:590
+#, java-format
+msgid "{0} MB total"
+msgstr ""
+
+#: org/jmol/awt/popup/JmolPopup.java:592
+#, java-format
+msgid "{0} MB free"
+msgstr ""
+
+#: org/jmol/awt/popup/JmolPopup.java:595
+#, java-format
+msgid "{0} MB maximum"
+msgstr ""
+
+#: org/jmol/awt/popup/JmolPopup.java:598
+msgid "unknown maximum"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:539
+#, fuzzy
+msgid "Configurations"
+msgstr "Анімація"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:540
+#, fuzzy
+msgid "Element"
+msgstr "не реалізовано"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:541
+msgid "Model/Frame"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:542
+msgid "Language"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:543
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:544
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:545
+msgid "By Residue Name"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:546
+msgid "By HETATM"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:547
+#, java-format
+msgid "Molecular Orbitals ({0})"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:548
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:860
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:904
+msgid "Symmetry"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:550
+msgid "Hide Symmetry"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:551
+msgid "Model information"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:552
+#, fuzzy, java-format
+msgid "Select ({0})"
+msgstr "Масштаб {0}"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:553
+#, java-format
+msgid "All {0} models"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:554
+#, java-format
+msgid "Configurations ({0})"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:555
+#, java-format
+msgid "Collection of {0} models"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:556
+#, java-format
+msgid "atoms: {0}"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:557
+#, java-format
+msgid "bonds: {0}"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:558
+#, java-format
+msgid "groups: {0}"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:559
+#, fuzzy, java-format
+msgid "chains: {0}"
+msgstr "створення {0}"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:560
+#, java-format
+msgid "polymers: {0}"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:561
+#, java-format
+msgid "model {0}"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:562
+#, fuzzy, java-format
+msgid "View {0}"
+msgstr "П&ерегляд"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:563
+msgid "Main Menu"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:564
+#, fuzzy
+msgid "Biomolecules"
+msgstr "Обертати молекулу."
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:565
+#, java-format
+msgid "biomolecule {0} ({1} atoms)"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:566
+#, java-format
+msgid "load biomolecule {0} ({1} atoms)"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:571
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:690
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:699
+#, fuzzy
+msgid "None"
+msgstr "&Жодного"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:572
+#, fuzzy
+msgid "Display Selected Only"
+msgstr "Вилучити позначені"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:573
+#, fuzzy
+msgid "Invert Selection"
+msgstr "Вибір: "
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:575
+#, fuzzy
+msgid "View"
+msgstr "П&ерегляд"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:576
+#, fuzzy
+msgid "Front"
+msgstr "С&переду"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:577
+#, fuzzy
+msgid "Left"
+msgstr "З&ліва"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:578
+#, fuzzy
+msgid "Right"
+msgstr "С&права"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:579
+msgid ""
+"Top[as in \"view from the top, from above\" - (translators: remove this "
+"bracketed part]"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:580
+#, fuzzy
+msgid "Bottom"
+msgstr "З&низу"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:581
+#, fuzzy
+msgid "Back"
+msgstr "Простий"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:583
+msgid "Protein"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:585
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:596
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:666
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:758
+msgid "Backbone"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:586
+#, fuzzy
+msgid "Side Chains"
+msgstr "Площини перерізу"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:587
+msgid "Polar Residues"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:588
+msgid "Nonpolar Residues"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:589
+msgid "Basic Residues (+)"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:590
+msgid "Acidic Residues (-)"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:591
+msgid "Uncharged Residues"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:592
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:104
+msgid "Nucleic"
+msgstr "Нуклеїн"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:594
+msgid "DNA"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:595
+msgid "RNA"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:597
+#, fuzzy
+msgid "Bases"
+msgstr "Призупинити"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:598
+msgid "AT pairs"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:599
+msgid "GC pairs"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:600
+msgid "AU pairs"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:601
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:106
+msgid "Hetero"
+msgstr "Гетеро"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:602
+msgid "All PDB \"HETATM\""
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:603
+msgid "All Solvent"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:604
+#, fuzzy
+msgid "All Water"
+msgstr "Вода"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:606
+msgid "Nonaqueous Solvent"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:607
+msgid "Nonaqueous HETATM"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:608
+msgid "Ligand"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:611
+msgid "Carbohydrate"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:612
+msgid "None of the above"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:614
+#, fuzzy
+msgid "Style"
+msgstr "стиль"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:615
+msgid "Scheme"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:616
+msgid "CPK Spacefill"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:617
+msgid "Ball and Stick"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:618
+msgid "Sticks"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:619
+#, fuzzy
+msgid "Wireframe"
+msgstr "&Каркас"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:620
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:667
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:760
+#, fuzzy
+msgid "Cartoon"
+msgstr "Вуглець"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:621
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:672
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:759
+msgid "Trace"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:623
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:712
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:159
+msgid "Atoms"
+msgstr "Атоми"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:624
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:633
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:642
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:654
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:665
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:675
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:678
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:784
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:835
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:902
+msgid "Off"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:625
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:626
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:627
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:628
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:629
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:630
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:110
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:111
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:112
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:113
+#, java-format
+msgid "{0}% van der Waals"
+msgstr "{0}% Ван-дер-Ваальс"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:632
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:754
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:160
+msgid "Bonds"
+msgstr "Зв’язки"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:634
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:644
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:655
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:676
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:679
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:783
+#, fuzzy
+msgid "On"
+msgstr "&У позиції"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:635
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:636
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:637
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:638
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:639
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:647
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:648
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:649
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:650
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:651
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:658
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:659
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:660
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:661
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:662
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:681
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:682
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:926
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:927
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:928
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:929
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:930
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:117
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:118
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:119
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:131
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:132
+#, java-format
+msgid "{0} Å"
+msgstr "{0} Å"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:641
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:755
+#, fuzzy
+msgid "Hydrogen Bonds"
+msgstr "Водневі атоми"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:643
+msgid "Calculate"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:645
+msgid "Set H-Bonds Side Chain"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:646
+msgid "Set H-Bonds Backbone"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:653
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:756
+msgid "Disulfide Bonds"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:656
+msgid "Set SS-Bonds Side Chain"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:657
+msgid "Set SS-Bonds Backbone"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:664
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:757
+msgid "Structures"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:668
+#, fuzzy
+msgid "Cartoon Rockets"
+msgstr "Макет сторінки"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:669
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:761
+msgid "Ribbons"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:670
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:762
+msgid "Rockets"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:671
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:763
+msgid "Strands"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:674
+#, fuzzy
+msgid "Vibration"
+msgstr "Анімація"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:677
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:767
+#, fuzzy
+msgid "Vectors"
+msgstr "В&ектори"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:680
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:130
+#, java-format
+msgid "{0} pixels"
+msgstr "{0} пікселів"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:683
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:684
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:685
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:686
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:687
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:133
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:134
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:135
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:136
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:137
+#, java-format
+msgid "Scale {0}"
+msgstr "Масштаб {0}"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:689
+msgid "Stereographic"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:691
+msgid "Red+Cyan glasses"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:692
+msgid "Red+Blue glasses"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:693
+#, fuzzy
+msgid "Red+Green glasses"
+msgstr "Червоний/Зелений"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:694
+msgid "Cross-eyed viewing"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:695
+msgid "Wall-eyed viewing"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:697
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:764
+#, fuzzy
+msgid "Labels"
+msgstr "&Мітка"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:700
+msgid "With Element Symbol"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:701
+msgid "With Atom Name"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:702
+msgid "With Atom Number"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:704
+msgid "Position Label on Atom"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:705
+#, fuzzy
+msgid "Centered"
+msgstr "По &центру"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:706
+#, fuzzy
+msgid "Upper Right"
+msgstr "&Вгорі праворуч"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:707
+#, fuzzy
+msgid "Lower Right"
+msgstr "&Вгорі праворуч"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:708
+#, fuzzy
+msgid "Upper Left"
+msgstr "&Вгорі праворуч"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:709
+msgid "Lower Left"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:711
+#, fuzzy
+msgid "Color"
+msgstr "Закрити"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:714
+msgid "By Scheme"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:715
+msgid "Element (CPK)"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:716
+msgid "Alternative Location"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:717
+msgid "Molecule"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:718
+#, fuzzy
+msgid "Formal Charge"
+msgstr "Загальний заряд: "
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:719
+#, fuzzy
+msgid "Partial Charge"
+msgstr "Загальний заряд: "
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:720
+msgid "Temperature (Relative)"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:721
+msgid "Temperature (Fixed)"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:723
+#, fuzzy
+msgid "Amino Acid"
+msgstr "Амін"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:724
+msgid "Secondary Structure"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:725
+msgid "Chain"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:726
+msgid "Group"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:727
+msgid "Monomer"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:728
+msgid "Shapely"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:730
+msgid "Inherit"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:731
+#, fuzzy
+msgid "Black"
+msgstr "Простий"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:732
+#, fuzzy
+msgid "White"
+msgstr "Вода"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:733
+#, fuzzy
+msgid "Cyan"
+msgstr "Червоний/Блакитний"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:735
+#, fuzzy
+msgid "Red"
+msgstr "Повторити"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:736
+msgid "Orange"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:737
+msgid "Yellow"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:738
+#, fuzzy
+msgid "Green"
+msgstr "Червоний/Зелений"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:739
+#, fuzzy
+msgid "Blue"
+msgstr "значення"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:740
+#, fuzzy
+msgid "Indigo"
+msgstr "Інфо"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:741
+msgid "Violet"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:743
+msgid "Salmon"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:744
+msgid "Olive"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:745
+#, fuzzy
+msgid "Maroon"
+msgstr "Вуглець"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:746
+msgid "Gray"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:747
+msgid "Slate Blue"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:748
+msgid "Gold"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:749
+msgid "Orchid"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:751
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:900
+msgid "Make Opaque"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:752
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:901
+msgid "Make Translucent"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:765
+#, fuzzy
+msgid "Background"
+msgstr "Колір тла"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:766
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:892
+#, fuzzy
+msgid "Surfaces"
+msgstr "Поверхні"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:768
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:912
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:938
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:199
+msgid "Axes"
+msgstr "Осі"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:769
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:913
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:937
+#, fuzzy
+msgid "Boundbox"
+msgstr "Обмежувальна рамка"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:770
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:889
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:914
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:939
+msgid "Unit cell"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:772
+#, fuzzy
+msgid "Zoom"
+msgstr "М&асштаб"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:779
+#, fuzzy
+msgid "Zoom In"
+msgstr "М&асштаб"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:780
+#, fuzzy
+msgid "Zoom Out"
+msgstr "М&асштаб"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:782
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:847
+#, fuzzy
+msgid "Spin"
+msgstr "Обертання увімкнено"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:786
+#, fuzzy
+msgid "Set X Rate"
+msgstr "Стан"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:787
+#, fuzzy
+msgid "Set Y Rate"
+msgstr "Стан"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:788
+#, fuzzy
+msgid "Set Z Rate"
+msgstr "Стан"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:789
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:815
+#, fuzzy
+msgid "Set FPS"
+msgstr "Частота кадрів"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:799
+#: org/openscience/jmol/app/webexport/Widgets.java:179
+msgid "Animation"
+msgstr "Анімація"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:800
+#, fuzzy
+msgid "Animation Mode"
+msgstr "Анімація"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:801
+#: org/openscience/jmol/app/webexport/Widgets.java:197
+msgid "Play Once"
+msgstr "Одноразове відтворення"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:802
+#: org/openscience/jmol/app/webexport/Widgets.java:195
+msgid "Palindrome"
+msgstr "Паліндром"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:803
+#: org/openscience/jmol/app/webexport/Widgets.java:193
+msgid "Loop"
+msgstr "Зациклити"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:805
+#: org/openscience/jmol/app/webexport/Widgets.java:184
+msgid "Play"
+msgstr "Відтворити"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:806
+#: org/openscience/jmol/app/webexport/Widgets.java:188
+msgid "Pause"
+msgstr "Призупинити"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:807
+#, fuzzy
+msgid "Resume"
+msgstr "Змінити &розміри"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:808
+#, fuzzy
+msgid "Stop"
+msgstr "Крок"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:809
+#: org/openscience/jmol/app/webexport/Widgets.java:186
+msgid "Next Frame"
+msgstr "Наступний кадр"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:810
+#: org/openscience/jmol/app/webexport/Widgets.java:182
+msgid "Previous Frame"
+msgstr "Попередній кадр"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:811
+#, fuzzy
+msgid "Rewind"
+msgstr "Повторити"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:812
+msgid "Reverse"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:813
+#, fuzzy
+msgid "Restart"
+msgstr "Повторити"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:822
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:855
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:197
+#: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:66
+msgid "Measurements"
+msgstr "Вимірювання"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:823
+msgid "Double-Click begins and ends all measurements"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:824
+msgid "Click for distance measurement"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:825
+msgid "Click for angle measurement"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:826
+msgid "Click for torsion (dihedral) measurement"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:827
+msgid "Click two atoms to display a sequence in the console"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:828
+#, fuzzy
+msgid "Delete measurements"
+msgstr "Вимірювання"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:829
+#, fuzzy
+msgid "List measurements"
+msgstr "Вимірювання"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:830
+#, fuzzy
+msgid "Distance units nanometers"
+msgstr "&Одиниці відстані"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:831
+#, fuzzy
+msgid "Distance units Angstroms"
+msgstr "&Одиниці відстані"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:832
+#, fuzzy
+msgid "Distance units picometers"
+msgstr "&Одиниці відстані"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:834
+msgid "Set picking"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:836
+#, fuzzy
+msgid "Center"
+msgstr "По &центру"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:838
+msgid "Identity"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:839
+#, fuzzy
+msgid "Label"
+msgstr "&Мітка"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:840
+#, fuzzy
+msgid "Select atom"
+msgstr "Вилучити атоми"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:841
+#, fuzzy
+msgid "Select chain"
+msgstr "Вибір: "
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:842
+#, fuzzy
+msgid "Select element"
+msgstr "Позна&чити все"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:843
+#, fuzzy
+msgid "Select group"
+msgstr "Вибрати"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:844
+#, fuzzy
+msgid "Select molecule"
+msgstr "Позна&чити все"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:845
+#, fuzzy
+msgid "Select site"
+msgstr "Вибрати"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:846
+msgid "Show symmetry operation"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:849
+#, fuzzy
+msgid "Show"
+msgstr "Показувати всі"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:850
+#, fuzzy
+msgid "Console"
+msgstr "Ко&нсоль..."
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:851
+msgid "File Contents"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:852
+#, fuzzy
+msgid "File Header"
+msgstr "Назва файла:"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:853
+#: org/openscience/jmol/app/jmolpanel/AppConsole.java:170
+msgid "History"
+msgstr "Журнал"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:854
+msgid "Isosurface JVXL data"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:856
+msgid "Molecular orbital JVXL data"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:857
+#, fuzzy
+msgid "Model"
+msgstr "Режим:"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:858
+#, fuzzy
+msgid "Orientation"
+msgstr "Анімація"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:859
+msgid "Space group"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:861
+msgid "Current state"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:863
+#, fuzzy
+msgid "File"
+msgstr "&Файл"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:864
+#, fuzzy
+msgid "Reload"
+msgstr "&Перезавантажити"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:865
+msgid "Open from PDB"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:866
+#, fuzzy
+msgid "Open file or URL"
+msgstr "Відкрити URL"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:867
+msgid "Load full unit cell"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:868
+#, fuzzy
+msgid "Open script"
+msgstr "Скопіювати скрипт"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:870
+#, java-format
+msgid "Save a copy of {0}"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:871
+msgid "Save script with state"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:872
+msgid "Save script with history"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:873
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:874
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:875
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:876
+#, fuzzy, java-format
+msgid "Export {0} image"
+msgstr "Експортувати як &зображення…"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:877
+msgid "Save all as JMOL file (zip)"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:878
+msgid "Save JVXL isosurface"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:879
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:880
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:881
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:882
+#, java-format
+msgid "Export {0} 3D model"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:884
+#, fuzzy
+msgid "Computation"
+msgstr "Обчислення зв’язків"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:885
+msgid "Optimize structure"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:886
+msgid "Model kit"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:890
+msgid "Extract MOL data"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:893
+#, fuzzy
+msgid "Dot Surface"
+msgstr "Вибір поверхонь"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:894
+#, fuzzy
+msgid "van der Waals Surface"
+msgstr "{0}% Ван-дер-Ваальс"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:895
+#, fuzzy
+msgid "Molecular Surface"
+msgstr "Молекулярні властивості"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:896
+#, java-format
+msgid "Solvent Surface ({0}-Angstrom probe)"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:898
+#, java-format
+msgid "Solvent-Accessible Surface (VDW + {0} Angstrom)"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:899
+msgid "Molecular Electrostatic Potential"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:905
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:906
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:907
+#, fuzzy, java-format
+msgid "Reload {0}"
+msgstr "&Перезавантажити"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:908
+#, java-format
+msgid "Reload {0} + Display {1}"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:909
+msgid "Reload + Polyhedra"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:916
+msgid "Hide"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:917
+msgid "Dotted"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:919
+msgid "Pixel Width"
+msgstr ""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:920
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:921
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:922
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:923
+#, fuzzy, java-format
+msgid "{0} px"
+msgstr "{0} пікселів"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:925
+#, fuzzy
+msgid "Angstrom Width"
+msgstr "(у ангстремах)"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:933
+#, fuzzy
+msgid "Selection Halos"
+msgstr "Вибір: "
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:934
+#, fuzzy
+msgid "Show Hydrogens"
+msgstr "Водневі атоми"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:935
+#, fuzzy
+msgid "Show Measurements"
+msgstr "Вимірювання"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:936
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:198
+msgid "Perspective Depth"
+msgstr "Глибина перспективи"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:940
+#, fuzzy
+msgid "RasMol Colors"
+msgstr "Типові параметри RasMol"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:941
+#, fuzzy
+msgid "About..."
+msgstr "Абсолютний"
+
+#: org/openscience/jmol/app/JmolApp.java:107
 msgid "Error starting Jmol: the property 'user.home' is not defined."
 msgstr ""
-"Помилка під час спроби запуску Jmol: не вказано значення властивості "
-"«user.home»."
+"Помилка під час спроби запуску Jmol: не вказано значення властивості «user."
+"home»."
 
-#: org/openscience/jmol/app/JmolApp.java:139
+#: org/openscience/jmol/app/JmolApp.java:144
 msgid "transparent background"
 msgstr "прозоре тло"
 
-#: org/openscience/jmol/app/JmolApp.java:140
+#: org/openscience/jmol/app/JmolApp.java:145
 msgid "give this help page"
 msgstr "відкрити цю сторінку довідки"
 
-#: org/openscience/jmol/app/JmolApp.java:142
+#: org/openscience/jmol/app/JmolApp.java:147
 msgid "no display (and also exit when done)"
 msgstr "нічого не показувати (завершити роботу після виконання завдання)"
 
-#: org/openscience/jmol/app/JmolApp.java:144
+#: org/openscience/jmol/app/JmolApp.java:149
 msgid "check script syntax only - no file loading"
 msgstr "лише перевірити синтаксис скрипту — без завантаження файла"
 
-#: org/openscience/jmol/app/JmolApp.java:146
+#: org/openscience/jmol/app/JmolApp.java:151
 msgid "check script syntax only - with file loading"
 msgstr "лише перевірити синтаксис скрипту — з завантаженням файла"
 
-#: org/openscience/jmol/app/JmolApp.java:147
+#: org/openscience/jmol/app/JmolApp.java:152
 msgid "debug"
 msgstr "зневадити"
 
-#: org/openscience/jmol/app/JmolApp.java:148
+#: org/openscience/jmol/app/JmolApp.java:153
 msgid "silent startup operation"
 msgstr "обробка скрипту без повідомлень"
 
-#: org/openscience/jmol/app/JmolApp.java:150
+#: org/openscience/jmol/app/JmolApp.java:155
+msgid "kiosk mode -- no frame"
+msgstr ""
+
+#: org/openscience/jmol/app/JmolApp.java:157
 msgid "list commands during script execution"
 msgstr "показувати команди під час виконання скрипту"
 
-#: org/openscience/jmol/app/JmolApp.java:152
+#: org/openscience/jmol/app/JmolApp.java:159
 msgid "start with no splash screen"
 msgstr "запускати без вікна вітання"
 
-#: org/openscience/jmol/app/JmolApp.java:154
+#: org/openscience/jmol/app/JmolApp.java:161
 msgid "no console -- all output to sysout"
 msgstr "без консолі — спрямувати вивід до sysout"
 
-#: org/openscience/jmol/app/JmolApp.java:156
+#: org/openscience/jmol/app/JmolApp.java:163
 msgid "send only output from print messages to console (implies -i)"
 msgstr "лише вивести повідомлення до консолі (вмикає -i)"
 
-#: org/openscience/jmol/app/JmolApp.java:158
+#: org/openscience/jmol/app/JmolApp.java:165
+msgid "port for JSON/MolecularPlayground-style communication"
+msgstr ""
+
+#: org/openscience/jmol/app/JmolApp.java:167
 msgid "independent command thread"
 msgstr "окремий потік виконання команд"
 
-#: org/openscience/jmol/app/JmolApp.java:160
+#: org/openscience/jmol/app/JmolApp.java:169
 msgid "exit after script (implicit with -n)"
 msgstr "вийти після виконання скрипту (неявно, якщо вказано -n)"
 
-#: org/openscience/jmol/app/JmolApp.java:164
+#: org/openscience/jmol/app/JmolApp.java:173
 msgid "script file to execute or '-' for System.in"
 msgstr "файл скрипту, який слід виконати або «-» для виконання System.in"
 
-#: org/openscience/jmol/app/JmolApp.java:170
+#: org/openscience/jmol/app/JmolApp.java:179
 msgid "use multitouch interface (requires \"sparshui\" parameter"
 msgstr ""
 "використовувати інтерфейс з декількома засобами сенсорного керування "
 "(потрібен параметр «sparshui»)"
 
-#: org/openscience/jmol/app/JmolApp.java:177
+#: org/openscience/jmol/app/JmolApp.java:186
 msgid "Jmol script to execute BEFORE -s option"
 msgstr "скрипт Jmol, який слід виконати ДО параметра -s"
 
-#: org/openscience/jmol/app/JmolApp.java:183
+#: org/openscience/jmol/app/JmolApp.java:192
 msgid "Jmol script to execute AFTER -s option"
 msgstr "скрипт Jmol, який слід виконати ПІСЛЯ параметра -s"
 
-#: org/openscience/jmol/app/JmolApp.java:192
+#: org/openscience/jmol/app/JmolApp.java:201
 msgid "property=value"
 msgstr "властивість=значення"
 
-#: org/openscience/jmol/app/JmolApp.java:195
+#: org/openscience/jmol/app/JmolApp.java:204
 msgid "supported options are given below"
 msgstr "підтримувані параметри наведено нижче"
 
-#: org/openscience/jmol/app/JmolApp.java:201
+#: org/openscience/jmol/app/JmolApp.java:210
 #, java-format
 msgid "window width x height, e.g. {0}"
 msgstr "розміри вікна, ширина x висота, наприклад, {0}"
 
-#: org/openscience/jmol/app/JmolApp.java:211
+#: org/openscience/jmol/app/JmolApp.java:220
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
@@ -114,16 +1424,16 @@ msgstr ""
 "якість зображення JPG (1-100; типова — 75) або рівень стискання зображення "
 "PNG (0-9; типовий — 2, максимальне стискання — 9)"
 
-#: org/openscience/jmol/app/JmolApp.java:216
+#: org/openscience/jmol/app/JmolApp.java:225
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr "{0} або {1}:назва файла"
 
-#: org/openscience/jmol/app/JmolApp.java:230
+#: org/openscience/jmol/app/JmolApp.java:239
 msgid "For example:"
 msgstr "Приклад:"
 
-#: org/openscience/jmol/app/JmolApp.java:236
+#: org/openscience/jmol/app/JmolApp.java:245
 msgid ""
 "The -D options are as follows (defaults in parenthesis) and must be called "
 "preceding '-jar Jmol.jar':"
@@ -131,15 +1441,15 @@ msgstr ""
 "Параметри -D (типові значення вказано в дужках), слід викликати до «-jar "
 "Jmol.jar»:"
 
-#: org/openscience/jmol/app/JmolApp.java:469
+#: org/openscience/jmol/app/JmolApp.java:496
 msgid "Executing script 1..."
 msgstr "Виконання скрипту 1…"
 
-#: org/openscience/jmol/app/JmolApp.java:479
+#: org/openscience/jmol/app/JmolApp.java:506
 msgid "Executing script file..."
 msgstr "Виконання файла скрипту…"
 
-#: org/openscience/jmol/app/JmolApp.java:500
+#: org/openscience/jmol/app/JmolApp.java:527
 msgid "Executing script 2..."
 msgstr "Виконання скрипту 2…"
 
@@ -186,10 +1496,6 @@ msgstr "Довідка"
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:169
 msgid "Editor"
 msgstr "Редактор"
-
-#: org/openscience/jmol/app/jmolpanel/AppConsole.java:170
-msgid "History"
-msgstr "Журнал"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:171
 msgid "State"
@@ -329,7 +1635,7 @@ msgstr "Перейти до останнього вектора у збірці"
 msgid "Error reading from BufferedReader: {0}"
 msgstr "Помилка під час читання з BufferedReader: {0}"
 
-#: org/openscience/jmol/app/jmolpanel/DisplayPanel.java:210
+#: org/openscience/jmol/app/jmolpanel/DisplayPanel.java:216
 msgid "Delete atoms"
 msgstr "Вилучити атоми"
 
@@ -600,17 +1906,9 @@ msgstr "Сірка"
 msgid "Amino"
 msgstr "Амін"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:104
-msgid "Nucleic"
-msgstr "Нуклеїн"
-
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:105
 msgid "Water"
 msgstr "Вода"
-
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:106
-msgid "Hetero"
-msgstr "Гетеро"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:107
 msgid "&Display"
@@ -620,14 +1918,6 @@ msgstr "По&каз"
 msgid "&Atom"
 msgstr "&Атом"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:110
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:111
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:112
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:113
-#, java-format
-msgid "{0}% van der Waals"
-msgstr "{0}% Ван-дер-Ваальс"
-
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:114
 msgid "&Bond"
 msgstr "Зв’&язок"
@@ -635,15 +1925,6 @@ msgstr "Зв’&язок"
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:116
 msgid "&Wireframe"
 msgstr "&Каркас"
-
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:117
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:118
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:119
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:131
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:132
-#, java-format
-msgid "{0} Å"
-msgstr "{0} Å"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:120
 msgid "&Label"
@@ -676,20 +1957,6 @@ msgstr "В&ектор"
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:129
 msgid "&On"
 msgstr "&У позиції"
-
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:130
-#, java-format
-msgid "{0} pixels"
-msgstr "{0} пікселів"
-
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:133
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:134
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:135
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:136
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:137
-#, java-format
-msgid "Scale {0}"
-msgstr "Масштаб {0}"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:138
 msgid "&Zoom"
@@ -909,19 +2176,6 @@ msgstr "Що нового?"
 msgid "Hydrogens"
 msgstr "Водневі атоми"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:197
-#: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:66
-msgid "Measurements"
-msgstr "Вимірювання"
-
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:198
-msgid "Perspective Depth"
-msgstr "Глибина перспективи"
-
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:199
-msgid "Axes"
-msgstr "Осі"
-
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:200
 msgid "Bounding Box"
 msgstr "Обмежувальна рамка"
@@ -949,8 +2203,7 @@ msgstr "Обертати молекулу."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:211
 msgid "Select a set of atoms using SHIFT-LEFT-DRAG."
-msgstr ""
-"Вкажіть набір атомів за допомогою SHIFT-СТРІЛКА ЛІВОРУЧ-ПЕРЕТЯГУВАННЯ."
+msgstr "Вкажіть набір атомів за допомогою SHIFT-СТРІЛКА ЛІВОРУЧ-ПЕРЕТЯГУВАННЯ."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:213
 msgid "Click atoms to measure distances"
@@ -973,97 +2226,139 @@ msgstr "Відкрити вікно моделювання."
 msgid "Jmol Help"
 msgstr "Довідка з Jmol"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:171
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:175
 msgid "Initializing 3D display..."
 msgstr "Ініціалізація просторового показу…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:204
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:208
 msgid "Initializing Script Window..."
 msgstr "Ініціалізація вікна скриптів…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:227
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:229
 msgid "Building Command Hooks..."
 msgstr "Побудова панелі виклику команд…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:238
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:244
 msgid "Building Menubar..."
 msgstr "Побудова меню…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:255
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:259
 msgid "Starting display..."
 msgstr "Запуск графічного інтерфейсу…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:301
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:308
 msgid "Setting up Drag-and-Drop..."
 msgstr "Налаштування перетягування зі скиданням…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:309
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:316
 msgid "Launching main frame..."
 msgstr "Запуск головного блоку…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:313
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:320
 msgid "Initializing Preferences..."
 msgstr "Ініціалізація параметрів…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:315
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:322
 msgid "Initializing Recent Files..."
 msgstr "Ініціалізація списку нещодавніх файлів…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:350
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:361
 msgid "Jmol Java Console"
 msgstr "Java-консоль Jmol"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:370
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:381
 msgid "Could not create ConsoleTextArea: "
 msgstr "Не вдалося створити ConsoleTextArea: "
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:417
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:427
 msgid "Creating main window..."
 msgstr "Створення головного вікна…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:418
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:428
 msgid "Initializing Swing..."
 msgstr "Ініціалізація Swing…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:430
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:440
 msgid "Initializing Jmol..."
 msgstr "Ініціалізація Jmol…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:511
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:521
 msgid "Closing Jmol..."
 msgstr "Завершення роботи Jmol…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1127
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1136
 msgid "Open URL"
 msgstr "Відкрити URL"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1128
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1137
 msgid "Enter URL of molecular model"
 msgstr "Введіть адресу URL моделі молекули"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1154
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1163
 msgid "Get PDB file"
 msgstr "Звантажити файл PDB"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1155
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1164
 msgid "Enter a four-digit PDB ID"
 msgstr "Введіть чотирицифровий ідентифікатор PDB"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1172
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1181
 msgid "Get MOL file by compound name or ID"
 msgstr "Звантажити файл MOL за складеною назвою або ідентифікатором"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1173
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1182
 msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
 msgstr "Введіть назву або ідентифікатор молекули (SMILES, InChI, CAS)"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1339
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1348
 msgid "IO Exception:"
 msgstr "Виключення вводу або виводу."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1468
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1477
 msgid "width height?"
 msgstr "Ширина і висота?"
+
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:176
+msgid "type"
+msgstr "тип"
+
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:187
+msgid "style"
+msgstr "стиль"
+
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:189
+msgid "sync"
+msgstr "синхр."
+
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:192
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:196
+msgid "x"
+msgstr "⨯"
+
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:193
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:197
+msgid "y"
+msgstr "y"
+
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:207
+msgid "command"
+msgstr "команда"
+
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:210
+msgid "id"
+msgstr ""
+
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:223
+msgid "startup_script"
+msgstr "скрипт_запуску"
+
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:228
+msgid "banner_text"
+msgstr "текст_банера"
+
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:229
+msgid "banner"
+msgstr "банер"
 
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:124
 msgid "Delete"
@@ -1229,14 +2524,6 @@ msgstr "Параметри"
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:158
 msgid "Display"
 msgstr "Показ"
-
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:159
-msgid "Atoms"
-msgstr "Атоми"
-
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:160
-msgid "Bonds"
-msgstr "Зв’язки"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:165
 msgid "Jmol Defaults"
@@ -1485,8 +2772,8 @@ msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
 "be significant the first time the applet is loaded."
 msgstr ""
-"Щоб отримати просторову модель, з якою можна буде працювати, натисніть "
-"{0}тут{1}. Перше звантаження за допомогою аплету може бути доволі тривалим."
+"Щоб отримати просторову модель, з якою можна буде працювати, натисніть {0}тут"
+"{1}. Перше звантаження за допомогою аплету може бути доволі тривалим."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:366
 msgid "Insert the page TITLE here."
@@ -1724,29 +3011,9 @@ msgstr "Червоний/Зелений"
 msgid "Animation Control"
 msgstr "Керування анімацією"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:179
-msgid "Animation"
-msgstr "Анімація"
-
 #: org/openscience/jmol/app/webexport/Widgets.java:180
 msgid "First Frame"
 msgstr "Перший кадр"
-
-#: org/openscience/jmol/app/webexport/Widgets.java:182
-msgid "Previous Frame"
-msgstr "Попередній кадр"
-
-#: org/openscience/jmol/app/webexport/Widgets.java:184
-msgid "Play"
-msgstr "Відтворити"
-
-#: org/openscience/jmol/app/webexport/Widgets.java:186
-msgid "Next Frame"
-msgstr "Наступний кадр"
-
-#: org/openscience/jmol/app/webexport/Widgets.java:188
-msgid "Pause"
-msgstr "Призупинити"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:190
 msgid "Last Frame"
@@ -1755,18 +3022,6 @@ msgstr "Останній кадр"
 #: org/openscience/jmol/app/webexport/Widgets.java:192
 msgid "Mode:"
 msgstr "Режим:"
-
-#: org/openscience/jmol/app/webexport/Widgets.java:193
-msgid "Loop"
-msgstr "Зациклити"
-
-#: org/openscience/jmol/app/webexport/Widgets.java:195
-msgid "Palindrome"
-msgstr "Паліндром"
-
-#: org/openscience/jmol/app/webexport/Widgets.java:197
-msgid "Play Once"
-msgstr "Одноразове відтворення"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:206
 msgid "Open Console Button"
@@ -1788,85 +3043,6 @@ msgstr "Звантажити перегляд"
 msgid "unimplemented"
 msgstr "не реалізовано"
 
-#: org/openscience/molecularplayground/MPJmolApp.java:253
-msgid "type"
-msgstr "тип"
-
-#: org/openscience/molecularplayground/MPJmolApp.java:267
-msgid "style"
-msgstr "стиль"
-
-#: org/openscience/molecularplayground/MPJmolApp.java:269
-msgid "sync"
-msgstr "синхр."
-
-#: org/openscience/molecularplayground/MPJmolApp.java:272
-#: org/openscience/molecularplayground/MPJmolApp.java:276
-msgid "x"
-msgstr "⨯"
-
-#: org/openscience/molecularplayground/MPJmolApp.java:273
-#: org/openscience/molecularplayground/MPJmolApp.java:277
-msgid "y"
-msgstr "y"
-
-#: org/openscience/molecularplayground/MPJmolApp.java:287
-msgid "command"
-msgstr "команда"
-
-#: org/openscience/molecularplayground/MPJmolApp.java:298
-msgid "startup_script"
-msgstr "скрипт_запуску"
-
-#: org/openscience/molecularplayground/MPJmolApp.java:299
-msgid "banner_text"
-msgstr "текст_банера"
-
-#: org/openscience/molecularplayground/MPJmolApp.java:300
-msgid "banner"
-msgstr "банер"
-
-#: org/openscience/molecularplayground/json/Cookie.java:121
-msgid "name"
-msgstr "назва"
-
-#: org/openscience/molecularplayground/json/Cookie.java:123
-msgid "value"
-msgstr "значення"
-
-#: org/openscience/molecularplayground/json/Cookie.java:126
-msgid "expires"
-msgstr "застаріває"
-
-#: org/openscience/molecularplayground/json/Cookie.java:130
-msgid "domain"
-msgstr "домен"
-
-#: org/openscience/molecularplayground/json/Cookie.java:134
-msgid "path"
-msgstr "шлях"
-
-#: org/openscience/molecularplayground/json/HTTP.java:132
-#: org/openscience/molecularplayground/json/HTTP.java:144
-msgid "HTTP-Version"
-msgstr "Версія HTTP"
-
-#: org/openscience/molecularplayground/json/HTTP.java:134
-msgid "Status-Code"
-msgstr "Код-стану"
-
-#: org/openscience/molecularplayground/json/HTTP.java:136
-msgid "Reason-Phrase"
-msgstr "Фраза-причини"
-
-#: org/openscience/molecularplayground/json/HTTP.java:138
-msgid "Method"
-msgstr "Метод"
-
-#: org/openscience/molecularplayground/json/HTTP.java:141
-msgid "Request-URI"
-msgstr "Адреса-запиту"
-
 #~ msgid "vector"
 #~ msgstr "вектор"
 
@@ -1879,23 +3055,18 @@ msgstr "Адреса-запиту"
 #~ msgid "atom set"
 #~ msgstr "набір атомів"
 
-#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Перейти до першого {0} у збірці"
 
-#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Перейти до попереднього {0} у збірці"
 
-#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Відтворити усю збірку {0}"
 
-#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Перейти до наступного {0} у збірці"
 
-#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Перейти до останнього {0} у збірці"
 
@@ -1908,15 +3079,12 @@ msgstr "Адреса-запиту"
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "додавання JmolPopIn.js"
 
-#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "додавання {0}.png"
 
-#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "додавання {0}.spt"
 
-#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"
@@ -1927,16 +3095,16 @@ msgstr "Адреса-запиту"
 #~ msgid "Clear console button (requires restarting Jmol)"
 #~ msgstr "Кнопка спорожнення консолі (потрібен перезапуску Jmol)"
 
-#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 #~ msgstr ""
-#~ "Тут ви можете вставити додатковий текст пояснення. Довгі рядки буде поділено "
-#~ "на частини і розташовано навколо моделі Jmol {0}."
+#~ "Тут ви можете вставити додатковий текст пояснення. Довгі рядки буде "
+#~ "поділено на частини і розташовано навколо моделі Jmol {0}."
 
 #~ msgid "double-click and drag to reorder"
-#~ msgstr "двічі клацніть лівою кнопкою миші і перетягніть, щоб змінити порядок"
+#~ msgstr ""
+#~ "двічі клацніть лівою кнопкою миші і перетягніть, щоб змінити порядок"
 
 #~ msgid "The -D options are as follows (defaults in parenthesis):"
 #~ msgstr "Параметри -D (типові значення вказано у дужках):"

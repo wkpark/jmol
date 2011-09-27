@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-09-25 22:23+0200\n"
+"POT-Creation-Date: 2011-09-27 20:09+0200\n"
 "PO-Revision-Date: 2011-03-30 23:20+0000\n"
 "Last-Translator: Lele Long <schemacs@gmail.com>\n"
 "Language-Team: Simplified Chinese <zh_CN@li.org>\n"
@@ -49,7 +49,7 @@ msgid "State"
 msgstr "状态"
 
 #: org/jmol/applet/AppletConsole.java:207
-#: org/jmol/console/ScriptEditor.java:137
+#: org/jmol/awt/console/ScriptEditor.java:137
 msgid "Run"
 msgstr "运行"
 
@@ -62,7 +62,7 @@ msgid "Clear Input"
 msgstr "清空输入"
 
 #: org/jmol/applet/AppletConsole.java:210
-#: org/jmol/popup/MainPopupResourceBundle.java:853
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:853
 msgid "History"
 msgstr "浏览历史"
 
@@ -111,63 +111,1300 @@ msgstr ""
 msgid "File Error:"
 msgstr "文件错误："
 
-#: org/jmol/console/JmolConsole.java:86
+#: org/jmol/awt/console/JmolConsole.java:86
 msgid "Jmol Script Console"
 msgstr "Jmol 脚本控制台"
 
-#: org/jmol/console/ScriptEditor.java:98
+#: org/jmol/awt/console/ScriptEditor.java:98
 msgid "Jmol Script Editor"
 msgstr "Jmol 脚本编辑器"
 
-#: org/jmol/console/ScriptEditor.java:130
-#: org/jmol/popup/MainPopupResourceBundle.java:850
+#: org/jmol/awt/console/ScriptEditor.java:130
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:850
 msgid "Console"
 msgstr "控制台"
 
-#: org/jmol/console/ScriptEditor.java:132
+#: org/jmol/awt/console/ScriptEditor.java:132
 #: org/jmol/export/dialog/Dialog.java:443
 #: org/jmol/export/dialog/Dialog.java:467
 #: org/jmol/export/dialog/Dialog.java:470
 msgid "Open"
 msgstr "打开"
 
-#: org/jmol/console/ScriptEditor.java:133
+#: org/jmol/awt/console/ScriptEditor.java:133
 msgid "Script"
 msgstr "脚本"
 
-#: org/jmol/console/ScriptEditor.java:134
+#: org/jmol/awt/console/ScriptEditor.java:134
 msgid "Check"
 msgstr "勾选"
 
-#: org/jmol/console/ScriptEditor.java:135
+#: org/jmol/awt/console/ScriptEditor.java:135
 msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "回到顶端"
 
-#: org/jmol/console/ScriptEditor.java:136
+#: org/jmol/awt/console/ScriptEditor.java:136
 msgid "Step"
 msgstr "步进"
 
-#: org/jmol/console/ScriptEditor.java:138
-#: org/jmol/popup/MainPopupResourceBundle.java:806
+#: org/jmol/awt/console/ScriptEditor.java:138
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:806
 msgid "Pause"
 msgstr "暂停"
 
-#: org/jmol/console/ScriptEditor.java:140
-#: org/jmol/popup/MainPopupResourceBundle.java:807
+#: org/jmol/awt/console/ScriptEditor.java:140
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:807
 msgid "Resume"
 msgstr "继续"
 
-#: org/jmol/console/ScriptEditor.java:142
+#: org/jmol/awt/console/ScriptEditor.java:142
 msgid "Halt"
 msgstr "停止"
 
-#: org/jmol/console/ScriptEditor.java:144
+#: org/jmol/awt/console/ScriptEditor.java:144
 msgid "Clear"
 msgstr "全部清除"
 
-#: org/jmol/console/ScriptEditor.java:145
+#: org/jmol/awt/console/ScriptEditor.java:145
 msgid "Close"
 msgstr "关闭"
+
+#: org/jmol/awt/modelkit/ModelKitPopup.java:75
+msgid "Element?"
+msgstr "元素？"
+
+#: org/jmol/awt/modelkit/modelKitPopupResourceBundle.java:78
+msgid "new"
+msgstr "新建"
+
+#: org/jmol/awt/modelkit/modelKitPopupResourceBundle.java:79
+msgid "undo (CTRL-Z)"
+msgstr "撤消(Ctrl-Z)"
+
+#: org/jmol/awt/modelkit/modelKitPopupResourceBundle.java:80
+msgid "redo (CTRL-Y)"
+msgstr "重做(Ctrl-Y)"
+
+#: org/jmol/awt/modelkit/modelKitPopupResourceBundle.java:81
+#: org/jmol/viewer/ActionManager.java:115
+msgid "center"
+msgstr "居中"
+
+#: org/jmol/awt/modelkit/modelKitPopupResourceBundle.java:82
+msgid "add hydrogens"
+msgstr "添加氢原子"
+
+#: org/jmol/awt/modelkit/modelKitPopupResourceBundle.java:83
+msgid "minimize"
+msgstr "最小化"
+
+#: org/jmol/awt/modelkit/modelKitPopupResourceBundle.java:84
+msgid "fix hydrogens and minimize"
+msgstr "固定氢原子并最小化"
+
+#: org/jmol/awt/modelkit/modelKitPopupResourceBundle.java:85
+msgid "clear"
+msgstr "清除"
+
+#: org/jmol/awt/modelkit/modelKitPopupResourceBundle.java:86
+msgid "save file"
+msgstr "保存文件"
+
+#: org/jmol/awt/modelkit/modelKitPopupResourceBundle.java:87
+msgid "save state"
+msgstr "保存状态"
+
+#: org/jmol/awt/modelkit/modelKitPopupResourceBundle.java:88
+msgid "invert ring stereochemistry"
+msgstr "反转环的立体化学"
+
+#: org/jmol/awt/modelkit/modelKitPopupResourceBundle.java:89
+msgid "delete atom"
+msgstr "删除原子"
+
+#: org/jmol/awt/modelkit/modelKitPopupResourceBundle.java:90
+msgid "drag to bond"
+msgstr "拖拽成键"
+
+#: org/jmol/awt/modelkit/modelKitPopupResourceBundle.java:91
+msgid "drag atom"
+msgstr "拖动原子"
+
+#: org/jmol/awt/modelkit/modelKitPopupResourceBundle.java:92
+msgid "drag atom (and minimize)"
+msgstr "拖动原子(并最小化)"
+
+#: org/jmol/awt/modelkit/modelKitPopupResourceBundle.java:93
+msgid "drag molecule (SHIFT to rotate)"
+msgstr "拖动分子(Shift-旋转)"
+
+#: org/jmol/awt/modelkit/modelKitPopupResourceBundle.java:94
+msgid "drag and minimize molecule (docking)"
+msgstr "拖拽并最小化分子(docking)"
+
+#: org/jmol/awt/modelkit/modelKitPopupResourceBundle.java:103
+msgid "increase charge"
+msgstr "增加电荷"
+
+#: org/jmol/awt/modelkit/modelKitPopupResourceBundle.java:104
+msgid "decrease charge"
+msgstr "减少电荷"
+
+#: org/jmol/awt/modelkit/modelKitPopupResourceBundle.java:105
+msgid "delete bond"
+msgstr "删除键"
+
+#: org/jmol/awt/modelkit/modelKitPopupResourceBundle.java:106
+msgid "single"
+msgstr "单价"
+
+#: org/jmol/awt/modelkit/modelKitPopupResourceBundle.java:107
+msgid "double"
+msgstr "二价"
+
+#: org/jmol/awt/modelkit/modelKitPopupResourceBundle.java:108
+msgid "triple"
+msgstr "三价"
+
+#: org/jmol/awt/modelkit/modelKitPopupResourceBundle.java:109
+msgid "increase order"
+msgstr "提高次序"
+
+#: org/jmol/awt/modelkit/modelKitPopupResourceBundle.java:110
+msgid "decrease order"
+msgstr "降低次序"
+
+#: org/jmol/awt/modelkit/modelKitPopupResourceBundle.java:111
+msgid "rotate bond (SHIFT-DRAG)"
+msgstr "旋转键(Shift-拖动)"
+
+#: org/jmol/awt/modelkit/modelKitPopupResourceBundle.java:112
+msgid "exit modelkit mode"
+msgstr "退出建模工具(modelkit)模式"
+
+#: org/jmol/awt/popup/JmolPopup.java:141
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:537
+msgid "No atoms loaded"
+msgstr "未载入原子"
+
+#: org/jmol/awt/popup/JmolPopup.java:354
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:549
+msgid "Space Group"
+msgstr "空间群"
+
+#: org/jmol/awt/popup/JmolPopup.java:416 org/jmol/awt/popup/JmolPopup.java:463
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:570
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:584
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:593
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:610
+msgid "All"
+msgstr "全部"
+
+#: org/jmol/awt/popup/JmolPopup.java:566
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:946
+msgid "Mouse Manual"
+msgstr "鼠标使用手册"
+
+#: org/jmol/awt/popup/JmolPopup.java:567
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:947
+msgid "Translations"
+msgstr "翻译"
+
+#: org/jmol/awt/popup/JmolPopup.java:569
+msgid "System"
+msgstr "系统"
+
+#: org/jmol/awt/popup/JmolPopup.java:575
+msgid "1 processor"
+msgstr "1 个处理器"
+
+#: org/jmol/awt/popup/JmolPopup.java:576
+#, java-format
+msgid "{0} processors"
+msgstr "{0} 个处理器"
+
+#: org/jmol/awt/popup/JmolPopup.java:578
+msgid "unknown processor count"
+msgstr "未知 处理器数目"
+
+#: org/jmol/awt/popup/JmolPopup.java:580
+msgid "Java version:"
+msgstr "Java 版本:"
+
+#: org/jmol/awt/popup/JmolPopup.java:584
+msgid "Java memory usage:"
+msgstr "Java 内存使用:"
+
+#: org/jmol/awt/popup/JmolPopup.java:590
+#, java-format
+msgid "{0} MB total"
+msgstr "共 {0} MB"
+
+#: org/jmol/awt/popup/JmolPopup.java:592
+#, java-format
+msgid "{0} MB free"
+msgstr "{0} MB 未使用"
+
+#: org/jmol/awt/popup/JmolPopup.java:595
+#, java-format
+msgid "{0} MB maximum"
+msgstr "最大 {0} MB"
+
+#: org/jmol/awt/popup/JmolPopup.java:598
+msgid "unknown maximum"
+msgstr "极大值未知"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:539
+msgid "Configurations"
+msgstr "设置"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:540
+msgid "Element"
+msgstr "元素"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:541
+msgid "Model/Frame"
+msgstr "模型/框架"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:542
+msgid "Language"
+msgstr "语言"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:543
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:544
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:545
+msgid "By Residue Name"
+msgstr "根据残基名称排列"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:546
+msgid "By HETATM"
+msgstr "根据 HETATM 排列"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:547
+#, java-format
+msgid "Molecular Orbitals ({0})"
+msgstr "分子轨道 ({0})"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:548
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:860
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:904
+msgid "Symmetry"
+msgstr "对称性"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:550
+msgid "Hide Symmetry"
+msgstr "隐藏对称性"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:551
+msgid "Model information"
+msgstr "分子模型的信息"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:552
+#, java-format
+msgid "Select ({0})"
+msgstr "选择 ({0})"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:553
+#, java-format
+msgid "All {0} models"
+msgstr "所有{0}模型"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:554
+#, java-format
+msgid "Configurations ({0})"
+msgstr "设置 ({0})"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:555
+#, java-format
+msgid "Collection of {0} models"
+msgstr "{0} 模型的收集"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:556
+#, java-format
+msgid "atoms: {0}"
+msgstr "原子：{0}"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:557
+#, java-format
+msgid "bonds: {0}"
+msgstr "化学键：{0}"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:558
+#, java-format
+msgid "groups: {0}"
+msgstr "基团：{0}"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:559
+#, java-format
+msgid "chains: {0}"
+msgstr "链：{0}"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:560
+#, java-format
+msgid "polymers: {0}"
+msgstr "聚合物：{0}"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:561
+#, java-format
+msgid "model {0}"
+msgstr "模型{0}"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:562
+#, java-format
+msgid "View {0}"
+msgstr "查看 {0}"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:563
+msgid "Main Menu"
+msgstr "主选单"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:564
+msgid "Biomolecules"
+msgstr "生物分子"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:565
+#, java-format
+msgid "biomolecule {0} ({1} atoms)"
+msgstr "分子 {0} ({1} 个原子)"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:566
+#, java-format
+msgid "load biomolecule {0} ({1} atoms)"
+msgstr "载入分子 {0} ({1} 个原子)"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:571
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:690
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:699
+msgid "None"
+msgstr "无"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:572
+msgid "Display Selected Only"
+msgstr "只显示己选取的"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:573
+msgid "Invert Selection"
+msgstr "反向选取"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:575
+msgid "View"
+msgstr "视图"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:576
+msgid "Front"
+msgstr "正视"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:577
+msgid "Left"
+msgstr "左视"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:578
+msgid "Right"
+msgstr "右视"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:579
+#, fuzzy
+msgid ""
+"Top[as in \"view from the top, from above\" - (translators: remove this "
+"bracketed part]"
+msgstr "回到顶端"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:580
+msgid "Bottom"
+msgstr "底视"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:581
+msgid "Back"
+msgstr "返回"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:583
+msgid "Protein"
+msgstr "蛋白质"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:585
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:596
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:666
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:758
+msgid "Backbone"
+msgstr "骨架"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:586
+msgid "Side Chains"
+msgstr "侧链"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:587
+msgid "Polar Residues"
+msgstr "极性残基"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:588
+msgid "Nonpolar Residues"
+msgstr "非极性残基"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:589
+msgid "Basic Residues (+)"
+msgstr "碱性残基 (+)"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:590
+msgid "Acidic Residues (-)"
+msgstr "酸性残基 (-)"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:591
+msgid "Uncharged Residues"
+msgstr "不带电荷的残基"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:592
+msgid "Nucleic"
+msgstr "核的"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:594
+msgid "DNA"
+msgstr "DNA"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:595
+msgid "RNA"
+msgstr "RNA"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:597
+msgid "Bases"
+msgstr "碱"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:598
+msgid "AT pairs"
+msgstr "AT 对"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:599
+msgid "GC pairs"
+msgstr "GC 对"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:600
+msgid "AU pairs"
+msgstr "AU 对"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:601
+msgid "Hetero"
+msgstr "异质的(Hetero)"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:602
+msgid "All PDB \"HETATM\""
+msgstr "全部的 PDB \"HETATM\""
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:603
+msgid "All Solvent"
+msgstr "全部溶剂"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:604
+msgid "All Water"
+msgstr "全部的水"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:606
+msgid "Nonaqueous Solvent"
+msgstr "非水溶剂"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:607
+msgid "Nonaqueous HETATM"
+msgstr "非水溶液的 HETATM"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:608
+msgid "Ligand"
+msgstr "配体"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:611
+msgid "Carbohydrate"
+msgstr "碳水化合物"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:612
+msgid "None of the above"
+msgstr "以上皆非"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:614
+msgid "Style"
+msgstr "样式"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:615
+msgid "Scheme"
+msgstr "方案"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:616
+msgid "CPK Spacefill"
+msgstr "CPK 空间填充"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:617
+msgid "Ball and Stick"
+msgstr "球－棍"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:618
+msgid "Sticks"
+msgstr "棒状"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:619
+msgid "Wireframe"
+msgstr "线框"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:620
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:667
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:760
+msgid "Cartoon"
+msgstr "卡通"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:621
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:672
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:759
+msgid "Trace"
+msgstr "迹线"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:623
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:712
+msgid "Atoms"
+msgstr "原子"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:624
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:633
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:642
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:654
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:665
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:675
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:678
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:784
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:835
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:902
+msgid "Off"
+msgstr "关闭"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:625
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:626
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:627
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:628
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:629
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:630
+#, java-format
+msgid "{0}% van der Waals"
+msgstr "{0}% 范德华力"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:632
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:754
+msgid "Bonds"
+msgstr "化学键"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:634
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:644
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:655
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:676
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:679
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:783
+msgid "On"
+msgstr "开启"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:635
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:636
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:637
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:638
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:639
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:647
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:648
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:649
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:650
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:651
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:658
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:659
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:660
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:661
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:662
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:681
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:682
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:926
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:927
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:928
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:929
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:930
+#, java-format
+msgid "{0} Å"
+msgstr "{0} Å"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:641
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:755
+msgid "Hydrogen Bonds"
+msgstr "氢键"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:643
+msgid "Calculate"
+msgstr "计算"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:645
+msgid "Set H-Bonds Side Chain"
+msgstr "设定氢键侧链"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:646
+msgid "Set H-Bonds Backbone"
+msgstr "设定氢键骨架"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:653
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:756
+msgid "Disulfide Bonds"
+msgstr "二硫键"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:656
+msgid "Set SS-Bonds Side Chain"
+msgstr "设定二硫键侧链"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:657
+msgid "Set SS-Bonds Backbone"
+msgstr "设定二硫键骨架"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:664
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:757
+msgid "Structures"
+msgstr "二级结构"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:668
+msgid "Cartoon Rockets"
+msgstr "卡通火箭"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:669
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:761
+msgid "Ribbons"
+msgstr "带状"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:670
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:762
+msgid "Rockets"
+msgstr "火箭"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:671
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:763
+msgid "Strands"
+msgstr "丝带"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:674
+msgid "Vibration"
+msgstr "振动"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:677
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:767
+msgid "Vectors"
+msgstr "向量"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:680
+#, java-format
+msgid "{0} pixels"
+msgstr "{0} 像素"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:683
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:684
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:685
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:686
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:687
+#, java-format
+msgid "Scale {0}"
+msgstr "刻度 {0}"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:689
+msgid "Stereographic"
+msgstr "立体图形"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:691
+msgid "Red+Cyan glasses"
+msgstr "红+青 玻璃"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:692
+msgid "Red+Blue glasses"
+msgstr "红+蓝 玻璃"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:693
+msgid "Red+Green glasses"
+msgstr "红+蓝 玻璃"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:694
+msgid "Cross-eyed viewing"
+msgstr "交叉眼查看"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:695
+msgid "Wall-eyed viewing"
+msgstr "八字眼查看"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:697
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:764
+msgid "Labels"
+msgstr "标记"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:700
+msgid "With Element Symbol"
+msgstr "标示元素符号"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:701
+msgid "With Atom Name"
+msgstr "标示原子名称"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:702
+msgid "With Atom Number"
+msgstr "标示原子编号"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:704
+msgid "Position Label on Atom"
+msgstr "在原子上放置标示"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:705
+msgid "Centered"
+msgstr "居中"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:706
+msgid "Upper Right"
+msgstr "右上"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:707
+msgid "Lower Right"
+msgstr "右下"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:708
+msgid "Upper Left"
+msgstr "左上"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:709
+msgid "Lower Left"
+msgstr "左下"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:711
+msgid "Color"
+msgstr "颜色"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:714
+msgid "By Scheme"
+msgstr "按方案"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:715
+msgid "Element (CPK)"
+msgstr "元素(CPK)"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:716
+msgid "Alternative Location"
+msgstr "可替换的位置"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:717
+msgid "Molecule"
+msgstr "分子"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:718
+msgid "Formal Charge"
+msgstr "形式电荷"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:719
+msgid "Partial Charge"
+msgstr "部份电荷"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:720
+msgid "Temperature (Relative)"
+msgstr "温度(相对)"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:721
+msgid "Temperature (Fixed)"
+msgstr "温度(固定)"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:723
+msgid "Amino Acid"
+msgstr "氨基酸"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:724
+msgid "Secondary Structure"
+msgstr "二级结构"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:725
+msgid "Chain"
+msgstr "链"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:726
+msgid "Group"
+msgstr "基团"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:727
+msgid "Monomer"
+msgstr "单体"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:728
+msgid "Shapely"
+msgstr "定形的"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:730
+msgid "Inherit"
+msgstr "继承"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:731
+msgid "Black"
+msgstr "黑色"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:732
+msgid "White"
+msgstr "白色"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:733
+msgid "Cyan"
+msgstr "青色"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:735
+msgid "Red"
+msgstr "红色"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:736
+msgid "Orange"
+msgstr "橙色"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:737
+msgid "Yellow"
+msgstr "黄色"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:738
+msgid "Green"
+msgstr "绿色"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:739
+msgid "Blue"
+msgstr "蓝色"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:740
+msgid "Indigo"
+msgstr "靛蓝"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:741
+msgid "Violet"
+msgstr "紫色"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:743
+msgid "Salmon"
+msgstr "橙红色"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:744
+msgid "Olive"
+msgstr "橄榄色"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:745
+msgid "Maroon"
+msgstr "褐红"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:746
+msgid "Gray"
+msgstr "灰色"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:747
+msgid "Slate Blue"
+msgstr "石板蓝色"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:748
+msgid "Gold"
+msgstr "金色"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:749
+msgid "Orchid"
+msgstr "谈紫色"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:751
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:900
+msgid "Make Opaque"
+msgstr "不透明效果"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:752
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:901
+msgid "Make Translucent"
+msgstr "半透明效果"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:765
+msgid "Background"
+msgstr "背景"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:766
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:892
+msgid "Surfaces"
+msgstr "表面"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:768
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:912
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:938
+msgid "Axes"
+msgstr "轴"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:769
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:913
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:937
+msgid "Boundbox"
+msgstr "边界盒"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:770
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:889
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:914
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:939
+msgid "Unit cell"
+msgstr "单位晶格"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:772
+msgid "Zoom"
+msgstr "缩放"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:779
+msgid "Zoom In"
+msgstr "放大"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:780
+msgid "Zoom Out"
+msgstr "缩小"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:782
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:847
+msgid "Spin"
+msgstr "旋转"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:786
+msgid "Set X Rate"
+msgstr "设定X轴速率"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:787
+msgid "Set Y Rate"
+msgstr "设定Y轴速率"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:788
+msgid "Set Z Rate"
+msgstr "设定Z轴速率"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:789
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:815
+msgid "Set FPS"
+msgstr "设定每秒帧数(FPS)"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:799
+msgid "Animation"
+msgstr "动画"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:800
+msgid "Animation Mode"
+msgstr "动画模式"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:801
+msgid "Play Once"
+msgstr "播放一次"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:802
+msgid "Palindrome"
+msgstr "回文"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:803
+msgid "Loop"
+msgstr "循环播放"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:805
+msgid "Play"
+msgstr "播放"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:808
+msgid "Stop"
+msgstr "停止"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:809
+msgid "Next Frame"
+msgstr "下一格"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:810
+msgid "Previous Frame"
+msgstr "上一格"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:811
+msgid "Rewind"
+msgstr "倒带"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:812
+msgid "Reverse"
+msgstr "反向"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:813
+msgid "Restart"
+msgstr "重新开始"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:822
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:855
+msgid "Measurements"
+msgstr "测量"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:823
+msgid "Double-Click begins and ends all measurements"
+msgstr "双击以开始及结束所有测量"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:824
+msgid "Click for distance measurement"
+msgstr "点击以测量距离"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:825
+msgid "Click for angle measurement"
+msgstr "点击以测量角度"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:826
+msgid "Click for torsion (dihedral) measurement"
+msgstr "点击测量(两平面间的)转矩"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:827
+msgid "Click two atoms to display a sequence in the console"
+msgstr "点击两个原子，在控制台中显示一个序列。"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:828
+msgid "Delete measurements"
+msgstr "移除测量值"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:829
+msgid "List measurements"
+msgstr "列出测量值"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:830
+msgid "Distance units nanometers"
+msgstr "距离单位 纳米"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:831
+msgid "Distance units Angstroms"
+msgstr "距离单位 Å"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:832
+msgid "Distance units picometers"
+msgstr "距离单位 皮米"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:834
+msgid "Set picking"
+msgstr "鼠标拾取"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:836
+msgid "Center"
+msgstr "居中显示"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:838
+msgid "Identity"
+msgstr "显示标识(ID)"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:839
+msgid "Label"
+msgstr "显示标签"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:840
+msgid "Select atom"
+msgstr "选择原子"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:841
+msgid "Select chain"
+msgstr "选择链"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:842
+msgid "Select element"
+msgstr "选择元素"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:843
+msgid "Select group"
+msgstr "选择基团"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:844
+msgid "Select molecule"
+msgstr "选择分子"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:845
+msgid "Select site"
+msgstr "选择位点"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:846
+msgid "Show symmetry operation"
+msgstr "显示对称性操作"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:849
+msgid "Show"
+msgstr "显示"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:851
+msgid "File Contents"
+msgstr "文件内容"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:852
+msgid "File Header"
+msgstr "文件头"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:854
+msgid "Isosurface JVXL data"
+msgstr "等面的 JVXL资料"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:856
+msgid "Molecular orbital JVXL data"
+msgstr "分子轨道的 JVXL 资料"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:857
+msgid "Model"
+msgstr "模型"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:858
+msgid "Orientation"
+msgstr "方向"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:859
+msgid "Space group"
+msgstr "空间群"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:861
+msgid "Current state"
+msgstr "当前状态"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:863
+msgid "File"
+msgstr "文件"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:864
+msgid "Reload"
+msgstr "重新载入"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:865
+msgid "Open from PDB"
+msgstr "从 PDB 中打开"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:866
+msgid "Open file or URL"
+msgstr "打开文件或网址(URL)"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:867
+msgid "Load full unit cell"
+msgstr "载入全部晶格"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:868
+msgid "Open script"
+msgstr "打开脚本"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:870
+#, java-format
+msgid "Save a copy of {0}"
+msgstr "保存 {0} 的副本"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:871
+msgid "Save script with state"
+msgstr "保存脚本及状态"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:872
+msgid "Save script with history"
+msgstr "保存脚本及历史"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:873
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:874
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:875
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:876
+#, java-format
+msgid "Export {0} image"
+msgstr "导出 {0} 图像"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:877
+msgid "Save all as JMOL file (zip)"
+msgstr "全部保存为Jmol文件(zip)"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:878
+msgid "Save JVXL isosurface"
+msgstr "保存 JVXL 等值面"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:879
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:880
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:881
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:882
+#, java-format
+msgid "Export {0} 3D model"
+msgstr "导出 {0} 3D 模型"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:884
+msgid "Computation"
+msgstr "计算"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:885
+msgid "Optimize structure"
+msgstr "优化结构"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:886
+msgid "Model kit"
+msgstr "建模工具"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:890
+msgid "Extract MOL data"
+msgstr "提取 MOL 数据"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:893
+msgid "Dot Surface"
+msgstr "点状表面"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:894
+msgid "van der Waals Surface"
+msgstr "范德华表面"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:895
+msgid "Molecular Surface"
+msgstr "分子表面"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:896
+#, java-format
+msgid "Solvent Surface ({0}-Angstrom probe)"
+msgstr "溶剂表面 ({0} Å 的探针)"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:898
+#, java-format
+msgid "Solvent-Accessible Surface (VDW + {0} Angstrom)"
+msgstr "溶剂可及表面 (范德华表面 + {0} Å)"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:899
+msgid "Molecular Electrostatic Potential"
+msgstr "分子静电势"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:905
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:906
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:907
+#, java-format
+msgid "Reload {0}"
+msgstr "重新载入 {0}"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:908
+#, java-format
+msgid "Reload {0} + Display {1}"
+msgstr "重新载入 {0} + 显示 {1}"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:909
+msgid "Reload + Polyhedra"
+msgstr "重析载入 + 多面体"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:916
+msgid "Hide"
+msgstr "隐藏"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:917
+msgid "Dotted"
+msgstr "点状"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:919
+msgid "Pixel Width"
+msgstr "像素宽度"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:920
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:921
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:922
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:923
+#, java-format
+msgid "{0} px"
+msgstr "{0} 像素"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:925
+msgid "Angstrom Width"
+msgstr "几 Å 宽度"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:933
+msgid "Selection Halos"
+msgstr "显示选择光圈"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:934
+msgid "Show Hydrogens"
+msgstr "显示氢原子"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:935
+msgid "Show Measurements"
+msgstr "显示测量结果"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:936
+msgid "Perspective Depth"
+msgstr "深度透视"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:940
+msgid "RasMol Colors"
+msgstr "RasMol 颜色"
+
+#: org/jmol/awt/popup/MainPopupResourceBundle.java:941
+msgid "About..."
+msgstr "关于..."
 
 #: org/jmol/export/dialog/Dialog.java:95
 msgid "File or URL:"
@@ -537,119 +1774,6 @@ msgstr "{0} 原子将被最小化"
 msgid "could not setup force field {0}"
 msgstr "无法设定力场 {0}"
 
-#: org/jmol/modelkit/ModelKitPopup.java:75
-msgid "Element?"
-msgstr "元素？"
-
-#: org/jmol/modelkit/modelKitPopupResourceBundle.java:78
-msgid "new"
-msgstr "新建"
-
-#: org/jmol/modelkit/modelKitPopupResourceBundle.java:79
-msgid "undo (CTRL-Z)"
-msgstr "撤消(Ctrl-Z)"
-
-#: org/jmol/modelkit/modelKitPopupResourceBundle.java:80
-msgid "redo (CTRL-Y)"
-msgstr "重做(Ctrl-Y)"
-
-#: org/jmol/modelkit/modelKitPopupResourceBundle.java:81
-#: org/jmol/viewer/ActionManager.java:115
-msgid "center"
-msgstr "居中"
-
-#: org/jmol/modelkit/modelKitPopupResourceBundle.java:82
-msgid "add hydrogens"
-msgstr "添加氢原子"
-
-#: org/jmol/modelkit/modelKitPopupResourceBundle.java:83
-msgid "minimize"
-msgstr "最小化"
-
-#: org/jmol/modelkit/modelKitPopupResourceBundle.java:84
-msgid "fix hydrogens and minimize"
-msgstr "固定氢原子并最小化"
-
-#: org/jmol/modelkit/modelKitPopupResourceBundle.java:85
-msgid "clear"
-msgstr "清除"
-
-#: org/jmol/modelkit/modelKitPopupResourceBundle.java:86
-msgid "save file"
-msgstr "保存文件"
-
-#: org/jmol/modelkit/modelKitPopupResourceBundle.java:87
-msgid "save state"
-msgstr "保存状态"
-
-#: org/jmol/modelkit/modelKitPopupResourceBundle.java:88
-msgid "invert ring stereochemistry"
-msgstr "反转环的立体化学"
-
-#: org/jmol/modelkit/modelKitPopupResourceBundle.java:89
-msgid "delete atom"
-msgstr "删除原子"
-
-#: org/jmol/modelkit/modelKitPopupResourceBundle.java:90
-msgid "drag to bond"
-msgstr "拖拽成键"
-
-#: org/jmol/modelkit/modelKitPopupResourceBundle.java:91
-msgid "drag atom"
-msgstr "拖动原子"
-
-#: org/jmol/modelkit/modelKitPopupResourceBundle.java:92
-msgid "drag atom (and minimize)"
-msgstr "拖动原子(并最小化)"
-
-#: org/jmol/modelkit/modelKitPopupResourceBundle.java:93
-msgid "drag molecule (SHIFT to rotate)"
-msgstr "拖动分子(Shift-旋转)"
-
-#: org/jmol/modelkit/modelKitPopupResourceBundle.java:94
-msgid "drag and minimize molecule (docking)"
-msgstr "拖拽并最小化分子(docking)"
-
-#: org/jmol/modelkit/modelKitPopupResourceBundle.java:103
-msgid "increase charge"
-msgstr "增加电荷"
-
-#: org/jmol/modelkit/modelKitPopupResourceBundle.java:104
-msgid "decrease charge"
-msgstr "减少电荷"
-
-#: org/jmol/modelkit/modelKitPopupResourceBundle.java:105
-msgid "delete bond"
-msgstr "删除键"
-
-#: org/jmol/modelkit/modelKitPopupResourceBundle.java:106
-msgid "single"
-msgstr "单价"
-
-#: org/jmol/modelkit/modelKitPopupResourceBundle.java:107
-msgid "double"
-msgstr "二价"
-
-#: org/jmol/modelkit/modelKitPopupResourceBundle.java:108
-msgid "triple"
-msgstr "三价"
-
-#: org/jmol/modelkit/modelKitPopupResourceBundle.java:109
-msgid "increase order"
-msgstr "提高次序"
-
-#: org/jmol/modelkit/modelKitPopupResourceBundle.java:110
-msgid "decrease order"
-msgstr "降低次序"
-
-#: org/jmol/modelkit/modelKitPopupResourceBundle.java:111
-msgid "rotate bond (SHIFT-DRAG)"
-msgstr "旋转键(Shift-拖动)"
-
-#: org/jmol/modelkit/modelKitPopupResourceBundle.java:112
-msgid "exit modelkit mode"
-msgstr "退出建模工具(modelkit)模式"
-
 #: org/jmol/modelsetbio/AminoPolymer.java:576
 #, java-format
 msgid ""
@@ -675,1132 +1799,8 @@ msgstr ""
 "使用 {0} 可以忽略这些氢原子的位置。\n"
 "\n"
 
-#: org/jmol/popup/JmolPopup.java:149
-#: org/jmol/popup/MainPopupResourceBundle.java:537
-msgid "No atoms loaded"
-msgstr "未载入原子"
-
-#: org/jmol/popup/JmolPopup.java:362
-#: org/jmol/popup/MainPopupResourceBundle.java:549
-msgid "Space Group"
-msgstr "空间群"
-
-#: org/jmol/popup/JmolPopup.java:424 org/jmol/popup/JmolPopup.java:471
-#: org/jmol/popup/MainPopupResourceBundle.java:570
-#: org/jmol/popup/MainPopupResourceBundle.java:584
-#: org/jmol/popup/MainPopupResourceBundle.java:593
-#: org/jmol/popup/MainPopupResourceBundle.java:610
-msgid "All"
-msgstr "全部"
-
-#: org/jmol/popup/JmolPopup.java:574
-#: org/jmol/popup/MainPopupResourceBundle.java:946
-msgid "Mouse Manual"
-msgstr "鼠标使用手册"
-
-#: org/jmol/popup/JmolPopup.java:575
-#: org/jmol/popup/MainPopupResourceBundle.java:947
-msgid "Translations"
-msgstr "翻译"
-
-#: org/jmol/popup/JmolPopup.java:577
-msgid "System"
-msgstr "系统"
-
-#: org/jmol/popup/JmolPopup.java:583
-msgid "1 processor"
-msgstr "1 个处理器"
-
-#: org/jmol/popup/JmolPopup.java:584
-#, java-format
-msgid "{0} processors"
-msgstr "{0} 个处理器"
-
-#: org/jmol/popup/JmolPopup.java:586
-msgid "unknown processor count"
-msgstr "未知 处理器数目"
-
-#: org/jmol/popup/JmolPopup.java:588
-msgid "Java version:"
-msgstr "Java 版本:"
-
-#: org/jmol/popup/JmolPopup.java:592
-msgid "Java memory usage:"
-msgstr "Java 内存使用:"
-
-#: org/jmol/popup/JmolPopup.java:598
-#, java-format
-msgid "{0} MB total"
-msgstr "共 {0} MB"
-
-#: org/jmol/popup/JmolPopup.java:600
-#, java-format
-msgid "{0} MB free"
-msgstr "{0} MB 未使用"
-
-#: org/jmol/popup/JmolPopup.java:603
-#, java-format
-msgid "{0} MB maximum"
-msgstr "最大 {0} MB"
-
-#: org/jmol/popup/JmolPopup.java:606
-msgid "unknown maximum"
-msgstr "极大值未知"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:539
-msgid "Configurations"
-msgstr "设置"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:540
-msgid "Element"
-msgstr "元素"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:541
-msgid "Model/Frame"
-msgstr "模型/框架"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:542
-msgid "Language"
-msgstr "语言"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:543
-#: org/jmol/popup/MainPopupResourceBundle.java:544
-#: org/jmol/popup/MainPopupResourceBundle.java:545
-msgid "By Residue Name"
-msgstr "根据残基名称排列"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:546
-msgid "By HETATM"
-msgstr "根据 HETATM 排列"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:547
-#, java-format
-msgid "Molecular Orbitals ({0})"
-msgstr "分子轨道 ({0})"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:548
-#: org/jmol/popup/MainPopupResourceBundle.java:860
-#: org/jmol/popup/MainPopupResourceBundle.java:904
-msgid "Symmetry"
-msgstr "对称性"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:550
-msgid "Hide Symmetry"
-msgstr "隐藏对称性"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:551
-msgid "Model information"
-msgstr "分子模型的信息"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:552
-#, java-format
-msgid "Select ({0})"
-msgstr "选择 ({0})"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:553
-#, java-format
-msgid "All {0} models"
-msgstr "所有{0}模型"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:554
-#, java-format
-msgid "Configurations ({0})"
-msgstr "设置 ({0})"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:555
-#, java-format
-msgid "Collection of {0} models"
-msgstr "{0} 模型的收集"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:556
-#, java-format
-msgid "atoms: {0}"
-msgstr "原子：{0}"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:557
-#, java-format
-msgid "bonds: {0}"
-msgstr "化学键：{0}"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:558
-#, java-format
-msgid "groups: {0}"
-msgstr "基团：{0}"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:559
-#, java-format
-msgid "chains: {0}"
-msgstr "链：{0}"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:560
-#, java-format
-msgid "polymers: {0}"
-msgstr "聚合物：{0}"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:561
-#, java-format
-msgid "model {0}"
-msgstr "模型{0}"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:562
-#, java-format
-msgid "View {0}"
-msgstr "查看 {0}"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:563
-msgid "Main Menu"
-msgstr "主选单"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:564
-msgid "Biomolecules"
-msgstr "生物分子"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:565
-#, java-format
-msgid "biomolecule {0} ({1} atoms)"
-msgstr "分子 {0} ({1} 个原子)"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:566
-#, java-format
-msgid "load biomolecule {0} ({1} atoms)"
-msgstr "载入分子 {0} ({1} 个原子)"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:571
-#: org/jmol/popup/MainPopupResourceBundle.java:690
-#: org/jmol/popup/MainPopupResourceBundle.java:699
-msgid "None"
-msgstr "无"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:572
-msgid "Display Selected Only"
-msgstr "只显示己选取的"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:573
-msgid "Invert Selection"
-msgstr "反向选取"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:575
-msgid "View"
-msgstr "视图"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:576
-msgid "Front"
-msgstr "正视"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:577
-msgid "Left"
-msgstr "左视"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:578
-msgid "Right"
-msgstr "右视"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:579
-#, fuzzy
-msgid ""
-"Top[as in \"view from the top, from above\" - (translators: remove this "
-"bracketed part]"
-msgstr "回到顶端"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:580
-msgid "Bottom"
-msgstr "底视"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:581
-msgid "Back"
-msgstr "返回"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:583
-msgid "Protein"
-msgstr "蛋白质"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:585
-#: org/jmol/popup/MainPopupResourceBundle.java:596
-#: org/jmol/popup/MainPopupResourceBundle.java:666
-#: org/jmol/popup/MainPopupResourceBundle.java:758
-msgid "Backbone"
-msgstr "骨架"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:586
-msgid "Side Chains"
-msgstr "侧链"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:587
-msgid "Polar Residues"
-msgstr "极性残基"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:588
-msgid "Nonpolar Residues"
-msgstr "非极性残基"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:589
-msgid "Basic Residues (+)"
-msgstr "碱性残基 (+)"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:590
-msgid "Acidic Residues (-)"
-msgstr "酸性残基 (-)"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:591
-msgid "Uncharged Residues"
-msgstr "不带电荷的残基"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:592
-msgid "Nucleic"
-msgstr "核的"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:594
-msgid "DNA"
-msgstr "DNA"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:595
-msgid "RNA"
-msgstr "RNA"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:597
-msgid "Bases"
-msgstr "碱"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:598
-msgid "AT pairs"
-msgstr "AT 对"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:599
-msgid "GC pairs"
-msgstr "GC 对"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:600
-msgid "AU pairs"
-msgstr "AU 对"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:601
-msgid "Hetero"
-msgstr "异质的(Hetero)"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:602
-msgid "All PDB \"HETATM\""
-msgstr "全部的 PDB \"HETATM\""
-
-#: org/jmol/popup/MainPopupResourceBundle.java:603
-msgid "All Solvent"
-msgstr "全部溶剂"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:604
-msgid "All Water"
-msgstr "全部的水"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:606
-msgid "Nonaqueous Solvent"
-msgstr "非水溶剂"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:607
-msgid "Nonaqueous HETATM"
-msgstr "非水溶液的 HETATM"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:608
-msgid "Ligand"
-msgstr "配体"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:611
-msgid "Carbohydrate"
-msgstr "碳水化合物"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:612
-msgid "None of the above"
-msgstr "以上皆非"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:614
-msgid "Style"
-msgstr "样式"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:615
-msgid "Scheme"
-msgstr "方案"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:616
-msgid "CPK Spacefill"
-msgstr "CPK 空间填充"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:617
-msgid "Ball and Stick"
-msgstr "球－棍"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:618
-msgid "Sticks"
-msgstr "棒状"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:619
-msgid "Wireframe"
-msgstr "线框"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:620
-#: org/jmol/popup/MainPopupResourceBundle.java:667
-#: org/jmol/popup/MainPopupResourceBundle.java:760
-msgid "Cartoon"
-msgstr "卡通"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:621
-#: org/jmol/popup/MainPopupResourceBundle.java:672
-#: org/jmol/popup/MainPopupResourceBundle.java:759
-msgid "Trace"
-msgstr "迹线"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:623
-#: org/jmol/popup/MainPopupResourceBundle.java:712
-msgid "Atoms"
-msgstr "原子"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:624
-#: org/jmol/popup/MainPopupResourceBundle.java:633
-#: org/jmol/popup/MainPopupResourceBundle.java:642
-#: org/jmol/popup/MainPopupResourceBundle.java:654
-#: org/jmol/popup/MainPopupResourceBundle.java:665
-#: org/jmol/popup/MainPopupResourceBundle.java:675
-#: org/jmol/popup/MainPopupResourceBundle.java:678
-#: org/jmol/popup/MainPopupResourceBundle.java:784
-#: org/jmol/popup/MainPopupResourceBundle.java:835
-#: org/jmol/popup/MainPopupResourceBundle.java:902
-msgid "Off"
-msgstr "关闭"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:625
-#: org/jmol/popup/MainPopupResourceBundle.java:626
-#: org/jmol/popup/MainPopupResourceBundle.java:627
-#: org/jmol/popup/MainPopupResourceBundle.java:628
-#: org/jmol/popup/MainPopupResourceBundle.java:629
-#: org/jmol/popup/MainPopupResourceBundle.java:630
-#, java-format
-msgid "{0}% van der Waals"
-msgstr "{0}% 范德华力"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:632
-#: org/jmol/popup/MainPopupResourceBundle.java:754
-msgid "Bonds"
-msgstr "化学键"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:634
-#: org/jmol/popup/MainPopupResourceBundle.java:644
-#: org/jmol/popup/MainPopupResourceBundle.java:655
-#: org/jmol/popup/MainPopupResourceBundle.java:676
-#: org/jmol/popup/MainPopupResourceBundle.java:679
-#: org/jmol/popup/MainPopupResourceBundle.java:783
-msgid "On"
-msgstr "开启"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:635
-#: org/jmol/popup/MainPopupResourceBundle.java:636
-#: org/jmol/popup/MainPopupResourceBundle.java:637
-#: org/jmol/popup/MainPopupResourceBundle.java:638
-#: org/jmol/popup/MainPopupResourceBundle.java:639
-#: org/jmol/popup/MainPopupResourceBundle.java:647
-#: org/jmol/popup/MainPopupResourceBundle.java:648
-#: org/jmol/popup/MainPopupResourceBundle.java:649
-#: org/jmol/popup/MainPopupResourceBundle.java:650
-#: org/jmol/popup/MainPopupResourceBundle.java:651
-#: org/jmol/popup/MainPopupResourceBundle.java:658
-#: org/jmol/popup/MainPopupResourceBundle.java:659
-#: org/jmol/popup/MainPopupResourceBundle.java:660
-#: org/jmol/popup/MainPopupResourceBundle.java:661
-#: org/jmol/popup/MainPopupResourceBundle.java:662
-#: org/jmol/popup/MainPopupResourceBundle.java:681
-#: org/jmol/popup/MainPopupResourceBundle.java:682
-#: org/jmol/popup/MainPopupResourceBundle.java:926
-#: org/jmol/popup/MainPopupResourceBundle.java:927
-#: org/jmol/popup/MainPopupResourceBundle.java:928
-#: org/jmol/popup/MainPopupResourceBundle.java:929
-#: org/jmol/popup/MainPopupResourceBundle.java:930
-#, java-format
-msgid "{0} Å"
-msgstr "{0} Å"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:641
-#: org/jmol/popup/MainPopupResourceBundle.java:755
-msgid "Hydrogen Bonds"
-msgstr "氢键"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:643
-msgid "Calculate"
-msgstr "计算"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:645
-msgid "Set H-Bonds Side Chain"
-msgstr "设定氢键侧链"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:646
-msgid "Set H-Bonds Backbone"
-msgstr "设定氢键骨架"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:653
-#: org/jmol/popup/MainPopupResourceBundle.java:756
-msgid "Disulfide Bonds"
-msgstr "二硫键"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:656
-msgid "Set SS-Bonds Side Chain"
-msgstr "设定二硫键侧链"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:657
-msgid "Set SS-Bonds Backbone"
-msgstr "设定二硫键骨架"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:664
-#: org/jmol/popup/MainPopupResourceBundle.java:757
-msgid "Structures"
-msgstr "二级结构"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:668
-msgid "Cartoon Rockets"
-msgstr "卡通火箭"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:669
-#: org/jmol/popup/MainPopupResourceBundle.java:761
-msgid "Ribbons"
-msgstr "带状"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:670
-#: org/jmol/popup/MainPopupResourceBundle.java:762
-msgid "Rockets"
-msgstr "火箭"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:671
-#: org/jmol/popup/MainPopupResourceBundle.java:763
-msgid "Strands"
-msgstr "丝带"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:674
-msgid "Vibration"
-msgstr "振动"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:677
-#: org/jmol/popup/MainPopupResourceBundle.java:767
-msgid "Vectors"
-msgstr "向量"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:680
-#, java-format
-msgid "{0} pixels"
-msgstr "{0} 像素"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:683
-#: org/jmol/popup/MainPopupResourceBundle.java:684
-#: org/jmol/popup/MainPopupResourceBundle.java:685
-#: org/jmol/popup/MainPopupResourceBundle.java:686
-#: org/jmol/popup/MainPopupResourceBundle.java:687
-#, java-format
-msgid "Scale {0}"
-msgstr "刻度 {0}"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:689
-msgid "Stereographic"
-msgstr "立体图形"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:691
-msgid "Red+Cyan glasses"
-msgstr "红+青 玻璃"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:692
-msgid "Red+Blue glasses"
-msgstr "红+蓝 玻璃"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:693
-msgid "Red+Green glasses"
-msgstr "红+蓝 玻璃"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:694
-msgid "Cross-eyed viewing"
-msgstr "交叉眼查看"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:695
-msgid "Wall-eyed viewing"
-msgstr "八字眼查看"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:697
-#: org/jmol/popup/MainPopupResourceBundle.java:764
-msgid "Labels"
-msgstr "标记"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:700
-msgid "With Element Symbol"
-msgstr "标示元素符号"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:701
-msgid "With Atom Name"
-msgstr "标示原子名称"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:702
-msgid "With Atom Number"
-msgstr "标示原子编号"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:704
-msgid "Position Label on Atom"
-msgstr "在原子上放置标示"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:705
-msgid "Centered"
-msgstr "居中"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:706
-msgid "Upper Right"
-msgstr "右上"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:707
-msgid "Lower Right"
-msgstr "右下"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:708
-msgid "Upper Left"
-msgstr "左上"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:709
-msgid "Lower Left"
-msgstr "左下"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:711
-msgid "Color"
-msgstr "颜色"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:714
-msgid "By Scheme"
-msgstr "按方案"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:715
-msgid "Element (CPK)"
-msgstr "元素(CPK)"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:716
-msgid "Alternative Location"
-msgstr "可替换的位置"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:717
-msgid "Molecule"
-msgstr "分子"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:718
-msgid "Formal Charge"
-msgstr "形式电荷"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:719
-msgid "Partial Charge"
-msgstr "部份电荷"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:720
-msgid "Temperature (Relative)"
-msgstr "温度(相对)"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:721
-msgid "Temperature (Fixed)"
-msgstr "温度(固定)"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:723
-msgid "Amino Acid"
-msgstr "氨基酸"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:724
-msgid "Secondary Structure"
-msgstr "二级结构"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:725
-msgid "Chain"
-msgstr "链"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:726
-msgid "Group"
-msgstr "基团"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:727
-msgid "Monomer"
-msgstr "单体"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:728
-msgid "Shapely"
-msgstr "定形的"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:730
-msgid "Inherit"
-msgstr "继承"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:731
-msgid "Black"
-msgstr "黑色"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:732
-msgid "White"
-msgstr "白色"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:733
-msgid "Cyan"
-msgstr "青色"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:735
-msgid "Red"
-msgstr "红色"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:736
-msgid "Orange"
-msgstr "橙色"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:737
-msgid "Yellow"
-msgstr "黄色"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:738
-msgid "Green"
-msgstr "绿色"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:739
-msgid "Blue"
-msgstr "蓝色"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:740
-msgid "Indigo"
-msgstr "靛蓝"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:741
-msgid "Violet"
-msgstr "紫色"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:743
-msgid "Salmon"
-msgstr "橙红色"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:744
-msgid "Olive"
-msgstr "橄榄色"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:745
-msgid "Maroon"
-msgstr "褐红"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:746
-msgid "Gray"
-msgstr "灰色"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:747
-msgid "Slate Blue"
-msgstr "石板蓝色"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:748
-msgid "Gold"
-msgstr "金色"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:749
-msgid "Orchid"
-msgstr "谈紫色"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:751
-#: org/jmol/popup/MainPopupResourceBundle.java:900
-msgid "Make Opaque"
-msgstr "不透明效果"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:752
-#: org/jmol/popup/MainPopupResourceBundle.java:901
-msgid "Make Translucent"
-msgstr "半透明效果"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:765
-msgid "Background"
-msgstr "背景"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:766
-#: org/jmol/popup/MainPopupResourceBundle.java:892
-msgid "Surfaces"
-msgstr "表面"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:768
-#: org/jmol/popup/MainPopupResourceBundle.java:912
-#: org/jmol/popup/MainPopupResourceBundle.java:938
-msgid "Axes"
-msgstr "轴"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:769
-#: org/jmol/popup/MainPopupResourceBundle.java:913
-#: org/jmol/popup/MainPopupResourceBundle.java:937
-msgid "Boundbox"
-msgstr "边界盒"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:770
-#: org/jmol/popup/MainPopupResourceBundle.java:889
-#: org/jmol/popup/MainPopupResourceBundle.java:914
-#: org/jmol/popup/MainPopupResourceBundle.java:939
-msgid "Unit cell"
-msgstr "单位晶格"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:772
-msgid "Zoom"
-msgstr "缩放"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:779
-msgid "Zoom In"
-msgstr "放大"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:780
-msgid "Zoom Out"
-msgstr "缩小"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:782
-#: org/jmol/popup/MainPopupResourceBundle.java:847
-msgid "Spin"
-msgstr "旋转"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:786
-msgid "Set X Rate"
-msgstr "设定X轴速率"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:787
-msgid "Set Y Rate"
-msgstr "设定Y轴速率"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:788
-msgid "Set Z Rate"
-msgstr "设定Z轴速率"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:789
-#: org/jmol/popup/MainPopupResourceBundle.java:815
-msgid "Set FPS"
-msgstr "设定每秒帧数(FPS)"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:799
-msgid "Animation"
-msgstr "动画"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:800
-msgid "Animation Mode"
-msgstr "动画模式"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:801
-msgid "Play Once"
-msgstr "播放一次"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:802
-msgid "Palindrome"
-msgstr "回文"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:803
-msgid "Loop"
-msgstr "循环播放"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:805
-msgid "Play"
-msgstr "播放"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:808
-msgid "Stop"
-msgstr "停止"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:809
-msgid "Next Frame"
-msgstr "下一格"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:810
-msgid "Previous Frame"
-msgstr "上一格"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:811
-msgid "Rewind"
-msgstr "倒带"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:812
-msgid "Reverse"
-msgstr "反向"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:813
-msgid "Restart"
-msgstr "重新开始"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:822
-#: org/jmol/popup/MainPopupResourceBundle.java:855
-msgid "Measurements"
-msgstr "测量"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:823
-msgid "Double-Click begins and ends all measurements"
-msgstr "双击以开始及结束所有测量"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:824
-msgid "Click for distance measurement"
-msgstr "点击以测量距离"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:825
-msgid "Click for angle measurement"
-msgstr "点击以测量角度"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:826
-msgid "Click for torsion (dihedral) measurement"
-msgstr "点击测量(两平面间的)转矩"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:827
-msgid "Click two atoms to display a sequence in the console"
-msgstr "点击两个原子，在控制台中显示一个序列。"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:828
-msgid "Delete measurements"
-msgstr "移除测量值"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:829
-msgid "List measurements"
-msgstr "列出测量值"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:830
-msgid "Distance units nanometers"
-msgstr "距离单位 纳米"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:831
-msgid "Distance units Angstroms"
-msgstr "距离单位 Å"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:832
-msgid "Distance units picometers"
-msgstr "距离单位 皮米"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:834
-msgid "Set picking"
-msgstr "鼠标拾取"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:836
-msgid "Center"
-msgstr "居中显示"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:838
-msgid "Identity"
-msgstr "显示标识(ID)"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:839
-msgid "Label"
-msgstr "显示标签"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:840
-msgid "Select atom"
-msgstr "选择原子"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:841
-msgid "Select chain"
-msgstr "选择链"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:842
-msgid "Select element"
-msgstr "选择元素"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:843
-msgid "Select group"
-msgstr "选择基团"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:844
-msgid "Select molecule"
-msgstr "选择分子"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:845
-msgid "Select site"
-msgstr "选择位点"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:846
-msgid "Show symmetry operation"
-msgstr "显示对称性操作"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:849
-msgid "Show"
-msgstr "显示"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:851
-msgid "File Contents"
-msgstr "文件内容"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:852
-msgid "File Header"
-msgstr "文件头"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:854
-msgid "Isosurface JVXL data"
-msgstr "等面的 JVXL资料"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:856
-msgid "Molecular orbital JVXL data"
-msgstr "分子轨道的 JVXL 资料"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:857
-msgid "Model"
-msgstr "模型"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:858
-msgid "Orientation"
-msgstr "方向"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:859
-msgid "Space group"
-msgstr "空间群"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:861
-msgid "Current state"
-msgstr "当前状态"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:863
-msgid "File"
-msgstr "文件"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:864
-msgid "Reload"
-msgstr "重新载入"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:865
-msgid "Open from PDB"
-msgstr "从 PDB 中打开"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:866
-msgid "Open file or URL"
-msgstr "打开文件或网址(URL)"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:867
-msgid "Load full unit cell"
-msgstr "载入全部晶格"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:868
-msgid "Open script"
-msgstr "打开脚本"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:870
-#, java-format
-msgid "Save a copy of {0}"
-msgstr "保存 {0} 的副本"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:871
-msgid "Save script with state"
-msgstr "保存脚本及状态"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:872
-msgid "Save script with history"
-msgstr "保存脚本及历史"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:873
-#: org/jmol/popup/MainPopupResourceBundle.java:874
-#: org/jmol/popup/MainPopupResourceBundle.java:875
-#: org/jmol/popup/MainPopupResourceBundle.java:876
-#, java-format
-msgid "Export {0} image"
-msgstr "导出 {0} 图像"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:877
-msgid "Save all as JMOL file (zip)"
-msgstr "全部保存为Jmol文件(zip)"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:878
-msgid "Save JVXL isosurface"
-msgstr "保存 JVXL 等值面"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:879
-#: org/jmol/popup/MainPopupResourceBundle.java:880
-#: org/jmol/popup/MainPopupResourceBundle.java:881
-#: org/jmol/popup/MainPopupResourceBundle.java:882
-#, java-format
-msgid "Export {0} 3D model"
-msgstr "导出 {0} 3D 模型"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:884
-msgid "Computation"
-msgstr "计算"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:885
-msgid "Optimize structure"
-msgstr "优化结构"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:886
-msgid "Model kit"
-msgstr "建模工具"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:890
-msgid "Extract MOL data"
-msgstr "提取 MOL 数据"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:893
-msgid "Dot Surface"
-msgstr "点状表面"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:894
-msgid "van der Waals Surface"
-msgstr "范德华表面"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:895
-msgid "Molecular Surface"
-msgstr "分子表面"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:896
-#, java-format
-msgid "Solvent Surface ({0}-Angstrom probe)"
-msgstr "溶剂表面 ({0} Å 的探针)"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:898
-#, java-format
-msgid "Solvent-Accessible Surface (VDW + {0} Angstrom)"
-msgstr "溶剂可及表面 (范德华表面 + {0} Å)"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:899
-msgid "Molecular Electrostatic Potential"
-msgstr "分子静电势"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:905
-#: org/jmol/popup/MainPopupResourceBundle.java:906
-#: org/jmol/popup/MainPopupResourceBundle.java:907
-#, java-format
-msgid "Reload {0}"
-msgstr "重新载入 {0}"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:908
-#, java-format
-msgid "Reload {0} + Display {1}"
-msgstr "重新载入 {0} + 显示 {1}"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:909
-msgid "Reload + Polyhedra"
-msgstr "重析载入 + 多面体"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:916
-msgid "Hide"
-msgstr "隐藏"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:917
-msgid "Dotted"
-msgstr "点状"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:919
-msgid "Pixel Width"
-msgstr "像素宽度"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:920
-#: org/jmol/popup/MainPopupResourceBundle.java:921
-#: org/jmol/popup/MainPopupResourceBundle.java:922
-#: org/jmol/popup/MainPopupResourceBundle.java:923
-#, java-format
-msgid "{0} px"
-msgstr "{0} 像素"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:925
-msgid "Angstrom Width"
-msgstr "几 Å 宽度"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:933
-msgid "Selection Halos"
-msgstr "显示选择光圈"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:934
-msgid "Show Hydrogens"
-msgstr "显示氢原子"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:935
-msgid "Show Measurements"
-msgstr "显示测量结果"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:936
-msgid "Perspective Depth"
-msgstr "深度透视"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:940
-msgid "RasMol Colors"
-msgstr "RasMol 颜色"
-
-#: org/jmol/popup/MainPopupResourceBundle.java:941
-msgid "About..."
-msgstr "关于..."
-
 #: org/jmol/script/ScriptCompilationTokenParser.java:1324
-#: org/jmol/script/ScriptEvaluator.java:2786
+#: org/jmol/script/ScriptEvaluator.java:2785
 msgid "bad argument count"
 msgstr "参数数目错误"
 
@@ -1810,7 +1810,7 @@ msgid "invalid context for {0}"
 msgstr "上下文对 {0} 无效"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1330
-#: org/jmol/script/ScriptEvaluator.java:2810
+#: org/jmol/script/ScriptEvaluator.java:2809
 msgid "command expected"
 msgstr "需要指令"
 
@@ -1819,7 +1819,7 @@ msgid "{ number number number } expected"
 msgstr "需要 {数值 数值 数值}"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1336
-#: org/jmol/script/ScriptEvaluator.java:2819
+#: org/jmol/script/ScriptEvaluator.java:2818
 msgid "unexpected end of script command"
 msgstr "非预期的脚本命令结尾"
 
@@ -1854,7 +1854,7 @@ msgid "missing END for {0}"
 msgstr "{0} 缺失 END 结束符"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1360
-#: org/jmol/script/ScriptEvaluator.java:2886
+#: org/jmol/script/ScriptEvaluator.java:2885
 msgid "number expected"
 msgstr "需要数值"
 
@@ -1882,7 +1882,7 @@ msgid "unrecognized expression token: {0}"
 msgstr "无法识别的表达式标记：{0}"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1378
-#: org/jmol/script/ScriptEvaluator.java:2935
+#: org/jmol/script/ScriptEvaluator.java:2934
 #, java-format
 msgid "unrecognized {0} parameter"
 msgstr "无法识别参数：{0}"
@@ -1896,265 +1896,265 @@ msgstr "无法识别标记：{0}"
 msgid "script compiler ERROR: "
 msgstr "脚本编译器错误： "
 
-#: org/jmol/script/ScriptEvaluator.java:2632
-#: org/jmol/script/ScriptEvaluator.java:10214
+#: org/jmol/script/ScriptEvaluator.java:2631
+#: org/jmol/script/ScriptEvaluator.java:10213
 msgid "script ERROR: "
 msgstr "脚本错误： "
 
-#: org/jmol/script/ScriptEvaluator.java:2780
+#: org/jmol/script/ScriptEvaluator.java:2779
 msgid "x y z axis expected"
 msgstr "需要 x y z 轴"
 
-#: org/jmol/script/ScriptEvaluator.java:2783
+#: org/jmol/script/ScriptEvaluator.java:2782
 #, java-format
 msgid "{0} not allowed with background model displayed"
 msgstr "在显示背景模型时不允许 {0}"
 
-#: org/jmol/script/ScriptEvaluator.java:2789
+#: org/jmol/script/ScriptEvaluator.java:2788
 msgid "Miller indices cannot all be zero."
 msgstr "米勒指数(Miller Index)不可为 0"
 
-#: org/jmol/script/ScriptEvaluator.java:2792
+#: org/jmol/script/ScriptEvaluator.java:2791
 msgid "bad [R,G,B] color"
 msgstr "[R,G,B] 颜色值无效"
 
-#: org/jmol/script/ScriptEvaluator.java:2795
+#: org/jmol/script/ScriptEvaluator.java:2794
 msgid "boolean expected"
 msgstr "需要布尔真假值"
 
-#: org/jmol/script/ScriptEvaluator.java:2798
+#: org/jmol/script/ScriptEvaluator.java:2797
 msgid "boolean or number expected"
 msgstr "需要布尔真假值或数值"
 
-#: org/jmol/script/ScriptEvaluator.java:2801
+#: org/jmol/script/ScriptEvaluator.java:2800
 #, java-format
 msgid "boolean, number, or {0} expected"
 msgstr "需要布尔真假值、数值或{0}"
 
-#: org/jmol/script/ScriptEvaluator.java:2804
+#: org/jmol/script/ScriptEvaluator.java:2803
 msgid "color expected"
 msgstr "需要颜色"
 
-#: org/jmol/script/ScriptEvaluator.java:2807
+#: org/jmol/script/ScriptEvaluator.java:2806
 msgid "a color or palette name (Jmol, Rasmol) is required"
 msgstr "必须有颜色或调色盘名称 (Jmol, Rasmol)"
 
-#: org/jmol/script/ScriptEvaluator.java:2813
+#: org/jmol/script/ScriptEvaluator.java:2812
 msgid "{x y z} or $name or (atom expression) required"
 msgstr "必须有{x y z} 或 $name 或 (原子表示式)"
 
-#: org/jmol/script/ScriptEvaluator.java:2816
+#: org/jmol/script/ScriptEvaluator.java:2815
 msgid "draw object not defined"
 msgstr "未定义绘图对象"
 
-#: org/jmol/script/ScriptEvaluator.java:2822
+#: org/jmol/script/ScriptEvaluator.java:2821
 msgid "valid (atom expression) expected"
 msgstr "需要有效的原子表达式"
 
-#: org/jmol/script/ScriptEvaluator.java:2825
+#: org/jmol/script/ScriptEvaluator.java:2824
 msgid "(atom expression) or integer expected"
 msgstr "需要原子表达式或整数"
 
-#: org/jmol/script/ScriptEvaluator.java:2828
+#: org/jmol/script/ScriptEvaluator.java:2827
 msgid "filename expected"
 msgstr "需要文件名"
 
-#: org/jmol/script/ScriptEvaluator.java:2831
+#: org/jmol/script/ScriptEvaluator.java:2830
 msgid "file not found"
 msgstr "文件未找到"
 
-#: org/jmol/script/ScriptEvaluator.java:2834
+#: org/jmol/script/ScriptEvaluator.java:2833
 msgid "incompatible arguments"
 msgstr "参数不相容"
 
-#: org/jmol/script/ScriptEvaluator.java:2837
+#: org/jmol/script/ScriptEvaluator.java:2836
 msgid "insufficient arguments"
 msgstr "缺少参数"
 
-#: org/jmol/script/ScriptEvaluator.java:2840
+#: org/jmol/script/ScriptEvaluator.java:2839
 msgid "integer expected"
 msgstr "需要整数"
 
-#: org/jmol/script/ScriptEvaluator.java:2843
+#: org/jmol/script/ScriptEvaluator.java:2842
 #, java-format
 msgid "integer out of range ({0} - {1})"
 msgstr "整数超出({0} - {1})范围"
 
-#: org/jmol/script/ScriptEvaluator.java:2846
+#: org/jmol/script/ScriptEvaluator.java:2845
 msgid "invalid argument"
 msgstr "无效参数"
 
-#: org/jmol/script/ScriptEvaluator.java:2849
+#: org/jmol/script/ScriptEvaluator.java:2848
 msgid "invalid parameter order"
 msgstr "参数顺序无效"
 
-#: org/jmol/script/ScriptEvaluator.java:2852
+#: org/jmol/script/ScriptEvaluator.java:2851
 msgid "keyword expected"
 msgstr "需要关键词"
 
-#: org/jmol/script/ScriptEvaluator.java:2855
+#: org/jmol/script/ScriptEvaluator.java:2854
 msgid "no MO coefficient data available"
 msgstr "无分子轨域(MO)的系数数据可用"
 
-#: org/jmol/script/ScriptEvaluator.java:2858
+#: org/jmol/script/ScriptEvaluator.java:2857
 #, java-format
 msgid "An MO index from 1 to {0} is required"
 msgstr "分子轨域(MO)索引值必须介在1到{0}之间"
 
-#: org/jmol/script/ScriptEvaluator.java:2861
+#: org/jmol/script/ScriptEvaluator.java:2860
 msgid "no MO basis/coefficient data available for this frame"
 msgstr "这个结构没有分子轨域(MO)的基底(basis)或参数资料可用"
 
-#: org/jmol/script/ScriptEvaluator.java:2864
+#: org/jmol/script/ScriptEvaluator.java:2863
 msgid "no MO occupancy data available"
 msgstr "没有分子轨域(MO)的占据数据可用"
 
-#: org/jmol/script/ScriptEvaluator.java:2867
+#: org/jmol/script/ScriptEvaluator.java:2866
 msgid "Only one molecular orbital is available in this file"
 msgstr "在这个文件中只有一个分子轨域(MO)可用"
 
-#: org/jmol/script/ScriptEvaluator.java:2870
+#: org/jmol/script/ScriptEvaluator.java:2869
 #, java-format
 msgid "{0} require that only one model be displayed"
 msgstr "{0} 要求只显示一个模型"
 
-#: org/jmol/script/ScriptEvaluator.java:2873
+#: org/jmol/script/ScriptEvaluator.java:2872
 #, java-format
 msgid "{0} requires that only one model be loaded"
 msgstr "{0} 要求仅有一个模型被加载"
 
-#: org/jmol/script/ScriptEvaluator.java:2876
+#: org/jmol/script/ScriptEvaluator.java:2875
 msgid "No data available"
 msgstr "无可用数据"
 
-#: org/jmol/script/ScriptEvaluator.java:2880
+#: org/jmol/script/ScriptEvaluator.java:2879
 msgid ""
 "No partial charges were read from the file; Jmol needs these to render the "
 "MEP data."
 msgstr "未从文件中读取到局部电荷；Jmol需要它们来 MEP 数据。"
 
-#: org/jmol/script/ScriptEvaluator.java:2883
+#: org/jmol/script/ScriptEvaluator.java:2882
 msgid "No unit cell"
 msgstr "无单位晶格"
 
-#: org/jmol/script/ScriptEvaluator.java:2889
+#: org/jmol/script/ScriptEvaluator.java:2888
 #, java-format
 msgid "number must be ({0} or {1})"
 msgstr "数值必需是({0} 或 {1})"
 
-#: org/jmol/script/ScriptEvaluator.java:2892
+#: org/jmol/script/ScriptEvaluator.java:2891
 #, java-format
 msgid "decimal number out of range ({0} - {1})"
 msgstr "十进位数值超出({0} - {1})之间"
 
-#: org/jmol/script/ScriptEvaluator.java:2895
+#: org/jmol/script/ScriptEvaluator.java:2894
 msgid "object name expected after '$'"
 msgstr "'$'之后应该是对象名"
 
-#: org/jmol/script/ScriptEvaluator.java:2899
+#: org/jmol/script/ScriptEvaluator.java:2898
 #, java-format
 msgid ""
 "plane expected -- either three points or atom expressions or {0} or {1} or "
 "{2}"
 msgstr "需要有平面——3个点或原子表示式，或 {0} 或 {1} 或 {2}"
 
-#: org/jmol/script/ScriptEvaluator.java:2902
+#: org/jmol/script/ScriptEvaluator.java:2901
 msgid "property name expected"
 msgstr "需要属性名"
 
-#: org/jmol/script/ScriptEvaluator.java:2905
+#: org/jmol/script/ScriptEvaluator.java:2904
 #, java-format
 msgid "space group {0} was not found."
 msgstr "空间群{0} 未发现"
 
-#: org/jmol/script/ScriptEvaluator.java:2908
+#: org/jmol/script/ScriptEvaluator.java:2907
 msgid "quoted string expected"
 msgstr "需要有加引号的字符串"
 
-#: org/jmol/script/ScriptEvaluator.java:2911
+#: org/jmol/script/ScriptEvaluator.java:2910
 msgid "quoted string or identifier expected"
 msgstr "需要有加引号的字符或标识符"
 
-#: org/jmol/script/ScriptEvaluator.java:2914
+#: org/jmol/script/ScriptEvaluator.java:2913
 msgid "too many rotation points were specified"
 msgstr "指定了太多的旋转点"
 
-#: org/jmol/script/ScriptEvaluator.java:2917
+#: org/jmol/script/ScriptEvaluator.java:2916
 msgid "too many script levels"
 msgstr "脚本层次太多"
 
-#: org/jmol/script/ScriptEvaluator.java:2920
+#: org/jmol/script/ScriptEvaluator.java:2919
 msgid "unrecognized atom property"
 msgstr "无法辩识的原子属性"
 
-#: org/jmol/script/ScriptEvaluator.java:2923
+#: org/jmol/script/ScriptEvaluator.java:2922
 msgid "unrecognized bond property"
 msgstr "无法辩识的化学键属性"
 
-#: org/jmol/script/ScriptEvaluator.java:2926
+#: org/jmol/script/ScriptEvaluator.java:2925
 msgid "unrecognized command"
 msgstr "无法辨识的指令"
 
-#: org/jmol/script/ScriptEvaluator.java:2929
+#: org/jmol/script/ScriptEvaluator.java:2928
 msgid "runtime unrecognized expression"
 msgstr "执行时无法辨识的表示式"
 
-#: org/jmol/script/ScriptEvaluator.java:2932
+#: org/jmol/script/ScriptEvaluator.java:2931
 msgid "unrecognized object"
 msgstr "无法辨识的对象"
 
-#: org/jmol/script/ScriptEvaluator.java:2939
+#: org/jmol/script/ScriptEvaluator.java:2938
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
 msgstr "Jmol 状态脚本中参数 {0} 无法辨识"
 
-#: org/jmol/script/ScriptEvaluator.java:2942
+#: org/jmol/script/ScriptEvaluator.java:2941
 #, java-format
 msgid "unrecognized SHOW parameter --  use {0}"
 msgstr "无法辨识 SHOW 的参数 -- 使用{0}"
 
-#: org/jmol/script/ScriptEvaluator.java:2948
+#: org/jmol/script/ScriptEvaluator.java:2947
 #, java-format
 msgid "write what? {0} or {1} \"filename\""
 msgstr "写什么呢？{0} 或 {1} \"文件名\""
 
-#: org/jmol/script/ScriptEvaluator.java:7324
+#: org/jmol/script/ScriptEvaluator.java:7323
 #, java-format
 msgid "{0} connections deleted"
 msgstr "己删除 {0} 个连接"
 
-#: org/jmol/script/ScriptEvaluator.java:7345
+#: org/jmol/script/ScriptEvaluator.java:7344
 #, java-format
 msgid "{0} new bonds; {1} modified"
 msgstr "{0} 个新化学键; {1} 个己修改"
 
-#: org/jmol/script/ScriptEvaluator.java:8847
+#: org/jmol/script/ScriptEvaluator.java:8846
 #, java-format
 msgid "file {0} created"
 msgstr "已创建文件： {0}"
 
-#: org/jmol/script/ScriptEvaluator.java:10357
-#: org/jmol/script/ScriptEvaluator.java:10623
+#: org/jmol/script/ScriptEvaluator.java:10356
+#: org/jmol/script/ScriptEvaluator.java:10622
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "己删除 {0} 个原子"
 
-#: org/jmol/script/ScriptEvaluator.java:11260
-#: org/jmol/script/ScriptEvaluator.java:11672
+#: org/jmol/script/ScriptEvaluator.java:11259
+#: org/jmol/script/ScriptEvaluator.java:11671
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} 个氢键"
 
-#: org/jmol/script/ScriptEvaluator.java:11626
+#: org/jmol/script/ScriptEvaluator.java:11625
 #, java-format
 msgid "{0} struts added"
 msgstr "已增加 {0} struts"
 
-#: org/jmol/script/ScriptEvaluator.java:15573
+#: org/jmol/script/ScriptEvaluator.java:15572
 msgid "Note: More than one model is involved in this contact!"
 msgstr ""
 
-#: org/jmol/shape/Frank.java:76
+#: org/jmol/shape/Frank.java:75
 msgid "Click for menu..."
 msgstr "点击出现菜单..."
 
@@ -2380,19 +2380,19 @@ msgstr "停止活动（需要 {0} ）"
 msgid "simulate multi-touch using the mouse)"
 msgstr "用鼠标模拟多点触控(multi-touch)"
 
-#: org/jmol/viewer/ActionManager.java:1960
+#: org/jmol/viewer/ActionManager.java:1955
 msgid "pick one more atom in order to spin the model around an axis"
 msgstr "请再多选一个原子来使分子可以一个轴旋转"
 
-#: org/jmol/viewer/ActionManager.java:1961
+#: org/jmol/viewer/ActionManager.java:1956
 msgid "pick two atoms in order to spin the model around an axis"
 msgstr "选取两个原子，使分子可以绕轴自旋"
 
-#: org/jmol/viewer/ActionManager.java:1964
+#: org/jmol/viewer/ActionManager.java:1959
 msgid "pick one more atom in order to display the symmetry relationship"
 msgstr "选择另一个原子以显示对称性关系"
 
-#: org/jmol/viewer/ActionManager.java:1965
+#: org/jmol/viewer/ActionManager.java:1960
 msgid ""
 "pick two atoms in order to display the symmetry relationship between them"
 msgstr "选择两个原子以显示它们之间的对称性关系"
@@ -2408,24 +2408,24 @@ msgstr "{0} 个原子己隐藏"
 msgid "{0} atoms selected"
 msgstr "{0} 个原子己选定"
 
-#: org/jmol/viewer/Viewer.java:4684
+#: org/jmol/viewer/Viewer.java:4680
 #, java-format
 msgid "{0} hydrogens added"
 msgstr "{0} 个氢原子已增加"
 
-#: org/jmol/viewer/Viewer.java:4765
+#: org/jmol/viewer/Viewer.java:4761
 msgid "Drag to move label"
 msgstr "拖拽移动标签"
 
-#: org/jmol/viewer/Viewer.java:8421
+#: org/jmol/viewer/Viewer.java:8396
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "不能存取剪贴板——请用使用签署过的小程序 (applet)"
 
-#: org/jmol/viewer/Viewer.java:9205
+#: org/jmol/viewer/Viewer.java:9170
 msgid "Cannot set log file path."
 msgstr "无法设置日志文件路径"
 
-#: org/jmol/viewer/Viewer.java:9208
+#: org/jmol/viewer/Viewer.java:9173
 #, java-format
 msgid "Setting log file to {0}"
 msgstr "设定日志文件为 {0}"

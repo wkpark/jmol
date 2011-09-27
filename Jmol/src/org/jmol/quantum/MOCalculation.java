@@ -209,6 +209,7 @@ public class MOCalculation extends QuantumCalculation implements
     }
   }
 
+  private double c = 1;
   @Override
   protected void process() {
     atomIndex = firstAtomOffset - 1;
@@ -217,6 +218,15 @@ public class MOCalculation extends QuantumCalculation implements
       // each STO shell is the combination of one or more gaussians
       int nShells = shells.size();
       //Logger.info("Processing " + nShells + " Gaussian  shells");
+      if (c < 0) {
+        c = 0;
+        for (int i = 0; i < nShells; i++)
+          c += normalizeShell(i);
+        System.out.println("sum[c^2] = " + c + "\t" + Math.sqrt(c));
+        c = Math.sqrt(c);
+        atomIndex = firstAtomOffset - 1;
+        moCoeff = 0;
+      }
       for (int i = 0; i < nShells; i++)
         processShell(i);
       return;
@@ -255,6 +265,20 @@ public class MOCalculation extends QuantumCalculation implements
     return true;
   }
 
+  private double normalizeShell(int iShell) {
+    double c = 0;
+    int[] shell = shells.get(iShell);
+    basisType = EnumQuantumShell.getItem(shell[1]);
+    gaussianPtr = shell[2];
+    nGaussians = shell[3];
+    doShowShellType = doDebug;
+    if (!setCoeffs(false))
+      return 0;
+    for (int i = map.length; --i >= 0;)
+      c += coeffs[i] * coeffs[i];
+    return c;
+  }
+
   private int nGaussians;
   private boolean doShowShellType;
   private EnumQuantumShell basisType;
@@ -269,7 +293,7 @@ public class MOCalculation extends QuantumCalculation implements
     doShowShellType = doDebug;
     if (atomIndex != lastAtom && (thisAtom = qmAtoms[atomIndex]) != null)
       thisAtom.setXYZ(true);
-    if (!setCoeffs())
+    if (!setCoeffs(true))
       return;
     if (havePoints)
       setMinMax(-1);
@@ -344,18 +368,18 @@ public class MOCalculation extends QuantumCalculation implements
   private final double[] coeffs = new double[10];
   private int[] map;
   
-  private boolean setCoeffs() {
+  private boolean setCoeffs(boolean isProcess) {
     boolean isOK = false;
     int mapType = basisType.id;
     map = dfCoefMaps[mapType];
-    if (thisAtom == null) {
+    if (isProcess && thisAtom == null) {
       moCoeff += map.length;
       return false;
     }
     for (int i = 0; i < map.length; i++)
       isOK |= ((coeffs[i] = moCoefficients[map[i] + moCoeff++]) != 0);
     isOK &= (coeffs[0] != Integer.MIN_VALUE);
-    if (isOK && doDebug)
+    if (isOK && doDebug && !isProcess)
       dumpInfo(mapType);
     return isOK;
   }

@@ -142,6 +142,7 @@ abstract class QuantumCalculation {
   }
 
   public float process(Point3f pt) {
+    doDebug = false;
     if (points == null || nX != 1)
       initializeOnePoint();
     points[0].set(pt);

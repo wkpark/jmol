@@ -142,15 +142,19 @@ public class JmolPanel extends JPanel implements SplashInterface {
 
   private StatusListener myStatusListener;
   
-  public JmolPanel(JmolApp jmolApp, Splash splash, JFrame frame, JmolPanel parent,
-      int startupWidth, int startupHeight, String commandOptions, Point loc) {
+  public JmolPanel(JmolApp jmolApp, Splash splash, JFrame frame,
+      JmolPanel parent, int startupWidth, int startupHeight,
+      String commandOptions, Point loc) {
     super(true);
     this.jmolApp = jmolApp;
     this.frame = frame;
     this.startupWidth = startupWidth;
     this.startupHeight = startupHeight;
     historyFile = jmolApp.historyFile;
-
+    if (jmolApp.isKiosk) {
+      frame.setUndecorated(true);
+      frame.setBackground(new Color(0, 0, 0, 0));
+    }
     numWindows++;
 
     try {
@@ -184,7 +188,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
      * adapter + " -- using Smarter"); modelAdapter = new SmarterJmolAdapter();
      * }
      */
-    
+
     /*
      * this version of Jmol needs to have a display so that it can 
      * construct JPG images -- if that is not needed, then you can
@@ -197,13 +201,12 @@ public class JmolPanel extends JPanel implements SplashInterface {
         appletContext = commandOptions, myStatusListener);
     display.setViewer(viewer);
     myStatusListener.setViewer(viewer);
-    
+
     if (!jmolApp.haveDisplay)
       return;
     getDialogs();
     say(GT._("Initializing Script Window..."));
     viewer.getProperty("DATA_API", "getAppConsole", Boolean.TRUE);
-
 
     // Setup Plugin system
     // say(GT._("Loading plugins..."));
@@ -222,7 +225,6 @@ public class JmolPanel extends JPanel implements SplashInterface {
     // pluginManager.loadPlugins(System.getProperty("plugin.dir"));
     // }
 
-
     // install the command table
     say(GT._("Building Command Hooks..."));
     commands = new Hashtable<String, Action>();
@@ -234,29 +236,32 @@ public class JmolPanel extends JPanel implements SplashInterface {
       }
     }
 
-    menuItems = new Hashtable<String, JMenuItem>();
-    say(GT._("Building Menubar..."));
-    executeScriptAction = new ExecuteScriptAction();
-    menubar = createMenubar();
-    add("North", menubar);
-
-    JPanel panel = new JPanel();
-    panel.setLayout(new BorderLayout());
-    toolbar = createToolbar();
-    panel.add("North", toolbar);
-
-    JPanel ip = new JPanel();
-    ip.setLayout(new BorderLayout());
-    ip.add("Center", display);
-    panel.add("Center", ip);
-    add("Center", panel);
-    add("South", status);
+    if (jmolApp.isKiosk) {
+      add("Center", display);
+    } else {
+      JPanel panel = new JPanel();
+      menuItems = new Hashtable<String, JMenuItem>();
+      say(GT._("Building Menubar..."));
+      executeScriptAction = new ExecuteScriptAction();
+      menubar = createMenubar();
+      add("North", menubar);
+      panel.setLayout(new BorderLayout());
+      toolbar = createToolbar();
+      panel.add("North", toolbar);
+      JPanel ip = new JPanel();
+      ip.setLayout(new BorderLayout());
+      ip.add("Center", display);
+      panel.add("Center", ip);
+      add("Center", panel);
+      add("South", status);
+    }
 
     say(GT._("Starting display..."));
     display.start();
 
     if (jmolApp.menuFile != null) {
-      viewer.getProperty("DATA_API", "setMenu", viewer.getFileAsString(jmolApp.menuFile));
+      viewer.getProperty("DATA_API", "setMenu", viewer
+          .getFileAsString(jmolApp.menuFile));
     }
 
     // prevent new Jmol from covering old Jmol
@@ -290,13 +295,15 @@ public class JmolPanel extends JPanel implements SplashInterface {
 
     //historyFile.repositionWindow("Jmol", getFrame(), 300, 300);
 
-    AppConsole console = (AppConsole) viewer.getProperty("DATA_API","getAppConsole", null);
-    if (console != null && console.jcd != null)
-      historyFile.repositionWindow(SCRIPT_WINDOW_NAME, console.jcd, 200, 100);
+    AppConsole console = (AppConsole) viewer.getProperty("DATA_API",
+        "getAppConsole", null);
+    if (console != null && console.jcd != null) {
+      historyFile.repositionWindow(SCRIPT_WINDOW_NAME, console.jcd, 200, 100, !jmolApp.isKiosk);
+    }
     // this just causes problems
     //c = (Component) viewer.getProperty("DATA_API","getScriptEditor", null);
     //if (c != null)
-      //historyFile.repositionWindow(EDITOR_WINDOW_NAME, c, 150, 50);
+    //historyFile.repositionWindow(EDITOR_WINDOW_NAME, c, 150, 50);
 
     say(GT._("Setting up Drag-and-Drop..."));
     new JmolFileDropper(myStatusListener, viewer);
@@ -345,62 +352,65 @@ public class JmolPanel extends JPanel implements SplashInterface {
       t.printStackTrace();
     }
 
-    if (jmolApp.haveConsole) {
-      // Adding console frame to grab System.out & System.err
-      jmol.consoleframe = new JFrame(GT._("Jmol Java Console"));
-      jmol.consoleframe.setIconImage(jmol.frame.getIconImage());
-      try {
-        final ConsoleTextArea consoleTextArea = new ConsoleTextArea(true);
-        consoleTextArea.setFont(java.awt.Font.decode("monospaced"));
-        jmol.consoleframe.getContentPane().add(new JScrollPane(consoleTextArea),
-            java.awt.BorderLayout.CENTER);
-          JButton buttonClear = jmol.guimap.newJButton("JavaConsole.Clear");
-          buttonClear.addActionListener(new ActionListener() {
-          public void actionPerformed(ActionEvent e) {
-            consoleTextArea.setText("");
-          }
-          });
-          jmol.consoleframe.getContentPane().add(buttonClear,
-              java.awt.BorderLayout.SOUTH);
-      } catch (IOException e) {
-        JTextArea errorTextArea = new JTextArea();
-        errorTextArea.setFont(java.awt.Font.decode("monospaced"));
-        jmol.consoleframe.getContentPane().add(new JScrollPane(errorTextArea),
-            java.awt.BorderLayout.CENTER);
-        errorTextArea.append(GT._("Could not create ConsoleTextArea: ") + e);
-      }
+    if (jmolApp.haveConsole) 
+      getJavaConsole(jmol);    
+  }
 
-      
-      Point location = jmol.frame.getLocation();
-      Dimension size = jmol.frame.getSize();
-   
-      // String name = CONSOLE_WINDOW_NAME;     
-
-      //Dimension consoleSize = historyFile.getWindowSize(name);
-      //Point consolePosition = historyFile.getWindowPosition(name);
-      //if (consoleSize != null && consolePosition != null) {
-      //  location = consolePosition;
-      //  size = consoleSize;
-      //} else {
-        location.y += size.height;
-        size.height = 200;
-      //}
-      if (size.height < 200 || size.height > 800)
-        size.height = 200;
-      if (size.width < 300 || size.width > 800)
-        size.width = 300;
-      if (location.y < 0 || location.y + size.height > screenSize.height)
-        location.y = screenSize.height - size.height;
-      if (location.x < 0 || location.x + size.width > screenSize.width)
-        location.x = 0;
-      jmol.consoleframe.setBounds(location.x, location.y, size.width, size.height);
-
-      //Boolean consoleVisible = historyFile.getWindowVisibility(name);
-      //if ((consoleVisible != null) && (consoleVisible.equals(Boolean.TRUE))) {
-        //jmol.consoleframe.setVisible(true);
-     // }
-
+  private static void getJavaConsole(Jmol jmol) {
+    // Adding console frame to grab System.out & System.err
+    jmol.consoleframe = new JFrame(GT._("Jmol Java Console"));
+    jmol.consoleframe.setIconImage(jmol.frame.getIconImage());
+    try {
+      final ConsoleTextArea consoleTextArea = new ConsoleTextArea(true);
+      consoleTextArea.setFont(java.awt.Font.decode("monospaced"));
+      jmol.consoleframe.getContentPane().add(new JScrollPane(consoleTextArea),
+          java.awt.BorderLayout.CENTER);
+        JButton buttonClear = jmol.guimap.newJButton("JavaConsole.Clear");
+        buttonClear.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          consoleTextArea.setText("");
+        }
+        });
+        jmol.consoleframe.getContentPane().add(buttonClear,
+            java.awt.BorderLayout.SOUTH);
+    } catch (IOException e) {
+      JTextArea errorTextArea = new JTextArea();
+      errorTextArea.setFont(java.awt.Font.decode("monospaced"));
+      jmol.consoleframe.getContentPane().add(new JScrollPane(errorTextArea),
+          java.awt.BorderLayout.CENTER);
+      errorTextArea.append(GT._("Could not create ConsoleTextArea: ") + e);
     }
+
+    
+    Point location = jmol.frame.getLocation();
+    Dimension size = jmol.frame.getSize();
+ 
+    // String name = CONSOLE_WINDOW_NAME;     
+
+    //Dimension consoleSize = historyFile.getWindowSize(name);
+    //Point consolePosition = historyFile.getWindowPosition(name);
+    //if (consoleSize != null && consolePosition != null) {
+    //  location = consolePosition;
+    //  size = consoleSize;
+    //} else {
+      location.y += size.height;
+      size.height = 200;
+    //}
+    if (size.height < 200 || size.height > 800)
+      size.height = 200;
+    if (size.width < 300 || size.width > 800)
+      size.width = 300;
+    if (location.y < 0 || location.y + size.height > screenSize.height)
+      location.y = screenSize.height - size.height;
+    if (location.x < 0 || location.x + size.width > screenSize.width)
+      location.x = 0;
+    jmol.consoleframe.setBounds(location.x, location.y, size.width, size.height);
+
+    //Boolean consoleVisible = historyFile.getWindowVisibility(name);
+    //if ((consoleVisible != null) && (consoleVisible.equals(Boolean.TRUE))) {
+      //jmol.consoleframe.setVisible(true);
+   // }
+
   }
 
   public static Jmol getJmol(JmolApp jmolApp, JFrame frame) {
@@ -523,19 +533,19 @@ public class JmolPanel extends JPanel implements SplashInterface {
     }
   }
 
-  protected void setupNewFrame(JmolViewer viewer) {
-    String state = viewer.getStateInfo();
-    JFrame newFrame = new JFrame();
-    JFrame f = this.frame;
-    Jmol j = new Jmol(jmolApp, null, newFrame, (Jmol) this, startupWidth, startupHeight,
-        "", (state == null ? null : f.getLocationOnScreen()));
-    newFrame.setVisible(true);
-    j.viewer.menuStructure = viewer.menuStructure;
-    if (state != null) {
-      dispose(f);
-      j.viewer.evalStringQuiet(state);
-    }
-  }
+//  protected void setupNewFrame(JmolViewer viewer) {
+//    String state = viewer.getStateInfo();
+//    JFrame newFrame = new JFrame();
+//    JFrame f = this.frame;
+//    Jmol j = new Jmol(jmolApp, null, newFrame, (Jmol) this, startupWidth, startupHeight,
+//        "", (state == null ? null : f.getLocationOnScreen()));
+//    newFrame.setVisible(true);
+//    j.viewer.menuStructure = viewer.menuStructure;
+//    if (state != null) {
+//      dispose(f);
+//      j.viewer.evalStringQuiet(state);
+//    }
+//  }
 
   /**
    * This is the hook through which all menu items are
@@ -802,8 +812,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
   }
 
   protected void addHelpMenuBar(JMenuBar menuBar) {
-    String menuKey = "help";
-    JMenu m = createMenu(menuKey);
+    JMenu m = createMenu("help");
     if (m != null) {
       menuBar.add(m);
     }

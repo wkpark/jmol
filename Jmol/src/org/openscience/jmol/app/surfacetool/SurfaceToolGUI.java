@@ -273,7 +273,7 @@ class SurfaceToolGUI extends JPanel implements WindowConstants, WindowListener,
 
       slicerFrame.setContentPane(this);
       slicerFrame.addWindowListener(this);
-      historyFile.repositionWindow(winName, slicerFrame, 200, 300);
+      historyFile.repositionWindow(winName, slicerFrame, 200, 300, true);
 
       //Display the window.
       slicerFrame.pack();

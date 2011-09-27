@@ -303,16 +303,16 @@ public class HistoryFile {
    * @param window Window
    * @param minWidth
    * @param minHeight
+   * @param allowVisible TODO
    */
   public void repositionWindow(String name, Component window, 
-                        int minWidth, int minHeight) {
+                        int minWidth, int minHeight, boolean allowVisible) {
     if (window != null) {
       Point position = getWindowPosition(name);
       Dimension size = getWindowSize(name);
       Boolean visible = getWindowVisibility(name);
-      if (position != null) {
+      if (position != null)
         window.setLocation(position);
-      }
       if (size != null) {
         if (size.width < minWidth)
           size.width = minWidth;
@@ -320,9 +320,8 @@ public class HistoryFile {
           size.height = minHeight;
         window.setSize(size);
       }
-      if ((visible != null) && (visible.equals(Boolean.TRUE))) {
+      if (allowVisible && visible != null && visible.booleanValue())
         window.setVisible(true);
-      }
     }
   }
 
@@ -333,7 +332,7 @@ public class HistoryFile {
    * @param window Window
    */
   public void repositionWindow(String name, Component window) {
-    repositionWindow(name, window, 10, 10);
+    repositionWindow(name, window, 10, 10, true);
   }
 
   public File getFile() {

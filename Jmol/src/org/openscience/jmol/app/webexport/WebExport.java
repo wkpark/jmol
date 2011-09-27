@@ -201,7 +201,7 @@ public class WebExport extends JPanel implements WindowListener {
     ImageIcon jmolIcon = new ImageIcon(imageUrl);
     webFrame.setIconImage(jmolIcon.getImage());
     windowName = wName;
-    historyFile.repositionWindow(windowName, webFrame, 700, 400);
+    historyFile.repositionWindow(windowName, webFrame, 700, 400, true);
     if (runStatus == STAND_ALONE) {
       //Make sure we have nice window decorations.
       JFrame.setDefaultLookAndFeelDecorated(true);

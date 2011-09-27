@@ -50,6 +50,7 @@ public class JmolApp {
    * The data model.
    */
 
+  public int port;
   public int startupWidth, startupHeight;
   public Point border;
   public boolean haveBorder;
@@ -69,6 +70,7 @@ public class JmolApp {
   public boolean haveConsole = true;
   public boolean haveDisplay = true;
   public boolean isDataOnly;
+  public boolean isKiosk;
   public boolean isPrintOnly;
   public boolean isSilent;
   public boolean listCommands;
@@ -149,6 +151,8 @@ public class JmolApp {
         ._("check script syntax only - with file loading"));
     options.addOption("d", "debug", false, GT._("debug"));
     options.addOption("i", "silent", false, GT._("silent startup operation"));
+    options.addOption("k", "kiosk", false, GT
+        ._("kiosk mode -- no frame"));
     options.addOption("l", "list", false, GT
         ._("list commands during script execution"));
     options.addOption("L", "nosplash", false, GT
@@ -157,6 +161,8 @@ public class JmolApp {
         ._("no console -- all output to sysout"));
     options.addOption("p", "printOnly", false, GT
         ._("send only output from print messages to console (implies -i)"));
+    options.addOption("P", "port", false, GT
+        ._("port for JSON/MolecularPlayground-style communication"));
     options.addOption("t", "threaded", false, GT
         ._("independent command thread"));
     options.addOption("x", "exit", false, GT
@@ -266,9 +272,27 @@ public class JmolApp {
     // invoked with just new JmolApp(), we can 
     // set options ourselves. 
     
+    commandOptions = (isDataOnly ? "JmolData " : "Jmol ");
+
+    // kiosk mode -- no frame
+    
+    if (line.hasOption("k"))
+      isKiosk = true;
+    if (isKiosk) {
+      commandOptions += "-k";
+    }
+
+    // port for JSON mode communication
+    
+    if (line.hasOption("P"))
+      port =  Parser.parseInt(line.getOptionValue("P"));
+    if (port > 0) {
+      commandOptions += "-k";
+    }
+
+
     // print command output only (implies silent)
 
-    commandOptions = (isDataOnly ? "JmolData " : "Jmol ");
     if (line.hasOption("p"))
       isPrintOnly = true;
     if (isPrintOnly) {

@@ -33,7 +33,6 @@ public class JsonNioService extends NIOService implements JmolCallbackListener {
   protected long lastMoveTime;
   protected boolean wasSpinOn;
 
-  private String defaultScript = "";
   protected String contentPath = "./%ID%/%ID%.json";
   protected String terminatorMessage = "NEXT_SCRIPT";
 
@@ -50,10 +49,6 @@ public class JsonNioService extends NIOService implements JmolCallbackListener {
     contentPath = path;
   }
 
-  public void setDefaultScript(String script) {
-    defaultScript = script;
-  }
-
   public void setTerminatorMessage(String msg) {
     terminatorMessage = msg;
   }
@@ -66,10 +61,9 @@ public class JsonNioService extends NIOService implements JmolCallbackListener {
     jmolViewer.setJmolCallbackListener(this);
 
     System.out.println("JsonNioService using port " + port);
-    System.out.println("defaultScript=" + defaultScript);
     System.out.println("contentPath=" + contentPath);
 
-    jmolViewer.script(defaultScript + ";sync on;sync slave");
+    jmolViewer.script(";sync on;sync slave");
 
     inSocket = openSocket("127.0.0.1", port);
     outSocket = openSocket("127.0.0.1", port);

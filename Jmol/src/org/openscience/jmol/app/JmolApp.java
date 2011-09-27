@@ -161,13 +161,16 @@ public class JmolApp {
         ._("no console -- all output to sysout"));
     options.addOption("p", "printOnly", false, GT
         ._("send only output from print messages to console (implies -i)"));
-    options.addOption("P", "port", false, GT
-        ._("port for JSON/MolecularPlayground-style communication"));
     options.addOption("t", "threaded", false, GT
         ._("independent command thread"));
     options.addOption("x", "exit", false, GT
         ._("exit after script (implicit with -n)"));
 
+    OptionBuilder.withLongOpt("port");
+    OptionBuilder.withDescription(GT._("port for JSON/MolecularPlayground-style communication"));
+    OptionBuilder.hasArg();
+    options.addOption(OptionBuilder.create("P"));
+    
     OptionBuilder.withLongOpt("script");
     OptionBuilder.withDescription(GT
         ._("script file to execute or '-' for System.in"));
@@ -287,7 +290,7 @@ public class JmolApp {
     if (line.hasOption("P"))
       port =  Parser.parseInt(line.getOptionValue("P"));
     if (port > 0) {
-      commandOptions += "-k";
+      commandOptions += "-P";
     }
 
 
@@ -384,7 +387,8 @@ public class JmolApp {
             + "1.1.2 or higher version VM!!!");
       }
 
-      size = historyFile.getWindowSize("Jmol");
+      if (!isKiosk) {
+        size = historyFile.getWindowSize("Jmol");
       if (size != null) {
         startupWidth = size.width;
         startupHeight = size.height;
@@ -397,12 +401,14 @@ public class JmolApp {
         border = new Point(12, 116);
       else
         border = new Point(b.x, b.y);
-      // note -- the first time this is run after changes it will not work
+        // note -- the first time this is run after changes it will not work
       // because there is a bootstrap problem.
+      }
     }
-    int width = 500;
-    int height = 500;
     // INNER frame dimensions
+    int width = (isKiosk ? 0 : 500);
+    int height = 500;
+
     if (line.hasOption("g")) {
       String geometry = line.getOptionValue("g");
       int indexX = geometry.indexOf('x');
@@ -416,7 +422,7 @@ public class JmolApp {
     }
 
     if (startupWidth <= 0 || startupHeight <= 0) {
-      if (haveDisplay) {
+      if (haveDisplay && !isKiosk) {
         startupWidth = width + border.x;
         startupHeight = height + border.y;
       } else {

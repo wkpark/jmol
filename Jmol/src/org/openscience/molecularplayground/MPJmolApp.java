@@ -105,7 +105,7 @@ public class MPJmolApp implements JsonNioClient {
   private void startJsonNioKiosk(int port) {
     KioskPanel kioskPanel = new KioskPanel();
     bannerFrame = new BannerFrame(1024, 75);
-    kioskFrame = new KioskFrame(1024, 768, kioskPanel);
+    kioskFrame = new KioskFrame(0, 75, 1024, 768 - 75, kioskPanel);
 
     /*
      * Separate sockets are used for incoming and outgoing messages,
@@ -115,15 +115,17 @@ public class MPJmolApp implements JsonNioClient {
      */
 
     try {
+      setBannerLabel("click below and type exitJmol[enter] to quit");
+      jmolViewer.script("set allowKeyStrokes;set zoomLarge false;set frank off;set antialiasdisplay off");
       service = new JsonNioService();
       service.setContentPath(System.getProperty("user.dir").replace('\\', '/')
           + "/Content-Cache/%ID%/%ID%.json");
-      service
-          .setDefaultScript("set allowKeyStrokes;set frank off;set antialiasdisplay off");
       service.setTerminatorMessage("MP_DONE");
       service.startService(port, this, jmolViewer);
+      
+      // Bob's demo model
       jmolViewer.script("load http://chemapps.stolaf.edu/jmol/docs/examples-12/data/caffeine.xyz");
-      setBannerLabel("type 'exitJmol' to quit");
+
     } catch (Throwable e) {
       e.printStackTrace();
       if (service == null)

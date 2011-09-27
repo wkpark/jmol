@@ -89,7 +89,7 @@ import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 
-public class JmolPanel extends JPanel implements SplashInterface {
+public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient {
 
   /**
    * The data model.
@@ -115,7 +115,8 @@ public class JmolPanel extends JPanel implements SplashInterface {
   GuiMap guimap = new GuiMap();
 
   private static int numWindows = 0;
-  private static Dimension screenSize = null;
+  private static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+
   int startupWidth, startupHeight;
 
   PropertyChangeSupport pcs = new PropertyChangeSupport(this);
@@ -139,8 +140,11 @@ public class JmolPanel extends JPanel implements SplashInterface {
   String appletContext;
   
   static HistoryFile historyFile;
+  private static KioskFrame kioskFrame;
+  private static JsonNioService service;
 
   private StatusListener myStatusListener;
+  private static BannerFrame bannerFrame;
   
   public JmolPanel(JmolApp jmolApp, Splash splash, JFrame frame,
       JmolPanel parent, int startupWidth, int startupHeight,
@@ -151,10 +155,6 @@ public class JmolPanel extends JPanel implements SplashInterface {
     this.startupWidth = startupWidth;
     this.startupHeight = startupHeight;
     historyFile = jmolApp.historyFile;
-    if (jmolApp.isKiosk) {
-      frame.setUndecorated(true);
-      frame.setBackground(new Color(0, 0, 0, 0));
-    }
     numWindows++;
 
     try {
@@ -264,24 +264,27 @@ public class JmolPanel extends JPanel implements SplashInterface {
           .getFileAsString(jmolApp.menuFile));
     }
 
-    // prevent new Jmol from covering old Jmol
-    if (loc != null) {
-      frame.setLocation(loc);
-    } else if (parent == null) {
-      loc = historyFile.getWindowPosition("Jmol");
-      if (loc != null)
-        frame.setLocation(loc);
+    if (jmolApp.isKiosk) {
+      bannerFrame = new BannerFrame(jmolApp.startupWidth, 75);
     } else {
-      loc = parent.frame.getLocationOnScreen();
-      int maxX = screenSize.width - 50;
-      int maxY = screenSize.height - 50;
-      loc.x += 40;
-      loc.y += 40;
-      if (loc.x > maxX || loc.y > maxY)
-        loc.setLocation(0, 0);
-      frame.setLocation(loc);
+      // prevent new Jmol from covering old Jmol
+      if (loc != null) {
+        frame.setLocation(loc);
+      } else if (parent == null) {
+        loc = historyFile.getWindowPosition("Jmol");
+        if (loc != null)
+          frame.setLocation(loc);
+      } else {
+        loc = parent.frame.getLocationOnScreen();
+        int maxX = screenSize.width - 50;
+        int maxY = screenSize.height - 50;
+        loc.x += 40;
+        loc.y += 40;
+        if (loc.x > maxX || loc.y > maxY)
+          loc.setLocation(0, 0);
+        frame.setLocation(loc);
+      }
     }
-
     frame.getContentPane().add("Center", this);
 
     frame.addWindowListener(new AppCloser());
@@ -298,7 +301,8 @@ public class JmolPanel extends JPanel implements SplashInterface {
     AppConsole console = (AppConsole) viewer.getProperty("DATA_API",
         "getAppConsole", null);
     if (console != null && console.jcd != null) {
-      historyFile.repositionWindow(SCRIPT_WINDOW_NAME, console.jcd, 200, 100, !jmolApp.isKiosk);
+      historyFile.repositionWindow(SCRIPT_WINDOW_NAME, console.jcd, 200, 100,
+          !jmolApp.isKiosk);
     }
     // this just causes problems
     //c = (Component) viewer.getProperty("DATA_API","getScriptEditor", null);
@@ -329,31 +333,63 @@ public class JmolPanel extends JPanel implements SplashInterface {
   }
 
   protected static void startJmol(JmolApp jmolApp) {
-    
+
     Dialog.setupUIManager();
-    
-    JFrame jmolFrame = new JFrame();
-    
+
+    JFrame jmolFrame;
+
+    if (jmolApp.isKiosk) {
+      if (jmolApp.startupWidth < 100 || jmolApp.startupHeight < 100) {
+        jmolApp.startupWidth = screenSize.width;
+        jmolApp.startupHeight = screenSize.height - 75;
+      }
+      jmolFrame = kioskFrame = new KioskFrame(0, 75, jmolApp.startupWidth,
+          jmolApp.startupHeight, null);
+    } else {
+      jmolFrame = new JFrame();
+    }
+
     // now pass these to viewer
-    
+
     Jmol jmol = null;
-    
+
     try {
       if (jmolApp.jmolPosition != null) {
         jmolFrame.setLocation(jmolApp.jmolPosition);
       }
-      
+
       jmol = getJmol(jmolApp, jmolFrame);
 
       jmolApp.startViewer(jmol.viewer, jmol.splash);
-    
+
     } catch (Throwable t) {
       Logger.error("uncaught exception: " + t);
       t.printStackTrace();
     }
 
-    if (jmolApp.haveConsole) 
-      getJavaConsole(jmol);    
+    if (jmolApp.haveConsole)
+      getJavaConsole(jmol);
+
+    if (jmolApp.isKiosk)
+      kioskFrame.setPanel(jmol);
+      bannerFrame.setLabel("click below and type exitJmol[enter] to quit");
+      jmol.viewer.script("set allowKeyStrokes;set zoomLarge false");
+    if (jmolApp.port > 0) {
+      try {
+        service = new JsonNioService();
+        service.setContentPath("./%ID%.json");
+        service.setTerminatorMessage("NEXT_SCRIPT");
+        service.startService(jmolApp.port, jmol, jmol.viewer);
+      } catch (Throwable e) {
+        e.printStackTrace();
+        if (bannerFrame != null) {
+          bannerFrame.setLabel("could not start NIO service on port " + jmolApp.port);
+        }
+        if (service != null)
+          service.close();
+      }
+
+    }
   }
 
   private static void getJavaConsole(Jmol jmol) {
@@ -433,8 +469,6 @@ public class JmolPanel extends JPanel implements SplashInterface {
     } catch (Exception exc) {
       System.err.println("Error loading L&F: " + exc);
     }
-
-    screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
     if (splash != null)
       splash.showStatus(GT._("Initializing Jmol..."));
@@ -1507,6 +1541,21 @@ public class JmolPanel extends JPanel implements SplashInterface {
     getDialogs();
     GT.setDoTranslate(doTranslate);
     guimap.updateLabels();
+  }
+
+  public void nioClosed() {
+    if (bannerFrame != null) {
+      viewer.scriptWait("delay 2");
+      bannerFrame.dispose();
+    }
+    viewer.setModeMouse(JmolConstants.MOUSE_NONE);
+    // would not nec. have to close this....
+    System.exit(0);
+  }
+
+  public void setBannerLabel(String label) {
+    if (bannerFrame != null)
+      bannerFrame.setLabel(label);
   }
   
 }

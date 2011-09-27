@@ -12,5 +12,5 @@ public interface JmolPopupInterface {
                                        String menu, boolean asPopup);
 
   public void updateComputedMenus();
-
+ 
 }

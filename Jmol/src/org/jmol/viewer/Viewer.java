@@ -4977,7 +4977,7 @@ private void zap(String msg) {
     case 'm':
       if (modelkit == null) {
         modelkit = (JmolModelKitInterface) Interface
-            .getOptionInterface("modelkit.ModelKit");
+            .getOptionInterface("awt.modelkit.ModelKit");
         if (modelkit == null)
           return;
         modelkit = modelkit.getModelKit(this, display);

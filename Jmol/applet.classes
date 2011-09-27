@@ -45,7 +45,6 @@ com/sparshui/gestures/*.java
 com/sparshui/inputdevice/*.java
 com/sparshui/server/*.java
 
-org/jmol/popup/*.java
 org/jmol/quantum/*.java
 org/jmol/script/*.java
 org/jmol/shape/*.java

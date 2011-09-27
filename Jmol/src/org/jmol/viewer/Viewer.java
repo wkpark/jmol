@@ -4970,6 +4970,7 @@ private void zap(String msg) {
     switch (type) {
     case 'j':
       getPopupMenu();
+      // can throw error if not present; that's ok
       jmolpopup.show(x, y);
       break;
     case 'a':

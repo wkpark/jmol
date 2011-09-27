@@ -371,10 +371,11 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     if (jmolApp.haveConsole)
       getJavaConsole(jmol);
 
-    if (jmolApp.isKiosk)
+    if (jmolApp.isKiosk) {
       kioskFrame.setPanel(jmol);
       bannerFrame.setLabel("click below and type exitJmol[enter] to quit");
       jmol.viewer.script("set allowKeyStrokes;set zoomLarge false;");
+    }
     if (jmolApp.port > 0) {
       try {
         service = new JsonNioService();

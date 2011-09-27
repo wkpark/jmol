@@ -1,4 +1,4 @@
-package org.openscience.molecularplayground.json;
+package com.json;
 
 /*
 Copyright (c) 2002 JSON.org

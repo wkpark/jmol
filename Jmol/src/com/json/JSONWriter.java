@@ -1,4 +1,4 @@
-package org.openscience.molecularplayground.json;
+package com.json;
 
 import java.io.IOException;
 import java.io.Writer;

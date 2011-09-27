@@ -91,8 +91,8 @@ import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.api.JmolCallbackListener;
 import org.jmol.api.JmolViewer;
 import org.jmol.constant.EnumCallback;
-import org.openscience.molecularplayground.json.JSONObject;
-import org.openscience.molecularplayground.json.JSONTokener;
+import com.json.JSONObject;
+import com.json.JSONTokener;
 
 import naga.NIOService;
 import naga.NIOSocket;

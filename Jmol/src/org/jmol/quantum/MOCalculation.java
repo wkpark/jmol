@@ -124,7 +124,7 @@ public class MOCalculation extends QuantumCalculation implements
 
   private double moFactor = 1;
   private boolean havePoints;
-  boolean testing;
+  boolean testing = true;
   
   public MOCalculation() {
   }

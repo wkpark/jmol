@@ -21,7 +21,7 @@ public class BannerFrame extends JFrame {
     bannerLabel.setFont(new Font("Helvetica", Font.BOLD, 30));
     getContentPane().add(bannerLabel, BorderLayout.CENTER);
     setVisible(true);
-    setAlwaysOnTop(true);
+    // setAlwaysOnTop(true);
   }
 
   private JLabel bannerLabel;

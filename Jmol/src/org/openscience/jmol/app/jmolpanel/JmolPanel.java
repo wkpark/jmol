@@ -360,6 +360,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
       jmol = getJmol(jmolApp, jmolFrame);
 
+      // scripts are read and files are loaded now
       jmolApp.startViewer(jmol.viewer, jmol.splash);
 
     } catch (Throwable t) {
@@ -373,12 +374,12 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     if (jmolApp.isKiosk)
       kioskFrame.setPanel(jmol);
       bannerFrame.setLabel("click below and type exitJmol[enter] to quit");
-      jmol.viewer.script("set allowKeyStrokes;set zoomLarge false");
+      jmol.viewer.script("set allowKeyStrokes;set zoomLarge false;");
     if (jmolApp.port > 0) {
       try {
         service = new JsonNioService();
-        service.setContentPath("./%ID%.json");
-        service.setTerminatorMessage("NEXT_SCRIPT");
+        //service.setContentPath("./%ID%.json");
+        //service.setTerminatorMessage("NEXT_SCRIPT");
         service.startService(jmolApp.port, jmol, jmol.viewer);
       } catch (Throwable e) {
         e.printStackTrace();

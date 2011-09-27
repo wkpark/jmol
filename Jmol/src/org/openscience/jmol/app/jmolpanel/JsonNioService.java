@@ -33,7 +33,7 @@ public class JsonNioService extends NIOService implements JmolCallbackListener {
   protected long lastMoveTime;
   protected boolean wasSpinOn;
 
-  protected String contentPath = "./%ID%/%ID%.json";
+  protected String contentPath = "./%ID%.json";
   protected String terminatorMessage = "NEXT_SCRIPT";
 
   /*
@@ -45,25 +45,23 @@ public class JsonNioService extends NIOService implements JmolCallbackListener {
     super();
   }
 
-  public void setContentPath(String path) {
-    contentPath = path;
-  }
-
-  public void setTerminatorMessage(String msg) {
-    terminatorMessage = msg;
-  }
-
   public void startService(int port, JsonNioClient client, JmolViewer jmolViewer)
       throws IOException {
 
     this.client = client;
     this.jmolViewer = jmolViewer;
     jmolViewer.setJmolCallbackListener(this);
-
+    jmolViewer.script(";sync on;sync slave");
+    String s = getJmolValue("NIOcontentPath");
+    if (s != null)
+      contentPath = s;
+    s = getJmolValue("NIOterminatorMessage");
+    if (s != null)
+      terminatorMessage = s;
     System.out.println("JsonNioService using port " + port);
     System.out.println("contentPath=" + contentPath);
+    System.out.println("terminatorMessage=" + terminatorMessage);
 
-    jmolViewer.script(";sync on;sync slave");
 
     inSocket = openSocket("127.0.0.1", port);
     outSocket = openSocket("127.0.0.1", port);
@@ -117,6 +115,11 @@ public class JsonNioService extends NIOService implements JmolCallbackListener {
 
     thread = new Thread(new JsonNioThread(), "JsonNiosThread");
     thread.start();
+  }
+
+  private String getJmolValue(String var) {
+    String s = (String) jmolViewer.scriptWaitStatus("print " + var, "output");
+    return (s.indexOf("\n") <= 1 ? null : s.substring(0, s.lastIndexOf("\n")));
   }
 
   Thread thread;

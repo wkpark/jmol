@@ -116,15 +116,18 @@ public class MPJmolApp implements JsonNioClient {
 
     try {
       setBannerLabel("click below and type exitJmol[enter] to quit");
-      jmolViewer.script("set allowKeyStrokes;set zoomLarge false;set frank off;set antialiasdisplay off");
+      jmolViewer
+          .script("set allowKeyStrokes;set zoomLarge false;set frank off;set antialiasdisplay off");
+      String path = System.getProperty("user.dir").replace('\\', '/')
+          + "/Content-Cache/%ID%/%ID%.json";
+      jmolViewer.script("NIOcontentPath=\"" + path + "\";NIOterminatorMessage='MP_DONE'");
+
       service = new JsonNioService();
-      service.setContentPath(System.getProperty("user.dir").replace('\\', '/')
-          + "/Content-Cache/%ID%/%ID%.json");
-      service.setTerminatorMessage("MP_DONE");
       service.startService(port, this, jmolViewer);
-      
+
       // Bob's demo model
-      jmolViewer.script("load http://chemapps.stolaf.edu/jmol/docs/examples-12/data/caffeine.xyz");
+      jmolViewer
+          .script("load http://chemapps.stolaf.edu/jmol/docs/examples-12/data/caffeine.xyz");
 
     } catch (Throwable e) {
       e.printStackTrace();

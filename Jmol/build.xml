@@ -593,6 +593,7 @@ all support for previous versions removed
         <exclude name="org/jmol/multitouch/**/*" />
         <exclude name="org/openscience/**/*" />
         <exclude name="com/sparshui/**/*" />
+        <exclude name="com/json/**/*" />
       </fileset>
       <fileset dir="${appletjars.dir}" includes="**/*"/>
     </jar>

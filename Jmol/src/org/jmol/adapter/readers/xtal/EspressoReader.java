@@ -156,9 +156,13 @@ public class EspressoReader extends AtomSetCollectionReader {
     // all atom block types are read here -- BH
     newAtomSet();
     boolean isAlat = (line.contains("alat") || line.contains("a_0"));
+    // This is when coordinates are like
+    //F        3.456262920   8.764752820   1.733918940    0   0   0
+    boolean firstStr = (line.contains("site n."));
     boolean isFractional = line.contains("crystal");
     boolean isBohr = line.contains("bohr");
     boolean isAngstrom = line.contains("angstrom");
+    
     if (isAlat || isFractional || isAngstrom)
       setCellParams();
     setFractionalCoordinates(isFractional);
@@ -166,8 +170,9 @@ public class EspressoReader extends AtomSetCollectionReader {
     while (readLine() != null && line.length() > 45) {
       String[] tokens = getTokens();
       Atom atom = atomSetCollection.addNewAtom();
-      atom.atomName = tokens[(isBohr || tokens.length == 4 ? 0 : 1)];
-      int i1 = (isBohr || tokens.length == 4 ? 1 : tokens.length - 4);
+      atom.atomName = tokens[(isBohr || tokens.length == 4 || !firstStr ? 0 : 1)];
+      int i1 = (isBohr || tokens.length == 4 || !firstStr ? 1
+          : tokens.length - 4);
       float x = parseFloat(tokens[i1++]);
       float y = parseFloat(tokens[i1++]);
       float z = parseFloat(tokens[i1++]);

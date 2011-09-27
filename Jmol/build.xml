@@ -43,6 +43,7 @@
   <property name="docbook-xsl" value="docbook-xsl-1.75.2" />
   <property name="docbook-xml" value="docbook-xml-4.4" />
   <property name="vecmath.jar" value="vecmath1.2-1.14.jar" />
+  <property name="naga.jar" value="naga-2_1-r42.jar" />
   <property name="itext.jar" value="itext-1.4.5.jar" />
   <property name="commons-cli.jar" value="commons-cli-1.0.jar" />
 
@@ -347,6 +348,7 @@ all support for previous versions removed
       <and>
         <uptodate targetfile="${appjars.dir}">
           <srcfiles dir="${lib.dir}" includes="${vecmath.jar}"/>
+          <srcfiles dir="${lib.dir}" includes="${naga.jar}"/>
           <!-- srcfiles dir="${lib.dir}" includes="Acme.jar"/ -->
           <srcfiles dir="${lib.dir}" includes="${itext.jar}"/>
           <srcfiles dir="${lib.dir}" includes="${commons-cli.jar}"/>
@@ -378,6 +380,7 @@ all support for previous versions removed
     <delete file="build/libjars.timestamp"/>
     <mkdir dir="${appjars.dir}"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/${vecmath.jar}"/>
+    <unjar dest="${appjars.dir}" src="${lib.dir}/${naga.jar}"/>
     <!-- unjar dest="${appjars.dir}" src="${lib.dir}/Acme.jar"/ -->
     <unjar dest="${appjars.dir}" src="${lib.dir}/${itext.jar}"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/${commons-cli.jar}"/>
@@ -446,7 +449,7 @@ all support for previous versions removed
         <exclude name="**/openscience/jmol/app/jmolpanel/**" />
         <exclude name="**/openscience/jmol/app/webexport/**" />
       </fileset>
-      <fileset dir="${appjars.dir}" includes="**/cli/** **/vecmath/**" />
+      <fileset dir="${appjars.dir}" includes="**/cli/** **/vecmath/** **/naga/**" />
       <fileset dir="src/org/jmol/translation/Jmol" includes="Messages*.class"/>
     </jar>
     <signjar jar="${jmol.build.dir}/JmolUnsignedF.jar"

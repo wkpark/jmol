@@ -122,6 +122,8 @@ public class MPJmolApp implements JsonNioClient {
           .setDefaultScript("set allowKeyStrokes;set frank off;set antialiasdisplay off");
       service.setTerminatorMessage("MP_DONE");
       service.startService(port, this, jmolViewer);
+      jmolViewer.script("load http://chemapps.stolaf.edu/jmol/docs/examples-12/data/caffeine.xyz");
+      setBannerLabel("type 'exitJmol' to quit");
     } catch (Throwable e) {
       e.printStackTrace();
       if (service == null)

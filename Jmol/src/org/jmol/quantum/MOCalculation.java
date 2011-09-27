@@ -149,6 +149,7 @@ public class MOCalculation extends QuantumCalculation implements
     this.coefs = coefs;
     this.isElectronDensity = (partialCharges != null);
     this.doNormalize = doNormalize;
+    Logger.info("Normalizing AOs: " + doNormalize + " slaters = " + (slaters != null));
     countsXYZ = volumeData.getVoxelCounts();
     initialize(countsXYZ[0], countsXYZ[1], countsXYZ[2], points);
     voxelData = volumeData.getVoxelData();
@@ -215,6 +216,7 @@ public class MOCalculation extends QuantumCalculation implements
     if (slaters == null) {
       // each STO shell is the combination of one or more gaussians
       int nShells = shells.size();
+      //Logger.info("Processing " + nShells + " Gaussian  shells");
       for (int i = 0; i < nShells; i++)
         processShell(i);
       return;
@@ -231,6 +233,8 @@ public class MOCalculation extends QuantumCalculation implements
       return true;
     }
     nwChemMode = (calculationType.indexOf("NWCHEM") >= 0);
+    if (nwChemMode)
+      Logger.info("Normalization of contractions (NWCHEM)");
     /*if (calculationType.indexOf("5D") >= 0) {
      Logger
      .error("QuantumCalculation.checkCalculationType: can't read 5D basis sets yet: "

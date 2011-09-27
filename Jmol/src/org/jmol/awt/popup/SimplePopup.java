@@ -108,7 +108,15 @@ public class SimplePopup {
 
   protected JPopupMenu swingPopup;
 
+  SimplePopup() {
+    // required by reflection
+  }
+  
   SimplePopup(JmolViewer viewer) {
+    set(viewer);
+  }
+
+  protected void set(JmolViewer viewer) {
     this.viewer = viewer;
     asPopup = true;
     display = (Component) viewer.getDisplay();
@@ -119,7 +127,7 @@ public class SimplePopup {
   private boolean isHorizontal = false;
   
   public SimplePopup(JmolViewer viewer, String title, PopupResource bundle, boolean isHorizontal) {
-    this(viewer);
+    set(viewer);
     this.isHorizontal = isHorizontal;
     build(title, swingPopup = new JPopupMenu(title), bundle);
   }

@@ -23,10 +23,10 @@
  */
 package org.jmol.awt.popup;
 
+import org.jmol.api.JmolPopupInterface;
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
 import org.jmol.util.Elements;
-import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
 
 import java.awt.Component;
@@ -41,45 +41,30 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
-public class JmolPopup extends SimplePopup {
+public class JmolPopup extends SimplePopup implements JmolPopupInterface {
   
   private int aboutComputedMenuBaseCount;
 
   private static String strMenuStructure;
   
   private JMenu mainMenu;
-  
-
+ 
   final private static int MENUITEM_HEIGHT = 20;
   final private static int MAX_ITEMS = 25;
   final private static int TITLE_MAX_WIDTH = 20;
 
-  static public JmolPopup newJmolPopup(JmolViewer viewer, boolean doTranslate,
-                                       String menu, boolean asPopup) {
-    strMenuStructure = menu;
-    GT.setDoTranslate(true);
-    JmolPopup popup;
-    try {
-      popup = new JmolPopup(viewer, asPopup);
-    } catch (Exception e) {
-      Logger.error("JmolPopup not loaded");
-      popup = null;
-    }
-    if (popup != null)
-      try {
-        popup.updateComputedMenus();
-      } catch (NullPointerException e) {
-        // ignore -- the frame just wasn't ready yet;
-        // updateComputedMenus() will be called again when the frame is ready; 
-      }
-    GT.setDoTranslate(doTranslate);
-    return popup;
+  public JmolPopup() {
+    // required by reflection
   }
 
-  private JmolPopup(JmolViewer viewer, boolean asPopup) {
-    super(viewer);
+  public void initialize(JmolViewer viewer, boolean doTranslate, String menu,
+                         boolean asPopup) {
+    set(viewer);
+    strMenuStructure = menu;
+    GT.setDoTranslate(true);
     this.asPopup = asPopup;
-    PopupResource bundle = new MainPopupResourceBundle(strMenuStructure, menuText);
+    PopupResource bundle = new MainPopupResourceBundle(strMenuStructure,
+        menuText);
     String title = "popupMenu";
     if (asPopup) {
       swingPopup = new JPopupMenu("Jmol");
@@ -88,6 +73,13 @@ public class JmolPopup extends SimplePopup {
       mainMenu = new JMenu("Jmol");
       build(title, mainMenu, bundle);
     }
+    try {
+      updateComputedMenus();
+    } catch (NullPointerException e) {
+      // ignore -- the frame just wasn't ready yet;
+      // updateComputedMenus() will be called again when the frame is ready; 
+    }
+    GT.setDoTranslate(doTranslate);
   }
 
   public Container getJMenu() {

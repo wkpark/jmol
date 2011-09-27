@@ -23,7 +23,7 @@
  */
 package org.jmol.viewer;
 
-import org.jmol.awt.popup.JmolPopup;
+import org.jmol.api.JmolPopupInterface;
 import org.jmol.script.ParallelProcessor;
 import org.jmol.script.ScriptCompiler;
 import org.jmol.script.ScriptContext;
@@ -4999,8 +4999,14 @@ private void zap(String msg) {
   }
 
   private Object getPopupMenu() {
-    if (jmolpopup == null)
-      jmolpopup = JmolPopup.newJmolPopup(this, true, menuStructure, true);
+    if (jmolpopup == null) {
+      jmolpopup = (JmolPopupInterface) Interface.getOptionInterface("awt.popup.JmolPopup");
+      if (jmolpopup == null) {
+        global.disablePopupMenu = true;
+        return null;
+      }
+      jmolpopup.initialize(this, true, menuStructure, true);
+    }
     return jmolpopup.getJMenu();
   }
 
@@ -7620,7 +7626,7 @@ private void zap(String msg) {
 
   JmolAppConsoleInterface appConsole;
   JmolScriptEditorInterface scriptEditor;
-  JmolPopup jmolpopup;
+  JmolPopupInterface jmolpopup;
   
   private JmolModelKitInterface modelkit;
   

@@ -70,7 +70,7 @@ public class MPJmolApp implements JsonNioClient {
       jmolViewer.script("NIOcontentPath=\"" + path + "\";NIOterminatorMessage='MP_DONE'");
 
       service = new JsonNioService();
-      service.startService(port, this, jmolViewer);
+      service.startService(port, this, jmolViewer, "-MP");
 
       // Bob's demo model
       jmolViewer

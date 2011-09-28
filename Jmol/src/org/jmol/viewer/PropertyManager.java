@@ -339,7 +339,7 @@ public class PropertyManager {
   }
   
   private final static String[] readableTypes = {
-    "", "stateinfo", "extractmodel", "filecontents", "fileheader", "image", "menu"};
+    "", "stateinfo", "extractmodel", "filecontents", "fileheader", "image", "menu", "minimizationInfo"};
   
   private static boolean isReadableAsString(String infoType) {
     for (int i = readableTypes.length; --i >= 0; )

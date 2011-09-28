@@ -32,6 +32,7 @@ import org.jmol.export.dialog.Dialog;
 import org.jmol.util.Logger;
 import org.openscience.jmol.app.webexport.WebExport;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.Map;
@@ -164,6 +165,8 @@ class StatusListener implements JmolStatusListener {
       return;
     }
     // cases that fail to return are sent to the console for processing
+    if (jmol.service != null)
+      jmol.service.scriptCallback(strInfo);
     JmolCallbackListener appConsole = (JmolCallbackListener) viewer
         .getProperty("DATA_API", "getAppConsole", null);
     if (appConsole != null)
@@ -171,14 +174,28 @@ class StatusListener implements JmolStatusListener {
   }
 
   private void sendNioMessage(int port, String strInfo) {
-    if (strInfo == null)
+    if (port < 0) {
+      try {
+        jmol.serverService = new JsonNioService();
+        jmol.serverService.startService(port, jmol, null, "-1");
+      } catch (IOException e) {
+        // TODO
+      }
       return;
-    //JsonNioService.send(port, strInfo);    
+    }
+    if (strInfo == null || jmol.service == null)
+      return;
+//    jmol.service.sendMessage(null, strInfo, null);
+    System.out.println("sendNioMessage " + port + "  " + strInfo);
+    jmol.service.send(port, strInfo); 
   }
 
   public void setCallbackFunction(String callbackType, String callbackFunction) {
     if (callbackType.equals("modelkit")) {
-      jmol.setButtonMode(callbackFunction.equals("ON") ? "modelkit" : "rotate");
+      if (callbackFunction.equals("ON"))
+        display.buttonModelkit.setSelected(true);
+      else
+        display.buttonRotate.setSelected(true);
       return;
     }
     //if (callbackType.equalsIgnoreCase("menu")) {

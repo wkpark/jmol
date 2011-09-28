@@ -149,7 +149,7 @@ public class MOCalculation extends QuantumCalculation implements
     this.coefs = coefs;
     this.isElectronDensity = (partialCharges != null);
     this.doNormalize = doNormalize;
-    Logger.info("Normalizing AOs: " + doNormalize + " slaters = " + (slaters != null));
+    Logger.info("Normalizing AOs: " + doNormalize + " slaters:" + (slaters != null));
     countsXYZ = volumeData.getVoxelCounts();
     initialize(countsXYZ[0], countsXYZ[1], countsXYZ[2], points);
     voxelData = volumeData.getVoxelData();
@@ -379,7 +379,7 @@ public class MOCalculation extends QuantumCalculation implements
     for (int i = 0; i < map.length; i++)
       isOK |= ((coeffs[i] = moCoefficients[map[i] + moCoeff++]) != 0);
     isOK &= (coeffs[0] != Integer.MIN_VALUE);
-    if (isOK && doDebug && !isProcess)
+    if (isOK && doDebug && isProcess)
       dumpInfo(mapType);
     return isOK;
   }

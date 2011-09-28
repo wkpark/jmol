@@ -584,7 +584,7 @@ class StatusManager {
 
   void syncSend(String script, String appletName, int port) {
     // no jmolscript option for syncSend
-    if (port > 0 || notifyEnabled(EnumCallback.SYNC))
+    if (port != 0 || notifyEnabled(EnumCallback.SYNC))
       jmolCallbackListener.notifyCallback(EnumCallback.SYNC,
           new Object[] { null, script, appletName, Integer.valueOf(port) });
   }

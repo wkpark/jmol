@@ -27,6 +27,7 @@ package org.openscience.jmol.app.jmolpanel;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.util.Calendar;
 
 import javax.vecmath.Point3f;
@@ -34,13 +35,18 @@ import javax.vecmath.Point3f;
 import org.jmol.api.JmolCallbackListener;
 import org.jmol.api.JmolViewer;
 import org.jmol.constant.EnumCallback;
+import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 
 import com.json.JSONObject;
 import com.json.JSONTokener;
 
+import naga.ConnectionAcceptor;
+import naga.NIOServerSocket;
 import naga.NIOService;
 import naga.NIOSocket;
+import naga.ServerSocketObserver;
+import naga.ServerSocketObserverAdapter;
 import naga.SocketObserver;
 import naga.packetreader.AsciiLinePacketReader;
 import naga.packetwriter.RawPacketWriter;
@@ -111,7 +117,7 @@ import naga.packetwriter.RawPacketWriter;
  *   "zoomByFactor <float:factor> <int:x> <int:y>" (with center reset)
  * 
  */
-public class JsonNioService extends NIOService implements JmolCallbackListener {
+public class JsonNioService extends NIOService {
 
   protected NIOSocket inSocket;
   protected NIOSocket outSocket;
@@ -135,29 +141,28 @@ public class JsonNioService extends NIOService implements JmolCallbackListener {
     super();
   }
 
-  public void startService(int port, JsonNioClient client, JmolViewer jmolViewer)
+  public void startService(int port, JsonNioClient client, JmolViewer jmolViewer, String name)
       throws IOException {
 
     this.client = client;
     this.jmolViewer = jmolViewer;
     
     if (port < 0) {
+      startServerService(-port, name);
       return;
     }
-    
-    jmolViewer.setJmolCallbackListener(this);
-    jmolViewer.script(";sync on;sync slave");
-    String s = getJmolValue("NIOcontentPath");
-    if (s != null)
-      contentPath = s;
-    s = getJmolValue("NIOterminatorMessage");
-    if (s != null)
-      terminatorMessage = s;
-    System.out.println("JsonNioService using port " + port);
-    System.out.println("contentPath=" + contentPath);
-    System.out.println("terminatorMessage=" + terminatorMessage);
-
-
+    if (jmolViewer != null) {   
+      jmolViewer.script(";sync on;sync slave");
+      String s = getJmolValue("NIOcontentPath");
+      if (s != null)
+        contentPath = s;
+      s = getJmolValue("NIOterminatorMessage");
+      if (s != null)
+        terminatorMessage = s;
+      System.out.println("contentPath=" + contentPath);
+      System.out.println("terminatorMessage=" + terminatorMessage);
+    }
+    System.out.println("JsonNioService" + name + " using port " + port);
     inSocket = openSocket("127.0.0.1", port);
     outSocket = openSocket("127.0.0.1", port);
     inSocket.setPacketReader(new AsciiLinePacketReader());
@@ -186,17 +191,120 @@ public class JsonNioService extends NIOService implements JmolCallbackListener {
       }
 
       public void packetReceived(NIOSocket nioSocket, byte[] packet) {
+        System.out.println(Thread.currentThread().getName() + " outSocket packetRecieved " + (new String(packet)));
       }
 
       public void connectionBroken(NIOSocket nioSocket, Exception exception) {
       }
     });
 
-    thread = new Thread(new JsonNioThread(), "JsonNiosThread");
+    thread = new Thread(new JsonNioThread(), "JsonNiosThread" + name);
     thread.start();
   }
 
+  /*
+   *     serverSocket.listen(new ServerSocketObserver() {
+
+      public void acceptFailed(IOException arg0) {
+      }
+
+      public void newConnection(NIOSocket arg0) {
+        // TODO
+        
+      }
+
+      public void serverSocketDied(Exception arg0) {
+      }
+      
+    });
+
+   */
+  
+  private NIOServerSocket serverSocket;
+  private Thread serverThread;
+  
+  class JsonNioServerThread implements Runnable {
+
+    public void run() {
+      // Keep reading IO forever.
+      try {
+        while (true) {
+          selectBlocking();
+        }
+      } catch (IOException e) {
+        // TODO
+      }
+
+    }
+    
+  }
+
+  private void startServerService(int port, String name) {
+    try {
+      serverSocket = openServerSocket(port);
+      Logger.info("JsonNioServiceServer" + name + " on port " + port);
+      serverSocket.listen(new ServerSocketObserverAdapter() {
+        
+        
+        @Override
+        public void newConnection(NIOSocket nioSocket) {
+          System.out.println("Received connection: " + nioSocket);
+
+          // Set a 1 byte header regular reader.
+          nioSocket.setPacketReader(new AsciiLinePacketReader());
+
+          // Set a 1 byte header regular writer.
+          nioSocket.setPacketWriter(new RawPacketWriter());
+
+          // Listen on the connection.
+          nioSocket.listen(new SocketObserver() {
+            public void packetReceived(NIOSocket socket, byte[] packet) {
+              System.out.println("received " + new String(packet));
+//              try {
+                // Create the outgoing packet.
+                //socket.write(byteArrayOutputStream.toByteArray());
+
+                // Close after the packet has finished writing.
+                // socket.closeAfterWrite();
+                socket.close();
+  //            } catch (IOException e) {
+                // No error handling to speak of.
+    //            socket.close();
+      //        }
+            }
+
+            public void connectionBroken(NIOSocket arg0, Exception arg1) {
+              // TODO
+
+            }
+
+            public void connectionOpened(NIOSocket arg0) {
+              // TODO
+
+            }
+          });
+        }
+      });
+
+      serverSocket.setConnectionAcceptor(new ConnectionAcceptor() {
+        public boolean acceptConnection(InetSocketAddress arg0) {
+          return (arg0.getAddress().isAnyLocalAddress());
+        }
+      });
+
+    } catch (IOException e) {
+      // TODO
+    }
+
+    if (serverThread != null)
+      serverThread.interrupt();
+    serverThread = new Thread(new JsonNioServerThread(), "JsonNioServerThread" + name);
+    serverThread.start();
+  }
+
   private String getJmolValue(String var) {
+    if (jmolViewer == null)
+      return "";
     String s = (String) jmolViewer.scriptWaitStatus("print " + var, "output");
     return (s.indexOf("\n") <= 1 ? null : s.substring(0, s.lastIndexOf("\n")));
   }
@@ -216,7 +324,8 @@ public class JsonNioService extends NIOService implements JmolCallbackListener {
     } catch (Throwable e) {
       //
     }
-    client.nioClosed();
+    if (client != null)
+      client.nioClosed();
   }
 
   class JsonNioThread implements Runnable {
@@ -249,7 +358,12 @@ public class JsonNioService extends NIOService implements JmolCallbackListener {
 
   protected void processMessage(byte[] packet) {
     try {
-      JSONObject json = new JSONObject(new String(packet));
+      String msg = new String(packet);
+      if (jmolViewer == null) {
+        Logger.info("JNIOS " + Thread.currentThread().getName() + " received " + msg);
+        return;
+      }
+      JSONObject json = new JSONObject(msg);
       switch (("move......" + "command..." + "content..." + "quit......"
           + "touch.....").indexOf(json.getString("type"))) {
       case 0: // move
@@ -313,7 +427,7 @@ public class JsonNioService extends NIOService implements JmolCallbackListener {
         break;
       case 30: // quit
         halt = true;
-        System.out.println("JsonNiosService quitting");
+        Logger.info("JsonNiosService quitting");
         break;
       case 40: // touch
         // raw touch event
@@ -329,13 +443,15 @@ public class JsonNioService extends NIOService implements JmolCallbackListener {
     }
   }
 
-  protected void sendMessage(JSONObject json, String msg, NIOSocket socket) {
+  public void sendMessage(JSONObject json, String msg, NIOSocket socket) {
     try {
-      if (msg != null) {
+      if (msg != null && msg.indexOf("{") != 0) {
         json = new JSONObject();
         json.put("magic", "JmolApp");
         json.put("role", msg);
       }
+      if (socket == null)
+        socket = outSocket;
       String jsonString = json.toString() + "\r\n";
       socket.write(jsonString.getBytes("UTF-8"));
     } catch (Throwable e) {
@@ -343,37 +459,41 @@ public class JsonNioService extends NIOService implements JmolCallbackListener {
     }
   }
 
-  public boolean notifyEnabled(EnumCallback type) {
-    switch (type) {
-    case SCRIPT:
-      return true;
-    default:
-      return false;
-    }
-  }
-
-  public void notifyCallback(EnumCallback type, Object[] data) {
-    switch (type) {
-    case SCRIPT:
-      String msg = (String) data[1];
-      if (msg.equals(terminatorMessage)) {
-        try {
-          JSONObject json = new JSONObject();
-          json.put("type", "script");
-          json.put("event", "done");
-          sendMessage(json, null, outSocket);
-        } catch (Throwable e) {
-          e.printStackTrace();
-        }
+  public void scriptCallback(String msg) {
+    if (msg.equals(terminatorMessage)) {
+      try {
+        JSONObject json = new JSONObject();
+        json.put("type", "script");
+        json.put("event", "done");
+        sendMessage(json, null, outSocket);
+      } catch (Throwable e) {
+        e.printStackTrace();
       }
-      break;
-    default:
-      break;
     }
   }
 
-  public void setCallbackFunction(String callbackType, String callbackFunction) {
-    // unused
+  public void send(int port, String strInfo) {
+    try {
+      JsonNioService jns = new JsonNioService();
+      jns.sendMessage(port, strInfo);
+      jns.close();
+    } catch (IOException e) {
+      // ignore
+    }
+  }
+
+  private void sendMessage(int port, String strInfo) {
+    try {
+      outSocket = openSocket("127.0.0.1", port);
+      outSocket.setPacketWriter(new RawPacketWriter());
+      
+      outSocket.write(strInfo.getBytes());      
+    } catch (IOException e) {
+      // TODO
+    }
+
+    
+    
   }
 
 }

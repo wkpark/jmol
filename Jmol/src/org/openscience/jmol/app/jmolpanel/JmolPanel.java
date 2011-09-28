@@ -91,61 +91,99 @@ import javax.swing.UIManager;
 
 public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient {
 
-  /**
-   * The data model.
-   */
+  static HistoryFile historyFile;
 
   public JmolViewer viewer;
+
   JmolAdapter modelAdapter;
   JmolApp jmolApp;
-
-
-  DisplayPanel display;
   StatusBar status;
+  int startupWidth, startupHeight;
+  JsonNioService serverService;
+
+
+  protected String appletContext;
+  protected PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+  protected DisplayPanel display;
   protected GaussianDialog gaussianDialog;
-  private PreferencesDialog preferencesDialog;
-  RecentFilesDialog recentFiles;
-  //private JMenu recentFilesMenu;
-  public AtomSetChooser atomSetChooser;
-  private ExecuteScriptAction executeScriptAction;
+  protected RecentFilesDialog recentFiles;
+  protected AtomSetChooser atomSetChooser;
   protected JFrame frame;
+  protected SplashInterface splash;
+  protected JFrame consoleframe;  
+  protected JsonNioService service;
+  protected GuiMap guimap = new GuiMap();
+  protected int qualityJPG = -1;
+  protected int qualityPNG = -1;
+  protected String imageType;
 
-  protected // private CDKPluginManager pluginManager;
+  private ExecuteScriptAction executeScriptAction;
+  private PreferencesDialog preferencesDialog;
+  private StatusListener myStatusListener;
+  private SurfaceTool surfaceTool;
 
-  GuiMap guimap = new GuiMap();
+  private Map<String, Action> commands;
+  private Map<String, JMenuItem> menuItems;
+  private JMenuBar menubar;
+  private JToolBar toolbar;
+
+  // --- action implementations -----------------------------------
+
+  private ExportAction exportAction = new ExportAction();
+  private PovrayAction povrayAction = new PovrayAction();
+  private ToWebAction toWebAction = new ToWebAction();
+  private WriteAction writeAction = new WriteAction();
+  private PrintAction printAction = new PrintAction();
+  private CopyImageAction copyImageAction = new CopyImageAction();
+  private CopyScriptAction copyScriptAction = new CopyScriptAction();
+  private SurfaceToolAction surfaceToolAction = new SurfaceToolAction();
+  private PasteClipboardAction pasteClipboardAction = new PasteClipboardAction();
+  private ViewMeasurementTableAction viewMeasurementTableAction = new ViewMeasurementTableAction();
 
   private static int numWindows = 0;
-  private static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-
-  int startupWidth, startupHeight;
-
-  PropertyChangeSupport pcs = new PropertyChangeSupport(this);
-
+  private static KioskFrame kioskFrame;
+  private static BannerFrame bannerFrame;
+  
   // Window names for the history file
- //private final static String CONSOLE_WINDOW_NAME = "Console";
   private final static String EDITOR_WINDOW_NAME = "ScriptEditor";
   private final static String SCRIPT_WINDOW_NAME = "ScriptWindow";
   private final static String FILE_OPEN_WINDOW_NAME = "FileOpen";
   private final static String WEB_MAKER_WINDOW_NAME = "JmolWebPageMaker";
   private final static String SURFACETOOL_WINDOW_NAME = "SurfaceToolWindow";
+  private final static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+  
+  // these correlate with items xxx in GuiMap.java 
+  // that have no associated xxxScript property listed
+  // in org.openscience.jmol.Properties.Jmol-resources.properties
 
-  /**
-   * Button group for toggle buttons in the toolbar.
-   */
-  
-  protected SplashInterface splash;
+  private static final String newwinAction = "newwin";
+  private static final String openAction = "open";
+  private static final String openurlAction = "openurl";
+  private static final String openpdbAction = "openpdb";
+  private static final String openmolAction = "openmol";
+  private static final String newAction = "new";
+  private static final String exportActionProperty = "export";
+  private static final String closeAction = "close";
+  private static final String exitAction = "exit";
+  private static final String aboutAction = "about";
+  private static final String whatsnewAction = "whatsnew";
+  private static final String uguideAction = "uguide";
+  private static final String printActionProperty = "print";
+  private static final String recentFilesAction = "recentFiles";
+  private static final String povrayActionProperty = "povray";
+  private static final String writeActionProperty = "write";
+  private static final String editorAction = "editor";
+  private static final String consoleAction = "console";
+  private static final String toWebActionProperty = "toweb";
+  private static final String atomsetchooserAction = "atomsetchooser";
+  private static final String copyImageActionProperty = "copyImage";
+  private static final String copyScriptActionProperty = "copyScript";
+  private static final String surfaceToolActionProperty = "surfaceTool";  private static final String pasteClipboardActionProperty = "pasteClipboard";
+  private static final String gaussianAction = "gauss";
+  private static final String resizeAction = "resize";
+  //private static final String saveasAction = "saveas";
+  //private static final String vibAction = "vibrate";
 
-  protected JFrame consoleframe;
-  
-  String appletContext;
-  
-  static HistoryFile historyFile;
-  private static KioskFrame kioskFrame;
-  private static JsonNioService service;
-
-  private StatusListener myStatusListener;
-  private static BannerFrame bannerFrame;
-  
   public JmolPanel(JmolApp jmolApp, Splash splash, JFrame frame,
       JmolPanel parent, int startupWidth, int startupHeight,
       String commandOptions, Point loc) {
@@ -286,7 +324,6 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       }
     }
     frame.getContentPane().add("Center", this);
-
     frame.addWindowListener(new AppCloser());
     frame.pack();
     frame.setSize(startupWidth, startupHeight);
@@ -378,17 +415,18 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     }
     if (jmolApp.port > 0) {
       try {
-        service = new JsonNioService();
-        //service.setContentPath("./%ID%.json");
-        //service.setTerminatorMessage("NEXT_SCRIPT");
-        service.startService(jmolApp.port, jmol, jmol.viewer);
+        jmol.service = new JsonNioService();
+        jmol.service.startService(jmolApp.port, jmol, jmol.viewer, "-1");
+//        JsonNioService service2 = new JsonNioService();
+//        service2.startService(jmolApp.port, jmol, null, "-2");
+//        service2.sendMessage(null, "test", null);
       } catch (Throwable e) {
         e.printStackTrace();
         if (bannerFrame != null) {
           bannerFrame.setLabel("could not start NIO service on port " + jmolApp.port);
         }
-        if (service != null)
-          service.close();
+        if (jmol.service != null)
+          jmol.service.close();
       }
 
     }
@@ -486,7 +524,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     splash.showStatus(message);    
   }
 
-  void report(String str) {
+  private void report(String str) {
     if (jmolApp.isSilent)
       return;
     Logger.info(str);
@@ -528,7 +566,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     }
   }
 
-  void doClose() {
+  protected void doClose() {
     dispose(this.frame);
   }
 
@@ -894,13 +932,6 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     return menu;
   }
 
-  void setButtonMode(String string) {
-    if (string.equals("modelkit"))
-      display.buttonModelkit.setSelected(true);
-    else if (string.equals("rotate"))
-      display.buttonRotate.setSelected(true);
-  }
-
   private static class ActionChangedListener implements PropertyChangeListener {
 
     AbstractButton button;
@@ -924,60 +955,6 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       }
     }
   }
-
-  private Map<String, Action> commands;
-  private Map<String, JMenuItem> menuItems;
-  private JMenuBar menubar;
-  protected JToolBar toolbar;
-
-  // these correlate with items xxx in GuiMap.java 
-  // that have no associated xxxScript property listed
-  // in org.openscience.jmol.Properties.Jmol-resources.properties
-
-  private static final String newwinAction = "newwin";
-  private static final String openAction = "open";
-  private static final String openurlAction = "openurl";
-  private static final String openpdbAction = "openpdb";
-  private static final String openmolAction = "openmol";
-  private static final String newAction = "new";
-  //private static final String saveasAction = "saveas";
-  private static final String exportActionProperty = "export";
-  private static final String closeAction = "close";
-  private static final String exitAction = "exit";
-  private static final String aboutAction = "about";
-  //private static final String vibAction = "vibrate";
-  private static final String whatsnewAction = "whatsnew";
-  private static final String uguideAction = "uguide";
-  private static final String printActionProperty = "print";
-  private static final String recentFilesAction = "recentFiles";
-  private static final String povrayActionProperty = "povray";
-  private static final String writeActionProperty = "write";
-  private static final String editorAction = "editor";
-  private static final String consoleAction = "console";
-  private static final String toWebActionProperty = "toweb";
-  private static final String atomsetchooserAction = "atomsetchooser";
-  private static final String copyImageActionProperty = "copyImage";
-  private static final String copyScriptActionProperty = "copyScript";
-  private static final String surfaceToolActionProperty = "surfaceTool";  private static final String pasteClipboardActionProperty = "pasteClipboard";
-  private static final String gaussianAction = "gauss";
-  private static final String resizeAction = "resize";
-
-  // --- action implementations -----------------------------------
-
-  private ExportAction exportAction = new ExportAction();
-  private PovrayAction povrayAction = new PovrayAction();
-  private ToWebAction toWebAction = new ToWebAction();
-  private WriteAction writeAction = new WriteAction();
-  private PrintAction printAction = new PrintAction();
-  private CopyImageAction copyImageAction = new CopyImageAction();
-  private CopyScriptAction copyScriptAction = new CopyScriptAction();
-  private SurfaceToolAction surfaceToolAction = new SurfaceToolAction();
-  private PasteClipboardAction pasteClipboardAction = new PasteClipboardAction();
-  private ViewMeasurementTableAction viewMeasurementTableAction = new ViewMeasurementTableAction();
-
-  int qualityJPG = -1;
-  int qualityPNG = -1;
-  String imageType;
 
   /**
    * Actions defined by the Jmol class
@@ -1418,7 +1395,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       display.measurementTable.activate();
     }
   }
-  SurfaceTool surfaceTool;
+  
   void createSurfaceTool(){
     //TODO check to see if it already exists, if so bring to front.
     if(surfaceTool!=null){

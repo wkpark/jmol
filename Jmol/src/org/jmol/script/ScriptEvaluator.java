@@ -10256,6 +10256,12 @@ public class ScriptEvaluator {
         applet = ".";
         break;
       }
+      if (tokAt(1) == Token.integer) {
+        // start/stop server on port <nnnn>
+        if (!isSyntaxCheck)
+          viewer.syncScript(null, null, intParameter(1));
+        return;
+      }
       text = applet;
       applet = "*";
       break;
@@ -10266,6 +10272,7 @@ public class ScriptEvaluator {
       text = (tokAt(2) == Token.stereo ? Viewer.SYNC_GRAPHICS_MESSAGE
           : parameterAsString(2));
       if (tokAt(1) == Token.integer) {
+        // send to server on port <nnnn>
         viewer.syncScript(text, null, intParameter(1));
         return;
       }

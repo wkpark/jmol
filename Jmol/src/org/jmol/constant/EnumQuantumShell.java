@@ -31,26 +31,28 @@ package org.jmol.constant;
  */
 public enum EnumQuantumShell {
 
-  S("S",0,0),
-  P("P",1,1),
-  SP("SP",2,2),
-  D_SPHERICAL("5D",3,3),
-  D_CARTESIAN("D",4,3),
-  F_SPHERICAL("7F",5,5),
-  F_CARTESIAN("F",6,5),
-  G_SPHERICAL("9G",7,7),
-  G_CARTESIAN("G",8,7),
-  H_SPHERICAL("10H",9,9),
-  H_CARTESIAN("H",10,9);
+  S("S","S",0,0),
+  P("P","X",1,1),
+  SP("SP","SP",2,2),
+  D_SPHERICAL("5D","5D",3,3),
+  D_CARTESIAN("D","XX",4,3),
+  F_SPHERICAL("7F","7F",5,5),
+  F_CARTESIAN("F","XXX",6,5),
+  G_SPHERICAL("9G","9G",7,7),
+  G_CARTESIAN("G","XXXX",8,7),
+  H_SPHERICAL("10H","10H",9,9),
+  H_CARTESIAN("H","XXXXX",10,9);
 
   final public static String SUPPORTED_BASIS_FUNCTIONS = "SPLDF";
   
   public final String tag;
+  private final String tag2;
   public final int id;
   private final int idSpherical;
   
-  private EnumQuantumShell(String tag, int id, int idSpherical) {
+  private EnumQuantumShell(String tag, String tag2, int id, int idSpherical) {
     this.tag = tag;
+    this.tag2 = tag2;
     this.id = id;
     this.idSpherical = idSpherical;
   }
@@ -76,7 +78,7 @@ public enum EnumQuantumShell {
 
   private static EnumQuantumShell getQuantumShell(String tag) {
     for (EnumQuantumShell item : values())
-      if (item.tag.equals(tag))
+      if (item.tag.equals(tag) || item.tag2.equals(tag))
         return item;
     return null;
   }

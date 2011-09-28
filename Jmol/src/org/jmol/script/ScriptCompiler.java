@@ -965,7 +965,11 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     }
     if (tokCommand == Token.sync && nTokens == 1 && charToken()) {
       String ident = script.substring(ichToken, ichToken + cchToken);
-      addTokenToPrefix(new Token(Token.identifier, ident));
+      int iident = Parser.parseInt(ident);
+      if (iident == Integer.MIN_VALUE || Math.abs(iident) < 1000)
+        addTokenToPrefix(new Token(Token.identifier, ident));
+      else
+        addTokenToPrefix(new Token(Token.integer, iident));
       return CONTINUE;
     }
     switch (tokCommand) {

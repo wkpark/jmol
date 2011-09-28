@@ -8605,7 +8605,7 @@ private void zap(String msg) {
 
   @Override
   public void syncScript(String script, String applet, int port) {
-    if (script.equalsIgnoreCase(SYNC_GRAPHICS_MESSAGE)) {
+    if (script != null && script.equalsIgnoreCase(SYNC_GRAPHICS_MESSAGE)) {
       statusManager.setSyncDriver(StatusManager.SYNC_STEREO);
       statusManager.syncSend(script, applet, 0);
       setBooleanProperty("_syncMouse", false);

@@ -10252,7 +10252,7 @@ public class ScriptEvaluator {
       if (applet.indexOf("jmolApplet") == 0 || Parser.isOneOf(applet, "*;.;^")) {
         text = "ON";
         if (!isSyntaxCheck)
-          viewer.syncScript(text, applet);
+          viewer.syncScript(text, applet, 0);
         applet = ".";
         break;
       }
@@ -10260,14 +10260,20 @@ public class ScriptEvaluator {
       applet = "*";
       break;
     case 3:
+      if (isSyntaxCheck)
+        return;
       applet = parameterAsString(1);
       text = (tokAt(2) == Token.stereo ? Viewer.SYNC_GRAPHICS_MESSAGE
           : parameterAsString(2));
+      if (tokAt(1) == Token.integer) {
+        viewer.syncScript(text, null, intParameter(1));
+        return;
+      }
       break;
     }
     if (isSyntaxCheck)
       return;
-    viewer.syncScript(text, applet);
+    viewer.syncScript(text, applet, 0);
   }
 
   private void history(int pt) throws ScriptException {

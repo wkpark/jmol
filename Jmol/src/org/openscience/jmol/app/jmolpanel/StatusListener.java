@@ -153,11 +153,13 @@ class StatusListener implements JmolStatusListener {
     case PICK:
       notifyAtomPicked(strInfo);
       break;
+    case SYNC:
+      sendNioMessage(((Integer) data[3]).intValue(), strInfo);
+      return;
     case ERROR:
     case HOVER:
     case MINIMIZATION:
     case RESIZE:
-    case SYNC:
       // applet only (but you could change this for your listener)
       return;
     }
@@ -166,6 +168,12 @@ class StatusListener implements JmolStatusListener {
         .getProperty("DATA_API", "getAppConsole", null);
     if (appConsole != null)
       appConsole.notifyCallback(type, data);
+  }
+
+  private void sendNioMessage(int port, String strInfo) {
+    if (strInfo == null)
+      return;
+    //JsonNioService.send(port, strInfo);    
   }
 
   public void setCallbackFunction(String callbackType, String callbackFunction) {

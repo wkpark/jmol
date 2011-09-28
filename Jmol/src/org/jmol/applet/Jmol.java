@@ -694,7 +694,7 @@ public class Jmol implements WrappedApplet {
   }
 
   synchronized public void syncScript(String script) {
-    viewer.syncScript(script, "~");
+    viewer.syncScript(script, "~", 0);
   }
 
   public String getAppletInfo() {

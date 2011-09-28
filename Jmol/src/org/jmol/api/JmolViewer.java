@@ -404,7 +404,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
 
   abstract public String getStateInfo();
   
-  abstract public void syncScript(String script, String applet);  
+  abstract public void syncScript(String script, String applet, int port);  
 
   //but NOTE that if you use the following, you are
   //bypassing the script history. If you want a script history, use

@@ -4272,7 +4272,7 @@ private void zap(String msg) {
     // System.out.println("OK, I'm in evalStringQUiet");
     if (allowSyncScript && statusManager.syncingScripts
         && strScript.indexOf("#NOSYNC;") < 0)
-      syncScript(strScript + " #NOSYNC;", null);
+      syncScript(strScript + " #NOSYNC;", null, 0);
     if (eval.isExecutionPaused() && strScript.charAt(0) != '!')
       strScript = '!' + TextFormat.trim(strScript, "\n\r\t ");
     boolean isInterrupt = (strScript.length() > 0 && strScript.charAt(0) == '!');
@@ -8586,7 +8586,7 @@ private void zap(String msg) {
       break;
     case 2:
       statusManager.syncSend(TF ? SYNC_GRAPHICS_MESSAGE
-          : SYNC_NO_GRAPHICS_MESSAGE, "*");
+          : SYNC_NO_GRAPHICS_MESSAGE, "*", 0);
       if (Float.isNaN(transformManager.stereoDegrees))
         setFloatProperty("stereoDegrees", EnumStereoMode.DEFAULT_STEREO_DEGREES);
       if (TF) {
@@ -8604,10 +8604,10 @@ private void zap(String msg) {
   public final static String SYNC_NO_GRAPHICS_MESSAGE = "SET_GRAPHICS_OFF";
 
   @Override
-  public void syncScript(String script, String applet) {
+  public void syncScript(String script, String applet, int port) {
     if (script.equalsIgnoreCase(SYNC_GRAPHICS_MESSAGE)) {
       statusManager.setSyncDriver(StatusManager.SYNC_STEREO);
-      statusManager.syncSend(script, applet);
+      statusManager.syncSend(script, applet, 0);
       setBooleanProperty("_syncMouse", false);
       setBooleanProperty("_syncScript", false);
       return;
@@ -8618,8 +8618,8 @@ private void zap(String msg) {
     // ~ : disable send (just me)
     boolean disableSend = "~".equals(applet);
     // null same as ">" -- "all others"
-    if (!disableSend && !".".equals(applet)) {
-      statusManager.syncSend(script, applet);
+    if (port > 0 || !disableSend && !".".equals(applet)) {
+      statusManager.syncSend(script, applet, port);
       if (!"*".equals(applet))
         return;
     }

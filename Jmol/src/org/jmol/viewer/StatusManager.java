@@ -520,9 +520,9 @@ class StatusManager {
   synchronized void setSync(String mouseCommand) {
     if (syncingMouse) {
       if (mouseCommand != null)
-        syncSend(mouseCommand, "*");
+        syncSend(mouseCommand, "*", 0);
     } else if (!syncingScripts)
-      syncSend("!" + viewer.getMoveToText(minSyncRepeatMs / 1000f), "*");
+      syncSend("!" + viewer.getMoveToText(minSyncRepeatMs / 1000f), "*", 0);
   }
 
   boolean drivingSync = false;
@@ -546,7 +546,7 @@ class StatusManager {
     //  5 stereo
     //System.out.println(viewer.getHtmlName() +" setting mode=" + syncMode);
     if (stereoSync && syncMode != SYNC_ENABLE) {
-      syncSend(Viewer.SYNC_NO_GRAPHICS_MESSAGE, "*");
+      syncSend(Viewer.SYNC_NO_GRAPHICS_MESSAGE, "*", 0);
       stereoSync = false;
     }
     switch (syncMode) {
@@ -582,11 +582,11 @@ class StatusManager {
     }
   }
 
-  void syncSend(String script, String appletName) {
+  void syncSend(String script, String appletName, int port) {
     // no jmolscript option for syncSend
-    if (notifyEnabled(EnumCallback.SYNC))
+    if (port > 0 || notifyEnabled(EnumCallback.SYNC))
       jmolCallbackListener.notifyCallback(EnumCallback.SYNC,
-          new Object[] { null, script, appletName });
+          new Object[] { null, script, appletName, Integer.valueOf(port) });
   }
   
   int getSyncMode() {

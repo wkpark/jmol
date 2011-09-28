@@ -1,3 +1,27 @@
+/* $RCSfile$
+ * $Author: hansonr $
+ * $Date: 2010-05-19 08:25:14 -0500 (Wed, 19 May 2010) $
+ * $Revision: 13133 $
+ *
+ * Copyright (C) 2002-2005  The Jmol Development Team
+ *
+ * Contact: jmol-developers@lists.sf.net
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2.1 of the License, or (at your option) any later version.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public
+ *  License along with this library; if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+
 package org.openscience.jmol.app.jmolpanel;
 
 import java.io.File;
@@ -21,6 +45,72 @@ import naga.SocketObserver;
 import naga.packetreader.AsciiLinePacketReader;
 import naga.packetwriter.RawPacketWriter;
 
+/**
+ * listens over a port on the local host for instructions on what to display. 
+ * Instructions come in over the port as JSON strings.
+ * 
+ * This class uses the Naga asynchronous socket network I/O package, 
+ * the JSON.org JSON package and Jmol.
+ * 
+ * http://code.google.com/p/naga/
+ * 
+ * Sent from Jmol: 
+ * 
+ *   {"magic" : "JmolApp", "role" : "out"}  (socket initialization for messages TO jmol)
+ *   {"magic" : "JmolApp", "role" : "in"}   (socket initialization for messages FROM jmol)
+ *   {"type" : "script", "event" : "done"}  (script completed)
+ *   
+ * Sent to Jmol:
+ * 
+ *   {"type" : "quit" }                          (shut down request)
+ *   {"type" : "move", "style" : (see below) }   (mouse command request)
+ *   {"type" : "command", "command" : command }  (script command request)
+ *   {"type" : "content", "id" : id }            (load content request)
+ *   {"type" : "touch",                          (a raw touch event)
+ *        "eventType" : eventType,
+ *        "touchID"   : touchID,
+ *        "iData"     : idata,
+ *        "time"      : time,
+ *        "x" : x, "y" : y, "z" : z }
+ *    
+ *   For details on the "touch" type, see org.jmol.viewer.ActionManagerMT::processEvent
+ *   Content is assumed to be in a location determined by the Jmol variable
+ *   nioContentPath, with %ID% being replaced by some sort of ID number of tag provided by
+ *   the other half of the system. That file contains more JSON code:
+ *   
+ *   {"startup_script" : scriptFileName, "banner_text" : text } 
+ *   
+ *   An additional option "banner" : "off" turns off the title banner.
+ *   The startup script must be in the same directory as the .json file, typically as a .spt file
+ *   
+ *   Move commands include:
+ *   
+ *   {"type" : "move", "style" : "rotate", "x" : deltaX, "y", deltaY }
+ *   {"type" : "move", "style" : "translate", "x" : deltaX, "y", deltaY }
+ *   {"type" : "move", "style" : "zoom", "scale" : scale }  (1.0 = 100%)
+ *   {"type" : "move", "style" : "sync", "sync" : syncText }
+ *   
+ *   Note that all these moves utilize the Jmol sync functionality originally intended for
+ *   applets. So any valid sync command may be used with the "sync" style. These include 
+ *   essentially all the actions that a user can make with a mouse, including the
+ *   following, where the notation <....> represents a number of a given type. These
+ *   events interrupt any currently running script, just as with typical mouse actions.
+ *   
+ *   "centerAt <int:x> <int:y> <float:ptx> <float:pty> <float:ptz>"
+ *      -- set {ptx,pty,ptz} at screen (x,y)
+ *   "rotateMolecule <float:deltaX> <float:deltaY>"
+ *   "rotateXYBy <float:deltaX> <float:deltaY>"
+ *   "rotateZBy <int:degrees>"
+ *   "rotateZBy <int:degrees> <int:x> <int:y>" (with center reset)
+ *   "rotateArcBall <int:x> <int:y> <float:factor>"
+ *   "spinXYBy <int:x> <int:y> <float:speed>"
+ *      -- a "flick" gesture
+ *   "translateXYBy <float:deltaX, float:deltaY>"
+ *   "zoomBy <int:pixels>"
+ *   "zoomByFactor <float:factor>"
+ *   "zoomByFactor <float:factor> <int:x> <int:y>" (with center reset)
+ * 
+ */
 public class JsonNioService extends NIOService implements JmolCallbackListener {
 
   protected NIOSocket inSocket;
@@ -50,6 +140,11 @@ public class JsonNioService extends NIOService implements JmolCallbackListener {
 
     this.client = client;
     this.jmolViewer = jmolViewer;
+    
+    if (port < 0) {
+      return;
+    }
+    
     jmolViewer.setJmolCallbackListener(this);
     jmolViewer.script(";sync on;sync slave");
     String s = getJmolValue("NIOcontentPath");
@@ -69,20 +164,11 @@ public class JsonNioService extends NIOService implements JmolCallbackListener {
     inSocket.setPacketWriter(new RawPacketWriter());
     outSocket.setPacketReader(new AsciiLinePacketReader());
     outSocket.setPacketWriter(new RawPacketWriter());
-    selectNonBlocking();
 
     inSocket.listen(new SocketObserver() {
 
       public void connectionOpened(NIOSocket nioSocket) {
-        try {
-          JSONObject json = new JSONObject();
-          json.put("magic", "JmolApp");
-          json.put("role", "out");
-          String jsonString = json.toString() + "\r\n";
-          nioSocket.write(jsonString.getBytes("UTF-8"));
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
+        sendMessage(null, "out", nioSocket);
       }
 
       public void packetReceived(NIOSocket nioSocket, byte[] packet) {
@@ -96,14 +182,7 @@ public class JsonNioService extends NIOService implements JmolCallbackListener {
     outSocket.listen(new SocketObserver() {
 
       public void connectionOpened(NIOSocket nioSocket) {
-        try {
-          JSONObject json = new JSONObject();
-          json.put("magic", "JmolApp");
-          json.put("role", "in");
-          sendMessage(json);
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
+        sendMessage(null, "in", outSocket);
       }
 
       public void packetReceived(NIOSocket nioSocket, byte[] packet) {
@@ -146,6 +225,8 @@ public class JsonNioService extends NIOService implements JmolCallbackListener {
       try {
         while (!halt) {
 
+          selectNonBlocking();
+
           long now = Calendar.getInstance().getTimeInMillis();
 
           // No commands for 5 seconds = unpause/restore Jmol
@@ -183,20 +264,20 @@ public class JsonNioService extends NIOService implements JmolCallbackListener {
         switch (("sync......" + "rotate...." + "translate." + "zoom......")
             .indexOf(json.getString("style"))) {
         case 0: // sync
-          jmolViewer.syncScript("Mouse: " + json.getString("sync"), "~");
+          jmolViewer.syncScript("Mouse: " + json.getString("sync"), "~", 0);
           break;
         case 10: // rotate
           jmolViewer.syncScript("Mouse: rotateXYBy " + json.getString("x")
-              + " " + json.getString("y"), "~");
+              + " " + json.getString("y"), "~", 0);
           break;
         case 20: // translate
           jmolViewer.syncScript("Mouse: translateXYBy " + json.getString("x")
-              + " " + json.getString("y"), "~");
+              + " " + json.getString("y"), "~", 0);
           break;
         case 30: // zoom
           float zoomFactor = (float) (json.getDouble("scale") / (jmolViewer
               .getZoomPercentFloat() / 100.0f));
-          jmolViewer.syncScript("Mouse: zoomByFactor " + zoomFactor, "~");
+          jmolViewer.syncScript("Mouse: zoomByFactor " + zoomFactor, "~", 0);
           break;
         }
         break;
@@ -248,10 +329,15 @@ public class JsonNioService extends NIOService implements JmolCallbackListener {
     }
   }
 
-  protected void sendMessage(JSONObject json) {
+  protected void sendMessage(JSONObject json, String msg, NIOSocket socket) {
     try {
+      if (msg != null) {
+        json = new JSONObject();
+        json.put("magic", "JmolApp");
+        json.put("role", msg);
+      }
       String jsonString = json.toString() + "\r\n";
-      outSocket.write(jsonString.getBytes("UTF-8"));
+      socket.write(jsonString.getBytes("UTF-8"));
     } catch (Throwable e) {
       e.printStackTrace();
     }
@@ -275,7 +361,7 @@ public class JsonNioService extends NIOService implements JmolCallbackListener {
           JSONObject json = new JSONObject();
           json.put("type", "script");
           json.put("event", "done");
-          sendMessage(json);
+          sendMessage(json, null, outSocket);
         } catch (Throwable e) {
           e.printStackTrace();
         }

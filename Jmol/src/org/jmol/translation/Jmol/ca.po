@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-09-27 20:09+0200\n"
-"PO-Revision-Date: 2011-09-25 12:08+0000\n"
+"POT-Creation-Date: 2011-09-28 06:53+0200\n"
+"PO-Revision-Date: 2011-09-27 22:47+0000\n"
 "Last-Translator: VPablo <villumar@gmail.com>\n"
 "Language-Team: Catalan <jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-09-25 19:52+0000\n"
-"X-Generator: Launchpad (build 14012)\n"
+"X-Launchpad-Export-Date: 2011-09-28 04:32+0000\n"
+"X-Generator: Launchpad (build 14049)\n"
 "X-Poedit-Country: ANDORRA\n"
 "X-Poedit-Language: Catalan\n"
 
@@ -74,9 +74,8 @@ msgstr ""
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:584
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:593
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:610
-#, fuzzy
 msgid "All"
-msgstr "&Tot"
+msgstr "Tot"
 
 #: org/jmol/awt/popup/JmolPopup.java:566
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:946
@@ -89,9 +88,8 @@ msgid "Translations"
 msgstr ""
 
 #: org/jmol/awt/popup/JmolPopup.java:569
-#, fuzzy
 msgid "System"
-msgstr "Pas"
+msgstr ""
 
 #: org/jmol/awt/popup/JmolPopup.java:575
 msgid "1 processor"
@@ -134,14 +132,12 @@ msgid "unknown maximum"
 msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:539
-#, fuzzy
 msgid "Configurations"
-msgstr "Animació"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:540
-#, fuzzy
 msgid "Element"
-msgstr "no implementat"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:541
 msgid "Model/Frame"
@@ -181,9 +177,9 @@ msgid "Model information"
 msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:552
-#, fuzzy, java-format
+#, java-format
 msgid "Select ({0})"
-msgstr "Escala {0}"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:553
 #, java-format
@@ -216,9 +212,9 @@ msgid "groups: {0}"
 msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:559
-#, fuzzy, java-format
+#, java-format
 msgid "chains: {0}"
-msgstr "es crea {0}"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:560
 #, java-format
@@ -231,18 +227,17 @@ msgid "model {0}"
 msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:562
-#, fuzzy, java-format
+#, java-format
 msgid "View {0}"
-msgstr "Perspe&ctiva"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:563
 msgid "Main Menu"
 msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:564
-#, fuzzy
 msgid "Biomolecules"
-msgstr "Rota la molècula."
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:565
 #, java-format
@@ -257,39 +252,32 @@ msgstr ""
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:571
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:690
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:699
-#, fuzzy
 msgid "None"
-msgstr "Ca&p"
+msgstr "Cap"
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:572
-#, fuzzy
 msgid "Display Selected Only"
-msgstr "Suprimeix allò seleccionat"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:573
-#, fuzzy
 msgid "Invert Selection"
-msgstr "Selecció: "
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:575
-#, fuzzy
 msgid "View"
-msgstr "Perspe&ctiva"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:576
-#, fuzzy
 msgid "Front"
-msgstr "Da&vant"
+msgstr "Frontal"
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:577
-#, fuzzy
 msgid "Left"
-msgstr "&Esquerra"
+msgstr "Esquerra"
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:578
-#, fuzzy
 msgid "Right"
-msgstr "&Dreta"
+msgstr "Dreta"
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:579
 msgid ""
@@ -298,14 +286,12 @@ msgid ""
 msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:580
-#, fuzzy
 msgid "Bottom"
-msgstr "A&vall"
+msgstr "De baix"
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:581
-#, fuzzy
 msgid "Back"
-msgstr "Bàsic"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:583
 msgid "Protein"
@@ -319,9 +305,8 @@ msgid "Backbone"
 msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:586
-#, fuzzy
 msgid "Side Chains"
-msgstr "Plans de secció"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:587
 msgid "Polar Residues"
@@ -357,9 +342,8 @@ msgid "RNA"
 msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:597
-#, fuzzy
 msgid "Bases"
-msgstr "Pausa"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:598
 msgid "AT pairs"
@@ -387,9 +371,8 @@ msgid "All Solvent"
 msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:604
-#, fuzzy
 msgid "All Water"
-msgstr "Aigua"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:606
 msgid "Nonaqueous Solvent"
@@ -412,9 +395,8 @@ msgid "None of the above"
 msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:614
-#, fuzzy
 msgid "Style"
-msgstr "Pas"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:615
 msgid "Scheme"
@@ -433,16 +415,14 @@ msgid "Sticks"
 msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:619
-#, fuzzy
 msgid "Wireframe"
-msgstr "&Filferro"
+msgstr "Filferro"
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:620
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:667
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:760
-#, fuzzy
 msgid "Cartoon"
-msgstr "Carboni"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:621
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:672
@@ -495,9 +475,8 @@ msgstr "Enllaços"
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:676
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:679
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:783
-#, fuzzy
 msgid "On"
-msgstr "&Activat"
+msgstr "Activat"
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:635
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:636
@@ -532,9 +511,8 @@ msgstr "{0} Å"
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:641
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:755
-#, fuzzy
 msgid "Hydrogen Bonds"
-msgstr "Hidrògens"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:643
 msgid "Calculate"
@@ -567,9 +545,8 @@ msgid "Structures"
 msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:668
-#, fuzzy
 msgid "Cartoon Rockets"
-msgstr "Aspecte de la pàgina"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:669
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:761
@@ -587,15 +564,13 @@ msgid "Strands"
 msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:674
-#, fuzzy
 msgid "Vibration"
-msgstr "Animació"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:677
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:767
-#, fuzzy
 msgid "Vectors"
-msgstr "V&ectors"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:680
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:130
@@ -630,9 +605,8 @@ msgid "Red+Blue glasses"
 msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:693
-#, fuzzy
 msgid "Red+Green glasses"
-msgstr "Vermell / Verd"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:694
 msgid "Cross-eyed viewing"
@@ -644,9 +618,8 @@ msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:697
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:764
-#, fuzzy
 msgid "Labels"
-msgstr "&Etiqueta"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:700
 msgid "With Element Symbol"
@@ -665,33 +638,28 @@ msgid "Position Label on Atom"
 msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:705
-#, fuzzy
 msgid "Centered"
-msgstr "&Centrat"
+msgstr "Centrat"
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:706
-#, fuzzy
 msgid "Upper Right"
-msgstr "&Adalt a la dreta"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:707
-#, fuzzy
 msgid "Lower Right"
-msgstr "&Adalt a la dreta"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:708
-#, fuzzy
 msgid "Upper Left"
-msgstr "&Adalt a la dreta"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:709
 msgid "Lower Left"
 msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:711
-#, fuzzy
 msgid "Color"
-msgstr "Tanca"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:714
 msgid "By Scheme"
@@ -710,14 +678,12 @@ msgid "Molecule"
 msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:718
-#, fuzzy
 msgid "Formal Charge"
-msgstr "Càrrega total: "
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:719
-#, fuzzy
 msgid "Partial Charge"
-msgstr "Càrrega total: "
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:720
 msgid "Temperature (Relative)"
@@ -728,9 +694,8 @@ msgid "Temperature (Fixed)"
 msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:723
-#, fuzzy
 msgid "Amino Acid"
-msgstr "Amino"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:724
 msgid "Secondary Structure"
@@ -757,24 +722,20 @@ msgid "Inherit"
 msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:731
-#, fuzzy
 msgid "Black"
-msgstr "Bàsic"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:732
-#, fuzzy
 msgid "White"
-msgstr "Aigua"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:733
-#, fuzzy
 msgid "Cyan"
-msgstr "Vermell / Cian"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:735
-#, fuzzy
 msgid "Red"
-msgstr "Refés"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:736
 msgid "Orange"
@@ -785,19 +746,16 @@ msgid "Yellow"
 msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:738
-#, fuzzy
 msgid "Green"
-msgstr "Vermell / Verd"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:739
-#, fuzzy
 msgid "Blue"
-msgstr "Vermell / Blau"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:740
-#, fuzzy
 msgid "Indigo"
-msgstr "Informació"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:741
 msgid "Violet"
@@ -812,9 +770,8 @@ msgid "Olive"
 msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:745
-#, fuzzy
 msgid "Maroon"
-msgstr "Carboni"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:746
 msgid "Gray"
@@ -843,15 +800,13 @@ msgid "Make Translucent"
 msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:765
-#, fuzzy
 msgid "Background"
-msgstr "Color de fons"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:766
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:892
-#, fuzzy
 msgid "Surfaces"
-msgstr "Eina de superfície"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:768
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:912
@@ -863,9 +818,8 @@ msgstr "Eixos"
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:769
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:913
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:937
-#, fuzzy
 msgid "Boundbox"
-msgstr "Quadre d'enllaçament"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:770
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:889
@@ -875,46 +829,38 @@ msgid "Unit cell"
 msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:772
-#, fuzzy
 msgid "Zoom"
-msgstr "A&mplia"
+msgstr "Zoom"
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:779
-#, fuzzy
 msgid "Zoom In"
-msgstr "A&mplia"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:780
-#, fuzzy
 msgid "Zoom Out"
-msgstr "A&mplia"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:782
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:847
-#, fuzzy
 msgid "Spin"
-msgstr "Gir activat"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:786
-#, fuzzy
 msgid "Set X Rate"
-msgstr "Estat"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:787
-#, fuzzy
 msgid "Set Y Rate"
-msgstr "Estat"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:788
-#, fuzzy
 msgid "Set Z Rate"
-msgstr "Estat"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:789
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:815
-#, fuzzy
 msgid "Set FPS"
-msgstr "FPS"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:799
 #: org/openscience/jmol/app/webexport/Widgets.java:179
@@ -922,9 +868,8 @@ msgid "Animation"
 msgstr "Animació"
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:800
-#, fuzzy
 msgid "Animation Mode"
-msgstr "Animació"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:801
 #: org/openscience/jmol/app/webexport/Widgets.java:197
@@ -952,14 +897,12 @@ msgid "Pause"
 msgstr "Pausa"
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:807
-#, fuzzy
 msgid "Resume"
-msgstr "Redime&nsiona"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:808
-#, fuzzy
 msgid "Stop"
-msgstr "Pas"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:809
 #: org/openscience/jmol/app/webexport/Widgets.java:186
@@ -972,18 +915,16 @@ msgid "Previous Frame"
 msgstr "Fotograma anterior"
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:811
-#, fuzzy
 msgid "Rewind"
-msgstr "Refés"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:812
 msgid "Reverse"
 msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:813
-#, fuzzy
 msgid "Restart"
-msgstr "Repeteix"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:822
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:855
@@ -1013,100 +954,84 @@ msgid "Click two atoms to display a sequence in the console"
 msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:828
-#, fuzzy
 msgid "Delete measurements"
-msgstr "Mesures"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:829
-#, fuzzy
 msgid "List measurements"
-msgstr "Mesures"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:830
-#, fuzzy
 msgid "Distance units nanometers"
-msgstr "&Unitats de distància"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:831
-#, fuzzy
 msgid "Distance units Angstroms"
-msgstr "&Unitats de distància"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:832
-#, fuzzy
 msgid "Distance units picometers"
-msgstr "&Unitats de distància"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:834
 msgid "Set picking"
 msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:836
-#, fuzzy
 msgid "Center"
-msgstr "&Centrat"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:838
 msgid "Identity"
 msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:839
-#, fuzzy
 msgid "Label"
-msgstr "&Etiqueta"
+msgstr "Etiqueta"
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:840
-#, fuzzy
 msgid "Select atom"
-msgstr "Suprimeix els àtoms"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:841
-#, fuzzy
 msgid "Select chain"
-msgstr "Selecció: "
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:842
-#, fuzzy
 msgid "Select element"
-msgstr "Seleccion&a-ho tot"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:843
-#, fuzzy
 msgid "Select group"
-msgstr "Selecció"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:844
-#, fuzzy
 msgid "Select molecule"
-msgstr "Seleccion&a-ho tot"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:845
-#, fuzzy
 msgid "Select site"
-msgstr "Selecció"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:846
 msgid "Show symmetry operation"
 msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:849
-#, fuzzy
 msgid "Show"
-msgstr "Mostra-ho tot"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:850
-#, fuzzy
 msgid "Console"
-msgstr "Conso&la..."
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:851
 msgid "File Contents"
 msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:852
-#, fuzzy
 msgid "File Header"
-msgstr "Nom del fitxer:"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:853
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:170
@@ -1122,14 +1047,12 @@ msgid "Molecular orbital JVXL data"
 msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:857
-#, fuzzy
 msgid "Model"
-msgstr "Mode:"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:858
-#, fuzzy
 msgid "Orientation"
-msgstr "Animació"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:859
 msgid "Space group"
@@ -1140,32 +1063,28 @@ msgid "Current state"
 msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:863
-#, fuzzy
 msgid "File"
-msgstr "&Fitxer"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:864
-#, fuzzy
 msgid "Reload"
-msgstr "&Recarrega"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:865
 msgid "Open from PDB"
 msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:866
-#, fuzzy
 msgid "Open file or URL"
-msgstr "Obre un URL"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:867
 msgid "Load full unit cell"
 msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:868
-#, fuzzy
 msgid "Open script"
-msgstr "Copia l'script"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:870
 #, java-format
@@ -1184,9 +1103,9 @@ msgstr ""
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:874
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:875
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:876
-#, fuzzy, java-format
+#, java-format
 msgid "Export {0} image"
-msgstr "Exporta una &imatge…"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:877
 msgid "Save all as JMOL file (zip)"
@@ -1205,9 +1124,8 @@ msgid "Export {0} 3D model"
 msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:884
-#, fuzzy
 msgid "Computation"
-msgstr "Computa els enllaços"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:885
 msgid "Optimize structure"
@@ -1222,19 +1140,16 @@ msgid "Extract MOL data"
 msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:893
-#, fuzzy
 msgid "Dot Surface"
-msgstr "Eina de superfície"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:894
-#, fuzzy
 msgid "van der Waals Surface"
-msgstr "{0}% van der Waals"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:895
-#, fuzzy
 msgid "Molecular Surface"
-msgstr "Propietats moleculars"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:896
 #, java-format
@@ -1253,9 +1168,9 @@ msgstr ""
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:905
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:906
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:907
-#, fuzzy, java-format
+#, java-format
 msgid "Reload {0}"
-msgstr "&Recarrega"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:908
 #, java-format
@@ -1282,29 +1197,25 @@ msgstr ""
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:921
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:922
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:923
-#, fuzzy, java-format
+#, java-format
 msgid "{0} px"
-msgstr "{0} píxels"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:925
-#, fuzzy
 msgid "Angstrom Width"
-msgstr "(Àmstrongs)"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:933
-#, fuzzy
 msgid "Selection Halos"
-msgstr "Selecció: "
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:934
-#, fuzzy
 msgid "Show Hydrogens"
-msgstr "Hidrògens"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:935
-#, fuzzy
 msgid "Show Measurements"
-msgstr "Mesures"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:936
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:198
@@ -1312,14 +1223,12 @@ msgid "Perspective Depth"
 msgstr "Perspectiva en profunditat"
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:940
-#, fuzzy
 msgid "RasMol Colors"
-msgstr "Paràmetres per defecte del RasMol"
+msgstr ""
 
 #: org/jmol/awt/popup/MainPopupResourceBundle.java:941
-#, fuzzy
 msgid "About..."
-msgstr "Absoluta"
+msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:107
 msgid "Error starting Jmol: the property 'user.home' is not defined."
@@ -1377,47 +1286,47 @@ msgstr ""
 "envia només a sortida els missatge d'impressió a la consola (implica -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:165
-msgid "port for JSON/MolecularPlayground-style communication"
-msgstr ""
-
-#: org/openscience/jmol/app/JmolApp.java:167
 msgid "independent command thread"
 msgstr "fil d'ordres independent"
 
-#: org/openscience/jmol/app/JmolApp.java:169
+#: org/openscience/jmol/app/JmolApp.java:167
 msgid "exit after script (implicit with -n)"
 msgstr "surt després de l'script (implícit amb -n)"
 
-#: org/openscience/jmol/app/JmolApp.java:173
+#: org/openscience/jmol/app/JmolApp.java:170
+msgid "port for JSON/MolecularPlayground-style communication"
+msgstr ""
+
+#: org/openscience/jmol/app/JmolApp.java:176
 msgid "script file to execute or '-' for System.in"
 msgstr "fitxer d'script que s'executarà o '-' per a System.in"
 
-#: org/openscience/jmol/app/JmolApp.java:179
+#: org/openscience/jmol/app/JmolApp.java:182
 msgid "use multitouch interface (requires \"sparshui\" parameter"
 msgstr "utilitza la interfície multitàctil (requereix el paràmetre «sparshui»)"
 
-#: org/openscience/jmol/app/JmolApp.java:186
+#: org/openscience/jmol/app/JmolApp.java:189
 msgid "Jmol script to execute BEFORE -s option"
 msgstr "Script de Jmol que s'executarà ABANS de l'opció -s"
 
-#: org/openscience/jmol/app/JmolApp.java:192
+#: org/openscience/jmol/app/JmolApp.java:195
 msgid "Jmol script to execute AFTER -s option"
 msgstr "Script de Jmol que s'executarà DESPRÉS de l'opció -s"
 
-#: org/openscience/jmol/app/JmolApp.java:201
+#: org/openscience/jmol/app/JmolApp.java:204
 msgid "property=value"
 msgstr "propietat=valor"
 
-#: org/openscience/jmol/app/JmolApp.java:204
+#: org/openscience/jmol/app/JmolApp.java:207
 msgid "supported options are given below"
 msgstr "les opcions implementades es descriuen a continuació"
 
-#: org/openscience/jmol/app/JmolApp.java:210
+#: org/openscience/jmol/app/JmolApp.java:213
 #, java-format
 msgid "window width x height, e.g. {0}"
 msgstr "amplada x altura de la finestra, ex. {0}"
 
-#: org/openscience/jmol/app/JmolApp.java:220
+#: org/openscience/jmol/app/JmolApp.java:223
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
@@ -1425,16 +1334,16 @@ msgstr ""
 "Qualitat de la imatge JPG (1-100; per defecte 75) o compressió de la imatge "
 "PNG (0-9; per defecte 2, compressió màxima 9)"
 
-#: org/openscience/jmol/app/JmolApp.java:225
+#: org/openscience/jmol/app/JmolApp.java:228
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr "{0} o {1}:nomdelfitxer"
 
-#: org/openscience/jmol/app/JmolApp.java:239
+#: org/openscience/jmol/app/JmolApp.java:242
 msgid "For example:"
 msgstr "Per exemple:"
 
-#: org/openscience/jmol/app/JmolApp.java:245
+#: org/openscience/jmol/app/JmolApp.java:248
 msgid ""
 "The -D options are as follows (defaults in parenthesis) and must be called "
 "preceding '-jar Jmol.jar':"
@@ -1442,15 +1351,15 @@ msgstr ""
 "Les opcions -D són com a continuació (per defecte en parèntesis) i cal "
 "cridar-les amb '-jar Jmol.jar' precedent:"
 
-#: org/openscience/jmol/app/JmolApp.java:496
+#: org/openscience/jmol/app/JmolApp.java:502
 msgid "Executing script 1..."
 msgstr "S'està executant l'script 1..."
 
-#: org/openscience/jmol/app/JmolApp.java:506
+#: org/openscience/jmol/app/JmolApp.java:512
 msgid "Executing script file..."
 msgstr "S'està executant el fitxer d'script..."
 
-#: org/openscience/jmol/app/JmolApp.java:527
+#: org/openscience/jmol/app/JmolApp.java:533
 msgid "Executing script 2..."
 msgstr "S'està executant l'script 2..."
 
@@ -2246,117 +2155,117 @@ msgstr "S'està construint la barra de menú…"
 msgid "Starting display..."
 msgstr "S'està iniciant la visualització…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:308
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:312
 msgid "Setting up Drag-and-Drop..."
 msgstr "Configuració del l'«arrossega i deixa anar»…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:316
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:320
 msgid "Launching main frame..."
 msgstr "S'està executant el fotograma principal…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:320
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:324
 msgid "Initializing Preferences..."
 msgstr "S'estan inicialitzant les preferències…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:322
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:326
 msgid "Initializing Recent Files..."
 msgstr "S'estan inicialitzant els fitxers recents…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:361
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:399
 msgid "Jmol Java Console"
 msgstr "Consola Java del Jmol"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:381
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:419
 msgid "Could not create ConsoleTextArea: "
 msgstr "No s'ha pogut crear l'àrea de text de la consola: "
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:427
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:465
 msgid "Creating main window..."
 msgstr "S'està creant la finestra principal…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:428
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:466
 msgid "Initializing Swing..."
 msgstr "S'està inicialitzant el Swing…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:440
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:476
 msgid "Initializing Jmol..."
 msgstr "S'està inicialitzant el Jmol…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:521
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:557
 msgid "Closing Jmol..."
 msgstr "S'està tancant el Jmol…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1136
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1172
 msgid "Open URL"
 msgstr "Obre un URL"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1137
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1173
 msgid "Enter URL of molecular model"
 msgstr "Introduïu l'URL d'un model molecular"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1163
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1199
 msgid "Get PDB file"
 msgstr "Aconseguir un fitxer PDB"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1164
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1200
 msgid "Enter a four-digit PDB ID"
 msgstr "Escriu un identificador de quatre dígits PDB"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1181
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1217
 msgid "Get MOL file by compound name or ID"
 msgstr "Aconseguix l'arxiu MOL a partir del nom o identificador del compost"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1182
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1218
 msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
 msgstr "Escriu el nom o l'identificador (SMILES, InChI, CAS) d'una molècula."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1348
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1384
 msgid "IO Exception:"
 msgstr "S'ha produït una excepció IO:"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1477
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1513
 msgid "width height?"
 msgstr "amplada alçada?"
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:176
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:254
 msgid "type"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:187
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:265
 msgid "style"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:189
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:267
 msgid "sync"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:192
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:196
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:270
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:274
 msgid "x"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:193
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:197
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:271
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:275
 msgid "y"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:207
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:285
 msgid "command"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:210
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:288
 msgid "id"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:223
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:301
 msgid "startup_script"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:228
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:306
 msgid "banner_text"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:229
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:307
 msgid "banner"
 msgstr ""
 
@@ -3103,6 +3012,3 @@ msgstr "no implementat"
 
 #~ msgid "Output Conso&le..."
 #~ msgstr "Scrip&t…"
-
-#~ msgid "Caps slice with opaque surfaces."
-#~ msgstr "Tanca la secció usant plans opacs"

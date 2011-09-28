@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-09-27 20:09+0200\n"
+"POT-Creation-Date: 2011-09-28 06:53+0200\n"
 "PO-Revision-Date: 2011-07-31 07:06+0000\n"
 "Last-Translator: Egon Willighagen <Unknown>\n"
 "Language-Team: Dutch <jmol-developer@lists.sf.net>\n"
@@ -1380,48 +1380,48 @@ msgid "send only output from print messages to console (implies -i)"
 msgstr "stuur alleen input van print berichten naar de console (impliceert -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:165
-msgid "port for JSON/MolecularPlayground-style communication"
-msgstr ""
-
-#: org/openscience/jmol/app/JmolApp.java:167
 msgid "independent command thread"
 msgstr "onafhankelijke opdrachtenthread"
 
-#: org/openscience/jmol/app/JmolApp.java:169
+#: org/openscience/jmol/app/JmolApp.java:167
 msgid "exit after script (implicit with -n)"
 msgstr "afsluiten na einde script (impliciet met -n)"
 
-#: org/openscience/jmol/app/JmolApp.java:173
+#: org/openscience/jmol/app/JmolApp.java:170
+msgid "port for JSON/MolecularPlayground-style communication"
+msgstr ""
+
+#: org/openscience/jmol/app/JmolApp.java:176
 msgid "script file to execute or '-' for System.in"
 msgstr "scriptbestand om te starten or '-' voor System.in"
 
-#: org/openscience/jmol/app/JmolApp.java:179
+#: org/openscience/jmol/app/JmolApp.java:182
 msgid "use multitouch interface (requires \"sparshui\" parameter"
 msgstr ""
 "Gebruik meervoudige aanraak systemen heeft \"sparshui\" parameter nodig"
 
-#: org/openscience/jmol/app/JmolApp.java:186
+#: org/openscience/jmol/app/JmolApp.java:189
 msgid "Jmol script to execute BEFORE -s option"
 msgstr "Jmol script om te starten VOOR de -s optie"
 
-#: org/openscience/jmol/app/JmolApp.java:192
+#: org/openscience/jmol/app/JmolApp.java:195
 msgid "Jmol script to execute AFTER -s option"
 msgstr "Jmol script om te starten NA de -s optie"
 
-#: org/openscience/jmol/app/JmolApp.java:201
+#: org/openscience/jmol/app/JmolApp.java:204
 msgid "property=value"
 msgstr "eigenschap=waarde"
 
-#: org/openscience/jmol/app/JmolApp.java:204
+#: org/openscience/jmol/app/JmolApp.java:207
 msgid "supported options are given below"
 msgstr "ondersteunde waarde staan hieronder"
 
-#: org/openscience/jmol/app/JmolApp.java:210
+#: org/openscience/jmol/app/JmolApp.java:213
 #, java-format
 msgid "window width x height, e.g. {0}"
 msgstr "windowhoogte, bv. {0}"
 
-#: org/openscience/jmol/app/JmolApp.java:220
+#: org/openscience/jmol/app/JmolApp.java:223
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
@@ -1429,16 +1429,16 @@ msgstr ""
 "JPEG-kwaliteit (1-100; normaal 75) of PNG-compressie (0-9; normaal 2; "
 "maximale compressie 9)"
 
-#: org/openscience/jmol/app/JmolApp.java:225
+#: org/openscience/jmol/app/JmolApp.java:228
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr "{0} of {1}: bestandsnaam"
 
-#: org/openscience/jmol/app/JmolApp.java:239
+#: org/openscience/jmol/app/JmolApp.java:242
 msgid "For example:"
 msgstr "Bijvoorbeeld:"
 
-#: org/openscience/jmol/app/JmolApp.java:245
+#: org/openscience/jmol/app/JmolApp.java:248
 msgid ""
 "The -D options are as follows (defaults in parenthesis) and must be called "
 "preceding '-jar Jmol.jar':"
@@ -1446,15 +1446,15 @@ msgstr ""
 "De -D opties zijn als volgt (voorbeelden in haakjes) en moeten gegeven "
 "worden voor '-jar Jmol.jar':"
 
-#: org/openscience/jmol/app/JmolApp.java:496
+#: org/openscience/jmol/app/JmolApp.java:502
 msgid "Executing script 1..."
 msgstr "Bezig met uitvoeren van script 1..."
 
-#: org/openscience/jmol/app/JmolApp.java:506
+#: org/openscience/jmol/app/JmolApp.java:512
 msgid "Executing script file..."
 msgstr "Bezig met uitvoeren van een scriptbestand..."
 
-#: org/openscience/jmol/app/JmolApp.java:527
+#: org/openscience/jmol/app/JmolApp.java:533
 msgid "Executing script 2..."
 msgstr "Executing script 2..."
 
@@ -2250,117 +2250,117 @@ msgstr "Opbouwen Menus..."
 msgid "Starting display..."
 msgstr "Starten viewer..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:308
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:312
 msgid "Setting up Drag-and-Drop..."
 msgstr "Initialiseren van Drag-and-Drop..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:316
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:320
 msgid "Launching main frame..."
 msgstr "Starten mainwindow..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:320
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:324
 msgid "Initializing Preferences..."
 msgstr "Initialiseren Eigenschappen..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:322
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:326
 msgid "Initializing Recent Files..."
 msgstr "Initialiseren Recente Bestanden..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:361
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:399
 msgid "Jmol Java Console"
 msgstr "Jmol Java Console"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:381
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:419
 msgid "Could not create ConsoleTextArea: "
 msgstr "Kon geen ConsoleTextArea aanmaken: "
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:427
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:465
 msgid "Creating main window..."
 msgstr "Maken van main window..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:428
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:466
 msgid "Initializing Swing..."
 msgstr "Initialiseren Swing..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:440
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:476
 msgid "Initializing Jmol..."
 msgstr "Initialiseren Jmol...."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:521
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:557
 msgid "Closing Jmol..."
 msgstr "Bezig met afsluiten Jmol..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1136
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1172
 msgid "Open URL"
 msgstr "Open URL"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1137
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1173
 msgid "Enter URL of molecular model"
 msgstr "Geef URL van molecuulmodel"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1163
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1199
 msgid "Get PDB file"
 msgstr "Haal een PDB file over"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1164
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1200
 msgid "Enter a four-digit PDB ID"
 msgstr "Geef de vier-cijferige PDB code"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1181
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1217
 msgid "Get MOL file by compound name or ID"
 msgstr "Heel een MOL file over via naam of code"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1182
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1218
 msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
 msgstr "Geef de naam of code (SMILES, InChI, CAS) van het molecule"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1348
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1384
 msgid "IO Exception:"
 msgstr "IO-fout:"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1477
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1513
 msgid "width height?"
 msgstr "breedte hoogte?"
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:176
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:254
 msgid "type"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:187
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:265
 msgid "style"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:189
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:267
 msgid "sync"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:192
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:196
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:270
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:274
 msgid "x"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:193
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:197
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:271
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:275
 msgid "y"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:207
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:285
 msgid "command"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:210
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:288
 msgid "id"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:223
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:301
 msgid "startup_script"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:228
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:306
 msgid "banner_text"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:229
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:307
 msgid "banner"
 msgstr ""
 

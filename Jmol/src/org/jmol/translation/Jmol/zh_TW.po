@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-09-27 20:09+0200\n"
+"POT-Creation-Date: 2011-09-28 06:53+0200\n"
 "PO-Revision-Date: 2011-08-18 17:15+0000\n"
 "Last-Translator: iychiang <iychiang1809@gmail.com>\n"
 "Language-Team: Traditional Chinese <zh_TW@li.org>\n"
@@ -1373,47 +1373,47 @@ msgid "send only output from print messages to console (implies -i)"
 msgstr "只把列印的訊息輸出至主控台 (意味選用了 -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:165
-msgid "port for JSON/MolecularPlayground-style communication"
-msgstr ""
-
-#: org/openscience/jmol/app/JmolApp.java:167
 msgid "independent command thread"
 msgstr "independent command thread"
 
-#: org/openscience/jmol/app/JmolApp.java:169
+#: org/openscience/jmol/app/JmolApp.java:167
 msgid "exit after script (implicit with -n)"
 msgstr "執行指令稿後結束 (意味選用了 -n)"
 
-#: org/openscience/jmol/app/JmolApp.java:173
+#: org/openscience/jmol/app/JmolApp.java:170
+msgid "port for JSON/MolecularPlayground-style communication"
+msgstr ""
+
+#: org/openscience/jmol/app/JmolApp.java:176
 msgid "script file to execute or '-' for System.in"
 msgstr "執行指令稿或'-'執行 System.in"
 
-#: org/openscience/jmol/app/JmolApp.java:179
+#: org/openscience/jmol/app/JmolApp.java:182
 msgid "use multitouch interface (requires \"sparshui\" parameter"
 msgstr "使用多點式觸碰介面 (需要 \"sparsui\" 的參數)"
 
-#: org/openscience/jmol/app/JmolApp.java:186
+#: org/openscience/jmol/app/JmolApp.java:189
 msgid "Jmol script to execute BEFORE -s option"
 msgstr "在 -s 選項前執行Jmol指令稿"
 
-#: org/openscience/jmol/app/JmolApp.java:192
+#: org/openscience/jmol/app/JmolApp.java:195
 msgid "Jmol script to execute AFTER -s option"
 msgstr "在 -s 選項後執行Jmol指令稿"
 
-#: org/openscience/jmol/app/JmolApp.java:201
+#: org/openscience/jmol/app/JmolApp.java:204
 msgid "property=value"
 msgstr "屬性名=屬性值"
 
-#: org/openscience/jmol/app/JmolApp.java:204
+#: org/openscience/jmol/app/JmolApp.java:207
 msgid "supported options are given below"
 msgstr "以下列出被支援的選項"
 
-#: org/openscience/jmol/app/JmolApp.java:210
+#: org/openscience/jmol/app/JmolApp.java:213
 #, java-format
 msgid "window width x height, e.g. {0}"
 msgstr "視窗的 寬度 x 高度,例如 {0}"
 
-#: org/openscience/jmol/app/JmolApp.java:220
+#: org/openscience/jmol/app/JmolApp.java:223
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
@@ -1421,30 +1421,30 @@ msgstr ""
 "JPG 影像壓縮品質(1-100;預設 75) 或 PNG 影像壓縮品質(0-9;預設 2,最大壓縮值為 "
 "9)"
 
-#: org/openscience/jmol/app/JmolApp.java:225
+#: org/openscience/jmol/app/JmolApp.java:228
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr "{0} or {1}:檔名"
 
-#: org/openscience/jmol/app/JmolApp.java:239
+#: org/openscience/jmol/app/JmolApp.java:242
 msgid "For example:"
 msgstr "例如："
 
-#: org/openscience/jmol/app/JmolApp.java:245
+#: org/openscience/jmol/app/JmolApp.java:248
 msgid ""
 "The -D options are as follows (defaults in parenthesis) and must be called "
 "preceding '-jar Jmol.jar':"
 msgstr "-D 選項如下 (括號內為預設), 必須被稱為 前面的 '-jar Jmol.jar':"
 
-#: org/openscience/jmol/app/JmolApp.java:496
+#: org/openscience/jmol/app/JmolApp.java:502
 msgid "Executing script 1..."
 msgstr "指令稿1執行中..."
 
-#: org/openscience/jmol/app/JmolApp.java:506
+#: org/openscience/jmol/app/JmolApp.java:512
 msgid "Executing script file..."
 msgstr "指令稿執行中..."
 
-#: org/openscience/jmol/app/JmolApp.java:527
+#: org/openscience/jmol/app/JmolApp.java:533
 msgid "Executing script 2..."
 msgstr "指令稿2執行中..."
 
@@ -2240,117 +2240,117 @@ msgstr "建定選單列..."
 msgid "Starting display..."
 msgstr "開始顯示..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:308
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:312
 msgid "Setting up Drag-and-Drop..."
 msgstr "設定拖放"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:316
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:320
 msgid "Launching main frame..."
 msgstr "開啟主要視框..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:320
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:324
 msgid "Initializing Preferences..."
 msgstr "啟始使用偏號..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:322
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:326
 msgid "Initializing Recent Files..."
 msgstr "啟始最近用過的檔案..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:361
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:399
 msgid "Jmol Java Console"
 msgstr "Jmol Java 主控台"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:381
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:419
 msgid "Could not create ConsoleTextArea: "
 msgstr "無法產生 ConsoleTextArea： "
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:427
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:465
 msgid "Creating main window..."
 msgstr "創立主要視窗..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:428
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:466
 msgid "Initializing Swing..."
 msgstr "啟始 Swing..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:440
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:476
 msgid "Initializing Jmol..."
 msgstr "啟始 Jmol..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:521
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:557
 msgid "Closing Jmol..."
 msgstr "關閉Jmol..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1136
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1172
 msgid "Open URL"
 msgstr "開啟網址(URL)"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1137
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1173
 msgid "Enter URL of molecular model"
 msgstr "輸入分子模型的網址(URL)"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1163
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1199
 msgid "Get PDB file"
 msgstr "取得 PDB 檔"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1164
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1200
 msgid "Enter a four-digit PDB ID"
 msgstr "請輸入四位數的 PDB 代碼"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1181
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1217
 msgid "Get MOL file by compound name or ID"
 msgstr "依照化合物名稱或是 ID 取得 MOL 檔"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1182
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1218
 msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
 msgstr "請輸入分子的名稱或是辨識碼 (SMILES, InChI, CAS)"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1348
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1384
 msgid "IO Exception:"
 msgstr "輸出入錯誤："
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1477
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1513
 msgid "width height?"
 msgstr "寬度高度?"
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:176
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:254
 msgid "type"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:187
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:265
 msgid "style"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:189
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:267
 msgid "sync"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:192
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:196
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:270
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:274
 msgid "x"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:193
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:197
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:271
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:275
 msgid "y"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:207
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:285
 msgid "command"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:210
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:288
 msgid "id"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:223
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:301
 msgid "startup_script"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:228
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:306
 msgid "banner_text"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:229
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:307
 msgid "banner"
 msgstr ""
 

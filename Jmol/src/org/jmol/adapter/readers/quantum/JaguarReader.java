@@ -25,6 +25,7 @@
 package org.jmol.adapter.readers.quantum;
 
 import org.jmol.adapter.smarter.*;
+import org.jmol.api.JmolAdapter;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
 
@@ -36,6 +37,9 @@ import java.util.Map;
 /**
  * Jaguar reader tested for the two samples files in CVS. Both
  * these files were created with Jaguar version 4.0, release 20.
+ * MO reader corrected 9/28/11 by Bob Hanson -- reading NORMALIZED set
+ * TODO: slight question about application of SQRT(3) in XY XZ YZ set
+ *       if that turns out to be an issue, we can multiply coefficients
  */
 public class JaguarReader extends MOReader {
 
@@ -68,10 +72,11 @@ public class JaguarReader extends MOReader {
       moData.put("calculationType", calculationType = line.substring(13).trim());
       return true;
     }
-    if (line.indexOf("Shell information") >= 0) {
-      readBasis();
+    if (line.indexOf("XXXXXShell information") >= 0) { // disabled -- need normalized set
+      readUnnormalizedBasis();
       return true;
     }
+
     if (line.indexOf("Normalized coefficients") >= 0) {
       readBasisNormalized();
       return true;
@@ -163,8 +168,10 @@ public class JaguarReader extends MOReader {
 
 
    */
-  //private final static float ROOT3 = 1.73205080756887729f;
-  private void readBasis() throws Exception {
+  
+  private final static float ROOT3 = 1.73205080756887729f;
+  
+  private void readUnnormalizedBasis() throws Exception {
     String lastAtom = "";
     int iAtom = -1;
     int[][] sdata = new int[moCount][4];
@@ -224,59 +231,80 @@ public class JaguarReader extends MOReader {
       Logger.debug(gaussianCount + " gaussian primitives read");
     }
   }
-  
-  
-/*
-   Gaussian Functions - Normalized coefficients
-   
-   s
-   h    t
-   e    y
-   l    p    f
-   atom       l    e    n          z          rcoef        rmfac     rcoef*rmfac
-   --------    ---  ---  ---     ---------    ----------   ----------  -----------
-   C1          1    S    1    3047.524880     0.536345     1.000000     0.536345
-   C1          2    S    1     457.369518     0.989452     1.000000     0.989452
-   C1          3    S    1     103.948685     1.597283     1.000000     1.597283
-   C1          4    S    1      29.210155     2.079187     1.000000     2.079187
-   C1          5    S    1       9.286663     1.774174     1.000000     1.774174
-   C1          6    S    1       3.163927     0.612580     1.000000     0.612580
-   C1          7    S    2       7.868272    -0.399556     1.000000    -0.399556
-   C1          8    S    2       1.881289    -0.184155     1.000000    -0.184155
-   C1          9    S    2       0.544249     0.516390     1.000000     0.516390
-   C1         10    X    3       7.868272     1.296082     1.000000     1.296082
-                    Y    4                                 1.000000     1.296082
-                    Z    5                                 1.000000     1.296082
-   C1         11    X    3       1.881289     0.993754     1.000000     0.993754
 
-   */
+  /*
+     Gaussian Functions - Normalized coefficients
+     
+     s
+     h    t
+     e    y
+     l    p    f
+     atom       l    e    n          z          rcoef        rmfac     rcoef*rmfac
+     --------    ---  ---  ---     ---------    ----------   ----------  -----------
+     C1          1    S    1    3047.524880     0.536345     1.000000     0.536345
+     C1          2    S    1     457.369518     0.989452     1.000000     0.989452
+     C1          3    S    1     103.948685     1.597283     1.000000     1.597283
+     C1          4    S    1      29.210155     2.079187     1.000000     2.079187
+     C1          5    S    1       9.286663     1.774174     1.000000     1.774174
+     C1          6    S    1       3.163927     0.612580     1.000000     0.612580
+     C1          7    S    2       7.868272    -0.399556     1.000000    -0.399556
+     C1          8    S    2       1.881289    -0.184155     1.000000    -0.184155
+     C1          9    S    2       0.544249     0.516390     1.000000     0.516390
+     C1         10    X    3       7.868272     1.296082     1.000000     1.296082
+                      Y    4                                 1.000000     1.296082
+                      Z    5                                 1.000000     1.296082
+     C1         11    X    3       1.881289     0.993754     1.000000     0.993754
+
+     */
   private void readBasisNormalized() throws Exception {
-    
-    //TODO don't know what this is about yet -- Bob Hanson
-/*    
-    if (true)
-      return;
+// if (true) return;
     String lastAtom = "";
     int iAtom = -1;
-    discardLinesUntilContains("--------");
-    float z = 0;
-    float rCoef = 0;
     String id;
-
+    int iFunc = 0;
+    int iFuncLast = -1;
+    List<int[]> sarray = new ArrayList<int[]>();
+    List<float[]> gdata = new ArrayList<float[]>();
+    gaussianCount = 0;
+    int[] sdata = null;
+    discardLinesUntilContains("--------");
     while (readLine() != null && line.length() > 3) {
       String[] tokens = getTokens();
       if (tokens.length == 4) { //continuation
         id = tokens[0];
-      } else {
-        if (!tokens[0].equals(lastAtom))
-          iAtom++;
-        lastAtom = tokens[0];
-        id = tokens[2];
-        z = parseFloat(tokens[4]);
-        rCoef = parseFloat(tokens[5]);
+        continue;
       }
+      if (!tokens[0].equals(lastAtom))
+        iAtom++;
+      lastAtom = tokens[0];
+      id = tokens[2];
+      int iType = JmolAdapter.getQuantumShellTagID(id);
+      iFunc = parseInt(tokens[3]) - 1;
+      if (iFunc == iFuncLast) {
+      } else {
+        sdata = new int[] { iAtom, iType, gaussianCount, 0 };
+        sarray.add(sdata);
+        iFuncLast = iFunc;
+      }
+      gaussianCount++;
+      sdata[3]++;
+      float z = parseFloat(tokens[4]);
+      float rCoef = parseFloat(tokens[5]);
+      if (id.equals("XX"))
+        rCoef *= ROOT3;
+      gdata.add(new float[] { z, rCoef });
     }
-*/
+
+    float[][] garray = new float[gaussianCount][];
+    for (int i = gdata.size(); --i >= 0;)
+      garray[i] = gdata.get(i);
+    moData.put("shells", sarray);
+    moData.put("gaussians", garray);
+    if (Logger.debugging) {
+      Logger.info(sarray.size() + " slater shells read");
+      Logger.info(gaussianCount + " gaussian primitives read");
+    }
+    moData.put("isNormalized", Boolean.TRUE);
   }
 
   /*
@@ -324,13 +352,11 @@ public class JaguarReader extends MOReader {
         }
         nMo++;
         for (int i = 0, pt =0; i < moCount; i++) {
-          String type = dataBlock[i][2];
-          //TODO: sort these?
-          char ch = type.charAt(0);
-          if (!isQuantumBasisSupported(ch))
-            continue;
-          coefs[pt] = parseFloat(dataBlock[i][iOrb + 3]);
-          pt++;
+          //String type = dataBlock[i][2];
+          //char ch = type.charAt(0);
+          //if (!isQuantumBasisSupported(ch))
+            //continue;
+          coefs[pt++] = parseFloat(dataBlock[i][iOrb + 3]);
         }
         mo.put("coefficients", coefs);
         setMO(mo);

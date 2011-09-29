@@ -71,10 +71,11 @@ import naga.packetwriter.RawPacketWriter;
  *   
  * Sent to Jmol (via inSocket):
  * 
- *   {"type" : "quit" }                          (shut down request)
- *   {"type" : "move", "style" : (see below) }   (mouse command request)
  *   {"type" : "command", "command" : command }  (script command request)
  *   {"type" : "content", "id" : id }            (load content request)
+ *   {"type" : "move", "style" : (see below) }   (mouse command request)
+ *   {"type" : "quit" }                          (shut down request)
+ *   {"type" : "sync", "sync" : (see below) }    (sync command request)
  *   {"type" : "touch",                          (a raw touch event)
  *        "eventType" : eventType,
  *        "touchID"   : touchID,
@@ -97,7 +98,7 @@ import naga.packetwriter.RawPacketWriter;
  *   {"type" : "move", "style" : "rotate", "x" : deltaX, "y", deltaY }
  *   {"type" : "move", "style" : "translate", "x" : deltaX, "y", deltaY }
  *   {"type" : "move", "style" : "zoom", "scale" : scale }  (1.0 = 100%)
- *   {"type" : "move", "style" : "sync", "sync" : syncText }
+ *   {"type" : "sync", "sync" : syncText }
  *   
  *   Note that all these moves utilize the Jmol sync functionality originally intended for
  *   applets. So any valid sync command may be used with the "sync" style. These include 
@@ -408,39 +409,17 @@ public class JsonNioService extends NIOService {
           outSocket = socket;
       if (!json.has("type"))
         return;
-      switch (("move......" + "command..." + "content..." + "quit......"
+      switch ((
+            "command..." 
+          + "content..." 
+          + "move......" 
+          + "quit......"
+          + "sync......" 
           + "touch.....").indexOf(json.getString("type"))) {
-      case 0: // move
-
-        //sync -3000;sync slave;sync 3000 '{"type":"move","style":"sync", "sync":"rotateZBy 30"}'
-        int iStyle = ("sync......" + "rotate...." + "translate." + "zoom......")
-            .indexOf(json.getString("style"));
-        if (iStyle != 0 && !isPaused) 
-          pauseScript(true);
-        lastMoveTime = Calendar.getInstance().getTimeInMillis();
-        switch (iStyle) {
-        case 0: // sync
-          jmolViewer.syncScript("Mouse: " + json.getString("sync"), "~", 0);
-          break;
-        case 10: // rotate
-          jmolViewer.syncScript("Mouse: rotateXYBy " + json.getString("x")
-              + " " + json.getString("y"), "~", 0);
-          break;
-        case 20: // translate
-          jmolViewer.syncScript("Mouse: translateXYBy " + json.getString("x")
-              + " " + json.getString("y"), "~", 0);
-          break;
-        case 30: // zoom
-          float zoomFactor = (float) (json.getDouble("scale") / (jmolViewer
-              .getZoomPercentFloat() / 100.0f));
-          jmolViewer.syncScript("Mouse: zoomByFactor " + zoomFactor, "~", 0);
-          break;
-        }
-        break;
-      case 10: // command
+      case 0: // command
         jmolViewer.evalStringQuiet(json.getString("command"));
         break;
-      case 20: // content
+      case 10: // content
         String id = json.getString("id");
         String path = TextFormat.simpleReplace(contentPath, "%ID%", id)
             .replace('\\', '/');
@@ -466,11 +445,40 @@ public class JsonNioService extends NIOService {
               + "</center></html>");
         }
         break;
+      case 20: // move
+        int iStyle = (
+              "rotate...." 
+            + "translate." 
+            + "zoom......")
+            .indexOf(json.getString("style"));
+        if (iStyle != 0 && !isPaused) 
+          pauseScript(true);
+        lastMoveTime = Calendar.getInstance().getTimeInMillis();
+        switch (iStyle) {
+        case 0: // rotate
+          jmolViewer.syncScript("Mouse: rotateXYBy " + json.getString("x")
+              + " " + json.getString("y"), "~", 0);
+          break;
+        case 10: // translate
+          jmolViewer.syncScript("Mouse: translateXYBy " + json.getString("x")
+              + " " + json.getString("y"), "~", 0);
+          break;
+        case 20: // zoom
+          float zoomFactor = (float) (json.getDouble("scale") / (jmolViewer
+              .getZoomPercentFloat() / 100.0f));
+          jmolViewer.syncScript("Mouse: zoomByFactor " + zoomFactor, "~", 0);
+          break;
+        }
+        break;
       case 30: // quit
         halt = true;
         Logger.info("JsonNiosService quitting");
         break;
-      case 40: // touch
+      case 40: // sync
+        //sync -3000;sync slave;sync 3000 '{"type":"sync","sync":"rotateZBy 30"}'
+        jmolViewer.syncScript("Mouse: " + json.getString("sync"), "~", 0);
+        break;
+      case 50: // touch
         // raw touch event
         jmolViewer.processEvent(0, json.getInt("eventType"), json
             .getInt("touchID"), json.getInt("iData"), new Point3f((float) json

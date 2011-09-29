@@ -8620,7 +8620,7 @@ private void zap(String msg) {
     // null same as ">" -- "all others"
     if (port > 0 || !disableSend && !".".equals(applet)) {
       statusManager.syncSend(script, applet, port);
-      if (!"*".equals(applet))
+      if (!"*".equals(applet) || script.startsWith("{"))
         return;
     }
     if (script.equalsIgnoreCase("on") || script.equalsIgnoreCase("true")) {

@@ -374,7 +374,11 @@ public class JsonNioService extends NIOService {
           + "quit......"
           + "touch.....").indexOf(json.getString("type"))) {
       case 0: // move
-        if (!isPaused) {
+        
+        //sync -3000;sync slave;sync 3000 '{"type":"move","style":"sync", "sync":"rotateZBy 30"}'
+        int iStyle = ("sync......" + "rotate...." + "translate." + "zoom......")
+        .indexOf(json.getString("style"));
+        if (iStyle != 0 && !isPaused) {
           // Pause the script and save the state when interaction starts
           wasSpinOn = jmolViewer.getBooleanProperty("spinOn");
           jmolViewer
@@ -382,8 +386,7 @@ public class JsonNioService extends NIOService {
           isPaused = true;
         }
         lastMoveTime = Calendar.getInstance().getTimeInMillis();
-        switch (("sync......" + "rotate...." + "translate." + "zoom......")
-            .indexOf(json.getString("style"))) {
+        switch (iStyle) {
         case 0: // sync
           jmolViewer.syncScript("Mouse: " + json.getString("sync"), "~", 0);
           break;
@@ -453,13 +456,14 @@ public class JsonNioService extends NIOService {
   public void sendMessage(JSONObject json, String msg, NIOSocket socket) {
     try {
       if (json != null) {
-        msg = json.toString() + "\r\n";
-      } else if (msg != null && msg.indexOf("{") != 0){
+        msg = json.toString();
+      } else if (json == null && msg != null && msg.indexOf("{") != 0){
         json = new JSONObject();
         json.put("type", "command");
         json.put("command", msg);
-        msg = json.toString() + "\r\n";
+        msg = json.toString();
       }
+      msg += "\r\n";
       if (socket == null)
         socket = outSocket;
       Logger.info(Thread.currentThread().getName() + " sending " + msg);
@@ -495,6 +499,8 @@ public class JsonNioService extends NIOService {
         }
         startService(port, client, jmolViewer, myName);
       }
+      if (msg.startsWith("Mouse:"))
+        msg = "{\"type\":\"move\",\"style\":\"sync\", \"sync\":\"" + msg.substring(6) + "\"}";
       sendMessage(null, msg, null);
     } catch (IOException e) {
       // ignore

@@ -79,7 +79,7 @@ public class MPJmolApp implements JsonNioClient {
     } catch (Throwable e) {
       e.printStackTrace();
       if (service == null)
-        nioClosed();
+        nioClosed(null);
       else
         service.close();
     }
@@ -91,7 +91,7 @@ public class MPJmolApp implements JsonNioClient {
     bannerFrame.setLabel(label);
   }
 
-  public void nioClosed() {
+  public void nioClosed(JsonNioService jns) {
     try {
       jmolViewer.setModeMouse(-1);
       bannerFrame.dispose();

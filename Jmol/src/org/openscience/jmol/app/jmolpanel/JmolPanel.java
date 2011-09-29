@@ -590,6 +590,14 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       if (historyFile.getProperty("clearHistory", "false").equals("true"))
         historyFile.clear();
     }
+    if (service != null) {
+      service.close();
+      service = null;
+    }
+    if (serverService != null) {
+      serverService.close();
+      serverService = null;
+    }
     if (numWindows <= 1) {
       // Close Jmol
       report(GT._("Closing Jmol..."));
@@ -1522,19 +1530,44 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     guimap.updateLabels();
   }
 
-  public void nioClosed() {
+  public void nioClosed(JsonNioService jns) {
     if (bannerFrame != null) {
       viewer.scriptWait("delay 2");
       bannerFrame.dispose();
+      viewer.setModeMouse(JmolConstants.MOUSE_NONE);
+      // would not nec. have to close this....
+      System.exit(0);
     }
-    viewer.setModeMouse(JmolConstants.MOUSE_NONE);
-    // would not nec. have to close this....
-    System.exit(0);
+    if (jns.equals(service))
+      service = null;
+    else if (jns.equals(serverService))
+      serverService = null;
+    
   }
 
   public void setBannerLabel(String label) {
     if (bannerFrame != null)
       bannerFrame.setLabel(label);
   }
+
+  void sendNioMessage(int port, String strInfo) {
+    try {
+      if (port < 0) {
+        serverService = new JsonNioService();
+        serverService.startService(port, this, viewer, "-1");
+        return;
+      }
+      if (strInfo == null)
+        return;
+      if (service == null) {
+        service = new JsonNioService();
+        service.startService(port, this, viewer, null);
+      }
+      service.send(port, strInfo);
+    } catch (IOException e) {
+      // TODO
+    }
+  }
+
   
 }

@@ -32,7 +32,6 @@ import org.jmol.export.dialog.Dialog;
 import org.jmol.util.Logger;
 import org.openscience.jmol.app.webexport.WebExport;
 
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.Map;
@@ -155,7 +154,7 @@ class StatusListener implements JmolStatusListener {
       notifyAtomPicked(strInfo);
       break;
     case SYNC:
-      sendNioMessage(((Integer) data[3]).intValue(), strInfo);
+      jmol.sendNioMessage(((Integer) data[3]).intValue(), strInfo);
       return;
     case ERROR:
     case HOVER:
@@ -171,23 +170,6 @@ class StatusListener implements JmolStatusListener {
         .getProperty("DATA_API", "getAppConsole", null);
     if (appConsole != null)
       appConsole.notifyCallback(type, data);
-  }
-
-  private void sendNioMessage(int port, String strInfo) {
-    if (port < 0) {
-      try {
-        jmol.serverService = new JsonNioService();
-        jmol.serverService.startService(port, jmol, null, "-1");
-      } catch (IOException e) {
-        // TODO
-      }
-      return;
-    }
-    if (strInfo == null || jmol.service == null)
-      return;
-//    jmol.service.sendMessage(null, strInfo, null);
-    System.out.println("sendNioMessage " + port + "  " + strInfo);
-    jmol.service.send(port, strInfo); 
   }
 
   public void setCallbackFunction(String callbackType, String callbackFunction) {

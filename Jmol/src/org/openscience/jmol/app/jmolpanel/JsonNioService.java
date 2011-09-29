@@ -32,12 +32,11 @@ import java.util.Calendar;
 
 import javax.vecmath.Point3f;
 
-import org.jmol.api.JmolCallbackListener;
 import org.jmol.api.JmolViewer;
-import org.jmol.constant.EnumCallback;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 
+import com.json.JSONException;
 import com.json.JSONObject;
 import com.json.JSONTokener;
 
@@ -45,7 +44,7 @@ import naga.ConnectionAcceptor;
 import naga.NIOServerSocket;
 import naga.NIOService;
 import naga.NIOSocket;
-import naga.ServerSocketObserver;
+import naga.SocketObserverAdapter;
 import naga.ServerSocketObserverAdapter;
 import naga.SocketObserver;
 import naga.packetreader.AsciiLinePacketReader;
@@ -128,6 +127,9 @@ public class JsonNioService extends NIOService {
   protected boolean isPaused;
   protected long lastMoveTime;
   protected boolean wasSpinOn;
+  
+  private int port;
+  protected String myName;
 
   protected String contentPath = "./%ID%.json";
   protected String terminatorMessage = "NEXT_SCRIPT";
@@ -144,14 +146,16 @@ public class JsonNioService extends NIOService {
   public void startService(int port, JsonNioClient client, JmolViewer jmolViewer, String name)
       throws IOException {
 
+    this.port = port;
     this.client = client;
     this.jmolViewer = jmolViewer;
+    myName = (name == null ? "" : name);
     
     if (port < 0) {
-      startServerService(-port, name);
+      startServerService();
       return;
     }
-    if (jmolViewer != null) {   
+    if (name != null) {
       jmolViewer.script(";sync on;sync slave");
       String s = getJmolValue("NIOcontentPath");
       if (s != null)
@@ -159,10 +163,10 @@ public class JsonNioService extends NIOService {
       s = getJmolValue("NIOterminatorMessage");
       if (s != null)
         terminatorMessage = s;
-      System.out.println("contentPath=" + contentPath);
-      System.out.println("terminatorMessage=" + terminatorMessage);
+      Logger.info("contentPath=" + contentPath);
+      Logger.info("terminatorMessage=" + terminatorMessage);
     }
-    System.out.println("JsonNioService" + name + " using port " + port);
+    Logger.info("JsonNioService" + myName + " using port " + port);
     inSocket = openSocket("127.0.0.1", port);
     outSocket = openSocket("127.0.0.1", port);
     inSocket.setPacketReader(new AsciiLinePacketReader());
@@ -173,7 +177,7 @@ public class JsonNioService extends NIOService {
     inSocket.listen(new SocketObserver() {
 
       public void connectionOpened(NIOSocket nioSocket) {
-        sendMessage(null, "out", nioSocket);
+        initialize("out", nioSocket);
       }
 
       public void packetReceived(NIOSocket nioSocket, byte[] packet) {
@@ -181,13 +185,15 @@ public class JsonNioService extends NIOService {
       }
 
       public void connectionBroken(NIOSocket nioSocket, Exception exception) {
+        halt = true;
+        Logger.info(Thread.currentThread().getName() + " connectionBroken");
       }
     });
 
     outSocket.listen(new SocketObserver() {
 
       public void connectionOpened(NIOSocket nioSocket) {
-        sendMessage(null, "in", outSocket);
+        initialize("in", outSocket);
       }
 
       public void packetReceived(NIOSocket nioSocket, byte[] packet) {
@@ -195,31 +201,25 @@ public class JsonNioService extends NIOService {
       }
 
       public void connectionBroken(NIOSocket nioSocket, Exception exception) {
+        System.out.println("connectionBroken");
       }
     });
 
-    thread = new Thread(new JsonNioThread(), "JsonNiosThread" + name);
+    thread = new Thread(new JsonNioThread(), "JsonNiosThread" + myName);
     thread.start();
   }
 
-  /*
-   *     serverSocket.listen(new ServerSocketObserver() {
+  protected void initialize(String role, NIOSocket nioSocket) {
+    try {
+      JSONObject json = new JSONObject();
+      json.put("magic", "JmolApp");
+      json.put("role", role);
+      sendMessage(json, null, nioSocket);
+    } catch (JSONException e) {
+      // TODO
+    }
+  }
 
-      public void acceptFailed(IOException arg0) {
-      }
-
-      public void newConnection(NIOSocket arg0) {
-        // TODO
-        
-      }
-
-      public void serverSocketDied(Exception arg0) {
-      }
-      
-    });
-
-   */
-  
   private NIOServerSocket serverSocket;
   private Thread serverThread;
   
@@ -228,7 +228,7 @@ public class JsonNioService extends NIOService {
     public void run() {
       // Keep reading IO forever.
       try {
-        while (true) {
+        while (!halt) {
           selectBlocking();
         }
       } catch (IOException e) {
@@ -239,47 +239,41 @@ public class JsonNioService extends NIOService {
     
   }
 
-  private void startServerService(int port, String name) {
+  private void startServerService() {
+    port = -port;
     try {
       serverSocket = openServerSocket(port);
-      Logger.info("JsonNioServiceServer" + name + " on port " + port);
+      Logger.info(Thread.currentThread().getName() + " on port " + port);
       serverSocket.listen(new ServerSocketObserverAdapter() {
         
         
         @Override
         public void newConnection(NIOSocket nioSocket) {
-          System.out.println("Received connection: " + nioSocket);
+          Logger.info(Thread.currentThread().getName() + " Received connection: " + nioSocket);
 
-          // Set a 1 byte header regular reader.
           nioSocket.setPacketReader(new AsciiLinePacketReader());
 
-          // Set a 1 byte header regular writer.
           nioSocket.setPacketWriter(new RawPacketWriter());
 
           // Listen on the connection.
-          nioSocket.listen(new SocketObserver() {
+          nioSocket.listen(new SocketObserverAdapter() {
+            @Override
             public void packetReceived(NIOSocket socket, byte[] packet) {
-              System.out.println("received " + new String(packet));
-//              try {
-                // Create the outgoing packet.
-                //socket.write(byteArrayOutputStream.toByteArray());
-
-                // Close after the packet has finished writing.
-                // socket.closeAfterWrite();
-                socket.close();
-  //            } catch (IOException e) {
-                // No error handling to speak of.
-    //            socket.close();
-      //        }
+              Logger.info(Thread.currentThread().getName() + " received " + new String(packet));
+              processMessage(packet);
+              //socket.close();
             }
 
+            @Override
             public void connectionBroken(NIOSocket arg0, Exception arg1) {
               // TODO
+              System.out.println("connectionBroken");
 
             }
 
+            @Override
             public void connectionOpened(NIOSocket arg0) {
-              // TODO
+              System.out.println("connectionOpened");
 
             }
           });
@@ -288,7 +282,8 @@ public class JsonNioService extends NIOService {
 
       serverSocket.setConnectionAcceptor(new ConnectionAcceptor() {
         public boolean acceptConnection(InetSocketAddress arg0) {
-          return (arg0.getAddress().isAnyLocalAddress());
+          boolean         isOK = arg0.getAddress().isLoopbackAddress();
+          return isOK;
         }
       });
 
@@ -298,7 +293,7 @@ public class JsonNioService extends NIOService {
 
     if (serverThread != null)
       serverThread.interrupt();
-    serverThread = new Thread(new JsonNioServerThread(), "JsonNioServerThread" + name);
+    serverThread = new Thread(new JsonNioServerThread(), "JsonNioServerThread" + myName);
     serverThread.start();
   }
 
@@ -314,18 +309,25 @@ public class JsonNioService extends NIOService {
   @Override
   public void close() {
     try {
+      super.close();
+      halt = true;
       if (thread != null) {
         thread.interrupt();
         thread = null;
       }
-      inSocket.close();
-      outSocket.close();
-      super.close();
+      if (serverThread != null) {
+        serverThread.interrupt();
+        serverThread = null;
+      }
+      if (inSocket != null)
+        inSocket.close();
+      if (outSocket != null)
+        outSocket.close();
     } catch (Throwable e) {
-      //
+      e.printStackTrace();
     }
     if (client != null)
-      client.nioClosed();
+      client.nioClosed(this);
   }
 
   class JsonNioThread implements Runnable {
@@ -349,7 +351,7 @@ public class JsonNioService extends NIOService {
           Thread.sleep(50);
         }
       } catch (Throwable e) {
-        //
+        e.printStackTrace();
       }
       close();
     }
@@ -364,7 +366,12 @@ public class JsonNioService extends NIOService {
         return;
       }
       JSONObject json = new JSONObject(msg);
-      switch (("move......" + "command..." + "content..." + "quit......"
+      if (!json.has("type"))
+        return;
+      switch (("move......" 
+          + "command..." 
+          + "content..." 
+          + "quit......"
           + "touch.....").indexOf(json.getString("type"))) {
       case 0: // move
         if (!isPaused) {
@@ -445,15 +452,18 @@ public class JsonNioService extends NIOService {
 
   public void sendMessage(JSONObject json, String msg, NIOSocket socket) {
     try {
-      if (msg != null && msg.indexOf("{") != 0) {
+      if (json != null) {
+        msg = json.toString() + "\r\n";
+      } else if (msg != null && msg.indexOf("{") != 0){
         json = new JSONObject();
-        json.put("magic", "JmolApp");
-        json.put("role", msg);
+        json.put("type", "command");
+        json.put("command", msg);
+        msg = json.toString() + "\r\n";
       }
       if (socket == null)
         socket = outSocket;
-      String jsonString = json.toString() + "\r\n";
-      socket.write(jsonString.getBytes("UTF-8"));
+      Logger.info(Thread.currentThread().getName() + " sending " + msg);
+      socket.write(msg.getBytes("UTF-8"));
     } catch (Throwable e) {
       e.printStackTrace();
     }
@@ -472,28 +482,23 @@ public class JsonNioService extends NIOService {
     }
   }
 
-  public void send(int port, String strInfo) {
+  public void send(int port, String msg) {
     try {
-      JsonNioService jns = new JsonNioService();
-      jns.sendMessage(port, strInfo);
-      jns.close();
+      if (port != this.port) {
+        if (inSocket != null) {
+          inSocket.close();
+          outSocket.close();
+        }
+        if (thread != null) {
+          thread.interrupt();
+          thread = null;
+        }
+        startService(port, client, jmolViewer, myName);
+      }
+      sendMessage(null, msg, null);
     } catch (IOException e) {
       // ignore
     }
-  }
-
-  private void sendMessage(int port, String strInfo) {
-    try {
-      outSocket = openSocket("127.0.0.1", port);
-      outSocket.setPacketWriter(new RawPacketWriter());
-      
-      outSocket.write(strInfo.getBytes());      
-    } catch (IOException e) {
-      // TODO
-    }
-
-    
-    
   }
 
 }

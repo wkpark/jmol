@@ -1282,8 +1282,11 @@ public abstract class AtomSetCollectionReader {
     return Parser.getTokens(line);
   }
 
-  protected static void getTokensFloat(String s, float[] f, int n) {
+  protected static float[] getTokensFloat(String s, float[] f, int n) {
+    if (f == null)
+      f = new float[n];
     Parser.parseFloatArray(getTokens(s), f, n);
+    return f;
   }
 
   public static String[] getTokens(String s) {

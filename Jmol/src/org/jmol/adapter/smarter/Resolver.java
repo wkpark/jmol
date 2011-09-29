@@ -547,6 +547,9 @@ public class Resolver {
     if (header.indexOf(">vasp") >= 0) {
       return specialTags[SPECIAL_VASP_XML][0];
     }
+    if (header.indexOf("<GEOMETRY_INFO>") >= 0) {
+      return specialTags[SPECIAL_QE_XML][0];
+    }
     
     return specialTags[SPECIAL_CML_XML][0] + "(unidentified)";
   }
@@ -576,14 +579,15 @@ public class Resolver {
   public final static int SPECIAL_ODYSSEY_XML = 19;
   public final static int SPECIAL_XSD_XML     = 20;
   public final static int SPECIAL_VASP_XML    = 21; 
+  public final static int SPECIAL_QE_XML      = 22; 
  
-  public final static int SPECIAL_ARGUS_DOM   = 22;
-  public final static int SPECIAL_CML_DOM     = 23;
-  public final static int SPECIAL_CHEM3D_DOM  = 24;
-  public final static int SPECIAL_MOLPRO_DOM  = 25;
-  public final static int SPECIAL_ODYSSEY_DOM = 26;
-  public final static int SPECIAL_XSD_DOM     = 27; // not implemented
-  public final static int SPECIAL_VASP_DOM    = 28; 
+  public final static int SPECIAL_ARGUS_DOM   = 23;
+  public final static int SPECIAL_CML_DOM     = 24;
+  public final static int SPECIAL_CHEM3D_DOM  = 25;
+  public final static int SPECIAL_MOLPRO_DOM  = 26;
+  public final static int SPECIAL_ODYSSEY_DOM = 27;
+  public final static int SPECIAL_XSD_DOM     = 28; // not implemented
+  public final static int SPECIAL_VASP_DOM    = 29; 
   
   public final static String[][] specialTags = {
     { "Jme" },
@@ -612,6 +616,7 @@ public class Resolver {
     { "XmlOdyssey" },
     { "XmlXsd" },
     { "XmlVasp" },
+    { "XmlQE" },
 
     { "XmlArgus(DOM)" }, //19
     { "XmlCml(DOM)" },
@@ -867,8 +872,7 @@ public class Resolver {
       if (spin < 0 || spin > 5 || atom1 <= 0 || charge > 5)
         return false;
       // hard to believe we would get here for a MOL file
-      float[] atomline = new float[5];
-      AtomSetCollectionReader.getTokensFloat(lines[i], atomline, 5);
+      float[] atomline = AtomSetCollectionReader.getTokensFloat(lines[i], null, 5);
       return !Float.isNaN(atomline[1]) && !Float.isNaN(atomline[2]) && !Float.isNaN(atomline[3]) && Float.isNaN(atomline[4]);
     } catch (Exception e) {
     }

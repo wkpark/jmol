@@ -404,7 +404,7 @@ public class JsonNioService extends NIOService {
       JSONObject json = new JSONObject(msg);
       if (socket != null && json.has("magic") 
           && json.getString("magic").equals("JmolApp") 
-          && json.getString("event").equals("out"))
+          && json.getString("role").equals("out"))
           outSocket = socket;
       if (!json.has("type"))
         return;
@@ -524,8 +524,9 @@ public class JsonNioService extends NIOService {
       msg += "\r\n";
       if (socket == null)
         socket = outSocket;
-      Logger.info(Thread.currentThread().getName() + " sending " + msg);
-      socket.write(msg.getBytes("UTF-8"));
+      Logger.info(Thread.currentThread().getName() + " sending " + msg + " to " + socket);
+      if (socket != null)
+        socket.write(msg.getBytes("UTF-8"));
     } catch (Throwable e) {
       e.printStackTrace();
     }

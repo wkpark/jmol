@@ -51,14 +51,6 @@ public class MPJmolApp implements JsonNioClient {
     KioskPanel kioskPanel = new KioskPanel();
     bannerFrame = new BannerFrame(1024, 75);
     kioskFrame = new KioskFrame(0, 75, 1024, 768 - 75, kioskPanel);
-
-    /*
-     * Separate sockets are used for incoming and outgoing messages,
-     * since communication to/from the Hub is completely asynchronous
-     *
-     * All messages are sent as JSON strings, terminated by a CR/LF.
-     */
-
     try {
       setBannerLabel("click below and type exitJmol[enter] to quit");
       jmolViewer

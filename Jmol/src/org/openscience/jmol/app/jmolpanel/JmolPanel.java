@@ -1530,6 +1530,8 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     guimap.updateLabels();
   }
 
+  ////////// JSON/NIO SERVICE //////////
+  
   public void nioClosed(JsonNioService jns) {
     if (bannerFrame != null) {
       viewer.scriptWait("delay 2");
@@ -1553,12 +1555,26 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
   void sendNioMessage(int port, String strInfo) {
     try {
       if (port < 0) {
-        serverService = new JsonNioService();
-        serverService.startService(port, this, viewer, "-1");
+        if (serverService != null && strInfo != null && strInfo.equalsIgnoreCase("STOP")) {
+          serverService.close();
+        } else {
+          serverService = new JsonNioService();
+          serverService.startService(port, this, viewer, "-1");
+        }
+        if (serverService != null && serverService.getPort() == -port && strInfo != null) {
+          if (service == null) {
+            service = new JsonNioService();
+            service.startService(-port, this, viewer, null);
+          }
+          service.send(-port, strInfo);
+          return;
+        }
         return;
       }
       if (strInfo == null)
         return;
+      if (strInfo.equalsIgnoreCase("STOP"))
+        strInfo = "{\"type\":\"quit\"}";
       if (service == null && serverService != null && serverService.getPort() == port) {
         serverService.send(port, strInfo);
         return;

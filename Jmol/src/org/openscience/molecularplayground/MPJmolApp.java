@@ -35,8 +35,6 @@ public class MPJmolApp implements JsonNioClient {
 
   protected JmolViewer jmolViewer;
 
-  //static final String magicWord = "{\"magic\":\"JmolApp\"\r\n";
-
   public static void main(String args[]) {
     new MPJmolApp(args.length > 1 ? Integer.parseInt(args[1]) : 31416);
   }

@@ -51,88 +51,91 @@ import naga.packetreader.AsciiLinePacketReader;
 import naga.packetwriter.RawPacketWriter;
 
 /**
- * listens over a port on the local host for instructions on what to display. 
+ * listens over a port on the local host for instructions on what to display.
  * Instructions come in over the port as JSON strings.
  * 
- * This class uses the Naga asynchronous socket network I/O package, 
- * the JSON.org JSON package and Jmol.
+ * This class uses the Naga asynchronous socket network I/O package, the
+ * JSON.org JSON package and Jmol.
  * 
  * http://code.google.com/p/naga/
  * 
- * Sent from Jmol: 
+ * Initial versions of this code, including the JSON-base protocol were created
+ * by Adam Williams, U-Mass Amherst see http://MolecularPlayground.org and
+ * org.openscience.jmol.molecularplayground.MPJmolApp.java
  * 
- *   {"magic" : "JmolApp", "role" : "out"}  (socket initialization for messages TO jmol)
- *   {"magic" : "JmolApp", "role" : "in"}   (socket initialization for messages FROM jmol)
- *   {"type" : "script", "event" : "done"}  (script completed)
- *   
- * Sent to Jmol:
+ * Sent from Jmol:
  * 
- *   {"type" : "quit" }                          (shut down request)
- *   {"type" : "move", "style" : (see below) }   (mouse command request)
- *   {"type" : "command", "command" : command }  (script command request)
- *   {"type" : "content", "id" : id }            (load content request)
- *   {"type" : "touch",                          (a raw touch event)
- *        "eventType" : eventType,
- *        "touchID"   : touchID,
- *        "iData"     : idata,
- *        "time"      : time,
- *        "x" : x, "y" : y, "z" : z }
- *    
- *   For details on the "touch" type, see org.jmol.viewer.ActionManagerMT::processEvent
- *   Content is assumed to be in a location determined by the Jmol variable
- *   nioContentPath, with %ID% being replaced by some sort of ID number of tag provided by
- *   the other half of the system. That file contains more JSON code:
- *   
- *   {"startup_script" : scriptFileName, "banner_text" : text } 
- *   
- *   An additional option "banner" : "off" turns off the title banner.
- *   The startup script must be in the same directory as the .json file, typically as a .spt file
- *   
- *   Move commands include:
- *   
- *   {"type" : "move", "style" : "rotate", "x" : deltaX, "y", deltaY }
- *   {"type" : "move", "style" : "translate", "x" : deltaX, "y", deltaY }
- *   {"type" : "move", "style" : "zoom", "scale" : scale }  (1.0 = 100%)
- *   {"type" : "move", "style" : "sync", "sync" : syncText }
- *   
- *   Note that all these moves utilize the Jmol sync functionality originally intended for
- *   applets. So any valid sync command may be used with the "sync" style. These include 
- *   essentially all the actions that a user can make with a mouse, including the
- *   following, where the notation <....> represents a number of a given type. These
- *   events interrupt any currently running script, just as with typical mouse actions.
- *   
- *   "centerAt <int:x> <int:y> <float:ptx> <float:pty> <float:ptz>"
- *      -- set {ptx,pty,ptz} at screen (x,y)
- *   "rotateMolecule <float:deltaX> <float:deltaY>"
- *   "rotateXYBy <float:deltaX> <float:deltaY>"
- *   "rotateZBy <int:degrees>"
- *   "rotateZBy <int:degrees> <int:x> <int:y>" (with center reset)
- *   "rotateArcBall <int:x> <int:y> <float:factor>"
- *   "spinXYBy <int:x> <int:y> <float:speed>"
- *      -- a "flick" gesture
- *   "translateXYBy <float:deltaX, float:deltaY>"
- *   "zoomBy <int:pixels>"
- *   "zoomByFactor <float:factor>"
- *   "zoomByFactor <float:factor> <int:x> <int:y>" (with center reset)
+ * {"magic" : "JmolApp", "role" : "out"} (socket initialization for messages TO
+ * jmol) {"magic" : "JmolApp", "role" : "in"} (socket initialization for
+ * messages FROM jmol) {"type" : "script", "event" : "done"} (script completed)
+ * 
+ * Sent to Jmol (to inSocket):
+ * 
+ * {"type" : "quit" } (shut down request) {"type" : "move", "style" : (see
+ * below) } (mouse command request) {"type" : "command", "command" : command }
+ * (script command request) {"type" : "content", "id" : id } (load content
+ * request) {"type" : "touch", (a raw touch event) "eventType" : eventType,
+ * "touchID" : touchID, "iData" : idata, "time" : time, "x" : x, "y" : y, "z" :
+ * z }
+ * 
+ * For details on the "touch" type, see
+ * org.jmol.viewer.ActionManagerMT::processEvent Content is assumed to be in a
+ * location determined by the Jmol variable nioContentPath, with %ID% being
+ * replaced by some sort of ID number or tag provided by the other half of the
+ * system. That file contains more JSON code:
+ * 
+ * {"startup_script" : scriptFileName, "banner_text" : text }
+ * 
+ * An additional option "banner" : "off" turns off the title banner. The startup
+ * script must be in the same directory as the .json file, typically as a .spt
+ * file
+ * 
+ * Move commands include:
+ * 
+ * {"type" : "move", "style" : "rotate", "x" : deltaX, "y", deltaY } {"type" :
+ * "move", "style" : "translate", "x" : deltaX, "y", deltaY } {"type" : "move",
+ * "style" : "zoom", "scale" : scale } (1.0 = 100%) {"type" : "move", "style" :
+ * "sync", "sync" : syncText }
+ * 
+ * Note that all these moves utilize the Jmol sync functionality originally
+ * intended for applets. So any valid sync command may be used with the "sync"
+ * style. These include essentially all the actions that a user can make with a
+ * mouse, including the following, where the notation <....> represents a number
+ * of a given type. These events interrupt any currently running script, just as
+ * with typical mouse actions.
+ * 
+ * "centerAt <int:x> <int:y> <float:ptx> <float:pty> <float:ptz>" -- set
+ * {ptx,pty,ptz} at screen (x,y) "rotateMolecule <float:deltaX> <float:deltaY>"
+ * "rotateXYBy <float:deltaX> <float:deltaY>" "rotateZBy <int:degrees>"
+ * "rotateZBy <int:degrees> <int:x> <int:y>" (with center reset)
+ * "rotateArcBall <int:x> <int:y> <float:factor>"
+ * "spinXYBy <int:x> <int:y> <float:speed>" -- a "flick" gesture
+ * "translateXYBy <float:deltaX, float:deltaY>" "zoomBy <int:pixels>"
+ * "zoomByFactor <float:factor>" "zoomByFactor <float:factor> <int:x> <int:y>"
+ * (with center reset)
  * 
  */
 public class JsonNioService extends NIOService {
 
-  protected NIOSocket inSocket;
-  protected NIOSocket outSocket;
-  protected JmolViewer jmolViewer;
-  protected JsonNioClient client;
-
+  protected String myName;
   protected boolean halt;
   protected boolean isPaused;
   protected long lastMoveTime;
-  protected boolean wasSpinOn;
-  
-  private int port;
-  protected String myName;
+  protected int port;
+  protected NIOSocket outSocket;
 
-  protected String contentPath = "./%ID%.json";
-  protected String terminatorMessage = "NEXT_SCRIPT";
+  private Thread thread;
+  private Thread serverThread;
+
+  private NIOSocket inSocket;
+  private NIOServerSocket serverSocket;
+  private JmolViewer jmolViewer;
+  private JsonNioClient client;
+
+  private boolean wasSpinOn;
+  private String contentPath = "./%ID%.json";
+  private String terminatorMessage = "NEXT_SCRIPT";
+
 
   /*
    * When Jmol gets the terminator message, we tell the Hub that we're done
@@ -143,18 +146,62 @@ public class JsonNioService extends NIOService {
     super();
   }
 
-  public void startService(int port, JsonNioClient client, JmolViewer jmolViewer, String name)
+  /**
+   * from StatusManager
+   * 
+   * @param msg
+   */
+  void scriptCallback(String msg) {
+    if (msg.equals(terminatorMessage))
+      sendMessage(null, "!script_terminated!", null);
+  }
+
+  int getPort() {
+    return port;
+  }
+  
+  /**
+   * from JmolPanel and SYNC command
+   * 
+   * @param port
+   * @param msg
+   */
+  void send(int port, String msg) {
+    try {
+      if (port != this.port) {
+        if (inSocket != null) {
+          inSocket.close();
+          outSocket.close();
+        }
+        if (thread != null) {
+          thread.interrupt();
+          thread = null;
+        }
+        startService(port, client, jmolViewer, myName);
+      }
+      if (msg.startsWith("Mouse:"))
+        msg = "{\"type\":\"move\",\"style\":\"sync\", \"sync\":\""
+            + msg.substring(6) + "\"}";
+      sendMessage(null, msg, null);
+    } catch (IOException e) {
+      // ignore
+    }
+  }
+
+  public void startService(int port, JsonNioClient client,
+                           JmolViewer jmolViewer, String name)
       throws IOException {
 
-    this.port = port;
+    this.port = Math.abs(port);
     this.client = client;
     this.jmolViewer = jmolViewer;
     myName = (name == null ? "" : name);
-    
+
     if (port < 0) {
       startServerService();
       return;
     }
+
     if (name != null) {
       jmolViewer.script(";sync on;sync slave");
       String s = getJmolValue("NIOcontentPath");
@@ -167,41 +214,49 @@ public class JsonNioService extends NIOService {
       Logger.info("terminatorMessage=" + terminatorMessage);
     }
     Logger.info("JsonNioService" + myName + " using port " + port);
+
+    // inSocket listens for JSON commands from the NIO server
+    // when initialized, it identifies itself to the server as the "out" connection
+
     inSocket = openSocket("127.0.0.1", port);
-    outSocket = openSocket("127.0.0.1", port);
     inSocket.setPacketReader(new AsciiLinePacketReader());
     inSocket.setPacketWriter(new RawPacketWriter());
-    outSocket.setPacketReader(new AsciiLinePacketReader());
-    outSocket.setPacketWriter(new RawPacketWriter());
-
     inSocket.listen(new SocketObserver() {
 
       public void connectionOpened(NIOSocket nioSocket) {
         initialize("out", nioSocket);
       }
 
-      public void packetReceived(NIOSocket nioSocket, byte[] packet) {
-        processMessage(packet);
+      public void packetReceived(NIOSocket socket, byte[] packet) {
+        processMessage(packet, null);
       }
 
       public void connectionBroken(NIOSocket nioSocket, Exception exception) {
         halt = true;
-        Logger.info(Thread.currentThread().getName() + " connectionBroken");
+        Logger.info(Thread.currentThread().getName() + " inSocket connectionBroken");
       }
     });
 
+    // outSocket is used to send JSON commands to the NIO server
+    // when initialized, it identifies itself to the server as the "in" connection
+
+    outSocket = openSocket("127.0.0.1", port);
+    outSocket.setPacketReader(new AsciiLinePacketReader());
+    outSocket.setPacketWriter(new RawPacketWriter());
     outSocket.listen(new SocketObserver() {
 
       public void connectionOpened(NIOSocket nioSocket) {
-        initialize("in", outSocket);
+        initialize("in", nioSocket);
       }
 
       public void packetReceived(NIOSocket nioSocket, byte[] packet) {
-        System.out.println(Thread.currentThread().getName() + " outSocket packetRecieved " + (new String(packet)));
+        System.out.println("outpacketreceived");
+        // not used
       }
 
       public void connectionBroken(NIOSocket nioSocket, Exception exception) {
-        System.out.println("connectionBroken");
+        halt = true;
+        Logger.info(Thread.currentThread().getName() + " outSocket connectionBroken");
       }
     });
 
@@ -209,108 +264,32 @@ public class JsonNioService extends NIOService {
     thread.start();
   }
 
-  protected void initialize(String role, NIOSocket nioSocket) {
-    try {
-      JSONObject json = new JSONObject();
-      json.put("magic", "JmolApp");
-      json.put("role", role);
-      sendMessage(json, null, nioSocket);
-    } catch (JSONException e) {
-      // TODO
-    }
-  }
-
-  private NIOServerSocket serverSocket;
-  private Thread serverThread;
-  
-  class JsonNioServerThread implements Runnable {
+  class JsonNioThread implements Runnable {
 
     public void run() {
-      // Keep reading IO forever.
+      Logger.info(Thread.currentThread().getName() + " JsonNioSocket on " + port);
       try {
         while (!halt) {
-          selectBlocking();
+          selectNonBlocking();
+          long now = Calendar.getInstance().getTimeInMillis();
+          // No commands for 5 seconds = unpause/restore Jmol
+          if (isPaused && now - lastMoveTime > 5000)
+            pauseScript(false);
+          Thread.sleep(50);
         }
-      } catch (IOException e) {
-        // TODO
+      } catch (Throwable e) {
+        e.printStackTrace();
       }
-
-    }
-    
-  }
-
-  private void startServerService() {
-    port = -port;
-    try {
-      serverSocket = openServerSocket(port);
-      Logger.info(Thread.currentThread().getName() + " on port " + port);
-      serverSocket.listen(new ServerSocketObserverAdapter() {
-        
-        
-        @Override
-        public void newConnection(NIOSocket nioSocket) {
-          Logger.info(Thread.currentThread().getName() + " Received connection: " + nioSocket);
-
-          nioSocket.setPacketReader(new AsciiLinePacketReader());
-
-          nioSocket.setPacketWriter(new RawPacketWriter());
-
-          // Listen on the connection.
-          nioSocket.listen(new SocketObserverAdapter() {
-            @Override
-            public void packetReceived(NIOSocket socket, byte[] packet) {
-              Logger.info(Thread.currentThread().getName() + " received " + new String(packet));
-              processMessage(packet);
-              //socket.close();
-            }
-
-            @Override
-            public void connectionBroken(NIOSocket arg0, Exception arg1) {
-              // TODO
-              System.out.println("connectionBroken");
-
-            }
-
-            @Override
-            public void connectionOpened(NIOSocket arg0) {
-              System.out.println("connectionOpened");
-
-            }
-          });
-        }
-      });
-
-      serverSocket.setConnectionAcceptor(new ConnectionAcceptor() {
-        public boolean acceptConnection(InetSocketAddress arg0) {
-          boolean         isOK = arg0.getAddress().isLoopbackAddress();
-          return isOK;
-        }
-      });
-
-    } catch (IOException e) {
-      // TODO
+      close();
     }
 
-    if (serverThread != null)
-      serverThread.interrupt();
-    serverThread = new Thread(new JsonNioServerThread(), "JsonNioServerThread" + myName);
-    serverThread.start();
   }
-
-  private String getJmolValue(String var) {
-    if (jmolViewer == null)
-      return "";
-    String s = (String) jmolViewer.scriptWaitStatus("print " + var, "output");
-    return (s.indexOf("\n") <= 1 ? null : s.substring(0, s.lastIndexOf("\n")));
-  }
-
-  Thread thread;
 
   @Override
   public void close() {
     try {
-      super.close();
       halt = true;
+      super.close();
       if (thread != null) {
         thread.interrupt();
         thread = null;
@@ -330,61 +309,107 @@ public class JsonNioService extends NIOService {
       client.nioClosed(this);
   }
 
-  class JsonNioThread implements Runnable {
+  protected void initialize(String role, NIOSocket nioSocket) {
+    try {
+      JSONObject json = new JSONObject();
+      json.put("magic", "JmolApp");
+      json.put("role", role);
+      sendMessage(json, null, nioSocket);
+    } catch (JSONException e) {
+      close();
+    }
+  }
 
-    public void run() {
-      try {
-        while (!halt) {
+  private void startServerService() {
+    try {
+      serverSocket = openServerSocket(port);
+      serverSocket.listen(new ServerSocketObserverAdapter() {
 
-          selectNonBlocking();
+        @Override
+        public void newConnection(NIOSocket nioSocket) {
+          Logger.info(Thread.currentThread().getName()
+              + " Received connection: " + nioSocket);
 
-          long now = Calendar.getInstance().getTimeInMillis();
+          nioSocket.setPacketReader(new AsciiLinePacketReader());
+          nioSocket.setPacketWriter(new RawPacketWriter());
+          nioSocket.listen(new SocketObserverAdapter() {
 
-          // No commands for 5 seconds = unpause/restore Jmol
-          if (isPaused && now - lastMoveTime > 5000) {
-            jmolViewer
-                .script("restore rotation 'JsonNios-save' 1; resume; spin "
-                    + wasSpinOn);
-            isPaused = false;
-            wasSpinOn = false;
-          }
-          Thread.sleep(50);
+            @Override
+            public void packetReceived(NIOSocket socket, byte[] packet) {
+              processMessage(packet, socket);
+            }
+
+            @Override
+            public void connectionOpened(NIOSocket arg0) {
+              //
+            }
+
+            @Override
+            public void connectionBroken(NIOSocket socket, Exception arg1) {
+              if (socket == outSocket)
+                outSocket = null;
+            }
+
+          });
         }
-      } catch (Throwable e) {
-        e.printStackTrace();
+      });
+
+      serverSocket.setConnectionAcceptor(new ConnectionAcceptor() {
+        public boolean acceptConnection(InetSocketAddress arg0) {
+          boolean isOK = arg0.getAddress().isLoopbackAddress();
+          return isOK;
+        }
+      });
+
+    } catch (IOException e) {
+      // TODO
+    }
+
+    if (serverThread != null)
+      serverThread.interrupt();
+    serverThread = new Thread(new JsonNioServerThread(), "JsonNioServerThread"
+        + myName);
+    serverThread.start();
+  }
+
+  class JsonNioServerThread implements Runnable {
+    public void run() {
+      Logger.info(Thread.currentThread().getName() + " JsonNioServerSocket on " + port);
+      try {
+        while (!halt)
+          selectBlocking();
+      } catch (IOException e) {
+        // exit
       }
       close();
     }
-
   }
 
-  protected void processMessage(byte[] packet) {
+
+  protected void processMessage(byte[] packet, NIOSocket socket) {
     try {
       String msg = new String(packet);
       if (jmolViewer == null) {
-        Logger.info("JNIOS " + Thread.currentThread().getName() + " received " + msg);
+        Logger.info("JNIOS " + Thread.currentThread().getName() + " received "
+            + msg);
         return;
       }
       JSONObject json = new JSONObject(msg);
+      if (socket != null && json.has("magic") 
+          && json.getString("magic").equals("JmolApp") 
+          && json.getString("event").equals("out"))
+          outSocket = socket;
       if (!json.has("type"))
         return;
-      switch (("move......" 
-          + "command..." 
-          + "content..." 
-          + "quit......"
+      switch (("move......" + "command..." + "content..." + "quit......"
           + "touch.....").indexOf(json.getString("type"))) {
       case 0: // move
-        
+
         //sync -3000;sync slave;sync 3000 '{"type":"move","style":"sync", "sync":"rotateZBy 30"}'
         int iStyle = ("sync......" + "rotate...." + "translate." + "zoom......")
-        .indexOf(json.getString("style"));
-        if (iStyle != 0 && !isPaused) {
-          // Pause the script and save the state when interaction starts
-          wasSpinOn = jmolViewer.getBooleanProperty("spinOn");
-          jmolViewer
-              .script("pause; save orientation 'JsonNios-save'; spin off");
-          isPaused = true;
-        }
+            .indexOf(json.getString("style"));
+        if (iStyle != 0 && !isPaused) 
+          pauseScript(true);
         lastMoveTime = Calendar.getInstance().getTimeInMillis();
         switch (iStyle) {
         case 0: // sync
@@ -406,7 +431,7 @@ public class JsonNioService extends NIOService {
         }
         break;
       case 10: // command
-        jmolViewer.script(json.getString("command"));
+        jmolViewer.evalStringQuiet(json.getString("command"));
         break;
       case 20: // content
         String id = json.getString("id");
@@ -414,8 +439,7 @@ public class JsonNioService extends NIOService {
             .replace('\\', '/');
         File f = new File(path);
         FileInputStream jsonFile = new FileInputStream(f);
-        System.out.println("JsonNiosService Setting path to "
-            + f.getAbsolutePath());
+        Logger.info("JsonNiosService Setting path to " + f.getAbsolutePath());
         int pt = path.lastIndexOf('/');
         if (pt >= 0)
           path = path.substring(0, pt);
@@ -423,7 +447,7 @@ public class JsonNioService extends NIOService {
           path = ".";
         JSONObject contentJSON = new JSONObject(new JSONTokener(jsonFile));
         String script = contentJSON.getString("startup_script");
-        System.out.println("JsonNiosService startup_script=" + script);
+        Logger.info("JsonNiosService startup_script=" + script);
         client.setBannerLabel("<html></html>");
         jmolViewer.script("exit");
         jmolViewer.script("zap;cd \"" + path + "\";script " + script);
@@ -453,14 +477,41 @@ public class JsonNioService extends NIOService {
     }
   }
 
-  public void sendMessage(JSONObject json, String msg, NIOSocket socket) {
+  protected void pauseScript(boolean isPause) {
+    String script;
+    if (isPause) {
+      // Pause the script and save the state when interaction starts
+      wasSpinOn = jmolViewer.getBooleanProperty("spinOn");
+      script = "pause; save orientation 'JsonNios-save'; spin off";
+      isPaused = true;
+    } else {
+      script = "restore rotation 'JsonNios-save' 1; resume; spin " + wasSpinOn;
+      wasSpinOn = false;
+    }
+    isPaused = isPause;
+    jmolViewer.evalStringQuiet(script);
+  }
+
+  private String getJmolValue(String var) {
+    if (jmolViewer == null)
+      return "";
+    String s = (String) jmolViewer.scriptWaitStatus("print " + var, "output");
+    return (s.indexOf("\n") <= 1 ? null : s.substring(0, s.lastIndexOf("\n")));
+  }
+
+  private void sendMessage(JSONObject json, String msg, NIOSocket socket) {
     try {
       if (json != null) {
         msg = json.toString();
-      } else if (json == null && msg != null && msg.indexOf("{") != 0){
+      } else if (json == null && msg != null && msg.indexOf("{") != 0) {
         json = new JSONObject();
-        json.put("type", "command");
-        json.put("command", msg);
+        if (msg.equalsIgnoreCase("!script_terminated!")) {
+          json.put("type", "script");
+          json.put("event", "done");
+        } else {
+          json.put("type", "command");
+          json.put("command", msg);
+        }
         msg = json.toString();
       }
       msg += "\r\n";
@@ -470,40 +521,6 @@ public class JsonNioService extends NIOService {
       socket.write(msg.getBytes("UTF-8"));
     } catch (Throwable e) {
       e.printStackTrace();
-    }
-  }
-
-  public void scriptCallback(String msg) {
-    if (msg.equals(terminatorMessage)) {
-      try {
-        JSONObject json = new JSONObject();
-        json.put("type", "script");
-        json.put("event", "done");
-        sendMessage(json, null, outSocket);
-      } catch (Throwable e) {
-        e.printStackTrace();
-      }
-    }
-  }
-
-  public void send(int port, String msg) {
-    try {
-      if (port != this.port) {
-        if (inSocket != null) {
-          inSocket.close();
-          outSocket.close();
-        }
-        if (thread != null) {
-          thread.interrupt();
-          thread = null;
-        }
-        startService(port, client, jmolViewer, myName);
-      }
-      if (msg.startsWith("Mouse:"))
-        msg = "{\"type\":\"move\",\"style\":\"sync\", \"sync\":\"" + msg.substring(6) + "\"}";
-      sendMessage(null, msg, null);
-    } catch (IOException e) {
-      // ignore
     }
   }
 

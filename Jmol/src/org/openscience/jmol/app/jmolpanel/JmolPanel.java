@@ -1559,6 +1559,10 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       }
       if (strInfo == null)
         return;
+      if (service == null && serverService != null && serverService.getPort() == port) {
+        serverService.send(port, strInfo);
+        return;
+      }
       if (service == null) {
         service = new JsonNioService();
         service.startService(port, this, viewer, null);

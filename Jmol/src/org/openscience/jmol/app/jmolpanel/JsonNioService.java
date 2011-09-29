@@ -50,7 +50,7 @@ import naga.SocketObserver;
 import naga.packetreader.AsciiLinePacketReader;
 import naga.packetwriter.RawPacketWriter;
 
-/**
+/*
  * listens over a port on the local host for instructions on what to display.
  * Instructions come in over the port as JSON strings.
  * 
@@ -63,58 +63,65 @@ import naga.packetwriter.RawPacketWriter;
  * by Adam Williams, U-Mass Amherst see http://MolecularPlayground.org and
  * org.openscience.jmol.molecularplayground.MPJmolApp.java
  * 
- * Sent from Jmol:
+ * Sent from Jmol (via outSocket): 
  * 
- * {"magic" : "JmolApp", "role" : "out"} (socket initialization for messages TO
- * jmol) {"magic" : "JmolApp", "role" : "in"} (socket initialization for
- * messages FROM jmol) {"type" : "script", "event" : "done"} (script completed)
+ *   {"magic" : "JmolApp", "role" : "out"}  (socket initialization for messages TO jmol)
+ *   {"magic" : "JmolApp", "role" : "in"}   (socket initialization for messages FROM jmol)
+ *   {"type" : "script", "event" : "done"}  (script completed)
+ *   
+ * Sent to Jmol (via inSocket):
  * 
- * Sent to Jmol (to inSocket):
+ *   {"type" : "quit" }                          (shut down request)
+ *   {"type" : "move", "style" : (see below) }   (mouse command request)
+ *   {"type" : "command", "command" : command }  (script command request)
+ *   {"type" : "content", "id" : id }            (load content request)
+ *   {"type" : "touch",                          (a raw touch event)
+ *        "eventType" : eventType,
+ *        "touchID"   : touchID,
+ *        "iData"     : idata,
+ *        "time"      : time,
+ *        "x" : x, "y" : y, "z" : z }
+ *    
+ *   For details on the "touch" type, see org.jmol.viewer.ActionManagerMT::processEvent
+ *   Content is assumed to be in a location determined by the Jmol variable
+ *   nioContentPath, with %ID% being replaced by some sort of ID number of tag provided by
+ *   the other half of the system. That file contains more JSON code:
+ *   
+ *   {"startup_script" : scriptFileName, "banner_text" : text } 
+ *   
+ *   An additional option "banner" : "off" turns off the title banner.
+ *   The startup script must be in the same directory as the .json file, typically as a .spt file
+ *   
+ *   Move commands include:
+ *   
+ *   {"type" : "move", "style" : "rotate", "x" : deltaX, "y", deltaY }
+ *   {"type" : "move", "style" : "translate", "x" : deltaX, "y", deltaY }
+ *   {"type" : "move", "style" : "zoom", "scale" : scale }  (1.0 = 100%)
+ *   {"type" : "move", "style" : "sync", "sync" : syncText }
+ *   
+ *   Note that all these moves utilize the Jmol sync functionality originally intended for
+ *   applets. So any valid sync command may be used with the "sync" style. These include 
+ *   essentially all the actions that a user can make with a mouse, including the
+ *   following, where the notation <....> represents a number of a given type. These
+ *   events interrupt any currently running script, just as with typical mouse actions.
+ *   
+ *   "centerAt <int:x> <int:y> <float:ptx> <float:pty> <float:ptz>"
+ *      -- set {ptx,pty,ptz} at screen (x,y)
+ *   "rotateMolecule <float:deltaX> <float:deltaY>"
+ *   "rotateXYBy <float:deltaX> <float:deltaY>"
+ *   "rotateZBy <int:degrees>"
+ *   "rotateZBy <int:degrees> <int:x> <int:y>" (with center reset)
+ *   "rotateArcBall <int:x> <int:y> <float:factor>"
+ *   "spinXYBy <int:x> <int:y> <float:speed>"
+ *      -- a "flick" gesture
+ *   "translateXYBy <float:deltaX, float:deltaY>"
+ *   "zoomBy <int:pixels>"
+ *   "zoomByFactor <float:factor>"
+ *   "zoomByFactor <float:factor> <int:x> <int:y>" (with center reset)
  * 
- * {"type" : "quit" } (shut down request) {"type" : "move", "style" : (see
- * below) } (mouse command request) {"type" : "command", "command" : command }
- * (script command request) {"type" : "content", "id" : id } (load content
- * request) {"type" : "touch", (a raw touch event) "eventType" : eventType,
- * "touchID" : touchID, "iData" : idata, "time" : time, "x" : x, "y" : y, "z" :
- * z }
- * 
- * For details on the "touch" type, see
- * org.jmol.viewer.ActionManagerMT::processEvent Content is assumed to be in a
- * location determined by the Jmol variable nioContentPath, with %ID% being
- * replaced by some sort of ID number or tag provided by the other half of the
- * system. That file contains more JSON code:
- * 
- * {"startup_script" : scriptFileName, "banner_text" : text }
- * 
- * An additional option "banner" : "off" turns off the title banner. The startup
- * script must be in the same directory as the .json file, typically as a .spt
- * file
- * 
- * Move commands include:
- * 
- * {"type" : "move", "style" : "rotate", "x" : deltaX, "y", deltaY } {"type" :
- * "move", "style" : "translate", "x" : deltaX, "y", deltaY } {"type" : "move",
- * "style" : "zoom", "scale" : scale } (1.0 = 100%) {"type" : "move", "style" :
- * "sync", "sync" : syncText }
- * 
- * Note that all these moves utilize the Jmol sync functionality originally
- * intended for applets. So any valid sync command may be used with the "sync"
- * style. These include essentially all the actions that a user can make with a
- * mouse, including the following, where the notation <....> represents a number
- * of a given type. These events interrupt any currently running script, just as
- * with typical mouse actions.
- * 
- * "centerAt <int:x> <int:y> <float:ptx> <float:pty> <float:ptz>" -- set
- * {ptx,pty,ptz} at screen (x,y) "rotateMolecule <float:deltaX> <float:deltaY>"
- * "rotateXYBy <float:deltaX> <float:deltaY>" "rotateZBy <int:degrees>"
- * "rotateZBy <int:degrees> <int:x> <int:y>" (with center reset)
- * "rotateArcBall <int:x> <int:y> <float:factor>"
- * "spinXYBy <int:x> <int:y> <float:speed>" -- a "flick" gesture
- * "translateXYBy <float:deltaX, float:deltaY>" "zoomBy <int:pixels>"
- * "zoomByFactor <float:factor>" "zoomByFactor <float:factor> <int:x> <int:y>"
- * (with center reset)
  * 
  */
+
 public class JsonNioService extends NIOService {
 
   protected String myName;
@@ -122,12 +129,12 @@ public class JsonNioService extends NIOService {
   protected boolean isPaused;
   protected long lastMoveTime;
   protected int port;
-  protected NIOSocket outSocket;
 
   private Thread thread;
   private Thread serverThread;
 
   private NIOSocket inSocket;
+  protected NIOSocket outSocket;
   private NIOServerSocket serverSocket;
   private JmolViewer jmolViewer;
   private JsonNioClient client;

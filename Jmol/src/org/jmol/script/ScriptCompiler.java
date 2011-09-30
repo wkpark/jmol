@@ -265,6 +265,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
   private final static int ERROR = 4;
 
   private int tokLastMath;
+  private boolean checkImpliedScriptCmd;
   
   private List<ScriptFunction> vFunctionStack;
   
@@ -319,6 +320,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     ptNewSetModifier = 1;
     isShowScriptOutput = false;    
     iHaveQuotedString = false;
+    checkImpliedScriptCmd = false;
     lltoken = new ArrayList<Token[]>();
     ltoken = new ArrayList<Token>();
     tokCommand = Token.nada;
@@ -335,6 +337,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     needRightParen = false;
     theTok = Token.nada;
     short iLine = 1;
+    
 
     for (; true; ichToken += cchToken) {
       if ((nTokens = ltoken.size()) == 0) { 
@@ -371,6 +374,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         case ERROR:
           return false;
         }
+        checkImpliedScriptCmd = false;
         if (ichToken < cchScript)
           continue;
         setAaTokenCompiled();
@@ -411,7 +415,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
             cchToken = 0;
             continue;
           }
-          if (lookingAtImpliedString(true))
+          if (lookingAtImpliedString(true, true))
             ichEnd = ichToken + cchToken;
         }
         return commandExpected();
@@ -619,6 +623,16 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       } else if (setBraceCount > 0 && endOfLine && ichToken < cchScript) {
         return CONTINUE;
       }
+      if (tokCommand == Token.script && checkImpliedScriptCmd && nTokens > 2) {
+        // check for improperly parsed implied script command 
+        ichToken = ichCurrentCommand;
+        nTokens = 0;
+        ltoken.clear();
+        cchToken = 0;
+        tokCommand = Token.nada;
+        return CONTINUE;
+      }
+
       if (tokInitialPlusPlus != Token.nada) {
         if (!isNewSet)
           checkNewSetCommand();
@@ -643,7 +657,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         } else {
           parenCount = setBraceCount = 0;
           setCommand(lastFlowCommand);
-          if (lastFlowCommand.tok != Token.process 
+          if (lastFlowCommand.tok != Token.process
               && (tokAt(0) == Token.leftbrace))
             ltoken.remove(0);
           lastFlowCommand = null;
@@ -669,9 +683,9 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         boolean doEval = true;
         switch (tokCommand) {
         case Token.trycmd:
-        case Token.parallel: 
+        case Token.parallel:
         case Token.function: // formerly "noeval"
-        case Token.end:          
+        case Token.end:
           // end switch may have - or + intValue, depending upon default or not
           // end function and the function call itself has intValue 0,
           // but the FUNCTION declaration itself will have MAX_VALUE intValue
@@ -1009,7 +1023,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       } else if ((bs = lookingAtBitset()) != null) {
         addTokenToPrefix(new Token(Token.bitset, bs));
         return CONTINUE;
-      } else if (!iHaveQuotedString && lookingAtImpliedString(false)) {
+      } else if (!iHaveQuotedString && lookingAtImpliedString(false, true)) {
         String str = script.substring(ichToken, ichToken + cchToken);
         addTokenToPrefix(new Token(Token.string, str));
         iHaveQuotedString = true;
@@ -1018,7 +1032,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       break;
     case Token.script:
     case Token.getproperty:
-      if (!iHaveQuotedString && lookingAtImpliedString(false)) {
+      if (!iHaveQuotedString && lookingAtImpliedString(false, false)) {
         String str = script.substring(ichToken, ichToken + cchToken);
         addTokenToPrefix(new Token(Token.string, str));
         iHaveQuotedString = true;
@@ -1038,7 +1052,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           iHaveQuotedString = true;
           return OK;
         }
-        if (lookingAtImpliedString(true)) {
+        if (lookingAtImpliedString(true, true)) {
           int pt = cchToken;
           String str = script.substring(ichToken, ichToken + cchToken);
           if (str.indexOf(" ") < 0) {
@@ -1053,7 +1067,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     }
     if (Token.tokAttr(tokCommand, Token.implicitStringCommand)
         && !(tokCommand == Token.script && iHaveQuotedString)
-        && lookingAtImpliedString(true)) {
+        && lookingAtImpliedString(true, true)) {
       String str = script.substring(ichToken, ichToken + cchToken);
       if (tokCommand == Token.label
           && Parser.isOneOf(str.toLowerCase(), "on;off;hide;display"))
@@ -1179,7 +1193,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       return ERROR(ERROR_badContext, ident);
     switch (theTok) {
     case Token.identifier:
-      if (nTokens == 0) {
+      if (nTokens == 0 && !checkImpliedScriptCmd) {
         if (ident.charAt(0) == '\'') {
           addTokenToPrefix(setCommand(Token.tokenScript));
           cchToken = 0;
@@ -1189,6 +1203,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           addTokenToPrefix(setCommand(Token.tokenScript));
           nTokens = 1;
           cchToken = 0;
+          checkImpliedScriptCmd = true;
           return CONTINUE;
         }
       }
@@ -2183,10 +2198,11 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
    * characters not involving white space.
    * echo, hover, label, message, pause are odd-valued; no initial parsing of variables for them. 
    * @param allowSpace 
+   * @param allowEquals TODO
    * 
    * @return true or false
    */
-  private boolean lookingAtImpliedString(boolean allowSpace) {
+  private boolean lookingAtImpliedString(boolean allowSpace, boolean allowEquals) {
     int ichT = ichToken;
     char ch = script.charAt(ichT);
     boolean parseVariables = !(Token.tokAttr(tokCommand, Token.implicitStringCommand) 
@@ -2204,6 +2220,12 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     int parenpt = 0;
     while (isOK && ichT < cchScript && !eol(ch = script.charAt(ichT))) {
       switch (ch) {
+      case '=':
+        if (!allowEquals) {
+          isOK = false;
+          continue;
+        }
+          break;
       case '{':
         parenpt++;
         break;

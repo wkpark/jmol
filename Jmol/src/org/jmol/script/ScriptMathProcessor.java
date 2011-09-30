@@ -787,6 +787,8 @@ class ScriptMathProcessor {
     if (isIsomer) {
       if (args.length != 3)
         return false;
+      if (bs1 == null && bs2 == null) 
+        return addX(viewer.getSmilesMatcher().getRelationship(smiles1, smiles2).toUpperCase());
       String mf1 = (bs1 == null ? viewer.getSmilesMatcher()
           .getMolecularFormula(smiles1, false) : JmolMolecule.getMolecularFormula(
           viewer.getModelSet().atoms, bs1, false));
@@ -811,12 +813,7 @@ class ScriptMathProcessor {
         if (s.indexOf("/") >= 0 || s.indexOf("\\") >= 0 || s.indexOf("@") >= 0) {
           if (smiles1.indexOf("@") >= 0 && (bs2 != null || smiles2.indexOf("@") >= 0)) {
             // reverse chirality centers
-            smiles1 = TextFormat.simpleReplace(smiles1, "@@", "!@");
-            smiles1 = TextFormat.simpleReplace(smiles1, "@", "@@");
-            smiles1 = TextFormat.simpleReplace(smiles1, "!@@", "@");
-            smiles1 = TextFormat.simpleReplace(smiles1, "@@SP", "@SP");
-            smiles1 = TextFormat.simpleReplace(smiles1, "@@OH", "@OH");
-            smiles1 = TextFormat.simpleReplace(smiles1, "@@TB", "@TB");
+            smiles1 = viewer.getSmilesMatcher().reverseChirality(smiles1);
             if (bs2 == null) {
               check = (viewer.getSmilesMatcher().areEqual(smiles1, smiles2) > 0);
             } else {

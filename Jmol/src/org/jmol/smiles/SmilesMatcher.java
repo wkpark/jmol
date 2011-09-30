@@ -29,6 +29,7 @@ import java.util.List;
 
 import org.jmol.api.SmilesMatcherInterface;
 import org.jmol.util.JmolNode;
+import org.jmol.util.TextFormat;
 
 /**
  * Originating author: Nicholas Vervelle
@@ -182,6 +183,50 @@ public class SmilesMatcher implements SmilesMatcherInterface {
       e.printStackTrace();
       return null;
     }
+  }
+
+  public String getRelationship(String smiles1, String smiles2) {
+    if (smiles1 == null || smiles2 == null
+        || smiles1.length() == 0 || smiles2.length() == 0)
+      return "";
+    String mf1 = getMolecularFormula(smiles1, false);
+    String mf2 = getMolecularFormula(smiles2, false);
+    if (!mf1.equals(mf2))
+      return "none";
+    boolean check;
+      // note: find smiles1 IN smiles2 here
+      check = (areEqual(smiles2, smiles1) > 0);
+    if (!check) {
+      // MF matched, but didn't match SMILES
+      String s = smiles1 + smiles2;
+      if (s.indexOf("/") >= 0 || s.indexOf("\\") >= 0 || s.indexOf("@") >= 0) {
+        if (smiles1.indexOf("@") >= 0 && smiles2.indexOf("@") >= 0) {
+          // reverse chirality centers
+          smiles1 = reverseChirality(smiles1);
+            check = (areEqual(smiles1, smiles2) > 0);
+          if (check)
+            return "enantiomers";
+        }
+        // remove all stereochemistry from SMILES string
+          check = (areEqual("/nostereo/" + smiles2, smiles1) > 0);
+        if (check)
+          return "diastereomers";
+      }
+      // MF matches, but not enantiomers or diasteriomers
+      return "constitutional isomers";
+    }
+    return "identical";
+  }
+    
+
+  public String reverseChirality(String smiles) {
+    smiles = TextFormat.simpleReplace(smiles, "@@", "!@");
+    smiles = TextFormat.simpleReplace(smiles, "@", "@@");
+    smiles = TextFormat.simpleReplace(smiles, "!@@", "@");
+    smiles = TextFormat.simpleReplace(smiles, "@@SP", "@SP");
+    smiles = TextFormat.simpleReplace(smiles, "@@OH", "@OH");
+    smiles = TextFormat.simpleReplace(smiles, "@@TB", "@TB");
+    return smiles;
   }
 
   /**

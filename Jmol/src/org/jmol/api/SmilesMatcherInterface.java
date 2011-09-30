@@ -36,4 +36,9 @@ public interface SmilesMatcherInterface {
   public abstract String getSmiles(JmolNode[] atoms, int atomCount,
                                    BitSet bsSelected, boolean asBioSmiles,
                                    boolean allowUnmatchedRings, boolean addCrossLinks, String comment);
+
+  public abstract String getRelationship(String smiles1, String smiles2);
+
+  public abstract String reverseChirality(String smiles);
+
 }

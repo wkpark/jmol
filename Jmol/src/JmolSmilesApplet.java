@@ -90,6 +90,17 @@ public class JmolSmilesApplet extends Applet {
     return ret;
   }
 
+  /**
+   * compares two SMILES strings
+   * 
+   * @param smiles1
+   * @param smiles2
+   * @return  IDENTICAL, ENANTIOMERS, DIASTERIOMERS, CONSTITUTIONAL ISOMERS, NONE 
+   */
+  public String getRelationship(String smiles1, String smiles2) {
+    return (new SmilesMatcher()).getRelationship(smiles1, smiles2);  
+  }
+
   @Override
   public String getAppletInfo() {
     return "JmolSmilesApplet";

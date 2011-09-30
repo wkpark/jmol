@@ -105,6 +105,9 @@ var defaultjar = "JmolApplet.jar"
 // The default action, if the user just presses "OK" is to NOT allow the change. 
 // The user must type the word "yes" in the prompt box for the change to be approved.
 
+// For a simple change to the signed applet in the same original directory (if it's available),
+// you can use JMOLJAR=SIGNED on the URL.
+
 // If you don't want people to be able to switch in their own JAR file on your page,
 // simply set this next line to read "var allowJMOLJAR = false".
 
@@ -132,6 +135,7 @@ function jmolInitialize(codebaseDirectory, fileNameOrUseSignedApplet) {
         alert("The web page URL was ignored. Continuing using " + _jmol.archivePath + ' in directory "' + codebaseDirectory + '"');
       }
     } else {
+			if (f=="SIGNED") { f=true; }
       fileNameOrUseSignedApplet = f;
     }
   }

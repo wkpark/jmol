@@ -71,6 +71,8 @@ import naga.packetwriter.RawPacketWriter;
  *   
  * Sent to Jmol (via inSocket):
  * 
+ *   {"type" : "banner", "mode" : "ON" or "OFF" }   (set banner for kiosk)
+ *   {"type" : "banner", "text" : bannerText }      (set banner for kiosk)
  *   {"type" : "command", "command" : command }  (script command request)
  *   {"type" : "content", "id" : id }            (load content request)
  *   {"type" : "move", "style" : (see below) }   (mouse command request)
@@ -403,23 +405,23 @@ public class JsonNioService extends NIOService {
         return;
       }
       JSONObject json = new JSONObject(msg);
-      if (socket != null && json.has("magic") 
-          && json.getString("magic").equals("JmolApp") 
+      if (socket != null && json.has("magic")
+          && json.getString("magic").equals("JmolApp")
           && json.getString("role").equals("out"))
-          outSocket = socket;
+        outSocket = socket;
       if (!json.has("type"))
         return;
-      switch ((
-            "command..." 
-          + "content..." 
-          + "move......" 
-          + "quit......"
-          + "sync......" 
-          + "touch.....").indexOf(json.getString("type"))) {
-      case 0: // command
+      switch (("banner...." + "command..." + "content..." + "move......"
+          + "quit......" + "sync......" + "touch.....").indexOf(json
+          .getString("type"))) {
+      case 0: // banner
+        setBanner((json.has("text") ? json.getString("text") : json.getString(
+            "visibility").equalsIgnoreCase("off") ? null : ""), false);
+        break;
+      case 10: // command
         jmolViewer.evalStringQuiet(json.getString("command"));
         break;
-      case 10: // content
+      case 20: // content
         String id = json.getString("id");
         String path = TextFormat.simpleReplace(contentPath, "%ID%", id)
             .replace('\\', '/');
@@ -434,24 +436,16 @@ public class JsonNioService extends NIOService {
         JSONObject contentJSON = new JSONObject(new JSONTokener(jsonFile));
         String script = contentJSON.getString("startup_script");
         Logger.info("JsonNiosService startup_script=" + script);
-        client.setBannerLabel("<html></html>");
+        setBanner("", false);
         jmolViewer.script("exit");
         jmolViewer.script("zap;cd \"" + path + "\";script " + script);
-        String bannerText = contentJSON.getString("banner_text");
-        if (contentJSON.getString("banner").equals("off") || bannerText == null) {
-          client.setBannerLabel(null);
-        } else {
-          client.setBannerLabel("<html><center>" + bannerText
-              + "</center></html>");
-        }
+        setBanner(contentJSON.getString("banner").equals("off") ? null
+            : contentJSON.getString("banner_text"), true);
         break;
-      case 20: // move
-        int iStyle = (
-              "rotate...." 
-            + "translate." 
-            + "zoom......")
-            .indexOf(json.getString("style"));
-        if (iStyle != 0 && !isPaused) 
+      case 30: // move
+        int iStyle = ("rotate...." + "translate." + "zoom......").indexOf(json
+            .getString("style"));
+        if (iStyle != 0 && !isPaused)
           pauseScript(true);
         lastMoveTime = Calendar.getInstance().getTimeInMillis();
         switch (iStyle) {
@@ -470,15 +464,15 @@ public class JsonNioService extends NIOService {
           break;
         }
         break;
-      case 30: // quit
+      case 40: // quit
         halt = true;
         Logger.info("JsonNiosService quitting");
         break;
-      case 40: // sync
+      case 50: // sync
         //sync -3000;sync slave;sync 3000 '{"type":"sync","sync":"rotateZBy 30"}'
         jmolViewer.syncScript("Mouse: " + json.getString("sync"), "~", 0);
         break;
-      case 50: // touch
+      case 60: // touch
         // raw touch event
         jmolViewer.processEvent(0, json.getInt("eventType"), json
             .getInt("touchID"), json.getInt("iData"), new Point3f((float) json
@@ -489,6 +483,17 @@ public class JsonNioService extends NIOService {
       }
     } catch (Throwable e) {
       e.printStackTrace();
+    }
+  }
+
+  private void setBanner(String bannerText, boolean andCenter) {
+    if (bannerText == null) {
+      client.setBannerLabel(null);
+    } else {
+      if (andCenter)
+        bannerText = "<center>" + bannerText + "</center>";
+      client.setBannerLabel("<html>" + bannerText
+          + "</html>");
     }
   }
 

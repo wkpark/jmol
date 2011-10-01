@@ -71,9 +71,9 @@ public class IsosurfaceRenderer extends MeshRenderer {
     for (int i = isosurface.meshCount; --i >= 0;) {
       imesh = (IsosurfaceMesh) isosurface.meshes[i];
       hasColorRange = false;
-      renderMesh(mySlabValue, slabValue);      
-      if (!isExport && hasColorRange && imesh.colorEncoder != null && Boolean.TRUE == showKey)
-        showKey();
+      renderMesh(mySlabValue, slabValue);
+      if (!isExport)
+        renderInfo();
       if (isExport && haveBsSlabGhost) {
         exportPass = 1;
         renderMesh(mySlabValue, slabValue);
@@ -82,6 +82,11 @@ public class IsosurfaceRenderer extends MeshRenderer {
     }
   }
 
+  protected void renderInfo() {
+    if (hasColorRange && imesh.colorEncoder != null && Boolean.TRUE == showKey)
+      showKey();
+  }
+  
   private void showKey() {
     showKey = Boolean.FALSE; // once only
     int[] colors = null;

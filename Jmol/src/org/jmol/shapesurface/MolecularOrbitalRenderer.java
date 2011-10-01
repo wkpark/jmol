@@ -25,10 +25,6 @@ package org.jmol.shapesurface;
 
 import java.text.NumberFormat;
 
-import org.jmol.g3d.Graphics3D;
-
-
-
 public class MolecularOrbitalRenderer extends IsosurfaceRenderer {
 
   private NumberFormat nf;
@@ -36,15 +32,13 @@ public class MolecularOrbitalRenderer extends IsosurfaceRenderer {
   @Override
   protected void render() {
     imageFontScaling = viewer.getImageFontScaling();
-    MolecularOrbital mo = (MolecularOrbital) shape;
-    int modelIndex = viewer.getCurrentModelIndex();
-    for (int i = mo.meshCount; --i >= 0;)
-      if (render1(imesh = (IsosurfaceMesh) mo.meshes[i]) && modelIndex >= 0)
-        renderInfo();
+    super.render();
   }
 
-  private void renderInfo() {
-    if (mesh.title == null || exportType != Graphics3D.EXPORT_NOT 
+  @Override
+  protected void renderInfo() {
+    if (viewer.getCurrentModelIndex() < 0
+        || mesh.title == null 
         || !g3d.setColix(viewer.getColixBackgroundContrast()))
       return;
     if (nf == null)
@@ -66,11 +60,4 @@ public class MolecularOrbitalRenderer extends IsosurfaceRenderer {
       }
   }
 
-  /*
-  private String nfformat(float x) {
-    if (nf == null)
-      return "" + x;
-    return nf.format(x);
-  }
-*/
 }

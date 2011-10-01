@@ -93,7 +93,7 @@ public class MolecularOrbital extends Isosurface {
       super.setProperty("init", null, null);
       super.setProperty("modelIndex", Integer.valueOf(modelIndex), null);
       if (htModels == null)
-        htModels = new Hashtable<String, Map<String,Object>>();
+        htModels = new Hashtable<String, Map<String, Object>>();
       if (!htModels.containsKey(strID))
         htModels.put(strID, new Hashtable<String, Object>());
       thisModel = htModels.get(strID);
@@ -104,26 +104,30 @@ public class MolecularOrbital extends Isosurface {
     }
 
     if ("slab" == propertyName) {
-      Object[] slabInfo = (Object[]) value;
-      int tok = ((Integer) slabInfo[0]).intValue();
-      moSlab = (List<Object>) thisModel.get("slab");
-      if (moSlab == null)
-        thisModel.put("slab", moSlab = new ArrayList<Object>());
-      if (tok == Token.none) {
-        moSlab = null;
-        thisModel.remove("slab");
-        return;
+      if (value instanceof Integer) {
+        thisModel.put("slabValue", value);
+      } else {
+        Object[] slabInfo = (Object[]) value;
+        int tok = ((Integer) slabInfo[0]).intValue();
+        moSlab = (List<Object>) thisModel.get("slab");
+        if (moSlab == null)
+          thisModel.put("slab", moSlab = new ArrayList<Object>());
+        if (tok == Token.none) {
+          moSlab = null;
+          thisModel.remove("slab");
+          return;
+        }
+        moSlab.add(value);
       }
-      moSlab.add(value);
       return;
     }
-    
+
     if ("cutoff" == propertyName) {
       thisModel.put("moCutoff", value);
       thisModel.put("moIsPositiveOnly", Boolean.FALSE);
       return;
     }
-    
+
     if ("scale" == propertyName) {
       thisModel.put("moScale", value);
       return;
@@ -171,7 +175,7 @@ public class MolecularOrbital extends Isosurface {
         thisModel.put("moPlane", value);
       return;
     }
-    
+
     if ("monteCarloCount" == propertyName) {
       thisModel.put("monteCarloCount", value);
       return;
@@ -184,7 +188,7 @@ public class MolecularOrbital extends Isosurface {
         thisModel.put("randomSeed", value);
       return;
     }
-    
+
     if ("molecularOrbital" == propertyName) {
       if (value instanceof Integer) {
         moNumber = ((Integer) value).intValue();
@@ -348,6 +352,7 @@ public class MolecularOrbital extends Isosurface {
   }
 
   private List<Object> moSlab;
+  private Integer moSlabValue;
   
   @SuppressWarnings("unchecked")
   private boolean getSettings(String strID) {
@@ -370,6 +375,7 @@ public class MolecularOrbital extends Isosurface {
     moColorNeg = (Integer) thisModel.get("moColorNeg");
     moMonteCarloCount = (Integer) thisModel.get("monteCarloCount");
     moRandomSeed = (Integer) thisModel.get("randomSeed");
+    moSlabValue = (Integer)  thisModel.get("slabValue");
     moSlab = (List<Object>) thisModel.get("slab");
     if (moRandomSeed == null)
       thisModel.put("randomSeed", moRandomSeed = Integer.valueOf(
@@ -418,6 +424,8 @@ public class MolecularOrbital extends Isosurface {
     if (moPlane != null && moColorPos != null)
       super.setProperty("colorRGB", moColorPos, null);
     currentMesh.isColorSolid = false;
+    if (moSlabValue != null)
+      super.setProperty("slab", moSlabValue, null);
     if (moSlab != null)
       for (int i = 0; i < moSlab.size(); i++)
         super.setProperty("slab", moSlab.get(i), null);
@@ -494,13 +502,15 @@ public class MolecularOrbital extends Isosurface {
   @Override
   public void merge(Shape shape) {
   MolecularOrbital mo = (MolecularOrbital) shape;
-  moCutoff = mo.moCutoff;
-  moScale = mo.moScale;
-  moResolution = mo.moResolution;
-  moPlane = mo.moPlane;
-  moTitleFormat = mo.moTitleFormat;
   moColorNeg = mo.moColorNeg;
   moColorPos = mo.moColorPos;
+  moCutoff = mo.moCutoff;
+  moPlane = mo.moPlane;
+  moResolution = mo.moResolution;
+  moScale = mo.moScale;
+  moSlab = mo.moSlab;
+  moSlabValue = mo.moSlabValue;
+  moTitleFormat = mo.moTitleFormat;
   moTranslucency = mo.moTranslucency;
   if (htModels == null)
     htModels = new Hashtable<String, Map<String, Object>>();

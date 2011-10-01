@@ -161,7 +161,7 @@ public class Mouse implements MouseWheelListener, MouseListener,
     // so we are in the ASCII non-printable region 1-31
     if (Logger.debuggingHigh)
       Logger.debug("MouseManager keyTyped: " + ch + " " + (0+ch) + " " + modifiers);
-    if (modifiers != 0) {
+    if (modifiers != 0 && modifiers != Binding.SHIFT) {
       switch (ch) {
       case (char) 11:
       case 'k': // keystrokes on/off
@@ -220,7 +220,7 @@ public class Mouse implements MouseWheelListener, MouseListener,
     }
     if (!viewer.getBooleanProperty("allowKeyStrokes"))
       return;
-    addKeyBuffer(ch);
+    addKeyBuffer(ke.getModifiers() == Binding.SHIFT ? Character.toUpperCase(ch) : ch);
   }
 
   public void keyPressed(KeyEvent ke) {

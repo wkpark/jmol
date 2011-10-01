@@ -32,6 +32,18 @@ import org.jmol.util.Logger;
 import org.jmol.smiles.InvalidSmilesException;
 import org.jmol.smiles.SmilesMatcher;
 
+/*
+ * JmolSmilesApplet is a small applet that can do interesting things with
+ * SMILES strings. It is a subset of Jmol with no graphics capability
+ * 
+ *  find(String pattern, String smiles, boolean isSmarts, boolean isAll)
+ *  getLastError()
+ *  getRelationship(String smiles1, String smiles2)
+ *  reverseChiralit(String smiles)
+ *  setDebug(boolean TF)
+ *  
+ *  
+ */
 public class JmolSmilesApplet extends Applet {
 
   @Override
@@ -99,6 +111,17 @@ public class JmolSmilesApplet extends Applet {
    */
   public String getRelationship(String smiles1, String smiles2) {
     return (new SmilesMatcher()).getRelationship(smiles1, smiles2);  
+  }
+
+
+  /**
+   * reverse the chirality throughout a SMILES string
+   * 
+   * @param smiles
+   * @return  reversed chirality SMILES string 
+   */
+  public String reverseChiralit(String smiles) {
+    return (new SmilesMatcher()).reverseChirality(smiles);  
   }
 
   @Override

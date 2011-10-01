@@ -36,7 +36,9 @@ public class MoldenReader extends MopacSlaterReader {
     optOnly = checkFilter("OPTONLY");
     loadGeometries = !vibOnly && desiredVibrationNumber < 0 && !checkFilter("NOOPT");
     loadVibrations = !optOnly && desiredModelNumber < 0 && !checkFilter("NOVIB");
-    
+   
+    if (checkFilter("NORMALIZED"))
+      moData.put("isNormalized", Boolean.TRUE);
     if (checkFilter("ALPHA"))
       filter = "alpha";
     else if (checkFilter("BETA"))

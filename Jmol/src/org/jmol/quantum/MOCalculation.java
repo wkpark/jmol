@@ -1275,6 +1275,8 @@ public class MOCalculation extends QuantumCalculation implements
   float integration = 0;
 
   public void calculateElectronDensity() {
+    if (points != null)
+      return;
     //TODO
     for (int ix = nX; --ix >= 0;)
       for (int iy = nY; --iy >= 0;)

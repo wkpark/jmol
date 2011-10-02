@@ -17,65 +17,65 @@ msgstr ""
 "X-Launchpad-Export-Date: 2011-08-05 17:04+0000\n"
 "X-Generator: Launchpad (build 13613)\n"
 
-#: org/jmol/applet/AppletConsole.java:199
+#: org/jmol/console/AppletConsole.java:199
 msgid "&Help"
 msgstr "ヘルプ(&H)"
 
-#: org/jmol/applet/AppletConsole.java:200
+#: org/jmol/console/AppletConsole.java:200
 msgid "&Search..."
 msgstr "検索(&S)..."
 
-#: org/jmol/applet/AppletConsole.java:201
+#: org/jmol/console/AppletConsole.java:201
 msgid "&Commands"
 msgstr "コマンド(&C)"
 
-#: org/jmol/applet/AppletConsole.java:202
+#: org/jmol/console/AppletConsole.java:202
 msgid "Math &Functions"
 msgstr "数学関数(&F)"
 
-#: org/jmol/applet/AppletConsole.java:203
+#: org/jmol/console/AppletConsole.java:203
 msgid "Set &Parameters"
 msgstr ""
 
-#: org/jmol/applet/AppletConsole.java:204
+#: org/jmol/console/AppletConsole.java:204
 msgid "&More"
 msgstr ""
 
-#: org/jmol/applet/AppletConsole.java:205
+#: org/jmol/console/AppletConsole.java:205
 msgid "Editor"
 msgstr ""
 
-#: org/jmol/applet/AppletConsole.java:206
+#: org/jmol/console/AppletConsole.java:206
 msgid "State"
 msgstr "状態"
 
-#: org/jmol/applet/AppletConsole.java:207
+#: org/jmol/console/AppletConsole.java:207
 #: org/jmol/console/ScriptEditor.java:137
 msgid "Run"
 msgstr "実行"
 
-#: org/jmol/applet/AppletConsole.java:208
+#: org/jmol/console/AppletConsole.java:208
 msgid "Clear Output"
 msgstr "出力をクリア"
 
-#: org/jmol/applet/AppletConsole.java:209
+#: org/jmol/console/AppletConsole.java:209
 msgid "Clear Input"
 msgstr ""
 
-#: org/jmol/applet/AppletConsole.java:210
+#: org/jmol/console/AppletConsole.java:210
 #: org/jmol/popup/MainPopupResourceBundle.java:852
 msgid "History"
 msgstr "履歴"
 
-#: org/jmol/applet/AppletConsole.java:211
+#: org/jmol/console/AppletConsole.java:211
 msgid "Load"
 msgstr ""
 
-#: org/jmol/applet/AppletConsole.java:213
+#: org/jmol/console/AppletConsole.java:213
 msgid "press CTRL-ENTER for new line or paste model data and press Load"
 msgstr ""
 
-#: org/jmol/applet/AppletConsole.java:215
+#: org/jmol/console/AppletConsole.java:215
 msgid ""
 "Messages will appear here. Enter commands in the box below. Click the "
 "console Help menu item for on-line help, which will appear in a new browser "

@@ -15,7 +15,7 @@
  *  This library is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  Lesser General Public License for more details.
+ *  Lesser General License for more details.
  *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
@@ -44,13 +44,20 @@ import java.awt.image.Raster;
 import java.awt.image.SinglePixelPackedSampleModel;
 import java.net.URL;
 
+import org.jmol.api.ApiPlatform;
 import org.jmol.g3d.Font3D;
 import org.jmol.util.JpegEncoder;
 import org.jmol.viewer.Viewer;
 
-public class Image {
+/**
+ * methods required by Jmol that access java.awt.Image
+ * 
+ * private to org.jmol.awt
+ * 
+ */
+class Image {
 
-  public static Object createImage(Object data) {
+  static Object createImage(Object data) {
     if (data instanceof URL)
       return Toolkit.getDefaultToolkit().createImage((URL) data);
     if (data instanceof String)
@@ -60,7 +67,7 @@ public class Image {
     return null;
   }
 
-  public static void waitForDisplay(Object display, Object image) throws InterruptedException {
+  static void waitForDisplay(Object display, Object image) throws InterruptedException {
     if (display == null)
       display = new Frame();
     MediaTracker mediaTracker = new MediaTracker((Component) display);
@@ -68,26 +75,26 @@ public class Image {
     mediaTracker.waitForID(0);
   }
 
-  public static int getWidth(Object image) {
+  static int getWidth(Object image) {
     return ((java.awt.Image) image).getWidth(null);
   }
 
-  public static int getHeight(Object image) {
+  static int getHeight(Object image) {
     return ((java.awt.Image) image).getHeight(null);
   }
 
-  public static Object getJpgImage(Viewer viewer, int quality, String comment) {
+  static Object getJpgImage(ApiPlatform apiPlatform, Viewer viewer, int quality, String comment) {
     BufferedImage eImage = (BufferedImage) viewer.getScreenImage(null);
     if (eImage == null)
       return null;
     if (quality < 0)
       quality = 75;
-    Object bytes = JpegEncoder.getBytes(eImage, quality, comment);
+    Object bytes = JpegEncoder.getBytes(apiPlatform, eImage, quality, comment);
     viewer.releaseScreenImage();
     return bytes;
   }
 
-  public static void grabPixels(Object imageobj, int imageWidth,
+  static void grabPixels(Object imageobj, int imageWidth,
                                 int imageHeight, int[] values) {
     PixelGrabber grabber = new PixelGrabber(((java.awt.Image) imageobj)
         .getSource(), 0, 0, imageWidth, imageHeight, values, 0, imageWidth);
@@ -97,10 +104,10 @@ public class Image {
     }
   }
 
-  public static int[] grabPixels(Object imageobj, int i, int j, int width,
+  static int[] grabPixels(Object imageobj, int x, int y, int width,
                                  int height) {
-    PixelGrabber pixelGrabber = new PixelGrabber((java.awt.Image) imageobj, i,
-        j, width, height, true);
+    PixelGrabber pixelGrabber = new PixelGrabber((java.awt.Image) imageobj, x,
+        y, width, height, true);
     try {
       pixelGrabber.grabPixels();
     } catch (InterruptedException e) {
@@ -109,7 +116,7 @@ public class Image {
     return (int[]) pixelGrabber.getPixels();
   }
 
-  public static int[] drawImageToBuffer(Object gOffscreen, Object imageOffscreen,
+  static int[] drawImageToBuffer(Object gOffscreen, Object imageOffscreen,
                                 Object imageobj, int width, int height, int bgcolor) {
     Graphics g = (Graphics) gOffscreen;
     java.awt.Image image = (java.awt.Image) imageobj;
@@ -129,7 +136,7 @@ public class Image {
         0, 0, width, height);
   }
 
-  public static void renderOffScreen(String text, Font3D font3d, Object gObj,
+  static void renderOffScreen(String text, Font3D font3d, Object gObj,
                                      int mapWidth, int height, int ascent) {
     Graphics g = (Graphics) gObj;
     g.setColor(Color.black);
@@ -139,12 +146,12 @@ public class Image {
     g.drawString(text, 0, ascent);
   }
 
-  public static BufferedImage newBufferedImage(Object image, int w, int h) {
+  static Object newBufferedImage(Object image, int w, int h) {
     return new BufferedImage(w, h, ((BufferedImage) image).getType());
   }
 
-  public static BufferedImage newBufferedImage(int w, int h, int type) {
-    return new BufferedImage(w, h, type);
+  static Object newBufferedImage(int w, int h) {
+    return new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
   }
 
   /*
@@ -161,8 +168,6 @@ public class Image {
   private final static int[] sampleModelBitMasks =
   { 0x00FF0000, 0x0000FF00, 0x000000FF };
 
-  public static final int TYPE_INT_ARGB = BufferedImage.TYPE_INT_ARGB;
-
   /**
    * @param windowWidth 
    * @param windowHeight 
@@ -171,7 +176,7 @@ public class Image {
    * @param backgroundTransparent  
    * @return   an Image
    */
-  public static Object allocateRgbImage(int windowWidth, int windowHeight,
+  static Object allocateRgbImage(int windowWidth, int windowHeight,
                                        int[] pBuffer, int windowSize, boolean backgroundTransparent) {
     //backgroundTransparent not working with antialiasDisplay. I have no idea why. BH 9/24/08
     /* DEAD CODE   if (false && backgroundTransparent)
@@ -207,7 +212,7 @@ public class Image {
    * @param backgroundTransparent  
    * @return Graphics object
    */
-  public static Graphics getStaticGraphics(Object image, boolean backgroundTransparent) {
+  static Graphics getStaticGraphics(Object image, boolean backgroundTransparent) {
     Graphics2D g2d = ((BufferedImage) image).createGraphics();
       //if (backgroundTransparent) {
         // what here?
@@ -225,19 +230,19 @@ public class Image {
       return g2d;
     }
 
-  public static Object getGraphics(Object image) {
+  static Object getGraphics(Object image) {
     return ((java.awt.Image) image).getGraphics();
   }
 
-  public static void drawImage(Object g, Object img, int x, int y) {
+  static void drawImage(Object g, Object img, int x, int y) {
     ((Graphics)g).drawImage((java.awt.Image) img, x, y, null);
   }
 
-  public static void flush(Object image) {
+  static void flush(Object image) {
     ((java.awt.Image) image).flush();
   }
 
-  public static void disposeGraphics(Object g) {
+  static void disposeGraphics(Object g) {
     ((java.awt.Graphics) g).dispose();
   }
 

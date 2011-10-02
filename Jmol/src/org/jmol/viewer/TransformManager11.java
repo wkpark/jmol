@@ -23,7 +23,7 @@
  */
 package org.jmol.viewer;
 
-import org.jmol.awt.Event;
+import org.jmol.api.Event;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;

@@ -34,6 +34,7 @@ import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Matrix3f;
 
+import org.jmol.api.ApiPlatform;
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.constant.EnumPalette;
 import org.jmol.modelset.Atom;
@@ -224,6 +225,7 @@ final public class Graphics3D implements JmolRendererInterface {
   int argbNoisyUp, argbNoisyDn;
 
   Font3D font3dCurrent;
+  ApiPlatform apiPlatform;
 
   public final static byte ENDCAPS_NONE = 0;
   public final static byte ENDCAPS_OPEN = 1;
@@ -255,12 +257,14 @@ final public class Graphics3D implements JmolRendererInterface {
 
   /**
    * Allocates a g3d object
+   * @param apiPlatform 
    * 
    * @param isDataOnly 
    *
    */
-  public Graphics3D(boolean isDataOnly) {
-    platform = (isDataOnly ? null : Platform3D.createInstance());
+  public Graphics3D(ApiPlatform apiPlatform, boolean isDataOnly) {
+    this.apiPlatform = apiPlatform;
+    platform = (isDataOnly ? null : Platform3D.createInstance(apiPlatform));
     this.line3d = new Line3D(this);
     this.circle3d = new Circle3D(this);
     this.sphere3d = new Sphere3D(this);

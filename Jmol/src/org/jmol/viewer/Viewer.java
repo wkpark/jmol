@@ -46,6 +46,7 @@ import org.jmol.modelset.Bond.BondSet;
 import org.jmol.modelset.ModelCollection.StateScript;
 
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
+import org.jmol.api.ApiPlatform;
 import org.jmol.api.AtomIndexIterator;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
@@ -66,10 +67,6 @@ import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.AtomDataServer;
 import org.jmol.atomdata.RadiusData;
-
-import org.jmol.awt.Display;
-import org.jmol.awt.Image;
-import org.jmol.awt.Mouse;
 
 import org.jmol.constant.EnumAnimationMode;
 import org.jmol.constant.EnumAxesMode;
@@ -242,7 +239,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private ShapeManager shapeManager;
   private ModelManager modelManager;
   private ModelSet modelSet;
-  private Mouse mouseManager;
   private RepaintManager repaintManager;
   private ScriptManager scriptManager;
   private SelectionManager selectionManager;
@@ -272,6 +268,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // private boolean jvm12orGreater = false;
   // private boolean jvm14orGreater = false;
   private boolean multiTouch = false;
+  
+  public ApiPlatform getApiPlatform() {
+    return apiPlatform; // in JmolSimpleViewer
+  }
+
 
   private Viewer(Object display, JmolAdapter modelAdapter,
       String commandOptions) {
@@ -280,7 +281,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       Logger.debug("Viewer constructor " + this);
     }
     isDataOnly = (display == null);
-    g3d = new Graphics3D(isDataOnly);
+    String platform = (commandOptions == null || !commandOptions.contains("platform=")
+          ? "org.jmol.awt.Platform" : commandOptions.substring(commandOptions.indexOf("platform=")) + 9); 
+    apiPlatform = (ApiPlatform) Interface.getInterface(platform);
+    g3d = new Graphics3D(apiPlatform, isDataOnly);
     haveDisplay = (!isDataOnly && (commandOptions == null || commandOptions.indexOf("-n") < 0));
     mustRender = haveDisplay;
     if (!haveDisplay)
@@ -314,14 +318,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (haveDisplay) {
       if (multiTouch) {
         if (commandOptions.indexOf("-multitouch-sparshui-simulated") < 0)
-          Display.setTransparentCursor(display);
+          apiPlatform.setTransparentCursor(display);
         actionManager = (ActionManager) Interface
             .getOptionInterface("multitouch.ActionManagerMT");
       } else {
         actionManager = new ActionManager();
       }
       actionManager.setViewer(this, commandOptions);
-      mouseManager = new Mouse(this, actionManager);
+      apiPlatform.getMouseManager(this, actionManager);
     }
     modelManager = new ModelManager(this);
     shapeManager = new ShapeManager(this);
@@ -522,7 +526,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   @Override
   public boolean handleOldJvm10Event(int id, int x, int y, int modifiers, long time) {
-    return mouseManager.handleOldJvm10Event(id, x, y, modifiers, time);
+    return apiPlatform.handleOldJvm10Event(id, x, y, modifiers, time);
   }
 
   public void reset(boolean includingSpin) {
@@ -1701,7 +1705,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (modeMouse == JmolConstants.MOUSE_NONE) {
       // applet is being destroyed
       if (haveDisplay)
-        mouseManager.dispose();
+        apiPlatform.disposeMouse();
       clearScriptQueue();
       haltScriptExecution();
       stopAnimationThreads("setModeMouse NONE");
@@ -2654,7 +2658,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       clearMinimization();
       modelSet = modelManager.zap();
       if (haveDisplay) {
-        mouseManager.clear();
+        apiPlatform.clearMouse();
         actionManager.clear();
       }
       stateManager.clear(global);
@@ -4115,7 +4119,7 @@ private void zap(String msg) {
   private void render1(Object g, Object img, int x, int y) {
     if (g != null && img != null) {
       try {
-        Image.drawImage(g, img, x, y);
+        apiPlatform.drawImage(g, img, x, y);
       } catch (NullPointerException npe) {
         Logger.error("Sun!! ... fix graphics your bugs!");
       }
@@ -4130,8 +4134,8 @@ private void zap(String msg) {
         : getImage(isStereoDouble()));
     Object image1 = null;
     if (mergeImages) {
-      image1 = Image.newBufferedImage(image, dimScreen.width << 1, dimScreen.height);
-      g = Image.getGraphics(image1);
+      image1 = apiPlatform.newBufferedImage(image, dimScreen.width << 1, dimScreen.height);
+      g = apiPlatform.getGraphics(image1);
     }
     if (g != null) {
       if (isStereoDouble()) {
@@ -4181,7 +4185,7 @@ private void zap(String msg) {
       }
     if (c == null) {
       try {
-        bytes = Image.getJpgImage(this, quality, comment);
+        bytes = apiPlatform.getJpgImage(this, quality, comment);
         if (type.equals("jpg64") || type.equals("jpeg64"))
           bytes = (bytes == null ? "" : Base64.getBase64((byte[]) bytes)
               .toString());
@@ -4852,7 +4856,7 @@ private void zap(String msg) {
   public void setCursor(int cursor) {
     if (currentCursor == cursor || multiTouch || !haveDisplay)
       return;
-    Display.setCursor(currentCursor = cursor, display);
+    apiPlatform.setCursor(currentCursor = cursor, display);
   }
 
   void setPickingMode(String strMode, int pickingMode) {
@@ -4978,7 +4982,7 @@ private void zap(String msg) {
     case 'm':
       if (modelkit == null) {
         modelkit = (JmolModelKitInterface) Interface
-            .getOptionInterface("awt.modelkit.ModelKit");
+            .getOptionInterface("modelkit.ModelKit");
         if (modelkit == null)
           return;
         modelkit = modelkit.getModelKit(this, display);
@@ -5000,7 +5004,7 @@ private void zap(String msg) {
 
   private Object getPopupMenu() {
     if (jmolpopup == null) {
-      jmolpopup = (JmolPopupInterface) Interface.getOptionInterface("awt.popup.JmolPopup");
+      jmolpopup = (JmolPopupInterface) Interface.getOptionInterface("popup.JmolPopup");
       if (jmolpopup == null) {
         global.disablePopupMenu = true;
         return null;
@@ -7676,7 +7680,7 @@ private void zap(String msg) {
           && ((Boolean) paramInfo).booleanValue()) {
         for (int i = 0; i < 4 && appConsole == null; i++) {
           appConsole = (isApplet ? (JmolAppConsoleInterface) Interface
-              .getOptionInterface("applet.AppletConsole")
+              .getOptionInterface("console.AppletConsole")
               : (JmolAppConsoleInterface) Interface
                   .getApplicationInterface("jmolpanel.AppConsole"))
               .getAppConsole(this);
@@ -9069,7 +9073,7 @@ private void zap(String msg) {
   void repaint() {
     // from RepaintManager
     if (haveDisplay)
-      Display.repaint(display);
+      apiPlatform.repaint(display);
   }
 
   public OutputStream getOutputStream(String localName, String[] fullPath) {
@@ -9206,12 +9210,12 @@ private void zap(String msg) {
   }
 
   public boolean hasFocus() {
-    return (haveDisplay && (isKiosk || Display.hasFocus(display)));
+    return (haveDisplay && (isKiosk || apiPlatform.hasFocus(display)));
   }
 
   public void setFocus() {
-    if (haveDisplay && !Display.hasFocus(display))
-      Display.requestFocusInWindow(display);
+    if (haveDisplay && !apiPlatform.hasFocus(display))
+      apiPlatform.requestFocusInWindow(display);
   }
 
 
@@ -9838,7 +9842,7 @@ private void zap(String msg) {
   public String prompt(String label, String data, String[] list,
                        boolean asButtons) {
     JmolPromptInterface jpi = (JmolPromptInterface) Interface
-        .getOptionInterface("awt.console.JmolPrompt");
+        .getOptionInterface("console.JmolPrompt");
     return (jpi == null ? "null" : jpi.prompt(label, data, list, asButtons));
   }
 

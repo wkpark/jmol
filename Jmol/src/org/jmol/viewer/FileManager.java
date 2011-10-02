@@ -33,7 +33,7 @@ import org.jmol.util.ZipUtil;
 
 import org.jmol.api.JmolFilesReaderInterface;
 import org.jmol.api.JmolViewer;
-import org.jmol.awt.Image;
+import org.jmol.api.ApiPlatform;
 
 import java.net.URL;
 import java.net.URLConnection;
@@ -769,6 +769,8 @@ public class FileManager {
       return null;
     }
     Object image = null;
+    ApiPlatform apiPlatform = viewer.getApiPlatform();
+
     //try {
     String fullPathName = names[0].replace('\\', '/');
     if (fullPathName.indexOf("|") > 0) {
@@ -777,19 +779,23 @@ public class FileManager {
         retFileNameOrError[0] = "" + ret;
         return null;
       }
-      image = Image.createImage(ret);
+      image = apiPlatform.createImage(ret);
     } else if (urlTypeIndex(fullPathName) >= 0) {
       try {
-        image = Image.createImage(new URL(fullPathName));
+        image = apiPlatform.createImage(new URL(fullPathName));
       } catch (Exception e) {
         retFileNameOrError[0] = "bad URL: " + fullPathName;
         return null;
       }
     } else {
-      image = Image.createImage(fullPathName);
+      image = apiPlatform.createImage(fullPathName);
     }
+    if (image == null)
+      return null;
     try {
-      Image.waitForDisplay(viewer.getDisplay(), image);
+      if (!apiPlatform.waitForDisplay(viewer.getDisplay(), image)) {
+        return null;
+      }
       /* SUN but here for malformed URL - can't trap
        Uncaught error fetching image:
        java.lang.NullPointerException
@@ -806,7 +812,7 @@ public class FileManager {
       retFileNameOrError[0] = e.getMessage() + " opening " + fullPathName;
       return null;
     }
-    if (Image.getWidth(image) < 1) {
+    if (apiPlatform.getImageWidth(image) < 1) {
       retFileNameOrError[0] = "invalid or missing image " + fullPathName;
       return null;
     }

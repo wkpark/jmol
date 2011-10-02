@@ -23,7 +23,7 @@
  */
 package org.jmol.g3d;
 
-import org.jmol.awt.Font;
+import org.jmol.api.ApiPlatform;
 
 /**
  *<p>
@@ -47,10 +47,12 @@ final public class Font3D {
   public final float fontSize;
   public final Object font;
   public final Object fontMetrics;
+  private ApiPlatform apiPlatform;
 
-  private Font3D(byte fid,
+  private Font3D(ApiPlatform apiPlatform, byte fid,
                  int idFontFace, int idFontStyle, float fontSize,
                  float fontSizeNominal, Object graphics) {
+    this.apiPlatform = apiPlatform;
     this.fid = fid;
     this.fontFace = fontFaces[idFontFace];
     this.fontStyle = fontStyles[idFontStyle];
@@ -58,11 +60,11 @@ final public class Font3D {
     this.idFontStyle = idFontStyle;
     this.fontSize = fontSize;
     this.fontSizeNominal = fontSizeNominal;
-    font = Font.newFont(fontFaces[idFontFace], 
+    font = apiPlatform.newFont(fontFaces[idFontFace], 
         (idFontStyle & FONT_STYLE_BOLD) == FONT_STYLE_BOLD,
         (idFontStyle & FONT_STYLE_ITALIC) == FONT_STYLE_ITALIC, 
         fontSize);
-    fontMetrics = Font.getFontMetrics(graphics, font);
+    fontMetrics = apiPlatform.getFontMetrics(graphics, font);
     //System.out.println("font3d constructed for fontsizeNominal=" + fontSizeNominal + "  and fontSize=" + fontSize);
   }
 
@@ -110,7 +112,7 @@ final public class Font3D {
       System.arraycopy(font3ds, 0, t1, 0, fontIndexNext);
       font3ds = t1;
     }
-    Font3D font3d = new Font3D((byte) fontIndexNext, fontface, fontstyle,
+    Font3D font3d = new Font3D(platform.apiPlatform, (byte) fontIndexNext, fontface, fontstyle,
         fontsize, fontsizeNominal, platform.graphicsOffscreen);
     // you must set the font3d before setting the fontkey in order
     // to prevent a race condition with getFont3D
@@ -154,11 +156,11 @@ final public class Font3D {
   }
 
   public int getAscent() {
-    return Font.getAscent(fontMetrics);
+    return apiPlatform.getFontAscent(fontMetrics);
   }
   
   public int getDescent() {
-    return Font.getDescent(fontMetrics);
+    return apiPlatform.getFontDescent(fontMetrics);
   }
   
   public int getHeight() {
@@ -166,7 +168,7 @@ final public class Font3D {
   }
   
   public int stringWidth(String text) {
-    return Font.stringWidth(fontMetrics, text);
+    return apiPlatform.fontStringWidth(fontMetrics, text);
   }
 }
 

@@ -11,17 +11,24 @@ import java.awt.image.MemoryImageSource;
 import org.jmol.api.JmolViewer;
 import org.jmol.viewer.JmolConstants;
 
-public class Display {
+/**
+ * methods required by Jmol that access java.awt.Component
+ * 
+ * private to org.jmol.awt
+ * 
+ */
 
-  public static boolean hasFocus(Object display) {
+class Display {
+
+  static boolean hasFocus(Object display) {
     return ((Component) display).hasFocus();
   }
 
-  public static void requestFocusInWindow(Object display) {
+  static void requestFocusInWindow(Object display) {
     ((Component) display).requestFocusInWindow();
   }
 
-  public static void repaint(Object display) {
+  static void repaint(Object display) {
     ((Component) display).repaint();
   }
 
@@ -32,11 +39,11 @@ public class Display {
    * @param g
    * @param size
    */
-  public static void renderScreenImage(JmolViewer viewer, Object g, Object size) {
+  static void renderScreenImage(JmolViewer viewer, Object g, Object size) {
     viewer.renderScreenImage(g, ((Dimension)size).width, ((Dimension)size).height);
   }
 
-  public static void setTransparentCursor(Object display) {
+  static void setTransparentCursor(Object display) {
     int[] pixels = new int[1];
     java.awt.Image image = Toolkit.getDefaultToolkit().createImage(
         new MemoryImageSource(1, 1, pixels, 0, 1));
@@ -45,7 +52,7 @@ public class Display {
     ((Container) display).setCursor(transparentCursor);
   }
 
-  public static void setCursor(int c, Object display) {
+  static void setCursor(int c, Object display) {
     Container d = (Container) display;
     switch (c) {
     case JmolConstants.CURSOR_HAND:

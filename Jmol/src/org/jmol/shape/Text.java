@@ -24,7 +24,6 @@
 package org.jmol.shape;
 
 import org.jmol.api.JmolRendererInterface;
-import org.jmol.awt.Image;
 import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.util.Escape;
@@ -146,8 +145,8 @@ public class Text extends Object2d {
   protected void recalc() {
     if (image != null) {
       textWidth = textHeight = 0;
-      boxWidth = Image.getWidth(image) * fontScale;
-      boxHeight = Image.getHeight(image) * fontScale;
+      boxWidth = viewer.getApiPlatform().getImageWidth(image) * fontScale;
+      boxHeight = viewer.getApiPlatform().getImageHeight(image) * fontScale;
       ascent = 0;
       return;
     }

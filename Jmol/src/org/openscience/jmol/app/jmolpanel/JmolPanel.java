@@ -25,7 +25,7 @@ package org.openscience.jmol.app.jmolpanel;
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolViewer;
-import org.jmol.awt.console.JmolConsole;
+import org.jmol.console.JmolConsole;
 import org.jmol.export.JmolFileDropper;
 import org.jmol.export.dialog.Dialog;
 import org.jmol.export.history.HistoryFile;

@@ -37,7 +37,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.jmol.awt.Image;
+import org.jmol.api.ApiPlatform;
 
 /*
  * JpegEncoder - The JPEG main program which performs a jpeg compression of
@@ -70,10 +70,10 @@ public class JpegEncoder {
   private int Quality;
   //int code;
 
-  public JpegEncoder(Object image, int quality, OutputStream out, String comment)
-  {
+  public JpegEncoder(ApiPlatform apiPlatform, Object image, int quality, OutputStream out, String comment) {
     try {
-      Image.waitForDisplay(null, image);
+      if (!apiPlatform.waitForDisplay(null, image)) 
+        return;
     } catch (InterruptedException e) {
       // ignore
     }
@@ -88,16 +88,16 @@ public class JpegEncoder {
      * Getting picture information
      * It takes the Width, Height and RGB scans of the image. 
      */
-    JpegObj = new JpegInfo(image, comment);
+    JpegObj = new JpegInfo(apiPlatform, image, comment);
     
     outStream = new BufferedOutputStream(out);
     dct = new DCT(Quality);
     Huf=new Huffman(JpegObj.imageWidth,JpegObj.imageHeight);
   }
   
-  public static byte[] getBytes(Object image, int quality, String comment) {
+  public static byte[] getBytes(ApiPlatform apiPlatform, Object image, int quality, String comment) {
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-    write(image, quality, os, comment);
+    write(apiPlatform, image, quality, os, comment);
     try {
       os.flush();
       os.close();
@@ -107,8 +107,8 @@ public class JpegEncoder {
     return os.toByteArray();
   }
 
-  public static void write(Object image, int quality, OutputStream os, String comment) {
-    (new JpegEncoder(image, quality, os, comment)).Compress();
+  public static void write(ApiPlatform apiPlatform, Object image, int quality, OutputStream os, String comment) {
+    (new JpegEncoder(apiPlatform, image, quality, os, comment)).Compress();
   }
 
   public void setQuality(int quality) {
@@ -120,6 +120,8 @@ public class JpegEncoder {
   }
 */  
   public void Compress() {
+    if (JpegObj == null)
+      return;
     String longState = WriteHeaders(outStream, JpegObj, dct);
     WriteCompressedData(outStream, JpegObj, dct, Huf);
     WriteEOI(outStream);
@@ -1231,9 +1233,10 @@ class JpegInfo
   private int compWidth[], compHeight[];
   private int MaxHsampFactor;
   private int MaxVsampFactor;
+  private ApiPlatform apiPlatform;
   
   
-  public JpegInfo(Object image, String comment)
+  public JpegInfo(ApiPlatform apiPlatform, Object image, String comment)
   {
     Components = new float[NumberOfComponents][][];
     compWidth = new int[NumberOfComponents];
@@ -1241,8 +1244,8 @@ class JpegInfo
     BlockWidth = new int[NumberOfComponents];
     BlockHeight = new int[NumberOfComponents];
     imageobj = image;
-    imageWidth = Image.getWidth(image);
-    imageHeight = Image.getHeight(image);
+    imageWidth = apiPlatform.getImageWidth(image);
+    imageHeight = apiPlatform.getImageHeight(image);
     Comment = comment;
     getYCCArray();
   }
@@ -1283,7 +1286,7 @@ class JpegInfo
       }
       BlockHeight[y] = (int) Math.ceil(compHeight[y]/8.0);
     }
-    Image.grabPixels(imageobj, imageWidth, imageHeight, values);
+    apiPlatform.grabPixels(imageobj, imageWidth, imageHeight, values);
     float Y[][] = new float[compHeight[0]][compWidth[0]];
     float Cr1[][] = new float[compHeight[0]][compWidth[0]];
     float Cb1[][] = new float[compHeight[0]][compWidth[0]];

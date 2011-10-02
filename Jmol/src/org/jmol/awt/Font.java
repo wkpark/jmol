@@ -7,9 +7,16 @@ import java.text.AttributedCharacterIterator.Attribute;
 import java.util.Hashtable;
 import java.util.Map;
 
-public class Font {
+/**
+ * methods required by Jmol that access java.awt.Font
+ * 
+ * private to org.jmol.awt
+ * 
+ */
 
-  public static Object newFont(String fontFace, boolean isBold, boolean isItalic, float fontSize) {
+class Font {
+
+  static Object newFont(String fontFace, boolean isBold, boolean isItalic, float fontSize) {
     Map<Attribute, Object> fontMap = new Hashtable<Attribute, Object>();
     fontMap.put(TextAttribute.FAMILY, fontFace);
     if (isBold)
@@ -20,19 +27,19 @@ public class Font {
     return new java.awt.Font(fontMap);
   }
 
-  public static Object getFontMetrics(Object graphics, Object font) {
+  static Object getFontMetrics(Object graphics, Object font) {
     return ((Graphics) graphics).getFontMetrics((java.awt.Font) font);
   }
 
-  public static int getAscent(Object fontMetrics) {
+  static int getAscent(Object fontMetrics) {
     return ((FontMetrics) fontMetrics).getAscent();
   }
 
-  public static int getDescent(Object fontMetrics) {
+  static int getDescent(Object fontMetrics) {
     return ((FontMetrics) fontMetrics).getDescent();
   }
 
-  public static int stringWidth(Object fontMetrics, String text) {
+  static int stringWidth(Object fontMetrics, String text) {
     return ((FontMetrics) fontMetrics).stringWidth(text);
   }
 }

@@ -184,15 +184,15 @@ public class ImageCreator implements JmolImageCreatorInterface {
           if (quality <= 0)
             quality = 75;
           if (asBytes) {
-            bytes = JpegEncoder.getBytes(image, quality, Viewer.getJmolVersion());
+            bytes = JpegEncoder.getBytes(viewer.getApiPlatform(), image, quality, Viewer.getJmolVersion());
           } else {
-            JpegEncoder.write(image, quality, os, viewer.getWrappedState(true, image.getWidth(null), image.getHeight(null)));
+            JpegEncoder.write(viewer.getApiPlatform(), image, quality, os, viewer.getWrappedState(true, image.getWidth(null), image.getHeight(null)));
             bytes = null;
           }
         } else if (type.equalsIgnoreCase("JPG64") || type.equalsIgnoreCase("JPEG64")) {
           if (quality <= 0)
             quality = 75;
-          bytes = JpegEncoder.getBytes(image, quality, Viewer.getJmolVersion());
+          bytes = JpegEncoder.getBytes(viewer.getApiPlatform(), image, quality, Viewer.getJmolVersion());
           if (asBytes) {
             bytes = Base64.getBytes64(bytes);
           } else {

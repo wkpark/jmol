@@ -15,7 +15,7 @@
  *  This library is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  Lesser General Public License for more details.
+ *  Lesser General License for more details.
  *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
@@ -42,13 +42,22 @@ import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.Viewer;
 import org.jmol.viewer.binding.Binding;
 
-public class Mouse implements MouseWheelListener, MouseListener,
+/**
+ * formerly org.jmol.viewer.MouseManager14
+ * 
+ * methods required by Jmol that access java.awt.event
+ * 
+ * private to org.jmol.awt
+ * 
+ */
+
+class Mouse implements MouseWheelListener, MouseListener,
     MouseMotionListener, KeyListener {
 
   private Viewer viewer;
   private ActionManager actionManager;
 
-  public Mouse(Viewer viewer, ActionManager actionManager) {
+  Mouse(Viewer viewer, ActionManager actionManager) {
     this.viewer = viewer;
     this.actionManager = actionManager;
     Component display = (Component) viewer.getDisplay();
@@ -58,11 +67,11 @@ public class Mouse implements MouseWheelListener, MouseListener,
     display.addMouseWheelListener(this);
   }
 
-  public void clear() {
+  void clear() {
     // nothing to do here now -- see ActionManager
   }
 
-  public void dispose() {
+  void dispose() {
     Component display = (Component) viewer.getDisplay();
     actionManager.dispose();
     display.removeMouseListener(this);
@@ -71,7 +80,7 @@ public class Mouse implements MouseWheelListener, MouseListener,
     display.removeKeyListener(this);
   }
 
-  public boolean handleOldJvm10Event(int id, int x, int y, int modifiers, long time) {
+  boolean handleOldJvm10Event(int id, int x, int y, int modifiers, long time) {
     modifiers = applyLeftMouse(modifiers);
     switch (id) {
     case Event.MOUSE_DOWN:

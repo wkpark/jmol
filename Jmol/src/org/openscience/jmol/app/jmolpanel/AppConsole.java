@@ -53,7 +53,7 @@ import javax.swing.JScrollPane;
 
 import org.jmol.api.JmolAppConsoleInterface;
 import org.jmol.api.JmolViewer;
-import org.jmol.awt.console.JmolConsole;
+import org.jmol.console.JmolConsole;
 import org.jmol.i18n.GT;
 import org.jmol.util.CommandHistory;
 import org.jmol.util.Logger;

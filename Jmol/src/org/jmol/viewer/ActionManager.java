@@ -32,7 +32,7 @@ import java.util.Map;
 
 import javax.vecmath.Point3f;
 
-import org.jmol.awt.Event;
+import org.jmol.api.Event;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.i18n.GT;
 import org.jmol.modelset.Atom;

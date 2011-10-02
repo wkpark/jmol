@@ -23,7 +23,9 @@
  */
 package org.jmol.g3d;
 
-import org.jmol.awt.Image;
+import org.jmol.api.ApiPlatform;
+
+//import org.jmol.awt.Image;
 
 /**
  *<p>
@@ -52,11 +54,13 @@ class Platform3D {
   boolean useClearingThread = true;
 
   ClearingThread clearingThread;
+  ApiPlatform apiPlatform;
 
-  static Platform3D createInstance() {
+  static Platform3D createInstance(ApiPlatform apiPlatform) {
     Platform3D platform = new Platform3D();
     platform.initialize(desireClearingThread);
-    platform.graphicsOffscreen = Image.getGraphics(platform.allocateOffscreenImage(1, 1));
+    platform.apiPlatform = apiPlatform;
+    platform.graphicsOffscreen = apiPlatform.getGraphics(platform.allocateOffscreenImage(1, 1));
     return platform;
   }
 
@@ -104,7 +108,7 @@ class Platform3D {
   void releaseBuffers() {
     windowWidth = windowHeight = bufferWidth = bufferHeight = bufferSize = -1;
     if (imagePixelBuffer != null) {
-      Image.flush(imagePixelBuffer);
+      apiPlatform.flushImage(imagePixelBuffer);
       imagePixelBuffer = null;
     }
     pBuffer = null;
@@ -162,8 +166,8 @@ class Platform3D {
     if (width <= widthOffscreen && height <= heightOffscreen)
       return true;
     if (imageOffscreen != null) {
-      Image.disposeGraphics(gOffscreen);
-      Image.flush(imageOffscreen);
+      apiPlatform.disposeGraphics(gOffscreen);
+      apiPlatform.flushImage(imageOffscreen);
     }
     if (width > widthOffscreen)
       widthOffscreen = (width + 63) & ~63;
@@ -236,17 +240,17 @@ class Platform3D {
   }
 
   private Object allocateImage() {
-    return org.jmol.awt.Image.allocateRgbImage(windowWidth, windowHeight, pBuffer, windowSize, backgroundTransparent);
+    return apiPlatform.allocateRgbImage(windowWidth, windowHeight, pBuffer, windowSize, backgroundTransparent);
   }
 
   private static boolean backgroundTransparent = false;
   
   private Object allocateOffscreenImage(int width, int height) {
-    return org.jmol.awt.Image.newBufferedImage(width, height, org.jmol.awt.Image.TYPE_INT_ARGB);
+    return apiPlatform.newBufferedRgbImage(width, height);
   }
 
   private Object getGraphics(Object image) {
-    return org.jmol.awt.Image.getStaticGraphics(image, backgroundTransparent);
+    return apiPlatform.getStaticGraphics(image, backgroundTransparent);
   }
   
 }

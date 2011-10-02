@@ -36,7 +36,6 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-import org.jmol.awt.Display;
 import org.jmol.script.Token;
 import org.jmol.util.BoxInfo;
 import org.jmol.viewer.Viewer;
@@ -516,7 +515,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
    */
   public void renderScreenImage(Object g, Object currentSize,
                                 Object rectClip) {
-    Display.renderScreenImage(this, g, currentSize);
+    apiPlatform.renderScreenImage(this, g, currentSize);
   }
 
 }

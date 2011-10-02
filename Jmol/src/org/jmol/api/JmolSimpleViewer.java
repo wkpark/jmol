@@ -31,6 +31,8 @@ import org.jmol.viewer.Viewer;
 
 abstract public class JmolSimpleViewer {
 
+  protected ApiPlatform apiPlatform; // used in Viewer and JmolViewer
+
   /**
    *  This is the main access point for creating an application
    *  or applet viewer. 

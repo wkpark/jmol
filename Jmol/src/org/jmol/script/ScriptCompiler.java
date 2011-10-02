@@ -623,22 +623,30 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       } else if (setBraceCount > 0 && endOfLine && ichToken < cchScript) {
         return CONTINUE;
       }
-      if (tokCommand == Token.script && checkImpliedScriptCmd && nTokens > 2) {
-        // check for improperly parsed implied script command 
-        ichToken = ichCurrentCommand;
-        nTokens = 0;
-        ltoken.clear();
-        cchToken = 0;
-        tokCommand = Token.nada;
-        return CONTINUE;
+      if (tokCommand == Token.script && checkImpliedScriptCmd) {
+        String s = (nTokens == 2 ? lastToken.value.toString().toUpperCase() : null);
+        if (nTokens > 2 || s != null && (s.endsWith(".SORT") || s.endsWith(".REVERSE"))) {
+          // check for improperly parsed implied script command 
+          ichToken = ichCurrentCommand;
+          nTokens = 0;
+          ltoken.clear();
+          cchToken = 0;
+          tokCommand = Token.nada;
+          return CONTINUE;
+        }
       }
-
-      if (tokInitialPlusPlus != Token.nada) {
+      if (isNewSet && nTokens > 2 && tokAt(2) == Token.per
+          && (tokAt(3) == Token.sort || tokAt(3) == Token.reverse)) {
+        // check for x.sort or x.reverse
+        // x.sort / x.reverse ==> x = x.sort / x = x.reverse
+        ltoken.set(0, Token.tokenSet);
+        ltoken.add(1, ltoken.get(1));
+      } else if (tokInitialPlusPlus != Token.nada) {
+        // check for ++x or --x
         if (!isNewSet)
           checkNewSetCommand();
         tokenizePlusPlus(tokInitialPlusPlus, true);
       }
-      // end of command or comment
       iCommand = lltoken.size();
       if (thisFunction != null && thisFunction.cmdpt0 < 0) {
         thisFunction.cmdpt0 = iCommand;
@@ -2221,6 +2229,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     while (isOK && ichT < cchScript && !eol(ch = script.charAt(ichT))) {
       switch (ch) {
       case '=':
+      case '(':
         if (!allowEquals) {
           isOK = false;
           continue;

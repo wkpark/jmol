@@ -761,6 +761,7 @@ REMARK 290 REMARK: NULL
     sourceSerial = parseInt(line, 6, 11);
     if (sourceSerial < 0)
       return;
+    int lastTarget = -1;
     for (int i = 0; i < 9; i += (i == 5 ? 2 : 1)) {
       int offset = i * 5 + 11;
       int offsetEnd = offset + 5;
@@ -769,6 +770,9 @@ REMARK 290 REMARK: NULL
       if (targetSerial < 0)
         continue;
       int i1;
+      boolean isDoubleBond = (targetSerial == lastTarget);
+      lastTarget = targetSerial;
+
       boolean isSwapped = (targetSerial < sourceSerial);
       if (isSwapped) {
         i1 = targetSerial;
@@ -777,7 +781,7 @@ REMARK 290 REMARK: NULL
         i1 = sourceSerial;
       }
       String st = ";" + i1 + " " + targetSerial + ";";
-      if (sbConect.indexOf(st) >= 0)
+      if (sbConect.indexOf(st) >= 0 && !isDoubleBond)
         continue;
       sbConect.append(st);
       atomSetCollection.addConnection(new int[] { i1, targetSerial,

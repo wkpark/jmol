@@ -68,7 +68,7 @@ public class MoldenReader extends MopacSlaterReader {
       return (!loadVibrations || readFreqsAndModes());
     if (line.indexOf("[GEOCONV]") == 0)
       return (!loadGeometries || readGeometryOptimization());
-    if ("[5D][7F][9G]".indexOf(line) >= 0)
+    if (line.length() > 3 && "5D 6D 7F 10".indexOf(line.substring(1,3)) >= 0)
       orbitalType += line;
     return true;
   }
@@ -93,11 +93,12 @@ public class MoldenReader extends MopacSlaterReader {
       throw new Exception("invalid coordinate unit " + coordUnit + " in [Atoms]"); 
     }
     
-    readLine();
     float f = (isAU ? ANGSTROMS_PER_BOHR : 1);
-    while (line != null && line.indexOf('[') < 0) {    
-      Atom atom = atomSetCollection.addNewAtom();
+    while (readLine() != null && line.indexOf('[') < 0) {    
       String [] tokens = getTokens();
+      if (tokens.length < 6)
+        continue;
+      Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = tokens[0];
       // tokens[1] is the atom number.  Since sane programs shouldn't list
       // these out of order, just throw an exception if one is encountered
@@ -111,7 +112,6 @@ public class MoldenReader extends MopacSlaterReader {
       setAtomCoord(atom, parseFloat(tokens[3]) * f, 
           parseFloat(tokens[4]) * f, 
           parseFloat(tokens[5]) * f);
-      readLine();
     }    
   }
   
@@ -136,15 +136,16 @@ public class MoldenReader extends MopacSlaterReader {
     List<float[]> gdata = new ArrayList<float[]>();
     int atomIndex = 0;
     int gaussianPtr = 0;
-    
-    while (readLine() != null 
-        && ! ((line = line.trim()).length() == 0 || line.charAt(0) == '[') ) {
+    int nCoef = 0;
+
+    while (readLine() != null
+        && !((line = line.trim()).length() == 0 || line.charAt(0) == '[')) {
       // First, expect the number of the atomic center
       // The 0 following the atom index is now optional
       String[] tokens = getTokens();
-      
+
       atomIndex = parseInt(tokens[0]) - 1;
-      
+
       // Next is a sequence of shells and their primitives
       while (readLine() != null && line.trim().length() > 0) {
         // Next line has the shell label and a count of the number of primitives
@@ -156,39 +157,39 @@ public class MoldenReader extends MopacSlaterReader {
           shellLabel = "7F";
         int nPrimitives = parseInt(tokens[1]);
         int[] slater = new int[4];
-        
+
         slater[0] = atomIndex;
         slater[1] = JmolAdapter.getQuantumShellTagID(shellLabel);
         slater[2] = gaussianPtr;
         slater[3] = nPrimitives;
-        
+        nCoef += getDfCoefMaps()[slater[1]].length;
+
         for (int ip = nPrimitives; --ip >= 0;) {
           // Read ip primitives, each containing an exponent and one (s,p,d,f)
           // or two (sp) contraction coefficient(s)
-          String [] primTokens = getTokens(readLine());
+          String[] primTokens = getTokens(readLine());
           int nTokens = primTokens.length;
           float orbData[] = new float[nTokens];
-          
+
           for (int d = 0; d < nTokens; d++)
             orbData[d] = parseFloat(primTokens[d]);
           gdata.add(orbData);
           gaussianPtr++;
         }
         shells.add(slater);
-      }      
+      }
       // Next atom
     }
 
-    float [][] garray = new float[gaussianPtr][];
+    float[][] garray = new float[gaussianPtr][];
     for (int i = 0; i < gaussianPtr; i++) {
       garray[i] = gdata.get(i);
     }
     moData.put("shells", shells);
     moData.put("gaussians", garray);
-    if (Logger.debugging) {
-      Logger.debug(shells.size() + " slater shells read");
-      Logger.debug(garray.length + " gaussian primitives read");
-    }
+    Logger.info(shells.size() + " slater shells read");
+    Logger.info(garray.length + " gaussian primitives read");
+    Logger.info(nCoef + " MO coefficients expected for orbital type " + orbitalType);
     atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
     return false;
   }

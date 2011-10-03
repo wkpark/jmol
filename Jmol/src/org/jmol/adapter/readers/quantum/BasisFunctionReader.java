@@ -163,8 +163,7 @@ abstract class BasisFunctionReader extends AtomSetCollectionReader {
     // we need an array that reads
     //                    [4     0     0     0    -4]
     // meaning add that number to the pointer for this coef.
-    if (dfCoefMaps == null)
-      dfCoefMaps = JmolAdapter.getNewDfCoefMap();
+   getDfCoefMaps();
     String[] tokens = getTokens(fileList);
     boolean isOK = true;
     for (int i = 0; i < dfCoefMaps[shellType].length && isOK; i++) {
@@ -185,6 +184,12 @@ abstract class BasisFunctionReader extends AtomSetCollectionReader {
       //throw new NullPointerException("TESTING MO READER");
     }
     return isOK;
+  }
+
+  protected int[][] getDfCoefMaps() {
+    if (dfCoefMaps == null)
+      dfCoefMaps = JmolAdapter.getNewDfCoefMap();
+    return dfCoefMaps;
   }
 
   final protected static String canonicalizeQuantumSubshellTag(String tag) {

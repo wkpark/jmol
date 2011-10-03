@@ -54,6 +54,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
   protected void initRenderer() {
     super.initRenderer();
   }
+
   @Override
   protected void render() {
     iShowNormals = viewer.getTestFlag(4);
@@ -64,20 +65,22 @@ public class IsosurfaceRenderer extends MeshRenderer {
     isNavigationMode = viewer.getNavigationMode();
     int mySlabValue = Integer.MAX_VALUE;
     int slabValue = g3d.getSlab();
-    showKey = (viewer.getIsosurfaceKey() ? Boolean.TRUE : null); 
+    showKey = (viewer.getIsosurfaceKey() ? Boolean.TRUE : null);
     if (isNavigationMode)
       mySlabValue = (int) viewer.getNavigationOffset().z;
     isosurface.keyXy = null;
     for (int i = isosurface.meshCount; --i >= 0;) {
       imesh = (IsosurfaceMesh) isosurface.meshes[i];
       hasColorRange = false;
-      renderMesh(mySlabValue, slabValue);
-      if (!isExport)
-        renderInfo();
-      if (isExport && haveBsSlabGhost) {
-        exportPass = 1;
-        renderMesh(mySlabValue, slabValue);
-        exportPass = 2;
+      if (renderMesh(mySlabValue, slabValue)) {
+        System.out.println("render isossurface " + i + " " + isosurface.meshCount);
+        if (!isExport)
+          renderInfo();
+        if (isExport && haveBsSlabGhost) {
+          exportPass = 1;
+          renderMesh(mySlabValue, slabValue);
+          exportPass = 2;
+        }
       }
     }
   }
@@ -139,7 +142,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     isosurface.keyXy[1] = (y + dy) / factor;
   }
   
-  private void renderMesh(int mySlabValue, int slabValue) {
+  private boolean renderMesh(int mySlabValue, int slabValue) {
     volumeRender = (imesh.jvxlData.colorDensity && imesh.jvxlData.allowVolumeRender);
     if (!isNavigationMode) {
       int meshSlabValue = imesh.jvxlData.slabValue;
@@ -157,14 +160,16 @@ public class IsosurfaceRenderer extends MeshRenderer {
     g3d.setTranslucentCoverOnly(imesh.frontOnly);
     thePlane = imesh.jvxlData.jvxlPlane;
     vertexValues = imesh.vertexValues;
+    boolean isOK;
     if (mySlabValue != Integer.MAX_VALUE && imesh.jvxlData.isSlabbable) {
       g3d.setSlab(mySlabValue);
-      render1(imesh);
+      isOK = render1(imesh);
       g3d.setSlab(slabValue);
     } else {
-      render1(imesh);
+      isOK = render1(imesh);
     }
     g3d.setTranslucentCoverOnly(false);
+    return isOK;
   }
   
   @Override

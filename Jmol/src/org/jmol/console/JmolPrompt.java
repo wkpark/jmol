@@ -24,7 +24,6 @@
 package org.jmol.console;
 
 import javax.swing.JOptionPane;
-import javax.swing.UIManager;
 
 import org.jmol.api.JmolPromptInterface;
 import org.jmol.util.TextFormat;
@@ -58,12 +57,4 @@ public class JmolPrompt implements JmolPromptInterface {
     }
   }
   
-  public void setLookAndFeel() {
-    try {
-      UIManager.setLookAndFeel(UIManager
-          .getCrossPlatformLookAndFeelClassName());
-    } catch (Throwable exc) {
-      System.err.println("Error loading L&F: " + exc);
-    }
-  }
 }

@@ -42,7 +42,7 @@ class ClassPreloader extends Thread {
       try {
         int lastCharIndex = className.length() - 1;
         boolean constructOne = className.charAt(lastCharIndex) == '+';
-        //System.out.println("ClassPreloader - " + className);
+        System.out.println("ClassPreloader - " + className);
         if (constructOne)
           className = className.substring(0, lastCharIndex);
         Class<?> preloadClass = Class.forName(className);

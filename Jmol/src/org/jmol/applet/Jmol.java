@@ -48,6 +48,8 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
 
+import javax.swing.UIManager;
+
 import netscape.javascript.JSObject;
 
 /*
@@ -286,10 +288,12 @@ public class Jmol implements WrappedApplet {
     if (menuFile != null)
       viewer.getProperty("DATA_API", "setMenu", viewer
           .getFileAsString(menuFile));
-    JmolPromptInterface jpi = (JmolPromptInterface) Interface
-    .getOptionInterface("awt.console.JmolPrompt");
-    if (jpi != null)
-      jpi.setLookAndFeel();
+    try {
+      UIManager.setLookAndFeel(UIManager
+          .getCrossPlatformLookAndFeelClassName());
+    } catch (Throwable exc) {
+      System.err.println("Error loading L&F: " + exc);
+    }
     if (Logger.debugging) {
       Logger.debug("checking for jsoWindow mayScript=" + mayScript);
     }

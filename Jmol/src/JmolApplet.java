@@ -31,11 +31,12 @@
  *
  */
 
+import org.jmol.applet.AppletWrapper;
 import org.jmol.applet.JmolAppletInterface;
 
 import netscape.javascript.JSObject;
 
-public class JmolApplet extends org.jmol.applet.AppletWrapper implements
+public class JmolApplet extends AppletWrapper implements
     JmolAppletInterface {
 
   //protected void finalize() throws Throwable {

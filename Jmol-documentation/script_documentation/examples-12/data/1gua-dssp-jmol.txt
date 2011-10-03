@@ -1,0 +1,73 @@
+Jmol 12.1.16_dev  2010-10-12 07:49 DSSP analysis for model 1.1 - 1GUA
+
+W. Kabsch and C. Sander, Biopolymers, vol 22, 1983, pp 2577-2637
+
+We thank Wolfgang Kabsch and Chris Sander for writing the DSSP software,
+and we thank the CMBI for maintaining it to the extent that it was easy to
+re-engineer for our purposes. At this point in time, we make no guarantee
+that this code gives precisely the same analysis as the code available via license
+from CMBI at http://swift.cmbi.ru.nl/gv/dssp
+
+------------------------------
+
+A.1.8:                                                                                                    1                                                                   
+A.1.7:          1         2         3         4         5         6         7         8         9         0         1         2         3         4         5         6       
+A.1.6: 12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567
+A.1.5: ....................>5555<..........................................................................>5555<............................>5555<......>5555<...............
+A.1.4: ..............>>>>XXXX<<<<......................................>4>>X>X<<<<..........>>>4<<X>>>XXXXXX<<<<.....................>>>>XXXX<X<<4<......>444<.>>>>XXXXXX<<<<.
+A.1.3: ..........>33<...............................>33<...............>>><<<............>33X>3<X>3X<3<....................>33X>3<<......>33<...>33<..........................
+A.1.1: ..EEEEEEE..TT..HHHHHHHHHH...........EEEEEEEEEETTEEEEEEEEE........TTHHHHHHH..EEEEEEETT.HHHHHTHHHHHHHHHHHHT.....EEEEEE.TT.GGG....HHHHHHHHHHTTT.EEEE.BTTTTB.HHHHHHHHHHHH..
+A.1.0: MREYKLVVLGSGGVGKSALTVQFVQGIFVDEYDPTIEDSYRKQVEVDCQQCMLEILDTAGTEQFTAMRDLYMKNGQGFALVYSITAQSTFNDLQDLREQILRVKDTEDVPMILVGNKCDLEDERVVGKEQGQNLARQWCNCAFLESSAKSKINVNEIFYDLVRQINR
+
+
+B.2.8:                                             1                               
+B.2.7:     6         7         8         9         0         1         2         3 
+B.2.6: 6789012345678901234567890123456789012345678901234567890123456789012345678901
+B.2.5: ..............................>5555<..........>5555<........................
+B.2.4: ......>444<..........>>>4<XX>4<<<...........................................
+B.2.3: .................>33<.........>>3<<.>>3<<......>3><3<....>33<>>><X<3<.......
+B.2.1: .EEEEEETTTEEEEEE..TT.BHHHHHHHHHHTTT..GGGEEEEEEETTTTTEEEEE.TT.BGGGGTT.EEEEEE.
+B.2.0: NTIRVFLPNKQRTVVNVRNGMSLHDCLMKALKVRGLQPECCAVFRLLHEHKGKKARLDWNTDAASLIGEELQVDFL
+
+
+SUMMARY:
+E : A:3_A:9
+T : A:12_A:13
+H : A:16_A:25
+E : A:37_A:46
+T : A:47_A:48
+E : A:49_A:57
+T : A:66_A:67
+H : A:68_A:74
+E : A:77_A:83
+T : A:84_A:85
+H : A:87_A:91
+T : A:92_A:92
+H : A:93_A:104
+T : A:105_A:105
+E : A:111_A:116
+T : A:118_A:119
+G : A:121_A:123
+H : A:128_A:137
+T : A:138_A:140
+E : A:142_A:145
+B : A:147_A:147
+T : A:148_A:151
+B : A:152_A:152
+H : A:154_A:165
+E : B:57_B:62
+T : B:63_B:65
+E : B:66_B:71
+T : B:74_B:75
+B : B:77_B:77
+H : B:78_B:87
+T : B:88_B:90
+G : B:93_B:95
+E : B:96_B:102
+T : B:103_B:107
+E : B:108_B:112
+T : B:114_B:115
+B : B:117_B:117
+G : B:118_B:121
+T : B:122_B:123
+E : B:125_B:130

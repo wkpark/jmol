@@ -1,0 +1,672 @@
+/* *******************
+
+A set of functions for generating reciprocal lattices and brillouin zones
+using  Jmol. File Fe2O3.out should be in the directory of the script
+
+Starting point: a PRIMITIVE CELL model 
+
+primary functions:
+
+getRL(): generate reciprocal lattice vectors
+		parameters: none
+		creates: global b1, b2, b3 -- reciprocal vectors scaled by 2pi
+		creates: global b1a, b2a, b3a -- reciprocal vectors scaled by a, b, and c
+		returns: none
+
+showRL(n, withpi): displays reciprocal lattice vectors as measurement lines with ticks
+		parameters: n: multiples of 2pi; withpi: include "2pi, 4pi, etc..."
+		creates: MEASURE lines (3)
+		returns: none
+
+getRLPoints(n): generate n x n x n reciprocal lattice points
+		parameters: n: dimension
+		returns: array of reciprocal lattice points, sorted by proximity to origin
+
+showRLPoints(n, allpoints): same as getRLPoints(n), but draws points
+                parameters: n: dimension; allpoints: include negative quadrants
+		creates: n^3 DRAW points rl_<i>_<j>_<k>
+
+pickRLPoints(TF): pick RL points to show family of planes
+                parameters: TF: true (on), false (off)
+ 
+******************* */
+
+testfile = "$SCRIPT_PATH$Fe2O3.out"
+hklLast = "1 1 1"
+kscale = 1 // will be |a|*2 / (2 pi)
+
+function getRL() {
+
+ // here we really want the three PRIMITIVE UNIT CELL vectors.
+ // I'm just using the full unit cell vectors, because that's what I have.
+
+ var a = {1 0 0/1}
+ var b = {0 1 0/1}
+ var c = {0 0 1/1}
+
+ // book values: 
+
+ b1 = cross(b,c)/a.dot(cross(b,c)) * 2 * 3.1415926
+ b2 = cross(c,a)/b.dot(cross(c,a)) * 2 * 3.1415926
+ b3 = cross(a,b)/c.dot(cross(a,b)) * 2 * 3.1415926
+ // yes, I know that a.dot(cross(b,c)) == b.dot(cross(c,a)) = volume, 
+ // but for me, this is much clearer: 
+ //  "b1 is the projection of vector a onto the bc-plane 
+ //  normal vector scaled to 2 pi"
+
+ // unit vectors:
+
+ var n23 = cross(b,c)/cross(b,c)
+ var n31 = cross(c,a)/cross(c,a)
+ var n12 = cross(a,b)/cross(a,b)
+
+ b1a = n23 / a.dot(n23) * 2 * 3.1415926
+ b2b = n31 / b.dot(n31) * 2 * 3.1415926
+ b3c = n12 / c.dot(n12) * 2 * 3.1415926
+
+ // for visualization purposes, we don't really care about the overall scale
+ // only the relative scale.
+ // Here we scale the k-vectors by |a|^2 just to get them out of the unit cell.
+
+ // end points:
+
+ kscale = a * a / (2 * 3.1415926)
+
+ b1a *= kscale
+ b2b *= kscale
+ b3c *= kscale
+}
+
+function showRL(n, withpi) {
+
+ // test of showing reciprocal lattice as measures with ticks
+
+ if ("x" + n == "x") {
+  n = 1
+ }
+
+ getRL()
+
+ // ticks:
+
+ var ticks = [""]
+ for (var i = 1; i <= n; i++) {
+  ticks[i + 1] = "" + (withpi ? "" + (i * 2) + "\u03C0" : i)  // pi in unicode
+ }
+
+ // show measures:
+ measure delete
+ measure ticks {1 0.25 0} FORMAT @ticks scale @{1/b1a} {0 0 0} @{b1a * n}
+ measure ticks {1 0.25 0} FORMAT @ticks scale @{1/b2b} {0 0 0} @{b2b * n}
+ measure ticks {1 0.25 0} FORMAT @ticks scale @{1/b3c} {0 0 0} @{b3c * n}
+
+}
+
+function getRLPoints(n) {
+ if ("x" + n == "x") {
+  n = 1
+ }
+ getRL()
+ var a = []
+ var ipt = 0
+ for (var i = -n; i <= n; i++) {
+   for (var j = -n; j <= n; j++) {
+     for (var k = -n; k <= n; k++) {
+       if (i == 0 && j == 0 && k == 0) continue
+       var pt = b1a * i + b2b * j + b3c * k 
+       ipt++
+       a[ipt] = pt
+     }
+   }
+ }
+ return a.sort // proximity to origin
+}
+
+function showRLPoints(n, allpoints) {
+ if ("x" + n == "x") {
+  n = 1
+ }
+ getRL()
+ draw rl_* delete 
+ var n0 = (allpoints ? -n : 0)
+ for (var i = n0; i <= n; i++) {
+   for (var j = n0; j <= n; j++) {
+     for (var k = n0; k <= n; k++) {
+       var id = "rl_" + i + "_" + j + "_" + k
+       var pt = b1a * i + b2b * j + b3c * k 
+       draw ID @id width 0.1 @pt
+     }
+   }
+ }
+ draw ID "rlinea" width 0.05 @{b1a*n} @{b1a*n+b2b*n} color white
+ draw ID "rlineb" width 0.05 @{b1a*n} @{b1a*n+b3c*n} color white
+ draw ID "rlined" width 0.05 @{b2b*n} @{b2b*n+b1a*n} color white
+ draw ID "rlinee" width 0.05 @{b2b*n} @{b2b*n+b3c*n} color white
+ draw ID "rlineg" width 0.05 @{b3c*n} @{b3c*n+b2b*n} color white
+ draw ID "rlineh" width 0.05 @{b3c*n} @{b3c*n+b1a*n} color white
+ draw ID "rlinec" width 0.05 @{b1a*n+b2b*n} @{b1a*n+b2b*n+b3c*n} color white
+ draw ID "rlinef" width 0.05 @{b2b*n+b3c*n} @{b1a*n+b2b*n+b3c*n} color white
+ draw ID "rlinei" width 0.05 @{b3c*n+b1a*n} @{b1a*n+b2b*n+b3c*n} color white
+
+}
+
+function pickRLPoints(TF) {
+ if ("x" + TF == "x") {
+  TF = true
+ }
+ if (!TF) {
+   set atompicking true
+   set drawpicking false
+   set drawhover off
+   set pickcallback ""
+   draw delete
+   set echo off
+   print "reciprocal lattice point picking turned off"
+   return
+ }
+
+ set atompicking false
+ set drawpicking true
+ set drawhover on
+ set pickcallback "jmolscript:pickRLPointCallback"
+ frame title "Pick a reciprocal lattice pt to see planes"
+}
+
+function pickRLPointCallback() {
+ script inline @{"pickinfo=" + _pickinfo}
+ var pt = pickinfo[2]
+ if (pt.find("rl_") != 1) return
+ var hkl = pt.split("_")[2][4]
+ var ptxyz = point(pickinfo[5], pickinfo[6], pickinfo[7])
+ showHklFamily(hkl)
+}
+
+function showHklFamily(hkl) {
+ 
+ if (hkl.length == 1 || hkl.length == -2) { //no spaces were entered -- assume "111" or 111
+  hkl = "" + hkl
+  hkl = [ hkl[1], hkl[2], hkl[3] ]
+ }
+ if (hkl.length != 3)return
+ if (hkl[1] == "?") {
+   for (var i = 0; i <= 4; i++) {
+     showHklFamily([i, hkl[2], hkl[3]])
+     delay 1
+   }
+   return
+ }
+ if (hkl[2] == "?") {
+   for (var i = 0; i <= 4; i++) {
+     showHklFamily([hkl[1], i, hkl[3]])
+     delay 1
+   }
+   return
+ }
+ if (hkl[3] == "?") {
+   for (var i = 0; i <= 4; i++) {
+     showHklFamily([hkl[1], hkl[2], i])
+     delay 1
+   }
+   return
+ }
+
+ var h = 0 + hkl[1]
+ var k = 0 + hkl[2]
+ var l = 0 + hkl[3]
+ var plane = hkl(h, k, l)
+ var x = b1a*h
+ var y = b2b*k
+ var z = b3c*l
+ var ptxyz = x + y + z
+ //draw p1 intersection unitcell plane @plane
+ draw v1 vector {0 0 0} @ptxyz
+ draw line* delete
+ if (h != 0) {
+	draw linea2 width 0.001 @{b1a*h+b2b*k} @x color red
+ }
+ if (k != 0) {
+	draw lineb2 width 0.001 @{b1a*h+b2b*k} @y color green
+ }
+ if (l != 0) {
+	draw linea1 width 0.001 @ptxyz @{b1a*h+b2b*k} color blue
+ }
+ set echo off
+ font echo 12
+ var ptd = drawHklFamily(h, k, l, "")
+ if (ptd) {
+	draw dhkl arrow {0 0 0} @ptd
+	set echo dhklstr @ptd
+	set echo align right
+	echo d<sub>hkl</sub>
+ }
+ set echo ptecho
+ set echo @ptxyz
+ var x = ""+h+k+l
+ echo @x
+  
+ frame title @{"plane family ("+h+" "+k+" "+l +")"}
+}
+
+function drawHklFamily(h,k,l, params) {
+	hklLast = "" + h + " " + k + " " + l
+	draw phkl* delete
+        draw dhkl delete
+	Var n = [abs(h), abs(k), abs(l)].max
+	n *= n * 2
+	Var s= ""
+	Var colors = ["red", "orange", "yellow", "green", "blue"]
+        Var f = 1.001  // slight scaling allows for 100 to be seen
+        Var dhkl=1e10
+        Var ptd=0
+	for (var  i = 1; i <= n;i++){
+		Var plane = hkl(f*h/i, f*k/i, f*l/i)
+                Var d = -plane.w
+		if (d > 0.01 && d < dhkl) {
+			dhkl=d
+			ptd = intersection({0 0 0},plane)
+                }
+		s += "\ndraw phkl" + i + " intersection unitcell plane " + plane + " color " + colors[i % colors.length + 1] + " " +  params 
+	}
+	script inline @s
+        return ptd
+}
+
+
+function showHKL(n) {
+ if ("x" + n == "x") {
+  n = 4
+ }
+ showRL(n)
+ showRLPoints(n)
+ pickRLPoints
+}
+
+function pickHKL() {
+ var hkl = prompt("Enter three values or \"?\" for h, k, and l separated by spaces or commas", hklLast)
+ if (!hkl)return
+ hkl = hkl.replace(","," ").replace("  "," ").split(" ")
+ showHklFamily(hkl)
+}
+
+/////////////////////////// brillouin zones //////////////////////
+
+//// data structures
+
+gamma = {0 0 0}
+
+kpts = [] 	// [ kpt1, kpt2, kpt3, ... ]  
+
+planes = [] 	// [plane1, plane2, plane3, ... ]
+
+mypoints = [] 	// [ {x,y,z}, ... ]
+pointbins = {}  // speed process immensely using a 0.1-angstrom grid catalog along x
+bingrid = 0.1
+
+vertices = []	//  array(imypoint, imypoint, imypoint,....)
+vertexSets = [] // bitsets 
+edges = []	// [imypoint1, imypoint2], "planes" : [iplane1, iplane2, ...]
+edgemin = []    // edge closest to {0 0 0}
+dmin = 1e99     // distance minimum for finding edgemin
+npoly = 0
+izone = 0
+faceMap = {}
+
+doDrawPoints = false//true
+doDrawLines = false//true
+
+
+
+function resetGlobals() {
+
+  // (globals)
+
+ kpts = []
+ planes = []
+ mypoints = []
+ pointbins = {}
+ npoints = 0
+ vertices = []
+ vertexSets = []
+ edges = []
+ edgelist = {}
+ edgemin = []
+ dmin = 1e99
+ npoly = 0
+ izone = 0
+ faceMap = {}
+}
+
+function showBrillouin(z, iplane) {
+
+ showRLPoints(z, true)
+
+ resetGlobals() 
+
+ izone = z
+ if (!izone) izone = 1
+print "zone " + izone
+ var s = ""
+ var ipt = 0
+
+ getPlanesAndLatticePoints(izone)
+
+  // draw one or more planes, with intersections
+
+
+  //draw plane* delete
+  //draw line* delete
+
+ if (iplane != 0) {
+
+  //isosurface ID @{"plane" + iplane} plane @{planes[iplane]}
+  
+   var doall = (iplane < 0)
+   var n = planes.length
+   for (var p = 1; p <= n; p++) {
+     if (doall || p == iplane) {
+       createPointsAndEdges(p)
+     }
+   }
+ }
+
+ createZone1()
+
+}
+
+function createZone1() {
+  createZone(edgemin[1], edgemin[2], gamma, [], 0)
+}
+
+function createZone(ipt1, ipt2, pt0, pts0, level) {
+  var ipt = getNextPoint(ipt1, ipt2, gamma, false)
+  var pts = []
+  fillPolygon(ipt1, ipt2, ipt, pts)
+  var sface = ("" + (pts + []).sort).replace("\n","-")
+  if (faceMap[sface]) return
+  print "adding face " + script("show pts")
+  faceMap[sface] = pts
+  drawPolygon(pts, "zone_" + izone + "_face" + (++npoly))
+  var n = pts.length
+  for (var i = 1; i <= n; i++) {
+    createZone(pts[(i % n) + 1], pts[i], pt0, pts, level + 1)
+  }
+}
+
+function getNextPoint(ipt1, ipt2, pt0, isabs) {
+  var v = vertices[ipt2]
+  var dmin = (isabs ? 1e99 : -1e99)
+  var imin = 0
+  var pt1 = mypoints[ipt1]
+  var pt2 = mypoints[ipt2]
+  for (var i = v.length; i > 0; --i) {
+     var ipt = v[i]
+     if (ipt == ipt1) continue
+     var pt = mypoints[ipt]
+     if (angle(pt1, pt2, pt) > 170) continue
+     var d = angle(pt0, pt1, pt2, pt)
+     if (isabs) d = abs(d)
+     if (isabs ? d >= dmin : d > 0 || d < dmin) continue
+     dmin = d
+     imin = i
+  }
+  return v[imin]
+}
+
+function fillPolygon(ipt1, ipt2, ipt3, pts) {
+  if (pts.length == 0) pts |= [ipt1, ipt2, ipt3]
+  var ipt = getNextPoint(ipt2, ipt3, mypoints[ipt1], true)
+  if (ipt == pts[1]) return
+  pts |= [ipt]
+  fillPolygon(ipt2, ipt3, ipt, pts)
+}
+
+
+function getPlanesAndLatticePoints(izone) {
+
+ kpts = getRLPoints(izone)
+ var n = kpts.length
+
+  // get all planes and associated k points
+
+ print "" + n + " reciprocal lattice points"
+
+ for (var i = 1; i <= n; i++) {
+   planes[i] = plane(gamma,kpts[i]) // bisecting plane, normal outward
+ }
+
+}
+
+function createPointsAndEdges(p) {
+
+  print "calculating intersections for plane " + p
+
+  var lines = getPlaneIntersections(planes, p)
+
+  var nl = lines.length
+  for (var i = 1; i <= nl; i++) {
+    var line = lines[i]
+    var pt1 = line[1]
+    var v = line[2] * 2
+    var pt2 = pt1 + v
+    var iplane1 = line[3]
+    var iplane2 = line[4]
+
+	// must sort points based on distance to center of local (1D) Brillouin zone
+
+    var pointsAll = []
+    var points = [] // [[d, {x,y,z}, imypoint], ...] (temporary only)
+
+    for (var p2 = planes.length; p2 > 0; --p2) {
+      var pt = intersection(pt1, v, planes[p2])
+      if (pt) pointsAll |= [[(pt - pt1).dot(v), pt]]
+    }
+
+    pointsAll = pointsAll.sort
+    var n = pointsAll.length
+    var d0 = 0
+    var np = 0
+    var ipt0 = 0
+    var ipt = 0
+    for (var i2 = 1; i2 <= n; i2++) {    
+      var pt = pointsAll[i2]
+      var d1 = pt[1]
+      if (i2 == 1) {
+        d0 = d1
+      } else if (d1-d0 < 0.001) {
+        continue
+      }
+      d0 = d1
+      // replace {x,y,z} with ptr
+      ipt = addPoint(pt[2])
+      if (doDrawPoints && ipt == npoints) draw ID @{"pt"+ipt} @{pt[2]} color white
+      points |= [[d1, pt[2]]]
+      if (++np > 1) addEdge(ipt, ipt0, iplane1, iplane2)
+      ipt0 = ipt
+    }  
+
+    if (doDrawLines) {  
+    // now sort points by distance to origin
+
+      points = points.sort(2)
+      pt1 = (points[1])[2]
+      pt2 = (points[2])[2]
+
+      var s = "" + iplane1 + "_" + iplane2
+      draw ID @{"line" + p +"_" + i} width 0.001 @pt1 @pt2 @s color white
+    }
+  }
+
+  print "   nPoints = " + nPoints
+  
+
+}
+
+
+function getPlaneIntersections(planes, iplane) {
+  var lines = []
+  var j = 0
+  var n = planes.length
+  for (var i = 1; i <= n; i++) {
+    if (i != iplane) {
+      var line = intersection(planes[i], planes[iplane])
+      if (!line) continue
+      lines[++j] = [line[1], line[2], i, iplane]
+    }
+  }
+  return lines
+}
+
+function addPoint(pt) {
+  var x = pt.x \ bingrid
+  var i = checkgrid("" + x, pt)
+  if (i != 0.1) return i
+  i = checkgrid("" + (x - 1), pt)
+  if (i != 0.1) return i
+  i = checkgrid("" + (x + 1), pt)
+  if (i != 0.1) return i
+  mypoints[++npoints] = pt
+  vertices[npoints] = []
+  vertexSets[npoints] = [{}]
+
+  var n == pointbins["" + x].length
+  pointbins["" + x][n + 1] = npoints
+  return npoints
+}
+
+function checkGrid(sx, pt) {
+  if (!pointbins[sx]) pointbins[sx] = []
+  var v = pointbins[sx]
+  var n = v.length
+  for (var i = 1; i <= n; i++) {
+    if (pt.distance(mypoints[v[i]]) < 0.01) {
+      return v[i]
+    }
+  }
+  return 0.1 // not an integer
+}
+
+function findEdge(i1, i2) {
+  if (i1 > i2) {
+    var i = i1
+    i1 = i2
+    i2 = i
+  }
+  return edgelist["" + i1 + "_" + i2]
+}
+
+function addEdge(ipt1, ipt2, iplane1, iplane2) {
+  if (ipt1 > ipt2) {
+    var i = ipt1
+    ipt1 = ipt2
+    ipt2 = i
+  }
+  var edge = [ipt1, ipt2, iplane1, iplane2]
+  var iedge = findEdge(ipt1, ipt2)
+  if (iedge) {
+    edge = edges[iedge]
+    var ok = true
+    for (var i = 3; i <= edge.length && ok; i++) {
+	if (iplane1 == edge[i]) {
+		ok = false
+		break
+	}
+    }
+    if (ok) edge |= iplane1
+    var ok = true
+    for (var i = 3; i <= edge.length && ok; i++) {
+	if (iplane2 == edge[i]) {
+		ok = false
+		break
+	}
+    }
+    if (ok) edge |= iplane2
+  } else {
+    var key = "" + ipt1 + "_" + ipt2
+    iedge = edges.length + 1
+    edgelist[key] = iedge
+    edges |= [edge]
+    var d0 = 0.0 + (mypoints[ipt1] + mypoints[ipt2]) / 2
+    if (d0 < dmin) {
+      dmin = d0
+      edgemin = edge
+    }
+  }
+  if (!(vertexSets[ipt1] & ipt2)) {
+    vertices[ipt1] |= ipt2
+    vertexSets[ipt1] |= ipt2
+    vertices[ipt2] |= ipt1
+    vertexSets[ipt2] |= ipt1
+  }
+}
+
+
+function drawPolygon(ptlist, label, andPoints) {
+
+// creates an array "a" for
+// draw polygon @{a[1]} @{a[2]} 
+
+// presumes an ordered list of points
+
+  var sum = {0 0 0}
+  var pts = []
+  var n = ptlist.length
+  var faces = []
+  for (var i = 1; i <= n; i++) {
+    var ipt = ptlist[i]
+    var pt = mypoints[ipt]
+    if (andPoints) draw ID @{"dp" + ipt} @pt @{"" + ipt} 
+    sum += pt
+    pts |= pt
+    faces |= [[i - 1, (i % n), n, 1]]
+  }
+  pts = pts + sum / n
+  
+  draw ID @label polygon @pts @faces color red
+
+}
+
+
+function dumpVertex(iv) {
+  var pts = vertices[iv]
+  show pts
+  draw dump* delete
+  for (var i = 1; i <= pts.length; i++) {
+    draw id @{"dump" + i} @{mypoints[iv]} @{mypoints[pts[i]]}
+  }
+}
+
+
+//////////////////////////////////////////////////////////////////////
+
+
+print "showRL(n,withpi), getRL(), getRLPoints(n), and showBrillouin() are loaded"
+
+/*  
+
+// brillouin zone demo:
+
+load @testfile
+display none
+unitcell off
+center @gamma
+draw gamma @gamma
+
+axes off
+refresh
+showRL(3, true)
+
+
+frame title "first Brillouin zone"
+showbrillouin(1,-1)
+
+//showbrillouin(2,-1)
+
+*/
+
+
+// hkl demo:
+
+load "http://chemapps.stolaf.edu/jmol/docs/examples-12/data/quartz.cif" {1 1 1}
+reset;center {1.2289999 2.1286902 2.7027001}; rotate z -104.86; rotate y 86.27; rotate z 94.53; zoom 40.0; translate x -28.2; translate y 23.69;
+display none
+showHKL

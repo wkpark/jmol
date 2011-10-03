@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JmolApplet\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-09-27 20:09+0200\n"
+"POT-Creation-Date: 2011-10-03 19:01+0200\n"
 "PO-Revision-Date: 2011-03-20 13:09+0000\n"
 "Last-Translator: Muhammet Kara <Unknown>\n"
 "Language-Team: Turkish <yerellestirme@kde.org.tr>\n"
@@ -18,76 +18,6 @@ msgstr ""
 "X-Generator: Launchpad (build 13613)\n"
 "X-Poedit-Language: Turkish\n"
 
-#: org/jmol/console/AppletConsole.java:199
-msgid "&Help"
-msgstr "&Yardım"
-
-#: org/jmol/console/AppletConsole.java:200
-msgid "&Search..."
-msgstr "&Ara..."
-
-#: org/jmol/console/AppletConsole.java:201
-msgid "&Commands"
-msgstr "&Komutlar"
-
-#: org/jmol/console/AppletConsole.java:202
-msgid "Math &Functions"
-msgstr "Matematiksel &Fonksiyonlar"
-
-#: org/jmol/console/AppletConsole.java:203
-msgid "Set &Parameters"
-msgstr "&Parametreleri Ayarla"
-
-#: org/jmol/console/AppletConsole.java:204
-msgid "&More"
-msgstr "&Daha Fazla"
-
-#: org/jmol/console/AppletConsole.java:205
-msgid "Editor"
-msgstr "Düzenleyici"
-
-#: org/jmol/console/AppletConsole.java:206
-msgid "State"
-msgstr "Durum"
-
-#: org/jmol/console/AppletConsole.java:207
-#: org/jmol/console/ScriptEditor.java:137
-msgid "Run"
-msgstr "Çalıştır"
-
-#: org/jmol/console/AppletConsole.java:208
-msgid "Clear Output"
-msgstr "Çıktıyı Temizle"
-
-#: org/jmol/console/AppletConsole.java:209
-msgid "Clear Input"
-msgstr "Girdiyi Temizle"
-
-#: org/jmol/console/AppletConsole.java:210
-#: org/jmol/popup/MainPopupResourceBundle.java:853
-msgid "History"
-msgstr "Geçmiş"
-
-#: org/jmol/console/AppletConsole.java:211
-msgid "Load"
-msgstr "Yükle"
-
-#: org/jmol/console/AppletConsole.java:213
-msgid "press CTRL-ENTER for new line or paste model data and press Load"
-msgstr ""
-"yeni satır için CTRL-ENTER'a basın veya model verisini yapıştırın ve "
-"Yükle'ye basın"
-
-#: org/jmol/console/AppletConsole.java:215
-msgid ""
-"Messages will appear here. Enter commands in the box below. Click the "
-"console Help menu item for on-line help, which will appear in a new browser "
-"window."
-msgstr ""
-"Mesajlar burada görünecek. Komutları aşağıdaki kutuya girin. Yeni bir "
-"tarayıcı penceresinde görüntülenecek olan çevrimiçi yardım için Uçbirim "
-"Yardım menüsüne tıklayın."
-
 #: org/jmol/applet/AppletWrapper.java:100
 msgid "Loading Jmol applet ..."
 msgstr "Jmol küçük uygulaması yükleniyor ..."
@@ -97,7 +27,7 @@ msgstr "Jmol küçük uygulaması yükleniyor ..."
 msgid "  {0} seconds"
 msgstr "  {0} saniye"
 
-#: org/jmol/applet/Jmol.java:703
+#: org/jmol/applet/Jmol.java:707
 #, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -112,9 +42,79 @@ msgstr ""
 "\n"
 "Daha fazla bilgi için http://www.jmol.org 'u ziyaret ediniz"
 
-#: org/jmol/applet/Jmol.java:965
+#: org/jmol/applet/Jmol.java:969
 msgid "File Error:"
 msgstr "Dosya Hatası:"
+
+#: org/jmol/console/AppletConsole.java:196
+msgid "&Help"
+msgstr "&Yardım"
+
+#: org/jmol/console/AppletConsole.java:197
+msgid "&Search..."
+msgstr "&Ara..."
+
+#: org/jmol/console/AppletConsole.java:198
+msgid "&Commands"
+msgstr "&Komutlar"
+
+#: org/jmol/console/AppletConsole.java:199
+msgid "Math &Functions"
+msgstr "Matematiksel &Fonksiyonlar"
+
+#: org/jmol/console/AppletConsole.java:200
+msgid "Set &Parameters"
+msgstr "&Parametreleri Ayarla"
+
+#: org/jmol/console/AppletConsole.java:201
+msgid "&More"
+msgstr "&Daha Fazla"
+
+#: org/jmol/console/AppletConsole.java:202
+msgid "Editor"
+msgstr "Düzenleyici"
+
+#: org/jmol/console/AppletConsole.java:203
+msgid "State"
+msgstr "Durum"
+
+#: org/jmol/console/AppletConsole.java:204
+#: org/jmol/console/ScriptEditor.java:137
+msgid "Run"
+msgstr "Çalıştır"
+
+#: org/jmol/console/AppletConsole.java:205
+msgid "Clear Output"
+msgstr "Çıktıyı Temizle"
+
+#: org/jmol/console/AppletConsole.java:206
+msgid "Clear Input"
+msgstr "Girdiyi Temizle"
+
+#: org/jmol/console/AppletConsole.java:207
+#: org/jmol/popup/MainPopupResourceBundle.java:853
+msgid "History"
+msgstr "Geçmiş"
+
+#: org/jmol/console/AppletConsole.java:208
+msgid "Load"
+msgstr "Yükle"
+
+#: org/jmol/console/AppletConsole.java:210
+msgid "press CTRL-ENTER for new line or paste model data and press Load"
+msgstr ""
+"yeni satır için CTRL-ENTER'a basın veya model verisini yapıştırın ve "
+"Yükle'ye basın"
+
+#: org/jmol/console/AppletConsole.java:212
+msgid ""
+"Messages will appear here. Enter commands in the box below. Click the "
+"console Help menu item for on-line help, which will appear in a new browser "
+"window."
+msgstr ""
+"Mesajlar burada görünecek. Komutları aşağıdaki kutuya girin. Yeni bir "
+"tarayıcı penceresinde görüntülenecek olan çevrimiçi yardım için Uçbirim "
+"Yardım menüsüne tıklayın."
 
 #: org/jmol/console/JmolConsole.java:86
 msgid "Jmol Script Console"
@@ -173,6 +173,374 @@ msgstr "Temizle"
 #: org/jmol/console/ScriptEditor.java:145
 msgid "Close"
 msgstr "Kapat"
+
+#: org/jmol/export/dialog/Dialog.java:95
+msgid "File or URL:"
+msgstr "Dosya veya URL:"
+
+#: org/jmol/export/dialog/Dialog.java:269
+msgid "Image Type"
+msgstr "Görüntü Türü"
+
+#: org/jmol/export/dialog/Dialog.java:284
+#: org/jmol/export/dialog/Dialog.java:325
+#, java-format
+msgid "JPEG Quality ({0})"
+msgstr "JPEG Kalitesi ({0})"
+
+#: org/jmol/export/dialog/Dialog.java:298
+#, java-format
+msgid "PNG Compression  ({0})"
+msgstr "PNG Sıkıştırması  ({0})"
+
+#: org/jmol/export/dialog/Dialog.java:328
+#, java-format
+msgid "PNG Quality ({0})"
+msgstr "PNG Kalitesi ({0})"
+
+#: org/jmol/export/dialog/Dialog.java:374
+#: org/jmol/export/dialog/Dialog.java:486
+msgid "Yes"
+msgstr "Evet"
+
+#: org/jmol/export/dialog/Dialog.java:374
+#: org/jmol/export/dialog/Dialog.java:484
+msgid "No"
+msgstr "Hayır"
+
+#: org/jmol/export/dialog/Dialog.java:376
+#, java-format
+msgid "Do you want to overwrite file {0}?"
+msgstr "{0} dosyasının üzerine yazılsın mı?"
+
+#: org/jmol/export/dialog/Dialog.java:377
+msgid "Warning"
+msgstr "Uyarı"
+
+#: org/jmol/export/dialog/Dialog.java:435
+msgid "All Files"
+msgstr "Tüm Dosyalar"
+
+#: org/jmol/export/dialog/Dialog.java:436
+#: org/jmol/export/dialog/Dialog.java:483
+msgid "Cancel"
+msgstr "İptal"
+
+#: org/jmol/export/dialog/Dialog.java:438
+msgid "Abort file chooser dialog"
+msgstr "Dosya seçici penceresini kapat"
+
+#: org/jmol/export/dialog/Dialog.java:440
+#: org/jmol/export/dialog/Dialog.java:441
+msgid "Details"
+msgstr "Ayrıntılar"
+
+#: org/jmol/export/dialog/Dialog.java:442
+msgid "Directory"
+msgstr "Dizin"
+
+#: org/jmol/export/dialog/Dialog.java:445
+msgid "Open selected directory"
+msgstr "Seçili dizini aç"
+
+#: org/jmol/export/dialog/Dialog.java:446
+msgid "Attributes"
+msgstr "Nitelikler"
+
+#: org/jmol/export/dialog/Dialog.java:447
+msgid "Modified"
+msgstr "Değiştirildi"
+
+#: org/jmol/export/dialog/Dialog.java:448
+msgid "Generic File"
+msgstr "Genel Dosya"
+
+#: org/jmol/export/dialog/Dialog.java:449
+msgid "Name"
+msgstr "Adı"
+
+#: org/jmol/export/dialog/Dialog.java:450
+msgid "File Name:"
+msgstr "Dosya Adı:"
+
+#: org/jmol/export/dialog/Dialog.java:451
+msgid "Size"
+msgstr "Boyut"
+
+#: org/jmol/export/dialog/Dialog.java:452
+msgid "Files of Type:"
+msgstr "Tür Dosyaları:"
+
+#: org/jmol/export/dialog/Dialog.java:453
+msgid "Type"
+msgstr "Tür"
+
+#: org/jmol/export/dialog/Dialog.java:454
+msgid "Help"
+msgstr "Yardım"
+
+#: org/jmol/export/dialog/Dialog.java:456
+msgid "FileChooser help"
+msgstr "DosyaSeçici yardımı"
+
+#: org/jmol/export/dialog/Dialog.java:457
+#: org/jmol/export/dialog/Dialog.java:458
+msgid "Home"
+msgstr "Anasayfa"
+
+#: org/jmol/export/dialog/Dialog.java:459
+#: org/jmol/export/dialog/Dialog.java:460
+msgid "List"
+msgstr "Liste"
+
+#: org/jmol/export/dialog/Dialog.java:461
+msgid "Look In:"
+msgstr "Bak:"
+
+#: org/jmol/export/dialog/Dialog.java:463
+msgid "Error creating new folder"
+msgstr "Yeni klasör oluşturma hatası"
+
+#: org/jmol/export/dialog/Dialog.java:464
+msgid "New Folder"
+msgstr "Yeni Klasör"
+
+#: org/jmol/export/dialog/Dialog.java:466
+msgid "Create New Folder"
+msgstr "Yeni Klasör Oluştur"
+
+#: org/jmol/export/dialog/Dialog.java:469
+msgid "Open selected file"
+msgstr "Seçilen dosyayı aç"
+
+#: org/jmol/export/dialog/Dialog.java:471
+#: org/jmol/export/dialog/Dialog.java:474
+msgid "Save"
+msgstr "Kaydet"
+
+#: org/jmol/export/dialog/Dialog.java:473
+msgid "Save selected file"
+msgstr "Seçilen dosyayı kaydet"
+
+#: org/jmol/export/dialog/Dialog.java:475
+msgid "Save In:"
+msgstr "İçine Kaydet:"
+
+#: org/jmol/export/dialog/Dialog.java:476
+msgid "Update"
+msgstr "Güncelle"
+
+#: org/jmol/export/dialog/Dialog.java:478
+msgid "Update directory listing"
+msgstr "Dizin listelemesini güncelle"
+
+#: org/jmol/export/dialog/Dialog.java:479
+msgid "Up"
+msgstr "Yukarı"
+
+#: org/jmol/export/dialog/Dialog.java:480
+msgid "Up One Level"
+msgstr "Bir Seviye Yukarı"
+
+#: org/jmol/export/dialog/Dialog.java:485
+msgid "OK"
+msgstr "TAMAM"
+
+#: org/jmol/export/dialog/FilePreview.java:71
+msgid "Preview"
+msgstr "Önizleme"
+
+#: org/jmol/export/dialog/FilePreview.java:91
+msgid "Append models"
+msgstr "Modelleri Birleştir"
+
+#: org/jmol/i18n/GT.java:139
+msgid "Arabic"
+msgstr "Arapça"
+
+#: org/jmol/i18n/GT.java:140
+msgid "Asturian"
+msgstr ""
+
+#: org/jmol/i18n/GT.java:141
+msgid "Bosnian"
+msgstr ""
+
+#: org/jmol/i18n/GT.java:142
+msgid "Catalan"
+msgstr "Katalanca"
+
+#: org/jmol/i18n/GT.java:143
+msgid "Czech"
+msgstr "Çekçe"
+
+#: org/jmol/i18n/GT.java:144
+msgid "Danish"
+msgstr "Danca"
+
+#: org/jmol/i18n/GT.java:145
+msgid "German"
+msgstr "Almanca"
+
+#: org/jmol/i18n/GT.java:146
+msgid "Greek"
+msgstr "Yunanca"
+
+#: org/jmol/i18n/GT.java:147
+msgid "Australian English"
+msgstr ""
+
+#: org/jmol/i18n/GT.java:148
+msgid "British English"
+msgstr "İngiliz İngilizcesi"
+
+#: org/jmol/i18n/GT.java:149
+msgid "American English"
+msgstr "Amerikan İngilizcesi"
+
+#: org/jmol/i18n/GT.java:150
+msgid "Spanish"
+msgstr "İspanyolca"
+
+#: org/jmol/i18n/GT.java:151
+msgid "Estonian"
+msgstr "Estonyaca"
+
+#: org/jmol/i18n/GT.java:152
+msgid "Finnish"
+msgstr "Fince"
+
+#: org/jmol/i18n/GT.java:153
+msgid "Faroese"
+msgstr "Faroese"
+
+#: org/jmol/i18n/GT.java:154
+msgid "French"
+msgstr "Fransızca"
+
+#: org/jmol/i18n/GT.java:155
+msgid "Croatian"
+msgstr "Hırvatça"
+
+#: org/jmol/i18n/GT.java:156
+msgid "Hungarian"
+msgstr "Macarca"
+
+#: org/jmol/i18n/GT.java:157
+msgid "Armenian"
+msgstr ""
+
+#: org/jmol/i18n/GT.java:158
+msgid "Indonesian"
+msgstr "Endonezce"
+
+#: org/jmol/i18n/GT.java:159
+msgid "Italian"
+msgstr "İtalyanca"
+
+#: org/jmol/i18n/GT.java:160
+msgid "Japanese"
+msgstr "Japonca"
+
+#: org/jmol/i18n/GT.java:161
+msgid "Javanese"
+msgstr "Cavaca"
+
+#: org/jmol/i18n/GT.java:162
+msgid "Korean"
+msgstr "Korece"
+
+#: org/jmol/i18n/GT.java:163
+#, fuzzy
+msgid "Malay"
+msgstr "Oynat"
+
+#: org/jmol/i18n/GT.java:164
+msgid "Norwegian Bokmal"
+msgstr "Norveç Bokmal"
+
+#: org/jmol/i18n/GT.java:165
+msgid "Dutch"
+msgstr "Flemenkçe"
+
+#: org/jmol/i18n/GT.java:166
+msgid "Occitan"
+msgstr "Occitan"
+
+#: org/jmol/i18n/GT.java:167
+msgid "Polish"
+msgstr "Lehçe"
+
+#: org/jmol/i18n/GT.java:168
+msgid "Portuguese"
+msgstr "Portekizce"
+
+#: org/jmol/i18n/GT.java:169
+msgid "Brazilian Portuguese"
+msgstr "Brezilya Portekizcesi"
+
+#: org/jmol/i18n/GT.java:170
+msgid "Russian"
+msgstr "Rusça"
+
+#: org/jmol/i18n/GT.java:171
+msgid "Slovenian"
+msgstr "Slovence"
+
+#: org/jmol/i18n/GT.java:172
+msgid "Serbian"
+msgstr ""
+
+#: org/jmol/i18n/GT.java:173
+msgid "Swedish"
+msgstr "İsveçce"
+
+#: org/jmol/i18n/GT.java:174
+msgid "Tamil"
+msgstr "Tamil"
+
+#: org/jmol/i18n/GT.java:175
+msgid "Telugu"
+msgstr ""
+
+#: org/jmol/i18n/GT.java:176
+msgid "Turkish"
+msgstr "Türkçe"
+
+#: org/jmol/i18n/GT.java:177
+msgid "Uyghur"
+msgstr ""
+
+#: org/jmol/i18n/GT.java:178
+msgid "Ukrainian"
+msgstr "Ukraynaca"
+
+#: org/jmol/i18n/GT.java:179
+msgid "Simplified Chinese"
+msgstr "Basitleştirilmiş Çince"
+
+#: org/jmol/i18n/GT.java:180
+msgid "Traditional Chinese"
+msgstr "Geleneksel Çince"
+
+#: org/jmol/minimize/Minimizer.java:206
+#, java-format
+msgid "Could not get class for force field {0}"
+msgstr "Güç alanı sınıfı alınamadı {0}"
+
+#: org/jmol/minimize/Minimizer.java:210
+msgid "No atoms selected -- nothing to do!"
+msgstr "Herhangi bir atom seçili değil -- yapacak bir şey yok!"
+
+#: org/jmol/minimize/Minimizer.java:286
+#, java-format
+msgid "{0} atoms will be minimized."
+msgstr "{0} atomlar küçültülecek."
+
+#: org/jmol/minimize/Minimizer.java:374
+#, java-format
+msgid "could not setup force field {0}"
+msgstr "Güç alanını ayarlanamadı {0}"
 
 #: org/jmol/modelkit/ModelKitPopup.java:75
 msgid "Element?"
@@ -286,6 +654,24 @@ msgstr ""
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:112
 msgid "exit modelkit mode"
 msgstr "modelkit modundan çık"
+
+#: org/jmol/modelsetbio/AminoPolymer.java:576
+#, java-format
+msgid ""
+"NOTE: Backbone amide hydrogen positions are present and will be ignored. "
+"Their positions will be approximated, as in standard DSSP analysis.\n"
+"Use {0} to not use this approximation.\n"
+"\n"
+msgstr ""
+
+#: org/jmol/modelsetbio/AminoPolymer.java:582
+#, java-format
+msgid ""
+"NOTE: Backbone amide hydrogen positions are present and will be used. "
+"Results may differ significantly from standard DSSP analysis.\n"
+"Use {0} to ignore these hydrogen positions.\n"
+"\n"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:141
 #: org/jmol/popup/MainPopupResourceBundle.java:537
@@ -1411,392 +1797,6 @@ msgstr "RasMol Renkleri"
 msgid "About..."
 msgstr "Hakkında..."
 
-#: org/jmol/export/dialog/Dialog.java:95
-msgid "File or URL:"
-msgstr "Dosya veya URL:"
-
-#: org/jmol/export/dialog/Dialog.java:269
-msgid "Image Type"
-msgstr "Görüntü Türü"
-
-#: org/jmol/export/dialog/Dialog.java:284
-#: org/jmol/export/dialog/Dialog.java:325
-#, java-format
-msgid "JPEG Quality ({0})"
-msgstr "JPEG Kalitesi ({0})"
-
-#: org/jmol/export/dialog/Dialog.java:298
-#, java-format
-msgid "PNG Compression  ({0})"
-msgstr "PNG Sıkıştırması  ({0})"
-
-#: org/jmol/export/dialog/Dialog.java:328
-#, java-format
-msgid "PNG Quality ({0})"
-msgstr "PNG Kalitesi ({0})"
-
-#: org/jmol/export/dialog/Dialog.java:374
-#: org/jmol/export/dialog/Dialog.java:486
-msgid "Yes"
-msgstr "Evet"
-
-#: org/jmol/export/dialog/Dialog.java:374
-#: org/jmol/export/dialog/Dialog.java:484
-msgid "No"
-msgstr "Hayır"
-
-#: org/jmol/export/dialog/Dialog.java:376
-#, java-format
-msgid "Do you want to overwrite file {0}?"
-msgstr "{0} dosyasının üzerine yazılsın mı?"
-
-#: org/jmol/export/dialog/Dialog.java:377
-msgid "Warning"
-msgstr "Uyarı"
-
-#: org/jmol/export/dialog/Dialog.java:435
-msgid "All Files"
-msgstr "Tüm Dosyalar"
-
-#: org/jmol/export/dialog/Dialog.java:436
-#: org/jmol/export/dialog/Dialog.java:483
-msgid "Cancel"
-msgstr "İptal"
-
-#: org/jmol/export/dialog/Dialog.java:438
-msgid "Abort file chooser dialog"
-msgstr "Dosya seçici penceresini kapat"
-
-#: org/jmol/export/dialog/Dialog.java:440
-#: org/jmol/export/dialog/Dialog.java:441
-msgid "Details"
-msgstr "Ayrıntılar"
-
-#: org/jmol/export/dialog/Dialog.java:442
-msgid "Directory"
-msgstr "Dizin"
-
-#: org/jmol/export/dialog/Dialog.java:445
-msgid "Open selected directory"
-msgstr "Seçili dizini aç"
-
-#: org/jmol/export/dialog/Dialog.java:446
-msgid "Attributes"
-msgstr "Nitelikler"
-
-#: org/jmol/export/dialog/Dialog.java:447
-msgid "Modified"
-msgstr "Değiştirildi"
-
-#: org/jmol/export/dialog/Dialog.java:448
-msgid "Generic File"
-msgstr "Genel Dosya"
-
-#: org/jmol/export/dialog/Dialog.java:449
-msgid "Name"
-msgstr "Adı"
-
-#: org/jmol/export/dialog/Dialog.java:450
-msgid "File Name:"
-msgstr "Dosya Adı:"
-
-#: org/jmol/export/dialog/Dialog.java:451
-msgid "Size"
-msgstr "Boyut"
-
-#: org/jmol/export/dialog/Dialog.java:452
-msgid "Files of Type:"
-msgstr "Tür Dosyaları:"
-
-#: org/jmol/export/dialog/Dialog.java:453
-msgid "Type"
-msgstr "Tür"
-
-#: org/jmol/export/dialog/Dialog.java:454
-msgid "Help"
-msgstr "Yardım"
-
-#: org/jmol/export/dialog/Dialog.java:456
-msgid "FileChooser help"
-msgstr "DosyaSeçici yardımı"
-
-#: org/jmol/export/dialog/Dialog.java:457
-#: org/jmol/export/dialog/Dialog.java:458
-msgid "Home"
-msgstr "Anasayfa"
-
-#: org/jmol/export/dialog/Dialog.java:459
-#: org/jmol/export/dialog/Dialog.java:460
-msgid "List"
-msgstr "Liste"
-
-#: org/jmol/export/dialog/Dialog.java:461
-msgid "Look In:"
-msgstr "Bak:"
-
-#: org/jmol/export/dialog/Dialog.java:463
-msgid "Error creating new folder"
-msgstr "Yeni klasör oluşturma hatası"
-
-#: org/jmol/export/dialog/Dialog.java:464
-msgid "New Folder"
-msgstr "Yeni Klasör"
-
-#: org/jmol/export/dialog/Dialog.java:466
-msgid "Create New Folder"
-msgstr "Yeni Klasör Oluştur"
-
-#: org/jmol/export/dialog/Dialog.java:469
-msgid "Open selected file"
-msgstr "Seçilen dosyayı aç"
-
-#: org/jmol/export/dialog/Dialog.java:471
-#: org/jmol/export/dialog/Dialog.java:474
-msgid "Save"
-msgstr "Kaydet"
-
-#: org/jmol/export/dialog/Dialog.java:473
-msgid "Save selected file"
-msgstr "Seçilen dosyayı kaydet"
-
-#: org/jmol/export/dialog/Dialog.java:475
-msgid "Save In:"
-msgstr "İçine Kaydet:"
-
-#: org/jmol/export/dialog/Dialog.java:476
-msgid "Update"
-msgstr "Güncelle"
-
-#: org/jmol/export/dialog/Dialog.java:478
-msgid "Update directory listing"
-msgstr "Dizin listelemesini güncelle"
-
-#: org/jmol/export/dialog/Dialog.java:479
-msgid "Up"
-msgstr "Yukarı"
-
-#: org/jmol/export/dialog/Dialog.java:480
-msgid "Up One Level"
-msgstr "Bir Seviye Yukarı"
-
-#: org/jmol/export/dialog/Dialog.java:485
-msgid "OK"
-msgstr "TAMAM"
-
-#: org/jmol/export/dialog/FilePreview.java:71
-msgid "Preview"
-msgstr "Önizleme"
-
-#: org/jmol/export/dialog/FilePreview.java:91
-msgid "Append models"
-msgstr "Modelleri Birleştir"
-
-#: org/jmol/i18n/GT.java:139
-msgid "Arabic"
-msgstr "Arapça"
-
-#: org/jmol/i18n/GT.java:140
-msgid "Asturian"
-msgstr ""
-
-#: org/jmol/i18n/GT.java:141
-msgid "Bosnian"
-msgstr ""
-
-#: org/jmol/i18n/GT.java:142
-msgid "Catalan"
-msgstr "Katalanca"
-
-#: org/jmol/i18n/GT.java:143
-msgid "Czech"
-msgstr "Çekçe"
-
-#: org/jmol/i18n/GT.java:144
-msgid "Danish"
-msgstr "Danca"
-
-#: org/jmol/i18n/GT.java:145
-msgid "German"
-msgstr "Almanca"
-
-#: org/jmol/i18n/GT.java:146
-msgid "Greek"
-msgstr "Yunanca"
-
-#: org/jmol/i18n/GT.java:147
-msgid "Australian English"
-msgstr ""
-
-#: org/jmol/i18n/GT.java:148
-msgid "British English"
-msgstr "İngiliz İngilizcesi"
-
-#: org/jmol/i18n/GT.java:149
-msgid "American English"
-msgstr "Amerikan İngilizcesi"
-
-#: org/jmol/i18n/GT.java:150
-msgid "Spanish"
-msgstr "İspanyolca"
-
-#: org/jmol/i18n/GT.java:151
-msgid "Estonian"
-msgstr "Estonyaca"
-
-#: org/jmol/i18n/GT.java:152
-msgid "Finnish"
-msgstr "Fince"
-
-#: org/jmol/i18n/GT.java:153
-msgid "Faroese"
-msgstr "Faroese"
-
-#: org/jmol/i18n/GT.java:154
-msgid "French"
-msgstr "Fransızca"
-
-#: org/jmol/i18n/GT.java:155
-msgid "Croatian"
-msgstr "Hırvatça"
-
-#: org/jmol/i18n/GT.java:156
-msgid "Hungarian"
-msgstr "Macarca"
-
-#: org/jmol/i18n/GT.java:157
-msgid "Armenian"
-msgstr ""
-
-#: org/jmol/i18n/GT.java:158
-msgid "Indonesian"
-msgstr "Endonezce"
-
-#: org/jmol/i18n/GT.java:159
-msgid "Italian"
-msgstr "İtalyanca"
-
-#: org/jmol/i18n/GT.java:160
-msgid "Japanese"
-msgstr "Japonca"
-
-#: org/jmol/i18n/GT.java:161
-msgid "Javanese"
-msgstr "Cavaca"
-
-#: org/jmol/i18n/GT.java:162
-msgid "Korean"
-msgstr "Korece"
-
-#: org/jmol/i18n/GT.java:163
-#, fuzzy
-msgid "Malay"
-msgstr "Oynat"
-
-#: org/jmol/i18n/GT.java:164
-msgid "Norwegian Bokmal"
-msgstr "Norveç Bokmal"
-
-#: org/jmol/i18n/GT.java:165
-msgid "Dutch"
-msgstr "Flemenkçe"
-
-#: org/jmol/i18n/GT.java:166
-msgid "Occitan"
-msgstr "Occitan"
-
-#: org/jmol/i18n/GT.java:167
-msgid "Polish"
-msgstr "Lehçe"
-
-#: org/jmol/i18n/GT.java:168
-msgid "Portuguese"
-msgstr "Portekizce"
-
-#: org/jmol/i18n/GT.java:169
-msgid "Brazilian Portuguese"
-msgstr "Brezilya Portekizcesi"
-
-#: org/jmol/i18n/GT.java:170
-msgid "Russian"
-msgstr "Rusça"
-
-#: org/jmol/i18n/GT.java:171
-msgid "Slovenian"
-msgstr "Slovence"
-
-#: org/jmol/i18n/GT.java:172
-msgid "Serbian"
-msgstr ""
-
-#: org/jmol/i18n/GT.java:173
-msgid "Swedish"
-msgstr "İsveçce"
-
-#: org/jmol/i18n/GT.java:174
-msgid "Tamil"
-msgstr "Tamil"
-
-#: org/jmol/i18n/GT.java:175
-msgid "Telugu"
-msgstr ""
-
-#: org/jmol/i18n/GT.java:176
-msgid "Turkish"
-msgstr "Türkçe"
-
-#: org/jmol/i18n/GT.java:177
-msgid "Uyghur"
-msgstr ""
-
-#: org/jmol/i18n/GT.java:178
-msgid "Ukrainian"
-msgstr "Ukraynaca"
-
-#: org/jmol/i18n/GT.java:179
-msgid "Simplified Chinese"
-msgstr "Basitleştirilmiş Çince"
-
-#: org/jmol/i18n/GT.java:180
-msgid "Traditional Chinese"
-msgstr "Geleneksel Çince"
-
-#: org/jmol/minimize/Minimizer.java:206
-#, java-format
-msgid "Could not get class for force field {0}"
-msgstr "Güç alanı sınıfı alınamadı {0}"
-
-#: org/jmol/minimize/Minimizer.java:210
-msgid "No atoms selected -- nothing to do!"
-msgstr "Herhangi bir atom seçili değil -- yapacak bir şey yok!"
-
-#: org/jmol/minimize/Minimizer.java:286
-#, java-format
-msgid "{0} atoms will be minimized."
-msgstr "{0} atomlar küçültülecek."
-
-#: org/jmol/minimize/Minimizer.java:374
-#, java-format
-msgid "could not setup force field {0}"
-msgstr "Güç alanını ayarlanamadı {0}"
-
-#: org/jmol/modelsetbio/AminoPolymer.java:576
-#, java-format
-msgid ""
-"NOTE: Backbone amide hydrogen positions are present and will be ignored. "
-"Their positions will be approximated, as in standard DSSP analysis.\n"
-"Use {0} to not use this approximation.\n"
-"\n"
-msgstr ""
-
-#: org/jmol/modelsetbio/AminoPolymer.java:582
-#, java-format
-msgid ""
-"NOTE: Backbone amide hydrogen positions are present and will be used. "
-"Results may differ significantly from standard DSSP analysis.\n"
-"Use {0} to ignore these hydrogen positions.\n"
-"\n"
-msgstr ""
-
 #: org/jmol/script/ScriptCompilationTokenParser.java:1324
 #: org/jmol/script/ScriptEvaluator.java:2785
 msgid "bad argument count"
@@ -1890,7 +1890,7 @@ msgstr "tanınmayan {0} parametre"
 msgid "unrecognized token: {0}"
 msgstr "tanınmayan belirtke: {0}"
 
-#: org/jmol/script/ScriptCompiler.java:2583
+#: org/jmol/script/ScriptCompiler.java:2618
 msgid "script compiler ERROR: "
 msgstr "betik derteyici HATASI: "
 
@@ -2136,24 +2136,24 @@ msgstr "{0} yeni bağ; {1} düzenlenmiş"
 msgid "file {0} created"
 msgstr "{0} dosyası oluşturuldu"
 
-#: org/jmol/script/ScriptEvaluator.java:10356
-#: org/jmol/script/ScriptEvaluator.java:10622
+#: org/jmol/script/ScriptEvaluator.java:10369
+#: org/jmol/script/ScriptEvaluator.java:10635
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "{0} atom silindi"
 
-#: org/jmol/script/ScriptEvaluator.java:11259
-#: org/jmol/script/ScriptEvaluator.java:11671
+#: org/jmol/script/ScriptEvaluator.java:11272
+#: org/jmol/script/ScriptEvaluator.java:11684
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} hidrojen bağ(lar)ı"
 
-#: org/jmol/script/ScriptEvaluator.java:11625
+#: org/jmol/script/ScriptEvaluator.java:11638
 #, java-format
 msgid "{0} struts added"
 msgstr ""
 
-#: org/jmol/script/ScriptEvaluator.java:15572
+#: org/jmol/script/ScriptEvaluator.java:15585
 msgid "Note: More than one model is involved in this contact!"
 msgstr ""
 
@@ -2411,24 +2411,24 @@ msgstr "{0} atomlar gizli"
 msgid "{0} atoms selected"
 msgstr "{0} atom(lar) seçildi"
 
-#: org/jmol/viewer/Viewer.java:4680
+#: org/jmol/viewer/Viewer.java:4684
 #, java-format
 msgid "{0} hydrogens added"
 msgstr "{0} hidrojen eklendi"
 
-#: org/jmol/viewer/Viewer.java:4761
+#: org/jmol/viewer/Viewer.java:4765
 msgid "Drag to move label"
 msgstr "Etiketi taşımak için sürükleyin"
 
-#: org/jmol/viewer/Viewer.java:8396
+#: org/jmol/viewer/Viewer.java:8400
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "panoya erişilemiyor -- işaretli uygulamacığı kullanın"
 
-#: org/jmol/viewer/Viewer.java:9170
+#: org/jmol/viewer/Viewer.java:9174
 msgid "Cannot set log file path."
 msgstr "Günlük dosyası yolu ayarlanamıyor."
 
-#: org/jmol/viewer/Viewer.java:9173
+#: org/jmol/viewer/Viewer.java:9177
 #, java-format
 msgid "Setting log file to {0}"
 msgstr "Günlük dosyası {0} olarak ayarlanıyor"

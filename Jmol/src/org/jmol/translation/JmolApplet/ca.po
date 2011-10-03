@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-09-27 20:09+0200\n"
+"POT-Creation-Date: 2011-10-03 19:01+0200\n"
 "PO-Revision-Date: 2011-08-05 14:03+0000\n"
 "Last-Translator: VPablo <villumar@gmail.com>\n"
 "Language-Team: Catalan <Jmol-developers@lists.sourceforge.net>\n"
@@ -19,77 +19,6 @@ msgstr ""
 "X-Poedit-Country: ANDORRA\n"
 "X-Poedit-Language: Catalan\n"
 
-#: org/jmol/console/AppletConsole.java:199
-msgid "&Help"
-msgstr "A&juda"
-
-#: org/jmol/console/AppletConsole.java:200
-msgid "&Search..."
-msgstr "Ce&rca…"
-
-#: org/jmol/console/AppletConsole.java:201
-msgid "&Commands"
-msgstr "&Ordres"
-
-#: org/jmol/console/AppletConsole.java:202
-msgid "Math &Functions"
-msgstr "&Funcions matemàtiques"
-
-#: org/jmol/console/AppletConsole.java:203
-msgid "Set &Parameters"
-msgstr "Defineix els &paràmetres"
-
-#: org/jmol/console/AppletConsole.java:204
-msgid "&More"
-msgstr "&Més"
-
-#: org/jmol/console/AppletConsole.java:205
-msgid "Editor"
-msgstr "Editor"
-
-#: org/jmol/console/AppletConsole.java:206
-msgid "State"
-msgstr "Estat"
-
-#: org/jmol/console/AppletConsole.java:207
-#: org/jmol/console/ScriptEditor.java:137
-msgid "Run"
-msgstr "Executa"
-
-#: org/jmol/console/AppletConsole.java:208
-msgid "Clear Output"
-msgstr "Neteja la sortida"
-
-#: org/jmol/console/AppletConsole.java:209
-msgid "Clear Input"
-msgstr "Neteja l'entrada"
-
-#: org/jmol/console/AppletConsole.java:210
-#: org/jmol/popup/MainPopupResourceBundle.java:853
-msgid "History"
-msgstr "Historial"
-
-#: org/jmol/console/AppletConsole.java:211
-msgid "Load"
-msgstr "Carrega"
-
-#: org/jmol/console/AppletConsole.java:213
-msgid "press CTRL-ENTER for new line or paste model data and press Load"
-msgstr ""
-"premeu Ctrl+Retorn per a una nova línia o enganxeu les dades del model i "
-"premeu Carrega"
-
-#: org/jmol/console/AppletConsole.java:215
-msgid ""
-"Messages will appear here. Enter commands in the box below. Click the "
-"console Help menu item for on-line help, which will appear in a new browser "
-"window."
-msgstr ""
-"Els missatges apareixeran ací. Introduïu les ordres en el quadre a "
-"continuació. Feu clic a l'element Ajuda del menú de la consola per a "
-"consultar l'ajuda en línia, que es mostrarà en una nova finestra del "
-"navegador."
-
 #: org/jmol/applet/AppletWrapper.java:100
 msgid "Loading Jmol applet ..."
 msgstr "S'està carregant la miniaplicació del Jmol…"
@@ -99,7 +28,7 @@ msgstr "S'està carregant la miniaplicació del Jmol…"
 msgid "  {0} seconds"
 msgstr "  {0} segons"
 
-#: org/jmol/applet/Jmol.java:703
+#: org/jmol/applet/Jmol.java:707
 #, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -114,9 +43,80 @@ msgstr ""
 "\n"
 "Consulteu http://www.jmol.org per a més informació"
 
-#: org/jmol/applet/Jmol.java:965
+#: org/jmol/applet/Jmol.java:969
 msgid "File Error:"
 msgstr "Error de fitxer:"
+
+#: org/jmol/console/AppletConsole.java:196
+msgid "&Help"
+msgstr "A&juda"
+
+#: org/jmol/console/AppletConsole.java:197
+msgid "&Search..."
+msgstr "Ce&rca…"
+
+#: org/jmol/console/AppletConsole.java:198
+msgid "&Commands"
+msgstr "&Ordres"
+
+#: org/jmol/console/AppletConsole.java:199
+msgid "Math &Functions"
+msgstr "&Funcions matemàtiques"
+
+#: org/jmol/console/AppletConsole.java:200
+msgid "Set &Parameters"
+msgstr "Defineix els &paràmetres"
+
+#: org/jmol/console/AppletConsole.java:201
+msgid "&More"
+msgstr "&Més"
+
+#: org/jmol/console/AppletConsole.java:202
+msgid "Editor"
+msgstr "Editor"
+
+#: org/jmol/console/AppletConsole.java:203
+msgid "State"
+msgstr "Estat"
+
+#: org/jmol/console/AppletConsole.java:204
+#: org/jmol/console/ScriptEditor.java:137
+msgid "Run"
+msgstr "Executa"
+
+#: org/jmol/console/AppletConsole.java:205
+msgid "Clear Output"
+msgstr "Neteja la sortida"
+
+#: org/jmol/console/AppletConsole.java:206
+msgid "Clear Input"
+msgstr "Neteja l'entrada"
+
+#: org/jmol/console/AppletConsole.java:207
+#: org/jmol/popup/MainPopupResourceBundle.java:853
+msgid "History"
+msgstr "Historial"
+
+#: org/jmol/console/AppletConsole.java:208
+msgid "Load"
+msgstr "Carrega"
+
+#: org/jmol/console/AppletConsole.java:210
+msgid "press CTRL-ENTER for new line or paste model data and press Load"
+msgstr ""
+"premeu Ctrl+Retorn per a una nova línia o enganxeu les dades del model i "
+"premeu Carrega"
+
+#: org/jmol/console/AppletConsole.java:212
+msgid ""
+"Messages will appear here. Enter commands in the box below. Click the "
+"console Help menu item for on-line help, which will appear in a new browser "
+"window."
+msgstr ""
+"Els missatges apareixeran ací. Introduïu les ordres en el quadre a "
+"continuació. Feu clic a l'element Ajuda del menú de la consola per a "
+"consultar l'ajuda en línia, que es mostrarà en una nova finestra del "
+"navegador."
 
 #: org/jmol/console/JmolConsole.java:86
 msgid "Jmol Script Console"
@@ -175,6 +175,374 @@ msgstr "Neteja"
 #: org/jmol/console/ScriptEditor.java:145
 msgid "Close"
 msgstr "Tanca"
+
+#: org/jmol/export/dialog/Dialog.java:95
+msgid "File or URL:"
+msgstr "Fitxer o URL:"
+
+#: org/jmol/export/dialog/Dialog.java:269
+msgid "Image Type"
+msgstr "Tipus d'imatge"
+
+#: org/jmol/export/dialog/Dialog.java:284
+#: org/jmol/export/dialog/Dialog.java:325
+#, java-format
+msgid "JPEG Quality ({0})"
+msgstr "Qualitat del JPEG ({0})"
+
+#: org/jmol/export/dialog/Dialog.java:298
+#, java-format
+msgid "PNG Compression  ({0})"
+msgstr "Compressió PNG ({0})"
+
+#: org/jmol/export/dialog/Dialog.java:328
+#, java-format
+msgid "PNG Quality ({0})"
+msgstr "Qualitat del PNG ({0})"
+
+#: org/jmol/export/dialog/Dialog.java:374
+#: org/jmol/export/dialog/Dialog.java:486
+msgid "Yes"
+msgstr "Sí"
+
+#: org/jmol/export/dialog/Dialog.java:374
+#: org/jmol/export/dialog/Dialog.java:484
+msgid "No"
+msgstr "No"
+
+#: org/jmol/export/dialog/Dialog.java:376
+#, java-format
+msgid "Do you want to overwrite file {0}?"
+msgstr "Voleu sobreescriure el fitxer {0}?"
+
+#: org/jmol/export/dialog/Dialog.java:377
+msgid "Warning"
+msgstr "Avís"
+
+#: org/jmol/export/dialog/Dialog.java:435
+msgid "All Files"
+msgstr "Tots els fitxers"
+
+#: org/jmol/export/dialog/Dialog.java:436
+#: org/jmol/export/dialog/Dialog.java:483
+msgid "Cancel"
+msgstr "Cancel·la"
+
+#: org/jmol/export/dialog/Dialog.java:438
+msgid "Abort file chooser dialog"
+msgstr "Avorta el diàleg de selecció de fitxers"
+
+#: org/jmol/export/dialog/Dialog.java:440
+#: org/jmol/export/dialog/Dialog.java:441
+msgid "Details"
+msgstr "Detalls"
+
+#: org/jmol/export/dialog/Dialog.java:442
+msgid "Directory"
+msgstr "Directori"
+
+#: org/jmol/export/dialog/Dialog.java:445
+msgid "Open selected directory"
+msgstr "Obre el directori seleccionat"
+
+#: org/jmol/export/dialog/Dialog.java:446
+msgid "Attributes"
+msgstr "Atributs"
+
+#: org/jmol/export/dialog/Dialog.java:447
+msgid "Modified"
+msgstr "Modificat"
+
+#: org/jmol/export/dialog/Dialog.java:448
+msgid "Generic File"
+msgstr "Fitxer genèric"
+
+#: org/jmol/export/dialog/Dialog.java:449
+msgid "Name"
+msgstr "Nom"
+
+#: org/jmol/export/dialog/Dialog.java:450
+msgid "File Name:"
+msgstr "Nom del fitxer:"
+
+#: org/jmol/export/dialog/Dialog.java:451
+msgid "Size"
+msgstr "Mida"
+
+#: org/jmol/export/dialog/Dialog.java:452
+msgid "Files of Type:"
+msgstr "Fitxers del tipus:"
+
+#: org/jmol/export/dialog/Dialog.java:453
+msgid "Type"
+msgstr "Tipus"
+
+#: org/jmol/export/dialog/Dialog.java:454
+msgid "Help"
+msgstr "Ajuda"
+
+#: org/jmol/export/dialog/Dialog.java:456
+msgid "FileChooser help"
+msgstr "Ajuda del selector de fitxers"
+
+#: org/jmol/export/dialog/Dialog.java:457
+#: org/jmol/export/dialog/Dialog.java:458
+msgid "Home"
+msgstr "Inici"
+
+#: org/jmol/export/dialog/Dialog.java:459
+#: org/jmol/export/dialog/Dialog.java:460
+msgid "List"
+msgstr "Llista"
+
+#: org/jmol/export/dialog/Dialog.java:461
+msgid "Look In:"
+msgstr "Cerca a:"
+
+#: org/jmol/export/dialog/Dialog.java:463
+msgid "Error creating new folder"
+msgstr "S'ha produït un error en crear la carpeta nova"
+
+#: org/jmol/export/dialog/Dialog.java:464
+msgid "New Folder"
+msgstr "Carpeta nova"
+
+#: org/jmol/export/dialog/Dialog.java:466
+msgid "Create New Folder"
+msgstr "Crea una carpeta nova"
+
+#: org/jmol/export/dialog/Dialog.java:469
+msgid "Open selected file"
+msgstr "Obre el fitxer seleccionat"
+
+#: org/jmol/export/dialog/Dialog.java:471
+#: org/jmol/export/dialog/Dialog.java:474
+msgid "Save"
+msgstr "Desa"
+
+#: org/jmol/export/dialog/Dialog.java:473
+msgid "Save selected file"
+msgstr "Desa el fitxer seleccionat"
+
+#: org/jmol/export/dialog/Dialog.java:475
+msgid "Save In:"
+msgstr "Desa a:"
+
+#: org/jmol/export/dialog/Dialog.java:476
+msgid "Update"
+msgstr "Actualitza"
+
+#: org/jmol/export/dialog/Dialog.java:478
+msgid "Update directory listing"
+msgstr "Actualitza la llista de directoris"
+
+#: org/jmol/export/dialog/Dialog.java:479
+msgid "Up"
+msgstr "Amunt"
+
+#: org/jmol/export/dialog/Dialog.java:480
+msgid "Up One Level"
+msgstr "Un nivell amunt"
+
+#: org/jmol/export/dialog/Dialog.java:485
+msgid "OK"
+msgstr "D'acord"
+
+#: org/jmol/export/dialog/FilePreview.java:71
+msgid "Preview"
+msgstr "Previsualització"
+
+#: org/jmol/export/dialog/FilePreview.java:91
+msgid "Append models"
+msgstr "Afegeix els models"
+
+#: org/jmol/i18n/GT.java:139
+msgid "Arabic"
+msgstr "Àrab"
+
+#: org/jmol/i18n/GT.java:140
+msgid "Asturian"
+msgstr "Asturià"
+
+#: org/jmol/i18n/GT.java:141
+msgid "Bosnian"
+msgstr "Bosnià"
+
+#: org/jmol/i18n/GT.java:142
+msgid "Catalan"
+msgstr "Català"
+
+#: org/jmol/i18n/GT.java:143
+msgid "Czech"
+msgstr "Txec"
+
+#: org/jmol/i18n/GT.java:144
+msgid "Danish"
+msgstr "Danès"
+
+#: org/jmol/i18n/GT.java:145
+msgid "German"
+msgstr "Alemany"
+
+#: org/jmol/i18n/GT.java:146
+msgid "Greek"
+msgstr "Grec"
+
+#: org/jmol/i18n/GT.java:147
+msgid "Australian English"
+msgstr "Anglès d'Austràlia"
+
+#: org/jmol/i18n/GT.java:148
+msgid "British English"
+msgstr "Anglès britànic"
+
+#: org/jmol/i18n/GT.java:149
+msgid "American English"
+msgstr "Anglès americà"
+
+#: org/jmol/i18n/GT.java:150
+msgid "Spanish"
+msgstr "Espanyol"
+
+#: org/jmol/i18n/GT.java:151
+msgid "Estonian"
+msgstr "Estonià"
+
+#: org/jmol/i18n/GT.java:152
+msgid "Finnish"
+msgstr "finès"
+
+#: org/jmol/i18n/GT.java:153
+msgid "Faroese"
+msgstr "Feroès"
+
+#: org/jmol/i18n/GT.java:154
+msgid "French"
+msgstr "Francès"
+
+#: org/jmol/i18n/GT.java:155
+msgid "Croatian"
+msgstr "croat"
+
+#: org/jmol/i18n/GT.java:156
+msgid "Hungarian"
+msgstr "Hongarès"
+
+#: org/jmol/i18n/GT.java:157
+msgid "Armenian"
+msgstr "Armeni"
+
+#: org/jmol/i18n/GT.java:158
+msgid "Indonesian"
+msgstr "Indonesi"
+
+#: org/jmol/i18n/GT.java:159
+msgid "Italian"
+msgstr "Italià"
+
+#: org/jmol/i18n/GT.java:160
+msgid "Japanese"
+msgstr "Japonès"
+
+#: org/jmol/i18n/GT.java:161
+msgid "Javanese"
+msgstr "Javanès"
+
+#: org/jmol/i18n/GT.java:162
+msgid "Korean"
+msgstr "Coreà"
+
+#: org/jmol/i18n/GT.java:163
+#, fuzzy
+msgid "Malay"
+msgstr "Reprodueix"
+
+#: org/jmol/i18n/GT.java:164
+msgid "Norwegian Bokmal"
+msgstr "Noruec Bökmal"
+
+#: org/jmol/i18n/GT.java:165
+msgid "Dutch"
+msgstr "Holandès"
+
+#: org/jmol/i18n/GT.java:166
+msgid "Occitan"
+msgstr "Occità"
+
+#: org/jmol/i18n/GT.java:167
+msgid "Polish"
+msgstr "Polonès"
+
+#: org/jmol/i18n/GT.java:168
+msgid "Portuguese"
+msgstr "Portuguès"
+
+#: org/jmol/i18n/GT.java:169
+msgid "Brazilian Portuguese"
+msgstr "Portuguès del Brasil"
+
+#: org/jmol/i18n/GT.java:170
+msgid "Russian"
+msgstr "Rus"
+
+#: org/jmol/i18n/GT.java:171
+msgid "Slovenian"
+msgstr "Eslovè"
+
+#: org/jmol/i18n/GT.java:172
+msgid "Serbian"
+msgstr "serbi"
+
+#: org/jmol/i18n/GT.java:173
+msgid "Swedish"
+msgstr "Suec"
+
+#: org/jmol/i18n/GT.java:174
+msgid "Tamil"
+msgstr "Tàmil"
+
+#: org/jmol/i18n/GT.java:175
+msgid "Telugu"
+msgstr "Telugu"
+
+#: org/jmol/i18n/GT.java:176
+msgid "Turkish"
+msgstr "Turc"
+
+#: org/jmol/i18n/GT.java:177
+msgid "Uyghur"
+msgstr "Uigur"
+
+#: org/jmol/i18n/GT.java:178
+msgid "Ukrainian"
+msgstr "Ucraïnès"
+
+#: org/jmol/i18n/GT.java:179
+msgid "Simplified Chinese"
+msgstr "Xinès simplificat"
+
+#: org/jmol/i18n/GT.java:180
+msgid "Traditional Chinese"
+msgstr "Xinès tradicional"
+
+#: org/jmol/minimize/Minimizer.java:206
+#, java-format
+msgid "Could not get class for force field {0}"
+msgstr "No es pot aconseguir la classe del camp de força {0}"
+
+#: org/jmol/minimize/Minimizer.java:210
+msgid "No atoms selected -- nothing to do!"
+msgstr "No s'ha seleccionat cap àtom -- no hi ha res per fer!"
+
+#: org/jmol/minimize/Minimizer.java:286
+#, java-format
+msgid "{0} atoms will be minimized."
+msgstr "Es minimitzaran {0} àtoms."
+
+#: org/jmol/minimize/Minimizer.java:374
+#, java-format
+msgid "could not setup force field {0}"
+msgstr "no ha pogut configurar-se el camp de força {0}"
 
 #: org/jmol/modelkit/ModelKitPopup.java:75
 msgid "Element?"
@@ -288,6 +656,29 @@ msgstr "rotar l'enllaç (May. + arrossega)"
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:112
 msgid "exit modelkit mode"
 msgstr "eixir del modelat"
+
+#: org/jmol/modelsetbio/AminoPolymer.java:576
+#, java-format
+msgid ""
+"NOTE: Backbone amide hydrogen positions are present and will be ignored. "
+"Their positions will be approximated, as in standard DSSP analysis.\n"
+"Use {0} to not use this approximation.\n"
+"\n"
+msgstr ""
+"Nota: Existeixen posicions pels hidrògens amida de l'esquelet però seran "
+"ignorats. Les seues posicions s'aproximaran, tal i com es fa en n anàlisi "
+"DSSP típic.\n"
+"Utilitza {0} si no vols usar este mètode.\n"
+"\n"
+
+#: org/jmol/modelsetbio/AminoPolymer.java:582
+#, java-format
+msgid ""
+"NOTE: Backbone amide hydrogen positions are present and will be used. "
+"Results may differ significantly from standard DSSP analysis.\n"
+"Use {0} to ignore these hydrogen positions.\n"
+"\n"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:141
 #: org/jmol/popup/MainPopupResourceBundle.java:537
@@ -1413,397 +1804,6 @@ msgstr "Colors del RasMol"
 msgid "About..."
 msgstr "Quant a..."
 
-#: org/jmol/export/dialog/Dialog.java:95
-msgid "File or URL:"
-msgstr "Fitxer o URL:"
-
-#: org/jmol/export/dialog/Dialog.java:269
-msgid "Image Type"
-msgstr "Tipus d'imatge"
-
-#: org/jmol/export/dialog/Dialog.java:284
-#: org/jmol/export/dialog/Dialog.java:325
-#, java-format
-msgid "JPEG Quality ({0})"
-msgstr "Qualitat del JPEG ({0})"
-
-#: org/jmol/export/dialog/Dialog.java:298
-#, java-format
-msgid "PNG Compression  ({0})"
-msgstr "Compressió PNG ({0})"
-
-#: org/jmol/export/dialog/Dialog.java:328
-#, java-format
-msgid "PNG Quality ({0})"
-msgstr "Qualitat del PNG ({0})"
-
-#: org/jmol/export/dialog/Dialog.java:374
-#: org/jmol/export/dialog/Dialog.java:486
-msgid "Yes"
-msgstr "Sí"
-
-#: org/jmol/export/dialog/Dialog.java:374
-#: org/jmol/export/dialog/Dialog.java:484
-msgid "No"
-msgstr "No"
-
-#: org/jmol/export/dialog/Dialog.java:376
-#, java-format
-msgid "Do you want to overwrite file {0}?"
-msgstr "Voleu sobreescriure el fitxer {0}?"
-
-#: org/jmol/export/dialog/Dialog.java:377
-msgid "Warning"
-msgstr "Avís"
-
-#: org/jmol/export/dialog/Dialog.java:435
-msgid "All Files"
-msgstr "Tots els fitxers"
-
-#: org/jmol/export/dialog/Dialog.java:436
-#: org/jmol/export/dialog/Dialog.java:483
-msgid "Cancel"
-msgstr "Cancel·la"
-
-#: org/jmol/export/dialog/Dialog.java:438
-msgid "Abort file chooser dialog"
-msgstr "Avorta el diàleg de selecció de fitxers"
-
-#: org/jmol/export/dialog/Dialog.java:440
-#: org/jmol/export/dialog/Dialog.java:441
-msgid "Details"
-msgstr "Detalls"
-
-#: org/jmol/export/dialog/Dialog.java:442
-msgid "Directory"
-msgstr "Directori"
-
-#: org/jmol/export/dialog/Dialog.java:445
-msgid "Open selected directory"
-msgstr "Obre el directori seleccionat"
-
-#: org/jmol/export/dialog/Dialog.java:446
-msgid "Attributes"
-msgstr "Atributs"
-
-#: org/jmol/export/dialog/Dialog.java:447
-msgid "Modified"
-msgstr "Modificat"
-
-#: org/jmol/export/dialog/Dialog.java:448
-msgid "Generic File"
-msgstr "Fitxer genèric"
-
-#: org/jmol/export/dialog/Dialog.java:449
-msgid "Name"
-msgstr "Nom"
-
-#: org/jmol/export/dialog/Dialog.java:450
-msgid "File Name:"
-msgstr "Nom del fitxer:"
-
-#: org/jmol/export/dialog/Dialog.java:451
-msgid "Size"
-msgstr "Mida"
-
-#: org/jmol/export/dialog/Dialog.java:452
-msgid "Files of Type:"
-msgstr "Fitxers del tipus:"
-
-#: org/jmol/export/dialog/Dialog.java:453
-msgid "Type"
-msgstr "Tipus"
-
-#: org/jmol/export/dialog/Dialog.java:454
-msgid "Help"
-msgstr "Ajuda"
-
-#: org/jmol/export/dialog/Dialog.java:456
-msgid "FileChooser help"
-msgstr "Ajuda del selector de fitxers"
-
-#: org/jmol/export/dialog/Dialog.java:457
-#: org/jmol/export/dialog/Dialog.java:458
-msgid "Home"
-msgstr "Inici"
-
-#: org/jmol/export/dialog/Dialog.java:459
-#: org/jmol/export/dialog/Dialog.java:460
-msgid "List"
-msgstr "Llista"
-
-#: org/jmol/export/dialog/Dialog.java:461
-msgid "Look In:"
-msgstr "Cerca a:"
-
-#: org/jmol/export/dialog/Dialog.java:463
-msgid "Error creating new folder"
-msgstr "S'ha produït un error en crear la carpeta nova"
-
-#: org/jmol/export/dialog/Dialog.java:464
-msgid "New Folder"
-msgstr "Carpeta nova"
-
-#: org/jmol/export/dialog/Dialog.java:466
-msgid "Create New Folder"
-msgstr "Crea una carpeta nova"
-
-#: org/jmol/export/dialog/Dialog.java:469
-msgid "Open selected file"
-msgstr "Obre el fitxer seleccionat"
-
-#: org/jmol/export/dialog/Dialog.java:471
-#: org/jmol/export/dialog/Dialog.java:474
-msgid "Save"
-msgstr "Desa"
-
-#: org/jmol/export/dialog/Dialog.java:473
-msgid "Save selected file"
-msgstr "Desa el fitxer seleccionat"
-
-#: org/jmol/export/dialog/Dialog.java:475
-msgid "Save In:"
-msgstr "Desa a:"
-
-#: org/jmol/export/dialog/Dialog.java:476
-msgid "Update"
-msgstr "Actualitza"
-
-#: org/jmol/export/dialog/Dialog.java:478
-msgid "Update directory listing"
-msgstr "Actualitza la llista de directoris"
-
-#: org/jmol/export/dialog/Dialog.java:479
-msgid "Up"
-msgstr "Amunt"
-
-#: org/jmol/export/dialog/Dialog.java:480
-msgid "Up One Level"
-msgstr "Un nivell amunt"
-
-#: org/jmol/export/dialog/Dialog.java:485
-msgid "OK"
-msgstr "D'acord"
-
-#: org/jmol/export/dialog/FilePreview.java:71
-msgid "Preview"
-msgstr "Previsualització"
-
-#: org/jmol/export/dialog/FilePreview.java:91
-msgid "Append models"
-msgstr "Afegeix els models"
-
-#: org/jmol/i18n/GT.java:139
-msgid "Arabic"
-msgstr "Àrab"
-
-#: org/jmol/i18n/GT.java:140
-msgid "Asturian"
-msgstr "Asturià"
-
-#: org/jmol/i18n/GT.java:141
-msgid "Bosnian"
-msgstr "Bosnià"
-
-#: org/jmol/i18n/GT.java:142
-msgid "Catalan"
-msgstr "Català"
-
-#: org/jmol/i18n/GT.java:143
-msgid "Czech"
-msgstr "Txec"
-
-#: org/jmol/i18n/GT.java:144
-msgid "Danish"
-msgstr "Danès"
-
-#: org/jmol/i18n/GT.java:145
-msgid "German"
-msgstr "Alemany"
-
-#: org/jmol/i18n/GT.java:146
-msgid "Greek"
-msgstr "Grec"
-
-#: org/jmol/i18n/GT.java:147
-msgid "Australian English"
-msgstr "Anglès d'Austràlia"
-
-#: org/jmol/i18n/GT.java:148
-msgid "British English"
-msgstr "Anglès britànic"
-
-#: org/jmol/i18n/GT.java:149
-msgid "American English"
-msgstr "Anglès americà"
-
-#: org/jmol/i18n/GT.java:150
-msgid "Spanish"
-msgstr "Espanyol"
-
-#: org/jmol/i18n/GT.java:151
-msgid "Estonian"
-msgstr "Estonià"
-
-#: org/jmol/i18n/GT.java:152
-msgid "Finnish"
-msgstr "finès"
-
-#: org/jmol/i18n/GT.java:153
-msgid "Faroese"
-msgstr "Feroès"
-
-#: org/jmol/i18n/GT.java:154
-msgid "French"
-msgstr "Francès"
-
-#: org/jmol/i18n/GT.java:155
-msgid "Croatian"
-msgstr "croat"
-
-#: org/jmol/i18n/GT.java:156
-msgid "Hungarian"
-msgstr "Hongarès"
-
-#: org/jmol/i18n/GT.java:157
-msgid "Armenian"
-msgstr "Armeni"
-
-#: org/jmol/i18n/GT.java:158
-msgid "Indonesian"
-msgstr "Indonesi"
-
-#: org/jmol/i18n/GT.java:159
-msgid "Italian"
-msgstr "Italià"
-
-#: org/jmol/i18n/GT.java:160
-msgid "Japanese"
-msgstr "Japonès"
-
-#: org/jmol/i18n/GT.java:161
-msgid "Javanese"
-msgstr "Javanès"
-
-#: org/jmol/i18n/GT.java:162
-msgid "Korean"
-msgstr "Coreà"
-
-#: org/jmol/i18n/GT.java:163
-#, fuzzy
-msgid "Malay"
-msgstr "Reprodueix"
-
-#: org/jmol/i18n/GT.java:164
-msgid "Norwegian Bokmal"
-msgstr "Noruec Bökmal"
-
-#: org/jmol/i18n/GT.java:165
-msgid "Dutch"
-msgstr "Holandès"
-
-#: org/jmol/i18n/GT.java:166
-msgid "Occitan"
-msgstr "Occità"
-
-#: org/jmol/i18n/GT.java:167
-msgid "Polish"
-msgstr "Polonès"
-
-#: org/jmol/i18n/GT.java:168
-msgid "Portuguese"
-msgstr "Portuguès"
-
-#: org/jmol/i18n/GT.java:169
-msgid "Brazilian Portuguese"
-msgstr "Portuguès del Brasil"
-
-#: org/jmol/i18n/GT.java:170
-msgid "Russian"
-msgstr "Rus"
-
-#: org/jmol/i18n/GT.java:171
-msgid "Slovenian"
-msgstr "Eslovè"
-
-#: org/jmol/i18n/GT.java:172
-msgid "Serbian"
-msgstr "serbi"
-
-#: org/jmol/i18n/GT.java:173
-msgid "Swedish"
-msgstr "Suec"
-
-#: org/jmol/i18n/GT.java:174
-msgid "Tamil"
-msgstr "Tàmil"
-
-#: org/jmol/i18n/GT.java:175
-msgid "Telugu"
-msgstr "Telugu"
-
-#: org/jmol/i18n/GT.java:176
-msgid "Turkish"
-msgstr "Turc"
-
-#: org/jmol/i18n/GT.java:177
-msgid "Uyghur"
-msgstr "Uigur"
-
-#: org/jmol/i18n/GT.java:178
-msgid "Ukrainian"
-msgstr "Ucraïnès"
-
-#: org/jmol/i18n/GT.java:179
-msgid "Simplified Chinese"
-msgstr "Xinès simplificat"
-
-#: org/jmol/i18n/GT.java:180
-msgid "Traditional Chinese"
-msgstr "Xinès tradicional"
-
-#: org/jmol/minimize/Minimizer.java:206
-#, java-format
-msgid "Could not get class for force field {0}"
-msgstr "No es pot aconseguir la classe del camp de força {0}"
-
-#: org/jmol/minimize/Minimizer.java:210
-msgid "No atoms selected -- nothing to do!"
-msgstr "No s'ha seleccionat cap àtom -- no hi ha res per fer!"
-
-#: org/jmol/minimize/Minimizer.java:286
-#, java-format
-msgid "{0} atoms will be minimized."
-msgstr "Es minimitzaran {0} àtoms."
-
-#: org/jmol/minimize/Minimizer.java:374
-#, java-format
-msgid "could not setup force field {0}"
-msgstr "no ha pogut configurar-se el camp de força {0}"
-
-#: org/jmol/modelsetbio/AminoPolymer.java:576
-#, java-format
-msgid ""
-"NOTE: Backbone amide hydrogen positions are present and will be ignored. "
-"Their positions will be approximated, as in standard DSSP analysis.\n"
-"Use {0} to not use this approximation.\n"
-"\n"
-msgstr ""
-"Nota: Existeixen posicions pels hidrògens amida de l'esquelet però seran "
-"ignorats. Les seues posicions s'aproximaran, tal i com es fa en n anàlisi "
-"DSSP típic.\n"
-"Utilitza {0} si no vols usar este mètode.\n"
-"\n"
-
-#: org/jmol/modelsetbio/AminoPolymer.java:582
-#, java-format
-msgid ""
-"NOTE: Backbone amide hydrogen positions are present and will be used. "
-"Results may differ significantly from standard DSSP analysis.\n"
-"Use {0} to ignore these hydrogen positions.\n"
-"\n"
-msgstr ""
-
 #: org/jmol/script/ScriptCompilationTokenParser.java:1324
 #: org/jmol/script/ScriptEvaluator.java:2785
 msgid "bad argument count"
@@ -1897,7 +1897,7 @@ msgstr "el paràmetre {0} no està reconegut"
 msgid "unrecognized token: {0}"
 msgstr "no es reconeix el testimoni: {0}"
 
-#: org/jmol/script/ScriptCompiler.java:2583
+#: org/jmol/script/ScriptCompiler.java:2618
 msgid "script compiler ERROR: "
 msgstr "Error del compilador script: "
 
@@ -2143,24 +2143,24 @@ msgstr "{0} enllaços nous; {1} modificats"
 msgid "file {0} created"
 msgstr ""
 
-#: org/jmol/script/ScriptEvaluator.java:10356
-#: org/jmol/script/ScriptEvaluator.java:10622
+#: org/jmol/script/ScriptEvaluator.java:10369
+#: org/jmol/script/ScriptEvaluator.java:10635
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "{0} àtoms suprimits"
 
-#: org/jmol/script/ScriptEvaluator.java:11259
-#: org/jmol/script/ScriptEvaluator.java:11671
+#: org/jmol/script/ScriptEvaluator.java:11272
+#: org/jmol/script/ScriptEvaluator.java:11684
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} enllaços d'hidrogen"
 
-#: org/jmol/script/ScriptEvaluator.java:11625
+#: org/jmol/script/ScriptEvaluator.java:11638
 #, java-format
 msgid "{0} struts added"
 msgstr ""
 
-#: org/jmol/script/ScriptEvaluator.java:15572
+#: org/jmol/script/ScriptEvaluator.java:15585
 msgid "Note: More than one model is involved in this contact!"
 msgstr "nota: en este contacte estan implicats uns quants models"
 
@@ -2426,25 +2426,25 @@ msgstr "{0} àtoms amagats"
 msgid "{0} atoms selected"
 msgstr "{0} àtoms seleccionats"
 
-#: org/jmol/viewer/Viewer.java:4680
+#: org/jmol/viewer/Viewer.java:4684
 #, java-format
 msgid "{0} hydrogens added"
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:4761
+#: org/jmol/viewer/Viewer.java:4765
 msgid "Drag to move label"
 msgstr "Arrossegueu per a moure l'etiqueta"
 
-#: org/jmol/viewer/Viewer.java:8396
+#: org/jmol/viewer/Viewer.java:8400
 msgid "clipboard is not accessible -- use signed applet"
 msgstr ""
 "el porta-retalls no és accessible -- utilitzeu una miniaplicació signada"
 
-#: org/jmol/viewer/Viewer.java:9170
+#: org/jmol/viewer/Viewer.java:9174
 msgid "Cannot set log file path."
 msgstr "No es pot establir la ruta de l'arxiu de registre."
 
-#: org/jmol/viewer/Viewer.java:9173
+#: org/jmol/viewer/Viewer.java:9177
 #, java-format
 msgid "Setting log file to {0}"
 msgstr ""

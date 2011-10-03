@@ -2,6 +2,7 @@
 .chimenote{color:darkgreen}
 .xref{color:red}
 .deprecated{color:#808080}
+.newv{color:blue;font-weight:bold}
 .new{color:darkgreen;font-size:11pt}
 .tbl{color:darkgreen;font-size:9pt}
 td,body{background-color:#eeeeee;font-size:11pt}

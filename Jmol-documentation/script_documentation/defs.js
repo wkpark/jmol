@@ -6,8 +6,8 @@ newDef('._viewing_distance','(integer),(decimal)','viewing-distance','the appare
 newDef('._anim_fps','(integer)','frames-per-second','the animation rate')
 
 
+
 newDef('._atom_expression','','atom-expression','any {#.atom expressions~expression} that evaluates to a set of atoms')
-newDef('._distance_unit','ANGSTROMS, AU, BOHR, NM, NANOMETERS,PM, or PICOMETERS','distance-unit','is')
 newDef('._atomno','(integer, >=1)','atom-number','the sequential number assigned to the atom')
 newDef('._axes_type','ON,OFF,DOTTED,._diameter_pixels,._axes_radius_angstroms','line-width-or-type','a line width or type for a drawing object')
 newDef('._axes_radius_angstroms','(decimal, <2.0)','radius-in-angstroms','a scaling factor')

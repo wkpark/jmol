@@ -5,19 +5,19 @@
 //BH 6:11 PM 2/21/2006 edited for script() command possibly returning a string
 //BH 2:47 PM 4/11/2006 added TEXT option
 //BH 6:51 AM 5/30/2007 refined ?command= and ?search= options
+//BH 6:41 AM 10/1/2011 version 12.2 default
 
 lastupdate = ""
 startmessage ="See an error? Something missing? Please <a href=\"mailto:hansonr@stolaf.edu?subject=Jmol applet documentation\">let us know</a>. For a wide variety of interactive examples, see <a href=examples-11/new.htm>new.htm</a>."
-defaultversion = "12.0"
-versionlist = ";12.2;12.0;11.8;11.6;11.4;11.2;11.0;10.2;" //semis on BOTH SIDES
+defaultversion = "12.2"
+versionlist = ";12.4;12.2;12.0;11.8;11.6;11.4;11.2;11.0;10.2;" //semis on BOTH SIDES
 removelist = versionlist.substring(0, versionlist.length-1).replace(/\;/g, ";*v-")
-
-versionlist = ";12.2;12.0;11.8;11.6;" //semis on BOTH SIDES
+versionlist = ";12.4;12.2;12.0;11.8;11.6;" //semis on BOTH SIDES
 
 exampledir = "examples/" //will be ignored if the example has a / in the name
 datadir = "examples/"
 jmoljs = "Jmol.js"
-jmolSite = "http://www.stolaf.edu/academics/chemapps/jmol"
+jmolSite = "http://chemapps.stolaf.edu/jmol"
 popupscript = "popupscript.js"
 //popup-example display did not work with the multi-file archive path
 
@@ -74,6 +74,9 @@ thesearch=""
 onlycommand=""
 docsearch=unescape(document.location.search)
 thisSubversion = "10.2" //could be 10.x
+rthisversion=""
+spanversion=""
+
 if(document.location.href.indexOf("#")<0){
  thesearch=(docsearch+"search=").split("search=")[1].split("&")[0]
  thesearch=(thesearch?unescape(thesearch):"")
@@ -140,7 +143,22 @@ themodel=(docsearch+"model=").split("model=")[1].split("&")[0]
 
 function setVersion(ver) {
  thisSubversion=(docsearch+"ver="+(ver ? ver : defaultversion)).split("ver=")[1].split("&")[0]
+ if (thisSubversion.indexOf(".") != thisSubversion.lastIndexOf(".")) {
+   // 12.
+   thisSubversion = thisSubversion.substring(0, thisSubversion.lastIndexOf("."))
+   var V = versionlist.split(";")
+   var newV = V[1]
+   for (var i = V.length - 1; --i >= 1;) {
+     if (parseFloat(thisSubversion) <= parseFloat(V[i])) {
+	newV = V[i]
+	break
+     }
+   } 
+   thisSubversion = newV 
+ }
  if (thisSubversion == "11.10")thisSubversion = "12.0"
+ rthisversion=new RegExp("Jmol " + thisSubversion,"gi")
+ spanversion="<span class=\"newv\">Jmol " + thisSubversion + "</span>"
  thisVersion = thisSubversion.substring(0,2);
  thisVrefNew = "*v+"+thisSubversion
  if(!dowritexml && !dowritedocbook) {
@@ -359,16 +377,15 @@ function newCmd(command,examples,xref,description,nparams,param1,param2,param3,p
  }else{
 	Cmd = Cmds[command]
  }
+
  if(nparams == "TEXT"){
 	var paramid = thisid + idof(param1);
 	Cmd.description+="<br /><br /><b><a name=\""+paramid+"\">"+param1+"</a></b>&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"#"
 		+(asdivs ? "top" : Cmd.idof) +"\">back</a>"
 		+"<br /><br /> "+descr
+        descr = Cmd.description
 	Cmd.textParams[Cmd.textParams.length] = "&nbsp;&nbsp;&nbsp;<a class=\"textParam\" href=\"#" + paramid + "\">" + param1 + "</a><br />"
-	return	
  }
- if(examples)addCmdExample(command,examples.replace(/\~/,""))
-
  var S=xref.split(";")
  for (var i=0;i<S.length;i++){
 	xref=S[i]
@@ -383,6 +400,14 @@ function newCmd(command,examples,xref,description,nparams,param1,param2,param3,p
 		if(Cmd.xrefs.indexOf(xref)<0)Cmd.xrefs+=","+xref
 	}
  }
+ if (!Cmd.isnew && (Cmd.description+description+descr).indexOf("Jmol " + thisSubversion) >= 0) {
+   Cmd.isnew = true
+   if (!Cmd.version)
+     Cmd.version = thisSubversion
+ }
+
+ if(nparams == "TEXT")return
+ if(examples)addCmdExample(command,examples.replace(/\~/,""))
 
  var n=Cmd.list.length
  var C=Cmd.list[n]={}
@@ -735,6 +760,7 @@ function doreplacements(s) {
 
  }else{
 	s=s.replace(/xml\=\S*?\=xml/g,"")
+        s=s.replace(rthisversion,spanversion)
  }
 
  if (s.indexOf("TABLE1") >= 0)
@@ -1264,7 +1290,7 @@ function fixhtml(s){
 
 function marksearch(s,isdescr){
  if(!s)return s
- r=(thesearch?new RegExp("("+thesearch+")","gi"):"")
+ var r=(thesearch?new RegExp("("+thesearch+")","gi"):"")
  if(!isdescr||s.indexOf("{")<0)return (r?s.replace(r,"<span class=\"found\">$1</span>"):s)
  // see {#.set mode~set mode} etc. 
  //  0     1         2        3

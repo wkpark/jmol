@@ -13,9 +13,8 @@ org/jmol/applet/*.java
 org/jmol/appletwrapper/*.java
 org/jmol/atomdata/*.java
 org/jmol/awt/*.java
-org/jmol/awt/modelkit/*.java
-org/jmol/awt/console/*.java
 org/jmol/bspt/*.java
+org/jmol/console/*.java
 org/jmol/export/*.java
 org/jmol/export/dialog/*.java
 org/jmol/export/history/*.java
@@ -32,11 +31,13 @@ org/jmol/jvxl/readers/*.java
 org/jmol/minimize/*.java
 org/jmol/minimize/forcefield/*.java
 
+org/jmol/modelkit/*.java
 org/jmol/modelset/*.java
 org/jmol/modelsetbio/*.java
-
 org/jmol/multitouch/*.java
 org/jmol/multitouch/sparshui/*.java
+org/jmol/popup/*.java
+
 com/sparshui/client/*.java
 com/sparshui/common/*.java
 com/sparshui/common/messages/events/*.java

@@ -10,7 +10,6 @@ org/jmol/adapter/readers/xtal/*.java
 org/jmol/adapter/smarter/*.java
 org/jmol/api/*.java
 org/jmol/applet/*.java
-org/jmol/appletwrapper/*.java
 org/jmol/atomdata/*.java
 org/jmol/awt/*.java
 org/jmol/bspt/*.java

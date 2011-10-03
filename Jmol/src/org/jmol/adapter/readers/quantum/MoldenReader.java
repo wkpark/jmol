@@ -68,8 +68,7 @@ public class MoldenReader extends MopacSlaterReader {
       return (!loadVibrations || readFreqsAndModes());
     if (line.indexOf("[GEOCONV]") == 0)
       return (!loadGeometries || readGeometryOptimization());
-    if (line.length() > 3 && "5D 6D 7F 10".indexOf(line.substring(1,3)) >= 0)
-      orbitalType += line;
+    checkOrbitalType(line);
     return true;
   }
   
@@ -151,10 +150,6 @@ public class MoldenReader extends MopacSlaterReader {
         // Next line has the shell label and a count of the number of primitives
         tokens = getTokens();
         String shellLabel = tokens[0].toUpperCase();
-        if (shellLabel.equals("D") && orbitalType.contains("5D"))
-          shellLabel = "5D";
-        if (shellLabel.equals("F") && orbitalType.contains("7F"))
-          shellLabel = "7F";
         int nPrimitives = parseInt(tokens[1]);
         int[] slater = new int[4];
 
@@ -213,17 +208,12 @@ public class MoldenReader extends MopacSlaterReader {
          3  -0.01553604903
      */
     
-    readLine();
-    if (line.equals("[5D]")) {
-      //TODO May be a bug here if there is a mixture of 6D and 7F
-      // We don't know while parsing the [GTO] section if we'll be using 
-      // spherical or Cartesian harmonics, so walk the list of shell information
-      // and reset as appropriate.
-      fixSlaterTypes(JmolAdapter.SHELL_D_CARTESIAN, JmolAdapter.SHELL_D_SPHERICAL);
-      fixSlaterTypes(JmolAdapter.SHELL_F_CARTESIAN, JmolAdapter.SHELL_F_SPHERICAL);
-      readLine();
+    
+    while(checkOrbitalType(readLine())) {
+      //
     }
- 
+      
+    fixOrbitalType();
     // TODO we are assuming Jmol-cannonical order for orbital coefficients.
     // see BasisFunctionReader
     // TODO no check here for G orbitals
@@ -288,6 +278,25 @@ public class MoldenReader extends MopacSlaterReader {
     return false;
   }
   
+  private boolean checkOrbitalType(String line) {
+    if (line.length() > 3 && "5D 6D 7F 10".indexOf(line.substring(1,3)) >= 0) {
+      orbitalType += line;
+      fixOrbitalType();
+      return true;
+    }
+    return false;
+  }
+
+  private void fixOrbitalType() {
+    if (orbitalType.contains("5D")) {
+      fixSlaterTypes(JmolAdapter.SHELL_D_CARTESIAN, JmolAdapter.SHELL_D_SPHERICAL);
+      fixSlaterTypes(JmolAdapter.SHELL_F_CARTESIAN, JmolAdapter.SHELL_F_SPHERICAL);
+    } 
+    if (orbitalType.contains("10F")) {
+      fixSlaterTypes(JmolAdapter.SHELL_F_SPHERICAL, JmolAdapter.SHELL_F_CARTESIAN);
+    } 
+  }
+
   private boolean readFreqsAndModes() throws Exception {
     String[] tokens;
     List<String> frequencies = new ArrayList<String>();

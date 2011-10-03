@@ -1,0 +1,53 @@
+
+# new feature: isosurface NCI (noncovalent interactions)
+#
+#  references: 
+#
+#   "Revealing Noncovalent Interactions", 
+#   Erin R. Johnson, Shahar Keinan, Paula Mori-Sanchez, Julia Contreras-Garcia, Aron J. Cohen, and Weitao Yang, 
+#   J. Am. Chem. Soc., 2010, 132, 6498-6506. email to julia.contreras@duke.edu
+# 
+#   "NCIPLOT: A Program for Plotting Noncovalent Interaction Regions"
+#   Julia Contreras-García, Erin R. Johnson, Shahar Keinan, Robin Chaudret, Jean-Philip Piquemal, David N. Beratan, and Weitao Yang,
+#   J. of Chemical Theory and Computation, 2011, 7, 625-632
+#
+#
+#   -- NCIPLOT promolecule calculation for reduced density.
+#      Plots reduced density mapped with ABS(rho)*SIGN(lambda2)
+#      where lambda2 is the middle eigenvalue of the Hessian matrix of
+#      promolecular electron density. Innovates a discrete SCF option not
+#      available in NCIPLOT itself.
+#
+#      default is "promolecular" approximation
+#
+#        isosurface NCI
+#
+#      DISCRETE SCF -- starting with standard CUBEGEN file
+#
+#        isosurface NCI "density.cube"  
+#
+#      DISCRETE SCF -- starting with NCIPLOT's xx-nci-dens.cube file        
+#
+#        isosurface parameters [0 0 0 0 0 0.01] NCI "dens.cube"
+# 
+#      Isosurface parameters [cutoff, p1, p2, p3, p4] NCI ...
+#
+#         -- p1 = 0(all, default), 1(intramolecular), 2(intermolecular)
+#         -- p2 = rhoMin   (min rho cutoff to remove very low density points)
+#         -- p3 = rhoPlot  (cutoff used to remove covalent density, default 0.07 for promolecular, 0.05 for SCF)
+#         -- p4 = rhoParam (fraction of total rho that defines intramolecular, default 0.95)
+#         -- p5 = dataScaling (default 1, but set to 0.01 to read back in NCIPLOT -dens.cube file)
+#
+#      for example: 
+#
+#        isosurface parameters [0 1] NCI "density.cube" (discrete SCF NCI with intramolecular option)
+#        isosurface parameters [0 2] NCI "density.cube" (discrete SCF NCI with intermolecular option)
+#        isosurface parameters [0 -1] NCI "grad.cube" MAP "dens.cube" (intramolecular filtering of NCIPLOT cubes)
+#        isosurface parameters [0 -2] NCI "grad.cube" MAP "dens.cube" (intermolecular filtering of NCIPLOT cubes)
+#
+#
+#  In addition, NCI promolecular calculations can be carried out also using 
+#
+#    contact {...} {...} NCI
+#
+

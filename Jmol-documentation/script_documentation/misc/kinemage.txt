@@ -1,0 +1,43 @@
+# new feature: ISOSURFACE Kinemage file reader (for contact/clash dots)
+#
+#  -- colors are set from the kin file
+#  -- parameters [cutoff, valueMin, valueMax, pointType]
+#  -- valueMin -- minimum value to display
+#  -- valueMax -- maxiumum value to display
+#       color.equals("greentint") ? 4f        H-bond
+#         : color.equals("blue") ? 0.35f       wide contact
+#         : color.equals("sky") ? 0.25f        almost wide contact 
+#         : color.equals("sea") ? 0.15f        close contact
+#         : color.equals("green") ? 0.0f       contact
+#         : color.equals("yellowtint") ? -0.1f small overlap
+#         : color.equals("yellow") ? -0.2f     small overlap
+#         : color.equals("orange") ? -0.3f     small overlap
+#         : color.equals("red") ? -0.4f        almost bad overlap
+#         : -0.5f);                            bad overlap
+#  -- pointType:
+#       0   all points
+#   	1   'M' {McMc contacts}
+#  	2   'S' {ScSc contacts}
+#       3   'P' {McSc contacts}
+#       4   'O' {Hets contacts}
+#
+#  -- dot size controllable via "set dotscale"
+#  -- example:
+#
+#    isosurface 2bxaH-multi.kin  # all overlaps
+#    isosurface parameters [0 -1 -0.1] 2bxaH-multi.kin # just non-H-bond overlaps
+#    isosurface slab within 3.0 {2001:A}; display group contact(2001:A); zoom {displayed} 0
+#   
+# new feature: set VDW PROBE  --- sets VDW radii as follows
+#   as per Word, et al, J. Mol. Biol. (1999) 285, 1711-1733
+#       {_H}.vdw = 1.0;
+#       {_H and connected(_C) and not connected(within(smiles,'[r6]'))}.vdw = 1.17;
+#       {_C}.vdw = 1.75;
+#       {_C and connected(3) and connected(_O)}.vdw = 1.65;
+#       {_N}.vdw = 1.55;
+#       {_O}.vdw = 1.4;
+#       {_P}.vdw = 1.8;
+#       {_S}.vdw = 1.8;
+#
+#   and returned to standard settings using   set vdw JMOL
+#

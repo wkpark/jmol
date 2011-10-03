@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-10-03 19:01+0200\n"
-"PO-Revision-Date: 2011-07-31 07:51+0000\n"
+"POT-Creation-Date: 2011-10-03 23:45+0200\n"
+"PO-Revision-Date: 2011-10-02 11:09+0000\n"
 "Last-Translator: Egon Willighagen <Unknown>\n"
 "Language-Team: Nederlands <jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-05 17:04+0000\n"
-"X-Generator: Launchpad (build 13613)\n"
+"X-Launchpad-Export-Date: 2011-10-03 20:48+0000\n"
+"X-Generator: Launchpad (build 14071)\n"
 "X-Poedit-Country: Nederlands\n"
 "X-Poedit-Language: Dutch\n"
 "X-Poedit-Basepath: ../../../..\n"
@@ -361,11 +361,11 @@ msgstr "Arabisch"
 
 #: org/jmol/i18n/GT.java:140
 msgid "Asturian"
-msgstr ""
+msgstr "Asturisch"
 
 #: org/jmol/i18n/GT.java:141
 msgid "Bosnian"
-msgstr ""
+msgstr "Bosnisch"
 
 #: org/jmol/i18n/GT.java:142
 msgid "Catalan"
@@ -389,7 +389,7 @@ msgstr "Grieks"
 
 #: org/jmol/i18n/GT.java:147
 msgid "Australian English"
-msgstr ""
+msgstr "Australisch Engels"
 
 #: org/jmol/i18n/GT.java:148
 msgid "British English"
@@ -420,107 +420,111 @@ msgid "French"
 msgstr "Frans"
 
 #: org/jmol/i18n/GT.java:155
+#, fuzzy
+msgid "Frisian"
+msgstr "Oekraïns"
+
+#: org/jmol/i18n/GT.java:156
 msgid "Croatian"
 msgstr "Kroatisch"
 
-#: org/jmol/i18n/GT.java:156
+#: org/jmol/i18n/GT.java:157
 msgid "Hungarian"
 msgstr "Hongaars"
 
-#: org/jmol/i18n/GT.java:157
-msgid "Armenian"
-msgstr ""
-
 #: org/jmol/i18n/GT.java:158
+msgid "Armenian"
+msgstr "Armeens"
+
+#: org/jmol/i18n/GT.java:159
 msgid "Indonesian"
 msgstr "Indonesisch"
 
-#: org/jmol/i18n/GT.java:159
+#: org/jmol/i18n/GT.java:160
 msgid "Italian"
 msgstr "Italiaans"
 
-#: org/jmol/i18n/GT.java:160
+#: org/jmol/i18n/GT.java:161
 msgid "Japanese"
 msgstr "Japans"
 
-#: org/jmol/i18n/GT.java:161
+#: org/jmol/i18n/GT.java:162
 msgid "Javanese"
 msgstr "Javaans"
 
-#: org/jmol/i18n/GT.java:162
+#: org/jmol/i18n/GT.java:163
 msgid "Korean"
 msgstr "Koreaans"
 
-#: org/jmol/i18n/GT.java:163
-#, fuzzy
-msgid "Malay"
-msgstr "Afspelen"
-
 #: org/jmol/i18n/GT.java:164
+msgid "Malay"
+msgstr "Maleisisch"
+
+#: org/jmol/i18n/GT.java:165
 msgid "Norwegian Bokmal"
 msgstr "Noors"
 
-#: org/jmol/i18n/GT.java:165
+#: org/jmol/i18n/GT.java:166
 msgid "Dutch"
 msgstr "Nederlands"
 
-#: org/jmol/i18n/GT.java:166
+#: org/jmol/i18n/GT.java:167
 msgid "Occitan"
 msgstr "Occitaans"
 
-#: org/jmol/i18n/GT.java:167
+#: org/jmol/i18n/GT.java:168
 msgid "Polish"
 msgstr "Pools"
 
-#: org/jmol/i18n/GT.java:168
+#: org/jmol/i18n/GT.java:169
 msgid "Portuguese"
 msgstr "Portugees"
 
-#: org/jmol/i18n/GT.java:169
+#: org/jmol/i18n/GT.java:170
 msgid "Brazilian Portuguese"
 msgstr "Braziliaans"
 
-#: org/jmol/i18n/GT.java:170
+#: org/jmol/i18n/GT.java:171
 msgid "Russian"
 msgstr "Russisch"
 
-#: org/jmol/i18n/GT.java:171
+#: org/jmol/i18n/GT.java:172
 msgid "Slovenian"
 msgstr "Sloveens"
 
-#: org/jmol/i18n/GT.java:172
+#: org/jmol/i18n/GT.java:173
 msgid "Serbian"
 msgstr "Servisch"
 
-#: org/jmol/i18n/GT.java:173
+#: org/jmol/i18n/GT.java:174
 msgid "Swedish"
 msgstr "Zweeds"
 
-#: org/jmol/i18n/GT.java:174
+#: org/jmol/i18n/GT.java:175
 msgid "Tamil"
 msgstr "Tamil"
 
-#: org/jmol/i18n/GT.java:175
+#: org/jmol/i18n/GT.java:176
 msgid "Telugu"
 msgstr ""
 
-#: org/jmol/i18n/GT.java:176
+#: org/jmol/i18n/GT.java:177
 msgid "Turkish"
 msgstr "Turks"
 
-#: org/jmol/i18n/GT.java:177
+#: org/jmol/i18n/GT.java:178
 msgid "Uyghur"
 msgstr ""
 
-#: org/jmol/i18n/GT.java:178
+#: org/jmol/i18n/GT.java:179
 msgid "Ukrainian"
 msgstr "Oekraïns"
 
-#: org/jmol/i18n/GT.java:179
+#: org/jmol/i18n/GT.java:180
 msgid "Simplified Chinese"
 msgstr "Vereenvoudigd Chinees"
 
-#: org/jmol/i18n/GT.java:180
+#: org/jmol/i18n/GT.java:181
 msgid "Traditional Chinese"
 msgstr "Traditioneel Chinees"
 
@@ -664,6 +668,10 @@ msgid ""
 "Use {0} to not use this approximation.\n"
 "\n"
 msgstr ""
+"OPMERKING: backbone amide-waterstof posities zijn aanwezig maar worden "
+"genegeerd. De posities worden bij benadering bepaald, as gebruikelijk in een "
+"DSSP-analyse. Gebruik {0} om deze benadering niet te gebruiken.\n"
+"\n"
 
 #: org/jmol/modelsetbio/AminoPolymer.java:582
 #, java-format
@@ -673,6 +681,10 @@ msgid ""
 "Use {0} to ignore these hydrogen positions.\n"
 "\n"
 msgstr ""
+"OPMERKING: aanwezige backbone amide-waterstof posities worden gebruikt. De "
+"resultaten kunnen significant afwijken van een standaard DSSP-analyse. "
+"Gebruik {0} om de aanwezige posities niet te gebruiken.\n"
+"\n"
 
 #: org/jmol/popup/JmolPopup.java:141
 #: org/jmol/popup/MainPopupResourceBundle.java:537
@@ -895,11 +907,10 @@ msgid "Right"
 msgstr "Rechts"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:579
-#, fuzzy
 msgid ""
 "Top[as in \"view from the top, from above\" - (translators: remove this "
 "bracketed part]"
-msgstr "Omhoog"
+msgstr "Top"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:580
 msgid "Bottom"
@@ -2155,6 +2166,7 @@ msgstr "{0} stutten toegevoegd"
 #: org/jmol/script/ScriptEvaluator.java:15585
 msgid "Note: More than one model is involved in this contact!"
 msgstr ""
+"Opmerking: Dit contact vind plaats tussen atomen uit meerdere modellen."
 
 #: org/jmol/shape/Frank.java:75
 msgid "Click for menu..."
@@ -2277,7 +2289,7 @@ msgstr "selecteer en sleep atomen (heeft {0} nodig)"
 #: org/jmol/viewer/ActionManager.java:139
 #, java-format
 msgid "drag atoms in Z direction (requires {0})"
-msgstr ""
+msgstr "sleep de atomen in de Z-richting (vereist {0})"
 
 #: org/jmol/viewer/ActionManager.java:140
 #, java-format
@@ -2439,14 +2451,14 @@ msgstr ""
 msgid "Setting log file to {0}"
 msgstr "logbestand veranderd naar {0}"
 
-#~ msgid "Top"
-#~ msgstr "Bovenkant"
-
 #~ msgid "Java memory usage"
 #~ msgstr "Geheugengebruik Java"
 
 #~ msgid "Molecular Orbitals"
 #~ msgstr "Moleculaire orbitaal"
+
+#~ msgid "Top"
+#~ msgstr "Bovenkant"
 
 #~ msgid "About Jmol"
 #~ msgstr "Over Jmol"

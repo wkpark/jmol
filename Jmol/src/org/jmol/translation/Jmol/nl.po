@@ -8,61 +8,56 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-10-03 19:01+0200\n"
-"PO-Revision-Date: 2011-07-31 07:06+0000\n"
+"PO-Revision-Date: 2011-10-02 11:39+0000\n"
 "Last-Translator: Egon Willighagen <Unknown>\n"
 "Language-Team: Dutch <jmol-developer@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-05 17:04+0000\n"
-"X-Generator: Launchpad (build 13613)\n"
+"X-Launchpad-Export-Date: 2011-10-03 20:48+0000\n"
+"X-Generator: Launchpad (build 14071)\n"
 "X-Poedit-Country: The Netherlands\n"
 "X-Poedit-Language: Dutch\n"
 
 #: com/json/Cookie.java:121
-#, fuzzy
 msgid "name"
-msgstr "&Naam"
+msgstr "naam"
 
 #: com/json/Cookie.java:123
-#, fuzzy
 msgid "value"
-msgstr "Waarde"
+msgstr "waarde"
 
 #: com/json/Cookie.java:126
 msgid "expires"
-msgstr ""
+msgstr "verloopt"
 
 #: com/json/Cookie.java:130
 msgid "domain"
-msgstr ""
+msgstr "domein"
 
 #: com/json/Cookie.java:134
-#, fuzzy
 msgid "path"
-msgstr "Herhaal"
+msgstr "folder"
 
 #: com/json/HTTP.java:132 com/json/HTTP.java:144
 msgid "HTTP-Version"
-msgstr ""
+msgstr "HTTP-versie"
 
 #: com/json/HTTP.java:134
-#, fuzzy
 msgid "Status-Code"
-msgstr "Toestand"
+msgstr "Status-code"
 
 #: com/json/HTTP.java:136
 msgid "Reason-Phrase"
-msgstr ""
+msgstr "Reden"
 
 #: com/json/HTTP.java:138
-#, fuzzy
 msgid "Method"
-msgstr "Methode: "
+msgstr "Methode"
 
 #: com/json/HTTP.java:141
 msgid "Request-URI"
-msgstr ""
+msgstr "Request-URI"
 
 #: org/openscience/jmol/app/JmolApp.java:107
 msgid "Error starting Jmol: the property 'user.home' is not defined."
@@ -99,7 +94,7 @@ msgstr "stille startup"
 
 #: org/openscience/jmol/app/JmolApp.java:155
 msgid "kiosk mode -- no frame"
-msgstr ""
+msgstr "Kiosk-modus -- geen frame"
 
 #: org/openscience/jmol/app/JmolApp.java:157
 msgid "list commands during script execution"
@@ -115,7 +110,8 @@ msgstr "geen console -- alle uitvoer naar de command line"
 
 #: org/openscience/jmol/app/JmolApp.java:163
 msgid "send only output from print messages to console (implies -i)"
-msgstr "stuur alleen input van print berichten naar de console (impliceert -i)"
+msgstr ""
+"stuur alleen input van print berichten naar de console (impliceert -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:165
 msgid "independent command thread"
@@ -127,7 +123,7 @@ msgstr "afsluiten na einde script (impliciet met -n)"
 
 #: org/openscience/jmol/app/JmolApp.java:170
 msgid "port for JSON/MolecularPlayground-style communication"
-msgstr ""
+msgstr "communicatiepoort voor JSON/MolecularPlayground-interactie"
 
 #: org/openscience/jmol/app/JmolApp.java:176
 msgid "script file to execute or '-' for System.in"
@@ -1117,9 +1113,8 @@ msgid "width height?"
 msgstr "breedte hoogte?"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:409
-#, fuzzy
 msgid "magic"
-msgstr "Standaard"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:410
 msgid "role"
@@ -1127,7 +1122,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:416
 msgid "type"
-msgstr ""
+msgstr "type"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:418
 msgid "text"
@@ -1139,41 +1134,41 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:422
 msgid "command"
-msgstr ""
+msgstr "opdracht"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:425
 msgid "id"
-msgstr ""
+msgstr "id"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:437
 msgid "startup_script"
-msgstr ""
+msgstr "start-script"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:442
 msgid "banner"
-msgstr ""
+msgstr "banner"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:443
 msgid "banner_text"
-msgstr ""
+msgstr "banner tekst"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:447
 msgid "style"
-msgstr ""
+msgstr "stijl"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:453
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:457
 msgid "x"
-msgstr ""
+msgstr "x"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:454
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:458
 msgid "y"
-msgstr ""
+msgstr "y"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:473
 msgid "sync"
-msgstr ""
+msgstr "synchroniseren"
 
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:124
 msgid "Delete"
@@ -1464,13 +1459,15 @@ msgstr "Nulpunt"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:167
 msgid "Cap"
-msgstr ""
+msgstr "Afronding"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:170
 msgid ""
 "Caps slice with opaque surfaces.\n"
 "Ignores MOs and surfaces with interior layers."
 msgstr ""
+"Werkt een doorsnede af met een ondoorzichtig oppervlak.\n"
+"Negeert MOs en oppervlakken met binnenlagen."
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:174
 msgid "Slice Planes"
@@ -1478,7 +1475,7 @@ msgstr "Doorsnedes"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:176
 msgid "Shows planes at slicing surfaces."
-msgstr ""
+msgstr "Laat vlakken zien bij doorsnedes."
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:183
 msgid "Ghost On"
@@ -1486,7 +1483,7 @@ msgstr "Schaduw Aan"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:186
 msgid "Shows an unsliced \"ghost\"."
-msgstr ""
+msgstr "Laat een ondoorgesnede \"ghost\" zien."
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:206
 msgid "Angle from X-axis in XY plane"
@@ -1510,7 +1507,7 @@ msgstr "Dikte van de doorsnede"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:261
 msgid "Select Surface(s)"
-msgstr ""
+msgstr "Selecteer Oppervlak(ken)"
 
 #: org/openscience/jmol/app/webexport/JmolInstance.java:81
 msgid "Attempt to make scratch directory failed."
@@ -1886,393 +1883,38 @@ msgstr "Overhalendialoog"
 msgid "unimplemented"
 msgstr "niet geimplementeerd"
 
-#, fuzzy
 #~ msgid "All"
-#~ msgstr "&Alles"
+#~ msgstr "Alle"
 
-#, fuzzy
-#~ msgid "System"
-#~ msgstr "Stap"
-
-#, fuzzy
-#~ msgid "Configurations"
-#~ msgstr "Animatie"
-
-#, fuzzy
-#~ msgid "Element"
-#~ msgstr "niet geimplementeerd"
-
-#, fuzzy
-#~ msgid "Select ({0})"
-#~ msgstr "Schalen naar {0}"
-
-#, fuzzy
-#~ msgid "chains: {0}"
-#~ msgstr "aanmaken {0}"
-
-#, fuzzy
-#~ msgid "View {0}"
-#~ msgstr "Orie&ntatie"
-
-#, fuzzy
-#~ msgid "Biomolecules"
-#~ msgstr "Roteer molecuul."
-
-#, fuzzy
 #~ msgid "None"
-#~ msgstr "Gee&n"
+#~ msgstr "Geen"
 
-#, fuzzy
-#~ msgid "Display Selected Only"
-#~ msgstr "Selectie verwijderen"
-
-#, fuzzy
-#~ msgid "Invert Selection"
-#~ msgstr "Selectie: "
-
-#, fuzzy
-#~ msgid "View"
-#~ msgstr "Orie&ntatie"
-
-#, fuzzy
-#~ msgid "Front"
-#~ msgstr "Voo&raanzicht"
-
-#, fuzzy
-#~ msgid "Left"
-#~ msgstr "&Links"
-
-#, fuzzy
-#~ msgid "Right"
-#~ msgstr "&Rechts"
-
-#, fuzzy
-#~ msgid "Bottom"
-#~ msgstr "&Onderkant"
-
-#, fuzzy
-#~ msgid "Back"
-#~ msgstr "Standaard"
-
-#, fuzzy
-#~ msgid "Side Chains"
-#~ msgstr "Doorsnedes"
-
-#, fuzzy
-#~ msgid "Bases"
-#~ msgstr "Pauze"
-
-#, fuzzy
-#~ msgid "All Water"
-#~ msgstr "Water"
-
-#, fuzzy
-#~ msgid "Style"
-#~ msgstr "Stap"
-
-#, fuzzy
 #~ msgid "Wireframe"
-#~ msgstr "Draad&werk"
+#~ msgstr "Draadmodel"
 
-#, fuzzy
-#~ msgid "Cartoon"
-#~ msgstr "Koolstof"
-
-#, fuzzy
-#~ msgid "On"
-#~ msgstr "&Aan"
-
-#, fuzzy
-#~ msgid "Hydrogen Bonds"
-#~ msgstr "Waterstoffen"
-
-#, fuzzy
-#~ msgid "Cartoon Rockets"
-#~ msgstr "Tekening van Pagina"
-
-#, fuzzy
-#~ msgid "Vibration"
-#~ msgstr "Animatie"
-
-#, fuzzy
-#~ msgid "Vectors"
-#~ msgstr "V&ectoren"
-
-#, fuzzy
-#~ msgid "Red+Green glasses"
-#~ msgstr "Rood/Groen"
-
-#, fuzzy
-#~ msgid "Labels"
-#~ msgstr "&Label"
-
-#, fuzzy
-#~ msgid "Centered"
-#~ msgstr "Ge&centreerd"
-
-#, fuzzy
-#~ msgid "Upper Right"
-#~ msgstr "Rechtsboven (&u)"
-
-#, fuzzy
-#~ msgid "Lower Right"
-#~ msgstr "Rechtsboven (&u)"
-
-#, fuzzy
-#~ msgid "Upper Left"
-#~ msgstr "Rechtsboven (&u)"
-
-#, fuzzy
-#~ msgid "Color"
-#~ msgstr "Sluiten"
-
-#, fuzzy
-#~ msgid "Formal Charge"
-#~ msgstr "Totale lading: "
-
-#, fuzzy
-#~ msgid "Partial Charge"
-#~ msgstr "Totale lading: "
-
-#, fuzzy
-#~ msgid "Amino Acid"
-#~ msgstr "Aminozuren"
-
-#, fuzzy
-#~ msgid "Black"
-#~ msgstr "Standaard"
-
-#, fuzzy
-#~ msgid "White"
-#~ msgstr "Water"
-
-#, fuzzy
-#~ msgid "Cyan"
-#~ msgstr "Rood/Cyaan"
-
-#, fuzzy
-#~ msgid "Red"
-#~ msgstr "Opnieuw uitvoeren"
-
-#, fuzzy
-#~ msgid "Green"
-#~ msgstr "Rood/Groen"
-
-#, fuzzy
-#~ msgid "Blue"
-#~ msgstr "Waarde"
-
-#, fuzzy
-#~ msgid "Indigo"
-#~ msgstr "Info"
-
-#, fuzzy
-#~ msgid "Maroon"
-#~ msgstr "Koolstof"
-
-#, fuzzy
-#~ msgid "Background"
-#~ msgstr "AchtergrondKleur"
-
-#, fuzzy
-#~ msgid "Surfaces"
-#~ msgstr "Oppervlakte Hulp"
-
-#, fuzzy
-#~ msgid "Boundbox"
-#~ msgstr "Omvattende Doos"
-
-#, fuzzy
-#~ msgid "Zoom"
-#~ msgstr "&Vergroten"
-
-#, fuzzy
-#~ msgid "Zoom In"
-#~ msgstr "&Vergroten"
-
-#, fuzzy
-#~ msgid "Zoom Out"
-#~ msgstr "&Vergroten"
-
-#, fuzzy
-#~ msgid "Spin"
-#~ msgstr "Spin aan"
-
-#, fuzzy
-#~ msgid "Set X Rate"
-#~ msgstr "Toestand"
-
-#, fuzzy
-#~ msgid "Set Y Rate"
-#~ msgstr "Toestand"
-
-#, fuzzy
-#~ msgid "Set Z Rate"
-#~ msgstr "Toestand"
-
-#, fuzzy
-#~ msgid "Set FPS"
-#~ msgstr "FPS"
-
-#, fuzzy
-#~ msgid "Animation Mode"
-#~ msgstr "Animatie"
-
-#, fuzzy
-#~ msgid "Resume"
-#~ msgstr "Grootte wij&ziggen"
-
-#, fuzzy
-#~ msgid "Stop"
-#~ msgstr "Stap"
-
-#, fuzzy
-#~ msgid "Rewind"
-#~ msgstr "Opnieuw uitvoeren"
-
-#, fuzzy
-#~ msgid "Restart"
-#~ msgstr "Herhaal"
-
-#, fuzzy
-#~ msgid "Delete measurements"
-#~ msgstr "Metingen"
-
-#, fuzzy
-#~ msgid "List measurements"
-#~ msgstr "Metingen"
-
-#, fuzzy
-#~ msgid "Distance units nanometers"
-#~ msgstr "Afstandsmaten"
-
-#, fuzzy
-#~ msgid "Distance units Angstroms"
-#~ msgstr "Afstandsmaten"
-
-#, fuzzy
-#~ msgid "Distance units picometers"
-#~ msgstr "Afstandsmaten"
-
-#, fuzzy
-#~ msgid "Center"
-#~ msgstr "Ge&centreerd"
-
-#, fuzzy
 #~ msgid "Label"
-#~ msgstr "&Label"
+#~ msgstr "Label"
 
-#, fuzzy
-#~ msgid "Select atom"
-#~ msgstr "Wis Atomen"
+#~ msgid "Centered"
+#~ msgstr "Gecentreerd"
 
-#, fuzzy
-#~ msgid "Select chain"
-#~ msgstr "Selectie: "
+#~ msgid "On"
+#~ msgstr "Aan"
 
-#, fuzzy
-#~ msgid "Select element"
-#~ msgstr "&Alles selecteren"
+#~ msgid "Zoom"
+#~ msgstr "Inzoomen"
 
-#, fuzzy
-#~ msgid "Select group"
-#~ msgstr "Selecteren"
+#~ msgid "Front"
+#~ msgstr "Voor"
 
-#, fuzzy
-#~ msgid "Select molecule"
-#~ msgstr "&Alles selecteren"
+#~ msgid "Bottom"
+#~ msgstr "Onder"
 
-#, fuzzy
-#~ msgid "Select site"
-#~ msgstr "Selecteren"
+#~ msgid "Right"
+#~ msgstr "Rechts"
 
-#, fuzzy
-#~ msgid "Show"
-#~ msgstr "Laat alles zien"
-
-#, fuzzy
-#~ msgid "Console"
-#~ msgstr "Opdrachtrege&l..."
-
-#, fuzzy
-#~ msgid "File Header"
-#~ msgstr "Bestandsnaam:"
-
-#, fuzzy
-#~ msgid "Model"
-#~ msgstr "Stand:"
-
-#, fuzzy
-#~ msgid "Orientation"
-#~ msgstr "Animatie"
-
-#, fuzzy
-#~ msgid "File"
-#~ msgstr "&Bestand"
-
-#, fuzzy
-#~ msgid "Reload"
-#~ msgstr "He&rladen"
-
-#, fuzzy
-#~ msgid "Open file or URL"
-#~ msgstr "Open URL"
-
-#, fuzzy
-#~ msgid "Open script"
-#~ msgstr "Script kopiëren"
-
-#, fuzzy
-#~ msgid "Export {0} image"
-#~ msgstr "Exporteer F&iguur..."
-
-#, fuzzy
-#~ msgid "Computation"
-#~ msgstr "Bepaal de Bindingen"
-
-#, fuzzy
-#~ msgid "Dot Surface"
-#~ msgstr "Oppervlakte Hulp"
-
-#, fuzzy
-#~ msgid "van der Waals Surface"
-#~ msgstr "{0}% vanderWaals"
-
-#, fuzzy
-#~ msgid "Molecular Surface"
-#~ msgstr "Moleculaire Eigenschappen"
-
-#, fuzzy
-#~ msgid "Reload {0}"
-#~ msgstr "He&rladen"
-
-#, fuzzy
-#~ msgid "{0} px"
-#~ msgstr "{0} pixels"
-
-#, fuzzy
-#~ msgid "Angstrom Width"
-#~ msgstr "(Angstroms)"
-
-#, fuzzy
-#~ msgid "Selection Halos"
-#~ msgstr "Selectie: "
-
-#, fuzzy
-#~ msgid "Show Hydrogens"
-#~ msgstr "Waterstoffen"
-
-#, fuzzy
-#~ msgid "Show Measurements"
-#~ msgstr "Metingen"
-
-#, fuzzy
-#~ msgid "RasMol Colors"
-#~ msgstr "Rasmol-standaarden"
-
-#, fuzzy
-#~ msgid "About..."
-#~ msgstr "Absoluut"
+#~ msgid "Left"
+#~ msgstr "Links"
 
 #~ msgid "atom set"
 #~ msgstr "atoomset"
@@ -2280,18 +1922,23 @@ msgstr "niet geimplementeerd"
 #~ msgid "vector"
 #~ msgstr "vector"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Ga naar de eerste {0} in de collectie"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Ga naar de vorige {0} in de collectie"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Speel de hele collectie van {0}'s af"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Ga naar de volgende {0} in de collectie"
 
+#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Ga naar de laatste {0} in de collectie"
 
@@ -2304,6 +1951,7 @@ msgstr "niet geimplementeerd"
 #~ msgid "double-click and drag to reorder"
 #~ msgstr "Dubbelklik en sleep om de volgorde te wijzigen"
 
+#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"
@@ -2317,18 +1965,21 @@ msgstr "niet geimplementeerd"
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "toevoegen JmolPopIn.js"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "toevoegen {0}.png"
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "toevoegen {0}.spt"
 
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 #~ msgstr ""
-#~ "Voeg hier extra uitleg in. Lange teksten worden om het Jmol-model {0} "
-#~ "heen gezet."
+#~ "Voeg hier extra uitleg in. Lange teksten worden om het Jmol-model {0} heen "
+#~ "gezet."
 
 #~ msgid "Clear console button (requires restarting Jmol)"
 #~ msgstr "Leeg console knop (vereist een herstart van Jmol)"
@@ -2338,3 +1989,694 @@ msgstr "niet geimplementeerd"
 
 #~ msgid "Output Conso&le..."
 #~ msgstr "Output Conso&le..."
+
+#~ msgid "Translations"
+#~ msgstr "Vertalingen"
+
+#~ msgid "Space Group"
+#~ msgstr "Ruimtegroep"
+
+#~ msgid "No atoms loaded"
+#~ msgstr "Geen atomen geladen"
+
+#, java-format
+#~ msgid "{0} processors"
+#~ msgstr "{0} processors"
+
+#~ msgid "unknown processor count"
+#~ msgstr "onbekend aantal processoren"
+
+#~ msgid "Java version:"
+#~ msgstr "Java-versie:"
+
+#~ msgid "Java memory usage:"
+#~ msgstr "Java geheugengebruik:"
+
+#~ msgid "Mouse Manual"
+#~ msgstr "Handleiding Muiscontrole"
+
+#~ msgid "System"
+#~ msgstr "Systeem"
+
+#~ msgid "1 processor"
+#~ msgstr "1 processor"
+
+#~ msgid "Model/Frame"
+#~ msgstr "Model/Frame"
+
+#~ msgid "Language"
+#~ msgstr "Taal"
+
+#~ msgid "By HETATM"
+#~ msgstr "Op HETATM"
+
+#~ msgid "By Residue Name"
+#~ msgstr "Op residuenaam"
+
+#~ msgid "unknown maximum"
+#~ msgstr "onbekend maximum"
+
+#, java-format
+#~ msgid "{0} MB maximum"
+#~ msgstr "{0} MB maximaal"
+
+#~ msgid "Element"
+#~ msgstr "Element"
+
+#~ msgid "Configurations"
+#~ msgstr "Orientaties"
+
+#, java-format
+#~ msgid "{0} MB total"
+#~ msgstr "{0} MB totaal"
+
+#, java-format
+#~ msgid "{0} MB free"
+#~ msgstr "{0} MB beschikbaar"
+
+#~ msgid "Symmetry"
+#~ msgstr "Symmetrie"
+
+#, java-format
+#~ msgid "Molecular Orbitals ({0})"
+#~ msgstr "Moleculaire orbitalen ({0})"
+
+#, java-format
+#~ msgid "Select ({0})"
+#~ msgstr "Selecteren ({0})"
+
+#, java-format
+#~ msgid "All {0} models"
+#~ msgstr "Alle {0} modellen"
+
+#~ msgid "Hide Symmetry"
+#~ msgstr "Verberg Symmetrie"
+
+#~ msgid "Model information"
+#~ msgstr "Modeldetails"
+
+#, java-format
+#~ msgid "atoms: {0}"
+#~ msgstr "atomen: {0}"
+
+#, java-format
+#~ msgid "bonds: {0}"
+#~ msgstr "bindingen: {0}"
+
+#, java-format
+#~ msgid "Configurations ({0})"
+#~ msgstr "Configuraties  ({0})"
+
+#, java-format
+#~ msgid "Collection of {0} models"
+#~ msgstr "Collectie van {0} modellen"
+
+#~ msgid "Main Menu"
+#~ msgstr "Hoofdmenu"
+
+#, java-format
+#~ msgid "View {0}"
+#~ msgstr "Orientatie {0}"
+
+#, java-format
+#~ msgid "model {0}"
+#~ msgstr "model {0}"
+
+#, java-format
+#~ msgid "polymers: {0}"
+#~ msgstr "polymeren: {0}"
+
+#~ msgid "Display Selected Only"
+#~ msgstr "Laat alleen selectie zien"
+
+#, java-format
+#~ msgid "load biomolecule {0} ({1} atoms)"
+#~ msgstr "Laad biomolecuul {0} ({1} atomen)"
+
+#, java-format
+#~ msgid "biomolecule {0} ({1} atoms)"
+#~ msgstr "biomolecuul {0} ({1} atomen)"
+
+#~ msgid "Biomolecules"
+#~ msgstr "Biomoleculen"
+
+#, java-format
+#~ msgid "groups: {0}"
+#~ msgstr "groepen: {0}"
+
+#, java-format
+#~ msgid "chains: {0}"
+#~ msgstr "ketens {0}"
+
+#~ msgid "View"
+#~ msgstr "Weergave"
+
+#~ msgid "Invert Selection"
+#~ msgstr "Inverteer Selectie"
+
+#~ msgid ""
+#~ "Top[as in \"view from the top, from above\" - (translators: remove this "
+#~ "bracketed part]"
+#~ msgstr "Top"
+
+#~ msgid "Back"
+#~ msgstr "Achterkant"
+
+#~ msgid "Protein"
+#~ msgstr "Proteïne"
+
+#~ msgid "Backbone"
+#~ msgstr "Hoofdketen"
+
+#~ msgid "Side Chains"
+#~ msgstr "Zijketens"
+
+#~ msgid "Polar Residues"
+#~ msgstr "Polaire Residuen"
+
+#~ msgid "Nonpolar Residues"
+#~ msgstr "Apolaire Residuen"
+
+#~ msgid "Basic Residues (+)"
+#~ msgstr "Basische Residuen (+)"
+
+#~ msgid "RNA"
+#~ msgstr "RNA"
+
+#~ msgid "DNA"
+#~ msgstr "DNA"
+
+#~ msgid "AT pairs"
+#~ msgstr "AT paren"
+
+#~ msgid "Bases"
+#~ msgstr "Basen"
+
+#~ msgid "AU pairs"
+#~ msgstr "AU paren"
+
+#~ msgid "GC pairs"
+#~ msgstr "GC paren"
+
+#~ msgid "All Solvent"
+#~ msgstr "Al het oplosmiddel"
+
+#~ msgid "All PDB \"HETATM\""
+#~ msgstr "Alle PDB \"HETATM\""
+
+#~ msgid "Acidic Residues (-)"
+#~ msgstr "Zure Residuen (-)"
+
+#~ msgid "Uncharged Residues"
+#~ msgstr "Ongeladen Residuen"
+
+#~ msgid "Nonaqueous Solvent"
+#~ msgstr "Oplosmiddel anders dan water"
+
+#~ msgid "All Water"
+#~ msgstr "Al het water"
+
+#~ msgid "CPK Spacefill"
+#~ msgstr "CPK Ruimtevullend"
+
+#~ msgid "Ball and Stick"
+#~ msgstr "Bal en staaf"
+
+#~ msgid "Style"
+#~ msgstr "Stijl"
+
+#~ msgid "Scheme"
+#~ msgstr "Schema"
+
+#~ msgid "Carbohydrate"
+#~ msgstr "Koolwaterstof"
+
+#~ msgid "None of the above"
+#~ msgstr "Geen van deze"
+
+#~ msgid "Nonaqueous HETATM"
+#~ msgstr "HETATM anders dan water"
+
+#~ msgid "Ligand"
+#~ msgstr "Ligand"
+
+#~ msgid "Sticks"
+#~ msgstr "Staven"
+
+#~ msgid "Cartoon"
+#~ msgstr "Tekening"
+
+#~ msgid "Hydrogen Bonds"
+#~ msgstr "Waterstofbruggen"
+
+#~ msgid "Calculate"
+#~ msgstr "Berekenen"
+
+#~ msgid "Trace"
+#~ msgstr "Spoor"
+
+#~ msgid "Off"
+#~ msgstr "Uit"
+
+#~ msgid "Set H-Bonds Side Chain"
+#~ msgstr "Kies H-bruggen van zijketens"
+
+#~ msgid "Set SS-Bonds Side Chain"
+#~ msgstr "Kies SS-bindingen van zijketens"
+
+#~ msgid "Set H-Bonds Backbone"
+#~ msgstr "Kies H-bruggen van backbone"
+
+#~ msgid "Disulfide Bonds"
+#~ msgstr "Disulfide-bindingen"
+
+#~ msgid "Vectors"
+#~ msgstr "Vectoren"
+
+#~ msgid "Vibration"
+#~ msgstr "Vibratie"
+
+#~ msgid "Red+Cyan glasses"
+#~ msgstr "Rood+Cyaan-bril"
+
+#~ msgid "Stereographic"
+#~ msgstr "Stereografisch"
+
+#~ msgid "Ribbons"
+#~ msgstr "Banden"
+
+#~ msgid "Cartoon Rockets"
+#~ msgstr "Tekening Raketten"
+
+#~ msgid "Strands"
+#~ msgstr "Strands"
+
+#~ msgid "Rockets"
+#~ msgstr "Raketten"
+
+#~ msgid "Set SS-Bonds Backbone"
+#~ msgstr "Kies SS-bindingen van backbone"
+
+#~ msgid "Structures"
+#~ msgstr "Structuren"
+
+#~ msgid "Red+Green glasses"
+#~ msgstr "Rood+Groen-bril"
+
+#~ msgid "Red+Blue glasses"
+#~ msgstr "Rood+Blauw-bril"
+
+#~ msgid "Cross-eyed viewing"
+#~ msgstr "Kruisende Blik-modus"
+
+#~ msgid "Wall-eyed viewing"
+#~ msgstr "Muur-kijk-modus"
+
+#~ msgid "Labels"
+#~ msgstr "Labels"
+
+#~ msgid "With Element Symbol"
+#~ msgstr "Met Symbool"
+
+#~ msgid "With Atom Name"
+#~ msgstr "Met Atoomnaam"
+
+#~ msgid "With Atom Number"
+#~ msgstr "Met Atoomnummer"
+
+#~ msgid "Position Label on Atom"
+#~ msgstr "Positie van Label op Atoom"
+
+#~ msgid "Upper Right"
+#~ msgstr "Rechtsboven"
+
+#~ msgid "Element (CPK)"
+#~ msgstr "Element (CPK)"
+
+#~ msgid "By Scheme"
+#~ msgstr "Volgens model"
+
+#~ msgid "Color"
+#~ msgstr "Kleur"
+
+#~ msgid "Lower Left"
+#~ msgstr "Linksonder"
+
+#~ msgid "Partial Charge"
+#~ msgstr "Partiële lading"
+
+#~ msgid "Formal Charge"
+#~ msgstr "Formele lading"
+
+#~ msgid "Molecule"
+#~ msgstr "Molecuul"
+
+#~ msgid "Alternative Location"
+#~ msgstr "Alternatieve locatie"
+
+#~ msgid "Lower Right"
+#~ msgstr "Rechtsonder"
+
+#~ msgid "Upper Left"
+#~ msgstr "Linksboven"
+
+#~ msgid "Temperature (Fixed)"
+#~ msgstr "Temperatuur (vast)"
+
+#~ msgid "Temperature (Relative)"
+#~ msgstr "Temperatuur"
+
+#~ msgid "Black"
+#~ msgstr "Zwart"
+
+#~ msgid "Inherit"
+#~ msgstr "Overnemen"
+
+#~ msgid "Monomer"
+#~ msgstr "Monomeer"
+
+#~ msgid "Shapely"
+#~ msgstr "Gevormd"
+
+#~ msgid "Chain"
+#~ msgstr "Keten"
+
+#~ msgid "Group"
+#~ msgstr "Groep"
+
+#~ msgid "Amino Acid"
+#~ msgstr "Aminozuur"
+
+#~ msgid "Secondary Structure"
+#~ msgstr "Secondaire Structuur"
+
+#~ msgid "White"
+#~ msgstr "Wit"
+
+#~ msgid "Orange"
+#~ msgstr "Oranje"
+
+#~ msgid "Red"
+#~ msgstr "Rood"
+
+#~ msgid "Green"
+#~ msgstr "Groen"
+
+#~ msgid "Indigo"
+#~ msgstr "Indigo"
+
+#~ msgid "Blue"
+#~ msgstr "Blauw"
+
+#~ msgid "Salmon"
+#~ msgstr "Zalmrose"
+
+#~ msgid "Violet"
+#~ msgstr "Violet"
+
+#~ msgid "Yellow"
+#~ msgstr "Geel"
+
+#~ msgid "Cyan"
+#~ msgstr "Cyaan"
+
+#~ msgid "Maroon"
+#~ msgstr "Purper rood"
+
+#~ msgid "Olive"
+#~ msgstr "Olijfgroen"
+
+#~ msgid "Surfaces"
+#~ msgstr "Oppervlakken"
+
+#~ msgid "Slate Blue"
+#~ msgstr "Blauw"
+
+#~ msgid "Make Opaque"
+#~ msgstr "Solide maken"
+
+#~ msgid "Make Translucent"
+#~ msgstr "Transparant maken"
+
+#~ msgid "Background"
+#~ msgstr "Achtergrond"
+
+#~ msgid "Gray"
+#~ msgstr "Grijs"
+
+#~ msgid "Gold"
+#~ msgstr "Goud"
+
+#~ msgid "Orchid"
+#~ msgstr "Orchideepaars"
+
+#~ msgid "Animation Mode"
+#~ msgstr "Animatie-modus"
+
+#~ msgid "Set FPS"
+#~ msgstr "Stel FPS in"
+
+#~ msgid "Set Z Rate"
+#~ msgstr "Stel Z-snelheid in"
+
+#~ msgid "Set Y Rate"
+#~ msgstr "Stel Y-snelheid in"
+
+#~ msgid "Set X Rate"
+#~ msgstr "Stel X-snelheid in"
+
+#~ msgid "Spin"
+#~ msgstr "Om een as draaien"
+
+#~ msgid "Zoom Out"
+#~ msgstr "Uitzoomen"
+
+#~ msgid "Zoom In"
+#~ msgstr "Inzoomen"
+
+#~ msgid "Click two atoms to display a sequence in the console"
+#~ msgstr "Kies twee atomen om een sequentie de laten zien op de commandoregel"
+
+#~ msgid "Click for angle measurement"
+#~ msgstr "Klik voor een hoekmeting"
+
+#~ msgid "Stop"
+#~ msgstr "Stoppen"
+
+#~ msgid "Resume"
+#~ msgstr "Doorgaan"
+
+#~ msgid "Restart"
+#~ msgstr "Herstarten"
+
+#~ msgid "Double-Click begins and ends all measurements"
+#~ msgstr "Dubbel-klik begint en eindigt alle metingen"
+
+#~ msgid "Rewind"
+#~ msgstr "Terugspoelen"
+
+#~ msgid "Reverse"
+#~ msgstr "Omgekeerde volgorde"
+
+#~ msgid "Click for torsion (dihedral) measurement"
+#~ msgstr "Klik voor een torsiehoekmeting"
+
+#~ msgid "Click for distance measurement"
+#~ msgstr "Klik voor een afstandsmeting"
+
+#~ msgid "Identity"
+#~ msgstr "Identiteit"
+
+#~ msgid "Center"
+#~ msgstr "Centreren"
+
+#~ msgid "Select chain"
+#~ msgstr "Selecteer keten"
+
+#~ msgid "Select atom"
+#~ msgstr "Selecteer atoom"
+
+#~ msgid "Distance units Angstroms"
+#~ msgstr "Ångström afstandsmaat"
+
+#~ msgid "Distance units nanometers"
+#~ msgstr "Nanometer afstandsmaat"
+
+#~ msgid "Set picking"
+#~ msgstr "Kies selecteervolgorde"
+
+#~ msgid "Distance units picometers"
+#~ msgstr "Picometer afstandsmaat"
+
+#~ msgid "List measurements"
+#~ msgstr "Lijst van metingen"
+
+#~ msgid "Delete measurements"
+#~ msgstr "Wis metingen"
+
+#~ msgid "Select group"
+#~ msgstr "Selecteer groep"
+
+#~ msgid "Select element"
+#~ msgstr "Selecteer element"
+
+#~ msgid "Show"
+#~ msgstr "Tonen"
+
+#~ msgid "Show symmetry operation"
+#~ msgstr "Toon symetrie-operatie"
+
+#~ msgid "Select site"
+#~ msgstr "Selecteer site"
+
+#~ msgid "Select molecule"
+#~ msgstr "Selecteer molecuul"
+
+#~ msgid "Isosurface JVXL data"
+#~ msgstr "Isosurface JVXL data"
+
+#~ msgid "File Header"
+#~ msgstr "Kopregels bestand"
+
+#~ msgid "File Contents"
+#~ msgstr "Inhoud van bestand"
+
+#~ msgid "Console"
+#~ msgstr "Console"
+
+#~ msgid "Orientation"
+#~ msgstr "Orientatie"
+
+#~ msgid "Space group"
+#~ msgstr "Ruimtegroep"
+
+#~ msgid "Current state"
+#~ msgstr "Huidige toestand"
+
+#~ msgid "File"
+#~ msgstr "Bestand"
+
+#~ msgid "Reload"
+#~ msgstr "Herladen"
+
+#~ msgid "Open from PDB"
+#~ msgstr "Open vanuit PDB"
+
+#~ msgid "Open file or URL"
+#~ msgstr "Open bestand of URL"
+
+#~ msgid "Load full unit cell"
+#~ msgstr "Hele eenheidscel laden"
+
+#~ msgid "Model"
+#~ msgstr "Model"
+
+#~ msgid "Molecular orbital JVXL data"
+#~ msgstr "Moleculaire orbitaal JVXL data"
+
+#~ msgid "Open script"
+#~ msgstr "Open script"
+
+#, java-format
+#~ msgid "Save a copy of {0}"
+#~ msgstr "Sla een kopie op van {0}"
+
+#, java-format
+#~ msgid "Export {0} 3D model"
+#~ msgstr "Exporteer {0} 3D model"
+
+#~ msgid "Save JVXL isosurface"
+#~ msgstr "Opslaan als JVXL iso-oppervlak"
+
+#~ msgid "Optimize structure"
+#~ msgstr "Optimaliseer structuur"
+
+#~ msgid "Computation"
+#~ msgstr "Berekening"
+
+#~ msgid "Save script with history"
+#~ msgstr "Bewaar script met geschiedenis"
+
+#~ msgid "Save script with state"
+#~ msgstr "Bewaar script met status"
+
+#~ msgid "Save all as JMOL file (zip)"
+#~ msgstr "Opslaan als JMOL-bestand (zip)"
+
+#, java-format
+#~ msgid "Export {0} image"
+#~ msgstr "Exporteer {0} afbeelding"
+
+#~ msgid "Molecular Surface"
+#~ msgstr "Moleculaire oppervlak"
+
+#, java-format
+#~ msgid "Solvent Surface ({0}-Angstrom probe)"
+#~ msgstr "Oplosmiddeloppervlak ({0}-Angstrom probe)"
+
+#~ msgid "Dot Surface"
+#~ msgstr "Puntenoppervlak"
+
+#~ msgid "van der Waals Surface"
+#~ msgstr "vanderWaalsoppervlak"
+
+#, java-format
+#~ msgid "Reload {0}"
+#~ msgstr "{0} herladen"
+
+#, java-format
+#~ msgid "Reload {0} + Display {1}"
+#~ msgstr "Herlaad {0} + Weergeven {1}"
+
+#, java-format
+#~ msgid "Solvent-Accessible Surface (VDW + {0} Angstrom)"
+#~ msgstr "Oplosmiddeltoegankelijk oppervlak (VDW + {0} Angstrom)"
+
+#~ msgid "Molecular Electrostatic Potential"
+#~ msgstr "Moleculair Electrostatisch Potentiaal"
+
+#~ msgid "Extract MOL data"
+#~ msgstr "Extraheer MOL data"
+
+#~ msgid "Model kit"
+#~ msgstr "Model kit"
+
+#~ msgid "Reload + Polyhedra"
+#~ msgstr "Herladen + Polyhedra"
+
+#~ msgid "Hide"
+#~ msgstr "Verbergen"
+
+#~ msgid "RasMol Colors"
+#~ msgstr "Rasmol-kleuren"
+
+#~ msgid "Show Measurements"
+#~ msgstr "Laat metingen zien"
+
+#~ msgid "Show Hydrogens"
+#~ msgstr "Laat waterstoffen zien"
+
+#~ msgid "Selection Halos"
+#~ msgstr "Selectiewolk"
+
+#~ msgid "Angstrom Width"
+#~ msgstr "Ångströmbreedte"
+
+#, java-format
+#~ msgid "{0} px"
+#~ msgstr "{0} px"
+
+#~ msgid "Pixel Width"
+#~ msgstr "Puntgrootte"
+
+#~ msgid "Dotted"
+#~ msgstr "Gestippeld"
+
+#~ msgid "About..."
+#~ msgstr "Info..."
+
+#~ msgid "Unit cell"
+#~ msgstr "Eenheidscel"
+
+#~ msgid "Boundbox"
+#~ msgstr "Boundbox"

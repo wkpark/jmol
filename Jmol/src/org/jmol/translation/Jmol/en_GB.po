@@ -8,59 +8,54 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-10-03 19:01+0200\n"
-"PO-Revision-Date: 2010-12-07 20:12+0000\n"
-"Last-Translator: Nicolas Vervelle <Unknown>\n"
+"PO-Revision-Date: 2011-10-03 23:28+0000\n"
+"Last-Translator: Anthony Harrington <untaintableangel@hotmail.co.uk>\n"
 "Language-Team: English (United Kingdom) <en_GB@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-05 17:04+0000\n"
-"X-Generator: Launchpad (build 13613)\n"
+"X-Launchpad-Export-Date: 2011-10-04 04:16+0000\n"
+"X-Generator: Launchpad (build 14071)\n"
 
 #: com/json/Cookie.java:121
-#, fuzzy
 msgid "name"
-msgstr "&Name"
+msgstr "Name"
 
 #: com/json/Cookie.java:123
-#, fuzzy
 msgid "value"
 msgstr "Value"
 
 #: com/json/Cookie.java:126
 msgid "expires"
-msgstr ""
+msgstr "expires"
 
 #: com/json/Cookie.java:130
 msgid "domain"
-msgstr ""
+msgstr "domain"
 
 #: com/json/Cookie.java:134
-#, fuzzy
 msgid "path"
-msgstr "Repeat"
+msgstr "path"
 
 #: com/json/HTTP.java:132 com/json/HTTP.java:144
 msgid "HTTP-Version"
-msgstr ""
+msgstr "HTTP-Version"
 
 #: com/json/HTTP.java:134
-#, fuzzy
 msgid "Status-Code"
-msgstr "State"
+msgstr "Status-Code"
 
 #: com/json/HTTP.java:136
 msgid "Reason-Phrase"
-msgstr ""
+msgstr "Reason-Phrase"
 
 #: com/json/HTTP.java:138
-#, fuzzy
 msgid "Method"
-msgstr "Method: "
+msgstr "Method"
 
 #: com/json/HTTP.java:141
 msgid "Request-URI"
-msgstr ""
+msgstr "Request-URI"
 
 #: org/openscience/jmol/app/JmolApp.java:107
 msgid "Error starting Jmol: the property 'user.home' is not defined."
@@ -96,7 +91,7 @@ msgstr "silent startup operation"
 
 #: org/openscience/jmol/app/JmolApp.java:155
 msgid "kiosk mode -- no frame"
-msgstr ""
+msgstr "kiosk mode -- no frame"
 
 #: org/openscience/jmol/app/JmolApp.java:157
 msgid "list commands during script execution"
@@ -124,7 +119,7 @@ msgstr "exit after script (implicit with -n)"
 
 #: org/openscience/jmol/app/JmolApp.java:170
 msgid "port for JSON/MolecularPlayground-style communication"
-msgstr ""
+msgstr "port for JSON/MolecularPlayground-style communication"
 
 #: org/openscience/jmol/app/JmolApp.java:176
 msgid "script file to execute or '-' for System.in"
@@ -936,11 +931,11 @@ msgstr "&Previous frequency"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:190
 msgid "SurfaceTool..."
-msgstr ""
+msgstr "SurfaceTool..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:191
 msgid "Control Display of Surfaces"
-msgstr ""
+msgstr "Control Display of Surfaces"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:192
 msgid "&Help"
@@ -1113,63 +1108,62 @@ msgid "width height?"
 msgstr "width height?"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:409
-#, fuzzy
 msgid "magic"
-msgstr "Basic"
+msgstr "magic"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:410
 msgid "role"
-msgstr ""
+msgstr "role"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:416
 msgid "type"
-msgstr ""
+msgstr "type"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:418
 msgid "text"
-msgstr ""
+msgstr "text"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:419
 msgid "visibility"
-msgstr ""
+msgstr "visibility"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:422
 msgid "command"
-msgstr ""
+msgstr "command"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:425
 msgid "id"
-msgstr ""
+msgstr "id"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:437
 msgid "startup_script"
-msgstr ""
+msgstr "startup_script"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:442
 msgid "banner"
-msgstr ""
+msgstr "banner"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:443
 msgid "banner_text"
-msgstr ""
+msgstr "banner_text"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:447
 msgid "style"
-msgstr ""
+msgstr "style"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:453
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:457
 msgid "x"
-msgstr ""
+msgstr "x"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:454
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:458
 msgid "y"
-msgstr ""
+msgstr "y"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:473
 msgid "sync"
-msgstr ""
+msgstr "sync"
 
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:124
 msgid "Delete"
@@ -1416,97 +1410,99 @@ msgstr "What's New in Jmol"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:69
 msgid "Degrees"
-msgstr ""
+msgstr "Degrees"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:69
 msgid "Radians"
-msgstr ""
+msgstr "Radians"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:70
 msgid "Gradians"
-msgstr ""
+msgstr "Gradians"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:70
 msgid "Circle Fraction"
-msgstr ""
+msgstr "Circle Fraction"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:70
 msgid "Units of Pi"
-msgstr ""
+msgstr "Units of Pi"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:311
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:365
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:388
 msgid "Percentage scaling not implemented yet!"
-msgstr ""
+msgstr "Percentage scaling is not implemented yet!"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:133
 msgid "SurfaceTool"
-msgstr ""
+msgstr "SurfaceTool"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:152
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:155
 msgid "View Center"
-msgstr ""
+msgstr "View Centre"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:153
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:156
 msgid "Absolute"
-msgstr ""
+msgstr "Absolute"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:164
 msgid "Origin"
-msgstr ""
+msgstr "Origin"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:167
 msgid "Cap"
-msgstr ""
+msgstr "Cap"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:170
 msgid ""
 "Caps slice with opaque surfaces.\n"
 "Ignores MOs and surfaces with interior layers."
 msgstr ""
+"Caps slice with opaque surfaces.\n"
+"Ignores MOs and surfaces with interior layers."
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:174
 msgid "Slice Planes"
-msgstr ""
+msgstr "Slice Planes"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:176
 msgid "Shows planes at slicing surfaces."
-msgstr ""
+msgstr "Shows planes at slicing surfaces."
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:183
 msgid "Ghost On"
-msgstr ""
+msgstr "Ghost On"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:186
 msgid "Shows an unsliced \"ghost\"."
-msgstr ""
+msgstr "Shows an unsliced \"ghost\"."
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:206
 msgid "Angle from X-axis in XY plane"
-msgstr ""
+msgstr "Angle from X-axis in XY plane"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:217
 msgid "Angle from Z-axis"
-msgstr ""
+msgstr "Angle from Z-axis"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:228
 msgid "Direction vector of normal to slice"
-msgstr ""
+msgstr "Direction vector of normal to slice"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:231
 msgid "Distance of slice from origin"
-msgstr ""
+msgstr "Distance of slice from origin"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:243
 msgid "Thickness of slice"
-msgstr ""
+msgstr "Thickness of slice"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:261
 msgid "Select Surface(s)"
-msgstr ""
+msgstr "Select Surface(s)"
 
 #: org/openscience/jmol/app/webexport/JmolInstance.java:81
 msgid "Attempt to make scratch directory failed."
@@ -1716,7 +1712,7 @@ msgstr "Call to FileWriter unsuccessful."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:560
 msgid "Errors occurred during web page creation.  See Log Tab!"
-msgstr ""
+msgstr "Errors occurred during web page creation. See Log Tab!"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:635
 #, java-format
@@ -1754,6 +1750,10 @@ msgid ""
 "Please check that you are using a Jmol.jar that is part of a full Jmol "
 "distribution."
 msgstr ""
+"Could not find or open:\n"
+"{0}\n"
+"Please check that you are using a Jmol.jar that's part of a full Jmol "
+"distribution."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:794
 #, java-format
@@ -1882,396 +1882,29 @@ msgstr "Download view"
 msgid "unimplemented"
 msgstr "unimplemented"
 
-#, fuzzy
-#~ msgid "All"
-#~ msgstr "&All"
-
-#, fuzzy
-#~ msgid "System"
-#~ msgstr "Step"
-
-#, fuzzy
-#~ msgid "Configurations"
-#~ msgstr "Animation"
-
-#, fuzzy
-#~ msgid "Element"
-#~ msgstr "unimplemented"
-
-#, fuzzy
-#~ msgid "Select ({0})"
-#~ msgstr "Scale {0}"
-
-#, fuzzy
-#~ msgid "chains: {0}"
-#~ msgstr "creating {0}"
-
-#, fuzzy
-#~ msgid "View {0}"
-#~ msgstr "&View"
-
-#, fuzzy
-#~ msgid "Biomolecules"
-#~ msgstr "Rotate molecule."
-
-#, fuzzy
-#~ msgid "None"
-#~ msgstr "&None"
-
-#, fuzzy
-#~ msgid "Display Selected Only"
-#~ msgstr "Delete Selected"
-
-#, fuzzy
-#~ msgid "Invert Selection"
-#~ msgstr "Selection: "
-
-#, fuzzy
-#~ msgid "View"
-#~ msgstr "&View"
-
-#, fuzzy
-#~ msgid "Front"
-#~ msgstr "&Front"
-
-#, fuzzy
-#~ msgid "Left"
-#~ msgstr "&Left"
-
-#, fuzzy
-#~ msgid "Right"
-#~ msgstr "&Right"
-
-#, fuzzy
-#~ msgid "Bottom"
-#~ msgstr "&Bottom"
-
-#, fuzzy
-#~ msgid "Back"
-#~ msgstr "Basic"
-
-#, fuzzy
-#~ msgid "Bases"
-#~ msgstr "Pause"
-
-#, fuzzy
-#~ msgid "All Water"
-#~ msgstr "Water"
-
-#, fuzzy
-#~ msgid "Style"
-#~ msgstr "Step"
-
-#, fuzzy
-#~ msgid "Wireframe"
-#~ msgstr "&Wireframe"
-
-#, fuzzy
-#~ msgid "Cartoon"
-#~ msgstr "Carbon"
-
-#, fuzzy
-#~ msgid "On"
-#~ msgstr "&On"
-
-#, fuzzy
-#~ msgid "Hydrogen Bonds"
-#~ msgstr "Hydrogens"
-
-#, fuzzy
-#~ msgid "Cartoon Rockets"
-#~ msgstr "Cartoon of Page"
-
-#, fuzzy
-#~ msgid "Vibration"
-#~ msgstr "Animation"
-
-#, fuzzy
-#~ msgid "Vectors"
-#~ msgstr "V&ectors"
-
-#, fuzzy
-#~ msgid "Red+Green glasses"
-#~ msgstr "Red/Green"
-
-#, fuzzy
-#~ msgid "Labels"
-#~ msgstr "&Label"
-
-#, fuzzy
-#~ msgid "Centered"
-#~ msgstr "&Centered"
-
-#, fuzzy
-#~ msgid "Upper Right"
-#~ msgstr "&Upper right"
-
-#, fuzzy
-#~ msgid "Lower Right"
-#~ msgstr "&Upper right"
-
-#, fuzzy
-#~ msgid "Upper Left"
-#~ msgstr "&Upper right"
-
-#, fuzzy
-#~ msgid "Color"
-#~ msgstr "Close"
-
-#, fuzzy
-#~ msgid "Formal Charge"
-#~ msgstr "Total Charge: "
-
-#, fuzzy
-#~ msgid "Partial Charge"
-#~ msgstr "Total Charge: "
-
-#, fuzzy
-#~ msgid "Amino Acid"
-#~ msgstr "Amino"
-
-#, fuzzy
-#~ msgid "Black"
-#~ msgstr "Basic"
-
-#, fuzzy
-#~ msgid "White"
-#~ msgstr "Water"
-
-#, fuzzy
-#~ msgid "Cyan"
-#~ msgstr "Red/Cyan"
-
-#, fuzzy
-#~ msgid "Red"
-#~ msgstr "Redo"
-
-#, fuzzy
-#~ msgid "Green"
-#~ msgstr "Red/Green"
-
-#, fuzzy
-#~ msgid "Blue"
-#~ msgstr "Value"
-
-#, fuzzy
-#~ msgid "Indigo"
-#~ msgstr "Info"
-
-#, fuzzy
-#~ msgid "Maroon"
-#~ msgstr "Carbon"
-
-#, fuzzy
-#~ msgid "Background"
-#~ msgstr "Background Colour"
-
-#, fuzzy
-#~ msgid "Boundbox"
-#~ msgstr "Bounding Box"
-
-#, fuzzy
-#~ msgid "Zoom"
-#~ msgstr "&Zoom"
-
-#, fuzzy
-#~ msgid "Zoom In"
-#~ msgstr "&Zoom"
-
-#, fuzzy
-#~ msgid "Zoom Out"
-#~ msgstr "&Zoom"
-
-#, fuzzy
-#~ msgid "Spin"
-#~ msgstr "Spin on"
-
-#, fuzzy
-#~ msgid "Set X Rate"
-#~ msgstr "State"
-
-#, fuzzy
-#~ msgid "Set Y Rate"
-#~ msgstr "State"
-
-#, fuzzy
-#~ msgid "Set Z Rate"
-#~ msgstr "State"
-
-#, fuzzy
-#~ msgid "Set FPS"
-#~ msgstr "FPS"
-
-#, fuzzy
-#~ msgid "Animation Mode"
-#~ msgstr "Animation"
-
-#, fuzzy
-#~ msgid "Resume"
-#~ msgstr "Resi&ze"
-
-#, fuzzy
-#~ msgid "Stop"
-#~ msgstr "Step"
-
-#, fuzzy
-#~ msgid "Rewind"
-#~ msgstr "Redo"
-
-#, fuzzy
-#~ msgid "Restart"
-#~ msgstr "Repeat"
-
-#, fuzzy
-#~ msgid "Delete measurements"
-#~ msgstr "Measurements"
-
-#, fuzzy
-#~ msgid "List measurements"
-#~ msgstr "Measurements"
-
-#, fuzzy
-#~ msgid "Distance units nanometers"
-#~ msgstr "Distance &Units"
-
-#, fuzzy
-#~ msgid "Distance units Angstroms"
-#~ msgstr "Distance &Units"
-
-#, fuzzy
-#~ msgid "Distance units picometers"
-#~ msgstr "Distance &Units"
-
-#, fuzzy
-#~ msgid "Center"
-#~ msgstr "&Centered"
-
-#, fuzzy
-#~ msgid "Label"
-#~ msgstr "&Label"
-
-#, fuzzy
-#~ msgid "Select atom"
-#~ msgstr "Delete atoms"
-
-#, fuzzy
-#~ msgid "Select chain"
-#~ msgstr "Selection: "
-
-#, fuzzy
-#~ msgid "Select element"
-#~ msgstr "Select &All"
-
-#, fuzzy
-#~ msgid "Select group"
-#~ msgstr "Select"
-
-#, fuzzy
-#~ msgid "Select molecule"
-#~ msgstr "Select &All"
-
-#, fuzzy
-#~ msgid "Select site"
-#~ msgstr "Select"
-
-#, fuzzy
-#~ msgid "Show"
-#~ msgstr "Show All"
-
-#, fuzzy
-#~ msgid "Console"
-#~ msgstr "Conso&le..."
-
-#, fuzzy
-#~ msgid "File Header"
-#~ msgstr "File Name:"
-
-#, fuzzy
-#~ msgid "Model"
-#~ msgstr "Mode:"
-
-#, fuzzy
-#~ msgid "Orientation"
-#~ msgstr "Animation"
-
-#, fuzzy
-#~ msgid "File"
-#~ msgstr "&File"
-
-#, fuzzy
-#~ msgid "Reload"
-#~ msgstr "&Reload"
-
-#, fuzzy
-#~ msgid "Open file or URL"
-#~ msgstr "Open URL"
-
-#, fuzzy
-#~ msgid "Open script"
-#~ msgstr "Copy Script"
-
-#, fuzzy
-#~ msgid "Export {0} image"
-#~ msgstr "Export &Image..."
-
-#, fuzzy
-#~ msgid "Computation"
-#~ msgstr "Compute Bonds"
-
-#, fuzzy
-#~ msgid "van der Waals Surface"
-#~ msgstr "{0}% van der Waals"
-
-#, fuzzy
-#~ msgid "Molecular Surface"
-#~ msgstr "Molecular Properties"
-
-#, fuzzy
-#~ msgid "Reload {0}"
-#~ msgstr "&Reload"
-
-#, fuzzy
-#~ msgid "{0} px"
-#~ msgstr "{0} pixels"
-
-#, fuzzy
-#~ msgid "Angstrom Width"
-#~ msgstr "(Angstroms)"
-
-#, fuzzy
-#~ msgid "Selection Halos"
-#~ msgstr "Selection: "
-
-#, fuzzy
-#~ msgid "Show Hydrogens"
-#~ msgstr "Hydrogens"
-
-#, fuzzy
-#~ msgid "Show Measurements"
-#~ msgstr "Measurements"
-
-#, fuzzy
-#~ msgid "RasMol Colors"
-#~ msgstr "RasMol Defaults"
-
 #~ msgid "vector"
 #~ msgstr "vector"
 
 #~ msgid "atom set"
 #~ msgstr "atom set"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Go to first {0} in the collection"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Go to previous {0} in the collection"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Play the whole collection of {0}'s"
 
+#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Jump to last {0} in the collection"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Go to next {0} in the collection"
 
@@ -2287,6 +1920,7 @@ msgstr "unimplemented"
 #~ msgid "double-click and drag to reorder"
 #~ msgstr "double-click and drag to reorder"
 
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
@@ -2294,15 +1928,18 @@ msgstr "unimplemented"
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "adding {0}.spt"
 
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "adding JmolPopIn.js"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "adding {0}.png"
 
+#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"

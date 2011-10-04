@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-10-03 19:01+0200\n"
-"PO-Revision-Date: 2011-10-02 11:39+0000\n"
-"Last-Translator: Egon Willighagen <Unknown>\n"
+"PO-Revision-Date: 2011-10-03 23:40+0000\n"
+"Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: Dutch <jmol-developer@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-10-03 20:48+0000\n"
+"X-Launchpad-Export-Date: 2011-10-04 04:16+0000\n"
 "X-Generator: Launchpad (build 14071)\n"
 "X-Poedit-Country: The Netherlands\n"
 "X-Poedit-Language: Dutch\n"
@@ -1999,7 +1999,6 @@ msgstr "niet geimplementeerd"
 #~ msgid "No atoms loaded"
 #~ msgstr "Geen atomen geladen"
 
-#, java-format
 #~ msgid "{0} processors"
 #~ msgstr "{0} processors"
 
@@ -2036,7 +2035,6 @@ msgstr "niet geimplementeerd"
 #~ msgid "unknown maximum"
 #~ msgstr "onbekend maximum"
 
-#, java-format
 #~ msgid "{0} MB maximum"
 #~ msgstr "{0} MB maximaal"
 
@@ -2046,26 +2044,21 @@ msgstr "niet geimplementeerd"
 #~ msgid "Configurations"
 #~ msgstr "Orientaties"
 
-#, java-format
 #~ msgid "{0} MB total"
 #~ msgstr "{0} MB totaal"
 
-#, java-format
 #~ msgid "{0} MB free"
 #~ msgstr "{0} MB beschikbaar"
 
 #~ msgid "Symmetry"
 #~ msgstr "Symmetrie"
 
-#, java-format
 #~ msgid "Molecular Orbitals ({0})"
 #~ msgstr "Moleculaire orbitalen ({0})"
 
-#, java-format
 #~ msgid "Select ({0})"
 #~ msgstr "Selecteren ({0})"
 
-#, java-format
 #~ msgid "All {0} models"
 #~ msgstr "Alle {0} modellen"
 
@@ -2075,56 +2068,45 @@ msgstr "niet geimplementeerd"
 #~ msgid "Model information"
 #~ msgstr "Modeldetails"
 
-#, java-format
 #~ msgid "atoms: {0}"
 #~ msgstr "atomen: {0}"
 
-#, java-format
 #~ msgid "bonds: {0}"
 #~ msgstr "bindingen: {0}"
 
-#, java-format
 #~ msgid "Configurations ({0})"
 #~ msgstr "Configuraties  ({0})"
 
-#, java-format
 #~ msgid "Collection of {0} models"
 #~ msgstr "Collectie van {0} modellen"
 
 #~ msgid "Main Menu"
 #~ msgstr "Hoofdmenu"
 
-#, java-format
 #~ msgid "View {0}"
 #~ msgstr "Orientatie {0}"
 
-#, java-format
 #~ msgid "model {0}"
 #~ msgstr "model {0}"
 
-#, java-format
 #~ msgid "polymers: {0}"
 #~ msgstr "polymeren: {0}"
 
 #~ msgid "Display Selected Only"
 #~ msgstr "Laat alleen selectie zien"
 
-#, java-format
 #~ msgid "load biomolecule {0} ({1} atoms)"
 #~ msgstr "Laad biomolecuul {0} ({1} atomen)"
 
-#, java-format
 #~ msgid "biomolecule {0} ({1} atoms)"
 #~ msgstr "biomolecuul {0} ({1} atomen)"
 
 #~ msgid "Biomolecules"
 #~ msgstr "Biomoleculen"
 
-#, java-format
 #~ msgid "groups: {0}"
 #~ msgstr "groepen: {0}"
 
-#, java-format
 #~ msgid "chains: {0}"
 #~ msgstr "ketens {0}"
 
@@ -2577,11 +2559,9 @@ msgstr "niet geimplementeerd"
 #~ msgid "Open script"
 #~ msgstr "Open script"
 
-#, java-format
 #~ msgid "Save a copy of {0}"
 #~ msgstr "Sla een kopie op van {0}"
 
-#, java-format
 #~ msgid "Export {0} 3D model"
 #~ msgstr "Exporteer {0} 3D model"
 
@@ -2603,14 +2583,12 @@ msgstr "niet geimplementeerd"
 #~ msgid "Save all as JMOL file (zip)"
 #~ msgstr "Opslaan als JMOL-bestand (zip)"
 
-#, java-format
 #~ msgid "Export {0} image"
 #~ msgstr "Exporteer {0} afbeelding"
 
 #~ msgid "Molecular Surface"
 #~ msgstr "Moleculaire oppervlak"
 
-#, java-format
 #~ msgid "Solvent Surface ({0}-Angstrom probe)"
 #~ msgstr "Oplosmiddeloppervlak ({0}-Angstrom probe)"
 
@@ -2620,15 +2598,12 @@ msgstr "niet geimplementeerd"
 #~ msgid "van der Waals Surface"
 #~ msgstr "vanderWaalsoppervlak"
 
-#, java-format
 #~ msgid "Reload {0}"
 #~ msgstr "{0} herladen"
 
-#, java-format
 #~ msgid "Reload {0} + Display {1}"
 #~ msgstr "Herlaad {0} + Weergeven {1}"
 
-#, java-format
 #~ msgid "Solvent-Accessible Surface (VDW + {0} Angstrom)"
 #~ msgstr "Oplosmiddeltoegankelijk oppervlak (VDW + {0} Angstrom)"
 
@@ -2662,7 +2637,6 @@ msgstr "niet geimplementeerd"
 #~ msgid "Angstrom Width"
 #~ msgstr "Ångströmbreedte"
 
-#, java-format
 #~ msgid "{0} px"
 #~ msgstr "{0} px"
 

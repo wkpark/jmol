@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-10-03 23:45+0200\n"
-"PO-Revision-Date: 2011-02-03 16:33+0000\n"
-"Last-Translator: Andi Chandler <Unknown>\n"
+"PO-Revision-Date: 2011-10-03 23:23+0000\n"
+"Last-Translator: Anthony Harrington <untaintableangel@hotmail.co.uk>\n"
 "Language-Team: English (United Kingdom) <en_GB@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-05 17:04+0000\n"
-"X-Generator: Launchpad (build 13613)\n"
+"X-Launchpad-Export-Date: 2011-10-04 04:16+0000\n"
+"X-Generator: Launchpad (build 14071)\n"
 
 #: org/jmol/applet/AppletWrapper.java:100
 msgid "Loading Jmol applet ..."
@@ -142,7 +142,8 @@ msgid "Check"
 msgstr "Check"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Top"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -357,11 +358,11 @@ msgstr "Arabic"
 
 #: org/jmol/i18n/GT.java:140
 msgid "Asturian"
-msgstr ""
+msgstr "Asturian"
 
 #: org/jmol/i18n/GT.java:141
 msgid "Bosnian"
-msgstr ""
+msgstr "Bosnian"
 
 #: org/jmol/i18n/GT.java:142
 msgid "Catalan"
@@ -385,7 +386,7 @@ msgstr "Greek"
 
 #: org/jmol/i18n/GT.java:147
 msgid "Australian English"
-msgstr ""
+msgstr "Australian English"
 
 #: org/jmol/i18n/GT.java:148
 msgid "British English"
@@ -416,13 +417,12 @@ msgid "French"
 msgstr "French"
 
 #: org/jmol/i18n/GT.java:155
-#, fuzzy
 msgid "Frisian"
-msgstr "Ukrainian"
+msgstr "Frisian"
 
 #: org/jmol/i18n/GT.java:156
 msgid "Croatian"
-msgstr ""
+msgstr "Croatian"
 
 #: org/jmol/i18n/GT.java:157
 msgid "Hungarian"
@@ -430,7 +430,7 @@ msgstr "Hungarian"
 
 #: org/jmol/i18n/GT.java:158
 msgid "Armenian"
-msgstr ""
+msgstr "Armenian"
 
 #: org/jmol/i18n/GT.java:159
 msgid "Indonesian"
@@ -453,9 +453,8 @@ msgid "Korean"
 msgstr "Korean"
 
 #: org/jmol/i18n/GT.java:164
-#, fuzzy
 msgid "Malay"
-msgstr "Play"
+msgstr "Malay"
 
 #: org/jmol/i18n/GT.java:165
 msgid "Norwegian Bokmal"
@@ -491,7 +490,7 @@ msgstr "Slovenian"
 
 #: org/jmol/i18n/GT.java:173
 msgid "Serbian"
-msgstr ""
+msgstr "Serbian"
 
 #: org/jmol/i18n/GT.java:174
 msgid "Swedish"
@@ -503,7 +502,7 @@ msgstr "Tamil"
 
 #: org/jmol/i18n/GT.java:176
 msgid "Telugu"
-msgstr ""
+msgstr "Telugu"
 
 #: org/jmol/i18n/GT.java:177
 msgid "Turkish"
@@ -511,7 +510,7 @@ msgstr "Turkish"
 
 #: org/jmol/i18n/GT.java:178
 msgid "Uyghur"
-msgstr ""
+msgstr "Uyghur"
 
 #: org/jmol/i18n/GT.java:179
 msgid "Ukrainian"
@@ -904,7 +903,6 @@ msgid "Right"
 msgstr "Right"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:579
-#, fuzzy
 msgid ""
 "Top[as in \"view from the top, from above\" - (translators: remove this "
 "bracketed part]"
@@ -2164,7 +2162,7 @@ msgstr "{0} struts added"
 
 #: org/jmol/script/ScriptEvaluator.java:15585
 msgid "Note: More than one model is involved in this contact!"
-msgstr ""
+msgstr "Note: More than one model is involved in this contact!"
 
 #: org/jmol/shape/Frank.java:75
 msgid "Click for menu..."
@@ -2212,8 +2210,10 @@ msgstr "click on two points to spin around axis clockwise (requires {0})"
 
 #: org/jmol/viewer/ActionManager.java:125
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
-msgstr "click on two points to spin around axis anti-clockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
+msgstr ""
+"click on two points to spin around axis anti-clockwise (requires {0})"
 
 #: org/jmol/viewer/ActionManager.java:126
 #, java-format
@@ -2285,7 +2285,7 @@ msgstr "select and drag atoms (requires {0})"
 #: org/jmol/viewer/ActionManager.java:139
 #, java-format
 msgid "drag atoms in Z direction (requires {0})"
-msgstr ""
+msgstr "Drag atoms in Z direction (requires {0})"
 
 #: org/jmol/viewer/ActionManager.java:140
 #, java-format
@@ -2448,15 +2448,11 @@ msgstr "Cannot set log file path."
 msgid "Setting log file to {0}"
 msgstr "Setting log file to {0}"
 
-#~ msgid "Top"
-#~ msgstr "Top"
-
+#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 #~ msgstr ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 
 #~ msgid "File creation failed."
 #~ msgstr "File creation failed."
@@ -2467,6 +2463,10 @@ msgstr "Setting log file to {0}"
 #~ msgid "Molecular Orbitals"
 #~ msgstr "Molecular Orbitals"
 
+#~ msgid "Top"
+#~ msgstr "Top"
+
+#, java-format
 #~ msgid "File {0}"
 #~ msgstr "File {0}"
 
@@ -2479,12 +2479,14 @@ msgstr "Setting log file to {0}"
 #~ msgid "Script with state"
 #~ msgstr "Script with state"
 
+#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "{0} 3D Model"
 
 #~ msgid "JVXL Isosurface"
 #~ msgstr "JVXL Isosurface"
 
+#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "{0} Image"
 
@@ -2494,12 +2496,15 @@ msgstr "Setting log file to {0}"
 #~ msgid "About Jmol"
 #~ msgstr "About Jmol"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to string value: {0}"
 #~ msgstr "ERROR: cannot set boolean flag to string value: {0}"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 #~ msgstr "ERROR: cannot set boolean flag to numeric value: {0}"
 
+#, java-format
 #~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 #~ msgstr "ERROR: Cannot set value of this variable to a boolean: {0}"
 

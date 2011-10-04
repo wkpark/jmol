@@ -7,13 +7,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-10-03 19:01+0200\n"
-"PO-Revision-Date: 2011-09-28 12:41+0000\n"
-"Last-Translator: Júlio Cezar Santos Pires <Unknown>\n"
+"PO-Revision-Date: 2011-10-03 23:39+0000\n"
+"Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: Brazilian Portuguese <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-10-03 20:48+0000\n"
+"X-Launchpad-Export-Date: 2011-10-04 04:16+0000\n"
 "X-Generator: Launchpad (build 14071)\n"
 "X-Poedit-Country: BRAZIL\n"
 "X-Poedit-Language: Portuguese\n"
@@ -1995,7 +1995,6 @@ msgstr "não implementado"
 #~ msgid "No atoms loaded"
 #~ msgstr "Nenhum átomo foi carregado"
 
-#, java-format
 #~ msgid "{0} processors"
 #~ msgstr "{0} processadores"
 
@@ -2023,15 +2022,12 @@ msgstr "não implementado"
 #~ msgid "Configurations"
 #~ msgstr "Configurações"
 
-#, java-format
 #~ msgid "{0} MB maximum"
 #~ msgstr "{0} MB máximo"
 
-#, java-format
 #~ msgid "{0} MB total"
 #~ msgstr "{0} MB total"
 
-#, java-format
 #~ msgid "{0} MB free"
 #~ msgstr "{0} MB livre(s)"
 
@@ -2041,44 +2037,35 @@ msgstr "não implementado"
 #~ msgid "Model information"
 #~ msgstr "Informações do modelo"
 
-#, java-format
 #~ msgid "Select ({0})"
 #~ msgstr "Selecionar ({0})"
 
-#, java-format
 #~ msgid "All {0} models"
 #~ msgstr "Todos os {0} modelos"
 
 #~ msgid "Hide Symmetry"
 #~ msgstr "Ocultar Simetria"
 
-#, java-format
 #~ msgid "atoms: {0}"
 #~ msgstr "Átomos: {0}"
 
-#, java-format
 #~ msgid "Configurations ({0})"
 #~ msgstr "Configurações ({0})"
 
-#, java-format
 #~ msgid "Collection of {0} models"
 #~ msgstr "Coleção de {0} modelos"
 
-#, java-format
 #~ msgid "model {0}"
 #~ msgstr "Modelo {0}"
 
-#, java-format
 #~ msgid "polymers: {0}"
 #~ msgstr "Polímeros: {0}"
 
 #~ msgid "Biomolecules"
 #~ msgstr "Biomoléculas"
 
-#, java-format
 #~ msgid "groups: {0}"
 #~ msgstr "Grupos: {0}"
 
-#, java-format
 #~ msgid "chains: {0}"
 #~ msgstr "Cadeias: {0}"

@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-10-03 19:01+0200\n"
-"PO-Revision-Date: 2011-10-03 19:53+0000\n"
+"PO-Revision-Date: 2011-10-03 23:42+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@gmail.com>\n"
 "Language-Team: Ukrainian <translation@linux.org.ua>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-10-03 20:08+0000\n"
+"X-Launchpad-Export-Date: 2011-10-04 04:12+0000\n"
 "X-Generator: Launchpad (build 14071)\n"
 "Language: uk\n"
 
@@ -1969,14 +1969,44 @@ msgstr "не реалізовано"
 #~ msgid "The -D options are as follows (defaults in parenthesis):"
 #~ msgstr "Параметри -D (типові значення вказано у дужках):"
 
+#~ msgid "All"
+#~ msgstr "Все"
+
+#~ msgid "None"
+#~ msgstr "Немає"
+
+#~ msgid "Front"
+#~ msgstr "Спереду"
+
+#~ msgid "Left"
+#~ msgstr "Зліва"
+
+#~ msgid "Right"
+#~ msgstr "Справа"
+
+#~ msgid "Bottom"
+#~ msgstr "Знизу"
+
+#~ msgid "Wireframe"
+#~ msgstr "Каркас"
+
+#~ msgid "On"
+#~ msgstr "Увімкнено"
+
+#~ msgid "Centered"
+#~ msgstr "По центру"
+
+#~ msgid "Zoom"
+#~ msgstr "Масштабування"
+
+#~ msgid "Label"
+#~ msgstr "Мітка"
+
 #~ msgid "No atoms loaded"
 #~ msgstr "Атомів не завантажено"
 
 #~ msgid "Space Group"
 #~ msgstr "Просторова група"
-
-#~ msgid "All"
-#~ msgstr "Все"
 
 #~ msgid "Mouse Manual"
 #~ msgstr "Довідник з користування мишею"
@@ -1990,7 +2020,6 @@ msgstr "не реалізовано"
 #~ msgid "1 processor"
 #~ msgstr "1 процесор"
 
-#, java-format
 #~ msgid "{0} processors"
 #~ msgstr "{0} процесорів"
 
@@ -2003,15 +2032,12 @@ msgstr "не реалізовано"
 #~ msgid "Java memory usage:"
 #~ msgstr "Використання пам’яті Java:"
 
-#, java-format
 #~ msgid "{0} MB total"
 #~ msgstr "Всього: {0} МБ"
 
-#, java-format
 #~ msgid "{0} MB free"
 #~ msgstr "Вільно: {0} MБ"
 
-#, java-format
 #~ msgid "{0} MB maximum"
 #~ msgstr "Максимум: {0} MБ"
 
@@ -2036,7 +2062,6 @@ msgstr "не реалізовано"
 #~ msgid "By HETATM"
 #~ msgstr "За HETATM"
 
-#, java-format
 #~ msgid "Molecular Orbitals ({0})"
 #~ msgstr "Молекулярні орбіталі ({0})"
 
@@ -2049,47 +2074,36 @@ msgstr "не реалізовано"
 #~ msgid "Model information"
 #~ msgstr "Відомості щодо моделі"
 
-#, java-format
 #~ msgid "Select ({0})"
 #~ msgstr "Вибір ({0})"
 
-#, java-format
 #~ msgid "All {0} models"
 #~ msgstr "Всі {0} моделі"
 
-#, java-format
 #~ msgid "Configurations ({0})"
 #~ msgstr "Налаштування ({0})"
 
-#, java-format
 #~ msgid "Collection of {0} models"
 #~ msgstr "Збірка {0} моделей"
 
-#, java-format
 #~ msgid "atoms: {0}"
 #~ msgstr "атоми: {0}"
 
-#, java-format
 #~ msgid "bonds: {0}"
 #~ msgstr "зв’язкиЖ {0}"
 
-#, java-format
 #~ msgid "groups: {0}"
 #~ msgstr "групи: {0}"
 
-#, java-format
 #~ msgid "chains: {0}"
 #~ msgstr "ланцюги: {0}"
 
-#, java-format
 #~ msgid "polymers: {0}"
 #~ msgstr "полімери: {0}"
 
-#, java-format
 #~ msgid "model {0}"
 #~ msgstr "модель {0}"
 
-#, java-format
 #~ msgid "View {0}"
 #~ msgstr "Перегляд {0}"
 
@@ -2099,16 +2113,11 @@ msgstr "не реалізовано"
 #~ msgid "Biomolecules"
 #~ msgstr "Біомолекули"
 
-#, java-format
 #~ msgid "biomolecule {0} ({1} atoms)"
 #~ msgstr "біомолекула {0} ({1} атомів)"
 
-#, java-format
 #~ msgid "load biomolecule {0} ({1} atoms)"
 #~ msgstr "завантаження біомолекули {0} ({1} атомів)"
-
-#~ msgid "None"
-#~ msgstr "Немає"
 
 #~ msgid "Display Selected Only"
 #~ msgstr "Показати лише позначені"
@@ -2119,22 +2128,10 @@ msgstr "не реалізовано"
 #~ msgid "View"
 #~ msgstr "Перегляд"
 
-#~ msgid "Front"
-#~ msgstr "Спереду"
-
-#~ msgid "Left"
-#~ msgstr "Зліва"
-
-#~ msgid "Right"
-#~ msgstr "Справа"
-
 #~ msgid ""
 #~ "Top[as in \"view from the top, from above\" - (translators: remove this "
 #~ "bracketed part]"
 #~ msgstr "Згори"
-
-#~ msgid "Bottom"
-#~ msgstr "Знизу"
 
 #~ msgid "Back"
 #~ msgstr "Ззаду"
@@ -2220,9 +2217,6 @@ msgstr "не реалізовано"
 #~ msgid "Sticks"
 #~ msgstr "Стрижні"
 
-#~ msgid "Wireframe"
-#~ msgstr "Каркас"
-
 #~ msgid "Cartoon"
 #~ msgstr "Макет"
 
@@ -2231,9 +2225,6 @@ msgstr "не реалізовано"
 
 #~ msgid "Off"
 #~ msgstr "Вимкнено"
-
-#~ msgid "On"
-#~ msgstr "Увімкнено"
 
 #~ msgid "Hydrogen Bonds"
 #~ msgstr "Водневі зв’язки"
@@ -2309,9 +2300,6 @@ msgstr "не реалізовано"
 
 #~ msgid "Position Label on Atom"
 #~ msgstr "Розташування мітки щодо атома"
-
-#~ msgid "Centered"
-#~ msgstr "По центру"
 
 #~ msgid "Upper Right"
 #~ msgstr "Вгорі праворуч"
@@ -2442,9 +2430,6 @@ msgstr "не реалізовано"
 #~ msgid "Unit cell"
 #~ msgstr "Комірка одиниці"
 
-#~ msgid "Zoom"
-#~ msgstr "Масштабування"
-
 #~ msgid "Zoom In"
 #~ msgstr "Збільшити"
 
@@ -2524,9 +2509,6 @@ msgstr "не реалізовано"
 #~ msgid "Identity"
 #~ msgstr "Профіль"
 
-#~ msgid "Label"
-#~ msgstr "Мітка"
-
 #~ msgid "Select atom"
 #~ msgstr "Вибрати атом"
 
@@ -2596,7 +2578,6 @@ msgstr "не реалізовано"
 #~ msgid "Open script"
 #~ msgstr "Відкрити скрипт"
 
-#, java-format
 #~ msgid "Save a copy of {0}"
 #~ msgstr "Зберегти копію {0}"
 
@@ -2606,7 +2587,6 @@ msgstr "не реалізовано"
 #~ msgid "Save script with history"
 #~ msgstr "Зберегти скрипт з журналом"
 
-#, java-format
 #~ msgid "Export {0} image"
 #~ msgstr "Експортувати зображення {0}"
 
@@ -2616,7 +2596,6 @@ msgstr "не реалізовано"
 #~ msgid "Save JVXL isosurface"
 #~ msgstr "Зберегти ізоповерхню JVXL"
 
-#, java-format
 #~ msgid "Export {0} 3D model"
 #~ msgstr "Експортувати просторову модель {0}"
 
@@ -2641,22 +2620,18 @@ msgstr "не реалізовано"
 #~ msgid "Molecular Surface"
 #~ msgstr "Молекулярна поверхня"
 
-#, java-format
 #~ msgid "Solvent Surface ({0}-Angstrom probe)"
 #~ msgstr "Поверхня розчинника ({0}-ангстремне зондування)"
 
-#, java-format
 #~ msgid "Solvent-Accessible Surface (VDW + {0} Angstrom)"
 #~ msgstr "Доступна для розчинника поверхня (ВДВ + {0} ангстрем)"
 
 #~ msgid "Molecular Electrostatic Potential"
 #~ msgstr "Молекулярний електростатичний потенціал"
 
-#, java-format
 #~ msgid "Reload {0}"
 #~ msgstr "Перезавантажити {0}"
 
-#, java-format
 #~ msgid "Reload {0} + Display {1}"
 #~ msgstr "Перезавантажити {0} + показати {1}"
 
@@ -2672,7 +2647,6 @@ msgstr "не реалізовано"
 #~ msgid "Pixel Width"
 #~ msgstr "Ширина у пікселях"
 
-#, java-format
 #~ msgid "{0} px"
 #~ msgstr "{0} пк"
 

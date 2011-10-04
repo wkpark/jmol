@@ -202,7 +202,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   @Override
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
-    System.out.println("isosurface testing " + propertyName + " " + value + (propertyName == "token" ? " " + Token.nameOf(((Integer)value).intValue()) : ""));
+    //System.out.println("isosurface testing " + propertyName + " " + value + (propertyName == "token" ? " " + Token.nameOf(((Integer)value).intValue()) : ""));
 
     //isosurface-only (no calculation required; no calc parameters to set)
 

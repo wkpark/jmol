@@ -202,7 +202,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   @Override
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
-    //System.out.println("isosurface testing " + propertyName + " " + value + (propertyName == "token" ? " " + Token.nameOf(((Integer)value).intValue()) : ""));
+    System.out.println("isosurface testing " + propertyName + " " + value + (propertyName == "token" ? " " + Token.nameOf(((Integer)value).intValue()) : ""));
 
     //isosurface-only (no calculation required; no calc parameters to set)
 
@@ -234,6 +234,16 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
     if ("atomcolor" == propertyName) {
       if (thisMesh != null) {
+        if (thisMesh.vertexSource == null) {
+          short colix = (!thisMesh.isColorSolid ? 0 : thisMesh.colix);
+          setProperty("init", null, null);
+          setProperty("map", Boolean.FALSE, null);
+          setProperty("property", new float[viewer.getAtomCount()], null);
+          if (colix != 0) {
+            thisMesh.colorCommand = "color isosurface " + Graphics3D.getHexCode(colix);
+            setProperty("color", new Integer(Graphics3D.getArgb(colix)), null);
+          }
+        }
         thisMesh.colorAtoms(Graphics3D.getColix(value), bs);
       }
       return;

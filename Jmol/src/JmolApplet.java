@@ -50,12 +50,14 @@ public class JmolApplet extends AppletWrapper implements
     //BH focus test: this.setFocusable(false);
   }
 
-  private final static String[] preloadClasses = { "javax.vecmath.Point3f+",
-      ".Vector3f+", ".Matrix3f+", ".Point3i+", "org.jmol.g3d.Graphics3D",
-      ".Sphere3D", ".Line3D", ".Cylinder3D", ".Colix3D", ".Shade3D",
-      "org.jmol.adapter.smarter.SmarterJmolAdapter",
-      "org.jmol.adapter.smarter.Atom", ".Bond", ".AtomSetCollection",
-      ".AtomSetCollectionReader", ".Resolver", "org.jmol.popup.JmolPopup", };
+  private final static String[] preloadClasses = { 
+    "org.jmol.viewer.JmolConstants",                // 1b 
+    "org.jmol.g3d.Graphics3D",                      // 1c
+    "org.jmol.modelset.Atom",                       // 1d
+    "org.jmol.util.Escape",                         // 1e
+    "org.jmol.adapter.smarter.SmarterJmolAdapter",  // 1f 
+    //"org.jmol.popup.JmolPopup", 
+    };
 
   public String getPropertyAsString(String infoType) {
     return (wrappedApplet == null ? null : ""

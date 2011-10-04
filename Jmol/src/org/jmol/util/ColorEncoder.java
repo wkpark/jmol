@@ -33,7 +33,6 @@ import javax.vecmath.Point3f;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.constant.EnumPalette;
 import org.jmol.g3d.Graphics3D;
-import org.jmol.util.ArrayUtil;
 
 /*
  * 

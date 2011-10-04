@@ -105,8 +105,6 @@ public class AppletWrapper extends Applet {
     try {
       String imagePath = "" + (getClass().getClassLoader().getResource(preloadImageName));
       isSigned = (imagePath.indexOf("Signed") >= 0);
-      int i = imagePath.indexOf("0.jar");
-      GT.setLanguagePath(i >= 0 ? imagePath.substring(4, i + 1) : null); 
     } catch (Exception e) {
       Logger.error("isSigned false: " + e);
     }

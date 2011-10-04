@@ -24,9 +24,7 @@
 
 package org.jmol.applet;
 
-import org.jmol.api.Interface;
 import org.jmol.api.JmolCallbackListener;
-import org.jmol.api.JmolPromptInterface;
 import org.jmol.api.JmolStatusListener;
 import org.jmol.api.JmolViewer;
 import org.jmol.constant.EnumCallback;

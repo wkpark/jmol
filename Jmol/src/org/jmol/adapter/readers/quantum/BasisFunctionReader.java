@@ -205,6 +205,8 @@ abstract class BasisFunctionReader extends AtomSetCollectionReader {
   protected void fixSlaterTypes(int typeOld, int typeNew) {
     // in certain cases we assume Cartesian and then later have to 
     // correct that. 
+    if (shells == null)
+      return;
     for (int i = shells.size(); --i >=0 ;) {
       int[] slater = shells.get(i);
       if (slater[1] == typeOld)

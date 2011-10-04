@@ -423,8 +423,13 @@ public class GT {
   }
 
   private String getString(String string) {
-    if (!doTranslate || translationResourcesCount == 0)
+    if (!doTranslate || translationResourcesCount == 0) {
+      if (string.startsWith("["))
+        string = string.substring(string.indexOf("]") + 1);
+      else if (string.endsWith("]"))
+        string = string.substring(0, string.indexOf("["));
       return string;
+    }
     for (int bundle = 0; bundle < translationResourcesCount; bundle++) {
       try {
         String trans = translationResources[bundle].getString(string);
@@ -471,11 +476,4 @@ public class GT {
     return msg;   
   }
 
-  /**
-   * 
-   * @param languagePath UNUSED
-   */
-  public static void setLanguagePath(String languagePath) {
-    //GT.languagePath = languagePath;
-  }
 }

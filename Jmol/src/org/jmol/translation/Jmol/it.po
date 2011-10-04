@@ -8,59 +8,54 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-10-03 19:01+0200\n"
-"PO-Revision-Date: 2011-08-26 19:33+0000\n"
-"Last-Translator: newlife <Unknown>\n"
+"PO-Revision-Date: 2011-10-04 15:28+0000\n"
+"Last-Translator: Marco Buono <Unknown>\n"
 "Language-Team: Italian <it@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-09-01 03:40+0000\n"
-"X-Generator: Launchpad (build 13827)\n"
+"X-Launchpad-Export-Date: 2011-10-04 17:00+0000\n"
+"X-Generator: Launchpad (build 14085)\n"
 
 #: com/json/Cookie.java:121
-#, fuzzy
 msgid "name"
-msgstr "&Nome"
+msgstr "nome"
 
 #: com/json/Cookie.java:123
-#, fuzzy
 msgid "value"
-msgstr "Valore"
+msgstr "valore"
 
 #: com/json/Cookie.java:126
 msgid "expires"
-msgstr ""
+msgstr "scade"
 
 #: com/json/Cookie.java:130
 msgid "domain"
-msgstr ""
+msgstr "dominio"
 
 #: com/json/Cookie.java:134
-#, fuzzy
 msgid "path"
-msgstr "Ripeti"
+msgstr "percorso"
 
 #: com/json/HTTP.java:132 com/json/HTTP.java:144
 msgid "HTTP-Version"
-msgstr ""
+msgstr "Versione HTTP"
 
 #: com/json/HTTP.java:134
-#, fuzzy
 msgid "Status-Code"
-msgstr "Stato"
+msgstr "Codice di Stato"
 
 #: com/json/HTTP.java:136
 msgid "Reason-Phrase"
-msgstr ""
+msgstr "Motivo della Frase"
 
 #: com/json/HTTP.java:138
-#, fuzzy
 msgid "Method"
-msgstr "Metodo: "
+msgstr "Metodo"
 
 #: com/json/HTTP.java:141
 msgid "Request-URI"
-msgstr ""
+msgstr "Richiesta URI"
 
 #: org/openscience/jmol/app/JmolApp.java:107
 msgid "Error starting Jmol: the property 'user.home' is not defined."
@@ -112,7 +107,8 @@ msgstr "nessuna console -- tutto l'output inviato a sysout"
 
 #: org/openscience/jmol/app/JmolApp.java:163
 msgid "send only output from print messages to console (implies -i)"
-msgstr "inviare l'output di stampa solo dai messaggi alla console (implica -i)"
+msgstr ""
+"inviare l'output di stampa solo dai messaggi alla console (implica -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:165
 msgid "independent command thread"
@@ -132,7 +128,8 @@ msgstr "file di script da eseguire o '-' per System.in"
 
 #: org/openscience/jmol/app/JmolApp.java:182
 msgid "use multitouch interface (requires \"sparshui\" parameter"
-msgstr "l'uso dell'interfaccia multitouch (richiede il parametro \"sparshui\""
+msgstr ""
+"l'uso dell'interfaccia multitouch (richiede il parametro \"sparshui\""
 
 #: org/openscience/jmol/app/JmolApp.java:189
 msgid "Jmol script to execute BEFORE -s option"
@@ -160,8 +157,8 @@ msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
 msgstr ""
-"Qualità delle immagini JPG (1-100; default 75) o compressione delle "
-"immagini  PNG (0-9; default e, compressione massima 9)"
+"Qualità delle immagini JPG (1-100; default 75) o compressione delle immagini "
+" PNG (0-9; default e, compressione massima 9)"
 
 #: org/openscience/jmol/app/JmolApp.java:228
 #, java-format
@@ -1117,9 +1114,8 @@ msgid "width height?"
 msgstr "larghezza altezza?"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:409
-#, fuzzy
 msgid "magic"
-msgstr "Base"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:410
 msgid "role"
@@ -1127,23 +1123,23 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:416
 msgid "type"
-msgstr ""
+msgstr "tipo"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:418
 msgid "text"
-msgstr ""
+msgstr "testo"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:419
 msgid "visibility"
-msgstr ""
+msgstr "visibilità"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:422
 msgid "command"
-msgstr ""
+msgstr "comando"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:425
 msgid "id"
-msgstr ""
+msgstr "id"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:437
 msgid "startup_script"
@@ -1164,12 +1160,12 @@ msgstr ""
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:453
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:457
 msgid "x"
-msgstr ""
+msgstr "×"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:454
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:458
 msgid "y"
-msgstr ""
+msgstr "y"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:473
 msgid "sync"
@@ -1231,7 +1227,8 @@ msgstr "Mostra durante Rendering"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:245
 msgid "Should POV-Ray attempt to display while rendering?"
-msgstr "Deve il POV-Ray tentare di visualizzare durante la fare di rendering?"
+msgstr ""
+"Deve il POV-Ray tentare di visualizzare durante la fare di rendering?"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:268
 msgid "width:"
@@ -1895,409 +1892,25 @@ msgstr "Scarica vista"
 msgid "unimplemented"
 msgstr "non implementato"
 
-#, fuzzy
-#~ msgid "All"
-#~ msgstr "&Tutti"
-
-#, fuzzy
-#~ msgid "System"
-#~ msgstr "Passaggio"
-
-#, fuzzy
-#~ msgid "Configurations"
-#~ msgstr "Animazione"
-
-#, fuzzy
-#~ msgid "Element"
-#~ msgstr "non implementato"
-
-#, fuzzy
-#~ msgid "Select ({0})"
-#~ msgstr "Scala {0}"
-
-#, fuzzy
-#~ msgid "chains: {0}"
-#~ msgstr "creando {0}"
-
-#, fuzzy
-#~ msgid "View {0}"
-#~ msgstr "&Vista"
-
-#, fuzzy
-#~ msgid "Biomolecules"
-#~ msgstr "Ruota la molecola."
-
-#, fuzzy
-#~ msgid "None"
-#~ msgstr "&Nessuna"
-
-#, fuzzy
-#~ msgid "Display Selected Only"
-#~ msgstr "Elimina selezionati"
-
-#, fuzzy
-#~ msgid "Invert Selection"
-#~ msgstr "Selezione: "
-
-#, fuzzy
-#~ msgid "View"
-#~ msgstr "&Vista"
-
-#, fuzzy
-#~ msgid "Front"
-#~ msgstr "&Fronte"
-
-#, fuzzy
-#~ msgid "Left"
-#~ msgstr "&Sinistra"
-
-#, fuzzy
-#~ msgid "Right"
-#~ msgstr "Dest&ra"
-
-#, fuzzy
-#~ msgid "Bottom"
-#~ msgstr "&Basso"
-
-#, fuzzy
-#~ msgid "Back"
-#~ msgstr "Base"
-
-#, fuzzy
-#~ msgid "Side Chains"
-#~ msgstr "piani del ritaglio"
-
-#, fuzzy
-#~ msgid "Bases"
-#~ msgstr "Pausa"
-
-#, fuzzy
-#~ msgid "All Water"
-#~ msgstr "Acqua"
-
-#, fuzzy
-#~ msgid "Style"
-#~ msgstr "Passaggio"
-
-#, fuzzy
-#~ msgid "Wireframe"
-#~ msgstr "&Wireframe"
-
-#, fuzzy
-#~ msgid "Cartoon"
-#~ msgstr "Carbonio"
-
-#, fuzzy
-#~ msgid "On"
-#~ msgstr "&Attivo"
-
-#, fuzzy
-#~ msgid "Hydrogen Bonds"
-#~ msgstr "Idrogeni"
-
-#, fuzzy
-#~ msgid "Cartoon Rockets"
-#~ msgstr "Cartoon della Pagina"
-
-#, fuzzy
-#~ msgid "Vibration"
-#~ msgstr "Animazione"
-
-#, fuzzy
-#~ msgid "Vectors"
-#~ msgstr "V&ettori"
-
-#, fuzzy
-#~ msgid "Red+Green glasses"
-#~ msgstr "Rosso/Verde"
-
-#, fuzzy
-#~ msgid "Labels"
-#~ msgstr "E&tichetta"
-
-#, fuzzy
-#~ msgid "Centered"
-#~ msgstr "&Centered"
-
-#, fuzzy
-#~ msgid "Upper Right"
-#~ msgstr "&Alto destra"
-
-#, fuzzy
-#~ msgid "Lower Right"
-#~ msgstr "&Alto destra"
-
-#, fuzzy
-#~ msgid "Upper Left"
-#~ msgstr "&Alto destra"
-
-#, fuzzy
-#~ msgid "Color"
-#~ msgstr "Chiudi"
-
-#, fuzzy
-#~ msgid "Formal Charge"
-#~ msgstr "Carica totale: "
-
-#, fuzzy
-#~ msgid "Partial Charge"
-#~ msgstr "Carica totale: "
-
-#, fuzzy
-#~ msgid "Amino Acid"
-#~ msgstr "Amino"
-
-#, fuzzy
-#~ msgid "Black"
-#~ msgstr "Base"
-
-#, fuzzy
-#~ msgid "White"
-#~ msgstr "Acqua"
-
-#, fuzzy
-#~ msgid "Cyan"
-#~ msgstr "Rosso/Ciano"
-
-#, fuzzy
-#~ msgid "Red"
-#~ msgstr "Ripeti"
-
-#, fuzzy
-#~ msgid "Green"
-#~ msgstr "Rosso/Verde"
-
-#, fuzzy
-#~ msgid "Blue"
-#~ msgstr "Valore"
-
-#, fuzzy
-#~ msgid "Indigo"
-#~ msgstr "Informazioni"
-
-#, fuzzy
-#~ msgid "Maroon"
-#~ msgstr "Carbonio"
-
-#, fuzzy
-#~ msgid "Background"
-#~ msgstr "Colore dello sfondo"
-
-#, fuzzy
-#~ msgid "Surfaces"
-#~ msgstr "Strumento per la superficie"
-
-#, fuzzy
-#~ msgid "Boundbox"
-#~ msgstr "Riquadro di selezione"
-
-#, fuzzy
-#~ msgid "Zoom"
-#~ msgstr "&Zoom"
-
-#, fuzzy
-#~ msgid "Zoom In"
-#~ msgstr "&Zoom"
-
-#, fuzzy
-#~ msgid "Zoom Out"
-#~ msgstr "&Zoom"
-
-#, fuzzy
-#~ msgid "Spin"
-#~ msgstr "Spin on"
-
-#, fuzzy
-#~ msgid "Set X Rate"
-#~ msgstr "Stato"
-
-#, fuzzy
-#~ msgid "Set Y Rate"
-#~ msgstr "Stato"
-
-#, fuzzy
-#~ msgid "Set Z Rate"
-#~ msgstr "Stato"
-
-#, fuzzy
-#~ msgid "Set FPS"
-#~ msgstr "FPS"
-
-#, fuzzy
-#~ msgid "Animation Mode"
-#~ msgstr "Animazione"
-
-#, fuzzy
-#~ msgid "Resume"
-#~ msgstr "&Ridimensiona"
-
-#, fuzzy
-#~ msgid "Stop"
-#~ msgstr "Passaggio"
-
-#, fuzzy
-#~ msgid "Rewind"
-#~ msgstr "Ripeti"
-
-#, fuzzy
-#~ msgid "Restart"
-#~ msgstr "Ripeti"
-
-#, fuzzy
-#~ msgid "Delete measurements"
-#~ msgstr "Misure"
-
-#, fuzzy
-#~ msgid "List measurements"
-#~ msgstr "Misure"
-
-#, fuzzy
-#~ msgid "Distance units nanometers"
-#~ msgstr "Distanza &Units"
-
-#, fuzzy
-#~ msgid "Distance units Angstroms"
-#~ msgstr "Distanza &Units"
-
-#, fuzzy
-#~ msgid "Distance units picometers"
-#~ msgstr "Distanza &Units"
-
-#, fuzzy
-#~ msgid "Center"
-#~ msgstr "&Centered"
-
-#, fuzzy
-#~ msgid "Label"
-#~ msgstr "E&tichetta"
-
-#, fuzzy
-#~ msgid "Select atom"
-#~ msgstr "Cancella atomi"
-
-#, fuzzy
-#~ msgid "Select chain"
-#~ msgstr "Selezione: "
-
-#, fuzzy
-#~ msgid "Select element"
-#~ msgstr "Selezion&a tutto"
-
-#, fuzzy
-#~ msgid "Select group"
-#~ msgstr "Seleziona"
-
-#, fuzzy
-#~ msgid "Select molecule"
-#~ msgstr "Selezion&a tutto"
-
-#, fuzzy
-#~ msgid "Select site"
-#~ msgstr "Seleziona"
-
-#, fuzzy
-#~ msgid "Show"
-#~ msgstr "Mostra Tutto"
-
-#, fuzzy
-#~ msgid "Console"
-#~ msgstr "Conso&le..."
-
-#, fuzzy
-#~ msgid "File Header"
-#~ msgstr "Nome file:"
-
-#, fuzzy
-#~ msgid "Model"
-#~ msgstr "Modalità:"
-
-#, fuzzy
-#~ msgid "Orientation"
-#~ msgstr "Animazione"
-
-#, fuzzy
-#~ msgid "File"
-#~ msgstr "&File"
-
-#, fuzzy
-#~ msgid "Reload"
-#~ msgstr "&Ricarica"
-
-#, fuzzy
-#~ msgid "Open file or URL"
-#~ msgstr "Apri URL"
-
-#, fuzzy
-#~ msgid "Open script"
-#~ msgstr "Copia Script"
-
-#, fuzzy
-#~ msgid "Export {0} image"
-#~ msgstr "Esporta &Immagine..."
-
-#, fuzzy
-#~ msgid "Computation"
-#~ msgstr "Calcola legami"
-
-#, fuzzy
-#~ msgid "Dot Surface"
-#~ msgstr "Seleziona superficie(ci)"
-
-#, fuzzy
-#~ msgid "van der Waals Surface"
-#~ msgstr "{0}% van der Waals"
-
-#, fuzzy
-#~ msgid "Molecular Surface"
-#~ msgstr "Proprietà Molecolare"
-
-#, fuzzy
-#~ msgid "Reload {0}"
-#~ msgstr "&Ricarica"
-
-#, fuzzy
-#~ msgid "{0} px"
-#~ msgstr "{0} pixels"
-
-#, fuzzy
-#~ msgid "Angstrom Width"
-#~ msgstr "(Angstrom)"
-
-#, fuzzy
-#~ msgid "Selection Halos"
-#~ msgstr "Selezione: "
-
-#, fuzzy
-#~ msgid "Show Hydrogens"
-#~ msgstr "Idrogeni"
-
-#, fuzzy
-#~ msgid "Show Measurements"
-#~ msgstr "Misure"
-
-#, fuzzy
-#~ msgid "RasMol Colors"
-#~ msgstr "Valori di Default per RasMol"
-
-#, fuzzy
-#~ msgid "About..."
-#~ msgstr "Assoluto"
-
 #~ msgid "atom set"
 #~ msgstr "atom set"
 
 #~ msgid "vector"
 #~ msgstr "vettore"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Vai al primo {0} nella raccolta"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Vai al precedente {0} nella raccolta"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Riproduci la collezione completa di {0}"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Vai al prossimo {0} nella raccolta"
 
@@ -2313,12 +1926,15 @@ msgstr "non implementato"
 #~ msgid "Show Selected"
 #~ msgstr "Mostra Selezionati."
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "aggiungendo {0}.spt"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "aggiungendo {0}.png"
 
+#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"
@@ -2335,12 +1951,25 @@ msgstr "non implementato"
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "aggiungendo JmolPopIn.js"
 
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 #~ msgstr ""
 #~ "Inserisci una descrizione qui. I testi lunghi saranno avvolti nel modello "
 #~ "jmod {0}"
+
+#~ msgid "All"
+#~ msgstr "Tutto"
+
+#~ msgid "None"
+#~ msgstr "Nulla"
+
+#~ msgid "Centered"
+#~ msgstr "Centrato"
+
+#~ msgid "Wireframe"
+#~ msgstr "Wireframe"
 
 #~ msgid "independent commmand thread"
 #~ msgstr "comando indipendente"

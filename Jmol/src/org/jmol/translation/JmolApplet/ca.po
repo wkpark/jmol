@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-10-03 23:45+0200\n"
-"PO-Revision-Date: 2011-08-05 14:03+0000\n"
+"POT-Creation-Date: 2011-10-04 20:23+0200\n"
+"PO-Revision-Date: 2011-10-04 15:10+0000\n"
 "Last-Translator: VPablo <villumar@gmail.com>\n"
 "Language-Team: Catalan <Jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-05 17:04+0000\n"
-"X-Generator: Launchpad (build 13613)\n"
+"X-Launchpad-Export-Date: 2011-10-04 17:00+0000\n"
+"X-Generator: Launchpad (build 14085)\n"
 "X-Poedit-Country: ANDORRA\n"
 "X-Poedit-Language: Catalan\n"
 
@@ -23,12 +23,12 @@ msgstr ""
 msgid "Loading Jmol applet ..."
 msgstr "S'està carregant la miniaplicació del Jmol…"
 
-#: org/jmol/applet/AppletWrapper.java:177
+#: org/jmol/applet/AppletWrapper.java:175
 #, java-format
 msgid "  {0} seconds"
 msgstr "  {0} segons"
 
-#: org/jmol/applet/Jmol.java:707
+#: org/jmol/applet/Jmol.java:705
 #, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -43,7 +43,7 @@ msgstr ""
 "\n"
 "Consulteu http://www.jmol.org per a més informació"
 
-#: org/jmol/applet/Jmol.java:969
+#: org/jmol/applet/Jmol.java:967
 msgid "File Error:"
 msgstr "Error de fitxer:"
 
@@ -421,112 +421,115 @@ msgid "French"
 msgstr "Francès"
 
 #: org/jmol/i18n/GT.java:155
-#, fuzzy
 msgid "Frisian"
-msgstr "Ucraïnès"
+msgstr "Frisó"
 
 #: org/jmol/i18n/GT.java:156
+#, fuzzy
+msgid "Galician"
+msgstr "Italià"
+
+#: org/jmol/i18n/GT.java:157
 msgid "Croatian"
 msgstr "croat"
 
-#: org/jmol/i18n/GT.java:157
+#: org/jmol/i18n/GT.java:158
 msgid "Hungarian"
 msgstr "Hongarès"
 
-#: org/jmol/i18n/GT.java:158
+#: org/jmol/i18n/GT.java:159
 msgid "Armenian"
 msgstr "Armeni"
 
-#: org/jmol/i18n/GT.java:159
+#: org/jmol/i18n/GT.java:160
 msgid "Indonesian"
 msgstr "Indonesi"
 
-#: org/jmol/i18n/GT.java:160
+#: org/jmol/i18n/GT.java:161
 msgid "Italian"
 msgstr "Italià"
 
-#: org/jmol/i18n/GT.java:161
+#: org/jmol/i18n/GT.java:162
 msgid "Japanese"
 msgstr "Japonès"
 
-#: org/jmol/i18n/GT.java:162
+#: org/jmol/i18n/GT.java:163
 msgid "Javanese"
 msgstr "Javanès"
 
-#: org/jmol/i18n/GT.java:163
+#: org/jmol/i18n/GT.java:164
 msgid "Korean"
 msgstr "Coreà"
 
-#: org/jmol/i18n/GT.java:164
-#, fuzzy
-msgid "Malay"
-msgstr "Reprodueix"
-
 #: org/jmol/i18n/GT.java:165
+msgid "Malay"
+msgstr "Malai"
+
+#: org/jmol/i18n/GT.java:166
 msgid "Norwegian Bokmal"
 msgstr "Noruec Bökmal"
 
-#: org/jmol/i18n/GT.java:166
+#: org/jmol/i18n/GT.java:167
 msgid "Dutch"
 msgstr "Holandès"
 
-#: org/jmol/i18n/GT.java:167
+#: org/jmol/i18n/GT.java:168
 msgid "Occitan"
 msgstr "Occità"
 
-#: org/jmol/i18n/GT.java:168
+#: org/jmol/i18n/GT.java:169
 msgid "Polish"
 msgstr "Polonès"
 
-#: org/jmol/i18n/GT.java:169
+#: org/jmol/i18n/GT.java:170
 msgid "Portuguese"
 msgstr "Portuguès"
 
-#: org/jmol/i18n/GT.java:170
+#: org/jmol/i18n/GT.java:171
 msgid "Brazilian Portuguese"
 msgstr "Portuguès del Brasil"
 
-#: org/jmol/i18n/GT.java:171
+#: org/jmol/i18n/GT.java:172
 msgid "Russian"
 msgstr "Rus"
 
-#: org/jmol/i18n/GT.java:172
+#: org/jmol/i18n/GT.java:173
 msgid "Slovenian"
 msgstr "Eslovè"
 
-#: org/jmol/i18n/GT.java:173
+#: org/jmol/i18n/GT.java:174
 msgid "Serbian"
 msgstr "serbi"
 
-#: org/jmol/i18n/GT.java:174
+#: org/jmol/i18n/GT.java:175
 msgid "Swedish"
 msgstr "Suec"
 
-#: org/jmol/i18n/GT.java:175
+#: org/jmol/i18n/GT.java:176
 msgid "Tamil"
 msgstr "Tàmil"
 
-#: org/jmol/i18n/GT.java:176
+#: org/jmol/i18n/GT.java:177
 msgid "Telugu"
 msgstr "Telugu"
 
-#: org/jmol/i18n/GT.java:177
+#: org/jmol/i18n/GT.java:178
 msgid "Turkish"
 msgstr "Turc"
 
-#: org/jmol/i18n/GT.java:178
+#: org/jmol/i18n/GT.java:179
 msgid "Uyghur"
 msgstr "Uigur"
 
-#: org/jmol/i18n/GT.java:179
+#: org/jmol/i18n/GT.java:180
 msgid "Ukrainian"
 msgstr "Ucraïnès"
 
-#: org/jmol/i18n/GT.java:180
+#: org/jmol/i18n/GT.java:181
 msgid "Simplified Chinese"
 msgstr "Xinès simplificat"
 
-#: org/jmol/i18n/GT.java:181
+#: org/jmol/i18n/GT.java:182
 msgid "Traditional Chinese"
 msgstr "Xinès tradicional"
 
@@ -684,6 +687,11 @@ msgid ""
 "Use {0} to ignore these hydrogen positions.\n"
 "\n"
 msgstr ""
+"NOTA: Existeixen posicions per els hidrògens amida de l'esquelet i "
+"s'utilitzaran. Els resultats poden diferir d'un mode significatiu dels d'una "
+"anàlisi DSSP típica.\n"
+"Usa {0} per ignorar dites posicions dels hidrògens.\n"
+"\n"
 
 #: org/jmol/popup/JmolPopup.java:141
 #: org/jmol/popup/MainPopupResourceBundle.java:537
@@ -786,7 +794,7 @@ msgstr "Per HETATM"
 #: org/jmol/popup/MainPopupResourceBundle.java:547
 #, java-format
 msgid "Molecular Orbitals ({0})"
-msgstr ""
+msgstr "Orbitals moleculars ({0})"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:548
 #: org/jmol/popup/MainPopupResourceBundle.java:860
@@ -906,11 +914,10 @@ msgid "Right"
 msgstr "Dreta"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:579
-#, fuzzy
 msgid ""
 "Top[as in \"view from the top, from above\" - (translators: remove this "
 "bracketed part]"
-msgstr "A dalt"
+msgstr "Des de dalt"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:580
 msgid "Bottom"
@@ -2146,7 +2153,7 @@ msgstr "{0} enllaços nous; {1} modificats"
 #: org/jmol/script/ScriptEvaluator.java:8846
 #, java-format
 msgid "file {0} created"
-msgstr ""
+msgstr "s'ha creat el fitxer '{0}'"
 
 #: org/jmol/script/ScriptEvaluator.java:10369
 #: org/jmol/script/ScriptEvaluator.java:10635
@@ -2163,7 +2170,7 @@ msgstr "{0} enllaços d'hidrogen"
 #: org/jmol/script/ScriptEvaluator.java:11638
 #, java-format
 msgid "{0} struts added"
-msgstr ""
+msgstr "s'han afegit '{0}' puntals"
 
 #: org/jmol/script/ScriptEvaluator.java:15585
 msgid "Note: More than one model is involved in this contact!"
@@ -2225,17 +2232,17 @@ msgstr ""
 #: org/jmol/viewer/ActionManager.java:126
 #, java-format
 msgid "adjust slab (front plane; requires {0})"
-msgstr ""
+msgstr "ajustar el pla davanter de secció (requerix {0})"
 
 #: org/jmol/viewer/ActionManager.java:127
 #, java-format
 msgid "adjust depth (back plane; requires {0})"
-msgstr ""
+msgstr "ajustar el pla posterior de secció (requerix {0})"
 
 #: org/jmol/viewer/ActionManager.java:128
 #, java-format
 msgid "move slab/depth window (both planes; requires {0})"
-msgstr ""
+msgstr "desplaçar els plànols de secció (requerix {0})"
 
 #: org/jmol/viewer/ActionManager.java:129
 msgid "pop up the full context menu"
@@ -2258,17 +2265,17 @@ msgstr "cancel·la la selecció (requerix {0})"
 #: org/jmol/viewer/ActionManager.java:133
 #, java-format
 msgid "toggle selection (requires {0})"
-msgstr ""
+msgstr "(des)activa la selecció (requerix {0})"
 
 #: org/jmol/viewer/ActionManager.java:134
 #, java-format
 msgid "unselect this group of atoms (requires {0})"
-msgstr ""
+msgstr "de-selecciona este grup d'àtoms (requerix '{0})"
 
 #: org/jmol/viewer/ActionManager.java:135
 #, java-format
 msgid "add this group of atoms to the set of selected atoms (requires {0})"
-msgstr ""
+msgstr "afegix este grup d'àtoms a la selecció (requerix '{0})"
 
 #: org/jmol/viewer/ActionManager.java:136
 #, java-format
@@ -2276,61 +2283,63 @@ msgid ""
 "if all are selected, unselect all, otherwise add this group of atoms to the "
 "set of selected atoms (requires {0})"
 msgstr ""
+"si estan tots seleccionats, elimina la selecció; si no, afegix este grup "
+"d'àtoms a la selecció (requerix '{0})"
 
 #: org/jmol/viewer/ActionManager.java:137
 #, java-format
 msgid "move selected atoms (requires {0})"
-msgstr ""
+msgstr "moure els àtoms seleccionats (requerix {0})"
 
 #: org/jmol/viewer/ActionManager.java:138
 #, java-format
 msgid "select and drag atoms (requires {0})"
-msgstr ""
+msgstr "selecciona i arrossega àtoms (requerix {0})"
 
 #: org/jmol/viewer/ActionManager.java:139
 #, java-format
 msgid "drag atoms in Z direction (requires {0})"
-msgstr ""
+msgstr "arrossega àtoms en la direcció Z (és necessari {0})"
 
 #: org/jmol/viewer/ActionManager.java:140
 #, java-format
 msgid "rotate selected atoms (requires {0})"
-msgstr ""
+msgstr "rota els àtoms seleccionats (requerix {0})"
 
 #: org/jmol/viewer/ActionManager.java:141
 #, java-format
 msgid "rotate branch around bond (requires {0})"
-msgstr ""
+msgstr "rota la branca al voltant de l'enllaç (requerix '{0})"
 
 #: org/jmol/viewer/ActionManager.java:142
 #, java-format
 msgid "move atom (requires {0})"
-msgstr ""
+msgstr "moure àtom (requerix {0})"
 
 #: org/jmol/viewer/ActionManager.java:143
 #, java-format
 msgid "move atom and minimize molecule (requires {0})"
-msgstr ""
+msgstr "moure àtom i minimitza la molècula (requerix {0})"
 
 #: org/jmol/viewer/ActionManager.java:144
 #, java-format
 msgid "move and minimize molecule (requires {0})"
-msgstr ""
+msgstr "moure i minimitza la molècula (requerix {0})"
 
 #: org/jmol/viewer/ActionManager.java:145
 #, java-format
 msgid "move label (requires {0})"
-msgstr ""
+msgstr "moure etiqueta (requerix {0})"
 
 #: org/jmol/viewer/ActionManager.java:146
 #, java-format
 msgid "move specific DRAW point (requires {0})"
-msgstr ""
+msgstr "moure un punt de l'objecte dibuixat (requerix '{0})"
 
 #: org/jmol/viewer/ActionManager.java:147
 #, java-format
 msgid "move whole DRAW object (requires {0})"
-msgstr ""
+msgstr "moure l'objecte dibuixat (requerix '{0})"
 
 #: org/jmol/viewer/ActionManager.java:148
 msgid "pick an atom"
@@ -2339,12 +2348,12 @@ msgstr "trieu un àtom"
 #: org/jmol/viewer/ActionManager.java:149
 #, java-format
 msgid "pick a DRAW point (for measurements) (requires {0}"
-msgstr ""
+msgstr "tria un punt d'un objecte dibuixat (per mesuraments) (requerix '{0})"
 
 #: org/jmol/viewer/ActionManager.java:150
 #, java-format
 msgid "pick a label to toggle it hidden/displayed (requires {0})"
-msgstr ""
+msgstr "tria una etiqueta per canviar la seua visibilitat (requerix {0})"
 
 #: org/jmol/viewer/ActionManager.java:151
 #, java-format
@@ -2362,32 +2371,32 @@ msgstr "trieu un àtom per iniciar o finalitzar una mesura"
 #: org/jmol/viewer/ActionManager.java:153
 #, java-format
 msgid "pick an ISOSURFACE point (requires {0}"
-msgstr ""
+msgstr "tria un punt a la isosuperfície (ISOSURFACE) (requerix {0})"
 
 #: org/jmol/viewer/ActionManager.java:154
 #, java-format
 msgid "pick a point or atom to navigate to (requires {0})"
-msgstr ""
+msgstr "tria un punt o un àtom fins el que navegar (requerix {0})"
 
 #: org/jmol/viewer/ActionManager.java:155
 #, java-format
 msgid "delete atom (requires {0})"
-msgstr ""
+msgstr "esborra àtom (requerix {0})"
 
 #: org/jmol/viewer/ActionManager.java:156
 #, java-format
 msgid "delete bond (requires {0})"
-msgstr ""
+msgstr "esborra enllaç (requerix {0})"
 
 #: org/jmol/viewer/ActionManager.java:157
 #, java-format
 msgid "connect atoms (requires {0})"
-msgstr ""
+msgstr "connecta àtoms (requerix {0})"
 
 #: org/jmol/viewer/ActionManager.java:158
 #, java-format
 msgid "assign/new atom or bond (requires {0})"
-msgstr ""
+msgstr "assigna o afegix àtom o enllaç (requerix {0})"
 
 #: org/jmol/viewer/ActionManager.java:159
 msgid "reset (when clicked off the model)"
@@ -2396,7 +2405,7 @@ msgstr "reiniciar (quan es polse fora del model)"
 #: org/jmol/viewer/ActionManager.java:160
 #, java-format
 msgid "stop motion (requires {0})"
-msgstr ""
+msgstr "para el moviment (requerix {0})"
 
 #: org/jmol/viewer/ActionManager.java:161
 msgid "simulate multi-touch using the mouse)"
@@ -2434,7 +2443,7 @@ msgstr "{0} àtoms seleccionats"
 #: org/jmol/viewer/Viewer.java:4684
 #, java-format
 msgid "{0} hydrogens added"
-msgstr ""
+msgstr "s'han afegit '{0} hidrògens"
 
 #: org/jmol/viewer/Viewer.java:4765
 msgid "Drag to move label"
@@ -2452,16 +2461,16 @@ msgstr "No es pot establir la ruta de l'arxiu de registre."
 #: org/jmol/viewer/Viewer.java:9177
 #, java-format
 msgid "Setting log file to {0}"
-msgstr ""
-
-#~ msgid "Top"
-#~ msgstr "Superior"
+msgstr "Definint l'arxiu de registre com a '{0}"
 
 #~ msgid "Java memory usage"
 #~ msgstr "Ús de memòria de Java"
 
 #~ msgid "Molecular Orbitals"
 #~ msgstr "Orbitals moleculars"
+
+#~ msgid "Top"
+#~ msgstr "Superior"
 
 #~ msgid "About Jmol"
 #~ msgstr "Quant al Jmol"

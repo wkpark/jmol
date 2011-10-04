@@ -153,6 +153,7 @@ public class GT {
       new Language("fo",    GT._("Faroese"),              "Føroyskt",             false),
       new Language("fr",    GT._("French"),               "Français",             true),
       new Language("fy",    GT._("Frisian"),              "Frysk",                false),
+      new Language("gl",    GT._("Galician"),             "Galego",               false),
       new Language("hr",    GT._("Croatian"),             "Hrvatski",             false),
       new Language("hu",    GT._("Hungarian"),            "Magyar",               true),
       new Language("hy",    GT._("Armenian"),             "Հայերեն",                false),

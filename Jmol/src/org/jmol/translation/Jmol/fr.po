@@ -8,27 +8,25 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-10-03 19:01+0200\n"
-"PO-Revision-Date: 2011-08-22 11:56+0000\n"
-"Last-Translator: xemard.nicolas <Unknown>\n"
+"PO-Revision-Date: 2011-10-04 07:36+0000\n"
+"Last-Translator: Pierre Slamich <pierre.slamich@gmail.com>\n"
 "Language-Team: French <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-23 19:48+0000\n"
-"X-Generator: Launchpad (build 13714)\n"
+"X-Launchpad-Export-Date: 2011-10-04 17:01+0000\n"
+"X-Generator: Launchpad (build 14085)\n"
 "X-Poedit-Country: France\n"
 "X-Poedit-Language: French\n"
 "X-Poedit-Basepath: ../../../..\n"
 
 #: com/json/Cookie.java:121
-#, fuzzy
 msgid "name"
-msgstr "&Nom"
+msgstr "nom"
 
 #: com/json/Cookie.java:123
-#, fuzzy
 msgid "value"
-msgstr "Valeur"
+msgstr "valeur"
 
 #: com/json/Cookie.java:126
 msgid "expires"
@@ -36,30 +34,27 @@ msgstr ""
 
 #: com/json/Cookie.java:130
 msgid "domain"
-msgstr ""
+msgstr "domaine"
 
 #: com/json/Cookie.java:134
-#, fuzzy
 msgid "path"
-msgstr "Répéter"
+msgstr ""
 
 #: com/json/HTTP.java:132 com/json/HTTP.java:144
 msgid "HTTP-Version"
 msgstr ""
 
 #: com/json/HTTP.java:134
-#, fuzzy
 msgid "Status-Code"
-msgstr "État"
+msgstr ""
 
 #: com/json/HTTP.java:136
 msgid "Reason-Phrase"
 msgstr ""
 
 #: com/json/HTTP.java:138
-#, fuzzy
 msgid "Method"
-msgstr "Méthode : "
+msgstr ""
 
 #: com/json/HTTP.java:141
 msgid "Request-URI"
@@ -1120,9 +1115,8 @@ msgid "width height?"
 msgstr "largeur hauteur ?"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:409
-#, fuzzy
 msgid "magic"
-msgstr "Basique"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:410
 msgid "role"
@@ -1234,7 +1228,8 @@ msgstr "Afficher pendant le calcul"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:245
 msgid "Should POV-Ray attempt to display while rendering?"
-msgstr "Est-ce que POV-Ray doit essayer d’afficher l’image durant le calcul ?"
+msgstr ""
+"Est-ce que POV-Ray doit essayer d’afficher l’image durant le calcul ?"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:268
 msgid "width:"
@@ -1698,8 +1693,8 @@ msgstr "Donner un nom à l’instance de Jmol:"
 #: org/openscience/jmol/app/webexport/WebPanel.java:483
 msgid "Error creating new instance containing script(s) and image."
 msgstr ""
-"Erreur lors de la création d’une nouvelle instance contenant un(des) script"
-"(s) et une image"
+"Erreur lors de la création d’une nouvelle instance contenant un(des) "
+"script(s) et une image"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:494
 #, java-format
@@ -1899,393 +1894,38 @@ msgstr "Affichage de téléchargement"
 msgid "unimplemented"
 msgstr "non-implémenté"
 
-#, fuzzy
 #~ msgid "All"
-#~ msgstr "&Tout"
+#~ msgstr "Tout"
 
-#, fuzzy
-#~ msgid "System"
-#~ msgstr "Étape"
-
-#, fuzzy
-#~ msgid "Configurations"
-#~ msgstr "Animation"
-
-#, fuzzy
-#~ msgid "Element"
-#~ msgstr "non-implémenté"
-
-#, fuzzy
-#~ msgid "Select ({0})"
-#~ msgstr "Echelle {0}"
-
-#, fuzzy
-#~ msgid "chains: {0}"
-#~ msgstr "créer {0}"
-
-#, fuzzy
-#~ msgid "View {0}"
-#~ msgstr "&Vue"
-
-#, fuzzy
-#~ msgid "Biomolecules"
-#~ msgstr "Faire tourner la molécule."
-
-#, fuzzy
 #~ msgid "None"
-#~ msgstr "&Aucun"
+#~ msgstr "Aucun"
 
-#, fuzzy
-#~ msgid "Display Selected Only"
-#~ msgstr "Effacer sélection"
-
-#, fuzzy
-#~ msgid "Invert Selection"
-#~ msgstr "Sélection : "
-
-#, fuzzy
-#~ msgid "View"
-#~ msgstr "&Vue"
-
-#, fuzzy
-#~ msgid "Front"
-#~ msgstr "De &face"
-
-#, fuzzy
-#~ msgid "Left"
-#~ msgstr "&Gauche"
-
-#, fuzzy
-#~ msgid "Right"
-#~ msgstr "&Droite"
-
-#, fuzzy
-#~ msgid "Bottom"
-#~ msgstr "&Bas"
-
-#, fuzzy
-#~ msgid "Back"
-#~ msgstr "Basique"
-
-#, fuzzy
-#~ msgid "Side Chains"
-#~ msgstr "Plans de coupe"
-
-#, fuzzy
-#~ msgid "Bases"
-#~ msgstr "Pause"
-
-#, fuzzy
-#~ msgid "All Water"
-#~ msgstr "Eau"
-
-#, fuzzy
-#~ msgid "Style"
-#~ msgstr "Étape"
-
-#, fuzzy
 #~ msgid "Wireframe"
 #~ msgstr "Fil de fer"
 
-#, fuzzy
-#~ msgid "Cartoon"
-#~ msgstr "Carbone"
-
-#, fuzzy
-#~ msgid "On"
-#~ msgstr "Activé"
-
-#, fuzzy
-#~ msgid "Hydrogen Bonds"
-#~ msgstr "Hydrogènes"
-
-#, fuzzy
-#~ msgid "Cartoon Rockets"
-#~ msgstr "Caricature de la page"
-
-#, fuzzy
-#~ msgid "Vibration"
-#~ msgstr "Animation"
-
-#, fuzzy
-#~ msgid "Vectors"
-#~ msgstr "V&ecteurs"
-
-#, fuzzy
-#~ msgid "Red+Green glasses"
-#~ msgstr "Rouge/Vert"
-
-#, fuzzy
-#~ msgid "Labels"
-#~ msgstr "&Libellé"
-
-#, fuzzy
-#~ msgid "Centered"
-#~ msgstr "&centré"
-
-#, fuzzy
-#~ msgid "Upper Right"
-#~ msgstr "Haut droite"
-
-#, fuzzy
-#~ msgid "Lower Right"
-#~ msgstr "Haut droite"
-
-#, fuzzy
-#~ msgid "Upper Left"
-#~ msgstr "Haut droite"
-
-#, fuzzy
-#~ msgid "Color"
-#~ msgstr "Fermer"
-
-#, fuzzy
-#~ msgid "Formal Charge"
-#~ msgstr "Charge Totale : "
-
-#, fuzzy
-#~ msgid "Partial Charge"
-#~ msgstr "Charge Totale : "
-
-#, fuzzy
-#~ msgid "Amino Acid"
-#~ msgstr "Amino"
-
-#, fuzzy
-#~ msgid "Black"
-#~ msgstr "Basique"
-
-#, fuzzy
-#~ msgid "White"
-#~ msgstr "Eau"
-
-#, fuzzy
-#~ msgid "Cyan"
-#~ msgstr "Rouge/Cyan"
-
-#, fuzzy
-#~ msgid "Red"
-#~ msgstr "Répéter"
-
-#, fuzzy
-#~ msgid "Green"
-#~ msgstr "Rouge/Vert"
-
-#, fuzzy
-#~ msgid "Blue"
-#~ msgstr "Valeur"
-
-#, fuzzy
-#~ msgid "Indigo"
-#~ msgstr "Info"
-
-#, fuzzy
-#~ msgid "Maroon"
-#~ msgstr "Carbone"
-
-#, fuzzy
-#~ msgid "Background"
-#~ msgstr "Couleur d’arrière-plan"
-
-#, fuzzy
-#~ msgid "Surfaces"
-#~ msgstr "Outil Surface"
-
-#, fuzzy
-#~ msgid "Boundbox"
-#~ msgstr "Limite"
-
-#, fuzzy
-#~ msgid "Zoom"
-#~ msgstr "&Zoom"
-
-#, fuzzy
-#~ msgid "Zoom In"
-#~ msgstr "&Zoom"
-
-#, fuzzy
-#~ msgid "Zoom Out"
-#~ msgstr "&Zoom"
-
-#, fuzzy
-#~ msgid "Spin"
-#~ msgstr "Rotation active"
-
-#, fuzzy
-#~ msgid "Set X Rate"
-#~ msgstr "État"
-
-#, fuzzy
-#~ msgid "Set Y Rate"
-#~ msgstr "État"
-
-#, fuzzy
-#~ msgid "Set Z Rate"
-#~ msgstr "État"
-
-#, fuzzy
-#~ msgid "Set FPS"
-#~ msgstr "FPS"
-
-#, fuzzy
-#~ msgid "Animation Mode"
-#~ msgstr "Animation"
-
-#, fuzzy
-#~ msgid "Resume"
-#~ msgstr "Redim&ensionner"
-
-#, fuzzy
-#~ msgid "Stop"
-#~ msgstr "Étape"
-
-#, fuzzy
-#~ msgid "Rewind"
-#~ msgstr "Répéter"
-
-#, fuzzy
-#~ msgid "Restart"
-#~ msgstr "Répéter"
-
-#, fuzzy
-#~ msgid "Delete measurements"
-#~ msgstr "Mesures"
-
-#, fuzzy
-#~ msgid "List measurements"
-#~ msgstr "Mesures"
-
-#, fuzzy
-#~ msgid "Distance units nanometers"
-#~ msgstr "&Unités de distance"
-
-#, fuzzy
-#~ msgid "Distance units Angstroms"
-#~ msgstr "&Unités de distance"
-
-#, fuzzy
-#~ msgid "Distance units picometers"
-#~ msgstr "&Unités de distance"
-
-#, fuzzy
-#~ msgid "Center"
-#~ msgstr "&centré"
-
-#, fuzzy
 #~ msgid "Label"
-#~ msgstr "&Libellé"
+#~ msgstr "Texte"
 
-#, fuzzy
-#~ msgid "Select atom"
-#~ msgstr "Effacer les atomes"
+#~ msgid "Centered"
+#~ msgstr "Centré"
 
-#, fuzzy
-#~ msgid "Select chain"
-#~ msgstr "Sélection : "
+#~ msgid "On"
+#~ msgstr "On"
 
-#, fuzzy
-#~ msgid "Select element"
-#~ msgstr "Tout &Sélectionner"
+#~ msgid "Zoom"
+#~ msgstr "Zoom"
 
-#, fuzzy
-#~ msgid "Select group"
-#~ msgstr "Sélection"
+#~ msgid "Front"
+#~ msgstr "Face"
 
-#, fuzzy
-#~ msgid "Select molecule"
-#~ msgstr "Tout &Sélectionner"
+#~ msgid "Bottom"
+#~ msgstr "Bas"
 
-#, fuzzy
-#~ msgid "Select site"
-#~ msgstr "Sélection"
+#~ msgid "Right"
+#~ msgstr "Droite"
 
-#, fuzzy
-#~ msgid "Show"
-#~ msgstr "Tout afficher"
-
-#, fuzzy
-#~ msgid "Console"
-#~ msgstr "Conso&le..."
-
-#, fuzzy
-#~ msgid "File Header"
-#~ msgstr "Nom de fichier :"
-
-#, fuzzy
-#~ msgid "Model"
-#~ msgstr "Mode :"
-
-#, fuzzy
-#~ msgid "Orientation"
-#~ msgstr "Animation"
-
-#, fuzzy
-#~ msgid "File"
-#~ msgstr "&Fichier"
-
-#, fuzzy
-#~ msgid "Reload"
-#~ msgstr "&Recharger"
-
-#, fuzzy
-#~ msgid "Open file or URL"
-#~ msgstr "Ouvrir une URL"
-
-#, fuzzy
-#~ msgid "Open script"
-#~ msgstr "Copier le Script"
-
-#, fuzzy
-#~ msgid "Export {0} image"
-#~ msgstr "Exporter une &Image..."
-
-#, fuzzy
-#~ msgid "Computation"
-#~ msgstr "Calculer les Liens"
-
-#, fuzzy
-#~ msgid "Dot Surface"
-#~ msgstr "Sélectionner Surface(s)"
-
-#, fuzzy
-#~ msgid "van der Waals Surface"
-#~ msgstr "{0}% van der Waals"
-
-#, fuzzy
-#~ msgid "Molecular Surface"
-#~ msgstr "Propriétés moléculaires"
-
-#, fuzzy
-#~ msgid "Reload {0}"
-#~ msgstr "&Recharger"
-
-#, fuzzy
-#~ msgid "{0} px"
-#~ msgstr "{0} pixels"
-
-#, fuzzy
-#~ msgid "Angstrom Width"
-#~ msgstr "(Angstroms 1E-10)"
-
-#, fuzzy
-#~ msgid "Selection Halos"
-#~ msgstr "Sélection : "
-
-#, fuzzy
-#~ msgid "Show Hydrogens"
-#~ msgstr "Hydrogènes"
-
-#, fuzzy
-#~ msgid "Show Measurements"
-#~ msgstr "Mesures"
-
-#, fuzzy
-#~ msgid "RasMol Colors"
-#~ msgstr "Défaut RasMol"
-
-#, fuzzy
-#~ msgid "About..."
-#~ msgstr "Absolu"
+#~ msgid "Left"
+#~ msgstr "Gauche"
 
 #~ msgid "atom set"
 #~ msgstr "groupe d'atomes"
@@ -2293,18 +1933,23 @@ msgstr "non-implémenté"
 #~ msgid "vector"
 #~ msgstr "vecteur"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Aller au premier {0} de la collection"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Aller au {0} précédent de la collection"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Jouer la collection complète de {0}"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Aller au {0} suivant de la collection"
 
+#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Aller au dernier {0} de la collection"
 
@@ -2330,22 +1975,26 @@ msgstr "non-implémenté"
 #~ msgid "Show Selected"
 #~ msgstr "Afficher les options sélectionnées"
 
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 #~ msgstr ""
-#~ "Insérer un texte explicatif pertinente ici. Long texte sera coupé "
-#~ "entourent le modèle de Jmol {0}."
+#~ "Insérer un texte explicatif pertinente ici. Long texte sera coupé entourent "
+#~ "le modèle de Jmol {0}."
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "ajoutant {0}. spt"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "ajoutant {0}. png"
 
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "ajoutant JmolPopIn.js"
 
+#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"

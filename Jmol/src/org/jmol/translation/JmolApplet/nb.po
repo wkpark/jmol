@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-10-03 23:45+0200\n"
+"POT-Creation-Date: 2011-10-04 20:23+0200\n"
 "PO-Revision-Date: 2011-06-06 09:19+0000\n"
 "Last-Translator: Anders Oftedal <anders.oftedal@gmail.com>\n"
 "Language-Team: Norwegian Bokmal <nb@li.org>\n"
@@ -21,12 +21,12 @@ msgstr ""
 msgid "Loading Jmol applet ..."
 msgstr ""
 
-#: org/jmol/applet/AppletWrapper.java:177
+#: org/jmol/applet/AppletWrapper.java:175
 #, java-format
 msgid "  {0} seconds"
 msgstr "  {0} sekunder"
 
-#: org/jmol/applet/Jmol.java:707
+#: org/jmol/applet/Jmol.java:705
 #, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -36,7 +36,7 @@ msgid ""
 "See http://www.jmol.org for more information"
 msgstr ""
 
-#: org/jmol/applet/Jmol.java:969
+#: org/jmol/applet/Jmol.java:967
 msgid "File Error:"
 msgstr "Fil feil:"
 
@@ -414,107 +414,112 @@ msgid "Frisian"
 msgstr "Ukrainsk"
 
 #: org/jmol/i18n/GT.java:156
+#, fuzzy
+msgid "Galician"
+msgstr "Italiensk"
+
+#: org/jmol/i18n/GT.java:157
 msgid "Croatian"
 msgstr "Kroatisk"
 
-#: org/jmol/i18n/GT.java:157
+#: org/jmol/i18n/GT.java:158
 msgid "Hungarian"
 msgstr "Ungarsk"
 
-#: org/jmol/i18n/GT.java:158
+#: org/jmol/i18n/GT.java:159
 msgid "Armenian"
 msgstr ""
 
-#: org/jmol/i18n/GT.java:159
+#: org/jmol/i18n/GT.java:160
 msgid "Indonesian"
 msgstr "Indonesisk"
 
-#: org/jmol/i18n/GT.java:160
+#: org/jmol/i18n/GT.java:161
 msgid "Italian"
 msgstr "Italiensk"
 
-#: org/jmol/i18n/GT.java:161
+#: org/jmol/i18n/GT.java:162
 msgid "Japanese"
 msgstr "Japansk"
 
-#: org/jmol/i18n/GT.java:162
+#: org/jmol/i18n/GT.java:163
 msgid "Javanese"
 msgstr "Javansk"
 
-#: org/jmol/i18n/GT.java:163
+#: org/jmol/i18n/GT.java:164
 msgid "Korean"
 msgstr "Koreansk"
 
-#: org/jmol/i18n/GT.java:164
+#: org/jmol/i18n/GT.java:165
 #, fuzzy
 msgid "Malay"
 msgstr "Spill av"
 
-#: org/jmol/i18n/GT.java:165
+#: org/jmol/i18n/GT.java:166
 msgid "Norwegian Bokmal"
 msgstr "Norsk Bokmål"
 
-#: org/jmol/i18n/GT.java:166
+#: org/jmol/i18n/GT.java:167
 msgid "Dutch"
 msgstr "Nederlandsk"
 
-#: org/jmol/i18n/GT.java:167
+#: org/jmol/i18n/GT.java:168
 msgid "Occitan"
 msgstr "Occitansk"
 
-#: org/jmol/i18n/GT.java:168
+#: org/jmol/i18n/GT.java:169
 msgid "Polish"
 msgstr "Polsk"
 
-#: org/jmol/i18n/GT.java:169
+#: org/jmol/i18n/GT.java:170
 msgid "Portuguese"
 msgstr "Portugisisk"
 
-#: org/jmol/i18n/GT.java:170
+#: org/jmol/i18n/GT.java:171
 msgid "Brazilian Portuguese"
 msgstr "Brasiliansk Portugisisk"
 
-#: org/jmol/i18n/GT.java:171
+#: org/jmol/i18n/GT.java:172
 msgid "Russian"
 msgstr "Russisk"
 
-#: org/jmol/i18n/GT.java:172
+#: org/jmol/i18n/GT.java:173
 msgid "Slovenian"
 msgstr "Slovensk"
 
-#: org/jmol/i18n/GT.java:173
+#: org/jmol/i18n/GT.java:174
 msgid "Serbian"
 msgstr ""
 
-#: org/jmol/i18n/GT.java:174
+#: org/jmol/i18n/GT.java:175
 msgid "Swedish"
 msgstr "Svensk"
 
-#: org/jmol/i18n/GT.java:175
+#: org/jmol/i18n/GT.java:176
 msgid "Tamil"
 msgstr "Tamilsk"
 
-#: org/jmol/i18n/GT.java:176
+#: org/jmol/i18n/GT.java:177
 msgid "Telugu"
 msgstr ""
 
-#: org/jmol/i18n/GT.java:177
+#: org/jmol/i18n/GT.java:178
 msgid "Turkish"
 msgstr "Tyrkisk"
 
-#: org/jmol/i18n/GT.java:178
+#: org/jmol/i18n/GT.java:179
 msgid "Uyghur"
 msgstr ""
 
-#: org/jmol/i18n/GT.java:179
+#: org/jmol/i18n/GT.java:180
 msgid "Ukrainian"
 msgstr "Ukrainsk"
 
-#: org/jmol/i18n/GT.java:180
+#: org/jmol/i18n/GT.java:181
 msgid "Simplified Chinese"
 msgstr "Forenklet kinesisk"
 
-#: org/jmol/i18n/GT.java:181
+#: org/jmol/i18n/GT.java:182
 msgid "Traditional Chinese"
 msgstr "Tradisjonell kinesisk"
 

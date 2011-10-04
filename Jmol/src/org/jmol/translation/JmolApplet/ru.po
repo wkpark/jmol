@@ -7,26 +7,26 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-10-03 23:45+0200\n"
-"PO-Revision-Date: 2011-09-24 21:32+0000\n"
-"Last-Translator: Pand5461 <pisarevvv@mail.ru>\n"
+"POT-Creation-Date: 2011-10-04 20:23+0200\n"
+"PO-Revision-Date: 2011-10-04 04:53+0000\n"
+"Last-Translator: Oleg Koptev <koptev.oleg@gmail.com>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-10-03 20:48+0000\n"
-"X-Generator: Launchpad (build 14071)\n"
+"X-Launchpad-Export-Date: 2011-10-04 17:01+0000\n"
+"X-Generator: Launchpad (build 14085)\n"
 
 #: org/jmol/applet/AppletWrapper.java:100
 msgid "Loading Jmol applet ..."
 msgstr "Загрузка апплета Jmol..."
 
-#: org/jmol/applet/AppletWrapper.java:177
+#: org/jmol/applet/AppletWrapper.java:175
 #, java-format
 msgid "  {0} seconds"
 msgstr "  {0} секунд"
 
-#: org/jmol/applet/Jmol.java:707
+#: org/jmol/applet/Jmol.java:705
 #, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -41,7 +41,7 @@ msgstr ""
 "\n"
 "Подробнее на сайте http://www.jmol.org"
 
-#: org/jmol/applet/Jmol.java:969
+#: org/jmol/applet/Jmol.java:967
 msgid "File Error:"
 msgstr "Ошибка файла:"
 
@@ -75,7 +75,7 @@ msgstr "Редактор"
 
 #: org/jmol/console/AppletConsole.java:203
 msgid "State"
-msgstr ""
+msgstr "Состояние"
 
 #: org/jmol/console/AppletConsole.java:204
 #: org/jmol/console/ScriptEditor.java:137
@@ -418,111 +418,115 @@ msgid "French"
 msgstr "Французский"
 
 #: org/jmol/i18n/GT.java:155
-#, fuzzy
 msgid "Frisian"
-msgstr "Украинский"
+msgstr "фризский"
 
 #: org/jmol/i18n/GT.java:156
+#, fuzzy
+msgid "Galician"
+msgstr "Итальянский"
+
+#: org/jmol/i18n/GT.java:157
 msgid "Croatian"
 msgstr "Хорватский"
 
-#: org/jmol/i18n/GT.java:157
+#: org/jmol/i18n/GT.java:158
 msgid "Hungarian"
 msgstr "Венгерский"
 
-#: org/jmol/i18n/GT.java:158
+#: org/jmol/i18n/GT.java:159
 msgid "Armenian"
 msgstr "Армянский"
 
-#: org/jmol/i18n/GT.java:159
+#: org/jmol/i18n/GT.java:160
 msgid "Indonesian"
 msgstr "Индонезийский"
 
-#: org/jmol/i18n/GT.java:160
+#: org/jmol/i18n/GT.java:161
 msgid "Italian"
 msgstr "Итальянский"
 
-#: org/jmol/i18n/GT.java:161
+#: org/jmol/i18n/GT.java:162
 msgid "Japanese"
 msgstr "Японский"
 
-#: org/jmol/i18n/GT.java:162
+#: org/jmol/i18n/GT.java:163
 msgid "Javanese"
 msgstr "Яванский"
 
-#: org/jmol/i18n/GT.java:163
+#: org/jmol/i18n/GT.java:164
 msgid "Korean"
 msgstr "Корейский"
 
-#: org/jmol/i18n/GT.java:164
-msgid "Malay"
-msgstr ""
-
 #: org/jmol/i18n/GT.java:165
+msgid "Malay"
+msgstr "Малайский"
+
+#: org/jmol/i18n/GT.java:166
 msgid "Norwegian Bokmal"
 msgstr "Норвежский (букмол)"
 
-#: org/jmol/i18n/GT.java:166
+#: org/jmol/i18n/GT.java:167
 msgid "Dutch"
 msgstr "Голландский"
 
-#: org/jmol/i18n/GT.java:167
+#: org/jmol/i18n/GT.java:168
 msgid "Occitan"
 msgstr "Окситанский"
 
-#: org/jmol/i18n/GT.java:168
+#: org/jmol/i18n/GT.java:169
 msgid "Polish"
 msgstr "Польский"
 
-#: org/jmol/i18n/GT.java:169
+#: org/jmol/i18n/GT.java:170
 msgid "Portuguese"
 msgstr "Португальский"
 
-#: org/jmol/i18n/GT.java:170
+#: org/jmol/i18n/GT.java:171
 msgid "Brazilian Portuguese"
 msgstr "Бразильский португальский"
 
-#: org/jmol/i18n/GT.java:171
+#: org/jmol/i18n/GT.java:172
 msgid "Russian"
 msgstr "Русский"
 
-#: org/jmol/i18n/GT.java:172
+#: org/jmol/i18n/GT.java:173
 msgid "Slovenian"
 msgstr "Словенский"
 
-#: org/jmol/i18n/GT.java:173
+#: org/jmol/i18n/GT.java:174
 msgid "Serbian"
 msgstr "Сербский"
 
-#: org/jmol/i18n/GT.java:174
+#: org/jmol/i18n/GT.java:175
 msgid "Swedish"
 msgstr "Шведский"
 
-#: org/jmol/i18n/GT.java:175
+#: org/jmol/i18n/GT.java:176
 msgid "Tamil"
 msgstr "Тамильский"
 
-#: org/jmol/i18n/GT.java:176
+#: org/jmol/i18n/GT.java:177
 msgid "Telugu"
 msgstr "Телугу"
 
-#: org/jmol/i18n/GT.java:177
+#: org/jmol/i18n/GT.java:178
 msgid "Turkish"
 msgstr "Турецкий"
 
-#: org/jmol/i18n/GT.java:178
+#: org/jmol/i18n/GT.java:179
 msgid "Uyghur"
 msgstr "Уйгурский"
 
-#: org/jmol/i18n/GT.java:179
+#: org/jmol/i18n/GT.java:180
 msgid "Ukrainian"
 msgstr "Украинский"
 
-#: org/jmol/i18n/GT.java:180
+#: org/jmol/i18n/GT.java:181
 msgid "Simplified Chinese"
 msgstr "Упрощённый китайский"
 
-#: org/jmol/i18n/GT.java:181
+#: org/jmol/i18n/GT.java:182
 msgid "Traditional Chinese"
 msgstr "Традиционный китайский"
 
@@ -1041,7 +1045,7 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:619
 msgid "Wireframe"
-msgstr ""
+msgstr "Каркас"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:620
 #: org/jmol/popup/MainPopupResourceBundle.java:667

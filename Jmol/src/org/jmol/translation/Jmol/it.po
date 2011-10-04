@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-10-03 19:01+0200\n"
-"PO-Revision-Date: 2011-10-04 15:28+0000\n"
+"PO-Revision-Date: 2011-10-04 20:20+0000\n"
 "Last-Translator: Marco Buono <Unknown>\n"
 "Language-Team: Italian <it@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-10-04 17:00+0000\n"
+"X-Launchpad-Export-Date: 2011-10-04 21:36+0000\n"
 "X-Generator: Launchpad (build 14085)\n"
 
 #: com/json/Cookie.java:121
@@ -1119,7 +1119,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:410
 msgid "role"
-msgstr ""
+msgstr "ruolo"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:416
 msgid "type"
@@ -1155,7 +1155,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:447
 msgid "style"
-msgstr ""
+msgstr "stile"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:453
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:457

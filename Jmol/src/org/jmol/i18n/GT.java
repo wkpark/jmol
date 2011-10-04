@@ -423,24 +423,20 @@ public class GT {
   }
 
   private String getString(String string) {
-    if (!doTranslate || translationResourcesCount == 0) {
-      if (string.startsWith("["))
-        string = string.substring(string.indexOf("]") + 1);
-      else if (string.endsWith("]"))
-        string = string.substring(0, string.indexOf("["));
-      return string;
+    if (doTranslate) {
+      for (int bundle = translationResourcesCount; --bundle >= 0;)
+        try {
+          return translationResources[bundle].getString(string);
+        } catch (MissingResourceException e) {
+          // Normal
+        }
+      if (Logger.debugging)
+        Logger.info("No trans, using default: " + string);
     }
-    for (int bundle = 0; bundle < translationResourcesCount; bundle++) {
-      try {
-        String trans = translationResources[bundle].getString(string);
-        return trans;
-      } catch (MissingResourceException e) {
-        // Normal
-      }
-    }
-    if (Logger.debugging) {
-      Logger.info("No trans, using default: " + string);
-    }
+    if (string.startsWith("["))
+      string = string.substring(string.indexOf("]") + 1);
+    else if (string.endsWith("]"))
+      string = string.substring(0, string.indexOf("["));
     return string;
   }
 

@@ -771,11 +771,11 @@ REMARK 290 REMARK: NULL
           offsetEnd) : -1);
       if (targetSerial < 0)
         continue;
-      int i1;
       boolean isDoubleBond = (sourceSerial == sourceSerialLast && targetSerial == targetSerialLast);
       sourceSerialLast = sourceSerial;
       targetSerialLast = targetSerial;
       boolean isSwapped = (targetSerial < sourceSerial);
+      int i1;
       if (isSwapped) {
         i1 = targetSerial;
         targetSerial = sourceSerial;

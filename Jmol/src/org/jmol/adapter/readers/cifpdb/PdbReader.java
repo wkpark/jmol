@@ -753,6 +753,9 @@ REMARK 290 REMARK: NULL
   }
 
   private StringBuffer sbConect;
+  private int sourceSerialLast = Integer.MIN_VALUE;
+  private int targetSerialLast = Integer.MIN_VALUE;
+  
   private void conect() {
     // adapted for improper non-crossreferenced files such as 1W7R
     if (sbConect == null)
@@ -761,7 +764,6 @@ REMARK 290 REMARK: NULL
     sourceSerial = parseInt(line, 6, 11);
     if (sourceSerial < 0)
       return;
-    int lastTarget = -1;
     for (int i = 0; i < 9; i += (i == 5 ? 2 : 1)) {
       int offset = i * 5 + 11;
       int offsetEnd = offset + 5;
@@ -770,9 +772,9 @@ REMARK 290 REMARK: NULL
       if (targetSerial < 0)
         continue;
       int i1;
-      boolean isDoubleBond = (targetSerial == lastTarget);
-      lastTarget = targetSerial;
-
+      boolean isDoubleBond = (sourceSerial == sourceSerialLast && targetSerial == targetSerialLast);
+      sourceSerialLast = sourceSerial;
+      targetSerialLast = targetSerial;
       boolean isSwapped = (targetSerial < sourceSerial);
       if (isSwapped) {
         i1 = targetSerial;

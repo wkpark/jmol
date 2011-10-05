@@ -240,7 +240,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
           setProperty("map", Boolean.FALSE, null);
           setProperty("property", new float[viewer.getAtomCount()], null);
           if (colix != 0) {
-            thisMesh.colorCommand = "color isosurface " + Graphics3D.getHexCode(colix);
+            thisMesh.colorCommand = "color isosurface "
+                + Graphics3D.getHexCode(colix);
             setProperty("color", new Integer(Graphics3D.getArgb(colix)), null);
           }
         }
@@ -467,7 +468,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         if (isomeshes[i].bsVdw != null
             && (bs == null || bs.intersects(isomeshes[i].bsVdw)))
           deleteMesh(i);
-       currentMesh = thisMesh = null;
+      currentMesh = thisMesh = null;
       return;
     }
     if ("mapColor" == propertyName || "readFile" == propertyName) {

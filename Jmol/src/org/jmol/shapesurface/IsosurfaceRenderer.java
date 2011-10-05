@@ -73,7 +73,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       imesh = (IsosurfaceMesh) isosurface.meshes[i];
       hasColorRange = false;
       if (renderMesh(mySlabValue, slabValue)) {
-        System.out.println("render isossurface " + i + " " + isosurface.meshCount);
+        //System.out.println("render isossurface " + i + " " + isosurface.meshCount);
         if (!isExport)
           renderInfo();
         if (isExport && haveBsSlabGhost) {

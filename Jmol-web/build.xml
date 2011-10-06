@@ -6,7 +6,7 @@
       <pathelement location="./ant-contrib.jar"/>
     </classpath>
   </taskdef>
-  <property name="version" value="12.0"/>
+  <property name="version" value="12.2"/>
   <property name="jmol-doc-dir" value="../Jmol"/>
   <property name="fah.projects.dir" value="../Jmol-FAH/projects"/>
   <property name="doc.dir" value="source/doc"/>

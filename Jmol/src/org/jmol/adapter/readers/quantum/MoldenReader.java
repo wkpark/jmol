@@ -218,7 +218,7 @@ public class MoldenReader extends MopacSlaterReader {
     // see BasisFunctionReader
     // TODO no check here for G orbitals
     
-    String[] tokens = getTokens(line.replace('=',' '));
+    String[] tokens = getMoTokens(line);
     while (tokens != null && tokens[0].indexOf('[') < 0) {
       Map<String, Object> mo = new Hashtable<String, Object>();
       List<String> data = new ArrayList<String>();
@@ -236,20 +236,19 @@ public class MoldenReader extends MopacSlaterReader {
         } else if (key.startsWith("Spin")) {
           alphaBeta = tokens[1].toLowerCase();
         }
-        tokens = getTokens(readLine().replace('=',' '));
+        tokens = getMoTokens(null);
       }
       while (tokens != null && parseInt(tokens[0]) != Integer.MIN_VALUE) {
         if (tokens.length != 2)
           throw new Exception("invalid MO coefficient specification");
         // tokens[0] is the function number, and tokens[1] is the coefficient
         data.add(tokens[1]);
-        tokens = getTokens(readLine());
+        tokens = getMoTokens(null);
       }
       
       float[] coefs = new float[data.size()];
-      for (int i = data.size(); --i >= 0;) {
+      for (int i = data.size(); --i >= 0;)
         coefs[i] = parseFloat(data.get(i));
-      }
       String l = line;
       line = "";
       if (filterMO()) {
@@ -274,6 +273,10 @@ public class MoldenReader extends MopacSlaterReader {
     return false;
   }
   
+  private String[] getMoTokens(String line) throws Exception {
+    return (line == null && (line = readLine()) == null ? null : getTokens(line.replace('=',' ')));
+  }
+
   private boolean checkOrbitalType(String line) {
     if (line.length() > 3 && "5D 6D 7F 10".indexOf(line.substring(1,3)) >= 0) {
       orbitalType += line;

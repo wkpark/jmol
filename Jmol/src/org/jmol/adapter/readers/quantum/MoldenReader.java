@@ -218,7 +218,7 @@ public class MoldenReader extends MopacSlaterReader {
     // see BasisFunctionReader
     // TODO no check here for G orbitals
     
-    String[] tokens = getTokens();
+    String[] tokens = getTokens(line.replace('=',' '));
     while (tokens != null && tokens[0].indexOf('[') < 0) {
       Map<String, Object> mo = new Hashtable<String, Object>();
       List<String> data = new ArrayList<String>();
@@ -226,7 +226,7 @@ public class MoldenReader extends MopacSlaterReader {
       float occupancy = Float.NaN;
       String symmetry = null;      
       String key;
-      while (tokens != null && parseInt(key = tokens[0]) == Integer.MIN_VALUE) {
+      while (parseInt(key = tokens[0]) == Integer.MIN_VALUE) {
         if (key.startsWith("Ene")) {
           energy = parseFloat(tokens[1]);          
         } else if (key.startsWith("Occup")) {
@@ -236,12 +236,8 @@ public class MoldenReader extends MopacSlaterReader {
         } else if (key.startsWith("Spin")) {
           alphaBeta = tokens[1].toLowerCase();
         }
-        tokens = getTokens(readLine());
+        tokens = getTokens(readLine().replace('=',' '));
       }
-      
-      if (tokens == null)
-        throw new Exception("error reading MOs: unexpected EOF reading coeffs");
-      
       while (tokens != null && parseInt(tokens[0]) != Integer.MIN_VALUE) {
         if (tokens.length != 2)
           throw new Exception("invalid MO coefficient specification");

@@ -87,7 +87,7 @@ public class MoldenReader extends MopacSlaterReader {
     
     int nPrevAtom = 0, nCurAtom = 0;
    
-    boolean isAU = (coordUnit.indexOf("Angs") < 0); 
+    boolean isAU = (coordUnit.indexOf("ANGS") < 0); 
     if (isAU && coordUnit.indexOf("AU") < 0) {
       throw new Exception("invalid coordinate unit " + coordUnit + " in [Atoms]"); 
     }

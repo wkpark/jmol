@@ -286,18 +286,25 @@
 			<p><i>Note</i>:<br/>
 			It takes some time to build the applet, so if you put some immediate action like <code>jmolScript()</code>
 			or <code>jmolLoadInline()</code> right after the <code>jmolApplet()</code> line, it will probably fail 
-			because it will be called before the applet has finished loading. There are two
+			because it will be called before the applet has finished loading. There are three
 			alternatives that will work:
 			</p>
 			<ul>
 			  <li>Put the commands inside the call to <code>jmolApplet()</code> (its 2nd argument, 
 			    <code>script</code>).
 			  </li>
-			  <li>Have the browser wait until the applet reports to be finished. To do so,
+			  <li>Have the browser wait until the applet has finished. To do so,
 			  put this at the end of the script sent with applet creation:
-			  <code>javascript appletLoaded();</code>
-			  and define a JavaScript function called <code>appletLoaded()</code> (or any other name you like) 
+			  <code>javascript appletHasLoaded();</code>
+			  and define a JavaScript function called <code>appletHasLoaded()</code> (or any other name you like) 
 			  that will trigger any further commands.
+			  </li>
+			  <li>Better yet, use <a href="#jmolSetCallback">appletReadyCallback</a>
+			  called before <code>jmolApplet()</code>:
+			  <br/>
+			  <code>jmolSetCallback("appletReadyCallback","appletHasLoaded");</code>
+			  <br/>
+			  and then define your <code>appletHasLoaded()</code> function to trigger further action.
 			  </li>
 			</ul>
 			</section>
@@ -311,6 +318,23 @@
 	If the page contains several Jmol applets, commands will be applied to
 	the immediately previous applet, or to that specified by a previous 
 	<a href="#jmolSetTarget"><code>jmolSetTarget</code></a> command.
+	<br/>
+	As a special syntax (valid for any other controls as well as the button described here), 
+	instead of a Jmol script you can run a JavaScript function that you have defined,
+	by providing this in place of the script:
+	<code>[funcName, param1, param2, param3...]</code>
+	<br/>
+	The function must be defined in this way:
+	<br/>
+    <pre>
+    function funcName(btn, obj, target) {
+        // Entire array object is provided as 2nd argument.
+        var param1 = obj[1];
+        var param2 = obj[2];
+        var param3 = obj[3];
+        // JavaScript to execute here.
+        ....
+    }</pre>
 				</p>
 				<p>
 					<code>label</code> is the text in the button; if 
@@ -1049,9 +1073,8 @@
 				</p>
 				<p><code>jmolSetCallback</code> must be invoked before <code>jmolApplet</code>.
 	For setting callback functions anytime after Jmol applet loading, use the 
-	<code>set animFrameCallback</code>, <code>set hoverCallback</code>,
-	<code>set loadStructCallback</code>, <code>set messageCallback</code>, or
-	<code>set pickCallback</code> script commands [see details on
+	<code>set animFrameCallback</code>, <code>set hoverCallback</code>, etc.
+	script commands [see details on
 	<a href="http://www.stolaf.edu/academics/chemapps/jmol/docs/#setcallback">Interactive Scripting Documentation</a>].
 	<br/>For canceling callback detection, use <code>set animFrameCallback none</code> etc.
 				</p>
@@ -1083,6 +1106,39 @@
 	"frame 1003" or "frame 1.3".
 				</p>
 				</section>
+				<section title="appletReadyCallback">
+	<p>
+		<i>Called:</i> when the applet has finished loading, 
+	and also when it is destroyed (this may include reloading the page in the browser).
+	The callback is fired after any script included in the <code>jmolApplet()</code> 
+	call has been executed.
+	<br/><i>Returned 2nd parameter:</i> the applet HTML name, followed by 
+	2 underscores, the unique syncID of the applet, and 2 underscores. 
+	Example: <code>jmolApplet0__2810172796629116__</code>
+	<br/><i>Returned 3rd parameter:</i> true (if the applet was loaded) or false 
+	(if the applet was destroyed).
+	</p>
+				</section>
+				<section title="atomMovedCallback">
+	<p>
+		<i>Called:</i> when any atoms are moved, either by script  
+	or by user action.
+	<br/><i>Returned 2nd parameter:</i> BitSet of atoms moved.
+	</p>
+				</section>
+				<section title="echoCallback">
+	<p>
+		<i>Called:</i> when an echo command is issued. 
+		If an echoCallback function is not defined, these messages go to 
+		the messageCallback function.
+	<br/><i>Returned 2nd parameter:</i> the same text as the echo.
+	</p>
+				</section>
+				<section title="evalCallback">
+	<p>(<i>Advanced</i>) See the 
+	<a href="http://chemapps.stolaf.edu/jmol/docs/#setcallback">scripting doc</a>.
+	</p>
+				</section>
 				<section title="hoverCallback">
 					<p>
 						<i>Called:</i> when the user hovers over an atom.
@@ -1109,9 +1165,31 @@
 	hovered over. 
 	</p>
 				</section>
+				<section title="language">
+	<p>
+	This is special: it is not called by an event, only by design, and does not return anything. 
+	Instead, it changes the interface language for the applet pop-up menu and messages in the console. 
+	It must be called before <code>jmolApplet</code>. The same functionality is available after the applet
+	has been loaded, by means of the scripting language (e.g. <code>language = "de"</code>), as well as
+	from the pop-up menu itself.
+	</p>
+	<p>
+	The first parameter must be "language" and the second, the two-letter code (or 2+2 letter code) of the language wanted
+	(provided that locale has been built into Jmol).
+	<br/>
+	<i>Examples</i>:
+	</p>
+	<ul>
+		<li><code>jmolSetCallback("language", "de")</code> (German)</li>
+		<li><code>jmolSetCallback("language", "en")</code> (English)</li>
+		<li><code>jmolSetCallback("language", "es")</code> (Spanish)</li>
+		<li><code>jmolSetCallback("language", "fr")</code> (French)</li>
+		<li><code>jmolSetCallback("language", "pt_BR")</code> (Brazilian Portuguese)</li>
+	</ul>
+				</section>
 				<section title="loadStructCallback">
-					<p>
-						<i>Called:</i> upon successful file loading. 
+	<p>
+	<i>Called:</i> upon successful file loading. 
 	<br/><i>Returned 2nd parameter:</i> the URL of the loaded file (full path+filename).
 	<br/><i>Returned 3rd parameter:</i> the filename of the loaded file (without the path).
 	<br/><i>Returned 4th parameter:</i> the internal title of the model in the loaded file.
@@ -1125,7 +1203,15 @@
 	loading the current model, in file.model syntax. 
 	<br/><i>Note:</i> When multiple files are loaded with the same load command, 
 	only data for the last-loaded file is returned.
-				</p>
+	</p>
+				</section>
+				<section title="measureCallback">
+	<p>
+		<i>Called:</i> when a measurement is made by the user. 
+		If a measureCallback function is not defined, these messages go to 
+		the messageCallback function.
+	<br/><i>Returned 2nd parameter:</i> text indicating the status of measurements.
+	</p>
 				</section>
 				<section title="messageCallback">
 					<p>
@@ -1155,13 +1241,41 @@
 		compilation.)
 				</p>
 				</section>
+				<section title="minimizationCallback">
+	<p>
+		<i>Called:</i> at each iteration of a minimization. 
+	<br/><i>Returned 2nd parameter:</i> text indicating the current status of a
+	currently running minimization: either <code>starting</code>, 
+	<code>running</code>, or <code>done</code>.
+	<br/><i>Returned 3rd parameter:</i> the number of the iteration.
+	<br/><i>Returned 4th parameter:</i> a number with the value of energy (E) at that step.
+	<br/><i>Returned 5th parameter:</i> a number with the decrease in energy (dE) at that step.
+	</p>
+				</section>
 				<section title="pickCallback">
-					<p>
-						<i>Called:</i> when the user clicks an atom.
+	<p>
+		<i>Called:</i> when the user clicks an atom.
 	<br/><i>Returned 2nd parameter:</i> atom id, atom number, and xyz coordinates in the form:
 	<br/>C6 #6 -0.30683374 -1.6836332 -0.716934 
 	<br/><i>Returned 3rd parameter:</i> atom index, starting with 0.
-				</p>
+	</p>
+				</section>
+				<section title="resizeCallback">
+	<p>
+		<i>Called:</i> when the applet size changes.
+	<br/><i>Returned 2nd parameter:</i> width (in pixels).
+	<br/><i>Returned 3rd parameter:</i> height (in pixels).
+	</p>
+				</section>
+				<section title="scriptCallback">
+	<p>
+		<i>Called:</i> when a script is being executed.
+	<br/>Sends messages indicating the status of script execution. 
+	Line-by-line script commands are sent if <code>set debugScript true</code>
+	has been issued. 
+	<br/>If a scriptCallback function is not defined, these messages go to 
+		the messageCallback function.
+	</p>
 				</section>
 				<section title="statusForm, statusText, statusTextarea">
 					<p>
@@ -1189,27 +1303,14 @@
 	for an example of their use.)</i>
 					</p>
 				</section>
-				<section title="language">
-					<p>
-						This is special: it is not called by an event, only by design, and does not return anything. 
-	Instead, it changes the interface language for the applet pop-up menu and messages in the console. 
-	It must be called before <code>jmolApplet</code>. The same functionality is available after the applet
-	has been loaded, by means of the scripting language (e.g. <code>language = "de"</code>), as well as
-	from the pop-up menu itself.
-				</p>
-					<p>
-	The first parameter must be "language" and the second, the two-letter code (or 2+2 letter code) of the language wanted
-	(provided that locale has been built into Jmol).
-	<br/>
-						<i>Examples</i>:
-				</p>
-					<ul>
-						<li><code>jmolSetCallback("language", "de")</code> (German)</li>
-						<li><code>jmolSetCallback("language", "en")</code> (English)</li>
-						<li><code>jmolSetCallback("language", "es")</code> (Spanish)</li>
-						<li><code>jmolSetCallback("language", "fr")</code> (French)</li>
-						<li><code>jmolSetCallback("language", "pt_BR")</code> (Brazilian Portuguese)</li>
-					</ul>
+				<section title="syncCallback">
+	<p>
+		<i>Called:</i> when a synchronization message is sent from one applet to another.
+	<br/>The JavaScript function may modify or cancel the synchronization message. 
+	If the called function returns "" or 0, the synchronization is canceled; 
+	any other string is substituted for the script and sent to the other 
+	currently synchronized applets.
+	</p>
 				</section>
 			</section>
 			<section title="jmolAppletAddParam">

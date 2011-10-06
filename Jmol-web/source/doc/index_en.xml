@@ -130,14 +130,18 @@ Catalan (ca),
 Chinese (both zh_CN and zh_TW)
 Czech (cs),
 Dutch (nl),
+Finnish (fi)
 French (fr),
 German (de),
 Hungarian (hu),
+Indonesian (id),
 Italian (it),
 Korean (ko),
+Malay (ms),
 Portuguese - Brazil (pt_BR),
 Spanish (es),
 Turkish (tr),
+Ukrainian (uk)
 	 (in addition to the native American English, en-US, and British English, en-GB).
 	  					</li>
 	  					<li>
@@ -290,7 +294,7 @@ Turkish (tr),
 	Jmol v. $VERSION$ is the latest official, stable version. 
 	<br/>
 	There are also prerelease versions that are being developed for enhanced functionality 
-	(odd-numbered versions like 11.7, 11.9). 
+	(odd-numbered versions like 11.7, 11.9, 12.1, 12.3). 
       </p>
 			<p>You can get both the stable release and the prereleases from the <a href="./download/">download page</a>. 
 	</p>

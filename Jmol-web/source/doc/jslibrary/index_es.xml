@@ -299,17 +299,24 @@ Cada páginaCada página      </p>
 			LLeva algo de tiempo construir la miniaplicación, por lo cual si pones alguna acción inmediata, como 
 			<code>jmolScript()</code> o <code>jmolLoadInline()</code> justo tras la línea <code>jmolApplet()</code>,
 			probablemente falle porque se ejecutará antes de que la miniaplicación haya terminado de 
-			cargarse. Hay dos alternativas que sí funcionarán:
+			cargarse. Hay tres alternativas que sí funcionarán:
 			</p>
 			<ul>
 			  <li>Pon las instrucciones dentro de la llamada a <code>jmolApplet()</code> (su segundo argumento, 
 			    <code>guión</code>).
 			  </li>
-			  <li>Haz que el navegador espere hasta que la miniaplicación informe de que está lista. Para ello,
+			  <li>Haz que el navegador espere hasta que la miniaplicación esté lista. Para ello,
 			  pon esto al final del guión enviado al crear la miniaplicación:
 			  <code>javascript JmolCargado();</code>
 			  y define una función JavaScript llamada <code>JmolCargado()</code> (o cualquier otro nombre que prefieras) 
 			  que ejecutará las instrucciones restantes.
+			  </li>
+			  <li>Mejor aún: utiliza <a href="#jmolSetCallback">appletReadyCallback</a>
+			  antes de <code>jmolApplet()</code>:
+			  <br/>
+			  <code>jmolSetCallback("appletReadyCallback","JmolCargado");</code>
+			  <br/>
+			  y define tu función <code>JmolCargado()</code> para que haga lo que precises.
 			  </li>
 			</ul>
 			</section>
@@ -323,6 +330,23 @@ Cada páginaCada página      </p>
 	Si en la página hay varias miniaplicaciones Jmol, las instrucciones se aplicarán
 	a la inmediatamente anterior o a la que haya sido especificada mediante una instrucción 
 	<a href="#jmolSetTarget"><code>jmolSetTarget</code></a> previa.
+	  <br/>
+	Como sintaxis especial (válida para todos los otros controles, al igual que para
+	el botón descrito aquí), en lugar de un guión de Jmol puedes ejecutar una función
+	de JavaScript que hayas definido, proporcionando esto en lugar del guión:
+	<code>[nombreFunción, param1, param2, param3...]</code>
+	<br/>
+	La función debe definirse así:
+	<br/>
+    <pre>
+    function nombreFunción(botón, objeto, diana) {
+        // El segundo argumento es una matriz.
+        var param1 = objeto[1];
+        var param2 = objeto[2];
+        var param3 = objeto[3];
+        // Aquí el JavaScript que deba ejecutarse.
+        ....
+    }</pre>  
 				</p>
 				<p>
 					<code>rótulo</code> es el texto del botón; si no se indica,
@@ -1082,9 +1106,8 @@ Cada páginaCada página      </p>
 				<p><code>jmolSetCallback</code> debe invocarse antes de <code>jmolApplet</code>.
 	Para definir funciones de retrollamada en cualquier momento tras la carga de la miniaplicación
 	Jmol, utiliza las instrucciones de guiones 
-	<code>set animFrameCallback</code>, <code>set hoverCallback</code>,
-	<code>set loadStructCallback</code>, <code>set messageCallback</code> o
-	<code>set pickCallback</code> [véanse detalles en la
+	<code>set animFrameCallback</code>, <code>set hoverCallback</code>, etc.
+	[véanse detalles en la
 	<a href="http://www.stolaf.edu/academics/chemapps/jmol/docs/#setcallback">Documentación de guiones interactivos</a>].
 	<br/>Para cancelar la detección de retrollamadas, utiliza <code>set animFrameCallback none</code> etc.
 				</p>
@@ -1115,6 +1138,41 @@ Cada páginaCada página      </p>
 	"frame 1003" o "frame 1.3".
 				</p>
 				</section>
+				<section title="appletReadyCallback">
+	<p>
+		<i>Se invoca:</i> cuando la miniaplicación ha terminado de cargarse, 
+	y también cuando se destruye (esto puede incluir cuando la página se recarga en el navegador).
+	La retrollamada se activa tras ejecutar cualquier guión incluido en la llamada a
+	<code>jmolApplet()</code>. 
+	<br/><i>2º parámetro devuelto:</i> el nombre HTML de la miniaplicación, seguido de
+	2 guiones bajos, el identificador único syncID de la miniaplicación y 2 guiones bajos. 
+	Ejemplo: <code>jmolApplet0__2810172796629116__</code>
+	<br/><i>3<sup>er</sup> parámetro:</i> verdadero (si se cargó la miniaplicación) o
+	falso (si se destruyó la miniaplicación).
+	</p>
+				</section>
+				<section title="atomMovedCallback">
+	<p>
+		<i>Se invoca:</i> cuando se mueve algún átomo, bien mediante un guión o
+	por una acción del usuario.
+	<br/><i>2º parámetro devuelto:</i> el BitSet de los átomos que se han movido.
+	</p>
+				</section>
+				<section title="echoCallback">
+	<p>
+		<i>Se invoca:</i> cuando se ejecuta una instrucción <code>echo</code>. 
+		Si no se define una función echoCallback, estos mensajes van a la
+		función messageCallback.
+	<br/><i>2º parámetro devuelto:</i> el mismo texto mostrado en Jmol por
+	 la instrucción <code>echo</code>.
+	</p>
+				</section>
+				<section title="evalCallback">
+	<p>(<i>Avanzado</i>) Véase la
+	<a href="http://chemapps.stolaf.edu/jmol/docs/#setcallback">documentación de guiones</a>
+	(en inglés).
+	</p>
+				</section>
 				<section title="hoverCallback">
 					<p>
 						<i>Se invoca:</i> cuando el usuario detiene el puntero 
@@ -1142,6 +1200,30 @@ Cada páginaCada página      </p>
 	que se detenga el puntero. 
 	</p>
 				</section>
+				<section title="language">
+					<p>
+						Esta llamada es especial: no se invoca mediante un evento, sino tan
+	sólo intencionadamente, y no devuelve nada. 
+	En su lugar, cambia el idioma de la interfaz en el menú emergente de la miniaplicación y en los
+	mensajes de la consola.
+	Debe llamarse antes que <code>jmolApplet</code>. Se puede conseguir lo mismo una vez cargada
+	la miniaplicación, empleando el lenguaje de guiones (por ej., <code>language = "de"</code>), así como
+	desde el propio menú emergente.
+				</p>
+					<p>
+	El primer parámetro debe ser "language" y el segundo, el código de dos letras (o de 2+2 letras) del idioma deseado
+	(siempre y cuando esa localización esté incluida en Jmol).
+	<br/>
+						<i>Ejemplos</i>:
+				</p>
+					<ul>
+						<li><code>jmolSetCallback("language", "de")</code> (alemán)</li>
+						<li><code>jmolSetCallback("language", "en")</code> (inglés)</li>
+						<li><code>jmolSetCallback("language", "es")</code> (español)</li>
+						<li><code>jmolSetCallback("language", "fr")</code> (francés)</li>
+						<li><code>jmolSetCallback("language", "pt_BR")</code> (portugués de Brasil)</li>
+					</ul>
+				</section>
 				<section title="loadStructCallback">
 					<p>
 						<i>Se invoca:</i> tras la carga con éxito de un archivo. 
@@ -1159,6 +1241,14 @@ Cada páginaCada página      </p>
 	<br/><i>Nota:</i> Si se cargan varios archivos con una sola instrucción "load", 
 	sólo se devuelven los datos del último.
 				</p>
+				</section>
+				<section title="measureCallback">
+	<p>
+		<i>Se invoca:</i> cuando el usuario hace una medición. 
+		Si no se define una función measureCallback, estos mensajes van a
+		la función messageCallback.
+	<br/><i>2º parámetro devuelto:</i> un texto indicando el estado de las mediciones.
+	</p>
 				</section>
 				<section title="messageCallback">
 					<p>
@@ -1186,6 +1276,17 @@ Cada páginaCada página      </p>
 		Durante la compilación, sólo se verifica una parte de la sintaxis de las instrucciones.)
 				</p>
 				</section>
+				<section title="minimizationCallback">
+	<p>
+		<i>Se invoca:</i> en cada iteración de una minimización. 
+	<br/><i>2º parámetro devuelto:</i> un texto indicando el estado actual de la
+	minimización que se esté ejecutando: bien <code>starting</code> (comenzando), 
+	<code>running</code> (en marcha) o <code>done</code> (finalizada).
+	<br/><i>3<sup>er</sup> parámetro devuelto:</i> el número de la iteración.
+	<br/><i>4º parámetro devuelto:</i> un número con el valor de energía (E) en esa etapa.
+	<br/><i>5º parámetro devuelto:</i> un número con la disminución de energía (dE) en esa etapa.
+	</p>
+				</section>
 				<section title="pickCallback">
 					<p>
 						<i>Se invoca:</i> cuando el usuario hace clic sobre un átomo.
@@ -1193,6 +1294,23 @@ Cada páginaCada página      </p>
 	<br/>C6 #6 -0.30683374 -1.6836332 -0.716934 
 	<br/><i>3.<sup>er</sup> parámetro devuelto:</i> índice del átomo, comenzando por 0.
 				</p>
+				</section>
+				<section title="resizeCallback">
+	<p>
+		<i>Se invoca:</i> cuando cambia el tamaño de la miniaplicación.
+	<br/><i>2º parámetro devuelto:</i> anchura (en píxeles).
+	<br/><i>3<sup>er</sup> parámetro devuelto:</i> altura (en píxeles).
+	</p>
+				</section>
+				<section title="scriptCallback">
+	<p>
+		<i>Se invoca:</i> cuando se está ejecutando un guión.
+	<br/>Envía mensajes que indican el estado de la ejecución del guión. 
+	Si se ha empleado <code>set debugScript true</code>, se envían las instrucciones 
+	del guión línea por línea. 
+	<br/>Si no se define una función scriptCallback, estos mensajes van a la
+		función messageCallback.
+	</p>
 				</section>
 				<section title="statusForm, statusText, statusTextarea">
 					<p>
@@ -1220,29 +1338,15 @@ Cada páginaCada página      </p>
 	http://www.stolaf.edu/academics/chemapps/jmol/docs/examples-11/simple2.htm .)</i>
 					</p>
 				</section>
-				<section title="language">
-					<p>
-						Esta llamada es especial: no se invoca mediante un evento, sino tan
-	sólo intencionadamente, y no devuelve nada. 
-	En su lugar, cambia el idioma de la interfaz en el menú emergente de la miniaplicación y en los
-	mensajes de la consola.
-	Debe llamarse antes que <code>jmolApplet</code>. Se puede conseguir lo mismo una vez cargada
-	la miniaplicación, empleando el lenguaje de guiones (por ej., <code>language = "de"</code>), así como
-	desde el propio menú emergente.
-				</p>
-					<p>
-	El primer parámetro debe ser "language" y el segundo, el código de dos letras (o de 2+2 letras) del idioma deseado
-	(siempre y cuando esa localización esté incluida en Jmol).
-	<br/>
-						<i>Ejemplos</i>:
-				</p>
-					<ul>
-						<li><code>jmolSetCallback("language", "de")</code> (alemán)</li>
-						<li><code>jmolSetCallback("language", "en")</code> (inglés)</li>
-						<li><code>jmolSetCallback("language", "es")</code> (español)</li>
-						<li><code>jmolSetCallback("language", "fr")</code> (francés)</li>
-						<li><code>jmolSetCallback("language", "pt_BR")</code> (portugués de Brasil)</li>
-					</ul>
+				<section title="syncCallback">
+	<p>
+		<i>Se invoca:</i> cuando una miniaplicación envía un mensaje de sincronización 
+		a otra.
+	<br/>La función JavaScript puede modificar o cancelar el mensaje de sincronización. 
+	Si la función devuelve "" o 0, se cancela la sincronización; 
+	si devuelve cualquier otro texto, éste sustituye al guión y se envía a las
+	otras miniaplicaciones que estén sincronizadas.
+	</p>
 				</section>
 			</section>
 			<section title="jmolAppletAddParam">

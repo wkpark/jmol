@@ -138,12 +138,16 @@ checo (cs),
 chino (tanto zh_CN como zh_TW)
 coreano (ko),
 español (es),
+finés (fi),
 francés (fr),
 holandés (nl),
 húngaro (hu),
+indonesio (id),
 italiano (it),
+malayo (ms),
 portugués de Brasil (pt_BR),
-turco (tr)
+turco (tr),
+ucraniano (uk)
 	 (además del inglés americano nativo, en-US y del inglés británico, en_GB).
 	  					</li>
 	  					<li>
@@ -295,7 +299,7 @@ turco (tr)
 	Jmol v. $VERSION$ es la última versión oficial y estable.
 	<br/>
 	Puedes conseguir también versiones preliminares, que están en desarrollo
-	para ampliar la funcionalidad (versiones con número impar como 11.7, 11.9)
+	para ampliar la funcionalidad (versiones con número impar como 11.7, 11.9, 12.1, 12.3)
       </p>
 			<p>Puedes conseguir tanto la versión oficial como las preliminares en la <a href="./download/">página de descargas</a>.
       </p>

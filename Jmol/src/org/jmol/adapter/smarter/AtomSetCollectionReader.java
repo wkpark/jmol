@@ -715,6 +715,7 @@ public abstract class AtomSetCollectionReader {
   // PDB: "BIOMOLECULE n;" "NOSYMMETRY"  "CONF n"
   // Spartan: "INPUT", "ESPCHARGES"
   // P2N: "ALTNAME"
+  // CASTEP: "CHARGE=HIRSH q={i,j,k}"
 
   protected void setFilter(String filter0) {
     if (filter0 == null) {

@@ -93,9 +93,16 @@ public class CastepReader extends AtomSetCollectionReader {
   private Vector3f desiredQpt;
   private String desiredQ;
 
+  private String chargeType = "MULL";
+
   @Override
   public void initializeReader() throws Exception {
     if (filter != null) {
+      if (checkFilter("CHARGE=")) {
+        chargeType = filter.substring(filter.indexOf("CHARGE=") + 7);
+        if (chargeType.length() > 4)
+          chargeType = chargeType.substring(0, 4);
+      }
       filter = filter.replace('(', '{').replace(')', '}');
       filter = TextFormat.simpleReplace(filter, "  ", " ");
       if (filter.indexOf("{") >= 0)
@@ -231,10 +238,12 @@ public class CastepReader extends AtomSetCollectionReader {
         if (doGetModel(++modelNumber)) {
           readOutputAtoms();
         }
-      } else if (doProcessLines && line.contains("Atomic Populations (Mulliken)")) {
+      } else if (doProcessLines && 
+          (line.contains("Atomic Populations (Mulliken)") 
+              || line.contains("Hirshfield Charge (e)"))) {
         readOutputCharges();
       } else if (doProcessLines && line.contains("Born Effective Charges")) {
-        readBornChargeTensors();
+        readOutputBornChargeTensors();
       }
       return true;
     }
@@ -295,26 +304,6 @@ public class CastepReader extends AtomSetCollectionReader {
     }
   }
 
-  /*
-   * 
-     Atomic Populations (Mulliken)
-     -----------------------------
-Species   Ion     s      p      d      f     Total  Charge (e)
-==============================================================
-  O        1     1.90   5.45   0.00   0.00   7.35    -1.35
-  O        2     1.90   5.45   0.00   0.00   7.35    -1.35
-
-   */
-  private void readOutputCharges() throws Exception {
-    readLines(3);
-    Atom[] atoms = atomSetCollection.getAtoms();
-    int atomCount = atomSetCollection.getAtomCount();
-    for (int i = atomSetCollection.getLastAtomSetAtomIndex(); i < atomCount; i++) {
-      tokens = getTokens(readLine());
-      atoms[i].partialCharge = parseFloat(tokens[7]);
-    }
-  }
-
   private void readPhononTrajectories() throws Exception {
     isTrajectory = true;
     doApplySymmetry = true;
@@ -327,7 +316,7 @@ Species   Ion     s      p      d      f     Total  Charge (e)
       setFractionalCoordinates(false);
       discardLinesUntilContains("<-- R");
       while (line != null && line.contains("<-- R")) {
-        String[] tokens = getTokens();
+        tokens = getTokens();
         Atom atom = atomSetCollection.addNewAtom();
         atom.elementSymbol = tokens[0];
         setAtomCoord(atom, parseFloat(tokens[2]) * ANGSTROMS_PER_BOHR,
@@ -507,18 +496,21 @@ Species   Ion     s      p      d      f     Total  Charge (e)
                     -0.32884    -1.78984     0.13678
                      1.81939     0.06085    -1.80221
    */
-  private void readBornChargeTensors() throws Exception {
+  private void readOutputBornChargeTensors() throws Exception {
     if (readLine().indexOf("--------") < 0)
       return;
     Atom[] atoms = atomSetCollection.getAtoms();
-    while (readLine().indexOf('=') < 0) {
-      String[] tokens = getTokens(line.substring(0, 12));
-      int index = atomSetCollection.getAtomIndexFromName(tokens[0] + tokens[1]);
-      getEllipsoid(atoms[index], line.substring(12));
-    }
+    while (readLine().indexOf('=') < 0)
+      getOutputEllipsoid(atoms[readOutputAtomIndex()], line.substring(12));
   }
 
-  private void getEllipsoid(Atom atom, String line0) throws Exception {
+
+  private int readOutputAtomIndex() {
+    tokens = getTokens(line);
+    return atomSetCollection.getAtomIndexFromName(tokens[0] + tokens[1]);
+  }
+
+  private void getOutputEllipsoid(Atom atom, String line0) throws Exception {
     float[] data = new float[9];
     double[][] a = new double[3][3];
     fillFloatArray(line0, 0, data);
@@ -530,6 +522,61 @@ Species   Ion     s      p      d      f     Total  Charge (e)
     atom.ellipsoid = Eigen.getEllipsoid(a);
   }
 
+  /*
+     Hirshfeld Analysis
+     ------------------
+Species   Ion     Hirshfeld Charge (e)
+======================================
+  H        1                 0.05
+...
+  O        6                -0.24
+  O        7                -0.25
+  O        8                -0.25
+======================================
+
+  or
+  
+  Atomic Populations (Mulliken)
+  -----------------------------
+Species   Ion     s      p      d      f     Total  Charge (e)
+==============================================================
+  O        1     1.86   4.84   0.00   0.00   6.70    -0.70
+..
+  Ti       3     2.23   6.33   2.12   0.00  10.67     1.33
+  Ti       4     2.23   6.33   2.12   0.00  10.67     1.33
+==============================================================
+
+*/
+
+  /**
+   * read Mulliken or Hirshfield charges
+   */
+  private void readOutputCharges() throws Exception {
+    if (line.toUpperCase().indexOf(chargeType ) < 0)
+      return; 
+    Logger.info("reading charges: " + line);
+    readLines(2);
+    boolean haveSpin = (line.indexOf("Spin") >= 0);
+    readLine();
+    Atom[] atoms = atomSetCollection.getAtoms();
+    String[] spins = (haveSpin ? new String[atoms.length] : null);
+    if (spins != null)
+      for (int i = 0; i < spins.length; i++)
+        spins[i] = "0";
+    while (readLine() != null && line.indexOf('=') < 0) {
+      int index = readOutputAtomIndex();
+      float charge = parseFloat(tokens[haveSpin ? tokens.length - 2 : tokens.length - 1]);
+      atoms[index].partialCharge = charge;
+      if (haveSpin)
+        spins[index] = tokens[tokens.length - 1];
+    }
+    if (haveSpin) {
+      String data = TextFormat.join(spins, '\n', 0);
+      atomSetCollection.setAtomSetAuxiliaryProperty("spin", data);
+    }
+
+    
+  }
 
 
   //////////// phonon code ////////////
@@ -552,7 +599,7 @@ Species   Ion     s      p      d      f     Total  Charge (e)
   private void readPhononFractionalCoord() throws Exception {
     setFractionalCoordinates(true);
     while (readLine() != null && line.indexOf("END") < 0) {
-      String[] tokens = getTokens();
+      tokens = getTokens();
       Atom atom = atomSetCollection.addNewAtom();
       setAtomCoord(atom, parseFloat(tokens[1]), parseFloat(tokens[2]),
           parseFloat(tokens[3]));
@@ -593,7 +640,7 @@ Species   Ion     s      p      d      f     Total  Charge (e)
    */
 
   private void readPhononFrequencies() throws Exception {
-    String[] tokens = getTokens();
+    tokens = getTokens();
     Vector3f v = new Vector3f();
     Vector3f qvec = new Vector3f(parseFloat(tokens[2]), parseFloat(tokens[3]),
         parseFloat(tokens[4]));

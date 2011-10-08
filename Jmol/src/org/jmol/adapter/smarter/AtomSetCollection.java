@@ -1484,7 +1484,7 @@ public class AtomSetCollection {
   /**
    * Sets a property for the current AtomSet
    * used specifically for creating directories and plots of frequencies and 
-   * moleular energies
+   * molecular energies
    *
    * @param key The key for the property
    * @param value The value to be associated with the key

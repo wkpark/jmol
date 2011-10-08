@@ -449,11 +449,13 @@ public class CrystalReader extends AtomSetCollectionReader {
     if (vInputCoords != null)
       processInputCoords();
     String[] s = new String[atomCount];
+    for (int i = 0; i < atomCount; i++)
+      s[i] = "0";
     String[] tokens = getTokens(data);
-    for (int i = 0, j = 0; i < atomCount; i++, pt += dp) {
+    for (int i = 0; i < atomCount; i++, pt += dp) {
       int iConv = getAtomIndexFromPrimitiveIndex(i);
       if (iConv >= 0)
-        s[j++] = tokens[pt];
+        s[iConv] = tokens[pt];
     }
     data = TextFormat.join(s, '\n', 0);
     atomSetCollection.setAtomSetAuxiliaryProperty(name, data);

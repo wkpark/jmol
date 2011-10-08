@@ -187,10 +187,6 @@ public class Eigen {
     return v;
   }
 
-  public Vector3f getEigenValues3() {
-    return new Vector3f((float)d[0], (float)d[1], (float)d[2]);
-  }
-
   /* ------------------------
      Class variables
    * ------------------------ */
@@ -613,7 +609,7 @@ public class Eigen {
 
     double norm = 0.0;
     for (int i = 0; i < nn; i++) {
-      if (i < low | i > high) {
+      if (i < low || i > high) {
         d[i] = H[i][i];
         e[i] = 0.0;
       }
@@ -1014,7 +1010,7 @@ public class Eigen {
     // Vectors of isolated roots
 
     for (int i = 0; i < nn; i++) {
-      if (i < low | i > high) {
+      if (i < low || i > high) {
         for (int j = i; j < nn; j++) {
           V[i][j] = H[i][j];
         }
@@ -1059,11 +1055,12 @@ public class Eigen {
     Eigen eigen = new Eigen(3);      
     eigen.calc(a);
     Vector3f[] evec = eigen.getEigenVectors3();
-    Vector3f eval = eigen.getEigenValues3();
     Logger.info("eigVc " + evec[0]);
     Logger.info("eigVc " + evec[1]);
     Logger.info("eigVc " + evec[2]);
-    Logger.info("eigVl " + eval);
+    Logger.info("eigVl (" + eigen.d[0] + " + " + eigen.e[0] 
+        + "I) (" + eigen.d[1] + " + " + eigen.e[1] 
+        + "I) (" + eigen.d[2] + " + " + eigen.e[2] + "I)");
     
     Vector3f[] unitVectors = new Vector3f[3];
     float[] lengths = new float[3];

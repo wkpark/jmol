@@ -61,24 +61,15 @@ public class Quadric {
   //
   //////////////////////////////////////
 
+  private static float ONE_OVER_ROOT2_PI = (float) (Math.sqrt(0.5) / Math.PI);
   public Quadric(double[] bcart) {
     isThermalEllipsoid = true;
     lengths = new float[3];
     vectors = new Vector3f[3];
     getAxesForEllipsoid(bcart, vectors, lengths);
 
-    // note -- this is the ellipsoid in RECIPROCAL SPACE!
-
-    double factor = Math.sqrt(0.5) / Math.PI;
     for (int i = 0; i < 3; i++)
-      lengths[i] = (float) (factor / lengths[i]);
-
-    Vector3f t = vectors[2];
-    vectors[2] = vectors[0];
-    vectors[0] = t;
-    float f = lengths[2];
-    lengths[2] = lengths[0];
-    lengths[0] = f;
+      lengths[i] *= ONE_OVER_ROOT2_PI;
   }
 
   public void rotate(Matrix4f mat) {

@@ -550,6 +550,7 @@ Species   Ion     s      p      d      f     Total  Charge (e)
 
   /**
    * read Mulliken or Hirshfield charges
+   * @throws Exception 
    */
   private void readOutputCharges() throws Exception {
     if (line.toUpperCase().indexOf(chargeType ) < 0)

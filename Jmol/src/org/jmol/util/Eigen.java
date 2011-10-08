@@ -88,7 +88,7 @@ public class Eigen {
       if (unitVectors[i] == null)
         unitVectors[i] = new Vector3f();
       unitVectors[i].set(eigenVectors[i]);
-      lengths[i] = (float) (1/Math.sqrt(Math.abs(eigenValues[i])));
+      lengths[i] = (float) Math.sqrt(Math.abs(eigenValues[i]));
     }
   }
 
@@ -1080,7 +1080,7 @@ public class Eigen {
   }
 
   /**
-   * sorts vectors and normalizes them
+   * sorts vectors by absolute value and normalizes them
    * @param vectors
    * @param lengths
    */

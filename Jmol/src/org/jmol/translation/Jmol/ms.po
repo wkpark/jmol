@@ -8,59 +8,54 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-10-03 19:01+0200\n"
-"PO-Revision-Date: 2011-08-18 03:25+0000\n"
+"PO-Revision-Date: 2011-10-07 10:53+0000\n"
 "Last-Translator: abuyop <Unknown>\n"
 "Language-Team: Malay <ms@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-21 09:24+0000\n"
-"X-Generator: Launchpad (build 13697)\n"
+"X-Launchpad-Export-Date: 2011-10-07 11:40+0000\n"
+"X-Generator: Launchpad (build 14085)\n"
 
 #: com/json/Cookie.java:121
-#, fuzzy
 msgid "name"
-msgstr "&Nama"
+msgstr "Nama"
 
 #: com/json/Cookie.java:123
-#, fuzzy
 msgid "value"
-msgstr "Nilai"
+msgstr "nilai"
 
 #: com/json/Cookie.java:126
 msgid "expires"
-msgstr ""
+msgstr "luput"
 
 #: com/json/Cookie.java:130
 msgid "domain"
-msgstr ""
+msgstr "domain"
 
 #: com/json/Cookie.java:134
-#, fuzzy
 msgid "path"
-msgstr "Ulang Semula"
+msgstr "laluan"
 
 #: com/json/HTTP.java:132 com/json/HTTP.java:144
 msgid "HTTP-Version"
-msgstr ""
+msgstr "Versi-HTTP"
 
 #: com/json/HTTP.java:134
-#, fuzzy
 msgid "Status-Code"
-msgstr "Keadaan"
+msgstr "Kod-Status"
 
 #: com/json/HTTP.java:136
 msgid "Reason-Phrase"
-msgstr ""
+msgstr "Frasa-Sebab"
 
 #: com/json/HTTP.java:138
-#, fuzzy
 msgid "Method"
-msgstr "Kaedah: "
+msgstr "Kaedah"
 
 #: com/json/HTTP.java:141
 msgid "Request-URI"
-msgstr ""
+msgstr "URI-Dipinta"
 
 #: org/openscience/jmol/app/JmolApp.java:107
 msgid "Error starting Jmol: the property 'user.home' is not defined."
@@ -96,7 +91,7 @@ msgstr "operasi permulaaan secara senyap"
 
 #: org/openscience/jmol/app/JmolApp.java:155
 msgid "kiosk mode -- no frame"
-msgstr ""
+msgstr "mod kiosk -- tiada bingkai"
 
 #: org/openscience/jmol/app/JmolApp.java:157
 msgid "list commands during script execution"
@@ -124,7 +119,7 @@ msgstr "keluar selepas skrip (melibatkan dengan -n)"
 
 #: org/openscience/jmol/app/JmolApp.java:170
 msgid "port for JSON/MolecularPlayground-style communication"
-msgstr ""
+msgstr "port untuk komunikasi gaya LatarMain JSON/Molekul"
 
 #: org/openscience/jmol/app/JmolApp.java:176
 msgid "script file to execute or '-' for System.in"
@@ -436,7 +431,7 @@ msgstr "Jumlah Cas: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:301
 msgid "Multiplicity: "
-msgstr ""
+msgstr "Kegandaan: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:308
 msgid "Selection: "
@@ -763,7 +758,7 @@ msgstr "P&aksi"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:146
 msgid "B&ounding Box"
-msgstr ""
+msgstr "Kotak &Lantun"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:147
 msgid "&Hydrogens"
@@ -973,7 +968,7 @@ msgstr "Paksi"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:200
 msgid "Bounding Box"
-msgstr ""
+msgstr "Kotak Lantun"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:202
 msgid "RasMol/Chime compatible axes orientation/rotations"
@@ -1113,63 +1108,62 @@ msgid "width height?"
 msgstr "tinggi lebar?"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:409
-#, fuzzy
 msgid "magic"
-msgstr "Asas"
+msgstr "magik"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:410
 msgid "role"
-msgstr ""
+msgstr "peranan"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:416
 msgid "type"
-msgstr ""
+msgstr "jenis"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:418
 msgid "text"
-msgstr ""
+msgstr "teks"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:419
 msgid "visibility"
-msgstr ""
+msgstr "ketampakan"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:422
 msgid "command"
-msgstr ""
+msgstr "perintah"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:425
 msgid "id"
-msgstr ""
+msgstr "id"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:437
 msgid "startup_script"
-msgstr ""
+msgstr "skrip_permulaan"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:442
 msgid "banner"
-msgstr ""
+msgstr "sepanduk"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:443
 msgid "banner_text"
-msgstr ""
+msgstr "teks_sepanduk"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:447
 msgid "style"
-msgstr ""
+msgstr "gaya"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:453
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:457
 msgid "x"
-msgstr ""
+msgstr "x"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:454
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:458
 msgid "y"
-msgstr ""
+msgstr "y"
 
 #: org/openscience/jmol/app/jmolpanel/JsonNioService.java:473
 msgid "sync"
-msgstr ""
+msgstr "segerak"
 
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:124
 msgid "Delete"
@@ -1467,6 +1461,8 @@ msgid ""
 "Caps slice with opaque surfaces.\n"
 "Ignores MOs and surfaces with interior layers."
 msgstr ""
+"Penutup dengan permukaan legap.\n"
+"Abaikan MO dan permukaan dengan lapisan dalaman."
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:174
 msgid "Slice Planes"
@@ -1506,7 +1502,7 @@ msgstr "Ketebalan hirisan"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:261
 msgid "Select Surface(s)"
-msgstr ""
+msgstr "Pilih Permukaan"
 
 #: org/openscience/jmol/app/webexport/JmolInstance.java:81
 msgid "Attempt to make scratch directory failed."
@@ -1887,390 +1883,70 @@ msgstr "Muat turun paparan"
 msgid "unimplemented"
 msgstr "tidak dilaksanakan"
 
-#, fuzzy
-#~ msgid "All"
-#~ msgstr "Semu&a"
-
-#, fuzzy
-#~ msgid "System"
-#~ msgstr "Langkah"
-
-#, fuzzy
-#~ msgid "Configurations"
-#~ msgstr "Animasi"
-
-#, fuzzy
-#~ msgid "Element"
-#~ msgstr "tidak dilaksanakan"
-
-#, fuzzy
-#~ msgid "Select ({0})"
-#~ msgstr "Skala {0}"
-
-#, fuzzy
-#~ msgid "chains: {0}"
-#~ msgstr "mencipta {0}"
-
-#, fuzzy
-#~ msgid "View {0}"
-#~ msgstr "&Lihat"
-
-#, fuzzy
-#~ msgid "Biomolecules"
-#~ msgstr "Putar molekul."
-
-#, fuzzy
-#~ msgid "None"
-#~ msgstr "&Tiada"
-
-#, fuzzy
-#~ msgid "Display Selected Only"
-#~ msgstr "Padam Yang Dipilih"
-
-#, fuzzy
-#~ msgid "Invert Selection"
-#~ msgstr "Pemilihan: "
-
-#, fuzzy
-#~ msgid "View"
-#~ msgstr "&Lihat"
-
-#, fuzzy
-#~ msgid "Front"
-#~ msgstr "&Hadapan"
-
-#, fuzzy
-#~ msgid "Left"
-#~ msgstr "&Kiri"
-
-#, fuzzy
-#~ msgid "Right"
-#~ msgstr "&Kanan"
-
-#, fuzzy
-#~ msgid "Bottom"
-#~ msgstr "&Bawah"
-
-#, fuzzy
-#~ msgid "Back"
-#~ msgstr "Asas"
-
-#, fuzzy
-#~ msgid "Side Chains"
-#~ msgstr "Hiris Satah"
-
-#, fuzzy
-#~ msgid "Bases"
-#~ msgstr "Jeda"
-
-#, fuzzy
-#~ msgid "All Water"
-#~ msgstr "Air"
-
-#, fuzzy
-#~ msgid "Style"
-#~ msgstr "Langkah"
-
-#, fuzzy
-#~ msgid "Wireframe"
-#~ msgstr "&Bingkai Wayar"
-
-#, fuzzy
-#~ msgid "Cartoon"
-#~ msgstr "Karbon"
-
-#, fuzzy
-#~ msgid "On"
-#~ msgstr "&Dihidupkan"
-
-#, fuzzy
-#~ msgid "Hydrogen Bonds"
-#~ msgstr "Hidrogen"
-
-#, fuzzy
-#~ msgid "Cartoon Rockets"
-#~ msgstr "Halaman Karton"
-
-#, fuzzy
-#~ msgid "Vibration"
-#~ msgstr "Animasi"
-
-#, fuzzy
-#~ msgid "Vectors"
-#~ msgstr "V&ektor"
-
-#, fuzzy
-#~ msgid "Red+Green glasses"
-#~ msgstr "Merah/Hijau"
-
-#, fuzzy
-#~ msgid "Labels"
-#~ msgstr "&Label"
-
-#, fuzzy
-#~ msgid "Centered"
-#~ msgstr "&Ditengahkan"
-
-#, fuzzy
-#~ msgid "Upper Right"
-#~ msgstr "Kanan &Atas"
-
-#, fuzzy
-#~ msgid "Lower Right"
-#~ msgstr "Kanan &Atas"
-
-#, fuzzy
-#~ msgid "Upper Left"
-#~ msgstr "Kanan &Atas"
-
-#, fuzzy
-#~ msgid "Color"
-#~ msgstr "Tutup"
-
-#, fuzzy
-#~ msgid "Formal Charge"
-#~ msgstr "Jumlah Cas: "
-
-#, fuzzy
-#~ msgid "Partial Charge"
-#~ msgstr "Jumlah Cas: "
-
-#, fuzzy
-#~ msgid "Amino Acid"
-#~ msgstr "Amino"
-
-#, fuzzy
-#~ msgid "Black"
-#~ msgstr "Asas"
-
-#, fuzzy
-#~ msgid "White"
-#~ msgstr "Air"
-
-#, fuzzy
-#~ msgid "Cyan"
-#~ msgstr "Merah/Sian"
-
-#, fuzzy
-#~ msgid "Red"
-#~ msgstr "Buat Semula"
-
-#, fuzzy
-#~ msgid "Green"
-#~ msgstr "Merah/Hijau"
-
-#, fuzzy
-#~ msgid "Blue"
-#~ msgstr "Nilai"
-
-#, fuzzy
-#~ msgid "Indigo"
-#~ msgstr "Maklumat"
-
-#, fuzzy
-#~ msgid "Maroon"
-#~ msgstr "Karbon"
-
-#, fuzzy
-#~ msgid "Background"
-#~ msgstr "Warna Latar Belakang"
-
-#, fuzzy
-#~ msgid "Surfaces"
-#~ msgstr "Alat Permukaan"
-
-#, fuzzy
-#~ msgid "Boundbox"
-#~ msgstr "&Ikatan"
-
-#, fuzzy
-#~ msgid "Zoom"
-#~ msgstr "&Zum"
-
-#, fuzzy
-#~ msgid "Zoom In"
-#~ msgstr "&Zum"
-
-#, fuzzy
-#~ msgid "Zoom Out"
-#~ msgstr "&Zum"
-
-#, fuzzy
-#~ msgid "Spin"
-#~ msgstr "Putar dihidupkan"
-
-#, fuzzy
-#~ msgid "Set X Rate"
-#~ msgstr "Keadaan"
-
-#, fuzzy
-#~ msgid "Set Y Rate"
-#~ msgstr "Keadaan"
-
-#, fuzzy
-#~ msgid "Set Z Rate"
-#~ msgstr "Keadaan"
-
-#, fuzzy
-#~ msgid "Set FPS"
-#~ msgstr "FPS"
-
-#, fuzzy
-#~ msgid "Animation Mode"
-#~ msgstr "Animasi"
-
-#, fuzzy
-#~ msgid "Resume"
-#~ msgstr "Sai&zkan Semula"
-
-#, fuzzy
-#~ msgid "Stop"
-#~ msgstr "Langkah"
-
-#, fuzzy
-#~ msgid "Rewind"
-#~ msgstr "Buat Semula"
-
-#, fuzzy
-#~ msgid "Restart"
-#~ msgstr "Ulang Semula"
-
-#, fuzzy
-#~ msgid "Delete measurements"
-#~ msgstr "Pengukuran"
-
-#, fuzzy
-#~ msgid "List measurements"
-#~ msgstr "Pengukuran"
-
-#, fuzzy
-#~ msgid "Distance units nanometers"
-#~ msgstr "Units &Jarak"
-
-#, fuzzy
-#~ msgid "Distance units Angstroms"
-#~ msgstr "Units &Jarak"
-
-#, fuzzy
-#~ msgid "Distance units picometers"
-#~ msgstr "Units &Jarak"
-
-#, fuzzy
-#~ msgid "Center"
-#~ msgstr "&Ditengahkan"
-
-#, fuzzy
-#~ msgid "Label"
-#~ msgstr "&Label"
-
-#, fuzzy
-#~ msgid "Select atom"
-#~ msgstr "Padam atom"
-
-#, fuzzy
-#~ msgid "Select chain"
-#~ msgstr "Pemilihan: "
-
-#, fuzzy
-#~ msgid "Select element"
-#~ msgstr "Pilih Semu&a"
-
-#, fuzzy
-#~ msgid "Select group"
-#~ msgstr "Pilih"
-
-#, fuzzy
-#~ msgid "Select molecule"
-#~ msgstr "Pilih Semu&a"
-
-#, fuzzy
-#~ msgid "Select site"
-#~ msgstr "Pilih"
-
-#, fuzzy
-#~ msgid "Show"
-#~ msgstr "Papar Semua"
-
-#, fuzzy
-#~ msgid "Console"
-#~ msgstr "Ko&nsol..."
-
-#, fuzzy
-#~ msgid "File Header"
-#~ msgstr "Nama Fail:"
-
-#, fuzzy
-#~ msgid "Model"
-#~ msgstr "Mod:"
-
-#, fuzzy
-#~ msgid "Orientation"
-#~ msgstr "Animasi"
-
-#, fuzzy
-#~ msgid "File"
-#~ msgstr "&Fail"
-
-#, fuzzy
-#~ msgid "Reload"
-#~ msgstr "&Muat Semula"
-
-#, fuzzy
-#~ msgid "Open file or URL"
-#~ msgstr "Buka URL"
-
-#, fuzzy
-#~ msgid "Open script"
-#~ msgstr "Salin Skrip"
-
-#, fuzzy
-#~ msgid "Export {0} image"
-#~ msgstr "Eksport &Imej..."
-
-#, fuzzy
-#~ msgid "Computation"
-#~ msgstr "Kira Ikatan"
-
-#, fuzzy
-#~ msgid "Dot Surface"
-#~ msgstr "Alat Permukaan"
-
-#, fuzzy
-#~ msgid "van der Waals Surface"
-#~ msgstr "{0}% van der Waals"
-
-#, fuzzy
-#~ msgid "Molecular Surface"
-#~ msgstr "Ciri-ciri Molekul"
-
-#, fuzzy
-#~ msgid "Reload {0}"
-#~ msgstr "&Muat Semula"
-
-#, fuzzy
-#~ msgid "{0} px"
-#~ msgstr "{0} piksel"
-
-#, fuzzy
-#~ msgid "Angstrom Width"
-#~ msgstr "(Angstroms)"
-
-#, fuzzy
-#~ msgid "Selection Halos"
-#~ msgstr "Pemilihan: "
-
-#, fuzzy
-#~ msgid "Show Hydrogens"
-#~ msgstr "Hidrogen"
-
-#, fuzzy
-#~ msgid "Show Measurements"
-#~ msgstr "Pengukuran"
-
-#, fuzzy
-#~ msgid "RasMol Colors"
-#~ msgstr "Lalai RasMol"
-
-#, fuzzy
-#~ msgid "About..."
-#~ msgstr "Mutlak"
+#, java-format
+#~ msgid ""
+#~ "Could not find or open:\n"
+#~ "{0}"
+#~ msgstr ""
+#~ "Tidak dapat mencari atau buka:\n"
+#~ "{0}"
+
+#~ msgid "Jmol Script Console"
+#~ msgstr "Konsol Skrip Jmol"
+
+#~ msgid "vector"
+#~ msgstr "vektor"
+
+#, java-format
+#~ msgid "Go to first {0} in the collection"
+#~ msgstr "Pergi ke {0} yang pertama didalam koleksi"
+
+#, java-format
+#~ msgid "Go to previous {0} in the collection"
+#~ msgstr "Pergi ke {0} yang terdahulu didalam koleksi"
+
+#, java-format
+#~ msgid "Play the whole collection of {0}'s"
+#~ msgstr "Main keseluruhan koleksi {0}"
+
+#, java-format
+#~ msgid "Go to next {0} in the collection"
+#~ msgstr "Pergi ke {0} yang berikutnya didalam koleksi"
+
+#, java-format
+#~ msgid "Jump to last {0} in the collection"
+#~ msgstr "Pergi ke {0} yang terakhir didalam koleksi"
+
+#~ msgid "atom set"
+#~ msgstr "set atom"
+
+#, java-format
+#~ msgid "adding {0}.spt"
+#~ msgstr "menambah {0}.spt"
+
+#, java-format
+#~ msgid "adding {0}.png"
+#~ msgstr "menambah {0}.png"
+
+#~ msgid "adding JmolPopIn.js"
+#~ msgstr "menambah JmolPopIn.js"
+
+#~ msgid "Show Selected"
+#~ msgstr "Papar yang Dipilih"
+
+#~ msgid "double-click and drag to reorder"
+#~ msgstr "dwi-klik dan seret untuk tertib semula"
+
+#~ msgid "Clear console button (requires restarting Jmol)"
+#~ msgstr "Kosongkan butang kosong (perlu mulakan semula Jmol)"
+
+#, java-format
+#~ msgid ""
+#~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
+#~ "model {0}."
+#~ msgstr ""
+#~ "Sisip teks penerangan disini. Teks panjang akan lilit disekeliling model "
+#~ "Jmol {0}."
+
+#~ msgid "Output Conso&le..."
+#~ msgstr "Konso&l Output..."

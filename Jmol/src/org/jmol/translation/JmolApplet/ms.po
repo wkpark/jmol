@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-10-04 20:23+0200\n"
-"PO-Revision-Date: 2011-08-18 03:26+0000\n"
+"PO-Revision-Date: 2011-10-07 11:01+0000\n"
 "Last-Translator: abuyop <Unknown>\n"
 "Language-Team: Malay <ms@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-21 09:24+0000\n"
-"X-Generator: Launchpad (build 13697)\n"
+"X-Launchpad-Export-Date: 2011-10-07 11:40+0000\n"
+"X-Generator: Launchpad (build 14085)\n"
 
 #: org/jmol/applet/AppletWrapper.java:100
 msgid "Loading Jmol applet ..."
@@ -143,7 +143,8 @@ msgid "Check"
 msgstr "Semak"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Atas[sebagaimana \"pergi ke atas\""
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -417,14 +418,12 @@ msgid "French"
 msgstr "Perancis"
 
 #: org/jmol/i18n/GT.java:155
-#, fuzzy
 msgid "Frisian"
-msgstr "Ukraine"
+msgstr "Frisian"
 
 #: org/jmol/i18n/GT.java:156
-#, fuzzy
 msgid "Galician"
-msgstr "Itali"
+msgstr "Galician"
 
 #: org/jmol/i18n/GT.java:157
 msgid "Croatian"
@@ -460,7 +459,7 @@ msgstr "Korea"
 
 #: org/jmol/i18n/GT.java:165
 msgid "Malay"
-msgstr ""
+msgstr "Melayu"
 
 #: org/jmol/i18n/GT.java:166
 msgid "Norwegian Bokmal"
@@ -670,6 +669,11 @@ msgid ""
 "Use {0} to not use this approximation.\n"
 "\n"
 msgstr ""
+"PERHATIAN: Kedudukan tulang belakang hidrogen amida adalah hadir dan akan "
+"diabaikan. Kedudukan mereka akan dianggarkan, sebagaimana didalam analisis "
+"DSSP piawai.\n"
+"Guna {0} untuk tidak gunakan anggaran ini.\n"
+"\n"
 
 #: org/jmol/modelsetbio/AminoPolymer.java:582
 #, java-format
@@ -679,6 +683,10 @@ msgid ""
 "Use {0} to ignore these hydrogen positions.\n"
 "\n"
 msgstr ""
+"PERHATIAN: Kedudukan tulang belakang hidrogen amida adalah hadir dan akan "
+"digunakan. Keputusan akan berbeza sedikit daripada analisis DSSP piawai.\n"
+"Guna {0} untuk abaikan kedudukan hidrogen ini.\n"
+"\n"
 
 #: org/jmol/popup/JmolPopup.java:141
 #: org/jmol/popup/MainPopupResourceBundle.java:537
@@ -772,7 +780,7 @@ msgstr "Bahasa"
 #: org/jmol/popup/MainPopupResourceBundle.java:544
 #: org/jmol/popup/MainPopupResourceBundle.java:545
 msgid "By Residue Name"
-msgstr ""
+msgstr "Mengikut Nama Residu"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:546
 msgid "By HETATM"
@@ -901,11 +909,10 @@ msgid "Right"
 msgstr "Kanan"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:579
-#, fuzzy
 msgid ""
 "Top[as in \"view from the top, from above\" - (translators: remove this "
 "bracketed part]"
-msgstr "Atas[sebagaimana \"pergi ke atas\""
+msgstr "Atas"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:580
 msgid "Bottom"
@@ -924,7 +931,7 @@ msgstr "Protein"
 #: org/jmol/popup/MainPopupResourceBundle.java:666
 #: org/jmol/popup/MainPopupResourceBundle.java:758
 msgid "Backbone"
-msgstr ""
+msgstr "Tulang Belakang"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:586
 msgid "Side Chains"
@@ -932,23 +939,23 @@ msgstr "Rantai Sisi"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:587
 msgid "Polar Residues"
-msgstr ""
+msgstr "Residu Kutub"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:588
 msgid "Nonpolar Residues"
-msgstr ""
+msgstr "Residu Bukan Kutub"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:589
 msgid "Basic Residues (+)"
-msgstr ""
+msgstr "Residu Asas (+)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:590
 msgid "Acidic Residues (-)"
-msgstr ""
+msgstr "Residu Berasid (-)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:591
 msgid "Uncharged Residues"
-msgstr ""
+msgstr "Residu Tidak Dicas"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:592
 msgid "Nucleic"
@@ -1133,7 +1140,7 @@ msgstr "Tetapkan Rantai Sisi Ikatan-H"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:646
 msgid "Set H-Bonds Backbone"
-msgstr ""
+msgstr "Tetapkan Tulang Belakang Ikatan-H"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:653
 #: org/jmol/popup/MainPopupResourceBundle.java:756
@@ -1146,7 +1153,7 @@ msgstr "Tetapkan Rantai Sisi Ikatan-SS"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:657
 msgid "Set SS-Bonds Backbone"
-msgstr ""
+msgstr "Tetapkan Tulang Belakang Ikatan-SS"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:664
 #: org/jmol/popup/MainPopupResourceBundle.java:757
@@ -1170,7 +1177,7 @@ msgstr "Roket"
 #: org/jmol/popup/MainPopupResourceBundle.java:671
 #: org/jmol/popup/MainPopupResourceBundle.java:763
 msgid "Strands"
-msgstr ""
+msgstr "Bebenang"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:674
 msgid "Vibration"
@@ -1421,7 +1428,7 @@ msgstr "Paksi"
 #: org/jmol/popup/MainPopupResourceBundle.java:913
 #: org/jmol/popup/MainPopupResourceBundle.java:937
 msgid "Boundbox"
-msgstr ""
+msgstr "Kotak Ikatan"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:770
 #: org/jmol/popup/MainPopupResourceBundle.java:889
@@ -1834,7 +1841,7 @@ msgstr "pengakhiran ungkapan tidak dijangka"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1342
 msgid "identifier or residue specification expected"
-msgstr ""
+msgstr "pengecam atau spesifikasi residu dijangka"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1345
 msgid "invalid atom specification"
@@ -1869,7 +1876,7 @@ msgstr "nombor atau nama pembolehubah dijangka"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1366
 msgid "residue specification (ALA, AL?, A*) expected"
-msgstr ""
+msgstr "spesifikasi residu (ALA ,AL?, A*) dijangka"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1369
 #, java-format
@@ -2114,7 +2121,8 @@ msgstr "objek tidak dikenalpasti"
 #: org/jmol/script/ScriptEvaluator.java:2938
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
-msgstr "parameter {0} tidak dikenali didalam skrip keadaan Jmol (tetapkan jua)"
+msgstr ""
+"parameter {0} tidak dikenali didalam skrip keadaan Jmol (tetapkan jua)"
 
 #: org/jmol/script/ScriptEvaluator.java:2941
 #, java-format
@@ -2181,7 +2189,8 @@ msgstr "putar Z"
 #: org/jmol/viewer/ActionManager.java:119
 msgid ""
 "rotate Z (horizontal motion of mouse) or zoom (vertical motion of mouse)"
-msgstr "putar Z (gerakan melintang tetikus) atau zum (gerakan menegak tetikus)"
+msgstr ""
+"putar Z (gerakan melintang tetikus) atau zum (gerakan menegak tetikus)"
 
 #: org/jmol/viewer/ActionManager.java:120
 msgid "zoom"
@@ -2209,7 +2218,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:125
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 "klik pada dua titik untuk putar disekeliling paksi lawan jam (perlukan {0})"
 

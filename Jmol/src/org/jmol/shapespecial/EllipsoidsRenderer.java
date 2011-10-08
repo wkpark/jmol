@@ -141,7 +141,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
         continue;
       if (atom.screenZ <= 1)
         continue;
-      Object[] ellipsoid = atom.getEllipsoid();
+      Quadric ellipsoid = atom.getEllipsoid();
       if (ellipsoid == null)
         continue;
       colix = Shape.getColix(ellipsoids.colixes, i, atom);
@@ -191,16 +191,15 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   private float perspectiveFactor;
   private Point3f center;
   
-  private void render1(Atom atom, Object[] ellipsoid) {
+  private void render1(Atom atom, Quadric ellipsoid) {
     s0.set(atom.screenX, atom.screenY, atom.screenZ);
-    float[] lengths = (float[]) ellipsoid[1];
     boolean isOK = true;
     for (int i = 3; --i >= 0;) {
-      factoredLengths[i] = lengths[i + 3];
+      factoredLengths[i] = ellipsoid.lengths[i] * ellipsoid.scale;
       if (Float.isNaN(factoredLengths[i]))
         isOK = false;
     }
-    axes = (Vector3f[]) ellipsoid[0];
+    axes = ellipsoid.vectors;
     if (axes == null) { //isotropic
       axes = unitVectors;
     }

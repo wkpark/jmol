@@ -11,6 +11,7 @@ import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.modelset.Atom;
+import org.jmol.util.Quadric;
 
 public interface SymmetryInterface {
 
@@ -68,7 +69,7 @@ public interface SymmetryInterface {
   public abstract void newSpaceGroupPoint(int i, Point3f atom1, Point3f atom2,
                                           int transX, int transY, int transZ);
 
-  public abstract Object rotateEllipsoid(int i, Point3f ptTemp,
+  public abstract Vector3f[] rotateEllipsoid(int i, Point3f ptTemp,
                                          Vector3f[] axes, Point3f ptTemp1,
                                          Point3f ptTemp2);
 
@@ -78,9 +79,7 @@ public interface SymmetryInterface {
 
   public abstract void toCartesian(Point3f pt, boolean asAbsolue);
 
-  public abstract Object[] getEllipsoid(float[] parBorU);
-
-  public abstract Object[] getEllipsoid(Vector3f[] vectors, float a, float b, float c);
+  public abstract Quadric getEllipsoid(float[] parBorU);
 
   public abstract Point3f ijkToPoint3f(int nnn);
 

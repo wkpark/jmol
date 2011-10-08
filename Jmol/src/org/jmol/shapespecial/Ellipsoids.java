@@ -96,16 +96,8 @@ public class Ellipsoids extends AtomShape {
     super.setSize(size, bsSelected);
     if (size == 0)
       return;
-    float factor = Ellipsoids.getRadius(size);
-    Object[] ellipsoid;
     for (int i = bsSelected.nextSetBit(0); i >= 0; i = bsSelected.nextSetBit(i + 1))
-      if ((ellipsoid = atoms[i].getEllipsoid()) != null) {
-        float[] lengths = (float[]) ellipsoid[1];
-        for (int j = 3; --j >= 0;)
-          lengths[j + 3] = lengths[j] * factor;
-        if (ellipsoid[0] == null)
-          lengths[3] = lengths[5] = lengths[4];
-      }
+      atoms[i].scaleEllipsoid(size);
   }
 
   @Override
@@ -283,27 +275,5 @@ public class Ellipsoids extends AtomShape {
     }
   }
  
-  // from ORTEP manual ftp://ftp.ornl.gov/pub/ortep/man/pdf/chap6.pdf
-  
-  private static float[] crtval = new float[] {
-    0.3389f, 0.4299f, 0.4951f, 0.5479f, 0.5932f, 0.6334f, 0.6699f, 0.7035f,
-    0.7349f, 0.7644f, 0.7924f, 0.8192f, 0.8447f, 0.8694f, 0.8932f, 0.9162f,
-    0.9386f, 0.9605f, 0.9818f, 1.0026f, 1.0230f, 1.0430f, 1.0627f, 1.0821f,
-    1.1012f, 1.1200f, 1.1386f, 1.1570f, 1.1751f, 1.1932f, 1.2110f, 1.2288f,
-    1.2464f, 1.2638f, 1.2812f, 1.2985f, 1.3158f, 1.3330f, 1.3501f, 1.3672f,
-    1.3842f, 1.4013f, 1.4183f, 1.4354f, 1.4524f, 1.4695f, 1.4866f, 1.5037f,
-    1.5209f, 1.5382f, 1.5555f, 1.5729f, 1.5904f, 1.6080f, 1.6257f, 1.6436f,
-    1.6616f, 1.6797f, 1.6980f, 1.7164f, 1.7351f, 1.7540f, 1.7730f, 1.7924f,
-    1.8119f, 1.8318f, 1.8519f, 1.8724f, 1.8932f, 1.9144f, 1.9360f, 1.9580f,
-    1.9804f, 2.0034f, 2.0269f, 2.0510f, 2.0757f, 2.1012f, 2.1274f, 2.1544f,
-    2.1824f, 2.2114f, 2.2416f, 2.2730f, 2.3059f, 2.3404f, 2.3767f, 2.4153f,
-    2.4563f, 2.5003f, 2.5478f, 2.5997f, 2.6571f, 2.7216f, 2.7955f, 2.8829f,
-    2.9912f, 3.1365f, 3.3682f 
-  };
-  
-  final static float getRadius(int prob) {
-    return crtval[prob < 1 ? 0 : prob > 99 ? 98 : prob - 1];
-  }
-
 }
 

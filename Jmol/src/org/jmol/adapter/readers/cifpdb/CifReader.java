@@ -813,7 +813,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
           }
           break;
         case ANISO_LABEL:
-          iAtom = atomSetCollection.getAtomNameIndex(field);
+          iAtom = atomSetCollection.getAtomIndexFromName(field);
           if (iAtom < 0)
             continue;
           atom = atomSetCollection.getAtom(iAtom);
@@ -955,10 +955,10 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       for (int i = 0; i < tokenizer.fieldCount; ++i) {
         switch (fieldProperty(i)) {
         case CHEM_COMP_BOND_ATOM_ID_1:
-          atomIndex1 = atomSetCollection.getAtomNameIndex(field);
+          atomIndex1 = atomSetCollection.getAtomIndexFromName(field);
           break;
         case CHEM_COMP_BOND_ATOM_ID_2:
-          atomIndex2 = atomSetCollection.getAtomNameIndex(field);
+          atomIndex2 = atomSetCollection.getAtomIndexFromName(field);
           break;
         case CHEM_COMP_BOND_AROMATIC_FLAG:
           isAromatic = (field.charAt(0) == 'Y');
@@ -1034,10 +1034,10 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         case NONE:
           break;
         case GEOM_BOND_ATOM_SITE_LABEL_1:
-          atomIndex1 = atomSetCollection.getAtomNameIndex(name1 = field);
+          atomIndex1 = atomSetCollection.getAtomIndexFromName(name1 = field);
           break;
         case GEOM_BOND_ATOM_SITE_LABEL_2:
-          atomIndex2 = atomSetCollection.getAtomNameIndex(name2 = field);
+          atomIndex2 = atomSetCollection.getAtomIndexFromName(name2 = field);
           break;
         case GEOM_BOND_DISTANCE:
           distance = parseFloat(field);
@@ -1646,7 +1646,7 @@ _struct_site_gen.details
     bsSets = new BitSet[nAtoms];
     symmetry = atomSetCollection.getSymmetry();
     for (int i = firstAtom; i < atomCount; i++) {
-      int ipt = atomSetCollection.getAtomNameIndex(atoms[i].atomName)
+      int ipt = atomSetCollection.getAtomIndexFromName(atoms[i].atomName)
           - firstAtom;
       if (bsSets[ipt] == null)
         bsSets[ipt] = new BitSet();
@@ -1755,8 +1755,8 @@ _struct_site_gen.details
       Object[] o = bondTypes.get(i);
       float distance = ((Float) o[2]).floatValue();
       float dx = ((Float) o[3]).floatValue();
-      int iatom1 = atomSetCollection.getAtomNameIndex((String) o[0]);
-      int iatom2 = atomSetCollection.getAtomNameIndex((String) o[1]);
+      int iatom1 = atomSetCollection.getAtomIndexFromName((String) o[0]);
+      int iatom2 = atomSetCollection.getAtomIndexFromName((String) o[1]);
       BitSet bs1 = bsSets[iatom1 - firstAtom];
       BitSet bs2 = bsSets[iatom2 - firstAtom];
       if (bs1 == null || bs2 == null)
@@ -1823,7 +1823,7 @@ _struct_site_gen.details
               cart1.set(atoms[k]);
               symmetry.toCartesian(cart1, true);
               BitSet bs = bsSets[atomSetCollection
-                  .getAtomNameIndex(atoms[k].atomName)
+                  .getAtomIndexFromName(atoms[k].atomName)
                   - firstAtom];
               if (bs != null)
                 for (int ii = bs.nextSetBit(0); ii >= 0; ii = bs.nextSetBit(ii + 1)) {

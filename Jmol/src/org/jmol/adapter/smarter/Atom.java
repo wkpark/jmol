@@ -25,6 +25,9 @@
 package org.jmol.adapter.smarter;
 
 import javax.vecmath.Point3f;
+
+import org.jmol.util.Quadric;
+
 import java.util.BitSet;
 
 public class Atom extends Point3f implements Cloneable {
@@ -50,7 +53,7 @@ public class Atom extends Point3f implements Cloneable {
   public int sequenceNumber = Integer.MIN_VALUE;
   public char insertionCode = '\0';
   float[] anisoBorU; //[6] = 1 for U, 0 for B; [7] = bFactor
-  public Object[] ellipsoid;
+  public Quadric ellipsoid;
   public boolean ignoreSymmetry; // CIF _atom_site_disorder_group -1
 
   public Atom() {

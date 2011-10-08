@@ -48,6 +48,7 @@ import org.jmol.geodesic.EnvelopeCalculation;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Elements;
+import org.jmol.util.Quadric;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
@@ -144,7 +145,7 @@ abstract public class AtomCollection {
   float[] ionicRadii;
   float[] hydrophobicities;
   
-  protected Object[][] ellipsoids;
+  protected Quadric[] ellipsoids;
   protected int[] surfaceDistance100s;
 
   protected boolean haveStraightness;
@@ -244,7 +245,7 @@ abstract public class AtomCollection {
     return atoms[i].getModelIndex();
   }
   
-  public Object[] getEllipsoid(int i) {
+  public Quadric getEllipsoid(int i) {
     // [0]: set of three vectors
     // [1]: set of six values
     return (i < 0 || ellipsoids == null || i >= ellipsoids.length ? null
@@ -780,11 +781,11 @@ abstract public class AtomCollection {
     return true;
   }
 
-  protected void setEllipsoid(int atomIndex, Object[] ellipsoid) {
+  protected void setEllipsoid(int atomIndex, Quadric ellipsoid) {
     if (ellipsoid == null)
       return;
     if (ellipsoids == null)
-      ellipsoids = new Object[atoms.length][];
+      ellipsoids = new Quadric[atoms.length];
     ellipsoids[atomIndex] = ellipsoid;
   }
 
@@ -2661,7 +2662,7 @@ abstract public class AtomCollection {
         firstAtomIndex, nAtoms);
     partialCharges = (float[]) ArrayUtil.deleteElements(partialCharges,
         firstAtomIndex, nAtoms);
-    ellipsoids = (Object[][]) ArrayUtil.deleteElements(ellipsoids,
+    ellipsoids = (Quadric[]) ArrayUtil.deleteElements(ellipsoids,
         firstAtomIndex, nAtoms);
     vibrationVectors = (Vector3f[]) ArrayUtil.deleteElements(vibrationVectors,
         firstAtomIndex, nAtoms);

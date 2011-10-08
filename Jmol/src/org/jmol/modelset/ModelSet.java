@@ -1043,6 +1043,15 @@ import javax.vecmath.Vector3f;
     BitSet bsModels = getModelBitSet(bs, false);
     for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels.nextSetBit(i + 1))
       shapeManager.refreshShapeTrajectories(i, bs, mat);
+    /* but we would need to somehow indicate this in the state
+    if (ellipsoids != null)
+      for (int i = bs.nextSetBit(0); i >= 0 && i < ellipsoids.length; i = bs.nextSetBit(i + 1))
+        ellipsoids[i].rotate(mat);
+    if (vibrationVectors != null)
+      for (int i = bs.nextSetBit(0); i >= 0 && i < vibrationVectors.length; i = bs.nextSetBit(i + 1))
+        if (vibrationVectors[i] != null)
+            mat.transform(vibrationVectors[i]);
+            */
   }
 
   public void connect(float[][] connections) {

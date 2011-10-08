@@ -303,13 +303,13 @@ public class XmlCmlReader extends XmlReader {
           breakOutBondTokens(atts.get("atomRef1"));
           for (int i = tokenCount; --i >= 0;)
             bondArray[i].atomIndex1 = atomSetCollection
-                .getAtomNameIndex(tokens[i]);
+                .getAtomIndexFromName(tokens[i]);
         }
         if (atts.containsKey("atomRef2")) {
           breakOutBondTokens(atts.get("atomRef2"));
           for (int i = tokenCount; --i >= 0;)
             bondArray[i].atomIndex2 = atomSetCollection
-                .getAtomNameIndex(tokens[i]);
+                .getAtomIndexFromName(tokens[i]);
         }
       }
       if (name.equals("atomArray")) {

@@ -26,19 +26,20 @@
 package org.jmol.modelset;
 
 
-import org.jmol.viewer.JmolConstants;
-import org.jmol.script.Token;
-import org.jmol.viewer.Viewer;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumPalette;
 import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumVdw;
 import org.jmol.g3d.Graphics3D;
+import org.jmol.script.Token;
 import org.jmol.util.Elements;
+import org.jmol.util.Quadric;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolNode;
 import org.jmol.util.Point3fi;
+import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.Viewer;
 
 import java.util.BitSet;
 import java.util.List;
@@ -266,10 +267,8 @@ final public class Atom extends Point3fi implements JmolNode {
   }
 
   public float getADPMinMax(boolean isMax) {
-    Object[] ellipsoid = getEllipsoid();
-    if (ellipsoid == null)
-      return 0;
-    return ((float[])ellipsoid[1])[isMax ? 5 : 3];
+    Quadric ellipsoid = getEllipsoid();
+    return (ellipsoid == null ? 0 : ellipsoid.lengths[isMax ? 2 : 0] * ellipsoid.scale);
   }
 
   public int getRasMolRadius() {
@@ -618,8 +617,15 @@ final public class Atom extends Point3fi implements JmolNode {
      return partialCharges == null ? 0 : partialCharges[index];
    }
 
-   public Object[] getEllipsoid() {
+   public Quadric getEllipsoid() {
      return group.chain.modelSet.getEllipsoid(index);
+   }
+
+   public void scaleEllipsoid(int size) {
+     Quadric ellipsoid = getEllipsoid();
+     if (ellipsoid == null)
+       return;
+     ellipsoid.setSize(size);
    }
 
    /**
@@ -1431,4 +1437,5 @@ final public class Atom extends Point3fi implements JmolNode {
     }
     return false;
   }
+
 }

@@ -46,6 +46,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jmol.adapter.smarter.*;
+import org.jmol.util.Eigen;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 
@@ -231,6 +233,8 @@ public class CastepReader extends AtomSetCollectionReader {
         }
       } else if (doProcessLines && line.contains("Atomic Populations (Mulliken)")) {
         readOutputCharges();
+      } else if (doProcessLines && line.contains("Born Effective Charges")) {
+        readBornChargeTensors();
       }
       return true;
     }
@@ -281,9 +285,11 @@ public class CastepReader extends AtomSetCollectionReader {
   private void readOutputAtoms() throws Exception {
     readLines(2);
     while (readLine().indexOf("xxx") < 0) {
-      Atom atom = atomSetCollection.addNewAtom();
+      Atom atom = new Atom();
       tokens = getTokens();
       atom.elementSymbol = tokens[1];
+      atom.atomName = tokens[1] + tokens[2];
+      atomSetCollection.addAtomWithMappedName(atom);
       setAtomCoord(atom, parseFloat(tokens[3]), parseFloat(tokens[4]),
           parseFloat(tokens[5]));
     }
@@ -493,6 +499,38 @@ Species   Ion     s      p      d      f     Total  Charge (e)
     }
     return (line == null ? 0 : (tokens = getTokens()).length);
   }
+
+  /*
+                   Born Effective Charges
+                   ----------------------
+   O       1        -5.27287    -0.15433     1.86524
+                    -0.32884    -1.78984     0.13678
+                     1.81939     0.06085    -1.80221
+   */
+  private void readBornChargeTensors() throws Exception {
+    if (readLine().indexOf("--------") < 0)
+      return;
+    Atom[] atoms = atomSetCollection.getAtoms();
+    while (readLine().indexOf('=') < 0) {
+      String[] tokens = getTokens(line.substring(0, 12));
+      int index = atomSetCollection.getAtomIndexFromName(tokens[0] + tokens[1]);
+      getEllipsoid(atoms[index], line.substring(12));
+    }
+  }
+
+  private void getEllipsoid(Atom atom, String line0) throws Exception {
+    float[] data = new float[9];
+    double[][] a = new double[3][3];
+    fillFloatArray(line0, 0, data);
+    Logger.info("tensor " +  atom.atomName 
+        + "\t" +Escape.escape(data)); 
+    for (int p = 0, i = 0; i < 3; i++)
+      for (int j = 0; j < 3; j++)
+        a[i][j] = data[p++];
+    atom.ellipsoid = Eigen.getEllipsoid(a);
+  }
+
+
 
   //////////// phonon code ////////////
 

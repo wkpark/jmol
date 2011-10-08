@@ -347,7 +347,7 @@ public class NciCalculation extends QuantumCalculation implements
       hess[1][2] = hess[2][1] = gyzTemp;
       hess[2][2] = gzzTemp;
       eigen.calc(hess);
-      double lambda2 = eigen.getEigenvalues()[1];
+      double lambda2 = eigen.getRealEigenvalues()[1];
       s = (lambda2 < 0 ? -rho : rho);
     }
     return (float) s;

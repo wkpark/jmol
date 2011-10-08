@@ -42,6 +42,7 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
+import org.jmol.util.Quadric;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.SimpleUnitCell;
@@ -500,15 +501,15 @@ public class AtomSetCollection {
   }
   
   public Bond addNewBond(String atomName1, String atomName2, int order) {
-    return addNewBond(getAtomNameIndex(atomName1),
-                      getAtomNameIndex(atomName2),
+    return addNewBond(getAtomIndexFromName(atomName1),
+                      getAtomIndexFromName(atomName2),
                       order);
   }
 
   public Bond addNewBondWithMappedSerialNumbers(int atomSerial1, int atomSerial2,
                                          int order) {
-    return addNewBond(getAtomSerialNumberIndex(atomSerial1),
-                      getAtomSerialNumberIndex(atomSerial2),
+    return addNewBond(getAtomIndexFromSerial(atomSerial1),
+                      getAtomIndexFromSerial(atomSerial2),
                       order);
   }
 
@@ -1121,8 +1122,8 @@ public class AtomSetCollection {
           if (addCartesian)
             cartesians[pt++] = cartesian;
           if (atoms[i].ellipsoid != null) {
-            Object axes = atoms[i].ellipsoid[0];
-            Object lengths = atoms[i].ellipsoid[1];
+            Vector3f[] axes = atoms[i].ellipsoid.vectors;
+            float[] lengths = atoms[i].ellipsoid.lengths;
             if (axes != null) {
               // note -- PDB reader specifically turns off cartesians
               if (addCartesian) {
@@ -1131,9 +1132,9 @@ public class AtomSetCollection {
                 ptTemp.set(atoms[i]);
                 symmetry.toCartesian(ptTemp, false);
               }
-              axes = symmetry.rotateEllipsoid(iSym, ptTemp, (Vector3f[]) axes, ptTemp1, ptTemp2);
+              axes = symmetry.rotateEllipsoid(iSym, ptTemp, axes, ptTemp1, ptTemp2);
             }
-            atom1.ellipsoid = new Object[] { axes, lengths };
+            atom1.ellipsoid = new Quadric(axes, lengths, atoms[i].ellipsoid.isThermalEllipsoid);
           }
         }
       }
@@ -1238,8 +1239,7 @@ public class AtomSetCollection {
   
   Map<Object, Integer> atomSymbolicMap = new Hashtable<Object, Integer>();
 
-  void mapMostRecentAtomName() {
-    //from ?? 
+  private void mapMostRecentAtomName() {
     if (atomCount > 0) {
       int index = atomCount - 1;
       String atomName = atoms[index].atomName;
@@ -1280,7 +1280,7 @@ public class AtomSetCollection {
     atomSymbolicMap.put(atomName, Integer.valueOf(atomIndex));
   }
 
-  public int getAtomNameIndex(String atomName) {
+  public int getAtomIndexFromName(String atomName) {
     //for new Bond -- inconsistent with mmCIF altLoc
     int index = -1;
     Object value = atomSymbolicMap.get(atomName);
@@ -1289,7 +1289,7 @@ public class AtomSetCollection {
     return index;
   }
 
-  public int getAtomSerialNumberIndex(int serialNumber) {
+  public int getAtomIndexFromSerial(int serialNumber) {
     int index = -1;
     Object value = atomSymbolicMap.get(Integer.valueOf(serialNumber));
     if (value != null)
@@ -1320,7 +1320,7 @@ public class AtomSetCollection {
   }
   
   public void mapPartialCharge(String atomName, float charge) {
-    atoms[getAtomNameIndex(atomName)].partialCharge = charge;  
+    atoms[getAtomIndexFromName(atomName)].partialCharge = charge;  
   }
   
   public Object getAtomSetCollectionAuxiliaryInfo(String key) {
@@ -1688,5 +1688,4 @@ public class AtomSetCollection {
     }
     return info;
   }
-
 }

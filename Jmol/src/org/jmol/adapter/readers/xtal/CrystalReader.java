@@ -28,6 +28,7 @@
 package org.jmol.adapter.readers.xtal;
 
 import org.jmol.adapter.smarter.*;
+import org.jmol.util.Eigen;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Quaternion;
@@ -1006,12 +1007,11 @@ public class CrystalReader extends AtomSetCollectionReader {
      while (readLine() != null  && line.startsWith(" *** ATOM")) {
        String[] tokens = getTokens();
        int index = parseInt(tokens[3]) - 1;
-       Atom atom = atoms[index];
        tokens = getTokens(readLines(3));
-       atom.ellipsoid = symmetry.getEllipsoid(directLatticeVectors, 
-           parseFloat(tokens[1]), 
+       atoms[index].ellipsoid = Eigen.getEllipsoid(directLatticeVectors, 
+           new float[] {parseFloat(tokens[1]), 
            parseFloat(tokens[3]), 
-           parseFloat(tokens[5]));
+           parseFloat(tokens[5]) }, false);
        readLine();
      }
      return true;

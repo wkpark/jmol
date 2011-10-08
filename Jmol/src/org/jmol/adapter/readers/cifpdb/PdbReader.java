@@ -1075,7 +1075,7 @@ Details
     } else {
       if (!haveMappedSerials)
         atomSetCollection.createAtomSerialMap();
-      index = atomSetCollection.getAtomSerialNumberIndex(serial);
+      index = atomSetCollection.getAtomIndexFromSerial(serial);
       haveMappedSerials = true;
     }
     if (index < 0) {

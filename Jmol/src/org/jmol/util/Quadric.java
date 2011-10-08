@@ -32,6 +32,25 @@ import javax.vecmath.Vector3f;
 
 public class Quadric {
 
+  public float[] lengths;
+  public Vector3f[] vectors;
+  public boolean isThermalEllipsoid = true;
+  public float scale = 1;
+  
+  @Override
+  public String toString() {
+    return (vectors == null ? "" + lengths[0] : 
+      vectors[0] + "\t" + lengths[0] + "\n"
+      + vectors[1] + "\t" + lengths[1] + "\n"
+      + vectors[2] + "\t" + lengths[2] + "\n");
+  }
+  
+  public Quadric(Vector3f[] vectors, float[] lengths, boolean isThermal) {
+    this.vectors = vectors;
+    this.lengths = lengths;
+    isThermalEllipsoid = isThermal;
+  }
+  
   //////////  Ellipsoid Code ///////////
   //
   // Bob Hanson, 4/2008
@@ -41,6 +60,36 @@ public class Quadric {
   // but of potentially many uses
   //
   //////////////////////////////////////
+
+  public Quadric(double[] bcart) {
+    isThermalEllipsoid = true;
+    lengths = new float[3];
+    vectors = new Vector3f[3];
+    getAxesForEllipsoid(bcart, vectors, lengths);
+
+    // note -- this is the ellipsoid in RECIPROCAL SPACE!
+
+    double factor = Math.sqrt(0.5) / Math.PI;
+    for (int i = 0; i < 3; i++)
+      lengths[i] = (float) (factor / lengths[i]);
+
+    Vector3f t = vectors[2];
+    vectors[2] = vectors[0];
+    vectors[0] = t;
+    float f = lengths[2];
+    lengths[2] = lengths[0];
+    lengths[0] = f;
+  }
+
+  public void rotate(Matrix4f mat) {
+    if (vectors != null)
+    for (int i = 0; i < 3; i++)
+      mat.transform(vectors[i]);
+  }
+  
+  public void setSize(int size) {
+    scale = (isThermalEllipsoid ? Quadric.getRadius(size) : size < 1 ? 0 : size / 100.0f);
+  }
 
   public static void getAxesForEllipsoid(double[] coef, Vector3f[] unitVectors, float[] lengths) {
     
@@ -54,13 +103,7 @@ public class Quadric {
     mat[0][1] = mat[1][0] = coef[3] / 2; //XY
     mat[0][2] = mat[2][0] = coef[4] / 2; //XZ
     mat[1][2] = mat[2][1] = coef[5] / 2; //YZ
-    Eigen eigen = new Eigen(mat);
-    float[][] eigenVectors = eigen.getEigenvectorsFloatTransposed();
-    double[] eigenValues = eigen.getEigenvalues();
-    for (int i = 0; i < 3; i++)
-      lengths[i] = (float) (1/Math.sqrt(eigenValues[i]));
-    for (int i = 0; i < 3; i++)
-      unitVectors[i].set(eigenVectors[i]);
+    new Eigen(mat, unitVectors, lengths);
   }
 
   public static Matrix3f setEllipsoidMatrix(Vector3f[] unitAxes, float[] lengths, Vector3f vTemp, Matrix3f mat) {
@@ -171,5 +214,28 @@ public class Quadric {
       i += 4;
     return i;
   }
+
+  // from ORTEP manual ftp://ftp.ornl.gov/pub/ortep/man/pdf/chap6.pdf
+  
+  private static float[] crtval = new float[] {
+    0.3389f, 0.4299f, 0.4951f, 0.5479f, 0.5932f, 0.6334f, 0.6699f, 0.7035f,
+    0.7349f, 0.7644f, 0.7924f, 0.8192f, 0.8447f, 0.8694f, 0.8932f, 0.9162f,
+    0.9386f, 0.9605f, 0.9818f, 1.0026f, 1.0230f, 1.0430f, 1.0627f, 1.0821f,
+    1.1012f, 1.1200f, 1.1386f, 1.1570f, 1.1751f, 1.1932f, 1.2110f, 1.2288f,
+    1.2464f, 1.2638f, 1.2812f, 1.2985f, 1.3158f, 1.3330f, 1.3501f, 1.3672f,
+    1.3842f, 1.4013f, 1.4183f, 1.4354f, 1.4524f, 1.4695f, 1.4866f, 1.5037f,
+    1.5209f, 1.5382f, 1.5555f, 1.5729f, 1.5904f, 1.6080f, 1.6257f, 1.6436f,
+    1.6616f, 1.6797f, 1.6980f, 1.7164f, 1.7351f, 1.7540f, 1.7730f, 1.7924f,
+    1.8119f, 1.8318f, 1.8519f, 1.8724f, 1.8932f, 1.9144f, 1.9360f, 1.9580f,
+    1.9804f, 2.0034f, 2.0269f, 2.0510f, 2.0757f, 2.1012f, 2.1274f, 2.1544f,
+    2.1824f, 2.2114f, 2.2416f, 2.2730f, 2.3059f, 2.3404f, 2.3767f, 2.4153f,
+    2.4563f, 2.5003f, 2.5478f, 2.5997f, 2.6571f, 2.7216f, 2.7955f, 2.8829f,
+    2.9912f, 3.1365f, 3.3682f 
+  };
+  
+  final public static float getRadius(int prob) {
+    return crtval[prob < 1 ? 0 : prob > 99 ? 98 : prob - 1];
+  }
+
 
 }

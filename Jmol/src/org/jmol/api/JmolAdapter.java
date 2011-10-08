@@ -36,6 +36,7 @@ import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumQuantumShell;
 import org.jmol.modelset.Group;
 import org.jmol.util.Elements;
+import org.jmol.util.Quadric;
 import org.jmol.util.JmolEdge;
 import org.jmol.viewer.JmolConstants;
 
@@ -424,7 +425,7 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
     public String getAtomName() { return null; }
     public int getFormalCharge() { return 0; }
     public float getPartialCharge() { return Float.NaN; }
-    public Object[] getEllipsoid() { return null; }
+    public Quadric getEllipsoid() { return null; }
     public float getRadius() { return Float.NaN; }
     abstract public float getX();
     abstract public float getY();

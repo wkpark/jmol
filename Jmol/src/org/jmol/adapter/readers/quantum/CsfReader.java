@@ -260,8 +260,8 @@ public class CsfReader extends MopacSlaterReader {
   ////////////////////////////////////////////////////////////////
 
   private void setBond(Bond bond, int[] connect) {
-    bond.atomIndex1 = atomSetCollection.getAtomSerialNumberIndex(connect[0]);
-    bond.atomIndex2 = atomSetCollection.getAtomSerialNumberIndex(connect[1]);
+    bond.atomIndex1 = atomSetCollection.getAtomIndexFromSerial(connect[0]);
+    bond.atomIndex2 = atomSetCollection.getAtomIndexFromSerial(connect[1]);
     atomSetCollection.addBond(bond);
     nBonds++;    
   }
@@ -646,7 +646,7 @@ public class CsfReader extends MopacSlaterReader {
           iShell = shells[ipt];
           int[] slater = new int[4];
           int iAtom = atomSetCollection
-              .getAtomSerialNumberIndex((connectors.get(sto_gto + "_basis_fxn" + (ipt + 1)))[0]);
+              .getAtomIndexFromSerial((connectors.get(sto_gto + "_basis_fxn" + (ipt + 1)))[0]);
           slater[0] = iAtom;
           slater[1] = JmolAdapter.getQuantumShellTagID(types[ipt]
               .substring(0, 1));
@@ -668,7 +668,7 @@ public class CsfReader extends MopacSlaterReader {
       moData.put("gaussians", garray);
     } else {
       for (int ipt = 0; ipt < nSlaters; ipt++) {
-        int iAtom = atomSetCollection.getAtomSerialNumberIndex((connectors
+        int iAtom = atomSetCollection.getAtomIndexFromSerial((connectors
             .get(sto_gto + "_basis_fxn" + (ipt + 1)))[0]);
         for (int i = 0; i < nZetas; i++) {
           if (zetas[ipt][i] == 0)

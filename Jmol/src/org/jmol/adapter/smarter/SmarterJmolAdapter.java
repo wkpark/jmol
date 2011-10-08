@@ -28,6 +28,7 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolFilesReaderInterface;
 import org.jmol.constant.EnumStructure;
 import org.jmol.util.CompoundDocument;
+import org.jmol.util.Quadric;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 import org.jmol.util.ZipUtil;
@@ -680,7 +681,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
     @Override
     public float getPartialCharge() { return atom.partialCharge; }
     @Override
-    public Object[] getEllipsoid() { return atom.ellipsoid; }
+    public Quadric getEllipsoid() { return atom.ellipsoid; }
     @Override
     public float getRadius() { return atom.radius; }
     @Override

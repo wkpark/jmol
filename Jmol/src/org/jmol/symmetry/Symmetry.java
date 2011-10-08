@@ -37,6 +37,7 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.api.SymmetryInterface;
 import org.jmol.modelset.Atom;
+import org.jmol.util.Quadric;
 import org.jmol.util.Logger;
 import org.jmol.util.SimpleUnitCell;
 
@@ -185,7 +186,7 @@ public class Symmetry implements SymmetryInterface {
     spaceGroup.finalOperations[i].newPoint(atom1, atom2, transX, transY, transZ);
   }
     
-  public Object rotateEllipsoid(int i, Point3f ptTemp, Vector3f[] axes, Point3f ptTemp1,
+  public Vector3f[] rotateEllipsoid(int i, Point3f ptTemp, Vector3f[] axes, Point3f ptTemp1,
                                 Point3f ptTemp2) {
     return spaceGroup.finalOperations[i].rotateEllipsoid(ptTemp, axes, unitCell, ptTemp1,
         ptTemp2);
@@ -289,14 +290,10 @@ public class Symmetry implements SymmetryInterface {
     return unitCell.getUnitCellAsArray(vectorsOnly);
   }
 
-  public Object[] getEllipsoid(float[] parBorU) {
+  public Quadric getEllipsoid(float[] parBorU) {
     return unitCell.getEllipsoid(parBorU);
   }
   
-  public Object[] getEllipsoid(Vector3f[] vectors, float a, float b, float c) {
-    return unitCell.getEllipsoid(vectors, a, b, c);
-  }
-
   public Point3f[] getUnitCellVertices() {
     return unitCell.getVertices();
   }

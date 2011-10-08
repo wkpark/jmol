@@ -25,14 +25,10 @@
 
 package org.jmol.symmetry;
 
-import java.util.Arrays;
-import java.util.Comparator;
-
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
-import javax.vecmath.Vector3f;
 
 import org.jmol.util.BoxInfo;
 import org.jmol.util.Quadric;
@@ -199,7 +195,7 @@ class UnitCell extends SimpleUnitCell {
   
   final private static double twoP2 = 2 * Math.PI * Math.PI;
   
-  Object[] getEllipsoid(float[] parBorU) {
+  Quadric getEllipsoid(float[] parBorU) {
     if (parBorU == null)
       return null;
     /*
@@ -265,10 +261,10 @@ class UnitCell extends SimpleUnitCell {
      * and the betaij should be entered as Type 0.
      */
 
-    float[] lengths = new float[6]; // last three are for factored lengths
     if (parBorU[0] == 0) { // this is iso
-      lengths[1] = (float) Math.sqrt(parBorU[7]);
-      return new Object[] { null, lengths };
+      float[] lengths = new float[3];
+      lengths[0] = lengths[1] = lengths[2] = (float) Math.sqrt(parBorU[7]);
+      return new Quadric(null, lengths, true);
     }
 
     int ortepType = (int) parBorU[6];
@@ -312,45 +308,9 @@ class UnitCell extends SimpleUnitCell {
 
     // System.out.println("UnitCell Bcart="+Bcart[0] + " " + Bcart[1] + " " +
     // Bcart[2] + " " + Bcart[3] + " " + Bcart[4] + " " + Bcart[5]);
-    Vector3f unitVectors[] = new Vector3f[3];
-    for (int i = 0; i < 3; i++)
-      unitVectors[i] = new Vector3f();
-    Quadric.getAxesForEllipsoid(Bcart, unitVectors, lengths);
-
-    // note -- this is the ellipsoid in INVERSE CARTESIAN SPACE!
-
-    double factor = Math.sqrt(0.5) / Math.PI;
-    for (int i = 0; i < 3; i++)
-      lengths[i] = (float) (factor / lengths[i]);
-    return new Object[] { unitVectors, lengths };
+    return new Quadric(Bcart);
   }
   
-  public Object[] getEllipsoid(Vector3f[] vectors, float a, float b, float c) {
-    //[0] is shortest; [2] is longest
-    Object[][] o = new Object[][] {
-        new Object[] { vectors[0], Float.valueOf(Math.abs(a)) }, 
-        new Object[] { vectors[1], Float.valueOf(Math.abs(b)) },
-        new Object[] { vectors[2], Float.valueOf(Math.abs(c)) } }; 
-    Arrays.sort(o, new Esort());
-    float[] lengths = new float[6];
-    Vector3f[] unitVectors = new Vector3f[3];
-    for (int i = 0; i < 3; i++) {
-      unitVectors[i] = new Vector3f((Vector3f) o[i][0]);
-      unitVectors[i].normalize();
-      lengths[i] = ((Float) o[i][1]).floatValue();
-    }
-    return new Object[] { unitVectors, lengths };
-  }
-
-  protected class Esort implements Comparator<Object[]> {
-    public int compare(Object[] o1, Object[] o2) {
-      float a = ((Float)o1[1]).floatValue();
-      float b = ((Float)o2[1]).floatValue();
-      return (a < b ? -1 : a > b ? 1 : 0);
-    }    
-  }
-
-    
   Point3f[] getCanonicalCopy(float scale) {
     Point3f[] pts = new Point3f[8];
     for (int i = 0; i < 8; i++) {

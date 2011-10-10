@@ -55,6 +55,9 @@ public class JmolActivity extends Activity implements JmolStatusListener {
   @Override
   protected void onResume() {
     super.onResume();
+    
+    // am I correct that imageView is null if and only if viewer is null?
+    // otherwise we could have a different imageView in updateListener than here
 
     if (imageView == null)
       imageView = (SurfaceView) findViewById(R.id.imageMolecule);
@@ -217,60 +220,69 @@ public class JmolActivity extends Activity implements JmolStatusListener {
     @Override
     public String createImage(String fileName, String type, Object textOrBytes,
                               int quality) {
+      // ignore
       // TODO Auto-generated method stub
       return null;
     }
 
     @Override
     public String eval(String strEval) {
+      // ignore
       // TODO Auto-generated method stub
       return null;
     }
 
     @Override
     public float[][] functionXY(String functionName, int x, int y) {
+      // ignore
       // TODO Auto-generated method stub
       return null;
     }
 
     @Override
     public float[][][] functionXYZ(String functionName, int nx, int ny, int nz) {
+      // ignore
       // TODO Auto-generated method stub
       return null;
     }
 
     @Override
     public Map<String, Object> getRegistryInfo() {
+      // ignore
       // TODO Auto-generated method stub
       return null;
     }
 
     @Override
     public void resizeInnerPanel(String data) {
+      // ignore
       // TODO Auto-generated method stub
       
     }
 
     @Override
     public void showUrl(String url) {
-      // TODO Auto-generated method stub
-      
+      // ignore
+      // TODO Auto-generated method stub      
     }
 
     @Override
     public void notifyCallback(EnumCallback message, Object[] data) {
+      // probably ignore
       // TODO Auto-generated method stub
       
     }
 
     @Override
     public boolean notifyEnabled(EnumCallback type) {
+      // probably ignore
       // TODO Auto-generated method stub
       return false;
     }
 
     @Override
     public void setCallbackFunction(String callbackType, String callbackFunction) {
+      // ignore -- applet only
       // TODO Auto-generated method stub
       
     }

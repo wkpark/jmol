@@ -11,6 +11,7 @@ public class AndroidFont {
 	}
 
 	public int getAscent() {
+		return Math.abs((int)paint.getFontMetrics().ascent);
 	}
 
 	public int getDescent() {

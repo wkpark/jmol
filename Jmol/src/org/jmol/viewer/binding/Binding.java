@@ -13,8 +13,8 @@ import org.jmol.util.Logger;
 
 abstract public class Binding {
 
-  public final static int WHEEL = 32; 
-  public final static int LEFT = 16;
+  public final static int WHEEL = Event.MOUSE_WHEEL; 
+  public final static int LEFT = Event.MOUSE_LEFT;
   public final static int MIDDLE = Event.ALT_MASK; // 8 note that MIDDLE
   public final static int ALT = Event.ALT_MASK; // 8 and ALT are the same
   public final static int RIGHT = Event.META_MASK; // 4

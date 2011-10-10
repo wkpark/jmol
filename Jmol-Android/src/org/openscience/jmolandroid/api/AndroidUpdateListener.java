@@ -14,15 +14,16 @@ public class AndroidUpdateListener {
 	private byte counter;
 	private Dialog dialog;
 	
-	public AndroidUpdateListener(JmolViewer viewer, SurfaceView imageView) {
-		this.imageView = imageView;
-		this.viewer = viewer;
-
-		this.surface = new AndroidSurface();
+	public AndroidUpdateListener() {
 	}
 		
-	@Override
-	public void imageUpdated() {
+  public void set(JmolViewer viewer, SurfaceView imageView) {
+    this.imageView = imageView;
+    this.viewer = viewer;
+    this.surface = new AndroidSurface();
+  }
+  
+	public void repaint() {
 		updateCanvas();
 		
     	if (dialog != null && --counter <= 0) {
@@ -61,4 +62,5 @@ public class AndroidUpdateListener {
 	public boolean isShowingDialog() {
 		return dialog != null;
 	}
+
 }

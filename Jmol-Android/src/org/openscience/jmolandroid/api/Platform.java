@@ -12,15 +12,15 @@ public class Platform implements ApiPlatform {
 
   ///// Display 
   public boolean hasFocus(Object display) {
-    return Display.hasFocus(display);
+    return true;
   }
 
   public void requestFocusInWindow(Object display) {
-    Display.requestFocusInWindow(display);
+    // unnecessary
   }
 
   public void repaint(Object display) {
-    Display.repaint(display);
+    ((AndroidUpdateListener) display).repaint();
   }
 
   /**
@@ -31,15 +31,15 @@ public class Platform implements ApiPlatform {
    * @param size
    */
   public void renderScreenImage(JmolViewer viewer, Object g, Object size) {
-    Display.renderScreenImage(viewer, g, size);
+    // unnecessary
   }
 
   public void setTransparentCursor(Object display) {
-    Display.setTransparentCursor(display);
+    // unnecessary
   }
 
   public void setCursor(int c, Object display) {
-    Display.setCursor(c, display);
+    // unnecessary
   }
 
   ////// Mouse

@@ -40,7 +40,7 @@ public class AndroidUpdateListener {
 				surface.canvas = imageView.getHolder().lockCanvas();
 				
 				if (surface.canvas != null)
-					viewer.renderScreenImage(surface, null, viewer.getScreenWidth(), viewer.getScreenHeight(), null);
+					viewer.renderScreenImage(surface, null, viewer.getScreenWidth(), viewer.getScreenHeight());
 				else
 					Log.w("AMOL", "Unable to lock the canvas");    					
 			} finally {

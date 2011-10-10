@@ -40,11 +40,16 @@ import org.jmol.viewer.binding.Binding;
 
 class Mouse {
 
-  private Viewer viewer;
+  //private Viewer viewer;
   private ActionManager actionManager;
 
+  /**
+   * 
+   * @param viewer  UNUSED in Jmol-Android
+   * @param actionManager
+   */
   Mouse(Viewer viewer, ActionManager actionManager) {
-    this.viewer = viewer;
+    //this.viewer = viewer;
     this.actionManager = actionManager;
   }
 
@@ -94,6 +99,7 @@ class Mouse {
     return true;
   }
 
+/*
   private String keyBuffer = "";
 
   private void clearKeyBuffer() {
@@ -104,7 +110,6 @@ class Mouse {
       viewer
           .evalStringQuiet("!set echo _KEYSTROKES; set echo bottom left;echo \"\"");
   }
-/*
   private void mouseEntered(long time, int x, int y) {
     actionManager.mouseEntered(time, x, y);
   }
@@ -114,7 +119,7 @@ class Mouse {
   }
 */
   void setMouseMode() {
-    clearKeyBuffer();
+    //clearKeyBuffer();
     actionManager.setMouseMode();
   }
 
@@ -127,7 +132,7 @@ class Mouse {
    * @param clickCount
    */
   private void mouseClicked(long time, int x, int y, int modifiers, int clickCount) {
-    clearKeyBuffer();
+    //clearKeyBuffer();
     // clickedCount is not reliable on some platforms
     // so we will just deal with it ourselves
     actionManager.mouseAction(Binding.CLICKED, time, x, y, 1, modifiers);
@@ -158,7 +163,7 @@ class Mouse {
    */
   private void mousePressed(long time, int x, int y, int modifiers,
                     boolean isPopupTrigger) {
-    clearKeyBuffer();
+    //clearKeyBuffer();
     isMouseDown = true;
     actionManager.mouseAction(Binding.PRESSED, time, x, y, 0, modifiers);
   }

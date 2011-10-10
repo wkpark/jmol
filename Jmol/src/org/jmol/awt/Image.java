@@ -212,7 +212,7 @@ class Image {
    * @param backgroundTransparent  
    * @return Graphics object
    */
-  static Graphics getStaticGraphics(Object image, boolean backgroundTransparent) {
+  static Object getStaticGraphics(Object image, boolean backgroundTransparent) {
     Graphics2D g2d = ((BufferedImage) image).createGraphics();
       //if (backgroundTransparent) {
         // what here?

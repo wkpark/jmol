@@ -27,6 +27,13 @@ package org.jmol.api;
 
 public class Event {
 
+  public static final int MOUSE_LEFT = 16;
+  public static final int MOUSE_WHEEL = 32;
+  public static final int MOUSE_DOWN = 501;//InputEvent.MOUSE_DOWN;
+  public static final int MOUSE_UP = 502; //Event.MOUSE_UP;
+  public static final int MOUSE_DRAG = 506; //Event.MOUSE_DRAG;
+  
+  
   public static final int SHIFT_MASK =  1;//InputEvent.SHIFT_MASK;
   public static final int ALT_MASK =    8;//InputEvent.ALT_MASK;
   public static final int CTRL_MASK =   2;//InputEvent.CTRL_MASK;

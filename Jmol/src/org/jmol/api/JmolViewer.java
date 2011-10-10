@@ -506,6 +506,11 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public boolean handleOldJvm10Event(int id, int x, int y, int modifiers,
                                      long when);
 
+  public void mouseEvent(int id, int x, int y, int modifiers,
+                         long when) {
+    handleOldJvm10Event(id, x, y, modifiers, when);
+  }
+
   /**
    * old -- not used in 12.2
    * 

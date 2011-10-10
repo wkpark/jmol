@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:title="Open" android:id="@+id/open"></item>
+    <item android:title="Download" android:id="@+id/download"></item>
+    <item android:title="Style" android:id="@+id/style">
+    	<menu>
+		    <group android:id="@+id/stylegrp" android:checkableBehavior="single">
+			    <item android:title="Van der Waals" android:id="@+id/cpkspacefill"></item>
+			    <item android:title="Ball and Stick" android:id="@+id/ballandstick"></item>
+			    <item android:title="Sticks" android:id="@+id/sticks"></item>
+			    <item android:title="Wireframe" android:id="@+id/wireframe"></item>
+			    <item android:title="Cartoon" android:id="@+id/cartoon"></item>
+			    <item android:title="Trace" android:id="@+id/trace"></item>
+		    </group>
+	    </menu>
+    </item>
+</menu>

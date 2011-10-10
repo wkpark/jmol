@@ -60,12 +60,15 @@ public class JmolActivity extends Activity implements JmolStatusListener {
       imageView = (SurfaceView) findViewById(R.id.imageMolecule);
 
     if (viewer == null) {
-
+      updateListener = new AndroidUpdateListener();
+      // bit of a chicken and an egg here, but 
+      // we pass the updateListener to viewer, where it will be called
+      // the "display" and then Platform will get a call asking for an update.
+      // not sure about the rest of it!
       viewer = JmolViewer
-          .allocateViewer(null, new SmarterJmolAdapter(), null, null, null,
+          .allocateViewer(updateListener, new SmarterJmolAdapter(), null, null, null,
               "platform=org.openscience.jmolandroid.api.platform", this);
-
-      updateListener = new AndroidUpdateListener(viewer, imageView);
+      updateListener.set(viewer, imageView);
     }
 
     if (viewer.getAtomCount() > 0

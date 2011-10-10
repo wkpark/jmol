@@ -67,7 +67,7 @@ public class JmolActivity extends Activity implements JmolStatusListener {
       // not sure about the rest of it!
       viewer = JmolViewer
           .allocateViewer(updateListener, new SmarterJmolAdapter(), null, null, null,
-              "platform=org.openscience.jmolandroid.api.platform", this);
+              "platform=org.openscience.jmolandroid.api.Platform", this);
       updateListener.set(viewer, imageView);
     }
 

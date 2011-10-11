@@ -27,6 +27,7 @@ package org.jmol.util;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import javax.vecmath.Matrix3f;
 import javax.vecmath.Vector3f;
 
 //import org.jmol.util.Escape;
@@ -89,6 +90,8 @@ public class Eigen {
         unitVectors[i] = new Vector3f();
       unitVectors[i].set(eigenVectors[i]);
       lengths[i] = (float) Math.sqrt(Math.abs(eigenValues[i]));
+      //if (eigenValues[i] < 0)
+        //unitVectors[i].scale(-1);
     }
   }
 
@@ -156,10 +159,6 @@ public class Eigen {
 
   public double[] getImagEigenvalues() {
     return e;
-  }
-
-  public double[][] getEigenvectors() {
-    return V;
   }
 
   public double[] getEigenvalues() {
@@ -1054,10 +1053,26 @@ public class Eigen {
   public static Quadric getEllipsoid(double[][] a) {
     Eigen eigen = new Eigen(3);      
     eigen.calc(a);
+    Matrix3f m = new Matrix3f();
+    float[] mm = new float[9];
+    for (int i = 0, p=0; i < 3; i++)
+      for (int j = 0; j < 3; j++)
+        mm[p++] = (float) a[i][j];
+    m.set(mm);
+    
     Vector3f[] evec = eigen.getEigenVectors3();
-    Logger.info("eigVc " + evec[0]);
-    Logger.info("eigVc " + evec[1]);
-    Logger.info("eigVc " + evec[2]);
+    Vector3f n = new Vector3f();
+    Vector3f cross = new Vector3f();
+    for (int i = 0; i < 3; i++) {
+      n.set(evec[i]);
+      m.transform(n);
+      cross.cross(n, evec[i]);
+      Logger.info("v[i], n, n x v[i]"+ evec[i] + " " + n + " "  + cross);
+      n.set(evec[i]);
+      n.normalize();
+      cross.cross(evec[i], evec[(i + 1)%3]);
+      Logger.info("draw id eigv" + i + " " + Escape.escape(evec[i]) + " color " + (i ==  0 ? "red": i == 1 ? "green" : "blue") + " # " + n + " " + cross);
+    }
     Logger.info("eigVl (" + eigen.d[0] + " + " + eigen.e[0] 
         + "I) (" + eigen.d[1] + " + " + eigen.e[1] 
         + "I) (" + eigen.d[2] + " + " + eigen.e[2] + "I)");

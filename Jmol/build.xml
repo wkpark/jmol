@@ -761,9 +761,32 @@ all support for previous versions removed
     <!-- changes to this must be replicated below for the signed applet -->
     <!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ -->
 
+    <jar destfile="${jmol.applet.build.dir}/JmolA.jar"
+         manifest="manifest/appletMonolithic.txt" index="true" >
+      <fileset dir="${applet.classes.dir}" >
+        <include name="**/*" />
+        <exclude name="JmolSmiles*" />
+        <exclude name="org/jmol/applet/**/*" />
+        <exclude name="org/jmol/awt/**/*" />
+        <exclude name="org/jmol/console/**/*" />
+        <exclude name="org/jmol/export/**/*" />
+        <exclude name="org/jmol/modelkit/**/*" />
+        <exclude name="org/jmol/multitouch/**/*" />
+        <exclude name="org/jmol/popup/**/*" />
+        <exclude name="org/jmol/translation/**/*" />
+        <exclude name="org/openscience/**/*" />
+        <exclude name="com/sparshui/**/*" />
+        <exclude name="com/json/**/*" />
+      </fileset>
+      <fileset dir="${appletjars.dir}" includes="**/*"/>
+    </jar>
+
+
   </target>
 
-  <target name="signed-applet" id="signed-applet" depends="applet-jar">
+
+	
+	<target name="signed-applet" id="signed-applet" depends="applet-jar">
     <jar destfile="${jmol.applet.build.dir}/JmolAppletSigned.jar.temp"
     	manifest="manifest/appletMonolithic.txt" index="true" >
       <fileset dir="${applet.classes.dir}" >

@@ -53,7 +53,7 @@ class Image {
 
   Image(int width, int height, Config type) {
     this.type = (type == null ? Bitmap.Config.ARGB_8888 : type);
-    bitmap = Bitmap.createBitmap(width, height, type);
+    bitmap = Bitmap.createBitmap(width, height, this.type);
   }
 
   Image(InputStream stream) {

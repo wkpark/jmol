@@ -32,6 +32,8 @@ public class AndroidUpdateListener {
 	}
 
 	public void updateCanvas() {
+	  if (imageView == null)
+	    return;  // start up -- ignore
 		long start = System.currentTimeMillis();
 		
 		synchronized (imageView) {

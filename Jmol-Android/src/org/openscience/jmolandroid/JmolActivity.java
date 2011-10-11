@@ -17,6 +17,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -56,6 +57,7 @@ public class JmolActivity extends Activity implements JmolStatusListener {
   protected void onResume() {
     super.onResume();
     
+    Log.w("AMOL","onResume...");
     // am I correct that imageView is null if and only if viewer is null?
     // otherwise we could have a different imageView in updateListener than here
 
@@ -74,6 +76,8 @@ public class JmolActivity extends Activity implements JmolStatusListener {
       updateListener.set(viewer, imageView);
     }
 
+    Log.w("AMOL","onResume... viewer=" + viewer);
+    Log.w("AMOL","onResume... opening " + opening);
     if (viewer.getAtomCount() > 0
         && !updateListener.isShowingDialog()) {
       imageView.post(new Runnable() {
@@ -104,6 +108,7 @@ public class JmolActivity extends Activity implements JmolStatusListener {
     
     @Override
     public boolean onTouchEvent(final MotionEvent event) {
+      Log.w("AMOL","onTouchEvent " + event);
     	switch (event.getAction()) {
     		case MotionEvent.ACTION_DOWN:
     			new AsyncTask<MotionEvent, Void, Void>(){
@@ -136,6 +141,7 @@ public class JmolActivity extends Activity implements JmolStatusListener {
     
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
+      Log.w("AMOL","onWindowFocusChanged " + hasFocus);
     	if (!hasFocus) return;
     	
         int width = imageView.getWidth();

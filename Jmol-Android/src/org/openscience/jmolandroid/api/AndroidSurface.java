@@ -9,6 +9,7 @@ import android.util.Log;
 public class AndroidSurface {
 
   Canvas canvas;
+  private static int BACKGROUND = 0x0;
 	
 	public AndroidSurface(Canvas canvas) {
 		this.canvas = canvas;
@@ -17,7 +18,7 @@ public class AndroidSurface {
 	public AndroidSurface(){}
 	
 	public void drawImage(Object image, int x, int y) {
-		canvas.drawBitmap((Bitmap) image, x, y, null);
+		canvas.drawBitmap(((Image) image).bitmap, x, y, null);
 	}
 
 	public void drawImage(Image image, Rectangle source, Rectangle destination) {
@@ -26,16 +27,9 @@ public class AndroidSurface {
 
 	public void erase() {
 		Paint paint = new Paint();
-		paint.setColor(background);
+		paint.setColor(BACKGROUND );
 		
 		canvas.drawPaint(paint);
-	}
-
-	public void drawText(String text, Object font, int x, int y, int color) {
-		// TODO: map color argument to the correspondent Android color
-	  Paint paint = (Paint) font;
-	        paint.setColor(Color.WHITE);
-		canvas.drawText(text, x, y, paint);
 	}
 
 	public void setPixels(int[] pixels) {

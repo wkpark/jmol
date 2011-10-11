@@ -25,6 +25,7 @@
 
 package org.openscience.jmolandroid.api;
 
+import java.io.InputStream;
 import java.net.URL;
 
 import org.jmol.api.ApiPlatform;
@@ -33,9 +34,12 @@ import org.jmol.util.JpegEncoder;
 import org.jmol.viewer.Viewer;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.Bitmap.Config;
 
 /**
  * methods required by Jmol that access java.awt.Image
@@ -47,7 +51,19 @@ class Image {
 
   Bitmap bitmap;
   Canvas canvas;
+  Config type;
 
+  Image(int width, int height, Config type) {
+    this.type = (type == null ? Bitmap.Config.ARGB_8888 : type);
+    bitmap = Bitmap.createBitmap(width, height, type);
+  }
+
+  Image(InputStream stream) {
+    bitmap = BitmapFactory.decodeStream(stream);
+    type = bitmap.getConfig();
+  }
+
+  
   static Object createImage(Object data) {
     // can be ignored
     return null;
@@ -65,25 +81,19 @@ class Image {
     return ((Image) image).bitmap.getHeight();
   }
 
-  static Object getJpgImage(ApiPlatform apiPlatform, Viewer viewer, int quality, String comment) {
-    // can be ignored
-    return null;
-  }
-
-  static void grabPixels(Object imageobj, int imageWidth,
-                                int imageHeight, int[] values) {
-    // can be ignored
-  }
-
-  static int[] grabPixels(Object imageobj, int x, int y, int width,
-                                 int height) {
+  static int[] grabPixels(Object imageobj, int width, int height) {
     int[] pixels = new int[width * height];
-    ((Image) imageobj).bitmap.getPixels(pixels, 0, width, x, y, width, height);
+    ((Image) imageobj).bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
     return pixels;
   }
 
   static int[] drawImageToBuffer(Object gOffscreen, Object imageOffscreen,
                                 Object imageobj, int width, int height, int bgcolor) {
+    // goffscreen is not necessary. imageOffscreen will have its own canvas object
+    return null;
+    // for now we can ignore this, as it is only for image objects being created
+    // for background images and text images. 
+    /*
     Bitmap bitmap = ((Image) imageOffscreen).bitmap;
     Canvas canvas = (Canvas) gOffscreen;
     int width0 = bitmap.getWidth();
@@ -98,26 +108,55 @@ class Image {
       g.clearRect(0, 0, width, height);
       g.drawImage(image, 0, 0, width, height, 0, 0, width0, height0, null);
     }
-    return org.jmolImage.grabPixels(imageOffscreen,
-        0, 0, width, height);
+    return grabPixels(imageOffscreen, width, height);
+        */
   }
 
-  static void renderOffScreen(String text, Font3D font3d, Object gObj,
-                                     int mapWidth, int height, int ascent) {
+  /**
+   * 
+   * @param text
+   * @param font3d
+   * @param gObj     UNUSED
+   * @param imgObj
+   * @param width
+   * @param height
+   * @param ascent
+   * @return
+   */
+  public static int[] getTextPixels(String text, Font3D font3d, Object gObj,
+                                    Object imgObj, int width, int height,
+                                    int ascent) {
+    
+    Image image = (Image) imgObj;
+    image.canvas.clipRect(new Rect(0, 0, width, height));
+    image.canvas.drawColor(Color.BLACK);
+    Paint paint = (Paint) (font3d.font);
+    paint.setColor(Color.WHITE);
+    image.canvas.drawText(text, 0, 0, paint);
+    // ascent is missing here
+    
+    /*
     Graphics g = (Graphics) gObj;
     g.setColor(Color.black);
     g.fillRect(0, 0, mapWidth, height);
     g.setColor(Color.white);
     g.setFont((Font) font3d.font);
     g.drawString(text, 0, ascent);
+    */
+    return grabPixels(image, width, height);
+  }
+
+  static Object getJpgImage(ApiPlatform apiPlatform, Viewer viewer, int quality, String comment) {
+    // can be ignored
+    return null;
   }
 
   static Object newBufferedImage(Object image, int w, int h) {
-    return new BufferedImage(w, h, ((BufferedImage) image).getType());
+    return new Image(w, h, ((Image) image).type);
   }
 
   static Object newBufferedImage(int w, int h) {
-    return new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+    return new Image(w, h, null);
   }
 
   /**
@@ -129,23 +168,7 @@ class Image {
    * @return   an Image
    */
   static Object allocateRgbImage(int windowWidth, int windowHeight,
-                                       int[] pBuffer, int windowSize, boolean backgroundTransparent) {
-    
-    //backgroundTransparent not working with antialiasDisplay. I have no idea why. BH 9/24/08
-    /* DEAD CODE   if (false && backgroundTransparent)
-          return new BufferedImage(
-              rgbColorModelT,
-              Raster.createWritableRaster(
-                  new SinglePixelPackedSampleModel(
-                      DataBuffer.TYPE_INT,
-                      windowWidth,
-                      windowHeight,
-                      sampleModelBitMasksT), 
-                  new DataBufferInt(pBuffer, windowSize),
-                  null),
-              false, 
-              null);
-    */
+                                       int[] pBuffer, int windowSize, boolean backgroundTransparent) {    
     return new BufferedImage(
         rgbColorModel,
         Raster.createWritableRaster(
@@ -185,7 +208,7 @@ class Image {
     // unnecessary?
   }
 
-  static void disposeGraphics(Object g) {
+  static void disposeGraphics(Object graphicForText) {
     // unnecessary?
   }
 
@@ -199,4 +222,6 @@ class Image {
   }
 */
 
+
+  
 }

@@ -45,8 +45,8 @@ class Platform3D {
   int[] zBuffer, zBufferT;
 
   int widthOffscreen, heightOffscreen;
-  Object imageOffscreen;
-  Object gOffscreen;
+  Object imageForText;
+  Object graphicForText;
   Object graphicsOffscreen;
   
   final static boolean forcePlatformAWT = false;
@@ -165,16 +165,16 @@ class Platform3D {
   boolean checkOffscreenSize(int width, int height) {
     if (width <= widthOffscreen && height <= heightOffscreen)
       return true;
-    if (imageOffscreen != null) {
-      apiPlatform.disposeGraphics(gOffscreen);
-      apiPlatform.flushImage(imageOffscreen);
+    if (imageForText != null) {
+      apiPlatform.disposeGraphics(graphicForText);
+      apiPlatform.flushImage(imageForText);
     }
     if (width > widthOffscreen)
       widthOffscreen = (width + 63) & ~63;
     if (height > heightOffscreen)
       heightOffscreen = (height + 15) & ~15;
-    imageOffscreen = allocateOffscreenImage(widthOffscreen, heightOffscreen);
-    gOffscreen = getGraphics(imageOffscreen);
+    imageForText = allocateOffscreenImage(widthOffscreen, heightOffscreen);
+    graphicForText = getGraphics(imageForText);
     return false;
   }
 

@@ -155,8 +155,10 @@ public class Text3D {
     if (x + width <= 0 || x >= g3d.width || y + height <= 0 || y >= g3d.height)
       return;
     g3d.platform.checkOffscreenSize(width, height);
-    int[] buffer = g3d.platform.apiPlatform.drawImageToBuffer(g3d.platform.gOffscreen, g3d.platform.imageOffscreen, image, width, height, 
+    int[] buffer = g3d.platform.apiPlatform.drawImageToBuffer(g3d.platform.graphicForText, g3d.platform.imageForText, image, width, height, 
         isBackground ? bgcolor : 0);
+    if (buffer == null)
+      return; // not supported on this platform (yet)
 /*    
     int n = 0;
     for (int i = 0; i < buffer.length; i++) {
@@ -346,13 +348,10 @@ public class Text3D {
 
   /**
    * 
-   * @param platform
-   * @param antialias UNUSED
+   * @param pixels 
+   * 
    */
-  private void rasterize(Platform3D platform, boolean antialias) {
-
-    int[] pixels = platform.apiPlatform.grabPixels(platform.imageOffscreen, 0, 0, 
-                                                 mapWidth, height);
+  private void rasterize(int[] pixels) {
     if (pixels == null)
       return;
     int bitmapSize = (size + 31) >> 5;
@@ -439,18 +438,16 @@ public class Text3D {
       ht.put(font3d, htForThisFont);
     if (newText) {
       //System.out.println(text + " " + x + " " + text3d.width + " " + g3d.width + " " + y + " " + g3d.height);
-      text3d.setBitmap(text, font3d, g3d, antialias);
+      text3d.setBitmap(text, font3d, g3d);
       htForThisFont.put(text, text3d);
     }
     working = false;
     return text3d;
   }
 
-  private void setBitmap(String text, Font3D font3d, Graphics3D g3d, boolean antialias) {
-    //System.out.println(text + " height=" + height + " setBitmap width= " + width);
+  private void setBitmap(String text, Font3D font3d, Graphics3D g3d) {
     g3d.platform.checkOffscreenSize(mapWidth, height);
-    g3d.apiPlatform.renderOffScreen(text, font3d, g3d.platform.gOffscreen, mapWidth, height, ascent);
-    rasterize(g3d.platform, antialias);
+    rasterize(g3d.apiPlatform.getTextPixels(text, font3d, g3d.platform.graphicForText, g3d.platform.imageForText, mapWidth, height, ascent));
   }
 
 }

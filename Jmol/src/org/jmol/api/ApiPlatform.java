@@ -46,7 +46,7 @@ public interface ApiPlatform {
   Object allocateRgbImage(int windowWidth, int windowHeight, int[] pBuffer,
                           int windowSize, boolean backgroundTransparent);
 
-  void disposeGraphics(Object gOffscreen);
+  void disposeGraphics(Object graphicForText);
 
   void drawImage(Object g, Object img, int x, int y);
 
@@ -63,16 +63,15 @@ public interface ApiPlatform {
 
   int getImageHeight(Object image);
 
-  int[] grabPixels(Object image, int x, int y, int width, int height);
-
   Object newBufferedImage(Object image, int i, int height);
 
   Object newBufferedRgbImage(int w, int h);
   
-  void renderOffScreen(String text, Font3D font3d, Object gObj,
-                       int width, int height, int ascent);
-
   void renderScreenImage(JmolViewer jmolViewer, Object g, Object currentSize);
+
+  int[] getTextPixels(String text, Font3D font3d, Object gObj,
+                      Object image, int mapWidth, int height,
+                      int ascent);
 
   ///// Image creation for export (optional for any platform)
 
@@ -95,14 +94,14 @@ public interface ApiPlatform {
   Object getJpgImage(Viewer viewer, int quality, String comment);
 
   /**
-   * used for JPG writing only; can be ignored
-   *  
+   * 
    * @param image
    * @param width
    * @param height
    * @param values
+   * @return         pixels
    */
-  void grabPixels(Object image, int width, int height, int[] values);
+  int[] grabPixels(Object image, int width, int height);
 
   /**
    * can be ignored (return false) if platform cannot save images

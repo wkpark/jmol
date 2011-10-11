@@ -82,9 +82,18 @@ public class Platform implements ApiPlatform {
     Image.drawImage(g, img, x, y);
   }
 
+  public int[] grabPixels(Object imageobj, int width, int height) {
+    return Image.grabPixels(imageobj, width, height); 
+  }
+
   public int[] drawImageToBuffer(Object gOffscreen, Object imageOffscreen,
                                  Object imageobj, int width, int height, int bgcolor) {
     return Image.drawImageToBuffer(gOffscreen, imageOffscreen, imageobj, width, height, bgcolor);
+  }
+
+  public int[] getTextPixels(String text, Font3D font3d, Object gObj,
+                             Object image, int width, int height, int ascent) {
+    return Image.getTextPixels(text, font3d, gObj, image, width, height, ascent);
   }
 
   public void flushImage(Object imagePixelBuffer) {
@@ -111,27 +120,12 @@ public class Platform implements ApiPlatform {
     return Image.getStaticGraphics(image, backgroundTransparent);
   }
 
-  public void grabPixels(Object image, int imageWidth, int imageHeight,
-                         int[] values) {
-    Image.grabPixels(image, imageWidth, imageHeight, values);
-  }
-
-  public int[] grabPixels(Object image, int x, int y, int width,
-                          int height) {
-    return Image.grabPixels(image, x, y, width, height);
-  }
-
   public Object newBufferedImage(Object image, int w, int h) {
     return Image.newBufferedImage(image, w, h);
   }
 
   public Object newBufferedRgbImage(int w, int h) {
     return Image.newBufferedImage(w, h);
-  }
-
-  public void renderOffScreen(String text, Font3D font3d, Object gObj,
-                              int mapWidth, int height, int ascent) {
-    Image.renderOffScreen(text, font3d, gObj, mapWidth, height, ascent);
   }
 
   public boolean waitForDisplay(Object display, Object image) throws InterruptedException {

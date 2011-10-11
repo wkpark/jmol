@@ -1286,7 +1286,7 @@ class JpegInfo
       }
       BlockHeight[y] = (int) Math.ceil(compHeight[y]/8.0);
     }
-    apiPlatform.grabPixels(imageobj, imageWidth, imageHeight, values);
+    values = apiPlatform.grabPixels(imageobj, imageWidth, imageHeight);
     float Y[][] = new float[compHeight[0]][compWidth[0]];
     float Cr1[][] = new float[compHeight[0]][compWidth[0]];
     float Cb1[][] = new float[compHeight[0]][compWidth[0]];

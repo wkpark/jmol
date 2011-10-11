@@ -94,20 +94,9 @@ class Image {
     return bytes;
   }
 
-  static void grabPixels(Object imageobj, int imageWidth,
-                                int imageHeight, int[] values) {
-    PixelGrabber grabber = new PixelGrabber(((java.awt.Image) imageobj)
-        .getSource(), 0, 0, imageWidth, imageHeight, values, 0, imageWidth);
-    try {
-      grabber.grabPixels();
-    } catch (InterruptedException e) {
-    }
-  }
-
-  static int[] grabPixels(Object imageobj, int x, int y, int width,
-                                 int height) {
-    PixelGrabber pixelGrabber = new PixelGrabber((java.awt.Image) imageobj, x,
-        y, width, height, true);
+  public static int[] grabPixels(Object imageobj, int width, int height) {
+    PixelGrabber pixelGrabber = new PixelGrabber((java.awt.Image) imageobj, 0,
+        0, width, height, true);
     try {
       pixelGrabber.grabPixels();
     } catch (InterruptedException e) {
@@ -117,33 +106,37 @@ class Image {
   }
 
   static int[] drawImageToBuffer(Object gOffscreen, Object imageOffscreen,
-                                Object imageobj, int width, int height, int bgcolor) {
+                                 Object imageobj, int width, int height,
+                                 int bgcolor) {
     Graphics g = (Graphics) gOffscreen;
     java.awt.Image image = (java.awt.Image) imageobj;
     int width0 = image.getWidth(null);
     int height0 = image.getHeight(null);
     if (g instanceof Graphics2D) {
-      ((Graphics2D)g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_IN, 1.0f));
+      ((Graphics2D) g).setComposite(AlphaComposite.getInstance(
+          AlphaComposite.SRC_IN, 1.0f));
       g.setColor(bgcolor == 0 ? new Color(0, 0, 0, 0) : new Color(bgcolor));
       g.fillRect(0, 0, width, height);
-      ((Graphics2D)g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+      ((Graphics2D) g).setComposite(AlphaComposite.getInstance(
+          AlphaComposite.SRC_OVER, 1.0f));
       g.drawImage(image, 0, 0, width, height, 0, 0, width0, height0, null);
     } else {
       g.clearRect(0, 0, width, height);
       g.drawImage(image, 0, 0, width, height, 0, 0, width0, height0, null);
     }
-    return org.jmol.awt.Image.grabPixels(imageOffscreen,
-        0, 0, width, height);
+    return grabPixels(imageOffscreen, width, height);
   }
 
-  static void renderOffScreen(String text, Font3D font3d, Object gObj,
-                                     int mapWidth, int height, int ascent) {
+  public static int[] getTextPixels(String text, Font3D font3d, Object gObj,
+                                    Object image, int width, int height,
+                                    int ascent) {
     Graphics g = (Graphics) gObj;
     g.setColor(Color.black);
-    g.fillRect(0, 0, mapWidth, height);
+    g.fillRect(0, 0, width, height);
     g.setColor(Color.white);
     g.setFont((Font) font3d.font);
     g.drawString(text, 0, ascent);
+    return grabPixels(image, width, height);
   }
 
   static Object newBufferedImage(Object image, int w, int h) {
@@ -242,8 +235,8 @@ class Image {
     ((java.awt.Image) image).flush();
   }
 
-  static void disposeGraphics(Object g) {
-    ((java.awt.Graphics) g).dispose();
+  static void disposeGraphics(Object graphicForText) {
+    ((java.awt.Graphics) graphicForText).dispose();
   }
 
 }

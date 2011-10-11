@@ -10,6 +10,10 @@ public class Platform implements ApiPlatform {
 
   private Mouse mouse;
 
+  public void setViewer(JmolViewer viewer, Object display) {
+    // ignored
+  }
+  
   ///// Display 
   public boolean hasFocus(Object display) {
     return Display.hasFocus(display);
@@ -78,8 +82,8 @@ public class Platform implements ApiPlatform {
     Image.disposeGraphics(gOffscreen);
   }
 
-  public void drawImage(Object g, Object img, int x, int y) {
-    Image.drawImage(g, img, x, y);
+  public void drawImage(Object g, Object img, int x, int y, int width, int height) {
+    Image.drawImage(g, img, x, y, width, height);
   }
 
   public int[] grabPixels(Object imageobj, int width, int height) {

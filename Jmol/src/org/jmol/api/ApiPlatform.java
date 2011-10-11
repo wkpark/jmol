@@ -6,6 +6,8 @@ import org.jmol.viewer.Viewer;
 
 public interface ApiPlatform {
 
+  void setViewer(JmolViewer viewer, Object display);
+  
   /////// Display
 
   boolean hasFocus(Object display);
@@ -48,7 +50,7 @@ public interface ApiPlatform {
 
   void disposeGraphics(Object graphicForText);
 
-  void drawImage(Object g, Object img, int x, int y);
+  void drawImage(Object g, Object img, int x, int y, int width, int height);
 
   int[] drawImageToBuffer(Object gObj, Object imageOffscreen,
                           Object image, int width, int height, int bgcolor);

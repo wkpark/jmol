@@ -284,6 +284,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     String platform = (commandOptions == null || !commandOptions.contains("platform=")
           ? "org.jmol.awt.Platform" : commandOptions.substring(commandOptions.indexOf("platform=") + 9)); 
     apiPlatform = (ApiPlatform) Interface.getInterface(platform);
+    apiPlatform.setViewer(this, display);
     g3d = new Graphics3D(apiPlatform, isDataOnly);
     haveDisplay = (!isDataOnly && (commandOptions == null || commandOptions.indexOf("-n") < 0));
     mustRender = haveDisplay;
@@ -4124,7 +4125,7 @@ private void zap(String msg) {
   private void render1(Object graphic, Object img, int x, int y) {
     if (graphic != null && img != null) {
       try {
-        apiPlatform.drawImage(graphic, img, x, y);
+        apiPlatform.drawImage(graphic, img, x, y, dimScreen.width, dimScreen.height);
       } catch (NullPointerException npe) {
         Logger.error("Sun!! ... fix graphics your bugs!");
       }

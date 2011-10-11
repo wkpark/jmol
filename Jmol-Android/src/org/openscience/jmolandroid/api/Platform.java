@@ -10,6 +10,10 @@ public class Platform implements ApiPlatform {
 
   private Mouse mouse;
 
+  public void setViewer(JmolViewer viewer, Object display) {
+    ((AndroidUpdateListener) display).setViewer(viewer);
+  }
+  
   ///// Display -- AndroidUpdateListener
   
   public boolean hasFocus(Object display) {
@@ -73,8 +77,8 @@ public class Platform implements ApiPlatform {
     Image.disposeGraphics(graphicForText);
   }
 
-  public void drawImage(Object graphic, Object img, int x, int y) {
-    Image.drawImage(graphic, img, x, y);
+  public void drawImage(Object graphic, Object img, int x, int y, int width, int height) {
+    Image.drawImage(graphic, img, x, y, width, height);
   }
 
   public int[] grabPixels(Object imageobj, int width, int height) {

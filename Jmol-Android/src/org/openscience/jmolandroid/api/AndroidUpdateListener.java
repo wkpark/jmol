@@ -1,6 +1,7 @@
 package org.openscience.jmolandroid.api;
 
 import org.jmol.api.JmolViewer;
+import org.openscience.jmolandroid.JmolActivity;
 
 import android.app.Dialog;
 import android.graphics.Canvas;
@@ -10,18 +11,18 @@ import android.view.SurfaceView;
 public class AndroidUpdateListener {
 
 	private JmolViewer viewer;
-	private SurfaceView imageView;
 	private byte counter;
 	private Dialog dialog;
+	private JmolActivity ja;
 	
-	public AndroidUpdateListener() {
+	public AndroidUpdateListener(JmolActivity ja) {
+	  this.ja = ja;
 	}
 		
-  public void set(JmolViewer viewer, SurfaceView imageView) {
-    this.imageView = imageView;
-    this.viewer = viewer;
-  }
-  
+	void setViewer(JmolViewer viewer) {
+	  this.viewer = viewer;
+	}
+	
 	public void repaint() {
 		updateCanvas();
 		
@@ -32,28 +33,27 @@ public class AndroidUpdateListener {
 	}
 
 	public void updateCanvas() {
-	  if (imageView == null)
-	    return;  // start up -- ignore
+	  SurfaceView imageView = ja.getImageView();
 		long start = System.currentTimeMillis();
 		
 		synchronized (imageView) {
 		  Canvas canvas = null;
 			try {
+        System.out.println(imageView);
+        System.out.println(imageView.getHolder());
 				canvas = imageView.getHolder().lockCanvas();
-				
-				if (canvas != null)
-					viewer.renderScreenImage(canvas, null, viewer.getScreenWidth(), viewer.getScreenHeight());
-				else
-					Log.w("AMOL", "Unable to lock the canvas");    					
-			} finally {
-				if (canvas != null)
-					imageView.getHolder().unlockCanvasAndPost(canvas);
-				
-				canvas = null;
-				
-				Log.d("AMOL", "Image updated in " + (System.currentTimeMillis() - start));    					
+				canvas.getHeight(); // simple test for canvas not null
+			} catch(Exception e) {
+        Log.w("AMOL", "Unable to lock the canvas\n");             
+			  e.printStackTrace();
+			}
+			if (canvas != null) {
+			  // at least for now we want to see errors traced to their Jmol methods, not trapped here
+        viewer.renderScreenImage(canvas, null, viewer.getScreenWidth(), viewer.getScreenHeight());
+        imageView.getHolder().unlockCanvasAndPost(canvas);
 			}
 		}
+    Log.d("AMOL", "Image updated in " + (System.currentTimeMillis() - start) + " ms");              
 	}
 	
 	public void manageDialog(Dialog dialog, byte value) {

@@ -27,8 +27,13 @@ import android.view.SurfaceView;
 public class JmolActivity extends Activity implements JmolStatusListener {
 	
 	private JmolViewer viewer;
+	
 	private SurfaceView imageView;
-	private AndroidUpdateListener updateListener;
+  public SurfaceView getImageView() {
+    return imageView;
+  }
+
+  private AndroidUpdateListener updateListener;
 	private boolean opening;
 	
     @Override
@@ -65,7 +70,7 @@ public class JmolActivity extends Activity implements JmolStatusListener {
       imageView = (SurfaceView) findViewById(R.id.imageMolecule);
 
     if (viewer == null) {
-      updateListener = new AndroidUpdateListener();
+      updateListener = new AndroidUpdateListener(this);
       // bit of a chicken and an egg here, but 
       // we pass the updateListener to viewer, where it will be called
       // the "display" and then Platform will get a call asking for an update.
@@ -73,7 +78,6 @@ public class JmolActivity extends Activity implements JmolStatusListener {
       viewer = JmolViewer
           .allocateViewer(updateListener, new SmarterJmolAdapter(), null, null, null,
               "platform=org.openscience.jmolandroid.api.Platform", this);
-      updateListener.set(viewer, imageView);
     }
 
     Log.w("AMOL","onResume... viewer=" + viewer);
@@ -292,4 +296,5 @@ public class JmolActivity extends Activity implements JmolStatusListener {
       // TODO Auto-generated method stub
       
     }
+
 }

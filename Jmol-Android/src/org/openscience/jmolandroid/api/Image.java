@@ -184,8 +184,9 @@ class Image {
     return canvas;
   }
 
-  static void drawImage(Object graphic, Object img, int x, int y) {
-    ((Canvas) graphic).drawBitmap(((Image) img).bitmap, x, y, null);
+  static void drawImage(Object graphic, Object imgInts, int x, int y, int width, int height) {
+    Canvas canvas = ((Canvas) graphic);
+    canvas.drawBitmap((int[]) imgInts, 0, canvas.getWidth(), x, y, width, height, true, null);
   }
 
   static void flush(Object image) {

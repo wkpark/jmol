@@ -282,7 +282,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     isDataOnly = (display == null);
     String platform = (commandOptions == null || !commandOptions.contains("platform=")
-          ? "org.jmol.awt.Platform" : commandOptions.substring(commandOptions.indexOf("platform=")) + 9); 
+          ? "org.jmol.awt.Platform" : commandOptions.substring(commandOptions.indexOf("platform=") + 9)); 
     apiPlatform = (ApiPlatform) Interface.getInterface(platform);
     g3d = new Graphics3D(apiPlatform, isDataOnly);
     haveDisplay = (!isDataOnly && (commandOptions == null || commandOptions.indexOf("-n") < 0));

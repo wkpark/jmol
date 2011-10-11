@@ -4062,6 +4062,11 @@ private void zap(String msg) {
     renderScreenImage(g, null, width, height);
   }
 
+  /**
+   * 
+   * @param isDouble
+   * @return         a java.awt.Image in the case of standard Jmol; an int[] in the case of Jmol-Android
+   */
   private Object getImage(boolean isDouble) {
     Object image = null;
     try {
@@ -4116,10 +4121,10 @@ private void zap(String msg) {
     return g3d.getScreenImage();
   }
 
-  private void render1(Object g, Object img, int x, int y) {
-    if (g != null && img != null) {
+  private void render1(Object graphic, Object img, int x, int y) {
+    if (graphic != null && img != null) {
       try {
-        apiPlatform.drawImage(g, img, x, y);
+        apiPlatform.drawImage(graphic, img, x, y);
       } catch (NullPointerException npe) {
         Logger.error("Sun!! ... fix graphics your bugs!");
       }
@@ -4128,21 +4133,21 @@ private void zap(String msg) {
   }
 
   @Override
-  public Object getScreenImage(Object g) {
-    boolean mergeImages = (g == null && isStereoDouble());
+  public Object getScreenImage(Object graphic) {
+    boolean mergeImages = (graphic == null && isStereoDouble());
     Object image = (transformManager.stereoMode.isBiColor() ? getStereoImage(transformManager.stereoMode)
         : getImage(isStereoDouble()));
     Object image1 = null;
     if (mergeImages) {
       image1 = apiPlatform.newBufferedImage(image, dimScreen.width << 1, dimScreen.height);
-      g = apiPlatform.getGraphics(image1);
+      graphic = apiPlatform.getGraphics(image1);
     }
-    if (g != null) {
+    if (graphic != null) {
       if (isStereoDouble()) {
-        render1(g, image, dimScreen.width, 0);
+        render1(graphic, image, dimScreen.width, 0);
         image = getImage(false);
       }
-      render1(g, image, 0, 0);
+      render1(graphic, image, 0, 0);
     }
     return (mergeImages ? image1 : image);
   }

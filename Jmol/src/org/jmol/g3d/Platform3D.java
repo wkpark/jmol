@@ -95,10 +95,11 @@ class Platform3D {
     zBuffer = new int[bufferSize];
     pBuffer = new int[bufferSize];
     // original thought was that there is
-    // no need for any antialiazing on a translucent buffer
+    // no need for any antialiasing on a translucent buffer
     // but that's simply not true.
     // bufferSizeT = windowSize;
-    imagePixelBuffer = allocateImage();
+    imagePixelBuffer = apiPlatform.allocateRgbImage(windowWidth, windowHeight, pBuffer, windowSize, backgroundTransparent);
+
     /*
     Logger.debug("  width:" + width + " bufferWidth=" + bufferWidth +
                        "\nheight:" + height + " bufferHeight=" + bufferHeight);
@@ -237,10 +238,6 @@ class Platform3D {
         notifyBufferReady();
       }
     }
-  }
-
-  private Object allocateImage() {
-    return apiPlatform.allocateRgbImage(windowWidth, windowHeight, pBuffer, windowSize, backgroundTransparent);
   }
 
   private static boolean backgroundTransparent = false;

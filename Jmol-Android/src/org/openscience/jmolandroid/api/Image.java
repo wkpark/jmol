@@ -186,7 +186,8 @@ class Image {
 
   static void drawImage(Object graphic, Object imgInts, int x, int y, int width, int height) {
     Canvas canvas = ((Canvas) graphic);
-    canvas.drawBitmap((int[]) imgInts, 0, canvas.getWidth(), x, y, width, height, true, null);
+    System.out.println("width/height " + canvas.getWidth() + " "  + canvas.getHeight() + " " + width + " " + height);
+    canvas.drawBitmap((int[]) imgInts, 0, width, x, y, width, height, true, null);
   }
 
   static void flush(Object image) {

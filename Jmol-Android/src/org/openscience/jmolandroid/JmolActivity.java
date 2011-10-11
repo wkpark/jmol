@@ -148,13 +148,7 @@ public class JmolActivity extends Activity implements JmolStatusListener {
     public void onWindowFocusChanged(boolean hasFocus) {
       Log.w("AMOL","onWindowFocusChanged " + hasFocus);
     	if (!hasFocus) return;
-    	
-        int width = imageView.getWidth();
-        int height = imageView.getHeight();
-        
-        if (viewer.getScreenWidth() != width || viewer.getScreenHeight() != height) {
-        	viewer.setScreenDimension(width, height);
-        }
+      updateListener.setScreenDimension();
     };
     
     

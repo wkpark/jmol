@@ -23,6 +23,13 @@ public class AndroidUpdateListener {
 	  this.viewer = viewer;
 	}
 	
+  public void setScreenDimension() {
+    int width = ja.getImageView().getWidth();
+    int height = ja.getImageView().getHeight();
+    if (viewer.getScreenWidth() != width || viewer.getScreenHeight() != height)
+      viewer.setScreenDimension(width, height);
+  }
+
 	public void repaint() {
 		updateCanvas();
 		
@@ -39,17 +46,15 @@ public class AndroidUpdateListener {
 		synchronized (imageView) {
 		  Canvas canvas = null;
 			try {
-        System.out.println(imageView);
-        System.out.println(imageView.getHolder());
 				canvas = imageView.getHolder().lockCanvas();
 				canvas.getHeight(); // simple test for canvas not null
 			} catch(Exception e) {
         Log.w("AMOL", "Unable to lock the canvas\n");             
-			  e.printStackTrace();
+			  //e.printStackTrace();
 			}
 			if (canvas != null) {
 			  // at least for now we want to see errors traced to their Jmol methods, not trapped here
-        viewer.renderScreenImage(canvas, null, viewer.getScreenWidth(), viewer.getScreenHeight());
+        viewer.renderScreenImage(canvas, null, canvas.getWidth(), canvas.getHeight());
         imageView.getHolder().unlockCanvasAndPost(canvas);
 			}
 		}

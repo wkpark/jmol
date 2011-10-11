@@ -10,36 +10,31 @@ public class Platform implements ApiPlatform {
 
   private Mouse mouse;
 
-  ///// Display 
+  ///// Display -- AndroidUpdateListener
+  
   public boolean hasFocus(Object display) {
-    return Display.hasFocus(display);
+    // ignored
+    return true;
   }
 
   public void requestFocusInWindow(Object display) {
-    Display.requestFocusInWindow(display);
+    // ignored
   }
 
   public void repaint(Object display) {
-    Display.repaint(display);
+    ((AndroidUpdateListener) display).repaint();
   }
 
-  /**
-   * legacy apps will use this
-   * 
-   * @param viewer
-   * @param g
-   * @param size
-   */
   public void renderScreenImage(JmolViewer viewer, Object g, Object size) {
-    Display.renderScreenImage(viewer, g, size);
+    // ignored
   }
 
   public void setTransparentCursor(Object display) {
-    Display.setTransparentCursor(display);
+    // ignored
   }
 
   public void setCursor(int c, Object display) {
-    Display.setCursor(c, display);
+    // ignored
   }
 
   ////// Mouse

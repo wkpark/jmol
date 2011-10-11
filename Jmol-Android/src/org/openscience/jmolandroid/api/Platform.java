@@ -78,8 +78,8 @@ public class Platform implements ApiPlatform {
     Image.disposeGraphics(graphicForText);
   }
 
-  public void drawImage(Object g, Object img, int x, int y) {
-    Image.drawImage(g, img, x, y);
+  public void drawImage(Object graphic, Object img, int x, int y) {
+    Image.drawImage(graphic, img, x, y);
   }
 
   public int[] grabPixels(Object imageobj, int width, int height) {

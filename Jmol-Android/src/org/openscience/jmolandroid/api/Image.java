@@ -26,11 +26,9 @@
 package org.openscience.jmolandroid.api;
 
 import java.io.InputStream;
-import java.net.URL;
 
 import org.jmol.api.ApiPlatform;
 import org.jmol.g3d.Font3D;
-import org.jmol.util.JpegEncoder;
 import org.jmol.viewer.Viewer;
 
 import android.graphics.Bitmap;
@@ -133,13 +131,7 @@ class Image {
     Paint paint = (Paint) (font3d.font);
     paint.setColor(Color.WHITE);
     image.canvas.drawText(text, 0, 0, paint);
-    // ascent is missing here
-    
-    /*
-    Graphics g = (Graphics) gObj;
-    g.setColor(Color.black);
-    g.fillRect(0, 0, mapWidth, height);
-    g.setColor(Color.white);
+    /*  ascent not needed here?
     g.setFont((Font) font3d.font);
     g.drawString(text, 0, ascent);
     */
@@ -169,18 +161,10 @@ class Image {
    */
   static Object allocateRgbImage(int windowWidth, int windowHeight,
                                        int[] pBuffer, int windowSize, boolean backgroundTransparent) {    
-    return new BufferedImage(
-        rgbColorModel,
-        Raster.createWritableRaster(
-            new SinglePixelPackedSampleModel(
-                DataBuffer.TYPE_INT,
-                windowWidth,
-                windowHeight,
-                sampleModelBitMasks), 
-            new DataBufferInt(pBuffer, windowSize),
-            null),
-        false, 
-        null);
+    // in standard Jmol we use an image as a buffer, writing directly to its image buffer.
+    // so for Android we do the same thing, only here we just save the pBuffer.
+    // no treatment of transparent background.
+    return pBuffer;
   }
 
   /**
@@ -200,8 +184,8 @@ class Image {
     return canvas;
   }
 
-  static void drawImage(Object g, Object img, int x, int y) {
-    ((Canvas) g).drawBitmap(((Image) img).bitmap, x, y, null);
+  static void drawImage(Object graphic, Object img, int x, int y) {
+    ((Canvas) graphic).drawBitmap(((Image) img).bitmap, x, y, null);
   }
 
   static void flush(Object image) {

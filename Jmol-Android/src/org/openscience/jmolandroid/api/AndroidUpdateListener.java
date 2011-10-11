@@ -3,13 +3,13 @@ package org.openscience.jmolandroid.api;
 import org.jmol.api.JmolViewer;
 
 import android.app.Dialog;
+import android.graphics.Canvas;
 import android.util.Log;
 import android.view.SurfaceView;
 
 public class AndroidUpdateListener {
 
 	private JmolViewer viewer;
-	private AndroidSurface surface;
 	private SurfaceView imageView;
 	private byte counter;
 	private Dialog dialog;
@@ -20,7 +20,6 @@ public class AndroidUpdateListener {
   public void set(JmolViewer viewer, SurfaceView imageView) {
     this.imageView = imageView;
     this.viewer = viewer;
-    this.surface = new AndroidSurface();
   }
   
 	public void repaint() {
@@ -36,18 +35,19 @@ public class AndroidUpdateListener {
 		long start = System.currentTimeMillis();
 		
 		synchronized (imageView) {
+		  Canvas canvas = null;
 			try {
-				surface.canvas = imageView.getHolder().lockCanvas();
+				canvas = imageView.getHolder().lockCanvas();
 				
-				if (surface.canvas != null)
-					viewer.renderScreenImage(surface, null, viewer.getScreenWidth(), viewer.getScreenHeight());
+				if (canvas != null)
+					viewer.renderScreenImage(canvas, null, viewer.getScreenWidth(), viewer.getScreenHeight());
 				else
 					Log.w("AMOL", "Unable to lock the canvas");    					
 			} finally {
-				if (surface.canvas != null)
-					imageView.getHolder().unlockCanvasAndPost(surface.canvas);
+				if (canvas != null)
+					imageView.getHolder().unlockCanvasAndPost(canvas);
 				
-				surface.canvas = null;
+				canvas = null;
 				
 				Log.d("AMOL", "Image updated in " + (System.currentTimeMillis() - start));    					
 			}

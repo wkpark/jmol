@@ -15,14 +15,6 @@ class Display {
     return true;
   }
 
-  static void requestFocusInWindow(Object display) {
-    return;
-  }
-
-  static void repaint(Object display) {
-    ((AndroidUpdateListener) display).repaint();
-  }
-
   /**
    * legacy apps will use this
    * 
@@ -34,11 +26,24 @@ class Display {
     // ignored
   }
 
-  static void setTransparentCursor(Object display) {
-    // ignored
+  /**
+   * the only method of interest
+   * 
+   * @param display
+   */
+  static void repaint(Object display) {
+    ((AndroidUpdateListener) display).repaint();
+  }
+
+  static void requestFocusInWindow(Object display) {
+    return;
   }
 
   static void setCursor(int c, Object display) {
+    // ignored
+  }
+
+  static void setTransparentCursor(Object display) {
     // ignored
   }
 

@@ -55,7 +55,7 @@ public class Group {
   protected Chain chain;
   int seqcode;
   protected short groupID;
-  protected boolean isAmino;
+  protected boolean isProtein;
   int selectedIndex;
   public int firstAtomIndex = -1;
   public int leadAtomIndex = -1;
@@ -132,7 +132,7 @@ public class Group {
     if (group3 == null)
       group3 = "";
     groupID = getGroupID(group3);
-    isAmino = (groupID >= 1 && groupID < JmolConstants.GROUPID_AMINO_MAX); 
+    isProtein = (groupID >= 1 && groupID < JmolConstants.GROUPID_AMINO_MAX); 
 
     this.firstAtomIndex = firstAtomIndex;
     this.lastAtomIndex = lastAtomIndex;
@@ -216,7 +216,7 @@ public class Group {
   }
 
   public boolean isProtein() { 
-    return (groupID < JmolConstants.GROUPID_AMINO_MAX); 
+    return isProtein; 
   }
   
   public boolean isNucleic() { 

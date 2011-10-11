@@ -1254,7 +1254,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     // structure related
     //
     "@alpha _a=2", // rasmol doc says "approximately *.CA" - whatever?
-    "@backbone (protein,nucleic) & (_a>0 & _a<14 || _a>="+ATOMID_BACKBONE_MIN+")",
+    "@backbone (protein,nucleic) & (_a>0 & _a<14 || _a>="+ATOMID_BACKBONE_MIN+") | _H & protein & connected(*.N)",
     "@spine protein & _a>0 & _a<= 3 || nucleic & (_a >= 6 & _a <= 10 || _a=" + ATOMID_NUCLEIC_PHOSPHORUS + ")",
     "@sidechain (protein,nucleic) & !backbone",
     "@base nucleic & !backbone",

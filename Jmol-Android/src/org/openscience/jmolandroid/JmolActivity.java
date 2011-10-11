@@ -78,6 +78,7 @@ public class JmolActivity extends Activity implements JmolStatusListener {
       viewer = JmolViewer
           .allocateViewer(updateListener, new SmarterJmolAdapter(), null, null, null,
               "platform=org.openscience.jmolandroid.api.Platform", this);
+      viewer.script("load http://chemapps.stolaf.edu/jmol/docs/examples-12/data/caffeine.xyz");
     }
 
     Log.w("AMOL","onResume... viewer=" + viewer);

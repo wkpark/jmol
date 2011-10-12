@@ -19,6 +19,11 @@ public class Platform implements ApiPlatform {
     return Display.hasFocus(display);
   }
 
+  public String prompt(String label, String data, String[] list,
+                       boolean asButtons) {
+    return Display.prompt(label, data, list, asButtons);
+  }
+
   public void requestFocusInWindow(Object display) {
     Display.requestFocusInWindow(display);
   }

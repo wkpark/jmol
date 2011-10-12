@@ -8,7 +8,10 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.image.MemoryImageSource;
 
+import javax.swing.JOptionPane;
+
 import org.jmol.api.JmolViewer;
+import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 
 /**
@@ -75,6 +78,25 @@ class Display {
       return;
     }
     d.setCursor(Cursor.getPredefinedCursor(c));
+  }
+
+  public static String prompt(String label, String data, String[] list,
+                              boolean asButtons) {
+    try {
+      if (!asButtons)
+        return JOptionPane.showInputDialog(label, data);
+      if (data != null)
+        list = TextFormat.split(data, "|");
+      int i = JOptionPane.showOptionDialog(null, label, "Jmol prompt",
+          JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null,
+          list, list[0]);
+      // ESCAPE will close the panel with no option selected.
+      return (data == null ? "" + i : i == JOptionPane.CLOSED_OPTION ? "null"
+          : list[i]);
+    } catch (Throwable e) {
+      return "null";
+    }
+
   }
 
 

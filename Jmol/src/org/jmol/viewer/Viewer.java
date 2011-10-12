@@ -54,7 +54,6 @@ import org.jmol.api.JmolAppConsoleInterface;
 import org.jmol.api.JmolCallbackListener;
 import org.jmol.api.JmolImageCreatorInterface;
 import org.jmol.api.JmolModelKitInterface;
-import org.jmol.api.JmolPromptInterface;
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.api.JmolScriptEditorInterface;
 import org.jmol.api.JmolSelectionListener;
@@ -9847,9 +9846,7 @@ private void zap(String msg) {
 
   public String prompt(String label, String data, String[] list,
                        boolean asButtons) {
-    JmolPromptInterface jpi = (JmolPromptInterface) Interface
-        .getOptionInterface("console.JmolPrompt");
-    return (jpi == null ? "null" : jpi.prompt(label, data, list, asButtons));
+    return apiPlatform.prompt(label, data, list, asButtons);
   }
 
   String getMenuName(int i) {

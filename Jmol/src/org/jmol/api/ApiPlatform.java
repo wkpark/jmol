@@ -12,6 +12,8 @@ public interface ApiPlatform {
 
   boolean hasFocus(Object display);
 
+  String prompt(String label, String data, String[] list, boolean asButtons);
+
   void repaint(Object display);
 
   void requestFocusInWindow(Object display);

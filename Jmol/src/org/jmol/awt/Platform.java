@@ -1,6 +1,8 @@
 package org.jmol.awt;
 
 import org.jmol.api.ApiPlatform;
+import org.jmol.api.Interface;
+import org.jmol.api.JmolModelKitInterface;
 import org.jmol.api.JmolViewer;
 import org.jmol.g3d.Font3D;
 import org.jmol.viewer.ActionManager;
@@ -15,6 +17,12 @@ public class Platform implements ApiPlatform {
   }
   
   ///// Display 
+
+  public JmolModelKitInterface getModelKitMenu(Viewer viewer, Object display) {
+    JmolModelKitInterface modelkit = (JmolModelKitInterface) Interface.getOptionInterface("modelkit.ModelKit");
+    return (modelkit == null ? null : modelkit.getModelKit(viewer, display));
+  }
+
   public boolean hasFocus(Object display) {
     return Display.hasFocus(display);
   }

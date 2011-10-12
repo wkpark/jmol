@@ -10,6 +10,8 @@ public interface ApiPlatform {
   
   /////// Display
 
+  JmolModelKitInterface getModelKitMenu(Viewer viewer, Object display);
+
   boolean hasFocus(Object display);
 
   String prompt(String label, String data, String[] list, boolean asButtons);

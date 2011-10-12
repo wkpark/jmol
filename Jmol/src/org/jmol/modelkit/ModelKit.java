@@ -30,10 +30,9 @@ import org.jmol.i18n.GT;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
 
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 
-public class ModelKit extends JDialog implements JmolModelKitInterface {
+public class ModelKit implements JmolModelKitInterface {
 
   JmolViewer viewer;
   ModelKitPopup modelkitMenu;
@@ -55,9 +54,8 @@ public class ModelKit extends JDialog implements JmolModelKitInterface {
    * @param viewer
    */
   private ModelKit(JmolViewer viewer, JFrame parentFrame) {
-    super(parentFrame, "", false);
-    this.viewer = viewer;
-    
+    this.viewer = viewer;   
+    getMenus(true);
   }
 
 

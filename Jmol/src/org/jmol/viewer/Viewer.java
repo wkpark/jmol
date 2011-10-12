@@ -4976,25 +4976,19 @@ private void zap(String msg) {
     if (!haveDisplay || !refreshing || isPreviewOnly || global.disablePopupMenu)
       return;
     try {
-    switch (type) {
-    case 'j':
-      getPopupMenu();
-      // can throw error if not present; that's ok
-      jmolpopup.show(x, y);
-      break;
-    case 'a':
-    case 'b':
-    case 'm':
-      if (modelkit == null) {
-        modelkit = (JmolModelKitInterface) Interface
-            .getOptionInterface("modelkit.ModelKit");
+      switch (type) {
+      case 'j':
+        getPopupMenu();
+        // can throw error if not present; that's ok
+        jmolpopup.show(x, y);
+        break;
+      case 'a':
+      case 'b':
+      case 'm':
         if (modelkit == null)
-          return;
-        modelkit = modelkit.getModelKit(this, display);
-        modelkit.getMenus(true);
+          modelkit = apiPlatform.getModelKitMenu(this, display);
+        modelkit.show(x, y, type);
       }
-      modelkit.show(x, y, type);
-    }
     } catch (Throwable e) {
       // no Swing -- tough luck!
       global.disablePopupMenu = true;

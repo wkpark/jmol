@@ -7130,7 +7130,9 @@ private void zap(String msg) {
                                BitSet bsBonds, boolean isBonds, boolean addGroup, float energy) {
     // eval
     clearModelDependentObjects();
-    clearAllMeasurements(); // necessary for serialization
+// removed in 12.3.2 and 12.2.1; cannot remember why this was important
+// we aren't removing atoms, just bonds. So who cares in terms of measurements?
+// clearAllMeasurements(); // necessary for serialization (??)
     clearMinimization();
     return modelSet.makeConnections(minDistance, maxDistance, order,
         connectOperation, bsA, bsB, bsBonds, isBonds, addGroup, energy);

@@ -35,14 +35,15 @@ public class JmolActivity extends Activity implements JmolStatusListener {
 
   private AndroidUpdateListener updateListener;
 	private boolean opening;
+  public static float SCALE_FACTOR;
 	
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
-        
-    	viewer = null;
-    }
+  @Override
+  public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.main);
+    viewer = null;
+    SCALE_FACTOR = getResources().getDisplayMetrics().density + 0.5f;
+  }
 
     @Override 
     protected void onDestroy() {
@@ -170,7 +171,7 @@ public class JmolActivity extends Activity implements JmolStatusListener {
     }
     
     private static final int REQUEST_OPEN = 1;
-    
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection

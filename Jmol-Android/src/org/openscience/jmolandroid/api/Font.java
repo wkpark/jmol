@@ -1,5 +1,7 @@
 package org.openscience.jmolandroid.api;
 
+import org.openscience.jmolandroid.JmolActivity;
+
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
@@ -19,7 +21,7 @@ class Font {
     Paint paint = new Paint();
     paint.setColor(Color.WHITE);
     paint.setTypeface(typeface);
-    paint.setTextSize(fontSize);    
+    paint.setTextSize(fontSize * JmolActivity.SCALE_FACTOR);    
     return paint;
   }
 

@@ -1,6 +1,7 @@
 package org.openscience.jmolandroid.api;
 
 import org.jmol.api.ApiPlatform;
+import org.jmol.api.JmolModelKitInterface;
 import org.jmol.api.JmolViewer;
 import org.jmol.g3d.Font3D;
 import org.jmol.viewer.ActionManager;
@@ -15,6 +16,10 @@ public class Platform implements ApiPlatform {
   }
   
   ///// Display -- AndroidUpdateListener
+  
+  public JmolModelKitInterface getModelKitMenu(Viewer viewer, Object display) {
+    return null;
+  }
   
   public boolean hasFocus(Object display) {
     // ignored

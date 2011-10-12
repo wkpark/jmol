@@ -4975,23 +4975,25 @@ private void zap(String msg) {
   void popupMenu(int x, int y, char type) {
     if (!haveDisplay || !refreshing || isPreviewOnly || global.disablePopupMenu)
       return;
-    try {
-      switch (type) {
-      case 'j':
+    switch (type) {
+    case 'j':
+      try {
         getPopupMenu();
         // can throw error if not present; that's ok
         jmolpopup.show(x, y);
-        break;
-      case 'a':
-      case 'b':
-      case 'm':
-        if (modelkit == null)
-          modelkit = apiPlatform.getModelKitMenu(this, display);
-        modelkit.show(x, y, type);
+      } catch (Throwable e) {
+        // no Swing -- tough luck!
+        global.disablePopupMenu = true;
       }
-    } catch (Throwable e) {
-      // no Swing -- tough luck!
-      global.disablePopupMenu = true;
+      break;
+    case 'a':
+    case 'b':
+    case 'm':
+      if (modelkit == null)
+        modelkit = apiPlatform.getModelKitMenu(this, display);
+      if (modelkit != null)
+        modelkit.show(x, y, type);
+      break;
     }
   }
 

@@ -24,61 +24,47 @@
 package org.jmol.modelkit;
 
 import org.jmol.api.JmolModelKitInterface;
-import org.jmol.api.JmolViewer;
-import org.jmol.console.JmolFrame;
+import org.jmol.constant.modelKitPopupResourceBundle;
 import org.jmol.i18n.GT;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
 
-import javax.swing.JFrame;
-
 public class ModelKit implements JmolModelKitInterface {
 
-  JmolViewer viewer;
-  ModelKitPopup modelkitMenu;
+  private ModelKitPopup modelkitMenu;
+  private final static String IMAGE_PATH = "org/jmol/modelkit/images/";
 
   public ModelKit() {
     // necessary for reflection
   }
 
   /* (non-Javadoc)
-   * @see org.jmol.modelkit.JmolModelKitInterface#getModelKit(org.jmol.viewer.Viewer, javax.swing.JFrame)
+   * @see org.jmol.modelkit.JmolModelKitInterface#getModelKit(org.jmol.viewer.Viewer, Object)
    */
-  public JmolModelKitInterface getModelKit(Viewer viewer, Object display) {
-    return new ModelKit(viewer,  display instanceof JmolFrame ? ((JmolFrame) display).getFrame() 
-        : display instanceof JFrame ? (JFrame) display : null);
+  public JmolModelKitInterface getModelKit(Viewer viewer) {
+    return new ModelKit(viewer);
   }
 
   /**
-   * @param parentFrame
    * @param viewer
    */
-  private ModelKit(JmolViewer viewer, JFrame parentFrame) {
-    this.viewer = viewer;   
-    getMenus(true);
-  }
-
-
-
-  /* (non-Javadoc)
-   * @see org.jmol.modelkit.JmolModelKitInterface#getMenus(boolean)
-   */
-  public void getMenus(boolean doTranslate) {
+  private ModelKit(Viewer viewer) {
     GT.setDoTranslate(true);
     try {
       modelkitMenu = new ModelKitPopup(viewer, "modelkitMenu",
-          new ModelKitPopupResourceBundle());
+          new modelKitPopupResourceBundle(), IMAGE_PATH);
     } catch (Exception e) {
       Logger.error("Modelkit menus not loaded");
     }
-    GT.setDoTranslate(doTranslate);
-    
+    GT.setDoTranslate(true);
   }
-  
+
   /* (non-Javadoc)
    * @see org.jmol.modelkit.JmolModelKitInterface#show(int, int, java.lang.String)
    */
   public void show(int x, int y, char type) {
+    // type 'a' atom 'b' bond 'm' main -- ignored
+    if (modelkitMenu != null)
       modelkitMenu.show(x, y);
   }  
 }

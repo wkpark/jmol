@@ -21,16 +21,16 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.jmol.popup;
+package org.jmol.constant;
 
 import java.util.Properties;
 
 import org.jmol.i18n.GT;
 import org.jmol.util.TextFormat;
 
-class MainPopupResourceBundle extends PopupResource {
+public class MainPopupResourceBundle extends PopupResource {
 
-  MainPopupResourceBundle(String menuStructure, Properties menuText) {
+  public MainPopupResourceBundle(String menuStructure, Properties menuText) {
     super(menuStructure, menuText);
   }
 

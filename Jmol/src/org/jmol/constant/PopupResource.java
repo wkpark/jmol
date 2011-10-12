@@ -21,7 +21,7 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.jmol.popup;
+package org.jmol.constant;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
@@ -53,11 +53,11 @@ public abstract class PopupResource {
   
   abstract protected void buildStructure(String menuStructure);
   
-  String getStructure(String key) {
+  public String getStructure(String key) {
     return structure.getProperty(key);
   }
 
-  String getWord(String key) {
+  public String getWord(String key) {
     String str = words.getProperty(key);
     return (str == null ? key : str);
   }

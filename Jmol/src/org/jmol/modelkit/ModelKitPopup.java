@@ -30,20 +30,23 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import org.jmol.api.*;
+import org.jmol.constant.PopupResource;
 import org.jmol.i18n.GT;
-import org.jmol.popup.PopupResource;
 import org.jmol.popup.SimplePopup;
 import org.jmol.util.Elements;
 
 class ModelKitPopup extends SimplePopup {
 
-  ModelKitPopup(JmolViewer viewer, String title, PopupResource bundle) {
+  String imagePath;
+  
+  ModelKitPopup(JmolViewer viewer, String title, PopupResource bundle, String imagePath) {
     super(viewer, title, bundle, false);
+    this.imagePath = imagePath;
   }
 
   @Override
   protected ImageIcon getIcon(String name) {
-    String imageName = "org/jmol/modelkit/images/" + name;
+    String imageName = imagePath + name;
     URL imageUrl = this.getClass().getClassLoader().getResource(imageName);
     if (imageUrl != null) {
       return new ImageIcon(imageUrl);

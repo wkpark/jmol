@@ -24,6 +24,7 @@
 package org.jmol.popup;
 
 import org.jmol.api.*;
+import org.jmol.constant.PopupResource;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 

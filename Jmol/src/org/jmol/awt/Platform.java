@@ -11,17 +11,13 @@ import org.jmol.viewer.Viewer;
 public class Platform implements ApiPlatform {
 
   private Mouse mouse;
+  private JmolModelKitInterface modelkit;
 
   public void setViewer(JmolViewer viewer, Object display) {
     // ignored
   }
   
   ///// Display 
-
-  public JmolModelKitInterface getModelKitMenu(Viewer viewer, Object display) {
-    JmolModelKitInterface modelkit = (JmolModelKitInterface) Interface.getOptionInterface("modelkit.ModelKit");
-    return (modelkit == null ? null : modelkit.getModelKit(viewer, display));
-  }
 
   public boolean hasFocus(Object display) {
     return Display.hasFocus(display);
@@ -30,14 +26,6 @@ public class Platform implements ApiPlatform {
   public String prompt(String label, String data, String[] list,
                        boolean asButtons) {
     return Display.prompt(label, data, list, asButtons);
-  }
-
-  public void requestFocusInWindow(Object display) {
-    Display.requestFocusInWindow(display);
-  }
-
-  public void repaint(Object display) {
-    Display.repaint(display);
   }
 
   /**
@@ -51,12 +39,34 @@ public class Platform implements ApiPlatform {
     Display.renderScreenImage(viewer, g, size);
   }
 
+  public void requestFocusInWindow(Object display) {
+    Display.requestFocusInWindow(display);
+  }
+
+  public void repaint(Object display) {
+    Display.repaint(display);
+  }
+
   public void setTransparentCursor(Object display) {
     Display.setTransparentCursor(display);
   }
 
   public void setCursor(int c, Object display) {
     Display.setCursor(c, display);
+  }
+
+  public void showMenuModelKit(Viewer viewer, Object display, int x, int y, char type) {
+    if (viewer == null) {
+      modelkit = null;
+      return;
+    }
+    if (modelkit == null) {
+      modelkit = (JmolModelKitInterface) Interface.getOptionInterface("modelkit.ModelKit");
+      if (modelkit == null)
+        return;      
+      modelkit = modelkit.getModelKit(viewer);
+    }
+    modelkit.show(x, y, type);
   }
 
   ////// Mouse

@@ -10,8 +10,6 @@ public interface ApiPlatform {
   
   /////// Display
 
-  JmolModelKitInterface getModelKitMenu(Viewer viewer, Object display);
-
   boolean hasFocus(Object display);
 
   String prompt(String label, String data, String[] list, boolean asButtons);
@@ -23,6 +21,8 @@ public interface ApiPlatform {
   void setCursor(int i, Object display);
 
   void setTransparentCursor(Object display);
+
+  void showMenuModelKit(Viewer viewer, Object display, int x, int y, char type);
 
 
   ////  Mouse 

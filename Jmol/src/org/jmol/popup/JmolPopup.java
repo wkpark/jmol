@@ -25,6 +25,8 @@ package org.jmol.popup;
 
 import org.jmol.api.JmolPopupInterface;
 import org.jmol.api.JmolViewer;
+import org.jmol.constant.MainPopupResourceBundle;
+import org.jmol.constant.PopupResource;
 import org.jmol.i18n.GT;
 import org.jmol.util.Elements;
 import org.jmol.viewer.JmolConstants;

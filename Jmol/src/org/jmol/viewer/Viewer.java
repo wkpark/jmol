@@ -53,7 +53,6 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolAppConsoleInterface;
 import org.jmol.api.JmolCallbackListener;
 import org.jmol.api.JmolImageCreatorInterface;
-import org.jmol.api.JmolModelKitInterface;
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.api.JmolScriptEditorInterface;
 import org.jmol.api.JmolSelectionListener;
@@ -4989,10 +4988,8 @@ private void zap(String msg) {
     case 'a':
     case 'b':
     case 'm':
-      if (modelkit == null)
-        modelkit = apiPlatform.getModelKitMenu(this, display);
-      if (modelkit != null)
-        modelkit.show(x, y, type);
+      // atom, bond, or main -- ignored
+      apiPlatform.showMenuModelKit(this, display, x, y, type);
       break;
     }
   }
@@ -5659,7 +5656,7 @@ private void zap(String msg) {
       // also serves to change language for callbacks and menu
       new GT(value);
       language = GT.getLanguage();
-      modelkit = null;
+      apiPlatform.showMenuModelKit(null, null, 0, 0, '\0');
       if (jmolpopup != null) {
         jmolpopup = null;
         getPopupMenu();
@@ -7634,8 +7631,6 @@ private void zap(String msg) {
   JmolAppConsoleInterface appConsole;
   JmolScriptEditorInterface scriptEditor;
   JmolPopupInterface jmolpopup;
-  
-  private JmolModelKitInterface modelkit;
   
   @Override
   public Object getProperty(String returnType, String infoType, Object paramInfo) {

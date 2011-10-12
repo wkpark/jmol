@@ -25,9 +25,9 @@ package org.jmol.constant;
 
 import org.jmol.i18n.GT;
 
-public class modelKitPopupResourceBundle extends PopupResource {
+public class ModelKitPopupResourceBundle extends PopupResource {
 
-  public modelKitPopupResourceBundle() {
+  public ModelKitPopupResourceBundle() {
     super(null, null);
   }
 

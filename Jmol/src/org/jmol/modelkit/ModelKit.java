@@ -24,7 +24,7 @@
 package org.jmol.modelkit;
 
 import org.jmol.api.JmolModelKitInterface;
-import org.jmol.constant.modelKitPopupResourceBundle;
+import org.jmol.constant.ModelKitPopupResourceBundle;
 import org.jmol.i18n.GT;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
@@ -52,7 +52,7 @@ public class ModelKit implements JmolModelKitInterface {
     GT.setDoTranslate(true);
     try {
       modelkitMenu = new ModelKitPopup(viewer, "modelkitMenu",
-          new modelKitPopupResourceBundle(), IMAGE_PATH);
+          new ModelKitPopupResourceBundle(), IMAGE_PATH);
     } catch (Exception e) {
       Logger.error("Modelkit menus not loaded");
     }

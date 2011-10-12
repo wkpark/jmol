@@ -130,11 +130,7 @@ class Image {
     image.canvas.drawColor(Color.BLACK);
     Paint paint = (Paint) (font3d.font);
     paint.setColor(Color.WHITE);
-    image.canvas.drawText(text, 0, 0, paint);
-    /*  ascent not needed here?
-    g.setFont((Font) font3d.font);
-    g.drawString(text, 0, ascent);
-    */
+    image.canvas.drawText(text, 0, ascent, paint);
     return grabPixels(image, width, height);
   }
 

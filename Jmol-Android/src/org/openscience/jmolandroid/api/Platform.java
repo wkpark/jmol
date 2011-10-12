@@ -21,6 +21,13 @@ public class Platform implements ApiPlatform {
     return true;
   }
 
+  @Override
+  public String prompt(String label, String data, String[] list,
+                       boolean asButtons) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
   public void requestFocusInWindow(Object display) {
     // ignored
   }
@@ -30,7 +37,7 @@ public class Platform implements ApiPlatform {
   }
 
   public void renderScreenImage(JmolViewer viewer, Object g, Object size) {
-    // ignored
+    // ignored -- legacy Java apps only
   }
 
   public void setTransparentCursor(Object display) {

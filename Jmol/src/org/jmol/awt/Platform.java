@@ -2,7 +2,7 @@ package org.jmol.awt;
 
 import org.jmol.api.ApiPlatform;
 import org.jmol.api.Interface;
-import org.jmol.api.JmolModelKitInterface;
+import org.jmol.api.JmolPopupInterface;
 import org.jmol.api.JmolViewer;
 import org.jmol.g3d.Font3D;
 import org.jmol.viewer.ActionManager;
@@ -11,13 +11,20 @@ import org.jmol.viewer.Viewer;
 public class Platform implements ApiPlatform {
 
   private Mouse mouse;
-  private JmolModelKitInterface modelkit;
 
   public void setViewer(JmolViewer viewer, Object display) {
     // ignored
   }
   
   ///// Display 
+
+  public JmolPopupInterface getMenuPopup(Viewer viewer, String menuStructure, char type) {
+    JmolPopupInterface jmolpopup = (JmolPopupInterface) Interface.getOptionInterface(
+        type == 'j' ? "popup.JmolPopup" : "modelkit.ModelKitPopup");
+    if (jmolpopup != null)
+      jmolpopup.initialize(viewer, true, menuStructure, true);
+    return jmolpopup;
+  }
 
   public boolean hasFocus(Object display) {
     return Display.hasFocus(display);
@@ -53,20 +60,6 @@ public class Platform implements ApiPlatform {
 
   public void setCursor(int c, Object display) {
     Display.setCursor(c, display);
-  }
-
-  public void showMenuModelKit(Viewer viewer, Object display, int x, int y, char type) {
-    if (viewer == null) {
-      modelkit = null;
-      return;
-    }
-    if (modelkit == null) {
-      modelkit = (JmolModelKitInterface) Interface.getOptionInterface("modelkit.ModelKit");
-      if (modelkit == null)
-        return;      
-      modelkit = modelkit.getModelKit(viewer);
-    }
-    modelkit.show(x, y, type);
   }
 
   ////// Mouse

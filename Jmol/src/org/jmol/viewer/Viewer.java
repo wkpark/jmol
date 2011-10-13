@@ -4988,8 +4988,10 @@ private void zap(String msg) {
     case 'a':
     case 'b':
     case 'm':
-      // atom, bond, or main -- ignored
-      apiPlatform.showMenuModelKit(this, display, x, y, type);
+      // atom, bond, or main -- ignored      
+      modelkitPopup = apiPlatform.getMenuPopup(this, null, type);
+      if (modelkitPopup != null)
+        modelkitPopup.show(x, y);
       break;
     }
   }
@@ -5002,12 +5004,11 @@ private void zap(String msg) {
 
   private Object getPopupMenu() {
     if (jmolpopup == null) {
-      jmolpopup = (JmolPopupInterface) Interface.getOptionInterface("popup.JmolPopup");
+      jmolpopup = apiPlatform.getMenuPopup(this, menuStructure, 'j');
       if (jmolpopup == null) {
         global.disablePopupMenu = true;
         return null;
       }
-      jmolpopup.initialize(this, true, menuStructure, true);
     }
     return jmolpopup.getJMenu();
   }
@@ -5656,7 +5657,7 @@ private void zap(String msg) {
       // also serves to change language for callbacks and menu
       new GT(value);
       language = GT.getLanguage();
-      apiPlatform.showMenuModelKit(null, null, 0, 0, '\0');
+      modelkitPopup = null;
       if (jmolpopup != null) {
         jmolpopup = null;
         getPopupMenu();
@@ -7631,6 +7632,8 @@ private void zap(String msg) {
   JmolAppConsoleInterface appConsole;
   JmolScriptEditorInterface scriptEditor;
   JmolPopupInterface jmolpopup;
+  private JmolPopupInterface modelkitPopup;
+
   
   @Override
   public Object getProperty(String returnType, String infoType, Object paramInfo) {

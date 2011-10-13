@@ -24,12 +24,10 @@
 package org.jmol.popup;
 
 import org.jmol.api.JmolPopupInterface;
-import org.jmol.api.JmolViewer;
-import org.jmol.constant.MainPopupResourceBundle;
-import org.jmol.constant.PopupResource;
 import org.jmol.i18n.GT;
 import org.jmol.util.Elements;
 import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.Viewer;
 
 import java.awt.Component;
 import java.awt.Container;
@@ -43,7 +41,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
-public class JmolPopup extends SimplePopup implements JmolPopupInterface {
+public class JmolPopup extends SwingPopup implements JmolPopupInterface {
   
   private int aboutComputedMenuBaseCount;
 
@@ -59,7 +57,7 @@ public class JmolPopup extends SimplePopup implements JmolPopupInterface {
     // required by reflection
   }
 
-  public void initialize(JmolViewer viewer, boolean doTranslate, String menu,
+  public void initialize(Viewer viewer, boolean doTranslate, String menu,
                          boolean asPopup) {
     set(viewer);
     strMenuStructure = menu;
@@ -111,6 +109,11 @@ public class JmolPopup extends SimplePopup implements JmolPopupInterface {
       enableMenu(subMenu, false);
     }
   }
+
+  private final static int UPDATE_ALL = 0;
+  private final static int UPDATE_CONFIG = 1;
+  private final static int UPDATE_SHOW = 2;
+  private int updateMode;
 
   @SuppressWarnings("unchecked")
   public void updateComputedMenus() {
@@ -645,7 +648,7 @@ public class JmolPopup extends SimplePopup implements JmolPopupInterface {
    * @param TF   true or false
    */
   @Override
-  protected void setCheckBoxValue(JMenuItem item, String what, boolean TF) {    
+  protected void setCheckBoxValue(Object item, String what, boolean TF) { 
     super.setCheckBoxValue(item, what, TF);
     if (what.indexOf("#CONFIG") >= 0) {
       configurationSelected = what;
@@ -665,9 +668,8 @@ public class JmolPopup extends SimplePopup implements JmolPopupInterface {
     updateAboutSubmenu();
   }
 
-  @Override
   public void show(int x, int y) {
-    super.show(x, y, false);
+    show(x, y, false);
     if (x < 0) {
       getViewerData();
       setFrankMenu(currentMenuItemId);
@@ -731,7 +733,7 @@ public class JmolPopup extends SimplePopup implements JmolPopupInterface {
   }
 
   @Override
-  void restorePopupMenu() {
+  protected void restorePopupMenu() {
     if (nFrankList < 2)
       return;
     // first entry is just the main item
@@ -752,18 +754,21 @@ public class JmolPopup extends SimplePopup implements JmolPopupInterface {
     }
   }
 
-  void insertMenuSubMenu(Object menu, Object subMenu, int index) {
+  private void insertMenuSubMenu(Object menu, Object subMenu, int index) {
     if (menu instanceof JPopupMenu)
       ((JPopupMenu) menu).insert((JMenu) subMenu, index);
     else
       ((JMenu) menu).insert((JMenu) subMenu, index);
   }
 
-  void createFrankPopup() {
+  private JPopupMenu frankPopup;
+
+  private void createFrankPopup() {
     frankPopup = new JPopupMenu("Frank");
   }
 
-  void showFrankMenu(int x, int y) {
+  private void showFrankMenu(int x, int y) {
+    Component display = (Component) viewer.getDisplay();
     if (display == null)
       return;
     try {
@@ -773,11 +778,11 @@ public class JmolPopup extends SimplePopup implements JmolPopupInterface {
     }
   }
 
-  void resetFrankMenu() {
+  private void resetFrankMenu() {
     frankPopup.removeAll();
   }
 
-  long maxMemoryForNewerJvm() {
+  private long maxMemoryForNewerJvm() {
     return Runtime.getRuntime().maxMemory();
   }
 

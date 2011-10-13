@@ -1,5 +1,7 @@
 package org.jmol.api;
 
+import org.jmol.viewer.Viewer;
+
 public interface JmolPopupInterface {
 
   public String getMenu(String string);
@@ -8,7 +10,7 @@ public interface JmolPopupInterface {
 
   public void show(int x, int y);
 
-  public void initialize(JmolViewer viewer, boolean doTranslate,
+  public void initialize(Viewer viewer, boolean doTranslate,
                                        String menu, boolean asPopup);
 
   public void updateComputedMenus();

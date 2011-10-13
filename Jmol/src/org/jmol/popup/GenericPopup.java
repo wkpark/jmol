@@ -23,17 +23,10 @@
  */
 package org.jmol.popup;
 
-import org.jmol.api.JmolViewer;
-import org.jmol.constant.PopupResource;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
+import org.jmol.viewer.Viewer;
 
-import java.awt.Component;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -41,17 +34,7 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.Hashtable;
 
-import javax.swing.AbstractButton;
-import javax.swing.ButtonGroup;
-import javax.swing.ImageIcon;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JComponent;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.JRadioButtonMenuItem;
-
-public class SimplePopup {
+abstract public class GenericPopup {
 
   //list is saved in http://www.stolaf.edu/academics/chemapps/jmol/docs/misc
   protected final static boolean dumpList = false;
@@ -60,10 +43,7 @@ public class SimplePopup {
   //  System.out.println("JmolPopup " + this + " finalize");
   //}
 
-  protected JmolViewer viewer;
-  protected Component display;
-  protected MenuItemListener mil;
-  protected CheckboxMenuItemListener cmil;
+  protected Viewer viewer;
   protected boolean asPopup = true;
 
   protected Properties menuText = new Properties();
@@ -73,7 +53,6 @@ public class SimplePopup {
   
   protected Map<String, Object> modelSetInfo;
   protected Map<String, Object> modelInfo;
-  protected JPopupMenu frankPopup;
 
   protected Map<String, Object> htMenus = new Hashtable<String, Object>();
   protected List<Object> NotPDB = new ArrayList<Object>();
@@ -107,52 +86,24 @@ public class SimplePopup {
 
   protected int modelIndex, modelCount, atomCount;
 
-  protected JPopupMenu swingPopup;
-
-  SimplePopup() {
+  GenericPopup() {
     // required by reflection
   }
   
-  SimplePopup(JmolViewer viewer) {
-    set(viewer);
-  }
-
-  protected void set(JmolViewer viewer) {
-    this.viewer = viewer;
+  protected void set(Viewer viewer) {
     asPopup = true;
-    display = (Component) viewer.getDisplay();
-    mil = new MenuItemListener();
-    cmil = new CheckboxMenuItemListener();
-  }
-
-  private boolean isHorizontal = false;
-  
-  public SimplePopup(JmolViewer viewer, String title, PopupResource bundle, boolean isHorizontal) {
-    set(viewer);
-    this.isHorizontal = isHorizontal;
-    build(title, swingPopup = new JPopupMenu(title), bundle);
+    this.viewer = viewer;
   }
 
   private boolean allowSignedFeatures;
   
   protected void build(String title, Object popupMenu, PopupResource bundle) {
-    if (isHorizontal && popupMenu instanceof JPopupMenu) {
-      JPopupMenu pm = (JPopupMenu) popupMenu;
-      //BoxLayout bl = new BoxLayout(pm, BoxLayout.LINE_AXIS);
-      GridLayout bl = new GridLayout(3,4);
-      pm.setLayout(bl);
-
-    }
     htMenus.put(title, popupMenu);
     allowSignedFeatures = (!viewer.isApplet() || viewer.getBooleanProperty("_signedApplet"));
     addMenuItems("", title, popupMenu, bundle);
   }
 
   protected int thisx, thisy;
-
-  public void show(int x, int y) {
-    show(x, y, true);
-  }
 
   protected void updateForShow() {
     // depends upon implementation
@@ -167,7 +118,7 @@ public class SimplePopup {
     thisx = x;
     thisy = y;
     updateForShow();
-    for (Map.Entry<String, JMenuItem> entry : htCheckbox.entrySet()) {
+    for (Map.Entry<String, Object> entry : htCheckbox.entrySet()) {
       String key = entry.getKey();
       Object item = entry.getValue();
       String basename = key.substring(0, key.indexOf(":"));
@@ -189,17 +140,12 @@ public class SimplePopup {
         .append("\n");
   }
 
-  final static int UPDATE_ALL = 0;
-  final static int UPDATE_CONFIG = 1;
-  final static int UPDATE_SHOW = 2;
-  int updateMode;
-
   protected String getMenuText(String key) {
     String str = menuText.getProperty(key);
     return (str == null ? key : str);
   }
 
-  boolean checkBoolean(Map<String, Object> info, String key) {
+  protected static boolean checkBoolean(Map<String, Object> info, String key) {
     Object value = (info == null ? null : info.get(key));
     return !(value == null || value instanceof Boolean && !((Boolean) (value)).booleanValue());
   }
@@ -238,7 +184,7 @@ public class SimplePopup {
     haveBFactors = (viewer.getBooleanProperty("haveBFactors"));
   }
 
-  void updateFileTypeDependentMenus() {
+  protected void updateFileTypeDependentMenus() {
     for (int i = 0; i < NotPDB.size(); i++)
       enableMenu(NotPDB.get(i), !isPDB);
     for (int i = 0; i < PDBOnly.size(); i++)
@@ -267,8 +213,8 @@ public class SimplePopup {
       enableMenu(TemperatureOnly.get(i), haveBFactors);
   }
 
-  private ButtonGroup group;
-
+  protected Object group;
+  
   protected void addMenuItems(String parentId, String key, Object menu,
                             PopupResource popupResourceBundle) {
     String id = parentId + "." + key;
@@ -319,12 +265,10 @@ public class SimplePopup {
         if (script == null || script.length() == 0 && !isRadio)
           script = "set " + basename + " T/F";
         newMenu = addCheckboxMenuItem(menu, label, basename 
-            + ":" + script, id + "." + item, isRadio);
-        if (isRadio) {
-          if (group == null)
-            group = new ButtonGroup();
-          group.add((JMenuItem) newMenu);
-        }
+            + ":" + script, id + "." + item, false, isRadio);
+        rememberCheckbox(basename, newMenu);
+        if (isRadio) 
+          addButtonGroupItem(newMenu);
       } else {
         script = popupResourceBundle.getStructure(item);
         if (script == null)
@@ -388,9 +332,9 @@ public class SimplePopup {
     // special considerations here
   }
 
-  protected Map<String, JMenuItem> htCheckbox = new Hashtable<String, JMenuItem>();
+  protected Map<String, Object> htCheckbox = new Hashtable<String, Object>();
 
-  void rememberCheckbox(String key, JMenuItem checkboxMenuItem) {
+  private void rememberCheckbox(String key, Object checkboxMenuItem) {
     htCheckbox.put(key + "::" + htCheckbox.size(), checkboxMenuItem);
   }
 
@@ -404,11 +348,11 @@ public class SimplePopup {
    * @param TF
    *          true or false
    */
-  protected void setCheckBoxValue(JMenuItem item, String what, boolean TF) {
+  protected void setCheckBoxValue(Object item, String what, boolean TF) {
     if (what.indexOf("##") < 0) {
       int pt = what.indexOf(":");
       if (pt < 0) {
-        Logger.error("check box " + item.getName() + " IS " + what);
+        Logger.error("check box " + item + " IS " + what);
         return;
       }
       // name:trueAction|falseAction
@@ -436,34 +380,17 @@ public class SimplePopup {
   }
 
   /**
+   * never implemented? For Modelkit
    * @param item  
    * @param name 
    * @param what 
    * @return   option
    */
-  protected String setCheckBoxOption(JMenuItem item, String name, String what) {
+  protected String setCheckBoxOption(Object item, String name, String what) {
     return null;
   }
 
-  String currentMenuItemId = null;
-
-  class MenuItemListener implements ActionListener {
-    public void actionPerformed(ActionEvent e) {
-      checkMenuClick(e.getSource(), e.getActionCommand());
-    }
-  }
-
-  class CheckboxMenuItemListener implements ItemListener {
-    public void itemStateChanged(ItemEvent e) {
-      restorePopupMenu();
-      setCheckBoxValue(e.getSource());
-      String id = getId(e.getSource());
-      if (id != null) {
-        currentMenuItemId = id;
-      }
-      //Logger.debug("CheckboxMenuItemListener() " + e.getSource());
-    }
-  }
+  public String currentMenuItemId = null;
 
   protected String fixScript(String id, String script) {
     int pt;
@@ -498,7 +425,7 @@ public class SimplePopup {
     if (script == null || script.length() == 0)
       return;
     if (script.equals("MAIN")) {
-      show(thisx, thisy);
+      show(thisx, thisy, true);
       return;
     }
     String id = getId(source);
@@ -509,7 +436,7 @@ public class SimplePopup {
     viewer.evalStringQuiet(script);
   }
 
-  void restorePopupMenu() {
+  protected void restorePopupMenu() {
     // main menu only 
   }
 
@@ -517,182 +444,28 @@ public class SimplePopup {
     return addMenuItem(menuItem, entry, "", null);
   }
 
-  JMenuItem addCheckboxMenuItem(Object menu, String entry, String basename,
-                             String id, boolean isRadio) {
-    JMenuItem item = addCheckboxMenuItem(menu, entry, basename, id, false, isRadio);
-    rememberCheckbox(basename, item);
-    return item;
-  }
-
   ////////////////////////////////////////////////////////////////
 
-  protected void showPopupMenu(int x, int y) {
-    if (display == null)
-      return;
-    try {
-      swingPopup.show(display, x, y);
-    } catch (Exception e) {
-      Logger.error("popup error: " + e.getMessage());
-      // browser in Java 1.6.0_10 is blocking setting WindowAlwaysOnTop 
-
-    }
-  }
-
-  void addToMenu(Object menu, JComponent item) {
-    if (menu instanceof JPopupMenu) {
-      ((JPopupMenu) menu).add(item);
-    } else if (menu instanceof JMenu) {
-      ((JMenu) menu).add(item);
-    } else {
-      Logger.warn("cannot add object to menu: " + menu);
-    }
-  }
-
-  ////////////////////////////////////////////////////////////////
-
-  void addMenuSeparator(Object menu) {
-    if (menu instanceof JPopupMenu)
-      ((JPopupMenu) menu).addSeparator();
-    else
-      ((JMenu) menu).addSeparator();
-  }
-
-  Object addMenuItem(Object menu, String entry, String script, String id) {
-    JMenuItem jmi = new JMenuItem(entry);
-    updateButton(jmi, entry, script);
-    jmi.addActionListener(mil);
-    jmi.setName(id == null ? ((Component) menu).getName() + "." : id);
-    addToMenu(menu, jmi);
-    return jmi;
-  }
-
-  protected void setLabel(Object menu, String entry) {
-    if (menu instanceof JMenuItem)
-      ((JMenuItem) menu).setText(entry);
-    else
-      ((JMenu) menu).setText(entry);
-  }
-
-  String getId(Object menu) {
-    return ((Component) menu).getName();
-  }
-
-  void setCheckBoxValue(Object source) {
-    JMenuItem jcmi = (JMenuItem) source;
-    setCheckBoxValue(jcmi, jcmi.getActionCommand(), jcmi.isSelected());
-  }
-
-  void setCheckBoxState(Object item, boolean state) {
-    if (item instanceof JCheckBoxMenuItem)
-      ((JCheckBoxMenuItem) item).setState(state);
-    else
-      ((JRadioButtonMenuItem) item).setArmed(state);
-    ((JMenuItem) item).setSelected(state);
-  }
-
-  /**
-   * @param name  
-   * @return  icon
-   */
-  protected ImageIcon getIcon(String name) {
-    return null; // subclassed
-  }
-
-  void updateButton(AbstractButton b, String entry, String script) {
-    ImageIcon icon = null;
-    if (entry.startsWith("<")) {
-      int pt = entry.indexOf(">");
-      icon = getIcon(entry.substring(1, pt));
-      entry = entry.substring(pt + 1);
-    }
-
-    if (icon != null)
-      b.setIcon(icon);
-    if (entry != null)
-      b.setText(entry);
-    if (script != null)
-      b.setActionCommand(script);
-  }
-  
-  JMenuItem addCheckboxMenuItem(Object menu, String entry, String basename,
-                             String id, boolean state, boolean isRadio) {
-    JMenuItem jm;
-    if (isRadio) {
-      JRadioButtonMenuItem jr = new JRadioButtonMenuItem(entry);
-      jm = jr;
-      jr.setArmed(state);
-    } else {
-      JCheckBoxMenuItem jcmi = new JCheckBoxMenuItem(entry);
-      jm = jcmi;
-      jcmi.setState(state);
-    }
-    jm.setSelected(state);
-    jm.addItemListener(cmil);
-    jm.setActionCommand(basename);
-    updateButton(jm, entry, basename);
-    jm.setName(id == null ? ((Component) menu).getName() + "." : id);
-    addToMenu(menu, jm);
-    return jm;
-  }
-
-  /**
-   * @param menu  
-   * @return new menu
-   */
-  Object cloneMenu(Object menu) {
-    return null;
-  }
-
-  void addMenuSubMenu(Object menu, Object subMenu) {
-    addToMenu(menu, (JMenu) subMenu);
-  }
-
-  Object newMenu(String entry, String id) {
-    JMenu jm = new JMenu(entry);
-    updateButton(jm, entry, null);
-    jm.setName(id);
-    jm.setAutoscrolls(true);
-    return jm;
-  }
-
-  void setAutoscrolls(Object menu) {
-    ((JMenu) menu).setAutoscrolls(true);
-  }
-
-  void renameMenu(Object menu, String entry) {
-    ((JMenu) menu).setText(entry);
-  }
-
-  int getMenuItemCount(Object menu) {
-    return ((JMenu) menu).getItemCount();
-  }
-
-  void removeMenuItem(Object menu, int index) {
-    ((JMenu) menu).remove(index);
-  }
-
-  void removeAll(Object menu) {
-    ((JMenu) menu).removeAll();
-  }
-
-  void enableMenu(Object menu, boolean enable) {
-    if (menu instanceof JMenuItem) {
-      enableMenuItem(menu, enable);
-      return;
-    }
-    try {
-      ((JMenu) menu).setEnabled(enable);
-    } catch (Exception e) {
-      //no menu item;
-    }
-  }
-
-  void enableMenuItem(Object item, boolean enable) {
-    try {
-      ((JMenuItem) item).setEnabled(enable);
-    } catch (Exception e) {
-      //no menu item;
-    }
-  }
+  abstract protected void addButtonGroupItem(Object newMenu);
+  abstract protected Object addCheckboxMenuItem(Object menu, String entry, String basename,
+                                                String id, boolean state, boolean isRadio);
+  abstract protected Object addMenuItem(Object menu, String entry, String script, String id);
+  abstract protected void addMenuSeparator(Object menu);
+  abstract protected void addMenuSubMenu(Object menu, Object subMenu);
+  abstract protected void addToMenu(Object menu, Object item);
+  abstract protected void enableMenu(Object menu, boolean enable);
+  abstract protected void enableMenuItem(Object item, boolean enable);
+  abstract protected String getId(Object menu);
+  abstract protected int getMenuItemCount(Object menu);
+  abstract protected Object newMenu(String entry, String id);
+  abstract protected void removeAll(Object menu);
+  abstract protected void removeMenuItem(Object menu, int index);
+  abstract protected void renameMenu(Object menu, String entry);
+  abstract protected void setAutoscrolls(Object menu);
+  abstract protected void setCheckBoxState(Object item, boolean state);
+  abstract protected void setCheckBoxValue(Object source);   
+  abstract protected void setLabel(Object menu, String entry);
+  abstract protected void setMenuListeners();
+  abstract protected void showPopupMenu(int x, int y);
 
 }

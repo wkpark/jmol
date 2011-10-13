@@ -21,9 +21,10 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.jmol.constant;
+package org.jmol.modelkit;
 
 import org.jmol.i18n.GT;
+import org.jmol.popup.PopupResource;
 
 public class ModelKitPopupResourceBundle extends PopupResource {
 

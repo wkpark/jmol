@@ -23,44 +23,51 @@
  */
 package org.jmol.modelkit;
 
-import java.net.URL;
-
-import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
-import org.jmol.api.*;
-import org.jmol.constant.PopupResource;
+import org.jmol.api.JmolPopupInterface;
 import org.jmol.i18n.GT;
-import org.jmol.popup.SimplePopup;
+import org.jmol.popup.SwingPopup;
 import org.jmol.util.Elements;
+import org.jmol.viewer.Viewer;
 
-class ModelKitPopup extends SimplePopup {
+public class ModelKitPopup extends SwingPopup implements JmolPopupInterface {
 
-  String imagePath;
-  
-  ModelKitPopup(JmolViewer viewer, String title, PopupResource bundle, String imagePath) {
-    super(viewer, title, bundle, false);
-    this.imagePath = imagePath;
+  public ModelKitPopup() {
+    // required by reflection
   }
-
-  @Override
-  protected ImageIcon getIcon(String name) {
-    String imageName = imagePath + name;
-    URL imageUrl = this.getClass().getClassLoader().getResource(imageName);
-    if (imageUrl != null) {
-      return new ImageIcon(imageUrl);
-    }
+  
+  public Object getJMenu() {
     return null;
   }
 
+  public String getMenu(String string) {
+    return null;
+  }
+  
+  public void initialize(Viewer viewer, boolean doTranslate, String menu,
+                         boolean asPopup) {
+    GT.setDoTranslate(true);
+    imagePath = "org/jmol/modelkit/images/"; 
+    initialize(viewer, "modelkitMenu", new ModelKitPopupResourceBundle(), false);
+    GT.setDoTranslate(doTranslate);
+  }
+    
+  public void show(int x, int y) {
+    show(x, y, false);
+  }
+
+  public void updateComputedMenus() {    
+  }
+  
   @Override
   public void checkMenuClick(Object source, String script) {
     if (script.equals("clearQ")) {
-      for (JMenuItem item : htCheckbox.values()) {
+      for (Object o : htCheckbox.values()) {
+        JMenuItem item = (JMenuItem) o;
         if (item.getActionCommand().indexOf(":??") < 0)
-          continue;
-        
+          continue;        
         setLabel(item, "??");
         item.setActionCommand("_??P!:");
         item.setSelected(false);
@@ -73,14 +80,14 @@ class ModelKitPopup extends SimplePopup {
   }
   
   @Override
-  protected String setCheckBoxOption(JMenuItem item, String name, String what) {
+  protected String setCheckBoxOption(Object item, String name, String what) {
     // atom type
     String element = JOptionPane.showInputDialog(GT._("Element?"), "");
     if (element == null || Elements.elementNumberFromSymbol(element, true) == 0)
       return null;
     setLabel(item, element);
-    item.setActionCommand("assignAtom_" + element + "P!:??");
+    ((JMenuItem)item).setActionCommand("assignAtom_" + element + "P!:??");
     return "set picking assignAtom_" + element;
   }
-  
+
 }

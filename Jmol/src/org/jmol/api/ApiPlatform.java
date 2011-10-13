@@ -22,9 +22,6 @@ public interface ApiPlatform {
 
   void setTransparentCursor(Object display);
 
-  void showMenuModelKit(Viewer viewer, Object display, int x, int y, char type);
-
-
   ////  Mouse 
 
   void clearMouse();
@@ -118,5 +115,7 @@ public interface ApiPlatform {
    * @throws InterruptedException
    */
   boolean waitForDisplay(Object display, Object image) throws InterruptedException;
+
+  JmolPopupInterface getMenuPopup(Viewer viewer, String menuStructure, char type);
 
 }

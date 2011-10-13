@@ -195,12 +195,14 @@ public class SmilesMatcher implements SmilesMatcherInterface {
       return "none";
     boolean check;
       // note: find smiles1 IN smiles2 here
-      check = (areEqual(smiles2, smiles1) > 0);
+    int n1 = countStereo(smiles1);
+    int n2 = countStereo(smiles2);
+    check = (n1 == n2 && areEqual(smiles2, smiles1) > 0);
     if (!check) {
       // MF matched, but didn't match SMILES
       String s = smiles1 + smiles2;
       if (s.indexOf("/") >= 0 || s.indexOf("\\") >= 0 || s.indexOf("@") >= 0) {
-        if (smiles1.indexOf("@") >= 0 && smiles2.indexOf("@") >= 0) {
+        if (n1 == n2 && n1 > 0) {
           // reverse chirality centers
           smiles1 = reverseChirality(smiles1);
             check = (areEqual(smiles1, smiles2) > 0);
@@ -210,7 +212,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
         // remove all stereochemistry from SMILES string
           check = (areEqual("/nostereo/" + smiles2, smiles1) > 0);
         if (check)
-          return "diastereomers";
+          return (n1 == n2 ? "diastereomers" : "ambiguous stereochemistry!");
       }
       // MF matches, but not enantiomers or diasteriomers
       return "constitutional isomers";
@@ -351,5 +353,16 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     }
     return null;
   }
+
+  private int countStereo(String s) {
+    s = TextFormat.simpleReplace(s, "@@","@");
+    int i = s.lastIndexOf('@') + 1;
+    int n = 0;
+    for (; --i >= 0;)
+      if (s.charAt(i) == '@')
+        n++;
+    return n;
+  }
+
 
 }

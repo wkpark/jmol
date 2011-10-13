@@ -1,7 +1,7 @@
 package org.openscience.jmolandroid.api;
 
 import org.jmol.api.ApiPlatform;
-import org.jmol.api.JmolModelKitInterface;
+import org.jmol.api.JmolPopupInterface;
 import org.jmol.api.JmolViewer;
 import org.jmol.g3d.Font3D;
 import org.jmol.viewer.ActionManager;
@@ -17,16 +17,17 @@ public class Platform implements ApiPlatform {
   
   ///// Display -- AndroidUpdateListener
   
-  public JmolModelKitInterface getModelKitMenu(Viewer viewer, Object display) {
+  public JmolPopupInterface getMenuPopup(Viewer viewer, String menuStructure,
+                                         char type) {
+    // ignored
     return null;
   }
-  
+
   public boolean hasFocus(Object display) {
     // ignored
     return true;
   }
 
-  @Override
   public String prompt(String label, String data, String[] list,
                        boolean asButtons) {
     // TODO Auto-generated method stub

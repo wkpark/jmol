@@ -45,7 +45,7 @@ public abstract class PopupResource {
    * @param title
    * @return menu string -- see MainPopupResourceBundle 
    */
-  public String getMenu(String title) {
+  String getMenuAsText(String title) {
     return null;
   }
     
@@ -53,16 +53,16 @@ public abstract class PopupResource {
   
   abstract protected void buildStructure(String menuStructure);
   
-  public String getStructure(String key) {
+  String getStructure(String key) {
     return structure.getProperty(key);
   }
 
-  public String getWord(String key) {
+  String getWord(String key) {
     String str = words.getProperty(key);
     return (str == null ? key : str);
   }
 
-  public void setStructure(String slist) {
+  protected void setStructure(String slist) {
     if (slist == null)
       return;
     BufferedReader br = new BufferedReader(new StringReader(slist));

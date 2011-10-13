@@ -4,14 +4,13 @@ import org.jmol.viewer.Viewer;
 
 public interface JmolPopupInterface {
 
-  public String getMenu(String string);
+  public String getMenuAsString(String string);
 
-  public Object getJMenu();
+  public Object getMenuAsObject();
+
+  public void initialize(Viewer viewer, String menu);
 
   public void show(int x, int y);
-
-  public void initialize(Viewer viewer, boolean doTranslate,
-                                       String menu, boolean asPopup);
 
   public void updateComputedMenus();
  

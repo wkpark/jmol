@@ -23,11 +23,12 @@
  */
 package org.jmol.popup;
 
+import org.jmol.i18n.GT;
+import org.jmol.util.Elements;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
 
 import java.awt.Component;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -41,73 +42,86 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
 
+
+/**
+ * all popup-related awt/swing class references are in this file.
+ */
 abstract public class SwingPopup extends GenericPopup {
 
-  protected String imagePath;
-  
-  protected MenuItemListener mil;
-  protected CheckboxMenuItemListener cmil;
-  protected JPopupMenu swingPopup;
+  private final static int MENUITEM_HEIGHT = 20;
+
+  private MenuItemListener mil;
+  private CheckboxMenuItemListener cmil;
 
   public SwingPopup() {
     // required by reflection
   }
+
+  public void show(int x, int y) {
+    // main entry point from Viewer
+    // called via JmolPopupInterface
+    if (!menuIsShowable(x))
+      return;
+    show(x, y, false);
+    if (x < 0) {
+      getViewerData();
+      setFrankMenu(currentMenuItemId);
+      thisx = -x - 50;
+      if (nFrankList > 1) {
+        thisy = y - nFrankList * MENUITEM_HEIGHT;
+        showPopupMenu(frankPopup, thisx, thisy);
+        return;
+      }
+    }
+    restorePopupMenu();
+    if (asPopup)
+      showPopupMenu(popupMenu, thisx, thisy);
+  }  
 
   @Override
   protected void set(Viewer viewer) {
     super.set(viewer);
   }
 
-  protected void initialize(Viewer viewer, String title, PopupResource bundle,
-      boolean isHorizontal) {
+  protected void initialize(Viewer viewer, String title, PopupResource bundle) {
     set(viewer);
-    swingPopup = new JPopupMenu(title);
-    if (isHorizontal) {
-      //BoxLayout bl = new BoxLayout(pm, BoxLayout.LINE_AXIS);
-      GridLayout bl = new GridLayout(3, 4);
-      swingPopup.setLayout(bl);
-    }
-    build(title, swingPopup, bundle);
+    popupMenu = new JPopupMenu(title);
+    build(title, popupMenu, bundle);
+
   }
 
+  /**
+   * update the button depending upon its type
+   * 
+   * @param b
+   * @param entry
+   * @param script
+   */
   private void updateButton(AbstractButton b, String entry, String script) {
-    ImageIcon icon = null;
-    if (entry.startsWith("<")) {
-      int pt = entry.indexOf(">");
-      icon = getIcon(entry.substring(1, pt));
-      entry = entry.substring(pt + 1);
-    }
-
+    String[] ret = new String[] { entry };    
+    Object icon = getEntryIcon(ret);
+    entry = ret[0];
     if (icon != null)
-      b.setIcon(icon);
+      b.setIcon((ImageIcon) icon);
     if (entry != null)
       b.setText(entry);
     if (script != null)
       b.setActionCommand(script);
   }
 
-  private ImageIcon getIcon(String name) {
-    // for modelkit only
-    if (imagePath == null)
-      return null;
-    String imageName = imagePath + name;
-    URL imageUrl = this.getClass().getClassLoader().getResource(imageName);
-    if (imageUrl != null) {
-      return new ImageIcon(imageUrl);
-    }
-    return null;
-  }
-
   ////////////////////////////////////////////////////////////////
+
+  /// required abstract classes ///
 
   @Override
   protected void addButtonGroupItem(Object newMenu) {
-    if (group == null)
-      group = new ButtonGroup();
-    ((ButtonGroup) group).add((JMenuItem) newMenu);
+    if (buttonGroup == null)
+      buttonGroup = new ButtonGroup();
+    ((ButtonGroup) buttonGroup).add((JMenuItem) newMenu);
   }
 
   @Override
@@ -196,6 +210,11 @@ abstract public class SwingPopup extends GenericPopup {
   }
 
   @Override
+  protected Object getImageIcon(URL imageUrl) {
+    return new ImageIcon(imageUrl);
+  }
+
+  @Override
   protected int getMenuItemCount(Object menu) {
     return ((JMenu) menu).getItemCount();
   }
@@ -258,20 +277,6 @@ abstract public class SwingPopup extends GenericPopup {
     cmil = new CheckboxMenuItemListener();    
   }
   
-  @Override
-  protected void showPopupMenu(int x, int y) {
-    Component display = (Component) viewer.getDisplay();
-    if (display == null)
-      return;
-    try {
-      swingPopup.show(display, x, y);
-    } catch (Exception e) {
-      Logger.error("popup error: " + e.getMessage());
-      // browser in Java 1.6.0_10 is blocking setting WindowAlwaysOnTop 
-
-    }
-  }
-
   class MenuItemListener implements ActionListener {
     public void actionPerformed(ActionEvent e) {
       checkMenuClick(e.getSource(), e.getActionCommand());
@@ -290,5 +295,117 @@ abstract public class SwingPopup extends GenericPopup {
     }
   }
 
+  @Override
+  protected void checkMenuClick(Object source, String script) {
+    if (script.equals("clearQ")) {
+      for (Object o : htCheckbox.values()) {
+        JMenuItem item = (JMenuItem) o;
+        if (item.getActionCommand().indexOf(":??") < 0)
+          continue;        
+        setLabel(item, "??");
+        item.setActionCommand("_??P!:");
+        item.setSelected(false);
+        item.setArmed(false);
+      }
+      viewer.evalStringQuiet("set picking assignAtom_C");
+      return;
+    }
+    super.checkMenuClick(source, script);  
+  }
+  
+
+  //////////////// JmolPopup methods ///////////
+    
+  @Override
+  protected void insertMenuSubMenu(Object menu, Object subMenu, int index) {
+    if (menu instanceof JPopupMenu)
+      ((JPopupMenu) menu).insert((JMenu) subMenu, index);
+    else
+      ((JMenu) menu).insert((JMenu) subMenu, index);
+  }
+
+  @Override
+  protected void createFrankPopup() {
+    frankPopup = new JPopupMenu("Frank");
+  }
+
+  @Override
+  protected void resetFrankMenu() {
+    ((JPopupMenu)frankPopup).removeAll();
+  }
+
+
+  @Override
+  protected void getMenuAsText(StringBuffer sb, int level, Object menu,
+                                String menuName) {
+    String name = menuName;
+    Component[] subMenus = (menu instanceof JPopupMenu ? ((JPopupMenu) menu)
+        .getComponents() : ((JMenu) menu).getPopupMenu().getComponents());
+    for (int i = 0; i < subMenus.length; i++) {
+      Object m = subMenus[i];
+      String flags;
+      if (m instanceof JMenu) {
+        JMenu jm = (JMenu) m;
+        name = jm.getName();
+        flags = "enabled:" + jm.isEnabled();
+        addItemText(sb, 'M', level, name, jm.getText(), null, flags);
+        getMenuAsText(sb, level + 1, ((JMenu) m).getPopupMenu(), name);
+      } else if (m instanceof JMenuItem) {
+        JMenuItem jmi = (JMenuItem) m;
+        flags = "enabled:" + jmi.isEnabled();
+        if (m instanceof JCheckBoxMenuItem)
+          flags += ";checked:" + ((JCheckBoxMenuItem) m).getState();
+        String script = fixScript(jmi.getName(), jmi.getActionCommand());
+        addItemText(sb, 'I', level, jmi.getName(), jmi.getText(), script,
+            flags);
+      } else {
+        addItemText(sb, 'S', level, name, null, null, null);
+      }
+    }
+  }
+  
+  @Override
+  protected Object getParent(Object menu) {
+    return ((JMenu) menu).getParent();
+  }
+
+  @Override
+  protected int getPosition(Object menu) {
+    Object p = getParent(menu);
+    if (p instanceof JPopupMenu) {
+      for (int i = ((JPopupMenu) p).getComponentCount(); --i >= 0;)
+        if (((JPopupMenu) p).getComponent(i) == menu)
+          return i;
+    } else {
+      for (int i = ((JMenu) p).getItemCount(); --i >= 0;)
+        if (((JMenu) p).getItem(i) == menu)
+          return i;
+    }
+    return -1;
+  }
+
+  @Override
+  protected String setCheckBoxOption(Object item, String name, String what) {
+    if (isModelKit) {
+      // atom type
+      String element = JOptionPane.showInputDialog(GT._("Element?"), "");
+      if (element == null
+          || Elements.elementNumberFromSymbol(element, true) == 0)
+        return null;
+      setLabel(item, element);
+      ((JMenuItem) item).setActionCommand("assignAtom_" + element + "P!:??");
+      return "set picking assignAtom_" + element;
+    }
+    return null;
+  }
+
+  @Override
+  protected void showPopupMenu(Object popup, int x, int y) {
+    try {
+      ((JPopupMenu)popup).show((Component) viewer.getDisplay(), x, y);
+    } catch (Exception e) {
+      // ignore
+    }
+  }
 
 }

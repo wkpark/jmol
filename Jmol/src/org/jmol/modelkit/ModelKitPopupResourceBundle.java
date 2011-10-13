@@ -26,9 +26,9 @@ package org.jmol.modelkit;
 import org.jmol.i18n.GT;
 import org.jmol.popup.PopupResource;
 
-public class ModelKitPopupResourceBundle extends PopupResource {
+class ModelKitPopupResourceBundle extends PopupResource {
 
-  public ModelKitPopupResourceBundle() {
+  ModelKitPopupResourceBundle() {
     super(null, null);
   }
 

@@ -4998,7 +4998,7 @@ private void zap(String msg) {
 
   public String getMenu(String type) {
     getPopupMenu();
-    return (jmolpopup == null ? "" : jmolpopup.getMenu("Jmol version "
+    return (jmolpopup == null ? "" : jmolpopup.getMenuAsString("Jmol version "
         + Viewer.getJmolVersion() + "|_GET_MENU|" + type));
   }
 
@@ -5010,7 +5010,7 @@ private void zap(String msg) {
         return null;
       }
     }
-    return jmolpopup.getJMenu();
+    return jmolpopup.getMenuAsObject();
   }
 
   public void setMenu(String fileOrText, boolean isFile) {

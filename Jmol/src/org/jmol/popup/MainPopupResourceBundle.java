@@ -28,9 +28,9 @@ import java.util.Properties;
 import org.jmol.i18n.GT;
 import org.jmol.util.TextFormat;
 
-public class MainPopupResourceBundle extends PopupResource {
+class MainPopupResourceBundle extends PopupResource {
 
-  public MainPopupResourceBundle(String menuStructure, Properties menuText) {
+  MainPopupResourceBundle(String menuStructure, Properties menuText) {
     super(menuStructure, menuText);
   }
 
@@ -952,7 +952,7 @@ public class MainPopupResourceBundle extends PopupResource {
   }
   
   @Override
-  public String getMenu(String title) {
+  String getMenuAsText(String title) {
     return "# Jmol.mnu " + title + "\n\n" +
            "# Part I -- Menu Structure\n" +
            "# ------------------------\n\n" +

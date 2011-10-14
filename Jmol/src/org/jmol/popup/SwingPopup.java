@@ -64,7 +64,7 @@ abstract public class SwingPopup extends GenericPopup {
   public void show(int x, int y) {
     // main entry point from Viewer
     // called via JmolPopupInterface
-    if (!menuIsShowable(x))
+    if (!viewer.haveDisplay)
       return;
     show(x, y, false);
     if (x < 0) {
@@ -87,9 +87,11 @@ abstract public class SwingPopup extends GenericPopup {
     super.set(viewer);
   }
 
-  protected void initialize(Viewer viewer, String title, PopupResource bundle) {
+  protected void initialize(Viewer viewer, PopupResource bundle) {
+    String title = bundle.getMenuName();
     set(viewer);
     popupMenu = new JPopupMenu(title);
+    menuName = title;
     build(title, popupMenu, bundle);
 
   }

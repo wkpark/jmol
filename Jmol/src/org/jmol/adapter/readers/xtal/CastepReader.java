@@ -519,7 +519,26 @@ public class CastepReader extends AtomSetCollectionReader {
     for (int p = 0, i = 0; i < 3; i++)
       for (int j = 0; j < 3; j++)
         a[i][j] = data[p++];
+    // symmetrize matrix
+    // and encode plane normals as vibration vectors!
+    double x = 0, y = 0, z = 0;
+    if (a[0][1] != a[1][0]) {
+      // xy ---> z
+      z = (a[0][1] - a[1][0])/2;
+      a[0][1] = a[1][0] = (a[0][1] + a[1][0])/2;
+    }
+    if (a[1][2] != a[2][1]) {
+      // yz ---> x
+      x = (a[1][2] - a[2][1])/2;
+      a[1][2] = a[2][1] = (a[1][2] + a[2][1])/2;
+    }
+    if (a[0][2] != a[2][0]) {
+      // xz ---> -y
+      y = -(a[0][2] - a[2][0])/2;
+      a[0][2] = a[2][0] = (a[0][2] + a[2][0])/2;
+    }
     atom.ellipsoid = Eigen.getEllipsoid(a);
+    atomSetCollection.addVibrationVector(atom.atomIndex, (float) x, (float) y, (float) z);
   }
 
   /*

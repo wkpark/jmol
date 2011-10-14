@@ -942,6 +942,7 @@ public class StateManager {
       setParameterValue("useMinimizationThread", useMinimizationThread);
       setParameterValue("useNumberLocalization", useNumberLocalization);
       setParameterValue("vectorScale", vectorScale);
+      setParameterValue("vectorSymmetry", vectorSymmetry);
       setParameterValue("vibrationPeriod", vibrationPeriod);
       setParameterValue("vibrationScale", vibrationScale);
       setParameterValue("visualRange", visualRange);
@@ -1231,6 +1232,7 @@ public class StateManager {
     boolean useScriptQueue = true;
     boolean waitForMoveTo = true; // Jmol 11.9.24
     float vectorScale = 1f;
+    boolean vectorSymmetry = false; // Jmol 12.3.2
     float vibrationPeriod = 1f;
     float vibrationScale = 1f;
     boolean wireframeRotation = false;

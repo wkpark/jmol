@@ -34,7 +34,9 @@ public abstract class PopupResource {
   // Properties to store menu structure and contents
   protected Properties structure = new Properties();
   protected Properties words = new Properties();
-  
+
+  abstract public String getMenuName();
+
   protected PopupResource(String menuStructure, Properties menuText) {
     buildStructure(menuStructure);
     localize(menuStructure != null, menuText);
@@ -138,4 +140,5 @@ public abstract class PopupResource {
         menuText.setProperty(item, word);
     }
   }
+
 }

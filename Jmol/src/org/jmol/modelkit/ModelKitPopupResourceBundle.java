@@ -28,6 +28,13 @@ import org.jmol.popup.PopupResource;
 
 class ModelKitPopupResourceBundle extends PopupResource {
 
+  private final static String MENU_NAME = "modelkitMenu";
+
+  @Override
+  public String getMenuName() {
+    return MENU_NAME; 
+  }
+
   ModelKitPopupResourceBundle() {
     super(null, null);
   }
@@ -38,9 +45,9 @@ class ModelKitPopupResourceBundle extends PopupResource {
     addItems(structureContents);
     setStructure(menuStructure);
   }
-    
+  
   private static String[][] menuContents = {
-    { "modelkitMenu", "atomMenu bondMenu optionsMenu" },
+    { MENU_NAME, "atomMenu bondMenu optionsMenu" },
     { "optionsMenu", "new center addh minimize hmin " +
     		" - undo redo - SIGNEDsaveFile SIGNEDsaveState exit" },
     { "atomMenu" , "assignAtom_XP!CB assignAtom_XxP!CB dragAtomP!CB dragMinimizeP!CB dragMoleculeP!CB dragMinimizeMoleculeP!CB " +

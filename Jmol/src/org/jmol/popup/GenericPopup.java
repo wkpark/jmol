@@ -52,6 +52,8 @@ abstract public class GenericPopup {
   //  System.out.println("JmolPopup " + this + " finalize");
   //}
 
+  protected String menuName;
+
   protected Viewer viewer;
   
   protected Object frankPopup; // JPopupMenu
@@ -491,7 +493,7 @@ abstract public class GenericPopup {
       title = title.substring(0, pt);
       if (type.indexOf("current") >= 0) {
         StringBuffer sb = new StringBuffer();
-        Object menu = htMenus.get("popupMenu");
+        Object menu = htMenus.get(menuName);
         getMenuAsText(sb, 0, menu, "PopupMenu");
         return sb.toString();
       }

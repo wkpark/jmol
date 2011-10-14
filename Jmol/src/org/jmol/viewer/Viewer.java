@@ -1359,6 +1359,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.vectorScale;
   }
 
+  public boolean getVectorSymmetry() {
+    return global.vectorSymmetry;
+  }
+
   @Override
   public void setVectorScale(float scale) {
     global.setParameterValue("vectorScale", scale);
@@ -6140,6 +6144,10 @@ private void zap(String msg) {
   private void setBooleanProperty(String key, int tok, boolean value) {
     boolean doRepaint = true;
     switch (tok) {
+    case Token.vectorsymmetry:
+      // 12.3.2
+      global.vectorSymmetry = value;
+      break;
     case Token.isosurfacekey:
       // 12.2.RC5
       global.isosurfaceKey = value;

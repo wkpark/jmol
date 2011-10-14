@@ -41,7 +41,7 @@ public class ModelKitPopup extends SwingPopup implements JmolPopupInterface {
     imagePath = "org/jmol/modelkit/images/"; 
     boolean doTranslate = GT.getDoTranslate();
     GT.setDoTranslate(true);
-    initialize(viewer, "modelkitMenu", new ModelKitPopupResourceBundle());
+    initialize(viewer, new ModelKitPopupResourceBundle());
     GT.setDoTranslate(doTranslate);
   }
     

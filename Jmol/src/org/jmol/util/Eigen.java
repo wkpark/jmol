@@ -103,7 +103,11 @@ public class Eigen {
    */
 
   public void calc(double[][] A) {
+    
+    /* Jmol only has need of symmetric solutions 
+     * 
     issymmetric = true;
+    
     for (int j = 0; (j < n) & issymmetric; j++) {
       for (int i = 0; (i < n) & issymmetric; i++) {
         issymmetric = (A[i][j] == A[j][i]);
@@ -111,6 +115,7 @@ public class Eigen {
     }
 
     if (issymmetric) {
+     */
       for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
           V[i][j] = A[i][j];
@@ -121,8 +126,8 @@ public class Eigen {
       tred2();
 
       // Diagonalize.
-      tql2();
-
+      tql2(); 
+  /*
     } else {
       H = new double[n][n];
       ort = new double[n];
@@ -139,6 +144,8 @@ public class Eigen {
       // Reduce Hessenberg to real Schur form.
       hqr2();
     }
+  */
+
   }
 
   /**
@@ -202,7 +209,7 @@ public class Eigen {
    * 
    * @serial internal symmetry flag.
    */
-  private boolean issymmetric;
+  //private boolean issymmetric = true;
 
   /**
    * Arrays for internal storage of eigenvalues.
@@ -223,14 +230,14 @@ public class Eigen {
    * 
    * @serial internal storage of nonsymmetric Hessenberg form.
    */
-  private double[][] H;
+  //private double[][] H;
 
   /**
    * Working storage for nonsymmetric algorithm.
    * 
    * @serial working storage for nonsymmetric algorithm.
    */
-  private double[] ort;
+  //private double[] ort;
 
   /* ------------------------
      Private Methods
@@ -475,6 +482,7 @@ public class Eigen {
 
   // Nonsymmetric reduction to Hessenberg form.
 
+  /*
   private void orthes() {
 
     //  This is derived from the Algol procedures orthes and ortran,
@@ -1028,6 +1036,7 @@ public class Eigen {
       }
     }
   }
+     */
 
   /* ------------------------
      Constructor

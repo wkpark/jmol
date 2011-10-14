@@ -858,7 +858,6 @@ public class Token {
   public final static int stereodegrees                  = floatparam | 60;
   public final static int strutdefaultradius             = floatparam | 62;
   public final static int strutlengthmaximum             = floatparam | 64;
-  // see floatproperty public final static int vectorscale                    = floatparam | 66;
   public final static int vibrationperiod                = floatparam | 68;
   public final static int vibrationscale                 = floatparam | 70;
   public final static int visualrange                    = floatparam | 72;
@@ -1028,8 +1027,9 @@ public class Token {
   public final static int usearcball                     = booleanparam | 193;
   public final static int useminimizationthread          = booleanparam | 194;
   public final static int usenumberlocalization          = booleanparam | 196;
-  public final static int waitformoveto                  = booleanparam | 197;
-  public final static int windowcentered                 = booleanparam | 198;
+  public final static int vectorsymmetry                 = booleanparam | 197;
+  public final static int waitformoveto                  = booleanparam | 198;
+  public final static int windowcentered                 = booleanparam | 199;
   public final static int wireframerotation              = booleanparam | 200;
   public final static int zerobasedxyzrasmol             = booleanparam | 202;
   public final static int zoomenabled                    = booleanparam | 204;
@@ -2197,6 +2197,7 @@ public class Token {
       "strutDefaultRadius",                       new Token(strutdefaultradius),
       "strutLengthMaximum",                       new Token(strutlengthmaximum),
       "vectorScale",                              new Token(vectorscale),
+      "vectorSymmetry",                           new Token(vectorsymmetry),
       "vibrationPeriod",                          new Token(vibrationperiod),
       "vibrationScale",                           new Token(vibrationscale),
       "visualRange",                              new Token(visualrange),

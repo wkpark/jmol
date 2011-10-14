@@ -30,6 +30,13 @@ import org.jmol.util.TextFormat;
 
 class MainPopupResourceBundle extends PopupResource {
 
+  private final static String MENU_NAME = "popupMenu";
+
+  @Override
+  public String getMenuName() {
+    return MENU_NAME; 
+  }
+  
   MainPopupResourceBundle(String menuStructure, Properties menuText) {
     super(menuStructure, menuText);
   }
@@ -50,7 +57,7 @@ class MainPopupResourceBundle extends PopupResource {
       {   "@COLOR", "black white red orange yellow green cyan blue indigo violet"},      
       {   "@AXESCOLOR", "gray salmon maroon olive slateblue gold orchid"},
       
-      {   "popupMenu",
+      {   MENU_NAME,
           "FRAMESbyModelComputedMenu configurationComputedMenu - selectMenuText viewMenu renderMenu colorMenu - surfaceMenu FILEUNITMenu - "
               + "zoomMenu spinMenu VIBRATIONMenu "
               + "FRAMESanimateMenu - "

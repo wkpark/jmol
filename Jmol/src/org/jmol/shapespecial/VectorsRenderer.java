@@ -36,6 +36,23 @@ import org.jmol.shape.ShapeRenderer;
 
 public class VectorsRenderer extends ShapeRenderer {
 
+  private final static float arrowHeadOffset = -0.2f;
+  private final Vector3f vector2 = new Vector3f();
+  private final Point3f pointVectorEnd = new Point3f();
+  private final Point3f pointArrowHead = new Point3f();
+  private final Point3i screenVectorEnd = new Point3i();
+  private final Point3i screenArrowHead = new Point3i();
+  private final Vector3f headOffsetVector = new Vector3f();
+  
+  private int diameter;
+  //float headWidthAngstroms;
+  private int headWidthPixels;
+  private float vectorScale;
+  private boolean vectorSymmetry;
+  private float headScale;
+  private boolean doShaft;
+
+
   @Override
   protected void render() {
     Vectors vectors = (Vectors) shape;
@@ -54,27 +71,21 @@ public class VectorsRenderer extends ShapeRenderer {
       if (vibrationVector == null)
         continue;
       vectorScale = viewer.getVectorScale();
+      vectorSymmetry = viewer.getVectorSymmetry();
       if (transform(mads[i], atom, vibrationVector)
-          && g3d.setColix(Shape.getColix(colixes, i, atom)))
+          && g3d.setColix(Shape.getColix(colixes, i, atom))) {
         renderVector(atom);
+        if (vectorSymmetry) {
+          vector2.set(vibrationVector);
+          vector2.scale(-1);
+          transform(mads[i], atom, vector2);
+          renderVector(atom);          
+        }
+      }
     }
   }
 
-  final Point3f pointVectorEnd = new Point3f();
-  final Point3f pointArrowHead = new Point3f();
-  final Point3i screenVectorEnd = new Point3i();
-  final Point3i screenArrowHead = new Point3i();
-  final Vector3f headOffsetVector = new Vector3f();
-  int diameter;
-  //float headWidthAngstroms;
-  int headWidthPixels;
-  float vectorScale;
-  float headScale;
-  boolean doShaft;
-  final static float arrowHeadOffset = -0.2f;
-
-
-  boolean transform(short mad, Atom atom, Vector3f vibrationVector) {
+  private boolean transform(short mad, Atom atom, Vector3f vibrationVector) {
     float len = vibrationVector.length();
     // to have the vectors move when vibration is turned on
     if (Math.abs(len * vectorScale) < 0.01)
@@ -97,7 +108,7 @@ public class VectorsRenderer extends ShapeRenderer {
     return true;
   }
   
-  void renderVector(Atom atom) {
+  private void renderVector(Atom atom) {
     if (doShaft)
       g3d.fillCylinderScreen(Graphics3D.ENDCAPS_OPEN, diameter, atom.screenX,
           atom.screenY, atom.screenZ, screenArrowHead.x, screenArrowHead.y,

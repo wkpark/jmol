@@ -40,25 +40,26 @@ public class AndroidUpdateListener {
 	}
 
 	public void updateCanvas() {
-	  SurfaceView imageView = ja.getImageView();
+		SurfaceView imageView = ja.getImageView();
 		long start = System.currentTimeMillis();
 		
 		synchronized (imageView) {
-		  Canvas canvas = null;
+		    Canvas canvas = null;
 			try {
 				canvas = imageView.getHolder().lockCanvas();
 				canvas.getHeight(); // simple test for canvas not null
 			} catch(Exception e) {
-        Log.w("AMOL", "Unable to lock the canvas\n");             
+				Log.w("AMOL", "Unable to lock the canvas\n");             
 			  //e.printStackTrace();
 			}
 			if (canvas != null) {
-			  // at least for now we want to see errors traced to their Jmol methods, not trapped here
-        viewer.renderScreenImage(canvas, null, canvas.getWidth(), canvas.getHeight());
-        imageView.getHolder().unlockCanvasAndPost(canvas);
+				// at least for now we want to see errors traced to their Jmol methods, not trapped here
+				viewer.renderScreenImage(canvas, null, canvas.getWidth(), canvas.getHeight());
+				imageView.getHolder().unlockCanvasAndPost(canvas);
 			}
 		}
-    Log.d("AMOL", "Image updated in " + (System.currentTimeMillis() - start) + " ms");              
+		Log.d("AMOL", "Image updated in " + (System.currentTimeMillis() - start) + " ms");
+		Log.d("AMOL", "Zoom % " + viewer.getZoomPercentFloat());
 	}
 	
 	public void manageDialog(Dialog dialog, byte value) {

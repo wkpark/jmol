@@ -22,34 +22,44 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.SurfaceView;
 
 public class JmolActivity extends Activity implements JmolStatusListener {
 	
-	private JmolViewer viewer;
-	
-	private SurfaceView imageView;
-  public SurfaceView getImageView() {
-    return imageView;
-  }
 
-  private AndroidUpdateListener updateListener;
+  private final static String TEST_SCRIPT = "set debug;set debugscript;load http://chemapps.stolaf.edu/jmol/docs/examples-12/data/caffeine.xyz;labels on; background labels white;spacefill on";
+
+  private final static String STARTUP_SCRIPT = 
+    "set allowGestures TRUE;unbind ALL _slidezoom;" + TEST_SCRIPT;
+  
+	public static float SCALE_FACTOR;
+		
+	private JmolViewer viewer;
+	private SurfaceView imageView;
+	private AndroidUpdateListener updateListener;
 	private boolean opening;
-  public static float SCALE_FACTOR;
+	private ScaleGestureDetector scaleDetector;
 	
-  @Override
-  public void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.main);
-    viewer = null;
-    SCALE_FACTOR = getResources().getDisplayMetrics().density + 0.5f;
-  }
+	
+	public SurfaceView getImageView() {
+	  return imageView;
+	}
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+	  super.onCreate(savedInstanceState);
+	  setContentView(R.layout.main);
+	  viewer = null;
+	  SCALE_FACTOR = getResources().getDisplayMetrics().density + 0.5f;
+	  
+	  scaleDetector = new ScaleGestureDetector(this, new PinchZoomScaleListener());
+	}
 
     @Override 
     protected void onDestroy() {
     	super.onDestroy();
         
-// unnec.    	viewer.zap(true, true, false);
     	viewer.releaseScreenImage();
 
     	viewer = null;
@@ -79,7 +89,7 @@ public class JmolActivity extends Activity implements JmolStatusListener {
       viewer = JmolViewer
           .allocateViewer(updateListener, new SmarterJmolAdapter(), null, null, null,
               "platform=org.openscience.jmolandroid.api.Platform", this);
-      viewer.script("load http://chemapps.stolaf.edu/jmol/docs/examples-12/data/caffeine.xyz");
+      viewer.script(STARTUP_SCRIPT);
     }
 
     Log.w("AMOL","onResume... viewer=" + viewer);
@@ -114,7 +124,14 @@ public class JmolActivity extends Activity implements JmolStatusListener {
     
     @Override
     public boolean onTouchEvent(final MotionEvent event) {
-      Log.w("AMOL","onTouchEvent " + event);
+    	// don't process other touch events when zooming
+/*    	if (scaleDetector.onTouchEvent(event))
+    		return true;
+*/
+    	scaleDetector.onTouchEvent(event);
+    	
+    	
+//      Log.w("AMOL","onTouchEvent " + event);
     	switch (event.getAction()) {
     		case MotionEvent.ACTION_DOWN:
     			new AsyncTask<MotionEvent, Void, Void>(){
@@ -145,11 +162,24 @@ public class JmolActivity extends Activity implements JmolStatusListener {
 		return true;
     };
     
+    private class PinchZoomScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+    	@Override
+    	public boolean onScale(final ScaleGestureDetector detector) {
+    		Log.w("JMOL", "old zoom=" + viewer.getZoomPercentFloat());
+    		
+	        float zoomFactor = detector.getScaleFactor() / (viewer.getZoomPercentFloat() / 100.0f);
+	        viewer.syncScript("Mouse: zoomByFactor " + zoomFactor, "~", 0);
+    		Log.w("JMOL", "changing zoom factor=" + zoomFactor);
+
+    		return true;
+    	}
+    }
+    
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
-      Log.w("AMOL","onWindowFocusChanged " + hasFocus);
-    	if (!hasFocus) return;
-      updateListener.setScreenDimension();
+		Log.w("AMOL","onWindowFocusChanged " + hasFocus);
+		if (!hasFocus) return;
+		updateListener.setScreenDimension();
     };
     
     

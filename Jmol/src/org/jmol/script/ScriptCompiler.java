@@ -1042,6 +1042,10 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     case Token.getproperty:
       if (!iHaveQuotedString && lookingAtImpliedString(false, false)) {
         String str = script.substring(ichToken, ichToken + cchToken);
+        if (tokCommand == Token.script && str.startsWith("javascript:")) {
+          lookingAtImpliedString(true, true);
+          str = script.substring(ichToken, ichToken + cchToken);
+        }
         addTokenToPrefix(new Token(Token.string, str));
         iHaveQuotedString = true;
         return CONTINUE;

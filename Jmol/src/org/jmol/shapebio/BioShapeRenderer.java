@@ -87,7 +87,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
       return;
     
     invalidateMesh = false;
-    boolean TF = exportType != Graphics3D.EXPORT_NOT || viewer.getHighResolution();
+    boolean TF = isExport || viewer.getHighResolution();
     if (TF != isHighRes)
       invalidateMesh = true;
     isHighRes = TF;

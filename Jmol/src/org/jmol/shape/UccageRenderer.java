@@ -27,7 +27,6 @@ import javax.vecmath.Point3f;
 import java.text.NumberFormat;
 
 import org.jmol.api.SymmetryInterface;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.TextFormat;
@@ -135,7 +134,7 @@ public class UccageRenderer extends CageRenderer {
   }
 
   private void renderInfo(SymmetryInterface symmetry) {
-    if (exportType != Graphics3D.EXPORT_NOT
+    if (isExport
         || !g3d.setColix(viewer.getColixBackgroundContrast()))
       return;
     if (nf == null) {

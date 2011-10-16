@@ -47,7 +47,7 @@ public class LabelsRenderer extends ShapeRenderer {
     String[] labelStrings = labels.strings;
     short[] colixes = labels.colixes;
     short[] bgcolixes = labels.bgcolixes;
-    if (exportType != Graphics3D.EXPORT_NOT)
+    if (isExport)
       bgcolixes = g3d.getBgColixes(bgcolixes);
     byte[] fids = labels.fids;
     int[] offsets = labels.offsets;
@@ -108,7 +108,7 @@ public class LabelsRenderer extends ShapeRenderer {
         zBox = 1;
 
       Text text = labels.getLabel(i);
-      float[] boxXY = (exportType == Graphics3D.EXPORT_NOT
+      float[] boxXY = (!isExport
           || viewer.getCreatingImage() ? labels.getBox(i) : new float[5]);
       if (boxXY == null)
         labels.putBox(i, boxXY = new float[5]);

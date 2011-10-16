@@ -51,6 +51,7 @@ public abstract class ShapeRenderer {
   protected short madMid;
   protected short madEnd;
   protected int exportType;
+  protected boolean isExport;
 
   public final void setViewerG3dShapeID(Viewer viewer, JmolRendererInterface g3d, int shapeID) {
     this.viewer = viewer;
@@ -68,8 +69,10 @@ public abstract class ShapeRenderer {
     this.modelSet = modelSet;
     this.shape = shape;
     exportType = g3d.getExportType();
+    isExport = (exportType != Graphics3D.EXPORT_NOT);
     render();
     exportType = Graphics3D.EXPORT_NOT;
+    isExport = false;
   }
 
   abstract protected void render();

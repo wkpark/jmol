@@ -38,7 +38,7 @@ public class FrankRenderer extends ShapeRenderer {
     boolean modelKitMode = viewer.isModelKitMode();
     colix = (modelKitMode ? Graphics3D.MAGENTA 
         : viewer.isSignedApplet() ? (allowKeys ? Graphics3D.ORANGE : Graphics3D.RED) : allowKeys ? Graphics3D.BLUE : Graphics3D.GRAY);
-    if (exportType != Graphics3D.EXPORT_NOT || !viewer.getShowFrank()
+    if (isExport || !viewer.getShowFrank()
         || !g3d.setColix(Graphics3D.getColixTranslucent(colix,
             g3d.haveTranslucentObjects(), 0.5f)))
       return;

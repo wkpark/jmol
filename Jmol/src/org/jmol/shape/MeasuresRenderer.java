@@ -220,7 +220,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
   }
 
   private void renderPendingMeasurement(MeasurementPending measurementPending) {
-    if (exportType != Graphics3D.EXPORT_NOT || measurementPending == null)
+    if (isExport || measurementPending == null)
       return;
     int count = measurementPending.getCount();
     if (count == 0)

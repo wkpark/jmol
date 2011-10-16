@@ -65,7 +65,6 @@ public abstract class MeshRenderer extends ShapeRenderer {
   protected final Point3i pt1i = new Point3i();
   protected final Point3i pt2i = new Point3i();
   protected final Point3i pt3i = new Point3i();
-  protected boolean isExport;
   protected int exportPass;
 
   @Override
@@ -260,7 +259,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
         if (!g3d.isDirectedTowardsCamera(normix))
           continue;
         if (fill) {
-          if (exportType != Graphics3D.EXPORT_NOT) {
+          if (isExport) {
             g3d.fillTriangle(screens[iC], colix, normix, screens[iB], colix,
                 normix, screens[iA], colix, normix);
           } else if (iShowTriangles) {

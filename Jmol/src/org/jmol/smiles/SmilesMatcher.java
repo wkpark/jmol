@@ -62,6 +62,8 @@ import org.jmol.util.TextFormat;
  * 
  * String getMolecularFormula   -- returns the MF of a SMILES or SMARTS string
  * 
+ * String getRelationship -- returns isomeric relationship
+ * 
  * String getSmiles  -- returns a standard SMILES string or a
  *                  Jmol BIOSMILES string with comment header.
  * 

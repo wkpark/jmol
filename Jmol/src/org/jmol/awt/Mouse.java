@@ -288,12 +288,12 @@ class Mouse implements MouseWheelListener, MouseListener,
   private void mouseExited(long time, int x, int y) {
     actionManager.mouseExited(time, x, y);
   }
-
+/*
   void setMouseMode() {
     clearKeyBuffer();
     actionManager.setMouseMode();
   }
-
+*/
   /**
    * 
    * @param time

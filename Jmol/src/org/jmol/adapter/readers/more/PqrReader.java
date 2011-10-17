@@ -60,8 +60,8 @@ public class PqrReader extends PdbReader {
   protected void setAdditionalAtomParameters(Atom atom) {
 
     String[] tokens = getTokens();
-    
-    atom.radius = parseFloat(tokens[tokens.length - 1]);
+    int offset = (line.length() > 75 ? 1 : 0);
+    atom.radius = parseFloat(tokens[tokens.length - 1 - offset]);
     if (atom.radius < 0.9f)
       atom.radius = 1; 
     // based on parameters in http://pdb2pqr.svn.sourceforge.net/viewvc/pdb2pqr/trunk/pdb2pqr/dat/
@@ -71,7 +71,7 @@ public class PqrReader extends PdbReader {
     // PEOEPB forcefield, no atoms given 0 radius
     // SWANSON forcefield, HW (on water) will be given 0 radius, and H on oxygen given 0.9170
     
-    atom.partialCharge = parseFloat(tokens[tokens.length - 2]);
+    atom.partialCharge = parseFloat(tokens[tokens.length - 2 - offset]);
 
   }
   

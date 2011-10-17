@@ -7,6 +7,7 @@ import java.io.OutputStreamWriter;
 
 public class OutputStringBuffer {
 
+  public String type;
   StringBuffer sb;
   BufferedWriter bw;
   long nBytes;

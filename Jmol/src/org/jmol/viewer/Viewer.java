@@ -9381,8 +9381,9 @@ private void zap(String msg) {
     if (os == null)
       return "";
     OutputStringBuffer sb;
-    if (type.equals("PDB")) {
+    if (type.equals("PDB") || type.equals("PQR")) {
       sb = new OutputStringBuffer(new BufferedOutputStream(os));
+      sb.type = type;
       msg = getPdbData(null, sb);
     } else if (type.equals("FILE")) {
       msg = writeCurrentFile(os);

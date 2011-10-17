@@ -13891,7 +13891,7 @@ public class ScriptEvaluator {
           && tokAt(pt + 1, args) == Token.integer) {
         quality = ScriptVariable.iValue(tokenAt(++pt, args));
       } else if (Parser.isOneOf(val.toLowerCase(),
-          "xyz;xyzrn;xyzvib;mol;sdf;v2000;v3000;pdb;cml")) {
+          "xyz;xyzrn;xyzvib;mol;sdf;v2000;v3000;pdb;pqr;cml")) {
         type = val.toUpperCase();
         if (pt + 1 == argCount)
           pt++;
@@ -13992,12 +13992,12 @@ public class ScriptEvaluator {
           && !Parser
               .isOneOf(
                   type,
-                  "JMOL;ZIP;ZIPALL;SPT;HIS;MO;ISO;ISOX;MESH;PMESH;VAR;FILE;FUNCS;CML;XYZ;XYZRN;XYZVIB;MENU;MOL;PDB;PGRP;QUAT;RAMA;SDF;V2000;V3000;"))
+                  "JMOL;ZIP;ZIPALL;SPT;HIS;MO;ISO;ISOX;MESH;PMESH;VAR;FILE;FUNCS;CML;XYZ;XYZRN;XYZVIB;MENU;MOL;PDB;PGRP;PQR;QUAT;RAMA;SDF;V2000;V3000;"))
         error(
             ERROR_writeWhat,
             "COORDS|FILE|FUNCTIONS|HISTORY|IMAGE|ISOSURFACE|JMOL|MENU|MO|POINTGROUP|QUATERNION [w,x,y,z] [derivative]"
                 + "|RAMACHANDRAN|SPT|STATE|VAR x|ZIP|ZIPALL  CLIPBOARD",
-            "CML|GIF|JPG|JPG64|JMOL|JVXL|MESH|MOL|PDB|PMESH|PNG|PNGT|PPM|SDF|V2000|V3000|SPT|XJVXL|XYZ|XYZRN|XYZVIB|ZIP"
+            "CML|GIF|JPG|JPG64|JMOL|JVXL|MESH|MOL|PDB|PMESH|PNG|PNGT|PPM|PQR|SDF|V2000|V3000|SPT|XJVXL|XYZ|XYZRN|XYZVIB|ZIP"
                 + driverList.toUpperCase().replace(';', '|'));
       if (isSyntaxCheck)
         return "";
@@ -14039,7 +14039,7 @@ public class ScriptEvaluator {
       } else if (data == "PGRP") {
         data = viewer
             .getPointGroupAsString(type2.equals("draw"), null, 0, 1.0f);
-      } else if (data == "PDB") {
+      } else if (data == "PDB" || data == "PQR") {
         if (isShow) {
           data = viewer.getPdbData(null, null);
         } else {

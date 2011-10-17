@@ -134,10 +134,10 @@ public class FileManager {
       sfunc.append("  _setFileState;\n");
       commands.append("function _setFileState() {\n\n");
     }
-    viewer.appendLoadStates(commands);
     if (commands.indexOf("append") < 0
         && viewer.getModelSetFileName().equals("zapped"))
       commands.append("  zap;\n");
+    viewer.appendLoadStates(commands);
     if (sfunc != null)
       commands.append("\n}\n\n");
     return commands.toString();

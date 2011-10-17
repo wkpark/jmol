@@ -8396,7 +8396,7 @@ public class ScriptEvaluator {
         return;
       case Token.data:
         isData = true;
-        loadScript.append(" data");
+        loadScript.append(" /*data*/ data");
         String key = stringParameter(++i).toLowerCase();
         loadScript.append(" ").append(Escape.escape(key));
         isAppend = key.startsWith("append");

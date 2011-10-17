@@ -359,7 +359,7 @@ class DataManager {
 
   static void getInlineData(StringBuffer loadScript, String strModel, boolean isAppend, String loadFilter) {
     String tag = (isAppend ? "append" : "model") + " inline";
-    loadScript.append("load data \"").append(tag).append("\"\n")
+    loadScript.append("load /*data*/ data \"").append(tag).append("\"\n")
         .append(strModel).append("end \"").append(tag)
         .append(loadFilter == null || loadFilter.length() == 0 ? "" : " filter" + Escape.escape(loadFilter))
         .append("\";");

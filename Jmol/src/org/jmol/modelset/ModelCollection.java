@@ -4088,8 +4088,8 @@ abstract public class ModelCollection extends BondCollection {
     deleteBonds(bsBonds, false);
   }
 
-  public void appendLoadStates(StringBuffer commands) {
-    boolean isFirst = true;
+  public void appendLoadStates(StringBuffer cmds) {
+    StringBuffer commands = new StringBuffer();
     for (int i = 0; i < modelCount; i++) { 
       if (isJmolDataFrame(i) || isTrajectorySubFrame(i))
         continue;
@@ -4107,12 +4107,18 @@ abstract public class ModelCollection extends BondCollection {
         models[i].loadScript = new StringBuffer(); 
         Viewer.getInlineData(commands, getModelExtract(bs, false, true, "MOL"), i > 0);
       } else {
-        if (models[i].loadScript.indexOf("append") >= 0 && isFirst)
-          commands.append("\n  zap;\n");
         commands.append(models[i].loadScript);
       }
-      isFirst = false;
     }
+    String s = commands.toString();
+    // add a zap command before the first load command.
+    int i = s.indexOf("load /*data*/");
+    int j = s.indexOf("load /*file*/");
+    if (j >= 0 && j < i)
+      i = j;
+    if (i >= 0)
+      s = s.substring(0, i) + "zap;" + s.substring(i); 
+    cmds.append(s);
   }
 
   /*

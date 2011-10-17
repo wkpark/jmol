@@ -4574,6 +4574,7 @@ private void zap(String msg) {
     case '2':
     case 'I':
     case 'K':
+    case '/':
       f = TextFormat.simpleReplace(f, "%", "%25");
       f = TextFormat.simpleReplace(f, "[", "%5B");
       f = TextFormat.simpleReplace(f, "]", "%5D");
@@ -4591,6 +4592,9 @@ private void zap(String msg) {
         break;
       case 'K':
         format = global.nihResolverFormat + "/inchikey";
+        break;
+      case '/':
+        format = global.nihResolverFormat + "/";
         break;
       default:
         format = global.smilesUrlFormat;
@@ -8326,8 +8330,11 @@ private void zap(String msg) {
     showUrl((String) setLoadFormat("_" + smiles, '2', false));
   }
   
-  public String getChemicalInfo(String smiles, char type) {
-    return getFileAsString((String) setLoadFormat("_" + smiles, type, false), Integer.MAX_VALUE, false);
+  public String getChemicalInfo(String smiles, char type, String info) {
+    String s = (String) setLoadFormat("_" + smiles, type, false);
+    if (type == '/')
+      s += TextFormat.simpleReplace(info, " ","%20");
+    return getFileAsString(s, Integer.MAX_VALUE, false);
   }
   
 

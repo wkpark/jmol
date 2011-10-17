@@ -1242,7 +1242,7 @@ public class ScriptEvaluator {
     Point3f zero = (minmaxtype == Token.allfloat ? new Point3f() : null);
     Point3f pt = (isPt || !isAtoms ? new Point3f() : null);
     if (isExplicitlyAll || isString && !haveIndex
-        && minmaxtype != Token.allfloat)
+        && minmaxtype != Token.allfloat && minmaxtype != Token.min)
       minmaxtype = Token.all;
     List<Object> vout = (minmaxtype == Token.all ? new ArrayList<Object>()
         : null);
@@ -5869,6 +5869,8 @@ public class ScriptEvaluator {
           nSkip -= 2;
           if (tokAt(++i) == Token.expressionBegin || tokAt(i) == Token.bitset) {
             bsOrList = atomExpression(i);
+            if (isBondSet)
+              bsOrList = new BondSet((BitSet) bsOrList);
           } else {
             List<ScriptVariable> what = parameterExpressionList(-i, 1, false);
             if (what == null || what.size() < 1)
@@ -14200,8 +14202,9 @@ public class ScriptEvaluator {
         msg = "Could not show drawing -- Either insufficient atoms are selected or the model is a PDB file.";
       } else if (tok == Token.chemical) {
         len = 3;
+        String info = null;
         if (msg.length() > 0) {
-          char type = 'N';
+          char type = '/';
           switch (getToken(2).tok) {
           case Token.inchi:
             type = 'I';
@@ -14213,9 +14216,9 @@ public class ScriptEvaluator {
             type = 'N';
             break;
           default:
-            error(ERROR_invalidArgument);
+            info = parameterAsString(2);
           }
-          msg = viewer.getChemicalInfo(msg, type);
+          msg = viewer.getChemicalInfo(msg, type, info);
           if (msg.indexOf("FileNotFound") >= 0)
             msg = "?";
         } else {

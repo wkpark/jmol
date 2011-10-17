@@ -3384,6 +3384,9 @@ class ScriptMathProcessor {
       if (op.intValue == Token.bonds && x2.value instanceof BondSet)
         return addX(x2);
       BitSet bs = ScriptVariable.bsSelect(x2);
+      if (bs.cardinality() == 1 
+          && (op.intValue & Token.minmaxmask) == 0)
+        op.intValue |= Token.min;
       Object val = eval.getBitsetProperty(bs, op.intValue, null, null,
           x2.value, op.value, false, x2.index, true);
       if (op.intValue == Token.bonds)

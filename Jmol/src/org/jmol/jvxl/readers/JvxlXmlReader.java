@@ -273,7 +273,7 @@ public class JvxlXmlReader extends VolumeFileReader {
 
     // new Jmol 12.1.50
     jvxlData.color = XmlReader.getXmlAttrib(data, "color");
-    if (jvxlData.color.length() == 0)
+    if (jvxlData.color.length() == 0 || jvxlData.color.indexOf("null") >= 0)
       jvxlData.color = "orange";
     jvxlData.translucency = parseFloat(XmlReader.getXmlAttrib(data, "translucency"));
     if (Float.isNaN(jvxlData.translucency))
@@ -286,7 +286,7 @@ public class JvxlXmlReader extends VolumeFileReader {
       jvxlData.rendering = s;
     jvxlData.colorScheme = XmlReader.getXmlAttrib(data, "colorScheme");
     if (jvxlData.colorScheme.length() == 0)
-      jvxlData.colorScheme = "rgb";
+      jvxlData.colorScheme = null;
     jvxlData.slabValue = parseInt(XmlReader.getXmlAttrib(data, "slabValue"));    
     jvxlData.isSlabbable = (XmlReader.getXmlAttrib(data, "slabbable").equalsIgnoreCase("true"));    
     jvxlData.diameter = parseInt(XmlReader.getXmlAttrib(data, "diameter"));
@@ -579,7 +579,7 @@ public class JvxlXmlReader extends VolumeFileReader {
     boolean needContourMinMax = (params.mappedDataMin == Float.MAX_VALUE);
     for (int i = 0; i < vertexCount; i += vertexIncrement) {
       float value;
-      if(getValues)
+      if (getValues)
         value = vertexValues[i] = getNextValue();
       else
         value = vertexValues[i];
@@ -594,20 +594,21 @@ public class JvxlXmlReader extends VolumeFileReader {
       params.mappedDataMin = contourPlaneMinimumValue;
       params.mappedDataMax = contourPlaneMaximumValue;
     }
-
-    for (int i = 0; i < vertexCount; i += vertexIncrement) {
-      float value = vertexValues[i];
-      //note: these are just default colorings
-      //orbital color had a bug through 11.2.6/11.3.6
-      if (marchingSquares != null && params.isContoured) {
-        marchingSquares.setContourData(i, value);
-      } else if (params.colorBySign) {
-        colixes[i] = ((params.isColorReversed ? value > 0 : value <= 0) ? colixNeg
-            : colixPos);
-      } else {
-        colixes[i] = params.colorEncoder.getColorIndex(value);
+    if (jvxlData.colorScheme != null)
+      for (int i = 0; i < vertexCount; i += vertexIncrement) {
+        float value = vertexValues[i];
+        //note: these are just default colorings
+        //orbital color had a bug through 11.2.6/11.3.6
+        if (marchingSquares != null && params.isContoured) {
+          marchingSquares.setContourData(i, value);
+          continue;
+        }
+        short colix = (!params.colorBySign ? params.colorEncoder
+            .getColorIndex(value) : (params.isColorReversed ? value > 0
+            : value <= 0) ? colixNeg : colixPos);
+        colixes[i] = Graphics3D.getColixTranslucent(colix, true,
+            jvxlData.translucency);
       }
-    }
     return jvxlColorDataRead + "\n";
   }
 

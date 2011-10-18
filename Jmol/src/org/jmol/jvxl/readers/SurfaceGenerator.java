@@ -1110,6 +1110,9 @@ public class SurfaceGenerator {
       surfaceReader.colorIsosurface();
       params.state = Parameters.STATE_DATA_COLORED;
     }
+    if (jvxlData.colorDensity) {
+      params.state = Parameters.STATE_DATA_COLORED;
+    }
     if (params.colorBySign || params.isBicolorMap) {
       params.state = Parameters.STATE_DATA_COLORED;
       surfaceReader.applyColorScale();
@@ -1119,7 +1122,8 @@ public class SurfaceGenerator {
     surfaceReader.discardTempData(false);
     params.mappedDataMin = Float.MAX_VALUE;
     surfaceReader.closeReader();
-    if (surfaceReader.hasColorData || params.colorDensity) {
+    if (params.state != Parameters.STATE_DATA_COLORED &&
+        (surfaceReader.hasColorData || params.colorDensity)) {
       params.state = Parameters.STATE_DATA_COLORED;
       colorIsosurface();
     }

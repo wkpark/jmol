@@ -129,7 +129,7 @@ public class MarchingCubes extends TriangleData {
 
   protected void setParameters(VolumeData volumeData, Parameters params) {
     this.volumeData = volumeData;
-    colorDensity = params.colorDensity && (mode != MODE_JVXL);
+    colorDensity = params.colorDensity;
     isContoured = params.thePlane == null && params.isContoured && !colorDensity;
     cutoff = params.cutoff;
     isCutoffAbsolute = params.isCutoffAbsolute;
@@ -269,7 +269,8 @@ public class MarchingCubes extends TriangleData {
       voxelData = volumeData.getVoxelData();
       break;
     }
-    allInside = (colorDensity && (cutoff == 0 || bsVoxels.cardinality() == 0));
+    allInside = (colorDensity && (cutoff == 0 
+        || mode == MODE_JVXL && bsVoxels.cardinality() == 0));
     boolean colorDensityAll = (colorDensity && cutoff == 0);
     float v = 0;
     for (int x = x0; x != x1; x += xStep, ptX += ptStep, pt = ptX) {

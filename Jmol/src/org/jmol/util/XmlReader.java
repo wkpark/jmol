@@ -170,7 +170,11 @@ public class XmlReader {
     int ipt = next[0];
     if (ipt < 0 || (ipt = data.indexOf(what, next[0])) < 0)
       return -1;
-    return next[0] = ipt + what.length() + offset;
+    ipt += what.length();
+    next[0] = ipt + offset;
+    if (offset > 0 && ipt < data.length() && data.charAt(ipt) != '=')
+      return setNext(data, what, next, offset);
+    return next[0];
   }
 
   private void skipTo(String key) throws Exception {

@@ -11133,15 +11133,6 @@ public class ScriptEvaluator {
     case Token.vanderwaals:
       value = 1;
       factorType = RadiusData.EnumType.FACTOR;
-      switch (tok) {
-      case Token.adpmax:
-      case Token.adpmin:
-      case Token.ionic:
-      case Token.hydrophobic:
-      case Token.temperature:
-      case Token.vanderwaals:
-      default:
-      }
       vdwType = (tok == Token.vanderwaals ? null : EnumVdw.getVdwType2(Token.nameOf(tok)));
       tok = tokAt(++index);
       break;
@@ -11159,9 +11150,33 @@ public class ScriptEvaluator {
       iToken = index - 1;
       break;
     case Token.plus:
+    case Token.integer:
     case Token.decimal:
-      if (tok == Token.plus)
+      if (tok == Token.plus) {
         index++;
+      } else if (tokAt(index + 1) == Token.percent) {
+        value = Math.round(floatParameter(index));
+        iToken = ++index;
+        factorType = RadiusData.EnumType.FACTOR;
+        if (value < 0 || value > 200)
+          integerOutOfRange(0, 200);
+        value /= 100;
+        break;
+      } else if (tok == Token.integer) {
+        value = intParameter(index);
+        // rasmol 250-scale if positive or percent (again), if negative
+        // (deprecated)
+        if (value > 749 || value < -200)
+          integerOutOfRange(-200, 749);
+        if (value > 0) {
+          value /= 250;
+          factorType = RadiusData.EnumType.ABSOLUTE;
+        } else {
+          value /= -100;
+          factorType = RadiusData.EnumType.FACTOR;
+        }
+        break;
+      }
       value = floatParameter(index,
           (isOnly || !allowAbsolute ? -Atom.RADIUS_MAX : 0), Atom.RADIUS_MAX);
       if (tok == Token.plus || !allowAbsolute) {
@@ -11172,28 +11187,6 @@ public class ScriptEvaluator {
       }
       if (isOnly)
         value = -value;
-      break;
-    case Token.integer:
-      value = intParameter(index);
-      if (tokAt(index + 1) == Token.percent) {
-        iToken = ++index;
-        factorType = RadiusData.EnumType.FACTOR;
-        if (value < 0 || value > 200)
-          integerOutOfRange(0, 200);
-        value /= 100;
-        break;
-      }
-      // rasmol 250-scale if positive or percent (again), if negative
-      // (deprecated)
-      if (value > 749 || value < -200)
-        integerOutOfRange(-200, 749);
-      if (value > 0) {
-        value /= 250;
-        factorType = RadiusData.EnumType.ABSOLUTE;
-      } else {
-        value /= -100;
-        factorType = RadiusData.EnumType.FACTOR;
-      }
       break;
     default:
       if (value == 1)

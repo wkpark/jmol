@@ -59,7 +59,7 @@ public class JmolActivity extends Activity implements JmolStatusListener {
    */
   
   
-  private final static String TEST_SCRIPT = "set debug;set debugscript;load http://chemapps.stolaf.edu/jmol/docs/examples-12/data/caffeine.xyz;";
+  private final static String TEST_SCRIPT = ";load http://chemapps.stolaf.edu/jmol/docs/examples-12/data/caffeine.xyz;";
   //labels on; background labels white;spacefill on";
 
   private final static String STARTUP_SCRIPT = "set allowGestures TRUE;unbind ALL _slidezoom;"
@@ -72,10 +72,13 @@ public class JmolActivity extends Activity implements JmolStatusListener {
     public JmolImageView(Context context) {
       super(context);
       // TODO Auto-generated constructor stub
+      Log.w("Jmol", "JmolImageView " + this);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
+      super.onDraw(canvas);
+      Log.w("Jmol", "JmolActivity onDraw");
       viewer.renderScreenImage(canvas, null, canvas.getWidth(), canvas.getHeight());
     }
   }
@@ -95,6 +98,7 @@ public class JmolActivity extends Activity implements JmolStatusListener {
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(imageView = new JmolImageView(this));
+    imageView.setWillNotDraw(false);
     viewer = null;
     SCALE_FACTOR = getResources().getDisplayMetrics().density + 0.5f;
 
@@ -146,7 +150,7 @@ public class JmolActivity extends Activity implements JmolStatusListener {
 
     Log.w("Jmol", "onResume... viewer=" + viewer + " opening=" + opening);
     updateListener.setPaused(false);    
-    if (viewer.getAtomCount() > 0 && !updateListener.isShowingDialog()) {
+    if (viewer.getAtomCount() > 0) {// && !updateListener.isShowingDialog()) {
       imageView.invalidate();
     } else {
       //        	this.setTitle(R.string.app_name);
@@ -174,16 +178,12 @@ public class JmolActivity extends Activity implements JmolStatusListener {
   @Override
   public boolean onTouchEvent(final MotionEvent event) {
     // don't process other touch events when zooming
-    /*    	if (scaleDetector.onTouchEvent(event))
-        		return true;
-    */
+   // if (scaleDetector.onTouchEvent(event))
+     // return true;
     final int index = event.findPointerIndex(0);
     if (index < 0 || updateListener == null)
       return true;
     Log.w("Jmol","onTouchEvent " + index + " " + event);
-    /*
-    
-    
     int e = Integer.MIN_VALUE;
     switch (event.getAction()) {
     case MotionEvent.ACTION_DOWN:
@@ -195,15 +195,13 @@ public class JmolActivity extends Activity implements JmolStatusListener {
     case MotionEvent.ACTION_UP:
       e = Event.MOUSE_UP;
       break;
-    default:
-      return true;
     }
     
-    scaleDetector.onTouchEvent(event);
+   // scaleDetector.onTouchEvent(event);
     
-    updateListener.mouseEvent(e, (int) event.getX(index),
-        (int) event.getY(index), Event.MOUSE_LEFT, event.getEventTime());
-*/
+    if (e != Integer.MIN_VALUE)
+      updateListener.mouseEvent(e, (int) event.getX(index),
+          (int) event.getY(index), Event.MOUSE_LEFT, event.getEventTime());
 /*    
     switch (event.getAction()) {
     case MotionEvent.ACTION_DOWN:
@@ -329,8 +327,12 @@ public class JmolActivity extends Activity implements JmolStatusListener {
     if (resultCode == Activity.RESULT_OK) {
 
       if (requestCode == REQUEST_OPEN) {
-        updateListener.manageDialog(ProgressDialog.show(this, "",
-            "Opening file...", true), (byte) 2);
+        
+        ProgressDialog.show(this, "",
+            "Opening file...", true);
+        
+        //updateListener.manageDialog(ProgressDialog.show(this, "",
+         //   "Opening file...", true), (byte) 2);
         // this is the best way to go -- allows for scripts, surfaces, and models
         viewer.openFileAsynchronously(data
             .getStringExtra(FileDialog.RESULT_PATH));
@@ -407,6 +409,11 @@ public class JmolActivity extends Activity implements JmolStatusListener {
     // ignore -- applet only
     // TODO Auto-generated method stub
 
+  }
+
+  public void dismissDialog() {
+    // TODO Auto-generated method stub
+    
   }
 
 }

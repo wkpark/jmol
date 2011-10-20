@@ -12,8 +12,8 @@ import android.view.SurfaceView;
 public class AndroidUpdateListener {
 
   private JmolViewer viewer;
-  private byte counter;
-  private Dialog dialog;
+//  private byte counter;
+//  private Dialog dialog;
   private JmolActivity ja;
 
   public AndroidUpdateListener(JmolActivity ja) {
@@ -33,17 +33,14 @@ public class AndroidUpdateListener {
 
   public void repaint() {
     // from Viewer
-    if (dialog != null && --counter <= 0) {
-      dialog.dismiss();
-      dialog = null;
-    }
-    ja.getImageView().invalidate();
-    //repaintEvent();
+    Log.w("Jmol", "updateListener repaint");
+    ja.dismissDialog();
+    ja.getImageView().postInvalidate();
   }
 
-  private boolean paused;
+  /*  
+
   private boolean updating;
-  
   protected void updateCanvas() {
     Log.w("Jmol","updateCanvas paused/updating " + paused + " " + updating);
     if (paused || updating)
@@ -73,11 +70,14 @@ public class AndroidUpdateListener {
         + " ms");
     Log.d("Jmol", "Zoom % " + viewer.getZoomPercentFloat());
   }
+*/
 
+  private boolean paused;
   public void setPaused(boolean TF) {
     paused = TF;    
   }
 
+  /*
   public void manageDialog(Dialog dialog, byte value) {
     this.dialog = dialog;
     counter = value;
@@ -86,7 +86,7 @@ public class AndroidUpdateListener {
   public boolean isShowingDialog() {
     return dialog != null;
   }
-
+*/
 //  boolean eventRunning;
   public void mouseEvent(int id, int x, int y, int modifiers, long when) {
 //    if (id == Event.MOUSE_DRAG && eventRunning)

@@ -23,7 +23,10 @@
  */
 package org.jmol.adapter.readers.xml;
 
-import org.jmol.adapter.smarter.*;
+import org.jmol.adapter.smarter.Atom;
+import org.jmol.adapter.smarter.AtomSetCollection;
+import org.jmol.adapter.smarter.AtomSetCollectionReader;
+import org.jmol.adapter.smarter.Resolver;
 
 
 import org.xml.sax.Attributes;
@@ -38,8 +41,6 @@ import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.Hashtable;
 import java.util.Map;
-
-import netscape.javascript.JSObject;
 
 import org.jmol.util.Logger;
 
@@ -106,14 +107,11 @@ import org.jmol.util.Logger;
  * 
  */
 
-public class XmlReader extends AtomSetCollectionReader {
-
-  //XmlReader subReader; // the actual reader; to be determined
-  protected XmlReader parent;    // XmlReader itself; to be assigned by the subReader
+ public class XmlReader extends AtomSetCollectionReader {
 
   protected Atom atom;
-
-  String[] implementedAttributes = { "id" };
+  protected String[] implementedAttributes = { "id" };
+  protected XmlReader parent;    // XmlReader itself; to be assigned by the subReader
 
   /////////////// file reader option //////////////
 
@@ -131,18 +129,6 @@ public class XmlReader extends AtomSetCollectionReader {
 
   private XMLReader getXMLReader() {
     XMLReader xmlr = null;
-    // JAXP is preferred (comes with Sun JVM 1.4.0 and higher)
-    if (xmlr == null
-        && System.getProperty("java.version").compareTo("1.4") >= 0)
-      xmlr = allocateXmlReader14();
-    // Aelfred is the first alternative.
-    if (xmlr == null)
-      xmlr = allocateXmlReaderAelfred2();
-    return xmlr;
-  }
-
-  private XMLReader allocateXmlReader14() {
-    XMLReader xmlr = null;
     try {
       javax.xml.parsers.SAXParserFactory spf = javax.xml.parsers.SAXParserFactory
           .newInstance();
@@ -157,25 +143,13 @@ public class XmlReader extends AtomSetCollectionReader {
     return xmlr;
   }
 
-  private XMLReader allocateXmlReaderAelfred2() {
-    XMLReader xmlr = null;
-    try {
-      xmlr = (XMLReader) this.getClass().getClassLoader().loadClass(
-          "gnu.xml.aelfred2.XmlReader").newInstance();
-      Logger.debug("Using Aelfred2 XML parser.");
-    } catch (Exception e) {
-      Logger.debug("Could not instantiate Aelfred2 XML reader!");
-    }
-    return xmlr;
-  }
-
   private Object processXml(XMLReader xmlReader) throws Exception {
     atomSetCollection = new AtomSetCollection(readerName, this);
     Object res = getXmlReader();
     if (res instanceof String)
       return res;
     XmlReader thisReader = (XmlReader)res;
-    thisReader.processXml(this, atomSetCollection, reader, xmlReader);
+    thisReader.processXml(this, atomSetCollection, reader, xmlReader, thisReader.getHandler(xmlReader));
     return thisReader;
   }
 
@@ -205,10 +179,18 @@ public class XmlReader extends AtomSetCollectionReader {
    * @param atomSetCollection
    * @param reader
    * @param xmlReader
+   * @param handler 
    */
   protected void processXml(XmlReader parent,
                          AtomSetCollection atomSetCollection,
-                          BufferedReader reader, XMLReader xmlReader) {
+                          BufferedReader reader, Object xmlReader, JmolXmlHandler handler) {
+    this.parent = parent;
+    this.atomSetCollection = atomSetCollection;
+    this.reader = reader;
+    if (xmlReader instanceof XMLReader)
+      parseReaderXML((XMLReader) xmlReader);
+    else
+      handler.walkDOMTree(xmlReader);
   }
 
   protected void parseReaderXML(XMLReader xmlReader) {
@@ -224,7 +206,7 @@ public class XmlReader extends AtomSetCollectionReader {
   }
 
   /////////////// DOM option //////////////
-
+  
   @Override
   protected void processXml(Object DOMNode) {
     atomSetCollection = new AtomSetCollection(readerName, this);
@@ -237,24 +219,18 @@ public class XmlReader extends AtomSetCollectionReader {
       atomSetCollectionReaderClass = Class.forName(className);//,true, Thread.currentThread().getContextClassLoader());
       thisReader = (XmlReader) atomSetCollectionReaderClass
           .newInstance();
-      thisReader.processXml(this, atomSetCollection, reader, (JSObject) DOMNode);
+      thisReader.processXml(this, atomSetCollection, reader, DOMNode, thisReader.getHandler(null));
     } catch (Exception e) {
       atomSetCollection.errorMessage = "File reader was not found:" + className;
     }
   }
 
-  /**
-   * 
-   * @param parent
-   * @param atomSetCollection
-   * @param reader
-   * @param DOMNode
-   */
-  protected void processXml(XmlReader parent,
-                            AtomSetCollection atomSetCollection,
-                            BufferedReader reader, JSObject DOMNode) {
+  protected String[] getImplementedAttributes() {
+    // different subclasses will implement this differently
+    // it is only for DOM nodes
+    return implementedAttributes;
   }
-
+  
   /**
    * 
    * @param namespaceURI
@@ -294,6 +270,19 @@ public class XmlReader extends AtomSetCollectionReader {
      */
   }
 
+  @Override
+  public void applySymmetryAndSetTrajectory() {
+    try {
+      if (parent == null) 
+        super.applySymmetryAndSetTrajectory();
+      else
+        parent.applySymmetryAndSetTrajectory();
+    } catch (Exception e) {
+      e.printStackTrace();
+      Logger.error("applySymmetry failed: " + e);
+    }
+  }
+
   public static class DummyResolver implements EntityResolver {
     public InputSource resolveEntity(String publicID, String systemID)
         throws SAXException {
@@ -308,16 +297,19 @@ public class XmlReader extends AtomSetCollectionReader {
     }
   }
   
+  protected JmolXmlHandler getHandler(Object xmlReader) {
+    // may be overridden in subclass. 
+    return new JmolXmlHandler(xmlReader);    
+  }
+
   public class JmolXmlHandler extends DefaultHandler {
 
-    public JmolXmlHandler() {
+    public JmolXmlHandler(Object xmlReader) {
+      if (xmlReader instanceof XMLReader)
+        setHandler((XMLReader) xmlReader, this);
     }
 
-    public JmolXmlHandler(XMLReader xmlReader) {
-      setHandler(xmlReader, this);
-    }
-
-    public void setHandler(XMLReader xmlReader, JmolXmlHandler handler) {
+    private void setHandler(XMLReader xmlReader, JmolXmlHandler handler) {
       try {
         xmlReader.setFeature("http://xml.org/sax/features/validation", false);
         xmlReader.setFeature("http://xml.org/sax/features/namespaces", true);
@@ -432,18 +424,19 @@ public class XmlReader extends AtomSetCollectionReader {
     // startElement with the appropriate strings etc., and then
     // endElement when the element is closed.
 
-    protected void walkDOMTree(JSObject DOMNode) {
-      String namespaceURI = (String) DOMNode.getMember("namespaceURI");
-      String localName = (String) DOMNode.getMember("localName");
-      String qName = (String) DOMNode.getMember("nodeName");
-      JSObject attributes = (JSObject) DOMNode.getMember("attributes");
+    protected void walkDOMTree(Object DOMNodeObj) {
+      getImplementedAttributes();
+      String namespaceURI = (String) jsObjectGetMember(DOMNodeObj, "namespaceURI");
+      String localName = (String) jsObjectGetMember(DOMNodeObj, "localName");
+      String qName = (String) jsObjectGetMember(DOMNodeObj, "nodeName");
+      Object attributes = jsObjectGetMember(DOMNodeObj, "attributes");
       getAttributes(attributes);
       startElement(namespaceURI, localName, qName);
-      if (((Boolean) DOMNode.call("hasChildNodes", null))
+      if (((Boolean) jsObjectCall(DOMNodeObj, "hasChildNodes", null))
           .booleanValue()) {
-        for (JSObject nextNode = (JSObject) DOMNode.getMember("firstChild"); 
+        for (Object nextNode = jsObjectGetMember(DOMNodeObj, "firstChild"); 
                nextNode != null; 
-               nextNode = (JSObject) nextNode.getMember("nextSibling"))
+               nextNode = jsObjectGetMember(nextNode, "nextSibling"))
           walkDOMTree(nextNode);
       }
       endElement(namespaceURI, localName, qName);
@@ -458,7 +451,7 @@ public class XmlReader extends AtomSetCollectionReader {
         atts.put(attributes.getLocalName(i), attributes.getValue(i));
     }
 
-    private void getAttributes(JSObject attributes) {
+    private void getAttributes(Object attributes) {
       if (attributes == null) {
         atts = new Hashtable<String, String>(0);
         return;
@@ -466,17 +459,27 @@ public class XmlReader extends AtomSetCollectionReader {
 
       // load up only the implemented attributes
 
-      int nAtts = ((Number) attributes.getMember("length")).intValue();
+      int nAtts = ((Number) jsObjectGetMember(attributes, "length")).intValue();
       atts = new Hashtable<String, String>(nAtts);
       for (int i = implementedAttributes.length; --i >= 0;) {
         Object[] attArgs = { implementedAttributes[i] };
-        JSObject attNode = (JSObject) attributes.call("getNamedItem", attArgs);
+        Object attNode = jsObjectCall(attributes, "getNamedItem", attArgs);
         if (attNode != null) {
-          String attLocalName = (String) attNode.getMember("name");
-          String attValue = (String) attNode.getMember("value");
-          atts.put(attLocalName, attValue);
+          String attLocalName = (String) jsObjectGetMember(attNode, "name");
+          String attValue = (String) jsObjectGetMember(attNode, "value");
+          if (attLocalName != null && attValue != null)
+            atts.put(attLocalName, attValue);
         }
       }
+    }
+
+    private Object jsObjectCall(Object jsObject, String method,
+                                Object[] args) {
+      return parent.viewer.getJsObjectInfo(jsObject, method, args);
+    }
+
+    private Object jsObjectGetMember(Object jsObject, String name) {
+      return parent.viewer.getJsObjectInfo(jsObject, name, null);
     }
   }
 }

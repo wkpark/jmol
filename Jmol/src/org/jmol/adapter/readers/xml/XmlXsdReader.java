@@ -23,16 +23,13 @@
  */
 package org.jmol.adapter.readers.xml;
 
-import org.jmol.adapter.smarter.*;
-
 import java.io.BufferedReader;
 import java.util.BitSet;
 import java.util.Map;
 
-import netscape.javascript.JSObject;
-
+import org.jmol.adapter.smarter.Atom;
+import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.util.TextFormat;
-import org.xml.sax.*;
 
 /**
  * An XML reader for Materials Studio .xsd files   http://accelrys.com/products/materials-studio/
@@ -50,45 +47,26 @@ public class XmlXsdReader extends XmlReader {
    * 
    */
 
-  String[] xsdImplementedAttributes = { "ID", //general 
-      "XYZ", "Connections", "Components", "IsBackboneAtom",//Atom3d
-      "Connects", "Type", //Bond
-      "Name", //LinearChain
-  };
-
   private BitSet bsBackbone = new BitSet();
   
   public XmlXsdReader() {
   }
 
   @Override
-  protected void processXml(XmlReader parent,
-                           AtomSetCollection atomSetCollection,
-                           BufferedReader reader, XMLReader xmlReader) {
-    init(parent, atomSetCollection);
-    this.reader = reader;
-    new XsdHandler(xmlReader);
-    parseReaderXML(xmlReader);
-    fin();
+  protected String[] getImplementedAttributes() {
+    return new String[] { "ID", //general 
+        "XYZ", "Connections", "Components", "IsBackboneAtom",//Atom3d
+        "Connects", "Type", //Bond
+        "Name", //LinearChain
+    };
   }
 
   @Override
   protected void processXml(XmlReader parent,
                             AtomSetCollection atomSetCollection,
-                            BufferedReader reader, JSObject DOMNode) {
-    init(parent, atomSetCollection);
-    implementedAttributes = xsdImplementedAttributes;
-    (new XsdHandler()).walkDOMTree(DOMNode);
-    fin();
-  }
-
-  private void init(XmlReader parent, AtomSetCollection atomSetCollection) {
-    this.parent = parent;
-    this.atomSetCollection = atomSetCollection;
+                             BufferedReader reader, Object xmlReader, JmolXmlHandler handler) {
     parent.htParams.put("backboneAtoms", bsBackbone);
-  }
-
-  private void fin() {
+    super.processXml(parent, atomSetCollection, reader, xmlReader, handler);
     atomSetCollection.clearSymbolicMap(); 
   }
 
@@ -165,16 +143,6 @@ public class XmlXsdReader extends XmlReader {
     }
     keepChars = false;
     chars = null;
-  }
-
-  class XsdHandler extends JmolXmlHandler {
-
-    XsdHandler() {
-    }
-
-    XsdHandler(XMLReader xmlReader) {
-      setHandler(xmlReader, this);
-    }
   }
 
 }

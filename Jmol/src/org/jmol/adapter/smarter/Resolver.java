@@ -32,8 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import netscape.javascript.JSObject;
-
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
@@ -299,7 +297,7 @@ public class Resolver {
     String className = null;
     Class<?> atomSetCollectionReaderClass;
     AtomSetCollectionReader atomSetCollectionReader; 
-    String atomSetCollectionReaderName = getXmlType((JSObject) DOMNode);
+    String atomSetCollectionReaderName = getXmlType((String) htParams.get("nameSpaceInfo"));
     if (Logger.debugging) {
       Logger.debug("The Resolver thinks " + atomSetCollectionReaderName);
     }
@@ -404,21 +402,6 @@ public class Resolver {
   }
   
   private static final String CML_NAMESPACE_URI = "http://www.xml-cml.org/schema";
-
-  private static String getXmlType(JSObject DOMNode) {
-    String namespaceURI = (String) DOMNode.getMember("namespaceURI");
-    String localName = (String) DOMNode.getMember("localName");
-    if (namespaceURI.startsWith("http://www.molpro.net/"))
-      return specialTags[SPECIAL_MOLPRO_DOM][0];
-    if ("odyssey_simulation".equals(localName))
-      return specialTags[SPECIAL_ODYSSEY_DOM][0];
-    if ("arguslab".equals(localName))
-      return specialTags[SPECIAL_ARGUS_DOM][0];
-    if (namespaceURI.startsWith(CML_NAMESPACE_URI) || "cml".equals(localName))
-      return specialTags[SPECIAL_CML_DOM][0];
-    return specialTags[SPECIAL_CML_DOM][0] + "(unidentified)";
-  }
-
 
   /**
    * the main resolver method. One of the great advantages of Jmol is that it can

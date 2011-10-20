@@ -27,11 +27,8 @@ package org.jmol.adapter.readers.xml;
 import java.io.BufferedReader;
 import java.util.Map;
 
-import netscape.javascript.JSObject;
-
-import org.jmol.adapter.smarter.*;
+import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.util.Logger;
-import org.xml.sax.XMLReader;
 
 /**
  * 
@@ -43,40 +40,20 @@ import org.xml.sax.XMLReader;
 
 public class XmlQEReader extends XmlReader {
   
-  /*
-   * Enter any implemented field names in the 
-   * implementedAttributes array. It is for when the XML 
-   * is already loaded in the DOM of an XML page.
-   * 
-   */
-
-  private String[] qeImplementedAttributes = { "SPECIES", "TAU" };
-
   XmlQEReader() {
   }
   
   @Override
-  protected void processXml(XmlReader parent,
-                           AtomSetCollection atomSetCollection,
-                           BufferedReader reader, XMLReader xmlReader) {
-    this.parent = parent;
-    parent.doProcessLines = true;
-    this.reader = reader;
-    this.atomSetCollection = atomSetCollection;
-    new Handler(xmlReader);
-    parseReaderXML(xmlReader);
+  protected String[] getImplementedAttributes() {
+    return new String[] { "SPECIES", "TAU" };
   }
 
   @Override
   protected void processXml(XmlReader parent,
                             AtomSetCollection atomSetCollection,
-                            BufferedReader reader, JSObject DOMNode) {
-    this.parent = parent;
+                             BufferedReader reader, Object xmlReader, JmolXmlHandler handler) {
     parent.doProcessLines = true;
-    this.atomSetCollection = atomSetCollection;
-    implementedAttributes = qeImplementedAttributes;
-    
-    (new Handler()).walkDOMTree(DOMNode);
+    super.processXml(parent, atomSetCollection, reader, xmlReader, handler);
   }
 
   int atomCount;
@@ -182,17 +159,5 @@ public class XmlQEReader extends XmlReader {
     chars = null;
     keepChars = false;
   }
-
-  class Handler extends JmolXmlHandler {
-
-    Handler() {
-    }
-
-    Handler(XMLReader xmlReader) {
-      setHandler(xmlReader, this);
-    }
-  }
-
-  
 
 }

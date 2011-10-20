@@ -1261,6 +1261,7 @@ public class FileManager {
     }
 
     void run() {
+      htParams.put("nameSpaceInfo", viewer.getApiPlatform().getJsObjectInfo(aDOMNode, null, null));
       atomSetCollection = viewer.getModelAdapter().getAtomSetCollectionFromDOM(
           aDOMNode, htParams);
       if (atomSetCollection instanceof String)

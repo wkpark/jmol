@@ -118,4 +118,6 @@ public interface ApiPlatform {
 
   JmolPopupInterface getMenuPopup(Viewer viewer, String menuStructure, char type);
 
+  Object getJsObjectInfo(Object jsObject, String method, Object[] args);
+
 }

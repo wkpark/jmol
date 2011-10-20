@@ -22,12 +22,8 @@
  */
 package org.jmol.adapter.readers.xml;
 
-import org.jmol.adapter.smarter.*;
-
-import java.io.BufferedReader;
 import java.util.Map;
 
-import netscape.javascript.JSObject;
 import org.xml.sax.*;
 
 /**
@@ -36,44 +32,19 @@ import org.xml.sax.*;
 
 public class XmlMolproReader extends XmlCmlReader {
 
-  /*
-   * Enter any implemented field names in the 
-   * implementedAttributes array. It is for when the XML 
-   * is already loaded in the DOM of an XML page.
-   * 
-   */
-
-  static String[] molProImplementedAttributes = { "id", "length", "type", //general
-      "x3", "y3", "z3", "elementType", //atoms
-      "name", //variable
-      "groups", "cartesianLength", "primitives", // basisSet and
-      "minL", "maxL", "angular", "contractions", //   basisGroup
-      "occupation", "energy", "symmetryID", // orbital 
-      "wavenumber", "units", // normalCoordinate
-  };
-
   XmlMolproReader() {  
   }
   
   @Override
-  protected void processXml(XmlReader parent,
-                           AtomSetCollection atomSetCollection,
-                           BufferedReader reader, XMLReader xmlReader) {
-    this.parent = parent;
-    this.reader = reader;
-    this.atomSetCollection = atomSetCollection;
-    new MolproHandler(xmlReader);
-    parseReaderXML(xmlReader);
-  }
-
-  @Override
-  protected void processXml(XmlReader parent,
-                            AtomSetCollection atomSetCollection,
-                            BufferedReader reader, JSObject DOMNode) {
-    this.parent = parent;
-    this.atomSetCollection = atomSetCollection;
-    implementedAttributes = molProImplementedAttributes;
-    (new MolproHandler()).walkDOMTree(DOMNode);
+  protected String[] getImplementedAttributes() {
+    return new String[] { "id", "length", "type", //general
+        "x3", "y3", "z3", "elementType", //atoms
+        "name", //variable
+        "groups", "cartesianLength", "primitives", // basisSet and
+        "minL", "maxL", "angular", "contractions", //   basisGroup
+        "occupation", "energy", "symmetryID", // orbital 
+        "wavenumber", "units", // normalCoordinate
+    };
   }
 
   public void processStartElement2(String localName, Map<String, String> atts) {
@@ -126,13 +97,15 @@ public class XmlMolproReader extends XmlCmlReader {
     }
   }
 
-  class MolproHandler extends CmlHandler {
+  @Override
+  protected JmolXmlHandler getHandler(Object xmlReader) {
+    return new MolproHandler(xmlReader);
+  }
 
-    MolproHandler() {
-    }
-
-    MolproHandler(XMLReader xmlReader) {
-      setHandler(xmlReader, this);
+  class MolproHandler extends JmolXmlHandler {
+ 
+    public MolproHandler(Object xmlReader) {
+      super(xmlReader);
     }
 
     @Override

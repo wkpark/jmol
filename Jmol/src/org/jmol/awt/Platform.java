@@ -1,5 +1,7 @@
 package org.jmol.awt;
 
+import netscape.javascript.JSObject;
+
 import org.jmol.api.ApiPlatform;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolPopupInterface;
@@ -174,6 +176,18 @@ public class Platform implements ApiPlatform {
 
   public Object newFont(String fontFace, boolean isBold, boolean isItalic, float fontSize) {
     return Font.newFont(fontFace, isBold, isItalic, fontSize);
+  }
+
+  /// misc
+
+  public Object getJsObjectInfo(Object jsObject, String method, Object[] args) {
+    JSObject DOMNode = (JSObject) jsObject;
+    if (method == null) {
+      String namespaceURI = (String) DOMNode.getMember("namespaceURI");
+      String localName = (String) DOMNode.getMember("localName");
+      return "namespaceURI=\"" + namespaceURI + "\" localName=\"" + localName + "\"";
+    }
+    return (args == null ? DOMNode.getMember(method) : DOMNode.call(method, args));
   }
 
 }

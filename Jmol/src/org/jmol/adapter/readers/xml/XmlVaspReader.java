@@ -29,12 +29,10 @@ import java.util.Map;
 
 import javax.vecmath.Vector3f;
 
-import netscape.javascript.JSObject;
-
-import org.jmol.adapter.smarter.*;
+import org.jmol.adapter.smarter.Atom;
+import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.xml.sax.XMLReader;
 
 /**
  * 
@@ -59,39 +57,27 @@ public class XmlVaspReader extends XmlReader {
   }
   
   @Override
-  protected void processXml(XmlReader parent,
-                           AtomSetCollection atomSetCollection,
-                           BufferedReader reader, XMLReader xmlReader) {
-    this.parent = parent;
-    parent.doProcessLines = true;
-    this.reader = reader;
-    this.atomSetCollection = atomSetCollection;
-    new VaspHandler(xmlReader);
-    parseReaderXML(xmlReader);
+  protected String[] getImplementedAttributes() {
+    return vaspImplementedAttributes;
   }
 
   @Override
   protected void processXml(XmlReader parent,
                             AtomSetCollection atomSetCollection,
-                            BufferedReader reader, JSObject DOMNode) {
-    this.parent = parent;
+                             BufferedReader reader, Object xmlReader, JmolXmlHandler handler) {
     parent.doProcessLines = true;
-    this.atomSetCollection = atomSetCollection;
-    implementedAttributes = vaspImplementedAttributes;
-    
-    (new VaspHandler()).walkDOMTree(DOMNode);
+    super.processXml(parent, atomSetCollection, reader, xmlReader, handler);
   }
 
-  StringBuffer data;
-  String name;
-  int atomCount;
-  int iAtom;
-  boolean modelRead = false;
-  boolean readThisModel = true;
-  boolean isE_wo_entrp = false;
-  boolean isE_fr_energy = false;
-  String enthalpy = null;
-  String gibbsEnergy = null;
+  private StringBuffer data;
+  private String name;
+  private int atomCount;
+  private int iAtom;
+  private boolean isE_wo_entrp = false;
+  private boolean isE_fr_energy = false;
+  private String enthalpy = null;
+  private String gibbsEnergy = null;
+  
   @Override
   public void processStartElement(String namespaceURI, String localName,
                                   String qName, Map<String, String> atts) {
@@ -280,17 +266,5 @@ public class XmlVaspReader extends XmlReader {
     chars = null;
     keepChars = false;
   }
-
-  class VaspHandler extends JmolXmlHandler {
-
-    VaspHandler() {
-    }
-
-    VaspHandler(XMLReader xmlReader) {
-      setHandler(xmlReader, this);
-    }
-  }
-
-  
 
 }

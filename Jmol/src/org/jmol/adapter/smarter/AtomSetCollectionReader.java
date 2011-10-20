@@ -150,7 +150,7 @@ public abstract class AtomSetCollectionReader {
   public boolean iHaveSymmetryOperators;
   public boolean continuing = true;
   
-  protected JmolViewer viewer; // used by GenNBOReader and by CifReader
+  public JmolViewer viewer; // used by GenNBOReader and by CifReader
 
   protected boolean doApplySymmetry;
   protected boolean ignoreFileSymmetryOperators;

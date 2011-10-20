@@ -23,16 +23,10 @@
  */
 package org.jmol.adapter.readers.xml;
 
-import org.jmol.adapter.smarter.*;
-
-
-import java.io.BufferedReader;
 import java.util.Map;
 
-import netscape.javascript.JSObject;
-
+import org.jmol.adapter.smarter.Atom;
 import org.jmol.api.JmolAdapter;
-import org.xml.sax.XMLReader;
 
 /**
  * A crude ArgusLab .agl file Reader - http://www.planaria-software.com/
@@ -43,18 +37,7 @@ import org.xml.sax.XMLReader;
 
 public class XmlArgusReader extends XmlReader {
 
-  /*
-   * Enter any implemented field names in the 
-   * implementedAttributes array. It is for when the XML 
-   * is already loaded in the DOM of an XML page.
-   * 
-   */
-
-  private String[] argusImplementedAttributes = { 
-      "order", //bond
-  };
-
-  private String[] keepCharsList = { 
+  private static String[] keepCharsList = { 
       "name", "x", "y", "z", "formalchg", "atomkey", "atsym", 
       "e00", "e01", "e02", "e03", 
       "e10", "e11", "e12", "e13", 
@@ -81,24 +64,10 @@ public class XmlArgusReader extends XmlReader {
   }
 
   @Override
-  protected void processXml(XmlReader parent,
-                           AtomSetCollection atomSetCollection,
-                           BufferedReader reader, XMLReader xmlReader) {
-    this.parent = parent;
-    this.reader = reader;
-    this.atomSetCollection = atomSetCollection;
-    new ArgusHandler(xmlReader);
-    parseReaderXML(xmlReader);
-  }
-
-  @Override
-  protected void processXml(XmlReader parent,
-                            AtomSetCollection atomSetCollection,
-                            BufferedReader reader, JSObject DOMNode) {
-    this.parent = parent;
-    this.atomSetCollection = atomSetCollection;
-    implementedAttributes = argusImplementedAttributes;
-    (new ArgusHandler()).walkDOMTree(DOMNode);
+  protected String[] getImplementedAttributes() {
+    return new String[] { 
+        "order", //bond
+    };
   }
 
   @Override
@@ -241,13 +210,4 @@ public class XmlArgusReader extends XmlReader {
     }
   }
 
-  class ArgusHandler extends JmolXmlHandler {
-
-    ArgusHandler() {
-    }
-
-    ArgusHandler(XMLReader xmlReader) {
-      setHandler(xmlReader, this);
-    }
-  }
 }

@@ -25,16 +25,12 @@ package org.jmol.adapter.readers.xml;
 
 import org.jmol.adapter.smarter.*;
 
-import java.io.BufferedReader;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
-import netscape.javascript.JSObject;
-
 import org.jmol.api.JmolAdapter;
-import org.xml.sax.XMLReader;
 import org.jmol.adapter.readers.cifpdb.CifReader;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
@@ -74,27 +70,10 @@ import org.jmol.util.Parser;
 public class XmlCmlReader extends XmlReader {
 
 
-  /*
-   * Enter any implemented field names in the 
-   * implementedAttributes array. It is for when the XML 
-   * is already loaded in the DOM of an XML page.
-   * 
-   */
-
-  private String[] cmlImplementedAttributes = { "id", //general
-      "title", //molecule, atom, scalar
-      "label", "name", //old atom
-      "x3", "y3", "z3", "x2", "y2", "isotope", //atom 
-      "elementType", "formalCharge", //atom
-      "atomId", //atomArray
-      "atomRefs2", "order", //bond
-      "atomRef1", "atomRef2", //bondArray
-      "dictRef", //scalar
-      "spaceGroup", //symmetry
-  };
-
   ////////////////////////////////////////////////////////////////
-  // Main body of class; variablaes & functiopns shared by DOM & SAX alike.
+  // Main body of class; variables & functions shared by DOM & SAX alike.
+
+  protected String[] tokens = new String[16];
 
   // the same atom array gets reused
   // it will grow to the maximum length;
@@ -109,8 +88,6 @@ public class XmlCmlReader extends XmlReader {
   // tokenCount holds the current number of tokens
   // see breakOutTokens
   private int tokenCount;
-  String[] tokens = new String[16];
-
   private int nModules = 0;
   private int moduleNestingLevel = 0;
   private boolean haveMolecule = false;
@@ -119,7 +96,7 @@ public class XmlCmlReader extends XmlReader {
   /**
    * state constants
    */
-  final protected int START = 0, 
+  final static protected int START = 0, 
     CML = 1, 
     CRYSTAL = 2, 
     CRYSTAL_SCALAR = 3,
@@ -159,27 +136,6 @@ public class XmlCmlReader extends XmlReader {
   XmlCmlReader() {
   }
 
-  @Override
-  protected void processXml(XmlReader parent,
-                           AtomSetCollection atomSetCollection,
-                           BufferedReader reader, XMLReader xmlReader) {
-    this.parent = parent;
-    this.reader = reader;
-    this.atomSetCollection = atomSetCollection;
-    new CmlHandler(xmlReader);
-    parseReaderXML(xmlReader);
-  }
-
-  @Override
-  protected void processXml(XmlReader parent,
-                            AtomSetCollection atomSetCollection,
-                            BufferedReader reader, JSObject DOMNode) {
-    this.parent = parent;
-    this.atomSetCollection = atomSetCollection;
-    implementedAttributes = cmlImplementedAttributes;
-    (new CmlHandler()).walkDOMTree(DOMNode);
-  }
-
   private String scalarDictRef;
   //String scalarDictKey;
   private String scalarDictValue;
@@ -196,6 +152,21 @@ public class XmlCmlReader extends XmlReader {
   private boolean embeddedCrystal = false;
   private Properties atomIdNames;
 
+  @Override
+  protected String[] getImplementedAttributes() {
+    return new String[] { "id", //general
+      "title", //molecule, atom, scalar
+      "label", "name", //old atom
+      "x3", "y3", "z3", "x2", "y2", "isotope", //atom 
+      "elementType", "formalCharge", //atom
+      "atomId", //atomArray
+      "atomRefs2", "order", //bond
+      "atomRef1", "atomRef2", //bondArray
+      "dictRef", //scalar
+      "spaceGroup", //symmetry
+    };
+  }
+  
   @Override
   public void processStartElement(String uri, String name, String qName,
                                   Map<String, String> atts) {
@@ -752,29 +723,11 @@ public class XmlCmlReader extends XmlReader {
   
   @Override
   public void applySymmetryAndSetTrajectory() {
-    if (moduleNestingLevel > 0 || !haveMolecule)
-      return;
-    if (localSpaceGroupName == null)
+    if (moduleNestingLevel > 0 || !haveMolecule || localSpaceGroupName == null)
       return;
     parent.setSpaceGroupName(localSpaceGroupName);
     parent.iHaveSymmetryOperators = iHaveSymmetryOperators;
-    try {
-      parent.applySymmetryAndSetTrajectory();
-    } catch (Exception e) {
-      e.printStackTrace();
-      Logger.error("applySymmetry failed: " + e);
-    }
-  }
-
-  class CmlHandler extends JmolXmlHandler {
-
-    CmlHandler() {
-    }
-
-    CmlHandler(XMLReader xmlReader) {
-      setHandler(xmlReader, this);
-    }
-
+    parent.applySymmetryAndSetTrajectory();
   }
 
 }

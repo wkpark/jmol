@@ -23,7 +23,8 @@
  */
 package org.jmol.adapter.readers.xml;
 
-import org.jmol.adapter.smarter.*;
+import org.jmol.adapter.smarter.Atom;
+import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.api.Interface;
 import org.jmol.api.VolumeDataInterface;
 
@@ -33,10 +34,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import netscape.javascript.JSObject;
-
 import org.jmol.util.Logger;
-import org.xml.sax.*;
 
 /**
  * An chem3d c3xml reader
@@ -44,49 +42,29 @@ import org.xml.sax.*;
 
 public class XmlChem3dReader extends XmlReader {
 
-  /*
-   * Enter any implemented field names in the 
-   * implementedAttributes array. It is for when the XML 
-   * is already loaded in the DOM of an XML page.
-   * 
-   */
+  private List<Map<String, Object>> orbitals = new ArrayList<Map<String, Object>>();
 
-  String[] chem3dImplementedAttributes = { "id", //general 
+  XmlChem3dReader() {
+  }
+
+  @Override
+  protected String[] getImplementedAttributes() {
+    return new String[] { "id", //general 
       "symbol", "cartCoords", //atoms
       "bondAtom1", "bondAtom2", "bondOrder", //bond
       "gridDatXDim", "gridDatYDim", "gridDatZDim",    
       "gridDatXSize", "gridDatYSize", "gridDatZSize",    
       "gridDatOrigin", "gridDatDat",   // grid cube data
       "calcPartialCharges", "calcAtoms" // electronicStructureCalculation 
-  };
-  protected List<Map<String, Object>> orbitals = new ArrayList<Map<String, Object>>();
-
-  //String modelName = null;
-  //String formula = null;
-  //String phase = null;
-
-  XmlChem3dReader() {
+    };
   }
+  
   @Override
   protected void processXml(XmlReader parent,
                            AtomSetCollection atomSetCollection,
-                           BufferedReader reader, XMLReader xmlReader) {
-    this.parent = parent;
-    this.reader = reader;
-    this.atomSetCollection = atomSetCollection;
-    new Chem3dHandler(xmlReader);
-    parseReaderXML(xmlReader);
+                           BufferedReader reader, Object xmlReader, JmolXmlHandler handler) {
+    super.processXml(parent, atomSetCollection, reader, xmlReader, handler);
     setMOData(moData);
-  }
-
-  @Override
-  protected void processXml(XmlReader parent,
-                            AtomSetCollection atomSetCollection,
-                            BufferedReader reader, JSObject DOMNode) {
-    this.parent = parent;
-    this.atomSetCollection = atomSetCollection;
-    implementedAttributes = chem3dImplementedAttributes;
-    (new Chem3dHandler()).walkDOMTree(DOMNode);
   }
 
   @Override
@@ -217,13 +195,4 @@ public class XmlChem3dReader extends XmlReader {
     chars = null;
   }
 
-  class Chem3dHandler extends JmolXmlHandler {
-
-    Chem3dHandler() {
-    }
-
-    Chem3dHandler(XMLReader xmlReader) {
-      setHandler(xmlReader, this);
-    }
-  }
 }

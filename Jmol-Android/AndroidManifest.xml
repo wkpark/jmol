@@ -5,7 +5,7 @@
     <uses-sdk android:minSdkVersion="8" />
 
 <!-- android:largeHeap="true" -->
-    <application android:icon="@drawable/icon" android:label="@string/app_name" android:debuggable="true">
+    <application android:icon="@drawable/icon" android:label="@string/app_name" android:debuggable="false">
         <activity android:label="@string/app_name" android:name=".JmolActivity" android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

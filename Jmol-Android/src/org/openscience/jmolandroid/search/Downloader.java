@@ -40,7 +40,8 @@ public class Downloader {
 	}
 	
 	public void download(final String id) {
-		File path = Downloader.getAppDir(context);
+
+	  File path = Downloader.getAppDir(context);
 	    
 		file = new File(path, id + ".pdb.gz");
 		if (file.exists()) {

@@ -33,9 +33,7 @@ public class AndroidUpdateListener {
 
   public void repaint() {
     // from Viewer
-    Log.w("Jmol", "updateListener repaint");
-    ja.dismissDialog();
-    ja.getImageView().postInvalidate();
+    ja.repaint();
   }
 
   /*  

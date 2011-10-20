@@ -77,7 +77,7 @@ public class JmolActivity extends Activity implements JmolStatusListener {
 
     @Override
     protected void onDraw(Canvas canvas) {
-      super.onDraw(canvas);
+      //super.onDraw(canvas);
       Log.w("Jmol", "JmolActivity onDraw");
       viewer.renderScreenImage(canvas, null, canvas.getWidth(), canvas.getHeight());
     }
@@ -97,7 +97,7 @@ public class JmolActivity extends Activity implements JmolStatusListener {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(imageView = new JmolImageView(this));
+    setContentView(imageView = new JmolImageView(this.getBaseContext()));
     imageView.setWillNotDraw(false);
     viewer = null;
     SCALE_FACTOR = getResources().getDisplayMetrics().density + 0.5f;
@@ -146,6 +146,7 @@ public class JmolActivity extends Activity implements JmolStatusListener {
           new SmarterJmolAdapter(), null, null, null,
           "platform=org.openscience.jmolandroid.api.Platform", this);
       viewer.script(STARTUP_SCRIPT);
+      return;
     }
 
     Log.w("Jmol", "onResume... viewer=" + viewer + " opening=" + opening);
@@ -322,13 +323,14 @@ public class JmolActivity extends Activity implements JmolStatusListener {
     return true;
   }
 
+  ProgressDialog pd;
   public synchronized void onActivityResult(final int requestCode,
                                             int resultCode, final Intent data) {
     if (resultCode == Activity.RESULT_OK) {
 
       if (requestCode == REQUEST_OPEN) {
         
-        ProgressDialog.show(this, "",
+        pd = ProgressDialog.show(this, "",
             "Opening file...", true);
         
         //updateListener.manageDialog(ProgressDialog.show(this, "",
@@ -413,7 +415,17 @@ public class JmolActivity extends Activity implements JmolStatusListener {
 
   public void dismissDialog() {
     // TODO Auto-generated method stub
-    
+    if (pd == null)
+      return;
+    pd.dismiss();
+    pd = null;
+  }
+
+  public void repaint() {
+    Log.w("Jmol", "JmolActivity repaint " + imageView);
+    dismissDialog();
+    if (imageView != null)
+      imageView.postInvalidate();
   }
 
 }

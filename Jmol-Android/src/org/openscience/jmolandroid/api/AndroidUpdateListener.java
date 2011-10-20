@@ -41,16 +41,6 @@ public class AndroidUpdateListener {
     //repaintEvent();
   }
 
-  public void repaintEvent() {
-    // from onResume
-    ja.getImageView().post(new Runnable() {
-      @Override
-      public void run() {
-        updateCanvas();
-      }
-    });
-  }
-
   private boolean paused;
   private boolean updating;
   
@@ -97,13 +87,13 @@ public class AndroidUpdateListener {
     return dialog != null;
   }
 
-  boolean eventRunning;
+//  boolean eventRunning;
   public void mouseEvent(int id, int x, int y, int modifiers, long when) {
-    if (id == Event.MOUSE_DRAG && eventRunning)
-      return;
-    eventRunning = true;
+//    if (id == Event.MOUSE_DRAG && eventRunning)
+  //    return;
+    //eventRunning = true;
     viewer.mouseEvent(id, x, y, modifiers, when);
-    eventRunning = false;
+    //eventRunning = false;
   }
 
 }

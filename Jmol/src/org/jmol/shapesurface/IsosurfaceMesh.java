@@ -644,7 +644,7 @@ public class IsosurfaceMesh extends Mesh {
         setTokenProperty(Token.getTokFromName(tokens[i]), true);
     }
       
-    isColorSolid = true;
+    isColorSolid = !jvxlData.isBicolorMap;
     if (colorEncoder != null) {
       if (jvxlData.colorScheme != null) {
         String colorScheme = jvxlData.colorScheme;

@@ -187,10 +187,12 @@ import org.jmol.util.Logger;
     this.parent = parent;
     this.atomSetCollection = atomSetCollection;
     this.reader = reader;
-    if (xmlReader instanceof XMLReader)
+    if (xmlReader instanceof XMLReader) {
       parseReaderXML((XMLReader) xmlReader);
-    else
+    } else {
+      getImplementedAttributes();
       handler.walkDOMTree(xmlReader);
+    }
   }
 
   protected void parseReaderXML(XMLReader xmlReader) {
@@ -425,12 +427,12 @@ import org.jmol.util.Logger;
     // endElement when the element is closed.
 
     protected void walkDOMTree(Object DOMNodeObj) {
-      getImplementedAttributes();
-      String namespaceURI = (String) jsObjectGetMember(DOMNodeObj, "namespaceURI");
       String localName = (String) jsObjectGetMember(DOMNodeObj, "localName");
+      if (localName == null)
+        return;
+      String namespaceURI = (String) jsObjectGetMember(DOMNodeObj, "namespaceURI");
       String qName = (String) jsObjectGetMember(DOMNodeObj, "nodeName");
-      Object attributes = jsObjectGetMember(DOMNodeObj, "attributes");
-      getAttributes(attributes);
+      getAttributes(jsObjectGetMember(DOMNodeObj, "attributes"));
       startElement(namespaceURI, localName, qName);
       if (((Boolean) jsObjectCall(DOMNodeObj, "hasChildNodes", null))
           .booleanValue()) {
@@ -459,7 +461,10 @@ import org.jmol.util.Logger;
 
       // load up only the implemented attributes
 
-      int nAtts = ((Number) jsObjectGetMember(attributes, "length")).intValue();
+      Number n = (Number) jsObjectGetMember(attributes, "length");
+      if (n == null)
+        return;
+      int nAtts = n.intValue();
       atts = new Hashtable<String, String>(nAtts);
       for (int i = implementedAttributes.length; --i >= 0;) {
         Object[] attArgs = { implementedAttributes[i] };

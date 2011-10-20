@@ -14,7 +14,9 @@ import org.openscience.jmolandroid.search.PDBSearchActivity;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Canvas;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,6 +29,36 @@ import android.view.SurfaceView;
 
 public class JmolActivity extends Activity implements JmolStatusListener {
 
+  /*
+   * Mario:
+   * 
+   * It seems to me we need to subclass ImageView so that we can add the 
+   * 
+   * onDraw(Canvas) 
+   * 
+   * method. The sequence should be:
+   * 
+   * 
+   * I.
+   * System calls onDraw(Canvas)
+   * Jmol draws onto it
+   * 
+   * II.
+   * Jmol gets an event and needs an update
+   * Jmol sends imageView.invalidate()
+   * System calls onDraw(Canvas)
+   * 
+   * 
+   * but I don't see yet how you get that started.
+   * 
+   * Bob
+   * 
+   * 
+   * 
+   * 
+   */
+  
+  
   private final static String TEST_SCRIPT = "set debug;set debugscript;load http://chemapps.stolaf.edu/jmol/docs/examples-12/data/caffeine.xyz;";
   //labels on; background labels white;spacefill on";
 
@@ -35,8 +67,22 @@ public class JmolActivity extends Activity implements JmolStatusListener {
 
   public static float SCALE_FACTOR;
 
+  class JmolImageView extends SurfaceView {
+
+    public JmolImageView(Context context) {
+      super(context);
+      // TODO Auto-generated constructor stub
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+      viewer.renderScreenImage(canvas, null, canvas.getWidth(), canvas.getHeight());
+    }
+  }
+
+  
   private JmolViewer viewer;
-  private SurfaceView imageView;
+  private JmolImageView imageView;
   private AndroidUpdateListener updateListener;
   private boolean opening;
   private ScaleGestureDetector scaleDetector;
@@ -48,7 +94,7 @@ public class JmolActivity extends Activity implements JmolStatusListener {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.main);
+    setContentView(imageView = new JmolImageView(this));
     viewer = null;
     SCALE_FACTOR = getResources().getDisplayMetrics().density + 0.5f;
 
@@ -78,12 +124,13 @@ public class JmolActivity extends Activity implements JmolStatusListener {
   protected void onResume() {
     super.onResume();
 
-    Log.w("Jmol", "onResume...");
+    Log.w("Jmol", "onResume..." + viewer);
     // am I correct that imageView is null if and only if viewer is null?
     // otherwise we could have a different imageView in updateListener than here
 
-    if (imageView == null)
-      imageView = (SurfaceView) findViewById(R.id.imageMolecule);
+//    if (imageView == null) {
+//      imageView = (SurfaceView) findViewById(R.id.imageMolecule);
+//    }
 
     if (viewer == null) {
       updateListener = new AndroidUpdateListener(this);
@@ -97,11 +144,10 @@ public class JmolActivity extends Activity implements JmolStatusListener {
       viewer.script(STARTUP_SCRIPT);
     }
 
-    Log.w("Jmol", "onResume... viewer=" + viewer);
-    Log.w("Jmol", "onResume... opening " + opening);
+    Log.w("Jmol", "onResume... viewer=" + viewer + " opening=" + opening);
     updateListener.setPaused(false);    
     if (viewer.getAtomCount() > 0 && !updateListener.isShowingDialog()) {
-      updateListener.repaintEvent();
+      imageView.invalidate();
     } else {
       //        	this.setTitle(R.string.app_name);
       if (!opening) {
@@ -114,6 +160,7 @@ public class JmolActivity extends Activity implements JmolStatusListener {
       }
       opening = false;
     }
+    Log.w("Jmol", "onResume... done");
 
   };
 
@@ -130,26 +177,41 @@ public class JmolActivity extends Activity implements JmolStatusListener {
     /*    	if (scaleDetector.onTouchEvent(event))
         		return true;
     */
+    final int index = event.findPointerIndex(0);
+    if (index < 0 || updateListener == null)
+      return true;
+    Log.w("Jmol","onTouchEvent " + index + " " + event);
+    /*
+    
+    
+    int e = Integer.MIN_VALUE;
+    switch (event.getAction()) {
+    case MotionEvent.ACTION_DOWN:
+      e = Event.MOUSE_DOWN;
+      break;
+    case MotionEvent.ACTION_MOVE:
+      e = Event.MOUSE_DRAG;
+      break;
+    case MotionEvent.ACTION_UP:
+      e = Event.MOUSE_UP;
+      break;
+    default:
+      return true;
+    }
+    
     scaleDetector.onTouchEvent(event);
-
-    //      Log.w("Jmol","onTouchEvent " + event);
+    
+    updateListener.mouseEvent(e, (int) event.getX(index),
+        (int) event.getY(index), Event.MOUSE_LEFT, event.getEventTime());
+*/
+/*    
     switch (event.getAction()) {
     case MotionEvent.ACTION_DOWN:
       new AsyncTask<MotionEvent, Void, Void>() {
         @Override
         protected Void doInBackground(MotionEvent... event) {
-          viewer.mouseEvent(Event.MOUSE_DOWN, (int) event[0].getX(),
-              (int) event[0].getY(), Event.MOUSE_LEFT, event[0].getDownTime());
-          return null;
-        }
-      }.execute(event);
-      break;
-    case MotionEvent.ACTION_UP:
-      new AsyncTask<MotionEvent, Object, Object>() {
-        @Override
-        protected Void doInBackground(MotionEvent... event) {
-          viewer.mouseEvent(Event.MOUSE_UP, (int) event[0].getX(),
-              (int) event[0].getY(), Event.MOUSE_LEFT, event[0].getDownTime());
+          updateListener.mouseEvent(Event.MOUSE_DOWN, (int) event[index].getX(),
+              (int) event[index].getY(), Event.MOUSE_LEFT, event[index].getDownTime());
           return null;
         }
       }.execute(event);
@@ -158,14 +220,24 @@ public class JmolActivity extends Activity implements JmolStatusListener {
       new AsyncTask<MotionEvent, Object, Object>() {
         @Override
         protected Void doInBackground(MotionEvent... event) {
-          viewer.mouseEvent(Event.MOUSE_DRAG, (int) event[0].getX(),
-              (int) event[0].getY(), Event.MOUSE_LEFT, event[0].getDownTime());
+          updateListener.mouseEvent(Event.MOUSE_DRAG, (int) event[index].getX(),
+              (int) event[index].getY(), Event.MOUSE_LEFT, event[index].getDownTime());
+          return null;
+        }
+      }.execute(event);
+      break;
+    case MotionEvent.ACTION_UP:
+      new AsyncTask<MotionEvent, Object, Object>() {
+        @Override
+        protected Void doInBackground(MotionEvent... event) {
+          updateListener.mouseEvent(Event.MOUSE_UP, (int) event[index].getX(),
+              (int) event[index].getY(), Event.MOUSE_LEFT, event[index].getDownTime());
           return null;
         }
       }.execute(event);
       break;
     }
-
+*/
     return true;
   };
 

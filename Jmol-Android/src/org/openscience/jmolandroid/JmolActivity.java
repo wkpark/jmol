@@ -17,7 +17,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -30,30 +29,15 @@ import android.view.SurfaceView;
 public class JmolActivity extends Activity implements JmolStatusListener {
 
   /*
-   * Mario:
+   * General signal flow -- two cases:
    * 
-   * It seems to me we need to subclass ImageView so that we can add the 
+   * I. System calls onDraw(Canvas) for whatever reason.
+   *        Jmol draws onto it
    * 
-   * onDraw(Canvas) 
-   * 
-   * method. The sequence should be:
-   * 
-   * 
-   * I.
-   * System calls onDraw(Canvas)
-   * Jmol draws onto it
-   * 
-   * II.
-   * Jmol gets an event and needs an update
-   * Jmol sends imageView.invalidate()
-   * System calls onDraw(Canvas)
-   * 
-   * 
-   * but I don't see yet how you get that started.
-   * 
-   * Bob
-   * 
-   * 
+   * II. Jmol gets a user event or script completion or DELAY command
+   *     and needs an update
+   *        Jmol triggers imageView.postInvalidate()
+   *        System calls onDraw(Canvas)
    * 
    * 
    */
@@ -97,7 +81,7 @@ public class JmolActivity extends Activity implements JmolStatusListener {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(imageView = new JmolImageView(this.getBaseContext()));
+    setContentView(imageView = new JmolImageView(getBaseContext()));
     imageView.setWillNotDraw(false);
     viewer = null;
     SCALE_FACTOR = getResources().getDisplayMetrics().density + 0.5f;
@@ -154,7 +138,7 @@ public class JmolActivity extends Activity implements JmolStatusListener {
     if (viewer.getAtomCount() > 0) {// && !updateListener.isShowingDialog()) {
       imageView.invalidate();
     } else {
-      //        	this.setTitle(R.string.app_name);
+      //        	setTitle(R.string.app_name);
       if (!opening) {
         imageView.post(new Runnable() {
           @Override
@@ -173,14 +157,26 @@ public class JmolActivity extends Activity implements JmolStatusListener {
 
   @Override
   public void onBackPressed() {
-    this.finish();
+    finish();
   };
+
+  public void dismissDialog() {
+    // TODO Auto-generated method stub
+    if (pd == null)
+      return;
+    pd.dismiss();
+    pd = null;
+  }
+
+  public void repaint() {
+    Log.w("Jmol", "JmolActivity repaint " + imageView);
+    dismissDialog();
+    if (imageView != null)
+      imageView.postInvalidate();
+  }
 
   @Override
   public boolean onTouchEvent(final MotionEvent event) {
-    // don't process other touch events when zooming
-   // if (scaleDetector.onTouchEvent(event))
-     // return true;
     final int index = event.findPointerIndex(0);
     if (index < 0 || updateListener == null)
       return true;
@@ -198,50 +194,17 @@ public class JmolActivity extends Activity implements JmolStatusListener {
       break;
     }
     
-   // scaleDetector.onTouchEvent(event);
+   scaleDetector.onTouchEvent(event);
     
     if (e != Integer.MIN_VALUE)
       updateListener.mouseEvent(e, (int) event.getX(index),
           (int) event.getY(index), Event.MOUSE_LEFT, event.getEventTime());
-/*    
-    switch (event.getAction()) {
-    case MotionEvent.ACTION_DOWN:
-      new AsyncTask<MotionEvent, Void, Void>() {
-        @Override
-        protected Void doInBackground(MotionEvent... event) {
-          updateListener.mouseEvent(Event.MOUSE_DOWN, (int) event[index].getX(),
-              (int) event[index].getY(), Event.MOUSE_LEFT, event[index].getDownTime());
-          return null;
-        }
-      }.execute(event);
-      break;
-    case MotionEvent.ACTION_MOVE:
-      new AsyncTask<MotionEvent, Object, Object>() {
-        @Override
-        protected Void doInBackground(MotionEvent... event) {
-          updateListener.mouseEvent(Event.MOUSE_DRAG, (int) event[index].getX(),
-              (int) event[index].getY(), Event.MOUSE_LEFT, event[index].getDownTime());
-          return null;
-        }
-      }.execute(event);
-      break;
-    case MotionEvent.ACTION_UP:
-      new AsyncTask<MotionEvent, Object, Object>() {
-        @Override
-        protected Void doInBackground(MotionEvent... event) {
-          updateListener.mouseEvent(Event.MOUSE_UP, (int) event[index].getX(),
-              (int) event[index].getY(), Event.MOUSE_LEFT, event[index].getDownTime());
-          return null;
-        }
-      }.execute(event);
-      break;
-    }
-*/
     return true;
   };
 
   private class PinchZoomScaleListener extends
       ScaleGestureDetector.SimpleOnScaleGestureListener {
+    
     @Override
     public boolean onScale(final ScaleGestureDetector detector) {
       Log.w("JMOL", "old zoom=" + viewer.getZoomPercentFloat());
@@ -289,14 +252,14 @@ public class JmolActivity extends Activity implements JmolStatusListener {
     case R.id.open:
       File path = Downloader.getAppDir(this);
 
-      Intent intent = new Intent(this.getBaseContext(), FileDialog.class);
+      Intent intent = new Intent(getBaseContext(), FileDialog.class);
       intent.putExtra(FileDialog.START_PATH, path.getAbsolutePath());
-      this.startActivityForResult(intent, REQUEST_OPEN);
+      startActivityForResult(intent, REQUEST_OPEN);
       break;
     case R.id.download:
-      Intent dnIntent = new Intent(this.getBaseContext(),
+      Intent dnIntent = new Intent(getBaseContext(),
           PDBSearchActivity.class);
-      this.startActivityForResult(dnIntent, REQUEST_OPEN);
+      startActivityForResult(dnIntent, REQUEST_OPEN);
       break;
     case R.id.cpkspacefill:
       viewer.script("spacefill only;color cpk");
@@ -323,7 +286,7 @@ public class JmolActivity extends Activity implements JmolStatusListener {
     return true;
   }
 
-  ProgressDialog pd;
+  private ProgressDialog pd;
   public synchronized void onActivityResult(final int requestCode,
                                             int resultCode, final Intent data) {
     if (resultCode == Activity.RESULT_OK) {
@@ -411,21 +374,6 @@ public class JmolActivity extends Activity implements JmolStatusListener {
     // ignore -- applet only
     // TODO Auto-generated method stub
 
-  }
-
-  public void dismissDialog() {
-    // TODO Auto-generated method stub
-    if (pd == null)
-      return;
-    pd.dismiss();
-    pd = null;
-  }
-
-  public void repaint() {
-    Log.w("Jmol", "JmolActivity repaint " + imageView);
-    dismissDialog();
-    if (imageView != null)
-      imageView.postInvalidate();
   }
 
 }

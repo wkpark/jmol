@@ -21,6 +21,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -50,7 +51,7 @@ public class JmolActivity extends Activity implements JmolStatusListener {
   private final static String TEST_SCRIPT = ";load http://chemapps.stolaf.edu/jmol/docs/examples-12/data/caffeine.xyz;";
   //labels on; background labels white;spacefill on";
 
-  private final static String STARTUP_SCRIPT = "set allowGestures TRUE;unbind ALL _slidezoom;"
+  private final static String STARTUP_SCRIPT = "set zoomLarge false; set allowGestures TRUE; unbind ALL _slidezoom;"
       + TEST_SCRIPT;
 
   public static float SCALE_FACTOR;
@@ -80,6 +81,7 @@ public class JmolActivity extends Activity implements JmolStatusListener {
   private AndroidUpdateListener updateListener;
   private boolean opening;
   private ScaleGestureDetector scaleDetector;
+  private boolean resumeComplete;
 
   public SurfaceView getImageView() {
     return imageView;
@@ -88,76 +90,96 @@ public class JmolActivity extends Activity implements JmolStatusListener {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(imageView = new JmolImageView(this));
+    imageView = new JmolImageView(this);
     imageView.setWillNotDraw(false);
-    viewer = null;
-    SCALE_FACTOR = getResources().getDisplayMetrics().density + 0.5f;
+    setContentView(imageView);
+    updateListener = new AndroidUpdateListener(this);
 
+    SCALE_FACTOR = getResources().getDisplayMetrics().density + 0.5f;
     scaleDetector = new ScaleGestureDetector(this, new PinchZoomScaleListener());
+
   }
 
+  /*
+   * this is what took me ALL day to discover --
+   * -- sometimes onPause and onDestroy are sent
+   *    at the BEGINNING of a process. Don't know why...
+   *    anyway, the System.exit(0) was not good.
+   *    
   @Override
   protected void onDestroy() {
     super.onDestroy();
-
-    viewer.releaseScreenImage();
+    Log.w("Jmol", "onDestroy");
+    if (viewer != null)
+       viewer.releaseScreenImage();
 
     viewer = null;
     imageView = null;
     updateListener = null;
 
-    System.exit(0);
+    //System.exit(0);
   };
 
+*/
+  
   @Override
   protected void onPause() {
+    Log.w("Jmol", "onPause");
     super.onPause();
-    updateListener.setPaused(true);    
+    setPaused(true);    
+  }
+  
+  @Override
+  protected void onStop() {
+    Log.w("Jmol", "onStop");
+    super.onStop();
   }
   
   @Override
   protected void onResume() {
     super.onResume();
+    setPaused(false);
 
+    setDialog("Loading...");
+    
     Log.w("Jmol", "onResume..." + viewer);
     // am I correct that imageView is null if and only if viewer is null?
     // otherwise we could have a different imageView in updateListener than here
 
-//    if (imageView == null) {
-//      imageView = (SurfaceView) findViewById(R.id.imageMolecule);
-//    }
+    //    if (imageView == null) {
+    //      imageView = (SurfaceView) findViewById(R.id.imageMolecule);
+    //    }
 
     if (viewer == null) {
-      updateListener = new AndroidUpdateListener(this);
       // bit of a chicken and an egg here, but 
       // we pass the updateListener to viewer, where it will be called
       // the "display" and then Platform will get a call asking for an update.
       // not sure about the rest of it!
       viewer = JmolViewer.allocateViewer(updateListener,
           new SmarterJmolAdapter(), null, null, null,
-          "platform=org.openscience.jmolandroid.api.Platform", this);
-      viewer.script(STARTUP_SCRIPT);
-      return;
-    }
-
-    Log.w("Jmol", "onResume... viewer=" + viewer + " opening=" + opening);
-    updateListener.setPaused(false);    
-    if (viewer.getAtomCount() > 0) {// && !updateListener.isShowingDialog()) {
-      imageView.invalidate();
+          "-NOTmultitouch-tab platform=org.openscience.jmolandroid.api.Platform", this);
+      script(STARTUP_SCRIPT);
     } else {
-      //          setTitle(R.string.app_name);
-      if (!opening) {
-        imageView.post(new Runnable() {
-          @Override
-          public void run() {
-            openOptionsMenu();
-          }
-        });
+
+      Log.w("Jmol", "onResume... viewer=" + viewer + " opening=" + opening);
+      if (viewer.getAtomCount() > 0) {// && !updateListener.isShowingDialog()) {
+        imageView.invalidate();
+      } else {
+        //          setTitle(R.string.app_name);
+        if (!opening) {
+          imageView.post(new Runnable() {
+            @Override
+            public void run() {
+              openOptionsMenu();
+            }
+          });
+        }
+        opening = false;
       }
-      opening = false;
+
     }
     Log.w("Jmol", "onResume... done");
-
+    resumeComplete = true;
   };
 
   // TODO Auto-generated method stub
@@ -166,29 +188,6 @@ public class JmolActivity extends Activity implements JmolStatusListener {
   public void onBackPressed() {
     finish();
   };
-
-  public void dismissDialog() {
-    // TODO Auto-generated method stub
-    if (pd == null)
-      return;
-    pd.dismiss();
-    pd = null;
-  }
-
-  public void repaint() {
-//    if (drawTrigger)
-//      return;
-//    drawTrigger = true;
-    Log.w("Jmol", "JmolActivity repaint " + imageView);
-    dismissDialog();
-    try {
-    if (imageView != null)
-      imageView.postInvalidate();
-    } 
-    catch(Throwable e) {
-      e.printStackTrace();
-    }
-  }
 
   @Override
   public boolean onTouchEvent(final MotionEvent event) {
@@ -270,6 +269,9 @@ public class JmolActivity extends Activity implements JmolStatusListener {
     case R.id.command:
       prompt(/*GT._*/("Enter a script command:"), lastCommand, 0);
       break;      
+    case R.id.pdb:
+      prompt(/*GT._*/("Enter a PDB ID or text:"), lastPDB, 2);
+      break;      
     case R.id.open:
       File path = Downloader.getAppDir(this);
 
@@ -277,28 +279,23 @@ public class JmolActivity extends Activity implements JmolStatusListener {
       intent.putExtra(FileDialog.START_PATH, path.getAbsolutePath());
       startActivityForResult(intent, REQUEST_OPEN);
       break;
-    case R.id.pdb:
-      Intent dnIntent = new Intent(getBaseContext(),
-          PDBSearchActivity.class);
-      startActivityForResult(dnIntent, REQUEST_OPEN);
-      break;
     case R.id.cpkspacefill:
-      viewer.script("spacefill only;color cpk");
+      script("spacefill only;color cpk");
       break;
     case R.id.ballandstick:
-      viewer.script("wireframe -0.15;spacefill 23%;color cpk");
+      script("wireframe -0.15;spacefill 23%;color cpk");
       break;
     case R.id.sticks:
-      viewer.script("wireframe -0.3;color cpk");
+      script("wireframe -0.3;color cpk");
       break;
     case R.id.wireframe:
-      viewer.script("wireframe only;color cpk");
+      script("wireframe only;color cpk");
       break;
     case R.id.cartoon:
-      viewer.script("cartoons only;color cartoons structure");
+      script("cartoons only;color cartoons structure");
       break;
     case R.id.trace:
-      viewer.script("trace only;color trace structure");
+      script("trace only;color trace structure");
       break;
     default:
       return super.onOptionsItemSelected(item);
@@ -314,8 +311,7 @@ public class JmolActivity extends Activity implements JmolStatusListener {
 
       if (requestCode == REQUEST_OPEN) {
         
-        pd = ProgressDialog.show(this, "",
-            "Opening file...", true);
+        setDialog("Opening file...");
         
         //updateListener.manageDialog(ProgressDialog.show(this, "",
          //   "Opening file...", true), (byte) 2);
@@ -409,6 +405,8 @@ public class JmolActivity extends Activity implements JmolStatusListener {
     // Set an EditText view to get user input 
     final EditText input = new EditText(this);
     input.setText(text);
+    input.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+    input.setSelectAllOnFocus(true);
     alert.setView(input);
 
     alert.setPositiveButton(/*GT._*/("OK"), new DialogInterface.OnClickListener() {
@@ -422,21 +420,97 @@ public class JmolActivity extends Activity implements JmolStatusListener {
         // ignore
       }
     });
+    
     alert.show();
   }
 
   private String lastCommand = "wireframe only";
   private String lastMolecule = "acetaminophen";
+  private String lastPDB = "1crn";
   
   protected void processUserInput(String cmd) {
     switch (myType) {
     case 1: // mol
-      viewer.script("load \"$" + (lastMolecule  = cmd) + "\"");
+      script("load \"$" + (lastMolecule  = cmd) + "\"");
       break;
     case 0: // script
-    default:
-      viewer.script(lastCommand = cmd);
+      script(lastCommand = cmd);
+      break;
+    case 2:
+      lastPDB = cmd;
+      Intent dnIntent = new Intent(getBaseContext(),
+          PDBSearchActivity.class);
+      dnIntent.setAction("jmol::" + cmd);
+      startActivityForResult(dnIntent, REQUEST_OPEN);
+      break;
     }
   }
+
+  private void script(String script) {
+    viewer.script(script);
+  }
   
+  protected void setDialog(String text) {
+    dismissDialog();
+    pd = ProgressDialog.show(this, "", text, true);  
+  }
+  
+  protected void dismissDialog() {
+    // TODO Auto-generated method stub
+    if (pd == null || !resumeComplete)
+      return;
+    pd.dismiss();
+    pd = null;
+  }
+
+  public void repaint() {
+    //    if (drawTrigger)
+    //      return;
+    //    drawTrigger = true;
+    Log.w("Jmol", "JmolActivity repaint " + imageView);
+    dismissDialog();
+    if (paused || updating || viewer == null)
+      return;
+    if (imageView != null)
+      //updateCanvas(); // alternative was not nec. after system.exit(0) was removed.
+      imageView.postInvalidate(); 
+  }
+
+  
+  private boolean updating;
+  private boolean paused;
+  
+  /*
+  private void updateCanvas() {
+    Log.w("Jmol","updateCanvas paused/updating " + paused + " " + updating);
+    long start = System.currentTimeMillis();
+
+    synchronized (imageView) {
+      updating = true;
+      Canvas canvas = null;
+      try {
+        canvas = imageView.getHolder().lockCanvas();
+        canvas.getHeight(); // simple test for canvas not null
+      } catch (Exception e) {
+        Log.w("Jmol", "Unable to lock the canvas\n");
+        //e.printStackTrace();
+      }
+      if (canvas != null) {
+        // at least for now we want to see errors traced to their Jmol methods, not trapped here
+        viewer.renderScreenImage(canvas, null, canvas.getWidth(), canvas
+            .getHeight());
+        imageView.getHolder().unlockCanvasAndPost(canvas);
+        Log.d("Jmol", "Image updated in " + (System.currentTimeMillis() - start)
+            + " ms");
+        Log.d("Jmol", "Zoom % " + viewer.getZoomPercentFloat());
+      }
+      updating = false;
+    }
+  }
+  */
+  protected void setPaused(boolean TF) {
+    paused = TF;    
+    Log.w("Jmol","setPaused " + paused);
+  }
+
 }

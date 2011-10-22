@@ -1,19 +1,11 @@
 package org.openscience.jmolandroid.api;
 
-import org.jmol.api.Event;
 import org.jmol.api.JmolViewer;
 import org.openscience.jmolandroid.JmolActivity;
-
-import android.app.Dialog;
-import android.graphics.Canvas;
-import android.util.Log;
-import android.view.SurfaceView;
 
 public class AndroidUpdateListener {
 
   private JmolViewer viewer;
-//  private byte counter;
-//  private Dialog dialog;
   private JmolActivity ja;
 
   public AndroidUpdateListener(JmolActivity ja) {
@@ -24,6 +16,11 @@ public class AndroidUpdateListener {
     this.viewer = viewer;
   }
 
+  public void getScreenDimensions(int[] widthHeight) {
+    widthHeight[0] = ja.getImageView().getWidth();
+    widthHeight[1] = ja.getImageView().getHeight();
+  }
+  
   public void setScreenDimension() {
     int width = ja.getImageView().getWidth();
     int height = ja.getImageView().getHeight();
@@ -36,62 +33,8 @@ public class AndroidUpdateListener {
     ja.repaint();
   }
 
-  /*  
-
-  private boolean updating;
-  protected void updateCanvas() {
-    Log.w("Jmol","updateCanvas paused/updating " + paused + " " + updating);
-    if (paused || updating)
-      return;
-    SurfaceView imageView = ja.getImageView();
-    long start = System.currentTimeMillis();
-
-    synchronized (imageView) {
-      updating = true;
-      Canvas canvas = null;
-      try {
-        canvas = imageView.getHolder().lockCanvas();
-        canvas.getHeight(); // simple test for canvas not null
-      } catch (Exception e) {
-        Log.w("Jmol", "Unable to lock the canvas\n");
-        //e.printStackTrace();
-      }
-      if (canvas != null) {
-        // at least for now we want to see errors traced to their Jmol methods, not trapped here
-        viewer.renderScreenImage(canvas, null, canvas.getWidth(), canvas
-            .getHeight());
-        imageView.getHolder().unlockCanvasAndPost(canvas);
-      }
-      updating = false;
-    }
-    Log.d("Jmol", "Image updated in " + (System.currentTimeMillis() - start)
-        + " ms");
-    Log.d("Jmol", "Zoom % " + viewer.getZoomPercentFloat());
-  }
-*/
-
-  private boolean paused;
-  public void setPaused(boolean TF) {
-    paused = TF;    
-  }
-
-  /*
-  public void manageDialog(Dialog dialog, byte value) {
-    this.dialog = dialog;
-    counter = value;
-  }
-
-  public boolean isShowingDialog() {
-    return dialog != null;
-  }
-*/
-//  boolean eventRunning;
   public void mouseEvent(int id, int x, int y, int modifiers, long when) {
-//    if (id == Event.MOUSE_DRAG && eventRunning)
-  //    return;
-    //eventRunning = true;
     viewer.mouseEvent(id, x, y, modifiers, when);
-    //eventRunning = false;
   }
 
 }

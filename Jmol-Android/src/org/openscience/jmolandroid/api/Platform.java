@@ -1,5 +1,7 @@
 package org.openscience.jmolandroid.api;
 
+import javax.vecmath.Point3f;
+
 import org.jmol.api.ApiPlatform;
 import org.jmol.api.JmolPopupInterface;
 import org.jmol.api.JmolViewer;
@@ -17,6 +19,16 @@ public class Platform implements ApiPlatform {
   
   ///// Display -- AndroidUpdateListener
   
+  @Override
+  public void convertPointFromScreen(Object display, Point3f ptTemp) {
+    // unnecessary
+  }
+
+  @Override
+  public void getFullScreenDimensions(Object display, int[] widthHeight) {
+    ((AndroidUpdateListener) display).getScreenDimensions(widthHeight);    
+  }
+
   public JmolPopupInterface getMenuPopup(Viewer viewer, String menuStructure,
                                          char type) {
     // ignored

@@ -6,7 +6,16 @@
     >
     <LinearLayout android:id="@+id/linearLayout1" android:layout_height="wrap_content" android:layout_width="fill_parent">
         <TextView android:text="PDB ID or Text:" android:id="@+id/textView1" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
-        <EditText android:id="@+id/searchText" android:layout_height="wrap_content" android:layout_width="wrap_content" android:layout_weight="1" android:singleLine="true">
+
+        <EditText
+            android:id="@+id/searchText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="textNoSuggestions"
+            android:selectAllOnFocus="true"
+            android:singleLine="true" >
+
             <requestFocus/>
         </EditText>
         <Button android:text="Search" android:id="@+id/searchButton" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>

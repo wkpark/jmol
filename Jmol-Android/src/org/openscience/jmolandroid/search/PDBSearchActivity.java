@@ -45,97 +45,115 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 public class PDBSearchActivity extends Activity {
-	private PDBResultAdapter adapter;
-	private static final String query = "<orgPdbQuery><queryType>org.pdb.query.simple.AdvancedKeywordQuery</queryType><description>Text Search</description><keywords>%s</keywords></orgPdbQuery>";
+	
+  protected static final String query = "<orgPdbQuery><queryType>org.pdb.query.simple.AdvancedKeywordQuery</queryType><description>Text Search</description><keywords>%s</keywords></orgPdbQuery>";
+	protected EditText editText;
+	protected PDBResultAdapter adapter;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.search);
-        
-		ListView resultsList = (ListView)this.findViewById(R.id.resultsListView);
-        adapter = new PDBResultAdapter(this, android.R.layout.simple_list_item_1, new ArrayList<PDBResult>());
-		resultsList.setAdapter(adapter);
-        
-		resultsList.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-		      public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				final PDBResult result = adapter.getItem(position);
-				
-				AlertDialog.Builder builder = new AlertDialog.Builder(PDBSearchActivity.this);
-				builder.setMessage("Download " + result.getId() + "?")
-				       .setCancelable(false)
-				       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-				           public void onClick(DialogInterface dialog, int id) {
-				        	   final Handler handler = new Handler();
-				        	   final Downloader dn = new Downloader(PDBSearchActivity.this, handler);
-				    			new AsyncTask<Void, Void, Void>(){
-									@Override
-									protected Void doInBackground(Void... v) {
-						        	    dn.download(result.getId());
-							    		return null;
-									}
-									@Override protected void onPostExecute(Void v) {
-										if (dn.progressDialog.isShowing()) {
-											dn.progressDialog.dismiss();
-										}
-										
-										getIntent().putExtra(FileDialog.RESULT_PATH, dn.file.getAbsolutePath());
-										setResult(RESULT_OK, getIntent());
-										
-						        	    finish();
-									};
-				    			}.execute((Void[])null);
-				           }
-				       })
-				       .setNegativeButton("No", new DialogInterface.OnClickListener() {
-				           public void onClick(DialogInterface dialog, int id) {
-				                dialog.cancel();
-				           }
-				       });
-				AlertDialog alert = builder.create();
-				alert.show();
-		      }                 
-		});
-		
-        final Button seachButton = (Button)this.findViewById(R.id.searchButton);
-        seachButton.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v) {
-				final ProgressDialog progressDialog = ProgressDialog.show(PDBSearchActivity.this, "Searching", "Loading Results", true);
-				(new AsyncTask<Void, Void, List<PDBResult>>(){
-				     protected List<PDBResult> doInBackground(Void... none) {
-				    	 try {
-				    		 EditText editText = (EditText)PDBSearchActivity.this.findViewById(R.id.searchText);
-							 List<String> ids = PDBSearchActivity.this.search(editText.getText().toString());
-							 
-							 if (ids.size() > 1) {
-					    		 // Hide keyboard
-					    		 InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-					    		 imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
-							 }
-							 
-							 return PDBSearchActivity.this.getDescriptions(ids);
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-				    	 return Collections.emptyList();
-				     }
+	@Override
+  public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.search);
+    String text = getIntent().getAction().substring(6);
+    editText = (EditText) findViewById(R.id.searchText);
+    editText.setText(text);
 
-				     protected void onPostExecute(List<PDBResult> data) {
-				 		adapter.clear();
-				 		for (PDBResult result : data)
-				 			adapter.add(result);
-						adapter.notifyDataSetChanged();
+    ListView resultsList = (ListView) findViewById(R.id.resultsListView);
+    adapter = new PDBResultAdapter(this, android.R.layout.simple_list_item_1,
+        new ArrayList<PDBResult>());
+    resultsList.setAdapter(adapter);
 
-						progressDialog.dismiss();
-				     }
-				 }).execute((Void[])null);
-			}});
-    }
+    resultsList.setOnItemClickListener(new OnItemClickListener() {
+      @Override
+      public void onItemClick(AdapterView<?> parent, View view, int position,
+                              long id) {
+        final PDBResult result = adapter.getItem(position);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(
+            PDBSearchActivity.this);
+        builder.setMessage("Download " + result.getId() + "?").setCancelable(
+            false).setPositiveButton("Yes",
+            new DialogInterface.OnClickListener() {
+              public void onClick(DialogInterface dialog, int id) {
+                final Handler handler = new Handler();
+                final Downloader dn = new Downloader(PDBSearchActivity.this,
+                    handler);
+                new AsyncTask<Void, Void, Void>() {
+                  @Override
+                  protected Void doInBackground(Void... v) {
+                    dn.download(result.getId());
+                    return null;
+                  }
+
+                  @Override
+                  protected void onPostExecute(Void v) {
+                    if (dn.progressDialog.isShowing()) {
+                      dn.progressDialog.dismiss();
+                    }
+
+                    getIntent().putExtra(FileDialog.RESULT_PATH,
+                        dn.file.getAbsolutePath());
+                    setResult(RESULT_OK, getIntent());
+
+                    finish();
+                  };
+                }.execute((Void[]) null);
+              }
+            }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+          public void onClick(DialogInterface dialog, int id) {
+            dialog.cancel();
+          }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
+      }
+    });
+
+    final Button seachButton = (Button) findViewById(R.id.searchButton);
+    seachButton.setOnClickListener(new OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        doSearch();
+      }
+    });
     
-	private List<String> search(String term) {
+    if (text.length() != 0)
+      doSearch();
+  }
+
+	protected void doSearch() {
+    final ProgressDialog progressDialog = ProgressDialog.show(
+        PDBSearchActivity.this, "Searching", "Loading Results", true);
+    (new AsyncTask<Void, Void, List<PDBResult>>() {
+      protected List<PDBResult> doInBackground(Void... none) {
+        try {
+          List<String> ids = search(editText.getText().toString());
+
+          if (ids.size() > 1) {
+            // Hide keyboard
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+          }
+
+          return getDescriptions(ids);
+        } catch (Exception e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        return Collections.emptyList();
+      }
+
+      protected void onPostExecute(List<PDBResult> data) {
+        adapter.clear();
+        for (PDBResult result : data)
+          adapter.add(result);
+        adapter.notifyDataSetChanged();
+        progressDialog.dismiss();
+      }
+    }).execute((Void[]) null);
+	}
+	
+	protected List<String> search(String term) {
 		List<String> result = new LinkedList<String>();
 		
 	    HttpClient httpclient = new DefaultHttpClient();
@@ -163,10 +181,10 @@ public class PDBSearchActivity extends Activity {
 	    return result;
 	}
 	
-	private List<PDBResult> getDescriptions(List<String> ids) throws Exception {
+	protected List<PDBResult> getDescriptions(List<String> ids) throws Exception {
 		List<PDBResult> results = new LinkedList<PDBResult>();
 		
-		String idsAsString = this.listToCSV(ids.subList(0, Math.min(ids.size(), 50)));
+		String idsAsString = listToCSV(ids.subList(0, Math.min(ids.size(), 50)));
 	    Log.i("JMOL", "Getting descriptions for " + idsAsString);
 
         HttpClient httpclient = new DefaultHttpClient();
@@ -196,7 +214,7 @@ public class PDBSearchActivity extends Activity {
 		return results;
 	}
 	
-	private String listToCSV(List<String> values) {
+	protected String listToCSV(List<String> values) {
 		StringBuilder builder = new StringBuilder();
 
 		for (String value : values) {

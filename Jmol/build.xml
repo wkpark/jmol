@@ -771,11 +771,18 @@ all support for previous versions removed
         <exclude name="org/jmol/console/**/*" />
         <exclude name="org/jmol/export/**/*" />
         <exclude name="org/jmol/modelkit/**/*" />
-        <exclude name="org/jmol/multitouch/**/*" />
+        <exclude name="org/jmol/multitouch/jni/*" />
+        <exclude name="org/jmol/multitouch/sparshui/*" />
         <exclude name="org/jmol/popup/**/*" />
         <exclude name="org/jmol/translation/**/*" />
         <exclude name="org/openscience/**/*" />
-        <exclude name="com/sparshui/**/*" />
+      	<!-- just need sparshUI gestureType.class -->
+        <exclude name="com/sparshui/client/*" />
+        <exclude name="com/sparshui/common/**/**/*" />
+        <exclude name="com/sparshui/cpp/*" />
+        <exclude name="com/sparshui/gestures/*" />
+        <exclude name="com/sparshui/inputdevice/*" />
+        <exclude name="com/sparshui/server/*" />
         <exclude name="com/json/**/*" />
         <exclude name="JmolApplet*" />
       </fileset>

@@ -8,13 +8,16 @@ import org.jmol.api.Event;
 import org.jmol.api.JmolStatusListener;
 import org.jmol.api.JmolViewer;
 import org.jmol.constant.EnumCallback;
+//import org.jmol.i18n.GT;
 import org.openscience.jmolandroid.api.AndroidUpdateListener;
 import org.openscience.jmolandroid.search.Downloader;
 import org.openscience.jmolandroid.search.PDBSearchActivity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.os.Bundle;
@@ -25,6 +28,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.SurfaceView;
+import android.widget.EditText;
 
 public class JmolActivity extends Activity implements JmolStatusListener {
 
@@ -59,15 +63,18 @@ public class JmolActivity extends Activity implements JmolStatusListener {
       Log.w("Jmol", "JmolImageView " + this);
     }
 
+    
     @Override
     protected void onDraw(Canvas canvas) {
-      //super.onDraw(canvas);
+      super.onDraw(canvas);
       Log.w("Jmol", "JmolActivity onDraw");
       viewer.renderScreenImage(canvas, null, canvas.getWidth(), canvas.getHeight());
+//      drawTrigger = false;
     }
   }
 
   
+//  protected boolean drawTrigger;
   private JmolViewer viewer;
   private JmolImageView imageView;
   private AndroidUpdateListener updateListener;
@@ -81,7 +88,7 @@ public class JmolActivity extends Activity implements JmolStatusListener {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(imageView = new JmolImageView(getBaseContext()));
+    setContentView(imageView = new JmolImageView(this));
     imageView.setWillNotDraw(false);
     viewer = null;
     SCALE_FACTOR = getResources().getDisplayMetrics().density + 0.5f;
@@ -138,7 +145,7 @@ public class JmolActivity extends Activity implements JmolStatusListener {
     if (viewer.getAtomCount() > 0) {// && !updateListener.isShowingDialog()) {
       imageView.invalidate();
     } else {
-      //        	setTitle(R.string.app_name);
+      //          setTitle(R.string.app_name);
       if (!opening) {
         imageView.post(new Runnable() {
           @Override
@@ -169,14 +176,23 @@ public class JmolActivity extends Activity implements JmolStatusListener {
   }
 
   public void repaint() {
+//    if (drawTrigger)
+//      return;
+//    drawTrigger = true;
     Log.w("Jmol", "JmolActivity repaint " + imageView);
     dismissDialog();
+    try {
     if (imageView != null)
       imageView.postInvalidate();
+    } 
+    catch(Throwable e) {
+      e.printStackTrace();
+    }
   }
 
   @Override
   public boolean onTouchEvent(final MotionEvent event) {
+    scaleDetector.onTouchEvent(event);
     final int index = event.findPointerIndex(0);
     if (index < 0 || updateListener == null)
       return true;
@@ -194,7 +210,6 @@ public class JmolActivity extends Activity implements JmolStatusListener {
       break;
     }
     
-   scaleDetector.onTouchEvent(event);
     
     if (e != Integer.MIN_VALUE)
       updateListener.mouseEvent(e, (int) event.getX(index),
@@ -249,6 +264,12 @@ public class JmolActivity extends Activity implements JmolStatusListener {
   public boolean onOptionsItemSelected(MenuItem item) {
     // Handle item selection
     switch (item.getItemId()) {
+    case R.id.mol:
+      prompt(/*GT._*/("Enter a molecule name:"), lastMolecule, 1);
+      break;      
+    case R.id.command:
+      prompt(/*GT._*/("Enter a script command:"), lastCommand, 0);
+      break;      
     case R.id.open:
       File path = Downloader.getAppDir(this);
 
@@ -256,7 +277,7 @@ public class JmolActivity extends Activity implements JmolStatusListener {
       intent.putExtra(FileDialog.START_PATH, path.getAbsolutePath());
       startActivityForResult(intent, REQUEST_OPEN);
       break;
-    case R.id.download:
+    case R.id.pdb:
       Intent dnIntent = new Intent(getBaseContext(),
           PDBSearchActivity.class);
       startActivityForResult(dnIntent, REQUEST_OPEN);
@@ -376,4 +397,46 @@ public class JmolActivity extends Activity implements JmolStatusListener {
 
   }
 
+  protected int myType;
+  
+  private void prompt(String title, String text, int type) {
+    
+    myType = type;
+    AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+    alert.setTitle(title);
+
+    // Set an EditText view to get user input 
+    final EditText input = new EditText(this);
+    input.setText(text);
+    alert.setView(input);
+
+    alert.setPositiveButton(/*GT._*/("OK"), new DialogInterface.OnClickListener() {
+    public void onClick(DialogInterface dialog, int whichButton) {
+      processUserInput(input.getText().toString());
+    }
+    });
+
+    alert.setNegativeButton(/*GT._*/("Cancel"), new DialogInterface.OnClickListener() {
+      public void onClick(DialogInterface dialog, int whichButton) {
+        // ignore
+      }
+    });
+    alert.show();
+  }
+
+  private String lastCommand = "wireframe only";
+  private String lastMolecule = "acetaminophen";
+  
+  protected void processUserInput(String cmd) {
+    switch (myType) {
+    case 1: // mol
+      viewer.script("load \"$" + (lastMolecule  = cmd) + "\"");
+      break;
+    case 0: // script
+    default:
+      viewer.script(lastCommand = cmd);
+    }
+  }
+  
 }

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       android:versionCode="1"
-      android:versionName="1.0" package="org.openscience.jmolandroid">
+      android:versionName="1.1" package="org.openscience.jmolandroid">
     <uses-sdk android:minSdkVersion="8" />
 
 <!-- android:largeHeap="true" -->
-    <application android:icon="@drawable/icon" android:label="@string/app_name" android:debuggable="false">
+    <application android:icon="@drawable/icon" android:label="@string/app_name" android:debuggable="true">
         <activity android:label="@string/app_name" android:name=".JmolActivity" android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -2,7 +2,8 @@
 <menu
   xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:title="Open" android:id="@+id/open"></item>
-    <item android:title="Download" android:id="@+id/download"></item>
+    <item android:title="PDB" android:id="@+id/pdb"></item>
+        <item android:title="Mol" android:id="@+id/mol"></item>
     <item android:title="Style" android:id="@+id/style">
     	<menu>
 		    <group android:id="@+id/stylegrp" android:checkableBehavior="single">
@@ -15,4 +16,5 @@
 		    </group>
 	    </menu>
     </item>
+    <item android:title="Command" android:id="@+id/command"></item>
 </menu>

@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sparshui.GestureType;
 import com.sparshui.common.Event;
 import com.sparshui.common.TouchState;
 import com.sparshui.gestures.Gesture;
-import com.sparshui.gestures.GestureType;
 
 /**
  * Represents a group of touch points 

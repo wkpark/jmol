@@ -6,7 +6,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import com.sparshui.gestures.GestureType;
+import com.sparshui.GestureType;
 
 /**
  * Represents a network connection to a client.

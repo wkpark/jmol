@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import org.jmol.util.Logger;
 
+import com.sparshui.GestureType;
 import com.sparshui.common.Event;
 import com.sparshui.common.TouchState;
 import com.sparshui.common.messages.events.TouchEvent;
 import com.sparshui.gestures.Gesture;
-import com.sparshui.gestures.GestureType;
 import com.sparshui.server.TouchPoint;
 
 /**

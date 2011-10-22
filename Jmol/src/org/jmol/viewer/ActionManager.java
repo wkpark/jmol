@@ -2058,6 +2058,7 @@ public class ActionManager {
     }
   
     int add(int action, int x, int y, long time) {
+      System.out.println("ActionMan gesture add " + action + " " + x + " " + y + " " + time);
       this.action = action;
       getNode(ptNext).set(ptNext, x, y, time - time0);
       ptNext++;
@@ -2075,6 +2076,7 @@ public class ActionManager {
 
     public float getSpeedPixelsPerMillisecond(int nPoints, int nPointsPrevious) {
       nPoints = getPointCount(nPoints, nPointsPrevious);
+      System.out.println("ActionMan getSpeed " + nPoints + " " + nPointsPrevious);
       if (nPoints < 2)
         return 0;
       MotionPoint mp1 = getNode(ptNext - 1 - nPointsPrevious);

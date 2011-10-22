@@ -28,7 +28,7 @@ import java.util.List;
 
 import javax.vecmath.Point3f;
 
-import com.sparshui.gestures.GestureType;
+import com.sparshui.GestureType;
 
 public interface JmolMultiTouchClient {
   

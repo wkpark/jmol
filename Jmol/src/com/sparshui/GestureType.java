@@ -1,4 +1,4 @@
-package com.sparshui.gestures;
+package com.sparshui;
 
 /**
  * This class is a place for the enum GestureType to stand.

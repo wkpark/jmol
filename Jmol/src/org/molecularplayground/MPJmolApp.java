@@ -39,6 +39,10 @@ public class MPJmolApp implements JsonNioClient {
     new MPJmolApp(args.length > 1 ? Integer.parseInt(args[1]) : 31416);
   }
 
+  public MPJmolApp() {
+    this(31416);
+  }
+  
   public MPJmolApp(int port) {
     startJsonNioKiosk(port);
   }
@@ -46,7 +50,7 @@ public class MPJmolApp implements JsonNioClient {
   private JsonNioService service;
   private BannerFrame bannerFrame;
   private KioskFrame kioskFrame;
-
+  
   private void startJsonNioKiosk(int port) {
     KioskPanel kioskPanel = new KioskPanel();
     bannerFrame = new BannerFrame(1024, 75);
@@ -54,7 +58,7 @@ public class MPJmolApp implements JsonNioClient {
     try {
       setBannerLabel("click below and type exitJmol[enter] to quit");
       jmolViewer
-          .script("set allowKeyStrokes;set zoomLarge false;set frank off;set antialiasdisplay off");
+          .script("set allowgestures;set allowKeyStrokes;set zoomLarge false;set frank off;set antialiasdisplay off");
       String path = System.getProperty("user.dir").replace('\\', '/')
           + "/Content-Cache/%ID%/%ID%.json";
       jmolViewer.script("NIOcontentPath=\"" + path + "\";NIOterminatorMessage='MP_DONE'");

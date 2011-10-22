@@ -23,12 +23,6 @@
  */
 package org.jmol.multitouch;
 
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.Toolkit;
-
-import javax.swing.SwingUtilities;
 import javax.vecmath.Point3f;
 
 import org.jmol.util.Logger;
@@ -37,8 +31,9 @@ import org.jmol.viewer.Viewer;
 public abstract class JmolMultiTouchClientAdapter implements JmolMultiTouchAdapter {
 
   protected JmolMultiTouchClient actionManager;
-  protected Component display;
   protected boolean isServer;
+  private Viewer viewer;
+  private int[] screen = new int[2];  
   
   public boolean isServer() {
     return isServer;
@@ -47,21 +42,15 @@ public abstract class JmolMultiTouchClientAdapter implements JmolMultiTouchAdapt
   // methods Jmol needs -- from viewer.ActionManagerMT
 
   public abstract void dispose();
-  
+
   public boolean setMultiTouchClient(Viewer viewer, JmolMultiTouchClient client,
                               boolean isSimulation) {
-    this.display = (Component) viewer.getDisplay();
+    this.viewer = viewer;
     actionManager = client; // ActionManagerMT
-    return true;
-  }
-  
-  private static int screenWidth, screenHeight;
-  static {
-    Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
-    screenWidth = screen.width;
-    screenHeight = screen.height;
+    viewer.getApiPlatform().getFullScreenDimensions(viewer.getDisplay(), screen);
     if (Logger.debugging)
-      Logger.info("screen resolution: " + screenWidth + " x " + screenHeight);
+      Logger.info("screen resolution: " + screen[0] + " x " + screen[1]);
+    return true;
   }
   
   public void mouseMoved(int x, int y) {
@@ -69,12 +58,10 @@ public abstract class JmolMultiTouchClientAdapter implements JmolMultiTouchAdapt
     //System.out.println("mouseMove " + x + " " + y);
   }
 
-  protected Point xyTemp = new Point();
   protected Point3f ptTemp = new Point3f();
   protected void fixXY(float x, float y, boolean isAbsolute) {
-    xyTemp.setLocation(x * screenWidth, y * screenHeight);
+    ptTemp.set(x * screen[0], y * screen[1], Float.NaN);
     if (isAbsolute)
-      SwingUtilities.convertPointFromScreen(xyTemp, display);
-    ptTemp.set(xyTemp.x, xyTemp.y, Float.NaN);
+      viewer.getApiPlatform().convertPointFromScreen(viewer.getDisplay(), ptTemp);
   }
 } 

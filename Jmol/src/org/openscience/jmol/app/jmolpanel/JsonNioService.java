@@ -28,7 +28,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.Calendar;
 
 import javax.vecmath.Point3f;
 
@@ -281,7 +280,7 @@ public class JsonNioService extends NIOService {
       try {
         while (!halt) {
           selectNonBlocking();
-          long now = Calendar.getInstance().getTimeInMillis();
+          long now = System.currentTimeMillis();
           // No commands for 5 seconds = unpause/restore Jmol
           if (isPaused && now - lastMoveTime > 5000)
             pauseScript(false);
@@ -395,13 +394,20 @@ public class JsonNioService extends NIOService {
     }
   }
 
+  private int nFast;
+  private float swipeCutoff = 100;
+  private int swipeCount = 2;
+  private float swipeDelayMs = 3000;
+  private long lastTime;
+  private long swipeStart;
+  private float swipeFactor = 30;
 
   protected void processMessage(byte[] packet, NIOSocket socket) {
     try {
       String msg = new String(packet);
+      Logger.info("JNIOS received " + msg + " "
+          + Thread.currentThread().getName());
       if (jmolViewer == null) {
-        Logger.info("JNIOS " + Thread.currentThread().getName() + " received "
-            + msg);
         return;
       }
       JSONObject json = new JSONObject(msg);
@@ -447,11 +453,35 @@ public class JsonNioService extends NIOService {
             .getString("style"));
         if (iStyle != 0 && !isPaused)
           pauseScript(true);
-        lastMoveTime = Calendar.getInstance().getTimeInMillis();
+        lastMoveTime = System.currentTimeMillis();
         switch (iStyle) {
         case 0: // rotate
-          jmolViewer.syncScript("Mouse: rotateXYBy " + json.getString("x")
-              + " " + json.getString("y"), "~", 0);
+          System.out.println("ls " + (lastMoveTime) + " " + swipeStart  + " "  + (lastMoveTime - swipeStart));
+          if (lastMoveTime - swipeStart > swipeDelayMs) {
+            // it's been a while since the last swipe....
+            float dx = (float) json.getDouble("x");
+            float dy = (float) json.getDouble("y");
+            float dxdy = dx * dx + dy * dy;
+            // ... send rotation in all cases
+            System.out.println("JNS - nFast=" + nFast + "  "
+                + dxdy);
+            msg = "Mouse: rotateXYBy " + dx + " " + dy;
+            if (dxdy > swipeCutoff) {
+              if (++nFast > swipeCount) {
+                // critical number of fast motions reached
+                // start spinning
+                swipeStart = lastMoveTime;
+                msg = "Mouse: spinXYBy " + (int) dx + " " + (int) dy + " " + (Math.sqrt(dxdy) * swipeFactor /(lastMoveTime - lastTime));
+              }
+            } else if (nFast > 0) {
+              // slow movement detected -- turn off spinning
+              // and reset the 
+              nFast = 0;
+              msg = "Mouse: spinXYBy 0 0 0";
+            }
+            jmolViewer.syncScript(msg, "~", 0);
+          }
+          lastTime = lastMoveTime;
           break;
         case 10: // translate
           jmolViewer.syncScript("Mouse: translateXYBy " + json.getString("x")

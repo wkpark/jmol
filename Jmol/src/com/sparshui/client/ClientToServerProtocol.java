@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.List;
 
+import com.sparshui.GestureType;
 import com.sparshui.common.ClientProtocol;
 import com.sparshui.common.Event;
 import com.sparshui.common.Location;
 import com.sparshui.common.messages.events.*;
 import com.sparshui.common.utils.Converter;
-import com.sparshui.gestures.GestureType;
 
 /**
  * ClientToServerProtocol implements the Client side protocol. It is the

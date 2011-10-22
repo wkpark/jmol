@@ -1,5 +1,7 @@
 package org.jmol.api;
 
+import javax.vecmath.Point3f;
+
 import org.jmol.g3d.Font3D;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.Viewer;
@@ -10,6 +12,10 @@ public interface ApiPlatform {
   
   /////// Display
 
+  void convertPointFromScreen(Object display, Point3f ptTemp);
+
+  void getFullScreenDimensions(Object display, int[] widthHeight);
+  
   boolean hasFocus(Object display);
 
   String prompt(String label, String data, String[] list, boolean asButtons);

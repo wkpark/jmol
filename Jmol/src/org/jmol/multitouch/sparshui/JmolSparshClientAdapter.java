@@ -36,6 +36,7 @@ import org.jmol.multitouch.JmolMultiTouchClientAdapter;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
 
+import com.sparshui.GestureType;
 import com.sparshui.client.SparshClient;
 import com.sparshui.client.ClientServerConnection;
 import com.sparshui.common.Event;
@@ -45,7 +46,6 @@ import com.sparshui.common.messages.events.DragEvent;
 import com.sparshui.common.messages.events.RotateEvent;
 import com.sparshui.common.messages.events.TouchEvent;
 import com.sparshui.common.messages.events.ZoomEvent;
-import com.sparshui.gestures.GestureType;
 
 public class JmolSparshClientAdapter extends JmolMultiTouchClientAdapter implements SparshClient {
 
@@ -164,7 +164,7 @@ public class JmolSparshClientAdapter extends JmolMultiTouchClientAdapter impleme
     if (actionManager == null)
       return 0;
     fixXY(location.getX(), location.getY(), true);
-    return (actionManager == null ? 0 : actionManager.getGroupID(xyTemp.x, xyTemp.y));
+    return (actionManager == null ? 0 : actionManager.getGroupID((int) ptTemp.x, (int) ptTemp.y));
   }
 
   /* mouse click:

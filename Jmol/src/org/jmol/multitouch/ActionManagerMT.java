@@ -36,7 +36,7 @@ import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 import org.jmol.viewer.binding.Binding;
 
-import com.sparshui.gestures.GestureType;
+import com.sparshui.GestureType;
 
 public class ActionManagerMT extends ActionManager implements JmolMultiTouchClient {
 
@@ -60,12 +60,16 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     boolean isSimulated = (commandOptions.indexOf("-multitouch-sparshui-simulated") >= 0);
     boolean isJNI = (commandOptions.indexOf("-multitouch-jni") >= 0);
     boolean isMP = (commandOptions.indexOf("-multitouch-mp") >= 0);
-    if (isMP) {
+    boolean isTablet = (commandOptions.indexOf("-multitouch-tab") >= 0);
+    
+    if (isMP || isTablet) {
       haveMultiTouchInput = true;
       groupID = 0;
     } else {
       groupID = ((int) (Math.random() * 0xFFFFFF)) << 4;
     }
+    if (isTablet)
+      return;
     String className = (isSparsh ? "multitouch.sparshui.JmolSparshClientAdapter" : "multitouch.jni.JmolJniClientAdapter");
     adapter = (JmolMultiTouchAdapter) Interface.getOptionInterface(className);
     Logger.info("ActionManagerMT SparshUI groupID=" + groupID);
@@ -359,6 +363,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
   @Override
   protected float getExitRate() {
     long dt = dragGesture.getTimeDifference(2);
+    System.out.println("ActionManMT getExitRate " + dt + " " + MININUM_GESTURE_DELAY_MILLISECONDS );
     return (dt > (MININUM_GESTURE_DELAY_MILLISECONDS << 3) ? 0 :
         dragGesture.getSpeedPixelsPerMillisecond(2, 1));
   }

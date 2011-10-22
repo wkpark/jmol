@@ -9,6 +9,8 @@ import java.awt.Toolkit;
 import java.awt.image.MemoryImageSource;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import javax.vecmath.Point3f;
 
 import org.jmol.api.JmolViewer;
 import org.jmol.util.TextFormat;
@@ -23,6 +25,17 @@ import org.jmol.viewer.JmolConstants;
 
 class Display {
 
+  /**
+   * @param display
+   * @param widthHeight
+   *   
+   */
+  static void getFullScreenDimensions(Object display, int[] widthHeight) {
+    Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+    widthHeight[0] = d.width;
+    widthHeight[1] = d.height;
+  }
+  
   static boolean hasFocus(Object display) {
     return ((Component) display).hasFocus();
   }
@@ -97,6 +110,14 @@ class Display {
       return "null";
     }
 
+  }
+
+  public static void convertPointFromScreen(Object display, Point3f ptTemp) {
+    Point xyTemp = new Point();
+    xyTemp.x = (int) ptTemp.x;
+    xyTemp.y = (int) ptTemp.y;
+    SwingUtilities.convertPointFromScreen(xyTemp, (Component) display);
+    ptTemp.set(xyTemp.x, xyTemp.y, Float.NaN);
   }
 
 

@@ -1,5 +1,7 @@
 package org.jmol.awt;
 
+import javax.vecmath.Point3f;
+
 import netscape.javascript.JSObject;
 
 import org.jmol.api.ApiPlatform;
@@ -20,6 +22,14 @@ public class Platform implements ApiPlatform {
   
   ///// Display 
 
+  public void convertPointFromScreen(Object display, Point3f ptTemp) {
+    Display.convertPointFromScreen(display, ptTemp);
+  }
+
+  public void getFullScreenDimensions(Object display, int[] widthHeight) {
+    Display.getFullScreenDimensions(display, widthHeight);        
+  }
+  
   public JmolPopupInterface getMenuPopup(Viewer viewer, String menuStructure, char type) {
     JmolPopupInterface jmolpopup = (JmolPopupInterface) Interface.getOptionInterface(
         type == 'j' ? "popup.JmolPopup" : "modelkit.ModelKitPopup");

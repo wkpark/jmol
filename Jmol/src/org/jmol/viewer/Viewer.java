@@ -423,6 +423,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     htmlName = (i < 0 ? fullName : fullName.substring(0, i));
     syncId = (i < 0 ? "" : fullName.substring(i + 1, fullName.length() - 1));
     String str = appletContext;
+    if (str.indexOf("-debug") >= 0)
+      Logger.setLogLevel(Logger.LEVEL_DEBUG);
     isPrintOnly = (appletContext.indexOf("-p") >= 0);
     isApplet = (appletContext.indexOf("-applet") >= 0);
     if (isApplet) {
@@ -448,9 +450,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
       if ((i = str.indexOf("-maximumSize ")) >= 0)
         setMaximumSize(Parser.parseInt(str.substring(i + 13)));
-      useCommandThread = (str.indexOf("-threaded") >= 0);
-      if (useCommandThread)
-        scriptManager.startCommandWatcher(true);
     } else {
       // not an applet -- used to pass along command line options
       g3d.setBackgroundTransparent(str.indexOf("-b") >= 0);
@@ -464,6 +463,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       autoExit = (str.indexOf("-x") >= 0);
       cd(".");
     }
+    useCommandThread = (str.indexOf("-threaded") >= 0);
+    if (useCommandThread)
+      scriptManager.startCommandWatcher(true);
     isPreviewOnly = (str.indexOf("#previewOnly") >= 0);
     setBooleanProperty("_applet", isApplet);
     setBooleanProperty("_signedApplet", isSignedApplet);
@@ -8625,6 +8627,7 @@ private void zap(String msg) {
 
   @Override
   public void syncScript(String script, String applet, int port) {
+    System.out.println("viewer syncscript " + script);
     if (script != null && script.equalsIgnoreCase(SYNC_GRAPHICS_MESSAGE)) {
       statusManager.setSyncDriver(StatusManager.SYNC_STEREO);
       statusManager.syncSend(script, applet, 0);

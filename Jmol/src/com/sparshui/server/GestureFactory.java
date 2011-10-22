@@ -2,8 +2,8 @@ package com.sparshui.server;
 
 import org.jmol.util.Logger;
 
+import com.sparshui.GestureType;
 import com.sparshui.gestures.Gesture;
-import com.sparshui.gestures.GestureType;
 
 //import com.sparshui.gestures.Flick;
 //import com.sparshui.gestures.GestureType;

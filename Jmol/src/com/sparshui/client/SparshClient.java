@@ -2,9 +2,9 @@ package com.sparshui.client;
 
 import java.util.List;
 
+import com.sparshui.GestureType;
 import com.sparshui.common.Event;
 import com.sparshui.common.Location;
-import com.sparshui.gestures.GestureType;
 
 /**
  * The Client interface must be implemented in all clients wishing

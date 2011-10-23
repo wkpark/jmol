@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-10-03 19:01+0200\n"
+"POT-Creation-Date: 2011-10-23 08:51+0200\n"
 "PO-Revision-Date: 2011-10-03 23:40+0000\n"
 "Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: Dutch <jmol-developer@lists.sf.net>\n"
@@ -110,8 +110,7 @@ msgstr "geen console -- alle uitvoer naar de command line"
 
 #: org/openscience/jmol/app/JmolApp.java:163
 msgid "send only output from print messages to console (implies -i)"
-msgstr ""
-"stuur alleen input van print berichten naar de console (impliceert -i)"
+msgstr "stuur alleen input van print berichten naar de console (impliceert -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:165
 msgid "independent command thread"
@@ -1112,61 +1111,59 @@ msgstr "IO-fout:"
 msgid "width height?"
 msgstr "breedte hoogte?"
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:409
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:415
 msgid "magic"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:410
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:416
 msgid "role"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:416
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:422
 msgid "type"
 msgstr "type"
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:418
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:424
 msgid "text"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:419
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:425
 msgid "visibility"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:422
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:428
 msgid "command"
 msgstr "opdracht"
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:425
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:431
 msgid "id"
 msgstr "id"
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:437
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:443
 msgid "startup_script"
 msgstr "start-script"
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:442
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:448
 msgid "banner"
 msgstr "banner"
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:443
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:449
 msgid "banner_text"
 msgstr "banner tekst"
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:447
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:453
 msgid "style"
 msgstr "stijl"
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:453
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:457
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:487
 msgid "x"
 msgstr "x"
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:454
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:458
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:488
 msgid "y"
 msgstr "y"
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:473
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:503
 msgid "sync"
 msgstr "synchroniseren"
 
@@ -1922,23 +1919,18 @@ msgstr "niet geimplementeerd"
 #~ msgid "vector"
 #~ msgstr "vector"
 
-#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Ga naar de eerste {0} in de collectie"
 
-#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Ga naar de vorige {0} in de collectie"
 
-#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Speel de hele collectie van {0}'s af"
 
-#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Ga naar de volgende {0} in de collectie"
 
-#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Ga naar de laatste {0} in de collectie"
 
@@ -1951,7 +1943,6 @@ msgstr "niet geimplementeerd"
 #~ msgid "double-click and drag to reorder"
 #~ msgstr "Dubbelklik en sleep om de volgorde te wijzigen"
 
-#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"
@@ -1965,21 +1956,18 @@ msgstr "niet geimplementeerd"
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "toevoegen JmolPopIn.js"
 
-#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "toevoegen {0}.png"
 
-#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "toevoegen {0}.spt"
 
-#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 #~ msgstr ""
-#~ "Voeg hier extra uitleg in. Lange teksten worden om het Jmol-model {0} heen "
-#~ "gezet."
+#~ "Voeg hier extra uitleg in. Lange teksten worden om het Jmol-model {0} "
+#~ "heen gezet."
 
 #~ msgid "Clear console button (requires restarting Jmol)"
 #~ msgstr "Leeg console knop (vereist een herstart van Jmol)"

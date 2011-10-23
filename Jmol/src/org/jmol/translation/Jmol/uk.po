@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-10-03 19:01+0200\n"
+"POT-Creation-Date: 2011-10-23 08:51+0200\n"
 "PO-Revision-Date: 2011-10-03 23:42+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@gmail.com>\n"
 "Language-Team: Ukrainian <translation@linux.org.ua>\n"
@@ -61,8 +61,8 @@ msgstr "Адреса-запиту"
 #: org/openscience/jmol/app/JmolApp.java:107
 msgid "Error starting Jmol: the property 'user.home' is not defined."
 msgstr ""
-"Помилка під час спроби запуску Jmol: не вказано значення властивості "
-"«user.home»."
+"Помилка під час спроби запуску Jmol: не вказано значення властивості «user."
+"home»."
 
 #: org/openscience/jmol/app/JmolApp.java:144
 msgid "transparent background"
@@ -998,8 +998,7 @@ msgstr "Обертати молекулу."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:211
 msgid "Select a set of atoms using SHIFT-LEFT-DRAG."
-msgstr ""
-"Вкажіть набір атомів за допомогою SHIFT-СТРІЛКА ЛІВОРУЧ-ПЕРЕТЯГУВАННЯ."
+msgstr "Вкажіть набір атомів за допомогою SHIFT-СТРІЛКА ЛІВОРУЧ-ПЕРЕТЯГУВАННЯ."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:213
 msgid "Click atoms to measure distances"
@@ -1114,61 +1113,59 @@ msgstr "Виключення вводу або виводу."
 msgid "width height?"
 msgstr "Ширина і висота?"
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:409
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:415
 msgid "magic"
 msgstr "контрольна сума"
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:410
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:416
 msgid "role"
 msgstr "роль"
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:416
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:422
 msgid "type"
 msgstr "тип"
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:418
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:424
 msgid "text"
 msgstr "текст"
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:419
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:425
 msgid "visibility"
 msgstr "видимість"
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:422
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:428
 msgid "command"
 msgstr "команда"
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:425
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:431
 msgid "id"
 msgstr "ід."
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:437
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:443
 msgid "startup_script"
 msgstr "скрипт_запуску"
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:442
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:448
 msgid "banner"
 msgstr "банер"
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:443
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:449
 msgid "banner_text"
 msgstr "текст_банера"
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:447
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:453
 msgid "style"
 msgstr "стиль"
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:453
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:457
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:487
 msgid "x"
 msgstr "⨯"
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:454
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:458
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:488
 msgid "y"
 msgstr "y"
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:473
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:503
 msgid "sync"
 msgstr "синхр."
 
@@ -1592,8 +1589,8 @@ msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
 "be significant the first time the applet is loaded."
 msgstr ""
-"Щоб отримати просторову модель, з якою можна буде працювати, натисніть "
-"{0}тут{1}. Перше звантаження за допомогою аплету може бути доволі тривалим."
+"Щоб отримати просторову модель, з якою можна буде працювати, натисніть {0}тут"
+"{1}. Перше звантаження за допомогою аплету може бути доволі тривалим."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:366
 msgid "Insert the page TITLE here."
@@ -1907,23 +1904,18 @@ msgstr "не реалізовано"
 #~ msgid "atom set"
 #~ msgstr "набір атомів"
 
-#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Перейти до першого {0} у збірці"
 
-#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Перейти до попереднього {0} у збірці"
 
-#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Відтворити усю збірку {0}"
 
-#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Перейти до наступного {0} у збірці"
 
-#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Перейти до останнього {0} у збірці"
 
@@ -1936,15 +1928,12 @@ msgstr "не реалізовано"
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "додавання JmolPopIn.js"
 
-#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "додавання {0}.png"
 
-#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "додавання {0}.spt"
 
-#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"
@@ -1955,16 +1944,16 @@ msgstr "не реалізовано"
 #~ msgid "Clear console button (requires restarting Jmol)"
 #~ msgstr "Кнопка спорожнення консолі (потрібен перезапуску Jmol)"
 
-#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 #~ msgstr ""
-#~ "Тут ви можете вставити додатковий текст пояснення. Довгі рядки буде поділено "
-#~ "на частини і розташовано навколо моделі Jmol {0}."
+#~ "Тут ви можете вставити додатковий текст пояснення. Довгі рядки буде "
+#~ "поділено на частини і розташовано навколо моделі Jmol {0}."
 
 #~ msgid "double-click and drag to reorder"
-#~ msgstr "двічі клацніть лівою кнопкою миші і перетягніть, щоб змінити порядок"
+#~ msgstr ""
+#~ "двічі клацніть лівою кнопкою миші і перетягніть, щоб змінити порядок"
 
 #~ msgid "The -D options are as follows (defaults in parenthesis):"
 #~ msgstr "Параметри -D (типові значення вказано у дужках):"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-10-03 19:01+0200\n"
+"POT-Creation-Date: 2011-10-23 08:51+0200\n"
 "PO-Revision-Date: 2011-10-07 20:44+0000\n"
 "Last-Translator: Pierre Slamich <pierre.slamich@gmail.com>\n"
 "Language-Team: French <Jmol-developers@lists.sf.net>\n"
@@ -1114,61 +1114,59 @@ msgstr "Exception E/S!"
 msgid "width height?"
 msgstr "largeur hauteur ?"
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:409
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:415
 msgid "magic"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:410
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:416
 msgid "role"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:416
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:422
 msgid "type"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:418
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:424
 msgid "text"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:419
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:425
 msgid "visibility"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:422
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:428
 msgid "command"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:425
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:431
 msgid "id"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:437
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:443
 msgid "startup_script"
 msgstr "startup_script"
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:442
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:448
 msgid "banner"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:443
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:449
 msgid "banner_text"
 msgstr "banner_text"
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:447
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:453
 msgid "style"
 msgstr "style"
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:453
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:457
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:487
 msgid "x"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:454
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:458
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:488
 msgid "y"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:473
+#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:503
 msgid "sync"
 msgstr ""
 
@@ -1228,8 +1226,7 @@ msgstr "Afficher pendant le calcul"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:245
 msgid "Should POV-Ray attempt to display while rendering?"
-msgstr ""
-"Est-ce que POV-Ray doit essayer d’afficher l’image durant le calcul ?"
+msgstr "Est-ce que POV-Ray doit essayer d’afficher l’image durant le calcul ?"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:268
 msgid "width:"
@@ -1693,8 +1690,8 @@ msgstr "Donner un nom à l’instance de Jmol:"
 #: org/openscience/jmol/app/webexport/WebPanel.java:483
 msgid "Error creating new instance containing script(s) and image."
 msgstr ""
-"Erreur lors de la création d’une nouvelle instance contenant un(des) "
-"script(s) et une image"
+"Erreur lors de la création d’une nouvelle instance contenant un(des) script"
+"(s) et une image"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:494
 #, java-format
@@ -1933,23 +1930,18 @@ msgstr "non-implémenté"
 #~ msgid "vector"
 #~ msgstr "vecteur"
 
-#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Aller au premier {0} de la collection"
 
-#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Aller au {0} précédent de la collection"
 
-#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Jouer la collection complète de {0}"
 
-#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Aller au {0} suivant de la collection"
 
-#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Aller au dernier {0} de la collection"
 
@@ -1975,26 +1967,22 @@ msgstr "non-implémenté"
 #~ msgid "Show Selected"
 #~ msgstr "Afficher les options sélectionnées"
 
-#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 #~ msgstr ""
-#~ "Insérer un texte explicatif pertinente ici. Long texte sera coupé entourent "
-#~ "le modèle de Jmol {0}."
+#~ "Insérer un texte explicatif pertinente ici. Long texte sera coupé "
+#~ "entourent le modèle de Jmol {0}."
 
-#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "ajoutant {0}. spt"
 
-#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "ajoutant {0}. png"
 
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "ajoutant JmolPopIn.js"
 
-#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"

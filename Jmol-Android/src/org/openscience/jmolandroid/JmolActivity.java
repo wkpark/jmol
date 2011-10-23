@@ -140,7 +140,7 @@ public class JmolActivity extends Activity implements JmolStatusListener {
     super.onResume();
     setPaused(false);
 
-    setDialog("Loading...");
+ //   setDialog("Loading...");
     
     Log.w("Jmol", "onResume..." + viewer);
     // am I correct that imageView is null if and only if viewer is null?
@@ -451,15 +451,19 @@ public class JmolActivity extends Activity implements JmolStatusListener {
   }
   
   protected void setDialog(String text) {
-    dismissDialog();
+//    dismissPDialog();
     pd = ProgressDialog.show(this, "", text, true);  
   }
   
-  protected void dismissDialog() {
+  protected void dismissPDialog() {
     // TODO Auto-generated method stub
     if (pd == null || !resumeComplete)
       return;
-    pd.dismiss();
+    try {
+      pd.dismiss();
+    } catch (Exception e) {
+      // ignore
+    }
     pd = null;
   }
 
@@ -468,7 +472,7 @@ public class JmolActivity extends Activity implements JmolStatusListener {
     //      return;
     //    drawTrigger = true;
     Log.w("Jmol", "JmolActivity repaint " + imageView);
-    dismissDialog();
+    dismissPDialog();
     if (paused || updating || viewer == null)
       return;
     if (imageView != null)

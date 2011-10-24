@@ -26,10 +26,10 @@ import javax.swing.JPanel;
 
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.api.JmolViewer;
-import org.openscience.jmol.app.jmolpanel.BannerFrame;
-import org.openscience.jmol.app.jmolpanel.jsonkiosk.JsonNioClient;
-import org.openscience.jmol.app.jmolpanel.jsonkiosk.JsonNioService;
-import org.openscience.jmol.app.jmolpanel.jsonkiosk.KioskFrame;
+import org.openscience.jmol.app.jsonkiosk.BannerFrame;
+import org.openscience.jmol.app.jsonkiosk.JsonNioClient;
+import org.openscience.jmol.app.jsonkiosk.JsonNioService;
+import org.openscience.jmol.app.jsonkiosk.KioskFrame;
 
 public class MPJmolApp implements JsonNioClient {
 

@@ -22,35 +22,17 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.openscience.jmol.app.jmolpanel.jsonkiosk;
+package org.openscience.jmol.app.jsonkiosk;
 
-import java.awt.Color;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 
 /**
- * A borderless rectangle, like the applet, that contains the application
- * for use in kiosk-style displays, as for example projected on the wall
- * as in http://molecularPlayground.org
+ * a client of a JsonNioService -- just needs notices of the service shutting down 
+ * or indicating that a banner needs to be changed.
  * 
  */
-public class KioskFrame extends JFrame {
+public interface JsonNioClient {
 
-  public KioskFrame(int x, int y, int width, int height, JPanel kioskPanel) {
-    setTitle("KioskFrame");
-    setUndecorated(true);
-    setBackground(new Color(0, 0, 0, 0));
-    setPanel(kioskPanel);
-    setSize(width, height);
-    setBounds(x, y, width, height);
-    setVisible(true);
-  }
-
-  public void setPanel(JPanel kioskPanel) {
-    if (kioskPanel == null)
-      return;
-    getContentPane().add(kioskPanel);
-  }
-  
+  void setBannerLabel(String label);
+  void nioClosed(JsonNioService jsonNioService);
+ 
 }

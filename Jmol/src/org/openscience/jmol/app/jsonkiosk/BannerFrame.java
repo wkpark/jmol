@@ -22,7 +22,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.openscience.jmol.app.jmolpanel;
+package org.openscience.jmol.app.jsonkiosk;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

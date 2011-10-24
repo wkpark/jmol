@@ -22,7 +22,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.openscience.jmol.app.jmolpanel;
+package org.openscience.jmol.app.jmolpanel.jsonkiosk;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -160,12 +160,12 @@ public class JsonNioService extends NIOService {
    * 
    * @param msg
    */
-  void scriptCallback(String msg) {
+  public void scriptCallback(String msg) {
     if (msg.equals(terminatorMessage))
       sendMessage(null, "!script_terminated!", null);
   }
 
-  int getPort() {
+  public int getPort() {
     return port;
   }
   
@@ -175,7 +175,7 @@ public class JsonNioService extends NIOService {
    * @param port
    * @param msg
    */
-  void send(int port, String msg) {
+  public void send(int port, String msg) {
     try {
       if (port != this.port) {
         if (inSocket != null) {

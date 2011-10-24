@@ -107,7 +107,6 @@ public interface ApiPlatform {
    * @param image
    * @param width
    * @param height
-   * @param values
    * @return         pixels
    */
   int[] grabPixels(Object image, int width, int height);

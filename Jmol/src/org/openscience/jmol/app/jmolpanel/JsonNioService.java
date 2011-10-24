@@ -470,7 +470,11 @@ public class JsonNioService extends NIOService {
                 // critical number of fast motions reached
                 // start spinning
                 swipeStartTime = now;
-                msg = "Mouse: spinXYBy " + (int) dx + " " + (int) dy + " "
+                msg = "Mouse: spinXYBy "
+                    + (int) dx
+                    + " "
+                    + (int) dy
+                    + " "
                     + (Math.sqrt(dxdy) * swipeFactor / (now - previousMoveTime));
               }
             } else if (nFast > 0) {

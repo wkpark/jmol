@@ -1233,8 +1233,6 @@ class JpegInfo
   private int compWidth[], compHeight[];
   private int MaxHsampFactor;
   private int MaxVsampFactor;
-  private ApiPlatform apiPlatform;
-  
   
   public JpegInfo(ApiPlatform apiPlatform, Object image, String comment)
   {
@@ -1247,7 +1245,7 @@ class JpegInfo
     imageWidth = apiPlatform.getImageWidth(image);
     imageHeight = apiPlatform.getImageHeight(image);
     Comment = comment;
-    getYCCArray();
+    getYCCArray(apiPlatform);
   }
 
   /*
@@ -1255,7 +1253,7 @@ class JpegInfo
    * input image.
    */
   
-  private void getYCCArray()
+  private void getYCCArray(ApiPlatform apiPlatform)
   {
     int values[] = new int[imageWidth * imageHeight];
     int r, g, b, y, x;

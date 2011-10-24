@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-10-23 08:51+0200\n"
+"POT-Creation-Date: 2011-10-24 05:01+0200\n"
 "PO-Revision-Date: 2011-08-18 17:15+0000\n"
 "Last-Translator: iychiang <iychiang1809@gmail.com>\n"
 "Language-Team: Traditional Chinese <zh_TW@li.org>\n"
@@ -1018,154 +1018,97 @@ msgstr "開啟模型組工具"
 msgid "Jmol Help"
 msgstr "關於 Jmol"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:213
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:217
 msgid "Initializing 3D display..."
 msgstr "啟始 3D 顯示..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:246
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:250
 msgid "Initializing Script Window..."
 msgstr "啟始指令稿視窗..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:267
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:271
 msgid "Building Command Hooks..."
 msgstr "建立指令關連..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:282
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:286
 msgid "Building Menubar..."
 msgstr "建定選單列..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:297
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:301
 msgid "Starting display..."
 msgstr "開始顯示..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:349
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:353
 msgid "Setting up Drag-and-Drop..."
 msgstr "設定拖放"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:357
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:361
 msgid "Launching main frame..."
 msgstr "開啟主要視框..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:361
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:365
 msgid "Initializing Preferences..."
 msgstr "啟始使用偏號..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:363
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:367
 msgid "Initializing Recent Files..."
 msgstr "啟始最近用過的檔案..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:437
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:441
 msgid "Jmol Java Console"
 msgstr "Jmol Java 主控台"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:457
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:461
 msgid "Could not create ConsoleTextArea: "
 msgstr "無法產生 ConsoleTextArea： "
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:503
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:507
 msgid "Creating main window..."
 msgstr "創立主要視窗..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:504
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:508
 msgid "Initializing Swing..."
 msgstr "啟始 Swing..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:514
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:518
 msgid "Initializing Jmol..."
 msgstr "啟始 Jmol..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:603
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:607
 msgid "Closing Jmol..."
 msgstr "關閉Jmol..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1157
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1161
 msgid "Open URL"
 msgstr "開啟網址(URL)"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1158
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1162
 msgid "Enter URL of molecular model"
 msgstr "輸入分子模型的網址(URL)"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1184
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1188
 msgid "Get PDB file"
 msgstr "取得 PDB 檔"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1185
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1189
 msgid "Enter a four-digit PDB ID"
 msgstr "請輸入四位數的 PDB 代碼"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1202
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1206
 msgid "Get MOL file by compound name or ID"
 msgstr "依照化合物名稱或是 ID 取得 MOL 檔"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1203
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1207
 msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
 msgstr "請輸入分子的名稱或是辨識碼 (SMILES, InChI, CAS)"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1369
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1373
 msgid "IO Exception:"
 msgstr "輸出入錯誤："
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1498
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1502
 msgid "width height?"
 msgstr "寬度高度?"
-
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:415
-#, fuzzy
-msgid "magic"
-msgstr "基礎"
-
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:416
-msgid "role"
-msgstr ""
-
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:422
-msgid "type"
-msgstr ""
-
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:424
-msgid "text"
-msgstr ""
-
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:425
-msgid "visibility"
-msgstr ""
-
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:428
-msgid "command"
-msgstr ""
-
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:431
-msgid "id"
-msgstr ""
-
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:443
-msgid "startup_script"
-msgstr ""
-
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:448
-msgid "banner"
-msgstr ""
-
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:449
-msgid "banner_text"
-msgstr ""
-
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:453
-msgid "style"
-msgstr ""
-
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:487
-msgid "x"
-msgstr ""
-
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:488
-msgid "y"
-msgstr ""
-
-#: org/openscience/jmol/app/jmolpanel/JsonNioService.java:503
-msgid "sync"
-msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:124
 msgid "Delete"
@@ -1409,6 +1352,63 @@ msgstr "載入中..."
 #: org/openscience/jmol/app/jmolpanel/WhatsNewDialog.java:57
 msgid "What's New in Jmol"
 msgstr "Jmol的新功能"
+
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:415
+#, fuzzy
+msgid "magic"
+msgstr "基礎"
+
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:416
+msgid "role"
+msgstr ""
+
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:422
+msgid "type"
+msgstr ""
+
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:424
+msgid "text"
+msgstr ""
+
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:425
+msgid "visibility"
+msgstr ""
+
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:428
+msgid "command"
+msgstr ""
+
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:431
+msgid "id"
+msgstr ""
+
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:443
+msgid "startup_script"
+msgstr ""
+
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:448
+msgid "banner"
+msgstr ""
+
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:449
+msgid "banner_text"
+msgstr ""
+
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:453
+msgid "style"
+msgstr ""
+
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:493
+msgid "x"
+msgstr ""
+
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:494
+msgid "y"
+msgstr ""
+
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:509
+msgid "sync"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:69
 msgid "Degrees"

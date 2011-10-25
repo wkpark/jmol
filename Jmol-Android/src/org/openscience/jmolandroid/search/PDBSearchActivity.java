@@ -31,6 +31,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -50,6 +51,12 @@ public class PDBSearchActivity extends Activity {
 	protected EditText editText;
 	protected PDBResultAdapter adapter;
 
+  @Override
+  public void onConfigurationChanged(Configuration newConfig) {
+    // Ignore orientation change that restarts activity
+    super.onConfigurationChanged(newConfig);
+  }
+  
 	@Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);

@@ -6,7 +6,12 @@
 
 <!-- android:largeHeap="true" -->
     <application android:icon="@drawable/icon" android:label="@string/app_name" android:debuggable="true">
-        <activity android:label="@string/app_name" android:name=".JmolActivity" android:screenOrientation="portrait">
+        <activity
+              android:label="@string/app_name" 
+              android:name=".JmolActivity" 
+              android:screenOrientation="landscape"
+              android:configChanges="orientation"
+             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -17,13 +22,19 @@
                 <category android:name="android.intent.category.OPENABLE"/>
             </intent-filter>
         </activity>
-        <activity android:label="@string/search_title" 
-        		  android:name=".search.PDBSearchActivity">
+        <activity 
+            android:label="@string/search_title" 
+        		android:name=".search.PDBSearchActivity"
+            android:configChanges="orientation"
+         >
             <intent-filter>
                 <category android:name="android.intent.category.OPENABLE"/>
             </intent-filter>
         </activity>
-        <activity android:label="@string/app_name" android:name="SelectionActivity">
+        <activity 
+            android:label="@string/app_name" 
+            android:name="SelectionActivity"
+            >
             <intent-filter>
                 <category android:name="android.intent.category.OPENABLE"/>
             </intent-filter>

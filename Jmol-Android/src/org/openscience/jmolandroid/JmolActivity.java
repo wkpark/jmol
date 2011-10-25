@@ -19,6 +19,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -93,6 +94,12 @@ public class JmolActivity extends Activity implements JmolStatusListener {
     return imageView;
   }
 
+  @Override
+  public void onConfigurationChanged(Configuration newConfig) {
+    // Ignore orientation change that restarts activity
+    super.onConfigurationChanged(newConfig);
+  }
+  
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -208,6 +215,9 @@ public class JmolActivity extends Activity implements JmolStatusListener {
   @Override
   public boolean onTouchEvent(final MotionEvent event) {
     scaleDetector.onTouchEvent(event);
+    if (event.getPointerCount() != 1)
+      return true;
+    // no multitouch needed here.
     final int index = event.findPointerIndex(0);
     if (index < 0 || updateListener == null)
       return true;
@@ -224,8 +234,7 @@ public class JmolActivity extends Activity implements JmolStatusListener {
       e = Event.MOUSE_UP;
       break;
     }
-    
-    
+        
     if (e != Integer.MIN_VALUE)
       updateListener.mouseEvent(e, (int) event.getX(index),
           (int) event.getY(index), Event.MOUSE_LEFT, event.getEventTime());
@@ -255,10 +264,10 @@ public class JmolActivity extends Activity implements JmolStatusListener {
     @Override
     public boolean onScale(final ScaleGestureDetector detector) {
       float zoomFactor = detector.getScaleFactor();
-      float viewerZoom = viewer.getZoomPercentFloat();
-      Log.w("Jmol", "old zoom=" + viewerZoom + " with detector.getScaleFactor=" + zoomFactor);
+      //float viewerZoom = viewer.getZoomPercentFloat();
+      //Log.w("Jmol", "old zoom=" + viewerZoom + " with detector.getScaleFactor=" + zoomFactor);
 
-      zoomFactor /= (viewerZoom / 100.0f);
+      //zoomFactor /= (viewerZoom / 100.0f);
       viewer.syncScript("Mouse: zoomByFactor " + zoomFactor, "~", 0);
       Log.w("Jmol", "changing zoom factor=" + zoomFactor);
 
@@ -282,7 +291,8 @@ public class JmolActivity extends Activity implements JmolStatusListener {
     if (dxyz2 < gyroThreshold)
       return;
     float speed = (float) (Math.sqrt(dxyz2) * spinFactor);
-    viewer.syncScript("Mouse: spinXYBy " + (int) x + " " + (int) -y + " " + speed, "=", 0);
+    viewer.syncScript("Mouse: spinXYBy " + (int) -y + " " + (int) -x + " " + speed, "=", 0);
+    // landscape mode, so x --> y and y --> -x
   }
 
   @Override

@@ -212,7 +212,6 @@ public class JsonNioService extends NIOService {
     }
 
     if (name != null) {
-      jmolViewer.script(";sync on;sync slave");
       String s = getJmolValue("NIOcontentPath");
       if (s != null)
         contentPath = s;
@@ -485,18 +484,18 @@ public class JsonNioService extends NIOService {
             }
             if (msg == null)
               msg = "Mouse: rotateXYBy " + dx + " " + dy;
-            jmolViewer.syncScript(msg, "~", 0);
+            jmolViewer.syncScript(msg, "=", 0);
           }
           previousMoveTime = now;
           break;
         case 10: // translate
           jmolViewer.syncScript("Mouse: translateXYBy " + json.getString("x")
-              + " " + json.getString("y"), "~", 0);
+              + " " + json.getString("y"), "=", 0);
           break;
         case 20: // zoom
           float zoomFactor = (float) (json.getDouble("scale") / (jmolViewer
               .getZoomPercentFloat() / 100.0f));
-          jmolViewer.syncScript("Mouse: zoomByFactor " + zoomFactor, "~", 0);
+          jmolViewer.syncScript("Mouse: zoomByFactor " + zoomFactor, "=", 0);
           break;
         }
         break;
@@ -506,7 +505,7 @@ public class JsonNioService extends NIOService {
         break;
       case 50: // sync
         //sync -3000;sync slave;sync 3000 '{"type":"sync","sync":"rotateZBy 30"}'
-        jmolViewer.syncScript("Mouse: " + json.getString("sync"), "~", 0);
+        jmolViewer.syncScript("Mouse: " + json.getString("sync"), "=", 0);
         break;
       case 60: // touch
         // raw touch event

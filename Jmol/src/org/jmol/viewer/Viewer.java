@@ -8639,6 +8639,11 @@ private void zap(String msg) {
     // > : all OTHER applets
     // . : just me
     // ~ : disable send (just me)
+    // = : disable send (just me) and force slave
+    if ("=".equals(applet)) {
+      applet = "~";
+      statusManager.setSyncDriver(StatusManager.SYNC_SLAVE);
+    }
     boolean disableSend = "~".equals(applet);
     // null same as ">" -- "all others"
     if (port > 0 || !disableSend && !".".equals(applet)) {

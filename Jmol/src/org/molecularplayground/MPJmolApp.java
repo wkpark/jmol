@@ -58,7 +58,7 @@ public class MPJmolApp implements JsonNioClient {
     try {
       setBannerLabel("click below and type exitJmol[enter] to quit");
       jmolViewer
-          .script("set allowgestures;set allowKeyStrokes;set zoomLarge false;set frank off;set antialiasdisplay off");
+          .script("set debugScript;set allowgestures;set allowKeyStrokes;set zoomLarge false;set frank off;set antialiasdisplay off");
       String path = System.getProperty("user.dir").replace('\\', '/')
           + "/Content-Cache/%ID%/%ID%.json";
       jmolViewer.script("NIOcontentPath=\"" + path + "\";NIOterminatorMessage='MP_DONE'");

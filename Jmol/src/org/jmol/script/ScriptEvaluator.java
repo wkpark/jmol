@@ -2267,6 +2267,13 @@ public class ScriptEvaluator {
     }
     if (i == statementLength)// || isScriptCheck)
       return i == statementLength;
+    switch (statement[0].tok) {
+    case Token.parallel:
+    case Token.function:
+    case Token.identifier:
+      if (tokAt(1) == Token.leftparen)
+        return true;
+    }
     fixed = new Token[statementLength];
     fixed[0] = statement[0];
     boolean isExpression = false;
@@ -12720,6 +12727,7 @@ public class ScriptEvaluator {
     case Token.middle:
     case Token.bottom:
     case Token.identifier:
+    case Token.string:
     case Token.id:
       if (theTok == Token.id)
         pt++;

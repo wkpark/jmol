@@ -20,6 +20,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Canvas;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -81,6 +85,8 @@ public class JmolActivity extends Activity implements JmolStatusListener {
   private AndroidUpdateListener updateListener;
   private boolean opening;
   private ScaleGestureDetector scaleDetector;
+  private JmolSpinDetector spinDetector;
+  
   private boolean resumeComplete;
 
   public SurfaceView getImageView() {
@@ -97,6 +103,16 @@ public class JmolActivity extends Activity implements JmolStatusListener {
 
     SCALE_FACTOR = getResources().getDisplayMetrics().density + 0.5f;
     scaleDetector = new ScaleGestureDetector(this, new PinchZoomScaleListener());
+    SensorManager sm = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
+    boolean gyroExists = (sm.getDefaultSensor(Sensor.TYPE_GYROSCOPE) != null);
+    if (gyroExists) {
+      spinDetector = new JmolSpinDetector();
+      sm.registerListener(spinDetector,
+          sm.getDefaultSensor(Sensor.TYPE_GYROSCOPE),
+          SensorManager.SENSOR_DELAY_UI);
+      
+    }
+    
 
   }
 
@@ -216,17 +232,35 @@ public class JmolActivity extends Activity implements JmolStatusListener {
     return true;
   };
 
+  private class JmolSpinDetector implements SensorEventListener {
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+      // huh?
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+      if (paused || updating || viewer == null)
+        return;
+      if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
+        updateOrientation(event.values[0], event.values[1], event.values[2], event.timestamp);
+      }
+    }    
+  }
+  
   private class PinchZoomScaleListener extends
       ScaleGestureDetector.SimpleOnScaleGestureListener {
     
     @Override
     public boolean onScale(final ScaleGestureDetector detector) {
-      Log.w("JMOL", "old zoom=" + viewer.getZoomPercentFloat());
+      float zoomFactor = detector.getScaleFactor();
+      float viewerZoom = viewer.getZoomPercentFloat();
+      Log.w("Jmol", "old zoom=" + viewerZoom + " with detector.getScaleFactor=" + zoomFactor);
 
-      float zoomFactor = detector.getScaleFactor()
-          / (viewer.getZoomPercentFloat() / 100.0f);
+      zoomFactor /= (viewerZoom / 100.0f);
       viewer.syncScript("Mouse: zoomByFactor " + zoomFactor, "~", 0);
-      Log.w("JMOL", "changing zoom factor=" + zoomFactor);
+      Log.w("Jmol", "changing zoom factor=" + zoomFactor);
 
       return true;
     }
@@ -239,6 +273,17 @@ public class JmolActivity extends Activity implements JmolStatusListener {
       return;
     updateListener.setScreenDimension();
   };
+
+  private final static float gyroThreshold = 1.0f;
+  private final static float spinFactor = 3;
+  
+  protected void updateOrientation(float x, float y, float z, long when) {
+    float dxyz2 = x * x + y * y;
+    if (dxyz2 < gyroThreshold)
+      return;
+    float speed = (float) (Math.sqrt(dxyz2) * spinFactor);
+    viewer.syncScript("Mouse: spinXYBy " + (int) x + " " + (int) -y + " " + speed, "=", 0);
+  }
 
   @Override
   public boolean onPrepareOptionsMenu(Menu menu) {

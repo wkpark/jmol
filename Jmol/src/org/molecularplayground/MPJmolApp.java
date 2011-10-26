@@ -25,7 +25,9 @@ import java.awt.Graphics;
 import javax.swing.JPanel;
 
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
+import org.jmol.api.JmolCallbackListener;
 import org.jmol.api.JmolViewer;
+import org.jmol.constant.EnumCallback;
 import org.openscience.jmol.app.jsonkiosk.BannerFrame;
 import org.openscience.jmol.app.jsonkiosk.JsonNioClient;
 import org.openscience.jmol.app.jsonkiosk.JsonNioService;
@@ -99,19 +101,57 @@ public class MPJmolApp implements JsonNioClient {
 
   ////////////////////////
 
-  class KioskPanel extends JPanel {
+  class KioskPanel extends JPanel implements JmolCallbackListener {
 
     private final Dimension currentSize = new Dimension();
 
     KioskPanel() {
       jmolViewer = JmolViewer.allocateViewer(this, new SmarterJmolAdapter(),
           null, null, null, ""/*-multitouch-mp"*/, null);
+      jmolViewer.setJmolCallbackListener(this);
     }
 
     @Override
     public void paint(Graphics g) {
       getSize(currentSize);
       jmolViewer.renderScreenImage(g, currentSize.width, currentSize.height);
+    }
+
+    // / JmolCallbackListener interface ///
+    public boolean notifyEnabled(EnumCallback type) {
+      switch (type) {
+      case ECHO:
+      case MESSAGE:
+        return true;
+      case ANIMFRAME:
+      case LOADSTRUCT:
+      case MEASURE:
+      case PICK:
+      case SCRIPT:
+      case EVAL:
+      case ATOMMOVED:
+      case CLICK:
+      case ERROR:
+      case HOVER:
+      case MINIMIZATION:
+      case RESIZE:
+      case SYNC:
+      case APPLETREADY:
+        // applet only (but you could change this for your listener)
+        break;
+      }
+      return false;
+    }
+
+    public void notifyCallback(EnumCallback type, Object[] data) {
+      JmolCallbackListener appConsole = (JmolCallbackListener) jmolViewer
+          .getProperty("DATA_API", "getAppConsole", null);
+      if (appConsole != null)
+        appConsole.notifyCallback(type, data);
+    }
+
+    public void setCallbackFunction(String callbackType, String callbackFunction) {
+      // ignore
     }
 
   }

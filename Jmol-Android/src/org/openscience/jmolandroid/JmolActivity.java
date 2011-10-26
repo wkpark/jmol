@@ -1,14 +1,12 @@
 package org.openscience.jmolandroid;
 
 import java.io.File;
-import java.util.Map;
 
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.api.Event;
-import org.jmol.api.JmolStatusListener;
+import org.jmol.api.JmolCallbackListener;
 import org.jmol.api.JmolViewer;
-import org.jmol.constant.EnumCallback;
-//import org.jmol.i18n.GT;
+import org.jmol.constant.EnumCallback; //import org.jmol.i18n.GT;
 import org.openscience.jmolandroid.api.AndroidUpdateListener;
 import org.openscience.jmolandroid.search.Downloader;
 import org.openscience.jmolandroid.search.PDBSearchActivity;
@@ -36,7 +34,7 @@ import android.view.ScaleGestureDetector;
 import android.view.SurfaceView;
 import android.widget.EditText;
 
-public class JmolActivity extends Activity implements JmolStatusListener {
+public class JmolActivity extends Activity implements JmolCallbackListener {
 
   /*
    * General signal flow -- two cases:
@@ -51,8 +49,7 @@ public class JmolActivity extends Activity implements JmolStatusListener {
    * 
    * 
    */
-  
-  
+
   private final static String TEST_SCRIPT = ";load http://chemapps.stolaf.edu/jmol/docs/examples-12/data/caffeine.xyz;";
   //labels on; background labels white;spacefill on";
 
@@ -60,6 +57,8 @@ public class JmolActivity extends Activity implements JmolStatusListener {
       + TEST_SCRIPT;
 
   public static float SCALE_FACTOR;
+  
+  private int screenWidth, screenHeight;
 
   class JmolImageView extends SurfaceView {
 
@@ -69,25 +68,25 @@ public class JmolActivity extends Activity implements JmolStatusListener {
       Log.w("Jmol", "JmolImageView " + this);
     }
 
-    
     @Override
     protected void onDraw(Canvas canvas) {
       super.onDraw(canvas);
+      screenWidth = canvas.getWidth();
+      screenHeight = canvas.getHeight();
       Log.w("Jmol", "JmolActivity onDraw");
-      viewer.renderScreenImage(canvas, null, canvas.getWidth(), canvas.getHeight());
-//      drawTrigger = false;
+      viewer.renderScreenImage(canvas, null, screenWidth, screenHeight);
+      //      drawTrigger = false;
     }
   }
 
-  
-//  protected boolean drawTrigger;
+  //  protected boolean drawTrigger;
   private JmolViewer viewer;
   private JmolImageView imageView;
   private AndroidUpdateListener updateListener;
   private boolean opening;
   private ScaleGestureDetector scaleDetector;
   private JmolSpinDetector spinDetector;
-  
+
   private boolean resumeComplete;
 
   public SurfaceView getImageView() {
@@ -99,7 +98,7 @@ public class JmolActivity extends Activity implements JmolStatusListener {
     // Ignore orientation change that restarts activity
     super.onConfigurationChanged(newConfig);
   }
-  
+
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -110,16 +109,14 @@ public class JmolActivity extends Activity implements JmolStatusListener {
 
     SCALE_FACTOR = getResources().getDisplayMetrics().density + 0.5f;
     scaleDetector = new ScaleGestureDetector(this, new PinchZoomScaleListener());
-    SensorManager sm = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
+    SensorManager sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
     boolean gyroExists = (sm.getDefaultSensor(Sensor.TYPE_GYROSCOPE) != null);
     if (gyroExists) {
       spinDetector = new JmolSpinDetector();
-      sm.registerListener(spinDetector,
-          sm.getDefaultSensor(Sensor.TYPE_GYROSCOPE),
+      sm.registerListener(spinDetector, sm
+          .getDefaultSensor(Sensor.TYPE_GYROSCOPE),
           SensorManager.SENSOR_DELAY_UI);
-      
     }
-    
 
   }
 
@@ -143,28 +140,29 @@ public class JmolActivity extends Activity implements JmolStatusListener {
     //System.exit(0);
   };
 
-*/
-  
+  */
+
   @Override
   protected void onPause() {
     Log.w("Jmol", "onPause");
     super.onPause();
-    setPaused(true);    
+    setPaused(true);
   }
-  
+
   @Override
   protected void onStop() {
     Log.w("Jmol", "onStop");
     super.onStop();
+    setPaused(true);
   }
-  
+
   @Override
   protected void onResume() {
     super.onResume();
     setPaused(false);
 
- //   setDialog("Loading...");
-    
+    //   setDialog("Loading...");
+
     Log.w("Jmol", "onResume..." + viewer);
     // am I correct that imageView is null if and only if viewer is null?
     // otherwise we could have a different imageView in updateListener than here
@@ -178,9 +176,16 @@ public class JmolActivity extends Activity implements JmolStatusListener {
       // we pass the updateListener to viewer, where it will be called
       // the "display" and then Platform will get a call asking for an update.
       // not sure about the rest of it!
-      viewer = JmolViewer.allocateViewer(updateListener,
-          new SmarterJmolAdapter(), null, null, null,
-          "-NOTmultitouch-tab platform=org.openscience.jmolandroid.api.Platform", this);
+      viewer = JmolViewer
+          .allocateViewer(
+              updateListener,
+              new SmarterJmolAdapter(),
+              null,
+              null,
+              null,
+              "-NOTmultitouch-tab platform=org.openscience.jmolandroid.api.Platform",
+              null);
+      viewer.setJmolCallbackListener(this);
       script(STARTUP_SCRIPT);
     } else {
 
@@ -212,16 +217,27 @@ public class JmolActivity extends Activity implements JmolStatusListener {
     finish();
   };
 
+  private boolean panLock;
+
   @Override
   public boolean onTouchEvent(final MotionEvent event) {
-    scaleDetector.onTouchEvent(event);
-    if (event.getPointerCount() != 1)
+    switch (event.getPointerCount()) {
+    case 1:
+      break;
+    case 2:
+      if (spinDetector != null && isTwoFingerGyroPan(event))
+        return panLock = true;
+      //fall through
+    default:
+      scaleDetector.onTouchEvent(event);
+      // no multitouch needed here.
       return true;
-    // no multitouch needed here.
+    }
+    panLock = false;
     final int index = event.findPointerIndex(0);
     if (index < 0 || updateListener == null)
       return true;
-    Log.w("Jmol","onTouchEvent " + index + " " + event);
+    Log.w("Jmol", "onTouchEvent " + index + " " + event);
     int e = Integer.MIN_VALUE;
     switch (event.getAction()) {
     case MotionEvent.ACTION_DOWN:
@@ -234,12 +250,22 @@ public class JmolActivity extends Activity implements JmolStatusListener {
       e = Event.MOUSE_UP;
       break;
     }
-        
+
     if (e != Integer.MIN_VALUE)
-      updateListener.mouseEvent(e, (int) event.getX(index),
-          (int) event.getY(index), Event.MOUSE_LEFT, event.getEventTime());
+      updateListener.mouseEvent(e, (int) event.getX(index), (int) event
+          .getY(index), Event.MOUSE_LEFT, event.getEventTime());
     return true;
   };
+
+  private final static float PAN_THRESHOLD = 0.9f;
+
+  private boolean isTwoFingerGyroPan(MotionEvent event) {
+    if (event.getAction() != MotionEvent.ACTION_POINTER_2_DOWN)
+      return false;
+    float x1 = event.getX(0);
+    float x2 = event.getX(1);
+    return (Math.abs(Math.abs(x2 - x1) / screenWidth) > PAN_THRESHOLD);
+  }
 
   private class JmolSpinDetector implements SensorEventListener {
 
@@ -253,14 +279,15 @@ public class JmolActivity extends Activity implements JmolStatusListener {
       if (paused || updating || viewer == null)
         return;
       if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
-        updateOrientation(event.values[0], event.values[1], event.values[2], event.timestamp);
+        updateOrientation(event.values[0], event.values[1], event.values[2],
+            event.timestamp);
       }
-    }    
+    }
   }
-  
+
   private class PinchZoomScaleListener extends
       ScaleGestureDetector.SimpleOnScaleGestureListener {
-    
+
     @Override
     public boolean onScale(final ScaleGestureDetector detector) {
       float zoomFactor = detector.getScaleFactor();
@@ -283,15 +310,21 @@ public class JmolActivity extends Activity implements JmolStatusListener {
     updateListener.setScreenDimension();
   };
 
-  private final static float gyroThreshold = 1.0f;
-  private final static float spinFactor = 3;
-  
+  private final static float gyroThreshold = 0.7f;
+  private final static float spinFactor = 4.5f;
+
   protected void updateOrientation(float x, float y, float z, long when) {
     float dxyz2 = x * x + y * y;
+    float speed = (float) (Math.sqrt(dxyz2) * (panLock ? 1 : 1) * spinFactor);
+    if (panLock) {
+      viewer.syncScript("Mouse: rotateXYBy " + (int) (-y * speed) + " " + (int) (-x * speed), "=",
+          0);
+      return;
+    }
     if (dxyz2 < gyroThreshold)
       return;
-    float speed = (float) (Math.sqrt(dxyz2) * spinFactor);
-    viewer.syncScript("Mouse: spinXYBy " + (int) -y + " " + (int) -x + " " + speed, "=", 0);
+    viewer.syncScript("Mouse: spinXYBy " + (int) -y + " " + (int) -x + " "
+        + speed, "=", 0);
     // landscape mode, so x --> y and y --> -x
   }
 
@@ -320,13 +353,13 @@ public class JmolActivity extends Activity implements JmolStatusListener {
     switch (item.getItemId()) {
     case R.id.mol:
       prompt(/*GT._*/("Enter a molecule name:"), lastMolecule, 1);
-      break;      
+      break;
     case R.id.command:
       prompt(/*GT._*/("Enter a script command:"), lastCommand, 0);
-      break;      
+      break;
     case R.id.pdb:
       prompt(/*GT._*/("Enter a PDB ID or text:"), lastPDB, 2);
-      break;      
+      break;
     case R.id.open:
       File path = Downloader.getAppDir(this);
 
@@ -360,71 +393,23 @@ public class JmolActivity extends Activity implements JmolStatusListener {
   }
 
   private ProgressDialog pd;
+
   public synchronized void onActivityResult(final int requestCode,
                                             int resultCode, final Intent data) {
     if (resultCode == Activity.RESULT_OK) {
 
       if (requestCode == REQUEST_OPEN) {
-        
+
         setDialog("Opening file...");
-        
+
         //updateListener.manageDialog(ProgressDialog.show(this, "",
-         //   "Opening file...", true), (byte) 2);
+        //   "Opening file...", true), (byte) 2);
         // this is the best way to go -- allows for scripts, surfaces, and models
         viewer.openFileAsynchronously(data
             .getStringExtra(FileDialog.RESULT_PATH));
         opening = true;
       }
     }
-  }
-
-  @Override
-  public String createImage(String fileName, String type, Object textOrBytes,
-                            int quality) {
-    // ignore
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public String eval(String strEval) {
-    // ignore
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public float[][] functionXY(String functionName, int x, int y) {
-    // ignore
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public float[][][] functionXYZ(String functionName, int nx, int ny, int nz) {
-    // ignore
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public Map<String, Object> getRegistryInfo() {
-    // ignore
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public void resizeInnerPanel(String data) {
-    // ignore
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void showUrl(String url) {
-    // ignore
-    // TODO Auto-generated method stub      
   }
 
   @Override
@@ -449,9 +434,9 @@ public class JmolActivity extends Activity implements JmolStatusListener {
   }
 
   protected int myType;
-  
+
   private void prompt(String title, String text, int type) {
-    
+
     myType = type;
     AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
@@ -464,37 +449,38 @@ public class JmolActivity extends Activity implements JmolStatusListener {
     input.setSelectAllOnFocus(true);
     alert.setView(input);
 
-    alert.setPositiveButton(/*GT._*/("OK"), new DialogInterface.OnClickListener() {
-    public void onClick(DialogInterface dialog, int whichButton) {
-      processUserInput(input.getText().toString());
-    }
-    });
+    alert.setPositiveButton(/*GT._*/("OK"),
+        new DialogInterface.OnClickListener() {
+          public void onClick(DialogInterface dialog, int whichButton) {
+            processUserInput(input.getText().toString());
+          }
+        });
 
-    alert.setNegativeButton(/*GT._*/("Cancel"), new DialogInterface.OnClickListener() {
-      public void onClick(DialogInterface dialog, int whichButton) {
-        // ignore
-      }
-    });
-    
+    alert.setNegativeButton(/*GT._*/("Cancel"),
+        new DialogInterface.OnClickListener() {
+          public void onClick(DialogInterface dialog, int whichButton) {
+            // ignore
+          }
+        });
+
     alert.show();
   }
 
   private String lastCommand = "wireframe only";
   private String lastMolecule = "acetaminophen";
   private String lastPDB = "1crn";
-  
+
   protected void processUserInput(String cmd) {
     switch (myType) {
     case 1: // mol
-      script("load \"$" + (lastMolecule  = cmd) + "\"");
+      script("load \"$" + (lastMolecule = cmd) + "\"");
       break;
     case 0: // script
       script(lastCommand = cmd);
       break;
     case 2:
       lastPDB = cmd;
-      Intent dnIntent = new Intent(getBaseContext(),
-          PDBSearchActivity.class);
+      Intent dnIntent = new Intent(getBaseContext(), PDBSearchActivity.class);
       dnIntent.setAction("jmol::" + cmd);
       startActivityForResult(dnIntent, REQUEST_OPEN);
       break;
@@ -504,12 +490,12 @@ public class JmolActivity extends Activity implements JmolStatusListener {
   private void script(String script) {
     viewer.script(script);
   }
-  
+
   protected void setDialog(String text) {
-//    dismissPDialog();
-    pd = ProgressDialog.show(this, "", text, true);  
+    //    dismissPDialog();
+    pd = ProgressDialog.show(this, "", text, true);
   }
-  
+
   protected void dismissPDialog() {
     // TODO Auto-generated method stub
     if (pd == null || !resumeComplete)
@@ -532,13 +518,12 @@ public class JmolActivity extends Activity implements JmolStatusListener {
       return;
     if (imageView != null)
       //updateCanvas(); // alternative was not nec. after system.exit(0) was removed.
-      imageView.postInvalidate(); 
+      imageView.postInvalidate();
   }
 
-  
   private boolean updating;
   private boolean paused;
-  
+
   /*
   private void updateCanvas() {
     Log.w("Jmol","updateCanvas paused/updating " + paused + " " + updating);
@@ -568,8 +553,11 @@ public class JmolActivity extends Activity implements JmolStatusListener {
   }
   */
   protected void setPaused(boolean TF) {
-    paused = TF;    
-    Log.w("Jmol","setPaused " + paused);
+    paused = TF;
+    if (paused && viewer != null) {
+      viewer.syncScript("Mouse: spinXYBy 0 0 0", "+", 0);
+    }
+    Log.w("Jmol", "setPaused " + paused);
   }
 
 }

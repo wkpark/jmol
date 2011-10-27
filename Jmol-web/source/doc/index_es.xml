@@ -301,7 +301,10 @@ ucraniano (uk)
 	Puedes conseguir también versiones preliminares, que están en desarrollo
 	para ampliar la funcionalidad (versiones con número impar como 11.7, 11.9, 12.1, 12.3)
       </p>
-			<p>Puedes conseguir tanto la versión oficial como las preliminares en la <a href="./download/">página de descargas</a>.
+		<p>Puedes conseguir la última versión estable directamente en este 
+		<a href="http://sourceforge.net/projects/jmol/files/latest/download?source=files">enlace de descarga</a>.
+		O, si te interesan otras versiones o las preliminares, lee los detalles en
+		la <a href="./download/">página de descargas</a>. 
       </p>
 			<p>Al ser un archivo .jar, la aplicación Jmol se mostrará con un icono de Java.
 	Si quieres que se muestre un icono de Jmol, puedes conseguir uno en la

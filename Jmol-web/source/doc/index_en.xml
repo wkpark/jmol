@@ -296,7 +296,10 @@ Ukrainian (uk)
 	There are also prerelease versions that are being developed for enhanced functionality 
 	(odd-numbered versions like 11.7, 11.9, 12.1, 12.3). 
       </p>
-			<p>You can get both the stable release and the prereleases from the <a href="./download/">download page</a>. 
+		<p>You can get the latest stable version from this direct 
+		<a href="http://sourceforge.net/projects/jmol/files/latest/download?source=files">download link</a>.
+		Or, if you are interested in other versions or the prereleases, read details in
+		the <a href="./download/">download page</a>. 
 	</p>
 			<p>Being a .jar file, the Jmol application will be displayed as a Java icon.
 	If you want a Jmol icon to be shown instead, you can get it from the 

@@ -7,15 +7,21 @@
 	<body>
 		<title>Descarga de Jmol</title>
 		<section title="Descarga de Jmol">
-			<p>La versión oficial más reciente es la versión $VERSION$.</p>
-			<p>Se puede descargar desde SourceForge usando este enlace:
+		<p>La versión oficial más reciente es la versión $VERSION$.</p>
+		<p>Se puede descargar desde SourceForge usando este 
+		<a href="http://sourceforge.net/projects/jmol/files/latest/download?source=files">enlace de descarga</a>
+		directo (archivo <tt>.zip</tt>).
+		</p>
+		<p>Si te interesa una versión más antigua o bien prefieres un archivo
+		<tt>.tar.gz</tt>, ve a la 
 			<a href="http://sourceforge.net/project/showfiles.php?group_id=23629">página de descargas de Jmol</a>.
       <br/>(Busca bajo el título <tt>Jmol</tt> el enlace que termina en <tt>binary.zip</tt> o <tt>binary.tar.gz</tt>, 
 	dependiendo del formato que puedas descomprimir en tu ordenador.)
       </p>
-			<p>
-      Ocasionalmente están disponibles en el mismo lugar algunas versiones preliminares (con número impar como 11.1, 11.3, 11.5).
-	Éstas no se han probado exhaustivamente, por lo que pueden tener fallos aún no resueltos.
+		<p>Además, están igualmente disponibles versiones preliminares experimentalss con las
+		últimas prestaciones.
+		Son las versiones con número impar como 11.3, 11.5, 12.1, 12.3.
+		Éstas no se han probado exhaustivamente, por lo que pueden tener fallos aún no resueltos.
       <br/>(Busca bajo el título <tt>Jmol Prerelease Tests</tt> el enlace que termina en <tt>binary.zip</tt> o <tt>binary.tar.gz</tt>, 
 	dependiendo del formato que puedas descomprimir en tu ordenador.)
       </p>

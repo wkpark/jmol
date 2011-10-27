@@ -809,9 +809,10 @@ public class Token {
   public final static int loadformat                     = strparam | 45;
   public final static int loadligandformat               = strparam | 46;
   public final static int logfile                        = strparam | 47;
-  public final static int measurementunits               = strparam | 48;  
-  public final static int picking                        = strparam | 49;
-  public final static int pickingstyle                   = strparam | 50;
+  public final static int measurementunits               = strparam | 48; 
+  public final static int nmrdbformat                    = strparam | 49;
+  public final static int picking                        = strparam | 50;
+  public final static int pickingstyle                   = strparam | 51;
   public final static int picklabel                      = strparam | 52;
   public final static int propertycolorscheme            = strparam | 54;
   public final static int quaternionframe                = strparam | 58;
@@ -1169,9 +1170,10 @@ public class Token {
   final static int name           = misc  | 211;
   public final static int nci            = misc  | 212;
   public final static int next    = misc  | 213;
-  public final static int nocontourlines  = misc  | 214;
-  final static int nocross        = misc  | 215;
-  final static int nodebug        = misc  | 216;
+  final static int nmr            = misc  | 214;
+  public final static int nocontourlines  = misc  | 215;
+  final static int nocross        = misc  | 216;
+  final static int nodebug        = misc  | 217;
   public final static int nodots  = misc  | 218;
   final static int noedges        = misc  | 220;
   public final static int nofill  = misc  | 222;
@@ -2048,6 +2050,7 @@ public class Token {
       "mrc",             new Token(mrc),
       "msms",            new Token(msms),
       "name",            new Token(name),
+      "nmr",             new Token(nmr),
       "noCross",         new Token(nocross),
       "noDebug",         new Token(nodebug),
       "noEdges",         new Token(noedges),
@@ -2146,6 +2149,7 @@ public class Token {
       "loadLigandFormat",                         new Token(loadligandformat),
       "logFile",                                  new Token(logfile),
       "measurementUnits",                         new Token(measurementunits),
+      "nmrdbFormat",                              new Token(nmrdbformat),
       "picking",                                  new Token(picking),
       "pickingStyle",                             new Token(pickingstyle),
       "pickLabel",                                new Token(picklabel),

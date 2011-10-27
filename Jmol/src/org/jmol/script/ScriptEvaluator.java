@@ -14187,6 +14187,7 @@ public class ScriptEvaluator {
       if (!isSyntaxCheck)
         msg = viewer.calculateStructures(null, true, false);
       break;
+    case Token.nmr:
     case Token.smiles:
     case Token.drawing:
     case Token.chemical:
@@ -14195,13 +14196,22 @@ public class ScriptEvaluator {
         return;
       msg = viewer.getSmiles(0, 0, viewer.getSelectionSet(false), false, true,
           false, false);
-      if (tok == Token.drawing) {
+      switch (tok) {
+      case Token.drawing:
         if (msg.length() > 0) {
           viewer.show2D(msg);
           return;
         }
         msg = "Could not show drawing -- Either insufficient atoms are selected or the model is a PDB file.";
-      } else if (tok == Token.chemical) {
+        break;
+      case Token.nmr:
+        if (msg.length() > 0) {
+          viewer.showNMR(msg);
+          return;
+        }
+        msg = "Could not show nmr -- Either insufficient atoms are selected or the model is a PDB file.";
+        break;
+      case Token.chemical:
         len = 3;
         String info = null;
         if (msg.length() > 0) {

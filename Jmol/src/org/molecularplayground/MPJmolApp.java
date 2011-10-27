@@ -33,6 +33,14 @@ import org.openscience.jmol.app.jsonkiosk.JsonNioClient;
 import org.openscience.jmol.app.jsonkiosk.JsonNioService;
 import org.openscience.jmol.app.jsonkiosk.KioskFrame;
 
+/*
+ * Jmol 12 implementation of the Molecular Playground
+ * 
+ * includes message "banner:xxxxx" intercept to 
+ * display xxxxx on the banner, thus allowing that to 
+ * be modified by a running script.
+ * 
+ */
 public class MPJmolApp implements JsonNioClient {
 
   protected JmolViewer jmolViewer;
@@ -144,10 +152,20 @@ public class MPJmolApp implements JsonNioClient {
     }
 
     public void notifyCallback(EnumCallback type, Object[] data) {
+      
+      String strInfo = (data == null || data[1] == null ? null : data[1]
+                                                                      .toString());
+      if (strInfo != null && strInfo.startsWith("banner:")) {
+        setBannerLabel(strInfo.substring(7).trim());  
+      }
+        
+
+      
       JmolCallbackListener appConsole = (JmolCallbackListener) jmolViewer
           .getProperty("DATA_API", "getAppConsole", null);
       if (appConsole != null)
         appConsole.notifyCallback(type, data);
+      
     }
 
     public void setCallbackFunction(String callbackType, String callbackFunction) {

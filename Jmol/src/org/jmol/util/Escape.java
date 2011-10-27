@@ -850,4 +850,13 @@ public class Escape {
     }
     return array;
   }
+
+  public static String escapeUrl(String url) {
+    url = TextFormat.simpleReplace(url, "\n", "");
+    url = TextFormat.simpleReplace(url, "%", "%25");
+    url = TextFormat.simpleReplace(url, "[", "%5B");
+    url = TextFormat.simpleReplace(url, "]", "%5D");
+    url = TextFormat.simpleReplace(url, " ", "%20");
+    return url;
+  }
 }

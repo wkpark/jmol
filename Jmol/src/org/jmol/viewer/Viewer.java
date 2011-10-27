@@ -4577,10 +4577,7 @@ private void zap(String msg) {
     case 'I':
     case 'K':
     case '/':
-      f = TextFormat.simpleReplace(f, "%", "%25");
-      f = TextFormat.simpleReplace(f, "[", "%5B");
-      f = TextFormat.simpleReplace(f, "]", "%5D");
-      f = TextFormat.simpleReplace(f, " ", "%20");
+      f = Escape.escapeUrl(f);
       String format;
       switch (type) {
       case 'N':
@@ -5610,6 +5607,10 @@ private void zap(String msg) {
 
   private void setStringProperty(String key, int tok, String value) {
     switch (tok) {
+    case Token.nmrdbformat:
+      // 12.3.3
+      global.nmrUrlFormat = value;
+      break;      
     case Token.loadligandformat:
       // /12.1.51//
       global.loadLigandFormat = value;
@@ -8317,6 +8318,11 @@ private void zap(String msg) {
     return xyzdata; 
   }
 
+  public void showNMR(String smiles) {
+    // nmrdb cannot handle "." separator
+    showUrl(global.nmrUrlFormat + Escape.escapeUrl(getChemicalInfo(smiles, '/', "smiles")));  
+  }
+  
   public void getHelp(String what) {
     if (global.helpPath.indexOf("?") < 0) { 
       if (what.length() > 0 && what.indexOf("?") != 0) 

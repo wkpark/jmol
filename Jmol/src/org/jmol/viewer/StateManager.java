@@ -880,6 +880,7 @@ public class StateManager {
       setParameterValue("navigateSurface", navigateSurface);
       setParameterValue("navigationPeriodic", navigationPeriodic);
       setParameterValue("navigationSpeed", navigationSpeed);
+      setParameterValue("nmrUrlFormat", nmrUrlFormat);
       setParameterValue("partialDots", partialDots);
       setParameterValue("pdbAddHydrogens", pdbAddHydrogens); // new 12.1.51
       setParameterValue("pdbGetHeader", pdbGetHeader); // new 11.5.39
@@ -996,6 +997,7 @@ public class StateManager {
     char inlineNewlineChar = '|'; //pseudo static
     String loadFormat = "http://www.rcsb.org/pdb/files/%FILE.pdb.gz";
     String loadLigandFormat = "http://www.rcsb.org/pdb/files/ligand/%FILE.cif";
+    String nmrUrlFormat = "http://www.nmrdb.org/predictor?smiles=";
     String smilesUrlFormat = "http://cactus.nci.nih.gov/chemical/structure/%FILE/file?format=sdf&get3d=True"; 
     String nihResolverFormat = "http://cactus.nci.nih.gov/chemical/structure/%FILE"; 
       

@@ -1308,6 +1308,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
         Logger.error(line + "\nError in TLS parser: ");
         e.printStackTrace();
         flushRemark3 = true;
+        isOK = false;
       }
     }
     if (!isOK)

@@ -218,7 +218,7 @@ private boolean tlsSeen;
         remark290();
         return false;
       }
-      if (!tlsSeen && line.indexOf("TLS") > 0) {
+      if (!tlsSeen && line.indexOf("TLS DETAILS") > 0) {
         return remarkTls();
       }
       checkLineForScript();
@@ -1193,6 +1193,12 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
   REMARK   3                                                                      
   REMARK   3   TLS GROUP : 2
    ...                                                      
+   or (1zy8)
+  REMARK   7                                                                      
+  REMARK   7 TLS DEFINITIONS USED IN A FEW FINAL ROUNDS                           
+  REMARK   7 OF REFINEMENT:                                                       
+  REMARK   7 TLS DETAILS                                                          
+
    */
   private boolean remarkTls() throws Exception {
     int nGroups = 0;
@@ -1202,7 +1208,8 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     List<Map<String, Object>> ranges = null;
     Map<String, Object> range = null;
     tlsSeen = true;
-    while (readLine() != null && line.startsWith("REMARK   3")) {
+    String remark = line.substring(0, 11);
+    while (readLine() != null && line.startsWith(remark)) {
       try {
         String[] tokens = getTokens(line.substring(10).replace(':', ' '));
         if (tokens.length < 2)

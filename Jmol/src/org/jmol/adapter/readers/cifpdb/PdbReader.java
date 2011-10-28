@@ -145,8 +145,10 @@ private boolean tlsSeen;
       // PDB is different -- targets actual model number
       int modelNo = (isNewModel ? modelNumber + 1 : getModelNumber());
       modelNumber = (bsModels == null ? modelNo : modelNumber + 1);
-      if (!doGetModel(modelNumber))
+      if (!doGetModel(modelNumber)) {
+        handleTlsMissingModels();
         return checkLastModel();
+      }
       atomSetCollection.connectAll(maxSerial);
       if (atomCount > 0)
         applySymmetryAndSetTrajectory();
@@ -244,14 +246,27 @@ private boolean tlsSeen;
   protected void finalizeReader() throws Exception {
     checkNotPDB();
     atomSetCollection.connectAll(maxSerial);
-    if (tlsGroups != null)
-      atomSetCollection.setAtomSetAuxiliaryInfo("tlsGroups", tlsGroups);
     if (biomolecules != null && biomolecules.size() > 0
         && atomSetCollection.getAtomCount() > 0) {
       atomSetCollection.setAtomSetAuxiliaryInfo("biomolecules", biomolecules);
       setBiomoleculeAtomCounts();
       if (biomts != null && applySymmetry) {
         atomSetCollection.applySymmetry(biomts, notionalUnitCell, applySymmetryToBonds, filter);
+        tlsModels = null; // for now, no TLS groups for biomolecules
+      }
+    }
+    if (tlsModels != null) {
+      int n = atomSetCollection.getAtomSetCount();
+      if (n == tlsModels.size()) {
+        for (int i = n; --i >= 0;)
+          atomSetCollection.setAtomSetAuxiliaryInfo("TLS", tlsModels.get(i), i);
+      } else {
+        Logger.info(n + " models but " + tlsModels.size() + " TLS descriptions");
+        if (tlsModels.size() == 1) {
+          Logger.info(" -- assuming all models have the same TLS description -- check REMARK 3 for details.");
+          for (int i = n; --i >= 0;)
+            atomSetCollection.setAtomSetAuxiliaryInfo("TLS", tlsModels.get(0), i);
+        }
       }
     }
     super.finalizeReader();
@@ -1164,7 +1179,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     }
   }
 
-  private List<Map<String, Object>> tlsGroups = null;
+  private List<Map<String, Object>> tlsModels = null;
 
   /*
   REMARK   3  TLS DETAILS                                                         
@@ -1204,6 +1219,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     int nGroups = 0;
     int iGroup = 0;
     String components = null;
+    List<Map<String, Object>> tlsGroups = null;
     Map<String, Object> tlsGroup = null;
     List<Map<String, Object>> ranges = null;
     Map<String, Object> range = null;
@@ -1223,6 +1239,8 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
             nGroups = parseInt(tokens[tokens.length - 1]);
             if (nGroups < 1)
               break;
+            if (tlsModels == null)
+              tlsModels = new ArrayList<Map<String, Object>>();
             tlsGroups = new ArrayList<Map<String, Object>>();
           }
         } else if (tokens[1].equalsIgnoreCase("GROUP")) {
@@ -1317,8 +1335,22 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
         break;
       }
     }
+    if (tlsGroups != null) {
+      Hashtable<String, Object> groups = new Hashtable<String, Object>();
+      groups.put("groupCount", Integer.valueOf(nGroups));
+      groups.put("groups", tlsGroups);
+      tlsModels.add(groups);
+    }
     return false;
   }
-        
+
+  /**
+   * for now, we just ignore TLS details if user has selected a specific model
+   */
+  private void handleTlsMissingModels() {
+    tlsModels = null;
+  }
+
+
 }
 

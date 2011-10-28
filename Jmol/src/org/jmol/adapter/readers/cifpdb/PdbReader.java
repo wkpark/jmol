@@ -107,6 +107,7 @@ public class PdbReader extends AtomSetCollectionReader {
  private StringBuffer pdbHeader;
  private int configurationPtr = Integer.MIN_VALUE;
  private boolean applySymmetry;
+private boolean tlsSeen;
 
  @Override
  protected void initializeReader() throws Exception {
@@ -217,7 +218,7 @@ public class PdbReader extends AtomSetCollectionReader {
         remark290();
         return false;
       }
-      if (line.indexOf("TLS") > 0) {
+      if (!tlsSeen && line.indexOf("TLS") > 0) {
         return remarkTls();
       }
       checkLineForScript();
@@ -1197,36 +1198,32 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     int nGroups = 0;
     int iGroup = 0;
     String components = null;
-    boolean flushRemark3 = false;
-    boolean isOK = true;
     Map<String, Object> tlsGroup = null;
     List<Map<String, Object>> ranges = null;
     Map<String, Object> range = null;
+    tlsSeen = true;
     while (readLine() != null && line.startsWith("REMARK   3")) {
-      if (flushRemark3)
-        continue;
       try {
         String[] tokens = getTokens(line.substring(10).replace(':', ' '));
         if (tokens.length < 2)
           continue;
         System.out.println(line);
-        if (tokens[0].equalsIgnoreCase("number")) {
-          nGroups = parseInt(tokens[tokens.length - 1]);
-          if (nGroups < 1) {
-            flushRemark3 = true;
-            isOK = false;
-            continue;
+        if (tokens[0].equalsIgnoreCase("NUMBER")) {
+          if (tokens[2].equalsIgnoreCase("COMPONENTS")) {
+            ranges = new ArrayList<Map<String, Object>>();
+            tlsGroup.put("ranges", ranges);
+          } else {
+            nGroups = parseInt(tokens[tokens.length - 1]);
+            if (nGroups < 1)
+              break;
+            tlsGroups = new ArrayList<Map<String, Object>>();
           }
-          tlsGroups = new ArrayList<Map<String, Object>>();
         } else if (tokens[1].equalsIgnoreCase("GROUP")) {
           tlsGroup = new Hashtable<String, Object>();
           tlsGroups.add(tlsGroup);
           int groupID = parseInt(tokens[tokens.length - 1]);
           tlsGroup.put("id", Integer.valueOf(groupID));
           ranges = null;
-        } else if (tokens[0].equalsIgnoreCase("NUMBER")) {
-          ranges = new ArrayList<Map<String, Object>>();
-          tlsGroup.put("ranges", ranges);
         } else if (tokens[0].equalsIgnoreCase("COMPONENTS")) {
           components = line;
           tlsGroup.put("components", components);
@@ -1301,18 +1298,18 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
             if (ti < tj)
               tensor[tj][ti] = tensor[ti][tj];
           }
-          if (tensorType == 'S' && ++iGroup == nGroups)
-            flushRemark3 = true;
+          if (tensorType == 'S' && ++iGroup == nGroups) {
+            Logger.info(nGroups + " TLS groups read");
+            break;
+          }
         }
       } catch (Exception e) {
         Logger.error(line + "\nError in TLS parser: ");
         e.printStackTrace();
-        flushRemark3 = true;
-        isOK = false;
+        tlsGroups = null;
+        break;
       }
     }
-    if (!isOK)
-      tlsGroups = null;
     return false;
   }
         

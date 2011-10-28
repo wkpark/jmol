@@ -1226,7 +1226,6 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
           ranges = null;
         } else if (tokens[0].equalsIgnoreCase("COMPONENTS")) {
           components = line;
-          tlsGroup.put("components", components);
         } else if (tokens[0].equalsIgnoreCase("RESIDUE")) {
           /*
           REMARK   3    RESIDUE RANGE :   A     2        A     8

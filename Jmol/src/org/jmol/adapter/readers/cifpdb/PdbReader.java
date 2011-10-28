@@ -1232,6 +1232,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
           token 0  1      2       3   4   5     6        7     8
           */
           range = new Hashtable<String, Object>();
+          ranges.add(range);
           if (tokens.length == 6) {
             range.put("chains", "" + tokens[2].charAt(0) + tokens[4].charAt(0));
             range.put("residues", new int[] { parseInt(tokens[3]),
@@ -1268,9 +1269,9 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
            */
           Point3f origin = new Point3f();
           tlsGroup.put("origin", origin);
-          if (tokens.length == 7) {
-            origin.set(parseFloat(tokens[4]), parseFloat(tokens[5]),
-                parseFloat(tokens[6]));
+          if (tokens.length == 8) {
+            origin.set(parseFloat(tokens[5]), parseFloat(tokens[6]),
+                parseFloat(tokens[7]));
           } else {
             int n = line.length();
             origin.set(parseFloat(line.substring(n - 27, n - 18)),

@@ -107,7 +107,6 @@ public class PdbReader extends AtomSetCollectionReader {
  private StringBuffer pdbHeader;
  private int configurationPtr = Integer.MIN_VALUE;
  private boolean applySymmetry;
-private boolean tlsSeen;
 
  @Override
  protected void initializeReader() throws Exception {
@@ -220,7 +219,7 @@ private boolean tlsSeen;
         remark290();
         return false;
       }
-      if (!tlsSeen && line.indexOf("TLS DETAILS") > 0) {
+      if (line.indexOf("TLS DETAILS") > 0) {
         return remarkTls();
       }
       checkLineForScript();
@@ -1223,7 +1222,6 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     Map<String, Object> tlsGroup = null;
     List<Map<String, Object>> ranges = null;
     Map<String, Object> range = null;
-    tlsSeen = true;
     String remark = line.substring(0, 11);
     while (readLine() != null && line.startsWith(remark)) {
       try {
@@ -1341,7 +1339,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
       groups.put("groups", tlsGroups);
       tlsModels.add(groups);
     }
-    return false;
+    return (nGroups < 1);
   }
 
   /**

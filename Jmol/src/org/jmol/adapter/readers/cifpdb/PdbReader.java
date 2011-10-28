@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.vecmath.Matrix4f;
+import javax.vecmath.Point3f;
 
 /**
  * PDB file reader.
@@ -216,6 +217,9 @@ public class PdbReader extends AtomSetCollectionReader {
         remark290();
         return false;
       }
+      if (line.indexOf("TLS") > 0) {
+        return remarkTls();
+      }
       checkLineForScript();
       return true;
     case 18:
@@ -239,6 +243,8 @@ public class PdbReader extends AtomSetCollectionReader {
   protected void finalizeReader() throws Exception {
     checkNotPDB();
     atomSetCollection.connectAll(maxSerial);
+    if (tlsGroups != null)
+      atomSetCollection.setAtomSetAuxiliaryInfo("tlsGroups", tlsGroups);
     if (biomolecules != null && biomolecules.size() > 0
         && atomSetCollection.getAtomCount() > 0) {
       atomSetCollection.setAtomSetAuxiliaryInfo("biomolecules", biomolecules);
@@ -569,7 +575,6 @@ REMARK 290 REMARK: NULL
     atom.elementSymbol = deduceElementSymbol(atom.isHetero);
     if (!filterAtom(atom, iAtom++))
       return;
-    
     atom.atomSerial = serial;
     if (serial > maxSerial)
       maxSerial = serial;
@@ -1157,5 +1162,158 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
       htSite.put("groups", groups);
     }
   }
+
+  private List<Map<String, Object>> tlsGroups = null;
+
+  /*
+  REMARK   3  TLS DETAILS                                                         
+  REMARK   3   NUMBER OF TLS GROUPS  : NULL
+   or 
+  REMARK   3  TLS DETAILS                                                         
+  REMARK   3   NUMBER OF TLS GROUPS  : 20                                         
+  REMARK   3                                                                      
+  REMARK   3   TLS GROUP : 1                                                      
+  REMARK   3    NUMBER OF COMPONENTS GROUP : 1                                    
+  REMARK   3    COMPONENTS        C SSSEQI   TO  C SSSEQI                         
+  REMARK   3    RESIDUE RANGE :   A     2        A     8                          
+  REMARK   3    ORIGIN FOR THE GROUP (A):  17.3300  62.7550  29.2560              
+  REMARK   3    T TENSOR                                                          
+  REMARK   3      T11:   0.0798 T22:   0.0357                                     
+  REMARK   3      T33:   0.0678 T12:   0.0530                                     
+  REMARK   3      T13:  -0.0070 T23:   0.0011                                     
+  REMARK   3    L TENSOR                                                          
+  REMARK   3      L11:  13.1074 L22:   7.9735                                     
+  REMARK   3      L33:   2.5703 L12:  -6.5507                                     
+  REMARK   3      L13:  -1.5297 L23:   4.1172                                     
+  REMARK   3    S TENSOR                                                          
+  REMARK   3      S11:  -0.4246 S12:  -0.4216 S13:   0.1672                       
+  REMARK   3      S21:   0.5307 S22:   0.3071 S23:   0.0385                       
+  REMARK   3      S31:   0.0200 S32:  -0.2454 S33:   0.1174                       
+  REMARK   3                                                                      
+  REMARK   3   TLS GROUP : 2
+   ...                                                      
+   */
+  private boolean remarkTls() throws Exception {
+    int nGroups = 0;
+    int iGroup = 0;
+    String components = null;
+    boolean flushRemark3 = false;
+    boolean isOK = true;
+    Map<String, Object> tlsGroup = null;
+    List<Map<String, Object>> ranges = null;
+    Map<String, Object> range = null;
+    while (readLine() != null && line.startsWith("REMARK   3")) {
+      if (flushRemark3)
+        continue;
+      try {
+        String[] tokens = getTokens(line.substring(10).replace(':', ' '));
+        if (tokens.length < 2)
+          continue;
+        System.out.println(line);
+        if (tokens[0].equalsIgnoreCase("number")) {
+          nGroups = parseInt(tokens[tokens.length - 1]);
+          if (nGroups < 1) {
+            flushRemark3 = true;
+            isOK = false;
+            continue;
+          }
+          tlsGroups = new ArrayList<Map<String, Object>>();
+        } else if (tokens[1].equalsIgnoreCase("GROUP")) {
+          tlsGroup = new Hashtable<String, Object>();
+          tlsGroups.add(tlsGroup);
+          int groupID = parseInt(tokens[tokens.length - 1]);
+          tlsGroup.put("id", Integer.valueOf(groupID));
+          ranges = null;
+        } else if (tokens[0].equalsIgnoreCase("NUMBER")) {
+          ranges = new ArrayList<Map<String, Object>>();
+          tlsGroup.put("ranges", ranges);
+        } else if (tokens[0].equalsIgnoreCase("COMPONENTS")) {
+          components = line;
+          tlsGroup.put("components", components);
+        } else if (tokens[0].equalsIgnoreCase("RESIDUE")) {
+          /*
+          REMARK   3    RESIDUE RANGE :   A     2        A     8
+          token 0  1      2       3   4   5     6        7     8
+          */
+          range = new Hashtable<String, Object>();
+          if (tokens.length == 6) {
+            range.put("chains", "" + tokens[2].charAt(0) + tokens[4].charAt(0));
+            range.put("residues", new int[] { parseInt(tokens[3]),
+                parseInt(tokens[5]) });
+          } else {
+            int toC = components.indexOf(" C ");
+            int fromC = components.indexOf(" C ", toC + 4);
+            range.put("chains", "" + line.charAt(fromC) + line.charAt(toC));
+            range.put("residues", new int[] {
+                parseInt(line.substring(fromC + 1, toC)),
+                parseInt(line.substring(toC + 1)) });
+          }
+        } else if (tokens[0].equalsIgnoreCase("SELECTION")) {
+          /*
+           * REMARK   3    SELECTION: RESID 513:544 OR RESID 568:634 OR RESID                
+           */
+          if (ranges == null)
+            ranges = new ArrayList<Map<String, Object>>();
+          for (int i = 2; i < tokens.length; i++) {
+            int resno = parseInt(tokens[i]);
+            if (resno == Integer.MIN_VALUE)
+              continue;
+            range = new Hashtable<String, Object>();
+            range.put("residues", new int[] { resno, parseInt(tokens[++i]) });
+            ranges.add(range);
+          }
+        } else if (tokens[0].equalsIgnoreCase("ORIGIN")) {
+          /*
+          REMARK   3    ORIGIN FOR THE GROUP (A):  17.3300  62.7550  29.2560              
+          */
+          /* 
+           * Parse tightly packed numbers e.g. -999.1234-999.1234-999.1234
+           * assuming there are 4 places to the right of each decimal point
+           */
+          Point3f origin = new Point3f();
+          tlsGroup.put("origin", origin);
+          if (tokens.length == 7) {
+            origin.set(parseFloat(tokens[4]), parseFloat(tokens[5]),
+                parseFloat(tokens[6]));
+          } else {
+            int n = line.length();
+            origin.set(parseFloat(line.substring(n - 27, n - 18)),
+                parseFloat(line.substring(n - 18, n - 9)), parseFloat(line
+                    .substring(n - 9, n)));
+          }
+        } else if (tokens[1].equalsIgnoreCase("TENSOR")) {
+          /*
+           * REMARK   3    T TENSOR                                                          
+           * REMARK   3      T11:   0.0798 T22:   0.0357                                     
+           * REMARK   3      T33:   0.0678 T12:   0.0530                                     
+           * REMARK   3      T13:  -0.0070 T23:   0.0011                                     
+           */
+          char tensorType = tokens[0].charAt(0);
+          tokens = getTokens((readLine().substring(10)
+              + readLine().substring(10) + readLine().substring(10)).replace(
+              tensorType, ' ').replace(':', ' '));
+          float[][] tensor = new float[3][3];
+          tlsGroup.put("t" + tensorType, tensor);
+          for (int i = 0; i < tokens.length; i++) {
+            int ti = tokens[i].charAt(0) - '1';
+            int tj = tokens[i].charAt(1) - '1';
+            tensor[ti][tj] = parseFloat(tokens[++i]);
+            if (ti < tj)
+              tensor[tj][ti] = tensor[ti][tj];
+          }
+          if (tensorType == 'S' && ++iGroup == nGroups)
+            flushRemark3 = true;
+        }
+      } catch (Exception e) {
+        Logger.error(line + "\nError in TLS parser: ");
+        e.printStackTrace();
+        flushRemark3 = true;
+      }
+    }
+    if (!isOK)
+      tlsGroups = null;
+    return false;
+  }
+        
 }
 

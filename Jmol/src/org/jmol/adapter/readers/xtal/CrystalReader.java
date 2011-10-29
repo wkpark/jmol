@@ -1010,10 +1010,10 @@ public class CrystalReader extends AtomSetCollectionReader {
        String[] tokens = getTokens();
        int index = parseInt(tokens[3]) - 1;
        tokens = getTokens(readLines(3));
-       atoms[index].ellipsoid = Eigen.getEllipsoid(directLatticeVectors, 
+       atoms[index].setEllipsoid(Eigen.getEllipsoid(directLatticeVectors, 
            new float[] {parseFloat(tokens[1]), 
            parseFloat(tokens[3]), 
-           parseFloat(tokens[5]) }, false);
+           parseFloat(tokens[5]) }, false));
        readLine();
      }
      return true;

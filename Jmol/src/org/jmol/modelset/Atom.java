@@ -267,8 +267,8 @@ final public class Atom extends Point3fi implements JmolNode {
   }
 
   public float getADPMinMax(boolean isMax) {
-    Quadric ellipsoid = getEllipsoid();
-    return (ellipsoid == null ? 0 : ellipsoid.lengths[isMax ? 2 : 0] * ellipsoid.scale);
+    Quadric[] ellipsoid = getEllipsoid();
+    return (ellipsoid == null ? 0 : ellipsoid[0].lengths[isMax ? 2 : 0] * ellipsoid[0].scale);
   }
 
   public int getRasMolRadius() {
@@ -617,15 +617,15 @@ final public class Atom extends Point3fi implements JmolNode {
      return partialCharges == null ? 0 : partialCharges[index];
    }
 
-   public Quadric getEllipsoid() {
+   public Quadric[] getEllipsoid() {
      return group.chain.modelSet.getEllipsoid(index);
    }
 
-   public void scaleEllipsoid(int size) {
-     Quadric ellipsoid = getEllipsoid();
-     if (ellipsoid == null)
+   public void scaleEllipsoid(int size, int iSelect) {
+     Quadric[] ellipsoid = getEllipsoid();
+     if (ellipsoid == null || iSelect >= ellipsoid.length)
        return;
-     ellipsoid.setSize(size);
+     ellipsoid[iSelect].setSize(size);
    }
 
    /**

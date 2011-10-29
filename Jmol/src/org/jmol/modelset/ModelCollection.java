@@ -4272,7 +4272,7 @@ abstract public class ModelCollection extends BondCollection {
     if (partialCharges != null)
       partialCharges = ArrayUtil.setLength(partialCharges, newLength);
     if (ellipsoids != null)
-      ellipsoids = (Quadric[]) ArrayUtil.setLength(ellipsoids, newLength);
+      ellipsoids = (Quadric[][]) ArrayUtil.setLength(ellipsoids, newLength);
     if (atomNames != null)
       atomNames = ArrayUtil.setLength(atomNames, newLength);
     if (atomTypes != null)
@@ -4293,7 +4293,7 @@ abstract public class ModelCollection extends BondCollection {
                          int atomSite, float x, float y, float z,
                          float radius, float vectorX, float vectorY,
                          float vectorZ, int formalCharge, float partialCharge,
-                         int occupancy, float bfactor, Quadric ellipsoid,
+                         int occupancy, float bfactor, Quadric[] ellipsoid,
                          boolean isHetero, char alternateLocationID,
                          byte specialAtomID, BitSet atomSymmetry) {
     Atom atom = new Atom(modelIndex, atomCount, x, y, z, radius, atomSymmetry,

@@ -791,7 +791,7 @@ public final class ModelLoader {
   private void addAtom(boolean isPDB, BitSet atomSymmetry, int atomSite,
                        Object atomUid, short atomicAndIsotopeNumber,
                        String atomName, int formalCharge, float partialCharge,
-                       Quadric ellipsoid, int occupancy, float bfactor,
+                       Quadric[] ellipsoid, int occupancy, float bfactor,
                        float x, float y, float z, boolean isHetero,
                        int atomSerial, String group3,
                        float vectorX, float vectorY, float vectorZ,

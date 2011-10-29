@@ -29,30 +29,31 @@ import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
-//import java.util.Map.Entry;
 
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
-//import org.jmol.script.Token;
 import org.jmol.shape.AtomShape;
 import org.jmol.util.Escape;
 import org.jmol.util.Quadric;
+import org.jmol.viewer.StateManager;
 
 public class Ellipsoids extends AtomShape {
-  // most differences are in renderer
-  
+
   Map<String, Ellipsoid> htEllipsoids = new Hashtable<String, Ellipsoid>();
   boolean haveEllipsoids;
-  
+  short[][] colixset;
+  byte[][] paletteIDset;
+  short[][] madset;
+
   static class Ellipsoid {
-    
+
     String id;
     Vector3f[] axes;
     float[] lengths;
-    Point3f center = new Point3f(0,0,0);
+    Point3f center = new Point3f(0, 0, 0);
     double[] coef;
     short colix = Graphics3D.GOLD;
     int modelIndex;
@@ -60,44 +61,41 @@ public class Ellipsoids extends AtomShape {
     boolean visible;
     boolean isValid;
     boolean isOn = true;
-    
+
     Ellipsoid(String id, int modelIndex) {
       this.id = id;
       this.modelIndex = modelIndex;
     }
 
   }
-    
-//  @SuppressWarnings("unchecked")
+
   @Override
   public boolean getProperty(String property, Object[] data) {
-/*  just implemented for MeshCollection
-    if (property == "getNames") {
-      Map<String, Token> map = (Map<String, Token>) data[0];
-      boolean withDollar = ((Boolean) data[1]).booleanValue();
-      for (Entry<String, Ellipsoid>entry : htEllipsoids.entrySet())
-        map.put((withDollar ? "$" : "") + entry.getKey(), Token.tokenExpressionBegin); // just a placeholder
-      return true;
-    }
-*/
     return super.getProperty(property, data);
   }
-    
+
   @Override
   public int getIndexFromName(String thisID) {
-    return ((ellipsoid = htEllipsoids.get(thisID))
-        == null ? -1 : 1);
+    return ((ellipsoid = htEllipsoids.get(thisID)) == null ? -1 : 1);
   }
 
   Ellipsoid ellipsoid;
-  
+  private int iSelect;
+
   @Override
   protected void setSize(int size, BitSet bsSelected) {
     super.setSize(size, bsSelected);
-    if (size == 0)
-      return;
-    for (int i = bsSelected.nextSetBit(0); i >= 0; i = bsSelected.nextSetBit(i + 1))
-      atoms[i].scaleEllipsoid(size);
+    checkSets();
+    madset[iSelect] = mads;
+    for (int i = bsSelected.nextSetBit(0); i >= 0; i = bsSelected
+        .nextSetBit(i + 1)) {
+      if (size != 0)
+        atoms[i].scaleEllipsoid(size, iSelect);
+      boolean isVisible = madset[0][i] > 0
+          || (madset[1] != null && madset[1].length > i && madset[1][i] > 0);
+      bsSizeSet.set(i, isVisible);
+      atoms[i].setShapeVisibility(myVisibilityFlag, isVisible);
+    }
   }
 
   @Override
@@ -135,11 +133,11 @@ public class Ellipsoids extends AtomShape {
       if ("modelindex" == propertyName) {
         ellipsoid.modelIndex = ((Integer) value).intValue();
         return;
-      } 
+      }
       if ("on" == propertyName) {
         ellipsoid.isOn = ((Boolean) value).booleanValue();
         return;
-      } 
+      }
       if ("axes" == propertyName) {
         ellipsoid.isValid = false;
         ellipsoid.axes = (Vector3f[]) value;
@@ -207,7 +205,34 @@ public class Ellipsoids extends AtomShape {
         return;
       }
     }
+
+    if ("select" == propertyName) {
+      iSelect = ((Integer) value).intValue() - 1;
+      checkSets();
+      colixes = colixset[iSelect];
+      paletteIDs = paletteIDset[iSelect];
+      mads = madset[iSelect];
+      return;
+    }
+
     super.setProperty(propertyName, value, bs);
+
+    if (colixset != null) {
+      if ("color" == propertyName || "translucency" == propertyName
+          || "deleteModelAtoms" == propertyName) {
+        colixset[iSelect] = colixes;
+        paletteIDset[iSelect] = paletteIDs;
+        madset[iSelect] = mads;
+      }
+    }
+  }
+
+  private void checkSets() {
+    if (colixset == null) {
+      colixset = new short[2][];
+      paletteIDset = new byte[2][];
+      madset = new short[2][];
+    }
   }
 
   private void updateEquation(Ellipsoid ellipsoid) {
@@ -217,16 +242,24 @@ public class Ellipsoids extends AtomShape {
     Matrix3f mTemp = new Matrix3f();
     Vector3f v1 = new Vector3f();
     ellipsoid.coef = new double[10];
-    Quadric.getEquationForQuadricWithCenter(ellipsoid.center.x, 
-        ellipsoid.center.y, ellipsoid.center.z, mat, v1, mTemp,
-        ellipsoid.coef, null);
+    Quadric.getEquationForQuadricWithCenter(ellipsoid.center.x,
+        ellipsoid.center.y, ellipsoid.center.z, mat, v1, mTemp, ellipsoid.coef,
+        null);
     ellipsoid.isValid = true;
   }
-  
+
   @Override
   public String getShapeState() {
-    Iterator<Ellipsoid> e = htEllipsoids.values().iterator();
     StringBuffer sb = new StringBuffer();
+    getStateID(sb);
+    getStateAtoms(sb);
+    return sb.toString();
+  }
+
+  private void getStateID(StringBuffer sb) {
+    if (!isActive || madset == null)
+      return;
+    Iterator<Ellipsoid> e = htEllipsoids.values().iterator();
     Vector3f v1 = new Vector3f();
     while (e.hasNext()) {
       Ellipsoid ellipsoid = e.next();
@@ -245,23 +278,28 @@ public class Ellipsoids extends AtomShape {
         sb.append(" off");
       sb.append(";\n");
     }
-    if (isActive) {
+  }
+
+  private void getStateAtoms(StringBuffer sb) {
+    for (int ii = 0; ii < 2; ii++) {
+      if (madset[ii] == null)
+        continue;
+      StateManager.appendCmd(sb, "Ellipsoids set " + (ii + 1) + "\n");
       Map<String, BitSet> temp = new Hashtable<String, BitSet>();
       Map<String, BitSet> temp2 = new Hashtable<String, BitSet>();
       if (bsSizeSet != null)
         for (int i = bsSizeSet.nextSetBit(0); i >= 0; i = bsSizeSet
             .nextSetBit(i + 1))
-          setStateInfo(temp, i, "Ellipsoids " + mads[i]);
-      if (bsColixSet != null)
+          setStateInfo(temp, i, "Ellipsoids " + madset[ii][i]);
+      if (bsColixSet != null && colixset[ii] != null)
         for (int i = bsColixSet.nextSetBit(0); i >= 0; i = bsColixSet
             .nextSetBit(i + 1))
-          setStateInfo(temp2, i, getColorCommand("Ellipsoids", paletteIDs[i],
-              colixes[i]));
+          setStateInfo(temp2, i, getColorCommand("Ellipsoids",
+              paletteIDset[ii][i], colixset[ii][i]));
       sb.append(getShapeCommands(temp, temp2));
     }
-    return sb.toString();
   }
-  
+
   @Override
   public void setVisibilityFlags(BitSet bs) {
     /*
@@ -271,9 +309,9 @@ public class Ellipsoids extends AtomShape {
     Iterator<Ellipsoid> e = htEllipsoids.values().iterator();
     while (e.hasNext()) {
       Ellipsoid ellipsoid = e.next();
-      ellipsoid.visible = ellipsoid.isOn && (ellipsoid.modelIndex < 0 || bs.get(ellipsoid.modelIndex)); 
+      ellipsoid.visible = ellipsoid.isOn
+          && (ellipsoid.modelIndex < 0 || bs.get(ellipsoid.modelIndex));
     }
   }
- 
-}
 
+}

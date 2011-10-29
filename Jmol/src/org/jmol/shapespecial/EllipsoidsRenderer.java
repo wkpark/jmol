@@ -88,7 +88,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   @Override
   protected void render() {
     ellipsoids = (Ellipsoids) shape;
-    if (ellipsoids.mads == null && !ellipsoids.haveEllipsoids)
+    if (ellipsoids.madset == null && !ellipsoids.haveEllipsoids)
       return;
     wireframeOnly = (viewer.getWireframeRotation() && viewer.getInMotion());
     drawAxes = viewer.getBooleanProperty("ellipsoidAxes");
@@ -141,21 +141,26 @@ public class EllipsoidsRenderer extends ShapeRenderer {
         continue;
       if (atom.screenZ <= 1)
         continue;
-      Quadric ellipsoid = atom.getEllipsoid();
-      if (ellipsoid == null)
+      Quadric[] ellipsoid2 = atom.getEllipsoid();
+      if (ellipsoid2 == null)
         continue;
-      colix = Shape.getColix(ellipsoids.colixes, i, atom);
-      if (!g3d.setColix(colix))
-        continue;
-      render1(atom, ellipsoid);
+
+      for (int j = 0; j < ellipsoid2.length; j++) {
+        if (ellipsoids.madset[j] == null || ellipsoids.madset[j][i] == 0)
+          continue;
+        colix = Shape.getColix(ellipsoids.colixset[j], i, atom);
+        if (!g3d.setColix(colix))
+          continue;
+        render1(atom, ellipsoid2[j]);
+      }
     }
-    
+
     if (ellipsoids.haveEllipsoids) {
       Iterator<Ellipsoid> e = ellipsoids.htEllipsoids.values().iterator();
       while (e.hasNext()) {
         Ellipsoid ellipsoid = e.next();
         if (ellipsoid.visible && ellipsoid.isValid)
-          renderEllipsoid(ellipsoid); 
+          renderEllipsoid(ellipsoid);
       }
     }
     coords = null;

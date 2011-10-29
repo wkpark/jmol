@@ -24,13 +24,13 @@
 
 package org.jmol.adapter.readers.cifpdb;
 
-import org.jmol.adapter.smarter.*;
-
-
-
+import org.jmol.adapter.smarter.Atom;
+import org.jmol.adapter.smarter.AtomSetCollectionReader;
+import org.jmol.adapter.smarter.Structure;
 import org.jmol.api.JmolAdapter;
 import org.jmol.constant.EnumStructure;
 import org.jmol.util.Logger;
+import org.jmol.util.Quadric;
 import org.jmol.util.TextFormat;
 
 import java.util.ArrayList;
@@ -64,20 +64,53 @@ import javax.vecmath.Point3f;
  */
 
 public class PdbReader extends AtomSetCollectionReader {
+
   private int lineLength;
-  // index into atoms array + 1
-  // so that 0 can be used for the null value
+
+  private StringBuffer pdbHeader;
+
+  private boolean applySymmetry;
+  private boolean getTlsGroups;
+  
+  private boolean isMultiModel;  // MODEL ...
+  private boolean haveMappedSerials;
+  
   private final Map<String, Map<String, Boolean>> htFormul = new Hashtable<String, Map<String, Boolean>>();
   private Map<String, String> htHetero = null;
   private Map<String, Map<String, Object>> htSites = null;
-  private String currentGroup3;
-  private int currentResno = Integer.MIN_VALUE;
   private Map<String, Boolean> htElementsInCurrentGroup;
+  private Map<String, Map<String, String>> htMolIds;
+  
+  private List<Map<String, String>> vCompnds;
+  private List<Matrix4f> vBiomts;
+  private List<Map<String, Object>> vBiomolecules;
+  private List<Map<String, Object>> vTlsModels = null;
+
+  private int[] chainAtomCounts;  
+  
+  private StringBuffer sbIgnored, sbSelected, sbConect;
+
+  private int atomCount;
   private int maxSerial;
-  private int[] chainAtomCounts;
   private int nUNK;
   private int nRes;
-  private boolean isMultiModel;  // MODEL ...
+  
+  private Map<String, String> currentCompnd;
+  private String currentGroup3;
+  private String currentKey;
+  private int currentResno = Integer.MIN_VALUE;
+  private int configurationPtr = Integer.MIN_VALUE;
+  private boolean resetKey = true;
+  private String compnd = null;
+  private int conformationIndex;
+  private int fileAtomIndex;
+  private char lastAltLoc;
+  private String lastAtomData;
+  private int lastAtomIndex;
+  private int lastGroup = Integer.MIN_VALUE;
+  private char lastInsertion;
+  private int lastSourceSerial = Integer.MIN_VALUE;
+  private int lasttargetSerial = Integer.MIN_VALUE;
   
  final private static String lineOptions = 
    "ATOM    " + //0
@@ -103,11 +136,6 @@ public class PdbReader extends AtomSetCollectionReader {
    "SOURCE  " + //20
    "TITLE   ";  //21
 
- private int serial = 0;
- private StringBuffer pdbHeader;
- private int configurationPtr = Integer.MIN_VALUE;
- private boolean applySymmetry;
-private boolean getTlsGroups;
 
  @Override
  protected void initializeReader() throws Exception {
@@ -115,7 +143,6 @@ private boolean getTlsGroups;
    pdbHeader = (getHeader ? new StringBuffer() : null);
    applySymmetry = !checkFilter("NOSYMMETRY");
    getTlsGroups = checkFilter("TLS");
-
    
    if (checkFilter("CONF ")) {
      configurationPtr = parseInt(filter, filter.indexOf("CONF ") + 5);
@@ -130,8 +157,7 @@ private boolean getTlsGroups;
         .indexOf(line.substring(0, 6))) >> 3;
     boolean isAtom = (ptOption == 0 || ptOption == 1);
     boolean isModel = (ptOption == 2);
-    if (isAtom)
-      serial = parseInt(line, 6, 11);
+    int serial = (isAtom ? parseInt(line, 6, 11) : 0);
     boolean isNewModel = ((isTrajectory || isSequential) && !isMultiModel
         && isAtom && serial == 1);
     if (getHeader) {
@@ -230,11 +256,8 @@ private boolean getTlsGroups;
       header();
       return true;
     case 19:
-      compndOld();
-      compndSource(false);
-      return true;
     case 20:
-      compndSource(true);
+      compnd(ptOption == 20);
       return true;
     case 21:
       title();
@@ -247,23 +270,25 @@ private boolean getTlsGroups;
   protected void finalizeReader() throws Exception {
     checkNotPDB();
     atomSetCollection.connectAll(maxSerial);
-    if (biomolecules != null && biomolecules.size() > 0
+    if (vBiomolecules != null && vBiomolecules.size() > 0
         && atomSetCollection.getAtomCount() > 0) {
-      atomSetCollection.setAtomSetAuxiliaryInfo("biomolecules", biomolecules);
+      atomSetCollection.setAtomSetAuxiliaryInfo("biomolecules", vBiomolecules);
       setBiomoleculeAtomCounts();
-      if (biomts != null && applySymmetry) {
-        atomSetCollection.applySymmetry(biomts, notionalUnitCell, applySymmetryToBonds, filter);
-        tlsModels = null; // for now, no TLS groups for biomolecules
+      if (vBiomts != null && applySymmetry) {
+        atomSetCollection.applySymmetry(vBiomts, notionalUnitCell, applySymmetryToBonds, filter);
+        vTlsModels = null; // for now, no TLS groups for biomolecules
       }
     }
-    if (tlsModels != null) {
+    if (vTlsModels != null) {
+      symmetry = atomSetCollection.getSymmetry();
+      symmetry.setUnitCell(new float[] { 1, 1, 1, 90, 90, 90 });
       int n = atomSetCollection.getAtomSetCount();
-      if (n == tlsModels.size()) {
+      if (n == vTlsModels.size()) {
         for (int i = n; --i >= 0;)
           setTlsGroups(i, i);
       } else {
-        Logger.info(n + " models but " + tlsModels.size() + " TLS descriptions");
-        if (tlsModels.size() == 1) {
+        Logger.info(n + " models but " + vTlsModels.size() + " TLS descriptions");
+        if (vTlsModels.size() == 1) {
           Logger.info(" -- assuming all models have the same TLS description -- check REMARK 3 for details.");
           for (int i = n; --i >= 0;)
             setTlsGroups(0, i);
@@ -311,14 +336,19 @@ private boolean getTlsGroups;
       return;
     appendLoadNote(line.substring(10).trim());
   }
-
-  private List<Map<String, String>> vCompnds;
-  private Map<String, String> currentCompnd;
-  private String currentKey;
-  private Map<String, Map<String, String>> htMolIds;
-  private boolean resetKey = true;
   
-  private void compndSource(boolean isSource) {
+  private void compnd(boolean isSource) {
+    if (!isSource) {
+      if (compnd == null)
+        compnd = "";
+      else
+        compnd += " ";
+      String s = line;
+      if (lineLength > 62)
+        s = s.substring(0, 62);
+      compnd += s.substring(10).trim();
+      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("COMPND", compnd);
+    }
     if (vCompnds == null) {
       if (isSource)
         return;
@@ -372,24 +402,10 @@ private boolean getTlsGroups;
               .simpleReplace(value, ", ", ",:"), " ", "") + ")");
   }
 
-  private String compnd = null;
-  private void compndOld() {
-    if (compnd == null)
-      compnd = "";
-    else
-      compnd += " ";
-    String s = line;
-    if (lineLength > 62)
-      s = s.substring(0, 62);
-    compnd += s.substring(10).trim();
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("COMPND", compnd);
-  }
-
-
   @SuppressWarnings("unchecked")
   private void setBiomoleculeAtomCounts() {
-    for (int i = biomolecules.size(); --i >= 0;) {
-      Map<String, Object> biomolecule = biomolecules.get(i);
+    for (int i = vBiomolecules.size(); --i >= 0;) {
+      Map<String, Object> biomolecule = vBiomolecules.get(i);
       String chain = (String) biomolecule.get("chains");
       int nTransforms = ((List<Matrix4f>) biomolecule.get("biomts")).size();
       int nAtoms = 0;
@@ -433,12 +449,10 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
 
 */
  
-  private List<Map<String, Object>> biomolecules;
-  private List<Matrix4f> biomts;
   
   private void remark350() throws Exception {
     List<Matrix4f> biomts = null;
-    biomolecules = new ArrayList<Map<String,Object>>();
+    vBiomolecules = new ArrayList<Map<String,Object>>();
     chainAtomCounts = new int[255];
     String title = "";
     String chainlist = "";
@@ -468,7 +482,7 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
           info.put("title", title);
           info.put("chains", "");
           info.put("biomts", biomts);
-          biomolecules.add(info);
+          vBiomolecules.add(info);
           nBiomt = 0;
           //continue; need to allow for next IF, in case this is a reconstruction
         }
@@ -487,7 +501,7 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
           if (checkFilter("BIOMOLECULE " + iMolecule + ";")) {
             setFilter(filter.replace(':', '_') + chainlist);
             Logger.info("filter set to \"" + filter + "\"");
-            this.biomts = biomts;
+            this.vBiomts = biomts;
           }
           info.put("chains", chainlist);
           continue;
@@ -520,8 +534,8 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
         }
       } catch (Exception e) {
         // probably just 
-        this.biomts = null;
-        this.biomolecules = null;
+        this.vBiomts = null;
+        this.vBiomolecules = null;
         return;
       }
     }
@@ -570,10 +584,6 @@ REMARK 290 REMARK: NULL
     }
   }
 
-  private int atomCount;
-  private String lastAtomData;
-  private int lastAtomIndex;
-  private int iAtom;
   
   private void atom(int serial) {
     Atom atom = new Atom();
@@ -590,7 +600,7 @@ REMARK 290 REMARK: NULL
     atom.insertionCode = JmolAdapter.canonizeInsertionCode(line.charAt(26));
     atom.isHetero = line.startsWith("HETATM");
     atom.elementSymbol = deduceElementSymbol(atom.isHetero);
-    if (!filterAtom(atom, iAtom++))
+    if (!filterAtom(atom, fileAtomIndex++))
       return;
     atom.atomSerial = serial;
     if (serial > maxSerial)
@@ -649,12 +659,6 @@ REMARK 290 REMARK: NULL
       }
     }
   }
-
-  private int lastGroup = Integer.MIN_VALUE;
-  private char lastInsertion;
-  private char lastAltLoc;
-  private int conformationIndex;
-  private StringBuffer sbIgnored, sbSelected;
 
   @Override
   protected boolean filterAtom(Atom atom, int iAtom) {
@@ -773,10 +777,6 @@ REMARK 290 REMARK: NULL
      return  "" + ch13 + ch14;
     return "Xx";
   }
-
-  private StringBuffer sbConect;
-  private int sourceSerialLast = Integer.MIN_VALUE;
-  private int targetSerialLast = Integer.MIN_VALUE;
   
   private void conect() {
     // adapted for improper non-crossreferenced files such as 1W7R
@@ -793,9 +793,9 @@ REMARK 290 REMARK: NULL
           offsetEnd) : -1);
       if (targetSerial < 0)
         continue;
-      boolean isDoubleBond = (sourceSerial == sourceSerialLast && targetSerial == targetSerialLast);
-      sourceSerialLast = sourceSerial;
-      targetSerialLast = targetSerial;
+      boolean isDoubleBond = (sourceSerial == lastSourceSerial && targetSerial == lasttargetSerial);
+      lastSourceSerial = sourceSerial;
+      lasttargetSerial = targetSerial;
       boolean isSwapped = (targetSerial < sourceSerial);
       int i1;
       if (isSwapped) {
@@ -1085,7 +1085,6 @@ Details
 
 * The anisotropic temperature factors are stored in the same coordinate frame as the atomic coordinate records. 
    */
-  private boolean  haveMappedSerials;
   
   private void anisou() {
     float[] data = new float[8];
@@ -1180,8 +1179,6 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     }
   }
 
-  private List<Map<String, Object>> tlsModels = null;
-
   /*
   REMARK   3  TLS DETAILS                                                         
   REMARK   3   NUMBER OF TLS GROUPS  : NULL
@@ -1239,8 +1236,8 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
             nGroups = parseInt(tokens[tokens.length - 1]);
             if (nGroups < 1)
               break;
-            if (tlsModels == null)
-              tlsModels = new ArrayList<Map<String, Object>>();
+            if (vTlsModels == null)
+              vTlsModels = new ArrayList<Map<String, Object>>();
             tlsGroups = new ArrayList<Map<String, Object>>();
             appendLoadNote(line.substring(11).trim());
           }
@@ -1340,7 +1337,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
       Hashtable<String, Object> groups = new Hashtable<String, Object>();
       groups.put("groupCount", Integer.valueOf(nGroups));
       groups.put("groups", tlsGroups);
-      tlsModels.add(groups);
+      vTlsModels.add(groups);
     }
     return (nGroups < 1);
   }
@@ -1349,7 +1346,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
    * for now, we just ignore TLS details if user has selected a specific model
    */
   private void handleTlsMissingModels() {
-    tlsModels = null;
+    vTlsModels = null;
   }
 
   /**
@@ -1361,11 +1358,12 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
   @SuppressWarnings("unchecked")
   private void setTlsGroups(int iGroup, int iModel) {
       Logger.info("TLS model " + iModel + " group " + iGroup);
-      Map<String, Object> tlsGroupInfo = tlsModels.get(iGroup);
+      Map<String, Object> tlsGroupInfo = vTlsModels.get(iGroup);
       List<Map<String, Object>> groups = (List<Map<String, Object>>) tlsGroupInfo.get("groups"); 
       int firstModelAtom = atomSetCollection.getAtomSetAtomIndex(iModel);
       int[] data = new int[atomSetCollection.getAtomSetAtomCount(iModel)];
       int atomMax = firstModelAtom + data.length;
+      Atom[] atoms = atomSetCollection.getAtoms();
       for (int i = groups.size(); --i >= 0;) {
         Map<String, Object> group = groups.get(i);
         List<Map<String, Object>> ranges = (List<Map<String, Object>>) group.get("ranges");
@@ -1380,8 +1378,10 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
           Logger.info("TLS ID="+id + " model atom index range " + atom1 + "-" + atom2);
           atom1 -= firstModelAtom;
           atom2 -= firstModelAtom;
-          for (int iAtom = atom1; iAtom < atom2; iAtom++)
+          for (int iAtom = atom1; iAtom < atom2; iAtom++) {
             data[iAtom] = id;
+            setTlsEllipsoid(atoms[iAtom], group);
+          }
         }
       }
       StringBuffer sdata = new StringBuffer();
@@ -1409,6 +1409,63 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     return (isTrue ? -1 : atom2);
   }
 
+  private final float[] dataS = new float[8];
+  private final float[] dataT = new float[8];
+
+  private static final float RAD_PER_DEG = (float) (Math.PI / 180);
+  
+  private void setTlsEllipsoid(Atom atom, Map<String, Object> group) {
+    Point3f origin = (Point3f) group.get("origin");
+    if (Float.isNaN(origin.x))
+      return;
+
+    float[][] T = (float[][]) group.get("tT");
+    float[][] L = (float[][]) group.get("tL");
+    float[][] S = (float[][]) group.get("tS");
+    
+    if (T == null || L == null || S == null)
+      return;
+    
+    // just factor degrees-to-radians into x, y, and z rather
+    // than create all new matrices
+    
+    float x = (atom.x - origin.x) * RAD_PER_DEG;
+    float y = (atom.y - origin.y) * RAD_PER_DEG;
+    float z = (atom.z - origin.z) * RAD_PER_DEG;
+    
+    float xx = x * x;
+    float yy = y * y;
+    float zz = z * z;
+    float xy = x * y;
+    float xz = x * z;
+    float yz = y * z;
+
+    /*
+     * 
+     * from pymmlib-1.2.0.tar|mmLib/TLS.py
+     * 
+     */
+
+    dataT[0] = T[0][0];
+    dataT[1] = T[1][1];
+    dataT[2] = T[2][2];
+    dataT[3] = T[0][1];
+    dataT[4] = T[0][2];
+    dataT[5] = T[1][2];
+    dataT[6] = 8; // ORTEP type 8
+   
+    dataS[0] /*u11*/ = dataT[0] + L[1][1]*zz + L[2][2]*yy - 2*L[1][2]*yz + 2*S[1][0]*z - 2*S[2][0]*y;
+    dataS[1] /*u22*/ = dataT[1] + L[0][0]*zz + L[2][2]*xx - 2*L[2][0]*xz - 2*S[0][1]*z + 2*S[2][1]*x;
+    dataS[2] /*u33*/ = dataT[2] + L[0][0]*yy + L[1][1]*xx - 2*L[0][1]*xy - 2*S[1][2]*x + 2*S[0][2]*y;
+    dataS[3] /*u12*/ = dataT[3] - L[2][2]*xy + L[1][2]*xz + L[2][0]*yz - L[0][1]*zz - S[0][0]*z + S[1][1]*z + S[2][0]*x - S[2][1]*y;
+    dataS[4] /*u13*/ = dataT[4] - L[1][1]*xz + L[1][2]*xy - L[2][0]*yy + L[0][1]*yz + S[0][0]*y - S[2][2]*y + S[1][2]*z - S[1][0]*x;
+    dataS[5] /*u23*/ = dataT[5] - L[0][0]*yz - L[1][2]*xx + L[2][0]*xy + L[0][1]*xz - S[1][1]*x + S[2][2]*x + S[0][1]*y - S[0][2]*z;
+    dataS[6] = 8;
+    
+    // symmetry is set to [1 1 1 90 90 90] -- Cartesians, not actual unit cell
+    
+    atom.ellipsoid = new Quadric[] { symmetry.getEllipsoid(dataS), symmetry.getEllipsoid(dataT) };
+  }
 
 }
 

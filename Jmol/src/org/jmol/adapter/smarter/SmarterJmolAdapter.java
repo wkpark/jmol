@@ -681,7 +681,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
     @Override
     public float getPartialCharge() { return atom.partialCharge; }
     @Override
-    public Quadric getEllipsoid() { return atom.ellipsoid; }
+    public Quadric[] getEllipsoid() { return atom.ellipsoid; }
     @Override
     public float getRadius() { return atom.radius; }
     @Override

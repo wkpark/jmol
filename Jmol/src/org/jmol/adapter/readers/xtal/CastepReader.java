@@ -537,7 +537,7 @@ public class CastepReader extends AtomSetCollectionReader {
       y = -(a[0][2] - a[2][0])/2;
       a[0][2] = a[2][0] = (a[0][2] + a[2][0])/2;
     }
-    atom.ellipsoid = Eigen.getEllipsoid(a);
+    atom.setEllipsoid(Eigen.getEllipsoid(a));
     atomSetCollection.addVibrationVector(atom.atomIndex, (float) x, (float) y, (float) z);
   }
 

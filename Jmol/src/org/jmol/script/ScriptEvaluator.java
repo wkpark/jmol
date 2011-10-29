@@ -10962,6 +10962,10 @@ public class ScriptEvaluator {
     case Token.integer:
       mad = intParameter(1);
       break;
+    case Token.set:
+      checkLength(3);
+      setShapeProperty(JmolConstants.SHAPE_ELLIPSOIDS, "select", Integer.valueOf(intParameter(2, 1, 2)));      
+      return;
     case Token.id:
     case Token.times:
     case Token.identifier:
@@ -10989,7 +10993,8 @@ public class ScriptEvaluator {
           break;
         case Token.color:
           float translucentLevel = Float.NaN;
-          i++;
+          if (tokAt(i) == Token.color)
+            i++;
           if ((theTok = tokAt(i)) == Token.translucent) {
             value = "translucent";
             if (isFloatParameter(++i))

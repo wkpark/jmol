@@ -145,7 +145,7 @@ abstract public class AtomCollection {
   float[] ionicRadii;
   float[] hydrophobicities;
   
-  protected Quadric[] ellipsoids;
+  protected Quadric[][] ellipsoids;
   protected int[] surfaceDistance100s;
 
   protected boolean haveStraightness;
@@ -245,9 +245,7 @@ abstract public class AtomCollection {
     return atoms[i].getModelIndex();
   }
   
-  public Quadric getEllipsoid(int i) {
-    // [0]: set of three vectors
-    // [1]: set of six values
+  public Quadric[] getEllipsoid(int i) {
     return (i < 0 || ellipsoids == null || i >= ellipsoids.length ? null
         : ellipsoids[i]);
   }
@@ -781,11 +779,11 @@ abstract public class AtomCollection {
     return true;
   }
 
-  protected void setEllipsoid(int atomIndex, Quadric ellipsoid) {
+  protected void setEllipsoid(int atomIndex, Quadric[] ellipsoid) {
     if (ellipsoid == null)
       return;
     if (ellipsoids == null)
-      ellipsoids = new Quadric[atoms.length];
+      ellipsoids = new Quadric[atoms.length][];
     ellipsoids[atomIndex] = ellipsoid;
   }
 
@@ -2662,7 +2660,7 @@ abstract public class AtomCollection {
         firstAtomIndex, nAtoms);
     partialCharges = (float[]) ArrayUtil.deleteElements(partialCharges,
         firstAtomIndex, nAtoms);
-    ellipsoids = (Quadric[]) ArrayUtil.deleteElements(ellipsoids,
+    ellipsoids = (Quadric[][]) ArrayUtil.deleteElements(ellipsoids,
         firstAtomIndex, nAtoms);
     vibrationVectors = (Vector3f[]) ArrayUtil.deleteElements(vibrationVectors,
         firstAtomIndex, nAtoms);

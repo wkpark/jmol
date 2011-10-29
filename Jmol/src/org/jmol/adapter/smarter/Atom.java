@@ -53,7 +53,12 @@ public class Atom extends Point3f implements Cloneable {
   public int sequenceNumber = Integer.MIN_VALUE;
   public char insertionCode = '\0';
   float[] anisoBorU; //[6] = 1 for U, 0 for B; [7] = bFactor
-  public Quadric ellipsoid;
+  public Quadric[] ellipsoid;  
+  public void setEllipsoid(Quadric e) {
+    ellipsoid = new Quadric[] { e };
+  }
+
+  
   public boolean ignoreSymmetry; // CIF _atom_site_disorder_group -1
 
   public Atom() {
@@ -282,4 +287,5 @@ public class Atom extends Point3f implements Cloneable {
     char chSecond = str.charAt(1);
     return isValidElementSymbolNoCaseSecondChar(chFirst, chSecond);
   }
+
 }

@@ -856,7 +856,7 @@ public class AtomSetCollection {
     int iAtomFirst = getLastAtomSetAtomIndex();
     if (needEllipsoids)
       for (int i = iAtomFirst; i < atomCount; i++)
-        atoms[i].ellipsoid = symmetry.getEllipsoid(atoms[i].anisoBorU);
+        atoms[i].ellipsoid = new Quadric[] { symmetry.getEllipsoid(atoms[i].anisoBorU) };
 
     bondCount0 = bondCount;
 
@@ -1072,7 +1072,8 @@ public class AtomSetCollection {
       for (int i = iAtomFirst; i < atomMax; i++) {
         if (atoms[i].ignoreSymmetry)
           continue;
-        symmetry.newSpaceGroupPoint(iSym, atoms[i], ptAtom, transX, transY, transZ);
+        symmetry.newSpaceGroupPoint(iSym, atoms[i], ptAtom, transX, transY,
+            transZ);
         Atom special = null;
         Point3f cartesian = new Point3f(ptAtom);
         symmetry.toCartesian(cartesian, false);
@@ -1080,8 +1081,8 @@ public class AtomSetCollection {
           symmetry.toUnitCell(cartesian, ptOffset);
           ptAtom.set(cartesian);
           symmetry.toFractional(ptAtom, false);
-          if (!isWithinCell(dtype, ptAtom, minXYZ0.x, maxXYZ0.x, 
-              minXYZ0.y, maxXYZ0.y, minXYZ0.z, maxXYZ0.z))
+          if (!isWithinCell(dtype, ptAtom, minXYZ0.x, maxXYZ0.x, minXYZ0.y,
+              maxXYZ0.y, minXYZ0.z, maxXYZ0.z))
             continue;
         }
         if (checkSymmetryMinMax)
@@ -1123,19 +1124,23 @@ public class AtomSetCollection {
           if (addCartesian)
             cartesians[pt++] = cartesian;
           if (atoms[i].ellipsoid != null) {
-            Vector3f[] axes = atoms[i].ellipsoid.vectors;
-            float[] lengths = atoms[i].ellipsoid.lengths;
-            if (axes != null) {
-              // note -- PDB reader specifically turns off cartesians
-              if (addCartesian) {
-                ptTemp.set(cartesians[i - iAtomFirst]);
-              } else {
-                ptTemp.set(atoms[i]);
-                symmetry.toCartesian(ptTemp, false);
+            for (int j = 0; j < atoms[i].ellipsoid.length; j++) {
+              Quadric e = atoms[i].ellipsoid[j];
+              Vector3f[] axes = e.vectors;
+              float[] lengths = e.lengths;
+              if (axes != null) {
+                // note -- PDB reader specifically turns off cartesians
+                if (addCartesian) {
+                  ptTemp.set(cartesians[i - iAtomFirst]);
+                } else {
+                  ptTemp.set(atoms[i]);
+                  symmetry.toCartesian(ptTemp, false);
+                }
+                axes = symmetry.rotateEllipsoid(iSym, ptTemp, axes, ptTemp1,
+                    ptTemp2);
               }
-              axes = symmetry.rotateEllipsoid(iSym, ptTemp, axes, ptTemp1, ptTemp2);
+              atom1.ellipsoid[j] = new Quadric(axes, lengths, e.isThermalEllipsoid);
             }
-            atom1.ellipsoid = new Quadric(axes, lengths, atoms[i].ellipsoid.isThermalEllipsoid);
           }
         }
       }

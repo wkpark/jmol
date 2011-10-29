@@ -425,7 +425,7 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
     public String getAtomName() { return null; }
     public int getFormalCharge() { return 0; }
     public float getPartialCharge() { return Float.NaN; }
-    public Quadric getEllipsoid() { return null; }
+    public Quadric[] getEllipsoid() { return null; }
     public float getRadius() { return Float.NaN; }
     abstract public float getX();
     abstract public float getY();

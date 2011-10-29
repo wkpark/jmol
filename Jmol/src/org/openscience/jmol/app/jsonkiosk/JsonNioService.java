@@ -26,6 +26,7 @@ package org.openscience.jmol.app.jsonkiosk;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
@@ -50,10 +51,14 @@ import naga.packetreader.AsciiLinePacketReader;
 import naga.packetwriter.RawPacketWriter;
 
 /*
- * listens over a port on the local host for instructions on what to display.
+ * See also org.molecularplayground.MPJmolApp.java for how this works.
+ * Note that this service does not require MPJmolApp -- it is a package
+ * in the standard Jmol app. 
+ * 
+ * Listens over a port on the local host for instructions on what to display.
  * Instructions come in over the port as JSON strings.
  * 
- * This class uses the Naga asynchronous socket network I/O package, the
+ * This class uses the Naga asynchronous socket network I/O package (NIO), the
  * JSON.org JSON package and Jmol.
  * 
  * http://code.google.com/p/naga/
@@ -161,7 +166,11 @@ public class JsonNioService extends NIOService {
    * @param msg
    */
   public void scriptCallback(String msg) {
-    if (msg.equals(terminatorMessage))
+    if (msg == null)
+      return;
+    if (msg.startsWith("banner:")) {
+      setBanner(msg.substring(7).trim(), false);
+    } else if (msg.equals(terminatorMessage))
       sendMessage(null, "!script_terminated!", null);
   }
 
@@ -212,14 +221,17 @@ public class JsonNioService extends NIOService {
     }
 
     if (name != null) {
-      String s = getJmolValue("NIOcontentPath");
+      String s = getJmolValue(jmolViewer, "NIOcontentPath");
       if (s != null)
         contentPath = s;
-      s = getJmolValue("NIOterminatorMessage");
+      s = getJmolValue(jmolViewer, "NIOterminatorMessage");
       if (s != null)
         terminatorMessage = s;
-      Logger.info("contentPath=" + contentPath);
-      Logger.info("terminatorMessage=" + terminatorMessage);
+      setEnabled();
+      Logger.info("NIOcontentPath=" + contentPath);
+      Logger.info("NIOterminatorMessage=" + terminatorMessage);
+      Logger.info("NIOcontentDisabled=" + contentDisabled);
+      Logger.info("NIOmotionDisabled=" + motionDisabled);
     }
     Logger.info("JsonNioService" + myName + " using port " + port);
 
@@ -271,6 +283,11 @@ public class JsonNioService extends NIOService {
     thread = new Thread(new JsonNioThread(), "JsonNiosThread" + myName);
     thread.start();
   }
+
+  private void setEnabled() {
+    contentDisabled = (getJmolValue(jmolViewer, "NIOcontentDisabled").equals("true"));
+    motionDisabled = (getJmolValue(jmolViewer, "NIOmotionDisabled").equals("true"));
+  } 
 
   class JsonNioThread implements Runnable {
 
@@ -400,6 +417,8 @@ public class JsonNioService extends NIOService {
   private long previousMoveTime;
   private long swipeStartTime;
   private float swipeFactor = 30;
+  private boolean motionDisabled;
+  private boolean contentDisabled;
 
   protected void processMessage(byte[] packet, NIOSocket socket) {
     try {
@@ -412,112 +431,133 @@ public class JsonNioService extends NIOService {
       JSONObject json = new JSONObject(msg);
       if (socket != null && json.has("magic")
           && json.getString("magic").equals("JmolApp")
-          && json.getString("role").equals("out"))
+          && json.getString("role").equals("out")) {
         outSocket = socket;
+      }
       if (!json.has("type"))
         return;
-      switch (("banner...." + "command..." + "content..." + "move......"
-          + "quit......" + "sync......" + "touch.....").indexOf(json
-          .getString("type"))) {
-      case 0: // banner
-        setBanner((json.has("text") ? json.getString("text") : json.getString(
-            "visibility").equalsIgnoreCase("off") ? null : ""), false);
-        break;
-      case 10: // command
-        jmolViewer.evalStringQuiet(json.getString("command"));
-        break;
-      case 20: // content
-        String id = json.getString("id");
-        String path = TextFormat.simpleReplace(contentPath, "%ID%", id)
-            .replace('\\', '/');
-        File f = new File(path);
-        FileInputStream jsonFile = new FileInputStream(f);
-        Logger.info("JsonNiosService Setting path to " + f.getAbsolutePath());
-        int pt = path.lastIndexOf('/');
-        if (pt >= 0)
-          path = path.substring(0, pt);
-        else
-          path = ".";
-        JSONObject contentJSON = new JSONObject(new JSONTokener(jsonFile));
-        String script = contentJSON.getString("startup_script");
-        Logger.info("JsonNiosService startup_script=" + script);
-        setBanner("", false);
-        jmolViewer.script("exit");
-        jmolViewer.script("zap;cd \"" + path + "\";script " + script);
-        setBanner(contentJSON.getString("banner").equals("off") ? null
-            : contentJSON.getString("banner_text"), true);
-        break;
-      case 30: // move
-        int iStyle = ("rotate...." + "translate." + "zoom......").indexOf(json
-            .getString("style"));
-        if (iStyle != 0 && !isPaused)
-          pauseScript(true);
-        long now = latestMoveTime = System.currentTimeMillis();
-        switch (iStyle) {
-        case 0: // rotate
-          System.out.println("JsonNioService move " + (now - swipeStartTime));
-          float dx = (float) json.getDouble("x");
-          float dy = (float) json.getDouble("y");
-          float dxdy = dx * dx + dy * dy;
-          boolean isFast = (dxdy > swipeCutoff);
-          if (isFast || now - swipeStartTime > swipeDelayMs) {
-            // it's been a while since the last swipe....
-            // ... send rotation in all cases
-            msg = null;
-            if (isFast) {
-              if (++nFast > swipeCount) {
-                // critical number of fast motions reached
-                // start spinning
-                swipeStartTime = now;
-                msg = "Mouse: spinXYBy "
-                    + (int) dx
-                    + " "
-                    + (int) dy
-                    + " "
-                    + (Math.sqrt(dxdy) * swipeFactor / (now - previousMoveTime));
-              }
-            } else if (nFast > 0) {
-              // slow movement detected -- turn off spinning
-              // and reset the 
-              nFast = 0;
-              msg = "Mouse: spinXYBy 0 0 0";
-            }
-            if (msg == null)
-              msg = "Mouse: rotateXYBy " + dx + " " + dy;
-            jmolViewer.syncScript(msg, "=", 0);
-          }
-          previousMoveTime = now;
-          break;
-        case 10: // translate
-          jmolViewer.syncScript("Mouse: translateXYBy " + json.getString("x")
-              + " " + json.getString("y"), "=", 0);
-          break;
-        case 20: // zoom
-          float zoomFactor = (float) (json.getDouble("scale") / (jmolViewer
-              .getZoomPercentFloat() / 100.0f));
-          jmolViewer.syncScript("Mouse: zoomByFactor " + zoomFactor, "=", 0);
-          break;
-        }
-        break;
-      case 40: // quit
-        halt = true;
-        Logger.info("JsonNiosService quitting");
-        break;
-      case 50: // sync
-        //sync -3000;sync slave;sync 3000 '{"type":"sync","sync":"rotateZBy 30"}'
-        jmolViewer.syncScript("Mouse: " + json.getString("sync"), "=", 0);
-        break;
-      case 60: // touch
-        // raw touch event
-        jmolViewer.processEvent(0, json.getInt("eventType"), json
-            .getInt("touchID"), json.getInt("iData"), new Point3f((float) json
-            .getDouble("x"), (float) json.getDouble("y"), (float) json
-            .getDouble("z")), json.getLong("time"));
-        break;
-
-      }
+      processJSON(json, msg);
     } catch (Throwable e) {
       e.printStackTrace();
+    }
+  }
+
+  private void processJSON(JSONObject json, String msg) throws FileNotFoundException, JSONException {
+    if (json == null)
+      json = new JSONObject(msg);
+    setEnabled();
+    switch (("banner...." + "command..." + "content..." + "move......"
+        + "quit......" + "sync......" + "touch.....").indexOf(json
+        .getString("type"))) {
+    case 0: // banner
+      if (contentDisabled)
+        break;
+      setBanner((json.has("text") ? json.getString("text") : json.getString(
+          "visibility").equalsIgnoreCase("off") ? null : ""), false);
+      break;
+    case 10: // command
+      if (contentDisabled)
+        break;
+      jmolViewer.evalStringQuiet(json.getString("command"));
+      break;
+    case 20: // content
+      if (contentDisabled) {
+        client.nioRunContent(this);
+        break;
+      }
+      String id = json.getString("id");
+      String path = TextFormat.simpleReplace(contentPath, "%ID%", id)
+          .replace('\\', '/');
+      File f = new File(path);
+      FileInputStream jsonFile = new FileInputStream(f);
+      Logger.info("JsonNiosService Setting path to " + f.getAbsolutePath());
+      int pt = path.lastIndexOf('/');
+      if (pt >= 0)
+        path = path.substring(0, pt);
+      else
+        path = ".";
+      JSONObject contentJSON = new JSONObject(new JSONTokener(jsonFile));
+      String script = contentJSON.getString("startup_script");
+      Logger.info("JsonNiosService startup_script=" + script);
+      setBanner("", false);
+      jmolViewer.script("exit");
+      jmolViewer.script("zap;cd \"" + path + "\";script " + script);
+      setBanner(contentJSON.getString("banner").equals("off") ? null
+          : contentJSON.getString("banner_text"), true);
+      break;
+    case 30: // move
+      if (motionDisabled)
+        break;
+      int iStyle = ("rotate...." + "translate." + "zoom......").indexOf(json
+          .getString("style"));
+      if (iStyle != 0 && !isPaused)
+        pauseScript(true);
+      long now = latestMoveTime = System.currentTimeMillis();
+      switch (iStyle) {
+      case 0: // rotate
+        System.out.println("JsonNioService move " + (now - swipeStartTime));
+        float dx = (float) json.getDouble("x");
+        float dy = (float) json.getDouble("y");
+        float dxdy = dx * dx + dy * dy;
+        boolean isFast = (dxdy > swipeCutoff);
+        if (isFast || now - swipeStartTime > swipeDelayMs) {
+          // it's been a while since the last swipe....
+          // ... send rotation in all cases
+          msg = null;
+          if (isFast) {
+            if (++nFast > swipeCount) {
+              // critical number of fast motions reached
+              // start spinning
+              swipeStartTime = now;
+              msg = "Mouse: spinXYBy "
+                  + (int) dx
+                  + " "
+                  + (int) dy
+                  + " "
+                  + (Math.sqrt(dxdy) * swipeFactor / (now - previousMoveTime));
+            }
+          } else if (nFast > 0) {
+            // slow movement detected -- turn off spinning
+            // and reset the 
+            nFast = 0;
+            msg = "Mouse: spinXYBy 0 0 0";
+          }
+          if (msg == null)
+            msg = "Mouse: rotateXYBy " + dx + " " + dy;
+          jmolViewer.syncScript(msg, "=", 0);
+        }
+        previousMoveTime = now;
+        break;
+      case 10: // translate
+        jmolViewer.syncScript("Mouse: translateXYBy " + json.getString("x")
+            + " " + json.getString("y"), "=", 0);
+        break;
+      case 20: // zoom
+        float zoomFactor = (float) (json.getDouble("scale") / (jmolViewer
+            .getZoomPercentFloat() / 100.0f));
+        jmolViewer.syncScript("Mouse: zoomByFactor " + zoomFactor, "=", 0);
+        break;
+      }
+      break;
+    case 40: // quit
+      halt = true;
+      Logger.info("JsonNiosService quitting");
+      break;
+    case 50: // sync
+      if (motionDisabled)
+        break;
+      //sync -3000;sync slave;sync 3000 '{"type":"sync","sync":"rotateZBy 30"}'
+      jmolViewer.syncScript("Mouse: " + json.getString("sync"), "=", 0);
+      break;
+    case 60: // touch
+      if (motionDisabled)
+        break;
+      // raw touch event
+      jmolViewer.processEvent(0, json.getInt("eventType"), json
+          .getInt("touchID"), json.getInt("iData"), new Point3f((float) json
+          .getDouble("x"), (float) json.getDouble("y"), (float) json
+          .getDouble("z")), json.getLong("time"));
+      break;
     }
   }
 
@@ -547,10 +587,11 @@ public class JsonNioService extends NIOService {
     jmolViewer.evalStringQuiet(script);
   }
 
-  private String getJmolValue(String var) {
+  public static String getJmolValue(JmolViewer jmolViewer, String var) {
     if (jmolViewer == null)
       return "";
     String s = (String) jmolViewer.scriptWaitStatus("print " + var, "output");
+    System.out.println("getJmolValue " + var + "=" + s);
     return (s.indexOf("\n") <= 1 ? null : s.substring(0, s.lastIndexOf("\n")));
   }
 
@@ -579,5 +620,4 @@ public class JsonNioService extends NIOService {
       e.printStackTrace();
     }
   }
-
 }

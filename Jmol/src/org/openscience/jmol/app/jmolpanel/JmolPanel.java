@@ -1536,6 +1536,10 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
   ////////// JSON/NIO SERVICE //////////
   
+  public void nioRunContent(JsonNioService jns) {
+    // ignore
+  }
+  
   public void nioClosed(JsonNioService jns) {
     if (bannerFrame != null) {
       viewer.scriptWait("delay 2");

@@ -1577,7 +1577,7 @@ public class AtomSetCollection {
    * @param value The value for the property
    * @param atomSetIndex The index of the AtomSet to get the property
    */
-  void setAtomSetAuxiliaryInfo(String key, Object value, int atomSetIndex) {
+  public void setAtomSetAuxiliaryInfo(String key, Object value, int atomSetIndex) {
     if (atomSetIndex < 0)
       return;
     if (atomSetAuxiliaryInfo[atomSetIndex] == null)

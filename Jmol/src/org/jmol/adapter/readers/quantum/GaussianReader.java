@@ -209,19 +209,19 @@ public class GaussianReader extends MOReader {
     atomSetCollection.setAtomSetNames(energyKey + " = " + energyString,
         equivalentAtomSets);
     // also set the properties for them
-    atomSetCollection.setAtomSetProperties(energyKey, energyString,
+    atomSetCollection.setAtomSetPropertyForSets(energyKey, energyString,
         equivalentAtomSets);
     tokens = getTokens(readLine());
     if (tokens.length > 2) {
-      atomSetCollection.setAtomSetProperties(tokens[0], tokens[2],
+      atomSetCollection.setAtomSetPropertyForSets(tokens[0], tokens[2],
           equivalentAtomSets);
       if (tokens.length > 5)
-        atomSetCollection.setAtomSetProperties(tokens[3], tokens[5],
+        atomSetCollection.setAtomSetPropertyForSets(tokens[3], tokens[5],
             equivalentAtomSets);
       tokens = getTokens(readLine());
     }
     if (tokens.length > 2)
-      atomSetCollection.setAtomSetProperties(tokens[0], tokens[2],
+      atomSetCollection.setAtomSetPropertyForSets(tokens[0], tokens[2],
           equivalentAtomSets);
   }
   
@@ -290,7 +290,7 @@ public class GaussianReader extends MOReader {
           parseFloat(tokens[++offset]), 
           parseFloat(tokens[++offset]));
     }
-    atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY,
+    atomSetCollection.setAtomSetModelProperty(SmarterJmolAdapter.PATH_KEY,
         "Calculation "+calculationNumber+
         (scanPoint>=0?(SmarterJmolAdapter.PATH_SEPARATOR+"Scan Point "+scanPoint):"")+
         SmarterJmolAdapter.PATH_SEPARATOR+path);
@@ -514,11 +514,11 @@ but:
         atomSetCollection.cloneLastAtomSet();
         // set the properties
         atomSetCollection.setAtomSetFrequency("Calculation " + calculationNumber, symmetries[i], frequencies[i], null);
-        atomSetCollection.setAtomSetProperty("ReducedMass",
+        atomSetCollection.setAtomSetModelProperty("ReducedMass",
             red_masses[i]+" AMU");
-        atomSetCollection.setAtomSetProperty("ForceConstant",
+        atomSetCollection.setAtomSetModelProperty("ForceConstant",
             frc_consts[i]+" mDyne/A");
-        atomSetCollection.setAtomSetProperty("IRIntensity",
+        atomSetCollection.setAtomSetModelProperty("IRIntensity",
             intensities[i]+" KM/Mole");
       }
       discardLinesUntilContains(" AN ");

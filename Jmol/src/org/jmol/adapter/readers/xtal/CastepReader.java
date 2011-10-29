@@ -592,7 +592,7 @@ Species   Ion     s      p      d      f     Total  Charge (e)
     }
     if (haveSpin) {
       String data = TextFormat.join(spins, '\n', 0);
-      atomSetCollection.setAtomSetAuxiliaryProperty("spin", data);
+      atomSetCollection.setAtomSetAtomProperty("spin", data, -1);
     }
 
     

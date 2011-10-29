@@ -180,10 +180,10 @@ abstract public class GamessReader extends MOReader {
         }
         atomSetCollection.setAtomSetFrequency(null, null, "" + frequencies[i], null);
         if (red_masses != null)
-          atomSetCollection.setAtomSetProperty("ReducedMass",
+          atomSetCollection.setAtomSetModelProperty("ReducedMass",
               red_masses[red_masses.length - frequencyCount + i] + " AMU");
         if (intensities != null)
-          atomSetCollection.setAtomSetProperty("IRIntensity",
+          atomSetCollection.setAtomSetModelProperty("IRIntensity",
               intensities[intensities.length - frequencyCount + i]
                   + " D^2/AMU-Angstrom^2");
 

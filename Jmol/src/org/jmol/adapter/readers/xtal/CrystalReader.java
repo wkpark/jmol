@@ -394,7 +394,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       else
         break;
       if (atomSetCollection.getAtomCount() > 0)
-        atomSetCollection.setAtomSetAuxiliaryProperty(key, tokens[2]);
+        atomSetCollection.setAtomSetModelProperty(key, tokens[2]);
       readLine();
     }
     return true;
@@ -410,9 +410,9 @@ public class CrystalReader extends AtomSetCollectionReader {
       line = TextFormat.simpleReplace(line, "DENSITY", "DENSITY ");
     }
     String densityPrim = tokens[10];
-    atomSetCollection.setAtomSetAuxiliaryProperty("volumePrimitive",
+    atomSetCollection.setAtomSetModelProperty("volumePrimitive",
         TextFormat.formatDecimal(parseFloat(volumePrim), 3));
-    atomSetCollection.setAtomSetAuxiliaryProperty("densityPrimitive",
+    atomSetCollection.setAtomSetModelProperty("densityPrimitive",
         TextFormat.formatDecimal(parseFloat(densityPrim), 3));
     return true;
   }
@@ -458,7 +458,7 @@ public class CrystalReader extends AtomSetCollectionReader {
         s[iConv] = tokens[pt];
     }
     data = TextFormat.join(s, '\n', 0);
-    atomSetCollection.setAtomSetAuxiliaryProperty(name, data);
+    atomSetCollection.setAtomSetAtomProperty(name, data, -1);
   }
 
   private boolean readHeader() throws Exception {
@@ -944,10 +944,10 @@ public class CrystalReader extends AtomSetCollectionReader {
   private void setFreqValue(float freq, String[] data) {
     String activity = "IR: " + data[2] + ", Ram.: " + data[3];
     atomSetCollection.setAtomSetFrequency(null, activity, "" + freq, null);
-    atomSetCollection.setAtomSetProperty("IRintensity", data[1] + " km/Mole");
-    atomSetCollection.setAtomSetProperty("vibrationalSymmetry", data[0]);
-    atomSetCollection.setAtomSetProperty("IRactivity", data[2]);
-    atomSetCollection.setAtomSetProperty("Ramanactivity", data[3]);
+    atomSetCollection.setAtomSetModelProperty("IRintensity", data[1] + " km/Mole");
+    atomSetCollection.setAtomSetModelProperty("vibrationalSymmetry", data[0]);
+    atomSetCollection.setAtomSetModelProperty("IRactivity", data[2]);
+    atomSetCollection.setAtomSetModelProperty("Ramanactivity", data[3]);
     atomSetCollection.setAtomSetName((isLongMode ? "LO " : "") + data[0] + " "
         + TextFormat.formatDecimal(freq, 2) + " cm-1 ("
         + TextFormat.formatDecimal(Float.parseFloat(data[1]), 0)

@@ -155,6 +155,7 @@ public class AtomSetCollection {
   }
 
   private int[] atomSetNumbers = new int[16];
+  private int[] atomSetAtomIndexes = new int[16];
   private int[] atomSetAtomCounts = new int[16];
   private int[] atomSetBondCounts = new int[16];
   private Map<String, Object>[] atomSetAuxiliaryInfo = new Hashtable[16];
@@ -1413,10 +1414,12 @@ public class AtomSetCollection {
     }    
     currentAtomSetIndex = atomSetCount++;
     if (atomSetCount > atomSetNumbers.length) {
+      atomSetAtomIndexes = ArrayUtil.doubleLength(atomSetAtomIndexes);
       atomSetAtomCounts = ArrayUtil.doubleLength(atomSetAtomCounts);
       atomSetBondCounts = ArrayUtil.doubleLength(atomSetBondCounts);
       atomSetAuxiliaryInfo = (Map<String, Object>[]) ArrayUtil.doubleLength(atomSetAuxiliaryInfo);
     }
+    atomSetAtomIndexes[currentAtomSetIndex] = atomCount;
     if (atomSetCount + trajectoryStepCount > atomSetNumbers.length) {
       atomSetNumbers = ArrayUtil.doubleLength(atomSetNumbers);
     }
@@ -1429,6 +1432,14 @@ public class AtomSetCollection {
     setAtomSetAuxiliaryInfo("title", collectionName);    
   }
 
+  public int getAtomSetAtomIndex(int i) {
+    return atomSetAtomIndexes[i];
+  }
+  
+  public int getAtomSetAtomCount(int i) {
+    return atomSetAtomCounts[i];
+  }
+  
   /**
   * Sets the name for the current AtomSet
   *
@@ -1489,8 +1500,8 @@ public class AtomSetCollection {
    * @param key The key for the property
    * @param value The value to be associated with the key
    */
-  public void setAtomSetProperty(String key, String value) {
-    setAtomSetProperty(key, value, currentAtomSetIndex);
+  public void setAtomSetModelProperty(String key, String value) {
+    setAtomSetModelProperty(key, value, currentAtomSetIndex);
   }
 
   /**
@@ -1500,7 +1511,7 @@ public class AtomSetCollection {
    * @param value The value for the property
    * @param atomSetIndex The index of the AtomSet to get the property
    */
-  public void setAtomSetProperty(String key, String value, int atomSetIndex) {
+  public void setAtomSetModelProperty(String key, String value, int atomSetIndex) {
     // lazy instantiation of the Properties object
     Properties p = (Properties) getAtomSetAuxiliaryInfo(atomSetIndex,
         "modelProperties");
@@ -1511,14 +1522,14 @@ public class AtomSetCollection {
   }
 
 
-  public void setAtomSetAuxiliaryProperty(String key, String data) {
-    if (!data.endsWith("\n")) {
+  public void setAtomSetAtomProperty(String key, String data, int atomSetIndex) {
+    if (!data.endsWith("\n"))
       data += "\n";
-    }
-    Map p = (Map) getAtomSetAuxiliaryInfo(currentAtomSetIndex, "atomProperties");
-    if (p == null) {
-      setAtomSetAuxiliaryInfo("atomProperties", p = new Hashtable());
-    }
+    if (atomSetIndex < 0)
+      atomSetIndex = currentAtomSetIndex;
+    Map p = (Map) getAtomSetAuxiliaryInfo(atomSetIndex, "atomProperties");
+    if (p == null)
+      setAtomSetAuxiliaryInfo("atomProperties", p = new Hashtable(), atomSetIndex);
     p.put(key, data);
   }
 
@@ -1598,10 +1609,9 @@ public class AtomSetCollection {
    * @param n
    *          The number of last AtomSets that needs these set
    */
-  public void setAtomSetProperties(String key, String value, int n) {
-    for (int idx = currentAtomSetIndex; --n >= 0 && idx >= 0; --idx) {
-      setAtomSetProperty(key, value, idx);
-    }
+  public void setAtomSetPropertyForSets(String key, String value, int n) {
+    for (int idx = currentAtomSetIndex; --n >= 0 && idx >= 0; --idx)
+      setAtomSetModelProperty(key, value, idx);
   }
   
 
@@ -1660,16 +1670,16 @@ public class AtomSetCollection {
       return;
     setAtomSetAuxiliaryInfo("EnergyString", energyString);
     setAtomSetAuxiliaryInfo("Energy", new Float(value));
-    setAtomSetProperty("Energy", "" + value);
+    setAtomSetModelProperty("Energy", "" + value);
   }
 
   public void setAtomSetFrequency(String pathKey, String label, String freq, String units) {
     freq += " " + (units == null ? "cm^-1" : units);
     setAtomSetName((label == null ? "" : label + " ") + freq);
-    setAtomSetProperty("Frequency", freq);
+    setAtomSetModelProperty("Frequency", freq);
     if (label != null)
-      setAtomSetProperty("FrequencyLabel", label);
-    setAtomSetProperty(SmarterJmolAdapter.PATH_KEY, (pathKey == null ? ""
+      setAtomSetModelProperty("FrequencyLabel", label);
+    setAtomSetModelProperty(SmarterJmolAdapter.PATH_KEY, (pathKey == null ? ""
         : pathKey + SmarterJmolAdapter.PATH_SEPARATOR + "Frequencies")
         + "Frequencies");
   }

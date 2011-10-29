@@ -80,8 +80,8 @@ public abstract class SpartanInputReader extends BasisFunctionReader {
     if (constraints.length() == 0)
       return;
     atomSetCollection.setAtomSetAuxiliaryInfo("constraints", constraints);
-    atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY, "EnergyProfile");
-    atomSetCollection.setAtomSetProperty("Constraint", constraints);
+    atomSetCollection.setAtomSetModelProperty(SmarterJmolAdapter.PATH_KEY, "EnergyProfile");
+    atomSetCollection.setAtomSetModelProperty("Constraint", constraints);
   }
 
   private void readTransform() throws Exception {

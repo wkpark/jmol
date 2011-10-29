@@ -553,8 +553,8 @@ class SpartanArchive {
       }
       freqs.add(info);
       r.atomSetCollection.setAtomSetName(label + " " + freq + " cm^-1");
-      r.atomSetCollection.setAtomSetProperty("Frequency", freq + " cm^-1");
-      r.atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY, "Frequencies");
+      r.atomSetCollection.setAtomSetModelProperty("Frequency", freq + " cm^-1");
+      r.atomSetCollection.setAtomSetModelProperty(SmarterJmolAdapter.PATH_KEY, "Frequencies");
     }
     r.atomSetCollection.setAtomSetCollectionAuxiliaryInfo("VibFreqs", freqs);
     int atomCount = r.atomSetCollection.getFirstAtomSetAtomCount();

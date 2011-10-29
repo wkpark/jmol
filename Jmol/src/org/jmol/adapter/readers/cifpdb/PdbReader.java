@@ -107,12 +107,14 @@ public class PdbReader extends AtomSetCollectionReader {
  private StringBuffer pdbHeader;
  private int configurationPtr = Integer.MIN_VALUE;
  private boolean applySymmetry;
+private boolean getTlsGroups;
 
  @Override
  protected void initializeReader() throws Exception {
    setIsPDB();
    pdbHeader = (getHeader ? new StringBuffer() : null);
    applySymmetry = !checkFilter("NOSYMMETRY");
+   getTlsGroups = checkFilter("TLS");
 
    
    if (checkFilter("CONF ")) {
@@ -219,7 +221,7 @@ public class PdbReader extends AtomSetCollectionReader {
         remark290();
         return false;
       }
-      if (line.indexOf("TLS DETAILS") > 0) {
+      if (getTlsGroups && line.indexOf("TLS DETAILS") > 0) {
         return remarkTls();
       }
       checkLineForScript();
@@ -258,13 +260,13 @@ public class PdbReader extends AtomSetCollectionReader {
       int n = atomSetCollection.getAtomSetCount();
       if (n == tlsModels.size()) {
         for (int i = n; --i >= 0;)
-          atomSetCollection.setAtomSetAuxiliaryInfo("TLS", tlsModels.get(i), i);
+          setTlsGroups(i, i);
       } else {
         Logger.info(n + " models but " + tlsModels.size() + " TLS descriptions");
         if (tlsModels.size() == 1) {
           Logger.info(" -- assuming all models have the same TLS description -- check REMARK 3 for details.");
           for (int i = n; --i >= 0;)
-            atomSetCollection.setAtomSetAuxiliaryInfo("TLS", tlsModels.get(0), i);
+            setTlsGroups(0, i);
         }
       }
     }
@@ -1228,7 +1230,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
         String[] tokens = getTokens(line.substring(10).replace(':', ' '));
         if (tokens.length < 2)
           continue;
-        System.out.println(line);
+        Logger.info(line);
         if (tokens[0].equalsIgnoreCase("NUMBER")) {
           if (tokens[2].equalsIgnoreCase("COMPONENTS")) {
             ranges = new ArrayList<Map<String, Object>>();
@@ -1240,6 +1242,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
             if (tlsModels == null)
               tlsModels = new ArrayList<Map<String, Object>>();
             tlsGroups = new ArrayList<Map<String, Object>>();
+            appendLoadNote(line.substring(11).trim());
           }
         } else if (tokens[1].equalsIgnoreCase("GROUP")) {
           tlsGroup = new Hashtable<String, Object>();
@@ -1347,6 +1350,63 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
    */
   private void handleTlsMissingModels() {
     tlsModels = null;
+  }
+
+  /**
+   * sets the atom property property_tlsGroup based on TLS group ranges
+   * 
+   * @param iGroup
+   * @param iModel
+   */
+  @SuppressWarnings("unchecked")
+  private void setTlsGroups(int iGroup, int iModel) {
+      Logger.info("TLS model " + iModel + " group " + iGroup);
+      Map<String, Object> tlsGroupInfo = tlsModels.get(iGroup);
+      List<Map<String, Object>> groups = (List<Map<String, Object>>) tlsGroupInfo.get("groups"); 
+      int firstModelAtom = atomSetCollection.getAtomSetAtomIndex(iModel);
+      int[] data = new int[atomSetCollection.getAtomSetAtomCount(iModel)];
+      int atomMax = firstModelAtom + data.length;
+      for (int i = groups.size(); --i >= 0;) {
+        Map<String, Object> group = groups.get(i);
+        List<Map<String, Object>> ranges = (List<Map<String, Object>>) group.get("ranges");
+        int id = ((Integer) group.get("id")).intValue();
+        for (int j = ranges.size(); --j >= 0;) {
+          String chains = (String) ranges.get(j).get("chains");
+          int[] residues = (int[]) ranges.get(j).get("residues");
+          int atom1 = findAtomForRange(firstModelAtom, atomMax, chains.charAt(0), residues[0], false);
+          int atom2 = (atom1 >= 0 ? findAtomForRange(atom1, atomMax, chains.charAt(1), residues[1], true) : -1);
+          if (atom2 < 0)
+            return;
+          Logger.info("TLS ID="+id + " model atom index range " + atom1 + "-" + atom2);
+          atom1 -= firstModelAtom;
+          atom2 -= firstModelAtom;
+          for (int iAtom = atom1; iAtom < atom2; iAtom++)
+            data[iAtom] = id;
+        }
+      }
+      StringBuffer sdata = new StringBuffer();
+      for (int i = 0; i < data.length; i++)
+        sdata.append(data[i]).append('\n');
+      atomSetCollection.setAtomSetAtomProperty("tlsGroup", sdata.toString(), iModel);
+      atomSetCollection.setAtomSetAuxiliaryInfo("TLS", tlsGroupInfo, iModel);
+  }
+
+  private int findAtomForRange(int atom1, int atom2, char chain, int resno,
+                          boolean isLast) {
+    int iAtom = findAtom(atom1, atom2, chain, resno, true);
+    return (isLast && iAtom >= 0 ? findAtom(iAtom, atom2, chain, resno, false) : iAtom);
+  }
+
+  private int findAtom(int atom1, int atom2, char chain, int resno, boolean isTrue) {
+    Atom[] atoms = atomSetCollection.getAtoms();
+    for (int i = atom1; i < atom2; i++) {
+     Atom atom = atoms[i];
+     if ((atom.chainID == chain && atom.sequenceNumber == resno) == isTrue)
+       return i;
+    }
+    if (isTrue)
+      Logger.warn("PdbReader findAtom chain=" + chain + " resno=" + resno + " not found");
+    return (isTrue ? -1 : atom2);
   }
 
 

@@ -214,7 +214,7 @@ public class NWChemReader extends MOReader {
   private void setEnergies(String key, String value, int nAtomSets) {
     energyKey = key;
     energyValue = value;
-    atomSetCollection.setAtomSetProperties(energyKey, energyValue,
+    atomSetCollection.setAtomSetPropertyForSets(energyKey, energyValue,
         equivalentAtomSets);
     atomSetCollection.setAtomSetNames(energyKey + " = " + energyValue,
         equivalentAtomSets);
@@ -225,7 +225,7 @@ public class NWChemReader extends MOReader {
   private void setEnergy(String key, String value) {
     energyKey = key;
     energyValue = value;
-    atomSetCollection.setAtomSetProperty(energyKey, energyValue);
+    atomSetCollection.setAtomSetModelProperty(energyKey, energyValue);
     atomSetCollection.setAtomSetName(energyKey + " = " + energyValue);
     haveEnergy = true;
   }
@@ -236,7 +236,7 @@ public class NWChemReader extends MOReader {
    */
   private void readSymmetry() throws Exception {
     String tokens[] = getTokens(readLines(3));
-    atomSetCollection.setAtomSetProperties("Symmetry group name",
+    atomSetCollection.setAtomSetPropertyForSets("Symmetry group name",
         tokens[tokens.length - 1], equivalentAtomSets);
   }
 
@@ -273,7 +273,7 @@ public class NWChemReader extends MOReader {
       // atom sets that may be been parsed.
       setEnergies(energyKey, energyValue, equivalentAtomSets);
     }
-    atomSetCollection.setAtomSetProperties("Step", tokens[1],
+    atomSetCollection.setAtomSetPropertyForSets("Step", tokens[1],
         equivalentAtomSets);
     haveAt = true;
   }
@@ -300,7 +300,7 @@ public class NWChemReader extends MOReader {
     String tokens[];
     haveEnergy = false;
     atomSetCollection.newAtomSet();
-    atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY, "Task "
+    atomSetCollection.setAtomSetModelProperty(SmarterJmolAdapter.PATH_KEY, "Task "
         + taskNumber
         + (inInput ? SmarterJmolAdapter.PATH_SEPARATOR + "Input"
             : SmarterJmolAdapter.PATH_SEPARATOR + "Geometry"));
@@ -318,7 +318,7 @@ public class NWChemReader extends MOReader {
     // only if was converged, use the last energy for the name and properties
     if (converged) {
       setEnergy(energyKey, energyValue);
-      atomSetCollection.setAtomSetProperty("Step", "converged");
+      atomSetCollection.setAtomSetModelProperty("Step", "converged");
     } else if (inInput) {
       atomSetCollection.setAtomSetName("Input");
     }
@@ -352,8 +352,8 @@ public class NWChemReader extends MOReader {
     atomSetCollection.newAtomSet();
     if (equivalentAtomSets > 1)
       atomSetCollection.cloneLastAtomSetProperties();
-    atomSetCollection.setAtomSetProperty("vector", "gradient");
-    atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY, "Task "
+    atomSetCollection.setAtomSetModelProperty("vector", "gradient");
+    atomSetCollection.setAtomSetModelProperty(SmarterJmolAdapter.PATH_KEY, "Task "
         + taskNumber + SmarterJmolAdapter.PATH_SEPARATOR + "Gradients");
     while (readLine() != null && line.length() > 0) {
       tokens = getTokens(); // get the tokens in the line
@@ -530,7 +530,7 @@ public class NWChemReader extends MOReader {
         int iset = atomSetCollection.getCurrentAtomSetIndex();
         atomSetCollection.setCurrentAtomSetIndex(idx++);
         atomSetCollection.setAtomSetFrequency(null, null, tokens[i], null);
-        atomSetCollection.setAtomSetProperty("IRIntensity", tokens[5]
+        atomSetCollection.setAtomSetModelProperty("IRIntensity", tokens[5]
             + " KM/mol");
         atomSetCollection.setCurrentAtomSetIndex(iset);
       }

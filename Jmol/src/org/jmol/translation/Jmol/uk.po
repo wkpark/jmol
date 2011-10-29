@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-10-24 05:01+0200\n"
-"PO-Revision-Date: 2011-10-03 23:42+0000\n"
+"PO-Revision-Date: 2011-10-24 10:14+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@gmail.com>\n"
 "Language-Team: Ukrainian <translation@linux.org.ua>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-10-04 04:12+0000\n"
-"X-Generator: Launchpad (build 14071)\n"
+"X-Launchpad-Export-Date: 2011-10-28 08:48+0000\n"
+"X-Generator: Launchpad (build 14197)\n"
 "Language: uk\n"
 
 #: com/json/Cookie.java:121
@@ -61,8 +61,8 @@ msgstr "Адреса-запиту"
 #: org/openscience/jmol/app/JmolApp.java:107
 msgid "Error starting Jmol: the property 'user.home' is not defined."
 msgstr ""
-"Помилка під час спроби запуску Jmol: не вказано значення властивості «user."
-"home»."
+"Помилка під час спроби запуску Jmol: не вказано значення властивості "
+"«user.home»."
 
 #: org/openscience/jmol/app/JmolApp.java:144
 msgid "transparent background"
@@ -998,7 +998,8 @@ msgstr "Обертати молекулу."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:211
 msgid "Select a set of atoms using SHIFT-LEFT-DRAG."
-msgstr "Вкажіть набір атомів за допомогою SHIFT-СТРІЛКА ЛІВОРУЧ-ПЕРЕТЯГУВАННЯ."
+msgstr ""
+"Вкажіть набір атомів за допомогою SHIFT-СТРІЛКА ЛІВОРУЧ-ПЕРЕТЯГУВАННЯ."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:213
 msgid "Click atoms to measure distances"
@@ -1589,8 +1590,8 @@ msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
 "be significant the first time the applet is loaded."
 msgstr ""
-"Щоб отримати просторову модель, з якою можна буде працювати, натисніть {0}тут"
-"{1}. Перше звантаження за допомогою аплету може бути доволі тривалим."
+"Щоб отримати просторову модель, з якою можна буде працювати, натисніть "
+"{0}тут{1}. Перше звантаження за допомогою аплету може бути доволі тривалим."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:366
 msgid "Insert the page TITLE here."
@@ -1904,18 +1905,23 @@ msgstr "не реалізовано"
 #~ msgid "atom set"
 #~ msgstr "набір атомів"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Перейти до першого {0} у збірці"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Перейти до попереднього {0} у збірці"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Відтворити усю збірку {0}"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Перейти до наступного {0} у збірці"
 
+#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Перейти до останнього {0} у збірці"
 
@@ -1928,12 +1934,15 @@ msgstr "не реалізовано"
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "додавання JmolPopIn.js"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "додавання {0}.png"
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "додавання {0}.spt"
 
+#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"
@@ -1944,16 +1953,16 @@ msgstr "не реалізовано"
 #~ msgid "Clear console button (requires restarting Jmol)"
 #~ msgstr "Кнопка спорожнення консолі (потрібен перезапуску Jmol)"
 
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 #~ msgstr ""
-#~ "Тут ви можете вставити додатковий текст пояснення. Довгі рядки буде "
-#~ "поділено на частини і розташовано навколо моделі Jmol {0}."
+#~ "Тут ви можете вставити додатковий текст пояснення. Довгі рядки буде поділено "
+#~ "на частини і розташовано навколо моделі Jmol {0}."
 
 #~ msgid "double-click and drag to reorder"
-#~ msgstr ""
-#~ "двічі клацніть лівою кнопкою миші і перетягніть, щоб змінити порядок"
+#~ msgstr "двічі клацніть лівою кнопкою миші і перетягніть, щоб змінити порядок"
 
 #~ msgid "The -D options are as follows (defaults in parenthesis):"
 #~ msgstr "Параметри -D (типові значення вказано у дужках):"
@@ -1990,669 +1999,3 @@ msgstr "не реалізовано"
 
 #~ msgid "Label"
 #~ msgstr "Мітка"
-
-#~ msgid "No atoms loaded"
-#~ msgstr "Атомів не завантажено"
-
-#~ msgid "Space Group"
-#~ msgstr "Просторова група"
-
-#~ msgid "Mouse Manual"
-#~ msgstr "Довідник з користування мишею"
-
-#~ msgid "Translations"
-#~ msgstr "Переклади"
-
-#~ msgid "System"
-#~ msgstr "Система"
-
-#~ msgid "1 processor"
-#~ msgstr "1 процесор"
-
-#~ msgid "{0} processors"
-#~ msgstr "{0} процесорів"
-
-#~ msgid "unknown processor count"
-#~ msgstr "невідома кількість процесорів"
-
-#~ msgid "Java version:"
-#~ msgstr "Версія Java:"
-
-#~ msgid "Java memory usage:"
-#~ msgstr "Використання пам’яті Java:"
-
-#~ msgid "{0} MB total"
-#~ msgstr "Всього: {0} МБ"
-
-#~ msgid "{0} MB free"
-#~ msgstr "Вільно: {0} MБ"
-
-#~ msgid "{0} MB maximum"
-#~ msgstr "Максимум: {0} MБ"
-
-#~ msgid "unknown maximum"
-#~ msgstr "максимум невідомий"
-
-#~ msgid "Configurations"
-#~ msgstr "Налаштування:"
-
-#~ msgid "Element"
-#~ msgstr "Елемент"
-
-#~ msgid "Model/Frame"
-#~ msgstr "Модель/Структура"
-
-#~ msgid "Language"
-#~ msgstr "Мова"
-
-#~ msgid "By Residue Name"
-#~ msgstr "За назвою залишку"
-
-#~ msgid "By HETATM"
-#~ msgstr "За HETATM"
-
-#~ msgid "Molecular Orbitals ({0})"
-#~ msgstr "Молекулярні орбіталі ({0})"
-
-#~ msgid "Symmetry"
-#~ msgstr "Симетрія"
-
-#~ msgid "Hide Symmetry"
-#~ msgstr "Приховати симетричні"
-
-#~ msgid "Model information"
-#~ msgstr "Відомості щодо моделі"
-
-#~ msgid "Select ({0})"
-#~ msgstr "Вибір ({0})"
-
-#~ msgid "All {0} models"
-#~ msgstr "Всі {0} моделі"
-
-#~ msgid "Configurations ({0})"
-#~ msgstr "Налаштування ({0})"
-
-#~ msgid "Collection of {0} models"
-#~ msgstr "Збірка {0} моделей"
-
-#~ msgid "atoms: {0}"
-#~ msgstr "атоми: {0}"
-
-#~ msgid "bonds: {0}"
-#~ msgstr "зв’язкиЖ {0}"
-
-#~ msgid "groups: {0}"
-#~ msgstr "групи: {0}"
-
-#~ msgid "chains: {0}"
-#~ msgstr "ланцюги: {0}"
-
-#~ msgid "polymers: {0}"
-#~ msgstr "полімери: {0}"
-
-#~ msgid "model {0}"
-#~ msgstr "модель {0}"
-
-#~ msgid "View {0}"
-#~ msgstr "Перегляд {0}"
-
-#~ msgid "Main Menu"
-#~ msgstr "Головне меню"
-
-#~ msgid "Biomolecules"
-#~ msgstr "Біомолекули"
-
-#~ msgid "biomolecule {0} ({1} atoms)"
-#~ msgstr "біомолекула {0} ({1} атомів)"
-
-#~ msgid "load biomolecule {0} ({1} atoms)"
-#~ msgstr "завантаження біомолекули {0} ({1} атомів)"
-
-#~ msgid "Display Selected Only"
-#~ msgstr "Показати лише позначені"
-
-#~ msgid "Invert Selection"
-#~ msgstr "Інвертувати вибір"
-
-#~ msgid "View"
-#~ msgstr "Перегляд"
-
-#~ msgid ""
-#~ "Top[as in \"view from the top, from above\" - (translators: remove this "
-#~ "bracketed part]"
-#~ msgstr "Згори"
-
-#~ msgid "Back"
-#~ msgstr "Ззаду"
-
-#~ msgid "Protein"
-#~ msgstr "Протеїн"
-
-#~ msgid "Backbone"
-#~ msgstr "Основа"
-
-#~ msgid "Side Chains"
-#~ msgstr "Бічні ланцюжки"
-
-#~ msgid "Polar Residues"
-#~ msgstr "Полярні залишки"
-
-#~ msgid "Nonpolar Residues"
-#~ msgstr "Неполярні залишки"
-
-#~ msgid "Basic Residues (+)"
-#~ msgstr "Базові залишки (+)"
-
-#~ msgid "Acidic Residues (-)"
-#~ msgstr "Кислотні залишки (-)"
-
-#~ msgid "Uncharged Residues"
-#~ msgstr "Незаряджені залишки"
-
-#~ msgid "DNA"
-#~ msgstr "ДНК"
-
-#~ msgid "RNA"
-#~ msgstr "РНК"
-
-#~ msgid "Bases"
-#~ msgstr "Базові"
-
-#~ msgid "AT pairs"
-#~ msgstr "АТ-пари"
-
-#~ msgid "GC pairs"
-#~ msgstr "ГЦ-пари"
-
-#~ msgid "AU pairs"
-#~ msgstr "АУ-пари"
-
-#~ msgid "All PDB \"HETATM\""
-#~ msgstr "Всі з ПБД \"HETATM\""
-
-#~ msgid "All Solvent"
-#~ msgstr "Всі розчинні"
-
-#~ msgid "All Water"
-#~ msgstr "Всі водорозчинні"
-
-#~ msgid "Nonaqueous Solvent"
-#~ msgstr "Всі неводорозчинні"
-
-#~ msgid "Nonaqueous HETATM"
-#~ msgstr "Неводорозчинні HETATM"
-
-#~ msgid "Ligand"
-#~ msgstr "Ліганд"
-
-#~ msgid "Carbohydrate"
-#~ msgstr "Карбогідрат"
-
-#~ msgid "None of the above"
-#~ msgstr "Нічого з наведеного вище"
-
-#~ msgid "Style"
-#~ msgstr "Стиль"
-
-#~ msgid "Scheme"
-#~ msgstr "Схема"
-
-#~ msgid "CPK Spacefill"
-#~ msgstr "Заповнення простору за моделлю CPK"
-
-#~ msgid "Ball and Stick"
-#~ msgstr "Кульки і стрижні"
-
-#~ msgid "Sticks"
-#~ msgstr "Стрижні"
-
-#~ msgid "Cartoon"
-#~ msgstr "Макет"
-
-#~ msgid "Trace"
-#~ msgstr "Трасування"
-
-#~ msgid "Off"
-#~ msgstr "Вимкнено"
-
-#~ msgid "Hydrogen Bonds"
-#~ msgstr "Водневі зв’язки"
-
-#~ msgid "Calculate"
-#~ msgstr "Обчислити"
-
-#~ msgid "Set H-Bonds Side Chain"
-#~ msgstr "Встановити бічний ланцюжок H-зв’язків"
-
-#~ msgid "Set H-Bonds Backbone"
-#~ msgstr "Встановити каркас H-зв’язків"
-
-#~ msgid "Disulfide Bonds"
-#~ msgstr "Дисульфідні зв’язки"
-
-#~ msgid "Set SS-Bonds Side Chain"
-#~ msgstr "Встановити бічний ланцюжок дисульфідних зв’язків"
-
-#~ msgid "Set SS-Bonds Backbone"
-#~ msgstr "Встановити каркас дисульфідних зв’язків"
-
-#~ msgid "Structures"
-#~ msgstr "Структури"
-
-#~ msgid "Cartoon Rockets"
-#~ msgstr "Ракетки"
-
-#~ msgid "Ribbons"
-#~ msgstr "Стрічки"
-
-#~ msgid "Rockets"
-#~ msgstr "Ракети"
-
-#~ msgid "Strands"
-#~ msgstr "Нитки"
-
-#~ msgid "Vibration"
-#~ msgstr "Вібрація"
-
-#~ msgid "Vectors"
-#~ msgstr "Вектори"
-
-#~ msgid "Stereographic"
-#~ msgstr "Стереографічна"
-
-#~ msgid "Red+Cyan glasses"
-#~ msgstr "Червоно-блакитні окуляри"
-
-#~ msgid "Red+Blue glasses"
-#~ msgstr "Червоно-сині окуляри"
-
-#~ msgid "Red+Green glasses"
-#~ msgstr "Червоно-зелені окуляри"
-
-#~ msgid "Cross-eyed viewing"
-#~ msgstr "Стереоскопія"
-
-#~ msgid "Wall-eyed viewing"
-#~ msgstr "Автостереограма"
-
-#~ msgid "Labels"
-#~ msgstr "Мітки"
-
-#~ msgid "With Element Symbol"
-#~ msgstr "З символом елемента"
-
-#~ msgid "With Atom Name"
-#~ msgstr "З назвою атома"
-
-#~ msgid "With Atom Number"
-#~ msgstr "З номером атома"
-
-#~ msgid "Position Label on Atom"
-#~ msgstr "Розташування мітки щодо атома"
-
-#~ msgid "Upper Right"
-#~ msgstr "Вгорі праворуч"
-
-#~ msgid "Lower Right"
-#~ msgstr "Внизу праворуч"
-
-#~ msgid "Upper Left"
-#~ msgstr "Вгорі ліворуч"
-
-#~ msgid "Lower Left"
-#~ msgstr "Внизу ліворуч"
-
-#~ msgid "Color"
-#~ msgstr "Колір"
-
-#~ msgid "By Scheme"
-#~ msgstr "За схемою"
-
-#~ msgid "Element (CPK)"
-#~ msgstr "Елемент (CPK)"
-
-#~ msgid "Alternative Location"
-#~ msgstr "Альтернативне розташування"
-
-#~ msgid "Molecule"
-#~ msgstr "Молекула"
-
-#~ msgid "Formal Charge"
-#~ msgstr "Формальний заряд"
-
-#~ msgid "Partial Charge"
-#~ msgstr "Частковий заряд"
-
-#~ msgid "Temperature (Relative)"
-#~ msgstr "Температура (відносна)"
-
-#~ msgid "Temperature (Fixed)"
-#~ msgstr "Температура (абсолютна)"
-
-#~ msgid "Amino Acid"
-#~ msgstr "Амінокислота"
-
-#~ msgid "Secondary Structure"
-#~ msgstr "Вторинна структура"
-
-#~ msgid "Chain"
-#~ msgstr "Ланцюжок"
-
-#~ msgid "Group"
-#~ msgstr "Група"
-
-#~ msgid "Monomer"
-#~ msgstr "Мономер"
-
-#~ msgid "Shapely"
-#~ msgstr "Обрис"
-
-#~ msgid "Inherit"
-#~ msgstr "Успадкувати"
-
-#~ msgid "Black"
-#~ msgstr "Чорний"
-
-#~ msgid "White"
-#~ msgstr "Білий"
-
-#~ msgid "Cyan"
-#~ msgstr "Блакитний"
-
-#~ msgid "Red"
-#~ msgstr "Червоний"
-
-#~ msgid "Orange"
-#~ msgstr "Жовтогарячий"
-
-#~ msgid "Yellow"
-#~ msgstr "Жовтий"
-
-#~ msgid "Green"
-#~ msgstr "Зелений"
-
-#~ msgid "Blue"
-#~ msgstr "Синій"
-
-#~ msgid "Indigo"
-#~ msgstr "Індиго"
-
-#~ msgid "Violet"
-#~ msgstr "Фіалковий"
-
-#~ msgid "Salmon"
-#~ msgstr "Оранжево-рожевий"
-
-#~ msgid "Olive"
-#~ msgstr "Оливковий"
-
-#~ msgid "Maroon"
-#~ msgstr "Каштановий"
-
-#~ msgid "Gray"
-#~ msgstr "Сірий"
-
-#~ msgid "Slate Blue"
-#~ msgstr "Сизий"
-
-#~ msgid "Gold"
-#~ msgstr "Золотий"
-
-#~ msgid "Orchid"
-#~ msgstr "Синяво-рожевий"
-
-#~ msgid "Make Opaque"
-#~ msgstr "Зробити непрозорим"
-
-#~ msgid "Make Translucent"
-#~ msgstr "Зробити прозорим"
-
-#~ msgid "Background"
-#~ msgstr "Тло"
-
-#~ msgid "Surfaces"
-#~ msgstr "Поверхні"
-
-#~ msgid "Boundbox"
-#~ msgstr "Рамка"
-
-#~ msgid "Unit cell"
-#~ msgstr "Комірка одиниці"
-
-#~ msgid "Zoom In"
-#~ msgstr "Збільшити"
-
-#~ msgid "Zoom Out"
-#~ msgstr "Зменшити"
-
-#~ msgid "Spin"
-#~ msgstr "Обертання навколо осі"
-
-#~ msgid "Set X Rate"
-#~ msgstr "Встановити швидкість за X"
-
-#~ msgid "Set Y Rate"
-#~ msgstr "Встановити швидкість за Y"
-
-#~ msgid "Set Z Rate"
-#~ msgstr "Встановити швидкість за Z"
-
-#~ msgid "Set FPS"
-#~ msgstr "Встановити частоту кадрів"
-
-#~ msgid "Animation Mode"
-#~ msgstr "Режим анімації"
-
-#~ msgid "Resume"
-#~ msgstr "Поновити"
-
-#~ msgid "Stop"
-#~ msgstr "Зупинити"
-
-#~ msgid "Rewind"
-#~ msgstr "Повний назад"
-
-#~ msgid "Reverse"
-#~ msgstr "Реверс"
-
-#~ msgid "Restart"
-#~ msgstr "Перезапустити"
-
-#~ msgid "Double-Click begins and ends all measurements"
-#~ msgstr "Подвійне клацання розпочинає і завершує всі вимірювання"
-
-#~ msgid "Click for distance measurement"
-#~ msgstr "Натисніть для вимірювання відстані"
-
-#~ msgid "Click for angle measurement"
-#~ msgstr "Натисніть, щоб виміряти кут"
-
-#~ msgid "Click for torsion (dihedral) measurement"
-#~ msgstr "Клацніть, щоб почати вимірювання двогранного кута кручення"
-
-#~ msgid "Click two atoms to display a sequence in the console"
-#~ msgstr ""
-#~ "Позначте клацанням два атоми, щоб переглянути послідовність у консолі."
-
-#~ msgid "Delete measurements"
-#~ msgstr "Вилучити виміри"
-
-#~ msgid "List measurements"
-#~ msgstr "Список вимірів"
-
-#~ msgid "Distance units nanometers"
-#~ msgstr "Вимір відстані у нанометрах"
-
-#~ msgid "Distance units Angstroms"
-#~ msgstr "Вимірювання відстані у ангстремах"
-
-#~ msgid "Distance units picometers"
-#~ msgstr "Вимірювання відстані у пікометрах"
-
-#~ msgid "Set picking"
-#~ msgstr "Встановити вибір"
-
-#~ msgid "Center"
-#~ msgstr "По центру"
-
-#~ msgid "Identity"
-#~ msgstr "Профіль"
-
-#~ msgid "Select atom"
-#~ msgstr "Вибрати атом"
-
-#~ msgid "Select chain"
-#~ msgstr "Вибрати ланцюжок"
-
-#~ msgid "Select element"
-#~ msgstr "Вибрати елемент"
-
-#~ msgid "Select group"
-#~ msgstr "Вибрати групу"
-
-#~ msgid "Select molecule"
-#~ msgstr "Вибрати молекулу"
-
-#~ msgid "Select site"
-#~ msgstr "Вибрати місце"
-
-#~ msgid "Show symmetry operation"
-#~ msgstr "Показати дію пошуку симетричної частини"
-
-#~ msgid "Show"
-#~ msgstr "Показати"
-
-#~ msgid "Console"
-#~ msgstr "Консоль"
-
-#~ msgid "File Contents"
-#~ msgstr "Вміст файла"
-
-#~ msgid "File Header"
-#~ msgstr "Заголовок файла"
-
-#~ msgid "Isosurface JVXL data"
-#~ msgstr "Дані ізоповерхні JVXL"
-
-#~ msgid "Molecular orbital JVXL data"
-#~ msgstr "Дані молекулярних орбіталей JVXL"
-
-#~ msgid "Model"
-#~ msgstr "Модель"
-
-#~ msgid "Orientation"
-#~ msgstr "Орієнтація"
-
-#~ msgid "Space group"
-#~ msgstr "Просторова група"
-
-#~ msgid "Current state"
-#~ msgstr "Поточний стан"
-
-#~ msgid "File"
-#~ msgstr "Файл"
-
-#~ msgid "Reload"
-#~ msgstr "Перезавантажити"
-
-#~ msgid "Open from PDB"
-#~ msgstr "Відкрити з PDB"
-
-#~ msgid "Open file or URL"
-#~ msgstr "Відкрити файл або адресу URL"
-
-#~ msgid "Load full unit cell"
-#~ msgstr "Завантажити комірку одиниць"
-
-#~ msgid "Open script"
-#~ msgstr "Відкрити скрипт"
-
-#~ msgid "Save a copy of {0}"
-#~ msgstr "Зберегти копію {0}"
-
-#~ msgid "Save script with state"
-#~ msgstr "Зберегти скрипт зі станом"
-
-#~ msgid "Save script with history"
-#~ msgstr "Зберегти скрипт з журналом"
-
-#~ msgid "Export {0} image"
-#~ msgstr "Експортувати зображення {0}"
-
-#~ msgid "Save all as JMOL file (zip)"
-#~ msgstr "Зберегти всі дані до файла JMOL (zip)"
-
-#~ msgid "Save JVXL isosurface"
-#~ msgstr "Зберегти ізоповерхню JVXL"
-
-#~ msgid "Export {0} 3D model"
-#~ msgstr "Експортувати просторову модель {0}"
-
-#~ msgid "Computation"
-#~ msgstr "Обчислення"
-
-#~ msgid "Optimize structure"
-#~ msgstr "Оптимізувати структуру"
-
-#~ msgid "Model kit"
-#~ msgstr "Моделювання"
-
-#~ msgid "Extract MOL data"
-#~ msgstr "Видобути дані MOL"
-
-#~ msgid "Dot Surface"
-#~ msgstr "Точкова поверхня"
-
-#~ msgid "van der Waals Surface"
-#~ msgstr "Поверхня Ван-дер-Ваальса"
-
-#~ msgid "Molecular Surface"
-#~ msgstr "Молекулярна поверхня"
-
-#~ msgid "Solvent Surface ({0}-Angstrom probe)"
-#~ msgstr "Поверхня розчинника ({0}-ангстремне зондування)"
-
-#~ msgid "Solvent-Accessible Surface (VDW + {0} Angstrom)"
-#~ msgstr "Доступна для розчинника поверхня (ВДВ + {0} ангстрем)"
-
-#~ msgid "Molecular Electrostatic Potential"
-#~ msgstr "Молекулярний електростатичний потенціал"
-
-#~ msgid "Reload {0}"
-#~ msgstr "Перезавантажити {0}"
-
-#~ msgid "Reload {0} + Display {1}"
-#~ msgstr "Перезавантажити {0} + показати {1}"
-
-#~ msgid "Reload + Polyhedra"
-#~ msgstr "Перезавантажити + Багатогранник"
-
-#~ msgid "Hide"
-#~ msgstr "Приховати"
-
-#~ msgid "Dotted"
-#~ msgstr "Пунктир"
-
-#~ msgid "Pixel Width"
-#~ msgstr "Ширина у пікселях"
-
-#~ msgid "{0} px"
-#~ msgstr "{0} пк"
-
-#~ msgid "Angstrom Width"
-#~ msgstr "Ширина у ангстремах"
-
-#~ msgid "Selection Halos"
-#~ msgstr "Ореоли позначених"
-
-#~ msgid "Show Hydrogens"
-#~ msgstr "Показувати атоми водню"
-
-#~ msgid "Show Measurements"
-#~ msgstr "Показувати розміри"
-
-#~ msgid "RasMol Colors"
-#~ msgstr "Кольори RasMol"
-
-#~ msgid "About..."
-#~ msgstr "Про програму…"

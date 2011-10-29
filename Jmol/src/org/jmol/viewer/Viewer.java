@@ -8319,7 +8319,7 @@ private void zap(String msg) {
   }
 
   public void showNMR(String smiles) {
-    // nmrdb cannot handle "." separator
+    // nmrdb cannot handle "." separator and cannot handle c=c
     showUrl(global.nmrUrlFormat + Escape.escapeUrl(getChemicalInfo(smiles, '/', "smiles")));  
   }
   

@@ -32,8 +32,8 @@ package org.openscience.jmol.app.jsonkiosk;
  */
 public interface JsonNioClient {
 
-  void nioRunContent(JsonNioService jsonNioService);
+  void nioRunContent(JsonNioServer jsonNioService);
   void setBannerLabel(String label);
-  void nioClosed(JsonNioService jsonNioService);
+  void nioClosed(JsonNioServer jsonNioService);
  
 }

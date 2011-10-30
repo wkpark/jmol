@@ -31,6 +31,7 @@ import org.jmol.constant.EnumCallback;
 import org.jmol.util.Logger;
 import org.openscience.jmol.app.jsonkiosk.BannerFrame;
 import org.openscience.jmol.app.jsonkiosk.JsonNioClient;
+import org.openscience.jmol.app.jsonkiosk.JsonNioServer;
 import org.openscience.jmol.app.jsonkiosk.JsonNioService;
 import org.openscience.jmol.app.jsonkiosk.KioskFrame;
 
@@ -121,7 +122,7 @@ public class MPJmolApp implements JsonNioClient {
     startJsonNioKiosk(port);
   }
 
-  protected JsonNioService service;
+  protected JsonNioServer service;
   private BannerFrame bannerFrame;
   private KioskFrame kioskFrame;
   private boolean contentDisabled;
@@ -178,7 +179,7 @@ public class MPJmolApp implements JsonNioClient {
   /// JsonNiosClient ///
 
   private boolean haveStarted = false;
-  public void nioRunContent(JsonNioService jns) {
+  public void nioRunContent(JsonNioServer jns) {
     if (contentDisabled && !haveStarted) {
       // needs to be run from the NIO thread, just once.
       haveStarted = true;
@@ -190,7 +191,7 @@ public class MPJmolApp implements JsonNioClient {
     bannerFrame.setLabel(label);
   }
 
-  public void nioClosed(JsonNioService jns) {
+  public void nioClosed(JsonNioServer jns) {
     try {
       jmolViewer.setModeMouse(-1);
       bannerFrame.dispose();

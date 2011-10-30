@@ -23,6 +23,7 @@
  */
 package org.openscience.jmol.app.jmolpanel;
 
+import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolViewer;
 import org.jmol.console.JmolConsole;
@@ -33,7 +34,7 @@ import org.jmol.export.image.ImageCreator;
 import org.jmol.i18n.GT;
 import org.openscience.jmol.app.jsonkiosk.BannerFrame;
 import org.openscience.jmol.app.jsonkiosk.JsonNioClient;
-import org.openscience.jmol.app.jsonkiosk.JsonNioService;
+import org.openscience.jmol.app.jsonkiosk.JsonNioServer;
 import org.openscience.jmol.app.jsonkiosk.KioskFrame;
 import org.openscience.jmol.app.surfacetool.SurfaceTool;
 import org.jmol.util.Logger;
@@ -103,7 +104,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
   JmolApp jmolApp;
   StatusBar status;
   int startupWidth, startupHeight;
-  JsonNioService serverService;
+  JsonNioServer serverService;
 
 
   protected String appletContext;
@@ -115,7 +116,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
   protected JFrame frame;
   protected SplashInterface splash;
   protected JFrame consoleframe;  
-  protected JsonNioService service;
+  protected JsonNioServer service;
   protected GuiMap guimap = new GuiMap();
   protected int qualityJPG = -1;
   protected int qualityPNG = -1;
@@ -419,7 +420,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     }
     if (jmolApp.port > 0) {
       try {
-        jmol.service = new JsonNioService();
+        jmol.service = getJsonNioServer();
         jmol.service.startService(jmolApp.port, jmol, jmol.viewer, "-1");
 //        JsonNioService service2 = new JsonNioService();
 //        service2.startService(jmolApp.port, jmol, null, "-2");
@@ -1536,11 +1537,11 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
   ////////// JSON/NIO SERVICE //////////
   
-  public void nioRunContent(JsonNioService jns) {
+  public void nioRunContent(JsonNioServer jns) {
     // ignore
   }
   
-  public void nioClosed(JsonNioService jns) {
+  public void nioClosed(JsonNioServer jns) {
     if (bannerFrame != null) {
       viewer.scriptWait("delay 2");
       bannerFrame.dispose();
@@ -1566,15 +1567,18 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
         if (serverService != null && strInfo != null && strInfo.equalsIgnoreCase("STOP")) {
           serverService.close();
         } else {
-          serverService = new JsonNioService();
-          serverService.startService(port, this, viewer, "-1");
+          serverService = getJsonNioServer();
+          if (serverService != null)
+            serverService.startService(port, this, viewer, "-1");
         }
         if (serverService != null && serverService.getPort() == -port && strInfo != null) {
           if (service == null) {
-            service = new JsonNioService();
-            service.startService(-port, this, viewer, null);
+            service = getJsonNioServer();
+            if (service != null)
+              service.startService(-port, this, viewer, null);
           }
-          service.send(-port, strInfo);
+          if (service != null)
+            service.send(-port, strInfo);
           return;
         }
         return;
@@ -1588,13 +1592,20 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
         return;
       }
       if (service == null) {
-        service = new JsonNioService();
-        service.startService(port, this, viewer, null);
+        service = getJsonNioServer();
+        if (service != null)
+          service.startService(port, this, viewer, null);
       }
-      service.send(port, strInfo);
+      if (service != null)
+        service.send(port, strInfo);
     } catch (IOException e) {
       // TODO
     }
+  }
+
+  public static JsonNioServer getJsonNioServer() {
+    return (JsonNioServer) Interface
+        .getApplicationInterface("jsonkiosk.JsonNioService");
   }
 
   

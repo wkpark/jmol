@@ -129,7 +129,7 @@ import naga.packetwriter.RawPacketWriter;
  * 
  */
 
-public class JsonNioService extends NIOService {
+public class JsonNioService extends NIOService implements JsonNioServer {
 
   protected String myName;
   protected boolean halt;
@@ -160,10 +160,8 @@ public class JsonNioService extends NIOService {
     super();
   }
 
-  /**
-   * from StatusManager
-   * 
-   * @param msg
+  /* (non-Javadoc)
+   * @see org.openscience.jmol.app.jsonkiosk.JsonNioServer#scriptCallback(java.lang.String)
    */
   public void scriptCallback(String msg) {
     if (msg == null)
@@ -174,15 +172,15 @@ public class JsonNioService extends NIOService {
       sendMessage(null, "!script_terminated!", null);
   }
 
+  /* (non-Javadoc)
+   * @see org.openscience.jmol.app.jsonkiosk.JsonNioServer#getPort()
+   */
   public int getPort() {
     return port;
   }
   
-  /**
-   * from JmolPanel and SYNC command
-   * 
-   * @param port
-   * @param msg
+  /* (non-Javadoc)
+   * @see org.openscience.jmol.app.jsonkiosk.JsonNioServer#send(int, java.lang.String)
    */
   public void send(int port, String msg) {
     try {
@@ -206,6 +204,9 @@ public class JsonNioService extends NIOService {
     }
   }
 
+  /* (non-Javadoc)
+   * @see org.openscience.jmol.app.jsonkiosk.JsonNioServer#startService(int, org.openscience.jmol.app.jsonkiosk.JsonNioClient, org.jmol.api.JmolViewer, java.lang.String)
+   */
   public void startService(int port, JsonNioClient client,
                            JmolViewer jmolViewer, String name)
       throws IOException {
@@ -310,6 +311,9 @@ public class JsonNioService extends NIOService {
 
   }
 
+  /* (non-Javadoc)
+   * @see org.openscience.jmol.app.jsonkiosk.JsonNioServer#close()
+   */
   @Override
   public void close() {
     try {

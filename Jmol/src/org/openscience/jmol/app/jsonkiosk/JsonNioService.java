@@ -35,6 +35,7 @@ import javax.vecmath.Point3f;
 import org.jmol.api.JmolViewer;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
+import org.openscience.jmol.app.jmolpanel.JmolPanel;
 
 import com.json.JSONException;
 import com.json.JSONObject;
@@ -157,6 +158,9 @@ public class JsonNioService extends NIOService implements JsonNioServer {
    */
 
   public JsonNioService() throws IOException {
+    /* called by reflection so as to allow interface that may
+     * not include Naga NioService
+     */
     super();
   }
 
@@ -222,10 +226,10 @@ public class JsonNioService extends NIOService implements JsonNioServer {
     }
 
     if (name != null) {
-      String s = getJmolValue(jmolViewer, "NIOcontentPath");
+      String s = JmolPanel.getJmolValue(jmolViewer, "NIOcontentPath");
       if (s != null)
         contentPath = s;
-      s = getJmolValue(jmolViewer, "NIOterminatorMessage");
+      s = JmolPanel.getJmolValue(jmolViewer, "NIOterminatorMessage");
       if (s != null)
         terminatorMessage = s;
       setEnabled();
@@ -286,11 +290,11 @@ public class JsonNioService extends NIOService implements JsonNioServer {
   }
 
   private void setEnabled() {
-    contentDisabled = (getJmolValue(jmolViewer, "NIOcontentDisabled").equals("true"));
-    motionDisabled = (getJmolValue(jmolViewer, "NIOmotionDisabled").equals("true"));
+    contentDisabled = (JmolPanel.getJmolValue(jmolViewer, "NIOcontentDisabled").equals("true"));
+    motionDisabled = (JmolPanel.getJmolValue(jmolViewer, "NIOmotionDisabled").equals("true"));
   } 
 
-  class JsonNioThread implements Runnable {
+  protected class JsonNioThread implements Runnable {
 
     public void run() {
       Logger.info(Thread.currentThread().getName() + " JsonNioSocket on " + port);
@@ -401,7 +405,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
     serverThread.start();
   }
 
-  class JsonNioServerThread implements Runnable {
+  protected class JsonNioServerThread implements Runnable {
     public void run() {
       Logger.info(Thread.currentThread().getName() + " JsonNioServerSocket on " + port);
       try {
@@ -589,14 +593,6 @@ public class JsonNioService extends NIOService implements JsonNioServer {
     }
     isPaused = isPause;
     jmolViewer.evalStringQuiet(script);
-  }
-
-  public static String getJmolValue(JmolViewer jmolViewer, String var) {
-    if (jmolViewer == null)
-      return "";
-    String s = (String) jmolViewer.scriptWaitStatus("print " + var, "output");
-    System.out.println("getJmolValue " + var + "=" + s);
-    return (s.indexOf("\n") <= 1 ? null : s.substring(0, s.lastIndexOf("\n")));
   }
 
   private void sendMessage(JSONObject json, String msg, NIOSocket socket) {

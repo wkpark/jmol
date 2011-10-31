@@ -1603,6 +1603,14 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     }
   }
 
+  public static String getJmolValue(JmolViewer jmolViewer, String var) {
+    if (jmolViewer == null)
+      return "";
+    String s = (String) jmolViewer.scriptWaitStatus("print " + var, "output");
+    System.out.println("getJmolValue " + var + "=" + s);
+    return (s.indexOf("\n") <= 1 ? null : s.substring(0, s.lastIndexOf("\n")));
+  }
+
   public static JsonNioServer getJsonNioServer() {
     return (JsonNioServer) Interface
         .getApplicationInterface("jsonkiosk.JsonNioService");

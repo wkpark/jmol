@@ -29,10 +29,10 @@ import org.jmol.api.JmolCallbackListener;
 import org.jmol.api.JmolViewer;
 import org.jmol.constant.EnumCallback;
 import org.jmol.util.Logger;
+import org.openscience.jmol.app.jmolpanel.JmolPanel;
 import org.openscience.jmol.app.jsonkiosk.BannerFrame;
 import org.openscience.jmol.app.jsonkiosk.JsonNioClient;
 import org.openscience.jmol.app.jsonkiosk.JsonNioServer;
-import org.openscience.jmol.app.jsonkiosk.JsonNioService;
 import org.openscience.jmol.app.jsonkiosk.KioskFrame;
 
 /*
@@ -159,9 +159,13 @@ public class MPJmolApp implements JsonNioClient {
         script += "NIOmotionDisabled=false;";
       }
       jmolViewer.scriptWait(defaultScript + script);
-      contentDisabled = JsonNioService.getJmolValue(jmolViewer, "NIOcontentDisabled").equals("true");
+      contentDisabled = JmolPanel.getJmolValue(jmolViewer, "NIOcontentDisabled").equals("true");
       
-      service = new JsonNioService();
+      service = JmolPanel.getJsonNioServer();
+      if (service == null) {
+        System.out.println("Cannot start JsonNioServer");
+        System.exit(1);
+      }
       service.startService(port, this, jmolViewer, "-MP");
 
       // Bob's demo model -- verifies that system is working and networked properly
@@ -183,7 +187,7 @@ public class MPJmolApp implements JsonNioClient {
     if (contentDisabled && !haveStarted) {
       // needs to be run from the NIO thread, just once.
       haveStarted = true;
-      jmolViewer.script(JsonNioService.getJmolValue(jmolViewer, "NIOcontentScript"));
+      jmolViewer.script(JmolPanel.getJmolValue(jmolViewer, "NIOcontentScript"));
     }
   }
   

@@ -1025,7 +1025,7 @@ class ScriptMathProcessor {
       if (bin < 0)
         bin = 0;
       else if (bin >= nbins)
-        bin = nbins;
+        bin = nbins - 1;
       array[bin]++;
     }
     return addX(array);

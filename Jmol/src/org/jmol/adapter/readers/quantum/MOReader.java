@@ -545,7 +545,7 @@ abstract public class MOReader extends BasisFunctionReader {
   private Map<String, Object> lastMoData;
   
   protected void setMOData(boolean clearOrbitals) {
-    if (shells != null && gaussians != null) {
+    if (shells != null && gaussians != null && orbitals.size() != 0) {
       moData.put("calculationType", calculationType);
       moData.put("energyUnits", energyUnits);
       moData.put("shells", shells);

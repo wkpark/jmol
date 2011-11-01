@@ -1228,10 +1228,16 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
         if (tokens.length < 2)
           continue;
         Logger.info(line);
-        if (tokens[0].equalsIgnoreCase("NUMBER")) {
+        if (tokens[1].equalsIgnoreCase("GROUP")) {
+          tlsGroup = new Hashtable<String, Object>();
+          ranges = new ArrayList<Map<String, Object>>();
+          tlsGroup.put("ranges", ranges);
+          tlsGroups.add(tlsGroup);
+          int groupID = parseInt(tokens[tokens.length - 1]);
+          tlsGroup.put("id", Integer.valueOf(groupID));
+        } else if (tokens[0].equalsIgnoreCase("NUMBER")) {
           if (tokens[2].equalsIgnoreCase("COMPONENTS")) {
-            ranges = new ArrayList<Map<String, Object>>();
-            tlsGroup.put("ranges", ranges);
+            // ignore
           } else {
             nGroups = parseInt(tokens[tokens.length - 1]);
             if (nGroups < 1)
@@ -1241,12 +1247,6 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
             tlsGroups = new ArrayList<Map<String, Object>>();
             appendLoadNote(line.substring(11).trim());
           }
-        } else if (tokens[1].equalsIgnoreCase("GROUP")) {
-          tlsGroup = new Hashtable<String, Object>();
-          tlsGroups.add(tlsGroup);
-          int groupID = parseInt(tokens[tokens.length - 1]);
-          tlsGroup.put("id", Integer.valueOf(groupID));
-          ranges = null;
         } else if (tokens[0].equalsIgnoreCase("COMPONENTS")) {
           components = line;
         } else if (tokens[0].equalsIgnoreCase("RESIDUE")) {
@@ -1270,16 +1270,23 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
           }
         } else if (tokens[0].equalsIgnoreCase("SELECTION")) {
           /*
-           * REMARK   3    SELECTION: RESID 513:544 OR RESID 568:634 OR RESID                
+           * REMARK   3    SELECTION: RESID 513:544 OR RESID 568:634 OR RESID
+           * 
+           * REMARK   3    SELECTION: (CHAIN A AND RESID 343:667)                            
            */
-          if (ranges == null)
-            ranges = new ArrayList<Map<String, Object>>();
-          for (int i = 2; i < tokens.length; i++) {
+          char chain = '\0';
+          for (int i = 1; i < tokens.length; i++) {
+            if (tokens[i].toUpperCase().indexOf("CHAIN") >= 0) {
+              chain = tokens[++i].charAt(0);
+              continue;
+            }
             int resno = parseInt(tokens[i]);
             if (resno == Integer.MIN_VALUE)
               continue;
             range = new Hashtable<String, Object>();
             range.put("residues", new int[] { resno, parseInt(tokens[++i]) });
+            if (chain != '\0')
+              range.put("chains", "" + chain + chain);
             ranges.add(range);
           }
         } else if (tokens[0].equalsIgnoreCase("ORIGIN")) {
@@ -1323,6 +1330,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
           }
           if (tensorType == 'S' && ++iGroup == nGroups) {
             Logger.info(nGroups + " TLS groups read");
+            readLine();
             break;
           }
         }
@@ -1357,28 +1365,31 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
    */
   @SuppressWarnings("unchecked")
   private void setTlsGroups(int iGroup, int iModel) {
-      Logger.info("TLS model " + iModel + " group " + iGroup);
+      Logger.info("TLS model " + (iModel + 1) + " set " + (iGroup + 1));
       Map<String, Object> tlsGroupInfo = vTlsModels.get(iGroup);
       List<Map<String, Object>> groups = (List<Map<String, Object>>) tlsGroupInfo.get("groups"); 
-      int firstModelAtom = atomSetCollection.getAtomSetAtomIndex(iModel);
+      int index0 = atomSetCollection.getAtomSetAtomIndex(iModel);
       int[] data = new int[atomSetCollection.getAtomSetAtomCount(iModel)];
-      int atomMax = firstModelAtom + data.length;
+      int indexMax = index0 + data.length;
       Atom[] atoms = atomSetCollection.getAtoms();
-      for (int i = groups.size(); --i >= 0;) {
+      int nGroups = groups.size();
+      for (int i = 0; i < nGroups; i++) {
         Map<String, Object> group = groups.get(i);
         List<Map<String, Object>> ranges = (List<Map<String, Object>>) group.get("ranges");
         int id = ((Integer) group.get("id")).intValue();
         for (int j = ranges.size(); --j >= 0;) {
           String chains = (String) ranges.get(j).get("chains");
           int[] residues = (int[]) ranges.get(j).get("residues");
-          int atom1 = findAtomForRange(firstModelAtom, atomMax, chains.charAt(0), residues[0], false);
-          int atom2 = (atom1 >= 0 ? findAtomForRange(atom1, atomMax, chains.charAt(1), residues[1], true) : -1);
-          if (atom2 < 0)
+          int index1 = findAtomForRange(index0, indexMax, chains.charAt(0), residues[0], false);
+          int index2 = (index1 >= 0 ? findAtomForRange(index1, indexMax, chains.charAt(1), residues[1], true) : -1);
+          if (index2 < 0) {
+            Logger.info("TLS processing terminated");
             return;
-          Logger.info("TLS ID="+id + " model atom index range " + atom1 + "-" + atom2);
-          atom1 -= firstModelAtom;
-          atom2 -= firstModelAtom;
-          for (int iAtom = atom1; iAtom < atom2; iAtom++) {
+          }
+          Logger.info("TLS ID="+id + " model atom index range " + index1 + "-" + index2);
+          index1 -= index0;
+          index2 -= index0;
+          for (int iAtom = index1; iAtom < index2; iAtom++) {
             data[iAtom] = id;
             setTlsEllipsoid(atoms[iAtom], group);
           }

@@ -466,10 +466,10 @@ public class AtomSetCollection {
       else
         atoms = (Atom[])ArrayUtil.doubleLength(atoms);
     }
-    atom.atomIndex = atomCount;
-    atoms[atomCount++] = atom;
     if (atomSetCount == 0)
       newAtomSet();
+    atom.atomIndex = atomCount;
+    atoms[atomCount++] = atom;
     atom.atomSetIndex = currentAtomSetIndex;
     atom.atomSite = atomSetAtomCounts[currentAtomSetIndex]++;
   }

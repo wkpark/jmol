@@ -29,6 +29,7 @@ import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Structure;
 import org.jmol.api.JmolAdapter;
 import org.jmol.constant.EnumStructure;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Quadric;
 import org.jmol.util.TextFormat;
@@ -76,15 +77,16 @@ public class PdbReader extends AtomSetCollectionReader {
   private boolean haveMappedSerials;
   
   private final Map<String, Map<String, Boolean>> htFormul = new Hashtable<String, Map<String, Boolean>>();
-  private Map<String, String> htHetero = null;
-  private Map<String, Map<String, Object>> htSites = null;
+  private Map<String, String> htHetero;
+  private Map<String, Map<String, Object>> htSites;
   private Map<String, Boolean> htElementsInCurrentGroup;
   private Map<String, Map<String, String>> htMolIds;
   
   private List<Map<String, String>> vCompnds;
   private List<Matrix4f> vBiomts;
   private List<Map<String, Object>> vBiomolecules;
-  private List<Map<String, Object>> vTlsModels = null;
+  private List<Map<String, Object>> vTlsModels;
+  private StringBuffer sbTlsErrors;
 
   private int[] chainAtomCounts;  
   
@@ -111,6 +113,7 @@ public class PdbReader extends AtomSetCollectionReader {
   private char lastInsertion;
   private int lastSourceSerial = Integer.MIN_VALUE;
   private int lasttargetSerial = Integer.MIN_VALUE;
+  private int tlsGroupID;
   
  final private static String lineOptions = 
    "ATOM    " + //0
@@ -294,6 +297,10 @@ public class PdbReader extends AtomSetCollectionReader {
             setTlsGroups(0, i);
         }
       }
+    }
+    if (sbTlsErrors != null) {
+      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("tlsErrors", sbTlsErrors.toString());
+      appendLoadNote(sbTlsErrors.toString());
     }
     super.finalizeReader();
     if (vCompnds != null)
@@ -1233,8 +1240,8 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
           ranges = new ArrayList<Map<String, Object>>();
           tlsGroup.put("ranges", ranges);
           tlsGroups.add(tlsGroup);
-          int groupID = parseInt(tokens[tokens.length - 1]);
-          tlsGroup.put("id", Integer.valueOf(groupID));
+          tlsGroupID = parseInt(tokens[tokens.length - 1]);
+          tlsGroup.put("id", Integer.valueOf(tlsGroupID));
         } else if (tokens[0].equalsIgnoreCase("NUMBER")) {
           if (tokens[2].equalsIgnoreCase("COMPONENTS")) {
             // ignore
@@ -1308,6 +1315,10 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
                 parseFloat(line.substring(n - 18, n - 9)), parseFloat(line
                     .substring(n - 9, n)));
           }
+          if (Float.isNaN(origin.x) || Float.isNaN(origin.y) || Float.isNaN(origin.z)) {
+            origin.set(Float.NaN, Float.NaN, Float.NaN);
+            tlsAddError("invalid origin: " + line);
+          }
         } else if (tokens[1].equalsIgnoreCase("TENSOR")) {
           /*
            * REMARK   3    T TENSOR                                                          
@@ -1328,6 +1339,12 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
             if (ti < tj)
               tensor[tj][ti] = tensor[ti][tj];
           }
+          for (int i = 0; i < 3; i++)
+            for (int j = 0; j < 3; j++)
+              if (Float.isNaN(tensor[i][j])) {
+                tlsAddError("invalid tensor: " + Escape.escapeArray(tensor));
+
+              }
           if (tensorType == 'S' && ++iGroup == nGroups) {
             Logger.info(nGroups + " TLS groups read");
             readLine();
@@ -1365,41 +1382,47 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
    */
   @SuppressWarnings("unchecked")
   private void setTlsGroups(int iGroup, int iModel) {
-      Logger.info("TLS model " + (iModel + 1) + " set " + (iGroup + 1));
-      Map<String, Object> tlsGroupInfo = vTlsModels.get(iGroup);
-      List<Map<String, Object>> groups = (List<Map<String, Object>>) tlsGroupInfo.get("groups"); 
-      int index0 = atomSetCollection.getAtomSetAtomIndex(iModel);
-      int[] data = new int[atomSetCollection.getAtomSetAtomCount(iModel)];
-      int indexMax = index0 + data.length;
-      Atom[] atoms = atomSetCollection.getAtoms();
-      int nGroups = groups.size();
-      for (int i = 0; i < nGroups; i++) {
-        Map<String, Object> group = groups.get(i);
-        List<Map<String, Object>> ranges = (List<Map<String, Object>>) group.get("ranges");
-        int id = ((Integer) group.get("id")).intValue();
-        for (int j = ranges.size(); --j >= 0;) {
-          String chains = (String) ranges.get(j).get("chains");
-          int[] residues = (int[]) ranges.get(j).get("residues");
-          int index1 = findAtomForRange(index0, indexMax, chains.charAt(0), residues[0], false);
-          int index2 = (index1 >= 0 ? findAtomForRange(index1, indexMax, chains.charAt(1), residues[1], true) : -1);
-          if (index2 < 0) {
-            Logger.info("TLS processing terminated");
-            return;
-          }
-          Logger.info("TLS ID="+id + " model atom index range " + index1 + "-" + index2);
-          index1 -= index0;
-          index2 -= index0;
-          for (int iAtom = index1; iAtom < index2; iAtom++) {
-            data[iAtom] = id;
-            setTlsEllipsoid(atoms[iAtom], group);
-          }
+    Logger.info("TLS model " + (iModel + 1) + " set " + (iGroup + 1));
+    Map<String, Object> tlsGroupInfo = vTlsModels.get(iGroup);
+    List<Map<String, Object>> groups = (List<Map<String, Object>>) tlsGroupInfo
+        .get("groups");
+    int index0 = atomSetCollection.getAtomSetAtomIndex(iModel);
+    int[] data = new int[atomSetCollection.getAtomSetAtomCount(iModel)];
+    int indexMax = index0 + data.length;
+    Atom[] atoms = atomSetCollection.getAtoms();
+    int nGroups = groups.size();
+    for (int i = 0; i < nGroups; i++) {
+      Map<String, Object> group = groups.get(i);
+      List<Map<String, Object>> ranges = (List<Map<String, Object>>) group
+          .get("ranges");
+      tlsGroupID = ((Integer) group.get("id")).intValue();
+      for (int j = ranges.size(); --j >= 0;) {
+        String chains = (String) ranges.get(j).get("chains");
+        int[] residues = (int[]) ranges.get(j).get("residues");
+        int index1 = findAtomForRange(index0, indexMax, chains.charAt(0),
+            residues[0], false);
+        int index2 = (index1 >= 0 ? findAtomForRange(index1, indexMax, chains
+            .charAt(1), residues[1], true) : -1);
+        if (index2 < 0) {
+          Logger.info("TLS processing terminated");
+          return;
+        }
+        Logger.info("TLS ID=" + tlsGroupID + " model atom index range " + index1
+            + "-" + index2);
+        index1 -= index0;
+        index2 -= index0;
+        for (int iAtom = index1; iAtom < index2; iAtom++) {
+          data[iAtom] = tlsGroupID;
+          setTlsEllipsoid(atoms[iAtom], group);
         }
       }
-      StringBuffer sdata = new StringBuffer();
-      for (int i = 0; i < data.length; i++)
-        sdata.append(data[i]).append('\n');
-      atomSetCollection.setAtomSetAtomProperty("tlsGroup", sdata.toString(), iModel);
-      atomSetCollection.setAtomSetAuxiliaryInfo("TLS", tlsGroupInfo, iModel);
+    }
+    StringBuffer sdata = new StringBuffer();
+    for (int i = 0; i < data.length; i++)
+      sdata.append(data[i]).append('\n');
+    atomSetCollection.setAtomSetAtomProperty("tlsGroup", sdata.toString(),
+        iModel);
+    atomSetCollection.setAtomSetAuxiliaryInfo("TLS", tlsGroupInfo, iModel);
   }
 
   private int findAtomForRange(int atom1, int atom2, char chain, int resno,
@@ -1415,8 +1438,10 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
      if ((atom.chainID == chain && atom.sequenceNumber == resno) == isTrue)
        return i;
     }
-    if (isTrue)
+    if (isTrue) {
       Logger.warn("PdbReader findAtom chain=" + chain + " resno=" + resno + " not found");
+      tlsAddError("atom not found: chain=" + chain + " resno=" + resno + " not found");
+    }
     return (isTrue ? -1 : atom2);
   }
 
@@ -1478,5 +1503,11 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     atom.ellipsoid = new Quadric[] { symmetry.getEllipsoid(dataS), symmetry.getEllipsoid(dataT) };
   }
 
+  private void tlsAddError(String error) {
+    if (sbTlsErrors == null)
+      sbTlsErrors = new StringBuffer();
+    sbTlsErrors.append(fileName).append('\t').append("TLS group ").append(
+        tlsGroupID).append('\t').append(error).append('\n');
+  }
 }
 

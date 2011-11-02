@@ -199,14 +199,17 @@ public abstract class AtomSetCollectionReader {
     }
   */
 
-  String fileName;
+  private String filePath;
+  protected String fileName;
 
   protected int stateScriptVersionInt = Integer.MAX_VALUE; // for compatiblity PDB reader Jmol 12.0.RC24 fix 
   // http://jmol.svn.sourceforge.net/viewvc/jmol/trunk/Jmol/src/org/jmol/adapter/readers/cifpdb/PdbReader.java?r1=13502&r2=13525
 
-  void setup(String fileName, Map<String, Object> htParams, Object reader) {
+  void setup(String fullPath, Map<String, Object> htParams, Object reader) {
     this.htParams = htParams;
-    this.fileName = fileName.replace('\\', '/');
+    filePath = fullPath.replace('\\', '/');
+    int i = filePath.lastIndexOf('/');
+    fileName = filePath.substring(i + 1);
     if (reader instanceof BufferedReader)
       this.reader = (BufferedReader) reader;
     else if (reader instanceof BinaryDocument)
@@ -345,15 +348,15 @@ public abstract class AtomSetCollectionReader {
     if (fileType.indexOf("(") >= 0)
       fileType = fileType.substring(0, fileType.indexOf("("));
     for (int i = atomSetCollection.getAtomSetCount(); --i >= 0;) {
-      atomSetCollection.setAtomSetAuxiliaryInfo("fileName", fileName, i);
+      atomSetCollection.setAtomSetAuxiliaryInfo("fileName", filePath, i);
       atomSetCollection.setAtomSetAuxiliaryInfo("fileType", fileType, i);
     }
     atomSetCollection.freeze();
     if (atomSetCollection.errorMessage != null)
-      return atomSetCollection.errorMessage + "\nfor file " + fileName
+      return atomSetCollection.errorMessage + "\nfor file " + filePath
           + "\ntype " + name;
     if (atomSetCollection.getAtomCount() == 0)
-      return "No atoms found\nfor file " + fileName + "\ntype " + name;
+      return "No atoms found\nfor file " + filePath + "\ntype " + name;
     return atomSetCollection;
   }
 

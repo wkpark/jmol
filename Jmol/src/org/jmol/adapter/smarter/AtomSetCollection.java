@@ -866,8 +866,9 @@ public class AtomSetCollection {
     getSymmetry().setMinMaxLatticeParameters(minXYZ, maxXYZ);
     if (doPackUnitCell || symmetryRange != 0 && maxXYZ.x - minXYZ.x == 1
         && maxXYZ.y - minXYZ.y == 1 && maxXYZ.z - minXYZ.z == 1) {
-      minXYZ0 = new Point3i(minXYZ);
-      maxXYZ0 = new Point3i(maxXYZ);
+      // weird Mac bug does not allow   new Point3i(minXYZ) !!
+      minXYZ0 = new Point3i(minXYZ.x, minXYZ.y, minXYZ.z);
+      maxXYZ0 = new Point3i(maxXYZ.x, maxXYZ.y, maxXYZ.z);
       dtype = (int) getSymmetry()
           .getUnitCellInfo(SimpleUnitCell.INFO_DIMENSIONS);
       switch (dtype) {

@@ -1412,13 +1412,17 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
         }
         Logger.info("TLS ID=" + tlsGroupID + " model atom index range "
             + index1 + "-" + index2);
+        boolean isSameChain = (chain0 == chain1);
         for (int iAtom = index0; iAtom < indexMax; iAtom++) {
           Atom atom = atoms[iAtom];
-          if (atom.chainID >= chain0 && atom.chainID <= chain1
-              && atom.sequenceNumber >= res0 && atom.sequenceNumber <= res1) {
-            data[iAtom - index0] = tlsGroupID;
-            setTlsEllipsoid(atom, group);
-          }
+          if (isSameChain ? atom.sequenceNumber >= res0 && atom.sequenceNumber <= res1
+            : atom.chainID > chain0 && atom.chainID < chain1 
+              || atom.chainID == chain0 && atom.sequenceNumber >= res0
+              || atom.chainID == chain1 && atom.sequenceNumber <= res1
+          ) {
+              data[iAtom - index0] = tlsGroupID;
+              setTlsEllipsoid(atom, group);
+            }
         }
       }
     }

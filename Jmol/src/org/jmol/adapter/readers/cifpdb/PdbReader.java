@@ -1399,21 +1399,26 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
       for (int j = ranges.size(); --j >= 0;) {
         String chains = (String) ranges.get(j).get("chains");
         int[] residues = (int[]) ranges.get(j).get("residues");
-        int index1 = findAtomForRange(index0, indexMax, chains.charAt(0),
-            residues[0], false);
-        int index2 = (index1 >= 0 ? findAtomForRange(index1, indexMax, chains
-            .charAt(1), residues[1], true) : -1);
+        char chain0 = chains.charAt(0);
+        char chain1 = chains.charAt(1);
+        int res0 = residues[0];
+        int res1 = residues[1];
+        int index1 = findAtomForRange(index0, indexMax, chain0, res0, false);
+        int index2 = (index1 >= 0 ? findAtomForRange(index1, indexMax, chain1,
+            res1, false) : -1);
         if (index2 < 0) {
           Logger.info("TLS processing terminated");
           return;
         }
-        Logger.info("TLS ID=" + tlsGroupID + " model atom index range " + index1
-            + "-" + index2);
-        index1 -= index0;
-        index2 -= index0;
-        for (int iAtom = index1; iAtom < index2; iAtom++) {
-          data[iAtom] = tlsGroupID;
-          setTlsEllipsoid(atoms[iAtom], group);
+        Logger.info("TLS ID=" + tlsGroupID + " model atom index range "
+            + index1 + "-" + index2);
+        for (int iAtom = index0; iAtom < indexMax; iAtom++) {
+          Atom atom = atoms[iAtom];
+          if (atom.chainID >= chain0 && atom.chainID <= chain1
+              && atom.sequenceNumber >= res0 && atom.sequenceNumber <= res1) {
+            data[iAtom - index0] = tlsGroupID;
+            setTlsEllipsoid(atom, group);
+          }
         }
       }
     }

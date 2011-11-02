@@ -164,8 +164,10 @@ public class NucleicMonomer extends PhosphorusMonomer {
                  byte[] offsets) {
     super(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex, offsets);
-    if (offsets[NP] == -1 && (offsets[0] = offsets[H5T]) == -1) {
+    if (offsets[NP] == -1) {
+      if ((offsets[0] = offsets[H5T]) == -1)
         offsets[0] = offsets[O5Pr];
+      if (offsets[0] >= 0)
         leadAtomIndex = firstAtomIndex + (offsets[0] & 0xFF);
     }
     this.hasRnaO2Prime = offsets[O2Pr] != -1;

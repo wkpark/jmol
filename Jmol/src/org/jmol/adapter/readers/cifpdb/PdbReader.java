@@ -1440,7 +1440,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     }
     if (isTrue) {
       Logger.warn("PdbReader findAtom chain=" + chain + " resno=" + resno + " not found");
-      tlsAddError("atom not found: chain=" + chain + " resno=" + resno + " not found");
+      tlsAddError("atom not found: chain=" + chain + " resno=" + resno);
     }
     return (isTrue ? -1 : atom2);
   }

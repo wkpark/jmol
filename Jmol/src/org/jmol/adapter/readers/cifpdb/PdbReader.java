@@ -1262,18 +1262,31 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
           token 0  1      2       3   4   5     6        7     8
           */
           range = new Hashtable<String, Object>();
-          ranges.add(range);
+          char chain1, chain2;
+          int res1, res2;
           if (tokens.length == 6) {
-            range.put("chains", "" + tokens[2].charAt(0) + tokens[4].charAt(0));
-            range.put("residues", new int[] { parseInt(tokens[3]),
-                parseInt(tokens[5]) });
+            chain1 = tokens[2].charAt(0);
+            chain2 = tokens[4].charAt(0);
+            res1 = parseInt(tokens[3]);
+            res2 = parseInt(tokens[5]);
           } else {
             int toC = components.indexOf(" C ");
             int fromC = components.indexOf(" C ", toC + 4);
-            range.put("chains", "" + line.charAt(fromC) + line.charAt(toC));
-            range.put("residues", new int[] {
-                parseInt(line.substring(fromC + 1, toC)),
-                parseInt(line.substring(toC + 1)) });
+            chain1 = line.charAt(fromC);
+            chain2 = line.charAt(toC);
+            res1 = parseInt(line.substring(fromC + 1, toC));
+            res2 = parseInt(line.substring(toC + 1));
+          }
+          if (chain1 == chain2) {
+            range.put("chains", "" + chain1 + chain2);
+            if (res1 <= res2) {
+              range.put("residues", new int[] { res1, res2 });
+              ranges.add(range);
+            } else {
+              tlsAddError(" TLS group residues are not in order (range ignored)");            
+            }
+          } else {
+            tlsAddError(" TLS group chains are different (range ignored)");            
           }
         } else if (tokens[0].equalsIgnoreCase("SELECTION")) {
           /*

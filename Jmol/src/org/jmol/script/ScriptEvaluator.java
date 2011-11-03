@@ -11935,6 +11935,8 @@ public class ScriptEvaluator {
     boolean isHyphen = false;
     int[] frameList = new int[] { -1, -1 };
     int nFrames = 0;
+    float fFrame = 0;
+    boolean haveFileSet = viewer.haveFileSet();
 
     for (int i = offset; i < statementLength; i++) {
       switch (getToken(i).tok) {
@@ -11953,14 +11955,22 @@ public class ScriptEvaluator {
         break;
       case Token.decimal:
         useModelNumber = false;
-        if (floatParameter(i) < 0)
-          isHyphen = true;
+        if ((fFrame = floatParameter(i)) < 0)
+          error(ERROR_invalidArgument);
         // fall through
       case Token.integer:
       case Token.string:
         if (nFrames == 2)
           error(ERROR_invalidArgument);
         int iFrame = (theTok == Token.string ? getFloatEncodedInt((String) theToken.value) : theToken.intValue);
+        if (iFrame < 0 && nFrames == 1) {
+          isHyphen = true;
+          iFrame = -iFrame;
+          if (haveFileSet && iFrame < 1000000)
+            iFrame *= 1000000;
+        }
+        if (theTok == Token.decimal && haveFileSet && fFrame == (int) fFrame)
+          iFrame = (int) fFrame * 1000000;
         if (iFrame == Integer.MAX_VALUE)
           iFrame = 0; // frame 0.0
         if (iFrame == -1) {
@@ -11969,9 +11979,9 @@ public class ScriptEvaluator {
             viewer.setAnimation(Token.prev);
           return;
         }
-        if (iFrame >= 1000 && iFrame < 1000000 && viewer.haveFileSet())
+        if (iFrame >= 1000 && iFrame < 1000000 && haveFileSet)
           iFrame = (iFrame / 1000) * 1000000 + (iFrame % 1000); // initial way
-        if (!useModelNumber && iFrame == 0)
+        if (!useModelNumber && iFrame == 0 && nFrames == 0)
           isAll = true; // 0.0 means ALL; 0 means "all in this range
         if (iFrame >= 1000000)
           useModelNumber = false;
@@ -11988,7 +11998,6 @@ public class ScriptEvaluator {
         return;
       }
     }
-    boolean haveFileSet = viewer.haveFileSet();
     if (isRange && nFrames == 0)
       isAll = true;
     if (isSyntaxCheck)
@@ -12012,16 +12021,19 @@ public class ScriptEvaluator {
     int modelIndex = viewer.getModelNumberIndex(frameList[0], useModelNumber,
         false);
     int modelIndex2 = -1;
-    if (haveFileSet && nFrames == 1 && modelIndex < 0 && frameList[0] != 0) {
+    if (haveFileSet && modelIndex < 0 && frameList[0] != 0) {
       // may have frame 2.0 or frame 2 meaning the range of models in file 2
+      // or frame 2.0 - 3.1   or frame 2.0 - 3.0
       if (frameList[0] < 1000000)
         frameList[0] *= 1000000;
+      if (nFrames == 2 && frameList[1] < 1000000)
+        frameList[1] *= 1000000;
       if (frameList[0] % 1000000 == 0) {
         frameList[0]++;
         modelIndex = viewer.getModelNumberIndex(frameList[0], false, false);
         if (modelIndex >= 0) {
-          modelIndex2 = viewer.getModelNumberIndex(frameList[0] + 1000000,
-              false, false);
+          int i2 = (nFrames == 1 ? frameList[0] + 1000001 : frameList[1] == 0 ? -1 : frameList[1] % 1000000 == 0 ? frameList[1] + 1000001 : frameList[1] + 1);
+          modelIndex2 = viewer.getModelNumberIndex(i2, false, false);
           if (modelIndex2 < 0)
             modelIndex2 = viewer.getModelCount();
           modelIndex2--;

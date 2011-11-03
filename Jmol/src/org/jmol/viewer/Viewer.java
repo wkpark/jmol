@@ -8117,17 +8117,17 @@ private void zap(String msg) {
       if (bsSelected.cardinality() != 0) {
         if (isTranslation) {
           Point3f ptCenter = getAtomSetCenter(bsSelected);
+          transformManager.finalizeTransformParameters();
+          float f = (global.antialiasDisplay ? 2 : 1);
           Point3i ptScreen = transformPoint(ptCenter);
           Point3f ptScreenNew;
           if (deltaZ != Integer.MIN_VALUE)
             ptScreenNew = new Point3f(ptScreen.x,
               ptScreen.y, ptScreen.z + deltaZ + 0.5f);
           else
-            ptScreenNew = new Point3f(ptScreen.x + deltaX + 0.5f,
-                ptScreen.y + deltaY + 0.5f, ptScreen.z);
-
+            ptScreenNew = new Point3f(ptScreen.x + deltaX * f + 0.5f,
+                ptScreen.y + deltaY * f + 0.5f, ptScreen.z);
           Point3f ptNew = new Point3f();
-          transformManager.finalizeTransformParameters();
           unTransformPoint(ptScreenNew, ptNew);
           // script("draw ID 'pt" + Math.random() + "' " + Escape.escape(ptNew));
           ptNew.sub(ptCenter);

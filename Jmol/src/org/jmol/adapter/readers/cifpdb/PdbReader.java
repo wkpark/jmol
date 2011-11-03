@@ -1425,7 +1425,8 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
         }
         Logger.info("TLS ID=" + tlsGroupID + " model atom index range "
             + index1 + "-" + index2);
-        boolean isSameChain = (chain0 == chain1);
+        boolean isSameChain = (chain0 == chain1);  // will be true
+        // could demand a contiguous section here for each range.
         for (int iAtom = index0; iAtom < indexMax; iAtom++) {
           Atom atom = atoms[iAtom];
           if (isSameChain ? atom.sequenceNumber >= res0 && atom.sequenceNumber <= res1

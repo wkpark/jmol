@@ -56,16 +56,17 @@ final public class Atom extends Point3fi implements JmolNode {
   
   public static final int RADIUS_MAX = 16;
 
-  Group group;
-  private BitSet atomSymmetry;
+  char alternateLocationID;
+  byte atomID;
   int atomSite;
+  Group group;
   private float userDefinedVanDerWaalRadius;
+  byte valence;
   
   private short atomicAndIsotopeNumber;
+  private BitSet atomSymmetry;
   private byte formalChargeAndFlags;
-  byte valence;
-  char alternateLocationID;
-  public byte atomID;
+
   public byte getAtomID() {
     return atomID;
   }
@@ -564,6 +565,10 @@ final public class Atom extends Point3fi implements JmolNode {
 
   public int getAtomSite() {
     return atomSite;
+  }
+
+  public void setAtomSymmetry(BitSet bsSymmetry) {
+    atomSymmetry = bsSymmetry;
   }
 
   public BitSet getAtomSymmetry() {

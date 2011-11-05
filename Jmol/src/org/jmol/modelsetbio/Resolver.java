@@ -572,6 +572,7 @@ public final class Resolver implements JmolBioResolver {
     modelSet.setAtomName(iAtom, name);
     atoms[iAtom].set(pt);
     modelSet.setAtomNumber(iAtom, ++maxSerial);
+    atoms[iAtom].setAtomSymmetry(atoms[iTo].getAtomSymmetry());
     modelLoader.undeleteAtom(iAtom);
 
     modelSet.bondAtoms(atoms[iTo], atoms[iAtom], JmolEdge.BOND_COVALENT_SINGLE, 

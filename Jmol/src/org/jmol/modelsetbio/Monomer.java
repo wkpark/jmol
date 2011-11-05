@@ -348,6 +348,7 @@ public abstract class Monomer extends Group {
           continue;
         int iThis = firstAtomIndex + offset;
         Atom atom = atoms[iThis];
+        byte thisID = atom.getAtomID();
         if (atom.getAlternateLocationID() == 0)
           continue;
         // scan entire group list to ensure including all of
@@ -362,12 +363,12 @@ public abstract class Monomer extends Group {
           if (offsetNew < 0 || offsetNew > 255 || iNew == iThis
               || !bsSelected.get(iNew))
             continue;
-          if (atoms[iNew].atomID != atoms[iThis].atomID
-              || atoms[iNew].atomID == 0 
-                  && !atoms[iNew].getAtomName().equals(atoms[iThis].getAtomName()))
+          byte atomID = atoms[iNew].getAtomID();
+          if (atomID != thisID || atomID == 0 
+                  && !atoms[iNew].getAtomName().equals(atom.getAtomName()))
             continue;
           if (Logger.debugging)
-            Logger.debug("Chain.udateOffsetsForAlternativeLocation " + atoms[iNew] + " was " + atoms[iThis]);
+            Logger.debug("Chain.udateOffsetsForAlternativeLocation " + atoms[iNew] + " was " + atom);
           offsets[offsetIndex] = (byte) offsetNew;
           break;
         }

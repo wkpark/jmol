@@ -9807,12 +9807,12 @@ public class ScriptEvaluator {
         continue;
       case Token.y:
         haveRotation = true;
-        rotAxis.set(0, (axesOrientationRasmol && !isMolecular ? -direction
-            : direction), 0);
+        rotAxis.set(0, direction, 0);
         continue;
       case Token.z:
         haveRotation = true;
-        rotAxis.set(0, 0, direction);
+        rotAxis.set(0, 0,(axesOrientationRasmol && !isMolecular ? -direction
+            : direction));
         continue;
 
         // 11.6 options

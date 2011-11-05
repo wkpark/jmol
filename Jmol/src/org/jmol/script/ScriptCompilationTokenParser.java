@@ -625,7 +625,7 @@ abstract class ScriptCompilationTokenParser {
     if (!isWithin) {
       tok = -1;
       for (int i = itokenInfix; tok != Token.nada; i++) {
-        switch (tokAt(i)) {
+        switch (tok = tokAt(i)) {
         case Token.comma:
           tok = Token.nada;
           break;

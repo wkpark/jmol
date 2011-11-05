@@ -1197,12 +1197,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void transformPoints(Point3f[] pointsAngstroms, Point3i[] pointsScreens) {
+    // nucleic acid base steps
     transformManager.transformPoints(pointsAngstroms.length, pointsAngstroms,
         pointsScreens);
   }
 
   public void transformVector(Vector3f vectorAngstroms,
                               Vector3f vectorTransformed) {
+    // dots only
     transformManager.transformVector(vectorAngstroms, vectorTransformed);
   }
 
@@ -2655,7 +2657,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       ligandModelSet = null;
       clearModelDependentObjects();
       fileManager.clear();
-      repaintManager.clear();
+      repaintManager.clear(-1);
       animationManager.clear();
       transformManager.clear();
       selectionManager.clear();
@@ -3059,7 +3061,7 @@ private void zap(String msg) {
 
   public boolean frankClicked(int x, int y) {
     return !global.disablePopupMenu && getShowFrank()
-        && shapeManager.frankClicked(x, y);
+        && shapeManager.checkFrankclicked(x, y);
   }
 
   public boolean frankClickedModelKit(int x, int y) {
@@ -4016,7 +4018,7 @@ private void zap(String msg) {
     int saveHeight = dimScreen.height;
     resizeImage(width, height, true, true, false);
     setModelVisibility();
-    String data = repaintManager.generateOutput(type, g3d, modelSet, fName);
+    String data = repaintManager.renderExport(type, g3d, modelSet, fName);
     // mth 2003-01-09 Linux Sun JVM 1.4.2_02
     // Sun is throwing a NullPointerExceptions inside graphics routines
     // while the window is resized.
@@ -4822,7 +4824,7 @@ private void zap(String msg) {
   }
 
   public void clearShapeRenderers() {
-    repaintManager.clear();
+    repaintManager.clear(-1);
   }
 
   public int getBfactor100Hi() {
@@ -6864,8 +6866,9 @@ private void zap(String msg) {
      * left-handed setting this flag makes Jmol mimic this behavior
      * 
      * All versions of Jmol prior to 11.5.51 incompletely implement this flag.
-     * Really all it is just a flag to tell Eval to flip the sign of the Y
-     * rotation when specified specifically as "rotate/spin y 30".
+     * All versions of Jmol between 11.5.51 and 12.2.4 incorrectly implement this flag.
+     * Really all it is just a flag to tell Eval to flip the sign of the Z
+     * rotation when specified specifically as "rotate/spin Z 30".
      * 
      * In principal, we could display the axis opposite as well, but that is
      * only aesthetic and not at all justified if the axis is molecular.
@@ -8843,7 +8846,7 @@ private void zap(String msg) {
     selectionManager.processDeletedModelAtoms(bsDeleted);
     setAnimationRange(0, 0);
     eval.deleteAtomsInVariables(bsDeleted);
-    repaintManager.clear();
+    repaintManager.clear(-1);
     animationManager.clear();
     animationManager.initializePointers(1);
     if (getModelCount() > 1)
@@ -9952,9 +9955,6 @@ private void zap(String msg) {
   @Override
   public void calcAtomsMinMax(BitSet bs, BoxInfo boxInfo) {
     modelSet.calcAtomsMinMax(bs, boxInfo);
-  }
-  public int[] getCrossHairMinMax() {
-    return shapeManager.getCrossHairMinMax();
   }
 
   public float evalFunctionFloat(Object func, Object params, float[] values) {

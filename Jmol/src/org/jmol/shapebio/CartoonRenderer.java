@@ -180,7 +180,7 @@ public class CartoonRenderer extends RocketsRenderer {
   private void renderNucleicBaseStep(NucleicMonomer nucleotide,
                              short thisMad, Point3i backboneScreen) {
     if (renderEdges) {
-      renderLenotisWesthofEdges(nucleotide, thisMad);
+      renderLeontisWesthofEdges(nucleotide, thisMad);
       return;
     }
     nucleotide.getBaseRing6Points(ring6Points);
@@ -219,7 +219,7 @@ public class CartoonRenderer extends RocketsRenderer {
     }
   }
 
-  private void renderLenotisWesthofEdges(NucleicMonomer nucleotide,
+  private void renderLeontisWesthofEdges(NucleicMonomer nucleotide,
                                          short thisMad) {
     //                Nasalean L, Strombaugh J, Zirbel CL, and Leontis NB in 
     //                Non-Protein Coding RNAs, 

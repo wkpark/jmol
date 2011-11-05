@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.vecmath.Matrix4f;
+import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
@@ -47,91 +48,34 @@ import org.jmol.util.Point3fi;
 
 public class ShapeManager {
 
-  private Viewer viewer;
   private Graphics3D g3d;
-  
-  public ShapeManager(Viewer viewer) {
-    this.viewer = viewer;
-    g3d = viewer.getGraphics3D();
-  }
+  private ModelSet modelSet;
+  private Shape[] shapes;
+  private Viewer viewer;
 
   public ShapeManager(Viewer viewer, ModelSet modelSet) {
+    // from ParallelProcessor
     this(viewer);
     resetShapes();
     loadDefaultShapes(modelSet);
   }
 
-  private Shape[] shapes;
+  ShapeManager(Viewer viewer) {
+    this.viewer = viewer;
+    g3d = viewer.getGraphics3D();
+  }
+
+  // public methods 
+  
+  public void findNearestShapeAtomIndex(int x, int y, Atom[] closest, BitSet bsNot) {
+    if (shapes != null)
+      for (int i = 0; i < shapes.length && closest[0] == null; ++i)
+        if (shapes[i] != null)
+          shapes[i].findNearestAtomIndex(x, y, closest, bsNot);
+  }
 
   public Shape[] getShapes() {
     return shapes;
-  }
-  
-  public void resetShapes() {
-    if (!viewer.isDataOnly())
-      shapes = new Shape[JmolConstants.SHAPE_MAX];
-  }
-  
-  private Shape allocateShape(int shapeID) {
-    if (shapeID == JmolConstants.SHAPE_HSTICKS || shapeID == JmolConstants.SHAPE_SSSTICKS
-        || shapeID == JmolConstants.SHAPE_STRUTS)
-      return null;
-    String className = JmolConstants.getShapeClassName(shapeID);
-    try {
-      Class<?> shapeClass = Class.forName(className);
-      Shape shape = (Shape) shapeClass.newInstance();
-      viewer.setShapeErrorState(shapeID, "allocate");
-      shape.initializeShape(viewer, g3d, modelSet, shapeID);
-      viewer.setShapeErrorState(-1, null);
-      return shape;
-    } catch (Exception e) {
-      Logger.error("Could not instantiate shape:" + className, e);
-    }
-    return null;
-  }
-
-  public Shape getShape(int i) {
-    //FrameRenderer
-    return (shapes == null ? null : shapes[i]);
-  }
-  
-  public void setShapeSize(int shapeID, int size, RadiusData rd, BitSet bsSelected) {
-    if (shapes == null)
-      return;
-    if (bsSelected == null && 
-        (shapeID != JmolConstants.SHAPE_STICKS || size != Integer.MAX_VALUE))
-      bsSelected = viewer.getSelectionSet(false);
-    if (rd != null && rd.value != 0 && rd.vdwType == EnumVdw.TEMP)
-      modelSet.getBfactor100Lo();
-    viewer.setShapeErrorState(shapeID, "set size");
-    if (rd != null && rd.value != 0 || rd == null && size != 0)
-      loadShape(shapeID);
-    if (shapes[shapeID] != null) {
-      shapes[shapeID].setShapeSize(size, rd, bsSelected);
-    }
-    viewer.setShapeErrorState(-1, null);
-  }
-
-  public Shape loadShape(int shapeID) {
-    if (shapes == null)
-      return null;
-    if (shapes[shapeID] == null)
-      shapes[shapeID] = allocateShape(shapeID);
-    return shapes[shapeID];
-  }
-
-  public void setShapeProperty(int shapeID, String propertyName, Object value,
-                               BitSet bsSelected) {
-    if (shapes == null || shapes[shapeID] == null)
-      return;
-    viewer.setShapeErrorState(shapeID, "set " + propertyName);
-    shapes[shapeID].setShapeProperty(propertyName.intern(), value, bsSelected);
-    viewer.setShapeErrorState(-1, null);
-  }
-
-  public void releaseShape(int shapeID) {
-    if (shapes != null) 
-      shapes[shapeID] = null;  
   }
   
   public Object getShapeProperty(int shapeID, String propertyName, int index) {
@@ -166,7 +110,180 @@ public class ShapeManager {
     return -1;
   }
 
-  public void getObjectMap(Map<String, Token> map, boolean withDollar) {
+  public void loadDefaultShapes(ModelSet newModelSet) {
+    modelSet = newModelSet;
+    if (shapes != null)
+    for (int i = 0; i < shapes.length; ++i)
+      if (shapes[i] != null)
+        shapes[i].setModelSet(newModelSet);
+    loadShape(JmolConstants.SHAPE_BALLS);
+    loadShape(JmolConstants.SHAPE_STICKS);
+    loadShape(JmolConstants.SHAPE_MEASURES);
+    loadShape(JmolConstants.SHAPE_BBCAGE);
+    loadShape(JmolConstants.SHAPE_UCCAGE);
+  }
+
+  public Shape loadShape(int shapeID) {
+    if (shapes == null)
+      return null;
+    if (shapes[shapeID] != null)
+      return shapes[shapeID];
+    if (shapeID == JmolConstants.SHAPE_HSTICKS
+        || shapeID == JmolConstants.SHAPE_SSSTICKS
+        || shapeID == JmolConstants.SHAPE_STRUTS)
+      return null;
+    String className = JmolConstants.getShapeClassName(shapeID);
+    try {
+      Class<?> shapeClass = Class.forName(className);
+      Shape shape = (Shape) shapeClass.newInstance();
+      viewer.setShapeErrorState(shapeID, "allocate");
+      shape.initializeShape(viewer, g3d, modelSet, shapeID);
+      viewer.setShapeErrorState(-1, null);
+      return shapes[shapeID] = shape;
+    } catch (Exception e) {
+      Logger.error("Could not instantiate shape:" + className, e);
+      return null;
+    }
+  }
+
+  public void refreshShapeTrajectories(int baseModel, BitSet bs, Matrix4f mat) {
+    Integer Imodel = Integer.valueOf(baseModel);
+    BitSet bsModelAtoms = viewer.getModelUndeletedAtomsBitSet(baseModel);
+    for (int i = 0; i < JmolConstants.SHAPE_MAX; i++)
+      if (shapes[i] != null)
+        setShapeProperty(i, "refreshTrajectories", new Object[] { Imodel, bs, mat }, bsModelAtoms);    
+  }
+
+  public void releaseShape(int shapeID) {
+    if (shapes != null) 
+      shapes[shapeID] = null;  
+  }
+  
+  public void resetShapes() {
+    if (!viewer.isDataOnly())
+      shapes = new Shape[JmolConstants.SHAPE_MAX];
+  }
+  
+  public void setShapeSize(int shapeID, int size, RadiusData rd, BitSet bsSelected) {
+    if (shapes == null)
+      return;
+    if (bsSelected == null && 
+        (shapeID != JmolConstants.SHAPE_STICKS || size != Integer.MAX_VALUE))
+      bsSelected = viewer.getSelectionSet(false);
+    if (rd != null && rd.value != 0 && rd.vdwType == EnumVdw.TEMP)
+      modelSet.getBfactor100Lo();
+    viewer.setShapeErrorState(shapeID, "set size");
+    if (rd != null && rd.value != 0 || rd == null && size != 0)
+      loadShape(shapeID);
+    if (shapes[shapeID] != null) {
+      shapes[shapeID].setShapeSize(size, rd, bsSelected);
+    }
+    viewer.setShapeErrorState(-1, null);
+  }
+
+  public void setLabel(String strLabel, BitSet bsSelection) {
+    if (strLabel != null) { // force the class to load and display
+      loadShape(JmolConstants.SHAPE_LABELS);
+      setShapeSize(JmolConstants.SHAPE_LABELS, 0, null, bsSelection);
+    }
+    setShapeProperty(JmolConstants.SHAPE_LABELS, "label", strLabel, bsSelection);
+  }
+
+  public void setShapeProperty(int shapeID, String propertyName, Object value,
+                               BitSet bsSelected) {
+    if (shapes == null || shapes[shapeID] == null)
+      return;
+    viewer.setShapeErrorState(shapeID, "set " + propertyName);
+    shapes[shapeID].setShapeProperty(propertyName.intern(), value, bsSelected);
+    viewer.setShapeErrorState(-1, null);
+  }
+
+  // methods local to Viewer and other managers
+  
+  boolean checkFrankclicked(int x, int y) {
+    Shape frankShape = shapes[JmolConstants.SHAPE_FRANK];
+    return (frankShape != null && frankShape.wasClicked(x, y));
+  }
+
+  private final static int[] hoverable = {
+    JmolConstants.SHAPE_ECHO, Token.echo, 
+    JmolConstants.SHAPE_CONTACT, Token.contact,
+    JmolConstants.SHAPE_ISOSURFACE, Token.isosurface,
+    JmolConstants.SHAPE_DRAW, Token.draw,
+    JmolConstants.SHAPE_FRANK, Token.nada,
+  };
+  
+  Token checkObjectClicked(int x, int y, int modifiers, BitSet bsVisible) {
+    Shape shape;
+    Point3fi pt = null;
+    if (modifiers != 0
+        && viewer.getBondPicking()
+        && (pt = shapes[JmolConstants.SHAPE_STICKS].checkObjectClicked(x, y,
+            modifiers, bsVisible)) != null)
+      return new Token(Token.bonds, pt);
+
+    int tok;
+    for (int i = 0; i < hoverable.length; i += 2)
+      if ((tok = hoverable[i + 1]) != Token.nada
+          && (shape = shapes[hoverable[i]]) != null
+          && (pt = shape.checkObjectClicked(x, y, modifiers, bsVisible)) != null)
+        return new Token(tok, pt);
+    return null;
+  }
+ 
+  boolean checkObjectDragged(int prevX, int prevY, int x, int y,
+                          int modifiers, BitSet bsVisible, int iShape) {
+    for (int i = iShape; i < JmolConstants.SHAPE_MAX; ++i) {
+      Shape shape = shapes[i];
+      if (shape != null
+          && shape.checkObjectDragged(prevX, prevY, x, y, modifiers, bsVisible)
+          || iShape > 0)
+        return true;
+    }
+    return false;
+  }
+
+  boolean checkObjectHovered(int x, int y, BitSet bsVisible, boolean checkBonds) {
+    Shape shape = shapes[JmolConstants.SHAPE_STICKS];
+    if (checkBonds && shape != null
+        && shape.checkObjectHovered(x, y, bsVisible))
+      return true;
+    for (int i = 0; i < hoverable.length; i += 2) {
+      shape = shapes[hoverable[i]];
+      if (shape != null && shape.checkObjectHovered(x, y, bsVisible))
+        return true;
+    }
+    return false;
+  }
+
+  void deleteShapeAtoms(Object[] value, BitSet bs) {
+    if (shapes != null)
+      for (int j = 0; j < JmolConstants.SHAPE_MAX; j++)
+        if (shapes[j] != null)
+          setShapeProperty(j, "deleteModelAtoms", value, bs);
+  }
+
+  void deleteVdwDependentShapes(BitSet bs) {
+    if (shapes[JmolConstants.SHAPE_ISOSURFACE] != null)
+      shapes[JmolConstants.SHAPE_ISOSURFACE].setShapeProperty("deleteVdw", null, bs);
+    if (shapes[JmolConstants.SHAPE_CONTACT] != null)
+      shapes[JmolConstants.SHAPE_CONTACT].setShapeProperty("deleteVdw", null, bs);
+  }
+
+  float getAtomShapeValue(int tok, Group group, int atomIndex) {
+    int iShape = JmolConstants.shapeTokenIndex(tok);
+    if (iShape < 0 || shapes[iShape] == null) 
+      return 0;
+    int mad = shapes[iShape].getSize(atomIndex);
+    if (mad == 0) {
+      if ((group.shapeVisibilityFlags & shapes[iShape].myVisibilityFlag) == 0)
+        return 0;
+      mad = shapes[iShape].getSize(group);
+    }
+    return mad / 2000f;
+  }
+
+  void getObjectMap(Map<String, Token> map, boolean withDollar) {
     if (shapes == null)
       return;
     Boolean bDollar = Boolean.valueOf(withDollar);
@@ -174,7 +291,88 @@ public class ShapeManager {
           getShapeProperty(i, "getNames", new Object[] { map , bDollar } );
   }
 
-  public void setModelVisibility() {
+  Object getProperty(Object paramInfo) {
+    if (paramInfo.equals("getShapes"))
+      return shapes;
+    return null;
+  }
+
+  private final BitSet bsRenderableAtoms = new BitSet();
+
+  BitSet getRenderableBitSet() {
+    return bsRenderableAtoms;
+  }
+  
+  Shape getShape(int i) {
+    //RepaintManager
+    return (shapes == null ? null : shapes[i]);
+  }
+  
+  Map<String, Object> getShapeInfo() {
+    Map<String, Object> info = new Hashtable<String, Object>();
+    StringBuffer commands = new StringBuffer();
+    if (shapes != null)
+      for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
+        Shape shape = shapes[i];
+        if (shape != null) {
+          String shapeType = JmolConstants.shapeClassBases[i];
+          List<Map<String, Object>> shapeDetail = shape.getShapeDetail();
+          if (shapeDetail != null)
+            info.put(shapeType, shapeDetail);
+        }
+      }
+    if (commands.length() > 0)
+      info.put("shapeCommands", commands.toString());
+    return info;
+  }
+
+  void getShapeState(StringBuffer commands, boolean isAll) {
+    if (shapes == null)
+      return;
+    String cmd;
+    for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
+      Shape shape = shapes[i];
+      if (shape != null && (isAll || JmolConstants.isShapeSecondary(i))
+          && (cmd = shape.getShapeState()) != null && cmd.length() > 1)
+        commands.append(cmd);
+    }
+    commands.append("  select *;\n");
+  }
+
+  void mergeShapes(Shape[] newShapes) {
+    if (newShapes == null)
+      return;
+    if (shapes == null)
+      shapes = newShapes;
+    else
+      for (int i = 0; i < newShapes.length; ++i)
+        if (newShapes[i] != null) {
+          if (shapes[i] == null)
+            loadShape(i);
+          shapes[i].merge(newShapes[i]);
+        }
+  }
+
+  void resetBioshapes(BitSet bsAllAtoms) {
+    if (shapes == null)
+      return;
+    for (int i = 0; i < shapes.length; ++i)
+      if (shapes[i] != null && shapes[i].isBioShape) {
+        shapes[i].setModelSet(modelSet);
+        shapes[i].setShapeSize(0, null, bsAllAtoms);
+        shapes[i].setShapeProperty("color",
+            EnumPalette.NONE, bsAllAtoms);
+      }
+  }
+
+  void setAtomLabel(String strLabel, int i) {
+    if (shapes == null)
+      return;
+    loadShape(JmolConstants.SHAPE_LABELS);
+    shapes[JmolConstants.SHAPE_LABELS].setProperty("label:"+strLabel, Integer.valueOf(i), null);
+  }
+  
+  void setModelVisibility() {
     if (shapes == null || shapes[JmolConstants.SHAPE_BALLS] == null)
       return;
 
@@ -202,228 +400,39 @@ public class ShapeManager {
     }
   }
 
-  float getAtomShapeValue(int tok, Group group, int atomIndex) {
-    int iShape = JmolConstants.shapeTokenIndex(tok);
-    if (iShape < 0 || shapes[iShape] == null) 
-      return 0;
-    int mad = shapes[iShape].getSize(atomIndex);
-    if (mad == 0) {
-      if ((group.shapeVisibilityFlags & shapes[iShape].myVisibilityFlag) == 0)
-        return 0;
-      mad = shapes[iShape].getSize(group);
+  private final int[] navigationCrossHairMinMax = new int[4];
+
+  int[] transformAtoms(BitSet bsAtoms, Point3f ptOffset) {
+    if (bsAtoms != null) {
+      // translateSelected operation
+      Point3f ptCenter = viewer.getAtomSetCenter(bsAtoms);
+      Point3f pt = new Point3f();
+      viewer.transformPoint(ptCenter, pt);
+      pt.add(ptOffset);
+      viewer.unTransformPoint(pt, pt);
+      pt.sub(ptCenter);
+      viewer.setAtomCoordRelative(pt, bsAtoms);
+      ptOffset.set(0, 0, 0);
     }
-    return mad / 2000f;
-  }
-
-  public boolean frankClicked(int x, int y) {
-    Shape frankShape = shapes[JmolConstants.SHAPE_FRANK];
-    return (frankShape != null && frankShape.wasClicked(x, y));
-  }
-
-  private final static int[] hoverable = {
-    JmolConstants.SHAPE_ECHO, Token.echo, 
-    JmolConstants.SHAPE_CONTACT, Token.contact,
-    JmolConstants.SHAPE_ISOSURFACE, Token.isosurface,
-    JmolConstants.SHAPE_DRAW, Token.draw,
-    JmolConstants.SHAPE_FRANK, Token.nada,
-  };
-  
-  public boolean checkObjectHovered(int x, int y, BitSet bsVisible,
-                                    boolean checkBonds) {
-    Shape shape = shapes[JmolConstants.SHAPE_STICKS];
-    if (checkBonds && shape != null
-        && shape.checkObjectHovered(x, y, bsVisible))
-      return true;
-    for (int i = 0; i < hoverable.length; i += 2) {
-      shape = shapes[hoverable[i]];
-      if (shape != null && shape.checkObjectHovered(x, y, bsVisible))
-        return true;
-    }
-    return false;
-  }
-
-  public Token checkObjectClicked(int x, int y, int modifiers, BitSet bsVisible) {
-    Shape shape;
-    Point3fi pt = null;
-    if (modifiers != 0
-        && viewer.getBondPicking()
-        && (pt = shapes[JmolConstants.SHAPE_STICKS].checkObjectClicked(x, y,
-            modifiers, bsVisible)) != null)
-      return new Token(Token.bonds, pt);
-
-    int tok;
-    for (int i = 0; i < hoverable.length; i += 2)
-      if ((tok = hoverable[i + 1]) != Token.nada
-          && (shape = shapes[hoverable[i]]) != null
-          && (pt = shape.checkObjectClicked(x, y, modifiers, bsVisible)) != null)
-        return new Token(tok, pt);
-    return null;
-  }
- 
-  public boolean checkObjectDragged(int prevX, int prevY, int x, int y,
-                          int modifiers, BitSet bsVisible, int iShape) {
-    for (int i = iShape; i < JmolConstants.SHAPE_MAX; ++i) {
-      Shape shape = shapes[i];
-      if (shape != null
-          && shape.checkObjectDragged(prevX, prevY, x, y, modifiers, bsVisible)
-          || iShape > 0)
-        return true;
-    }
-    return false;
-  }
-
-  public Map<String, Object> getShapeInfo() {
-    Map<String, Object> info = new Hashtable<String, Object>();
-    StringBuffer commands = new StringBuffer();
-    if (shapes != null)
-      for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
-        Shape shape = shapes[i];
-        if (shape != null) {
-          String shapeType = JmolConstants.shapeClassBases[i];
-          List<Map<String, Object>> shapeDetail = shape.getShapeDetail();
-          if (shapeDetail != null)
-            info.put(shapeType, shapeDetail);
-        }
-      }
-    if (commands.length() > 0)
-      info.put("shapeCommands", commands.toString());
-    return info;
-  }
-
-  public void loadDefaultShapes(ModelSet modelSet) {
-    setShapeModelSet(modelSet);
-    loadShape(JmolConstants.SHAPE_BALLS);
-    loadShape(JmolConstants.SHAPE_STICKS);
-    loadShape(JmolConstants.SHAPE_MEASURES);
-    loadShape(JmolConstants.SHAPE_BBCAGE);
-    loadShape(JmolConstants.SHAPE_UCCAGE);
-  }
-
-  public void refreshShapeTrajectories(int baseModel, BitSet bs, Matrix4f mat) {
-    Integer Imodel = Integer.valueOf(baseModel);
-    BitSet bsModelAtoms = viewer.getModelUndeletedAtomsBitSet(baseModel);
-    for (int i = 0; i < JmolConstants.SHAPE_MAX; i++)
-      if (shapes[i] != null)
-        setShapeProperty(i, "refreshTrajectories", new Object[] { Imodel, bs, mat }, bsModelAtoms);    
-  }
-
-  public void deleteShapeAtoms(Object[] value, BitSet bs) {
-    if (shapes != null)
-      for (int j = 0; j < JmolConstants.SHAPE_MAX; j++)
-        if (shapes[j] != null)
-          setShapeProperty(j, "deleteModelAtoms", value, bs);
-  }
-
-  public void setLabel(String strLabel, BitSet bsSelection) {
-    if (strLabel != null) { // force the class to load and display
-      loadShape(JmolConstants.SHAPE_LABELS);
-      setShapeSize(JmolConstants.SHAPE_LABELS, 0, null, bsSelection);
-    }
-    setShapeProperty(JmolConstants.SHAPE_LABELS, "label", strLabel, bsSelection);
-  }
-
-  public void setAtomLabel(String strLabel, int i) {
-    if (shapes == null)
-      return;
-    loadShape(JmolConstants.SHAPE_LABELS);
-    shapes[JmolConstants.SHAPE_LABELS].setProperty("label:"+strLabel, Integer.valueOf(i), null);
-  }
-  
-  public void findNearestShapeAtomIndex(int x, int y, Atom[] closest, BitSet bsNot) {
-    if (shapes != null)
-      for (int i = 0; i < shapes.length && closest[0] == null; ++i)
-        if (shapes[i] != null)
-          shapes[i].findNearestAtomIndex(x, y, closest, bsNot);
-  }
-
-  public void getShapeState(StringBuffer commands, boolean isAll) {
-    if (shapes == null)
-      return;
-    String cmd;
-    for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
-      Shape shape = shapes[i];
-      if (shape != null && (isAll || JmolConstants.isShapeSecondary(i))
-          && (cmd = shape.getShapeState()) != null && cmd.length() > 1)
-        commands.append(cmd);
-    }
-    commands.append("  select *;\n");
-  }
-
-  public void deleteVdwDependentShapes(BitSet bs) {
-    if (shapes[JmolConstants.SHAPE_ISOSURFACE] != null)
-      shapes[JmolConstants.SHAPE_ISOSURFACE].setShapeProperty("deleteVdw", null, bs);
-    if (shapes[JmolConstants.SHAPE_CONTACT] != null)
-      shapes[JmolConstants.SHAPE_CONTACT].setShapeProperty("deleteVdw", null, bs);
-  }
-
-  public void resetBioshapes(BitSet bsAllAtoms) {
-    if (shapes == null)
-      return;
-    for (int i = 0; i < shapes.length; ++i)
-      if (shapes[i] != null && shapes[i].isBioShape) {
-        shapes[i].setModelSet(modelSet);
-        shapes[i].setShapeSize(0, null, bsAllAtoms);
-        shapes[i].setShapeProperty("color",
-            EnumPalette.NONE, bsAllAtoms);
-      }
-  }
-
-  private ModelSet modelSet;
-  private void setShapeModelSet(ModelSet newModelSet) {
-    modelSet = newModelSet;
-    if (shapes == null)
-      return;
-    for (int i = 0; i < shapes.length; ++i)
-      if (shapes[i] != null)
-        shapes[i].setModelSet(newModelSet);
-  }
-
-  public void mergeShapes(Shape[] newShapes) {
-    if (newShapes == null)
-      return;
-    if (shapes == null)
-      shapes = newShapes;
-    else
-      for (int i = 0; i < newShapes.length; ++i)
-        if (newShapes[i] != null) {
-          if (shapes[i] == null)
-            loadShape(i);
-          shapes[i].merge(newShapes[i]);
-        }
-  }
-
-  private final BitSet bsRenderable = new BitSet();
-  BitSet getRenderableBitSet() {
-    return bsRenderable;
-  }
-  
-  private final int[] minMax = new int[4];
-  public int[] getCrossHairMinMax() {
-    return minMax;
-  }
-
-  public void transformAtoms() {
-    bsRenderable.clear();
+    bsRenderableAtoms.clear();
     Atom[] atoms = modelSet.atoms;
     Vector3f[] vibrationVectors = modelSet.vibrationVectors;
     for (int i = modelSet.getAtomCount(); --i >= 0;) {
       Atom atom = atoms[i];
       if ((atom.getShapeVisibilityFlags() & JmolConstants.ATOM_IN_FRAME) == 0)
         continue;
-      bsRenderable.set(i);
-      Point3i screen;
-      if (vibrationVectors != null && atom.hasVibration())
-        screen = viewer.transformPoint(atom, vibrationVectors[i]);
-      else
-        screen = viewer.transformPoint(atom);
-      // ultimately I would like to dissociate the rendering 
-      // from the modelSet completely. 
+      bsRenderableAtoms.set(i);
+      // note that this vibration business is not compatible with
+      // PDB objects such as cartoons and traces, which 
+      // use Cartesian coordinates, not screen coordinates
+      Point3i screen = (vibrationVectors != null && atom.hasVibration() 
+          ? viewer.transformPoint(atom, vibrationVectors[i]) 
+              : viewer.transformPoint(atom));
       atom.screenX = screen.x;
       atom.screenY = screen.y;
       atom.screenZ = screen.z;
       atom.screenDiameter = viewer.scaleToScreen(screen.z, Math
           .abs(atom.madAtom));
-      //      System.out.println("shapeman " + atom + " scaleToScreen(" + screen.z + "," + atom.madAtom + ")=" + atom.screenDiameter);
     }
 
     if (viewer.getSlabEnabled()) {
@@ -438,7 +447,7 @@ public class ShapeManager {
           JmolMolecule m = molecules[i];
           int j = 0;
           int pt = m.firstAtomIndex;
-          if (!bsRenderable.get(pt))
+          if (!bsRenderableAtoms.get(pt))
             continue;
           for (; j < m.atomCount; j++, pt++)
             if (g3d.isClippedZ(atoms[pt].screenZ
@@ -447,13 +456,13 @@ public class ShapeManager {
           if (j != m.atomCount) {
             pt = m.firstAtomIndex;
             for (int k = 0; k < m.atomCount; k++) {
-              bsRenderable.clear(pt);
+              bsRenderableAtoms.clear(pt);
               atoms[pt++].screenZ = 0;
             }
           }
         }
       }
-      for (int i = bsRenderable.nextSetBit(0); i >= 0; i = bsRenderable
+      for (int i = bsRenderableAtoms.nextSetBit(0); i >= 0; i = bsRenderableAtoms
           .nextSetBit(i + 1)) {
         Atom atom = atoms[i];
         if (g3d.isClippedZ(atom.screenZ
@@ -464,24 +473,19 @@ public class ShapeManager {
           int r = (slabByAtom ? -1 : 1) * atom.screenDiameter / 2;
           if (atom.screenZ + r < minZ || atom.screenZ - r > maxZ
               || !g3d.isInDisplayRange(atom.screenX, atom.screenY)) {
-            bsRenderable.clear(i);
+            bsRenderableAtoms.clear(i);
           }
         }
       }
     }
-
-    boolean renderCrosshairs = (modelSet.getAtomCount() > 0
-        && viewer.getShowNavigationPoint()
-        && g3d.getExportType() == Graphics3D.EXPORT_NOT && g3d
-        .setColix(Graphics3D.BLACK));
-    minMax[0] = Integer.MAX_VALUE;
-    if (!renderCrosshairs)
-      return;
+    if (modelSet.getAtomCount() == 0 || !viewer.getShowNavigationPoint())
+      return null;
+    // set min/max for navigation crosshair rendering
     int minX = Integer.MAX_VALUE;
     int maxX = Integer.MIN_VALUE;
     int minY = Integer.MAX_VALUE;
     int maxY = Integer.MIN_VALUE;
-    for (int i = bsRenderable.nextSetBit(0); i >= 0; i = bsRenderable
+    for (int i = bsRenderableAtoms.nextSetBit(0); i >= 0; i = bsRenderableAtoms
         .nextSetBit(i + 1)) {
       Atom atom = atoms[i];
       if (atom.screenX < minX)
@@ -493,16 +497,11 @@ public class ShapeManager {
       if (atom.screenY > maxY)
         maxY = atom.screenY;
     }
-    minMax[0] = minX;
-    minMax[1] = maxX;
-    minMax[2] = minY;
-    minMax[3] = maxY;
-  }
-
-  public Object getProperty(Object paramInfo) {
-    if (paramInfo.equals("getShapes"))
-      return shapes;
-    return null;
+    navigationCrossHairMinMax[0] = minX;
+    navigationCrossHairMinMax[1] = maxX;
+    navigationCrossHairMinMax[2] = minY;
+    navigationCrossHairMinMax[3] = maxY;
+    return navigationCrossHairMinMax;
   }
 
 }

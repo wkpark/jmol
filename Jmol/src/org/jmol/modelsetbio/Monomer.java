@@ -53,10 +53,16 @@ public abstract class Monomer extends Group {
           byte[] interestingAtomOffsets) {
     super(chain, group3, seqcode, firstAtomIndex, lastAtomIndex);
     offsets = interestingAtomOffsets;
-    leadAtomIndex = firstAtomIndex + (offsets[0] & 0xFF);
+    if (offsets[0] >= 0)
+      leadAtomIndex = firstAtomIndex + (offsets[0] & 0xFF);
   }
 
   int monomerIndex;
+
+  @Override
+  public Group[] getGroups() {
+    return bioPolymer.getGroups();
+  }
   
   void setBioPolymer(BioPolymer polymer, int index) {
     this.bioPolymer = polymer;
@@ -271,7 +277,7 @@ public abstract class Monomer extends Group {
   
   public Map<String, Object> getMyInfo() {
     Map<String, Object> info = super.getGroupInfo(groupIndex);
-    char chainID = chain.getChainID();
+    char chainID = chain.chainID;
     info.put("chain", (chainID == '\0' ? "" : "" + chainID));
     int seqNum = getSeqNumber();
     char insCode = getInsertionCode();

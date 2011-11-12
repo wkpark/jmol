@@ -34,7 +34,6 @@ import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.HBond;
 import org.jmol.modelset.LabelToken;
-import org.jmol.modelset.Polymer;
 import org.jmol.script.Token;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Measure;
@@ -88,7 +87,7 @@ public class NucleicPolymer extends BioPolymer {
   }
   
   @Override
-  public void calcRasmolHydrogenBonds(Polymer polymer, BitSet bsA, 
+  public void calcRasmolHydrogenBonds(BioPolymer polymer, BitSet bsA, 
                                       BitSet bsB, List<Bond> vAtoms,
                                       int nMaxPerResidue, int[][][] min, 
                                       boolean checkDistances, boolean dsspIgnoreHydrogens) {

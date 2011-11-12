@@ -67,9 +67,9 @@ public class PhosphorusMonomer extends Monomer {
     super(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex, offsets);
     if (group3.indexOf('T') >= 0)
-      chain.setIsDna(true);
+      chain.isDna = true;
     if (group3.indexOf('U') + group3.indexOf('I') > -2)
-        chain.setIsRna(true);
+        chain.isRna = true;
     isPurine = (group3.indexOf('A') + group3.indexOf('G') + group3.indexOf('I') > -3);
     isPyrimidine = (group3.indexOf('T') + group3.indexOf('C') + group3.indexOf('U') > -3);
   }
@@ -81,10 +81,10 @@ public class PhosphorusMonomer extends Monomer {
   boolean isPhosphorusMonomer() { return true; }
 
   @Override
-  public boolean isDna() { return chain.isDna(); }
+  public boolean isDna() { return chain.isDna; }
 
   @Override
-  public boolean isRna() { return chain.isRna(); }
+  public boolean isRna() { return chain.isRna; }
 
   @Override
   public boolean isPurine() { return isPurine; }

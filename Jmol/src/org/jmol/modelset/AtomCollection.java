@@ -674,9 +674,12 @@ abstract public class AtomCollection {
   protected void setVibrationVector(int atomIndex, float x, float y, float z) {
     if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
       return;
-    if (vibrationVectors == null)
+    if (vibrationVectors == null || vibrationVectors.length < atomIndex)
       vibrationVectors = new Vector3f[atoms.length];
-    vibrationVectors[atomIndex] = new Vector3f(x, y, z);
+    if (vibrationVectors[atomIndex] == null)
+      vibrationVectors[atomIndex] = new Vector3f(x, y, z);
+    else
+      vibrationVectors[atomIndex].set(x, y, z);
     atoms[atomIndex].setVibrationVector();
   }
 
@@ -701,7 +704,7 @@ abstract public class AtomCollection {
   public void setAtomName(int atomIndex, String name) {
     byte id = JmolConstants.lookupSpecialAtomID(name);
     atoms[atomIndex].atomID = id;
-    if (id > 0 && ((ModelCollection)this).models[atoms[atomIndex].modelIndex].isPDB)
+    if (id > 0 && ((ModelCollection)this).models[atoms[atomIndex].modelIndex].isBioModel)
       return;
     if (atomNames == null)
       atomNames = new String[atoms.length];

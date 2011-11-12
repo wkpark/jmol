@@ -52,14 +52,17 @@ public class Group {
     this.groupIndex = groupIndex;
   }
 
-  protected Chain chain;
-  int seqcode;
-  protected short groupID;
-  protected boolean isProtein;
-  int selectedIndex;
+  public Chain chain;
   public int firstAtomIndex = -1;
   public int leadAtomIndex = -1;
   public int lastAtomIndex;
+
+  int seqcode;
+  
+  protected short groupID;
+  protected boolean isProtein;
+  
+  int selectedIndex;
   private final static int SEQUENCE_NUMBER_FLAG = 0x80;
   private final static int INSERTION_CODE_MASK = 0x7F; //7-bit character codes, please!
   private final static int SEQUENCE_NUMBER_SHIFT = 8;
@@ -139,7 +142,7 @@ public class Group {
   }
 
   public void setModelSet(ModelSet modelSet) {
-    chain.modelSet = modelSet;  
+    chain.model.modelSet = modelSet;  
   }
   
   public final void setShapeVisibility(int visFlag, boolean isVisible) {
@@ -148,10 +151,6 @@ public class Group {
     } else {
       shapeVisibilityFlags &=~visFlag;
     }
-}
-
-  final boolean isGroup3(String group3) {
-    return group3Names[groupID].equalsIgnoreCase(group3);
   }
 
   public final String getGroup3() {
@@ -172,10 +171,6 @@ public class Group {
     return groupID;
   }
 
-  public final ModelSet getModelSet() {
-    return chain.getModelSet();
-  }
-
   public final char getChainID() {
     return chain.chainID;
   }
@@ -186,6 +181,10 @@ public class Group {
 
   public int getMonomerIndex() {
     return -1;
+  }
+
+  public Group[] getGroups() {
+    return null;
   }
 
   public Object getStructure() {
@@ -375,15 +374,15 @@ public class Group {
   }
 
   protected int scaleToScreen(int Z, int mar) {
-    return chain.modelSet.viewer.scaleToScreen(Z, mar);
+    return chain.model.modelSet.viewer.scaleToScreen(Z, mar);
   }
   
   protected boolean isCursorOnTopOf(Atom atom, int x, int y, int radius, Atom champ) {
-    return chain.modelSet.isCursorOnTopOf(atom , x, y, radius, champ);
+    return chain.model.modelSet.isCursorOnTopOf(atom , x, y, radius, champ);
   }
   
   protected boolean isAtomHidden(int atomIndex) {
-    return chain.modelSet.isAtomHidden(atomIndex);
+    return chain.model.modelSet.isAtomHidden(atomIndex);
   }
 
   /**
@@ -397,7 +396,7 @@ public class Group {
   }
   
   public int getModelIndex() {
-    return chain.model.getModelIndex();
+    return chain.model.modelIndex;
   }
   
   public int getSelectedMonomerCount() {
@@ -546,8 +545,8 @@ public class Group {
     infoGroup.put("_apt2", Integer.valueOf(lastAtomIndex));
     if (bsAdded != null)
     infoGroup.put("addedAtoms", bsAdded);
-    infoGroup.put("atomInfo1", chain.modelSet.getAtomInfo(firstAtomIndex, null));
-    infoGroup.put("atomInfo2", chain.modelSet.getAtomInfo(lastAtomIndex, null));
+    infoGroup.put("atomInfo1", chain.model.modelSet.getAtomInfo(firstAtomIndex, null));
+    infoGroup.put("atomInfo2", chain.model.modelSet.getAtomInfo(lastAtomIndex, null));
     infoGroup.put("visibilityFlags", Integer.valueOf(shapeVisibilityFlags));
     return infoGroup;
   }

@@ -330,7 +330,7 @@ class BioShape {
       if (mads[i] <= 0)
         continue;
       int iAtom = leadAtomIndices[i];
-      if (monomers[i].getModel().isAtomHidden(iAtom))
+      if (monomers[i].chain.model.modelSet.isAtomHidden(iAtom))
         continue;
       shape.atoms[iAtom].setClickable(BioShape.ALPHA_CARBON_VISIBILITY_FLAG);
       if (isNucleicPolymer)

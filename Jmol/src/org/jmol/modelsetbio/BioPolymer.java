@@ -29,7 +29,8 @@ import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.LabelToken;
-import org.jmol.modelset.Polymer;
+import org.jmol.modelset.Model;
+import org.jmol.modelset.ModelSet;
 import org.jmol.util.Escape;
 
 import org.jmol.util.Logger;
@@ -48,11 +49,33 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-public abstract class BioPolymer extends Polymer {
+public abstract class BioPolymer {
 
   Monomer[] monomers;
 
-  @Override
+  // these arrays will be one longer than the polymerCount
+  // we probably should have better names for these things
+  // holds center points between alpha carbons or sugar phosphoruses
+
+  public Model model;
+  protected Point3f[] leadMidpoints;
+  protected Point3f[] leadPoints;
+  protected Point3f[] controlPoints;
+  // holds the vector that runs across the 'ribbon'
+  protected Vector3f[] wingVectors;
+
+  protected int[] leadAtomIndices;
+
+  protected int type = TYPE_NOBONDING;
+  public int bioPolymerIndexInModel;
+  public int monomerCount;
+
+  protected final static int TYPE_NOBONDING = 0; // could be phosphorus or alpha
+  protected final static int TYPE_AMINO = 1;
+  protected final static int TYPE_NUCLEIC = 2;
+  protected final static int TYPE_CARBOHYDRATE = 3;
+  
+  
   public Group[] getGroups() {
     return monomers;
   }
@@ -65,7 +88,6 @@ public abstract class BioPolymer extends Polymer {
     model = monomers[0].getModel();
   }
 
-  @Override
   public void getRange(BitSet bs) {
     // this is OK -- doesn't relate to added hydrogens
     if (monomerCount == 0)
@@ -110,7 +132,7 @@ public abstract class BioPolymer extends Polymer {
     throw new NullPointerException();
   }
 
-  @Override
+  
   public void clearStructures() {
     for (int i = 0; i < monomerCount; i++)
       monomers[i].setStructure(null);
@@ -188,7 +210,7 @@ public abstract class BioPolymer extends Polymer {
     return monomers[polymerIndex].getWingAtom();
   }
 
-  @Override
+  
   public void getConformation(BitSet bsConformation, int conformationIndex) {
     Atom[] atoms = model.getModelSet().atoms;
     for (int i = monomerCount; --i >= 0;)
@@ -196,7 +218,7 @@ public abstract class BioPolymer extends Polymer {
     recalculateLeadMidpointsAndWingVectors();
   }
 
-  @Override
+  
   public void setConformation(BitSet bsSelected) {
     Atom[] atoms = model.getModelSet().atoms;
     for (int i = monomerCount; --i >= 0;)
@@ -207,7 +229,7 @@ public abstract class BioPolymer extends Polymer {
   private boolean invalidLead;
   protected boolean invalidControl = false;
   
-  @Override
+  
   public void recalculateLeadMidpointsAndWingVectors() {
     invalidLead = invalidControl = true;
     getLeadAtomIndices();
@@ -219,7 +241,7 @@ public abstract class BioPolymer extends Polymer {
     // amino polymer only
   }
   
-  @Override
+  
   public Point3f[] getLeadMidpoints() {
     if (leadMidpoints == null)
       calcLeadMidpointsAndWingVectors();
@@ -370,7 +392,7 @@ public abstract class BioPolymer extends Polymer {
 
   BitSet bsSelectedMonomers;
 
-  @Override
+  
   public void calcSelectedMonomersCount(BitSet bsSelected) {
     selectedMonomerCount = 0;
     if (bsSelectedMonomers == null)
@@ -388,7 +410,7 @@ public abstract class BioPolymer extends Polymer {
     return (i >= 0 && bsSelectedMonomers.get(i));
   }
 
-  @Override
+  
   public int getPolymerPointsAndVectors(int last, BitSet bs, List<Point3f[]> vList,
                                         boolean isTraceAlpha,
                                         float sheetSmoothing) {
@@ -409,7 +431,7 @@ public abstract class BioPolymer extends Polymer {
     return last;
   }
 
-  @Override
+  
   public String getSequence() {
     char[] buf = new char[monomerCount];
     for (int i = 0; i < monomerCount; i++)
@@ -417,7 +439,7 @@ public abstract class BioPolymer extends Polymer {
     return String.valueOf(buf);
   }
 
-  @Override
+  
   public Map<String, Object> getPolymerInfo(BitSet bs) {
     Map<String, Object> returnInfo = new Hashtable<String, Object>();
     List<Map<String, Object>> info = new ArrayList<Map<String,Object>>();
@@ -450,7 +472,7 @@ public abstract class BioPolymer extends Polymer {
     return returnInfo;
   }
 
-  @Override
+  
   public void getPolymerSequenceAtoms(int group1, int nGroups, BitSet bsInclude,
                                       BitSet bsResult) {
     for (int i = Math.min(monomerCount, group1 + nGroups); --i >= group1;)
@@ -961,12 +983,12 @@ public abstract class BioPolymer extends Polymer {
     return (float) (1 - 2 * Math.acos(Math.abs(cosHalfTheta))/Math.PI);   
   }
 
-  @Override
+  
   public boolean isDna() { return (monomerCount > 0 && monomers[0].isDna()); }
-  @Override
+  
   public boolean isRna() { return (monomerCount > 0 && monomers[0].isRna()); }
 
-  @Override
+  
   public void getRangeGroups(int nResidues, BitSet bsAtoms, BitSet bsResult) {
     BitSet bsTemp = new BitSet();
     for (int i = 0; i < monomerCount; i++) {
@@ -979,11 +1001,103 @@ public abstract class BioPolymer extends Polymer {
       monomers[i].selectAtoms(bsResult);
   }
   
-  @Override
-  public String calculateStructures(Polymer[] bioPolymers, int bioPolymerCount, List<Bond> vHBonds, boolean doReport, boolean dsspIgnoreHydrogens, boolean setStructure) {
+  
+  public String calculateStructures(BioPolymer[] bioPolymers, int bioPolymerCount, List<Bond> vHBonds, boolean doReport, boolean dsspIgnoreHydrogens, boolean setStructure) {
     // Here because we are calling a static method in AminoPolymer for the 
     // entire SET of polymers, just using the first one, which may or may not
     // be an AminoPolymer.
     return AminoPolymer.calculateStructuresDssp(bioPolymers, bioPolymerCount, vHBonds, doReport, dsspIgnoreHydrogens, setStructure);
   }
+
+  /**
+   * 
+   * @param type
+   * @param structureID
+   * @param serialID
+   * @param strandCount
+   * @param startChainID
+   * @param startSeqcode
+   * @param endChainID
+   * @param endSeqcode
+   */
+  public void addSecondaryStructure(EnumStructure type, String structureID,
+                                    int serialID, int strandCount,
+                                    char startChainID, int startSeqcode,
+                                    char endChainID, int endSeqcode) {
+    // overridden by each subclass
+  }
+  
+  /**
+   * @param alphaOnly  
+   */
+  public void calculateStructures(boolean alphaOnly) {
+  }
+
+  /**
+   * 
+   * @param polymer
+   * @param bsA
+   * @param bsB
+   * @param vHBonds
+   * @param nMaxPerResidue
+   * @param min 
+   * @param checkDistances
+   * @param dsspIgnoreHydrogens 
+   */
+  public void calcRasmolHydrogenBonds(BioPolymer polymer, BitSet bsA,
+           BitSet bsB, List<Bond> vHBonds, int nMaxPerResidue, int[][][] min, 
+           boolean checkDistances, boolean dsspIgnoreHydrogens) {
+    // subclasses should override if they know how to calculate hbonds
+  }
+  
+  /**
+   * @param structureList  protein only -- helix, sheet, turn definitions
+   */
+  public void setStructureList(Map<EnumStructure, float[]> structureList) {
+  }
+
+  /**
+   * 
+   * @param viewer
+   * @param ctype
+   * @param qtype
+   * @param mStep
+   * @param derivType
+   * @param bsAtoms
+   * @param bsSelected
+   * @param bothEnds
+   * @param isDraw
+   * @param addHeader
+   * @param tokens
+   * @param pdbATOM
+   * @param pdbCONECT
+   * @param bsWritten
+   */
+  public void getPdbData(Viewer viewer, char ctype, char qtype, int mStep, int derivType, 
+              BitSet bsAtoms, BitSet bsSelected, boolean bothEnds, 
+              boolean isDraw, boolean addHeader, LabelToken[] tokens, 
+              OutputStringBuffer pdbATOM, StringBuffer pdbCONECT, BitSet bsWritten) {
+    return;
+  }
+
+  public int getType() {
+    return type;
+  }
+
+  /**
+   * 
+   * @param modelSet
+   * @param bs1
+   * @param bs2
+   * @param vCA
+   * @param thresh
+   * @param delta
+   * @param allowMultiple
+   * @return List [ {atom1, atom2}, {atom1, atom2}...]
+   */
+  public List<Atom[]> calculateStruts(ModelSet modelSet, BitSet bs1, BitSet bs2,
+      List<Atom> vCA, float thresh, int delta, boolean allowMultiple) {
+    return null;
+  }
+
 }

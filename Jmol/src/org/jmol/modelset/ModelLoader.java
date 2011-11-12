@@ -150,15 +150,26 @@ public final class ModelLoader {
     modelSet.modelSetTypeName = name;
     modelSet.isXYZ = (name == "xyz");
     modelSet.modelSetAuxiliaryInfo = info;
-    modelSet.modelSetProperties = (Properties) modelSet.getModelSetAuxiliaryInfo("properties");
+    modelSet.modelSetProperties = (Properties) modelSet
+        .getModelSetAuxiliaryInfo("properties");
     //isMultiFile = getModelSetAuxiliaryInfoBoolean("isMultiFile"); -- no longer necessary
     isPDB = modelSet.isPDB = modelSet.getModelSetAuxiliaryInfoBoolean("isPDB");
-    if (isPDB) 
-      jbr = modelSet.getJbr();
+    if (isPDB) {
+      try {
+        Class<?> shapeClass = Class.forName("org.jmol.modelsetbio.Resolver");
+        jbr = (JmolBioResolver) shapeClass.newInstance();
+        jbr.initialize(modelSet);
+      } catch (Exception e) {
+        Logger
+            .error("developer error: org.jmol.modelsetbio.Resolver could not be found");
+      }
+    }
     jmolData = (String) modelSet.getModelSetAuxiliaryInfo("jmolData");
     fileHeader = (String) modelSet.getModelSetAuxiliaryInfo("fileHeader");
-    modelSet.trajectorySteps = (List<Point3f[]>) modelSet.getModelSetAuxiliaryInfo("trajectorySteps");
-    modelSet.vibrationSteps = (List<Vector3f[]>) modelSet.getModelSetAuxiliaryInfo("vibrationSteps");
+    modelSet.trajectorySteps = (List<Point3f[]>) modelSet
+        .getModelSetAuxiliaryInfo("trajectorySteps");
+    modelSet.vibrationSteps = (List<Vector3f[]>) modelSet
+        .getModelSetAuxiliaryInfo("vibrationSteps");
     isTrajectory = (modelSet.trajectorySteps != null);
     if (isTrajectory) {
       info.remove("trajectorySteps");
@@ -172,11 +183,14 @@ public final class ModelLoader {
     noAutoBond = modelSet.getModelSetAuxiliaryInfoBoolean("noAutoBond");
     is2D = modelSet.getModelSetAuxiliaryInfoBoolean("is2D");
     doMinimize = is2D && modelSet.getModelSetAuxiliaryInfoBoolean("doMinimize");
-    adapterTrajectoryCount = (modelSet.trajectorySteps == null ? 0 : modelSet.trajectorySteps
-        .size());
-    modelSet.someModelsHaveSymmetry = modelSet.getModelSetAuxiliaryInfoBoolean("someModelsHaveSymmetry");
-    someModelsHaveUnitcells = modelSet.getModelSetAuxiliaryInfoBoolean("someModelsHaveUnitcells");
-    modelSet.someModelsHaveFractionalCoordinates = modelSet.getModelSetAuxiliaryInfoBoolean("someModelsHaveFractionalCoordinates");
+    adapterTrajectoryCount = (modelSet.trajectorySteps == null ? 0
+        : modelSet.trajectorySteps.size());
+    modelSet.someModelsHaveSymmetry = modelSet
+        .getModelSetAuxiliaryInfoBoolean("someModelsHaveSymmetry");
+    someModelsHaveUnitcells = modelSet
+        .getModelSetAuxiliaryInfoBoolean("someModelsHaveUnitcells");
+    modelSet.someModelsHaveFractionalCoordinates = modelSet
+        .getModelSetAuxiliaryInfoBoolean("someModelsHaveFractionalCoordinates");
     if (merging) {
       modelSet.isPDB |= mergeModelSet.isPDB;
       modelSet.someModelsHaveSymmetry |= mergeModelSet
@@ -190,8 +204,8 @@ public final class ModelLoader {
           .valueOf(modelSet.someModelsHaveSymmetry));
       modelSet.modelSetAuxiliaryInfo.put("someModelsHaveUnitcells", Boolean
           .valueOf(someModelsHaveUnitcells));
-      modelSet.modelSetAuxiliaryInfo.put("someModelsHaveFractionalCoordinates", Boolean
-          .valueOf(modelSet.someModelsHaveFractionalCoordinates));
+      modelSet.modelSetAuxiliaryInfo.put("someModelsHaveFractionalCoordinates",
+          Boolean.valueOf(modelSet.someModelsHaveFractionalCoordinates));
       modelSet.modelSetAuxiliaryInfo.put("someModelsHaveAromaticBonds", Boolean
           .valueOf(modelSet.someModelsHaveAromaticBonds));
     }
@@ -364,7 +378,7 @@ public final class ModelLoader {
     int modelCount = modelSet.modelCount;
     Model[] models = modelSet.models;
     for (int i = baseModelIndex; i < modelCount; i++)
-      if (models[i].isPDB)
+      if (models[i].isBioModel)
         models[i].getDefaultLargePDBRendering(sb, maxAtoms);
     if (sb.length() == 0)
       return;
@@ -378,7 +392,7 @@ public final class ModelLoader {
 
   @SuppressWarnings("unchecked")
   private void setAtomProperties() {
-    // Crystal reader
+    // Crystal reader, PDB tlsGroup
     int atomIndex = baseAtomIndex;
     int modelAtomCount = 0;
     int modelCount = modelSet.modelCount;
@@ -394,6 +408,8 @@ public final class ModelLoader {
         String value = entry.getValue();
         // no deletions yet...
         BitSet bs = modelSet.getModelAtomBitSetIncludingDeleted(i, true);
+        if (doAddHydrogens)
+          value = jbr.fixPropertyValue(bs, value);
         key = "property_" + key.toLowerCase();
         Logger.info("creating " + key + " for model " + modelSet.getModelName(i));
         viewer.setData(key, new Object[] { key, value, bs }, modelSet.atomCount, 0,
@@ -440,7 +456,8 @@ public final class ModelLoader {
     modelSet.modelNames = ArrayUtil.setLength(modelSet.modelNames, modelSet.modelCount);
     modelSet.frameTitles = ArrayUtil.setLength(modelSet.frameTitles, modelSet.modelCount);
     if (merging)
-      modelSet.mergeModels(mergeModelSet);
+      for (int i = 0; i < mergeModelSet.modelCount; i++)
+        (modelSet.models[i] = mergeModelSet.models[i]).modelSet = modelSet;
   }
 
   private void mergeGroups() {
@@ -466,11 +483,6 @@ public final class ModelLoader {
   private void iterateOverAllNewModels(JmolAdapter adapter, Object atomSetCollection) {
 
     // set private values
-
-    if (modelSet.modelCount > 0) {
-      nullGroup = new Group(new Chain(modelSet, modelSet.models[baseModelIndex], ' '), "",
-          0, -1, -1);
-    }
 
     group3Lists = new String[modelSet.modelCount + 1];
     group3Counts = new int[modelSet.modelCount + 1][];
@@ -548,9 +560,15 @@ public final class ModelLoader {
                                                Properties modelProperties,
                                                Map<String, Object> modelAuxiliaryInfo,
                                                String jmolData) {
+    boolean modelIsPDB = (modelAuxiliaryInfo != null 
+        && modelAuxiliaryInfo.containsKey("isPDB") 
+        && ((Boolean) modelAuxiliaryInfo.get("isPDB")).booleanValue());
     if (appendNew) {
-      modelSet.models[modelIndex] = new Model(modelSet, modelIndex, trajectoryBaseIndex,
-          jmolData, modelProperties, modelAuxiliaryInfo);
+      modelSet.models[modelIndex] = (modelIsPDB ? 
+          jbr.getBioModel(modelSet, modelIndex, trajectoryBaseIndex,
+          jmolData, modelProperties, modelAuxiliaryInfo)
+          : new Model(modelSet, modelIndex, trajectoryBaseIndex,
+              jmolData, modelProperties, modelAuxiliaryInfo));
       modelSet.modelNumbers[modelIndex] = modelNumber;
       modelSet.modelNames[modelIndex] = modelName;
     } else {
@@ -580,8 +598,7 @@ public final class ModelLoader {
         || modelName.startsWith("Jmol Model Kit") || "Jme"
         .equals(modelSet.getModelAuxiliaryInfo(modelIndex, "fileType")));
     models[modelIndex].isModelKit = isModelKit;
-    return models[modelIndex].isPDB = modelSet.getModelAuxiliaryInfoBoolean(modelIndex,
-        "isPDB");
+    return modelIsPDB;
   }
 
   /**
@@ -715,6 +732,9 @@ public final class ModelLoader {
     JmolAdapter.AtomIterator iterAtom = adapter.getAtomIterator(atomSetCollection);
     int nRead = 0;
     Model[] models = modelSet.models;
+    if (modelSet.modelCount > 0)
+      nullGroup = new Group(new Chain(modelSet.models[baseModelIndex], ' '), "",
+          0, -1, -1);
     while (iterAtom.hasNext()) {
       nRead++;
       int modelIndex = iterAtom.getAtomSetIndex() + baseModelIndex;
@@ -723,7 +743,7 @@ public final class ModelLoader {
         currentModel = models[modelIndex];
         currentChainID = '\uFFFF';
         models[modelIndex].bsAtoms.clear();
-        isPdbThisModel = models[modelIndex].isPDB;
+        isPdbThisModel = models[modelIndex].isBioModel;
         iLast = modelIndex;
         addH = isPdbThisModel && doAddHydrogens;
         if (jbr != null)
@@ -855,7 +875,7 @@ public final class ModelLoader {
       return chain;
     if (model.chainCount == model.chains.length)
       model.chains = (Chain[])ArrayUtil.doubleLength(model.chains);
-    return model.chains[model.chainCount++] = new Chain(modelSet, model, chainID);
+    return model.chains[model.chainCount++] = new Chain(model, chainID);
   }
 
   private void iterateOverAllNewBonds(JmolAdapter adapter, Object atomSetCollection) {
@@ -1078,7 +1098,7 @@ public final class ModelLoader {
         modelAtomCount = models[i].bsAtoms.cardinality();
         int modelBondCount = modelSet.getModelAuxiliaryInfoInt(i, "initialBondCount");
         
-        boolean modelIsPDB = models[i].isPDB;
+        boolean modelIsPDB = models[i].isBioModel;
         if (modelBondCount < 0) {
           modelBondCount = modelSet.bondCount;
         }
@@ -1123,23 +1143,20 @@ public final class ModelLoader {
     // run this loop in increasing order so that the
     // groups get defined going up
     groups = new Group[groupCount];
-    if (merging) {
+    if (merging)
       for (int i = 0; i < mergeGroups.length; i++) {
         groups[i] = mergeGroups[i];
         groups[i].setModelSet(modelSet);
       }
-    }
-    for (int i = baseGroupIndex; i < groupCount; ++i) {
+    for (int i = baseGroupIndex; i < groupCount; ++i)
       distinguishAndPropagateGroup(i, chainOf[i], group3Of[i], seqcodes[i],
           firstAtomIndexes[i], (i == groupCount - 1 ? modelSet.atomCount
               : firstAtomIndexes[i + 1]));
-    }
-    if (group3Lists != null) {
+    if (group3Lists != null)
       if (modelSet.modelSetAuxiliaryInfo != null) {
         modelSet.modelSetAuxiliaryInfo.put("group3Lists", group3Lists);
         modelSet.modelSetAuxiliaryInfo.put("group3Counts", group3Counts);
       }
-    }
   }
 
   private void distinguishAndPropagateGroup(int groupIndex, Chain chain,

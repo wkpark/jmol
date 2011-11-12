@@ -29,6 +29,7 @@ import java.util.BitSet;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
@@ -38,17 +39,26 @@ import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Chain;
 import org.jmol.modelset.Group;
+import org.jmol.modelset.Model;
 import org.jmol.modelset.ModelLoader;
 import org.jmol.modelset.ModelSet;
-import org.jmol.modelset.Polymer;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
+import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolBioResolver;
 
 public final class Resolver implements JmolBioResolver {
+
+  public Model getBioModel(ModelSet modelSet, int modelIndex,
+                        int trajectoryBaseIndex, String jmolData,
+                        Properties modelProperties,
+                        Map<String, Object> modelAuxiliaryInfo) {
+    return new BioModel(modelSet, modelIndex, trajectoryBaseIndex,
+        jmolData, modelProperties, modelAuxiliaryInfo);
+  }
 
   public Group distinguishAndPropagateGroup(Chain chain, String group3,
                                             int seqcode, int firstAtomIndex,
@@ -103,29 +113,24 @@ public final class Resolver implements JmolBioResolver {
     if (lastAtomIndex < firstAtomIndex)
       throw new NullPointerException();
 
+    Monomer m = null;
     if ((distinguishingBits & JmolConstants.ATOMID_PROTEIN_MASK) == JmolConstants.ATOMID_PROTEIN_MASK)
-      return AminoMonomer.validateAndAllocate(chain, group3, seqcode,
+      m = AminoMonomer.validateAndAllocate(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex, specialAtomIndexes, atoms);
-    if (distinguishingBits == JmolConstants.ATOMID_ALPHA_ONLY_MASK)
-      return AlphaMonomer.validateAndAllocate(chain, group3, seqcode,
+    else if (distinguishingBits == JmolConstants.ATOMID_ALPHA_ONLY_MASK)
+      m = AlphaMonomer.validateAndAllocate(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex, specialAtomIndexes);
-    if (((distinguishingBits & JmolConstants.ATOMID_NUCLEIC_MASK) == JmolConstants.ATOMID_NUCLEIC_MASK))
-      return NucleicMonomer.validateAndAllocate(chain, group3, seqcode,
+    else if (((distinguishingBits & JmolConstants.ATOMID_NUCLEIC_MASK) == JmolConstants.ATOMID_NUCLEIC_MASK))
+      m = NucleicMonomer.validateAndAllocate(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex, specialAtomIndexes);
-    if (distinguishingBits == JmolConstants.ATOMID_PHOSPHORUS_ONLY_MASK)
-      return PhosphorusMonomer.validateAndAllocate(chain, group3, seqcode,
+    else if (distinguishingBits == JmolConstants.ATOMID_PHOSPHORUS_ONLY_MASK)
+      m = PhosphorusMonomer.validateAndAllocate(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex, specialAtomIndexes);
-    if (JmolConstants.checkCarbohydrate(group3))
-      return CarbohydrateMonomer.validateAndAllocate(chain, group3, seqcode,
+    else if (JmolConstants.checkCarbohydrate(group3))
+      m = CarbohydrateMonomer.validateAndAllocate(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex);
-    return null;
+    return ( m != null && m.leadAtomIndex >= 0 ? m : null);
   }   
-  
-  public Polymer buildBioPolymer(Group group, Group[] groups, int i, 
-                                 boolean checkPolymerConnections) {
-    return (group instanceof Monomer && ((Monomer) group).getBioPolymer() == null ?
-      BioPolymer.allocateBioPolymer(groups, i, checkPolymerConnections) : null);
-  }
   
   public void clearBioPolymers(Group[] groups, int groupCount,
                                BitSet bsModelsExcluded) {
@@ -579,6 +584,44 @@ public final class Resolver implements JmolBioResolver {
         modelSet.getDefaultMadFromOrder(JmolEdge.BOND_COVALENT_SINGLE), null, 0, true, false);
   }
 
+  public String fixPropertyValue(BitSet bsAtoms, String data) {
+    String[] aData = TextFormat.split(data, '\n');
+    Atom[] atoms = modelSet.atoms;
+    String[] newData = new String[bsAtoms.cardinality()];
+    String lastData = "";
+    for (int pt = 0, iAtom = 0, i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms
+        .nextSetBit(i), iAtom++) {
+      if (atoms[i].getElementNumber() != 1)
+        lastData = aData[pt++];
+      newData[iAtom] = lastData;
+    }
+    return TextFormat.join(newData, '\n', 0);
+  }
+
+  public void calculatePolymers(Group[] groups, int groupCount,
+                                int baseGroupIndex, BitSet modelsExcluded) {
+    if (groups == null) {
+      groups = modelSet.getGroups();
+      groupCount = groups.length;
+    }
+    if (modelsExcluded != null)
+      clearBioPolymers(groups, groupCount, modelsExcluded);
+    boolean checkPolymerConnections = !modelSet.viewer.isPdbSequential();
+    for (int i = baseGroupIndex; i < groupCount; ++i) {
+      Group g = groups[i];
+      Model model = g.getModel();
+      if (!model.isBioModel || ! (g instanceof Monomer))
+        continue;
+      boolean doCheck = checkPolymerConnections 
+        && !modelSet.isJmolDataFrame(modelSet.atoms[g.firstAtomIndex].modelIndex);
+      BioPolymer bp = (((Monomer) g).getBioPolymer() == null ?
+          BioPolymer.allocateBioPolymer(groups, i, doCheck) : null);
+      if (bp == null || bp.monomerCount == 0)
+        continue;
+      ((BioModel) model).addBioPolymer(bp);
+      i += bp.monomerCount - 1;
+    }
+  }  
 }
 
 

@@ -180,51 +180,70 @@ import javax.vecmath.Vector3f;
     // Or has specified a trajectory in a select, display, or hide command.
 
     // Assign the coordinates and the model index for this set of atoms
-    int iFirst = models[modelIndex].firstAtomIndex;
-    if (atoms[iFirst].modelIndex == modelIndex)
+    if (atoms[models[modelIndex].firstAtomIndex].modelIndex == modelIndex)
       return;
-    int baseModel = models[modelIndex].trajectoryBaseIndex;
-    models[baseModel].selectedTrajectory = modelIndex;
-    Point3f[] trajectory = trajectorySteps.get(modelIndex);
-    Vector3f[] vibrations = (vibrationSteps == null ? null : vibrationSteps.get(modelIndex));
+    int baseModelIndex = models[modelIndex].trajectoryBaseIndex;
+    models[baseModelIndex].selectedTrajectory = modelIndex;
+    setAtomPositions(baseModelIndex, modelIndex, trajectorySteps.get(modelIndex), 
+        (vibrationSteps == null ? null : vibrationSteps.get(modelIndex)), true);    
+    int m = viewer.getCurrentModelIndex();
+    if (m >= 0 && m != modelIndex 
+        && models[m].fileIndex == models[modelIndex].fileIndex)
+      viewer.setCurrentModelIndex(modelIndex, false);
+  }  
+
+  /**
+   * A generic way to set atom positions, possibly from trajectories but also
+   * possibly from an array. Takes care of all associated issues of changing
+   * coordinates.
+   * 
+   * @param baseModelIndex
+   * @param modelIndex
+   * @param trajectory
+   * @param vibrations
+   * @param isFractional
+   */
+  private void setAtomPositions(int baseModelIndex, int modelIndex,
+                                Point3f[] trajectory, Vector3f[] vibrations,
+                                boolean isFractional) {
     BitSet bs = new BitSet();
     Vector3f vib = new Vector3f();
-    int iMax = iFirst + getAtomCountInModel(baseModel);
-    for (int pt = 0, i = iFirst; i < iMax && pt < trajectory.length && trajectory[pt]!= null; i++, pt++) {
-      atoms[i].setFractionalCoord(trajectory[pt], true);
+    int iFirst = models[baseModelIndex].firstAtomIndex;
+    int iMax = iFirst + getAtomCountInModel(baseModelIndex);
+    for (int pt = 0, i = iFirst; i < iMax && pt < trajectory.length
+        && trajectory[pt] != null; i++, pt++) {
+      if (isFractional)
+        atoms[i].setFractionalCoord(trajectory[pt], true);
+      else
+        atoms[i].set(trajectory[pt]);
       atoms[i].modelIndex = (short) modelIndex;
       if (vibrationSteps != null) {
         if (vibrations != null && vibrations[pt] != null)
           vib = vibrations[pt];
-          setVibrationVector(i, vib.x, vib.y, vib.z);
+        setVibrationVector(i, vib.x, vib.y, vib.z);
       }
       bs.set(i);
     }
     // Clear the Binary Search so that select within(),
     // isosurface, and dots will work properly
     initializeBspf();
-    validateBspf(baseModel, false);
+    validateBspf(baseModelIndex, false);
     // Recalculate critical points for cartoons and such
     // note that models[baseModel] and models[modelIndex]
     // point to the same model. So there is only one copy of 
     // the shape business.
-    
-    
-    recalculateLeadMidpointsAndWingVectors(baseModel);
+
+    recalculateLeadMidpointsAndWingVectors(baseModelIndex);
     // Recalculate all measures that involve trajectories
 
-    shapeManager.refreshShapeTrajectories(baseModel, bs, null);
+    shapeManager.refreshShapeTrajectories(baseModelIndex, bs, null);
 
-    if (models[baseModel].hasRasmolHBonds) {
-      clearRasmolHydrogenBonds(baseModel, null);
-      getRasmolHydrogenBonds(models[baseModel], bs, bs, null, false, Integer.MAX_VALUE, false);     
+    if (models[baseModelIndex].hasRasmolHBonds) {
+      models[baseModelIndex].clearRasmolHydrogenBonds(null);
+      models[baseModelIndex].getRasmolHydrogenBonds(bs, bs, null, false,
+          Integer.MAX_VALUE, false);
     }
-    
-    int m = viewer.getCurrentModelIndex();
-    if (m >= 0 && m != modelIndex 
-        && models[m].fileIndex == models[modelIndex].fileIndex)
-      viewer.setCurrentModelIndex(modelIndex, false);
-  }  
+  }
 
   public Point3f[] getFrameOffsets(BitSet bsAtoms) {
     if (bsAtoms == null)
@@ -328,7 +347,7 @@ import javax.vecmath.Vector3f;
           dsspIgnoreHydrogen, false, false);
     for (int i = 0; i < modelCount; i++)
       if (!bsModelsExcluded.get(i))
-        addBioPolymerToModel(null, models[i]);
+        models[i].clearBioPolymers();
     calculatePolymers(null, 0, 0, bsModelsExcluded);
     String ret = calculateStructuresAllExcept(bsModelsExcluded, asDSSP, true,
         dsspIgnoreHydrogen, true, false);
@@ -411,7 +430,7 @@ import javax.vecmath.Vector3f;
     BitSet bsModels = modelsOf(bsAtoms, bsAllAtoms);
     StringBuffer ret = new StringBuffer();
     for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels.nextSetBit(i + 1)) 
-      if (models[i].isPDB && models[i].defaultStructure != null)
+      if (models[i].isBioModel && models[i].defaultStructure != null)
         ret.append(models[i].defaultStructure);
     return ret.toString();
   }
@@ -1184,7 +1203,7 @@ import javax.vecmath.Vector3f;
 
   public boolean allowSpecAtom() {
     // old Chime scripts use *.C for _C
-    return modelCount != 1 || models[0].isPDB;
+    return modelCount != 1 || models[0].isBioModel;
   }
 
 }

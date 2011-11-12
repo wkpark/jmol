@@ -27,44 +27,23 @@ import java.util.BitSet;
 
 public final class Chain {
 
-  ModelSet modelSet;
-  Model model;
-  char chainID;
+  public Model model;
+  public char chainID;
+  public boolean isDna, isRna;
+  
   int groupCount;
   Group[] groups = new Group[16];
-
-  private int selectedGroupCount;
-  private boolean isDna, isRna;
-  private BitSet bsSelectedGroups;
-
-  public char getChainID() {
-    return chainID;
-  }
-  
-  public boolean isDna() { return isDna; }
-  public boolean isRna() { return isRna; }
-
-  public void setIsDna(boolean TF) {isDna = TF;}
-  public void setIsRna(boolean TF) {isRna = TF;}
+  int selectedGroupCount;
 
   public Atom getAtom(int index) {
-    return modelSet.atoms[index];
+    return model.modelSet.atoms[index];
   }
   
-  Chain(ModelSet modelSet, Model model, char chainID) {
-    this.modelSet = modelSet;
+  Chain(Model model, char chainID) {
     this.model = model;
     this.chainID = chainID;
   }
 
-  void setModelSet(ModelSet modelSet) {
-    this.modelSet = modelSet;
-  }
-  
-  ModelSet getModelSet() {
-    return modelSet;
-  }
-  
   Group getGroup(int groupIndex) {
     return groups[groupIndex];
   }
@@ -74,27 +53,19 @@ public final class Chain {
   }
 
   /**
-   * prior to coloring by group, we need the chain count per chain
-   * that is selected
+   * prior to coloring by group, we need the chain count per chain that is
+   * selected
    * 
    * @param bsSelected
    */
   void calcSelectedGroupsCount(BitSet bsSelected) {
     selectedGroupCount = 0;
-    if (bsSelectedGroups == null)
-      bsSelectedGroups = new BitSet();
-    bsSelectedGroups.clear();
-    for (int i = 0; i < groupCount; i++) {
-      if (groups[i].isSelected(bsSelected)) {
-        groups[i].selectedIndex = selectedGroupCount++;
-        bsSelectedGroups.set(i);
-      } else {
-        groups[i].selectedIndex = -1;
-      }
-    }
+    for (int i = 0; i < groupCount; i++)
+      groups[i].selectedIndex = (groups[i].isSelected(bsSelected) ? selectedGroupCount++
+          : -1);
   }
 
-  int selectSeqcodeRange(int index0, int seqcodeA, int seqcodeB,
+  public int selectSeqcodeRange(int index0, int seqcodeA, int seqcodeB,
                                 BitSet bs) {
     int seqcode, indexA, indexB, minDiff;
     boolean isInexact = false;
@@ -144,10 +115,6 @@ public final class Chain {
     return (isInexact ? -1 : indexB + 1);
   }
   
-  int getSelectedGroupCount() {
-    return selectedGroupCount;
-  }
-
   void fixIndices(int atomsDeleted, BitSet bsDeleted) {
     for (int i = 0; i < groupCount; i++)
       groups[i].fixIndices(atomsDeleted, bsDeleted);

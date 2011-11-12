@@ -810,7 +810,7 @@ public class Token {
   public final static int loadligandformat               = strparam | 46;
   public final static int logfile                        = strparam | 47;
   public final static int measurementunits               = strparam | 48; 
-  public final static int nmrdbformat                    = strparam | 49;
+  public final static int nmrurlformat                   = strparam | 49;
   public final static int picking                        = strparam | 50;
   public final static int pickingstyle                   = strparam | 51;
   public final static int picklabel                      = strparam | 52;
@@ -2149,7 +2149,7 @@ public class Token {
       "loadLigandFormat",                         new Token(loadligandformat),
       "logFile",                                  new Token(logfile),
       "measurementUnits",                         new Token(measurementunits),
-      "nmrdbFormat",                              new Token(nmrdbformat),
+      "nmrUrlFormat",                             new Token(nmrurlformat),
       "picking",                                  new Token(picking),
       "pickingStyle",                             new Token(pickingstyle),
       "pickLabel",                                new Token(picklabel),

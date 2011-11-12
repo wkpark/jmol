@@ -1,13 +1,15 @@
 package org.jmol.api;
 
 import java.util.BitSet;
+import java.util.Map;
+import java.util.Properties;
 
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Chain;
 import org.jmol.modelset.Group;
+import org.jmol.modelset.Model;
 import org.jmol.modelset.ModelLoader;
 import org.jmol.modelset.ModelSet;
-import org.jmol.modelset.Polymer;
 
 public interface JmolBioResolver {
 
@@ -15,8 +17,6 @@ public interface JmolBioResolver {
                                                   int firstAtomIndex, int maxAtomIndex, 
                                                   int modelIndex, int[] specialAtomIndexes,
                                                   Atom[] atoms);
-  
-  public Polymer buildBioPolymer(Group group, Group[] groups, int i, boolean checkPolymerConnections);
   
   public void clearBioPolymers(Group[] groups, int groupCount, BitSet bsModelsExcluded);
 
@@ -30,5 +30,12 @@ public interface JmolBioResolver {
 
   public void initialize(ModelSet modelSet);
 
-}
+  public String fixPropertyValue(BitSet bsAtoms, String data);
+
+  public Model getBioModel(ModelSet modelSet, int modelIndex,
+                        int trajectoryBaseIndex, String jmolData,
+                        Properties modelProperties,
+                        Map<String, Object> modelAuxiliaryInfo);
+
+  }
 

@@ -35,6 +35,7 @@ import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.Model;
+import org.jmol.modelsetbio.BioModel;
 import org.jmol.modelsetbio.BioPolymer;
 import org.jmol.modelsetbio.Monomer;
 import org.jmol.shape.Shape;
@@ -173,10 +174,10 @@ public abstract class BioShapeCollection extends Shape {
     BioShape[] shapes = new BioShape[n--];
     for (int i = modelCount; --i >= 0;)
       for (int j = modelSet.getBioPolymerCountInModel(i); --j >= 0; n--) {
+        BioPolymer bp = ((BioModel) models[i]).getBioPolymer(j);
         shapes[n] = (bioShapes == null || bioShapes.length <= n
-            || bioShapes[n] == null
-            || bioShapes[n].bioPolymer != models[i].getBioPolymer(j) ? new BioShape(
-            this, i, (BioPolymer) models[i].getBioPolymer(j))
+            || bioShapes[n] == null || bioShapes[n].bioPolymer != bp ? new BioShape(
+            this, i, bp)
             : bioShapes[n]);
       }
     bioShapes = shapes;

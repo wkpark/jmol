@@ -26,9 +26,7 @@
 package org.jmol.modelset;
 
 
-import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.List;
 
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
@@ -242,63 +240,17 @@ abstract public class BondCollection extends AtomCollection {
 
   ////// bonding methods //////
   
-  protected BitSet bsHBondsRasmol;
+  public BitSet bsHBondsRasmol;
 
-  void getRasmolHydrogenBonds(Model m, BitSet bsA, BitSet bsB,
-                              List<Bond> vHBonds, boolean nucleicOnly,
-                              int nMax, boolean dsspIgnoreHydrogens) {
-    boolean doAdd = (vHBonds == null);
-    Polymer bp, bp1;
-    if (doAdd)
-      vHBonds = new ArrayList<Bond>();
-    if (nMax < 0)
-      nMax = Integer.MAX_VALUE;
-    boolean asDSSP = (bsB == null);
-    if (asDSSP && m.bioPolymerCount > 0) {
-      m.bioPolymers[0].calculateStructures(m.bioPolymers, m.bioPolymerCount,
-          vHBonds, false, dsspIgnoreHydrogens, false);
-    } else {
-      for (int i = m.bioPolymerCount; --i >= 0;) {
-        bp = m.bioPolymers[i];
-        int type = bp.getType();
-        if ((nucleicOnly || type != Polymer.TYPE_AMINO)
-            && type != Polymer.TYPE_NUCLEIC)
-          continue;
-        boolean isRNA = bp.isRna();
-        boolean isAmino = (type == Polymer.TYPE_AMINO);
-        if (isAmino)
-          bp.calcRasmolHydrogenBonds(null, bsA, bsB, vHBonds, nMax, null, true,
-              false);
-        for (int j = m.bioPolymerCount; --j >= 0;) {
-          if ((bp1 = m.bioPolymers[j]) != null && (isRNA || i != j)
-              && type == bp1.getType()) {
-            bp1.calcRasmolHydrogenBonds(bp, bsA, bsB, vHBonds, nMax, null,
-                true, false);
-          }
-        }
-      }
-    }
-    if (vHBonds.size() == 0 || !doAdd)
-      return;
-    m.hasRasmolHBonds = true;
-    for (int i = 0; i < vHBonds.size(); i++) {
-      HBond bond = (HBond) vHBonds.get(i);
-      Atom atom1 = bond.atom1;
-      Atom atom2 = bond.atom2;
-      if (atom1.isBonded(atom2))
-        continue;
-      int n = addHBond(atom1, atom2, bond.order, bond.getEnergy());
-      if (bsHBondsRasmol != null)
-        bsHBondsRasmol.set(n);
-    }
-  }
-  
-  protected int addHBond(Atom atom1, Atom atom2, int order, float energy) {
+  public void addHBond(Atom atom1, Atom atom2, int order, float energy) {
     // from autoHbond
     if (bondCount == bonds.length)
       bonds = (Bond[]) ArrayUtil.setLength(bonds, bondCount
           + BOND_GROWTH_INCREMENT);
-    return setBond(bondCount++, bondMutually(atom1, atom2, order, (short) 1, energy)).index;
+    int n = setBond(bondCount++, bondMutually(atom1, atom2, order, (short) 1, energy)).index;
+    if (bsHBondsRasmol != null)
+      bsHBondsRasmol.set(n);
+
   }
 
   protected static short getBondOrder(float bondingRadiusA,

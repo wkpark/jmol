@@ -29,7 +29,6 @@ import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.HBond;
 import org.jmol.modelset.Model;
-import org.jmol.modelset.Polymer;
 import org.jmol.script.Token;
 //import org.jmol.util.Escape;
 import org.jmol.util.Escape;
@@ -194,7 +193,7 @@ public class AminoPolymer extends AlphaPolymer {
   //////////////////////////////////////////////////
   
   @Override
-  public void calcRasmolHydrogenBonds(Polymer polymer, BitSet bsA, BitSet bsB,
+  public void calcRasmolHydrogenBonds(BioPolymer polymer, BitSet bsA, BitSet bsB,
                                       List<Bond> vHBonds, int nMaxPerResidue,
                                       int[][][] min, boolean checkDistances, 
                                       boolean dsspIgnoreHydrogens) {
@@ -235,7 +234,7 @@ public class AminoPolymer extends AlphaPolymer {
   // this next was fixed in Jmol 12.1.14; was just 0.5f (0.71*0.71) since Jmol 10.0.00
   private final static float minimumHbondDistance2 = 0.5f * 0.5f; 
 
-  private void checkRasmolHydrogenBond(AminoMonomer source, Polymer polymer,
+  private void checkRasmolHydrogenBond(AminoMonomer source, BioPolymer polymer,
                                        int indexDonor, Point3f hydrogenPoint,
                                        BitSet bsB, List<Bond> vHBonds,
                                        int[][] min, boolean checkDistances) {
@@ -248,7 +247,7 @@ public class AminoPolymer extends AlphaPolymer {
           /* || i - 1 == indexDonor*/ ))
         continue; 
       // 3mn5 GLY36->ARG37 is an example where we can have i-1 be the donor  
-      AminoMonomer target = (AminoMonomer) ((BioPolymer) polymer).monomers[i];
+      AminoMonomer target = (AminoMonomer) polymer.monomers[i];
       Atom oxygen = target.getCarbonylOxygenAtom();
       if (oxygen == null || bsB != null && !bsB.get(oxygen.index))
         continue;
@@ -521,7 +520,7 @@ public class AminoPolymer extends AlphaPolymer {
    * @return                 helix-5, helix-4, helix-3, and SUMMARY lines        
    */
 
-  protected static String calculateStructuresDssp(Polymer[] bioPolymers,
+  protected static String calculateStructuresDssp(BioPolymer[] bioPolymers,
                                                   int bioPolymerCount,
                                                   List<Bond> vHBonds,
                                                   boolean doReport,
@@ -670,7 +669,7 @@ public class AminoPolymer extends AlphaPolymer {
    * @return                array of dual-minmum NH-->O=C H bonds
    * 
    */
-  private static int[][][][] getDualHydrogenBondArray(Polymer[] bioPolymers,
+  private static int[][][][] getDualHydrogenBondArray(BioPolymer[] bioPolymers,
                                                     int bioPolymerCount,
                                                     boolean dsspIgnoreHydrogens) {
     
@@ -898,7 +897,7 @@ public class AminoPolymer extends AlphaPolymer {
    * @param vHBonds 
    * @param bsDone
    */
-  private static void getBridges(Polymer[] bioPolymers, int[][][][] min,
+  private static void getBridges(BioPolymer[] bioPolymers, int[][][][] min,
                                  List<Bridge> bridgesA, List<Bridge> bridgesP,
                                  Map<String, Bridge> htBridges,
                                  Map<int[][], Boolean> htLadders, BitSet bsBad,
@@ -1007,7 +1006,7 @@ public class AminoPolymer extends AlphaPolymer {
    * @param doReport
    * @param setStructure 
    */
-  private static void getSheetStructures(Polymer[] bioPolymers,
+  private static void getSheetStructures(BioPolymer[] bioPolymers,
                                          List<Bridge> bridgesA,
                                          List<Bridge> bridgesP,
                                          Map<String, Bridge> htBridges,

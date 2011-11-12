@@ -5609,7 +5609,7 @@ private void zap(String msg) {
 
   private void setStringProperty(String key, int tok, String value) {
     switch (tok) {
-    case Token.nmrdbformat:
+    case Token.nmrurlformat:
       // 12.3.3
       global.nmrUrlFormat = value;
       break;      
@@ -9810,7 +9810,7 @@ private void zap(String msg) {
   }
 
   public boolean isModelPDB(int i) {
-    return modelSet.getModels()[i].isPDB;
+    return modelSet.getModels()[i].isBioModel;
   }
 
   boolean isAtomAssignable(int i) {

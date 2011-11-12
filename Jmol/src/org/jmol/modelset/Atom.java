@@ -57,7 +57,7 @@ final public class Atom extends Point3fi implements JmolNode {
   public static final int RADIUS_MAX = 16;
 
   char alternateLocationID;
-  byte atomID;
+  public byte atomID;
   int atomSite;
   Group group;
   private float userDefinedVanDerWaalRadius;
@@ -386,21 +386,21 @@ final public class Atom extends Point3fi implements JmolNode {
 
   // a percentage value in the range 0-100
   public int getOccupancy100() {
-    byte[] occupancies = group.chain.modelSet.occupancies;
+    byte[] occupancies = group.chain.model.modelSet.occupancies;
     return occupancies == null ? 100 : occupancies[index];
   }
 
   // This is called bfactor100 because it is stored as an integer
   // 100 times the bfactor(temperature) value
   public int getBfactor100() {
-    short[] bfactor100s = group.chain.modelSet.bfactor100s;
+    short[] bfactor100s = group.chain.model.modelSet.bfactor100s;
     if (bfactor100s == null)
       return 0;
     return bfactor100s[index];
   }
 
   private float getHydrophobicity() {
-    float[] values = group.chain.modelSet.hydrophobicities;
+    float[] values = group.chain.model.modelSet.hydrophobicities;
     if (values == null)
       return Elements.getHydrophobicity(group.getGroupID());
     return values[index];
@@ -442,7 +442,7 @@ final public class Atom extends Point3fi implements JmolNode {
   }
 
   public int getImplicitHydrogenCount() {
-    return group.chain.modelSet.getImplicitHydrogenCount(this);
+    return group.chain.model.modelSet.getImplicitHydrogenCount(this);
   }
 
   int getTargetValence() {
@@ -492,10 +492,10 @@ final public class Atom extends Point3fi implements JmolNode {
   private EnumVdw getVdwType(EnumVdw type) {
     switch (type) {
     case AUTO:
-      type = group.chain.modelSet.getDefaultVdwType(modelIndex);
+      type = group.chain.model.modelSet.getDefaultVdwType(modelIndex);
       break;
     case NOJMOL:
-      type = group.chain.modelSet.getDefaultVdwType(modelIndex);
+      type = group.chain.model.modelSet.getDefaultVdwType(modelIndex);
       if (type == EnumVdw.AUTO_JMOL)
         type = EnumVdw.AUTO_BABEL;
       break;
@@ -503,12 +503,12 @@ final public class Atom extends Point3fi implements JmolNode {
     return type;
   }
 
-  public float getCovalentRadiusFloat() {
+  private float getCovalentRadiusFloat() {
     return Elements.getBondingRadiusFloat(atomicAndIsotopeNumber, 0);
   }
 
-  public float getBondingRadiusFloat() {
-    float[] ionicRadii = group.chain.modelSet.ionicRadii;
+  float getBondingRadiusFloat() {
+    float[] ionicRadii = group.chain.model.modelSet.ionicRadii;
     float r = (ionicRadii == null ? 0 : ionicRadii[index]);
     return (r == 0 ? Elements.getBondingRadiusFloat(atomicAndIsotopeNumber,
         getFormalCharge()) : r);
@@ -555,7 +555,7 @@ final public class Atom extends Point3fi implements JmolNode {
     return paletteID;
   }
 
-  public float getRadius() {
+  float getRadius() {
     return Math.abs(madAtom / (1000f * 2));
   }
 
@@ -589,20 +589,20 @@ final public class Atom extends Point3fi implements JmolNode {
    
    public String getAtomName() {
      return (atomID > 0 ? JmolConstants.getSpecialAtomName(atomID) 
-         : group.chain.modelSet.atomNames[index]);
+         : group.chain.model.modelSet.atomNames[index]);
    }
    
    public String getAtomType() {
-    String[] atomTypes = group.chain.modelSet.atomTypes;
+    String[] atomTypes = group.chain.model.modelSet.atomTypes;
     String type = (atomTypes == null ? null : atomTypes[index]);
     return (type == null ? getAtomName() : type);
   }
    
    public int getAtomNumber() {
-     int[] atomSerials = group.chain.modelSet.atomSerials;
+     int[] atomSerials = group.chain.model.modelSet.atomSerials;
      // shouldn't ever be null.
      return (atomSerials != null ? atomSerials[index] : index);
-//        : group.chain.modelSet.isZeroBased ? atomIndex : atomIndex);
+//        : group.chain.model.modelSet.isZeroBased ? atomIndex : atomIndex);
    }
 
    public boolean isInFrame() {
@@ -618,12 +618,12 @@ final public class Atom extends Point3fi implements JmolNode {
    }
 
    public float getPartialCharge() {
-     float[] partialCharges = group.chain.modelSet.partialCharges;
+     float[] partialCharges = group.chain.model.modelSet.partialCharges;
      return partialCharges == null ? 0 : partialCharges[index];
    }
 
    public Quadric[] getEllipsoid() {
-     return group.chain.modelSet.getEllipsoid(index);
+     return group.chain.model.modelSet.getEllipsoid(index);
    }
 
    public void scaleEllipsoid(int size, int iSelect) {
@@ -696,7 +696,7 @@ final public class Atom extends Point3fi implements JmolNode {
    
    String getSymmetryOperatorList() {
     String str = "";
-    ModelSet f = group.chain.modelSet;
+    ModelSet f = group.chain.model.modelSet;
     int nOps = f.getModelSymmetryCount(modelIndex);
     if (nOps == 0 || atomSymmetry == null)
       return "";
@@ -714,8 +714,8 @@ final public class Atom extends Point3fi implements JmolNode {
     return modelIndex;
   }
    
-  public int getMoleculeNumber(boolean inModel) {
-    return (group.chain.modelSet.getMoleculeIndex(index, inModel) + 1);
+  int getMoleculeNumber(boolean inModel) {
+    return (group.chain.model.modelSet.getMoleculeIndex(index, inModel) + 1);
   }
    
   private float getFractionalCoord(char ch, boolean asAbsolute) {
@@ -730,7 +730,7 @@ final public class Atom extends Point3fi implements JmolNode {
 
   private Point3f getFractionalCoord(boolean asAbsolute) {
     // asAbsolute TRUE uses the original unshifted matrix
-    SymmetryInterface c = group.chain.modelSet.getUnitCell(modelIndex);
+    SymmetryInterface c = group.chain.model.modelSet.getUnitCell(modelIndex);
     if (c == null) 
       return this;
     Point3f pt = new Point3f(this);
@@ -738,8 +738,8 @@ final public class Atom extends Point3fi implements JmolNode {
     return pt;
   }
   
-  public Point3f getFractionalUnitCoord(boolean asCartesian) {
-    SymmetryInterface c = group.chain.modelSet.getUnitCell(modelIndex);
+  Point3f getFractionalUnitCoord(boolean asCartesian) {
+    SymmetryInterface c = group.chain.model.modelSet.getUnitCell(modelIndex);
     if (c == null)
       return this;
     Point3f pt = new Point3f(this);
@@ -755,8 +755,8 @@ final public class Atom extends Point3fi implements JmolNode {
     return pt;
   }
   
-  public float getFractionalUnitDistance(Point3f pt, Point3f ptTemp1, Point3f ptTemp2) {
-    SymmetryInterface c = group.chain.modelSet.getUnitCell(modelIndex);
+  float getFractionalUnitDistance(Point3f pt, Point3f ptTemp1, Point3f ptTemp2) {
+    SymmetryInterface c = group.chain.model.modelSet.getUnitCell(modelIndex);
     if (c == null) 
       return distance(pt);
     ptTemp1.set(this);
@@ -772,7 +772,7 @@ final public class Atom extends Point3fi implements JmolNode {
   }
   
   void setFractionalCoord(int tok, float fValue, boolean asAbsolute) {
-    SymmetryInterface c = group.chain.modelSet.getUnitCell(modelIndex);
+    SymmetryInterface c = group.chain.model.modelSet.getUnitCell(modelIndex);
     if (c != null)
       c.toFractional(this, asAbsolute);
     switch (tok) {
@@ -799,7 +799,7 @@ final public class Atom extends Point3fi implements JmolNode {
   
   void setFractionalCoord(Point3f pt, Point3f ptNew, boolean asAbsolute) {
     pt.set(ptNew);
-    SymmetryInterface c = group.chain.modelSet.getUnitCell(modelIndex);
+    SymmetryInterface c = group.chain.model.modelSet.getUnitCell(modelIndex);
     if (c != null)
       c.toCartesian(pt, asAbsolute && !group.chain.model.isJmolDataFrame);
   }
@@ -901,7 +901,7 @@ final public class Atom extends Point3fi implements JmolNode {
       info.append("%");
       info.append(alternateLocationID);
     }
-    if (group.chain.modelSet.getModelCount() > 1) {
+    if (group.chain.model.modelSet.getModelCount() > 1) {
       info.append("/");
       info.append(getModelNumberForLabel());
     }
@@ -910,10 +910,6 @@ final public class Atom extends Point3fi implements JmolNode {
     return info.toString();
   }
 
-  public int getGroupIndex() {
-    return group.getGroupIndex();
-  }
-  
   public String getGroup3(boolean allowNull) {
     String group3 = group.getGroup3();
     return (allowNull 
@@ -926,15 +922,11 @@ final public class Atom extends Point3fi implements JmolNode {
     return (c != '\0' ? "" + c : c0 != '\0' ? "" + c0 : "");
   }
 
-  boolean isGroup3(String group3) {
-    return group.isGroup3(group3);
-  }
-
   public boolean isProtein() {
     return group.isProtein();
   }
 
-  public boolean isCarbohydrate() {
+  boolean isCarbohydrate() {
     return group.isCarbohydrate();
   }
 
@@ -992,7 +984,7 @@ final public class Atom extends Point3fi implements JmolNode {
    */
   public boolean isVisible(int flags) {
     // Is the atom's model visible? Is the atom NOT hidden?
-    if (!isInFrame() || group.chain.modelSet.isAtomHidden(index))
+    if (!isInFrame() || group.chain.model.modelSet.isAtomHidden(index))
       return false;
     // Is any shape associated with this atom visible?
     if (flags != 0)
@@ -1026,15 +1018,15 @@ final public class Atom extends Point3fi implements JmolNode {
   }
 
   public int getSurfaceDistance100() {
-    return group.chain.modelSet.getSurfaceDistance100(index);
+    return group.chain.model.modelSet.getSurfaceDistance100(index);
   }
 
   public Vector3f getVibrationVector() {
-    return group.chain.modelSet.getVibrationVector(index, false);
+    return group.chain.model.modelSet.getVibrationVector(index, false);
   }
 
   public float getVibrationCoord(char ch) {
-    return group.chain.modelSet.getVibrationCoord(index, ch);
+    return group.chain.model.modelSet.getVibrationCoord(index, ch);
   }
 
 
@@ -1051,7 +1043,7 @@ final public class Atom extends Point3fi implements JmolNode {
   }
   
   public int getSelectedGroupCountWithinChain() {
-    return group.chain.getSelectedGroupCount();
+    return group.chain.selectedGroupCount;
   }
 
   public int getSelectedGroupIndexWithinChain() {
@@ -1071,11 +1063,11 @@ final public class Atom extends Point3fi implements JmolNode {
   }
 
   String getModelNumberForLabel() {
-    return group.chain.modelSet.getModelNumberForAtomLabel(modelIndex);
+    return group.chain.model.modelSet.getModelNumberForAtomLabel(modelIndex);
   }
   
   public int getModelNumber() {
-    return group.chain.modelSet.getModelNumber(modelIndex) % 1000000;
+    return group.chain.model.modelSet.getModelNumber(modelIndex) % 1000000;
   }
   
   public int getModelFileIndex() {
@@ -1083,7 +1075,7 @@ final public class Atom extends Point3fi implements JmolNode {
   }
   
   public int getModelFileNumber() {
-    return group.chain.modelSet.getModelFileNumber(modelIndex);
+    return group.chain.model.modelSet.getModelFileNumber(modelIndex);
   }
   
   public String getBioStructureTypeName() {
@@ -1170,7 +1162,7 @@ final public class Atom extends Point3fi implements JmolNode {
     case Token.bondcount:
       return atom.getCovalentBondCount();
     case Token.color:
-      return atom.group.chain.modelSet.viewer.getColorArgbOrGray(atom.getColix());
+      return atom.group.chain.model.modelSet.viewer.getColorArgbOrGray(atom.getColix());
     case Token.element:
     case Token.elemno:
       return atom.getElementNumber();
@@ -1183,7 +1175,7 @@ final public class Atom extends Point3fi implements JmolNode {
     case Token.groupid:
       return atom.getGroupID(); //-1 if no group
     case Token.groupindex:
-      return atom.getGroupIndex(); 
+      return atom.group.getGroupIndex();
     case Token.model:
       //integer model number -- could be PDB/sequential adapter number
       //or it could be a sequential model in file number when multiple files
@@ -1237,7 +1229,7 @@ final public class Atom extends Point3fi implements JmolNode {
     case Token.selected:
       return (viewer.isAtomSelected(atom.index) ? 1 : 0);
     case Token.surfacedistance:
-      atom.group.chain.modelSet.getSurfaceDistanceMax();
+      atom.group.chain.model.modelSet.getSurfaceDistanceMax();
       return atom.getSurfaceDistance100() / 100f;
     case Token.temperature: // 0 - 9999
       return atom.getBfactor100() / 100f;
@@ -1361,7 +1353,7 @@ final public class Atom extends Point3fi implements JmolNode {
       return (ch == '\0' ? "" : "" + ch);
     case Token.label:
     case Token.format:
-      String s = atom.group.chain.modelSet.getAtomLabel(atom.getIndex());
+      String s = atom.group.chain.model.modelSet.getAtomLabel(atom.getIndex());
       if (s == null)
         s = "";
       return s;
@@ -1399,7 +1391,7 @@ final public class Atom extends Point3fi implements JmolNode {
       return atom;
     case Token.color:
       return Graphics3D.colorPointFromInt2(
-          atom.group.chain.modelSet.viewer.getColorArgbOrGray(atom.getColix())
+          atom.group.chain.model.modelSet.viewer.getColorArgbOrGray(atom.getColix())
           );
     }
     return null;
@@ -1410,7 +1402,7 @@ final public class Atom extends Point3fi implements JmolNode {
   }
   
   public int getOffsetResidueAtom(String name, int offset) {
-    return group.chain.modelSet.getGroupAtom(this, offset, name);
+    return group.chain.model.modelSet.getGroupAtom(this, offset, name);
   }
   
   public boolean isCrossLinked(JmolNode node) {

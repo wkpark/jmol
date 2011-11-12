@@ -25,16 +25,21 @@ package org.jmol.modelset;
 
 import java.util.BitSet;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.jmol.constant.EnumStructure;
-import org.jmol.util.BitSetUtil;
-import org.jmol.util.Escape;
+import javax.vecmath.Point3f;
 
+import org.jmol.constant.EnumStructure;
+import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSetUtil;
+import org.jmol.util.OutputStringBuffer;
+
+import org.jmol.viewer.Viewer;
 import org.jmol.viewer.StateManager.Orientation;
 
-public final class Model {
+public class Model {
 
   /*
    * In Jmol all atoms and bonds are kept as a set of arrays in 
@@ -82,7 +87,7 @@ public final class Model {
    *  
    */
   
-  ModelSet modelSet;
+  public ModelSet modelSet;
  
   /**
    * BE CAREFUL: FAILURE TO NULL REFERENCES TO modelSet WILL PREVENT FINALIZATION
@@ -98,8 +103,10 @@ public final class Model {
   int fileIndex;   // 0-based file reference
 
   public int hydrogenCount;
-  public boolean isPDB;
+  public boolean isBioModel;
   public boolean isPdbWithMultipleBonds;
+  public int trajectoryBaseIndex;
+  protected boolean hasRasmolHBonds;
   
   String loadState = "";
   StringBuffer loadScript = new StringBuffer();
@@ -110,9 +117,7 @@ public final class Model {
   }
   
   boolean isTrajectory;
-  int trajectoryBaseIndex;
   int selectedTrajectory = -1;
-  boolean hasRasmolHBonds;
   
   Map<String, Integer> dataFrames;
   int dataSourceFrame = -1;
@@ -120,9 +125,9 @@ public final class Model {
   String jmolFrameType;
   
   // set in ModelLoader phase:
-  int firstAtomIndex;  
-  int atomCount = 0; // includes deleted atoms
-  final BitSet bsAtoms = new BitSet();
+  protected int firstAtomIndex;  
+  protected int atomCount = 0; // includes deleted atoms
+  protected final BitSet bsAtoms = new BitSet();
   final BitSet bsAtomsDeleted = new BitSet();
   // this one is variable and calculated only if necessary:
   public int getTrueAtomCount() {
@@ -135,7 +140,7 @@ public final class Model {
     bondCount = -1;    
   }
   
-  int getBondCount() {
+  protected int getBondCount() {
     if (bondCount >= 0)
       return bondCount;
     Bond[] bonds = modelSet.getBonds();
@@ -154,22 +159,19 @@ public final class Model {
   
   int groupCount = -1;
 
-  int chainCount = 0;
-  Chain[] chains = new Chain[8];
-
-  int bioPolymerCount = 0;
-  Polymer[] bioPolymers = new Polymer[8];
+  protected int chainCount = 0;
+  protected Chain[] chains = new Chain[8];
 
   int biosymmetryCount;
 
-  Map<String, Object> auxiliaryInfo;
+  protected Map<String, Object> auxiliaryInfo;
   Properties properties;
   float defaultRotationRadius;
   String defaultStructure;
 
   Orientation orientation;
 
-  Model(ModelSet modelSet, int modelIndex, int trajectoryBaseIndex, 
+  public Model(ModelSet modelSet, int modelIndex, int trajectoryBaseIndex, 
       String jmolData, Properties properties, Map<String, Object> auxiliaryInfo) {
     this.modelSet = modelSet;
     dataSourceFrame = this.modelIndex = modelIndex;
@@ -203,18 +205,7 @@ public final class Model {
     this.nInsertions = nInsertions;  
   }
   
-  void addSecondaryStructure(EnumStructure type, 
-                             String structureID, int serialID, int strandCount,
-                             char startChainID, int startSeqcode,
-                             char endChainID, int endSeqcode) {
-    for (int i = bioPolymerCount; --i >= 0; ) {
-      Polymer polymer = bioPolymers[i];
-      polymer.addSecondaryStructure(type, structureID, serialID, strandCount, startChainID, startSeqcode,
-                                    endChainID, endSeqcode);
-    }
-  }
-
-  boolean structureTainted;
+  protected boolean structureTainted;
   boolean isJmolDataFrame;
   
   public String getModelNumberDotted() {
@@ -224,49 +215,15 @@ public final class Model {
   public String getModelTitle() {
     return modelSet.getModelTitle(modelIndex);
   }
-  
-  
-  String calculateStructures(boolean asDSSP, boolean doReport, 
-                             boolean dsspIgnoreHydrogen, boolean setStructure,
-                             boolean includeAlpha) {
-    structureTainted = modelSet.proteinStructureTainted = true;
-    if (bioPolymerCount == 0 || !setStructure && !asDSSP)
-      return "";
-    if (setStructure)
-      for (int i = bioPolymerCount; --i >= 0;)
-        if (!asDSSP || bioPolymers[i].getGroups()[0].getNitrogenAtom() != null)
-          bioPolymers[i].clearStructures();
-    if (!asDSSP || includeAlpha)
-      for (int i = bioPolymerCount; --i >= 0;)
-        bioPolymers[i].calculateStructures(includeAlpha);
-    return (asDSSP ? bioPolymers[0].calculateStructures(bioPolymers, bioPolymerCount,
-          null, doReport, dsspIgnoreHydrogen, setStructure) : "");
-  }
-
+    
   public boolean isStructureTainted() {
     return structureTainted;
   }
   
-  void setConformation(BitSet bsConformation) {
-    if (nAltLocs > 0)
-      for (int i = bioPolymerCount; --i >= 0; )
-        bioPolymers[i].setConformation(bsConformation);
-  }
-
-  boolean getPdbConformation(BitSet bsConformation, int conformationIndex) {
-    if (!isPDB)
-      return false;
-    if (nAltLocs > 0)
-      for (int i = bioPolymerCount; --i >= 0;)
-        bioPolymers[i].getConformation(bsConformation, conformationIndex);
-    return true;
-  }
-
   public Chain[] getChains() {
     return chains;
   }
 
-  
   public int getChainCount(boolean countWater) {
     if (chainCount > 1 && !countWater)
       for (int i = 0; i < chainCount; i++)
@@ -284,27 +241,9 @@ public final class Model {
     return n;
   }
   
-  public int getBioPolymerCount() {
-    return bioPolymerCount;
-  }
-
   void calcSelectedGroupsCount(BitSet bsSelected) {
     for (int i = chainCount; --i >= 0; )
       chains[i].calcSelectedGroupsCount(bsSelected);
-  }
-
-  void calcSelectedMonomersCount(BitSet bsSelected) {
-    for (int i = bioPolymerCount; --i >= 0; )
-      bioPolymers[i].calcSelectedMonomersCount(bsSelected);
-  }
-
-  void selectSeqcodeRange(int seqcodeA, int seqcodeB, char chainID, BitSet bs,
-                          boolean caseSensitive) {
-    for (int i = chainCount; --i >= 0;)
-      if (chainID == '\t' || chainID == chains[i].chainID || !caseSensitive
-          && chainID == Character.toUpperCase(chains[i].chainID))
-        for (int index = 0; index >= 0;)
-          index = chains[i].selectSeqcodeRange(index, seqcodeA, seqcodeB, bs);
   }
 
   int getGroupCount() {
@@ -316,67 +255,20 @@ public final class Model {
     return groupCount;
   }
 
+  Chain getChain(int i) {
+    return (i < chainCount ? chains[i] : null);
+  }
+
   Chain getChain(char chainID) {
     for (int i = chainCount; --i >= 0; ) {
       Chain chain = chains[i];
-      if (chain.getChainID() == chainID)
+      if (chain.chainID == chainID)
         return chain;
     }
     return null;
   }
 
-  Chain getChain(int i) {
-    return (i < chainCount ? chains[i] : null);
-  }
-
-  public Polymer getBioPolymer(int polymerIndex) {
-    return bioPolymers[polymerIndex];
-  }
-
-  void getDefaultLargePDBRendering(StringBuffer sb, int maxAtoms) {
-    BitSet bs = new BitSet();
-    if (getBondCount() == 0)
-      bs = bsAtoms;
-    // all biopolymer atoms...
-    if (bs != bsAtoms)
-      for (int i = 0; i < bioPolymerCount; i++)
-        bioPolymers[i].getRange(bs);
-    if (bs.nextSetBit(0) < 0)
-      return;
-    // ...and not connected to backbone:
-    BitSet bs2 = new BitSet();
-    if (bs == bsAtoms) {
-      bs2 = bs;
-    } else {
-      for (int i = 0; i < bioPolymerCount; i++)
-        if (bioPolymers[i].getType() == Polymer.TYPE_NOBONDING)
-          bioPolymers[i].getRange(bs2);
-    }
-    if (bs2.nextSetBit(0) >= 0)
-      sb.append("select ").append(Escape.escape(bs2)).append(";backbone only;");
-    if (atomCount <= maxAtoms)
-      return;
-    // ...and it's a large model, to wireframe:
-      sb.append("select ").append(Escape.escape(bs)).append(" & connected; wireframe only;");
-    // ... and all non-biopolymer and not connected to stars...
-    if (bs != bsAtoms) {
-      bs2.clear();
-      bs2.or(bsAtoms);
-      bs2.andNot(bs);
-      if (bs2.nextSetBit(0) >= 0)
-        sb.append("select " + Escape.escape(bs2) + " & !connected;stars 0.5;");
-    }
-  }
-  
-  public boolean isAtomHidden(int index) {
-    return modelSet.isAtomHidden(index);
-  }
-  
-  public int getModelIndex() {
-    return modelIndex;
-  }
-
-  void fixIndices(int modelIndex, int nAtomsDeleted, BitSet bsDeleted) {
+  public void fixIndices(int modelIndex, int nAtomsDeleted, BitSet bsDeleted) {
     if (dataSourceFrame > modelIndex)
       dataSourceFrame--;
     if (trajectoryBaseIndex > modelIndex)
@@ -384,10 +276,254 @@ public final class Model {
     firstAtomIndex -= nAtomsDeleted;
     for (int i = 0; i < chainCount; i++)
       chains[i].fixIndices(nAtomsDeleted, bsDeleted);
-    for (int i = 0; i < bioPolymerCount; i++)
-      bioPolymers[i].recalculateLeadMidpointsAndWingVectors();
     BitSetUtil.deleteBits(bsAtoms, bsDeleted);
     BitSetUtil.deleteBits(bsAtomsDeleted, bsDeleted);
   }
+
+  public void freeze() {
+    chains = (Chain[])ArrayUtil.setLength(chains, chainCount);
+    groupCount = -1;
+    getGroupCount();      
+    for (int i = 0; i < chainCount; ++i)
+      chains[i].groups = (Group[])ArrayUtil.setLength(chains[i].groups, chains[i].groupCount);
+  }
+
+
+  /////// BioModel only ///////
+  
+  /**
+   * @param viewer  
+   * @param type 
+   * @param ctype 
+   * @param isDraw 
+   * @param bsSelected 
+   * @param sb 
+   * @param bsWritten 
+   * @param pdbCONECT 
+   * @param tokens 
+   */
+  public void getPdbData(Viewer viewer, String type, char ctype,
+                         boolean isDraw, BitSet bsSelected,
+                         OutputStringBuffer sb, LabelToken[] tokens, StringBuffer pdbCONECT, BitSet bsWritten) {
+  }
+  
+  /**
+   * @param sb  
+   * @param maxAtoms 
+   */
+  public void getDefaultLargePDBRendering(StringBuffer sb, int maxAtoms) {
+  }
+  
+  /**
+   * @param bioBranches 
+   * @param bsBranch  
+   * @return  updated bioBranches 
+   */
+  public List<BitSet> getBioBranches(List<BitSet> bioBranches) {
+    return bioBranches;
+  }
+
+  /**
+   * @param nResidues  
+   * @param bs 
+   * @param bsResult 
+   */
+  public void getGroupsWithin(int nResidues, BitSet bs, BitSet bsResult) {
+  }
+
+  /**
+   * @param specInfo  
+   * @param bs 
+   * @param bsResult 
+   */
+  public void getSequenceBits(String specInfo, BitSet bs, BitSet bsResult) {
+  }
+
+  /**
+   * @param bsA  
+   * @param bsB 
+   * @param vHBonds 
+   * @param nucleicOnly 
+   * @param nMax 
+   * @param dsspIgnoreHydrogens 
+   */
+  public void getRasmolHydrogenBonds(BitSet bsA, BitSet bsB,
+                                     List<Bond> vHBonds, boolean nucleicOnly,
+                                     int nMax, boolean dsspIgnoreHydrogens) {
+  }
+
+  /**
+   * @param bsAtoms   
+   */
+  public void clearRasmolHydrogenBonds(BitSet bsAtoms) {
+  }
+
+
+  public void clearBioPolymers() {
+  }
+
+  /**
+   * @param bsSelected  
+   */
+  public void calcSelectedMonomersCount(BitSet bsSelected) {
+    // BioModel only
+  }
+
+  /**
+   * @param groups  
+   * @param groupCount 
+   * @param baseGroupIndex 
+   * @param modelsExcluded 
+   */
+  public void calculatePolymers(Group[] groups, int groupCount,
+                                int baseGroupIndex, BitSet modelsExcluded) {
+  }
+
+  /**
+   * @param bs  
+   * @param finalInfo 
+   * @param modelVector 
+   */
+  public void getAllPolymerInfo(
+                                BitSet bs,
+                                Map<String, List<Map<String, Object>>> finalInfo,
+                                List<Map<String, Object>> modelVector) {
+  }
+
+  public int getBioPolymerCount() {
+    return 0;
+  }
+
+  /**
+   * @param bs  
+   * @param vList 
+   * @param isTraceAlpha 
+   * @param sheetSmoothing 
+   */
+  public void getPolymerPointsAndVectors(BitSet bs, List<Point3f[]> vList,
+                                         boolean isTraceAlpha,
+                                         float sheetSmoothing) {
+  }
+
+  /**
+   * @param iPolymer  
+   * @return list of points or null
+   */
+  public Point3f[] getPolymerLeadMidPoints(int iPolymer) {
+    return null;
+  }
+
+  public void recalculateLeadMidpointsAndWingVectors() {
+  }
+
+  /**
+   * 
+   * @param type
+   * @param structureID
+   * @param serialID
+   * @param strandCount
+   * @param startChainID
+   * @param startSeqcode
+   * @param endChainID
+   * @param endSeqcode
+   */
+  public void addSecondaryStructure(EnumStructure type, 
+                             String structureID, int serialID, int strandCount,
+                             char startChainID, int startSeqcode,
+                             char endChainID, int endSeqcode) {
+    
+  }
+
+  /**
+   * @param asDSSP  
+   * @param doReport 
+   * @param dsspIgnoreHydrogen 
+   * @param setStructure 
+   * @param includeAlpha 
+   * @return structure list
+   */
+  public String calculateStructures(boolean asDSSP, boolean doReport, 
+                             boolean dsspIgnoreHydrogen, boolean setStructure,
+                             boolean includeAlpha) {
+    return "";
+  }
+
+  /**
+   * @param structureList  
+   */
+  public void setStructureList(Map<EnumStructure, float[]> structureList) {
+  }
+
+  public void getChimeInfo(StringBuffer sb, int nHetero) {
+    sb.append("\nNumber of Atoms ..... " + (modelSet.atomCount - nHetero));
+    if (nHetero > 0)
+      sb.append(" (" + nHetero + ")");
+    sb.append("\nNumber of Bonds ..... " + modelSet.bondCount);
+    sb.append("\nNumber of Models ...... " + modelSet.modelCount);
+  }
+
+  /**
+   * @param modelSet  
+   * @param bs1 
+   * @param bs2 
+   * @return number of struts
+   */
+  public int calculateStruts(ModelSet modelSet, BitSet bs1, BitSet bs2) {
+    return 0;
+  }
+
+  /**
+   * @param viewer  
+   * @param ctype 
+   * @param qtype 
+   * @param mStep 
+   */
+  public void calculateStraightness(Viewer viewer, char ctype, char qtype,
+                                    int mStep) {
+  }
+
+  /**
+   * @param seqcodeA  
+   * @param seqcodeB 
+   * @param chainID 
+   * @param bs 
+   * @param caseSensitive 
+   */
+  public void selectSeqcodeRange(int seqcodeA, int seqcodeB, char chainID, BitSet bs,
+                                 boolean caseSensitive) {
+  }
+
+  /**
+   * @param bsConformation  
+   */
+  public void setConformation(BitSet bsConformation) {
+    //
+  }
+
+  /**
+   * @param bsConformation  
+   * @param conformationIndex 
+   * @return true for BioModel
+   */
+  public boolean getPdbConformation(BitSet bsConformation, int conformationIndex) {
+    return false;
+  }
+
+  /**
+   * @param bsAtoms  
+   * @param taintedOnly 
+   * @param needPhiPsi 
+   * @param mode 
+   * @return     only for BioModel
+   */
+  public String getProteinStructureState(BitSet bsAtoms, boolean taintedOnly,
+                                         boolean needPhiPsi, int mode) {
+    return "";
+  }
+
+  public String getFullPDBHeader() {
+    return "";
+  }
+
 
 }

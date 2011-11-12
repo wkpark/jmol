@@ -53,18 +53,6 @@ public class Model {
    *   and their associated monomers
    * molecules (as defined by connectivity)
    *  
-   * Note that "monomer" extends group. A group only becomes a 
-   * monomer if it can be identified as one of the following 
-   * PDB/mmCIF types:
-   * 
-   *   amino  -- has an N, a C, and a CA
-   *   alpha  -- has just a CA
-   *   nucleic -- has C1',C2',C3',C4',C5',O3', and O5'
-   *   phosphorus -- has P
-   *   
-   * The term "conformation" is a bit loose. It means "what you get
-   * when you go with one or another set of alternative locations.
-   *
    * A Model then is just a small set of fields, a few arrays pointing
    * to other objects, and a couple of hash tables for information storage
    * 

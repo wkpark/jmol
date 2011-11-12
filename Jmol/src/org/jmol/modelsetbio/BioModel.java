@@ -54,17 +54,7 @@ import org.jmol.viewer.Viewer;
 public final class BioModel extends Model{
 
   /*
-   * In Jmol all atoms and bonds are kept as a set of arrays in 
-   * the AtomCollection and BondCollection objects. 
-   * Thus, "Model" is not atoms and bonds. 
-   * It is a description of all the:
-   * 
-   * chains (as defined in the file)
-   *   and their associated file-associated groups,  
-   * polymers (same, I think, but in terms of secondary structure)
-   *   and their associated monomers
-   * molecules (as defined by connectivity)
-   *  
+   *   
    * Note that "monomer" extends group. A group only becomes a 
    * monomer if it can be identified as one of the following 
    * PDB/mmCIF types:
@@ -77,25 +67,6 @@ public final class BioModel extends Model{
    * The term "conformation" is a bit loose. It means "what you get
    * when you go with one or another set of alternative locations.
    *
-   * A Model then is just a small set of fields, a few arrays pointing
-   * to other objects, and a couple of hash tables for information storage
-   * 
-   * Additional information here includes
-   * how many atoms there were before symmetry was applied
-   * as well as a bit about insertions and alternative locations.
-   * 
-   * 
-   * one model = one animation "frame", but we don't use the "f" word
-   * here because that would confuse the issue.
-   * 
-   * If multiple files are loaded, then they will appear here in 
-   * at least as many Model objects. Each vibration will be a complete
-   * set of atoms as well.
-   * 
-   * Jmol 11.3.58 developed the trajectory idea -- where
-   * multiple models may share the same structures, bonds, etc., but
-   * just differ in atom positions, saved in the Trajectories Vector
-   * in ModelCollection.
    *  
    */
   

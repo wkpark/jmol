@@ -50,8 +50,18 @@ import org.jmol.viewer.JmolConstants;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolBioResolver;
 
+/**
+ * a class used by ModelLoader only to handle all loading
+ * of operations specific to PDB/mmCIF files. By loading
+ * only by class name, only loaded if PDB file is called. 
+ * 
+ */
 public final class Resolver implements JmolBioResolver {
 
+  public Resolver() {
+    // only implemented via reflection, and only for PDB/mmCIF files
+  }
+  
   public Model getBioModel(ModelSet modelSet, int modelIndex,
                         int trajectoryBaseIndex, String jmolData,
                         Properties modelProperties,

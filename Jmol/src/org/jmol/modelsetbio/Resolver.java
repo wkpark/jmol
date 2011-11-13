@@ -132,20 +132,6 @@ public final class Resolver implements JmolBioResolver {
     return ( m != null && m.leadAtomIndex >= 0 ? m : null);
   }   
   
-  public void clearBioPolymers(Group[] groups, int groupCount,
-                               BitSet bsModelsExcluded) {
-    for (int i = 0; i < groupCount; ++i) {
-      Group group = groups[i];
-      if (group instanceof Monomer) {
-        Monomer monomer = (Monomer) group;
-        if (monomer.getBioPolymer() != null
-            && (bsModelsExcluded == null || !bsModelsExcluded.get(monomer.getModelIndex())))
-          monomer.setBioPolymer(null, -1);
-      }
-    }
-
-  }
-
   //////////// ADDITION OF HYDROGEN ATOMS /////////////
   // Bob Hanson and Erik Wyatt, Jmol 12.1.51, 7/1/2011
   
@@ -598,30 +584,6 @@ public final class Resolver implements JmolBioResolver {
     return TextFormat.join(newData, '\n', 0);
   }
 
-  public void calculatePolymers(Group[] groups, int groupCount,
-                                int baseGroupIndex, BitSet modelsExcluded) {
-    if (groups == null) {
-      groups = modelSet.getGroups();
-      groupCount = groups.length;
-    }
-    if (modelsExcluded != null)
-      clearBioPolymers(groups, groupCount, modelsExcluded);
-    boolean checkPolymerConnections = !modelSet.viewer.isPdbSequential();
-    for (int i = baseGroupIndex; i < groupCount; ++i) {
-      Group g = groups[i];
-      Model model = g.getModel();
-      if (!model.isBioModel || ! (g instanceof Monomer))
-        continue;
-      boolean doCheck = checkPolymerConnections 
-        && !modelSet.isJmolDataFrame(modelSet.atoms[g.firstAtomIndex].modelIndex);
-      BioPolymer bp = (((Monomer) g).getBioPolymer() == null ?
-          BioPolymer.allocateBioPolymer(groups, i, doCheck) : null);
-      if (bp == null || bp.monomerCount == 0)
-        continue;
-      ((BioModel) model).addBioPolymer(bp);
-      i += bp.monomerCount - 1;
-    }
-  }  
 }
 
 

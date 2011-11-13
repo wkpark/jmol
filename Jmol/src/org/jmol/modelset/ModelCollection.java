@@ -238,6 +238,8 @@ abstract public class ModelCollection extends BondCollection {
                                    int baseGroupIndex, BitSet modelsExcluded) {
     if (!isPDB)
       return;
+    
+    
     for (int i = 0; i < modelCount; i++)
       if ((modelsExcluded == null || !modelsExcluded.get(i))
           && models[i].isBioModel) {

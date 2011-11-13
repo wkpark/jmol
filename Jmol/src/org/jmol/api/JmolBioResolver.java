@@ -18,8 +18,6 @@ public interface JmolBioResolver {
                                                   int modelIndex, int[] specialAtomIndexes,
                                                   Atom[] atoms);
   
-  public void clearBioPolymers(Group[] groups, int groupCount, BitSet bsModelsExcluded);
-
   public void initializeHydrogenAddition(ModelLoader modelSet, int bondCount);
 
   public void finalizeHydrogens();

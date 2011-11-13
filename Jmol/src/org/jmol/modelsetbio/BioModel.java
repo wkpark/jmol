@@ -35,6 +35,7 @@ import javax.vecmath.Point3f;
 import org.jmol.constant.EnumStructure;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
+import org.jmol.modelset.Group;
 import org.jmol.modelset.HBond;
 import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.Model;
@@ -73,12 +74,6 @@ public final class BioModel extends Model{
   private int bioPolymerCount = 0;
   private BioPolymer[] bioPolymers;
 
-  @Override
-  public void clearBioPolymers() {
-    bioPolymers = new BioPolymer[8];
-    bioPolymerCount = 0;
-  }
-
   BioModel(ModelSet modelSet, int modelIndex, int trajectoryBaseIndex, 
       String jmolData, Properties properties, Map<String, Object> auxiliaryInfo) {
     super(modelSet, modelIndex, trajectoryBaseIndex, jmolData, properties, auxiliaryInfo);
@@ -86,6 +81,12 @@ public final class BioModel extends Model{
     clearBioPolymers();
   }
 
+  @Override
+  public void freeze() {
+    super.freeze();
+    bioPolymers = (BioPolymer[])ArrayUtil.setLength(bioPolymers, bioPolymerCount);
+  }
+  
   @Override
   public void addSecondaryStructure(EnumStructure type, 
                              String structureID, int serialID, int strandCount,
@@ -224,12 +225,6 @@ public final class BioModel extends Model{
   }
   
   @Override
-  public void freeze() {
-    super.freeze();
-    bioPolymers = (BioPolymer[])ArrayUtil.setLength(bioPolymers, bioPolymerCount);
-  }
-  
-  @Override
   public void setStructureList(Map<EnumStructure, float[]> structureList) {
     bioPolymers = (BioPolymer[])ArrayUtil.setLength(bioPolymers, bioPolymerCount);
     for (int i = bioPolymerCount; --i >= 0; )
@@ -245,42 +240,6 @@ public final class BioModel extends Model{
   }
   
   
-  @Override
-  public void getPdbData(Viewer viewer, String type, char ctype,
-                         boolean isDraw, BitSet bsSelected,
-                         OutputStringBuffer sb, LabelToken[] tokens, StringBuffer pdbCONECT, BitSet bsWritten) {
-    boolean bothEnds = false;
-    char qtype = (ctype != 'R' ? 'r' : type.length() > 13
-        && type.indexOf("ramachandran ") >= 0 ? type.charAt(13) : 'R');
-    if (qtype == 'r')
-      qtype = viewer.getQuaternionFrame();
-    int mStep = viewer.getHelixStep();
-    int derivType = (type.indexOf("diff") < 0 ? 0 : type.indexOf("2") < 0 ? 1
-        : 2);
-    if (!isDraw) {
-      sb.append("REMARK   6 Jmol PDB-encoded data: " + type + ";");
-      if (ctype != 'R') {
-        sb.append("  quaternionFrame = \"" + qtype + "\"");
-        bothEnds = true; //???
-      }
-      sb.append("\nREMARK   6 Jmol Version ").append(Viewer.getJmolVersion())
-          .append('\n');
-      if (ctype == 'R')
-        sb
-            .append("REMARK   6 Jmol data min = {-180 -180 -180} max = {180 180 180} "
-                + "unScaledXyz = xyz * {1 1 1} + {0 0 0} plotScale = {100 100 100}\n");
-      else
-        sb
-            .append("REMARK   6 Jmol data min = {-1 -1 -1} max = {1 1 1} "
-                + "unScaledXyz = xyz * {0.1 0.1 0.1} + {0 0 0} plotScale = {100 100 100}\n");
-    }
-    
-    for (int p = 0; p < bioPolymerCount; p++)
-      bioPolymers[p].getPdbData(viewer, ctype, qtype, mStep, derivType,
-          bsAtoms, bsSelected, bothEnds, isDraw, p == 0, tokens, sb, 
-          pdbCONECT, bsWritten);
-  }
-
   @Override
   public void getPolymerPointsAndVectors(BitSet bs, List<Point3f[]> vList,
                                          boolean isTraceAlpha,
@@ -338,31 +297,21 @@ public final class BioModel extends Model{
   }
 
   @Override
-  public void getAllPolymerInfo(
-                                BitSet bs,
-                                Map<String, List<Map<String, Object>>> finalInfo,
-                                List<Map<String, Object>> modelVector) {
-    Map<String, Object> modelInfo = new Hashtable<String, Object>();
-    List<Map<String, Object>> info = new ArrayList<Map<String, Object>>();
-    for (int ip = 0; ip < bioPolymerCount; ip++) {
-      Map<String, Object> polyInfo = bioPolymers[ip].getPolymerInfo(bs); 
-      if (!polyInfo.isEmpty())
-        info.add(polyInfo);
-    }
-    if (info.size() > 0) {
-      modelInfo.put("modelIndex", Integer.valueOf(modelIndex));
-      modelInfo.put("polymers", info);
-      modelVector.add(modelInfo);
-    }
+  public void selectSeqcodeRange(int seqcodeA, int seqcodeB, char chainID,
+                                 BitSet bs, boolean caseSensitive) {
+    char ch;
+    for (int i = chainCount; --i >= 0;)
+      if (chainID == (ch = chains[i].chainID) || chainID == '\t' || !caseSensitive
+          && chainID == Character.toUpperCase(ch))
+        for (int index = 0; index >= 0;)
+          index = chains[i].selectSeqcodeRange(index, seqcodeA, seqcodeB, bs);
   }
-  
+
   @Override
   public void getRasmolHydrogenBonds(BitSet bsA, BitSet bsB,
                                      List<Bond> vHBonds, boolean nucleicOnly,
                                      int nMax, boolean dsspIgnoreHydrogens,
-                                     BitSet bsHBonds) {
-    
-    
+                                     BitSet bsHBonds) {    
     boolean doAdd = (vHBonds == null);
     if (doAdd)
       vHBonds = new ArrayList<Bond>();
@@ -408,8 +357,6 @@ public final class BioModel extends Model{
       if (bsHBonds != null)
         bsHBonds.set(index);
     }
-
-
   }
 
   @Override
@@ -437,7 +384,41 @@ public final class BioModel extends Model{
       modelSet.deleteBonds(bsDelete, false);
   }
 
-  void addBioPolymer(BioPolymer polymer) {
+  @Override
+  public void calculatePolymers(Group[] groups, int groupCount,
+                                int baseGroupIndex, BitSet modelsExcluded) {
+    if (groups == null) {
+      groups = modelSet.getGroups();
+      groupCount = groups.length;
+    }
+    if (modelsExcluded != null)
+      for (int i = 0; i < groupCount; ++i) {
+        Group group = groups[i];
+        if (group instanceof Monomer) {
+          Monomer monomer = (Monomer) group;
+          if (monomer.getBioPolymer() != null
+              && (modelsExcluded == null || !modelsExcluded.get(monomer.getModelIndex())))
+            monomer.setBioPolymer(null, -1);
+        }
+      }
+    boolean checkPolymerConnections = !modelSet.viewer.isPdbSequential();
+    for (int i = baseGroupIndex; i < groupCount; ++i) {
+      Group g = groups[i];
+      Model model = g.getModel();
+      if (!model.isBioModel || ! (g instanceof Monomer))
+        continue;
+      boolean doCheck = checkPolymerConnections 
+        && !modelSet.isJmolDataFrame(modelSet.atoms[g.firstAtomIndex].modelIndex);
+      BioPolymer bp = (((Monomer) g).getBioPolymer() == null ?
+          BioPolymer.allocateBioPolymer(groups, i, doCheck) : null);
+      if (bp == null || bp.monomerCount == 0)
+        continue;
+      ((BioModel) model).addBioPolymer(bp);
+      i += bp.monomerCount - 1;
+    }
+  }  
+
+  private void addBioPolymer(BioPolymer polymer) {
     if (bioPolymers.length == 0)
       clearBioPolymers();
     if (bioPolymerCount == bioPolymers.length)
@@ -446,6 +427,31 @@ public final class BioModel extends Model{
     bioPolymers[bioPolymerCount++] = polymer;
   }
 
+  @Override
+  public void clearBioPolymers() {
+    bioPolymers = new BioPolymer[8];
+    bioPolymerCount = 0;
+  }
+
+  @Override
+  public void getAllPolymerInfo(
+                                BitSet bs,
+                                Map<String, List<Map<String, Object>>> finalInfo,
+                                List<Map<String, Object>> modelVector) {
+    Map<String, Object> modelInfo = new Hashtable<String, Object>();
+    List<Map<String, Object>> info = new ArrayList<Map<String, Object>>();
+    for (int ip = 0; ip < bioPolymerCount; ip++) {
+      Map<String, Object> polyInfo = bioPolymers[ip].getPolymerInfo(bs); 
+      if (!polyInfo.isEmpty())
+        info.add(polyInfo);
+    }
+    if (info.size() > 0) {
+      modelInfo.put("modelIndex", Integer.valueOf(modelIndex));
+      modelInfo.put("polymers", info);
+      modelVector.add(modelInfo);
+    }
+  }
+  
   @SuppressWarnings("incomplete-switch")
   @Override
   public void getChimeInfo(StringBuffer sb, int nHetero) {
@@ -500,17 +506,6 @@ public final class BioModel extends Model{
     sb.append("\nNumber of Helices ... " + nH);
     sb.append("\nNumber of Strands ... " + nS);
     sb.append("\nNumber of Turns ..... " + nT);
-  }
-
-  @Override
-  public void selectSeqcodeRange(int seqcodeA, int seqcodeB, char chainID,
-                                 BitSet bs, boolean caseSensitive) {
-    char ch;
-    for (int i = chainCount; --i >= 0;)
-      if (chainID == (ch = chains[i].chainID) || chainID == '\t' || !caseSensitive
-          && chainID == Character.toUpperCase(ch))
-        for (int index = 0; index >= 0;)
-          index = chains[i].selectSeqcodeRange(index, seqcodeA, seqcodeB, bs);
   }
 
   @SuppressWarnings("incomplete-switch")
@@ -716,4 +711,41 @@ public final class BioModel extends Model{
     auxiliaryInfo.put("fileHeader", info);
     return info;
   }
+
+  @Override
+  public void getPdbData(Viewer viewer, String type, char ctype,
+                         boolean isDraw, BitSet bsSelected,
+                         OutputStringBuffer sb, LabelToken[] tokens, StringBuffer pdbCONECT, BitSet bsWritten) {
+    boolean bothEnds = false;
+    char qtype = (ctype != 'R' ? 'r' : type.length() > 13
+        && type.indexOf("ramachandran ") >= 0 ? type.charAt(13) : 'R');
+    if (qtype == 'r')
+      qtype = viewer.getQuaternionFrame();
+    int mStep = viewer.getHelixStep();
+    int derivType = (type.indexOf("diff") < 0 ? 0 : type.indexOf("2") < 0 ? 1
+        : 2);
+    if (!isDraw) {
+      sb.append("REMARK   6 Jmol PDB-encoded data: " + type + ";");
+      if (ctype != 'R') {
+        sb.append("  quaternionFrame = \"" + qtype + "\"");
+        bothEnds = true; //???
+      }
+      sb.append("\nREMARK   6 Jmol Version ").append(Viewer.getJmolVersion())
+          .append('\n');
+      if (ctype == 'R')
+        sb
+            .append("REMARK   6 Jmol data min = {-180 -180 -180} max = {180 180 180} "
+                + "unScaledXyz = xyz * {1 1 1} + {0 0 0} plotScale = {100 100 100}\n");
+      else
+        sb
+            .append("REMARK   6 Jmol data min = {-1 -1 -1} max = {1 1 1} "
+                + "unScaledXyz = xyz * {0.1 0.1 0.1} + {0 0 0} plotScale = {100 100 100}\n");
+    }
+    
+    for (int p = 0; p < bioPolymerCount; p++)
+      bioPolymers[p].getPdbData(viewer, ctype, qtype, mStep, derivType,
+          bsAtoms, bsSelected, bothEnds, isDraw, p == 0, tokens, sb, 
+          pdbCONECT, bsWritten);
+  }
+
 }

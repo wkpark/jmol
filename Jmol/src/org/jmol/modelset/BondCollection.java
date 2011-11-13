@@ -240,17 +240,12 @@ abstract public class BondCollection extends AtomCollection {
 
   ////// bonding methods //////
   
-  public BitSet bsHBondsRasmol;
-
-  public void addHBond(Atom atom1, Atom atom2, int order, float energy) {
-    // from autoHbond
+  public int addHBond(Atom atom1, Atom atom2, int order, float energy) {
+    // from autoHbond and BioModel.getRasmolHydrogenBonds
     if (bondCount == bonds.length)
       bonds = (Bond[]) ArrayUtil.setLength(bonds, bondCount
           + BOND_GROWTH_INCREMENT);
-    int n = setBond(bondCount++, bondMutually(atom1, atom2, order, (short) 1, energy)).index;
-    if (bsHBondsRasmol != null)
-      bsHBondsRasmol.set(n);
-
+    return setBond(bondCount++, bondMutually(atom1, atom2, order, (short) 1, energy)).index;
   }
 
   protected static short getBondOrder(float bondingRadiusA,
@@ -400,7 +395,6 @@ abstract public class BondCollection extends AtomCollection {
     if (sets != null)
       for (int i = 0; i < sets.length; i++)
         BitSetUtil.deleteBits(sets[i], bsBond);
-    BitSetUtil.deleteBits(bsHBondsRasmol, bsBond);
     BitSetUtil.deleteBits(bsAromatic, bsBond);
   }
 

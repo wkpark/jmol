@@ -241,7 +241,7 @@ import javax.vecmath.Vector3f;
     if (models[baseModelIndex].hasRasmolHBonds) {
       models[baseModelIndex].clearRasmolHydrogenBonds(null);
       models[baseModelIndex].getRasmolHydrogenBonds(bs, bs, null, false,
-          Integer.MAX_VALUE, false);
+          Integer.MAX_VALUE, false, null);
     }
   }
 

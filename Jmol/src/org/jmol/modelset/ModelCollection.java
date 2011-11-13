@@ -1087,11 +1087,13 @@ abstract public class ModelCollection extends BondCollection {
    * @param nucleicOnly
    * @param nMax
    * @param dsspIgnoreHydrogens
+   * @param bsHBonds 
    */
 
   public void calcRasmolHydrogenBonds(BitSet bsA, BitSet bsB,
                                       List<Bond> vHBonds, boolean nucleicOnly,
-                                      int nMax, boolean dsspIgnoreHydrogens) {
+                                      int nMax, boolean dsspIgnoreHydrogens,
+                                      BitSet bsHBonds) {
     boolean isSame = (bsB == null || bsA.equals(bsB));
     for (int i = modelCount; --i >= 0;)
       if (models[i].isBioModel && models[i].trajectoryBaseIndex == i) {
@@ -1101,7 +1103,7 @@ abstract public class ModelCollection extends BondCollection {
             models[i].clearRasmolHydrogenBonds(bsB);
         }
         models[i].getRasmolHydrogenBonds(bsA, bsB, vHBonds, nucleicOnly, nMax,
-            dsspIgnoreHydrogens);
+            dsspIgnoreHydrogens, bsHBonds);
       }
   }
 
@@ -1787,14 +1789,6 @@ abstract public class ModelCollection extends BondCollection {
     return molecules;
   }
 
-  public boolean hasCalculatedHBonds(BitSet bs) {
-    BitSet bsModels = getModelBitSet(bs, false);
-    for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels.nextSetBit(i + 1))
-      if (models[atoms[i].modelIndex].hasRasmolHBonds)
-        return true;
-    return false;
-  }
-
   //////////// iterators //////////
 
   //private final static boolean MIX_BSPT_ORDER = false;
@@ -2195,7 +2189,7 @@ abstract public class ModelCollection extends BondCollection {
   private String getBasePairInfo(BitSet bs) {
     StringBuffer info = new StringBuffer();
     List<Bond> vHBonds = new ArrayList<Bond>();
-    calcRasmolHydrogenBonds(bs, bs, vHBonds, true, 1, false);
+    calcRasmolHydrogenBonds(bs, bs, vHBonds, true, 1, false, null);
     for (int i = vHBonds.size(); --i >= 0;) {
       Bond b = vHBonds.get(i);
       getAtomResidueInfo(info, b.atom1);
@@ -2222,7 +2216,7 @@ abstract public class ModelCollection extends BondCollection {
     List<Bond> vHBonds = new ArrayList<Bond>();
     if (specInfo.length() == 0) {
       bsA = bsB = viewer.getModelUndeletedAtomsBitSet(-1);
-      calcRasmolHydrogenBonds(bsA, bsB, vHBonds, true, 1, false);
+      calcRasmolHydrogenBonds(bsA, bsB, vHBonds, true, 1, false, null);
     } else {
       for (int i = 0; i < specInfo.length();) {
         bsA = getSequenceBits(specInfo.substring(i, ++i), null);
@@ -2231,7 +2225,7 @@ abstract public class ModelCollection extends BondCollection {
         bsB = getSequenceBits(specInfo.substring(i, ++i), null);
         if (bsB.cardinality() == 0)
           continue;
-        calcRasmolHydrogenBonds(bsA, bsB, vHBonds, true, 1, false);
+        calcRasmolHydrogenBonds(bsA, bsB, vHBonds, true, 1, false, null);
       }
     }
     BitSet bsAtoms = new BitSet();
@@ -2586,7 +2580,7 @@ abstract public class ModelCollection extends BondCollection {
       }
     }
     return new int[] {
-        matchHbond ? autoHbond(bsA, bsB) : autoBond(bsA, bsB, null, bsBonds,
+        matchHbond ? autoHbond(bsA, bsB, false) : autoBond(bsA, bsB, null, bsBonds,
             viewer.getMadBond(), false), 0 };
   }
 
@@ -2601,21 +2595,32 @@ abstract public class ModelCollection extends BondCollection {
    *        "from" set (must contain H if that is desired)
    * @param bsB
    *        "to" set
+   * @param onlyIfHaveCalculated
    * @return negative number of pseudo-hbonds or number of actual hbonds formed
    */
-  public int autoHbond(BitSet bsA, BitSet bsB) {
-    bsHBondsRasmol = new BitSet();
+  public int autoHbond(BitSet bsA, BitSet bsB, boolean onlyIfHaveCalculated) {
+    if (onlyIfHaveCalculated) {
+      BitSet bsModels = getModelBitSet(bsA, false);
+      for (int i = bsModels.nextSetBit(0); i >= 0 && onlyIfHaveCalculated; i = bsModels
+          .nextSetBit(i + 1))
+        onlyIfHaveCalculated = !models[i].hasRasmolHBonds;
+      if (onlyIfHaveCalculated)
+        return 0;
+    }
     boolean haveHAtoms = false;
-    for (int i = bsA.nextSetBit(0); i >= 0 && !haveHAtoms; i = bsA
-        .nextSetBit(i + 1))
-      if (atoms[i].getElementNumber() == 1)
+    for (int i = bsA.nextSetBit(0); i >= 0; i = bsA.nextSetBit(i + 1))
+      if (atoms[i].getElementNumber() == 1) {
         haveHAtoms = true;
+        break;
+      }
+    BitSet bsHBonds = new BitSet();
     boolean useRasMol = viewer.getHbondsRasmol();
     if (bsB == null || useRasMol && !haveHAtoms) {
       Logger.info((bsB == null ? "DSSP " : "RasMol")
           + " pseudo-hbond calculation");
-      calcRasmolHydrogenBonds(bsA, bsB, null, false, Integer.MAX_VALUE, false);
-      return -BitSetUtil.cardinalityOf(bsHBondsRasmol);
+      calcRasmolHydrogenBonds(bsA, bsB, null, false, Integer.MAX_VALUE, false,
+          bsHBonds);
+      return -BitSetUtil.cardinalityOf(bsHBonds);
     }
     Logger.info(haveHAtoms ? "Standard Hbond calculation"
         : "Jmol pseudo-hbond calculation");
@@ -2724,13 +2729,13 @@ abstract public class ModelCollection extends BondCollection {
         } else {
           bo = JmolEdge.BOND_H_REGULAR;
         }
-        addHBond(atom, atomNear, bo, energy);
+        bsHBonds.set(addHBond(atom, atomNear, bo, energy));
         nNew++;
       }
     }
     iter.release();
     shapeManager.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MIN_VALUE,
-        null, bsHBondsRasmol);
+        null, bsHBonds);
     if (showRebondTimes && Logger.debugging)
       Logger.checkTimer("Time to hbond");
     return (haveHAtoms ? nNew : -nNew);

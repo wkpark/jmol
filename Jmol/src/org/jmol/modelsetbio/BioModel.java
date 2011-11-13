@@ -359,7 +359,8 @@ public final class BioModel extends Model{
   @Override
   public void getRasmolHydrogenBonds(BitSet bsA, BitSet bsB,
                                      List<Bond> vHBonds, boolean nucleicOnly,
-                                     int nMax, boolean dsspIgnoreHydrogens) {
+                                     int nMax, boolean dsspIgnoreHydrogens,
+                                     BitSet bsHBonds) {
     
     
     boolean doAdd = (vHBonds == null);
@@ -403,7 +404,9 @@ public final class BioModel extends Model{
       Atom atom2 = bond.getAtom2();
       if (atom1.isBonded(atom2))
         continue;
-      modelSet.addHBond(atom1, atom2, bond.order, bond.getEnergy());
+      int index = modelSet.addHBond(atom1, atom2, bond.order, bond.getEnergy());
+      if (bsHBonds != null)
+        bsHBonds.set(index);
     }
 
 

@@ -334,10 +334,12 @@ public class Model {
    * @param nucleicOnly 
    * @param nMax 
    * @param dsspIgnoreHydrogens 
+   * @param bsHBonds 
    */
   public void getRasmolHydrogenBonds(BitSet bsA, BitSet bsB,
                                      List<Bond> vHBonds, boolean nucleicOnly,
-                                     int nMax, boolean dsspIgnoreHydrogens) {
+                                     int nMax, boolean dsspIgnoreHydrogens,
+                                     BitSet bsHBonds) {
   }
 
   /**
@@ -506,11 +508,11 @@ public class Model {
    */
   public String getProteinStructureState(BitSet bsAtoms, boolean taintedOnly,
                                          boolean needPhiPsi, int mode) {
-    return "";
+    return null;
   }
 
   public String getFullPDBHeader() {
-    return "";
+    return null;
   }
 
 

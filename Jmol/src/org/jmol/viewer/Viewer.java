@@ -3490,12 +3490,12 @@ private void zap(String msg) {
   // return true;//global.autoLoadOrientation; 12.0.RC10
   // }
 
-  public int autoHbond(BitSet bsFrom, BitSet bsTo) {
+  public int autoHbond(BitSet bsFrom, BitSet bsTo, boolean onlyIfHaveCalculated) {
     if (bsFrom == null)
       bsFrom = bsTo = getSelectionSet(false);
     // bsTo null --> use DSSP method further developed 
     // here to give the "defining" Hbond set only
-    return modelSet.autoHbond(bsFrom, bsTo);
+    return modelSet.autoHbond(bsFrom, bsTo, onlyIfHaveCalculated);
   }
 
   public float getHbondsAngleMin() {
@@ -3508,10 +3508,6 @@ private void zap(String msg) {
 
   public boolean getHbondsRasmol() {
     return global.hbondsRasmol;
-  }
-
-  public boolean hasCalculatedHBonds(BitSet bsAtoms) {
-    return modelSet.hasCalculatedHBonds(bsAtoms);
   }
 
   @Override

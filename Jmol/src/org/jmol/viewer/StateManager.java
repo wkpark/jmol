@@ -947,6 +947,7 @@ public class StateManager {
       setParameterValue("vibrationPeriod", vibrationPeriod);
       setParameterValue("vibrationScale", vibrationScale);
       setParameterValue("visualRange", visualRange);
+      setParameterValue("waitForMoveTo", waitForMoveTo);
       setParameterValue("wireframeRotation", wireframeRotation);
       setParameterValue("zDepth", zDepth);
       setParameterValue("zeroBasedXyzRasmol", zeroBasedXyzRasmol);

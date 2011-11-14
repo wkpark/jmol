@@ -96,6 +96,7 @@ public class JvxlData {
   public boolean isJvxlPrecisionColor;
   public boolean jvxlDataIsColorMapped;
   public boolean jvxlDataIs2dContour;
+  public boolean jvxlDataIsColorDensity;
   public boolean isColorReversed;
   
   public int edgeFractionBase = JvxlCoder.defaultEdgeFractionBase;

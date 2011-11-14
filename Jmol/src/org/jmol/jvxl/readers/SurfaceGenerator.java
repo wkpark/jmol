@@ -1110,7 +1110,7 @@ public class SurfaceGenerator {
       surfaceReader.colorIsosurface();
       params.state = Parameters.STATE_DATA_COLORED;
     }
-    if (jvxlData.colorDensity) {
+    if (jvxlData.jvxlDataIsColorDensity) {
       params.state = Parameters.STATE_DATA_COLORED;
     }
     if (params.colorBySign || params.isBicolorMap) {

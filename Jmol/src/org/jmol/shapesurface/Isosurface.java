@@ -264,6 +264,20 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return;
     }
 
+    if ("colorPhase" == propertyName) {
+      // from color isosurface phase color1 color2  Jmol 12.3.5
+      Object[] colors = (Object[]) value;
+      if (thisMesh != null) {
+        thisMesh.colorPhased = true;
+        thisMesh.colix = thisMesh.jvxlData.minColorIndex = Graphics3D.getColix(((Integer) colors[0]).intValue());
+        thisMesh.jvxlData.maxColorIndex = Graphics3D.getColix(((Integer) colors[1]).intValue());
+        thisMesh.jvxlData.isBicolorMap = true;
+        thisMesh.jvxlData.colorDensity = false;
+        thisMesh.isColorSolid = false;
+        thisMesh.remapColors(null, translucentLevel);
+      }
+      return;
+    }
     if ("color" == propertyName) {
       if (thisMesh != null) {
         // thisMesh.vertexColixes = null;
@@ -846,6 +860,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       boolean colorArrayed = (imesh.isColorSolid && imesh.polygonColixes != null);
       if (imesh.isColorSolid && !colorArrayed)
         appendCmd(sb, getColorCommand(myType, imesh.colix));
+      else if (imesh.jvxlData.isBicolorMap && imesh.colorPhased)
+        appendCmd(sb, "color isosurface phase "
+            + encodeColor(imesh.jvxlData.minColorIndex) + " "
+            + encodeColor(imesh.jvxlData.maxColorIndex));
       if (imesh.vertexColorMap != null)
         for (Map.Entry<String, BitSet> entry : imesh.vertexColorMap.entrySet()) {
           BitSet bs = entry.getValue();

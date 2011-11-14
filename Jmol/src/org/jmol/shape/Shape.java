@@ -473,7 +473,7 @@ public abstract class Shape {
         ? EnumPalette.getPaletteName(pid) : encodeColor(colix));
   }
 
-  static String encodeColor(short colix) {
+  protected static String encodeColor(short colix) {
     // used also by labels for background state (no translucent issues there?)
     return (Graphics3D.isColixColorInherited(colix) ? "none" : Graphics3D
         .getHexCode(colix));

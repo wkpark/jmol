@@ -303,6 +303,7 @@ public abstract class SurfaceReader implements VertexDataServer {
   protected boolean jvxlDataIsColorMapped;
   protected boolean jvxlDataIsPrecisionColor;
   protected boolean jvxlDataIs2dContour;
+  protected boolean jvxlDataIsColorDensity;
   protected float jvxlCutoff;
   protected int jvxlNSurfaceInts;
   protected char cJvxlEdgeNaN;
@@ -404,6 +405,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     jvxlData.colorFractionRange = colorFractionRange;
     jvxlData.jvxlDataIs2dContour = jvxlDataIs2dContour;
     jvxlData.jvxlDataIsColorMapped = jvxlDataIsColorMapped;
+    jvxlData.jvxlDataIsColorDensity = jvxlDataIsColorDensity;
     jvxlData.isXLowToHigh = isXLowToHigh;
     jvxlData.vertexDataOnly = vertexDataOnly;
     jvxlData.saveVertexCount = 0;
@@ -859,7 +861,7 @@ public abstract class SurfaceReader implements VertexDataServer {
 
   static int getColorPhaseIndex(String color) {
     int colorPhase = -1;
-    for (int i = colorPhases.length; --i >= 0;)
+    for (int i = 0; i < colorPhases.length; i++)
       if (color.equalsIgnoreCase(colorPhases[i])) {
         colorPhase = i;
         break;

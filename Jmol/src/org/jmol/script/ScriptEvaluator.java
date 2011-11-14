@@ -7689,6 +7689,7 @@ public class ScriptEvaluator {
       throws ScriptException {
     String translucency = null;
     Object colorvalue = null;
+    Object colorvalue1 = null;
     BitSet bs = null;
     String prefix = "";
     boolean isColor = false;
@@ -7715,6 +7716,11 @@ public class ScriptEvaluator {
       case Token.mesh:
         getToken(++index);
         prefix = "mesh";
+        break;
+      case Token.phase:
+        int argb = getArgbParam(++index, false);
+        colorvalue1 = (argb == 0 ? null : Integer.valueOf(argb));
+        getToken(index = iToken + 1);
         break;
       case Token.bitset:
       case Token.expressionBegin:
@@ -7933,7 +7939,9 @@ public class ScriptEvaluator {
         viewer.calcSelectedMoleculesCount();
         break;
       }
-      if (bs == null)
+      if (isIsosurface && colorvalue1 != null)
+        setShapeProperty(shapeType, "colorPhase", new Object[] { colorvalue1, colorvalue });
+      else if (bs == null)
         setShapeProperty(shapeType, prefix + "color", colorvalue);
       else
         setShapeProperty(shapeType, prefix + "color", colorvalue, bs);

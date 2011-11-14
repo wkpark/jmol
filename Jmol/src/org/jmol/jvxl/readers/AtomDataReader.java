@@ -246,6 +246,10 @@ abstract class AtomDataReader extends VolumeDataReader {
     firstNearbyAtom = myAtomCount;
     Logger.info(myAtomCount + " atoms will be used in the surface calculation");
 
+    if (myAtomCount == 0) {
+      setBoundingBox(new Point3f(10, 10, 10), 0);
+      setBoundingBox(new Point3f(-10, -10, -10), 0);
+    }
     for (int i = 0; i < myAtomCount; i++)
       setBoundingBox(atomXyz[i], getRadii ? atomRadius[i] + 0.5f : 0);
     if (!Float.isNaN(params.scale)) {

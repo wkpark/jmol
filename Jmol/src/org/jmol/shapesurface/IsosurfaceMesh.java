@@ -77,6 +77,7 @@ public class IsosurfaceMesh extends Mesh {
     mergeAssociatedNormalCount = 0;
     centers = null;
     colorEncoder = null;
+    colorPhased = false;
     firstRealVertex = -1;
     hasGridPoints = iAddGridPoints;
     isColorSolid = true;
@@ -400,6 +401,7 @@ public class IsosurfaceMesh extends Mesh {
   
   float volumeRenderPointSize = 0.15f;
   BitSet bsVdw;
+  public boolean colorPhased;
 
   public void setDiscreteColixes(float[] values, short[] colixes) {
     if (values != null)

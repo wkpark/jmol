@@ -45,7 +45,7 @@ public class Resolver {
   private final static String[] readerSets = new String[] {
     "cifpdb.", ";Cif;Pdb;",
     "molxyz.", ";Mol3D;Mol;Xyz;",
-    "more.", ";BinaryDcd;Gromacs;MdCrd;MdTop;Mol2;Pqr;P2n;",
+    "more.", ";BinaryDcd;Gromacs;MdCrd;MdTop;Mol2;Pqr;P2n;TlsDataOnly;",
     "quantum.", ";Adf;Csf;Dgrid;GamessUK;GamessUS;Gaussian;GausianWfn;Jaguar;" +
                  "Molden;MopacGraphf;GenNBO;NWChem;Odyssey;Psi;Qchem;Spartan;SpartanSmol;" +
                  "WebMO;",
@@ -270,7 +270,7 @@ public class Resolver {
         atomSetCollectionReader = (AtomSetCollectionReader) atomSetCollectionReaderClass
             .newInstance();
       } catch (Exception e) {
-        err = "File reader was not found:" + readerName;
+        err = "File reader was not found:" + className;
         Logger.error(err);
         return err;
       }
@@ -911,8 +911,12 @@ public class Resolver {
   private final static String[] dcdFileStartRecords =
   {"BinaryDcd", "T\0\0\0CORD", "\0\0\0TCORD"};
 
+  private final static String[] tlsDataOnlyFileStartRecords =
+  {"TlsDataOnly", "REFMAC\n\nTL", "REFMAC\r\n\r\n", "REFMAC\r\rTL"};
+  
   private final static String[][] fileStartsWithRecords =
-  { cubeFileStartRecords, mol2Records, webmoFileStartRecords, moldenFileStartRecords, dcdFileStartRecords };
+  { cubeFileStartRecords, mol2Records, webmoFileStartRecords, 
+    moldenFileStartRecords, dcdFileStartRecords, tlsDataOnlyFileStartRecords };
 
   ////////////////////////////////////////////////////////////////
   // these test lines that startWith one of these strings

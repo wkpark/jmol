@@ -355,7 +355,7 @@ public abstract class AtomSetCollectionReader {
     if (atomSetCollection.errorMessage != null)
       return atomSetCollection.errorMessage + "\nfor file " + filePath
           + "\ntype " + name;
-    if (atomSetCollection.getAtomCount() == 0)
+    if (atomSetCollection.getAtomCount() == 0 && fileType.indexOf("DataOnly") < 0)
       return "No atoms found\nfor file " + filePath + "\ntype " + name;
     return atomSetCollection;
   }
@@ -373,8 +373,7 @@ public abstract class AtomSetCollectionReader {
   @SuppressWarnings("unchecked")
   private void initialize() {
     initializeSymmetry();
-    viewer = (JmolViewer) htParams.get("viewer");
-    htParams.remove("viewer"); // don't pass this on to user
+    viewer = (JmolViewer) htParams.remove("viewer"); // don't pass this on to user
     if (htParams.containsKey("stateScriptVersionInt"))
       stateScriptVersionInt = ((Integer) htParams.get("stateScriptVersionInt"))
           .intValue();

@@ -140,13 +140,17 @@ public class PdbReader extends AtomSetCollectionReader {
    "TITLE   ";  //21
 
 
- @Override
+ @SuppressWarnings("unchecked")
+@Override
  protected void initializeReader() throws Exception {
    setIsPDB();
    pdbHeader = (getHeader ? new StringBuffer() : null);
    applySymmetry = !checkFilter("NOSYMMETRY");
    getTlsGroups = checkFilter("TLS");
-   
+   if (htParams.containsKey("vTlsModels")) {
+     // from   load files "tls.out" "xxxx.pdb"
+     vTlsModels = (List<Map<String, Object>>) htParams.remove("vTlsModels");
+   }
    if (checkFilter("CONF ")) {
      configurationPtr = parseInt(filter, filter.indexOf("CONF ") + 5);
      sbIgnored = new StringBuffer();

@@ -199,10 +199,12 @@ public class AtomSetCollection {
   
   public AtomSetCollection(AtomSetCollection[] array) {
     this("Array", null);
-    setAtomSetCollectionAuxiliaryInfo("isMultiFile", Boolean.TRUE);
-    for (int i = 0; i < array.length; i++) {
-      appendAtomSetCollection(i, array[i]);
-    }
+    int n = 0;
+    for (int i = 0; i < array.length; i++) 
+      if (array[i].atomCount > 0)
+        appendAtomSetCollection(n++, array[i]);
+    if (n > 1)
+      setAtomSetCollectionAuxiliaryInfo("isMultiFile", Boolean.TRUE);
   }
 
   /**

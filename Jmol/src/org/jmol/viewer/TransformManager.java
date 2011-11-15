@@ -872,8 +872,8 @@ abstract class TransformManager {
 
   int slabPercentSetting;
   int depthPercentSetting;
-  int zSlabPercentSetting; // from global.zSlab
-  int zDepthPercentSetting;// from global.zDepth
+  int zSlabPercentSetting = 50; // new default for 12.3.6 and 12.2.6
+  int zDepthPercentSetting = 0;
   Point3f zSlabPoint;
   
   void setZslabPoint(Point3f pt) {

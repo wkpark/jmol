@@ -720,6 +720,8 @@ public class StateManager {
       setParameterValue("slabEnabled", false);       // maintained by TransformManager     
       setParameterValue("depth", 0);                 // maintained by TransformManager
       setParameterValue("slab", 100);                // maintained by TransformManager
+      setParameterValue("zDepth", 0);                // maintained by TransformManager
+      setParameterValue("zSlab", 50);                // maintained by TransformManager
       setParameterValue("slabrange", 0f);            // maintained by TransformManager
       setParameterValue("spinX", 0);                 // maintained by TransformManager
       setParameterValue("spinY", TransformManager.DEFAULT_SPIN_Y);
@@ -967,8 +969,8 @@ public class StateManager {
     int specularPower = 40;
     int zDepth = 0;
     int zShadePower = 3;  // increased to 3 from 1 for Jmol 12.1.49
-    int zSlab = 0;
-    
+    int zSlab = 50; // increased to 50 from 0 in Jmol 12.3.6 and Jmol 12.2.6
+     
     boolean slabByMolecule = false;
     boolean slabByAtom = false;
 

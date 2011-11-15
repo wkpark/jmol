@@ -16211,20 +16211,22 @@ public class ScriptEvaluator {
           Float f;
           for (int i = 0; i < nOrb; i++) {
             Map<String, Object> mo = mos.get(i);
-            f = (Float) mo.get("occupancy");
-            if (f != null) {
+            if ((f = (Float) mo.get("occupancy")) != null) {
               if (f.floatValue() == 0) {
+                // go for LUMO = first unoccupied
                 moNumber = i;
                 break;
               }
-            } else if ((f = (Float) mo.get("energy")) == null) {
-              break;
-            }
-            if (f.floatValue() > 0) {
-              // go for HOMO = highest non-negative
-              moNumber = i;
+              continue;
+            } else if ((f = (Float) mo.get("energy")) != null) {
+              if (f.floatValue() > 0) {
+                // go for LUMO = first positive
+                moNumber = i;
+                break;
+              }
               continue;
             }
+            break;
           }
           if (moNumber < 0)
             error(ERROR_moOccupancy);

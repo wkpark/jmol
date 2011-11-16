@@ -775,6 +775,11 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
     meshData.nSets = thisMesh.nSets;
     meshData.vertexSets = thisMesh.vertexSets;
+    if (!isArea && thisMesh.jvxlData.colorDensity) {
+      float f = thisMesh.jvxlData.voxelVolume;
+      f *= (thisMesh.bsSlabDisplay == null ? thisMesh.vertexCount : thisMesh.bsSlabDisplay.cardinality());
+      return  thisMesh.calculatedVolume = Float.valueOf(f); 
+    }
     Object ret = meshData.calculateVolumeOrArea(thisMesh.thisSet, isArea, false);
     if (isArea)
       thisMesh.calculatedArea = ret;

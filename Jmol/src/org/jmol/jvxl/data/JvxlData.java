@@ -162,6 +162,7 @@ public class JvxlData {
   public int diameter;
   public String slabInfo;
   public boolean allowVolumeRender;
+  public float voxelVolume;
 
   public void clear() {
     allowVolumeRender = true;
@@ -186,6 +187,7 @@ public class JvxlData {
     translucency = 0;
     vContours = null;
     vertexColorMap = null;
+    voxelVolume = 0;
   }
 
   public void setSurfaceInfo(Point4f thePlane, int nSurfaceInts, String surfaceData) {

@@ -187,7 +187,7 @@ public class Contact extends Isosurface {
       colorByType = false;
       if (rd == null)
         rd = rdVDW;
-      newSurface(Token.trim, null, bsA, bsB, rd, null, null, false, null);
+      newSurface(Token.trim, null, bsA, bsB, rd, null, null, colorDensity, null);
       if (displayType == Token.full) {
         sg.initState();
         newSurface(Token.trim, null, bsB, bsA, rd, parameters, func,
@@ -199,6 +199,7 @@ public class Contact extends Isosurface {
         meshData.getSurfaceSet();
         fillMeshData(meshData, MeshData.MODE_PUT_SETS, null);
       }
+      
       break;
     case Token.connect:
     case Token.plane:

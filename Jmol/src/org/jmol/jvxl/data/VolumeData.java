@@ -201,6 +201,7 @@ public class VolumeData implements VolumeDataInterface {
 
   public float minGrid;
   public float maxGrid;
+  public float voxelVolume;
   
   public int getYzCount() {
     
@@ -322,12 +323,14 @@ public class VolumeData implements VolumeDataInterface {
 
   public boolean setUnitVectors() {
     maxVectorLength = 0;
+    voxelVolume = 1;
     for (int i = 0; i < 3; i++) {
       float d = volumetricVectorLengths[i] = volumetricVectors[i].length();
       if (d == 0)
         return false;
       if (d > maxVectorLength)
         maxVectorLength = d;
+      voxelVolume *= d;
       unitVolumetricVectors[i].normalize(volumetricVectors[i]);
     }
     minToPlaneDistance = maxVectorLength * 2;

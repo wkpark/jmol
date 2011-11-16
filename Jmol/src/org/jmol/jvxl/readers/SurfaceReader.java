@@ -355,6 +355,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     jvxlData.nPointsY = nPointsY;
     jvxlData.nPointsZ = nPointsZ;
     jvxlData.jvxlVolumeDataXml = volumeData.xmlData;
+    jvxlData.voxelVolume = volumeData.voxelVolume;
     if (justForPlane) {
       //float[][][] voxelDataTemp =  volumeData.voxelData;
       volumeData.setMappingPlane(params.thePlane);

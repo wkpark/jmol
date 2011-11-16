@@ -15594,7 +15594,7 @@ public class ScriptEvaluator {
         volume = Float.valueOf((float) v);
       }
       int nsets = ((Integer) getShapeProperty(JmolConstants.SHAPE_CONTACT, "nSets")).intValue();
-      if (displayType == Token.trim) {
+      if (!colorDensity && displayType == Token.trim) {
         showString(nsets + " contacts");
       } else {
         showString((nsets == 0 ? "" : nsets + " contacts with ") + "net volume " + volume + " A^3");

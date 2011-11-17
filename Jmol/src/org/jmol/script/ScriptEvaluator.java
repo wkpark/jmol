@@ -12995,8 +12995,7 @@ public class ScriptEvaluator {
     switch (tok) {
     case Token.on:
     case Token.off:
-      setShapeProperty(JmolConstants.SHAPE_MEASURES, "showMeasurementNumbers",
-          tok == Token.on ? Boolean.TRUE : Boolean.FALSE);
+      setBooleanProperty("measurementlabels", tok == Token.on);
       return;
     case Token.dotted:
     case Token.integer:

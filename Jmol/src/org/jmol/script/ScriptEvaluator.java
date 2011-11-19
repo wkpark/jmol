@@ -15389,6 +15389,7 @@ public class ScriptEvaluator {
     int displayType = Token.plane;
     int contactType = Token.nada;
     float distance = Float.NaN;
+    float surfaceRadius = 0;
     boolean localOnly = true;
     Boolean intramolecular = null;
     Object userSlabObject = null;
@@ -15498,6 +15499,9 @@ public class ScriptEvaluator {
         contactType = tok;
         sbCommand.append(" ").append(theToken.value);
         break;
+      case Token.sasurface:
+        if (isFloatParameter(i + 1))
+          surfaceRadius = floatParameter(++i);
       case Token.cap:
       case Token.nci:
       case Token.surface:
@@ -15509,6 +15513,8 @@ public class ScriptEvaluator {
       case Token.connect:
         displayType = tok;
         sbCommand.append(" ").append(theToken.value);
+        if (tok == Token.sasurface)
+          sbCommand.append(" ").append(surfaceRadius);
         break;
       case Token.parameters:
         params = floatParameterSet(++i, 1, 10);
@@ -15546,6 +15552,7 @@ public class ScriptEvaluator {
       switch (displayType) {
       case Token.cap:
       case Token.surface:
+      case Token.sasurface:
         bsB.andNot(bsA);
         break;
       case Token.nci:
@@ -15572,7 +15579,7 @@ public class ScriptEvaluator {
       setShapeProperty(JmolConstants.SHAPE_CONTACT, "set", new Object[] {
           Integer.valueOf(contactType), Integer.valueOf(displayType),
           Boolean.valueOf(colorDensity), Boolean.valueOf(colorByType), bsA,
-          bsB, rd, params, sbCommand.toString() });
+          bsB, rd, Float.valueOf(surfaceRadius), params, sbCommand.toString() });
       if (colorpt > 0)
         setMeshDisplayProperty(JmolConstants.SHAPE_CONTACT, colorpt, 0);
     }
@@ -15593,9 +15600,8 @@ public class ScriptEvaluator {
         volume = Float.valueOf((float) v);
       }
       int nsets = ((Integer) getShapeProperty(JmolConstants.SHAPE_CONTACT, "nSets")).intValue();
-      if (!colorDensity && displayType == Token.trim) {
-        showString(nsets + " contacts");
-      } else {
+      
+      if (colorDensity || displayType != Token.trim) {
         showString((nsets == 0 ? "" : nsets + " contacts with ") + "net volume " + volume + " A^3");
       }
     }

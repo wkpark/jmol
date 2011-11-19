@@ -92,8 +92,12 @@ public class Contact extends Isosurface {
     BitSet bsA = (BitSet) value[4];
     BitSet bsB = (BitSet) value[5];
     RadiusData rd = (RadiusData) value[6];
-    float[] parameters = (float[]) value[7];
-    String command = (String) value[8];
+    if (rd == null)
+      rd = (contactType == Token.vanderwaals ? new RadiusData(0.25f,
+          RadiusData.EnumType.OFFSET, EnumVdw.AUTO) : rdVDW);
+    float sasurfaceRadius = ((Float) value[7]).floatValue();
+    float[] parameters = (float[]) value[8];
+    String command = (String) value[9];
 
     if (colorDensity) {
       switch (displayType) {
@@ -105,6 +109,7 @@ public class Contact extends Isosurface {
       case Token.connect:
       case Token.nci:
       case Token.surface:
+      case Token.sasurface:
         // ok as is
         break;
       case Token.cap:
@@ -162,36 +167,31 @@ public class Contact extends Isosurface {
       sg.setParameter("parameters", parameters);
       super.setProperty("nci", Boolean.TRUE, null);
       break;
+    case Token.sasurface:
     case Token.surface:
       colorByType = false;
-      if (rd == null)
-        rd = rdVDW;
       thisMesh.nSets = 1;
       newSurface(Token.surface, null, bsA, bsB, rd, null, null, colorDensity,
-          null);
+          null, sasurfaceRadius);
       break;
     case Token.cap:
       colorByType = false;
-      if (rd == null)
-        rd = rdVDW;
       thisMesh.nSets = 1;
-      newSurface(Token.slab, null, bsA, bsB, rd, null, null, false, null);
+      newSurface(Token.slab, null, bsA, bsB, rd, null, null, false, null, 0);
       volumeData = sg.getVolumeData();
       sg.initState();
       newSurface(Token.plane, null, bsA, bsB, rd, parameters, func,
-          colorDensity, volumeData);
+          colorDensity, volumeData, 0);
       mergeMesh(null);
       break;
     case Token.full:
     case Token.trim:
       colorByType = false;
-      if (rd == null)
-        rd = rdVDW;
-      newSurface(Token.trim, null, bsA, bsB, rd, null, null, colorDensity, null);
+      newSurface(Token.trim, null, bsA, bsB, rd, null, null, colorDensity, null, 0);
       if (displayType == Token.full) {
         sg.initState();
         newSurface(Token.trim, null, bsB, bsA, rd, parameters, func,
-          colorDensity, null);
+            colorDensity, null, 0);
         mergeMesh(null);
       } else {
         MeshData meshData = new MeshData();
@@ -199,13 +199,14 @@ public class Contact extends Isosurface {
         meshData.getSurfaceSet();
         fillMeshData(meshData, MeshData.MODE_PUT_SETS, null);
       }
-      
+
       break;
     case Token.connect:
     case Token.plane:
-      if (rd == null)
-        rd = new RadiusData(0.25f, RadiusData.EnumType.OFFSET,
-            EnumVdw.AUTO);
+      /*      if (rd == null)
+              rd = new RadiusData(0.25f, RadiusData.EnumType.OFFSET,
+                  EnumVdw.AUTO);
+      */
       float volume = 0;
       List<ContactPair> pairs = getPairs(bsA, bsB, rd, intramolecularMode);
       thisMesh.info = pairs;
@@ -309,23 +310,23 @@ public class Contact extends Isosurface {
       switch (displayType) {
       case Token.full:
         newSurface(displayType, cp, null, null, null, null, func,
-            isColorDensity, volumeData);
+            isColorDensity, volumeData, 0);
         cp.switchAtoms();
         newSurface(displayType, cp, null, null, null, null, null,
-            isColorDensity, volumeData);
+            isColorDensity, volumeData, 0);
         break;
       case Token.trim:
       case Token.plane:
       case Token.connect:
         newSurface(displayType, cp, null, null, null, parameters, func,
-            isColorDensity, volumeData);
+            isColorDensity, volumeData, 0);
         if (isVdwClash && cp.setForVdwClash(false)) {
           if (colorByType)
             nV = setColorByScore(cp.score, nV);
           cp.score = oldScore;
           volume += cp.volume;
           newSurface(displayType, cp, null, null, null, parameters, func,
-              isColorDensity, volumeData);          
+              isColorDensity, volumeData, 0);          
         }
         break;
       }
@@ -372,7 +373,6 @@ public class Contact extends Isosurface {
         | (isMultiModel ? AtomData.MODE_FILL_MULTIMODEL : 0)
         | AtomData.MODE_FILL_MOLECULES);
     float maxRadius = 0;
-    float hbondCutoff = -1.0f;//HBOND_CUTOFF;
     for (int ib = bsB.nextSetBit(0); ib >= 0; ib = bsB.nextSetBit(ib + 1))
       if (ad.atomRadius[ib] > maxRadius)
         maxRadius = ad.atomRadius[ib];
@@ -420,7 +420,12 @@ public class Contact extends Isosurface {
         EnumHBondType typeA = EnumHBondType.getType(atomA);
         EnumHBondType typeB = (typeA == EnumHBondType.NOT ? EnumHBondType.NOT
             : EnumHBondType.getType(atomB));
-        boolean isHBond = (EnumHBondType.isPossibleHBond(typeA, typeB) && cp.score > hbondCutoff);
+        boolean isHBond = EnumHBondType.isPossibleHBond(typeA, typeB);
+        //float hbondCutoff = -1.0f;//HBOND_CUTOFF;
+        float hbondCutoff = (atomA.getElementNumber() == 1 || atomB.getElementNumber() == 1 ? -1.2f : -1.0f);
+        
+        if (isHBond && cp.score < hbondCutoff)
+          isHBond = false;
         if (isHBond && cp.score < 0)
           cp.contactType = Token.hbond;
         list.add(cp);
@@ -479,7 +484,7 @@ public class Contact extends Isosurface {
 
   private void newSurface(int displayType, ContactPair cp, BitSet bs1, BitSet bs2,
                           RadiusData rd, float[] parameters, Object func,
-                          boolean isColorDensity, VolumeData volumeData) {
+                          boolean isColorDensity, VolumeData volumeData, float sasurfaceRadius) {
     Parameters params = sg.getParams();
     params.isSilent = true;
     if (cp == null) {
@@ -492,13 +497,14 @@ public class Contact extends Isosurface {
     int iSlab0 = 0, iSlab1 = 0;
     sg.initState();
     switch (displayType) {
+    case Token.sasurface:
     case Token.surface:
     case Token.slab:
     case Token.trim:
     case Token.full:
       RadiusData rdA, rdB;
       if (displayType == Token.surface) {
-        rdA = new RadiusData(1, RadiusData.EnumType.FACTOR, EnumVdw.AUTO);
+        rdA = rdVDW;
         rdB = new RadiusData((rd.factorType == RadiusData.EnumType.OFFSET ? rd.value * 2 : (rd.value - 1) * 2 + 1), 
             rd.factorType, rd.vdwType);
       } else {
@@ -515,7 +521,7 @@ public class Contact extends Isosurface {
         params.bsSolvent = null;
       }
       params.volumeData = volumeData;
-      super.setProperty("sasurface", Float.valueOf(0), null);
+      super.setProperty("sasurface", Float.valueOf(sasurfaceRadius), null);
       super.setProperty("map", Boolean.TRUE, null);
       if (cp == null) {
         params.atomRadiusData = rdB;
@@ -523,12 +529,13 @@ public class Contact extends Isosurface {
         params.bsSelected = bs2;
       }
       params.volumeData = volumeData;
-      super.setProperty("sasurface", Float.valueOf(0), null);
+      super.setProperty("sasurface", Float.valueOf(sasurfaceRadius), null);
       switch (displayType) {
       case Token.full:
       case Token.trim:
         iSlab0 = -100;
         break;
+      case Token.sasurface:
       case Token.surface:
         if (isColorDensity)
           iSlab0 = -100;

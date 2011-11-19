@@ -1226,7 +1226,7 @@ public class Token {
   final static int rotate45       = misc  | 306;
   public final static int rotation = misc  | 308;
   final static int rubberband     = misc  | 310;
-  final static int sasurface      = misc  | 312;
+  public final static int sasurface      = misc  | 312;
   final static int scale          = misc  | 314;
   final static int selection      = misc  | 316;
   final static int shapely        = misc  | 320;

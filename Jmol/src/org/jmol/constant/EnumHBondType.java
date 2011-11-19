@@ -71,7 +71,7 @@ public enum EnumHBondType {
       }
       return UNKNOWN;
     case 8:
-      if (atom == group.getCarbonylOxygenAtom())
+      if (atom == group.getCarbonylOxygenAtom() || atom.getFormalCharge() == -1)
         return ACCEPTOR;
       if (atom.getCovalentBondCount() == 0 || atom.getCovalentHydrogenCount() > 0)
         return UNKNOWN;

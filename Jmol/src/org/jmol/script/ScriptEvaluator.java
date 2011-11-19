@@ -10420,7 +10420,7 @@ public class ScriptEvaluator {
         float targetValue = 0;
         int[] aList = new int[5];
         if (tokAt(++i) == Token.clear) {
-          checkLength(2);
+          checkLength(3);
         } else {
           while (n < 4 && !isFloatParameter(i)) {
             aList[++n] = atomExpression(i).nextSetBit(0);

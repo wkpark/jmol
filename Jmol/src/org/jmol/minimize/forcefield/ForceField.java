@@ -120,6 +120,7 @@ abstract public class ForceField {
     String s = calc.getDebugHeader(-1) + "Jmol Minimization Version " + Viewer.getJmolVersion() + "\n";
     calc.appendLogData(s);
     Logger.info(s);
+    calc.getConstraintList();
     if (calc.loggingEnabled)
       calc.appendLogData(calc.getAtomList("S T E E P E S T   D E S C E N T"));
     dE = 0;

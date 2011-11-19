@@ -33,6 +33,7 @@ import org.jmol.minimize.MinAtom;
 import org.jmol.minimize.MinBond;
 import org.jmol.minimize.Util;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.TextFormat;
 
 abstract class Calculations {
 
@@ -297,6 +298,74 @@ abstract class Calculations {
       }
     }
     return k * delta * delta;
+  }
+
+  void getConstraintList() {
+    if (constraints.size() == 0)
+      return;
+    appendLogData("C O N S T R A I N T S\n---------------------");
+    for (int i = constraints.size(); --i >= 0;) {
+      Object[] c = constraints.get(i);
+      int[] indexes = (int[]) c[0];
+      int[] minList = (int[]) c[1];
+      double targetValue = ((Float) c[2]).doubleValue();
+      int iType = indexes[0] - 2;
+      switch (iType) {
+      case CALC_TORSION:
+        id = minList[3];
+        //fall through
+      case CALC_ANGLE:
+        ic = minList[2];
+        //fall through
+      case CALC_DISTANCE:
+        ib = minList[1];
+        ia = minList[0];
+      }
+      switch (iType) {
+      case CALC_DISTANCE:
+        appendLogData(TextFormat
+            .sprintf(
+                "%3d %3d  %-5s %-5s  %12.6f",
+                new Object[] {
+                    atoms[ia].atom.getAtomName(),
+                    atoms[ib].atom.getAtomName(),
+                    new float[] { (float) targetValue },
+                    new int[] { atoms[ia].atom.getAtomNumber(),
+                        atoms[ib].atom.getAtomNumber(),
+                        } }));
+        break;
+      case CALC_ANGLE:
+        appendLogData(TextFormat
+            .sprintf(
+                "%3d %3d %3d  %-5s %-5s %-5s  %12.6f",
+                new Object[] {
+                    atoms[ia].atom.getAtomName(),
+                    atoms[ib].atom.getAtomName(),
+                    atoms[ic].atom.getAtomName(),
+                    new float[] { (float) targetValue },
+                    new int[] { atoms[ia].atom.getAtomNumber(),
+                        atoms[ib].atom.getAtomNumber(),
+                        atoms[ic].atom.getAtomNumber(),
+                        } }));
+        break;
+      case CALC_TORSION:
+        appendLogData(TextFormat
+            .sprintf(
+                "%3d %3d %3d %3d  %-5s %-5s %-5s %-5s  %3d %8.3f     %8.3f     %8.3f     %8.3f",
+                new Object[] {
+                    atoms[ia].atom.getAtomName(),
+                    atoms[ib].atom.getAtomName(),
+                    atoms[ic].atom.getAtomName(),
+                    atoms[id].atom.getAtomName(),
+                    new float[] { (float) targetValue },
+                    new int[] { atoms[ia].atom.getAtomNumber(),
+                        atoms[ib].atom.getAtomNumber(),
+                        atoms[ic].atom.getAtomNumber(),
+                        atoms[id].atom.getAtomNumber() } }));
+        break;
+      }
+    }
+    appendLogData("---------------------\n");
   }
 
 }

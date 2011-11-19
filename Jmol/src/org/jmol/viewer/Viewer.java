@@ -8834,6 +8834,8 @@ private void zap(String msg) {
       setTainted(true);
       return n;
     }
+    if (bs.cardinality() == 0)
+      return 0;
     // fileManager.addLoadScript("zap " + Escape.escape(bs));
     setCurrentModelIndex(0, false);
     animationManager.setAnimationOn(false);

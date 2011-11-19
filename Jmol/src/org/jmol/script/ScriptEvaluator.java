@@ -15389,7 +15389,7 @@ public class ScriptEvaluator {
     int displayType = Token.plane;
     int contactType = Token.nada;
     float distance = Float.NaN;
-    float surfaceRadius = 0;
+    float saProbeRadius = Float.NaN;
     boolean localOnly = true;
     Boolean intramolecular = null;
     Object userSlabObject = null;
@@ -15501,7 +15501,7 @@ public class ScriptEvaluator {
         break;
       case Token.sasurface:
         if (isFloatParameter(i + 1))
-          surfaceRadius = floatParameter(++i);
+          saProbeRadius = floatParameter(++i);
       case Token.cap:
       case Token.nci:
       case Token.surface:
@@ -15514,7 +15514,7 @@ public class ScriptEvaluator {
         displayType = tok;
         sbCommand.append(" ").append(theToken.value);
         if (tok == Token.sasurface)
-          sbCommand.append(" ").append(surfaceRadius);
+          sbCommand.append(" ").append(saProbeRadius);
         break;
       case Token.parameters:
         params = floatParameterSet(++i, 1, 10);
@@ -15551,8 +15551,13 @@ public class ScriptEvaluator {
         bsB = setContactBitSets(bsA, bsB, localOnly, distance, rd1, true);
       switch (displayType) {
       case Token.cap:
-      case Token.surface:
       case Token.sasurface:
+        BitSet bsSolvent = lookupIdentifierValue("solvent");
+        bsA.andNot(bsSolvent);
+        bsB.andNot(bsSolvent);
+        bsB.andNot(bsA);
+        break;
+      case Token.surface:
         bsB.andNot(bsA);
         break;
       case Token.nci:
@@ -15579,7 +15584,7 @@ public class ScriptEvaluator {
       setShapeProperty(JmolConstants.SHAPE_CONTACT, "set", new Object[] {
           Integer.valueOf(contactType), Integer.valueOf(displayType),
           Boolean.valueOf(colorDensity), Boolean.valueOf(colorByType), bsA,
-          bsB, rd, Float.valueOf(surfaceRadius), params, sbCommand.toString() });
+          bsB, rd, Float.valueOf(saProbeRadius), params, sbCommand.toString() });
       if (colorpt > 0)
         setMeshDisplayProperty(JmolConstants.SHAPE_CONTACT, colorpt, 0);
     }

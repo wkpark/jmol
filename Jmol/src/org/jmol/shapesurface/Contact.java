@@ -92,13 +92,14 @@ public class Contact extends Isosurface {
     BitSet bsA = (BitSet) value[4];
     BitSet bsB = (BitSet) value[5];
     RadiusData rd = (RadiusData) value[6];
-    if (rd == null)
-      rd = (contactType == Token.vanderwaals ? new RadiusData(0.25f,
-          RadiusData.EnumType.OFFSET, EnumVdw.AUTO) : rdVDW);
-    float sasurfaceRadius = ((Float) value[7]).floatValue();
+    float saProbeRadius = ((Float) value[7]).floatValue();
     float[] parameters = (float[]) value[8];
     String command = (String) value[9];
-
+    if (rd == null)
+      rd = new RadiusData(Float.isNaN(saProbeRadius) ? 0.25f : saProbeRadius,
+          RadiusData.EnumType.OFFSET, EnumVdw.AUTO);
+    if (Float.isNaN(saProbeRadius))
+      saProbeRadius = 0;
     if (colorDensity) {
       switch (displayType) {
       case Token.full:
@@ -172,7 +173,7 @@ public class Contact extends Isosurface {
       colorByType = false;
       thisMesh.nSets = 1;
       newSurface(Token.surface, null, bsA, bsB, rd, null, null, colorDensity,
-          null, sasurfaceRadius);
+          null, saProbeRadius);
       break;
     case Token.cap:
       colorByType = false;

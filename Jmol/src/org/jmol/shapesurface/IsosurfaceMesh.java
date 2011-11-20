@@ -74,13 +74,15 @@ public class IsosurfaceMesh extends Mesh {
     assocGridPointMap = null;
     assocGridPointNormals = null;
     bsVdw = null;
-    mergeAssociatedNormalCount = 0;
+    calculatedVolume = null;
+    calculatedArea = null;
     centers = null;
     colorEncoder = null;
     colorPhased = false;
     firstRealVertex = -1;
     hasGridPoints = iAddGridPoints;
     isColorSolid = true;
+    mergeAssociatedNormalCount = 0;
     nSets = 0;
     polygonColixes = null;
     showPoints = iAddGridPoints;

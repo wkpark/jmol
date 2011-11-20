@@ -95,11 +95,10 @@ public class Contact extends Isosurface {
     float saProbeRadius = ((Float) value[7]).floatValue();
     float[] parameters = (float[]) value[8];
     String command = (String) value[9];
-    if (rd == null)
-      rd = new RadiusData(Float.isNaN(saProbeRadius) ? 0.25f : saProbeRadius,
-          RadiusData.EnumType.OFFSET, EnumVdw.AUTO);
     if (Float.isNaN(saProbeRadius))
       saProbeRadius = 0;
+    if (rd == null)
+      rd = new RadiusData(saProbeRadius, RadiusData.EnumType.OFFSET, EnumVdw.AUTO);
     if (colorDensity) {
       switch (displayType) {
       case Token.full:

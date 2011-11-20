@@ -174,7 +174,7 @@ public class MolReader extends AtomSetCollectionReader {
     header += line + "\n";
     dimension = (line.length() < 22 ? "3D" : line.substring(20,22));
     if (!allow2D && dimension.equals("2D"))
-      throw (new Exception("File is 2D, not 3D"));
+      throw new Exception("File is 2D, not 3D");
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("dimension", dimension);
     //line 3: comment
     readLine();

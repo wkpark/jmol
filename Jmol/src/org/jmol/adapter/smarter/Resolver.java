@@ -49,7 +49,7 @@ public class Resolver {
     "quantum.", ";Adf;Csf;Dgrid;GamessUK;GamessUS;Gaussian;GausianWfn;Jaguar;" +
                  "Molden;MopacGraphf;GenNBO;NWChem;Odyssey;Psi;Qchem;Spartan;SpartanSmol;" +
                  "WebMO;",
-    "simple.", ";Alchemy;Ampac;Cube;FoldingXyz;GhemicalMM;HyperChem;Jme;Mopac;", 
+    "simple.", ";Alchemy;Ampac;Cube;FoldingXyz;GhemicalMM;HyperChem;Jme;Mopac;ZMatrix;", 
     "xtal.", ";Aims;Castep;Crystal;Dmol;Espresso;Gulp;Shelx;Siesta;VaspOutcar;Wien2k;"
   };
   
@@ -914,9 +914,13 @@ public class Resolver {
   private final static String[] tlsDataOnlyFileStartRecords =
   {"TlsDataOnly", "REFMAC\n\nTL", "REFMAC\r\n\r\n", "REFMAC\r\rTL"};
   
+  private final static String[] zMatrixFileStartRecords =
+  {"ZMatrix", "#ZMATRIX"};
+  
   private final static String[][] fileStartsWithRecords =
   { cubeFileStartRecords, mol2Records, webmoFileStartRecords, 
-    moldenFileStartRecords, dcdFileStartRecords, tlsDataOnlyFileStartRecords };
+    moldenFileStartRecords, dcdFileStartRecords, tlsDataOnlyFileStartRecords,
+    zMatrixFileStartRecords};
 
   ////////////////////////////////////////////////////////////////
   // these test lines that startWith one of these strings

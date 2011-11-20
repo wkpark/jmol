@@ -24,10 +24,10 @@
 
 package org.jmol.adapter.readers.simple;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
@@ -109,26 +109,96 @@ H1 N1 1.0
 H2 N1 1.0 H1 107  
 H3 N1 -1.0 H1 -107 H2 107
 
+symbolics may be used -- they may be listed first or last
+
+#ZMATRIX
+
+dist 1.0
+angle 107
+
+N1 
+H1 N1 dist
+H2 N1 dist H1 angle 
+H3 N1 -dist H1 angle H2 angle
+
+If #ZMATRIX is not the start of the file, MOPAC style is assumed.
+The first two lines will be considered to be comments and ignored:
+
+ AM1
+Ethane
+
+C
+C     1     r21
+H     2     r32       1     a321
+H     2     r32       1     a321      3  d4213
+H     2     r32       1     a321      3 -d4213
+H     1     r32       2     a321      3   60.
+H     1     r32       2     a321      3  180.
+H     1     r32       2     a321      3  d300
+
+r21        1.5
+r32        1.1
+a321     109.5
+d4213    120.0
+d300     300.0
+
+
    */
   private int atomCount;
-  private Vector<Atom> vAtoms = new Vector<Atom>();
+  private List<Atom> vAtoms = new ArrayList<Atom>();
   private Map<String, Integer> atomMap = new Hashtable<String, Integer>();
-  String[] tokens;
+  private String[] tokens;
+  private boolean doReadAtoms;
+  private List<String> lineBuffer;
+  private Map<String, Float> symbolicMap = new Hashtable<String, Float>();
   
   @Override
   protected boolean checkLine() throws Exception {
     if (line.startsWith("#")) {
+      doReadAtoms = true;
       checkLineForScript();
     } else {
+      if (!doReadAtoms) {
+        // skip first two lines
+        readLine();
+        doReadAtoms = true;
+        return true;
+      }
       getAtom();
     }
     return true;
   }
 
+  @Override
+  protected void finalizeReader() throws Exception {
+    if (lineBuffer != null) {
+      List<String> list = lineBuffer;
+      lineBuffer = null;
+      for (int i = 0; i < list.size(); i++) {
+        line = list.get(i);
+        checkLine();
+      }
+    }
+    super.finalizeReader();
+  }
+  
   private void getAtom() throws Exception {
     tokens = getTokens();
     if (tokens.length == 0)
       return;
+    float f;
+    if (tokens.length == 2) {
+      if (symbolicMap.containsKey(tokens[0]))
+        return;
+      f = parseFloat(tokens[1]);
+      symbolicMap.put(tokens[0], Float.valueOf(f));
+      Logger.info("symbolic " + tokens[0] + " = " + f);
+      return;
+    }
+    if (lineBuffer != null) {
+        lineBuffer.add(line);
+        return;
+    }
     int ia = 0;
     Atom atom = new Atom();
     String element = tokens[0];
@@ -145,13 +215,8 @@ H3 N1 -1.0 H1 -107 H2 107
       element = element.substring(0, ++i);
     }
     atom.elementSymbol = element;
-    vAtoms.add(atom);
-    atomMap.put(atom.atomName, Integer.valueOf(atomCount));
     int bondOrder = 1;
     switch (tokens.length) {
-    case 2:
-      // bond order ignored, if present
-      // fall through
     case 1:
       if (atomCount != 0)
         atom = null;
@@ -168,7 +233,10 @@ H3 N1 -1.0 H1 -107 H2 107
         atom = null;
         break;
       }
-      atom.set(parseFloat(tokens[2]), 0, 0);
+      f = getValue(2);
+      if (Float.isNaN(f))
+        return;
+      atom.set(f, 0, 0);
       ia = 0;
       break;
     case 6:
@@ -181,12 +249,18 @@ H3 N1 -1.0 H1 -107 H2 107
         atom = null;
         break;
       }
+      float d = getValue(2);
+      if (Float.isNaN(d))
+        return;
+      float theta1 = getValue(4);
+      if (Float.isNaN(theta1))
+        return;
+      float theta2 = (tokens.length < 7 ? Float.MAX_VALUE : getValue(6));
+      if (Float.isNaN(theta2))
+        return;
       ia = getAtomIndex(1);
-      float d = parseFloat(tokens[2]);
       int ib = getAtomIndex(3);
-      float theta1 = parseFloat(tokens[4]);
       int ic = (tokens.length < 7 ? -1 : getAtomIndex(5));
-      float theta2 = (tokens.length < 7 ? Float.MAX_VALUE : parseFloat(tokens[6]));
       atom = setAtom(atom, ia, ib, ic, d, theta1, theta2);
       break;
     default:
@@ -194,6 +268,8 @@ H3 N1 -1.0 H1 -107 H2 107
     }
     if (atom == null)
       throw new Exception("bad Z-Matrix line");
+    vAtoms.add(atom);
+    atomMap.put(atom.atomName, Integer.valueOf(atomCount));
     atomCount++;
     if (element.startsWith("X") && JmolAdapter.getElementNumber(element) < 1) {
       Logger.info("#dummy atom ignored: atom " + atomCount + " - " + atom.atomName);
@@ -203,6 +279,27 @@ H3 N1 -1.0 H1 -107 H2 107
       if (bondOrder > 0)
         atomSetCollection.addBond(new Bond(atom.atomIndex, vAtoms.get(ia).atomIndex, bondOrder));
     }
+  }
+
+  private float getValue(int i) {
+    String key = tokens[i];
+    float f = parseFloat(key);
+    if (Float.isNaN(f)) {
+      boolean isNeg = key.startsWith("-");
+      if (isNeg)
+        key = key.substring(1);
+      Float F = symbolicMap.get(key);
+      if (F != null)
+        f = F.floatValue();
+      if (Float.isNaN(f)) {
+        if (lineBuffer == null)
+          lineBuffer = new ArrayList<String>();
+        lineBuffer.add(line);
+      } else if (isNeg) {
+        f = -f;
+      }
+    }
+    return f;
   }
 
   private int getAtomIndex(int i) {

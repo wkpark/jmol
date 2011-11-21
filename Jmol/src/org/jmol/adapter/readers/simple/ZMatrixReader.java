@@ -311,29 +311,24 @@ d300     300.0
     return ia;
   }
 
-  private Point3f pt0 = new Point3f();
-  private Point3f pt1 = new Point3f();
-  private Point3f pt2 = new Point3f();
-  private Vector3f v1 = new Vector3f();
+  private final Point3f pt0 = new Point3f();
+  private final Vector3f v1 = new Vector3f();
   private Vector3f v2 = new Vector3f();
-  private Vector3f v3 = new Vector3f();
   
   private Atom setAtom(Atom atom, int ia, int ib, int ic, float d,
                        float theta1, float theta2) {
     if (Float.isNaN(theta1) || Float.isNaN(theta2)) 
       return null;
     pt0.set(vAtoms.get(ia));
-    pt1.set(vAtoms.get(ib));
-    v1.sub(pt1, pt0);
+    v1.sub(vAtoms.get(ib), pt0);
     v1.normalize();
-    Quaternion q;
     if (theta2 == Float.MAX_VALUE) {
       // just the first angle being set
-      pt2.set(0, 0, 1);
-      q = new Quaternion(pt2, theta1);
-      v3.set(v1);
+      v2.set(0, 0, 1);
+      v2 = (new Quaternion(v2, theta1)).transform(v1);
     } else if (d < 0) {
       // theta1 and theta2 are simple angles atom-ia-ib and atom-ia-ic 
+      // get vector that is intersection of two planes and go from there
       setAtom(atom, ia, ib, ic, -d, theta1, 0);
       Point4f plane1 = new Point4f();
       Measure.getPlaneThroughPoint(atom, v1, plane1);
@@ -343,23 +338,20 @@ d300     300.0
       List<Object> list = Measure.getIntersection(plane1, plane2);
       if (list.size() == 0)
         return null;
-      Point3f ptLine = (Point3f) list.get(0);      
-      Vector3f vLine = (Vector3f) list.get(1);
-      vLine.normalize();
-      float d1 = ptLine.distance(vAtoms.get(ia));
-      float d3 = (float) Math.sqrt(d * d - d1 * d1) * Math.signum(theta1) * Math.signum(theta2);
-      atom.scaleAdd(d3, vLine, ptLine);
-      return atom;
+      pt0.set((Point3f) list.get(0));      
+      float d1 = pt0.distance(vAtoms.get(ia));
+      d = (float) Math.sqrt(d * d - d1 * d1) * Math.signum(theta1) * Math.signum(theta2);
+      v2.set((Vector3f) list.get(1));
+      v2.normalize();
     } else {
-      pt2.set(vAtoms.get(ic));
-      v2.sub(pt2, pt1);
-      v3.cross(v1, v2);
-      q = new Quaternion(v3, theta1);
-      v3 = q.transform(v1);
-      q = new Quaternion(v1, -theta2);
+      // theta2 is a dihedral angle
+      // just do quaternion rotations
+      v2.sub(vAtoms.get(ic), pt0);
+      v2.cross(v1, v2);
+      v2 = (new Quaternion(v2, theta1)).transform(v1);
+      v2 = (new Quaternion(v1, -theta2)).transform(v2);
     }
-    v3 = q.transform(v3);
-    atom.scaleAdd(Math.abs(d), v3, pt0);
+    atom.scaleAdd(d, v2, pt0);
     return atom;
   }
 }

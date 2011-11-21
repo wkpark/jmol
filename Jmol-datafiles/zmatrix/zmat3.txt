@@ -1,0 +1,6 @@
+#ZMATRIX
+Xx1
+Xx2 Xx1 1.0
+C1  Xx1 1.0      Xx2 90
+O1   C1 1.3000   Xx2 90   Xx1 0  2     
+O2   C1 1.3000    O1 180  Xx2 0  2      

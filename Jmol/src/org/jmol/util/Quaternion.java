@@ -586,7 +586,7 @@ public class Quaternion {
     return ptNew;
   }
 
-  public void transform(Point3f pt, Point3f ptNew) {
+  public void transform(Tuple3f pt, Tuple3f ptNew) {
     if (mat == null)
       setMatrix();
     mat.transform(pt, ptNew);

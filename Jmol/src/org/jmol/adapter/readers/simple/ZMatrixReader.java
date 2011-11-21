@@ -334,9 +334,9 @@ d300     300.0
 
   private final Point3f pt0 = new Point3f();
   private final Vector3f v1 = new Vector3f();
+  private final Vector3f v2 = new Vector3f();
   private final Point4f plane1 = new Point4f();
   private final Point4f plane2 = new Point4f();
-  private Vector3f v2 = new Vector3f();
   
   private Atom setAtom(Atom atom, int ia, int ib, int ic, float d,
                        float theta1, float theta2) {
@@ -348,14 +348,14 @@ d300     300.0
     if (theta2 == Float.MAX_VALUE) {
       // just the first angle being set
       v2.set(0, 0, 1);
-      v2 = (new Quaternion(v2, theta1)).transform(v1);
+      (new Quaternion(v2, theta1)).transform(v1, v2);
     } else if (d >= 0) {
       // theta2 is a dihedral angle
       // just do two quaternion rotations
       v2.sub(vAtoms.get(ic), pt0);
       v2.cross(v1, v2);
-      v2 = (new Quaternion(v2, theta1)).transform(v1);
-      v2 = (new Quaternion(v1, -theta2)).transform(v2);
+      (new Quaternion(v2, theta1)).transform(v1, v2);
+      (new Quaternion(v1, -theta2)).transform(v2, v2);
     } else {
       // d < 0
       // theta1 and theta2 are simple angles atom-ia-ib and atom-ia-ic 

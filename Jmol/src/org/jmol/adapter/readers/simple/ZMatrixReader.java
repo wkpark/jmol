@@ -349,7 +349,6 @@ d300     300.0
       float d1 = pt0.distance(vAtoms.get(ia));
       d = (float) Math.sqrt(d * d - d1 * d1) * Math.signum(theta1) * Math.signum(theta2);
       v2.set((Vector3f) list.get(1));
-      v2.normalize();
     }
     atom.scaleAdd(d, v2, pt0);
     return atom;

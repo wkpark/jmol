@@ -657,6 +657,7 @@ final public class Measure {
     }
     List<Object>list = new ArrayList<Object>();
     list.add(new Point3f(x, y, z));
+    nxn.normalize();
     list.add(nxn);
     return list;
   }

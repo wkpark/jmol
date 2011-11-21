@@ -336,6 +336,7 @@ d300     300.0
       v2 = (new Quaternion(v2, theta1)).transform(v1);
       v2 = (new Quaternion(v1, -theta2)).transform(v2);
     } else {
+      // d < 0
       // theta1 and theta2 are simple angles atom-ia-ib and atom-ia-ic 
       // get vector that is intersection of two planes and go from there
       Measure.getPlaneThroughPoint(setAtom(atom, ia, ib, ic, -d, theta1, 0), v1, plane1);

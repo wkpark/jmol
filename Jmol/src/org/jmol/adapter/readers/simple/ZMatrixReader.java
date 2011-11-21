@@ -338,10 +338,8 @@ d300     300.0
     } else {
       // theta1 and theta2 are simple angles atom-ia-ib and atom-ia-ic 
       // get vector that is intersection of two planes and go from there
-      setAtom(atom, ia, ib, ic, -d, theta1, 0);
-      Measure.getPlaneThroughPoint(atom, v1, plane1);
-      Point3f pta2 = new Point3f(setAtom(atom, ia, ic, ib, -d, theta2, 0));
-      Measure.getPlaneThroughPoint(pta2, v1, plane2);      
+      Measure.getPlaneThroughPoint(setAtom(atom, ia, ib, ic, -d, theta1, 0), v1, plane1);
+      Measure.getPlaneThroughPoint(setAtom(atom, ia, ic, ib, -d, theta2, 0), v1, plane2);
       List<Object> list = Measure.getIntersection(plane1, plane2);
       if (list.size() == 0)
         return null;

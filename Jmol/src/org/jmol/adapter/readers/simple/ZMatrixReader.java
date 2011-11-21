@@ -225,7 +225,7 @@ d300     300.0
       bondOrder = 0;
       break;
     case 4:
-      bondOrder = parseInt(tokens[3]);
+      bondOrder = (int) getValue(3);
       // fall through
     case 3:
       // tokens[1] is ignored
@@ -241,7 +241,7 @@ d300     300.0
       break;
     case 6:
     case 8:
-      bondOrder = parseInt(tokens[tokens.length - 1]);
+      bondOrder = (int) getValue(tokens.length - 1);
       // fall through
     case 5:
     case 7:

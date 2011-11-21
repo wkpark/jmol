@@ -340,7 +340,7 @@ d300     300.0
   
   private Atom setAtom(Atom atom, int ia, int ib, int ic, float d,
                        float theta1, float theta2) {
-    if (Float.isNaN(theta1) || Float.isNaN(theta2)) 
+    if (Float.isNaN(theta1) || Float.isNaN(theta2))
       return null;
     pt0.set(vAtoms.get(ia));
     v1.sub(vAtoms.get(ib), pt0);
@@ -360,14 +360,16 @@ d300     300.0
       // d < 0
       // theta1 and theta2 are simple angles atom-ia-ib and atom-ia-ic 
       // get vector that is intersection of two planes and go from there
-      Measure.getPlaneThroughPoint(setAtom(atom, ia, ib, ic, -d, theta1, 0), v1, plane1);
-      Measure.getPlaneThroughPoint(setAtom(atom, ia, ic, ib, -d, theta2, 0), v1, plane2);
+      Measure.getPlaneThroughPoint(setAtom(atom, ia, ib, ic, -d, theta1, 0),
+          v1, plane1);
+      Measure.getPlaneThroughPoint(setAtom(atom, ia, ic, ib, -d, theta2, 0),
+          v1, plane2);
       List<Object> list = Measure.getIntersection(plane1, plane2);
       if (list.size() == 0)
         return null;
-      pt0.set((Point3f) list.get(0));      
-      float d1 = pt0.distance(vAtoms.get(ia));
-      d = (float) Math.sqrt(d * d - d1 * d1) * Math.signum(theta1) * Math.signum(theta2);
+      pt0.set((Point3f) list.get(0));
+      d = (float) Math.sqrt(d * d - pt0.distanceSquared(vAtoms.get(ia)))
+          * Math.signum(theta1) * Math.signum(theta2);
       v2.set((Vector3f) list.get(1));
     }
     atom.scaleAdd(d, v2, pt0);

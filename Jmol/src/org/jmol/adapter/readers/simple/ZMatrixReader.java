@@ -314,6 +314,8 @@ d300     300.0
   private final Point3f pt0 = new Point3f();
   private final Vector3f v1 = new Vector3f();
   private Vector3f v2 = new Vector3f();
+  private Point4f plane1 = new Point4f();
+  private Point4f plane2 = new Point4f();
   
   private Atom setAtom(Atom atom, int ia, int ib, int ic, float d,
                        float theta1, float theta2) {
@@ -330,10 +332,8 @@ d300     300.0
       // theta1 and theta2 are simple angles atom-ia-ib and atom-ia-ic 
       // get vector that is intersection of two planes and go from there
       setAtom(atom, ia, ib, ic, -d, theta1, 0);
-      Point4f plane1 = new Point4f();
       Measure.getPlaneThroughPoint(atom, v1, plane1);
       Point3f pta2 = new Point3f(setAtom(atom, ia, ic, ib, -d, theta2, 0));
-      Point4f plane2 = new Point4f();
       Measure.getPlaneThroughPoint(pta2, v1, plane2);      
       List<Object> list = Measure.getIntersection(plane1, plane2);
       if (list.size() == 0)

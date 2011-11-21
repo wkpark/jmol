@@ -334,9 +334,9 @@ d300     300.0
 
   private final Point3f pt0 = new Point3f();
   private final Vector3f v1 = new Vector3f();
+  private final Point4f plane1 = new Point4f();
+  private final Point4f plane2 = new Point4f();
   private Vector3f v2 = new Vector3f();
-  private Point4f plane1 = new Point4f();
-  private Point4f plane2 = new Point4f();
   
   private Atom setAtom(Atom atom, int ia, int ib, int ic, float d,
                        float theta1, float theta2) {

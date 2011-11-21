@@ -25,7 +25,6 @@
 package org.jmol.adapter.readers.molxyz;
 
 import org.jmol.adapter.smarter.*;
-import org.jmol.api.JmolAdapter;
 
 import org.jmol.util.Logger;
 

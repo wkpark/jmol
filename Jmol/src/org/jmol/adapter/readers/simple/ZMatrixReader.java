@@ -163,11 +163,11 @@ d300     300.0
       checkLineForScript();
     } else {
       if (!doReadAtoms) {
+        doReadAtoms = true;
         // skip first two lines ?
         String line1 = line;
         String line2 = readLine();
         String line3 = readLine();
-        doReadAtoms = true;
         isMopac = (line3.trim().length() == 0);
         if (!isMopac) {
           checkLine(line1);

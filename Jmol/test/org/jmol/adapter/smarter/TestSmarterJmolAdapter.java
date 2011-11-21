@@ -113,6 +113,7 @@ public class TestSmarterJmolAdapter extends TestSuite {
     result.addDirectory("webmo", "mo", "WebMO");
     result.addDirectory("xsd", "xsd", "XmlXsd");
     result.addDirectory("xyz", "xyz", "Xyz");
+    result.addDirectory("zmatrix", "txt;zmat", "ZMatrix");
     return result;
   }
 

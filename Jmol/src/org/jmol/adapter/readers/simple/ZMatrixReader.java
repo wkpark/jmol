@@ -151,69 +151,49 @@ d300     300.0
   private List<Atom> vAtoms = new ArrayList<Atom>();
   private Map<String, Integer> atomMap = new Hashtable<String, Integer>();
   private String[] tokens;
-  private boolean doReadAtoms;
-  private List<String> lineBuffer;
+  private boolean isJmolZformat;
+  private List<String[]> lineBuffer = new ArrayList<String[]>();
   private Map<String, Float> symbolicMap = new Hashtable<String, Float>();
   private boolean isMopac;
   
   @Override
   protected boolean checkLine() throws Exception {
+    // easiest just to grab all lines that are comments or symbolic first, then do the processing of atoms.
     if (line.startsWith("#")) {
-      doReadAtoms = true;
+      isJmolZformat = true;
       checkLineForScript();
-    } else {
-      if (!doReadAtoms) {
-        doReadAtoms = true;
-        // skip first two lines ?
-        String line1 = line;
-        String line2 = readLine();
-        String line3 = readLine();
-        isMopac = (line3.trim().length() == 0);
-        if (!isMopac) {
-          checkLine(line1);
-          checkLine(line2);
-          checkLine(line3);
-        }
-        return true;
-      }
-      getAtom();
+      return true;
     }
+    tokens = getTokens(line);
+    if ((isJmolZformat || lineBuffer.size() > 2)
+        && tokens.length == 2) {
+      getSymbolic();
+      return true;
+    }
+    lineBuffer.add(tokens);
     return true;
   }
 
-  private void checkLine(String line) throws Exception {
-    this.line = line;
-    checkLine();
-  }
-  
   @Override
   protected void finalizeReader() throws Exception {
-    if (lineBuffer != null) {
-      List<String> list = lineBuffer;
-      lineBuffer = null;
-      for (int i = 0; i < list.size(); i++)
-        checkLine(list.get(i));
-    }
+    // Mopac must have third line blank and not have # as first character -- at least that's what we are using
+    isMopac = (lineBuffer.size() > 3 && lineBuffer.get(2).length == 0);
+    for (int i = (isMopac ? 3 : 0); i < lineBuffer.size(); i++)
+      if ((tokens = lineBuffer.get(i)).length > 0)
+        getAtom();
     super.finalizeReader();
   }
-  
+
+  private void getSymbolic() {
+    if (symbolicMap.containsKey(tokens[0]))
+      return;
+    float f = parseFloat(tokens[1]);
+    symbolicMap.put(tokens[0], Float.valueOf(f));
+    Logger.info("symbolic " + tokens[0] + " = " + f);
+  }
+
   private void getAtom() throws Exception {
-    tokens = getTokens();
-    if (tokens.length == 0)
-      return;
     float f;
-    if (tokens.length == 2) {
-      if (symbolicMap.containsKey(tokens[0]))
-        return;
-      f = parseFloat(tokens[1]);
-      symbolicMap.put(tokens[0], Float.valueOf(f));
-      Logger.info("symbolic " + tokens[0] + " = " + f);
-      return;
-    }
-    if (lineBuffer != null) {
-      lineBuffer.add(line);
-      return;
-    }
     Atom atom = new Atom();
     String element = tokens[0];
     int i = element.length();
@@ -223,14 +203,17 @@ d300     300.0
     if (++i == 0)
       throw new Exception("Bad Z-matrix atom name");
     if (i == element.length()) {
+      // no number -- append atomCount
       atom.atomName = element + (atomCount + 1);
     } else {
+      // has a number -- pull out element
       atom.atomName = element;
       element = element.substring(0, i);
     }
     if (isMopac && i != tokens[0].length())      // C13 == 13C
       element = tokens[0].substring(i) + element;
     setElementAndIsotope(atom, element);
+    
     int ia = getAtomIndex(1);
     int bondOrder = 1;
     switch (tokens.length) {
@@ -305,18 +288,9 @@ d300     300.0
     float f = parseFloat(key);
     if (Float.isNaN(f)) {
       boolean isNeg = key.startsWith("-");
-      if (isNeg)
-        key = key.substring(1);
-      Float F = symbolicMap.get(key);
-      if (F != null)
-        f = F.floatValue();
-      if (Float.isNaN(f)) {
-        if (lineBuffer == null)
-          lineBuffer = new ArrayList<String>();
-        lineBuffer.add(line);
-      } else if (isNeg) {
+      Float F = symbolicMap.get(isNeg ? key.substring(1) : key);
+      if (F != null && !Float.isNaN(f = F.floatValue()) && isNeg)
         f = -f;
-      }
     }
     return f;
   }

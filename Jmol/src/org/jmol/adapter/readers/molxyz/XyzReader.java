@@ -103,16 +103,7 @@ public class XyzReader extends AtomSetCollectionReader {
         continue;
       }
       Atom atom = atomSetCollection.addNewAtom();
-      String str = tokens[0];
-      int isotope = parseInt(str);
-      // xyzI
-      if (isotope == Integer.MIN_VALUE) {
-        atom.elementSymbol = str;
-      } else {
-        str = str.substring(("" + isotope).length());
-        atom.elementNumber = (short) (str.length() == 0 ? isotope
-            : ((isotope << 7) + JmolAdapter.getElementNumber(str)));
-      }
+      setElementAndIsotope(atom, tokens[0]);
       atom.x = parseFloat(tokens[1]);
       atom.y = parseFloat(tokens[2]);
       atom.z = parseFloat(tokens[3]);
@@ -133,10 +124,10 @@ public class XyzReader extends AtomSetCollectionReader {
         // accepts  sym x y z c r
         // accepts  sym x y z c vx vy vz
         // accepts  sym x y z c vx vy vz atomno
-        if ((str = tokens[4]).indexOf(".") >= 0) {
-          atom.partialCharge = parseFloat(str);
+        if (tokens[4].indexOf(".") >= 0) {
+          atom.partialCharge = parseFloat(tokens[4]);
         } else {
-          int charge = parseInt(str);
+          int charge = parseInt(tokens[4]);
           if (charge != Integer.MIN_VALUE)
             atom.formalCharge = charge;
         }
@@ -162,4 +153,5 @@ public class XyzReader extends AtomSetCollectionReader {
       }
     }
   }
+
 }

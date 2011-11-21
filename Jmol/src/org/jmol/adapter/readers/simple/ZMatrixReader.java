@@ -121,8 +121,10 @@ H1 N1 dist
 H2 N1 dist H1 angle 
 H3 N1 -dist H1 angle H2 angle
 
-If #ZMATRIX is not the start of the file, MOPAC style is assumed.
-The first two lines will be considered to be comments and ignored:
+If #ZMATRIX is not the start of the file, MOPAC style is checked.
+MOPAC will have the third line blank. Atom names are not allowed,
+and isotopes are in the form of "C13". The first two lines will be 
+considered to be comments and ignored:
 
  AM1
 Ethane
@@ -144,6 +146,7 @@ d300     300.0
 
 
    */
+
   private int atomCount;
   private List<Atom> vAtoms = new ArrayList<Atom>();
   private Map<String, Integer> atomMap = new Hashtable<String, Integer>();
@@ -151,6 +154,7 @@ d300     300.0
   private boolean doReadAtoms;
   private List<String> lineBuffer;
   private Map<String, Float> symbolicMap = new Hashtable<String, Float>();
+  private boolean isMopac;
   
   @Override
   protected boolean checkLine() throws Exception {
@@ -159,9 +163,17 @@ d300     300.0
       checkLineForScript();
     } else {
       if (!doReadAtoms) {
-        // skip first two lines
-        readLine();
+        // skip first two lines ?
+        String line1 = line;
+        String line2 = readLine();
+        String line3 = readLine();
         doReadAtoms = true;
+        isMopac = (line3.trim().length() == 0);
+        if (!isMopac) {
+          checkLine(line1);
+          checkLine(line2);
+          checkLine(line3);
+        }
         return true;
       }
       getAtom();
@@ -169,15 +181,18 @@ d300     300.0
     return true;
   }
 
+  private void checkLine(String line) throws Exception {
+    this.line = line;
+    checkLine();
+  }
+  
   @Override
   protected void finalizeReader() throws Exception {
     if (lineBuffer != null) {
       List<String> list = lineBuffer;
       lineBuffer = null;
-      for (int i = 0; i < list.size(); i++) {
-        line = list.get(i);
-        checkLine();
-      }
+      for (int i = 0; i < list.size(); i++)
+        checkLine(list.get(i));
     }
     super.finalizeReader();
   }
@@ -196,25 +211,27 @@ d300     300.0
       return;
     }
     if (lineBuffer != null) {
-        lineBuffer.add(line);
-        return;
+      lineBuffer.add(line);
+      return;
     }
-    int ia = 0;
     Atom atom = new Atom();
     String element = tokens[0];
     int i = element.length();
     while (--i >= 0 && Character.isDigit(element.charAt(i))) {
       //continue;
     }
-    if (i < 0)
+    if (++i == 0)
       throw new Exception("Bad Z-matrix atom name");
-    if (i == element.length() - 1) {
+    if (i == element.length()) {
       atom.atomName = element + (atomCount + 1);
     } else {
       atom.atomName = element;
-      element = element.substring(0, ++i);
+      element = element.substring(0, i);
     }
-    atom.elementSymbol = element;
+    if (isMopac && i != tokens[0].length())      // C13 == 13C
+      element = tokens[0].substring(i) + element;
+    setElementAndIsotope(atom, element);
+    int ia = getAtomIndex(1);
     int bondOrder = 1;
     switch (tokens.length) {
     case 1:
@@ -258,7 +275,6 @@ d300     300.0
       float theta2 = (tokens.length < 7 ? Float.MAX_VALUE : getValue(6));
       if (Float.isNaN(theta2))
         return;
-      ia = getAtomIndex(1);
       int ib = getAtomIndex(3);
       int ic = (tokens.length < 7 ? -1 : getAtomIndex(5));
       atom = setAtom(atom, ia, ib, ic, d, theta1, theta2);
@@ -269,15 +285,18 @@ d300     300.0
     if (atom == null)
       throw new Exception("bad Z-Matrix line");
     vAtoms.add(atom);
-    atomMap.put(atom.atomName, Integer.valueOf(atomCount));
+    if (!isMopac)
+      atomMap.put(atom.atomName, Integer.valueOf(atomCount));
     atomCount++;
     if (element.startsWith("X") && JmolAdapter.getElementNumber(element) < 1) {
-      Logger.info("#dummy atom ignored: atom " + atomCount + " - " + atom.atomName);
+      Logger.info("#dummy atom ignored: atom " + atomCount + " - "
+          + atom.atomName);
     } else {
       atomSetCollection.addAtom(atom);
       Logger.info(atom.atomName + " " + atom.x + " " + atom.y + " " + atom.z);
       if (bondOrder > 0)
-        atomSetCollection.addBond(new Bond(atom.atomIndex, vAtoms.get(ia).atomIndex, bondOrder));
+        atomSetCollection.addBond(new Bond(atom.atomIndex,
+            vAtoms.get(ia).atomIndex, bondOrder));
     }
   }
 
@@ -303,11 +322,13 @@ d300     300.0
   }
 
   private int getAtomIndex(int i) {
+    if (i >= tokens.length)
+      return -1;
     int ia = parseInt(tokens[i]);
-    if (ia == Integer.MIN_VALUE)
+    if (tokens[i].length() != ("" + ia).length()) // check for clean integer, not "13C1"
       ia = atomMap.get(tokens[i]).intValue();
-    else 
-      ia--;
+    else
+      ia--;    
     return ia;
   }
 

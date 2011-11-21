@@ -1447,4 +1447,21 @@ public abstract class AtomSetCollectionReader {
     return vectors;
   }
 
+  /**
+   * allow 13C, 15N, 2H, etc. for isotopes
+   *  
+   * @param atom
+   * @param str
+   */
+  protected void setElementAndIsotope(Atom atom, String str) {
+    int isotope = parseInt(str);
+    if (isotope == Integer.MIN_VALUE) {
+      atom.elementSymbol = str;
+    } else {
+      str = str.substring(("" + isotope).length());
+      atom.elementNumber = (short) (str.length() == 0 ? isotope
+          : ((isotope << 7) + JmolAdapter.getElementNumber(str)));
+    }
+  }
+
 }

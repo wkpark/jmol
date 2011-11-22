@@ -1111,7 +1111,7 @@ public class FileManager {
     getFileReferences(script, fileNames);
     List<String> newFileNames = new ArrayList<String>();
     int nFiles = fileNames.size();
-    if (fileName != null) 
+    if (fileName != null)
       fileName = fileName.replace('\\', '/');
     String fileRoot = fileName;
     if (fileRoot != null) {
@@ -1148,11 +1148,13 @@ public class FileManager {
     script = TextFormat.replaceQuotedStrings(script, fileNames, newFileNames);
     v.add(sname);
     v.add(script.getBytes());
-    Object bytes = viewer.getImageAs("PNG", -1, -1, -1, null, null,
-        JmolConstants.embedScript(script));
-    if (bytes instanceof byte[]) {
-      v.add(fileRoot + ".png");
-      v.add(bytes);
+    if (fileRoot != null) {
+      Object bytes = viewer.getImageAs("PNG", -1, -1, -1, null, null,
+          JmolConstants.embedScript(script));
+      if (bytes instanceof byte[]) {
+        v.add(fileRoot + ".png");
+        v.add(bytes);
+      }
     }
     return writeZipFile(fileName, v, false, "OK JMOL");
   }

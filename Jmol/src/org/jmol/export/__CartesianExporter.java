@@ -166,12 +166,12 @@ abstract public class __CartesianExporter extends ___Exporter {
   abstract protected boolean outputCylinder(Point3f ptCenter, Point3f pt1,
                                             Point3f pt2, short colix1,
                                             byte endcaps, float radius,
-                                            Point3f ptX, Point3f ptY);
+                                            Point3f ptX, Point3f ptY, boolean checkRadius);
 
   abstract protected void outputEllipsoid(Point3f center, Point3f[] points,
                                           short colix);
 
-  abstract protected void outputSphere(Point3f ptAtom2, float f, short colix);
+  abstract protected void outputSphere(Point3f ptAtom2, float f, short colix, boolean checkRadius);
 
   abstract protected void outputTextPixel(Point3f pt, int argb);
 
@@ -182,7 +182,8 @@ abstract public class __CartesianExporter extends ___Exporter {
 
   @Override
   void drawAtom(Atom atom) {
-    outputSphere(atom, atom.madAtom / 2000f, atom.getColix());
+    short colix = atom.getColix();
+    outputSphere(atom, atom.madAtom / 2000f, colix, Graphics3D.isColixTranslucent(colix));
   }
 
   @Override
@@ -212,7 +213,7 @@ abstract public class __CartesianExporter extends ___Exporter {
     tempP2.add(tempV2);
     return outputCylinder(ptCenter, tempP1, tempP2, colix,
         doFill ? Graphics3D.ENDCAPS_FLAT : Graphics3D.ENDCAPS_NONE, 1.01f, ptX,
-        ptY);
+        ptY, true);
   }
 
   @Override
@@ -220,7 +221,7 @@ abstract public class __CartesianExporter extends ___Exporter {
     //measures, meshRibbon, dots
     tempP3.set(x, y, z);
     viewer.unTransformPoint(tempP3, tempP1);
-    outputSphere(tempP1, 0.02f * scale, colix);
+    outputSphere(tempP1, 0.02f * scale, colix, true);
   }
 
   @Override
@@ -248,7 +249,7 @@ abstract public class __CartesianExporter extends ___Exporter {
     setTempPoints(ptA, ptB, bondOrder == -1);
     float radius = mad / 2000f;
     if (colix1 == colix2) {
-      outputCylinder(null, tempP1, tempP2, colix1, endcaps, radius, null, null);
+      outputCylinder(null, tempP1, tempP2, colix1, endcaps, radius, null, null, bondOrder != -1);
     } else {
       tempV2.set(tempP2);
       tempV2.add(tempP1);
@@ -256,13 +257,13 @@ abstract public class __CartesianExporter extends ___Exporter {
       tempP3.set(tempV2);
       outputCylinder(null, tempP1, tempP3, colix1,
           (endcaps == Graphics3D.ENDCAPS_SPHERICAL ? Graphics3D.ENDCAPS_NONE
-              : endcaps), radius, null, null);
+              : endcaps), radius, null, null, true);
       outputCylinder(null, tempP3, tempP2, colix2,
           (endcaps == Graphics3D.ENDCAPS_SPHERICAL ? Graphics3D.ENDCAPS_NONE
-              : endcaps), radius, null, null);
+              : endcaps), radius, null, null, true);
       if (endcaps == Graphics3D.ENDCAPS_SPHERICAL) {
-        outputSphere(tempP1, radius * 1.01f, colix1);
-        outputSphere(tempP2, radius * 1.01f, colix2);
+        outputSphere(tempP1, radius * 1.01f, colix1, bondOrder != -1);
+        outputSphere(tempP2, radius * 1.01f, colix2, bondOrder != -1);
       }
     }
   }
@@ -272,7 +273,7 @@ abstract public class __CartesianExporter extends ___Exporter {
                              Point3f screenA, Point3f screenB) {
     float radius = mad / 2000f;
     setTempPoints(screenA, screenB, false);
-    outputCylinder(null, tempP1, tempP2, colix, endcaps, radius, null, null);
+    outputCylinder(null, tempP1, tempP2, colix, endcaps, radius, null, null, true);
   }
 
   @Override
@@ -294,7 +295,7 @@ abstract public class __CartesianExporter extends ___Exporter {
   @Override
   void fillSphere(short colix, int diameter, Point3f pt) {
     viewer.unTransformPoint(pt, tempP1);
-    outputSphere(tempP1, viewer.unscaleToScreen(pt.z, diameter) / 2, colix);
+    outputSphere(tempP1, viewer.unscaleToScreen(pt.z, diameter) / 2, colix, true);
   }
 
   @Override

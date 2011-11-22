@@ -617,7 +617,7 @@ public class _IdtfExporter extends __CartesianExporter {
   @Override
   protected boolean outputCylinder(Point3f ptCenter, Point3f pt1, Point3f pt2,
                                    short colix, byte endcaps, float radius,
-                                   Point3f ptX, Point3f ptY) {
+                                   Point3f ptX, Point3f ptY, boolean checkRadius) {
     if (ptX != null) {
       if (endcaps == Graphics3D.ENDCAPS_FLAT) {
         outputEllipse(ptCenter, pt1, ptX, ptY, colix);
@@ -628,8 +628,8 @@ public class _IdtfExporter extends __CartesianExporter {
       }
 
     } else if (endcaps == Graphics3D.ENDCAPS_SPHERICAL) {
-      outputSphere(pt1, radius * 1.01f, colix);
-      outputSphere(pt2, radius * 1.01f, colix);
+      outputSphere(pt1, radius * 1.01f, colix, true);
+      outputSphere(pt2, radius * 1.01f, colix, true);
     } else if (endcaps == Graphics3D.ENDCAPS_FLAT) {
       outputCircle(pt1, pt2, colix, radius);
       outputCircle(pt2, pt1, colix, radius);
@@ -970,7 +970,7 @@ public class _IdtfExporter extends __CartesianExporter {
   }
   
   @Override
-  protected void outputSphere(Point3f center, float radius, short colix) {
+  protected void outputSphere(Point3f center, float radius, short colix, boolean checkRadius) {
     setSphereMatrix(center, radius, radius, radius, null, sphereMatrix);
     outputEllipsoid(center, sphereMatrix, colix);
   }
@@ -978,7 +978,7 @@ public class _IdtfExporter extends __CartesianExporter {
   @Override
   protected void outputTextPixel(Point3f pt, int argb) {    
     short colix = Graphics3D.getColix(argb); 
-    outputSphere(pt, 0.02f, colix);
+    outputSphere(pt, 0.02f, colix, true);
   }
 
   @Override

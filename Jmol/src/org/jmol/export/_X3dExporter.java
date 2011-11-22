@@ -79,7 +79,7 @@ public class _X3dExporter extends _VrmlExporter {
       + "' position='" + round(cameraPosition)
       + "' orientation='" + viewpoint.x + " " + viewpoint.y + " " 
       + (viewpoint.angle == 0 ? 1 : viewpoint.z) + " " + -viewpoint.angle
-      + "'\n jump='TRUE' description='v1'/>\n");
+      + "'\n jump='true' description='v1'/>\n");
     output("\n  <!-- ");
     output(getJmolPerspective());
     output("\n  -->\n\n");
@@ -155,7 +155,7 @@ public class _X3dExporter extends _VrmlExporter {
     if (child.charAt(0) == '_') {
       output("DEF='" + child + "'");
       output(" axisOfRotation='0 0 0'><Transform>");
-      output("<Shape><Extrusion beginCap='FALSE' convex='FALSE' endCap='FALSE' creaseAngle='1.57'");
+      output("<Shape><Extrusion beginCap='false' convex='false' endCap='false' creaseAngle='1.57'");
       output(" crossSection='");
       float rpd = 3.1415926f / 180;
       float scale = 0.02f / radius;
@@ -207,7 +207,7 @@ public class _X3dExporter extends _VrmlExporter {
 
   @Override
   protected boolean outputCylinder(Point3f ptCenter, Point3f pt1, Point3f pt2,
-                                short colix, byte endcaps, float radius, Point3f ptX, Point3f ptY) {
+                                short colix, byte endcaps, float radius, Point3f ptX, Point3f ptY, boolean checkRadius) {
     output("<Transform");
     if (ptX == null) {
       outputTransRot(pt1, pt2, 0, 1, 0);
@@ -223,8 +223,8 @@ public class _X3dExporter extends _VrmlExporter {
     outputCylinderChild(pt1, pt2, colix, endcaps, radius);
     output("\n</Transform>\n");
     if (endcaps == Graphics3D.ENDCAPS_SPHERICAL) {
-      outputSphere(pt1, radius * 1.01f, colix);
-      outputSphere(pt2, radius * 1.01f, colix);
+      outputSphere(pt1, radius * 1.01f, colix, true);
+      outputSphere(pt2, radius * 1.01f, colix, true);
     }
     return true;
   }
@@ -248,7 +248,7 @@ public class _X3dExporter extends _VrmlExporter {
             + radius
             + "'"
             + (endcaps == Graphics3D.ENDCAPS_FLAT ? ""
-                : " top='FALSE' bottom='FALSE'") + "/>");
+                : " top='false' bottom='false'") + "/>");
       } else {
         output(cyl + "/>");
       }
@@ -300,7 +300,7 @@ public class _X3dExporter extends _VrmlExporter {
     output("<IndexedFaceSet \n");
 
     if (polygonColixes != null)
-      output(" colorPerVertex='FALSE'\n");
+      output(" colorPerVertex='false'\n");
 
     // coordinates, part 1
 
@@ -316,7 +316,7 @@ public class _X3dExporter extends _VrmlExporter {
     if (normals != null) {
       vNormals = new ArrayList<String>();
       map = getNormalMap(normals, nVertices, null, vNormals);
-      output("  solid='FALSE'\n  normalPerVertex='TRUE'\n  normalIndex='\n");
+      output("  solid='false'\n  normalPerVertex='true'\n  normalIndex='\n");
       outputIndices(indices, map, nPolygons, bsPolygons, faceVertexMax);
       output("'\n");
     }      
@@ -366,7 +366,7 @@ public class _X3dExporter extends _VrmlExporter {
     // nucleic base
     // cartoons
     output("<Shape>\n");
-    output("<IndexedFaceSet solid='FALSE' ");
+    output("<IndexedFaceSet solid='false' ");
     output("coordIndex='0 1 2 -1'>");
     output("<Coordinate point='");
     output(pt1);

@@ -103,7 +103,7 @@ public class _MayaExporter extends __CartesianExporter {
 
   @Override
   protected boolean outputCylinder(Point3f ptCenter, Point3f pt1, Point3f pt2, short colix,
-                      byte endcaps, float radius, Point3f ptX, Point3f ptY) {
+                      byte endcaps, float radius, Point3f ptX, Point3f ptY, boolean checkRadius) {
     if (ptX != null)
       return false;
     nCyl++;
@@ -138,7 +138,7 @@ public class _MayaExporter extends __CartesianExporter {
   }
 
   @Override
-  protected void outputSphere(Point3f pt, float radius, short colix) {
+  protected void outputSphere(Point3f pt, float radius, short colix, boolean checkRadius) {
     //String color = rgbFromColix(colix);
     nBalls++;
     name = "nurbsSphere" + nBalls;

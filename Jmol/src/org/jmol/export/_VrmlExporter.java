@@ -196,7 +196,8 @@ public class _VrmlExporter extends __CartesianExporter {
 
   @Override
   protected boolean outputCylinder(Point3f ptCenter, Point3f pt1, Point3f pt2,
-                             short colix, byte endcaps, float radius, Point3f ptX, Point3f ptY) {
+                                   short colix, byte endcaps, float radius,
+                                   Point3f ptX, Point3f ptY, boolean checkRadius) {
     if (ptX == null) {
       outputTransRot(pt1, pt2, 0, 1, 0);
     } else {
@@ -209,8 +210,8 @@ public class _VrmlExporter extends __CartesianExporter {
     outputCylinderChild(pt1, pt2, colix, endcaps, radius);
     output("}\n");
     if (endcaps == Graphics3D.ENDCAPS_SPHERICAL) {
-      outputSphere(pt1, radius*1.01f, colix);
-      outputSphere(pt2, radius*1.01f, colix);
+      outputSphere(pt1, radius * 1.01f, colix, checkRadius);
+      outputSphere(pt2, radius * 1.01f, colix, checkRadius);
     }
     return true;
   }
@@ -391,9 +392,8 @@ public class _VrmlExporter extends __CartesianExporter {
   private Map<String, Boolean> htSpheresRendered = new Hashtable<String, Boolean>();
 
   @Override
-  protected void outputSphere(Point3f ptCenter, float radius, short colix) {
-    int iRad = (int) (radius * 100);
-    String check = round(ptCenter) + " " + iRad;
+  protected void outputSphere(Point3f ptCenter, float radius, short colix, boolean checkRadius) {
+    String check = round(ptCenter) + (checkRadius ? " " + (int) (radius * 100) : "");
     if (htSpheresRendered.get(check) != null)
       return;
     htSpheresRendered.put(check, Boolean.TRUE);

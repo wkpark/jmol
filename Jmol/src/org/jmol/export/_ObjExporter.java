@@ -181,7 +181,7 @@ public class _ObjExporter extends __CartesianExporter {
   @Override
   protected boolean outputCylinder(Point3f ptCenter, Point3f pt1, Point3f pt2,
                                    short colix, byte endcaps, float radius,
-                                   Point3f ptX, Point3f ptY) {
+                                   Point3f ptX, Point3f ptY, boolean checkRadius) {
     // Ignore ptX and pyY as they are passed null from __CartesianExporter.draw
     if (debug) {
       debugPrint("outputCylinder: colix="
@@ -211,8 +211,8 @@ public class _ObjExporter extends __CartesianExporter {
       }
 
     } else if (endcaps == Graphics3D.ENDCAPS_SPHERICAL) {
-      outputSphere(pt1, radius * 1.01f, colix);
-      outputSphere(pt2, radius * 1.01f, colix);
+      outputSphere(pt1, radius * 1.01f, colix, true);
+      outputSphere(pt2, radius * 1.01f, colix, true);
     } else if (endcaps == Graphics3D.ENDCAPS_FLAT) {
       outputCircle1(pt1, pt2, colix, radius);
       outputCircle1(pt2, pt1, colix, radius);
@@ -252,7 +252,7 @@ public class _ObjExporter extends __CartesianExporter {
    * @see org.jmol.export.__CartesianExporter#outputSphere(javax.vecmath.Point3f, float, short)
    */
   @Override
-  protected void outputSphere(Point3f center, float radius, short colix) {
+  protected void outputSphere(Point3f center, float radius, short colix, boolean checkRadius) {
     // Note center is called ptAtom2 in the _CartesianExporter superclass
     // Note radius is called f in the _CartesianExporter superclass
     // Atom extends Point3fi extends Point3f, so this may be passed an Atom
@@ -287,7 +287,7 @@ public class _ObjExporter extends __CartesianExporter {
     }
 
     short colix = Graphics3D.getColix(argb);
-    outputSphere(pt, pixelSize, colix);
+    outputSphere(pt, pixelSize, colix, true);
   }
 
   /* (non-Javadoc)

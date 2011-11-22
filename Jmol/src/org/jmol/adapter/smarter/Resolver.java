@@ -424,7 +424,7 @@ public class Resolver {
       throws Exception {
     LimitedLineReader llr = new LimitedLineReader(bufferedReader, 16384);
     
-    // first check just the first 10 bytes
+    // first check just the first 64 bytes
     
     String leader = llr.getHeader(LEADER_CHAR_MAX).trim();
 
@@ -438,6 +438,8 @@ public class Resolver {
     }
 
     // PNG or BCD-encoded JPG or JPEG
+    if (leader.indexOf("PNG") == 1 && leader.indexOf("PNGJ") >= 0)
+      return "pngj"; // presume appended JMOL file
     if (leader.indexOf("PNG") == 1 || leader.indexOf("JPG") == 1
         || leader.indexOf("JFIF") == 6)
       return "spt"; // presume embedded script --- allows dragging into Jmol
@@ -894,7 +896,7 @@ public class Resolver {
   // these test files that startWith one of these strings
   ////////////////////////////////////////////////////////////////
 
-  private final static int LEADER_CHAR_MAX = 10;
+  private final static int LEADER_CHAR_MAX = 64;
   
   private final static String[] cubeFileStartRecords =
   {"Cube", "JVXL", "#JVXL"};

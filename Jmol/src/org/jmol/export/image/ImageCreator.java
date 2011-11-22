@@ -216,7 +216,11 @@ public class ImageCreator implements JmolImageCreatorInterface {
           if (asBytes) {
             bytes = PngEncoder.getBytes(image, quality, bgcolor, type);
           } else {
-            PngEncoder.write(image, quality, os, bgcolor, type);
+            bytes = PngEncoder.getBytes(image, quality, bgcolor, type);
+            String nbytes = "" + bytes.length;
+            for (int i = nbytes.length(), pt = 63; --i >= 0;--pt)
+              bytes[pt] = nbytes.substring(i, i + 1).getBytes()[0];
+            os.write(bytes);
             if (appendText == null) {
               Object ret = viewer.getWrappedState(true, type.equals("PNGJ"),
                   image.getWidth(null), image.getHeight(null));

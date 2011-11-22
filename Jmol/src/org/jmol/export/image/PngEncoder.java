@@ -99,9 +99,11 @@ public class PngEncoder extends Object {
     os.write(getBytes(image, quality));
   }
 
-  public static void write(Image image, int quality, OutputStream os,
+  public static int write(Image image, int quality, OutputStream os,
                            int bgcolor, String type) throws IOException {
-    os.write(getBytes(image, quality, bgcolor, type));
+    byte[] bytes = getBytes(image, quality, bgcolor, type);
+    os.write(bytes);
+    return bytes.length;
   }
 
   public static byte[] getBytes(Image image, int quality) {
@@ -112,7 +114,7 @@ public class PngEncoder extends Object {
   public static byte[] getBytes(Image image, int quality, int bgcolor, String type) {
     PngEncoder pg = new PngEncoder(image, false, PngEncoder.FILTER_NONE,
         quality);
-    pg.type = type;
+    pg.type = (type + "0000").substring(0, 4);
     pg.setTransparentColor(bgcolor);
     return pg.pngEncode();
   }

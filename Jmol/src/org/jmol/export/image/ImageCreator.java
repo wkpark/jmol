@@ -213,20 +213,22 @@ public class ImageCreator implements JmolImageCreatorInterface {
             quality = 9;
           int bgcolor = (type.equals("PNGT") ? viewer
               .getBackgroundArgb() : 0);
-          if (asBytes) {
-            bytes = PngEncoder.getBytes(image, quality, bgcolor, type);
-          } else {
-            bytes = PngEncoder.getBytes(image, quality, bgcolor, type);
-            String nbytes = "" + bytes.length;
-            for (int i = nbytes.length(), pt = 63; --i >= 0;--pt)
-              bytes[pt] = nbytes.substring(i, i + 1).getBytes()[0];
-            os.write(bytes);
+          bytes = PngEncoder.getBytes(image, quality, bgcolor, type);
+          if (!asBytes) {
             if (appendText == null) {
+              String nbytes = "" + bytes.length;
+              byte[] b = bytes;
+              for (int i = nbytes.length(), pt = 63; --i >= 0;--pt)
+                b[pt] = nbytes.substring(i, i + 1).getBytes()[0];
               Object ret = viewer.getWrappedState(true, type.equals("PNGJ"),
                   image.getWidth(null), image.getHeight(null));
               bytes = (ret instanceof byte[] ? (byte[]) ret : ((String) ret).getBytes());
-              os.write(bytes);
+              nbytes = "" + bytes.length;
+              for (int i = nbytes.length(), pt = 73; --i >= 0;--pt)
+                b[pt] = nbytes.substring(i, i + 1).getBytes()[0];
+              os.write(b);
             }
+            os.write(bytes);
             bytes = null;
           }
         } else if (type.equals("PPM")) {

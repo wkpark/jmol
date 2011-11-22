@@ -235,7 +235,7 @@ public class PngEncoder extends Object {
     writeHeader();
     
     // new Jmol 12.3.7
-    writeText("Jmol Type\0" + type + "000000000-000000000");
+    writeText("Jmol Type\0" + type + "000000000+000000000");
     writeText("Software\0Jmol " + Viewer.getJmolVersion());
     writeText("Creation Time\0" + DateFormat.getDateInstance().format(new Date()));
     

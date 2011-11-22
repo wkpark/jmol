@@ -3321,14 +3321,16 @@ private void zap(String msg) {
     return modelSet.getAllPolymerInfo(getAtomBitSet(atomExpression));
   }
 
-  public String getWrappedState(boolean isImage, boolean asJmolZip, int width, int height) {
+  public Object getWrappedState(boolean isImage, boolean asJmolZip, int width, int height) {
     if (isImage && !global.imageState || !global.preserveState)
       return "";
+    String s = getStateInfo(null, width, height);
+    if (asJmolZip)
+      return fileManager.createZipSet(null, s, true);
     // we remove local file references in the embedded states for images
-    String s = "";
     try {
       s = JmolConstants.embedScript(FileManager.setScriptFileReferences(
-          getStateInfo(null, width, height), ".", null, null));
+          s, ".", null, null));
     } catch (Throwable e) {
       // ignore if this uses too much memory
       Logger.error("state could not be saved: " + e.getMessage());

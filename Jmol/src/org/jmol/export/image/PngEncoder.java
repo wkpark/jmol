@@ -26,12 +26,16 @@ package org.jmol.export.image;
 import java.awt.Image;
 import java.awt.image.PixelGrabber;
 import java.awt.image.ImageObserver;
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.zip.CRC32;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+
+import org.jmol.viewer.Viewer;
 
 /**
  * PngEncoder takes a Java Image object and creates a byte string which can be saved as a PNG file.
@@ -81,13 +85,23 @@ public class PngEncoder extends Object {
   protected int bytesPerPixel;
   protected int compressionLevel;
 
+  private String type;
+
+  /**
+   * not used in Jmol
+   * 
+   * @param image
+   * @param quality
+   * @param os
+   * @throws IOException
+   */
   public static void write(Image image, int quality, OutputStream os) throws IOException {
     os.write(getBytes(image, quality));
   }
 
   public static void write(Image image, int quality, OutputStream os,
-                           int bgcolor) throws IOException {
-    os.write(getBytes(image, quality, bgcolor));
+                           int bgcolor, String type) throws IOException {
+    os.write(getBytes(image, quality, bgcolor, type));
   }
 
   public static byte[] getBytes(Image image, int quality) {
@@ -95,9 +109,10 @@ public class PngEncoder extends Object {
         quality)).pngEncode();
   }
 
-  public static byte[] getBytes(Image image, int quality, int bgcolor) {
+  public static byte[] getBytes(Image image, int quality, int bgcolor, String type) {
     PngEncoder pg = new PngEncoder(image, false, PngEncoder.FILTER_NONE,
         quality);
+    pg.type = type;
     pg.setTransparentColor(bgcolor);
     return pg.pngEncode();
   }
@@ -216,6 +231,12 @@ public class PngEncoder extends Object {
     bytePos = writeBytes(pngIdBytes, 0);
     hdrPos = bytePos;
     writeHeader();
+    
+    // new Jmol 12.3.7
+    writeText("Jmol Type\0" + type + "000000000");
+    writeText("Software\0Jmol " + Viewer.getJmolVersion());
+    writeText("Creation Time\0" + DateFormat.getDateInstance().format(new Date()));
+    
     if (!encodeAlpha && transparentColor != null) 
       writeTransparentColor(transparentColor.intValue());
     dataPos = bytePos;
@@ -435,6 +456,17 @@ public class PngEncoder extends Object {
     bytePos = writeByte(0, bytePos);      // compression method
     bytePos = writeByte(0, bytePos);      // filter method
     bytePos = writeByte(0, bytePos);      // no interlace
+    crc.reset();
+    crc.update(pngBytes, startPos, bytePos - startPos);
+    crcValue = crc.getValue();
+    bytePos = writeInt4((int) crcValue, bytePos);
+    
+  }
+
+  private void writeText(String msg) {
+    int startPos = bytePos = writeInt4(msg.length(), bytePos);
+    bytePos = writeString("iTXt", bytePos);
+    bytePos = writeString(msg, bytePos);
     crc.reset();
     crc.update(pngBytes, startPos, bytePos - startPos);
     crcValue = crc.getValue();

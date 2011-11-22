@@ -1105,16 +1105,20 @@ public class FileManager {
     }
   }
 
-  String createZipSet(String fileName, String script, boolean includeRemoteFiles) {
+  Object createZipSet(String fileName, String script, boolean includeRemoteFiles) {
     List<Object> v = new ArrayList<Object>();
     List<String> fileNames = new ArrayList<String>();
     getFileReferences(script, fileNames);
     List<String> newFileNames = new ArrayList<String>();
     int nFiles = fileNames.size();
-    fileName = fileName.replace('\\', '/');
-    String fileRoot = fileName.substring(fileName.lastIndexOf("/") + 1);
-    if (fileRoot.indexOf(".") >= 0)
-      fileRoot = fileRoot.substring(0, fileRoot.indexOf("."));
+    if (fileName != null) 
+      fileName = fileName.replace('\\', '/');
+    String fileRoot = fileName;
+    if (fileRoot != null) {
+      fileRoot = fileName.substring(fileName.lastIndexOf("/") + 1);
+      if (fileRoot.indexOf(".") >= 0)
+        fileRoot = fileRoot.substring(0, fileRoot.indexOf("."));
+    }
     for (int iFile = 0; iFile < nFiles; iFile++) {
       String name = fileNames.get(iFile);
       int itype = urlTypeIndex(name);
@@ -1128,7 +1132,7 @@ public class FileManager {
         } else {
           Object ret = getFileAsBytes(name, null);
           if (!(ret instanceof byte[]))
-            return (String) ret;
+            return ret;
           v.add(ret);
         }
         name = newName;
@@ -1157,14 +1161,14 @@ public class FileManager {
    * generic method to create a zip file based on
    * http://www.exampledepot.com/egs/java.util.zip/CreateZip.html
    * 
-   * @param outFileName
+   * @param outFileName or null to return byte[]
    * @param fileNamesAndByteArrays
    *          Vector of [filename1, bytes|null, filename2, bytes|null, ...]
    * @param preservePath
    * @param msg 
-   * @return msg bytes filename or errorMessage
+   * @return msg bytes filename or errorMessage or byte[]
    */
-  private static String writeZipFile(String outFileName,
+  private static Object writeZipFile(String outFileName,
                                      List<Object> fileNamesAndByteArrays,
                                      boolean preservePath, String msg) {
     byte[] buf = new byte[1024];
@@ -1174,7 +1178,7 @@ public class FileManager {
     String fullFilePath = null;
     String fileList = "";
     try {
-      ByteArrayOutputStream bos = (outFileName.startsWith("http://") ? new ByteArrayOutputStream()
+      ByteArrayOutputStream bos = (outFileName == null || outFileName.startsWith("http://") ? new ByteArrayOutputStream()
           : null);
       ZipOutputStream os = new ZipOutputStream(
           bos == null ? (OutputStream) new FileOutputStream(outFileName) : bos);
@@ -1218,8 +1222,10 @@ public class FileManager {
       os.close();
       Logger.info(nBytesOut + " bytes prior to compression");
       if (bos != null) {
-        fullFilePath = outFileName;
         byte[] bytes = bos.toByteArray();
+        if (outFileName == null)
+          return bytes;  
+        fullFilePath = outFileName;
         nBytes = bytes.length;
         String ret = postByteArray(outFileName, bytes);
         if (ret != null)

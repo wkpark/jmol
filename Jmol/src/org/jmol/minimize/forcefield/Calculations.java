@@ -301,7 +301,7 @@ abstract class Calculations {
   }
 
   void getConstraintList() {
-    if (constraints.size() == 0)
+    if (constraints == null || constraints.size() == 0)
       return;
     appendLogData("C O N S T R A I N T S\n---------------------");
     for (int i = constraints.size(); --i >= 0;) {

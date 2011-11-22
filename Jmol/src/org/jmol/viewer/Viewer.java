@@ -3321,7 +3321,7 @@ private void zap(String msg) {
     return modelSet.getAllPolymerInfo(getAtomBitSet(atomExpression));
   }
 
-  public String getWrappedState(boolean isImage, int width, int height) {
+  public String getWrappedState(boolean isImage, boolean asJmolZip, int width, int height) {
     if (isImage && !global.imageState || !global.preserveState)
       return "";
     // we remove local file references in the embedded states for images

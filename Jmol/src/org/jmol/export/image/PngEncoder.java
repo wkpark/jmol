@@ -105,7 +105,8 @@ public class PngEncoder extends Object {
   private Integer transparentColor;
 
   private void setTransparentColor(int bgcolor) {
-    transparentColor = Integer.valueOf(bgcolor);
+    if (bgcolor != 0)
+      transparentColor = Integer.valueOf(bgcolor);
   }
 
   /**

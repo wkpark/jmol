@@ -166,64 +166,59 @@ public class ImageCreator implements JmolImageCreatorInterface {
   }
 
   public Object getImageBytes(String type, int quality, String fileName,
-                              Object appendText, OutputStream os) throws IOException {
+                              Object appendText, OutputStream os)
+      throws IOException {
     byte[] bytes = null;
     String errMsg = null;
     boolean isPDF = type.equalsIgnoreCase("PDF");
     boolean isOsTemp = (os == null && fileName != null && !isPDF);
     boolean asBytes = (os == null && fileName == null && !isPDF);
-    boolean isImage = (appendText instanceof Image); 
+    boolean isImage = (appendText instanceof Image);
     Image image = (Image) (isImage ? appendText : viewer.getScreenImage(null));
     try {
       if (image == null) {
         errMsg = viewer.getErrorMessage();
-      }else {
+      } else {
         if (isOsTemp)
-            os = new FileOutputStream(fileName);
+          os = new FileOutputStream(fileName);
         if (type.equalsIgnoreCase("JPEG") || type.equalsIgnoreCase("JPG")) {
           if (quality <= 0)
             quality = 75;
           if (asBytes) {
-            bytes = JpegEncoder.getBytes(viewer.getApiPlatform(), image, quality, Viewer.getJmolVersion());
+            bytes = JpegEncoder.getBytes(viewer.getApiPlatform(), image,
+                quality, Viewer.getJmolVersion());
           } else {
-            JpegEncoder.write(viewer.getApiPlatform(), image, quality, os, viewer.getWrappedState(true, image.getWidth(null), image.getHeight(null)));
+            JpegEncoder.write(viewer.getApiPlatform(), image, quality, os,
+                viewer.getWrappedState(true, false, image.getWidth(null), image
+                    .getHeight(null)));
             bytes = null;
           }
-        } else if (type.equalsIgnoreCase("JPG64") || type.equalsIgnoreCase("JPEG64")) {
+        } else if (type.equalsIgnoreCase("JPG64")
+            || type.equalsIgnoreCase("JPEG64")) {
           if (quality <= 0)
             quality = 75;
-          bytes = JpegEncoder.getBytes(viewer.getApiPlatform(), image, quality, Viewer.getJmolVersion());
+          bytes = JpegEncoder.getBytes(viewer.getApiPlatform(), image, quality,
+              Viewer.getJmolVersion());
           if (asBytes) {
             bytes = Base64.getBytes64(bytes);
           } else {
             Base64.write(bytes, os);
             bytes = null;
           }
-        } else if (type.equalsIgnoreCase("PNG")) {
+        } else if (type.startsWith("PNG")) {
           if (quality < 0)
             quality = 2;
           else if (quality > 9)
             quality = 9;
-          if (asBytes) {
-            bytes = PngEncoder.getBytes(image, quality);
-          } else {
-            PngEncoder.write(image, quality, os);
-            if (appendText == null)
-              os.write(viewer.getWrappedState(true, image.getWidth(null), image.getHeight(null)).getBytes());
-            bytes = null;
-          }
-        } else if (type.equalsIgnoreCase("PNGT")) {
-          if (quality < 0)
-            quality = 2;
-          else if (quality > 9)
-            quality = 9;
-          int bgcolor = viewer.getBackgroundArgb();
+          int bgcolor = (type.equalsIgnoreCase("PNGT") ? viewer
+              .getBackgroundArgb() : 0);
           if (asBytes) {
             bytes = PngEncoder.getBytes(image, quality, bgcolor);
           } else {
             PngEncoder.write(image, quality, os, bgcolor);
             if (appendText == null)
-              os.write(viewer.getWrappedState(true, image.getWidth(null), image.getHeight(null)).getBytes());
+              os.write(viewer.getWrappedState(true, type.equalsIgnoreCase("PNGJ"),
+                  image.getWidth(null), image.getHeight(null)).getBytes());
             bytes = null;
           }
         } else if (type.equalsIgnoreCase("PPM")) {
@@ -243,14 +238,14 @@ public class ImageCreator implements JmolImageCreatorInterface {
         } else if (type.equalsIgnoreCase("PDF")) {
           // applet will not have this interface
           // PDF is application-only because it is such a HUGE package
-            JmolPdfCreatorInterface pci = (JmolPdfCreatorInterface) Interface
-                .getApplicationInterface("jmolpanel.PdfCreator");
-            errMsg = pci.createPdfDocument(fileName, image);
+          JmolPdfCreatorInterface pci = (JmolPdfCreatorInterface) Interface
+              .getApplicationInterface("jmolpanel.PdfCreator");
+          errMsg = pci.createPdfDocument(fileName, image);
         }
         if (appendText != null && os != null) {
-          byte[] b = (appendText instanceof byte[] ? 
-                (byte[]) appendText 
-              : appendText instanceof String ? ((String) appendText).getBytes() : null);
+          byte[] b = (appendText instanceof byte[] ? (byte[]) appendText
+              : appendText instanceof String ? ((String) appendText).getBytes()
+                  : null);
           if (b != null)
             os.write(b);
         }

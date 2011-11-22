@@ -30,8 +30,8 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
+//import java.net.URL;
+//import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +41,7 @@ import java.util.zip.ZipInputStream;
 
 
 public class ZipUtil {
-
+/*
   public static boolean isZipFile(String filePath) {
     try {
       URL url = new URL(filePath);
@@ -55,7 +55,7 @@ public class ZipUtil {
     }
     return false;
   }
-  
+*/  
   public static boolean isZipFile(InputStream is) throws Exception {
     byte[] abMagic = new byte[4];
     is.mark(5);

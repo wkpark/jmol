@@ -125,8 +125,8 @@ public class StateManager {
     this.viewer = viewer;
   }
 
-  GlobalSettings getGlobalSettings(GlobalSettings gsOld) {
-    return new GlobalSettings(gsOld);
+  GlobalSettings getGlobalSettings(GlobalSettings gsOld, boolean clearUserVariables) {
+    return new GlobalSettings(gsOld, clearUserVariables);
   }
 
   void clear(GlobalSettings global) {
@@ -631,8 +631,8 @@ public class StateManager {
      *  
      */
 
-    GlobalSettings(GlobalSettings gsOld) {
-      registerAllValues(gsOld);
+    GlobalSettings(GlobalSettings gsOld, boolean clearUserVariables) {
+      registerAllValues(gsOld, clearUserVariables);
     }
 
     void clear() {
@@ -655,14 +655,15 @@ public class StateManager {
 
     }
 
-    void registerAllValues(GlobalSettings g) {
+    void registerAllValues(GlobalSettings g, boolean clearUserVariables) {
       htNonbooleanParameterValues = new Hashtable<String, Object>();
       htBooleanParameterFlags = new Hashtable<String, Boolean>();
       htPropertyFlagsRemoved = new Hashtable<String, Boolean>();
 
       if (g != null) {
         //persistent values not reset with the "initialize" command
-        htUserVariables = g.htUserVariables; // 12.3.7, 12.2.7
+        if (!clearUserVariables)
+          htUserVariables = g.htUserVariables; // 12.3.7, 12.2.7
         debugScript = g.debugScript;
         disablePopupMenu = g.disablePopupMenu;
         messageStyleChime = g.messageStyleChime;

@@ -332,7 +332,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     dataManager = new DataManager(this);
     animationManager = new AnimationManager(this);
     repaintManager = new RepaintManager(this, shapeManager);
-    initialize();
+    initialize(true);
     fileManager = new FileManager(this);
     compiler = new ScriptCompiler(this);
     definedAtomSets = new Hashtable<String, Object>();
@@ -579,8 +579,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // delegated to StateManager
   // ///////////////////////////////////////////////////////////////
 
-  public void initialize() {
-    global = stateManager.getGlobalSettings(global);
+  public void initialize(boolean clearUserVariables) {
+    global = stateManager.getGlobalSettings(global, clearUserVariables);
     global.setParameterValue("_applet", isApplet);
     global.setParameterValue("_signedApplet", isSignedApplet);
     global.setParameterValue("_useCommandThread", useCommandThread);

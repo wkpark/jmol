@@ -5397,7 +5397,8 @@ public class ScriptEvaluator {
           hover();
           break;
         case Token.initialize:
-          viewer.initialize();
+          if (!isSyntaxCheck)
+            viewer.initialize(!isStateScript);
           break;
         case Token.invertSelected:
           invertSelected();

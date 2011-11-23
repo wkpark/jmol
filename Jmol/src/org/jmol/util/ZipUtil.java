@@ -110,7 +110,7 @@ public class ZipUtil {
         pt -= bis.skip(pt);
       bis.read(data);
       bis.close();
-    } catch (IOException e) {
+    } catch (Throwable e) {
       data = new byte[0];
     }
     return new BufferedInputStream(new ByteArrayInputStream(data));

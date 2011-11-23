@@ -486,7 +486,7 @@ class MainPopupResourceBundle extends PopupResource {
       { "SIGNEDwriteGif", "write image \"?FILEROOT?.gif\"" },      
       { "SIGNEDwriteJpg", "write image \"?FILEROOT?.jpg\"" },      
       { "SIGNEDwritePng", "write image \"?FILEROOT?.png\"" },      
-      { "SIGNEDwritePngJmol", "imagestate__ = imageState; try { write PNGJ \"?FILEROOT?.png\" }; imageState=imageState__; reset imageState__" },      
+      { "SIGNEDwritePngJmol", "imagestate__ = imageState; imageState=true; try { write PNGJ \"?FILEROOT?.png\" }; imageState=imageState__; reset imageState__" },      
       { "SIGNEDwritePovray", "write POVRAY \"?FILEROOT?.pov\"" },      
       { "SIGNEDwriteVrml", "write VRML \"?FILEROOT?.wrl\"" },      
       { "SIGNEDwriteX3d", "write X3D \"?FILEROOT?.x3d\"" },      

@@ -3322,7 +3322,7 @@ private void zap(String msg) {
   }
 
   public Object getWrappedState(boolean isImage, boolean asJmolZip, int width, int height) {
-    if (isImage && !global.imageState || !global.preserveState)
+    if (isImage && !global.imageState && !asJmolZip || !global.preserveState)
       return "";
     String s = getStateInfo(null, width, height);
     if (asJmolZip)

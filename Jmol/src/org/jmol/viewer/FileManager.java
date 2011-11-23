@@ -1171,6 +1171,8 @@ public class FileManager {
     script = TextFormat.replaceQuotedStrings(script, fileNames, newFileNames);
     v.add(sname);
     v.add(script.getBytes());
+    v.add("Jmol_version_" + Viewer.getJmolVersion().replace(' ','_').replace(':','.'));
+    v.add(new byte[0]);
     if (fileRoot != null) {
       Object bytes = viewer.getImageAs("PNG", -1, -1, -1, null, null,
           JmolConstants.embedScript(script));

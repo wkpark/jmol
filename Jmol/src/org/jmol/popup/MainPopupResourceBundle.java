@@ -201,7 +201,7 @@ class MainPopupResourceBundle extends PopupResource {
       {   "fileMenu",
           "SIGNEDloadFileOrUrl SIGNEDloadPdb SIGNEDloadScript - "
               + "reload SIGNEDloadFileUnitCell - "
-              + "writeFileTextVARIABLE writeState writeHistory SIGNEDwriteJmol SIGNEDwriteIsosurface - SIGNEDwriteGif SIGNEDwriteJpg SIGNEDwritePng SIGNEDwritePovray - "
+              + "writeFileTextVARIABLE writeState writeHistory SIGNEDwriteJmol SIGNEDwriteIsosurface - SIGNEDwriteGif SIGNEDwriteJpg SIGNEDwritePng SIGNEDwritePngJmol SIGNEDwritePovray - "
               + "SIGNEDwriteVrml SIGNEDwriteX3d SIGNEDwriteIdtf SIGNEDwriteMaya" },
 
       { "[set_spin_X]Menu", "s0 s5 s10 s20 s30 s40 s50" },
@@ -486,6 +486,7 @@ class MainPopupResourceBundle extends PopupResource {
       { "SIGNEDwriteGif", "write image \"?FILEROOT?.gif\"" },      
       { "SIGNEDwriteJpg", "write image \"?FILEROOT?.jpg\"" },      
       { "SIGNEDwritePng", "write image \"?FILEROOT?.png\"" },      
+      { "SIGNEDwritePngJmol", "imagestate__ = imageState; try { write PNGJ \"?FILEROOT?.png\" }; imageState=imageState__; reset imageState__" },      
       { "SIGNEDwritePovray", "write POVRAY \"?FILEROOT?.pov\"" },      
       { "SIGNEDwriteVrml", "write VRML \"?FILEROOT?.wrl\"" },      
       { "SIGNEDwriteX3d", "write X3D \"?FILEROOT?.x3d\"" },      
@@ -879,6 +880,7 @@ class MainPopupResourceBundle extends PopupResource {
         "writeHistory", GT._("Save script with history"),      
         "SIGNEDwriteJpg", GT._("Export {0} image", "JPG"),      
         "SIGNEDwritePng", GT._("Export {0} image", "PNG"),      
+        "SIGNEDwritePngJmol", GT._("Export {0} image", "PNG+JMOL"),      
         "SIGNEDwriteGif", GT._("Export {0} image", "GIF"),    
         "SIGNEDwritePovray", GT._("Export {0} image", "POV-Ray"),      
         "SIGNEDwriteJmol", GT._("Save all as JMOL file (zip)"),      

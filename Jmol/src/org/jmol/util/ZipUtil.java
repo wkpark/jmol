@@ -41,40 +41,91 @@ import java.util.zip.ZipInputStream;
 
 
 public class ZipUtil {
-/*
-  public static boolean isZipFile(String filePath) {
-    try {
-      URL url = new URL(filePath);
-      URLConnection conn = url.openConnection();
-      BufferedInputStream bis = new BufferedInputStream(conn.getInputStream(), 8192);
-      boolean isOK = isZipFile(bis);
-      bis.close();
-      return isOK;
-    } catch (Exception e) {
-      //
+  /*
+    public static boolean isZipFile(String filePath) {
+      try {
+        URL url = new URL(filePath);
+        URLConnection conn = url.openConnection();
+        BufferedInputStream bis = new BufferedInputStream(conn.getInputStream(), 8192);
+        boolean isOK = isZipFile(bis);
+        bis.close();
+        return isOK;
+      } catch (Exception e) {
+        //
+      }
+      return false;
     }
-    return false;
-  }
-*/  
-  public static boolean isZipFile(InputStream is) throws Exception {
+  */
+  public static boolean isZipFile(InputStream is) {
     byte[] abMagic = new byte[4];
-    is.mark(5);
-    int countRead = is.read(abMagic, 0, 4);
-    is.reset();
-    return (countRead == 4 && abMagic[0] == (byte) 0x50 && abMagic[1] == (byte) 0x4B
-        && abMagic[2] == (byte) 0x03 && abMagic[3] == (byte) 0x04);
+    try {
+      is.mark(5);
+      is.read(abMagic, 0, 4);
+      is.reset();
+    } catch (Exception e) {
+      // ignore;
+    }
+    return isZipFile(abMagic);
   }
 
-  public static boolean isZipFile(byte[] bytes) throws Exception {
-    return (bytes.length > 4 
-        && bytes[0] == 0x50  //PK<03><04> 
-        && bytes[1] == 0x4B
-        && bytes[2] == 0x03 
-        && bytes[3] == 0x04);
+
+  public static boolean isPngZipStream(InputStream is) {
+    if (isZipFile(is))
+      return false;
+    byte[] abMagic = new byte[55];
+    try {
+      is.mark(56);
+      is.read(abMagic, 0, 55);
+      is.reset();
+    } catch (Exception e) {
+      // ignore
+    }
+    return (abMagic[51] == 'P' && abMagic[52] == 'N' && abMagic[53] == 'G' && abMagic[54] == 'J');
+  }
+
+  /**
+   * looks at byte 51 for "PNGJxxxxxxxxx+yyyyyyyyy"
+   * where xxxxxxxxx is a byte offset to the JMOL data
+   * and yyyyyyyyy is the length of the data.
+   * 
+   * @param bis
+   * @return same stream or byte stream
+   */
+  public static BufferedInputStream checkPngZipStream(BufferedInputStream bis) {
+    if (!isPngZipStream(bis))
+      return bis;
+    byte[] data = new byte[74];
+    bis.mark(75);
+    try {
+      bis.read(data, 0, 74);
+      bis.reset();
+      int pt = 0;
+      for (int i = 64, f = 1; --i > 54; f *= 10)
+        pt += (data[i] - '0') * f;
+      int n = 0;
+      for (int i = 74, f = 1; --i > 64; f *= 10)
+        n += (data[i] - '0') * f;
+      data = new byte[n];
+      while (pt > 0)
+        pt -= bis.skip(pt);
+      bis.read(data);
+      bis.close();
+    } catch (IOException e) {
+      data = new byte[0];
+    }
+    return new BufferedInputStream(new ByteArrayInputStream(data));
+  }
+
+  public static boolean isZipFile(byte[] bytes) {
+    return (bytes.length >= 4 
+        && bytes[0] == 'P'  //PK<03><04> 
+        && bytes[1] == 'K'
+        && bytes[2] == '\3' 
+        && bytes[3] == '\4');
   }
 
   public static ZipInputStream getStream(InputStream is) {
-    return (is instanceof ZipInputStream ? (ZipInputStream) is 
+    return (is instanceof ZipInputStream? (ZipInputStream) is
         : is instanceof BufferedInputStream ? new ZipInputStream (is)
         : new ZipInputStream(new BufferedInputStream(is))); 
   }
@@ -150,19 +201,19 @@ public class ZipUtil {
    *  
    *  Does not return "__MACOS" paths
    * 
-   * @param is
+   * @param bis
    * @param list
    * @param listPtr
    * @param asBufferedInputStream  for Pmesh
    * @return  directory listing or subfile contents
    */
-  static public Object getZipFileContents(InputStream is, String[] list,
+  static public Object getZipFileContents(BufferedInputStream bis, String[] list,
                                           int listPtr, boolean asBufferedInputStream) {
     StringBuffer ret;
     if (list == null || listPtr >= list.length)
-      return getZipDirectoryAsStringAndClose(is);
+      return getZipDirectoryAsStringAndClose(bis);
     String fileName = list[listPtr];
-    ZipInputStream zis = new ZipInputStream(is);
+    ZipInputStream zis = new ZipInputStream(bis);
     ZipEntry ze;
     //System.out.println("fname=" + fileName);
     try {
@@ -207,15 +258,16 @@ public class ZipUtil {
     return "";
   }
   
-  static public byte[] getZipFileContentsAsBytes(InputStream is, String[] list,
+  static public byte[] getZipFileContentsAsBytes(BufferedInputStream bis, String[] list,
                                           int listPtr) {
     byte[] ret = new byte[0];
     String fileName = list[listPtr];
     if (fileName.lastIndexOf("/") == fileName.length() - 1)
       return ret;
-    ZipInputStream zis = new ZipInputStream(is);
-    ZipEntry ze;
     try {
+      bis = checkPngZipStream(bis);
+      ZipInputStream zis = new ZipInputStream(bis);
+      ZipEntry ze;
       while ((ze = zis.getNextEntry()) != null) {
         if (!fileName.equals(ze.getName()))
           continue;
@@ -230,12 +282,12 @@ public class ZipUtil {
     return ret;
   }
   
-  static public String getZipDirectoryAsStringAndClose(InputStream is) {
+  static public String getZipDirectoryAsStringAndClose(BufferedInputStream bis) {
     StringBuffer sb = new StringBuffer();
     String[] s = new String[0];
     try {
-      s = getZipDirectoryOrErrorAndClose(is, false);
-      is.close();
+      s = getZipDirectoryOrErrorAndClose(bis, false);
+      bis.close();
     } catch (Exception e) { 
       Logger.error(e.getMessage());
     }
@@ -244,11 +296,11 @@ public class ZipUtil {
     return sb.toString();
   }
   
-  static public String[] getZipDirectoryAndClose(InputStream is, boolean addManifest) {
+  static public String[] getZipDirectoryAndClose(BufferedInputStream bis, boolean addManifest) {
     String[] s = new String[0];
     try {
-      s = getZipDirectoryOrErrorAndClose(is, addManifest);
-      is.close();
+      s = getZipDirectoryOrErrorAndClose(bis, addManifest);
+      bis.close();
     } catch (Exception e) { 
       Logger.error(e.getMessage());
     }
@@ -259,9 +311,10 @@ public class ZipUtil {
     return thisEntry.startsWith("JmolManifest");
   }
   
-  private static String[] getZipDirectoryOrErrorAndClose(InputStream is, boolean addManifest) throws IOException {
+  private static String[] getZipDirectoryOrErrorAndClose(BufferedInputStream bis, boolean addManifest) throws IOException {
+    bis = checkPngZipStream(bis);
     List<String> v = new ArrayList<String>();
-    ZipInputStream zis = new ZipInputStream(is);
+    ZipInputStream zis = new ZipInputStream(bis);
     ZipEntry ze;
     String manifest = null;
     while ((ze = zis.getNextEntry()) != null) {
@@ -281,7 +334,7 @@ public class ZipUtil {
     return dirList;
   }
   
-  public static String getZipEntryAsString(InputStream is) throws IOException {
+  private static String getZipEntryAsString(InputStream is) throws IOException {
     StringBuffer sb = new StringBuffer();
     byte[] buf = new byte[1024];
     int len;
@@ -314,11 +367,15 @@ public class ZipUtil {
           && bytes[0] == (byte) 0x1F && bytes[1] == (byte) 0x8B);
   }
 
-  public static boolean isGzip(InputStream is) throws Exception {
+  public static boolean isGzip(InputStream is) {
     byte[] abMagic = new byte[4];
-    is.mark(5);
-    is.read(abMagic, 0, 4);
-    is.reset();
+    try {
+      is.mark(5);
+      is.read(abMagic, 0, 4);
+      is.reset();
+    } catch (IOException e) {
+      // ignore
+    }
     return isGzip(abMagic);
   }
 

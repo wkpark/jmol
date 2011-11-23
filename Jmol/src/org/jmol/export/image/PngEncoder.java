@@ -26,7 +26,7 @@ package org.jmol.export.image;
 import java.awt.Image;
 import java.awt.image.PixelGrabber;
 import java.awt.image.ImageObserver;
-import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.zip.CRC32;
 import java.util.zip.Deflater;
@@ -237,7 +237,9 @@ public class PngEncoder extends Object {
     // new Jmol 12.3.7
     writeText("Jmol Type\0" + type + "000000000+000000000");
     writeText("Software\0Jmol " + Viewer.getJmolVersion());
-    writeText("Creation Time\0" + DateFormat.getDateInstance().format(new Date()));
+    writeText("Creation Time\0" + 
+        (new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z"))
+        .format(new Date()));
     
     if (!encodeAlpha && transparentColor != null) 
       writeTransparentColor(transparentColor.intValue());

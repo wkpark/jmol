@@ -41,7 +41,6 @@ import java.net.URLEncoder;
 import java.net.MalformedURLException;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.io.BufferedInputStream;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
@@ -172,7 +171,7 @@ public class FileManager {
 
   private String getZipDirectoryAsString(String fileName) {
     return ZipUtil
-        .getZipDirectoryAsStringAndClose((InputStream) getInputStreamOrErrorMessageFromName(
+        .getZipDirectoryAsStringAndClose((BufferedInputStream) getBufferedInputStreamOrErrorMessageFromName(
             fileName, false, false));
   }
 
@@ -375,13 +374,13 @@ public class FileManager {
         : null);
   }
 
-  Object getInputStreamOrErrorMessageFromName(String name, boolean showMsg,
+  Object getBufferedInputStreamOrErrorMessageFromName(String name, boolean showMsg,
                                               boolean checkOnly) {
-    return getInputStreamOrPost(name, showMsg, null, checkOnly,
+    return getBufferedInputStreamOrPost(name, showMsg, null, checkOnly,
         appletDocumentBase, appletProxy);
   }
 
-  private static Object getInputStreamOrPost(String name, boolean showMsg,
+  private static Object getBufferedInputStreamOrPost(String name, boolean showMsg,
                                              byte[] bytes, boolean checkOnly,
                                              URL appletDocumentBase,
                                              String appletProxy) {
@@ -397,7 +396,7 @@ public class FileManager {
       name = name.substring(0, iurl);
     }
     boolean isApplet = (appletDocumentBase != null);
-    InputStream in = null;
+    BufferedInputStream bis = null;
     // int length;
     try {
       if (isApplet || isURL) {
@@ -420,23 +419,23 @@ public class FileManager {
           wr.write(post);
           wr.flush();
         }
-        in = conn.getInputStream();
+        bis = new BufferedInputStream(conn.getInputStream());
       } else {
         if (showMsg)
           Logger.info("FileManager opening " + name);
         File file = new File(name);
         // length = (int) file.length();
-        in = new FileInputStream(file);
+        bis = new BufferedInputStream(new FileInputStream(file));
       }
       if (checkOnly) {
-        in.close();
-        in = null;
+        bis.close();
+        bis = null;
       }
-      return in;
+      return bis;
     } catch (Exception e) {
       try {
-        if (in != null)
-          in.close();
+        if (bis != null)
+          bis.close();
       } catch (IOException e1) {
       }
       errorMessage = "" + e;
@@ -458,7 +457,7 @@ public class FileManager {
     String fullPath = names[0].replace('\\', '/');
     if (name.indexOf("|") >= 0)
       name = TextFormat.split(name, "|")[0];
-    Object errMsg = getInputStreamOrErrorMessageFromName(name, false, true);
+    Object errMsg = getBufferedInputStreamOrErrorMessageFromName(name, false, true);
     return new String[] { fullPath,
         (errMsg instanceof String ? (String) errMsg : null) };
   }
@@ -528,29 +527,33 @@ public class FileManager {
       subFileList = TextFormat.split(name, "|");
       name = subFileList[0];
     }
-    Object t = getInputStreamOrErrorMessageFromName(name, true, false);
+    Object t = getBufferedInputStreamOrErrorMessageFromName(name, true, false);
     if (t instanceof String)
       return t;
     try {
-      BufferedInputStream bis = new BufferedInputStream((InputStream) t, 8192);
+      BufferedInputStream bis = (BufferedInputStream) t;
       if (CompoundDocument.isCompoundDocument(bis)) {
         CompoundDocument doc = new CompoundDocument(bis);
-        return getBufferedReaderForString(doc.getAllData("Molecule", "Input").toString());
+        return getBufferedReaderForString(doc.getAllData("Molecule", "Input")
+            .toString());
       } else if (ZipUtil.isGzip(bis)) {
         do {
           bis = new BufferedInputStream(new GZIPInputStream(bis));
         } while (ZipUtil.isGzip(bis));
-      } else if (ZipUtil.isZipFile(bis)) {
-        if (allowZipStream)
-          return new ZipInputStream(bis);
-        if (asInputStream)
-          return ZipUtil.getZipFileContents(bis, subFileList, 1, true);
-        // danger -- converting bytes to String here.
-        // we lose 128-156 or so.
-        String s = (String) ZipUtil.getZipFileContents(bis, subFileList, 1,
-            false);
-        bis.close();
-        return getBufferedReaderForString(s);
+      } else {
+        bis = ZipUtil.checkPngZipStream(bis);
+        if (ZipUtil.isZipFile(bis)) {
+          if (allowZipStream)
+            return new ZipInputStream(bis);
+          if (asInputStream)
+            return ZipUtil.getZipFileContents(bis, subFileList, 1, true);
+          // danger -- converting bytes to String here.
+          // we lose 128-156 or so.
+          String s = (String) ZipUtil.getZipFileContents(bis, subFileList, 1,
+              false);
+          bis.close();
+          return getBufferedReaderForString(s);
+        }
       }
       if (asInputStream)
         return bis;
@@ -562,7 +565,7 @@ public class FileManager {
 
   String[] getZipDirectory(String fileName, boolean addManifest) {
     return ZipUtil.getZipDirectoryAndClose(
-        (InputStream) getInputStreamOrErrorMessageFromName(fileName, false,
+        (BufferedInputStream) getBufferedInputStreamOrErrorMessageFromName(fileName, false,
             false), addManifest);
   }
 
@@ -599,12 +602,12 @@ public class FileManager {
     }
     BufferedInputStream bis = null;
     try {
-      Object t = getInputStreamOrErrorMessageFromName(name, false, false);
+      Object t = getBufferedInputStreamOrErrorMessageFromName(name, false, false);
       if (t instanceof String) {
         fileData.put(name0, (String) t + "\n");
         return name0;
       }
-      bis = new BufferedInputStream((InputStream) t, 8192);
+      bis = (BufferedInputStream) t;
       if (CompoundDocument.isCompoundDocument(bis)) {
         CompoundDocument doc = new CompoundDocument(bis);
         doc.getAllData(name.replace('\\', '/'), "Molecule", fileData);
@@ -630,7 +633,7 @@ public class FileManager {
         fileData.put(name0, sb.toString());
       } else {
         BufferedReader br = new BufferedReader(new InputStreamReader(ZipUtil
-            .isGzip(bis) ? new GZIPInputStream(bis) : (InputStream) bis));
+            .isGzip(bis) ? new GZIPInputStream(bis) : bis));
         String line;
         sb = new StringBuffer();
         if (header != null)
@@ -668,18 +671,19 @@ public class FileManager {
       subFileList = TextFormat.split(name, "|");
       name = subFileList[0];
     }
-    Object t = getInputStreamOrErrorMessageFromName(name, false, false);
+    Object t = getBufferedInputStreamOrErrorMessageFromName(name, false, false);
     if (t instanceof String)
       return "Error:" + t;
     try {
-      BufferedInputStream bis = new BufferedInputStream((InputStream) t, 8192);
-      InputStream is = bis;
+      BufferedInputStream bis = (BufferedInputStream) t;
       if (os != null)
         return getStreamAsBytes(bis, os);
-      Object bytes = (ZipUtil.isZipFile(is) && subFileList != null
-          && 1 < subFileList.length ? ZipUtil.getZipFileContentsAsBytes(is,
-          subFileList, 1) : getStreamAsBytes(bis, null));
-      is.close();
+      Object bytes = (subFileList != null
+          && subFileList.length > 1 && 
+          (ZipUtil.isZipFile(bis) || ZipUtil.isPngZipStream(bis)) ? 
+              ZipUtil.getZipFileContentsAsBytes(bis, subFileList, 1) 
+              : getStreamAsBytes(bis, null));
+      bis.close();
       return bytes;
     } catch (Exception ioe) {
       return ioe.getMessage();
@@ -1447,11 +1451,10 @@ public class FileManager {
         if (subFileList != null)
           htParams.put("subFileList", subFileList);
         String[] zipDirectory = getZipDirectory(name, true);
-        InputStream is = new BufferedInputStream(
-            (InputStream) getInputStreamOrErrorMessageFromName(name, false,
-                false), 8192);
+        BufferedInputStream bis = (BufferedInputStream) getBufferedInputStreamOrErrorMessageFromName(name, false,
+                false);
         t = viewer.getModelAdapter()
-            .getAtomSetCollectionOrBufferedReaderFromZip(is, name,
+            .getAtomSetCollectionOrBufferedReaderFromZip(bis, name,
                 zipDirectory, htParams, true, isBinary);
       }
       if (t instanceof BufferedInputStream)

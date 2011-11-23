@@ -111,7 +111,7 @@ public class MPJmolApp implements JsonNioClient {
   protected JmolViewer jmolViewer;
 
   public static void main(String args[]) {
-    new MPJmolApp(args.length > 1 ? Integer.parseInt(args[1]) : 31416);
+    new MPJmolApp(args.length > 0 ? Integer.parseInt(args[0]) : 31416);
   }
 
   public MPJmolApp() {

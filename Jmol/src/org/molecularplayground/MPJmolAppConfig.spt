@@ -1,14 +1,13 @@
-NIOcontentScript="biophysics/biophysics.spt"
-contentdir = "biophysics/"
+topicdir = "biophysics/"
+NIOcontentScript=topicdir + "biophysics.spt"
+cd @topicdir
 
 function loadModel(jmolFile,more,banner) {
   if (!jmolFile) { return }
   zap
   var msg = "banner:" + banner
   message @msg
-  cd ""
-  cd @contentdir
   load @jmolFile
-  if (more) { script @more }
-  delay 30
+  if (more) { script inline @more }
+  delay 120
 }

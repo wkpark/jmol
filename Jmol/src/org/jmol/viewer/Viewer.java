@@ -8924,7 +8924,7 @@ private void zap(String msg) {
       dir = ".";
     }
     dir = fileManager.getDefaultDirectory(dir
-        + (dir.equals("=") || dir.endsWith("/") ? "" : "/X"));
+        + (dir.equals("=") ? "" : dir.endsWith("/") ? "X" : "/X"));
     if (dir.length() > 0)
       setStringProperty("defaultDirectory", dir);
     String path = fileManager.getFilePath(dir + "/", true, false);

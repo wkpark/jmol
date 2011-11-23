@@ -662,6 +662,7 @@ public class StateManager {
 
       if (g != null) {
         //persistent values not reset with the "initialize" command
+        htUserVariables = g.htUserVariables; // 12.3.7, 12.2.7
         debugScript = g.debugScript;
         disablePopupMenu = g.disablePopupMenu;
         messageStyleChime = g.messageStyleChime;

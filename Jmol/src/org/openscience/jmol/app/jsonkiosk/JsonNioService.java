@@ -243,50 +243,56 @@ public class JsonNioService extends NIOService implements JsonNioServer {
     // inSocket listens for JSON commands from the NIO server
     // when initialized, it identifies itself to the server as the "out" connection
 
-    inSocket = openSocket("127.0.0.1", port);
-    inSocket.setPacketReader(new AsciiLinePacketReader());
-    inSocket.setPacketWriter(new RawPacketWriter());
-    inSocket.listen(new SocketObserver() {
+    if (port != 0) {
+      inSocket = openSocket("127.0.0.1", port);
+      inSocket.setPacketReader(new AsciiLinePacketReader());
+      inSocket.setPacketWriter(new RawPacketWriter());
+      inSocket.listen(new SocketObserver() {
 
-      public void connectionOpened(NIOSocket nioSocket) {
-        initialize("out", nioSocket);
-      }
+        public void connectionOpened(NIOSocket nioSocket) {
+          initialize("out", nioSocket);
+        }
 
-      public void packetReceived(NIOSocket socket, byte[] packet) {
-        processMessage(packet, null);
-      }
+        public void packetReceived(NIOSocket socket, byte[] packet) {
+          processMessage(packet, null);
+        }
 
-      public void connectionBroken(NIOSocket nioSocket, Exception exception) {
-        halt = true;
-        Logger.info(Thread.currentThread().getName() + " inSocket connectionBroken");
-      }
-    });
+        public void connectionBroken(NIOSocket nioSocket, Exception exception) {
+          halt = true;
+          Logger.info(Thread.currentThread().getName()
+              + " inSocket connectionBroken");
+        }
+      });
 
-    // outSocket is used to send JSON commands to the NIO server
-    // when initialized, it identifies itself to the server as the "in" connection
+      // outSocket is used to send JSON commands to the NIO server
+      // when initialized, it identifies itself to the server as the "in" connection
 
-    outSocket = openSocket("127.0.0.1", port);
-    outSocket.setPacketReader(new AsciiLinePacketReader());
-    outSocket.setPacketWriter(new RawPacketWriter());
-    outSocket.listen(new SocketObserver() {
+      outSocket = openSocket("127.0.0.1", port);
+      outSocket.setPacketReader(new AsciiLinePacketReader());
+      outSocket.setPacketWriter(new RawPacketWriter());
+      outSocket.listen(new SocketObserver() {
 
-      public void connectionOpened(NIOSocket nioSocket) {
-        initialize("in", nioSocket);
-      }
+        public void connectionOpened(NIOSocket nioSocket) {
+          initialize("in", nioSocket);
+        }
 
-      public void packetReceived(NIOSocket nioSocket, byte[] packet) {
-        System.out.println("outpacketreceived");
-        // not used
-      }
+        public void packetReceived(NIOSocket nioSocket, byte[] packet) {
+          System.out.println("outpacketreceived");
+          // not used
+        }
 
-      public void connectionBroken(NIOSocket nioSocket, Exception exception) {
-        halt = true;
-        Logger.info(Thread.currentThread().getName() + " outSocket connectionBroken");
-      }
-    });
+        public void connectionBroken(NIOSocket nioSocket, Exception exception) {
+          halt = true;
+          Logger.info(Thread.currentThread().getName()
+              + " outSocket connectionBroken");
+        }
+      });
 
+    }
     thread = new Thread(new JsonNioThread(), "JsonNiosThread" + myName);
     thread.start();
+    if (port == 0 && contentDisabled)
+      client.nioRunContent(this);
   }
 
   private void setEnabled() {

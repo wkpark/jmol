@@ -10000,4 +10000,8 @@ private void zap(String msg) {
     return global.minPixelSelRadius;
   }
 
+  public String getEmbeddedFileState(String fileName) {
+    return fileManager.getEmbeddedFileState(fileName);
+  }
+
 }

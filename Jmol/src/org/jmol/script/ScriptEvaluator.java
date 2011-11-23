@@ -14459,11 +14459,8 @@ public class ScriptEvaluator {
         }
         break;
       } else if (tokAt(2) == Token.file && (len = statementLength) == 4) {
-        if (!isSyntaxCheck) {
-          msg = viewer.getFileAsString(parameterAsString(3));
-          msg = (msg.indexOf(JmolConstants.EMBEDDED_SCRIPT_TAG) < 0 ? ""
-              : ScriptCompiler.getEmbeddedScript(msg));
-        }
+        if (!isSyntaxCheck)
+          msg = viewer.getEmbeddedFileState(parameterAsString(3));
         break;
       }
       len = 3;

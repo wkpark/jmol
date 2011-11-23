@@ -23,6 +23,7 @@
  */
 package org.jmol.viewer;
 
+import org.jmol.script.ScriptCompiler;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BinaryDocument;
 import org.jmol.util.CompoundDocument;
@@ -473,6 +474,24 @@ public class FileManager {
       fullPathNameReturn[0] = names[0].replace('\\', '/');
     return getUnzippedBufferedReaderOrErrorMessageFromName(names[0], false,
         isBinary, false, doSpecialLoad);
+  }
+
+  public String getEmbeddedFileState(String fileName) {
+    String[] dir = null;
+    try {
+      dir = getZipDirectory(fileName, false);
+      for (int i = 0; i < dir.length; i++)
+        if (dir[i].indexOf(".spt") >= 0) {
+          String[] data = new String[] { fileName + "|" + dir[i], null };
+          getFileDataOrErrorAsString(data, Integer.MAX_VALUE, false);
+          return data[1];
+        }
+      return "";
+    } catch (Exception e) {
+      String state = viewer.getFileAsString(fileName);
+      return (state.indexOf(JmolConstants.EMBEDDED_SCRIPT_TAG) < 0 ? ""
+          : ScriptCompiler.getEmbeddedScript(state));
+    }
   }
 
   Object getUnzippedBufferedReaderOrErrorMessageFromName(

@@ -321,7 +321,7 @@ public abstract class SurfaceReader implements VertexDataServer {
       return true;
     //if (volumeData.sr != null)
       //return true;
-    return (volumeData.setUnitVectors());
+    return (volumeData.setUnitVectors());// || isMapData && params.thePlane != null);
     
 //        && (vertexDataOnly 
 //            || isMapData && params.thePlane != null 

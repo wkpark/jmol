@@ -671,11 +671,11 @@ abstract class TransformManager {
   }
 
   float getTranslationXPercent() {
-    return (fixedTranslation.x - width / 2) * 100 / width;
+    return (fixedTranslation.x - width / 2f) * 100 / width;
   }
 
   float getTranslationYPercent() {
-    return (fixedTranslation.y - height / 2) * 100 / height;
+    return (fixedTranslation.y - height / 2f) * 100 / height;
   }
 
   float getTranslationZPercent() {
@@ -2124,17 +2124,25 @@ abstract class TransformManager {
 
   private String getRotateZyzText(boolean iAddComment) {
     StringBuffer sb = new StringBuffer();
-    float m22 = matrixRotate.m22;
+    Matrix3f m = (Matrix3f) viewer.getModelSetAuxiliaryInfo("defaultOrientationMatrix");
+    if (m == null) {
+      m = matrixRotate;
+    } else {
+      m = new Matrix3f(m);
+      m.invert();
+      m.mul(matrixRotate, m);
+    }
+    float m22 = m.m22;
     float rY = (float) (Math.acos(m22) * degreesPerRadian);
     float rZ1, rZ2;
     if (m22 > .999f || m22 < -.999f) {
-      rZ1 = (float) (Math.atan2(matrixRotate.m10, matrixRotate.m11)
+      rZ1 = (float) (Math.atan2(m.m10, m.m11)
           * degreesPerRadian);
       rZ2 = 0;
     } else {
-      rZ1 = (float) (Math.atan2(matrixRotate.m21, -matrixRotate.m20)
+      rZ1 = (float) (Math.atan2(m.m21, -m.m20)
           * degreesPerRadian);
-      rZ2 = (float) (Math.atan2(matrixRotate.m12, matrixRotate.m02)
+      rZ2 = (float) (Math.atan2(m.m12, m.m02)
           * degreesPerRadian);
     }
     if (rZ1 != 0 && rY != 0 && rZ2 != 0 && iAddComment)

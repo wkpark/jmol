@@ -5602,10 +5602,10 @@
     credit="132" frames="100" code="GT" contact="gbowman" contrib="Barrie North"/>
   <fah_proj number="2968" name="Trpzip2 Folding at 300K" public="y" file="xyz"
     server="143.89.28.70" atoms="8991" preferred="16.7" deadline="24"
-    credit="80.7" frames="100" code="G" contact="xuhuihuang@gmail.com" contrib="SandStar"/>
+    credit="80.7" frames="100" code="G" contact="xuhuihuang@gmail.com" kfactor="0.75" contrib="SandStar"/>
   <fah_proj number="2969" name="Trpzip2 Folding at 350K" public="y" file="xyz"
     server="143.89.28.70" atoms="8991" preferred="16.7" deadline="24"
-    credit="80.7" frames="100" code="G" contact="xuhuihuang@gmail.com" contrib="Leszek Dobrowolski"/>
+    credit="80.7" frames="100" code="G" contact="xuhuihuang@gmail.com" kfactor="0.75" contrib="Leszek Dobrowolski"/>
   <fah_proj number="2970" name="p2970_N17_native" public="y" file="xyz"
     server="171.64.122.131" atoms="7294" preferred="55" deadline="81"
     credit="292.5" frames="100" code="GST" contact="nwkelley" contrib="Smoking2000"/>
@@ -5614,10 +5614,10 @@
     credit="292.5" frames="100" code="GST" contact="nwkelley" contrib="Smoking2000"/>
   <fah_proj number="2972" name="Trpzip2 Folding at 400K" public="y" file="xyz"
     server="143.89.28.70" atoms="8991" preferred="16.7" deadline="24"
-    credit="80.7" frames="100" code="G" contact="xuhuihuang@gmail.com" contrib="Leszek Dobrowolski"/>
+    credit="80.7" frames="100" code="G" contact="xuhuihuang@gmail.com" kfactor="0.75" contrib="Leszek Dobrowolski"/>
   <fah_proj number="2973" name="Trpzip2 Folding at 450K" public="y" file="xyz"
     server="143.89.28.70" atoms="8991" preferred="16.7" deadline="24"
-    credit="80.7" frames="100" code="G" contact="xuhuihuang@gmail.com" contrib="Chiricozzi Walter"/>
+    credit="80.7" frames="100" code="G" contact="xuhuihuang@gmail.com" kfactor="0.75" contrib="Chiricozzi Walter"/>
   <fah_proj number="2974" name="p2974" public="y"
     server="143.89.28.72" atoms="33597" preferred="13.3" deadline="22.17"
     credit="895.0" frames="100" code="A4" contact="xhuang" kfactor="0.75"/>
@@ -5629,7 +5629,7 @@
     credit="395.0" frames="100" code="G" contact="xhuang" kfactor="0.0"/>
   <fah_proj number="2977" name="p2977_humanIAPP_300K" public="y"
     server="143.89.28.70" atoms="33597" preferred="11.8" deadline="19.56"
-    credit="790.0" frames="100" code="G" contact="xhuang" kfactor="0.0"/>
+    credit="790.0" frames="100" code="G" contact="xhuang" kfactor="0.75"/>
 
   <!-- Projects 3000 to 3099 -->
   <fah_proj number="3000" name="p3000_SMP-supervillin-beta1" public="n" file="xyz"
@@ -8425,9 +8425,15 @@
   <fah_proj number="6080" name="p6080_HAFP3-mutant" public="y"
     server="171.64.65.54" atoms="77457" preferred="2.5" deadline="4.2"
     credit="521.0" frames="100" code="A3" contact="kasson" kfactor="2.99"/>
-  <fah_proj number="6099" name="uncharged_peptide" public="n"
-    server="171.64.65.53" atoms="141459" preferred="2.6" deadline="4"
-    credit="529.0" frames="100" code="A3" contact="kasson" kfactor="3.19"/>
+  <fah_proj number="6097" name="charged_peptide" public="y"
+    server="171.64.65.53" atoms="168080" preferred="7.7" deadline="12.8"
+    credit="1593.0" frames="100" code="A3" contact="kasson" kfactor="3.0"/>
+  <fah_proj number="6098" name="charged_peptide" public="y"
+    server="171.64.65.53" atoms="168080" preferred="7.7" deadline="12.8"
+    credit="1593.0" frames="100" code="A3" contact="kasson" kfactor="3.0"/>
+  <fah_proj number="6099" name="uncharged_peptide" public="y"
+    server="171.64.65.53" atoms="141459" preferred="7.7" deadline="12.8"
+    credit="1588.0" frames="100" code="A3" contact="kasson" kfactor="3.0"/>
 
   <!-- Projects 6300 to 6399 -->
   <fah_proj number="6300" name="p6300_Peptide dimer in TIP3P water" public="y" file="xyz"
@@ -9692,6 +9698,27 @@
   <fah_proj number="10127" name="p10127" public="y"
     server="171.64.65.75" atoms="84533" preferred="15.05" deadline="25.09"
     credit="3262.0" frames="100" code="A3" contact="gbowman" kfactor="3.0"/>
+  <fah_proj number="10128" name="p10128" public="y"
+    server="171.64.65.75" atoms="29584" preferred="5.54" deadline="9.24"
+    credit="1200.79" frames="100" code="A3" contact="gbowman" kfactor="3.0"/>
+  <fah_proj number="10129" name="p10129" public="y"
+    server="171.64.65.75" atoms="32890" preferred="6.28" deadline="10.46"
+    credit="1359.62" frames="100" code="A3" contact="gbowman" kfactor="3.0"/>
+  <fah_proj number="10130" name="p10130" public="y"
+    server="171.64.65.75" atoms="34894" preferred="6.58" deadline="10.97"
+    credit="1426.67" frames="100" code="A3" contact="gbowman" kfactor="3.0"/>
+  <fah_proj number="10131" name="p10131" public="y"
+    server="171.64.65.75" atoms="28841" preferred="5.42" deadline="9.03"
+    credit="1173.33" frames="100" code="A3" contact="gbowman" kfactor="3.0"/>
+  <fah_proj number="10132" name="p10132" public="y"
+    server="171.64.65.75" atoms="28029" preferred="5.29" deadline="8.81"
+    credit="1145.36" frames="100" code="A3" contact="gbowman" kfactor="3.0"/>
+  <fah_proj number="10133" name="p10133" public="y"
+    server="171.64.65.75" atoms="32784" preferred="6.26" deadline="10.44"
+    credit="1357.17" frames="100" code="A3" contact="gbowman" kfactor="3.0"/>
+  <fah_proj number="10134" name="p10134" public="y"
+    server="171.64.65.75" atoms="32216" preferred="5.83" deadline="9.72"
+    credit="1264.12" frames="100" code="A3" contact="gbowman" kfactor="3.0"/>
 
   <!-- Projects 10200 to 10299 -->
   <fah_proj number="10200" name="b2AR conformational space sampling" public="y" file="xyz"
@@ -10481,9 +10508,12 @@
   <fah_proj number="11051" name="p11051" public="n"
     server="171.64.65.55" atoms="35398" preferred="12" deadline="24"
     credit="645.0" frames="100" code="A3" contact="dvanatta" kfactor="0.75"/>
-  <fah_proj number="11060" name="p11060" public="n"
+  <fah_proj number="11060" name="p11060" public="y"
     server="171.64.65.55" atoms="25192" preferred="8" deadline="12"
     credit="334.0" frames="100" code="A3" contact="dvanatta" kfactor="0.75"/>
+  <fah_proj number="11061" name="p11061" public="y"
+    server="171.64.65.55" atoms="29884" preferred="8" deadline="12"
+    credit="380.0" frames="100" code="A3" contact="dvanatta" kfactor="0.75"/>
   <fah_proj number="11070" name="p11070" public="n"
     server="171.64.65.55" atoms="25192" preferred="8" deadline="12"
     credit="443.0" frames="100" code="A3" contact="dvanatta" kfactor="0.75"/>

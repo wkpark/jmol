@@ -60,30 +60,42 @@ public class ZMatrixReader extends AtomSetCollectionReader {
    * Bob Hanson hansonr@stolaf.edu 11/19/2011
    */
 
-  /*
+  /*  SYNTAX 
+
+Anything after # on a line is considered a comment.
+A first line starting with #ZMATRIX defines the file type:
+  Jmol z-format type (just #ZMATRIX) 
+  Gaussian (#ZMATRIX GAUSSIAN) 
+  Mopac (#ZMATRIX MOPAC) 
+Lines starting with # may contain jmolscript
+Blank lines are ignored:
 
 #ZMATRIX -- methane
+#jmolscript: spin on
+
 C
 H   1 1.089000     
 H   1 1.089000  2  109.4710      
 H   1 1.089000  2  109.4710  3  120.0000   
 H   1 1.089000  2  109.4710  3 -120.0000
 
-or, to add bond orders, just add them as one more integer on the line:
+Bonds will not generally be added, leaving Jmol to do its autoBonding.
+To add bond orders, just add them as one more integer on any line
+other than the first-atom line:
 
 #ZMATRIX -- CO2 
 C
 O   1 1.3000                 2     
 O   1 1.3000    2  180       2      
 
-any position number may be replaced by a unique atom name, with number:
+Any position number may be replaced by a unique atom name, with number:
 
 #ZMATRIX -- CO2
 C1
 O1   C1 1.3000                2     
 O2   C1 1.3000    O1  180     2      
 
-ignored dummy atoms are any atoms starting with "X" and a number,
+Ignored dummy atoms are any atoms starting with "X" and a number,
 allowing for positioning:
 
 #ZMATRIX -- CO2
@@ -93,7 +105,7 @@ C1   X1 1.0       X2 90
 O1   C1 1.3000    X2 90   X1 0  2     
 O2   C1 1.3000    O1 180  X2 0  2      
 
-negative distance indicates that the second angle is a normal angle, not a dihedral
+Negative distance indicates that the second angle is a normal angle, not a dihedral:
 
 #ZMATRIX -- NH3 (using simple angles only)
 N1 
@@ -101,15 +113,15 @@ H1 N1 1.0
 H2 N1 1.0 H1 107  
 H3 N1 -1.0 H1 107 H2 107
 
-negative distance and one negative angle reverses the chirality
+Negative distance and one negative angle reverses the chirality:
 
-#ZMATRIX -- NH3 (using simple angles only; reversed chirality)
+#ZMATRIX -- NH3 (using simple angles only; reversed chirality):
 N1 
 H1 N1 1.0
 H2 N1 1.0 H1 107  
 H3 N1 -1.0 H1 -107 H2 107
 
-symbolics may be used -- they may be listed first or last
+Symbolics may be used -- they may be listed first or last:
 
 #ZMATRIX
 
@@ -121,8 +133,22 @@ H1 N1 dist
 H2 N1 dist H1 angle 
 H3 N1 -dist H1 angle H2 angle
 
-If #ZMATRIX is not the start of the file, MOPAC style is checked.
-MOPAC will have the third line blank. Atom names are not allowed,
+All atoms will end up with numbers in their names, 
+but you do not need to include those in the z-matrix file
+if atoms have unique elements or you are referring
+to the last atom of that type. Still, numbering is recommended.
+
+#ZMATRIX
+
+dist 1.0
+angle 107
+
+N                  # will be N1
+H N dist           # will be H2
+H N dist H angle   # will be H3
+H N -dist H2 angle H angle # H here refers to H3
+
+MOPAC format will have the third line blank. Atom names are not allowed,
 and isotopes are in the form of "C13". The first two lines will be 
 considered to be comments and ignored:
 
@@ -144,6 +170,19 @@ a321     109.5
 d4213    120.0
 d300     300.0
 
+Gaussian will not have the third line blank and has a slightly 
+different format for showing the alternative two-angle format
+involving the eighth field having the flag 1
+(see http://www.gaussian.com/g_tech/g_ur/c_zmat.htm):
+
+C5 O1 1.0 C2 110.4 C4 105.4 1
+C6 O1 R   C2 A1    C3 A2    1
+
+Note that Gaussian cartesian format is allowed -- simply 
+set the first atom index to be 0:
+
+
+No distinction between "Variable:" and "Constant:" is made by Jmol.
 
    */
 
@@ -155,18 +194,26 @@ d300     300.0
   private List<String[]> lineBuffer = new ArrayList<String[]>();
   private Map<String, Float> symbolicMap = new Hashtable<String, Float>();
   private boolean isMopac;
+  private int nComments = 0;
   
   @Override
   protected boolean checkLine() throws Exception {
     // easiest just to grab all lines that are comments or symbolic first, then do the processing of atoms.
+    line = line.trim();
     if (line.startsWith("#")) {
-      isJmolZformat = true;
+      nComments++;
+      if (line.startsWith("#ZMATRIX"))
+        isJmolZformat = line.toUpperCase().indexOf("GAUSSIAN") < 0
+            && !(isMopac = (line.toUpperCase().indexOf("MOPAC") >= 0));
       checkLineForScript();
       return true;
     }
+    if (line.indexOf("#") >= 0)
+      line = line.substring(0, line.indexOf("#"));
+    if (isMopac && ptLine < 3 || line.indexOf(":") >= 0)
+      return true; // Mopac header or Variables: or Constants:
     tokens = getTokens(line);
-    if ((isJmolZformat || lineBuffer.size() > 2)
-        && tokens.length == 2) {
+    if (tokens.length == 2) {
       getSymbolic();
       return true;
     }
@@ -176,9 +223,12 @@ d300     300.0
 
   @Override
   protected void finalizeReader() throws Exception {
-    // Mopac must have third line blank and not have # as first character -- at least that's what we are using
-    isMopac = (lineBuffer.size() > 3 && lineBuffer.get(2).length == 0);
-    for (int i = (isMopac ? 3 : 0); i < lineBuffer.size(); i++)
+    int firstLine = 0;
+    if (!isMopac && lineBuffer.size() > 3 && lineBuffer.get(2).length == 0) {
+      isMopac = true;
+      firstLine = Math.max(0, 3 - nComments);
+    }
+    for (int i = firstLine; i < lineBuffer.size(); i++)
       if ((tokens = lineBuffer.get(i)).length > 0)
         getAtom();
     super.finalizeReader();
@@ -215,16 +265,20 @@ d300     300.0
     setElementAndIsotope(atom, element);
     
     int ia = getAtomIndex(1);
-    int bondOrder = 1;
+    int bondOrder = 0;
     switch (tokens.length) {
     case 1:
       if (atomCount != 0)
         atom = null;
       else
         atom.set(0, 0, 0);
-      bondOrder = 0;
       break;
     case 4:
+      if (getAtomIndex(1) < 0) {
+        // Gaussian cartesian
+        atom.set(getValue(1), getValue(2), getValue(3));
+        break;
+      }
       bondOrder = (int) getValue(3);
       // fall through
     case 3:
@@ -244,6 +298,13 @@ d300     300.0
       bondOrder = (int) getValue(tokens.length - 1);
       // fall through
     case 5:
+      if (tokens.length == 5 && tokens[1].equals("0")) {
+        // Gaussian mix 
+        atom.set(getValue(2), getValue(3), getValue(4));
+        bondOrder = 0;
+        break;
+      }
+      // fall through
     case 7:
       if (tokens.length < 7 && atomCount != 2) {
         atom = null;
@@ -260,6 +321,10 @@ d300     300.0
         return;
       int ib = getAtomIndex(3);
       int ic = (tokens.length < 7 ? -1 : getAtomIndex(5));
+      if (tokens.length == 8 && !isJmolZformat && !isMopac && bondOrder == 1) {
+        // Gaussian indicator of alternative angle representation
+        d = -Math.abs(d);
+      }
       atom = setAtom(atom, ia, ib, ic, d, theta1, theta2);
       break;
     default:
@@ -277,32 +342,54 @@ d300     300.0
     } else {
       atomSetCollection.addAtom(atom);
       Logger.info(atom.atomName + " " + atom.x + " " + atom.y + " " + atom.z);
-      if (bondOrder > 0)
+      if (isJmolZformat && bondOrder > 0)
         atomSetCollection.addBond(new Bond(atom.atomIndex,
             vAtoms.get(ia).atomIndex, bondOrder));
     }
   }
 
+  private float getSymbolic(String key) {
+    boolean isNeg = key.startsWith("-");
+    Float F = symbolicMap.get(isNeg ? key.substring(1) : key);
+    if (F == null)
+      return Float.NaN;
+    float f = F.floatValue();
+    return (isNeg ? -f : f);
+  }
+  
   private float getValue(int i) {
-    String key = tokens[i];
-    float f = parseFloat(key);
-    if (Float.isNaN(f)) {
-      boolean isNeg = key.startsWith("-");
-      Float F = symbolicMap.get(isNeg ? key.substring(1) : key);
-      if (F != null && !Float.isNaN(f = F.floatValue()) && isNeg)
-        f = -f;
-    }
-    return f;
+    float f = getSymbolic(tokens[i]);
+    return (Float.isNaN(f) ? parseFloat(tokens[i]) : f);
   }
 
   private int getAtomIndex(int i) {
     if (i >= tokens.length)
       return -1;
-    int ia = parseInt(tokens[i]);
-    if (tokens[i].length() != ("" + ia).length()) // check for clean integer, not "13C1"
-      ia = atomMap.get(tokens[i]).intValue();
-    else
-      ia--;    
+    String name = tokens[i];
+    int ia = parseInt(name);
+    if (name.length() != ("" + ia).length()) {
+      // check for clean integer, not "13C1"
+      Integer I = atomMap.get(name);
+      if (I == null) {
+        // We allow just an element name without a number if it is unique.
+        // The most recent atom match will be used 
+        for (i = vAtoms.size(); --i >= 0; ) {
+          Atom atom = vAtoms.get(i);
+          if (atom.atomName.startsWith(name) 
+              && atom.atomName.length() > name.length()
+              && Character.isDigit(atom.atomName.charAt(name.length()))) {
+            I = atomMap.get(atom.atomName);
+            break;
+          }  
+        }
+      } 
+      if (I == null)
+        ia = -1;
+      else
+        ia = I.intValue();
+    } else {
+      ia--;
+    }
     return ia;
   }
 

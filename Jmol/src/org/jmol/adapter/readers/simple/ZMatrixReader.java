@@ -148,9 +148,9 @@ H N dist           # will be H2
 H N dist H angle   # will be H3
 H N -dist H2 angle H angle # H here refers to H3
 
-MOPAC format will have the third line blank. Atom names are not allowed,
-and isotopes are in the form of "C13". The first two lines will be 
-considered to be comments and ignored:
+MOPAC format will have an initial comment section. Isotopes are in the form of "C13". 
+If isotopes are used, the file type MUST be identified as #ZMATRIX MOPAC. 
+Lines prior to the first line with less than 2 characters will be considered to be comments and ignored.
 
  AM1
 Ethane
@@ -194,14 +194,15 @@ No distinction between "Variable:" and "Constant:" is made by Jmol.
   private List<String[]> lineBuffer = new ArrayList<String[]>();
   private Map<String, Float> symbolicMap = new Hashtable<String, Float>();
   private boolean isMopac;
-  private int nComments = 0;
+  private boolean isHeader = true;
   
   @Override
   protected boolean checkLine() throws Exception {
     // easiest just to grab all lines that are comments or symbolic first, then do the processing of atoms.
-    line = line.trim();
-    if (line.startsWith("#")) {
-      nComments++;
+    cleanLine();
+    if (line.length() <= 2) // for Mopac, could be blank or an atom symbol, but not an atom name
+      isHeader = false;
+    if (line.startsWith("#") || isMopac && isHeader) {
       if (line.startsWith("#ZMATRIX"))
         isJmolZformat = line.toUpperCase().indexOf("GAUSSIAN") < 0
             && !(isMopac = (line.toUpperCase().indexOf("MOPAC") >= 0));
@@ -210,8 +211,8 @@ No distinction between "Variable:" and "Constant:" is made by Jmol.
     }
     if (line.indexOf("#") >= 0)
       line = line.substring(0, line.indexOf("#"));
-    if (isMopac && ptLine < 3 || line.indexOf(":") >= 0)
-      return true; // Mopac header or Variables: or Constants:
+    if (line.indexOf(":") >= 0)
+      return true; // Variables: or Constants:
     tokens = getTokens(line);
     if (tokens.length == 2) {
       getSymbolic();
@@ -221,13 +222,18 @@ No distinction between "Variable:" and "Constant:" is made by Jmol.
     return true;
   }
 
+  private void cleanLine() {
+    // remove commas for Gaussian and parenthetical expressions for MOPAC 
+    line = line.replace(',', ' ');
+    int pt1, pt2;
+    while ((pt1 = line.indexOf('(')) >= 0 && (pt2 = line.indexOf('(', pt1)) >= 0)
+      line = line.substring(0, pt1) + " " + line.substring(pt2 + 1);
+    line = line.trim();
+  }
+
   @Override
   protected void finalizeReader() throws Exception {
     int firstLine = 0;
-    if (!isMopac && lineBuffer.size() > 3 && lineBuffer.get(2).length == 0) {
-      isMopac = true;
-      firstLine = Math.max(0, 3 - nComments);
-    }
     for (int i = firstLine; i < lineBuffer.size(); i++)
       if ((tokens = lineBuffer.get(i)).length > 0)
         getAtom();
@@ -267,65 +273,63 @@ No distinction between "Variable:" and "Constant:" is made by Jmol.
     int ia = getAtomIndex(1);
     int bondOrder = 0;
     switch (tokens.length) {
-    case 1:
-      if (atomCount != 0)
+    case 8:
+      // angle + dihedral + bond order
+      // angle + angle + bond order 
+    case 6:
+      // angle + bond order 
+      bondOrder = (int) getValue(tokens.length - 1);
+      // fall through
+    case 5:
+      // angle  
+      // Gaussian Sym 0 x y z 
+      if (tokens.length == 5 && tokens[1].equals("0")) {
+        atom.set(getValue(2), getValue(3), getValue(4));
+        bondOrder = 0;
+        break;
+      }
+    case 7:
+      // angle + dihedral or angle + angle
+      int ib, ic;
+      if (tokens.length < 7 && atomCount != 2
+          || (ib = getAtomIndex(3)) < 0
+          || (ic = (tokens.length < 7 ? -2 : getAtomIndex(5))) == -1
+        ) {
         atom = null;
-      else
-        atom.set(0, 0, 0);
+      } else {
+        float d = getValue(2);
+        float theta1 = getValue(4);
+        float theta2 = (tokens.length < 7 ? Float.MAX_VALUE : getValue(6));
+        if (tokens.length == 8 && !isJmolZformat && !isMopac && bondOrder == 1)
+          // Gaussian indicator of alternative angle representation
+          d = -Math.abs(d);
+        atom = setAtom(atom, ia, ib, ic, d, theta1, theta2); 
+      }
       break;
     case 4:
+      // angle + bond order
+      // Gaussian cartesian
       if (getAtomIndex(1) < 0) {
-        // Gaussian cartesian
         atom.set(getValue(1), getValue(2), getValue(3));
         break;
       }
       bondOrder = (int) getValue(3);
       // fall through
     case 3:
-      // tokens[1] is ignored
-      if (atomCount != 1) {
-        atom = null;
-        break;
-      }
+      // angle
       f = getValue(2);
-      if (Float.isNaN(f))
-        return;
-      atom.set(f, 0, 0);
-      ia = 0;
-      break;
-    case 6:
-    case 8:
-      bondOrder = (int) getValue(tokens.length - 1);
-      // fall through
-    case 5:
-      if (tokens.length == 5 && tokens[1].equals("0")) {
-        // Gaussian mix 
-        atom.set(getValue(2), getValue(3), getValue(4));
-        bondOrder = 0;
-        break;
-      }
-      // fall through
-    case 7:
-      if (tokens.length < 7 && atomCount != 2) {
+      if (atomCount != 1 
+          || (ia = getAtomIndex(1)) != 0) {
         atom = null;
-        break;
+      } else {
+        atom.set(f, 0, 0);
       }
-      float d = getValue(2);
-      if (Float.isNaN(d))
-        return;
-      float theta1 = getValue(4);
-      if (Float.isNaN(theta1))
-        return;
-      float theta2 = (tokens.length < 7 ? Float.MAX_VALUE : getValue(6));
-      if (Float.isNaN(theta2))
-        return;
-      int ib = getAtomIndex(3);
-      int ic = (tokens.length < 7 ? -1 : getAtomIndex(5));
-      if (tokens.length == 8 && !isJmolZformat && !isMopac && bondOrder == 1) {
-        // Gaussian indicator of alternative angle representation
-        d = -Math.abs(d);
-      }
-      atom = setAtom(atom, ia, ib, ic, d, theta1, theta2);
+      break;
+    case 1:
+      if (atomCount != 0)
+        atom = null;
+      else
+        atom.set(0, 0, 0);
       break;
     default:
       atom = null;
@@ -333,8 +337,7 @@ No distinction between "Variable:" and "Constant:" is made by Jmol.
     if (atom == null)
       throw new Exception("bad Z-Matrix line");
     vAtoms.add(atom);
-    if (!isMopac)
-      atomMap.put(atom.atomName, Integer.valueOf(atomCount));
+    atomMap.put(atom.atomName, Integer.valueOf(atomCount));
     atomCount++;
     if (element.startsWith("X") && JmolAdapter.getElementNumber(element) < 1) {
       Logger.info("#dummy atom ignored: atom " + atomCount + " - "
@@ -357,17 +360,23 @@ No distinction between "Variable:" and "Constant:" is made by Jmol.
     return (isNeg ? -f : f);
   }
   
-  private float getValue(int i) {
+  private float getValue(int i) throws Exception {
     float f = getSymbolic(tokens[i]);
-    return (Float.isNaN(f) ? parseFloat(tokens[i]) : f);
+    if (Float.isNaN(f))
+      f = parseFloat(tokens[i]);
+    if (Float.isNaN(f))
+      throw new Exception("Bad Z-matrix value: " + tokens[i]);
+    return f;
   }
 
   private int getAtomIndex(int i) {
-    if (i >= tokens.length)
+    String name;
+    if (i >= tokens.length 
+        || (name = tokens[i]).indexOf(".") >= 0
+        || !Character.isLetterOrDigit(name.charAt(0)))
       return -1;
-    String name = tokens[i];
     int ia = parseInt(name);
-    if (name.length() != ("" + ia).length()) {
+    if (ia <= 0 || name.length() != ("" + ia).length()) {
       // check for clean integer, not "13C1"
       Integer I = atomMap.get(name);
       if (I == null) {

@@ -1,4 +1,4 @@
-#ZMATRIX
+#ZMATRIX  -- simple example -- CH4
 C
 H   1 1.089000     
 H   1 1.089000  2  109.4710      

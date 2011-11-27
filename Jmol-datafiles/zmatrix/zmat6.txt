@@ -1,5 +1,6 @@
-#ZMATRIX AM1
-# Ethane
+#ZMATRIX -- MOPAC style
+ AM1
+Ethane
 
 C
 C     1     r21

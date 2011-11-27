@@ -1,0 +1,16 @@
+#ZMATRIX GAUSSIAN example using dummy atoms
+
+X
+C1  X halfcc
+O   X     ox C1 90.
+C2  X halfcc  O 90. C1 180.0
+H1 C1     ch  X hcc  O  hcco
+H2 C1     ch  X hcc  O -hcco
+H3 C2     ch  X hcc  O  hcco
+H4 C2     ch  X hcc  O -hcco
+ 
+halfcc   0.75
+ox       1.0
+ch       1.08
+hcc    130.0
+hcco   130.0

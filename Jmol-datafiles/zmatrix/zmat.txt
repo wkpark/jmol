@@ -1,4 +1,4 @@
-#ZMATRIX
+#ZMATRIX  -- simple CO2 example, with bond order indicated
 
 C
 O   1 1.3000                 2     

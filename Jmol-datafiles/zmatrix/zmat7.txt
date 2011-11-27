@@ -1,0 +1,9 @@
+#ZMATRIX -- automatic numbering of atoms
+
+dist 1.0
+angle 107
+
+N                  # will be N1
+H N dist           # will be H2
+H N dist H angle   # will be H3
+H N -dist H2 angle H angle # will be H4; H here is H3

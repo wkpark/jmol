@@ -344,6 +344,7 @@ No distinction between "Variable:" and "Constant:" is made by Jmol.
           + atom.atomName);
     } else {
       atomSetCollection.addAtom(atom);
+      setAtomCoord(atom);
       Logger.info(atom.atomName + " " + atom.x + " " + atom.y + " " + atom.z);
       if (isJmolZformat && bondOrder > 0)
         atomSetCollection.addBond(new Bond(atom.atomIndex,

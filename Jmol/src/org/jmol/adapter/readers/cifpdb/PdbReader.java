@@ -306,6 +306,7 @@ public class PdbReader extends AtomSetCollectionReader {
       atomSetCollection.setAtomSetCollectionAuxiliaryInfo("tlsErrors", sbTlsErrors.toString());
       appendLoadNote(sbTlsErrors.toString());
     }
+    
     super.finalizeReader();
     if (vCompnds != null)
       atomSetCollection.setAtomSetCollectionAuxiliaryInfo("compoundSource", vCompnds);
@@ -321,16 +322,6 @@ public class PdbReader extends AtomSetCollectionReader {
     }
   }
   
-  @Override
-  public void applySymmetryAndSetTrajectory() throws Exception {
-    // This speeds up calculation, because no crosschecking
-    // No special-position atoms in mmCIF files, because there will
-    // be no center of symmetry, no rotation-inversions, 
-    // no atom-centered rotation axes, and no mirror or glide planes. 
-    atomSetCollection.setCheckSpecial(false);
-    super.applySymmetryAndSetTrajectory();
-  }
-
   private void header() {
     if (lineLength < 8)
       return;
@@ -953,8 +944,13 @@ Polyproline 10
   }
 
   private void checkNotPDB() {
-    if (nRes > 0 && nUNK == nRes)
-      atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.FALSE);
+    boolean isPDB = (nRes == 0 || nUNK != nRes);
+    // This speeds up calculation, because no crosschecking
+    // No special-position atoms in mmCIF files, because there will
+    // be no center of symmetry, no rotation-inversions, 
+    // no atom-centered rotation axes, and no mirror or glide planes. 
+    atomSetCollection.setCheckSpecial(!isPDB);
+    atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", isPDB ? Boolean.TRUE : Boolean.FALSE);
     nUNK = nRes = 0;
     currentGroup3 = null;
   }

@@ -75,6 +75,8 @@ public class AtomSetCollection {
     return atomSetCollectionAuxiliaryInfo;
   }
   
+  public BitSet bsAtoms; // required for CIF reader
+  
   private final static String[] globalBooleans = {"someModelsHaveFractionalCoordinates",
     "someModelsHaveSymmetry", "someModelsHaveUnitcells", "someModelsHaveCONECT", "isPDB"};
 
@@ -254,10 +256,20 @@ public class AtomSetCollection {
                                          AtomSetCollection collection) {
     // Initialisations
     int existingAtomsCount = atomCount;
+
     // auxiliary info
+    setAtomSetCollectionAuxiliaryInfo("loadState", collection.getAtomSetCollectionAuxiliaryInfo("loadState"));
+
+    // append to bsAtoms if necessary (CIF reader molecular mode)
+    if (collection.bsAtoms != null) {
+      if (bsAtoms == null)
+        bsAtoms = new BitSet();
+      for (int i = collection.bsAtoms.nextSetBit(0); i >= 0; i = collection.bsAtoms.nextSetBit(i + 1))
+        bsAtoms.set(existingAtomsCount + i);
+    }
+
     // Clone each AtomSet
     int clonedAtoms = 0;
-    setAtomSetCollectionAuxiliaryInfo("loadState", collection.getAtomSetCollectionAuxiliaryInfo("loadState"));
     for (int atomSetNum = 0; atomSetNum < collection.atomSetCount; atomSetNum++) {
       newAtomSet();
       // must fix referencing for someModelsHaveCONECT business
@@ -1659,8 +1671,6 @@ public class AtomSetCollection {
   }
 
   //// for XmlChem3dReader, but could be for CUBE
-  
-  public BitSet bsAtoms;
   
   public Properties setAtomNames(Properties atomIdNames) {
     // for CML reader "a3" --> "N3"

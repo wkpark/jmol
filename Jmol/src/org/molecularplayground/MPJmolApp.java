@@ -136,6 +136,7 @@ public class MPJmolApp implements JsonNioClient {
       String defaultScript = "set allowgestures;set allowKeyStrokes;set zoomLarge false;set frank off;set antialiasdisplay off;";
       
       String script = jmolViewer.getFileAsString("MPJmolAppConfig.spt");
+      Logger.info("startJsonNioKiosk on port " + port);
       Logger.info(script);
       if (script.indexOf("java.io") >= 0)
         script = "";
@@ -158,12 +159,14 @@ public class MPJmolApp implements JsonNioClient {
       if (script.indexOf("NIOmotionDisabled") < 0) {
         script += "NIOmotionDisabled=false;";
       }
+      Logger.info("startJsonNioKiosk: " + defaultScript + script);
       jmolViewer.scriptWait(defaultScript + script);
-      contentDisabled = JmolPanel.getJmolValue(jmolViewer, "NIOcontentDisabled").equals("true");
+      contentDisabled = JmolViewer.getJmolValueAsString(jmolViewer, "NIOcontentDisabled").equals("true");
+      Logger.info("startJsonNioKiosk: contentDisabled=" + contentDisabled);
       
       service = JmolPanel.getJsonNioServer();
       if (service == null) {
-        System.out.println("Cannot start JsonNioServer");
+        Logger.info("Cannot start JsonNioServer");
         System.exit(1);
       }
       service.startService(port, this, jmolViewer, "-MP");
@@ -187,7 +190,7 @@ public class MPJmolApp implements JsonNioClient {
     if (contentDisabled && !haveStarted) {
       // needs to be run from the NIO thread, just once.
       haveStarted = true;
-      jmolViewer.script(JmolPanel.getJmolValue(jmolViewer, "NIOcontentScript"));
+      jmolViewer.script(JmolViewer.getJmolValueAsString(jmolViewer, "NIOcontentScript"));
     }
   }
   

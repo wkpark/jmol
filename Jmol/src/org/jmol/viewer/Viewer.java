@@ -3789,7 +3789,8 @@ private void zap(String msg) {
     return motionEventNumber;
   }
 
-  void setInMotion(boolean inMotion) {
+  @Override
+  public void setInMotion(boolean inMotion) {
     // MouseManager, TransformManager
     if (wasInMotion ^ inMotion) {
       animationManager.setInMotion(inMotion);
@@ -5568,6 +5569,8 @@ private void zap(String msg) {
       return getShowFrank();
     if (key.equalsIgnoreCase("spinOn"))
       return getSpinOn();
+    if (key.equalsIgnoreCase("isNavigating"))
+      return isNavigating();
     if (key.equalsIgnoreCase("showSelections"))
       return modelSet.getSelectionHaloEnabled();
     if (global.htUserVariables.containsKey(key)) {

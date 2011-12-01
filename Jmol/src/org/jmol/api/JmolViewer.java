@@ -118,6 +118,8 @@ abstract public class JmolViewer extends JmolSimpleViewer {
     getProperty("DATA_API", "getAppConsole", console); 
   }
 
+  abstract public void setInMotion(boolean isInMotion);
+
   abstract public BitSet getSmartsMatch(String smarts, BitSet bsSelected);
   
   /**
@@ -525,6 +527,10 @@ abstract public class JmolViewer extends JmolSimpleViewer {
 
   public Object getJsObjectInfo(Object jsObject, String method, Object[] args) {
     return apiPlatform.getJsObjectInfo(jsObject, method, args);
+  }
+
+  public static String getJmolValueAsString(JmolViewer jmolViewer, String var) {
+    return (jmolViewer == null ? "" : "" + jmolViewer.getParameter(var));
   }
 
 }

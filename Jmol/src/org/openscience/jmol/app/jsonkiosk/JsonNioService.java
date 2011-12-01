@@ -35,7 +35,6 @@ import javax.vecmath.Point3f;
 import org.jmol.api.JmolViewer;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
-import org.openscience.jmol.app.jmolpanel.JmolPanel;
 
 import com.json.JSONException;
 import com.json.JSONObject;
@@ -226,10 +225,10 @@ public class JsonNioService extends NIOService implements JsonNioServer {
     }
 
     if (name != null) {
-      String s = JmolPanel.getJmolValue(jmolViewer, "NIOcontentPath");
+      String s = JmolViewer.getJmolValueAsString(jmolViewer, "NIOcontentPath");
       if (s != null)
         contentPath = s;
-      s = JmolPanel.getJmolValue(jmolViewer, "NIOterminatorMessage");
+      s = JmolViewer.getJmolValueAsString(jmolViewer, "NIOterminatorMessage");
       if (s != null)
         terminatorMessage = s;
       setEnabled();
@@ -277,7 +276,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
         }
 
         public void packetReceived(NIOSocket nioSocket, byte[] packet) {
-          System.out.println("outpacketreceived");
+          Logger.info("outpacketreceived");
           // not used
         }
 
@@ -296,8 +295,8 @@ public class JsonNioService extends NIOService implements JsonNioServer {
   }
 
   private void setEnabled() {
-    contentDisabled = (JmolPanel.getJmolValue(jmolViewer, "NIOcontentDisabled").equals("true"));
-    motionDisabled = (JmolPanel.getJmolValue(jmolViewer, "NIOmotionDisabled").equals("true"));
+    contentDisabled = (JmolViewer.getJmolValueAsString(jmolViewer, "NIOcontentDisabled").equals("true"));
+    motionDisabled = (JmolViewer.getJmolValueAsString(jmolViewer, "NIOmotionDisabled").equals("true"));
   } 
 
   protected class JsonNioThread implements Runnable {
@@ -326,6 +325,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
    */
   @Override
   public void close() {
+    Logger.info("JsonNioService" + myName + " close");
     try {
       halt = true;
       super.close();
@@ -350,6 +350,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
 
   protected void initialize(String role, NIOSocket nioSocket) {
     try {
+      Logger.info("JsonNioService" + myName + " initialize " + role);
       JSONObject json = new JSONObject();
       json.put("magic", "JmolApp");
       json.put("role", role);
@@ -385,6 +386,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
 
             @Override
             public void connectionBroken(NIOSocket socket, Exception arg1) {
+              Logger.info("JsonNioService" + myName + " server connection broken");
               if (socket == outSocket)
                 outSocket = null;
             }
@@ -437,8 +439,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
   protected void processMessage(byte[] packet, NIOSocket socket) {
     try {
       String msg = new String(packet);
-      Logger.info("JNIOS received " + msg + " "
-          + Thread.currentThread().getName());
+      Logger.info("JNIOS received " + msg);
       if (jmolViewer == null) {
         return;
       }
@@ -459,10 +460,11 @@ public class JsonNioService extends NIOService implements JsonNioServer {
   private void processJSON(JSONObject json, String msg) throws FileNotFoundException, JSONException {
     if (json == null)
       json = new JSONObject(msg);
-    setEnabled();
-    switch (("banner...." + "command..." + "content..." + "move......"
+    int pt = ("banner...." + "command..." + "content..." + "move......"
         + "quit......" + "sync......" + "touch.....").indexOf(json
-        .getString("type"))) {
+            .getString("type"));
+    setEnabled();
+    switch (pt) {
     case 0: // banner
       if (contentDisabled)
         break;
@@ -472,7 +474,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
     case 10: // command
       if (contentDisabled)
         break;
-      jmolViewer.evalStringQuiet(json.getString("command"));
+      sendScript(json.getString("command"));
       break;
     case 20: // content
       if (contentDisabled) {
@@ -485,7 +487,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
       File f = new File(path);
       FileInputStream jsonFile = new FileInputStream(f);
       Logger.info("JsonNiosService Setting path to " + f.getAbsolutePath());
-      int pt = path.lastIndexOf('/');
+      pt = path.lastIndexOf('/');
       if (pt >= 0)
         path = path.substring(0, pt);
       else
@@ -494,31 +496,33 @@ public class JsonNioService extends NIOService implements JsonNioServer {
       String script = contentJSON.getString("startup_script");
       Logger.info("JsonNiosService startup_script=" + script);
       setBanner("", false);
-      jmolViewer.script("exit");
-      jmolViewer.script("zap;cd \"" + path + "\";script " + script);
+      sendScript("exit");
+      sendScript("zap;cd \"" + path + "\";script " + script);
       setBanner(contentJSON.getString("banner").equals("off") ? null
           : contentJSON.getString("banner_text"), true);
       break;
     case 30: // move
+      pt = ("rotate...." + "translate." + "zoom......").indexOf(json
+          .getString("style"));
       if (motionDisabled)
         break;
-      int iStyle = ("rotate...." + "translate." + "zoom......").indexOf(json
-          .getString("style"));
-      if (iStyle != 0 && !isPaused)
+      if (pt != 0 && !isPaused)
         pauseScript(true);
       long now = latestMoveTime = System.currentTimeMillis();
-      switch (iStyle) {
+      switch (pt) {
       case 0: // rotate
-        System.out.println("JsonNioService move " + (now - swipeStartTime));
         float dx = (float) json.getDouble("x");
         float dy = (float) json.getDouble("y");
         float dxdy = dx * dx + dy * dy;
         boolean isFast = (dxdy > swipeCutoff);
-        if (isFast || now - swipeStartTime > swipeDelayMs) {
+        boolean isNavigating = jmolViewer.getBooleanProperty("isNavigating");
+        if (isNavigating || isFast || now - swipeStartTime > swipeDelayMs) {
           // it's been a while since the last swipe....
           // ... send rotation in all cases
           msg = null;
-          if (isFast) {
+          if (isNavigating) {
+            // just rotate
+          } else if (isFast) {
             if (++nFast > swipeCount) {
               // critical number of fast motions reached
               // start spinning
@@ -532,13 +536,13 @@ public class JsonNioService extends NIOService implements JsonNioServer {
             }
           } else if (nFast > 0) {
             // slow movement detected -- turn off spinning
-            // and reset the 
+            // and reset the number of fast actions
             nFast = 0;
             msg = "Mouse: spinXYBy 0 0 0";
           }
           if (msg == null)
             msg = "Mouse: rotateXYBy " + dx + " " + dy;
-          jmolViewer.syncScript(msg, "=", 0);
+          syncScript(msg);
         }
         previousMoveTime = now;
         break;
@@ -549,7 +553,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
       case 20: // zoom
         float zoomFactor = (float) (json.getDouble("scale") / (jmolViewer
             .getZoomPercentFloat() / 100.0f));
-        jmolViewer.syncScript("Mouse: zoomByFactor " + zoomFactor, "=", 0);
+        syncScript("Mouse: zoomByFactor " + zoomFactor);
         break;
       }
       break;
@@ -561,7 +565,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
       if (motionDisabled)
         break;
       //sync -3000;sync slave;sync 3000 '{"type":"sync","sync":"rotateZBy 30"}'
-      jmolViewer.syncScript("Mouse: " + json.getString("sync"), "=", 0);
+      syncScript("Mouse: " + json.getString("sync"));
       break;
     case 60: // touch
       if (motionDisabled)
@@ -573,6 +577,16 @@ public class JsonNioService extends NIOService implements JsonNioServer {
           .getDouble("z")), json.getLong("time"));
       break;
     }
+  }
+
+  private void sendScript(String script) {
+    Logger.info("JsonNiosService sendScript " + script);
+    jmolViewer.evalStringQuiet(script);
+  }
+
+  private void syncScript(String script) {
+    Logger.info("JsonNiosService syncScript " + script);
+    jmolViewer.syncScript(script, "=", 0);
   }
 
   private void setBanner(String bannerText, boolean andCenter) {
@@ -598,7 +612,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
       wasSpinOn = false;
     }
     isPaused = isPause;
-    jmolViewer.evalStringQuiet(script);
+    sendScript(script);
   }
 
   private void sendMessage(JSONObject json, String msg, NIOSocket socket) {

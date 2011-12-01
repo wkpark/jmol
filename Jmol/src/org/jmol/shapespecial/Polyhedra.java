@@ -29,6 +29,7 @@ import org.jmol.constant.EnumPalette;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
+import org.jmol.script.Token;
 import org.jmol.shape.AtomShape;
 import org.jmol.util.Escape;
 import org.jmol.util.ArrayUtil;
@@ -181,6 +182,11 @@ public class Polyhedra extends AtomShape {
       //allow super
     }
 
+    if ("token" == propertyName) {
+      setLighting(((Integer) value).intValue() == Token.fullylit, bs);
+      return;
+    }
+    
     if (propertyName.indexOf("translucency") == 0) {
       // from polyhedra command, we may not be using the prior select
       // but from Color we need to identify the centers.
@@ -210,6 +216,18 @@ public class Polyhedra extends AtomShape {
     }
 
     super.setProperty(propertyName, value, bs);
+  }
+
+  private void setLighting(boolean isFullyLit, BitSet bs) {
+    for (int i = polyhedronCount; --i >= 0;)
+      if (bs.get(polyhedrons[i].centralAtom.getIndex())) {
+        short[] normixes = polyhedrons[i].normixes;
+        polyhedrons[i].isFullyLit = isFullyLit;
+        for (int j = normixes.length; --j >= 0;) {
+          if (normixes[j] < 0 != isFullyLit)
+            normixes[j] = (short) ~normixes[j];
+        }
+      }
   }
 
   private void andBitSet(BitSet bs) {
@@ -545,6 +563,7 @@ public class Polyhedra extends AtomShape {
     int visibilityFlags = 0;
     boolean collapsed = false;
     float myFaceCenterOffset, myDistanceFactor;
+    boolean isFullyLit;
 
     Polyhedron(Atom centralAtom, int ptCenter, int nPoints, int planeCount,
         Point3f[] otherAtoms, short[] normixes, byte[] planes) {
@@ -576,7 +595,8 @@ public class Polyhedra extends AtomShape {
               : " distanceFactor " + myDistanceFactor)
           + (myFaceCenterOffset == DEFAULT_FACECENTEROFFSET ? ""
               : " faceCenterOffset " + myFaceCenterOffset) + " to "
-          + Escape.escape(bs) + (collapsed ? " collapsed" : "") + ";"
+          + Escape.escape(bs) + (collapsed ? " collapsed" : "") 
+          + (isFullyLit ? " fullyLit" : "" ) + ";"
           + (visible ? "" : "polyhedra off;") + "\n";
     }
   }

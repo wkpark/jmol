@@ -15211,6 +15211,7 @@ public class ScriptEvaluator {
     boolean typeSeen = false;
     boolean edgeParameterSeen = false;
     boolean isDesignParameter = false;
+    int lighting = 0;
     int nAtomSets = 0;
     shapeManager.loadShape(JmolConstants.SHAPE_POLYHEDRA);
     setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "init", null);
@@ -15220,11 +15221,6 @@ public class ScriptEvaluator {
     float translucentLevel = Float.MAX_VALUE;
     int color = Integer.MIN_VALUE;
     for (int i = 1; i < statementLength; ++i) {
-      if (isColorParam(i)) {
-        color = getArgbParam(i);
-        i = iToken;
-        continue;
-      }
       String propertyName = null;
       Object propertyValue = null;
       switch (getToken(i).tok) {
@@ -15346,7 +15342,15 @@ public class ScriptEvaluator {
         propertyName = parameterAsString(i);
         edgeParameterSeen = true;
         break;
+      case Token.fullylit:
+        lighting = theTok;
+        continue;
       default:
+        if (isColorParam(i)) {
+          color = getArgbParam(i);
+          i = iToken;
+          continue;
+        }
         error(ERROR_invalidArgument);
       }
       setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, propertyName,
@@ -15354,7 +15358,7 @@ public class ScriptEvaluator {
       if (onOffDelete)
         return;
     }
-    if (!needsGenerating && !typeSeen && !edgeParameterSeen)
+    if (!needsGenerating && !typeSeen && !edgeParameterSeen && lighting == 0)
       error(ERROR_insufficientArguments);
     if (needsGenerating)
       setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "generate", null);
@@ -15364,6 +15368,8 @@ public class ScriptEvaluator {
     if (isTranslucent)
       setShapeTranslucency(JmolConstants.SHAPE_POLYHEDRA, "", "translucent",
           translucentLevel, null);
+    if (lighting != 0)
+      setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "token", Integer.valueOf(lighting));
   }
 
   private void contact() throws ScriptException {

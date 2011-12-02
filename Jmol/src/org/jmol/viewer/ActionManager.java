@@ -719,6 +719,7 @@ public class ActionManager {
       checkAction(action, x, y, deltaX, deltaY, time, Binding.DRAGGED);
       return;
     case Binding.PRESSED:
+      setMouseMode();
       setCurrent(time, x, y, modifiers);
       pressedCount = (pressed.check(x, y, modifiers, time,
           MAX_DOUBLE_CLICK_MILLIS) ? pressedCount + 1 : 1);

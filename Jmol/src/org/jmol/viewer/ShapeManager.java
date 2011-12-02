@@ -231,17 +231,15 @@ public class ShapeManager {
     return null;
   }
  
-  boolean checkObjectDragged(int prevX, int prevY, int x, int y,
-                          int modifiers, BitSet bsVisible, int iShape) {
-    for (int i = iShape; i < JmolConstants.SHAPE_MAX; ++i) {
-      Shape shape = shapes[i];
-      if (shape == null)
-        continue;
-      boolean found = shape.checkObjectDragged(prevX, prevY, x, y, modifiers, bsVisible);
-      if (found || iShape > 0)
-        return found;
-    }
-    return false;
+  boolean checkObjectDragged(int prevX, int prevY, int x, int y, int modifiers,
+                             BitSet bsVisible, int iShape) {
+    boolean found = false;
+    int n = (iShape > 0 ? iShape + 1 : JmolConstants.SHAPE_MAX);
+    for (int i = iShape; !found && i < n; ++i)
+      if (shapes[i] != null)
+        found = shapes[i].checkObjectDragged(prevX, prevY, x, y, modifiers,
+            bsVisible);
+    return found;
   }
 
   boolean checkObjectHovered(int x, int y, BitSet bsVisible, boolean checkBonds) {

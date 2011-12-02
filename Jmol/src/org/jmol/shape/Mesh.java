@@ -66,7 +66,7 @@ public class Mesh extends MeshSurface {
 
   public float scale = 1;
   public boolean haveXyPoints;
-  public boolean isPolygonSet; // just a set of flat polygons
+  public boolean isTriangleSet; // just a set of flat polygons
   public int diameter;
   public float width;
   public Point3f ptCenter = new Point3f(0,0,0);
@@ -133,7 +133,7 @@ public class Mesh extends MeshSurface {
     drawTriangles = false;
     fillTriangles = true;
     showTriangles = false; //as distinct entities
-    isPolygonSet = false;
+    isTriangleSet = false;
     frontOnly = false;
     title = null;
     normixes = null;
@@ -169,7 +169,7 @@ public class Mesh extends MeshSurface {
   }
 
   public Vector3f[] getNormals(Point3f[] vertices, Point4f plane) {
-    normixCount = (isPolygonSet ? polygonCount : vertexCount);
+    normixCount = (isTriangleSet ? polygonCount : vertexCount);
     Vector3f[] normals = new Vector3f[normixCount];
     for (int i = normixCount; --i >= 0;)
       normals[i] = new Vector3f();
@@ -180,7 +180,7 @@ public class Mesh extends MeshSurface {
       for (int i = normixCount; --i >= 0;)
         normals[i] = normal;
     }
-    if (!isPolygonSet)
+    if (!isTriangleSet)
       for (int i = normixCount; --i >= 0;)
         normals[i].normalize();
     return normals;
@@ -241,7 +241,7 @@ public class Mesh extends MeshSurface {
             || vA.distanceSquared(vC) < 0.0001)
           continue;
         Measure.calcNormalizedNormal(vA, vB, vC, vTemp, vAB, vAC);
-        if (isPolygonSet) {
+        if (isTriangleSet) {
           normals[i].set(vTemp);
           continue;
         }

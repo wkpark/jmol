@@ -195,7 +195,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
   }
   
   protected void renderPoints() {
-    if (mesh.isPolygonSet) {
+    if (mesh.isTriangleSet) {
       int[][] polygonIndexes = mesh.polygonIndexes;
       BitSet bsPoints = new BitSet(mesh.vertexCount);
       if (haveBsDisplay) {
@@ -254,7 +254,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
         continue;
       }
       int check;
-      if (mesh.isPolygonSet) {
+      if (mesh.isTriangleSet) {
         short normix = normixes[i];
         if (!g3d.isDirectedTowardsCamera(normix))
           continue;

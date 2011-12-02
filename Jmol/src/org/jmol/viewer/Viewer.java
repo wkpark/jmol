@@ -7812,9 +7812,12 @@ private void zap(String msg) {
       break;
     }
     if (shapeManager.checkObjectDragged(prevX, prevY, x, y, action,
-        getVisibleFramesBitSet(), iShape))
-      refresh(1, "checkObjectDragged");
-
+      getVisibleFramesBitSet(), iShape)) {
+        refresh(1, "checkObjectDragged");
+        if (iShape == JmolConstants.SHAPE_DRAW)
+          scriptEcho((String) getShapeProperty(JmolConstants.SHAPE_DRAW,
+          "command"));
+      }
     // TODO: refresh 1 or 2?
   }
 

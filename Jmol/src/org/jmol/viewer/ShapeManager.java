@@ -235,10 +235,11 @@ public class ShapeManager {
                           int modifiers, BitSet bsVisible, int iShape) {
     for (int i = iShape; i < JmolConstants.SHAPE_MAX; ++i) {
       Shape shape = shapes[i];
-      if (shape != null
-          && shape.checkObjectDragged(prevX, prevY, x, y, modifiers, bsVisible)
-          || iShape > 0)
-        return true;
+      if (shape == null)
+        continue;
+      boolean found = shape.checkObjectDragged(prevX, prevY, x, y, modifiers, bsVisible);
+      if (found || iShape > 0)
+        return found;
     }
     return false;
   }

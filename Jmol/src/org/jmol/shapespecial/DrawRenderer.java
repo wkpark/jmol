@@ -23,6 +23,7 @@
  */
 package org.jmol.shapespecial;
 
+import java.util.BitSet;
 import java.util.List;
 
 import javax.vecmath.AxisAngle4f;
@@ -421,6 +422,8 @@ public class DrawRenderer extends MeshRenderer {
       g3d.fillCylinderScreen(Graphics3D.ENDCAPS_OPENEND, diameter, pt0i, pt1i);
   }
 
+  private final BitSet bsHandles = new BitSet();
+  
   private void renderHandles() {
     int diameter = (int) (10 * imageFontScaling);
     switch (drawType) {
@@ -429,19 +432,23 @@ public class DrawRenderer extends MeshRenderer {
     default:
       short colixFill = Graphics3D.getColixTranslucent(Graphics3D.GOLD, true,
           0.5f);
+      bsHandles.clear();
       for (int i = dmesh.polygonCount; --i >= 0;) {
         if (!isPolygonDisplayable(i))
           continue;
         int[] vertexIndexes = dmesh.polygonIndexes[i];
         if (vertexIndexes == null)
           continue;
-        for (int j = vertexIndexes.length; --j >= 0;) {
+        for (int j = (dmesh.isTriangleSet ? 3 : vertexIndexes.length); --j >= 0;) {
           int k = vertexIndexes[j];
+          if (bsHandles.get(k))
+            continue;
+          bsHandles.set(k);
           g3d.drawFilledCircle(Graphics3D.GOLD, colixFill, diameter,
               screens[k].x, screens[k].y, screens[k].z);
         }
-        break;
       }
+      break;
     }
   }
 

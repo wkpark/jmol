@@ -552,7 +552,7 @@ public void initShape() {
       if (polygon != null) {
         if (polygon.size() == 0)
           return false;
-        thisMesh.isPolygonSet = true;
+        thisMesh.isTriangleSet = true;
         thisMesh.vertices = (Point3f[]) polygon.get(0);
         thisMesh.polygonIndexes = (int[][]) polygon.get(1);          
         thisMesh.drawVertexCount = thisMesh.vertexCount = thisMesh.vertices.length;
@@ -1210,7 +1210,8 @@ public void initShape() {
       y <<= 1;
     }
     Point3f pt = new Point3f();
-    Point3f coord = new Point3f(mesh.vertices[vertexes[iVertex]]);
+    int ptVertex = vertexes[iVertex];
+    Point3f coord = new Point3f(mesh.vertices[ptVertex]);
     Point3f newcoord = new Point3f();
     Vector3f move = new Vector3f();
     viewer.transformPoint(coord, pt);
@@ -1219,21 +1220,21 @@ public void initShape() {
     viewer.unTransformPoint(pt, newcoord);
     move.set(newcoord);
     move.sub(coord);
-    int klast = -1;
-    for (int i = (moveAll ? 0 : iVertex); i < vertexes.length; i++)
+    if (mesh.isTriangleSet)
+      iVertex = ptVertex; // operate on entire set of vertices, not just the
+                          // one for this model
+    int n = (!moveAll ? iVertex + 1 
+        : mesh.isTriangleSet ? mesh.vertices.length : vertexes.length);
+    BitSet bsMoved = new BitSet();
+    for (int i = (moveAll ? 0 : iVertex); i < n; i++)
       if (moveAll || i == iVertex) {
-        int k = vertexes[i];
-        if (k == klast)
-            break;
+        int k = (mesh.isTriangleSet ? i : vertexes[i]);
+        if (bsMoved.get(k))
+          continue;
+        bsMoved.set(k);
         mesh.vertices[k].add(move);
-        if (!moveAll)
-          break;
-        klast = k;
       }
     mesh.setCenters();
-    if (Logger.debugging)
-      Logger.debug(getDrawCommand(mesh));
-    viewer.refresh(3, "draw");
   }
   
   /**
@@ -1256,16 +1257,17 @@ public void initShape() {
     pickedMesh = null;
     for (int i = 0; i < meshCount; i++) {
       DrawMesh m = dmeshes[i];
-      if (m.drawType == EnumDrawType.POLYGON)
-        continue;
       if (m.visibilityFlags != 0) {
-        int mCount = (m.modelFlags == null ? 1 : viewer.getModelCount());
+        int mCount = (m.isTriangleSet ? m.polygonCount 
+                : m.modelFlags == null ? 1 
+                : viewer.getModelCount());
         for (int iModel = mCount; --iModel >= 0;) {
           if (m.modelFlags != null && !m.modelFlags.get(iModel) 
               || m.polygonIndexes == null 
-              || iModel >= m.polygonIndexes.length || m.polygonIndexes[iModel] == null)
+              || !m.isTriangleSet  && (iModel >= m.polygonIndexes.length || m.polygonIndexes[iModel] == null)
+              )
             continue;
-          for (int iVertex = m.polygonIndexes[iModel].length; --iVertex >= 0;) {
+          for (int iVertex = (m.isTriangleSet ? 3 : m.polygonIndexes[iModel].length); --iVertex >= 0;) {
             try{
             int d2 = coordinateInRange(x, y, m.vertices[m.polygonIndexes[iModel][iVertex]], dmin2, ptXY);
             

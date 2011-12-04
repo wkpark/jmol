@@ -25,6 +25,7 @@ package org.jmol.viewer;
 
 import org.jmol.script.ScriptCompiler;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.Base64;
 import org.jmol.util.BinaryDocument;
 import org.jmol.util.CompoundDocument;
 import org.jmol.util.Logger;
@@ -377,14 +378,14 @@ public class FileManager {
 
   Object getBufferedInputStreamOrErrorMessageFromName(String name, boolean showMsg,
                                               boolean checkOnly) {
-    return getBufferedInputStreamOrPost(name, showMsg, null, checkOnly,
-        appletDocumentBase, appletProxy);
-  }
-
-  private static Object getBufferedInputStreamOrPost(String name, boolean showMsg,
-                                             byte[] bytes, boolean checkOnly,
-                                             URL appletDocumentBase,
-                                             String appletProxy) {
+    boolean isPngj = (name.indexOf("?POST?_PNGJ_") >= 0);
+    byte[] bytes = null;
+    if (name.indexOf("?POST?_PNG_") > 0 || isPngj) {
+      Object o = viewer.getImageAs(isPngj ? "PNGJ" : "PNG", -1, 0, 0, null, null);
+      if (! (o instanceof byte[]))
+        return o;
+      name = (new StringBuffer(name)).append("=").append(Base64.getBase64((byte[]) o)).toString();
+    }
     String errorMessage = null;
     int iurl;
     for (iurl = urlPrefixes.length; --iurl >= 0;)
@@ -405,13 +406,14 @@ public class FileManager {
           name = appletProxy + "?url=" + URLEncoder.encode(name, "utf-8");
         URL url = (isApplet ? new URL(appletDocumentBase, name) : new URL(name));
         name = url.toString();
-        if (showMsg && !checkOnly)
-          Logger.info("FileManager opening " + url.toString());
+        if (showMsg && !checkOnly && name.toLowerCase().indexOf("password") < 0)
+          Logger.info("FileManager opening " + name);
         URLConnection conn = url.openConnection();
         if (bytes != null && !checkOnly) {
-          conn.setRequestProperty("Content-Type", "application/octet-stream");
+          conn.setRequestProperty("Content-Type", "application/octet-stream;");
           conn.setDoOutput(true);
           conn.getOutputStream().write(bytes);
+          conn.getOutputStream().flush();
         } else if (post != null && !checkOnly) {
           conn.setRequestProperty("Content-Type",
               "application/x-www-form-urlencoded");

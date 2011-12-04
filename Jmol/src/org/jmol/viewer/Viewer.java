@@ -4166,7 +4166,7 @@ private void zap(String msg) {
 
   /**
    * @param type
-   *        "PNG", "JPG", "JPEG", "JPG64", "PPM", "GIF"
+   *        "PNG", "PNGJ", "JPG", "JPEG", "JPG64", "PPM", "GIF"
    * @param quality
    * @param width
    * @param height

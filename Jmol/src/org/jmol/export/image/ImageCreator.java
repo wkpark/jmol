@@ -214,22 +214,30 @@ public class ImageCreator implements JmolImageCreatorInterface {
           int bgcolor = (type.equals("PNGT") ? viewer
               .getBackgroundArgb() : 0);
           bytes = PngEncoder.getBytes(image, quality, bgcolor, type);
+          byte[] b = null;
+          if (asBytes && type.equals("PNGJ") || !asBytes && appendText == null) {
+            byte[] nbytes = ("" + bytes.length).getBytes();
+            b = bytes;
+            for (int i = nbytes.length, pt = 63; --i >= 0; --pt)
+              b[pt] = nbytes[i];
+            Object ret = viewer.getWrappedState(true, type.equals("PNGJ"),
+                image.getWidth(null), image.getHeight(null));
+            bytes = (ret instanceof byte[] ? (byte[]) ret : ((String) ret).getBytes());
+            nbytes = ("" + bytes.length).getBytes();
+            for (int i = nbytes.length, pt = 73; --i >= 0;--pt)
+              b[pt] = nbytes[i];
+          }
           if (!asBytes) {
-            if (appendText == null) {
-              String nbytes = "" + bytes.length;
-              byte[] b = bytes;
-              for (int i = nbytes.length(), pt = 63; --i >= 0;--pt)
-                b[pt] = nbytes.substring(i, i + 1).getBytes()[0];
-              Object ret = viewer.getWrappedState(true, type.equals("PNGJ"),
-                  image.getWidth(null), image.getHeight(null));
-              bytes = (ret instanceof byte[] ? (byte[]) ret : ((String) ret).getBytes());
-              nbytes = "" + bytes.length;
-              for (int i = nbytes.length(), pt = 73; --i >= 0;--pt)
-                b[pt] = nbytes.substring(i, i + 1).getBytes()[0];
+            if (b != null)
               os.write(b);
-            }
             os.write(bytes);
-            bytes = null;
+            b = bytes = null;
+          } else if (b != null) {
+           byte[] bt = new byte[b.length + bytes.length];
+           System.arraycopy(b, 0, bt, 0, b.length);
+           System.arraycopy(bytes, 0, bt, b.length, bytes.length);
+           bytes = bt;
+           b = bt = null;
           }
         } else if (type.equals("PPM")) {
           if (asBytes) {

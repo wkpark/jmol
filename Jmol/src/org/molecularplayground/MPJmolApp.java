@@ -78,6 +78,8 @@ version=12.3.3_dev
 #             -- ignored if NIOcontentDisabled ends up true (see below)
 #          NIOterminatorMessage
 #             -- default: "MP_DONE"
+#          NIOresetMessage
+#             -- default: "MP_RESET"
 #          NIObannerEnabled
 #             -- default: true
 #          NIOcontentScript
@@ -148,6 +150,9 @@ public class MPJmolApp implements JsonNioClient {
       if (script.indexOf("NIOterminatorMessage") < 0) {
         script += "NIOterminatorMessage='MP_DONE';";
       }
+      if (script.indexOf("NIOresetMessage") < 0) {
+        script += "NIOresetMessage='MP_RESET';";
+      }
       if (script.indexOf("NIObannerEnabled") < 0) {
         script += "NIObannerEnabled=true;";
       }
@@ -187,10 +192,13 @@ public class MPJmolApp implements JsonNioClient {
 
   private boolean haveStarted = false;
   public void nioRunContent(JsonNioServer jns) {
-    if (contentDisabled && !haveStarted) {
+    if (contentDisabled && (jns == null || !haveStarted)) {
       // needs to be run from the NIO thread, just once.
+      String script = (jns == null && haveStarted ? 
+          "exit;" + jmolViewer.getFileAsString("MPJmolAppConfig.spt")
+          : "");
       haveStarted = true;
-      jmolViewer.script(JmolViewer.getJmolValueAsString(jmolViewer, "NIOcontentScript"));
+      jmolViewer.script(script + JmolViewer.getJmolValueAsString(jmolViewer, "NIOcontentScript"));
     }
   }
   

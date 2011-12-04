@@ -149,6 +149,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
   private boolean wasSpinOn;
   private String contentPath = "./%ID%.json";
   private String terminatorMessage = "NEXT_SCRIPT";
+  private String resetMessage = "RESET_SCRIPT";
 
 
   /*
@@ -171,8 +172,11 @@ public class JsonNioService extends NIOService implements JsonNioServer {
       return;
     if (msg.startsWith("banner:")) {
       setBanner(msg.substring(7).trim(), false);
-    } else if (msg.equals(terminatorMessage))
+    } else if (msg.equals(terminatorMessage)) {
       sendMessage(null, "!script_terminated!", null);
+    } else if (contentDisabled && msg.equals(resetMessage)) {
+      client.nioRunContent(null);
+    }
   }
 
   /* (non-Javadoc)
@@ -231,9 +235,14 @@ public class JsonNioService extends NIOService implements JsonNioServer {
       s = JmolViewer.getJmolValueAsString(jmolViewer, "NIOterminatorMessage");
       if (s != null)
         terminatorMessage = s;
+      s = JmolViewer.getJmolValueAsString(jmolViewer, "NIOresetMessage");
+      if (s != null)
+        resetMessage = s;
+      
       setEnabled();
       Logger.info("NIOcontentPath=" + contentPath);
       Logger.info("NIOterminatorMessage=" + terminatorMessage);
+      Logger.info("NIOresetMessage=" + resetMessage);
       Logger.info("NIOcontentDisabled=" + contentDisabled);
       Logger.info("NIOmotionDisabled=" + motionDisabled);
     }
@@ -291,7 +300,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
     thread = new Thread(new JsonNioThread(), "JsonNiosThread" + myName);
     thread.start();
     if (port == 0 && contentDisabled)
-      client.nioRunContent(this);
+      client.nioRunContent(null);
   }
 
   private void setEnabled() {

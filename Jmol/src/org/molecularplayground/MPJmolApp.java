@@ -29,6 +29,7 @@ import org.jmol.api.JmolCallbackListener;
 import org.jmol.api.JmolViewer;
 import org.jmol.constant.EnumCallback;
 import org.jmol.util.Logger;
+import org.jmol.util.TextFormat;
 import org.openscience.jmol.app.jmolpanel.JmolPanel;
 import org.openscience.jmol.app.jsonkiosk.BannerFrame;
 import org.openscience.jmol.app.jsonkiosk.JsonNioClient;
@@ -137,31 +138,32 @@ public class MPJmolApp implements JsonNioClient {
       setBannerLabel("click below and type exitJmol[enter] to quit");
       String defaultScript = "set allowgestures;set allowKeyStrokes;set zoomLarge false;set frank off;set antialiasdisplay off;";
       
-      String script = jmolViewer.getFileAsString("MPJmolAppConfig.spt");
+      String script = jmolViewer.getFileAsString("MPJmolAppConfig.spt") + ";";
       Logger.info("startJsonNioKiosk on port " + port);
       Logger.info(script);
       if (script.indexOf("java.io") >= 0)
         script = "";
-      if (script.indexOf("NIOContentPath") < 0) {
+      String s = TextFormat.simpleReplace(script.toLowerCase(), " ", "");
+      if (s.indexOf("niocontentpath=") < 0) {
         String path = System.getProperty("user.dir").replace('\\', '/')
         + "/Content-Cache/%ID%/%ID%.json";
         script += "NIOcontentPath=\"" + path + "\";";
       }
-      if (script.indexOf("NIOterminatorMessage") < 0) {
+      if (s.indexOf("nioterminatormessage=") < 0) {
         script += "NIOterminatorMessage='MP_DONE';";
       }
-      if (script.indexOf("NIOresetMessage") < 0) {
+      if (s.indexOf("nioresetmessage=") < 0) {
         script += "NIOresetMessage='MP_RESET';";
       }
-      if (script.indexOf("NIObannerEnabled") < 0) {
+      if (s.indexOf("niobannerenabled=") < 0) {
         script += "NIObannerEnabled=true;";
       }
-      if (script.indexOf("NIOcontentScript") >= 0) {
+      if (s.indexOf("niocontentscript=") >= 0) {
         script += "NIOcontentDisabled=true;";
       } else {
         script += "NIOcontentScript='';NIOcontentDisabled=false;";
       }
-      if (script.indexOf("NIOmotionDisabled") < 0) {
+      if (s.indexOf("niomotiondisabled=") < 0) {
         script += "NIOmotionDisabled=false;";
       }
       Logger.info("startJsonNioKiosk: " + defaultScript + script);
@@ -198,7 +200,7 @@ public class MPJmolApp implements JsonNioClient {
           "exit;" + jmolViewer.getFileAsString("MPJmolAppConfig.spt")
           : "");
       haveStarted = true;
-      jmolViewer.script(script + JmolViewer.getJmolValueAsString(jmolViewer, "NIOcontentScript"));
+      jmolViewer.script(script + "; cd \"\"; script \"" + JmolViewer.getJmolValueAsString(jmolViewer, "NIOcontentScript") + "\"");
     }
   }
   

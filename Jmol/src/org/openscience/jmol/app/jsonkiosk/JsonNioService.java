@@ -230,13 +230,13 @@ public class JsonNioService extends NIOService implements JsonNioServer {
 
     if (name != null) {
       String s = JmolViewer.getJmolValueAsString(jmolViewer, "NIOcontentPath");
-      if (s != null)
+      if (s != "")
         contentPath = s;
       s = JmolViewer.getJmolValueAsString(jmolViewer, "NIOterminatorMessage");
-      if (s != null)
+      if (s != "")
         terminatorMessage = s;
       s = JmolViewer.getJmolValueAsString(jmolViewer, "NIOresetMessage");
-      if (s != null)
+      if (s != "")
         resetMessage = s;
       
       setEnabled();

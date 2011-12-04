@@ -197,6 +197,7 @@ public class ScriptEvaluator {
     this.viewer = viewer;
     compiler = viewer.compiler;
     definedAtomSets = viewer.definedAtomSets;
+    currentThread = Thread.currentThread();
   }
 
   // //////////////// primary interfacing methods //////////////////

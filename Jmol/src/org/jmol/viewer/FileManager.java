@@ -939,7 +939,7 @@ public class FileManager {
     if (names == null)
       return "";
     name = fixPath(names[0]);
-    return (names == null ? "" : name.substring(0, name.lastIndexOf("/")));
+    return (name == null ? "" : name.substring(0, name.lastIndexOf("/")));
   }
 
   private static String fixPath(String path) {
@@ -950,6 +950,8 @@ public class FileManager {
       pt = path.indexOf(":/") + 1;
     if (pt < 1)
       pt = path.indexOf("/");
+    if (pt < 0)
+      return null;
     String protocol = path.substring(0, pt);
     path = path.substring(pt);
 
@@ -968,7 +970,9 @@ public class FileManager {
                             boolean asShortName) {
     String[] names = classifyName(name, false);
     return (names == null ? "" : asShortName ? names[1]
-        : addUrlPrefix ? names[2] : names[0].replace('\\', '/'));
+        : addUrlPrefix ? names[2] 
+        : names[0] == null ? "" 
+        : names[0].replace('\\', '/'));
   }
 
   private final static String[] urlPrefixPairs = { "http:", "http://", "www.",

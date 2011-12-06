@@ -16,9 +16,9 @@ This server is then also called by a web page for web-based interaction
 */
 
 remotedir = ""  // leaving this empty disables remote operation
-password= ""    // set in MPJmolAppRemoteConfig.spt
-remotestatus =  // PHP file to call for topic/subtopic/delay reading
-remoteupdate =  // PHP file to call for updating banner and image
+password = ""    // set in MPJmolAppRemoteConfig.spt
+remotestatus = "" // PHP file to call for topic/subtopic/delay reading
+remoteupdate = "" // PHP file to call for updating banner and image
 
 try {
 
@@ -43,9 +43,15 @@ function getRemoteStatus() {
 
   // get remote status -- topic, subtopic, and delay
 
+  print "remotedir: " + remotedir
   if (remotedir == "") { return }
+
+  print remoteStatus
+
+  var scr = load(remoteStatus)
+  print scr
   try {
-    script @remoteStatus // sets topic, and subtopic, and mydelay
+    script inline @scr // sets topic, and subtopic, and mydelay
   }
 
   message remotedir = @{remotedir}
@@ -59,7 +65,10 @@ function remoteSet(s) {
   // update remote information for banner and image
 
   if (remotedir == "") { return }
-  var x=load(remoteupdate + s)
+  print "remotest " + remoteupdate+s
+  try {
+    var x=load(remoteupdate + s)
+  }
 }
 
 function setDirectory() {
@@ -72,9 +81,6 @@ function setDirectory() {
   NIOcontentScript=topic + "/" + topic + ".spt"
   cd ""
   cd @topic
-  print "setDirectory..."
-  cd
-
 }
 
 function setMPStatus(doCheckTopic) {
@@ -85,6 +91,11 @@ function setMPStatus(doCheckTopic) {
   var oldtopic = topic
   getRemoteStatus()
   setDirectory()
+
+print topic + ".spt"
+
+print load(topic + ".spt")
+
   if (load(topic + ".spt").find("java.") == 1) {
     topic = ""
     setDirectory()
@@ -105,20 +116,23 @@ function checkSubTopic(info) {
   // just words, not phrases
   // for example: substitution or elimination
   
-  if (subtopic == "") { return false }
+  if (subtopic == "") { return true }
   if (subtopic.find(" and ") == 0 
 	&& subtopic.find(" or ") == 0
-	&& subtopic.find(" not ") == 0) { return (info.find(subtopic) > 0) }
+	&& subtopic.find("not ") == 0) { return (info.find(subtopic) > 0) }
   var S = subtopic.replace("("," ( ").replace(")"," ) ").split(" ")
   for (var i = S.length; i > 0; --i) {
     var item = S[i]
-    if (item == "(" || item == ")" || item == "and" || item == "or" || item == "not") { continue }
+    if (item == "" || item == "(" || item == ")" || item == "and" || item == "or" || item == "not") { continue }
     S[i] = (info.find(item) > 0)
   }
   x = false
   try {
     script inline @{"x=" + S.join(" ")}
   }
+
+print "x = " + x +  " " + S.join(" ")
+
   return x
 }
 
@@ -137,6 +151,8 @@ function loadModel(jmolFile,more,banner) {
 
   */
 
+print "load model " + jmolFile + " " + more + " " + banner
+
   setMPStatus(true)
   if (!jmolFile) { return }
   if (!checkSubtopic(banner)) { return }
@@ -147,19 +163,23 @@ function loadModel(jmolFile,more,banner) {
     load @jmolFile
     if (more) { script inline @more }
     banner = banner.split("##")[1]
-    message @{"banner:" + banner}
-    remoteSet("log&info=" + _modelFile)
-    remoteSet("setbanner&banner=" + banner)
-    remoteSet("setimage&?POST?_PNG_")
+    var msg = "banner:" + banner
+    message @msg
+    try {
+      remoteSet("log&info=" + _modelFile)
+      remoteSet("setbanner&banner=" + banner)
+      remoteSet("setimage&?POST?_PNG_")
+    } 
+    catch (err) { print err }
+    
+  }
 
-    print "delay = " + mydelay
 
     delay @mydelay
-  }
 
   // send terminator message to keep Hub happy
 
-  print "terminatormessage=" + NIOTerminatorMessage
+  print "terminatormessage=" + NIOterminatormessage
 
   message @NIOterminatorMessage
 }

@@ -2147,7 +2147,7 @@ final public class Graphics3D implements JmolRendererInterface {
         red = Integer.parseInt(strColor.substring(1, 3), 16);
         grn = Integer.parseInt(strColor.substring(3, 5), 16);
         blu = Integer.parseInt(strColor.substring(5, 7), 16);
-        return colorTriadToInt(red/255f, grn/255f, blu/255f);
+        return colorTriadToInt(red, grn, blu);
       } catch (NumberFormatException e) {
         return 0;
       }

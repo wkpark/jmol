@@ -1357,7 +1357,8 @@ public void initShape() {
         str.append(" POLYGON ").append(nVertices);
         break;
       case PLANE:
-        str.append(" PLANE");
+        if (nVertices == 4)
+          str.append(" PLANE");
         break;
       case LINE_SEGMENT:
         str.append(" LINE");

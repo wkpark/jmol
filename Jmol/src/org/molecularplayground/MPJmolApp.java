@@ -138,7 +138,7 @@ public class MPJmolApp implements JsonNioClient {
       setBannerLabel("click below and type exitJmol[enter] to quit");
       String defaultScript = "set allowgestures;set allowKeyStrokes;set zoomLarge false;set frank off;set antialiasdisplay off;";
       
-      String script = jmolViewer.getFileAsString("MPJmolAppConfig.spt") + ";";
+      String script = "cd \"\"; " + jmolViewer.getFileAsString("MPJmolAppConfig.spt") + ";";
       Logger.info("startJsonNioKiosk on port " + port);
       Logger.info(script);
       if (script.indexOf("java.io") >= 0)
@@ -193,14 +193,15 @@ public class MPJmolApp implements JsonNioClient {
   /// JsonNiosClient ///
 
   private boolean haveStarted = false;
-  public void nioRunContent(JsonNioServer jns) {
+  public synchronized void nioRunContent(JsonNioServer jns) {
     if (contentDisabled && (jns == null || !haveStarted)) {
       // needs to be run from the NIO thread, just once.
-      String script = (jns == null && haveStarted ? 
-          "exit;" + jmolViewer.getFileAsString("MPJmolAppConfig.spt")
-          : "");
+      String script = (jns == null ? "; message testing nioRun2; cd \"\"; script \"" + JmolViewer.getJmolValueAsString(jmolViewer, "NIOcontentScript") + "\"" : "");
       haveStarted = true;
-      jmolViewer.script(script + "; cd \"\"; script \"" + JmolViewer.getJmolValueAsString(jmolViewer, "NIOcontentScript") + "\"");
+      script += ";cd \"\";cd;script \"" + JmolViewer.getJmolValueAsString(jmolViewer, "NIOcontentScript") + "\"";
+      System.out.println("nioRunContent " + Thread.currentThread() + " " + script);
+      jmolViewer.script(script);
+      System.out.println("nioRunContent done");
     }
   }
   

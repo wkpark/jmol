@@ -72,6 +72,9 @@ function setDirectory() {
   NIOcontentScript=topic + "/" + topic + ".spt"
   cd ""
   cd @topic
+  print "setDirectory..."
+  cd
+
 }
 
 function setMPStatus(doCheckTopic) {
@@ -105,12 +108,12 @@ function checkSubTopic(info) {
   if (subtopic == "") { return false }
   if (subtopic.find(" and ") == 0 
 	&& subtopic.find(" or ") == 0
-	&& subtopic.find(" not ") == 0) { return (banner.find(subtopic) > 0) }
+	&& subtopic.find(" not ") == 0) { return (info.find(subtopic) > 0) }
   var S = subtopic.replace("("," ( ").replace(")"," ) ").split(" ")
   for (var i = S.length; i > 0; --i) {
     var item = S[i]
     if (item == "(" || item == ")" || item == "and" || item == "or" || item == "not") { continue }
-    S[i] = (banner.find(item) > 0)
+    S[i] = (info.find(item) > 0)
   }
   x = false
   try {
@@ -148,10 +151,15 @@ function loadModel(jmolFile,more,banner) {
     remoteSet("log&info=" + _modelFile)
     remoteSet("setbanner&banner=" + banner)
     remoteSet("setimage&?POST?_PNG_")
+
+    print "delay = " + mydelay
+
     delay @mydelay
   }
 
   // send terminator message to keep Hub happy
+
+  print "terminatormessage=" + NIOTerminatorMessage
 
   message @NIOterminatorMessage
 }

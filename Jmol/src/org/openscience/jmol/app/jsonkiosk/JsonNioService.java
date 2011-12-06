@@ -300,7 +300,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
     thread = new Thread(new JsonNioThread(), "JsonNiosThread" + myName);
     thread.start();
     if (port == 0 && contentDisabled)
-      client.nioRunContent(null);
+      client.nioRunContent(this);
   }
 
   private void setEnabled() {

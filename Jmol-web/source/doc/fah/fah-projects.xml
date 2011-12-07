@@ -5618,9 +5618,9 @@
   <fah_proj number="2973" name="Trpzip2 Folding at 450K" public="y" file="xyz"
     server="143.89.28.70" atoms="8991" preferred="16.7" deadline="24"
     credit="80.7" frames="100" code="G" contact="xuhuihuang@gmail.com" kfactor="0.75" contrib="Chiricozzi Walter"/>
-  <fah_proj number="2974" name="p2974" public="y"
+  <fah_proj number="2974" name="p2974" public="y" file="xyz"
     server="143.89.28.72" atoms="33597" preferred="13.3" deadline="22.17"
-    credit="895.0" frames="100" code="A4" contact="xhuang" kfactor="0.75"/>
+    credit="895.0" frames="100" code="A4" contact="xhuang" kfactor="0.75" contrib="Krokonowaka"/>
   <fah_proj number="2975" name="p2975" public="y"
     server="143.89.28.72" atoms="33597" preferred="13.3" deadline="22.17"
     credit="895.0" frames="100" code="A4" contact="xhuang" kfactor="0.75"/>
@@ -9217,6 +9217,9 @@
     credit="5187.0" frames="100" code="OG" contact="tjlane" kfactor="0.0"/>
   <fah_proj number="7621" name="p7621" public="y"
     server="171.64.65.105" atoms="1980" preferred="12.6" deadline="17.90"
+    credit="5187.0" frames="100" code="OG" contact="tjlane" kfactor="0.0"/>
+  <fah_proj number="7622" name="p7622" public="y"
+    server="171.64.65.105" atoms="1980" preferred="12.6" deadline="17.899988425925926"
     credit="5187.0" frames="100" code="OG" contact="tjlane" kfactor="0.0"/>
 
   <!-- Projects 7700 to 7799 -->

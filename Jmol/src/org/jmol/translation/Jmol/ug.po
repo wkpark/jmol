@@ -8,23 +8,22 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-10-24 05:01+0200\n"
-"PO-Revision-Date: 2011-08-03 09:18+0000\n"
+"PO-Revision-Date: 2011-12-07 08:03+0000\n"
 "Last-Translator: Gheyret T.Kenji <Unknown>\n"
 "Language-Team: Uyghur <ug@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-05 17:04+0000\n"
-"X-Generator: Launchpad (build 13613)\n"
+"X-Launchpad-Export-Date: 2011-12-07 10:52+0000\n"
+"X-Generator: Launchpad (build 14443)\n"
 
 #: com/json/Cookie.java:121
 msgid "name"
-msgstr ""
+msgstr "ئاتى"
 
 #: com/json/Cookie.java:123
-#, fuzzy
 msgid "value"
-msgstr "ئۆلچەك"
+msgstr "قىممىتى"
 
 #: com/json/Cookie.java:126
 msgid "expires"
@@ -35,18 +34,16 @@ msgid "domain"
 msgstr ""
 
 #: com/json/Cookie.java:134
-#, fuzzy
 msgid "path"
-msgstr "تەكرارلا"
+msgstr "يول"
 
 #: com/json/HTTP.java:132 com/json/HTTP.java:144
 msgid "HTTP-Version"
 msgstr ""
 
 #: com/json/HTTP.java:134
-#, fuzzy
 msgid "Status-Code"
-msgstr "ھالەت"
+msgstr ""
 
 #: com/json/HTTP.java:136
 msgid "Reason-Phrase"
@@ -54,7 +51,7 @@ msgstr ""
 
 #: com/json/HTTP.java:138
 msgid "Method"
-msgstr ""
+msgstr "چارە"
 
 #: com/json/HTTP.java:141
 msgid "Request-URI"
@@ -256,7 +253,7 @@ msgstr "قايتىلا"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:176
 msgid "Variables"
-msgstr ""
+msgstr "ئۆزگەرگۈچىلەر"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:165
 msgid "AtomSetChooser"
@@ -320,7 +317,7 @@ msgstr "مەزگىل"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:355
 msgid "Controller"
-msgstr ""
+msgstr "كونتروللىغۇچ"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:363
 msgid "Go to first atom set in the collection"
@@ -337,7 +334,7 @@ msgstr ""
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:366
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:375
 msgid "Pause playing"
-msgstr ""
+msgstr "قويۇشنى ۋاقىتلىق توختىتىش"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:367
 msgid "Go to next atom set in the collection"
@@ -406,7 +403,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:254
 msgid "Method: "
-msgstr ""
+msgstr "ئۇسۇل: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:261
 msgid "Basis Set: "
@@ -442,7 +439,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:349
 msgid "File..."
-msgstr ""
+msgstr "ھۆججەت …"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:360
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:760
@@ -490,7 +487,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:64
 msgid "&Reload"
-msgstr ""
+msgstr "قايت ئوقۇ(&R)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:65
 msgid "Scrip&t Editor..."
@@ -510,11 +507,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:69
 msgid "&Save As..."
-msgstr ""
+msgstr "باشقا ئاتتا ساقلا(&S)…"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:70
 msgid "&Export"
-msgstr ""
+msgstr "چىقار(&E)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:71
 msgid "Export &Image..."
@@ -551,7 +548,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:79
 msgid "&Print..."
-msgstr ""
+msgstr "باس(&P)…"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:80
 msgid "Print view."
@@ -559,11 +556,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:81
 msgid "&Close"
-msgstr ""
+msgstr "ياپ(&C)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:82
 msgid "E&xit"
-msgstr ""
+msgstr "چېكىن(&X)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:83
 msgid "Recent &Files..."
@@ -571,16 +568,16 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:84
 msgid "&Edit"
-msgstr ""
+msgstr "تەھرىر(&E)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:86
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:92
 msgid "Select &All"
-msgstr ""
+msgstr "ھەممىنى تاللا(&A)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:87
 msgid "Deselect All"
-msgstr ""
+msgstr "تاللاشنىڭ ھەممىسىنى بىكار قىل"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:88
 msgid "Copy &Image"
@@ -596,16 +593,16 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:91
 msgid "&Paste"
-msgstr ""
+msgstr "چاپلا(&P)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:93
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:94
 msgid "&Select"
-msgstr ""
+msgstr "تاللا(&S)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:95
 msgid "&All"
-msgstr ""
+msgstr "ھەممىسى(&A)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:96
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:109
@@ -613,7 +610,7 @@ msgstr ""
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:121
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:128
 msgid "&None"
-msgstr ""
+msgstr "يوق(&N)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:97
 msgid "Hydrogen"
@@ -629,7 +626,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:100
 msgid "Oxygen"
-msgstr ""
+msgstr "ئوكسېگىن"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:101
 msgid "Phosphorus"
@@ -649,7 +646,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:105
 msgid "Water"
-msgstr ""
+msgstr "سۇ"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:106
 msgid "Hetero"
@@ -698,7 +695,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:123
 msgid "&Name"
-msgstr ""
+msgstr "ئاتى(&N)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:124
 msgid "&Number"
@@ -736,7 +733,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:138
 msgid "&Zoom"
-msgstr ""
+msgstr "كېڭەيت تارايت(&Z)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:139
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:140
@@ -745,7 +742,7 @@ msgstr ""
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:143
 #, java-format
 msgid "{0}%"
-msgstr ""
+msgstr "{0}%"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:144
 msgid "&Perspective Depth"
@@ -778,7 +775,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:151
 msgid "&View"
-msgstr ""
+msgstr "كۆرۈنۈش(&V)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:152
 msgid "&Front"
@@ -786,7 +783,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:153
 msgid "&Top"
-msgstr ""
+msgstr "ئۈستى(&T)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:154
 msgid "&Bottom"
@@ -794,11 +791,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:155
 msgid "&Right"
-msgstr ""
+msgstr "ئوڭ(&R)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:156
 msgid "&Left"
-msgstr ""
+msgstr "سول(&L)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:157
 msgid "Tr&ansform..."
@@ -810,7 +807,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:159
 msgid "&Tools"
-msgstr ""
+msgstr "قوراللار(&T)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:160
 msgid "&Gaussian..."
@@ -858,7 +855,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:172
 msgid "&Loop"
-msgstr ""
+msgstr "دەۋرىي(&L)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:173
 msgid "P&alindrome"
@@ -938,7 +935,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:192
 msgid "&Help"
-msgstr ""
+msgstr "ياردەم(&H)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:194
 msgid "User Guide"
@@ -963,7 +960,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:199
 msgid "Axes"
-msgstr ""
+msgstr "ئوق"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:200
 msgid "Bounding Box"
@@ -1076,7 +1073,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1161
 msgid "Open URL"
-msgstr ""
+msgstr "URL ئاچ"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1162
 msgid "Enter URL of molecular model"
@@ -1108,7 +1105,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:124
 msgid "Delete"
-msgstr ""
+msgstr "ئۆچۈر"
 
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:133
 msgid "DeleteAll"
@@ -1116,11 +1113,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:151
 msgid "Dismiss"
-msgstr ""
+msgstr "تاشلىۋەت"
 
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:202
 msgid "Value"
-msgstr ""
+msgstr "قىممەت"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:153
 msgid "Conversion from Jmol to POV-Ray"
@@ -1128,7 +1125,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:157
 msgid "File Name:"
-msgstr ""
+msgstr "ھۆججەت ئاتى:"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:159
 msgid ""
@@ -1198,11 +1195,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:359
 msgid "N - PNG"
-msgstr ""
+msgstr "N - PNG"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:362
 msgid "P - PPM"
-msgstr ""
+msgstr "P - PPM"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:365
 msgid "C - Compressed Targa-24"
@@ -1288,7 +1285,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:177
 msgid "Apply"
-msgstr ""
+msgstr "قوللان"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:205
 msgid "Show All"
@@ -1308,7 +1305,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:365
 msgid "Automatically"
-msgstr ""
+msgstr "ئاپتوماتىك"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:366
 msgid "Don't Compute Bonds"
@@ -1334,36 +1331,35 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/RecentFilesDialog.java:61
 msgid "Recent Files"
-msgstr ""
+msgstr "يېقىنقى ھۆججەتلەر"
 
 #: org/openscience/jmol/app/jmolpanel/RecentFilesDialog.java:66
 msgid "Open"
-msgstr ""
+msgstr "ئاچ"
 
 #: org/openscience/jmol/app/jmolpanel/Splash.java:46
 msgid "Loading..."
-msgstr ""
+msgstr "ئوقۇۋاتىدۇ..."
 
 #: org/openscience/jmol/app/jmolpanel/WhatsNewDialog.java:57
 msgid "What's New in Jmol"
 msgstr ""
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:415
-#, fuzzy
 msgid "magic"
-msgstr "ئاساس"
+msgstr ""
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:416
 msgid "role"
-msgstr ""
+msgstr "رول"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:422
 msgid "type"
-msgstr ""
+msgstr "تىپى"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:424
 msgid "text"
-msgstr ""
+msgstr "تېكىست"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:425
 msgid "visibility"
@@ -1371,11 +1367,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:428
 msgid "command"
-msgstr ""
+msgstr "بۇيرۇق"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:431
 msgid "id"
-msgstr ""
+msgstr "id"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:443
 msgid "startup_script"
@@ -1391,15 +1387,15 @@ msgstr ""
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:453
 msgid "style"
-msgstr ""
+msgstr "ئۇسلۇب"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:493
 msgid "x"
-msgstr ""
+msgstr "x"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:494
 msgid "y"
-msgstr ""
+msgstr "y"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:509
 msgid "sync"
@@ -1407,11 +1403,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:69
 msgid "Degrees"
-msgstr ""
+msgstr "گرادۇس"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:69
 msgid "Radians"
-msgstr ""
+msgstr "رادىئان"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:70
 msgid "Gradians"
@@ -1443,7 +1439,7 @@ msgstr ""
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:153
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:156
 msgid "Absolute"
-msgstr ""
+msgstr "مۇتلەق"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:164
 msgid "Origin"
@@ -1549,7 +1545,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebExport.java:125
 msgid "Introduction"
-msgstr ""
+msgstr "تونۇشتۇرۇش"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:135
 msgid "Pop-In Jmol"
@@ -1561,7 +1557,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebExport.java:153
 msgid "Log"
-msgstr ""
+msgstr "خاتىرە"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:168
 #, java-format
@@ -1627,7 +1623,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:190
 msgid "Delete Selected"
-msgstr ""
+msgstr "تاللانغاننى ئۆچۈرۈش"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:222
 msgid "Jmol Instances:"
@@ -1764,7 +1760,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:88
 msgid "Background Color"
-msgstr ""
+msgstr "تەگلىك رەڭگى"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:106
 msgid "background color:"
@@ -1804,7 +1800,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:180
 msgid "First Frame"
-msgstr ""
+msgstr "بىرىنچى كاندۇك"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:182
 msgid "Previous Frame"
@@ -1812,7 +1808,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:184
 msgid "Play"
-msgstr ""
+msgstr "قويۇش"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:186
 msgid "Next Frame"
@@ -1820,19 +1816,19 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:188
 msgid "Pause"
-msgstr ""
+msgstr "بىردەم توختاش"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:190
 msgid "Last Frame"
-msgstr ""
+msgstr "ئاخىرقى كاندۇك"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:192
 msgid "Mode:"
-msgstr ""
+msgstr "ئۇسۇلى:"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:193
 msgid "Loop"
-msgstr ""
+msgstr "دەۋرىي"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:195
 msgid "Palindrome"
@@ -1861,111 +1857,3 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr ""
-
-#, fuzzy
-#~ msgid "System"
-#~ msgstr "باسقۇچ"
-
-#, fuzzy
-#~ msgid "Select ({0})"
-#~ msgstr "تاللا"
-
-#, fuzzy
-#~ msgid "Back"
-#~ msgstr "ئاساس"
-
-#, fuzzy
-#~ msgid "Bases"
-#~ msgstr "ئاساس"
-
-#, fuzzy
-#~ msgid "Style"
-#~ msgstr "باسقۇچ"
-
-#, fuzzy
-#~ msgid "Vectors"
-#~ msgstr "ۋېكتور"
-
-#, fuzzy
-#~ msgid "Color"
-#~ msgstr "ياپ"
-
-#, fuzzy
-#~ msgid "Black"
-#~ msgstr "ئاساس"
-
-#, fuzzy
-#~ msgid "Cyan"
-#~ msgstr "ۋاز كەچ"
-
-#, fuzzy
-#~ msgid "Red"
-#~ msgstr "قايتىلا"
-
-#, fuzzy
-#~ msgid "Blue"
-#~ msgstr "ئۆلچەك"
-
-#, fuzzy
-#~ msgid "Indigo"
-#~ msgstr "ئۇچۇر"
-
-#, fuzzy
-#~ msgid "Set X Rate"
-#~ msgstr "ھالەت"
-
-#, fuzzy
-#~ msgid "Set Y Rate"
-#~ msgstr "ھالەت"
-
-#, fuzzy
-#~ msgid "Set Z Rate"
-#~ msgstr "ھالەت"
-
-#, fuzzy
-#~ msgid "Set FPS"
-#~ msgstr "FPS"
-
-#, fuzzy
-#~ msgid "Stop"
-#~ msgstr "باسقۇچ"
-
-#, fuzzy
-#~ msgid "Rewind"
-#~ msgstr "قايتىلا"
-
-#, fuzzy
-#~ msgid "Restart"
-#~ msgstr "تەكرارلا"
-
-#, fuzzy
-#~ msgid "Select atom"
-#~ msgstr "تاللا"
-
-#, fuzzy
-#~ msgid "Select chain"
-#~ msgstr "تاللا"
-
-#, fuzzy
-#~ msgid "Select element"
-#~ msgstr "تاللا"
-
-#, fuzzy
-#~ msgid "Select group"
-#~ msgstr "تاللا"
-
-#, fuzzy
-#~ msgid "Select site"
-#~ msgstr "تاللا"
-
-#, fuzzy
-#~ msgid "Console"
-#~ msgstr "ياپ"
-
-#, fuzzy
-#~ msgid "File"
-#~ msgstr "ھۆججەت(&F)"
-
-#, fuzzy
-#~ msgid "Reload"
-#~ msgstr "قايتىلا"

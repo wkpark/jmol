@@ -4046,4 +4046,51 @@ abstract public class ModelCollection extends BondCollection {
         unitCell.setUnitCellOffset(pt);
     }
   }
+  
+  public void connect(float[][] connections) {
+    // array of [index1 index2 order diameter energy]
+    resetMolecules();
+    BitSet bsDelete = new BitSet();
+    for (int i = 0; i < connections.length; i++) {
+      float[] f = connections[i];
+      if (f == null || f.length < 2)
+        continue;
+      int index1 = (int) f[0];
+      boolean addGroup = (index1 < 0);
+      if (addGroup)
+        index1 = -1 - index1;
+      int index2 = (int) f[1];
+      if (index2 < 0 || index1 >= atomCount || index2 >= atomCount)
+        continue;
+      int order = (f.length > 2 ? (int) f[2] : JmolEdge.BOND_COVALENT_SINGLE);
+      if (order < 0)
+        order &= 0xFFFF; // 12.0.1 was saving struts as negative numbers
+      short mad = (f.length > 3 ? (short) (1000f * connections[i][3]) : getDefaultMadFromOrder(order));
+      if (order == 0 || mad == 0 && order != JmolEdge.BOND_STRUT && !Bond.isHydrogen(order)) {
+        Bond b = atoms[index1].getBond(atoms[index2]);
+        if (b != null)
+          bsDelete.set(b.index);
+        continue; 
+      }
+      float energy = (f.length > 4 ? f[4] : 0);
+      bondAtoms(atoms[index1], atoms[index2], order, mad, null, energy, addGroup, true);
+    }
+    if (bsDelete.nextSetBit(0) >= 0)
+      deleteBonds(bsDelete, false);
+  }
+
+  public boolean allowSpecAtom() {
+    // old Chime scripts use *.C for _C
+    return modelCount != 1 || models[0].isBioModel;
+  }
+
+  public void setFrameDelayMs(long millis, BitSet bsModels) {
+    for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels.nextSetBit(i + 1))
+      models[models[i].trajectoryBaseIndex].frameDelay = millis;
+  }
+  
+  public long getFrameDelayMs(int i) {
+    return (i < models.length ? models[models[i].trajectoryBaseIndex].frameDelay : 0);
+  }
+
 }

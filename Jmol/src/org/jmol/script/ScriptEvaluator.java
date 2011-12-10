@@ -11914,6 +11914,22 @@ public class ScriptEvaluator {
       return;
     }
     switch (tokAt(1)) {
+    case Token.delay:
+      long millis = 0;
+      checkLength(3);
+      switch (getToken(2).tok) {
+      case Token.integer:
+        millis = intParameter(2) * 1000;
+        break;
+      case Token.decimal:
+        millis = (long) (floatParameter(2) * 1000);
+        break;
+      default:
+        error(ERROR_integerExpected);
+      }
+      if (!isSyntaxCheck)
+        viewer.setFrameDelayMs(millis);
+      return;
     case Token.title:
       if (checkLength23() > 0)
         if (!isSyntaxCheck)

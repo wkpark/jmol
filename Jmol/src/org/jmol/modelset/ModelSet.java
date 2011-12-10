@@ -29,7 +29,6 @@ import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
-import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.Quaternion;
 
@@ -39,7 +38,6 @@ import org.jmol.viewer.Viewer;
 import org.jmol.modelset.Bond.BondSet;
 import org.jmol.script.Token;
 import org.jmol.api.Interface;
-import org.jmol.api.JmolAdapter;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.shape.Shape;
@@ -643,6 +641,9 @@ import javax.vecmath.Vector3f;
             && !isTrajectorySubFrame(i))
           commands.append("  frame " + getModelNumberDotted(i) + "; "
               + models[i].orientation.getMoveToText(false) + "\n");
+        if (models[i].frameDelay != 0 && !isTrajectorySubFrame(i))
+          commands.append("  frame " + getModelNumberDotted(i) 
+              + "; frame delay " + models[i].frameDelay + "\n");
       }
 
       if (unitCells != null) {
@@ -1073,138 +1074,6 @@ import javax.vecmath.Vector3f;
             */
   }
 
-  public void connect(float[][] connections) {
-    // array of [index1 index2 order diameter energy]
-    resetMolecules();
-    BitSet bsDelete = new BitSet();
-    for (int i = 0; i < connections.length; i++) {
-      float[] f = connections[i];
-      if (f == null || f.length < 2)
-        continue;
-      int index1 = (int) f[0];
-      boolean addGroup = (index1 < 0);
-      if (addGroup)
-        index1 = -1 - index1;
-      int index2 = (int) f[1];
-      if (index2 < 0 || index1 >= atomCount || index2 >= atomCount)
-        continue;
-      int order = (f.length > 2 ? (int) f[2] : JmolEdge.BOND_COVALENT_SINGLE);
-      if (order < 0)
-        order &= 0xFFFF; // 12.0.1 was saving struts as negative numbers
-      short mad = (f.length > 3 ? (short) (1000f * connections[i][3]) : getDefaultMadFromOrder(order));
-      if (order == 0 || mad == 0 && order != JmolEdge.BOND_STRUT && !Bond.isHydrogen(order)) {
-        Bond b = atoms[index1].getBond(atoms[index2]);
-        if (b != null)
-          bsDelete.set(b.index);
-        continue; 
-      }
-      float energy = (f.length > 4 ? f[4] : 0);
-      bondAtoms(atoms[index1], atoms[index2], order, mad, null, energy, addGroup, true);
-    }
-    if (bsDelete.nextSetBit(0) >= 0)
-      deleteBonds(bsDelete, false);
-  }
-  
-  public void createAtomDataSet(int tokType, Object atomSetCollection,
-                                BitSet bsSelected) {
-    if (atomSetCollection == null)
-      return;
-    // must be one of JmolConstants.LOAD_ATOM_DATA_TYPES
-    JmolAdapter adapter = viewer.getModelAdapter();
-    Point3f pt = new Point3f();
-    Point3f v = new Point3f();
-    float tolerance = viewer.getLoadAtomDataTolerance();
-    if (unitCells != null)
-      for (int i = bsSelected.nextSetBit(0); i >= 0; i = bsSelected
-          .nextSetBit(i + 1))
-        if (atoms[i].getAtomSymmetry() != null) {
-          tolerance = -tolerance;
-          break;
-        }
-    int i = -1;
-    int n = 0;
-    boolean loadAllData = (BitSetUtil.cardinalityOf(bsSelected) == viewer
-        .getAtomCount());
-    for (JmolAdapter.AtomIterator iterAtom = adapter
-        .getAtomIterator(atomSetCollection); iterAtom.hasNext();) {
-      float x = iterAtom.getX();
-      float y = iterAtom.getY();
-      float z = iterAtom.getZ();
-      if (Float.isNaN(x + y + z))
-        continue;
-
-      if (tokType == Token.xyz) {
-        // we are loading selected coordinates only
-        i = bsSelected.nextSetBit(i + 1);
-        if (i < 0)
-          break;
-        n++;
-        if (Logger.debugging)
-          Logger.debug("atomIndex = " + i + ": " + atoms[i]
-              + " --> (" + x + "," + y + "," + z);
-        setAtomCoord(i, x, y, z);
-        continue;
-      }
-      pt.set(x, y, z);
-      BitSet bs = new BitSet(atomCount);
-      getAtomsWithin(tolerance, pt, bs, -1);
-      bs.and(bsSelected);
-      if (loadAllData) {
-        n = BitSetUtil.cardinalityOf(bs);
-        if (n == 0) {
-          Logger.warn("createAtomDataSet: no atom found at position " + pt);
-          continue;
-        } else if (n > 1 && Logger.debugging) {
-          Logger.debug("createAtomDataSet: " + n + " atoms found at position "
-              + pt);
-        }
-      }
-      switch (tokType) {
-      case Token.vibxyz:
-        float vx = iterAtom.getVectorX();
-        float vy = iterAtom.getVectorY();
-        float vz = iterAtom.getVectorZ();
-        if (Float.isNaN(vx + vy + vz))
-          continue;
-        v.set(vx, vy, vz);
-        if (Logger.debugging)
-          Logger.info("xyz: " + pt + " vib: " + v);
-        setAtomCoord(bs, Token.vibxyz, v);
-        break;
-      case Token.occupancy:
-        // [0 to 100], default 100
-        setAtomProperty(bs, tokType, iterAtom.getOccupancy(), 0, null, null,
-            null);
-        break;
-      case Token.partialcharge:
-        // anything but NaN, default NaN
-        setAtomProperty(bs, tokType, 0, iterAtom.getPartialCharge(), null,
-            null, null);
-        break;
-      case Token.temperature:
-        // anything but NaN but rounded to 0.01 precision and stored as a short (-32000 - 32000), default NaN
-        setAtomProperty(bs, tokType, 0, iterAtom.getBfactor(), null, null, null);
-        break;
-      }
-    }
-    //finally:
-    switch (tokType) {
-    case Token.vibxyz:
-      String vibName = adapter.getAtomSetName(atomSetCollection, 0);
-      Logger.info("_vibrationName = " + vibName);
-      viewer.setStringProperty("_vibrationName", vibName);
-      break;
-    case Token.xyz:
-      Logger.info(n + " atom positions read");
-      recalculateLeadMidpointsAndWingVectors(-1);
-      break;
-    }    
-  }
-
-  public boolean allowSpecAtom() {
-    // old Chime scripts use *.C for _C
-    return modelCount != 1 || models[0].isBioModel;
-  }
 
 }
 

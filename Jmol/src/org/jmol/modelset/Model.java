@@ -195,6 +195,7 @@ public class Model {
   
   protected boolean structureTainted;
   boolean isJmolDataFrame;
+  public long frameDelay;
   
   public String getModelNumberDotted() {
     return modelSet.getModelNumberDotted(modelIndex);

@@ -101,4 +101,9 @@ class ModelManager {
     return fileName;
   }
 
+  void createAtomDataSet(Object atomSetCollection, int tokType) {
+    ModelLoader.createAtomDataSet(viewer, modelSet, tokType, atomSetCollection,
+    viewer.getSelectionSet(false));    
+  }
+
 }

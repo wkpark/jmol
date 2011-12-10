@@ -26,6 +26,7 @@
 package org.jmol.modelset;
 
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSetUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.Quadric;
 import org.jmol.util.JmolEdge;
@@ -1461,5 +1462,103 @@ public final class ModelLoader {
     modelSet.resetMolecules();
     modelSet.validateBspf(false);
   }
+
   
+  public static void createAtomDataSet(Viewer viewer, ModelSet modelSet, int tokType, Object atomSetCollection,
+                                BitSet bsSelected) {
+    if (atomSetCollection == null)
+      return;
+    // must be one of JmolConstants.LOAD_ATOM_DATA_TYPES
+    JmolAdapter adapter = viewer.getModelAdapter();
+    Point3f pt = new Point3f();
+    Point3f v = new Point3f();
+    Atom[] atoms = modelSet.atoms;
+    float tolerance = viewer.getLoadAtomDataTolerance();
+    if (modelSet.unitCells != null)
+      for (int i = bsSelected.nextSetBit(0); i >= 0; i = bsSelected
+          .nextSetBit(i + 1))
+        if (atoms[i].getAtomSymmetry() != null) {
+          tolerance = -tolerance;
+          break;
+        }
+    int i = -1;
+    int n = 0;
+    boolean loadAllData = (BitSetUtil.cardinalityOf(bsSelected) == viewer
+        .getAtomCount());
+    for (JmolAdapter.AtomIterator iterAtom = adapter
+        .getAtomIterator(atomSetCollection); iterAtom.hasNext();) {
+      float x = iterAtom.getX();
+      float y = iterAtom.getY();
+      float z = iterAtom.getZ();
+      if (Float.isNaN(x + y + z))
+        continue;
+
+      if (tokType == Token.xyz) {
+        // we are loading selected coordinates only
+        i = bsSelected.nextSetBit(i + 1);
+        if (i < 0)
+          break;
+        n++;
+        if (Logger.debugging)
+          Logger.debug("atomIndex = " + i + ": " + atoms[i]
+              + " --> (" + x + "," + y + "," + z);
+        modelSet.setAtomCoord(i, x, y, z);
+        continue;
+      }
+      pt.set(x, y, z);
+      BitSet bs = new BitSet(modelSet.atomCount);
+      modelSet.getAtomsWithin(tolerance, pt, bs, -1);
+      bs.and(bsSelected);
+      if (loadAllData) {
+        n = BitSetUtil.cardinalityOf(bs);
+        if (n == 0) {
+          Logger.warn("createAtomDataSet: no atom found at position " + pt);
+          continue;
+        } else if (n > 1 && Logger.debugging) {
+          Logger.debug("createAtomDataSet: " + n + " atoms found at position "
+              + pt);
+        }
+      }
+      switch (tokType) {
+      case Token.vibxyz:
+        float vx = iterAtom.getVectorX();
+        float vy = iterAtom.getVectorY();
+        float vz = iterAtom.getVectorZ();
+        if (Float.isNaN(vx + vy + vz))
+          continue;
+        v.set(vx, vy, vz);
+        if (Logger.debugging)
+          Logger.info("xyz: " + pt + " vib: " + v);
+        modelSet.setAtomCoord(bs, Token.vibxyz, v);
+        break;
+      case Token.occupancy:
+        // [0 to 100], default 100
+        modelSet.setAtomProperty(bs, tokType, iterAtom.getOccupancy(), 0, null, null,
+            null);
+        break;
+      case Token.partialcharge:
+        // anything but NaN, default NaN
+        modelSet.setAtomProperty(bs, tokType, 0, iterAtom.getPartialCharge(), null,
+            null, null);
+        break;
+      case Token.temperature:
+        // anything but NaN but rounded to 0.01 precision and stored as a short (-32000 - 32000), default NaN
+        modelSet.setAtomProperty(bs, tokType, 0, iterAtom.getBfactor(), null, null, null);
+        break;
+      }
+    }
+    //finally:
+    switch (tokType) {
+    case Token.vibxyz:
+      String vibName = adapter.getAtomSetName(atomSetCollection, 0);
+      Logger.info("_vibrationName = " + vibName);
+      viewer.setStringProperty("_vibrationName", vibName);
+      break;
+    case Token.xyz:
+      Logger.info(n + " atom positions read");
+      modelSet.recalculateLeadMidpointsAndWingVectors(-1);
+      break;
+    }    
+  }
+
 }

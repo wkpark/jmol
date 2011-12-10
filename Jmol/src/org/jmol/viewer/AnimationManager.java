@@ -447,7 +447,7 @@ class AnimationManager {
             return;
           }
           isFirst = false;
-          targetTime += (1000 / animationFps);
+          targetTime += (1000 / animationFps) + viewer.getFrameDelayMs(currentModelIndex);
           sleepTime = targetTime
               - (int) (System.currentTimeMillis() - timeBegin);
 

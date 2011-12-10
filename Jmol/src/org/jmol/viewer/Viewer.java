@@ -2423,8 +2423,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return (String) atomSetCollection;
     setErrorMessage(null);
     try {
-      modelSet.createAtomDataSet(tokType, atomSetCollection,
-          getSelectionSet(false));
+      modelManager.createAtomDataSet(atomSetCollection, tokType);
       switch  (tokType) {
       case Token.vibration:
         setStatusFrameChanged(Integer.MIN_VALUE);
@@ -10016,6 +10015,14 @@ private void zap(String msg) {
 
   public String getEmbeddedFileState(String fileName) {
     return fileManager.getEmbeddedFileState(fileName);
+  }
+
+  public void setFrameDelayMs(long millis) {
+    modelSet.setFrameDelayMs(millis, getVisibleFramesBitSet());
+  }
+
+  public long getFrameDelayMs(int i) {
+    return modelSet.getFrameDelayMs(i);
   }
 
 }

@@ -43,7 +43,7 @@
 
   <property file="proxy.properties" />
 
-  <import file="build-i18n.xml"/>
+  <import file="tools/build-i18n.xml"/>
 
   <path id="project.class.path">
     <fileset dir="${lib.dir}">

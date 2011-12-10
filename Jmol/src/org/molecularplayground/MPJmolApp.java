@@ -231,6 +231,8 @@ public class MPJmolApp implements JsonNioClient {
       jmolViewer = JmolViewer.allocateViewer(this, new SmarterJmolAdapter(),
           null, null, null, ""/*-multitouch-mp"*/, null);
       jmolViewer.setJmolCallbackListener(this);
+      // turn off all file-writing capabilities
+      jmolViewer.setBooleanProperty("isKiosk", true);
     }
 
     @Override

@@ -360,6 +360,8 @@ public class SmarterJmolAdapter extends JmolAdapter {
           return null;
         return "unknown reader error";
       }
+      if (is instanceof BufferedInputStream)
+        is = ZipUtil.checkPngZipStream((BufferedInputStream) is);
       ZipInputStream zis = ZipUtil.getStream(is);
       ZipEntry ze;
       while ((ze = zis.getNextEntry()) != null

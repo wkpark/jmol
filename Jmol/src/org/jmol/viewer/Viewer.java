@@ -4866,7 +4866,7 @@ private void zap(String msg) {
   }
 
   public void setCursor(int cursor) {
-    if (currentCursor == cursor || multiTouch || !haveDisplay)
+    if (isKiosk || currentCursor == cursor || multiTouch || !haveDisplay)
       return;
     apiPlatform.setCursor(currentCursor = cursor, display);
   }
@@ -5445,7 +5445,7 @@ private void zap(String msg) {
   }
 
   public String dialogAsk(String type, String fileName) {
-    return statusManager.dialogAsk(type, fileName);
+    return (isKiosk ? null : statusManager.dialogAsk(type, fileName));
   }
 
   public int getScriptDelay() {
@@ -6208,7 +6208,13 @@ private void zap(String msg) {
       break;
     case Token.iskiosk:
       // 11.9.29
-      isKiosk = value;
+      // 12.2.9, 12.3.9: no false here, because it's a one-time setting
+      if (value) {
+        isKiosk = true;
+        global.disablePopupMenu = true;
+        if (display != null)
+          apiPlatform.setTransparentCursor(display);
+      }
       break;
     // 11.9.28
     case Token.waitformoveto:
@@ -7692,7 +7698,9 @@ private void zap(String msg) {
       scriptEditorVisible = ((Boolean) paramInfo).booleanValue();
       return null;
     case 80:
-      if (paramInfo instanceof JmolAppConsoleInterface) {
+      if (isKiosk) {
+        appConsole = null;
+      } else if (paramInfo instanceof JmolAppConsoleInterface) {
         appConsole = (JmolAppConsoleInterface) paramInfo;
       } else if (paramInfo != null && !((Boolean) paramInfo).booleanValue()) {
         appConsole = null;
@@ -8598,7 +8606,7 @@ private void zap(String msg) {
   }
 
   private String getFileNameFromDialog(String fileName, int quality) {
-    if (fileName == null)
+    if (fileName == null || isKiosk)
       return null;
     boolean useDialog = (fileName.indexOf("?") == 0);
     if (useDialog)
@@ -9881,7 +9889,7 @@ private void zap(String msg) {
 
   public String prompt(String label, String data, String[] list,
                        boolean asButtons) {
-    return apiPlatform.prompt(label, data, list, asButtons);
+    return (isKiosk ? "null" : apiPlatform.prompt(label, data, list, asButtons));
   }
 
   String getMenuName(int i) {

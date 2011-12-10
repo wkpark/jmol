@@ -643,7 +643,7 @@ import javax.vecmath.Vector3f;
               + models[i].orientation.getMoveToText(false) + "\n");
         if (models[i].frameDelay != 0 && !isTrajectorySubFrame(i))
           commands.append("  frame " + getModelNumberDotted(i) 
-              + "; frame delay " + models[i].frameDelay + "\n");
+              + "; frame delay " + models[i].frameDelay/1000f + "\n");
       }
 
       if (unitCells != null) {

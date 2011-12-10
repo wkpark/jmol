@@ -11919,8 +11919,6 @@ public class ScriptEvaluator {
       checkLength(3);
       switch (getToken(2).tok) {
       case Token.integer:
-        millis = intParameter(2) * 1000;
-        break;
       case Token.decimal:
         millis = (long) (floatParameter(2) * 1000);
         break;

@@ -6765,7 +6765,10 @@ public class ScriptEvaluator {
     BitSet bsSubset = null;
     boolean isSmiles = false;
     String strSmiles = null;
-    boolean isFrames = false;
+    BitSet bs = BitSetUtil.copy(bsFrom);
+    bs.or(bsTo);
+    boolean isToSubsetOfFrom = bs.equals(bsFrom);
+    boolean isFrames = isToSubsetOfFrom;
     for (int i = iToken + 1; i < statementLength; ++i) {
       switch (getToken(i).tok) {
       case Token.frame:
@@ -6794,7 +6797,7 @@ public class ScriptEvaluator {
         if (vQuatSets != null)
           error(ERROR_invalidArgument);
         bsAtoms1 = atomExpression(iToken);
-        int tok = tokAt(iToken + 1);
+        int tok = (isToSubsetOfFrom ? 0 : tokAt(iToken + 1));
         bsAtoms2 = (tok == Token.bitset || tok == Token.expressionBegin ? atomExpression(++iToken)
             : BitSetUtil.copy(bsAtoms1));
         if (bsSubset != null) {

@@ -6749,6 +6749,7 @@ public class ScriptEvaluator {
     // compare {model1} {model2} [orientations] [quaternionList1] [quaternionList2]
     // compare {model1} {model2} SMILES "....."
     // compare {model1} {model2} SMARTS "....."
+    // compare {model1} {model2} FRAMES 
 
     boolean isQuaternion = false;
     boolean doRotate = false;
@@ -6764,8 +6765,12 @@ public class ScriptEvaluator {
     BitSet bsSubset = null;
     boolean isSmiles = false;
     String strSmiles = null;
+    boolean isFrames = false;
     for (int i = iToken + 1; i < statementLength; ++i) {
       switch (getToken(i).tok) {
+      case Token.frame:
+        isFrames = true;
+        break;
       case Token.smiles:
         isSmiles = true;
         // fall through
@@ -6792,12 +6797,11 @@ public class ScriptEvaluator {
         int tok = tokAt(iToken + 1);
         bsAtoms2 = (tok == Token.bitset || tok == Token.expressionBegin ? atomExpression(++iToken)
             : BitSetUtil.copy(bsAtoms1));
-        bsAtoms1.and(bsFrom);
-        bsAtoms2.and(bsTo);
         if (bsSubset != null) {
           bsAtoms1.and(bsSubset);
           bsAtoms2.and(bsSubset);
         }
+        bsAtoms2.and(bsTo);
         if (vAtomSets == null)
           vAtomSets = new ArrayList<BitSet[]>();
         vAtomSets.add(new BitSet[] { bsAtoms1, bsAtoms2 });
@@ -6835,109 +6839,137 @@ public class ScriptEvaluator {
     }
     if (isSyntaxCheck)
       return;
-    float[] retStddev = new float[2]; // [0] final, [1] initial for atoms
-    Quaternion q = null;
-    List<Quaternion> vQ = new ArrayList<Quaternion>();
-    Point3f[][] centerAndPoints = null;
-    if (isQuaternion) {
-      if (vAtomSets == null && vQuatSets == null) {
-        vAtomSets = new ArrayList<BitSet[]>();
-        vAtomSets.add(new BitSet[] { bsFrom, bsTo });
+
+    if (isFrames)
+      nSeconds = 0;
+    if (Float.isNaN(nSeconds) || nSeconds < 0)
+      nSeconds = 1;
+    else if (!doRotate && !doTranslate)
+      doRotate = doTranslate = true;
+    doAnimate = (nSeconds != 0);
+
+    boolean isAtoms = (!isQuaternion && strSmiles == null);
+    if (vAtomSets == null && vQuatSets == null) {
+      bsAtoms1 = (isAtoms ? viewer.getAtomBitSet("spine") : new BitSet());
+      bsAtoms1.and(bsFrom);
+      if (bsAtoms1.nextSetBit(0) < 0) {
+        bsAtoms1 = bsFrom;
+        bsAtoms2 = bsTo;
+      } else {
+        bsAtoms2 = BitSetUtil.copy(bsAtoms1);
+        bsAtoms1.and(bsFrom);
+        bsAtoms2.and(bsTo);
       }
-      if (vQuatSets == null) {
-        for (int i = 0; i < vAtomSets.size(); i++) {
-          BitSet[] bss = vAtomSets.get(i);
-          data1 = viewer.getAtomGroupQuaternions(bss[0], Integer.MAX_VALUE);
-          data2 = viewer.getAtomGroupQuaternions(bss[1], Integer.MAX_VALUE);
+      vAtomSets = new ArrayList<BitSet[]>();
+      vAtomSets.add(new BitSet[] { bsAtoms1, bsAtoms2 });
+    }
+
+    BitSet[] bsFrames;
+    if (isFrames) {
+      BitSet bsModels = viewer.getModelBitSet(bsFrom, false);
+      bsFrames = new BitSet[bsModels.cardinality()];
+      for (int i = 0, iModel = bsModels.nextSetBit(0); iModel >= 0; iModel = bsModels.nextSetBit(iModel + 1), i++)
+        bsFrames[i] = viewer.getModelUndeletedAtomsBitSet(iModel);       
+    } else {
+      bsFrames = new BitSet[] { bsFrom };
+    }
+    for (int iFrame = 0; iFrame < bsFrames.length; iFrame++) {
+      bsFrom = bsFrames[iFrame];
+      float[] retStddev = new float[2]; // [0] final, [1] initial for atoms
+      Quaternion q = null;
+      List<Quaternion> vQ = new ArrayList<Quaternion>();
+      Point3f[][] centerAndPoints = null;
+      List<BitSet[]> vAtomSets2 = (isFrames ? new ArrayList<BitSet[]>()
+          : vAtomSets);
+      for (int i = 0; i < vAtomSets.size(); ++i) {
+        BitSet[] bss = vAtomSets.get(i);
+        if (isFrames)
+          vAtomSets2
+              .add(bss = new BitSet[] { BitSetUtil.copy(bss[0]), bss[1] });
+        bss[0].and(bsFrom);
+      }
+      if (isAtoms) {
+        centerAndPoints = viewer.getCenterAndPoints(vAtomSets2, true);
+        q = Measure.calculateQuaternionRotation(centerAndPoints, retStddev,
+            true);
+        float r0 = (Float.isNaN(retStddev[1]) ? Float.NaN
+            : (int) (retStddev[0] * 100) / 100f);
+        float r1 = (Float.isNaN(retStddev[1]) ? Float.NaN
+            : (int) (retStddev[1] * 100) / 100f);
+        showString("RMSD " + r0 + " --> " + r1 + " Angstroms");
+      } else if (isQuaternion) {
+        if (vQuatSets == null) {
+          for (int i = 0; i < vAtomSets2.size(); i++) {
+            BitSet[] bss = vAtomSets2.get(i);
+            data1 = viewer.getAtomGroupQuaternions(bss[0], Integer.MAX_VALUE);
+            data2 = viewer.getAtomGroupQuaternions(bss[1], Integer.MAX_VALUE);
+            for (int j = 0; j < data1.length && j < data2.length; j++) {
+              vQ.add(data2[j].div(data1[j]));
+            }
+          }
+        } else {
           for (int j = 0; j < data1.length && j < data2.length; j++) {
             vQ.add(data2[j].div(data1[j]));
           }
         }
+        retStddev[0] = 0;
+        data1 = new Quaternion[vQ.size()];
+        for (int i = vQ.size(); --i >= 0;) {
+          data1[i] = vQ.get(i);
+        }
+        q = Quaternion.sphereMean(data1, retStddev, 0.0001f);
+        showString("RMSD = " + retStddev[0] + " degrees");
       } else {
-        for (int j = 0; j < data1.length && j < data2.length; j++) {
-          vQ.add(data2[j].div(data1[j]));
+        // SMILES
+        /* not sure why this was like this:
+        if (vAtomSets == null) {
+          vAtomSets = new ArrayList<BitSet[]>();
         }
-      }
-      retStddev[0] = 0;
-      data1 = new Quaternion[vQ.size()];
-      for (int i = vQ.size(); --i >= 0;) {
-        data1[i] = vQ.get(i);
-      }
-      q = Quaternion.sphereMean(data1, retStddev, 0.0001f);
-      showString("RMSD = " + retStddev[0] + " degrees");
-    } else if (strSmiles != null) {
-      if (vAtomSets == null) {
-        vAtomSets = new ArrayList<BitSet[]>();
-      }
-      bsAtoms1 = BitSetUtil.copy(bsFrom);
-      bsAtoms2 = BitSetUtil.copy(bsTo);
-      vAtomSets.add(new BitSet[] { bsAtoms1, bsAtoms2 });
-      Matrix4f m4 = new Matrix4f();
-      float stddev = getSmilesCorrelation(bsFrom, bsTo, strSmiles, null, null,
-          m4, null, !isSmiles, false);
-      if (Float.isNaN(stddev))
-        error(ERROR_invalidArgument);
-      Vector3f translation = new Vector3f();
-      m4.get(translation);
-      Matrix3f m3 = new Matrix3f();
-      m4.get(m3);
-      q = new Quaternion(m3);
-    } else {
-      // atoms
-      if (bsAtoms1 == null) {
-        bsAtoms1 = viewer.getAtomBitSet("spine");
-        if (bsAtoms1.nextSetBit(0) < 0) {
-          bsAtoms1 = bsFrom;
-          bsAtoms2 = bsTo;
-        } else {
-          bsAtoms2 = BitSetUtil.copy(bsAtoms1);
-          bsAtoms1.and(bsFrom);
-          bsAtoms2.and(bsTo);
-        }
-        vAtomSets = new ArrayList<BitSet[]>();
+        bsAtoms1 = BitSetUtil.copy(bsFrom);
+        bsAtoms2 = BitSetUtil.copy(bsTo);
         vAtomSets.add(new BitSet[] { bsAtoms1, bsAtoms2 });
+        */
+
+        Matrix4f m4 = new Matrix4f();
+        float stddev = getSmilesCorrelation(bsFrom, bsTo, strSmiles, null,
+            null, m4, null, !isSmiles, false);
+        if (Float.isNaN(stddev))
+          error(ERROR_invalidArgument);
+        Vector3f translation = new Vector3f();
+        m4.get(translation);
+        Matrix3f m3 = new Matrix3f();
+        m4.get(m3);
+        q = new Quaternion(m3);
       }
-      centerAndPoints = viewer.getCenterAndPoints(vAtomSets, true);
-      q = Measure.calculateQuaternionRotation(centerAndPoints, retStddev, true);
-      float r0 = (Float.isNaN(retStddev[1]) ? Float.NaN
-          : (int) (retStddev[0] * 100) / 100f);
-      float r1 = (Float.isNaN(retStddev[1]) ? Float.NaN
-          : (int) (retStddev[1] * 100) / 100f);
-      showString("RMSD " + r0 + " --> " + r1 + " Angstroms");
+      if (centerAndPoints == null)
+        centerAndPoints = viewer.getCenterAndPoints(vAtomSets2, true);
+      Point3f pt1 = new Point3f();
+      float endDegrees = Float.NaN;
+      Vector3f translation = null;
+      if (doTranslate) {
+        translation = new Vector3f(centerAndPoints[1][0]);
+        translation.sub(centerAndPoints[0][0]);
+        endDegrees = 0;
+      }
+      if (doRotate) {
+        if (q == null)
+          evalError("option not implemented", null);
+        pt1.set(centerAndPoints[0][0]);
+        pt1.add(q.getNormal());
+        endDegrees = q.getTheta();
+      }
+      if (Float.isNaN(endDegrees) || Float.isNaN(pt1.x))
+        continue;
+      List<Point3f> ptsB = null;
+      if (doRotate && doTranslate && nSeconds != 0) {
+        List<Point3f> ptsA = viewer.getAtomPointVector(bsFrom);
+        Matrix4f m4 = ScriptMathProcessor.getMatrix4f(q.getMatrix(),
+            translation);
+        ptsB = Measure.transformPoints(ptsA, m4, centerAndPoints[0][0]);
+      }
+      viewer.rotateAboutPointsInternal(centerAndPoints[0][0], pt1, endDegrees
+          / nSeconds, endDegrees, doAnimate, bsFrom, translation, ptsB);
     }
-    Point3f pt1 = new Point3f();
-    if (centerAndPoints == null)
-      centerAndPoints = viewer.getCenterAndPoints(vAtomSets, true);
-    if (Float.isNaN(nSeconds) || nSeconds < 0) {
-      nSeconds = 1;
-    } else if (!doRotate && !doTranslate) {
-      doAnimate = doRotate = doTranslate = true;
-    }
-    doAnimate = (nSeconds != 0);
-    float endDegrees = Float.NaN;
-    Vector3f translation = null;
-    if (doTranslate) {
-      translation = new Vector3f(centerAndPoints[1][0]);
-      translation.sub(centerAndPoints[0][0]);
-      endDegrees = 0;
-    }
-    if (doRotate) {
-      if (q == null)
-        evalError("option not implemented", null);
-      pt1.set(centerAndPoints[0][0]);
-      pt1.add(q.getNormal());
-      endDegrees = q.getTheta();
-    }
-    if (Float.isNaN(endDegrees) || Float.isNaN(pt1.x))
-      return;
-    List<Point3f> ptsB = null;
-    if (doRotate && doTranslate && nSeconds != 0) {
-      List<Point3f> ptsA = viewer.getAtomPointVector(bsFrom);
-      Matrix4f m4 = ScriptMathProcessor.getMatrix4f(q.getMatrix(), translation);
-      ptsB = Measure.transformPoints(ptsA, m4, centerAndPoints[0][0]);
-    }
-    viewer.rotateAboutPointsInternal(centerAndPoints[0][0], pt1, endDegrees
-        / nSeconds, endDegrees, doAnimate, bsFrom, translation, ptsB);
   }
 
   float getSmilesCorrelation(BitSet bsA, BitSet bsB, String smiles,

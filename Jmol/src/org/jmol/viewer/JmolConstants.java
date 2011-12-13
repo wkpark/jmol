@@ -786,14 +786,16 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
    */
   public static boolean getAminoAcidValenceAndCharge(String res, String name,
                                                      int[] ret) {
-    if (res == null || res.length() == 0 || name.equals("CA")
+    if (res == null || res.length() == 0 || res.length() > 3 || name.equals("CA")
         || name.equals("CB"))
       return false;
     char ch0 = name.charAt(0);
     char ch1 = (name.length() == 1 ? 0 : name.charAt(1));
     boolean isSp2 = false;
     int bondCount = ret[3];
-    if (res.length() == 3) {
+    switch (res.length()) {
+    case 3:
+      // protein, but also carbohydrate?
       if (name.length() == 1) {
         switch (ch0) {
         case 'N':
@@ -819,8 +821,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
           ret[1] = -1;
         }
       }
-
-    } else if (name.length() > 1) {
+    case 1:
+    case 2:
       // dna/rna
       if (name.length() > 2 && name.charAt(2) == '\'')
         return false;
@@ -828,6 +830,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
       case 'C':
         if (ch1 == '7') // T CH3
           return false;
+        break;
       case 'N':
         switch (ch1) {
         case '1':

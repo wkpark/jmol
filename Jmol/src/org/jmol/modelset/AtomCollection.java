@@ -1455,8 +1455,8 @@ abstract public class AtomCollection {
     aaRet[1] = charge;
     aaRet[2] = 0;
     aaRet[3] = atom.getCovalentBondCount();
-    String s = (((ModelCollection) this).models[atom.modelIndex].isPdbWithMultipleBonds ? null
-        : atom.group.getGroup3());
+    Model model = ((ModelCollection) this).models[atom.modelIndex];
+    String s = (model.isBioModel && !model.isPdbWithMultipleBonds ? atom.group.getGroup3() : null);
     if (s != null && charge == 0) {
       if (JmolConstants.getAminoAcidValenceAndCharge(s, atom.getAtomName(),
           aaRet)) {

@@ -180,6 +180,12 @@ public class ImageCreator implements JmolImageCreatorInterface {
       if (image == null) {
         errMsg = viewer.getErrorMessage();
       } else {
+        Object ret = null;
+        boolean includeState = (asBytes && type.equals("PNGJ") || !asBytes
+            && appendText == null);
+        if (type.equals("PNGJ") && includeState)
+          ret = viewer.getWrappedState(true, true, image.getWidth(null), image
+              .getHeight(null));
         if (isOsTemp)
           os = new FileOutputStream(fileName);
         if (type.equals("JPEG") || type.equals("JPG")) {
@@ -190,12 +196,11 @@ public class ImageCreator implements JmolImageCreatorInterface {
                 quality, Viewer.getJmolVersion());
           } else {
             JpegEncoder.write(viewer.getApiPlatform(), image, quality, os,
-                (String) viewer.getWrappedState(true, false, image.getWidth(null), image
-                    .getHeight(null)));
+                (String) viewer.getWrappedState(true, false, image
+                    .getWidth(null), image.getHeight(null)));
             bytes = null;
           }
-        } else if (type.equals("JPG64")
-            || type.equals("JPEG64")) {
+        } else if (type.equals("JPG64") || type.equals("JPEG64")) {
           if (quality <= 0)
             quality = 75;
           bytes = JpegEncoder.getBytes(viewer.getApiPlatform(), image, quality,
@@ -211,20 +216,21 @@ public class ImageCreator implements JmolImageCreatorInterface {
             quality = 2;
           else if (quality > 9)
             quality = 9;
-          int bgcolor = (type.equals("PNGT") ? viewer
-              .getBackgroundArgb() : 0);
+          int bgcolor = (type.equals("PNGT") ? viewer.getBackgroundArgb() : 0);
           bytes = PngEncoder.getBytes(image, quality, bgcolor, type);
           byte[] b = null;
-          if (asBytes && type.equals("PNGJ") || !asBytes && appendText == null) {
+          if (includeState) {
             byte[] nbytes = ("" + bytes.length).getBytes();
             b = bytes;
             for (int i = nbytes.length, pt = 63; --i >= 0; --pt)
               b[pt] = nbytes[i];
-            Object ret = viewer.getWrappedState(true, type.equals("PNGJ"),
-                image.getWidth(null), image.getHeight(null));
-            bytes = (ret instanceof byte[] ? (byte[]) ret : ((String) ret).getBytes());
+            if (ret == null)
+              ret = viewer.getWrappedState(true, false, image.getWidth(null),
+                  image.getHeight(null));
+            bytes = (ret instanceof byte[] ? (byte[]) ret : ((String) ret)
+                .getBytes());
             nbytes = ("" + bytes.length).getBytes();
-            for (int i = nbytes.length, pt = 73; --i >= 0;--pt)
+            for (int i = nbytes.length, pt = 73; --i >= 0; --pt)
               b[pt] = nbytes[i];
           }
           if (!asBytes) {
@@ -233,11 +239,11 @@ public class ImageCreator implements JmolImageCreatorInterface {
             os.write(bytes);
             b = bytes = null;
           } else if (b != null) {
-           byte[] bt = new byte[b.length + bytes.length];
-           System.arraycopy(b, 0, bt, 0, b.length);
-           System.arraycopy(bytes, 0, bt, b.length, bytes.length);
-           bytes = bt;
-           b = bt = null;
+            byte[] bt = new byte[b.length + bytes.length];
+            System.arraycopy(b, 0, bt, 0, b.length);
+            System.arraycopy(bytes, 0, bt, b.length, bytes.length);
+            bytes = bt;
+            b = bt = null;
           }
         } else if (type.equals("PPM")) {
           if (asBytes) {

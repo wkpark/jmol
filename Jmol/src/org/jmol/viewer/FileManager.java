@@ -480,20 +480,19 @@ public class FileManager {
 
   public String getEmbeddedFileState(String fileName) {
     String[] dir = null;
-    try {
-      dir = getZipDirectory(fileName, false);
-      for (int i = 0; i < dir.length; i++)
-        if (dir[i].indexOf(".spt") >= 0) {
-          String[] data = new String[] { fileName + "|" + dir[i], null };
-          getFileDataOrErrorAsString(data, Integer.MAX_VALUE, false);
-          return data[1];
-        }
-      return "";
-    } catch (Exception e) {
+    dir = getZipDirectory(fileName, false);
+    if (dir.length == 0) {
       String state = viewer.getFileAsString(fileName);
       return (state.indexOf(JmolConstants.EMBEDDED_SCRIPT_TAG) < 0 ? ""
           : ScriptCompiler.getEmbeddedScript(state));
     }
+    for (int i = 0; i < dir.length; i++)
+      if (dir[i].indexOf(".spt") >= 0) {
+        String[] data = new String[] { fileName + "|" + dir[i], null };
+        getFileDataOrErrorAsString(data, Integer.MAX_VALUE, false);
+        return data[1];
+      }
+    return "";
   }
 
   Object getUnzippedBufferedReaderOrErrorMessageFromName(
@@ -584,6 +583,12 @@ public class FileManager {
     }
   }
 
+  /**
+   * 
+   * @param fileName
+   * @param addManifest
+   * @return  [] if not a zip file; 
+   */
   String[] getZipDirectory(String fileName, boolean addManifest) {
     return ZipUtil.getZipDirectoryAndClose(
         (BufferedInputStream) getBufferedInputStreamOrErrorMessageFromName(fileName, false,

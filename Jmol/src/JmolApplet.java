@@ -170,7 +170,7 @@ public class JmolApplet extends AppletWrapper implements
   }
 
   public void script(String script) {
-    System.out.println("JmolApplet script test " + script + " " + wrappedApplet);
+    //System.out.println("JmolApplet script test " + script + " " + wrappedApplet);
     if (wrappedApplet != null)
       wrappedApplet.script("" + script);
   }

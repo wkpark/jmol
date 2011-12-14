@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-11-26 14:53+0100\n"
-"PO-Revision-Date: 2011-08-18 17:13+0000\n"
+"PO-Revision-Date: 2011-12-12 08:33+0000\n"
 "Last-Translator: iychiang <iychiang1809@gmail.com>\n"
 "Language-Team: Traditional Chinese <zh_TW@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-18 18:20+0000\n"
-"X-Generator: Launchpad (build 13697)\n"
+"X-Launchpad-Export-Date: 2011-12-13 09:08+0000\n"
+"X-Generator: Launchpad (build 14458)\n"
 
 #: org/jmol/applet/AppletWrapper.java:100
 msgid "Loading Jmol applet ..."
@@ -357,11 +357,11 @@ msgstr "阿拉伯文"
 
 #: org/jmol/i18n/GT.java:140
 msgid "Asturian"
-msgstr ""
+msgstr "亞斯圖語"
 
 #: org/jmol/i18n/GT.java:141
 msgid "Bosnian"
-msgstr ""
+msgstr "波士尼亞語"
 
 #: org/jmol/i18n/GT.java:142
 msgid "Catalan"
@@ -416,14 +416,12 @@ msgid "French"
 msgstr "法文"
 
 #: org/jmol/i18n/GT.java:155
-#, fuzzy
 msgid "Frisian"
-msgstr "烏克蘭文"
+msgstr "夫里斯蘭語"
 
 #: org/jmol/i18n/GT.java:156
-#, fuzzy
 msgid "Galician"
-msgstr "義大利文"
+msgstr "加里斯亞語"
 
 #: org/jmol/i18n/GT.java:157
 msgid "Croatian"
@@ -435,7 +433,7 @@ msgstr "匈牙利文"
 
 #: org/jmol/i18n/GT.java:159
 msgid "Armenian"
-msgstr ""
+msgstr "亞美尼亞語"
 
 #: org/jmol/i18n/GT.java:160
 msgid "Indonesian"
@@ -458,9 +456,8 @@ msgid "Korean"
 msgstr "韓文"
 
 #: org/jmol/i18n/GT.java:165
-#, fuzzy
 msgid "Malay"
-msgstr "播放"
+msgstr "馬來語"
 
 #: org/jmol/i18n/GT.java:166
 msgid "Norwegian Bokmal"
@@ -508,7 +505,7 @@ msgstr "坦米爾語"
 
 #: org/jmol/i18n/GT.java:177
 msgid "Telugu"
-msgstr ""
+msgstr "泰盧固文"
 
 #: org/jmol/i18n/GT.java:178
 msgid "Turkish"
@@ -905,11 +902,10 @@ msgid "Right"
 msgstr "右邊"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:587
-#, fuzzy
 msgid ""
 "Top[as in \"view from the top, from above\" - (translators: remove this "
 "bracketed part]"
-msgstr "回到頂端"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:588
 msgid "Bottom"
@@ -2445,9 +2441,6 @@ msgstr "無法設定紀錄檔之路徑"
 msgid "Setting log file to {0}"
 msgstr "設定紀錄檔到 {0}"
 
-#~ msgid "Top"
-#~ msgstr "頂端"
-
 #~ msgid ""
 #~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
 #~ "{0}."
@@ -2464,6 +2457,9 @@ msgstr "設定紀錄檔到 {0}"
 
 #~ msgid "Molecular Orbitals"
 #~ msgstr "分子軌域"
+
+#~ msgid "Top"
+#~ msgstr "頂端"
 
 #~ msgid "File {0}"
 #~ msgstr "檔案 {0}"

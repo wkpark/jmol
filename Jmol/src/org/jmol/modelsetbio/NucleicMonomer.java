@@ -74,7 +74,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
    
   // negative values are optional
   final static byte[] interestingNucleicAtomIDs = {
-    ~JmolConstants.ATOMID_NUCLEIC_PHOSPHORUS,    //  the lead, POSSIBLY P, maybe H5T or O5T 
+    ~JmolConstants.ATOMID_NUCLEIC_PHOSPHORUS,    //  the lead, POSSIBLY P, maybe O5' or O5T 
     JmolConstants.ATOMID_C6,   // 1 the wing man, c6
 
     ~JmolConstants.ATOMID_O2_PRIME, // 2  O2' for RNA
@@ -166,8 +166,8 @@ public class NucleicMonomer extends PhosphorusMonomer {
           firstAtomIndex, lastAtomIndex, offsets);
     if (offsets[NP] == -1) {
       offsets[0] = offsets[O5Pr];
-//      if ((offsets[0] = offsets[O5Pr]) == -1)
-  //      offsets[0] = offsets[H5T]; // really we don't want to use H5T at all
+      // if ((offsets[0] = offsets[O5Pr]) == -1)
+      // offsets[0] = offsets[H5T]; // really we don't want to use H5T at all
       if (offsets[0] >= 0)
         leadAtomIndex = firstAtomIndex + (offsets[0] & 0xFF);
     }

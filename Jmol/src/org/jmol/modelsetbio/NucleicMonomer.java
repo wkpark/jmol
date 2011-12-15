@@ -165,8 +165,9 @@ public class NucleicMonomer extends PhosphorusMonomer {
     super(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex, offsets);
     if (offsets[NP] == -1) {
-      if ((offsets[0] = offsets[H5T]) == -1)
-        offsets[0] = offsets[O5Pr];
+      offsets[0] = offsets[O5Pr];
+//      if ((offsets[0] = offsets[O5Pr]) == -1)
+  //      offsets[0] = offsets[H5T]; // really we don't want to use H5T at all
       if (offsets[0] >= 0)
         leadAtomIndex = firstAtomIndex + (offsets[0] & 0xFF);
     }

@@ -1150,6 +1150,15 @@ abstract public class ModelCollection extends BondCollection {
     return qs;
   }
 
+  /**
+   * PDB or PQR only
+   * 
+   * @param bs
+   *        selected atoms
+   * @param sb
+   *        StringBuffer or BufferedWriter
+   * @return PDB file data string
+   */
   public String getPdbAtomData(BitSet bs, OutputStringBuffer sb) {
     if (atomCount == 0)
       return "";
@@ -1173,6 +1182,8 @@ abstract public class ModelCollection extends BondCollection {
                   + " e\nREMARK   6\n");
     }
     boolean showModels = (iModel != atoms[atomCount - 1].modelIndex);
+    StringBuffer sbCONECT = (showModels ? null : new StringBuffer());
+    boolean isMultipleBondPDB = models[iModel].isPdbWithMultipleBonds;
     LabelToken[] t4x = null;
     LabelToken[] t3x = null;
     LabelToken[] t4h = null;
@@ -1191,14 +1202,16 @@ abstract public class ModelCollection extends BondCollection {
       String sa = a.getAtomName();
       boolean leftJustify = (a.getElementSymbol().length() == 2
           || sa.length() >= 4 || Character.isDigit(sa.charAt(0)));
-      if (!models[a.modelIndex].isBioModel)
+      boolean isBiomodel = models[a.modelIndex].isBioModel;
+      boolean isHetero = a.isHetero();
+      if (!isBiomodel)
         tokens = (leftJustify ? (t4x == null ? LabelToken.compile(viewer,
             "HETATM%5.-5i %-4.4a%1AUNK %1c   1%1E   %8.3x%8.3y%8.3z" + occTemp,
             '\0', null) : t4x) : (t3x == null ? LabelToken
             .compile(viewer,
                 "HETATM%5.-5i  %-3.3a%1AUNK %1c   1%1E   %8.3x%8.3y%8.3z"
                     + occTemp, '\0', null) : t3x));
-      else if (a.isHetero())
+      else if (isHetero)
         tokens = (leftJustify ? (t4h == null ? LabelToken.compile(viewer,
             "HETATM%5.-5i %-4.4a%1A%3.-3n %1c%4.-4R%1E   %8.3x%8.3y%8.3z"
                 + occTemp, '\0', null) : t4h) : (t3h == null ? LabelToken
@@ -1215,9 +1228,38 @@ abstract public class ModelCollection extends BondCollection {
       String XX = a.getElementSymbol(false).toUpperCase();
       sb.append(LabelToken.formatLabel(viewer, a, tokens, '\0', null)).append(
           XX.length() == 1 ? " " + XX : XX.substring(0, 2)).append("  \n");
+      if (!showModels && (!isBiomodel || isHetero || isMultipleBondPDB)) {
+        Bond[] bonds = a.getBonds();
+        if (bonds != null)
+          for (int j = 0; j < bonds.length; j++) {
+            int iThis = a.getAtomNumber();
+            Atom a2 = bonds[j].getOtherAtom(a);
+            if (!bs.get(a2.index))
+              continue;
+            int n = bonds[j].getCovalentOrder();
+            if (n == 1 && isMultipleBondPDB && !isHetero)
+              continue;
+            int iOther = a2.getAtomNumber();
+            switch (n) {
+            case 2:
+            case 3:
+              if (iOther < iThis)
+                continue; // only one entry in this case -- pseudo-PDB style
+            case 1:
+              sbCONECT.append("CONECT").append(
+                  TextFormat.formatString("%5i", "i", iThis));
+              for (int k = 0; k < n; k++)
+                sbCONECT.append(TextFormat.formatString("%5i", "i", iOther));
+              sbCONECT.append('\n');
+              break;
+            }
+          }
+      }
     }
     if (showModels)
       sb.append("ENDMDL\n");
+    else
+      sb.append(sbCONECT.toString());
     return sb.toString();
   }
 

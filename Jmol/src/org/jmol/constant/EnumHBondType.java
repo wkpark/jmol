@@ -26,6 +26,7 @@
 package org.jmol.constant;
 
 import org.jmol.modelset.Atom;
+import org.jmol.modelset.Bond;
 import org.jmol.modelset.Group;
 import org.jmol.viewer.JmolConstants;
 
@@ -45,7 +46,10 @@ public enum EnumHBondType {
     case 1:
       if (atom.getCovalentBondCount() == 0)
         return DONOR;
-      switch (atom.getBonds()[0].getOtherAtom(atom).getElementNumber()) {
+      Bond[] bonds = atom.getBonds();
+      if (bonds == null)
+        return NOT;
+      switch (bonds[0].getOtherAtom(atom).getElementNumber()) {
       case 7:
       case 8:
       case 16:

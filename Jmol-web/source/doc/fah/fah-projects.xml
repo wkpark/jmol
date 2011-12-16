@@ -9312,6 +9312,14 @@
     server="128.113.12.163" atoms="93636" preferred="9" deadline="19"
     credit="487.0" frames="100" code="A4" contact="jimenc@rpi.edu" kfactor="0.58"/>
 
+  <!-- Projects 8000 to 8099 -->
+  <fah_proj number="8001" name="p8001" public="y" file="xyz"
+    server="171.67.108.58" atoms="21376" preferred="1.64" deadline="3.54"
+    credit="88.59" frames="100" code="A4" contact="shukla" kfactor="3.0" contrib="Wylko Zillmer"/>
+  <fah_proj number="8004" name="p8004" public="y" file="xyz"
+    server="171.67.108.59" atoms="21376" preferred="1.64" deadline="3.54"
+    credit="88.59" frames="100" code="A4" contact="shukla" kfactor="3.0" contrib="Wylko Zillmer"/>
+
   <!-- Projects 9900 to 9999 -->
   <fah_proj number="9900" name="p9900_supervillin_e1" public="y"
     server="171.64.122.137" atoms="576" preferred="2" deadline="3"
@@ -10091,6 +10099,9 @@
   <fah_proj number="10722" name="p10722" public="y" file="xyz"
     server="171.67.108.42" atoms="12098" preferred="32" deadline="56"
     credit="2244.0" frames="100" code="A4" contact="dvanatta" kfactor="0.75" contrib="Danny Nielsen"/>
+  <fah_proj number="10731" name="p10731" public="n"
+    server="171.67.108.42" atoms="3442" preferred="16" deadline="24"
+    credit="984.0" frames="100" code="A4" contact="dvanatta" kfactor="0.75"/>
 
   <!-- Projects 10800 to 10899 -->
   <fah_proj number="10820" name="Abeta42_monomer" public="n"
@@ -10520,6 +10531,9 @@
   <fah_proj number="11070" name="p11070" public="n"
     server="171.64.65.55" atoms="25192" preferred="8" deadline="12"
     credit="443.0" frames="100" code="A3" contact="dvanatta" kfactor="0.75"/>
+  <fah_proj number="11071" name="p11071" public="n"
+    server="171.64.65.55" atoms="29884" preferred="8" deadline="12"
+    credit="480.0" frames="100" code="A3" contact="dvanatta" kfactor="0.75"/>
 
   <!-- Projects 11100 to 11199 -->
   <fah_proj number="11101" name="Fs_96" public="y"

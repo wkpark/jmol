@@ -108,7 +108,12 @@ public class ZipUtil {
       data = new byte[n];
       while (pt > 0)
         pt -= bis.skip(pt);
-      bis.read(data);
+      n = data.length;
+      pt = 0;
+      while (pt < n) {
+         pt += bis.read(data, pt, n - pt);
+         //System.out.println("ziputil " + pt);
+      }
       bis.close();
     } catch (Throwable e) {
       data = new byte[0];

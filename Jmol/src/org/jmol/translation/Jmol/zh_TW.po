@@ -14,18 +14,16 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-18 18:20+0000\n"
-"X-Generator: Launchpad (build 13697)\n"
+"X-Launchpad-Export-Date: 2011-12-18 14:49+0000\n"
+"X-Generator: Launchpad (build 14525)\n"
 
 #: com/json/Cookie.java:121
-#, fuzzy
 msgid "name"
-msgstr "名稱(&N)"
+msgstr ""
 
 #: com/json/Cookie.java:123
-#, fuzzy
 msgid "value"
-msgstr "數值"
+msgstr ""
 
 #: com/json/Cookie.java:126
 msgid "expires"
@@ -36,27 +34,24 @@ msgid "domain"
 msgstr ""
 
 #: com/json/Cookie.java:134
-#, fuzzy
 msgid "path"
-msgstr "重覆"
+msgstr ""
 
 #: com/json/HTTP.java:132 com/json/HTTP.java:144
 msgid "HTTP-Version"
 msgstr ""
 
 #: com/json/HTTP.java:134
-#, fuzzy
 msgid "Status-Code"
-msgstr "狀態"
+msgstr ""
 
 #: com/json/HTTP.java:136
 msgid "Reason-Phrase"
 msgstr ""
 
 #: com/json/HTTP.java:138
-#, fuzzy
 msgid "Method"
-msgstr "方法: "
+msgstr ""
 
 #: com/json/HTTP.java:141
 msgid "Request-URI"
@@ -1354,9 +1349,8 @@ msgid "What's New in Jmol"
 msgstr "Jmol的新功能"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:415
-#, fuzzy
 msgid "magic"
-msgstr "基礎"
+msgstr ""
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:416
 msgid "role"
@@ -1870,378 +1864,6 @@ msgstr "下載觀看"
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr "未實作的"
-
-#, fuzzy
-#~ msgid "All"
-#~ msgstr "全部(&A)"
-
-#, fuzzy
-#~ msgid "System"
-#~ msgstr "步進"
-
-#, fuzzy
-#~ msgid "Configurations"
-#~ msgstr "動畫"
-
-#, fuzzy
-#~ msgid "Element"
-#~ msgstr "未實作的"
-
-#, fuzzy
-#~ msgid "Select ({0})"
-#~ msgstr "刻度 {0}"
-
-#, fuzzy
-#~ msgid "chains: {0}"
-#~ msgstr "正在產生{0}"
-
-#, fuzzy
-#~ msgid "View {0}"
-#~ msgstr "檢視(&V)"
-
-#, fuzzy
-#~ msgid "Biomolecules"
-#~ msgstr "旋轉分子"
-
-#, fuzzy
-#~ msgid "None"
-#~ msgstr "無(&N)"
-
-#, fuzzy
-#~ msgid "Display Selected Only"
-#~ msgstr "刪除所選的"
-
-#, fuzzy
-#~ msgid "Invert Selection"
-#~ msgstr "選擇: "
-
-#, fuzzy
-#~ msgid "View"
-#~ msgstr "檢視(&V)"
-
-#, fuzzy
-#~ msgid "Front"
-#~ msgstr "前端(&F)"
-
-#, fuzzy
-#~ msgid "Left"
-#~ msgstr "左端(&R)"
-
-#, fuzzy
-#~ msgid "Right"
-#~ msgstr "右端(&R)"
-
-#, fuzzy
-#~ msgid "Bottom"
-#~ msgstr "底端(&B)"
-
-#, fuzzy
-#~ msgid "Back"
-#~ msgstr "基礎"
-
-#, fuzzy
-#~ msgid "Bases"
-#~ msgstr "暫停"
-
-#, fuzzy
-#~ msgid "All Water"
-#~ msgstr "水"
-
-#, fuzzy
-#~ msgid "Style"
-#~ msgstr "步進"
-
-#, fuzzy
-#~ msgid "Wireframe"
-#~ msgstr "線框 (&W)"
-
-#, fuzzy
-#~ msgid "Cartoon"
-#~ msgstr "碳"
-
-#, fuzzy
-#~ msgid "On"
-#~ msgstr "於(&O)"
-
-#, fuzzy
-#~ msgid "Hydrogen Bonds"
-#~ msgstr "氫"
-
-#, fuzzy
-#~ msgid "Cartoon Rockets"
-#~ msgstr "此頁的卡通漫畫"
-
-#, fuzzy
-#~ msgid "Vibration"
-#~ msgstr "動畫"
-
-#, fuzzy
-#~ msgid "Vectors"
-#~ msgstr "向量(&e)"
-
-#, fuzzy
-#~ msgid "Red+Green glasses"
-#~ msgstr "紅/綠"
-
-#, fuzzy
-#~ msgid "Labels"
-#~ msgstr "標籤"
-
-#, fuzzy
-#~ msgid "Centered"
-#~ msgstr "置中(&C)"
-
-#, fuzzy
-#~ msgid "Upper Right"
-#~ msgstr "右上(&U)"
-
-#, fuzzy
-#~ msgid "Lower Right"
-#~ msgstr "右上(&U)"
-
-#, fuzzy
-#~ msgid "Upper Left"
-#~ msgstr "右上(&U)"
-
-#, fuzzy
-#~ msgid "Color"
-#~ msgstr "關閉"
-
-#, fuzzy
-#~ msgid "Formal Charge"
-#~ msgstr "總電荷: "
-
-#, fuzzy
-#~ msgid "Partial Charge"
-#~ msgstr "總電荷: "
-
-#, fuzzy
-#~ msgid "Amino Acid"
-#~ msgstr "胺基"
-
-#, fuzzy
-#~ msgid "Black"
-#~ msgstr "基礎"
-
-#, fuzzy
-#~ msgid "White"
-#~ msgstr "水"
-
-#, fuzzy
-#~ msgid "Cyan"
-#~ msgstr "紅/靛"
-
-#, fuzzy
-#~ msgid "Red"
-#~ msgstr "取消復原"
-
-#, fuzzy
-#~ msgid "Green"
-#~ msgstr "紅/綠"
-
-#, fuzzy
-#~ msgid "Blue"
-#~ msgstr "數值"
-
-#, fuzzy
-#~ msgid "Indigo"
-#~ msgstr "訊息"
-
-#, fuzzy
-#~ msgid "Maroon"
-#~ msgstr "碳"
-
-#, fuzzy
-#~ msgid "Background"
-#~ msgstr "背景顏色"
-
-#, fuzzy
-#~ msgid "Boundbox"
-#~ msgstr "邊界方塊"
-
-#, fuzzy
-#~ msgid "Zoom"
-#~ msgstr "縮放(&Z)"
-
-#, fuzzy
-#~ msgid "Zoom In"
-#~ msgstr "縮放(&Z)"
-
-#, fuzzy
-#~ msgid "Zoom Out"
-#~ msgstr "縮放(&Z)"
-
-#, fuzzy
-#~ msgid "Spin"
-#~ msgstr "開啟旋轉"
-
-#, fuzzy
-#~ msgid "Set X Rate"
-#~ msgstr "狀態"
-
-#, fuzzy
-#~ msgid "Set Y Rate"
-#~ msgstr "狀態"
-
-#, fuzzy
-#~ msgid "Set Z Rate"
-#~ msgstr "狀態"
-
-#, fuzzy
-#~ msgid "Set FPS"
-#~ msgstr "每秒張數 FPS"
-
-#, fuzzy
-#~ msgid "Animation Mode"
-#~ msgstr "動畫"
-
-#, fuzzy
-#~ msgid "Resume"
-#~ msgstr "調整大小(&Z)"
-
-#, fuzzy
-#~ msgid "Stop"
-#~ msgstr "步進"
-
-#, fuzzy
-#~ msgid "Rewind"
-#~ msgstr "取消復原"
-
-#, fuzzy
-#~ msgid "Restart"
-#~ msgstr "重覆"
-
-#, fuzzy
-#~ msgid "Delete measurements"
-#~ msgstr "測量"
-
-#, fuzzy
-#~ msgid "List measurements"
-#~ msgstr "測量"
-
-#, fuzzy
-#~ msgid "Distance units nanometers"
-#~ msgstr "距離的單位(&U)"
-
-#, fuzzy
-#~ msgid "Distance units Angstroms"
-#~ msgstr "距離的單位(&U)"
-
-#, fuzzy
-#~ msgid "Distance units picometers"
-#~ msgstr "距離的單位(&U)"
-
-#, fuzzy
-#~ msgid "Center"
-#~ msgstr "置中(&C)"
-
-#, fuzzy
-#~ msgid "Label"
-#~ msgstr "標籤"
-
-#, fuzzy
-#~ msgid "Select atom"
-#~ msgstr "刪除原子"
-
-#, fuzzy
-#~ msgid "Select chain"
-#~ msgstr "選擇: "
-
-#, fuzzy
-#~ msgid "Select element"
-#~ msgstr "全選(&A)"
-
-#, fuzzy
-#~ msgid "Select group"
-#~ msgstr "選擇"
-
-#, fuzzy
-#~ msgid "Select molecule"
-#~ msgstr "全選(&A)"
-
-#, fuzzy
-#~ msgid "Select site"
-#~ msgstr "選擇"
-
-#, fuzzy
-#~ msgid "Show"
-#~ msgstr "全部顯示"
-
-#, fuzzy
-#~ msgid "Console"
-#~ msgstr "控制台"
-
-#, fuzzy
-#~ msgid "File Header"
-#~ msgstr "檔名："
-
-#, fuzzy
-#~ msgid "Model"
-#~ msgstr "模式:"
-
-#, fuzzy
-#~ msgid "Orientation"
-#~ msgstr "動畫"
-
-#, fuzzy
-#~ msgid "File"
-#~ msgstr "檔案(&F)"
-
-#, fuzzy
-#~ msgid "Reload"
-#~ msgstr "重新載入 (&R)"
-
-#, fuzzy
-#~ msgid "Open file or URL"
-#~ msgstr "開啟網址(URL)"
-
-#, fuzzy
-#~ msgid "Open script"
-#~ msgstr "拷貝指令稿"
-
-#, fuzzy
-#~ msgid "Export {0} image"
-#~ msgstr "匯出圖像(&I)"
-
-#, fuzzy
-#~ msgid "Computation"
-#~ msgstr "計算化學鍵"
-
-#, fuzzy
-#~ msgid "van der Waals Surface"
-#~ msgstr "{0}% 凡得瓦力"
-
-#, fuzzy
-#~ msgid "Molecular Surface"
-#~ msgstr "分子特性"
-
-#, fuzzy
-#~ msgid "Reload {0}"
-#~ msgstr "重新載入 (&R)"
-
-#, fuzzy
-#~ msgid "{0} px"
-#~ msgstr "{0} 像素"
-
-#, fuzzy
-#~ msgid "Angstrom Width"
-#~ msgstr "(埃)"
-
-#, fuzzy
-#~ msgid "Selection Halos"
-#~ msgstr "選擇: "
-
-#, fuzzy
-#~ msgid "Show Hydrogens"
-#~ msgstr "氫"
-
-#, fuzzy
-#~ msgid "Show Measurements"
-#~ msgstr "測量"
-
-#, fuzzy
-#~ msgid "RasMol Colors"
-#~ msgstr "RasMol預設值"
 
 #~ msgid ""
 #~ "Could not find or open:\n"

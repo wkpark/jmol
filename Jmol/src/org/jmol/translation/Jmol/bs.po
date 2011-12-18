@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-05 17:04+0000\n"
-"X-Generator: Launchpad (build 13613)\n"
+"X-Launchpad-Export-Date: 2011-12-18 14:49+0000\n"
+"X-Generator: Launchpad (build 14525)\n"
 
 #: com/json/Cookie.java:121
 msgid "name"
@@ -34,9 +34,8 @@ msgid "domain"
 msgstr ""
 
 #: com/json/Cookie.java:134
-#, fuzzy
 msgid "path"
-msgstr "Ponovi"
+msgstr ""
 
 #: com/json/HTTP.java:132 com/json/HTTP.java:144
 msgid "HTTP-Version"
@@ -1858,63 +1857,3 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr ""
-
-#, fuzzy
-#~ msgid "System"
-#~ msgstr "Korak"
-
-#, fuzzy
-#~ msgid "Select ({0})"
-#~ msgstr "Odaberi"
-
-#, fuzzy
-#~ msgid "Style"
-#~ msgstr "Korak"
-
-#, fuzzy
-#~ msgid "Vectors"
-#~ msgstr "Vektor"
-
-#, fuzzy
-#~ msgid "Color"
-#~ msgstr "Zatvori"
-
-#, fuzzy
-#~ msgid "Indigo"
-#~ msgstr "Informacije"
-
-#, fuzzy
-#~ msgid "Set FPS"
-#~ msgstr "FPS"
-
-#, fuzzy
-#~ msgid "Stop"
-#~ msgstr "Korak"
-
-#, fuzzy
-#~ msgid "Restart"
-#~ msgstr "Ponovi"
-
-#, fuzzy
-#~ msgid "Select atom"
-#~ msgstr "Odaberi"
-
-#, fuzzy
-#~ msgid "Select chain"
-#~ msgstr "Odaberi"
-
-#, fuzzy
-#~ msgid "Select element"
-#~ msgstr "Odaberi"
-
-#, fuzzy
-#~ msgid "Select group"
-#~ msgstr "Odaberi"
-
-#, fuzzy
-#~ msgid "Select site"
-#~ msgstr "Odaberi"
-
-#, fuzzy
-#~ msgid "Console"
-#~ msgstr "Zatvori"

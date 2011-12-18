@@ -15,8 +15,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-05 17:04+0000\n"
-"X-Generator: Launchpad (build 13613)\n"
+"X-Launchpad-Export-Date: 2011-12-18 14:49+0000\n"
+"X-Generator: Launchpad (build 14525)\n"
 "X-Poedit-Country: CZECH REPUBLIC\n"
 "X-Poedit-Language: Czech\n"
 
@@ -421,14 +421,12 @@ msgid "French"
 msgstr "Francouzština"
 
 #: org/jmol/i18n/GT.java:155
-#, fuzzy
 msgid "Frisian"
-msgstr "Ukrajinština"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:156
-#, fuzzy
 msgid "Galician"
-msgstr "Italština"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:157
 msgid "Croatian"
@@ -463,9 +461,8 @@ msgid "Korean"
 msgstr "Korejština"
 
 #: org/jmol/i18n/GT.java:165
-#, fuzzy
 msgid "Malay"
-msgstr "Přehrát"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:166
 msgid "Norwegian Bokmal"
@@ -910,11 +907,10 @@ msgid "Right"
 msgstr "Zprava"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:587
-#, fuzzy
 msgid ""
 "Top[as in \"view from the top, from above\" - (translators: remove this "
 "bracketed part]"
-msgstr "Nahoru"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:588
 msgid "Bottom"
@@ -2461,14 +2457,14 @@ msgstr "Nemohu nastavit cestu k log souboru."
 msgid "Setting log file to {0}"
 msgstr "Nastavuji log soubor na {0}"
 
-#~ msgid "Top"
-#~ msgstr "Shora"
-
 #~ msgid "Java memory usage"
 #~ msgstr "Využití Java  paměti"
 
 #~ msgid "Molecular Orbitals"
 #~ msgstr "Molekulární orbitaly"
+
+#~ msgid "Top"
+#~ msgstr "Shora"
 
 #~ msgid "About Jmol"
 #~ msgstr "O programu Jmol"

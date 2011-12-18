@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-10-24 05:01+0200\n"
-"PO-Revision-Date: 2011-12-16 00:26+0900\n"
-"Last-Translator: Rubia <akane3@katakago.sakura.ne.jp>\n"
+"PO-Revision-Date: 2011-02-25 02:03+0000\n"
+"Last-Translator: biochem_fan <Unknown>\n"
 "Language-Team: Japanese <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-05 17:04+0000\n"
-"X-Generator: Launchpad (build 13613)\n"
-"X-Poedit-Language: Japanese\n"
+"X-Launchpad-Export-Date: 2011-12-18 14:49+0000\n"
+"X-Generator: Launchpad (build 14525)\n"
 "X-Poedit-Country: Japan\n"
+"X-Poedit-Language: Japanese\n"
 
 #: com/json/Cookie.java:121
 msgid "name"
@@ -39,15 +39,13 @@ msgstr "ドメイン"
 msgid "path"
 msgstr "パス"
 
-#: com/json/HTTP.java:132
-#: com/json/HTTP.java:144
+#: com/json/HTTP.java:132 com/json/HTTP.java:144
 msgid "HTTP-Version"
 msgstr "HTTP-バージョン"
 
 #: com/json/HTTP.java:134
-#, fuzzy
 msgid "Status-Code"
-msgstr "状況"
+msgstr ""
 
 #: com/json/HTTP.java:136
 msgid "Reason-Phrase"
@@ -110,9 +108,8 @@ msgid "no console -- all output to sysout"
 msgstr "コンソールなし -- 出力はすべてsysoutに"
 
 #: org/openscience/jmol/app/JmolApp.java:163
-#, fuzzy
 msgid "send only output from print messages to console (implies -i)"
-msgstr "出力メッセージのうち結果だけをコンソールに送る（-i を意味する）"
+msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:165
 msgid "independent command thread"
@@ -156,8 +153,12 @@ msgid "window width x height, e.g. {0}"
 msgstr "ウインドウサイズ 幅×高さ, 例 {0}"
 
 #: org/openscience/jmol/app/JmolApp.java:223
-msgid "JPG image quality (1-100; default 75) or PNG image compression (0-9; default 2, maximum compression 9)"
-msgstr "JPG画像品質（1～100；デフォルト 75） or ＰＮＧ画像圧縮率（0～9；デフォルト 2）"
+msgid ""
+"JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
+"2, maximum compression 9)"
+msgstr ""
+"JPG画像品質（1～100；デフォルト 75） or ＰＮＧ画像圧縮率（0～9；デフォルト "
+"2）"
 
 #: org/openscience/jmol/app/JmolApp.java:228
 #, java-format
@@ -169,8 +170,12 @@ msgid "For example:"
 msgstr "例："
 
 #: org/openscience/jmol/app/JmolApp.java:248
-msgid "The -D options are as follows (defaults in parenthesis) and must be called preceding '-jar Jmol.jar':"
-msgstr "- Dオプションは次のとおり（括弧内はデフォルト）で、'- jar Jmol.jar'の前に呼び出す必要があります。"
+msgid ""
+"The -D options are as follows (defaults in parenthesis) and must be called "
+"preceding '-jar Jmol.jar':"
+msgstr ""
+"- Dオプションは次のとおり（括弧内はデフォルト）で、'- jar Jmol.jar'の前に呼び"
+"出す必要があります。"
 
 #: org/openscience/jmol/app/JmolApp.java:502
 msgid "Executing script 1..."
@@ -412,7 +417,7 @@ msgstr "基底関数: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:269
 msgid "Density Fitting Basis Set (DFT Only): "
-msgstr "密度フィッティング基底関数系（DFTのみ）："
+msgstr "密度フィッティング基底関数系（DFTのみ）： "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:275
 msgid "Job Options: "
@@ -432,7 +437,7 @@ msgstr "多重度: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:308
 msgid "Selection: "
-msgstr "選択："
+msgstr "選択： "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:343
 msgid "Gaussian Input File Name"
@@ -667,7 +672,7 @@ msgstr "原子(&A)"
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:113
 #, java-format
 msgid "{0}% van der Waals"
-msgstr "van der Waals半径の {0}% "
+msgstr "van der Waals半径の {0}%"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:114
 msgid "&Bond"
@@ -990,7 +995,7 @@ msgstr "分子を回転させる"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:211
 msgid "Select a set of atoms using SHIFT-LEFT-DRAG."
-msgstr " SHIFTキーを押しながらドラッグして原子セットを選択する"
+msgstr "SHIFTキーを押しながらドラッグして原子セットを選択する"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:213
 msgid "Click atoms to measure distances"
@@ -1129,8 +1134,10 @@ msgid "File Name:"
 msgstr "ファイル名："
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:159
-msgid "'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
-msgstr "'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
+msgid ""
+"'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
+msgstr ""
+"'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:169
 msgid "Working Directory"
@@ -1179,7 +1186,7 @@ msgstr "画像の高さ"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:304
 msgid "Fixed ratio : "
-msgstr "固定比率："
+msgstr "固定比率： "
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:306
 msgid "Use a fixed ratio for width:height"
@@ -1227,7 +1234,7 @@ msgstr "複数のパスで画像をレンダリング"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:411
 msgid "Start size : "
-msgstr "開始サイズ"
+msgstr "開始サイズ "
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:413
 msgid "Initial size of the tiles"
@@ -1235,7 +1242,7 @@ msgstr "タイルの初期サイズ"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:429
 msgid "End size : "
-msgstr "終了サイズ"
+msgstr "終了サイズ "
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:431
 msgid "Final size of the tiles"
@@ -1550,9 +1557,8 @@ msgid "Introduction"
 msgstr "紹介"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:135
-#, fuzzy
 msgid "Pop-In Jmol"
-msgstr "Jmol ポップイン"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebExport.java:136
 msgid "ScriptButton Jmol"
@@ -1564,13 +1570,21 @@ msgstr "ログ"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:168
 #, java-format
-msgid "Page skeleton and JavaScript generated by export to web function using {0} on {1}."
-msgstr "{1}で{0}を使用してWebの関数にエクスポートして生成されたページの骨格とJavaScript"
+msgid ""
+"Page skeleton and JavaScript generated by export to web function using {0} "
+"on {1}."
+msgstr ""
+"{1}で{0}を使用してWebの関数にエクスポートして生成されたページの骨格と"
+"JavaScript"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:364
 #, java-format
-msgid "To get a 3-D model you can manipulate, click {0}here{1}. Download time may be significant the first time the applet is loaded."
-msgstr "操作可能な3次元モデルを取得するには、ここ{1}の{0}をクリックしてください。アプレットが最初にロードされる際はダウンロード時間が長くかかることがあります。"
+msgid ""
+"To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
+"be significant the first time the applet is loaded."
+msgstr ""
+"操作可能な3次元モデルを取得するには、ここ{1}の{0}をクリックしてください。アプ"
+"レットが最初にロードされる際はダウンロード時間が長くかかることがあります。"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:366
 msgid "Insert the page TITLE here."
@@ -1587,8 +1601,12 @@ msgstr "ここに {0} へのキャプションを挿入してください。"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:370
 #, java-format
-msgid "Insert additional explanatory text here. Long text will wrap around Jmol model {0}."
-msgstr "ここに補足説明テキストを挿入してください。長いテキストはJmolのモデル{0}の周りで折り返されます。"
+msgid ""
+"Insert additional explanatory text here. Long text will wrap around Jmol "
+"model {0}."
+msgstr ""
+"ここに補足説明テキストを挿入してください。長いテキストはJmolのモデル{0}の周り"
+"で折り返されます。"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:372
 msgid "Insert your TITLE and INTRODUCTION here."
@@ -1596,8 +1614,12 @@ msgstr "ここにタイトルと紹介を挿入してください。"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:374
 #, java-format
-msgid "The button {0} will appear in the box below.  Insert information for {0} here and below."
-msgstr "ボタン{0}が下のボックスに表示されます。 {0}の情報をここから下に挿入してください。"
+msgid ""
+"The button {0} will appear in the box below.  Insert information for {0} "
+"here and below."
+msgstr ""
+"ボタン{0}が下のボックスに表示されます。 {0}の情報をここから下に挿入してくださ"
+"い。"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:375
 #, java-format
@@ -1634,9 +1656,8 @@ msgstr "ヘルプ/説明"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:338
 #: org/openscience/jmol/app/webexport/WebPanel.java:346
-#, fuzzy
 msgid "Cartoon of Page"
-msgstr "ページのカートゥーン"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:352
 msgid "Save HTML as..."
@@ -1659,13 +1680,13 @@ msgid "Browser window title for this web page:"
 msgstr "ブラウザで表示されるこのWebページのタイトル："
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:467
-#, fuzzy
 msgid "Give the occurrence of Jmol a name:"
-msgstr "Jmolの出現に名前をつけてください"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:483
 msgid "Error creating new instance containing script(s) and image."
-msgstr "スクリプトとイメージを含む新しいインスタンスを作成中にエラーが発生しました。"
+msgstr ""
+"スクリプトとイメージを含む新しいインスタンスを作成中にエラーが発生しました。"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:494
 #, java-format
@@ -1692,7 +1713,8 @@ msgstr "ファイル書き込み機能の呼び出しが失敗しました"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:560
 msgid "Errors occurred during web page creation.  See Log Tab!"
-msgstr "Webページの作成中にエラーが発生しました。ログのタブを参照してください！"
+msgstr ""
+"Webページの作成中にエラーが発生しました。ログのタブを参照してください！"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:635
 #, java-format
@@ -1714,9 +1736,8 @@ msgid "Unable to load resource {0}"
 msgstr "リソース {0} を読み込めません"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:750
-#, fuzzy
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
-msgstr " J. Gutowにより修正されたA. Herr&#x00E1;ez によるテンプレートに基づいて"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:753
 #, java-format
@@ -1728,11 +1749,13 @@ msgstr "{0}を作成しています"
 msgid ""
 "Could not find or open:\n"
 "{0}\n"
-"Please check that you are using a Jmol.jar that is part of a full Jmol distribution."
+"Please check that you are using a Jmol.jar that is part of a full Jmol "
+"distribution."
 msgstr ""
 "{0}\n"
 "を見つけたり開くことができませんでした。\n"
-"Jmolの完全なディストリビューションに含まれるJmol.jarを使用していることを確認してください。"
+"Jmolの完全なディストリビューションに含まれるJmol.jarを使用していることを確認"
+"してください。"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:794
 #, java-format
@@ -1747,7 +1770,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:801
 msgid "compressing large data file to"
-msgstr "大きなデータファイルを圧縮しています　"
+msgstr "大きなデータファイルを圧縮しています"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:62
 msgid "Spin on/off"
@@ -1860,258 +1883,6 @@ msgstr "ビューをダウンロード"
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr "未実装"
-
-#, fuzzy
-#~ msgid "All"
-#~ msgstr "すべて(&A)"
-
-#, fuzzy
-#~ msgid "System"
-#~ msgstr "ステップ"
-
-#, fuzzy
-#~ msgid "Select ({0})"
-#~ msgstr "選択(&S)"
-
-#, fuzzy
-#~ msgid "View {0}"
-#~ msgstr "表示(&V)"
-
-#, fuzzy
-#~ msgid "None"
-#~ msgstr "なし(&N)"
-
-#, fuzzy
-#~ msgid "View"
-#~ msgstr "表示(&V)"
-
-#, fuzzy
-#~ msgid "Front"
-#~ msgstr "前(&F)"
-
-#, fuzzy
-#~ msgid "Left"
-#~ msgstr "左(&L)"
-
-#, fuzzy
-#~ msgid "Right"
-#~ msgstr "右(&R)"
-
-#, fuzzy
-#~ msgid "Bottom"
-#~ msgstr "下(&B)"
-
-#, fuzzy
-#~ msgid "All Water"
-#~ msgstr "水"
-
-#, fuzzy
-#~ msgid "Style"
-#~ msgstr "ステップ"
-
-#, fuzzy
-#~ msgid "Wireframe"
-#~ msgstr "ワイヤフレーム(&W)"
-
-#, fuzzy
-#~ msgid "Cartoon"
-#~ msgstr "炭素"
-
-#, fuzzy
-#~ msgid "Hydrogen Bonds"
-#~ msgstr "水素(&H)"
-
-#, fuzzy
-#~ msgid "Vibration"
-#~ msgstr "振動...(&V)"
-
-#, fuzzy
-#~ msgid "Vectors"
-#~ msgstr "ベクトル(&E)"
-
-#, fuzzy
-#~ msgid "Labels"
-#~ msgstr "ラベル(&L)"
-
-#, fuzzy
-#~ msgid "Color"
-#~ msgstr "閉じる"
-
-#, fuzzy
-#~ msgid "Formal Charge"
-#~ msgstr "全電荷: "
-
-#, fuzzy
-#~ msgid "Partial Charge"
-#~ msgstr "全電荷: "
-
-#, fuzzy
-#~ msgid "Amino Acid"
-#~ msgstr "アミノ酸"
-
-#, fuzzy
-#~ msgid "White"
-#~ msgstr "水"
-
-#, fuzzy
-#~ msgid "Cyan"
-#~ msgstr "炭素"
-
-#, fuzzy
-#~ msgid "Red"
-#~ msgstr "やり直し"
-
-#, fuzzy
-#~ msgid "Indigo"
-#~ msgstr "元に戻す"
-
-#, fuzzy
-#~ msgid "Maroon"
-#~ msgstr "炭素"
-
-#, fuzzy
-#~ msgid "Boundbox"
-#~ msgstr "バウンディングボックス(&O)"
-
-#, fuzzy
-#~ msgid "Zoom"
-#~ msgstr "ズーム(&Z)"
-
-#, fuzzy
-#~ msgid "Zoom In"
-#~ msgstr "ズーム(&Z)"
-
-#, fuzzy
-#~ msgid "Zoom Out"
-#~ msgstr "ズーム(&Z)"
-
-#, fuzzy
-#~ msgid "Set X Rate"
-#~ msgstr "状況"
-
-#, fuzzy
-#~ msgid "Set Y Rate"
-#~ msgstr "状況"
-
-#, fuzzy
-#~ msgid "Set Z Rate"
-#~ msgstr "状況"
-
-#, fuzzy
-#~ msgid "Set FPS"
-#~ msgstr "FPS"
-
-#, fuzzy
-#~ msgid "Resume"
-#~ msgstr "サイズ変更(&Z)"
-
-#, fuzzy
-#~ msgid "Stop"
-#~ msgstr "ステップ"
-
-#, fuzzy
-#~ msgid "Rewind"
-#~ msgstr "やり直し"
-
-#, fuzzy
-#~ msgid "Restart"
-#~ msgstr "繰り返し"
-
-#, fuzzy
-#~ msgid "Delete measurements"
-#~ msgstr "計測(&M)"
-
-#, fuzzy
-#~ msgid "List measurements"
-#~ msgstr "計測(&M)"
-
-#, fuzzy
-#~ msgid "Distance units nanometers"
-#~ msgstr "長さの単位(&U)"
-
-#, fuzzy
-#~ msgid "Distance units Angstroms"
-#~ msgstr "長さの単位(&U)"
-
-#, fuzzy
-#~ msgid "Distance units picometers"
-#~ msgstr "長さの単位(&U)"
-
-#, fuzzy
-#~ msgid "Center"
-#~ msgstr "ヘテロ"
-
-#, fuzzy
-#~ msgid "Label"
-#~ msgstr "ラベル(&L)"
-
-#, fuzzy
-#~ msgid "Select atom"
-#~ msgstr "原子を削除"
-
-#, fuzzy
-#~ msgid "Select chain"
-#~ msgstr "選択(&S)"
-
-#, fuzzy
-#~ msgid "Select element"
-#~ msgstr "すべて選択(&A)"
-
-#, fuzzy
-#~ msgid "Select group"
-#~ msgstr "選択(&S)"
-
-#, fuzzy
-#~ msgid "Select molecule"
-#~ msgstr "すべて選択(&A)"
-
-#, fuzzy
-#~ msgid "Select site"
-#~ msgstr "選択(&S)"
-
-#, fuzzy
-#~ msgid "Console"
-#~ msgstr "コンソール(&L)"
-
-#, fuzzy
-#~ msgid "File"
-#~ msgstr "ファイル(&F)"
-
-#, fuzzy
-#~ msgid "Reload"
-#~ msgstr "再読み込み(&R)"
-
-#, fuzzy
-#~ msgid "Open file or URL"
-#~ msgstr "ファイルを開く"
-
-#, fuzzy
-#~ msgid "Export {0} image"
-#~ msgstr "画像としてエクスポート(&I)"
-
-#, fuzzy
-#~ msgid "Reload {0}"
-#~ msgstr "再読み込み(&R)"
-
-#, fuzzy
-#~ msgid "{0} px"
-#~ msgstr "{0} ピクセル"
-
-#, fuzzy
-#~ msgid "Angstrom Width"
-#~ msgstr "オングストローム 1E-10(&A)"
-
-#, fuzzy
-#~ msgid "Selection Halos"
-#~ msgstr "すべて選択(&A)"
-
-#, fuzzy
-#~ msgid "Show Hydrogens"
-#~ msgstr "水素(&H)"
-
-#, fuzzy
-#~ msgid "Show Measurements"
-#~ msgstr "計測(&M)"
 
 #~ msgid "Jmol Script Console"
 #~ msgstr "Jmol スクリプトコンソール"

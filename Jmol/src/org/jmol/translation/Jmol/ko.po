@@ -13,18 +13,16 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-05 17:05+0000\n"
-"X-Generator: Launchpad (build 13613)\n"
+"X-Launchpad-Export-Date: 2011-12-18 14:50+0000\n"
+"X-Generator: Launchpad (build 14525)\n"
 
 #: com/json/Cookie.java:121
-#, fuzzy
 msgid "name"
-msgstr "이름(&N)"
+msgstr ""
 
 #: com/json/Cookie.java:123
-#, fuzzy
 msgid "value"
-msgstr "값"
+msgstr ""
 
 #: com/json/Cookie.java:126
 msgid "expires"
@@ -35,27 +33,24 @@ msgid "domain"
 msgstr ""
 
 #: com/json/Cookie.java:134
-#, fuzzy
 msgid "path"
-msgstr "반복"
+msgstr ""
 
 #: com/json/HTTP.java:132 com/json/HTTP.java:144
 msgid "HTTP-Version"
 msgstr ""
 
 #: com/json/HTTP.java:134
-#, fuzzy
 msgid "Status-Code"
-msgstr "상태"
+msgstr ""
 
 #: com/json/HTTP.java:136
 msgid "Reason-Phrase"
 msgstr ""
 
 #: com/json/HTTP.java:138
-#, fuzzy
 msgid "Method"
-msgstr "방식: "
+msgstr ""
 
 #: com/json/HTTP.java:141
 msgid "Request-URI"
@@ -509,7 +504,7 @@ msgstr "Jmol 자바 콘솔(&C)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:68
 msgid "AtomSet&Chooser..."
-msgstr ""
+msgstr "원자 고르기"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:69
 msgid "&Save As..."
@@ -1119,7 +1114,7 @@ msgstr "다지우기"
 
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:151
 msgid "Dismiss"
-msgstr ""
+msgstr "버리기"
 
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:202
 msgid "Value"
@@ -1127,7 +1122,7 @@ msgstr "값"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:153
 msgid "Conversion from Jmol to POV-Ray"
-msgstr ""
+msgstr "Jmol파일에서 POV-Ray파일로 변환"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:157
 msgid "File Name:"
@@ -1137,6 +1132,7 @@ msgstr "파일 이름:"
 msgid ""
 "'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
 msgstr ""
+"'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:169
 msgid "Working Directory"
@@ -1168,7 +1164,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:268
 msgid "width:"
-msgstr ""
+msgstr "너비"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:270
 msgid "Image width"
@@ -1177,7 +1173,7 @@ msgstr "이미지 너비"
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:285
 #: org/openscience/jmol/app/webexport/PopInJmol.java:74
 msgid "height:"
-msgstr ""
+msgstr "높이"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:287
 msgid "Image height"
@@ -1250,7 +1246,7 @@ msgstr "타일의 마지막 크기"
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:452
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:454
 msgid "Location of the POV-Ray Executable"
-msgstr ""
+msgstr "POV-Ray 실행 파일의 위치"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:491
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:758
@@ -1259,7 +1255,7 @@ msgstr "시작!"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:493
 msgid "Save file and possibly launch POV-Ray"
-msgstr ""
+msgstr "파일을 저장하고 POV-Ray를 실행"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:504
 msgid "Cancel this dialog without saving"
@@ -1352,9 +1348,8 @@ msgid "What's New in Jmol"
 msgstr "Jmol의 새로와진 점"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:415
-#, fuzzy
 msgid "magic"
-msgstr "기본"
+msgstr ""
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:416
 msgid "role"
@@ -1508,7 +1503,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/LogPanel.java:56
 msgid "Log and Error Messages:"
-msgstr ""
+msgstr "실행 로그와 에러 메시지"
 
 #: org/openscience/jmol/app/webexport/LogPanel.java:64
 msgid "Messages (see Log tab for full history):"
@@ -1548,7 +1543,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebExport.java:106
 msgid "Couldn't find file: {0}"
-msgstr ""
+msgstr "다음 파일을 찾을 수 없음: {0}"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:125
 msgid "Introduction"
@@ -1865,314 +1860,6 @@ msgstr ""
 msgid "unimplemented"
 msgstr ""
 
-#, fuzzy
-#~ msgid "All"
-#~ msgstr "모두(&A)"
-
-#, fuzzy
-#~ msgid "System"
-#~ msgstr "단계"
-
-#, fuzzy
-#~ msgid "Select ({0})"
-#~ msgstr "스케일 {0}"
-
-#, fuzzy
-#~ msgid "chains: {0}"
-#~ msgstr "스케일 {0}"
-
-#, fuzzy
-#~ msgid "View {0}"
-#~ msgstr "보기(&V)"
-
-#, fuzzy
-#~ msgid "Biomolecules"
-#~ msgstr "분자 회전."
-
-#, fuzzy
-#~ msgid "None"
-#~ msgstr "없음(&N)"
-
-#, fuzzy
-#~ msgid "Invert Selection"
-#~ msgstr "원자 셋 콜렉션"
-
-#, fuzzy
-#~ msgid "View"
-#~ msgstr "보기(&V)"
-
-#, fuzzy
-#~ msgid "Front"
-#~ msgstr "앞면(&F)"
-
-#, fuzzy
-#~ msgid "Left"
-#~ msgstr "왼쪽(&L)"
-
-#, fuzzy
-#~ msgid "Right"
-#~ msgstr "오른쪽(&R)"
-
-#, fuzzy
-#~ msgid "Bottom"
-#~ msgstr "아랫면(&B)"
-
-#, fuzzy
-#~ msgid "Back"
-#~ msgstr "기본"
-
-#, fuzzy
-#~ msgid "Bases"
-#~ msgstr "기본"
-
-#, fuzzy
-#~ msgid "All Water"
-#~ msgstr "물"
-
-#, fuzzy
-#~ msgid "Style"
-#~ msgstr "단계"
-
-#, fuzzy
-#~ msgid "Wireframe"
-#~ msgstr "뼈대모양(&W)"
-
-#, fuzzy
-#~ msgid "Cartoon"
-#~ msgstr "탄소"
-
-#, fuzzy
-#~ msgid "On"
-#~ msgstr "켜기(&O)"
-
-#, fuzzy
-#~ msgid "Hydrogen Bonds"
-#~ msgstr "수소"
-
-#, fuzzy
-#~ msgid "Vibration"
-#~ msgstr "진동 멈춤(&S)"
-
-#, fuzzy
-#~ msgid "Vectors"
-#~ msgstr "벡터(&e)"
-
-#, fuzzy
-#~ msgid "Labels"
-#~ msgstr "표지(&L)"
-
-#, fuzzy
-#~ msgid "Centered"
-#~ msgstr "가운데정렬(&C)"
-
-#, fuzzy
-#~ msgid "Upper Right"
-#~ msgstr "우상(&U)"
-
-#, fuzzy
-#~ msgid "Lower Right"
-#~ msgstr "우상(&U)"
-
-#, fuzzy
-#~ msgid "Upper Left"
-#~ msgstr "우상(&U)"
-
-#, fuzzy
-#~ msgid "Color"
-#~ msgstr "닫기"
-
-#, fuzzy
-#~ msgid "Amino Acid"
-#~ msgstr "질소"
-
-#, fuzzy
-#~ msgid "Black"
-#~ msgstr "기본"
-
-#, fuzzy
-#~ msgid "White"
-#~ msgstr "물"
-
-#, fuzzy
-#~ msgid "Cyan"
-#~ msgstr "탄소"
-
-#, fuzzy
-#~ msgid "Red"
-#~ msgstr "재실행"
-
-#, fuzzy
-#~ msgid "Blue"
-#~ msgstr "값"
-
-#, fuzzy
-#~ msgid "Indigo"
-#~ msgstr "정보"
-
-#, fuzzy
-#~ msgid "Maroon"
-#~ msgstr "탄소"
-
-#, fuzzy
-#~ msgid "Boundbox"
-#~ msgstr "경계상자"
-
-#, fuzzy
-#~ msgid "Zoom"
-#~ msgstr "확대(&Z)"
-
-#, fuzzy
-#~ msgid "Zoom In"
-#~ msgstr "확대(&Z)"
-
-#, fuzzy
-#~ msgid "Zoom Out"
-#~ msgstr "확대(&Z)"
-
-#, fuzzy
-#~ msgid "Set X Rate"
-#~ msgstr "상태"
-
-#, fuzzy
-#~ msgid "Set Y Rate"
-#~ msgstr "상태"
-
-#, fuzzy
-#~ msgid "Set Z Rate"
-#~ msgstr "상태"
-
-#, fuzzy
-#~ msgid "Set FPS"
-#~ msgstr "FPS"
-
-#, fuzzy
-#~ msgid "Stop"
-#~ msgstr "단계"
-
-#, fuzzy
-#~ msgid "Rewind"
-#~ msgstr "재실행"
-
-#, fuzzy
-#~ msgid "Restart"
-#~ msgstr "반복"
-
-#, fuzzy
-#~ msgid "Delete measurements"
-#~ msgstr "측정"
-
-#, fuzzy
-#~ msgid "List measurements"
-#~ msgstr "측정"
-
-#, fuzzy
-#~ msgid "Distance units nanometers"
-#~ msgstr "거리 단위(&U)"
-
-#, fuzzy
-#~ msgid "Distance units Angstroms"
-#~ msgstr "거리 단위(&U)"
-
-#, fuzzy
-#~ msgid "Distance units picometers"
-#~ msgstr "거리 단위(&U)"
-
-#, fuzzy
-#~ msgid "Center"
-#~ msgstr "가운데정렬(&C)"
-
-#, fuzzy
-#~ msgid "Label"
-#~ msgstr "표지(&L)"
-
-#, fuzzy
-#~ msgid "Select atom"
-#~ msgstr "원자 지움"
-
-#, fuzzy
-#~ msgid "Select chain"
-#~ msgstr "선택"
-
-#, fuzzy
-#~ msgid "Select element"
-#~ msgstr "모두 선택(&A)"
-
-#, fuzzy
-#~ msgid "Select group"
-#~ msgstr "선택"
-
-#, fuzzy
-#~ msgid "Select molecule"
-#~ msgstr "모두 선택(&A)"
-
-#, fuzzy
-#~ msgid "Select site"
-#~ msgstr "선택"
-
-#, fuzzy
-#~ msgid "Show"
-#~ msgstr "모두 보이기"
-
-#, fuzzy
-#~ msgid "Console"
-#~ msgstr "콘트롤러"
-
-#, fuzzy
-#~ msgid "File Header"
-#~ msgstr "파일 이름:"
-
-#, fuzzy
-#~ msgid "File"
-#~ msgstr "파일(&F)"
-
-#, fuzzy
-#~ msgid "Reload"
-#~ msgstr "재실행"
-
-#, fuzzy
-#~ msgid "Open file or URL"
-#~ msgstr "URL 열기"
-
-#, fuzzy
-#~ msgid "Open script"
-#~ msgstr "스크립트 복사"
-
-#, fuzzy
-#~ msgid "Export {0} image"
-#~ msgstr "이미지로(&I)..."
-
-#, fuzzy
-#~ msgid "Computation"
-#~ msgstr "결합 계산"
-
-#, fuzzy
-#~ msgid "van der Waals Surface"
-#~ msgstr "{0}% 반데르발스"
-
-#, fuzzy
-#~ msgid "{0} px"
-#~ msgstr "{0} 픽셀"
-
-#, fuzzy
-#~ msgid "Angstrom Width"
-#~ msgstr "(옹스트롬)"
-
-#, fuzzy
-#~ msgid "Selection Halos"
-#~ msgstr "모두 선택(&A)"
-
-#, fuzzy
-#~ msgid "Show Hydrogens"
-#~ msgstr "수소"
-
-#, fuzzy
-#~ msgid "Show Measurements"
-#~ msgstr "측정"
-
-#, fuzzy
-#~ msgid "RasMol Colors"
-#~ msgstr "RasMol 기본값"
-
 #~ msgid "atom set"
 #~ msgstr "원자셋"
 
@@ -2202,3 +1889,15 @@ msgstr ""
 
 #~ msgid "Clear console button (requires restarting Jmol)"
 #~ msgstr "콘솔 버튼 지우기 (Jmol 재시작 필요)"
+
+#~ msgid "Label"
+#~ msgstr "레이블"
+
+#~ msgid "Wireframe"
+#~ msgstr "뼈대구조"
+
+#~ msgid "All"
+#~ msgstr "모두"
+
+#~ msgid "None"
+#~ msgstr "없음"

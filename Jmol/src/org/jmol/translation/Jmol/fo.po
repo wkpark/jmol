@@ -14,17 +14,16 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-05 17:04+0000\n"
-"X-Generator: Launchpad (build 13613)\n"
+"X-Launchpad-Export-Date: 2011-12-18 14:49+0000\n"
+"X-Generator: Launchpad (build 14525)\n"
 
 #: com/json/Cookie.java:121
 msgid "name"
 msgstr ""
 
 #: com/json/Cookie.java:123
-#, fuzzy
 msgid "value"
-msgstr "Skala"
+msgstr ""
 
 #: com/json/Cookie.java:126
 msgid "expires"
@@ -35,18 +34,16 @@ msgid "domain"
 msgstr ""
 
 #: com/json/Cookie.java:134
-#, fuzzy
 msgid "path"
-msgstr "Endurtak"
+msgstr ""
 
 #: com/json/HTTP.java:132 com/json/HTTP.java:144
 msgid "HTTP-Version"
 msgstr ""
 
 #: com/json/HTTP.java:134
-#, fuzzy
 msgid "Status-Code"
-msgstr "Støða"
+msgstr ""
 
 #: com/json/HTTP.java:136
 msgid "Reason-Phrase"
@@ -1349,9 +1346,8 @@ msgid "What's New in Jmol"
 msgstr ""
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:415
-#, fuzzy
 msgid "magic"
-msgstr "Grundleggjandi"
+msgstr ""
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:416
 msgid "role"
@@ -1861,123 +1857,3 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr ""
-
-#, fuzzy
-#~ msgid "System"
-#~ msgstr "Stev"
-
-#, fuzzy
-#~ msgid "Select ({0})"
-#~ msgstr "Vel"
-
-#, fuzzy
-#~ msgid "Back"
-#~ msgstr "Grundleggjandi"
-
-#, fuzzy
-#~ msgid "Bases"
-#~ msgstr "Grundleggjandi"
-
-#, fuzzy
-#~ msgid "Style"
-#~ msgstr "Stev"
-
-#, fuzzy
-#~ msgid "Color"
-#~ msgstr "Lat aftur"
-
-#, fuzzy
-#~ msgid "Black"
-#~ msgstr "Grundleggjandi"
-
-#, fuzzy
-#~ msgid "Cyan"
-#~ msgstr "Ógilda"
-
-#, fuzzy
-#~ msgid "Red"
-#~ msgstr "Ger umaftur"
-
-#, fuzzy
-#~ msgid "Blue"
-#~ msgstr "Skala"
-
-#, fuzzy
-#~ msgid "Indigo"
-#~ msgstr "Kunning"
-
-#, fuzzy
-#~ msgid "Set X Rate"
-#~ msgstr "Støða"
-
-#, fuzzy
-#~ msgid "Set Y Rate"
-#~ msgstr "Støða"
-
-#, fuzzy
-#~ msgid "Set Z Rate"
-#~ msgstr "Støða"
-
-#, fuzzy
-#~ msgid "Stop"
-#~ msgstr "Stev"
-
-#, fuzzy
-#~ msgid "Rewind"
-#~ msgstr "Ger umaftur"
-
-#, fuzzy
-#~ msgid "Restart"
-#~ msgstr "Endurtak"
-
-#, fuzzy
-#~ msgid "Center"
-#~ msgstr "Stýritól"
-
-#, fuzzy
-#~ msgid "Select atom"
-#~ msgstr "Vel"
-
-#, fuzzy
-#~ msgid "Select chain"
-#~ msgstr "Vel"
-
-#, fuzzy
-#~ msgid "Select element"
-#~ msgstr "Vel &Alt"
-
-#, fuzzy
-#~ msgid "Select group"
-#~ msgstr "Vel"
-
-#, fuzzy
-#~ msgid "Select molecule"
-#~ msgstr "Vel &Alt"
-
-#, fuzzy
-#~ msgid "Select site"
-#~ msgstr "Vel"
-
-#, fuzzy
-#~ msgid "Console"
-#~ msgstr "Stýritól"
-
-#, fuzzy
-#~ msgid "File"
-#~ msgstr "&Fíla"
-
-#, fuzzy
-#~ msgid "Reload"
-#~ msgstr "Ger umaftur"
-
-#, fuzzy
-#~ msgid "Open file or URL"
-#~ msgstr "Lat ein fílu upp"
-
-#, fuzzy
-#~ msgid "Export {0} image"
-#~ msgstr "Útflyt &mynd..."
-
-#, fuzzy
-#~ msgid "Selection Halos"
-#~ msgstr "Vel &Alt"

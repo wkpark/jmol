@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-05 17:04+0000\n"
-"X-Generator: Launchpad (build 13613)\n"
+"X-Launchpad-Export-Date: 2011-12-18 14:49+0000\n"
+"X-Generator: Launchpad (build 14525)\n"
 
 #: com/json/Cookie.java:121
 msgid "name"
@@ -42,9 +42,8 @@ msgid "HTTP-Version"
 msgstr ""
 
 #: com/json/HTTP.java:134
-#, fuzzy
 msgid "Status-Code"
-msgstr "Վիճակ"
+msgstr ""
 
 #: com/json/HTTP.java:136
 msgid "Reason-Phrase"
@@ -1858,35 +1857,3 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr ""
-
-#, fuzzy
-#~ msgid "System"
-#~ msgstr "Քայլ"
-
-#, fuzzy
-#~ msgid "Style"
-#~ msgstr "Քայլ"
-
-#, fuzzy
-#~ msgid "Color"
-#~ msgstr "Փակել"
-
-#, fuzzy
-#~ msgid "Set X Rate"
-#~ msgstr "Վիճակ"
-
-#, fuzzy
-#~ msgid "Set Y Rate"
-#~ msgstr "Վիճակ"
-
-#, fuzzy
-#~ msgid "Set Z Rate"
-#~ msgstr "Վիճակ"
-
-#, fuzzy
-#~ msgid "Stop"
-#~ msgstr "Քայլ"
-
-#, fuzzy
-#~ msgid "Console"
-#~ msgstr "Փակել"

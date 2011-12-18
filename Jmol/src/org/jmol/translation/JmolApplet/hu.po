@@ -15,8 +15,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-05 17:04+0000\n"
-"X-Generator: Launchpad (build 13613)\n"
+"X-Launchpad-Export-Date: 2011-12-18 14:49+0000\n"
+"X-Generator: Launchpad (build 14525)\n"
 "X-Poedit-Country: HUNGARY\n"
 "X-Poedit-Language: Hungarian\n"
 "X-Poedit-SourceCharset: utf-8\n"
@@ -422,14 +422,12 @@ msgid "French"
 msgstr "Francia"
 
 #: org/jmol/i18n/GT.java:155
-#, fuzzy
 msgid "Frisian"
-msgstr "Ukrán"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:156
-#, fuzzy
 msgid "Galician"
-msgstr "Olasz"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:157
 msgid "Croatian"
@@ -465,9 +463,8 @@ msgid "Korean"
 msgstr "Kóreai"
 
 #: org/jmol/i18n/GT.java:165
-#, fuzzy
 msgid "Malay"
-msgstr "Lejátszás"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:166
 msgid "Norwegian Bokmal"
@@ -2447,14 +2444,14 @@ msgstr ""
 msgid "Setting log file to {0}"
 msgstr ""
 
-#~ msgid "Top"
-#~ msgstr "Felülnézet"
-
 #~ msgid "Java memory usage"
 #~ msgstr "Java memóriahasználat"
 
 #~ msgid "Molecular Orbitals"
 #~ msgstr "Molekuláris orbitálok"
+
+#~ msgid "Top"
+#~ msgstr "Felülnézet"
 
 #~ msgid "About Jmol"
 #~ msgstr "A Jmol programról"

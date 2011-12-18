@@ -14,17 +14,16 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-05 17:04+0000\n"
-"X-Generator: Launchpad (build 13613)\n"
+"X-Launchpad-Export-Date: 2011-12-18 14:49+0000\n"
+"X-Generator: Launchpad (build 14525)\n"
 
 #: com/json/Cookie.java:121
 msgid "name"
 msgstr ""
 
 #: com/json/Cookie.java:123
-#, fuzzy
 msgid "value"
-msgstr "قيمة"
+msgstr ""
 
 #: com/json/Cookie.java:126
 msgid "expires"
@@ -35,9 +34,8 @@ msgid "domain"
 msgstr ""
 
 #: com/json/Cookie.java:134
-#, fuzzy
 msgid "path"
-msgstr "تكرار"
+msgstr ""
 
 #: com/json/HTTP.java:132 com/json/HTTP.java:144
 msgid "HTTP-Version"
@@ -1860,134 +1858,6 @@ msgstr ""
 msgid "unimplemented"
 msgstr ""
 
-#, fuzzy
-#~ msgid "Select ({0})"
-#~ msgstr "اختر"
-
-#, fuzzy
-#~ msgid "All Water"
-#~ msgstr "ماء"
-
-#, fuzzy
-#~ msgid "Style"
-#~ msgstr "المقاس"
-
-#, fuzzy
-#~ msgid "Cartoon"
-#~ msgstr "كربون"
-
-#, fuzzy
-#~ msgid "On"
-#~ msgstr "فتح"
-
-#, fuzzy
-#~ msgid "Hydrogen Bonds"
-#~ msgstr "الهيدروجين"
-
-#, fuzzy
-#~ msgid "Color"
-#~ msgstr "إغلاق"
-
-#, fuzzy
-#~ msgid "White"
-#~ msgstr "ماء"
-
-#, fuzzy
-#~ msgid "Cyan"
-#~ msgstr "كربون"
-
-#, fuzzy
-#~ msgid "Red"
-#~ msgstr "تكرار"
-
-#, fuzzy
-#~ msgid "Blue"
-#~ msgstr "قيمة"
-
-#, fuzzy
-#~ msgid "Indigo"
-#~ msgstr "معلومات"
-
-#, fuzzy
-#~ msgid "Maroon"
-#~ msgstr "كربون"
-
-#, fuzzy
-#~ msgid "Rewind"
-#~ msgstr "تكرار"
-
-#, fuzzy
-#~ msgid "Restart"
-#~ msgstr "تكرار"
-
-#, fuzzy
-#~ msgid "Delete measurements"
-#~ msgstr "القياسات"
-
-#, fuzzy
-#~ msgid "List measurements"
-#~ msgstr "القياسات"
-
-#, fuzzy
-#~ msgid "Center"
-#~ msgstr "التحكم"
-
-#, fuzzy
-#~ msgid "Select atom"
-#~ msgstr "اختر"
-
-#, fuzzy
-#~ msgid "Select chain"
-#~ msgstr "اختر"
-
-#, fuzzy
-#~ msgid "Select element"
-#~ msgstr "اختر"
-
-#, fuzzy
-#~ msgid "Select group"
-#~ msgstr "اختر"
-
-#, fuzzy
-#~ msgid "Select site"
-#~ msgstr "اختر"
-
-#, fuzzy
-#~ msgid "Show"
-#~ msgstr "عرض الكل"
-
-#, fuzzy
-#~ msgid "Console"
-#~ msgstr "التحكم"
-
-#, fuzzy
-#~ msgid "File Header"
-#~ msgstr "إسم الملف:"
-
-#, fuzzy
-#~ msgid "File"
-#~ msgstr "&ملف"
-
-#, fuzzy
-#~ msgid "Reload"
-#~ msgstr "تكرار"
-
-#, fuzzy
-#~ msgid "Open file or URL"
-#~ msgstr "فتح الرابط"
-
-#, fuzzy
-#~ msgid "{0} px"
-#~ msgstr "{0}%"
-
-#, fuzzy
-#~ msgid "Show Hydrogens"
-#~ msgstr "الهيدروجين"
-
-#, fuzzy
-#~ msgid "Show Measurements"
-#~ msgstr "القياسات"
-
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "إذهب إلى أول {0} في المجموعة"
 
@@ -1996,3 +1866,27 @@ msgstr ""
 
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "إقفز إلى أخر {0} في المجموعة"
+
+#~ msgid "All"
+#~ msgstr "الكل"
+
+#~ msgid "None"
+#~ msgstr "لا شيء"
+
+#~ msgid "Wireframe"
+#~ msgstr "اطار سلكي"
+
+#~ msgid "On"
+#~ msgstr "مفعّل"
+
+#~ msgid "Zoom"
+#~ msgstr "تقريب"
+
+#~ msgid "Left"
+#~ msgstr "يسار"
+
+#~ msgid "Bottom"
+#~ msgstr "أسفل"
+
+#~ msgid "Right"
+#~ msgstr "يمين"

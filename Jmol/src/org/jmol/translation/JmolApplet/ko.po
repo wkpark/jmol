@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-05 17:04+0000\n"
-"X-Generator: Launchpad (build 13613)\n"
+"X-Launchpad-Export-Date: 2011-12-18 14:49+0000\n"
+"X-Generator: Launchpad (build 14525)\n"
 
 #: org/jmol/applet/AppletWrapper.java:100
 msgid "Loading Jmol applet ..."
@@ -415,14 +415,12 @@ msgid "French"
 msgstr "프랑스어"
 
 #: org/jmol/i18n/GT.java:155
-#, fuzzy
 msgid "Frisian"
-msgstr "우크라이나어"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:156
-#, fuzzy
 msgid "Galician"
-msgstr "이탈리아어"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:157
 msgid "Croatian"
@@ -457,9 +455,8 @@ msgid "Korean"
 msgstr "한국어"
 
 #: org/jmol/i18n/GT.java:165
-#, fuzzy
 msgid "Malay"
-msgstr "재생"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:166
 msgid "Norwegian Bokmal"
@@ -2436,11 +2433,11 @@ msgstr ""
 msgid "Setting log file to {0}"
 msgstr ""
 
-#~ msgid "Top"
-#~ msgstr "위"
-
 #~ msgid "Molecular Orbitals"
 #~ msgstr "분자 궤도"
+
+#~ msgid "Top"
+#~ msgstr "위"
 
 #~ msgid "About Jmol"
 #~ msgstr "Jmol은"

@@ -15,55 +15,50 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-05 17:04+0000\n"
-"X-Generator: Launchpad (build 13613)\n"
+"X-Launchpad-Export-Date: 2011-12-18 14:49+0000\n"
+"X-Generator: Launchpad (build 14525)\n"
 "X-Poedit-Country: CZECH REPUBLIC\n"
 "X-Poedit-Language: Czech\n"
 
 #: com/json/Cookie.java:121
-#, fuzzy
 msgid "name"
-msgstr "&Jméno"
+msgstr "název"
 
 #: com/json/Cookie.java:123
-#, fuzzy
 msgid "value"
-msgstr "Hodnota"
+msgstr "hodnota"
 
 #: com/json/Cookie.java:126
 msgid "expires"
-msgstr ""
+msgstr "vyprší"
 
 #: com/json/Cookie.java:130
 msgid "domain"
-msgstr ""
+msgstr "doména"
 
 #: com/json/Cookie.java:134
-#, fuzzy
 msgid "path"
-msgstr "Opakovat"
+msgstr "cesta"
 
 #: com/json/HTTP.java:132 com/json/HTTP.java:144
 msgid "HTTP-Version"
-msgstr ""
+msgstr "HTTP-verze"
 
 #: com/json/HTTP.java:134
-#, fuzzy
 msgid "Status-Code"
-msgstr "Stav"
+msgstr ""
 
 #: com/json/HTTP.java:136
 msgid "Reason-Phrase"
 msgstr ""
 
 #: com/json/HTTP.java:138
-#, fuzzy
 msgid "Method"
-msgstr "Metoda: "
+msgstr "Metoda"
 
 #: com/json/HTTP.java:141
 msgid "Request-URI"
-msgstr ""
+msgstr "URI požadavku"
 
 #: org/openscience/jmol/app/JmolApp.java:107
 msgid "Error starting Jmol: the property 'user.home' is not defined."
@@ -944,7 +939,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:191
 msgid "Control Display of Surfaces"
-msgstr ""
+msgstr "Ovládání Zobrazení povrchů"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:192
 msgid "&Help"
@@ -1362,33 +1357,32 @@ msgid "What's New in Jmol"
 msgstr "Novinky v programu Jmol"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:415
-#, fuzzy
 msgid "magic"
-msgstr "Základní"
+msgstr ""
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:416
 msgid "role"
-msgstr ""
+msgstr "role"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:422
 msgid "type"
-msgstr ""
+msgstr "typ"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:424
 msgid "text"
-msgstr ""
+msgstr "text"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:425
 msgid "visibility"
-msgstr ""
+msgstr "viditelnost"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:428
 msgid "command"
-msgstr ""
+msgstr "příkaz"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:431
 msgid "id"
-msgstr ""
+msgstr "id"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:443
 msgid "startup_script"
@@ -1396,39 +1390,39 @@ msgstr ""
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:448
 msgid "banner"
-msgstr ""
+msgstr "banner"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:449
 msgid "banner_text"
-msgstr ""
+msgstr "banner_text"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:453
 msgid "style"
-msgstr ""
+msgstr "styl"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:493
 msgid "x"
-msgstr ""
+msgstr "x"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:494
 msgid "y"
-msgstr ""
+msgstr "y"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:509
 msgid "sync"
-msgstr ""
+msgstr "synchronizace"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:69
 msgid "Degrees"
-msgstr ""
+msgstr "Stupně"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:69
 msgid "Radians"
-msgstr ""
+msgstr "Radiány"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:70
 msgid "Gradians"
-msgstr ""
+msgstr "Gradiány"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:70
 msgid "Circle Fraction"
@@ -1436,13 +1430,13 @@ msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:70
 msgid "Units of Pi"
-msgstr ""
+msgstr "Jednotek Pi"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:311
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:365
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:388
 msgid "Percentage scaling not implemented yet!"
-msgstr ""
+msgstr "Procento škálování - není ještě implementováno!"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:133
 msgid "SurfaceTool"
@@ -1451,16 +1445,16 @@ msgstr ""
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:152
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:155
 msgid "View Center"
-msgstr ""
+msgstr "Centrum pohledu"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:153
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:156
 msgid "Absolute"
-msgstr ""
+msgstr "Absolutní"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:164
 msgid "Origin"
-msgstr ""
+msgstr "Počátek"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:167
 msgid "Cap"
@@ -1474,11 +1468,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:174
 msgid "Slice Planes"
-msgstr ""
+msgstr "Roviny řezu"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:176
 msgid "Shows planes at slicing surfaces."
-msgstr ""
+msgstr "Ukázat roviny na uřezaných površích."
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:183
 msgid "Ghost On"
@@ -1490,27 +1484,27 @@ msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:206
 msgid "Angle from X-axis in XY plane"
-msgstr ""
+msgstr "Úhel od osy X v rovině XY"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:217
 msgid "Angle from Z-axis"
-msgstr ""
+msgstr "Úhel od osy Z"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:228
 msgid "Direction vector of normal to slice"
-msgstr ""
+msgstr "Normálový vektor k řezu"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:231
 msgid "Distance of slice from origin"
-msgstr ""
+msgstr "Vzdálenost řezu od počátku"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:243
 msgid "Thickness of slice"
-msgstr ""
+msgstr "Tloušťka řezu"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:261
 msgid "Select Surface(s)"
-msgstr ""
+msgstr "Vybrat povrch(y)"
 
 #: org/openscience/jmol/app/webexport/JmolInstance.java:81
 msgid "Attempt to make scratch directory failed."
@@ -1717,6 +1711,7 @@ msgstr "Volání FileWriteru neúspěšné."
 #: org/openscience/jmol/app/webexport/WebPanel.java:560
 msgid "Errors occurred during web page creation.  See Log Tab!"
 msgstr ""
+"Při vytváření webové stránky se objevily chyby.  Podívejte se do záložky Log!"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:635
 #, java-format
@@ -1754,6 +1749,10 @@ msgid ""
 "Please check that you are using a Jmol.jar that is part of a full Jmol "
 "distribution."
 msgstr ""
+"Nemohu najít nebo otevřít:\n"
+"{0}\n"
+"Zkontrolujte prosím, zda používáte soubor Jmol.jar,  který je součástí plné "
+"distribuce Jmol."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:794
 #, java-format
@@ -1882,377 +1881,38 @@ msgstr "Ulož pohled"
 msgid "unimplemented"
 msgstr "neimplementováno"
 
-#, fuzzy
 #~ msgid "All"
-#~ msgstr "Vše (&a)"
+#~ msgstr "Vše"
 
-#, fuzzy
-#~ msgid "System"
-#~ msgstr "Krok"
-
-#, fuzzy
-#~ msgid "Configurations"
-#~ msgstr "Animace"
-
-#, fuzzy
-#~ msgid "Element"
-#~ msgstr "neimplementováno"
-
-#, fuzzy
-#~ msgid "Select ({0})"
-#~ msgstr "Měřítko {0}"
-
-#, fuzzy
-#~ msgid "chains: {0}"
-#~ msgstr "vytvářím {0}"
-
-#, fuzzy
-#~ msgid "View {0}"
-#~ msgstr "&Pohled"
-
-#, fuzzy
-#~ msgid "Biomolecules"
-#~ msgstr "Otáčet molekulu."
-
-#, fuzzy
 #~ msgid "None"
-#~ msgstr "Nic (&0)"
+#~ msgstr "Nic"
 
-#, fuzzy
-#~ msgid "Display Selected Only"
-#~ msgstr "Smazat vybrané"
-
-#, fuzzy
-#~ msgid "Invert Selection"
-#~ msgstr "Výběr: "
-
-#, fuzzy
-#~ msgid "View"
-#~ msgstr "&Pohled"
-
-#, fuzzy
-#~ msgid "Front"
-#~ msgstr "Ze&předu"
-
-#, fuzzy
-#~ msgid "Left"
-#~ msgstr "Z&leva"
-
-#, fuzzy
-#~ msgid "Right"
-#~ msgstr "Zp&rava"
-
-#, fuzzy
-#~ msgid "Bottom"
-#~ msgstr "Z&dola"
-
-#, fuzzy
-#~ msgid "Back"
-#~ msgstr "Základní"
-
-#, fuzzy
-#~ msgid "Bases"
-#~ msgstr "Pozastavit"
-
-#, fuzzy
-#~ msgid "All Water"
-#~ msgstr "Voda"
-
-#, fuzzy
-#~ msgid "Style"
-#~ msgstr "Krok"
-
-#, fuzzy
 #~ msgid "Wireframe"
-#~ msgstr "&Drátový model"
+#~ msgstr "Drátový model"
 
-#, fuzzy
-#~ msgid "Cartoon"
-#~ msgstr "Uhlík (&C)"
-
-#, fuzzy
-#~ msgid "On"
-#~ msgstr "Zapnut&o"
-
-#, fuzzy
-#~ msgid "Hydrogen Bonds"
-#~ msgstr "Vodíky"
-
-#, fuzzy
-#~ msgid "Cartoon Rockets"
-#~ msgstr "Skica stránky"
-
-#, fuzzy
-#~ msgid "Vibration"
-#~ msgstr "Animace"
-
-#, fuzzy
-#~ msgid "Vectors"
-#~ msgstr "V&ektory"
-
-#, fuzzy
-#~ msgid "Red+Green glasses"
-#~ msgstr "Červená/Zelená"
-
-#, fuzzy
-#~ msgid "Labels"
-#~ msgstr "&Popisek"
-
-#, fuzzy
-#~ msgid "Centered"
-#~ msgstr "&Vystředit"
-
-#, fuzzy
-#~ msgid "Upper Right"
-#~ msgstr "Vpravo &nahoře"
-
-#, fuzzy
-#~ msgid "Lower Right"
-#~ msgstr "Vpravo &nahoře"
-
-#, fuzzy
-#~ msgid "Upper Left"
-#~ msgstr "Vpravo &nahoře"
-
-#, fuzzy
-#~ msgid "Color"
-#~ msgstr "Zavřít"
-
-#, fuzzy
-#~ msgid "Formal Charge"
-#~ msgstr "Celkový náboj: "
-
-#, fuzzy
-#~ msgid "Partial Charge"
-#~ msgstr "Celkový náboj: "
-
-#, fuzzy
-#~ msgid "Amino Acid"
-#~ msgstr "Amino"
-
-#, fuzzy
-#~ msgid "Black"
-#~ msgstr "Základní"
-
-#, fuzzy
-#~ msgid "White"
-#~ msgstr "Voda"
-
-#, fuzzy
-#~ msgid "Cyan"
-#~ msgstr "Červená/Modrozelená"
-
-#, fuzzy
-#~ msgid "Red"
-#~ msgstr "Znovu"
-
-#, fuzzy
-#~ msgid "Green"
-#~ msgstr "Červená/Zelená"
-
-#, fuzzy
-#~ msgid "Blue"
-#~ msgstr "Hodnota"
-
-#, fuzzy
-#~ msgid "Indigo"
-#~ msgstr "Informace"
-
-#, fuzzy
-#~ msgid "Maroon"
-#~ msgstr "Uhlík (&C)"
-
-#, fuzzy
-#~ msgid "Background"
-#~ msgstr "Barva pozadí"
-
-#, fuzzy
-#~ msgid "Boundbox"
-#~ msgstr "Hraniční box"
-
-#, fuzzy
-#~ msgid "Zoom"
-#~ msgstr "&Zvětšit"
-
-#, fuzzy
-#~ msgid "Zoom In"
-#~ msgstr "&Zvětšit"
-
-#, fuzzy
-#~ msgid "Zoom Out"
-#~ msgstr "&Zvětšit"
-
-#, fuzzy
-#~ msgid "Spin"
-#~ msgstr "Zapni rotaci"
-
-#, fuzzy
-#~ msgid "Set X Rate"
-#~ msgstr "Stav"
-
-#, fuzzy
-#~ msgid "Set Y Rate"
-#~ msgstr "Stav"
-
-#, fuzzy
-#~ msgid "Set Z Rate"
-#~ msgstr "Stav"
-
-#, fuzzy
-#~ msgid "Set FPS"
-#~ msgstr "FPS (snímků za sekundu)"
-
-#, fuzzy
-#~ msgid "Animation Mode"
-#~ msgstr "Animace"
-
-#, fuzzy
-#~ msgid "Resume"
-#~ msgstr "Změ&nit velikost"
-
-#, fuzzy
-#~ msgid "Stop"
-#~ msgstr "Krok"
-
-#, fuzzy
-#~ msgid "Rewind"
-#~ msgstr "Znovu"
-
-#, fuzzy
-#~ msgid "Restart"
-#~ msgstr "Opakovat"
-
-#, fuzzy
-#~ msgid "Delete measurements"
-#~ msgstr "Měření"
-
-#, fuzzy
-#~ msgid "List measurements"
-#~ msgstr "Měření"
-
-#, fuzzy
-#~ msgid "Distance units nanometers"
-#~ msgstr "&Jednotky vzdálenosti"
-
-#, fuzzy
-#~ msgid "Distance units Angstroms"
-#~ msgstr "&Jednotky vzdálenosti"
-
-#, fuzzy
-#~ msgid "Distance units picometers"
-#~ msgstr "&Jednotky vzdálenosti"
-
-#, fuzzy
-#~ msgid "Center"
-#~ msgstr "&Vystředit"
-
-#, fuzzy
 #~ msgid "Label"
-#~ msgstr "&Popisek"
+#~ msgstr "Popisek"
 
-#, fuzzy
-#~ msgid "Select atom"
-#~ msgstr "Smazat atomy"
+#~ msgid "Centered"
+#~ msgstr "Na střed"
 
-#, fuzzy
-#~ msgid "Select chain"
-#~ msgstr "Výběr: "
+#~ msgid "On"
+#~ msgstr "Zapnuto"
 
-#, fuzzy
-#~ msgid "Select element"
-#~ msgstr "Vybr&at vše"
+#~ msgid "Zoom"
+#~ msgstr "Lupa"
 
-#, fuzzy
-#~ msgid "Select group"
-#~ msgstr "Vybrat"
+#~ msgid "Front"
+#~ msgstr "Zepředu"
 
-#, fuzzy
-#~ msgid "Select molecule"
-#~ msgstr "Vybr&at vše"
+#~ msgid "Bottom"
+#~ msgstr "Zespoda"
 
-#, fuzzy
-#~ msgid "Select site"
-#~ msgstr "Vybrat"
+#~ msgid "Right"
+#~ msgstr "Zprava"
 
-#, fuzzy
-#~ msgid "Show"
-#~ msgstr "Ukázat vše"
-
-#, fuzzy
-#~ msgid "Console"
-#~ msgstr "Konzo&le..."
-
-#, fuzzy
-#~ msgid "File Header"
-#~ msgstr "Název souboru:"
-
-#, fuzzy
-#~ msgid "Model"
-#~ msgstr "Režim:"
-
-#, fuzzy
-#~ msgid "Orientation"
-#~ msgstr "Animace"
-
-#, fuzzy
-#~ msgid "File"
-#~ msgstr "&Soubor"
-
-#, fuzzy
-#~ msgid "Reload"
-#~ msgstr "O&bnovit"
-
-#, fuzzy
-#~ msgid "Open file or URL"
-#~ msgstr "Otevřít URL"
-
-#, fuzzy
-#~ msgid "Open script"
-#~ msgstr "Kopírovat skript"
-
-#, fuzzy
-#~ msgid "Export {0} image"
-#~ msgstr "Exportovat &obrázek..."
-
-#, fuzzy
-#~ msgid "Computation"
-#~ msgstr "Vypočítat vazby"
-
-#, fuzzy
-#~ msgid "van der Waals Surface"
-#~ msgstr "{0}% van der Waals"
-
-#, fuzzy
-#~ msgid "Molecular Surface"
-#~ msgstr "Vlastnosti molekul"
-
-#, fuzzy
-#~ msgid "Reload {0}"
-#~ msgstr "O&bnovit"
-
-#, fuzzy
-#~ msgid "{0} px"
-#~ msgstr "pixely: {0}"
-
-#, fuzzy
-#~ msgid "Angstrom Width"
-#~ msgstr "(Angstromy)"
-
-#, fuzzy
-#~ msgid "Selection Halos"
-#~ msgstr "Výběr: "
-
-#, fuzzy
-#~ msgid "Show Hydrogens"
-#~ msgstr "Vodíky"
-
-#, fuzzy
-#~ msgid "Show Measurements"
-#~ msgstr "Měření"
-
-#, fuzzy
-#~ msgid "RasMol Colors"
-#~ msgstr "RasMol výchozí"
+#~ msgid "Left"
+#~ msgstr "Zleva"
 
 #~ msgid "atom set"
 #~ msgstr "sada atomů"

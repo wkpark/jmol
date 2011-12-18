@@ -14,18 +14,16 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-05 17:04+0000\n"
-"X-Generator: Launchpad (build 13613)\n"
+"X-Launchpad-Export-Date: 2011-12-18 14:49+0000\n"
+"X-Generator: Launchpad (build 14525)\n"
 
 #: com/json/Cookie.java:121
-#, fuzzy
 msgid "name"
-msgstr "&Όνομα"
+msgstr ""
 
 #: com/json/Cookie.java:123
-#, fuzzy
 msgid "value"
-msgstr "Παύση"
+msgstr ""
 
 #: com/json/Cookie.java:126
 msgid "expires"
@@ -36,27 +34,24 @@ msgid "domain"
 msgstr ""
 
 #: com/json/Cookie.java:134
-#, fuzzy
 msgid "path"
-msgstr "Επανάληψη"
+msgstr ""
 
 #: com/json/HTTP.java:132 com/json/HTTP.java:144
 msgid "HTTP-Version"
 msgstr ""
 
 #: com/json/HTTP.java:134
-#, fuzzy
 msgid "Status-Code"
-msgstr "Κατάσταση"
+msgstr ""
 
 #: com/json/HTTP.java:136
 msgid "Reason-Phrase"
 msgstr ""
 
 #: com/json/HTTP.java:138
-#, fuzzy
 msgid "Method"
-msgstr "Μέθοδος: "
+msgstr ""
 
 #: com/json/HTTP.java:141
 msgid "Request-URI"
@@ -1358,9 +1353,8 @@ msgid "What's New in Jmol"
 msgstr "Τι νέο υπάρχει στο Jmol"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:415
-#, fuzzy
 msgid "magic"
-msgstr "Βασικό"
+msgstr ""
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:416
 msgid "role"
@@ -1876,366 +1870,6 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr ""
-
-#, fuzzy
-#~ msgid "All"
-#~ msgstr "&Όλα"
-
-#, fuzzy
-#~ msgid "System"
-#~ msgstr "Βήμα"
-
-#, fuzzy
-#~ msgid "Configurations"
-#~ msgstr "Προσομοίωση"
-
-#, fuzzy
-#~ msgid "Select ({0})"
-#~ msgstr "Κλίμακα {0}"
-
-#, fuzzy
-#~ msgid "chains: {0}"
-#~ msgstr "δημιουργείται {0}"
-
-#, fuzzy
-#~ msgid "View {0}"
-#~ msgstr "&Όψη"
-
-#, fuzzy
-#~ msgid "Biomolecules"
-#~ msgstr "Περιστροφή μορίου."
-
-#, fuzzy
-#~ msgid "None"
-#~ msgstr "&Κανένα"
-
-#, fuzzy
-#~ msgid "Display Selected Only"
-#~ msgstr "Διαγραφή Επιλεγμένων"
-
-#, fuzzy
-#~ msgid "Invert Selection"
-#~ msgstr "Επιλογή: "
-
-#, fuzzy
-#~ msgid "View"
-#~ msgstr "&Όψη"
-
-#, fuzzy
-#~ msgid "Front"
-#~ msgstr "&Μπροστινή"
-
-#, fuzzy
-#~ msgid "Left"
-#~ msgstr "Από &αριστερά"
-
-#, fuzzy
-#~ msgid "Right"
-#~ msgstr "Από &δεξιά"
-
-#, fuzzy
-#~ msgid "Bottom"
-#~ msgstr "Από &κάτω"
-
-#, fuzzy
-#~ msgid "Back"
-#~ msgstr "Βασικό"
-
-#, fuzzy
-#~ msgid "Bases"
-#~ msgstr "Παύση"
-
-#, fuzzy
-#~ msgid "All Water"
-#~ msgstr "Νερό"
-
-#, fuzzy
-#~ msgid "Style"
-#~ msgstr "Βήμα"
-
-#, fuzzy
-#~ msgid "Wireframe"
-#~ msgstr "&Σκελετικό Μοντέλο"
-
-#, fuzzy
-#~ msgid "Cartoon"
-#~ msgstr "Άνθρακας"
-
-#, fuzzy
-#~ msgid "On"
-#~ msgstr "Άνοιγμα"
-
-#, fuzzy
-#~ msgid "Hydrogen Bonds"
-#~ msgstr "Υδρογόνα"
-
-#, fuzzy
-#~ msgid "Vibration"
-#~ msgstr "Προσομοίωση"
-
-#, fuzzy
-#~ msgid "Vectors"
-#~ msgstr "Διάνυσμα"
-
-#, fuzzy
-#~ msgid "Red+Green glasses"
-#~ msgstr "Κόκκινο/Πράσινο"
-
-#, fuzzy
-#~ msgid "Labels"
-#~ msgstr "&Ετικέτα"
-
-#, fuzzy
-#~ msgid "Centered"
-#~ msgstr "Στο κέντ&ρο"
-
-#, fuzzy
-#~ msgid "Upper Right"
-#~ msgstr "&Πάνω δεξιά"
-
-#, fuzzy
-#~ msgid "Lower Right"
-#~ msgstr "&Πάνω δεξιά"
-
-#, fuzzy
-#~ msgid "Upper Left"
-#~ msgstr "&Πάνω δεξιά"
-
-#, fuzzy
-#~ msgid "Color"
-#~ msgstr "Κλείσιμο"
-
-#, fuzzy
-#~ msgid "Formal Charge"
-#~ msgstr "Συνολικό Φορτίο "
-
-#, fuzzy
-#~ msgid "Partial Charge"
-#~ msgstr "Συνολικό Φορτίο "
-
-#, fuzzy
-#~ msgid "Amino Acid"
-#~ msgstr "Αμινοξέα"
-
-#, fuzzy
-#~ msgid "Black"
-#~ msgstr "Βασικό"
-
-#, fuzzy
-#~ msgid "White"
-#~ msgstr "Νερό"
-
-#, fuzzy
-#~ msgid "Cyan"
-#~ msgstr "Κόκκινο/Κυανό"
-
-#, fuzzy
-#~ msgid "Red"
-#~ msgstr "Επανάληψη"
-
-#, fuzzy
-#~ msgid "Green"
-#~ msgstr "Κόκκινο/Πράσινο"
-
-#, fuzzy
-#~ msgid "Blue"
-#~ msgstr "Παύση"
-
-#, fuzzy
-#~ msgid "Indigo"
-#~ msgstr "Πληροφορίες"
-
-#, fuzzy
-#~ msgid "Maroon"
-#~ msgstr "Άνθρακας"
-
-#, fuzzy
-#~ msgid "Background"
-#~ msgstr "Χρώμα Παρασκηνίου"
-
-#, fuzzy
-#~ msgid "Boundbox"
-#~ msgstr "Π&λαίσιο Ορίων"
-
-#, fuzzy
-#~ msgid "Zoom"
-#~ msgstr "&Εστίαση"
-
-#, fuzzy
-#~ msgid "Zoom In"
-#~ msgstr "&Εστίαση"
-
-#, fuzzy
-#~ msgid "Zoom Out"
-#~ msgstr "&Εστίαση"
-
-#, fuzzy
-#~ msgid "Spin"
-#~ msgstr "Spin ενεργό"
-
-#, fuzzy
-#~ msgid "Set X Rate"
-#~ msgstr "Κατάσταση"
-
-#, fuzzy
-#~ msgid "Set Y Rate"
-#~ msgstr "Κατάσταση"
-
-#, fuzzy
-#~ msgid "Set Z Rate"
-#~ msgstr "Κατάσταση"
-
-#, fuzzy
-#~ msgid "Set FPS"
-#~ msgstr "FPS"
-
-#, fuzzy
-#~ msgid "Animation Mode"
-#~ msgstr "Προσομοίωση"
-
-#, fuzzy
-#~ msgid "Resume"
-#~ msgstr "Αλλαγή μεγέ&θους"
-
-#, fuzzy
-#~ msgid "Stop"
-#~ msgstr "Βήμα"
-
-#, fuzzy
-#~ msgid "Rewind"
-#~ msgstr "Επανάληψη"
-
-#, fuzzy
-#~ msgid "Restart"
-#~ msgstr "Επανάληψη"
-
-#, fuzzy
-#~ msgid "Delete measurements"
-#~ msgstr "Μετρήσεις"
-
-#, fuzzy
-#~ msgid "List measurements"
-#~ msgstr "Μετρήσεις"
-
-#, fuzzy
-#~ msgid "Distance units nanometers"
-#~ msgstr "Μο&νάδες Απόστασης"
-
-#, fuzzy
-#~ msgid "Distance units Angstroms"
-#~ msgstr "Μο&νάδες Απόστασης"
-
-#, fuzzy
-#~ msgid "Distance units picometers"
-#~ msgstr "Μο&νάδες Απόστασης"
-
-#, fuzzy
-#~ msgid "Center"
-#~ msgstr "Στο κέντ&ρο"
-
-#, fuzzy
-#~ msgid "Label"
-#~ msgstr "&Ετικέτα"
-
-#, fuzzy
-#~ msgid "Select atom"
-#~ msgstr "Διαγραφή ατόμων"
-
-#, fuzzy
-#~ msgid "Select chain"
-#~ msgstr "Επιλογή: "
-
-#, fuzzy
-#~ msgid "Select element"
-#~ msgstr "Επιλογή &Όλων"
-
-#, fuzzy
-#~ msgid "Select group"
-#~ msgstr "Επιλογή"
-
-#, fuzzy
-#~ msgid "Select molecule"
-#~ msgstr "Επιλογή &Όλων"
-
-#, fuzzy
-#~ msgid "Select site"
-#~ msgstr "Επιλογή"
-
-#, fuzzy
-#~ msgid "Show"
-#~ msgstr "Εμφάνιση Όλων"
-
-#, fuzzy
-#~ msgid "Console"
-#~ msgstr "Κονσό&λα"
-
-#, fuzzy
-#~ msgid "File Header"
-#~ msgstr "Όνομα αρχείου:"
-
-#, fuzzy
-#~ msgid "Orientation"
-#~ msgstr "Προσομοίωση"
-
-#, fuzzy
-#~ msgid "File"
-#~ msgstr "&Αρχείο"
-
-#, fuzzy
-#~ msgid "Reload"
-#~ msgstr "Επανα&φόρτωση"
-
-#, fuzzy
-#~ msgid "Open file or URL"
-#~ msgstr "Άνοιγμα URL"
-
-#, fuzzy
-#~ msgid "Open script"
-#~ msgstr "Αντιγραφή Script"
-
-#, fuzzy
-#~ msgid "Export {0} image"
-#~ msgstr "Εξαγωγή Ε&ικόνας"
-
-#, fuzzy
-#~ msgid "Computation"
-#~ msgstr "Υπολογισμός Δεσμών"
-
-#, fuzzy
-#~ msgid "van der Waals Surface"
-#~ msgstr "{0}% van der Waals"
-
-#, fuzzy
-#~ msgid "Molecular Surface"
-#~ msgstr "Μοριακές Ιδιότητες"
-
-#, fuzzy
-#~ msgid "Reload {0}"
-#~ msgstr "Επανα&φόρτωση"
-
-#, fuzzy
-#~ msgid "{0} px"
-#~ msgstr "{0} εικονοστοιχεία"
-
-#, fuzzy
-#~ msgid "Angstrom Width"
-#~ msgstr "(Angstroms)"
-
-#, fuzzy
-#~ msgid "Selection Halos"
-#~ msgstr "Επιλογή: "
-
-#, fuzzy
-#~ msgid "Show Hydrogens"
-#~ msgstr "Υδρογόνα"
-
-#, fuzzy
-#~ msgid "Show Measurements"
-#~ msgstr "Μετρήσεις"
-
-#, fuzzy
-#~ msgid "RasMol Colors"
-#~ msgstr "Προκαθορισμένες Ρυθμίσεις RasMol"
 
 #~ msgid "vector"
 #~ msgstr "διάνυσμα"

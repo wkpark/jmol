@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-05 17:04+0000\n"
-"X-Generator: Launchpad (build 13613)\n"
+"X-Launchpad-Export-Date: 2011-12-18 14:49+0000\n"
+"X-Generator: Launchpad (build 14525)\n"
 
 #: com/json/Cookie.java:121
 msgid "name"
@@ -34,9 +34,8 @@ msgid "domain"
 msgstr ""
 
 #: com/json/Cookie.java:134
-#, fuzzy
 msgid "path"
-msgstr "పునరావృతంచేయి"
+msgstr ""
 
 #: com/json/HTTP.java:132 com/json/HTTP.java:144
 msgid "HTTP-Version"
@@ -1858,47 +1857,3 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr ""
-
-#, fuzzy
-#~ msgid "Select ({0})"
-#~ msgstr "ఎంచుకోండి"
-
-#, fuzzy
-#~ msgid "Color"
-#~ msgstr "మూసివేయి"
-
-#, fuzzy
-#~ msgid "Indigo"
-#~ msgstr "సమాచారం"
-
-#, fuzzy
-#~ msgid "Set FPS"
-#~ msgstr "FPS"
-
-#, fuzzy
-#~ msgid "Restart"
-#~ msgstr "పునరావృతంచేయి"
-
-#, fuzzy
-#~ msgid "Select atom"
-#~ msgstr "ఎంచుకోండి"
-
-#, fuzzy
-#~ msgid "Select chain"
-#~ msgstr "ఎంచుకోండి"
-
-#, fuzzy
-#~ msgid "Select element"
-#~ msgstr "ఎంచుకోండి"
-
-#, fuzzy
-#~ msgid "Select group"
-#~ msgstr "ఎంచుకోండి"
-
-#, fuzzy
-#~ msgid "Select site"
-#~ msgstr "ఎంచుకోండి"
-
-#, fuzzy
-#~ msgid "Console"
-#~ msgstr "మూసివేయి"

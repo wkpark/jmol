@@ -14,18 +14,16 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-05 17:04+0000\n"
-"X-Generator: Launchpad (build 13613)\n"
+"X-Launchpad-Export-Date: 2011-12-18 14:49+0000\n"
+"X-Generator: Launchpad (build 14525)\n"
 
 #: com/json/Cookie.java:121
-#, fuzzy
 msgid "name"
-msgstr "&Navn"
+msgstr ""
 
 #: com/json/Cookie.java:123
-#, fuzzy
 msgid "value"
-msgstr "Værdi"
+msgstr ""
 
 #: com/json/Cookie.java:126
 msgid "expires"
@@ -36,27 +34,24 @@ msgid "domain"
 msgstr ""
 
 #: com/json/Cookie.java:134
-#, fuzzy
 msgid "path"
-msgstr "Gentag"
+msgstr ""
 
 #: com/json/HTTP.java:132 com/json/HTTP.java:144
 msgid "HTTP-Version"
 msgstr ""
 
 #: com/json/HTTP.java:134
-#, fuzzy
 msgid "Status-Code"
-msgstr "Tilstand"
+msgstr ""
 
 #: com/json/HTTP.java:136
 msgid "Reason-Phrase"
 msgstr ""
 
 #: com/json/HTTP.java:138
-#, fuzzy
 msgid "Method"
-msgstr "Metode: "
+msgstr ""
 
 #: com/json/HTTP.java:141
 msgid "Request-URI"
@@ -1355,9 +1350,8 @@ msgid "What's New in Jmol"
 msgstr "Hvad er nyt i Jmol"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:415
-#, fuzzy
 msgid "magic"
-msgstr "Grundlæggende"
+msgstr ""
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:416
 msgid "role"
@@ -1879,377 +1873,35 @@ msgstr "Hent visning"
 msgid "unimplemented"
 msgstr "ikke implementeret"
 
-#, fuzzy
 #~ msgid "All"
-#~ msgstr "&Alle"
+#~ msgstr "Alt"
 
-#, fuzzy
-#~ msgid "System"
-#~ msgstr "Trin"
-
-#, fuzzy
-#~ msgid "Configurations"
-#~ msgstr "Animation"
-
-#, fuzzy
-#~ msgid "Element"
-#~ msgstr "ikke implementeret"
-
-#, fuzzy
-#~ msgid "Select ({0})"
-#~ msgstr "Skalér {0}"
-
-#, fuzzy
-#~ msgid "chains: {0}"
-#~ msgstr "opretter {0}"
-
-#, fuzzy
-#~ msgid "View {0}"
-#~ msgstr "&Vis"
-
-#, fuzzy
-#~ msgid "Biomolecules"
-#~ msgstr "Rotér molekyle."
-
-#, fuzzy
 #~ msgid "None"
-#~ msgstr "&Ingen"
+#~ msgstr "Ingen"
 
-#, fuzzy
-#~ msgid "Display Selected Only"
-#~ msgstr "Slet valgte"
-
-#, fuzzy
-#~ msgid "Invert Selection"
-#~ msgstr "Udvalg: "
-
-#, fuzzy
-#~ msgid "View"
-#~ msgstr "&Vis"
-
-#, fuzzy
-#~ msgid "Front"
-#~ msgstr "&Front"
-
-#, fuzzy
-#~ msgid "Left"
-#~ msgstr "&Venstre"
-
-#, fuzzy
-#~ msgid "Right"
-#~ msgstr "&Højre"
-
-#, fuzzy
-#~ msgid "Bottom"
-#~ msgstr "&Bund"
-
-#, fuzzy
-#~ msgid "Back"
-#~ msgstr "Grundlæggende"
-
-#, fuzzy
-#~ msgid "Bases"
-#~ msgstr "Pause"
-
-#, fuzzy
-#~ msgid "All Water"
-#~ msgstr "Vand"
-
-#, fuzzy
-#~ msgid "Style"
-#~ msgstr "Trin"
-
-#, fuzzy
-#~ msgid "Wireframe"
-#~ msgstr "&Trådgitter"
-
-#, fuzzy
-#~ msgid "Cartoon"
-#~ msgstr "Kul"
-
-#, fuzzy
-#~ msgid "On"
-#~ msgstr "&Slået til"
-
-#, fuzzy
-#~ msgid "Hydrogen Bonds"
-#~ msgstr "Hydrogen"
-
-#, fuzzy
-#~ msgid "Cartoon Rockets"
-#~ msgstr "Tegneserie af side"
-
-#, fuzzy
-#~ msgid "Vibration"
-#~ msgstr "Animation"
-
-#, fuzzy
-#~ msgid "Vectors"
-#~ msgstr "V&ektorer"
-
-#, fuzzy
-#~ msgid "Red+Green glasses"
-#~ msgstr "Rød/Grøn"
-
-#, fuzzy
-#~ msgid "Labels"
-#~ msgstr "&Etiket"
-
-#, fuzzy
 #~ msgid "Centered"
-#~ msgstr "&Centreret"
+#~ msgstr "Centreret"
 
-#, fuzzy
-#~ msgid "Upper Right"
-#~ msgstr "&Øverst til højre"
+#~ msgid "On"
+#~ msgstr "Til"
 
-#, fuzzy
-#~ msgid "Lower Right"
-#~ msgstr "&Øverst til højre"
-
-#, fuzzy
-#~ msgid "Upper Left"
-#~ msgstr "&Øverst til højre"
-
-#, fuzzy
-#~ msgid "Color"
-#~ msgstr "Luk"
-
-#, fuzzy
-#~ msgid "Formal Charge"
-#~ msgstr "Samlet ladning: "
-
-#, fuzzy
-#~ msgid "Partial Charge"
-#~ msgstr "Samlet ladning: "
-
-#, fuzzy
-#~ msgid "Amino Acid"
-#~ msgstr "Amino"
-
-#, fuzzy
-#~ msgid "Black"
-#~ msgstr "Grundlæggende"
-
-#, fuzzy
-#~ msgid "White"
-#~ msgstr "Vand"
-
-#, fuzzy
-#~ msgid "Cyan"
-#~ msgstr "Rød/Cyan"
-
-#, fuzzy
-#~ msgid "Red"
-#~ msgstr "Omgør"
-
-#, fuzzy
-#~ msgid "Green"
-#~ msgstr "Rød/Grøn"
-
-#, fuzzy
-#~ msgid "Blue"
-#~ msgstr "Værdi"
-
-#, fuzzy
-#~ msgid "Indigo"
-#~ msgstr "Info"
-
-#, fuzzy
-#~ msgid "Maroon"
-#~ msgstr "Kul"
-
-#, fuzzy
-#~ msgid "Background"
-#~ msgstr "Baggrundsfarve"
-
-#, fuzzy
-#~ msgid "Boundbox"
-#~ msgstr "Afgrænsningsboks"
-
-#, fuzzy
 #~ msgid "Zoom"
-#~ msgstr "&Zoom"
+#~ msgstr "Forstør"
 
-#, fuzzy
-#~ msgid "Zoom In"
-#~ msgstr "&Zoom"
+#~ msgid "Front"
+#~ msgstr "Forside"
 
-#, fuzzy
-#~ msgid "Zoom Out"
-#~ msgstr "&Zoom"
+#~ msgid "Left"
+#~ msgstr "Venstre"
 
-#, fuzzy
-#~ msgid "Spin"
-#~ msgstr "Rotation til"
+#~ msgid "Bottom"
+#~ msgstr "Bund"
 
-#, fuzzy
-#~ msgid "Set X Rate"
-#~ msgstr "Tilstand"
+#~ msgid "Right"
+#~ msgstr "Højre"
 
-#, fuzzy
-#~ msgid "Set Y Rate"
-#~ msgstr "Tilstand"
-
-#, fuzzy
-#~ msgid "Set Z Rate"
-#~ msgstr "Tilstand"
-
-#, fuzzy
-#~ msgid "Set FPS"
-#~ msgstr "FPS"
-
-#, fuzzy
-#~ msgid "Animation Mode"
-#~ msgstr "Animation"
-
-#, fuzzy
-#~ msgid "Resume"
-#~ msgstr "N&y størrelse"
-
-#, fuzzy
-#~ msgid "Stop"
-#~ msgstr "Trin"
-
-#, fuzzy
-#~ msgid "Rewind"
-#~ msgstr "Omgør"
-
-#, fuzzy
-#~ msgid "Restart"
-#~ msgstr "Gentag"
-
-#, fuzzy
-#~ msgid "Delete measurements"
-#~ msgstr "Målinger"
-
-#, fuzzy
-#~ msgid "List measurements"
-#~ msgstr "Målinger"
-
-#, fuzzy
-#~ msgid "Distance units nanometers"
-#~ msgstr "Afstands&enheder"
-
-#, fuzzy
-#~ msgid "Distance units Angstroms"
-#~ msgstr "Afstands&enheder"
-
-#, fuzzy
-#~ msgid "Distance units picometers"
-#~ msgstr "Afstands&enheder"
-
-#, fuzzy
-#~ msgid "Center"
-#~ msgstr "&Centreret"
-
-#, fuzzy
 #~ msgid "Label"
-#~ msgstr "&Etiket"
-
-#, fuzzy
-#~ msgid "Select atom"
-#~ msgstr "Slet atomer"
-
-#, fuzzy
-#~ msgid "Select chain"
-#~ msgstr "Udvalg: "
-
-#, fuzzy
-#~ msgid "Select element"
-#~ msgstr "Vælg &alle"
-
-#, fuzzy
-#~ msgid "Select group"
-#~ msgstr "Vælg"
-
-#, fuzzy
-#~ msgid "Select molecule"
-#~ msgstr "Vælg &alle"
-
-#, fuzzy
-#~ msgid "Select site"
-#~ msgstr "Vælg"
-
-#, fuzzy
-#~ msgid "Show"
-#~ msgstr "Vis alle"
-
-#, fuzzy
-#~ msgid "Console"
-#~ msgstr "Konso&l..."
-
-#, fuzzy
-#~ msgid "File Header"
-#~ msgstr "Filnavn:"
-
-#, fuzzy
-#~ msgid "Model"
-#~ msgstr "Tilstand:"
-
-#, fuzzy
-#~ msgid "Orientation"
-#~ msgstr "Animation"
-
-#, fuzzy
-#~ msgid "File"
-#~ msgstr "&Fil"
-
-#, fuzzy
-#~ msgid "Reload"
-#~ msgstr "&Genindlæs"
-
-#, fuzzy
-#~ msgid "Open file or URL"
-#~ msgstr "Åbn URL"
-
-#, fuzzy
-#~ msgid "Open script"
-#~ msgstr "Kopiér script"
-
-#, fuzzy
-#~ msgid "Export {0} image"
-#~ msgstr "&Eksporter billede..."
-
-#, fuzzy
-#~ msgid "Computation"
-#~ msgstr "Beregn bindinger"
-
-#, fuzzy
-#~ msgid "van der Waals Surface"
-#~ msgstr "{0}% van der Waals"
-
-#, fuzzy
-#~ msgid "Molecular Surface"
-#~ msgstr "Molekylære egenskaber"
-
-#, fuzzy
-#~ msgid "Reload {0}"
-#~ msgstr "&Genindlæs"
-
-#, fuzzy
-#~ msgid "{0} px"
-#~ msgstr "{0} pixels"
-
-#, fuzzy
-#~ msgid "Angstrom Width"
-#~ msgstr "(Ångström)"
-
-#, fuzzy
-#~ msgid "Selection Halos"
-#~ msgstr "Udvalg: "
-
-#, fuzzy
-#~ msgid "Show Hydrogens"
-#~ msgstr "Hydrogen"
-
-#, fuzzy
-#~ msgid "Show Measurements"
-#~ msgstr "Målinger"
-
-#, fuzzy
-#~ msgid "RasMol Colors"
-#~ msgstr "Forvalg for RasMol"
+#~ msgstr "Etiket"
 
 #~ msgid "vector"
 #~ msgstr "vektor"

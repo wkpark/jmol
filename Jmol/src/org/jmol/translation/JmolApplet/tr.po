@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-05 17:04+0000\n"
-"X-Generator: Launchpad (build 13613)\n"
+"X-Launchpad-Export-Date: 2011-12-18 14:49+0000\n"
+"X-Generator: Launchpad (build 14525)\n"
 "X-Poedit-Language: Turkish\n"
 
 #: org/jmol/applet/AppletWrapper.java:100
@@ -419,14 +419,12 @@ msgid "French"
 msgstr "Fransızca"
 
 #: org/jmol/i18n/GT.java:155
-#, fuzzy
 msgid "Frisian"
-msgstr "Ukraynaca"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:156
-#, fuzzy
 msgid "Galician"
-msgstr "İtalyanca"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:157
 msgid "Croatian"
@@ -461,9 +459,8 @@ msgid "Korean"
 msgstr "Korece"
 
 #: org/jmol/i18n/GT.java:165
-#, fuzzy
 msgid "Malay"
-msgstr "Oynat"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:166
 msgid "Norwegian Bokmal"
@@ -900,11 +897,10 @@ msgid "Right"
 msgstr "Sağ"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:587
-#, fuzzy
 msgid ""
 "Top[as in \"view from the top, from above\" - (translators: remove this "
 "bracketed part]"
-msgstr "Yukarı"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:588
 msgid "Bottom"
@@ -2444,14 +2440,14 @@ msgstr "Günlük dosyası yolu ayarlanamıyor."
 msgid "Setting log file to {0}"
 msgstr "Günlük dosyası {0} olarak ayarlanıyor"
 
-#~ msgid "Top"
-#~ msgstr "Üst"
-
 #~ msgid "Java memory usage"
 #~ msgstr "Java hafıza kullanımı"
 
 #~ msgid "Molecular Orbitals"
 #~ msgstr "Moleküler Orbitaller"
+
+#~ msgid "Top"
+#~ msgstr "Üst"
 
 #~ msgid "About Jmol"
 #~ msgstr "Jmol Hakkında"

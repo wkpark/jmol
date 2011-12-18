@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-05 17:04+0000\n"
-"X-Generator: Launchpad (build 13613)\n"
+"X-Launchpad-Export-Date: 2011-12-18 14:49+0000\n"
+"X-Generator: Launchpad (build 14525)\n"
 
 #: org/jmol/applet/AppletWrapper.java:100
 msgid "Loading Jmol applet ..."
@@ -414,14 +414,12 @@ msgid "French"
 msgstr "Franska"
 
 #: org/jmol/i18n/GT.java:155
-#, fuzzy
 msgid "Frisian"
-msgstr "Ukrainska"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:156
-#, fuzzy
 msgid "Galician"
-msgstr "Italienska"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:157
 msgid "Croatian"
@@ -456,9 +454,8 @@ msgid "Korean"
 msgstr "Koreansk"
 
 #: org/jmol/i18n/GT.java:165
-#, fuzzy
 msgid "Malay"
-msgstr "Spela upp"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:166
 msgid "Norwegian Bokmal"
@@ -2433,11 +2430,11 @@ msgstr ""
 msgid "Setting log file to {0}"
 msgstr ""
 
-#~ msgid "Top"
-#~ msgstr "Överst"
-
 #~ msgid "Minimize"
 #~ msgstr "Minimera"
+
+#~ msgid "Top"
+#~ msgstr "Överst"
 
 #~ msgid "File {0}"
 #~ msgstr "Fil {0}"

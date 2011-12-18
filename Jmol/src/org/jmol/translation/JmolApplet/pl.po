@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-05 17:04+0000\n"
-"X-Generator: Launchpad (build 13613)\n"
+"X-Launchpad-Export-Date: 2011-12-18 14:49+0000\n"
+"X-Generator: Launchpad (build 14525)\n"
 
 #: org/jmol/applet/AppletWrapper.java:100
 msgid "Loading Jmol applet ..."
@@ -163,7 +163,7 @@ msgstr "Wznów"
 
 #: org/jmol/console/ScriptEditor.java:142
 msgid "Halt"
-msgstr ""
+msgstr "Wstrzymaj"
 
 #: org/jmol/console/ScriptEditor.java:144
 msgid "Clear"
@@ -418,14 +418,12 @@ msgid "French"
 msgstr "Francuski"
 
 #: org/jmol/i18n/GT.java:155
-#, fuzzy
 msgid "Frisian"
-msgstr "ukraiński"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:156
-#, fuzzy
 msgid "Galician"
-msgstr "Włoski"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:157
 msgid "Croatian"
@@ -460,9 +458,8 @@ msgid "Korean"
 msgstr "Koreański"
 
 #: org/jmol/i18n/GT.java:165
-#, fuzzy
 msgid "Malay"
-msgstr "Odtwórz"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:166
 msgid "Norwegian Bokmal"
@@ -2437,9 +2434,6 @@ msgstr ""
 msgid "Setting log file to {0}"
 msgstr ""
 
-#~ msgid "Top"
-#~ msgstr "Góra"
-
 #~ msgid "File creation failed."
 #~ msgstr "Tworzenie pliku zakończone niepowodzeniem."
 
@@ -2452,6 +2446,9 @@ msgstr ""
 
 #~ msgid "Java memory usage"
 #~ msgstr "poziom użycia pamięci Java"
+
+#~ msgid "Top"
+#~ msgstr "Góra"
 
 #~ msgid "File {0}"
 #~ msgstr "Plik {0}"

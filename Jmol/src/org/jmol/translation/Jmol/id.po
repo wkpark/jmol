@@ -14,18 +14,16 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-05 17:04+0000\n"
-"X-Generator: Launchpad (build 13613)\n"
+"X-Launchpad-Export-Date: 2011-12-18 14:50+0000\n"
+"X-Generator: Launchpad (build 14525)\n"
 
 #: com/json/Cookie.java:121
-#, fuzzy
 msgid "name"
-msgstr "&Nama"
+msgstr ""
 
 #: com/json/Cookie.java:123
-#, fuzzy
 msgid "value"
-msgstr "Nilai"
+msgstr ""
 
 #: com/json/Cookie.java:126
 msgid "expires"
@@ -36,27 +34,24 @@ msgid "domain"
 msgstr ""
 
 #: com/json/Cookie.java:134
-#, fuzzy
 msgid "path"
-msgstr "Ulangi"
+msgstr ""
 
 #: com/json/HTTP.java:132 com/json/HTTP.java:144
 msgid "HTTP-Version"
 msgstr ""
 
 #: com/json/HTTP.java:134
-#, fuzzy
 msgid "Status-Code"
-msgstr "Kondisi"
+msgstr ""
 
 #: com/json/HTTP.java:136
 msgid "Reason-Phrase"
 msgstr ""
 
 #: com/json/HTTP.java:138
-#, fuzzy
 msgid "Method"
-msgstr "Metode: "
+msgstr ""
 
 #: com/json/HTTP.java:141
 msgid "Request-URI"
@@ -1357,9 +1352,8 @@ msgid "What's New in Jmol"
 msgstr "Hal Baru di Jmol"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:415
-#, fuzzy
 msgid "magic"
-msgstr "Umum"
+msgstr ""
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:416
 msgid "role"
@@ -1882,378 +1876,6 @@ msgstr "Tampilan Muaturun"
 msgid "unimplemented"
 msgstr "belum diimplementasi"
 
-#, fuzzy
-#~ msgid "All"
-#~ msgstr "Semu&a"
-
-#, fuzzy
-#~ msgid "System"
-#~ msgstr "Langkah"
-
-#, fuzzy
-#~ msgid "Configurations"
-#~ msgstr "Animasi"
-
-#, fuzzy
-#~ msgid "Element"
-#~ msgstr "belum diimplementasi"
-
-#, fuzzy
-#~ msgid "Select ({0})"
-#~ msgstr "Skala {0}"
-
-#, fuzzy
-#~ msgid "chains: {0}"
-#~ msgstr "membuat {0}"
-
-#, fuzzy
-#~ msgid "View {0}"
-#~ msgstr "&Tampilan"
-
-#, fuzzy
-#~ msgid "Biomolecules"
-#~ msgstr "Putar molekul."
-
-#, fuzzy
-#~ msgid "None"
-#~ msgstr "&Tak Ada"
-
-#, fuzzy
-#~ msgid "Display Selected Only"
-#~ msgstr "Hapus Pilihan"
-
-#, fuzzy
-#~ msgid "Invert Selection"
-#~ msgstr "Seleksi: "
-
-#, fuzzy
-#~ msgid "View"
-#~ msgstr "&Tampilan"
-
-#, fuzzy
-#~ msgid "Front"
-#~ msgstr "Depan"
-
-#, fuzzy
-#~ msgid "Left"
-#~ msgstr "Kiri"
-
-#, fuzzy
-#~ msgid "Right"
-#~ msgstr "Kanan"
-
-#, fuzzy
-#~ msgid "Bottom"
-#~ msgstr "Bawah"
-
-#, fuzzy
-#~ msgid "Back"
-#~ msgstr "Umum"
-
-#, fuzzy
-#~ msgid "Bases"
-#~ msgstr "Jeda"
-
-#, fuzzy
-#~ msgid "All Water"
-#~ msgstr "Air"
-
-#, fuzzy
-#~ msgid "Style"
-#~ msgstr "Langkah"
-
-#, fuzzy
-#~ msgid "Wireframe"
-#~ msgstr "&Wireframe"
-
-#, fuzzy
-#~ msgid "Cartoon"
-#~ msgstr "Karbon"
-
-#, fuzzy
-#~ msgid "On"
-#~ msgstr "Hid&up"
-
-#, fuzzy
-#~ msgid "Hydrogen Bonds"
-#~ msgstr "Hidrogen"
-
-#, fuzzy
-#~ msgid "Cartoon Rockets"
-#~ msgstr "Kartun dari Halaman"
-
-#, fuzzy
-#~ msgid "Vibration"
-#~ msgstr "Animasi"
-
-#, fuzzy
-#~ msgid "Vectors"
-#~ msgstr "Vektor"
-
-#, fuzzy
-#~ msgid "Red+Green glasses"
-#~ msgstr "Merah/Hijau"
-
-#, fuzzy
-#~ msgid "Labels"
-#~ msgstr "&Label"
-
-#, fuzzy
-#~ msgid "Centered"
-#~ msgstr "&Ketengah"
-
-#, fuzzy
-#~ msgid "Upper Right"
-#~ msgstr "Kanan &atas"
-
-#, fuzzy
-#~ msgid "Lower Right"
-#~ msgstr "Kanan &atas"
-
-#, fuzzy
-#~ msgid "Upper Left"
-#~ msgstr "Kanan &atas"
-
-#, fuzzy
-#~ msgid "Color"
-#~ msgstr "Tutup"
-
-#, fuzzy
-#~ msgid "Formal Charge"
-#~ msgstr "Muatan Total: "
-
-#, fuzzy
-#~ msgid "Partial Charge"
-#~ msgstr "Muatan Total: "
-
-#, fuzzy
-#~ msgid "Amino Acid"
-#~ msgstr "Amino"
-
-#, fuzzy
-#~ msgid "Black"
-#~ msgstr "Umum"
-
-#, fuzzy
-#~ msgid "White"
-#~ msgstr "Air"
-
-#, fuzzy
-#~ msgid "Cyan"
-#~ msgstr "Merah/BiruLaut"
-
-#, fuzzy
-#~ msgid "Red"
-#~ msgstr "Jadi Lagi"
-
-#, fuzzy
-#~ msgid "Green"
-#~ msgstr "Merah/Hijau"
-
-#, fuzzy
-#~ msgid "Blue"
-#~ msgstr "Nilai"
-
-#, fuzzy
-#~ msgid "Indigo"
-#~ msgstr "Info"
-
-#, fuzzy
-#~ msgid "Maroon"
-#~ msgstr "Karbon"
-
-#, fuzzy
-#~ msgid "Background"
-#~ msgstr "Warna Latar"
-
-#, fuzzy
-#~ msgid "Boundbox"
-#~ msgstr "Kotak Bingkai"
-
-#, fuzzy
-#~ msgid "Zoom"
-#~ msgstr "&Zum"
-
-#, fuzzy
-#~ msgid "Zoom In"
-#~ msgstr "&Zum"
-
-#, fuzzy
-#~ msgid "Zoom Out"
-#~ msgstr "&Zum"
-
-#, fuzzy
-#~ msgid "Spin"
-#~ msgstr "Putaran hidup"
-
-#, fuzzy
-#~ msgid "Set X Rate"
-#~ msgstr "Kondisi"
-
-#, fuzzy
-#~ msgid "Set Y Rate"
-#~ msgstr "Kondisi"
-
-#, fuzzy
-#~ msgid "Set Z Rate"
-#~ msgstr "Kondisi"
-
-#, fuzzy
-#~ msgid "Set FPS"
-#~ msgstr "FPS"
-
-#, fuzzy
-#~ msgid "Animation Mode"
-#~ msgstr "Animasi"
-
-#, fuzzy
-#~ msgid "Resume"
-#~ msgstr "Aturulang ukuran"
-
-#, fuzzy
-#~ msgid "Stop"
-#~ msgstr "Langkah"
-
-#, fuzzy
-#~ msgid "Rewind"
-#~ msgstr "Jadi Lagi"
-
-#, fuzzy
-#~ msgid "Restart"
-#~ msgstr "Ulangi"
-
-#, fuzzy
-#~ msgid "Delete measurements"
-#~ msgstr "Pengukuran"
-
-#, fuzzy
-#~ msgid "List measurements"
-#~ msgstr "Pengukuran"
-
-#, fuzzy
-#~ msgid "Distance units nanometers"
-#~ msgstr "Satuan Jarak"
-
-#, fuzzy
-#~ msgid "Distance units Angstroms"
-#~ msgstr "Satuan Jarak"
-
-#, fuzzy
-#~ msgid "Distance units picometers"
-#~ msgstr "Satuan Jarak"
-
-#, fuzzy
-#~ msgid "Center"
-#~ msgstr "&Ketengah"
-
-#, fuzzy
-#~ msgid "Label"
-#~ msgstr "&Label"
-
-#, fuzzy
-#~ msgid "Select atom"
-#~ msgstr "Hapus atom-atom"
-
-#, fuzzy
-#~ msgid "Select chain"
-#~ msgstr "Seleksi: "
-
-#, fuzzy
-#~ msgid "Select element"
-#~ msgstr "Pilih Semu&a"
-
-#, fuzzy
-#~ msgid "Select group"
-#~ msgstr "Pilih"
-
-#, fuzzy
-#~ msgid "Select molecule"
-#~ msgstr "Pilih Semu&a"
-
-#, fuzzy
-#~ msgid "Select site"
-#~ msgstr "Pilih"
-
-#, fuzzy
-#~ msgid "Show"
-#~ msgstr "Tampilkan Semua"
-
-#, fuzzy
-#~ msgid "Console"
-#~ msgstr "Konsul..."
-
-#, fuzzy
-#~ msgid "File Header"
-#~ msgstr "Nama Berkas:"
-
-#, fuzzy
-#~ msgid "Model"
-#~ msgstr "Mode:"
-
-#, fuzzy
-#~ msgid "Orientation"
-#~ msgstr "Animasi"
-
-#, fuzzy
-#~ msgid "File"
-#~ msgstr "&Berkas"
-
-#, fuzzy
-#~ msgid "Reload"
-#~ msgstr "Muat Ulang"
-
-#, fuzzy
-#~ msgid "Open file or URL"
-#~ msgstr "Buka URL"
-
-#, fuzzy
-#~ msgid "Open script"
-#~ msgstr "Salin Skrip"
-
-#, fuzzy
-#~ msgid "Export {0} image"
-#~ msgstr "Expor &Gambar..."
-
-#, fuzzy
-#~ msgid "Computation"
-#~ msgstr "Menghitung ikatan-ikatan"
-
-#, fuzzy
-#~ msgid "van der Waals Surface"
-#~ msgstr "{0}% van der Waals"
-
-#, fuzzy
-#~ msgid "Molecular Surface"
-#~ msgstr "Properti Molekul"
-
-#, fuzzy
-#~ msgid "Reload {0}"
-#~ msgstr "Muat Ulang"
-
-#, fuzzy
-#~ msgid "{0} px"
-#~ msgstr "{0} piksel"
-
-#, fuzzy
-#~ msgid "Angstrom Width"
-#~ msgstr "(Angstroms)"
-
-#, fuzzy
-#~ msgid "Selection Halos"
-#~ msgstr "Seleksi: "
-
-#, fuzzy
-#~ msgid "Show Hydrogens"
-#~ msgstr "Hidrogen"
-
-#, fuzzy
-#~ msgid "Show Measurements"
-#~ msgstr "Pengukuran"
-
-#, fuzzy
-#~ msgid "RasMol Colors"
-#~ msgstr "Bawaan RasMol"
-
 #~ msgid "vector"
 #~ msgstr "vektor"
 
@@ -2318,3 +1940,36 @@ msgstr "belum diimplementasi"
 
 #~ msgid "independent commmand thread"
 #~ msgstr "ulir perintah independen"
+
+#~ msgid "Wireframe"
+#~ msgstr "Wireframe"
+
+#~ msgid "All"
+#~ msgstr "Semua"
+
+#~ msgid "None"
+#~ msgstr "Tidak ada"
+
+#~ msgid "Centered"
+#~ msgstr "Ditengahkan"
+
+#~ msgid "Label"
+#~ msgstr "Label"
+
+#~ msgid "Front"
+#~ msgstr "Depan"
+
+#~ msgid "Zoom"
+#~ msgstr "Zum"
+
+#~ msgid "On"
+#~ msgstr "Hidup"
+
+#~ msgid "Left"
+#~ msgstr "Kiri"
+
+#~ msgid "Bottom"
+#~ msgstr "Bawah"
+
+#~ msgid "Right"
+#~ msgstr "Kanan"

@@ -14,20 +14,18 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-05 17:05+0000\n"
-"X-Generator: Launchpad (build 13613)\n"
+"X-Launchpad-Export-Date: 2011-12-18 14:49+0000\n"
+"X-Generator: Launchpad (build 14525)\n"
 "X-Poedit-Country: ANDORRA\n"
 "X-Poedit-Language: Catalan\n"
 
 #: com/json/Cookie.java:121
-#, fuzzy
 msgid "name"
-msgstr "&Nom"
+msgstr ""
 
 #: com/json/Cookie.java:123
-#, fuzzy
 msgid "value"
-msgstr "Valor"
+msgstr ""
 
 #: com/json/Cookie.java:126
 msgid "expires"
@@ -38,27 +36,24 @@ msgid "domain"
 msgstr ""
 
 #: com/json/Cookie.java:134
-#, fuzzy
 msgid "path"
-msgstr "Repeteix"
+msgstr ""
 
 #: com/json/HTTP.java:132 com/json/HTTP.java:144
 msgid "HTTP-Version"
 msgstr ""
 
 #: com/json/HTTP.java:134
-#, fuzzy
 msgid "Status-Code"
-msgstr "Estat"
+msgstr ""
 
 #: com/json/HTTP.java:136
 msgid "Reason-Phrase"
 msgstr ""
 
 #: com/json/HTTP.java:138
-#, fuzzy
 msgid "Method"
-msgstr "Mètode: "
+msgstr ""
 
 #: com/json/HTTP.java:141
 msgid "Request-URI"
@@ -1360,9 +1355,8 @@ msgid "What's New in Jmol"
 msgstr "Novetats del Jmol"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:415
-#, fuzzy
 msgid "magic"
-msgstr "Bàsic"
+msgstr ""
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:416
 msgid "role"
@@ -1886,334 +1880,6 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr ""
-
-#, fuzzy
-#~ msgid "All"
-#~ msgstr "&Tot"
-
-#, fuzzy
-#~ msgid "System"
-#~ msgstr "Pas"
-
-#, fuzzy
-#~ msgid "Select ({0})"
-#~ msgstr "Escala {0}"
-
-#, fuzzy
-#~ msgid "chains: {0}"
-#~ msgstr "es crea {0}"
-
-#, fuzzy
-#~ msgid "View {0}"
-#~ msgstr "Perspe&ctiva"
-
-#, fuzzy
-#~ msgid "Biomolecules"
-#~ msgstr "Rota la molècula."
-
-#, fuzzy
-#~ msgid "None"
-#~ msgstr "Ca&p"
-
-#, fuzzy
-#~ msgid "Display Selected Only"
-#~ msgstr "Suprimeix allò seleccionat"
-
-#, fuzzy
-#~ msgid "Invert Selection"
-#~ msgstr "Selecció: "
-
-#, fuzzy
-#~ msgid "View"
-#~ msgstr "Perspe&ctiva"
-
-#, fuzzy
-#~ msgid "Front"
-#~ msgstr "Da&vant"
-
-#, fuzzy
-#~ msgid "Left"
-#~ msgstr "&Esquerra"
-
-#, fuzzy
-#~ msgid "Right"
-#~ msgstr "&Dreta"
-
-#, fuzzy
-#~ msgid "Bottom"
-#~ msgstr "A&vall"
-
-#, fuzzy
-#~ msgid "Back"
-#~ msgstr "Bàsic"
-
-#, fuzzy
-#~ msgid "Bases"
-#~ msgstr "Bàsic"
-
-#, fuzzy
-#~ msgid "All Water"
-#~ msgstr "Aigua"
-
-#, fuzzy
-#~ msgid "Style"
-#~ msgstr "Pas"
-
-#, fuzzy
-#~ msgid "Wireframe"
-#~ msgstr "&Filferro"
-
-#, fuzzy
-#~ msgid "Cartoon"
-#~ msgstr "Carboni"
-
-#, fuzzy
-#~ msgid "On"
-#~ msgstr "&Activat"
-
-#, fuzzy
-#~ msgid "Hydrogen Bonds"
-#~ msgstr "Hidrògens"
-
-#, fuzzy
-#~ msgid "Cartoon Rockets"
-#~ msgstr "Aspecte de la pàgina"
-
-#, fuzzy
-#~ msgid "Vibration"
-#~ msgstr "A&tura la vibració"
-
-#, fuzzy
-#~ msgid "Vectors"
-#~ msgstr "V&ectors"
-
-#, fuzzy
-#~ msgid "Labels"
-#~ msgstr "&Etiqueta"
-
-#, fuzzy
-#~ msgid "Centered"
-#~ msgstr "&Centrat"
-
-#, fuzzy
-#~ msgid "Upper Right"
-#~ msgstr "&Adalt a la dreta"
-
-#, fuzzy
-#~ msgid "Lower Right"
-#~ msgstr "&Adalt a la dreta"
-
-#, fuzzy
-#~ msgid "Upper Left"
-#~ msgstr "&Adalt a la dreta"
-
-#, fuzzy
-#~ msgid "Color"
-#~ msgstr "Tanca"
-
-#, fuzzy
-#~ msgid "Formal Charge"
-#~ msgstr "Càrrega total: "
-
-#, fuzzy
-#~ msgid "Partial Charge"
-#~ msgstr "Càrrega total: "
-
-#, fuzzy
-#~ msgid "Amino Acid"
-#~ msgstr "Amino"
-
-#, fuzzy
-#~ msgid "Black"
-#~ msgstr "Bàsic"
-
-#, fuzzy
-#~ msgid "White"
-#~ msgstr "Aigua"
-
-#, fuzzy
-#~ msgid "Cyan"
-#~ msgstr "Carboni"
-
-#, fuzzy
-#~ msgid "Red"
-#~ msgstr "Refés"
-
-#, fuzzy
-#~ msgid "Blue"
-#~ msgstr "Valor"
-
-#, fuzzy
-#~ msgid "Indigo"
-#~ msgstr "Informació"
-
-#, fuzzy
-#~ msgid "Maroon"
-#~ msgstr "Carboni"
-
-#, fuzzy
-#~ msgid "Boundbox"
-#~ msgstr "Quadre d'enllaçament"
-
-#, fuzzy
-#~ msgid "Zoom"
-#~ msgstr "A&mplia"
-
-#, fuzzy
-#~ msgid "Zoom In"
-#~ msgstr "A&mplia"
-
-#, fuzzy
-#~ msgid "Zoom Out"
-#~ msgstr "A&mplia"
-
-#, fuzzy
-#~ msgid "Set X Rate"
-#~ msgstr "Estat"
-
-#, fuzzy
-#~ msgid "Set Y Rate"
-#~ msgstr "Estat"
-
-#, fuzzy
-#~ msgid "Set Z Rate"
-#~ msgstr "Estat"
-
-#, fuzzy
-#~ msgid "Set FPS"
-#~ msgstr "FPS"
-
-#, fuzzy
-#~ msgid "Stop"
-#~ msgstr "Pas"
-
-#, fuzzy
-#~ msgid "Rewind"
-#~ msgstr "Refés"
-
-#, fuzzy
-#~ msgid "Restart"
-#~ msgstr "Repeteix"
-
-#, fuzzy
-#~ msgid "Delete measurements"
-#~ msgstr "Mesures"
-
-#, fuzzy
-#~ msgid "List measurements"
-#~ msgstr "Mesures"
-
-#, fuzzy
-#~ msgid "Distance units nanometers"
-#~ msgstr "&Unitats de distància"
-
-#, fuzzy
-#~ msgid "Distance units Angstroms"
-#~ msgstr "&Unitats de distància"
-
-#, fuzzy
-#~ msgid "Distance units picometers"
-#~ msgstr "&Unitats de distància"
-
-#, fuzzy
-#~ msgid "Center"
-#~ msgstr "&Centrat"
-
-#, fuzzy
-#~ msgid "Label"
-#~ msgstr "&Etiqueta"
-
-#, fuzzy
-#~ msgid "Select atom"
-#~ msgstr "Suprimeix els àtoms"
-
-#, fuzzy
-#~ msgid "Select chain"
-#~ msgstr "Selecció: "
-
-#, fuzzy
-#~ msgid "Select element"
-#~ msgstr "Seleccion&a-ho tot"
-
-#, fuzzy
-#~ msgid "Select group"
-#~ msgstr "Selecció"
-
-#, fuzzy
-#~ msgid "Select molecule"
-#~ msgstr "Seleccion&a-ho tot"
-
-#, fuzzy
-#~ msgid "Select site"
-#~ msgstr "Selecció"
-
-#, fuzzy
-#~ msgid "Show"
-#~ msgstr "Mostra-ho tot"
-
-#, fuzzy
-#~ msgid "Console"
-#~ msgstr "Consola del Jmol"
-
-#, fuzzy
-#~ msgid "File Header"
-#~ msgstr "Nom del fitxer:"
-
-#, fuzzy
-#~ msgid "File"
-#~ msgstr "&Fitxer"
-
-#, fuzzy
-#~ msgid "Reload"
-#~ msgstr "Refés"
-
-#, fuzzy
-#~ msgid "Open file or URL"
-#~ msgstr "Obri un URL"
-
-#, fuzzy
-#~ msgid "Open script"
-#~ msgstr "Copia l'script"
-
-#, fuzzy
-#~ msgid "Export {0} image"
-#~ msgstr "Exporta una &imatge…"
-
-#, fuzzy
-#~ msgid "Computation"
-#~ msgstr "Computa els enllaços"
-
-#, fuzzy
-#~ msgid "van der Waals Surface"
-#~ msgstr "{0}% van der Waals"
-
-#, fuzzy
-#~ msgid "Molecular Surface"
-#~ msgstr "Propietats moleculars"
-
-#, fuzzy
-#~ msgid "{0} px"
-#~ msgstr "{0} píxels"
-
-#, fuzzy
-#~ msgid "Angstrom Width"
-#~ msgstr "(Àmstrongs)"
-
-#, fuzzy
-#~ msgid "Selection Halos"
-#~ msgstr "Selecció: "
-
-#, fuzzy
-#~ msgid "Show Hydrogens"
-#~ msgstr "Hidrògens"
-
-#, fuzzy
-#~ msgid "Show Measurements"
-#~ msgstr "Mesures"
-
-#, fuzzy
-#~ msgid "RasMol Colors"
-#~ msgstr "Paràmetres per defecte del RasMol"
 
 #~ msgid "The -D options are as follows (defaults in parenthesis):"
 #~ msgstr ""

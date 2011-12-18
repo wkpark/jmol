@@ -14,17 +14,16 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-21 09:24+0000\n"
-"X-Generator: Launchpad (build 13697)\n"
+"X-Launchpad-Export-Date: 2011-12-18 14:50+0000\n"
+"X-Generator: Launchpad (build 14525)\n"
 
 #: com/json/Cookie.java:121
 msgid "name"
 msgstr ""
 
 #: com/json/Cookie.java:123
-#, fuzzy
 msgid "value"
-msgstr "Wartość"
+msgstr ""
 
 #: com/json/Cookie.java:126
 msgid "expires"
@@ -35,27 +34,24 @@ msgid "domain"
 msgstr ""
 
 #: com/json/Cookie.java:134
-#, fuzzy
 msgid "path"
-msgstr "Powtórz"
+msgstr ""
 
 #: com/json/HTTP.java:132 com/json/HTTP.java:144
 msgid "HTTP-Version"
 msgstr ""
 
 #: com/json/HTTP.java:134
-#, fuzzy
 msgid "Status-Code"
-msgstr "Stan"
+msgstr ""
 
 #: com/json/HTTP.java:136
 msgid "Reason-Phrase"
 msgstr ""
 
 #: com/json/HTTP.java:138
-#, fuzzy
 msgid "Method"
-msgstr "Metoda: "
+msgstr ""
 
 #: com/json/HTTP.java:141
 msgid "Request-URI"
@@ -1353,9 +1349,8 @@ msgid "What's New in Jmol"
 msgstr "Co nowego w Jmol"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:415
-#, fuzzy
 msgid "magic"
-msgstr "Podstawowe"
+msgstr ""
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:416
 msgid "role"
@@ -1865,234 +1860,6 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr ""
-
-#, fuzzy
-#~ msgid "System"
-#~ msgstr "Krok"
-
-#, fuzzy
-#~ msgid "Select ({0})"
-#~ msgstr "Skala {0}"
-
-#, fuzzy
-#~ msgid "chains: {0}"
-#~ msgstr "Skala {0}"
-
-#, fuzzy
-#~ msgid "View {0}"
-#~ msgstr "&Widok"
-
-#, fuzzy
-#~ msgid "Biomolecules"
-#~ msgstr "Obróć cząsteczkę."
-
-#, fuzzy
-#~ msgid "Invert Selection"
-#~ msgstr "Kolekcja zestawów atomów"
-
-#, fuzzy
-#~ msgid "View"
-#~ msgstr "&Widok"
-
-#, fuzzy
-#~ msgid "Back"
-#~ msgstr "Podstawowe"
-
-#, fuzzy
-#~ msgid "Bases"
-#~ msgstr "Podstawowe"
-
-#, fuzzy
-#~ msgid "All Water"
-#~ msgstr "Woda"
-
-#, fuzzy
-#~ msgid "Style"
-#~ msgstr "Krok"
-
-#, fuzzy
-#~ msgid "Cartoon"
-#~ msgstr "Węgiel"
-
-#, fuzzy
-#~ msgid "On"
-#~ msgstr "Otwórz"
-
-#, fuzzy
-#~ msgid "Hydrogen Bonds"
-#~ msgstr "Wodorki"
-
-#, fuzzy
-#~ msgid "Vectors"
-#~ msgstr "Wektor"
-
-#, fuzzy
-#~ msgid "Color"
-#~ msgstr "Zamknij"
-
-#, fuzzy
-#~ msgid "Formal Charge"
-#~ msgstr "Ładunek Całkowity: "
-
-#, fuzzy
-#~ msgid "Partial Charge"
-#~ msgstr "Ładunek Całkowity: "
-
-#, fuzzy
-#~ msgid "Amino Acid"
-#~ msgstr "Aminokwas"
-
-#, fuzzy
-#~ msgid "Black"
-#~ msgstr "Podstawowe"
-
-#, fuzzy
-#~ msgid "White"
-#~ msgstr "Woda"
-
-#, fuzzy
-#~ msgid "Cyan"
-#~ msgstr "Węgiel"
-
-#, fuzzy
-#~ msgid "Red"
-#~ msgstr "Przywróć"
-
-#, fuzzy
-#~ msgid "Blue"
-#~ msgstr "Wartość"
-
-#, fuzzy
-#~ msgid "Indigo"
-#~ msgstr "Informacja"
-
-#, fuzzy
-#~ msgid "Maroon"
-#~ msgstr "Węgiel"
-
-#, fuzzy
-#~ msgid "Boundbox"
-#~ msgstr "Obramowanie"
-
-#, fuzzy
-#~ msgid "Set X Rate"
-#~ msgstr "Stan"
-
-#, fuzzy
-#~ msgid "Set Y Rate"
-#~ msgstr "Stan"
-
-#, fuzzy
-#~ msgid "Set Z Rate"
-#~ msgstr "Stan"
-
-#, fuzzy
-#~ msgid "Set FPS"
-#~ msgstr "Klatek na sekundę"
-
-#, fuzzy
-#~ msgid "Stop"
-#~ msgstr "Krok"
-
-#, fuzzy
-#~ msgid "Rewind"
-#~ msgstr "Przywróć"
-
-#, fuzzy
-#~ msgid "Restart"
-#~ msgstr "Powtórz"
-
-#, fuzzy
-#~ msgid "Delete measurements"
-#~ msgstr "Miary"
-
-#, fuzzy
-#~ msgid "List measurements"
-#~ msgstr "Miary"
-
-#, fuzzy
-#~ msgid "Center"
-#~ msgstr "Kontroler"
-
-#, fuzzy
-#~ msgid "Select atom"
-#~ msgstr "Usuń atomy"
-
-#, fuzzy
-#~ msgid "Select chain"
-#~ msgstr "Wybierz"
-
-#, fuzzy
-#~ msgid "Select element"
-#~ msgstr "Wybierz"
-
-#, fuzzy
-#~ msgid "Select group"
-#~ msgstr "Wybierz"
-
-#, fuzzy
-#~ msgid "Select molecule"
-#~ msgstr "Obróć cząsteczkę."
-
-#, fuzzy
-#~ msgid "Select site"
-#~ msgstr "Wybierz"
-
-#, fuzzy
-#~ msgid "Show"
-#~ msgstr "Pokaż wszystko"
-
-#, fuzzy
-#~ msgid "Console"
-#~ msgstr "Kontroler"
-
-#, fuzzy
-#~ msgid "File Header"
-#~ msgstr "Nazwa pliku:"
-
-#, fuzzy
-#~ msgid "File"
-#~ msgstr "&Plik"
-
-#, fuzzy
-#~ msgid "Reload"
-#~ msgstr "Przywróć"
-
-#, fuzzy
-#~ msgid "Open file or URL"
-#~ msgstr "Otwórz URL"
-
-#, fuzzy
-#~ msgid "Open script"
-#~ msgstr "Skopiuj skrypt"
-
-#, fuzzy
-#~ msgid "Export {0} image"
-#~ msgstr "Eksoprtuj &grafikę..."
-
-#, fuzzy
-#~ msgid "Computation"
-#~ msgstr "Oblicz wiązania"
-
-#, fuzzy
-#~ msgid "Molecular Surface"
-#~ msgstr "Właściwości Molekularne"
-
-#, fuzzy
-#~ msgid "{0} px"
-#~ msgstr "{0} pikseli"
-
-#, fuzzy
-#~ msgid "Angstrom Width"
-#~ msgstr "(Angstromów)"
-
-#, fuzzy
-#~ msgid "Show Hydrogens"
-#~ msgstr "Wodorki"
-
-#, fuzzy
-#~ msgid "Show Measurements"
-#~ msgstr "Miary"
 
 #~ msgid "atom set"
 #~ msgstr "zestaw atomów"

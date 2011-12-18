@@ -4390,11 +4390,8 @@ public class ScriptEvaluator {
     }
     if (tok != Token.rightsquare)
       error(ERROR_invalidArgument);
-    if (points == null) {
-      points = new Point3f[vp.size()];
-      for (int j = vp.size(); --j >= 0;)
-        points[j] = vp.get(j);
-    }
+    if (points == null)
+      points = vp.toArray(new Point3f[vp.size()]);
     return points;
   }
 
@@ -6604,10 +6601,7 @@ public class ScriptEvaluator {
           i = iToken;
         }
         if (v.size() > 0) {
-          path = new Point3f[v.size()];
-          for (int j = 0; j < v.size(); j++) {
-            path[j] = v.get(j);
-          }
+          path = v.toArray(new Point3f[v.size()]);
           if (!isSyntaxCheck)
             viewer.navigate(timeSec, path, theta, 0, Integer.MAX_VALUE);
           continue;
@@ -6916,10 +6910,7 @@ public class ScriptEvaluator {
           }
         }
         retStddev[0] = 0;
-        data1 = new Quaternion[vQ.size()];
-        for (int i = vQ.size(); --i >= 0;) {
-          data1[i] = vQ.get(i);
-        }
+        data1 = vQ.toArray(new Quaternion[vQ.size()]);
         q = Quaternion.sphereMean(data1, retStddev, 0.0001f);
         showString("RMSD = " + retStddev[0] + " degrees");
       } else {
@@ -7095,10 +7086,7 @@ public class ScriptEvaluator {
         return new String[] {};
       }
       showString("RMSD " + stddev + " Angstroms");
-      b = new BitSet[vReturn.size()];
-      for (int j = 0; j < b.length; j++) {
-        b[j] = vReturn.get(j);
-      }
+      b = vReturn.toArray(new BitSet[vReturn.size()]);
     }
     if (asOneBitset) {
       // sum total of all now, not just first

@@ -374,7 +374,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
         if (ZipUtil.isJmolManifest(thisEntry) || haveManifest
             && exceptFiles == manifest.indexOf("|" + thisEntry + "|") >= 0)
           continue;
-        byte[] bytes = ZipUtil.getZipEntryAsBytes(zis);
+        byte[] bytes = ZipUtil.getStreamBytes(zis, ze.getSize());
         if (ZipUtil.isZipFile(bytes)) {
           BufferedInputStream bis = new BufferedInputStream(
               new ByteArrayInputStream(bytes));

@@ -249,9 +249,7 @@ final public class ArrayUtil {
       return null;
     if (v.size() == 1)
       return v.get(0);
-    String[] keys = new String[v.size()];
-    for (int i = 0; i < keys.length; i++)
-      keys[i] = v.get(i);
+    String[] keys = v.toArray(new String[v.size()]);
     Arrays.sort(keys);
     return keys[n % keys.length];
   }

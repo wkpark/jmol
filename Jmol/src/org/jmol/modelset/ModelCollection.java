@@ -1143,11 +1143,7 @@ abstract public class ModelCollection extends BondCollection {
       v.add(q);
       i = g.lastAtomIndex;
     }
-    Quaternion[] qs = new Quaternion[v.size()];
-    for (int i = 0; i < qs.length; i++) {
-      qs[i] = v.get(i);
-    }
-    return qs;
+    return v.toArray(new Quaternion[v.size()]);
   }
 
   /**

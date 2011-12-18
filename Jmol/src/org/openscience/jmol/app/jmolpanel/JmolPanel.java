@@ -798,23 +798,14 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
    * for trying to get an array of strings out of the
    * resource file.
    * @param input String to chop
-   * @return Strings chopped on whitespace boundries
+   * @return Strings chopped on whitespace boundaries
    */
   protected String[] tokenize(String input) {
-
     List<String> v = new ArrayList<String>();
     StringTokenizer t = new StringTokenizer(input);
-    String cmd[];
-
-    while (t.hasMoreTokens()) {
+    while (t.hasMoreTokens())
       v.add(t.nextToken());
-    }
-    cmd = new String[v.size()];
-    for (int i = 0; i < cmd.length; i++) {
-      cmd[i] = v.get(i);
-    }
-
-    return cmd;
+    return v.toArray(new String[v.size()]);
   }
 
   /**

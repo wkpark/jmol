@@ -395,10 +395,7 @@ public class Resolver {
     } catch (Exception e) {
       //
     }
-    String[] dirs = new String[v.size()];
-    for (int i = 0; i < v.size(); i++)
-      dirs[i] = v.get(i);
-    return dirs;
+    return v.toArray(new String[v.size()]);
   }
   
   private static final String CML_NAMESPACE_URI = "http://www.xml-cml.org/schema";

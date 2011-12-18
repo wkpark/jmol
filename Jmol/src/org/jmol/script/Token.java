@@ -1411,9 +1411,7 @@ public class Token {
       if (tokAttr(token.tok, attr) && (notattr == nada || !tokAttr(token.tok, notattr)))
         v.add(name);
     }
-    String[] a = new String[v.size()];
-    for (int i = 0; i < a.length; i++)
-      a[i] = v.get(i);
+    String[] a = v.toArray(new String[v.size()]);
     Arrays.sort(a);
     return a;
   }

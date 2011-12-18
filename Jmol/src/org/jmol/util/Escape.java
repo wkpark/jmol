@@ -844,11 +844,7 @@ public class Escape {
       while (next[0] < data.length() && data.charAt(next[0]) != '"')
         next[0]++;
     }    
-    String[] array = new String[v.size()];
-    for (int i = 0; i < array.length; i++) {
-      array[i] = v.get(i);
-    }
-    return array;
+    return v.toArray(new String[v.size()]);
   }
 
   public static String escapeUrl(String url) {

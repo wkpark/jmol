@@ -145,10 +145,7 @@ public class MdTopReader extends ForceFieldReader {
       vdata.add(line.substring(i, i + n).trim());
       i += n;
     }
-    String[] data = new String[vdata.size()];
-    for (i = vdata.size(); --i >= 0; )
-      data[i] = vdata.get(i);
-    return data;
+    return vdata.toArray(new String[vdata.size()]);
   }
 
   /*

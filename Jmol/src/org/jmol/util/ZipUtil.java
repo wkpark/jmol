@@ -72,15 +72,14 @@ public class ZipUtil {
   public static boolean isPngZipStream(InputStream is) {
     if (isZipFile(is))
       return false;
-    byte[] abMagic = new byte[55];
     try {
       is.mark(56);
-      is.read(abMagic, 0, 55);
+      byte[] abMagic = getStreamBytes(is, 55);
       is.reset();
+      return (abMagic[51] == 'P' && abMagic[52] == 'N' && abMagic[53] == 'G' && abMagic[54] == 'J');
     } catch (Exception e) {
-      // ignore
     }
-    return (abMagic[51] == 'P' && abMagic[52] == 'N' && abMagic[53] == 'G' && abMagic[54] == 'J');
+    return false;
   }
 
   /**
@@ -94,10 +93,10 @@ public class ZipUtil {
   public static BufferedInputStream checkPngZipStream(BufferedInputStream bis) {
     if (!isPngZipStream(bis))
       return bis;
-    byte[] data = new byte[74];
+    byte[] data = null;
     bis.mark(75);
     try {
-      bis.read(data, 0, 74);
+      data = getStreamBytes(bis, 74);
       bis.reset();
       int pt = 0;
       for (int i = 64, f = 1; --i > 54; f *= 10)
@@ -105,15 +104,9 @@ public class ZipUtil {
       int n = 0;
       for (int i = 74, f = 1; --i > 64; f *= 10)
         n += (data[i] - '0') * f;
-      data = new byte[n];
       while (pt > 0)
         pt -= bis.skip(pt);
-      n = data.length;
-      pt = 0;
-      while (pt < n) {
-         pt += bis.read(data, pt, n - pt);
-         //System.out.println("ziputil " + pt);
-      }
+      data = getStreamBytes(bis, n);
       bis.close();
     } catch (Throwable e) {
       data = new byte[0];
@@ -175,7 +168,7 @@ public class ZipUtil {
         listing.append(name).append('\n');
         String sname = "|" + name.substring(name.lastIndexOf("/") + 1) + "|";
         boolean asBinaryString = (binaryFileList.indexOf(sname) >= 0);
-        byte[] bytes = getZipEntryAsBytes(zis);
+        byte[] bytes = getStreamBytes(zis, ze.getSize());
         String str;
         if (asBinaryString) {
           str = getBinaryStringForBytes(bytes);
@@ -243,7 +236,7 @@ public class ZipUtil {
       while ((ze = zis.getNextEntry()) != null) {
         if (!fileName.equals(ze.getName()))
           continue;
-        byte[] bytes = getZipEntryAsBytes(zis);
+        byte[] bytes = getStreamBytes(zis, ze.getSize());
         //System.out.println("ZipUtil::ZipEntry.name = " + ze.getName() + " " + bytes.length);
         if (isZipFile(bytes))
           return getZipFileContents(new BufferedInputStream(
@@ -276,7 +269,7 @@ public class ZipUtil {
       while ((ze = zis.getNextEntry()) != null) {
         if (!fileName.equals(ze.getName()))
           continue;
-        byte[] bytes = getZipEntryAsBytes(zis);
+        byte[] bytes = getStreamBytes(zis, ze.getSize());
         if (isZipFile(bytes) && list != null && ++listPtr < list.length)
           return getZipFileContentsAsBytes(new BufferedInputStream(
               new ByteArrayInputStream(bytes)), list, listPtr);
@@ -332,13 +325,10 @@ public class ZipUtil {
     zis.close();
     if (addManifest)
       v.add(0, manifest == null ? "" : manifest + "\n############\n");
-    int len = v.size();
-    String[] dirList = new String[len];
-    for (int i = 0; i < len; i++)
-      dirList[i] = v.get(i);
-    return dirList;
+    return v.toArray(new String[v.size()]);
   }
-  
+
+
   private static String getZipEntryAsString(InputStream is) throws IOException {
     StringBuffer sb = new StringBuffer();
     byte[] buf = new byte[1024];
@@ -348,20 +338,24 @@ public class ZipUtil {
     return sb.toString();
   }
   
-  public static byte[] getZipEntryAsBytes(ZipInputStream zis) throws IOException {
+  public static byte[] getStreamBytes(InputStream is, long n) throws IOException {
     
-    //What is the efficient way to read an input stream into a byte array?
+    //Note: You cannot use InputStream.available() to reliably read
+    //      zip data from the web. 
     
-    byte[] buf = new byte[1024];
-    byte[] bytes = new byte[4096];
+    byte[] buf = new byte[n >= 0 && n < 1024 ? (int) n : 1024];
+    byte[] bytes = new byte[n < 0 ? 4096 : (int) n];
     int len = 0;
     int totalLen = 0;
-    while (zis.available() == 1 && (len = zis.read(buf)) > 0) {
+    while ((n < 0 || totalLen < n) 
+        && (len = is.read(buf)) > 0) {
       totalLen += len;
-      if (totalLen >= bytes.length)
+      if (totalLen > bytes.length)
         bytes = ArrayUtil.ensureLength(bytes, totalLen * 2);
       System.arraycopy(buf, 0, bytes, totalLen - len, len);
     }
+    if (totalLen == bytes.length)
+      return bytes;
     buf = new byte[totalLen];
     System.arraycopy(bytes, 0, buf, 0, totalLen);
     return buf;

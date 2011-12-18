@@ -605,10 +605,7 @@ Token[keyword(0x880001) value=")"]
               + minAtoms[atomList[ic]].getIdentity());
 */        }
     }
-    
-    angles = new int[vAngles.size()][];
-    for (int i = vAngles.size(); --i >= 0; )
-      angles[i] = vAngles.get(i);
+    angles = vAngles.toArray(new int[vAngles.size()][]);
     Logger.info(angles.length + " angles");
   }
 
@@ -653,11 +650,7 @@ Token[keyword(0x880001) value=")"]
       }
       
     }
-
-    torsions = new int[vTorsions.size()][];
-    for (int i = vTorsions.size(); --i >= 0;)
-      torsions[i] = vTorsions.get(i);
-
+    torsions = vTorsions.toArray(new int[vTorsions.size()][]);
     Logger.info(torsions.length + " torsions");
 
   }

@@ -311,7 +311,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
         firstMatchOnly, MODE_ARRAY);
   }
 
-  @SuppressWarnings({ "unchecked", "cast" })
+  @SuppressWarnings({ "unchecked" })
   private Object match(String pattern, JmolNode[] atoms, int atomCount,
                        BitSet bsSelected, BitSet bsAromatic, boolean isSmarts,
                        boolean matchAllAtoms, boolean firstMatchOnly,
@@ -326,27 +326,20 @@ public class SmilesMatcher implements SmilesMatcherInterface {
       search.setSelected(bsSelected);
       search.bsRequired = null;//(bsRequired != null && bsRequired.cardinality() > 0 ? bsRequired : null);
       search.setRingData(bsAromatic);
-      List<Object> vSubstructures;
       search.firstMatchOnly = firstMatchOnly;
       search.matchAllAtoms = matchAllAtoms;
       switch (mode) {
       case MODE_BITSET:
         search.asVector = false;
-        return (BitSet) search.search(false);
+        return search.search(false);
       case MODE_ARRAY:
         search.asVector = true;
-        vSubstructures = (List<Object>) search.search(false);
-        BitSet[] bitsets = new BitSet[vSubstructures.size()];
-        for (int i = 0; i < bitsets.length; i++)
-          bitsets[i] = (BitSet) vSubstructures.get(i);
-        return bitsets;
+        List<BitSet> vb = (List<BitSet>) search.search(false);
+        return vb.toArray(new BitSet[vb.size()]);
       case MODE_MAP:
         search.getMaps = true;
-        vSubstructures = (List<Object>) search.search(false);
-        int[][] maps = new int[vSubstructures.size()][];
-        for (int i = 0; i < maps.length; i++)
-          maps[i] = (int[]) vSubstructures.get(i);
-        return maps;
+        List<int[]> vl = (List<int[]>) search.search(false);
+        return vl.toArray(new int[vl.size()][]);
       }
     } catch (Exception e) {
       if (InvalidSmilesException.getLastError() == null)

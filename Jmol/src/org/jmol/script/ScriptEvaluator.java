@@ -705,14 +705,18 @@ public class ScriptEvaluator {
       }
       switch (tok) {
       case Token.define:
-        // @{@x} or @{@{x}}
+        // @{@x} or @{@{x}} or @{@1} -- also userFunction(@1)
         if (tokAt(++i) == Token.expressionBegin) {
           v = parameterExpressionToken(++i);
+          i = iToken;
+        } else if (tokAt(i) == Token.integer) {
+          v = viewer.getAtomBits(Token.atomno, Integer
+              .valueOf(statement[i].intValue));
+          break;
         } else {
           v = getParameter(ScriptVariable.sValue(statement[i]), Token.variable);
         }
         v = getParameter(((ScriptVariable) v).asString(), Token.variable);
-        i = iToken;
         break;
       case Token.ifcmd:
         if (getToken(++i).tok != Token.leftparen)

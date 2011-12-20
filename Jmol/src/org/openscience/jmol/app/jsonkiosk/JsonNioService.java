@@ -466,12 +466,13 @@ public class JsonNioService extends NIOService implements JsonNioServer {
     }
   }
 
-  private void processJSON(JSONObject json, String msg) throws FileNotFoundException, JSONException {
+  private void processJSON(JSONObject json, String msg)
+      throws FileNotFoundException, JSONException {
     if (json == null)
       json = new JSONObject(msg);
     int pt = ("banner...." + "command..." + "content..." + "move......"
         + "quit......" + "sync......" + "touch.....").indexOf(json
-            .getString("type"));
+        .getString("type"));
     setEnabled();
     switch (pt) {
     case 0: // banner
@@ -491,8 +492,8 @@ public class JsonNioService extends NIOService implements JsonNioServer {
         break;
       }
       String id = json.getString("id");
-      String path = TextFormat.simpleReplace(contentPath, "%ID%", id)
-          .replace('\\', '/');
+      String path = TextFormat.simpleReplace(contentPath, "%ID%", id).replace(
+          '\\', '/');
       File f = new File(path);
       FileInputStream jsonFile = new FileInputStream(f);
       Logger.info("JsonNiosService Setting path to " + f.getAbsolutePath());
@@ -524,23 +525,22 @@ public class JsonNioService extends NIOService implements JsonNioServer {
         float dy = (float) json.getDouble("y");
         float dxdy = dx * dx + dy * dy;
         boolean isFast = (dxdy > swipeCutoff);
-        boolean isNavigating = jmolViewer.getBooleanProperty("isNavigating");
-        if (isNavigating || isFast || now - swipeStartTime > swipeDelayMs) {
+        boolean disallowSpinGesture = jmolViewer
+            .getBooleanProperty("isNavigating")
+            || !jmolViewer.getBooleanProperty("allowGestures");
+        if (disallowSpinGesture || isFast
+            || now - swipeStartTime > swipeDelayMs) {
           // it's been a while since the last swipe....
           // ... send rotation in all cases
           msg = null;
-          if (isNavigating) {
+          if (disallowSpinGesture) {
             // just rotate
           } else if (isFast) {
             if (++nFast > swipeCount) {
               // critical number of fast motions reached
               // start spinning
               swipeStartTime = now;
-              msg = "Mouse: spinXYBy "
-                  + (int) dx
-                  + " "
-                  + (int) dy
-                  + " "
+              msg = "Mouse: spinXYBy " + (int) dx + " " + (int) dy + " "
                   + (Math.sqrt(dxdy) * swipeFactor / (now - previousMoveTime));
             }
           } else if (nFast > 0) {

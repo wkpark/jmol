@@ -1043,7 +1043,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     //really rotRadians is just one of these -- x, y, or z -- not all
     float rotRadians = rotAxis.x + rotAxis.y + rotAxis.z;
     defaultColix = Graphics3D.getColix(sg.getColor(1));
-    int colorNeg = sg.getColor(-1);
+    short colixNeg = Graphics3D.getColix(sg.getColor(-1));
     Vector3f y = new Vector3f();
     boolean isReverse = (lcaoCartoon.length() > 0 && lcaoCartoon.charAt(0) == '-');
     if (isReverse)
@@ -1078,7 +1078,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         return;
       setProperty("thisID", id + "b", null);
       createLcaoLobe(x, -sense, nElectrons);
-      thisMesh.colix = Graphics3D.getColix(colorNeg);
+      thisMesh.colix = colixNeg;
       linkedMesh = thisMesh.linkedMesh = meshA;
       return;
     }
@@ -1090,7 +1090,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         return;
       setProperty("thisID", id + "b", null);
       createLcaoLobe(y, -sense, nElectrons);
-      thisMesh.colix = Graphics3D.getColix(colorNeg);
+      thisMesh.colix = colixNeg;
       linkedMesh = thisMesh.linkedMesh = meshA;
       return;
     }
@@ -1102,7 +1102,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         return;
       setProperty("thisID", id + "b", null);
       createLcaoLobe(z, -sense, nElectrons);
-      thisMesh.colix = Graphics3D.getColix(colorNeg);
+      thisMesh.colix = colixNeg;
       linkedMesh = thisMesh.linkedMesh = meshA;
       return;
     }
@@ -1150,7 +1150,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if (Logger.debugging) {
       Logger.debug("creating isosurface ID " + thisMesh.thisID);
     }
-    thisMesh.colix = defaultColix;
     if (lobeAxis == null) {
       setProperty("sphere", new Float(factor / 2f), null);
     } else {
@@ -1161,6 +1160,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       setProperty(nElectrons == 2 ? "lp" : nElectrons == 1 ? "rad" : "lobe", 
           lcaoDir, null);
     }
+    thisMesh.colix = defaultColix;
     setScriptInfo(null);
   }
 

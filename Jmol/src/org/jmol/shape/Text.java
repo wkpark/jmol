@@ -109,12 +109,18 @@ public class Text extends Object2d {
   }
 
   Object image;
+  float imageScale = 1;
   public void setImage(Object image) {
     this.image = image;
     // this.text will be file name
     recalc();
   }
 
+  public void setScale(float scale) {
+    imageScale = scale;
+    recalc();
+  }
+  
   void setFont(Font3D f3d) {
     font = f3d;
     if (font == null)
@@ -145,8 +151,8 @@ public class Text extends Object2d {
   protected void recalc() {
     if (image != null) {
       textWidth = textHeight = 0;
-      boxWidth = viewer.getApiPlatform().getImageWidth(image) * fontScale;
-      boxHeight = viewer.getApiPlatform().getImageHeight(image) * fontScale;
+      boxWidth = viewer.getApiPlatform().getImageWidth(image) * fontScale * imageScale;
+      boxHeight = viewer.getApiPlatform().getImageHeight(image) * fontScale * imageScale;
       ascent = 0;
       return;
     }
@@ -430,6 +436,8 @@ public class Text extends Object2d {
       s.append("; echo ");
     s.append(Escape.escape(text)); // was textUnformatted, but that is not really the STATE
     s.append(";\n");
+    if (isImage && imageScale != 1)
+      s.append("  ").append(echoCmd).append(" scale ").append(imageScale).append(";\n");
     if (script != null)
       s.append("  ").append(echoCmd).append(" script ").append(
           Escape.escape(script)).append(";\n");

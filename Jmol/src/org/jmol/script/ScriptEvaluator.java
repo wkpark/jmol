@@ -12884,6 +12884,10 @@ public class ScriptEvaluator {
       case Token.off:
         propertyName = "off";
         break;
+      case Token.scale:
+        propertyName = "scale";
+        propertyValue = Float.valueOf(floatParameter(pt++));
+        break;
       case Token.script:
         propertyName = "script";
         propertyValue = parameterAsString(pt++);

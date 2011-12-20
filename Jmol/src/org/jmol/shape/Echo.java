@@ -71,6 +71,19 @@ public class Echo extends TextShape {
       // continue on to Object2d setting
     }
 
+    if ("scale" == propertyName) {
+      if (currentObject == null) {
+        if (isAll) {
+          Iterator<Text> e = objects.values().iterator();
+          while (e.hasNext()) {
+            e.next().setScale(((Float) value).floatValue());
+          }
+        }
+        return;
+      }
+      ((Text) currentObject).setScale(((Float) value).floatValue());
+      return;
+    }
     if ("image" == propertyName) {
       if (currentObject == null) {
         if (isAll) {

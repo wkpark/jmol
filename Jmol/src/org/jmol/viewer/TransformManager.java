@@ -2106,7 +2106,8 @@ abstract class TransformManager {
       truncate2(sb, tY);
       sb.append(";");
     }
-    if (modelRadius != rotationRadiusDefault) {
+    if (modelRadius != rotationRadiusDefault || modelRadius == 10) {
+      // after ZAP;load APPEND   we need modelRadius, which is 10
       sb.append(" set rotationRadius");
       truncate2(sb, modelRadius);
       sb.append(";");

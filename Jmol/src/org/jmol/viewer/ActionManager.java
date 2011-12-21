@@ -1554,11 +1554,11 @@ public class ActionManager {
             break;
         }
       } catch (InterruptedException ie) {
-        Logger.info("Timeout " + this + " interrupted");
+        //Logger.info("Timeout " + this + " interrupted");
       } catch (Exception ie) {
         Logger.info("Timeout " + name + " Exception: " + ie);
       }
-      System.out.println("timeout done:" + name);
+      //System.out.println("timeout done:" + name);
       timeouts.remove(name);
     }
   }

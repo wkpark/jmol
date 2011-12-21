@@ -56,6 +56,8 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.print.PrinterException;
@@ -741,7 +743,8 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
   protected AbstractButton createToolbarButton(String key) {
 
     ImageIcon ii = JmolResourceHandler.getIconX(key + "Image");
-    AbstractButton b = new JButton(ii);
+    boolean isHoldButton = (key.startsWith("animatePrev") || key.startsWith("animateNext"));
+    AbstractButton b = (isHoldButton ? new AnimButton(ii, JmolResourceHandler.getStringX(key)) : new JButton(ii));
     String isToggleString = JmolResourceHandler.getStringX(key + "Toggle");
     if (isToggleString != null) {
       boolean isToggle = Boolean.valueOf(isToggleString).booleanValue();
@@ -767,7 +770,9 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
     Action a = null;
     String actionCommand = null;
-    if (key.endsWith("Script")) {
+    if (isHoldButton) {
+      
+    } else if (key.endsWith("Script")) {
       actionCommand = JmolResourceHandler.getStringX(key);
       a = executeScriptAction;
     } else {
@@ -780,7 +785,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       a.addPropertyChangeListener(new ActionChangedListener(b));
       b.setEnabled(a.isEnabled());
     } else {
-      b.setEnabled(false);
+      b.setEnabled(isHoldButton);
     }
 
     String tip = guimap.getLabel(key + "Tip");
@@ -1598,6 +1603,37 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     return (JsonNioServer) Interface
         .getApplicationInterface("jsonkiosk.JsonNioService");
   }
+
+  private class AnimButton extends JButton implements MouseListener {
+
+    private String script;
+
+    protected AnimButton(ImageIcon ii, String script) {
+      super(ii);
+      this.script = script;
+      addMouseListener(this);
+    }
+
+    public void mousePressed(MouseEvent e) {
+      viewer.evalStringQuiet(script);
+      viewer.evalStringQuiet("timeout '__animBtn' -100 \"" + script + "\"");
+    }
+
+    public void mouseReleased(MouseEvent e) {
+      viewer.evalStringQuiet("timeout '__animBtn' OFF");
+    }
+
+    public void mouseClicked(MouseEvent e) {
+    }
+
+    public void mouseEntered(MouseEvent e) {
+    }
+
+    public void mouseExited(MouseEvent e) {
+    }
+
+  }
+
 
   
 }

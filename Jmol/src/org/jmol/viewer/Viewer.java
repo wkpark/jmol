@@ -3773,11 +3773,12 @@ private void zap(String msg) {
         .getModelNumberDotted(modelIndex));
   }
 
-  void setFrameVariables(int firstModelIndex, int lastModelIndex) {
+  void setFrameVariables() {
     global.setParameterValue("_firstFrame",
-        getModelNumberDotted(firstModelIndex));
+        getModelNumberDotted(animationManager.firstModelIndex));
     global
-        .setParameterValue("_lastFrame", getModelNumberDotted(lastModelIndex));
+        .setParameterValue("_lastFrame", getModelNumberDotted(animationManager.lastModelIndex));
+    global.setParameterValue("_animTimeSec", animationManager.getAnimRunTimeSeconds());
   }
 
   boolean wasInMotion = false;
@@ -3792,7 +3793,7 @@ private void zap(String msg) {
   public void setInMotion(boolean inMotion) {
     // MouseManager, TransformManager
     if (wasInMotion ^ inMotion) {
-      animationManager.setInMotion(inMotion);
+      animationManager.inMotion = inMotion;
       if (inMotion) {
         ++motionEventNumber;
       } else {

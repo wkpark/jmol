@@ -35,13 +35,41 @@ import java.util.Map;
 
 class AnimationManager {
 
-  Viewer viewer;
-
+  protected Viewer viewer;
+  
   AnimationManager(Viewer viewer) {
     this.viewer = viewer;
   }
 
-  int currentModelIndex = 0;
+  EnumAnimationMode animationReplayMode = EnumAnimationMode.ONCE;
+
+  boolean animationOn;
+  boolean animationPaused;
+  boolean inMotion;
+  
+  int animationFps;  // set in stateManager
+  int animationDirection = 1;
+  int currentDirection = 1;
+  int currentModelIndex;
+  int firstModelIndex;
+  int frameStep;
+  int lastModelIndex;
+   
+  protected int firstFrameDelayMs;
+  protected int lastFrameDelayMs;
+  protected int lastModelPainted;
+  
+  private AnimationThread animationThread;
+  private int backgroundModelIndex = -1;
+  private final BitSet bsVisibleFrames = new BitSet();
+  
+  BitSet getVisibleFramesBitSet() {
+    return bsVisibleFrames;
+  }
+  
+  private float firstFrameDelay;
+  private int intAnimThread;
+  private float lastFrameDelay;
 
   void setCurrentModelIndex(int modelIndex) {
     setCurrentModelIndex(modelIndex, true);  
@@ -100,13 +128,6 @@ class AnimationManager {
   
   }
 
-  private void setStatusFrameChanged() {
-    if (viewer.getModelSet() != null)
-      viewer.setStatusFrameChanged(animationOn ? -2 - currentModelIndex
-          : currentModelIndex);
-  }
-  
-  int backgroundModelIndex = -1;
   void setBackgroundModelIndex(int modelIndex) {
     ModelSet modelSet = viewer.getModelSet();
     if (modelSet == null || modelIndex < 0 || modelIndex >= modelSet.getModelCount())
@@ -118,9 +139,10 @@ class AnimationManager {
     setFrameRangeVisible(); 
   }
   
-  private final BitSet bsVisibleFrames = new BitSet();
-  BitSet getVisibleFramesBitSet() {
-    return bsVisibleFrames;
+  private void setStatusFrameChanged() {
+    if (viewer.getModelSet() != null)
+      viewer.setStatusFrameChanged(animationOn ? -2 - currentModelIndex
+          : currentModelIndex);
   }
   
   private void setFrameRangeVisible() {
@@ -152,28 +174,13 @@ class AnimationManager {
       setCurrentModelIndex(frameDisplayed);
   }
 
-  AnimationThread animationThread;
-
-  boolean inMotion = false;
-  void setInMotion(boolean inMotion) {
-    this.inMotion = inMotion;
-  }
-
-  /****************************************************************
-   * Animation support
-   ****************************************************************/
-  
-  int firstModelIndex;
-  int lastModelIndex;
-  int frameStep;
-
   void initializePointers(int frameStep) {
     firstModelIndex = 0;
     int modelCount = viewer.getModelCount();
     lastModelIndex = (frameStep == 0 ? 0 
         : modelCount) - 1;
     this.frameStep = frameStep;
-    viewer.setFrameVariables(firstModelIndex, lastModelIndex);
+    viewer.setFrameVariables();
   }
 
   void clear() {
@@ -244,16 +251,12 @@ class AnimationManager {
     return commands.toString();
   }
   
-  int animationDirection = 1;
-  int currentDirection = 1;
   void setAnimationDirection(int animationDirection) {
     this.animationDirection = animationDirection;
     //if (animationReplayMode != ANIMATION_LOOP)
       //currentDirection = 1;
   }
 
-  int animationFps;  // set in stateManager
-  
   void setAnimationFps(int animationFps) {
     this.animationFps = animationFps;
   }
@@ -262,9 +265,6 @@ class AnimationManager {
   // 1 = loop
   // 2 = palindrome
   
-  EnumAnimationMode animationReplayMode = EnumAnimationMode.ONCE;
-  float firstFrameDelay, lastFrameDelay;
-  int firstFrameDelayMs, lastFrameDelayMs;
   void setAnimationReplayMode(EnumAnimationMode animationReplayMode,
                                      float firstFrameDelay,
                                      float lastFrameDelay) {
@@ -273,6 +273,7 @@ class AnimationManager {
     this.lastFrameDelay = lastFrameDelay > 0 ? lastFrameDelay : 0;
     lastFrameDelayMs = (int)(this.lastFrameDelay * 1000);
     this.animationReplayMode = animationReplayMode;
+    viewer.setFrameVariables();
   }
 
   void setAnimationRange(int framePointer, int framePointer2) {
@@ -287,13 +288,11 @@ class AnimationManager {
     rewindAnimation();
   }
 
-  boolean animationOn = false;
   private void animationOn(boolean TF) {
     animationOn = TF; 
     viewer.setBooleanProperty("_animating", TF);
   }
   
-  boolean animationPaused = false;
   void setAnimationOn(boolean animationOn) {
     if (!animationOn || !viewer.haveModelSet()) {
       setAnimationOff(false);
@@ -327,8 +326,6 @@ class AnimationManager {
       resumeAnimation();
   }
   
-  int intAnimThread = 0;
-  int lastModelPainted;
   void repaintDone() {
     lastModelPainted = currentModelIndex;
   }
@@ -360,7 +357,7 @@ class AnimationManager {
   void rewindAnimation() {
     setCurrentModelIndex(animationDirection > 0 ? firstModelIndex : lastModelIndex);
     currentDirection = 1;
-    viewer.setFrameVariables(firstModelIndex, lastModelIndex);
+    viewer.setFrameVariables();
   }
   
   boolean setAnimationPrevious() {
@@ -368,11 +365,6 @@ class AnimationManager {
   }
 
   boolean setAnimationRelative(int direction) {
-    
-//    if (true)
-  //    return true;
-    
-    
     int frameStep = this.frameStep * direction * currentDirection;
     int modelIndexNext = currentModelIndex + frameStep;
     boolean isDone = (modelIndexNext > firstModelIndex
@@ -398,7 +390,22 @@ class AnimationManager {
     setCurrentModelIndex(modelIndexNext);
     return true;
   }
-  
+
+  float getAnimRunTimeSeconds() {
+    if (firstModelIndex == lastModelIndex
+        || lastModelIndex < 0 || firstModelIndex < 0
+        || lastModelIndex >= viewer.getModelCount()
+        || firstModelIndex >= viewer.getModelCount())
+      return  0;
+    int i0 = Math.min(firstModelIndex, lastModelIndex);
+    int i1 = Math.max(firstModelIndex, lastModelIndex);
+    float nsec = 1f * (i1 - i0) / animationFps + firstFrameDelay
+        + lastFrameDelay;
+    for (int i = i0; i <= i1; i++)
+      nsec += viewer.getFrameDelayMs(i) / 1000f;
+    return nsec;
+  }
+
   class AnimationThread extends Thread {
     final int framePointer;
     final int framePointer2;
@@ -447,7 +454,7 @@ class AnimationManager {
             return;
           }
           isFirst = false;
-          targetTime += (1000 / animationFps) + viewer.getFrameDelayMs(currentModelIndex);
+          targetTime += (int)((1000f / animationFps) + viewer.getFrameDelayMs(currentModelIndex));
           sleepTime = targetTime
               - (int) (System.currentTimeMillis() - timeBegin);
 

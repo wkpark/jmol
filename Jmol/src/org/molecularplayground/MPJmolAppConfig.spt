@@ -1,7 +1,7 @@
 /*
 
 Molecular Playground Configuration File
-Bob Hanson, St. Olaf College 12/4/2011
+Bob Hanson, St. Olaf College 12/21/2011
 
 See also MPJmolAppRemoteConfig.spt and MPJmolAppDefaultConfig.spt
 
@@ -158,6 +158,7 @@ print "load model " + jmolFile + " " + more + " " + banner
   if (!checkSubtopic(banner)) { return }
   zap
   message banner:
+  var d = 0
   try {
     remoteSet("log&info=loading " + jmolFile)
     load @jmolFile
@@ -171,11 +172,10 @@ print "load model " + jmolFile + " " + more + " " + banner
       remoteSet("setimage&?POST?_PNG_")
     } 
     catch (err) { print err }
-    
+    d = [300, (_animating ? [myDelay,_animTimeSec * 2].max : myDelay)].min
   }
 
-
-    delay @mydelay
+  delay @d
 
   // send terminator message to keep Hub happy
 

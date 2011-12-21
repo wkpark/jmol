@@ -1036,6 +1036,10 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       break;
     case Token.script:
     case Token.getproperty:
+      if (script.charAt(ichToken) == '@') {
+        iHaveQuotedString = true;
+        return OK;
+      }
       if (!iHaveQuotedString && lookingAtImpliedString(false, false)) {
         String str = script.substring(ichToken, ichToken + cchToken);
         if (tokCommand == Token.script && str.startsWith("javascript:")) {

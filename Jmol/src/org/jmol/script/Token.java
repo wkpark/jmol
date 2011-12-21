@@ -269,13 +269,13 @@ public class Token {
   final static int log          = 5 | mathExpressionCommand;
   //final static int prompt     see mathfunc
   
-  public final static int echo  = 1 | implicitStringCommand | shapeCommand | setparam;
+  public final static int echo  = 1 /* must be odd */ | implicitStringCommand | shapeCommand | setparam;
   final static int help         = 2 /* must be even */ | implicitStringCommand;
-  public final static int hover = 3 | implicitStringCommand | defaultON;
+  public final static int hover = 3 /* must be odd */ | implicitStringCommand | defaultON;
 //final static int javascript   see mathfunc
 //final static int label        see mathfunc
-  final static int message      = 5 | implicitStringCommand;
-  public final static int pause = 7 | implicitStringCommand;
+  final static int message      = 5 /* must be odd */ | implicitStringCommand;
+  public final static int pause = 7 /* must be odd */ | implicitStringCommand;
 
   //these commands control flow
   //sorry about GOTO!
@@ -301,7 +301,7 @@ public class Token {
   final static int bind         = scriptCommand | 4;
   final static int bondorder    = scriptCommand | 5;
   final static int calculate    = scriptCommand | 6;
-  final static int cd           = scriptCommand | 8 | implicitStringCommand | expression; // must be even
+  final static int cd           = scriptCommand | 8 /* must be even */| implicitStringCommand | expression; // must be even
   final static int centerAt     = scriptCommand | 9;
 //final static int color        see intproperty
 //final static int configuration see intproperty

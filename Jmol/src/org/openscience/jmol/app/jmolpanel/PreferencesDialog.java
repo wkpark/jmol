@@ -108,7 +108,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     "showAxes",                       "false",
     "showBoundingBox",                "false",
     "axesOrientationRasmol",          "false",
-	"openFilePreview",                "true",
+	  "openFilePreview",                "true",
     "percentVdwAtom",                 "23",
     "autoBond",                       "true",
     "marBond",                        "150",
@@ -170,9 +170,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     rasmolDefaultsButton.addActionListener(this);
     buttonPanel.add(rasmolDefaultsButton);
 
-    cancelButton = new JButton(GT._("Cancel"));
-    cancelButton.addActionListener(this);
-    buttonPanel.add(cancelButton);
+    //cancelButton = new JButton(GT._("Cancel"));
+    //cancelButton.addActionListener(this);
+    //buttonPanel.add(cancelButton);
 
     applyButton = new JButton(GT._("Apply"));
     applyButton.addActionListener(this);
@@ -315,11 +315,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     vdwPercentSlider.addChangeListener(new ChangeListener() {
 
       public void stateChanged(ChangeEvent e) {
-
-        JSlider source = (JSlider) e.getSource();
-        percentVdwAtom = source.getValue();
-        viewer.setIntProperty("PercentVdwAtom", percentVdwAtom);
-        currentProperties.put("percentVdwAtom", "" + percentVdwAtom);
+        rebond();
       }
     });
     sfPanel.add(vdwPercentSlider, BorderLayout.CENTER);
@@ -414,11 +410,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     bwSlider.addChangeListener(new ChangeListener() {
 
       public void stateChanged(ChangeEvent e) {
-
-        JSlider source = (JSlider) e.getSource();
-        marBond = (short)source.getValue();
-        viewer.setIntProperty("bondRadiusMilliAngstroms", marBond);
-        currentProperties.put("marBond", "" + marBond);
+        rebond();
       }
     });
 
@@ -460,12 +452,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     btSlider.addChangeListener(new ChangeListener() {
 
       public void stateChanged(ChangeEvent e) {
-
-        JSlider source = (JSlider) e.getSource();
-        bondTolerance = source.getValue() / 100f;
-        viewer.setFloatProperty("bondTolerance", bondTolerance);
-        currentProperties.put("bondTolerance", "" + bondTolerance);
-        viewer.rebond();
+        rebond();
       }
     });
     btPanel.add(btSlider);
@@ -504,14 +491,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     bdSlider.setLabelTable(labelTable);
 
     bdSlider.addChangeListener(new ChangeListener() {
-
       public void stateChanged(ChangeEvent e) {
-
-        JSlider source = (JSlider) e.getSource();
-        minBondDistance = source.getValue() / 100f;
-        viewer.setFloatProperty("minBondDistance", minBondDistance);
-        currentProperties.put("minBondDistance", "" + minBondDistance);
-        viewer.rebond();
+        rebond();
       }
     });
     bdPanel.add(bdSlider);
@@ -571,6 +552,12 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
   }
 
+  private void apply() {
+    rebond();
+    save();
+    viewer.refresh(3, "PreferencesDialog:apply()");
+  }
+
   private void save() {
     try {
       FileOutputStream fileOutputStream =
@@ -580,7 +567,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     } catch (Exception e) {
       Logger.error("Error saving preferences", e);
     }
-    viewer.refresh(3, "PreferencesDialog:save()");
   }
 
   void initializeProperties() {
@@ -610,6 +596,27 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     updateComponents();
   }
 
+  void rebond() {
+    percentVdwAtom = vdwPercentSlider.getValue();
+    viewer.setIntProperty("PercentVdwAtom", percentVdwAtom);
+    currentProperties.put("percentVdwAtom", "" + percentVdwAtom);
+
+    bondTolerance = btSlider.getValue() / 100f;
+    viewer.setFloatProperty("bondTolerance", bondTolerance);
+    currentProperties.put("bondTolerance", "" + bondTolerance);
+    
+    minBondDistance = bdSlider.getValue() / 100f;
+    viewer.setFloatProperty("minBondDistance", minBondDistance);
+    currentProperties.put("minBondDistance", "" + minBondDistance);
+    
+    marBond = (short)bwSlider.getValue();
+    viewer.setIntProperty("bondRadiusMilliAngstroms", marBond);
+    currentProperties.put("marBond", "" + marBond);
+    
+    viewer.rebond();
+    viewer.refresh(3, "PreferencesDialog:rebond()");
+  }
+  
   void initVariables() {
 
     autoBond = Boolean.getBoolean("autoBond");
@@ -729,7 +736,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   
   public void actionPerformed(ActionEvent event) {
     if (event.getSource() == applyButton) {
-      save();
+      apply();
     } else if (event.getSource() == jmolDefaultsButton) {
       resetDefaults(null);
     } else if (event.getSource() == rasmolDefaultsButton) {

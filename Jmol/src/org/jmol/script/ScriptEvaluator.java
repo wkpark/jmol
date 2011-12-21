@@ -7144,7 +7144,8 @@ public class ScriptEvaluator {
      */
 
     if (statementLength == 1) {
-      viewer.rebond();
+      if (!isSyntaxCheck)
+        viewer.rebond();
       return;
     }
 

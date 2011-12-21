@@ -992,55 +992,50 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     }
     switch (tokCommand) {
     case Token.load:
-      if (script.charAt(ichToken) == '@') {
-        iHaveQuotedString = true;
-        return OK;
-      }
-      if (nTokens == 1 && lookingAtLoadFormat()) {
-        String strFormat = script.substring(ichToken, ichToken + cchToken);
-        Token token = Token.getTokenFromName(strFormat.toLowerCase());
-        switch (token == null ? Token.nada : token.tok) {
-        case Token.append:
-        case Token.data:
-        case Token.file:
-        case Token.inline:
-        case Token.menu:
-        case Token.model:
-        case Token.smiles:
-        case Token.trajectory:
-          addTokenToPrefix(token);
-          break;
-        default:
-          // skip entirely if not recognized
-          int tok = (strFormat.indexOf("=") == 0 || strFormat.indexOf("$") == 0 ? Token.string
-              : Parser.isOneOf(strFormat = strFormat.toLowerCase(),
-                  JmolConstants.LOAD_ATOM_DATA_TYPES) ? Token.identifier : 0);
-          if (tok != 0) {
-            addTokenToPrefix(new Token(tok, strFormat));
-            iHaveQuotedString = (tok == Token.string);
-          }
-        }
-        return CONTINUE;
-      }
-      BitSet bs;
-      if (script.charAt(ichToken) == '{' || parenCount > 0) {
-      } else if ((bs = lookingAtBitset()) != null) {
-        addTokenToPrefix(new Token(Token.bitset, bs));
-        return CONTINUE;
-      } else if (!iHaveQuotedString && lookingAtImpliedString(false, true)) {
-        String str = script.substring(ichToken, ichToken + cchToken);
-        addTokenToPrefix(new Token(Token.string, str));
-        iHaveQuotedString = true;
-        return CONTINUE;
-      }
-      break;
     case Token.script:
     case Token.getproperty:
       if (script.charAt(ichToken) == '@') {
         iHaveQuotedString = true;
         return OK;
       }
-      if (!iHaveQuotedString && lookingAtImpliedString(false, false)) {
+      if (tokCommand == Token.load) {
+        if (nTokens == 1 && lookingAtLoadFormat()) {
+          String strFormat = script.substring(ichToken, ichToken + cchToken);
+          Token token = Token.getTokenFromName(strFormat.toLowerCase());
+          switch (token == null ? Token.nada : token.tok) {
+          case Token.append:
+          case Token.data:
+          case Token.file:
+          case Token.inline:
+          case Token.menu:
+          case Token.model:
+          case Token.smiles:
+          case Token.trajectory:
+            addTokenToPrefix(token);
+            break;
+          default:
+            // skip entirely if not recognized
+            int tok = (strFormat.indexOf("=") == 0
+                || strFormat.indexOf("$") == 0 ? Token.string : Parser.isOneOf(
+                strFormat = strFormat.toLowerCase(),
+                JmolConstants.LOAD_ATOM_DATA_TYPES) ? Token.identifier : 0);
+            if (tok != 0) {
+              addTokenToPrefix(new Token(tok, strFormat));
+              iHaveQuotedString = (tok == Token.string);
+            }
+          }
+          return CONTINUE;
+        }
+        BitSet bs;
+        if (script.charAt(ichToken) == '{' || parenCount > 0)
+          break;
+        if ((bs = lookingAtBitset()) != null) {
+          addTokenToPrefix(new Token(Token.bitset, bs));
+          return CONTINUE;
+        }
+      }
+      if (!iHaveQuotedString
+          && lookingAtImpliedString(false, tokCommand == Token.load)) {
         String str = script.substring(ichToken, ichToken + cchToken);
         if (tokCommand == Token.script && str.startsWith("javascript:")) {
           lookingAtImpliedString(true, true);

@@ -469,10 +469,13 @@ public class JsonNioService extends NIOService implements JsonNioServer {
         return;
       }
       JSONObject json = new JSONObject(msg);
-      if (socket != null && (version != 1 || json.has("magic")
+      if (version == 1) {
+      if (socket != null && json.has("magic")
           && json.getString("magic").equals("JmolApp")
-          && json.getString("role").equals("out"))) {
+          && json.getString("role").equals("out"))
         outSocket = socket;
+      } else {
+        outSocket = inSocket;
       }
       if (!json.has("type"))
         return;
@@ -519,6 +522,20 @@ public class JsonNioService extends NIOService implements JsonNioServer {
       else
         path = ".";
       JSONObject contentJSON = new JSONObject(new JSONTokener(jsonFile));
+      
+      /*
+       *        //Find startup script
+        String startupScript = null;
+        JSONArray scripts = contentJSON.getJSONArray("scripts");
+        for(int i = 0; i < scripts.length(); i++) {
+          JSONObject scriptInfo = scripts.getJSONObject(i);
+          if(scriptInfo.getString("startup").equals("yes")) {
+            startupScript = scriptInfo.getString("filename");
+            break;
+          }
+        }
+
+       */
       String script = contentJSON.getString("startup_script");
       Logger.info("JsonNiosService startup_script=" + script);
       setBanner("", false);

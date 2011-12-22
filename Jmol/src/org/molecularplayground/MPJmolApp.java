@@ -113,7 +113,7 @@ public class MPJmolApp implements JsonNioClient {
 
   protected JmolViewer jmolViewer;
 
-  private int MP_VERSION = 1; // SET TO 2 if using Version 2 (AW 12/2011) 
+  private static int MP_VERSION = 1; // SET TO 2 if using Version 2 (AW 12/2011) 
   
   public static void main(String args[]) {
     new MPJmolApp(args.length > 0 ? Integer.parseInt(args[0]) : 31416);

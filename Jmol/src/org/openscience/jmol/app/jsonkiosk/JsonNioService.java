@@ -525,7 +525,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
       JSONObject contentJSON = new JSONObject(new JSONTokener(jsonFile));
       
       String script = null;
-      if (json.has("scripts")) {
+      if (contentJSON.has("scripts")) {
         JSONArray scripts = contentJSON.getJSONArray("scripts");
         for(int i = scripts.length(); --i >= 0; ) {
           JSONObject scriptInfo = scripts.getJSONObject(i);

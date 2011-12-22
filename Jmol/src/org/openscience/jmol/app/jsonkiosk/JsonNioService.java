@@ -69,8 +69,12 @@ import naga.packetwriter.RawPacketWriter;
  * 
  * Sent from Jmol (via outSocket): 
  * 
+ * version 1:
  *   {"magic" : "JmolApp", "role" : "out"}  (socket initialization for messages TO jmol)
  *   {"magic" : "JmolApp", "role" : "in"}   (socket initialization for messages FROM jmol)
+ * version 2:
+ *   {"type" : "login", "source" : "Jmol"}  (socket initialization for messages TO/FROM jmol)
+ * both versions:
  *   {"type" : "script", "event" : "done"}  (script completed)
  *   
  * Sent to Jmol (via inSocket):
@@ -194,13 +198,14 @@ public class JsonNioService extends NIOService implements JsonNioServer {
       if (port != this.port) {
         if (inSocket != null) {
           inSocket.close();
-          outSocket.close();
+          if (outSocket != null)
+            outSocket.close();
         }
         if (thread != null) {
           thread.interrupt();
           thread = null;
         }
-        startService(port, client, jmolViewer, myName);
+        startService(port, client, jmolViewer, myName, 1);
       }
       if (msg.startsWith("Mouse:"))
         msg = "{\"type\":\"move\",\"style\":\"sync\", \"sync\":\""
@@ -211,13 +216,15 @@ public class JsonNioService extends NIOService implements JsonNioServer {
     }
   }
 
+  protected int version = 1;
+  
   /* (non-Javadoc)
    * @see org.openscience.jmol.app.jsonkiosk.JsonNioServer#startService(int, org.openscience.jmol.app.jsonkiosk.JsonNioClient, org.jmol.api.JmolViewer, java.lang.String)
    */
   public void startService(int port, JsonNioClient client,
-                           JmolViewer jmolViewer, String name)
+                           JmolViewer jmolViewer, String name, int version)
       throws IOException {
-
+    this.version = version;
     this.port = Math.abs(port);
     this.client = client;
     this.jmolViewer = jmolViewer;
@@ -274,27 +281,30 @@ public class JsonNioService extends NIOService implements JsonNioServer {
 
       // outSocket is used to send JSON commands to the NIO server
       // when initialized, it identifies itself to the server as the "in" connection
+      // only for version 1
 
-      outSocket = openSocket("127.0.0.1", port);
-      outSocket.setPacketReader(new AsciiLinePacketReader());
-      outSocket.setPacketWriter(new RawPacketWriter());
-      outSocket.listen(new SocketObserver() {
+      if (version == 1) {
+        outSocket = openSocket("127.0.0.1", port);
+        outSocket.setPacketReader(new AsciiLinePacketReader());
+        outSocket.setPacketWriter(new RawPacketWriter());
+        outSocket.listen(new SocketObserver() {
 
-        public void connectionOpened(NIOSocket nioSocket) {
-          initialize("in", nioSocket);
-        }
+          public void connectionOpened(NIOSocket nioSocket) {
+            initialize("in", nioSocket);
+          }
 
-        public void packetReceived(NIOSocket nioSocket, byte[] packet) {
-          Logger.info("outpacketreceived");
-          // not used
-        }
+          public void packetReceived(NIOSocket nioSocket, byte[] packet) {
+            Logger.info("outpacketreceived");
+            // not used
+          }
 
-        public void connectionBroken(NIOSocket nioSocket, Exception exception) {
-          halt = true;
-          Logger.info(Thread.currentThread().getName()
-              + " outSocket connectionBroken");
-        }
-      });
+          public void connectionBroken(NIOSocket nioSocket, Exception exception) {
+            halt = true;
+            Logger.info(Thread.currentThread().getName()
+                + " outSocket connectionBroken");
+          }
+        });
+      }
 
     }
     thread = new Thread(new JsonNioThread(), "JsonNiosThread" + myName);
@@ -361,8 +371,14 @@ public class JsonNioService extends NIOService implements JsonNioServer {
     try {
       Logger.info("JsonNioService" + myName + " initialize " + role);
       JSONObject json = new JSONObject();
-      json.put("magic", "JmolApp");
-      json.put("role", role);
+      if (version == 1) {
+        json.put("magic", "JmolApp");
+        json.put("role", role);      
+      } else {
+        // role will be "out"; socket will be inSocket
+        json.put("source","Jmol");
+        json.put("type", "login");
+      }
       sendMessage(json, null, nioSocket);
     } catch (JSONException e) {
       close();
@@ -453,9 +469,9 @@ public class JsonNioService extends NIOService implements JsonNioServer {
         return;
       }
       JSONObject json = new JSONObject(msg);
-      if (socket != null && json.has("magic")
+      if (socket != null && (version != 1 || json.has("magic")
           && json.getString("magic").equals("JmolApp")
-          && json.getString("role").equals("out")) {
+          && json.getString("role").equals("out"))) {
         outSocket = socket;
       }
       if (!json.has("type"))

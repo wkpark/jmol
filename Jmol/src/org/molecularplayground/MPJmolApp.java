@@ -113,6 +113,8 @@ public class MPJmolApp implements JsonNioClient {
 
   protected JmolViewer jmolViewer;
 
+  private int MP_VERSION = 1; // SET TO 2 if using Version 2 (AW 12/2011) 
+  
   public static void main(String args[]) {
     new MPJmolApp(args.length > 0 ? Integer.parseInt(args[0]) : 31416);
   }
@@ -176,7 +178,7 @@ public class MPJmolApp implements JsonNioClient {
         Logger.info("Cannot start JsonNioServer");
         System.exit(1);
       }
-      service.startService(port, this, jmolViewer, "-MP");
+      service.startService(port, this, jmolViewer, "-MP", MP_VERSION);
 
       // Bob's demo model -- verifies that system is working and networked properly
       jmolViewer.script("load $caffeine");

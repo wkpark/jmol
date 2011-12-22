@@ -423,7 +423,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     if (jmolApp.port > 0) {
       try {
         jmol.service = getJsonNioServer();
-        jmol.service.startService(jmolApp.port, jmol, jmol.viewer, "-1");
+        jmol.service.startService(jmolApp.port, jmol, jmol.viewer, "-1", 1);
 //        JsonNioService service2 = new JsonNioService();
 //        service2.startService(jmolApp.port, jmol, null, "-2");
 //        service2.sendMessage(null, "test", null);
@@ -1565,13 +1565,13 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
         } else {
           serverService = getJsonNioServer();
           if (serverService != null)
-            serverService.startService(port, this, viewer, "-1");
+            serverService.startService(port, this, viewer, "-1", 1);
         }
         if (serverService != null && serverService.getPort() == -port && strInfo != null) {
           if (service == null) {
             service = getJsonNioServer();
             if (service != null)
-              service.startService(-port, this, viewer, null);
+              service.startService(-port, this, viewer, null, 1);
           }
           if (service != null)
             service.send(-port, strInfo);
@@ -1590,7 +1590,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       if (service == null) {
         service = getJsonNioServer();
         if (service != null)
-          service.startService(port, this, viewer, null);
+          service.startService(port, this, viewer, null, 1);
       }
       if (service != null)
         service.send(port, strInfo);

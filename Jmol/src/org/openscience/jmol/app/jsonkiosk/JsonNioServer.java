@@ -24,7 +24,7 @@ public interface JsonNioServer {
   public abstract void send(int port, String msg);
 
   public abstract void startService(int port, JsonNioClient client,
-                                    JmolViewer jmolViewer, String name)
+                                    JmolViewer jmolViewer, String name, int version)
       throws IOException;
 
   public abstract void close();

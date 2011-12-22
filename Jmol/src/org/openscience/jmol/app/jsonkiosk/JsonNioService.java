@@ -36,6 +36,7 @@ import org.jmol.api.JmolViewer;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 
+import com.json.JSONArray;
 import com.json.JSONException;
 import com.json.JSONObject;
 import com.json.JSONTokener;
@@ -523,20 +524,21 @@ public class JsonNioService extends NIOService implements JsonNioServer {
         path = ".";
       JSONObject contentJSON = new JSONObject(new JSONTokener(jsonFile));
       
-      /*
-       *        //Find startup script
-        String startupScript = null;
+      String script = null;
+      if (json.has("scripts")) {
         JSONArray scripts = contentJSON.getJSONArray("scripts");
-        for(int i = 0; i < scripts.length(); i++) {
+        for(int i = scripts.length(); --i >= 0; ) {
           JSONObject scriptInfo = scripts.getJSONObject(i);
           if(scriptInfo.getString("startup").equals("yes")) {
-            startupScript = scriptInfo.getString("filename");
+            script = scriptInfo.getString("filename");
             break;
           }
         }
-
-       */
-      String script = contentJSON.getString("startup_script");
+        if (script == null)
+          throw new JSONException("scripts startup:yes not found");
+      } else {
+        script = contentJSON.getString("startup_script");
+      }
       Logger.info("JsonNiosService startup_script=" + script);
       setBanner("", false);
       sendScript("exit");

@@ -792,16 +792,14 @@ all support for previous versions removed
 
   </target>
 
-
-	
-	<target name="signed-applet" id="signed-applet" depends="applet-jar">
+  <target name="signed-applet" id="signed-applet" depends="applet-jar">
     <jar destfile="${jmol.applet.build.dir}/JmolAppletSigned.jar.temp"
-    	manifest="manifest/appletMonolithic.txt" index="true" >
+         manifest="manifest/appletMonolithic.txt" index="true" >
       <fileset dir="${applet.classes.dir}" >
         <include name="**/*" />
         <exclude name="JmolSmiles*" />
         <exclude name="org/openscience/**/*" />
-     </fileset>
+      </fileset>
       <fileset dir="${appletjars.dir}" includes="**/*"/>
     </jar>
     <signjar jar="${jmol.applet.build.dir}/JmolAppletSigned.jar.temp"
@@ -1303,37 +1301,35 @@ all support for previous versions removed
     <!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ -->
     </target>
 
-    <target name="smiles-applet-jar" id="smiles-applet-jar"
-            depends="applet-classes">
-      <jar destfile="${jmol.applet.build.dir}/JmolSmilesApplet.jar"
-           manifest="manifest/appletSmiles.txt" index="true" >
-        <fileset dir="${classes.dir}" >
-          <include name="JmolSmiles.class"/>
-        </fileset>
-        <fileset dir="${applet.classes.dir}" >
-          <include name="JmolSmiles*" />
-          <include name="org/jmol/smiles/**" />
-          <include name="org/jmol/api/SmilesMatcherInterface.class" />
-          <include name="org/jmol/constant/**" />
-          <include name="org/jmol/util/JmolEdge.class" />
-          <include name="org/jmol/util/JmolNode.class" />
-          <include name="org/jmol/util/JmolMolecule.class" />
-          <include name="org/jmol/util/DefaultLogger.class" />
-          <include name="org/jmol/util/Elements.class" />
-          <include name="org/jmol/util/Logger.class" />
-          <include name="org/jmol/util/LoggerInterface.class" />
-          <include name="org/jmol/util/TextFormat.class" />
-        </fileset>
-        <fileset dir="${appletjars.dir}">
-          <include name="javax/vecmath/*3f*" />
-          <include name="javax/vecmath/*3d*" />
-          <include name="javax/vecmath/Point4f*" />
-          <include name="javax/vecmath/Tuple4f*" />
-          <exclude name="javax/vecmath/Matrix*" />
-        </fileset>
-      </jar>
-
-
+  <target name="smiles-applet-jar" id="smiles-applet-jar"
+          depends="applet-classes">
+    <jar destfile="${jmol.applet.build.dir}/JmolSmilesApplet.jar"
+         manifest="manifest/appletSmiles.txt" index="true" >
+      <fileset dir="${classes.dir}" >
+        <include name="JmolSmiles.class"/>
+      </fileset>
+      <fileset dir="${applet.classes.dir}" >
+        <include name="JmolSmiles*" />
+        <include name="org/jmol/smiles/**" />
+        <include name="org/jmol/api/SmilesMatcherInterface.class" />
+        <include name="org/jmol/constant/**" />
+        <include name="org/jmol/util/JmolEdge.class" />
+        <include name="org/jmol/util/JmolNode.class" />
+        <include name="org/jmol/util/JmolMolecule.class" />
+        <include name="org/jmol/util/DefaultLogger.class" />
+        <include name="org/jmol/util/Elements.class" />
+        <include name="org/jmol/util/Logger.class" />
+        <include name="org/jmol/util/LoggerInterface.class" />
+        <include name="org/jmol/util/TextFormat.class" />
+      </fileset>
+      <fileset dir="${appletjars.dir}">
+        <include name="javax/vecmath/*3f*" />
+        <include name="javax/vecmath/*3d*" />
+        <include name="javax/vecmath/Point4f*" />
+        <include name="javax/vecmath/Tuple4f*" />
+        <exclude name="javax/vecmath/Matrix*" />
+      </fileset>
+    </jar>
   </target>
 
   <target name="dist" id="dist"
@@ -1463,6 +1459,14 @@ all support for previous versions removed
                   mode="755"
                   includes="*/jmol,*/jmol.sh" />
     </tar>
+  </target>
+
+  <target name="clean-after-dist" id="clean-after-dist">
+    <delete dir="build" includeemptydirs="true">
+      <exclude name="dist/**/*"/>
+      <exclude name="doc/**/*"/>
+    </delete>
+    <delete dir="build/dist/jmol-${version}"/>
   </target>
 
   <target name="apisio-dist" id="apisio-dist"

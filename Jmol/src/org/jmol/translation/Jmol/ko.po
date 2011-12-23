@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-10-24 05:01+0200\n"
+"POT-Creation-Date: 2011-12-23 19:22+0100\n"
 "PO-Revision-Date: 2011-06-04 05:49+0000\n"
 "Last-Translator: Won-Kyu Park <wkpark@gmail.com>\n"
 "Language-Team: Korean <LL@li.org>\n"
@@ -449,7 +449,6 @@ msgstr "저장"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:364
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:502
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:173
 #: org/openscience/jmol/app/jmolpanel/RecentFilesDialog.java:70
 msgid "Cancel"
 msgstr "취소"
@@ -1012,95 +1011,95 @@ msgstr ""
 msgid "Jmol Help"
 msgstr "Jmol 도움말"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:217
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:220
 msgid "Initializing 3D display..."
 msgstr "3D 장면 초기화..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:250
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:253
 msgid "Initializing Script Window..."
 msgstr "스크립트 창 초기화..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:271
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:274
 msgid "Building Command Hooks..."
 msgstr "명령 후크 구성..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:286
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:289
 msgid "Building Menubar..."
 msgstr "메뉴바 구성..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:301
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:304
 msgid "Starting display..."
 msgstr "디스플레이 시작..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:353
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:356
 msgid "Setting up Drag-and-Drop..."
 msgstr "드랙-앤-드롭 셋업..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:361
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:364
 msgid "Launching main frame..."
 msgstr "기본 프레임 적제..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:365
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:368
 msgid "Initializing Preferences..."
 msgstr "환경 초기화..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:367
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:370
 msgid "Initializing Recent Files..."
 msgstr "최근 파일 초기화..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:441
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:444
 msgid "Jmol Java Console"
 msgstr "Jmol 자바 콘솔"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:461
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:464
 msgid "Could not create ConsoleTextArea: "
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:507
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:510
 msgid "Creating main window..."
 msgstr "기본 창 구성..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:508
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:511
 msgid "Initializing Swing..."
 msgstr "Swing 초기화..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:518
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:521
 msgid "Initializing Jmol..."
 msgstr "Jmol 초기화..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:607
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:610
 msgid "Closing Jmol..."
 msgstr "Jmol 닫기..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1161
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1158
 msgid "Open URL"
 msgstr "URL 열기"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1162
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1159
 msgid "Enter URL of molecular model"
 msgstr "분자 모델의 URL을 넣으세요"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1188
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1185
 msgid "Get PDB file"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1189
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1186
 msgid "Enter a four-digit PDB ID"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1206
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1203
 msgid "Get MOL file by compound name or ID"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1207
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1204
 msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1373
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1370
 msgid "IO Exception:"
 msgstr "IO 예외"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1502
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1499
 msgid "width height?"
 msgstr ""
 
@@ -1301,33 +1300,33 @@ msgstr "기본 원자 크기"
 msgid "(percentage of vanDerWaals radius)"
 msgstr "(반데르발스 반지름 비율)"
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:363
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:359
 msgid "Compute Bonds"
 msgstr "결합 계산"
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:365
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:361
 msgid "Automatically"
 msgstr "자동"
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:366
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:362
 msgid "Don't Compute Bonds"
 msgstr "결합 계산하지 않음"
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:396
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:392
 msgid "Default Bond Radius"
 msgstr "결합 반지름 기본값"
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:397
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:436
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:482
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:393
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:428
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:469
 msgid "(Angstroms)"
 msgstr "(옹스트롬)"
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:435
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:427
 msgid "Bond Tolerance - sum of two covalent radii + this value"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:481
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:468
 msgid "Minimum Bonding Distance"
 msgstr "최소 결합 길이"
 
@@ -1347,59 +1346,68 @@ msgstr "불러오기..."
 msgid "What's New in Jmol"
 msgstr "Jmol의 새로와진 점"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:415
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:475
 msgid "magic"
 msgstr ""
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:416
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:476
 msgid "role"
 msgstr ""
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:422
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:495
 msgid "type"
 msgstr ""
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:424
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:501
 msgid "text"
 msgstr ""
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:425
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:502
 msgid "visibility"
 msgstr ""
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:428
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:507
 msgid "command"
 msgstr ""
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:431
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:514
 msgid "id"
 msgstr ""
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:443
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:532
+msgid "startup"
+msgstr ""
+
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:533
+#, fuzzy
+msgid "filename"
+msgstr "파일 이름:"
+
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:540
 msgid "startup_script"
 msgstr ""
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:448
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:546
 msgid "banner"
 msgstr ""
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:449
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:547
 msgid "banner_text"
 msgstr ""
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:453
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:551
 msgid "style"
 msgstr ""
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:493
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:594
 msgid "x"
 msgstr ""
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:494
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:595
 msgid "y"
 msgstr ""
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:509
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:612
 msgid "sync"
 msgstr ""
 

@@ -342,12 +342,17 @@ public class Measurement {
   }
 
   private String getLabelString() {
-    String s = countPlusIndices[0]+":" + "";
+    String s = countPlusIndices[0] + ":";
     String label = (strFormat != null && strFormat.length() > 2 
-        && strFormat.indexOf(s)==0? strFormat : viewer
-        .getDefaultMeasurementLabel(countPlusIndices[0]));
+        && strFormat.indexOf(s)==0? strFormat : null);
+    if (label == null) {
+      strFormat = null;
+      label = viewer.getDefaultMeasurementLabel(countPlusIndices[0]);
+    }
     if (label.indexOf(s)==0)
       label = label.substring(2);
+    if (strFormat == null)
+      strFormat = s + label;
     return label;
   }
 

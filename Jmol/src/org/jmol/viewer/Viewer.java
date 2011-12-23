@@ -1332,6 +1332,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private void setDefaultColors(boolean isRasmol) {
     colorManager.setDefaultColors(isRasmol);
     global.setParameterValue("colorRasmol", isRasmol);
+    global.setParameterValue("defaultColorScheme", (isRasmol ? "rasmol" : "jmol"));
   }
 
   public float getDefaultTranslucent() {
@@ -5735,12 +5736,14 @@ private void zap(String msg) {
       global.helpPath = value;
       break;
     case Token.defaults:
+      if (!value.equalsIgnoreCase("RasMol"))
+        value = "Jmol";
       setDefaults(value);
       break;
     case Token.defaultcolorscheme:
       // only two are possible: "jmol" and "rasmol"
-      setDefaultColors(value.equals("rasmol"));
-      break;
+      setDefaultColors(value.equalsIgnoreCase("rasmol"));
+      return;
     case Token.picking:
       setPickingMode(value, 0);
       return;
@@ -5914,6 +5917,7 @@ private void zap(String msg) {
       global.sheetSmoothing = value;
       break;
     case Token.dipolescale:
+      value = checkFloatRange(value, -10, 10);
       global.dipoleScale = value;
       break;
     case Token.stereodegrees:
@@ -5941,6 +5945,7 @@ private void zap(String msg) {
       transformManager.setScaleAngstromsPerInch(value);
       break;
     case Token.solventproberadius:
+      value = checkFloatRange(value, 0, 10);
       global.solventProbeRadius = value;
       break;
     default:
@@ -6004,6 +6009,7 @@ private void zap(String msg) {
       break;
     case Token.phongexponent:
       // 11.9.13
+      value = checkIntRange(value, 0, 1000);
       Graphics3D.setPhongExponent(value);
       break;
     case Token.helixstep:
@@ -6060,10 +6066,15 @@ private void zap(String msg) {
       global.scriptDelay = value;
       break;
     case Token.specularpower:
+      if (value < 0)
+        value = checkIntRange(value, -10, -1);
+      else
+        value = checkIntRange(value, 0, 100);
       Graphics3D.setSpecularPower(value);
       break;
     case Token.specularexponent:
-      Graphics3D.setSpecularPower(-value);
+      value = checkIntRange(-value, -10, -1);
+      Graphics3D.setSpecularPower(value);
       break;
     case Token.bondradiusmilliangstroms:
       setMarBond((short) value);
@@ -6073,12 +6084,15 @@ private void zap(String msg) {
       setBooleanProperty(key, tok, value == 1);
       return;
     case Token.specularpercent:
+      value = checkIntRange(value, 0, 100);
       Graphics3D.setSpecularPercent(value);
       break;
     case Token.diffusepercent:
+      value = checkIntRange(value, 0, 100);
       Graphics3D.setDiffusePercent(value);
       break;
     case Token.ambientpercent:
+      value = checkIntRange(value, 0, 100);
       Graphics3D.setAmbientPercent(value);
       break;
     case Token.zdepth:
@@ -6127,6 +6141,14 @@ private void zap(String msg) {
       }
     }
     global.setParameterValue(key, value);
+  }
+
+  private static int checkIntRange(int value, int min, int max) {
+    return (value < min ? min : value > max ? max : value);
+  }
+
+  private static float checkFloatRange(float value, float min, float max) {
+    return (value < min ? min : value > max ? max : value);
   }
 
   @Override
@@ -6892,6 +6914,7 @@ private void zap(String msg) {
   }
 
   void setAxesScale(float scale) {
+    scale = checkFloatRange(scale, -100, 100);
     global.axesScale = scale;
     axesAreTainted = true;
   }
@@ -6993,6 +7016,7 @@ private void zap(String msg) {
   }
 
   private void setStrandCount(int type, int value) {
+    value = checkIntRange(value, 0, 20);
     switch (type) {
     case JmolConstants.SHAPE_STRANDS:
       global.strandCountForStrands = value;

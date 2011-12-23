@@ -12275,6 +12275,7 @@ public class ScriptEvaluator {
       return;
     }
     int tok = getToken(1).tok;
+
     int newTok = 0;
     String sval;
     int ival = Integer.MAX_VALUE;
@@ -12398,9 +12399,6 @@ public class ScriptEvaluator {
     boolean justShow = true;
 
     switch (tok) {
-    case Token.axesscale:
-      setFloatProperty("axesScale", floatSetting(2, -100, 100));
-      break;
     case Token.backgroundmodel:
       if (statementLength > 2) {
         String modelDotted = stringSetting(2, false);
@@ -12466,17 +12464,12 @@ public class ScriptEvaluator {
       // allows unquoted "jmol" or "rasmol"
       if (statementLength > 2) {
         if ((theTok = tokAt(2)) == Token.jmol || theTok == Token.rasmol) {
-          sval = parameterAsString(checkLast(2)).toLowerCase();
+          sval = parameterAsString(checkLast(2));
         } else {
-          sval = stringSetting(2, false).toLowerCase();
+          sval = stringSetting(2, false);
         }
-        if (!sval.equals("jmol") && !sval.equals("rasmol"))
-          error(ERROR_invalidArgument);
         setStringProperty(key, sval);
       }
-      break;
-    case Token.dipolescale:
-      setFloatProperty("dipoleScale", floatSetting(2, -10, 10));
       break;
     case Token.formalcharge:
       ival = intSetting(2);
@@ -12504,9 +12497,6 @@ public class ScriptEvaluator {
       if (statementLength > 2)
         setMeasurementUnits(stringSetting(2, isJmolSet));
       break;
-    case Token.phongexponent:
-      setIntProperty(key, intSetting(2, Integer.MAX_VALUE, 0, 1000));
-      break;
     case Token.picking:
       if (!isSyntaxCheck)
         viewer.setPicked(-1);
@@ -12533,49 +12523,20 @@ public class ScriptEvaluator {
         setIntProperty(key, ival);
       }
       break;
-    case Token.solventproberadius:
-      setFloatProperty(key, floatSetting(2, 0, 10));
-      break;
     case Token.specular:
-    case Token.specularpercent:
-    case Token.ambientpercent:
-    case Token.diffusepercent:
       ival = intSetting(2);
-      if (tok == Token.specular) {
-        if (ival == Integer.MIN_VALUE || ival == 0 || ival == 1) {
-          justShow = false;
-          break;
-        }
-        tok = Token.specularpercent;
-        key = "specularPercent";
+      if (ival == Integer.MIN_VALUE || ival == 0 || ival == 1) {
+        justShow = false;
+        break;
       }
-      setIntProperty(key, intSetting(2, ival, 0, 100));
-      break;
-    case Token.specularpower:
-    case Token.specularexponent:
-      ival = intSetting(2);
-      if (tok == Token.specularpower) {
-        if (ival >= 0) {
-          justShow = false;
-          break;
-        }
-        tok = Token.specularexponent;
-        key = "specularExponent";
-        if (ival < -10 || ival > -1)
-          integerOutOfRange(-10, -1);
-        ival = -ival;
-      }
-      setIntProperty(key, intSetting(2, ival, 0, 10));
+      tok = Token.specularpercent;
+      key = "specularPercent";
+      setIntProperty(key, ival);
       break;
     case Token.strands:
-    case Token.strandcount:
-    case Token.strandcountformeshribbon:
-    case Token.strandcountforstrands:
-      if (tok == Token.strands) {
-        tok = Token.strandcount;
-        key = "strandCount";
-      }
-      setIntProperty(key, intSetting(2, Integer.MAX_VALUE, 0, 20));
+      tok = Token.strandcount;
+      key = "strandCount";
+      setIntProperty(key, intSetting(2));
       break;
     default:
       justShow = false;
@@ -12607,7 +12568,7 @@ public class ScriptEvaluator {
         break;
       case Token.radius:
         newTok = Token.solventproberadius;
-        setFloatProperty("solventProbeRadius", floatSetting(2, 0, 10));
+        setFloatProperty("solventProbeRadius", floatSetting(2));
         justShow = true;
         break;
       case Token.scale3d:
@@ -12915,29 +12876,17 @@ public class ScriptEvaluator {
       setShapeProperty(JmolConstants.SHAPE_ECHO, propertyName, propertyValue);
   }
 
-  private int intSetting(int pt, int val, int min, int max)
-      throws ScriptException {
-    if (val == Integer.MAX_VALUE)
-      val = intSetting(pt);
-    if (val != Integer.MIN_VALUE && val < min || val > max)
-      integerOutOfRange(min, max);
-    return val;
-  }
-
   private int intSetting(int pt) throws ScriptException {
     if (pt == statementLength)
       return Integer.MIN_VALUE;
     return ScriptVariable.iValue(parameterExpressionToken(pt));
   }
 
-  private float floatSetting(int pt, float min, float max)
+  private float floatSetting(int pt)
       throws ScriptException {
     if (pt == statementLength)
       return Float.NaN;
-    float val = ScriptVariable.fValue(parameterExpressionToken(pt));
-    if (val < min || val > max)
-      numberOutOfRange(min, max);
-    return val;
+    return ScriptVariable.fValue(parameterExpressionToken(pt));
   }
 
   private String stringSetting(int pt, boolean isJmolSet)

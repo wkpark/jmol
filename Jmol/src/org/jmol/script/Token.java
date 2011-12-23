@@ -122,6 +122,7 @@ public class Token {
    * 
    * 3         2         1         0
    * 0987654321098765432109876543210
+   *    |   |   |   |   |   |   |     
    *  x                  xxxxxxxxxxx setparam  "set THIS ...."
    *  x     x                        strparam
    *  x    x                         intparam

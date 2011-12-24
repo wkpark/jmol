@@ -562,8 +562,7 @@ public final class ModelLoader {
                                                Map<String, Object> modelAuxiliaryInfo,
                                                String jmolData) {
     boolean modelIsPDB = (modelAuxiliaryInfo != null 
-        && modelAuxiliaryInfo.containsKey("isPDB") 
-        && ((Boolean) modelAuxiliaryInfo.get("isPDB")).booleanValue());
+        && Boolean.TRUE.equals(modelAuxiliaryInfo.get("isPDB")));
     if (appendNew) {
       modelSet.models[modelIndex] = (modelIsPDB ? 
           jbr.getBioModel(modelSet, modelIndex, trajectoryBaseIndex,

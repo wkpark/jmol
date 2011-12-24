@@ -36,9 +36,8 @@ public class GromacsReader extends AtomSetCollectionReader {
   
   @Override
   protected void initializeReader() {
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("isPDB", Boolean.TRUE);
     atomSetCollection.newAtomSet();
-    atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
+    setIsPDB();
   }
   
   @Override

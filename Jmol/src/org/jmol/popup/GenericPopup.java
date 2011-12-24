@@ -168,9 +168,8 @@ abstract public class GenericPopup {
         .append("\n");
   }
 
-  protected static boolean checkBoolean(Map<String, Object> info, String key) {
-    Object value = (info == null ? null : info.get(key));
-    return !(value == null || value instanceof Boolean && !((Boolean) (value)).booleanValue());
+  private static boolean checkBoolean(Map<String, Object> info, String key) {
+    return Boolean.TRUE.equals(info.get(key));
   }
 
   protected void getViewerData() {

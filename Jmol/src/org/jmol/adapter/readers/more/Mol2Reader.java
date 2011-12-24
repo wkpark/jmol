@@ -146,11 +146,8 @@ public class Mol2Reader extends ForceFieldReader {
       readLine();
     }
     nAtoms += atomCount;
-    if (isPDB) {
-      atomSetCollection
-          .setAtomSetCollectionAuxiliaryInfo("isPDB", Boolean.TRUE);
-      atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
-    }
+    if (isPDB)
+      setIsPDB();
     applySymmetryAndSetTrajectory();
   }
 

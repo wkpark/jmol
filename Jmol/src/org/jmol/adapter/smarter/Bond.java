@@ -23,7 +23,7 @@
  */
 
 package org.jmol.adapter.smarter;
-public class Bond {
+public class Bond extends AtomSetObject {
   public int atomIndex1;
   public int atomIndex2;
   public int order;

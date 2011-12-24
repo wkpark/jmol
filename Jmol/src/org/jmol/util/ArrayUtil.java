@@ -279,4 +279,10 @@ final public class ArrayUtil {
     return new Hashtable[size];
   }
 
+  public static void swap(Object[] o, int i, int j) {
+    Object oi = o[i];
+    o[i] = o[j];
+    o[j] = oi;
+  }
+
 }

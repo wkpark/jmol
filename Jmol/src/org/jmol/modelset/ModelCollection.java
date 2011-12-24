@@ -1156,11 +1156,11 @@ abstract public class ModelCollection extends BondCollection {
    * @return PDB file data string
    */
   public String getPdbAtomData(BitSet bs, OutputStringBuffer sb) {
-    if (atomCount == 0)
+    if (atomCount == 0 || bs.nextSetBit(0) < 0)
       return "";
     if (sb == null)
       sb = new OutputStringBuffer(null);
-    int iModel = atoms[0].modelIndex;
+    int iModel = atoms[bs.nextSetBit(0)].modelIndex;
     int iModelLast = -1;
     boolean isPQR = "PQR".equals(sb.type);
     String occTemp = "%6.2Q%6.2b          ";
@@ -1177,7 +1177,8 @@ abstract public class ModelCollection extends BondCollection {
               "\nREMARK   6 Total charge on this protein: " + charge
                   + " e\nREMARK   6\n");
     }
-    boolean showModels = (iModel != atoms[atomCount - 1].modelIndex);
+    int lastAtomIndex = bs.length() - 1; 
+    boolean showModels = (iModel != atoms[lastAtomIndex].modelIndex);
     StringBuffer sbCONECT = (showModels ? null : new StringBuffer());
     boolean isMultipleBondPDB = models[iModel].isPdbWithMultipleBonds;
     LabelToken[] t4x = null;

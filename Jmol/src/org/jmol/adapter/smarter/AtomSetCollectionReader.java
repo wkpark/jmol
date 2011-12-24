@@ -181,8 +181,8 @@ public abstract class AtomSetCollectionReader {
 
   private StringBuffer loadNote = new StringBuffer();
   private boolean doConvertToFractional;
-  private boolean merging;
   private boolean fileCoordinatesAreFractional;
+  private boolean merging;
   private float symmetryRange;
   private int[] firstLastStep;
   private int lastModelNumber = Integer.MAX_VALUE;
@@ -351,7 +351,7 @@ public abstract class AtomSetCollectionReader {
       atomSetCollection.setAtomSetAuxiliaryInfo("fileName", filePath, i);
       atomSetCollection.setAtomSetAuxiliaryInfo("fileType", fileType, i);
     }
-    atomSetCollection.freeze();
+    atomSetCollection.freeze(reverseModels);
     if (atomSetCollection.errorMessage != null)
       return atomSetCollection.errorMessage + "\nfor file " + filePath
           + "\ntype " + name;
@@ -705,6 +705,7 @@ public abstract class AtomSetCollectionReader {
   protected boolean addVibrations;
   protected boolean useAltNames;
   public boolean readMolecularOrbitals;
+  private boolean reverseModels;
 
   // MANY: "NOVIB" "NOMO"
   // CSF, SPARTAN: "NOORIENT"
@@ -732,6 +733,8 @@ public abstract class AtomSetCollectionReader {
     addVibrations = !checkFilter("NOVIB");
     readMolecularOrbitals = !checkFilter("NOMO");
     useAltNames = checkFilter("ALTNAME");
+    reverseModels = checkFilter("REVERSEMODELS");
+
     if (filter == null)
       return;
     filterAtomType = checkFilter("*.") || checkFilter("!.");

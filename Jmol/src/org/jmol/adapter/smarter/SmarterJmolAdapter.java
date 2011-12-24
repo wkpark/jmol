@@ -785,7 +785,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
 
     @Override
     public int getModelIndex() {
-      return structure.modelIndex;
+      return structure.atomSetIndex;
     }
 
     @Override

@@ -26,7 +26,7 @@ package org.jmol.adapter.smarter;
 
 import org.jmol.constant.EnumStructure;
 
-public class Structure {
+public class Structure extends AtomSetObject {
   public EnumStructure structureType;
   public EnumStructure substructureType;
   public String structureID;
@@ -38,7 +38,6 @@ public class Structure {
   public char endChainID = ' ';
   public int endSequenceNumber;
   public char endInsertionCode = ' ';
-  public int modelIndex;
 
   public static EnumStructure getHelixType(int type) {
     switch (type) {
@@ -61,7 +60,7 @@ public class Structure {
             String structureID, int serialID, int strandCount,
             char startChainID, int startSequenceNumber, char startInsertionCode,
             char endChainID, int endSequenceNumber, char endInsertionCode) {
-    this.modelIndex = modelIndex;
+    this.atomSetIndex = modelIndex;
     this.structureType = structureType;
     this.substructureType = substructureType;
     this.structureID = structureID;

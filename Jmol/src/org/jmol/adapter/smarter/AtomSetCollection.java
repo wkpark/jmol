@@ -25,6 +25,7 @@
 package org.jmol.adapter.smarter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -168,6 +169,7 @@ public class AtomSetCollection {
   public boolean coordinatesAreFractional;
   private boolean isTrajectory;    
   private int trajectoryStepCount = 0;
+  
   private List<Point3f[]> trajectorySteps;
   private List<Vector3f[]> vibrationSteps;
   private List<String> trajectoryNames;
@@ -291,8 +293,8 @@ public class AtomSetCollection {
       //Structures: We must incorporate any global structures (modelIndex == -1) into this model
       //explicitly. Whew! This is because some cif _data structures have multiple PDB models (1skt)
       for (int i = 0; i < collection.structureCount; i++)
-        if (collection.structures[i].modelIndex == atomSetNum
-            || collection.structures[i].modelIndex == -1)
+        if (collection.structures[i].atomSetIndex == atomSetNum
+            || collection.structures[i].atomSetIndex == -1)
           addStructure(collection.structures[i]);
 
       // numbers
@@ -323,8 +325,10 @@ public class AtomSetCollection {
       setAtomSetCollectionAuxiliaryInfo("noAutoBond", Boolean.TRUE);
   }
   
-  void freeze() {
+  void freeze(boolean reverseModels) {
     //Logger.debug("AtomSetCollection.freeze; atomCount = " + atomCount);
+    if (reverseModels)
+      reverseAtomSets();
     if (isTrajectory)
       finalizeTrajectory();
     getList(true);
@@ -335,6 +339,84 @@ public class AtomSetCollection {
       setAtomSetAuxiliaryInfo("initialBondCount", Integer
           .valueOf(atomSetBondCounts[i]), i);
     }
+  }
+
+  private void reverseAtomSets() {
+    reverse(atomSetAtomIndexes);
+    reverse(atomSetNumbers);
+    reverse(atomSetAtomCounts);
+    reverse(atomSetBondCounts);
+    reverse(trajectorySteps);
+    reverse(trajectoryNames);
+    reverse(vibrationSteps);
+    reverse(atomSetAuxiliaryInfo);  
+    for (int i = 0; i < atomCount; i++)    
+      atoms[i].atomSetIndex = atomSetCount - 1 - atoms[i].atomSetIndex;
+    for (int i = 0; i < structureCount; i++)
+      if (structures[i].atomSetIndex >= 0)
+        structures[i].atomSetIndex = atomSetCount - 1 - structures[i].atomSetIndex;
+    for (int i = 0; i < bondCount; i++)    
+      bonds[i].atomSetIndex = atomSetCount - 1 - atoms[bonds[i].atomIndex1].atomSetIndex;
+    reverseSets(structures, structureCount);        
+    reverseSets(bonds, bondCount);
+    //getAtomSetAuxiliaryInfo("PDB_CONECT_firstAtom_count_max" ??
+    List<Atom>[] lists = ArrayUtil.createArrayOfArrayList(atomSetCount);
+    for (int i = 0; i < atomSetCount; i++)
+      lists[i] = new ArrayList<Atom>();
+    for (int i = 0; i < atomCount; i++)
+      lists[atoms[i].atomSetIndex].add(atoms[i]);
+    int[] newIndex = new int[atomCount];
+    int n = atomCount;
+    for (int i = atomSetCount; --i >= 0; )
+      for (int j = lists[i].size(); --j >= 0;) {
+        Atom a = atoms[--n] = lists[i].get(j);
+        newIndex[a.atomIndex] = n;
+        a.atomIndex = n;
+      }
+    for (int i = 0; i < bondCount; i++) {
+      bonds[i].atomIndex1 = newIndex[bonds[i].atomIndex1];
+      bonds[i].atomIndex2 = newIndex[bonds[i].atomIndex2];
+    }
+    for (int i = 0; i < atomSetCount; i++) {
+      int[] conect = (int[]) getAtomSetAuxiliaryInfo(i, "PDB_CONECT_firstAtom_count_max");
+      if (conect == null)
+        continue;
+      conect[0] = newIndex[conect[0]];
+      conect[1] = atomSetAtomCounts[i];
+    }
+  }
+
+  private void reverseSets(AtomSetObject[] o, int n) {
+    List<AtomSetObject>[] lists = ArrayUtil.createArrayOfArrayList(atomSetCount);
+    for (int i = 0; i < atomSetCount; i++)
+      lists[i] = new ArrayList<AtomSetObject>();
+    for (int i = 0; i < n; i++) {
+      int index = o[i].atomSetIndex;
+      if (index < 0)
+        return;
+      lists[o[i].atomSetIndex].add(o[i]);
+    }
+    for (int i = atomSetCount; --i >= 0; )
+      for (int j = lists[i].size(); --j >= 0;)
+        o[--n] = lists[i].get(j);
+  }
+  
+  private void reverse(Object[] o) {
+    int n = atomSetCount;
+    for (int i = n/2; --i >= 0; )
+      ArrayUtil.swap(o, i, n - 1 - i);
+  }
+
+  private static void reverse(List<?> list) {
+    if (list == null)
+      return;
+    Collections.reverse(list); 
+  }
+
+  private void reverse(int[] a) {
+    int n = atomSetCount;
+    for (int i = n/2; --i >= 0; )
+      ArrayUtil.swap(a, i, n - 1 - i);
   }
 
   private void getList(boolean isAltLoc) {
@@ -591,12 +673,12 @@ public class AtomSetCollection {
     if (structureCount == structures.length)
       structures = (Structure[])ArrayUtil.setLength(structures,
                                                       structureCount + 32);
-    structure.modelIndex = currentAtomSetIndex;
+    structure.atomSetIndex = currentAtomSetIndex;
     structures[structureCount++] = structure;
     if (structure.strandCount >= 1) {
       int i = structureCount;
       for (i = structureCount; --i >= 0 
-        && structures[i].modelIndex == currentAtomSetIndex
+        && structures[i].atomSetIndex == currentAtomSetIndex
         && structures[i].structureID.equals(structure.structureID); ) {
       }
       i++;

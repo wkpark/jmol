@@ -12517,11 +12517,8 @@ public class ScriptEvaluator {
     case Token.scriptreportinglevel:
       // save value locally as well
       ival = intSetting(2);
-      if (!isSyntaxCheck) {
-        if (ival != Integer.MIN_VALUE)
-          scriptReportingLevel = ival;
-        setIntProperty(key, ival);
-      }
+      if (!isSyntaxCheck && ival != Integer.MIN_VALUE)
+        setIntProperty(key, scriptReportingLevel = ival);
       break;
     case Token.specular:
       ival = intSetting(2);

@@ -8,20 +8,20 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-11-26 14:53+0100\n"
-"PO-Revision-Date: 2011-12-15 12:17+0000\n"
-"Last-Translator: Hiroshi Kihara <Unknown>\n"
+"PO-Revision-Date: 2011-12-26 19:12+0900\n"
+"Last-Translator: Hiroshi Kihara <kihara@itc.u-toyama.ac.jp>\n"
 "Language-Team: Japanese <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-12-18 14:49+0000\n"
-"X-Generator: Launchpad (build 14525)\n"
-"X-Poedit-Country: Japan\n"
+"X-Launchpad-Export-Date: 2011-08-05 17:04+0000\n"
+"X-Generator: Launchpad (build 13613)\n"
 "X-Poedit-Language: Japanese\n"
+"X-Poedit-Country: Japan\n"
 
 #: org/jmol/applet/AppletWrapper.java:100
 msgid "Loading Jmol applet ..."
-msgstr "Jmoアプレットを読み込んでいます ..."
+msgstr "Jmolアプレットを読み込んでいます ..."
 
 #: org/jmol/applet/AppletWrapper.java:175
 #, java-format
@@ -73,7 +73,7 @@ msgstr "さらに"
 
 #: org/jmol/console/AppletConsole.java:202
 msgid "Editor"
-msgstr "エディター"
+msgstr "エディタ"
 
 #: org/jmol/console/AppletConsole.java:203
 msgid "State"
@@ -86,11 +86,11 @@ msgstr "実行"
 
 #: org/jmol/console/AppletConsole.java:205
 msgid "Clear Output"
-msgstr "出力をクリアする"
+msgstr "出力をクリア"
 
 #: org/jmol/console/AppletConsole.java:206
 msgid "Clear Input"
-msgstr "入力をクリアする"
+msgstr "入力をクリア"
 
 #: org/jmol/console/AppletConsole.java:207
 #: org/jmol/popup/MainPopupResourceBundle.java:861
@@ -103,19 +103,11 @@ msgstr "読み込み"
 
 #: org/jmol/console/AppletConsole.java:210
 msgid "press CTRL-ENTER for new line or paste model data and press Load"
-msgstr ""
-"改行するにはCTRL-ENTERキーを押してください。またはデータをペーストしてLoadボ"
-"タンをクリックしてください。"
+msgstr "改行するにはCtrl-Enterキーを押してください。またはデータをペーストして[読み込み]ボタンをクリックしてください。"
 
 #: org/jmol/console/AppletConsole.java:212
-msgid ""
-"Messages will appear here. Enter commands in the box below. Click the "
-"console Help menu item for on-line help, which will appear in a new browser "
-"window."
-msgstr ""
-"メッセージはここに表示されます。下のボックスにコマンドを入力してください。コ"
-"ンソールのヘルプメニューの項目をクリックするとブラウザの新しいウィンドウでオ"
-"ンラインヘルプが表示されます。"
+msgid "Messages will appear here. Enter commands in the box below. Click the console Help menu item for on-line help, which will appear in a new browser window."
+msgstr "メッセージはここに表示されます。下のボックスにコマンドを入力してください。コンソールのヘルプメニューの項目をクリックするとブラウザの新しいウィンドウでオンラインヘルプが表示されます。"
 
 #: org/jmol/console/JmolConsole.java:86
 msgid "Jmol Script Console"
@@ -123,7 +115,7 @@ msgstr "Jmol スクリプト・コンソール"
 
 #: org/jmol/console/ScriptEditor.java:98
 msgid "Jmol Script Editor"
-msgstr "Jmol スクリプト・エディター"
+msgstr "Jmol スクリプト・エディタ"
 
 #: org/jmol/console/ScriptEditor.java:130
 #: org/jmol/popup/MainPopupResourceBundle.java:858
@@ -147,7 +139,7 @@ msgstr "チェック"
 
 #: org/jmol/console/ScriptEditor.java:135
 msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
-msgstr ""
+msgstr "トップ"
 
 #: org/jmol/console/ScriptEditor.java:136
 msgid "Step"
@@ -169,7 +161,7 @@ msgstr "停止"
 
 #: org/jmol/console/ScriptEditor.java:144
 msgid "Clear"
-msgstr "クリアー"
+msgstr "クリア"
 
 #: org/jmol/console/ScriptEditor.java:145
 msgid "Close"
@@ -187,17 +179,17 @@ msgstr "画像の種類"
 #: org/jmol/export/dialog/Dialog.java:325
 #, java-format
 msgid "JPEG Quality ({0})"
-msgstr "JPEG 画像品質 ({0})"
+msgstr "JPEG画像品質 ({0})"
 
 #: org/jmol/export/dialog/Dialog.java:298
 #, java-format
 msgid "PNG Compression  ({0})"
-msgstr "PNG 圧縮率 ({0})"
+msgstr "PNG圧縮率 ({0})"
 
 #: org/jmol/export/dialog/Dialog.java:328
 #, java-format
 msgid "PNG Quality ({0})"
-msgstr "PNG 画像品質 ({0})"
+msgstr "PNG画質 ({0})"
 
 #: org/jmol/export/dialog/Dialog.java:374
 #: org/jmol/export/dialog/Dialog.java:486
@@ -229,7 +221,7 @@ msgstr "キャンセル"
 
 #: org/jmol/export/dialog/Dialog.java:438
 msgid "Abort file chooser dialog"
-msgstr "ファイル選択ダイアログを中止する"
+msgstr "ファイル選択ダイアログを中止"
 
 #: org/jmol/export/dialog/Dialog.java:440
 #: org/jmol/export/dialog/Dialog.java:441
@@ -270,7 +262,7 @@ msgstr "サイズ"
 
 #: org/jmol/export/dialog/Dialog.java:452
 msgid "Files of Type:"
-msgstr "種類:"
+msgstr "ファイルの型:"
 
 #: org/jmol/export/dialog/Dialog.java:453
 msgid "Type"
@@ -296,7 +288,7 @@ msgstr "リスト"
 
 #: org/jmol/export/dialog/Dialog.java:461
 msgid "Look In:"
-msgstr "覗く:"
+msgstr "ファイルの場所:"
 
 #: org/jmol/export/dialog/Dialog.java:463
 msgid "Error creating new folder"
@@ -304,11 +296,11 @@ msgstr "新規フォルダの作成中にエラーが発生しました"
 
 #: org/jmol/export/dialog/Dialog.java:464
 msgid "New Folder"
-msgstr "新規フォルダー"
+msgstr "新規フォルダ"
 
 #: org/jmol/export/dialog/Dialog.java:466
 msgid "Create New Folder"
-msgstr "新規フォルダーを作成する"
+msgstr "新規フォルダを作成する"
 
 #: org/jmol/export/dialog/Dialog.java:469
 msgid "Open selected file"
@@ -341,7 +333,7 @@ msgstr "Up"
 
 #: org/jmol/export/dialog/Dialog.java:480
 msgid "Up One Level"
-msgstr "1つ上のレベル"
+msgstr "1つ上のレベルへ"
 
 #: org/jmol/export/dialog/Dialog.java:485
 msgid "OK"
@@ -525,11 +517,11 @@ msgstr "ウクライナ語"
 
 #: org/jmol/i18n/GT.java:181
 msgid "Simplified Chinese"
-msgstr "中国語（簡体字）"
+msgstr "中国語（簡体）"
 
 #: org/jmol/i18n/GT.java:182
 msgid "Traditional Chinese"
-msgstr "中国語（繁体字）"
+msgstr "中国語（繁体）"
 
 #: org/jmol/minimize/Minimizer.java:206
 #, java-format
@@ -573,23 +565,23 @@ msgstr "水素を付加する"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:90
 msgid "minimize"
-msgstr "構造最適化する"
+msgstr "構造最適化"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:91
 msgid "fix hydrogens and minimize"
-msgstr "水素を固定して最小化する"
+msgstr "水素原子との距離を一定にして構造最適化"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:92
 msgid "clear"
-msgstr "クリアー"
+msgstr "クリア"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:93
 msgid "save file"
-msgstr "ファイルを保存する"
+msgstr "構造をファイルに保存"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:94
 msgid "save state"
-msgstr "状態を保存する"
+msgstr "状態（イメージ）を保存"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:95
 msgid "invert ring stereochemistry"
@@ -597,59 +589,59 @@ msgstr "環の立体化学を反転する"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:96
 msgid "delete atom"
-msgstr "原子を削除する"
+msgstr "原子を削除"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:97
 msgid "drag to bond"
-msgstr ""
+msgstr "ドラッグして結合を作成"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:98
 msgid "drag atom"
-msgstr "原子をドラッグする"
+msgstr "原子をドラッグ"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:99
 msgid "drag atom (and minimize)"
-msgstr "原子をドラッグする (その後、構造最適化する)"
+msgstr "原子をドラッグ (その後、構造最適化する)"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:100
 msgid "drag molecule (SHIFT to rotate)"
-msgstr "分子をドラッグする (SHIFTキーで回転)"
+msgstr "分子をドラッグ (SHIFTキーで回転)"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:101
 msgid "drag and minimize molecule (docking)"
-msgstr "ドラッグして分子を構造最適化する (ドッキング)"
+msgstr "ドラッグして分子を構造最適化 (ドッキング)"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:110
 msgid "increase charge"
-msgstr "電荷を増加させる"
+msgstr "電荷を増やす"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:111
 msgid "decrease charge"
-msgstr "電荷を減少させる"
+msgstr "電荷を減らす"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:112
 msgid "delete bond"
-msgstr "結合を削除する"
+msgstr "結合を削除"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:113
 msgid "single"
-msgstr "単"
+msgstr "単結合"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:114
 msgid "double"
-msgstr "二重"
+msgstr "二重結合"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:115
 msgid "triple"
-msgstr "三重"
+msgstr "三重結合"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:116
 msgid "increase order"
-msgstr ""
+msgstr "結合次数を増やす"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:117
 msgid "decrease order"
-msgstr ""
+msgstr "結合次数を減らす"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:118
 msgid "rotate bond (SHIFT-DRAG)"
@@ -657,31 +649,27 @@ msgstr "結合を回転させる(SHIFT-ドラッグ)"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:119
 msgid "exit modelkit mode"
-msgstr "モデルキット・モードを終了する"
+msgstr "モデル組立てモードを終了"
 
 #: org/jmol/modelsetbio/AminoPolymer.java:575
 #, java-format
 msgid ""
-"NOTE: Backbone amide hydrogen positions are present and will be ignored. "
-"Their positions will be approximated, as in standard DSSP analysis.\n"
+"NOTE: Backbone amide hydrogen positions are present and will be ignored. Their positions will be approximated, as in standard DSSP analysis.\n"
 "Use {0} to not use this approximation.\n"
 "\n"
 msgstr ""
-"注意: バックボーンのアミド水素の位置は無視されます。それらの位置は標準DSSP解"
-"析のように近似されます。\n"
+"注意: バックボーンのアミド水素の位置は無視されます。それらの位置は標準DSSP解析のように近似されます。\n"
 "この近似を用いないためには {0}を使用してください。\n"
 "\n"
 
 #: org/jmol/modelsetbio/AminoPolymer.java:581
 #, java-format
 msgid ""
-"NOTE: Backbone amide hydrogen positions are present and will be used. "
-"Results may differ significantly from standard DSSP analysis.\n"
+"NOTE: Backbone amide hydrogen positions are present and will be used. Results may differ significantly from standard DSSP analysis.\n"
 "Use {0} to ignore these hydrogen positions.\n"
 "\n"
 msgstr ""
-"注意: バックボーンのアミド水素の位置が利用されます。結果は標準DSSP解析と大き"
-"く異なる可能性があります。\n"
+"注意: バックボーンのアミド水素の位置が利用されます。結果は標準DSSP解析と大きく異なる可能性があります。\n"
 "これらの水素の位置を無視するには {0} を使用してください。\n"
 "\n"
 
@@ -695,7 +683,8 @@ msgstr "何も原子が読み込まれていません"
 msgid "Space Group"
 msgstr "空間群"
 
-#: org/jmol/popup/GenericPopup.java:816 org/jmol/popup/GenericPopup.java:861
+#: org/jmol/popup/GenericPopup.java:816
+#: org/jmol/popup/GenericPopup.java:861
 #: org/jmol/popup/MainPopupResourceBundle.java:578
 #: org/jmol/popup/MainPopupResourceBundle.java:592
 #: org/jmol/popup/MainPopupResourceBundle.java:601
@@ -711,7 +700,7 @@ msgstr "マウスの使い方"
 #: org/jmol/popup/GenericPopup.java:965
 #: org/jmol/popup/MainPopupResourceBundle.java:956
 msgid "Translations"
-msgstr "移動"
+msgstr "翻訳"
 
 #: org/jmol/popup/GenericPopup.java:967
 msgid "System"
@@ -796,7 +785,7 @@ msgstr "対称性"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:558
 msgid "Hide Symmetry"
-msgstr "対称性を隠す"
+msgstr "対称性を非表示"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:559
 msgid "Model information"
@@ -805,7 +794,7 @@ msgstr "モデル情報"
 #: org/jmol/popup/MainPopupResourceBundle.java:560
 #, java-format
 msgid "Select ({0})"
-msgstr "({0})を選択"
+msgstr " 選択 ({0})"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:561
 #, java-format
@@ -887,7 +876,7 @@ msgstr "選択したものだけを表示"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:581
 msgid "Invert Selection"
-msgstr "選択を反転"
+msgstr "選択範囲を反転"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:583
 msgid "View"
@@ -906,9 +895,7 @@ msgid "Right"
 msgstr "右"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:587
-msgid ""
-"Top[as in \"view from the top, from above\" - (translators: remove this "
-"bracketed part]"
+msgid "Top[as in \"view from the top, from above\" - (translators: remove this bracketed part]"
 msgstr "上"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:588
@@ -1080,7 +1067,7 @@ msgstr "オフ"
 #: org/jmol/popup/MainPopupResourceBundle.java:638
 #, java-format
 msgid "{0}% van der Waals"
-msgstr "van der Waals半径の{0}%"
+msgstr "van der Waals半径の{0}% "
 
 #: org/jmol/popup/MainPopupResourceBundle.java:640
 #: org/jmol/popup/MainPopupResourceBundle.java:762
@@ -1205,15 +1192,15 @@ msgstr "立体視の方式"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:699
 msgid "Red+Cyan glasses"
-msgstr "赤+シアン立体視眼鏡"
+msgstr "赤+青緑 立体視眼鏡"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:700
 msgid "Red+Blue glasses"
-msgstr "赤+青立体視眼鏡"
+msgstr "赤+青 立体視眼鏡"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:701
 msgid "Red+Green glasses"
-msgstr "赤+緑立体視眼鏡"
+msgstr "赤+緑 立体視眼鏡"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:702
 msgid "Cross-eyed viewing"
@@ -1230,19 +1217,19 @@ msgstr "ラベル"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:708
 msgid "With Element Symbol"
-msgstr "元素記号で"
+msgstr "元素記号"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:709
 msgid "With Atom Name"
-msgstr "原子名で"
+msgstr "原子名"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:710
 msgid "With Atom Number"
-msgstr "原子番号で"
+msgstr "原子番号"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:712
 msgid "Position Label on Atom"
-msgstr "原子上の位置ラベル"
+msgstr "表示位置"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:713
 msgid "Centered"
@@ -1250,19 +1237,19 @@ msgstr "中心に"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:714
 msgid "Upper Right"
-msgstr "上部右"
+msgstr "右肩"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:715
 msgid "Lower Right"
-msgstr "下部右"
+msgstr "右下"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:716
 msgid "Upper Left"
-msgstr "上部左"
+msgstr "左肩"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:717
 msgid "Lower Left"
-msgstr "下部左"
+msgstr "左下"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:719
 msgid "Color"
@@ -1278,7 +1265,7 @@ msgstr "元素（CPKモデル）"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:724
 msgid "Alternative Location"
-msgstr "替わりの場所"
+msgstr "別な場所"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:725
 msgid "Molecule"
@@ -1338,7 +1325,7 @@ msgstr "白"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:741
 msgid "Cyan"
-msgstr "シアン"
+msgstr "青緑"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:743
 msgid "Red"
@@ -1346,11 +1333,11 @@ msgstr "赤"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:744
 msgid "Orange"
-msgstr "橙色"
+msgstr "橙"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:745
 msgid "Yellow"
-msgstr "黄色"
+msgstr "黄"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:746
 msgid "Green"
@@ -1362,7 +1349,7 @@ msgstr "青"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:748
 msgid "Indigo"
-msgstr "藍色"
+msgstr "藍"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:749
 msgid "Violet"
@@ -1425,7 +1412,7 @@ msgstr "軸"
 #: org/jmol/popup/MainPopupResourceBundle.java:922
 #: org/jmol/popup/MainPopupResourceBundle.java:946
 msgid "Boundbox"
-msgstr "分子を囲む箱を描く"
+msgstr "バウンドボックス"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:778
 #: org/jmol/popup/MainPopupResourceBundle.java:898
@@ -1440,11 +1427,11 @@ msgstr "ズーム"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:787
 msgid "Zoom In"
-msgstr "表示を拡大する"
+msgstr "表示を拡大"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:788
 msgid "Zoom Out"
-msgstr "表示を縮小する"
+msgstr "表示を縮小"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:790
 #: org/jmol/popup/MainPopupResourceBundle.java:855
@@ -1466,7 +1453,7 @@ msgstr "Z軸の回りの回転速度"
 #: org/jmol/popup/MainPopupResourceBundle.java:797
 #: org/jmol/popup/MainPopupResourceBundle.java:823
 msgid "Set FPS"
-msgstr "FPSを設定する"
+msgstr "FPSを設定"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:807
 msgid "Animation"
@@ -1527,31 +1514,31 @@ msgstr "始点と終点でダブルクリックして計測"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:832
 msgid "Click for distance measurement"
-msgstr "クリックして距離を計測する"
+msgstr "クリックして距離を計測"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:833
 msgid "Click for angle measurement"
-msgstr "クリックして結合角を計測する"
+msgstr "クリックして結合角を計測"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:834
 msgid "Click for torsion (dihedral) measurement"
-msgstr "クリックして二面角を計測する"
+msgstr "クリックして二面角を計測"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:835
 msgid "Click two atoms to display a sequence in the console"
-msgstr "2原子をクリックしてコンソールに順序を表示する"
+msgstr "2原子をクリックしてコンソールに順序を表示"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:836
 msgid "Delete measurements"
-msgstr "計測値を消去する"
+msgstr "計測値を消去"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:837
 msgid "List measurements"
-msgstr "計測値をコンソールに表示する"
+msgstr "計測値をコンソールに表示"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:838
 msgid "Distance units nanometers"
-msgstr "長さの単位 ナノメーター"
+msgstr "長さの単位 ナノメータ"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:839
 msgid "Distance units Angstroms"
@@ -1559,7 +1546,7 @@ msgstr "長さの単位 オングストローム"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:840
 msgid "Distance units picometers"
-msgstr "長さの単位 ピコメーター"
+msgstr "長さの単位 ピコメータ"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:842
 msgid "Set picking"
@@ -1571,7 +1558,7 @@ msgstr "中心"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:846
 msgid "Identity"
-msgstr ""
+msgstr "原子の番号と位置"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:847
 msgid "Label"
@@ -1579,31 +1566,31 @@ msgstr "ラベル"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:848
 msgid "Select atom"
-msgstr "原子を選択する"
+msgstr "原子を選択"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:849
 msgid "Select chain"
-msgstr "鎖を選択する"
+msgstr "鎖を選択"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:850
 msgid "Select element"
-msgstr "元素を選択する"
+msgstr "元素を選択"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:851
 msgid "Select group"
-msgstr "基を選択する"
+msgstr "基を選択"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:852
 msgid "Select molecule"
-msgstr "分子を選択する"
+msgstr "分子を選択"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:853
 msgid "Select site"
-msgstr "サイトを選択する"
+msgstr "サイトを選択"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:854
 msgid "Show symmetry operation"
-msgstr "対称操作を表示する"
+msgstr "対称操作を表示"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:857
 msgid "Show"
@@ -1668,7 +1655,7 @@ msgstr "スクリプトを開く"
 #: org/jmol/popup/MainPopupResourceBundle.java:878
 #, java-format
 msgid "Save a copy of {0}"
-msgstr "{0}のコピーを保存"
+msgstr " {0}のコピーを保存"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:879
 msgid "Save script with state"
@@ -1676,7 +1663,7 @@ msgstr "状態とスクリプトを保存する"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:880
 msgid "Save script with history"
-msgstr "ヒストリーとスクリプトを保存する"
+msgstr "履歴とスクリプトを保存する"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:881
 #: org/jmol/popup/MainPopupResourceBundle.java:882
@@ -1685,15 +1672,15 @@ msgstr "ヒストリーとスクリプトを保存する"
 #: org/jmol/popup/MainPopupResourceBundle.java:885
 #, java-format
 msgid "Export {0} image"
-msgstr "{0} イメージをエクスポートする"
+msgstr "{0} イメージを書き出す"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:886
 msgid "Save all as JMOL file (zip)"
-msgstr "すべてをJMOLファイル (zip)として保存する"
+msgstr "すべてをJMOLファイル (zip)として保存"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:887
 msgid "Save JVXL isosurface"
-msgstr "JVXL等高面を保存する"
+msgstr "JVXL等高面を保存"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:888
 #: org/jmol/popup/MainPopupResourceBundle.java:889
@@ -1701,7 +1688,7 @@ msgstr "JVXL等高面を保存する"
 #: org/jmol/popup/MainPopupResourceBundle.java:891
 #, java-format
 msgid "Export {0} 3D model"
-msgstr "{0} 3Dモデルをエクスポートする"
+msgstr "{0} 3Dモデルを書き出す"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:893
 msgid "Computation"
@@ -1709,15 +1696,15 @@ msgstr "計算"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:894
 msgid "Optimize structure"
-msgstr "構造最適化する"
+msgstr "構造最適化"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:895
 msgid "Model kit"
-msgstr "モデルキット"
+msgstr "モデル組立て"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:899
 msgid "Extract MOL data"
-msgstr "MOLデータを抽出する"
+msgstr "MOLデータを抽出"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:902
 msgid "Dot Surface"
@@ -1755,7 +1742,7 @@ msgstr "{0}を再読み込みする"
 #: org/jmol/popup/MainPopupResourceBundle.java:917
 #, java-format
 msgid "Reload {0} + Display {1}"
-msgstr "{0}を再読み込みし{1}を表示する"
+msgstr "{0}を再読み込みし{1}を表示"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:918
 msgid "Reload + Polyhedra"
@@ -1763,7 +1750,7 @@ msgstr "再読み込み + 多面体"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:925
 msgid "Hide"
-msgstr "隠す"
+msgstr "非表示"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:926
 msgid "Dotted"
@@ -1807,7 +1794,7 @@ msgstr "RasMollで使われている色"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:950
 msgid "About..."
-msgstr "...について"
+msgstr "Jmolについて..."
 
 #: org/jmol/popup/SwingPopup.java:393
 msgid "Element?"
@@ -1865,7 +1852,7 @@ msgstr "モデルの指定が無効です"
 #: org/jmol/script/ScriptCompilationTokenParser.java:1357
 #, java-format
 msgid "missing END for {0}"
-msgstr "{0}に対するENDがありません"
+msgstr " {0}に対するENDがありません"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1360
 #: org/jmol/script/ScriptEvaluator.java:2892
@@ -1926,11 +1913,11 @@ msgstr "{0} 背景モデルが表示されている場合は使用できませ�
 
 #: org/jmol/script/ScriptEvaluator.java:2795
 msgid "Miller indices cannot all be zero."
-msgstr "ミラー指数はすべて0にはできません"
+msgstr "ミラー指数はすべて0にはできません "
 
 #: org/jmol/script/ScriptEvaluator.java:2798
 msgid "bad [R,G,B] color"
-msgstr "[R,G,B] カラーが正しくありません"
+msgstr "[R,G,B] 色指定が正しくありません"
 
 #: org/jmol/script/ScriptEvaluator.java:2801
 msgid "boolean expected"
@@ -2013,15 +2000,15 @@ msgstr "MOの係数データがありません"
 #: org/jmol/script/ScriptEvaluator.java:2864
 #, java-format
 msgid "An MO index from 1 to {0} is required"
-msgstr "1 から {0}の間のMO指数が必要です"
+msgstr "分子軌道を1 から {0}の間で指定してください"
 
 #: org/jmol/script/ScriptEvaluator.java:2867
 msgid "no MO basis/coefficient data available for this frame"
-msgstr "このフレームに対する MO 基底係数データがありません"
+msgstr "このフレームに対するMO基底関数/係数データがありません"
 
 #: org/jmol/script/ScriptEvaluator.java:2870
 msgid "no MO occupancy data available"
-msgstr "分子軌道の占有電子数データがありません"
+msgstr " 分子軌道の占有電子数データがありません"
 
 #: org/jmol/script/ScriptEvaluator.java:2873
 msgid "Only one molecular orbital is available in this file"
@@ -2042,12 +2029,8 @@ msgid "No data available"
 msgstr "データがありません"
 
 #: org/jmol/script/ScriptEvaluator.java:2886
-msgid ""
-"No partial charges were read from the file; Jmol needs these to render the "
-"MEP data."
-msgstr ""
-"JmolでMEPデータを表示するのに必要な部分電荷がファイルから読み込まれていませ"
-"ん。"
+msgid "No partial charges were read from the file; Jmol needs these to render the MEP data."
+msgstr " JmolでMEPデータを表示するのに必要な部分電荷がファイルから読み込まれていません。"
 
 #: org/jmol/script/ScriptEvaluator.java:2889
 msgid "No unit cell"
@@ -2065,13 +2048,11 @@ msgstr "小数点数が ({0} - {1}) の範囲を超えています"
 
 #: org/jmol/script/ScriptEvaluator.java:2901
 msgid "object name expected after '$'"
-msgstr "'$' の後にオブジェクトの名前を指定してください"
+msgstr " '$' の後にオブジェクトの名前を指定してください"
 
 #: org/jmol/script/ScriptEvaluator.java:2905
 #, java-format
-msgid ""
-"plane expected -- either three points or atom expressions or {0} or {1} or "
-"{2}"
+msgid "plane expected -- either three points or atom expressions or {0} or {1} or {2}"
 msgstr "三点、原子式、 {0} 、{1} または {2}のいずれかで平面を指定してください"
 
 #: org/jmol/script/ScriptEvaluator.java:2908
@@ -2122,18 +2103,17 @@ msgstr "認識できないオブジェクト"
 #: org/jmol/script/ScriptEvaluator.java:2945
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
-msgstr ""
-"Jmol state スクリプトでの認識できない {0} パラメーター (いずれにせよ設定)"
+msgstr "Jmol state スクリプトでの認識できない {0} パラメータ (set anyway)"
 
 #: org/jmol/script/ScriptEvaluator.java:2948
 #, java-format
 msgid "unrecognized SHOW parameter --  use {0}"
-msgstr "認識できないSHOWパラメーター --  use {0}"
+msgstr "認識できないSHOWパラメータ --  use {0}"
 
 #: org/jmol/script/ScriptEvaluator.java:2954
 #, java-format
 msgid "write what? {0} or {1} \"filename\""
-msgstr ""
+msgstr "何を書きますか? {0} または {1} \"ファイル名\""
 
 #: org/jmol/script/ScriptEvaluator.java:7333
 #, java-format
@@ -2143,7 +2123,7 @@ msgstr "{0} 原子が削除されました"
 #: org/jmol/script/ScriptEvaluator.java:7354
 #, java-format
 msgid "{0} new bonds; {1} modified"
-msgstr "新規結合 {0} ; 変更 {1}"
+msgstr "新規結合 {0} ; 変更 {1} "
 
 #: org/jmol/script/ScriptEvaluator.java:8864
 #, java-format
@@ -2188,10 +2168,8 @@ msgid "rotate Z"
 msgstr "Z軸の回りの回転"
 
 #: org/jmol/viewer/ActionManager.java:119
-msgid ""
-"rotate Z (horizontal motion of mouse) or zoom (vertical motion of mouse)"
-msgstr ""
-"Z軸の回りの回転(マウスの横方向移動) または表示の拡大(マウスの縦方向移動)"
+msgid "rotate Z (horizontal motion of mouse) or zoom (vertical motion of mouse)"
+msgstr "Z軸の回りの回転(マウスの横方向移動) または表示の拡大(マウスの縦方向移動)"
 
 #: org/jmol/viewer/ActionManager.java:120
 msgid "zoom"
@@ -2208,7 +2186,7 @@ msgstr "ナビゲーションポイントを平行移動 ({0} と {1} が必要)
 
 #: org/jmol/viewer/ActionManager.java:123
 msgid "spin model (swipe and release button and stop motion simultaneously)"
-msgstr ""
+msgstr "モデルを回転させる(スワイプしてボタンを離すと同時に停止します)"
 
 #: org/jmol/viewer/ActionManager.java:124
 #, java-format
@@ -2241,8 +2219,7 @@ msgstr "完全なコンテキストメニューをポップアップ表示する
 
 #: org/jmol/viewer/ActionManager.java:130
 msgid "pop up recent context menu (click on Jmol frank)"
-msgstr ""
-"最近のコンテキストメニューをポップアップ表示する(右下のJmolロゴをクリック)"
+msgstr "最近のコンテキストメニューをポップアップ表示する(右下のJmolロゴをクリック)"
 
 #: org/jmol/viewer/ActionManager.java:131
 #, java-format
@@ -2271,12 +2248,8 @@ msgstr "選択された原子のセットにこの原子のグループを追加
 
 #: org/jmol/viewer/ActionManager.java:136
 #, java-format
-msgid ""
-"if all are selected, unselect all, otherwise add this group of atoms to the "
-"set of selected atoms (requires {0})"
-msgstr ""
-"すべてが選択されている場合はすべてを選択解除してください。さもなければ、選択"
-"された原子の集合にこのグループの原子を追加してください。( {0} が必要)"
+msgid "if all are selected, unselect all, otherwise add this group of atoms to the set of selected atoms (requires {0})"
+msgstr "すべてが選択されている場合はすべてを選択解除してください。さもなければ、選択された原子の集合にこのグループの原子を追加してください。( {0} が必要)"
 
 #: org/jmol/viewer/ActionManager.java:137
 #, java-format
@@ -2349,9 +2322,7 @@ msgstr "ラベルを選択して表示/非表示を切り替える ({0}が必要
 
 #: org/jmol/viewer/ActionManager.java:151
 #, java-format
-msgid ""
-"pick an atom to include it in a measurement (after starting a measurement or "
-"after {0})"
+msgid "pick an atom to include it in a measurement (after starting a measurement or after {0})"
 msgstr "(計測を開始した後または{0} の後に)計測に含めるために原子を選択する"
 
 #: org/jmol/viewer/ActionManager.java:152
@@ -2366,7 +2337,7 @@ msgstr "等高面上の点を選択する ( {0} が必要)"
 #: org/jmol/viewer/ActionManager.java:154
 #, java-format
 msgid "pick a point or atom to navigate to (requires {0})"
-msgstr "( {0} が必要)に移動させるために原子を選択する"
+msgstr "( {0} が必要)に移動させるために原子を選択する "
 
 #: org/jmol/viewer/ActionManager.java:155
 #, java-format
@@ -2414,8 +2385,7 @@ msgid "pick one more atom in order to display the symmetry relationship"
 msgstr "対称性の関係を表示するためにもう１つの原子を選択する"
 
 #: org/jmol/viewer/ActionManager.java:1960
-msgid ""
-"pick two atoms in order to display the symmetry relationship between them"
+msgid "pick two atoms in order to display the symmetry relationship between them"
 msgstr "対称性の関係を表示するために2つの原子を選択する"
 
 #: org/jmol/viewer/SelectionManager.java:95
@@ -2450,3 +2420,4 @@ msgstr "ログファイルのパスを設定できません"
 #, java-format
 msgid "Setting log file to {0}"
 msgstr "ログファイルを {0} に設定する"
+

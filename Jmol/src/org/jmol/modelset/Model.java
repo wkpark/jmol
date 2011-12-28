@@ -305,7 +305,6 @@ public class Model {
   
   /**
    * @param bioBranches 
-   * @param bsBranch  
    * @return  updated bioBranches 
    */
   public List<BitSet> getBioBranches(List<BitSet> bioBranches) {

@@ -3,15 +3,14 @@
   <!--
       DocumentId  $Id$
       Summary     create and update applet-, developers- and user-guide
-                    translation
+                  translation
       Todo        should check for existance of xml2po
                   translated XML files have lang="Jmol*Guide.LANG", so we need
-                    a workaround to set the correct language in the lang
-                    attribute
+                  a workaround to set the correct language in the lang
+                  attribute
   -->
 
-  <!-- our properties section -->
-
+  <!-- Our properties section -->
   <property name="lib.dir" value="jars" />
   <property name="src.dir" value="${basedir}/doc/source" />
   <property name="pot.dir" value="${basedir}/doc/source/po" />
@@ -39,17 +38,17 @@
     <include name="*/*.docbook.xml"/>
   </fileset>
 
-  <!-- main target creates .pot files, update existing .po files and creates
+  <!-- Main target creates .pot files, update existing .po files and creates
        translated XML files by default -->
   <target name="main" id="main"
           depends="init,create-pot,update-po"/>
 <!--    depends="init,create-pot,update-po,update-xml"/> -->
-  
+
   <target name="init" id="init">
     <tstamp/>
   </target>
 
-  <!-- parse list of possible guides and create .pot for every guide -->
+  <!-- Parse list of possible guides and create .pot for every guide -->
   <target name="check-uptodate-pot">
     <condition property="uptodate-pot">
       <uptodate targetfile="${pot.dir}/tstamp.pot">
@@ -62,7 +61,7 @@
   <target name="create-pot" id="create-pot"
           depends="check-uptodate-pot"
           unless="uptodate-pot">
-    <echo message="Generating gettext PO-template file for all Guides ..."/>
+    <echo message="Generating gettext PO-template file for all Guides ..." level="info"/>
     <mkdir dir="${pot.tmp.dir}"/>
     <apply os="Linux"
            executable="${src.dir}/xml2po.sh"
@@ -96,7 +95,7 @@
             <available file="${pot.tmp.dir}/@{current.guide}.pot"/>
           </and>
           <then>
-            <!-- compare both .pot files -->
+            <!-- Compare both .pot files -->
             <copy file="${pot.dir}/@{current.guide}.pot"
                   tofile="${pot.tmp.dir}/@{current.guide}.old.pot"/>
             <antcall target="shrink-pot-file">
@@ -134,7 +133,7 @@
   	<delete dir="${pot.tmp.dir}"/>
   </target>
 
-  <!-- parse list of possible languages and update LANG.po gettext files -->
+  <!-- Parse list of possible languages and update LANG.po gettext files -->
   <target name="update-po" id="update-po">
     <for list="${all.guides}" delimiter="," param="current.guide">
       <sequential>
@@ -163,7 +162,7 @@
   <target name="update-po-guide-lang" id="update-po-guide-lang"
           depends="check-uptodate-po"
           unless="uptodate-po-${guide_value}-${lang_value}">
-    <echo message="Updating ${guide_value}.${lang_value}.po gettext file ..."/>
+    <echo message="Updating ${guide_value}.${lang_value}.po gettext file ..." level="info"/>
     <exec os="Linux"
           executable="${src.dir}/xml2po.sh"
           dir="${pot.dir}">
@@ -180,8 +179,7 @@
     </exec>
   </target>
 
-
-  <!-- parse list of vailable languages and guides and marge translations back -->
+  <!-- Parse list of vailable languages and guides and marge translations back -->
   <target name="update-xml" id="update-xml" depends="clean-translation">
     <for list="${all.guides}" delimiter="," param="current.guide">
       <sequential>
@@ -200,7 +198,7 @@
 
   <target name="update-xml-guide-lang" id="update-xml-guide-lang">
     <echo message="Merging back translations for ${guide_value}.docbook.xml
-    ${line.separator}into ${guide_value}_${lang_value}.docbook.xml file ..."/>
+    ${line.separator}into ${guide_value}_${lang_value}.docbook.xml file ..." level="info"/>
     <exec os="Linux" executable="${src.dir}/xml2po.sh" dir="${pot.dir}">
       <arg line="${src.dir}/xml2po.py -e
                  -p ${guide_value}.${lang_value}.po
@@ -215,7 +213,7 @@
     </exec>
   </target>
 
-  <!-- we can clean .pot, .LANG.docbook.xml and .xml2po.mo files -->
+  <!-- We can clean .pot, .LANG.docbook.xml and .xml2po.mo files -->
   <target name="clean" id="clean">
     <fileset dir="${pot.dir}">
       <include name=".xml2po.mo" />

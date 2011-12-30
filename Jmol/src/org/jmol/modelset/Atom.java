@@ -1213,15 +1213,17 @@ final public class Atom extends Point3fi implements JmolNode {
   }
 
   /**
-   * called by isosurface and int comparator via atomProperty()
-   * and also by getBitsetProperty() 
-   * @param viewer 
+   * called by isosurface and int comparator via atomProperty() and also by
+   * getBitsetProperty()
+   * 
+   * @param viewer
    * 
    * @param atom
    * @param tokWhat
-   * @return       float value or value*100 (asInt=true) or throw an error if not found
+   * @return float value or value*100 (asInt=true) or throw an error if not
+   *         found
    * 
-   */  
+   */
   public static float atomPropertyFloat(Viewer viewer, Atom atom, int tokWhat) {
     switch (tokWhat) {
     case Token.radius:
@@ -1238,9 +1240,9 @@ final public class Atom extends Point3fi implements JmolNode {
     case Token.volume:
       return atom.getVolume(viewer, EnumVdw.AUTO);
 
-    // these next have to be multiplied by 100 if being compared
-    // note that spacefill here is slightly different than radius -- no integer option
-      
+      // these next have to be multiplied by 100 if being compared
+      // note that spacefill here is slightly different than radius -- no integer option
+
     case Token.adpmax:
       return atom.getADPMinMax(true);
     case Token.adpmin:
@@ -1276,9 +1278,27 @@ final public class Atom extends Point3fi implements JmolNode {
       return atom.getOccupancy100() / 100f;
     case Token.partialcharge:
       return atom.getPartialCharge();
-    case Token.omega:
     case Token.phi:
     case Token.psi:
+    case Token.omega:
+      if (atom.group.chain.model.isJmolDataFrame
+          && atom.group.chain.model.jmolFrameType
+              .startsWith("plot ramachandran")) {
+        switch (tokWhat) {
+        case Token.phi:
+          return atom.getFractionalCoord('X', false);
+        case Token.psi:
+          return atom.getFractionalCoord('Y', false);
+        case Token.omega:
+          if (atom.group.chain.model.isJmolDataFrame
+              && atom.group.chain.model.jmolFrameType
+                  .equals("plot ramachandran")) {
+            float omega = atom.getFractionalCoord('Z', false) - 180;
+            return (omega < -180 ? 360 + omega : omega);
+          }
+        }
+      }
+      return atom.getGroupParameter(tokWhat);
     case Token.eta:
     case Token.theta:
     case Token.straightness:
@@ -1315,7 +1335,7 @@ final public class Atom extends Point3fi implements JmolNode {
     case Token.vectorscale:
       Vector3f v = atom.getVibrationVector();
       return (v == null ? 0 : v.length() * viewer.getVectorScale());
-      
+
     }
     return atomPropertyInt(atom, tokWhat);
   }

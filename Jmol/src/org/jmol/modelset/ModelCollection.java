@@ -4129,7 +4129,6 @@ abstract public class ModelCollection extends BondCollection {
   }
   
   public long getFrameDelayMs(int i) {
-    return (i < models.length ? models[models[i].trajectoryBaseIndex].frameDelay : 0);
+    return (i < models.length && i >= 0 ? models[models[i].trajectoryBaseIndex].frameDelay : 0);
   }
-
 }

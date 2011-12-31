@@ -10046,7 +10046,7 @@ private void zap(String msg) {
     modelSet.setFrameDelayMs(millis, getVisibleFramesBitSet());
   }
 
-  public long getFrameDelayMs(int i) {
+  long getFrameDelayMs(int i) {
     return modelSet.getFrameDelayMs(i);
   }
 

@@ -76,6 +76,8 @@ class AnimationManager {
   }
   
   void setCurrentModelIndex(int modelIndex, boolean clearBackgroundModel) {
+    if (modelIndex < 0)
+      setAnimationOff(false);
     int formerModelIndex = currentModelIndex;
     ModelSet modelSet = viewer.getModelSet();
     int modelCount = (modelSet == null ? 0 : modelSet.getModelCount());

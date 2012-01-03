@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-12-23 19:22+0100\n"
-"PO-Revision-Date: 2011-12-26 19:06+0900\n"
-"Last-Translator: Hiroshi Kihara <kihara@itc.u-toyama.ac.jp>\n"
+"PO-Revision-Date: 2011-12-30 11:52+0000\n"
+"Last-Translator: Hiroshi Kihara <Unknown>\n"
 "Language-Team: Japanese <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-05 17:04+0000\n"
-"X-Generator: Launchpad (build 13613)\n"
-"X-Poedit-Language: Japanese\n"
+"X-Launchpad-Export-Date: 2012-01-03 00:12+0000\n"
+"X-Generator: Launchpad (build 14560)\n"
 "X-Poedit-Country: Japan\n"
+"X-Poedit-Language: Japanese\n"
 
 #: com/json/Cookie.java:121
 msgid "name"
@@ -230,7 +230,7 @@ msgstr "ヘルプ"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:169
 msgid "Editor"
-msgstr "エディタ"
+msgstr "エディター"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:170
 msgid "History"
@@ -416,7 +416,7 @@ msgstr "基底関数: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:269
 msgid "Density Fitting Basis Set (DFT Only): "
-msgstr "密度フィッティング基底関数系（DFTのみ）："
+msgstr "密度フィッティング基底関数系（DFTのみ）： "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:275
 msgid "Job Options: "
@@ -436,7 +436,7 @@ msgstr "多重度: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:308
 msgid "Selection: "
-msgstr "選択："
+msgstr "選択： "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:343
 msgid "Gaussian Input File Name"
@@ -459,7 +459,7 @@ msgstr "取り消し"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:56
 msgid "&Macros"
-msgstr "マクロ (&M)"
+msgstr "マクロ(&M)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:57
 msgid "&File"
@@ -507,7 +507,7 @@ msgstr "Jmol Java コンソール (&C)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:68
 msgid "AtomSet&Chooser..."
-msgstr "原子セットセレクタ... (&C)"
+msgstr "原子セットセレクタ...(&C)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:69
 msgid "&Save As..."
@@ -670,7 +670,7 @@ msgstr "原子 (&A)"
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:113
 #, java-format
 msgid "{0}% van der Waals"
-msgstr "van der Waals半径の {0}% "
+msgstr "van der Waals半径の {0}%"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:114
 msgid "&Bond"
@@ -703,11 +703,11 @@ msgstr "名前 (&N)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:124
 msgid "&Number"
-msgstr "番号 (&N)"
+msgstr "番号(&N)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:125
 msgid "&Centered"
-msgstr "中心に (&C)"
+msgstr "中心に(&C)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:126
 msgid "&Upper right"
@@ -750,7 +750,7 @@ msgstr "{0} %"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:144
 msgid "&Perspective Depth"
-msgstr "視点の深度 (&P)"
+msgstr "透視深度(&P)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:145
 msgid "A&xes"
@@ -851,7 +851,7 @@ msgstr "化学シフトを計算 (&S)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:170
 msgid "&Crystal Properties"
-msgstr "結晶の特性 (&C)"
+msgstr "結晶の特性(&C)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:171
 msgid "&Once"
@@ -1184,7 +1184,7 @@ msgstr "画像の高さ"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:304
 msgid "Fixed ratio : "
-msgstr "固定比率："
+msgstr "固定比率： "
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:306
 msgid "Use a fixed ratio for width:height"
@@ -1232,7 +1232,7 @@ msgstr "複数のパスで画像をレンダリング"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:411
 msgid "Start size : "
-msgstr "開始サイズ"
+msgstr "開始サイズ "
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:413
 msgid "Initial size of the tiles"
@@ -1240,7 +1240,7 @@ msgstr "タイルの初期サイズ"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:429
 msgid "End size : "
-msgstr "終了サイズ"
+msgstr "終了サイズ "
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:431
 msgid "Final size of the tiles"
@@ -1379,14 +1379,12 @@ msgid "id"
 msgstr "id"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:532
-#, fuzzy
 msgid "startup"
-msgstr "繰り返し"
+msgstr "起動時"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:533
-#, fuzzy
 msgid "filename"
-msgstr "ファイル名："
+msgstr "ファイル名"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:540
 msgid "startup_script"
@@ -1778,7 +1776,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:801
 msgid "compressing large data file to"
-msgstr "大きなデータファイルを圧縮しています　"
+msgstr "大きなデータファイルを圧縮しています"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:62
 msgid "Spin on/off"
@@ -1891,254 +1889,6 @@ msgstr "ビューをダウンロード"
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr "未実装"
-
-#, fuzzy
-#~ msgid "All"
-#~ msgstr "すべて(&A)"
-
-#, fuzzy
-#~ msgid "System"
-#~ msgstr "ステップ"
-
-#, fuzzy
-#~ msgid "Select ({0})"
-#~ msgstr "選択(&S)"
-
-#, fuzzy
-#~ msgid "View {0}"
-#~ msgstr "表示(&V)"
-
-#, fuzzy
-#~ msgid "None"
-#~ msgstr "なし(&N)"
-
-#, fuzzy
-#~ msgid "View"
-#~ msgstr "表示(&V)"
-
-#, fuzzy
-#~ msgid "Front"
-#~ msgstr "前(&F)"
-
-#, fuzzy
-#~ msgid "Left"
-#~ msgstr "左(&L)"
-
-#, fuzzy
-#~ msgid "Right"
-#~ msgstr "右(&R)"
-
-#, fuzzy
-#~ msgid "Bottom"
-#~ msgstr "下(&B)"
-
-#, fuzzy
-#~ msgid "All Water"
-#~ msgstr "水"
-
-#, fuzzy
-#~ msgid "Style"
-#~ msgstr "ステップ"
-
-#, fuzzy
-#~ msgid "Wireframe"
-#~ msgstr "ワイヤフレーム(&W)"
-
-#, fuzzy
-#~ msgid "Cartoon"
-#~ msgstr "炭素"
-
-#, fuzzy
-#~ msgid "Hydrogen Bonds"
-#~ msgstr "水素(&H)"
-
-#, fuzzy
-#~ msgid "Vibration"
-#~ msgstr "振動...(&V)"
-
-#, fuzzy
-#~ msgid "Vectors"
-#~ msgstr "ベクトル(&E)"
-
-#, fuzzy
-#~ msgid "Labels"
-#~ msgstr "ラベル(&L)"
-
-#, fuzzy
-#~ msgid "Color"
-#~ msgstr "閉じる"
-
-#, fuzzy
-#~ msgid "Formal Charge"
-#~ msgstr "全電荷: "
-
-#, fuzzy
-#~ msgid "Partial Charge"
-#~ msgstr "全電荷: "
-
-#, fuzzy
-#~ msgid "Amino Acid"
-#~ msgstr "アミノ酸"
-
-#, fuzzy
-#~ msgid "White"
-#~ msgstr "水"
-
-#, fuzzy
-#~ msgid "Cyan"
-#~ msgstr "炭素"
-
-#, fuzzy
-#~ msgid "Red"
-#~ msgstr "やり直し"
-
-#, fuzzy
-#~ msgid "Indigo"
-#~ msgstr "元に戻す"
-
-#, fuzzy
-#~ msgid "Maroon"
-#~ msgstr "炭素"
-
-#, fuzzy
-#~ msgid "Boundbox"
-#~ msgstr "バウンディングボックス(&O)"
-
-#, fuzzy
-#~ msgid "Zoom"
-#~ msgstr "ズーム(&Z)"
-
-#, fuzzy
-#~ msgid "Zoom In"
-#~ msgstr "ズーム(&Z)"
-
-#, fuzzy
-#~ msgid "Zoom Out"
-#~ msgstr "ズーム(&Z)"
-
-#, fuzzy
-#~ msgid "Set X Rate"
-#~ msgstr "状況"
-
-#, fuzzy
-#~ msgid "Set Y Rate"
-#~ msgstr "状況"
-
-#, fuzzy
-#~ msgid "Set Z Rate"
-#~ msgstr "状況"
-
-#, fuzzy
-#~ msgid "Set FPS"
-#~ msgstr "FPS"
-
-#, fuzzy
-#~ msgid "Resume"
-#~ msgstr "サイズ変更(&Z)"
-
-#, fuzzy
-#~ msgid "Stop"
-#~ msgstr "ステップ"
-
-#, fuzzy
-#~ msgid "Rewind"
-#~ msgstr "やり直し"
-
-#, fuzzy
-#~ msgid "Delete measurements"
-#~ msgstr "計測(&M)"
-
-#, fuzzy
-#~ msgid "List measurements"
-#~ msgstr "計測(&M)"
-
-#, fuzzy
-#~ msgid "Distance units nanometers"
-#~ msgstr "長さの単位(&U)"
-
-#, fuzzy
-#~ msgid "Distance units Angstroms"
-#~ msgstr "長さの単位(&U)"
-
-#, fuzzy
-#~ msgid "Distance units picometers"
-#~ msgstr "長さの単位(&U)"
-
-#, fuzzy
-#~ msgid "Center"
-#~ msgstr "ヘテロ"
-
-#, fuzzy
-#~ msgid "Label"
-#~ msgstr "ラベル(&L)"
-
-#, fuzzy
-#~ msgid "Select atom"
-#~ msgstr "原子を削除"
-
-#, fuzzy
-#~ msgid "Select chain"
-#~ msgstr "選択(&S)"
-
-#, fuzzy
-#~ msgid "Select element"
-#~ msgstr "すべて選択(&A)"
-
-#, fuzzy
-#~ msgid "Select group"
-#~ msgstr "選択(&S)"
-
-#, fuzzy
-#~ msgid "Select molecule"
-#~ msgstr "すべて選択(&A)"
-
-#, fuzzy
-#~ msgid "Select site"
-#~ msgstr "選択(&S)"
-
-#, fuzzy
-#~ msgid "Console"
-#~ msgstr "コンソール(&L)"
-
-#, fuzzy
-#~ msgid "File"
-#~ msgstr "ファイル(&F)"
-
-#, fuzzy
-#~ msgid "Reload"
-#~ msgstr "再読み込み(&R)"
-
-#, fuzzy
-#~ msgid "Open file or URL"
-#~ msgstr "ファイルを開く"
-
-#, fuzzy
-#~ msgid "Export {0} image"
-#~ msgstr "画像としてエクスポート(&I)"
-
-#, fuzzy
-#~ msgid "Reload {0}"
-#~ msgstr "再読み込み(&R)"
-
-#, fuzzy
-#~ msgid "{0} px"
-#~ msgstr "{0} ピクセル"
-
-#, fuzzy
-#~ msgid "Angstrom Width"
-#~ msgstr "オングストローム 1E-10(&A)"
-
-#, fuzzy
-#~ msgid "Selection Halos"
-#~ msgstr "すべて選択(&A)"
-
-#, fuzzy
-#~ msgid "Show Hydrogens"
-#~ msgstr "水素(&H)"
-
-#, fuzzy
-#~ msgid "Show Measurements"
-#~ msgstr "計測(&M)"
 
 #~ msgid "Jmol Script Console"
 #~ msgstr "Jmol スクリプトコンソール"

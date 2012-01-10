@@ -9274,6 +9274,12 @@
   <fah_proj number="7716" name="p7716" public="n"
     server="143.89.28.70" atoms="47624" preferred="11.55" deadline="19.26"
     credit="777.0" frames="100" code="A4" contact="xhuang" kfactor="0.75"/>
+  <fah_proj number="7717" name="p7717" public="n"
+    server="143.89.28.70" atoms="47624" preferred="11.619988425925927" deadline="19.37"
+    credit="783.0" frames="100" code="A4" contact="xhuang" kfactor="0.75"/>
+  <fah_proj number="7718" name="p7718" public="n"
+    server="143.89.28.70" atoms="47647" preferred="11.619988425925927" deadline="19.37"
+    credit="782.0" frames="100" code="A4" contact="xhuang" kfactor="0.75"/>
 
   <!-- Projects 7800 to 7899 -->
   <fah_proj number="7800" name="p7800" public="y" file="xyz"

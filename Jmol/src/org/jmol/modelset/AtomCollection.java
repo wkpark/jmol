@@ -1768,6 +1768,7 @@ abstract public class AtomCollection {
             getHybridizationAndAxes(a.index, 0, x, z, "pz", false, doAlignZ);
             if (lcaoType.equals("px"))
               x.scale(-1);
+            z.set(v[0]);
             break;
           }
           // O-C*-O

@@ -63,8 +63,8 @@ class TransformManager10 extends TransformManager {
     // conversion factor Angstroms --> pixels
     // -- note -- in this model, it depends upon camera position
     scalePixelsPerAngstrom = 
-      (scale3D && !perspectiveDepth ? 72 / scale3DAngstromsPerInch : scaleDefaultPixelsPerAngstrom * zoomPercent / 100
-        * cameraScaleFactor); //(s/m)
+      (scale3D && !perspectiveDepth ? 72 / scale3DAngstromsPerInch * (antialias ? 2 : 1) 
+          : scaleDefaultPixelsPerAngstrom * zoomPercent / 100 * cameraScaleFactor); //(s/m)
 
     // model radius in pixels, for slab calculation
     modelRadiusPixels = modelRadius * scalePixelsPerAngstrom;

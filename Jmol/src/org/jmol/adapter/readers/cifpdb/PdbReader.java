@@ -90,7 +90,7 @@ public class PdbReader extends AtomSetCollectionReader {
 
   private int[] chainAtomCounts;  
   
-  private StringBuffer sbIgnored, sbSelected, sbConect;
+  private StringBuffer sbIgnored, sbSelected, sbConect, sb;
 
   private int atomCount;
   private int maxSerial;
@@ -112,7 +112,7 @@ public class PdbReader extends AtomSetCollectionReader {
   private int lastGroup = Integer.MIN_VALUE;
   private char lastInsertion;
   private int lastSourceSerial = Integer.MIN_VALUE;
-  private int lasttargetSerial = Integer.MIN_VALUE;
+  private int lastTargetSerial = Integer.MIN_VALUE;
   private int tlsGroupID;
   
  final private static String lineOptions = 
@@ -780,10 +780,16 @@ REMARK 290 REMARK: NULL
     return "Xx";
   }
   
+  private boolean haveDoubleBonds;
+  
   private void conect() {
     // adapted for improper non-crossreferenced files such as 1W7R
-    if (sbConect == null)
+    if (sbConect == null) {
       sbConect = new StringBuffer();
+      sb = new StringBuffer();
+    } else {
+      sb.setLength(0);
+    }
     int sourceSerial = -1;
     sourceSerial = parseInt(line, 6, 11);
     if (sourceSerial < 0)
@@ -795,9 +801,11 @@ REMARK 290 REMARK: NULL
           offsetEnd) : -1);
       if (targetSerial < 0)
         continue;
-      boolean isDoubleBond = (sourceSerial == lastSourceSerial && targetSerial == lasttargetSerial);
+      boolean isDoubleBond = (sourceSerial == lastSourceSerial && targetSerial == lastTargetSerial);
+      if (isDoubleBond)
+        haveDoubleBonds = true;
       lastSourceSerial = sourceSerial;
-      lasttargetSerial = targetSerial;
+      lastTargetSerial = targetSerial;
       boolean isSwapped = (targetSerial < sourceSerial);
       int i1;
       if (isSwapped) {
@@ -809,10 +817,20 @@ REMARK 290 REMARK: NULL
       String st = ";" + i1 + " " + targetSerial + ";";
       if (sbConect.indexOf(st) >= 0 && !isDoubleBond)
         continue;
-      sbConect.append(st);
+      // check for previous double
+      if (haveDoubleBonds) {
+        String st1 = "--" + st;
+        if (sbConect.indexOf(st1) >= 0)
+          continue;
+        sbConect.append(st);
+        sb.append(st1);
+      } else {
+        sbConect.append(st);
+      }
       atomSetCollection.addConnection(new int[] { i1, targetSerial,
           i < 4 ? 1 : JmolAdapter.ORDER_HBOND });
     }
+    sbConect.append(sb);
   }
 
   /*

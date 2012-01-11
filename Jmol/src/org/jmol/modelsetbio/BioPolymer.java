@@ -275,7 +275,8 @@ public abstract class BioPolymer {
       this.sheetSmoothing = sheetSmoothing;
     for (int i = 0; i < monomerCount; i++) 
       controlPoints[i] = getControlPoint(i, v);
-    controlPoints[monomerCount] = controlPoints[monomerCount - 1];
+    controlPoints[monomerCount] = getTerminatorPoint();
+    //controlPoints[monomerCount] = controlPoints[monomerCount - 1];
     invalidControl = false;
     return controlPoints;
   }

@@ -169,7 +169,7 @@ abstract public class GenericPopup {
   }
 
   private static boolean checkBoolean(Map<String, Object> info, String key) {
-    return Boolean.TRUE.equals(info.get(key));
+    return info != null && Boolean.TRUE.equals(info.get(key));
   }
 
   protected void getViewerData() {
@@ -484,8 +484,6 @@ abstract public class GenericPopup {
   ////// JmolPopup methods //////
   
   public String getMenuAsString(String title) {
-    if (strMenuStructure == null)
-      return "";
     int pt = title.indexOf("|"); 
     if (pt >= 0) {
       String type = title.substring(pt);

@@ -109,7 +109,7 @@ class TransformManager11 extends TransformManager {
     // conversion factor Angstroms --> pixels
     // so that "full window" is visualRange
     scalePixelsPerAngstrom = (scale3D && !perspectiveDepth
-        && mode != MODE_NAVIGATION ? 72 / scale3DAngstromsPerInch
+        && mode != MODE_NAVIGATION ? 72 / scale3DAngstromsPerInch * (antialias ? 2 : 1)
         : screenPixelCount / visualRange); // (s/m)
 
     // model radius in pixels

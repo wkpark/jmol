@@ -3378,29 +3378,23 @@ abstract public class ModelCollection extends BondCollection {
     SymmetryInterface cellInfo = null;
     Object[][] infolist = null;
     if (spaceGroup == null) {
-      cellInfo = getUnitCell(modelIndex);
-      if (modelIndex <= 0) {
+      if (modelIndex <= 0)
         modelIndex = (pt1 instanceof Atom ? ((Atom) pt1).modelIndex : viewer
             .getCurrentModelIndex());
-      }
-      if (modelIndex < 0) {
+      if (modelIndex < 0)
         strOperations = "no single current model";
-      } else if (cellInfo == null) {
+      else if ((cellInfo = getUnitCell(modelIndex)) == null)
         strOperations = "not applicable";
-      }
       if (strOperations != null) {
         info = new Hashtable<String, Object>();
         info.put("spaceGroupInfo", strOperations);
         info.put("symmetryInfo", "");
-        return info;
-      }
-      if (pt1 == null && drawID == null && symOp != 0) {
+      } else if (pt1 == null && drawID == null && symOp != 0) {
         info = (Map<String, Object>) getModelAuxiliaryInfo(modelIndex,
             "spaceGroupInfo");
       }
-      if (info != null) {
+      if (info != null)
         return info;
-      }
       info = new Hashtable<String, Object>();
       if (pt1 == null && drawID == null && symOp == 0)
         setModelAuxiliaryInfo(modelIndex, "spaceGroupInfo", info);

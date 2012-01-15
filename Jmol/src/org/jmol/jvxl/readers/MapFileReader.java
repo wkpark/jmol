@@ -30,6 +30,8 @@ import javax.vecmath.Point3f;
 import org.jmol.util.Logger;
 import org.jmol.util.SimpleUnitCell;
 
+// DSN6, MRC, and XPLOR readers
+
 abstract class MapFileReader extends VolumeFileReader {
 
   protected float dmin = Float.MAX_VALUE;

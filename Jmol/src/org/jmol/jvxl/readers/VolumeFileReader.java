@@ -122,8 +122,6 @@ abstract class VolumeFileReader extends SurfaceFileReader {
       if (atomCount == Integer.MIN_VALUE)
         return 0;
 
-      if (isAnisotropic)
-        setVolumetricOriginAnisotropy();
       Logger.info("voxel grid origin:" + volumetricOrigin);
 
       int downsampleFactor = params.downsampleFactor;
@@ -148,8 +146,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
         if (!isAngstroms)
           volumetricVectors[i].scale(ANGSTROMS_PER_BOHR);
       }
-      if (isAnisotropic)
-        setVolumetricAnisotropy();
+      scaleIsosurface(params.scale);
       volumeData.setVolumetricXml();
       return nSurfaces;
     } catch (Exception e) {
@@ -568,4 +565,23 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     vB = marchingCubes.getLinearOffset(x, y, z, vB);
     return qpc.process(vA, vB, fReturn[0]);
   }
+  
+  private boolean isScaledAlready;
+  private void scaleIsosurface(float scale) {
+    if (isScaledAlready)
+      return;
+    isScaledAlready = true;
+    if (isAnisotropic)
+      setVolumetricAnisotropy();
+    if (Float.isNaN(scale))
+      return;
+    Logger.info("applying scaling factor of " + scale);
+    volumetricOrigin.scaleAdd((1 - scale) / 2, volumetricVectors[0]);
+    volumetricOrigin.scaleAdd((1 - scale) / 2, volumetricVectors[1]);
+    volumetricOrigin.scaleAdd((1 - scale) / 2, volumetricVectors[2]);
+    volumetricVectors[0].scale(scale);
+    volumetricVectors[1].scale(scale);
+    volumetricVectors[2].scale(scale);
+  }
+
 }

@@ -6379,7 +6379,7 @@ public class ScriptEvaluator {
             && (zoom == 0 || Float.isNaN(zoom))) {
           // alternative (atom expression) 0 zoomFactor
           float newZoom = Math
-              .abs(getZoom(i, bsCenter, (zoom == 0 ? 0 : zoom0)));
+              .abs(getZoom(0, i, bsCenter, (zoom == 0 ? 0 : zoom0)));
           i = iToken + 1;
           zoom = newZoom;
         } else {
@@ -10732,7 +10732,7 @@ public class ScriptEvaluator {
     // zoom/zoomTo percent|-factor|+factor|*factor|/factor | 0
     float zoom = viewer.getZoomSetting();
 
-    float newZoom = getZoom(i, bsCenter, zoom);
+    float newZoom = getZoom(ptCenter, i, bsCenter, zoom);
     i = iToken + 1;
     float xTrans = Float.NaN;
     float yTrans = Float.NaN;
@@ -10780,16 +10780,25 @@ public class ScriptEvaluator {
         xTrans, yTrans, Float.NaN, null, Float.NaN, Float.NaN, Float.NaN);
   }
 
-  private float getZoom(int i, BitSet bs, float currentZoom)
+  private float getZoom(int ptCenter, int i, BitSet bs, float currentZoom)
       throws ScriptException {
     // where [zoom factor] is [0|n|+n|-n|*n|/n|IN|OUT]
 
     float zoom = (isFloatParameter(i) ? floatParameter(i++) : Float.NaN);
     if (zoom == 0 || currentZoom == 0) {
       // moveTo/zoom/zoomTo {center} 0
-      if (bs == null)
-        error(ERROR_invalidArgument);
-      float r = viewer.calcRotationRadius(bs);
+      float r = Float.NaN;
+      if (bs == null) {
+        if (tokAt(ptCenter) == Token.dollarsign) {
+          Point3f[] bbox = getObjectBoundingBox(objectNameParameter(ptCenter + 1));
+          if (bbox == null || (r = bbox[0].distance(bbox[1]) / 2) == 0)
+            error(ERROR_invalidArgument);
+        }
+      } else {
+        r = viewer.calcRotationRadius(bs);       
+      }
+      if (Float.isNaN(r))
+        error(ERROR_invalidArgument);        
       currentZoom = viewer.getRotationRadius() / r * 100;
       zoom = Float.NaN;
     }

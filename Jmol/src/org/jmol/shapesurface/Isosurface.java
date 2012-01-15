@@ -676,6 +676,14 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       if (m == null || m.vertices == null)
         return false;
       data[2] = m.jvxlData.boundingBox;
+      if (m.ptOffset != null) {
+        Point3f[] d = new Point3f[2];
+        d[0] = new Point3f(m.jvxlData.boundingBox[0]);
+        d[1] = new Point3f(m.jvxlData.boundingBox[1]);
+        d[0].add(m.ptOffset);
+        d[1].add(m.ptOffset);
+        data[2] = d;
+      }
       return true;
     }
     if (property == "getCenter") {
@@ -688,6 +696,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         Point3f p = new Point3f(m.jvxlData.boundingBox[0]);
         p.add(m.jvxlData.boundingBox[1]);
         p.scale(0.5f);
+        if (m.ptOffset != null)
+          p.add(m.ptOffset);
         data[2] = p;
         return true;
       }

@@ -23,7 +23,7 @@
     </p>
     <p>
     Comprueba
-    <a href="http://wiki.jmol.org:81/index.php/Internationalisation/Current_Status">la Wiki</a>
+    <a href="http://wiki.jmol.org/index.php/Internationalisation/Current_Status">la Wiki</a>
     para consultar la lista actualizada de idiomas.
     </p>
     <p>
@@ -36,7 +36,7 @@
     </p>
     <ul>
     	<li>Al iniciar Jmol: lee las instrucciones en 
-    	<a href="http://wiki.jmol.org:81/index.php/Jmol_Application#Forcing_Jmol_to_open_in_a_certain_language">esta página Wiki</a>.
+    	<a href="http://wiki.jmol.org/index.php/Jmol_Application#Forcing_Jmol_to_open_in_a_certain_language">esta página Wiki</a>.
     	</li>
     	<li>Dinámicamente una vez que Jmol ya se haya iniciado:
 		usando la entrada 'Idioma' cerca del final del menú emergente.
@@ -48,7 +48,7 @@
     <p>
     Si tu idioma <b>no</b> está en la lista, puedes ofrecerte voluntario para
     colaborar como traductor(a). Lee las instrucciones en 
-    <a href="http://wiki.jmol.org:81/index.php/Internationalisation">esta página Wiki</a>
+    <a href="http://wiki.jmol.org/index.php/Internationalisation">esta página Wiki</a>
     y, si necesitas ayuda, contacta con el equipo de desarrollo.
     </p>
     

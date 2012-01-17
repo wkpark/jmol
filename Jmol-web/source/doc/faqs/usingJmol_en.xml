@@ -17,7 +17,7 @@
     </p>
     <p>
     Check 
-    <a href="http://wiki.jmol.org:81/index.php/Internationalisation/Current_Status">the Wiki</a>
+    <a href="http://wiki.jmol.org/index.php/Internationalisation/Current_Status">the Wiki</a>
     for the list of currently supported languages.
     </p>
     <p>
@@ -28,7 +28,7 @@
     You can force Jmol into using any of the available languages in several ways:    
     </p>
     <ul>
-    	<li>Upon start: visit <a href="http://wiki.jmol.org:81/index.php/Jmol_Application#Forcing_Jmol_to_open_in_a_certain_language">this Wiki page</a>
+    	<li>Upon start: visit <a href="http://wiki.jmol.org/index.php/Jmol_Application#Forcing_Jmol_to_open_in_a_certain_language">this Wiki page</a>
     	for instructions.
     	</li>
     	<li>Dynamically after Jmol has started:
@@ -41,7 +41,7 @@
     <p>
     If your language is <b>not</b> in the list, you may volunteer to collaborate
     as translator. Please, read instructions in
-    <a href="http://wiki.jmol.org:81/index.php/Internationalisation">this Wiki page</a>
+    <a href="http://wiki.jmol.org/index.php/Internationalisation">this Wiki page</a>
     and, if you need help, contact the developers team.
     </p>
     

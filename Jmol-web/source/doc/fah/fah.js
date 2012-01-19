@@ -8,7 +8,7 @@ function clearStatus() {
 }
 
 function showProjectDescription() {
-  window.open("http://fah-web.stanford.edu/cgi-bin/fahproject?p=" + document.fahForm.infoNumber.value);
+  window.open("http://fah-web.stanford.edu/cgi-bin/fahproject.overusingIPswillbebanned?p=" + document.fahForm.infoNumber.value);
 }
 
 function hideSolvent() {

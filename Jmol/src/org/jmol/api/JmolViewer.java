@@ -51,34 +51,47 @@ import org.jmol.viewer.Viewer;
 abstract public class JmolViewer extends JmolSimpleViewer {
 
   /**
-   *  This is the main access point for creating an application
-   *  or applet viewer. In Jmol 11.6 it was manditory that one of 
-   *  the next commands is either 
-   *  
-   *    viewer.evalString("ZAP");
-   *    
-   *    or at least:
-   *    
-   *    viewer.setAppletContext("",null,null,"")
-   *    
-   *    One or the other of these was necessary to establish the 
-   *    first modelset, which might be required by one or more
-   *    later evaluated commands or file loadings.
-   *    
-   *    Starting with Jmol 11.7, setAppletContext is rolled into
-   *    allocateViewer so that the full initialization is done
-   *    all at once.
-   *    
+   * This is the main access point for creating an application or applet viewer.
+   * In Jmol 11.6 it was manditory that one of the next commands is either
+   * 
+   * viewer.evalString("ZAP");
+   * 
+   * or at least:
+   * 
+   * viewer.setAppletContext("",null,null,"")
+   * 
+   * One or the other of these was necessary to establish the first modelset,
+   * which might be required by one or more later evaluated commands or file
+   * loadings.
+   * 
+   * Starting with Jmol 11.7, setAppletContext is rolled into allocateViewer so
+   * that the full initialization is done all at once.
+   * 
+   * Starting with Jmol 12.3.13, we allow for preconstructed ApiPlatform
+   * 
    * 
    * @param container
    * @param jmolAdapter
-   * @param htmlName 
-   * @param documentBase 
-   * @param codeBase 
-   * @param commandOptions 
-   * @param statusListener 
-   * @return              a JmolViewer object
+   * @param htmlName
+   * @param documentBase
+   * @param codeBase
+   * @param commandOptions
+   * @param statusListener
+   * @param implementedPlatform
+   * @return a JmolViewer object
    */
+  static public JmolViewer allocateViewer(Object container,
+                                          JmolAdapter jmolAdapter,
+                                          String htmlName, URL documentBase,
+                                          URL codeBase, String commandOptions,
+                                          JmolStatusListener statusListener,
+                                          ApiPlatform implementedPlatform) {
+
+    return Viewer.allocateViewer(container, jmolAdapter, htmlName,
+        documentBase, codeBase, commandOptions, statusListener,
+        implementedPlatform);
+  }
+
   static public JmolViewer allocateViewer(Object container,
                                           JmolAdapter jmolAdapter,
                                           String htmlName, URL documentBase, 
@@ -87,7 +100,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
                                           JmolStatusListener statusListener) {
     
     return Viewer.allocateViewer(container, jmolAdapter,
-        htmlName, documentBase, codeBase, commandOptions, statusListener);
+        htmlName, documentBase, codeBase, commandOptions, statusListener, null);
   }
 
   /**
@@ -98,7 +111,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
    * @return             a viewer
    */
   public static JmolViewer allocateViewer(Object container, JmolAdapter jmolAdapter) {
-    return Viewer.allocateViewer(container, jmolAdapter, null, null, null, null, null);
+    return Viewer.allocateViewer(container, jmolAdapter, null, null, null, null, null, null);
   }
   
   /**

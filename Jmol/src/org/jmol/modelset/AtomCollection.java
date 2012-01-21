@@ -237,14 +237,6 @@ abstract public class AtomCollection {
     return "" + atoms[i].getChainID();
   }
 
-  public String getAtomSequenceCode(int i) {
-    return atoms[i].getSeqcodeString();
-  }
-
-  public int getAtomModelIndex(int i) {
-    return atoms[i].getModelIndex();
-  }
-  
   public Quadric[] getEllipsoid(int i) {
     return (i < 0 || ellipsoids == null || i >= ellipsoids.length ? null
         : ellipsoids[i]);

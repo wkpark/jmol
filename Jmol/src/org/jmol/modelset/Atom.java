@@ -1106,7 +1106,7 @@ final public class Atom extends Point3fi implements JmolNode {
     return group.groupID;
   }
 
-  String getSeqcodeString() {
+  public String getSeqcodeString() {
     return group.getSeqcodeString();
   }
 

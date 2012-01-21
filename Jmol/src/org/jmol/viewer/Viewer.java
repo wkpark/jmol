@@ -53,6 +53,7 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolAppConsoleInterface;
 import org.jmol.api.JmolCallbackListener;
 import org.jmol.api.JmolImageCreatorInterface;
+import org.jmol.api.JmolPeerInterface;
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.api.JmolScriptEditorInterface;
 import org.jmol.api.JmolSelectionListener;
@@ -273,18 +274,21 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
 
   private Viewer(Object display, JmolAdapter modelAdapter,
-      String commandOptions) {
+      String commandOptions, ApiPlatform implementedPlatform) {
     // use allocateViewer
     if (Logger.debugging) {
       Logger.debug("Viewer constructor " + this);
     }
     isDataOnly = (display == null);
-    String platform = (commandOptions == null || !commandOptions.contains("platform=")
-          ? "org.jmol.awt.Platform" : commandOptions.substring(commandOptions.indexOf("platform=") + 9)); 
-    apiPlatform = (ApiPlatform) Interface.getInterface(platform);
+    apiPlatform = implementedPlatform;
+    if (apiPlatform == null)
+      apiPlatform = (ApiPlatform) Interface.getInterface(commandOptions == null
+          || !commandOptions.contains("platform=") ? "org.jmol.awt.Platform"
+          : commandOptions.substring(commandOptions.indexOf("platform=") + 9));
     apiPlatform.setViewer(this, display);
     g3d = new Graphics3D(apiPlatform, isDataOnly);
-    haveDisplay = (!isDataOnly && (commandOptions == null || commandOptions.indexOf("-n") < 0));
+    haveDisplay = (!isDataOnly && (commandOptions == null || commandOptions
+        .indexOf("-n") < 0));
     mustRender = haveDisplay;
     if (!haveDisplay)
       display = null;
@@ -365,6 +369,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    *          or null
    * @param statusListener
    *          or null
+   * @param implementedPlatform  -- necessary for .NET/IKVM ?
+   *          or null
    * @return a viewer instance
    */
 
@@ -372,11 +378,23 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                           JmolAdapter modelAdapter,
                                           String fullName, URL documentBase,
                                           URL codeBase, String commandOptions,
-                                          JmolStatusListener statusListener) {
-    Viewer viewer = new Viewer(display, modelAdapter, commandOptions);
+                                          JmolStatusListener statusListener,
+                                          ApiPlatform implementedPlatform) {
+    Viewer viewer = new Viewer(display, modelAdapter, commandOptions, implementedPlatform);
     viewer.setAppletContext(fullName, documentBase, codeBase, commandOptions);
     viewer.setJmolStatusListener(statusListener);
     return viewer;
+  }
+  
+
+   public static JmolViewer allocateViewer(Object display,
+                                          JmolAdapter modelAdapter,
+                                          String fullName, URL documentBase,
+                                          URL codeBase, String commandOptions,
+                                          JmolStatusListener statusListener) {
+   //for legacy purposes, but not used in Jmol code
+     return allocateViewer(display, modelAdapter, fullName, documentBase,
+        codeBase, commandOptions, statusListener, null);
   }
   
   private boolean isSilent = false;
@@ -7570,11 +7588,11 @@ private void zap(String msg) {
 
   @Override
   public int getAtomModelIndex(int i) {
-    return modelSet.getAtomModelIndex(i);
+    return modelSet.atoms[i].modelIndex;
   }
 
   String getAtomSequenceCode(int i) {
-    return modelSet.getAtomSequenceCode(i);
+    return modelSet.atoms[i].getSeqcodeString();
   }
 
   @Override
@@ -10050,4 +10068,16 @@ private void zap(String msg) {
     return modelSet.getFrameDelayMs(i);
   }
 
+  // interaction with JSpecView
+  
+  private JmolPeerInterface jmolSpectralPeer;
+  
+  public JmolPeerInterface getJmolSpectralPeer(boolean createNew) {
+    if (createNew && jmolSpectralPeer == null) {
+      jmolSpectralPeer = (JmolPeerInterface) Interface.getInterface("org.jmol.spectrum.JmolPeer");
+      jmolSpectralPeer.setViewer(this);
+    }
+    return jmolSpectralPeer;    
+  }
 }
+

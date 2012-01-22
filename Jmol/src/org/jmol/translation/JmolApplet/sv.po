@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-11-26 14:53+0100\n"
-"PO-Revision-Date: 2012-01-15 23:31+0000\n"
+"PO-Revision-Date: 2012-01-16 22:05+0000\n"
 "Last-Translator: Peter Sahlin <Unknown>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-01-16 18:00+0000\n"
-"X-Generator: Launchpad (build 14664)\n"
+"X-Launchpad-Export-Date: 2012-01-22 10:08+0000\n"
+"X-Generator: Launchpad (build 14700)\n"
 
 #: org/jmol/applet/AppletWrapper.java:100
 msgid "Loading Jmol applet ..."
@@ -63,7 +63,7 @@ msgstr "Matte &Funktioner"
 
 #: org/jmol/console/AppletConsole.java:200
 msgid "Set &Parameters"
-msgstr ""
+msgstr "Bestäm &Parametrar"
 
 #: org/jmol/console/AppletConsole.java:201
 msgid "&More"
@@ -677,16 +677,20 @@ msgid ""
 "Use {0} to ignore these hydrogen positions.\n"
 "\n"
 msgstr ""
+"NOTERA: Backbone amide hydrogen positioner finns och kommer att användas. "
+"Resultet kan skilja signifikant från standard DSSP analys.\n"
+"Använd {0} för att ignorera dessa vätepositioner.\n"
+"\n"
 
 #: org/jmol/popup/GenericPopup.java:544
 #: org/jmol/popup/MainPopupResourceBundle.java:545
 msgid "No atoms loaded"
-msgstr ""
+msgstr "Inga atomer hämtade"
 
 #: org/jmol/popup/GenericPopup.java:754
 #: org/jmol/popup/MainPopupResourceBundle.java:557
 msgid "Space Group"
-msgstr ""
+msgstr "Rymdgrupp"
 
 #: org/jmol/popup/GenericPopup.java:816 org/jmol/popup/GenericPopup.java:861
 #: org/jmol/popup/MainPopupResourceBundle.java:578
@@ -699,7 +703,7 @@ msgstr "Alla"
 #: org/jmol/popup/GenericPopup.java:964
 #: org/jmol/popup/MainPopupResourceBundle.java:955
 msgid "Mouse Manual"
-msgstr ""
+msgstr "Musmanual"
 
 #: org/jmol/popup/GenericPopup.java:965
 #: org/jmol/popup/MainPopupResourceBundle.java:956
@@ -708,7 +712,7 @@ msgstr "Översättningar"
 
 #: org/jmol/popup/GenericPopup.java:967
 msgid "System"
-msgstr ""
+msgstr "System"
 
 #: org/jmol/popup/GenericPopup.java:973
 msgid "1 processor"
@@ -725,11 +729,11 @@ msgstr "okänt antal processorer"
 
 #: org/jmol/popup/GenericPopup.java:978
 msgid "Java version:"
-msgstr ""
+msgstr "Java-version:"
 
 #: org/jmol/popup/GenericPopup.java:982
 msgid "Java memory usage:"
-msgstr ""
+msgstr "Java minnesanvändning:"
 
 #: org/jmol/popup/GenericPopup.java:988
 #, java-format
@@ -748,7 +752,7 @@ msgstr "{0} MB maximalt"
 
 #: org/jmol/popup/GenericPopup.java:996
 msgid "unknown maximum"
-msgstr ""
+msgstr "okänt maximum"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:547
 msgid "Configurations"
@@ -756,11 +760,11 @@ msgstr "Konfigurationer"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:548
 msgid "Element"
-msgstr ""
+msgstr "Grundämne"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:549
 msgid "Model/Frame"
-msgstr ""
+msgstr "Modell/Ram"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:550
 msgid "Language"
@@ -770,16 +774,16 @@ msgstr "Språk"
 #: org/jmol/popup/MainPopupResourceBundle.java:552
 #: org/jmol/popup/MainPopupResourceBundle.java:553
 msgid "By Residue Name"
-msgstr ""
+msgstr "Efter rest-namn"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:554
 msgid "By HETATM"
-msgstr ""
+msgstr "Efter HETATM"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:555
 #, java-format
 msgid "Molecular Orbitals ({0})"
-msgstr ""
+msgstr "Molekylorbitaler ({0})"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:556
 #: org/jmol/popup/MainPopupResourceBundle.java:868
@@ -793,7 +797,7 @@ msgstr "Göm symmetri"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:559
 msgid "Model information"
-msgstr ""
+msgstr "Modellinformation"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:560
 #, java-format
@@ -808,12 +812,12 @@ msgstr "Alla {0} modeller"
 #: org/jmol/popup/MainPopupResourceBundle.java:562
 #, java-format
 msgid "Configurations ({0})"
-msgstr ""
+msgstr "Konfigurationer ({0})"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:563
 #, java-format
 msgid "Collection of {0} models"
-msgstr ""
+msgstr "Samling av {0} modeller"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:564
 #, java-format
@@ -843,12 +847,12 @@ msgstr "polymerer: {0}"
 #: org/jmol/popup/MainPopupResourceBundle.java:569
 #, java-format
 msgid "model {0}"
-msgstr ""
+msgstr "modell {0}"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:570
 #, java-format
 msgid "View {0}"
-msgstr ""
+msgstr "Vy {0}"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:571
 msgid "Main Menu"
@@ -856,17 +860,17 @@ msgstr "Huvudmeny"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:572
 msgid "Biomolecules"
-msgstr ""
+msgstr "Biomolekyler"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:573
 #, java-format
 msgid "biomolecule {0} ({1} atoms)"
-msgstr ""
+msgstr "biomolekyl {0} ({1} atomer)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:574
 #, java-format
 msgid "load biomolecule {0} ({1} atoms)"
-msgstr ""
+msgstr "hämta biomolekyl {0} ({1} atomer)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:579
 #: org/jmol/popup/MainPopupResourceBundle.java:698
@@ -888,7 +892,7 @@ msgstr "Visa"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:584
 msgid "Front"
-msgstr ""
+msgstr "Framifrån"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:585
 msgid "Left"
@@ -902,7 +906,7 @@ msgstr "Höger"
 msgid ""
 "Top[as in \"view from the top, from above\" - (translators: remove this "
 "bracketed part]"
-msgstr ""
+msgstr "Uppifrån"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:588
 msgid "Bottom"
@@ -921,31 +925,31 @@ msgstr "Protein"
 #: org/jmol/popup/MainPopupResourceBundle.java:674
 #: org/jmol/popup/MainPopupResourceBundle.java:766
 msgid "Backbone"
-msgstr ""
+msgstr "Stickor"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:594
 msgid "Side Chains"
-msgstr ""
+msgstr "Sidokedjor"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:595
 msgid "Polar Residues"
-msgstr ""
+msgstr "Polära enheter"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:596
 msgid "Nonpolar Residues"
-msgstr ""
+msgstr "Opoära enheter"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:597
 msgid "Basic Residues (+)"
-msgstr ""
+msgstr "Basiska enheter"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:598
 msgid "Acidic Residues (-)"
-msgstr ""
+msgstr "Sura enheter"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:599
 msgid "Uncharged Residues"
-msgstr ""
+msgstr "Oladdade enheter"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:600
 msgid "Nucleic"
@@ -965,23 +969,23 @@ msgstr "Baser"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:606
 msgid "AT pairs"
-msgstr ""
+msgstr "AT-par"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:607
 msgid "GC pairs"
-msgstr ""
+msgstr "GC-par"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:608
 msgid "AU pairs"
-msgstr ""
+msgstr "AU-par"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:609
 msgid "Hetero"
-msgstr ""
+msgstr "Hetero"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:610
 msgid "All PDB \"HETATM\""
-msgstr ""
+msgstr "Alla PDB \"HETATM\""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:611
 msgid "All Solvent"
@@ -993,15 +997,15 @@ msgstr "Enbart vatten"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:614
 msgid "Nonaqueous Solvent"
-msgstr ""
+msgstr "Icke vattenhaltigt lösningsmedel"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:615
 msgid "Nonaqueous HETATM"
-msgstr ""
+msgstr "Icke vattenhaltigt HETATM"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:616
 msgid "Ligand"
-msgstr ""
+msgstr "Ligand"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:619
 msgid "Carbohydrate"
@@ -1017,35 +1021,35 @@ msgstr "Stil"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:623
 msgid "Scheme"
-msgstr ""
+msgstr "Schema"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:624
 msgid "CPK Spacefill"
-msgstr ""
+msgstr "CPK Spacefill"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:625
 msgid "Ball and Stick"
-msgstr ""
+msgstr "Kula och pinne"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:626
 msgid "Sticks"
-msgstr ""
+msgstr "Pinnar"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:627
 msgid "Wireframe"
-msgstr ""
+msgstr "Trådmodell"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:628
 #: org/jmol/popup/MainPopupResourceBundle.java:675
 #: org/jmol/popup/MainPopupResourceBundle.java:768
 msgid "Cartoon"
-msgstr ""
+msgstr "Avbild"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:629
 #: org/jmol/popup/MainPopupResourceBundle.java:680
 #: org/jmol/popup/MainPopupResourceBundle.java:767
 msgid "Trace"
-msgstr ""
+msgstr "Spåra"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:631
 #: org/jmol/popup/MainPopupResourceBundle.java:720
@@ -1118,7 +1122,7 @@ msgstr "{0} Å"
 #: org/jmol/popup/MainPopupResourceBundle.java:649
 #: org/jmol/popup/MainPopupResourceBundle.java:763
 msgid "Hydrogen Bonds"
-msgstr ""
+msgstr "Vätebindningar"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:651
 msgid "Calculate"
@@ -1126,24 +1130,24 @@ msgstr "Beräkna"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:653
 msgid "Set H-Bonds Side Chain"
-msgstr ""
+msgstr "Bestäm vätebindningars sidokedjor"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:654
 msgid "Set H-Bonds Backbone"
-msgstr ""
+msgstr "Bestäm vätebindningars trådmodell"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:661
 #: org/jmol/popup/MainPopupResourceBundle.java:764
 msgid "Disulfide Bonds"
-msgstr ""
+msgstr "Disulfidbindningar"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:664
 msgid "Set SS-Bonds Side Chain"
-msgstr ""
+msgstr "Bestäm SS-bindningars sidokedja"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:665
 msgid "Set SS-Bonds Backbone"
-msgstr ""
+msgstr "Bestäm SS-bindningars trådmodell"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:672
 #: org/jmol/popup/MainPopupResourceBundle.java:765
@@ -1223,7 +1227,7 @@ msgstr "Etiketter"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:708
 msgid "With Element Symbol"
-msgstr ""
+msgstr "Med grundämnessymbol"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:709
 msgid "With Atom Name"
@@ -1235,7 +1239,7 @@ msgstr "Med atomnummer"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:712
 msgid "Position Label on Atom"
-msgstr ""
+msgstr "Placera etikett på atom"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:713
 msgid "Centered"
@@ -1263,11 +1267,11 @@ msgstr "Färg"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:722
 msgid "By Scheme"
-msgstr ""
+msgstr "Efter schema"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:723
 msgid "Element (CPK)"
-msgstr ""
+msgstr "Grundämne (CPK)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:724
 msgid "Alternative Location"
@@ -1279,7 +1283,7 @@ msgstr "Molekyl"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:726
 msgid "Formal Charge"
-msgstr ""
+msgstr "Formell laddning"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:727
 msgid "Partial Charge"
@@ -1291,15 +1295,15 @@ msgstr "Temperatur (Relativ)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:729
 msgid "Temperature (Fixed)"
-msgstr ""
+msgstr "Temperatur (Fast)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:731
 msgid "Amino Acid"
-msgstr ""
+msgstr "Aminosyra"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:732
 msgid "Secondary Structure"
-msgstr ""
+msgstr "Sekundär struktur"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:733
 msgid "Chain"
@@ -1315,7 +1319,7 @@ msgstr "Monomer"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:736
 msgid "Shapely"
-msgstr ""
+msgstr "Välskapad"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:738
 msgid "Inherit"
@@ -1516,43 +1520,43 @@ msgstr "Mätningar"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:831
 msgid "Double-Click begins and ends all measurements"
-msgstr ""
+msgstr "Dubbelklick börjar och avslutar alla mätningar"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:832
 msgid "Click for distance measurement"
-msgstr ""
+msgstr "Klicka för avständsmätning"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:833
 msgid "Click for angle measurement"
-msgstr ""
+msgstr "Klicka för vinkelmätning"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:834
 msgid "Click for torsion (dihedral) measurement"
-msgstr ""
+msgstr "Klicka för torsionsmätning (dihedral)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:835
 msgid "Click two atoms to display a sequence in the console"
-msgstr ""
+msgstr "Klicka på två atormer för att visa sekvens i konsolen"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:836
 msgid "Delete measurements"
-msgstr ""
+msgstr "Radera mätningar"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:837
 msgid "List measurements"
-msgstr ""
+msgstr "Lista mätningar"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:838
 msgid "Distance units nanometers"
-msgstr ""
+msgstr "Avständsenhet nanometer"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:839
 msgid "Distance units Angstroms"
-msgstr ""
+msgstr "Avståndsenhet Ångström"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:840
 msgid "Distance units picometers"
-msgstr ""
+msgstr "Avständsenhet picometer"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:842
 msgid "Set picking"
@@ -1560,7 +1564,7 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:844
 msgid "Center"
-msgstr ""
+msgstr "Centrera"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:846
 msgid "Identity"
@@ -1592,11 +1596,11 @@ msgstr "Välj molekyl"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:853
 msgid "Select site"
-msgstr ""
+msgstr "Välj plats"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:854
 msgid "Show symmetry operation"
-msgstr ""
+msgstr "Visa symmetrioperation"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:857
 msgid "Show"
@@ -1616,7 +1620,7 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:864
 msgid "Molecular orbital JVXL data"
-msgstr ""
+msgstr "Molekylorbital JVXL data"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:865
 msgid "Model"
@@ -1628,7 +1632,7 @@ msgstr "Orientering"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:867
 msgid "Space group"
-msgstr ""
+msgstr "Rymdgrupp"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:869
 msgid "Current state"
@@ -1636,40 +1640,40 @@ msgstr "Aktuellt tillstånd"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:871
 msgid "File"
-msgstr ""
+msgstr "Arkiv"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:872
 msgid "Reload"
-msgstr ""
+msgstr "Hämta igen"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:873
 msgid "Open from PDB"
-msgstr ""
+msgstr "Öppna från PDB"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:874
 msgid "Open file or URL"
-msgstr ""
+msgstr "Öppna fil eller URL"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:875
 msgid "Load full unit cell"
-msgstr ""
+msgstr "Hämta fullständig enhetscell"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:876
 msgid "Open script"
-msgstr ""
+msgstr "Öppna skript"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:878
 #, java-format
 msgid "Save a copy of {0}"
-msgstr ""
+msgstr "Spara en kopia av {0}"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:879
 msgid "Save script with state"
-msgstr ""
+msgstr "Spara skript med status"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:880
 msgid "Save script with history"
-msgstr ""
+msgstr "Spara skript med history"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:881
 #: org/jmol/popup/MainPopupResourceBundle.java:882
@@ -1678,15 +1682,15 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:885
 #, java-format
 msgid "Export {0} image"
-msgstr ""
+msgstr "Exportera {0} bild"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:886
 msgid "Save all as JMOL file (zip)"
-msgstr ""
+msgstr "Spara sllt som JMOL-fil (zip)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:887
 msgid "Save JVXL isosurface"
-msgstr ""
+msgstr "Spara JVXL isosurface"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:888
 #: org/jmol/popup/MainPopupResourceBundle.java:889
@@ -1694,35 +1698,35 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:891
 #, java-format
 msgid "Export {0} 3D model"
-msgstr ""
+msgstr "Exportera {0} 3D-modell"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:893
 msgid "Computation"
-msgstr ""
+msgstr "Beräkning"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:894
 msgid "Optimize structure"
-msgstr ""
+msgstr "Optimera struktur"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:895
 msgid "Model kit"
-msgstr ""
+msgstr "Modelluppsättning"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:899
 msgid "Extract MOL data"
-msgstr ""
+msgstr "Extrahera MOL-data"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:902
 msgid "Dot Surface"
-msgstr ""
+msgstr "Dot-yta"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:903
 msgid "van der Waals Surface"
-msgstr ""
+msgstr "van der Waals-yta"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:904
 msgid "Molecular Surface"
-msgstr ""
+msgstr "Molekylyta"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:905
 #, java-format
@@ -1736,14 +1740,14 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:908
 msgid "Molecular Electrostatic Potential"
-msgstr ""
+msgstr "Molekulär Elektrostatisk Potential"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:914
 #: org/jmol/popup/MainPopupResourceBundle.java:915
 #: org/jmol/popup/MainPopupResourceBundle.java:916
 #, java-format
 msgid "Reload {0}"
-msgstr ""
+msgstr "Hämta igen {0}"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:917
 #, java-format
@@ -1784,32 +1788,32 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:943
 msgid "Show Hydrogens"
-msgstr ""
+msgstr "Visa väte"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:944
 msgid "Show Measurements"
-msgstr ""
+msgstr "Visa mått"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:945
 msgid "Perspective Depth"
-msgstr ""
+msgstr "Perspektivdjup"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:949
 msgid "RasMol Colors"
-msgstr ""
+msgstr "RasMol-färger"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:950
 msgid "About..."
-msgstr ""
+msgstr "Om..."
 
 #: org/jmol/popup/SwingPopup.java:393
 msgid "Element?"
-msgstr ""
+msgstr "Grundämne?"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1324
 #: org/jmol/script/ScriptEvaluator.java:2792
 msgid "bad argument count"
-msgstr ""
+msgstr "felaktigt antal argument"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1327
 #, java-format
@@ -1828,15 +1832,15 @@ msgstr ""
 #: org/jmol/script/ScriptCompilationTokenParser.java:1336
 #: org/jmol/script/ScriptEvaluator.java:2825
 msgid "unexpected end of script command"
-msgstr ""
+msgstr "oväntat end of script command"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1339
 msgid "end of expression expected"
-msgstr ""
+msgstr "end of expression förväntat"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1342
 msgid "identifier or residue specification expected"
-msgstr ""
+msgstr "identifier eller residue specification förväntad"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1345
 msgid "invalid atom specification"
@@ -2138,19 +2142,19 @@ msgstr ""
 #: org/jmol/script/ScriptEvaluator.java:8864
 #, java-format
 msgid "file {0} created"
-msgstr ""
+msgstr "fil {0} skapad"
 
 #: org/jmol/script/ScriptEvaluator.java:10387
 #: org/jmol/script/ScriptEvaluator.java:10653
 #, java-format
 msgid "{0} atoms deleted"
-msgstr ""
+msgstr "{0} atomer raderade"
 
 #: org/jmol/script/ScriptEvaluator.java:11288
 #: org/jmol/script/ScriptEvaluator.java:11698
 #, java-format
 msgid "{0} hydrogen bonds"
-msgstr ""
+msgstr "{0} vätebindningar"
 
 #: org/jmol/script/ScriptEvaluator.java:11652
 #, java-format
@@ -2163,99 +2167,101 @@ msgstr ""
 
 #: org/jmol/shape/Frank.java:75
 msgid "Click for menu..."
-msgstr ""
+msgstr "Klicka för meny..."
 
 #: org/jmol/viewer/ActionManager.java:116
 msgid "translate"
-msgstr ""
+msgstr "förflytta"
 
 #: org/jmol/viewer/ActionManager.java:117
 msgid "rotate"
-msgstr ""
+msgstr "rotera"
 
 #: org/jmol/viewer/ActionManager.java:118
 msgid "rotate Z"
-msgstr ""
+msgstr "rotera Z"
 
 #: org/jmol/viewer/ActionManager.java:119
 msgid ""
 "rotate Z (horizontal motion of mouse) or zoom (vertical motion of mouse)"
 msgstr ""
+"rotera Z (horisontell förflyttning av musen) eller zooma (vertikal "
+"förflyttning av musen)"
 
 #: org/jmol/viewer/ActionManager.java:120
 msgid "zoom"
-msgstr ""
+msgstr "zooma"
 
 #: org/jmol/viewer/ActionManager.java:121
 msgid "zoom (along right edge of window)"
-msgstr ""
+msgstr "zooma (längs högra sidan av fönstret)"
 
 #: org/jmol/viewer/ActionManager.java:122
 #, java-format
 msgid "translate navigation point (requires {0} and {1})"
-msgstr ""
+msgstr "navigationspunkt för förflyttning (kräver {0} och {1})"
 
 #: org/jmol/viewer/ActionManager.java:123
 msgid "spin model (swipe and release button and stop motion simultaneously)"
-msgstr ""
+msgstr "rotera modell (svep och släpp knapp och stanna rörelsen samtidigt)"
 
 #: org/jmol/viewer/ActionManager.java:124
 #, java-format
 msgid "click on two points to spin around axis clockwise (requires {0})"
-msgstr ""
+msgstr "klicka på två punkter för att rotera runt axel medurs (kräver {0})"
 
 #: org/jmol/viewer/ActionManager.java:125
 #, java-format
 msgid "click on two points to spin around axis counterclockwise (requires {0})"
-msgstr ""
+msgstr "klicka på två punkter för att rotera runt axel moturs (kräver {0})"
 
 #: org/jmol/viewer/ActionManager.java:126
 #, java-format
 msgid "adjust slab (front plane; requires {0})"
-msgstr ""
+msgstr "justera slab (front plane; requires {0})"
 
 #: org/jmol/viewer/ActionManager.java:127
 #, java-format
 msgid "adjust depth (back plane; requires {0})"
-msgstr ""
+msgstr "justera djup (back plane; requires {0})"
 
 #: org/jmol/viewer/ActionManager.java:128
 #, java-format
 msgid "move slab/depth window (both planes; requires {0})"
-msgstr ""
+msgstr "flytta slab/depth-fönster (both planes; requires {0})"
 
 #: org/jmol/viewer/ActionManager.java:129
 msgid "pop up the full context menu"
-msgstr ""
+msgstr "popup fullständig kontextmeny"
 
 #: org/jmol/viewer/ActionManager.java:130
 msgid "pop up recent context menu (click on Jmol frank)"
-msgstr ""
+msgstr "popup föregående kontextmeny (klicka på Jmol frank)"
 
 #: org/jmol/viewer/ActionManager.java:131
 #, java-format
 msgid "select an atom (requires {0})"
-msgstr ""
+msgstr "välj en atom (kräver {0})"
 
 #: org/jmol/viewer/ActionManager.java:132
 #, java-format
 msgid "select NONE (requires {0})"
-msgstr ""
+msgstr "välj NONE (kräver {0})"
 
 #: org/jmol/viewer/ActionManager.java:133
 #, java-format
 msgid "toggle selection (requires {0})"
-msgstr ""
+msgstr "omvänd markering (kräver {0})"
 
 #: org/jmol/viewer/ActionManager.java:134
 #, java-format
 msgid "unselect this group of atoms (requires {0})"
-msgstr ""
+msgstr "avmarkera denna atomgrupp (kräver {0})"
 
 #: org/jmol/viewer/ActionManager.java:135
 #, java-format
 msgid "add this group of atoms to the set of selected atoms (requires {0})"
-msgstr ""
+msgstr "lägg till denna atomgrupp till markerade atomer (kräver {0})"
 
 #: org/jmol/viewer/ActionManager.java:136
 #, java-format
@@ -2263,75 +2269,77 @@ msgid ""
 "if all are selected, unselect all, otherwise add this group of atoms to the "
 "set of selected atoms (requires {0})"
 msgstr ""
+"om alla är markerade, avmarkera alla, annars lägg till denna atomgrupp till "
+"markerade atomer (kräver {0})"
 
 #: org/jmol/viewer/ActionManager.java:137
 #, java-format
 msgid "move selected atoms (requires {0})"
-msgstr ""
+msgstr "flytta markerade atomer (kräver {0})"
 
 #: org/jmol/viewer/ActionManager.java:138
 #, java-format
 msgid "select and drag atoms (requires {0})"
-msgstr ""
+msgstr "markera och dra atomer (kräver {0})"
 
 #: org/jmol/viewer/ActionManager.java:139
 #, java-format
 msgid "drag atoms in Z direction (requires {0})"
-msgstr ""
+msgstr "dra atomer i z-riktning (kräver {0})"
 
 #: org/jmol/viewer/ActionManager.java:140
 #, java-format
 msgid "rotate selected atoms (requires {0})"
-msgstr ""
+msgstr "rotera markerade atomer (kräver {0})"
 
 #: org/jmol/viewer/ActionManager.java:141
 #, java-format
 msgid "rotate branch around bond (requires {0})"
-msgstr ""
+msgstr "rotera del kring bindning (kräver {0})"
 
 #: org/jmol/viewer/ActionManager.java:142
 #, java-format
 msgid "move atom (requires {0})"
-msgstr ""
+msgstr "flytta atom (kräver {0})"
 
 #: org/jmol/viewer/ActionManager.java:143
 #, java-format
 msgid "move atom and minimize molecule (requires {0})"
-msgstr ""
+msgstr "flytta atom och minimera molekyl (kräver {0})"
 
 #: org/jmol/viewer/ActionManager.java:144
 #, java-format
 msgid "move and minimize molecule (requires {0})"
-msgstr ""
+msgstr "flytta och minimera molekyl (kräver {0})"
 
 #: org/jmol/viewer/ActionManager.java:145
 #, java-format
 msgid "move label (requires {0})"
-msgstr ""
+msgstr "flytta etikett (kräver {0})"
 
 #: org/jmol/viewer/ActionManager.java:146
 #, java-format
 msgid "move specific DRAW point (requires {0})"
-msgstr ""
+msgstr "flytta specifik DRAW-punkt (kräver {0})"
 
 #: org/jmol/viewer/ActionManager.java:147
 #, java-format
 msgid "move whole DRAW object (requires {0})"
-msgstr ""
+msgstr "flytta hela DRAW-objektet (kräver {0})"
 
 #: org/jmol/viewer/ActionManager.java:148
 msgid "pick an atom"
-msgstr ""
+msgstr "välj en atom"
 
 #: org/jmol/viewer/ActionManager.java:149
 #, java-format
 msgid "pick a DRAW point (for measurements) (requires {0}"
-msgstr ""
+msgstr "välj en DRAW-punkt (för mätning) (kräver {0})"
 
 #: org/jmol/viewer/ActionManager.java:150
 #, java-format
 msgid "pick a label to toggle it hidden/displayed (requires {0})"
-msgstr ""
+msgstr "välj en etikett för för att byta mellan dold/visa (kräver {0})"
 
 #: org/jmol/viewer/ActionManager.java:151
 #, java-format
@@ -2339,81 +2347,83 @@ msgid ""
 "pick an atom to include it in a measurement (after starting a measurement or "
 "after {0})"
 msgstr ""
+"välj en atom för att inkludera den i en mätning (efter att ha startat en "
+"mätning eller efter {0})"
 
 #: org/jmol/viewer/ActionManager.java:152
 msgid "pick an atom to initiate or conclude a measurement"
-msgstr ""
+msgstr "välj en atom för att initiera eller avsluta en mätning"
 
 #: org/jmol/viewer/ActionManager.java:153
 #, java-format
 msgid "pick an ISOSURFACE point (requires {0}"
-msgstr ""
+msgstr "välj en ISOSURFACE-punkt (kräver {0})"
 
 #: org/jmol/viewer/ActionManager.java:154
 #, java-format
 msgid "pick a point or atom to navigate to (requires {0})"
-msgstr ""
+msgstr "välj en punkt eller atom att navigera till (kräver {0})"
 
 #: org/jmol/viewer/ActionManager.java:155
 #, java-format
 msgid "delete atom (requires {0})"
-msgstr ""
+msgstr "radera atom (kräver {0})"
 
 #: org/jmol/viewer/ActionManager.java:156
 #, java-format
 msgid "delete bond (requires {0})"
-msgstr ""
+msgstr "radera bindning (kräver {0})"
 
 #: org/jmol/viewer/ActionManager.java:157
 #, java-format
 msgid "connect atoms (requires {0})"
-msgstr ""
+msgstr "förbind atomer (kräver {0})"
 
 #: org/jmol/viewer/ActionManager.java:158
 #, java-format
 msgid "assign/new atom or bond (requires {0})"
-msgstr ""
+msgstr "inför/ny atom eller bindning (requires {0})"
 
 #: org/jmol/viewer/ActionManager.java:159
 msgid "reset (when clicked off the model)"
-msgstr ""
+msgstr "återställ (vid klickning utaför modellen)"
 
 #: org/jmol/viewer/ActionManager.java:160
 #, java-format
 msgid "stop motion (requires {0})"
-msgstr ""
+msgstr "stanna rörelse (kräver {0})"
 
 #: org/jmol/viewer/ActionManager.java:161
 msgid "simulate multi-touch using the mouse)"
-msgstr ""
+msgstr "simulera multi-touch med musen)"
 
 #: org/jmol/viewer/ActionManager.java:1955
 msgid "pick one more atom in order to spin the model around an axis"
-msgstr ""
+msgstr "välj en atom till för att rotera modellen runt en axel"
 
 #: org/jmol/viewer/ActionManager.java:1956
 msgid "pick two atoms in order to spin the model around an axis"
-msgstr ""
+msgstr "välj två atomer för att rotera modellen runt en axel"
 
 #: org/jmol/viewer/ActionManager.java:1959
 msgid "pick one more atom in order to display the symmetry relationship"
-msgstr ""
+msgstr "välj en atom till för att visa symmetriförhållande"
 
 #: org/jmol/viewer/ActionManager.java:1960
 msgid ""
 "pick two atoms in order to display the symmetry relationship between them"
-msgstr ""
+msgstr "välj två atomer för att visa symmetriförhållandet mellan dem"
 
 #: org/jmol/viewer/SelectionManager.java:95
 #: org/jmol/viewer/SelectionManager.java:115
 #, java-format
 msgid "{0} atoms hidden"
-msgstr ""
+msgstr "{0} atomer dolda"
 
 #: org/jmol/viewer/SelectionManager.java:157
 #, java-format
 msgid "{0} atoms selected"
-msgstr ""
+msgstr "{0} atomer markerade"
 
 #: org/jmol/viewer/Viewer.java:4695
 #, java-format

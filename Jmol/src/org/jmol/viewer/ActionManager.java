@@ -603,7 +603,7 @@ public class ActionManager {
       moved.modifiers |= Binding.CTRL;
     }
     int action = Binding.LEFT+Binding.SINGLE_CLICK+moved.modifiers;
-    if(!labelMode && !binding.isUserAction(action) && !isSelectAction(action))
+    if(!labelMode && !binding.isUserAction(action) && !isSelectAction(action, true))
       checkMotionRotateZoom(action, current.x, 0, 0, false);
     if (viewer.getNavigationMode()) {
       // if (viewer.getBooleanProperty("showKeyStrokes", false))
@@ -1366,7 +1366,7 @@ public class ActionManager {
     boolean isDragSelected = (dragSelectedMode && (isBound(action,
         ACTION_rotateSelected) || isBound(action, ACTION_dragSelected)));
     
-    if (isDragSelected || isSelectAction(action)) {
+    if (isDragSelected || isSelectAction(action, true)) {
       // TODO: in drawMode the binding changes
         if (tokType != Token.isosurface)
           atomOrPointPicked(nearestAtomIndex, nearestPoint, isDragSelected ? 0 : action);
@@ -1380,14 +1380,15 @@ public class ActionManager {
     return (nearestAtomIndex >= 0);
   }
 
-  private boolean isSelectAction(int action) {
-    return (isBound(action, ACTION_pickAtom) 
-        || isBound(action, ACTION_pickPoint)
+  private boolean isSelectAction(int action, boolean allowPick) {
+    return (allowPick && (isBound(action, ACTION_pickAtom) || isBound(action, ACTION_pickPoint))
+        || isBound(action, ACTION_select)
+        || isBound(action, ACTION_selectToggleExtended)
         || isBound(action, ACTION_selectToggle)
         || isBound(action, ACTION_selectAndNot)
         || isBound(action, ACTION_selectOr)
-        || isBound(action, ACTION_selectToggleExtended)
-        || isBound(action, ACTION_select));
+        
+    );
   }
 
   protected void checkMotion(int cursor) {
@@ -1743,6 +1744,7 @@ public class ActionManager {
         return;
     }
     int n = 2;
+    boolean processed = false;
     switch (atomPickingMode) {
     case PICKING_DRAG_ATOM:
       // this is done in mouse drag, not mouse release
@@ -1827,13 +1829,15 @@ public class ActionManager {
     case PICKING_IDENTIFY:
       if (isBound(action, ACTION_pickAtom))
         viewer.setStatusAtomPicked(atomIndex, null);
-      return;
+      processed = true;
+      break;
     case PICKING_LABEL:
       if (isBound(action, ACTION_pickLabel)) {
         viewer.script("set labeltoggle {atomindex=" + atomIndex + "}");
         viewer.setStatusAtomPicked(atomIndex, null);
       }
-      return;
+      processed = true;
+      break;
     case PICKING_INVERT_STEREO:
       if (isBound(action, ACTION_assignNew)) {
         bs = viewer.getAtomBitSet("connected(atomIndex=" + atomIndex
@@ -1872,7 +1876,8 @@ public class ActionManager {
         viewer.invertSelected(null, null, atomIndex, bs);
         viewer.setStatusAtomPicked(atomIndex, "inverted: " + Escape.escape(bs));
       }
-      return;
+      processed = true;
+      break;
     case PICKING_DELETE_ATOM:
       if (isBound(action, ACTION_deleteAtom)) {
         bs = getSelectionSet("(" + spec + ")");
@@ -1881,10 +1886,14 @@ public class ActionManager {
       }
       return;
     }
+    if (processed && !isBound(action, ACTION_select))
+      return;
+
     // set picking select options:
     switch (atomPickingMode) {
     default:
       return;
+    case PICKING_IDENTIFY:
     case PICKING_SELECT_ATOM:
       applySelectStyle(spec, action);
       break;

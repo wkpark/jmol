@@ -603,7 +603,7 @@ public class ActionManager {
       moved.modifiers |= Binding.CTRL;
     }
     int action = Binding.LEFT+Binding.SINGLE_CLICK+moved.modifiers;
-    if(!labelMode && !binding.isUserAction(action) && !isSelectAction(action, true))
+    if(!labelMode && !binding.isUserAction(action) && !isSelectAction(action))
       checkMotionRotateZoom(action, current.x, 0, 0, false);
     if (viewer.getNavigationMode()) {
       // if (viewer.getBooleanProperty("showKeyStrokes", false))
@@ -674,7 +674,7 @@ public class ActionManager {
       setCurrent(time, x, y, modifiers);
       moved.setCurrent(Binding.MOVED);
       if (measurementPending != null || hoverActive)
-        checkPointOrAtomClicked(x, y, 0, 0, false, Binding.MOVED);
+        checkPointOrAtomClicked(x, y, 0, 0, time, false, Binding.MOVED);
       else if (isZoomArea(x))
         checkMotionRotateZoom(Binding.getMouseAction(1, Binding.LEFT), 0, 0, 0,
             false);
@@ -702,7 +702,7 @@ public class ActionManager {
           && isBound(Binding.getMouseAction(Integer.MIN_VALUE, modifiers),
               ACTION_selectAndDrag))
         return;
-      checkPointOrAtomClicked(x, y, modifiers, clickedCount, false,
+      checkPointOrAtomClicked(x, y, modifiers, clickedCount, time, false,
           Binding.CLICKED);
       return;
     case Binding.DRAGGED:
@@ -737,8 +737,6 @@ public class ActionManager {
           return;
       }
       pressedAtomIndex = Integer.MAX_VALUE;
-      if (checkUserAction(action, x, y, 0, 0, time, 0))
-        return;
       if (drawMode
           && (isBound(action, ACTION_dragDrawObject) || isBound(action,
               ACTION_dragDrawPoint)) || labelMode
@@ -746,6 +744,7 @@ public class ActionManager {
         viewer.checkObjectDragged(Integer.MIN_VALUE, 0, x, y, action);
         return;
       }
+      checkUserAction(action, x, y, 0, 0, time, Binding.PRESSED);
       boolean isBound = false;
       switch (atomPickingMode) {
       case PICKING_ASSIGN_ATOM:
@@ -902,7 +901,7 @@ public class ActionManager {
         viewer.moveSelected(Integer.MAX_VALUE, 0, Integer.MIN_VALUE,
             Integer.MIN_VALUE, Integer.MIN_VALUE, null, false, false);
 
-      if (dragRelease && checkUserAction(action, x, y, 0, 0, time, 2))
+      if (dragRelease && checkUserAction(action, x, y, 0, 0, time, Binding.RELEASED))
         return;
 
       if (viewer.getAllowGestures()) {
@@ -1186,8 +1185,8 @@ public class ActionManager {
     viewer.setInMotion(false);
   }
 
-  private boolean checkUserAction(int action, int x, int y, 
-                                  int deltaX, int deltaY, long time, int mode) {
+  private boolean checkUserAction(int action, int x, int y, int deltaX,
+                                  int deltaY, long time, int mode) {
     if (!binding.isUserAction(action))
       return false;
     Map<String, Object> ht = binding.getBindings();
@@ -1196,17 +1195,44 @@ public class ActionManager {
     Object obj;
     while (e.hasNext()) {
       String key = e.next();
-      if (key.indexOf(action + "\t") != 0 
+      if (key.indexOf(action + "\t") != 0
           || !((obj = ht.get(key)) instanceof String[]))
         continue;
       String script = ((String[]) obj)[1];
-      script = TextFormat.simpleReplace(script,"_ACTION", "" + action);
-      script = TextFormat.simpleReplace(script,"_X", "" + x);
-      script = TextFormat.simpleReplace(script,"_Y", "" + (viewer.getScreenHeight() - y));
-      script = TextFormat.simpleReplace(script,"_DELTAX", "" + deltaX);
-      script = TextFormat.simpleReplace(script,"_DELTAY", "" + deltaY);
-      script = TextFormat.simpleReplace(script,"_TIME", "" + time);
-      script = TextFormat.simpleReplace(script,"_MODE", "" + mode);
+      Point3fi nearestPoint = null;
+      boolean isBond = false;      
+      if (!drawMode
+          && (script.indexOf("_POINT") >= 0 || (isBond = script
+              .indexOf("_BOND") >= 0))) {
+        Token t = viewer.checkObjectClicked(x, y, action);
+        if (t != null) {
+          isBond = (t.tok == Token.bonds);
+          nearestPoint = (Point3fi) t.value;
+          if (nearestPoint != null && Float.isNaN(nearestPoint.x))
+            nearestPoint = null;
+          if (nearestPoint != null)
+            if (isBond) {
+              script = TextFormat.simpleReplace(script, "_BOND", "[{"+nearestPoint.index+"}]"); 
+            } else {
+              script = TextFormat.simpleReplace(script, "_POINT", Escape.escape(nearestPoint));              
+            }
+        }
+        script = TextFormat.simpleReplace(script, "_BOND", "[{}]");
+        script = TextFormat.simpleReplace(script, "_POINT", "{}");
+      }
+      if (script.indexOf("_ATOM") >= 0) {
+        int iatom = findNearestAtom(x, y, null, true);
+        script = TextFormat.simpleReplace(script, "_ATOM", "({"
+            + (iatom >= 0 ? "" + iatom : "") + "})");
+      }
+      script = TextFormat.simpleReplace(script, "_ACTION", "" + action);
+      script = TextFormat.simpleReplace(script, "_X", "" + x);
+      script = TextFormat.simpleReplace(script, "_Y", ""
+          + (viewer.getScreenHeight() - y));
+      script = TextFormat.simpleReplace(script, "_DELTAX", "" + deltaX);
+      script = TextFormat.simpleReplace(script, "_DELTAY", "" + deltaY);
+      script = TextFormat.simpleReplace(script, "_TIME", "" + time);
+      script = TextFormat.simpleReplace(script, "_MODE", "" + mode);
       viewer.evalStringQuiet(script);
       ret = true;
     }
@@ -1250,14 +1276,15 @@ public class ActionManager {
   }
 
   private boolean checkPointOrAtomClicked(int x, int y, int mods,
-                                          int clickedCount, boolean atomOnly,
-                                          int mode) {
+                                          int clickedCount, long time, 
+                                          boolean atomOnly, int mode) {
     if (!viewer.haveModelSet())
       return false;
     // points are always picked up first, then atoms
     // so that atom picking can be superceded by draw picking
     int action = Binding.getMouseAction(clickedCount, mods);
     if (action != Binding.MOVED) {
+      checkUserAction(action, x, y, 0, 0, time, mode);
       action = viewer.notifyMouseClicked(x, y, action, mode);
       if (action == Binding.MOVED)
         return false;
@@ -1285,12 +1312,7 @@ public class ActionManager {
 
     if (nearestPoint != null && Float.isNaN(nearestPoint.x))
       return false;
-    int nearestAtomIndex = (drawMode || nearestPoint != null ? -1 : viewer
-        .findNearestAtomIndex(x, y, false));
-    if (nearestAtomIndex >= 0
-        && (clickedCount > 0 || measurementPending == null)
-        && !viewer.isInSelectionSubset(nearestAtomIndex))
-      nearestAtomIndex = -1;
+    int nearestAtomIndex = findNearestAtom(x, y, nearestPoint, clickedCount > 0);
 
     if (clickedCount == 0 && atomPickingMode != PICKING_ASSIGN_ATOM) {
       // mouse move
@@ -1366,7 +1388,7 @@ public class ActionManager {
     boolean isDragSelected = (dragSelectedMode && (isBound(action,
         ACTION_rotateSelected) || isBound(action, ACTION_dragSelected)));
     
-    if (isDragSelected || isSelectAction(action, true)) {
+    if (isDragSelected || isSelectAction(action)) {
       // TODO: in drawMode the binding changes
         if (tokType != Token.isosurface)
           atomOrPointPicked(nearestAtomIndex, nearestPoint, isDragSelected ? 0 : action);
@@ -1380,15 +1402,22 @@ public class ActionManager {
     return (nearestAtomIndex >= 0);
   }
 
-  private boolean isSelectAction(int action, boolean allowPick) {
-    return (allowPick && (isBound(action, ACTION_pickAtom) || isBound(action, ACTION_pickPoint))
-        || isBound(action, ACTION_select)
-        || isBound(action, ACTION_selectToggleExtended)
+  private int findNearestAtom(int x, int y, Point3fi nearestPoint, boolean isClicked) {
+    int index = (drawMode || nearestPoint != null ? -1 : viewer
+        .findNearestAtomIndex(x, y, false));
+    return (index >= 0
+        && (isClicked || measurementPending == null)
+        && !viewer.isInSelectionSubset(index) ? -1 : index);
+  }
+
+  private boolean isSelectAction(int action) {
+    return (isBound(action, ACTION_pickAtom) 
+        || isBound(action, ACTION_pickPoint)
         || isBound(action, ACTION_selectToggle)
         || isBound(action, ACTION_selectAndNot)
         || isBound(action, ACTION_selectOr)
-        
-    );
+        || isBound(action, ACTION_selectToggleExtended)
+        || isBound(action, ACTION_select));
   }
 
   protected void checkMotion(int cursor) {
@@ -1744,7 +1773,6 @@ public class ActionManager {
         return;
     }
     int n = 2;
-    boolean processed = false;
     switch (atomPickingMode) {
     case PICKING_DRAG_ATOM:
       // this is done in mouse drag, not mouse release
@@ -1829,15 +1857,13 @@ public class ActionManager {
     case PICKING_IDENTIFY:
       if (isBound(action, ACTION_pickAtom))
         viewer.setStatusAtomPicked(atomIndex, null);
-      processed = true;
-      break;
+      return;
     case PICKING_LABEL:
       if (isBound(action, ACTION_pickLabel)) {
         viewer.script("set labeltoggle {atomindex=" + atomIndex + "}");
         viewer.setStatusAtomPicked(atomIndex, null);
       }
-      processed = true;
-      break;
+      return;
     case PICKING_INVERT_STEREO:
       if (isBound(action, ACTION_assignNew)) {
         bs = viewer.getAtomBitSet("connected(atomIndex=" + atomIndex
@@ -1876,8 +1902,7 @@ public class ActionManager {
         viewer.invertSelected(null, null, atomIndex, bs);
         viewer.setStatusAtomPicked(atomIndex, "inverted: " + Escape.escape(bs));
       }
-      processed = true;
-      break;
+      return;
     case PICKING_DELETE_ATOM:
       if (isBound(action, ACTION_deleteAtom)) {
         bs = getSelectionSet("(" + spec + ")");
@@ -1886,14 +1911,10 @@ public class ActionManager {
       }
       return;
     }
-    if (processed && !isBound(action, ACTION_select))
-      return;
-
     // set picking select options:
     switch (atomPickingMode) {
     default:
       return;
-    case PICKING_IDENTIFY:
     case PICKING_SELECT_ATOM:
       applySelectStyle(spec, action);
       break;

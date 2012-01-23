@@ -70,6 +70,7 @@ import org.jmol.util.TriangleData;
 import org.jmol.util.XmlUtil;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.ShapeManager;
+import org.jmol.modelset.Bond.BondSet;
 import org.jmol.script.Token;
 import org.jmol.viewer.Viewer;
 import org.jmol.viewer.StateManager.Orientation;
@@ -3270,15 +3271,20 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public List<Map<String, Object>> getAllBondInfo(BitSet bs) {
-    List<Map<String, Object>> V = new ArrayList<Map<String, Object>>();
+    List<Map<String, Object>> v = new ArrayList<Map<String, Object>>();
+    if (bs instanceof BondSet) {
+      for (int i = bs.nextSetBit(0); i >= 0 && i < bondCount; i = bs.nextSetBit(i + 1))
+        v.add(getBondInfo(i));
+      return v;
+    }
     int thisAtom = (bs.cardinality() == 1 ? bs.nextSetBit(0) : -1);
     for (int i = 0; i < bondCount; i++) {
       if (thisAtom >= 0 ? (bonds[i].atom1.index == thisAtom || bonds[i].atom2.index == thisAtom)
           : bs.get(bonds[i].atom1.index) && bs.get(bonds[i].atom2.index)) {
-        V.add(getBondInfo(i));
+        v.add(getBondInfo(i));
       }
     }
-    return V;
+    return v;
   }
 
   private Map<String, Object> getBondInfo(int i) {

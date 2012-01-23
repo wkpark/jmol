@@ -279,12 +279,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (Logger.debugging) {
       Logger.debug("Viewer constructor " + this);
     }
-    isDataOnly = (display == null);
-    apiPlatform = implementedPlatform;
-    if (apiPlatform == null)
-      apiPlatform = (ApiPlatform) Interface.getInterface(commandOptions == null
-          || !commandOptions.contains("platform=") ? "org.jmol.awt.Platform"
-          : commandOptions.substring(commandOptions.indexOf("platform=") + 9));
+    isDataOnly = (display == null);   
+    if (implementedPlatform == null) {
+      if (apiPlatform == null)
+        apiPlatform = (ApiPlatform) Interface.getInterface(commandOptions == null
+            || !commandOptions.contains("platform=") ? "org.jmol.awt.Platform"
+            : commandOptions.substring(commandOptions.indexOf("platform=") + 9));
+    } else
+      apiPlatform = implementedPlatform;
     apiPlatform.setViewer(this, display);
     g3d = new Graphics3D(apiPlatform, isDataOnly);
     haveDisplay = (!isDataOnly && (commandOptions == null || commandOptions

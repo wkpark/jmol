@@ -50,6 +50,9 @@
   <!-- you can set this by defining it in ~/.jmol.build.properties -->
   <property name="keystore.name" value="Must be set by user." />
 
+  <!-- this value is required if you are building the .NET DLL, it must point to the IKVM/bin directory -->
+  <property name="ikvm.home" value="Must be set by user." />
+	
   <property file="proxy.properties" />
 
   <import file="tools/build-i18n.xml"/>
@@ -1798,4 +1801,14 @@ all support for previous versions removed
     <ant antfile="tools/build-i18n.xml" target="spotless-i18n"/>
   </target>
 
+  <target name="dotnet" depends="applet-jar">
+    <exec executable="${ikvm.home}/ikvmc.exe">
+      <arg value="-target:library"/>
+      <arg value="-out:${jmol.applet.build.dir}/JmolLib.dll"/>
+      <arg value="-debug"/>
+      <arg value="${jmol.applet.build.dir}/JmolLib.jar"/>
+      <arg value="${lib.dir}/${vecmath.jar}"/>
+    </exec>
+  </target>
+  	
 </project>

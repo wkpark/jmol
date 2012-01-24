@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE history [
+<!ENTITY contributors SYSTEM "contributors.xml">
+<!ENTITY changes      SYSTEM "changes_ro.xml">
+]>
+<document>
+	<body>
+		<title>Istoria Jmol de Dezvoltare</title>
+		<section>
+			<p>
+			<a href="http://webhostinggeeks.com/science/history-jmol-ro">Romanian translation</a>
+			(by <a href="http://webhostinggeeks.com/">Web Geek Science</a>)
+			</p>
+		</section>
+		<section title="Ştiri">
+			<p>Anunturi despre dezvoltarea Jmol sunt detaşaţi cu privire la proiectul de 
+			<a href="http://sourceforge.net/news/?group_id=23629">pagina de ştiri</a>
+			de la SourceForge.
+			</p>
+		</section>
+		<section title="Originile Jmol">
+			<p>
+			Jmol a fost iniţial destinat să fie un înlocuitor pe deplin funcţională pentru XMol
+			care a fost un program care vizionează moleculara dezvoltat la Centrul de Supercomputer Minnesota.
+			Deşi executabilele programului au fost distribuite,
+			codul sursă nu au fost disponibile pentru utilizatori,
+			iar din program nu a fost menţinut, versiunile gratuite binare au căzut în desuetudine.
+			De exemplu, versiunea SGI a XMol nu ruleaza pe IRIX 6.x deoarece IRIX a trecut la un format executabil nou.
+			</p>
+			<p>
+			Dispariţia XMol a mai rămas o nevoie pentru un instrument similar.
+			Dan Gezelter, iniţiatorul Jmol, a ales pentru a evita problemele de acest site aceeaşi sursă Jmol deschise.
+			Deşi nu a îndeplinit în totalitate scopul de a înlocui funcţional duplicate XMol,
+			Jmol multe dintre caracteristicile cele mai utile, şi, în anumite feluri,
+			le-a depăşit funcţionalitate XMol. În timp, a fost Jmol speră să includă şi mai multe funcţii avansate.
+			</p>
+			<p>
+			Jmol a fost început ca un proiect OpenScience care este dedicat pentru scris şi de eliberare de software
+			cu sursă liberă şi deschisă ştiinţifice. Pentru mai multe informatii despre proiect OpenScience, du-te la
+			<url>http://www.openscience.org/</url>.
+			</p>
+		</section>
+		<section title="Jmol creşte">
+			<p>
+			Mai târziu, Bradley A. Smith a preluat proiectul şi a făcut o mulţime de muncă în eficientizarea proiectului,
+			precum şi software-ul. Sub conducerea sa versiuni noi a ajuns în baza de utilizatori,
+			şi multe caracteristici noi au fost adăugate, unele dintre care au contribuit de către utilizatori.
+			</p>
+			<p>
+			La sfârşitul anului 2002, Egon Willighagen a devenit lider de proiect nou şi un început a fost făcută cu integrarea Jmol cu
+			<a href="http://cdk.sf.net/">Development Kit chimice</a>,
+			ceva care a fost deja planificate în septembrie 2000 de către Dan, Egon si Christoph Steinbeck.
+			</p>
+		</section>
+		<section title="Jmol - un inlocuitor open source pentru plugin-ul Chime">
+			<p>
+			Miguel a aderat la proiect, la sfârşitul anului 2002,
+			cu scopul explicit de a ajuta construirea Jmol într-o repacement viabilă pentru plugin-ul Chime 
+			(<a href="http://www.mdlchime.com">www.mdlchime.com</a>)
+			</p>
+			<p>
+			În primele luni Miguel contribuit traducere spaniolă şi a făcut o trecere iniţială la RasMol / Chime interpret script.
+			Apoi, unele îmbunătăţiri de performanţă şi a început să lucreze la o performanta de randare şi de viteză.
+			</p>
+			<p>
+			A devenit repede evident că grafice Java2D nu a furnizat performanţă şi funcţionalitate necesare.
+			În plus, a devenit clar faptul că clasele de bază Jmol nu ar sprijini de performanţă şi cerinţele
+			de spaţiu pentru a lucra cu macromolecule cu 10 secunde de mii de atomi.
+			</p>
+			<p>
+			În primăvara anului 2003 Miguel a început proiectarea şi implementarea unui software de înaltă performanţă bazat pe engine-ul grafic.
+			În scopul de a asigura desfăşurarea de web a applet-ului Jmol era important ca motorul rula pe versiunea 1.1 Java Virtual Machines
+			şi că nu se grafică hardware specializate este necesară.
+			</p>
+			<p>
+			Miguel rescris, de asemenea, clasele de bază, în scopul de a sprijini molecule mult mai mari.
+			În plus, el a separat toate fişier IO de la miezul Jmol, ceea ce face mult mai uşor să suport pentru noi tipuri de fişiere.
+			</p>
+			<p>
+			O perioadă de încercare prelungită a început la sfârşitul anului 2003.
+			În cursul anului 2004 un set mic de utilizatori din întreaga lume au contribuit la dezvoltarea Jmol de testare Jmol,
+			explicând concepte chimice, precum şi explicarea comportamentelor de scripting RasMol şi Chime.
+			</p>
+			<p>
+			Jmol versiunea 10.0, un înlocuitor open source pentru plugin Chime, a fost lansat în decembrie 2004.
+			Acesta a fost urmat de o versiune îmbunătăţită 10.2 la aprilie 2006.
+			</p>
+		</section>
+		<section title="Outgrows Jmol Chime">
+			<p>
+			La scurt timp după 10.2 a fost lansat, Bob Hanson a început activitatea de lider pe codul sursă Jmol,
+			şi a început adăugând celelalte funcţii de care nu au fost disponibile pe Rasmol şi Chime -
+			mulţi dintre ei, după întrebările utilizatorilor ", timid sau vise -.
+			Ca o consecinţă a unui volum imens de muncă, versiunea 11.0 a fost lansat în februarie 2007,
+			urmat de versiunile 11.2 in luna august, 11,4 la începutul anului 2008 şi 11,6 în octombrie 2008.
+			</p>
+			<p>
+			Acestea sunt unele dintre cele mai remarcabile capacităţi adaugă:
+			</p>
+			<ul>
+				<li>De intrare şi de ieşire:
+				<ul>
+					<li>De încărcare mai multe fişiere, chiar şi cu mai multe modele fiecare.
+					Fişierele pot fi încărcate succesiv în noi "cadre" sau anexată în frame-ul curent,
+					astfel încât să îmbinaţi două seturi de date într-un singur.</li>
+					<li>Salva şi restabili starea modelului.
+					Astfel de "instantanee", poate fi utilizat pentru a copia modelul într-o fereastră pop-up,
+					salvaţi-l pentru regăsire mai târziu,
+					trimite o vedere specifică a unui model specific prin e-mail unui coleg.</li>
+					<li>Suport pentru reabilitate PPB.</li>
+					<li>Sprijin pentru înregistrările SITE în PPB şi CIF.</li>
+					<li>Mac Spartan06 Culegere de lectură.</li>
+					<li>Citirea modele din fişiere zip. Lectură de conţinut bazate pe text, a zip şi fişiere borcan.</li>
+					<li>Molden cititor.</li>
+					<li>gOpenMol fişiere formatate pentru isosurfaces plt.</li>
+					<li>Exportul de VRML.</li>
+					<li>Îmbunătăţit mult POV-Ray export (cerere numai).</li>
+					<li>Mai multe date pot fi scrise în fişier (cerere numai) sau la clipboard.
+					Aceasta include modelul, o imagine, istoria script-ul, starea actuala, orbitale curent moleculare, sau isosurface curent.</li>
+					<li>On-the-fly crearea de jpeg "instantanee" din fereastra afişată (atât de aplicare şi applet).
+					Scris scriptat dintre aceste instantanee permite crearea de filme folosind instrumente de obicei disponibile.</li>
+					<li>Cererea Jmol include WebExport add-on,
+					care permite să creaţi cu uşurinţă pagini web care includ un applet oferind afişare curentă a modelului.</li>
+				</ul>
+				</li>
+				<li>Variabile Jmol şi aritmetica
+				<ul>
+					<li>Utilizarea de variabile şi operaţii aritmetice.</li>
+					<li>dacă / altceva / endif construieşte în script-uri.</li>
+					<li>în cazul în care / în timp ce / pentru capacitatea.</li>
+					<li>O mare varietate de proprietăţi sunt acum recuperabilă,
+					făcând Jmol un portal generalizate la dosar informaţii bazate pe o structura moleculara.</li>
+					<li>Ghid de tipuri de date definite şi aplicarea selectivă a fişierul de date externe atomice
+					la un model de culoare pe bază de vizualizare de proprietăţi.</li>
+					<li>Variabilele pot fi definite şi manipulate cu ajutorul unui aritmetică simplă care implică boolean
+					(adevărat / fals), întregi, zecimale, string, matrice, punct, şi planul de tipuri de date.</li>
+				</ul>
+				</li>
+				<li>Cristalografie:
+				<ul>
+					<li>Includ conceptul de simetrie şi de a gestiona cristalografice.</li>
+					<li>Defini grupuri de arbitrare spaţiu şi a celulelor unitate pentru orice model de la orice format de fişier,
+					chiar dacă aceste informaţii nu sunt conţinute în dosar, precum şi coordonatele nu sunt fracţionare.</li>
+					<li>Felii de Planar printr-un model bazat pe avionului indicele Miller.</li>
+					<li>Opţiuni extinse pentru celula unitate şi boundbox.</li>
+				</ul>
+				</li>
+				<li>Scripting:
+				<ul>
+					<li>Desemnează funcţii callback pe zbor.</li>
+					<li>Un mecanism robust de aşteptare script-ul este instalat,
+					astfel încât mai multe script-uri pot fi iniţiat fără pericolul de a întrerupe un altul.</li>
+					<li>AJAX sprijin este construit în Jmol.js, astfel încât orice applet pe orice pagină web
+					poate accesa orice model pe orice locaţie de pe web oricând.</li>
+					<li>Un nou mesaj de comandă pentru a comunica statutul de script-ul personalizabil înapoi
+					la pagina de web în timp ce un script se execută.</li>
+					<li>Ghid de utilizare definite de macrocomenzi, subrutine şi funcţii.</li>
+				</ul>
+				</li>
+				<li>Ediţia de model:
+				<ul>
+					<li>Obligatiunile pot fi create, modificate sau şterse în voie. Aceasta include tipuri de unică,
+					mai multe, aromatice şi mai multe obligaţiuni parţiale.</li>
+					<li>Atomii pot fi mutate la vor de la poziţiile lor iniţiale specificate în fişierul.</li>
+					<li>Traducere, rotaţie, filare, şi punctul / planul de atomi de inversarea selectate.</li>
+					<li>Proprietăţile atom pot fi setate folosind direct, matematica Jmol sau cu o matrice.</li>
+				</ul>
+				</li>
+				<li>Biopolimeri:
+				<ul>
+					<li>Spirale în butoaie în loc de rachete.</li>
+					<li>Recalcularea structura secundară pe acoperi după selectarea unui anumit set de locaţii alternative de atom.</li>
+					<li>Genereaza un teren Ramachandran interactiv calculată de la modelul actual.</li>
+				</ul>
+				</li>
+				<li>Suprafete:
+				<ul>
+					<li>Tras obiecte: sfere, ellipsoids, vectori dipol, puncte, linii, planuri triunghiulare şi patrulater,
+					drepte si curbe tridimensionale săgeţi.</li>
+					<li>Pmesh sprijin pentru mai mult de avioane.</li>
+					<li>LCAO "desene animate".</li>
+					<li>Arbitrare f (x, y) suprafeţe.</li>
+					<li>Suport pentru isosurfaces, altele decât cub fişiere.</li>
+					<li>Manevraţi orbitali molecular.</li>
+					<li>Calculul directă a suprafeţelor moleculare orbitale de la fişier pe bază de bază de date orbitale atomice si coeficient.</li>
+					<li>Moleculară electrostatic hărţi potenţial de date de la taxa pe bază de dosar.</li>
+					<li>Suprafete moleculară: fix-atomic-rază, reglabil-rază van der Waals, cu solvent accesibile, cu solvent exclus, carii Biomolecular.</li>
+					<li>Suprafetele pot fi create automat folosind opţiunile de linie de comandă pentru aplicaţie.</li>
+					<li>Format Jmol voxel fişier (JVXL), cu un raport de compresie de pe ordinea de 300-600:1 peste culoare-mapate cub de fişiere
+					permite livrarea de proteine ​​full color-mapate suprafeţe cu solvent accesibile şi cu solvent excluse.
+					Cererea Jmol poate scrie aceste fişiere pe suprafaţa de disc, apoi applet poate afişa suprafetele aproape instantaneu.</li>
+					<li>Color-contur-mapate avionului şi arbitrar f (x, y) suprafeţe.</li>
+					<li>Cartografiere Isosurface de potenţial electrostatic moleculară şi date moleculare orbitale pe avioane.</li>
+					<li>Calcularea distanta de suprafete.</li>
+				</ul>
+				</li>
+				<li>Adnota un model, prin plasarea de text, în orice {xyz} coordonate.</li>
+				<li>Selectaţi şi elimina atomi bazat pe una sau mai multe avioane definite.</li>
+				<li>Desemnează un anumit model ca un "fundal" model pe multi-cadru setari.</li>
+				<li>Particularizate stereo care vizionează coloratie.</li>
+				<li>Rotiţi şi de spin modelul în jurul valorii de orice axă moleculară referinţe complet independent de orice orientare stabilite de utilizator.</li>
+				<li>Modul de navigare permite "acoperi-through" a modelului.</li>
+				<li>Nou standard în industrie transluciditatea de obiecte,
+				producătoare de redare vii de mai multe obiecte translucid la opt nivele de transluciditate.</li>
+				<li>Antialiasing pentru ecran şi imaginile exportate.</li>
+				<li>Schimbarea limbii interfeţei on-the-fly, prin meniul pop-up sau un script.</li>
+				<li>Personalizabile meniul pop-up.</li>
+				<li>Afişează-cadru specifice titlurilor şi specifice modelului Echos.</li>
+				<li>Schimbarea modelului de sârmă în timp ce acesta este rotit.</li>
+				<li>Applet-uri de mai multe într-o pagină pot fi sincronizate,
+				astfel încât acţiunile pe modelul intr-unul din ele sunt transmise la modele în alte applet-uri.</li>
+			</ul>
+		</section>
+		<section title="Istoria Modificări">
+			<p>
+			<i>A se vedea, de asemenea, un rezumat în
+			<a href="http://sourceforge.net/news/?group_id=23629">ştiri</a> pagina.</i>
+			</p>
+			<p>Există liste şi demonstraţii de caracteristici noi pentru
+			<a href="http://chemapps.stolaf.edu/jmol/docs/examples-11/new.htm">cea mai recentă versiune</a> |
+			<a href="http://chemapps.stolaf.edu/jmol/docs/examples-11/new8.htm">Jmol 11.8</a> |
+			<a href="http://chemapps.stolaf.edu/jmol/docs/examples-11/new6.htm">Jmol 11.6</a> |
+			<a href="http://chemapps.stolaf.edu/jmol/docs/examples-11/new4.htm">Jmol 11.4</a> |
+			<a href="http://chemapps.stolaf.edu/jmol/docs/examples-11/new2.htm">Jmol 11.2</a> |
+			<a href="http://chemapps.stolaf.edu/jmol/docs/examples-11/new0.htm">Jmol 11.0</a> |
+			<a href="http://chemapps.stolaf.edu/jmol/docs/examples-10.2/new.htm">Jmol 10.2</a>.
+			</p>
+			<p>Fostul istorie:</p>
+			&changes;
+		</section>
+		<section title="Contribuabili">
+			&contributors;
+		</section>
+	</body>
+</document>

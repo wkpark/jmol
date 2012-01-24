@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-12-23 19:22+0100\n"
+"POT-Creation-Date: 2012-01-24 22:51+0100\n"
 "PO-Revision-Date: 2012-01-17 17:41+0000\n"
 "Last-Translator: Nicolas Delvaux <Unknown>\n"
 "Language-Team: French <Jmol-developers@lists.sf.net>\n"
@@ -1102,7 +1102,8 @@ msgid "Get MOL file by compound name or ID"
 msgstr "Obtenir un fichier MOL par nom du composé ou ID"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1204
-msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
+#, fuzzy
+msgid "Enter the name or identifier (SMILES, InChI, CAS) of a compound"
 msgstr "Entrer le nom ou l’identifiant (SMILES, InChI, CAS) d’une molécule"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1370

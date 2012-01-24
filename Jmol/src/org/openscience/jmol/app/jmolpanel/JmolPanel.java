@@ -1201,7 +1201,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     OpenMolAction() {
       super(openmolAction);
       title = GT._("Get MOL file by compound name or ID");
-      prompt = GT._("Enter the name or identifier (SMILES, InChI, CAS) of a molecule");
+      prompt = GT._("Enter the name or identifier (SMILES, InChI, CAS) of a compound");
     }
 
     @Override

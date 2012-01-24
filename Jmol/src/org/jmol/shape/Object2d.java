@@ -316,7 +316,7 @@ public abstract class Object2d {
       x <<= 1;
       y <<= 1;
     }
-    return (x >= boxX && x <= boxX + boxWidth 
+    return (script != null && x >= boxX && x <= boxX + boxWidth 
         && y >= boxY && y <= boxY + boxHeight);
   }
 

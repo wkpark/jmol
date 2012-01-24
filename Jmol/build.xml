@@ -707,6 +707,12 @@ all support for previous versions removed
       </fileset>
     </jar>
 
+    <jar destfile="${jmol.applet.build.dir}/JmolApplet0_Spectrum.jar" manifest="manifest/applet.txt">
+      <fileset dir="${applet.classes.dir}">
+        <include name="org/jmol/spectrum/**" />
+      </fileset>
+    </jar>
+
   	<jar destfile="${jmol.applet.build.dir}/JmolApplet0_Symmetry.jar" manifest="manifest/applet.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/symmetry/**" />
@@ -757,6 +763,7 @@ all support for previous versions removed
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ShapeSpecial.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ShapeSurface.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Smiles.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Spectrum.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Symmetry.jar" />
         <fileset dir="${jmol.applet.build.dir}" includes="JmolApplet0_i18n_*.jar" />
       </indexjars>
@@ -895,6 +902,11 @@ all support for previous versions removed
              keystore="selfSignedCertificate/selfSignedCertificate.store"
              storepass="selfSignedCertificate" alias="selfSignedCertificate" />
 
+    <signjar jar="${jmol.applet.build.dir}/JmolApplet0_Spectrum.jar"
+             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_Spectrum.jar"
+             keystore="selfSignedCertificate/selfSignedCertificate.store"
+             storepass="selfSignedCertificate" alias="selfSignedCertificate" />
+
     <signjar jar="${jmol.applet.build.dir}/JmolApplet0_Symmetry.jar"
              signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_Symmetry.jar"
              keystore="selfSignedCertificate/selfSignedCertificate.store"
@@ -984,6 +996,7 @@ all support for previous versions removed
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ShapeSpecial.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ShapeSurface.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Smiles.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Spectrum.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Symmetry.jar" />
         <fileset dir="${jmol.applet.build.dir}" includes="JmolAppletSigned0_i18n_*.jar" />
       </indexjars>
@@ -1037,6 +1050,7 @@ all support for previous versions removed
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ShapeSpecial.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ShapeSurface.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Smiles.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Spectrum.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Symmetry.jar" />
         <fileset dir="${jmol.applet.build.dir}" includes="JmolAppletSigned0_i18n_*.jar" />
       </indexjars>
@@ -1150,6 +1164,12 @@ all support for previous versions removed
     <jar destfile="${jmol.applet.build.dir}/JmolApplet0_Smiles.jar" manifest="manifest/applet.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/smiles/**" />
+      </fileset>
+    </jar>
+
+    <jar destfile="${jmol.applet.build.dir}/JmolApplet0_Spectrum.jar" manifest="manifest/applet.txt">
+      <fileset dir="${applet.classes.dir}">
+        <include name="org/jmol/spectrum/**" />
       </fileset>
     </jar>
 

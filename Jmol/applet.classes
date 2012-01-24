@@ -53,6 +53,7 @@ org/jmol/shapespecial/*.java
 org/jmol/shapesurface/*.java
 
 org/jmol/smiles/*.java
+org/jmol/spectrum/*.java
 
 org/jmol/symmetry/*.java
 org/jmol/util/*.java

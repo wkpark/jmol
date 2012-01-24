@@ -135,6 +135,10 @@
           <srcfiles dir="doc/source"
                     includes="JmolHistory_nl.xml,JmolHistoryToHtml.xsl,history/changes_nl.xml" />
         </uptodate>
+        <uptodate targetfile="build/doc/JmolHistory/ChangeLog_ro.html">
+          <srcfiles dir="doc/source"
+                    includes="JmolHistory_ro.xml,JmolHistoryToHtml.xsl,history/changes_ro.xml" />
+        </uptodate>
       </and>
     </condition>
     
@@ -1717,6 +1721,16 @@ all support for previous versions removed
       <arg value="../../../doc/source/JmolHistory_nl.xml" />
       <arg value="../../../doc/source/JmolHistoryToHtml.xsl" />
       <arg value="lang=nl" />
+    </java>
+    <echo message="Generating history of changes (ro)" level="info"/>
+    <java fork="true" dir="build/doc/JmolHistory"
+          classname="com.icl.saxon.StyleSheet"
+          classpath="${lib.dir}/saxon.jar" >
+      <arg value="-o" />
+      <arg value="ChangeLog_ro.html" />
+      <arg value="../../../doc/source/JmolHistory_ro.xml" />
+      <arg value="../../../doc/source/JmolHistoryToHtml.xsl" />
+      <arg value="lang=ro" />
     </java>
   </target>
 

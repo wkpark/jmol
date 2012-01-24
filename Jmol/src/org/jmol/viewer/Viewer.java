@@ -279,14 +279,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (Logger.debugging) {
       Logger.debug("Viewer constructor " + this);
     }
-    isDataOnly = (display == null);   
-    if (implementedPlatform == null) {
-      if (apiPlatform == null)
-        apiPlatform = (ApiPlatform) Interface.getInterface(commandOptions == null
-            || !commandOptions.contains("platform=") ? "org.jmol.awt.Platform"
-            : commandOptions.substring(commandOptions.indexOf("platform=") + 9));
-    } else
-      apiPlatform = implementedPlatform;
+    isDataOnly = (display == null);
+    apiPlatform = implementedPlatform;
+    if (apiPlatform == null)
+      apiPlatform = (ApiPlatform) Interface.getInterface(commandOptions == null
+          || !commandOptions.contains("platform=") ? "org.jmol.awt.Platform"
+          : commandOptions.substring(commandOptions.indexOf("platform=") + 9));
     apiPlatform.setViewer(this, display);
     g3d = new Graphics3D(apiPlatform, isDataOnly);
     haveDisplay = (!isDataOnly && (commandOptions == null || commandOptions
@@ -6337,6 +6335,7 @@ private void zap(String msg) {
       break;
     case Token.bondpicking:
       // 11.6.RC13
+      highlight(null);
       global.bondPicking = value;
       break;
     case Token.selectallmodels:
@@ -7843,7 +7842,7 @@ private void zap(String msg) {
         clickCount, mode);
   }
 
-  Token checkObjectClicked(int x, int y, int modifiers) {
+  Map<String, Object> checkObjectClicked(int x, int y, int modifiers) {
     return shapeManager.checkObjectClicked(x, y, modifiers,
         getVisibleFramesBitSet());
   }

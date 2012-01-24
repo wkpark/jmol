@@ -306,13 +306,13 @@ public class Measurement {
   }
 
   private static String fixUnits(String units) {
-    if (units == "nanometers")
+    if (units.equals("nanometers"))
       return "nm";
-    else if (units == "picometers")
+    else if (units.equals("picometers"))
       return "pm";
-    else if (units == "angstroms")
+    else if (units.equals("angstroms"))
       return "\u00C5";
-    else if (units == "vanderwaals" || units == "vdw")
+    else if (units.equals("vanderwaals") || units.equals("vdw"))
       return "%";
     return units;
   }

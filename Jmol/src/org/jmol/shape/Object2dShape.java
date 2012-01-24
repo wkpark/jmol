@@ -5,9 +5,10 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.vecmath.Point3f;
+
 import org.jmol.g3d.Font3D;
 import org.jmol.util.Logger;
-import org.jmol.util.Point3fi;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 
@@ -206,7 +207,7 @@ public class Object2dShape extends Shape {
   }
 
   @Override
-  public Point3fi checkObjectClicked(int x, int y, int modifiers, BitSet bsVisible) {
+  public Map<String, Object> checkObjectClicked(int x, int y, int modifiers, BitSet bsVisible) {
     if (isHover || modifiers == 0)
       return null;
     Iterator<Text> e = objects.values().iterator();
@@ -217,12 +218,16 @@ public class Object2dShape extends Shape {
         if (s != null) {
           viewer.evalStringQuiet(s);
         }
-        Point3fi pt = new Point3fi();
-        if (obj.xyz != null) {
-          pt.set(obj.xyz);
-          pt.modelIndex = (short) obj.modelIndex;
-        }
-        return pt; // may or may not be null
+        Map<String, Object> map = new Hashtable<String, Object>();
+        map.put("pt", (obj.xyz == null ? new Point3f() : obj.xyz));
+        int modelIndex = obj.modelIndex;
+        if (modelIndex < 0)
+          modelIndex = 0;
+        map.put("modelIndex", Integer.valueOf(modelIndex));
+        map.put("model", viewer.getModelNumberDotted(modelIndex));
+        map.put("id", obj.target);
+        map.put("type", "echo");
+        return map;
       }
     }
     return null;

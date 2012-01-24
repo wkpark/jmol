@@ -26,7 +26,6 @@
 package org.jmol.shape;
 
 import org.jmol.util.Logger;
-import org.jmol.util.Point3fi;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.StateManager;
 import org.jmol.viewer.Viewer;
@@ -346,9 +345,9 @@ public abstract class Shape {
    * @param y
    * @param modifiers
    * @param bsVisible
-   * @return pt clicked
+   * @return Hashtable containing information about pt clicked
    */
-  public Point3fi checkObjectClicked(int x, int y, int modifiers, BitSet bsVisible) {
+  public Map<String, Object> checkObjectClicked(int x, int y, int modifiers, BitSet bsVisible) {
     return null;
   }
 

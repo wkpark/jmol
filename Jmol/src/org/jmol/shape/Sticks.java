@@ -28,7 +28,6 @@ package org.jmol.shape;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
-import org.jmol.util.Point3fi;
 
 import java.util.BitSet;
 import java.util.Hashtable;
@@ -246,7 +245,7 @@ public class Sticks extends Shape {
   
   @Override
   public boolean checkObjectHovered(int x, int y, BitSet bsVisible) {
-    Point3fi pt = new Point3fi();
+    Point3f pt = new Point3f();
     Bond bond = findPickedBond(x, y, bsVisible, pt);
     if (bond == null)
       return false;
@@ -256,15 +255,23 @@ public class Sticks extends Shape {
   
 
   @Override
-  public Point3fi checkObjectClicked(int x, int y, int modifiers,
+  public Map<String, Object> checkObjectClicked(int x, int y, int modifiers,
                                     BitSet bsVisible) {
-    Point3fi pt = new Point3fi();
+    Point3f pt = new Point3f();
     Bond bond = findPickedBond(x, y, bsVisible, pt);
     if (bond == null)
       return null;
-    pt.index = bond.index;
+    int modelIndex = bond.getAtom1().modelIndex;
+    String info = bond.getIdentity();
+    Map<String, Object> map = new Hashtable<String, Object>();
+    map.put("pt", pt);
+    map.put("index", Integer.valueOf(bond.index));
+    map.put("modelIndex", Integer.valueOf(modelIndex));
+    map.put("model", viewer.getModelNumberDotted(modelIndex));
+    map.put("type", "bond");
+    map.put("info", info);
     viewer.setStatusAtomPicked(-3, "[\"bond\",\"" + bond.getIdentity() + "\"," + pt.x + "," + pt.y + "," + pt.z + "]");
-    return pt;
+    return map;
   }
 
   private final static int MAX_BOND_CLICK_DISTANCE_SQUARED = 10 * 10;
@@ -278,7 +285,7 @@ public class Sticks extends Shape {
    * @param pt
    * @return picked bond or null
    */
-  private Bond findPickedBond(int x, int y, BitSet bsVisible, Point3fi pt) {
+  private Bond findPickedBond(int x, int y, BitSet bsVisible, Point3f pt) {
     int dmin2 = MAX_BOND_CLICK_DISTANCE_SQUARED;
     if (g3d.isAntialiased()) {
       x <<= 1;
@@ -307,7 +314,6 @@ public class Sticks extends Shape {
         dmin2 = d2;
         pickedBond = bond;
         pt.set(v);
-        pt.modelIndex = atom1.modelIndex;
       }
     }
     return pickedBond;

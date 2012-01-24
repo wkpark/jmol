@@ -104,7 +104,6 @@ import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.MeshSurface;
 import org.jmol.util.Parser;
-import org.jmol.util.Point3fi;
 import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.ActionManager;
@@ -1506,7 +1505,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   int[] keyXy;
 
   @Override
-  public Point3fi checkObjectClicked(int x, int y, int action, BitSet bsVisible) {
+  public Map<String, Object> checkObjectClicked(int x, int y, int action, BitSet bsVisible) {
     if (!(viewer.getDrawPicking() || viewer.getNavigationMode() && viewer.getNavigateSurface())) 
        return null;
     if (!viewer.isBound(action, ActionManager.ACTION_pickIsosurface))
@@ -1556,10 +1555,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     pickedMesh = isomeshes[imesh];
     setPropertySuper("thisID", pickedMesh.thisID, null);
     int iFace = pickedVertex = (pickFront ? jminz : jmaxz);
-    Point3fi ptRet = new Point3fi();
+    Point3f ptRet = new Point3f();
     ptRet.set((pickFront ? pickedMesh.vertices[pickedVertex] : ((IsosurfaceMesh)pickedMesh).centers[iFace]));
-    pickedModel = ptRet.modelIndex = (short) pickedMesh.modelIndex;
-    ptRet.index = imesh;
+    pickedModel = (short) pickedMesh.modelIndex;
     if (pickFront) {
       setStatusPicked(-4, ptRet);
     } else {
@@ -1569,7 +1567,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       vNorm.scale(-1);
       setHeading(ptRet, vNorm, 2);
     }
-    return ptRet;
+    return getPickedPoint(ptRet, pickedModel);
   }
 
   private boolean isPickable(IsosurfaceMesh m, BitSet bsVisible) {

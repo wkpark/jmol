@@ -24,12 +24,13 @@
 
 package org.jmol.shape;
 
-import org.jmol.g3d.*;
 import org.jmol.viewer.StateManager;
+import org.jmol.g3d.Graphics3D;
 import org.jmol.script.ScriptVariable;
 import org.jmol.script.Token;
 
 import java.util.BitSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -561,6 +562,20 @@ public abstract class MeshCollection extends Shape {
         + (pickedMesh.title == null ? "\"\"" 
                : Escape.escape(pickedMesh.title[0]))+"]");
   }
+
+  protected Map<String, Object> getPickedPoint(Point3f v, int modelIndex) {
+    Map<String, Object> map = new Hashtable<String, Object>();
+    if (v != null) {
+      map.put("pt", v);
+      map.put("modelIndex", Integer.valueOf(modelIndex));
+      map.put("model", viewer.getModelNumberDotted(modelIndex));
+      map.put("id", pickedMesh.thisID);
+      map.put("vertex", Integer.valueOf(pickedVertex + 1));
+      map.put("type", myType);
+    }
+    return map;
+  }
+
 }
 
  

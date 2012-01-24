@@ -42,7 +42,6 @@ import org.jmol.util.Logger;
 import org.jmol.util.MeshSurface;
 
 import org.jmol.util.Measure;
-import org.jmol.util.Point3fi;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.JmolConstants;
@@ -1103,10 +1102,9 @@ public void initShape() {
   private final static int MAX_OBJECT_CLICK_DISTANCE_SQUARED = 10 * 10;
 
   private final Point3i ptXY = new Point3i();
-  private final Point3fi PT_NAN = new Point3fi(Float.NaN, 0.0f, 0.0f);
   
   @Override
-  public Point3fi checkObjectClicked(int x, int y, int action, BitSet bsVisible) {
+  public Map<String, Object> checkObjectClicked(int x, int y, int action, BitSet bsVisible) {
     boolean isPickingMode = (viewer.getPickingMode() == ActionManager.PICKING_DRAW);
     boolean isSpinMode = (viewer.getPickingMode() == ActionManager.PICKING_SPIN);
     boolean isDrawPicking = viewer.getDrawPicking();
@@ -1116,13 +1114,17 @@ public void initShape() {
     if (!findPickedObject(x, y, false, bsVisible))
       return null;
     Point3f v = pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][pickedVertex]];
+    int modelIndex = pickedMesh.modelIndex;
+    BitSet bs = ((DrawMesh) pickedMesh).modelFlags;
+    if (modelIndex < 0 && bs != null && BitSetUtil.cardinalityOf(bs) == 1)
+      modelIndex = bs.nextSetBit(0);
     if (isDrawPicking && !isPickingMode) {
       if (action != 0) // not mouseMove
         setStatusPicked(-2, v);
-      return getPickedPoint(v);
+      return getPickedPoint(v, modelIndex);
     }
     if (action == 0 || pickedMesh.polygonIndexes[pickedModel][0] == pickedMesh.polygonIndexes[pickedModel][1]) {
-      return (action == 0 ? getPickedPoint(v) : null); 
+      return (action == 0 ? getPickedPoint(v, modelIndex) : null); 
     }
     boolean isClockwise = viewer.isBound(action, ActionManager.ACTION_spinDrawObjectCW);
     if (pickedVertex == 0) {
@@ -1136,17 +1138,7 @@ public void initShape() {
           pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][1]],
           isClockwise);
     }
-    return PT_NAN;
-  }
-
-  private Point3fi getPickedPoint(Point3f v) {
-    Point3fi pt = new Point3fi();
-    pt.set(v);
-    pt.modelIndex = (short) pickedMesh.modelIndex;
-    BitSet bs = ((DrawMesh) pickedMesh).modelFlags;
-    if (pt.modelIndex < 0 && bs != null && BitSetUtil.cardinalityOf(bs) == 1)
-      pt.modelIndex = (short) bs.nextSetBit(0);
-    return pt; 
+    return getPickedPoint(null, 0);
   }
 
   @Override

@@ -44,7 +44,6 @@ import org.jmol.script.Token;
 import org.jmol.shape.Shape;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
-import org.jmol.util.Point3fi;
 
 public class ShapeManager {
 
@@ -206,28 +205,28 @@ public class ShapeManager {
   }
 
   private final static int[] hoverable = {
-    JmolConstants.SHAPE_ECHO, Token.echo, 
-    JmolConstants.SHAPE_CONTACT, Token.contact,
-    JmolConstants.SHAPE_ISOSURFACE, Token.isosurface,
-    JmolConstants.SHAPE_DRAW, Token.draw,
-    JmolConstants.SHAPE_FRANK, Token.nada,
+    JmolConstants.SHAPE_ECHO, 
+    JmolConstants.SHAPE_CONTACT,
+    JmolConstants.SHAPE_ISOSURFACE,
+    JmolConstants.SHAPE_DRAW,
+    JmolConstants.SHAPE_FRANK,
   };
   
-  Token checkObjectClicked(int x, int y, int modifiers, BitSet bsVisible) {
+  private static int clickableMax = hoverable.length - 1;
+  
+  Map<String, Object> checkObjectClicked(int x, int y, int modifiers, BitSet bsVisible) {
     Shape shape;
-    Point3fi pt = null;
+    Map<String, Object> map = null;
     if (modifiers != 0
         && viewer.getBondPicking()
-        && (pt = shapes[JmolConstants.SHAPE_STICKS].checkObjectClicked(x, y,
+        && (map = shapes[JmolConstants.SHAPE_STICKS].checkObjectClicked(x, y,
             modifiers, bsVisible)) != null)
-      return new Token(Token.bonds, pt);
+      return map;
 
-    int tok;
-    for (int i = 0; i < hoverable.length; i += 2)
-      if ((tok = hoverable[i + 1]) != Token.nada
-          && (shape = shapes[hoverable[i]]) != null
-          && (pt = shape.checkObjectClicked(x, y, modifiers, bsVisible)) != null)
-        return new Token(tok, pt);
+    for (int i = 0; i < clickableMax; i++)
+      if ((shape = shapes[hoverable[i]]) != null
+          && (map = shape.checkObjectClicked(x, y, modifiers, bsVisible)) != null)
+        return map;
     return null;
   }
  
@@ -247,7 +246,7 @@ public class ShapeManager {
     if (checkBonds && shape != null
         && shape.checkObjectHovered(x, y, bsVisible))
       return true;
-    for (int i = 0; i < hoverable.length; i += 2) {
+    for (int i = 0; i < hoverable.length; i++) {
       shape = shapes[hoverable[i]];
       if (shape != null && shape.checkObjectHovered(x, y, bsVisible))
         return true;

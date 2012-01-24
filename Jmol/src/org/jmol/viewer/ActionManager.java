@@ -797,9 +797,9 @@ public class ActionManager {
       if (isBound(action, ACTION_popupMenu)) {
         char type = 'j';
         if (viewer.getModelkitMode()) {
-          Token t = viewer.checkObjectClicked(x, y, Binding.getMouseAction(1,
+          Map<String, Object> t = viewer.checkObjectClicked(x, y, Binding.getMouseAction(1,
               Binding.LEFT));
-          type = (t != null && t.tok == Token.bonds ? 'b' : viewer
+          type = (t != null && "bond".equals(t.get("type")) ? 'b' : viewer
               .findNearestAtomIndex(x, y) >= 0 ? 'a' : 'm');
         }
         viewer.popupMenu(x, y, type);
@@ -1199,32 +1199,33 @@ public class ActionManager {
           || !((obj = ht.get(key)) instanceof String[]))
         continue;
       String script = ((String[]) obj)[1];
-      Point3fi nearestPoint = null;
-      boolean isBond = false;      
-      if (!drawMode
-          && (script.indexOf("_POINT") >= 0 || (isBond = script
-              .indexOf("_BOND") >= 0))) {
-        Token t = viewer.checkObjectClicked(x, y, action);
-        if (t != null) {
-          isBond = (t.tok == Token.bonds);
-          nearestPoint = (Point3fi) t.value;
-          if (nearestPoint != null && Float.isNaN(nearestPoint.x))
-            nearestPoint = null;
-          if (nearestPoint != null)
-            if (isBond) {
-              script = TextFormat.simpleReplace(script, "_BOND", "[{"+nearestPoint.index+"}]"); 
-            } else {
-              script = TextFormat.simpleReplace(script, "_POINT", Escape.escape(nearestPoint));              
-            }
-        }
-        script = TextFormat.simpleReplace(script, "_BOND", "[{}]");
-        script = TextFormat.simpleReplace(script, "_POINT", "{}");
-      }
+      Point3f nearestPoint = null;
       if (script.indexOf("_ATOM") >= 0) {
         int iatom = findNearestAtom(x, y, null, true);
         script = TextFormat.simpleReplace(script, "_ATOM", "({"
             + (iatom >= 0 ? "" + iatom : "") + "})");
+        if (iatom >= 0)
+          script = TextFormat.simpleReplace(script, "_POINT", Escape
+              .escape(viewer.getModelSet().atoms[iatom]));
       }
+      if (!drawMode
+          && (script.indexOf("_POINT") >= 0 || script.indexOf("_OBJECT") >= 0 || script
+              .indexOf("_BOND") >= 0)) {
+        Map<String, Object> t = viewer.checkObjectClicked(x, y, action);
+        if (t != null && (nearestPoint = (Point3f) t.get("pt")) != null) {
+          boolean isBond = t.get("type").equals("bond");
+          if (isBond)
+            script = TextFormat.simpleReplace(script, "_BOND", "[{"
+                + t.get("index") + "}]");
+          script = TextFormat.simpleReplace(script, "_POINT", Escape
+              .escape(nearestPoint));
+          script = TextFormat
+              .simpleReplace(script, "_OBJECT", Escape.escape(t));
+        }
+        script = TextFormat.simpleReplace(script, "_BOND", "[{}]");
+        script = TextFormat.simpleReplace(script, "_OBJECT", "{}");
+      }
+      script = TextFormat.simpleReplace(script, "_POINT", "{}");
       script = TextFormat.simpleReplace(script, "_ACTION", "" + action);
       script = TextFormat.simpleReplace(script, "_X", "" + x);
       script = TextFormat.simpleReplace(script, "_Y", ""
@@ -1298,16 +1299,19 @@ public class ActionManager {
       return false;
     }
     Point3fi nearestPoint = null;
-    int tokType = 0;
+    boolean isBond = false;
+    boolean isIsosurface = false;
+    Map<String, Object> t = null;
     // t.tok will let us know if this is an atom or a bond that was clicked
     if (!drawMode && !atomOnly) {
-      Token t = viewer.checkObjectClicked(x, y, action);
+      t = viewer.checkObjectClicked(x, y, action);
       if (t != null) {
-        tokType = t.tok;
-        nearestPoint = (Point3fi) t.value;
+        isBond = "bond".equals(t.get("type"));
+        isIsosurface = "isosurface".equals(t.get("type"));
+        nearestPoint = getPoint(t);
       }
     }
-    if (tokType == Token.bonds)
+    if (isBond)
       clickedCount = 1;
 
     if (nearestPoint != null && Float.isNaN(nearestPoint.x))
@@ -1342,26 +1346,27 @@ public class ActionManager {
 
     // bond change by clicking on a bond
     // bond deletion by clicking a bond
-    if (tokType == Token.bonds) {
+    if (isBond) {
       if (isBound(action, bondPickingMode == PICKING_ROTATE_BOND
           || bondPickingMode == PICKING_ASSIGN_BOND ? ACTION_assignNew
           : ACTION_deleteBond)) {
         if (bondPickingMode == PICKING_ASSIGN_BOND)
           viewer.undoMoveAction(-1, Token.save, true);
+        int index = ((Integer) t.get("index")).intValue();
         switch (bondPickingMode) {
         case PICKING_ASSIGN_BOND:
-          viewer.script("assign bond [{" + nearestPoint.index + "}] \""
+          viewer.script("assign bond [{" + index + "}] \""
               + pickBondAssignType + "\"");
           break;
         case PICKING_ROTATE_BOND:
-          viewer.setRotateBondIndex(nearestPoint.index);
+          viewer.setRotateBondIndex(index);
           break;
         case PICKING_DELETE_BOND:
-          viewer.deleteBonds(BitSetUtil.setBit(nearestPoint.index));
+          viewer.deleteBonds(BitSetUtil.setBit(index));
         }
         return false;
       }
-    } else if (tokType == Token.isosurface) {
+    } else if (isIsosurface) {
       return false;
     } else {
       if (atomPickingMode != PICKING_ASSIGN_ATOM && measurementPending != null
@@ -1390,7 +1395,7 @@ public class ActionManager {
     
     if (isDragSelected || isSelectAction(action)) {
       // TODO: in drawMode the binding changes
-        if (tokType != Token.isosurface)
+        if (!isIsosurface)
           atomOrPointPicked(nearestAtomIndex, nearestPoint, isDragSelected ? 0 : action);
       return (nearestAtomIndex >= 0);
     }
@@ -1400,6 +1405,12 @@ public class ActionManager {
       return false;
     }
     return (nearestAtomIndex >= 0);
+  }
+
+  private Point3fi getPoint(Map<String, Object> t) {
+    Point3fi pt = new Point3fi((Point3f) t.get("pt"));
+    pt.modelIndex = (short) ((Integer) t.get("modelIndex")).intValue();
+    return pt;
   }
 
   private int findNearestAtom(int x, int y, Point3fi nearestPoint, boolean isClicked) {

@@ -46,6 +46,8 @@
   <property name="naga.jar" value="naga-2_1-r42.jar" />
   <property name="itext.jar" value="itext-1.4.5.jar" />
   <property name="commons-cli.jar" value="commons-cli-1.0.jar" />
+  <property name="saxon.jar" value="saxon.jar" />
+  <property name="saxon.main" value="com.icl.saxon.StyleSheet" />
 
   <!-- you can set this by defining it in ~/.jmol.build.properties -->
   <property name="keystore.name" value="Must be set by user." />
@@ -176,8 +178,8 @@
       </and>
     </condition>
 
-    <available classname="com.icl.saxon.StyleSheet"
-               classpath="${lib.dir}/saxon.jar"
+    <available classname="${saxon.main}"
+               classpath="${lib.dir}/${saxon.jar}"
                property="xsl.available"/>
     <uptodate property="javadoc.uptodate" targetfile="${javadoc.dir}/index.html">
       <srcfiles dir="src" includes="**/*.java, **/*.html" />
@@ -1557,7 +1559,7 @@ all support for previous versions removed
       <fileset dir="${lib.dir}">
         <include name="*.jar" />
         <exclude name="junit.jar" />
-        <exclude name="saxon.jar" />
+        <exclude name="${saxon.jar}" />
       </fileset>
     </copy>
     <mkdir dir="build/dist/jmol-jws-${version}/images" />
@@ -1647,7 +1649,7 @@ all support for previous versions removed
   </target>
 
   <target name="check.xsl" depends="setup" unless="xsl.available" >
-    <echo message="XSLT class 'com.icl.saxon.StyleSheet' not found." />
+    <echo message="XSLT class '${saxon.main}' not found." />
     <echo message="Note that the documentation is NOT generated now." />
   </target>
 
@@ -1670,8 +1672,8 @@ all support for previous versions removed
     <echo message="Generating user's guide" level="info"/>
     <mkdir dir="build/doc/JmolUserGuide" />
     <java fork="true" dir="build/doc/JmolUserGuide"
-          classname="com.icl.saxon.StyleSheet"
-          classpath="${lib.dir}/saxon.jar" >
+          classname="${saxon.main}"
+          classpath="${lib.dir}/${saxon.jar}" >
       <jvmarg value="${proxyHost}" />
       <jvmarg value="${proxyPort}" />
       <arg value="../../../doc/source/JmolGuide.docbook.xml" />
@@ -1680,8 +1682,8 @@ all support for previous versions removed
     <echo message="Generating user's guide (fr)" level="info"/>
     <mkdir dir="build/doc/JmolUserGuide_fr" />
     <java fork="true" dir="build/doc/JmolUserGuide_fr"
-          classname="com.icl.saxon.StyleSheet"
-          classpath="${lib.dir}/saxon.jar" >
+          classname="${saxon.main}"
+          classpath="${lib.dir}/${saxon.jar}" >
       <jvmarg value="${proxyHost}" />
       <jvmarg value="${proxyPort}" />
       <arg value="../../../doc/source/JmolGuide_fr.docbook.xml" />
@@ -1695,8 +1697,8 @@ all support for previous versions removed
     <echo message="Generating history of changes" level="info"/>
     <mkdir dir="build/doc/JmolHistory" />
     <java fork="true" dir="build/doc/JmolHistory"
-          classname="com.icl.saxon.StyleSheet"
-          classpath="${lib.dir}/saxon.jar" >
+          classname="${saxon.main}"
+          classpath="${lib.dir}/${saxon.jar}" >
       <arg value="-o" />
       <arg value="ChangeLog.html" />
       <arg value="../../../doc/source/JmolHistory.xml" />
@@ -1704,8 +1706,8 @@ all support for previous versions removed
     </java>
     <echo message="Generating history of changes (fr)" level="info"/>
     <java fork="true" dir="build/doc/JmolHistory"
-          classname="com.icl.saxon.StyleSheet"
-          classpath="${lib.dir}/saxon.jar" >
+          classname="${saxon.main}"
+          classpath="${lib.dir}/${saxon.jar}" >
       <arg value="-o" />
       <arg value="ChangeLog_fr.html" />
       <arg value="../../../doc/source/JmolHistory_fr.xml" />
@@ -1714,8 +1716,8 @@ all support for previous versions removed
     </java>
     <echo message="Generating history of changes (nl)" level="info"/>
     <java fork="true" dir="build/doc/JmolHistory"
-          classname="com.icl.saxon.StyleSheet"
-          classpath="${lib.dir}/saxon.jar" >
+          classname="${saxon.main}"
+          classpath="${lib.dir}/${saxon.jar}" >
       <arg value="-o" />
       <arg value="ChangeLog_nl.html" />
       <arg value="../../../doc/source/JmolHistory_nl.xml" />
@@ -1724,8 +1726,8 @@ all support for previous versions removed
     </java>
     <echo message="Generating history of changes (ro)" level="info"/>
     <java fork="true" dir="build/doc/JmolHistory"
-          classname="com.icl.saxon.StyleSheet"
-          classpath="${lib.dir}/saxon.jar" >
+          classname="${saxon.main}"
+          classpath="${lib.dir}/${saxon.jar}" >
       <arg value="-o" />
       <arg value="ChangeLog_ro.html" />
       <arg value="../../../doc/source/JmolHistory_ro.xml" />
@@ -1739,8 +1741,8 @@ all support for previous versions removed
           description="Generation of Developer's guide">
     <echo message="Generating developer's guide" level="info"/>
     <java fork="true" dir="build/doc"
-          classname="com.icl.saxon.StyleSheet"
-          classpath="${lib.dir}/saxon.jar" >
+          classname="${saxon.main}"
+          classpath="${lib.dir}/${saxon.jar}" >
       <arg value="-o" />
       <arg value="JmolDevelopersGuide.html" />
       <arg value="../../doc/source/JmolDevelopersGuide.docbook.xml" />
@@ -1748,8 +1750,8 @@ all support for previous versions removed
     </java>
     <echo message="Generating developer's guide (fr)" level="info"/>
     <java fork="true" dir="build/doc"
-          classname="com.icl.saxon.StyleSheet"
-          classpath="${lib.dir}/saxon.jar" >
+          classname="${saxon.main}"
+          classpath="${lib.dir}/${saxon.jar}" >
       <arg value="-o" />
       <arg value="JmolDevelopersGuide_fr.html" />
       <arg value="../../doc/source/JmolDevelopersGuide_fr.docbook.xml" />
@@ -1757,8 +1759,8 @@ all support for previous versions removed
     </java>
     <echo message="Generating developer's guide (de)" level="info"/>
     <java fork="true" dir="build/doc"
-          classname="com.icl.saxon.StyleSheet"
-          classpath="${lib.dir}/saxon.jar" >
+          classname="${saxon.main}"
+          classpath="${lib.dir}/${saxon.jar}" >
       <arg value="-o" />
       <arg value="JmolDevelopersGuide_de.html" />
       <arg value="../../doc/source/JmolDevelopersGuide_de.docbook.xml" />
@@ -1771,8 +1773,8 @@ all support for previous versions removed
           description="Generation of Applet guide">
     <echo message="Generating applet guide" level="info"/>
     <java fork="true" dir="build/doc"
-          classname="com.icl.saxon.StyleSheet"
-          classpath="${lib.dir}/saxon.jar" >
+          classname="${saxon.main}"
+          classpath="${lib.dir}/${saxon.jar}" >
       <arg value="-o" />
       <arg value="JmolAppletGuide.html" />
       <arg value="../../doc/source/JmolAppletGuide.docbook.xml" />
@@ -1780,8 +1782,8 @@ all support for previous versions removed
     </java>
     <echo message="Generating applet guide (fr)" level="info"/>
     <java fork="true" dir="build/doc"
-          classname="com.icl.saxon.StyleSheet"
-          classpath="${lib.dir}/saxon.jar" >
+          classname="${saxon.main}"
+          classpath="${lib.dir}/${saxon.jar}" >
       <arg value="-o" />
       <arg value="JmolAppletGuide_fr.html" />
       <arg value="../../doc/source/JmolAppletGuide_fr.docbook.xml" />
@@ -1789,8 +1791,8 @@ all support for previous versions removed
     </java>
     <echo message="Generating applet guide (de)" level="info"/>
     <java fork="true" dir="build/doc"
-          classname="com.icl.saxon.StyleSheet"
-          classpath="${lib.dir}/saxon.jar" >
+          classname="${saxon.main}"
+          classpath="${lib.dir}/${saxon.jar}" >
       <arg value="-o" />
       <arg value="JmolAppletGuide_de.html" />
       <arg value="../../doc/source/JmolAppletGuide_de.docbook.xml" />

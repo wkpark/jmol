@@ -2952,7 +2952,8 @@ private void zap(String msg) {
 
   @Override
   public String getModelNumberDotted(int modelIndex) {
-    return modelIndex < 0 ? "all" : modelSet == null ? null : modelSet
+    // must not return "all" for -1, because this could be within a frame RANGE
+    return modelIndex < 0 ? "0" : modelSet == null ? null : modelSet
         .getModelNumberDotted(modelIndex);
   }
 

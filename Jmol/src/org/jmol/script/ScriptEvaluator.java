@@ -12091,7 +12091,7 @@ public class ScriptEvaluator {
         frameList[0]++;
         modelIndex = viewer.getModelNumberIndex(frameList[0], false, false);
         if (modelIndex >= 0) {
-          int i2 = (nFrames == 1 ? frameList[0] + 1000001 : frameList[1] == 0 ? -1 : frameList[1] % 1000000 == 0 ? frameList[1] + 1000001 : frameList[1] + 1);
+          int i2 = (nFrames == 1 ? frameList[0] + 1000000 : frameList[1] == 0 ? -1 : frameList[1] % 1000000 == 0 ? frameList[1] + 1000001 : frameList[1] + 1);
           modelIndex2 = viewer.getModelNumberIndex(i2, false, false);
           if (modelIndex2 < 0)
             modelIndex2 = viewer.getModelCount();

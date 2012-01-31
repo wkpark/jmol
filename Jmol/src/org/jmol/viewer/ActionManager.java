@@ -488,12 +488,15 @@ public class ActionManager {
         measuresEnabled = false;
         break;
       case PICKING_SELECT_ATOM:
+        measuresEnabled = false;
+        break;
       case PICKING_MEASURE_DISTANCE:
       case PICKING_MEASURE_SEQUENCE:
       case PICKING_MEASURE_ANGLE:
       case PICKING_MEASURE_TORSION:
         measuresEnabled = false;
-        break;
+        return;
+        //break;
       }
     exitMeasurementMode();
   }
@@ -586,7 +589,6 @@ public class ActionManager {
     if (keyProcessing)
       return;
     hoverOff();
-    //System.out.println("ActionmManager keyPressed: " + ke.getKeyCode());
     keyProcessing = true;
     switch(key) {
     case Event.VK_ALT:
@@ -624,7 +626,6 @@ public class ActionManager {
   }
 
   public void keyReleased(int key) {
-    //System.out.println("ActionmManager keyReleased: " + ke.getKeyCode());
     switch(key) {
     case Event.VK_ALT:
       if (dragSelectedMode)
@@ -682,7 +683,6 @@ public class ActionManager {
         viewer.setCursor(JmolConstants.CURSOR_DEFAULT);
       return;
     case Binding.WHEELED:
-      //System.out.println("actionmanager mouseWheel " + mods);
       if (viewer.isApplet() && !viewer.hasFocus())
         return;
       // sun bug? noted by Charles Xie that wheeling on a Java page
@@ -714,7 +714,6 @@ public class ActionManager {
       if (atomPickingMode != PICKING_ASSIGN_ATOM)
         exitMeasurementMode();
       action = Binding.getMouseAction(pressedCount, modifiers);
-      //System.out.println("actionmanager mouseDragged " + mods + " " + action);
       dragGesture.add(action, x, y, time);
       checkAction(action, x, y, deltaX, deltaY, time, Binding.DRAGGED);
       return;
@@ -729,7 +728,6 @@ public class ActionManager {
       boolean isSelectAndDrag = isBound(Binding.getMouseAction(
           Integer.MIN_VALUE, modifiers), ACTION_selectAndDrag);
       action = Binding.getMouseAction(pressedCount, modifiers);
-      //System.out.println("actionmanager mousePressed " + mods + " " + action);
       dragGesture.setAction(action, time);
       if (Binding.getModifiers(action) != 0) {
         action = viewer.notifyMouseClicked(x, y, action, Binding.PRESSED);
@@ -817,7 +815,6 @@ public class ActionManager {
       viewer.setInMotion(false);
       viewer.setCursor(JmolConstants.CURSOR_DEFAULT);
       action = Binding.getMouseAction(pressedCount, modifiers);
-      //System.out.println("actionmanager mouseReleased " + mods + " " + action);
       dragGesture.add(action, x, y, time);
       if (dragRelease)
         viewer.setRotateBondIndex(Integer.MIN_VALUE);
@@ -1154,7 +1151,6 @@ public class ActionManager {
       return;
     }
     if (viewer.getSlabEnabled()) {
-      //System.out.println(Binding.getMouseActionName(action, false));
       if (isBound(action, ACTION_depth)) {
         viewer.depthByPixels(deltaY);
         return;
@@ -1439,7 +1435,7 @@ public class ActionManager {
 
   private int addToMeasurement(int atomIndex, Point3fi nearestPoint,
                                boolean dblClick) {
-    if (atomIndex == -1 && nearestPoint == null) {
+    if (atomIndex == -1 && nearestPoint == null || measurementPending == null) {
       exitMeasurementMode();
       return 0;
     }
@@ -1456,6 +1452,7 @@ public class ActionManager {
     viewer.setCursor(JmolConstants.CURSOR_CROSSHAIR);
     viewer.setPendingMeasurement(measurementPending = new MeasurementPending(
         viewer.getModelSet()));
+    measurementQueued = measurementPending;
   }
 
   private void exitMeasurementMode() {
@@ -1520,7 +1517,6 @@ public class ActionManager {
       return;
     }
     t = new TimeoutThread(name, mSec, script);
-    //System.out.println("action man new timeout " + name + " " + mSec + " " + script);
     timeouts.put(name, t);
     t.start();
   }
@@ -1553,7 +1549,6 @@ public class ActionManager {
     }
 
     void trigger() {
-      //System.out.println("timeout triggered " + this);
       triggered = (ms < 0);
     }
     
@@ -1567,7 +1562,6 @@ public class ActionManager {
     public void run() {
       if (script == null || script.length() == 0 || ms == 0)
         return;
-      //System.out.println("I am the timeout thread, and my name is " + Thread.currentThread().getName());
       Thread.currentThread().setName("timeout " + name);
       //if (true || Logger.debugging) 
       //Logger.info(toString());
@@ -1586,10 +1580,8 @@ public class ActionManager {
             timeouts.remove(name);
           if (triggered) {
             triggered = false;
-            //System.out.println("timeout " + name + " executing " + this);
             viewer.evalStringQuiet(script + (looping ? ";\ntimeout ID \"" + name + "\";" : ""));
           } else {
-//            System.out.println("timeout " + name + " not triggered " + this);
           }
           if (!looping)
             break;
@@ -1599,7 +1591,6 @@ public class ActionManager {
       } catch (Exception ie) {
         Logger.info("Timeout " + name + " Exception: " + ie);
       }
-      //System.out.println("timeout done:" + name);
       timeouts.remove(name);
     }
   }
@@ -1655,6 +1646,7 @@ public class ActionManager {
   private void resetMeasurement() {
     // doesn't reset the measurement that is being picked using
     // double-click, just the one using set picking measure.
+    exitMeasurementMode();
     measurementQueued = new MeasurementPending(viewer.getModelSet());    
   }
 
@@ -1798,8 +1790,11 @@ public class ActionManager {
       boolean isStruts = (atomPickingMode == PICKING_STRUTS);
       if (!isBound(action, (isDelete ? ACTION_deleteBond : ACTION_connectAtoms)))
         return;
-      if (measurementQueued == null || measurementQueued.getCount() >= 2)
+      if (measurementQueued == null || measurementQueued.getCount() == 0 || measurementQueued.getCount() > 2) {
         resetMeasurement();
+        enterMeasurementMode(atomIndex);
+      }
+      addToMeasurement(atomIndex, ptClicked, true);
       if (queueAtom(atomIndex, ptClicked) != 2)
         return;
       String cAction = (isDelete
@@ -1807,6 +1802,7 @@ public class ActionManager {
           : isStruts ? "STRUTS" : "");
       viewer.script("connect "
           + measurementQueued.getMeasurementScript(" ", true) + cAction);
+      resetMeasurement();
       return;
     case PICKING_MEASURE_TORSION:
       n++;
@@ -1819,9 +1815,13 @@ public class ActionManager {
     case PICKING_MEASURE_SEQUENCE:
       if (!isBound(action, ACTION_pickMeasure))
         return;
-      if (measurementQueued == null || measurementQueued.getCount() >= n)
+      if (measurementQueued == null || measurementQueued.getCount() == 0 || measurementQueued.getCount() > n) {
         resetMeasurement();
-      int i = queueAtom(atomIndex, ptClicked);
+        enterMeasurementMode(atomIndex);
+      }
+      addToMeasurement(atomIndex, ptClicked, true);
+      queueAtom(atomIndex, ptClicked);
+      int i = measurementQueued.getCount();
       if (i == 1) {
         viewer.setPicked(-1);
         viewer.setPicked(atomIndex);
@@ -1830,15 +1830,16 @@ public class ActionManager {
         return;
       if (atomPickingMode == PICKING_MEASURE_SEQUENCE) {
         getSequence();
-        return;
+      } else {
+        viewer.setStatusMeasuring("measurePicked", n, measurementQueued
+            .getStringDetail(), measurementQueued.getValue());
+        if (atomPickingMode == PICKING_MEASURE
+            || pickingStyleMeasure == PICKINGSTYLE_MEASURE_ON) {
+          viewer.script("measure "
+              + measurementQueued.getMeasurementScript(" ", true));
+        }
       }
-      viewer.setStatusMeasuring("measurePicked", n, measurementQueued
-          .getStringDetail(), measurementQueued.getValue());
-      if (atomPickingMode == PICKING_MEASURE
-          || pickingStyleMeasure == PICKINGSTYLE_MEASURE_ON) {
-        viewer.script("measure "
-            + measurementQueued.getMeasurementScript(" ", true));
-      }
+      resetMeasurement();
       return;
     }
     int mode = (measurementPending != null
@@ -1974,7 +1975,8 @@ public class ActionManager {
     boolean isSpin = (atomPickingMode == PICKING_SPIN);
     if (viewer.getSpinOn() || viewer.getNavOn() || viewer.getPendingMeasurement() != null) {
       resetMeasurement();
-      viewer.script("spin off");
+      if (viewer.getSpinOn())
+        viewer.script("spin off");
       return;
     }
     if (measurementQueued.getCount() >= 2)
@@ -2100,7 +2102,6 @@ public class ActionManager {
     }
   
     int add(int action, int x, int y, long time) {
-      //System.out.println("ActionMan gesture add " + action + " " + x + " " + y + " " + time);
       this.action = action;
       getNode(ptNext).set(ptNext, x, y, time - time0);
       ptNext++;
@@ -2118,7 +2119,6 @@ public class ActionManager {
 
     public float getSpeedPixelsPerMillisecond(int nPoints, int nPointsPrevious) {
       nPoints = getPointCount(nPoints, nPointsPrevious);
-      //System.out.println("ActionMan getSpeed " + nPoints + " " + nPointsPrevious);
       if (nPoints < 2)
         return 0;
       MotionPoint mp1 = getNode(ptNext - 1 - nPointsPrevious);

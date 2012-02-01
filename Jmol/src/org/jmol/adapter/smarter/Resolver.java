@@ -45,7 +45,7 @@ public class Resolver {
   private final static String[] readerSets = new String[] {
     "cifpdb.", ";Cif;Pdb;",
     "molxyz.", ";Mol3D;Mol;Xyz;",
-    "more.", ";BinaryDcd;Gromacs;MdCrd;MdTop;Mol2;Pqr;P2n;TlsDataOnly;",
+    "more.", ";BinaryDcd;Gromacs;Jcampdx;MdCrd;MdTop;Mol2;Pqr;P2n;TlsDataOnly;",
     "quantum.", ";Adf;Csf;Dgrid;GamessUK;GamessUS;Gaussian;GausianWfn;Jaguar;" +
                  "Molden;MopacGraphf;GenNBO;NWChem;Odyssey;Psi;Qchem;Spartan;SpartanSmol;" +
                  "WebMO;",
@@ -440,7 +440,6 @@ public class Resolver {
     if (leader.indexOf("PNG") == 1 || leader.indexOf("JPG") == 1
         || leader.indexOf("JFIF") == 6)
       return "spt"; // presume embedded script --- allows dragging into Jmol
-
     // now allow identification in first 16 lines
     // excluding those starting with "#"
     
@@ -916,10 +915,13 @@ public class Resolver {
   private final static String[] zMatrixFileStartRecords =
   {"ZMatrix", "#ZMATRIX"};
   
+  private final static String[] jcampdxFileStartRecords =
+  {"Jcampdx", "##TITLE=", "##JCAMP-DX"};
+  
   private final static String[][] fileStartsWithRecords =
   { cubeFileStartRecords, mol2Records, webmoFileStartRecords, 
     moldenFileStartRecords, dcdFileStartRecords, tlsDataOnlyFileStartRecords,
-    zMatrixFileStartRecords};
+    zMatrixFileStartRecords, jcampdxFileStartRecords };
 
   ////////////////////////////////////////////////////////////////
   // these test lines that startWith one of these strings
@@ -1089,7 +1091,7 @@ class LimitedLineReader {
     return (n == 0 ? new String(buf) : new String(buf, 0, Math.min(cchBuf, n)));
   }
   
-  String readLineWithNewline() {
+  protected String readLineWithNewline() {
     // mth 2004 10 17
     // for now, I am going to put in a hack here
     // we have some CIF files with many lines of '#' comments

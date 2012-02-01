@@ -251,22 +251,26 @@ public class AtomSetCollection {
   /**
    * Appends an AtomSetCollection
    * 
-   * @param collectionIndex collection index for new model number
-   * @param collection AtomSetCollection to append
+   * @param collectionIndex
+   *        collection index for new model number
+   * @param collection
+   *        AtomSetCollection to append
    */
-  protected void appendAtomSetCollection(int collectionIndex,
-                                         AtomSetCollection collection) {
+  public void appendAtomSetCollection(int collectionIndex,
+                                      AtomSetCollection collection) {
     // Initialisations
     int existingAtomsCount = atomCount;
 
     // auxiliary info
-    setAtomSetCollectionAuxiliaryInfo("loadState", collection.getAtomSetCollectionAuxiliaryInfo("loadState"));
+    setAtomSetCollectionAuxiliaryInfo("loadState", collection
+        .getAtomSetCollectionAuxiliaryInfo("loadState"));
 
     // append to bsAtoms if necessary (CIF reader molecular mode)
     if (collection.bsAtoms != null) {
       if (bsAtoms == null)
         bsAtoms = new BitSet();
-      for (int i = collection.bsAtoms.nextSetBit(0); i >= 0; i = collection.bsAtoms.nextSetBit(i + 1))
+      for (int i = collection.bsAtoms.nextSetBit(0); i >= 0; i = collection.bsAtoms
+          .nextSetBit(i + 1))
         bsAtoms.set(existingAtomsCount + i);
     }
 
@@ -298,14 +302,15 @@ public class AtomSetCollection {
           addStructure(collection.structures[i]);
 
       // numbers
-      atomSetNumbers[currentAtomSetIndex] = ((collectionIndex + 1) * 1000000)
-          + collection.atomSetNumbers[atomSetNum];
+      atomSetNumbers[currentAtomSetIndex] = (collectionIndex < 0 ? currentAtomSetIndex + 1
+          : ((collectionIndex + 1) * 1000000)
+              + collection.atomSetNumbers[atomSetNum]);
 
       // Note -- this number is used for Model.modelNumber. It is a combination of
       // file number * 1000000 + PDB MODEL NUMBER, which could be anything.
       // Adding the file number here indicates that we have multiple files.
       // But this will all be adjusted in ModelLoader.finalizeModels(). BH 11/2007
-      
+
     }
     // Clone bonds
     for (int bondNum = 0; bondNum < collection.bondCount; bondNum++) {
@@ -315,10 +320,10 @@ public class AtomSetCollection {
     }
     // Set globals
     for (int i = globalBooleans.length; --i >= 0;)
-      if (Boolean.TRUE.equals(
-          collection.getAtomSetCollectionAuxiliaryInfo(globalBooleans[i])))
+      if (Boolean.TRUE.equals(collection
+          .getAtomSetCollectionAuxiliaryInfo(globalBooleans[i])))
         setGlobalBoolean(i);
-    
+
   }
 
   void setNoAutoBond() {

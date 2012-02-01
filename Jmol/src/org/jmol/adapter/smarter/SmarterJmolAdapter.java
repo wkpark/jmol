@@ -81,7 +81,13 @@ public class SmarterJmolAdapter extends JmolAdapter {
     return null;
   }
 
-  /**
+  @Override
+  public Object getAtomSetCollectionReader(String name, String type,
+                                           BufferedReader bufferedReader, Map<String, Object> htParams) {
+    return staticGetAtomSetCollectionReader(name, type, bufferedReader, htParams);
+  }
+
+    /**
    * The primary file or string reader -- returns just the reader now
    * 
    * @param name 
@@ -91,8 +97,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
    * @return        an AtomSetCollectionReader or an error string
    * 
    */
-  @Override
-  public Object getAtomSetCollectionReader(String name, String type,
+  public static Object staticGetAtomSetCollectionReader(String name, String type,
                                    BufferedReader bufferedReader, Map<String, Object> htParams) {
     try {
       Object ret = Resolver.getAtomCollectionReader(name, type,
@@ -128,9 +133,12 @@ public class SmarterJmolAdapter extends JmolAdapter {
    */
   @Override
   public Object getAtomSetCollection(Object atomSetCollectionReader) {
+    return staticGetAtomSetCollection((AtomSetCollectionReader) atomSetCollectionReader);
+  }
+
+  public static Object staticGetAtomSetCollection(AtomSetCollectionReader a) {
     BufferedReader br = null;
     try {
-      AtomSetCollectionReader a = (AtomSetCollectionReader) atomSetCollectionReader;
       br = a.reader;
       Object ret = a.readData();
       if (!(ret instanceof AtomSetCollection))

@@ -199,7 +199,7 @@ public abstract class AtomSetCollectionReader {
     }
   */
 
-  private String filePath;
+  protected String filePath;
   protected String fileName;
 
   protected int stateScriptVersionInt = Integer.MAX_VALUE; // for compatiblity PDB reader Jmol 12.0.RC24 fix 

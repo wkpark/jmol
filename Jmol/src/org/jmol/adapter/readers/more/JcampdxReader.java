@@ -39,7 +39,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
 /**
- * A reader for Jcamdx files having <model> and <peaklist> records.
+ * A preliminary reader for JCAMP-DX files having <model> and <peaklist> records.
  * Designed by Robert Lancashire and Bob Hanson
  * 
  * 

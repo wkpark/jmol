@@ -98,6 +98,8 @@ public class SurfaceFileTyper {
       return "Efvet";
     if (line.indexOf("usemtl") >= 0)
       return "Obj";
+    if (line.indexOf("# object with") == 0)
+      return "Nff";
     // binary formats: problem here is that the buffered reader
     // may be translating byte sequences into unicode
     // and thus shifting the offset

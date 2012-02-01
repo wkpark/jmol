@@ -1281,6 +1281,8 @@ public class SurfaceGenerator {
       return new KinemageReader(this, br);
     if (fileType.equals("CastepDensity"))
       return new CastepDensityReader(this, br);
+    if (fileType.equals("Nff"))
+      return new NffFileReader(this, br);
     return null;
   }
 

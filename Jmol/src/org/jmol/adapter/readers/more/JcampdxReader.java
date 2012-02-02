@@ -26,8 +26,6 @@ package org.jmol.adapter.readers.more;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
-import java.util.Hashtable;
-import java.util.Map;
 
 import org.jmol.adapter.readers.molxyz.MolReader;
 import org.jmol.adapter.smarter.AtomSetCollection;
@@ -67,6 +65,15 @@ C    -1.693100    0.007800    0.000000   -0.000980    0.000120    0.000000
   </model>
 </models>
 
+-- All XML data should be line-oriented in the above fashion. Leading spaces will be ignored.
+-- Any number of <model> segments can be present
+-- The first model is referred to as the "base" model
+-- The base model:
+   -- will generally be of type MOL, but any known type is acceptable
+   -- will be used to generate bonding for later models that have no bonding information
+   -- will be the only model for NMR
+-- Additional models can represent vibrations (XYZ format) or MS fragmentation (MOL format, probably)
+
 ##$PEAK_LINKS= IR
 <peakList xUnits="1/cm" yUnits="TRANSMITTANCE" >
 <peak id="1" title="asymm stretch of aromatic CH group (~3100 cm-1)" peakShape="broad" model="1029383.1"  xMax="3121" xMin="3081"  yMax="1" yMin="0" />
@@ -83,7 +90,7 @@ public class JcampdxReader extends MolReader {
   private String dataType;
   private AtomSetCollection baseModel;
   private AtomSetCollection additionalModels;
-  private Map<String, String> htModelData = new Hashtable<String, String>();
+  private String modelIdList = "";
   
   @Override
   public void initializeReader() throws Exception {
@@ -117,7 +124,11 @@ public class JcampdxReader extends MolReader {
   private void readModels() throws Exception {
     discardLinesUntilContains("<models");
     modelID = getAttribute(line, "id");
-    String data = htModelData.get(modelID);
+    // read model only once for a given ID
+    String key = ";" + modelID + ";";
+    if (modelIdList.indexOf(key) >= 0)
+      return;
+    modelIdList += key;
     baseModel = null;
     line = "";
     // if load xxx.jdx n  then we must temporarily set n to 1 for the base model reading
@@ -133,24 +144,25 @@ public class JcampdxReader extends MolReader {
     switch (imodel) {
     case Integer.MIN_VALUE:
     case 0:
-      if (data == null) {
-        atomSetCollection.appendAtomSetCollection(-1, baseModel);
-        atomSetCollection.setAtomSetAuxiliaryInfo("modelID", modelID);        
-      }
+      atomSetCollection.appendAtomSetCollection(-1, baseModel);
+      atomSetCollection.setAtomSetAuxiliaryInfo("modelID", modelID);
       if (desiredModelNumber == 0)
         return;
       break;
     }
-    additionalModels = null;
     int model0 = atomSetCollection.getCurrentAtomSetIndex();
-    discardLinesUntilNonBlank();
-    if (line.contains("<model"))
+    while (true) {
+      discardLinesUntilNonBlank();
+      if (line == null || !line.contains("<model"))
+        break;
       additionalModels = getModelAtomSetCollection();
-    if (additionalModels != null) {
-      atomSetCollection.appendAtomSetCollection(-1, additionalModels);
-      for (int pt = 0, i = atomSetCollection.getAtomSetCount(); --i > model0; )
-        atomSetCollection.setAtomSetAuxiliaryInfo("modelID", modelID + "." + (++pt), i);       
+      if (additionalModels != null)
+        atomSetCollection.appendAtomSetCollection(-1, additionalModels);
     }
+    for (int pt = 0, i = atomSetCollection.getAtomSetCount(); --i > model0;)
+      atomSetCollection.setAtomSetAuxiliaryInfo("modelID", modelID + "."
+          + (++pt), i);
+
   }
 
   private static String getAttribute(String line, String tag) {
@@ -168,8 +180,6 @@ public class JcampdxReader extends MolReader {
     else if (modelType.length() == 0)
       modelType = null;
     String data = getModelData();
-    if (baseModel == null)
-      htModelData.put(modelID, data);
     discardLinesUntilContains("</model>");
     Logger.info("jdx model=" + modelID + " type=" + modelType);
     Object ret = SmarterJmolAdapter.staticGetAtomSetCollectionReader(filePath, modelType, new BufferedReader(new StringReader(data)), htParams);

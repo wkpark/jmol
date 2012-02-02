@@ -94,7 +94,6 @@ C    -1.693100    0.007800    0.000000   -0.000980    0.000120    0.000000
 
 public class JcampdxReader extends MolReader {
 
-  private String dataType;
   private String modelID;
   private AtomSetCollection baseModel;
   private AtomSetCollection additionalModels;
@@ -117,9 +116,7 @@ public class JcampdxReader extends MolReader {
 
   @Override
   public boolean checkLine() throws Exception {
-    if (line.startsWith("##DATA TYPE")) {
-      setDataType();
-    } else if (line.startsWith("##$MODELS")) {
+    if (line.startsWith("##$MODELS")) {
       readModels();
     } else if (line.startsWith("##$PEAK") && line.contains("LINKS=")) {
       readPeakLinks();
@@ -128,6 +125,7 @@ public class JcampdxReader extends MolReader {
     return true;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public void finalizeReader() {
     // process peak data
@@ -139,13 +137,20 @@ public class JcampdxReader extends MolReader {
         line = peakData.get(p);
         String title = getAttribute(line, "title");
         String modelID = getAttribute(line, "model");
-        Logger.info(modelID + " " + title);
         for (int i = atomSetCollection.getAtomSetCount(); --i >= 0;)
           if (modelID.equals(atomSetCollection.getAtomSetAuxiliaryInfo(i,
               "modelID"))) {
             bsModels.set(i);
-            if (modelID.indexOf('.') >= 0)
+            if (modelID.indexOf('.') >= 0) {
               atomSetCollection.setAtomSetAuxiliaryInfo("name", title, i);
+              atomSetCollection.setAtomSetAuxiliaryInfo("modelSelect", line, i);
+            } else if (getAttribute(line, "atoms").length() != 0) {
+              List<String> peaks = (List<String>) atomSetCollection.getAtomSetAuxiliaryInfo(i, "peakList");
+              if (peaks == null)
+                atomSetCollection.setAtomSetAuxiliaryInfo("peakSelect", peaks = new ArrayList<String>(), i);
+              peaks.add(line);
+            }
+            Logger.info(line);
             break;
           }
       }
@@ -155,15 +160,6 @@ public class JcampdxReader extends MolReader {
     }
   }
   
-  private void setDataType() {
-    line = line.toUpperCase();
-    dataType = (line.contains("INFRARED") ? "IR" : line.contains("NMR") ? "NMR" : line.contains("MASS") ? "MS" : null);
-    if (dataType == null)
-      Logger.warn("jdx data type ignored: " + line);
-    else
-      Logger.info("jdx data type: " + dataType);
-  }
-
   private void readModels() throws Exception {
     discardLinesUntilContains("<Models");
     modelID = getAttribute(line, "id");
@@ -229,13 +225,11 @@ public class JcampdxReader extends MolReader {
     Object ret = SmarterJmolAdapter.staticGetAtomSetCollectionReader(filePath, modelType, new BufferedReader(new StringReader(data)), htParams);
     if (ret instanceof String) {
       Logger.warn("" + ret);
-      dataType = null;
       return null;
     }
     ret = SmarterJmolAdapter.staticGetAtomSetCollection((AtomSetCollectionReader) ret);
     if (ret instanceof String) {
       Logger.warn("" + ret);
-      dataType = null;
       return null;
     }
     AtomSetCollection a = (AtomSetCollection) ret;
@@ -278,9 +272,10 @@ public class JcampdxReader extends MolReader {
   
   private void readPeakLinks() throws Exception {
     discardLinesUntilContains("<PeakList");
+    String type = getAttribute(line, "type");
     while (readLine() != null && line.indexOf("</PeakList") < 0)
       if (line.contains("<Peak"))
-        peakData.add(line.trim());      
+        peakData.add(filePath + "|" + type + "|" + line.trim());      
   }
 
 

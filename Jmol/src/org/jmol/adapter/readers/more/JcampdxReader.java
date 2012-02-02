@@ -81,6 +81,9 @@ C    -1.693100    0.007800    0.000000   -0.000980    0.000120    0.000000
 ...
 </peakList>
 
+-- peak record must be a single line of information because
+   Jmol will use line.trim() as a key to pass information to JSpecView. 
+
  * 
  *<p>
  */

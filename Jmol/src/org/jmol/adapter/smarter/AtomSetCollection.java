@@ -485,6 +485,11 @@ public class AtomSetCollection {
     }
   }
 
+  /**
+   * note that sets must be iterated from LAST to FIRST
+   * 
+   * @param imodel
+   */
   public void removeAtomSet(int imodel) {
     if (bsAtoms == null) {
       bsAtoms = new BitSet();

@@ -134,7 +134,8 @@ public class JcampdxReader extends MolReader {
     if (peakData.size() > 0) {
       BitSet bsModels = new BitSet();
       bsModels.set(0);
-      for (int p = peakData.size(); --p >= 0;) {
+      int n = peakData.size();
+      for (int p = 0; p < n; p++) {
         line = peakData.get(p);
         String title = getAttribute(line, "title");
         String modelID = getAttribute(line, "model");
@@ -148,14 +149,10 @@ public class JcampdxReader extends MolReader {
               break;
             }
       }
-      cleanModels(bsModels);
+      for (int i = atomSetCollection.getAtomSetCount(); --i >= 0;)
+        if (!bsModels.get(i))
+          atomSetCollection.removeAtomSet(i);
     }
-  }
-  
-  private void cleanModels(BitSet bsModels) {
-    for (int i = atomSetCollection.getAtomSetCount(); --i >= 0;)
-      if (!bsModels.get(i))
-        atomSetCollection.removeAtomSet(i);
   }
   
   private void setDataType() {

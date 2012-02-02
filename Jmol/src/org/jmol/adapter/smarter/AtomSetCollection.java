@@ -297,8 +297,8 @@ public class AtomSetCollection {
       //Structures: We must incorporate any global structures (modelIndex == -1) into this model
       //explicitly. Whew! This is because some cif _data structures have multiple PDB models (1skt)
       for (int i = 0; i < collection.structureCount; i++)
-        if (collection.structures[i].atomSetIndex == atomSetNum
-            || collection.structures[i].atomSetIndex == -1)
+        if (collection.structures[i] != null
+            && (collection.structures[i].atomSetIndex == atomSetNum || collection.structures[i].atomSetIndex == -1))
           addStructure(collection.structures[i]);
 
       // numbers
@@ -502,10 +502,15 @@ public class AtomSetCollection {
       atomSetAtomCounts[i - 1] = atomSetAtomCounts[i];
       atomSetNumbers[i - 1] = atomSetNumbers[i];
     }
-    for (int i = 0; i < structureCount; i++)
+    for (int i = 0; i < structureCount; i++) {
+      if (structures[i] == null)
+        continue;
       if (structures[i].atomSetIndex > imodel)
         structures[i].atomSetIndex--;
-    for (int i = 0; i < bondCount; i++)    
+      else if (structures[i].atomSetIndex == imodel)
+        structures[i] = null;
+    }
+    for (int i = 0; i < bondCount; i++)
       bonds[i].atomSetIndex = atoms[bonds[i].atomIndex1].atomSetIndex;
     atomSetAuxiliaryInfo[--atomSetCount] = null;
   }

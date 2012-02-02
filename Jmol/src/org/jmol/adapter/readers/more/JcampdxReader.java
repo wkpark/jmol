@@ -108,6 +108,11 @@ public class JcampdxReader extends MolReader {
       Logger.warn("TRAJECTORY keyword ignored");
       isTrajectory = false;
     }
+    if (reverseModels) {
+      Logger.warn("REVERSE keyword ignored");
+      reverseModels = false;
+    }
+    
   }
 
   @Override
@@ -133,7 +138,7 @@ public class JcampdxReader extends MolReader {
         line = peakData.get(p);
         String title = getAttribute(line, "title");
         String modelID = getAttribute(line, "model");
-        System.out.println(modelID + " " + title);
+        Logger.info(modelID + " " + title);
         if (modelID.indexOf('.') >= 0)
           for (int i = atomSetCollection.getAtomSetCount(); --i >= 0;)
             if (modelID.equals(atomSetCollection.getAtomSetAuxiliaryInfo(i,
@@ -148,11 +153,11 @@ public class JcampdxReader extends MolReader {
   }
   
   private void cleanModels(BitSet bsModels) {
-    System.out.println(bsModels);
     for (int i = atomSetCollection.getAtomSetCount(); --i >= 0;)
       if (!bsModels.get(i))
         atomSetCollection.removeAtomSet(i);
   }
+  
   private void setDataType() {
     line = line.toUpperCase();
     dataType = (line.contains("INFRARED") ? "IR" : line.contains("NMR") ? "NMR" : line.contains("MASS") ? "MS" : null);

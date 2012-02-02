@@ -705,7 +705,7 @@ public abstract class AtomSetCollectionReader {
   protected boolean addVibrations;
   protected boolean useAltNames;
   public boolean readMolecularOrbitals;
-  private boolean reverseModels;
+  protected boolean reverseModels;
 
   // MANY: "NOVIB" "NOMO"
   // CSF, SPARTAN: "NOORIENT"

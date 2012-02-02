@@ -78,8 +78,8 @@ C    -1.693100    0.007800    0.000000   -0.000980    0.000120    0.000000
    -- will be the only model for NMR
 -- Additional models can represent vibrations (XYZ format) or MS fragmentation (MOL format, probably)
 
-##$PEAK_LINKS= IR
-<PeakList xUnits="1/cm" yUnits="TRANSMITTANCE" >
+##$PEAK_LINKS=
+<PeakList type="IR" xUnits="1/cm" yUnits="TRANSMITTANCE" >
 <Peak id="1" title="asymm stretch of aromatic CH group (~3100 cm-1)" peakShape="broad" model="1029383.1"  xMax="3121" xMin="3081"  yMax="1" yMin="0" />
 <Peak id="2" title="symm stretch of aromatic CH group (~3085 cm-1)" peakShape="broad" model="1029383.2"  xMax="3101" xMin="3071"  yMax="1" yMin="0" />
 ...
@@ -143,11 +143,11 @@ public class JcampdxReader extends MolReader {
             bsModels.set(i);
             if (modelID.indexOf('.') >= 0) {
               atomSetCollection.setAtomSetAuxiliaryInfo("name", title, i);
-              atomSetCollection.setAtomSetAuxiliaryInfo("modelSelect", line, i);
+              atomSetCollection.setAtomSetAuxiliaryInfo("jdxModelSelect", line, i);
             } else if (getAttribute(line, "atoms").length() != 0) {
-              List<String> peaks = (List<String>) atomSetCollection.getAtomSetAuxiliaryInfo(i, "peakList");
+              List<String> peaks = (List<String>) atomSetCollection.getAtomSetAuxiliaryInfo(i, "jdxAtomSelect");
               if (peaks == null)
-                atomSetCollection.setAtomSetAuxiliaryInfo("peakSelect", peaks = new ArrayList<String>(), i);
+                atomSetCollection.setAtomSetAuxiliaryInfo("jdxAtomSelect", peaks = new ArrayList<String>(), i);
               peaks.add(line);
             }
             Logger.info(line);
@@ -202,7 +202,6 @@ public class JcampdxReader extends MolReader {
     for (int pt = 0, i = model0; ++i < n;)
       atomSetCollection.setAtomSetAuxiliaryInfo("modelID", modelID + "."
           + (++pt), i);
-
   }
 
   private static String getAttribute(String line, String tag) {
@@ -277,6 +276,5 @@ public class JcampdxReader extends MolReader {
       if (line.contains("<Peak"))
         peakData.add(filePath + "|" + type + "|" + line.trim());      
   }
-
-
+  
 }

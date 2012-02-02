@@ -26,6 +26,9 @@ package org.jmol.adapter.readers.more;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.List;
 
 import org.jmol.adapter.readers.molxyz.MolReader;
 import org.jmol.adapter.smarter.AtomSetCollection;
@@ -37,7 +40,8 @@ import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
 /**
- * A preliminary reader for JCAMP-DX files having <model> and <peaklist> records.
+ * A preliminary reader for JCAMP-DX files having ##$MODELS= and ##PEAK_LINKS= records
+ * 
  * Designed by Robert Lancashire and Bob Hanson
  * 
  * specifications (by example here):
@@ -45,7 +49,7 @@ import org.jmol.util.Parser;
 ##$MODELS=
 <models id="1029383">
  <model type="MOL">
-  <modelData>
+  <modeldata>
 acetophenone
   DSViewer          3D                             0
 
@@ -53,15 +57,15 @@ acetophenone
 ...
  17 14  1  0  0  0
 M  END
-  </modelData>
+  </modeldata>
  </model>
  <model type="XYZVIB">
-  <modelData>
+  <modeldata>
 17
 1  Energy: -1454.38826  Freq: 3199.35852
 C    -1.693100    0.007800    0.000000   -0.000980    0.000120    0.000000
 ...
-  </modelData>
+  </modeldata>
   </model>
 </models>
 
@@ -75,11 +79,11 @@ C    -1.693100    0.007800    0.000000   -0.000980    0.000120    0.000000
 -- Additional models can represent vibrations (XYZ format) or MS fragmentation (MOL format, probably)
 
 ##$PEAK_LINKS= IR
-<peakList xUnits="1/cm" yUnits="TRANSMITTANCE" >
+<peaklist xUnits="1/cm" yUnits="TRANSMITTANCE" >
 <peak id="1" title="asymm stretch of aromatic CH group (~3100 cm-1)" peakShape="broad" model="1029383.1"  xMax="3121" xMin="3081"  yMax="1" yMin="0" />
 <peak id="2" title="symm stretch of aromatic CH group (~3085 cm-1)" peakShape="broad" model="1029383.2"  xMax="3101" xMin="3071"  yMax="1" yMin="0" />
 ...
-</peakList>
+</peaklist>
 
 -- peak record must be a single line of information because
    Jmol will use line.trim() as a key to pass information to JSpecView. 
@@ -91,13 +95,19 @@ C    -1.693100    0.007800    0.000000   -0.000980    0.000120    0.000000
 public class JcampdxReader extends MolReader {
 
   private String dataType;
+  private String modelID;
   private AtomSetCollection baseModel;
   private AtomSetCollection additionalModels;
   private String modelIdList = "";
+  private List<String> peakData = new ArrayList<String>();
+  
   
   @Override
   public void initializeReader() throws Exception {
-    //
+    if (isTrajectory) {
+      Logger.warn("TRAJECTORY keyword ignored");
+      isTrajectory = false;
+    }
   }
 
   @Override
@@ -106,13 +116,43 @@ public class JcampdxReader extends MolReader {
       setDataType();
     } else if (line.startsWith("##$MODELS")) {
       readModels();
-    } else if (line.startsWith("##$PEAK_LINKS=")) {
+    } else if (line.startsWith("##$PEAK") && line.contains("LINKS=")) {
       readPeakLinks();
     }
 
     return true;
   }
 
+  @Override
+  public void finalizeReader() {
+    // process peak data
+    if (peakData.size() > 0) {
+      BitSet bsModels = new BitSet();
+      bsModels.set(0);
+      for (int p = peakData.size(); --p >= 0;) {
+        line = peakData.get(p);
+        String title = getAttribute(line, "title");
+        String modelID = getAttribute(line, "model");
+        System.out.println(modelID + " " + title);
+        if (modelID.indexOf('.') >= 0)
+          for (int i = atomSetCollection.getAtomSetCount(); --i >= 0;)
+            if (modelID.equals(atomSetCollection.getAtomSetAuxiliaryInfo(i,
+                "modelID"))) {
+              bsModels.set(i);
+              atomSetCollection.setAtomSetAuxiliaryInfo("name", title, i);
+              break;
+            }
+      }
+      cleanModels(bsModels);
+    }
+  }
+  
+  private void cleanModels(BitSet bsModels) {
+    System.out.println(bsModels);
+    for (int i = atomSetCollection.getAtomSetCount(); --i >= 0;)
+      if (!bsModels.get(i))
+        atomSetCollection.removeAtomSet(i);
+  }
   private void setDataType() {
     line = line.toUpperCase();
     dataType = (line.contains("INFRARED") ? "IR" : line.contains("NMR") ? "NMR" : line.contains("MASS") ? "MS" : null);
@@ -121,8 +161,6 @@ public class JcampdxReader extends MolReader {
     else
       Logger.info("jdx data type: " + dataType);
   }
-
-  private String modelID;
 
   private void readModels() throws Exception {
     discardLinesUntilContains("<models");
@@ -162,7 +200,8 @@ public class JcampdxReader extends MolReader {
       if (additionalModels != null)
         atomSetCollection.appendAtomSetCollection(-1, additionalModels);
     }
-    for (int pt = 0, i = atomSetCollection.getAtomSetCount(); --i > model0;)
+    int n = atomSetCollection.getAtomSetCount();
+    for (int pt = 0, i = model0; ++i < n;)
       atomSetCollection.setAtomSetAuxiliaryInfo("modelID", modelID + "."
           + (++pt), i);
 
@@ -228,16 +267,18 @@ public class JcampdxReader extends MolReader {
   }
 
   private String getModelData() throws Exception {
-    discardLinesUntilContains("<modelData");
+    discardLinesUntilContains("<modeldata");
     StringBuffer sb = new StringBuffer();
-    while (readLine() != null && !line.contains("</modelData>"))
+    while (readLine() != null && !line.contains("</modeldata>"))
       sb.append(line).append('\n');
     return sb.toString();
   }
   
-  private void readPeakLinks() {
-    // TODO
-    
+  private void readPeakLinks() throws Exception {
+    discardLinesUntilContains("<peaklist");
+    while (readLine() != null && line.indexOf("</peaklist") < 0)
+      if (line.contains("<peak"))
+        peakData.add(line.trim());      
   }
 
 

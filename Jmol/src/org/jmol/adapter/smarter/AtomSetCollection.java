@@ -485,6 +485,31 @@ public class AtomSetCollection {
     }
   }
 
+  public void removeAtomSet(int imodel) {
+    if (bsAtoms == null) {
+      bsAtoms = new BitSet();
+      bsAtoms.set(0, atomCount);
+    }
+    int i0 = atomSetAtomIndexes[imodel];
+    int i1 = i0 + atomSetAtomCounts[imodel];
+    bsAtoms.clear(i0, i1);
+    for (int i = i1; i < atomCount; i++)
+      atoms[i].atomSetIndex--;
+    for (int i = imodel + 1; i < atomSetCount; i++) {
+      atomSetAuxiliaryInfo[i - 1] = atomSetAuxiliaryInfo[i];
+      atomSetAtomIndexes[i - 1] = atomSetAtomIndexes[i];
+      atomSetBondCounts[i - 1] = atomSetBondCounts[i];
+      atomSetAtomCounts[i - 1] = atomSetAtomCounts[i];
+      atomSetNumbers[i - 1] = atomSetNumbers[i];
+    }
+    for (int i = 0; i < structureCount; i++)
+      if (structures[i].atomSetIndex > imodel)
+        structures[i].atomSetIndex--;
+    for (int i = 0; i < bondCount; i++)    
+      bonds[i].atomSetIndex = atoms[bonds[i].atomIndex1].atomSetIndex;
+    atomSetAuxiliaryInfo[--atomSetCount] = null;
+  }
+  
   public void removeAtomSet() {
     if (currentAtomSetIndex < 0)
       return;
@@ -1684,7 +1709,7 @@ public class AtomSetCollection {
     return true;
   }
   
-  private Object getAtomSetAuxiliaryInfo(int index, String key) {
+  public Object getAtomSetAuxiliaryInfo(int index, String key) {
     return  atomSetAuxiliaryInfo[index].get(key);
   }
   

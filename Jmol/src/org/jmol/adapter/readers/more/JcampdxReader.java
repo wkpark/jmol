@@ -140,14 +140,14 @@ public class JcampdxReader extends MolReader {
         String title = getAttribute(line, "title");
         String modelID = getAttribute(line, "model");
         Logger.info(modelID + " " + title);
-        if (modelID.indexOf('.') >= 0)
-          for (int i = atomSetCollection.getAtomSetCount(); --i >= 0;)
-            if (modelID.equals(atomSetCollection.getAtomSetAuxiliaryInfo(i,
-                "modelID"))) {
-              bsModels.set(i);
+        for (int i = atomSetCollection.getAtomSetCount(); --i >= 0;)
+          if (modelID.equals(atomSetCollection.getAtomSetAuxiliaryInfo(i,
+              "modelID"))) {
+            bsModels.set(i);
+            if (modelID.indexOf('.') >= 0)
               atomSetCollection.setAtomSetAuxiliaryInfo("name", title, i);
-              break;
-            }
+            break;
+          }
       }
       for (int i = atomSetCollection.getAtomSetCount(); --i >= 0;)
         if (!bsModels.get(i))

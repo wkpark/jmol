@@ -42,6 +42,38 @@ import org.jmol.util.Parser;
  * A preliminary reader for JCAMP-DX files having <model> and <peaklist> records.
  * Designed by Robert Lancashire and Bob Hanson
  * 
+ * specifications (by example here):
+
+##$MODELS=
+<models id="1029383">
+ <model type="MOL">
+  <modelData>
+acetophenone
+  DSViewer          3D                             0
+
+ 17 17  0  0  0  0  0  0  0  0999 V2000
+...
+ 17 14  1  0  0  0
+M  END
+  </modelData>
+ </model>
+ <model type="XYZVIB">
+  <modelData>
+17
+1  Energy: -1454.38826  Freq: 3199.35852
+C    -1.693100    0.007800    0.000000   -0.000980    0.000120    0.000000
+...
+  </modelData>
+  </model>
+</models>
+
+##$PEAK_LINKS= IR
+<peakList xUnits="1/cm" yUnits="TRANSMITTANCE" >
+<peak id="1" title="asymm stretch of aromatic CH group (~3100 cm-1)" peakShape="broad" model="1029383.1"  xMax="3121" xMin="3081"  yMax="1" yMin="0" />
+<peak id="2" title="symm stretch of aromatic CH group (~3085 cm-1)" peakShape="broad" model="1029383.2"  xMax="3101" xMin="3071"  yMax="1" yMin="0" />
+...
+</peakList>
+
  * 
  *<p>
  */
@@ -49,6 +81,9 @@ import org.jmol.util.Parser;
 public class JcampdxReader extends MolReader {
 
   private String dataType;
+  private AtomSetCollection baseModel;
+  private AtomSetCollection additionalModels;
+  private Map<String, String> htModelData = new Hashtable<String, String>();
   
   @Override
   public void initializeReader() throws Exception {
@@ -59,15 +94,10 @@ public class JcampdxReader extends MolReader {
   public boolean checkLine() throws Exception {
     if (line.startsWith("##DATA TYPE")) {
       setDataType();
-      return true;
-    }
-    if (line.startsWith("##$ASSIGNMENT TYPE")) {
-      if (!line.contains("JMOL")) {
-        Logger.warn("assignment type not recognized: " + line);
-        dataType = null;
-        return true;
-      }
+    } else if (line.startsWith("##$MODELS")) {
       readModels();
+    } else if (line.startsWith("##$PEAK_LINKS=")) {
+      readPeakLinks();
     }
 
     return true;
@@ -77,44 +107,72 @@ public class JcampdxReader extends MolReader {
     line = line.toUpperCase();
     dataType = (line.contains("INFRARED") ? "IR" : line.contains("NMR") ? "NMR" : line.contains("MASS") ? "MS" : null);
     if (dataType == null)
-      Logger.warn("data type not recognized: " + line);
+      Logger.warn("jdx data type ignored: " + line);
+    else
+      Logger.info("jdx data type: " + dataType);
   }
 
-  AtomSetCollection baseModel;
-  AtomSetCollection additionalModels;
+  private String modelID;
+
   private void readModels() throws Exception {
     discardLinesUntilContains("<models");
-    readLine();
+    modelID = getAttribute(line, "id");
+    String data = htModelData.get(modelID);
     baseModel = null;
+    line = "";
+    // if load xxx.jdx n  then we must temporarily set n to 1 for the base model reading
+    int imodel = desiredModelNumber;
+    if (imodel != Integer.MIN_VALUE)
+      htParams.put("modelNumber", Integer.valueOf(1));
     baseModel = getModelAtomSetCollection();
+    if (imodel != Integer.MIN_VALUE)
+      htParams.put("modelNumber", Integer.valueOf(imodel));
     if (baseModel == null)
       return;
-    if (desiredModelNumber == 1) {
-      atomSetCollection.appendAtomSetCollection(-1, baseModel);
-      return;
+    // load xxx.jdx 0  will mean "load only the base model(s)"
+    switch (imodel) {
+    case Integer.MIN_VALUE:
+    case 0:
+      if (data == null) {
+        atomSetCollection.appendAtomSetCollection(-1, baseModel);
+        atomSetCollection.setAtomSetAuxiliaryInfo("modelID", modelID);        
+      }
+      if (desiredModelNumber == 0)
+        return;
+      break;
     }
     additionalModels = null;
-    if (desiredModelNumber == 0) {
-      baseModel = null;
-    }
-    if (readLine().contains("<model")) {
+    int model0 = atomSetCollection.getCurrentAtomSetIndex();
+    discardLinesUntilNonBlank();
+    if (line.contains("<model"))
       additionalModels = getModelAtomSetCollection();
+    if (additionalModels != null) {
       atomSetCollection.appendAtomSetCollection(-1, additionalModels);
+      for (int pt = 0, i = atomSetCollection.getAtomSetCount(); --i > model0; )
+        atomSetCollection.setAtomSetAuxiliaryInfo("modelID", modelID + "." + (++pt), i);       
     }
   }
 
-  private Map<String, AtomSetCollection> htModels = new Hashtable<String, AtomSetCollection>();
-  
+  private static String getAttribute(String line, String tag) {
+    int i = line.indexOf(tag);
+    if (i < 0) return "";
+    return Parser.getNextQuotedString(line, i);
+  }
+
   private AtomSetCollection getModelAtomSetCollection() throws Exception {
     if (line.indexOf("<model") < 0)
       discardLinesUntilContains("<model");
-    String modelId = getAttribute(line, "id");
     String modelType = getAttribute(line, "type").toLowerCase();
     if (modelType.equals("xyzvib"))
       modelType = "xyz";
+    else if (modelType.length() == 0)
+      modelType = null;
     String data = getModelData();
+    if (baseModel == null)
+      htModelData.put(modelID, data);
     discardLinesUntilContains("</model>");
-    Object ret = SmarterJmolAdapter.staticGetAtomSetCollectionReader(filePath, modelType, new BufferedReader(new StringReader(data)), htParams); 
+    Logger.info("jdx model=" + modelID + " type=" + modelType);
+    Object ret = SmarterJmolAdapter.staticGetAtomSetCollectionReader(filePath, modelType, new BufferedReader(new StringReader(data)), htParams);
     if (ret instanceof String) {
       Logger.warn("" + ret);
       dataType = null;
@@ -127,7 +185,6 @@ public class JcampdxReader extends MolReader {
       return null;
     }
     AtomSetCollection a = (AtomSetCollection) ret;
-    htModels.put(modelId, a);
     if (modelType.equals("xyz") && baseModel != null)
       setBonding(a);
     return a;
@@ -157,12 +214,6 @@ public class JcampdxReader extends MolReader {
     }
   }
 
-  private String getAttribute(String line, String tag) {
-    int i = line.indexOf(tag);
-    if (i < 0) return "";
-    return Parser.getNextQuotedString(line, i);
-  }
-
   private String getModelData() throws Exception {
     discardLinesUntilContains("<modelData");
     StringBuffer sb = new StringBuffer();
@@ -170,4 +221,11 @@ public class JcampdxReader extends MolReader {
       sb.append(line).append('\n');
     return sb.toString();
   }
+  
+  private void readPeakLinks() {
+    // TODO
+    
+  }
+
+
 }

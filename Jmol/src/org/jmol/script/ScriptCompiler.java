@@ -557,7 +557,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     for (; ichT < cchScript; ichT++) {
       if (eol(ch = script.charAt(ichT))) {
         ichEnd = ichT;
-        if (isLineContinuation(ichT - 1, false)) {
+        if (ichT > 0 && isLineContinuation(ichT - 1, false)) {
           ichT += nCharNewLine(ichT);
           continue;
         }

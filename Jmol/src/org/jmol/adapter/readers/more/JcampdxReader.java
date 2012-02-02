@@ -47,9 +47,9 @@ import org.jmol.util.Parser;
  * specifications (by example here):
 
 ##$MODELS=
-<models id="1029383">
- <model type="MOL">
-  <modeldata>
+<Models id="1029383">
+ <Model type="MOL">
+  <ModelData>
 acetophenone
   DSViewer          3D                             0
 
@@ -57,17 +57,17 @@ acetophenone
 ...
  17 14  1  0  0  0
 M  END
-  </modeldata>
- </model>
- <model type="XYZVIB">
-  <modeldata>
+  </ModelData>
+ </Model>
+ <Model type="XYZVIB">
+  <ModelData>
 17
 1  Energy: -1454.38826  Freq: 3199.35852
 C    -1.693100    0.007800    0.000000   -0.000980    0.000120    0.000000
 ...
-  </modeldata>
-  </model>
-</models>
+  </ModelData>
+  </Model>
+</Models>
 
 -- All XML data should be line-oriented in the above fashion. Leading spaces will be ignored.
 -- Any number of <model> segments can be present
@@ -79,11 +79,11 @@ C    -1.693100    0.007800    0.000000   -0.000980    0.000120    0.000000
 -- Additional models can represent vibrations (XYZ format) or MS fragmentation (MOL format, probably)
 
 ##$PEAK_LINKS= IR
-<peaklist xUnits="1/cm" yUnits="TRANSMITTANCE" >
-<peak id="1" title="asymm stretch of aromatic CH group (~3100 cm-1)" peakShape="broad" model="1029383.1"  xMax="3121" xMin="3081"  yMax="1" yMin="0" />
-<peak id="2" title="symm stretch of aromatic CH group (~3085 cm-1)" peakShape="broad" model="1029383.2"  xMax="3101" xMin="3071"  yMax="1" yMin="0" />
+<PeakList xUnits="1/cm" yUnits="TRANSMITTANCE" >
+<Peak id="1" title="asymm stretch of aromatic CH group (~3100 cm-1)" peakShape="broad" model="1029383.1"  xMax="3121" xMin="3081"  yMax="1" yMin="0" />
+<Peak id="2" title="symm stretch of aromatic CH group (~3085 cm-1)" peakShape="broad" model="1029383.2"  xMax="3101" xMin="3071"  yMax="1" yMin="0" />
 ...
-</peaklist>
+</PeakList>
 
 -- peak record must be a single line of information because
    Jmol will use line.trim() as a key to pass information to JSpecView. 
@@ -165,7 +165,7 @@ public class JcampdxReader extends MolReader {
   }
 
   private void readModels() throws Exception {
-    discardLinesUntilContains("<models");
+    discardLinesUntilContains("<Models");
     modelID = getAttribute(line, "id");
     // read model only once for a given ID
     String key = ";" + modelID + ";";
@@ -196,7 +196,7 @@ public class JcampdxReader extends MolReader {
     int model0 = atomSetCollection.getCurrentAtomSetIndex();
     while (true) {
       discardLinesUntilNonBlank();
-      if (line == null || !line.contains("<model"))
+      if (line == null || !line.contains("<Model"))
         break;
       additionalModels = getModelAtomSetCollection();
       if (additionalModels != null)
@@ -216,15 +216,15 @@ public class JcampdxReader extends MolReader {
   }
 
   private AtomSetCollection getModelAtomSetCollection() throws Exception {
-    if (line.indexOf("<model") < 0)
-      discardLinesUntilContains("<model");
+    if (line.indexOf("<Model") < 0)
+      discardLinesUntilContains("<Model");
     String modelType = getAttribute(line, "type").toLowerCase();
     if (modelType.equals("xyzvib"))
       modelType = "xyz";
     else if (modelType.length() == 0)
       modelType = null;
     String data = getModelData();
-    discardLinesUntilContains("</model>");
+    discardLinesUntilContains("</Model>");
     Logger.info("jdx model=" + modelID + " type=" + modelType);
     Object ret = SmarterJmolAdapter.staticGetAtomSetCollectionReader(filePath, modelType, new BufferedReader(new StringReader(data)), htParams);
     if (ret instanceof String) {
@@ -269,17 +269,17 @@ public class JcampdxReader extends MolReader {
   }
 
   private String getModelData() throws Exception {
-    discardLinesUntilContains("<modeldata");
+    discardLinesUntilContains("<ModelData");
     StringBuffer sb = new StringBuffer();
-    while (readLine() != null && !line.contains("</modeldata>"))
+    while (readLine() != null && !line.contains("</ModelData>"))
       sb.append(line).append('\n');
     return sb.toString();
   }
   
   private void readPeakLinks() throws Exception {
-    discardLinesUntilContains("<peaklist");
-    while (readLine() != null && line.indexOf("</peaklist") < 0)
-      if (line.contains("<peak"))
+    discardLinesUntilContains("<PeakList");
+    while (readLine() != null && line.indexOf("</PeakList") < 0)
+      if (line.contains("<Peak"))
         peakData.add(line.trim());      
   }
 

@@ -11951,6 +11951,13 @@ public class ScriptEvaluator {
       return;
     }
     switch (tokAt(1)) {
+    case Token.id:
+      checkLength(3);
+      String id = stringParameter(2);
+      int modelIndex = (isSyntaxCheck ? -1 : viewer.getModelIndexFromId(id));
+      if (modelIndex >=0)
+        viewer.setCurrentModelIndex(modelIndex);
+      return;
     case Token.delay:
       long millis = 0;
       checkLength(3);
@@ -12064,9 +12071,8 @@ public class ScriptEvaluator {
     if (isAll) {
       viewer.setAnimationOn(false);
       viewer.setAnimationRange(-1, -1);
-      if (!isRange) {
+      if (!isRange)
         viewer.setCurrentModelIndex(-1);
-      }
       return;
     }
     if (nFrames == 2 && !isRange)
@@ -14706,11 +14712,6 @@ public class ScriptEvaluator {
     return (String) getShapeProperty(JmolConstants.SHAPE_MO, "showMO", ptMO);
   }
 
-  private String extractCommandOption(String name) {
-    int i = fullCommand.indexOf(name + "=");
-    return (i < 0 ? null : Parser.getNextQuotedString(fullCommand, i));
-  }
-
   private void draw() throws ScriptException {
     shapeManager.loadShape(JmolConstants.SHAPE_DRAW);
     switch (tokAt(1)) {
@@ -16419,7 +16420,7 @@ public class ScriptEvaluator {
         break;
       case Token.boundbox:
         if (fullCommand.indexOf("# BBOX=") >= 0) {
-          String[] bbox = TextFormat.split(extractCommandOption("# BBOX"), ',');
+          String[] bbox = TextFormat.split(Parser.getQuotedAttribute(fullCommand, "# BBOX"), ',');
           pts = new Point3f[] { (Point3f) Escape.unescapePoint(bbox[0]),
               (Point3f) Escape.unescapePoint(bbox[1]) };
         } else if (isCenterParameter(i + 1)) {
@@ -16529,7 +16530,7 @@ public class ScriptEvaluator {
           checkLast(iToken);
         i = iToken;
         if (fullCommand.indexOf("# WITHIN=") >= 0)
-          bs = Escape.unescapeBitset(extractCommandOption("# WITHIN"));
+          bs = Escape.unescapeBitset(Parser.getQuotedAttribute(fullCommand, "# WITHIN"));
         else if (!havePt)
           bs = (expressionResult instanceof BitSet ? (BitSet) expressionResult
               : null);
@@ -17188,7 +17189,7 @@ public class ScriptEvaluator {
           break;
         }
         // override of function or data name when saved as a state
-        String dName = extractCommandOption("# DATA" + (isFxy ? "2" : ""));
+        String dName = Parser.getQuotedAttribute(fullCommand, "# DATA" + (isFxy ? "2" : ""));
         if (dName == null)
           dName = "inline";
         else
@@ -17559,7 +17560,7 @@ public class ScriptEvaluator {
             String[] fullPathNameOrError;
             String localName = null;
             if (fullCommand.indexOf("# FILE" + nFiles + "=") >= 0) {
-              filename = extractCommandOption("# FILE" + nFiles);
+              filename = Parser.getQuotedAttribute(fullCommand, "# FILE" + nFiles);
               if (tokAt(i + 1) == Token.as)
                 i += 2; // skip that
             } else if (tokAt(i + 1) == Token.as) {

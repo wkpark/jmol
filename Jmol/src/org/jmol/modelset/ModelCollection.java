@@ -1522,13 +1522,14 @@ abstract public class ModelCollection extends BondCollection {
       model.put("file_model", getModelNumberDotted(i));
       model.put("name", getModelName(i));
       String s = getModelTitle(i);
-      if (s != null) {
+      if (s != null)
         model.put("title", s);
-      }
       s = getModelFileName(i);
-      if (s != null) {
+      if (s != null)
         model.put("file", s);
-      }
+      s = (String) getModelAuxiliaryInfo(i, "modelID");
+      if (s != null)
+        model.put("id", s);      
       model.put("vibrationVectors", Boolean
           .valueOf(modelHasVibrationVectors(i)));
       model.put("atomCount", Integer.valueOf(models[i].atomCount));
@@ -4131,4 +4132,34 @@ abstract public class ModelCollection extends BondCollection {
   public long getFrameDelayMs(int i) {
     return (i < models.length && i >= 0 ? models[models[i].trajectoryBaseIndex].frameDelay : 0);
   }
+  
+  /**
+   * 
+   * @param id
+   * @return model index if found; 
+   *     -2 if file found but model not found
+   *     -2 if no file indicated and no model found
+   *     -1 if no such file 
+   */
+  public int getModelIndexFromId(String id) {
+    boolean haveFile = (id.indexOf("#") >= 0);
+    int errCode = -1;
+    String fname = null;
+    for (int i = 0; i < modelCount; i++) {
+      String mid = (String) getModelAuxiliaryInfo(i, "modelID");
+      if (mid == null && (mid = getModelTitle(i)) == null)
+        continue;
+      if (haveFile) {
+        fname = getModelFileName(i) + "#";
+        mid = fname + mid;
+      }
+      if (id.equals(mid))
+        return i;
+      if (fname != null && id.startsWith(fname))
+        errCode = -2;
+    }
+    return (fname == null && !haveFile ? -2 : errCode);
+  }
+
+
 }

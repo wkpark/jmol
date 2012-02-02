@@ -36,6 +36,7 @@ import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Bond;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
@@ -205,9 +206,8 @@ public class JcampdxReader extends MolReader {
   }
 
   private static String getAttribute(String line, String tag) {
-    int i = line.indexOf(tag);
-    if (i < 0) return "";
-    return Parser.getNextQuotedString(line, i);
+    String attr = Parser.getQuotedAttribute(line, tag);
+    return (attr == null ? "" : attr);
   }
 
   private AtomSetCollection getModelAtomSetCollection() throws Exception {
@@ -272,9 +272,9 @@ public class JcampdxReader extends MolReader {
   private void readPeakLinks() throws Exception {
     discardLinesUntilContains("<PeakList");
     String type = getAttribute(line, "type");
-    while (readLine() != null && line.indexOf("</PeakList") < 0)
-      if (line.contains("<Peak"))
-        peakData.add(filePath + "|" + type + "|" + line.trim());      
+    while (readLine() != null && !(line = line.trim()).startsWith("</PeakList"))
+      if (line.startsWith("<Peak"))
+        peakData.add("<Peak file=" + Escape.escape(filePath) + " type=\"" + type + "\" " + line.trim().substring(5));      
   }
   
 }

@@ -8692,8 +8692,7 @@ private void zap(String msg) {
 
   @Override
   public void syncScript(String script, String applet, int port) {
-    System.out.println("viewer syncscript " + script);
-    if (script != null && script.equalsIgnoreCase(SYNC_GRAPHICS_MESSAGE)) {
+    if (SYNC_GRAPHICS_MESSAGE.equalsIgnoreCase(script)) {
       statusManager.setSyncDriver(StatusManager.SYNC_STEREO);
       statusManager.syncSend(script, applet, 0);
       setBooleanProperty("_syncMouse", false);
@@ -8742,6 +8741,28 @@ private void zap(String msg) {
     if (disableSend)
       statusManager.setSyncDriver(StatusManager.SYNC_DISABLE);
     if (script.indexOf("Mouse: ") != 0) {
+      if (script.startsWith("Select: ")) {
+        String filename = Parser.getQuotedAttribute(script, "file");
+        String modelID = Parser.getQuotedAttribute(script, "model");
+        String atoms = Parser.getQuotedAttribute(script, "atoms");
+        String select = Parser.getQuotedAttribute(script, "select");
+        String script2 = Parser.getQuotedAttribute(script, "script");
+        String id = (modelID == null ? null : (filename == null ? "" : filename + "#") + modelID);
+        int modelIndex = (modelID == null ? -3 : getModelIndexFromId(id));
+        if (modelIndex == -2)
+          return; // file was found, or no file was indicated, but not this model -- ignore
+        script = (modelIndex == -1 && filename != null ? script = "load " + Escape.escape(filename)
+            : "");
+        if (id != null)
+          script += ";model ID " + Escape.escape(id);
+        if (atoms != null)
+          script += ";select visible & (@" + TextFormat.simpleReplace(atoms, ",", " or @") + ")";
+        if (select != null)
+          script += ";select visible & (" + select + ")";
+        if (script2 != null)
+          script += ";" + script2;
+      }
+      System.out.println(script);
       evalStringQuiet(script, true, false);
       return;
     }
@@ -8789,6 +8810,10 @@ private void zap(String msg) {
     }
     if (disableSend)
       setSyncDriver(StatusManager.SYNC_ENABLE);
+  }
+
+  public int getModelIndexFromId(String id) {
+    return modelSet.getModelIndexFromId(id);
   }
 
   void setSyncDriver(int mode) {

@@ -59,7 +59,7 @@ class MainPopupResourceBundle extends PopupResource {
       
       {   MENU_NAME,
           "FRAMESbyModelComputedMenu configurationComputedMenu - selectMenuText viewMenu renderMenu colorMenu - surfaceMenu FILEUNITMenu - "
-              + "zoomMenu spinMenu VIBRATIONMenu "
+              + "zoomMenu spinMenu VIBRATIONMenu spectraMenu "
               + "FRAMESanimateMenu - "
               + "measureMenu pickingMenu - showConsole showMenu fileMenu computationMenu - "
               + "languageComputedMenu aboutComputedMenu" },
@@ -171,6 +171,9 @@ class MainPopupResourceBundle extends PopupResource {
 
       {   "VIBRATIONMenu", 
           "vibrationOff vibrationOn VIBRATIONvectorMenu" },
+
+          {   "spectraMenu", 
+          "hnmrMenu cnmrMenu" },
 
       {   "FRAMESanimateMenu",
           "animModeMenu - play pause resume stop - nextframe prevframe rewind - playrev restart - "
@@ -683,6 +686,9 @@ class MainPopupResourceBundle extends PopupResource {
         "vibrationOff", GT._("Off"),
         "vibrationOn", GT._("On"),
         "VIBRATIONvectorMenu", GT._("Vectors"),
+        "spectraMenu", GT._("Spectra"),
+        "hnmrMenu", GT._("1H-NMR"),
+        "cnmrMenu", GT._("13C-NMR"),
         "vectorOff", GT._("Off"),
         "vectorOn", GT._("On"),
         "vector3", GT._("{0} pixels", "3"),

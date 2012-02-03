@@ -138,6 +138,7 @@ public class JcampdxReader extends MolReader {
         line = peakData.get(p);
         String title = getAttribute(line, "title");
         String modelID = getAttribute(line, "model");
+        String key = "jdxAtomSelect_" + getAttribute(line, "type");
         for (int i = atomSetCollection.getAtomSetCount(); --i >= 0;)
           if (modelID.equals(atomSetCollection.getAtomSetAuxiliaryInfo(i,
               "modelID"))) {
@@ -146,9 +147,9 @@ public class JcampdxReader extends MolReader {
               atomSetCollection.setAtomSetAuxiliaryInfo("name", title, i);
               atomSetCollection.setAtomSetAuxiliaryInfo("jdxModelSelect", line, i);
             } else if (getAttribute(line, "atoms").length() != 0) {
-              List<String> peaks = (List<String>) atomSetCollection.getAtomSetAuxiliaryInfo(i, "jdxAtomSelect");
+              List<String> peaks = (List<String>) atomSetCollection.getAtomSetAuxiliaryInfo(i, key);
               if (peaks == null)
-                atomSetCollection.setAtomSetAuxiliaryInfo("jdxAtomSelect", peaks = new ArrayList<String>(), i);
+                atomSetCollection.setAtomSetAuxiliaryInfo(key, peaks = new ArrayList<String>(), i);
               peaks.add(line);
             }
             Logger.info(line);

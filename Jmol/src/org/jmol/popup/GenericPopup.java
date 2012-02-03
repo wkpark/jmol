@@ -26,6 +26,7 @@ package org.jmol.popup;
 import org.jmol.i18n.GT;
 import org.jmol.util.Elements;
 import org.jmol.util.Logger;
+import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
@@ -123,6 +124,8 @@ abstract public class GenericPopup {
 
   private String group3List;
   private int[] group3Counts;
+  private List<String> cnmrPeaks;
+  private List<String> hnmrPeaks;
 
 
   GenericPopup() {
@@ -172,6 +175,7 @@ abstract public class GenericPopup {
     return (info != null && !Boolean.FALSE.equals(info.get(key)));
   }
 
+  @SuppressWarnings("unchecked")
   protected void getViewerData() {
     isApplet = viewer.isApplet();
     isSigned = (viewer.getBooleanProperty("_signedApplet"));
@@ -204,6 +208,8 @@ abstract public class GenericPopup {
     isVibration = (viewer.modelHasVibrationVectors(modelIndex));
     haveCharges = (viewer.havePartialCharges());
     haveBFactors = (viewer.getBooleanProperty("haveBFactors"));
+    cnmrPeaks = (List<String>)modelInfo.get("jdxAtomSelect_13CNMR"); 
+    hnmrPeaks = (List<String>)modelInfo.get("jdxAtomSelect_HNMR");
   }
 
   protected void updateFileTypeDependentMenus() {
@@ -580,6 +586,50 @@ abstract public class GenericPopup {
       }
     }
     enableMenu(menu, true);
+  }
+
+  private void updateSpectraMenu() {
+    Object menuh = htMenus.get("hnmrMenu");
+    Object menuc = htMenus.get("cnmrMenu");
+    if (menuh != null)
+      removeAll(menuh);
+    if (menuc != null)
+      removeAll(menuc);
+    Object menu = htMenus.get("spectraMenu");
+    if (menu == null)
+      return;
+    removeAll(menu);
+    // yes binary | not logical || here -- need to try to set both
+    boolean isOK = setSpectraMenu(menuh, hnmrPeaks) | setSpectraMenu(menuc, cnmrPeaks);
+    if (isOK) {
+      if (viewer.getSelectionHaloEnabled(false))
+        addMenuItem(menu, "selectionHalos OFF", "selectionHalos off;", null);
+      else
+        addMenuItem(menu, "selectionHalos ON", "select none; selectionHalos on;", null);
+      if (menuh != null)
+        addMenuSubMenu(menu, menuh);
+      if (menuc != null)
+        addMenuSubMenu(menu, menuc);
+    }
+    enableMenu(menu, isOK);
+  }
+
+  private boolean setSpectraMenu(Object menu, List<String> peaks) {
+    if (menu == null)
+      return false;
+    enableMenu(menu, false);
+    int n = (peaks == null ? 0 : peaks.size());
+    if (n == 0)
+      return false;
+    for (int i = 0; i < n; i++) {
+      String peak = peaks.get(i);
+      String title = Parser.getQuotedAttribute(peak, "title");
+      String atoms = Parser.getQuotedAttribute(peak, "atoms");
+      if (atoms != null)
+        addMenuItem(menu, title, "select visible & (@" + TextFormat.simpleReplace(atoms, ",", " or @") + ")", null);
+    }
+    enableMenu(menu, true);
+    return true;
   }
 
   private void updateHeteroComputedMenu(Map<String, String> htHetero) {
@@ -1036,6 +1086,7 @@ abstract public class GenericPopup {
     getViewerData();
     updateMode = UPDATE_SHOW;
     updateSelectMenu();
+    updateSpectraMenu();
     updateFRAMESbyModelComputedMenu();
     updateModelSetComputedMenu();
     updateAboutSubmenu();

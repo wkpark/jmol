@@ -168,13 +168,8 @@ public class JcampdxReader extends MolReader {
   
   private void readModels() throws Exception {
     discardLinesUntilContains("<Models");
-    modelID = getAttribute(line, "id");
-    // read model only once for a given ID
-    String key = ";" + modelID + ";";
-    if (modelIdList.indexOf(key) >= 0)
-      return;
-    modelIdList += key;
     baseModel = null;
+    additionalModels = null;
     line = "";
     // if load xxx.jdx n  then we must temporarily set n to 1 for the base model reading
     int imodel = desiredModelNumber;
@@ -186,16 +181,17 @@ public class JcampdxReader extends MolReader {
     if (baseModel == null)
       return;
     // load xxx.jdx 0  will mean "load only the base model(s)"
+    int model0 = atomSetCollection.getCurrentAtomSetIndex();
     switch (imodel) {
     case Integer.MIN_VALUE:
     case 0:
       atomSetCollection.appendAtomSetCollection(-1, baseModel);
-      atomSetCollection.setAtomSetAuxiliaryInfo("modelID", modelID);
+      updateModelIDs(model0);
       if (desiredModelNumber == 0)
         return;
       break;
     }
-    int model0 = atomSetCollection.getCurrentAtomSetIndex();
+    model0 = atomSetCollection.getCurrentAtomSetIndex();
     while (true) {
       discardLinesUntilNonBlank();
       if (line == null || !line.contains("<Model"))
@@ -204,10 +200,22 @@ public class JcampdxReader extends MolReader {
       if (additionalModels != null)
         atomSetCollection.appendAtomSetCollection(-1, additionalModels);
     }
+    updateModelIDs(model0);
+  }
+
+  private void updateModelIDs(int model0) {
     int n = atomSetCollection.getAtomSetCount();
-    for (int pt = 0, i = model0; ++i < n;)
+    if (additionalModels == null && n == model0 + 2) {
+      atomSetCollection.setAtomSetAuxiliaryInfo("modelID", modelID);
+      return;
+    }
+    if (model0 < 0)
+      model0 = 0;
+    for (int pt = 0, i = model0; ++i < n;) {
+      System.out.println(i + " " + pt);
       atomSetCollection.setAtomSetAuxiliaryInfo("modelID", modelID + "."
           + (++pt), i);
+    }
   }
 
   private static String getAttribute(String line, String tag) {
@@ -218,6 +226,12 @@ public class JcampdxReader extends MolReader {
   private AtomSetCollection getModelAtomSetCollection() throws Exception {
     if (line.indexOf("<Model") < 0)
       discardLinesUntilContains("<Model");
+    modelID = getAttribute(line, "id");
+    // read model only once for a given ID
+    String key = ";" + modelID + ";";
+    if (baseModel == null && modelIdList.indexOf(key) >= 0)
+      return null;
+    modelIdList += key;
     String modelType = getAttribute(line, "type").toLowerCase();
     if (modelType.equals("xyzvib"))
       modelType = "xyz";

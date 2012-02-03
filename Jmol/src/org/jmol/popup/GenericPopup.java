@@ -490,6 +490,7 @@ abstract public class GenericPopup {
   ////// JmolPopup methods //////
   
   public String getMenuAsString(String title) {
+    updateForShow(); 
     int pt = title.indexOf("|"); 
     if (pt >= 0) {
       String type = title.substring(pt);
@@ -602,10 +603,6 @@ abstract public class GenericPopup {
     // yes binary | not logical || here -- need to try to set both
     boolean isOK = setSpectraMenu(menuh, hnmrPeaks) | setSpectraMenu(menuc, cnmrPeaks);
     if (isOK) {
-      if (viewer.getSelectionHaloEnabled(false))
-        addMenuItem(menu, "selectionHalos OFF", "selectionHalos off;", null);
-      else
-        addMenuItem(menu, "selectionHalos ON", "select none; selectionHalos on;", null);
       if (menuh != null)
         addMenuSubMenu(menu, menuh);
       if (menuc != null)
@@ -626,7 +623,7 @@ abstract public class GenericPopup {
       String title = Parser.getQuotedAttribute(peak, "title");
       String atoms = Parser.getQuotedAttribute(peak, "atoms");
       if (atoms != null)
-        addMenuItem(menu, title, "select visible & (@" + TextFormat.simpleReplace(atoms, ",", " or @") + ")", null);
+        addMenuItem(menu, title, "select visible & (@" + TextFormat.simpleReplace(atoms, ",", " or @") + ")", "Focus" + i);
     }
     enableMenu(menu, true);
     return true;

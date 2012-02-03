@@ -33,6 +33,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.net.URL;
 
 import javax.swing.AbstractButton;
@@ -56,6 +58,7 @@ abstract public class SwingPopup extends GenericPopup {
 
   private MenuItemListener mil;
   private CheckboxMenuItemListener cmil;
+  private MenuMouseListener mfl;
 
   public SwingPopup() {
     // required by reflection
@@ -155,6 +158,9 @@ abstract public class SwingPopup extends GenericPopup {
     JMenuItem jmi = new JMenuItem(entry);
     updateButton(jmi, entry, script);
     jmi.addActionListener(mil);
+    jmi.addMouseListener(mfl);
+    if (id != null && id.startsWith("Focus"))
+      id = ((Component) menu).getName() + "." + id;
     jmi.setName(id == null ? ((Component) menu).getName() + "." : id);
     addToMenu(menu, jmi);
     return jmi;
@@ -276,13 +282,35 @@ abstract public class SwingPopup extends GenericPopup {
   @Override
   protected void setMenuListeners() {
     mil = new MenuItemListener();
-    cmil = new CheckboxMenuItemListener();    
+    cmil = new CheckboxMenuItemListener();
+    mfl = new MenuMouseListener();
   }
   
   class MenuItemListener implements ActionListener {
     public void actionPerformed(ActionEvent e) {
       checkMenuClick(e.getSource(), e.getActionCommand());
     }
+  }
+
+  class MenuMouseListener implements MouseListener {
+
+    public void mouseClicked(MouseEvent e) {
+    }
+
+    public void mouseEntered(MouseEvent e) {
+      checkMenuFocus(e.getSource(), true);
+    }
+
+    public void mouseExited(MouseEvent e) {
+      checkMenuFocus(e.getSource(), false);
+    }
+
+    public void mousePressed(MouseEvent e) {
+    }
+
+    public void mouseReleased(MouseEvent e) {
+    }
+
   }
 
   class CheckboxMenuItemListener implements ItemListener {
@@ -318,6 +346,19 @@ abstract public class SwingPopup extends GenericPopup {
 
   //////////////// JmolPopup methods ///////////
     
+  public void checkMenuFocus(Object source, boolean isFocus) {
+    if (source instanceof JMenuItem) {
+      String name = ((JMenuItem) source).getName();
+      if (name.indexOf("Focus") < 0)
+        return;
+      if (isFocus) {
+        viewer.script("selectionHalos ON;" + ((JMenuItem) source).getActionCommand());
+      } else {
+        viewer.script("selectionHalos OFF");
+      }
+    }
+  }
+
   @Override
   protected void insertMenuSubMenu(Object menu, Object subMenu, int index) {
     if (menu instanceof JPopupMenu)

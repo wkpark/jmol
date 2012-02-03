@@ -54,6 +54,12 @@ import javax.swing.JRadioButtonMenuItem;
  */
 abstract public class SwingPopup extends GenericPopup {
 
+  
+  @Override
+  public void finalize() {
+    System.out.println("SwingPopup Finalize " + this);
+  }
+  
   private final static int MENUITEM_HEIGHT = 20;
 
   private MenuItemListener mil;
@@ -62,6 +68,34 @@ abstract public class SwingPopup extends GenericPopup {
 
   public SwingPopup() {
     // required by reflection
+  }
+
+  public void dispose() {
+    clearListeners(popupMenu);
+    clearListeners(frankPopup);
+    popupMenu = null;
+    frankPopup = null;
+  }
+  
+  private void clearListeners(Object menu) {
+    if (menu == null)
+      return;
+    Component[] subMenus = (menu instanceof JPopupMenu ? ((JPopupMenu) menu)
+        .getComponents() : ((JMenu) menu).getPopupMenu().getComponents());
+    for (int i = 0; i < subMenus.length; i++) {
+      Component m = subMenus[i];
+      if (m instanceof JMenu) {
+        clearListeners(((JMenu) m).getPopupMenu());
+      } else {
+        try {
+          m.removeMouseListener(mfl);
+          ((AbstractButton) m).removeActionListener(mil);
+          ((AbstractButton) m).removeItemListener(cmil);
+        } catch (Exception e) {
+          // ignore
+        }
+      }
+    }
   }
 
   public void show(int x, int y) {
@@ -158,9 +192,10 @@ abstract public class SwingPopup extends GenericPopup {
     JMenuItem jmi = new JMenuItem(entry);
     updateButton(jmi, entry, script);
     jmi.addActionListener(mil);
-    jmi.addMouseListener(mfl);
-    if (id != null && id.startsWith("Focus"))
+    if (id != null && id.startsWith("Focus")) {
+      jmi.addMouseListener(mfl);
       id = ((Component) menu).getName() + "." + id;
+    }
     jmi.setName(id == null ? ((Component) menu).getName() + "." : id);
     addToMenu(menu, jmi);
     return jmi;

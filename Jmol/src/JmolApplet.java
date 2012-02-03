@@ -31,8 +31,10 @@
  *
  */
 
+
 import org.jmol.applet.AppletWrapper;
 import org.jmol.applet.JmolAppletInterface;
+import org.jmol.applet.JmolSyncedAppletInterface;
 
 import netscape.javascript.JSObject;
 
@@ -215,6 +217,11 @@ public class JmolApplet extends AppletWrapper implements
     if (wrappedApplet != null)
       return "" + (wrappedApplet.scriptWaitOutput("" + script));
     return null;
+  }
+
+  public void registerApplet(String appletID, JmolSyncedAppletInterface applet) {
+    if (wrappedApplet != null)
+      wrappedApplet.registerApplet(appletID, applet);
   }
 
 }

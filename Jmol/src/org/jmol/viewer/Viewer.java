@@ -1738,6 +1738,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       scriptManager.startCommandWatcher(false);
       scriptManager.interruptQueueThreads();
       g3d.destroy();
+      if (jmolpopup != null)
+        jmolpopup.dispose();
+      if (modelkitPopup != null)
+        modelkitPopup.dispose();
       try {
         if (appConsole != null) {
           appConsole.dispose();
@@ -5693,6 +5697,7 @@ private void zap(String msg) {
       language = GT.getLanguage();
       modelkitPopup = null;
       if (jmolpopup != null) {
+        jmolpopup.dispose();
         jmolpopup = null;
         getPopupMenu();
       }
@@ -7775,6 +7780,8 @@ private void zap(String msg) {
       }
       return scriptEditor;
     case 120:
+      if (jmolpopup != null)
+        jmolpopup.dispose();
       jmolpopup = null;
       return menuStructure = (String) paramInfo;
     case 140:

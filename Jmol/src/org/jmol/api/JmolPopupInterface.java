@@ -13,5 +13,7 @@ public interface JmolPopupInterface {
   public void show(int x, int y);
 
   public void updateComputedMenus();
+
+  public void dispose();
  
 }

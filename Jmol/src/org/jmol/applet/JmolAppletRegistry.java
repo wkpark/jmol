@@ -38,7 +38,7 @@ final class JmolAppletRegistry {
 
   static Map<String, Object> htRegistry = new Hashtable<String, Object>();
 
-  synchronized static void checkIn(String name, Applet applet) {
+  synchronized static void checkIn(String name, JmolSyncedAppletInterface applet) {
     cleanRegistry();
     if (name != null) {
       Logger.info("AppletRegistry.checkIn(" + name + ")");
@@ -83,12 +83,12 @@ final class JmolAppletRegistry {
   }
 
   synchronized private static void cleanRegistry() {
-    AppletWrapper app = null;
+    Applet app = null;
     boolean closed = true;
     for (Map.Entry<String, Object> entry : htRegistry.entrySet()) {
       String theApplet = entry.getKey();
       try {
-        app = (AppletWrapper) (entry.getValue());
+        app = (Applet) (entry.getValue());
         JSObject theWindow = JSObject.getWindow(app);
         //System.out.print("checking " + app + " window : ");
         closed = ((Boolean) theWindow.getMember("closed")).booleanValue();

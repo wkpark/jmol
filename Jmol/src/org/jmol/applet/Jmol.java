@@ -256,7 +256,7 @@ public class Jmol implements WrappedApplet {
 
     String ms = getParameter("mayscript");
     mayScript = (ms != null) && (!ms.equalsIgnoreCase("false"));
-    JmolAppletRegistry.checkIn(fullName, appletWrapper);
+    JmolAppletRegistry.checkIn(fullName, (JmolSyncedAppletInterface) appletWrapper);
     initWindows();
     initApplication();
   }
@@ -653,16 +653,7 @@ public class Jmol implements WrappedApplet {
   }
 
   public void script(String script) {
-    if (script == null || script.length() == 0)
-      return;
-    //System.out.println("Jmol.java script " + script);
-    scriptProcessor(script, null, SCRIPT_NOWAIT);
-  }
-
-  public String scriptCheck(String script) {
-    if (script == null || script.length() == 0)
-      return "";
-    return scriptProcessor(script, null, SCRIPT_CHECK);
+    scriptNoWait(script);
   }
 
   public String scriptNoWait(String script) {
@@ -671,11 +662,14 @@ public class Jmol implements WrappedApplet {
     return scriptProcessor(script, null, SCRIPT_NOWAIT);
   }
 
-  public String scriptWait(String script) {
+  public String scriptCheck(String script) {
     if (script == null || script.length() == 0)
       return "";
-    outputBuffer = null;
-    return scriptProcessor(script, null, SCRIPT_WAIT);
+    return scriptProcessor(script, null, SCRIPT_CHECK);
+  }
+
+  public String scriptWait(String script) {
+    return scriptWait(script, null);
   }
 
   public String scriptWait(String script, String statusParams) {
@@ -1268,7 +1262,7 @@ public class Jmol implements WrappedApplet {
         gRight = null;
       for (int i = 0; i < nApplets; i++) {
         String theApplet = apps.get(i);
-        JmolAppletInterface app = (JmolAppletInterface) JmolAppletRegistry.htRegistry
+        JmolSyncedAppletInterface app = (JmolSyncedAppletInterface) JmolAppletRegistry.htRegistry
             .get(theApplet);
         if (Logger.debugging)
           Logger.debug(fullName + " sending to " + theApplet + ": " + script);
@@ -1292,5 +1286,9 @@ public class Jmol implements WrappedApplet {
       return (isSync ? "" : sb.toString());
     }
 
+  }
+
+  public void registerApplet(String appletID, JmolSyncedAppletInterface applet) {
+    JmolAppletRegistry.checkIn(appletID, applet); 
   }
 }

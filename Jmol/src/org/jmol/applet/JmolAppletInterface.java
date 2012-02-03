@@ -33,9 +33,8 @@ import netscape.javascript.JSObject;
  * 
  */
 
-public interface JmolAppletInterface {
+public interface JmolAppletInterface extends JmolSyncedAppletInterface {
 
-  public Object setStereoGraphics(boolean isStereo);
   public String getPropertyAsString(String infoType);
   public String getPropertyAsString(String infoType, String paramInfo);
   public String getPropertyAsJSON(String infoType);
@@ -47,12 +46,9 @@ public interface JmolAppletInterface {
   public String loadNodeId(String nodeId);
   public String loadDOMNode(JSObject DOMNode);
   public void script(String script);
-  public String scriptNoWait(String script);
   public String scriptCheck(String script);
   public String scriptWait(String script);
-  public String scriptWait(String script, String statusParams);
   public String scriptWaitOutput(String script);
-  public void syncScript(String script);
 
   // Note -- some Macintosh-based browsers cannot distinguish methods
   // with the same name but with different method signatures

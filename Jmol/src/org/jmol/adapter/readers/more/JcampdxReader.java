@@ -49,8 +49,7 @@ import org.jmol.util.Parser;
 
 ##$MODELS=
 <Models>
- <Model id="acetophenone" type="MOL">
-  <ModelData>
+ <ModelData id="acetophenone" type="MOL">
 acetophenone
   DSViewer          3D                             0
 
@@ -59,15 +58,12 @@ acetophenone
  17 14  1  0  0  0
 M  END
   </ModelData>
- </Model>
- <Model id="irvibs" type="XYZVIB">
-  <ModelData>
+ <ModelData id="irvibs" type="XYZVIB">
 17
 1  Energy: -1454.38826  Freq: 3199.35852
 C    -1.693100    0.007800    0.000000   -0.000980    0.000120    0.000000
 ...
   </ModelData>
-  </Model>
 </Models>
 
 -- All XML data should be line-oriented in the above fashion. Leading spaces will be ignored.
@@ -188,7 +184,7 @@ public class JcampdxReader extends MolReader {
     while (true) {
       int model0 = atomSetCollection.getCurrentAtomSetIndex();
       discardLinesUntilNonBlank();
-      if (line == null || !line.contains("<Model"))
+      if (line == null || !line.contains("<ModelData"))
         break;
       models = getModelAtomSetCollection();
       if (models != null) {
@@ -217,8 +213,6 @@ public class JcampdxReader extends MolReader {
   }
 
   private AtomSetCollection getModelAtomSetCollection() throws Exception {
-    if (line.indexOf("<Model") < 0)
-      discardLinesUntilContains("<Model");
     lastModel = modelID;
     modelID = getAttribute(line, "id");
     // read model only once for a given ID
@@ -232,8 +226,10 @@ public class JcampdxReader extends MolReader {
       modelType = "xyz";
     else if (modelType.length() == 0)
       modelType = null; // let Jmol set the type
-    String data = getModelData();
-    discardLinesUntilContains("</Model>");
+    StringBuffer sb = new StringBuffer();
+    while (readLine() != null && !line.contains("</ModelData>"))
+      sb.append(line).append('\n');
+    String data = sb.toString();
     
     /*
     int imodel = desiredModelNumber;
@@ -296,14 +292,6 @@ public class JcampdxReader extends MolReader {
     }
   }
 
-  private String getModelData() throws Exception {
-    discardLinesUntilContains("<ModelData");
-    StringBuffer sb = new StringBuffer();
-    while (readLine() != null && !line.contains("</ModelData>"))
-      sb.append(line).append('\n');
-    return sb.toString();
-  }
-  
   private void readPeakLinks() throws Exception {
     discardLinesUntilContains("<PeakList");
     String type = getAttribute(line, "type");

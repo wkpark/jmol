@@ -212,7 +212,6 @@ public class JcampdxReader extends MolReader {
     if (model0 < 0)
       model0 = 0;
     for (int pt = 0, i = model0; ++i < n;) {
-      System.out.println(i + " " + pt);
       atomSetCollection.setAtomSetAuxiliaryInfo("modelID", modelID + "."
           + (++pt), i);
     }

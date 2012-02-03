@@ -48,8 +48,8 @@ import org.jmol.util.Parser;
  * specifications (by example here):
 
 ##$MODELS=
-<Models id="1029383">
- <Model type="MOL">
+<Models>
+ <Model id="acetophenone" type="MOL">
   <ModelData>
 acetophenone
   DSViewer          3D                             0
@@ -60,7 +60,7 @@ acetophenone
 M  END
   </ModelData>
  </Model>
- <Model type="XYZVIB">
+ <Model id="irvibs" type="XYZVIB">
   <ModelData>
 17
 1  Energy: -1454.38826  Freq: 3199.35852
@@ -81,8 +81,8 @@ C    -1.693100    0.007800    0.000000   -0.000980    0.000120    0.000000
 
 ##$PEAK_LINKS=
 <PeakList type="IR" xUnits="1/cm" yUnits="TRANSMITTANCE" >
-<Peak id="1" title="asymm stretch of aromatic CH group (~3100 cm-1)" peakShape="broad" model="1029383.1"  xMax="3121" xMin="3081"  yMax="1" yMin="0" />
-<Peak id="2" title="symm stretch of aromatic CH group (~3085 cm-1)" peakShape="broad" model="1029383.2"  xMax="3101" xMin="3071"  yMax="1" yMin="0" />
+<Peak id="1" title="asymm stretch of aromatic CH group (~3100 cm-1)" peakShape="broad" model="irvibs.1"  xMax="3121" xMin="3081"  yMax="1" yMin="0" />
+<Peak id="2" title="symm stretch of aromatic CH group (~3085 cm-1)" peakShape="broad" model="irvibs.2"  xMax="3101" xMin="3071"  yMax="1" yMin="0" />
 ...
 </PeakList>
 
@@ -96,11 +96,10 @@ C    -1.693100    0.007800    0.000000   -0.000980    0.000120    0.000000
 public class JcampdxReader extends MolReader {
 
   private String modelID;
-  private AtomSetCollection baseModel;
-  private AtomSetCollection additionalModels;
+  private AtomSetCollection models;
   private String modelIdList = "";
   private List<String> peakData = new ArrayList<String>();
-  
+  private String lastModel = "";
   
   @Override
   public void initializeReader() throws Exception {
@@ -111,6 +110,10 @@ public class JcampdxReader extends MolReader {
     if (reverseModels) {
       Logger.warn("REVERSE keyword ignored");
       reverseModels = false;
+    }
+    if (desiredModelNumber != Integer.MIN_VALUE) {
+      Logger.warn("desired model number ignored");
+      desiredModelNumber = Integer.MIN_VALUE;
     }
     
   }
@@ -139,74 +142,66 @@ public class JcampdxReader extends MolReader {
         String title = type + ": " + getAttribute(line, "title");
         modelID = getAttribute(line, "model");
         String key = "jdxAtomSelect_" + getAttribute(line, "type");
-        for (int i = atomSetCollection.getAtomSetCount(); --i >= 0;)
-          if (modelID.equals(atomSetCollection.getAtomSetAuxiliaryInfo(i,
-              "modelID"))) {
-            bsModels.set(i);
-            if (modelID.indexOf('.') >= 0) {
-              atomSetCollection.setAtomSetAuxiliaryInfo("name", title, i);
-              atomSetCollection.setAtomSetAuxiliaryInfo("jdxModelSelect", line,
-                  i);
-            } else if (getAttribute(line, "atoms").length() != 0) {
-              List<String> peaks = (List<String>) atomSetCollection
-                  .getAtomSetAuxiliaryInfo(i, key);
-              if (peaks == null)
-                atomSetCollection.setAtomSetAuxiliaryInfo(key,
-                    peaks = new ArrayList<String>(), i);
-              peaks.add(line);
-            }
-            Logger.info(line);
-            break;
+        int i = findModelById(modelID);
+        if (i >= 0) {
+          bsModels.set(i);
+          if (modelID.indexOf('.') >= 0) {
+            atomSetCollection.setAtomSetAuxiliaryInfo("name", title, i);
+            atomSetCollection
+                .setAtomSetAuxiliaryInfo("jdxModelSelect", line, i);
+          } else if (getAttribute(line, "atoms").length() != 0) {
+            List<String> peaks = (List<String>) atomSetCollection
+                .getAtomSetAuxiliaryInfo(i, key);
+            if (peaks == null)
+              atomSetCollection.setAtomSetAuxiliaryInfo(key,
+                  peaks = new ArrayList<String>(), i);
+            peaks.add(line);
           }
+          Logger.info(line);
+        }
       }
       for (int i = atomSetCollection.getAtomSetCount(); --i >= 0;) {
-        modelID = (String) atomSetCollection.getAtomSetAuxiliaryInfo(i, "modelID");
+        modelID = (String) atomSetCollection.getAtomSetAuxiliaryInfo(i,
+            "modelID");
         if (!bsModels.get(i) && modelID.indexOf(".") >= 0)
           atomSetCollection.removeAtomSet(i);
       }
     }
   }
   
+  private int findModelById(String modelID) {
+    for (int i = atomSetCollection.getAtomSetCount(); --i >= 0;)
+      if (modelID.equals(atomSetCollection
+          .getAtomSetAuxiliaryInfo(i, "modelID")))
+        return i;
+    return -1;
+  }
+
   private void readModels() throws Exception {
     discardLinesUntilContains("<Models");
-    baseModel = null;
-    additionalModels = null;
-    line = "";
     // if load xxx.jdx n  then we must temporarily set n to 1 for the base model reading
-    int imodel = desiredModelNumber;
-    if (imodel != Integer.MIN_VALUE)
-      htParams.put("modelNumber", Integer.valueOf(1));
-    baseModel = getModelAtomSetCollection();
-    if (imodel != Integer.MIN_VALUE)
-      htParams.put("modelNumber", Integer.valueOf(imodel));
-    if (baseModel == null)
-      return;
     // load xxx.jdx 0  will mean "load only the base model(s)"
-    int model0 = atomSetCollection.getCurrentAtomSetIndex();
-    switch (imodel) {
-    case Integer.MIN_VALUE:
-    case 0:
-      atomSetCollection.appendAtomSetCollection(-1, baseModel);
-      updateModelIDs(model0);
-      if (desiredModelNumber == 0)
-        return;
-      break;
-    }
-    model0 = atomSetCollection.getCurrentAtomSetIndex();
+    models = null;
+    line = "";
+    modelID = "";
+    boolean isFirst = true;
     while (true) {
+      int model0 = atomSetCollection.getCurrentAtomSetIndex();
       discardLinesUntilNonBlank();
       if (line == null || !line.contains("<Model"))
         break;
-      additionalModels = getModelAtomSetCollection();
-      if (additionalModels != null)
-        atomSetCollection.appendAtomSetCollection(-1, additionalModels);
+      models = getModelAtomSetCollection();
+      if (models != null) {
+        atomSetCollection.appendAtomSetCollection(-1, models);
+      }
+      updateModelIDs(model0, isFirst);
+      isFirst = false;
     }
-    updateModelIDs(model0);
   }
 
-  private void updateModelIDs(int model0) {
+  private void updateModelIDs(int model0, boolean isFirst) {
     int n = atomSetCollection.getAtomSetCount();
-    if (additionalModels == null && n == model0 + 2) {
+    if (isFirst && n == model0 + 2) {
       atomSetCollection.setAtomSetAuxiliaryInfo("modelID", modelID);
       return;
     }
@@ -224,20 +219,34 @@ public class JcampdxReader extends MolReader {
   private AtomSetCollection getModelAtomSetCollection() throws Exception {
     if (line.indexOf("<Model") < 0)
       discardLinesUntilContains("<Model");
+    lastModel = modelID;
     modelID = getAttribute(line, "id");
     // read model only once for a given ID
     String key = ";" + modelID + ";";
-    if (baseModel == null && modelIdList.indexOf(key) >= 0)
+    if (modelIdList.indexOf(key) >= 0)
       return null;
     modelIdList += key;
+    String baseModel = getAttribute(line, "baseModel");
     String modelType = getAttribute(line, "type").toLowerCase();
     if (modelType.equals("xyzvib"))
       modelType = "xyz";
     else if (modelType.length() == 0)
-      modelType = null;
+      modelType = null; // let Jmol set the type
     String data = getModelData();
     discardLinesUntilContains("</Model>");
-    Logger.info("jdx model=" + modelID + " type=" + modelType);
+    
+    /*
+    int imodel = desiredModelNumber;
+    if (imodel != Integer.MIN_VALUE)
+      htParams.put("modelNumber", Integer.valueOf(1));
+    baseModel = getModelAtomSetCollection();
+    if (imodel != Integer.MIN_VALUE)
+      htParams.put("modelNumber", Integer.valueOf(imodel));
+    if (baseModel == null)
+      return;
+
+    */
+    
     Object ret = SmarterJmolAdapter.staticGetAtomSetCollectionReader(filePath, modelType, new BufferedReader(new StringReader(data)), htParams);
     if (ret instanceof String) {
       Logger.warn("" + ret);
@@ -249,31 +258,40 @@ public class JcampdxReader extends MolReader {
       return null;
     }
     AtomSetCollection a = (AtomSetCollection) ret;
-    if (modelType.equals("xyz") && baseModel != null)
-      setBonding(a);
+    if (a.getBondCount() == 0) {
+      if (baseModel.length() == 0)
+        baseModel = lastModel ;
+    if (baseModel.length() != 0)
+      setBonding(a, baseModel); 
+    }
+    Logger.info("jdx model=" + modelID + " type=" + a.getFileTypeName());
     return a;
   }
 
-  private void setBonding(AtomSetCollection a) {
-    if (a.getBondCount() != 0)
+  private void setBonding(AtomSetCollection a, String baseModel) {
+    int ibase = findModelById(baseModel);
+    if (ibase < 0)
       return;
-    int n0 = baseModel.getAtomCount();
+    int n0 = atomSetCollection.getAtomSetAtomCount(ibase);
     int n = a.getAtomCount();
     if (n % n0 != 0) {
       Logger.warn("atom count in secondary model (" + n + ") is not a multiple of " + n0 + " -- bonding ignored");
       return;
     }
+    Bond[] bonds = atomSetCollection.getBonds();
+    int b0 = 0;
+    for (int i = 0; i < ibase; i++)
+      b0 += atomSetCollection.getAtomSetBondCount(i);
+    int b1 = b0 + atomSetCollection.getAtomSetBondCount(ibase);
+    int ii0 = atomSetCollection.getAtomSetAtomIndex(ibase);
     int nModels = a.getAtomSetCount();
-    Bond[] bonds = baseModel.getBonds();
-    int nBonds = baseModel.getBondCount();
     for (int j = 0; j < nModels; j++) {
-      int i0 = a.getAtomSetAtomIndex(j);
+      int i0 = a.getAtomSetAtomIndex(j) - ii0;
       if (a.getAtomSetAtomCount(j) != n0) {
         Logger.warn("atom set atom count in secondary model (" + a.getAtomSetAtomCount(j) + ") is not equal to " + n0 + " -- bonding ignored");
         return;
-      }
-      
-      for (int i = 0; i < nBonds; i++) 
+      }      
+      for (int i = b0; i < b1; i++) 
         a.addNewBond(bonds[i].atomIndex1 + i0, bonds[i].atomIndex2 + i0, bonds[i].order);      
     }
   }

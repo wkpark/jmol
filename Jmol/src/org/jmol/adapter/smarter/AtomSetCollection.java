@@ -1582,6 +1582,10 @@ public class AtomSetCollection {
     return atomSetAtomCounts[i];
   }
   
+  public int getAtomSetBondCount(int i) {
+    return atomSetBondCounts[i];
+  }
+  
   /**
   * Sets the name for the current AtomSet
   *

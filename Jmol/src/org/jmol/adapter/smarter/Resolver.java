@@ -916,7 +916,7 @@ public class Resolver {
   {"ZMatrix", "#ZMATRIX"};
   
   private final static String[] jcampdxFileStartRecords =
-  {"Jcampdx", "##TITLE=", "##JCAMP-DX"};
+  {"Jcampdx", "##TITLE="};
   
   private final static String[][] fileStartsWithRecords =
   { cubeFileStartRecords, mol2Records, webmoFileStartRecords, 

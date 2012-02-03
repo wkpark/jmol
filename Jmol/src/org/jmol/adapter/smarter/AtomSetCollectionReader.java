@@ -547,7 +547,7 @@ public abstract class AtomSetCollectionReader {
     } else {
       atomSetCollection.setCollectionName(name);
     }
-    Logger.debug(name);
+    atomSetCollection.setAtomSetAuxiliaryInfo("name", name, Math.max(0, atomSetCollection.getCurrentAtomSetIndex()));
   }
 
   protected int cloneLastAtomSet(int atomCount, Point3f[] pts) throws Exception {

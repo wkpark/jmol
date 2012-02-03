@@ -181,6 +181,7 @@ public class MolReader extends AtomSetCollectionReader {
     if (line == null)
       return;
     header += line + "\n";
+    Logger.info(header);
     checkLineForScript();
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("fileHeader", header);
     newAtomSet(thisDataSetName);

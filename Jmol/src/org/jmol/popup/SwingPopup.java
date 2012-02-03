@@ -181,6 +181,10 @@ abstract public class SwingPopup extends GenericPopup {
     jm.addItemListener(cmil);
     jm.setActionCommand(basename);
     updateButton(jm, entry, basename);
+    if (id != null && id.startsWith("Focus")) {
+      jm.addMouseListener(mfl);
+      id = ((Component) menu).getName() + "." + id;
+    }
     jm.setName(id == null ? ((Component) menu).getName() + "." : id);
     addToMenu(menu, jm);
     return jm;

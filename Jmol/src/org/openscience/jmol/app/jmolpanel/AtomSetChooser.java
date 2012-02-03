@@ -352,7 +352,7 @@ ActionListener, ChangeListener, Runnable {
   private JPanel createVCRController(String section) {
     JPanel controlPanel = new JPanel();
     controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.X_AXIS));
-    controlPanel.setBorder(new TitledBorder(GT._("Controller")));
+    controlPanel.setBorder(new TitledBorder((section.equals(COLLECTION) ? GT._("Frame") : GT._("Vibration"))));
     Insets inset = new Insets(1,1,1,1);
 // take out the save functionality until the XYZ file can properly be created
 //    String buttons[] = {REWIND,PREVIOUS,PLAY,PAUSE,NEXT,FF,SAVE};
@@ -369,12 +369,12 @@ ActionListener, ChangeListener, Runnable {
       };
     } else if (section.equals(VECTOR)) {
       tooltips = new String[] {
-          GT._("Go to first vector in the collection"),
-          GT._("Go to previous vector in the collection"),
-          GT._("Play the whole collection of vectors"),
-          GT._("Pause playing"),
-          GT._("Go to next vector in the collection"),
-          GT._("Jump to last vector in the collection")
+          GT._("Go to first atom set in the collection"),
+          GT._("Go to previous atom set in the collection"),
+          GT._("Vibration ON"),
+          GT._("Vibration OFF"),
+          GT._("Go to next atom set in the collection"),
+          GT._("Jump to last atom set in the collection")
       };
     }
     for (int i=buttons.length, idx=0; --i>=0; idx++) {
@@ -491,9 +491,9 @@ ActionListener, ChangeListener, Runnable {
           } else if (PREVIOUS.equals(cmd)) {
             findFrequency(currentIndex-1,-1);
           } else if (PLAY.equals(cmd)) {
-            viewer.evalStringQuiet("vibration on");
+            viewer.evalStringQuiet("vibration on; vectors " + radiusValue);
           } else if (PAUSE.equals(cmd)) {
-            viewer.evalStringQuiet("vibration off");
+            viewer.evalStringQuiet("vibration off; vectors off");
           } else if (NEXT.equals(cmd)) {
             findFrequency(currentIndex+1,1);
           } else if (FF.equals(cmd)) {
@@ -573,6 +573,8 @@ ActionListener, ChangeListener, Runnable {
       showAtomSetIndex(index, true);      
     }
   }
+
+  private int radiusValue = 1;
   
   public void stateChanged(ChangeEvent e) {
     Object src = e.getSource();
@@ -587,9 +589,10 @@ ActionListener, ChangeListener, Runnable {
         cmd = "animation fps " + value;
     } else if (src == radiusSlider) {
       if (value == 0)
-        radiusSlider.setValue(1); // make sure I never set it to 0..
+        radiusSlider.setValue(value = 1); // make sure I never set it to 0..
       else
         cmd = "vector " + value;
+      radiusValue = value;
     } else if (src == scaleSlider) {
       cmd = "vector scale " + (value * SCALE_PRECISION);
     } else if (src == amplitudeSlider) {

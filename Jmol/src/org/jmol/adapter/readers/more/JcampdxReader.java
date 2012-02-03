@@ -132,12 +132,11 @@ public class JcampdxReader extends MolReader {
     // process peak data
     if (peakData.size() > 0) {
       BitSet bsModels = new BitSet();
-      bsModels.set(0);
       int n = peakData.size();
       for (int p = 0; p < n; p++) {
         line = peakData.get(p);
         String title = getAttribute(line, "title");
-        String modelID = getAttribute(line, "model");
+        modelID = getAttribute(line, "model");
         String key = "jdxAtomSelect_" + getAttribute(line, "type");
         for (int i = atomSetCollection.getAtomSetCount(); --i >= 0;)
           if (modelID.equals(atomSetCollection.getAtomSetAuxiliaryInfo(i,
@@ -145,20 +144,25 @@ public class JcampdxReader extends MolReader {
             bsModels.set(i);
             if (modelID.indexOf('.') >= 0) {
               atomSetCollection.setAtomSetAuxiliaryInfo("name", title, i);
-              atomSetCollection.setAtomSetAuxiliaryInfo("jdxModelSelect", line, i);
+              atomSetCollection.setAtomSetAuxiliaryInfo("jdxModelSelect", line,
+                  i);
             } else if (getAttribute(line, "atoms").length() != 0) {
-              List<String> peaks = (List<String>) atomSetCollection.getAtomSetAuxiliaryInfo(i, key);
+              List<String> peaks = (List<String>) atomSetCollection
+                  .getAtomSetAuxiliaryInfo(i, key);
               if (peaks == null)
-                atomSetCollection.setAtomSetAuxiliaryInfo(key, peaks = new ArrayList<String>(), i);
+                atomSetCollection.setAtomSetAuxiliaryInfo(key,
+                    peaks = new ArrayList<String>(), i);
               peaks.add(line);
             }
             Logger.info(line);
             break;
           }
       }
-      for (int i = atomSetCollection.getAtomSetCount(); --i >= 0;)
-        if (!bsModels.get(i))
+      for (int i = atomSetCollection.getAtomSetCount(); --i >= 0;) {
+        modelID = (String) atomSetCollection.getAtomSetAuxiliaryInfo(i, "modelID");
+        if (!bsModels.get(i) && modelID.indexOf(".") >= 0)
           atomSetCollection.removeAtomSet(i);
+      }
     }
   }
   

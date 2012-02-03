@@ -135,7 +135,8 @@ public class JcampdxReader extends MolReader {
       int n = peakData.size();
       for (int p = 0; p < n; p++) {
         line = peakData.get(p);
-        String title = getAttribute(line, "title");
+        String type = getAttribute(line, "type");
+        String title = type + ": " + getAttribute(line, "title");
         modelID = getAttribute(line, "model");
         String key = "jdxAtomSelect_" + getAttribute(line, "type");
         for (int i = atomSetCollection.getAtomSetCount(); --i >= 0;)

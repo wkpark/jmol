@@ -41,7 +41,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
 /**
- * A preliminary reader for JCAMP-DX files having ##$MODELS= and ##PEAK_LINKS= records
+ * A preliminary reader for JCAMP-DX files having ##$MODELS= and ##$PEAK_LINKS= records
  * 
  * Designed by Robert Lancashire and Bob Hanson
  * 

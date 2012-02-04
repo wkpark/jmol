@@ -192,8 +192,10 @@ public class JcampdxReader extends MolReader {
     modelID = getAttribute(line, "id");
     // read model only once for a given ID
     String key = ";" + modelID + ";";
-    if (modelIdList.indexOf(key) >= 0)
+    if (modelIdList.indexOf(key) >= 0) {
+      discardLinesUntilContains("</ModelData");
       return null;
+    }
     modelIdList += key;
     String baseModel = getAttribute(line, "baseModel");
     String modelType = getAttribute(line, "type").toLowerCase();

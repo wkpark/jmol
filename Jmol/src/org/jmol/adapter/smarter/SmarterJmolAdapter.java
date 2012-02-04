@@ -589,7 +589,8 @@ public class SmarterJmolAdapter extends JmolAdapter {
 
   @Override
   public int getAtomCount(Object atomSetCollection) {
-    return ((AtomSetCollection)atomSetCollection).getAtomCount();
+    AtomSetCollection a = (AtomSetCollection)atomSetCollection; 
+    return (a.bsAtoms == null ? a.getAtomCount() : a.bsAtoms.cardinality());
   }
 
   @Override

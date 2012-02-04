@@ -96,22 +96,23 @@ public class JcampdxReader extends MolReader {
   private String modelIdList = "";
   private List<String> peakData = new ArrayList<String>();
   private String lastModel = "";
+  private int selectedModel;
   
   @Override
   public void initializeReader() throws Exception {
+    // trajectories would be OK for IR, but just too complicated for others.
     if (isTrajectory) {
       Logger.warn("TRAJECTORY keyword ignored");
       isTrajectory = false;
     }
+    // forget reversing models!
     if (reverseModels) {
       Logger.warn("REVERSE keyword ignored");
       reverseModels = false;
     }
-    if (desiredModelNumber != Integer.MIN_VALUE) {
-      Logger.warn("desired model number ignored");
-      desiredModelNumber = Integer.MIN_VALUE;
-    }
-    
+    selectedModel = desiredModelNumber;
+    desiredModelNumber = Integer.MIN_VALUE;
+    htParams.remove("modelNumber");
   }
 
   @Override
@@ -119,50 +120,16 @@ public class JcampdxReader extends MolReader {
     if (line.startsWith("##$MODELS")) {
       readModels();
     } else if (line.startsWith("##$PEAK") && line.contains("LINKS=")) {
-      readPeakLinks();
+      readPeakList();
     }
 
     return true;
   }
 
-  @SuppressWarnings("unchecked")
   @Override
-  public void finalizeReader() {
-    // process peak data
-    if (peakData.size() > 0) {
-      BitSet bsModels = new BitSet();
-      int n = peakData.size();
-      for (int p = 0; p < n; p++) {
-        line = peakData.get(p);
-        String type = getAttribute(line, "type");
-        String title = type + ": " + getAttribute(line, "title");
-        modelID = getAttribute(line, "model");
-        String key = "jdxAtomSelect_" + getAttribute(line, "type");
-        int i = findModelById(modelID);
-        if (i >= 0) {
-          bsModels.set(i);
-          if (modelID.indexOf('.') >= 0) {
-            atomSetCollection.setAtomSetAuxiliaryInfo("name", title, i);
-            atomSetCollection
-                .setAtomSetAuxiliaryInfo("jdxModelSelect", line, i);
-          } else if (getAttribute(line, "atoms").length() != 0) {
-            List<String> peaks = (List<String>) atomSetCollection
-                .getAtomSetAuxiliaryInfo(i, key);
-            if (peaks == null)
-              atomSetCollection.setAtomSetAuxiliaryInfo(key,
-                  peaks = new ArrayList<String>(), i);
-            peaks.add(line);
-          }
-          Logger.info(line);
-        }
-      }
-      for (int i = atomSetCollection.getAtomSetCount(); --i >= 0;) {
-        modelID = (String) atomSetCollection.getAtomSetAuxiliaryInfo(i,
-            "modelID");
-        if (!bsModels.get(i) && modelID.indexOf(".") >= 0)
-          atomSetCollection.removeAtomSet(i);
-      }
-    }
+  public void finalizeReader() throws Exception {
+    processPeakData();
+    super.finalizeReader();
   }
   
   private int findModelById(String modelID) {
@@ -195,6 +162,14 @@ public class JcampdxReader extends MolReader {
     }
   }
 
+  /**
+   * The first model set is allowed to be a single model and given no extension.
+   * All other model sets are given .1 .2 .3 ... extensions to their IDs.
+   *   
+   * 
+   * @param model0
+   * @param isFirst
+   */
   private void updateModelIDs(int model0, boolean isFirst) {
     int n = atomSetCollection.getAtomSetCount();
     if (isFirst && n == model0 + 2) {
@@ -230,19 +205,6 @@ public class JcampdxReader extends MolReader {
     while (readLine() != null && !line.contains("</ModelData>"))
       sb.append(line).append('\n');
     String data = sb.toString();
-    
-    /*
-    int imodel = desiredModelNumber;
-    if (imodel != Integer.MIN_VALUE)
-      htParams.put("modelNumber", Integer.valueOf(1));
-    baseModel = getModelAtomSetCollection();
-    if (imodel != Integer.MIN_VALUE)
-      htParams.put("modelNumber", Integer.valueOf(imodel));
-    if (baseModel == null)
-      return;
-
-    */
-    
     Object ret = SmarterJmolAdapter.staticGetAtomSetCollectionReader(filePath, modelType, new BufferedReader(new StringReader(data)), htParams);
     if (ret instanceof String) {
       Logger.warn("" + ret);
@@ -264,6 +226,12 @@ public class JcampdxReader extends MolReader {
     return a;
   }
 
+  /**
+   * add bonding to an XYZ file based on a MOL file
+   * 
+   * @param a
+   * @param baseModel
+   */
   private void setBonding(AtomSetCollection a, String baseModel) {
     int ibase = findModelById(baseModel);
     if (ibase < 0)
@@ -292,12 +260,98 @@ public class JcampdxReader extends MolReader {
     }
   }
 
-  private void readPeakLinks() throws Exception {
+  private void readPeakList() throws Exception {
     discardLinesUntilContains("<PeakList");
     String type = getAttribute(line, "type");
     while (readLine() != null && !(line = line.trim()).startsWith("</PeakList"))
       if (line.startsWith("<Peak"))
         peakData.add("<Peak file=" + Escape.escape(filePath) + " type=\"" + type + "\" " + line.trim().substring(5));      
   }
+
+  /**
+   * integrate the <Peak> records into the associated models, and delete unreferenced n.m models
+   */
+  @SuppressWarnings("unchecked")
+  private void processPeakData() {
+    if (peakData.size() == 0)
+      return;
+    BitSet bsModels = new BitSet();
+    int n = peakData.size();
+    for (int p = 0; p < n; p++) {
+      line = peakData.get(p);
+      String type = getAttribute(line, "type");
+      modelID = getAttribute(line, "model");
+      int i = findModelById(modelID);
+      if (i < 0) {
+        Logger.warn("cannot find model " + modelID + " required for " + line);
+        continue;
+      }
+      addType(i, type);
+      String title = type + ": " + getAttribute(line, "title");
+      String key = "jdxAtomSelect_" + getAttribute(line, "type");
+      bsModels.set(i);
+      if (modelID.indexOf('.') >= 0) {
+        atomSetCollection.setAtomSetAuxiliaryInfo("name", title, i);
+        atomSetCollection.setAtomSetAuxiliaryInfo("jdxModelSelect", line, i);
+      } else if (getAttribute(line, "atoms").length() != 0) {
+        List<String> peaks = (List<String>) atomSetCollection
+            .getAtomSetAuxiliaryInfo(i, key);
+        if (peaks == null)
+          atomSetCollection.setAtomSetAuxiliaryInfo(key,
+              peaks = new ArrayList<String>(), i);
+        peaks.add(line);
+      }
+      Logger.info(line);
+    }
+    n = atomSetCollection.getAtomSetCount();
+    for (int i = n; --i >= 0;) {
+      modelID = (String) atomSetCollection
+          .getAtomSetAuxiliaryInfo(i, "modelID");
+      if (!bsModels.get(i) && modelID.indexOf(".") >= 0) {
+        atomSetCollection.removeAtomSet(i);
+        n--;
+      }
+    }
+    if (selectedModel == Integer.MIN_VALUE) {
+      if (allTypes != null)
+        appendLoadNote(allTypes);
+    } else {
+      if (selectedModel == 0)
+        selectedModel = n - 1;
+      for (int i = atomSetCollection.getAtomSetCount(); --i >= 0;)
+        if (i + 1 != selectedModel)
+          atomSetCollection.removeAtomSet(i);
+      if (n > 0)
+        appendLoadNote((String) atomSetCollection.getAtomSetAuxiliaryInfo(0, "name"));
+    }
+  }
+
+  private String allTypes;
+  /**
+   * sets an auxiliaryInfo string to "HNMR 13CNMR" or "IR" or "MS" 
+   *
+   * @param imodel
+   * @param type
+   */
+  private void addType(int imodel, String type) {
+    String types = addType((String) atomSetCollection.getAtomSetAuxiliaryInfo(imodel, "spectrumTypes"), type);
+    if (types == null)
+      return;
+    atomSetCollection.setAtomSetAuxiliaryInfo("spectrumTypes", types, imodel);
+    String s = addType(allTypes, type);
+    if (s != null)
+      allTypes = s;
+  }
+
+  private String addType(String types, String type) {    
+    if (types != null && types.contains(type))
+      return null;
+    if (types == null)
+      types = "";
+    else
+      types += ",";
+    return types + type;
+  }
+  
   
 }

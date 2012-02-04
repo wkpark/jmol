@@ -851,14 +851,15 @@ abstract public class GenericPopup {
     Object menu = htMenus.get("FRAMESbyModelComputedMenu");
     if (menu == null)
       return;
-    enableMenu(menu, (modelCount > 1));
+    enableMenu(menu, (modelCount > 0));
     setLabel(menu, (modelIndex < 0 ? GT._(getMenuText("allModelsText"),
         modelCount, true) : getModelLabel()));
     removeAll(menu);
-    if (modelCount < 2)
+    if (modelCount < 1)
       return;
-    addCheckboxMenuItem(menu, GT._("All", true), "frame 0 ##", null,
-        (modelIndex < 0), false);
+    if (modelCount > 1)
+      addCheckboxMenuItem(menu, GT._("All", true), "frame 0 ##", null,
+         (modelIndex < 0), false);
 
     Object subMenu = menu;
     int nmod = itemMax;
@@ -875,6 +876,9 @@ abstract public class GenericPopup {
       }
       String script = "" + viewer.getModelNumberDotted(i);
       String entryName = viewer.getModelName(i);
+      String spectrumTypes = (String) viewer.getModelAuxiliaryInfo(i, "spectrumTypes");
+      if (spectrumTypes != null && entryName.startsWith(spectrumTypes))
+        spectrumTypes = null;
       if (!entryName.equals(script)) {
         int ipt = entryName.indexOf(";PATH");
         if (ipt >= 0)
@@ -884,8 +888,10 @@ abstract public class GenericPopup {
           entryName = entryName.substring(ipt + 2);
         entryName = script + ": " + entryName;
       }
-      if (entryName.length() > 50)
-        entryName = entryName.substring(0, 45) + "...";
+      if (entryName.length() > 60)
+        entryName = entryName.substring(0, 55) + "...";
+      if (spectrumTypes != null)
+        entryName += " (" + spectrumTypes + ")";
       addCheckboxMenuItem(subMenu, entryName, "model " + script + " ##", null,
           (modelIndex == i), false);
     }

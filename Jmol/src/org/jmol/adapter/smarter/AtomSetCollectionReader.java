@@ -326,6 +326,7 @@ public abstract class AtomSetCollectionReader {
 
   protected void setPdb() {
   }
+
   private Object finish() {
     String s = (String) htParams.get("loadState");
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("loadState",
@@ -355,7 +356,9 @@ public abstract class AtomSetCollectionReader {
     if (atomSetCollection.errorMessage != null)
       return atomSetCollection.errorMessage + "\nfor file " + filePath
           + "\ntype " + name;
-    if (atomSetCollection.getAtomCount() == 0 && fileType.indexOf("DataOnly") < 0)
+    if ((atomSetCollection.bsAtoms == null ? atomSetCollection.getAtomCount()
+        : atomSetCollection.bsAtoms.cardinality()) == 0
+        && fileType.indexOf("DataOnly") < 0)
       return "No atoms found\nfor file " + filePath + "\ntype " + name;
     return atomSetCollection;
   }

@@ -496,7 +496,8 @@ public class AtomSetCollection {
       bsAtoms.set(0, atomCount);
     }
     int i0 = atomSetAtomIndexes[imodel];
-    int i1 = i0 + atomSetAtomCounts[imodel];
+    int nAtoms = atomSetAtomCounts[imodel];
+    int i1 = i0 + nAtoms;
     bsAtoms.clear(i0, i1);
     for (int i = i1; i < atomCount; i++)
       atoms[i].atomSetIndex--;

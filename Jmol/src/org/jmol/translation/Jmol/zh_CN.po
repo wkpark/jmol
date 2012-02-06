@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2012-01-24 22:51+0100\n"
+"POT-Creation-Date: 2012-02-06 06:32+0100\n"
 "PO-Revision-Date: 2010-12-16 13:34+0000\n"
 "Last-Translator: LI Anbang <lianbang@gmail.com>\n"
 "Language-Team: Simplified Chinese <zh_CN@li.org>\n"
@@ -316,14 +316,22 @@ msgid "Period"
 msgstr "周期"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:355
-msgid "Controller"
-msgstr "控制器"
+#, fuzzy
+msgid "Frame"
+msgstr "最后一帧"
+
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:355
+#, fuzzy
+msgid "Vibration"
+msgstr "动画"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:363
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:372
 msgid "Go to first atom set in the collection"
 msgstr "跳转到收藏集中的第一个原子集合"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:364
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:373
 msgid "Go to previous atom set in the collection"
 msgstr "跳转到收藏集中的前一个原子集合"
 
@@ -332,37 +340,26 @@ msgid "Play the whole collection of atom sets"
 msgstr "播放整个原子集合收藏集"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:366
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:375
 msgid "Pause playing"
 msgstr "暂停播放"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:367
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:376
 msgid "Go to next atom set in the collection"
 msgstr "跳转到收藏集中的下一个原子集合"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:368
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:377
 msgid "Jump to last atom set in the collection"
 msgstr "跳转到收藏集中的最后一个原子集合"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:372
-msgid "Go to first vector in the collection"
-msgstr "跳转到收藏集中的第一个向量"
-
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:373
-msgid "Go to previous vector in the collection"
-msgstr "跳转到收藏集中的前一个向量"
-
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:374
-msgid "Play the whole collection of vectors"
-msgstr "播放的整个向量收藏集"
+msgid "Vibration ON"
+msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:376
-msgid "Go to next vector in the collection"
-msgstr "跳转到收藏集中的下一个向量"
-
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:377
-msgid "Jump to last vector in the collection"
-msgstr "跳转到收藏集中的最后一个向量"
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:375
+msgid "Vibration OFF"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/ConsoleTextArea.java:87
 #, java-format
@@ -1872,6 +1869,24 @@ msgstr "下载视图"
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr "功能尚未实现"
+
+#~ msgid "Controller"
+#~ msgstr "控制器"
+
+#~ msgid "Go to first vector in the collection"
+#~ msgstr "跳转到收藏集中的第一个向量"
+
+#~ msgid "Go to previous vector in the collection"
+#~ msgstr "跳转到收藏集中的前一个向量"
+
+#~ msgid "Play the whole collection of vectors"
+#~ msgstr "播放的整个向量收藏集"
+
+#~ msgid "Go to next vector in the collection"
+#~ msgstr "跳转到收藏集中的下一个向量"
+
+#~ msgid "Jump to last vector in the collection"
+#~ msgstr "跳转到收藏集中的最后一个向量"
 
 #~ msgid "Clear console button (requires restarting Jmol)"
 #~ msgstr "清除控制台按钮（需重启Jmol）"

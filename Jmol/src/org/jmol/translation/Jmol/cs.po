@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2012-01-24 22:51+0100\n"
+"POT-Creation-Date: 2012-02-06 06:32+0100\n"
 "PO-Revision-Date: 2010-11-18 00:27+0000\n"
 "Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: Czech <Jmol-developers@lists.sf.net>\n"
@@ -323,14 +323,22 @@ msgid "Period"
 msgstr "Perioda"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:355
-msgid "Controller"
-msgstr "Ovládací prvek"
+#, fuzzy
+msgid "Frame"
+msgstr "Poslední snímek"
+
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:355
+#, fuzzy
+msgid "Vibration"
+msgstr "Animace"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:363
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:372
 msgid "Go to first atom set in the collection"
 msgstr "Jít na první soubor atomů v kolekci"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:364
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:373
 msgid "Go to previous atom set in the collection"
 msgstr "Jít na předchozí soubor atomů v kolekci"
 
@@ -339,37 +347,26 @@ msgid "Play the whole collection of atom sets"
 msgstr "Přehrát celou kolekci souborů atomů"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:366
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:375
 msgid "Pause playing"
 msgstr "Pozastavit přehrávání"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:367
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:376
 msgid "Go to next atom set in the collection"
 msgstr "Jít na další soubor atomů v kolekci"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:368
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:377
 msgid "Jump to last atom set in the collection"
 msgstr "Skočit na poslední soubor atomů v kolekci"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:372
-msgid "Go to first vector in the collection"
-msgstr "Jít na první vektor v kolekci"
-
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:373
-msgid "Go to previous vector in the collection"
-msgstr "Jít na předchozí vektor v kolekci"
-
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:374
-msgid "Play the whole collection of vectors"
-msgstr "Přehrát celou kolekci vektorů"
+msgid "Vibration ON"
+msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:376
-msgid "Go to next vector in the collection"
-msgstr "Jít na další vektor v kolekci"
-
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:377
-msgid "Jump to last vector in the collection"
-msgstr "Skočit na poslední vektor v kolekci"
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:375
+msgid "Vibration OFF"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/ConsoleTextArea.java:87
 #, java-format
@@ -1889,6 +1886,24 @@ msgstr "Ulož pohled"
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr "neimplementováno"
+
+#~ msgid "Controller"
+#~ msgstr "Ovládací prvek"
+
+#~ msgid "Go to first vector in the collection"
+#~ msgstr "Jít na první vektor v kolekci"
+
+#~ msgid "Go to previous vector in the collection"
+#~ msgstr "Jít na předchozí vektor v kolekci"
+
+#~ msgid "Play the whole collection of vectors"
+#~ msgstr "Přehrát celou kolekci vektorů"
+
+#~ msgid "Go to next vector in the collection"
+#~ msgstr "Jít na další vektor v kolekci"
+
+#~ msgid "Jump to last vector in the collection"
+#~ msgstr "Skočit na poslední vektor v kolekci"
 
 #~ msgid "All"
 #~ msgstr "Vše"

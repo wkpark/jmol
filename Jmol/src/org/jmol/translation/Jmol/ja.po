@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2012-01-24 22:51+0100\n"
+"POT-Creation-Date: 2012-02-06 06:32+0100\n"
 "PO-Revision-Date: 2011-12-30 11:52+0000\n"
 "Last-Translator: Hiroshi Kihara <Unknown>\n"
 "Language-Team: Japanese <Jmol-developers@lists.sf.net>\n"
@@ -321,14 +321,22 @@ msgid "Period"
 msgstr "周期"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:355
-msgid "Controller"
-msgstr "コントローラ"
+#, fuzzy
+msgid "Frame"
+msgstr "最後のフレーム"
+
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:355
+#, fuzzy
+msgid "Vibration"
+msgstr "アニメーション"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:363
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:372
 msgid "Go to first atom set in the collection"
 msgstr "集合の中の最初の原子セットに移動"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:364
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:373
 msgid "Go to previous atom set in the collection"
 msgstr "集合の中の前の原子セットに移動"
 
@@ -337,37 +345,26 @@ msgid "Play the whole collection of atom sets"
 msgstr "原子セットの集合全体を実行します"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:366
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:375
 msgid "Pause playing"
 msgstr "再生の一時停止"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:367
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:376
 msgid "Go to next atom set in the collection"
 msgstr "集合の中の次の原子セットに移動"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:368
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:377
 msgid "Jump to last atom set in the collection"
 msgstr "集合の中の最後の原子セットに移動"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:372
-msgid "Go to first vector in the collection"
-msgstr "集合の中の最初のベクトルに移動"
-
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:373
-msgid "Go to previous vector in the collection"
-msgstr "集合の中の前のベクトルに移動"
-
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:374
-msgid "Play the whole collection of vectors"
-msgstr "ベクトルの集合全体を実行します"
+msgid "Vibration ON"
+msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:376
-msgid "Go to next vector in the collection"
-msgstr "集合の中の次のベクトルに移動"
-
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:377
-msgid "Jump to last vector in the collection"
-msgstr "集合の中の最後のベクトルに移動"
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:375
+msgid "Vibration OFF"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/ConsoleTextArea.java:87
 #, java-format
@@ -1890,6 +1887,24 @@ msgstr "ビューをダウンロード"
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr "未実装"
+
+#~ msgid "Controller"
+#~ msgstr "コントローラ"
+
+#~ msgid "Go to first vector in the collection"
+#~ msgstr "集合の中の最初のベクトルに移動"
+
+#~ msgid "Go to previous vector in the collection"
+#~ msgstr "集合の中の前のベクトルに移動"
+
+#~ msgid "Play the whole collection of vectors"
+#~ msgstr "ベクトルの集合全体を実行します"
+
+#~ msgid "Go to next vector in the collection"
+#~ msgstr "集合の中の次のベクトルに移動"
+
+#~ msgid "Jump to last vector in the collection"
+#~ msgstr "集合の中の最後のベクトルに移動"
 
 #~ msgid "Jmol Script Console"
 #~ msgstr "Jmol スクリプトコンソール"

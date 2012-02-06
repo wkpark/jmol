@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2012-01-24 22:51+0100\n"
+"POT-Creation-Date: 2012-02-06 06:32+0100\n"
 "PO-Revision-Date: 2011-09-27 22:41+0000\n"
 "Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: Finland <Jmol-developers@lists.sf.net>\n"
@@ -322,14 +322,22 @@ msgid "Period"
 msgstr "Periodi"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:355
-msgid "Controller"
-msgstr "Ohjain"
+#, fuzzy
+msgid "Frame"
+msgstr "Viimeinen ruutu"
+
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:355
+#, fuzzy
+msgid "Vibration"
+msgstr "Animaatio"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:363
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:372
 msgid "Go to first atom set in the collection"
 msgstr "Mene valikoiman ensimmäiseen atomiryhmään"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:364
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:373
 msgid "Go to previous atom set in the collection"
 msgstr "Mene valikoiman edelliseen atomiryhmään"
 
@@ -338,37 +346,26 @@ msgid "Play the whole collection of atom sets"
 msgstr "Toista valikoiman kaikki atomiryhmät"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:366
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:375
 msgid "Pause playing"
 msgstr "Tauko"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:367
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:376
 msgid "Go to next atom set in the collection"
 msgstr "Mene valikoiman seuraavaan atomiryhmään"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:368
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:377
 msgid "Jump to last atom set in the collection"
 msgstr "Siirry valikoiman viimeiseen atomiryhmään"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:372
-msgid "Go to first vector in the collection"
-msgstr "Mene valikoiman ensimmäiseen vektoriin"
-
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:373
-msgid "Go to previous vector in the collection"
-msgstr "Mene valikoiman edelliseen vektoriin"
-
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:374
-msgid "Play the whole collection of vectors"
-msgstr "Toista valikoiman kaikki vektorit"
+msgid "Vibration ON"
+msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:376
-msgid "Go to next vector in the collection"
-msgstr "Mene valikoiman seuraavaan vektoriin"
-
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:377
-msgid "Jump to last vector in the collection"
-msgstr "Mene valikoiman viimeiseen vektoriin"
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:375
+msgid "Vibration OFF"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/ConsoleTextArea.java:87
 #, java-format
@@ -1886,6 +1883,24 @@ msgstr "Latausnäkymä"
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr "toteutumatta"
+
+#~ msgid "Controller"
+#~ msgstr "Ohjain"
+
+#~ msgid "Go to first vector in the collection"
+#~ msgstr "Mene valikoiman ensimmäiseen vektoriin"
+
+#~ msgid "Go to previous vector in the collection"
+#~ msgstr "Mene valikoiman edelliseen vektoriin"
+
+#~ msgid "Play the whole collection of vectors"
+#~ msgstr "Toista valikoiman kaikki vektorit"
+
+#~ msgid "Go to next vector in the collection"
+#~ msgstr "Mene valikoiman seuraavaan vektoriin"
+
+#~ msgid "Jump to last vector in the collection"
+#~ msgstr "Mene valikoiman viimeiseen vektoriin"
 
 #~ msgid ""
 #~ "Could not find or open:\n"

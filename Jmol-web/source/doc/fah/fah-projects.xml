@@ -8425,6 +8425,12 @@
   <fah_proj number="6080" name="p6080_HAFP3-mutant" public="y"
     server="171.64.65.54" atoms="77457" preferred="2.5" deadline="4.2"
     credit="521.0" frames="100" code="A3" contact="kasson" kfactor="2.99"/>
+  <fah_proj number="6095" name="uncharged_new_popg_peptide" public="n"
+    server="128.143.231.202" atoms="167952" preferred="8.1" deadline="13.5"
+    credit="1676.0" frames="100" code="A3" contact="kasson" kfactor="3.0"/>
+  <fah_proj number="6096" name="uncharged_new_peptide" public="n"
+    server="128.143.231.202" atoms="168080" preferred="7.7" deadline="12.8"
+    credit="1591.0" frames="100" code="A3" contact="kasson" kfactor="3.0"/>
   <fah_proj number="6097" name="charged_peptide" public="y"
     server="128.143.231.202" atoms="168080" preferred="7.7" deadline="12.8"
     credit="1593.0" frames="100" code="A3" contact="kasson" kfactor="3.0"/>
@@ -8985,6 +8991,9 @@
   <fah_proj number="7028" name="WW gtt ext/folded 395K" public="y" file="xyz"
     server="129.74.85.15" atoms="570" preferred="8" deadline="11"
     credit="600.0" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75" contrib="Danny Nielsen"/>
+  <fah_proj number="7029" name="hipin" public="n"
+    server="129.74.85.15" atoms="575" preferred="8" deadline="11"
+    credit="600.0" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75"/>
 
   <!-- Projects 7100 to 7199 -->
   <fah_proj number="7100" name="2kxa_bax" public="y"
@@ -9277,10 +9286,10 @@
   <fah_proj number="7716" name="p7716" public="y"
     server="143.89.28.70" atoms="47624" preferred="11.55" deadline="19.26"
     credit="777.0" frames="100" code="A4" contact="xhuang" kfactor="0.75"/>
-  <fah_proj number="7717" name="p7717" public="n"
+  <fah_proj number="7717" name="p7717" public="y"
     server="143.89.28.70" atoms="47624" preferred="11.619988425925927" deadline="19.37"
     credit="783.0" frames="100" code="A4" contact="xhuang" kfactor="0.75"/>
-  <fah_proj number="7718" name="p7718" public="n"
+  <fah_proj number="7718" name="p7718" public="y"
     server="143.89.28.70" atoms="47647" preferred="11.619988425925927" deadline="19.37"
     credit="782.0" frames="100" code="A4" contact="xhuang" kfactor="0.75"/>
 
@@ -9346,6 +9355,11 @@
   <fah_proj number="8011" name="p8011" public="y" file="xyz"
     server="171.67.108.60" atoms="23000" preferred="2.13" deadline="4.62"
     credit="106.6" frames="100" code="A4" contact="shukla" kfactor="0.75" contrib="Masahiro Tagashira"/>
+
+  <!-- Projects 8100 to 8199 -->
+  <fah_proj number="8101" name="ha_formarta" public="n"
+    server="128.143.231.201" atoms="1340422" preferred="2.4" deadline="8"
+    credit="9829.0" frames="100" code="A5" contact="kasson" kfactor="24.71"/>
 
   <!-- Projects 9900 to 9999 -->
   <fah_proj number="9900" name="p9900_supervillin_e1" public="y"
@@ -10126,16 +10140,16 @@
   <fah_proj number="10722" name="p10722" public="y" file="xyz"
     server="171.67.108.42" atoms="12098" preferred="32" deadline="56"
     credit="2244.0" frames="100" code="A4" contact="dvanatta" kfactor="0.75" contrib="Danny Nielsen"/>
-  <fah_proj number="10731" name="p10731" public="n"
+  <fah_proj number="10731" name="p10731" public="y"
     server="171.67.108.42" atoms="3442" preferred="22" deadline="10"
     credit="530.0" frames="100" code="A4" contact="dvanatta" kfactor="0.75"/>
-  <fah_proj number="10732" name="p10732" public="n"
+  <fah_proj number="10732" name="p10732" public="y"
     server="171.67.108.42" atoms="12099" preferred="74" deadline="34"
     credit="1832.0" frames="100" code="A4" contact="dvanatta" kfactor="0.75"/>
-  <fah_proj number="10741" name="p10741" public="n"
+  <fah_proj number="10741" name="p10741" public="y"
     server="171.67.108.42" atoms="3440" preferred="22" deadline="10"
     credit="528.0" frames="100" code="A4" contact="dvanatta" kfactor="0.75"/>
-  <fah_proj number="10742" name="p10742" public="n"
+  <fah_proj number="10742" name="p10742" public="y"
     server="171.67.108.42" atoms="12097" preferred="73" deadline="34"
     credit="1813.0" frames="100" code="A4" contact="dvanatta" kfactor="0.75"/>
 

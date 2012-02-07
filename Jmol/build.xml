@@ -394,7 +394,7 @@ all support for previous versions removed
     <!-- unjar dest="${appjars.dir}" src="${lib.dir}/Acme.jar"/ -->
     <unjar dest="${appjars.dir}" src="${lib.dir}/${itext.jar}"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/${commons-cli.jar}"/>
-    <srcfiles dir="${lib.dir}" includes="jspecview.jar"/>
+    <unjar dest="${appjars.dir}" src="${lib.dir}/jspecview.jar"/>
     <touch file="build/libjars.timestamp"/>
   </target>
 

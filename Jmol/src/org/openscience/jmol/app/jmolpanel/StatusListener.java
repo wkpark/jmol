@@ -357,7 +357,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface {
   }
 
   public void registerApplet(String appletID, JmolSyncInterface applet) {
-    // TODO    
+    // not used unless embedded in JSpecView?   
   }
 
   public void syncScript(String script) {

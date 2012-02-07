@@ -26,6 +26,8 @@ package org.jmol.applet;
 
 import org.jmol.api.JmolCallbackListener;
 import org.jmol.api.JmolStatusListener;
+import org.jmol.api.JmolScriptInterface;
+import org.jmol.api.JmolSyncInterface;
 import org.jmol.api.JmolViewer;
 import org.jmol.constant.EnumCallback;
 import org.jmol.export.JmolFileDropper;
@@ -256,7 +258,7 @@ public class Jmol implements WrappedApplet {
 
     String ms = getParameter("mayscript");
     mayScript = (ms != null) && (!ms.equalsIgnoreCase("false"));
-    JmolAppletRegistry.checkIn(fullName, (JmolSyncedAppletInterface) appletWrapper);
+    JmolAppletRegistry.checkIn(fullName, (JmolSyncInterface) appletWrapper);
     initWindows();
     initApplication();
   }
@@ -1262,19 +1264,20 @@ public class Jmol implements WrappedApplet {
         gRight = null;
       for (int i = 0; i < nApplets; i++) {
         String theApplet = apps.get(i);
-        JmolSyncedAppletInterface app = (JmolSyncedAppletInterface) JmolAppletRegistry.htRegistry
+        JmolSyncInterface app = (JmolSyncInterface) JmolAppletRegistry.htRegistry
             .get(theApplet);
+        boolean isScriptable = (app instanceof JmolScriptInterface);
         if (Logger.debugging)
           Logger.debug(fullName + " sending to " + theApplet + ": " + script);
         try {
-          if (getGraphics || setNoGraphics) {
-            gRight = app.setStereoGraphics(getGraphics);
+          if (isScriptable && (getGraphics || setNoGraphics)) {
+            gRight = ((JmolScriptInterface)app).setStereoGraphics(getGraphics);
             return "";
           }
           if (isSync)
             app.syncScript(script);
-          else
-            sb.append(app.scriptWait(script, "output")).append("\n");
+          else if (isScriptable)
+            sb.append(((JmolScriptInterface)app).scriptWait(script, "output")).append("\n");
         } catch (Exception e) {
           String msg = htmlName + " couldn't send to " + theApplet + ": "
               + script + ": " + e;
@@ -1288,7 +1291,7 @@ public class Jmol implements WrappedApplet {
 
   }
 
-  public void registerApplet(String appletID, JmolSyncedAppletInterface applet) {
+  public void registerApplet(String appletID, JmolSyncInterface applet) {
     JmolAppletRegistry.checkIn(appletID, applet); 
   }
 }

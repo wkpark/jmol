@@ -96,8 +96,6 @@ import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 
-import jspecview.application.MainFrame;
-
 public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient {
 
   static HistoryFile historyFile;
@@ -109,8 +107,6 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
   StatusBar status;
   int startupWidth, startupHeight;
   JsonNioServer serverService;
-
-  MainFrame jSpecViewFrame;
 
   protected String appletContext;
   protected PropertyChangeSupport pcs = new PropertyChangeSupport(this);
@@ -1637,16 +1633,8 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
   }
 
-  public void setJSpecView(String peaks) {
-    if (jSpecViewFrame == null) {
-      jSpecViewFrame = new MainFrame();
-      jSpecViewFrame.setSize(800, 500);
-      jSpecViewFrame.setLocation(400, 400);
-    }
-    jSpecViewFrame.setVisible(true);
-    jSpecViewFrame.syncScript(peaks);
+  public void syncScript(String script) {
+    viewer.syncScript(script, "~", 0);
   }
 
-
-  
 }

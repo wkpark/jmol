@@ -31,6 +31,7 @@ import java.util.Map;
 
 import netscape.javascript.JSObject;
 
+import org.jmol.api.JmolSyncInterface;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 
@@ -38,7 +39,7 @@ final class JmolAppletRegistry {
 
   static Map<String, Object> htRegistry = new Hashtable<String, Object>();
 
-  synchronized static void checkIn(String name, JmolSyncedAppletInterface applet) {
+  synchronized static void checkIn(String name, JmolSyncInterface applet) {
     cleanRegistry();
     if (name != null) {
       Logger.info("AppletRegistry.checkIn(" + name + ")");

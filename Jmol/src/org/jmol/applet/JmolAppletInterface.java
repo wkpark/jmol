@@ -23,6 +23,8 @@
  */
 package org.jmol.applet;
 
+import org.jmol.api.JmolScriptInterface;
+
 import netscape.javascript.JSObject;
 
 /**
@@ -33,7 +35,7 @@ import netscape.javascript.JSObject;
  * 
  */
 
-public interface JmolAppletInterface extends JmolSyncedAppletInterface {
+public interface JmolAppletInterface extends JmolScriptInterface {
 
   public String getPropertyAsString(String infoType);
   public String getPropertyAsString(String infoType, String paramInfo);

@@ -1,4 +1,4 @@
-package org.jmol.applet;
+package org.jmol.api;
 
 
 /*
@@ -7,16 +7,12 @@ package org.jmol.applet;
  * syncing operations.
  *  
  */
-public interface JmolSyncedAppletInterface {
+public interface JmolScriptInterface extends JmolSyncInterface {
 
   public abstract Object setStereoGraphics(boolean isStereo);
 
   public abstract String scriptWait(String script, String statusParams);
 
   public abstract String scriptNoWait(String script);
-
-  public abstract void syncScript(String script);
-
-  public abstract void registerApplet(String appletID, JmolSyncedAppletInterface applet);
 
 }

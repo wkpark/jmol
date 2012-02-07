@@ -32,9 +32,9 @@
  */
 
 
+import org.jmol.api.JmolSyncInterface;
 import org.jmol.applet.AppletWrapper;
 import org.jmol.applet.JmolAppletInterface;
-import org.jmol.applet.JmolSyncedAppletInterface;
 
 import netscape.javascript.JSObject;
 
@@ -219,7 +219,7 @@ public class JmolApplet extends AppletWrapper implements
     return null;
   }
 
-  public void registerApplet(String appletID, JmolSyncedAppletInterface applet) {
+  public void registerApplet(String appletID, JmolSyncInterface applet) {
     if (wrappedApplet != null)
       wrappedApplet.registerApplet(appletID, applet);
   }

@@ -26,6 +26,7 @@ package org.openscience.jmol.app.jmolpanel;
 import org.jmol.api.JmolAppConsoleInterface;
 import org.jmol.api.JmolCallbackListener;
 import org.jmol.api.JmolStatusListener;
+import org.jmol.api.JmolSyncInterface;
 import org.jmol.api.JmolViewer;
 import org.jmol.constant.EnumCallback;
 import org.jmol.export.dialog.Dialog;
@@ -36,7 +37,9 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.Map;
 
-class StatusListener implements JmolStatusListener {
+import jspecview.application.MainFrame;
+
+class StatusListener implements JmolStatusListener, JmolSyncInterface {
 
   /*
    * starting with Jmol 11.7.27, JmolStatusListener extends JmolCallbackListener
@@ -58,10 +61,11 @@ class StatusListener implements JmolStatusListener {
    * remain unimplemented if no such user action is intended
    */
 
-  JmolPanel jmol;
-  DisplayPanel display;
+  private JmolPanel jmol;
+  private DisplayPanel display;
 
-  JmolViewer viewer;
+  private JmolViewer viewer;
+  private MainFrame jSpecViewFrame;
   void setViewer(JmolViewer viewer) {
     this.viewer = viewer;
   }
@@ -155,7 +159,7 @@ class StatusListener implements JmolStatusListener {
       break;
     case SYNC:
       if (strInfo != null && strInfo.startsWith("JSpecView:")) {
-        jmol.setJSpecView(strInfo.substring(10).trim());
+        setJSpecView(strInfo.substring(10).trim());
         return;
       }
       jmol.sendNioMessage(((Integer) data[3]).intValue(), strInfo);
@@ -341,4 +345,24 @@ class StatusListener implements JmolStatusListener {
     jmol.resizeInnerPanel(data);
   }
 
+  public void setJSpecView(String peaks) {
+    if (jSpecViewFrame == null) {
+      jSpecViewFrame = new MainFrame();
+      jSpecViewFrame.setSize(800, 500);
+      jSpecViewFrame.setLocation(400, 400);
+    }
+    jSpecViewFrame.setVisible(true);
+    jSpecViewFrame.syncScript(peaks);
+  }
+
+  public void registerApplet(String appletID, JmolSyncInterface applet) {
+    // TODO    
+  }
+
+  public void syncScript(String script) {
+    jmol.syncScript(script);    
+  }
+
+
+  
 }

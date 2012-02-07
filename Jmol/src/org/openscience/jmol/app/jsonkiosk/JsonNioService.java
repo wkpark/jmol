@@ -660,6 +660,8 @@ public class JsonNioService extends NIOService implements JsonNioServer {
   }
 
   private void sendMessage(JSONObject json, String msg, NIOSocket socket) {
+    if (socket == null && (socket = outSocket) == null)
+      return;
     try {
       if (json != null) {
         msg = json.toString();
@@ -675,11 +677,8 @@ public class JsonNioService extends NIOService implements JsonNioServer {
         msg = json.toString();
       }
       msg += "\r\n";
-      if (socket == null)
-        socket = outSocket;
       Logger.info(Thread.currentThread().getName() + " sending " + msg + " to " + socket);
-      if (socket != null)
-        socket.write(msg.getBytes("UTF-8"));
+      socket.write(msg.getBytes("UTF-8"));
     } catch (Throwable e) {
       e.printStackTrace();
     }

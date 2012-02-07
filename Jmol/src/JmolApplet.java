@@ -219,9 +219,9 @@ public class JmolApplet extends AppletWrapper implements
     return null;
   }
 
-  public void registerApplet(String appletID, JmolSyncInterface applet) {
+  public void register(String id, JmolSyncInterface jsi) {
     if (wrappedApplet != null)
-      wrappedApplet.registerApplet(appletID, applet);
+      wrappedApplet.register(id, jsi);
   }
 
 }

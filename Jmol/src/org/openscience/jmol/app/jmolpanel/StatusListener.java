@@ -350,15 +350,18 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface {
       jSpecViewFrame = new MainFrame();
       jSpecViewFrame.setSize(800, 500);
       jSpecViewFrame.setLocation(400, 400);
-      jSpecViewFrame.registerApplet("Jmol", this);
+      jSpecViewFrame.register("Jmol", this);
     }
     if (!jSpecViewFrame.isVisible())
       jSpecViewFrame.setVisible(true);
     jSpecViewFrame.syncScript(peaks);
   }
 
-  public void registerApplet(String appletID, JmolSyncInterface applet) {
-    // not used unless embedded in JSpecView?   
+  public void register(String id, JmolSyncInterface jsi) {
+    // this would be a call from JSpecView requesting that Jmol 
+    // register the JSpecView applet in the JmolAppletRegistry. 
+    // That will be important, because the applet will be using
+    // SYNC to communicate with the JSpecView applet.
   }
 
   public void syncScript(String script) {

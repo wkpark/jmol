@@ -1291,7 +1291,7 @@ public class Jmol implements WrappedApplet {
 
   }
 
-  public void registerApplet(String appletID, JmolSyncInterface applet) {
-    JmolAppletRegistry.checkIn(appletID, applet); 
+  public void register(String id, JmolSyncInterface jsi) {
+    JmolAppletRegistry.checkIn(id, jsi); 
   }
 }

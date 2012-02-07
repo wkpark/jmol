@@ -9,10 +9,12 @@ package org.jmol.api;
  */
 public interface JmolScriptInterface extends JmolSyncInterface {
 
-  public abstract Object setStereoGraphics(boolean isStereo);
-
-  public abstract String scriptWait(String script, String statusParams);
-
-  public abstract String scriptNoWait(String script);
+  public Object setStereoGraphics(boolean isStereo);
+  public void script(String script);
+  public String scriptCheck(String script);
+  public String scriptWait(String script);
+  public String scriptWaitOutput(String script);
+  public String scriptWait(String script, String statusParams);
+  public String scriptNoWait(String script);
 
 }

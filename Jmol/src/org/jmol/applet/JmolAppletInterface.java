@@ -47,10 +47,6 @@ public interface JmolAppletInterface extends JmolScriptInterface {
   public String loadInlineArray(String[] strModels, String script, boolean isAppend);
   public String loadNodeId(String nodeId);
   public String loadDOMNode(JSObject DOMNode);
-  public void script(String script);
-  public String scriptCheck(String script);
-  public String scriptWait(String script);
-  public String scriptWaitOutput(String script);
 
   // Note -- some Macintosh-based browsers cannot distinguish methods
   // with the same name but with different method signatures

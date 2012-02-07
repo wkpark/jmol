@@ -3375,6 +3375,8 @@ abstract public class ModelCollection extends BondCollection {
 
   private SymmetryInterface symTemp;
 
+  private Hashtable<String, BitSet> htPeaks;
+
   @SuppressWarnings("unchecked")
   public Map<String, Object> getSpaceGroupInfo(int modelIndex,
                                                String spaceGroup, int symOp,
@@ -4161,5 +4163,47 @@ abstract public class ModelCollection extends BondCollection {
     return (fname == null && !haveFile ? -2 : errCode);
   }
 
+  
+  @SuppressWarnings("unchecked")
+  public String getPeakAtomRecord(int atomIndex) {
+    int iModel = atoms[atomIndex].modelIndex;
+    String type = null;
+    switch (atoms[atomIndex].getElementNumber()) {
+    case 1:
+      type = "HNMR";
+      break;
+    case 6:
+      type = "13CNMR";
+      break;
+    default:
+      return null;
+    }
+    List<String> peaks = (List<String>) getModelAuxiliaryInfo(iModel,
+        "jdxAtomSelect_" + type);
+    if (peaks == null)
+      return null;
+    htPeaks = null;
+    if (htPeaks == null)
+      htPeaks = new Hashtable<String, BitSet>();
+    for (int i = 0; i < peaks.size(); i++) {
+      String peak = peaks.get(i);
+      BitSet bsPeak = htPeaks.get(peak);
+      if (bsPeak == null) {
+        htPeaks.put(peak, bsPeak = new BitSet());
+        String atoms = Parser.getQuotedAttribute(peak, "atoms");
+        String select = Parser.getQuotedAttribute(peak, "select");
+        String script = "";
+        if (atoms != null)
+          script += "visible & (atomno="
+              + TextFormat.simpleReplace(atoms, ",", " or atomno=") + ")";
+        else if (select != null)
+          script += "visible & (" + select + ")";
+        bsPeak.or(viewer.getAtomBitSet(script));
+      }
+      if (bsPeak.get(atomIndex))
+        return peak;
+    }
+    return null;
+  }
 
 }

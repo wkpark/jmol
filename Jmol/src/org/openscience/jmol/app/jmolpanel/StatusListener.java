@@ -82,6 +82,7 @@ class StatusListener implements JmolStatusListener {
     case MESSAGE:
     case PICK:
     case SCRIPT:
+    case SYNC:
       return true;
     case EVAL:
     case ATOMMOVED:
@@ -90,7 +91,6 @@ class StatusListener implements JmolStatusListener {
     case HOVER:
     case MINIMIZATION:
     case RESIZE:
-    case SYNC:
     case APPLETREADY:
       // applet only (but you could change this for your listener)
       break;
@@ -154,6 +154,10 @@ class StatusListener implements JmolStatusListener {
       notifyAtomPicked(strInfo);
       break;
     case SYNC:
+      if (strInfo != null && strInfo.startsWith("JSpecView:")) {
+        jmol.setJSpecView(strInfo.substring(10).trim());
+        return;
+      }
       jmol.sendNioMessage(((Integer) data[3]).intValue(), strInfo);
       return;
     case ERROR:

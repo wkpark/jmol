@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="org/jmol/jcamp/" path="src" kind="src"/>
-	<classpathentry excluding="CDKIntegration.java|CDKIntegrationPDB.java" path="examples/basic" kind="src"/>
-	<classpathentry path="examples/externalAppletControls" kind="src"/>
-	<classpathentry path="test" kind="src"/>
-	<classpathentry excluding="org/jmol/screensaver/JmolScreensaver.java" path="screensaver/src/java" kind="src"/>
-	<classpathentry path="jars/vecmath1.2-1.14.jar" kind="lib"/>
-	<classpathentry path="org.eclipse.jdt.launching.JRE_CONTAINER" kind="con"/>
-	<classpathentry path="jars/netscape.jar" kind="lib"/>
-	<classpathentry path="jars/Acme.jar" kind="lib"/>
-	<classpathentry path="jars/commons-cli-1.0.jar" kind="lib"/>
-	<classpathentry path="jars/itext-1.4.5.jar" kind="lib"/>
-	<classpathentry path="screensaver/jars/saverbeans-api.jar" kind="lib"/>
-	<classpathentry path="jars/junit.jar" kind="lib"/>
-	<classpathentry path="jars/naga-2_1-r42.jar" kind="lib"/>
-	<classpathentry path="bin" kind="output"/>
+	<classpathentry excluding="org/jmol/jcamp/" kind="src" path="src"/>
+	<classpathentry excluding="CDKIntegration.java|CDKIntegrationPDB.java" kind="src" path="examples/basic"/>
+	<classpathentry kind="src" path="examples/externalAppletControls"/>
+	<classpathentry kind="src" path="test"/>
+	<classpathentry excluding="org/jmol/screensaver/JmolScreensaver.java" kind="src" path="screensaver/src/java"/>
+	<classpathentry kind="lib" path="jars/vecmath1.2-1.14.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="jars/netscape.jar"/>
+	<classpathentry kind="lib" path="jars/Acme.jar"/>
+	<classpathentry kind="lib" path="jars/commons-cli-1.0.jar"/>
+	<classpathentry kind="lib" path="jars/itext-1.4.5.jar"/>
+	<classpathentry kind="lib" path="screensaver/jars/saverbeans-api.jar"/>
+	<classpathentry kind="lib" path="jars/junit.jar"/>
+	<classpathentry kind="lib" path="jars/naga-2_1-r42.jar"/>
+	<classpathentry kind="lib" path="jars/jspecview.jar"/>
+	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -5149,6 +5149,12 @@ private void zap(String msg) {
     statusManager.setStatusFrameChanged(frameNo, fileNo, modelNo,
         (animationManager.animationDirection < 0 ? -firstNo : firstNo),
         (animationManager.currentDirection < 0 ? -lastNo : lastNo));
+    int syncMode = statusManager.getSyncMode();
+    if (syncMode != StatusManager.SYNC_DRIVER)
+      return;
+    String peak = (String) getModelAuxiliaryInfo(modelIndex, "jdxModelSelect");
+    if (peak != null)
+      statusManager.syncSend("JSpecView: " + peak, ">", 0);
   }
 
   /*
@@ -5385,6 +5391,12 @@ private void zap(String msg) {
     global.setPicked(atomIndex);
     global.setParameterValue("_pickinfo", info);
     statusManager.setStatusAtomPicked(atomIndex, info);
+    int syncMode = statusManager.getSyncMode();
+    if (syncMode != StatusManager.SYNC_DRIVER)
+      return;
+    String peaks = modelSet.getPeakAtomRecord(atomIndex);
+    if (peaks != null)
+      statusManager.syncSend("JSpecView: " + peaks, ">", 0);
   }
 
   /*
@@ -8764,7 +8776,7 @@ private void zap(String msg) {
           script += ";model ID " + Escape.escape(id);
         if (atoms != null)
           script += ";select visible & (@" + TextFormat.simpleReplace(atoms, ",", " or @") + ")";
-        if (select != null)
+        else if (select != null)
           script += ";select visible & (" + select + ")";
         if (script2 != null)
           script += ";" + script2;

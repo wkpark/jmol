@@ -437,9 +437,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     this.fullName = fullName = (fullName == null ? "" : fullName);
     appletDocumentBase = (documentBase == null ? "" : documentBase.toString());
     appletCodeBase = (codeBase == null ? "" : codeBase.toString());
-    int i = fullName.lastIndexOf("[");
+    int i = fullName.indexOf("__");
     htmlName = (i < 0 ? fullName : fullName.substring(0, i));
-    syncId = (i < 0 ? "" : fullName.substring(i + 1, fullName.length() - 1));
+    syncId = (i < 0 ? "" : fullName.substring(i + 2, fullName.length() - 2));
     String str = appletContext;
     if (str.indexOf("-debug") >= 0)
       Logger.setLogLevel(Logger.LEVEL_DEBUG);
@@ -5154,7 +5154,7 @@ private void zap(String msg) {
       return;
     String peak = (String) getModelAuxiliaryInfo(modelIndex, "jdxModelSelect");
     if (peak != null)
-      statusManager.syncSend("JSpecView: " + peak, ">", 0);
+      statusManager.syncSend(fullName + "JSpecView: " + peak, ">", 0);
   }
 
   /*
@@ -5396,7 +5396,7 @@ private void zap(String msg) {
       return;
     String peaks = modelSet.getPeakAtomRecord(atomIndex);
     if (peaks != null)
-      statusManager.syncSend("JSpecView: " + peaks, ">", 0);
+      statusManager.syncSend(fullName + "JSpecView: " + peaks, ">", 0);
   }
 
   /*

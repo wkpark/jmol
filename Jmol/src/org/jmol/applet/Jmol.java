@@ -899,11 +899,12 @@ public class Jmol implements WrappedApplet {
       //System.out.println("Jmol.java notifyCallback " + type + " " + callback
        //+ " " + strInfo);
       switch (type) {
-      case MINIMIZATION:
-      case RESIZE:
+      case APPLETREADY:
+      case ERROR:
       case EVAL:
       case HOVER:
-      case ERROR:
+      case MINIMIZATION:
+      case RESIZE:
         // just send it
         break;
       case CLICK:

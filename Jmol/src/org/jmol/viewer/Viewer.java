@@ -5585,7 +5585,7 @@ private void zap(String msg) {
     }
     if (key.equalsIgnoreCase("__appletReady")) {
       // used as a simple way to communicate this from org.jmol.applet.jmol
-      statusManager.setStatusAppletReady(htmlName, true);
+      statusManager.setStatusAppletReady(fullName, true);
       return true;
     }
     if (key.equalsIgnoreCase("__appletDestroyed")) {

@@ -219,6 +219,14 @@ public class JmolApplet extends AppletWrapper implements
     return null;
   }
 
+  public void registerApplet(String id, String fullName) {
+    // does not work looking for JSVApplet!
+    JmolSyncInterface applet = (JmolSyncInterface) getAppletContext().getApplet(id);
+    if (applet == null)
+      System.out.println("could not find " + id);
+    register(fullName, applet);
+  }
+  
   public void register(String id, JmolSyncInterface jsi) {
     if (wrappedApplet != null)
       wrappedApplet.register(id, jsi);

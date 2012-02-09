@@ -365,7 +365,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface {
   }
 
   public void syncScript(String script) {
-    // called from JSpecView to send "Select: <Peak...." script
+    // called from JSpecView to send "Select: <PeakAssignment...." script
     jmol.syncScript(script);    
   }
 

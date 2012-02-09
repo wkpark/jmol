@@ -41,7 +41,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
 /**
- * A preliminary reader for JCAMP-DX files having ##$MODELS= and ##$PEAK_LINKS= records
+ * A preliminary reader for JCAMP-DX files having ##$MODELS= and ##$PEAKS= records
  * 
  * Designed by Robert Lancashire and Bob Hanson
  * 
@@ -67,7 +67,7 @@ C    -1.693100    0.007800    0.000000   -0.000980    0.000120    0.000000
 </Models>
 
 -- All XML data should be line-oriented in the above fashion. Leading spaces will be ignored.
--- Any number of <model> segments can be present
+-- Any number of <ModelData> segments can be present
 -- The first model is referred to as the "base" model
 -- The base model:
    -- will generally be of type MOL, but any known type is acceptable
@@ -75,12 +75,12 @@ C    -1.693100    0.007800    0.000000   -0.000980    0.000120    0.000000
    -- will be the only model for NMR
 -- Additional models can represent vibrations (XYZ format) or MS fragmentation (MOL format, probably)
 
-##$PEAK_LINKS=
-<PeakList type="IR" xUnits="1/cm" yUnits="TRANSMITTANCE" >
-<Peak id="1" title="asymm stretch of aromatic CH group (~3100 cm-1)" peakShape="broad" model="irvibs.1"  xMax="3121" xMin="3081"  yMax="1" yMin="0" />
-<Peak id="2" title="symm stretch of aromatic CH group (~3085 cm-1)" peakShape="broad" model="irvibs.2"  xMax="3101" xMin="3071"  yMax="1" yMin="0" />
+##$PEAKS=
+<Peaks type="IR" xUnits="1/cm" yUnits="TRANSMITTANCE" >
+<PeakData id="1" title="asymm stretch of aromatic CH group (~3100 cm-1)" peakShape="broad" model="irvibs.1"  xMax="3121" xMin="3081"  yMax="1" yMin="0" />
+<PeakData id="2" title="symm stretch of aromatic CH group (~3085 cm-1)" peakShape="broad" model="irvibs.2"  xMax="3101" xMin="3071"  yMax="1" yMin="0" />
 ...
-</PeakList>
+</Peaks>
 
 -- peak record must be a single line of information because
    Jmol will use line.trim() as a key to pass information to JSpecView. 
@@ -117,12 +117,15 @@ public class JcampdxReader extends MolReader {
 
   @Override
   public boolean checkLine() throws Exception {
-    if (line.startsWith("##$MODELS")) {
+    int i = line.indexOf("=");
+    if (i < 0 || !line.startsWith("##"))
+      return true; 
+    String label = line.substring(0, i).trim();
+    if (label.equals("##$MODELS")) {
       readModels();
-    } else if (line.startsWith("##$PEAK") && line.contains("LINKS=")) {
-      readPeakList();
+    } else if (label.equals("##$PEAKS")) {
+      readPeaks();
     }
-
     return true;
   }
 
@@ -193,7 +196,7 @@ public class JcampdxReader extends MolReader {
     // read model only once for a given ID
     String key = ";" + modelID + ";";
     if (modelIdList.indexOf(key) >= 0) {
-      discardLinesUntilContains("</ModelData");
+      discardLinesUntilContains("</ModelData>");
       return null;
     }
     modelIdList += key;
@@ -264,16 +267,16 @@ public class JcampdxReader extends MolReader {
 
   private int peakIndex;
   
-  private void readPeakList() throws Exception {
-    discardLinesUntilContains("<PeakList");
+  private void readPeaks() throws Exception {
+    discardLinesUntilContains("<Peaks");
     String type = getAttribute(line, "type");
-    while (readLine() != null && !(line = line.trim()).startsWith("</PeakList"))
-      if (line.startsWith("<Peak"))
-        peakData.add("<Peak file=" + Escape.escape(filePath) + " index=\"" + (++peakIndex) + "\"" + " type=\"" + type + "\" " + line.substring(5).trim());      
+    while (readLine() != null && !(line = line.trim()).startsWith("</Peaks>"))
+      if (line.startsWith("<PeakData"))
+        peakData.add("<PeakData file=" + Escape.escape(filePath) + " index=\"" + (++peakIndex) + "\"" + " type=\"" + type + "\" " + line.substring(9).trim());      
   }
 
   /**
-   * integrate the <Peak> records into the associated models, and delete unreferenced n.m models
+   * integrate the <PeakAssignment> records into the associated models, and delete unreferenced n.m models
    */
   @SuppressWarnings("unchecked")
   private void processPeakData() {

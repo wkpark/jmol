@@ -74,11 +74,12 @@ abstract class CageRenderer extends FontLineShapeRenderer {
     int diameter = getDiameter((int) (zSum / 8), mad);
     int axisPt = 2;
     char edge = 0;
-    allowedEdges0 &= (isPolymer ? 0x1 : isSlab ? 0x51 : 0xFF);
-    allowedEdges1 &= (isPolymer ? 0x10 : isSlab ? 0x51 : 0xFF);
+    allowedEdges0 &= (isPolymer ? 0x1 : isSlab ? 0x55 : 0xFF);
+    allowedEdges1 &= (isPolymer ? 0x10 : isSlab ? 0x55 : 0xFF);
     for (int i = firstLine * 2; i < 24; i += 2) {
       int edge0 = BoxInfo.edges[i];
       int edge1 = BoxInfo.edges[i + 1];
+      System.out.println(i + " " + edge0 + " " + edge1);
       if (axisPoints != null && edge0 == 0)
         viewer.transformPointNoClip(axisPoints[axisPt--], screens[0]);
       if ((allowedEdges0 & (1 << edge0)) == 0 

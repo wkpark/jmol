@@ -639,7 +639,13 @@ public class CrystalReader extends AtomSetCollectionReader {
   private boolean readAtoms() throws Exception {
     if (isMolecular)
       newAtomSet();
-    discardLinesUntilContains("*");
+    while (readLine() != null && line.indexOf("*") < 0) {
+      if (line.indexOf("X(ANGSTROM") >= 0) {
+        // fullerene from slab has this.
+        setFractionalCoordinates(false);
+        isMolecular = true;
+      }
+    }
     int i = atomIndexLast;
     // I turned off normalization -- proper way to do this is to 
     // add the "packed" keyword. As it was, it was impossible to
@@ -662,7 +668,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       float z = parseFloat(tokens[pt]);
       if (haveCharges)
         atom.partialCharge = atomSetCollection.getAtom(i++).partialCharge;
-      if (!isProperties) {
+      if (iHaveFractionalCoordinates && !isProperties) {
         // note: this normalization is unique to this reader -- all other
         //       readers operate through symmetry application
         if (x < 0 && (isPolymer || isSlab || doNormalizePrimitive))

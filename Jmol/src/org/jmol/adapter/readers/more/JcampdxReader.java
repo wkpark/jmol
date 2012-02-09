@@ -262,12 +262,14 @@ public class JcampdxReader extends MolReader {
     }
   }
 
+  private int peakIndex;
+  
   private void readPeakList() throws Exception {
     discardLinesUntilContains("<PeakList");
     String type = getAttribute(line, "type");
     while (readLine() != null && !(line = line.trim()).startsWith("</PeakList"))
       if (line.startsWith("<Peak"))
-        peakData.add("<Peak file=" + Escape.escape(filePath) + " type=\"" + type + "\" " + line.trim().substring(5));      
+        peakData.add("<Peak file=" + Escape.escape(filePath) + " index=\"" + (++peakIndex) + "\"" + " type=\"" + type + "\" " + line.substring(5).trim());      
   }
 
   /**

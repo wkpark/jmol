@@ -360,8 +360,6 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface {
   public void register(String id, JmolSyncInterface jsi) {
     // this would be a call from JSpecView requesting that Jmol 
     // register the JSpecView applet in the JmolAppletRegistry. 
-    // That will be important, because the applet will be using
-    // SYNC to communicate with the JSpecView applet.
   }
 
   public void syncScript(String script) {

@@ -1399,6 +1399,7 @@ all support for previous versions removed
     <copy todir="build/dist/jmol-${version}" >
       <fileset dir="./appletweb">
         <include name="Jmol.js" />
+        <include name="jspecview.jar" />
       </fileset>
     </copy>
 

@@ -100,6 +100,7 @@ public class JcampdxReader extends MolReader {
   
   @Override
   public void initializeReader() throws Exception {
+    System.out.println("JcampdxReader " +   filePath);
     // trajectories would be OK for IR, but just too complicated for others.
     if (isTrajectory) {
       Logger.warn("TRAJECTORY keyword ignored");

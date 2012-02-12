@@ -331,6 +331,8 @@ public class JcampdxReader extends MolReader {
       if (n > 0)
         appendLoadNote((String) atomSetCollection.getAtomSetAuxiliaryInfo(0, "name"));
     }
+    for (int i = atomSetCollection.getAtomSetCount(); --i >= 0;)
+      atomSetCollection.setAtomSetNumber(i, i + 1);
   }
 
   private String allTypes;

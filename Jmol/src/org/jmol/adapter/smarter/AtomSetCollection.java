@@ -1628,15 +1628,18 @@ public class AtomSetCollection {
   }
 
   /**
-  * Sets the number for the current AtomSet
-  *
-  * @param atomSetNumber The number for the current AtomSet.
-  */
+   * Sets the number for the current AtomSet
+   * 
+   * @param atomSetNumber
+   *        The number for the current AtomSet.
+   */
   public void setAtomSetNumber(int atomSetNumber) {
-    if (isTrajectory)
-      atomSetNumbers[currentAtomSetIndex + trajectoryStepCount] = atomSetNumber;
-    else
-      atomSetNumbers[currentAtomSetIndex] = atomSetNumber;
+    setAtomSetNumber(currentAtomSetIndex
+        + (isTrajectory ? trajectoryStepCount : 0), atomSetNumber);
+  }
+  
+  public void setAtomSetNumber(int index, int atomSetNumber) {
+    atomSetNumbers[index] = atomSetNumber;
   }
   
   /**

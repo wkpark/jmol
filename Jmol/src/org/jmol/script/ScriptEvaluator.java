@@ -9722,13 +9722,16 @@ public class ScriptEvaluator {
      * 
      * note that there are many defaults
      * 
-     * spin # defaults to spin y 10 spin 10 # defaults to spin y 10 spin x #
-     * defaults to spin x 10
+     * spin # defaults to spin y 10 
+     * spin 10 # defaults to spin y 10 
+     * spin x # defaults to spin x 10
      * 
      * and several new options
      * 
-     * spin -x spin axisangle {1 1 0} 10 spin 10 (atomno=1)(atomno=2) spin 20 {0
-     * 0 0} {1 1 1}
+     * spin -x 
+     * spin axisangle {1 1 0} 10 
+     * spin 10 (atomno=1)(atomno=2) 
+     * spin 20 {0 0 0} {1 1 1}
      * 
      * spin MOLECULAR {0 0 0} 20
      * 

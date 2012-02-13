@@ -5154,7 +5154,7 @@ private void zap(String msg) {
       return;
     String peak = (String) getModelAuxiliaryInfo(modelIndex, "jdxModelSelect");
     if (peak != null)
-      statusManager.syncSend(fullName + "JSpecView: " + peak, ">", 0);
+      sendJSpecView(peak);
   }
 
   /*
@@ -5395,12 +5395,8 @@ private void zap(String msg) {
     if (syncMode != StatusManager.SYNC_DRIVER)
       return;
     String peak = modelSet.getPeakAtomRecord(atomIndex);
-    if (peak != null) {
-      String msg = Parser.getQuotedAttribute(peak, "title");
-      if (msg != null)
-        scriptEcho(Logger.debugging ? peak : msg);
-      statusManager.syncSend(fullName + "JSpecView: " + peak, ">", 0);
-    }
+    if (peak != null)
+      sendJSpecView(peak);
   }
 
   /*
@@ -5410,6 +5406,13 @@ private void zap(String msg) {
    * jmolSetCallback("resizeCallback", "myResizeCallback") function
    * myResizeCallback(width, height) {}
    */
+
+  private void sendJSpecView(String peak) {
+    String msg = Parser.getQuotedAttribute(peak, "title");
+    if (msg != null)
+      scriptEcho(Logger.debugging ? peak : msg);
+    statusManager.syncSend(fullName + "JSpecView: " + peak, ">", 0);
+  }
 
   public void setStatusResized(int width, int height) {
     statusManager.setStatusResized(width, height);

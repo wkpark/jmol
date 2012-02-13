@@ -5394,9 +5394,13 @@ private void zap(String msg) {
     int syncMode = statusManager.getSyncMode();
     if (syncMode != StatusManager.SYNC_DRIVER)
       return;
-    String peaks = modelSet.getPeakAtomRecord(atomIndex);
-    if (peaks != null)
-      statusManager.syncSend(fullName + "JSpecView: " + peaks, ">", 0);
+    String peak = modelSet.getPeakAtomRecord(atomIndex);
+    if (peak != null) {
+      String msg = Parser.getQuotedAttribute(peak, "title");
+      if (msg != null)
+        scriptEcho(Logger.debugging ? peak : msg);
+      statusManager.syncSend(fullName + "JSpecView: " + peak, ">", 0);
+    }
   }
 
   /*

@@ -8780,6 +8780,8 @@ private void zap(String msg) {
           script += ";select visible & (" + select + ")";
         if (script2 != null)
           script += ";" + script2;
+      } else if (script.startsWith("JSpecView:")) {
+        return;
       }
       System.out.println(script);
       evalStringQuiet(script, true, false);

@@ -62,6 +62,9 @@ class GuiMap {
     labels.put("openpdb", GT._("&Get PDB"));
     labels.put("openmol", GT._("Get &MOL"));
     labels.put("reloadScript", GT._("&Reload"));
+    
+    labels.put("openJSpecViewScript", "JSpecView");
+    
     labels.put("editor", GT._("Scrip&t Editor..."));  // new %t 11.7.45
     labels.put("console", GT._("Conso&le..."));
     labels.put("jconsole", GT._("Jmol Java &Console"));

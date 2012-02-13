@@ -354,7 +354,8 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface {
     }
     if (!jSpecViewFrame.isVisible())
       jSpecViewFrame.setVisible(true);
-    jSpecViewFrame.syncScript(peaks);
+    if (peaks.length() > 0)
+      jSpecViewFrame.syncScript(peaks);
   }
 
   public void register(String id, JmolSyncInterface jsi) {

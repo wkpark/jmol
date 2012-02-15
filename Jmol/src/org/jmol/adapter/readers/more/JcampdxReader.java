@@ -144,7 +144,8 @@ public class JcampdxReader extends MolReader {
   }
 
   private void readModels() throws Exception {
-    discardLinesUntilContains("<Models");
+    if (line.indexOf("<Models") < 0)
+      discardLinesUntilContains("<Models");
     // if load xxx.jdx n  then we must temporarily set n to 1 for the base model reading
     // load xxx.jdx 0  will mean "load only the base model(s)"
     models = null;
@@ -268,7 +269,8 @@ public class JcampdxReader extends MolReader {
   private int peakIndex;
   
   private void readPeaks() throws Exception {
-    discardLinesUntilContains("<Peaks");
+    if (line.indexOf("<Peaks") < 0)
+      discardLinesUntilContains("<Peaks");
     String type = getAttribute(line, "type");
     while (readLine() != null && !(line = line.trim()).startsWith("</Peaks>"))
       if (line.startsWith("<PeakData"))

@@ -59,7 +59,7 @@ acetophenone
  17 14  1  0  0  0
 M  END
   </ModelData>
- <ModelData id="irvibs" type="XYZVIB">
+ <ModelData id="irvibs" type="XYZVIB" baseModel="acetophenone" vibrationScale="0.1">
 17
 1  Energy: -1454.38826  Freq: 3199.35852
 C    -1.693100    0.007800    0.000000   -0.000980    0.000120    0.000000
@@ -226,7 +226,7 @@ public class JcampdxReader extends MolReader {
     AtomSetCollection a = (AtomSetCollection) ret;
     if (a.getBondCount() == 0) {
       if (baseModel.length() == 0)
-        baseModel = lastModel ;
+        baseModel = lastModel;
     if (baseModel.length() != 0)
       setBonding(a, baseModel); 
     }

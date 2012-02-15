@@ -288,4 +288,12 @@ public class Atom extends Point3f implements Cloneable {
     return isValidElementSymbolNoCaseSecondChar(chFirst, chSecond);
   }
 
+  public void scaleVector(float vibScale) {
+    if (Float.isNaN(vectorX))
+      return;
+    vectorX *= vibScale;
+    vectorY *= vibScale;
+    vectorZ *= vibScale;    
+  }
+
 }

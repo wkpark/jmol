@@ -31,6 +31,7 @@ import java.util.BitSet;
 import java.util.List;
 
 import org.jmol.adapter.readers.molxyz.MolReader;
+import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Bond;
@@ -203,6 +204,7 @@ public class JcampdxReader extends MolReader {
     modelIdList += key;
     String baseModel = getAttribute(line, "baseModel");
     String modelType = getAttribute(line, "type").toLowerCase();
+    float vibScale = Parser.parseFloat(getAttribute(line, "vibrationScale"));
     if (modelType.equals("xyzvib"))
       modelType = "xyz";
     else if (modelType.length() == 0)
@@ -227,6 +229,12 @@ public class JcampdxReader extends MolReader {
         baseModel = lastModel ;
     if (baseModel.length() != 0)
       setBonding(a, baseModel); 
+    }
+    if (!Float.isNaN(vibScale)) {
+      Logger.info("jdx applying vibrationScale of " + vibScale + " to " + a.getAtomCount() + " atoms");
+      Atom[] atoms = a.getAtoms();
+      for (int i = a.getAtomCount(); --i >= 0; )
+        atoms[i].scaleVector(vibScale);      
     }
     Logger.info("jdx model=" + modelID + " type=" + a.getFileTypeName());
     return a;

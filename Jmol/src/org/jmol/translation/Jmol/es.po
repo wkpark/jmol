@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-02-06 06:32+0100\n"
-"PO-Revision-Date: 2012-02-10 21:26+0100\n"
+"PO-Revision-Date: 2012-02-15 22:34+0100\n"
 "Last-Translator: Angel Herráez <aherraez@users.sourceforge.net>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -1436,7 +1436,7 @@ msgstr "Herramienta de superficies"
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:152
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:155
 msgid "View Center"
-msgstr "Ver el centro"
+msgstr "Centro de lo mostrado"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:153
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:156
@@ -1456,7 +1456,7 @@ msgid ""
 "Caps slice with opaque surfaces.\n"
 "Ignores MOs and surfaces with interior layers."
 msgstr ""
-"Cierra la sección usando planos opacos.\n"
+"Cierra la sección usando planos opacos. \n"
 "Ignora los orbitales moleculares y las superficies con capas interiores."
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:174
@@ -1465,7 +1465,7 @@ msgstr "Planos de sección"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:176
 msgid "Shows planes at slicing surfaces."
-msgstr "Muestra planos en las superficies que seccionan"
+msgstr "Muestra planos en las secciones"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:183
 msgid "Ghost On"
@@ -1497,7 +1497,7 @@ msgstr "Grosor de la sección"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:261
 msgid "Select Surface(s)"
-msgstr "Seleccionar superficie(s)"
+msgstr "Elegir superficie(s)"
 
 #: org/openscience/jmol/app/webexport/JmolInstance.java:81
 msgid "Attempt to make scratch directory failed."

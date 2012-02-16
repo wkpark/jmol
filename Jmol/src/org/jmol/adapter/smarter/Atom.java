@@ -55,7 +55,8 @@ public class Atom extends Point3f implements Cloneable {
   float[] anisoBorU; //[6] = 1 for U, 0 for B; [7] = bFactor
   public Quadric[] ellipsoid;  
   public void setEllipsoid(Quadric e) {
-    ellipsoid = new Quadric[] { e };
+    if (e != null)
+      ellipsoid = new Quadric[] { e };
   }
 
   

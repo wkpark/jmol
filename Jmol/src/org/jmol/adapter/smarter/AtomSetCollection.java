@@ -993,7 +993,7 @@ public class AtomSetCollection {
     int iAtomFirst = getLastAtomSetAtomIndex();
     if (needEllipsoids)
       for (int i = iAtomFirst; i < atomCount; i++)
-        atoms[i].ellipsoid = new Quadric[] { symmetry.getEllipsoid(atoms[i].anisoBorU) };
+        atoms[i].setEllipsoid(symmetry.getEllipsoid(atoms[i].anisoBorU));
 
     bondCount0 = bondCount;
 
@@ -1264,6 +1264,8 @@ public class AtomSetCollection {
           if (atoms[i].ellipsoid != null) {
             for (int j = 0; j < atoms[i].ellipsoid.length; j++) {
               Quadric e = atoms[i].ellipsoid[j];
+        if (e == null)
+          System.out.println("HMM atomsetcollection");
               Vector3f[] axes = e.vectors;
               float[] lengths = e.lengths;
               if (axes != null) {

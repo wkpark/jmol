@@ -282,7 +282,7 @@ public class Ellipsoids extends AtomShape {
 
   private void getStateAtoms(StringBuffer sb) {
     for (int ii = 0; ii < 2; ii++) {
-      if (madset[ii] == null)
+      if (madset == null || madset[ii] == null)
         continue;
       StateManager.appendCmd(sb, "Ellipsoids set " + (ii + 1) + "\n");
       Map<String, BitSet> temp = new Hashtable<String, BitSet>();

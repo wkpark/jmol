@@ -203,8 +203,8 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       factoredLengths[i] = ellipsoid.lengths[i] * ellipsoid.scale;
       if (Float.isNaN(factoredLengths[i]))
         isOK = false;
-      else if (factoredLengths[i] < 0.05f)
-        factoredLengths[i] = 0.05f; // for extremely flat ellipsoids, we need at least some length
+      else if (factoredLengths[i] < 0.2f)
+        factoredLengths[i] = 0.2f; // for extremely flat ellipsoids, we need at least some length
         
     }
     axes = ellipsoid.vectors;

@@ -1760,7 +1760,7 @@ class ScriptMathProcessor {
     if (isScalar) {
       scalar = x2;
     } else if (x2.tok == Token.varray) {
-      len = Math.min(list1.length, alist2.size());
+      len = Math.min(len, alist2.size());
     } else {
       sList2 = TextFormat.split((String) x2.value, "\n");
       list2 = new float[sList2.length];

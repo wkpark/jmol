@@ -11014,7 +11014,8 @@ public class ScriptEvaluator {
       break;
     case Token.set:
       checkLength(3);
-      setShapeProperty(JmolConstants.SHAPE_ELLIPSOIDS, "select", Integer.valueOf(intParameter(2, 1, 2)));      
+      shapeManager.loadShape(JmolConstants.SHAPE_ELLIPSOIDS);
+      setShapeProperty(JmolConstants.SHAPE_ELLIPSOIDS, "select", Integer.valueOf(intParameter(2, 1, 3)));      
       return;
     case Token.id:
     case Token.times:

@@ -52,10 +52,14 @@ public class Atom extends Point3f implements Cloneable {
   public String group3;
   public int sequenceNumber = Integer.MIN_VALUE;
   public char insertionCode = '\0';
-  float[] anisoBorU; //[6] = 1 for U, 0 for B; [7] = bFactor
+  public float[] anisoBorU; //[6] = 1 for U, 0 for B; [7] = bFactor
   public Quadric[] ellipsoid;  
   public void setEllipsoid(Quadric e) {
-    if (e != null)
+    if (e == null)
+      return;
+    if (ellipsoid != null && ellipsoid.length == 3)
+      ellipsoid[0] = e;
+    else
       ellipsoid = new Quadric[] { e };
   }
 

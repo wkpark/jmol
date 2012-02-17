@@ -147,6 +147,10 @@ public class PdbReader extends AtomSetCollectionReader {
    pdbHeader = (getHeader ? new StringBuffer() : null);
    applySymmetry = !checkFilter("NOSYMMETRY");
    getTlsGroups = checkFilter("TLS");
+   if (getTlsGroups) {
+     ignoreFileSymmetryOperators = true;
+     ignoreFileUnitCell = true;
+   }
    if (htParams.containsKey("vTlsModels")) {
      // from   load files "tls.out" "xxxx.pdb"
      vTlsModels = (List<Map<String, Object>>) htParams.remove("vTlsModels");
@@ -1358,9 +1362,11 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
            * REMARK   3      T13:  -0.0070 T23:   0.0011                                     
            */
           char tensorType = tokens[0].charAt(0);
-          tokens = getTokens((readLine().substring(10)
+          String s = (readLine().substring(10)
               + readLine().substring(10) + readLine().substring(10)).replace(
-              tensorType, ' ').replace(':', ' '));
+                  tensorType, ' ').replace(':', ' ');
+          //System.out.println("Tensor data = " + s);
+          tokens = getTokens(s);
           float[][] tensor = new float[3][3];
           tlsGroup.put("t" + tensorType, tensor);
           for (int i = 0; i < tokens.length; i++) {
@@ -1376,6 +1382,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
                 tlsAddError("invalid tensor: " + Escape.escapeArray(tensor));
 
               }
+          //System.out.println("Tensor t" + tensorType + " = " + Escape.escape(tensor));
           if (tensorType == 'S' && ++iGroup == nGroups) {
             Logger.info(nGroups + " TLS groups read");
             readLine();
@@ -1422,6 +1429,9 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     int indexMax = index0 + data.length;
     Atom[] atoms = atomSetCollection.getAtoms();
     int nGroups = groups.size();
+    symmetry = atomSetCollection.getSymmetry();
+    symmetry.setUnitCell(new float[] { 1, 1, 1, 90, 90, 90 });
+    
     for (int i = 0; i < nGroups; i++) {
       Map<String, Object> group = groups.get(i);
       List<Map<String, Object>> ranges = (List<Map<String, Object>>) group
@@ -1464,6 +1474,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     atomSetCollection.setAtomSetAtomProperty("tlsGroup", sdata.toString(),
         iModel);
     atomSetCollection.setAtomSetAuxiliaryInfo("TLS", tlsGroupInfo, iModel);
+    atomSetCollection.setEllipsoids();
   }
 
   private int findAtomForRange(int atom1, int atom2, char chain, int resno,
@@ -1499,17 +1510,17 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     float[][] T = (float[][]) group.get("tT");
     float[][] L = (float[][]) group.get("tL");
     float[][] S = (float[][]) group.get("tS");
-    
+
     if (T == null || L == null || S == null)
       return;
-    
+
     // just factor degrees-to-radians into x, y, and z rather
     // than create all new matrices
-    
+
     float x = (atom.x - origin.x) * RAD_PER_DEG;
     float y = (atom.y - origin.y) * RAD_PER_DEG;
     float z = (atom.z - origin.z) * RAD_PER_DEG;
-    
+
     float xx = x * x;
     float yy = y * y;
     float zz = z * z;
@@ -1530,18 +1541,27 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     dataT[4] = T[0][2];
     dataT[5] = T[1][2];
     dataT[6] = 8; // ORTEP type 8
-   
-    dataS[0] /*u11*/ = dataT[0] + L[1][1]*zz + L[2][2]*yy - 2*L[1][2]*yz + 2*S[1][0]*z - 2*S[2][0]*y;
-    dataS[1] /*u22*/ = dataT[1] + L[0][0]*zz + L[2][2]*xx - 2*L[2][0]*xz - 2*S[0][1]*z + 2*S[2][1]*x;
-    dataS[2] /*u33*/ = dataT[2] + L[0][0]*yy + L[1][1]*xx - 2*L[0][1]*xy - 2*S[1][2]*x + 2*S[0][2]*y;
-    dataS[3] /*u12*/ = dataT[3] - L[2][2]*xy + L[1][2]*xz + L[2][0]*yz - L[0][1]*zz - S[0][0]*z + S[1][1]*z + S[2][0]*x - S[2][1]*y;
-    dataS[4] /*u13*/ = dataT[4] - L[1][1]*xz + L[1][2]*xy - L[2][0]*yy + L[0][1]*yz + S[0][0]*y - S[2][2]*y + S[1][2]*z - S[1][0]*x;
-    dataS[5] /*u23*/ = dataT[5] - L[0][0]*yz - L[1][2]*xx + L[2][0]*xy + L[0][1]*xz - S[1][1]*x + S[2][2]*x + S[0][1]*y - S[0][2]*z;
+
+    dataS[0] /*u11*/= dataT[0] + L[1][1] * zz + L[2][2] * yy - 2 * L[1][2]
+        * yz + 2 * S[1][0] * z - 2 * S[2][0] * y;
+    dataS[1] /*u22*/= dataT[1] + L[0][0] * zz + L[2][2] * xx - 2 * L[2][0]
+        * xz - 2 * S[0][1] * z + 2 * S[2][1] * x;
+    dataS[2] /*u33*/= dataT[2] + L[0][0] * yy + L[1][1] * xx - 2 * L[0][1]
+        * xy - 2 * S[1][2] * x + 2 * S[0][2] * y;
+    dataS[3] /*u12*/= dataT[3] - L[2][2] * xy + L[1][2] * xz + L[2][0] * yz
+        - L[0][1] * zz - S[0][0] * z + S[1][1] * z + S[2][0] * x - S[2][1] * y;
+    dataS[4] /*u13*/= dataT[4] - L[1][1] * xz + L[1][2] * xy - L[2][0] * yy
+        + L[0][1] * yz + S[0][0] * y - S[2][2] * y + S[1][2] * z - S[1][0] * x;
+    dataS[5] /*u23*/= dataT[5] - L[0][0] * yz - L[1][2] * xx + L[2][0] * xy
+        + L[0][1] * xz - S[1][1] * x + S[2][2] * x + S[0][1] * y - S[0][2] * z;
     dataS[6] = 8;
-    
+
     // symmetry is set to [1 1 1 90 90 90] -- Cartesians, not actual unit cell
-    
-    atom.ellipsoid = new Quadric[] { symmetry.getEllipsoid(dataS), symmetry.getEllipsoid(dataT) };
+
+    atom.ellipsoid = new Quadric[] { null, symmetry.getEllipsoid(dataS),
+        symmetry.getEllipsoid(dataT) };
+    //if (atom.atomIndex == 0)
+      //System.out.println("pdbreader ellip 0 = " + atom.ellipsoid[1]); 
   }
 
   private void tlsAddError(String error) {

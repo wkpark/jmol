@@ -918,7 +918,7 @@ public class AtomSetCollection {
 
       // 5) apply the full lattice symmetry now
       
-      needEllipsoids = false;
+      haveAnisou = false;
       
       // ?? TODO
       atomSetAuxiliaryInfo[currentAtomSetIndex].remove("matUnitCellOrientation");
@@ -974,9 +974,9 @@ public class AtomSetCollection {
         && (dtype < 3 || pt.z > minZ - slop && pt.z < maxZ + slop));
   }
 
-  private boolean needEllipsoids;
+  public boolean haveAnisou;
   public void setAnisoBorU(Atom atom, float[] data, int type) {
-    needEllipsoids = true;
+    haveAnisou = true;
     atom.anisoBorU = data;
     data[6] = type;
   }
@@ -988,13 +988,17 @@ public class AtomSetCollection {
   private int dtype = 3;
   private Vector3f[] unitCellTranslations;
   
+  public void setEllipsoids() {
+    if (!haveAnisou)
+      return;
+    int iAtomFirst = getLastAtomSetAtomIndex();
+    for (int i = iAtomFirst; i < atomCount; i++)
+      atoms[i].setEllipsoid(symmetry.getEllipsoid(atoms[i].anisoBorU));
+  }
   private void applyAllSymmetry() throws Exception {
     int noSymmetryCount = getLastAtomSetAtomCount();
     int iAtomFirst = getLastAtomSetAtomIndex();
-    if (needEllipsoids)
-      for (int i = iAtomFirst; i < atomCount; i++)
-        atoms[i].setEllipsoid(symmetry.getEllipsoid(atoms[i].anisoBorU));
-
+    setEllipsoids();
     bondCount0 = bondCount;
 
     symmetry
@@ -1264,8 +1268,8 @@ public class AtomSetCollection {
           if (atoms[i].ellipsoid != null) {
             for (int j = 0; j < atoms[i].ellipsoid.length; j++) {
               Quadric e = atoms[i].ellipsoid[j];
-        if (e == null)
-          System.out.println("HMM atomsetcollection");
+              if (e == null)
+                continue;
               Vector3f[] axes = e.vectors;
               float[] lengths = e.lengths;
               if (axes != null) {

@@ -146,11 +146,12 @@ public class EllipsoidsRenderer extends ShapeRenderer {
         continue;
 
       for (int j = 0; j < ellipsoid2.length; j++) {
-        if (ellipsoids.madset[j] == null || ellipsoids.madset[j][i] == 0)
+        if (ellipsoid2[j] == null || ellipsoids.madset[j] == null || ellipsoids.madset[j][i] == 0)
           continue;
         colix = Shape.getColix(ellipsoids.colixset[j], i, atom);
         if (!g3d.setColix(colix))
           continue;
+        //if (i == 0)        System.out.println("ell rend " + j + " " + i + ": " + ellipsoid2[j]);
         render1(atom, ellipsoid2[j]);
       }
     }

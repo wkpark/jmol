@@ -91,8 +91,9 @@ public class Ellipsoids extends AtomShape {
         .nextSetBit(i + 1)) {
       if (size != 0)
         atoms[i].scaleEllipsoid(size, iSelect);
-      boolean isVisible = madset[0][i] > 0
-          || (madset[1] != null && madset[1].length > i && madset[1][i] > 0);
+      boolean isVisible = (madset[0] != null && madset[0].length > i && madset[0][i] > 0
+          || madset[1] != null && madset[1].length > i && madset[1][i] > 0
+          || madset[2] != null && madset[2].length > i && madset[2][i] > 0);
       bsSizeSet.set(i, isVisible);
       atoms[i].setShapeVisibility(myVisibilityFlag, isVisible);
     }
@@ -229,9 +230,9 @@ public class Ellipsoids extends AtomShape {
 
   private void checkSets() {
     if (colixset == null) {
-      colixset = new short[2][];
-      paletteIDset = new byte[2][];
-      madset = new short[2][];
+      colixset = new short[3][];
+      paletteIDset = new byte[3][];
+      madset = new short[3][];
     }
   }
 
@@ -281,7 +282,7 @@ public class Ellipsoids extends AtomShape {
   }
 
   private void getStateAtoms(StringBuffer sb) {
-    for (int ii = 0; ii < 2; ii++) {
+    for (int ii = 0; ii < 3; ii++) {
       if (madset == null || madset[ii] == null)
         continue;
       StateManager.appendCmd(sb, "Ellipsoids set " + (ii + 1) + "\n");

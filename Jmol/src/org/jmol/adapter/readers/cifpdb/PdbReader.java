@@ -114,6 +114,8 @@ public class PdbReader extends AtomSetCollectionReader {
   private int lastSourceSerial = Integer.MIN_VALUE;
   private int lastTargetSerial = Integer.MIN_VALUE;
   private int tlsGroupID;
+
+  private boolean isRefMac;
   
  final private static String lineOptions = 
    "ATOM    " + //0
@@ -258,8 +260,11 @@ public class PdbReader extends AtomSetCollectionReader {
         remark290();
         return false;
       }
-      if (getTlsGroups && line.indexOf("TLS DETAILS") > 0) {
-        return remarkTls();
+      if (getTlsGroups) {
+        if (line.startsWith("REMARK   3") && line.indexOf("REFMAC") >= 0)
+          isRefMac = true;
+        if (line.indexOf("TLS DETAILS") > 0)
+          return remarkTls();
       }
       checkLineForScript();
       return true;
@@ -1501,6 +1506,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
   private final float[] dataT = new float[8];
 
   private static final float RAD_PER_DEG = (float) (Math.PI / 180);
+  private static final float _8PI2_ = (float) (8 * Math.PI * Math.PI);
   
   private void setTlsEllipsoid(Atom atom, Map<String, Object> group) {
     Point3f origin = (Point3f) group.get("origin");
@@ -1542,12 +1548,21 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     dataT[5] = T[1][2];
     dataT[6] = 8; // ORTEP type 8
 
+    boolean isResidualB = isRefMac;
+    
+    float bresidual = atom.bfactor; // not guaranteed to be correct
+    if (isResidualB) {
+      bresidual /= _8PI2_;      
+    }else {
+      
+    }
+    
     dataS[0] /*u11*/= dataT[0] + L[1][1] * zz + L[2][2] * yy - 2 * L[1][2]
-        * yz + 2 * S[1][0] * z - 2 * S[2][0] * y;
+        * yz + 2 * S[1][0] * z - 2 * S[2][0] * y + bresidual;
     dataS[1] /*u22*/= dataT[1] + L[0][0] * zz + L[2][2] * xx - 2 * L[2][0]
-        * xz - 2 * S[0][1] * z + 2 * S[2][1] * x;
+        * xz - 2 * S[0][1] * z + 2 * S[2][1] * x + bresidual;
     dataS[2] /*u33*/= dataT[2] + L[0][0] * yy + L[1][1] * xx - 2 * L[0][1]
-        * xy - 2 * S[1][2] * x + 2 * S[0][2] * y;
+        * xy - 2 * S[1][2] * x + 2 * S[0][2] * y + bresidual;
     dataS[3] /*u12*/= dataT[3] - L[2][2] * xy + L[1][2] * xz + L[2][0] * yz
         - L[0][1] * zz - S[0][0] * z + S[1][1] * z + S[2][0] * x - S[2][1] * y;
     dataS[4] /*u13*/= dataT[4] - L[1][1] * xz + L[1][2] * xy - L[2][0] * yy

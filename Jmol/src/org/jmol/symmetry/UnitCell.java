@@ -267,47 +267,64 @@ class UnitCell extends SimpleUnitCell {
       return new Quadric(null, lengths, true);
     }
 
-    int ortepType = (int) parBorU[6];
-    boolean isFractional = (ortepType == 4 || ortepType == 5 || ortepType == 8 || ortepType == 9);
-    double cc = 2 - (ortepType % 2);
-    double dd = (ortepType == 8 || ortepType == 9 || ortepType == 10 ? twoP2
-        : ortepType == 4 || ortepType == 5 ? 0.25 : ortepType == 2
-            || ortepType == 3 ? Math.log(2) : 1);
-    // types 6 and 7 not supported
-
-    // System.out.println("ortep type " + ortepType + " isFractional=" +
-    // isFractional + " D = " + dd + " C=" + cc);
-    double B11 = parBorU[0] * dd * (isFractional ? a_ * a_ : 1);
-    double B22 = parBorU[1] * dd * (isFractional ? b_ * b_ : 1);
-    double B33 = parBorU[2] * dd * (isFractional ? c_ * c_ : 1);
-    double B12 = parBorU[3] * dd * (isFractional ? a_ * b_ : 1) * cc;
-    double B13 = parBorU[4] * dd * (isFractional ? a_ * c_ : 1) * cc;
-    double B23 = parBorU[5] * dd * (isFractional ? b_ * c_ : 1) * cc;
-
-    // set bFactor = (U11*U22*U33)
-    parBorU[7] = (float) Math.pow(B11 / twoP2 / a_ / a_ * B22 / twoP2
-        / b_ / b_ * B33 / twoP2 / c_ / c_, 0.3333);
-
     double[] Bcart = new double[6];
 
-    Bcart[0] = a * a * B11 + b * b * cosGamma * cosGamma * B22 + c
-        * c * cosBeta * cosBeta * B33 + a * b * cosGamma * B12
-        + b * c * cosGamma * cosBeta * B23 + a * c * cosBeta
-        * B13;
-    Bcart[1] = b * b * sinGamma * sinGamma * B22 + c * c * cA_
-        * cA_ * B33 + b * c * cA_ * sinGamma * B23;
-    Bcart[2] = c * c * cB_ * cB_ * B33;
-    Bcart[3] = 2 * b * b * cosGamma * sinGamma * B22 + 2 * c * c
-        * cA_ * cosBeta * B33 + a * b * sinGamma * B12 + b * c
-        * (cA_ * cosGamma + sinGamma * cosBeta) * B23 + a
-        * c * cA_ * B13;
-    Bcart[4] = 2 * c * c * cB_ * cosBeta * B33 + b * c
-        * cosGamma * B23 + a * c * cB_ * B13;
-    Bcart[5] = 2 * c * c * cA_ * cB_ * B33 + b * c * cB_
-        * sinGamma * B23;
+    int ortepType = (int) parBorU[6];
 
-    // System.out.println("UnitCell Bcart="+Bcart[0] + " " + Bcart[1] + " " +
-    // Bcart[2] + " " + Bcart[3] + " " + Bcart[4] + " " + Bcart[5]);
+    if (ortepType == 12) {
+      // macromolecular Cartesian
+
+      Bcart[0] = parBorU[0] * twoP2;
+      Bcart[1] = parBorU[1] * twoP2;
+      Bcart[2] = parBorU[2] * twoP2;
+      Bcart[3] = parBorU[3] * twoP2 * 2;
+      Bcart[4] = parBorU[4] * twoP2 * 2;
+      Bcart[5] = parBorU[5] * twoP2 * 2;
+
+      parBorU[7] = (float) Math.pow(parBorU[0] * parBorU[1] * parBorU[3],
+          0.3333);
+
+    } else {
+
+      boolean isFractional = (ortepType == 4 || ortepType == 5
+          || ortepType == 8 || ortepType == 9);
+      double cc = 2 - (ortepType % 2);
+      double dd = (ortepType == 8 || ortepType == 9 || ortepType == 10 ? twoP2
+          : ortepType == 4 || ortepType == 5 ? 0.25 
+          : ortepType == 2 || ortepType == 3 ? Math.log(2) 
+          : 1);
+      // types 6 and 7 not supported
+
+      // System.out.println("ortep type " + ortepType + " isFractional=" +
+      // isFractional + " D = " + dd + " C=" + cc);
+      double B11 = parBorU[0] * dd * (isFractional ? a_ * a_ : 1);
+      double B22 = parBorU[1] * dd * (isFractional ? b_ * b_ : 1);
+      double B33 = parBorU[2] * dd * (isFractional ? c_ * c_ : 1);
+      double B12 = parBorU[3] * dd * (isFractional ? a_ * b_ : 1) * cc;
+      double B13 = parBorU[4] * dd * (isFractional ? a_ * c_ : 1) * cc;
+      double B23 = parBorU[5] * dd * (isFractional ? b_ * c_ : 1) * cc;
+
+      // set bFactor = (U11*U22*U33)
+      parBorU[7] = (float) Math.pow(B11 / twoP2 / a_ / a_ * B22 / twoP2 / b_
+          / b_ * B33 / twoP2 / c_ / c_, 0.3333);
+
+      Bcart[0] = a * a * B11 + b * b * cosGamma * cosGamma * B22 + c * c
+          * cosBeta * cosBeta * B33 + a * b * cosGamma * B12 + b * c * cosGamma
+          * cosBeta * B23 + a * c * cosBeta * B13;
+      Bcart[1] = b * b * sinGamma * sinGamma * B22 + c * c * cA_ * cA_ * B33
+          + b * c * cA_ * sinGamma * B23;
+      Bcart[2] = c * c * cB_ * cB_ * B33;
+      Bcart[3] = 2 * b * b * cosGamma * sinGamma * B22 + 2 * c * c * cA_
+          * cosBeta * B33 + a * b * sinGamma * B12 + b * c
+          * (cA_ * cosGamma + sinGamma * cosBeta) * B23 + a * c * cA_ * B13;
+      Bcart[4] = 2 * c * c * cB_ * cosBeta * B33 + b * c * cosGamma * B23 + a
+          * c * cB_ * B13;
+      Bcart[5] = 2 * c * c * cA_ * cB_ * B33 + b * c * cB_ * sinGamma * B23;
+
+    }
+
+    System.out.println("UnitCell Bcart=" + Bcart[0] + " " + Bcart[1] + " "
+        + Bcart[2] + " " + Bcart[3] + " " + Bcart[4] + " " + Bcart[5]);
     return new Quadric(Bcart);
   }
   

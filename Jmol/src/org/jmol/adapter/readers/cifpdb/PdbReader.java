@@ -1148,8 +1148,11 @@ Details
       }
       data[i] /= 10000f;
     }
-    atomSetCollection.setAnisoBorU(atom, data, 8);
+    atomSetCollection.setAnisoBorU(atom, data, 12); // was 8 12.3.16
+    // new type 12 - cartesian already
+    // Ortep Type 0: D = 1, C = 2, Cartesian
     // Ortep Type 8: D = 2pi^2, C = 2, a*b*
+    // Ortep Type 10: D = 2pi^2, C = 2, Cartesian
   }
   /*
    * http://www.wwpdb.org/documentation/format23/sect7.html
@@ -1502,7 +1505,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     return (isTrue ? -1 : atom2);
   }
 
-  private final float[] dataS = new float[8];
+  private final float[] anisou = new float[8];
   private final float[] dataT = new float[8];
 
   private static final float RAD_PER_DEG = (float) (Math.PI / 180);
@@ -1546,9 +1549,9 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     dataT[3] = T[0][1];
     dataT[4] = T[0][2];
     dataT[5] = T[1][2];
-    dataT[6] = 8; // ORTEP type 8
+    dataT[6] = 12; // (non)ORTEP type 12 -- macromolecular Cartesian
 
-    boolean isResidualB = isRefMac;
+    boolean isResidualB = isRefMac;  // not adequate
     
     float bresidual = atom.bfactor; // not guaranteed to be correct
     if (isResidualB) {
@@ -1557,23 +1560,23 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
       
     }
     
-    dataS[0] /*u11*/= dataT[0] + L[1][1] * zz + L[2][2] * yy - 2 * L[1][2]
+    anisou[0] /*u11*/= dataT[0] + L[1][1] * zz + L[2][2] * yy - 2 * L[1][2]
         * yz + 2 * S[1][0] * z - 2 * S[2][0] * y + bresidual;
-    dataS[1] /*u22*/= dataT[1] + L[0][0] * zz + L[2][2] * xx - 2 * L[2][0]
+    anisou[1] /*u22*/= dataT[1] + L[0][0] * zz + L[2][2] * xx - 2 * L[2][0]
         * xz - 2 * S[0][1] * z + 2 * S[2][1] * x + bresidual;
-    dataS[2] /*u33*/= dataT[2] + L[0][0] * yy + L[1][1] * xx - 2 * L[0][1]
+    anisou[2] /*u33*/= dataT[2] + L[0][0] * yy + L[1][1] * xx - 2 * L[0][1]
         * xy - 2 * S[1][2] * x + 2 * S[0][2] * y + bresidual;
-    dataS[3] /*u12*/= dataT[3] - L[2][2] * xy + L[1][2] * xz + L[2][0] * yz
+    anisou[3] /*u12*/= dataT[3] - L[2][2] * xy + L[1][2] * xz + L[2][0] * yz
         - L[0][1] * zz - S[0][0] * z + S[1][1] * z + S[2][0] * x - S[2][1] * y;
-    dataS[4] /*u13*/= dataT[4] - L[1][1] * xz + L[1][2] * xy - L[2][0] * yy
+    anisou[4] /*u13*/= dataT[4] - L[1][1] * xz + L[1][2] * xy - L[2][0] * yy
         + L[0][1] * yz + S[0][0] * y - S[2][2] * y + S[1][2] * z - S[1][0] * x;
-    dataS[5] /*u23*/= dataT[5] - L[0][0] * yz - L[1][2] * xx + L[2][0] * xy
+    anisou[5] /*u23*/= dataT[5] - L[0][0] * yz - L[1][2] * xx + L[2][0] * xy
         + L[0][1] * xz - S[1][1] * x + S[2][2] * x + S[0][1] * y - S[0][2] * z;
-    dataS[6] = 8;
+    anisou[6] = 12; // macromolecular Cartesian
 
     // symmetry is set to [1 1 1 90 90 90] -- Cartesians, not actual unit cell
 
-    atom.ellipsoid = new Quadric[] { null, symmetry.getEllipsoid(dataS),
+    atom.ellipsoid = new Quadric[] { null, symmetry.getEllipsoid(anisou),
         symmetry.getEllipsoid(dataT) };
     //if (atom.atomIndex == 0)
       //System.out.println("pdbreader ellip 0 = " + atom.ellipsoid[1]); 

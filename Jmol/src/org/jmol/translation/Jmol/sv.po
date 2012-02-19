@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-02-06 06:32+0100\n"
-"PO-Revision-Date: 2012-01-16 20:59+0000\n"
-"Last-Translator: Peter Sahlin <Unknown>\n"
+"PO-Revision-Date: 2012-02-18 07:05+0000\n"
+"Last-Translator: Rikard Edgren <Unknown>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-01-22 10:08+0000\n"
-"X-Generator: Launchpad (build 14700)\n"
+"X-Launchpad-Export-Date: 2012-02-19 13:28+0000\n"
+"X-Generator: Launchpad (build 14814)\n"
 
 #: com/json/Cookie.java:121
 msgid "name"
@@ -107,7 +107,8 @@ msgstr "ingen konsol - all output till sysout"
 
 #: org/openscience/jmol/app/JmolApp.java:163
 msgid "send only output from print messages to console (implies -i)"
-msgstr "sänd endast output från utskriftsmeddelanden till konsoll (kräver -i)"
+msgstr ""
+"sänd endast output från utskriftsmeddelanden till konsoll (kräver -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:165
 msgid "independent command thread"
@@ -320,14 +321,12 @@ msgid "Period"
 msgstr "Period"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:355
-#, fuzzy
 msgid "Frame"
-msgstr "Sista rutan"
+msgstr "Ram"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:355
-#, fuzzy
 msgid "Vibration"
-msgstr "Animering"
+msgstr "Vibration"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:363
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:372
@@ -359,11 +358,11 @@ msgstr "Gå till sista atomgruppen i samlingen"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:374
 msgid "Vibration ON"
-msgstr ""
+msgstr "Vibration PÅ"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:375
 msgid "Vibration OFF"
-msgstr ""
+msgstr "Vibration AV"
 
 #: org/openscience/jmol/app/jmolpanel/ConsoleTextArea.java:87
 #, java-format
@@ -564,7 +563,7 @@ msgstr "A&vsluta"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:83
 msgid "Recent &Files..."
-msgstr "&Senaste..."
+msgstr "&Senaste filer..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:84
 msgid "&Edit"
@@ -1092,9 +1091,8 @@ msgid "Get MOL file by compound name or ID"
 msgstr "Hämta MOL-fil med ämnesnamn eller ID"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1204
-#, fuzzy
 msgid "Enter the name or identifier (SMILES, InChI, CAS) of a compound"
-msgstr "Skriv namn eller identifierare (SMILES, InChi, CAS) för molekylen"
+msgstr "Ange namn eller identifierare (SMILES, InChI, CAS) för förening."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1370
 msgid "IO Exception:"
@@ -1884,24 +1882,6 @@ msgstr "Nedladdningsvy"
 msgid "unimplemented"
 msgstr "ej implementerad"
 
-#~ msgid "Controller"
-#~ msgstr "Kontroll"
-
-#~ msgid "Go to first vector in the collection"
-#~ msgstr "Gå till första vektorn i samlingen"
-
-#~ msgid "Go to previous vector in the collection"
-#~ msgstr "Gå till föregående vektor i samlingen"
-
-#~ msgid "Play the whole collection of vectors"
-#~ msgstr "Spela hela vektorsamlingen"
-
-#~ msgid "Go to next vector in the collection"
-#~ msgstr "Gå till nästa vektor i samlingen"
-
-#~ msgid "Jump to last vector in the collection"
-#~ msgstr "Gå till sista vektorn i samlingen"
-
 #~ msgid "All"
 #~ msgstr "Allt"
 
@@ -1910,3 +1890,27 @@ msgstr "ej implementerad"
 
 #~ msgid "vector"
 #~ msgstr "vector"
+
+#~ msgid "Go to next vector in the collection"
+#~ msgstr "Gå till nästa vektor i samlingen"
+
+#~ msgid "Jump to last vector in the collection"
+#~ msgstr "Gå till sista vektorn i samlingen"
+
+#~ msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
+#~ msgstr "Skriv namn eller identifierare (SMILES, InChi, CAS) för molekylen"
+
+#~ msgid "Controller"
+#~ msgstr "Kontroll"
+
+#~ msgid "Play the whole collection of vectors"
+#~ msgstr "Spela hela vektorsamlingen"
+
+#~ msgid "Go to first vector in the collection"
+#~ msgstr "Gå till första vektorn i samlingen"
+
+#~ msgid "Go to previous vector in the collection"
+#~ msgstr "Gå till föregående vektor i samlingen"
+
+#~ msgid "Jmol Script Console"
+#~ msgstr "Jmol skriptkonsol"

@@ -8788,9 +8788,10 @@ private void zap(String msg) {
         if (script2 != null)
           script += ";" + script2;
       } else if (script.startsWith("JSpecView:")) {
-        return;
+        if (!disableSend)
+          statusManager.syncSend(fullName + script, ">", 0);
+         return;
       }
-      System.out.println(script);
       evalStringQuiet(script, true, false);
       return;
     }

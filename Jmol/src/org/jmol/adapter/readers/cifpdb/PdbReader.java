@@ -355,6 +355,7 @@ public class PdbReader extends AtomSetCollectionReader {
        anisou[2] += resid;
        atom.ellipsoid[1] = symmetry.getEllipsoid(anisou);       
      }
+     tlsU = null;
   }
 
   private void header() {

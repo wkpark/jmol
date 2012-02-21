@@ -281,8 +281,7 @@ class UnitCell extends SimpleUnitCell {
       Bcart[4] = parBorU[4] * twoP2 * 2;
       Bcart[5] = parBorU[5] * twoP2 * 2;
 
-      parBorU[7] = (float) Math.pow(parBorU[0] * parBorU[1] * parBorU[3],
-          0.3333);
+      parBorU[7] = (parBorU[0] + parBorU[1] + parBorU[3]) / 3;
 
     } else {
 

@@ -332,8 +332,7 @@ public class PdbReader extends AtomSetCollectionReader {
     Atom[] atoms = atomSetCollection.getAtoms();
     boolean isResidual = false;
      for (int i = atomSetCollection.getAtomCount(); --i >= 0;) {
-      Atom atom = atoms[i];
-      float[] anisou = tlsU.get(atom);
+      float[] anisou = tlsU.get(atoms[i]);
       if (anisou == null)
         continue;
       float resid = anisou[7] - (anisou[0] + anisou[1] + anisou[2])/3f;
@@ -346,7 +345,6 @@ public class PdbReader extends AtomSetCollectionReader {
      Logger.info("TLS analysis suggests Bfactors are " + (isResidual ? "" : "NOT") + " residuals");
      
      for (Map.Entry<Atom, float[]> entry : tlsU.entrySet()) {
-       Atom atom = entry.getKey();
        float[] anisou = entry.getValue();
        float resid = anisou[7];
        if (resid == 0)
@@ -356,7 +354,7 @@ public class PdbReader extends AtomSetCollectionReader {
        anisou[0] += resid;
        anisou[1] += resid;
        anisou[2] += resid;
-       atom.ellipsoid[1] = symmetry.getEllipsoid(anisou);       
+       entry.getKey().ellipsoid[1] = symmetry.getEllipsoid(anisou);       
      }
      tlsU = null;
   }

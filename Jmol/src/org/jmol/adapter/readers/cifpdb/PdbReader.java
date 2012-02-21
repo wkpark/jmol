@@ -115,8 +115,6 @@ public class PdbReader extends AtomSetCollectionReader {
   private int lastTargetSerial = Integer.MIN_VALUE;
   private int tlsGroupID;
 
-  private boolean isRefMac;
-  
  final private static String lineOptions = 
    "ATOM    " + //0
    "HETATM  " + //1
@@ -261,8 +259,6 @@ public class PdbReader extends AtomSetCollectionReader {
         return false;
       }
       if (getTlsGroups) {
-        if (line.startsWith("REMARK   3") && line.indexOf("REFMAC") >= 0)
-          isRefMac = true;
         if (line.indexOf("TLS DETAILS") > 0)
           return remarkTls();
       }
@@ -310,6 +306,7 @@ public class PdbReader extends AtomSetCollectionReader {
             setTlsGroups(0, i);
         }
       }
+      checkForResidualBFactors();
     }
     if (sbTlsErrors != null) {
       atomSetCollection.setAtomSetCollectionAuxiliaryInfo("tlsErrors", sbTlsErrors.toString());
@@ -331,6 +328,35 @@ public class PdbReader extends AtomSetCollectionReader {
     }
   }
   
+  private void checkForResidualBFactors() {
+    Atom[] atoms = atomSetCollection.getAtoms();
+    boolean isResidual = false;
+     for (int i = atomSetCollection.getAtomCount(); --i >= 0;) {
+      Atom atom = atoms[i];
+      float[] anisou = tlsU.get(atom);
+      if (anisou == null)
+        continue;
+      float resid = anisou[7] - (anisou[0] + anisou[1] + anisou[2])/3f;
+      if (resid < 0 || Float.isNaN(resid)) {
+        isResidual = true; // can't be total
+        break;
+      }
+     }
+     for (Map.Entry<Atom, float[]> entry : tlsU.entrySet()) {
+       Atom atom = entry.getKey();
+       float[] anisou = entry.getValue();
+       float resid = anisou[7];
+       if (resid == 0)
+         continue;
+       if (!isResidual)
+         resid -= (anisou[0] + anisou[1] + anisou[2])/3f;         
+       anisou[0] += resid;
+       anisou[1] += resid;
+       anisou[2] += resid;
+       atom.ellipsoid[1] = symmetry.getEllipsoid(anisou);       
+     }
+  }
+
   private void header() {
     if (lineLength < 8)
       return;
@@ -1505,17 +1531,17 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     return (isTrue ? -1 : atom2);
   }
 
-  private final float[] anisou = new float[8];
   private final float[] dataT = new float[8];
 
   private static final float RAD_PER_DEG = (float) (Math.PI / 180);
   private static final float _8PI2_ = (float) (8 * Math.PI * Math.PI);
+  private Map<Atom, float[]>tlsU;
   
   private void setTlsEllipsoid(Atom atom, Map<String, Object> group) {
     Point3f origin = (Point3f) group.get("origin");
     if (Float.isNaN(origin.x))
       return;
-
+    
     float[][] T = (float[][]) group.get("tT");
     float[][] L = (float[][]) group.get("tL");
     float[][] S = (float[][]) group.get("tS");
@@ -1551,21 +1577,16 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     dataT[5] = T[1][2];
     dataT[6] = 12; // (non)ORTEP type 12 -- macromolecular Cartesian
 
-    boolean isResidualB = isRefMac;  // not adequate
-    
-    float bresidual = atom.bfactor; // not guaranteed to be correct
-    if (isResidualB) {
-      bresidual /= _8PI2_;      
-    }else {
-      
-    }
-    
+    float[] anisou = new float[8];
+
+    float bresidual = (Float.isNaN(atom.bfactor) ? 0 : atom.bfactor / _8PI2_);
+
     anisou[0] /*u11*/= dataT[0] + L[1][1] * zz + L[2][2] * yy - 2 * L[1][2]
-        * yz + 2 * S[1][0] * z - 2 * S[2][0] * y + bresidual;
+        * yz + 2 * S[1][0] * z - 2 * S[2][0] * y;
     anisou[1] /*u22*/= dataT[1] + L[0][0] * zz + L[2][2] * xx - 2 * L[2][0]
-        * xz - 2 * S[0][1] * z + 2 * S[2][1] * x + bresidual;
+        * xz - 2 * S[0][1] * z + 2 * S[2][1] * x;
     anisou[2] /*u33*/= dataT[2] + L[0][0] * yy + L[1][1] * xx - 2 * L[0][1]
-        * xy - 2 * S[1][2] * x + 2 * S[0][2] * y + bresidual;
+        * xy - 2 * S[1][2] * x + 2 * S[0][2] * y;
     anisou[3] /*u12*/= dataT[3] - L[2][2] * xy + L[1][2] * xz + L[2][0] * yz
         - L[0][1] * zz - S[0][0] * z + S[1][1] * z + S[2][0] * x - S[2][1] * y;
     anisou[4] /*u13*/= dataT[4] - L[1][1] * xz + L[1][2] * xy - L[2][0] * yy
@@ -1573,11 +1594,15 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     anisou[5] /*u23*/= dataT[5] - L[0][0] * yz - L[1][2] * xx + L[2][0] * xy
         + L[0][1] * xz - S[1][1] * x + S[2][2] * x + S[0][1] * y - S[0][2] * z;
     anisou[6] = 12; // macromolecular Cartesian
+    anisou[7] = bresidual;
+    
+    if (tlsU == null)
+      tlsU = new Hashtable<Atom, float[]>();
+     tlsU.put(atom, anisou);
 
     // symmetry is set to [1 1 1 90 90 90] -- Cartesians, not actual unit cell
 
-    atom.ellipsoid = new Quadric[] { null, symmetry.getEllipsoid(anisou),
-        symmetry.getEllipsoid(dataT) };
+    atom.ellipsoid = new Quadric[] { null, null, symmetry.getEllipsoid(dataT) };
     //if (atom.atomIndex == 0)
       //System.out.println("pdbreader ellip 0 = " + atom.ellipsoid[1]); 
   }

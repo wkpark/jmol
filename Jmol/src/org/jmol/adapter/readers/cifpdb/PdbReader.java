@@ -27,7 +27,9 @@ package org.jmol.adapter.readers.cifpdb;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Structure;
+import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
+import org.jmol.api.SymmetryInterface;
 import org.jmol.constant.EnumStructure;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
@@ -147,10 +149,6 @@ public class PdbReader extends AtomSetCollectionReader {
    pdbHeader = (getHeader ? new StringBuffer() : null);
    applySymmetry = !checkFilter("NOSYMMETRY");
    getTlsGroups = checkFilter("TLS");
-   if (getTlsGroups) {
-     ignoreFileSymmetryOperators = true;
-     ignoreFileUnitCell = true;
-   }
    if (htParams.containsKey("vTlsModels")) {
      // from   load files "tls.out" "xxxx.pdb"
      vTlsModels = (List<Map<String, Object>>) htParams.remove("vTlsModels");
@@ -292,21 +290,20 @@ public class PdbReader extends AtomSetCollectionReader {
       }
     }
     if (vTlsModels != null) {
-      symmetry = atomSetCollection.getSymmetry();
-      symmetry.setUnitCell(new float[] { 1, 1, 1, 90, 90, 90 });
+      SymmetryInterface symmetry = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
       int n = atomSetCollection.getAtomSetCount();
       if (n == vTlsModels.size()) {
         for (int i = n; --i >= 0;)
-          setTlsGroups(i, i);
+          setTlsGroups(i, i, symmetry);
       } else {
         Logger.info(n + " models but " + vTlsModels.size() + " TLS descriptions");
         if (vTlsModels.size() == 1) {
           Logger.info(" -- assuming all models have the same TLS description -- check REMARK 3 for details.");
           for (int i = n; --i >= 0;)
-            setTlsGroups(0, i);
+            setTlsGroups(0, i, symmetry);
         }
       }
-      checkForResidualBFactors();
+      checkForResidualBFactors(symmetry);
     }
     if (sbTlsErrors != null) {
       atomSetCollection.setAtomSetCollectionAuxiliaryInfo("tlsErrors", sbTlsErrors.toString());
@@ -328,7 +325,7 @@ public class PdbReader extends AtomSetCollectionReader {
     }
   }
   
-  private void checkForResidualBFactors() {
+  private void checkForResidualBFactors(SymmetryInterface symmetry) {
     Atom[] atoms = atomSetCollection.getAtoms();
     boolean isResidual = false;
      for (int i = atomSetCollection.getAtomCount(); --i >= 0;) {
@@ -343,7 +340,7 @@ public class PdbReader extends AtomSetCollectionReader {
      }
      
      Logger.info("TLS analysis suggests Bfactors are " + (isResidual ? "" : "NOT") + " residuals");
-     
+
      for (Map.Entry<Atom, float[]> entry : tlsU.entrySet()) {
        float[] anisou = entry.getValue();
        float resid = anisou[7];
@@ -361,8 +358,7 @@ public class PdbReader extends AtomSetCollectionReader {
        System.out.println("TLS-U:  " + Escape.escape(anisou));
        anisou = (entry.getKey().anisoBorU);
        if (anisou != null)
-         System.out.println("ANISOU: " + Escape.escape(anisou));
-       
+         System.out.println("ANISOU: " + Escape.escape(anisou));       
      }
      tlsU = null;
   }
@@ -1461,9 +1457,10 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
    * 
    * @param iGroup
    * @param iModel
+   * @param symmetry 
    */
   @SuppressWarnings("unchecked")
-  private void setTlsGroups(int iGroup, int iModel) {
+  private void setTlsGroups(int iGroup, int iModel, SymmetryInterface symmetry) {
     Logger.info("TLS model " + (iModel + 1) + " set " + (iGroup + 1));
     Map<String, Object> tlsGroupInfo = vTlsModels.get(iGroup);
     List<Map<String, Object>> groups = (List<Map<String, Object>>) tlsGroupInfo
@@ -1473,9 +1470,6 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     int indexMax = index0 + data.length;
     Atom[] atoms = atomSetCollection.getAtoms();
     int nGroups = groups.size();
-    symmetry = atomSetCollection.getSymmetry();
-    symmetry.setUnitCell(new float[] { 1, 1, 1, 90, 90, 90 });
-    
     for (int i = 0; i < nGroups; i++) {
       Map<String, Object> group = groups.get(i);
       List<Map<String, Object>> ranges = (List<Map<String, Object>>) group
@@ -1507,7 +1501,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
               || atom.chainID == chain1 && atom.sequenceNumber <= res1
           ) {
               data[iAtom - index0] = tlsGroupID;
-              setTlsEllipsoid(atom, group);
+              setTlsEllipsoid(atom, group, symmetry);
             }
         }
       }
@@ -1547,7 +1541,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
   private static final float _8PI2_ = (float) (8 * Math.PI * Math.PI);
   private Map<Atom, float[]>tlsU;
   
-  private void setTlsEllipsoid(Atom atom, Map<String, Object> group) {
+  private void setTlsEllipsoid(Atom atom, Map<String, Object> group, SymmetryInterface symmetry) {
     Point3f origin = (Point3f) group.get("origin");
     if (Float.isNaN(origin.x))
       return;

@@ -291,6 +291,8 @@ public class Symmetry implements SymmetryInterface {
   }
 
   public Quadric getEllipsoid(float[] parBorU) {
+    if (unitCell == null)
+      unitCell = new UnitCell(new float[] {1,1,1,90,90,90});
     return unitCell.getEllipsoid(parBorU);
   }
   

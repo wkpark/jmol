@@ -823,6 +823,8 @@ public class AtomSetCollection {
     return symmetry;
   }
   
+  
+  
   boolean haveUnitCell = false;
   
   public void setNotionalUnitCell(float[] info, Matrix3f matUnitCellOrientation, Point3f unitCellOffset) {

@@ -355,6 +355,9 @@ public class PdbReader extends AtomSetCollectionReader {
        anisou[1] += resid;
        anisou[2] += resid;
        entry.getKey().ellipsoid[1] = symmetry.getEllipsoid(anisou);
+       
+       // check for equal: 
+       
        System.out.println("TLS-U:  " + Escape.escape(anisou));
        anisou = (entry.getKey().anisoBorU);
        if (anisou != null)

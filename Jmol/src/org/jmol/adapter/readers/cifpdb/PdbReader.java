@@ -342,6 +342,9 @@ public class PdbReader extends AtomSetCollectionReader {
         break;
       }
      }
+     
+     Logger.info("TLS analysis suggests Bfactors are " + (isResidual ? "" : "NOT") + " residuals");
+     
      for (Map.Entry<Atom, float[]> entry : tlsU.entrySet()) {
        Atom atom = entry.getKey();
        float[] anisou = entry.getValue();

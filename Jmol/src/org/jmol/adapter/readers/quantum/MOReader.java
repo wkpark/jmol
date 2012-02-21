@@ -492,10 +492,6 @@ abstract public class MOReader extends BasisFunctionReader {
     switch (headerType) {
     default:
     case HEADER_NONE:
-      // this means there are no energies, occupancies or symmetries
-      for (int i = 0; i < nThisLine; i++) {
-        mos[i].put("energy", "");
-      }
       return;
     case HEADER_GAMESS_UK_MO:
       for (int i = 0; i < nThisLine; i++)

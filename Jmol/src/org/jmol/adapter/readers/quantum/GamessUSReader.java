@@ -78,8 +78,9 @@ public class GamessUSReader extends GamessReader {
   */
 
   @Override
-  protected void initializeReader() {
+  protected void initializeReader() throws Exception {
     lowdenCharges = checkFilter("CHARGE=LOW");
+    super.initializeReader();
   }
   
   /**

@@ -57,8 +57,8 @@ public class Atom extends Point3f implements Cloneable {
   public void setEllipsoid(Quadric e) {
     if (e == null)
       return;
-    if (atomIndex < 5)
-      System.out.println("Atom: ellipsoid " + e);
+    //if (atomIndex < 5)
+      //System.out.println("Atom: ellipsoid " + e);
     if (ellipsoid != null && ellipsoid.length == 3)
       ellipsoid[0] = e;
     else

@@ -323,8 +323,8 @@ class UnitCell extends SimpleUnitCell {
 
     }
 
-    System.out.println("UnitCell Bcart=" + Bcart[0] + " " + Bcart[1] + " "
-        + Bcart[2] + " " + Bcart[3] + " " + Bcart[4] + " " + Bcart[5]);
+    //System.out.println("UnitCell Bcart=" + Bcart[0] + " " + Bcart[1] + " "
+      //  + Bcart[2] + " " + Bcart[3] + " " + Bcart[4] + " " + Bcart[5]);
     return new Quadric(Bcart);
   }
   

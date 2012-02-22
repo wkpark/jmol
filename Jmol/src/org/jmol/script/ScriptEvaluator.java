@@ -69,6 +69,7 @@ import org.jmol.util.Escape;
 
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BoxInfo;
+import org.jmol.util.ColorUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
@@ -1704,7 +1705,7 @@ public class ScriptEvaluator {
           } else if (svi.tok == Token.integer) {
             values[i] = svi.intValue;
           } else {
-            values[i] = Graphics3D.getArgbFromString(svi.asString());
+            values[i] = ColorUtil.getArgbFromString(svi.asString());
             if (values[i] == 0)
               values[i] = ScriptVariable.iValue(svi);
           }
@@ -3663,7 +3664,7 @@ public class ScriptEvaluator {
           }
         } else if (val instanceof String) {
           if (tokWhat == Token.color) {
-            comparisonValue = Graphics3D.getArgbFromString((String) val);
+            comparisonValue = ColorUtil.getArgbFromString((String) val);
             if (comparisonValue == 0
                 && Token.tokAttr(tokValue, Token.identifier)) {
               val = getStringParameter((String) val, true);
@@ -3674,7 +3675,7 @@ public class ScriptEvaluator {
                 else
                   comparisonValue = 0;
               } else {
-                comparisonValue = Graphics3D.getArgbFromString((String) val);
+                comparisonValue = ColorUtil.getArgbFromString((String) val);
               }
             }
             tokValue = Token.integer;
@@ -4803,7 +4804,7 @@ public class ScriptEvaluator {
         || tok == Token.leftsquare || tok == Token.varray
         || tok == Token.point3f || isPoint3f(i) || (tok == Token.string || Token
         .tokAttr(tok, Token.identifier))
-        && Graphics3D.getArgbFromString((String) statement[i].value) != 0);
+        && ColorUtil.getArgbFromString((String) statement[i].value) != 0);
   }
 
   private int getArgbParam(int index) throws ScriptException {
@@ -4827,7 +4828,7 @@ public class ScriptEvaluator {
         // fall through
       case Token.navy:
       case Token.string:
-        return Graphics3D.getArgbFromString(parameterAsString(index));
+        return ColorUtil.getArgbFromString(parameterAsString(index));
       case Token.spacebeforesquare:
         return getColorTriad(index + 2);
       case Token.leftsquare:
@@ -4914,7 +4915,7 @@ public class ScriptEvaluator {
       error(ERROR_badRGBColor);
     if (pt != null)
       return Graphics3D.colorPtToInt(pt);
-    if ((n = Graphics3D.getArgbFromString("[" + hex + "]")) == 0)
+    if ((n = ColorUtil.getArgbFromString("[" + hex + "]")) == 0)
       error(ERROR_badRGBColor);
     return n;
   }
@@ -7540,7 +7541,7 @@ public class ScriptEvaluator {
                 + " "
                 + Escape.escape(pt)
                 + " color "
-                + Escape.escapeColor(Graphics3D.colorTriadToInt(r / 255f,
+                + Escape.escapeColor(ColorUtil.colorTriadToInt(r / 255f,
                     g / 255f, b / 255f))
             //+ " \"" + (int) (hsv[0] * 240) + " "+ (int) (hsv[1] * 240) + " "+ (int) (hsv[2] * 240) + "\""
                 );

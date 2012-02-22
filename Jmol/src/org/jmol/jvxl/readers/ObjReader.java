@@ -30,7 +30,7 @@ import java.util.Map;
 
 import javax.vecmath.Point3f;
 
-import org.jmol.g3d.Graphics3D;
+import org.jmol.util.ColorUtil;
 import org.jmol.util.Parser;
 
 /*
@@ -105,7 +105,7 @@ class ObjReader extends PmeshReader {
       if (line.length() < 2 || line.charAt(1) != ' ') {
         if (params.readAllData && line.startsWith("usemtl"))
           // usemtl k00FF00
-            color = Graphics3D.getArgbFromString("[x" + line.substring(8) + "]");
+            color = ColorUtil.getArgbFromString("[x" + line.substring(8) + "]");
         continue;
       }
       switch (line.charAt(0)) {
@@ -174,7 +174,7 @@ class ObjReader extends PmeshReader {
       case 'g':
         htPymol = null;
         if (params.readAllData)
-          color = Graphics3D.getArgbFromString("[x" + line.substring(3) + "]");
+          color = ColorUtil.getArgbFromString("[x" + line.substring(3) + "]");
         break;
       }
     }

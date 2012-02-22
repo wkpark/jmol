@@ -77,6 +77,7 @@ import org.jmol.util.BitSetUtil;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.CifDataReader;
 import org.jmol.util.ColorEncoder;
+import org.jmol.util.ColorUtil;
 import org.jmol.util.CommandHistory;
 import org.jmol.util.Dimension;
 import org.jmol.util.Elements;
@@ -1435,7 +1436,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   void setObjectColor(String name, String colorName) {
     if (colorName == null || colorName.length() == 0)
       return;
-    setObjectArgb(name, Graphics3D.getArgbFromString(colorName));
+    setObjectArgb(name, ColorUtil.getArgbFromString(colorName));
   }
 
   public void setObjectArgb(String name, int argb) {

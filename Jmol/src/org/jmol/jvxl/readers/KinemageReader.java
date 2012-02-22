@@ -27,7 +27,7 @@ import java.io.BufferedReader;
 
 import javax.vecmath.Point3f;
 
-import org.jmol.g3d.Graphics3D;
+import org.jmol.util.ColorUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
@@ -205,7 +205,7 @@ class KinemageReader extends PmeshReader {
       color = "skyblue";
     else if (color.equals("sea"))
       color = "seagreen";
-    return Graphics3D.getArgbFromString(color); 
+    return ColorUtil.getArgbFromString(color); 
   }
   
   /*

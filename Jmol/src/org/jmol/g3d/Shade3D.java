@@ -24,6 +24,8 @@
 
 package org.jmol.g3d;
 
+import org.jmol.util.ColorUtil;
+
 
 /**
  *<p>
@@ -138,7 +140,7 @@ final class Shade3D {
         blu0++;
         if (f < 0.1f)
           f += 0.1f;
-        rgb = rgb((int) red0, (int) grn0, (int) blu0);
+        rgb = ColorUtil.rgb((int) red0, (int) grn0, (int) blu0);
         continue;
       }
       break;
@@ -151,7 +153,7 @@ final class Shade3D {
 
     int i;
     for (i = 0; i < shadeIndexNormal; ++i) {
-      shades[i] = rgb((int) red, (int) grn, (int) blu);
+      shades[i] = ColorUtil.rgb((int) red, (int) grn, (int) blu);
       red += redStep;
       grn += grnStep;
       blu += bluStep;
@@ -168,17 +170,13 @@ final class Shade3D {
       red += redStep;
       grn += grnStep;
       blu += bluStep;
-      shades[i] = rgb((int) red, (int) grn, (int) blu);
+      shades[i] = ColorUtil.rgb((int) red, (int) grn, (int) blu);
     }
     
     if (greyScale)
       for (; --i >= 0;)
         shades[i] = Graphics3D.calcGreyscaleRgbFromRgb(shades[i]);
     return shades;
-  }
-
-  final static int rgb(int red, int grn, int blu) {
-    return 0xFF000000 | (red << 16) | (grn << 8) | blu;
   }
 
   static int getShadeIndex(float x, float y, float z) {

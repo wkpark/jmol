@@ -278,7 +278,7 @@ import org.jmol.g3d.Graphics3D;
         pt2 = colorScheme.indexOf("]", pt);
         if (pt2 < 0)
           pt2 = colorScheme.length() - 1;
-        scale[n++] = c = Graphics3D.getArgbFromString(colorScheme.substring(pt,
+        scale[n++] = c = ColorUtil.getArgbFromString(colorScheme.substring(pt,
             pt2 + 1));
         if (c == 0) {
           Logger.error("error in color value: "
@@ -576,7 +576,7 @@ import org.jmol.g3d.Graphics3D;
     int[] b = new int[JmolConstants.argbsRoygbScale.length];
     for (int i = 0; i < b.length; i++) {
       float xff = (1f / b.length * (b.length - i));        
-      b[i] = Graphics3D.colorTriadToInt(xff, xff, xff);
+      b[i] = ColorUtil.colorTriadToInt(xff, xff, xff);
     }
     return propertyColorEncoder.paletteWB = b;
   }
@@ -595,7 +595,7 @@ import org.jmol.g3d.Graphics3D;
     float dg = (green2 - green1) / (n - 1);
     float db = (blue2 - blue1) / (n - 1);
     for (int i = 0; i < n; i++)
-      b[i] = Graphics3D.colorTriadToInt(red1 + dr * i, green1 + dg * i, blue1
+      b[i] = ColorUtil.colorTriadToInt(red1 + dr * i, green1 + dg * i, blue1
           + db * i);
     return b;
   }
@@ -605,7 +605,7 @@ import org.jmol.g3d.Graphics3D;
     int[] b = new int[JmolConstants.argbsRoygbScale.length];
     for (int i = 0; i < b.length; i++) {
       float xff = (1f / b.length * i); 
-      b[i] = Graphics3D.colorTriadToInt(xff, xff, xff);
+      b[i] = ColorUtil.colorTriadToInt(xff, xff, xff);
     }
     return propertyColorEncoder.paletteBW = b;
   }

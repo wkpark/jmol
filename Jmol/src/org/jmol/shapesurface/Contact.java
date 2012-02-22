@@ -39,7 +39,6 @@ import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumHBondType;
 import org.jmol.constant.EnumVdw;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.jvxl.data.MeshData;
 import org.jmol.jvxl.data.VolumeData;
 import org.jmol.jvxl.readers.Parameters;
@@ -47,6 +46,7 @@ import org.jmol.modelset.Atom;
 import org.jmol.script.Token;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.ColorEncoder;
+import org.jmol.util.ColorUtil;
 import org.jmol.util.ContactPair;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
@@ -252,7 +252,7 @@ public class Contact extends Isosurface {
       ce = viewer.getColorEncoder("rwb");
       ce.setRange(-0.5f, 0.5f, false);
     } else if (defaultColor != null) {
-      super.setProperty("color", Integer.valueOf(Graphics3D
+      super.setProperty("color", Integer.valueOf(ColorUtil
           .getArgbFromString(defaultColor)), null);
     } else if (displayType == Token.nci) {
       ce = viewer.getColorEncoder("bgr");

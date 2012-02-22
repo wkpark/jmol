@@ -41,6 +41,7 @@ import org.jmol.jvxl.data.MeshData;
 import org.jmol.shapesurface.IsosurfaceMesh;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.ColorEncoder;
+import org.jmol.util.ColorUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
@@ -225,11 +226,11 @@ public class JvxlXmlReader extends VolumeFileReader {
       s = XmlReader.getXmlAttrib(data, "colorPositive");
       if (s.length() > 0 && params.colorRgb == Integer.MIN_VALUE 
           && params.colorPos == Parameters.defaultColorPositive)
-        params.colorPos = Graphics3D.getArgbFromString(s);
+        params.colorPos = ColorUtil.getArgbFromString(s);
       s = XmlReader.getXmlAttrib(data, "colorNegative");
       if (s.length() > 0 && params.colorRgb == Integer.MIN_VALUE
           && params.colorNeg == Parameters.defaultColorNegative)
-        params.colorNeg = Graphics3D.getArgbFromString(s);
+        params.colorNeg = ColorUtil.getArgbFromString(s);
     }
     if (params.isBicolorMap || params.colorBySign)
       jvxlCutoff = 0;
@@ -784,7 +785,7 @@ public class JvxlXmlReader extends VolumeFileReader {
       String s = xr.getXmlData("jvxlContour", data.substring(pt), true, false);
       float value = parseFloat(XmlReader.getXmlAttrib(s, "value"));
       values.append(" ").append(value);
-      short colix = Graphics3D.getColix(Graphics3D.getArgbFromString(XmlReader.getXmlAttrib(s,
+      short colix = Graphics3D.getColix(ColorUtil.getArgbFromString(XmlReader.getXmlAttrib(s,
           "color")));
       int color = Graphics3D.getArgb(colix);
       colors.append(" ").append(Escape.escapeColor(color));

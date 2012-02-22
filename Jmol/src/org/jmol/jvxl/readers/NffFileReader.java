@@ -29,8 +29,8 @@ import java.util.Map;
 
 import javax.vecmath.Point3f;
 
-import org.jmol.g3d.Graphics3D;
 import org.jmol.jvxl.data.JvxlCoder;
+import org.jmol.util.ColorUtil;
 import org.jmol.util.Logger;
 
 /* simple Neutral File Format reader 
@@ -84,7 +84,7 @@ class NffFileReader extends PolygonFileReader {
           vertexMap.clear();
           continue;
         case 'f':
-          color = Graphics3D.colorTriadToInt(parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3]));
+          color = ColorUtil.colorTriadToInt(parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3]));
           continue;
         case 'p':
           if (line.equals("pp 3")) {

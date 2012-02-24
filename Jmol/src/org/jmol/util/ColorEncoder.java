@@ -260,6 +260,14 @@ import org.jmol.g3d.Graphics3D;
       if (name.length() > 0)
         isOverloaded = true;
       int n = 0;
+      if (!colorScheme.contains("[")) {
+        // also allow xxx=red,blue,green
+        
+        colorScheme = "[" + colorScheme.substring(pt + 1).trim() + "]";
+        colorScheme = TextFormat.simpleReplace(colorScheme.replace('\n', ' '), "  ", " ");
+        colorScheme = TextFormat.simpleReplace(colorScheme, ", ", ",").replace(' ',',');
+        colorScheme = TextFormat.simpleReplace(colorScheme, ",", "][");
+      }
       pt = -1;
       while ((pt = colorScheme.indexOf("[", pt + 1)) >= 0)
         n++;
@@ -270,21 +278,21 @@ import org.jmol.g3d.Graphics3D;
       // create the scale -- error returns ROYGB
       
       int[] scale = new int[n];
-      pt = -1;
       n = 0;
-      int c;
-      int pt2;
       while ((pt = colorScheme.indexOf("[", pt + 1)) >= 0) {
-        pt2 = colorScheme.indexOf("]", pt);
+        int pt2 = colorScheme.indexOf("]", pt);
         if (pt2 < 0)
           pt2 = colorScheme.length() - 1;
-        scale[n++] = c = ColorUtil.getArgbFromString(colorScheme.substring(pt,
+        int c = ColorUtil.getArgbFromString(colorScheme.substring(pt,
             pt2 + 1));
+        if (c == 0) // try without the brackets
+          c = ColorUtil.getArgbFromString(colorScheme.substring(pt + 1, pt2).trim());        
         if (c == 0) {
           Logger.error("error in color value: "
               + colorScheme.substring(pt, pt2 + 1));
           return ROYGB;
         }
+        scale[n++] = c;
       }
       
       // set the user scale if that is what this is
@@ -503,7 +511,7 @@ import org.jmol.g3d.Graphics3D;
 
     for (int i = 0; i < segmentCount; i++) {
       values[i] = (isReversed ? hi - i * quantum : lo + i * quantum);
-      colors.add(Graphics3D.colorPointFromInt2(getArgb(values[i] + f)));
+      colors.add(ColorUtil.colorPointFromInt2(getArgb(values[i] + f)));
     }
     values[segmentCount] = (isReversed ? lo : hi);
     info.put("values", values);

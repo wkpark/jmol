@@ -175,7 +175,7 @@ final class Shade3D {
     
     if (greyScale)
       for (; --i >= 0;)
-        shades[i] = Graphics3D.calcGreyscaleRgbFromRgb(shades[i]);
+        shades[i] = ColorUtil.calcGreyscaleRgbFromRgb(shades[i]);
     return shades;
   }
 

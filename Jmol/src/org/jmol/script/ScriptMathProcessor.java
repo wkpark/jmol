@@ -43,7 +43,6 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumVdw;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.MeasurementData;
 import org.jmol.modelset.Bond.BondSet;
@@ -52,6 +51,7 @@ import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.ColorEncoder;
+import org.jmol.util.ColorUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
@@ -2478,7 +2478,7 @@ class ScriptMathProcessor {
     }
     Map<String, Object> key = ce.getColorKey();
     if (getValue)
-      return addX(Graphics3D.colorPointFromInt2(ce
+      return addX(ColorUtil.colorPointFromInt2(ce
           .getArgb(hi == Float.MAX_VALUE ? lo : value)));
     return addX(ScriptVariable.getVariable(key));
   }
@@ -2704,13 +2704,13 @@ class ScriptMathProcessor {
         case Token.varray:
           s = ScriptVariable.sValue(x2);
           pt = new Point3f();
-          return addX(Graphics3D.colorPointFromString(s, pt));
+          return addX(ColorUtil.colorPointFromString(s, pt));
         case Token.integer:
         case Token.decimal:
           return addX(viewer.getColorPointForPropertyValue(ScriptVariable
               .fValue(x2)));
         case Token.point3f:
-          return addX(Escape.escapeColor(Graphics3D
+          return addX(Escape.escapeColor(ColorUtil
               .colorPtToInt((Point3f) x2.value)));
         default:
           // handle bitset later

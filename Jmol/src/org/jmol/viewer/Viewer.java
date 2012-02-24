@@ -1568,7 +1568,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   
   public Point3f getColorPointForPropertyValue(float val) {
     // x = {atomno=3}.partialcharge.color
-    return Graphics3D.colorPointFromInt2(g3d.getColorArgbOrGray(colorManager
+    return ColorUtil.colorPointFromInt2(g3d.getColorArgbOrGray(colorManager
         .getColixForPropertyValue(val)));
   }
 

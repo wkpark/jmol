@@ -100,6 +100,7 @@ import org.jmol.util.Escape;
 import org.jmol.util.BinaryDocument;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.ColorUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.MeshSurface;
@@ -1425,7 +1426,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if (s != null)
       info.put("jvxlInfo", s.replace('\n', ' '));
     info.put("modelIndex", Integer.valueOf(mesh.modelIndex));
-    info.put("color", Graphics3D.colorPointFromInt2(Graphics3D
+    info.put("color", ColorUtil.colorPointFromInt2(Graphics3D
         .getArgb(mesh.colix)));
     if (mesh.colorEncoder != null)
       info.put("colorKey", mesh.colorEncoder.getColorKey());

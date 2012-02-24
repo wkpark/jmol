@@ -26,20 +26,10 @@ package org.jmol.util;
 import java.util.Hashtable;
 import java.util.Map;
 
-/*
- * 
- * just a simple class using crude color encoding
- * 
- * 
- * NOT THREAD-SAFE! TOO MANY STATIC FIELDS!!
- * 
- * The idea was that isosurface would have access to user-defined applet-wide color schemes.
- * but what we have is a set of globals that any applet could use to mess up any other applet.
- * 
- */
+import javax.vecmath.Point3f;
 
 
- public class ColorUtil {
+public class ColorUtil {
 
   private final static String[] colorNames = {
     "black",                // 000000
@@ -405,7 +395,7 @@ import java.util.Map;
         red = Parser.parseFloat(tokens[0]);
         grn = Parser.parseFloat(tokens[1]);
         blu = Parser.parseFloat(tokens[2]);
-        return ColorUtil.colorTriadToInt(red, grn, blu);
+        return colorTriadToInt(red, grn, blu);
       }
       switch (len) {
       case 9:
@@ -427,7 +417,7 @@ import java.util.Map;
         red = Integer.parseInt(strColor.substring(1, 3), 16);
         grn = Integer.parseInt(strColor.substring(3, 5), 16);
         blu = Integer.parseInt(strColor.substring(5, 7), 16);
-        return ColorUtil.colorTriadToInt(red, grn, blu);
+        return colorTriadToInt(red, grn, blu);
       } catch (NumberFormatException e) {
         return 0;
       }
@@ -450,6 +440,41 @@ import java.util.Map;
 
   public static int rgb(int red, int grn, int blu) {
     return 0xFF000000 | (red << 16) | (grn << 8) | blu;
+  }
+
+  public final static Point3f colorPointFromString(String colorName, Point3f pt) {
+    return colorPointFromInt(getArgbFromString(colorName), pt);
+  }
+
+  public final static Point3f colorPointFromInt2(int color) {
+    return new Point3f((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF);
+  }
+
+  public static int colorPtToInt(Point3f pt) {
+    return colorTriadToInt(pt.x, pt.y, pt.z);
+  }
+
+  public final static Point3f colorPointFromInt(int color, Point3f pt) {
+    pt.z = color & 0xFF;
+    pt.y = (color >> 8) & 0xFF;
+    pt.x = (color >> 16) & 0xFF;
+    return pt;
+  }
+
+  /**
+   * Return a greyscale rgb value 0-FF using NTSC color luminance algorithm
+   *<p>
+   * the alpha component is set to 0xFF. If you want a value in the
+   * range 0-255 then & the result with 0xFF;
+   *
+   * @param rgb the rgb value
+   * @return a grayscale value in the range 0 - 255 decimal
+   */
+  public static int calcGreyscaleRgbFromRgb(int rgb) {
+    int grey = ((2989 * ((rgb >> 16) & 0xFF)) +
+                (5870 * ((rgb >> 8) & 0xFF)) +
+                (1140 * (rgb & 0xFF)) + 5000) / 10000;
+    return rgb(grey, grey, grey);
   }
 
 }

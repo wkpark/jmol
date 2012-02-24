@@ -33,6 +33,7 @@ import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumVdw;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.script.Token;
+import org.jmol.util.ColorUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.Quadric;
 import org.jmol.util.JmolEdge;
@@ -1412,7 +1413,7 @@ final public class Atom extends Point3fi implements JmolNode {
     case Token.xyz:
       return atom;
     case Token.color:
-      return Graphics3D.colorPointFromInt2(
+      return ColorUtil.colorPointFromInt2(
           atom.group.chain.model.modelSet.viewer.getColorArgbOrGray(atom.getColix())
           );
     }

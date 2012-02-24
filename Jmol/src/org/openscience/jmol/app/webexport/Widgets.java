@@ -2,8 +2,8 @@ package org.openscience.jmol.app.webexport;
 
 import javax.vecmath.Point3f;
 
-import org.jmol.g3d.Graphics3D;
 import org.jmol.i18n.GT;
+import org.jmol.util.ColorUtil;
 
 class Widgets { 
   
@@ -101,7 +101,7 @@ class Widgets {
     
     @Override
     String getJavaScript(int appletID, JmolInstance instance) {
-      Point3f ptRGB = Graphics3D.colorPointFromInt2(instance.bgColor);
+      Point3f ptRGB = ColorUtil.colorPointFromInt2(instance.bgColor);
       return "<table><tbody><tr><td style=\"min-width:70px;\">"
           + GT.escapeHTML(GT._("background color:"))
           + "</td><td style=\"min-width:70px;\"><script type = 'text/javascript'>"

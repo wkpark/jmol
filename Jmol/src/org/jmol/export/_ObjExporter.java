@@ -25,6 +25,7 @@ import javax.vecmath.Vector3f;
 import org.jmol.export.image.ImageCreator;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
+import org.jmol.util.ColorUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.MeshSurface;
@@ -671,9 +672,9 @@ public class _ObjExporter extends __CartesianExporter {
         // Get the vertex colors and average them
         sum.set(0, 0, 0);
         for (int iVertex : face)
-          sum.add(Graphics3D.colorPointFromInt2(g3d.getColorArgbOrGray(colixes[iVertex])));
+          sum.add(ColorUtil.colorPointFromInt2(g3d.getColorArgbOrGray(colixes[iVertex])));
         sum.scale(1.0f / face.length);
-        rgb = Graphics3D.colorPtToInt(sum);
+        rgb = ColorUtil.colorPtToInt(sum);
       } else {
         rgb = g3d.getColorArgbOrGray(colixes[i]);
       }

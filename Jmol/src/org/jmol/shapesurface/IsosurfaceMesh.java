@@ -37,6 +37,7 @@ import javax.vecmath.Vector3f;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.ColorEncoder;
+import org.jmol.util.ColorUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.MeshSurface;
@@ -465,7 +466,7 @@ public class IsosurfaceMesh extends Mesh {
     if (jvxlData.contourColixes != null) {
       // set in SurfaceReader.colorData()
       for (int i = 0; i < jvxlData.contourColixes.length; i++) {
-        colors.add(Graphics3D.colorPointFromInt2(Graphics3D
+        colors.add(ColorUtil.colorPointFromInt2(Graphics3D
             .getArgb(jvxlData.contourColixes[i])));
       }
       ht.put("colors", colors);

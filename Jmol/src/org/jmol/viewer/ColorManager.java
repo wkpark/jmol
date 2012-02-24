@@ -25,6 +25,7 @@ package org.jmol.viewer;
 
 import org.jmol.script.Token;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.ColorUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.Logger;
 
@@ -116,7 +117,7 @@ class ColorManager {
   short colixBackgroundContrast;
 
   void setColixBackgroundContrast(int argb) {
-    colixBackgroundContrast = ((Graphics3D.calcGreyscaleRgbFromRgb(argb) & 0xFF) < 128 ? Graphics3D.WHITE
+    colixBackgroundContrast = ((ColorUtil.calcGreyscaleRgbFromRgb(argb) & 0xFF) < 128 ? Graphics3D.WHITE
         : Graphics3D.BLACK);
   }
 

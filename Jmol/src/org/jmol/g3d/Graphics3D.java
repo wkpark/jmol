@@ -2001,22 +2001,6 @@ final public class Graphics3D implements JmolRendererInterface {
   final static short         RAW_RGB             = 3;
   final static short         SPECIAL_COLIX_MAX   = 4;
 
-  /**
-   * Return a greyscale rgb value 0-FF using NTSC color luminance algorithm
-   *<p>
-   * the alpha component is set to 0xFF. If you want a value in the
-   * range 0-255 then & the result with 0xFF;
-   *
-   * @param rgb the rgb value
-   * @return a grayscale value in the range 0 - 255 decimal
-   */
-  public static int calcGreyscaleRgbFromRgb(int rgb) {
-    int grey = ((2989 * ((rgb >> 16) & 0xFF)) +
-                (5870 * ((rgb >> 8) & 0xFF)) +
-                (1140 * (rgb & 0xFF)) + 5000) / 10000;
-    return ColorUtil.rgb(grey, grey, grey);
-  }
-
   public static short getColix(int argb) {
     return Colix3D.getColix(argb); 
   }
@@ -2057,25 +2041,6 @@ final public class Graphics3D implements JmolRendererInterface {
         return null;
     }
     return colixes;
-  }
-
-  public final static Point3f colorPointFromInt(int color, Point3f pt) {
-    pt.z = color & 0xFF;
-    pt.y = (color >> 8) & 0xFF;
-    pt.x = (color >> 16) & 0xFF;
-    return pt;
-  }
-
-  public static int colorPtToInt(Point3f pt) {
-    return ColorUtil.colorTriadToInt(pt.x, pt.y, pt.z);
-  }
-  
-  public final static Point3f colorPointFromInt2(int color) {
-    return new Point3f((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF);
-  }
-
-  public final static Point3f colorPointFromString(String colorName, Point3f pt) {
-    return colorPointFromInt(ColorUtil.getArgbFromString(colorName), pt);
   }
 
   public static short getColix(String colorName) {

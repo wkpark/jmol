@@ -24,6 +24,7 @@
 
 package org.jmol.g3d;
 
+import org.jmol.util.ColorUtil;
 import org.jmol.util.Int2IntHash;
 
 /**
@@ -123,7 +124,7 @@ class Colix3D {
     argbs[colixMax] = argb;
     //System.out.println("Colix "+colixMax + " = "+Integer.toHexString(argb) + " " + argb);
     if (argbsGreyscale != null)
-      argbsGreyscale[colixMax] = Graphics3D.calcGreyscaleRgbFromRgb(argb);
+      argbsGreyscale[colixMax] = ColorUtil.calcGreyscaleRgbFromRgb(argb);
     colixHash.put(argb, colixMax);
     return (colixMax < Graphics3D.LAST_AVAILABLE_COLIX ? colixMax++ : colixMax);
   }
@@ -133,7 +134,7 @@ class Colix3D {
       return;
     int[] a = new int[argbs.length];
     for (int i = argbs.length; --i >= Graphics3D.SPECIAL_COLIX_MAX;)
-      a[i] = Graphics3D.calcGreyscaleRgbFromRgb(argbs[i]);
+      a[i] = ColorUtil.calcGreyscaleRgbFromRgb(argbs[i]);
     argbsGreyscale = a;
   }
 
@@ -151,7 +152,7 @@ class Colix3D {
     if (asGrey) {
       if (argbsGreyscale == null)
         calcArgbsGreyscale();
-      argbsGreyscale[Graphics3D.LAST_AVAILABLE_COLIX] = Graphics3D.calcGreyscaleRgbFromRgb(argb);
+      argbsGreyscale[Graphics3D.LAST_AVAILABLE_COLIX] = ColorUtil.calcGreyscaleRgbFromRgb(argb);
     }
     return ashades[Graphics3D.LAST_AVAILABLE_COLIX] = Shade3D.getShades(argb, false);
   }

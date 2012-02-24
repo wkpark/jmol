@@ -1556,7 +1556,7 @@ public class ScriptEvaluator {
           }
           break;
         case Token.color:
-          Graphics3D.colorPointFromInt(viewer.getColorArgbOrGray(bond
+          ColorUtil.colorPointFromInt(viewer.getColorArgbOrGray(bond
               .getColix()), ptT);
           switch (minmaxtype) {
           case Token.all:
@@ -1701,7 +1701,7 @@ public class ScriptEvaluator {
           ScriptVariable svi = sv.get(i);
           pt = ScriptVariable.ptValue(svi);
           if (pt != null) {
-            values[i] = Graphics3D.colorPtToInt(pt);
+            values[i] = ColorUtil.colorPtToInt(pt);
           } else if (svi.tok == Token.integer) {
             values[i] = svi.intValue;
           } else {
@@ -1716,7 +1716,7 @@ public class ScriptEvaluator {
         prop = "colorValues";
         break;
       case Token.point3f:
-        value = Integer.valueOf(Graphics3D
+        value = Integer.valueOf(ColorUtil
             .colorPtToInt((Point3f) tokenValue.value));
         break;
       case Token.string:
@@ -3658,7 +3658,7 @@ public class ScriptEvaluator {
         float comparisonFloat = Float.NaN;
         if (val instanceof Point3f) {
           if (tokWhat == Token.color) {
-            comparisonValue = Graphics3D.colorPtToInt((Point3f) val);
+            comparisonValue = ColorUtil.colorPtToInt((Point3f) val);
             tokValue = Token.integer;
             isIntProperty = true;
           }
@@ -3671,7 +3671,7 @@ public class ScriptEvaluator {
               if (((String) val).startsWith("{")) {
                 val = Escape.unescapePoint((String) val);
                 if (val instanceof Point3f)
-                  comparisonValue = Graphics3D.colorPtToInt((Point3f) val);
+                  comparisonValue = ColorUtil.colorPtToInt((Point3f) val);
                 else
                   comparisonValue = 0;
               } else {
@@ -4851,7 +4851,7 @@ public class ScriptEvaluator {
     }
     if (pt == null)
       error(ERROR_colorExpected);
-    return Graphics3D.colorPtToInt(pt);
+    return ColorUtil.colorPtToInt(pt);
   }
 
   private int getColorTriad(int i) throws ScriptException {
@@ -4914,7 +4914,7 @@ public class ScriptEvaluator {
     if (getToken(++i).tok != Token.rightsquare)
       error(ERROR_badRGBColor);
     if (pt != null)
-      return Graphics3D.colorPtToInt(pt);
+      return ColorUtil.colorPtToInt(pt);
     if ((n = ColorUtil.getArgbFromString("[" + hex + "]")) == 0)
       error(ERROR_badRGBColor);
     return n;

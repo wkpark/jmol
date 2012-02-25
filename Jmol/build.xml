@@ -361,7 +361,7 @@ all support for previous versions removed
           <!-- srcfiles dir="${lib.dir}" includes="Acme.jar"/ -->
           <srcfiles dir="${lib.dir}" includes="${itext.jar}"/>
           <srcfiles dir="${lib.dir}" includes="${commons-cli.jar}"/>
-          <srcfiles dir="${lib.dir}" includes="jspecview.jar"/>
+          <srcfiles dir="${lib.dir}" includes="JSpecView.jar"/>
         </uptodate>
         <uptodate targetfile="build/libjars.timestamp"
                   srcfile="${appjars.dir}"/>
@@ -394,7 +394,7 @@ all support for previous versions removed
     <!-- unjar dest="${appjars.dir}" src="${lib.dir}/Acme.jar"/ -->
     <unjar dest="${appjars.dir}" src="${lib.dir}/${itext.jar}"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/${commons-cli.jar}"/>
-    <unjar dest="${appjars.dir}" src="${lib.dir}/jspecview.jar"/>
+    <unjar dest="${appjars.dir}" src="${lib.dir}/JSpecView.jar"/>
   	<delete file="${appjars.dir}/org/jmol/api/JmolSyncInterface.class" />
     <touch file="build/libjars.timestamp"/>
   </target>
@@ -1399,7 +1399,8 @@ all support for previous versions removed
     <copy todir="build/dist/jmol-${version}" >
       <fileset dir="./appletweb">
         <include name="Jmol.js" />
-        <include name="jspecview.jar" />
+        <include name="JSpecViewApplet.jar" />
+        <include name="JSpecViewAppletSigned.jar" />
       </fileset>
     </copy>
 

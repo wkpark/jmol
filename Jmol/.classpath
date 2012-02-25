@@ -13,6 +13,6 @@
 	<classpathentry kind="lib" path="screensaver/jars/saverbeans-api.jar"/>
 	<classpathentry kind="lib" path="jars/junit.jar"/>
 	<classpathentry kind="lib" path="jars/naga-2_1-r42.jar"/>
-	<classpathentry kind="lib" path="jars/jspecview.jar"/>
+	<classpathentry kind="lib" path="jars/JSpecView.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

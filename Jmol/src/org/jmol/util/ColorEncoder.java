@@ -260,7 +260,7 @@ import org.jmol.g3d.Graphics3D;
       if (name.length() > 0)
         isOverloaded = true;
       int n = 0;
-      if (!colorScheme.contains("[")) {
+      if (colorScheme.length() > pt + 1 && !colorScheme.contains("[")) {
         // also allow xxx=red,blue,green
         
         colorScheme = "[" + colorScheme.substring(pt + 1).trim() + "]";

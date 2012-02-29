@@ -66,7 +66,7 @@ public class Contact extends Isosurface {
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
     if ("set" == propertyName) {
-      setContacts((Object[]) value);
+      setContacts((Object[]) value, !viewer.getTestFlag(4));
       return;
     }
     if ("init" == propertyName) {
@@ -83,7 +83,7 @@ public class Contact extends Isosurface {
   //private final static float HBOND_CUTOFF = -0.8f;
   private final static RadiusData rdVDW =  new RadiusData(1, RadiusData.EnumType.FACTOR, EnumVdw.AUTO);
   
-  private void setContacts(Object[] value) {
+  private void setContacts(Object[] value, boolean doEditCpList) {
     Logger.startTimer();
     int contactType = ((Integer) value[0]).intValue();
     int displayType = ((Integer) value[1]).intValue();
@@ -208,7 +208,7 @@ public class Contact extends Isosurface {
                   EnumVdw.AUTO);
       */
       float volume = 0;
-      List<ContactPair> pairs = getPairs(bsA, bsB, rd, intramolecularMode);
+      List<ContactPair> pairs = getPairs(bsA, bsB, rd, intramolecularMode, doEditCpList);
       thisMesh.info = pairs;
       volume += combineSurfaces(pairs, contactType, displayType, parameters,
           func, colorDensity, colorByType);
@@ -354,10 +354,11 @@ public class Contact extends Isosurface {
    * @param bsB
    * @param rd
    * @param intramolecularMode
+   * @param doEditCpList 
    * @return a list of pairs of atoms to process
    */
   private List<ContactPair> getPairs(BitSet bsA, BitSet bsB, RadiusData rd,
-                                     int intramolecularMode) {
+                                     int intramolecularMode, boolean doEditCpList) {
     List<ContactPair> list = new ArrayList<ContactPair>();
     AtomData ad = new AtomData();
     ad.radiusData = rd;
@@ -433,6 +434,8 @@ public class Contact extends Isosurface {
     }
     iter.release();
     iter = null;
+    if (!doEditCpList)
+      return list;
     int n = list.size() - 1;
     BitSet bsBad = new BitSet();
     for (int i = 0; i < n; i++) {
@@ -457,7 +460,6 @@ public class Contact extends Isosurface {
     for (int i = bsBad.length(); --i >= 0;)
       if (bsBad.get(i))
         list.remove(i);
-
     if (Logger.debugging)
       for (int i = 0; i < list.size(); i++)
         Logger.info(list.get(i).toString());

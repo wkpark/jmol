@@ -6911,10 +6911,12 @@ private void zap(String msg) {
     case 1:
       return global.testFlag1;
     case 2:
+      // nciCalculation special params.testFlag = 2 "absolute" calc.
       return global.testFlag2;
     case 3:
       return global.testFlag3;
     case 4:
+      // contact -- true: do not edit Cp list
       return global.testFlag4;
     }
     return false;

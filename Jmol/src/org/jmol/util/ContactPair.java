@@ -27,12 +27,18 @@ public class ContactPair {
     myAtoms[0] = atoms[i1];
     myAtoms[1] = atoms[i2];
     
-
-    //     ------d------------
-    //    i1--------|->vdw1
-    //        vdw2<-|--------i2
+    //    ----------d---------
+    //    -----R----|->
+    //    A      (  .  )     B
+    //            <-|----r----
     //              pt
-
+    // dist(A, pt) = x = R - (R + r - d)/2 = (R - r + d)/2
+    // pt = A + (Vab/d)*x
+    //
+    // Note that R is not necessarily VDW(A), and 
+    // r is not necessarily VDW(B). That's certainly true for clashes,
+    // for attractive Van der Waals forces R and r will be larger
+    
     Vector3f v = new Vector3f(myAtoms[1]);
     v.sub(myAtoms[0]);
     d = v.length();
@@ -48,6 +54,10 @@ public class ContactPair {
     // http://mathworld.wolfram.com/Sphere-SphereIntersection.html
     //  volume = pi * (R + r - d)^2 (d^2 + 2dr - 3r^2 + 2dR + 6rR - 3R^2)/(12d)
 
+    // score > 0 if two atoms are not really touching (Van der Waals interaaction only)
+    // score = 0 when just touching
+    // score < 0 when two atoms are in contact (clash or hydrogen bond).
+    // lower score --> more contact. 
     score = d - vdwA - vdwB;
     contactType = (score < 0 ? Token.clash : Token.vanderwaals);
     if (score < 0) {

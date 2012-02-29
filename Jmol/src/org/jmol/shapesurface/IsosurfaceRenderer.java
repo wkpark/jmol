@@ -57,8 +57,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
 
   @Override
   protected void render() {
-    iShowNormals = viewer.getTestFlag(4);
-    showNumbers = viewer.getTestFlag(3);
+    iShowNormals = false;//viewer.getTestFlag(4);
+    showNumbers = false;//viewer.getTestFlag(3);
     isosurface = (Isosurface) shape;
     exportPass = (isExport ? 2 : 0);
     isNavigationMode = viewer.getNavigationMode();

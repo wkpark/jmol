@@ -136,7 +136,7 @@ class RepaintManager {
   void render(Graphics3D g3d, ModelSet modelSet, boolean isFirstPass) {
     if (modelSet == null || !viewer.mustRenderFlag())
       return;
-    logTime = viewer.getTestFlag(2);
+    logTime = false;//viewer.getTestFlag(2);
     if (logTime)
       Logger.startTimer();
     viewer.finalizeTransformParameters();

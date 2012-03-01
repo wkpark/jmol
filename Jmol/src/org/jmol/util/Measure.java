@@ -172,7 +172,7 @@ final public class Measure {
           +"measure " + Escape.escape(a) + Escape.escape(pt_a_prime) + Escape.escape(pt_b_prime) + Escape.escape(b));
     */
     if (tokType == Token.draw)
-      return "draw ID " + id + " VECTOR " + Escape.escape(pt_a_prime)
+      return "draw ID \"" + id + "\" VECTOR " + Escape.escape(pt_a_prime)
           + " " + Escape.escape(n) + " color "
           + (theta < 0 ? "{255.0 200.0 0.0}" : "{255.0 0.0 128.0}");
     if (tokType == Token.measure)

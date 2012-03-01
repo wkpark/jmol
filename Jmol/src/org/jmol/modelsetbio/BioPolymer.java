@@ -615,7 +615,8 @@ public abstract class BioPolymer {
    * @param calcRamachandranStraightness
    * @param useQuaternionStraightness
    * @param writeRamachandranStraightness
-   * @param quaternionStraightness          NOT USED
+   * @param quaternionStraightness
+   *        NOT USED
    * @param factor
    * @param isAmino
    * @param isRelativeAlias
@@ -649,6 +650,8 @@ public abstract class BioPolymer {
     String strExtra = "";
     float val1 = Float.NaN;
     float val2 = Float.NaN;
+    Point3f pt = (isDraw ? new Point3f() : null);
+    
     int dm = (mStep <= 1 ? 1 : mStep);
     for (int m = m0; m < p.monomerCount; m += dm) {
       Monomer monomer = p.monomers[m];
@@ -686,32 +689,37 @@ public abstract class BioPolymer {
             // standard dihedral/Jmol definitions for anticlockwise positive
             // angles
             AminoMonomer aa = (AminoMonomer) monomer;
-            pdbATOM.append("draw phi" + id + " ARROW ARC ").append(
-                Escape.escape(aa.getNitrogenAtom())).append(
-                Escape.escape(a)).append(
-                Escape.escape(aa.getCarbonylCarbonAtom())).append(
-                "{" + (-x) + " " + x + " 0.5} \"phi = " + (int) x + "\"")
+            pt.set(-x, x, 0.5f);
+            pdbATOM.append("draw ID \"phi").append(id).append("\" ARROW ARC ")
+                .append(Escape.escape(aa.getNitrogenAtom()))
+                .append(Escape.escape(a))
+                .append(Escape.escape(aa.getCarbonylCarbonAtom()))
+                .append(Escape.escape(pt))
+                .append(" \"phi = ").append(String.valueOf((int) x)).append('\"')
                 .append(" color ").append(qColor[2]).append('\n');
-            pdbATOM.append("draw psi" + id + " ARROW ARC ").append(
-                Escape.escape(a)).append(
-                Escape.escape(aa.getCarbonylCarbonAtom())).append(
-                Escape.escape(aa.getNitrogenAtom())).append(
-                "{0 " + y + " 0.5} \"psi = " + (int) y + "\"")
+            pt.set(0, y, 0.5f);
+            pdbATOM.append("draw ID \"psi").append(id).append("\" ARROW ARC ")
+                .append(Escape.escape(a))
+                .append(Escape.escape(aa.getCarbonylCarbonAtom()))
+                .append(Escape.escape(aa.getNitrogenAtom()))
+                .append(Escape.escape(pt))
+                .append(" \"psi = ").append(String.valueOf((int) y)).append('\"')
                 .append(" color ").append(qColor[1]).append('\n');
-            pdbATOM.append("draw planeNCC" + id + " ").append(
-                Escape.escape(aa.getNitrogenAtom())).append(Escape.escape(a))
-                .append(Escape.escape(aa.getCarbonylCarbonAtom())).append(
-                    " color ").append(qColor[0]).append('\n');
-            pdbATOM.append("draw planeCNC" + id + " ").append(
-                Escape.escape(((AminoMonomer) p.monomers[m - 1])
-                    .getCarbonylCarbonAtom())).append(
-                Escape.escape(aa.getNitrogenAtom())).append(Escape.escape(a))
+            pdbATOM.append("draw ID \"planeNCC").append(id).append("\" ")
+                .append(Escape.escape(aa.getNitrogenAtom()))
+                .append(Escape.escape(a))
+                .append(Escape.escape(aa.getCarbonylCarbonAtom()))
+                .append(" color ").append(qColor[0]).append('\n');
+            pdbATOM.append("draw ID \"planeCNC").append(id).append("\" ")
+                .append(Escape.escape(((AminoMonomer) p.monomers[m - 1]).getCarbonylCarbonAtom()))
+                .append(Escape.escape(aa.getNitrogenAtom()))
+                .append(Escape.escape(a))
                 .append(" color ").append(qColor[1]).append('\n');
-            pdbATOM.append("draw planeCCN" + id + " ").append(Escape.escape(a))
-                .append(Escape.escape(aa.getCarbonylCarbonAtom())).append(
-                    Escape.escape(((AminoMonomer) p.monomers[m + 1])
-                        .getNitrogenAtom())).append(" color ")
-                .append(qColor[2]).append('\n');
+            pdbATOM.append("draw ID \"planeCCN").append(id).append("\" ")
+                .append(Escape.escape(a))
+                .append(Escape.escape(aa.getCarbonylCarbonAtom()))
+                .append(Escape.escape(((AminoMonomer) p.monomers[m + 1]).getNitrogenAtom()))
+                .append(" color ").append(qColor[2]).append('\n');
             continue;
           }
           if (Float.isNaN(angledeg)) {
@@ -883,8 +891,8 @@ public abstract class BioPolymer {
                 Point3f ptH = ((AminoMonomer) monomer)
                     .getNitrogenHydrogenPoint();
                 if (ptH != null)
-                  pdbATOM.append("draw " + prefix + "nh" + id + " width 0.1 "
-                      + Escape.escape(ptH) + "\n");
+                  pdbATOM.append("draw ID \"").append(prefix).append("nh").append(id).append('\"')
+                  		.append(" width 0.1 ").append(Escape.escape(ptH)).append('\n');
               }
             }
             if (derivType == 1) {
@@ -893,11 +901,13 @@ public abstract class BioPolymer {
                   .append('\n');
               continue;
             }
-            pdbATOM.append(
-                "draw " + prefix + "a" + id + " VECTOR "
-                    + Escape.escape(ptCenter) + " {" + (x * 2) + "," + (y * 2)
-                    + "," + (z * 2) + "}" + " \">" + deg + "\"").append(
-                " color ").append(qColor[derivType]).append('\n');
+            pt.set(x * 2, y * 2, z * 2);
+            pdbATOM.append("draw ID \"").append(prefix).append("a").append(id).append('\"')
+                .append(" VECTOR ")
+                .append(Escape.escape(ptCenter))
+                .append(Escape.escape(pt))
+                .append(" \">").append(String.valueOf(deg)).append('\"')
+                .append(" color ").append(qColor[derivType]).append('\n');
             continue;
           }
           strExtra = q.getInfo()

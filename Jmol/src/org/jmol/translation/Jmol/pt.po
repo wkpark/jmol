@@ -7,14 +7,14 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-02-06 06:32+0100\n"
-"PO-Revision-Date: 2011-02-24 14:39+0000\n"
-"Last-Translator: GJ <goncalo.justino@gmail.com>\n"
+"PO-Revision-Date: 2012-02-29 16:17+0000\n"
+"Last-Translator: Alexandre Duarte <d3vilbl3ss3d@gmail.com>\n"
 "Language-Team: Portugal@Folding <Jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-12-18 14:49+0000\n"
-"X-Generator: Launchpad (build 14525)\n"
+"X-Launchpad-Export-Date: 2012-03-02 19:48+0000\n"
+"X-Generator: Launchpad (build 14886)\n"
 "X-Poedit-Country: Portugal\n"
 "X-Poedit-Language: Portuguese\n"
 "X-Poedit-Basepath: ../../../..\n"
@@ -29,7 +29,7 @@ msgstr ""
 
 #: com/json/Cookie.java:126
 msgid "expires"
-msgstr ""
+msgstr "expira"
 
 #: com/json/Cookie.java:130
 msgid "domain"
@@ -320,14 +320,12 @@ msgid "Period"
 msgstr "Período"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:355
-#, fuzzy
 msgid "Frame"
-msgstr "&Nome"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:355
-#, fuzzy
 msgid "Vibration"
-msgstr "&Parar vibração"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:363
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:372
@@ -359,11 +357,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:374
 msgid "Vibration ON"
-msgstr ""
+msgstr "Vibração Ligada"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:375
 msgid "Vibration OFF"
-msgstr ""
+msgstr "Vibração Desligada"
 
 #: org/openscience/jmol/app/jmolpanel/ConsoleTextArea.java:87
 #, java-format
@@ -1323,7 +1321,8 @@ msgstr "(Angstroms)"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:427
 msgid "Bond Tolerance - sum of two covalent radii + this value"
-msgstr "Tolerância da ligação- somatório de dois raios covalentes+ este valor"
+msgstr ""
+"Tolerância da ligação- somatório de dois raios covalentes+ este valor"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:468
 msgid "Minimum Bonding Distance"
@@ -1378,9 +1377,8 @@ msgid "startup"
 msgstr ""
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:533
-#, fuzzy
 msgid "filename"
-msgstr "Nome do Ficheiro:"
+msgstr ""
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:540
 msgid "startup_script"
@@ -1693,7 +1691,8 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:534
 msgid "Select a directory to create or an HTML file to save"
-msgstr "Seleccionar uma directoria para criar ou um ficheiro HTML para guardar"
+msgstr ""
+"Seleccionar uma directoria para criar ou um ficheiro HTML para guardar"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:554
 #, java-format
@@ -1869,24 +1868,6 @@ msgstr ""
 msgid "unimplemented"
 msgstr ""
 
-#~ msgid "Controller"
-#~ msgstr "Controlador"
-
-#~ msgid "Go to first vector in the collection"
-#~ msgstr "Ir para o primeiro vector da colecção"
-
-#~ msgid "Go to previous vector in the collection"
-#~ msgstr "Ir para o vector anterior da colecção"
-
-#~ msgid "Play the whole collection of vectors"
-#~ msgstr "Mostrar toda a colecção de vectores"
-
-#~ msgid "Go to next vector in the collection"
-#~ msgstr "Ir para o próximo vector da colecção"
-
-#~ msgid "Jump to last vector in the collection"
-#~ msgstr "Ir para o último vector da colecção"
-
 #~ msgid "All"
 #~ msgstr "Todos"
 
@@ -1920,24 +1901,32 @@ msgstr ""
 #~ msgid "Left"
 #~ msgstr "Esquerda"
 
+#~ msgid "Controller"
+#~ msgstr "Controlador"
+
 #~ msgid "atom set"
 #~ msgstr "Grupo de átomos"
 
 #~ msgid "vector"
 #~ msgstr "vector"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Ir para o primeiro {0} na colecção"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Ir para o anterior {0} na colecção"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Correr toda a colecção de {0}'s"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Ir para a seguinte  {0} na colecção"
 
+#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Saltar para o último {0} na selecção"
 
@@ -1950,16 +1939,33 @@ msgstr ""
 #~ msgid "independent commmand thread"
 #~ msgstr "discussão commmand independente"
 
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 #~ msgstr ""
-#~ "Insira um texto de explicação aqui. Textos grandes serão ajustados em "
-#~ "torno do modelo de Jmol {0}.."
+#~ "Insira um texto de explicação aqui. Textos grandes serão ajustados em torno "
+#~ "do modelo de Jmol {0}.."
 
 #~ msgid "Jmol Script Console"
 #~ msgstr "Consola de Script Jmol"
 
+#~ msgid "Play the whole collection of vectors"
+#~ msgstr "Mostrar toda a colecção de vectores"
+
+#~ msgid "Go to first vector in the collection"
+#~ msgstr "Ir para o primeiro vector da colecção"
+
+#~ msgid "Go to previous vector in the collection"
+#~ msgstr "Ir para o vector anterior da colecção"
+
+#~ msgid "Go to next vector in the collection"
+#~ msgstr "Ir para o próximo vector da colecção"
+
+#~ msgid "Jump to last vector in the collection"
+#~ msgstr "Ir para o último vector da colecção"
+
+#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"

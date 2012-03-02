@@ -109,16 +109,6 @@ final public class JmolConstants {
   //do not capitalize any other letter in the word. Separate by semicolon.
   public static final String EXPORT_DRIVER_LIST = "Idtf;Maya;Povray;Vrml;X3d;Tachyon;Obj"; 
 
-  public final static String VdwPROBE = "#VDW radii for PROBE;{_H}.vdw = 1.0;" +
-  		"{_H and connected(_C) and not connected(within(smiles,'[a]'))}.vdw = 1.17;" +
-  		"{_C}.vdw = 1.75;{_C and connected(3) and connected(_O)}.vdw = 1.65;" +
-  		"{_N}.vdw = 1.55;" +
-  		"{_O}.vdw = 1.4;" +
-  		"{_P}.vdw = 1.8;" +
-  		"{_S}.vdw = 1.8;" +
-  		"message VDW radii for H, C, N, O, P, and S set according to " +
-  		"Word, et al., J. Mol. Biol. (1999) 285, 1711-1733";
-
   public final static Vector3f center = new Vector3f(0, 0, 0);
   public final static Vector3f axisX = new Vector3f(1, 0, 0);
   public final static Vector3f axisY = new Vector3f(0, 1, 0);

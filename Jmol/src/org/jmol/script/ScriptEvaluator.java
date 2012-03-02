@@ -12446,7 +12446,7 @@ public class ScriptEvaluator {
           Token.vanderwaals, -1, Float.NaN, null, null, null);
       switch (tokAt(2)) {
       case Token.probe:
-        runScript(JmolConstants.VdwPROBE);
+        runScript(Elements.VdwPROBE);
         return;
       }
       newTok = Token.defaultvdw;

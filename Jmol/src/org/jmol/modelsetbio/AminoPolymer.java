@@ -744,13 +744,13 @@ public class AminoPolymer extends AlphaPolymer {
     BitSet bsTurn = new BitSet();
 
     String line4 = findHelixes(4, min, iPolymer,
-        EnumStructure.HELIX_ALPHA, JmolEdge.BOND_H_PLUS_4, bsDone,
+        EnumStructure.HELIXALPHA, JmolEdge.BOND_H_PLUS_4, bsDone,
         bsTurn, labels, doReport, setStructure, vHBonds, bsBad);
     String line3 = findHelixes(3, min, iPolymer,
-        EnumStructure.HELIX_310, JmolEdge.BOND_H_PLUS_3,
+        EnumStructure.HELIX310, JmolEdge.BOND_H_PLUS_3,
         bsDone, bsTurn, labels, doReport, setStructure, vHBonds, bsBad);
     String line5 = findHelixes(5, min, iPolymer,
-        EnumStructure.HELIX_PI, JmolEdge.BOND_H_PLUS_5,
+        EnumStructure.HELIXPI, JmolEdge.BOND_H_PLUS_5,
         bsDone, bsTurn, labels, doReport, setStructure, vHBonds, bsBad);
 
     // G, H, and I have been set; now set what is left over as turn

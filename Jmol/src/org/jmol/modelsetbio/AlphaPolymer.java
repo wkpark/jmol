@@ -99,9 +99,9 @@ public class AlphaPolymer extends BioPolymer {
       System.out.println("alhapoly null type");
     switch(type) {
     case HELIX:
-    case HELIX_ALPHA:
-    case HELIX_310:
-    case HELIX_PI:
+    case HELIXALPHA:
+    case HELIX310:
+    case HELIXPI:
       proteinstructure = new Helix(this, indexStart, structureCount, 0, type);
       break;
     case SHEET:

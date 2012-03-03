@@ -132,9 +132,9 @@ public class AlphaMonomer extends Monomer {
       }
       switch (type) {
       case HELIX:
-      case HELIX_ALPHA:
-      case HELIX_310:
-      case HELIX_PI:
+      case HELIXALPHA:
+      case HELIX310:
+      case HELIXPI:
         setStructure(new Helix((AlphaPolymer) bioPolymer, monomerIndex, 1, 0, type));
         break;
       case SHEET:

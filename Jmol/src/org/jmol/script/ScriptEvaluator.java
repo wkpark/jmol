@@ -12640,7 +12640,7 @@ public class ScriptEvaluator {
         if (setLabel(key.substring(5)))
           return;
       }
-      if (lckey.indexOf("callback") >= 0)
+      if (lckey.endsWith("callback"))
         tok = Token.setparam;
     }
     if (isJmolSet && !Token.tokAttr(tok, Token.setparam)) {
@@ -12673,7 +12673,7 @@ public class ScriptEvaluator {
 
     if (!justShow && !isJmolSet && tokAt(2) == Token.none) {
       if (!isSyntaxCheck)
-        viewer.removeUserVariable(key);
+        viewer.removeUserVariable(key.toLowerCase());
       justShow = true;
     }
 

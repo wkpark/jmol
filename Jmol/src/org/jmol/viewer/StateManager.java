@@ -678,7 +678,7 @@ public class StateManager {
       }
 
       for (EnumCallback item : EnumCallback.values())        
-        resetParameterStringValue(item.getName(), g);        
+        resetParameterStringValue(item.name() + "Callback", g);        
 
       setParameterValue("historyLevel", 0); //deprecated ? doesn't do anything
 

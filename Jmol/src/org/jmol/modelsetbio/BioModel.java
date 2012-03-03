@@ -597,13 +597,13 @@ public final class BioModel extends Model{
                   String stype = null;
                   switch (subtype) {
                   case HELIX:
-                  case HELIX_ALPHA:
+                  case HELIXALPHA:
                     stype = "  1";
                     break;
-                  case HELIX_310:
+                  case HELIX310:
                     stype = "  5";
                     break;
-                  case HELIX_PI:
+                  case HELIXPI:
                     stype = "  3";
                     break;
                   }

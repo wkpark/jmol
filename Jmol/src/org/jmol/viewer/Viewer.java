@@ -5798,7 +5798,7 @@ private void zap(String msg) {
       // just saving this
       break;
     default:
-      if (key.toLowerCase().indexOf("callback") >= 0) {
+      if (key.toLowerCase().endsWith("callback")) {
         statusManager.setCallbackFunction(key, (value.length() == 0
             || value.equalsIgnoreCase("none") ? null : value));
         break;
@@ -6767,7 +6767,7 @@ private void zap(String msg) {
 
   public void removeUserVariable(String key) {
     global.removeUserVariable(key);
-    if (key.indexOf("callback") >= 0)
+    if (key.endsWith("callback"))
       statusManager.setCallbackFunction(key, null);
   }
 

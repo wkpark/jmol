@@ -33,25 +33,23 @@ public enum EnumStructure {
   // accessible via {atom}.structure and {atom}.substructure
   // DO NOT CHANGE THEM!
   
-  NOT(-1,"",0xFF808080),
-  NONE(0,"none",0xFFFFFFFF),
-  TURN(1,"turn",0xFF6080FF),
-  SHEET(2,"sheet",0xFFFFC800),
-  HELIX(3,"helix",0xFFFF0080),
-  DNA(4,"dna",0xFFAE00FE),
-  RNA(5,"rna",0xFFFD0162),
-  CARBOHYDRATE(6,"carbohydrate",0xFFA6A6FA),
-  HELIX_310(7,"helix310",0xFFA00080),
-  HELIX_ALPHA(8,"helixalpha",0xFFFF0080),
-  HELIX_PI(9,"helixpi",0xFF600080);
+  NOT(-1,0xFF808080),
+  NONE(0,0xFFFFFFFF),
+  TURN(1,0xFF6080FF),
+  SHEET(2,0xFFFFC800),
+  HELIX(3,0xFFFF0080),
+  DNA(4,0xFFAE00FE),
+  RNA(5,0xFFFD0162),
+  CARBOHYDRATE(6,0xFFA6A6FA),
+  HELIX310(7,0xFFA00080),
+  HELIXALPHA(8,0xFFFF0080),
+  HELIXPI(9,0xFF600080);
   
   private int id;
-  private String name;
   private int color;
   
-  private EnumStructure(int id, String name, int color) {
+  private EnumStructure(int id, int color) {
     this.id = id;
-    this.name = name;
     this.color = color;
   }
   
@@ -59,10 +57,6 @@ public enum EnumStructure {
     return id;
   }
 
-  public String getName() {
-    return name;
-  }
- 
   public int getColor() {
     return color;
   }
@@ -90,13 +84,13 @@ public enum EnumStructure {
    ****************************************************************/
   public final static EnumStructure getProteinStructureType(String name) {
     for (EnumStructure item : values())
-      if (name.equalsIgnoreCase(item.name))
+      if (name.equalsIgnoreCase(item.name()))
         return (item.isProtein() ? item : NOT);
     return NOT;
   }
 
   public String getBioStructureTypeName(boolean isGeneric) {
-    return (isGeneric && isProtein() ? "protein" : name);
+    return (id < 0 ? "" : isGeneric && isProtein() ? "protein" : name());
   }
 
   private boolean isProtein() {

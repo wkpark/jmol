@@ -345,7 +345,7 @@ public class Jmol implements WrappedApplet {
       viewer.setBooleanProperty("frank", true);
       loading = true;
       for (EnumCallback item : EnumCallback.values())
-        setValue(item.getName(), null);
+        setValue(item.name() + "Callback", null);
       loading = false;
 
       language = getParameter("language");
@@ -1030,8 +1030,8 @@ public class Jmol implements WrappedApplet {
       } catch (Exception e) {
         if (!haveNotifiedError)
           if (Logger.debugging) {
-            Logger.debug(type.getName()
-                + " call error to " + callback + ": " + e);
+            Logger.debug(type.name()
+                + "Callback call error to " + callback + ": " + e);
           }
         haveNotifiedError = true;
       }

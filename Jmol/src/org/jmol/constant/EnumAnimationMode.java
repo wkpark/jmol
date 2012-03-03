@@ -29,16 +29,5 @@ package org.jmol.constant;
  * Enum for animation mode.
  */
 public enum EnumAnimationMode {
-  ONCE("once"), 
-  LOOP("loop"), 
-  PALINDROME("palindrome");
-  
-  private String name;
-  public String getName() {
-    return name;
-  }
-  
-  private EnumAnimationMode(String name) {
-    this.name = name;
-  }
+  ONCE, LOOP, PALINDROME;  
 }

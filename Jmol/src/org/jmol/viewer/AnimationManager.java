@@ -205,7 +205,7 @@ class AnimationManager {
     info.put("displayModelNumber", viewer.getModelNumberDotted(currentModelIndex));
     info.put("displayModelName", (currentModelIndex >=0 ? viewer.getModelName(currentModelIndex) : ""));
     info.put("animationFps", Integer.valueOf(animationFps));
-    info.put("animationReplayMode", animationReplayMode.getName());
+    info.put("animationReplayMode", animationReplayMode.name());
     info.put("firstFrameDelay", new Float(firstFrameDelay));
     info.put("lastFrameDelay", new Float(lastFrameDelay));
     info.put("animationOn", Boolean.valueOf(animationOn));
@@ -240,7 +240,7 @@ class AnimationManager {
     StateManager.appendCmd(commands, 
         "animation DIRECTION " + (animationDirection == 1 ? "+1" : "-1"));
     StateManager.appendCmd(commands, "animation FPS " + animationFps);
-    StateManager.appendCmd(commands, "animation MODE " + animationReplayMode.getName()
+    StateManager.appendCmd(commands, "animation MODE " + animationReplayMode.name()
         + " " + firstFrameDelay + " " + lastFrameDelay);
     StateManager.appendCmd(commands, "frame " + viewer.getModelNumberDotted(currentModelIndex));
     StateManager.appendCmd(commands, "animation "

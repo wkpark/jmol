@@ -42,11 +42,11 @@ public class Structure extends AtomSetObject {
   public static EnumStructure getHelixType(int type) {
     switch (type) {
     case 1:
-      return EnumStructure.HELIX_ALPHA;
+      return EnumStructure.HELIXALPHA;
     case 3:
-      return EnumStructure.HELIX_PI;
+      return EnumStructure.HELIXPI;
     case 5:
-      return EnumStructure.HELIX_310;
+      return EnumStructure.HELIX310;
     }
     return EnumStructure.HELIX;
   }

@@ -651,6 +651,7 @@ public class IsosurfaceMesh extends Mesh {
       
     isColorSolid = !jvxlData.isBicolorMap;
     if (colorEncoder != null) {
+      // bicolor map will be taken care of with params.isBicolorMap
       if (jvxlData.colorScheme != null) {
         String colorScheme = jvxlData.colorScheme;
         boolean isTranslucent = colorScheme.startsWith("translucent ");

@@ -478,7 +478,7 @@ public abstract class Shape {
         .getHexCode(colix));
   }
 
-  private static String getTranslucentLabel(short colix) {
+  protected static String getTranslucentLabel(short colix) {
     return (Graphics3D.isColixTranslucent(colix) ? "translucent "
         + Graphics3D.getColixTranslucencyFractional(colix): "opaque");
   }

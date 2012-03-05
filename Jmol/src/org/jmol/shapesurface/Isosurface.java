@@ -867,18 +867,19 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if (cmd.charAt(0) != '#') {
       if (allowMesh)
         appendCmd(sb, imesh.getState(myType));
+      if (!imesh.isColorSolid && Graphics3D.isColixTranslucent(imesh.colix))
+        appendCmd(sb, "color " + myType + " " + getTranslucentLabel(imesh.colix));
       if (imesh.colorCommand != null) {
-        if (!imesh.isColorSolid && Graphics3D.isColixTranslucent(imesh.colix))
-          appendCmd(sb, getColorCommand(myType, imesh.colix));
         appendCmd(sb, imesh.colorCommand);
       }
       boolean colorArrayed = (imesh.isColorSolid && imesh.polygonColixes != null);
-      if (imesh.isColorSolid && !colorArrayed)
+      if (imesh.isColorSolid && !colorArrayed) {
         appendCmd(sb, getColorCommand(myType, imesh.colix));
-      else if (imesh.jvxlData.isBicolorMap && imesh.colorPhased)
+      } else if (imesh.jvxlData.isBicolorMap && imesh.colorPhased) {
         appendCmd(sb, "color isosurface phase "
             + encodeColor(imesh.jvxlData.minColorIndex) + " "
             + encodeColor(imesh.jvxlData.maxColorIndex));
+      }
       if (imesh.vertexColorMap != null)
         for (Map.Entry<String, BitSet> entry : imesh.vertexColorMap.entrySet()) {
           BitSet bs = entry.getValue();

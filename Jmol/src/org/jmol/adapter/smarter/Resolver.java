@@ -440,6 +440,9 @@ public class Resolver {
     if (leader.indexOf("PNG") == 1 || leader.indexOf("JPG") == 1
         || leader.indexOf("JFIF") == 6)
       return "spt"; // presume embedded script --- allows dragging into Jmol
+    if (leader.startsWith("##TITLE"))
+      return "Jcampdx";
+
     // now allow identification in first 16 lines
     // excluding those starting with "#"
     
@@ -915,13 +918,10 @@ public class Resolver {
   private final static String[] zMatrixFileStartRecords =
   {"ZMatrix", "#ZMATRIX"};
   
-  private final static String[] jcampdxFileStartRecords =
-  {"Jcampdx", "##TITLE="};
-  
   private final static String[][] fileStartsWithRecords =
   { cubeFileStartRecords, mol2Records, webmoFileStartRecords, 
     moldenFileStartRecords, dcdFileStartRecords, tlsDataOnlyFileStartRecords,
-    zMatrixFileStartRecords, jcampdxFileStartRecords };
+    zMatrixFileStartRecords };
 
   ////////////////////////////////////////////////////////////////
   // these test lines that startWith one of these strings

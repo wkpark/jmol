@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-02-06 06:32+0100\n"
-"PO-Revision-Date: 2012-02-06 07:42+0000\n"
-"Last-Translator: Nicolas Vervelle <Unknown>\n"
+"PO-Revision-Date: 2012-03-05 09:35+0000\n"
+"Last-Translator: xemard.nicolas <Unknown>\n"
 "Language-Team: French <Jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-02-06 07:48+0000\n"
-"X-Generator: Launchpad (build 14747)\n"
+"X-Launchpad-Export-Date: 2012-03-07 19:28+0000\n"
+"X-Generator: Launchpad (build 14907)\n"
 "X-Poedit-Country: France\n"
 "X-Poedit-Language: French\n"
 "X-Poedit-Basepath: ../../../..\n"
@@ -1195,11 +1195,11 @@ msgstr "Spectre"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:690
 msgid "1H-NMR"
-msgstr ""
+msgstr "1H-RMN"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:691
 msgid "13C-NMR"
-msgstr ""
+msgstr "13C-RMN"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:694
 #, java-format

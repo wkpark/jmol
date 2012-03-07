@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-02-06 06:32+0100\n"
-"PO-Revision-Date: 2012-01-23 22:43+0000\n"
+"PO-Revision-Date: 2012-03-07 00:51+0000\n"
 "Last-Translator: Peter Sahlin <Unknown>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-01-26 21:32+0000\n"
-"X-Generator: Launchpad (build 14719)\n"
+"X-Launchpad-Export-Date: 2012-03-07 19:28+0000\n"
+"X-Generator: Launchpad (build 14907)\n"
 
 #: org/jmol/applet/AppletWrapper.java:100
 msgid "Loading Jmol applet ..."
@@ -143,7 +143,8 @@ msgid "Check"
 msgstr "Kontrollera"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Överst"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -1184,15 +1185,15 @@ msgstr "Vektorer"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:689
 msgid "Spectra"
-msgstr ""
+msgstr "Spectrum"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:690
 msgid "1H-NMR"
-msgstr ""
+msgstr "1H-NMR"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:691
 msgid "13C-NMR"
-msgstr ""
+msgstr "13C-NMR"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:694
 #, java-format
@@ -1214,15 +1215,15 @@ msgstr "Stereografisk"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:705
 msgid "Red+Cyan glasses"
-msgstr ""
+msgstr "Röd+Cyan glas"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:706
 msgid "Red+Blue glasses"
-msgstr ""
+msgstr "Röd+Blå glas"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:707
 msgid "Red+Green glasses"
-msgstr ""
+msgstr "Röd+Gröna glas"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:708
 msgid "Cross-eyed viewing"
@@ -1441,7 +1442,7 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:929
 #: org/jmol/popup/MainPopupResourceBundle.java:954
 msgid "Unit cell"
-msgstr ""
+msgstr "Enhetscell"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:786
 msgid "Zoom"
@@ -1835,7 +1836,7 @@ msgstr ""
 #: org/jmol/script/ScriptCompilationTokenParser.java:1328
 #: org/jmol/script/ScriptEvaluator.java:2821
 msgid "command expected"
-msgstr ""
+msgstr "Kommando förväntas"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1331
 msgid "{ number number number } expected"
@@ -1856,11 +1857,11 @@ msgstr "identifier eller residue specification förväntad"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1343
 msgid "invalid atom specification"
-msgstr ""
+msgstr "ogiltig atomspecifikation"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1346
 msgid "invalid chain specification"
-msgstr ""
+msgstr "ogiltig kedjespecifikation"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1349
 #, java-format
@@ -1869,30 +1870,30 @@ msgstr ""
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1352
 msgid "invalid model specification"
-msgstr ""
+msgstr "ogiltig modellspecifikation"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1355
 #, java-format
 msgid "missing END for {0}"
-msgstr ""
+msgstr "END fattas för {0}"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1358
 #: org/jmol/script/ScriptEvaluator.java:2897
 msgid "number expected"
-msgstr ""
+msgstr "tal förväntas"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1361
 msgid "number or variable name expected"
-msgstr ""
+msgstr "tal eller variabelnamn förväntas"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1364
 msgid "residue specification (ALA, AL?, A*) expected"
-msgstr ""
+msgstr "rest-specificering (ALA, AL?, A*) förväntas"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1367
 #, java-format
 msgid "{0} expected"
-msgstr ""
+msgstr "{0} förväntas"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1370
 #, java-format
@@ -1917,7 +1918,7 @@ msgstr ""
 
 #: org/jmol/script/ScriptCompiler.java:2619
 msgid "script compiler ERROR: "
-msgstr ""
+msgstr "script compiler ERROR: "
 
 #: org/jmol/script/ScriptEvaluator.java:2643
 #: org/jmol/script/ScriptEvaluator.java:10260
@@ -1926,49 +1927,49 @@ msgstr "script-FEL: "
 
 #: org/jmol/script/ScriptEvaluator.java:2791
 msgid "x y z axis expected"
-msgstr ""
+msgstr "x y z-axlar förväntas"
 
 #: org/jmol/script/ScriptEvaluator.java:2794
 #, java-format
 msgid "{0} not allowed with background model displayed"
-msgstr ""
+msgstr "{0} inte tillåtet när bakgrundsmodell visas"
 
 #: org/jmol/script/ScriptEvaluator.java:2800
 msgid "Miller indices cannot all be zero."
-msgstr ""
+msgstr "Miller indices kan inte alla vara noll."
 
 #: org/jmol/script/ScriptEvaluator.java:2803
 msgid "bad [R,G,B] color"
-msgstr ""
+msgstr "felaktig [R,G,B]-färg"
 
 #: org/jmol/script/ScriptEvaluator.java:2806
 msgid "boolean expected"
-msgstr ""
+msgstr "boolesk förväntas"
 
 #: org/jmol/script/ScriptEvaluator.java:2809
 msgid "boolean or number expected"
-msgstr ""
+msgstr "boolesk eller tal förväntas"
 
 #: org/jmol/script/ScriptEvaluator.java:2812
 #, java-format
 msgid "boolean, number, or {0} expected"
-msgstr ""
+msgstr "boolesk,  tal, eller {0} förväntas"
 
 #: org/jmol/script/ScriptEvaluator.java:2815
 msgid "color expected"
-msgstr ""
+msgstr "färg förväntas"
 
 #: org/jmol/script/ScriptEvaluator.java:2818
 msgid "a color or palette name (Jmol, Rasmol) is required"
-msgstr ""
+msgstr "en färg eller palettnamn (Jmol, Rasmol) krävs"
 
 #: org/jmol/script/ScriptEvaluator.java:2824
 msgid "{x y z} or $name or (atom expression) required"
-msgstr ""
+msgstr "{x y z} eller $namn eller (atomuttryck) krävs"
 
 #: org/jmol/script/ScriptEvaluator.java:2827
 msgid "draw object not defined"
-msgstr ""
+msgstr "ritobjekt inte definierat"
 
 #: org/jmol/script/ScriptEvaluator.java:2833
 msgid "valid (atom expression) expected"
@@ -1980,7 +1981,7 @@ msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2839
 msgid "filename expected"
-msgstr ""
+msgstr "filnamn förväntas"
 
 #: org/jmol/script/ScriptEvaluator.java:2842
 msgid "file not found"
@@ -2224,7 +2225,8 @@ msgstr "klicka på två punkter för att rotera runt axel medurs (kräver {0})"
 
 #: org/jmol/viewer/ActionManager.java:125
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr "klicka på två punkter för att rotera runt axel moturs (kräver {0})"
 
 #: org/jmol/viewer/ActionManager.java:126
@@ -2465,27 +2467,30 @@ msgstr ""
 #~ msgid "Top"
 #~ msgstr "Överst"
 
+#, java-format
 #~ msgid "File {0}"
 #~ msgstr "Fil {0}"
 
 #~ msgid "File or URL"
 #~ msgstr "Fil eller URL"
 
+#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "{0} 3D-modell"
 
+#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "{0} Bild"
 
 #~ msgid "About Jmol"
 #~ msgstr "Om Jmol"
 
+#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 #~ msgstr ""
-#~ "Skapande av filer genom det här programmet är inte tillåtet. För Base64 "
-#~ "JPEG-format, använd {0}."
+#~ "Skapande av filer genom det här programmet är inte tillåtet. För Base64 JPEG-"
+#~ "format, använd {0}."
 
 #~ msgid "File creation failed."
 #~ msgstr "Skapande av en fil misslyckades."

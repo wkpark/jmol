@@ -114,6 +114,8 @@ public class JcampdxReader extends MolReader {
     selectedModel = desiredModelNumber;
     desiredModelNumber = Integer.MIN_VALUE;
     htParams.remove("modelNumber");
+    if (!checkFilter("NOSYNC"))
+      addJmolScript("sync on");
   }
 
   @Override

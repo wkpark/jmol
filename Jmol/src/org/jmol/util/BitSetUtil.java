@@ -65,7 +65,7 @@ final public class BitSetUtil {
   }
 
   public static BitSet andNot(BitSet a, BitSet b) {
-    if (b != null)
+    if (b != null && a != null)
       a.andNot(b);
     return a;
   }

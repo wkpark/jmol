@@ -2230,7 +2230,6 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     while (isOK && ichT < cchScript && !eol(ch = script.charAt(ichT))) {
       switch (ch) {
       case '=':
-      case '(':
         if (!allowEquals) {
           isOK = false;
           continue;

@@ -23,6 +23,7 @@
  */
 package org.openscience.jmol.app.jmolpanel;
 
+import org.jmol.api.JSVInterface;
 import org.jmol.api.JmolAppConsoleInterface;
 import org.jmol.api.JmolCallbackListener;
 import org.jmol.api.JmolStatusListener;
@@ -33,13 +34,16 @@ import org.jmol.export.dialog.Dialog;
 import org.jmol.util.Logger;
 import org.openscience.jmol.app.webexport.WebExport;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.Map;
+import java.util.Properties;
 
 import jspecview.application.MainFrame;
 
-class StatusListener implements JmolStatusListener, JmolSyncInterface {
+class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterface {
 
   /*
    * starting with Jmol 11.7.27, JmolStatusListener extends JmolCallbackListener
@@ -347,7 +351,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface {
 
   public void setJSpecView(String peaks) {
     if (jSpecViewFrame == null) {
-      jSpecViewFrame = new MainFrame();
+      jSpecViewFrame = new MainFrame(this);
       jSpecViewFrame.setSize(800, 500);
       jSpecViewFrame.setLocation(400, 400);
       jSpecViewFrame.register("Jmol", this);
@@ -368,6 +372,32 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface {
     jmol.syncScript(script);    
   }
 
+  private static String propertiesFileName = "jspecview.properties";
+
+  public void setProperties(Properties properties) {
+    try {
+      FileInputStream fileIn = new FileInputStream(propertiesFileName);
+      properties.load(fileIn);
+    } catch (Exception e) {
+    }
+  }
+
+  public void saveProperties(Properties properties) {
+    // Write out current properties
+    try {
+      FileOutputStream fileOut = new FileOutputStream(propertiesFileName);
+      properties.store(fileOut, "JSpecView Application Properties");
+    } catch (Exception e) {
+    }
+  }
+
+  /**
+   * @param withDialog  
+   * @param frame 
+   */
+  public void exitJSpecView(boolean withDialog, Object frame) {
+    // no exit from Jmol
+  }
 
   
 }

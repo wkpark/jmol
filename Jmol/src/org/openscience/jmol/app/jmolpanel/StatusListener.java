@@ -399,5 +399,14 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
     // no exit from Jmol
   }
 
+  /**
+   * no queuing here -- called by MainFrame
+   * 
+   * @param script 
+   */
+  public void runScript(String script) {
+    jSpecViewFrame.runScriptNow(script);
+    
+  }
   
 }

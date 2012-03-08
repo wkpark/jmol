@@ -372,6 +372,9 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
     jmol.syncScript(script);    
   }
 
+  
+  // -- JSVInterface -- 
+  
   private static String propertiesFileName = "jspecview.properties";
 
   public void setProperties(Properties properties) {
@@ -407,6 +410,13 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
   public void runScript(String script) {
     jSpecViewFrame.runScriptNow(script);
     
+  }
+
+  /**
+   * @param msg
+   */
+  public void syncToJmol(String msg) {
+    // not utilized in Jmol application -- jmolSyncInterface used instead
   }
   
 }

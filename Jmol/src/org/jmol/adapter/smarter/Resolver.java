@@ -939,7 +939,7 @@ public class Resolver {
     "DBREF ", "SEQADV", "SEQRES", "MODRES", 
     "HELIX ", "SHEET ", "TURN  ",
     "CRYST1", "ORIGX1", "ORIGX2", "ORIGX3", "SCALE1", "SCALE2", "SCALE3",
-    "ATOM  ", "HETATM", "MODEL ",
+    "ATOM  ", "HETATM", "MODEL ", "LINK  ",
   };
 
   private final static String[] shelxLineStartRecords =

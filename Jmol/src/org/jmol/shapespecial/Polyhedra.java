@@ -90,8 +90,10 @@ public class Polyhedra extends AtomShape {
     }
 
     if ("generate" == propertyName) {
-      if (!iHaveCenterBitSet)
+      if (!iHaveCenterBitSet) {
         centers = bs;
+        iHaveCenterBitSet = true;
+      }
       deletePolyhedra();
       buildPolyhedra();
       return;
@@ -174,11 +176,17 @@ public class Polyhedra extends AtomShape {
     if (propertyName.indexOf("color") == 0) {
       // from polyhedra command, we may not be using the prior select
       // but from Color we need to identify the centers.
-      if ("colorThis" == propertyName && iHaveCenterBitSet)
-        bs = centers;
-      else
-        andBitSet(bs);
+      bs = ("colorThis" == propertyName && iHaveCenterBitSet ? centers : andBitSet(bs));
       propertyName = "color";
+      //allow super
+    }
+
+    if (propertyName.indexOf("translucency") == 0) {
+      // from polyhedra command, we may not be using the prior select
+      // but from Color we need to identify the centers.
+      bs = ("translucentThis".equals(value) && iHaveCenterBitSet ? centers : andBitSet(bs));
+      if (value.equals("translucentThis"))
+        value = "translucent";
       //allow super
     }
 
@@ -187,16 +195,6 @@ public class Polyhedra extends AtomShape {
       return;
     }
     
-    if (propertyName.indexOf("translucency") == 0) {
-      // from polyhedra command, we may not be using the prior select
-      // but from Color we need to identify the centers.
-      if ("translucencyThis" == propertyName && iHaveCenterBitSet)
-        bs = centers;
-      else
-        andBitSet(bs);
-      //allow super
-    }
-
     if ("radius" == propertyName) {
       radius = ((Float) value).floatValue();
       return;
@@ -230,11 +228,12 @@ public class Polyhedra extends AtomShape {
       }
   }
 
-  private void andBitSet(BitSet bs) {
+  private BitSet andBitSet(BitSet bs) {
     BitSet bsCenters = new BitSet();
     for (int i = polyhedronCount; --i >= 0;)
       bsCenters.set(polyhedrons[i].centralAtom.getIndex());
-    bs.and(bsCenters);
+    bsCenters.and(bs);
+    return bsCenters;
   }
 
   private void deletePolyhedra() {

@@ -15237,7 +15237,7 @@ public class ScriptEvaluator {
       case Token.on:
       case Token.off:
         if (i + 1 != statementLength || needsGenerating || nAtomSets > 1
-            || nAtomSets == 0 && setPropertyName == "to")
+            || nAtomSets == 0 && "to".equals(setPropertyName))
           error(ERROR_incompatibleArguments);
         propertyName = (theTok == Token.off ? "off" : theTok == Token.on ? "on"
             : "delete");
@@ -15280,7 +15280,7 @@ public class ScriptEvaluator {
           error(ERROR_invalidParameterOrder);
         if (++nAtomSets > 2)
           error(ERROR_badArgumentCount);
-        if (setPropertyName == "to")
+        if ("to".equals(setPropertyName))
           needsGenerating = true;
         propertyName = setPropertyName;
         setPropertyName = "to";
@@ -15321,8 +15321,8 @@ public class ScriptEvaluator {
         if (tokAt(i + 1) == Token.translucent) {
           i++;
           isTranslucent = true;
-          if (isFloatParameter(++i))
-            translucentLevel = getTranslucentLevel(i);
+          if (isFloatParameter(i + 1))
+            translucentLevel = getTranslucentLevel(++i);
         } else if (tokAt(i + 1) == Token.opaque) {
           i++;
           isTranslucent = true;
@@ -15375,10 +15375,11 @@ public class ScriptEvaluator {
       setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "colorThis", Integer
           .valueOf(color));
     if (isTranslucent)
-      setShapeTranslucency(JmolConstants.SHAPE_POLYHEDRA, "", "translucent",
+      setShapeTranslucency(JmolConstants.SHAPE_POLYHEDRA, "", "translucentThis",
           translucentLevel, null);
     if (lighting != 0)
       setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "token", Integer.valueOf(lighting));
+    setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "init", null);
   }
 
   private void contact() throws ScriptException {

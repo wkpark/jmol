@@ -793,7 +793,7 @@ public class FileManager {
   private enum Encoding {
     NONE, UTF8, UTF_16BE, UTF_16LE, UTF_32BE, UTF_32LE
   }
-  private void fixUnicode(String[] data, int i) {
+  private static void fixUnicode(String[] data, int i) {
     String s = data[i];
     Encoding encoding = Encoding.NONE;
     //    try {

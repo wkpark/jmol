@@ -53,6 +53,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
@@ -781,11 +782,65 @@ public class FileManager {
       }
       br.close();
       data[1] = sb.toString();
+      fixUnicode(data, 1);
       return true;
     } catch (Exception ioe) {
       data[1] = ioe.getMessage();
       return false;
     }
+  }
+
+  private enum Encoding {
+    NONE, UTF8, UTF_16BE, UTF_16LE, UTF_32BE, UTF_32LE
+  }
+  private void fixUnicode(String[] data, int i) {
+    String s = data[i];
+    Encoding encoding = Encoding.NONE;
+    //    try {
+    //      System.out.println("16 " + new String(s.getBytes(), "UTF-16"));
+    //      System.out.println("16LE " + new String(s.getBytes(), "UTF-16LE"));
+    //      System.out.println("16BE " + new String(s.getBytes(), "UTF-16BE"));
+    //    } catch (UnsupportedEncodingException e1) {
+    //      // ignore
+    //    }
+
+    
+    if (s.indexOf("\357\273\277") == 0) //EF BB BF
+      encoding = Encoding.UTF8;
+    else if (s.indexOf("\0\0\376\377") == 0) // 0 0 FE FF
+      encoding = Encoding.UTF_32BE;
+    else if (s.indexOf("\377\376\0\0") == 0)  // FF FE 0 0
+      encoding = Encoding.UTF_32LE;
+    else if (s.indexOf("\377\376") == 0)  // FF FE
+      encoding = Encoding.UTF_16LE;
+    else if (s.indexOf("\376\377") == 0) // FE FF
+      encoding = Encoding.UTF_16BE;
+    if (encoding == Encoding.NONE)
+      return;
+    Logger.info("FileManager found encoding " + encoding.name());
+    try {
+      s = new String(s.getBytes(), encoding.name().replace('_', '-'));
+      switch (encoding) {
+      case UTF8:
+      case UTF_16BE:
+        // extra byte at beginning removed
+        s = s.substring(1);
+        break;
+      case UTF_16LE:
+        // extra bytes at beginning and end removed
+        s = s.substring(1, s.length() - 1);
+        break;
+      default:
+        break;        
+      }
+    } catch (UnsupportedEncodingException e) {
+      System.out.println(e);
+    }
+    data[i] = s;
+//    System.out.println(s);
+//    for (int ii = 0; ii < s.length(); ii++)
+//      System.out.println(ii + " '" + s.charAt(ii) + "' "
+//          + Character.codePointAt(s, ii));
   }
 
   Object getFileAsImage(String name, String[] retFileNameOrError) {

@@ -193,6 +193,12 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
    * @return cleaned script
    */
   private String cleanScriptComments(String script) {
+    if (script.indexOf('\u201C') >= 0)
+      script = script.replace('\u201C', '"');
+    if (script.indexOf('\u201D') >= 0)
+      script = script.replace('\u201D', '"');
+    if (script.indexOf('\uFEFF') >= 0)
+      script = script.replace('\uFEFF', ' ');
     int pt = (script.indexOf("\1##"));
     if (pt >= 0) {
       // these are for jmolConsole and scriptEditor
@@ -272,7 +278,6 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
   private boolean compile0(boolean isFull) {
     vFunctionStack = new ArrayList<ScriptFunction>();
     htUserFunctions = new Hashtable<String, Boolean>();
-    script = script.replace('\u201C', '"').replace('\u201D', '"');
     script = cleanScriptComments(script);
     ichToken = script.indexOf(Viewer.STATE_VERSION_STAMP);
     isStateScript = (ichToken >= 0);
@@ -282,7 +287,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         viewer.setStateScriptVersion(script.substring(
             ichToken + Viewer.STATE_VERSION_STAMP.length(), ptSemi).trim());
     }
-    cchScript = this.script.length();
+    cchScript = script.length();
 
     // these four will be returned:
     contextVariables = null;
@@ -297,10 +302,11 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     errorLine = null;
 
     nSemiSkip = 0;
-    ichToken = 0;
     ichCurrentCommand = 0;
     ichComment = 0;
     ichBrace = 0;
+    // Skip Binary Order Mark created by some text processors 
+    ichToken = 0;
     lineCurrent = 1;
     iCommand = 0;
     tokLastMath = 0;

@@ -228,8 +228,6 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
 
   public Object openBufferedReader(String name, BufferedReader bufferedReader,
                                    Map<String, Object> htParams) {
-    if (htParams == null)
-      htParams = new Hashtable<String,Object>();
     return getAtomSetCollectionFromReader(name, null, bufferedReader, htParams);
   }
 

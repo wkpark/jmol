@@ -253,8 +253,6 @@ public class Resolver {
       bufferedReader.close();
       return errMsg;
     }
-    if (htParams == null)
-      htParams = new Hashtable<String, Object>();
     htParams.put("ptFile", Integer.valueOf(ptFile));
     if (ptFile <= 0)
       htParams.put("readerName", readerName);

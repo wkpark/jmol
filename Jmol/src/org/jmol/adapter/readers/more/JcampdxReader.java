@@ -118,14 +118,21 @@ public class JcampdxReader extends MolReader {
     }
     selectedModel = desiredModelNumber;
     desiredModelNumber = Integer.MIN_VALUE;
+    peakFilePath = Escape.escape(filePath);
     htParams.remove("modelNumber");
     // peakIndex will be passed on to additional files in a ZIP file load
-    peakIndex = (int[]) htParams.get("peakIndex");
-    if (peakIndex == null)
+    // the peak file path is stripped of the "|xxxx.jdx" part 
+    if (htParams.containsKey("zipSet")) {
+      peakIndex = (int[]) htParams.get("peakIndex");
+      if (peakIndex == null) {
+        peakIndex = new int[1];
+        htParams.put("peakIndex", peakIndex);
+      }
+      if (!htParams.containsKey("subFileName"))
+        peakFilePath = Escape.escape(TextFormat.split(filePath, '|')[0]);
+    } else {
       peakIndex = new int[1];
-    htParams.put("peakIndex", peakIndex);
-    peakFilePath = Escape.escape(htParams.containsKey("subFileName") ? filePath : TextFormat.split(filePath, '|')[0]);
-      
+    }
     if (!checkFilter("NOSYNC"))
       addJmolScript("sync on");
   }

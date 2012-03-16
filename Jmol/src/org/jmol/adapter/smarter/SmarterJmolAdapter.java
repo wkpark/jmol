@@ -379,6 +379,8 @@ public class SmarterJmolAdapter extends JmolAdapter {
         String thisEntry = ze.getName();
         if (subFileName != null && !thisEntry.equals(subFileName))
           continue;
+        if (subFileName != null)
+          htParams.put("subFileName", subFileName);
         if (ZipUtil.isJmolManifest(thisEntry) || haveManifest
             && exceptFiles == manifest.indexOf("|" + thisEntry + "|") >= 0)
           continue;

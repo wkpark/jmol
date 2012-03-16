@@ -30,6 +30,8 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 
+import jspecview.util.TextFormat;
+
 import org.jmol.adapter.readers.molxyz.MolReader;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.AtomSetCollection;
@@ -98,6 +100,9 @@ public class JcampdxReader extends MolReader {
   private List<String> peakData = new ArrayList<String>();
   private String lastModel = "";
   private int selectedModel;
+  private int[] peakIndex;
+  private String peakFilePath;
+  
   
   @Override
   public void initializeReader() throws Exception {
@@ -114,6 +119,13 @@ public class JcampdxReader extends MolReader {
     selectedModel = desiredModelNumber;
     desiredModelNumber = Integer.MIN_VALUE;
     htParams.remove("modelNumber");
+    // peakIndex will be passed on to additional files in a ZIP file load
+    peakIndex = (int[]) htParams.get("peakIndex");
+    if (peakIndex == null)
+      peakIndex = new int[1];
+    htParams.put("peakIndex", peakIndex);
+    peakFilePath = Escape.escape(htParams.containsKey("subFileName") ? filePath : TextFormat.split(filePath, '|')[0]);
+      
     if (!checkFilter("NOSYNC"))
       addJmolScript("sync on");
   }
@@ -276,15 +288,13 @@ public class JcampdxReader extends MolReader {
     }
   }
 
-  private int peakIndex;
-  
   private void readPeaks() throws Exception {
     if (line.indexOf("<Peaks") < 0)
       discardLinesUntilContains("<Peaks");
     String type = getAttribute(line, "type");
     while (readLine() != null && !(line = line.trim()).startsWith("</Peaks>"))
       if (line.startsWith("<PeakData"))
-        peakData.add("<PeakData file=" + Escape.escape(filePath) + " index=\"" + (++peakIndex) + "\"" + " type=\"" + type + "\" " + line.substring(9).trim());      
+        peakData.add("<PeakData file=" + peakFilePath + " index=\"" + (++peakIndex[0]) + "\"" + " type=\"" + type + "\" " + line.substring(9).trim());      
   }
 
   /**

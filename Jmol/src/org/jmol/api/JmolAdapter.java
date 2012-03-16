@@ -223,7 +223,7 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
   // alternative settings, for posterity:
 
   public Object openBufferedReader(String name, BufferedReader bufferedReader) {
-    return getAtomSetCollectionFromReader(name, null, bufferedReader, new Hashtable<String,Object>());
+    return getAtomSetCollectionFromReader(name, null, bufferedReader, null);
   }
 
   public Object openBufferedReader(String name, BufferedReader bufferedReader,
@@ -235,7 +235,7 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
 
   public Object openBufferedReader(String name, String type,
                                    BufferedReader bufferedReader) {
-    return getAtomSetCollectionFromReader(name, type, bufferedReader, new Hashtable<String,Object>());
+    return getAtomSetCollectionFromReader(name, type, bufferedReader, null);
   }
 
   abstract public Object getAtomSetCollectionFromDOM(Object DOMNode, Map<String, Object> htParams);

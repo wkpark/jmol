@@ -37,6 +37,7 @@ import javax.vecmath.Vector3f;
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
+import org.jmol.util.Parser;
 
 /**
  * Reader for Gaussian 94/98/03/09 output files.
@@ -171,7 +172,8 @@ public class GaussianReader extends MOReader {
       readBasis();
       return true;
     }
-    if (line.indexOf("Molecular Orbital Coefficients") >= 0) {
+    if (line.indexOf("Molecular Orbital Coefficients") >= 0 
+        || line.indexOf("Natural Orbital Coefficients") >= 0) {
       if (!filterMO())
         return true;
       readMolecularOrbitals();
@@ -379,9 +381,18 @@ public class GaussianReader extends MOReader {
    5        2PZ        -0.00134  -0.09475   0.00000   0.55774   0.00000
    6        3S          0.00415   0.43535   0.00000   0.32546   0.00000
 
-but:
+  but:
 
- 105        4S        -47.27845  63.29565-100.44035   1.98362 -51.35328
+  105        4S        -47.27845  63.29565-100.44035   1.98362 -51.35328
+
+  also G09  # B3LYP 6-31g sp gfprint pop(full,NO) 
+
+     Natural Orbital Coefficients:
+                           1         2         3         4         5
+     Eigenvalues --     2.00000   2.00000   2.00000   2.00000   2.00000
+   1 1   C  1S          0.03807   0.23941   0.96961   0.01811  -0.04011
+   2        2S         -0.00048   0.00095   0.01728   0.01316  -0.02849
+
 
    */
   private void readMolecularOrbitals() throws Exception {
@@ -390,23 +401,37 @@ but:
     Map<String, Object>[] mos = ArrayUtil.createArrayOfHashtable(5);
     List<String>[] data = ArrayUtil.createArrayOfArrayList(5);
     int nThisLine = 0;
-    while (readLine() != null
-        && line.toUpperCase().indexOf("DENS") < 0) {
+    boolean isNOtype = line.contains("Natural"); //gfprint pop(full,NO)
+    while (readLine() != null && line.toUpperCase().indexOf("DENS") < 0) {
       String[] tokens;
       if (line.indexOf("                    ") == 0) {
         addMOData(nThisLine, data, mos);
-        tokens = getTokens(readLine());
-        nThisLine = tokens.length;
+        if (isNOtype) {
+          tokens = getTokens(line);
+          nThisLine = tokens.length;
+          tokens = getTokens(readLine());
+        } else {
+          tokens = getTokens(readLine());
+          nThisLine = tokens.length;
+        }
         for (int i = 0; i < nThisLine; i++) {
           mos[i] = new Hashtable<String, Object>();
           data[i] = new ArrayList<String>();
-          String sym = tokens[i];
-          mos[i].put("symmetry", sym);
-          if (sym.indexOf("O") >= 0)
-            mos[i].put("occupancy", new Float(2));
-          else if (sym.indexOf("V") >= 0)
-            mos[i].put("occupancy", new Float(0));
+          String sym;
+          if (isNOtype) {
+            mos[i]
+                .put("occupancy", new Float(Parser.parseFloat(tokens[i + 2])));
+          } else {
+            sym = tokens[i];
+            mos[i].put("symmetry", sym);
+            if (sym.indexOf("O") >= 0)
+              mos[i].put("occupancy", new Float(2));
+            else if (sym.indexOf("V") >= 0)
+              mos[i].put("occupancy", new Float(0));
+          }
         }
+        if (isNOtype)
+          continue;
         line = readLine().substring(21);
         tokens = getTokens();
         if (tokens.length != nThisLine)
@@ -414,19 +439,20 @@ but:
         for (int i = 0; i < nThisLine; i++)
           mos[i].put("energy", new Float(tokens[i]));
         continue;
-      } else if (line.length() < 21 || (line.charAt(5) != ' ' 
-                                        && ! Character.isDigit(line.charAt(5)) 
-                                        ) ) {
+      } else if (line.length() < 21
+          || (line.charAt(5) != ' ' && !Character.isDigit(line.charAt(5)))) {
         continue;
       }
       try {
         tokens = getTokens();
         String type = tokens[tokens.length - nThisLine - 1].substring(1);
-        if (!isQuantumBasisSupported(type.charAt(0)) && "XYZ".indexOf(type.charAt(0)) >= 0)
+        if (!isQuantumBasisSupported(type.charAt(0))
+            && "XYZ".indexOf(type.charAt(0)) >= 0)
           type = (type.length() == 2 ? "D" : "F") + type;
         if (!isQuantumBasisSupported(type.charAt(0)))
           continue;
-        tokens = getStrings(line.substring(line.length() - 10 * nThisLine), nThisLine, 10);
+        tokens = getStrings(line.substring(line.length() - 10 * nThisLine),
+            nThisLine, 10);
         for (int i = 0; i < nThisLine; i++)
           data[i].add(tokens[i]);
       } catch (Exception e) {

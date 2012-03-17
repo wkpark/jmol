@@ -16237,7 +16237,7 @@ public class ScriptEvaluator {
           for (int i = 0; i < nOrb; i++) {
             Map<String, Object> mo = mos.get(i);
             if ((f = (Float) mo.get("occupancy")) != null) {
-              if (f.floatValue() == 0) {
+              if (f.floatValue() < 0.5f) {
                 // go for LUMO = first unoccupied
                 moNumber = i;
                 break;

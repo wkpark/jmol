@@ -299,6 +299,8 @@ public class JcampdxReader extends MolReader {
     if (line.indexOf("<Peaks") < 0)
       discardLinesUntilContains("<Peaks");
     String type = getAttribute(line, "type");
+    while (type.length() > 0 && Character.isDigit(type.charAt(0)))
+      type = type.substring(1);
     while (readLine() != null && !(line = line.trim()).startsWith("</Peaks>"))
       if (line.startsWith("<PeakData"))
         peakData.add("<PeakData file=" + peakFilePath + " index=\"" + (++peakIndex[0]) + "\"" + " type=\"" + type + "\" " + line.substring(9).trim());      

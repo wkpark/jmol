@@ -4173,7 +4173,7 @@ abstract public class ModelCollection extends BondCollection {
       type = "HNMR";
       break;
     case 6:
-      type = "13CNMR";
+      type = "CNMR";
       break;
     default:
       return null;

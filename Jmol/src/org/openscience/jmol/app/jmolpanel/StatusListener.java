@@ -162,7 +162,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
       notifyAtomPicked(strInfo);
       break;
     case SYNC:
-      if (strInfo != null && strInfo.startsWith("JSpecView")) {
+      if (strInfo != null && strInfo.toLowerCase().startsWith("jspecview")) {
         setJSpecView(strInfo.substring(9).trim());
         return;
       }
@@ -360,8 +360,9 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
     }
     if (!jSpecViewFrame.isVisible() && peaks.toLowerCase().startsWith("hidden"))
       jSpecViewFrame.setVisible(true);
-    if (peaks.length() > 0)
-      jSpecViewFrame.syncScript(peaks);
+    if (peaks.length() == 0)
+      peaks = "HIDDEN false";
+    jSpecViewFrame.syncScript(peaks);
   }
 
   public void register(String id, JmolSyncInterface jsi) {

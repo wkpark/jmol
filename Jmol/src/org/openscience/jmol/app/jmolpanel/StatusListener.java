@@ -162,8 +162,8 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
       notifyAtomPicked(strInfo);
       break;
     case SYNC:
-      if (strInfo != null && strInfo.startsWith("JSpecView:")) {
-        setJSpecView(strInfo.substring(10).trim());
+      if (strInfo != null && strInfo.startsWith("JSpecView")) {
+        setJSpecView(strInfo.substring(9).trim());
         return;
       }
       jmol.sendNioMessage(((Integer) data[3]).intValue(), strInfo);
@@ -350,6 +350,8 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
   }
 
   public void setJSpecView(String peaks) {
+    if (peaks.startsWith(":"))
+      peaks = peaks.substring(1);
     if (jSpecViewFrame == null) {
       jSpecViewFrame = new MainFrame(this);
       jSpecViewFrame.setSize(800, 500);

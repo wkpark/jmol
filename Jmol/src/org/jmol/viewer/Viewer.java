@@ -8790,9 +8790,9 @@ private void zap(String msg) {
           script += ";select visible & (" + select + ")";
         if (script2 != null)
           script += ";" + script2;
-      } else if (script.startsWith("JSpecView:")) {
+      } else if (script.toLowerCase().startsWith("jspecview")) {
         if (!disableSend)
-          statusManager.syncSend(fullName + script, ">", 0);
+          statusManager.syncSend(fullName + "JSpecView" + script.substring(9), ">", 0);
          return;
       }
       evalStringQuiet(script, true, false);

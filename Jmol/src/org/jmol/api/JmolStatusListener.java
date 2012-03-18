@@ -80,4 +80,6 @@ public interface JmolStatusListener extends JmolCallbackListener {
 
   public void resizeInnerPanel(String data);
 
+  public Map<String, Object> getProperty(String type);
+
 }

@@ -548,6 +548,26 @@ public class Escape {
       sb.append("]");
       return packageJSON(infoType, sb);
     }
+    if (info instanceof Object[][]) {
+      sb.append("[");
+      int imax = ((Object[][]) info).length;
+      for (int i = 0; i < imax; i++) {
+        sb.append(sep).append(toJSON(null, ((Object[][]) info)[i]));
+        sep = ",";
+      }
+      sb.append("]");
+      return packageJSON(infoType, sb);
+    }
+    if (info instanceof Object[]) {
+      sb.append("[");
+      int imax = ((Object[]) info).length;
+      for (int i = 0; i < imax; i++) {
+        sb.append(sep).append(toJSON(null, ((Object[]) info)[i]));
+        sep = ",";
+      }
+      sb.append("]");
+      return packageJSON(infoType, sb);
+    }
     if (info instanceof int[][]) {
       sb.append("[");
       int imax = ((int[][]) info).length;
@@ -706,6 +726,26 @@ public class Escape {
       }
       sb.append("]");
       return packageReadable(name, "point3f[" + imax + "]", sb);
+    }
+    if (info instanceof Object[][]) {
+      sb.append("[");
+      int imax = ((Object[][]) info).length;
+      for (int i = 0; i < imax; i++) {
+        sb.append(sep).append(toReadable(null, ((Object[][]) info)[i]));
+        sep = ",\n";
+      }
+      sb.append("]");
+      return packageReadable(name, "Object[" + imax + "][]", sb);
+    }
+    if (info instanceof Object[]) {
+      sb.append("[");
+      int imax = ((Object[]) info).length;
+      for (int i = 0; i < imax; i++) {
+        sb.append(sep).append(toReadable(null, ((Object[]) info)[i]));
+        sep = ",";
+      }
+      sb.append("]");
+      return packageReadable(name, "", sb);
     }
     if (info instanceof int[][]) {
       sb.append("[");

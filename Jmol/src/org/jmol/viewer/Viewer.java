@@ -10138,5 +10138,9 @@ private void zap(String msg) {
     }
     return jmolSpectralPeer;    
   }
+
+  public Object getJspecViewProperties() {
+    return statusManager.getJspecViewProperties();
+  }
 }
 

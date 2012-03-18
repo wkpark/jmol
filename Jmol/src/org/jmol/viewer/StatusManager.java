@@ -679,5 +679,10 @@ class StatusManager {
     return outputFileName;
   }
 
+  Map<String, Object> getJspecViewProperties() {
+    return (jmolStatusListener == null  ? null :
+      jmolStatusListener.getProperty("JSpecView"));
+  }
+
 }
 

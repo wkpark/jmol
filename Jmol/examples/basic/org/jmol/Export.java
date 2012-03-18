@@ -230,4 +230,9 @@ class MyStatusListener implements JmolStatusListener {
     // TODO
     
   }
+
+  public Map<String, Object> getProperty(String type) {
+    // TODO
+    return null;
+  }
 }

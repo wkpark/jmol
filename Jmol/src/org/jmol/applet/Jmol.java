@@ -1290,6 +1290,11 @@ public class Jmol implements WrappedApplet {
       return (isSync ? "" : sb.toString());
     }
 
+    public Map<String, Object> getProperty(String type) {
+      // only used on JSpecView side
+      return null;
+    }
+
   }
 
   public void register(String id, JmolSyncInterface jsi) {

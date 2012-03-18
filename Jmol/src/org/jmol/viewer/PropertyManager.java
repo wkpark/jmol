@@ -96,6 +96,7 @@ public class PropertyManager {
     "mouseInfo"       , "", "",
     "isosurfaceInfo"  , "", "",
     "consoleText"     , "", "",
+    "jspecView"       , "", "",
   };
 
   private final static int PROP_APPLET_INFO = 0;
@@ -141,7 +142,8 @@ public class PropertyManager {
   private final static int PROP_MOUSE_INFO = 34;
   private final static int PROP_ISOSURFACE_INFO = 35;
   private final static int PROP_CONSOLE_TEXT = 36;
-  private final static int PROP_COUNT = 37;
+  private final static int PROP_JSPECVIEW = 37;
+  private final static int PROP_COUNT = 38;
 
   //// static methods used by Eval and Viewer ////
   
@@ -380,6 +382,8 @@ public class PropertyManager {
       return viewer.getAllChainInfo(myParam);
     case PROP_CONSOLE_TEXT:
       return viewer.getProperty("DATA_API", "consoleText", null);
+    case PROP_JSPECVIEW:
+      return viewer.getJspecViewProperties();
     case PROP_DATA_INFO:
       return viewer.getData(myParam.toString());
     case PROP_ERROR_MESSAGE:

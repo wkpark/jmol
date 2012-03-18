@@ -422,7 +422,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
   }
 
   public Map<String, Object> getProperty(String type) {
-    return (jSpecViewFrame == null ? null : jSpecViewFrame.getProperties());
+    return (jSpecViewFrame == null ? null : jSpecViewFrame.getProperty(type));
   }
   
 }

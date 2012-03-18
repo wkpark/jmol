@@ -96,7 +96,7 @@ public class PropertyManager {
     "mouseInfo"       , "", "",
     "isosurfaceInfo"  , "", "",
     "consoleText"     , "", "",
-    "jspecView"       , "", "",
+    "jspecView"       , "<key>", "",
   };
 
   private final static int PROP_APPLET_INFO = 0;
@@ -383,7 +383,7 @@ public class PropertyManager {
     case PROP_CONSOLE_TEXT:
       return viewer.getProperty("DATA_API", "consoleText", null);
     case PROP_JSPECVIEW:
-      return viewer.getJspecViewProperties();
+      return viewer.getJspecViewProperties(myParam);
     case PROP_DATA_INFO:
       return viewer.getData(myParam.toString());
     case PROP_ERROR_MESSAGE:

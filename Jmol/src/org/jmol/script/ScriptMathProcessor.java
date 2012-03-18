@@ -597,6 +597,13 @@ class ScriptMathProcessor {
     }
     ScriptVariable var1 = xStack[xPt--];
     ScriptVariable var = xStack[xPt];
+    if (var.tok == Token.varray && var1.tok == Token.string 
+        && var.intValue != Integer.MAX_VALUE) {
+      // allow for x[1]["test"][1]["here"]
+      // common in getproperty business
+      // prior to 12.2/3.18, x[1]["id"] was misread as x[1][0]
+      var = ScriptVariable.selectItem(var, Integer.MIN_VALUE);
+    }
     if (var.tok == Token.hash) {
       ScriptVariable v = var.mapValue(ScriptVariable.sValue(var1));
       xStack[xPt] = (v == null ? ScriptVariable.getVariable("") : v);

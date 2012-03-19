@@ -38,7 +38,6 @@ public class BallsRenderer extends ShapeRenderer {
       BitSet bsOK = viewer.getRenderableBitSet();
       for (int i = bsOK.nextSetBit(0); i >= 0; i = bsOK.nextSetBit(i + 1)) {
         Atom atom = atoms[i];
-        //System.out.println("ballsrend " + atom.screenDiameter);
         if (atom.screenDiameter > 0
             && (atom.getShapeVisibilityFlags() & myVisibilityFlag) != 0
             && g3d.setColix(atom.getColix())) {

@@ -517,6 +517,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
     zap(false, true, false); // here to allow echos
     global.setParameterValue("language", GT.getLanguage());
+    stateManager.setJmolDefaults();
   }
 
   public boolean isDataOnly() {
@@ -7452,7 +7453,7 @@ private void zap(String msg) {
 
   @Override
   public void setJmolDefaults() {
-    setDefaults("Jmol");
+    setDefaults();
   }
 
   private void setDefaults(String type) {
@@ -7460,7 +7461,10 @@ private void zap(String msg) {
       stateManager.setRasMolDefaults();
       return;
     }
-    stateManager.setJmolDefaults();
+    setDefaults();
+  }
+
+  private void setDefaults() {
     setShapeSize(JmolConstants.SHAPE_BALLS, rd, getModelUndeletedAtomsBitSet(-1));
   }
 

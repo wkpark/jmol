@@ -27,6 +27,7 @@ import org.jmol.api.*;
 import org.jmol.console.KeyJMenuItem;
 import org.jmol.i18n.GT;
 import org.jmol.util.Logger;
+import org.jmol.viewer.JmolConstants;
 import org.openscience.jmol.app.jmolpanel.GuiMap;
 import org.openscience.jmol.app.jmolpanel.JmolPanel;
 
@@ -109,11 +110,11 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     "showBoundingBox",                "false",
     "axesOrientationRasmol",          "false",
 	  "openFilePreview",                "true",
-    "percentVdwAtom",                 "23",
     "autoBond",                       "true",
-    "marBond",                        "150",
-    "minBondDistance",                "0.40",
-    "bondTolerance",                  "0.45",
+    "percentVdwAtom",                 "" + JmolConstants.DEFAULT_PERCENT_VDW_ATOM,
+    "marBond",                        "" + JmolConstants.DEFAULT_BOND_MILLIANGSTROM_RADIUS,
+    "minBondDistance",                "" + JmolConstants.DEFAULT_MIN_BOND_DISTANCE,
+    "bondTolerance",                  "" + JmolConstants.DEFAULT_BOND_TOLERANCE,
   };
 
   final static String[] rasmolOverrides = {

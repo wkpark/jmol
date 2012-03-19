@@ -9972,6 +9972,7 @@ public class ScriptEvaluator {
         q = (isSyntaxCheck ? new Quaternion() : new Quaternion(m3));
         rotAxis.set(q.getNormal());
         endDegrees = q.getTheta();
+        System.out.println("scripteval " + rotAxis + " " + endDegrees);
         isMolecular = true;
         break;
       default:

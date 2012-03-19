@@ -80,9 +80,9 @@ public class Escape {
     if (x instanceof BitSet) 
       return escape((BitSet) x, true);
     if (x instanceof Matrix3f) 
-      return ((Matrix3f) x).toString();
+      return TextFormat.simpleReplace(((Matrix3f) x).toString(), "\t", ",\t");
     if (x instanceof Matrix4f) 
-      return ((Matrix4f) x).toString();
+      return TextFormat.simpleReplace(((Matrix4f) x).toString(), "\t", ",\t");
     if (x instanceof Tuple3f)
       return escape((Tuple3f) x);
     if (x instanceof Point4f) {

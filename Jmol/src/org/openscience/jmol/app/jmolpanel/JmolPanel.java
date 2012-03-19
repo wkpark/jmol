@@ -509,12 +509,13 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       splash.showStatus(GT._("Creating main window..."));
       splash.showStatus(GT._("Initializing Swing..."));
     }
-    try {
-      UIManager
-          .setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-    } catch (Exception exc) {
-      System.err.println("Error loading L&F: " + exc);
-    }
+    if (jmolApp.haveDisplay)
+      try {
+        UIManager.setLookAndFeel(UIManager
+            .getCrossPlatformLookAndFeelClassName());
+      } catch (Exception exc) {
+        System.err.println("Error loading L&F: " + exc);
+      }
 
     if (splash != null)
       splash.showStatus(GT._("Initializing Jmol..."));

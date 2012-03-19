@@ -54,7 +54,6 @@ public class Quaternion {
   private Matrix3f mat;
 
   private final static Point4f qZero = new Point4f();
-  private final static Quaternion qTemp = new Quaternion(0, 0, 0, 0);
   
   public Quaternion() {
     q0 = 1;
@@ -235,6 +234,7 @@ public class Quaternion {
     q2 = (float) (y * 0.5);
     q3 = (float) (z * 0.5);
 
+    System.out.println("quaternion set(mat) " + mat + "\n" + this + " " + getNormal() + " " + getTheta());
     /*
      *  Originally from http://www.gamedev.net/community/forums/topic.asp?topic_id=448380
      *  later algorithm was adapted from Visualizing Quaternions, by Andrew J. Hanson
@@ -298,7 +298,7 @@ public class Quaternion {
    */
   public void setRef(Quaternion qref) {
     if (qref == null) {
-      fixQ(this);
+      mul(getFixFactor());
       return;
     }
     if (dot(qref) >= 0)
@@ -432,8 +432,9 @@ public class Quaternion {
     return new Quaternion(-q0, -q1, -q2, -q3);
   }
 
-  /*
-   * return a quaternion having:
+  /**
+   * ensures 
+   * 
    * 1) q0 > 0
    * or
    * 2) q0 = 0 and q1 > 0
@@ -442,24 +443,23 @@ public class Quaternion {
    * or
    * 4) q0 = 0 and q1 = 0 and q2 = 0 and q3 > 0
    * 
+   * @return 1 or -1  
+   * 
    */
-  private void fixQ(Quaternion qNew) {
-    float f = (q0 < 0 || q0 == 0
-        && (q1 < 0 || q1 == 0 && (q2 < 0 || q2 == 0 && q3 < 0)) ? -1 : 1);
-    qNew.q0 = q0 * f;
-    qNew.q1 = q1 * f;
-    qNew.q2 = q2 * f;
-    qNew.q3 = q3 * f;
-  }
 
+  private float getFixFactor() {
+    return (q0 < 0 || 
+        q0 == 0 && (q1 < 0 || q1 == 0 && (q2 < 0 || q2 == 0 && q3 < 0)) ? -1 : 1);
+  }
+  
   public Vector3f getVector(int i) {
     return getVector(i, 1f);
   }
 
   private Vector3f getVector(int i, float scale) {
     if (i == -1) {
-      fixQ(qTemp);
-      return new Vector3f(qTemp.q1 * scale, qTemp.q2 * scale, qTemp.q3 * scale);
+      scale *= getFixFactor();
+      return new Vector3f(q1 * scale, q2 * scale, q3 * scale);
     }
     if (mat == null)
       setMatrix();
@@ -475,8 +475,9 @@ public class Quaternion {
    * @return  vector such that 0 <= angle <= 180
    */
   public Vector3f getNormal() {
-    fixQ(qTemp);
-    return getRawNormal(qTemp);
+    Vector3f v = getRawNormal(this);
+    v.scale(getFixFactor());
+    return v;
   }
 
   private static Vector3f getRawNormal(Quaternion q) {
@@ -492,13 +493,11 @@ public class Quaternion {
    * @return 0 <= angle <= 180 in degrees
    */
   public float getTheta() {
-    fixQ(qTemp);
-    return (float) (Math.acos(qTemp.q0) * 2 * 180 / Math.PI);
+    return (float) (Math.acos(Math.abs(q0)) * 2 * 180 / Math.PI);
   }
 
   public float getThetaRadians() {
-    fixQ(qTemp);
-    return (float) (Math.acos(qTemp.q0) * 2);
+    return (float) (Math.acos(Math.abs(q0)) * 2);
   }
 
   /**
@@ -567,8 +566,7 @@ public class Quaternion {
   }
 
   public AxisAngle4f toAxisAngle4f() {
-    fixQ(qTemp);
-    double theta = 2 * Math.acos(qTemp.q0);
+    double theta = 2 * Math.acos(Math.abs(q0));
     double sinTheta2 = Math.sin(theta/2);
     Vector3f v = getNormal();
     if (sinTheta2 < 0) {

@@ -79,7 +79,6 @@ abstract class CageRenderer extends FontLineShapeRenderer {
     for (int i = firstLine * 2; i < 24; i += 2) {
       int edge0 = BoxInfo.edges[i];
       int edge1 = BoxInfo.edges[i + 1];
-      System.out.println(i + " " + edge0 + " " + edge1);
       if (axisPoints != null && edge0 == 0)
         viewer.transformPointNoClip(axisPoints[axisPt--], screens[0]);
       if ((allowedEdges0 & (1 << edge0)) == 0 

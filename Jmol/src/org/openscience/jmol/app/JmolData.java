@@ -43,10 +43,12 @@ public class JmolData {
   
   public static JmolData getJmol(int width, int height, String commandOptions) {
     JmolApp jmolApp = new JmolApp();
-    jmolApp.haveDisplay = false;
+    //jmolApp.haveDisplay = false;
     jmolApp.startupHeight = height;
     jmolApp.startupWidth = width;
     jmolApp.isDataOnly = true;
+    jmolApp.exitUponCompletion = true;
+
     String[] args = TextFormat.split(commandOptions, ' '); // doesn't allow for double-quoted 
     jmolApp.parseCommandLine(args);
     return new JmolData(jmolApp);
@@ -61,13 +63,17 @@ public class JmolData {
   }
   
   public static void main(String[] args) {
-    // note that -o -n -x are all implied
+    // note that -o-x are implied, but -n is not. 
+    // in this case -n means "no GRAPHICS" for speed
     JmolApp jmolApp = new JmolApp();
     jmolApp.isDataOnly = true;
     jmolApp.haveConsole = false;
-    jmolApp.haveDisplay = false;
+    //jmolApp.haveDisplay = false;
     jmolApp.exitUponCompletion = true;
-    jmolApp.parseCommandLine(args);    
+    jmolApp.parseCommandLine(args);
+    System.out.println("JmolData using command options " + jmolApp.commandOptions);
+    if (jmolApp.commandOptions.indexOf("-n") < 0) 
+      System.out.println("Add -n (NOGRAPHICS) if you are not creating images for faster performance.");
     new JmolData(jmolApp);
   }
   

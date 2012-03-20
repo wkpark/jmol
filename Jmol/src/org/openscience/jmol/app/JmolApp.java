@@ -379,7 +379,7 @@ public class JmolApp {
     }
 
     Point b = null;    
-    if (haveDisplay) {
+    if (haveDisplay && historyFile != null) {
       Dimension size;
       String vers = System.getProperty("java.version");
       if (vers.compareTo("1.1.2") < 0) {
@@ -422,7 +422,7 @@ public class JmolApp {
     }
 
     if (startupWidth <= 0 || startupHeight <= 0) {
-      if (haveDisplay && !isKiosk) {
+      if (haveDisplay && !isKiosk && border != null) {
         startupWidth = width + border.x;
         startupHeight = height + border.y;
       } else {

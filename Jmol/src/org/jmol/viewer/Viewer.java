@@ -280,15 +280,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (Logger.debugging) {
       Logger.debug("Viewer constructor " + this);
     }
-    isDataOnly = (display == null);
+    noGraphicsAllowed = (display == null && commandOptions.indexOf("-n") >= 0);
     apiPlatform = implementedPlatform;
     if (apiPlatform == null)
       apiPlatform = (ApiPlatform) Interface.getInterface(commandOptions == null
           || !commandOptions.contains("platform=") ? "org.jmol.awt.Platform"
           : commandOptions.substring(commandOptions.indexOf("platform=") + 9));
     apiPlatform.setViewer(this, display);
-    g3d = new Graphics3D(apiPlatform, isDataOnly);
-    haveDisplay = (!isDataOnly && (commandOptions == null || commandOptions
+    g3d = new Graphics3D(apiPlatform);
+    haveDisplay = (display != null && (commandOptions == null || commandOptions
         .indexOf("-n") < 0));
     mustRender = haveDisplay;
     if (!haveDisplay)
@@ -423,9 +423,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private boolean useCommandThread = false;
   private boolean isSignedApplet = false;
   private boolean isSignedAppletLocal = false;
-  private boolean isDataOnly = false;
 
   private String appletContext;
+  private boolean noGraphicsAllowed;
 
   public String getAppletContext() {
     return appletContext;
@@ -520,8 +520,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     stateManager.setJmolDefaults();
   }
 
-  public boolean isDataOnly() {
-    return isDataOnly;
+  public boolean noGraphicsAllowed() {
+    return noGraphicsAllowed;
   }
 
   public static String getJmolVersion() {
@@ -4029,8 +4029,8 @@ private void zap(String msg) {
   @Override
   public String generateOutput(String type, String[] fileName, int width,
                                int height) {
-    if (isDataOnly)
-      return "";
+    if (noGraphicsAllowed)
+      return null;
     String fName = null;
     if (fileName != null) {
       fileName[0] = getFileNameFromDialog(fileName[0], Integer.MIN_VALUE);
@@ -8672,7 +8672,8 @@ private void zap(String msg) {
         }
       }
     } catch (Throwable er) {
-      Logger.error(setErrorMessage((String) (err = "ERROR creating image: "
+      er.printStackTrace();
+      Logger.error(setErrorMessage((String) (err = "ERROR creating image??: "
           + er)));
     }
     creatingImage = false;

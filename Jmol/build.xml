@@ -19,7 +19,7 @@
   <!-- for some reason, I can't get ant to use this ${java.version}
        property as the value of the source parameter -->
   <property name="java.version" value="1.5" />
-  <property name="debug" value="off" />
+  <property name="debug" value="on" />
   <property name="deprecation" value="off" />
   <property name="optimization" value="off" />
 
@@ -449,13 +449,12 @@ all support for previous versions removed
         <exclude name="com/**" />
         <include name="**/jmol/**" />
         <exclude name="**/jmol/_documents/**" />
-        <exclude name="**/jmol/jcamp/**" />
         <exclude name="**/jmol/applet/**" />
         <exclude name="**/jmol/console/**" />
-        <exclude name="**/jmol/export/**" />
+        <!-- exclude name="**/jmol/export/**" />
         <exclude name="**/jmol/shapebio/**" />
         <exclude name="**/jmol/shapespecial/**" />
-        <exclude name="**/jmol/shapesurface/**" />
+        <exclude name="**/jmol/shapesurface/**" / -->
         <exclude name="**/jmol/popup/**" />
         <exclude name="**/openscience/jmol/Data/**" />
         <exclude name="**/openscience/jmol/app/Jmol.class" />

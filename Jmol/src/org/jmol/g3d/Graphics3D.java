@@ -260,9 +260,9 @@ final public class Graphics3D implements JmolRendererInterface {
    * @param isDataOnly 
    *
    */
-  public Graphics3D(ApiPlatform apiPlatform, boolean isDataOnly) {
+  public Graphics3D(ApiPlatform apiPlatform) {
     this.apiPlatform = apiPlatform;
-    platform = (isDataOnly ? null : Platform3D.createInstance(apiPlatform));
+    platform = Platform3D.createInstance(apiPlatform);
     this.line3d = new Line3D(this);
     this.circle3d = new Circle3D(this);
     this.sphere3d = new Sphere3D(this);

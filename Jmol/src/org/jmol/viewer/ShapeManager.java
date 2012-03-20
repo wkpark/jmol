@@ -159,7 +159,7 @@ public class ShapeManager {
   }
   
   public void resetShapes() {
-    if (!viewer.isDataOnly())
+    if (!viewer.noGraphicsAllowed())
       shapes = new Shape[JmolConstants.SHAPE_MAX];
   }
   

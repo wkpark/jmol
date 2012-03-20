@@ -358,7 +358,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
       jSpecViewFrame.setLocation(400, 400);
       jSpecViewFrame.register("Jmol", this);
     }
-    if (!jSpecViewFrame.isVisible() && peaks.toLowerCase().startsWith("hidden"))
+    if (!jSpecViewFrame.isVisible() && peaks.length() > 0 && !peaks.toLowerCase().startsWith("hidden"))
       jSpecViewFrame.setVisible(true);
     if (peaks.length() == 0)
       peaks = "HIDDEN false";

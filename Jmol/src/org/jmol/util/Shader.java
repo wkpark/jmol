@@ -22,9 +22,8 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.g3d;
+package org.jmol.util;
 
-import org.jmol.util.ColorUtil;
 
 
 /**
@@ -40,17 +39,17 @@ import org.jmol.util.ColorUtil;
  *
  * @author Miguel, miguel@jmol.org
  */
-final class Shade3D {
+public final class Shader {
 
   // there are 64 shades of a given color
   // 0 = ambient
   // 52 = normal
   // 56 = max for 
   // 63 = specular
-  static final int shadeIndexMax = 64;
-  static final int shadeIndexLast = shadeIndexMax - 1;
-  static final byte shadeIndexNormal = 52;
-  final static byte shadeIndexNoisyLimit = 56;
+  public static final int shadeIndexMax = 64;
+  public static final int shadeIndexLast = shadeIndexMax - 1;
+  public static final byte shadeIndexNormal = 52;
+  public final static byte shadeIndexNoisyLimit = 56;
 
   public static int zPower = 1; // the power for the zShading -- higher number --> more depth of fog
 
@@ -66,37 +65,37 @@ final class Shade3D {
                      yLightsource * yLightsource +
                      zLightsource * zLightsource);
   // the light source vector normalized
-  static final float xLight = xLightsource / magnitudeLight;
-  static final float yLight = yLightsource / magnitudeLight;
-  static final float zLight = zLightsource / magnitudeLight;
+  public static final float xLight = xLightsource / magnitudeLight;
+  public static final float yLight = yLightsource / magnitudeLight;
+  public static final float zLight = zLightsource / magnitudeLight;
   
-  static boolean specularOn = true; 
-  static boolean usePhongExponent = false;
+  public static boolean specularOn = true; 
+  public static boolean usePhongExponent = false;
   
   //fractional distance from black for ambient color
-  static int ambientPercent = 45;
+  public static int ambientPercent = 45;
   
   // df in I = df * (N dot L) + sf * (R dot V)^p
-  static int diffusePercent = 84;
+  public static int diffusePercent = 84;
 
   // log_2(p) in I = df * (N dot L) + sf * (R dot V)^p
   // for faster calculation of shades
-  static int specularExponent = 6;
+  public static int specularExponent = 6;
 
   // sf in I = df * (N dot L) + sf * (R dot V)^p
   // not a percent of anything, really
-  static int specularPercent = 22;
+  public static int specularPercent = 22;
   
   // fractional distance to white for specular dot
-  static int specularPower = 40;
+  public static int specularPower = 40;
 
   // p in I = df * (N dot L) + sf * (R dot V)^p
-  static int phongExponent = 64;
+  public static int phongExponent = 64;
   
-  static float ambientFraction = ambientPercent / 100f;
-  static float diffuseFactor = diffusePercent / 100f;
-  static float intenseFraction = specularPower / 100f;
-  static float specularFactor = specularPercent / 100f;
+  public static float ambientFraction = ambientPercent / 100f;
+  public static float diffuseFactor = diffusePercent / 100f;
+  public static float intenseFraction = specularPower / 100f;
+  public static float specularFactor = specularPercent / 100f;
   
   /*
    * intensity calculation:
@@ -111,7 +110,7 @@ final class Shade3D {
    *              black  <---ambient%--x---specular power---->  white
    */
   
-  static int[] getShades(int rgb, boolean greyScale) {
+  public static int[] getShades(int rgb, boolean greyScale) {
     int[] shades = new int[shadeIndexMax];
     if (rgb == 0)
       return shades;
@@ -179,7 +178,7 @@ final class Shade3D {
     return shades;
   }
 
-  static int getShadeIndex(float x, float y, float z) {
+  public static int getShadeIndex(float x, float y, float z) {
     // from Cylinder3D.calcArgbEndcap and renderCone
     // from Graphics3D.getShadeIndex and getShadeIndex
     double magnitude = Math.sqrt(x*x + y*y + z*z);
@@ -189,13 +188,13 @@ final class Shade3D {
                   * shadeIndexLast + 0.5f);
   }
 
-  static byte getShadeIndexNormalized(float x, float y, float z) {
+  public static byte getShadeIndexNormalized(float x, float y, float z) {
     //from Normix3D.setRotationMatrix
     return (byte)(int) (getFloatShadeIndexNormalized(x, y, z)
                   * shadeIndexLast + 0.5f);
   }
 
-  static int getFp8ShadeIndex(float x, float y, float z) {
+  public static int getFp8ShadeIndex(float x, float y, float z) {
     //from calcDitheredNoisyShadeIndex (not utilized)
     //and Cylinder.calcRotatedPoint
     double magnitude = Math.sqrt(x*x + y*y + z*z);
@@ -272,7 +271,7 @@ final class Shade3D {
    }
    */
 
-  static byte getDitheredNoisyShadeIndex(float x, float y, float z, float r) {
+  public static byte getDitheredNoisyShadeIndex(float x, float y, float z, float r) {
     // from Sphere3D only
     // add some randomness to prevent banding
     int fp8ShadeIndex = (int) (getFloatShadeIndexNormalized(x / r, y / r, z / r)
@@ -310,10 +309,10 @@ final class Shade3D {
   // Sphere shading cache for Large spheres
   ////////////////////////////////////////////////////////////////
 
-  static boolean sphereShadingCalculated = false;
-  final static byte[] sphereShadeIndexes = new byte[256 * 256];
+  public static boolean sphereShadingCalculated = false;
+  public final static byte[] sphereShadeIndexes = new byte[256 * 256];
 
-  synchronized static void calcSphereShading() {
+  public synchronized static void calcSphereShading() {
     //if (!sphereShadingCalculated) { //unnecessary -- but be careful!
     float xF = -127.5f;
     for (int i = 0; i < 256; ++xF, ++i) {
@@ -364,7 +363,7 @@ final class Shade3D {
    *
    * @return Next random
    */
-  static int nextRandom8Bit() {
+  public static int nextRandom8Bit() {
     int t = seed;
     seed = t = ((t << 16) + (t << 1) + t) & 0x7FFFFFFF;
     return t >> 23;

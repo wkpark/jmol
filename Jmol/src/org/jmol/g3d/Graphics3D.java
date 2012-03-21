@@ -40,7 +40,9 @@ import org.jmol.util.ColorUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.MeshSurface;
+import org.jmol.util.Normix;
 import org.jmol.util.Parser;
+import org.jmol.util.Shader;
 import org.jmol.viewer.Viewer;
 
 /**
@@ -150,7 +152,7 @@ final public class Graphics3D implements JmolRendererInterface {
   Triangle3D triangle3d;
   Cylinder3D cylinder3d;
   Hermite3D hermite3d;
-  Normix3D normix3d;
+  Normix normix3d;
   boolean isFullSceneAntialiasingEnabled;
   private boolean antialiasThisFrame;
   private boolean antialias2; 
@@ -269,7 +271,7 @@ final public class Graphics3D implements JmolRendererInterface {
     this.triangle3d = new Triangle3D(this);
     this.cylinder3d = new Cylinder3D(this);
     this.hermite3d = new Hermite3D(this);
-    this.normix3d = new Normix3D();
+    this.normix3d = new Normix();
   }
   
   int newWindowWidth, newWindowHeight;
@@ -808,8 +810,8 @@ final public class Graphics3D implements JmolRendererInterface {
         int pB = (p & 0xFF0000) >> 16;
         int pA = (p & 0xFF000000);
         float f = (float)(zDepth - z) / (zDepth - zSlab);
-        if (Shade3D.zPower > 1) {
-          for (int i = 0; i < Shade3D.zPower; i++)
+        if (Shader.zPower > 1) {
+          for (int i = 0; i < Shader.zPower; i++)
             f *= f;
         }
         pR = zShadeR + (int) (f * (pR - zShadeR));
@@ -888,8 +890,8 @@ final public class Graphics3D implements JmolRendererInterface {
 
   public void volumeRender(boolean TF) {
     if (TF) {
-      saveAmbient = Shade3D.ambientPercent;
-      saveDiffuse = Shade3D.diffusePercent;
+      saveAmbient = Shader.ambientPercent;
+      saveDiffuse = Shader.diffusePercent;
       setAmbientPercent(100);
       setDiffusePercent(0);
     } else {
@@ -2219,18 +2221,18 @@ final public class Graphics3D implements JmolRendererInterface {
   }
 
   public static Point3f getLightSource() {
-    return new Point3f(Shade3D.xLight, Shade3D.yLight, Shade3D.zLight);
+    return new Point3f(Shader.xLight, Shader.yLight, Shader.zLight);
   }
 
   public synchronized static void setSpecular(boolean val) {
-    if (Shade3D.specularOn == val)
+    if (Shader.specularOn == val)
       return;
-    Shade3D.specularOn = val;
+    Shader.specularOn = val;
     flushCaches();
   }
 
   public static boolean getSpecular() {
-    return Shade3D.specularOn;
+    return Shader.specularOn;
   }
 
   /**
@@ -2239,11 +2241,11 @@ final public class Graphics3D implements JmolRendererInterface {
    * @param val
    */
   public synchronized static void setZShadePower(int val) {
-    Shade3D.zPower = val;
+    Shader.zPower = val;
   }
 
   public static int getZShadePower() {
-    return Shade3D.zPower;
+    return Shader.zPower;
   }
   
   /**
@@ -2252,15 +2254,15 @@ final public class Graphics3D implements JmolRendererInterface {
    * @param val
    */
   public synchronized static void setAmbientPercent(int val) {
-    if (Shade3D.ambientPercent == val)
+    if (Shader.ambientPercent == val)
       return;
-    Shade3D.ambientPercent = val;
-    Shade3D.ambientFraction = val / 100f;
+    Shader.ambientPercent = val;
+    Shader.ambientFraction = val / 100f;
     flushCaches();
   }
 
   public static int getAmbientPercent() {
-    return Shade3D.ambientPercent;
+    return Shader.ambientPercent;
   }
   
   /**
@@ -2269,15 +2271,15 @@ final public class Graphics3D implements JmolRendererInterface {
    * @param val
    */
   public synchronized static void setDiffusePercent(int val) {
-    if (Shade3D.diffusePercent == val)
+    if (Shader.diffusePercent == val)
       return;
-    Shade3D.diffusePercent = val;
-    Shade3D.diffuseFactor = val / 100f;
+    Shader.diffusePercent = val;
+    Shader.diffuseFactor = val / 100f;
     flushCaches();
   }
 
   public static int getDiffusePercent() {
-    return Shade3D.diffusePercent;
+    return Shader.diffusePercent;
   }
   
   /**
@@ -2286,18 +2288,18 @@ final public class Graphics3D implements JmolRendererInterface {
    * @param val
    */
   public synchronized static void setPhongExponent(int val) {
-    if (Shade3D.phongExponent == val && Shade3D.usePhongExponent)
+    if (Shader.phongExponent == val && Shader.usePhongExponent)
       return;
-    Shade3D.phongExponent = val;
+    Shader.phongExponent = val;
     float x = (float) (Math.log(val) / Math.log(2));
-    Shade3D.usePhongExponent = (x != (int) x);
-    if (!Shade3D.usePhongExponent)
-      Shade3D.specularExponent = (int) x;
+    Shader.usePhongExponent = (x != (int) x);
+    if (!Shader.usePhongExponent)
+      Shader.specularExponent = (int) x;
     flushCaches();
   }
 
   public static int getPhongExponent() {
-    return Shade3D.phongExponent;
+    return Shader.phongExponent;
   }
 
   /**
@@ -2307,16 +2309,16 @@ final public class Graphics3D implements JmolRendererInterface {
    * @param val
    */
   public synchronized static void setSpecularExponent(int val) {
-    if (Shade3D.specularExponent == val)
+    if (Shader.specularExponent == val)
       return;
-    Shade3D.specularExponent = val;
-    Shade3D.phongExponent = (int) Math.pow(2, val);
-    Shade3D.usePhongExponent = false;
+    Shader.specularExponent = val;
+    Shader.phongExponent = (int) Math.pow(2, val);
+    Shader.usePhongExponent = false;
     flushCaches();
   }
   
   public static int getSpecularExponent() {
-    return Shade3D.specularExponent;
+    return Shader.specularExponent;
   }
   
   /**
@@ -2326,15 +2328,15 @@ final public class Graphics3D implements JmolRendererInterface {
    * @param val
    */
   public synchronized static void setSpecularPercent(int val) {
-    if (Shade3D.specularPercent == val)
+    if (Shader.specularPercent == val)
       return;
-    Shade3D.specularPercent = val;
-    Shade3D.specularFactor = val / 100f;
+    Shader.specularPercent = val;
+    Shader.specularFactor = val / 100f;
     flushCaches();
   }
 
   public static int getSpecularPercent() {
-    return Shade3D.specularPercent;
+    return Shader.specularPercent;
   }
 
   /**
@@ -2347,15 +2349,15 @@ final public class Graphics3D implements JmolRendererInterface {
       setSpecularExponent(-val);
       return;
     }
-    if (Shade3D.specularPower == val)
+    if (Shader.specularPower == val)
       return;
-    Shade3D.specularPower = val;
-    Shade3D.intenseFraction = val / 100f;
+    Shader.specularPower = val;
+    Shader.intenseFraction = val / 100f;
     flushCaches();
   }
   
   public static int getSpecularPower() {
-    return Shade3D.specularPower;
+    return Shader.specularPower;
   }
   
   private final Vector3f vectorAB = new Vector3f();
@@ -2365,8 +2367,8 @@ final public class Graphics3D implements JmolRendererInterface {
   void setColorNoisy(int shadeIndex) {
     currentShadeIndex = shadeIndex;
     argbCurrent = shadesCurrent[shadeIndex];
-    argbNoisyUp = shadesCurrent[shadeIndex < Shade3D.shadeIndexLast ? shadeIndex + 1
-        : Shade3D.shadeIndexLast];
+    argbNoisyUp = shadesCurrent[shadeIndex < Shader.shadeIndexLast ? shadeIndex + 1
+        : Shader.shadeIndexLast];
     argbNoisyDn = shadesCurrent[shadeIndex > 0 ? shadeIndex - 1 : 0];
   }
 
@@ -2382,17 +2384,17 @@ final public class Graphics3D implements JmolRendererInterface {
         - screenA.z);
     int shadeIndex;
     if (screenC == null) {
-      shadeIndex = Shade3D.getShadeIndex(-vectorAB.x, -vectorAB.y, vectorAB.z);
+      shadeIndex = Shader.getShadeIndex(-vectorAB.x, -vectorAB.y, vectorAB.z);
     } else {
       vectorAC.set(screenC.x - screenA.x, screenC.y - screenA.y, screenC.z
           - screenA.z);
       vectorAB.cross(vectorAB, vectorAC);
-      shadeIndex = vectorAB.z >= 0 ? Shade3D.getShadeIndex(-vectorAB.x,
-          -vectorAB.y, vectorAB.z) : Shade3D.getShadeIndex(vectorAB.x,
+      shadeIndex = vectorAB.z >= 0 ? Shader.getShadeIndex(-vectorAB.x,
+          -vectorAB.y, vectorAB.z) : Shader.getShadeIndex(vectorAB.x,
           vectorAB.y, -vectorAB.z);
     }
-    if (shadeIndex > Shade3D.shadeIndexNoisyLimit)
-      shadeIndex = Shade3D.shadeIndexNoisyLimit;
+    if (shadeIndex > Shader.shadeIndexNoisyLimit)
+      shadeIndex = Shader.shadeIndexNoisyLimit;
     setColorNoisy(shadeIndex);
   }
 
@@ -2404,9 +2406,9 @@ final public class Graphics3D implements JmolRendererInterface {
     vectorNormal.cross(vectorAB, vectorAC);
     return
       (vectorNormal.z >= 0
-            ? Shade3D.getShadeIndex(-vectorNormal.x, -vectorNormal.y,
+            ? Shader.getShadeIndex(-vectorNormal.x, -vectorNormal.y,
                                     vectorNormal.z)
-            : Shade3D.getShadeIndex(vectorNormal.x, vectorNormal.y,
+            : Shader.getShadeIndex(vectorNormal.x, vectorNormal.y,
                                     -vectorNormal.z));
   }
 
@@ -2460,22 +2462,22 @@ final public class Graphics3D implements JmolRendererInterface {
    * normals and normal indexes -- normix
    * ***************************************************************/
 
-  public static final short NORMIX_NULL = Normix3D.NORMIX_NULL;
+  public static final short NORMIX_NULL = Normix.NORMIX_NULL;
   
   public static short getInverseNormix(short normix) {
-    return Normix3D.getInverseNormix(normix);
+    return Normix.getInverseNormix(normix);
   }
 
   public static short getNormix(Vector3f vector, BitSet bsTemp) {
-    return Normix3D.getNormix(vector, bsTemp);
+    return Normix.getNormix(vector, bsTemp);
   }
 
   public static short get2SidedNormix(Vector3f vector, BitSet bsTemp) {
-    return Normix3D.get2SidedNormix(vector, bsTemp);
+    return Normix.get2SidedNormix(vector, bsTemp);
   }
 
   public static Vector3f getNormixVector(short normix) {
-    return Normix3D.getVector(normix);
+    return Normix.getVector(normix);
   }
 
   public boolean isDirectedTowardsCamera(short normix) {

@@ -22,7 +22,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.geodesic;
+package org.jmol.util;
 
 import javax.vecmath.Vector3f;
 import java.util.Hashtable;

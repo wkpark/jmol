@@ -25,8 +25,8 @@
 package org.jmol.shapespecial;
 
 import org.jmol.g3d.Graphics3D;
-import org.jmol.geodesic.Geodesic;
 import org.jmol.util.FastBitSet;
+import org.jmol.util.Geodesic;
 
 import javax.vecmath.Point3i;
 

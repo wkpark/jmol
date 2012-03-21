@@ -42,7 +42,7 @@ import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
-import org.jmol.geodesic.Geodesic;
+import org.jmol.util.Geodesic;
 import org.jmol.util.MeshSurface;
 import org.jmol.util.Quaternion;
 import org.jmol.viewer.Viewer;

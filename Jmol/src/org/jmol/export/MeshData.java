@@ -4,7 +4,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
-import org.jmol.geodesic.Geodesic;
+import org.jmol.util.Geodesic;
 import org.jmol.util.MeshSurface;
 
 /**

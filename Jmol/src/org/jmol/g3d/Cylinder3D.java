@@ -24,6 +24,8 @@
 
 package org.jmol.g3d;
 
+import org.jmol.util.Shader;
+
 /**
  *<p>
  * Draws shaded cylinders in 3D.
@@ -231,7 +233,7 @@ class Cylinder3D {
     colixA = colix;
     this.isScreenedA = isScreened;
     shadesA = g3d.getShades(colix);
-    int shadeIndexTip = Shade3D.getShadeIndex(dxB, dyB, -dzB);
+    int shadeIndexTip = Shader.getShadeIndex(dxB, dyB, -dzB);
     g3d.plotPixelClipped(shadesA[shadeIndexTip], isScreenedA, (int) xTip,
         (int) yTip, (int) zTip);
 
@@ -353,7 +355,7 @@ class Cylinder3D {
       yRaster[i] = (int) (yR);
       zRaster[i] = (int) (zR + 0.5);
     }
-    fp8ShadeIndexUp[i] = Shade3D.getFp8ShadeIndex((float) xR, (float) yR,
+    fp8ShadeIndexUp[i] = Shader.getFp8ShadeIndex((float) xR, (float) yR,
         (float) zR);
   }
 
@@ -641,12 +643,12 @@ class Cylinder3D {
     float dxf = (isFloat ? dxBf : (float) dxB);
     float dyf = (isFloat ? dyBf : (float) dyB);
     if (dzf >= 0 || !tCylinder) {
-      endcapShadeIndex = Shade3D.getShadeIndex(-dxf, -dyf, dzf);
+      endcapShadeIndex = Shader.getShadeIndex(-dxf, -dyf, dzf);
       colixEndcap = colixA;
       shadesEndcap = shadesA;
       //Logger.debug("endcap is A");
     } else {
-      endcapShadeIndex = Shade3D.getShadeIndex(dxf, dyf, -dzf);
+      endcapShadeIndex = Shader.getShadeIndex(dxf, dyf, -dzf);
       colixEndcap = colixB;
       shadesEndcap = shadesB;
       xEndcap += dxB;
@@ -655,8 +657,8 @@ class Cylinder3D {
       //Logger.debug("endcap is B");
     }
     // limit specular glare on endcap
-    if (endcapShadeIndex > Shade3D.shadeIndexNoisyLimit)
-      endcapShadeIndex = Shade3D.shadeIndexNoisyLimit;
+    if (endcapShadeIndex > Shader.shadeIndexNoisyLimit)
+      endcapShadeIndex = Shader.shadeIndexNoisyLimit;
     argbEndcap = shadesEndcap[endcapShadeIndex];
     tEndcapOpen = (endcaps == Graphics3D.ENDCAPS_OPEN);
   }

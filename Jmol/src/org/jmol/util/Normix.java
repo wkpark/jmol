@@ -22,16 +22,14 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.g3d;
+package org.jmol.util;
 
-import org.jmol.geodesic.Geodesic;
 
 import javax.vecmath.Vector3f;
 import javax.vecmath.Matrix3f;
 import java.util.Random;
 import java.util.BitSet;
 
-import org.jmol.util.Logger;
 
 /**
  * Provides quantization of normalized vectors so that shading for
@@ -41,7 +39,7 @@ import org.jmol.util.Logger;
  *
  * @author Miguel, miguel@jmol.org
  */
-class Normix3D {
+public class Normix {
 
   
   // these inital 
@@ -51,7 +49,7 @@ class Normix3D {
   private final static Vector3f[] vertexVectors = Geodesic.getVertexVectors(); 
   private final static short[] inverseNormixes = new short[normixCount];
   
-  static short getInverseNormix(short normix) {
+  public static short getInverseNormix(short normix) {
     return inverseNormixes[normix];
   }
 
@@ -146,15 +144,15 @@ class Normix3D {
     }
   }
   
-  static short getNormix(Vector3f v, BitSet bsTemp) {
+  public static short getNormix(Vector3f v, BitSet bsTemp) {
     return getNormix(v.x, v.y, v.z, NORMIX_GEODESIC_LEVEL, bsTemp);
   }
 
-  static short get2SidedNormix(Vector3f v, BitSet bsTemp) {
-    return (short)~getNormix(v.x, v.y, v.z, Normix3D.NORMIX_GEODESIC_LEVEL, bsTemp);
+  public static short get2SidedNormix(Vector3f v, BitSet bsTemp) {
+    return (short)~getNormix(v.x, v.y, v.z, Normix.NORMIX_GEODESIC_LEVEL, bsTemp);
   }
 
-  static Vector3f getVector(short normix) {
+  public static Vector3f getVector(short normix) {
     return vertexVectors[normix];
   }
   
@@ -241,33 +239,33 @@ class Normix3D {
   private final byte[] shadeIndexes = new byte[normixCount];
   private final byte[] shadeIndexes2Sided = new byte[normixCount];
 
-  Vector3f[] getTransformedVectors() {
+  public Vector3f[] getTransformedVectors() {
     return transformedVectors;
   }
   
-  boolean isDirectedTowardsCamera(short normix) {
+  public boolean isDirectedTowardsCamera(short normix) {
     // normix < 0 means a double sided normix, so always visible
     return (normix < 0) || (transformedVectors[normix].z > 0);
   }
 
-  void setRotationMatrix(Matrix3f rotationMatrix) {
+  public void setRotationMatrix(Matrix3f rotationMatrix) {
     for (int i = normixCount; --i >= 0; ) {
       Vector3f tv = transformedVectors[i];
       rotationMatrix.transform(vertexVectors[i], tv);
 //        if (i == 0)
   //        System.out.println(i + " " + shadeIndexes[i]);
 
-      shadeIndexes[i] = Shade3D.getShadeIndexNormalized(tv.x, -tv.y, tv.z);
+      shadeIndexes[i] = Shader.getShadeIndexNormalized(tv.x, -tv.y, tv.z);
     //  if (i == 0 || i == 219 || i == 162 || i == 193)
       //  System.out.println(i + " " + shadeIndexes[i]);
       shadeIndexes2Sided[i] = (tv.z >= 0 ? shadeIndexes[i] 
-          : Shade3D.getShadeIndexNormalized(-tv.x, tv.y, -tv.z));
+          : Shader.getShadeIndexNormalized(-tv.x, tv.y, -tv.z));
     }
   }
 
   private static byte nullShadeIndex = 50;
   
-  int getShadeIndex(short normix) {
+  public int getShadeIndex(short normix) {
     return (normix == ~NORMIX_NULL
         || normix == NORMIX_NULL 
         ? nullShadeIndex

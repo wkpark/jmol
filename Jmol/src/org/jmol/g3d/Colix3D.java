@@ -26,6 +26,7 @@ package org.jmol.g3d;
 
 import org.jmol.util.ColorUtil;
 import org.jmol.util.Int2IntHash;
+import org.jmol.util.Shader;
 
 /**
  *<p>
@@ -154,14 +155,14 @@ class Colix3D {
         calcArgbsGreyscale();
       argbsGreyscale[Graphics3D.LAST_AVAILABLE_COLIX] = ColorUtil.calcGreyscaleRgbFromRgb(argb);
     }
-    return ashades[Graphics3D.LAST_AVAILABLE_COLIX] = Shade3D.getShades(argb, false);
+    return ashades[Graphics3D.LAST_AVAILABLE_COLIX] = Shader.getShades(argb, false);
   }
 
   final static int[] getShades(short colix) {
     colix &= Graphics3D.OPAQUE_MASK;
     int[] shades = ashades[colix];
     if (shades == null)
-      shades = ashades[colix] = Shade3D.getShades(argbs[colix], false);
+      shades = ashades[colix] = Shader.getShades(argbs[colix], false);
     return shades;
   }
 
@@ -172,14 +173,14 @@ class Colix3D {
     int[] shadesGreyscale = ashadesGreyscale[colix];
     if (shadesGreyscale == null)
       shadesGreyscale = ashadesGreyscale[colix] =
-        Shade3D.getShades(argbs[colix], true);
+        Shader.getShades(argbs[colix], true);
     return shadesGreyscale;
   }
 
   final synchronized static void flushShades() {
     for (int i = colixMax; --i >= 0; )
       ashades[i] = null;
-    Shade3D.sphereShadingCalculated = false;
+    Shader.sphereShadingCalculated = false;
   }
 
   /*

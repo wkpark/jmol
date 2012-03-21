@@ -39,6 +39,9 @@ import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.Map;
 
+import javax.vecmath.Matrix3f;
+import javax.vecmath.Matrix4f;
+
 public class Dots extends AtomShape {
 
   public EnvelopeCalculation ec;
@@ -135,7 +138,10 @@ public class Dots extends AtomShape {
     }
 
     if ("refreshTrajectories" == propertyName) {
-      ec.reCalculate(bs);
+      bs = (BitSet) ((Object[]) value)[1];
+      Matrix3f m = new Matrix3f();
+      ((Matrix4f) ((Object[]) value)[2]).get(m);
+      ec.reCalculate(bs, m);
       return;
     }
 

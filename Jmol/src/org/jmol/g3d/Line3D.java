@@ -47,6 +47,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.jmol.util.Logger;
+import org.jmol.util.Shader;
 
 final class Line3D {
 
@@ -450,7 +451,7 @@ final class Line3D {
     }
     int offset = y * width + x;
     int offsetMax = g3d.bufferSize;
-    int shadeIndexUp = (shadeIndex < Shade3D.shadeIndexLast ? shadeIndex + 1
+    int shadeIndexUp = (shadeIndex < Shader.shadeIndexLast ? shadeIndex + 1
         : shadeIndex);
     int shadeIndexDn = (shadeIndex > 0 ? shadeIndex - 1 : shadeIndex);
     int argb1 = shades1[shadeIndex];
@@ -529,7 +530,7 @@ final class Line3D {
             && runIndex < rise && (!tScreened || (flipflop = !flipflop))) {
           int zCurrent = zCurrentScaled >> 10;
           if (zCurrent < zbuf[offset]) {
-            int rand8 = Shade3D.nextRandom8Bit();
+            int rand8 = Shader.nextRandom8Bit();
             g3d.addPixel(offset, zCurrent, rand8 < 85 ? argbDn : (rand8 > 170 ? argbUp : argb));
           }
         }
@@ -572,7 +573,7 @@ final class Line3D {
             && runIndex < rise && (!tScreened || (flipflop = !flipflop))) {
           int zCurrent = zCurrentScaled >> 10;
           if (zCurrent < zbuf[offset]) {
-            int rand8 = Shade3D.nextRandom8Bit();
+            int rand8 = Shader.nextRandom8Bit();
             g3d.addPixel(offset, zCurrent, rand8 < 85 ? argbDn : (rand8 > 170 ? argbUp : argb));
           }
         }
@@ -594,7 +595,7 @@ final class Line3D {
       rise = Integer.MAX_VALUE;
       run = 1;
     }
-    int shadeIndexUp = (shadeIndex < Shade3D.shadeIndexLast ? shadeIndex + 1
+    int shadeIndexUp = (shadeIndex < Shader.shadeIndexLast ? shadeIndex + 1
         : shadeIndex);
     int shadeIndexDn = (shadeIndex > 0 ? shadeIndex - 1 : shadeIndex);
     int argb1 = shades1[shadeIndex];
@@ -667,7 +668,7 @@ final class Line3D {
       if (argb != 0 && isInWindow && offset >= 0 && offset < offsetMax 
           && runIndex < rise && (!tScreened || (flipflop = !flipflop))) {
         if (zFloat < zbuf[offset]) {
-          int rand8 = Shade3D.nextRandom8Bit();
+          int rand8 = Shader.nextRandom8Bit();
           g3d.addPixel(offset, (int) zFloat, rand8 < 85 ? argbDn : (rand8 > 170 ? argbUp : argb));
         }
       }

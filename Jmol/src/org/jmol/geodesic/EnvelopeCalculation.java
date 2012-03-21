@@ -27,6 +27,8 @@ package org.jmol.geodesic;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.FastBitSet;
+import org.jmol.util.Geodesic;
+import org.jmol.util.Normix;
 //import org.jmol.util.SlowBitSet;
 
 import org.jmol.api.AtomIndexIterator;
@@ -35,7 +37,10 @@ import org.jmol.atomdata.AtomDataServer;
 import org.jmol.atomdata.RadiusData;
 
 import java.util.BitSet;
+
+import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 
 /* ***************************************************************
  * 
@@ -232,8 +237,40 @@ public final class EnvelopeCalculation {
     mads = null;
   }
 
-  public void reCalculate(BitSet bs) {
-    calculate(null, maxRadius, bs, bsIgnore, disregardNeighbors, onlySelectedDots, isSurface, multiModel); 
+  /**
+   * problem prior to 12.3.18 was that dots once on the deodesic were not being moved.
+   * this isn't perfect, but it's reasonably good. Mostly, you should recreate dots
+   * after rotateSelected. This isn't a problem until after a state is saved and
+   * reloaded, since only then with atomData.radiusData be null.
+   * 
+   * @param bs
+   * @param m
+   */
+  public void reCalculate(BitSet bs, Matrix3f m) {
+    if (atomData.radiusData != null) {    
+      calculate(null, maxRadius, bs, bsIgnore, disregardNeighbors,
+          onlySelectedDots, isSurface, multiModel);
+      return;
+    }
+    if (dotsConvexMaps == null || dotsConvexMax == 0)
+      return;
+    Vector3f pt = new Vector3f();
+    BitSet bsTemp = new BitSet();
+    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+      if (i >= dotsConvexMax)
+        return;
+      FastBitSet map = dotsConvexMaps[i];
+      if (map == null || map.isEmpty())
+        continue;
+      FastBitSet bsNew = new FastBitSet();
+      for (int j = map.nextSetBit(0); j >= 0; j = map.nextSetBit(j + 1)) {
+        pt.set(Geodesic.getVertexVector(j));
+        m.transform(pt);
+        bsNew.set(Normix.getNormix(pt, bsTemp));
+      }         
+      dotsConvexMaps[i] = bsNew;
+    }
+    
   }  
 
   
@@ -262,6 +299,8 @@ public final class EnvelopeCalculation {
 
     if (rd == null) {
       rd = atomData.radiusData;
+      if (rd == null)
+        return;
     } else {
       atomData.radiusData = rd;
       this.bsIgnore = bsIgnore;

@@ -31,6 +31,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.jmol.util.ZipUtil.GZipData;
+
 
 /* a simple compound document reader. 
  * See http://sc.openoffice.org/compdocfileformat.pdf
@@ -185,7 +187,10 @@ public class CompoundDocument extends BinaryDocument {
       CmpDocDirectoryEntry thisEntry = directory.get(i);
       Logger.info("reading " + thisEntry.entryName);
       if (!thisEntry.isEmpty && thisEntry.entryType != 5) {
-        data.append("BEGIN Directory Entry ").append(thisEntry.entryName).append("\n");            
+        String name = thisEntry.entryName;
+        if (name.endsWith(".gz"))
+          name = name.substring(0, name.length() - 3);
+        data.append("BEGIN Directory Entry ").append(name).append("\n");            
         data.append(getFileAsString(thisEntry, binaryFileList != null && binaryFileList.indexOf("|" + thisEntry.entryName + "|") >= 0));
         data.append("\n");
         data.append("END Directory Entry ").append(thisEntry.entryName).append("\n");            
@@ -454,15 +459,15 @@ public class CompoundDocument extends BinaryDocument {
             thisEntry.SIDfirstSector, thisEntry.lenStream, asBinaryString)
             : getShortStringData(thisEntry.SIDfirstSector, thisEntry.lenStream, asBinaryString));
   }
-
   private StringBuffer getStandardStringData(int thisSID, int nBytes,
                                              boolean asBinaryString) {
     StringBuffer data = new StringBuffer();
     byte[] byteBuf = new byte[sectorSize];
+    GZipData gzipData =  (new ZipUtil()).new GZipData(nBytes);
     try {
       while (thisSID > 0 && nBytes > 0) {
         gotoSector(thisSID);
-        nBytes = getSectorData(data, byteBuf, sectorSize, nBytes, asBinaryString);
+        nBytes = getSectorData(data, byteBuf, sectorSize, nBytes, asBinaryString, gzipData);
         thisSID = SAT[thisSID];
       }
       if (nBytes == -9999)
@@ -470,13 +475,19 @@ public class CompoundDocument extends BinaryDocument {
     } catch (Exception e) {
       Logger.error(null, e);
     }
+    if (gzipData.isEnabled)
+      gzipData.addTo(data);
     return data;
   }
 
   private int getSectorData(StringBuffer data, byte[] byteBuf,
-                            int nSectorBytes, int nBytes, boolean asBinaryString)
+                            int nSectorBytes, int nBytes, 
+                            boolean asBinaryString, GZipData gzipData)
       throws Exception {
     readByteArray(byteBuf);
+    int n = gzipData.addBytes(byteBuf, nSectorBytes, nBytes);
+    if (n >= 0)
+      return n;
     if (asBinaryString) {
       for (int i = 0; i < nSectorBytes; i++) {
         data.append(Integer.toHexString(byteBuf[i] & 0xFF)).append(' ');
@@ -494,6 +505,7 @@ public class CompoundDocument extends BinaryDocument {
     }
     return nBytes;
   }
+
   private StringBuffer getShortStringData(int shortSID, int nBytes, boolean asBinaryString) {
     StringBuffer data = new StringBuffer();
     if (rootEntry == null)
@@ -501,6 +513,7 @@ public class CompoundDocument extends BinaryDocument {
     int thisSID = rootEntry.SIDfirstSector;
     int ptShort = 0;
     byte[] byteBuf = new byte[shortSectorSize];
+    GZipData gzipData =  (new ZipUtil()).new GZipData(nBytes);
     try {
       //System.out.println("CD shortSID=" + shortSID);
       // point to correct short data sector, 512/64 = 4 per page
@@ -510,7 +523,7 @@ public class CompoundDocument extends BinaryDocument {
           thisSID = SAT[thisSID];
         }
         seek(getOffset(thisSID) + (shortSID - ptShort) * shortSectorSize);
-        nBytes = getSectorData(data, byteBuf, shortSectorSize, nBytes, asBinaryString);
+        nBytes = getSectorData(data, byteBuf, shortSectorSize, nBytes, asBinaryString, gzipData);
         shortSID = SSAT[shortSID];
         //System.out.println("CD shortSID=" + shortSID);
       }
@@ -518,9 +531,10 @@ public class CompoundDocument extends BinaryDocument {
       Logger.error(data.toString());
       Logger.error(null, e);
     }
-    //System.out.println(data);
+    if (gzipData.isEnabled)
+      gzipData.addTo(data);
     return data;
   }
-  
+
   
 }

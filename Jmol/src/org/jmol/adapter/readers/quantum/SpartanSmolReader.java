@@ -53,9 +53,8 @@ public class SpartanSmolReader extends SpartanInputReader {
   @Override
   protected boolean checkLine() throws Exception {
     String lcline;
-    System.out.println(line);
     if (isCompoundDocument && 
-        (lcline = line.toLowerCase()).equalsIgnoreCase("begin directory entry molecule") 
+        (lcline = line.toLowerCase()).equals("begin directory entry molecule") 
         || line.indexOf("JMOL_MODEL") >= 0 && !line.startsWith("END")) {
 
       // bogus type added by Jmol as a marker only

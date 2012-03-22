@@ -5151,7 +5151,13 @@ private void zap(String msg) {
     statusManager.setStatusFrameChanged(frameNo, fileNo, modelNo,
         (animationManager.animationDirection < 0 ? -firstNo : firstNo),
         (animationManager.currentDirection < 0 ? -lastNo : lastNo));
-    int syncMode = statusManager.getSyncMode();
+    
+    sendJSpecViewModelChange(modelIndex);
+  }
+
+  private void sendJSpecViewModelChange(int modelIndex) {
+    int syncMode = ("sync on".equals(modelSet.getModelSetAuxiliaryInfo("jmolscript")) 
+        ? StatusManager.SYNC_DRIVER : statusManager.getSyncMode());
     if (syncMode != StatusManager.SYNC_DRIVER)
       return;
     String peak = (String) getModelAuxiliaryInfo(modelIndex, "jdxModelSelect");
@@ -5276,6 +5282,8 @@ private void zap(String msg) {
     boolean doCallback = (ptLoad != FileManager.EnumFileStatus.CREATING_MODELSET); 
     statusManager.setFileLoadStatus(fullPathName, fileName, modelName,
         strError, ptLoad.getCode(), doCallback);
+    if (doCallback)
+      sendJSpecViewModelChange(getCurrentModelIndex());
   }
 
   public String getZapName() {
@@ -5413,7 +5421,9 @@ private void zap(String msg) {
     String msg = Parser.getQuotedAttribute(peak, "title");
     if (msg != null)
       scriptEcho(Logger.debugging ? peak : msg);
-    statusManager.syncSend(fullName + "JSpecView: " + peak, ">", 0);
+    peak = fullName + "JSpecView: " + peak;
+    Logger.info("Jmol sending to JSpecView: "  + peak);
+    statusManager.syncSend(peak, ">", 0);
   }
 
   public void setStatusResized(int width, int height) {
@@ -10134,16 +10144,6 @@ private void zap(String msg) {
 
   // interaction with JSpecView
   
-  private JmolPeerInterface jmolSpectralPeer;
-  
-  public JmolPeerInterface getJmolSpectralPeer(boolean createNew) {
-    if (createNew && jmolSpectralPeer == null) {
-      jmolSpectralPeer = (JmolPeerInterface) Interface.getInterface("org.jmol.spectrum.JmolPeer");
-      jmolSpectralPeer.setViewer(this);
-    }
-    return jmolSpectralPeer;    
-  }
-
   public Object getJspecViewProperties(Object myParam) {
     return statusManager.getJspecViewProperties("" + myParam);
   }

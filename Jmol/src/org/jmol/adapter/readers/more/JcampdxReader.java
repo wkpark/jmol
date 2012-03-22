@@ -327,19 +327,25 @@ public class JcampdxReader extends MolReader {
       addType(i, type);
       String title = type + ": " + getAttribute(line, "title");
       String key = "jdxAtomSelect_" + getAttribute(line, "type");
-      bsModels.set(i);
-      if (modelID.indexOf('.') >= 0) {
-        atomSetCollection.setAtomSetAuxiliaryInfo("name", title, i);
-        atomSetCollection.setAtomSetAuxiliaryInfo("jdxModelSelect", line, i);
-      } else if (getAttribute(line, "atoms").length() != 0) {
+      bsModels.set(i);      
+      String s;
+      if (getAttribute(line, "atoms").length() != 0) {
         List<String> peaks = (List<String>) atomSetCollection
             .getAtomSetAuxiliaryInfo(i, key);
         if (peaks == null)
           atomSetCollection.setAtomSetAuxiliaryInfo(key,
               peaks = new ArrayList<String>(), i);
         peaks.add(line);
+        s = type + ": ";
+      } else if (atomSetCollection.getAtomSetAuxiliaryInfo(i, "jdxModelSelect") == null) {
+        // assign name and jdxModelSelect ONLY if first found.
+        atomSetCollection.setAtomSetAuxiliaryInfo("name", title, i);
+        atomSetCollection.setAtomSetAuxiliaryInfo("jdxModelSelect", line, i);
+        s = "model: ";
+      } else {
+        s = "ignored: ";
       }
-      Logger.info(line);
+      Logger.info(s + line);
     }
     n = atomSetCollection.getAtomSetCount();
     for (int i = n; --i >= 0;) {

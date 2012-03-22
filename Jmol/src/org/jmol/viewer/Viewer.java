@@ -53,7 +53,6 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolAppConsoleInterface;
 import org.jmol.api.JmolCallbackListener;
 import org.jmol.api.JmolImageCreatorInterface;
-import org.jmol.api.JmolPeerInterface;
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.api.JmolScriptEditorInterface;
 import org.jmol.api.JmolSelectionListener;

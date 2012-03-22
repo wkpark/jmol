@@ -941,7 +941,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       }
       readLine();
       fillFrequencyData(iAtom0, freqAtomCount, lastAtomCount, ignore, false,
-          14, 10, atomFrag);
+          14, 10, atomFrag, 0);
       readLine();
     }
     return true;

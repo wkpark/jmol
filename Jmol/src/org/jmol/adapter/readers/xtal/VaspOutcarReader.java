@@ -379,7 +379,7 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
       }
       readLine();
       fillFrequencyData(iAtom0, atomCount, atomCount, ignore, true, 35, 12,
-          null);
+          null, 0);
       iAtom0 += atomCount;
       readLine();
     }

@@ -218,7 +218,7 @@ OR
         atomSetCollection.setAtomSetFrequency(null, null, frequencies[i], null);
       }
       readLines(nXX);
-      fillFrequencyData(iAtom0, atomCount, atomCount, ignore, true, 0, 0, null);
+      fillFrequencyData(iAtom0, atomCount, atomCount, ignore, true, 0, 0, null, 0);
     }
   }
   
@@ -380,7 +380,7 @@ OR
       readLine();
       sd.mos = ArrayUtil.createArrayOfHashtable(sd.nSFO);
       String[][] data = new String[sd.nSFO][];
-      fillDataBlock(data);
+      fillDataBlock(data, 0);
       for (int j = 1; j < nLine; j++) {
         int pt = sd.basisFunctions[n++];
         for (int i = 0; i < sd.nSFO; i++)

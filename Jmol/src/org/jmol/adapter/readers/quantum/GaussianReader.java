@@ -548,7 +548,7 @@ public class GaussianReader extends MOReader {
             intensities[i]+" KM/Mole");
       }
       discardLinesUntilContains(" AN ");
-      fillFrequencyData(iAtom0, atomCount, atomCount, ignore, true, 0, 0, null);
+      fillFrequencyData(iAtom0, atomCount, atomCount, ignore, true, 0, 0, null, 0);
     }
   }
   

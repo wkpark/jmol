@@ -340,7 +340,7 @@ public class JaguarReader extends MOReader {
         break;
       String[] eigenValues = getTokens();
       int n = eigenValues.length - 1;
-      fillDataBlock(dataBlock);
+      fillDataBlock(dataBlock, 0);
       for (int iOrb = 0; iOrb < n; iOrb++) {
         float[] coefs = new float[moCount];
         Map<String, Object> mo = new Hashtable<String, Object>();
@@ -417,7 +417,7 @@ public class JaguarReader extends MOReader {
               intensities[i + 1] + " km/mol");
       }
       haveLine = true;
-      fillFrequencyData(iAtom0, atomCount, atomCount, ignore, false, 0, 0, null);
+      fillFrequencyData(iAtom0, atomCount, atomCount, ignore, false, 0, 0, null, 0);
       readLine();
       readLine();
     }

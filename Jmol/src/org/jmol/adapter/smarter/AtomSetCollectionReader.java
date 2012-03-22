@@ -969,12 +969,13 @@ public abstract class AtomSetCollectionReader {
    * @param data
    * @param col0
    * @param colWidth
+   * @param minLineLen TODO
    * @throws Exception
    */
-  protected void fillDataBlock(String[][] data, int col0, int colWidth)
+  protected void fillDataBlock(String[][] data, int col0, int colWidth, int minLineLen)
       throws Exception {
     if (colWidth == 0) {
-      fillDataBlock(data);
+      fillDataBlock(data, minLineLen);
       return;
     }
     int nLines = data.length;
@@ -992,12 +993,17 @@ public abstract class AtomSetCollectionReader {
    * skipping blank lines in the process
    * 
    * @param data
+   * @param minLineLen TODO
    * @throws Exception
    */
-  protected void fillDataBlock(String[][] data) throws Exception {
+  protected void fillDataBlock(String[][] data, int minLineLen) throws Exception {
     int nLines = data.length;
-    for (int i = 0; i < nLines; i++)
+    for (int i = 0; i < nLines; i++) { 
       data[i] = getTokens(discardLinesUntilNonBlank());
+      if (data[i].length < minLineLen)
+        --i;
+    }
+      
   }
 
   /**
@@ -1060,19 +1066,20 @@ public abstract class AtomSetCollectionReader {
    * @param atomIndexes
    *          an array either null or indicating exactly which atoms get the
    *          frequencies (used by CrystalReader)
+   * @param minlineLen TODO
    * @throws Exception
    */
   protected void fillFrequencyData(int iAtom0, int atomCount,
                                    int modelAtomCount, boolean[] ignore,
                                    boolean isWide, int col0, int colWidth,
-                                   int[] atomIndexes) throws Exception {
+                                   int[] atomIndexes, int minLineLen) throws Exception {
     boolean withSymmetry = (modelAtomCount != atomCount);
     if (atomIndexes != null)
       atomCount = atomIndexes.length;
     int nLines = (isWide ? atomCount : atomCount * 3);
     int nFreq = ignore.length;
     String[][] data = new String[nLines][];
-    fillDataBlock(data, col0, colWidth);
+    fillDataBlock(data, col0, colWidth, minLineLen);
     for (int i = 0, atomPt = 0; i < nLines; i++, atomPt++) {
       String[] values = data[i];
       String[] valuesY = (isWide ? null : data[++i]);

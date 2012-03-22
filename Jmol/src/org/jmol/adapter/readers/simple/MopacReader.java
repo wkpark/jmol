@@ -239,14 +239,17 @@ void processAtomicCharges() throws Exception {
         int iAtom0 = atomSetCollection.getAtomCount();
         int atomCount = atomSetCollection.getLastAtomSetAtomCount();
         boolean[] ignore = new boolean[frequencyCount];
+        float freq1 = Parser.parseFloatStrict(tokens[0]);
+        boolean ignoreNegative = (freq1 < 0);
         for (int i = 0; i < frequencyCount; ++i) {
-          ignore[i] = done || (done = Parser.parseFloatStrict(tokens[i]) < 1) || !doGetVibration(++vibrationNumber);
+          ignore[i] = done || (done = (!ignoreNegative && Parser.parseFloatStrict(tokens[i]) < 1))
+          || !doGetVibration(++vibrationNumber);
           if (ignore[i])
             continue;  
           bsOK.set(vibrationNumber - 1);
           atomSetCollection.cloneLastAtomSet();
         }
-        fillFrequencyData(iAtom0, atomCount, atomCount, ignore, false, 0, 0, null);
+        fillFrequencyData(iAtom0, atomCount, atomCount, ignore, false, 0, 0, null, 2);
       }
     String[][] info = new String[vibrationNumber][];
     if (line.indexOf("DESCRIPTION") < 0)

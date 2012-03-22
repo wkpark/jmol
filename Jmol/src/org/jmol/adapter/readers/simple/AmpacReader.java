@@ -198,7 +198,7 @@ public class AmpacReader extends AtomSetCollectionReader {
         atomSetCollection.setAtomSetModelProperty(SmarterJmolAdapter.PATH_KEY,
             "Frequencies");
       }
-      fillFrequencyData(iAtom0, atomCount, atomCount, ignore, false, 8, 9, null);
+      fillFrequencyData(iAtom0, atomCount, atomCount, ignore, false, 8, 9, null, 0);
       readLine();
       readLine();
     }

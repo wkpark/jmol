@@ -4180,6 +4180,11 @@ abstract public class ModelCollection extends BondCollection {
     }
     List<String> peaks = (List<String>) getModelAuxiliaryInfo(iModel,
         "jdxAtomSelect_" + type);
+    if (peaks == null && type.equals("CNMR")) {
+      type = "13CNMR";
+      peaks = (List<String>) getModelAuxiliaryInfo(iModel,
+          "jdxAtomSelect_" + type);
+    }
     if (peaks == null)
       return null;
     htPeaks = null;

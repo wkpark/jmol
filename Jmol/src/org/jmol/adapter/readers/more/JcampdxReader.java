@@ -298,9 +298,11 @@ public class JcampdxReader extends MolReader {
   private void readPeaks() throws Exception {
     if (line.indexOf("<Peaks") < 0)
       discardLinesUntilContains("<Peaks");
-    String type = getAttribute(line, "type");
-    while (type.length() > 0 && Character.isDigit(type.charAt(0)))
-      type = type.substring(1);
+    String type = getAttribute(line, "type").toUpperCase();
+    if (type.equals("HNMR"))
+      type = "1HNMR";
+    else if (type.equals("CNMR"))
+      type = "13CNMR";
     while (readLine() != null && !(line = line.trim()).startsWith("</Peaks>"))
       if (line.startsWith("<PeakData"))
         peakData.add("<PeakData file=" + peakFilePath + " index=\"" + (++peakIndex[0]) + "\"" + " type=\"" + type + "\" " + line.substring(9).trim());      

@@ -209,11 +209,7 @@ abstract public class GenericPopup {
     haveCharges = (viewer.havePartialCharges());
     haveBFactors = (viewer.getBooleanProperty("haveBFactors"));
     cnmrPeaks = (List<String>)modelInfo.get("jdxAtomSelect_13CNMR"); 
-    if (cnmrPeaks == null)
-      cnmrPeaks = (List<String>)modelInfo.get("jdxAtomSelect_CNMR");
-    hnmrPeaks = (List<String>)modelInfo.get("jdxAtomSelect_HNMR");
-    if (hnmrPeaks == null)
-      hnmrPeaks = (List<String>)modelInfo.get("jdxAtomSelect_1HNMR");
+    hnmrPeaks = (List<String>)modelInfo.get("jdxAtomSelect_1HNMR");
   }
 
   protected void updateFileTypeDependentMenus() {

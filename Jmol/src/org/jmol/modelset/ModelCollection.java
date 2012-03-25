@@ -4170,21 +4170,16 @@ abstract public class ModelCollection extends BondCollection {
     String type = null;
     switch (atoms[atomIndex].getElementNumber()) {
     case 1:
-      type = "HNMR";
+      type = "1HNMR";
       break;
     case 6:
-      type = "CNMR";
+      type = "13CNMR";
       break;
     default:
       return null;
     }
     List<String> peaks = (List<String>) getModelAuxiliaryInfo(iModel,
         "jdxAtomSelect_" + type);
-    if (peaks == null && type.equals("CNMR")) {
-      type = "13CNMR";
-      peaks = (List<String>) getModelAuxiliaryInfo(iModel,
-          "jdxAtomSelect_" + type);
-    }
     if (peaks == null)
       return null;
     htPeaks = null;

@@ -2844,25 +2844,32 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public String getModelInfoAsString() {
-    StringBuffer sb = new StringBuffer("model count = ");
-    sb.append(modelCount).append("\nmodelSetHasVibrationVectors:").append(
-        modelSetHasVibrationVectors());
-    if (modelSetProperties == null) {
-      sb.append("\nProperties: null");
-    } else {
+    StringBuffer sb = new StringBuffer("<models count=\"");
+    sb.append(modelCount).append("\" modelSetHasVibrationVectors=\"").append(
+        modelSetHasVibrationVectors() + "\">\n<properties>");
+    if (modelSetProperties != null) {
       Enumeration<?> e = modelSetProperties.propertyNames();
-      sb.append("\nProperties:");
       while (e.hasMoreElements()) {
         String propertyName = (String) e.nextElement();
-        sb.append("\n ").append(propertyName).append("=").append(
-            modelSetProperties.getProperty(propertyName));
+        sb.append("\n <property name=\"").append(propertyName).append("\" value=").append(
+            Escape.escape(modelSetProperties.getProperty(propertyName))).append(" />");
       }
+      sb.append("\n</properties>");
     }
-    for (int i = 0; i < modelCount; ++i)
-      sb.append("\n").append(i).append(":").append(getModelNumberDotted(i))
-          .append(":").append(getModelName(i)).append(":").append(
-              getModelTitle(i)).append("\nmodelHasVibrationVectors:").append(
-              modelHasVibrationVectors(i));
+    for (int i = 0; i < modelCount; ++i) {
+      sb.append("\n<model index=\"").append(i)
+          .append("\" n=\"").append(getModelNumberDotted(i))
+          .append("\" id=").append(Escape.escape("" + getModelAuxiliaryInfo(i, "modelID")));
+          int ib = getBaseModelIndex(i);
+          if (ib != i)
+            sb.append(" baseModelId=").append(Escape.escape(getModelAuxiliaryInfo(ib, "jdxModelID")));
+          sb.append(" name=").append(Escape.escape(getModelName(i)))
+          .append(" title=").append(Escape.escape(
+              getModelTitle(i)))
+           .append(" hasVibrationVectors=\"").append(
+              modelHasVibrationVectors(i)).append("\" />");
+    }
+    sb.append("\n</models>");
     return sb.toString();
   }
 
@@ -4145,6 +4152,9 @@ abstract public class ModelCollection extends BondCollection {
    */
   public int getModelIndexFromId(String id) {
     boolean haveFile = (id.indexOf("#") >= 0);
+    boolean isBaseModel = id.toLowerCase().endsWith(".basemodel");
+    if (isBaseModel) 
+      id = id.substring(0, id.length() - 10);
     int errCode = -1;
     String fname = null;
     for (int i = 0; i < modelCount; i++) {
@@ -4156,7 +4166,7 @@ abstract public class ModelCollection extends BondCollection {
         mid = fname + mid;
       }
       if (id.equals(mid))
-        return i;
+        return (isBaseModel ? getBaseModelIndex(i) : i);
       if (fname != null && id.startsWith(fname))
         errCode = -2;
     }
@@ -4217,14 +4227,16 @@ abstract public class ModelCollection extends BondCollection {
    * @return atom bitset
    */
   public BitSet getBaseModelBitSet(int modelIndex) {
+    return getModelAtomBitSetIncludingDeleted(getBaseModelIndex(modelIndex), true);
+  }
+
+  private int getBaseModelIndex(int modelIndex) {
     String baseModel = (String) getModelAuxiliaryInfo(modelIndex, "jdxBaseModel");
     if (baseModel != null)
       for (int i = models.length; --i >= 0;)
-        if (baseModel.equals(getModelAuxiliaryInfo(i, "jdxModelID"))) {
-          modelIndex = i;
-          break;
-        }
-    return getModelAtomBitSetIncludingDeleted(modelIndex, true);
+        if (baseModel.equals(getModelAuxiliaryInfo(i, "jdxModelID"))) 
+          return i;
+    return modelIndex;
   }
 
 

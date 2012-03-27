@@ -8787,10 +8787,13 @@ private void zap(String msg) {
       if (script.startsWith("Select: ")) {
         String filename = Parser.getQuotedAttribute(script, "file");
         String modelID = Parser.getQuotedAttribute(script, "model");
+        String baseModel = Parser.getQuotedAttribute(script, "baseModel");
         String atoms = Parser.getQuotedAttribute(script, "atoms");
         String select = Parser.getQuotedAttribute(script, "select");
         String script2 = Parser.getQuotedAttribute(script, "script");
         String id = (modelID == null ? null : (filename == null ? "" : filename + "#") + modelID);
+        if ("".equals(baseModel))
+          id += ".baseModel";
         int modelIndex = (modelID == null ? -3 : getModelIndexFromId(id));
         if (modelIndex == -2)
           return; // file was found, or no file was indicated, but not this model -- ignore

@@ -3515,6 +3515,9 @@ public class ScriptEvaluator {
       case Token.displayed:
         rpn.addX(BitSetUtil.copyInvert(viewer.getHiddenSet(), atomCount));
         break;
+      case Token.basemodel:
+        rpn.addX(viewer.getBaseModelBitSet());
+        break;
       case Token.visible:
         if (!isSyntaxCheck && !refreshed)
           viewer.setModelVisibility();
@@ -11958,6 +11961,16 @@ public class ScriptEvaluator {
       return;
     }
     switch (tokAt(1)) {
+    case Token.expressionBegin:
+    case Token.bitset:
+      int i = atomExpression(1).nextSetBit(0);
+      checkLength(iToken + 1);
+      if (isSyntaxCheck || i < 0)
+        return;
+      BitSet bsa = new BitSet();
+      bsa.set(i);
+      viewer.setCurrentModelIndex(viewer.getModelBitSet(bsa, false).nextSetBit(0));
+      return;
     case Token.id:
       checkLength(3);
       String id = stringParameter(2);

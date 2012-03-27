@@ -10146,5 +10146,9 @@ private void zap(String msg) {
   public Object getJspecViewProperties(Object myParam) {
     return statusManager.getJspecViewProperties("" + myParam);
   }
+
+  public BitSet getBaseModelBitSet() {
+    return modelSet.getBaseModelBitSet(getCurrentModelIndex());
+  }
 }
 

@@ -234,43 +234,51 @@ public class JcampdxReader extends MolReader {
     while (readLine() != null && !line.contains("</ModelData>"))
       sb.append(line).append('\n');
     String data = sb.toString();
-    Object ret = SmarterJmolAdapter.staticGetAtomSetCollectionReader(filePath, modelType, new BufferedReader(new StringReader(data)), htParams);
+    Object ret = SmarterJmolAdapter.staticGetAtomSetCollectionReader(filePath,
+        modelType, new BufferedReader(new StringReader(data)), htParams);
     if (ret instanceof String) {
       Logger.warn("" + ret);
       return null;
     }
-    ret = SmarterJmolAdapter.staticGetAtomSetCollection((AtomSetCollectionReader) ret);
+    ret = SmarterJmolAdapter
+        .staticGetAtomSetCollection((AtomSetCollectionReader) ret);
     if (ret instanceof String) {
       Logger.warn("" + ret);
       return null;
     }
     AtomSetCollection a = (AtomSetCollection) ret;
-    if (a.getBondCount() == 0) {
-      if (baseModel.length() == 0)
-        baseModel = lastModel;
-    if (baseModel.length() != 0)
-      setBonding(a, baseModel); 
+    if (baseModel.length() == 0)
+      baseModel = lastModel;
+    if (baseModel.length() != 0) {
+      int ibase = findModelById(baseModel);
+      if (ibase >= 0) {
+        atomSetCollection
+            .setAtomSetAuxiliaryInfo("jdxModelID", baseModel, ibase);
+        for (int i = a.getAtomSetCount(); --i >= 0;)
+          a.setAtomSetAuxiliaryInfo("jdxBaseModel", baseModel, i);
+        if (a.getBondCount() == 0)
+          setBonding(a, ibase);
+      }
     }
     if (!Float.isNaN(vibScale)) {
-      Logger.info("jdx applying vibrationScale of " + vibScale + " to " + a.getAtomCount() + " atoms");
+      Logger.info("jdx applying vibrationScale of " + vibScale + " to "
+          + a.getAtomCount() + " atoms");
       Atom[] atoms = a.getAtoms();
-      for (int i = a.getAtomCount(); --i >= 0; )
-        atoms[i].scaleVector(vibScale);      
+      for (int i = a.getAtomCount(); --i >= 0;)
+        atoms[i].scaleVector(vibScale);
     }
     Logger.info("jdx model=" + modelID + " type=" + a.getFileTypeName());
     return a;
   }
 
   /**
-   * add bonding to an XYZ file based on a MOL file
+   * add bonding to a set of ModelData based on a MOL file
+   * only if the this set has no bonding already
    * 
    * @param a
-   * @param baseModel
+   * @param ibase 
    */
-  private void setBonding(AtomSetCollection a, String baseModel) {
-    int ibase = findModelById(baseModel);
-    if (ibase < 0)
-      return;
+  private void setBonding(AtomSetCollection a, int ibase) {
     int n0 = atomSetCollection.getAtomSetAtomCount(ibase);
     int n = a.getAtomCount();
     if (n % n0 != 0) {

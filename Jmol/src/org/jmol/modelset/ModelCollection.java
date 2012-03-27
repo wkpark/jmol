@@ -4206,4 +4206,26 @@ abstract public class ModelCollection extends BondCollection {
     return null;
   }
 
+  /**
+   * get the BitSet of model atoms for the model designated as "baseModel" in a
+   * JCamp-MOL file for example, the model used for bonding for an XYZVIB file
+   * or the model used as the base model for a mass spec file. This might then
+   * allow pointing off a peak in JSpecView to switch to the model that is
+   * involved in HNMR or CNMR
+   * 
+   * @param modelIndex
+   * @return atom bitset
+   */
+  public BitSet getBaseModelBitSet(int modelIndex) {
+    String baseModel = (String) getModelAuxiliaryInfo(modelIndex, "jdxBaseModel");
+    if (baseModel != null)
+      for (int i = models.length; --i >= 0;)
+        if (baseModel.equals(getModelAuxiliaryInfo(i, "jdxModelID"))) {
+          modelIndex = i;
+          break;
+        }
+    return getModelAtomBitSetIncludingDeleted(modelIndex, true);
+  }
+
+
 }

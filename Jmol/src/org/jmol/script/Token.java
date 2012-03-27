@@ -448,6 +448,7 @@ public class Token {
   final static int hidden                 = predefinedset | 42;
   public final static int specialposition = predefinedset | 44;
   final static int visible                = predefinedset | 46;
+  final static int basemodel              = predefinedset | 48;
 
   
   static int getPrecedence(int tokOperator) {
@@ -1746,6 +1747,7 @@ public class Token {
       "babel21",         new Token(babel21), 
       "back",            new Token(back),
       "backlit",         new Token(backlit),
+      "baseModel",       new Token(basemodel), // Jmol 12.3.19
       "bin",             new Token(bin),
       "bondCount",       new Token(bondcount),
       "bottom",          new Token(bottom),

@@ -325,6 +325,7 @@ public class JcampdxReader extends MolReader {
       return;
     BitSet bsModels = new BitSet();
     int n = peakData.size();
+    boolean havePeaks = (n > 0);
     for (int p = 0; p < n; p++) {
       line = peakData.get(p);
       String type = getAttribute(line, "type");
@@ -361,7 +362,7 @@ public class JcampdxReader extends MolReader {
     for (int i = n; --i >= 0;) {
       modelID = (String) atomSetCollection
           .getAtomSetAuxiliaryInfo(i, "modelID");
-      if (!bsModels.get(i) && modelID.indexOf(".") >= 0) {
+      if (havePeaks && !bsModels.get(i) && modelID.indexOf(".") >= 0) {
         atomSetCollection.removeAtomSet(i);
         n--;
       }

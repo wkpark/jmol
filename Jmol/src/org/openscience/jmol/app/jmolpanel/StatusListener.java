@@ -34,6 +34,7 @@ import org.jmol.export.dialog.Dialog;
 import org.jmol.util.Logger;
 import org.openscience.jmol.app.webexport.WebExport;
 
+import java.awt.Component;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.lang.reflect.Method;
@@ -353,13 +354,13 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
     if (peaks.startsWith(":"))
       peaks = peaks.substring(1);
     if (jSpecViewFrame == null) {
-      jSpecViewFrame = new MainFrame(this);
+      jSpecViewFrame = new MainFrame((Component) viewer.getDisplay(), this);
       jSpecViewFrame.setSize(800, 500);
       jSpecViewFrame.setLocation(400, 400);
       jSpecViewFrame.register("Jmol", this);
     }
     if (!jSpecViewFrame.isVisible() && peaks.length() > 0 && !peaks.toLowerCase().startsWith("hidden"))
-      jSpecViewFrame.setVisible(true);
+      jSpecViewFrame.awaken(false);
     if (peaks.length() == 0)
       peaks = "HIDDEN false";
     jSpecViewFrame.syncScript(peaks);

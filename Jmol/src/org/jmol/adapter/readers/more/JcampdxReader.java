@@ -143,11 +143,10 @@ public class JcampdxReader extends MolReader {
     if (i < 0 || !line.startsWith("##"))
       return true; 
     String label = line.substring(0, i).trim();
-    if (label.equals("##$MODELS")) {
-      readModels();
-    } else if (label.equals("##$PEAKS")) {
-      readPeaks();
-    }
+    if (label.equals("##$MODELS"))
+      return readModels();
+    if (label.equals("##$PEAKS"))
+      return readPeaks();
     return true;
   }
 
@@ -165,9 +164,12 @@ public class JcampdxReader extends MolReader {
     return -1;
   }
 
-  private void readModels() throws Exception {
-    if (line.indexOf("<Models") < 0)
-      discardLinesUntilContains("<Models");
+  private boolean readModels() throws Exception {
+    if (line.indexOf("<Models") < 0) {
+      discardLinesUntilContains("<Models", "##");
+      if (line.indexOf("<Models") < 0)
+        return false;
+    }
     // if load xxx.jdx n  then we must temporarily set n to 1 for the base model reading
     // load xxx.jdx 0  will mean "load only the base model(s)"
     models = null;
@@ -186,6 +188,7 @@ public class JcampdxReader extends MolReader {
       updateModelIDs(model0, isFirst);
       isFirst = false;
     }
+    return true;
   }
 
   /**
@@ -303,9 +306,11 @@ public class JcampdxReader extends MolReader {
     }
   }
 
-  private void readPeaks() throws Exception {
+  private boolean readPeaks() throws Exception {
     if (line.indexOf("<Peaks") < 0)
-      discardLinesUntilContains("<Peaks");
+      discardLinesUntilContains("<Peaks", "##");
+    if (line.indexOf("<Peaks") < 0)
+      return false;
     String type = getAttribute(line, "type").toUpperCase();
     if (type.equals("HNMR"))
       type = "1HNMR";
@@ -313,7 +318,8 @@ public class JcampdxReader extends MolReader {
       type = "13CNMR";
     while (readLine() != null && !(line = line.trim()).startsWith("</Peaks>"))
       if (line.startsWith("<PeakData"))
-        peakData.add("<PeakData file=" + peakFilePath + " index=\"" + (++peakIndex[0]) + "\"" + " type=\"" + type + "\" " + line.substring(9).trim());      
+        peakData.add("<PeakData file=" + peakFilePath + " index=\"" + (++peakIndex[0]) + "\"" + " type=\"" + type + "\" " + line.substring(9).trim());
+    return true;
   }
 
   /**
@@ -381,6 +387,7 @@ public class JcampdxReader extends MolReader {
     }
     for (int i = atomSetCollection.getAtomSetCount(); --i >= 0;)
       atomSetCollection.setAtomSetNumber(i, i + 1);
+    atomSetCollection.centralize();
   }
 
   private String allTypes;

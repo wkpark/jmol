@@ -1854,4 +1854,24 @@ public class AtomSetCollection {
     }
     return info;
   }
+
+  public void centralize() {
+    Point3f pt = new Point3f();
+    for (int i = 0; i < atomSetCount; i++) {
+       int n = atomSetAtomCounts[i];
+       int atom0 = atomSetAtomIndexes[i];
+       pt.set(0,0,0);
+       for (int j = atom0 + n; --j >= atom0; ) {
+         pt.x += atoms[j].x;
+         pt.y += atoms[j].y;
+         pt.z += atoms[j].z;
+       }
+       pt.scale(1f/n);
+       for (int j = atom0 + n; --j >= atom0; ) {
+         atoms[j].x -= pt.x;
+         atoms[j].y -= pt.y;
+         atoms[j].z -= pt.z;
+       }
+    }
+  }
 }

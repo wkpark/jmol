@@ -31,6 +31,7 @@ import org.jmol.api.JmolSyncInterface;
 import org.jmol.api.JmolViewer;
 import org.jmol.constant.EnumCallback;
 import org.jmol.export.dialog.Dialog;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.openscience.jmol.app.webexport.WebExport;
 
@@ -358,6 +359,11 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
       jSpecViewFrame.setSize(800, 500);
       jSpecViewFrame.setLocation(400, 400);
       jSpecViewFrame.register("Jmol", this);
+      if (peaks.length() == 0) {
+        String s = "" + viewer.getParameter("_modelfile");
+        if (s.indexOf("/") >= 0)
+          peaks = "hidden false; load " + Escape.escape(s);
+      }
     }
     if (!jSpecViewFrame.isVisible() && peaks.length() > 0 && !peaks.toLowerCase().startsWith("hidden"))
       jSpecViewFrame.awaken(false);

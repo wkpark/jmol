@@ -89,19 +89,6 @@ final public class Font3D {
       if (fontkey == fontkeys[i]
           && font3ds[i].fontSizeNominal == fontsizeNominal)
         return font3ds[i];
-    /*
-    return allocFont3D(fontkey, fontface, fontstyle, fontsize, 
-        fontsizeNominal, platform);
-    }
-
-    private static synchronized Font3D allocFont3D(int fontkey, int fontface,
-                                                int fontstyle, float fontsize, float fontsizeNominal,
-                                                Platform3D platform) {
-    // recheck in case another process just allocated one
-    for (int i = fontkeyCount; --i > 0; )
-      if (fontkey == fontkeys[i] && font3ds[i].fontSizeNominal == fontsizeNominal)
-        return font3ds[i];
-        */
     int fontIndexNext = fontkeyCount++;
     if (fontIndexNext == fontkeys.length) {
       int[] t0 = new int[fontIndexNext + FONT_ALLOCATION_UNIT];

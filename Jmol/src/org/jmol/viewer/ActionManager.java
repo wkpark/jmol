@@ -779,6 +779,17 @@ public class ActionManager {
         }
         return;
       }
+      if (isBound(action, ACTION_popupMenu)) {
+        char type = 'j';
+        if (viewer.getModelkitMode()) {
+          Map<String, Object> t = viewer.checkObjectClicked(x, y, Binding.getMouseAction(1,
+              Binding.LEFT));
+          type = (t != null && "bond".equals(t.get("type")) ? 'b' : viewer
+              .findNearestAtomIndex(x, y) >= 0 ? 'a' : 'm');
+        }
+        viewer.popupMenu(x, y, type);
+        return;
+      }
       if (dragSelectedMode) {
         haveSelection = true;
         if (isSelectAndDrag) {
@@ -790,17 +801,6 @@ public class ActionManager {
         if (isBound(action, ACTION_dragSelected) || isBound(action, ACTION_dragZ))
           viewer.moveSelected(Integer.MIN_VALUE, 0, Integer.MIN_VALUE,
               Integer.MIN_VALUE, Integer.MIN_VALUE, null, false, false);
-        return;
-      }
-      if (isBound(action, ACTION_popupMenu)) {
-        char type = 'j';
-        if (viewer.getModelkitMode()) {
-          Map<String, Object> t = viewer.checkObjectClicked(x, y, Binding.getMouseAction(1,
-              Binding.LEFT));
-          type = (t != null && "bond".equals(t.get("type")) ? 'b' : viewer
-              .findNearestAtomIndex(x, y) >= 0 ? 'a' : 'm');
-        }
-        viewer.popupMenu(x, y, type);
         return;
       }
       if (viewer.useArcBall())

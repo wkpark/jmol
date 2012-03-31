@@ -8,34 +8,34 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-02-06 06:32+0100\n"
-"PO-Revision-Date: 2011-08-19 15:52+0000\n"
-"Last-Translator: Łukasz Wiśniewski <Unknown>\n"
+"PO-Revision-Date: 2012-03-31 17:58+0000\n"
+"Last-Translator: Antoni Kudelski <antekk@linux.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-12-18 14:50+0000\n"
-"X-Generator: Launchpad (build 14525)\n"
+"X-Launchpad-Export-Date: 2012-03-31 21:44+0000\n"
+"X-Generator: Launchpad (build 15032)\n"
 
 #: com/json/Cookie.java:121
 msgid "name"
-msgstr ""
+msgstr "nazwa"
 
 #: com/json/Cookie.java:123
 msgid "value"
-msgstr ""
+msgstr "wartość"
 
 #: com/json/Cookie.java:126
 msgid "expires"
-msgstr ""
+msgstr "wygasa"
 
 #: com/json/Cookie.java:130
 msgid "domain"
-msgstr ""
+msgstr "domena"
 
 #: com/json/Cookie.java:134
 msgid "path"
-msgstr ""
+msgstr "ścieżka"
 
 #: com/json/HTTP.java:132 com/json/HTTP.java:144
 msgid "HTTP-Version"
@@ -51,7 +51,7 @@ msgstr ""
 
 #: com/json/HTTP.java:138
 msgid "Method"
-msgstr ""
+msgstr "Metoda"
 
 #: com/json/HTTP.java:141
 msgid "Request-URI"
@@ -436,7 +436,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:349
 msgid "File..."
-msgstr ""
+msgstr "Plik..."
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:360
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:760
@@ -483,7 +483,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:64
 msgid "&Reload"
-msgstr ""
+msgstr "&Przeładuj"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:65
 msgid "Scrip&t Editor..."
@@ -552,7 +552,7 @@ msgstr "Podgląd wydruku."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:81
 msgid "&Close"
-msgstr ""
+msgstr "&Zamknij"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:82
 msgid "E&xit"
@@ -569,7 +569,7 @@ msgstr "&Edycja"
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:86
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:92
 msgid "Select &All"
-msgstr ""
+msgstr "Zaznacz &wszystkio"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:87
 msgid "Deselect All"
@@ -577,7 +577,7 @@ msgstr "Odznacz wszystko"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:88
 msgid "Copy &Image"
-msgstr ""
+msgstr "Kopjuj &zdjęcie"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:89
 msgid "Copy Script"
@@ -585,7 +585,7 @@ msgstr "Skopiuj skrypt"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:90
 msgid "Pr&eferences..."
-msgstr ""
+msgstr "Us&tawienia..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:91
 msgid "&Paste"
@@ -594,11 +594,11 @@ msgstr "&Wklej"
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:93
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:94
 msgid "&Select"
-msgstr ""
+msgstr "&Wybierz"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:95
 msgid "&All"
-msgstr ""
+msgstr "&Wszystkie"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:96
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:109
@@ -606,7 +606,7 @@ msgstr ""
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:121
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:128
 msgid "&None"
-msgstr ""
+msgstr "&Brak"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:97
 msgid "Hydrogen"
@@ -683,19 +683,19 @@ msgstr "{0} Å"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:120
 msgid "&Label"
-msgstr ""
+msgstr "&Etykieta"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:122
 msgid "&Symbol"
-msgstr ""
+msgstr "&Symbol"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:123
 msgid "&Name"
-msgstr ""
+msgstr "&Nazwa"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:124
 msgid "&Number"
-msgstr ""
+msgstr "&Numer"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:125
 msgid "&Centered"
@@ -729,7 +729,7 @@ msgstr "Skala {0}"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:138
 msgid "&Zoom"
-msgstr ""
+msgstr "&Powiększ"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:139
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:140
@@ -779,19 +779,19 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:153
 msgid "&Top"
-msgstr ""
+msgstr "&Góra"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:154
 msgid "&Bottom"
-msgstr ""
+msgstr "&Dół"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:155
 msgid "&Right"
-msgstr ""
+msgstr "&Prawo"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:156
 msgid "&Left"
-msgstr ""
+msgstr "&Lewo"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:157
 msgid "Tr&ansform..."
@@ -1159,7 +1159,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:268
 msgid "width:"
-msgstr ""
+msgstr "szerokość:"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:270
 msgid "Image width"
@@ -1168,7 +1168,7 @@ msgstr "Szerokość obrazu"
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:285
 #: org/openscience/jmol/app/webexport/PopInJmol.java:74
 msgid "height:"
-msgstr ""
+msgstr "wysokość:"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:287
 msgid "Image height"
@@ -1352,32 +1352,31 @@ msgstr ""
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:495
 msgid "type"
-msgstr ""
+msgstr "typ"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:501
 msgid "text"
-msgstr ""
+msgstr "tekst"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:502
 msgid "visibility"
-msgstr ""
+msgstr "widoczność"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:507
 msgid "command"
-msgstr ""
+msgstr "polecenie"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:514
 msgid "id"
-msgstr ""
+msgstr "id"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:532
 msgid "startup"
 msgstr ""
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:533
-#, fuzzy
 msgid "filename"
-msgstr "Nazwa pliku:"
+msgstr "nazwa pliku"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:540
 msgid "startup_script"
@@ -1393,15 +1392,15 @@ msgstr ""
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:551
 msgid "style"
-msgstr ""
+msgstr "styl"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:594
 msgid "x"
-msgstr ""
+msgstr "x"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:595
 msgid "y"
-msgstr ""
+msgstr "y"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:612
 msgid "sync"
@@ -1650,7 +1649,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:352
 msgid "Save HTML as..."
-msgstr ""
+msgstr "Zapisz HTML jako..."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:362
 msgid "Relative server path to jar files:"
@@ -1766,11 +1765,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:88
 msgid "Background Color"
-msgstr ""
+msgstr "Kolor tła"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:106
 msgid "background color:"
-msgstr ""
+msgstr "kolor tła:"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:119
 msgid "Stereo Viewing"
@@ -1786,7 +1785,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:141
 msgid "Red/Blue"
-msgstr ""
+msgstr "Czerwony/Niebieski"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:143
 msgid "Red/Cyan"
@@ -1794,7 +1793,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:145
 msgid "Red/Green"
-msgstr ""
+msgstr "Czerwony/Zielony"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:152
 msgid "Animation Control"
@@ -1802,7 +1801,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:179
 msgid "Animation"
-msgstr ""
+msgstr "Animacja"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:180
 msgid "First Frame"
@@ -1814,7 +1813,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:184
 msgid "Play"
-msgstr ""
+msgstr "Odtwórz"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:186
 msgid "Next Frame"
@@ -1822,7 +1821,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:188
 msgid "Pause"
-msgstr ""
+msgstr "Wstrzymaj"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:190
 msgid "Last Frame"
@@ -1842,7 +1841,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:197
 msgid "Play Once"
-msgstr ""
+msgstr "Odtwórz raz"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:206
 msgid "Open Console Button"
@@ -1867,11 +1866,33 @@ msgstr ""
 #~ msgid "Controller"
 #~ msgstr "Kontroler"
 
-#~ msgid "Go to first vector in the collection"
-#~ msgstr "Idź do pierwszego wektora w kolekcji"
+#~ msgid "atom set"
+#~ msgstr "zestaw atomów"
 
-#~ msgid "Go to previous vector in the collection"
-#~ msgstr "Idź do popszedniego wektora w kolekcji"
+#~ msgid "vector"
+#~ msgstr "wektor"
+
+#, java-format
+#~ msgid "Go to first {0} in the collection"
+#~ msgstr "Idź do pierwszego {0} w kolekcji"
+
+#, java-format
+#~ msgid "Go to previous {0} in the collection"
+#~ msgstr "Idź do ostatniego {0} w kolekcji"
+
+#~ msgid "Jmol Script Console"
+#~ msgstr "Konsola skryptów Jmol"
+
+#, java-format
+#~ msgid "Jump to last {0} in the collection"
+#~ msgstr "Przejdź do ostatniego {0} w kolekcji"
+
+#, java-format
+#~ msgid "Go to next {0} in the collection"
+#~ msgstr "Przejdź do nastepnego {0} w kolekcji"
+
+#~ msgid "Output Conso&le..."
+#~ msgstr "Skryp&t..."
 
 #~ msgid "Go to next vector in the collection"
 #~ msgstr "Idź do następnego wektora w kolekcji"
@@ -1879,26 +1900,8 @@ msgstr ""
 #~ msgid "Jump to last vector in the collection"
 #~ msgstr "Skocz do ostatniego wektora w kolekcji"
 
-#~ msgid "atom set"
-#~ msgstr "zestaw atomów"
+#~ msgid "Go to first vector in the collection"
+#~ msgstr "Idź do pierwszego wektora w kolekcji"
 
-#~ msgid "vector"
-#~ msgstr "wektor"
-
-#~ msgid "Go to first {0} in the collection"
-#~ msgstr "Idź do pierwszego {0} w kolekcji"
-
-#~ msgid "Go to previous {0} in the collection"
-#~ msgstr "Idź do ostatniego {0} w kolekcji"
-
-#~ msgid "Jmol Script Console"
-#~ msgstr "Konsola skryptów Jmol"
-
-#~ msgid "Jump to last {0} in the collection"
-#~ msgstr "Przejdź do ostatniego {0} w kolekcji"
-
-#~ msgid "Go to next {0} in the collection"
-#~ msgstr "Przejdź do nastepnego {0} w kolekcji"
-
-#~ msgid "Output Conso&le..."
-#~ msgstr "Skryp&t..."
+#~ msgid "Go to previous vector in the collection"
+#~ msgstr "Idź do popszedniego wektora w kolekcji"

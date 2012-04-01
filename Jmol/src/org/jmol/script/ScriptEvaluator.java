@@ -9837,13 +9837,30 @@ public class ScriptEvaluator {
         continue;
       case Token.integer:
       case Token.decimal:
-        if (endDegrees == Float.MAX_VALUE) {
-          endDegrees = floatParameter(i);
+        if (isSpin) {
+          // rotate spin ... [degreesPerSecond]
+          // rotate spin ... [endDegrees] [degreesPerSecond]
+          if (degreesPerSecond == Float.MIN_VALUE) {
+            degreesPerSecond = floatParameter(i);
+            continue;
+          } else if (endDegrees == Float.MAX_VALUE) {
+            endDegrees = degreesPerSecond;
+            degreesPerSecond = floatParameter(i);
+            continue;
+          }
         } else {
-          degreesPerSecond = floatParameter(i);
-          isSpin = (degreesPerSecond != 0);
+          // rotate ... [endDegrees]
+          // rotate ... [endDegrees] [degreesPerSecond]
+          if (endDegrees == Float.MAX_VALUE) {
+            endDegrees = floatParameter(i);
+            continue;
+          } else if (degreesPerSecond == Float.MIN_VALUE) {
+            degreesPerSecond = floatParameter(i);
+            isSpin = true;
+            continue;
+          }
         }
-        continue;
+        error(ERROR_invalidArgument);
       case Token.minus:
         direction = -1;
         continue;
@@ -9857,7 +9874,7 @@ public class ScriptEvaluator {
         continue;
       case Token.z:
         haveRotation = true;
-        rotAxis.set(0, 0,(axesOrientationRasmol && !isMolecular ? -direction
+        rotAxis.set(0, 0, (axesOrientationRasmol && !isMolecular ? -direction
             : direction));
         continue;
 
@@ -9993,11 +10010,11 @@ public class ScriptEvaluator {
         bsAtoms = bsCompare;
     }
     float rate = (degreesPerSecond == Float.MIN_VALUE ? 10
-        : degreesPerSecond < 0 ?
+        : endDegrees == Float.MAX_VALUE ? degreesPerSecond 
+        : (degreesPerSecond < 0) == (endDegrees > 0) ?
         // -n means number of seconds, not degreesPerSecond
         -endDegrees / degreesPerSecond
             : degreesPerSecond);
-
     if (q != null) {
       // only when there is a translation (4x4 matrix or TRANSLATE)
       // do we set the rotation to be the center of the selected atoms or model

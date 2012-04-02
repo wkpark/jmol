@@ -139,8 +139,11 @@ public class Dots extends AtomShape {
 
     if ("refreshTrajectories" == propertyName) {
       bs = (BitSet) ((Object[]) value)[1];
+      Matrix4f m4 = (Matrix4f) ((Object[]) value)[2];
+      if (m4 == null) // end of compare command
+        return;
       Matrix3f m = new Matrix3f();
-      ((Matrix4f) ((Object[]) value)[2]).get(m);
+      m4.get(m);
       ec.reCalculate(bs, m);
       return;
     }

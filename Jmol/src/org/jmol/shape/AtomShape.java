@@ -92,7 +92,7 @@ public abstract class AtomShape extends Shape {
     for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsSelected.nextSetBit(i + 1))) {
       Atom atom = atoms[i];
       mads[i] = atom.calculateMad(viewer, rd);
-      System.out.println("atomshape - setSize " + i + " " + rd);
+      //System.out.println("atomshape - setSize " + i + " " + rd);
 //      System.out.println("atomSHape " + atom + " mad=" + mads[i]);
       bsSizeSet.set(i, isVisible);
       atom.setShapeVisibility(myVisibilityFlag, isVisible);

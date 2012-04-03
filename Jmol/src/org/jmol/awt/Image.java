@@ -27,12 +27,9 @@ package org.jmol.awt;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Font;
-import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.MediaTracker;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
@@ -67,12 +64,23 @@ class Image {
     return null;
   }
 
+  /**
+   * @param display  
+   * @param image 
+   * @throws InterruptedException 
+   */
   static void waitForDisplay(Object display, Object image) throws InterruptedException {
+    return;
+    // I have no idea why JPGEncoder was requiring this.
+/*    if (true)
+      return;
     if (display == null)
       display = new Frame();
     MediaTracker mediaTracker = new MediaTracker((Component) display);
     mediaTracker.addImage((java.awt.Image)image, 0);
     mediaTracker.waitForID(0);
+*/
+      
   }
 
   static int getWidth(Object image) {

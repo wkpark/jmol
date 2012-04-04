@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-02-06 06:32+0100\n"
-"PO-Revision-Date: 2012-03-31 17:58+0000\n"
+"PO-Revision-Date: 2012-04-03 16:02+0000\n"
 "Last-Translator: Antoni Kudelski <antekk@linux.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-03-31 21:44+0000\n"
-"X-Generator: Launchpad (build 15032)\n"
+"X-Launchpad-Export-Date: 2012-04-04 16:44+0000\n"
+"X-Generator: Launchpad (build 15055)\n"
 
 #: com/json/Cookie.java:121
 msgid "name"
@@ -491,7 +491,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:66
 msgid "Conso&le..."
-msgstr ""
+msgstr "Konso%la..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:67
 msgid "Jmol Java &Console"
@@ -654,7 +654,7 @@ msgstr "W&yświetlanie"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:108
 msgid "&Atom"
-msgstr ""
+msgstr "&Atom"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:110
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:111

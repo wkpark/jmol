@@ -1,5 +1,7 @@
 package org.jmol.awt;
 
+import java.awt.GraphicsEnvironment;
+
 import javax.vecmath.Point3f;
 
 import netscape.javascript.JSObject;
@@ -198,6 +200,10 @@ public class Platform implements ApiPlatform {
       return "namespaceURI=\"" + namespaceURI + "\" localName=\"" + localName + "\"";
     }
     return (args == null ? DOMNode.getMember(method) : DOMNode.call(method, args));
+  }
+
+  public boolean isHeadless() {
+    return GraphicsEnvironment.isHeadless();
   }
 
 }

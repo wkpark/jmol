@@ -12,6 +12,8 @@ public interface ApiPlatform {
   
   /////// Display
 
+  boolean isHeadless();
+  
   void convertPointFromScreen(Object display, Point3f ptTemp);
 
   void getFullScreenDimensions(Object display, int[] widthHeight);

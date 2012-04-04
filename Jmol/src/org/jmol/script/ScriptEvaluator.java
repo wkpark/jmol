@@ -5362,7 +5362,7 @@ public class ScriptEvaluator {
           interruptExecution = (pc > 0 || !viewer.usingScriptQueue());
           break;
         case Token.exitjmol:
-          if (isSyntaxCheck || viewer.isApplet())
+          if (isSyntaxCheck)
             return;
           viewer.exitJmol();
           break;
@@ -13798,6 +13798,8 @@ public class ScriptEvaluator {
   }
 
   String write(Token[] args) throws ScriptException {
+    if (viewer.isHeadless())
+      return "";
     int pt = 0, pt0 = 0;
     boolean isCommand, isShow;
     if (args == null) {

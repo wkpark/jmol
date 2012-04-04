@@ -1490,8 +1490,11 @@ public class ActionManager {
     if (timeouts == null)
       return;
     Iterator<TimeoutThread> e = timeouts.values().iterator();
-    while (e.hasNext())
-      e.next().interrupt();
+    while (e.hasNext()) {
+      TimeoutThread t = e.next();
+      if (!t.script.equals("exitJmol"))
+        t.interrupt();
+    }
     timeouts.clear();    
   }
   
@@ -1533,7 +1536,7 @@ public class ActionManager {
     private int ms;
     private long targetTime;
     private int status;
-    private String script;
+    String script;
     private boolean triggered = true;
     
     TimeoutThread(String name, int ms, String script) {

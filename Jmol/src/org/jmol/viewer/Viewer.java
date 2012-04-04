@@ -485,9 +485,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (useCommandThread)
       scriptManager.startCommandWatcher(true);
     isPreviewOnly = (str.indexOf("#previewOnly") >= 0);
-    setBooleanProperty("_applet", isApplet);
-    setBooleanProperty("_signedApplet", isSignedApplet);
-    setBooleanProperty("_useCommandThread", useCommandThread);
+    setStartupBooleans();
     setIntProperty("_nProcessors", nProcessors);
 
     /*
@@ -519,6 +517,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     stateManager.setJmolDefaults();
   }
 
+  private void setStartupBooleans() {
+    setBooleanProperty("_applet", isApplet);
+    setBooleanProperty("_signedApplet", isSignedApplet);
+    setBooleanProperty("_headless", apiPlatform.isHeadless());
+    setBooleanProperty("_useCommandThread", useCommandThread);
+  }
+
   public boolean noGraphicsAllowed() {
     return noGraphicsAllowed;
   }
@@ -528,7 +533,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public String getExportDriverList() {
-    return (String) global.getParameter("exportDrivers");
+    return (apiPlatform.isHeadless() ? "" 
+        : (String) global.getParameter("exportDrivers"));
   }
 
   String getHtmlName() {
@@ -600,9 +606,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void initialize(boolean clearUserVariables) {
     global = stateManager.getGlobalSettings(global, clearUserVariables);
-    global.setParameterValue("_applet", isApplet);
-    global.setParameterValue("_signedApplet", isSignedApplet);
-    global.setParameterValue("_useCommandThread", useCommandThread);
+    setStartupBooleans();
     global.setParameterValue("_width", dimScreen.width);
     global.setParameterValue("_height", dimScreen.height);
     if (haveDisplay) {
@@ -4532,6 +4536,8 @@ private void zap(String msg) {
   }
 
   public void exitJmol() {
+    if (isApplet)
+      return;
     Logger.debug("exitJmol -- exiting");
     System.out.flush();
     System.exit(0);
@@ -7742,6 +7748,7 @@ private void zap(String msg) {
   JmolScriptEditorInterface scriptEditor;
   JmolPopupInterface jmolpopup;
   private JmolPopupInterface modelkitPopup;
+  private boolean haveHeadlessExitTimeout;
 
   
   @Override
@@ -7769,6 +7776,8 @@ private void zap(String msg) {
         + "getPopupMenu........" // 200
         + "shapeManager........" // 220
         + "consoleText........." // 240
+        + "headlessImage......." // 260
+        + "headlessMaxTime....." // 280
     ).indexOf(infoType)) {
 
     case 0:
@@ -7835,10 +7844,29 @@ private void zap(String msg) {
       return shapeManager.getProperty(paramInfo);
     case 240:
       return (appConsole == null ? "" : appConsole.getText());
-    default:
-      Logger.error("ERROR in getProperty DATA_API: " + infoType);
+    case 260:
+      try {
+        Object[] p = (Object[]) paramInfo;
+        if (apiPlatform.isHeadless())
+          createImage((String) p[0], (String) p[1], null,
+              ((Integer) p[2]).intValue(),
+              ((Integer) p[3]).intValue(),
+              ((Integer) p[4]).intValue());
+      } catch (Exception e) {
+        //
+      }
+      exitJmol();
+      break;
+    case 280:
+      if (!apiPlatform.isHeadless() || haveHeadlessExitTimeout)
+        return null; // only one of these allowed
+      haveHeadlessExitTimeout = true;
+      actionManager.setTimeout("" + Math.random(), 
+          ((Integer) paramInfo).intValue(), "exitJmol");
       return null;
     }
+    Logger.error("ERROR in getProperty DATA_API: " + infoType);
+    return null;
   }
 
   void showEditor(String[] file_text) {
@@ -8514,6 +8542,8 @@ private void zap(String msg) {
    */
   @Override
   public String clipImage(String text) {
+    if (apiPlatform.isHeadless())
+      return "no";
     JmolImageCreatorInterface c;
     try {
       c = (JmolImageCreatorInterface) Interface
@@ -8545,7 +8575,7 @@ private void zap(String msg) {
                             BitSet bsFrames, String[] fullPath) {
     if (bsFrames == null)
       return (String) createImage(fileName, type, text_or_bytes, quality,
-          width, height, fullPath);
+          width, height, fullPath, true);
     String info = "";
     int n = 0;
     fileName = getFileNameFromDialog(fileName, quality);
@@ -8610,14 +8640,9 @@ private void zap(String msg) {
    * @param height
    *          image height
    * @param fullPath
+   * @param doCheck
    * @return null (canceled) or a message starting with OK or an error message
    */
-  public Object createImage(String fileName, String type, Object text_or_bytes,
-                            int quality, int width, int height,
-                            String[] fullPath) {
-    return createImage(fileName, type, text_or_bytes, quality, width, height, fullPath, true);
-  }
-  
   private Object createImage(String fileName, String type, Object text_or_bytes,
                             int quality, int width, int height,
                             String[] fullPath, boolean doCheck) {
@@ -8693,7 +8718,7 @@ private void zap(String msg) {
   }
 
   private String getFileNameFromDialog(String fileName, int quality) {
-    if (fileName == null || isKiosk)
+    if (fileName == null || isKiosk || apiPlatform.isHeadless())
       return null;
     boolean useDialog = (fileName.indexOf("?") == 0);
     if (useDialog)
@@ -9246,8 +9271,10 @@ private void zap(String msg) {
   }
 
   public OutputStream getOutputStream(String localName, String[] fullPath) {
+    if (apiPlatform.isHeadless())
+      return null;
     Object ret = createImage(localName, "OutputStream", null,
-        Integer.MIN_VALUE, 0, 0, fullPath);
+        Integer.MIN_VALUE, 0, 0, fullPath, true);
     if (ret instanceof String) {
       Logger.error((String) ret);
       return null;
@@ -9339,7 +9366,7 @@ private void zap(String msg) {
         value = null;
       }
     }
-    if (value == null) {
+    if (value == null || apiPlatform.isHeadless()) {
       Logger.info(GT._("Cannot set log file path."));
     } else {
       if (path != null) 
@@ -10156,6 +10183,10 @@ private void zap(String msg) {
 
   public BitSet getBaseModelBitSet() {
     return modelSet.getBaseModelBitSet(getCurrentModelIndex());
+  }
+
+  public boolean isHeadless() {
+    return apiPlatform.isHeadless();
   }
 }
 

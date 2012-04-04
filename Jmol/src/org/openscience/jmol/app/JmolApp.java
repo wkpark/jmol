@@ -24,6 +24,7 @@
 package org.openscience.jmol.app;
 
 import java.awt.Dimension;
+import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 import java.io.File;
 import java.util.Scanner;
@@ -33,7 +34,6 @@ import org.jmol.i18n.GT;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolViewer;
 
 import org.apache.commons.cli.Options;
@@ -73,18 +73,20 @@ public class JmolApp {
   public boolean isKiosk;
   public boolean isPrintOnly;
   public boolean isSilent;
-  public boolean listCommands;
-  
   public String commandOptions = "";
-  public String modelFilename;
-  public String scriptFilename;
-  public String script1 = "";
-  public String script;
-  public String script2 = "";
   public Point jmolPosition;
   
-  public JmolViewer viewer;
-  public JmolAdapter modelAdapter;
+  private boolean listCommands;  
+  private String modelFilename;
+  private String scriptFilename;
+  private String script1 = "";
+  private String script2;
+  private boolean doExit;
+  private Object headlessWriteCmd;
+  private int headlessMaxTimeSec = 60;
+  
+  //private JmolViewer viewer;
+  //private JmolAdapter modelAdapter;
 
   public JmolApp() {
     // defer parsing until we can set a few options ourselves
@@ -200,6 +202,11 @@ public class JmolApp {
     OptionBuilder.withDescription("menu file to use");
     OptionBuilder.hasArg();
     options.addOption(OptionBuilder.create("m"));
+
+    OptionBuilder.withLongOpt("headlessmaxtime");
+    OptionBuilder.withDescription("headless max time (sec)");
+    OptionBuilder.hasArg();
+    options.addOption(OptionBuilder.create("T"));
 
     OptionBuilder.withArgName(GT._("property=value"));
     OptionBuilder.hasArg();
@@ -355,6 +362,10 @@ public class JmolApp {
       menuFile = line.getOptionValue("m");
     }
 
+    // headless max time
+    if (line.hasOption("T"))
+      headlessMaxTimeSec = Parser.parseInt(line.getOptionValue("T"));
+
     // run pre Jmol script
     if (line.hasOption("J")) {
       commandOptions += "-J";
@@ -445,10 +456,19 @@ public class JmolApp {
         int i = type_name.indexOf(":");
         String type = type_name.substring(0, i).toUpperCase();
         type_name = " \"" + type_name.substring(i + 1) + "\"";
-        if (type.indexOf(" ") < 0)
-          type += " " + quality;
-        script2 += ";write image " + width + " " + height + " " + type
-            + type_name;
+        if (type.indexOf(" ") >= 0) {
+          quality = Parser.parseInt(type.substring(type.indexOf(" ")).trim());
+          type.substring(0, type.indexOf(" "));
+        }
+        if (GraphicsEnvironment.isHeadless())
+          headlessWriteCmd = new Object[] { 
+              type_name, 
+              type, 
+              Integer.valueOf(quality),
+              Integer.valueOf(width),
+              Integer.valueOf(height) };
+        else
+          script2 += ";write image " + width + " " + height + " " + type + " " + quality + " " + Escape.escape(type_name);
       }
     }
 
@@ -470,19 +490,23 @@ public class JmolApp {
       commandOptions += "-n";
     if (exitUponCompletion) {
       commandOptions += "-x";
-      script2 += ";exitJmol // " + commandOptions;
+      doExit = true;
+      script2 += "// " + commandOptions;
     }
     
   }
 
-  public void startViewer(JmolViewer viewer, SplashInterface splash) {  
-    this.viewer = viewer;
+  public void startViewer(JmolViewer viewer, SplashInterface splash) { 
     try {
     } catch (Throwable t) {
       System.out.println("uncaught exception: " + t);
       t.printStackTrace();
     }
     
+    if (GraphicsEnvironment.isHeadless()) {
+      // 60-second timeout for exit
+      viewer.getProperty("DATA_API", "headlessMaxTime", Integer.valueOf(headlessMaxTimeSec  * 1000));
+    }
     // Open a file if one is given as an argument -- note, this CAN be a
     // script file
     if (modelFilename != null) {
@@ -533,6 +557,13 @@ public class JmolApp {
         splash.showStatus(GT._("Executing script 2..."));
       viewer.script(script2);
     }    
+    if (headlessWriteCmd != null) {
+      if (!isSilent)
+        Logger.info("Executing writeCmd");
+      viewer.getProperty("DATA_API", "headlessImage", headlessWriteCmd);
+    }    
+    if (doExit)
+      System.exit(0);
   }
   
 }

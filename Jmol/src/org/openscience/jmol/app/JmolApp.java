@@ -80,7 +80,7 @@ public class JmolApp {
   private String modelFilename;
   private String scriptFilename;
   private String script1 = "";
-  private String script2;
+  private String script2 = "";
   private boolean doExit;
   private Object headlessWriteCmd;
   private int headlessMaxTimeSec = 60;
@@ -455,18 +455,20 @@ public class JmolApp {
           type_name += ":jpg";
         int i = type_name.indexOf(":");
         String type = type_name.substring(0, i).toUpperCase();
-        type_name = " \"" + type_name.substring(i + 1) + "\"";
+        type_name = type_name.substring(i + 1).trim();
         if (type.indexOf(" ") >= 0) {
           quality = Parser.parseInt(type.substring(type.indexOf(" ")).trim());
           type.substring(0, type.indexOf(" "));
         }
-        if (GraphicsEnvironment.isHeadless())
+        if (GraphicsEnvironment.isHeadless()) {
           headlessWriteCmd = new Object[] { 
               type_name, 
               type, 
               Integer.valueOf(quality),
               Integer.valueOf(width),
               Integer.valueOf(height) };
+
+        }
         else
           script2 += ";write image " + width + " " + height + " " + type + " " + quality + " " + Escape.escape(type_name);
       }
@@ -490,8 +492,7 @@ public class JmolApp {
       commandOptions += "-n";
     if (exitUponCompletion) {
       commandOptions += "-x";
-      doExit = true;
-      script2 += "// " + commandOptions;
+      script2 += ";exitJmol // " + commandOptions;
     }
     
   }
@@ -506,6 +507,9 @@ public class JmolApp {
     if (GraphicsEnvironment.isHeadless()) {
       // 60-second timeout for exit
       viewer.getProperty("DATA_API", "headlessMaxTime", Integer.valueOf(headlessMaxTimeSec  * 1000));
+      if (headlessWriteCmd != null) {
+        viewer.getProperty("DATA_API", "headlessImage", headlessWriteCmd);
+      }    
     }
     // Open a file if one is given as an argument -- note, this CAN be a
     // script file
@@ -556,11 +560,6 @@ public class JmolApp {
       if (splash != null)
         splash.showStatus(GT._("Executing script 2..."));
       viewer.script(script2);
-    }    
-    if (headlessWriteCmd != null) {
-      if (!isSilent)
-        Logger.info("Executing writeCmd");
-      viewer.getProperty("DATA_API", "headlessImage", headlessWriteCmd);
     }    
     if (doExit)
       System.exit(0);

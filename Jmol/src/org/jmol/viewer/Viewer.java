@@ -2693,6 +2693,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       modelSet = modelManager.zap();
       if (haveDisplay) {
         apiPlatform.clearMouse();
+        clearTimeouts();
         actionManager.clear();
       }
       stateManager.clear(global);
@@ -4538,6 +4539,19 @@ private void zap(String msg) {
   public void exitJmol() {
     if (isApplet)
       return;
+    if (headlessWriteCmd != null) {
+      try {
+        Object[] p = headlessWriteCmd;
+        if (isHeadless())
+          createImage((String) p[0], (String) p[1], null,
+              ((Integer) p[2]).intValue(),
+              ((Integer) p[3]).intValue(),
+              ((Integer) p[4]).intValue());
+      } catch (Exception e) {
+        //
+      }
+    }
+      
     Logger.debug("exitJmol -- exiting");
     System.out.flush();
     System.exit(0);
@@ -7749,6 +7763,7 @@ private void zap(String msg) {
   JmolPopupInterface jmolpopup;
   private JmolPopupInterface modelkitPopup;
   private boolean haveHeadlessExitTimeout;
+  private Object[] headlessWriteCmd;
 
   
   @Override
@@ -7845,23 +7860,14 @@ private void zap(String msg) {
     case 240:
       return (appConsole == null ? "" : appConsole.getText());
     case 260:
-      try {
-        Object[] p = (Object[]) paramInfo;
-        if (isHeadless())
-          createImage((String) p[0], (String) p[1], null,
-              ((Integer) p[2]).intValue(),
-              ((Integer) p[3]).intValue(),
-              ((Integer) p[4]).intValue());
-      } catch (Exception e) {
-        //
-      }
-      exitJmol();
-      break;
+      if (isHeadless())
+        headlessWriteCmd = (Object[]) paramInfo; 
+      return null;
     case 280:
       if (!isHeadless() || haveHeadlessExitTimeout)
         return null; // only one of these allowed
       haveHeadlessExitTimeout = true;
-      actionManager.setTimeout("" + Math.random(), 
+      setTimeout("" + Math.random(), 
           ((Integer) paramInfo).intValue(), "exitJmol");
       return null;
     }
@@ -8617,6 +8623,7 @@ private void zap(String msg) {
   @Override
   public Object createImage(String fileName, String type, Object text_or_bytes,
                             int quality, int width, int height) {
+    System.out.println("createimage " + fileName + " " + type + " " + text_or_bytes + " " + quality + " " + width + " " + height);
     return createImage(fileName, type, text_or_bytes, quality, width, height,
         null, true);
   }
@@ -8718,7 +8725,7 @@ private void zap(String msg) {
   }
 
   private String getFileNameFromDialog(String fileName, int quality) {
-    if (fileName == null || isKiosk || isHeadless())
+    if (fileName == null || isKiosk)
       return null;
     boolean useDialog = (fileName.indexOf("?") == 0);
     if (useDialog)
@@ -9234,24 +9241,6 @@ private void zap(String msg) {
 
   public Object getMouseInfo() {
     return (haveDisplay ? actionManager.getMouseInfo() : null);
-  }
-
-  public void clearTimeout(String name) {
-    setTimeout(name, 0, null);
-  }
-
-  public void setTimeout(String name, int mSec, String script) {
-    if (haveDisplay)
-      actionManager.setTimeout(name, mSec, script);
-  }
-
-  public void triggerTimeout(String name) {
-    if (haveDisplay)
-      actionManager.triggerTimeout(name);
-  }
-
-  public String showTimeout(String name) {
-    return (haveDisplay ? actionManager.showTimeout(name) : "");
   }
 
   public int getFrontPlane() {
@@ -10129,7 +10118,8 @@ private void zap(String msg) {
     shapeManager.getObjectMap(map, withDollar);
   }
 
-  Map<String, String[][]>htPdbBondInfo; 
+  Map<String, String[][]>htPdbBondInfo;
+  
   public String[][] getPdbBondInfo(String group3) {
     if (htPdbBondInfo == null)
       htPdbBondInfo = new Hashtable<String, String[][]>();
@@ -10188,5 +10178,72 @@ private void zap(String msg) {
   public boolean isHeadless() {
     return apiPlatform.isHeadless();
   }
+
+  Map<String, TimeoutThread> timeouts;
+  public void clearTimeouts() {
+    if (timeouts == null)
+      return;
+    Iterator<TimeoutThread> e = timeouts.values().iterator();
+    while (e.hasNext()) {
+      TimeoutThread t = e.next();
+      if (!t.script.equals("exitJmol"))
+        t.interrupt();
+    }
+    timeouts.clear();    
+  }
+  
+  public void setTimeout(String name, int mSec, String script) {
+    if (name == null) {
+      clearTimeouts();
+      return;
+    }
+    if (timeouts == null) {
+      timeouts = new Hashtable<String, TimeoutThread>();
+    }
+    if (mSec == 0) {
+      Thread t = timeouts.get(name);
+      if (t != null) {
+        t.interrupt();
+        timeouts.remove(name);
+      }
+      return;
+    }
+    TimeoutThread t = timeouts.get(name);
+    if (t != null) {
+      t.set(mSec, script);
+      return;
+    }
+    t = new TimeoutThread(this, name, mSec, script);
+    timeouts.put(name, t);
+    t.start();
+  }
+
+  public void triggerTimeout(String name) {
+    TimeoutThread t;
+    if (!haveDisplay || timeouts == null || (t = timeouts.get(name)) == null) 
+      return;
+    t.trigger();
+  }
+
+  public void clearTimeout(String name) {
+    setTimeout(name, 0, null);
+  }
+
+  public String showTimeout(String name) {
+    if (!haveDisplay)
+      return "";
+    StringBuffer sb = new StringBuffer();
+    if (timeouts != null) {
+      Iterator<TimeoutThread> e = timeouts.values().iterator();
+      while (e.hasNext()) {
+        TimeoutThread t = e.next();
+        if (name == null || t.name.equalsIgnoreCase(name))
+          sb.append(t.toString()).append("\n");
+      }
+    }
+    return (sb.length() > 0 ? sb.toString() : "<no timeouts set>");
+  }
+
+  
 }
 

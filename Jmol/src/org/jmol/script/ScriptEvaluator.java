@@ -13232,6 +13232,8 @@ public class ScriptEvaluator {
     String name = null;
     String script = null;
     int mSec = 0;
+    if (viewer.isHeadless())
+      return;
     if (statementLength == index) {
       showString(viewer.showTimeout(null));
       return;

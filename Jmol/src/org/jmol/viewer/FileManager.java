@@ -1029,7 +1029,7 @@ public class FileManager {
   public String getFilePath(String name, boolean addUrlPrefix,
                             boolean asShortName) {
     String[] names = classifyName(name, false);
-    return (names == null ? "" : asShortName ? names[1]
+    return (names == null || names.length == 1 ? "" : asShortName ? names[1]
         : addUrlPrefix ? names[2] 
         : names[0] == null ? "" 
         : names[0].replace('\\', '/'));

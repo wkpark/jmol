@@ -10883,7 +10883,7 @@ public class ScriptEvaluator {
     default:
       error(ERROR_numberExpected);
     }
-    if (!isSyntaxCheck)
+    if (!isSyntaxCheck && !viewer.isHeadless())
       delay(millis);
   }
 

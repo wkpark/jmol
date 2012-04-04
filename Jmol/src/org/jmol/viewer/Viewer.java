@@ -8791,10 +8791,13 @@ private void zap(String msg) {
         String atoms = Parser.getQuotedAttribute(script, "atoms");
         String select = Parser.getQuotedAttribute(script, "select");
         String script2 = Parser.getQuotedAttribute(script, "script");
-        String id = (modelID == null ? null : (filename == null ? "" : filename + "#") + modelID);
+        boolean isNIH = (modelID != null && modelID.startsWith("$"));
+        if (isNIH)
+         filename = (modelID.substring(1).equals(getParameter("_smilesstring")) ? null : modelID);
+        String id = (isNIH || modelID == null ? null : (filename == null ? "" : filename + "#") + modelID);
         if ("".equals(baseModel))
           id += ".baseModel";
-        int modelIndex = (modelID == null ? -3 : getModelIndexFromId(id));
+        int modelIndex = (id == null ? -3 : getModelIndexFromId(id));
         if (modelIndex == -2)
           return; // file was found, or no file was indicated, but not this model -- ignore
         script = (modelIndex == -1 && filename != null ? script = "load " + Escape.escape(filename)
@@ -8812,6 +8815,7 @@ private void zap(String msg) {
           statusManager.syncSend(fullName + "JSpecView" + script.substring(9), ">", 0);
          return;
       }
+      System.out.println("Jmol executing script for JSpecView: " + script);
       evalStringQuiet(script, true, false);
       return;
     }

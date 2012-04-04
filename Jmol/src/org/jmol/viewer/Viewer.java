@@ -5505,7 +5505,7 @@ private void zap(String msg) {
   }
 
   public String dialogAsk(String type, String fileName) {
-    return (isKiosk ? null : statusManager.dialogAsk(type, fileName));
+    return (isKiosk || isHeadless() ? null : statusManager.dialogAsk(type, fileName));
   }
 
   public int getScriptDelay() {
@@ -7847,7 +7847,7 @@ private void zap(String msg) {
     case 260:
       try {
         Object[] p = (Object[]) paramInfo;
-        if (apiPlatform.isHeadless())
+        if (isHeadless())
           createImage((String) p[0], (String) p[1], null,
               ((Integer) p[2]).intValue(),
               ((Integer) p[3]).intValue(),
@@ -7858,7 +7858,7 @@ private void zap(String msg) {
       exitJmol();
       break;
     case 280:
-      if (!apiPlatform.isHeadless() || haveHeadlessExitTimeout)
+      if (!isHeadless() || haveHeadlessExitTimeout)
         return null; // only one of these allowed
       haveHeadlessExitTimeout = true;
       actionManager.setTimeout("" + Math.random(), 
@@ -8542,7 +8542,7 @@ private void zap(String msg) {
    */
   @Override
   public String clipImage(String text) {
-    if (apiPlatform.isHeadless())
+    if (isHeadless())
       return "no";
     JmolImageCreatorInterface c;
     try {
@@ -8718,7 +8718,7 @@ private void zap(String msg) {
   }
 
   private String getFileNameFromDialog(String fileName, int quality) {
-    if (fileName == null || isKiosk || apiPlatform.isHeadless())
+    if (fileName == null || isKiosk || isHeadless())
       return null;
     boolean useDialog = (fileName.indexOf("?") == 0);
     if (useDialog)
@@ -9271,7 +9271,7 @@ private void zap(String msg) {
   }
 
   public OutputStream getOutputStream(String localName, String[] fullPath) {
-    if (apiPlatform.isHeadless())
+    if (isHeadless())
       return null;
     Object ret = createImage(localName, "OutputStream", null,
         Integer.MIN_VALUE, 0, 0, fullPath, true);
@@ -9366,7 +9366,7 @@ private void zap(String msg) {
         value = null;
       }
     }
-    if (value == null || apiPlatform.isHeadless()) {
+    if (value == null || isHeadless()) {
       Logger.info(GT._("Cannot set log file path."));
     } else {
       if (path != null) 

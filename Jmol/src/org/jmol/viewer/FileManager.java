@@ -950,8 +950,8 @@ public class FileManager {
         return new String[] { isFullLoad ? e.getMessage() : null };
       }
     } else {
-      // This code is for the app
-      if (urlTypeIndex(name) >= 0) {
+      // This code is for the app -- no local file reading for headless
+      if (urlTypeIndex(name) >= 0 || viewer.isHeadless()) {
         try {
           url = new URL(name);
         } catch (MalformedURLException e) {

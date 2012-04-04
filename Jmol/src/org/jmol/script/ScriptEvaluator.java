@@ -13799,7 +13799,7 @@ public class ScriptEvaluator {
 
   String write(Token[] args) throws ScriptException {
     if (viewer.isHeadless())
-      return "";
+      return "write disabled";
     int pt = 0, pt0 = 0;
     boolean isCommand, isShow;
     if (args == null) {

@@ -184,4 +184,9 @@ public class Platform implements ApiPlatform {
     return null;
   }
 
+  @Override
+  public boolean isHeadless() {
+    return false;
+  }
+
 }

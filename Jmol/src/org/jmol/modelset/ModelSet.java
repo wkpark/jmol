@@ -98,9 +98,7 @@ import javax.vecmath.Vector3f;
   private boolean echoShapeActive = false;
 
   public void setSelectionHaloEnabled(boolean selectionHaloEnabled) {
-    if (this.selectionHaloEnabled != selectionHaloEnabled) {
-      this.selectionHaloEnabled = selectionHaloEnabled;
-    }
+    this.selectionHaloEnabled = selectionHaloEnabled;
   }
 
   public boolean getSelectionHaloEnabled() {

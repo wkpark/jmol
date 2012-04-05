@@ -352,6 +352,8 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
   }
 
   public void setJSpecView(String peaks) {
+    if (!display.isRotateMode())
+      return;
     if (peaks.startsWith(":"))
       peaks = peaks.substring(1);
     if (jSpecViewFrame == null) {

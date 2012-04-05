@@ -98,10 +98,15 @@ public class DisplayPanel extends JPanel
   
   ButtonGroup toolbarButtonGroup = new ButtonGroup();
 
+  boolean isRotateMode() {
+    return (buttonRotate != null && buttonRotate.isSelected());  
+  }
+  
   void setRotateMode() {
-    if (buttonRotate != null)
+    if (buttonRotate != null && !isRotateMode()) {
       buttonRotate.setSelected(true);
       viewer.setSelectionHalos(false);
+    }
   }
     
   void setModelkitMode() {
@@ -311,9 +316,8 @@ public class DisplayPanel extends JPanel
   private MenuListener menuListener = new MenuListener() {
       public void menuSelected(MenuEvent e) {
         String menuKey = KeyJMenuItem.getKey(e.getSource());
-        if (menuKey.equals("display")) {
-          setDisplayMenuState();
-        }
+        if (menuKey.equals("display") || menuKey.equals("tools"))
+          setMenuState();
       }
       public void menuDeselected(MenuEvent e) {
       }
@@ -325,12 +329,13 @@ public class DisplayPanel extends JPanel
     return menuListener;
   }
 
-  void setDisplayMenuState() {
+  void setMenuState() {
     guimap.setSelected("perspectiveCheck", viewer.getPerspectiveDepth());
     guimap.setSelected("hydrogensCheck", viewer.getShowHydrogens());
     guimap.setSelected("measurementsCheck", viewer.getShowMeasurements());
     guimap.setSelected("axesCheck", viewer.getShowAxes());
     guimap.setSelected("boundboxCheck", viewer.getShowBbcage());
+    guimap.setEnabled("openJSpecViewScript", isRotateMode());
   }
 
   public Action[] getActions() {

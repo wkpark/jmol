@@ -925,13 +925,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       if (item.equals("-")) {
         menu.addSeparator();
       } else if (item.endsWith("Menu")) {
-        JMenu pm;
-        if ("recentFilesMenu".equals(item)) {
-          /*recentFilesMenu = */pm = createMenu(item);
-        } else {
-          pm = createMenu(item);
-        }
-        menu.add(pm);
+        menu.add(createMenu(item));
       } else {
         JMenuItem mi = createMenuItem(item);
         menu.add(mi);

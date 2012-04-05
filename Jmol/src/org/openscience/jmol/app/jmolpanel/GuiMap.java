@@ -258,6 +258,10 @@ class GuiMap {
     ((AbstractButton)get(key)).setSelected(b);
   }
 
+  void setEnabled(String key, boolean b) {
+    ((AbstractButton)get(key)).setEnabled(b);
+  }
+
   public void updateLabels() {
     boolean doTranslate = GT.getDoTranslate();
     GT.setDoTranslate(true);

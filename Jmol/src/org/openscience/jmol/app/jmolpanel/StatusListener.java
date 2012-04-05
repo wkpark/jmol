@@ -365,8 +365,8 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
           peaks = "hidden false; load " + Escape.escape(s);
       }
     }
-    if (!jSpecViewFrame.isVisible() && peaks.length() > 0 && !peaks.toLowerCase().startsWith("hidden"))
-      jSpecViewFrame.awaken(false);
+    if (!jSpecViewFrame.isVisible() && !peaks.toLowerCase().startsWith("hidden"))
+      jSpecViewFrame.awaken(true);
     if (peaks.length() == 0)
       peaks = "HIDDEN false";
     jSpecViewFrame.syncScript(peaks);

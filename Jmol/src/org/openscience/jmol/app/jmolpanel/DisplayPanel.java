@@ -25,22 +25,18 @@ package org.openscience.jmol.app.jmolpanel;
 
 import org.jmol.api.*;
 import org.jmol.console.JmolFrame;
-import org.jmol.console.KeyJMenuItem;
 import org.jmol.i18n.GT;
-import org.openscience.jmol.app.jmolpanel.GuiMap;
 import org.openscience.jmol.app.jmolpanel.JmolPanel;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.print.*;
 import javax.swing.*;
-import javax.swing.event.*;
 
 public class DisplayPanel extends JPanel
   implements JmolFrame, ComponentListener, Printable {
   
   StatusBar status;
-  GuiMap guimap;
   JmolViewer viewer;
     
   private String displaySpeed;
@@ -62,7 +58,6 @@ public class DisplayPanel extends JPanel
     jmolPanel = jmol;
     frame = jmol.frame;
     status = jmol.status;
-    guimap = jmol.guimap;
     border = jmol.jmolApp.border;
     haveDisplay = jmol.jmolApp.haveDisplay;
     startupDimension = new Dimension(jmol.startupWidth, jmol.startupHeight);
@@ -311,31 +306,6 @@ public class DisplayPanel extends JPanel
       JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
       viewer.evalStringQuiet(action + " " + cbmi.isSelected());
     }
-  }
-
-  private MenuListener menuListener = new MenuListener() {
-      public void menuSelected(MenuEvent e) {
-        String menuKey = KeyJMenuItem.getKey(e.getSource());
-        if (menuKey.equals("display") || menuKey.equals("tools"))
-          setMenuState();
-      }
-      public void menuDeselected(MenuEvent e) {
-      }
-      public void menuCanceled(MenuEvent e) {
-      }
-    };
-
-  public MenuListener getMenuListener() {
-    return menuListener;
-  }
-
-  void setMenuState() {
-    guimap.setSelected("perspectiveCheck", viewer.getPerspectiveDepth());
-    guimap.setSelected("hydrogensCheck", viewer.getShowHydrogens());
-    guimap.setSelected("measurementsCheck", viewer.getShowMeasurements());
-    guimap.setSelected("axesCheck", viewer.getShowAxes());
-    guimap.setSelected("boundboxCheck", viewer.getShowBbcage());
-    guimap.setEnabled("openJSpecViewScript", isRotateMode());
   }
 
   public Action[] getActions() {

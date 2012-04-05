@@ -27,6 +27,7 @@ import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolViewer;
 import org.jmol.console.JmolConsole;
+import org.jmol.console.KeyJMenuItem;
 import org.jmol.export.JmolFileDropper;
 import org.jmol.export.dialog.Dialog;
 import org.jmol.export.history.HistoryFile;
@@ -95,6 +96,8 @@ import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
 
 public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient {
 
@@ -118,11 +121,11 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
   protected SplashInterface splash;
   protected JFrame consoleframe;  
   protected JsonNioServer service;
-  protected GuiMap guimap = new GuiMap();
   protected int qualityJPG = -1;
   protected int qualityPNG = -1;
   protected String imageType;
 
+  protected GuiMap guimap = new GuiMap();
   private ExecuteScriptAction executeScriptAction;
   private PreferencesDialog preferencesDialog;
   private StatusListener myStatusListener;
@@ -931,8 +934,27 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
         menu.add(mi);
       }
     }
-    menu.addMenuListener(display.getMenuListener());
+    menu.addMenuListener(new MenuListener() {
+        public void menuSelected(MenuEvent e) {
+          String menuKey = KeyJMenuItem.getKey(e.getSource());
+          if (menuKey.equals("display") || menuKey.equals("tools"))
+            setMenuState();
+        }
+        public void menuDeselected(MenuEvent e) {
+        }
+        public void menuCanceled(MenuEvent e) {
+        }
+    });
     return menu;
+  }
+
+  void setMenuState() {
+    guimap.setSelected("perspectiveCheck", viewer.getPerspectiveDepth());
+    guimap.setSelected("hydrogensCheck", viewer.getShowHydrogens());
+    guimap.setSelected("measurementsCheck", viewer.getShowMeasurements());
+    guimap.setSelected("axesCheck", viewer.getShowAxes());
+    guimap.setSelected("boundboxCheck", viewer.getShowBbcage());
+    guimap.setEnabled("openJSpecViewScript", display.isRotateMode());
   }
 
   private static class ActionChangedListener implements PropertyChangeListener {

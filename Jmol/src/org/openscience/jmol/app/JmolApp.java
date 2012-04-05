@@ -163,6 +163,8 @@ public class JmolApp {
         ._("no console -- all output to sysout"));
     options.addOption("p", "printOnly", false, GT
         ._("send only output from print messages to console (implies -i)"));
+    options.addOption("R", "restricted", false, GT
+        ._("restrict local file access"));
     options.addOption("t", "threaded", false, GT
         ._("independent command thread"));
     options.addOption("x", "exit", false, GT
@@ -328,6 +330,10 @@ public class JmolApp {
     if (transparentBackground)
       commandOptions += "-b";
 
+    // restricted file access
+    if (line.hasOption("R"))
+      commandOptions += "-R";
+    
     // independent command thread
     if (line.hasOption("t"))
       useIndependentCommandThread = true;
@@ -358,9 +364,8 @@ public class JmolApp {
       commandOptions += "-c";
       
     // menu file
-    if (line.hasOption("m")) {
+    if (line.hasOption("m"))
       menuFile = line.getOptionValue("m");
-    }
 
     // headless max time
     if (line.hasOption("T"))
@@ -373,9 +378,8 @@ public class JmolApp {
     }
 
     // use SparshUI
-    if (line.hasOption("M")) {
+    if (line.hasOption("M"))
       commandOptions += "-multitouch-" + line.getOptionValue("M");
-    }
 
     // run script from file
     if (line.hasOption("s")) {

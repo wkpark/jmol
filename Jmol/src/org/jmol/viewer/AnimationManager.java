@@ -296,7 +296,7 @@ class AnimationManager {
   }
   
   void setAnimationOn(boolean animationOn) {
-    if (!animationOn || !viewer.haveModelSet()) {
+    if (!animationOn || !viewer.haveModelSet() || viewer.isHeadless()) {
       setAnimationOff(false);
       return;
     }

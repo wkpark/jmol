@@ -369,7 +369,7 @@ public class ScriptEvaluator {
   }
 
   public void pauseExecution(boolean withDelay) {
-    if (isSyntaxCheck)
+    if (isSyntaxCheck || viewer.isHeadless())
       return;
     if (withDelay)
       delay(-100);
@@ -5275,6 +5275,11 @@ public class ScriptEvaluator {
           break;
         case Token.colon:
           break;
+        case Token.gotocmd:
+        case Token.loop:
+          if (viewer.isHeadless())
+            break;
+          //  fall through
         case Token.catchcmd:
         case Token.breakcmd:
         case Token.continuecmd:
@@ -5283,12 +5288,10 @@ public class ScriptEvaluator {
         case Token.end:
         case Token.endifcmd:
         case Token.forcmd:
-        case Token.gotocmd:
         case Token.ifcmd:
         case Token.switchcmd:
         case Token.casecmd:
         case Token.defaultcmd:
-        case Token.loop:
         case Token.process:
         case Token.whilecmd:
           isForCheck = flowControl(theToken.tok, isForCheck);
@@ -5764,8 +5767,7 @@ public class ScriptEvaluator {
     ContextToken ct;
     switch (tok) {
     case Token.gotocmd:
-      String strTo = parameterAsString(checkLast(1));
-      gotoCmd(strTo);
+      gotoCmd(parameterAsString(checkLast(1)));
       return isForCheck;
     case Token.loop:
       // back to the beginning of this script
@@ -10883,11 +10885,13 @@ public class ScriptEvaluator {
     default:
       error(ERROR_numberExpected);
     }
-    if (!isSyntaxCheck && !viewer.isHeadless())
+    if (!isSyntaxCheck)
       delay(millis);
   }
 
   private void delay(long millis) {
+    if (viewer.isHeadless())
+      return;
     long timeBegin = System.currentTimeMillis();
     refresh();
     int delayMax;
@@ -13232,8 +13236,6 @@ public class ScriptEvaluator {
     String name = null;
     String script = null;
     int mSec = 0;
-    if (viewer.isHeadless())
-      return;
     if (statementLength == index) {
       showString(viewer.showTimeout(null));
       return;
@@ -13265,7 +13267,7 @@ public class ScriptEvaluator {
           error(ERROR_invalidArgument);
         break;
       }
-    if (!isSyntaxCheck)
+    if (!isSyntaxCheck && !viewer.isHeadless())
       viewer.setTimeout(name, mSec, script);
   }
 
@@ -13800,7 +13802,7 @@ public class ScriptEvaluator {
   }
 
   String write(Token[] args) throws ScriptException {
-    if (viewer.isHeadless())
+    if (viewer.isRestricted())
       return "write disabled";
     int pt = 0, pt0 = 0;
     boolean isCommand, isShow;

@@ -951,7 +951,7 @@ public class FileManager {
       }
     } else {
       // This code is for the app -- no local file reading for headless
-      if (urlTypeIndex(name) >= 0 || viewer.isHeadless()) {
+      if (urlTypeIndex(name) >= 0 || viewer.isRestricted()) {
         try {
           url = new URL(name);
         } catch (MalformedURLException e) {

@@ -165,6 +165,57 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     super.finalize();
   }
 
+  /**
+   * NOTE: for APPLICATION AND APPLET call
+   * 
+   * setModeMouse(JmolConstants.MOUSE_NONE);
+   * 
+   * before setting viewer=null
+   * 
+   * in order to remove references to display window in listeners and
+   * hoverWatcher
+   * 
+   * This is the main access point for creating an application or applet viewer.
+   * 
+   * @param display
+   *          either DisplayPanel or WrappedApplet
+   * @param modelAdapter
+   *          the model reader
+   * @param fullName
+   *          or null
+   * @param documentBase
+   *          or null
+   * @param codeBase
+   *          or null
+   * @param commandOptions
+   *          or null
+   * @param statusListener
+   *          or null
+   * @param implementedPlatform  -- necessary for .NET/IKVM ?
+   *          or null
+   * @return a viewer instance
+   */
+
+  public static JmolViewer allocateViewer(Object display,
+                                          JmolAdapter modelAdapter,
+                                          String fullName, URL documentBase,
+                                          URL codeBase, String commandOptions,
+                                          JmolStatusListener statusListener) {
+   //for legacy purposes, but not used in Jmol code
+     return allocateViewer(display, modelAdapter, fullName, documentBase,
+        codeBase, commandOptions, statusListener, null);
+  }
+  
+  public static JmolViewer allocateViewer(Object display,
+                                          JmolAdapter modelAdapter,
+                                          String fullName, URL documentBase,
+                                          URL codeBase, String commandOptions,
+                                          JmolStatusListener statusListener,
+                                          ApiPlatform implementedPlatform) {
+    return new Viewer(display, modelAdapter, statusListener, implementedPlatform,
+        commandOptions, fullName, documentBase, codeBase);
+  }
+  
   // these are all private now so we are certain they are not
   // being accesed by any other classes
 
@@ -230,7 +281,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         true, false);
   }
 
-  ScriptEvaluator eval;
+  private ScriptEvaluator eval;
   private AnimationManager animationManager;
   private DataManager dataManager;
   private FileManager fileManager;
@@ -263,23 +314,33 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private String appletCodeBase = "";
   private String logFilePath = "";
 
-  // private boolean jvm11orGreater = false;
-  // private boolean jvm12orGreater = false;
-  // private boolean jvm14orGreater = false;
-  private boolean multiTouch = false;
+  private boolean multiTouch;
+  private boolean isSilent;
+  private boolean isApplet;
+
+  @Override
+  public boolean isApplet() {
+    return isApplet;
+  }
+
   
   public ApiPlatform getApiPlatform() {
     return apiPlatform; // in JmolSimpleViewer
   }
 
-
-  private Viewer(Object display, JmolAdapter modelAdapter,
-      String commandOptions, ApiPlatform implementedPlatform) {
+  private Viewer(Object display, JmolAdapter modelAdapter, JmolStatusListener statusListener, 
+      ApiPlatform implementedPlatform, String commandOptions, 
+      String fullName, URL documentBase, URL codeBase) {
     // use allocateViewer
     if (Logger.debugging) {
       Logger.debug("Viewer constructor " + this);
     }
+    this.commandOptions = commandOptions = (commandOptions == null ? "" : commandOptions);
+    this.fullName = fullName = (fullName == null ? "" : fullName);
+    appletDocumentBase = (documentBase == null ? "" : documentBase.toString());
+    appletCodeBase = (codeBase == null ? "" : codeBase.toString());
     noGraphicsAllowed = (display == null && commandOptions.indexOf("-n") >= 0);
+    restrictedFileAccess = (commandOptions.indexOf("-R") >= 0);
     apiPlatform = implementedPlatform;
     if (apiPlatform == null)
       apiPlatform = (ApiPlatform) Interface.getInterface(commandOptions == null
@@ -287,8 +348,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           : commandOptions.substring(commandOptions.indexOf("platform=") + 9));
     apiPlatform.setViewer(this, display);
     g3d = new Graphics3D(apiPlatform);
-    haveDisplay = (display != null && (commandOptions == null || commandOptions
-        .indexOf("-n") < 0));
+    haveDisplay = (display != null && !isHeadless() && commandOptions.indexOf("-n") < 0);
     mustRender = haveDisplay;
     if (!haveDisplay)
       display = null;
@@ -297,21 +357,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     strJavaVendor = System.getProperty("java.vendor");
     strOSName = System.getProperty("os.name");
     strJavaVersion = System.getProperty("java.version");
-    // Netscape on MacOS does not implement 1.1 event model
-    // jvm11orGreater = (strJavaVersion.compareTo("1.1") >= 0 && !(strJavaVendor
-    // .startsWith("Netscape")
-    // && strJavaVersion.compareTo("1.1.5") <= 0 &&
-    // "Mac OS".equals(strOSName)));
-    // jvm12orGreater = (strJavaVersion.compareTo("1.2") >= 0);
-    // jvm14orGreater = (strJavaVersion.compareTo("1.4") >= 0);
-
-    // jvm14orGreater = jvm12orGreater = jvm11orGreater = true;
-
-    // NOTE: Jmol 12.0 will only run with 1.5 or greater because of
-    // .contains and parallel processes.
-
-    multiTouch = (commandOptions != null && commandOptions
-        .indexOf("-multitouch") >= 0);
+    multiTouch = (haveDisplay && commandOptions.indexOf("-multitouch") >= 0);
     stateManager = new StateManager(this);
     colorManager = new ColorManager(this, g3d);
     statusManager = new StatusManager(this);
@@ -322,6 +368,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (multiTouch) {
         if (commandOptions.indexOf("-multitouch-sparshui-simulated") < 0)
           apiPlatform.setTransparentCursor(display);
+        else
+          commandOptions = TextFormat.simpleReplace(commandOptions, "-multitouch-sparshui-simulated", "");
         actionManager = (ActionManager) Interface
             .getOptionInterface("multitouch.ActionManagerMT");
       } else {
@@ -341,112 +389,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     compiler = new ScriptCompiler(this);
     definedAtomSets = new Hashtable<String, Object>();
     eval = new ScriptEvaluator(this);
-  }
-
-  /**
-   * NOTE: for APPLICATION AND APPLET call
-   * 
-   * setModeMouse(JmolConstants.MOUSE_NONE);
-   * 
-   * before setting viewer=null
-   * 
-   * in order to remove references to display window in listeners and
-   * hoverWatcher
-   * 
-   * This is the main access point for creating an application or applet viewer.
-   * 
-   * @param display
-   *          either DisplayPanel or WrappedApplet
-   * @param modelAdapter
-   *          the model reader
-   * @param fullName
-   *          or null
-   * @param documentBase
-   *          or null
-   * @param codeBase
-   *          or null
-   * @param commandOptions
-   *          or null
-   * @param statusListener
-   *          or null
-   * @param implementedPlatform  -- necessary for .NET/IKVM ?
-   *          or null
-   * @return a viewer instance
-   */
-
-  public static JmolViewer allocateViewer(Object display,
-                                          JmolAdapter modelAdapter,
-                                          String fullName, URL documentBase,
-                                          URL codeBase, String commandOptions,
-                                          JmolStatusListener statusListener,
-                                          ApiPlatform implementedPlatform) {
-    Viewer viewer = new Viewer(display, modelAdapter, commandOptions, implementedPlatform);
-    viewer.setAppletContext(fullName, documentBase, codeBase, commandOptions);
-    viewer.setJmolStatusListener(statusListener);
-    return viewer;
-  }
-  
-
-   public static JmolViewer allocateViewer(Object display,
-                                          JmolAdapter modelAdapter,
-                                          String fullName, URL documentBase,
-                                          URL codeBase, String commandOptions,
-                                          JmolStatusListener statusListener) {
-   //for legacy purposes, but not used in Jmol code
-     return allocateViewer(display, modelAdapter, fullName, documentBase,
-        codeBase, commandOptions, statusListener, null);
-  }
-  
-  private boolean isSilent = false;
-  private boolean isApplet = false;
-
-  @Override
-  public boolean isApplet() {
-    return isApplet;
-  }
-
-  private boolean isPreviewOnly = false;
-
-  public boolean isPreviewOnly() {
-    return isPreviewOnly;
-  }
-
-  public boolean haveDisplay = false;
-  public boolean autoExit = false;
-
-  private boolean mustRender = true;
-  private boolean isPrintOnly = false;
-  private boolean isCmdLine_C_Option = false;
-  private boolean isCmdLine_c_or_C_Option = false;
-  private boolean listCommands = false;
-  private boolean useCommandThread = false;
-  private boolean isSignedApplet = false;
-  private boolean isSignedAppletLocal = false;
-
-  private String appletContext;
-  private boolean noGraphicsAllowed;
-
-  public String getAppletContext() {
-    return appletContext;
-  }
-
-  @Override
-  public synchronized void setAppletContext(String fullName, URL documentBase,
-                                            URL codeBase, String commandOptions) {
-    appletContext = (commandOptions == null ? "" : commandOptions);
-    this.fullName = fullName = (fullName == null ? "" : fullName);
-    appletDocumentBase = (documentBase == null ? "" : documentBase.toString());
-    appletCodeBase = (codeBase == null ? "" : codeBase.toString());
+    setJmolStatusListener(statusListener);     
+    
     int i = fullName.indexOf("__");
     htmlName = (i < 0 ? fullName : fullName.substring(0, i));
     syncId = (i < 0 ? "" : fullName.substring(i + 2, fullName.length() - 2));
-    String str = appletContext;
+    String str = commandOptions;
     if (str.indexOf("-debug") >= 0)
       Logger.setLogLevel(Logger.LEVEL_DEBUG);
-    isPrintOnly = (appletContext.indexOf("-p") >= 0);
-    isApplet = (appletContext.indexOf("-applet") >= 0);
+    isPrintOnly = (commandOptions.indexOf("-p") >= 0);
+    isApplet = (commandOptions.indexOf("-applet") >= 0);
     if (isApplet) {
-      Logger.info("applet context: " + appletContext);
+      Logger.info("applet context: " + commandOptions);
       String appletProxy = null;
       // -appletProxy must be the last flag added
       if ((i = str.indexOf("-appletProxy ")) >= 0) {
@@ -481,7 +435,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       autoExit = (str.indexOf("-x") >= 0);
       cd(".");
     }
-    useCommandThread = (str.indexOf("-threaded") >= 0);
+    useCommandThread = (str.indexOf("-threaded") >= 0 && !isHeadless());
     if (useCommandThread)
       scriptManager.startCommandWatcher(true);
     isPreviewOnly = (str.indexOf("#previewOnly") >= 0);
@@ -502,6 +456,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           + strJavaVersion
           + "\nos.name: "
           + strOSName
+          + "\nrestrictedFileAccess: " + restrictedFileAccess
           + "\nmemory: "
           + getParameter("_memory")
           + "\nprocessors available: "
@@ -511,16 +466,58 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           + (!isApplet ? "" : "\nappletId:" + htmlName
               + (isSignedApplet ? " (signed)" : "")));
     }
-
     zap(false, true, false); // here to allow echos
     global.setParameterValue("language", GT.getLanguage());
     stateManager.setJmolDefaults();
+ 
+  }
+
+  private boolean isPreviewOnly = false;
+
+  public boolean isPreviewOnly() {
+    return isPreviewOnly;
+  }
+
+  public boolean haveDisplay = false;
+  public boolean autoExit = false;
+
+  private boolean mustRender = true;
+  private boolean isPrintOnly = false;
+  private boolean isCmdLine_C_Option = false;
+  private boolean isCmdLine_c_or_C_Option = false;
+  private boolean listCommands = false;
+  private boolean useCommandThread = false;
+  private boolean isSignedApplet = false;
+  private boolean isSignedAppletLocal = false;
+
+  private String commandOptions;
+  private boolean noGraphicsAllowed;
+  private boolean restrictedFileAccess;
+  
+  public boolean isRestricted() {
+    // disables WRITE, LOAD file:/, set logFile 
+    // command line -g and -w options ARE available for final writing of image
+    return restrictedFileAccess;
+  }
+
+  public boolean isHeadless() {
+    // determined by GraphicsEnvironment.isHeadless()
+    //   from java -Djava.awt.headless=true
+    // disables command threading
+    // disables DELAY, TIMEOUT, PAUSE, LOOP, GOTO, SPIN <rate>, ANIMATION ON
+    // turns SPIN <rate> <end> into just ROTATE <end>
+    return apiPlatform.isHeadless();
+  }
+
+  public String getCommandOptions() {
+    return commandOptions;
   }
 
   private void setStartupBooleans() {
     setBooleanProperty("_applet", isApplet);
     setBooleanProperty("_signedApplet", isSignedApplet);
     setBooleanProperty("_headless", apiPlatform.isHeadless());
+    setBooleanProperty("_restricted", restrictedFileAccess);
     setBooleanProperty("_useCommandThread", useCommandThread);
   }
 
@@ -533,8 +530,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public String getExportDriverList() {
-    return (apiPlatform.isHeadless() ? "" 
-        : (String) global.getParameter("exportDrivers"));
+    return (restrictedFileAccess ? "" : (String) global.getParameter("exportDrivers"));
   }
 
   String getHtmlName() {
@@ -5519,7 +5515,7 @@ private void zap(String msg) {
   }
 
   public String dialogAsk(String type, String fileName) {
-    return (isKiosk || isHeadless() ? null : statusManager.dialogAsk(type, fileName));
+    return (isKiosk || restrictedFileAccess ? null : statusManager.dialogAsk(type, fileName));
   }
 
   public int getScriptDelay() {
@@ -7953,12 +7949,9 @@ private void zap(String msg) {
                                       float degreesPerSecond, float endDegrees,
                                       boolean isSpin, BitSet bsSelected) {
     // Eval: rotate FIXED
-    if (Float.isNaN(degreesPerSecond) || degreesPerSecond == 0
-        || endDegrees == 0)
-      return;
-    transformManager.rotateAxisAngleAtCenter(rotCenter, rotAxis,
-        degreesPerSecond, endDegrees, isSpin, bsSelected);
-    refresh(-1, "rotateAxisAngleAtCenter");
+    if (transformManager.rotateAxisAngleAtCenter(rotCenter, rotAxis,
+        degreesPerSecond, endDegrees, isSpin, bsSelected))
+      refresh(-1, "rotateAxisAngleAtCenter");
   }
 
   public void rotateAboutPointsInternal(Point3f point1, Point3f point2,
@@ -7967,17 +7960,10 @@ private void zap(String msg) {
                                         BitSet bsSelected,
                                         Vector3f translation, List<Point3f> finalPoints) {
     // Eval: rotate INTERNAL
-    if ((translation == null || translation.length() < 0.001)
-        && (!isSpin || endDegrees == 0 || Float.isNaN(degreesPerSecond) || degreesPerSecond == 0)
-        && (isSpin || endDegrees == 0))
-      return;
-    // System.out.println("viewer " + endDegrees + "\npoints " +
-    // Escape.escape(point1) + " " + Escape.escape(point2) + "\ntrans:" +
-    // translation);
-    transformManager.rotateAboutPointsInternal(point1, point2,
+    if (transformManager.rotateAboutPointsInternal(point1, point2,
         degreesPerSecond, endDegrees, false, isSpin, bsSelected, false,
-        translation, finalPoints);
-    refresh(-1, "rotateAxisAboutPointsInternal");
+        translation, finalPoints))
+      refresh(-1, "rotateAxisAboutPointsInternal");
   }
 
   int getPickingSpinRate() {
@@ -8548,7 +8534,7 @@ private void zap(String msg) {
    */
   @Override
   public String clipImage(String text) {
-    if (isHeadless())
+    if (isRestricted())
       return "no";
     JmolImageCreatorInterface c;
     try {
@@ -9260,7 +9246,7 @@ private void zap(String msg) {
   }
 
   public OutputStream getOutputStream(String localName, String[] fullPath) {
-    if (isHeadless())
+    if (isRestricted())
       return null;
     Object ret = createImage(localName, "OutputStream", null,
         Integer.MIN_VALUE, 0, 0, fullPath, true);
@@ -9355,8 +9341,9 @@ private void zap(String msg) {
         value = null;
       }
     }
-    if (value == null || isHeadless()) {
+    if (value == null || isRestricted()) {
       Logger.info(GT._("Cannot set log file path."));
+      value = null;
     } else {
       if (path != null) 
         Logger.info(GT._("Setting log file to {0}", path));
@@ -10175,9 +10162,6 @@ private void zap(String msg) {
     return modelSet.getBaseModelBitSet(getCurrentModelIndex());
   }
 
-  public boolean isHeadless() {
-    return apiPlatform.isHeadless();
-  }
 
   Map<String, TimeoutThread> timeouts;
   public void clearTimeouts() {

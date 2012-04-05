@@ -439,7 +439,7 @@ abstract class TransformManager {
    * **************************************************************
    */
 
-  void rotateAxisAngleAtCenter(Point3f rotCenter, Vector3f rotAxis,
+  boolean rotateAxisAngleAtCenter(Point3f rotCenter, Vector3f rotAxis,
                                float degreesPerSecond, float endDegrees,
                                boolean isSpin, BitSet bsAtoms) {
 
@@ -450,8 +450,14 @@ abstract class TransformManager {
     setSpinOn(false);
     setNavOn(false);
 
-    if (Float.isNaN(degreesPerSecond) || degreesPerSecond == 0)
-      return;
+    if (viewer.isHeadless()) {
+      if (isSpin && endDegrees == Float.MAX_VALUE)
+        return false;
+      isSpin = false;
+    }    
+    if (Float.isNaN(degreesPerSecond) || degreesPerSecond == 0
+        || endDegrees == 0)
+      return false;
 
     if (rotCenter != null) {
       setRotationPointXY(rotCenter);
@@ -465,11 +471,12 @@ abstract class TransformManager {
       isSpinFixed = true;
       isSpinSelected = (bsAtoms != null);
       setSpinOn(true, endDegrees, null, bsAtoms, false);
-      return;
+      return false;
     }
     float radians = endDegrees * JmolConstants.radiansPerDegree;
     fixedRotationAxis.set(rotAxis, endDegrees);
     rotateAxisAngleRadiansFixed(radians, bsAtoms);
+    return true;
   }
 
   synchronized void rotateAxisAngleRadiansFixed(float angleRadians,
@@ -485,7 +492,7 @@ abstract class TransformManager {
    * ROTATIONS**************************************************************
    */
 
-  void rotateAboutPointsInternal(Point3f point1, Point3f point2,
+  boolean rotateAboutPointsInternal(Point3f point1, Point3f point2,
                                  float degreesPerSecond, float endDegrees,
                                  boolean isClockwise, boolean isSpin,
                                  BitSet bsAtoms, boolean isGesture,
@@ -496,10 +503,16 @@ abstract class TransformManager {
     setSpinOn(false);
     setNavOn(false);
 
+    if (viewer.isHeadless()) {
+      if (isSpin && endDegrees == Float.MAX_VALUE)
+        return false;
+      isSpin = false;
+    }
+
     if ((translation == null || translation.length() < 0.001)
         && (!isSpin || endDegrees == 0 || Float.isNaN(degreesPerSecond) || degreesPerSecond == 0)
         && (isSpin || endDegrees == 0))
-      return;
+      return false;
 
     Vector3f axis = new Vector3f(point2);
     axis.sub(point1);
@@ -531,11 +544,12 @@ abstract class TransformManager {
       isSpinFixed = false;
       isSpinSelected = isSelected;
       setSpinOn(true, endDegrees, finalPoints, bsAtoms, isGesture);
-      return;
+      return false;
     }
     float radians = endDegrees * JmolConstants.radiansPerDegree;
     internalRotationAxis.set(axis, radians);
     rotateAxisAngleRadiansInternal(radians, bsAtoms);
+    return true;
   }
 
   synchronized void rotateAxisAngleRadiansInternal(float radians, BitSet bsAtoms) {

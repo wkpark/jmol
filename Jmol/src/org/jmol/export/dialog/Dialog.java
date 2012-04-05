@@ -81,7 +81,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
   private static FileChooser openChooser;
   private FilePreview openPreview;
 
-  public String getOpenFileNameFromDialog(String appletContext,
+  public String getOpenFileNameFromDialog(String commandOptions,
                                           JmolViewer viewer,
                                           String fileName, Object historyFileObject,
                                           String windowName,
@@ -100,7 +100,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
         && (viewer.isApplet() || Boolean.valueOf(
             System.getProperty("openFilePreview", "true")).booleanValue())) {
       openPreview = new FilePreview(openChooser, viewer.getModelAdapter(), allowAppend,
-          appletContext);
+          commandOptions);
     }
 
     if (historyFile != null) {
@@ -538,7 +538,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
         public void run() {
           if (dialogType.equals("load")) {
             outputFileName = getOpenFileNameFromDialog(
-                viewer.getAppletContext(), viewer, inputFileName, null, null, false);
+                viewer.getCommandOptions(), viewer, inputFileName, null, null, false);
             return;
           }
           if (dialogType.equals("save")) {

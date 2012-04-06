@@ -69,7 +69,46 @@ public class MoldenReader extends MopacSlaterReader {
     checkOrbitalType(line);
     return true;
   }
-  
+
+  @Override
+  public void finalizeReader() {
+    // a hack to make up for Molden's ** limitation in writing shell information
+    // assumption is that there is an atom of the same type just prior to the missing one.
+    if (bsBadIndex.isEmpty())
+      return;
+    try {
+      int ilast = 0;
+      Atom[] atoms = atomSetCollection.getAtoms();
+      int nAtoms = atomSetCollection.getAtomCount();
+      bsAtomOK.set(nAtoms);
+      int n = shells.size();
+      for (int i = 0; i < n; i++) {
+        int iatom = shells.get(i)[0];
+        if (iatom != Integer.MAX_VALUE) {
+          ilast = atoms[iatom].elementNumber;
+          continue;
+        }
+        for (int j = bsAtomOK.nextClearBit(0); j >= 0; j = bsAtomOK
+            .nextClearBit(j + 1)) {
+          if (atoms[j].elementNumber == ilast) {
+            shells.get(i)[0] = j;
+            Logger.info("MoldenReader assigning shells starting with " + i
+                + " for ** to atom " + (j + 1) + " z " + ilast);
+            for (; ++i < n && !bsBadIndex.get(i)
+                && shells.get(i)[0] == Integer.MAX_VALUE;)
+              shells.get(i)[0] = j;
+            i--;
+            bsAtomOK.set(j);
+            break;
+          }
+        }
+      }
+    } catch (Exception e) {
+      Logger.error("Molden reader could not assign shells -- abandoning MOs");
+      atomSetCollection.setAtomSetAuxiliaryInfo("moData", null);
+    }
+
+  }
   private void readAtoms() throws Exception {
     /* 
      [Atoms] {Angs|AU}
@@ -112,6 +151,9 @@ public class MoldenReader extends MopacSlaterReader {
     }    
   }
   
+  private BitSet bsAtomOK = new BitSet();
+  private BitSet bsBadIndex = new BitSet();
+  
   private boolean readGaussianBasis() throws Exception {
     /* 
      [GTO]
@@ -141,8 +183,13 @@ public class MoldenReader extends MopacSlaterReader {
       // The 0 following the atom index is now optional
       String[] tokens = getTokens();
 
+      // Molden may have ** in place of the atom index when there are > 99 atoms
       atomIndex = parseInt(tokens[0]) - 1;
-
+      if (atomIndex == Integer.MAX_VALUE) {
+        bsBadIndex.set(shells.size());
+      } else {
+        bsAtomOK.set(atomIndex);
+      }
       // Next is a sequence of shells and their primitives
       while (readLine() != null && line.trim().length() > 0) {
         // Next line has the shell label and a count of the number of primitives

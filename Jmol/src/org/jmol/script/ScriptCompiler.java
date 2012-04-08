@@ -255,7 +255,8 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     if (logMessages)
       Logger.info("addTokenToPrefix" + token);
     ltoken.add(token);
-    lastToken = token;
+    if (token.tok != Token.nada)
+      lastToken = token;
   }
 
   private final static int OK = 0;
@@ -732,7 +733,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
 
     }
     if (endOfLine) {
-      if (flowContext != null && flowContext.checkForceEndIf()) {
+      if (tokCommand != Token.nada && flowContext != null && flowContext.checkForceEndIf()) {
         forceFlowEnd(flowContext.token);
         isEndOfCommand = true;
         cchToken = 0;

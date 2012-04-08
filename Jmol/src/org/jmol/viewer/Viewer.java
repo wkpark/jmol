@@ -8609,7 +8609,7 @@ private void zap(String msg) {
   @Override
   public Object createImage(String fileName, String type, Object text_or_bytes,
                             int quality, int width, int height) {
-    System.out.println("createimage " + fileName + " " + type + " " + text_or_bytes + " " + quality + " " + width + " " + height);
+    //System.out.println("createimage " + fileName + " " + type + " " + text_or_bytes + " " + quality + " " + width + " " + height);
     return createImage(fileName, type, text_or_bytes, quality, width, height,
         null, true);
   }

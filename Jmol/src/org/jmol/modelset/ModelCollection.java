@@ -3020,7 +3020,7 @@ abstract public class ModelCollection extends BondCollection {
     if (asV3000) {
       mol.append("  0  0  0  0  0  0            999 V3000");
     } else if (asChemDoodle) {
-      mol.append("{\"mol\":{\"a\":[");
+      mol.append("{\"mol\":{\"scaling\":[20,-20,20],\"a\":[");
     } else {
       TextFormat.rFill(mol, "   ", "" + nAtoms);
       TextFormat.rFill(mol, "   ", "" + nBonds);
@@ -3129,8 +3129,8 @@ abstract public class ModelCollection extends BondCollection {
         mol.append("\"c\":").append(charge).append(",");
       if (iso != 0 && iso != Elements.getNaturalIsotope(elemNo))
         mol.append("\"m\":").append(iso).append(",");
-      mol.append("\"x\":").append(a.x).append(",\"y\":").append(a.y).append(
-          ",\"z\":").append(a.z).append("}");
+      mol.append("\"x\":").append(a.x*20).append(",\"y\":").append(-a.y*20).append(
+          ",\"z\":").append(a.z*20).append("}");
     } else {
       mol.append(TextFormat.sprintf("%10.5p%10.5p%10.5p",
           new Object[] { pTemp }));

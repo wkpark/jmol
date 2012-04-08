@@ -13802,15 +13802,13 @@ public class ScriptEvaluator {
   }
 
   String write(Token[] args) throws ScriptException {
-    if (viewer.isRestricted())
-      return "write disabled";
     int pt = 0, pt0 = 0;
     boolean isCommand, isShow;
     if (args == null) {
       args = statement;
       pt = pt0 = 1;
       isCommand = true;
-      isShow = (viewer.isApplet() && !viewer.isSignedApplet());
+      isShow = (viewer.isApplet() && !viewer.isSignedApplet() || viewer.isRestricted());
     } else {
       isCommand = false;
       isShow = true;
@@ -14013,7 +14011,7 @@ public class ScriptEvaluator {
           if (type != "VAR" && pt == pt0 + 1)
             type = "image";
         }
-        if (fileName.equalsIgnoreCase("clipboard"))
+        if (fileName.equalsIgnoreCase("clipboard") || viewer.isRestricted())
           fileName = null;
         break;
       default:
@@ -14207,7 +14205,7 @@ public class ScriptEvaluator {
       if (!isCommand)
         return data;
       if (isShow) {
-        showString(data);
+        showString(data, true);
         return "";
       }
       if (bytes != null && bytes instanceof String) {

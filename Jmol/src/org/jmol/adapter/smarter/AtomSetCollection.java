@@ -53,6 +53,7 @@ import org.jmol.util.TextFormat;
 public class AtomSetCollection {
 
   private String fileTypeName;
+  
   public String getFileTypeName() {
     return fileTypeName;
   }
@@ -656,7 +657,7 @@ public class AtomSetCollection {
   int connectNextAtomIndex = 0;
   int connectNextAtomSet = 0;
   int[] connectLast;
-  
+
   public void addConnection(int[] is) {
     if (vConnect == null) {
       connectLast = null;
@@ -673,7 +674,11 @@ public class AtomSetCollection {
     vConnect.add(connectLast = is);
   }
 
-  public void connectAll(int maxSerial) {
+  private void connectAllBad(int maxSerial) {
+    // between 12.1.51-12.2.20 and 12.3.0-12.3.20 we have 
+    // a problem in that this method was used for connect
+    // this means that scripts created during this time could have incorrect 
+    // BOND indexes in the state script. It was when we added reading of H atoms
     int firstAtom = connectNextAtomIndex;
     for (int i = connectNextAtomSet; i < atomSetCount; i++) {
       setAtomSetAuxiliaryInfo("PDB_CONECT_firstAtom_count_max", new int[] {
@@ -682,6 +687,30 @@ public class AtomSetCollection {
         setAtomSetAuxiliaryInfo("PDB_CONECT_bonds", vConnect, i);
         setGlobalBoolean(GLOBAL_CONECT);
       }
+      firstAtom += atomSetAtomCounts[i];
+    }
+    vConnect = null;
+    connectNextAtomSet = currentAtomSetIndex + 1;
+    connectNextAtomIndex = firstAtom;
+  }
+
+
+  public void connectAll(int maxSerial, boolean isConnectStateBug) {
+    if (currentAtomSetIndex < 0)
+      return;
+    if (isConnectStateBug) {
+      connectAllBad(maxSerial);
+      return;
+    }
+    setAtomSetAuxiliaryInfo("PDB_CONECT_firstAtom_count_max", new int[] {
+        atomSetAtomIndexes[currentAtomSetIndex],
+        atomSetAtomCounts[currentAtomSetIndex], maxSerial });
+    if (vConnect == null)
+      return;
+    int firstAtom = connectNextAtomIndex;
+    for (int i = connectNextAtomSet; i < atomSetCount; i++) {
+      setAtomSetAuxiliaryInfo("PDB_CONECT_bonds", vConnect, i);
+      setGlobalBoolean(GLOBAL_CONECT);
       firstAtom += atomSetAtomCounts[i];
     }
     vConnect = null;

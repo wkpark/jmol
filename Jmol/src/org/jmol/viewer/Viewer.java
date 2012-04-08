@@ -10049,10 +10049,11 @@ private void zap(String msg) {
         int main = Integer.valueOf(tokens[0]).intValue(); //11
         int sub = Integer.valueOf(tokens[1]).intValue(); //9
         int minor = Integer.valueOf(tokens[2]).intValue(); //24
+        if (minor == Integer.MIN_VALUE) // RCxxx
+          minor = 0;
         stateScriptVersionInt = main * 10000 + sub * 100 + minor;
         // here's why:
-        global.legacyAutoBonding = (stateScriptVersionInt < 110924);
-        
+        global.legacyAutoBonding = (stateScriptVersionInt < 110924);        
         return;
       } catch (Exception e) {
         //

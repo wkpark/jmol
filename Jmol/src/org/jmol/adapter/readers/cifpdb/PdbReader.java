@@ -77,6 +77,9 @@ public class PdbReader extends AtomSetCollectionReader {
   
   private boolean isMultiModel;  // MODEL ...
   private boolean haveMappedSerials;
+  private boolean isConnectStateBug;
+  private boolean isLegacyModelType;
+
   
   private final Map<String, Map<String, Boolean>> htFormul = new Hashtable<String, Map<String, Boolean>>();
   private Map<String, String> htHetero;
@@ -117,7 +120,7 @@ public class PdbReader extends AtomSetCollectionReader {
   private int lastTargetSerial = Integer.MIN_VALUE;
   private int tlsGroupID;
 
- final private static String lineOptions = 
+  final private static String lineOptions = 
    "ATOM    " + //0
    "HETATM  " + //1
    "MODEL   " + //2
@@ -158,6 +161,9 @@ public class PdbReader extends AtomSetCollectionReader {
      sbIgnored = new StringBuffer();
      sbSelected = new StringBuffer();
    }
+   isLegacyModelType = (stateScriptVersionInt < 120000);
+   isConnectStateBug = (stateScriptVersionInt >= 120151 && stateScriptVersionInt <= 120220
+         || stateScriptVersionInt >= 120300 && stateScriptVersionInt <= 120320);
  }
 
   @Override
@@ -185,12 +191,12 @@ public class PdbReader extends AtomSetCollectionReader {
         handleTlsMissingModels();
         return checkLastModel();
       }
-      atomSetCollection.connectAll(maxSerial);
+      atomSetCollection.connectAll(maxSerial, isConnectStateBug);
       if (atomCount > 0)
         applySymmetryAndSetTrajectory();
       // supposedly MODEL is only for NMR
       model(modelNo);
-      if (stateScriptVersionInt < 120000 || !isAtom) // Jmol 12.0.RC24 fixed this bug, but for earlier scripts we need to unfix it.
+      if (isLegacyModelType || !isAtom) // Jmol 12.0.RC24 fixed this bug, but for earlier scripts we need to unfix it.
         return true;
     }
     /*
@@ -279,7 +285,7 @@ public class PdbReader extends AtomSetCollectionReader {
   @Override
   protected void finalizeReader() throws Exception {
     checkNotPDB();
-    atomSetCollection.connectAll(maxSerial);
+    atomSetCollection.connectAll(maxSerial, isConnectStateBug);
     if (vBiomolecules != null && vBiomolecules.size() > 0
         && atomSetCollection.getAtomCount() > 0) {
       atomSetCollection.setAtomSetAuxiliaryInfo("biomolecules", vBiomolecules);

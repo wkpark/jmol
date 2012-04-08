@@ -44,22 +44,34 @@ final public class JmolConstants {
   // callback constants --> org.jmol.constant.EnumCallback
   // draw constants --> org.jmol.shapespecial.draw.EnumCallback
   
-  public final static String copyright = "(C) 2009 Jmol Development";
+  public final static String copyright = "(C) 2012 Jmol Development";
   public final static String version;
+  public final static String date;
 
   static {
     String tmpVersion = null;
+    String tmpDate = null;
     Properties props = new Properties();
 
     // Reading version from resource   inside jar
-    if (tmpVersion == null) {
+    if ((tmpVersion == null) || (tmpDate == null)) {
       BufferedInputStream bis = null;
       InputStream is = null;
       try {
         is = JmolConstants.class.getClassLoader().getResourceAsStream("org/jmol/viewer/Jmol.properties");        
         bis = new BufferedInputStream(is);
         props.load(bis);
-        tmpVersion = props.getProperty("version", tmpVersion);
+        if (tmpVersion == null) {
+          tmpVersion = props.getProperty("version", tmpVersion);
+        }
+        if (tmpDate == null) {
+          tmpDate = props.getProperty("date", tmpDate);
+          if (tmpDate != null) {
+            tmpDate = tmpDate.substring(7, 23);
+            // NOTE : date is update in the properties by SVN, and is in the format
+            // $Date$"
+          }
+        }
       } catch (IOException e) {
         // Nothing to do
       } finally {
@@ -80,11 +92,9 @@ final public class JmolConstants {
       }
     }
     version = (tmpVersion != null ? tmpVersion : "(Unknown version)");
+    date = (tmpDate != null ? tmpDate : "(Unknown date)");
   }
-    
-  public final static String cvsDate = "$Date$"; //
-  public final static String date = cvsDate.substring(7, 23);
-    
+
   public final static boolean officialRelease = false;
 
   public final static String CLASSBASE_OPTIONS = "org.jmol.";

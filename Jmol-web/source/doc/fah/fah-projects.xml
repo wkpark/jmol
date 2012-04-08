@@ -9329,22 +9329,31 @@
   <fah_proj number="7158" name="hairpin" public="y"
     server="128.143.199.96" atoms="77354" preferred="2.6" deadline="4"
     credit="541.0" frames="100" code="A3" contact="pela3247" kfactor="3.0"/>
-  <fah_proj number="7162" name="influenza_smp" public="n"
+  <fah_proj number="7162" name="influenza_smp" public="y"
     server="128.143.199.96" atoms="77077" preferred="2.6" deadline="4.3"
     credit="536.0" frames="100" code="A3" contact="pela3247" kfactor="3.01"/>
-  <fah_proj number="7163" name="influenza_smp" public="n"
+  <fah_proj number="7163" name="influenza_smp" public="y"
     server="128.143.199.96" atoms="77445" preferred="2.6" deadline="4.3"
     credit="539.0" frames="100" code="A3" contact="pela3247" kfactor="3.03"/>
-  <fah_proj number="7164" name="influenza_smp" public="n"
+  <fah_proj number="7164" name="influenza_smp" public="y"
     server="128.143.199.96" atoms="77032" preferred="2.6" deadline="4.3"
     credit="538.0" frames="100" code="A3" contact="pela3247" kfactor="3.02"/>
-  <fah_proj number="7165" name="influenza_smp" public="n"
+  <fah_proj number="7165" name="influenza_smp" public="y"
     server="128.143.199.96" atoms="77400" preferred="2.6" deadline="4.4"
     credit="541.0" frames="100" code="A3" contact="pela3247" kfactor="2.97"/>
-  <fah_proj number="7166" name="influenza_smp" public="n"
+  <fah_proj number="7166" name="influenza_smp" public="y"
     server="128.143.199.96" atoms="77017" preferred="2.6" deadline="4.3"
     credit="538.0" frames="100" code="A3" contact="pela3247" kfactor="3.02"/>
-  <fah_proj number="7167" name="influenza_smp" public="n"
+  <fah_proj number="7167" name="influenza_smp" public="y"
+    server="128.143.199.96" atoms="77385" preferred="2.6" deadline="4.4"
+    credit="542.0" frames="100" code="A3" contact="pela3247" kfactor="2.97"/>
+  <fah_proj number="7168" name="influenza_smp" public="n"
+    server="128.143.199.96" atoms="77373" preferred="2.6" deadline="4.4"
+    credit="542.0" frames="100" code="A3" contact="pela3247" kfactor="2.97"/>
+  <fah_proj number="7169" name="influenza_smp" public="n"
+    server="128.143.199.96" atoms="77400" preferred="2.6" deadline="4.4"
+    credit="542.0" frames="100" code="A3" contact="pela3247" kfactor="2.97"/>
+  <fah_proj number="7170" name="influenza_smp" public="n"
     server="128.143.199.96" atoms="77385" preferred="2.6" deadline="4.4"
     credit="542.0" frames="100" code="A3" contact="pela3247" kfactor="2.97"/>
 
@@ -9398,10 +9407,10 @@
   <fah_proj number="7611" name="p7611" public="y"
     server="171.64.65.104" atoms="13564" preferred="11.71" deadline="19.52"
     credit="788.0" frames="100" code="A4" contact="tjlane" kfactor="0.75"/>
-  <fah_proj number="7612" name="p7612" public="n"
+  <fah_proj number="7612" name="p7612" public="y"
     server="171.64.65.105" atoms="562" preferred="12" deadline="17"
     credit="4991.0" frames="100" code="OG" contact="tjlane" kfactor="0.0"/>
-  <fah_proj number="7613" name="p7613" public="n"
+  <fah_proj number="7613" name="p7613" public="y"
     server="171.64.65.105" atoms="612" preferred="13" deadline="18"
     credit="5383.0" frames="100" code="OG" contact="tjlane" kfactor="0.0"/>
   <fah_proj number="7620" name="p7620" public="y"
@@ -9422,16 +9431,19 @@
   <fah_proj number="7632" name="p7632" public="n"
     server="171.64.65.105" atoms="21443" preferred="13" deadline="18"
     credit="6094.0" frames="100" code="OG" contact="tjlane" kfactor="0.0"/>
-  <fah_proj number="7640" name="p7640" public="n"
+  <fah_proj number="7640" name="p7640" public="y"
     server="171.64.65.93" atoms="21443" preferred="13" deadline="18"
     credit="7718.0" frames="100" code="OG" contact="tjlane" kfactor="0.0"/>
-  <fah_proj number="7641" name="p7641" public="n"
+  <fah_proj number="7641" name="p7641" public="y"
     server="171.64.65.93" atoms="21443" preferred="13" deadline="18"
     credit="7718.0" frames="100" code="OG" contact="tjlane" kfactor="0.0"/>
-  <fah_proj number="7642" name="p7642" public="n"
+  <fah_proj number="7642" name="p7642" public="y"
     server="171.64.65.93" atoms="21443" preferred="13" deadline="18"
     credit="7718.0" frames="100" code="OG" contact="tjlane" kfactor="0.0"/>
-  <fah_proj number="7644" name="p7644" public="n"
+  <fah_proj number="7643" name="p7643" public="y"
+    server="171.64.65.93" atoms="21443" preferred="13" deadline="18"
+    credit="7718.0" frames="100" code="OG" contact="tjlane" kfactor="0.0"/>
+  <fah_proj number="7644" name="p7644" public="y"
     server="171.64.65.93" atoms="21443" preferred="13" deadline="18"
     credit="7718.0" frames="100" code="OG" contact="tjlane" kfactor="0.0"/>
   <fah_proj number="7698" name="p7698" public="n"
@@ -9559,6 +9571,12 @@
   <fah_proj number="8011" name="p8011" public="y" file="xyz"
     server="171.67.108.60" atoms="23000" preferred="2.13" deadline="4.62"
     credit="106.6" frames="100" code="A4" contact="shukla" kfactor="0.75" contrib="Masahiro Tagashira"/>
+  <fah_proj number="8012" name="p8012" public="y"
+    server="171.67.108.60" atoms="36000" preferred="3.32" deadline="7.2"
+    credit="180.6" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
+  <fah_proj number="8013" name="p8013" public="y"
+    server="171.67.108.60" atoms="36000" preferred="3.32" deadline="7.2"
+    credit="180.6" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
   <fah_proj number="8021" name="p8021" public="y"
     server="171.67.108.58" atoms="23850" preferred="2" deadline="4.349988425925926"
     credit="108.0" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
@@ -9568,6 +9586,9 @@
   <fah_proj number="8023" name="p8023" public="n"
     server="171.67.108.144" atoms="890" preferred="4.45" deadline="10"
     credit="1200.0" frames="100" code="OC" contact="shukla" kfactor="0.0"/>
+  <fah_proj number="8024" name="p8024" public="y"
+    server="171.67.108.59" atoms="36050" preferred="3.21" deadline="7.11"
+    credit="185.0" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
   <fah_proj number="8031" name="p8031" public="y"
     server="171.67.108.141" atoms="1832" preferred="9.86" deadline="13.78"
     credit="3843.4" frames="100" code="OG" contact="shukla" kfactor="0.0"/>
@@ -9577,11 +9598,28 @@
   <fah_proj number="8033" name="p8033" public="y"
     server="171.67.108.143" atoms="1832" preferred="9.86" deadline="13.78"
     credit="3843.4" frames="100" code="OG" contact="shukla" kfactor="0.0"/>
+  <fah_proj number="8034" name="p8034" public="y"
+    server="171.67.108.142" atoms="1832" preferred="9.86" deadline="13.78"
+    credit="3843.4" frames="100" code="OG" contact="shukla" kfactor="0.0"/>
 
   <!-- Projects 8100 to 8199 -->
   <fah_proj number="8101" name="ha_formarta" public="n"
     server="128.143.231.201" atoms="1340422" preferred="2.4" deadline="4"
     credit="22607.0" frames="100" code="A5" contact="kasson" kfactor="49.43"/>
+
+  <!-- Projects 8400 to 8499 -->
+  <fah_proj number="8400" name="p8400" public="n"
+    server="171.64.65.55" atoms="32767" preferred="3" deadline="4"
+    credit="453.0" frames="100" code="A3" contact="dvanatta" kfactor="0.75"/>
+  <fah_proj number="8401" name="p8401" public="n"
+    server="171.64.65.55" atoms="37675" preferred="3" deadline="4"
+    credit="497.0" frames="100" code="A3" contact="dvanatta" kfactor="0.75"/>
+  <fah_proj number="8410" name="p8410" public="n"
+    server="171.64.65.55" atoms="32770" preferred="3" deadline="4"
+    credit="454.0" frames="100" code="A3" contact="dvanatta" kfactor="0.75"/>
+  <fah_proj number="8411" name="p8411" public="n"
+    server="171.64.65.55" atoms="32657" preferred="3" deadline="4"
+    credit="497.0" frames="100" code="A3" contact="dvanatta" kfactor="0.75"/>
 
   <!-- Projects 9900 to 9999 -->
   <fah_proj number="9900" name="p9900_supervillin_e1" public="y"

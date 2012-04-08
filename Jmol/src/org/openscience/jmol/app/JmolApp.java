@@ -501,7 +501,7 @@ public class JmolApp {
     
   }
 
-  public void startViewer(JmolViewer viewer, SplashInterface splash) { 
+  public void startViewer(JmolViewer viewer, SplashInterface splash, boolean isJmolData) { 
     try {
     } catch (Throwable t) {
       System.out.println("uncaught exception: " + t);
@@ -532,7 +532,7 @@ public class JmolApp {
         Logger.info("Executing script: " + script1);
       if (splash != null)
         splash.showStatus(GT._("Executing script 1..."));
-      viewer.script(script1);
+      runScript(script1, isJmolData, viewer);
     }
 
     // next the file
@@ -552,7 +552,7 @@ public class JmolApp {
         while (scan.hasNextLine() && (linein = scan.nextLine()) != null
             && !linein.equals("!quit"))
           script.append(linein).append("\n");
-        viewer.script(script.toString());
+        runScript(script.toString(), isJmolData, viewer);
       } else {
         viewer.evalFile(scriptFilename);
       }
@@ -563,10 +563,19 @@ public class JmolApp {
         Logger.info("Executing script: " + script2);
       if (splash != null)
         splash.showStatus(GT._("Executing script 2..."));
-      viewer.script(script2);
+      runScript(script2, isJmolData, viewer);
     }    
     if (doExit)
       System.exit(0);
   }
+
+  private void runScript(String script, boolean outputResults, JmolViewer viewer) {
+    if (outputResults)
+      System.out.print(viewer.scriptWaitStatus(script, null));
+    else
+      viewer.script(script);
+  }
+  
+  
   
 }

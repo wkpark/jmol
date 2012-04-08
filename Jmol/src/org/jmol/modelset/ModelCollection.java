@@ -2914,11 +2914,12 @@ abstract public class ModelCollection extends BondCollection {
 
   public String getModelExtract(BitSet bs, boolean doTransform,
                                 boolean isModelKit, String type) {
-    boolean asV3000 = (type.equalsIgnoreCase("V3000"));
-    boolean asSDF = (type.equalsIgnoreCase("SDF"));
-    boolean asXYZVIB = (type.equalsIgnoreCase("XYZVIB"));
+    boolean asV3000 = type.equalsIgnoreCase("V3000");
+    boolean asSDF = type.equalsIgnoreCase("SDF");
+    boolean asXYZVIB = type.equalsIgnoreCase("XYZVIB");
+    boolean asChemDoodle = type.equalsIgnoreCase("CD");
     StringBuffer mol = new StringBuffer();
-    if (!asXYZVIB) {
+    if (!asXYZVIB && !asChemDoodle) {
       mol.append(isModelKit ? "Jmol Model Kit" : viewer.getFullPathName()
           .replace('\\', '/'));
       String version = Viewer.getJmolVersion();
@@ -2955,7 +2956,7 @@ abstract public class ModelCollection extends BondCollection {
         BitSet bsTemp = BitSetUtil.copy(bsAtoms);
         bsTemp.and(getModelAtomBitSetIncludingDeleted(i, false));
         bsBonds = getCovalentBondsForAtoms(bsTemp);
-        if (!(isOK = addMolFile(mol, bsTemp, bsBonds, false, q)))
+        if (!(isOK = addMolFile(mol, bsTemp, bsBonds, false, false, q)))
           break;
         mol.append("$$$$\n");
       }
@@ -3002,28 +3003,31 @@ abstract public class ModelCollection extends BondCollection {
               null));
       }
     } else {
-      isOK = addMolFile(mol, bsAtoms, bsBonds, asV3000, q);
+      isOK = addMolFile(mol, bsAtoms, bsBonds, asV3000, asChemDoodle, q);
     }
     return (isOK ? mol.toString()
         : "ERROR: Too many atoms or bonds -- use V3000 format.");
   }
 
   private boolean addMolFile(StringBuffer mol, BitSet bsAtoms, BitSet bsBonds,
-                             boolean asV3000, Quaternion q) {
+                             boolean asV3000, boolean asChemDoodle, Quaternion q) {
     int nAtoms = bsAtoms.cardinality();
     int nBonds = bsBonds.cardinality();
-    if (!asV3000 && (nAtoms > 999 || nBonds > 999))
+    if (!asV3000 && !asChemDoodle && (nAtoms > 999 || nBonds > 999))
       return false;
     int[] atomMap = new int[atomCount];
     Point3f pTemp = new Point3f();
     if (asV3000) {
       mol.append("  0  0  0  0  0  0            999 V3000");
+    } else if (asChemDoodle) {
+      mol.append("{\"mol\":{\"a\":[");
     } else {
       TextFormat.rFill(mol, "   ", "" + nAtoms);
       TextFormat.rFill(mol, "   ", "" + nBonds);
       mol.append("  0  0  0  0              1 V2000");
     }
-    mol.append("\n");
+    if (!asChemDoodle)
+      mol.append("\n");
     if (asV3000) {
       mol.append("M  V30 BEGIN CTAB\nM  V30 COUNTS ").append(nAtoms)
           .append(" ").append(nBonds).append(" 0 0 0\n").append(
@@ -3031,18 +3035,23 @@ abstract public class ModelCollection extends BondCollection {
     }
     for (int i = bsAtoms.nextSetBit(0), n = 0; i >= 0; i = bsAtoms
         .nextSetBit(i + 1))
-      getAtomRecordMOL(mol, atomMap[i] = ++n, atoms[i], q, pTemp, asV3000);
+      getAtomRecordMOL(mol, atomMap[i] = ++n, atoms[i], q, pTemp, asV3000, asChemDoodle);
     if (asV3000) {
       mol.append("M  V30 END ATOM\nM  V30 BEGIN BOND\n");
+    } else if (asChemDoodle) {
+      mol.append("],\"b\":[");
     }
     for (int i = bsBonds.nextSetBit(0), n = 0; i >= 0; i = bsBonds
         .nextSetBit(i + 1))
-      getBondRecordMOL(++n, mol, i, atomMap, asV3000);
+      getBondRecordMOL(mol, ++n, bonds[i], atomMap, asV3000, asChemDoodle);
     // 21 21 0 0 0
     if (asV3000) {
       mol.append("M  V30 END BOND\nM  V30 END CTAB\n");
     }
-    mol.append("M  END\n");
+    if (asChemDoodle) 
+      mol.append("]}}");
+    else
+      mol.append("M  END\n");
     return true;
   }
 
@@ -3083,8 +3092,9 @@ abstract public class ModelCollection extends BondCollection {
   M  END
    */
 
-  private void getAtomRecordMOL(StringBuffer sb, int i, Atom a, Quaternion q,
-                                Point3f pTemp, boolean asV3000) {
+  private void getAtomRecordMOL(StringBuffer mol, int n, Atom a, Quaternion q,
+                                Point3f pTemp, boolean asV3000,
+                                boolean asChemDoodle) {
     //   -0.9920    3.2030    9.1570 Cl  0  0  0  0  0
     //    3.4920    4.0920    5.8700 Cl  0  0  0  0  0
     //012345678901234567890123456789012
@@ -3095,38 +3105,50 @@ abstract public class ModelCollection extends BondCollection {
       pTemp.set(a);
     if (q != null)
       q.transform(pTemp, pTemp);
-    String sym = (a.isDeleted() ? "Xx" : Elements.elementSymbolFromNumber(a
-        .getElementNumber()));
+    int elemNo = a.getElementNumber();
+    String sym = (a.isDeleted() ? "Xx" : Elements
+        .elementSymbolFromNumber(elemNo));
     int iso = a.getIsotopeNumber();
     int charge = a.getFormalCharge();
     if (asV3000) {
-      sb.append("M  V30 ").append(i).append(" ").append(sym).append(" ")
+      mol.append("M  V30 ").append(n).append(" ").append(sym).append(" ")
           .append(pTemp.x).append(" ").append(pTemp.y).append(" ").append(
               pTemp.z).append(" 0");
       if (charge != 0)
-        sb.append(" CHG=").append(charge);
+        mol.append(" CHG=").append(charge);
       if (iso != 0)
-        sb.append(" MASS=").append(iso);
+        mol.append(" MASS=").append(iso);
+      mol.append("\n");
+    } else if (asChemDoodle) {
+      if (n != 1)
+        mol.append(",");
+      mol.append("{");
+      if (a.getElementNumber() != 6)
+        mol.append("\"l\":\"").append(a.getElementSymbol()).append("\",");
+      if (charge != 0)
+        mol.append("\"c\":").append(charge).append(",");
+      if (iso != 0 && iso != Elements.getNaturalIsotope(elemNo))
+        mol.append("\"m\":").append(iso).append(",");
+      mol.append("\"x\":").append(a.x).append(",\"y\":").append(a.y).append(
+          ",\"z\":").append(a.z).append("}");
     } else {
-      sb.append(TextFormat
-          .sprintf("%10.5p%10.5p%10.5p", new Object[] { pTemp }));
-      sb.append(" ").append(sym);
+      mol.append(TextFormat.sprintf("%10.5p%10.5p%10.5p",
+          new Object[] { pTemp }));
+      mol.append(" ").append(sym);
       if (sym.length() == 1)
-        sb.append(" ");
+        mol.append(" ");
       if (iso > 0)
         iso -= Elements.getNaturalIsotope(a.getElementNumber());
-      sb.append(" ");
-      TextFormat.rFill(sb, "  ", "" + iso);
-      TextFormat.rFill(sb, "   ", "" + (charge == 0 ? 0 : 4 - charge));
-      sb.append("  0  0  0  0");
+      mol.append(" ");
+      TextFormat.rFill(mol, "  ", "" + iso);
+      TextFormat.rFill(mol, "   ", "" + (charge == 0 ? 0 : 4 - charge));
+      mol.append("  0  0  0  0\n");
     }
-    sb.append("\n");
   }
 
-  private void getBondRecordMOL(int n, StringBuffer sb, int i, int[] atomMap,
-                                boolean asV3000) {
+  private void getBondRecordMOL(StringBuffer mol, int n, Bond b, int[] atomMap,
+                                boolean asV3000, boolean asChemDoodle) {
     //  1  2  1  0
-    Bond b = bonds[i];
     int a1 = atomMap[b.atom1.index];
     int a2 = atomMap[b.atom2.index];
     int order = b.getValence();
@@ -3134,27 +3156,33 @@ abstract public class ModelCollection extends BondCollection {
       order = 1;
     switch (b.order & ~JmolEdge.BOND_NEW) {
     case JmolAdapter.ORDER_AROMATIC:
-      order = 4;
+      order = (asChemDoodle ? 2: 4);
       break;
     case JmolAdapter.ORDER_PARTIAL12:
-      order = 5;
+      order = (asChemDoodle ? 1: 5);
       break;
     case JmolAdapter.ORDER_AROMATIC_SINGLE:
-      order = 6;
+      order = (asChemDoodle ? 1: 6);
       break;
     case JmolAdapter.ORDER_AROMATIC_DOUBLE:
-      order = 7;
+      order = (asChemDoodle ? 2: 7);
       break;
     }
     if (asV3000) {
-      sb.append("M  V30 ").append(n).append(" ").append(order).append(" ")
-          .append(a1).append(" ").append(a2);
+      mol.append("M  V30 ").append(n).append(" ").append(order).append(" ")
+          .append(a1).append(" ").append(a2).append('\n');
+    } else if (asChemDoodle) {
+      if (n != 1)
+        mol.append(",");
+      mol.append("{\"b\":").append(a1 - 1).append(",\"e\":").append(a2 - 1);
+      if (order != 1)
+        mol.append(",\"o\":").append(order);
+      mol.append("}");
     } else {
-      TextFormat.rFill(sb, "   ", "" + a1);
-      TextFormat.rFill(sb, "   ", "" + a2);
-      sb.append("  ").append(order).append("  0  0  0");
+      TextFormat.rFill(mol, "   ", "" + a1);
+      TextFormat.rFill(mol, "   ", "" + a2);
+      mol.append("  ").append(order).append("  0  0  0\n");
     }
-    sb.append("\n");
   }
 
   @Override

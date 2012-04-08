@@ -59,7 +59,7 @@ public class JmolData {
     viewer = JmolViewer.allocateViewer(null, null, 
         null, null, null, jmolApp.commandOptions, null);
     viewer.setScreenDimension(jmolApp.startupWidth, jmolApp.startupHeight);
-    jmolApp.startViewer(viewer, null);
+    jmolApp.startViewer(viewer, null, true);
   }
   
   public static void main(String[] args) {
@@ -71,9 +71,11 @@ public class JmolData {
     //jmolApp.haveDisplay = false;
     jmolApp.exitUponCompletion = true;
     jmolApp.parseCommandLine(args);
-    System.out.println("JmolData using command options " + jmolApp.commandOptions);
-    if (jmolApp.commandOptions.indexOf("-n") < 0) 
-      System.out.println("Add -n (NOGRAPHICS) if you are not creating images for faster performance.");
+    if (!jmolApp.isSilent) {
+      System.out.println("JmolData using command options " + jmolApp.commandOptions);
+      if (jmolApp.commandOptions.indexOf("-n") < 0) 
+        System.out.println("Add -n (NOGRAPHICS) if you are not creating images for faster performance.");
+    }
     new JmolData(jmolApp);
   }
   

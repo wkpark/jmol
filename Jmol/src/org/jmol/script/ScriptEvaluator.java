@@ -13966,7 +13966,7 @@ public class ScriptEvaluator {
           && tokAt(pt + 1, args) == Token.integer) {
         quality = ScriptVariable.iValue(tokenAt(++pt, args));
       } else if (Parser.isOneOf(val.toLowerCase(),
-          "xyz;xyzrn;xyzvib;mol;sdf;v2000;v3000;pdb;pqr;cml")) {
+          "xyz;xyzrn;xyzvib;mol;sdf;v2000;v3000;cd;pdb;pqr;cml")) {
         type = val.toUpperCase();
         if (pt + 1 == argCount)
           pt++;
@@ -14067,7 +14067,7 @@ public class ScriptEvaluator {
           && !Parser
               .isOneOf(
                   type,
-                  "JMOL;ZIP;ZIPALL;SPT;HIS;MO;ISO;ISOX;MESH;PMESH;VAR;FILE;FUNCS;CML;XYZ;XYZRN;XYZVIB;MENU;MOL;PDB;PGRP;PQR;QUAT;RAMA;SDF;V2000;V3000;"))
+                  "JMOL;ZIP;ZIPALL;SPT;HIS;MO;ISO;ISOX;MESH;PMESH;VAR;FILE;FUNCS;CD;CML;XYZ;XYZRN;XYZVIB;MENU;MOL;PDB;PGRP;PQR;QUAT;RAMA;SDF;V2000;V3000;"))
         error(
             ERROR_writeWhat,
             "COORDS|FILE|FUNCTIONS|HISTORY|IMAGE|ISOSURFACE|JMOL|MENU|MO|POINTGROUP|QUATERNION [w,x,y,z] [derivative]"
@@ -14133,14 +14133,14 @@ public class ScriptEvaluator {
           doDefer = true;
         if ("?".equals(fileName))
           fileName = "?Jmol." + viewer.getParameter("_fileType");
-      } else if ((data == "SDF" || data == "MOL" || data == "V2000" || data == "V3000")
+      } else if ((data == "SDF" || data == "MOL" || data == "V2000" || data == "V3000" || data ==  "CD")
           && isCoord) {
         data = viewer.getModelExtract("selected", true, data);
         if (data.startsWith("ERROR:"))
           bytes = data;
       } else if (data == "XYZ" || data == "XYZRN" || data == "XYZVIB"
           || data == "MOL" || data == "SDF" || data == "V2000"
-          || data == "V3000" || data == "CML") {
+          || data == "V3000" || data == "CML" || data == "CD") {
         data = viewer.getData("selected", data);
         if (data.startsWith("ERROR:"))
           bytes = data;

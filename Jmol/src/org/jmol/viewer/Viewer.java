@@ -8023,7 +8023,7 @@ private void zap(String msg) {
   public String getData(String atomExpression, String type) {
     String exp = "";
     if (type.equalsIgnoreCase("MOL") || type.equalsIgnoreCase("SDF") 
-        || type.equalsIgnoreCase("V2000") || type.equalsIgnoreCase("V3000") || type.equalsIgnoreCase("XYZVIB"))
+        || type.equalsIgnoreCase("V2000") || type.equalsIgnoreCase("V3000") || type.equalsIgnoreCase("XYZVIB") || type.equalsIgnoreCase("CD"))
       return getModelExtract(atomExpression, false, type);
     if (type.toLowerCase().indexOf("property_") == 0)
       exp = "{selected}.label(\"%{" + type + "}\")";

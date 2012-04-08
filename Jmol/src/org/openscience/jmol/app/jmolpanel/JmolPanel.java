@@ -407,7 +407,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       jmol = getJmol(jmolApp, jmolFrame);
 
       // scripts are read and files are loaded now
-      jmolApp.startViewer(jmol.viewer, jmol.splash);
+      jmolApp.startViewer(jmol.viewer, jmol.splash, false);
 
     } catch (Throwable t) {
       Logger.error("uncaught exception: " + t);

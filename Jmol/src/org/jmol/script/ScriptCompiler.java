@@ -733,7 +733,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
 
     }
     if (endOfLine) {
-      if (tokCommand != Token.nada && flowContext != null && flowContext.checkForceEndIf()) {
+      if (flowContext != null && tokCommand != Token.nada && flowContext.checkForceEndIf()) {
         forceFlowEnd(flowContext.token);
         isEndOfCommand = true;
         cchToken = 0;

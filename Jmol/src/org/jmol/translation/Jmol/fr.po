@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-04-08 09:36+0200\n"
-"PO-Revision-Date: 2012-02-06 07:42+0000\n"
-"Last-Translator: Nicolas Vervelle <Unknown>\n"
+"PO-Revision-Date: 2012-04-05 19:08+0000\n"
+"Last-Translator: Tognu <jaalvarez@ipn.mx>\n"
 "Language-Team: French <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-02-06 07:44+0000\n"
-"X-Generator: Launchpad (build 14747)\n"
+"X-Launchpad-Export-Date: 2012-04-10 04:40+0000\n"
+"X-Generator: Launchpad (build 15070)\n"
 "X-Poedit-Country: France\n"
 "X-Poedit-Language: French\n"
 "X-Poedit-Basepath: ../../../..\n"
@@ -63,7 +63,7 @@ msgstr "Requête URI"
 #: org/openscience/jmol/app/JmolApp.java:109
 msgid "Error starting Jmol: the property 'user.home' is not defined."
 msgstr ""
-"Erreur au démarrage de Jmol : la propriété « user.home » n’est pas définie."
+"Impossible de démarrer le Jmol: le «user.home» n'est pas défini correctement."
 
 #: org/openscience/jmol/app/JmolApp.java:146
 msgid "transparent background"
@@ -71,23 +71,24 @@ msgstr "arrière-plan transparent"
 
 #: org/openscience/jmol/app/JmolApp.java:147
 msgid "give this help page"
-msgstr "affiche cette page d’aide"
+msgstr "donner à cette page d'aide"
 
 #: org/openscience/jmol/app/JmolApp.java:149
 msgid "no display (and also exit when done)"
-msgstr "aucun affichage (et quitter lorsque terminé)"
+msgstr "pas d'affichage (et également quitter lorsque vous avez terminé)"
 
 #: org/openscience/jmol/app/JmolApp.java:151
 msgid "check script syntax only - no file loading"
-msgstr "vérifie seulement la syntaxe du script - sans chargement du fichier"
+msgstr ""
+"vérifier la syntaxe de script seulement - pas de chargement de fichier"
 
 #: org/openscience/jmol/app/JmolApp.java:153
 msgid "check script syntax only - with file loading"
-msgstr "vérifie seulement la syntaxe du script - avec chargement du fichier"
+msgstr "vérifier la syntaxe de script seulement - avec chargement du fichier"
 
 #: org/openscience/jmol/app/JmolApp.java:154
 msgid "debug"
-msgstr "débogage"
+msgstr "déboguer"
 
 #: org/openscience/jmol/app/JmolApp.java:155
 msgid "silent startup operation"
@@ -214,7 +215,7 @@ msgstr "Impossible de trouver l’url \"{0}\"."
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:182
 #: org/openscience/jmol/app/jmolpanel/WhatsNewDialog.java:89
 msgid "OK"
-msgstr "OK"
+msgstr "Valider"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:164
 msgid "Check"
@@ -223,7 +224,7 @@ msgstr "Vérifier"
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:165
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:221
 msgid "Clear"
-msgstr "Effacer"
+msgstr "Vider"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:166
 msgid "Close"
@@ -235,7 +236,7 @@ msgstr "Arrêter"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:168
 msgid "Help"
-msgstr "?"
+msgstr "Aide"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:169
 msgid "Editor"
@@ -1168,7 +1169,8 @@ msgstr "Afficher pendant le calcul"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:245
 msgid "Should POV-Ray attempt to display while rendering?"
-msgstr "Est-ce que POV-Ray doit essayer d’afficher l’image durant le calcul ?"
+msgstr ""
+"Est-ce que POV-Ray doit essayer d’afficher l’image durant le calcul ?"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:268
 msgid "width:"
@@ -1698,8 +1700,8 @@ msgstr "Donner un nom à l’instance de Jmol:"
 #: org/openscience/jmol/app/webexport/WebPanel.java:483
 msgid "Error creating new instance containing script(s) and image."
 msgstr ""
-"Erreur lors de la création d’une nouvelle instance contenant un(des) script"
-"(s) et une image"
+"Erreur lors de la création d’une nouvelle instance contenant un(des) "
+"script(s) et une image"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:494
 #, java-format
@@ -1941,18 +1943,23 @@ msgstr "non-implémenté"
 #~ msgid "vector"
 #~ msgstr "vecteur"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Aller au premier {0} de la collection"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Aller au {0} précédent de la collection"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Jouer la collection complète de {0}"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Aller au {0} suivant de la collection"
 
+#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Aller au dernier {0} de la collection"
 
@@ -1978,22 +1985,26 @@ msgstr "non-implémenté"
 #~ msgid "Show Selected"
 #~ msgstr "Afficher les options sélectionnées"
 
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 #~ msgstr ""
-#~ "Insérer un texte explicatif pertinente ici. Long texte sera coupé "
-#~ "entourent le modèle de Jmol {0}."
+#~ "Insérer un texte explicatif pertinente ici. Long texte sera coupé entourent "
+#~ "le modèle de Jmol {0}."
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "ajoutant {0}. spt"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "ajoutant {0}. png"
 
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "ajoutant JmolPopIn.js"
 
+#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"

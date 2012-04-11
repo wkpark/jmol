@@ -444,6 +444,7 @@ public class SmilesSearch extends JmolMolecule {
       return false;
     if (iAtom >= 0)
       bsFound.clear(iAtom);
+    //System.out.println(iAtom + " smilesSearch " + bsFound);
     return true;
   }
 
@@ -500,6 +501,7 @@ public class SmilesSearch extends JmolMolecule {
         }
         boolean skipGroup = (iAtom >= 0 && newPatternAtom.isBioAtom 
             && (newPatternAtom.atomName == null || newPatternAtom.residueChar != null));
+        // TODO fix the *.*.*.*.* problem
         for (int j = bsSelected.nextSetBit(0); j >= 0; j = bsSelected
             .nextSetBit(j + 1)) {
           if (!bs.get(j)

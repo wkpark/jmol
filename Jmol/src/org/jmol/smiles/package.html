@@ -75,7 +75,7 @@ the term "aromatic" is <a href="#aromaticity">defined</a>.
 <p>
 <b>format</b>
 <ul>
-</li><li>Allows for searching "pattern1 or pattern2" and for a variable number of occurances of a pattern within a pattern using [$(...)n] or [$(...)min-max].
+</li><li>Allows for searching "pattern1 or pattern2" and for a variable number of occurances of a pattern within a pattern using [$n(...)] or [$min-max(...)].
 <li> 
 Allows any amount of white space -- spaces, tabs, new lines. Prior to parsing, all white space is removed.
 </li>
@@ -247,8 +247,7 @@ and may dramatically increase processing speed.
 </pre> 
 Note that these variables are any string whatsoever, not just atom sets. The syntax is simply:
 <ul><li>Each variable definition takes the form $ [name] =" [definition] " [comments] ;
-</li><li>[name] can be any characters except '$', '=', and ']' and must not start with '('. 
-It is recommended they be restricted to the set A-Z, a-z, and 0-9.
+</li><li>[name] must start with a letter and can contain any characters other than '$', '=', '(', and ']'.
 </li><li>[definition] can be any valid SMARTS characters. 
 </li><li>[comments] can be any characters other than ';'. 
 </li><li>The actual pattern starts after the last variable definition.
@@ -301,9 +300,9 @@ In addition, Jmol 3D-SMARTS adds the following primitives and options:
 <tr><td>d</td><td>non-hydrogen degree -- number of non-hydrogen connections</td></tr>
 <tr><td>=</td><td>Jmol atom index, for example: [=23]</td></tr>
 <tr><td>[number]?</td><td>mass number or undefined (so, for example, [C12?] means any carbon that isn't explicitly C13 or C14</td></tr>
-<tr><td>[$(pattern)n]</td><td>A specific number of occurances of <b>pattern</b>. For example, <b>C[$(C=C)3]C</b> is synonymous with <b>CC=CC=CC=CC</b>.</td></tr>
-<tr><td>[$(pattern)min-max]</td><td>A variable number of occurances of <b>pattern</b>. 
-For example: <b>A[$(C:G)0-2]A</b> is synonymous with <b>AA</b> or <b>AC(:G)A</b> or <b>AC(:G)C(:G)A</b>.</td></tr>
+<tr><td>[$n(pattern)]</td><td>A specific number of occurances of <b>pattern</b>. For example, <b>C[$3(C=C)]C</b> is synonymous with <b>CC=CC=CC=CC</b>.</td></tr>
+<tr><td>[$min-max(pattern)]</td><td>A variable number of occurances of <b>pattern</b>. 
+For example: <b>A[$0-2(C:G)]A</b> is synonymous with <b>AA</b> or <b>AC(:G)A</b> or <b>AC(:G)C(:G)A</b>.</td></tr>
 <tr><td>pattern1 || pattern2</td><td> "||" indicates "or" and allows searching for multiple patterns, which may overlap.
 For example: <b>select search("c{O} || c{C}")</b>. Note that the "||" syntax is an alternative to using "[,]", 
 in this case being equivalent to (and slightly slower than) <b>select search("c{[O,C]}")</b>.</td></tr>
@@ -574,7 +573,7 @@ includes:
       # note: thus, both "/noAromatic//noStereo/" and "/noAromatic noStereo/" are valid 
    [variableDefs] == [variableDef] | [variableDef] [variableDefs]
    [variableDef] ==  "$" [label] "=" "\"" [smarts] "\"" [comments] ";"
-   [label] == [any characters other than "=" and "$", and not starting with "("]
+   [label] == 'A-Z' [any characters other than "=", "(", or "$"]
    [comments] == [any characters other than ";"]
       # note: Variable definitions must be parsed first. 
       #       After that, all variable references [$XXXX] are replaced
@@ -678,21 +677,19 @@ includes:
       # note: nestedExpressions return only the first atom as a match, 
       #       not all atoms in the expression.
 
-   [multipleExpression] == { "[$(" [orExpression] ")" [nTimes] "]" 
-                             | "[$(" [orExpression] ")" [nMinimum] "-" [nMaximum] "]" 
-                             | "[$(" [orExpression] "|" [orExpression] "]" 
-                             | "[$(" [orExpression] "||" [orExpression] "]" }
+   [multipleExpression] == { "[$" [nTimes] "(" [orExpression] ")]" 
+                             | "[$[nMinimum] "-" [nMaximum](" [orExpression] ")]" }  
    [orExpression] = { [atomExpression] 
                        | [atomExpression "|" [orExpression] 
                        | [atomExpression "||" [orExpression] }
       # note: "|" and "||" are synonymous in this inner context; "|" is preferred simply
       #       for readability (whereas "||" is required for the [smartsSet] context). 
-      # note: This syntax is carefully written to exclude [$(xxx)] by itself, which
+      # note: This syntax is carefully written to exclude $(xxx) by itself, which
       #       is a nestedExpression, not a multipleExpression. The difference is that
       #       the nestedExpression only returns the first atom, while the multipleExpression
       #       returns all atoms. To return only the first atom within this context 
       #       it is necessary to use a nested expression within the multiple expression.
-      #       For example: "CC[$( $(C=O) | $(C=N) )2]"
+      #       For example: "CC[$2( $(C=O) | $(C=N) )]"
       #       is the same as "CC$(C=[O,N])$(C=[O,N])", although Jmol preprocesses it as
       #          "CC$(C=O)$(C=O)||CC$(C=O)$(C=N)||CC$(C=N)$(C=O)||CC$(C=N)$(C=N)"
       
@@ -829,7 +826,7 @@ assume a bonding scheme (PDB, GAUSSIAN, etc.).
 </p>
 
 <p>
- -- <a href="mailto:hansonr@stolaf.edu">Bob Hanson</a>  last updated 6/12/2010
+ -- <a href="mailto:hansonr@stolaf.edu">Bob Hanson</a>  last updated 4/10/2012 : fix for [$(...)n] and [$(...)min-max]
  </p>
 </body>
 </html>

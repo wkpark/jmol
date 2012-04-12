@@ -952,19 +952,20 @@ public class ActionManager {
   }
 
   private void calcRectRubberBand() {
+    int factor = (viewer.isAntialiased() ? 2 : 1);
     if (current.x < pressed.x) {
-      rectRubber.x = current.x;
-      rectRubber.width = pressed.x - current.x;
+      rectRubber.x = current.x * factor;
+      rectRubber.width = (pressed.x - current.x) * factor;
     } else {
-      rectRubber.x = pressed.x;
-      rectRubber.width = current.x - pressed.x;
+      rectRubber.x = pressed.x * factor;
+      rectRubber.width = (current.x - pressed.x) * factor;
     }
     if (current.y < pressed.y) {
-      rectRubber.y = current.y;
-      rectRubber.height = pressed.y - current.y;
+      rectRubber.y = current.y * factor;
+      rectRubber.height = (pressed.y - current.y) * factor;
     } else {
-      rectRubber.y = pressed.y;
-      rectRubber.height = current.y - pressed.y;
+      rectRubber.y = pressed.y * factor;
+      rectRubber.height = (current.y - pressed.y) * factor;
     }
   }
 

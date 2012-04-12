@@ -178,21 +178,21 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * This is the main access point for creating an application or applet viewer.
    * 
    * @param display
-   *          either DisplayPanel or WrappedApplet
+   *        either DisplayPanel or WrappedApplet
    * @param modelAdapter
-   *          the model reader
+   *        the model reader
    * @param fullName
-   *          or null
+   *        or null
    * @param documentBase
-   *          or null
+   *        or null
    * @param codeBase
-   *          or null
+   *        or null
    * @param commandOptions
-   *          or null
+   *        or null
    * @param statusListener
-   *          or null
-   * @param implementedPlatform  -- necessary for .NET/IKVM ?
-   *          or null
+   *        or null
+   * @param implementedPlatform
+   *        -- necessary for .NET/IKVM ? or null
    * @return a viewer instance
    */
 
@@ -201,21 +201,21 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                           String fullName, URL documentBase,
                                           URL codeBase, String commandOptions,
                                           JmolStatusListener statusListener) {
-   //for legacy purposes, but not used in Jmol code
-     return allocateViewer(display, modelAdapter, fullName, documentBase,
+    //for legacy purposes, but not used in Jmol code
+    return allocateViewer(display, modelAdapter, fullName, documentBase,
         codeBase, commandOptions, statusListener, null);
   }
-  
+
   public static JmolViewer allocateViewer(Object display,
                                           JmolAdapter modelAdapter,
                                           String fullName, URL documentBase,
                                           URL codeBase, String commandOptions,
                                           JmolStatusListener statusListener,
                                           ApiPlatform implementedPlatform) {
-    return new Viewer(display, modelAdapter, statusListener, implementedPlatform,
-        commandOptions, fullName, documentBase, codeBase);
+    return new Viewer(display, modelAdapter, statusListener,
+        implementedPlatform, commandOptions, fullName, documentBase, codeBase);
   }
-  
+
   // these are all private now so we are certain they are not
   // being accesed by any other classes
 
@@ -276,9 +276,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public BitSet getSmartsMatch(String smarts, BitSet bsSelected) {
     if (bsSelected == null)
       bsSelected = getSelectionSet(false);
-    return getSmilesMatcher().getSubstructureSet(smarts,
-        getModelSet().atoms, getAtomCount(), bsSelected,
-        true, false);
+    return getSmilesMatcher().getSubstructureSet(smarts, getModelSet().atoms,
+        getAtomCount(), bsSelected, true, false);
   }
 
   private ScriptEvaluator eval;
@@ -323,19 +322,19 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return isApplet;
   }
 
-  
   public ApiPlatform getApiPlatform() {
     return apiPlatform; // in JmolSimpleViewer
   }
 
-  private Viewer(Object display, JmolAdapter modelAdapter, JmolStatusListener statusListener, 
-      ApiPlatform implementedPlatform, String commandOptions, 
-      String fullName, URL documentBase, URL codeBase) {
+  private Viewer(Object display, JmolAdapter modelAdapter,
+      JmolStatusListener statusListener, ApiPlatform implementedPlatform,
+      String commandOptions, String fullName, URL documentBase, URL codeBase) {
     // use allocateViewer
     if (Logger.debugging) {
       Logger.debug("Viewer constructor " + this);
     }
-    this.commandOptions = commandOptions = (commandOptions == null ? "" : commandOptions);
+    this.commandOptions = commandOptions = (commandOptions == null ? ""
+        : commandOptions);
     this.fullName = fullName = (fullName == null ? "" : fullName);
     appletDocumentBase = (documentBase == null ? "" : documentBase.toString());
     appletCodeBase = (codeBase == null ? "" : codeBase.toString());
@@ -348,7 +347,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           : commandOptions.substring(commandOptions.indexOf("platform=") + 9));
     apiPlatform.setViewer(this, display);
     g3d = new Graphics3D(apiPlatform);
-    haveDisplay = (display != null && !isHeadless() && commandOptions.indexOf("-n") < 0);
+    haveDisplay = (display != null && !isHeadless() && commandOptions
+        .indexOf("-n") < 0);
     mustRender = haveDisplay;
     if (!haveDisplay)
       display = null;
@@ -369,7 +369,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         if (commandOptions.indexOf("-multitouch-sparshui-simulated") < 0)
           apiPlatform.setTransparentCursor(display);
         else
-          commandOptions = TextFormat.simpleReplace(commandOptions, "-multitouch-sparshui-simulated", "");
+          commandOptions = TextFormat.simpleReplace(commandOptions,
+              "-multitouch-sparshui-simulated", "");
         actionManager = (ActionManager) Interface
             .getOptionInterface("multitouch.ActionManagerMT");
       } else {
@@ -389,8 +390,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     compiler = new ScriptCompiler(this);
     definedAtomSets = new Hashtable<String, Object>();
     eval = new ScriptEvaluator(this);
-    setJmolStatusListener(statusListener);     
-    
+    setJmolStatusListener(statusListener);
+
     int i = fullName.indexOf("__");
     htmlName = (i < 0 ? fullName : fullName.substring(0, i));
     syncId = (i < 0 ? "" : fullName.substring(i + 2, fullName.length() - 2));
@@ -456,7 +457,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           + strJavaVersion
           + "\nos.name: "
           + strOSName
-          + "\nrestrictedFileAccess: " + restrictedFileAccess
+          + "\nrestrictedFileAccess: "
+          + restrictedFileAccess
           + "\nmemory: "
           + getParameter("_memory")
           + "\nprocessors available: "
@@ -469,7 +471,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     zap(false, true, false); // here to allow echos
     global.setParameterValue("language", GT.getLanguage());
     stateManager.setJmolDefaults();
- 
+
   }
 
   private boolean isPreviewOnly = false;
@@ -493,7 +495,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private String commandOptions;
   private boolean noGraphicsAllowed;
   private boolean restrictedFileAccess;
-  
+
   public boolean isRestricted() {
     // disables WRITE, LOAD file:/, set logFile 
     // command line -g and -w options ARE available for final writing of image
@@ -530,7 +532,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public String getExportDriverList() {
-    return (restrictedFileAccess ? "" : (String) global.getParameter("exportDrivers"));
+    return (restrictedFileAccess ? "" : (String) global
+        .getParameter("exportDrivers"));
   }
 
   String getHtmlName() {
@@ -547,7 +550,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   @Override
-  public boolean handleOldJvm10Event(int id, int x, int y, int modifiers, long time) {
+  public boolean handleOldJvm10Event(int id, int x, int y, int modifiers,
+                                     long time) {
     return apiPlatform.handleOldJvm10Event(id, x, y, modifiers, time);
   }
 
@@ -838,7 +842,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   void setRotationMatrix(Matrix3f rotationMatrix) {
     transformManager.setRotation(rotationMatrix);
   }
-  
+
   public void moveTo(float floatSecondsTotal, Point3f center, Vector3f rotAxis,
                      float degrees, Matrix3f rotationMatrix, float zoom,
                      float xTrans, float yTrans, float rotationRadius,
@@ -928,7 +932,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // multitouch only
     actionManager.processEvent(groupID, eventType, touchID, iData, pt, time);
   }
-  
+
   void zoomBy(int pixels) {
     // MouseManager.mouseSinglePressDrag
     if (mouseEnabled)
@@ -973,7 +977,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (isJmolDataFrame())
       return;
     if (mouseEnabled) {
-      transformManager.rotateXYBy(deltaX, deltaY, setMovableBitSet(bsSelected, false));
+      transformManager.rotateXYBy(deltaX, deltaY, setMovableBitSet(bsSelected,
+          false));
       refreshMeasures(true);
     }
     //TODO: note that sync may not work with set allowRotateSelectedAtoms
@@ -985,7 +990,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (bsSelected == null)
       bsSelected = getSelectionSet(false);
     bsSelected = BitSetUtil.copy(bsSelected);
-    BitSetUtil.andNot(bsSelected,getMotionFixedAtoms());
+    BitSetUtil.andNot(bsSelected, getMotionFixedAtoms());
     if (checkMolecule && !global.allowMoveAtoms)
       bsSelected = modelSet.getMoleculeBitSet(bsSelected);
     return bsSelected;
@@ -1351,7 +1356,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private void setDefaultColors(boolean isRasmol) {
     colorManager.setDefaultColors(isRasmol);
     global.setParameterValue("colorRasmol", isRasmol);
-    global.setParameterValue("defaultColorScheme", (isRasmol ? "rasmol" : "jmol"));
+    global.setParameterValue("defaultColorScheme", (isRasmol ? "rasmol"
+        : "jmol"));
   }
 
   public float getDefaultTranslucent() {
@@ -1565,7 +1571,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // isosurface
     return colorManager.getColixForPropertyValue(val);
   }
-  
+
   public Point3f getColorPointForPropertyValue(float val) {
     // x = {atomno=3}.partialcharge.color
     return ColorUtil.colorPointFromInt2(g3d.getColorArgbOrGray(colorManager
@@ -1576,7 +1582,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // delegated to SelectionManager
   // ///////////////////////////////////////////////////////////////
 
-  public void select(BitSet bs, boolean isGroup, Boolean addRemove, boolean isQuiet) {
+  public void select(BitSet bs, boolean isGroup, Boolean addRemove,
+                     boolean isQuiet) {
     // Eval, ActionManager
     if (isGroup)
       bs = getUndeletedGroupAtomBits(bs);
@@ -1596,7 +1603,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         null, bs);
   }
 
-  public void display(BitSet bs, boolean isDisplay, boolean isGroup, Boolean addRemove, boolean isQuiet) {
+  public void display(BitSet bs, boolean isDisplay, boolean isGroup,
+                      Boolean addRemove, boolean isQuiet) {
     // Eval
     if (isGroup)
       bs = getUndeletedGroupAtomBits(bs);
@@ -1679,7 +1687,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public BitSet getSelectionSet(boolean includeDeleted) {
     return selectionManager.getSelectionSet(includeDeleted);
   }
-  
+
   public void setSelectedAtom(int atomIndex, boolean TF) {
     selectionManager.setSelectedAtom(atomIndex, TF);
   }
@@ -1687,7 +1695,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public boolean isAtomSelected(int atomIndex) {
     return selectionManager.isAtomSelected(atomIndex);
   }
-  
+
   @Override
   public int getSelectionCount() {
     return selectionManager.getSelectionCount();
@@ -1796,13 +1804,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return fileManager.getBufferedReaderOrErrorMessageFromName(name,
         fullPathNameReturn, isBinary, true);
   }
-/*
-  public void addLoadScript(String script) {
-    System.out.println("VIEWER addLoadSCript " + script);
-    // fileManager.addLoadScript(script);
-  }
-*/
-  private Map<String, Object> setLoadParameters(Map<String, Object> htParams, boolean isAppend) {
+
+  /*
+    public void addLoadScript(String script) {
+      System.out.println("VIEWER addLoadSCript " + script);
+      // fileManager.addLoadScript(script);
+    }
+  */
+  private Map<String, Object> setLoadParameters(Map<String, Object> htParams,
+                                                boolean isAppend) {
     if (htParams == null)
       htParams = new Hashtable<String, Object>();
     htParams.put("viewer", this);
@@ -1816,7 +1826,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       htParams.put("getHeader", Boolean.TRUE);
     if (global.pdbSequential)
       htParams.put("isSequential", Boolean.TRUE);
-    htParams.put("stateScriptVersionInt", Integer.valueOf(stateScriptVersionInt));
+    htParams.put("stateScriptVersionInt", Integer
+        .valueOf(stateScriptVersionInt));
     if (!htParams.containsKey("filter")) {
       String filter = getDefaultLoadFilter();
       if (filter.length() > 0)
@@ -1831,9 +1842,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   /**
    * opens a file as a model, a script, or a surface via the creation of a
-   * script that is queued \t at the beginning disallows script option
-   * - used by JmolFileDropper and JmolPanel file-open actions
-   * - sets up a script to load the file
+   * script that is queued \t at the beginning disallows script option - used by
+   * JmolFileDropper and JmolPanel file-open actions - sets up a script to load
+   * the file
    * 
    * @param fileName
    */
@@ -1907,14 +1918,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * Opens the file, given an already-created reader.
    * 
    * @param fullPathName
-   * @param fileName 
+   * @param fileName
    * @param reader
    * @return null or error message
    */
   @Override
   public String openReader(String fullPathName, String fileName, Reader reader) {
     zap(true, true, false);
-    return loadModelFromFile(fullPathName, fileName, null, reader, false, null, null, 0);
+    return loadModelFromFile(fullPathName, fileName, null, reader, false, null,
+        null, 0);
   }
 
   /**
@@ -1935,10 +1947,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * Used by the ScriptEvaluator LOAD command to open one or more files. Now
    * necessary for EVERY load of a file, as loadScript must be passed to the
    * ModelLoader.
-   * @param fullPathName TODO
+   * 
+   * @param fullPathName
+   *        TODO
    * @param fileName
    * @param fileNames
-   * @param reader TODO
+   * @param reader
+   *        TODO
    * @param isAppend
    * @param htParams
    * @param loadScript
@@ -1948,7 +1963,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
   public String loadModelFromFile(String fullPathName, String fileName,
                                   String[] fileNames, Object reader,
-                                  boolean isAppend, Map<String, Object> htParams,
+                                  boolean isAppend,
+                                  Map<String, Object> htParams,
                                   StringBuffer loadScript, int tokType) {
     if (htParams == null)
       htParams = setLoadParameters(null, isAppend);
@@ -1984,29 +2000,30 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
 
       loadScript = new StringBuffer(s);
-      
+
     } else if (reader == null) {
 
-        // 2) a standard, single file 
+      // 2) a standard, single file 
 
-        if (loadScript == null)
-          loadScript = new StringBuffer("load /*file*/$FILENAME$");
+      if (loadScript == null)
+        loadScript = new StringBuffer("load /*file*/$FILENAME$");
 
-        atomSetCollection = getAtomSetCollection(fileName, isAppend, htParams,
-            loadScript);
+      atomSetCollection = getAtomSetCollection(fileName, isAppend, htParams,
+          loadScript);
 
     } else if (reader instanceof Reader) {
 
-        // 3) a file reader (not used by Jmol) 
+      // 3) a file reader (not used by Jmol) 
 
-        atomSetCollection = fileManager.createAtomSetCollectionFromReader(
-            fullPathName, fileName, (Reader) reader, htParams);
-        
+      atomSetCollection = fileManager.createAtomSetCollectionFromReader(
+          fullPathName, fileName, (Reader) reader, htParams);
+
     } else {
 
-        // 4) a DOM reader (could be used by Jmol) 
+      // 4) a DOM reader (could be used by Jmol) 
 
-        atomSetCollection = fileManager.createAtomSetCollectionFromDOM(reader, htParams);
+      atomSetCollection = fileManager.createAtomSetCollectionFromDOM(reader,
+          htParams);
     }
 
     // OK, the file has been read and is now closed.
@@ -2039,6 +2056,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private Map<String, Object> ligandModels;
   private Map<String, Boolean> ligandModelSet;
+
   public void setLigandModel(String id, String data) {
     id = id.toUpperCase();
     if (ligandModels == null)
@@ -2048,17 +2066,19 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   /**
    * obtain CIF data for a ligand for purposes of adding hydrogens
-   * @param id   
-   *          if null, clear "bad" entries from the set. 
-   * @return  a ligand model or null
+   * 
+   * @param id
+   *        if null, clear "bad" entries from the set.
+   * @return a ligand model or null
    */
   public Object getLigandModel(String id) {
     if (id == null) {
       if (ligandModelSet != null) {
-        Iterator <Map.Entry<String, Object>> e = ligandModels.entrySet().iterator();
+        Iterator<Map.Entry<String, Object>> e = ligandModels.entrySet()
+            .iterator();
         while (e.hasNext()) {
           Entry<String, Object> entry = e.next();
-          if(entry.getValue() instanceof Boolean)
+          if (entry.getValue() instanceof Boolean)
             e.remove();
         }
       }
@@ -2113,15 +2133,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     return model;
   }
+
   /**
    * 
    * @param fileName
    * @param isAppend
    * @param htParams
-   * @param loadScript  
-   *            only necessary for string reading
-   * @return            
-   *            an AtomSetCollection or a String (error)
+   * @param loadScript
+   *        only necessary for string reading
+   * @return an AtomSetCollection or a String (error)
    */
   private Object getAtomSetCollection(String fileName, boolean isAppend,
                                       Map<String, Object> htParams,
@@ -2147,17 +2167,19 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (htParams.containsKey("isData")) {
         return loadInline(strModel, '\0', isAppend, htParams);
       }
-   } else if (isString) {
+    } else if (isString) {
       strModel = modelSet.getInlineData(-1);
       if (strModel == null)
         if (isModelKitMode())
           strModel = JmolConstants.MODELKIT_ZAP_STRING;
         else
-         return "cannot find string data";
+          return "cannot find string data";
       if (loadScript != null)
-        htParams.put("loadScript", loadScript = new StringBuffer(TextFormat.simpleReplace(
-            loadScript.toString(), "$FILENAME$", 
-            "data \"model inline\"\n" + strModel + "end \"model inline\"")));
+        htParams
+            .put("loadScript", loadScript = new StringBuffer(TextFormat
+                .simpleReplace(loadScript.toString(), "$FILENAME$",
+                    "data \"model inline\"\n" + strModel
+                        + "end \"model inline\"")));
     }
     if (strModel != null) {
       if (!isAppend)
@@ -2166,10 +2188,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           strModel, loadScript, htParams, isAppend, isLoadVariable
               || haveFileData && !isString);
     } else {
-      
+
       // if the filename has a "?" at the beginning, we don't zap, 
       // because the user might cancel the operation.
-      
+
       atomSetCollection = fileManager.createAtomSetCollectionFromFile(fileName,
           htParams, isAppend);
     }
@@ -2178,7 +2200,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   /// (unnecessarily) many inline versions
-  
+
   @Override
   public String openStringInline(String strModel) {
     // JmolSimpleViewer
@@ -2220,16 +2242,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   /**
-   *  does not preserver state, intentionally!
-   * @param arrayData 
-   * @param isAppend 
-   * @return            null or error string
-   *  
+   * does not preserver state, intentionally!
+   * 
+   * @param arrayData
+   * @param isAppend
+   * @return null or error string
+   * 
    */
   @Override
   public String loadInline(List<Object> arrayData, boolean isAppend) {
     // NO STATE SCRIPT -- HERE WE ARE TRYING TO CONSERVE SPACE
-    
+
     // loadInline
     if (arrayData == null || arrayData.size() == 0)
       return null;
@@ -2240,7 +2263,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return createModelSetAndReturnError(atomSetCollection, isAppend, null);
   }
 
-  public String loadInline(String strModel, char newLine, boolean isAppend, Map<String, Object> htParams) {
+  public String loadInline(String strModel, char newLine, boolean isAppend,
+                           Map<String, Object> htParams) {
     // ScriptEvaluator DATA command uses this, but anyone could.
     if (strModel == null || strModel.length() == 0)
       return null;
@@ -2304,9 +2328,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   // everything funnels to these two inline methods: String and String[]
-  
-  private String openStringInline(String strModel, Map<String, Object> htParams,
-                                  boolean isAppend) {
+
+  private String openStringInline(String strModel,
+                                  Map<String, Object> htParams, boolean isAppend) {
     // loadInline, openStringInline
 
     BufferedReader br = new BufferedReader(new StringReader(strModel));
@@ -2329,14 +2353,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return createModelSetAndReturnError(atomSetCollection, isAppend, loadScript);
   }
 
-  private String openStringsInline(String[] arrayModels, Map<String, Object> htParams,
+  private String openStringsInline(String[] arrayModels,
+                                   Map<String, Object> htParams,
                                    boolean isAppend) {
     // loadInline
     StringBuffer loadScript = new StringBuffer();
     if (!isAppend)
       zap(true, false/*true*/, false);
     Object atomSetCollection = fileManager.createAtomSeCollectionFromStrings(
-        arrayModels, loadScript, setLoadParameters(htParams, isAppend), isAppend);
+        arrayModels, loadScript, setLoadParameters(htParams, isAppend),
+        isAppend);
     return createModelSetAndReturnError(atomSetCollection, isAppend, loadScript);
   }
 
@@ -2351,15 +2377,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   ////////// create the model set ////////////
-  
 
   /**
-   * finally(!) we are ready to create the 
-   * "model set" from the "atom set collection"
+   * finally(!) we are ready to create the "model set" from the
+   * "atom set collection"
    * 
    * @param atomSetCollection
    * @param isAppend
-   * @param loadScript  if null, then some special method like DOM; turn of preserveState
+   * @param loadScript
+   *        if null, then some special method like DOM; turn of preserveState
    * @return errMsg
    */
   private String createModelSetAndReturnError(Object atomSetCollection,
@@ -2374,9 +2400,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     if (atomSetCollection instanceof String) {
       errMsg = (String) atomSetCollection;
-      setFileLoadStatus(FileManager.EnumFileStatus.NOT_LOADED, fullPathName, null, null,
-          errMsg);
-      if (displayLoadErrors && errMsg != null && !isAppend && !errMsg.equals("#CANCELED#"))
+      setFileLoadStatus(FileManager.EnumFileStatus.NOT_LOADED, fullPathName,
+          null, null, errMsg);
+      if (displayLoadErrors && errMsg != null && !isAppend
+          && !errMsg.equals("#CANCELED#"))
         zap(errMsg);
       return errMsg;
     }
@@ -2384,8 +2411,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       clearAtomSets();
     else if (getModelkitMode() && !fileName.equals("Jmol Model Kit"))
       setModelKitMode(false);
-    setFileLoadStatus(FileManager.EnumFileStatus.CREATING_MODELSET, fullPathName, fileName,
-        null, null);
+    setFileLoadStatus(FileManager.EnumFileStatus.CREATING_MODELSET,
+        fullPathName, fileName, null, null);
 
     // null fullPathName implies we are doing a merge
     pushHoldRepaint("createModelSet");
@@ -2421,8 +2448,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     popHoldRepaint("createModelSet");
     errMsg = getErrorMessage();
 
-    setFileLoadStatus(FileManager.EnumFileStatus.CREATED, fullPathName, fileName,
-        getModelSetName(), errMsg);
+    setFileLoadStatus(FileManager.EnumFileStatus.CREATED, fullPathName,
+        fileName, getModelSetName(), errMsg);
     if (isAppend) {
       selectAll();
       setTainted(true);
@@ -2448,7 +2475,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     setErrorMessage(null);
     try {
       modelManager.createAtomDataSet(atomSetCollection, tokType);
-      switch  (tokType) {
+      switch (tokType) {
       case Token.vibration:
         setStatusFrameChanged(Integer.MIN_VALUE);
         break;
@@ -2468,9 +2495,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return getErrorMessage();
   }
 
-
   ////////// File-related methods ////////////
-  
+
   public String writeCurrentFile(OutputStream os) {
     String filename = getFullPathName();
     if (filename.equals("string") || filename.indexOf("[]") >= 0
@@ -2492,7 +2518,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public String getCurrentFileAsString() {
     String filename = getFullPathName();
-    if (filename.equals("string") || filename.equals(JmolConstants.MODELKIT_ZAP_TITLE))
+    if (filename.equals("string")
+        || filename.equals(JmolConstants.MODELKIT_ZAP_TITLE))
       return modelSet.getInlineData(getCurrentModelIndex());
     if (filename.indexOf("[]") >= 0)
       return filename;
@@ -2601,7 +2628,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.calculateSurface(bsSelected, envelopeRadius);
   }
 
-  public Map<EnumStructure, float[]> getStructureList() {     
+  public Map<EnumStructure, float[]> getStructureList() {
     return global.getStructureList();
   }
 
@@ -2614,23 +2641,26 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public boolean getDefaultStructureDSSP() {
     return global.defaultStructureDSSP;
   }
-  
+
   public String getDefaultStructure(BitSet bsAtoms, BitSet bsAllAtoms) {
     if (bsAtoms == null)
       bsAtoms = getSelectionSet(false);
     return modelSet.getDefaultStructure(bsAtoms, bsAllAtoms);
   }
 
-  public String calculateStructures(BitSet bsAtoms, boolean asDSSP, boolean setStructure) {
+  public String calculateStructures(BitSet bsAtoms, boolean asDSSP,
+                                    boolean setStructure) {
     // Eval
     if (bsAtoms == null)
       bsAtoms = getSelectionSet(false);
-    return modelSet.calculateStructures(bsAtoms, asDSSP, global.dsspCalcHydrogen, setStructure);
+    return modelSet.calculateStructures(bsAtoms, asDSSP,
+        global.dsspCalcHydrogen, setStructure);
   }
 
   public AtomIndexIterator getSelectedAtomIterator(BitSet bsSelected,
                                                    boolean isGreaterOnly,
-                                                   boolean modelZeroBased, boolean isMultiModel) {
+                                                   boolean modelZeroBased,
+                                                   boolean isMultiModel) {
     return modelSet.getSelectedAtomIterator(bsSelected, isGreaterOnly,
         modelZeroBased, false, isMultiModel);
   }
@@ -2640,11 +2670,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelSet.setIteratorForAtom(iterator, -1, atomIndex, distance, null);
   }
 
-  public void setIteratorForPoint(AtomIndexIterator iterator, int modelIndex, Point3f pt,
-                                  float distance) {
+  public void setIteratorForPoint(AtomIndexIterator iterator, int modelIndex,
+                                  Point3f pt, float distance) {
     modelSet.setIteratorForPoint(iterator, modelIndex, pt, distance);
   }
-  
+
   public void fillAtomData(AtomData atomData, int mode) {
     atomData.programInfo = "Jmol Version " + getJmolVersion();
     atomData.fileName = getFileName();
@@ -2712,13 +2742,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     initializeModel(false);
     if (notify)
-      setFileLoadStatus(FileManager.EnumFileStatus.ZAPPED, null, (resetUndo ? "resetUndo"
-          : getZapName()), null, null);
+      setFileLoadStatus(FileManager.EnumFileStatus.ZAPPED, null,
+          (resetUndo ? "resetUndo" : getZapName()), null, null);
     if (Logger.debugging)
       Logger.checkMemory();
   }
 
-private void zap(String msg) {
+  private void zap(String msg) {
     zap(true, true, false);
     echoMessage(msg);
   }
@@ -2820,8 +2850,8 @@ private void zap(String msg) {
 
   public String getHybridizationAndAxes(int atomIndex, Vector3f z, Vector3f x,
                                         String lcaoType) {
-    return modelSet.getHybridizationAndAxes(atomIndex, 0, z, x, lcaoType,
-        true, true);
+    return modelSet.getHybridizationAndAxes(atomIndex, 0, z, x, lcaoType, true,
+        true);
   }
 
   public BitSet getMoleculeBitSet(int atomIndex) {
@@ -3070,7 +3100,7 @@ private void zap(String msg) {
    * from JmolPopup.udateModelSetComputedMenu
    * 
    * @param modelIndex
-   *          the model of interest or -1 for all
+   *        the model of interest or -1 for all
    * @return the actual number of connections
    */
   @Override
@@ -3090,29 +3120,31 @@ private void zap(String msg) {
   }
 
   public boolean frankClickedModelKit(int x, int y) {
-    return !global.disablePopupMenu && isModelKitMode()
-        && x >= 0 && y >= 0 && x < 40 && y < 80;
+    return !global.disablePopupMenu && isModelKitMode() && x >= 0 && y >= 0
+        && x < 40 && y < 80;
   }
 
   @Override
   public int findNearestAtomIndex(int x, int y) {
     return findNearestAtomIndex(x, y, false);
-      }
+  }
 
   public int findNearestAtomIndex(int x, int y, boolean mustBeMovable) {
     return (modelSet == null || !getAtomPicking() ? -1 : modelSet
-        .findNearestAtomIndex(x, y, mustBeMovable ? selectionManager.getMotionFixedAtoms() : null));
+        .findNearestAtomIndex(x, y, mustBeMovable ? selectionManager
+            .getMotionFixedAtoms() : null));
   }
 
   BitSet findAtomsInRectangle(Rectangle rect) {
     return modelSet.findAtomsInRectangle(rect, getVisibleFramesBitSet());
   }
 
-  
   /**
    * absolute or relative to origin of UNITCELL {x y z}
+   * 
    * @param pt
-   * @param asAbsolute TODO
+   * @param asAbsolute
+   *        TODO
    */
   public void toCartesian(Point3f pt, boolean asAbsolute) {
     SymmetryInterface unitCell = getCurrentUnitCell();
@@ -3122,8 +3154,10 @@ private void zap(String msg) {
 
   /**
    * absolute or relative to origin of UNITCELL {x y z}
+   * 
    * @param pt
-   * @param asAbsolute TODO
+   * @param asAbsolute
+   *        TODO
    */
   public void toFractional(Point3f pt, boolean asAbsolute) {
     SymmetryInterface unitCell = getCurrentUnitCell();
@@ -3133,6 +3167,7 @@ private void zap(String msg) {
 
   /**
    * relative to origin without regard to UNITCELL {x y z}
+   * 
    * @param pt
    * @param offset
    */
@@ -3154,14 +3189,13 @@ private void zap(String msg) {
   public boolean getFractionalRelative() {
     return global.fractionalRelative;
   }
-  
+
   public void addUnitCellOffset(Point3f pt) {
     SymmetryInterface unitCell = getCurrentUnitCell();
     if (unitCell == null)
       return;
     pt.add(unitCell.getCartesianOffset());
   }
-
 
   public void setAtomData(int type, String name, String coordinateData,
                           boolean isDefault) {
@@ -3227,10 +3261,11 @@ private void zap(String msg) {
     return bs;
   }
 
-  public BitSet getAtomsWithin(float distance, Point3f[] points, BitSet bsInclude) {
+  public BitSet getAtomsWithin(float distance, Point3f[] points,
+                               BitSet bsInclude) {
     return modelSet.getAtomsWithin(distance, points, bsInclude);
   }
-  
+
   public BitSet getAtomsWithin(float distance, Point4f plane) {
     return modelSet.getAtomsWithin(distance, plane);
   }
@@ -3247,9 +3282,9 @@ private void zap(String msg) {
   public BitSet getBranchBitSet(int atomIndex, int atomIndexNot) {
     if (atomIndex < 0 || atomIndex >= getAtomCount())
       return new BitSet();
-    return JmolMolecule.getBranchBitSet(modelSet.atoms,
-        atomIndex,
-        getModelUndeletedAtomsBitSet(modelSet.atoms[atomIndex].modelIndex), null, atomIndexNot, true, true);
+    return JmolMolecule.getBranchBitSet(modelSet.atoms, atomIndex,
+        getModelUndeletedAtomsBitSet(modelSet.atoms[atomIndex].modelIndex),
+        null, atomIndexNot, true, true);
   }
 
   public int getAtomIndexFromAtomNumber(int atomNumber) {
@@ -3338,15 +3373,18 @@ private void zap(String msg) {
     return modelSet.getChimeInfo(tok, getSelectionSet(true));
   }
 
-  public Map<String, List<Map<String, Object>>> getAllChainInfo(Object atomExpression) {
+  public Map<String, List<Map<String, Object>>> getAllChainInfo(
+                                                                Object atomExpression) {
     return modelSet.getAllChainInfo(getAtomBitSet(atomExpression));
   }
 
-  public Map<String, List<Map<String, Object>>> getAllPolymerInfo(Object atomExpression) {
+  public Map<String, List<Map<String, Object>>> getAllPolymerInfo(
+                                                                  Object atomExpression) {
     return modelSet.getAllPolymerInfo(getAtomBitSet(atomExpression));
   }
 
-  public Object getWrappedState(boolean isImage, boolean asJmolZip, int width, int height) {
+  public Object getWrappedState(boolean isImage, boolean asJmolZip, int width,
+                                int height) {
     if (isImage && !global.imageState && !asJmolZip || !global.preserveState)
       return "";
     String s = getStateInfo(null, width, height);
@@ -3354,8 +3392,8 @@ private void zap(String msg) {
       return fileManager.createZipSet(null, s, true);
     // we remove local file references in the embedded states for images
     try {
-      s = JmolConstants.embedScript(FileManager.setScriptFileReferences(
-          s, ".", null, null));
+      s = JmolConstants.embedScript(FileManager.setScriptFileReferences(s, ".",
+          null, null));
     } catch (Throwable e) {
       // ignore if this uses too much memory
       Logger.error("state could not be saved: " + e.getMessage());
@@ -3393,7 +3431,7 @@ private void zap(String msg) {
     if (isAll || type.equalsIgnoreCase("windowState"))
       s.append(global.getWindowState(sfunc, width, height));
     //if (isAll)
-      //s.append(getFunctionCalls(null)); // removed in 12.1.16; unnecessary in state
+    //s.append(getFunctionCalls(null)); // removed in 12.1.16; unnecessary in state
     // file state
     if (isAll || type.equalsIgnoreCase("fileState"))
       s.append(fileManager.getState(sfunc));
@@ -3409,7 +3447,8 @@ private void zap(String msg) {
           null));
     // connections, atoms, bonds, labels, echos, shapes
     if (isAll || type.equalsIgnoreCase("modelState"))
-      s.append(modelSet.getState(sfunc, true, getBooleanProperty("saveProteinStructureState")));
+      s.append(modelSet.getState(sfunc, true,
+          getBooleanProperty("saveProteinStructureState")));
     // color scheme
     if (isAll || type.equalsIgnoreCase("colorState"))
       s.append(colorManager.getState(sfunc));
@@ -3444,8 +3483,8 @@ private void zap(String msg) {
   }
 
   public String getProteinStructureState() {
-    return modelSet.getProteinStructureState(
-        getSelectionSet(false), false, false, 3);
+    return modelSet.getProteinStructureState(getSelectionSet(false), false,
+        false, 3);
   }
 
   public String getCoordinateState(BitSet bsSelected) {
@@ -3550,7 +3589,6 @@ private void zap(String msg) {
     return modelSet.getUnitCell(modelIndex);
   }
 
-
   /*
    * ****************************************************************************
    * delegated to MeasurementManager
@@ -3583,7 +3621,8 @@ private void zap(String msg) {
 
   @SuppressWarnings("unchecked")
   List<Map<String, Object>> getMeasurementInfo() {
-    return (List<Map<String, Object>>) getShapeProperty(JmolConstants.SHAPE_MEASURES, "info");
+    return (List<Map<String, Object>>) getShapeProperty(
+        JmolConstants.SHAPE_MEASURES, "info");
   }
 
   public String getMeasurementInfoAsString() {
@@ -3688,8 +3727,8 @@ private void zap(String msg) {
     return animationManager.animationFps;
   }
 
-  public void setAnimationReplayMode(EnumAnimationMode replayMode, float firstFrameDelay,
-                                     float lastFrameDelay) {
+  public void setAnimationReplayMode(EnumAnimationMode replayMode,
+                                     float firstFrameDelay, float lastFrameDelay) {
     // Eval
 
     animationManager.setAnimationReplayMode(replayMode, firstFrameDelay,
@@ -3802,9 +3841,10 @@ private void zap(String msg) {
   void setFrameVariables() {
     global.setParameterValue("_firstFrame",
         getModelNumberDotted(animationManager.firstModelIndex));
-    global
-        .setParameterValue("_lastFrame", getModelNumberDotted(animationManager.lastModelIndex));
-    global.setParameterValue("_animTimeSec", animationManager.getAnimRunTimeSeconds());
+    global.setParameterValue("_lastFrame",
+        getModelNumberDotted(animationManager.lastModelIndex));
+    global.setParameterValue("_animTimeSec", animationManager
+        .getAnimRunTimeSeconds());
   }
 
   boolean wasInMotion = false;
@@ -3851,12 +3891,12 @@ private void zap(String msg) {
   @Override
   public void popHoldRepaint() {
     //System.out.println("viewer popHoldRepaint don't know why");
-        repaintManager.popHoldRepaint(true);
+    repaintManager.popHoldRepaint(true);
   }
 
   public void popHoldRepaint(String why) {
     //if (!why.equals("pause"))
-      //System.out.println("viewer popHoldRepaint " + why);
+    //System.out.println("viewer popHoldRepaint " + why);
     repaintManager.popHoldRepaint(!why.equals("pause"));
   }
 
@@ -4052,8 +4092,8 @@ private void zap(String msg) {
   }
 
   @Override
-  public void renderScreenImage(Object gLeft, Object gRight,
-                                int width, int height) {
+  public void renderScreenImage(Object gLeft, Object gRight, int width,
+                                int height) {
     // from paint/update event
     // gRight is for second stereo applet
     // when this is the stereoSlave, no rendering occurs through this applet
@@ -4097,7 +4137,8 @@ private void zap(String msg) {
   /**
    * 
    * @param isDouble
-   * @return         a java.awt.Image in the case of standard Jmol; an int[] in the case of Jmol-Android
+   * @return a java.awt.Image in the case of standard Jmol; an int[] in the case
+   *         of Jmol-Android
    */
   private Object getImage(boolean isDouble) {
     Object image = null;
@@ -4114,6 +4155,10 @@ private void zap(String msg) {
   }
 
   private boolean antialiasDisplay;
+  
+  boolean isAntialiased() {
+    return antialiasDisplay;
+  }
 
   private void render() {
     if (!refreshing && !creatingImage)
@@ -4156,7 +4201,8 @@ private void zap(String msg) {
   private void render1(Object graphic, Object img, int x, int y) {
     if (graphic != null && img != null) {
       try {
-        apiPlatform.drawImage(graphic, img, x, y, dimScreen.width, dimScreen.height);
+        apiPlatform.drawImage(graphic, img, x, y, dimScreen.width,
+            dimScreen.height);
       } catch (NullPointerException npe) {
         Logger.error("Sun!! ... fix graphics your bugs!");
       }
@@ -4171,7 +4217,8 @@ private void zap(String msg) {
         : getImage(isStereoDouble()));
     Object image1 = null;
     if (mergeImages) {
-      image1 = apiPlatform.newBufferedImage(image, dimScreen.width << 1, dimScreen.height);
+      image1 = apiPlatform.newBufferedImage(image, dimScreen.width << 1,
+          dimScreen.height);
       graphic = apiPlatform.getGraphics(image1);
     }
     if (graphic != null) {
@@ -4539,15 +4586,14 @@ private void zap(String msg) {
       try {
         Object[] p = headlessWriteCmd;
         if (isHeadless())
-          createImage((String) p[0], (String) p[1], null,
-              ((Integer) p[2]).intValue(),
-              ((Integer) p[3]).intValue(),
-              ((Integer) p[4]).intValue());
+          createImage((String) p[0], (String) p[1], null, ((Integer) p[2])
+              .intValue(), ((Integer) p[3]).intValue(), ((Integer) p[4])
+              .intValue());
       } catch (Exception e) {
         //
       }
     }
-      
+
     Logger.debug("exitJmol -- exiting");
     System.out.flush();
     System.exit(0);
@@ -4739,7 +4785,7 @@ private void zap(String msg) {
   }
 
   private BitSet addHydrogensInline(BitSet bsAtoms, List<Atom> vConnections,
-                                   Point3f[] pts) throws Exception {
+                                    Point3f[] pts) throws Exception {
     int modelIndex = getAtomModelIndex(bsAtoms.nextSetBit(0));
     if (modelIndex != modelSet.getModelCount() - 1)
       return new BitSet();
@@ -4755,12 +4801,12 @@ private void zap(String msg) {
     StringBuffer sbConnect = new StringBuffer();
     for (int i = 0; i < vConnections.size(); i++) {
       Atom a = vConnections.get(i);
-      sbConnect.append(";  connect 0 100 ").append("({" + (atomIndex++) + "}) ")
-          .append("({" + a.index + "}) group;");
+      sbConnect.append(";  connect 0 100 ")
+          .append("({" + (atomIndex++) + "}) ").append(
+              "({" + a.index + "}) group;");
     }
     StringBuffer sb = new StringBuffer();
-    sb.append(pts.length).append("\n")
-        .append(JmolConstants.ADD_HYDROGEN_TITLE)
+    sb.append(pts.length).append("\n").append(JmolConstants.ADD_HYDROGEN_TITLE)
         .append("#noautobond").append("\n");
     for (int i = 0; i < pts.length; i++)
       sb.append("H ").append(pts[i].x).append(" ").append(pts[i].y).append(" ")
@@ -4800,7 +4846,7 @@ private void zap(String msg) {
       return;
     if (isModelKitMode()) {
       if (isAtomAssignable(atomIndex))
-          highlight(BitSetUtil.setBit(atomIndex));
+        highlight(BitSetUtil.setBit(atomIndex));
       refresh(3, "hover on atom");
       return;
     }
@@ -4818,7 +4864,8 @@ private void zap(String msg) {
           ._("Drag to move label"));
     }
     setShapeProperty(JmolConstants.SHAPE_HOVER, "text", null);
-    setShapeProperty(JmolConstants.SHAPE_HOVER, "target", Integer.valueOf(atomIndex));
+    setShapeProperty(JmolConstants.SHAPE_HOVER, "target", Integer
+        .valueOf(atomIndex));
     hoverText = null;
     hoverAtomIndex = atomIndex;
     refresh(3, "hover on atom");
@@ -5166,13 +5213,14 @@ private void zap(String msg) {
     statusManager.setStatusFrameChanged(frameNo, fileNo, modelNo,
         (animationManager.animationDirection < 0 ? -firstNo : firstNo),
         (animationManager.currentDirection < 0 ? -lastNo : lastNo));
-    
+
     sendJSpecViewModelChange(modelIndex);
   }
 
   private void sendJSpecViewModelChange(int modelIndex) {
-    int syncMode = ("sync on".equals(modelSet.getModelSetAuxiliaryInfo("jmolscript")) 
-        ? StatusManager.SYNC_DRIVER : statusManager.getSyncMode());
+    int syncMode = ("sync on".equals(modelSet
+        .getModelSetAuxiliaryInfo("jmolscript")) ? StatusManager.SYNC_DRIVER
+        : statusManager.getSyncMode());
     if (syncMode != StatusManager.SYNC_DRIVER)
       return;
     String peak = (String) getModelAuxiliaryInfo(modelIndex, "jdxModelSelect");
@@ -5289,12 +5337,12 @@ private void zap(String msg) {
    * Viewer.createModelSetAndReturnError (-1, 1, 4) Viewer.deleteAtoms (5)
    * Viewer.zap (0)
    */
-  private void setFileLoadStatus(FileManager.EnumFileStatus ptLoad, String fullPathName,
-                                 String fileName, String modelName,
-                                 String strError) {
+  private void setFileLoadStatus(FileManager.EnumFileStatus ptLoad,
+                                 String fullPathName, String fileName,
+                                 String modelName, String strError) {
     setErrorMessage(strError);
     global.setParameterValue("_loadPoint", ptLoad.getCode());
-    boolean doCallback = (ptLoad != FileManager.EnumFileStatus.CREATING_MODELSET); 
+    boolean doCallback = (ptLoad != FileManager.EnumFileStatus.CREATING_MODELSET);
     statusManager.setFileLoadStatus(fullPathName, fileName, modelName,
         strError, ptLoad.getCode(), doCallback);
     if (doCallback)
@@ -5304,7 +5352,6 @@ private void zap(String msg) {
   public String getZapName() {
     return (getModelkitMode() ? JmolConstants.MODELKIT_ZAP_TITLE : "zapped");
   }
-
 
   /*
    * measureCallback reports completed or pending measurements. Pending
@@ -5342,8 +5389,9 @@ private void zap(String msg) {
    * Measures.deleteMeasurement Measures.pending actionManager.atomPicked
    */
 
-  public void setStatusMeasuring(String status, int intInfo, String strMeasure, float value) {
-    
+  public void setStatusMeasuring(String status, int intInfo, String strMeasure,
+                                 float value) {
+
     // status           intInfo 
 
     // measureCompleted index
@@ -5437,7 +5485,7 @@ private void zap(String msg) {
     if (msg != null)
       scriptEcho(Logger.debugging ? peak : msg);
     peak = fullName + "JSpecView: " + peak;
-    Logger.info("Jmol sending to JSpecView: "  + peak);
+    Logger.info("Jmol sending to JSpecView: " + peak);
     statusManager.syncSend(peak, ">", 0);
   }
 
@@ -5515,7 +5563,8 @@ private void zap(String msg) {
   }
 
   public String dialogAsk(String type, String fileName) {
-    return (isKiosk || restrictedFileAccess ? null : statusManager.dialogAsk(type, fileName));
+    return (isKiosk || restrictedFileAccess ? null : statusManager.dialogAsk(
+        type, fileName));
   }
 
   public int getScriptDelay() {
@@ -5665,10 +5714,12 @@ private void zap(String msg) {
     int tok = Token.getTokFromName(key.toLowerCase());
     switch (Token.getParamType(tok)) {
     case Token.booleanparam:
-      setBooleanProperty(key, tok, ScriptVariable.bValue(ScriptVariable.getVariable(value)));
+      setBooleanProperty(key, tok, ScriptVariable.bValue(ScriptVariable
+          .getVariable(value)));
       break;
     case Token.intparam:
-      setIntProperty(key, tok, ScriptVariable.iValue(ScriptVariable.getVariable(value)));
+      setIntProperty(key, tok, ScriptVariable.iValue(ScriptVariable
+          .getVariable(value)));
       break;
     case Token.floatparam:
       setFloatProperty(key, tok, Parser.parseFloat(value));
@@ -5683,12 +5734,12 @@ private void zap(String msg) {
     case Token.nmrurlformat:
       // 12.3.3
       global.nmrUrlFormat = value;
-      break;      
+      break;
     case Token.loadligandformat:
       // /12.1.51//
       global.loadLigandFormat = value;
       break;
-      // 12.1.50
+    // 12.1.50
     case Token.defaultlabelpdb:
       global.defaultLabelPDB = value;
       break;
@@ -5727,7 +5778,8 @@ private void zap(String msg) {
         global.quaternionFrame = value.substring(0, 2);
       else
         global.quaternionFrame = "" + (value.toLowerCase() + "p").charAt(0);
-      if (!Parser.isOneOf(global.quaternionFrame, JmolConstants.allowedQuaternionFrames))
+      if (!Parser.isOneOf(global.quaternionFrame,
+          JmolConstants.allowedQuaternionFrames))
         global.quaternionFrame = "p";
       modelSet.setHaveStraightness(false);
       break;
@@ -6051,7 +6103,7 @@ private void zap(String msg) {
       setIntProperty(key, tok, value);
     }
   }
-  
+
   private void setIntProperty(String key, int tok, int value) {
     switch (tok) {
     case Token.minpixelselradius:
@@ -6878,11 +6930,11 @@ private void zap(String msg) {
   public int getDotDensity() {
     return global.dotDensity;
   }
-  
+
   public int getDotScale() {
     return global.dotScale;
   }
-  
+
   public boolean isRangeSelected() {
     return global.rangeSelected;
   }
@@ -6893,7 +6945,8 @@ private void zap(String msg) {
 
   public int getIsosurfacePropertySmoothing(boolean asPower) {
     // Eval
-    return (asPower ? global.isosurfacePropertySmoothingPower : global.isosurfacePropertySmoothing ? 1 : 0);
+    return (asPower ? global.isosurfacePropertySmoothingPower
+        : global.isosurfacePropertySmoothing ? 1 : 0);
   }
 
   public boolean getWireframeRotation() {
@@ -6997,10 +7050,9 @@ private void zap(String msg) {
     return (getObjectMad(StateManager.OBJ_AXIS1) == 0
         || getAxesMode() != EnumAxesMode.UNITCELL
         || ((Boolean) getShapeProperty(JmolConstants.SHAPE_AXES, "axesTypeXY"))
-            .booleanValue() 
-        || getShapeProperty(JmolConstants.SHAPE_AXES, "origin") != null 
-            ? null : (Point3f[]) getShapeProperty(
-        JmolConstants.SHAPE_AXES, "axisPoints"));
+            .booleanValue()
+        || getShapeProperty(JmolConstants.SHAPE_AXES, "origin") != null ? null
+        : (Point3f[]) getShapeProperty(JmolConstants.SHAPE_AXES, "axisPoints"));
   }
 
   public float getAxesScale() {
@@ -7008,9 +7060,9 @@ private void zap(String msg) {
   }
 
   public void resetError() {
-    global.removeJmolParameter("_errormessage");  
+    global.removeJmolParameter("_errormessage");
   }
-  
+
   private void setAxesModeMolecular(boolean TF) {
     global.axesMode = (TF ? EnumAxesMode.MOLECULAR : EnumAxesMode.BOUNDBOX);
     axesAreTainted = true;
@@ -7057,7 +7109,8 @@ private void zap(String msg) {
   }
 
   public boolean getSelectionHaloEnabled(boolean isRenderer) {
-    boolean flag = modelSet.getSelectionHaloEnabled() || isRenderer && showSelected;
+    boolean flag = modelSet.getSelectionHaloEnabled() || isRenderer
+        && showSelected;
     if (isRenderer)
       showSelected = false;
     return flag;
@@ -7247,12 +7300,13 @@ private void zap(String msg) {
 
   public int[] makeConnections(float minDistance, float maxDistance, int order,
                                int connectOperation, BitSet bsA, BitSet bsB,
-                               BitSet bsBonds, boolean isBonds, boolean addGroup, float energy) {
+                               BitSet bsBonds, boolean isBonds,
+                               boolean addGroup, float energy) {
     // eval
     clearModelDependentObjects();
-// removed in 12.3.2 and 12.2.1; cannot remember why this was important
-// we aren't removing atoms, just bonds. So who cares in terms of measurements?
-// clearAllMeasurements(); // necessary for serialization (??)
+    // removed in 12.3.2 and 12.2.1; cannot remember why this was important
+    // we aren't removing atoms, just bonds. So who cares in terms of measurements?
+    // clearAllMeasurements(); // necessary for serialization (??)
     clearMinimization();
     return modelSet.makeConnections(minDistance, maxDistance, order,
         connectOperation, bsA, bsB, bsBonds, isBonds, addGroup, energy);
@@ -7490,7 +7544,8 @@ private void zap(String msg) {
   }
 
   private void setDefaults() {
-    setShapeSize(JmolConstants.SHAPE_BALLS, rd, getModelUndeletedAtomsBitSet(-1));
+    setShapeSize(JmolConstants.SHAPE_BALLS, rd,
+        getModelUndeletedAtomsBitSet(-1));
   }
 
   public boolean getZeroBasedXyzRasmol() {
@@ -7498,7 +7553,7 @@ private void zap(String msg) {
   }
 
   private void setAntialias(int mode, boolean TF) {
-    
+
     switch (mode) {
     case 0: // display
       global.antialiasDisplay = TF;
@@ -7700,10 +7755,10 @@ private void zap(String msg) {
   // stereo support
   // //////////////////////////////////////////////////////////////
 
-  public void setStereoMode(int[] twoColors, EnumStereoMode stereoMode, float degrees) {
+  public void setStereoMode(int[] twoColors, EnumStereoMode stereoMode,
+                            float degrees) {
     setFloatProperty("stereoDegrees", degrees);
-    setBooleanProperty("greyscaleRendering",
-        stereoMode.isBiColor());
+    setBooleanProperty("greyscaleRendering", stereoMode.isBiColor());
     if (twoColors != null)
       transformManager.setStereoMode(twoColors);
     else
@@ -7761,7 +7816,6 @@ private void zap(String msg) {
   private boolean haveHeadlessExitTimeout;
   private Object[] headlessWriteCmd;
 
-  
   @Override
   public Object getProperty(String returnType, String infoType, Object paramInfo) {
     // accepts a BitSet paramInfo
@@ -7773,8 +7827,7 @@ private void zap(String msg) {
     if (!"DATA_API".equals(returnType))
       return PropertyManager.getProperty(this, returnType, infoType, paramInfo);
 
-    switch (
-         ("scriptCheck........." // 0
+    switch (("scriptCheck........." // 0
         + "scriptContext......." // 20
         + "scriptEditor........" // 40
         + "scriptEditorState..." // 60
@@ -7857,14 +7910,14 @@ private void zap(String msg) {
       return (appConsole == null ? "" : appConsole.getText());
     case 260:
       if (isHeadless())
-        headlessWriteCmd = (Object[]) paramInfo; 
+        headlessWriteCmd = (Object[]) paramInfo;
       return null;
     case 280:
       if (!isHeadless() || haveHeadlessExitTimeout)
         return null; // only one of these allowed
       haveHeadlessExitTimeout = true;
-      setTimeout("" + Math.random(), 
-          ((Integer) paramInfo).intValue(), "exitJmol");
+      setTimeout("" + Math.random(), ((Integer) paramInfo).intValue(),
+          "exitJmol");
       return null;
     }
     Logger.error("ERROR in getProperty DATA_API: " + infoType);
@@ -7889,8 +7942,10 @@ private void zap(String msg) {
     scriptEditor.setVisible(true);
   }
 
-  public String getModelExtract(Object atomExpression, boolean doTransform, String type) {
-    return modelSet.getModelExtract(getAtomBitSet(atomExpression), doTransform, false, type);
+  public String getModelExtract(Object atomExpression, boolean doTransform,
+                                String type) {
+    return modelSet.getModelExtract(getAtomBitSet(atomExpression), doTransform,
+        false, type);
   }
 
   // ////////////////////////////////////////////////
@@ -7936,12 +7991,12 @@ private void zap(String msg) {
       break;
     }
     if (shapeManager.checkObjectDragged(prevX, prevY, x, y, action,
-      getVisibleFramesBitSet(), iShape)) {
-        refresh(1, "checkObjectDragged");
-        if (iShape == JmolConstants.SHAPE_DRAW)
-          scriptEcho((String) getShapeProperty(JmolConstants.SHAPE_DRAW,
-          "command"));
-      }
+        getVisibleFramesBitSet(), iShape)) {
+      refresh(1, "checkObjectDragged");
+      if (iShape == JmolConstants.SHAPE_DRAW)
+        scriptEcho((String) getShapeProperty(JmolConstants.SHAPE_DRAW,
+            "command"));
+    }
     // TODO: refresh 1 or 2?
   }
 
@@ -7958,7 +8013,8 @@ private void zap(String msg) {
                                         float degreesPerSecond,
                                         float endDegrees, boolean isSpin,
                                         BitSet bsSelected,
-                                        Vector3f translation, List<Point3f> finalPoints) {
+                                        Vector3f translation,
+                                        List<Point3f> finalPoints) {
     // Eval: rotate INTERNAL
     if (transformManager.rotateAboutPointsInternal(point1, point2,
         degreesPerSecond, endDegrees, false, isSpin, bsSelected, false,
@@ -8022,8 +8078,9 @@ private void zap(String msg) {
   @Override
   public String getData(String atomExpression, String type) {
     String exp = "";
-    if (type.equalsIgnoreCase("MOL") || type.equalsIgnoreCase("SDF") 
-        || type.equalsIgnoreCase("V2000") || type.equalsIgnoreCase("V3000") || type.equalsIgnoreCase("XYZVIB") || type.equalsIgnoreCase("CD"))
+    if (type.equalsIgnoreCase("MOL") || type.equalsIgnoreCase("SDF")
+        || type.equalsIgnoreCase("V2000") || type.equalsIgnoreCase("V3000")
+        || type.equalsIgnoreCase("XYZVIB") || type.equalsIgnoreCase("CD"))
       return getModelExtract(atomExpression, false, type);
     if (type.toLowerCase().indexOf("property_") == 0)
       exp = "{selected}.label(\"%{" + type + "}\")";
@@ -8037,7 +8094,8 @@ private void zap(String msg) {
       exp = "\"\" + {selected}.size + \"\n\n\"+{selected}.label(\"%-2e %8.3x %8.3y %8.3z %4.2[vdw] 1 [%n]%r.%a#%i\").lines";
     else if (type.startsWith("USER:"))
       exp = "{selected}.label(\"" + type.substring(5) + "\").lines";
-    else // if(type.equals("XYZ"))
+    else
+      // if(type.equals("XYZ"))
       exp = "\"\" + {selected}.size + \"\n\n\"+{selected}.label(\"%-2e %10.5x %10.5y %10.5z\").lines";
     if (!atomExpression.equals("selected"))
       exp = TextFormat.simpleReplace(exp, "selected", atomExpression);
@@ -8203,9 +8261,9 @@ private void zap(String msg) {
   private boolean movingSelected;
   private boolean showSelected;
 
-  public void moveSelected(int deltaX, int deltaY, int deltaZ, int x,
-                           int y, BitSet bsSelected,
-                           boolean isTranslation, boolean asAtoms) {
+  public void moveSelected(int deltaX, int deltaY, int deltaZ, int x, int y,
+                           BitSet bsSelected, boolean isTranslation,
+                           boolean asAtoms) {
     // cannot synchronize this -- it's from the mouse and the event queue
     if (deltaZ == 0)
       return;
@@ -8243,8 +8301,8 @@ private void zap(String msg) {
           Point3i ptScreen = transformPoint(ptCenter);
           Point3f ptScreenNew;
           if (deltaZ != Integer.MIN_VALUE)
-            ptScreenNew = new Point3f(ptScreen.x,
-              ptScreen.y, ptScreen.z + deltaZ + 0.5f);
+            ptScreenNew = new Point3f(ptScreen.x, ptScreen.y, ptScreen.z
+                + deltaZ + 0.5f);
           else
             ptScreenNew = new Point3f(ptScreen.x + deltaX * f + 0.5f,
                 ptScreen.y + deltaY * f + 0.5f, ptScreen.z);
@@ -8352,12 +8410,11 @@ private void zap(String msg) {
     Vector3f v2 = new Vector3f(deltaX, deltaY, 0);
     v1.cross(v1, v2);
     float degrees = (v1.z > 0 ? 1 : -1) * v2.length();
-   
+
     BitSet bs = BitSetUtil.copy(bsBranch);
     bs.andNot(selectionManager.getMotionFixedAtoms());
 
-    rotateAboutPointsInternal(atom1, atom2, 0, degrees, false, bs,
-        null, null);
+    rotateAboutPointsInternal(atom1, atom2, 0, degrees, false, bs, null, null);
   }
 
   public void refreshMeasures(boolean andStopMinimization) {
@@ -8436,17 +8493,18 @@ private void zap(String msg) {
       for (int j = 0; j < nY; j++)
         for (int k = 0; k < nZ; k++)
           xyzdata[i][j][k] = f[n++];
-    return xyzdata; 
+    return xyzdata;
   }
 
   public void showNMR(String smiles) {
     // nmrdb cannot handle "." separator and cannot handle c=c
-    showUrl(global.nmrUrlFormat + Escape.escapeUrl(getChemicalInfo(smiles, '/', "smiles")));  
+    showUrl(global.nmrUrlFormat
+        + Escape.escapeUrl(getChemicalInfo(smiles, '/', "smiles")));
   }
-  
+
   public void getHelp(String what) {
-    if (global.helpPath.indexOf("?") < 0) { 
-      if (what.length() > 0 && what.indexOf("?") != 0) 
+    if (global.helpPath.indexOf("?") < 0) {
+      if (what.length() > 0 && what.indexOf("?") != 0)
         what = "?search=" + TextFormat.simpleReplace(what, " ", "%20");
       what += (what.length() == 0 ? "?ver=" : "&ver=") + JmolConstants.version;
     } else {
@@ -8454,19 +8512,17 @@ private void zap(String msg) {
     }
     showUrl(global.helpPath + what);
   }
-  
+
   public void show2D(String smiles) {
     showUrl((String) setLoadFormat("_" + smiles, '2', false));
   }
-  
+
   public String getChemicalInfo(String smiles, char type, String info) {
     String s = (String) setLoadFormat("_" + smiles, type, false);
     if (type == '/')
-      s += TextFormat.simpleReplace(info, " ","%20");
+      s += TextFormat.simpleReplace(info, " ", "%20");
     return getFileAsString(s, Integer.MAX_VALUE, false);
   }
-  
-
 
   // ///////////////////////////////////////////////////////////////
   // delegated to stateManager
@@ -8485,7 +8541,7 @@ private void zap(String msg) {
    * Adds one or more commands to the command history
    * 
    * @param command
-   *          the command to add
+   *        the command to add
    */
   public void addCommand(String command) {
     if (autoExit || !haveDisplay || !getPreserveState())
@@ -8509,7 +8565,7 @@ private void zap(String msg) {
    * return "" n == 0 ; clear and turn on; return "" n == Integer.MIN_VALUE;
    * 
    * @param howFarBack
-   *          number of lines (-1 for next line)
+   *        number of lines (-1 for next line)
    * @return one or more lines of command history
    */
   @Override
@@ -8529,7 +8585,7 @@ private void zap(String msg) {
   /**
    * 
    * @param text
-   *          null here clips image; String clips text
+   *        null here clips image; String clips text
    * @return "OK" for image or "OK [number of bytes]"
    */
   @Override
@@ -8573,7 +8629,7 @@ private void zap(String msg) {
     fileName = getFileNameFromDialog(fileName, quality);
     if (fullPath != null)
       fullPath[0] = fileName;
-    if (fileName == null) 
+    if (fileName == null)
       return null;
     int ptDot = fileName.indexOf(".");
     if (ptDot < 0)
@@ -8600,11 +8656,10 @@ private void zap(String msg) {
   }
 
   private boolean creatingImage;
-  
+
   public boolean getCreatingImage() {
     return creatingImage;
   }
-  
 
   @Override
   public Object createImage(String fileName, String type, Object text_or_bytes,
@@ -8621,25 +8676,24 @@ private void zap(String msg) {
    * jmolStatusListener interface
    * 
    * @param fileName
-   *          starts with ? --> use file dialog; null --> to clipboard
+   *        starts with ? --> use file dialog; null --> to clipboard
    * @param type
-   *          PNG, JPG, etc.
+   *        PNG, JPG, etc.
    * @param text_or_bytes
-   *          String or byte[] or null if an image
+   *        String or byte[] or null if an image
    * @param quality
-   *          Integer.MIN_VALUE --> not an image
+   *        Integer.MIN_VALUE --> not an image
    * @param width
-   *          image width
+   *        image width
    * @param height
-   *          image height
+   *        image height
    * @param fullPath
    * @param doCheck
    * @return null (canceled) or a message starting with OK or an error message
    */
-  private Object createImage(String fileName, String type, Object text_or_bytes,
-                            int quality, int width, int height,
-                            String[] fullPath, boolean doCheck) {
-
+  private Object createImage(String fileName, String type,
+                             Object text_or_bytes, int quality, int width,
+                             int height, String[] fullPath, boolean doCheck) {
 
     /*
      * 
@@ -8811,27 +8865,32 @@ private void zap(String msg) {
         String script2 = Parser.getQuotedAttribute(script, "script");
         boolean isNIH = (modelID != null && modelID.startsWith("$"));
         if (isNIH)
-         filename = (modelID.substring(1).equals(getParameter("_smilesstring")) ? null : modelID);
-        String id = (isNIH || modelID == null ? null : (filename == null ? "" : filename + "#") + modelID);
+          filename = (modelID.substring(1)
+              .equals(getParameter("_smilesstring")) ? null : modelID);
+        String id = (isNIH || modelID == null ? null : (filename == null ? ""
+            : filename + "#")
+            + modelID);
         if ("".equals(baseModel))
           id += ".baseModel";
         int modelIndex = (id == null ? -3 : getModelIndexFromId(id));
         if (modelIndex == -2)
           return; // file was found, or no file was indicated, but not this model -- ignore
-        script = (modelIndex == -1 && filename != null ? script = "load " + Escape.escape(filename)
-            : "");
+        script = (modelIndex == -1 && filename != null ? script = "load "
+            + Escape.escape(filename) : "");
         if (id != null)
           script += ";model ID " + Escape.escape(id);
         if (atoms != null)
-          script += ";select visible & (@" + TextFormat.simpleReplace(atoms, ",", " or @") + ")";
+          script += ";select visible & (@"
+              + TextFormat.simpleReplace(atoms, ",", " or @") + ")";
         else if (select != null)
           script += ";select visible & (" + select + ")";
         if (script2 != null)
           script += ";" + script2;
       } else if (script.toLowerCase().startsWith("jspecview")) {
         if (!disableSend)
-          statusManager.syncSend(fullName + "JSpecView" + script.substring(9), ">", 0);
-         return;
+          statusManager.syncSend(fullName + "JSpecView" + script.substring(9),
+              ">", 0);
+        return;
       }
       System.out.println("Jmol executing script for JSpecView: " + script);
       evalStringQuiet(script, true, false);
@@ -8903,18 +8962,20 @@ private void zap(String msg) {
    * @param fileName
    * @return calculated atom potentials
    */
-  public float[] getAtomicPotentials(boolean isMep, BitSet bsSelected, BitSet bsIgnore, String fileName) {
+  public float[] getAtomicPotentials(boolean isMep, BitSet bsSelected,
+                                     BitSet bsIgnore, String fileName) {
     float[] potentials = new float[getAtomCount()];
-    MepCalculationInterface m = (MepCalculationInterface) Interface.getOptionInterface("quantum.MlpCalculation");
+    MepCalculationInterface m = (MepCalculationInterface) Interface
+        .getOptionInterface("quantum.MlpCalculation");
     String data = (fileName == null ? null : getFileAsString(fileName));
-    m.assignPotentials(modelSet.atoms, potentials, getSmartsMatch("a", bsSelected), 
-        getSmartsMatch("/noAromatic/[$(C=O),$(O=C),$(NC=O)]", bsSelected), bsIgnore, data);
+    m.assignPotentials(modelSet.atoms, potentials, getSmartsMatch("a",
+        bsSelected), getSmartsMatch("/noAromatic/[$(C=O),$(O=C),$(NC=O)]",
+        bsSelected), bsIgnore, data);
     return potentials;
   }
 
   public void setProteinType(EnumStructure type, BitSet bs) {
-    modelSet.setProteinType(bs == null ? getSelectionSet(false)
-        : bs, type);
+    modelSet.setProteinType(bs == null ? getSelectionSet(false) : bs, type);
   }
 
   /*
@@ -8960,8 +9021,8 @@ private void zap(String msg) {
       case JMOL:
       case BABEL:
       case RASMOL:
-      // could be a bug here -- why override these
-      // with dataManager's if not AUTO?
+        // could be a bug here -- why override these
+        // with dataManager's if not AUTO?
         if (dataManager.defaultVdw != EnumVdw.AUTO)
           type = dataManager.defaultVdw;
         break;
@@ -8974,8 +9035,8 @@ private void zap(String msg) {
     if (vType == null)
       vType = EnumVdw.AUTO;
     dataManager.setDefaultVdw(vType);
-    global.setParameterValue("defaultVDW",
-        getDefaultVdwTypeNameOrData(Integer.MIN_VALUE, null));
+    global.setParameterValue("defaultVDW", getDefaultVdwTypeNameOrData(
+        Integer.MIN_VALUE, null));
   }
 
   public String getDefaultVdwTypeNameOrData(int iMode, EnumVdw vType) {
@@ -9006,7 +9067,8 @@ private void zap(String msg) {
     if (getModelCount() > 1)
       setCurrentModelIndex(-1, true);
     hoverAtomIndex = -1;
-    setFileLoadStatus(FileManager.EnumFileStatus.DELETED, null, null, null, null);
+    setFileLoadStatus(FileManager.EnumFileStatus.DELETED, null, null, null,
+        null);
     refreshMeasures(true);
     if (bsD0 != null)
       bsDeleted.andNot(bsD0);
@@ -9048,8 +9110,8 @@ private void zap(String msg) {
 
   public String getPointGroupAsString(boolean asDraw, String type, int index,
                                       float scale) {
-    return modelSet.getPointGroupAsString(getSelectionSet(false),
-        asDraw, type, index, scale);
+    return modelSet.getPointGroupAsString(getSelectionSet(false), asDraw, type,
+        index, scale);
   }
 
   public float getPointGroupTolerance(int type) {
@@ -9233,8 +9295,8 @@ private void zap(String msg) {
     return transformManager.getFrontPlane();
   }
 
-  public List<Object> getPlaneIntersection(int type, Point4f plane, float scale,
-                                     int flags) {
+  public List<Object> getPlaneIntersection(int type, Point4f plane,
+                                           float scale, int flags) {
     return modelSet.getPlaneIntersection(type, plane, scale, flags,
         animationManager.currentModelIndex);
   }
@@ -9345,7 +9407,7 @@ private void zap(String msg) {
       Logger.info(GT._("Cannot set log file path."));
       value = null;
     } else {
-      if (path != null) 
+      if (path != null)
         Logger.info(GT._("Setting log file to {0}", path));
       logFile = path;
     }
@@ -9390,7 +9452,6 @@ private void zap(String msg) {
       apiPlatform.requestFocusInWindow(display);
   }
 
-
   private MinimizerInterface minimizer;
 
   public MinimizerInterface getMinimizer(boolean createNew) {
@@ -9425,18 +9486,20 @@ private void zap(String msg) {
     refreshMeasures(true);
     if (!global.monitorEnergy)
       return;
-    minimize(0, 0, getModelUndeletedAtomsBitSet(-1), null, 0, false, true, false);
+    minimize(0, 0, getModelUndeletedAtomsBitSet(-1), null, 0, false, true,
+        false);
     echoMessage("Energy = " + getParameter("_minimizationEnergy"));
   }
 
   /**
    * 
    * @param steps
-   *          Integer.MAX_VALUE --> use defaults
+   *        Integer.MAX_VALUE --> use defaults
    * @param crit
-   *          -1 --> use defaults
+   *        -1 --> use defaults
    * @param bsSelected
-   * @param bsFixed TODO
+   * @param bsFixed
+   *        TODO
    * @param rangeFixed
    * @param addHydrogen
    * @param isSilent
@@ -9445,9 +9508,9 @@ private void zap(String msg) {
   public void minimize(int steps, float crit, BitSet bsSelected,
                        BitSet bsFixed, float rangeFixed, boolean addHydrogen,
                        boolean isSilent, boolean asScript) {
-    
+
     // We only work on atoms that are in frame
-    
+
     BitSet bsInFrame = getModelUndeletedAtomsBitSet(getVisibleFramesBitSet());
 
     if (bsSelected == null)
@@ -9455,22 +9518,23 @@ private void zap(String msg) {
           .length() - 1);
     else
       bsSelected.and(bsInFrame);
-    
+
     if (rangeFixed <= 0)
       rangeFixed = JmolConstants.MINIMIZE_FIXED_RANGE;
 
     // we allow for a set of atoms to be fixed, 
     // but that is only used by default
-    
-    BitSet bsMotionFixed = BitSetUtil.copy(bsFixed == null ? selectionManager.getMotionFixedAtoms() : bsFixed);
-    boolean haveFixed = (bsMotionFixed.cardinality() > 0); 
+
+    BitSet bsMotionFixed = BitSetUtil.copy(bsFixed == null ? selectionManager
+        .getMotionFixedAtoms() : bsFixed);
+    boolean haveFixed = (bsMotionFixed.cardinality() > 0);
     if (haveFixed)
       bsSelected.andNot(bsMotionFixed);
 
     // We always fix any atoms that
     // are in the visible frame set and are within 5 angstroms
     // and are not already selected
-    
+
     BitSet bsNearby = getAtomsWithin(rangeFixed, bsSelected, true, null);
     bsNearby.andNot(bsSelected);
     if (haveFixed) {
@@ -9482,7 +9546,6 @@ private void zap(String msg) {
 
     if (addHydrogen)
       bsSelected.or(addHydrogens(bsSelected, asScript, isSilent));
-    
 
     if (bsSelected.cardinality() > JmolConstants.MINIMIZATION_ATOM_MAX) {
       Logger.error("Too many atoms for minimization (>"
@@ -9492,7 +9555,8 @@ private void zap(String msg) {
     try {
       if (!isSilent)
         Logger.info("Minimizing " + bsSelected.cardinality() + " atoms");
-      getMinimizer(true).minimize(steps, crit, bsSelected, bsMotionFixed, haveFixed, isSilent);
+      getMinimizer(true).minimize(steps, crit, bsSelected, bsMotionFixed,
+          haveFixed, isSilent);
     } catch (Exception e) {
       e.printStackTrace();
       Logger.error(e.getMessage());
@@ -9502,11 +9566,11 @@ private void zap(String msg) {
   public void setMotionFixedAtoms(BitSet bs) {
     selectionManager.setMotionFixedAtoms(bs);
   }
-  
+
   public BitSet getMotionFixedAtoms() {
     return selectionManager.getMotionFixedAtoms();
   }
-  
+
   boolean useArcBall() {
     return global.useArcBall;
   }
@@ -9522,7 +9586,8 @@ private void zap(String msg) {
     modelSet.getAtomicPropertyState(commands, type, bs, name, data);
   }
 
-  public Point3f[][] getCenterAndPoints(List<BitSet[]> atomSets, boolean addCenter) {
+  public Point3f[][] getCenterAndPoints(List<BitSet[]> atomSets,
+                                        boolean addCenter) {
     return modelSet.getCenterAndPoints(atomSets, addCenter);
   }
 
@@ -9530,7 +9595,8 @@ private void zap(String msg) {
     return global.smallMoleculeMaxAtoms;
   }
 
-  public String streamFileData(String fileName, String type, String type2, int modelIndex, Object[] parameters) {
+  public String streamFileData(String fileName, String type, String type2,
+                               int modelIndex, Object[] parameters) {
     String msg = null;
     String[] fullPath = new String[1];
     OutputStream os = getOutputStream(fileName, fullPath);
@@ -9546,7 +9612,8 @@ private void zap(String msg) {
       // quality = Integer.MIN_VALUE;
     } else if (type.equals("PLOT")) {
       sb = new OutputStringBuffer(new BufferedOutputStream(os));
-      msg = modelSet.getPdbData(modelIndex, type2, getSelectionSet(false), parameters, sb);
+      msg = modelSet.getPdbData(modelIndex, type2, getSelectionSet(false),
+          parameters, sb);
     }
     if (msg != null)
       msg = "OK " + msg + " " + fullPath[0];
@@ -9560,8 +9627,8 @@ private void zap(String msg) {
   }
 
   public String getPdbData(int modelIndex, String type, Object[] parameters) {
-    return modelSet.getPdbData(modelIndex, type, 
-        getSelectionSet(false), parameters, null);
+    return modelSet.getPdbData(modelIndex, type, getSelectionSet(false),
+        parameters, null);
   }
 
   public int getRepaintWait() {
@@ -9594,7 +9661,7 @@ private void zap(String msg) {
   }
 
   boolean displayLoadErrors = true;
-  
+
   public boolean eval(ScriptContext context, ShapeManager shapeManager) {
     displayLoadErrors = false;
     boolean isOK = ScriptEvaluator.evaluateContext(this, context,
@@ -9730,7 +9797,7 @@ private void zap(String msg) {
   //   AtomCollection.TAINT_COORD
   //   AtomCollection.TAINT_FORMALCHARGE
   private boolean undoWorking = false;
-  
+
   void undoClear() {
     actionStates.clear();
     actionStatesRedo.clear();
@@ -9738,8 +9805,11 @@ private void zap(String msg) {
 
   /**
    * 
-   * @param action   Token.undo or Token.redo
-   * @param n        number of steps to go back/forward; 0 for all; -1 for clear; -2 for clear BOTH
+   * @param action
+   *        Token.undo or Token.redo
+   * @param n
+   *        number of steps to go back/forward; 0 for all; -1 for clear; -2 for
+   *        clear BOTH
    * 
    */
   public void undoMoveAction(int action, int n) {
@@ -9758,7 +9828,8 @@ private void zap(String msg) {
         // fall through
       default:
         if (n > MAX_ACTION_UNDO)
-          n = (action == Token.undomove ? actionStates : actionStatesRedo).size();
+          n = (action == Token.undomove ? actionStates : actionStatesRedo)
+              .size();
         for (int i = 0; i < n; i++)
           undoMoveAction(0, action, true);
       }
@@ -9785,11 +9856,11 @@ private void zap(String msg) {
       String s = "";
       List<String> list1;
       List<String> list2;
-      switch (type) { 
+      switch (type) {
       default:
       case Token.undomove:
         list1 = actionStates;
-        list2 = actionStatesRedo;            
+        list2 = actionStatesRedo;
         break;
       case Token.redomove:
         list1 = actionStatesRedo;
@@ -9806,7 +9877,7 @@ private void zap(String msg) {
       if (type == Token.undomove && list2.size() == 1) {
         // must save current state, coord, etc.
         // but this destroys actionStatesRedo
-        int[] pt = new int[] {1};
+        int[] pt = new int[] { 1 };
         type = Parser.parseInt(s, pt);
         taintedAtom = Parser.parseInt(s, pt);
         undoMoveAction(taintedAtom, type, false);
@@ -9830,7 +9901,7 @@ private void zap(String msg) {
       undoWorking = true;
       BitSet bs;
       StringBuffer sb = new StringBuffer();
-      sb.append("#" + type + " "+ taintedAtom + " " + (new Date()) + "\n");
+      sb.append("#" + type + " " + taintedAtom + " " + (new Date()) + "\n");
       if (taintedAtom >= 0) {
         bs = getModelUndeletedAtomsBitSet(modelIndex);
         modelSet.taint(bs, (byte) type);
@@ -9849,7 +9920,7 @@ private void zap(String msg) {
       }
       if (clearRedo) {
         actionStates.add(0, sb.toString());
-        actionStatesRedo.clear();        
+        actionStatesRedo.clear();
       } else {
         actionStatesRedo.add(1, sb.toString());
       }
@@ -9910,7 +9981,7 @@ private void zap(String msg) {
   }
 
   protected void moveAtomWithHydrogens(int atomIndex, int deltaX, int deltaY,
-                             int deltaZ, BitSet bsAtoms) {
+                                       int deltaZ, BitSet bsAtoms) {
     stopMinimization();
     if (bsAtoms == null) {
       Atom atom = modelSet.atoms[atomIndex];
@@ -9932,7 +10003,8 @@ private void zap(String msg) {
       for (String key : ligandModelSet.keySet()) {
         String data = (String) ligandModels.get(key + "_data");
         if (data != null)
-          commands.append("  ").append(Escape.encapsulateData("ligand_" + key, data.trim() + "\n"));
+          commands.append("  ").append(
+              Escape.encapsulateData("ligand_" + key, data.trim() + "\n"));
       }
     }
     modelSet.appendLoadStates(commands);
@@ -9970,20 +10042,23 @@ private void zap(String msg) {
   }
 
   /**
-   * returns the SMILES string for a sequence or atom set
-   * does not include attached protons on groups
+   * returns the SMILES string for a sequence or atom set does not include
+   * attached protons on groups
    * 
    * @param index1
    * @param index2
    * @param bsSelected
    * @param isBioSmiles
-   * @param allowUnmatchedRings TODO
-   * @param addCrossLinks TODO
+   * @param allowUnmatchedRings
+   *        TODO
+   * @param addCrossLinks
+   *        TODO
    * @param addComment
    * @return SMILES string
    */
   public String getSmiles(int index1, int index2, BitSet bsSelected,
-                          boolean isBioSmiles, boolean allowUnmatchedRings, boolean addCrossLinks, boolean addComment) {
+                          boolean isBioSmiles, boolean allowUnmatchedRings,
+                          boolean addCrossLinks, boolean addComment) {
     Atom[] atoms = getModelSet().atoms;
     if (bsSelected == null) {
       if (index1 < 0 || index2 < 0) {
@@ -10032,7 +10107,7 @@ private void zap(String msg) {
   }
 
   public void displayBonds(BondSet bs, boolean isDisplay) {
-    modelSet.displayBonds(bs, isDisplay);    
+    modelSet.displayBonds(bs, isDisplay);
   }
 
   public String getModelAtomProperty(Atom atom, String text) {
@@ -10053,7 +10128,7 @@ private void zap(String msg) {
           minor = 0;
         stateScriptVersionInt = main * 10000 + sub * 100 + minor;
         // here's why:
-        global.legacyAutoBonding = (stateScriptVersionInt < 110924);        
+        global.legacyAutoBonding = (stateScriptVersionInt < 110924);
         return;
       } catch (Exception e) {
         //
@@ -10062,8 +10137,8 @@ private void zap(String msg) {
     global.legacyAutoBonding = false;
     stateScriptVersionInt = Integer.MAX_VALUE;
   }
-  
-  public boolean checkAutoBondLegacy() {    
+
+  public boolean checkAutoBondLegacy() {
     // aargh -- BitSet efficiencies in Jmol 11.9.24, 2/3/2010, meant that
     // state files created before that that use select BONDS will select the
     // wrong bonds. 
@@ -10071,9 +10146,9 @@ private void zap(String msg) {
     // reset after a state script is read
   }
 
-  boolean initializeExporter(JmolRendererInterface g3dExport,
-                                    String type, Object output) {
-    return  g3dExport.initializeExporter(type, this, privateKey, g3d, output);
+  boolean initializeExporter(JmolRendererInterface g3dExport, String type,
+                             Object output) {
+    return g3dExport.initializeExporter(type, this, privateKey, g3d, output);
   }
 
   public void setPrivateKeyForShape(int iShape) {
@@ -10106,8 +10181,8 @@ private void zap(String msg) {
     shapeManager.getObjectMap(map, withDollar);
   }
 
-  Map<String, String[][]>htPdbBondInfo;
-  
+  Map<String, String[][]> htPdbBondInfo;
+
   public String[][] getPdbBondInfo(String group3) {
     if (htPdbBondInfo == null)
       htPdbBondInfo = new Hashtable<String, String[][]>();
@@ -10126,11 +10201,11 @@ private void zap(String msg) {
   public boolean runScriptImmediately(String script) {
     // from isosurface reading JVXL file with slab
     try {
-    eval.runScript(script);
+      eval.runScript(script);
     } catch (Exception e) {
-      return  false;
+      return false;
     }
-    return true; 
+    return true;
   }
 
   public boolean allowSpecAtom() {
@@ -10154,7 +10229,7 @@ private void zap(String msg) {
   }
 
   // interaction with JSpecView
-  
+
   public Object getJspecViewProperties(Object myParam) {
     return statusManager.getJspecViewProperties("" + myParam);
   }
@@ -10163,8 +10238,8 @@ private void zap(String msg) {
     return modelSet.getBaseModelBitSet(getCurrentModelIndex());
   }
 
-
   Map<String, TimeoutThread> timeouts;
+
   public void clearTimeouts() {
     if (timeouts == null)
       return;
@@ -10174,9 +10249,9 @@ private void zap(String msg) {
       if (!t.script.equals("exitJmol"))
         t.interrupt();
     }
-    timeouts.clear();    
+    timeouts.clear();
   }
-  
+
   public void setTimeout(String name, int mSec, String script) {
     if (name == null) {
       clearTimeouts();
@@ -10205,7 +10280,7 @@ private void zap(String msg) {
 
   public void triggerTimeout(String name) {
     TimeoutThread t;
-    if (!haveDisplay || timeouts == null || (t = timeouts.get(name)) == null) 
+    if (!haveDisplay || timeouts == null || (t = timeouts.get(name)) == null)
       return;
     t.trigger();
   }
@@ -10229,6 +10304,4 @@ private void zap(String msg) {
     return (sb.length() > 0 ? sb.toString() : "<no timeouts set>");
   }
 
-  
 }
-

@@ -14,18 +14,18 @@ msgstr ""
 "Project-Id-Version: JmolApplet 11\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-02-06 06:32+0100\n"
-"PO-Revision-Date: 2012-01-17 17:13+0000\n"
-"Last-Translator: Eberhard Allgaier <Unknown>\n"
+"PO-Revision-Date: 2012-04-13 01:56+0000\n"
+"Last-Translator: Dennis Baudys <Unknown>\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-01-22 10:08+0000\n"
-"X-Generator: Launchpad (build 14700)\n"
+"X-Launchpad-Export-Date: 2012-04-14 07:50+0000\n"
+"X-Generator: Launchpad (build 15070)\n"
 
 #: org/jmol/applet/AppletWrapper.java:100
 msgid "Loading Jmol applet ..."
-msgstr "Jmol Applet wird geladen..."
+msgstr "Jmol-Applet wird geladen …"
 
 #: org/jmol/applet/AppletWrapper.java:175
 #, java-format
@@ -41,9 +41,9 @@ msgid ""
 "\n"
 "See http://www.jmol.org for more information"
 msgstr ""
-"Jmol Applet Version {0} {1}.\n"
+"Jmol-Applet Version {0} {1}.\n"
 "\n"
-"Ein OpenScience Projekt.\n"
+"Ein OpenScience-Projekt.\n"
 "\n"
 "Mehr Informationen unter http://www.jmol.org."
 
@@ -57,7 +57,7 @@ msgstr "&Hilfe"
 
 #: org/jmol/console/AppletConsole.java:197
 msgid "&Search..."
-msgstr "&Suchen.."
+msgstr "&Suchen …"
 
 #: org/jmol/console/AppletConsole.java:198
 msgid "&Commands"
@@ -65,11 +65,11 @@ msgstr "&Befehle"
 
 #: org/jmol/console/AppletConsole.java:199
 msgid "Math &Functions"
-msgstr "Mathematik &Funktionen"
+msgstr "Mathematische &Funktionen"
 
 #: org/jmol/console/AppletConsole.java:200
 msgid "Set &Parameters"
-msgstr "Set &Parameter"
+msgstr "&Parameter festlegen"
 
 #: org/jmol/console/AppletConsole.java:201
 msgid "&More"
@@ -108,8 +108,8 @@ msgstr "Laden"
 #: org/jmol/console/AppletConsole.java:210
 msgid "press CTRL-ENTER for new line or paste model data and press Load"
 msgstr ""
-"CTRL-ENTER für eine neue Zeile drücken oder Modelldaten einfügen und Laden "
-"drücken"
+"Strg+Eingabe drücken für einen Zeilenumbruch oder Modelldaten einfügen und "
+"auf »Laden« drücken"
 
 #: org/jmol/console/AppletConsole.java:212
 msgid ""
@@ -123,11 +123,11 @@ msgstr ""
 
 #: org/jmol/console/JmolConsole.java:86
 msgid "Jmol Script Console"
-msgstr "Jmol Skript Konsole"
+msgstr "Jmol-Skript-Konsole"
 
 #: org/jmol/console/ScriptEditor.java:98
 msgid "Jmol Script Editor"
-msgstr "Jmol Skript Editor"
+msgstr "Jmol-Skript-Editor"
 
 #: org/jmol/console/ScriptEditor.java:130
 #: org/jmol/popup/MainPopupResourceBundle.java:864
@@ -191,17 +191,17 @@ msgstr "Bildtyp"
 #: org/jmol/export/dialog/Dialog.java:325
 #, java-format
 msgid "JPEG Quality ({0})"
-msgstr "JPEG Qualität ({0})"
+msgstr "JPEG-Qualität ({0})"
 
 #: org/jmol/export/dialog/Dialog.java:298
 #, java-format
 msgid "PNG Compression  ({0})"
-msgstr "PNG Komprimierung ({0})"
+msgstr "PNG-Komprimierung ({0})"
 
 #: org/jmol/export/dialog/Dialog.java:328
 #, java-format
 msgid "PNG Quality ({0})"
-msgstr "PNG Qualittät ({0})"
+msgstr "PNG-Qualittät ({0})"
 
 #: org/jmol/export/dialog/Dialog.java:374
 #: org/jmol/export/dialog/Dialog.java:486
@@ -560,11 +560,11 @@ msgstr "Neu"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:86
 msgid "undo (CTRL-Z)"
-msgstr "Rückgängig (CTRL-Z)"
+msgstr "Rückgängig (Strg+Z)"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:87
 msgid "redo (CTRL-Y)"
-msgstr "Wiederherstellen (CTRL-Y)"
+msgstr "Wiederherstellen (Strg+Y)"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:88
 #: org/jmol/viewer/ActionManager.java:115
@@ -617,7 +617,7 @@ msgstr "Atom verschieben (und minimieren)"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:100
 msgid "drag molecule (SHIFT to rotate)"
-msgstr "Molekül verschieben (UMSCHALTEN zum rotieren)"
+msgstr "Molekül verschieben (Umschalttaste zum Rotieren)"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:101
 msgid "drag and minimize molecule (docking)"
@@ -657,7 +657,7 @@ msgstr "Bindunggsgrad vermindern"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:118
 msgid "rotate bond (SHIFT-DRAG)"
-msgstr "Bindung rotieren (UMSCHALTEN-ZIEHEN)"
+msgstr "Bindung rotieren (Umschalttaste+Ziehen)"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:119
 msgid "exit modelkit mode"
@@ -897,11 +897,11 @@ msgstr "Auswahl invertieren"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:586
 msgid "View"
-msgstr "Ansicht (von...)"
+msgstr "Ansicht"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:587
 msgid "Front"
-msgstr "Vorn"
+msgstr "Vorderseite"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:588
 msgid "Left"
@@ -915,15 +915,15 @@ msgstr "Rechts"
 msgid ""
 "Top[as in \"view from the top, from above\" - (translators: remove this "
 "bracketed part]"
-msgstr "Oberhalb"
+msgstr "Oberseite"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:591
 msgid "Bottom"
-msgstr "Unten"
+msgstr "Unterseite"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:592
 msgid "Back"
-msgstr "Hinten"
+msgstr "Rückseite"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:594
 msgid "Protein"
@@ -1197,15 +1197,15 @@ msgstr "Vektoren"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:689
 msgid "Spectra"
-msgstr ""
+msgstr "Spektren"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:690
 msgid "1H-NMR"
-msgstr ""
+msgstr "1H-NMR"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:691
 msgid "13C-NMR"
-msgstr ""
+msgstr "13C-NMR"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:694
 #, java-format
@@ -1300,7 +1300,7 @@ msgstr "Element (CPK)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:730
 msgid "Alternative Location"
-msgstr "alternative Lage"
+msgstr "Alternative Lage"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:731
 msgid "Molecule"
@@ -1711,7 +1711,7 @@ msgstr "exportiere {0} Abbild"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:892
 msgid "Save all as JMOL file (zip)"
-msgstr "Sichere alles als JMOL Datei (zip)"
+msgstr "Alles als Jmol-Datei (zip) speichern"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:893
 msgid "Save JVXL isosurface"
@@ -1973,7 +1973,7 @@ msgstr "Farbe erwartet"
 
 #: org/jmol/script/ScriptEvaluator.java:2818
 msgid "a color or palette name (Jmol, Rasmol) is required"
-msgstr "eine Farbe oder ein Palettenname (Jmol, Rasmol) wird benötigt"
+msgstr "Eine Farbe oder ein Palettenname (Jmol, Rasmol) wird benötigt"
 
 #: org/jmol/script/ScriptEvaluator.java:2824
 msgid "{x y z} or $name or (atom expression) required"
@@ -2068,8 +2068,8 @@ msgid ""
 "No partial charges were read from the file; Jmol needs these to render the "
 "MEP data."
 msgstr ""
-"Aus der Datei wurden keine Partialladungen gelesen; Jmol benötigt diese um "
-"die MEP Daten darzustellen."
+"Aus der Datei wurden keine Partialladungen gelesen; Jmol benötigt diese, um "
+"die MEP-Daten darzustellen."
 
 #: org/jmol/script/ScriptEvaluator.java:2894
 msgid "No unit cell"
@@ -2146,7 +2146,7 @@ msgstr "unbekanntes Objekt"
 #: org/jmol/script/ScriptEvaluator.java:2950
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
-msgstr "unbekannter {0} Parameter in Jmol Zustands-Skript (trotzdem gesetzt)"
+msgstr "Unbekannter Parameter {0} in Jmol-Zustands-Skript (trotzdem gesetzt)"
 
 #: org/jmol/script/ScriptEvaluator.java:2953
 #, java-format
@@ -2272,7 +2272,7 @@ msgstr "komplettes Kontextmenü öffnen"
 
 #: org/jmol/viewer/ActionManager.java:130
 msgid "pop up recent context menu (click on Jmol frank)"
-msgstr "letztes Kontext-Menü aufklappen (Klick auf Jmol Emblem)"
+msgstr "Letztes Kontextmenü aufklappen (Jmol-Emblem anklicken)"
 
 #: org/jmol/viewer/ActionManager.java:131
 #, java-format

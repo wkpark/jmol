@@ -2683,6 +2683,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public StateScript addStateScript(String script, boolean addFrameNumber,
                                     boolean postDefinitions) {
+    // calculate
+    // configuration
+    // plot
+    // rebond
+    // setPdbConectBonding
     return addStateScript(script, null, null, null, null, addFrameNumber,
         postDefinitions);
   }
@@ -2691,6 +2696,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                     BitSet bsAtoms1, BitSet bsAtoms2,
                                     String script2, boolean addFrameNumber,
                                     boolean postDefinitions) {
+    // configuration
+    // calculateSurface
     return modelSet.addStateScript(script1, bsBonds, bsAtoms1, bsAtoms2,
         script2, addFrameNumber, postDefinitions);
   }
@@ -7314,22 +7321,30 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   @Override
   public void rebond() {
-    // Eval, PreferencesDialog
+    // PreferencesDialog
+    rebond(false);
+  }
+  
+  public void rebond(boolean isStateScript) {
+    // Eval CONNECT
     clearModelDependentObjects();
     modelSet.deleteAllBonds();
-    modelSet.autoBond(null, null, null, null, getMadBond(), false);
-    addStateScript("connect;", false, true);
+    boolean isLegacy = isStateScript && checkAutoBondLegacy();
+    modelSet.autoBond(null, null, null, null, getMadBond(), isLegacy);
+    addStateScript((isLegacy ? "set legacyAutoBonding TRUE;connect;set legacyAutoBonding FALSE;" : "connect;"), false, true);
   }
 
-  public void setPdbConectBonding(boolean isAuto) {
+  public void setPdbConectBonding(boolean isAuto, boolean isStateScript) {
     // from eval
     clearModelDependentObjects();
     modelSet.deleteAllBonds();
     BitSet bsExclude = new BitSet();
     modelSet.setPdbConectBonding(0, 0, bsExclude);
     if (isAuto) {
-      modelSet.autoBond(null, null, bsExclude, null, getMadBond(), false);
-      addStateScript("connect PDB AUTO;", false, true);
+      boolean isLegacy = isStateScript && checkAutoBondLegacy();
+      modelSet.autoBond(null, null, bsExclude, null, getMadBond(), isLegacy);
+      addStateScript(
+          (isLegacy ? "set legacyAutoBonding TRUE;connect PDB AUTO;set legacyAutoBonding FALSE;" : "connect PDB auto;"), false, true);
       return;
     }
     addStateScript("connect PDB;", false, true);
@@ -10134,7 +10149,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         //
       }
     }
-    global.legacyAutoBonding = false;
+    setBooleanProperty("legacyautobonding", false);
     stateScriptVersionInt = Integer.MAX_VALUE;
   }
 

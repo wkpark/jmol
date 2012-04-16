@@ -7151,7 +7151,7 @@ public class ScriptEvaluator {
 
     if (statementLength == 1) {
       if (!isSyntaxCheck)
-        viewer.rebond();
+        viewer.rebond(isStateScript); 
       return;
     }
 
@@ -7161,7 +7161,7 @@ public class ScriptEvaluator {
       case Token.off:
         checkLength(2);
         if (!isSyntaxCheck)
-          viewer.rebond();
+          viewer.rebond(isStateScript);
         return;
       case Token.integer:
       case Token.decimal:
@@ -7226,7 +7226,7 @@ public class ScriptEvaluator {
         boolean isAuto = (tokAt(2) == Token.auto);
         checkLength(isAuto ? 3 : 2);
         if (!isSyntaxCheck)
-          viewer.setPdbConectBonding(isAuto);
+          viewer.setPdbConectBonding(isAuto, isStateScript);
         return;
       case Token.adjust:
       case Token.auto:

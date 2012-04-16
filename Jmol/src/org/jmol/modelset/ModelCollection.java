@@ -589,6 +589,7 @@ abstract public class ModelCollection extends BondCollection {
     public String toString() {
       if (!isValid())
         return "";
+      
       StringBuffer sb = new StringBuffer(script1);
       if (bsBonds != null)
         sb.append(" ").append(Escape.escape(bsBonds, false));
@@ -605,7 +606,7 @@ abstract public class ModelCollection extends BondCollection {
     }
 
     public boolean isConnect() {
-      return (script1.indexOf("connect") == 0);
+      return (script1.indexOf("connect") >= 0);
     }
 
     public boolean deleteAtoms(int modelIndex, BitSet bsBonds, BitSet bsAtoms) {
@@ -2333,9 +2334,10 @@ abstract public class ModelCollection extends BondCollection {
     case Token.delete:
       return deleteConnections(minDistance, maxDistance, order, bsA, bsB,
           isBonds, matchNull, minDistanceSquared, maxDistanceSquared);
+    case Token.legacyautobonding:
     case Token.auto:
       if (order != JmolEdge.BOND_AROMATIC)
-        return autoBond(bsA, bsB, bsBonds, isBonds, matchHbond);
+        return autoBond(bsA, bsB, bsBonds, isBonds, matchHbond, connectOperation == Token.legacyautobonding);
       modifyOnly = true;
       autoAromatize = true;
       break;
@@ -2612,7 +2614,7 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   private int[] autoBond(BitSet bsA, BitSet bsB, BitSet bsBonds,
-                         boolean isBonds, boolean matchHbond) {
+                         boolean isBonds, boolean matchHbond, boolean legacyAutoBond) {
     if (isBonds) {
       BitSet bs = bsA;
       bsA = new BitSet();
@@ -2624,7 +2626,7 @@ abstract public class ModelCollection extends BondCollection {
     }
     return new int[] {
         matchHbond ? autoHbond(bsA, bsB, false) : autoBond(bsA, bsB, null, bsBonds,
-            viewer.getMadBond(), false), 0 };
+            viewer.getMadBond(), legacyAutoBond), 0 };
   }
 
   private static float hbondMin = 2.5f;

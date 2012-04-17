@@ -1,5 +1,7 @@
 // JmolCD.js -- Jmol ChemDoodle extension   author: Bob Hanson, hansonr@stolaf.edu  4/16/2012
 
+// last revision: 4/17/2012
+
 // allows Jmol applets to be created on a page with more flexibility and extendability
 // possibly using infrastructure of ChemDoodle.
 
@@ -153,7 +155,7 @@ Jmol = (function() {
 	}
 	
 	Jmol.loadFileData = function(fileName, fSuccess, fError){
-		this.inRelay?alert("Already connecting to the server - please wait for the first request to finish."):
+		Jmol.inRelay?alert("Already connecting to the server - please wait for the first request to finish."):
 		(Jmol.inRelay=!0,
 			jQuery.ajax({
 				dataType: "text",
@@ -167,7 +169,7 @@ Jmol = (function() {
 	}
 	
 	Jmol.contactServer = function(cmd,content,fSuccess,fError){
-		this.inRelay?alert("Already connecting to the server - please wait for the previous request to finish."):
+		Jmol.inRelay?alert("Already connecting to the server - please wait for the previous request to finish."):
 		(Jmol.inRelay=!0,
 			jQuery.ajax({
 				dataType: "text",
@@ -431,7 +433,7 @@ Jmol = (function() {
 		var factor = cdcanvas.dataMultiplier;
 		data = Jmol.cdCleanFileData(data);
 		var molecule;
-		switch(canvas.jmolFileType) {
+		switch(cdcanvas.jmolFileType) {
 		case "PDB":
 		case "PQR":
 			molecule = ChemDoodle.readPDB(data, 1);

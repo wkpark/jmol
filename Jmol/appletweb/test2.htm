@@ -1,5 +1,101 @@
-<script src=http://chemapps.stolaf.edu/jmol/docs/examples-12/Jmol.js></script>
-<script>
-  jmolInitialize("..", true)
-  jmolApplet([780,500], "script test2.spt")
+<html>
+<title>Jmol/ChemDoodle Demo -- Using JmolData.jar for serving ChemDoodle models</title>
+<head>
+<script type="text/javascript" src="json2.js"></script>
+<script type="text/javascript" src="ChemDoodleWeb-libs.js"></script>
+<script type="text/javascript" src="ChemDoodleWeb-unpacked.js"></script>
+<script type="text/javascript" src="Jmol.js"></script>
+<script type="text/javascript" src="JmolCD.js"></script>
+
+<script type="text/javascript">
+
+// note; json2 is necessary for MSIE compatibility
+  
+var applet; // set up in HTML table, below
+
+// logic is set as follows:
+//  -- if Java is present and have Jmol.js, use Jmol
+//  -- otherwise, if WebGL is present and have ChemDoodleWeb.js, use ChemDoodle/WebGL
+//  -- otherwise, if ChemDoodleWeb.js is present, use ChemDoodle/2D
+//  -- otherwise, just display the image
+
+// ?USECD or ?USEIMAGE in the URL can force one or the other of these.
+
+// and, of course, a little tweaking of the logic would let you do anything
+
+  var useJmolOnly = (document.location.href.indexOf("NOCD") >= 0);
+  var useChemDoodleOnly = (!useJmolOnly && document.location.href.indexOf("CD") >= 0);
+  var useWebGlIfAvailable = (document.location.href.indexOf("NOWEBGL") < 0);
+  var useImageOnly = (document.location.href.indexOf("IMAGE") >= 0);
+  var useSignedApplet = (document.location.href.indexOf("SIGNED") >= 0);
+  
+	jmol_isReady = function(app,isReady) {
+		if (!isReady) return;
+		applet.setSearchTerm(Info.defaultModel);
+	}		
+
+  var Info = {
+		id: "molgrabber1",
+		width: 300,
+		height: 300,
+		debug: true,
+		addSelectionOptions: true,
+		serverURL: "http://chemapps.stolaf.edu/jmol/jmolcd2.php",
+		defaultModel: "morphine",
+		useChemDoodleOnly: useChemDoodleOnly,
+		useJmolOnly: useJmolOnly,
+		useWebGlIfAvailable: useWebGlIfAvailable,
+		useImageOnly: useImageOnly,
+		jmolJarPath: ".",
+		jmolJarFile: (useSignedApplet ? "JmolAppletSigned.jar" : "JmolApplet.jar"),
+		jmolIsSigned: useSignedApplet,
+		jmolReadyFunctionName: "jmol_isReady"
+	}
+
 </script>
+</head>
+<body>
+<table width=900 cellpadding=10><tr><td>
+<script>applet = Jmol.getApplet(Info)</script>
+</td><td valign=top>
+If we're lucky, this is the first Jmol page that automatically switches to different modes
+depending upon browser capabilities. It can use the signed Jmol applet, the unsigned Jmol applet
+with server-side help, and ChemDoodle with or without WebGL. 
+On the server side, it uses JmolData.jar 
+for delivering models into ChemDoodle or the unsigned applet.
+<br /><br /> 
+Just enter a molecule name, a CAS registry number, an IUPAC name, or some other sort of identifier in the box
+and press [ENTER].
+<br /><br /> 
+Options include: 
+<table cellpadding=5><tr><td>
+  <a href=test2.htm>unsigned Jmol applet</a> 
+	 <br /> 
+<a href=test2.htm?SIGNED>signed Jmol applet</a>
+ <br /> 
+ <a href=test2.htm?CD>ChemDoodle only</a> 
+  <br /> 
+<a href=test2.htm?CD-NOWEBGL>not ChemDoodle(no WebGL)</a> 
+ <br /> 
+<a href=test2.htm?NOCD>not ChemDoodle</a> 
+ <br /> 
+ <a href=test2.htm?IMAGE>image only</a>
+</td><td>
+ <a href="javascript:applet.loadFile('caffeine.mol')">load caffeine.mol</a>
+ <br /> 
+ <a href="javascript:applet.loadFile('1crn.pdb')">load 1crn.pdb</a>
+ <br /> 
+ <a href="javascript:applet.loadFile('t-butene.xyz')">load t-butene.xyz</a>
+ <br /> 
+ <a href="javascript:applet.loadFile('sebi0105c.ccdc.cif')">load sebi0105c.ccdc.cif</a>
+ <br /> 
+ <a href="javascript:applet.loadFile('sucrose.cif')">load sucrose.cif</a>
+ <br /> 
+ <a href="javascript:applet.loadFile('y1237.cif', '{1 1 1}')">load y1237.cif</a>
+ <br /> 
+ <a href="javascript:applet.loadFile('quartz.cif', '{1 1 1}')">load quartz.cif</a>
+ </td></tr></table>
+</td>
+</tr></table>
+</body>
+</html>

@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-04-08 09:36+0200\n"
-"PO-Revision-Date: 2011-12-31 18:58+0000\n"
+"PO-Revision-Date: 2012-04-17 16:49+0000\n"
 "Last-Translator: abuyop <Unknown>\n"
 "Language-Team: Malay <ms@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-01-03 00:12+0000\n"
-"X-Generator: Launchpad (build 14560)\n"
+"X-Launchpad-Export-Date: 2012-04-18 17:48+0000\n"
+"X-Generator: Launchpad (build 15108)\n"
 
 #: com/json/Cookie.java:121
 msgid "name"
@@ -111,7 +111,7 @@ msgstr "hanya hantar output dari mesej cetak ke konsol (melibatkan -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:167
 msgid "restrict local file access"
-msgstr ""
+msgstr "sekat capaian fail setempat"
 
 #: org/openscience/jmol/app/JmolApp.java:169
 msgid "independent command thread"
@@ -324,14 +324,12 @@ msgid "Period"
 msgstr "Tempoh"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:355
-#, fuzzy
 msgid "Frame"
-msgstr "Bingkai Terakhir"
+msgstr "Bingkai"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:355
-#, fuzzy
 msgid "Vibration"
-msgstr "Animasi"
+msgstr "Getaran"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:363
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:372
@@ -363,11 +361,11 @@ msgstr "Lompat ke set atom terakhir didalam koleksi"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:374
 msgid "Vibration ON"
-msgstr ""
+msgstr "Getaran DIHIDUPKAN"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:375
 msgid "Vibration OFF"
-msgstr ""
+msgstr "Getaran DIMATIKAN"
 
 #: org/openscience/jmol/app/jmolpanel/ConsoleTextArea.java:87
 #, java-format
@@ -1096,9 +1094,8 @@ msgid "Get MOL file by compound name or ID"
 msgstr "Dapatkan fail melalui nama atau ID sebatian"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1220
-#, fuzzy
 msgid "Enter the name or identifier (SMILES, InChI, CAS) of a compound"
-msgstr "Masukkan nama atau pengecam (SMILES, InChI, CAS) molekul"
+msgstr "Masukkan nama atau pengenalpasti (SMILES, InChI, CAS) bagi sebatian"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1386
 msgid "IO Exception:"
@@ -1908,6 +1905,10 @@ msgstr "tidak dilaksanakan"
 #~ msgid "Jump to last vector in the collection"
 #~ msgstr "Lompat ke vektor terakhir didalam koleksi"
 
+#~ msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
+#~ msgstr "Masukkan nama atau pengecam (SMILES, InChI, CAS) molekul"
+
+#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"
@@ -1921,27 +1922,34 @@ msgstr "tidak dilaksanakan"
 #~ msgid "vector"
 #~ msgstr "vektor"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Pergi ke {0} yang pertama didalam koleksi"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Pergi ke {0} yang terdahulu didalam koleksi"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Main keseluruhan koleksi {0}"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Pergi ke {0} yang berikutnya didalam koleksi"
 
+#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Pergi ke {0} yang terakhir didalam koleksi"
 
 #~ msgid "atom set"
 #~ msgstr "set atom"
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "menambah {0}.spt"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "menambah {0}.png"
 
@@ -1957,6 +1965,7 @@ msgstr "tidak dilaksanakan"
 #~ msgid "Clear console button (requires restarting Jmol)"
 #~ msgstr "Kosongkan butang kosong (perlu mulakan semula Jmol)"
 
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."

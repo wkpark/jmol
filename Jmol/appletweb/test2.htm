@@ -29,13 +29,13 @@ var applet; // set up in HTML table, below
   var useImageOnly = (document.location.href.indexOf("IMAGE") >= 0);
   var useSignedApplet = (document.location.href.indexOf("SIGNED") >= 0);
   
-	jmol_isReady = function(app,isReady) {
+	jmol_isReady = function(app,appFull,isReady) {
 		if (!isReady) return;
 		applet.setSearchTerm(Info.defaultModel);
 	}		
 
   var Info = {
-		id: "molgrabber1",
+		id: "applet", // must be the same as the variable name
 		width: 300,
 		height: 300,
 		debug: true,
@@ -57,6 +57,8 @@ var applet; // set up in HTML table, below
 <body>
 <table width=900 cellpadding=10><tr><td>
 <script>applet = Jmol.getApplet(Info)</script>
+			<br><a href="javascript:Jmol.showInfo(applet, true)">show info</a>
+			<a href="javascript:Jmol.showInfo(applet, false)">hide info</a>
 </td><td valign=top>
 If we're lucky, this is the first Jmol page that automatically switches to different modes
 depending upon browser capabilities. It can use the signed Jmol applet, the unsigned Jmol applet

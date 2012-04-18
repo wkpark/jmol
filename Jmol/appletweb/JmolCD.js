@@ -34,7 +34,7 @@ Jmol = (function() {
 		fileLoadScript: ";if (_loadScript = '' && defaultLoadScript == '' && _filetype == 'Pdb') { select protein or nucleic;cartoons Only;color structure; select * };",
 		asynchronous: !0,
 		getVersion: function(){return version},
-	};
+	}
 })();
 
 (function (Jmol) {
@@ -107,7 +107,7 @@ Jmol = (function() {
 				applet.specs.set3DRepresentation('Ball and Stick');
 				applet.specs.backgroundColor = 'black';
 			} else {
-				applet = new Jmol.Canvas(Info.id+"_2D", Info.width, Info.height,
+				applet = new Jmol.Canvas(Info.id, Info.width, Info.height,
 					(Info.debug ? "<br />(No WebGL: Jmol.Canvas)" : null),
 					Info.addSelectionOptions);
 					applet.specs.bonds_useJMOLColors = true;
@@ -130,6 +130,35 @@ Jmol = (function() {
 		return applet;
 	}
 
+	// Jmol core functionality
+		
+	Jmol.getWrapper = function(applet, isHeader) {
+		var s = (isHeader ?
+			"<div id=ID_appletinfotablediv style=width:Wpx;height:Hpx>\
+			<table><tr><td></td><td><div id=ID_infotablediv style=width:Wpx;height:Hpx;display:none>\
+			<table><tr height=20><td style=background:yellow><span id=ID_infoheaderdiv></span></td>\
+			<td width=10><a href=javascript:Jmol.showInfo(ID,false)>[x]</a></td></tr><tr><td colspan=2>\
+			<div id=ID_infodiv style=overflow:scroll;width:Wpx;height:Hpx></div></td></tr></table></div></td></tr>\
+			<tr><td><div id=ID_appletdiv style=width:Wpx;height:Hpx>"
+			:"</div></td><td></td></tr></table></div>"
+		).replace(/H/g, applet.height).replace(/W/g, applet.width).replace(/ID/g, applet.id);
+		document.write(s);
+	}
+
+	Jmol.showInfo = function(applet, tf) {
+		document.getElementById(applet.id + "_infotablediv").style.display = (tf ? "block" : "none");
+		document.getElementById(applet.id + "_appletdiv").style.height = (tf ? 1 : applet.height);
+		document.getElementById(applet.id + "_appletdiv").style.width = (tf ? 1 : applet.width);
+		applet.show(!tf);
+		document.getElementById(applet.id + "_infoheaderdiv").innerHTML = applet.getInfoHeader();
+		document.getElementById(applet.id + "_infodiv").innerHTML = applet.getInfo();
+	}
+
+	Jmol.searchQuery = function(applet, query) {
+			jQuery("#"+applet.id+"_query").val(query);
+			applet.search(query.replace(/\"/g, ""));
+	}
+	
 	Jmol.getScript = function(database, model) {
 		return (database == "$" ? Jmol.nciLoadScript : Jmol.fileLoadScript);
 	}
@@ -190,17 +219,23 @@ Jmol = (function() {
 	// Applet -- an alternative to _Canvas3D
 	//                -- loads the Jmol applet instead of ChemDoodle
 	
-	Jmol.Applet = function(id,c,h, jmolDirectory, appJar, jmolIsSigned, readyFunctionName, caption, addOptions){
+	Jmol.Applet = function(id, width, height, jmolDirectory, appJar, jmolIsSigned, readyFunctionName, caption, addOptions){
+		this.jmolType = "Jmol.Applet" + (jmolIsSigned ? " (signed)" : "");
 		this.id = id;
+		this.width = width;
+		this.height = height;
 		this.jmolIsSigned = jmolIsSigned;
 		this.dataMultiplier=1;
 		jmolInitialize(jmolDirectory, appJar);
 		readyFunctionName && jmolSetParameter("appletReadyCallback", readyFunctionName);
 		var script = "";
-		jmolApplet([c,h],script, id);  	
+		
+		Jmol.getWrapper(this, true);
+		jmolApplet(["100%","100%"],script, id);
+		Jmol.getWrapper(this, false);  	
 		if (addOptions)
 			Jmol.getGrabberOptions(this, id, caption);
-			return this;
+		return this;
 	}
 	
 	Jmol.Applet.prototype.setSearchTerm = function(b){
@@ -212,6 +247,18 @@ Jmol = (function() {
 				+ Jmol.fileLoadScript);
 	}
 	
+	Jmol.Applet.prototype.show = function(tf) {
+		_jmolFindApplet("jmolApplet" + this.id).resize(tf ? this.width : 1, tf ? this.height : 1);
+	}
+	
+	Jmol.Applet.prototype.getInfo = function(tf) {
+		return _jmolFindApplet("jmolApplet" + this.id).getPropertyAsString("modelInfo");
+	}
+		
+	Jmol.Applet.prototype.getInfoHeader = function(tf) {
+		return this.jmolType + ' "' + this.id + '"';
+	}
+		
 	Jmol.Applet.prototype.script = function(script) {
 		_jmolFindApplet("jmolApplet" + this.id).script(script);
 	}	
@@ -239,7 +286,7 @@ Jmol = (function() {
 		else if (database == "=")
 			this.jmolFileType = "PDB";
 		this.searchDatabase(model, database);
-	};
+	}
 			
 	Jmol.Applet.prototype.searchDatabase = function(model, database){
 		if (this.jmolIsSigned) {
@@ -258,20 +305,36 @@ Jmol = (function() {
 	
 	// Image -- another alternative to _Canvas
 	Jmol.Image = function(id,width,height, caption, addOptions){
+		this.jmolType = "image";
 		this.id = id;
-		this.imgWidth = width;
-		this.imgHeight = height;
+		this.width = width;
+		this.height = height;
 		var img = '<img id="'+id+'_image" width="' + width + '" height="' + height + '" src=""/>';
+		Jmol.getWrapper(this, true);
 		document.write(img);
+		Jmol.getWrapper(this, false);
 		if (addOptions)
 			Jmol.getGrabberOptions(this, id, caption);
 		return this;
 	}
 	
+	Jmol.Image.prototype.show = function(tf) {
+		document.getElementById(this.id + "_appletdiv").style.display = (tf ? "block" : "none");
+	}
+	
+	Jmol.Image.prototype.getInfo = function(tf) {
+		return JSON.stringify(this);
+	}
+		
+	Jmol.Image.prototype.getInfoHeader = function(tf) {
+		return this.jmolType + ' "' + this.id + '"';
+	}
+		
 	Jmol.Image.prototype.search = Jmol.Applet.prototype.search;
 	Jmol.Image.prototype.setSearchTerm = Jmol.Applet.prototype.setSearchTerm;
 	
 	Jmol.Image.prototype.loadFile = function(fileName, params){
+		this.thisJmolModel = "" + Math.random();
 		params = (params ? params : "");
 		if (fileName.indexOf("://") < 0 && fileName.indexOf("=") != 0 && fileName.indexOf("$") != 0) {
 			var ref = document.location.href
@@ -281,19 +344,21 @@ Jmol = (function() {
 		var src = Jmol.Jmol.SERVER_URL 
 				+ "?call=getImageForFileLoad"
 				+ "&file=" + fileName
-				+ "&width=" + this.imgWidth
-				+ "&height=" + this.imgHeight
+				+ "&width=" + this.width
+				+ "&height=" + this.height
 				+ "&params=" + escape(params);
 			+ "&script=" + Jmol.getScriptForModel(database, model);
+		Jmol.getWrapper(this, true);
 		document.getElementById(this.id + "_image").src = src;
+		Jmol.getWrapper(this, false);
 	}
 
 	Jmol.Image.prototype.searchDatabase = function(model, database){
 		var src = Jmol.SERVER_URL 
 			+ "?call=getImageFromDatabase"
 			+ "&query=" + model;
-			+ "&width=" + this.imgWidth
-			+ "&height=" + this.imgHeight
+			+ "&width=" + this.width
+			+ "&height=" + this.height
 			+ "&database=" + database
 			+ "&script=" + Jmol.getScriptForModel(database, model);
 		document.getElementById(this.id + "_image").src = src;
@@ -340,13 +405,6 @@ Jmol = (function() {
 		);
 	}
 	
-	// Jmol core functionality
-		
-	Jmol.searchQuery = function(applet, query) {
-			jQuery("#"+applet.id+"_query").val(query);
-			applet.search(query.replace(/\"/g, ""));
-	}
-	
 	if (!ChemDoodle) 
 		return;
 
@@ -359,18 +417,30 @@ Jmol = (function() {
 	// new: Applet, Image
 	
 	
-	Jmol.Canvas3D = function(b,c,h,caption,addOptions){
-		b&&this.create(b,c,h);
+	Jmol.Canvas3D = function(id,width,height,caption,addOptions){
+		this.jmolType = "Jmol.Canvas3D";
+		this.id = id;
+		this.width = width;
+		this.height = height;
+		Jmol.getWrapper(this, true);
+		this.create(id,width,height);
+		Jmol.getWrapper(this, false);
 		this.dataMultiplier=1;
 		if (addOptions)
-			Jmol.getGrabberOptions(this, b,caption); // just for this test page
+			Jmol.getGrabberOptions(this, id, caption); // just for this test page
 		return this
 	}
 	
 	// MolGrabberCanvas changes add a dataMultiplier, subclasses TransformCanvas, modifies display options
 	
-	Jmol.Canvas = function(b,c,h,caption, addOptions){
-		b&&this.create(b,c,h);
+	Jmol.Canvas = function(id,width,height,caption, addOptions){
+		this.jmolType = "Jmol.Canvas";
+		this.id = id;
+		this.width = width;
+		this.height = height;
+		Jmol.getWrapper(this, true);
+		this.create(id,width,height);
+		Jmol.getWrapper(this, false);
 		this.lastPoint=null;
 		this.rotate3D=true;
 		this.rotationMultMod=1.3;
@@ -378,15 +448,27 @@ Jmol = (function() {
 		this.lastGestureRotate=0;
 		this.dataMultiplier=20;
 		if (addOptions)
-			Jmol.getGrabberOptions(this,b,caption);
+			Jmol.getGrabberOptions(this,id,caption);
 		return this;
 	}
 
   var cdSetPrototype = function(proto) {
   
+		proto.show = function(tf) {
+			document.getElementById(this.id + "_appletdiv").style.display = (tf ? "block" : "none");
+		}
+	
+		proto.getInfo = function() {
+			return JSON.stringify(Jmol).replace(/\,/g,",<br>");
+		}
+		
+		proto.getInfoHeader = function() {
+			return this.jmolType + ' "' + this.id + '"';
+		}
+		
 		proto.setSearchTerm = function(b){
 			Jmol.searchQuery(this, b);
-		};
+		}
 
 		proto.search = Jmol.Applet.prototype.search;
 	
@@ -400,29 +482,27 @@ Jmol = (function() {
 				model,
 				function(data){Jmol.cdProcessFileData(c, data)}
 			);
-		};
+		}
 		
 		proto.loadFile = function(fileName, params){
-			Jmol.cdLoadFile(this, fileName, params);
-		};
+			this.thisJmolModel = "" + Math.random();
+			this.emptyMessage="Searching...";
+			this.molecule=null;
+			this.repaint();
+			this.jmolFileType = Jmol.cdGetFileType(fileName);
+			var cdcanvas = this;
+			Jmol.loadFileData(
+				fileName,
+				function(data){Jmol.cdProcessFileData(cdcanvas, data)}
+			);
+		}
 
 		return proto;		
 	}
 
 	Jmol.Canvas3D.prototype = cdSetPrototype(new ChemDoodle._Canvas3D);
 	Jmol.Canvas.prototype = cdSetPrototype(new ChemDoodle.TransformCanvas);
-	
-	Jmol.cdLoadFile = function(cdcanvas, fileName){
-		cdcanvas.emptyMessage="Searching...";
-		cdcanvas.molecule=null;
-		cdcanvas.repaint();
-		cdcanvas.jmolFileType = Jmol.cdGetFileType(fileName);
-		Jmol.loadFileData(
-			fileName,
-			function(data){Jmol.cdProcessFileData(cdcanvas, data)}
-		);
-	}
-		
+			
 	Jmol.cdGetFileType = function(name) {
 		// just the extension, which must be PDB, XYZ..., CIF, or MOL
 		name = name.split('.').pop().toUpperCase();

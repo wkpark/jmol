@@ -26,7 +26,7 @@
 if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 
 Jmol = (function() {
-	var	version = 'Jmol 12.3.22' + (ChemDoodle ? "; ChemDoodle " + ChemDoodle.getVersion(): "");
+	var	version = 'Jmol 12.3.23' + (ChemDoodle ? "; ChemDoodle " + ChemDoodle.getVersion(): "");
 	return {
 		INFO: {userAgent:navigator.userAgent, version: version},
 		SERVER_URL: "http://chemapps.stolaf.edu/jmol/jmolcd.php",
@@ -183,7 +183,6 @@ Jmol = (function() {
 	}
 	
 	/*
-	This XML file does not appear to have any style information associated with it. The document tree is shown below.
       <dataset><record><structureId>1BLU</structureId><structureTitle>STRUCTURE OF THE 2[4FE-4S] FERREDOXIN FROM CHROMATIUM VINOSUM</structureTitle></record><record><structureId>3EUN</structureId><structureTitle>Crystal structure of the 2[4Fe-4S] C57A ferredoxin variant from allochromatium vinosum</structureTitle></record></dataset>
       
 	*/
@@ -204,9 +203,8 @@ Jmol = (function() {
 				info.push("</table>");
 				header = (S.length - 1) + " matches";
 				break;			
-			case "$":
-			break;
-			case "#": // pubChem
+			case "$": // NCI
+			case ":": // pubChem
 			break;
 			default:
 				return;
@@ -270,7 +268,7 @@ Jmol = (function() {
 		this.height = height;
 		this.jmolIsSigned = jmolIsSigned;
 		this.dataMultiplier=1;
-		this.haveOptions = addOptions;
+		this.hasOptions = addOptions;
 		this.info = JSON.stringify(this);
 		this.infoHeader = this.jmolType + ' "' + this.id + '"'
 		jmolInitialize(jmolDirectory, appJar);
@@ -313,7 +311,7 @@ Jmol = (function() {
 	Jmol.Applet.prototype.search = function(model){
 		model || (model = jQuery("#"+this.id+"_query").val().replace(/\"/g, ""));
 		database = (this.hasOptions ? jQuery("#"+this.id+"_select").val() : "$");
-		if (model.indexOf("=") == 0 || model.indexOf("$") == 0) {
+		if (model.indexOf("=") == 0 || model.indexOf("$") == 0 || model.indexOf(":") == 0) {
 			database = model.substring(0, 1);
 			model = model.substring(1);
 		}
@@ -321,7 +319,7 @@ Jmol = (function() {
 		if (!model || dm.indexOf("?") < 0 && dm == this.thisJmolModel)
 			return;
 		this.thisJmolModel = dm;
-		if (database == "$")
+		if (database == "$" || database == ":")
 			this.jmolFileType = "MOL";
 		else if (database == "=")
 			this.jmolFileType = "PDB";
@@ -353,7 +351,7 @@ Jmol = (function() {
 		this.id = id;
 		this.width = width;
 		this.height = height;
-		this.haveOptions = addOptions;
+		this.hasOptions = addOptions;
 		this.info = JSON.stringify(this);
 		this.infoHeader = this.jmolType + ' "' + this.id + '"'
 		var img = '<img id="'+id+'_image" width="' + width + '" height="' + height + '" src=""/>';
@@ -375,7 +373,7 @@ Jmol = (function() {
 	Jmol.Image.prototype.loadFile = function(fileName, params){
 		this.thisJmolModel = "" + Math.random();
 		params = (params ? params : "");
-		if (fileName.indexOf("://") < 0 && fileName.indexOf("=") != 0 && fileName.indexOf("$") != 0) {
+		if (fileName.indexOf("://") < 0 && fileName.indexOf("=") != 0 && fileName.indexOf("$") != 0 && fileName.indexOf(":") != 0) {
 			var ref = document.location.href
 			var pt = ref.lastIndexOf("/");
 			fileName = ref.substring(0, pt + 1) + fileName;
@@ -420,6 +418,7 @@ Jmol = (function() {
 		c.push(label);
 		c.push('_select">');
 		c.push('<option value="$" selected>NCI(small molecules)</option>');
+		c.push('<option value=":">PubChem(small molecules)</option>');
 		c.push('<option value="=">RCSB(macromolecules)</option>');
 		c.push("</select>");
 		c.push('<button id="');
@@ -461,7 +460,7 @@ Jmol = (function() {
 		this.id = id;
 		this.width = width;
 		this.height = height;
-		this.haveOptions = addOptions;
+		this.hasOptions = addOptions;
 		this.dataMultiplier=1;
 		this.info = JSON.stringify(this);
 		this.infoHeader = this.jmolType + ' "' + this.id + '"'
@@ -480,7 +479,7 @@ Jmol = (function() {
 		this.id = id;
 		this.width = width;
 		this.height = height;
-		this.haveOptions = addOptions;
+		this.hasOptions = addOptions;
 		this.info = JSON.stringify(this);
 		this.infoHeader = this.jmolType + ' "' + this.id + '"'
 		Jmol.getWrapper(this, true);

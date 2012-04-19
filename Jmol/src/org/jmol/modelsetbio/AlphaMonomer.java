@@ -170,8 +170,6 @@ public class AlphaMonomer extends Monomer {
   boolean isConnectedAfter(Monomer possiblyPreviousMonomer) {
     if (possiblyPreviousMonomer == null)
       return true;
-    if (! (possiblyPreviousMonomer instanceof AlphaMonomer))
-      return false;
     Atom atom1 = getLeadAtom();
     Atom atom2 = possiblyPreviousMonomer.getLeadAtom();
     return atom1.isBonded(atom2) || atom1.distance(atom2) <= 4.2f;

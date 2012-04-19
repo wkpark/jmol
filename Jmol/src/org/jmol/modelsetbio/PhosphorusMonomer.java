@@ -103,8 +103,6 @@ public class PhosphorusMonomer extends Monomer {
   boolean isConnectedAfter(Monomer possiblyPreviousMonomer) {
     if (possiblyPreviousMonomer == null)
       return true;
-    if (! (possiblyPreviousMonomer instanceof PhosphorusMonomer))
-      return false;
     // 1PN8 73:d and 74:d are 7.001 angstroms apart
     // but some P atoms are up to 7.4 angstroms apart
     float distance =

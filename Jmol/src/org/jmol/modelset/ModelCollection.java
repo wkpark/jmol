@@ -1814,7 +1814,7 @@ abstract public class ModelCollection extends BondCollection {
     BitSet[] bsModelAtoms = new BitSet[modelCount];
     List<BitSet> biobranches = null;
     for (int i = 0; i < modelCount; i++) {
-      // TODO: Trajetories?
+      // TODO: Trajectories?
       bsModelAtoms[i] = viewer.getModelUndeletedAtomsBitSet(i);
       m = models[i];
       m.moleculeCount = 0;

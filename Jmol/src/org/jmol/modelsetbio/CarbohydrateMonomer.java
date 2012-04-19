@@ -57,7 +57,17 @@ public class CarbohydrateMonomer extends Monomer {
 
   @Override
   boolean isConnectedAfter(Monomer possiblyPreviousMonomer) {
-    return true;
+    if (possiblyPreviousMonomer == null)
+      return true;
+    for (int i = firstAtomIndex; i <= lastAtomIndex; i++)
+      for (int j = possiblyPreviousMonomer.firstAtomIndex; j <= possiblyPreviousMonomer.lastAtomIndex; j++) {
+        Atom a = chain.getAtom(i);
+        Atom b = chain.getAtom(j);
+        if (a.getElementNumber() + b.getElementNumber() == 14
+            && a.distanceSquared(b) < 3.24) // C and O; d < 1.8 (very generous)
+          return true;
+      }
+    return false;
   }
 
   @Override

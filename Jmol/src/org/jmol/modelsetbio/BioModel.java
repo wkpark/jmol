@@ -265,9 +265,9 @@ public final class BioModel extends Model{
   @Override
   public List<BitSet> getBioBranches(List<BitSet> biobranches) {
     // scan through biopolymers quickly -- 
-    BitSet bsBranch = new BitSet();
+    BitSet bsBranch;
     for (int j = 0; j < bioPolymerCount; j++) {
-      bsBranch.clear();
+      bsBranch = new BitSet();
       bioPolymers[j].getRange(bsBranch);
       int iAtom = bsBranch.nextSetBit(0);
       if (iAtom >= 0) {

@@ -138,7 +138,7 @@ Jmol = (function() {
 			<table><tr><td></td><td><div id=ID_infotablediv style=width:Wpx;height:Hpx;display:none>\
 			<table><tr height=20><td style=background:yellow><span id=ID_infoheaderdiv></span></td>\
 			<td width=10><a href=javascript:Jmol.showInfo(ID,false)>[x]</a></td></tr><tr><td colspan=2>\
-			<div id=ID_infodiv style=overflow:scroll;width:Wpx;height:Hpx></div></td></tr></table></div></td></tr>\
+			<div id=ID_infodiv style=overflow:scroll;width:Wpx;height:" + (applet.height - 15) + "px></div></td></tr></table></div></td></tr>\
 			<tr><td><div id=ID_appletdiv style=width:Wpx;height:Hpx>"
 			:"</div></td><td></td></tr></table></div>"
 		).replace(/H/g, applet.height).replace(/W/g, applet.width).replace(/ID/g, applet.id);
@@ -150,16 +150,17 @@ Jmol = (function() {
 		document.getElementById(applet.id + "_appletdiv").style.height = (tf ? 1 : applet.height);
 		document.getElementById(applet.id + "_appletdiv").style.width = (tf ? 1 : applet.width);
 		applet.show(!tf);
-		document.getElementById(applet.id + "_infoheaderdiv").innerHTML = applet.getInfoHeader();
-		document.getElementById(applet.id + "_infodiv").innerHTML = applet.getInfo();
+		document.getElementById(applet.id + "_infoheaderdiv").innerHTML = applet.infoHeader;
+		document.getElementById(applet.id + "_infodiv").innerHTML = applet.info;
 	}
 
 	Jmol.searchQuery = function(applet, query) {
-			jQuery("#"+applet.id+"_query").val(query);
+			if (applet.hasOptions)
+				jQuery("#"+applet.id+"_query").val(query);
 			applet.search(query.replace(/\"/g, ""));
 	}
 	
-	Jmol.getScript = function(database, model) {
+	Jmol.getScriptForModel = function(database, model) {
 		return (database == "$" ? Jmol.nciLoadScript : Jmol.fileLoadScript);
 	}
 	
@@ -167,9 +168,52 @@ Jmol = (function() {
 		var c=this;
 		this.contactServer(
 			"getRawDataFromDatabase",
-			{database:database,dimension:3,query:query,script:Jmol.getScript(database)},
+			{database:database,dimension:3,query:query,script:Jmol.getScriptForModel(database)},
 			fSuccess, fError
 		)
+	}
+	
+	Jmol.getInfoFromDatabase = function(applet, query, database){
+		var c=this;
+		this.contactServer(
+			"getInfoFromDatabase",
+			{database:database,query:query},
+			function(data) { Jmol.setInfo(database, applet, data) }
+		)
+	}
+	
+	/*
+	This XML file does not appear to have any style information associated with it. The document tree is shown below.
+      <dataset><record><structureId>1BLU</structureId><structureTitle>STRUCTURE OF THE 2[4FE-4S] FERREDOXIN FROM CHROMATIUM VINOSUM</structureTitle></record><record><structureId>3EUN</structureId><structureTitle>Crystal structure of the 2[4Fe-4S] C57A ferredoxin variant from allochromatium vinosum</structureTitle></record></dataset>
+      
+	*/
+	Jmol.setInfo = function(database, applet, data) {
+		var info = [];
+		var header = "";
+		if (data.indexOf("ERROR") == 0)
+			header = data;
+		else
+			switch (database) {
+			case "=":
+				var S = data.split("<structureId>");
+				var info = ["<table>"];
+				for (var i = 1; i < S.length; i++) {
+					info.push("<tr><td valign=top><a href=\"javascript:Jmol.showInfo(" + applet.id + ",false);" + applet.id + ".setSearchTerm('=" + S[i].substring(0, 4) + "')\">" + S[i].substring(0, 4) + "</a></td>");
+					info.push("<td>" + S[i].split("Title>")[1].split("</")[0] + "</td></tr>");
+				}
+				info.push("</table>");
+				header = (S.length - 1) + " matches";
+				break;			
+			case "$":
+			break;
+			case "#": // pubChem
+			break;
+			default:
+				return;
+		}
+		applet.infoHeader = header;
+		applet.info = info.join("");
+		Jmol.showInfo(applet, true);
 	}
 	
 	Jmol.loadSuccess = function(a, fSuccess) {
@@ -226,6 +270,9 @@ Jmol = (function() {
 		this.height = height;
 		this.jmolIsSigned = jmolIsSigned;
 		this.dataMultiplier=1;
+		this.haveOptions = addOptions;
+		this.info = JSON.stringify(this);
+		this.infoHeader = this.jmolType + ' "' + this.id + '"'
 		jmolInitialize(jmolDirectory, appJar);
 		readyFunctionName && jmolSetParameter("appletReadyCallback", readyFunctionName);
 		var script = "";
@@ -239,6 +286,7 @@ Jmol = (function() {
 	}
 	
 	Jmol.Applet.prototype.setSearchTerm = function(b){
+		this.script("zap;set echo middle center;echo Retrieving data...");
 		Jmol.searchQuery(this, b);
 	}
 	
@@ -251,14 +299,6 @@ Jmol = (function() {
 		_jmolFindApplet("jmolApplet" + this.id).resize(tf ? this.width : 1, tf ? this.height : 1);
 	}
 	
-	Jmol.Applet.prototype.getInfo = function(tf) {
-		return _jmolFindApplet("jmolApplet" + this.id).getPropertyAsString("modelInfo");
-	}
-		
-	Jmol.Applet.prototype.getInfoHeader = function(tf) {
-		return this.jmolType + ' "' + this.id + '"';
-	}
-		
 	Jmol.Applet.prototype.script = function(script) {
 		_jmolFindApplet("jmolApplet" + this.id).script(script);
 	}	
@@ -272,13 +312,13 @@ Jmol = (function() {
 	
 	Jmol.Applet.prototype.search = function(model){
 		model || (model = jQuery("#"+this.id+"_query").val().replace(/\"/g, ""));
-		database = jQuery("#"+this.id+"_select").val();
+		database = (this.hasOptions ? jQuery("#"+this.id+"_select").val() : "$");
 		if (model.indexOf("=") == 0 || model.indexOf("$") == 0) {
 			database = model.substring(0, 1);
 			model = model.substring(1);
 		}
 		var dm = database + model;
-		if (!model || model && dm == this.thisJmolModel)
+		if (!model || dm.indexOf("?") < 0 && dm == this.thisJmolModel)
 			return;
 		this.thisJmolModel = dm;
 		if (database == "$")
@@ -289,6 +329,10 @@ Jmol = (function() {
 	}
 			
 	Jmol.Applet.prototype.searchDatabase = function(model, database){
+		if (model.indexOf("?") >= 0) {
+		  Jmol.getInfoFromDatabase(this, model.split("?")[0], database);
+		  return;
+		}
 		if (this.jmolIsSigned) {
 			var postLoad = (database == "$" ? Jmol.nciPostLoadScript : "");				
 			this.script("load \"" + dm + "\"" + postLoad);
@@ -309,6 +353,9 @@ Jmol = (function() {
 		this.id = id;
 		this.width = width;
 		this.height = height;
+		this.haveOptions = addOptions;
+		this.info = JSON.stringify(this);
+		this.infoHeader = this.jmolType + ' "' + this.id + '"'
 		var img = '<img id="'+id+'_image" width="' + width + '" height="' + height + '" src=""/>';
 		Jmol.getWrapper(this, true);
 		document.write(img);
@@ -322,14 +369,6 @@ Jmol = (function() {
 		document.getElementById(this.id + "_appletdiv").style.display = (tf ? "block" : "none");
 	}
 	
-	Jmol.Image.prototype.getInfo = function(tf) {
-		return JSON.stringify(this);
-	}
-		
-	Jmol.Image.prototype.getInfoHeader = function(tf) {
-		return this.jmolType + ' "' + this.id + '"';
-	}
-		
 	Jmol.Image.prototype.search = Jmol.Applet.prototype.search;
 	Jmol.Image.prototype.setSearchTerm = Jmol.Applet.prototype.setSearchTerm;
 	
@@ -347,7 +386,7 @@ Jmol = (function() {
 				+ "&width=" + this.width
 				+ "&height=" + this.height
 				+ "&params=" + escape(params);
-			+ "&script=" + Jmol.getScriptForModel(database, model);
+			+ "&script=frank off;" + Jmol.getScriptForModel(database, model);
 		Jmol.getWrapper(this, true);
 		document.getElementById(this.id + "_image").src = src;
 		Jmol.getWrapper(this, false);
@@ -360,7 +399,7 @@ Jmol = (function() {
 			+ "&width=" + this.width
 			+ "&height=" + this.height
 			+ "&database=" + database
-			+ "&script=" + Jmol.getScriptForModel(database, model);
+			+ "&script=frank off;" + Jmol.getScriptForModel(database, model);
 		document.getElementById(this.id + "_image").src = src;
 	}
 
@@ -422,10 +461,13 @@ Jmol = (function() {
 		this.id = id;
 		this.width = width;
 		this.height = height;
+		this.haveOptions = addOptions;
+		this.dataMultiplier=1;
+		this.info = JSON.stringify(this);
+		this.infoHeader = this.jmolType + ' "' + this.id + '"'
 		Jmol.getWrapper(this, true);
 		this.create(id,width,height);
 		Jmol.getWrapper(this, false);
-		this.dataMultiplier=1;
 		if (addOptions)
 			Jmol.getGrabberOptions(this, id, caption); // just for this test page
 		return this
@@ -433,11 +475,14 @@ Jmol = (function() {
 	
 	// MolGrabberCanvas changes add a dataMultiplier, subclasses TransformCanvas, modifies display options
 	
-	Jmol.Canvas = function(id,width,height,caption, addOptions){
+	Jmol.Canvas = function(id, width, height, caption, addOptions){
 		this.jmolType = "Jmol.Canvas";
 		this.id = id;
 		this.width = width;
 		this.height = height;
+		this.haveOptions = addOptions;
+		this.info = JSON.stringify(this);
+		this.infoHeader = this.jmolType + ' "' + this.id + '"'
 		Jmol.getWrapper(this, true);
 		this.create(id,width,height);
 		Jmol.getWrapper(this, false);
@@ -448,7 +493,7 @@ Jmol = (function() {
 		this.lastGestureRotate=0;
 		this.dataMultiplier=20;
 		if (addOptions)
-			Jmol.getGrabberOptions(this,id,caption);
+			Jmol.getGrabberOptions(this, id, caption);
 		return this;
 	}
 
@@ -458,14 +503,6 @@ Jmol = (function() {
 			document.getElementById(this.id + "_appletdiv").style.display = (tf ? "block" : "none");
 		}
 	
-		proto.getInfo = function() {
-			return JSON.stringify(Jmol).replace(/\,/g,",<br>");
-		}
-		
-		proto.getInfoHeader = function() {
-			return this.jmolType + ' "' + this.id + '"';
-		}
-		
 		proto.setSearchTerm = function(b){
 			Jmol.searchQuery(this, b);
 		}

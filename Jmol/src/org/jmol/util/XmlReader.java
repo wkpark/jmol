@@ -100,6 +100,10 @@ public class XmlReader {
     return extractTag(data, tag, closer, withTag);
   }
 
+  public static String extractTag(String data, String tag) {
+    return extractTag(data, "<" + tag + ">", "</" + tag  + ">", false);
+  }
+  
   private static String extractTag(String data, String tag, String closer, boolean withTag) {
     int pt1 = data.indexOf(tag);
     if (pt1 < 0)

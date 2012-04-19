@@ -934,7 +934,7 @@ public class FileManager {
     File file = null;
     URL url = null;
     String[] names = null;
-    if (name.indexOf("=") == 0 || name.indexOf('$') == 0)
+    if (name.indexOf("=") == 0 || name.indexOf('$') == 0 || name.indexOf(':') == 0)
       name = (String) viewer.setLoadFormat(name, name.charAt(0), false);
     if (name.indexOf(":") < 0 && name.indexOf("/") != 0)
       name = addDirectory(viewer.getDefaultDirectory(), name);

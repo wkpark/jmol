@@ -2189,7 +2189,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     // old load formats are simple unneeded words like PDB or XYZ -- no numbers
     int ichT = ichToken;
     char ch = '\0';
-    boolean allchar = (ichT < cchScript && ((ch = script.charAt(ichT)) == '$' || ch == '='));
+    boolean allchar = (ichT < cchScript && ((ch = script.charAt(ichT)) == '$' || ch == '=' || ch == ':'));
     while (ichT < cchScript
         && (Character.isLetterOrDigit(ch = script.charAt(ichT))
             && (allchar || Character.isLetter(ch))

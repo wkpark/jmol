@@ -87,6 +87,7 @@ import org.jmol.util.OutputStringBuffer;
 import org.jmol.util.Parser;
 import org.jmol.util.Rectangle;
 import org.jmol.util.SurfaceFileTyper;
+import org.jmol.util.XmlReader;
 
 import org.jmol.util.Measure;
 import org.jmol.util.Quaternion;
@@ -4666,6 +4667,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (f.indexOf(".") > 0 && s.indexOf("%FILE.") >= 0)
         s = s.substring(0, s.indexOf("%FILE") + 5);
       return TextFormat.formatString(s, "FILE", f);
+    case ':': // PubChem is special
+      String url;
+      try {
+        f = String.valueOf(Integer.valueOf(f).intValue());
+      } catch (Exception e) {
+        f = Escape.escapeUrl(f);
+        url = global.pubChemFormat1;
+        if (url.startsWith("http:"))
+          f = XmlReader.extractTag(getFileAsString(TextFormat.formatString(url,
+              "NAME", f)), "Id");
+      }
+      return TextFormat.formatString(global.pubChemFormat2, "CID", f);
     case '$':
     case 'N':
     case '2':

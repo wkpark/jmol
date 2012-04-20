@@ -352,13 +352,13 @@ public class MoldenReader extends MopacSlaterReader {
       frequencies.add(f);
     }
     int nFreqs = frequencies.size();
-    discardLinesUntilContains("[FR-COORD]");
+    skipTo("[FR-COORD]");
     if (!vibOnly)
       readAtomSet("frequency base geometry", true, true);
-    discardLinesUntilContains("[FR-NORM-COORD]");
+    skipTo("[FR-NORM-COORD]");
     boolean haveVib = false;
     for (int nFreq = 0; nFreq < nFreqs; nFreq++) {
-      discardLinesUntilContains("vibration");
+      skipTo("vibration");
       if (!bsOK.get(nFreq) || !doGetVibration(++vibrationNumber)) 
         continue;
       if (haveVib)
@@ -407,7 +407,7 @@ max-force
     while (readLine() != null 
         && line.indexOf("force") < 0)
       energies.add(Double.valueOf(line.trim()).toString());
-    discardLinesUntilContains("[GEOMETRIES] XYZ");
+    skipTo("[GEOMETRIES] XYZ");
     int nGeom = energies.size();
     int firstModel = (optOnly || desiredModelNumber >= 0 ? 0 : 1);
     modelNumber = firstModel; // input model counts as model 1; vibrations do not count
@@ -429,13 +429,33 @@ max-force
     return true;
   }
 
+  private void skipTo(String key) throws Exception {
+    if (line == null || !line.contains(key))
+      discardLinesUntilContains(key);
+    
+  }
+
   private void readAtomSet(String atomSetName, boolean isBohr, boolean asClone) throws Exception {
     if (asClone && desiredModelNumber < 0)
       atomSetCollection.cloneFirstAtomSet(0);
+    float f = (isBohr ? ANGSTROMS_PER_BOHR : 1);
     atomSetCollection.setAtomSetName(atomSetName);
+    if (atomSetCollection.getAtomCount() == 0) {
+      while (readLine() != null && line.indexOf('[') < 0) {    
+        String [] tokens = getTokens();
+        if (tokens.length != 4)
+          continue;
+        Atom atom = atomSetCollection.addNewAtom();
+        atom.atomName = tokens[0];
+        setAtomCoord(atom, parseFloat(tokens[1]) * f, 
+            parseFloat(tokens[2]) * f, 
+            parseFloat(tokens[3]) * f);
+      }    
+      modelAtomCount = atomSetCollection.getLastAtomSetAtomCount();
+      return;
+    }
     Atom[] atoms = atomSetCollection.getAtoms();
     int i0 = atomSetCollection.getLastAtomSetAtomIndex();
-    float f = (isBohr ? ANGSTROMS_PER_BOHR : 1);
     for (int i = 0; i < modelAtomCount; i++) {
       String[] tokens = getTokens(readLine());
       Atom atom = atoms[i + i0];

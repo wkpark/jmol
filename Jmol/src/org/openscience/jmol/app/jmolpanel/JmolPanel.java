@@ -1193,42 +1193,28 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
   class OpenPdbAction extends NewAction {
 
-    String title;
-    String prompt;
-
     OpenPdbAction() {
       super(openpdbAction);
-      title = GT._("Get PDB file");
-      prompt = GT._("Enter a four-digit PDB ID");
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      String script = "var xid = _modelTitle; if (xid.length != 4) { xid = '1crn'};xid = prompt('" + prompt + "',xid);if (!xid) { quit }; load @{'=' + xid}";
-      viewer.script(script);
+      script = "var x__id__ = _modelTitle; if (x__id__.length != 4) { x__id__ = '1crn'};x__id__ = prompt('" 
+        + GT._("Enter a four-digit PDB model ID or \"=\" and a three-digit ligand ID") + "',x__id__);if (!x__id__) { quit }; load @{'=' + x__id__}";
     }
   }
 
   class OpenMolAction extends NewAction {
 
-    String title;
-    String prompt;
-
     OpenMolAction() {
       super(openmolAction);
-      title = GT._("Get MOL file by compound name or ID");
-      prompt = GT._("Enter the name or identifier (SMILES, InChI, CAS) of a compound");
+      script = "var x__id__ = _smilesString; if (!x__id__) { x__id__ = 'tylenol'};x__id__ = prompt('" 
+        + GT._("Enter the name or identifier (SMILES, InChI, CAS) of a compound. Preface with \":\" to load from PubChem; otherwise Jmol will use the NCI/NIH Resolver.")
+        + "',x__id__);if (!x__id__) { quit }; load @{(x__id__[1]==':' ? x__id__ : '$' + x__id__)}";
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      String script = "var xid = _smilesString; if (!xid) { xid = 'tylenol'};xid = prompt('Enter the name or identifier (SMILES, InChI, CAS) of a compound',xid);if (!xid) { quit }; load @{'$' + xid}";
-      viewer.script(script);
-    }
   }
 
   class NewAction extends AbstractAction {
 
+    protected String script;
+    
     NewAction() {
       super(newAction);
     }
@@ -1238,10 +1224,13 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     }
 
     public void actionPerformed(ActionEvent e) {
-      revalidate();
+      if (script == null)
+        revalidate();
+      else
+        viewer.script(script);
     }
   }
-
+  
   /**
    * Really lame implementation of an exit command
    */

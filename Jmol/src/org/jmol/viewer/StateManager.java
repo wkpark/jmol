@@ -923,6 +923,8 @@ public class StateManager {
       setParameterValue("smallMoleculeMaxAtoms", smallMoleculeMaxAtoms);
       setParameterValue("smilesUrlFormat", smilesUrlFormat);
       setParameterValue("nihResolverFormat", nihResolverFormat);
+      setParameterValue("pubChemFormat1", pubChemFormat1);
+      setParameterValue("pubChemFormat2", pubChemFormat2);
       setParameterValue("solventProbe", solventOn);
       setParameterValue("solventProbeRadius", solventProbeRadius);
       setParameterValue("specular", specular);
@@ -1069,8 +1071,8 @@ public class StateManager {
       appendCmd(str, "#set loadLigandFormat " + Escape.escape(loadLigandFormat));
       appendCmd(str, "#set smilesUrlFormat " + Escape.escape(smilesUrlFormat));
       appendCmd(str, "#set nihResolverFormat " + Escape.escape(nihResolverFormat));
-      appendCmd(str, "#set pubChemFormat1 \"" + pubChemFormat1 + "\"");
-      appendCmd(str, "#set pubChemFormat2 \"" + pubChemFormat2 + "\"");
+      appendCmd(str, "#set pubChemFormat1 " + Escape.escape(pubChemFormat1));
+      appendCmd(str, "#set pubChemFormat2 " + Escape.escape(pubChemFormat2));
       appendCmd(str, "#set edsUrlFormat " + Escape.escape(edsUrlFormat));
       appendCmd(str, "#set edsUrlCutoff " + Escape.escape(edsUrlCutoff));
 //      if (autoLoadOrientation)

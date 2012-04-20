@@ -209,8 +209,7 @@ public class FileManager {
     if (htParams.get("atomDataOnly") == null) {
       setLoadState(htParams);
     }
-    if (name.indexOf('=') == 0 || name.indexOf('$') == 0)
-      name = (String) viewer.setLoadFormat(name, name.charAt(0), true);
+    name = viewer.resolveDatabaseFormat(name);
     int pt = name.indexOf("::");
     String nameAsGiven = (pt >= 0 ? name.substring(pt + 2) : name);
     String fileType = (pt >= 0 ? name.substring(0, pt) : null);
@@ -934,8 +933,7 @@ public class FileManager {
     File file = null;
     URL url = null;
     String[] names = null;
-    if (name.indexOf("=") == 0 || name.indexOf('$') == 0 || name.indexOf(':') == 0)
-      name = (String) viewer.setLoadFormat(name, name.charAt(0), false);
+    name = viewer.resolveDatabaseFormat(name);
     if (name.indexOf(":") < 0 && name.indexOf("/") != 0)
       name = addDirectory(viewer.getDefaultDirectory(), name);
     if (appletDocumentBase != null) {

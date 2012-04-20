@@ -357,7 +357,7 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
   private void readFrequency() throws Exception {
 
     int pt = atomSetCollection.getCurrentAtomSetIndex();
-    int iAtom0 = atomSetCollection.getAtomCount();
+    atomSetCollection.setBaseSymmetryAtomCount(atomCount);
 
     if (isVersion5) {
       readLines(3);
@@ -370,7 +370,8 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
     while (readLine() != null
         && (line.contains("f  = ") || line.contains("f/i= "))) {
       applySymmetryAndSetTrajectory();
-      cloneLastAtomSet(0, null);
+      int iAtom0 = atomSetCollection.getAtomCount();
+      cloneLastAtomSet(atomCount, null);
       if (!ignore[0]) {
         atomSetCollection.setCurrentAtomSetIndex(++pt);
         atomSetCollection.setAtomSetFrequency(null, null,
@@ -380,7 +381,6 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
       readLine();
       fillFrequencyData(iAtom0, atomCount, atomCount, ignore, true, 35, 12,
           null, 0);
-      iAtom0 += atomCount;
       readLine();
     }
   }

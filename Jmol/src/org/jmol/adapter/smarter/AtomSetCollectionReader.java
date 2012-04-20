@@ -882,8 +882,6 @@ public abstract class AtomSetCollectionReader {
       symmetry.toFractional(atom, false);
       iHaveFractionalCoordinates = true;
     }
-    //if (Logger.debugging)
-    //Logger.debug(" atom "+atom.atomName + " " + atom.x + " " + atom.y+" "+atom.z);
     doCheckUnitCell = true;
   }
 

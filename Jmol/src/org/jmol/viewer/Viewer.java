@@ -4654,6 +4654,23 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.defaultLoadScript;
   }
 
+  String resolveDatabaseFormat(String fileName) {
+    if (hasDatabasePrefix(fileName))
+      fileName = (String) setLoadFormat(fileName, fileName.charAt(0), false);
+    return fileName;
+  }
+
+  public static boolean isDatabaseCode(char ch) {
+    return (ch == '$' // NCI resolver
+      || ch == '='    // RCSB model or ligand
+      || ch == ':'    // PubChem
+    );
+  }
+
+  public static boolean hasDatabasePrefix(String fileName) {
+    return (fileName.length() != 0 && isDatabaseCode(fileName.charAt(0)));
+  }
+
   public Object setLoadFormat(String name, char type, boolean withPrefix) {
     String f = name.substring(1);
     switch (type) {
@@ -4674,7 +4691,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       } catch (Exception e) {
         f = Escape.escapeUrl(f);
         url = global.pubChemFormat1;
-        if (url.startsWith("http:"))
+        if (url.startsWith("http://"))
           f = XmlReader.extractTag(getFileAsString(TextFormat.formatString(url,
               "NAME", f)), "Id");
       }

@@ -96,6 +96,10 @@ public class AtomSetCollection {
     setAtomSetCollectionAuxiliaryInfo(globalBooleans[globalIndex], Boolean.TRUE);
   }
   
+  boolean getGlobalBoolean(int globalIndex) {
+    return (getAtomSetCollectionAuxiliaryInfo(globalBooleans[globalIndex]) == Boolean.TRUE);
+  }
+  
   final public static String[] notionalUnitcellTags =
   { "a", "b", "c", "alpha", "beta", "gamma" };
 
@@ -1026,8 +1030,15 @@ public class AtomSetCollection {
     for (int i = iAtomFirst; i < atomCount; i++)
       atoms[i].setEllipsoid(symmetry.getEllipsoid(atoms[i].anisoBorU));
   }
+  
+  private int baseSymmetryAtomCount;
+  
+  public void setBaseSymmetryAtomCount(int n) {
+    baseSymmetryAtomCount = n;
+  }
+  
   private void applyAllSymmetry() throws Exception {
-    int noSymmetryCount = getLastAtomSetAtomCount();
+    int noSymmetryCount = (baseSymmetryAtomCount == 0 ? getLastAtomSetAtomCount() : baseSymmetryAtomCount);
     int iAtomFirst = getLastAtomSetAtomIndex();
     setEllipsoids();
     bondCount0 = bondCount;

@@ -234,7 +234,7 @@ Jmol = (function() {
 	Jmol._loadFileData = function(applet, fileName, fSuccess, fError){
 		if (Jmol._isDatabaseCall(fileName)) {
 			Jmol._setQueryTerm(applet, fileName);
-			//fileName = Jmol._getDirectDatabaseCall(fileName, true);
+			fileName = Jmol._getDirectDatabaseCall(fileName, true);
 			if (Jmol._isDatabaseCall(fileName)) {
 				// xhr2 not supported (MSIE)
 				fileName = Jmol._getDirectDatabaseCall(fileName, false);

@@ -1,9 +1,11 @@
 <html>
 <title>Jmol/ChemDoodle Demo -- Using JmolData.jar for serving ChemDoodle models</title>
 <head>
-<script type="text/javascript" src="json2.js"></script>
-<script type="text/javascript" src="ChemDoodleWeb-libs.js"></script>
-<script type="text/javascript" src="ChemDoodleWeb-unpacked.js"></script>
+<script type="text/javascript" src="json2.js" title="required for MSIE"></script>
+<script type="text/javascript" src="jQuery.min.js" title="required; replaces ChemDoodleWeb-lib;fixed bug in that version"></script>
+<script type="text/javascript" src="gl-matrix-min.js" title="optional; replaces ChemDoodleWeb-lib;required if using ChemDoodle option"></script>
+<script type="text/javascript" src="mousewheel.js" title="optional; replaces ChemDoodleWeb-lib;required if using ChemDoodle option"></script>
+<script type="text/javascript" src="ChemDoodleWeb-unpacked.js" title="optional; required only if using ChemDoodle option"></script>
 <script type="text/javascript" src="Jmol.js"></script>
 <script type="text/javascript" src="JmolCore.js"></script>
 <script type="text/javascript" src="JmolApplet.js"></script>

@@ -28,7 +28,7 @@
 		jmolApplet(["100%","100%"], script, suffix);
 		Jmol._getWrapper(this, false);  	
 		if (Info.addSelectionOptions)
-			Jmol._getGrabberOptions(this, id, caption);
+			Jmol._getGrabberOptions(this, caption);
 		return this;
 	}
 
@@ -47,14 +47,14 @@
 	Jmol._Applet.prototype._search = function(query, script){
 		this._showInfo(false);
 		Jmol._setQueryTerm(this, query);
-		query || (query = jQuery("#"+this._id+"_query").val());
+		query || (query = Jmol._getElement(this, "query").value);
 		query && (query = query.replace(/\"/g, ""));
 		var database;
 		if (Jmol._isDatabaseCall(query)) {
 			database = query.substring(0, 1);
 			query = query.substring(1);
 		} else {
-			database = (this._hasOptions ? jQuery("#"+this._id+"_select").val() : "$");
+			database = (this._hasOptions ? Jmol._getElement(this, "select").value : "$");
 		}
 		if (database == "=" && query.length == 3)
 			query = "=" + query; // this is a ligand			
@@ -101,8 +101,9 @@
 		  return;
 		}
 		script || (script = Jmol._getScriptForDatabase(database));
+		var dm = database + query;
 		if (Jmol.db._DirectDatabaseCalls[database]) {
-			this._loadFile(database + query, script);
+			this._loadFile(dm, script);
 			return;
 		}
 		if (this._jmolIsSigned) {
@@ -134,7 +135,7 @@
 		document.write(s);
 		Jmol._getWrapper(this, false);
 		if (Info.addSelectionOptions)
-			Jmol._getGrabberOptions(this, id, caption);
+			Jmol._getGrabberOptions(this, caption);
 		return this;
 	}
 

@@ -51,7 +51,7 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 		this.create(id,Info.width,Info.height);
 		Jmol._getWrapper(this, false);
 		if (Info.addSelectionOptions)
-			Jmol._getGrabberOptions(this, id, caption);
+			Jmol._getGrabberOptions(this, caption);
 		return this;
 	}
 	
@@ -73,7 +73,7 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 		this.lastPinchScale=1;
 		this.lastGestureRotate=0;
 		if (Info.addSelectionOptions)
-			Jmol._getGrabberOptions(this, id, caption);
+			Jmol._getGrabberOptions(this, caption);
 		return this;
 	}
 

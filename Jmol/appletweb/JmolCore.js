@@ -2,14 +2,22 @@
 
 // see JmolApi.js for public user-interface. All these are private functions
 
-// last revision: 4/20/2012
+// last revision: 4/23/2012
 
 // allows Jmol applets to be created on a page with more flexibility and extendability
-// possibly using infrastructure of ChemDoodle.
+// possibly using infrastructure of ChemDoodle for multiplatform doodlable structures
 
-// This package may be used with or without ChemDoodle.
-// If using ChemDoodle, this package requires ChemDoodleWeb-libs.js and ChemDoodleWeb.js prior to JmolCore.js
-// If not using ChemDoodle, this package requires jQuery.js (or ChemDoodleWeb-libs.js, which conains jQuery) 
+// required/optional libraries (preferably in the following order):
+
+//		jQuery.min.js    -- required for ChemDoodle or any server-based options
+//		gl-matrix-min.js -- required for ChemDoodle option
+//		mousewheel.js    -- required for ChemDoodle option
+//		ChemDoodleWeb.js -- required for ChemDoodle option
+//		JmolCore.js      -- required
+//		JmolApplet.js    -- required
+//		JmolCD.js        -- required for ChemDoodle option
+//		JmolApi.js       -- required
+//		Jmol.js          -- required currently, but in the future only if using legacy jmolXxxx() calls
 
 // Allows Jmol-like objects to be displayed on Java-challenged (iPad/iPhone)
 // or applet-challenged (Android/iPhone) platforms, with automatic switching to 
@@ -24,12 +32,12 @@
 // For your installation, you should consider putting JmolData.jar and jmolcd.php 
 // on your own server. Nothing more than these two files is needed on the server.
 
-// The NCI and RCSB databases are accessed via direct AJAX.
+// The NCI and RCSB databases are accessed via direct AJAX if available (xhr2).
 
 Jmol = (function() {
 	return {
 		features: {
-		  supports_xhr2: function() {return jQuery.support.cors}
+		  supports_xhr2: function() {return jQuery && jQuery.support.cors}
 		},
 		_jmolInfo: {
 			userAgent:navigator.userAgent, 
@@ -60,18 +68,19 @@ Jmol = (function() {
 
 	// Jmol core functionality
 
-	Jmol._getGrabberOptions = function(applet, label, note) {
+	Jmol._getGrabberOptions = function(applet, note) {
 	
 		// feel free to adjust this look to anything you want
 		
-	document.writeln('<br><input type="text" id="ID_query"\
-	size="32" value="" /><br><nobr><select id="ID_select">\
-	<option value="$" selected>NCI(small molecules)</option>\
-	<option value=":">PubChem(small molecules)</option>\
-	<option value="=">RCSB(macromolecules)</option>\
-	</select>\<button id="ID_submit">Search</button></nobr>'.replace(/ID/g, label));
-	note && document.writeln(note);
-	jQuery("#"+label+"_submit").click(
+		document.writeln('<br><input type="text" id="ID_query"\
+		size="32" value="" /><br><nobr><select id="ID_select">\
+		<option value="$" selected>NCI(small molecules)</option>\
+		<option value=":">PubChem(small molecules)</option>\
+		<option value="=">RCSB(macromolecules)</option>\
+		</select>\<button id="ID_submit">Search</button></nobr>'.replace(/ID/g, applet._id));
+		note && document.writeln(note);
+		/*
+		jQuery("#"+label+"_submit").click(
 			function(){
 				applet._search()
 			}
@@ -81,6 +90,10 @@ Jmol = (function() {
 				13==a.which&&applet._search()
 			}
 		);
+		*/
+		Jmol._getElement(applet, "submit").onclick = function(){applet._search()};
+		Jmol._getElement(applet, "query").onkeypress = function(a){13==a.which&&applet._search()};
+		
 		if (applet.repaint) {
 			applet.emptyMessage="Enter search term below",
 			applet.repaint()
@@ -267,13 +280,18 @@ Jmol = (function() {
 			query = query.substring(1);
 			if (database == "=" && query.length == 4 && query.substring(0, 1) == "=")
 				query = query.substring(1);
-			var d = document.getElementById(applet._id + "_select");
-			for (var i = 0; i < d.options.length; i++)
-				if (d[i].value == database)
-					d[i].selected = true;
+			var d = Jmol._getElement(applet, "select");
+			if (d.options)
+				for (var i = 0; i < d.options.length; i++)
+					if (d[i].value == database)
+						d[i].selected = true;
 		}
-		jQuery("#"+applet._id+"_query").val(query);
+		Jmol._getElement(applet, "query").value = query;
 	}
-	
+
+	Jmol._getElement = function(applet, what) {
+		var d = document.getElementById(applet._id + "_" + what);
+		return (d || {});
+	}	
 
 })(Jmol);

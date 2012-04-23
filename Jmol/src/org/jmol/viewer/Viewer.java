@@ -300,6 +300,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   private StatusManager statusManager;
+  StatusManager getStatusManager() {
+    return statusManager;
+  }
+
   private TempArray tempManager;
   private TransformManager transformManager;
 

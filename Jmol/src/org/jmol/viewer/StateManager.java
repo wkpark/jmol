@@ -659,7 +659,6 @@ public class StateManager {
       htNonbooleanParameterValues = new Hashtable<String, Object>();
       htBooleanParameterFlags = new Hashtable<String, Boolean>();
       htPropertyFlagsRemoved = new Hashtable<String, Boolean>();
-
       if (g != null) {
         //persistent values not reset with the "initialize" command
         if (!clearUserVariables)
@@ -693,6 +692,7 @@ public class StateManager {
       // we really just have to make sure that all these values are definitely
       // also initialized within the managers. 
 
+      setParameterValue("depth", 0);                 // maintained by TransformManager
       setParameterValue("gestureSwipeFactor", ActionManager.DEFAULT_GESTURE_SWIPE_FACTOR);
       setParameterValue("hideNotSelected", false); //maintained by the selectionManager
       setParameterValue("hoverLabel", ""); // maintained by the Hover shape
@@ -719,11 +719,8 @@ public class StateManager {
       setParameterValue("showboundbox", false);      // maintained by Bbcage
       setParameterValue("showfrank", false);         // maintained by Viewer
       setParameterValue("showUnitcell", false);      // maintained by Uccage
-      setParameterValue("slabEnabled", false);       // maintained by TransformManager     
-      setParameterValue("depth", 0);                 // maintained by TransformManager
       setParameterValue("slab", 100);                // maintained by TransformManager
-      setParameterValue("zDepth", 0);                // maintained by TransformManager
-      setParameterValue("zSlab", 50);                // maintained by TransformManager
+      setParameterValue("slabEnabled", false);       // maintained by TransformManager     
       setParameterValue("slabrange", 0f);            // maintained by TransformManager
       setParameterValue("spinX", 0);                 // maintained by TransformManager
       setParameterValue("spinY", TransformManager.DEFAULT_SPIN_Y);
@@ -731,9 +728,14 @@ public class StateManager {
       setParameterValue("spinFps", TransformManager.DEFAULT_SPIN_FPS);
       setParameterValue("stereoDegrees", EnumStereoMode.DEFAULT_STEREO_DEGREES); 
       setParameterValue("stateversion", 0); // only set by a saved state being recalled
+      setParameterValue("syncScript", viewer.getStatusManager().syncingScripts);
+      setParameterValue("syncMouse", viewer.getStatusManager().syncingMouse);
+      setParameterValue("syncStereo", viewer.getStatusManager().stereoSync);
       setParameterValue("windowCentered", true); // maintained by TransformManager
       setParameterValue("zoomEnabled", true);    // maintained by TransformManager
+      setParameterValue("zDepth", 0);            // maintained by TransformManager
       setParameterValue("zShade", false);        // maintained by TransformManager
+      setParameterValue("zSlab", 50);            // maintained by TransformManager
       
 
       // These next values have no other place than the global Hashtables.
@@ -761,9 +763,6 @@ public class StateManager {
       setParameterValue("propertyAtomNumberField", 0);
       setParameterValue("propertyDataColumnCount", 0);
       setParameterValue("propertyDataField", 0);
-      setParameterValue("syncScript", false);
-      setParameterValue("syncMouse", false);
-      setParameterValue("syncStereo", false);
       setParameterValue("undo", true);
 
       // OK, all of the rest of these are maintained here as global values (below)

@@ -297,7 +297,7 @@ class StatusManager {
     String sJmol = (isReady ? jmolScriptCallback(EnumCallback.APPLETREADY) : null);
     if (notifyEnabled(EnumCallback.APPLETREADY))
       jmolCallbackListener.notifyCallback(EnumCallback.APPLETREADY,
-          new Object[] { sJmol, htmlName, Boolean.valueOf(isReady) });
+          new Object[] { sJmol, htmlName, Boolean.valueOf(isReady), null });
   }
 
   synchronized void setStatusAtomMoved(BitSet bsMoved) {

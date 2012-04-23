@@ -902,6 +902,8 @@ public class Jmol implements WrappedApplet {
        //+ " " + strInfo);
       switch (type) {
       case APPLETREADY:
+        data[3] = appletWrapper;
+        break;
       case ERROR:
       case EVAL:
       case HOVER:

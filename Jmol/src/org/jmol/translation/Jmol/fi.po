@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2012-04-08 09:36+0200\n"
+"POT-Creation-Date: 2012-04-23 22:06+0200\n"
 "PO-Revision-Date: 2011-09-27 22:41+0000\n"
 "Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: Finland <Jmol-developers@lists.sf.net>\n"
@@ -1085,28 +1085,22 @@ msgstr "Avaa URL"
 msgid "Enter URL of molecular model"
 msgstr "Anna molekyylimallien URL"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1201
-msgid "Get PDB file"
-msgstr "Hae PDB-tiedosto"
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1199
+msgid "Enter a four-digit PDB model ID or \"=\" and a three-digit ligand ID"
+msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1202
-msgid "Enter a four-digit PDB ID"
-msgstr "Anna nelinumeroinen PDB-ID"
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1208
+msgid ""
+"Enter the name or identifier (SMILES, InChI, CAS) of a compound. Preface "
+"with \":\" to load from PubChem; otherwise Jmol will use the NCI/NIH "
+"Resolver."
+msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1219
-msgid "Get MOL file by compound name or ID"
-msgstr "Hae MOL-tiedosto yhdisteen nimellä tai ID:llä"
-
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1220
-#, fuzzy
-msgid "Enter the name or identifier (SMILES, InChI, CAS) of a compound"
-msgstr "Lisää molekyylin nimi tai tunniste (SMILES, InChI, CAS)"
-
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1386
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1375
 msgid "IO Exception:"
 msgstr "IO-poikkeus:"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1515
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1504
 msgid "width height?"
 msgstr "leveys korkeus?"
 
@@ -1887,6 +1881,19 @@ msgstr "Latausnäkymä"
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr "toteutumatta"
+
+#~ msgid "Get PDB file"
+#~ msgstr "Hae PDB-tiedosto"
+
+#~ msgid "Enter a four-digit PDB ID"
+#~ msgstr "Anna nelinumeroinen PDB-ID"
+
+#~ msgid "Get MOL file by compound name or ID"
+#~ msgstr "Hae MOL-tiedosto yhdisteen nimellä tai ID:llä"
+
+#, fuzzy
+#~ msgid "Enter the name or identifier (SMILES, InChI, CAS) of a compound"
+#~ msgstr "Lisää molekyylin nimi tai tunniste (SMILES, InChI, CAS)"
 
 #~ msgid "Controller"
 #~ msgstr "Ohjain"

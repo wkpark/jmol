@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2012-04-08 09:36+0200\n"
+"POT-Creation-Date: 2012-04-23 22:06+0200\n"
 "PO-Revision-Date: 2010-12-04 19:26+0000\n"
 "Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: Indonesian <id@li.org>\n"
@@ -1084,28 +1084,22 @@ msgstr "Buka URL"
 msgid "Enter URL of molecular model"
 msgstr "Tulis URL model molekuler"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1201
-msgid "Get PDB file"
-msgstr "Ambil berkas PDB"
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1199
+msgid "Enter a four-digit PDB model ID or \"=\" and a three-digit ligand ID"
+msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1202
-msgid "Enter a four-digit PDB ID"
-msgstr "Tuliskan ID PDB empat angka"
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1208
+msgid ""
+"Enter the name or identifier (SMILES, InChI, CAS) of a compound. Preface "
+"with \":\" to load from PubChem; otherwise Jmol will use the NCI/NIH "
+"Resolver."
+msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1219
-msgid "Get MOL file by compound name or ID"
-msgstr "Ambil berkas MOL dengan nama atau ID"
-
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1220
-#, fuzzy
-msgid "Enter the name or identifier (SMILES, InChI, CAS) of a compound"
-msgstr "Tuliskan nama atau pengenal (SMILES, InChI, CAS) dari molekul"
-
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1386
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1375
 msgid "IO Exception:"
 msgstr "Perkecualian IO:"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1515
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1504
 msgid "width height?"
 msgstr "lebar ketinggian?"
 
@@ -1885,6 +1879,19 @@ msgstr "Tampilan Muaturun"
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr "belum diimplementasi"
+
+#~ msgid "Get PDB file"
+#~ msgstr "Ambil berkas PDB"
+
+#~ msgid "Enter a four-digit PDB ID"
+#~ msgstr "Tuliskan ID PDB empat angka"
+
+#~ msgid "Get MOL file by compound name or ID"
+#~ msgstr "Ambil berkas MOL dengan nama atau ID"
+
+#, fuzzy
+#~ msgid "Enter the name or identifier (SMILES, InChI, CAS) of a compound"
+#~ msgstr "Tuliskan nama atau pengenal (SMILES, InChI, CAS) dari molekul"
 
 #~ msgid "Controller"
 #~ msgstr "Pengendali"

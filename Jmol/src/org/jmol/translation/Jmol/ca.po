@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2012-04-08 09:36+0200\n"
+"POT-Creation-Date: 2012-04-23 22:06+0200\n"
 "PO-Revision-Date: 2011-10-04 15:11+0000\n"
 "Last-Translator: VPablo <villumar@gmail.com>\n"
 "Language-Team: Catalan <jmol-developers@lists.sourceforge.net>\n"
@@ -1088,28 +1088,22 @@ msgstr "Obre un URL"
 msgid "Enter URL of molecular model"
 msgstr "Introduïu l'URL d'un model molecular"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1201
-msgid "Get PDB file"
-msgstr "Aconseguir un fitxer PDB"
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1199
+msgid "Enter a four-digit PDB model ID or \"=\" and a three-digit ligand ID"
+msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1202
-msgid "Enter a four-digit PDB ID"
-msgstr "Escriu un identificador de quatre dígits PDB"
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1208
+msgid ""
+"Enter the name or identifier (SMILES, InChI, CAS) of a compound. Preface "
+"with \":\" to load from PubChem; otherwise Jmol will use the NCI/NIH "
+"Resolver."
+msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1219
-msgid "Get MOL file by compound name or ID"
-msgstr "Aconseguix l'arxiu MOL a partir del nom o identificador del compost"
-
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1220
-#, fuzzy
-msgid "Enter the name or identifier (SMILES, InChI, CAS) of a compound"
-msgstr "Escriu el nom o l'identificador (SMILES, InChI, CAS) d'una molècula."
-
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1386
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1375
 msgid "IO Exception:"
 msgstr "S'ha produït una excepció IO:"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1515
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1504
 msgid "width height?"
 msgstr "amplada alçada?"
 
@@ -1903,6 +1897,20 @@ msgstr "Vista de baixada"
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr "no implementat"
+
+#~ msgid "Get PDB file"
+#~ msgstr "Aconseguir un fitxer PDB"
+
+#~ msgid "Enter a four-digit PDB ID"
+#~ msgstr "Escriu un identificador de quatre dígits PDB"
+
+#~ msgid "Get MOL file by compound name or ID"
+#~ msgstr "Aconseguix l'arxiu MOL a partir del nom o identificador del compost"
+
+#, fuzzy
+#~ msgid "Enter the name or identifier (SMILES, InChI, CAS) of a compound"
+#~ msgstr ""
+#~ "Escriu el nom o l'identificador (SMILES, InChI, CAS) d'una molècula."
 
 #~ msgid "Controller"
 #~ msgstr "Control·lador"

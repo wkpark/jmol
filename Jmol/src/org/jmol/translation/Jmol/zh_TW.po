@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2012-04-08 09:36+0200\n"
+"POT-Creation-Date: 2012-04-23 22:06+0200\n"
 "PO-Revision-Date: 2012-03-16 08:01+0000\n"
 "Last-Translator: Emerson Hsieh <emerson1234567890@yahoo.com.tw>\n"
 "Language-Team: Traditional Chinese <zh_TW@li.org>\n"
@@ -1079,27 +1079,22 @@ msgstr "開啟網址(URL)"
 msgid "Enter URL of molecular model"
 msgstr "輸入分子模型的網址(URL)"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1201
-msgid "Get PDB file"
-msgstr "取得 PDB 檔"
-
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1202
-msgid "Enter a four-digit PDB ID"
-msgstr "請輸入四位數的 PDB 代碼"
-
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1219
-msgid "Get MOL file by compound name or ID"
-msgstr "依照化合物名稱或是 ID 取得 MOL 檔"
-
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1220
-msgid "Enter the name or identifier (SMILES, InChI, CAS) of a compound"
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1199
+msgid "Enter a four-digit PDB model ID or \"=\" and a three-digit ligand ID"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1386
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1208
+msgid ""
+"Enter the name or identifier (SMILES, InChI, CAS) of a compound. Preface "
+"with \":\" to load from PubChem; otherwise Jmol will use the NCI/NIH "
+"Resolver."
+msgstr ""
+
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1375
 msgid "IO Exception:"
 msgstr "輸出入錯誤："
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1515
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1504
 msgid "width height?"
 msgstr "寬度高度?"
 
@@ -1870,6 +1865,15 @@ msgstr "下載觀看"
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr "未實作的"
+
+#~ msgid "Get PDB file"
+#~ msgstr "取得 PDB 檔"
+
+#~ msgid "Enter a four-digit PDB ID"
+#~ msgstr "請輸入四位數的 PDB 代碼"
+
+#~ msgid "Get MOL file by compound name or ID"
+#~ msgstr "依照化合物名稱或是 ID 取得 MOL 檔"
 
 #~ msgid ""
 #~ "Could not find or open:\n"

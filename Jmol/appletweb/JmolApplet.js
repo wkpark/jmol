@@ -86,6 +86,10 @@
 		this._showInfo(false);
 		params || (params = "");
 		this._thisJmolModel = "" + Math.random();
+		if (this._jmolIsSigned) {
+			this._script("load \"" + fileName + "\"" + params);
+			return;
+		}
 		var c = this;
 		Jmol._loadFileData(this, fileName, function(data){c._loadModel(data, params)});
 	}

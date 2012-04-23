@@ -88,22 +88,16 @@ Jmol = (function() {
 	}
 	
 	Jmol._getWrapper = function(applet, isHeader) {
-		if (!isHeader) {
-			document.write("</div></td></tr></table></div>");
-			return;
-		}
 		var height = applet._height;
 		var width = applet._width;
 		if (typeof height !== "string")
 			height += "px";
 		if (typeof width !== "string")
 			width += "px";
-		var s = "<div id=ID_appletinfotablediv style=width:Wpx;height:Hpx>\
-			<table><tr><td><div id=ID_infotablediv style=width:Wpx;height:Hpx;display:none>\
-			<table><tr height=20><td style=background:yellow><span id=ID_infoheaderdiv></span></td>\
-			<td width=10><a href=javascript:Jmol.showInfo(ID,false)>[x]</a></td></tr><tr><td colspan=2>\
-			<div id=ID_infodiv style=overflow:scroll;width:Wpx;height:" + (applet._height - 15) + "px></div></td></tr></table></div></td></tr>\
-			<tr><td><div id=ID_appletdiv style=width:Wpx;height:Hpx>";
+		var s = (isHeader ? "<div id=ID_appletinfotablediv style=width:Wpx;height:Hpx><table><tr><td><div id=ID_appletdiv style=width:Wpx;height:Hpx>"
+				: "</div></td></tr><tr><td><div id=ID_infotablediv style=width:Wpx;height:Hpx;display:none>\
+			<table><tr height=20><td style=background:yellow><span id=ID_infoheaderdiv></span></td><td width=10><a href=javascript:Jmol.showInfo(ID,false)>[x]</a></td></tr><tr><td colspan=2>\
+			<div id=ID_infodiv style=overflow:scroll;width:Wpx;height:" + (applet._height - 15) + "px></div></td></tr></table></div></td></tr></table></div>");
 		s = s.replace(/Hpx/g, height).replace(/Wpx/g, width).replace(/ID/g, applet._id);
 		document.write(s);
 	}

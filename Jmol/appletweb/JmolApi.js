@@ -1,7 +1,5 @@
 // JmolApi.js -- Jmol user functions
 
-if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
-
 (function (Jmol) {
 
 	Jmol.getVersion = function(){return _version};
@@ -29,7 +27,7 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 			jmolReadyFunctionName: ""
 		});	
 	
-		var applet;  // return value
+		var applet = null;  // return value
 	
 		/* a general function that will switch to the desired rendering option
 			involving Jmol or ChemDoodle.
@@ -59,35 +57,12 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 			 
 		// Jmol applet, signed or unsigned
 		
-			applet = new Jmol._Applet(id, Info, null);
-			model = null;
-			
-		} else if (!Info.useJmolOnly && !Info.useImageOnly && ChemDoodle) {	
-		
-			// ChemDoodle: first try with WebGL unless that doesn't work or we have indicated NOWEBGL
-			if (Info.useWebGlIfAvailable && ChemDoodle.featureDetection.supports_webgl()) {
-				applet = new Jmol._Canvas3D(id, Info, null);
-			} else {
-				applet = {}
-			}
-			if (applet.gl) {
-				//applet.specs.set3DRepresentation('Stick');
-				applet.specs.set3DRepresentation('Ball and Stick');
-				applet.specs.backgroundColor = 'black';
-			} else {
-				applet = new Jmol._Canvas(id, Info);
-				applet.specs.bonds_useJMOLColors = true;
-				applet.specs.bonds_width_2D = 3;
-				applet.specs.atoms_display = false;
-				applet.specs.backgroundColor = 'black';
-				applet.specs.bonds_clearOverlaps_2D = true;
-			}
-
-		} else {
-		
+			return new Jmol._Applet(id, Info, null);
+		} 
+		if (!Info.useJmolOnly && !Info.useImageOnly) 
+			applet = Jmol._getCanvas(id, Info);	
+		if (applet == null)
 			applet = new Jmol._Image(id, Info, null);
-			
-		}
 		model && applet._search(model);
 		return applet;
 	}

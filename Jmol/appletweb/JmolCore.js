@@ -26,8 +26,6 @@
 
 // The NCI and RCSB databases are accessed via direct AJAX.
 
-if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
-
 Jmol = (function() {
 	return {
 		features: {
@@ -35,7 +33,7 @@ Jmol = (function() {
 		},
 		_jmolInfo: {
 			userAgent:navigator.userAgent, 
-			version: version = 'Jmol 12.3.23' + (ChemDoodle ? "; ChemDoodle " + ChemDoodle.getVersion(): "")
+			version: version = 'Jmol 12.3.23'
 		},
 		_serverUrl: "http://chemapps.stolaf.edu/jmol/jmolcd.php",
 		_asynchronous: !0,
@@ -53,7 +51,8 @@ Jmol = (function() {
 			_restQueryUrl: "http://www.rcsb.org/pdb/rest/search",
 			_restQueryXml: "<orgPdbQuery><queryType>org.pdb.query.simple.AdvancedKeywordQuery</queryType><description>Text Search</description><keywords>QUERY</keywords></orgPdbQuery>",
 			_restReportUrl: "http://www.pdb.org/pdb/rest/customReport?pdbids=IDLIST&customReportColumns=structureId,structureTitle"
-		}
+		},
+		_getCanvas: function(){ /* only in JmolCD.js */ return null }		
 	}
 })();
 
@@ -65,25 +64,14 @@ Jmol = (function() {
 	
 		// feel free to adjust this look to anything you want
 		
-		var c=[];
-		c.push('<br><input type="text" id="');
-		c.push(label);
-		c.push('_query" size="32" value="" />');
-		c.push("<br><nobr>");
-		c.push('<select id="');
-		c.push(label);
-		c.push('_select">');
-		c.push('<option value="$" selected>NCI(small molecules)</option>');
-		c.push('<option value=":">PubChem(small molecules)</option>');
-		c.push('<option value="=">RCSB(macromolecules)</option>');
-		c.push("</select>");
-		c.push('<button id="');
-		c.push(label);
-		c.push('_submit">Search</button>');
-		c.push("</nobr>");
-		note && c.push(note);
-		document.writeln(c.join(""));
-		jQuery("#"+label+"_submit").click(
+	document.writeln('<br><input type="text" id="ID_query"\
+	size="32" value="" /><br><nobr><select id="ID_select">\
+	<option value="$" selected>NCI(small molecules)</option>\
+	<option value=":">PubChem(small molecules)</option>\
+	<option value="=">RCSB(macromolecules)</option>\
+	</select>\<button id="ID_submit">Search</button></nobr>'.replace(/ID/g, label));
+	note && document.writeln(note);
+	jQuery("#"+label+"_submit").click(
 			function(){
 				applet._search()
 			}
@@ -100,15 +88,23 @@ Jmol = (function() {
 	}
 	
 	Jmol._getWrapper = function(applet, isHeader) {
-		var s = (isHeader ?
-			"<div id=ID_appletinfotablediv style=width:Wpx;height:Hpx>\
-			<table><tr><td></td><td><div id=ID_infotablediv style=width:Wpx;height:Hpx;display:none>\
+		if (!isHeader) {
+			document.write("</div></td></tr></table></div>");
+			return;
+		}
+		var height = applet._height;
+		var width = applet._width;
+		if (typeof height !== "string")
+			height += "px";
+		if (typeof width !== "string")
+			width += "px";
+		var s = "<div id=ID_appletinfotablediv style=width:Wpx;height:Hpx>\
+			<table><tr><td><div id=ID_infotablediv style=width:Wpx;height:Hpx;display:none>\
 			<table><tr height=20><td style=background:yellow><span id=ID_infoheaderdiv></span></td>\
 			<td width=10><a href=javascript:Jmol.showInfo(ID,false)>[x]</a></td></tr><tr><td colspan=2>\
 			<div id=ID_infodiv style=overflow:scroll;width:Wpx;height:" + (applet._height - 15) + "px></div></td></tr></table></div></td></tr>\
-			<tr><td><div id=ID_appletdiv style=width:Wpx;height:Hpx>"
-			:"</div></td><td></td></tr></table></div>"
-		).replace(/H/g, applet._height).replace(/W/g, applet._width).replace(/ID/g, applet._id);
+			<tr><td><div id=ID_appletdiv style=width:Wpx;height:Hpx>";
+		s = s.replace(/Hpx/g, height).replace(/Wpx/g, width).replace(/ID/g, applet._id);
 		document.write(s);
 	}
 

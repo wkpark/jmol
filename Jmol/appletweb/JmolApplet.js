@@ -161,8 +161,7 @@
 				+ "&file=" + escape(fileName)
 				+ "&width=" + this._width
 				+ "&height=" + this._height
-				+ "&params=" + escape(params) + ";frank off;";
-			alert(src)
+				+ "&params=" + escape(params + ";frank off;");
 		document.getElementById(this._id + "_image").src = src;
 	}
 
@@ -177,7 +176,7 @@
 			+ "&query=" + query
 			+ "&width=" + this._width
 			+ "&height=" + this._height
-			+ "&script=;frank off;" + script;
+			+ "&script=" + escape(script + ";frank off;");
 		document.getElementById(this._id + "_image").src = src;
 	}
 

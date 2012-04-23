@@ -1,6 +1,14 @@
 // JmolCD.js -- Jmol ChemDoodle extension   author: Bob Hanson, hansonr@stolaf.edu  4/16/2012
 
-// If using ChemDoodle, this package requires ChemDoodleWeb-libs.js and ChemDoodleWeb.js prior to JmolCD.js
+// This library requires
+// 
+//  JmolCore.js
+//	gl-matrix-min.js 
+//	jQuery.min.js
+//	mousewheel.js 
+//	ChemDoodleWeb.js
+//
+// prior to JmolCD.js
 
 if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 
@@ -9,16 +17,27 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 
 	if (!ChemDoodle) 
 		return;
+		
+	Jmol._getCanvas = function(id, Info) {
+		// overrides the function in JmolCore.js
+		// ChemDoodle: first try with WebGL unless that doesn't work or we have indicated NOWEBGL
+		var applet = (Info.useWebGlIfAvailable && ChemDoodle.featureDetection.supports_webgl() 
+			? new Jmol._Canvas3D(id, Info, null) : null);
+		if (applet && applet.gl) {
+			//applet.specs.set3DRepresentation('Stick');
+			applet.specs.set3DRepresentation('Ball and Stick');
+			applet.specs.backgroundColor = 'black';
+		} else {
+			applet = new Jmol._Canvas(id, Info);
+			applet.specs.bonds_useJMOLColors = true;
+			applet.specs.bonds_width_2D = 3;
+			applet.specs.atoms_display = false;
+			applet.specs.backgroundColor = 'black';
+			applet.specs.bonds_clearOverlaps_2D = true;
+		}
+		return applet;
+	}
 
-	// Note: all of the rest of this can be removed if you have no interest in using ChemDoodle
- 		
-	// changes: MolGrabberCanvas, MolGrabberCanvas3D
-	//   -- properly scales data using dataMultiplier 1 (3D canvas) or 20 (2d canvas)
-	//   -- generalized selection/input options
-	//   -- adds caption
-	// new: Applet, Image
-	
-	
 	Jmol._Canvas3D = function(id, Info, caption){
 		this._jmolType = "Jmol._Canvas3D";
 		this._id = id;
@@ -32,11 +51,9 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 		this.create(id,Info.width,Info.height);
 		Jmol._getWrapper(this, false);
 		if (Info.addSelectionOptions)
-			Jmol._getGrabberOptions(this, id, caption); // just for this test page
+			Jmol._getGrabberOptions(this, id, caption);
 		return this;
 	}
-	
-	// MolGrabberCanvas changes add a dataMultiplier, subclasses TransformCanvas, modifies display options
 	
 	Jmol._Canvas = function(id, Info, caption){
 		this._jmolType = "Jmol._Canvas";

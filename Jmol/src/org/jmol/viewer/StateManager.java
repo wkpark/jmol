@@ -761,6 +761,9 @@ public class StateManager {
       setParameterValue("propertyAtomNumberField", 0);
       setParameterValue("propertyDataColumnCount", 0);
       setParameterValue("propertyDataField", 0);
+      setParameterValue("syncScript", false);
+      setParameterValue("syncMouse", false);
+      setParameterValue("syncStereo", false);
       setParameterValue("undo", true);
 
       // OK, all of the rest of these are maintained here as global values (below)

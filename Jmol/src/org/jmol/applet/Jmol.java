@@ -37,6 +37,8 @@ import org.jmol.viewer.Viewer;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
+import org.jmol.util.TextFormat;
+
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -1022,11 +1024,18 @@ public class Jmol implements WrappedApplet {
       if (!doCallback || !mayScript)
         return;
       try {
-        JSObject jsoWindow = JSObject.getWindow(appletWrapper);
-        if (callback.equals("alert"))
-          jsoWindow.call(callback, new Object[] { strInfo });
-        else if (callback.length() > 0)
-          jsoWindow.call(callback, data);
+        JSObject jso = JSObject.getWindow(appletWrapper);
+        if (callback.equals("alert")) {
+          jso.call(callback, new Object[] { strInfo });
+        } else if (callback.length() > 0) {
+          if (callback.indexOf(".") > 0) {
+            String[] mods = TextFormat.split(callback, '.');
+            for (int i = 0; i < mods.length - 1; i++)
+              jso = (JSObject) jso.getMember(mods[i]);
+            callback = mods[mods.length - 1];
+          }
+          jso.call(callback, data);
+        }
       } catch (Exception e) {
         if (!haveNotifiedError)
           if (Logger.debugging) {

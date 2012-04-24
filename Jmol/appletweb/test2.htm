@@ -34,16 +34,14 @@ var useWebGlIfAvailable = (document.location.href.indexOf("NOWEBGL") < 0);
 var useImageOnly = (document.location.href.indexOf("IMAGE") >= 0);
 var useSignedApplet = (document.location.href.indexOf("SIGNED") >= 0);
   
-jmol_isReady = function(app,appFull,isReady) {
-	if (!isReady) return;
-	Jmol.search(jmolApplet0,Info.defaultModel);
+jmol_isReady = function(applet) {
+	document.title = (applet._id + " is ready")
 }		
 
 var Info = {
 	width: 300,
 	height: 300,
 	debug: true,
-	defaultModel: "morphine",
 	addSelectionOptions: true,
 	serverURL: "http://chemapps.stolaf.edu/jmol/jmolcd2.php",
 	useChemDoodleOnly: useChemDoodleOnly,
@@ -53,7 +51,9 @@ var Info = {
 	jmolJarPath: ".",
 	jmolJarFile: (useSignedApplet ? "JmolAppletSigned.jar" : "JmolApplet.jar"),
 	jmolIsSigned: useSignedApplet,
-	jmolReadyFunctionName: "jmol_isReady"
+	jmolReadyFunction: jmol_isReady,
+	defaultModel: "$morphine",
+	script: "spin on"
 }
 
 </script>
@@ -82,13 +82,14 @@ jmolApplet0 = Jmol.getApplet("jmolApplet0", Info)
 <a href="javascript:Jmol.showInfo(jmolApplet0, false)">hide info</a>
 
 </td><td valign=top>
-Just enter a molecule name, a CAS registry number, an IUPAC name, or some other sort of identifier in the box
-and press [ENTER]. Note that these input controls can be easily hidden for a more standard Jmol look.
+For NCI, enter a molecule name, a CAS registry number, an IUPAC name, or some other sort of identifier in the box
+and press [ENTER]. For PubChem, enter a name or CAS number.
+Note that these input controls can be easily hidden for a more standard Jmol look.
 <br /><br /> 
 
-Current status: (4/20/12) Small molecules loading from PubChem not working with xhr2 without server relay;
-ChemDoodle not loading ligand CIF files <a href="javascript:Jmol.loadFile(jmolApplet0,'==HEM')">(==HEM)</a>;
-ChemDoodle without WebGL very slow at loading PDB files. 
+Current status: (4/23/12) using PubChem rest/pub interface for direct xhr2 loading of models;
+all files loading
+ 
   
 <br /><br /> 
 <table cellpadding=5><tr><td valign=top>
@@ -105,6 +106,15 @@ ChemDoodle without WebGL very slow at loading PDB files.
 <a href=test2.htm?NOCD>not ChemDoodle</a> 
  <br /> 
  <a href=test2.htm?IMAGE>image only</a>
+ <br />
+ <br />
+	<b>keyword searches</b>
+ <br />
+ <a href="javascript:Jmol.search(jmolApplet0,'=caffeine?')">=caffeine? (RCSB)</a>
+ <br />
+ <a href="javascript:Jmol.search(jmolApplet0,'=1blu?')">=1blu? (RCSB)</a>
+ <br />
+ <a href="javascript:Jmol.search(jmolApplet0,'=1crn?')">=1crn? (RCSB)</a>
 </td><td valign=top>
 	<b>this-domain calls - no server</b> 
  <br /> 
@@ -122,29 +132,23 @@ ChemDoodle without WebGL very slow at loading PDB files.
  <br /> 
  <a href="javascript:Jmol.loadFile(jmolApplet0,'quartz.cif', '{1 1 1}')">load quartz.cif</a>
  </td><td valign=top>
-	<b>keyword searches</b> 
- <br /> 
- <a href="javascript:Jmol.search(jmolApplet0,'=caffeine?')">=caffeine? (RCSB)</a>
- <br /> 
- <a href="javascript:Jmol.search(jmolApplet0,'=1blu?')">=1blu? (RCSB)</a>
- <br /> 
- <a href="javascript:Jmol.search(jmolApplet0,'=1crn?')">=1crn? (RCSB)</a>
- <br />
- <br />
 	<b>direct database calls - no server</b> 
  <br />
  <a href="javascript:Jmol.loadFile(jmolApplet0,'$caffeine')">load $caffeine (from NCI)</a>
  <br /> 
  <a href="javascript:Jmol.loadFile(jmolApplet0,'=1blu',';cartoons only;color structure')">load =1blu (cartoon, from RCSB)</a>
  <br /> 
+ <a href="javascript:Jmol.loadFile(jmolApplet0,':1983')">load :1983 (PubChem CID)</a>
  <br /> 
-	<b>problems</b> 
+ <a href="javascript:Jmol.loadFile(jmolApplet0,':aspirin')">load :aspirin (PubChem name)</a>
+ <br /> 
+ <a href="javascript:Jmol.loadFile(jmolApplet0,':smiles:CC/C=C/CC')">load :smiles:CC/C=C/CC (PubChem SMILES)</a>
  <br />
- <a href="javascript:Jmol.loadFile(jmolApplet0,'==HEM')">load ==HEM (fails in ChemDoodle)</a>
+ <a href="javascript:Jmol.loadFile(jmolApplet0,'$CC/C=C/CC')">load $CC/C=C/CC (NCI SMILES)</a>
+ <br />
+ <a href="javascript:Jmol.search(jmolApplet0,':caffeine',';isosurface vdw map mep translucent')">:caffeine (PubChem, with mep)</a>
  <br /> 
- <a href="javascript:Jmol.loadFile(jmolApplet0,'http://pubchem.ncbi.nlm.nih.gov/summary/summary.cgi?cid=1983&disopt=3DDisplaySDF')">load :tylenol (not working)</a>
- <br /> 
- <a href="javascript:Jmol.search(jmolApplet0,':caffeine',';isosurface vdw map mep translucent')">:caffeine (indirect PubChem, with mep)</a>
+ <a href="javascript:Jmol.loadFile(jmolApplet0,'==HEM')">load ==HEM (RCSB ligand)</a>
 
 </td></tr></table>
 </td>

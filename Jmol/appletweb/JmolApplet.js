@@ -21,27 +21,49 @@
 		this._hasOptions = Info.addSelectionOptions;
 		this._info = JSON.stringify(this);
 		this._infoHeader = this._jmolType + ' "' + this._id + '"'
+		this._defaultModel = Info.defaultModel;
+		this._readyFunction = Info.jmolReadyFunction;
+		this._readyScript = (Info.script ? Info.script : "");
+		this._ready = false; 
+		this._applet = null;
 		jmolInitialize(Info.jmolJarPath, Info.jmolJarFile);
-		Info.jmolReadyFunctionName && jmolSetParameter("appletReadyCallback", Info.jmolReadyFunctionName);
+		jmolSetParameter("appletReadyCallback", this._id + ".readyCallback");
 		var script = "";
 		Jmol._getWrapper(this, true);
-		jmolApplet(["100%","100%"], script, suffix);
+		jmolApplet([Info.width,Info.height], script, suffix);
 		Jmol._getWrapper(this, false);  	
 		if (Info.addSelectionOptions)
 			Jmol._getGrabberOptions(this, caption);
 		return this;
 	}
 
+	Jmol._Applet.prototype.readyCallback = function(id, fullid, isReady, applet) {
+		if (!isReady)
+			return; // ignore -- page is closing
+		this._ready = true;
+		var script = this._readyScript;
+		this._applet = applet;
+		if (this._defaultModel)
+			this._search(this._defaultModel, (script ? ";" + script : ""));
+		else if (script)
+			this._script(script);
+		this._readyFunction && this._readyFunction(this);
+	}
+	
 	Jmol._Applet.prototype._showInfo = function(tf) {
 		if ((!this._isInfoVisible) == (!tf))
 			return;
 		this._isInfoVisible = tf;
-		document.getElementById(this._id + "_infotablediv").style.display = (tf ? "block" : "none");
-		document.getElementById(this._id + "_appletdiv").style.height = (tf ? 1 : this._height);
-		document.getElementById(this._id + "_appletdiv").style.width = (tf ? 1 : this._width);
+		Jmol._getElement(this, "infotablediv").style.display = (tf ? "block" : "none");
+		Jmol._getElement(this, "appletdiv").style.height = (tf ? 1 : this._height) + "px";
+		Jmol._getElement(this, "appletdiv").style.width = (tf ? 1 : this._width) + "px";
+		if (!tf && Jmol._isMsieRenderBug)
+			alert("OK");
 		this._show(!tf);
-		document.getElementById(this._id + "_infoheaderdiv").innerHTML = this._infoHeader;
-		document.getElementById(this._id + "_infodiv").innerHTML = this._info;
+		if (tf) {
+			Jmol._getElement(this, "infoheaderdiv").innerHTML = this._infoHeader;
+			Jmol._getElement(this, "infodiv").innerHTML = this._info;
+		}
 	}
 
 	Jmol._Applet.prototype._search = function(query, script){
@@ -71,15 +93,23 @@
 	
 	Jmol._Applet.prototype._loadModel = function(mol, params) {
 	  var script = 'load DATA "model"\n' + mol + '\nEND "model" ' + params;
-		_jmolFindApplet(this._jmolId).script(script);
+		this._applet.script(script);
 	}
 	
 	Jmol._Applet.prototype._show = function(tf) {
-		_jmolFindApplet(this._jmolId).resize(tf ? this._width : 1, tf ? this._height : 1);
+		var w = (tf ? this._width : 1) + "px";
+		var h = (tf ? this._height : 1) + "px";
+			document.getElementById(this._jmolId).style.width = w; 
+			document.getElementById(this._jmolId).style.height = h; 
 	}
 	
 	Jmol._Applet.prototype._script = function(script) {
-		_jmolFindApplet(this._jmolId).script(script);
+		if (!this._ready) {
+			this._readyScript || (this._readyScript = ";");
+			this._readyScript += ";" + script;
+			return; 
+		}
+		this._applet.script(script);
 	}	
 	
 	Jmol._Applet.prototype._loadFile = function(fileName, params){
@@ -144,7 +174,7 @@
 	Jmol._Image.prototype._script = function(script) {} // not implemented
 	
 	Jmol._Image.prototype._show = function(tf) {
-		document.getElementById(this._id + "_appletdiv").style.display = (tf ? "block" : "none");
+		Jmol._getElement(this, "appletdiv").style.display = (tf ? "block" : "none");
 	}
 		
 	Jmol._Image.prototype._loadFile = function(fileName, params){
@@ -167,7 +197,7 @@
 				+ "&width=" + this._width
 				+ "&height=" + this._height
 				+ "&params=" + escape(params + ";frank off;");
-		document.getElementById(this._id + "_image").src = src;
+		Jmol._getElement(this, "image").src = src;
 	}
 
 	Jmol._Image.prototype._searchDatabase = function(query, database, script){
@@ -182,7 +212,7 @@
 			+ "&width=" + this._width
 			+ "&height=" + this._height
 			+ "&script=" + escape(script + ";frank off;");
-		document.getElementById(this._id + "_image").src = src;
+		Jmol._getElement(this, "image").src = src;
 	}
 
 })(Jmol);

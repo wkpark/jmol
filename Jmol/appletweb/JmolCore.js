@@ -45,6 +45,7 @@ Jmol = (function() {
 		},
 		_serverUrl: "http://chemapps.stolaf.edu/jmol/jmolcd.php",
 		_asynchronous: !0,
+		_isMsieRenderBug: (navigator.userAgent.toLowerCase().indexOf("msie") >= 0),
 		db: {
 			_databasePrefixes: "$=:",
 			_nciLoadScript: ";n = ({molecule=1}.length < {molecule=2}.length ? 2 : 1); select molecule=n;display selected;center selected;",
@@ -53,8 +54,7 @@ Jmol = (function() {
 				"$": "http://cactus.nci.nih.gov/chemical/structure/%FILE/file?format=sdf&get3d=True",
 				"=": "http://www.rcsb.org/pdb/files/%FILE.pdb",
 				"==": "http://www.rcsb.org/pdb/files/ligand/%FILE.cif",
-				//":": "http://pubchem.ncbi.nlm.nih.gov/summary/summary.cgi?cid=1983&disopt=3DDisplaySDF",
-				"::": "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pccompound&term=%22%FILE%22[completesynonym]"
+				":": "http://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/%FILE/SDF?record_type=3d"
 			},
 			_restQueryUrl: "http://www.rcsb.org/pdb/rest/search",
 			_restQueryXml: "<orgPdbQuery><queryType>org.pdb.query.simple.AdvancedKeywordQuery</queryType><description>Text Search</description><keywords>QUERY</keywords></orgPdbQuery>",
@@ -168,9 +168,27 @@ Jmol = (function() {
 		if (checkXhr2 && !Jmol.features.supports_xhr2())
 			return query;
 		var pt = 2;
+		var db;
 		var call = Jmol.db._DirectDatabaseCalls[query.substring(0,pt)];
 		if (!call)
-			call = Jmol.db._DirectDatabaseCalls[query.substring(0,--pt)];
+			call = Jmol.db._DirectDatabaseCalls[db = query.substring(0,--pt)];
+		if (call && db == ":") {
+			var ql = query.toLowerCase();
+			if (!isNaN(parseInt(query.substring(1)))) {
+				query = ":cid/" + query.substring(1);
+			} else if (ql.indexOf(":smiles:") == 0) {
+				call += "?POST?smiles=" + query.substring(8);
+				query = ":smiles";
+			} else if (ql.indexOf(":cid:") == 0) {
+				query = ":cid/" + query.substring(5);
+			} else {
+				if (ql.indexOf(":name:") == 0)
+					query = query.substring(5);
+				else if (ql.indexOf(":cas:") == 0)
+					query = query.substring(4);
+				query = ":name/" + encodeURIComponent(query.substring(1));
+			}
+		}
 		query = (call ? call.replace(/\%FILE/, query.substring(pt)) : query);
 		return query;
 	}
@@ -245,26 +263,36 @@ Jmol = (function() {
 				return;
 			}
 		}	
-		if (!Jmol._checkActive())
-			jQuery.ajax({
-				dataType: "text",
-				url: fileName,
-				success: function(a) {Jmol._loadSuccess(a, fSuccess)},
-				error: function() {Jmol._loadError(fError)},
-				async: Jmol._asynchronous
-			});
+		if (Jmol._checkActive())
+      return;
+    info = {
+			dataType: "text",
+			url: fileName,
+			success: function(a) {Jmol._loadSuccess(a, fSuccess)},
+			error: function() {Jmol._loadError(fError)},
+			async: Jmol._asynchronous
+		}
+    var pt = fileName.indexOf("?POST?");
+		if (pt > 0) {
+      info.url = fileName.substring(0, pt);
+      info.data = fileName.substring(pt + 6);
+      info.type = "POST";
+			info.contentType = "application/x-www-form-urlencoded";
+    }
+		jQuery.ajax(info);
 	}
 	
 	Jmol._contactServer = function(cmd,content,fSuccess,fError){
+		var data = JSON.stringify({
+					call: cmd,
+					content: content,
+					info: Jmol._jmolInfo
+				});
 		if (!Jmol._checkActive())
 			jQuery.ajax({
 				dataType: "text",
 				type: "POST",
-				data: JSON.stringify({
-					call: cmd,
-					content: content,
-					info: Jmol._jmolInfo
-				}),
+				data: data,
 				url: Jmol._serverUrl,
 				success: function(a) {Jmol._loadSuccess(a, fSuccess)},
 				error:function() { Jmol._loadError(fError) },

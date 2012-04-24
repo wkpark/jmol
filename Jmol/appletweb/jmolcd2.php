@@ -101,9 +101,12 @@ if ($call == "getInfoFromDatabase") {
 	$imagedata = file_get_contents($imagefile);
 
 } else if ($call == "getRawDataFromDatabase") {
-//TODO: fix this so that 
-	if ($database == '\\$') {
+	if ($database == '\\$') { // NCI -- needs post load
 		$cmd = $cmd.'"load \\"'.$database.$query.'\\"'.$postLoad.';write MOL"'; 
+		exec($cmd, $result);
+		$output = implode("\n",$result);
+	} else if ($database == ":") { // PubChem -- just get file, including charge data
+		$cmd = $cmd.'"print load(\\"'.$database.$query.'\\")"'; 
 		exec($cmd, $result);
 		$output = implode("\n",$result);
 	} else {

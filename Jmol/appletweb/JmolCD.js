@@ -1,8 +1,8 @@
-// JmolCD.js -- Jmol ChemDoodle extension   author: Bob Hanson, hansonr@stolaf.edu  4/16/2012
+// JmolCD.js -- Jmol ChemDoodle extension	 author: Bob Hanson, hansonr@stolaf.edu	4/16/2012
 
 // This library requires
 // 
-//  JmolCore.js
+//	JmolCore.js
 //	gl-matrix-min.js 
 //	jQuery.min.js
 //	mousewheel.js 
@@ -17,7 +17,7 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 
 	if (!ChemDoodle) 
 		return;
-		
+
 	Jmol._getCanvas = function(id, Info) {
 		// overrides the function in JmolCore.js
 		// ChemDoodle: first try with WebGL unless that doesn't work or we have indicated NOWEBGL
@@ -54,7 +54,7 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 			Jmol._getGrabberOptions(this, caption);
 		return this;
 	}
-	
+
 	Jmol._Canvas = function(id, Info, caption){
 		this._jmolType = "Jmol._Canvas";
 		this._id = id;
@@ -77,17 +77,17 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 		return this;
 	}
 
-  var _cdSetPrototype = function(proto) {
-  
-  	Jmol._setCommonMethods(proto);
+	var _cdSetPrototype = function(proto) {
+
+		Jmol._setCommonMethods(proto);
 
 		proto._script = function(script) {} // not implemented
-	
+
 		proto._searchDatabase = function(query, database, script){
 			this._showInfo(false);
 			if (query.indexOf("?") >= 0) {
-			  Jmol._getInfoFromDatabase(this, database, query.split("?")[0]);
-			  return;
+				Jmol._getInfoFromDatabase(this, database, query.split("?")[0]);
+				return;
 			}
 			if (Jmol.db._DirectDatabaseCalls[database]) {
 				this._loadFile(database + query);
@@ -103,11 +103,11 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 				function(data){Jmol._cdProcessFileData(c, data)}
 			);
 		}
-		
+
 		proto._show = function(tf) {
 			document.getElementById(this._id + "_appletdiv").style.display = (tf ? "block" : "none");
 		}
-	
+
 		proto._loadFile = function(fileName){
 			this._showInfo(false);
 			this._thisJmolModel = "" + Math.random();
@@ -119,7 +119,7 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 			Jmol._loadFileData(this, fileName, function(data){Jmol._cdProcessFileData(cdcanvas, data)});
 		}
 
-		return proto;		
+		return proto;
 	}
 
 	Jmol._Canvas3D.prototype = _cdSetPrototype(new ChemDoodle._Canvas3D);
@@ -130,12 +130,12 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 		if (database == "$" || database == ":")
 			return "MOL";
 		if (database == "=")
-			return (name.substring(1,2) == "=" ? "CIF_noUnitCell" : "PDB");
+			return (name.substring(1,2) == "=" ? "LCIF" : "PDB");
 		// just the extension, which must be PDB, XYZ..., CIF, or MOL
 		name = name.split('.').pop().toUpperCase();
 		return name.substring(0, Math.min(name.length, 3));
 	}
-	
+
 	Jmol._cdProcessFileData = function(cdcanvas, data) {
 		var factor = cdcanvas._dataMultiplier;
 		data = Jmol._cdCleanFileData(data);
@@ -150,8 +150,8 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 			molecule = ChemDoodle.readXYZ(data, 1);
 			// 1 here is just in case
 			break;
-		case "CIF_noUnitCell":
-			molecule = ChemDoodle.readCIF(data, 0, 0, 0, 1);
+		case "LCIF":
+			molecule = Jmol._cdReadLigandCIF(data);
 			break;
 		case "CIF":
 			molecule = ChemDoodle.readCIF(data, 1, 1, 1, 1);
@@ -163,10 +163,10 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 			break;
 		default:
 			return;
-		}		
+		}
 		cdcanvas.loadMolecule(Jmol._cdScaleMolecule(molecule, factor));
-	}	
-	
+	}
+
 	Jmol._cdCleanFileData = function(data) {
 		if (data.indexOf("\r") >= 0 && data.indexOf("\n") >= 0) {
 			return data.replace(/\r\n/g,"\n");
@@ -176,7 +176,7 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 		}
 		return data;
 	}
-		
+
 	Jmol._cdScaleMolecule = function(molecule, multiplier) {
 		if (multiplier != 0 && multiplier != 1) {
 			var atoms = molecule.atoms;
@@ -190,4 +190,64 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 		return molecule;
 	}
 
+	Jmol._cdReadLigandCIF = function(data) {
+	// strictly a hack
+    var molecule = new ChemDoodle.structures.Molecule();
+		if (data == null || data.length == 0)
+			return molecule;
+		var pt = data.indexOf("_chem_comp.id");
+		if (pt < 0)
+			return molecule;
+		var ID = jQuery.trim(data.substring(pt+13, data.indexOf("\n", pt)));
+		var lines = data.split('\n' + ID);
+		var isAtoms = true;
+		var atoms = {};
+		var aFields = [0,2,11,12,13];
+		var bFields = [0,1,2];
+		for (var i = 1, n = lines.length; i < n; i++) {
+			var line = lines[i];
+			if (isAtoms) {
+				var List = Jmol._cdGetList(line, aFields);
+				var sym = List[1];
+				if (sym.length == 2)
+				  sym = sym.charAt(0) + sym.charAt(1).toLowerCase();
+				molecule.atoms.push(atoms[List[0]] = new ChemDoodle.structures.Atom(sym, parseFloat(List[2]), parseFloat(List[3]), parseFloat(List[4])));
+				if (line.indexOf("comp_bond") >= 0)
+					isAtoms = false;
+			} else {
+				var List = Jmol._cdGetList(line, bFields);
+				var bondOrder = 1;
+				switch(List[2]) {
+				case "DOUB":
+					bondOrder = 2;
+					break;
+				case "TRIP":
+					bondOrder = 3;
+					break;
+				}
+				molecule.bonds.push(new ChemDoodle.structures.Bond(atoms[List[0]], atoms[List[1]], bondOrder));
+				if (line.indexOf("comp_desc") >= 0)
+					break;
+			}
+		}
+		return molecule;
+	}
+	Jmol._cdGetList = function(line, fields) {
+		var data = [];
+		for (var i = 0, isSpace = true, pt = 0, pt1 = -1, n = line.length, 
+		pf = 0, nf = fields.length, af = fields[pf]; i < n && pf < nf; i++) {
+			if (line.charAt(i) === ' ') {
+				if (!isSpace && pt1 == fields[pf]) {
+					pf++;
+					data.push(line.substring(pt, i));
+				}
+				isSpace = true;
+			} else if (isSpace) {
+				pt = i;
+				pt1++;
+				isSpace = false;
+			}
+		}
+   	return data;
+	}
 })(Jmol);

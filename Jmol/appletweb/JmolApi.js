@@ -68,19 +68,19 @@
 	}
 
 	Jmol.script = function(applet, script) {
-		return applet._script(script);
+		applet._script(script);
 	}
 
 	Jmol.search = function(applet, query, script) {
-		return applet._search(query, script);
+		applet._search(query, script);
 	}
 
 	Jmol.showInfo = function(applet, tf) {
-		return applet._showInfo(tf);
+		applet._showInfo(tf);
 	}
 	
 	Jmol.loadFile = function(applet, fileName, params){
-		return applet._loadFile(fileName, params);
+		applet._loadFile(fileName, params);
 	}
 
 	Jmol.say = function(msg) {

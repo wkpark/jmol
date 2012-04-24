@@ -28,29 +28,12 @@
 		});	
 	
 		var applet = null;  // return value
-	
-		/* a general function that will switch to the desired rendering option
-			involving Jmol or ChemDoodle.
-		
-		for example: 
-		
-			jmol_isReady = function(app,apptag,isReady) {
-			if (!isReady) return;
-			applet.setSearchTerm(Info.defaultModel);
-		}		
-	
-	...
-	
-		[in body script tag]
-		
-			applet = Jmol.getApplet(Info)
-	
-		*/
-	
+
+		Jmol._debugAlert = Info.debug;	
 		Info.serverURL && (Jmol._serverUrl = Info.serverURL);
 		var model = Info.defaultModel;
 		
-		if (_jmol && !Info.useChemDoodleOnly && !Info.useImageOnly && navigator.javaEnabled()) {
+		if (!Info.useChemDoodleOnly && !Info.useImageOnly && navigator.javaEnabled()) {
 		
 			Info.jmolJarFile || (Info.jmolJarFile = (Info.jmolIsSigned ? "JmolAppletSigned0.jar" : "JmolApplet0.jar")); 
 			Info.jmolJarPath || (Info.jmolJarPath = "."); 
@@ -75,10 +58,6 @@
 		applet._search(query, script);
 	}
 
-	Jmol.showInfo = function(applet, tf) {
-		applet._showInfo(tf);
-	}
-	
 	Jmol.loadFile = function(applet, fileName, params){
 		applet._loadFile(fileName, params);
 	}
@@ -86,6 +65,9 @@
 	Jmol.say = function(msg) {
 		alert(msg);
 	}
-		
 
+	Jmol.showInfo = function(applet, tf) {
+		applet._showInfo(tf);
+	}
+	
 })(Jmol);

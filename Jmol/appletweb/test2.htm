@@ -6,7 +6,6 @@
 <script type="text/javascript" src="gl-matrix-min.js" title="optional; replaces ChemDoodleWeb-lib;required if using ChemDoodle option"></script>
 <script type="text/javascript" src="mousewheel.js" title="optional; replaces ChemDoodleWeb-lib;required if using ChemDoodle option"></script>
 <script type="text/javascript" src="ChemDoodleWeb-unpacked.js" title="optional; required only if using ChemDoodle option"></script>
-<script type="text/javascript" src="Jmol.js"></script>
 <script type="text/javascript" src="JmolCore.js"></script>
 <script type="text/javascript" src="JmolApplet.js"></script>
 <script type="text/javascript" src="JmolCD.js"></script>
@@ -41,7 +40,7 @@ jmol_isReady = function(applet) {
 var Info = {
 	width: 300,
 	height: 300,
-	debug: true,
+	debug: false,
 	addSelectionOptions: true,
 	serverURL: "http://chemapps.stolaf.edu/jmol/jmolcd3.php",
 	useChemDoodleOnly: useChemDoodleOnly,

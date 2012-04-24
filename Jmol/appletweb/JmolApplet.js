@@ -2,6 +2,21 @@
 
 (function (Jmol) {
 
+
+  /*  AngelH, mar2007:
+    By (re)setting these variables in the webpage before calling jmolApplet(),
+    a custom message can be provided (e.g. localized for user's language) when no Java is installed.
+  */
+		Jmol._noJavaMsg == undefined && (Jmol._noJavaMsg =
+        "You do not have Java applets enabled in your web browser, or your browser is blocking this applet.<br />\
+        Check the warning message from your browser and/or enable Java applets in<br />\
+        your web browser preferences, or install the Java Runtime Environment from <a href='http://www.java.com'>www.java.com</a>");
+		Jmol._noJavaMsg2 == undefined && (Jmol._noJavaMsg2 =
+        "You do not have the<br />\
+        Java Runtime Environment<br />\
+        installed for applet support.<br />\
+        Visit <a href='http://www.java.com'>www.java.com</a>");
+
 	Jmol._setCommonMethods = function(proto) {
 		proto._showInfo = Jmol._Applet.prototype._showInfo;	
 		proto._search = Jmol._Applet.prototype._search;
@@ -26,17 +41,190 @@
 		this._readyScript = (Info.script ? Info.script : "");
 		this._ready = false; 
 		this._applet = null;
-		jmolInitialize(Info.jmolJarPath, Info.jmolJarFile);
+		this._jmolJarFile = Info.jmolJarFile || (Info.jmolIsSigned ? "JmolAppletSigned0.jar" : "JmolApplet0.jar"); 
+		this._jmolJarPath =	Info.jmolJarPath || "."; 
+		this._memoryLimit = Info.memoryLimit || 512;
+		
+		/*
+		 * private variables
+		 */
+		var that = this;
+		
+		/*
+		 * private methods
+		 */
+		var getJarFilename=function(fileNameOrFlag){
+			that._jmolJarFile =
+	    	(typeof(fileNameOrFlag) == "string"  ? fileNameOrFlag : (fileNameOrFlag ?  "JmolAppletSigned" : "JmolApplet") + "0.jar");
+		}
+		var setCodebase=function(codebase) {
+ 			that._jmolJarPath = codebase ? codebase : ".";
+		}
+		
+		/*
+		 * privileged methods
+		 */
+		this._initialize = function(codebaseDirectory, fileNameOrUseSignedApplet) {	 		
+			if(this._jmolJarFile) {
+				var f = this._jmolJarFile;
+				if(f.indexOf("/") >= 0) {
+					alert("This web page URL is requesting that the applet used be " + f + ". This is a possible security risk, particularly if the applet is signed, because signed applets can read and write files on your local machine or network.");
+					var ok = prompt("Do you want to use applet " + f + "? ", "yes or no")
+					if(ok == "yes") {
+						codebaseDirectory = f.substring(0, f.lastIndexOf("/"));
+						fileNameOrUseSignedApplet = f.substring(f.lastIndexOf("/") + 1);
+					} else {
+						getJarFilename(fileNameOrUseSignedApplet);
+						alert("The web page URL was ignored. Continuing using " + this._jmolJarFile + ' in directory "' + codebaseDirectory + '"');
+					}
+				} else {
+					fileNameOrUseSignedApplet = f;
+				}
+			}
+			setCodebase(codebaseDirectory);
+			getJarFilename(fileNameOrUseSignedApplet);
+			//_jmolOnloadResetForms();			
+		}
+		
+		this._create(id,Info);
+		  	
+		if (Info.addSelectionOptions)
+			Jmol._getGrabberOptions(this, caption);
+		return this;
+		
 		jmolSetParameter("appletReadyCallback", this._id + ".readyCallback");
 		var script = "";
 		Jmol._getWrapper(this, true);
 		jmolApplet([Info.width,Info.height], script, suffix);
 		Jmol._getWrapper(this, false);  	
-		if (Info.addSelectionOptions)
-			Jmol._getGrabberOptions(this, caption);
-		return this;
 	}
 
+	Jmol._Applet.prototype._create = function(id, Info){
+		/*
+		 * private variables
+		 */
+		var _windowsClassId = "clsid:8AD9C840-044E-11D1-B3E9-00805F499D93";
+		var _windowsCabUrl = "http://java.sun.com/update/1.6.0/jinstall-6u22-windows-i586.cab";
+
+		/*
+		 * private methods
+		 */
+		function sterilizeScript(script) {
+			script = script.replace(/'/g, "&#39;");
+			if (Jmol._debugAlert)
+				alert("script:\n" + script);
+			return script;
+		}
+		function sterilizeInline(model) {
+			model = model.replace(/\r|\n|\r\n/g, (model.indexOf("|") >= 0 ? "\\/n" : "|")).replace(/'/g, "&#39;");
+			if(Jmol._debugAlert)
+				alert("inline model:\n" + model);
+			return model;
+		}
+
+		function writeParams() {
+ 			var t = "";
+ 			console.log(params);
+ 			for (var i in params)
+				if(params[i]!="")
+		 			t+="  <param name='"+i+"' value='"+params[i]+"' />\n";
+ 			return t;
+		}
+		
+		function getParameters(Info){
+			var availableValues = ['progressbar','progresscolor','boxbgcolor','boxfgcolor','boxmessage',
+										'messagecallback','pickcallback','animframecallback','appletreadycallback','atommovedcallback',
+										'echocallback','evalcallback','hovercallback','language','loadstructcallback','measurecallback',
+										'minimizationcallback','resizecallback','scriptcallback','statusform','statustext','statustextarea',
+										'synccallback'];
+				for (var i in Info)
+					if(availableValues[i.toLowerCase()])
+						params[i] = Info [i];
+		}
+		
+		/*
+		 * Applet creation
+		 */
+		this._initialize(Info.jmolJarPath, Info.jmolJarFile);
+		//var suffix = id.replace(/^jmolApplet/,"");
+		var params = {
+			syncId: ("" + Math.random()).substring(3),
+			progressbar: "true",
+			progresscolor: "blue",
+			boxbgcolor: Info.color || "black",
+			boxfgcolor: "white",
+			boxmessage: "Downloading JmolApplet ..."
+		};
+		params.appletReadyCallback = this._id + ".readyCallback";
+		
+		//var sz = j._applet.getSize();
+		var widthAndHeight = " width='" + this._width + "' height='" + this._height + "' ";
+		var tHeader, tFooter;
+		getParameters(Info);
+			
+		//this._name = "jmolApplet" + suffix
+		if (Jmol.featureDetection.useIEObject || Jmol.featureDetection.useHtml4Object) {
+			params.archive = this._jmolJarFile;
+			params.mayscript = 'true';
+			params.codebase = this._jmolJarPath;
+			params.code = 'JmolApplet.class';
+			tHeader =
+				"<object name='" + this._jmolId +
+				"' id='" + this._jmolId + "' " + "\n" +
+				widthAndHeight + "\n";
+			tFooter = "</object>";
+		}
+		//if (java_arguments) //PP java_arguments is always set
+		params.java_arguments = "-Xmx" + Math.round(Info.memoryLimit || this._memoryLimit) + "m";
+		if (Jmol.featureDetection.useIEObject) { // use MSFT IE6 object tag with .cab file reference
+			tHeader += " classid='" + _windowsClassId + "'\n" + " codebase='" + _windowsCabUrl + "'\n>\n";
+		} else if (Jmol.featureDetection.useHtml4Object) { // use HTML4 object tag
+			tHeader += " type='application/x-java-applet'\n>\n";
+				/*	" classid='java:JmolApplet'\n" +	AH removed this
+					Chromium Issue 62076:	 Java Applets using an <object> with a classid paramater don't load.
+					http://code.google.com/p/chromium/issues/detail?id=62076
+					They say this is the correct behavior according to the spec, and there's no indication at this point
+					that WebKit will be changing the handling, so eventually Safari will acquire this behavior too.
+					Removing the classid parameter seems to be well tolerated by all browsers (even IE!).
+				*/ 
+		} else { // use applet tag
+			tHeader =
+				"<applet name='" + this._jmolId +
+				"' id='" + this._jmolId + "' \n" +
+				widthAndHeight + "\n" +
+				" code='JmolApplet'" +
+				" archive='" + this._jmolJarFile + "' codebase='" + this._jmolJarPath + "'\n" +
+				" mayscript='true'>\n";
+			tFooter = "</applet>";
+		}
+		var visitJava;
+		if (Jmol.featureDetection.useIEObject || Jmol.featureDetection.useHtml4Object) {
+			var szX = "width:" + this._width;
+			if ( szX.indexOf("%")==-1 ) 
+				szX+="px";
+			var szY = "height:" + this._height;
+			if ( szY.indexOf("%")==-1 )
+				szY+="px";
+			visitJava = "<p style='background-color:yellow; color:black; " + szX + ";" + szY + ";" +
+					// why doesn't this vertical-align work?
+				"text-align:center;vertical-align:middle;'>\n" +
+				Jmol._noJavaMsg + "</p>";
+		} else {
+			visitJava = "<table bgcolor='yellow'><tr>" +
+				"<td align='center' valign='middle' " + widthAndHeight + "><font color='black'>\n" +
+				Jmol._noJavaMsg2 + "</font></td></tr></table>";
+		}
+		params.loadInline = (Info.inlineModel ? sterilizeInline(Info.inlineModel) : "");
+		params.script = (Info.script ? sterilizeScript(Info.script) : "");
+		var t = tHeader + writeParams() + visitJava + tFooter;
+		//jmolSetTarget(nameSuffix);
+		if (Jmol._debugAlert)
+			alert(t);
+		Jmol._getWrapper(this, true);
+		document.write(t);
+		Jmol._getWrapper(this, false);
+	}
+	
 	Jmol._Applet.prototype.readyCallback = function(id, fullid, isReady, applet) {
 		if (!isReady)
 			return; // ignore -- page is closing
@@ -92,7 +280,7 @@
 	}
 	
 	Jmol._Applet.prototype._loadModel = function(mol, params) {
-	  var script = 'load DATA "model"\n' + mol + '\nEND "model" ' + params;
+		var script = 'load DATA "model"\n' + mol + '\nEND "model" ' + params;
 		this._applet.script(script);
 	}
 	
@@ -127,8 +315,8 @@
 	Jmol._Applet.prototype._searchDatabase = function(query, database, script){
 		this._showInfo(false);
 		if (query.indexOf("?") >= 0) {
-		  Jmol._getInfoFromDatabase(this, database, query.split("?")[0]);
-		  return;
+			Jmol._getInfoFromDatabase(this, database, query.split("?")[0]);
+			return;
 		}
 		script || (script = Jmol._getScriptForDatabase(database));
 		var dm = database + query;

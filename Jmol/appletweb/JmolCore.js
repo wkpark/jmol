@@ -34,17 +34,18 @@
 
 // The NCI and RCSB databases are accessed via direct AJAX if available (xhr2).
 
+
+if(typeof(jQuery)=="undefined") jQuery = null;
+
 Jmol = (function() {
 	return {
-		features: {
-		  supports_xhr2: function() {return jQuery && jQuery.support.cors}
-		},
 		_jmolInfo: {
 			userAgent:navigator.userAgent, 
 			version: version = 'Jmol 12.3.23'
 		},
 		_serverUrl: "http://chemapps.stolaf.edu/jmol/jmolcd2.php",
 		_asynchronous: !0,
+		_debugAlert: !1,
 		_isMsieRenderBug: (navigator.userAgent.toLowerCase().indexOf("msie") >= 0),
 		db: {
 			_databasePrefixes: "$=:",
@@ -165,7 +166,7 @@ Jmol = (function() {
 	}
 	
 	Jmol._getDirectDatabaseCall = function(query, checkXhr2) {
-		if (checkXhr2 && !Jmol.features.supports_xhr2())
+		if (checkXhr2 && !Jmol.featureDetection.supportsXhr2())
 			return query;
 		var pt = 2;
 		var db;
@@ -321,5 +322,63 @@ Jmol = (function() {
 		var d = document.getElementById(applet._id + "_" + what);
 		return (d || {});
 	}	
+
+	Jmol.featureDetection = (function(document, window) {
+		
+		var features = {};
+		features.ua = navigator.userAgent.toLowerCase()
+		
+		features.os = function(){
+			var osList = ["linux","unix","mac","win"]
+			var i = osList.length;
+			
+			while (i--){
+				if (features.ua.indexOf(osList[i])!=-1) return osList[i]
+			}
+			return "unknown";
+		}
+		
+		features.browser = function(){
+			var ua = features.ua;
+			var browserList = ["konqueror","webkit","omniweb","opera","webtv","icab","msie","mozilla"];
+			for (var i=browserList.length; --i >= 0;)
+				if (ua.indexOf(browserList[i])>=0) 
+					return browserList[i];
+			return "unknown";
+		}
+		features.browserName = features.browser();
+	  features.browserVersion= parseFloat(features.ua.substring(features.ua.indexOf(features.browserName)+features.browserName.length+1));
+	  
+		features.supportsJava = function() {
+			return !!navigator.javaEnabled()
+		}
+		
+		features.supportsXhr2 = function() {return jQuery && jQuery.support.cors}
+
+		features.compliantBrowser = function() {
+			var a = !!document.getElementById;
+			var os = features.os()
+			// known exceptions (old browsers):
+	  		if (features.browserName == "opera" && features.browserVersion <= 7.54 && os == "mac"
+			      || features.browserName == "webkit" && features.browserVersion < 125.12
+			      || features.browserName == "msie" && os == "mac"
+			      || features.browserName == "konqueror" && features.browserVersion <= 3.3
+			    ) a = false;
+			return a;
+		}
+		
+		features.isFullyCompliant = function() {
+			return features.compliantBrowser() && features.supportsJava();
+		}
+	  	
+	  	features.useIEObject = (features.os() == "win" && features.browserName == "msie" && features.browserVersion >= 5.5);
+	  
+	  	features.useHtml4Object = (features.browserName == "mozilla" && features.browserVersion >= 5) ||
+	   		(features.browserName == "opera" && features.browserVersion >= 8) ||
+	   		(features.browserName == "webkit" && features.browserVersion >= 412.2);
+	
+		return features;
+		
+	})(document, window);
 
 })(Jmol);

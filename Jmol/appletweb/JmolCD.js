@@ -12,7 +12,6 @@
 
 if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 
-
 (function (Jmol) {
 
 	if (!ChemDoodle) 

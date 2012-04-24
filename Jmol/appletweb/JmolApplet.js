@@ -57,8 +57,8 @@
 		Jmol._getElement(this, "infotablediv").style.display = (tf ? "block" : "none");
 		Jmol._getElement(this, "appletdiv").style.height = (tf ? 1 : this._height) + "px";
 		Jmol._getElement(this, "appletdiv").style.width = (tf ? 1 : this._width) + "px";
-		if (!tf && Jmol._isMsieRenderBug)
-			alert("OK");
+		if (!tf)//&& Jmol._isMsieRenderBug -- occurring also on Mac systems)
+			alert("returning to applet...");
 		this._show(!tf);
 		if (tf) {
 			Jmol._getElement(this, "infoheaderdiv").innerHTML = this._infoHeader;
@@ -196,7 +196,7 @@
 				+ "&file=" + escape(fileName)
 				+ "&width=" + this._width
 				+ "&height=" + this._height
-				+ "&params=" + escape(params + ";frank off;");
+				+ "&params=" + encodeURIComponent(params + ";frank off;");
 		Jmol._getElement(this, "image").src = src;
 	}
 
@@ -211,7 +211,7 @@
 			+ "&query=" + query
 			+ "&width=" + this._width
 			+ "&height=" + this._height
-			+ "&script=" + escape(script + ";frank off;");
+			+ "&script=" + encodeURIComponent(script + ";frank off;");
 		Jmol._getElement(this, "image").src = src;
 	}
 

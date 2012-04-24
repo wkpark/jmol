@@ -43,7 +43,7 @@ Jmol = (function() {
 			userAgent:navigator.userAgent, 
 			version: version = 'Jmol 12.3.23'
 		},
-		_serverUrl: "http://chemapps.stolaf.edu/jmol/jmolcd.php",
+		_serverUrl: "http://chemapps.stolaf.edu/jmol/jmolcd2.php",
 		_asynchronous: !0,
 		_isMsieRenderBug: (navigator.userAgent.toLowerCase().indexOf("msie") >= 0),
 		db: {
@@ -72,8 +72,8 @@ Jmol = (function() {
 	
 		// feel free to adjust this look to anything you want
 		
-		document.writeln('<br><input type="text" id="ID_query"\
-		size="32" value="" /><br><nobr><select id="ID_select">\
+		document.writeln('<br /><input type="text" id="ID_query"\
+		size="32" value="" /><br /><nobr><select id="ID_select">\
 		<option value="$" selected>NCI(small molecules)</option>\
 		<option value=":">PubChem(small molecules)</option>\
 		<option value="=">RCSB(macromolecules)</option>\
@@ -107,10 +107,10 @@ Jmol = (function() {
 			height += "px";
 		if (typeof width !== "string")
 			width += "px";
-		var s = (isHeader ? "<div id=ID_appletinfotablediv style=width:Wpx;height:Hpx><table><tr><td><div id=ID_appletdiv style=width:Wpx;height:Hpx>"
-				: "</div></td></tr><tr><td><div id=ID_infotablediv style=width:Wpx;height:Hpx;display:none>\
-			<table><tr height=20><td style=background:yellow><span id=ID_infoheaderdiv></span></td><td width=10><a href=javascript:Jmol.showInfo(ID,false)>[x]</a></td></tr><tr><td colspan=2>\
-			<div id=ID_infodiv style=overflow:scroll;width:Wpx;height:" + (applet._height - 15) + "px></div></td></tr></table></div></td></tr></table></div>");
+		var s = (isHeader ? "<div id=\"ID_appletinfotablediv\" style=\"width:Wpx;height:Hpx\"><table><tr><td><div id=\"ID_appletdiv\" style=\"width:Wpx;height:Hpx\">"
+				: "</div></td></tr><tr><td><div id=\"ID_infotablediv\" style=\"width:Wpx;height:Hpx;display:none\">\
+			<table><tr height=\"20\"><td style=\"background:yellow\"><span id=\"ID_infoheaderdiv\"></span></td><td width=\"10\"><a href=\"javascript:Jmol.showInfo(ID,false)\">[x]</a></td></tr>\
+			<tr><td colspan=\"2\"><div id=\"ID_infodiv\" style=\"overflow:scroll;width:Wpx;height:" + (applet._height - 15) + "px\"></div></td></tr></table></div></td></tr></table></div>");
 		s = s.replace(/Hpx/g, height).replace(/Wpx/g, width).replace(/ID/g, applet._id);
 		document.write(s);
 	}

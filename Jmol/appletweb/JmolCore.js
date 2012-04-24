@@ -2,7 +2,7 @@
 
 // see JmolApi.js for public user-interface. All these are private functions
 
-// last revision: 4/23/2012
+// last revision: 4/24/2012
 
 // allows Jmol applets to be created on a page with more flexibility and extendability
 // possibly using infrastructure of ChemDoodle for multiplatform doodlable structures
@@ -12,12 +12,11 @@
 //		jQuery.min.js    -- required for ChemDoodle or any server-based options
 //		gl-matrix-min.js -- required for ChemDoodle option
 //		mousewheel.js    -- required for ChemDoodle option
-//		ChemDoodleWeb.js -- required for ChemDoodle option
-//		JmolCore.js      -- required
-//		JmolApplet.js    -- required
-//		JmolCD.js        -- required for ChemDoodle option
-//		JmolApi.js       -- required
-//		Jmol.js          -- required currently, but in the future only if using legacy jmolXxxx() calls
+//		ChemDoodleWeb.js -- required for ChemDoodle option; must be after jQuery, gl-matrix-min, and mousewheel
+//		JmolCore.js      -- required; must be after jQuery
+//		JmolApplet.js    -- required; must be after JmolCore
+//		JmolCD.js        -- required for ChemDoodle option; must be after JmolApplet
+//		JmolApi.js       -- required; must be after JmolCore
 
 // Allows Jmol-like objects to be displayed on Java-challenged (iPad/iPhone)
 // or applet-challenged (Android/iPhone) platforms, with automatic switching to 

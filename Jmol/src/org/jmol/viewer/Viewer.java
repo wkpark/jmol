@@ -4690,19 +4690,19 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return TextFormat.formatString(s, "FILE", f);
     case ':': // PubChem
       format = global.pubChemFormat;
+      String fl = f.toLowerCase();
       try {
-        f = f.toLowerCase();
         f = "cid/" + String.valueOf(Integer.valueOf(f).intValue());
       } catch (Exception e) {
-        if (f.startsWith("smiles:")) {
+        if (fl.startsWith("smiles:")) {
           format += "?POST?smiles=" + f.substring(7);
           f = "smiles";          
-        } else if (f.startsWith("cid:")) {
+        } else if (fl.startsWith("cid:")) {
           f = "cid/" + f.substring(4);
         } else {
-          if (f.startsWith("name:"))
+          if (fl.startsWith("name:"))
             f = f.substring(5);
-          if (f.startsWith("cas:"))
+          if (fl.startsWith("cas:"))
             f = f.substring(4);
           f = "name/" + Escape.escapeUrl(f);
         }

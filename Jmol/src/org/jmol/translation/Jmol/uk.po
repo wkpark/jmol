@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-04-23 22:06+0200\n"
-"PO-Revision-Date: 2012-04-08 18:03+0000\n"
+"PO-Revision-Date: 2012-04-24 04:31+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@gmail.com>\n"
 "Language-Team: Ukrainian <translation@linux.org.ua>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-04-10 04:40+0000\n"
-"X-Generator: Launchpad (build 15070)\n"
+"X-Launchpad-Export-Date: 2012-04-24 19:20+0000\n"
+"X-Generator: Launchpad (build 15139)\n"
 "Language: uk\n"
 
 #: com/json/Cookie.java:121
@@ -61,8 +61,8 @@ msgstr "Адреса-запиту"
 #: org/openscience/jmol/app/JmolApp.java:109
 msgid "Error starting Jmol: the property 'user.home' is not defined."
 msgstr ""
-"Помилка під час спроби запуску Jmol: не вказано значення властивості «user."
-"home»."
+"Помилка під час спроби запуску Jmol: не вказано значення властивості "
+"«user.home»."
 
 #: org/openscience/jmol/app/JmolApp.java:146
 msgid "transparent background"
@@ -996,7 +996,8 @@ msgstr "Обертати молекулу."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:214
 msgid "Select a set of atoms using SHIFT-LEFT-DRAG."
-msgstr "Вкажіть набір атомів за допомогою SHIFT-СТРІЛКА ЛІВОРУЧ-ПЕРЕТЯГУВАННЯ."
+msgstr ""
+"Вкажіть набір атомів за допомогою SHIFT-СТРІЛКА ЛІВОРУЧ-ПЕРЕТЯГУВАННЯ."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:216
 msgid "Click atoms to measure distances"
@@ -1090,6 +1091,8 @@ msgstr "Введіть адресу URL моделі молекули"
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1199
 msgid "Enter a four-digit PDB model ID or \"=\" and a three-digit ligand ID"
 msgstr ""
+"Введіть чотирицифровий ідентифікатор моделі PDB або «=» і трицифровий "
+"ідентифікатор ліганду"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1208
 msgid ""
@@ -1097,6 +1100,9 @@ msgid ""
 "with \":\" to load from PubChem; otherwise Jmol will use the NCI/NIH "
 "Resolver."
 msgstr ""
+"Введіть назву або ідентифікатор (SMILES, InChI, CAS) сполуки. Додайте перед "
+"цим рядком «:», щоб завантажити дані з PubChem; інакше Jmol використає "
+"визначник NCI/NIH."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1375
 msgid "IO Exception:"
@@ -1590,8 +1596,8 @@ msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
 "be significant the first time the applet is loaded."
 msgstr ""
-"Щоб отримати просторову модель, з якою можна буде працювати, натисніть {0}тут"
-"{1}. Перше звантаження за допомогою аплету може бути доволі тривалим."
+"Щоб отримати просторову модель, з якою можна буде працювати, натисніть "
+"{0}тут{1}. Перше звантаження за допомогою аплету може бути доволі тривалим."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:366
 msgid "Insert the page TITLE here."
@@ -1893,18 +1899,6 @@ msgstr "Звантажити перегляд"
 msgid "unimplemented"
 msgstr "не реалізовано"
 
-#~ msgid "Get PDB file"
-#~ msgstr "Звантажити файл PDB"
-
-#~ msgid "Enter a four-digit PDB ID"
-#~ msgstr "Введіть чотирицифровий ідентифікатор PDB"
-
-#~ msgid "Get MOL file by compound name or ID"
-#~ msgstr "Звантажити файл MOL за складеною назвою або ідентифікатором"
-
-#~ msgid "Enter the name or identifier (SMILES, InChI, CAS) of a compound"
-#~ msgstr "Вкажіть назву або ідентифікатор (SMILES, InChI, CAS) сполука"
-
 #~ msgid "vector"
 #~ msgstr "вектор"
 
@@ -1920,18 +1914,23 @@ msgstr "не реалізовано"
 #~ msgid "atom set"
 #~ msgstr "набір атомів"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Перейти до першого {0} у збірці"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Перейти до попереднього {0} у збірці"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Відтворити усю збірку {0}"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Перейти до наступного {0} у збірці"
 
+#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Перейти до останнього {0} у збірці"
 
@@ -1944,12 +1943,15 @@ msgstr "не реалізовано"
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "додавання JmolPopIn.js"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "додавання {0}.png"
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "додавання {0}.spt"
 
+#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"
@@ -1960,16 +1962,16 @@ msgstr "не реалізовано"
 #~ msgid "Clear console button (requires restarting Jmol)"
 #~ msgstr "Кнопка спорожнення консолі (потрібен перезапуску Jmol)"
 
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 #~ msgstr ""
-#~ "Тут ви можете вставити додатковий текст пояснення. Довгі рядки буде "
-#~ "поділено на частини і розташовано навколо моделі Jmol {0}."
+#~ "Тут ви можете вставити додатковий текст пояснення. Довгі рядки буде поділено "
+#~ "на частини і розташовано навколо моделі Jmol {0}."
 
 #~ msgid "double-click and drag to reorder"
-#~ msgstr ""
-#~ "двічі клацніть лівою кнопкою миші і перетягніть, щоб змінити порядок"
+#~ msgstr "двічі клацніть лівою кнопкою миші і перетягніть, щоб змінити порядок"
 
 #~ msgid "The -D options are as follows (defaults in parenthesis):"
 #~ msgstr "Параметри -D (типові значення вказано у дужках):"
@@ -1989,8 +1991,17 @@ msgstr "не реалізовано"
 #~ msgid "Go to next vector in the collection"
 #~ msgstr "Перейти до наступного вектора у збірці"
 
+#~ msgid "Get MOL file by compound name or ID"
+#~ msgstr "Звантажити файл MOL за складеною назвою або ідентифікатором"
+
 #~ msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
 #~ msgstr "Введіть назву або ідентифікатор молекули (SMILES, InChI, CAS)"
+
+#~ msgid "Get PDB file"
+#~ msgstr "Звантажити файл PDB"
+
+#~ msgid "Enter a four-digit PDB ID"
+#~ msgstr "Введіть чотирицифровий ідентифікатор PDB"
 
 #~ msgid "All"
 #~ msgstr "Все"
@@ -2024,3 +2035,6 @@ msgstr "не реалізовано"
 
 #~ msgid "Label"
 #~ msgstr "Мітка"
+
+#~ msgid "Enter the name or identifier (SMILES, InChI, CAS) of a compound"
+#~ msgstr "Вкажіть назву або ідентифікатор (SMILES, InChI, CAS) сполука"

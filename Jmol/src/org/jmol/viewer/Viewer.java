@@ -87,7 +87,6 @@ import org.jmol.util.OutputStringBuffer;
 import org.jmol.util.Parser;
 import org.jmol.util.Rectangle;
 import org.jmol.util.SurfaceFileTyper;
-import org.jmol.util.XmlReader;
 
 import org.jmol.util.Measure;
 import org.jmol.util.Quaternion;
@@ -4676,6 +4675,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public Object setLoadFormat(String name, char type, boolean withPrefix) {
+    String format;
     String f = name.substring(1);
     switch (type) {
     case '=':
@@ -4688,18 +4688,26 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (f.indexOf(".") > 0 && s.indexOf("%FILE.") >= 0)
         s = s.substring(0, s.indexOf("%FILE") + 5);
       return TextFormat.formatString(s, "FILE", f);
-    case ':': // PubChem is special
-      String url;
+    case ':': // PubChem
+      format = global.pubChemFormat;
       try {
-        f = String.valueOf(Integer.valueOf(f).intValue());
+        f = f.toLowerCase();
+        f = "cid/" + String.valueOf(Integer.valueOf(f).intValue());
       } catch (Exception e) {
-        f = Escape.escapeUrl(f);
-        url = global.pubChemFormat1;
-        if (url.startsWith("http://"))
-          f = XmlReader.extractTag(getFileAsString(TextFormat.formatString(url,
-              "NAME", f)), "Id");
+        if (f.startsWith("smiles:")) {
+          format += "?POST?smiles=" + f.substring(7);
+          f = "smiles";          
+        } else if (f.startsWith("cid:")) {
+          f = "cid/" + f.substring(4);
+        } else {
+          if (f.startsWith("name:"))
+            f = f.substring(5);
+          if (f.startsWith("cas:"))
+            f = f.substring(4);
+          f = "name/" + Escape.escapeUrl(f);
+        }
       }
-      return TextFormat.formatString(global.pubChemFormat2, "CID", f);
+      return TextFormat.formatString(format, "FILE", f);
     case '$':
     case 'N':
     case '2':
@@ -4707,7 +4715,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case 'K':
     case '/':
       f = Escape.escapeUrl(f);
-      String format;
       switch (type) {
       case 'N':
         format = global.nihResolverFormat + "/names";

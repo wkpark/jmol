@@ -556,7 +556,7 @@ public class StateManager {
         + ";_filecaching;_filecache;fontcaching;fontscaling;language"
         + ";legacyautobonding"
         + ";loglevel;logfile;loggestures;logcommands;measurestylechime"
-        + ";loadformat;loadligandformat;smilesurlformat;pubchemformat1;pubchemformat2;nihresolverformat;edsurlformat;edsurlcutoff;multiprocessor;navigationmode;"
+        + ";loadformat;loadligandformat;smilesurlformat;pubchemformat;nihresolverformat;edsurlformat;edsurlcutoff;multiprocessor;navigationmode;"
         + ";perspectivedepth;phongexponent;perspectivemodel;preservestate;refreshing;repaintwaitms;rotationradius"
         + ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showunitcell"
         + ";slabenabled;slab;slabrange;depth;zshade;zshadepower;specular;specularexponent;specularpercent;specularpower;stateversion"
@@ -925,8 +925,7 @@ public class StateManager {
       setParameterValue("smallMoleculeMaxAtoms", smallMoleculeMaxAtoms);
       setParameterValue("smilesUrlFormat", smilesUrlFormat);
       setParameterValue("nihResolverFormat", nihResolverFormat);
-      setParameterValue("pubChemFormat1", pubChemFormat1);
-      setParameterValue("pubChemFormat2", pubChemFormat2);
+      setParameterValue("pubChemFormat", pubChemFormat);
       setParameterValue("solventProbe", solventOn);
       setParameterValue("solventProbeRadius", solventProbeRadius);
       setParameterValue("specular", specular);
@@ -1009,10 +1008,7 @@ public class StateManager {
     String nmrUrlFormat = "http://www.nmrdb.org/predictor?smiles=";
     String smilesUrlFormat = "http://cactus.nci.nih.gov/chemical/structure/%FILE/file?format=sdf&get3d=True"; 
     String nihResolverFormat = "http://cactus.nci.nih.gov/chemical/structure/%FILE";
-    String pubChemFormat1 = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pccompound&term=%22%NAME%22[completesynonym]%20OR%20%22%NAME%22[iupac]%20OR%20%22%NAME%22[InChI]%20OR%20%22%NAME%22[InChIKey]";
-    String pubChemFormat2 = "http://pubchem.ncbi.nlm.nih.gov/summary/summary.cgi?cid=%CID&disopt=3DDisplaySDF";
-      
-    //  "http://cheminfov.informatics.indiana.edu/rest/thread/d3.py/SMILES/%FILE";
+    String pubChemFormat = "http://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/%FILE/SDF?record_type=3d";
     String edsUrlFormat = "http://eds.bmc.uu.se/eds/dfs/%LC13/%LCFILE/%LCFILE.omap";
     String edsUrlCutoff = "load('http://eds.bmc.uu.se/eds/dfs/%LC13/%LCFILE/%LCFILE.sfdat').lines.find('MAP_SIGMA').split(' ')[2]";
     String edsUrlOptions = "within 2.0 {*}";
@@ -1073,8 +1069,7 @@ public class StateManager {
       appendCmd(str, "#set loadLigandFormat " + Escape.escape(loadLigandFormat));
       appendCmd(str, "#set smilesUrlFormat " + Escape.escape(smilesUrlFormat));
       appendCmd(str, "#set nihResolverFormat " + Escape.escape(nihResolverFormat));
-      appendCmd(str, "#set pubChemFormat1 " + Escape.escape(pubChemFormat1));
-      appendCmd(str, "#set pubChemFormat2 " + Escape.escape(pubChemFormat2));
+      appendCmd(str, "#set pubChemFormat " + Escape.escape(pubChemFormat));
       appendCmd(str, "#set edsUrlFormat " + Escape.escape(edsUrlFormat));
       appendCmd(str, "#set edsUrlCutoff " + Escape.escape(edsUrlCutoff));
 //      if (autoLoadOrientation)

@@ -1,6 +1,5 @@
 <html>
 <head>
-<script type="text/javascript" src="json2.js" title="required for MSIE"></script>
 <script type="text/javascript" src="jQuery.min.js" title="required; replaces ChemDoodleWeb-lib;fixed bug in that version"></script>
 <script type="text/javascript" src="gl-matrix-min.js" title="optional; replaces ChemDoodleWeb-lib;required if using ChemDoodle option"></script>
 <script type="text/javascript" src="mousewheel.js" title="optional; replaces ChemDoodleWeb-lib;required if using ChemDoodle option"></script>
@@ -101,14 +100,14 @@ jmol = Jmol.getApplet(jmol, Info);
 </script>
 </td><td>
 <script type="text/javascript">
-Jmol.controls._buttonCssText="style='width:160'"
-Jmol.jmolButton(jmol,"if (!molname) { molname = 'tylenol'};var x = prompt('Enter the name of a compound',molname);if (!x) { quit }; molname = x; load @{':' + molname} #alt:LOAD :??Enter a model name after ':'","Load MOL (PubChem)")
-Jmol.jmolBr()
+Jmol.setButtonCss(null, "style='width:160'")
 Jmol.jmolButton(jmol,"if (!molname) { molname = 'ethanol'};var x = prompt('Enter the name of a compound to see its electrostatic potential map',molname);if (!x) { quit }; molname = x; load @{':' + molname};isosurface vdw map MEP translucent","Load MOL + MEP")
 Jmol.jmolBr()
-Jmol.jmolButton(jmol,"if (!molname) { molname = 'tylenol'};var x = prompt('Enter the name or identifier (SMILES, InChI, CAS) of a molecule',molname);if (!x) { quit }; molname = x; load @{'$' + molname} #alt:LOAD $??Enter a model name after '$'","Load MOL (NCI)")
+Jmol.jmolButton(jmol,"if (!molname) { molname = 'tylenol'};var x = prompt('Enter the name of a compound',molname);if (!x) { quit }; molname = x; load @{':' + molname} #alt:LOAD :??Enter a model name","Load MOL (PubChem)")
 Jmol.jmolBr()
-Jmol.jmolButton(jmol,"load ? #alt:LOAD http://??load a URL starting with http://","Load URL")
+Jmol.jmolButton(jmol,"if (!molname) { molname = 'tylenol'};var x = prompt('Enter the name or identifier (SMILES, InChI, CAS) of a molecule',molname);if (!x) { quit }; molname = x; load @{'$' + molname} #alt:LOAD $??Enter a model name","Load MOL (NCI)")
+Jmol.jmolBr()
+Jmol.jmolButton(jmol,"load ? ","Load URL")
 Jmol.jmolBr()
 Jmol.jmolButton(jmol,"load ? ","Load FILE")
 Jmol.jmolBr()
@@ -136,15 +135,17 @@ Jmol.jmolBr()
 
 
 <script type="text/javascript">
-Jmol.jmolBr()
-Jmol.controls._buttonCssText="style='width:120'"
-Jmol.jmolButton(jmol,"wireframe -0.1 #alt:SETTING Line", "wireframe")
-Jmol.jmolButton(jmol,"spacefill only;spacefill 23%;wireframe 0.15 #alt:SETTING Ball and Stick","ball&stick")
-Jmol.jmolButton(jmol,"spacefill #alt:SETTING van der Waals Spheres", "spacefill")
-Jmol.jmolBr()
-Jmol.controls._buttonCssText="style='width:100'"
-Jmol.jmolButton(jmol,"console")
-Jmol.jmolCommandInput(jmol)
+if (!jmol._is2D) {
+	Jmol.jmolBr()
+	Jmol.setButtonCss(null,"style='width:120'")
+	Jmol.jmolButton(jmol,"wireframe -0.1 #alt:SETTING Line", "wireframe")
+	Jmol.jmolButton(jmol,"spacefill only;spacefill 23%;wireframe 0.15 #alt:SETTING Ball and Stick","ball&stick")
+	Jmol.jmolButton(jmol,"spacefill #alt:SETTING van der Waals Spheres", "spacefill")
+	Jmol.jmolBr()
+	Jmol.setButtonCss(null,"style='width:100'")
+	Jmol.jmolButton(jmol,"console")
+	Jmol.jmolCommandInput(jmol)
+}
 </script>
 
 </td></tr></table>

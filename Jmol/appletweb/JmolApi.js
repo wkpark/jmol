@@ -41,13 +41,12 @@
 		
 			applet = new Jmol._Applet(id, Info, null, checkOnly);
 		} 
-		
-		if (applet == null) {
+ 		if (applet == null) {
 			if (!Info.useJmolOnly && !Info.useImageOnly)
 				applet = Jmol._getCanvas(id, Info, checkOnly);
 			if (applet == null)
 				applet = new Jmol._Image(id, Info, null, checkOnly);
-			model && applet._search(model);
+			Jmol._document && model && applet._search(model);
 		}
 		// keyed to both its string id and itself
 		if (!checkOnly)
@@ -295,10 +294,33 @@
 	}
 	
 	Jmol.setDocument = function(doc) {
+		
+		// If doc is null or 0, Jmol.getApplet() will still return an Object, but the HTML will
+		// put in applet._code and not written to the page. This can be nice, because then you 
+		// can still refer to the applet, but place it on the page after the controls are made. 
+		//
+		// This really isn't necessary, though, because there is a simpler way: Just define the 
+		// applet variable like this:
+		//
+		// jmolApplet0 = "jmolApplet0"
+		//
+		// and then, in the getApplet command, use
+		//
+		// jmolapplet0 = Jmol.getApplet(jmolApplet0,....)
+		// 
+		// prior to this, "jmolApplet0" will suffice, and after it, the Object will work as well
+		// in any button creation 
+		//		 
+		//  Bob Hanson 25.04.2012
+		
 		Jmol._document = doc;
 	}
 
 	Jmol.setTarget = function(appletOrId, script) {
+
+		// Specify a target for future control creation where the control is indicated as null.
+		// Really shouldn't be needing this. It is always best to be explicit.
+		
 		if (appletOrId) {
 			Jmol._targetId = (typeof appletOrId == "string" ? appletOrId : (Jmol._target = appletOrId)._id);
 		}			
@@ -319,34 +341,37 @@
 	// Cascading Style Sheet Class support
 	////////////////////////////////////////////////////////////////
 	
-	Jmol.setAppletCssClass = function(appletCssClass) {
-		Jmol.controls._appletCssClass = appletCssClass;
-		Jmol.controls._appletCssText = appletCssClass ? "class='" + appletCssClass + "' " : "";
+	// BH 4/25 -- added text option. setAppletCss(null, "style=\"xxxx\"")
+	// note that since you must add the style keyword, this can be used to add any attribute to these tags, not just css. 
+	
+	Jmol.setAppletCss = function(cssClass, text) {
+		cssClass != null && (Jmol.controls._appletCssClass = cssClass);
+		Jmol.controls._appletCssText = text ? text + " " : cssClass ? "class=\"" + cssClass + "\" " : "";
 	}
 	
-	function jmolSetButtonCssClass(buttonCssClass) {
-		Jmol.controls._buttonCssClass = buttonCssClass;
-		Jmol.controls._buttonCssText = buttonCssClass ? "class='" + buttonCssClass + "' " : "";
+	Jmol.setButtonCss = function(cssClass, text) {
+		cssClass != null && (Jmol.controls._buttonCssClass = cssClass);
+		Jmol.controls._buttonCssText = text ? text + " " : cssClass ? "class=\"" + cssClass + "\" " : "";
 	}
 	
-	function jmolSetCheckboxCssClass(checkboxCssClass) {
-		Jmol.controls._checkboxCssClass = checkboxCssClass;
-		Jmol.controls._checkboxCssText = checkboxCssClass ? "class='" + checkboxCssClass + "' " : "";
+	Jmol.setCheckboxCss = function(cssClass, text) {
+		cssClass != null && (Jmol.controls._checkboxCssClass = cssClass);
+		Jmol.controls._checkboxCssText = text ? text + " " : cssClass ? "class=\"" + cssClass + "\" " : "";
 	}
 	
-	function jmolSetRadioCssClass(radioCssClass) {
-		Jmol.controls._radioCssClass = radioCssClass;
-		Jmol.controls._radioCssText = radioCssClass ? "class='" + radioCssClass + "' " : "";
+	Jmol.setRadioCss = function(cssClass, text) {
+		cssClass != null && (Jmol.controls._radioCssClass = cssClass);
+		Jmol.controls._radioCssText = text ? text + " " : cssClass ? "class=\"" + cssClass + "\" " : "";
 	}
 	
-	function jmolSetLinkCssClass(linkCssClass) {
-		Jmol.controls._linkCssClass = linkCssClass;
-		Jmol.controls._linkCssText = linkCssClass ? "class='" + linkCssClass + "' " : "";
+	Jmol.setLinkCss = function(cssClass, text) {
+		cssClass != null && (Jmol.controls._linkCssClass = cssClass);
+		Jmol.controls._linkCssText = text ? text + " " : cssClass ? "class=\"" + cssClass + "\" " : "";
 	}
 	
-	function jmolSetMenuCssClass(menuCssClass) {
-		Jmol.controls._menuCssClass = menuCssClass;
-		Jmol.controls._menuCssText = menuCssClass ? "class='" + menuCssClass + "' " : "";
+	function jmolSetMenuCssClass(cssClass, text) {
+		cssClass != null && (Jmol.controls._menuCssClass = cssClass);
+		Jmol.controls._menuCssText = text ? text + " ": cssClass ? "class=\"" + cssClass + "\" " : "";
 	}
 
 	

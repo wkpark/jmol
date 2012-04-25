@@ -55,8 +55,9 @@ Jmol = (function(document) {
 		_applets: {},
 		db: {
 			_databasePrefixes: "$=:",
-			_nciLoadScript: ";n = ({molecule=1}.length < {molecule=2}.length ? 2 : 1); select molecule=n;display selected;center selected;",
 			_fileLoadScript: ";if (_loadScript = '' && defaultLoadScript == '' && _filetype == 'Pdb') { select protein or nucleic;cartoons Only;color structure; select * };",
+			_nciLoadScript: ";n = ({molecule=1}.length < {molecule=2}.length ? 2 : 1); select molecule=n;display selected;center selected;",
+			_pubChemLoadScript: "",
 			_DirectDatabaseCalls:{
 				"$": "http://cactus.nci.nih.gov/chemical/structure/%FILE/file?format=sdf&get3d=True",
 				"=": "http://www.rcsb.org/pdb/files/%FILE.pdb",
@@ -79,32 +80,13 @@ Jmol = (function(document) {
 	
 		// feel free to adjust this look to anything you want
 		
-		Jmol._documentWrite('<br /><input type="text" id="ID_query"\
-		size="32" value="" /><br /><nobr><select id="ID_select">\
-		<option value="$" selected>NCI(small molecules)</option>\
-		<option value=":">PubChem(small molecules)</option>\
-		<option value="=">RCSB(macromolecules)</option>\
-		</select>\<button id="ID_submit">Search</button></nobr>'.replace(/ID/g, applet._id));
-		note && Jmol.documentWrite(note);
-		/*
-		jQuery("#"+label+"_submit").click(
-			function(){
-				applet._search()
-			}
-		);
-		jQuery("#"+label+"_query").keypress(
-			function(a){
-				13==a.which&&applet._search()
-			}
-		);
-		*/
-		Jmol._getElement(applet, "submit").onclick = function(){applet._search()};
-		Jmol._getElement(applet, "query").onkeypress = function(a){13==a.which&&applet._search()};
-		
-		if (applet.repaint) {
-			applet.emptyMessage="Enter search term below",
-			applet.repaint()
-		};
+		return '<br /><input type="text" id="ID_query" onkeypress="13==event.which&&Jmol._applets[\'ID\']._search()"\
+			size="32" value="" /><br /><nobr><select id="ID_select">\
+			<option value="$" selected>NCI(small molecules)</option>\
+			<option value=":">PubChem(small molecules)</option>\
+			<option value="=">RCSB(macromolecules)</option>\
+			</select>\<button id="ID_submit" onclick="Jmol._applets[\'ID\']._search()">Search</button></nobr>'
+				.replace(/ID/g, applet._id) + (note ? note : "");
 	}
 
 	Jmol._getWrapper = function(applet, isHeader) {
@@ -118,12 +100,11 @@ Jmol = (function(document) {
 				: "</div></td></tr><tr><td><div id=\"ID_infotablediv\" style=\"width:Wpx;height:Hpx;display:none\">\
 			<table><tr height=\"20\"><td style=\"background:yellow\"><span id=\"ID_infoheaderdiv\"></span></td><td width=\"10\"><a href=\"javascript:Jmol.showInfo(ID,false)\">[x]</a></td></tr>\
 			<tr><td colspan=\"2\"><div id=\"ID_infodiv\" style=\"overflow:scroll;width:Wpx;height:" + (applet._height - 15) + "px\"></div></td></tr></table></div></td></tr></table></div>");
-		s = s.replace(/Hpx/g, height).replace(/Wpx/g, width).replace(/ID/g, applet._id);
-		Jmol._documentWrite(s);
+		return s.replace(/Hpx/g, height).replace(/Wpx/g, width).replace(/ID/g, applet._id);
 	}
 
 	Jmol._getScriptForDatabase = function(database) {
-		return (database == "$" ? Jmol.db._nciLoadScript : Jmol.db._fileLoadScript);
+		return (database == "$" ? Jmol.db._nciLoadScript : database == ":" ? Jmol.db._pubChemLoadScript : Jmol.db._fileLoadScript);
 	}
 	
    //   <dataset><record><structureId>1BLU</structureId><structureTitle>STRUCTURE OF THE 2[4FE-4S] FERREDOXIN FROM CHROMATIUM VINOSUM</structureTitle></record><record><structureId>3EUN</structureId><structureTitle>Crystal structure of the 2[4Fe-4S] C57A ferredoxin variant from allochromatium vinosum</structureTitle></record></dataset>
@@ -397,6 +378,7 @@ Jmol = (function(document) {
 				Jmol._domWrite(text);
 			else
 				Jmol._document.write(text);
+			return null;
 		}
 		return text;
 	}

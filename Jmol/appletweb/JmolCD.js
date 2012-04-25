@@ -22,68 +22,33 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 		// overrides the function in JmolCore.js
 		// ChemDoodle: first try with WebGL unless that doesn't work or we have indicated NOWEBGL
 		var canvas = null;
-		if (Info.useWebGlIfAvailable && ChemDoodle.featureDetection.supports_webgl()) {
+		if (Info.useWebGlIfAvailable && ChemDoodle.featureDetection.supports_webgl())
 			canvas = new Jmol._Canvas3D(id, Info, null, checkOnly);
-			if (canvas && checkOnly)
-				return canvas;
-		} 
-		if (canvas) {
-			//canvas.specs.set3DRepresentation('Stick');
-			canvas.specs.set3DRepresentation('Ball and Stick');
-			canvas.specs.backgroundColor = 'black';
-		} else {
-			canvas = new Jmol._Canvas(id, Info, null, checkOnly);
-			if (checkOnly)
-				return canvas;
-			canvas.specs.bonds_useJMOLColors = true;
-			canvas.specs.bonds_width_2D = 3;
-			canvas.specs.atoms_display = false;
-			canvas.specs.backgroundColor = 'black';
-			canvas.specs.bonds_clearOverlaps_2D = true;
-		}
-		return canvas;
+		return (canvas ? canvas : new Jmol._Canvas(id, Info, null, checkOnly));
 	}
 
 	Jmol._Canvas3D = function(id, Info, caption, checkOnly){
+		this._is2D = false;
 		this._jmolType = "Jmol._Canvas3D";
 		if (checkOnly)
 			return this;
-		Jmol._targetId = this._id = id;
-		this._width = Info.width;
-		this._height = Info.height;
-		this._info = "";
-		this._infoHeader = this._jmolType + ' "' + this._id + '"'
 		this._dataMultiplier=1;
-		this._hasOptions = Info.addSelectionOptions;
-		Jmol._getWrapper(this, true);
-		this.create(id,Info.width,Info.height);
-		Jmol._getWrapper(this, false);
-		if (Info.addSelectionOptions)
-			Jmol._getGrabberOptions(this, caption);
+		this._create(id, Info, caption);
 		return this;
 	}
 
 	Jmol._Canvas = function(id, Info, caption, checkOnly){
+		this._is2D = true;				
 		this._jmolType = "Jmol._Canvas";
 		if (checkOnly)
-			return this;			
-		this._width = Info.width;
-		this._height = Info.height;
-		Jmol._targetId = this._id = id;
-		this._hasOptions = Info.addSelectionOptions;
-		this._info = "";
-		this._infoHeader = this._jmolType + ' "' + this._id + '"'
-		Jmol._getWrapper(this, true);
-		this.create(id, Info.width, Info.height);
-		Jmol._getWrapper(this, false);
+			return this;
 		this._dataMultiplier=20;
+		this._create(id, Info, caption);
 		this.lastPoint=null;
 		this.rotate3D=true;
 		this.rotationMultMod=1.3;
 		this.lastPinchScale=1;
 		this.lastGestureRotate=0;
-		if (Info.addSelectionOptions)
-			Jmol._getGrabberOptions(this, caption);
 		return this;
 	}
 
@@ -91,6 +56,36 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 
 		Jmol._setCommonMethods(proto);
 
+		proto._create = function(id, Info, caption) {
+			Jmol._targetId = this._id = id;
+			this._width = Info.width;
+			this._height = Info.height;
+			this._info = "";
+			this._infoHeader = this._jmolType + ' "' + this._id + '"'
+			this._hasOptions = Info.addSelectionOptions;
+			this._defaultModel = Info.defaultModel;
+			var t = Jmol._getWrapper(this, true);
+			if (Jmol._document) {
+				Jmol._documentWrite(t);
+				this.create(id, Info.width, Info.height);
+				this._setDefaults();
+				t = "";
+			} else {
+				t += '<script type="text/javascript">' 
+					+ id + '.create("'+id+'",'+Info.width+','+Info.height+');' 
+					+ id + '._setDefaults();'
+				if (Info.defaultModel)
+					t += id + "._search(" + id + "._defaultModel)";
+				t += '</script>';
+			}
+			t += Jmol._getWrapper(this, false);
+			if (Info.addSelectionOptions)
+				t += Jmol._getGrabberOptions(this, caption);
+			if (Jmol._debugAlert && !Jmol._document)
+				alert(t);
+			this._code = Jmol._documentWrite(t);
+		}
+		
 		proto._canScript = function(script) {return (script.indexOf("#alt") >= 0);};
 
 		proto._script = function(script) {
@@ -101,15 +96,29 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 			var what = jQuery.trim(Cmd.substring(pt + 1));
 			switch (Cmd.substring(0, pt)) {
 			case "SETTING":
-				this.specs.set3DRepresentation(what);
-				this.setupScene();
+				if (!this._is2D) {
+					this.specs.set3DRepresentation(what);
+					this.setupScene();
+				} else {
+					switch (what) {
+					case "Ball and Stick":
+						this.specs.atoms_circles_2D = this.specs.bonds_symmetrical_2D = true;
+					 	break;
+					case "Line":
+						this.specs.atoms_circles_2D = this.specs.bonds_symmetrical_2D = false;
+						break;
+					}
+				}
 				this.repaint();
 				return;
 			case "LOAD":
 				if (what.indexOf("??") >= 0) {
-					what = prompt(what.split("??")[1], what.split("??")[0]);
+					var db = what.split("??")[0];
+					what = prompt(what.split("??")[1], "");
 					if (!what)
 						return;
+					if (!Jmol.db._DirectDatabaseCalls[what.substring(0,1)])
+						what = db + what;
 				}
 				Jmol.loadFile(this, what);
 				return;
@@ -158,6 +167,19 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 	Jmol._Canvas3D.prototype = _cdSetPrototype(new ChemDoodle._Canvas3D);
 	Jmol._Canvas.prototype = _cdSetPrototype(new ChemDoodle.TransformCanvas);
 
+  Jmol._Canvas3D.prototype._setDefaults = function() {
+		this.specs.set3DRepresentation('Ball and Stick');
+		this.specs.backgroundColor = 'black';
+	}
+	
+	Jmol._Canvas.prototype._setDefaults = function() {
+		this.specs.bonds_useJMOLColors = true;
+		this.specs.bonds_width_2D = 3;
+		this.specs.atoms_display = false;
+		this.specs.backgroundColor = 'black';
+		this.specs.bonds_clearOverlaps_2D = true;
+	}
+	
 	Jmol._cdGetFileType = function(name) {
 		var database = name.substring(0, 1);
 		if (database == "$" || database == ":")

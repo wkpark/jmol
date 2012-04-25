@@ -1,6 +1,6 @@
 // JmolApplet.js -- Jmol._Applet and Jmol._Image
 
-(function (Jmol) {
+(function (Jmol, document) {
 
 
   /*  AngelH, mar2007:
@@ -87,15 +87,12 @@
 			Jmol.controls == undefined || Jmol.controls._onloadResetForms();		
 		}
 		
-		this._create(id,Info);
-		  	
-		if (Info.addSelectionOptions)
-			Jmol._getGrabberOptions(this, caption);
+		this._create(id,Info, caption);		  	
 		return this;
 		
 	}
 
-	Jmol._Applet.prototype._create = function(id, Info){
+	Jmol._Applet.prototype._create = function(id, Info, caption){
 		/*
 		 * private variables
 		 */
@@ -211,12 +208,13 @@
 		}
 		params.loadInline = (Info.inlineModel ? sterilizeInline(Info.inlineModel) : "");
 		//params.script = (Info.script ? sterilizeScript(Info.script) : "");
-		var t = tHeader + writeParams() + visitJava + tFooter;
+		var t = Jmol._getWrapper(this, true) 
+			+ tHeader + writeParams() + visitJava + tFooter 
+			+ Jmol._getWrapper(this, false) 
+			+ (Info.addSelectionOptions ? Jmol._getGrabberOptions(this, caption) : "");
 		if (Jmol._debugAlert)
 			alert(t);
-		Jmol._getWrapper(this, true);
-		document.write(t);
-		Jmol._getWrapper(this, false);
+		this._code = Jmol._documentWrite(t);
 	}
 	
 	Jmol._Applet.prototype.readyCallback = function(id, fullid, isReady, applet) {
@@ -298,6 +296,7 @@
 		this._showInfo(false);
 		params || (params = "");
 		this._thisJmolModel = "" + Math.random();
+		this._script("zap;set echo middle center;echo Retrieving data...");
 		if (this._jmolIsSigned) {
 			this._script("load \"" + fileName + "\"" + params);
 			return;
@@ -318,8 +317,9 @@
 			this._loadFile(dm, script);
 			return;
 		}
+		this._script("zap;set echo middle center;echo Retrieving data...");
 		if (this._jmolIsSigned) {
-			this._script("zap;set echo middle center;echo Retrieving data...;refresh;load \"" + dm + "\";" + script);
+			this._script("load \"" + dm + "\";" + script);
 		} else {
 			// need to do the postLoad here as well
 			var c=this;
@@ -343,13 +343,14 @@
 		this._height = Info.height;
 		this._hasOptions = Info.addSelectionOptions;
 		this._info = "";
-		this._infoHeader = this._jmolType + ' "' + this._id + '"'
-		Jmol._getWrapper(this, true);
-		var s = '<img id="'+id+'_image" width="' + Info.width + '" height="' + Info.height + '" src=""/>';
-		document.write(s);
-		Jmol._getWrapper(this, false);
-		if (Info.addSelectionOptions)
-			Jmol._getGrabberOptions(this, caption);
+		this._infoHeader = this._jmolType + ' "' + this._id + '"';
+		var t = Jmol._getWrapper(this, true) 
+			+ '<img id="'+id+'_image" width="' + Info.width + '" height="' + Info.height + '" src=""/>'
+		 	+	Jmol._getWrapper(this, false)
+			+ (Info.addSelectionOptions ? Jmol._getGrabberOptions(this, caption) : "");
+		if (Jmol._debugAlert)
+			alert(t);
+		this._code = Jmol._documentWrite(t);
 		this._canScript = function(script) {return (script.indexOf("#alt:LOAD") >= 0);};
 		return this;
 	}
@@ -401,4 +402,4 @@
 		Jmol._getElement(this, "image").src = src;
 	}
 
-})(Jmol);
+})(Jmol, document);

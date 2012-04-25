@@ -24,11 +24,11 @@
 
 	// _Applet -- the main, full-featured, object
 	
-	Jmol._Applet = function(id, Info, caption){
+	Jmol._Applet = function(id, Info, caption, checkOnly){
 		this._jmolType = "Jmol._Applet" + (Info.jmolIsSigned ? " (signed)" : "");
-		this._id = id;
-		var suffix = id.replace(/^jmolApplet/,"");
-		this._jmolId = "jmolApplet" + suffix;
+		if (checkOnly)
+			return this;
+		Jmol._targetId = this._id = id;
 		this._width = Info.width;
 		this._height = Info.height;
 		this._jmolIsSigned = Info.jmolIsSigned;
@@ -44,6 +44,7 @@
 		this._jmolJarFile = Info.jmolJarFile || (Info.jmolIsSigned ? "JmolAppletSigned0.jar" : "JmolApplet0.jar"); 
 		this._jmolJarPath =	Info.jmolJarPath || "."; 
 		this._memoryLimit = Info.memoryLimit || 512;
+		this._canScript = function(script) {return true;};
 		
 		/*
 		 * private variables
@@ -64,7 +65,7 @@
 		/*
 		 * privileged methods
 		 */
-		this._initialize = function(codebaseDirectory, fileNameOrUseSignedApplet) {	 		
+		this._initialize = function(codebaseDirectory, fileNameOrUseSignedApplet) {
 			if(this._jmolJarFile) {
 				var f = this._jmolJarFile;
 				if(f.indexOf("/") >= 0) {
@@ -83,7 +84,7 @@
 			}
 			setCodebase(codebaseDirectory);
 			getJarFilename(fileNameOrUseSignedApplet);
-			//_jmolOnloadResetForms();			
+			Jmol.controls == undefined || Jmol.controls._onloadResetForms();		
 		}
 		
 		this._create(id,Info);
@@ -92,11 +93,6 @@
 			Jmol._getGrabberOptions(this, caption);
 		return this;
 		
-		jmolSetParameter("appletReadyCallback", this._id + ".readyCallback");
-		var script = "";
-		Jmol._getWrapper(this, true);
-		jmolApplet([Info.width,Info.height], script, suffix);
-		Jmol._getWrapper(this, false);  	
 	}
 
 	Jmol._Applet.prototype._create = function(id, Info){
@@ -162,15 +158,14 @@
 		var tHeader, tFooter;
 		getParameters(Info);
 			
-		//this._name = "jmolApplet" + suffix
 		if (Jmol.featureDetection.useIEObject || Jmol.featureDetection.useHtml4Object) {
 			params.archive = this._jmolJarFile;
 			params.mayscript = 'true';
 			params.codebase = this._jmolJarPath;
 			params.code = 'JmolApplet.class';
 			tHeader =
-				"<object name='" + this._jmolId +
-				"' id='" + this._jmolId + "' " + "\n" +
+				"<object name='" + this._id +
+				"' id='" + this._id + "' " + "\n" +
 				widthAndHeight + "\n";
 			tFooter = "</object>";
 		}
@@ -189,8 +184,8 @@
 				*/ 
 		} else { // use applet tag
 			tHeader =
-				"<applet name='" + this._jmolId +
-				"' id='" + this._jmolId + "' \n" +
+				"<applet name='" + this._id +
+				"' id='" + this._id + "' \n" +
 				widthAndHeight + "\n" +
 				" code='JmolApplet'" +
 				" archive='" + this._jmolJarFile + "' codebase='" + this._jmolJarPath + "'\n" +
@@ -215,9 +210,8 @@
 				Jmol._noJavaMsg2 + "</font></td></tr></table>";
 		}
 		params.loadInline = (Info.inlineModel ? sterilizeInline(Info.inlineModel) : "");
-		params.script = (Info.script ? sterilizeScript(Info.script) : "");
+		//params.script = (Info.script ? sterilizeScript(Info.script) : "");
 		var t = tHeader + writeParams() + visitJava + tFooter;
-		//jmolSetTarget(nameSuffix);
 		if (Jmol._debugAlert)
 			alert(t);
 		Jmol._getWrapper(this, true);
@@ -230,7 +224,7 @@
 			return; // ignore -- page is closing
 		this._ready = true;
 		var script = this._readyScript;
-		this._applet = applet;
+		this._applet = applet;		
 		if (this._defaultModel)
 			this._search(this._defaultModel, (script ? ";" + script : ""));
 		else if (script)
@@ -287,8 +281,8 @@
 	Jmol._Applet.prototype._show = function(tf) {
 		var w = (tf ? this._width : 1) + "px";
 		var h = (tf ? this._height : 1) + "px";
-			document.getElementById(this._jmolId).style.width = w; 
-			document.getElementById(this._jmolId).style.height = h; 
+			document.getElementById(this._id).style.width = w; 
+			document.getElementById(this._id).style.height = h; 
 	}
 	
 	Jmol._Applet.prototype._script = function(script) {
@@ -340,9 +334,11 @@
 
 	// _Image -- an alternative to _Applet
 	
-	Jmol._Image = function(id, Info, caption){
+	Jmol._Image = function(id, Info, caption, checkOnly){
 		this._jmolType = "image";
-		this._id = id;
+		if (checkOnly)
+			return this;
+		Jmol._targetId = this._id = id;
 		this._width = Info.width;
 		this._height = Info.height;
 		this._hasOptions = Info.addSelectionOptions;
@@ -354,12 +350,14 @@
 		Jmol._getWrapper(this, false);
 		if (Info.addSelectionOptions)
 			Jmol._getGrabberOptions(this, caption);
+		this._canScript = function(script) {return (script.indexOf("#alt:LOAD") >= 0);};
 		return this;
 	}
 
 	Jmol._setCommonMethods(Jmol._Image.prototype);
 
-	Jmol._Image.prototype._script = function(script) {} // not implemented
+	Jmol._Image.prototype._script = function(script) {
+	} // not implemented
 	
 	Jmol._Image.prototype._show = function(tf) {
 		Jmol._getElement(this, "appletdiv").style.display = (tf ? "block" : "none");

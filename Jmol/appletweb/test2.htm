@@ -42,7 +42,7 @@ var Info = {
 	height: 300,
 	debug: false,
 	addSelectionOptions: true,
-	serverURL: "http://chemapps.stolaf.edu/jmol/jmolcd3.php",
+	serverURL: "http://chemapps.stolaf.edu/jmol/jmolcd2.php",
 	useChemDoodleOnly: useChemDoodleOnly,
 	useJmolOnly: useJmolOnly,
 	useWebGlIfAvailable: useWebGlIfAvailable,
@@ -75,6 +75,10 @@ for delivering cross-domain models into ChemDoodle or the unsigned applet. It is
 
 jmolApplet0 = Jmol.getApplet("jmolApplet0", Info)
 
+// note that now scripts can be sent immediately after the _Applet object is created
+
+Jmol.script(jmolApplet0,"background gray;delay 0.5;background black")
+
 </script>
 
 <br><a href="javascript:Jmol.showInfo(jmolApplet0, true)">show info</a>
@@ -86,8 +90,8 @@ and press [ENTER]. For PubChem, enter a name or CAS number.
 Note that these input controls can be easily hidden for a more standard Jmol look.
 <br /><br /> 
 
-Current status: (4/23/12) using PubChem rest/pub interface for direct xhr2 loading of models;
-all files loading
+Current status: (4/24/12) using PubChem rest/pub interface for direct xhr2 loading of models;
+all files loading; basic functionality only; Jmol.js no longer necessary for creating applets or scripting
  
   
 <br /><br /> 

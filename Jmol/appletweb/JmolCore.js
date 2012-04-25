@@ -36,7 +36,7 @@
 
 if(typeof(jQuery)=="undefined") jQuery = null;
 
-Jmol = (function() {
+Jmol = (function(document) {
 	return {
 		_jmolInfo: {
 			userAgent:navigator.userAgent, 
@@ -44,8 +44,15 @@ Jmol = (function() {
 		},
 		_serverUrl: "http://chemapps.stolaf.edu/jmol/jmolcd2.php",
 		_asynchronous: !0,
+		_document: document,
 		_debugAlert: !1,
+		_targetId: "jmolApplet0",
+		_target: null,
 		_isMsieRenderBug: (navigator.userAgent.toLowerCase().indexOf("msie") >= 0),
+		_isXHTML: false,
+		_XhtmlElement: null,
+		_XhtmlAppendChild: false,
+		_applets: {},
 		db: {
 			_databasePrefixes: "$=:",
 			_nciLoadScript: ";n = ({molecule=1}.length < {molecule=2}.length ? 2 : 1); select molecule=n;display selected;center selected;",
@@ -62,7 +69,7 @@ Jmol = (function() {
 		},
 		_getCanvas: function(){ /* only in JmolCD.js */ return null }		
 	}
-})();
+})(document);
 
 (function (Jmol) {
 
@@ -72,13 +79,13 @@ Jmol = (function() {
 	
 		// feel free to adjust this look to anything you want
 		
-		document.writeln('<br /><input type="text" id="ID_query"\
+		Jmol._documentWrite('<br /><input type="text" id="ID_query"\
 		size="32" value="" /><br /><nobr><select id="ID_select">\
 		<option value="$" selected>NCI(small molecules)</option>\
 		<option value=":">PubChem(small molecules)</option>\
 		<option value="=">RCSB(macromolecules)</option>\
 		</select>\<button id="ID_submit">Search</button></nobr>'.replace(/ID/g, applet._id));
-		note && document.writeln(note);
+		note && Jmol.documentWrite(note);
 		/*
 		jQuery("#"+label+"_submit").click(
 			function(){
@@ -99,7 +106,7 @@ Jmol = (function() {
 			applet.repaint()
 		};
 	}
-	
+
 	Jmol._getWrapper = function(applet, isHeader) {
 		var height = applet._height;
 		var width = applet._width;
@@ -112,7 +119,7 @@ Jmol = (function() {
 			<table><tr height=\"20\"><td style=\"background:yellow\"><span id=\"ID_infoheaderdiv\"></span></td><td width=\"10\"><a href=\"javascript:Jmol.showInfo(ID,false)\">[x]</a></td></tr>\
 			<tr><td colspan=\"2\"><div id=\"ID_infodiv\" style=\"overflow:scroll;width:Wpx;height:" + (applet._height - 15) + "px\"></div></td></tr></table></div></td></tr></table></div>");
 		s = s.replace(/Hpx/g, height).replace(/Wpx/g, width).replace(/ID/g, applet._id);
-		document.write(s);
+		Jmol._documentWrite(s);
 	}
 
 	Jmol._getScriptForDatabase = function(database) {
@@ -380,4 +387,106 @@ Jmol = (function() {
 		
 	})(document, window);
 
+
+/// Bob's ADDITIONS  24.4.2012:
+
+	Jmol._documentWrite = function(text) {
+		if (Jmol._document) {
+			if (Jmol._isXHTML && !Jmol._XhtmlElement) {
+				var s = document.getElementsByTagName("script");
+				Jmol._XhtmlElement = s.item(s.length - 1);
+				Jmol._XhtmlAppendChild = false;
+			}
+			if (Jmol._XhtmlElement)
+				Jmol._domWrite(text);
+			else
+				Jmol._document.write(text);
+		}
+		return text;
+	}
+
+	Jmol._domWrite = function(data) {
+	  var pt = 0
+	  var Ptr = []
+	  Ptr[0] = 0
+	  while (Ptr[0] < data.length) {
+	    var child = Jmol._getDomElement(data, Ptr);
+	    if (!child)
+				break;
+	    if (Jmol._XhtmlAppendChild)
+	      Jmol._XhtmlElement.appendChild(child);
+	    else
+	      Jmol._XhtmlElement.parentNode.insertBefore(child, _jmol.XhtmlElement);
+	  }
+	}
+	
+	Jmol._getDomElement = function(data, Ptr, closetag, lvel) {
+
+		// there is no "document.write" in XHTML
+	
+		var e = document.createElement("span");
+		e.innerHTML = data;
+		Ptr[0] = data.length;
+
+		return e;
+
+	// unnecessary ?	
+
+		closetag || (closetag = "");
+		lvel || (lvel = 0);
+		var pt0 = Ptr[0];
+		var pt = pt0;
+		while (pt < data.length && data.charAt(pt) != "<") 
+			pt++
+		if (pt != pt0) {
+			var text = data.substring(pt0, pt);
+			Ptr[0] = pt;
+			return document.createTextNode(text);
+		}
+		pt0 = ++pt;
+		var ch;
+		while (pt < data.length && "\n\r\t >".indexOf(ch = data.charAt(pt)) < 0) 
+			pt++;
+		var tagname = data.substring(pt0, pt);
+		var e = (tagname == closetag	|| tagname == "/" ? ""
+			: document.createElementNS ? document.createElementNS('http://www.w3.org/1999/xhtml', tagname)
+			: document.createElement(tagname));
+		if (ch == ">") {
+			Ptr[0] = ++pt;
+			return e;
+		}
+		while (pt < data.length && (ch = data.charAt(pt)) != ">") {
+			while (pt < data.length && "\n\r\t ".indexOf(ch = data.charAt(pt)) >= 0) 
+				pt++;
+			pt0 = pt;
+			while (pt < data.length && "\n\r\t =/>".indexOf(ch = data.charAt(pt)) < 0) 
+				pt++;
+			var attrname = data.substring(pt0, pt).toLowerCase();
+			if (attrname && ch != "=")
+				e.setAttribute(attrname, "true");
+			while (pt < data.length && "\n\r\t ".indexOf(ch = data.charAt(pt)) >= 0) 
+				pt++;
+			if (ch == "/") {
+				Ptr[0] = pt + 2;
+				return e;
+			} else if (ch == "=") {
+				var quote = data.charAt(++pt);
+				pt0 = ++pt;
+				while (pt < data.length && (ch = data.charAt(pt)) != quote) 
+					pt++;
+				var attrvalue = data.substring(pt0, pt);
+				e.setAttribute(attrname, attrvalue);
+				pt++;
+			}
+		}
+		Ptr[0] = ++pt;
+		while (Ptr[0] < data.length) {
+			var child = _jmolGetDomElement(data, Ptr, "/" + tagname, lvel+1);
+			if (!child)
+				break;
+			e.appendChild(child);
+		}
+		return e;
+	}
+	
 })(Jmol);

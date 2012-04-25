@@ -34,7 +34,7 @@ var useJmolOnly = (document.location.href.indexOf("NOCD") >= 0);
 var useChemDoodleOnly = (!useJmolOnly && document.location.href.indexOf("CD") >= 0);
 var useWebGlIfAvailable = (document.location.href.indexOf("NOWEBGL") < 0);
 var useImageOnly = (document.location.href.indexOf("IMAGE") >= 0);
-var useSignedApplet = (document.location.href.indexOf("SIGNED") >= 0);
+var useSignedApplet = true;//(document.location.href.indexOf("SIGNED") >= 0);
 
 var Info = {
 	width: 450,
@@ -72,21 +72,14 @@ appletCheck = Jmol.getApplet(jmol, Info, true);
 		
 		// Jmol applet
 		
-		Jmol.jmolHtml('<a href=simple2.htm?cd%20data%3Bscript%20cyclflip2.spt>cyclohexane ring flip</a> <a href=chairflip.png>images</a>');
-		Jmol.jmolBr();
-		Jmol.jmolLink(jmol,"animation playrev");
-		Jmol.jmolBr();
-		Jmol.jmolLink(jmol,"animation off");
-		Jmol.jmolBr();
-		Jmol.jmolLink(jmol,"animation play");
-		Jmol.jmolBr();
-		Jmol.jmolBr();
 		Jmol.jmolHtml("Drag-Minimize ");
 		Jmol.jmolLink(jmol,"set picking dragMinimize", "on");  
+		Jmol.jmolHtml("    ");
 		Jmol.jmolLink(jmol,"set picking dragMinimize off", "off")
 		Jmol.jmolBr();
 		Jmol.jmolHtml("Model Kit Mode ")
 		Jmol.jmolLink(jmol,"set modelkitmode", "on")
+		Jmol.jmolHtml("    ");
 		Jmol.jmolLink(jmol,"set modelkitmode off", "off")
 	
 	} else {

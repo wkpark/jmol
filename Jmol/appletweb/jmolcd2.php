@@ -110,11 +110,20 @@ if ($call == "getInfoFromDatabase") {
 		exec($cmd, $result);
 		$output = implode("\n",$result);
 	} else {
-		if ($database == "_")
-			$database = "";
-		$output = file_get_contents($database.$query);
+		if ($database != "_")
+			$query = $database.$query;
+		if (strpos($query, '?POST?') > 0) {
+			list($query,$data) = explode('?POST?', $query, 2);
+			$context = stream_context_create(array('http' => array(
+				'method' => 'POST',
+				'header' => 'Content-Type: application/x-www-form-urlencoded',
+				'content' => $data))
+			);
+			$output = file_get_contents($query, false, $context);
+		} else {
+			$output = file_get_contents($query);
+		}
 	}
-
 } else if ($call == "getMoleculeFromDatabase") {
 
   // note: ChemDoodle coordinates in JSON are factored by [20, -20, 20]

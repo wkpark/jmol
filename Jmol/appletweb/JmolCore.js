@@ -202,8 +202,9 @@ Jmol = (function(document) {
 	
 	Jmol._getRawDataFromServer = function(database,query,fSuccess,fError){
 		Jmol._contactServer(
-			"getRawDataFromDatabase",
-			{database:database,query:query,script:Jmol._getScriptForDatabase(database)},
+			"?call=getRawDataFromDatabase&database=" + database 
+				+ "&query=" + encodeURIComponent(query)
+				+ "&script=" + encodeURIComponent(Jmol._getScriptForDatabase(database)),
 			fSuccess, fError
 		);
 	}
@@ -227,8 +228,8 @@ Jmol = (function(document) {
 			return;
 		}		
 		Jmol._contactServer(
-			"getInfoFromDatabase",
-			{database:database,query:query},
+			"?call=getInfoFromDatabase&database=" + database 
+				+ "&query=" + encodeURIComponent(query),
 			function(data) {Jmol._setInfo(applet, database, data) }
 		);
 	}
@@ -289,18 +290,13 @@ Jmol = (function(document) {
 		jQuery.ajax(info);
 	}
 	
-	Jmol._contactServer = function(cmd,content,fSuccess,fError){
-		var data = JSON.stringify({
-					call: cmd,
-					content: content,
-					info: Jmol._jmolInfo
-				});
+	Jmol._contactServer = function(data,fSuccess,fError){
 		if (!Jmol._checkActive())
 			jQuery.ajax({
 				dataType: "text",
-				type: "POST",
-				data: data,
-				url: Jmol._serverUrl,
+				type: "GET",
+//				data: data,
+				url: Jmol._serverUrl + data,
 				success: function(a) {Jmol._loadSuccess(a, fSuccess)},
 				error:function() { Jmol._loadError(fError) },
 				async:Jmol._asynchronous

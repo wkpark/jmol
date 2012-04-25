@@ -1,7 +1,8 @@
 // JmolCD.js -- Jmol ChemDoodle extension	 author: Bob Hanson, hansonr@stolaf.edu	4/16/2012
 
 // This library requires
-// 
+//
+//	json2.js 
 //	JmolCore.js
 //	gl-matrix-min.js 
 //	jQuery.min.js
@@ -50,7 +51,7 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 		Jmol._targetId = this._id = id;
 		this._width = Info.width;
 		this._height = Info.height;
-		this._info = JSON.stringify(this);
+		this._info = "";
 		this._infoHeader = this._jmolType + ' "' + this._id + '"'
 		this._dataMultiplier=1;
 		this._hasOptions = Info.addSelectionOptions;
@@ -70,7 +71,7 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 		this._height = Info.height;
 		Jmol._targetId = this._id = id;
 		this._hasOptions = Info.addSelectionOptions;
-		this._info = JSON.stringify(this);
+		this._info = "";
 		this._infoHeader = this._jmolType + ' "' + this._id + '"'
 		Jmol._getWrapper(this, true);
 		this.create(id, Info.width, Info.height);

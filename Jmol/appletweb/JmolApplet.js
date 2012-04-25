@@ -34,7 +34,7 @@
 		this._jmolIsSigned = Info.jmolIsSigned;
 		this._dataMultiplier=1;
 		this._hasOptions = Info.addSelectionOptions;
-		this._info = JSON.stringify(this);
+		this._info = "";
 		this._infoHeader = this._jmolType + ' "' + this._id + '"'
 		this._defaultModel = Info.defaultModel;
 		this._readyFunction = Info.jmolReadyFunction;
@@ -342,7 +342,7 @@
 		this._width = Info.width;
 		this._height = Info.height;
 		this._hasOptions = Info.addSelectionOptions;
-		this._info = JSON.stringify(this);
+		this._info = "";
 		this._infoHeader = this._jmolType + ' "' + this._id + '"'
 		Jmol._getWrapper(this, true);
 		var s = '<img id="'+id+'_image" width="' + Info.width + '" height="' + Info.height + '" src=""/>';

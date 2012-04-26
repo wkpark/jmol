@@ -369,7 +369,7 @@
 		Jmol.controls._linkCssText = text ? text + " " : cssClass ? "class=\"" + cssClass + "\" " : "";
 	}
 	
-	function jmolSetMenuCssClass(cssClass, text) {
+	Jmol.setMenuCss = function(cssClass, text) {
 		cssClass != null && (Jmol.controls._menuCssClass = cssClass);
 		Jmol.controls._menuCssText = text ? text + " ": cssClass ? "class=\"" + cssClass + "\" " : "";
 	}

@@ -100,12 +100,13 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 					this.specs.set3DRepresentation(what);
 					this.setupScene();
 				} else {
+					this.specs.atoms_useJMOLColors = true;
 					switch (what) {
 					case "Ball and Stick":
-						this.specs.atoms_circles_2D = this.specs.bonds_symmetrical_2D = true;
+						this.specs.atoms_circles_2D = this.specs.bonds_symmetrical_2D = this.specs.atoms_display = true;
 					 	break;
 					case "Line":
-						this.specs.atoms_circles_2D = this.specs.bonds_symmetrical_2D = false;
+						this.specs.atoms_circles_2D = this.specs.bonds_symmetrical_2D = this.specs.atoms_display = false;
 						break;
 					}
 				}
@@ -168,15 +169,18 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 	Jmol._Canvas.prototype = _cdSetPrototype(new ChemDoodle.TransformCanvas);
 
   Jmol._Canvas3D.prototype._setDefaults = function() {
-		this.specs.set3DRepresentation('Ball and Stick');
 		this.specs.backgroundColor = 'black';
+		this.specs.atoms_useJMOLColors = true;
+		this.specs.bonds_useJMOLColors = true;
+		this.specs.set3DRepresentation('Ball and Stick');
 	}
 	
 	Jmol._Canvas.prototype._setDefaults = function() {
+		this.specs.backgroundColor = 'black';
+		this.specs.atoms_useJMOLColors = true;
 		this.specs.bonds_useJMOLColors = true;
 		this.specs.bonds_width_2D = 3;
 		this.specs.atoms_display = false;
-		this.specs.backgroundColor = 'black';
 		this.specs.bonds_clearOverlaps_2D = true;
 	}
 	

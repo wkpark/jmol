@@ -135,11 +135,11 @@ Jmol.jmolBr()
 
 
 <script type="text/javascript">
-if (!jmol._is2D) {
 	Jmol.jmolBr()
 	Jmol.setButtonCss(null,"style='width:120'")
 	Jmol.jmolButton(jmol,"wireframe -0.1 #alt:SETTING Line", "wireframe")
 	Jmol.jmolButton(jmol,"spacefill only;spacefill 23%;wireframe 0.15 #alt:SETTING Ball and Stick","ball&stick")
+if (!jmol._is2D) {
 	Jmol.jmolButton(jmol,"spacefill #alt:SETTING van der Waals Spheres", "spacefill")
 	Jmol.jmolBr()
 	Jmol.setButtonCss(null,"style='width:100'")

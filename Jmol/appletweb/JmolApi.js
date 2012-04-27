@@ -57,6 +57,66 @@
 	Jmol.script = function(applet, script) {	
 		applet._script(script);
 	}
+	
+	Jmol.scriptWait = function(applet, script) {
+		return applet._scriptWait(script);
+	}
+	
+	Jmol.scriptEcho = function(applet, script) {
+		return applet._scriptEcho(script);
+	}
+	
+	Jmol.scriptMessage = function(applet, script) {
+		return applet._scriptMessage(script);
+	}
+	
+	Jmol.scriptWaitOutput = function(applet, script) {
+		return applet._scriptWait(script);
+	}
+	
+	Jmol.scriptWaitAsArray = function(applet, script) {
+		return applet._scriptWait(script);
+	}
+	
+	Jmol.getStatus = function(applet,strStatus) {
+		return applet._getStatus(strStatus);
+	}
+	
+	Jmol.getPropertyAsArray = function(applet,sKey,sValue) {
+		return applet._getPropertyAsArray(sKey,sValue);
+	}
+
+	Jmol.getPropertyAsString = function(applet,sKey,sValue) {
+		return applet._getPropertyAsString(sKey,sValue);
+	}
+
+	Jmol.getPropertyAsJSON = function(applet,sKey,sValue) {
+		return applet._getPropertyAsJSON(sKey,sValue);
+	}
+
+	Jmol.getPropertyAsJavaObject = function(applet,sKey,sValue) {
+		return applet._getPropertyAsJavaObject(sKey,sValue);
+	}
+	
+	Jmol.evaluate = function(applet,molecularMath) {
+		return applet._evaluate(molecularMath);
+	}
+	
+	Jmol.saveOrientation = function(applet,id) {
+		return applet._saveOrientation(id);
+	}
+	
+	Jmol.restoreOrientation = function(applet,id) {
+		return applet._restoreOrientation(id);
+	}
+	
+	Jmol.restoreOrientationDelayed = function(applet,id,delay) {
+		return applet._restoreOrientationDelayed(id,delay);
+	}
+	
+	Jmol.resizeApplet = function(applet,size) {
+		return applet._resizeApplet(size);
+	}
 
 	Jmol.search = function(applet, query, script) {
 		applet._search(query, script);

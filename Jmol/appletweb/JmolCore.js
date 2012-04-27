@@ -68,7 +68,12 @@ Jmol = (function(document) {
 			_restQueryXml: "<orgPdbQuery><queryType>org.pdb.query.simple.AdvancedKeywordQuery</queryType><description>Text Search</description><keywords>QUERY</keywords></orgPdbQuery>",
 			_restReportUrl: "http://www.pdb.org/pdb/rest/customReport?pdbids=IDLIST&customReportColumns=structureId,structureTitle"
 		},
-		_getCanvas: function(){ /* only in JmolCD.js */ return null }		
+		_getCanvas: function(){ /* only in JmolCD.js */ return null },
+		_allowedJmolSize: [25, 2048, 300]   // min, max, default (pixels)
+    /*  By setting the Jmol.allowedJmolSize[] variable in the webpage
+        before calling Jmol.getApplet(), limits for applet size can be overriden.
+        2048 standard for GeoWall (http://geowall.geo.lsa.umich.edu/home.html)
+    */		
 	}
 })(document);
 
@@ -96,10 +101,10 @@ Jmol = (function(document) {
 			height += "px";
 		if (typeof width !== "string")
 			width += "px";
-		var s = (isHeader ? "<div id=\"ID_appletinfotablediv\" style=\"width:Wpx;height:Hpx\"><table><tr><td><div id=\"ID_appletdiv\" style=\"width:Wpx;height:Hpx\">"
-				: "</div></td></tr><tr><td><div id=\"ID_infotablediv\" style=\"width:Wpx;height:Hpx;display:none\">\
-			<table><tr height=\"20\"><td style=\"background:yellow\"><span id=\"ID_infoheaderdiv\"></span></td><td width=\"10\"><a href=\"javascript:Jmol.showInfo(ID,false)\">[x]</a></td></tr>\
-			<tr><td colspan=\"2\"><div id=\"ID_infodiv\" style=\"overflow:scroll;width:Wpx;height:" + (applet._height - 15) + "px\"></div></td></tr></table></div></td></tr></table></div>");
+		var s = (isHeader ? "<div id=\"ID_appletinfotablediv\" style=\"width:Wpx;height:Hpx\"><div id=\"ID_appletdiv\" style=\"width:100%;height:100%\">"
+				: "</div><div id=\"ID_infotablediv\" style=\"width:100%;height:100%;display:none\">\
+			<table height=\"100%\" width=\"100%\"><tr height=\"20\"><td style=\"background:yellow\"><span id=\"ID_infoheaderdiv\"></span></td><td width=\"10\"><a href=\"javascript:Jmol.showInfo(ID,false)\">[x]</a></td></tr>\
+			<tr height=\"*\"><td colspan=\"2\"><div id=\"ID_infodiv\" style=\"overflow:scroll;width:100%;height:100%\"></div></td></tr></table></div></div>");
 		return s.replace(/Hpx/g, height).replace(/Wpx/g, width).replace(/ID/g, applet._id);
 	}
 
@@ -466,5 +471,43 @@ Jmol = (function(document) {
 		}
 		return e;
 	}
+	
+	Jmol._evalJSON = function(s,key){
+		s = s + "";
+		if(!s)
+			return [];
+		if(s.charAt(0) != "{") {
+			if(s.indexOf(" | ") >= 0)
+				s = s.replace(/\ \|\ /g, "\n");
+			return s;
+		}
+		var A = jQuery.parseJSON(s);
+		if(!A)
+			return;
+		if(key && A[key])
+			A = A[key];
+		return A;
+	}
+
+	Jmol._sortMessages = function(A){
+		/*
+		 * private function
+		 */
+		function _sortKey0(a,b){
+			return (a[0]<b[0]?1:a[0]>b[0]?-1:0);
+		}
+
+		if(!A || typeof (A) != "object")
+			return [];
+		var B = [];
+		for(var i = A.length - 1; i >= 0; i--)
+			for(var j = 0, jj= A[i].length; j < jj; j++)
+				B[B.length] = A[i][j];
+		if(B.length == 0)
+			return;
+		B = B.sort(_sortKey0);
+		return B;
+	}
+
 	
 })(Jmol);

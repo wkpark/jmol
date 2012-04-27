@@ -45,6 +45,9 @@
 		this._jmolJarPath =	Info.jmolJarPath || "."; 
 		this._memoryLimit = Info.memoryLimit || 512;
 		this._canScript = function(script) {return true;};
+		this._savedOrientations = [];
+		this._containerWidth = this._width + ((this._width==parseFloat(this._width))? "px":"");
+		this._containerHeight = this._height + ((this._height==parseFloat(this._height))? "px":"");
 		
 		/*
 		 * private variables
@@ -117,7 +120,6 @@
 
 		function writeParams() {
  			var t = "";
- 			console.log(params);
  			for (var i in params)
 				if(params[i]!="")
 		 			t+="  <param name='"+i+"' value='"+params[i]+"' />\n";
@@ -129,7 +131,7 @@
 										'messagecallback','pickcallback','animframecallback','appletreadycallback','atommovedcallback',
 										'echocallback','evalcallback','hovercallback','language','loadstructcallback','measurecallback',
 										'minimizationcallback','resizecallback','scriptcallback','statusform','statustext','statustextarea',
-										'synccallback'];
+										'synccallback','usecommandthread'];
 				for (var i in Info)
 					if(availableValues[i.toLowerCase()])
 						params[i] = Info [i];
@@ -150,8 +152,8 @@
 		};
 		params.appletReadyCallback = this._id + ".readyCallback";
 		
-		//var sz = j._applet.getSize();
-		var widthAndHeight = " width='" + this._width + "' height='" + this._height + "' ";
+		//size is set to 100% of containers' size
+		var widthAndHeight = " width='" + "100%" + "' height='" + "100%" + "' ";
 		var tHeader, tFooter;
 		getParameters(Info);
 			
@@ -235,8 +237,8 @@
 			return;
 		this._isInfoVisible = tf;
 		Jmol._getElement(this, "infotablediv").style.display = (tf ? "block" : "none");
-		Jmol._getElement(this, "appletdiv").style.height = (tf ? 1 : this._height) + "px";
-		Jmol._getElement(this, "appletdiv").style.width = (tf ? 1 : this._width) + "px";
+		Jmol._getElement(this, "appletdiv").style.height = (tf ? "1px" : "100%");
+		Jmol._getElement(this, "appletdiv").style.width = (tf ? "1px" : "100%");
 		if (!tf)//&& Jmol._isMsieRenderBug -- occurring also on Mac systems)
 			alert("returning to applet...");
 		this._show(!tf);
@@ -277,8 +279,8 @@
 	}
 	
 	Jmol._Applet.prototype._show = function(tf) {
-		var w = (tf ? this._width : 1) + "px";
-		var h = (tf ? this._height : 1) + "px";
+		var w = (tf ? "100%" : "1px");
+		var h = (tf ? "100%" : "1px");
 			document.getElementById(this._id).style.width = w; 
 			document.getElementById(this._id).style.height = h; 
 	}
@@ -290,7 +292,168 @@
 			return; 
 		}
 		this._applet.script(script);
-	}	
+	}
+	
+	Jmol._Applet.prototype._scriptWait = function(script) {
+		var Ret = this._scriptWaitAsArray(script);
+		var s = "";
+		for(var i = Ret.length; --i >= 0; )
+			for(var j = 0, jj = Ret[i].length; j < jj; j++)
+				s += Ret[i][j] + "\n";
+		return s;
+	}
+	
+	Jmol._Applet.prototype._scriptEcho = function(script) {
+		// returns a newline-separated list of all echos from a script
+		var Ret = this._scriptWaitAsArray(script);
+		var s = "";
+		for(var i = Ret.length; --i >= 0; )
+			for(var j = Ret[i].length; --j >= 0; )
+				if(Ret[i][j][1] == "scriptEcho")
+					s += Ret[i][j][3] + "\n";
+		return s.replace(/ \| /g, "\n");
+	}
+	
+	Jmol._Applet.prototype._scriptMessage = function(script) {
+		// returns a newline-separated list of all messages from a script, ending with "script completed\n"
+		var Ret = this._scriptWaitAsArray(script);
+		var s = "";
+		for(var i = Ret.length; --i >= 0; )
+			for(var j = Ret[i].length; --j >= 0; )
+				if(Ret[i][j][1] == "scriptStatus")
+					s += Ret[i][j][3] + "\n";
+		return s.replace(/ \| /g, "\n");
+	}
+	
+	Jmol._Applet.prototype._scriptWaitOutput = function(script) {
+		var ret = "";
+		try {
+			if(script) {
+				ret += this._applet.scriptWaitOutput(script);
+			}
+		} catch(e) {
+		}
+		return ret;
+	}
+
+	Jmol._Applet.prototype._scriptWaitAsArray = function(script) {
+		var ret = "";
+		try {
+			this._getStatus("scriptEcho,scriptMessage,scriptStatus,scriptError");
+			if(script) {
+				ret += this._applet.scriptWait(script);
+				ret = Jmol._evalJSON(ret, "jmolStatus");
+				if( typeof ret == "object")
+					return ret;
+			}
+		} catch(e) {
+		}
+		return [[ret]];
+	}
+	
+	Jmol._Applet.prototype._getStatus = function(strStatus) {
+		return Jmol._sortMessages(this._getPropertyAsArray("jmolStatus",strStatus));
+	}
+	
+	Jmol._Applet.prototype._getPropertyAsArray = function(sKey,sValue) {
+		return Jmol._evalJSON(this._getPropertyAsJSON(sKey,sValue),sKey);
+	}
+
+	Jmol._Applet.prototype._getPropertyAsString = function(sKey,sValue) {
+		sValue == undefined && ( sValue = "");
+		return this._applet.getPropertyAsString(sKey, sValue) + "";
+	}
+
+	Jmol._Applet.prototype._getPropertyAsJSON = function(sKey,sValue) {
+		sValue == undefined && ( sValue = "");
+		try {
+			return (this._applet.getPropertyAsJSON(sKey, sValue) + "");
+		} catch(e) {
+			return "";
+		}
+	}
+
+	Jmol._Applet.prototype._getPropertyAsJavaObject = function(sKey,sValue) {		
+		sValue == undefined && ( sValue = "");
+		return this._applet.getProperty(sKey,sValue);
+	}
+
+	
+	Jmol._Applet.prototype._evaluate = function(molecularMath) {
+		//carries out molecular math on a model
+	
+		var result = "" + this._getPropertyAsJavaObject("evaluate", molecularMath);
+		var s = result.replace(/\-*\d+/, "");
+		if(s == "" && !isNaN(parseInt(result)))
+			return parseInt(result);
+		var s = result.replace(/\-*\d*\.\d*/, "")
+		if(s == "" && !isNaN(parseFloat(result)))
+			return parseFloat(result);
+		return result;
+	}
+
+	
+	Jmol._Applet.prototype._saveOrientation = function(id) {	
+		return this._savedOrientations[id] = this._getPropertyAsArray("orientationInfo","info").moveTo;
+	}
+
+	
+	Jmol._Applet.prototype._restoreOrientation = function(id) {
+		var s = this._savedOrientations[id];
+		if(!s || s == "")
+			return s = s.replace(/1\.0/, "0");
+		return this._scriptWait(s);
+	}
+
+	
+	Jmol._Applet.prototype._restoreOrientationDelayed = function(id,delay) {
+		arguments.length < 1 && ( delay = 1);
+		var s = this._savedOrientations[id];
+		if(!s || s == "")
+			return s = s.replace(/1\.0/, delay);
+		return this._scriptWait(s);
+	}
+
+	Jmol._Applet.prototype._resizeApplet = function(size) {
+		// See _jmolGetAppletSize() for the formats accepted as size [same used by jmolApplet()]
+		//  Special case: an empty value for width or height is accepted, meaning no change in that dimension.
+		
+			/*
+			 * private functions
+			 */
+			function _getAppletSize(size, units) {
+				/* Accepts single number, 2-value array, or object with width and height as mroperties, each one can be one of:
+				 percent (text string ending %), decimal 0 to 1 (percent/100), number, or text string (interpreted as nr.)
+				 [width, height] array of strings is returned, with units added if specified.
+				 Percent is relative to container div or element (which should have explicitly set size).
+				 */
+				var width, height;
+				if(( typeof size) == "object" && size != null) {
+					width = size[0]||size.width;
+					height = size[1]||size.height;
+				} else {
+					width = height = size;
+				}
+				return [_fixDim(width, units), _fixDim(height, units)];
+			}
+
+			function _fixDim(x, units) {
+				var sx = "" + x;
+				return (sx.length == 0 ? ( units ? "" : Jmol._allowedJmolSize[2]) : sx.indexOf("%") == sx.length - 1 ? sx : ( x = parseFloat(x)) <= 1 && x > 0 ? x * 100 + "%" : (isNaN( x = Math.floor(x)) ? Jmol._allowedJmolSize[2] : x < Jmol._allowedJmolSize[0] ? Jmol._allowedJmolSize[0] : x > Jmol._allowedJmolSize[1] ? Jmol._allowedJmolSize[1] : x) + ( units ? units : ""));
+			}
+			
+			function _setDomNodeSize(id, sz){
+				var domNode = Jmol._document.getElementById(id);
+				domNode.style.width = sz[0];
+				domNode.style.height = sz[1];
+			}
+
+		var sz = _getAppletSize(size, "px");
+		console.log(sz)
+		_setDomNodeSize(this._id+"_appletinfotablediv",sz);
+		this._containerWidth = sz[0];
+		this._containerHeight = sz[1];
+	}
 	
 	Jmol._Applet.prototype._loadFile = function(fileName, params){
 		this._showInfo(false);

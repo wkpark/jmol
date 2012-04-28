@@ -2,6 +2,7 @@
 # date: 6:21 AM 4/27/2012
 
 # order is important, because for a given atom, if a hit is made, we stop
+# source: ftp://ftp.wiley.com/public/journals/jcc/suppmat/17/490/MMFF-I_AppendixB.ascii
 
 #MMFF94Type ElemNo SmilesDef
 67  7 NITROGEN IN N-OXIDE       $([#7D3+1][O-1])
@@ -89,7 +90,7 @@
 94 19 POTASSIUM CATION          [KD0+1]
 92  3 LITHIUM CATION            [LiD0+1]
 99 12 DIPOSITIVE MAGNESIUM CATI [MgD0+2]
- 8  7 AMINE N                   [ND3]
+ 8  7 AMINE N                   $([ND3](-A)(-A)-A)
  9  7 N=C, IMINES               $([ND2]=[C,N])
  9  7 N=N, AZO COMPOUNDS        .
 34  7 N+, QUATERNARY N          [ND4+1]
@@ -187,3 +188,7 @@
 74 16 SULFINYL SULFUR, C=S=O    $([SD2](=C)=O)
 95 30 DIPOSITIVE ZINC CATION    [ZnD0+2]
 95 30 DIPOSITIVE ZINC CATION    .
+
+
+
+

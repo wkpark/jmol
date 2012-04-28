@@ -13,10 +13,11 @@
 //		gl-matrix-min.js -- required for ChemDoodle option
 //		mousewheel.js    -- required for ChemDoodle option
 //		ChemDoodleWeb.js -- required for ChemDoodle option; must be after jQuery, gl-matrix-min, and mousewheel
-//		JmolCore.js      -- required; must be after jQuery
-//		JmolApplet.js    -- required; must be after JmolCore
-//		JmolCD.js        -- required for ChemDoodle option; must be after JmolApplet
-//		JmolApi.js       -- required; must be after JmolCore
+//		JmolCore.js      -- required;
+//		JmolApplet.js    -- required; internal functions for _Applet and _Image; must be after JmolCore
+//		JmolControls.js  -- optional; internal functions for buttons, links, menus, etc.; must be after JmolCore
+//		JmolApi.js       -- required; all user functions; must be after JmolCore
+//		JmolCD.js        -- optional; for ChemDoodle option; must be after JmolApplet
 
 // Allows Jmol-like objects to be displayed on Java-challenged (iPad/iPhone)
 // or applet-challenged (Android/iPhone) platforms, with automatic switching to 
@@ -101,10 +102,10 @@ Jmol = (function(document) {
 			height += "px";
 		if (typeof width !== "string")
 			width += "px";
-		var s = (isHeader ? "<div id=\"ID_appletinfotablediv\" style=\"width:Wpx;height:Hpx\"><div id=\"ID_appletdiv\" style=\"width:100%;height:100%\">"
-				: "</div><div id=\"ID_infotablediv\" style=\"width:100%;height:100%;display:none\">\
-			<table height=\"100%\" width=\"100%\"><tr height=\"20\"><td style=\"background:yellow\"><span id=\"ID_infoheaderdiv\"></span></td><td width=\"10\"><a href=\"javascript:Jmol.showInfo(ID,false)\">[x]</a></td></tr>\
-			<tr height=\"*\"><td colspan=\"2\"><div id=\"ID_infodiv\" style=\"overflow:scroll;width:100%;height:100%\"></div></td></tr></table></div></div>");
+		var s = (isHeader ? "<div id=\"ID_appletinfotablediv\" style=\"width:Wpx;height:Hpx\"><table><tr><td><div id=\"ID_appletdiv\" style=\"width:Wpx;height:Hpx\">"
+				: "</div></td></tr><tr><td><div id=\"ID_infotablediv\" style=\"width:Wpx;height:Hpx;display:none\">\
+			<table><tr height=\"20\"><td style=\"background:yellow\"><span id=\"ID_infoheaderdiv\"></span></td><td width=\"10\"><a href=\"javascript:Jmol.showInfo(ID,false)\">[x]</a></td></tr>\
+			<tr><td colspan=\"2\"><div id=\"ID_infodiv\" style=\"overflow:scroll;width:Wpx;height:" + (applet._height - 15) + "px\"></div></td></tr></table></div></td></tr></table></div>");
 		return s.replace(/Hpx/g, height).replace(/Wpx/g, width).replace(/ID/g, applet._id);
 	}
 
@@ -481,12 +482,8 @@ Jmol = (function(document) {
 				s = s.replace(/\ \|\ /g, "\n");
 			return s;
 		}
-		var A = jQuery.parseJSON(s);
-		if(!A)
-			return;
-		if(key && A[key])
-			A = A[key];
-		return A;
+		var A = (new Function( "return " + data ) )();
+		return (!A ? null : key  && A[key] ? A : A);
 	}
 
 	Jmol._sortMessages = function(A){

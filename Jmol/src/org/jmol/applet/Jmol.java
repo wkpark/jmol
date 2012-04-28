@@ -1240,6 +1240,7 @@ public class Jmol implements WrappedApplet {
 
     private void showStatus(String message) {
       try {
+        System.out.println(message);
         appletWrapper.showStatus(message);
         sendJsTextStatus(message);
       } catch (Exception e) {

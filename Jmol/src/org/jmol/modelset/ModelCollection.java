@@ -4269,5 +4269,4 @@ abstract public class ModelCollection extends BondCollection {
     return modelIndex;
   }
 
-
 }

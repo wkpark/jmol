@@ -10360,4 +10360,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return (sb.length() > 0 ? sb.toString() : "<no timeouts set>");
   }
 
+  public void calculatePartialCharges(BitSet bs) {
+    getMinimizer(true).calculatePartialCharges(modelSet.atoms, bs == null ? getSelectionSet(false) : bs,
+        getSmilesMatcher());
+  }
+
 }

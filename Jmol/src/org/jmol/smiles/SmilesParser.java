@@ -124,10 +124,15 @@ public class SmilesParser {
     return (new SmilesParser(isSmarts)).parse(pattern);
   }
 
-  private SmilesParser(boolean isSmarts) {
+  SmilesParser(boolean isSmarts) {
     this.isSmarts = isSmarts;
   }
 
+  void reset() {
+    braceCount = 0;
+    branchLevel = 0;
+  }
+  
   /**
    * Parses a SMILES String
    * 
@@ -292,7 +297,7 @@ public class SmilesParser {
     return (haveInternalOr ? parseVariableLength(sout.substring(2)) : sout.length() < 2 ? pattern : sout.substring(2));
   }
 
-  private SmilesSearch getSearch(SmilesSearch parent, String pattern,
+  SmilesSearch getSearch(SmilesSearch parent, String pattern,
                                  boolean noAromatic,
                                  boolean ignoreStereochemistry)
       throws InvalidSmilesException {

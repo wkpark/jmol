@@ -31,8 +31,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.jmol.api.MinimizerInterface;
+import org.jmol.api.SmilesMatcherInterface;
 import org.jmol.i18n.GT;
 import org.jmol.minimize.forcefield.ForceField;
+import org.jmol.minimize.forcefield.ForceFieldMMFF;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;
@@ -859,5 +861,15 @@ Token[keyword(0x880001) value=")"]
       viewer.showString(msg, false);
     else
       viewer.scriptEcho(msg);    
+  }
+
+  public void calculatePartialCharges(
+                                      Atom[] atoms,
+                                      BitSet bsAtoms,
+                                      SmilesMatcherInterface smilesMatcher) {
+    //TODO -- combine SMILES and MINIMIZER in same JAR file
+    new ForceFieldMMFF();
+    float[] charges = ForceFieldMMFF.getPartialCharges(atoms, bsAtoms, smilesMatcher);
+    viewer.setAtomProperty(bsAtoms, Token.partialcharge, 0, 0, null, charges, null);
   }
 }

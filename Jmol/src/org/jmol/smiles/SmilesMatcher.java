@@ -28,6 +28,7 @@ import java.util.BitSet;
 import java.util.List;
 
 import org.jmol.api.SmilesMatcherInterface;
+import org.jmol.util.BitSetUtil;
 import org.jmol.util.JmolNode;
 import org.jmol.util.TextFormat;
 
@@ -251,6 +252,48 @@ public class SmilesMatcher implements SmilesMatcherInterface {
                                    boolean isSmarts, boolean firstMatchOnly) {
     return (BitSet) match(pattern, atoms, atomCount, bsSelected, null, isSmarts,
         false, firstMatchOnly, MODE_BITSET);
+  }
+
+  public void getSubstructureSets(String[] smarts, JmolNode[] atoms, int atomCount,
+                                  BitSet bsSelected, BitSet[] ret) {
+    getSubstructureSetsStatic(smarts, atoms, atomCount, bsSelected, ret);
+  }
+
+  private static void getSubstructureSetsStatic(String[] smarts,
+                                                JmolNode[] atoms,
+                                                int atomCount,
+                                                BitSet bsSelected, BitSet[] ret) {
+    InvalidSmilesException.setLastError(null);
+    SmilesParser sp = new SmilesParser(true);
+    SmilesSearch search = null;
+    try {
+      search = sp.parse("");
+      search.firstMatchOnly = false;
+      search.matchAllAtoms = false;
+      search.jmolAtoms = atoms;
+      search.jmolAtomCount = Math.abs(atomCount);
+      search.setSelected(bsSelected);
+      search.getRingData(true);
+      search.asVector = false;
+    } catch (InvalidSmilesException e) {
+      // I think this is impossible.
+    }
+    for (int i = 0; i < smarts.length; i++) {
+      if (smarts[i] == null || smarts[i].length() == 0 || smarts[i].startsWith("#"))
+        continue;
+      try {
+        search.bsReturn.clear();
+        SmilesSearch ss = sp.getSearch(search, smarts[i], false, false);
+        ret[i] = BitSetUtil.copy((BitSet) search.subsearch(ss, false, false));
+        if (ret[i] != null && ret[i].nextSetBit(0) >= 0)
+          System.out.println(smarts[i] + "  "+ ret[i]);
+      } catch (Exception e) {
+        if (InvalidSmilesException.getLastError() == null)
+          InvalidSmilesException.setLastError(e.getMessage());
+        e.printStackTrace();
+        // ret[i] will be null in that case
+      }
+    }
   }
 
   /**

@@ -104,13 +104,13 @@ public class SmilesSearch extends JmolMolecule {
   private BitSet[] ringData;
   private int[] ringCounts;
   private int[] ringConnections;
-  private BitSet bsFound = new BitSet(); 
+  BitSet bsFound = new BitSet(); 
   private Map<String, Object> htNested;
   private int nNested;
   private SmilesBond nestedBond;
 
   private List<Object> vReturn;
-  private BitSet bsReturn = new BitSet();
+  BitSet bsReturn = new BitSet();
     
 
   void setAtomArray() {
@@ -158,7 +158,6 @@ public class SmilesSearch extends JmolMolecule {
     return n;
   }
 
-  @SuppressWarnings("unchecked")
   void setRingData(BitSet bsA) throws InvalidSmilesException {
     if (needAromatic)
       needRingData = true;
@@ -172,6 +171,11 @@ public class SmilesSearch extends JmolMolecule {
       if (!needRingMemberships && !needRingData)
         return;
     }
+    getRingData(needRingData);
+  }
+
+  @SuppressWarnings("unchecked")
+  void getRingData(boolean needRingData) throws InvalidSmilesException {
     if (ringDataMax < 0)
       ringDataMax = 8;
     if (needRingData) {
@@ -190,7 +194,7 @@ public class SmilesSearch extends JmolMolecule {
         continue;
       String smarts = "*1" + s.substring(0, i - 2) + "*1";
       SmilesSearch search = SmilesParser.getMolecule(smarts, true);
-      List<Object> v = (List<Object>) getBitSets(search, false, true);
+      List<Object> v = (List<Object>) subsearch(search, false, true);
       if (needAromatic)
         for (int r = v.size(); --r >= 0;) {
           BitSet bs = (BitSet) v.get(r);
@@ -220,8 +224,7 @@ public class SmilesSearch extends JmolMolecule {
       }
     }
   }
-
-  private Object getBitSets(SmilesSearch search, 
+  Object subsearch(SmilesSearch search, 
                             boolean firstAtomOnly, 
                             boolean isRingCheck) throws InvalidSmilesException {
     search.ringSets = ringSets;
@@ -315,7 +318,7 @@ public class SmilesSearch extends JmolMolecule {
       for (int i = 0; i < subSearches.length; i++) {
         if (subSearches[i] == null)
           continue;
-        getBitSets(subSearches[i], false, false);
+        subsearch(subSearches[i], false, false);
         if (firstMatchOnly) {
           if (vReturn == null ? bsReturn.nextSetBit(0) >= 0 : vReturn.size() > 0)
             break;
@@ -444,7 +447,6 @@ public class SmilesSearch extends JmolMolecule {
       return false;
     if (iAtom >= 0)
       bsFound.clear(iAtom);
-    //System.out.println(iAtom + " smilesSearch " + bsFound);
     return true;
   }
 
@@ -693,7 +695,7 @@ public class SmilesSearch extends JmolMolecule {
           SmilesSearch search = (SmilesSearch) o;              
           if (patternAtom.isBioAtom)
             search.nestedBond = patternAtom.getBondTo(null);
-          o = getBitSets(search, true, false);
+          o = subsearch(search, true, false);
           if (o == null)
             o = new BitSet();
           if (!patternAtom.isBioAtom)

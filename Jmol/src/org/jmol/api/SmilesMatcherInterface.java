@@ -41,4 +41,6 @@ public interface SmilesMatcherInterface {
 
   public abstract String reverseChirality(String smiles);
 
+  public abstract void getSubstructureSets(String[] smarts, JmolNode[] atoms, int atomCount,
+                         BitSet bsSelected, BitSet[] ret);
 }

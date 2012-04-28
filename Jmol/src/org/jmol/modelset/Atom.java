@@ -384,6 +384,7 @@ final public class Atom extends Point3fi implements JmolNode {
   }
   
   public int getFormalCharge() {
+    //System.out.println("Atom " + this + " " + this.formalChargeAndFlags);
     return formalChargeAndFlags >> 2;
   }
 

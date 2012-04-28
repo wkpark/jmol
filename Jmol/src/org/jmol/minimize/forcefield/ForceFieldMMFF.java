@@ -217,6 +217,7 @@ public class ForceFieldMMFF {
           bFactor = 1;
         }
         if (value == null) {
+          //TODO letting this fail for now.
           if (pa == Float.MAX_VALUE)
             pa = bciData.get(Integer.valueOf(type1 * 100)).floatValue();
           float pb = bciData.get(Integer.valueOf(type2 * 100)).floatValue();

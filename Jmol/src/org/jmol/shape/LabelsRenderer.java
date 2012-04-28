@@ -67,6 +67,7 @@ public class LabelsRenderer extends ShapeRenderer {
       if (!atom.isVisible(myVisibilityFlag))
         continue;
       String label = labelStrings[i];
+      //System.out.println("labelsren " + label);
       if (label == null || label.length() == 0 || labels.mads != null
           && labels.mads[i] < 0)
         continue;

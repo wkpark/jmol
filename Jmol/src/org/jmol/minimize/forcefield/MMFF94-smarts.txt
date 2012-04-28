@@ -95,7 +95,7 @@
 34  7 N+, QUATERNARY N          [ND4+1]
 38  7 AROMATIC N, PYRIDINE      [nD2r6]
 39  7 AROMATIC N, PYRROLE       [nD3r5]
-40  7 N-C=C (DELOC LP)          $([ND3]C=[C,N])
+40  7 N-C=C (DELOC LP)          [$([ND3]C=[C,N]),$([ND3]a)]
 40  7 N-C=N (DELOC LP)          .
 42  7 N TRIPLE BONDED           $([ND1]#*)
 43  7 N, SULFONAMIDES           $([ND3+0]S=O)

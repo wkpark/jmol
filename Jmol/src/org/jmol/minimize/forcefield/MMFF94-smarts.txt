@@ -1,29 +1,20 @@
 # author: Bob Hanson, hansonr@stolaf.edu
-# date: 6:21 AM 4/27/2012
+# date: 4/27/2012  11PM
 
 # order is important, because for a given atom, if a hit is made, we stop
 # source: ftp://ftp.wiley.com/public/journals/jcc/suppmat/17/490/MMFF-I_AppendixB.ascii
 
 #MMFF94Type ElemNo SmilesDef
-67  7 NITROGEN IN N-OXIDE       $([#7D3+1][O-1])
-68  7 NITROGEN IN N-OXIDE       $([ND4+1][O-1])
-69  7 NITROGEN IN N-OXIDE       $([#7D3+1][O-1])
+13 35 BROMINE                   [BrD1+0]
+91 35 BROMIDE ANION             [BrD0-1]
 20  6 C IN CYCLOBUTYL           [CD4r4]
 22  6 C IN CYCLOPROPLY          [CD4r3]
 30  6 C=C IN 4-RING             [CD3r4]
-78  6 GENERAL AROM 5-RING C     [cD3r5]
-10  7 N-C=O, AMIDES             $([#7D3][#6,#7]=[C,N,O,S])
-10  7 N-C=S (DELOC LP)          .
-10  7 N-N=C (DELOC LP)          .
-10  7 N-N=N (DELOC LP)          .
-79  7 GENERAL AROM 5-RING N     [nD2r5]
-13 35 BROMINE                   [BrD1+0]
-91 35 BROMIDE ANION             [BrD0-1]
  1  6 ALKYL CARBON              [CD4]
  2  6 VINYLIC                   $([CD3]=[!O&!N&!S])
  2  6 GENERIC CSP2              .
- 3  6 GUANIDINE CARBON          [$([#6D3]=[O,N,S]),$([#6D3](=[N+0])(N)N)]
- 3  6 GENERAL CARBONYL C        .
+ 3  6 GENERAL CARBONYL C        [$([#6D3]=[O,N,S]),$([#6D3](=[N+0])(N)N)]
+ 3  6 GUANIDINE CARBON          .
  3  6 C=N                       .
  3  6 KETONE OR ALDEHYDE CO     .
  3  6 AMIDE CARBONYL            .
@@ -45,6 +36,7 @@
 63  6 ALPHA AROM 5-RING  C      $([cD3r5][n,o,s])
 64  6 BETA AROM 5-RING  C       $([cD3r5]a[o,n,s])
 80  6 C IN N-C-N, IM+ ION       $([cD3r5](=[N+1])(N)[C,H])
+78  6 GENERAL AROM 5-RING C     [cD3r5]
 96 20 DIPOSITIVE CALCIUM CATION [CaD0+2]
 12 17 CHLORINE                  [ClD1+0]
 77 17 CHLORINE IN CLO4(-)       $([ClD4](O)(O)(O)O)
@@ -58,14 +50,6 @@
  5  1 H-C                       $([H][#6,Si,P])
  5  1 H-SI                      .
  5  1 H-P                       .
-21  1 H-O, ALCOHOLS             $([HD1][OD2])
-21  1 GENERAL H ON O            .
-23  1 H-N, AMINES               $([HD1][ND3])
-23  1 H, AMMONIA                .
-23  1 H-N IN PYRROLE            $([HD1][nD3+0])
-23  1 GENERAL H-N               $([HD1][#7+0])
-24  1 H-O, ACIDS                $([HD1]OC(=O)[H,C])
-24  1 H-O-P, PHOS ACIDS         $([HD1]OP)
 27  1 IMINE N-H                 $([HD1]N=[C,N])
 27  1 AZO N-H                   .
 28  1 H-N, AMIDES               [$([HD1][$([n+0]),$(N[a])]),$([H]NC=[C,O,N,S])]
@@ -74,9 +58,13 @@
 28  1 H-N, HN-C=N               .
 28  1 H-N, HN-N=C               .
 28  1 H-N, HN-N=N               .
+23  1 H-N, AMINES               [$([HD1][ND3]),$([HD1][nD3+0]),$([HD1][#7+0])]
+23  1 H, AMMONIA                .
+23  1 H-N IN PYRROLE            .
+23  1 GENERAL H-N               .
 28  1 GENERAL H ON SP2 N        .
-29  1 H-O, ENOLS, PHENOLS       $([HD1]O[#6D3])
-29  1 H-O IN HO-C=N             $([HD1]O[#6]=[#7])
+29  1 H-O, ENOLS, PHENOLS       [$([HD1]O[#6D3]),$([HD1]O[#6]=[#7])]
+29  1 H-O IN HO-C=N             .
 31  1 H-OH                      $([HD1]O[H])
 33  1 H-O-S, SULF ACIDS         $([HD1]OS=O)
 36  1 H-N+                      $([HD1][N+1])
@@ -86,10 +74,21 @@
 50  1 H ON OXONIUM OXYGEN       $([HD1][O+1D3])
 52  1 H ON OXENIUM O+           $([HD1][O+1D2])
 71  1 H-S                       $([HD1]S)
+24  1 H-O, ACIDS                [$([HD1]OC(=O)[H,C]),$([HD1]OP)]
+24  1 H-O-P, PHOS ACIDS         .
+21  1 H-O, ALCOHOLS             $([HD1][OD2])
+21  1 GENERAL H ON O            .
 14 53 IODINE                    [ID1]
 94 19 POTASSIUM CATION          [KD0+1]
 92  3 LITHIUM CATION            [LiD0+1]
 99 12 DIPOSITIVE MAGNESIUM CATI [MgD0+2]
+67  7 NITROGEN IN N-OXIDE       $([#7D3+1][O-1])
+68  7 NITROGEN IN N-OXIDE       $([ND4+1][O-1])
+69  7 NITROGEN IN N-OXIDE       $([#7D3+1][O-1])
+10  7 N-C=O, AMIDES             $([#7D3][#6,#7]=[C,N,O,S])
+10  7 N-C=S (DELOC LP)          .
+10  7 N-N=C (DELOC LP)          .
+10  7 N-N=N (DELOC LP)          .
  8  7 AMINE N                   $([ND3](-A)(-A)-A)
  9  7 N=C, IMINES               $([ND2]=[C,N])
  9  7 N=N, AZO COMPOUNDS        .
@@ -120,6 +119,7 @@
 82  7 N-OXIDE NITROGEN IN 5-RIN #huh?
 82  7 N-OXIDE NITROGEN IN 5-RIN #huh?
 82  7 N-OXIDE NITROGEN IN GENER #huh?
+79  7 GENERAL AROM 5-RING N     [nD2r5]
 93 11 SODIUM CATION             [NaD0+1]
  6  8 O-CSP3                    $([#8D2](-*)-*)
  6  8 OXYGEN IN H2O             .
@@ -188,6 +188,25 @@
 74 16 SULFINYL SULFUR, C=S=O    $([SD2](=C)=O)
 95 30 DIPOSITIVE ZINC CATION    [ZnD0+2]
 95 30 DIPOSITIVE ZINC CATION    .
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

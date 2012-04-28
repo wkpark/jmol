@@ -156,6 +156,7 @@ public class ForceFieldMMFF {
         if (bsDone.get(i))
           continue;
         types[i] = j;//atomTypes.get(j).mmType;
+        bsDone.set(i);
       }
     }
     for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) {

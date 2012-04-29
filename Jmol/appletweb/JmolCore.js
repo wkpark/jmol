@@ -102,10 +102,10 @@ Jmol = (function(document) {
 			height += "px";
 		if (typeof width !== "string")
 			width += "px";
-		var s = (isHeader ? "<div id=\"ID_appletinfotablediv\" style=\"width:Wpx;height:Hpx\"><table><tr><td><div id=\"ID_appletdiv\" style=\"width:Wpx;height:Hpx\">"
-				: "</div></td></tr><tr><td><div id=\"ID_infotablediv\" style=\"width:Wpx;height:Hpx;display:none\">\
-			<table><tr height=\"20\"><td style=\"background:yellow\"><span id=\"ID_infoheaderdiv\"></span></td><td width=\"10\"><a href=\"javascript:Jmol.showInfo(ID,false)\">[x]</a></td></tr>\
-			<tr><td colspan=\"2\"><div id=\"ID_infodiv\" style=\"overflow:scroll;width:Wpx;height:" + (applet._height - 15) + "px\"></div></td></tr></table></div></td></tr></table></div>");
+		var s = (isHeader ? "<div id=\"ID_appletinfotablediv\" style=\"width:Wpx;height:Hpx\"><div id=\"ID_appletdiv\" style=\"width:100%;height:100%\">"
+				: "</div><div id=\"ID_infotablediv\" style=\"width:100%;height:100%;display:none;position:relative\">\
+			<div style=\"height:20px;width:100%;background:yellow\"><span id=\"ID_infoheaderdiv\"></span><span style=\"position:absolute;width:10px;right:10px\"><a href=\"javascript:Jmol.showInfo(ID,false)\">[x]</a></span></div>\
+			<div id=\"ID_infodiv\" style=\"position:absolute;top:20px;bottom:0px;width:100%;overflow-y:scroll\"></div></div></div>");
 		return s.replace(/Hpx/g, height).replace(/Wpx/g, width).replace(/ID/g, applet._id);
 	}
 
@@ -483,7 +483,7 @@ Jmol = (function(document) {
 			return s;
 		}
 		var A = (new Function( "return " + data ) )();
-		return (!A ? null : key  && A[key] ? A : A);
+		return (!A ? null : key && A[key] ? A : A);
 	}
 
 	Jmol._sortMessages = function(A){

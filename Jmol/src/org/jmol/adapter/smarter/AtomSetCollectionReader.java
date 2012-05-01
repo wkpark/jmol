@@ -46,6 +46,8 @@ import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
+import jspecview.util.TextFormat;
+
 /*
  * Notes 9/2006 Bob Hanson
  * 
@@ -312,6 +314,8 @@ public abstract class AtomSetCollectionReader {
     applySymmetryAndSetTrajectory();
     if (loadNote.length() > 0)
       atomSetCollection.setAtomSetCollectionAuxiliaryInfo("modelLoadNote", loadNote.toString());
+    if (doCentralize)
+      atomSetCollection.centralize();
   }
 
   /////////////////////////////////////////////////////////////////////////////////////
@@ -503,7 +507,10 @@ public abstract class AtomSetCollectionReader {
 
   public boolean haveModel;
 
-  public boolean doGetModel(int modelNumber) {
+  public boolean doGetModel(int modelNumber, String title) {
+    if (title != null && nameRequired != null && nameRequired.length() > 0 
+        && title.toUpperCase().indexOf(nameRequired) < 0)
+          return false;
     // modelNumber is 1-based, but firstLastStep is 0-based
     boolean isOK = (bsModels == null ? desiredModelNumber < 1
         || modelNumber == desiredModelNumber
@@ -705,10 +712,12 @@ public abstract class AtomSetCollectionReader {
   private int filterN;
   private int nFiltered;
   private boolean doSetOrientation;
+  private boolean doCentralize;
   protected boolean addVibrations;
   protected boolean useAltNames;
   public boolean readMolecularOrbitals;
   protected boolean reverseModels;
+  private String nameRequired;
 
   // MANY: "NOVIB" "NOMO"
   // CSF, SPARTAN: "NOORIENT"
@@ -733,11 +742,20 @@ public abstract class AtomSetCollectionReader {
       filter0 = filter0.toUpperCase();
     filter = filter0;
     doSetOrientation = !checkFilter("NOORIENT");
+    doCentralize = checkFilter("CENTER");
     addVibrations = !checkFilter("NOVIB");
     readMolecularOrbitals = !checkFilter("NOMO");
     useAltNames = checkFilter("ALTNAME");
     reverseModels = checkFilter("REVERSEMODELS");
-
+    if (checkFilter("NAME=")) {
+      nameRequired = filter.substring(filter.indexOf("NAME=") + 5);
+      if (nameRequired.startsWith("'"))
+        nameRequired = TextFormat.split(nameRequired, "'")[1]; 
+      else if (nameRequired.startsWith("\""))
+        nameRequired = TextFormat.split(nameRequired, "\"")[1]; 
+      filter0 = filter = TextFormat.simpleReplace(filter, nameRequired,"");
+      filter0 = filter = TextFormat.simpleReplace(filter, "NAME=","");
+    }
     if (filter == null)
       return;
     filterAtomType = checkFilter("*.") || checkFilter("!.");

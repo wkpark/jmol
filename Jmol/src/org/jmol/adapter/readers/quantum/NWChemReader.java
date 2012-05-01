@@ -139,7 +139,7 @@ public class NWChemReader extends MOReader {
       return true;
     }
     if (line.indexOf("Output coordinates in angstroms") >= 0) {
-      if (!doGetModel(++modelNumber))
+      if (!doGetModel(++modelNumber, null))
         return checkLastModel();
       equivalentAtomSets++;
       readAtoms();

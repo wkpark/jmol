@@ -234,7 +234,6 @@ public class Quaternion {
     q2 = (float) (y * 0.5);
     q3 = (float) (z * 0.5);
 
-    System.out.println("quaternion set(mat) " + mat + "\n" + this + " " + getNormal() + " " + getTheta());
     /*
      *  Originally from http://www.gamedev.net/community/forums/topic.asp?topic_id=448380
      *  later algorithm was adapted from Visualizing Quaternions, by Andrew J. Hanson

@@ -1,193 +1,187 @@
-# author: Bob Hanson, hansonr@stolaf.edu
-# date: 4/27/2012  11PM
-
-# order is important, because for a given atom, if a hit is made, we stop
-# source: ftp://ftp.wiley.com/public/journals/jcc/suppmat/17/490/MMFF-I_AppendixB.ascii
-
-#MMFF94Type ElemNo SmilesDef
-13 35 BROMINE                   [BrD1+0]
-91 35 BROMIDE ANION             [BrD0-1]
-20  6 C IN CYCLOBUTYL           [CD4r4]
-22  6 C IN CYCLOPROPLY          [CD4r3]
-30  6 C=C IN 4-RING             [CD3r4]
- 1  6 ALKYL CARBON              [CD4]
- 2  6 VINYLIC                   $([CD3]=[!O&!N&!S])
- 2  6 GENERIC CSP2              .
- 3  6 GENERAL CARBONYL C        [$([#6D3]=[O,N,S]),$([#6D3](=[N+0])(N)N)]
- 3  6 GUANIDINE CARBON          .
- 3  6 C=N                       .
- 3  6 KETONE OR ALDEHYDE CO     .
- 3  6 AMIDE CARBONYL            .
- 3  6 CARBOXYLIC ACID OF EST    .
- 3  6 CARBAMATE CARBONYL        .
- 3  6 CARBONIC ACID OR ESTER    .
- 3  6 THIOESTER, C=O            .
- 3  6 THIOESTER, C=S            .
- 3  6 THIOAMIDE                 .
- 3  6 CARBON IN >C=SO2          .
- 4  6 ACETYLENIC C              [$([#6D2]#*),$([#6D2](=C)=C)]
- 4  6 ALLENIC C                 .
-37  6 AROMATIC C                [cD3]
-41  6 C IN CO2- ANION           [$([CD3](=[S,O])[-1]),$(C([-1])=[S,O])]
-41  6 THIOCARBOXYLATE C         .
-57  6 GUANIDINIUM CARBON        [$([CD3](=[N+1])(N)N),$([CD3](=[N+1])(N)[C,H])]
-57  6 C IN +N=C-N RESONANCE     .
-60  6 ISONITRILE CARBON         $([CD1]#N)
-63  6 ALPHA AROM 5-RING  C      $([cD3r5][n,o,s])
-64  6 BETA AROM 5-RING  C       $([cD3r5]a[o,n,s])
-80  6 C IN N-C-N, IM+ ION       $([cD3r5](=[N+1])(N)[C,H])
-78  6 GENERAL AROM 5-RING C     [cD3r5]
-96 20 DIPOSITIVE CALCIUM CATION [CaD0+2]
-12 17 CHLORINE                  [ClD1+0]
-77 17 CHLORINE IN CLO4(-)       $([ClD4](O)(O)(O)O)
-90 17 CHLORIDE ANION            [ClD0-1]
-97 29 MONOPOSITIVE COPPER CATIO [CuD0+1]
-98 29 DIPOSITIVE COPPER CATION  [CuD0+2]
-11  9 FLUORINE                  [FD1+0]
-87 26 IRON +2 CATION            [FeD0+2]
-88 26 IRON +3 CATION            [FeD0+3]
-89 26 FLUORIDE ANION            [FD0-1]
- 5  1 H-C                       $([H][#6,Si,P])
- 5  1 H-SI                      .
- 5  1 H-P                       .
-27  1 IMINE N-H                 $([HD1]N=[C,N])
-27  1 AZO N-H                   .
-28  1 H-N, AMIDES               [$([HD1][$([n+0]),$(N[a])]),$([H]NC=[C,O,N,S])]
-28  1 H-N, ENAMINES             .
-28  1 H-N, THIOAMIDES           .
-28  1 H-N, HN-C=N               .
-28  1 H-N, HN-N=C               .
-28  1 H-N, HN-N=N               .
-23  1 H-N, AMINES               [$([HD1][ND3]),$([HD1][nD3+0]),$([HD1][#7+0])]
-23  1 H, AMMONIA                .
-23  1 H-N IN PYRROLE            .
-23  1 GENERAL H-N               .
-28  1 GENERAL H ON SP2 N        .
-29  1 H-O, ENOLS, PHENOLS       [$([HD1]O[#6D3]),$([HD1]O[#6]=[#7])]
-29  1 H-O IN HO-C=N             .
-31  1 H-OH                      $([HD1]O[H])
-33  1 H-O-S, SULF ACIDS         $([HD1]OS=O)
-36  1 H-N+                      $([HD1][N+1])
-36  1 H ON IMIDAZOLIUM N        .
-36  1 H ON PROTONATED N+=C-N    .
-36  1 H ON GUANIDINIUM N        .
-50  1 H ON OXONIUM OXYGEN       $([HD1][O+1D3])
-52  1 H ON OXENIUM O+           $([HD1][O+1D2])
-71  1 H-S                       $([HD1]S)
-24  1 H-O, ACIDS                [$([HD1]OC(=O)[H,C]),$([HD1]OP)]
-24  1 H-O-P, PHOS ACIDS         .
-21  1 H-O, ALCOHOLS             $([HD1][OD2])
-21  1 GENERAL H ON O            .
-14 53 IODINE                    [ID1]
-94 19 POTASSIUM CATION          [KD0+1]
-92  3 LITHIUM CATION            [LiD0+1]
-99 12 DIPOSITIVE MAGNESIUM CATI [MgD0+2]
-67  7 NITROGEN IN N-OXIDE       $([#7D3+1][O-1])
-68  7 NITROGEN IN N-OXIDE       $([ND4+1][O-1])
-69  7 NITROGEN IN N-OXIDE       $([#7D3+1][O-1])
-10  7 N-C=O, AMIDES             $([#7D3][#6,#7]=[C,N,O,S])
-10  7 N-C=S (DELOC LP)          .
-10  7 N-N=C (DELOC LP)          .
-10  7 N-N=N (DELOC LP)          .
- 8  7 AMINE N                   $([ND3](-A)(-A)-A)
- 9  7 N=C, IMINES               $([ND2]=[C,N])
- 9  7 N=N, AZO COMPOUNDS        .
-34  7 N+, QUATERNARY N          [ND4+1]
-38  7 AROMATIC N, PYRIDINE      [nD2r6]
-39  7 AROMATIC N, PYRROLE       [nD3r5]
-40  7 N-C=C (DELOC LP)          [$([ND3]C=[C,N]),$([ND3]a)]
-40  7 N-C=N (DELOC LP)          .
-42  7 N TRIPLE BONDED           $([ND1]#*)
-43  7 N, SULFONAMIDES           $([ND3+0]S=O)
-45  7 NITRO GROUP N             $([ND3](=O)O)
-45  7 NITRATE GROUP N           .
-46  7 NITROSO GROUP N           $([ND3](=O)[#6])
-47  7 TERMINAL N, AZIDE         $([ND1][ND2][ND2])
-48  7 DIVAL. N IN S(N)(O) GP    $([ND2]S=O)
-53  7 N TWICE DOUBLE BONDED     $([ND2](=*)=*)
-54  7 IMINIUM NITROGEN          $([ND3+1]=C)
-54  7 AZONIUM NITROGEN          $([ND3+1]#N)
-55  7 N IN +N=C-N: ; Q=1/2      [$([ND3+1]=CN),$(NC=[N+1])]
-56  7 GUANIDINIUM N; Q=1/3      $([ND3]C([ND3])[ND3])
-58  7 N PYRIDINIUM ION          [nD3+1]
-61  7 ISONITRILE N              $([ND2]#C)
-62  7 SULFONAMIDE N-            $([ND2-1]S=O)
-65  7 ALPHA AROM 5-RING N       $([nD2r5][n,o,s])
-66  7 ALPHA AROM 5-RING N       $([nD2r5][n,o,s])
-76  7 NEG N IN TETRAZOLE AN     [$([nD2-1r5]nnn),$([nD2-1r5](n)nn)]
-81  7 N IN N-C-N, IM+ ION       $([nD3r5+1]c[nr5+1])
-82  7 N-OXIDE NITROGEN IN 5-RIN #huh?
-82  7 N-OXIDE NITROGEN IN 5-RIN #huh?
-82  7 N-OXIDE NITROGEN IN GENER #huh?
-79  7 GENERAL AROM 5-RING N     [nD2r5]
-93 11 SODIUM CATION             [NaD0+1]
- 6  8 O-CSP3                    $([#8D2](-*)-*)
- 6  8 OXYGEN IN H2O             .
- 6  8 ESTER OR ACID -O-         .
- 6  8 ENOL OR PHEMOLIC O        .
- 6  8 OXYGEN IN -O-C=N MOIETY   .
- 6  8 DIVALENT O IN SULFATE     .
- 6  8 DIVALENT O IN SULFITE     .
- 6  8 PAIR OF DIVALENT O ON S   .
- 6  8 OTHER DIVALENT O ON S     .
- 6  8 DIVALENT O IN PHOSPHATE   .
- 6  8 DIVALENT O IN PHOSPHITE   .
- 6  8 PAIR OF DIVALENT O ON P   .
- 6  8 OTHER DIVALENT O ON P     .
- 6  8 GENERAL DIVALENT OX       .
- 7  8 O=C, GENERIC              $([#8D1]=[#6,#7,#16])
- 7  8 O=C IN AMIDES             .
- 7  8 O=C IN KET, ALD           .
- 7  8 O=C IN ACIDS, ESTERS      .
- 7  8 TERMINAL O SULFOXIDES     .
- 7  8 NITROSO-GROUP OXYGEN      .
-32  8 O, CARBOXYLATE ANION      [$([OD1-1][C,N]=O),$([OD1]=[C,N][O-1]),$([OD1]=[N,S,P,O]),$([OD1][N,S,P,Cl]=O)]
-32  8 OXIDE ON NITROHGEN        .
-32  8 NITRO-GROUP OXYGEN        .
-32  8 NITRO-GROUP IN NITRATE    .
-32  8 NITRATE ANION OXYGEN      .
-32  8 SINGLE TERM O ON TET S    .
-32  8 SULFONES, SULFONAMIDES    .
-32  8 SULFONATES, TERM OX       .
-32  8 SO4(3-)                   .
-32  8 THIOSULFINATE O (-1/2)    .
-32  8 TERMINAL O, O-P           .
-32  8 TERMINAL O, O2P GROUP     .
-32  8 TERMINAL O, O3P GROUP     .
-32  8 TERMINAL O, PO4(-3)       .
-32  8 TERMINAL O IN CLO4(-)     .
-35  8 OXIDE OXYGEN ON SP3 C     $([OD1-1][#6])
-35  8 OXIDE OXYGEN ON SP2 C     .
-49  8 OXONIUM (TRICOORD) O      [OD3+1]
-51  8 OXENIUM OXYGEN+           [OD2+1]
-59  8 AROMATIC O, FURAN         [oD2r5]
-70  8 OXYGEN IN WATER           $([OD2](H)H)
-25 15 PHOSPHODIESTER            $([PD4]=O)
-25 15 TETRACRD P, 3 OXYGENS     .
-25 15 TETRACRD P, 2 OXYGENS     .
-25 15 TETRACRD P, 2 OXYGENS     .
-25 15 GENERAL TETRACRD P        [PD4]
-26 15 TRICOORDINATE P           [PD3]
-75 15 P DOUBLY BONDED TO C      $([PD2]=C)
-15 16 THIOL, SULFIDE            $([SD2](-*)-*)
-16 16 S DOUBLY BONDED TO C      $([SD1]=C)
-17 16 SULFOXIDE S               $([SD3](=O)([#6])[#6])
-18 16 SULFONE S                 $([SD4](=[N,O])[N,O])
-18 16 SULFONAMIDE S             .
-18 16 SULFONATE S               .
-18 16 OXYGENATED SULFONE S      .
-18 16 NITROGEN ANALOG OF SO2    .
-19 16 SILICON                   [SiD4]
-44 16 S IN THIOPHENE            [sD2r5]
-72 16 THIOCARBOXYLATE S         [$([SD1-1]C=S),$([SD1]=C[S-1]),$([SD1][P,C,S])]
-72 16 TERMINAL SULFUR ON P      .
-72 16 TERMINAL SULFUR ON C      .
-72 16 TERM S, THIOSULFINATE     .
-73 16 SULFUR IN SULFINATE       $([SD3][$([O,S])-1]=O)
-73 16 SULFUR, THIOSULFINATE     .
-74 16 SULFINYL SULFUR, C=S=O    $([SD2](=C)=O)
-95 30 DIPOSITIVE ZINC CATION    [ZnD0+2]
-95 30 DIPOSITIVE ZINC CATION    .
+#AtSym ElemNo mmType formalCharge Desc Smiles
+Br 35 13      0 BROMINE                   [BrD1+0]
+Br 35 91      0 BROMIDE ANION             [BrD0-1]
+C   6 20      0 C IN CYCLOBUTYL           [CD4r4]
+C   6 22      0 C IN CYCLOPROPLY          [CD4r3]
+C   6 30      0 C=C IN 4-RING             [CD3r4]
+C   6  1      0 ALKYL CARBON              [CD4]
+C   6  2      0 VINYLIC                   $([CD3]=[!O&!N&!S])
+C   6  2      0 GENERIC CSP2              .
+C   6 41      0 C IN CO2- ANION           $([CD3]([SD1,OD1])[SD1,OD1])
+C   6 41      0 THIOCARBOXYLATE C         .
+C   6 57      0 GUANIDINIUM CARBON        [$([#6D3]([#7D3])([#7D3])[#7D3]),$([#6D3]([#7D3])([#7D3])[#6,H])]
+C   6 57      0 C IN +N=C-N RESONANCE     .
+C   6 60      0 ISONITRILE CARBON         $([CD1]#N)
+C   6  3      0 GUANIDINE CARBON          $([#6D3]([#7D3])([#7D3])[#7D2])
+C   6  3      0 GENERAL CARBONYL C        $([#6D3]=[O,N,S])
+C   6  3      0 C=N                       .
+C   6  3      0 KETONE OR ALDEHYDE CO     .
+C   6  3      0 AMIDE CARBONYL            .
+C   6  3      0 CARBOXYLIC ACID OF EST    .
+C   6  3      0 CARBAMATE CARBONYL        .
+C   6  3      0 CARBONIC ACID OR ESTER    .
+C   6  3      0 THIOESTER, C=O            .
+C   6  3      0 THIOESTER, C=S            .
+C   6  3      0 THIOAMIDE                 .
+C   6  3      0 CARBON IN >C=SO2          .
+C   6  4      0 ACETYLENIC C              [$([#6D2]#*),$([#6D2](=C)=C)]
+C   6  4      0 ALLENIC C                 .
+C   6 63      0 ALPHA AROM 5-RING  C      $([cD3r5][n,o,s])
+C   6 64      0 BETA AROM 5-RING  C       $([cD3r5]a[o,n,s])
+C   6 80      0 C IN N-C-N, IM+ ION       $([cD3r5](=[N+1])(N)[C,H])
+C   6 78      0 GENERAL AROM 5-RING C     [cD3r5]
+C   6 37      0 AROMATIC C                [cD3]
+Ca 20 96      0 DIPOSITIVE CALCIUM CATION [CaD0+2]
+Cl 17 12      0 CHLORINE                  [ClD1+0]
+Cl 17 77      0 CHLORINE IN CLO4(-)       $([ClD4](O)(O)(O)O)
+Cl 17 90      0 CHLORIDE ANION            [ClD0-1]
+Cu 29 97      0 MONOPOSITIVE COPPER CATIO [CuD0+1]
+Cu 29 98      0 DIPOSITIVE COPPER CATION  [CuD0+2]
+F   9 11      0 FLUORINE                  [FD1+0]
+Fe 26 87      0 IRON +2 CATION            [FeD0+2]
+Fe 26 88      0 IRON +3 CATION            [FeD0+3]
+Fe 26 89      0 FLUORIDE ANION            [FD0-1]
+H   1  5      0 H-C                       $([H][#6,Si,P])
+H   1  5      0 H-SI                      .
+H   1  5      0 H-P                       .
+H   1 36      0 H ON IMIDAZOLIUM N        .
+H   1 36      0 H ON PROTONATED N+=C-N    .
+H   1 36      0 H ON GUANIDINIUM N        .
+H   1 36      0 H-N+                      [$([HD1][#7+1]),$([HD1][#7][#6][#7+1])]
+H   1 27      0 IMINE N-H                 $([HD1][#7+0]=[#6,#7])
+H   1 27      0 AZO N-H                   .
+H   1 28      0 H-N, AMIDES               [$([HD1][$([n+0]),$([#7]a)]),$([HD1][#7+0][#6]=[#6,#7,#8,#16])]
+H   1 28      0 H-N, ENAMINES             .
+H   1 28      0 H-N, THIOAMIDES           .
+H   1 28      0 H-N, HN-C=N               .
+H   1 28      0 H-N, HN-N=C               .
+H   1 28      0 H-N, HN-N=N               .
+H   1 28      0 GENERAL H ON SP2 N        .
+H   1 23      0 H-N, AMINES               [$([HD1][ND3]),$([HD1][nD3+0]),$([HD1][#7+0])]
+H   1 23      0 H, AMMONIA                .
+H   1 23      0 H-N IN PYRROLE            .
+H   1 23      0 GENERAL H-N               .
+H   1 31      0 H-OH                      $([HD1]O[H])
+H   1 33      0 H-O-S, SULF ACIDS         $([HD1]OS=O)
+H   1 50      0 H ON OXONIUM OXYGEN       $([HD1][O+1D3])
+H   1 52      0 H ON OXENIUM O+           $([HD1][O+1D2])
+H   1 71      0 H-S                       $([HD1]S)
+H   1 24      0 H-O, ACIDS                [$([HD1]OC(=O)[H,C]),$([HD1]OP)]
+H   1 24      0 H-O-P, PHOS ACIDS         .
+H   1 29      0 H-O, ENOLS, PHENOLS       [$([HD1]O[#6D3]),$([HD1]O[#6]=[#7])]
+H   1 29      0 H-O IN HO-C=N             .
+H   1 21      0 H-O, ALCOHOLS             $([HD1][OD2])
+H   1 21      0 GENERAL H ON O            .
+I  53 14      0 IODINE                    [ID1]
+K  19 94      0 POTASSIUM CATION          [KD0+1]
+Li  3 92      0 LITHIUM CATION            [LiD0+1]
+Mg 12 99      0 DIPOSITIVE MAGNESIUM CATI [MgD0+2]
+N   7 67      0 NITROGEN IN N-OXIDE       $([#7D3+1][O-1])
+N   7 68      0 NITROGEN IN N-OXIDE       $([ND4+1][O-1])
+N   7 69      0 NITROGEN IN N-OXIDE       $([#7D3+1][O-1])
+N   7 10      0 N-C=O, AMIDES             $([#7D3][#6,#7]=[C,N,O,S])
+N   7 10      0 N-C=S (DELOC LP)          .
+N   7 10      0 N-N=C (DELOC LP)          .
+N   7 10      0 N-N=N (DELOC LP)          .
+N   7  8      0 AMINE N                   $([ND3](-A)(-A)-A)
+N   7  9      0 N=C, IMINES               $([ND2]=[C,N])
+N   7  9      0 N=N, AZO COMPOUNDS        .
+N   7 34      0 N+, QUATERNARY N          [ND4+1]
+N   7 38      0 AROMATIC N, PYRIDINE      [nD2r6]
+N   7 39      0 AROMATIC N, PYRROLE       [nD3r5]
+N   7 58      0 N PYRIDINIUM ION          [nD3r6]
+N   7 40      0 N-C=C (DELOC LP)          [$([ND3]C=[C,N]),$([ND3]a)]
+N   7 40      0 N-C=N (DELOC LP)          .
+N   7 42      0 N TRIPLE BONDED           $([ND1]#*)
+N   7 43      0 N, SULFONAMIDES           $([ND3+0]S=O)
+N   7 45      0 NITRO GROUP N             $([ND3](=O)O)
+N   7 45      0 NITRATE GROUP N           .
+N   7 46      0 NITROSO GROUP N           $([ND3](=O)[#6])
+N   7 47      0 TERMINAL N, AZIDE         $([ND1][ND2][ND2])
+N   7 48      0 DIVAL. N IN S(N)(O) GP    $([ND2]S=O)
+N   7 53      0 N TWICE DOUBLE BONDED     $([ND2](=*)=*)
+N   7 54      0 IMINIUM NITROGEN          $([ND3+1]=C)
+N   7 54      0 AZONIUM NITROGEN          $([ND3+1]#N)
+N   7 55      0 N IN +N=C-N: ; Q=1/2      [$([ND3+1]=CN),$(NC=[N+1])]
+N   7 56      0 GUANIDINIUM N; Q=1/3      $([#7D3][#6]([#7D3])[#7D3])
+N   7 61      0 ISONITRILE N              $([ND2]#C)
+N   7 62      0 SULFONAMIDE N-            $([ND2-1]S=O)
+N   7 65      0 ALPHA AROM 5-RING N       $([nD2r5][n,o,s])
+N   7 66      0 ALPHA AROM 5-RING N       $([nD2r5][n,o,s])
+N   7 76      0 NEG N IN TETRAZOLE AN     [$([nD2-1r5]nnn),$([nD2-1r5](n)nn)]
+N   7 81      0 N IN N-C-N, IM+ ION       $([nD3r5+1]c[nr5+1])
+N   7 82      0 N-OXIDE NITROGEN IN 5-RIN #huh?
+N   7 82      0 N-OXIDE NITROGEN IN 5-RIN #huh?
+N   7 82      0 N-OXIDE NITROGEN IN GENER #huh?
+N   7 79      0 GENERAL AROM 5-RING N     [nD2r5]
+Na 11 93      0 SODIUM CATION             [NaD0+1]
+O   8  6      0 O-CSP3                    $([#8D2](-*)-*)
+O   8  6      0 OXYGEN IN H2O             .
+O   8  6      0 ESTER OR ACID -O-         .
+O   8  6      0 ENOL OR PHEMOLIC O        .
+O   8  6      0 OXYGEN IN -O-C=N MOIETY   .
+O   8  6      0 DIVALENT O IN SULFATE     .
+O   8  6      0 DIVALENT O IN SULFITE     .
+O   8  6      0 PAIR OF DIVALENT O ON S   .
+O   8  6      0 OTHER DIVALENT O ON S     .
+O   8  6      0 DIVALENT O IN PHOSPHATE   .
+O   8  6      0 DIVALENT O IN PHOSPHITE   .
+O   8  6      0 PAIR OF DIVALENT O ON P   .
+O   8  6      0 OTHER DIVALENT O ON P     .
+O   8  6      0 GENERAL DIVALENT OX       .
+O   8 32   -0.5 O, CARBOXYLATE ANION      $([OD1][CD3][OD1])
+O   8 32   -0.5 NITRO-GROUP OXYGEN        [$([OD1-1][ND3]=O),$(O=[ND3][OD1-1])]
+O   8 32 -0.667 NITRO-GROUP IN NITRATE    [$([OD1-1][ND3](=O)[OD1-1]),$(O=[ND3][OD1-1][OD1-1])]
+O   8 32 -0.333 NITRATE ANION OXYGEN      $([OD1][ND3]([OD1])[OD1])
+O   8 32     -1 OXIDE ON NITROHGEN        $([OD1][ND3+1])
+O   8 32      0 SINGLE TERM O ON TET S    #huh?
+O   8 32      0 SULFONES, SULFONAMIDES    $([OD1][SD4]([OD1])([#6])[#6,#7D3])
+O   8 32 -0.333 SULFONATES, TERM OX ROSO3 $([OD1][SD4]([OD1])([OD1])[OD2])
+O   8 32   -0.5 SO4(2-)                   $([OD1][SD4]([OD1])([OD1])[OD1])
+O   8 32   -0.5 THIOSULFINATE O (-1/2)    $([OD1][SD3][#6]S)
+O   8 32      0 TERMINAL O, O-P           #huh?
+O   8 32   -0.5 TERMINAL O, O2P GROUP (RO $([OD1][PD4]([OD1])([OD2])[OD2])
+O   8 32 -0.667 TERMINAL O, O3P GROUP ROP $([OD1][PD4]([OD1])([OD1])[OD2])
+O   8 32  -0.75 TERMINAL O, PO4(-3)       $([OD1][PD4]([OD1])([OD1])[OD1])
+O   8 32  -0.25 TERMINAL O IN CLO4(-)     $([OD1][ClD4]([OD1])([OD1])[OD1])
+O   8  7      0 O=C, GENERIC              $([#8D1]=[#6,#7,#16])
+O   8  7      0 O=C IN AMIDES             .
+O   8  7      0 O=C IN KET, ALD           .
+O   8  7      0 O=C IN ACIDS, ESTERS      .
+O   8  7      0 TERMINAL O SULFOXIDES     .
+O   8  7      0 NITROSO-GROUP OXYGEN      .
+O   8 35      0 OXIDE OXYGEN ON SP3 C     $([OD1-1][CD4])
+O   8 35      0 OXIDE OXYGEN ON SP2 C     $([OD1-1][#6D3])
+O   8 49      0 OXONIUM (TRICOORD) O      [OD3+1]
+O   8 51      0 OXENIUM OXYGEN+           [OD2+1]
+O   8 59      0 AROMATIC O, FURAN         [oD2r5]
+O   8 70      0 OXYGEN IN WATER           $([OD2](H)H)
+P  15 75      0 P DOUBLY BONDED TO C      $([PD2]=C)
+P  15 25      0 GENERAL TETRACRD P        [PD4]
+P  15 25      0 PHOSPHODIESTER            .
+P  15 25      0 TETRACRD P, 3 OXYGENS     .
+P  15 25      0 TETRACRD P, 2 OXYGENS     .
+P  15 25      0 TETRACRD P, 2 OXYGENS     .
+P  15 26      0 TRICOORDINATE P           [PD3]
+S  16 15      0 THIOL, SULFIDE            $([SD2](-*)-*)
+S  16 16      0 S DOUBLY BONDED TO C      $([SD1]=C)
+S  16 17      0 SULFOXIDE S               $([SD3](=O)([#6])[#6])
+S  16 18      0 SULFONE S                 $([SD4](=[N,O])[N,O])
+S  16 18      0 SULFONAMIDE S             .
+S  16 18      0 SULFONATE S               .
+S  16 18      0 OXYGENATED SULFONE S      .
+S  16 18      0 NITROGEN ANALOG OF SO2    .
+S  16 19      0 SILICON                   [SiD4]
+S  16 44      0 S IN THIOPHENE            [sD2r5]
+S  16 72      0 THIOCARBOXYLATE S         [$([SD1-1]C=S),$([SD1]=C[S-1]),$([SD1][P,C,S])]
+S  16 72      0 TERMINAL SULFUR ON P      .
+S  16 72      0 TERMINAL SULFUR ON C      .
+S  16 72      0 TERM S, THIOSULFINATE     .
+S  16 73      0 SULFUR IN SULFINATE       $([SD3][$([O,S])-1]=O)
+S  16 73      0 SULFUR, THIOSULFINATE     .
+S  16 74      0 SULFINYL SULFUR, C=S=O    $([SD2](=C)=O)
+Zn 30 95      0 DIPOSITIVE ZINC CATION    [ZnD0+2]
+Zn 30 95      0 DIPOSITIVE ZINC CATION    .
 
 
 

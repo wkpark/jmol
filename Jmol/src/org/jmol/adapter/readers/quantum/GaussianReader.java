@@ -127,7 +127,7 @@ public class GaussianReader extends MOReader {
     if (line.indexOf("Input orientation:") >= 0
         || line.indexOf("Z-Matrix orientation:") >= 0
         || line.indexOf("Standard orientation:") >= 0) {
-      if (!doGetModel(++modelNumber))
+      if (!doGetModel(++modelNumber, null))
         return checkLastModel();
       equivalentAtomSets++;
       //if (Logger.debugging)

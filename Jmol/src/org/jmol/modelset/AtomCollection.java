@@ -519,7 +519,11 @@ abstract public class AtomCollection {
 
     if (values != null && values.length == 0 || bs == null)
       return;
+    boolean isAll = (values != null && values.length == atomCount 
+        || list != null && list.length == atomCount);
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+      if (isAll)
+        n = i;
       if (values != null) {
         if (n >= values.length)
           return;
@@ -952,6 +956,7 @@ abstract public class AtomCollection {
   }
   
   protected BitSet[] tainted;  // not final -- can be set to null
+  boolean canSkipLoad = true;
 
   public static int getUserSettableType(String dataType) {
     boolean isExplicit = (dataType.indexOf("property_") == 0);
@@ -972,6 +977,7 @@ abstract public class AtomCollection {
   }
   
   public void taint(BitSet bsAtoms, byte type) {
+    canSkipLoad = false;
     if (!preserveState)
       return;
     for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1))

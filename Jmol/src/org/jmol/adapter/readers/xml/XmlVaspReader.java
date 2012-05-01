@@ -104,7 +104,7 @@ public class XmlVaspReader extends XmlReader {
     }
 
     if ("structure".equals(localName)) {
-      if (!parent.doGetModel(++parent.modelNumber)) {
+      if (!parent.doGetModel(++parent.modelNumber, null)) {
         parent.checkLastModel();
         return;
       }

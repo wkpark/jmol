@@ -28,6 +28,9 @@ import org.jmol.script.ScriptEvaluator;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collections;
@@ -685,5 +688,21 @@ class StatusManager {
             + (myParam == null || myParam.length() == 0 ? "" : ":" + myParam)));
   }
 
+  Map<String, String> cache = new Hashtable<String, String>();
+  void cachePut(String key, String data) {
+    cache.put(key, data);
+    //if (jmolStatusListener != null)
+      //jmolStatusListener.createImage("cache", key, data, Integer.MIN_VALUE);
+  }
+  
+  String cacheGet(String key) {
+    return cache.get(key);
+    //if (jmolStatusListener != null)
+      //jmolStatusListener.createImage("cache", key, data, Integer.MAX_VALUE);
+  }
+
+  void cacheClear() {
+    cache.clear();
+  }
 }
 

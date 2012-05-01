@@ -655,19 +655,20 @@ public class SmarterJmolAdapter extends JmolAdapter {
     private int atomCount;
     private Atom[] atoms;
     private BitSet bsAtoms;
+    private int ptLast;
 
     AtomIterator(AtomSetCollection atomSetCollection) {
       atomCount = atomSetCollection.getAtomCount();
       atoms = atomSetCollection.getAtoms();
       bsAtoms = atomSetCollection.bsAtoms;
-      iatom = 0;
+      ptLast = (bsAtoms == null ? atomCount - 1 : Math.min(bsAtoms.length(), atoms.length));
     }
     @Override
     public boolean hasNext() {
-      if (iatom == atomCount)
+      if (iatom == ptLast)
         return false;
       while ((atom = atoms[iatom++]) == null || (bsAtoms != null && !bsAtoms.get(atom.atomIndex)))
-        if (iatom == atomCount)
+        if (iatom == ptLast)
           return false;
       atoms[iatom - 1] = null; // single pass
       return true;

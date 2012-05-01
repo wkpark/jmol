@@ -498,6 +498,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
               + " -- " + value);
           return;
         }
+        if (!(value instanceof BufferedReader))
         try {
           value = new BufferedReader(new InputStreamReader((InputStream) value,
               "ISO-8859-1"));

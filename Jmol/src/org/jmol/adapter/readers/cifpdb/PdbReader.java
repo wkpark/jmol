@@ -187,7 +187,7 @@ public class PdbReader extends AtomSetCollectionReader {
       // PDB is different -- targets actual model number
       int modelNo = (isNewModel ? modelNumber + 1 : getModelNumber());
       modelNumber = (bsModels == null ? modelNo : modelNumber + 1);
-      if (!doGetModel(modelNumber)) {
+      if (!doGetModel(modelNumber, null)) {
         handleTlsMissingModels();
         return checkLastModel();
       }

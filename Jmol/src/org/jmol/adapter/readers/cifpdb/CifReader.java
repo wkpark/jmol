@@ -116,7 +116,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       if (key.startsWith("data_")) {
         if (iHaveDesiredModel)
           break;
-        skipping = !doGetModel(++modelNumber);
+        skipping = !doGetModel(++modelNumber, null);
         if (skipping) {
           tokenizer.getTokenPeeked();
         } else {

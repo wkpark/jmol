@@ -69,7 +69,7 @@ public class MdCrdReader extends AtomSetCollectionReader {
     boolean isPeriodic = htParams.containsKey("isPeriodic");
     int floatCount = templateAtomCount * 3 + (isPeriodic ? 3 : 0);
     while (true)
-      if (doGetModel(++modelNumber)) {
+      if (doGetModel(++modelNumber, null)) {
         Point3f[] trajectoryStep = new Point3f[atomCount];
         if (!getTrajectoryStep(trajectoryStep, isPeriodic))
           return;

@@ -102,7 +102,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
   short elementNumber = -2; // UNDEFINED (could be A or a or *)
 
   private short atomicMass = Short.MIN_VALUE;
-  private int charge;
+  private int charge = Integer.MIN_VALUE;
   int missingHydrogenCount = Integer.MIN_VALUE;
   int implicitHydrogenCount = Integer.MIN_VALUE;
   private int matchingAtom = -1;

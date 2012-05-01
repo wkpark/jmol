@@ -180,7 +180,7 @@ ICNTRL(20)=VERNUM ! version number
     int atomCount = (bsFilter == null ? templateAtomCount : ((Integer) htParams
         .get("filteredAtomCount")).intValue());
     for (int i = 0; i < nModels; i++)
-      if (doGetModel(++modelNumber)) {
+      if (doGetModel(++modelNumber, null)) {
         Point3f[] trajectoryStep = new Point3f[atomCount];
         if (!getTrajectoryStep(trajectoryStep))
           return;

@@ -175,7 +175,7 @@ public class FileManager {
   private String getZipDirectoryAsString(String fileName) {
     return ZipUtil
         .getZipDirectoryAsStringAndClose((BufferedInputStream) getBufferedInputStreamOrErrorMessageFromName(
-            fileName, false, false));
+            fileName, false, false, null));
   }
 
   /////////////// createAtomSetCollectionFromXXX methods /////////////////
@@ -377,9 +377,8 @@ public class FileManager {
   }
 
   Object getBufferedInputStreamOrErrorMessageFromName(String name, boolean showMsg,
-                                              boolean checkOnly) {
+                                              boolean checkOnly, byte[] bytes) {
     boolean isPngj = (name.indexOf("?POST?_PNGJ_") >= 0);
-    byte[] bytes = null;
     if (name.indexOf("?POST?_PNG_") > 0 || isPngj) {
       Object o = viewer.getImageAs(isPngj ? "PNGJ" : "PNG", -1, 0, 0, null, null);
       if (! (o instanceof byte[]))
@@ -460,7 +459,7 @@ public class FileManager {
     String fullPath = names[0].replace('\\', '/');
     if (name.indexOf("|") >= 0)
       name = TextFormat.split(name, "|")[0];
-    Object errMsg = getBufferedInputStreamOrErrorMessageFromName(name, false, true);
+    Object errMsg = getBufferedInputStreamOrErrorMessageFromName(name, false, true, null);
     return new String[] { fullPath,
         (errMsg instanceof String ? (String) errMsg : null) };
   }
@@ -547,7 +546,7 @@ public class FileManager {
       subFileList = TextFormat.split(name, "|");
       name = subFileList[0];
     }
-    Object t = getBufferedInputStreamOrErrorMessageFromName(name, true, false);
+    Object t = getBufferedInputStreamOrErrorMessageFromName(name, true, false, null);
     if (t instanceof String)
       return t;
     try {
@@ -592,7 +591,7 @@ public class FileManager {
   String[] getZipDirectory(String fileName, boolean addManifest) {
     return ZipUtil.getZipDirectoryAndClose(
         (BufferedInputStream) getBufferedInputStreamOrErrorMessageFromName(fileName, false,
-            false), addManifest);
+            false, null), addManifest);
   }
 
   /**
@@ -628,7 +627,7 @@ public class FileManager {
     }
     BufferedInputStream bis = null;
     try {
-      Object t = getBufferedInputStreamOrErrorMessageFromName(name, false, false);
+      Object t = getBufferedInputStreamOrErrorMessageFromName(name, false, false, null);
       if (t instanceof String) {
         fileData.put(name0, (String) t + "\n");
         return name0;
@@ -697,18 +696,20 @@ public class FileManager {
       subFileList = TextFormat.split(name, "|");
       name = subFileList[0];
     }
-    Object t = getBufferedInputStreamOrErrorMessageFromName(name, false, false);
+    Object t = getBufferedInputStreamOrErrorMessageFromName(name, false, false,
+        null);
     if (t instanceof String)
       return "Error:" + t;
     try {
       BufferedInputStream bis = (BufferedInputStream) t;
+      Object bytes;
       if (os != null)
-        return getStreamAsBytes(bis, os);
-      Object bytes = (subFileList != null
-          && subFileList.length > 1 && 
-          (ZipUtil.isZipFile(bis) || ZipUtil.isPngZipStream(bis)) ? 
-              ZipUtil.getZipFileContentsAsBytes(bis, subFileList, 1) 
-              : getStreamAsBytes(bis, null));
+        bytes = getStreamAsBytes(bis, os);
+      else
+        bytes = (os == null || subFileList == null || subFileList.length <= 1
+            || !ZipUtil.isZipFile(bis) && !ZipUtil.isPngZipStream(bis) ? getStreamAsBytes(
+            bis, os)
+            : ZipUtil.getZipFileContentsAsBytes(bis, subFileList, 1));
       bis.close();
       return bytes;
     } catch (Exception ioe) {
@@ -732,6 +733,7 @@ public class FileManager {
         os.write(buf, 0, len);
       }
     }
+    bis.close();
     if (os == null) {
       buf = new byte[totalLen];
       System.arraycopy(bytes, 0, buf, 0, totalLen);
@@ -893,6 +895,7 @@ public class FileManager {
        at sun.awt.image.ImageFetcher.run(Unknown Source)
        */
     } catch (Exception e) {
+      e.printStackTrace();
       retFileNameOrError[0] = e.getMessage() + " opening " + fullPathName;
       return null;
     }
@@ -1226,7 +1229,7 @@ public class FileManager {
       }
       newFileNames.add(name);
     }
-    String sname = fileRoot + ".spt";
+    String sname = "state.spt";
     v.add("JmolManifest.txt");
     String sinfo = "# Jmol Manifest Zip Format 1.0\n" + "# Created "
         + DateFormat.getDateInstance().format(new Date()) + "\n"
@@ -1241,7 +1244,7 @@ public class FileManager {
       Object bytes = viewer.getImageAs("PNG", -1, -1, -1, null, null,
           JmolConstants.embedScript(script));
       if (bytes instanceof byte[]) {
-        v.add(fileRoot + ".png");
+        v.add("preview.png");
         v.add(bytes);
       }
     }
@@ -1252,16 +1255,17 @@ public class FileManager {
    * generic method to create a zip file based on
    * http://www.exampledepot.com/egs/java.util.zip/CreateZip.html
    * 
-   * @param outFileName or null to return byte[]
+   * @param outFileName
+   *        or null to return byte[]
    * @param fileNamesAndByteArrays
-   *          Vector of [filename1, bytes|null, filename2, bytes|null, ...]
+   *        Vector of [filename1, bytes|null, filename2, bytes|null, ...]
    * @param preservePath
-   * @param msg 
+   * @param msg
    * @return msg bytes filename or errorMessage or byte[]
    */
-  private static Object writeZipFile(String outFileName,
-                                     List<Object> fileNamesAndByteArrays,
-                                     boolean preservePath, String msg) {
+  private Object writeZipFile(String outFileName,
+                              List<Object> fileNamesAndByteArrays,
+                              boolean preservePath, String msg) {
     byte[] buf = new byte[1024];
     long nBytesOut = 0;
     long nBytes = 0;
@@ -1269,18 +1273,24 @@ public class FileManager {
     String fullFilePath = null;
     String fileList = "";
     try {
-      ByteArrayOutputStream bos = (outFileName == null || outFileName.startsWith("http://") ? new ByteArrayOutputStream()
+      ByteArrayOutputStream bos = (outFileName == null
+          || outFileName.startsWith("http://") ? new ByteArrayOutputStream()
           : null);
       ZipOutputStream os = new ZipOutputStream(
           bos == null ? (OutputStream) new FileOutputStream(outFileName) : bos);
       for (int i = 0; i < fileNamesAndByteArrays.size(); i += 2) {
         String fname = (String) fileNamesAndByteArrays.get(i);
+        byte[] bytes = null;
         if (fname.indexOf("file:/") == 0) {
           fname = fname.substring(5);
           if (fname.length() > 2 && fname.charAt(2) == ':') // "/C:..." DOS/Windows
             fname = fname.substring(1);
+        } else if (fname.indexOf("cache://") == 0) {
+          fname = fname.substring(8);
+          bytes = viewer.cacheGet(fname).getBytes();
         }
-        byte[] bytes = (byte[]) fileNamesAndByteArrays.get(i + 1);
+        if (bytes == null)
+          bytes = (byte[]) fileNamesAndByteArrays.get(i + 1);
         String fnameShort = fname;
         if (!preservePath || fname.indexOf("|") >= 0) {
           int pt = Math.max(fname.lastIndexOf("|"), fname.lastIndexOf("/"));
@@ -1315,12 +1325,13 @@ public class FileManager {
       if (bos != null) {
         byte[] bytes = bos.toByteArray();
         if (outFileName == null)
-          return bytes;  
+          return bytes;
         fullFilePath = outFileName;
         nBytes = bytes.length;
         String ret = postByteArray(outFileName, bytes);
-        if (ret != null)
+        if (ret.indexOf("Exception") >= 0)
           return ret;
+        msg += " " + ret;
       } else {
         File f = new File(outFileName);
         fullFilePath = f.getAbsolutePath().replace('\\', '/');
@@ -1333,16 +1344,21 @@ public class FileManager {
     return msg + " " + nBytes + " " + fullFilePath;
   }
 
-  /**
-   * not implemented 
-   * @param outFileName
-   * @param bytes
-   * @return posted results
-   * 
-   */
-  private static String postByteArray(String outFileName, byte[] bytes) {
-    //getInputStreamOrPost(outFileName, false, bytes, false, null, null);
-    return null;
+  private String postByteArray(String outFileName, byte[] bytes) {
+    Object ret = getBufferedInputStreamOrErrorMessageFromName(outFileName, false,
+        false, bytes);
+    if (ret instanceof String)
+      return (String) ret;
+    try {
+      ret = getStreamAsBytes((BufferedInputStream) ret, null);
+    } catch (IOException e) {
+      try {
+        ((BufferedInputStream) ret).close();
+      } catch (IOException e1) {
+        // ignore
+      }
+    }
+    return new String((byte[]) ret);
   }
 
   ////////////////// reader classes -- DOM, File, and Files /////////////
@@ -1537,7 +1553,7 @@ public class FileManager {
           htParams.put("subFileList", subFileList);
         String[] zipDirectory = getZipDirectory(name, true);
         BufferedInputStream bis = (BufferedInputStream) getBufferedInputStreamOrErrorMessageFromName(name, false,
-                false);
+                false, null);
         t = viewer.getModelAdapter()
             .getAtomSetCollectionOrBufferedReaderFromZip(bis, name,
                 zipDirectory, htParams, true, isBinary);

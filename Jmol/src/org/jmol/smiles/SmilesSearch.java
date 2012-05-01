@@ -780,7 +780,7 @@ public class SmilesSearch extends JmolMolecule {
         }
 
         // +/- Check charge
-        if (patternAtom.getCharge() != atom.getFormalCharge())
+        if ((n = patternAtom.getCharge()) != Integer.MIN_VALUE && n != atom.getFormalCharge())
           break;
 
         // H explicit H count

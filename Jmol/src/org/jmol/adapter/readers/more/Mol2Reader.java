@@ -64,12 +64,11 @@ public class Mol2Reader extends ForceFieldReader {
   @Override
   public boolean checkLine() throws Exception {
     if (line.equals("@<TRIPOS>MOLECULE")) {
-      if (doGetModel(++modelNumber)) {
-        processMolecule();
-        continuing = !isLastModel(modelNumber);
-        return false;
+      if (!processMolecule()) {
+        return true;
       }
-      return true;
+      continuing = !isLastModel(modelNumber);
+      return false;
     }
     if (line.length() != 0 && line.charAt(0) == '#') {
       /*
@@ -81,7 +80,7 @@ public class Mol2Reader extends ForceFieldReader {
     return true;
   }
 
-  private void processMolecule() throws Exception {
+  private boolean processMolecule() throws Exception {
     /* 4-6 lines:
      ZINC02211856
      55    58     0     0     0
@@ -100,6 +99,10 @@ public class Mol2Reader extends ForceFieldReader {
 
     isPDB = false;
     String thisDataSetName = readLine().trim();
+    if (!doGetModel(++modelNumber, thisDataSetName)) {
+      return false;
+    }
+
     lastSequenceNumber = Integer.MAX_VALUE;
     chainID = 'A' - 1;
     readLine();
@@ -149,6 +152,7 @@ public class Mol2Reader extends ForceFieldReader {
     if (isPDB)
       setIsPDB();
     applySymmetryAndSetTrajectory();
+    return true;
   }
 
   private int lastSequenceNumber = Integer.MAX_VALUE;

@@ -81,7 +81,7 @@ public class XmlQEReader extends XmlReader {
       parent.setAtomCoord(atom, xyz[0] * ANGSTROMS_PER_BOHR, xyz[1] * ANGSTROMS_PER_BOHR, xyz[2] * ANGSTROMS_PER_BOHR);
     }
     if ("structure".equals(localName)) {
-      if (!parent.doGetModel(++parent.modelNumber)) {
+      if (!parent.doGetModel(++parent.modelNumber, null)) {
         parent.checkLastModel();
         return;
       }

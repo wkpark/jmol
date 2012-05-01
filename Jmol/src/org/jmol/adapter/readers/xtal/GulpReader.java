@@ -90,7 +90,7 @@ public class GulpReader extends AtomSetCollectionReader {
         || line.contains("Cartesian coordinates of cluster ")
         || line.contains("Final cartesian coordinates of atoms :")
         && isMolecular) {
-      if (doGetModel(++modelNumber))
+      if (doGetModel(++modelNumber, null))
         readAtomicPos(!bTest);
       return true;
     } 

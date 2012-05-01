@@ -1505,6 +1505,8 @@ abstract public class ModelCollection extends BondCollection {
     Map<String, Object> info = new Hashtable<String, Object>();
     info.put("modelSetName", modelSetName);
     info.put("modelCount", Integer.valueOf(modelCount));
+    info.put("isTainted", Boolean.valueOf(tainted != null));
+    info.put("canSkipLoad", Boolean.valueOf(canSkipLoad));
     info.put("modelSetHasVibrationVectors", Boolean
         .valueOf(modelSetHasVibrationVectors()));
     if (modelSetProperties != null) {

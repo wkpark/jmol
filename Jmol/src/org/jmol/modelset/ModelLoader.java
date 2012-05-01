@@ -88,7 +88,7 @@ public final class ModelLoader {
   public ModelLoader(Viewer viewer, String name) {
     this.viewer = viewer;
     modelSet = new ModelSet(viewer, name);
-    viewer.resetShapes();
+    viewer.resetShapes(false);
     modelSet.preserveState = viewer.getPreserveState();
     initializeInfo(name, null);
     createModelSet(null, null, null);
@@ -103,11 +103,14 @@ public final class ModelLoader {
     this.mergeModelSet = mergeModelSet;
     JmolAdapter adapter = viewer.getModelAdapter();
     merging = (mergeModelSet != null && mergeModelSet.atomCount > 0);
-    if (!merging) {
-      viewer.resetShapes();
+    if (merging) {
+      modelSet.canSkipLoad = false;
+    } else {
+      viewer.resetShapes(false);
     }
     modelSet.preserveState = viewer.getPreserveState();
-
+    if (!modelSet.preserveState)
+      modelSet.canSkipLoad = false;
     Map<String, Object> info = adapter.getAtomSetCollectionAuxiliaryInfo(atomSetCollection);
     info.put("loadScript", loadScript);
     initializeInfo(adapter.getFileTypeName(atomSetCollection).toLowerCase().intern(), info);

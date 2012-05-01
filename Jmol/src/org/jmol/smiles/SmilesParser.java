@@ -1273,8 +1273,8 @@ public class SmilesParser {
       return true;
     }
     char ch = pattern.charAt(pt);
-    throw new InvalidSmilesException(isSmarts ? "invalid placement for '" + ch
-        + "'" : "[" + ch + "] notation only valid with SMARTS, not SMILES");
+    throw new InvalidSmilesException((isSmarts ? "invalid placement for '" + ch
+        + "'" : "[" + ch + "] notation only valid with SMARTS, not SMILES,")+" in " + pattern);
   }
 
   private static String getSubPattern(String pattern, int index, char ch)

@@ -71,12 +71,12 @@ public class JpegEncoder {
   //int code;
 
   public JpegEncoder(ApiPlatform apiPlatform, Object image, int quality, OutputStream out, String comment) {
-    try {
-      if (!apiPlatform.waitForDisplay(null, image)) 
-        return;
-    } catch (InterruptedException e) {
+   // try {
+   //   if (!apiPlatform.waitForDisplay(null, image)) 
+   //     return;
+   // } catch (InterruptedException e) {
       // ignore
-    }
+   // }
     /*
      * Quality of the image.
      * 0 to 100 and from bad image quality, high compression to good

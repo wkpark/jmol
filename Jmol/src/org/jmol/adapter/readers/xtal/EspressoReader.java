@@ -39,10 +39,10 @@ public class EspressoReader extends AtomSetCollectionReader {
       readCellParam(true);
     } else if (line.contains("Cartesian axes")) {
       discardLinesUntilContains("positions (");
-      if (doGetModel(++modelNumber))
+      if (doGetModel(++modelNumber, null))
         readAtoms();
     } else if (line.contains("POSITIONS (")) {
-      if (doGetModel(++modelNumber))
+      if (doGetModel(++modelNumber, null))
         readAtoms();
     } else if (line.contains("!    total energy")) {
       readEnergy();

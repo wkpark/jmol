@@ -1805,6 +1805,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                                         String[] fullPathNameReturn,
                                                         boolean isBinary) {
     // used by isosurface reader
+    if (name.startsWith("cache://"))
+      return new BufferedReader(new StringReader(cacheGet(name.substring(8))));
     return fileManager.getBufferedReaderOrErrorMessageFromName(name,
         fullPathNameReturn, isBinary, true);
   }
@@ -8602,6 +8604,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void addCommand(String command) {
     if (autoExit || !haveDisplay || !getPreserveState())
       return;
+    System.out.println("addCommand " + command);
     commandHistory.addCommand(TextFormat.replaceAllCharacters(command,
         "\r\n\t", " "));
   }
@@ -8612,6 +8615,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * @return command removed
    */
   public String removeCommand() {
+    System.out.println("removeCommand");
     return commandHistory.removeCommand();
   }
 
@@ -8626,6 +8630,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
   @Override
   public String getSetHistory(int howFarBack) {
+    System.out.println("getSetHistory " +  howFarBack);
     return commandHistory.getSetHistory(howFarBack);
   }
 
@@ -8720,7 +8725,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   @Override
   public Object createImage(String fileName, String type, Object text_or_bytes,
                             int quality, int width, int height) {
-    //System.out.println("createimage " + fileName + " " + type + " " + text_or_bytes + " " + quality + " " + width + " " + height);
     return createImage(fileName, type, text_or_bytes, quality, width, height,
         null, true);
   }
@@ -9181,10 +9185,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public Object getFileAsImage(String pathName, String[] retFileNameOrError) {
-    if (!haveDisplay) {
-      retFileNameOrError[0] = "no display";
-      return null;
-    }
+    //if (!haveDisplay) {
+    //  retFileNameOrError[0] = "no display";
+    //  return null;
+    //}
     return fileManager.getFileAsImage(pathName, retFileNameOrError);
   }
 
@@ -9281,6 +9285,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void addFunction(ScriptFunction f) {
     stateManager.addFunction(f);
+  }
+
+  public void removeFunction(String name) {
+    stateManager.removeFunction(name);
   }
 
   public void clearFunctions() {
@@ -9788,8 +9796,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     shapeManager.setModelVisibility();
   }
 
-  public void resetShapes() {
+  public void resetShapes(boolean andCreateNew) {
     shapeManager.resetShapes();
+    if (andCreateNew) {
+      shapeManager.loadDefaultShapes(modelSet);
+      repaintManager.clear(-1);
+    }
   }
 
   public void setAtomLabel(String value, int i) {
@@ -10365,4 +10377,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         getSmilesMatcher());
   }
 
+  public void cachePut(String key, String data) {
+    statusManager.cachePut(key, data);
+  }
+
+  public String cacheGet(String key) {
+    return statusManager.cacheGet(key);
+  }
+
+  public void cacheClear() {
+    statusManager.cacheClear();
+  }
 }

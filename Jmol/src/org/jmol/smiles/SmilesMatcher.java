@@ -283,6 +283,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
         continue;
       try {
         search.bsReturn.clear();
+        System.out.println("SmilesMatcher " + smarts[i]);
         SmilesSearch ss = sp.getSearch(search, smarts[i], false, false);
         ret[i] = BitSetUtil.copy((BitSet) search.subsearch(ss, false, false));
         if (ret[i] != null && ret[i].nextSetBit(0) >= 0)

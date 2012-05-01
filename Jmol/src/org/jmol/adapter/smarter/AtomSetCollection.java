@@ -292,6 +292,8 @@ public class AtomSetCollection {
       setAtomSetName(collection.getAtomSetName(atomSetNum));
       for (int atomNum = 0; atomNum < collection.atomSetAtomCounts[atomSetNum]; atomNum++) {
         try {
+          if (bsAtoms != null)
+            bsAtoms.set(atomCount);
           newCloneAtom(collection.atoms[clonedAtoms]);
         } catch (Exception e) {
           errorMessage = "appendAtomCollection error: " + e;

@@ -235,7 +235,7 @@ public class CastepReader extends AtomSetCollectionReader {
       if (line.contains("Real Lattice(A)")) {
         readOutputUnitCell();
       } else if (line.contains("Fractional coordinates of atoms")) {
-        if (doGetModel(++modelNumber)) {
+        if (doGetModel(++modelNumber, null)) {
           readOutputAtoms();
         }
       } else if (doProcessLines && 

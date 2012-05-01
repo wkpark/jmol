@@ -418,7 +418,7 @@ max-force
       setMOData(null);
     for (int i = 0; i < nGeom; i++) {
       readLines(2);
-      if (doGetModel(++modelNumber)) {
+      if (doGetModel(++modelNumber, null)) {
         readAtomSet("Step " + (modelNumber - firstModel) + "/" + nGeom + ": " + energies.get(i), false, 
             !optOnly || haveModel);
         haveModel = true;

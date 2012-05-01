@@ -528,6 +528,14 @@ public class StateManager {
     (isStaticFunction(function.name) ? staticFunctions
         : localFunctions).put(function.name, function);
   }
+  
+  void removeFunction(String name) {
+    ScriptFunction function = getFunction(name);
+    if (function == null)
+      return;
+    staticFunctions.remove(name);
+    localFunctions.remove(name);
+  }
 
   ScriptFunction getFunction(String name) {
     if (name == null)

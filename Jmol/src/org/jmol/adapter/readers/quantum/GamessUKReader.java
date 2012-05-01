@@ -53,7 +53,7 @@ public class GamessUKReader extends GamessReader {
       return false;
     }
     if (line.indexOf("molecular geometry") >= 0) {
-      if (!doGetModel(++modelNumber))
+      if (!doGetModel(++modelNumber, null))
         return checkLastModel();
       atomNames = new ArrayList<String>();
       readAtomsInBohrCoordinates();

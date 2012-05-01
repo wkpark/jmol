@@ -74,7 +74,7 @@ public class ShelxReader extends AtomSetCollectionReader {
       return true;
     String command = tokens[0].toUpperCase();
     if (command.equals("TITL")) {
-      if (!doGetModel(++modelNumber))
+      if (!doGetModel(++modelNumber, null))
         return checkLastModel();
       sfacElementSymbols = null;
       applySymmetryAndSetTrajectory();

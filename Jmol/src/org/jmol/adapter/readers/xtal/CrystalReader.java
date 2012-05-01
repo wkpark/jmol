@@ -159,7 +159,7 @@ public class CrystalReader extends AtomSetCollectionReader {
           //return true;
         }
         if (!getLastConventional) {
-          if (!doGetModel(++modelNumber)) {
+          if (!doGetModel(++modelNumber, null)) {
             vInputCoords = null;
             checkLastModel();
           }
@@ -220,7 +220,7 @@ public class CrystalReader extends AtomSetCollectionReader {
 
     if ((isPrimitive && line.startsWith(" ATOMS IN THE ASYMMETRIC UNIT"))
         || isProperties && line.startsWith("   ATOM N.AT.")) {
-      if (!doGetModel(++modelNumber))
+      if (!doGetModel(++modelNumber, null))
         return checkLastModel();
       return readAtoms();
     }

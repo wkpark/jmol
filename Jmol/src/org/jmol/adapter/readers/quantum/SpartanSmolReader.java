@@ -65,7 +65,7 @@ public class SpartanSmolReader extends SpartanInputReader {
       int modelNo = getModelNumber();
       modelNumber = (bsModels == null && modelNo != Integer.MIN_VALUE ? modelNo : modelNumber + 1);
       bondData = "";
-      if (!doGetModel(modelNumber))
+      if (!doGetModel(modelNumber, null))
         return checkLastModel();
       if (modelAtomCount == 0)
         atomSetCollection.newAtomSet();

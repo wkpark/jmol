@@ -43,7 +43,7 @@ public class AmpacReader extends AtomSetCollectionReader {
   @Override
   protected boolean checkLine() throws Exception {
     if (line.indexOf("CARTESIAN COORDINATES") >= 0) {
-      if (!doGetModel(++modelNumber))
+      if (!doGetModel(++modelNumber, null))
         return checkLastModel();
       readCoordinates();
       return true;

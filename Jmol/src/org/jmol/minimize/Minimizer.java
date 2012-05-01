@@ -866,10 +866,12 @@ Token[keyword(0x880001) value=")"]
   public void calculatePartialCharges(
                                       Atom[] atoms,
                                       BitSet bsAtoms,
-                                      SmilesMatcherInterface smilesMatcher) {
+                                      SmilesMatcherInterface smartsMatcher) {
     //TODO -- combine SMILES and MINIMIZER in same JAR file
     new ForceFieldMMFF();
-    float[] charges = ForceFieldMMFF.getPartialCharges(atoms, bsAtoms, smilesMatcher);
+    int[] types = ForceFieldMMFF.getTypes(atoms, bsAtoms, smartsMatcher);
+    float[] charges = ForceFieldMMFF.getPartialCharges(atoms, types, bsAtoms);
+    viewer.setAtomProperty(bsAtoms, Token.atomtype, 0, 0, null, null, ForceFieldMMFF.getAtomTypeDescs(types));
     viewer.setAtomProperty(bsAtoms, Token.partialcharge, 0, 0, null, charges, null);
   }
 }

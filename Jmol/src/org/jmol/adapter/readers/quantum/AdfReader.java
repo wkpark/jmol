@@ -87,7 +87,7 @@ public class AdfReader extends SlaterReader {
     }
     if (line.indexOf(" Coordinates (Cartesian, in Input Orientation)") >= 0
         || line.indexOf("G E O M E T R Y  ***") >= 0) {
-      if (!doGetModel(++modelNumber))
+      if (!doGetModel(++modelNumber, null))
         return checkLastModel();
       readCoordinates();
       return true;

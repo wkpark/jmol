@@ -105,7 +105,7 @@ public class GamessUSReader extends GamessReader {
     }
     if ((isBohr = line.indexOf("COORDINATES (BOHR)") >= 0)
         || line.indexOf("COORDINATES OF ALL ATOMS ARE (ANGS)") >= 0) {
-      if (!doGetModel(++modelNumber))
+      if (!doGetModel(++modelNumber, null))
         return checkLastModel();
       atomNames = new ArrayList<String>();
       if (isBohr)

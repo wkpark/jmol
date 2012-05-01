@@ -83,7 +83,7 @@ public class WebMOReader extends MopacSlaterReader {
     }
 
     if (line.indexOf("[MO") == 0) {
-      if (!doGetModel(++modelNumber))
+      if (!doGetModel(++modelNumber, null))
         return checkLastModel();
       readMolecularOrbital();
       return false;

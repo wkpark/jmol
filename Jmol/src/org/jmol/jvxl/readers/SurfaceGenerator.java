@@ -1223,13 +1223,12 @@ public class SurfaceGenerator {
       fname += Parser.getNextQuotedString(fileType,
           fileType.indexOf("A HREF") + 1);
       params.fileName = fname;
-      value = atomDataServer.getBufferedInputStream(fname);
+        value = atomDataServer.getBufferedInputStream(fname);
       if (value == null) {
         Logger.error("Isosurface: could not open file " + fname);
         return null;
       }
-      br = new BufferedReader(
-          new InputStreamReader((BufferedInputStream) value));
+      br = new BufferedReader(new InputStreamReader((BufferedInputStream) value));        
       fileType = SurfaceFileTyper.determineSurfaceFileType(br);
     }
     if (fileType == null)

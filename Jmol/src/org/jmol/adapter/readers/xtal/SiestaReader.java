@@ -27,11 +27,11 @@ public class SiestaReader extends AtomSetCollectionReader {
   protected boolean checkLine() throws Exception {
 
     if (line.contains("%block LatticeVectors")) {
-      if (doGetModel(++modelNumber))
+      if (doGetModel(++modelNumber, null))
         readCellThenAtomsCartesian();
       return true;
     } else if (line.contains("outcoor: Atomic coordinates")) {
-      if (doGetModel(++modelNumber))
+      if (doGetModel(++modelNumber, null))
         readAtomsCartGeomThenCell();
       return true;
     }

@@ -27,9 +27,11 @@ package org.jmol.awt;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.MediaTracker;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
@@ -40,6 +42,8 @@ import java.awt.image.PixelGrabber;
 import java.awt.image.Raster;
 import java.awt.image.SinglePixelPackedSampleModel;
 import java.net.URL;
+
+import javax.swing.JPanel;
 
 import org.jmol.api.ApiPlatform;
 import org.jmol.g3d.Font3D;
@@ -70,16 +74,16 @@ class Image {
    * @throws InterruptedException 
    */
   static void waitForDisplay(Object display, Object image) throws InterruptedException {
-    return;
+  //  return;
     // I have no idea why JPGEncoder was requiring this.
-/*    if (true)
-      return;
+    System.out.println("Image waitfordisplay 1");
     if (display == null)
-      display = new Frame();
+      display = new JPanel();
+    System.out.println("Image waitForDisplay");
     MediaTracker mediaTracker = new MediaTracker((Component) display);
     mediaTracker.addImage((java.awt.Image)image, 0);
     mediaTracker.waitForID(0);
-*/
+    System.out.println("Image waitfordisplay 2");
       
   }
 

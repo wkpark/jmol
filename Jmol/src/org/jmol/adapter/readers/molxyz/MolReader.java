@@ -96,7 +96,7 @@ public class MolReader extends AtomSetCollectionReader {
         return false;
       }
     }
-    if (doGetModel(++modelNumber)) {
+    if (doGetModel(++modelNumber, null)) {
       processMolSdHeader();
       processCtab(isMDL);
       if (isLastModel(modelNumber)) {

@@ -50,7 +50,7 @@ public class HyperChemReader extends AtomSetCollectionReader {
       return true;
     if (line.startsWith("mol ")) {
       // we have reached the start of a molecule
-      if (!doGetModel(++modelNumber))
+      if (!doGetModel(++modelNumber, null))
         return checkLastModel();
       processMol();
       return true;

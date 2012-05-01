@@ -61,7 +61,7 @@ public class XyzReader extends AtomSetCollectionReader {
 
     // models and vibrations are the same for XYZ files
     vibrationNumber = ++modelNumber;
-    if (desiredVibrationNumber <= 0 ? doGetModel(modelNumber)
+    if (desiredVibrationNumber <= 0 ? doGetModel(modelNumber, null)
         : doGetVibration(vibrationNumber)) {
       readLine();
       checkLineForScript();

@@ -42,7 +42,6 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.api.AtomIndexIterator;
 import org.jmol.api.Interface;
-import org.jmol.api.JmolAdapter;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.RadiusData;
@@ -3159,17 +3158,20 @@ abstract public class ModelCollection extends BondCollection {
     if (order > 3)
       order = 1;
     switch (b.order & ~JmolEdge.BOND_NEW) {
-    case JmolAdapter.ORDER_AROMATIC:
+    case JmolEdge.BOND_AROMATIC:
       order = (asChemDoodle ? 2: 4);
       break;
-    case JmolAdapter.ORDER_PARTIAL12:
+    case JmolEdge.BOND_PARTIAL12:
       order = (asChemDoodle ? 1: 5);
       break;
-    case JmolAdapter.ORDER_AROMATIC_SINGLE:
+    case JmolEdge.BOND_AROMATIC_SINGLE:
       order = (asChemDoodle ? 1: 6);
       break;
-    case JmolAdapter.ORDER_AROMATIC_DOUBLE:
+    case JmolEdge.BOND_AROMATIC_DOUBLE:
       order = (asChemDoodle ? 2: 7);
+      break;
+    case JmolEdge.BOND_PARTIAL01:
+      order = (asChemDoodle ? 1: 8);
       break;
     }
     if (asV3000) {

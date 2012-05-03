@@ -162,6 +162,9 @@ public class Mol2Reader extends ForceFieldReader {
     //     1 Cs       0.0000   4.1230   0.0000   Cs        1 RES1   0.0000
     //  1 C1          7.0053   11.3096   -1.5429 C.3       1 <0>        -0.1912
     // free format, but no blank lines
+    if (atomCount == 0)
+      return;
+    int i0 = atomSetCollection.getAtomCount();
     for (int i = 0; i < atomCount; ++i) {
       Atom atom = atomSetCollection.addNewAtom();
       String[] tokens = getTokens(readLine());
@@ -170,7 +173,6 @@ public class Mol2Reader extends ForceFieldReader {
       atom.atomName = tokens[1] + '\0' + atomType;
       atom.set(parseFloat(tokens[2]), parseFloat(tokens[3]),
           parseFloat(tokens[4]));
-      boolean deduceSymbol = !getElementSymbol(atom, atomType);
       // apparently "NO_CHARGES" is not strictly enforced
       //      if (iHaveCharges)
       if (tokens.length > 6) {
@@ -183,20 +185,48 @@ public class Mol2Reader extends ForceFieldReader {
         lastSequenceNumber = atom.sequenceNumber;
         atom.chainID = chainID;
       }
-      if (tokens.length > 7) {
+      if (tokens.length > 7)
         atom.group3 = tokens[7];
-        atom.isHetero = JmolAdapter.isHetero(atom.group3);
-        if (!isPDB && atom.group3.length() <= 3
-            && JmolAdapter.lookupGroupID(atom.group3) >= 0) {
-          isPDB = true;
-        }
-        if (isPDB && deduceSymbol)
-          atom.elementSymbol = deducePdbElementSymbol(atom.isHetero, atomType,
-              atom.group3);
-        //System.out.print(atom.atomName + "/" + atom.elementSymbol + " " );
-      }
       if (tokens.length > 8)
         atom.partialCharge = parseFloat(tokens[8]);
+    }
+    Atom[] atoms = atomSetCollection.getAtoms();
+    String g3 = atoms[i0].group3;
+    if (g3 == null)
+      return;
+    isPDB = false;
+    for (int i = atomSetCollection.getAtomCount(); --i >= i0;)
+      if (!g3.equals(atoms[atomSetCollection.getAtomCount() - 1].group3)) {
+        isPDB = true;
+        break;
+      }
+    if (isPDB) {
+      isPDB = false;
+      for (int i = atomSetCollection.getAtomCount(); --i >= i0;) {
+        Atom atom = atoms[i];
+        if (atom.group3.length() <= 3
+            && JmolAdapter.lookupGroupID(atom.group3) >= 0) {
+          isPDB = true;
+          break;
+        }
+      }
+      if (isPDB) {
+        for (int i = atomSetCollection.getAtomCount(); --i >= i0;) {
+          Atom atom = atoms[i];
+          atom.isHetero = JmolAdapter.isHetero(atom.group3);
+          String atomType = atom.atomName
+              .substring(atom.atomName.indexOf('\0') + 1);
+          boolean deduceSymbol = !getElementSymbol(atom, atomType);
+          if (deduceSymbol)
+            atom.elementSymbol = deducePdbElementSymbol(atom.isHetero,
+                atomType, atom.group3);
+        } //System.out.print(atom.atomName + "/" + atom.elementSymbol + " " );
+        return;
+      }
+    }
+    if (!isPDB) {
+      for (int i = atomSetCollection.getAtomCount(); --i >= i0;)
+       atoms[i].group3 = null;      
     }
   }
 

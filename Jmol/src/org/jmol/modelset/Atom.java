@@ -877,23 +877,22 @@ final public class Atom extends Point3fi implements JmolNode {
   String getIdentity(boolean allInfo) {
     StringBuffer info = new StringBuffer();
     String group3 = getGroup3(true);
-    String seqcodeString = getSeqcodeString();
-    char chainID = getChainID();
     if (group3 != null && group3.length() > 0) {
       info.append("[");
       info.append(group3);
       info.append("]");
-    }
-    if (seqcodeString != null)
-      info.append(seqcodeString);
-    if (chainID != 0 && chainID != ' ') {
-      info.append(":");
-      info.append(chainID);
-    }
-    if (!allInfo)
-      return info.toString();
-    if (info.length() > 0)
+      String seqcodeString = getSeqcodeString();
+      if (seqcodeString != null)
+        info.append(seqcodeString);
+      char chainID = getChainID();
+      if (chainID != 0 && chainID != ' ') {
+        info.append(":");
+        info.append(chainID);
+      }
+      if (!allInfo)
+        return info.toString();
       info.append(".");
+    }
     info.append(getAtomName());
     if (info.length() == 0) {
       // since atomName cannot be null, this is unreachable

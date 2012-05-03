@@ -10373,8 +10373,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void calculatePartialCharges(BitSet bs) {
-    getMinimizer(true).calculatePartialCharges(modelSet.atoms, bs == null ? getSelectionSet(false) : bs,
-        getSmilesMatcher());
+    getMinimizer(true).calculatePartialCharges(modelSet.getBonds(), modelSet.atoms,
+        bs == null ? getSelectionSet(false) : bs, getSmilesMatcher());
   }
 
   public void cachePut(String key, String data) {

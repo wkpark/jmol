@@ -651,7 +651,6 @@ public class SmarterJmolAdapter extends JmolAdapter {
    * **************************************************************/
   class AtomIterator extends JmolAdapter.AtomIterator {
     private int iatom;
-    private int nAtoms;
     private Atom atom;
     private int atomCount;
     private Atom[] atoms;
@@ -665,10 +664,10 @@ public class SmarterJmolAdapter extends JmolAdapter {
     }
     @Override
     public boolean hasNext() {
-      if (nAtoms == atomCount)
+      if (iatom == atomCount)
         return false;
       while ((atom = atoms[iatom++]) == null || (bsAtoms != null && !bsAtoms.get(atom.atomIndex)))
-        if (++nAtoms == atomCount)
+        if (iatom == atomCount)
           return false;
       atoms[iatom - 1] = null; // single pass
       return true;

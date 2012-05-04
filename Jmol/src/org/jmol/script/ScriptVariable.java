@@ -467,6 +467,7 @@ public class ScriptVariable extends Token {
   public static boolean bValue(Token x) {
     switch (x == null ? nada : x.tok) {
     case on:
+    case hash:
       return true;
     case off:
       return false;

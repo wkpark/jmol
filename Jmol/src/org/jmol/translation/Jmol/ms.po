@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-04-23 22:06+0200\n"
-"PO-Revision-Date: 2012-04-17 16:49+0000\n"
+"PO-Revision-Date: 2012-04-30 14:02+0000\n"
 "Last-Translator: abuyop <Unknown>\n"
 "Language-Team: Malay <ms@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-04-18 17:48+0000\n"
-"X-Generator: Launchpad (build 15108)\n"
+"X-Launchpad-Export-Date: 2012-05-03 18:32+0000\n"
+"X-Generator: Launchpad (build 15190)\n"
 
 #: com/json/Cookie.java:121
 msgid "name"
@@ -1083,7 +1083,7 @@ msgstr "Masukkan URL model molekular"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1199
 msgid "Enter a four-digit PDB model ID or \"=\" and a three-digit ligand ID"
-msgstr ""
+msgstr "Masukkan ID model PDB empat-digit atau \"=\" dan ID ligan tiga-digit"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1208
 msgid ""
@@ -1091,6 +1091,9 @@ msgid ""
 "with \":\" to load from PubChem; otherwise Jmol will use the NCI/NIH "
 "Resolver."
 msgstr ""
+"Masukkan nama atau pengenalpasti (SMILES, InChI, CAS) sebatian. Mulakan "
+"dengan \":\" untuk muatkan  dari PubChem; jika tidak Jmol akan gunakan "
+"Pelerai NCI/NIH."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1375
 msgid "IO Exception:"
@@ -1882,18 +1885,6 @@ msgstr "Muat turun paparan"
 msgid "unimplemented"
 msgstr "tidak dilaksanakan"
 
-#~ msgid "Get PDB file"
-#~ msgstr "Dapatkan fail PDB"
-
-#~ msgid "Enter a four-digit PDB ID"
-#~ msgstr "Masukkan ID empat-digit PDB"
-
-#~ msgid "Get MOL file by compound name or ID"
-#~ msgstr "Dapatkan fail melalui nama atau ID sebatian"
-
-#~ msgid "Enter the name or identifier (SMILES, InChI, CAS) of a compound"
-#~ msgstr "Masukkan nama atau pengenalpasti (SMILES, InChI, CAS) bagi sebatian"
-
 #~ msgid "Controller"
 #~ msgstr "Pengawal"
 
@@ -1912,9 +1903,19 @@ msgstr "tidak dilaksanakan"
 #~ msgid "Jump to last vector in the collection"
 #~ msgstr "Lompat ke vektor terakhir didalam koleksi"
 
+#~ msgid "Get PDB file"
+#~ msgstr "Dapatkan fail PDB"
+
+#~ msgid "Enter a four-digit PDB ID"
+#~ msgstr "Masukkan ID empat-digit PDB"
+
+#~ msgid "Get MOL file by compound name or ID"
+#~ msgstr "Dapatkan fail melalui nama atau ID sebatian"
+
 #~ msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
 #~ msgstr "Masukkan nama atau pengecam (SMILES, InChI, CAS) molekul"
 
+#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"
@@ -1928,27 +1929,34 @@ msgstr "tidak dilaksanakan"
 #~ msgid "vector"
 #~ msgstr "vektor"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Pergi ke {0} yang pertama didalam koleksi"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Pergi ke {0} yang terdahulu didalam koleksi"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Main keseluruhan koleksi {0}"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Pergi ke {0} yang berikutnya didalam koleksi"
 
+#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Pergi ke {0} yang terakhir didalam koleksi"
 
 #~ msgid "atom set"
 #~ msgstr "set atom"
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "menambah {0}.spt"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "menambah {0}.png"
 
@@ -1964,6 +1972,7 @@ msgstr "tidak dilaksanakan"
 #~ msgid "Clear console button (requires restarting Jmol)"
 #~ msgstr "Kosongkan butang kosong (perlu mulakan semula Jmol)"
 
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."

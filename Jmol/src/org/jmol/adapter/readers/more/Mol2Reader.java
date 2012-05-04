@@ -240,7 +240,7 @@ public class Mol2Reader extends ForceFieldReader {
       int order = parseInt(tokens[3]);
       if (order == Integer.MIN_VALUE)
         order = (tokens[3].equals("ar") ? JmolAdapter.ORDER_AROMATIC
-            : JmolAdapter.ORDER_UNSPECIFIED);
+            : tokens[3].equals("am") ? 1 : JmolAdapter.ORDER_UNSPECIFIED);
       atomSetCollection.addBond(new Bond(nAtoms + atomIndex1 - 1, nAtoms
           + atomIndex2 - 1, order));
     }

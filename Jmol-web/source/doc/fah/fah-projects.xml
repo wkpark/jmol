@@ -9568,6 +9568,18 @@
   <fah_proj number="8004" name="p8004" public="y" file="xyz"
     server="171.67.108.59" atoms="21376" preferred="1.64" deadline="3.54"
     credit="88.59" frames="100" code="A4" contact="shukla" kfactor="0.75" contrib="Wylko Zillmer"/>
+  <fah_proj number="8006" name="p8006" public="y"
+    server="171.67.108.144" atoms="917" preferred="7.1" deadline="9.699988425925927"
+    credit="2510.0" frames="100" code="OG" contact="shukla" kfactor="0.0"/>
+  <fah_proj number="8007" name="p8007" public="y"
+    server="171.67.108.144" atoms="917" preferred="7.1" deadline="9.699988425925927"
+    credit="2510.0" frames="100" code="OG" contact="shukla" kfactor="0.0"/>
+  <fah_proj number="8008" name="p8008" public="y"
+    server="171.67.108.141" atoms="917" preferred="7.1" deadline="9.699988425925927"
+    credit="2510.0" frames="100" code="OG" contact="shukla" kfactor="0.0"/>
+  <fah_proj number="8009" name="p8009" public="y"
+    server="171.67.108.142" atoms="917" preferred="7.1" deadline="9.699988425925927"
+    credit="2510.0" frames="100" code="OG" contact="shukla" kfactor="0.0"/>
   <fah_proj number="8011" name="p8011" public="y" file="xyz"
     server="171.67.108.60" atoms="23000" preferred="2.13" deadline="4.62"
     credit="106.6" frames="100" code="A4" contact="shukla" kfactor="0.75" contrib="Masahiro Tagashira"/>
@@ -9577,6 +9589,15 @@
   <fah_proj number="8013" name="p8013" public="y"
     server="171.67.108.60" atoms="36000" preferred="3.32" deadline="7.2"
     credit="180.6" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
+  <fah_proj number="8014" name="p8014" public="y"
+    server="171.67.108.58" atoms="36000" preferred="2.13" deadline="4.62"
+    credit="106.6" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
+  <fah_proj number="8019" name="p8019" public="y"
+    server="171.67.108.144" atoms="2262" preferred="13.77" deadline="19.649988425925926"
+    credit="5757.0" frames="100" code="OG" contact="shukla" kfactor="0.0"/>
+  <fah_proj number="8020" name="p8020" public="y"
+    server="171.67.108.143" atoms="2262" preferred="13.77" deadline="19.649988425925926"
+    credit="5757.0" frames="100" code="OG" contact="shukla" kfactor="0.0"/>
   <fah_proj number="8021" name="p8021" public="y"
     server="171.67.108.58" atoms="23850" preferred="2" deadline="4.349988425925926"
     credit="108.0" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
@@ -9589,6 +9610,9 @@
   <fah_proj number="8024" name="p8024" public="y"
     server="171.67.108.59" atoms="36050" preferred="3.21" deadline="7.11"
     credit="185.0" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
+  <fah_proj number="8026" name="p8026" public="y"
+    server="171.67.108.58" atoms="9165" preferred="1.6" deadline="3.47"
+    credit="87.0" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
   <fah_proj number="8031" name="p8031" public="y"
     server="171.67.108.141" atoms="1832" preferred="9.86" deadline="13.78"
     credit="3843.4" frames="100" code="OG" contact="shukla" kfactor="0.0"/>
@@ -9601,9 +9625,21 @@
   <fah_proj number="8034" name="p8034" public="y"
     server="171.67.108.142" atoms="1832" preferred="9.86" deadline="13.78"
     credit="3843.4" frames="100" code="OG" contact="shukla" kfactor="0.0"/>
+  <fah_proj number="8035" name="p8035" public="y"
+    server="171.67.108.141" atoms="1832" preferred="9.86" deadline="13.78"
+    credit="3843.4" frames="100" code="OG" contact="shukla" kfactor="0.0"/>
+  <fah_proj number="8036" name="p8036" public="y"
+    server="171.67.108.142" atoms="1832" preferred="9.86" deadline="13.78"
+    credit="3843.4" frames="100" code="OG" contact="shukla" kfactor="0.0"/>
+  <fah_proj number="8041" name="p8041" public="y"
+    server="171.67.108.58" atoms="39000" preferred="4.4" deadline="9.5"
+    credit="236.0" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
+  <fah_proj number="8042" name="p8042" public="y"
+    server="171.67.108.59" atoms="39000" preferred="4.4" deadline="9.5"
+    credit="236.0" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
 
   <!-- Projects 8100 to 8199 -->
-  <fah_proj number="8101" name="ha_formarta" public="n"
+  <fah_proj number="8101" name="ha_formarta" public="y"
     server="128.143.231.201" atoms="1340422" preferred="2.4" deadline="4"
     credit="22607.0" frames="100" code="A5" contact="kasson" kfactor="49.43"/>
 
@@ -10031,6 +10067,15 @@
   <fah_proj number="10134" name="p10134" public="y"
     server="171.64.65.75" atoms="32216" preferred="5.83" deadline="9.72"
     credit="1264.12" frames="100" code="A3" contact="gbowman" kfactor="3.0"/>
+  <fah_proj number="10135" name="p10135" public="y"
+    server="171.64.65.75" atoms="37170" preferred="28" deadline="48"
+    credit="1612.0" frames="100" code="A3" contact="gbowman" kfactor="0.75"/>
+  <fah_proj number="10136" name="p10136" public="y"
+    server="171.64.65.75" atoms="39130" preferred="32" deadline="52"
+    credit="1670.0" frames="100" code="A3" contact="gbowman" kfactor="0.75"/>
+  <fah_proj number="10137" name="p10137" public="n"
+    server="171.64.65.71" atoms="1174" preferred="2" deadline="3"
+    credit="494.0" frames="100" code="GG2" contact="gbowman" kfactor="0.0"/>
 
   <!-- Projects 10200 to 10299 -->
   <fah_proj number="10200" name="b2AR conformational space sampling" public="y" file="xyz"

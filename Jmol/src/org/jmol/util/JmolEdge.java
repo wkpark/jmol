@@ -100,6 +100,11 @@ public abstract class JmolEdge {
 
   public int index = -1;
   public int order;
+  final public static int FLAG_AROMATIC_DOUBLE = 16;
+  final public static int FLAG_AROMATIC_DEFINED = 8;
+  final public static int FLAG_AROMATIC_STRICT = 4;
+  final public static int FLAG_IGNORE_STEREOCHEMISTRY = 2;
+  public final static int FLAG_NO_AROMATIC = 1;
 
   abstract public int getAtomIndex1();
 

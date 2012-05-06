@@ -25,6 +25,7 @@
 package org.jmol.smiles;
 
 import java.util.BitSet;
+import java.util.List;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -111,6 +112,17 @@ public class SmilesAromatic {
      *   
      */
 
+    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+      JmolNode ringAtom = atoms[i];
+      JmolEdge[] bonds = ringAtom.getEdges();
+      if (bonds.length < 3)
+        continue;
+      if (bonds.length > 3)
+        return false;
+    }
+    if (cutoff == Float.MAX_VALUE)
+      return true;
+    
     if (cutoff <= 0)
       cutoff = 0.01f;
 
@@ -122,25 +134,6 @@ public class SmilesAromatic {
     Vector3f[] vNorms = new Vector3f[nPoints * 2];
     int nNorms = 0;
     float maxDev = (1 - cutoff * 5);
-    //System.out.println("using maxDev=" + maxDev);
-    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-      JmolNode ringAtom = atoms[i];
-      JmolEdge[] bonds = ringAtom.getEdges();
-      if (bonds.length < 3)
-        continue;
-      if (bonds.length > 3)
-        return false;
-/*      
-      // uncomment these next lines to exclude quinone and nucleic acid bases
-      for (int k = bonds.length; --k >= 0;) {
-        int iAtom = ringAtom.getBondedAtomIndex(k);
-        if (!bsSelected.get(iAtom))
-          continue;
-        if (!bs.get(iAtom) && bonds[k].getOrder() == JmolConstants.BOND_COVALENT_DOUBLE)
-          return false;
-      }
-*/
-    }
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       JmolNode ringAtom = atoms[i];
       JmolEdge[] bonds = ringAtom.getEdges();
@@ -217,6 +210,162 @@ public class SmilesAromatic {
     // so if a point is in the plane, then N dot X = -d
     vAB.set((Point3f) pointA);
     return -vAB.dot(vNorm);
+  }
+
+  /**
+   * set aromatic atoms based on predefined BOND_AROMATIC definitions
+   * @param jmolAtoms
+   * @param bsAtoms
+   * @return bsAromatic
+   */
+  static BitSet checkAromaticDefined(JmolNode[] jmolAtoms, BitSet bsAtoms) {
+    BitSet bsDefined = new BitSet();
+    for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) {
+      JmolEdge[] bonds = jmolAtoms[i].getEdges();
+      for (int j = 0; j < bonds.length; j++) {
+        switch (bonds[j].order) {
+        case JmolEdge.BOND_AROMATIC:
+        case JmolEdge.BOND_AROMATIC_DOUBLE:
+        case JmolEdge.BOND_AROMATIC_SINGLE:
+          bsDefined.set(bonds[j].getAtomIndex1());
+          bsDefined.set(bonds[j].getAtomIndex2());
+        }
+      }
+    }
+    return bsDefined;
+  }
+  
+  static void checkAromaticStrict(JmolNode[] jmolAtoms,
+                                         BitSet bsAromatic, List<Object> v5,
+                                         List<Object> v6) {
+    BitSet bsStrict = new BitSet();
+    BitSet bsTest = new BitSet();
+    for (int i = v5.size(); --i >= 0; ) {
+      BitSet bs = (BitSet) v5.get(i);
+      if (isAromaticRing(bsAromatic, bsTest, bs, 5))
+        checkAromaticStrict(jmolAtoms, bsStrict, v5, v6, bs, true);
+    }
+    for (int i = v6.size(); --i >= 0; ) {
+      BitSet bs = (BitSet) v6.get(i);
+      if (isAromaticRing(bsAromatic, bsTest, bs, 6))
+        checkAromaticStrict(jmolAtoms, bsStrict, v5, v6, bs, false);
+    }
+    bsAromatic.clear();
+    bsAromatic.or(bsStrict);
+  }
+
+  private static boolean isAromaticRing(BitSet bsAromatic, BitSet bsTest,
+                                        BitSet bs, int n) {
+    bsTest.clear();
+    bsTest.or(bs);
+    bsTest.and(bsAromatic);
+    return (bsTest.cardinality() == n);
+  }
+
+  /**
+   * uses an MMFF94 strategy for determining aromaticity for a specific ring.
+   * 
+   * @param jmolAtoms
+   * @param bsStrict  growing list of aromatic atoms
+   * @param v5
+   * @param v6
+   * @param bsRing  this ring's atoms
+   * @param is5
+   */
+  private static void checkAromaticStrict(JmolNode[] jmolAtoms,
+                                          BitSet bsStrict, List<Object> v5,
+                                          List<Object> v6, BitSet bsRing,
+                                          boolean is5) {
+    // I believe this gives the wrong answer for mmff94_dative.mol2 CIKSEU10
+    // but at least it agrees with MMFF94.  -- Bob Hanson
+
+    System.out.println(bsRing);
+    int piElectronCount = countInternalPairs(jmolAtoms, bsRing, is5) << 1;
+    switch (piElectronCount) {
+    case -3:
+      break;
+    default:
+      for (int i = bsRing.nextSetBit(0); i >= 0; i = bsRing.nextSetBit(i + 1)) {
+        JmolEdge[] bonds = jmolAtoms[i].getEdges();
+        for (int j = 0; j < bonds.length; j++)
+          if (bonds[j].order == JmolEdge.BOND_COVALENT_DOUBLE) {
+            int i2 = bonds[j].getOtherAtom(jmolAtoms[i]).getIndex();
+            if (!bsRing.get(i2)) {
+              boolean piShared = false;
+              for (int k = v5.size(); --k >= 0 && !piShared;) {
+                BitSet bs = (BitSet) v5.get(k);
+                if (bs.get(i2)
+                    && (bsStrict.get(i2) || Math.abs(countInternalPairs(
+                        jmolAtoms, bs, true)) == 3))
+                  piShared = true;
+              }
+              for (int k = v6.size(); --k >= 0 && !piShared;) {
+                BitSet bs = (BitSet) v6.get(k);
+                if (bs.get(i2)
+                    && (bsStrict.get(i2) || Math.abs(countInternalPairs(
+                        jmolAtoms, bs, false)) == 3))
+                  piShared = true;
+              }
+              if (!piShared)
+                return;
+              piElectronCount++;
+            }
+          }
+      }
+      break;
+    }
+    if (piElectronCount == 6)
+      bsStrict.or(bsRing);
+  }
+
+  /**
+   * Counts the electron pairs that are internal to this ring. 
+   * Allows for aromatic bond types.
+   * Note that Jmol has already determined that the ring is flat
+   * so there is no need to worry about hybridization.
+   * 
+   * @param jmolAtoms
+   * @param bsRing
+   * @param is5
+   * @return  number of pairs
+   */
+  private static int countInternalPairs(JmolNode[] jmolAtoms, BitSet bsRing,
+                                        boolean is5) {
+    int nDouble = 0;
+    int nAromatic = 0;
+    int nLonePairs = 0;
+    for (int i = bsRing.nextSetBit(0); i >= 0; i = bsRing.nextSetBit(i + 1)) {
+      JmolNode atom = jmolAtoms[i];
+      JmolEdge[] bonds = atom.getEdges();
+      boolean haveDouble = false;
+      for (int k = 0; k < bonds.length; k++) {
+        int j = bonds[k].getOtherAtom(atom).getIndex();
+        if (bsRing.get(j)) {
+          switch (bonds[k].order) {
+          case JmolEdge.BOND_AROMATIC_DOUBLE:
+          case JmolEdge.BOND_AROMATIC_SINGLE:
+          case JmolEdge.BOND_AROMATIC:
+            nAromatic++;
+            break;
+          case JmolEdge.BOND_COVALENT_DOUBLE:
+            nDouble++;
+            haveDouble = true;
+          }
+        }
+      }
+      if (is5 && nAromatic == 0) {
+        switch (atom.getElementNumber()) {
+        case 7:
+        case 8:
+        case 16:
+          if (!haveDouble)
+            nLonePairs++;
+          break;
+        }
+      }
+    }
+    return (nAromatic == 0 ? nDouble / 2 + nLonePairs
+        : nAromatic == (is5 ? 5 : 6) ? -3 : 0);
   }
 
 }

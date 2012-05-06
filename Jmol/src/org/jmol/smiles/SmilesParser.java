@@ -31,6 +31,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.jmol.util.Elements;
+import org.jmol.util.JmolEdge;
 import org.jmol.util.TextFormat;
 import org.jmol.util.Logger;
 
@@ -132,7 +133,9 @@ public class SmilesParser {
     braceCount = 0;
     branchLevel = 0;
   }
-  
+
+  private int flags;
+
   /**
    * Parses a SMILES String
    * 
@@ -146,16 +149,21 @@ public class SmilesParser {
     // Logger.debug("Smiles Parser: " + pattern);
     if (pattern == null)
       throw new InvalidSmilesException("SMILES expressions must not be null");
-    pattern = cleanPattern(pattern, isSmarts);
-    boolean noAromatic = false;
-    boolean ignoreStereochemistry = false;
+    pattern = cleanPattern(pattern);
     while (pattern.startsWith("/")) {
-      String flags = getSubPattern(pattern, 0, '/').toUpperCase();
-      pattern = pattern.substring(flags.length());
-      if (flags.indexOf("NOAROMATIC") >= 0)
-        noAromatic = true;
-      if (flags.indexOf("NOSTEREO") >= 0)
-        ignoreStereochemistry = true;
+      String strFlags = getSubPattern(pattern, 0, '/').toUpperCase();
+      pattern = pattern.substring(strFlags.length());
+      flags = 0;
+      if (strFlags.indexOf("NOAROMATIC") >= 0)
+        flags |= JmolEdge.FLAG_NO_AROMATIC;
+      if (strFlags.indexOf("AROMATICSTRICT") >= 0)
+        flags |= JmolEdge.FLAG_AROMATIC_STRICT;
+      if (strFlags.indexOf("AROMATICDEFINED") >= 0)
+        flags |= JmolEdge.FLAG_AROMATIC_DEFINED;
+      if (strFlags.indexOf("AROMATICDOUBLE") >= 0)
+        flags |= JmolEdge.FLAG_AROMATIC_DOUBLE;
+      if (strFlags.indexOf("NOSTEREO") >= 0)
+        flags |= JmolEdge.FLAG_IGNORE_STEREOCHEMISTRY;
     }
     if (pattern.indexOf("$") >= 0)
       pattern = parseVariables(pattern);
@@ -169,7 +177,7 @@ public class SmilesParser {
       for (int i = 0; i < patterns.length; i++) {
         String key = "|" + patterns[i] + "|";
         if (toDo.indexOf(key) < 0) {
-          search.subSearches[i] = getSearch(search, patterns[i], noAromatic, ignoreStereochemistry);
+          search.subSearches[i] = getSearch(search, patterns[i], flags);
           toDo += key;
         }
       }
@@ -177,7 +185,7 @@ public class SmilesParser {
         Logger.info(toDo);
       return search;
     }
-     return getSearch(null, pattern, noAromatic, ignoreStereochemistry);
+     return getSearch(null, pattern, flags);
   }
 
   private String parseVariableLength(String pattern)
@@ -297,9 +305,7 @@ public class SmilesParser {
     return (haveInternalOr ? parseVariableLength(sout.substring(2)) : sout.length() < 2 ? pattern : sout.substring(2));
   }
 
-  SmilesSearch getSearch(SmilesSearch parent, String pattern,
-                                 boolean noAromatic,
-                                 boolean ignoreStereochemistry)
+  SmilesSearch getSearch(SmilesSearch parent, String pattern, int flags)
       throws InvalidSmilesException {
     // First pass
     htMeasures = new Hashtable<String, SmilesMeasure>();
@@ -307,8 +313,7 @@ public class SmilesParser {
     molecule.setParent(parent);
     molecule.isSmarts = isSmarts;
     molecule.pattern = pattern;
-    molecule.noAromatic = noAromatic;
-    molecule.ignoreStereochemistry = ignoreStereochemistry;
+    molecule.flags = flags;
     if (pattern.indexOf("$(") >= 0)
       pattern = parseNested(molecule, pattern);
     parseSmiles(molecule, pattern, null, false);
@@ -340,11 +345,11 @@ public class SmilesParser {
     if (isSmarts)
       for (int i = molecule.atomCount; --i >= 0;) {
         SmilesAtom atom = molecule.patternAtoms[i];
-        checkNested(molecule, atom, noAromatic, ignoreStereochemistry);
+        checkNested(molecule, atom, flags);
         for (int k = 0; k < atom.nAtomsOr; k++)
-          checkNested(molecule, atom.atomsOr[k], noAromatic, ignoreStereochemistry);
+          checkNested(molecule, atom.atomsOr[k], flags);
         for (int k = 0; k < atom.nPrimitives; k++)
-          checkNested(molecule, atom.primitives[k], noAromatic, ignoreStereochemistry);
+          checkNested(molecule, atom.primitives[k], flags);
       }
     if (!isSmarts && !isBioSequence)
       molecule.elementCounts[1] = molecule.getMissingHydrogenCount();
@@ -353,15 +358,15 @@ public class SmilesParser {
     return molecule;
   }
   
-  private void checkNested(SmilesSearch molecule, SmilesAtom atom, 
-                           boolean noAromatic, boolean ignoreStereochemistry) throws InvalidSmilesException {
+  private void checkNested(SmilesSearch molecule, SmilesAtom atom, int flags) 
+  throws InvalidSmilesException {
     if (atom.iNested > 0) {
       Object o = molecule.getNested(atom.iNested);
       if (o instanceof String) {
         String s = (String) o;
         if (s.charAt(0) != '~' && atom.bioType != '\0')
           s = "~" + atom.bioType + "~" + s;
-        SmilesSearch search = getSearch(molecule, s, noAromatic, ignoreStereochemistry);
+        SmilesSearch search = getSearch(molecule, s, flags);
         if (search.atomCount > 0 && search.patternAtoms[0].selected)
           atom.selected = true;
         molecule.setNested(atom.iNested, search);
@@ -933,7 +938,17 @@ public class SmilesParser {
                   val = -1; // r --> !R0; !r --> R0
                   newAtom.setRingMembership(val);
                 } else {
+                  // 500 --> aromatic 5-membered ring
+                  // 600 --> aromatic 6-membered ring
                   newAtom.setRingSize(val);
+                  switch (val) {
+                  case 500:
+                    val = 5;
+                    break;
+                  case 600:
+                    val = 6;
+                    break;
+                  }
                   if (val > molecule.ringDataMax)
                     molecule.ringDataMax = val;
                 }
@@ -1350,10 +1365,9 @@ public class SmilesParser {
   /**
    * 
    * @param pattern
-   * @param isSmarts
    * @return  comments and white space removed, also ^^ to '
    */
-  private static String cleanPattern(String pattern, boolean isSmarts) {
+  static String cleanPattern(String pattern) {
     pattern = pattern.replaceAll("\\s", "").replaceAll("\\^\\^","'");
     int i = 0;
     int i2 = 0;

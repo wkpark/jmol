@@ -1,0 +1,166 @@
+vdat = load("mmff-validationData.dat").split("model ")
+tdat = {}
+mmdat = {}
+
+function setAtomInfo() {
+	for (var i = 2; i <= vdat.length; i++) {
+		var dat = vdat[i].split(" # ")
+		var model = ((dat[1])[1][10]).split(" ")[1]
+		var m = {}
+		mmdat[model] = m
+		m["atomInfo"] = {}
+		var mm = m["atomInfo"]
+		for (var t = 2; t <= dat.length; t++) {
+			var line = dat[t]
+			var ttype = line[1]
+			m[ttype] = line
+			var tokens = line.split(" ")
+			for (var j = 2; j < tokens.length; j+= 3) {
+				var a = tokens[j]
+				if(!mm[a]) {
+					mm[a] = {}
+				}
+				var mmm = mm[a]
+				mmm[ttype] = tokens[j+2]
+			}
+		}	
+	}
+	
+	var dat = load("MMFF94SYMB.PAR").split("SYMBOL").lines[3][0]
+	for (var i = 1; i <=dat.length; i++) {
+		var code = (dat[i])[3][9].trim()
+		var mmtype = (dat[i])[10][11].trim()
+		var def = (dat[i])[12][0].trim()
+		tdat[code] = "" + mmtype + " " + def
+	}
+}
+setAtomInfo
+
+function labelmm(color) { 
+		label %a %4.2[partialcharge] %[formalcharge] %[atomtype]
+	background label @color
+}
+
+function checkpc(name) {
+	if (name != "") {
+		print name
+		load @{":" + name}
+	}
+	select *
+	wireframe only
+	 A = {*}.partialcharge.all
+	calculate partialCharge
+	{*}.partialcharge = A.sub({*}.partialcharge.all)
+	select partialcharge > 0.01 or partialcharge < -0.01
+	labelMM "pink"
+}
+
+function loadmm(name) {
+	if (name == "") {
+		load mmff94_dative.mol2 filter "CENTER"
+		mdat = getProperty("modelinfo.models.name")
+	} else {
+		load mmff94_dative.mol2 filter @{"name=" + name}
+	}
+	set echo top center
+	echo @name
+}
+
+function showmm(name) {
+	print mmdat[name]
+}
+
+function findatom(n) {
+	var m = {atomindex=n}.modelIndex
+	model @{m+1}
+	checkatoms(_modelName)
+
+}
+
+function findmm(name) {
+  for (var i = 1; i <= mdat.length; i++) {
+		if (mdat[i].find(name)) {
+			model @i
+			showmm(name)
+			return
+		}
+	}
+	
+}
+
+function findfc(fc) {
+  fc = "" + fc
+  for (var i = 1; i <= vdat.length; i++) {
+		if (vdat[i].find(fc) && vdat[i].find(fc) > vdat[i].find("fchar")) {
+			print mdat[i-1] 
+			model @{i-1}
+			showmm(mdat[i-1])
+			delay 4
+		}
+	}
+}
+
+function checkatoms(name) {
+	labels off
+	select none
+	var m = mmdat[name]["atomInfo"]
+	var b = {visible}
+	for (var a in b) {
+		var aname = a.atomName
+		var atype = a.atomType.split(":")[1]
+		var mmtype = "" + m[aname]["t"]
+		var mmcode = "" + m[aname]["s"]
+		if (atype != mmtype) {
+			select add @a
+			print name + "\t" + a + "\t" + aname + "\t" + atype + "\t" + mmcode + "\t" + tdat[mmcode]
+		}		
+	}
+	label %a %3.2[partialcharge] %[atomtype]
+}
+
+
+function checkAll(n) {
+	select *
+	calculate partialcharge
+	var nbad = 0
+	for (var a in {*}) {
+		m = a.modelIndex
+		if(m==n){quit}
+		model @{m+1}
+		aname = a.atomName
+		atype = a.atomType.split(":")[1]
+		mmtype = "" + mmdat[_modelName]["atomInfo"][aname]["t"]
+		if (atype != mmtype) {
+			print "" + (++nbad) + "\t" + m + "\t" + _modelName + "\t" + a + "\t" + aname + "\t" + mmtype + "\t_" + mmdat[_modelName]["atomInfo"][aname]["s"] + "\t" + atype  + "\t" + a.atomType
+		}		
+	}
+
+
+}
+
+function checkmm(name, dodif) {
+	loadmm(name)
+	select *
+	wireframe only
+	 A = {*}.partialcharge.all
+	calculate partialCharge
+	if (dodif) {
+		{*}.partialcharge = A.sub({*}.partialcharge.all)
+		select partialcharge > 0.01 or partialcharge < -0.01
+		print {*}.partialcharge.all.stddev
+	}
+	labelMM(dodif ? "pink" : "none")
+	print {*}.partialcharge.all.stddev
+//	showmm @name
+	checkatoms name
+}
+
+function find(smartsString) {
+	var x = {within(smarts,@smartsString)}
+	print x
+	findAtom(x[1].atomIndex)	
+
+}
+
+loadmm
+//checkmm "AMPTRB" true

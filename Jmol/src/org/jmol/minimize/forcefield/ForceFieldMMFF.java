@@ -38,6 +38,7 @@ import org.jmol.api.SmilesMatcherInterface;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.util.BitSetUtil;
+import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
 
 public class ForceFieldMMFF {
@@ -184,7 +185,9 @@ public class ForceFieldMMFF {
         continue;
       smarts[i] = at.smartsCode;      
     }
-    smartsMatcher.getSubstructureSets(smarts, atoms, atoms.length, bsConnected, bitSets);
+    smartsMatcher.getSubstructureSets(smarts, atoms, atoms.length, 
+        JmolEdge.FLAG_AROMATIC_STRICT | JmolEdge.FLAG_AROMATIC_DOUBLE, 
+        bsConnected, bitSets);
     BitSet bsDone = new BitSet();
     for (int j = 0; j < bitSets.length; j++) {
       BitSet bs = bitSets[j];

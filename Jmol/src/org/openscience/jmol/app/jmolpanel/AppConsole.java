@@ -650,6 +650,13 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
       int kid = ke.getID();
       if (kid == KeyEvent.KEY_PRESSED) {
         switch (kcode) {
+        case KeyEvent.VK_C:
+          if (ke.isControlDown() && ke.isAltDown()) {
+            ke.consume();
+            viewer.script("!quit");
+            return;
+          }
+          break;
         case KeyEvent.VK_TAB:
           ke.consume();
           if (consoleDoc.isAtEnd()) {

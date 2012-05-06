@@ -28,9 +28,6 @@ import org.jmol.script.ScriptEvaluator;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collections;

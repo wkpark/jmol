@@ -187,8 +187,11 @@ public class Mol2Reader extends ForceFieldReader {
       }
       if (tokens.length > 7)
         atom.group3 = tokens[7];
-      if (tokens.length > 8)
+      if (tokens.length > 8) {
         atom.partialCharge = parseFloat(tokens[8]);
+        if (atom.partialCharge == (int) atom.partialCharge)
+          atom.formalCharge = (int) atom.partialCharge;
+      }
     }
     Atom[] atoms = atomSetCollection.getAtoms();
     String g3 = atoms[i0].group3;

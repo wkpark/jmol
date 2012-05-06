@@ -58,6 +58,7 @@ public class SmilesGenerator {
   private int atomCount;
   private BitSet bsSelected;
   private BitSet bsAromatic;
+  
   private StringBuffer ringSets;
 
   // data

@@ -255,13 +255,13 @@ public class SmilesMatcher implements SmilesMatcherInterface {
   }
 
   public void getSubstructureSets(String[] smarts, JmolNode[] atoms, int atomCount,
-                                  BitSet bsSelected, BitSet[] ret) {
-    getSubstructureSetsStatic(smarts, atoms, atomCount, bsSelected, ret);
+                                  int flags, BitSet bsSelected, BitSet[] ret) {
+    getSubstructureSetsStatic(smarts, atoms, atomCount, flags, bsSelected, ret);
   }
 
   private static void getSubstructureSetsStatic(String[] smarts,
                                                 JmolNode[] atoms,
-                                                int atomCount,
+                                                int atomCount, int flags,
                                                 BitSet bsSelected, BitSet[] ret) {
     InvalidSmilesException.setLastError(null);
     SmilesParser sp = new SmilesParser(true);
@@ -273,7 +273,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
       search.jmolAtoms = atoms;
       search.jmolAtomCount = Math.abs(atomCount);
       search.setSelected(bsSelected);
-      search.getRingData(true);
+      search.getRingData(true, flags);
       search.asVector = false;
     } catch (InvalidSmilesException e) {
       // I think this is impossible.
@@ -284,7 +284,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
       try {
         search.bsReturn.clear();
         System.out.println("SmilesMatcher " + smarts[i]);
-        SmilesSearch ss = sp.getSearch(search, smarts[i], false, false);
+        SmilesSearch ss = sp.getSearch(search, SmilesParser.cleanPattern(smarts[i]), flags);
         ret[i] = BitSetUtil.copy((BitSet) search.subsearch(ss, false, false));
         if (ret[i] != null && ret[i].nextSetBit(0) >= 0)
           System.out.println(smarts[i] + "  "+ ret[i]);

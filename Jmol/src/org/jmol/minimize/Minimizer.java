@@ -868,8 +868,9 @@ Token[keyword(0x880001) value=")"]
                                       BitSet bsAtoms, SmilesMatcherInterface smartsMatcher) {
     //TODO -- combine SMILES and MINIMIZER in same JAR file
     new ForceFieldMMFF();
-    int[] types = ForceFieldMMFF.getTypes(atoms, bsAtoms, smartsMatcher);
-    float[] charges = ForceFieldMMFF.getPartialCharges(bonds, atoms, types, bsAtoms);
+    List<BitSet> vAromatic56 = new ArrayList<BitSet>();
+    int[] types = ForceFieldMMFF.getTypes(atoms, bsAtoms, smartsMatcher, vAromatic56);
+    float[] charges = ForceFieldMMFF.getPartialCharges(bonds, atoms, types, bsAtoms, vAromatic56);
     viewer.setAtomProperty(bsAtoms, Token.atomtype, 0, 0, null, null, ForceFieldMMFF.getAtomTypeDescs(types));
     viewer.setAtomProperty(bsAtoms, Token.partialcharge, 0, 0, null, charges, null);
   }

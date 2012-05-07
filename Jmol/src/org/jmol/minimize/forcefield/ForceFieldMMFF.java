@@ -48,6 +48,8 @@ public class ForceFieldMMFF {
     int elemNo;
     float formalCharge;
     float fcadj;
+    boolean sbmb;
+    boolean arom;
     String descr;
     String smartsCode;
     AtomType(int elemNo, int mmType, float formalCharge, String descr, String smartsCode) {
@@ -56,7 +58,17 @@ public class ForceFieldMMFF {
       this.smartsCode = smartsCode;
       this.descr = descr;
       this.formalCharge = formalCharge;
+      setFlags();
+    }
+    private void setFlags() {
       switch (mmType) {
+      
+      // Note that these are NOT fractional charges based on
+      // number of connected atoms. These are relatively arbitrary
+      // fractions of the formal charge to be shared with other atoms.
+      // That is, it is not significant that 0.5 is 1/2, and 0.25 is 1/4; 
+      // they are just numbers.
+      
       case 32:
       case 35:
       case 72:
@@ -76,9 +88,146 @@ public class ForceFieldMMFF {
         fcadj = 0.25f;
         break;
       }
+      switch (mmType) {
+      case 37:
+      case 38:
+      case 39:
+      case 44:
+      case 58:
+      case 59:
+      case 63:
+      case 64:
+      case 65:
+      case 66:
+      case 69:
+      case 78:
+      case 79:
+      case 81:
+      case 82:
+        arom = true;
+      }
+      switch (mmType) {
+      case 2:
+      case 3:
+      case 4:
+      case 9:
+      case 30:
+      case 37:
+      case 39:
+      case 54:
+      case 57:
+      case 58:
+      case 63:
+      case 64:
+      case 67:
+      case 75:
+      case 78:
+      case 80:
+      case 81:
+        sbmb = true;
+      }
     }
   }
 
+  /*
+  * atype aspec crd val  pilp mltb arom lin sbmb
+    1    6    4    4    0    0    0    0    0
+    2    6    3    4    0    2    0    0    1
+    3    6    3    4    0    2    0    0    1
+    4    6    2    4    0    3    0    1    1
+    5    1    1    1    0    0    0    0    0
+    6    8    2    2    1    0    0    0    0
+    7    8    1    2    0    2    0    0    0
+    8    7    3    3    1    0    0    0    0
+    9    7    2    3    0    2    0    0    1
+   10    7    3    3    1    1    0    0    0
+   11    9    1    1    1    0    0    0    0
+   12   17    1    1    1    0    0    0    0
+   13   35    1    1    1    0    0    0    0
+   14   53    1    1    1    0    0    0    0
+   15   16    2    2    1    0    0    0    0
+   16   16    1    2    0    2    0    0    0
+   17   16    3    4    0    2    0    0    0
+   18   16    4    4    0    0    0    0    0
+   19   14    4    4    0    0    0    0    0
+   20    6    4    4    0    0    0    0    0
+   21    1    1    1    0    0    0    0    0
+   22    6    4    4    0    0    0    0    0
+   23    1    1    1    0    0    0    0    0
+   24    1    1    1    0    0    0    0    0
+   25   15    4    4    0    0    0    0    0
+   26   15    3    3    1    0    0    0    0
+   27    1    1    1    0    0    0    0    0
+   28    1    1    1    0    0    0    0    0
+   29    1    1    1    0    0    0    0    0
+   30    6    3    4    0    2    0    0    1
+   31    1    1    1    0    0    0    0    0
+   32    8    1   12    1    1    0    0    0
+   33    1    1    1    0    0    0    0    0
+   34    7    4    4    0    0    0    0    0
+   35    8    1    1    1    1    0    0    0
+   36    1    1    1    0    0    0    0    0
+   37    6    3    4    0    2    1    0    1
+   38    7    2    3    0    2    1    0    0
+   39    7    3    3    1    1    1    0    1
+   40    7    3    3    1    0    0    0    0
+   41    6    3    4    0    1    0    0    0
+   42    7    1    3    0    3    0    0    0
+   43    7    3    3    1    0    0    0    0
+   44   16    2    2    1    1    1    0    0
+   45    7    3    4    0    2    0    0    0
+   46    7    2    3    0    2    0    0    0
+   47    7    1    2    0    2    0    0    0
+   48    7    2    2    0    0    0    0    0
+   49    8    3    3    0    0    0    0    0
+   50    1    1    1    0    0    0    0    0
+   51    8    2    3    0    2    0    0    0
+   52    1    1    1    0    0    0    0    0
+   53    7    2    4    0    2    0    1    0
+   54    7    3    4    0    2    0    0    1
+   55    7    3   34    0    1    0    0    0
+   56    7    3   34    0    1    0    0    0
+   57    6    3    4    0    2    0    0    1
+   58    7    3    4    0    1    1    0    1
+   59    8    2    2    1    1    1    0    0
+   60    6    1    3    0    3    0    0    0
+   61    7    2    4    0    3    0    1    0
+   62    7    2    2    1    0    0    0    0
+   63    6    3    4    0    2    1    0    1
+   64    6    3    4    0    2    1    0    1
+   65    7    2    3    0    2    1    0    0
+   66    7    2    3    0    2    1    0    0
+   67    7    3    4    0    2    0    0    1
+   68    7    4    4    0    0    0    0    0
+   69    7    3    4    0    1    1    0    0
+   70    8    2    2    1    0    0    0    0
+   71    1    1    1    0    0    0    0    0
+   72   16    1    1    1    1    0    0    0
+   73   16    3    3    0    0    0    0    0
+   74   16    2    4    0    2    0    0    0
+   75   15    2    3    0    2    0    0    1
+   76    7    2    2    1    0    0    0    0
+   77   17    4    4    0    0    0    0    0
+   78    6    3    4    0    2    1    0    1
+   79    7    2    3    0    2    1    0    0
+   80    6    3    4    0    2    0    0    1
+   81    7    3    4    0    1    1    0    1
+   82    7    3    4    0    1    1    0    0
+   87   26    0    0    0    0    0    0    0
+   88   26    0    0    0    0    0    0    0
+   89    9    0    0    0    0    0    0    0
+   90   17    0    0    0    0    0    0    0
+   91   35    0    0    0    0    0    0    0
+   92    3    0    0    0    0    0    0    0
+   93   11    0    0    0    0    0    0    0
+   94   19    0    0    0    0    0    0    0
+   95   30    0    0    0    0    0    0    0
+   96   20    0    0    0    0    0    0    0
+   97   29    0    0    0    0    0    0    0
+   98   29    0    0    0    0    0    0    0
+   99   12    0    0    0    0    0    0    0
+
+   */
   public ForceFieldMMFF() {
     getParameters();
   }
@@ -108,11 +257,12 @@ public class ForceFieldMMFF {
       while ((line = br.readLine()) != null) {
         if (line.length() < 5 || line.startsWith("*"))
           continue;
+        int bondType = line.charAt(0) - '0';
         int a1 = Integer.valueOf(line.substring(3,5).trim()).intValue();
         int a2 = (isPartial ? 0 : Integer.valueOf(line.substring(8,10).trim()).intValue());
         Float value = Float.valueOf((isPartial ? line.substring(5,15) : line.substring(10,20)).trim());
-        data.put(Integer.valueOf(a1 * 100 + a2), value);
-        //System.out.println(a1 + "\t" + a2 + "\t" + value);
+        Integer key = Integer.valueOf((a1 * 100 + a2) * 10 + bondType);
+        data.put(key, value);
       }
       br.close();
     } catch (Exception e) {
@@ -163,7 +313,9 @@ public class ForceFieldMMFF {
 
   }
 
-  public static int[] getTypes(Atom[] atoms, BitSet bsAtoms, SmilesMatcherInterface smartsMatcher) {
+  public static int[] getTypes(Atom[] atoms, BitSet bsAtoms, 
+                               SmilesMatcherInterface smartsMatcher, 
+                               List<BitSet> vAromatic56) {
     BitSet[] bitSets = new BitSet[atomTypes.size()];
     String[] smarts = new String[atomTypes.size()];
     int[] types = new int[atoms.length];
@@ -187,7 +339,7 @@ public class ForceFieldMMFF {
     }
     smartsMatcher.getSubstructureSets(smarts, atoms, atoms.length, 
         JmolEdge.FLAG_AROMATIC_STRICT | JmolEdge.FLAG_AROMATIC_DOUBLE, 
-        bsConnected, bitSets);
+        bsConnected, bitSets, vAromatic56);
     BitSet bsDone = new BitSet();
     for (int j = 0; j < bitSets.length; j++) {
       BitSet bs = bitSets[j];
@@ -214,10 +366,12 @@ public class ForceFieldMMFF {
    * @param atoms
    * @param types
    * @param bsAtoms
+   * @param vAromatic56 
    * @return   full array of partial charges
    */
   public static float[] getPartialCharges(Bond[] bonds, Atom[] atoms,
-                                          int[] types, BitSet bsAtoms) {
+                                          int[] types, BitSet bsAtoms, 
+                                          List<BitSet> vAromatic56) {
 
     // start with formal charges specified by MMFF94 (not what is in file!)
 
@@ -244,8 +398,8 @@ public class ForceFieldMMFF {
       
       // we are only interested in bonds that are between different atom types
       
-      if (type1 == type2)
-        continue;
+//      if (type1 == type2)
+  //      continue;
       
       // check for bond charge increment
       
@@ -255,19 +409,27 @@ public class ForceFieldMMFF {
       
       float dq;  // the difference in charge to be added or subtracted from the formal charges
       try {
+        int bondType = (isBondType1(at1, at2) && 
+            bonds[i].getCovalentOrder() == 1 
+            && !isAromaticBond(a1.index, a2.index, vAromatic56) ? 1 : 0);
         float bFactor = (type1 < type2 ? -1 : 1);
-        Float bciValue = bciData.get(Integer.valueOf(bFactor == 1 ? type2 * 100 + type1
-            : type1 * 100 + type2));
+        Integer key = Integer.valueOf(((bFactor == 1 ? type2 * 100 + type1
+            : type1 * 100 + type2) * 10) + bondType);
+        Float bciValue = bciData.get(key);
         float bci;
+        String msg = key + " " + a1 + "/" + a2 + " mmTypes=" + type1 + "/" + type2 + " formalCharges=" + at1.formalCharge + "/" + at2.formalCharge + " bci = ";
         if (bciValue == null) { 
           // no bci was found; we have to use partial bond charge increments
           // a failure here indicates we don't have information
-          float pa = bciData.get(Integer.valueOf(type1 * 100)).floatValue();
-          float pb = bciData.get(Integer.valueOf(type2 * 100)).floatValue();
+          float pa = bciData.get(Integer.valueOf(type1 * 1000)).floatValue();
+          float pb = bciData.get(Integer.valueOf(type2 * 1000)).floatValue();
           bci = pa - pb;
+          msg += pa + " - " + pb + " = ";
         } else {
           bci = bFactor * bciValue.floatValue();
         }
+        msg += bci;
+        System.out.println(msg);
         // Here's the way to do this:
         //
         // 1) The formal charge on each atom is adjusted both by
@@ -301,11 +463,24 @@ public class ForceFieldMMFF {
     return partialCharges;
   }
 
+  private static boolean isAromaticBond(int a1, int a2, List<BitSet> vAromatic56) {
+    for (int i = vAromatic56.size(); --i >= 0;) {
+      BitSet bsRing = vAromatic56.get(i);
+      if (bsRing.get(a1) && bsRing.get(a2))
+        return true;
+    }
+    return false;
+  }
+
+  private static boolean isBondType1(AtomType at1, AtomType at2) {
+      return at1.sbmb && at2.sbmb || at1.arom && at2.arom; 
+  }
+
   public static String[] getAtomTypeDescs(int[] types) {
     String[] stypes = new String[types.length];
     for (int i = types.length; --i >= 0;) {
       AtomType at = atomTypes.get(types[i]);
-      stypes[i] = at.mmType + ":" + at.descr;
+      stypes[i] = String.valueOf(at.mmType);
     }
     return stypes;
   }

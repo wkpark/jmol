@@ -1,8 +1,11 @@
-vdat = load("mmff-validationData.dat").split("model ")
+print "checkmm.spt reading mmff-validation.dat..."
+vdat = load("mmff-validation.dat").split("model ")
 tdat = {}
 mmdat = {}
+print "...validation data for " + (vdat.length - 1) + " models read"
 
 function setAtomInfo() {
+	print "...creating reference data set"
 	for (var i = 2; i <= vdat.length; i++) {
 		var dat = vdat[i].split(" # ")
 		var model = ((dat[1])[1][10]).split(" ")[1]
@@ -13,7 +16,7 @@ function setAtomInfo() {
 		for (var t = 2; t <= dat.length; t++) {
 			var line = dat[t]
 			var ttype = line[1]
-			m[ttype] = line
+//			m[ttype] = line
 			var tokens = line.split(" ")
 			for (var j = 2; j < tokens.length; j+= 3) {
 				var a = tokens[j]
@@ -25,7 +28,8 @@ function setAtomInfo() {
 			}
 		}	
 	}
-	
+
+	print "loading MMFF94SYMB.PAR"	
 	var dat = load("MMFF94SYMB.PAR").split("SYMBOL").lines[3][0]
 	for (var i = 1; i <=dat.length; i++) {
 		var code = (dat[i])[3][9].trim()
@@ -33,8 +37,11 @@ function setAtomInfo() {
 		var def = (dat[i])[12][0].trim()
 		tdat[code] = "" + mmtype + " " + def
 	}
+	print "..." + tdat.keys.length + " atom type symbols read"	
+
 }
 setAtomInfo
+print "use checkAll() to check atom types; checkAllCharges() to check partial charges"
 
 function labelmm(color) { 
 		label %a %4.2[partialcharge] %[formalcharge] %[atomtype]
@@ -120,7 +127,11 @@ function checkatoms(name) {
 
 
 function checkAll(n) {
+	if (!n) {
+		n = 10000
+	}
 	select *
+	print "calculating atom types for " + {*}.length + " atoms..."
 	calculate partialcharge
 	var nbad = 0
 	for (var a in {*}) {
@@ -128,13 +139,40 @@ function checkAll(n) {
 		if(m==n){quit}
 		model @{m+1}
 		aname = a.atomName
-		atype = a.atomType.split(":")[1]
+		atype = a.atomType
 		mmtype = "" + mmdat[_modelName]["atomInfo"][aname]["t"]
 		if (atype != mmtype) {
-			print "" + (++nbad) + "\t" + m + "\t" + _modelName + "\t" + a + "\t" + aname + "\t" + mmtype + "\t_" + mmdat[_modelName]["atomInfo"][aname]["s"] + "\t" + atype  + "\t" + a.atomType
-		}		
+			print "" + (++nbad) + "\t" + (m + 1) + "\t" + _modelName + "\t" + a + "\t" + aname + "\t" + mmtype + "\t_" + mmdat[_modelName]["atomInfo"][aname]["s"] + "\t" + atype  + "\t" + a.atomType
+		}
+	}
+	if (nbad == 0) {
+		print "...all types match mmff94"
 	}
 
+}
+
+function checkAllCharges(n) {
+	if (!n) {
+		n = 10000
+	}
+	var max = 0.002
+	select *
+	var A = {*}.partialcharge.all
+	calculate partialcharge
+	{*}.partialcharge = A.sub({*}.partialcharge.all)
+	select partialcharge > max or partialcharge < -max
+	selectionhalos on
+	print "for " + {*}.size + " atoms, " + {selected}.size + " have charge differences outside the range " + (-max) + " to " + max + " with a standard deviation of " + {*}.partialcharge.all.stddev
+	var nbad = 0
+	for (var a in {selected}) {
+		m = a.modelIndex
+		if(m>n){quit}
+		model @{m+1}
+		aname = a.atomName
+		atype = a.atomType.split(":")[1]
+		mmtype = "" + mmdat[_modelName]["atomInfo"][aname]["t"]
+		print "" + (++nbad) + "\t" + (m + 1) + "\t" + _modelName + "\t" + a + "\t" + aname + "\t" + a.partialCharge +  "\t" + mmtype + "\t_" + mmdat[_modelName]["atomInfo"][aname]["s"]
+	}
 
 }
 
@@ -155,7 +193,7 @@ function checkmm(name, dodif) {
 	checkatoms name
 }
 
-function find(smartsString) {
+function findmm(smartsString) {
 	var x = {within(smarts,@smartsString)}
 	print x
 	findAtom(x[1].atomIndex)	

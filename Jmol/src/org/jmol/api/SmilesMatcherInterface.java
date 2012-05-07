@@ -1,6 +1,7 @@
 package org.jmol.api;
 
 import java.util.BitSet;
+import java.util.List;
 
 import org.jmol.util.JmolNode;
 
@@ -43,5 +44,5 @@ public interface SmilesMatcherInterface {
 
   public abstract void getSubstructureSets(String[] smarts, JmolNode[] atoms, int atomCount,
                                            int flags,
-                         BitSet bsSelected, BitSet[] ret);
+                         BitSet bsSelected, BitSet[] ret, List<BitSet> vAromatic56);
 }

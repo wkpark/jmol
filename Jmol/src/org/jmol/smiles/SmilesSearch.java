@@ -178,11 +178,11 @@ public class SmilesSearch extends JmolMolecule {
       if (!needRingMemberships && !needRingData)
         return;
     }
-    getRingData(needRingData, flags);
+    getRingData(needRingData, flags, null);
   }
 
   @SuppressWarnings("unchecked")
-  void getRingData(boolean needRingData, int flags) throws InvalidSmilesException {
+  void getRingData(boolean needRingData, int flags, List<BitSet> vAromatic56) throws InvalidSmilesException {
     boolean aromaticStrict = ((flags & JmolEdge.FLAG_AROMATIC_STRICT) != 0);
     boolean aromaticDefined = ((flags & JmolEdge.FLAG_AROMATIC_DEFINED) != 0);
     if (aromaticDefined && needAromatic) {
@@ -232,8 +232,8 @@ public class SmilesSearch extends JmolMolecule {
                   bsAromatic);
             else
               SmilesAromatic.checkAromaticStrict(jmolAtoms, bsAromatic, v5, vRings);
-           setAromatic56(v5, bsAromatic5, 5);
-           setAromatic56(vRings, bsAromatic6, 6);
+           setAromatic56(v5, bsAromatic5, 5, vAromatic56);
+           setAromatic56(vRings, bsAromatic6, 6, vAromatic56);
             break;
           }
         }
@@ -261,14 +261,17 @@ public class SmilesSearch extends JmolMolecule {
     }
   }
 
-  private void setAromatic56(List<Object> vRings, BitSet bs56, int n56) {
+  private void setAromatic56(List<Object> vRings, BitSet bs56, int n56, List<BitSet> vAromatic56) {
     for (int k = 0; k < vRings.size(); k++) {
       BitSet r = (BitSet) vRings.get(k);
       v.bsTemp.clear();
       v.bsTemp.or(r);
       v.bsTemp.and(bsAromatic);
-      if (v.bsTemp.cardinality() == n56)
+      if (v.bsTemp.cardinality() == n56) {
         bs56.or(r);
+        if (vAromatic56 != null)
+          vAromatic56.add(r);
+      }
     }
   }
 

@@ -44,5 +44,5 @@ public interface SmilesMatcherInterface {
 
   public abstract void getSubstructureSets(String[] smarts, JmolNode[] atoms, int atomCount,
                                            int flags,
-                         BitSet bsSelected, BitSet[] ret, List<BitSet> vAromatic56);
+                         BitSet bsSelected, List<BitSet> bitSets, List<BitSet> vAromatic56);
 }

@@ -255,7 +255,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
   }
 
   public void getSubstructureSets(String[] smarts, JmolNode[] atoms, int atomCount,
-                                  int flags, BitSet bsSelected, BitSet[] ret, 
+                                  int flags, BitSet bsSelected, List<BitSet> ret, 
                                   List<BitSet> vAromatic56) {
     InvalidSmilesException.setLastError(null);
     SmilesParser sp = new SmilesParser(true);
@@ -272,14 +272,22 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     } catch (InvalidSmilesException e) {
       // I think this is impossible.
     }
+    BitSet bsDone = new BitSet();
+    
     for (int i = 0; i < smarts.length; i++) {
-      if (smarts[i] == null || smarts[i].length() == 0 || smarts[i].startsWith("#"))
+      if (smarts[i] == null || smarts[i].length() == 0 || smarts[i].startsWith("#")) {
+        ret.add(null);
         continue;
+      }
       try {
         search.bsReturn.clear();
         //System.out.println("SmilesMatcher " + smarts[i]);
         SmilesSearch ss = sp.getSearch(search, SmilesParser.cleanPattern(smarts[i]), flags);
-        ret[i] = BitSetUtil.copy((BitSet) search.subsearch(ss, false, false));
+        BitSet bs = BitSetUtil.copy((BitSet) search.subsearch(ss, false, false));
+        ret.add(bs);
+        bsDone.or(bs);
+        if (bsDone.cardinality() == atomCount)
+          return;
         //if (ret[i] != null && ret[i].nextSetBit(0) >= 0)
           //System.out.println(smarts[i] + "  "+ ret[i]);
       } catch (Exception e) {

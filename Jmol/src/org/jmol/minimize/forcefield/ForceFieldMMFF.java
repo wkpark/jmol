@@ -316,7 +316,7 @@ public class ForceFieldMMFF {
   public static int[] getTypes(Atom[] atoms, BitSet bsAtoms, 
                                SmilesMatcherInterface smartsMatcher, 
                                List<BitSet> vAromatic56) {
-    BitSet[] bitSets = new BitSet[atomTypes.size()];
+    List<BitSet>bitSets = new ArrayList<BitSet>();
     String[] smarts = new String[atomTypes.size()];
     int[] types = new int[atoms.length];
     BitSet elements = new BitSet();
@@ -341,14 +341,14 @@ public class ForceFieldMMFF {
         JmolEdge.FLAG_AROMATIC_STRICT | JmolEdge.FLAG_AROMATIC_DOUBLE, 
         bsConnected, bitSets, vAromatic56);
     BitSet bsDone = new BitSet();
-    for (int j = 0; j < bitSets.length; j++) {
-      BitSet bs = bitSets[j];
+    for (int j = 0; j < bitSets.size(); j++) {
+      BitSet bs = bitSets.get(j);
       if (bs == null)
         continue;
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
         if (bsDone.get(i))
           continue;
-        types[i] = j;//atomTypes.get(j).mmType;
+        types[i] = j;
         bsDone.set(i);
       }
     }

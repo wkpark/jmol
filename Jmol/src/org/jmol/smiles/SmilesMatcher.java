@@ -283,11 +283,11 @@ public class SmilesMatcher implements SmilesMatcherInterface {
         continue;
       try {
         search.bsReturn.clear();
-        System.out.println("SmilesMatcher " + smarts[i]);
+        //System.out.println("SmilesMatcher " + smarts[i]);
         SmilesSearch ss = sp.getSearch(search, SmilesParser.cleanPattern(smarts[i]), flags);
         ret[i] = BitSetUtil.copy((BitSet) search.subsearch(ss, false, false));
-        if (ret[i] != null && ret[i].nextSetBit(0) >= 0)
-          System.out.println(smarts[i] + "  "+ ret[i]);
+        //if (ret[i] != null && ret[i].nextSetBit(0) >= 0)
+          //System.out.println(smarts[i] + "  "+ ret[i]);
       } catch (Exception e) {
         if (InvalidSmilesException.getLastError() == null)
           InvalidSmilesException.setLastError(e.getMessage());

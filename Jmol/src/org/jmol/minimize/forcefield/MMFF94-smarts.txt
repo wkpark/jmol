@@ -57,10 +57,13 @@ C   6  3      0 GENERAL CARBONYL C        $([CD3]=[O,N,P,S])
 
 
 C   6 80      0 C IN N-C-N, IM+ ION       $([cD3r500]([#7D3v3])=[#7D3v4&!r600&!$([#7][OD1])])
-C   6 78      0 ALPHA AROM 5-RING  C (to  #$([cD3r500]:[nD3v4])
-C   6 78      0 BETA AROM 5-RING  C (to c #$([cD3r500]:a:[nD3v4])
-C   6 63      0 ALPHA AROM 5-RING  C      $([cD3r500&!$(c[nv4])&!$(ca[nv4])]:[oD2,nD3v3,sD2])
-C   6 64      0 BETA AROM 5-RING  C       $([cD3r500&!$(c[nv4])&!$(ca[nv4])]:a:[oD2,nD3v3,sD2])
+C   6 78      0 general 5-ring C both alp [$([cD3r500]1[oD2r500,sD2r500,nD3v3r500]aaa1);$([cD3r500]1a[oD2r500,sD2r500,nD3v3r500]aa1)]
+C   6 63      0 ALPHA AROM 5-RING  C (fur $([cD3r500]:[oD2r500,sD2r500])
+C   6 64      0 BETA AROM 5-RING  C (fura $([cD3r500]:a:[oD2r500,sD2r500])
+C   6 78      0 general 5-ring C (imidzol [$([cD3r500]1[nv4r500&!$(n[OD1])]aaa1),$([cr500]1a[nv4r500&!$(n[OD1])]aa1)]
+C   6 78      0 general 5-ring C (1,2-dia [$([cD3r500]1[cr500][cr500][nD2r500][nD2r500]1),$([cD3r500]1[cr500][nD2r500][nD2r500][cr500]1)]
+C   6 63      0 ALPHA AROM 5-RING  C      $([cD3r500]:[nD3v3r500])
+C   6 64      0 BETA AROM 5-RING  C       $([cD3r500]1a[nD3v3r500]aa1)
 C   6 37      0 CARBON AS IN BENZENE, PYR [cD3]1ccccc1
 C   6 78      0 GENERAL AROM 5-RING C     [cD3r500]
 C   6 37      0 AROMATIC C                [cD3]
@@ -78,8 +81,12 @@ N   7 48      0 DIVALENT NITROGEN REPLACI $([ND2][SD4]([OD1])([#6])[#6])
 N   7 62     -1 SULFONAMIDE N-            [$([ND2v2][SD4]),$([ND2v2][CD3])]
 N   7 61      1 ISONITRILE N              $([ND2]#[#6,#7])
 N   7 38      0 AROMATIC N, PYRIDINE      [nD2r600]
-N   7 65      0 ALPHA AROM 5-RING N       [$([nD2r500][oD2,nD3v3,sD2])&$([$(n[sD2]),$(n:a:C[OD1]),$(n:C[OD1]),!$([$(n[$([nv4]),$([#7][OD1])]),$(na=[$([nv4])&!$([#7][OD1])]),$(n=a[$([nv4])&!$([#7][OD1])])])])]
-N   7 66      0 (BETA) AROM 5-RING N      [$([nD2r500]:a:[oD2,nD3v3,sD2])&$([$(n:a:[sD2]),$(n:a:C[OD1]),$(n:C[OD1]),!$([$(n[$([nv4]),$([#7][OD1])]),$(na=[$([nv4])&!$([#7][OD1])]),$(n=a[$([nv4])&!$([#7][OD1])])])])]
+N   7 65      0 ALPHA AROM 5-RING N (thio $([nD2r500][sD2])
+N   7 66      0 (BETA) AROM 5-RING N (thi $([nD2r500]:a:[sD2])
+N   7 65      0 ALPHA AROM 5-RING N (fura $([nD2r500]:[oD2])
+N   7 66      0 (BETA) AROM 5-RING N (fur $([nD2r500]:a:[oD2])
+N   7 65      0 ALPHA AROM 5-RING N       [$([nD2r500]:[nD3v3])&!$([$(n:[$([nv4])&!$([#7][OD1])]),$(n:a=[$([nv4])&!$([#7][OD1])]),$(n=a:[$([nv4])&!$([#7][OD1])])])]
+N   7 66      0 (BETA) AROM 5-RING N      [$([nD2r500]:a:[nD3v3])&!$([$(n:[$([nv4])&!$([#7][OD1])]),$(n:a=[$([nv4])&!$([#7][OD1])]),$(n=a:[$([nv4])&!$([#7][OD1])])])]
 N   7 76  -0.33 (NEG N IN TRIAZOLE)       [nD2r500]:[nD2r500]:c:[nD2r500]
 N   7 76  -0.25 NEG N IN TETRAZOLE AN     [nD2r500][nD2r500][nD2r500][nD2r500]
 N   7 76   -0.5 NEG N IN DIAZOLE          $([nD2r500][nD2r500]ccc)
@@ -196,6 +203,11 @@ Zn 30 95      2 DIPOSITIVE ZINC CATION    [ZnD0+2]
 Br 35 13      0 BROMINE                   [BrD1]
 Br 35 91     -1 BROMIDE ANION             [BrD0]
 I  53 14      0 IODINE                    [ID1]
+
+
+
+
+
 
 
 

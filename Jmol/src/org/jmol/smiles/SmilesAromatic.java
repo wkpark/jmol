@@ -279,7 +279,7 @@ public class SmilesAromatic {
     // I believe this gives the wrong answer for mmff94_dative.mol2 CIKSEU10
     // but at least it agrees with MMFF94.  -- Bob Hanson
 
-    System.out.println(bsRing);
+    //System.out.println(bsRing);
     int piElectronCount = countInternalPairs(jmolAtoms, bsRing, is5) << 1;
     switch (piElectronCount) {
     case -3:

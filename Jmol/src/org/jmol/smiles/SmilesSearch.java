@@ -192,6 +192,8 @@ public class SmilesSearch extends JmolMolecule {
     }
     if (ringDataMax < 0)
       ringDataMax = 8;
+    if (aromaticStrict && ringDataMax < 6)
+      ringDataMax = 6;
     if (needRingData) {
       ringCounts = new int[jmolAtomCount];
       ringConnections = new int[jmolAtomCount];
@@ -230,23 +232,17 @@ public class SmilesSearch extends JmolMolecule {
                   bsAromatic);
             else
               SmilesAromatic.checkAromaticStrict(jmolAtoms, bsAromatic, v5, vRings);
+           setAromatic56(v5, bsAromatic5, 5);
+           setAromatic56(vRings, bsAromatic6, 6);
             break;
           }
         }
       }
       if (needRingData) {
         ringData[i] = new BitSet();
-        BitSet bs56 = (!needAromatic ? null : i == 5 ? bsAromatic5 : i == 6 ? bsAromatic6 : null);
         for (int k = 0; k < vRings.size(); k++) {
           BitSet r = (BitSet) vRings.get(k);
           ringData[i].or(r);
-          if (bs56 != null) {
-            v.bsTemp.clear();
-            v.bsTemp.or(r);
-            v.bsTemp.and(bsAromatic);
-            if (v.bsTemp.cardinality() == i)
-              bs56.or(r);
-          }
           for (int j = r.nextSetBit(0); j >= 0; j = r.nextSetBit(j + 1))
             ringCounts[j]++;
         }
@@ -264,6 +260,18 @@ public class SmilesSearch extends JmolMolecule {
       }
     }
   }
+
+  private void setAromatic56(List<Object> vRings, BitSet bs56, int n56) {
+    for (int k = 0; k < vRings.size(); k++) {
+      BitSet r = (BitSet) vRings.get(k);
+      v.bsTemp.clear();
+      v.bsTemp.or(r);
+      v.bsTemp.and(bsAromatic);
+      if (v.bsTemp.cardinality() == n56)
+        bs56.or(r);
+    }
+  }
+
   Object subsearch(SmilesSearch search, 
                             boolean firstAtomOnly, 
                             boolean isRingCheck) throws InvalidSmilesException {

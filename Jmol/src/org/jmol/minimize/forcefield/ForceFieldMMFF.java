@@ -332,7 +332,7 @@ public class ForceFieldMMFF {
     for (int i = bsConnected.nextSetBit(0); i >= 0; i = bsConnected.nextSetBit(i + 1))
       elements.set(atoms[i].getElementNumber());
     int nUsed = 0;
-    for (int i = 1; i <= atomTypes.size(); i++) {
+    for (int i = 1; i < atomTypes.size(); i++) {
       AtomType at = atomTypes.get(i);
       if (!elements.get(at.elemNo))
         continue;

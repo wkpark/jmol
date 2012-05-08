@@ -880,7 +880,15 @@ public class ScriptEvaluator {
         rpn.addX(new ScriptVariable(theToken));
         break;
       case Token.dollarsign:
-        rpn.addX(new ScriptVariable(Token.point3f, centerParameter(i)));
+        ignoreError = true;
+        Point3f ptc;
+        try{
+          ptc = centerParameter(i);
+          rpn.addX(new ScriptVariable(Token.point3f, ptc));
+        } catch (Exception e) {
+          rpn.addX("");
+        }
+        ignoreError = false;
         i = iToken;
         break;
       case Token.leftbrace:

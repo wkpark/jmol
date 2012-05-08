@@ -76,15 +76,12 @@ class Image {
   static void waitForDisplay(Object display, Object image) throws InterruptedException {
   //  return;
     // I have no idea why JPGEncoder was requiring this.
-    System.out.println("Image waitfordisplay 1");
     if (display == null)
       display = new JPanel();
-    System.out.println("Image waitForDisplay");
     MediaTracker mediaTracker = new MediaTracker((Component) display);
-    mediaTracker.addImage((java.awt.Image)image, 0);
-    mediaTracker.waitForID(0);
-    System.out.println("Image waitfordisplay 2");
-      
+    int rnd = (int) (Math.random()*100000);
+    mediaTracker.addImage((java.awt.Image)image, rnd);
+    mediaTracker.waitForID(rnd);      
   }
 
   static int getWidth(Object image) {

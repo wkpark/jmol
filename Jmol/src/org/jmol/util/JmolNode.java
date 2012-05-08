@@ -68,4 +68,5 @@ public interface JmolNode {
   public boolean isPurine();
   public boolean isPyrimidine();
   public boolean isDeleted();
+  public String getAtomType();
 }

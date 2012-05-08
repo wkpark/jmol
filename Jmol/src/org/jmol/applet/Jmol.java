@@ -1241,7 +1241,7 @@ public class Jmol implements WrappedApplet {
     private void showStatus(String message) {
       try {
         System.out.println(message);
-        appletWrapper.showStatus(message);
+        appletWrapper.showStatus(TextFormat.simpleReplace(TextFormat.split(message, "\n")[0], "'", "\\'"));
         sendJsTextStatus(message);
       } catch (Exception e) {
         //ignore if page is closing

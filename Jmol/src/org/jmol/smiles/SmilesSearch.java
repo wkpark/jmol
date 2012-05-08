@@ -813,6 +813,10 @@ public class SmilesSearch extends JmolMolecule {
         if (patternAtom.jmolIndex >= 0
             && atom.getIndex() != patternAtom.jmolIndex)
           break;
+        
+        if (patternAtom.atomType != null && 
+            !patternAtom.atomType.equals(atom.getAtomType()))
+          break;
 
         // # <n> or Symbol Check atomic number
         if (patternAtom.elementNumber >= 0

@@ -32,6 +32,7 @@ import java.util.Map;
 
 import org.jmol.util.Elements;
 import org.jmol.util.JmolEdge;
+import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;
 import org.jmol.util.Logger;
 
@@ -813,6 +814,11 @@ public class SmilesParser {
           newAtom.setAtomicMass(mass);
         } else {
           switch (ch) {
+          case '"':
+            String type = Parser.getNextQuotedString(pattern, index);
+            index += type.length() + 2;
+            newAtom.setAtomType(type);
+            break;
           case '_': // $(...) nesting
             index = getDigits(pattern, index + 1, ret) + 1;
             if (ret[0] == Integer.MIN_VALUE)

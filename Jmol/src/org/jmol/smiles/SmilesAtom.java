@@ -60,6 +60,12 @@ public class SmilesAtom extends Point3f implements JmolNode {
     return (UNBRACKETED_SET.indexOf(xx + ",") >= 0);
   }
 
+  SmilesAtom[] atomsOr;
+  int nAtomsOr;
+
+  SmilesAtom[] primitives;
+  int nPrimitives;
+
   int index;
   String atomName;
   String residueName;
@@ -70,6 +76,31 @@ public class SmilesAtom extends Point3f implements JmolNode {
   int notBondedIndex = -1;
   boolean notCrossLinked;
   boolean aromaticAmbiguous = true;
+  String atomType;
+
+  private int covalentHydrogenCount = -1;
+  
+  boolean not;
+  boolean selected;
+  boolean hasSymbol;
+  boolean isFirst = true;
+
+  int jmolIndex = -1;
+  short elementNumber = -2; // UNDEFINED (could be A or a or *)
+
+  int missingHydrogenCount = Integer.MIN_VALUE;
+  int implicitHydrogenCount = Integer.MIN_VALUE;
+  SmilesAtom parent;
+  SmilesBond[] bonds = new SmilesBond[4];
+  int bondCount;
+  int iNested = 0;
+
+  private short atomicMass = Short.MIN_VALUE;
+  private int charge = Integer.MIN_VALUE;
+  private int matchingAtom = -1;
+  private int chiralClass = Integer.MIN_VALUE;
+  private int chiralOrder = Integer.MIN_VALUE;
+  private boolean isAromatic;
 
   void setBioAtom(char bioType) {
     isBioAtom = (bioType != '\0');
@@ -93,37 +124,9 @@ public class SmilesAtom extends Point3f implements JmolNode {
     }
   }
 
-  boolean not;
-  boolean selected;
-  boolean hasSymbol;
-  boolean isFirst = true;
-
-  int jmolIndex = -1;
-  short elementNumber = -2; // UNDEFINED (could be A or a or *)
-
-  private short atomicMass = Short.MIN_VALUE;
-  private int charge = Integer.MIN_VALUE;
-  int missingHydrogenCount = Integer.MIN_VALUE;
-  int implicitHydrogenCount = Integer.MIN_VALUE;
-  private int matchingAtom = -1;
-  private int chiralClass = Integer.MIN_VALUE;
-  private int chiralOrder = Integer.MIN_VALUE;
-  private boolean isAromatic;
-  SmilesAtom parent;
-  SmilesBond[] bonds = new SmilesBond[4];
-  int bondCount;
-
   public void setBonds(SmilesBond[] bonds) {
     this.bonds = bonds;
   }
-
-  int iNested = 0;
-
-  SmilesAtom[] atomsOr;
-  int nAtomsOr;
-
-  SmilesAtom[] primitives;
-  int nPrimitives;
 
   public SmilesAtom addAtomOr() {
     if (atomsOr == null)
@@ -621,8 +624,6 @@ public class SmilesAtom extends Point3f implements JmolNode {
         .getOtherAtom(this).index);
   }
 
-  private int covalentHydrogenCount = -1;
-  
   public int getCovalentHydrogenCount() {
     if (covalentHydrogenCount >= 0)
       return covalentHydrogenCount;
@@ -766,6 +767,14 @@ public class SmilesAtom extends Point3f implements JmolNode {
 
   public boolean isDeleted() {
     return false;
+  }
+
+  public void setAtomType(String type) {
+    this.atomType = type;
+  }
+
+  public String getAtomType() {
+    return (atomType == null ? atomName : atomType);
   }
 
 }

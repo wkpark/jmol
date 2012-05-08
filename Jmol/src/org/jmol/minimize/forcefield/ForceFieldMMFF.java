@@ -331,12 +331,15 @@ public class ForceFieldMMFF {
     }
     for (int i = bsConnected.nextSetBit(0); i >= 0; i = bsConnected.nextSetBit(i + 1))
       elements.set(atoms[i].getElementNumber());
-    for (int i = atomTypes.size(); -- i >= 1;) {
+    int nUsed = 0;
+    for (int i = 1; i <= atomTypes.size(); i++) {
       AtomType at = atomTypes.get(i);
       if (!elements.get(at.elemNo))
         continue;
-      smarts[i] = at.smartsCode;      
+      smarts[i] = at.smartsCode;
+      nUsed++;
     }
+    Logger.info(nUsed + " SMARTS matches required");
     smartsMatcher.getSubstructureSets(smarts, atoms, atoms.length, 
         JmolEdge.FLAG_AROMATIC_STRICT | JmolEdge.FLAG_AROMATIC_DOUBLE, 
         bsConnected, bitSets, vAromatic56);

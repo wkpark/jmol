@@ -201,12 +201,16 @@ For example, a section of the large ribosomal unit for PDB code 1FFK reads:
 allows SMARTS searches to target specific ranges of values. 
 <br /><br />
 </li><li><b>processing flags</b> Jmol recognizes "/..../" at the beginning of a pattern as processing flags. 
-Currently the only flags supported are "noAromatic" and "noStereo". "noAromatic" turns off all aromaticity checks.
-It may be desireable when no distinction between
+Prior to Jmol 12.3.24 the only flags supported were <b>noAromatic</b> and <b>noStereo</b>. 
+<b>noAromatic</b> turns off all aromaticity checks.It may be desirable when no distinction between
 aromatic and nonaromatic atoms is desired. For large biomolecules /noAromatic/ can 
-dramatically improve processing speed when no check for aromaticity is necessary. All atoms are then considered NOT aromatic.
-"noStereo" turns off all stereochemical checking.
-
+dramatically improve processing speed when no check for aromaticity is necessary. 
+All atoms are then considered NOT aromatic.
+<b>noStereo</b> turns off all stereochemical checking. 
+Starting with Jmol 12.3.24, the flags <b>aromaticDouble</b> and <b>aromaticStrict</b> are added. 
+<b>aromaticDouble</b> allows for using "=" between two aromatic atoms to indicate an explicitly double aromatic bond.
+To specify an explicitly single aromatic bond, use <b>@&!=</b>. 
+<b>aromaticStrict</b> uses a 6-electron Hueckel model for specifying aromaticity.
 </li></ol>
 
 
@@ -218,7 +222,8 @@ dramatically improve processing speed when no check for aromaticity is necessary
 <b>aromaticity</b>
  
 <ul>
-<li>Jmol 3D-SEARCH defines "aromatic" unambiguously and strictly geometrically. 
+<li>The default Jmol 3D-SEARCH defines "aromatic" unambiguously and strictly geometrically. However, starting
+with Jmol 12.3.24, you can use the flag /aromaticStrict/ to add to that a 6-electron Hueckel model for specifying aromaticity. 
     see <a href="#aromaticity">below</a>.
 
 </li><li>Note that "aromatic" is not restricted to any specific subset of elements.
@@ -292,6 +297,16 @@ Note that these variables are any string whatsoever, not just atom sets. The syn
 <tr><td>x</td><td>number of ring bonds</td></tr>
 <tr><td>@</td><td>stereochemistry</td></tr>
 </table>
+<br/>
+
+Jmol 12.3.24 adds the following primitives:
+<br/>
+<br/>
+<table border="1" cellpadding="5" width="500">
+<tr><td>"xxx"</td><td>atom type, in double quotes, for example: ["39"r5] (After <b>calculate partialcharge</b> this will be the MMFF94 atom type. [Jmol 12.3.24]</td></tr>
+<tr><td>r500</td><td>a specifically aromatic 5-membered ring [Jmol 12.3.24]</td></tr>
+<tr><td>r600</td><td>a specifically aromatic 6-membered ring [Jmol 12.3.24]</td></tr>
+</table>  
 <br/>
 In addition, Jmol 3D-SMARTS adds the following primitives and options:
 <br/>
@@ -634,7 +649,7 @@ includes:
    [atomPrimitive] == { [isotope] | [atomType] | [charge] | [stereochemistry]
                               | [a_Prop] | [A_Prop] | [D_Prop] | [H_Prop] | [h_Prop] 
                               | [R_Prop] | [r_Prop] | [v_Prop] | [X_Prop]
-                              | [x_Prop] | [nestedExpression] }
+                              | [x_Prop] | [at_Prop] | [nestedExpression] }
    [isotope] == [digits] | [digits] "?"
        # note -- isotope mass may come before or after element symbol, 
        #         EXCEPT "H1" which must be parsed as "an atom with a single H" 
@@ -653,7 +668,7 @@ includes:
        # note -- "?" here (unspecified) is not relevant in 3D-SEARCH 
    
    [A_Prop] == "#" [digits]           # elemental atomic number
-   [a_Prop] == "=" [digits]           # atom index (starts with 0)
+   [a_Prop] == "=" [digits]           # Jmol atom index (starts with 0)
    [D_Prop] == { "D" [digits] | "D" } # degree -- total number of connections 
                                       #   excludes implicit H atoms; default 1
    [d_Prop] == { "d" [digits] | "d" } # degree -- non-hydrogen connections
@@ -666,10 +681,13 @@ includes:
                                       #   "R" indicates "in a ring" 
                                       #   !R" or "R0" indicates "not in any ring"
    [r_Prop] == { "r" [digits] | "r" } # in ring of size [digits]; "r" indicates "in a ring"
+                                      #   r500 and r600 match specifically <i>aromatic</i> 
+                                      #   5- and 6-membered rings, respectively [Jmol 12.3.24]
    [v_Prop] == { "v" [digits] | "v" } # valence -- total bond order (counting double as 2, e.g.)
    [X_Prop] == { "X" [digits] | "X" } # connectivity -- total number of connections
                                       #   includes implicit H atoms
    [x_Prop] == { "x" [digits] | "x" } # ring connectivity -- total ring connections
+   [at_Prop] == { "\"" [charsExceptDoubleQuote] | "\"" } # atom type (in double quotes) [ Jmol 12.3.24]
    
  ######## Nested and Multiple Expressions ########
  
@@ -780,7 +798,9 @@ includes:
 
 <p>
 
-We define "aromatic" here strictly in terms of geometry - a flat ring with trigonal planar geometry for all atoms in the ring. 
+The default Jmol 3D-SEARCH defines "aromatic" unambiguously and strictly geometrically. However, starting
+with Jmol 12.3.24, you can use the flag /aromaticStrict/ to add to that a 6-electron Hueckel model for specifying aromaticity. 
+This discussion relates to the 3D definition. We define "aromatic" here strictly in terms of geometry - a flat ring with trigonal planar geometry for all atoms in the ring. 
 No consideration of bond order is used, because for the sorts of models that can be loaded into Jmol, many do not
 assume a bonding scheme (PDB, GAUSSIAN, etc.).
 </p>
@@ -805,7 +825,7 @@ assume a bonding scheme (PDB, GAUSSIAN, etc.).
        Note: An alternative definition might include "and no substituent
        is explicitly double-bonded to its ring atom, as in quinone.
        Here we opt to allow the atoms of quinone to be called "aromatic."
-</li><li> Select a cutoff value close to zero. We use 0.01 here. 
+</li><li> Select a cutoff value close to zero. We use 0.01 here (increased to 0.1 for /aromaticStrict/). 
 </li><li> Generate a set of normals as follows:
 <ol style="list-style-type: lower-alpha;"><li> For each ring atom, construct the normal associated with the plane
           formed by that ring atom and its two nearest ring-atom neighbors.

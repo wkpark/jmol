@@ -155,7 +155,7 @@ function checkAllCharges(n) {
 	if (!n) {
 		n = 10000
 	}
-	var max = 0.002
+	var max = 0.001001
 	select *
 	var A = {*}.partialcharge.all
 	calculate partialcharge

@@ -294,12 +294,12 @@ public class ForceFieldMMFF {
           continue;
         //0         1         2         3         4         5         6
         //0123456789012345678901234567890123456789012345678901234567890123456789
-        //O   8 32 -0.333 NITRATE ANION OXYGEN      $([OD1][ND3]([OD1])[OD1])
+        //O   8 32  -4 NITRATE ANION OXYGEN      $([OD1][ND3]([OD1])[OD1])
         int elemNo = Integer.valueOf(line.substring(3,5).trim()).intValue();
         int mmType = Integer.valueOf(line.substring(6,8).trim()).intValue();
-        float formalCharge = Float.valueOf(line.substring(9,15).trim()).floatValue();
-        String desc = line.substring(16,41).trim();
-        String smarts = line.substring(42).trim();
+        float formalCharge = Float.valueOf(line.substring(9,12).trim()).floatValue()/12;
+        String desc = line.substring(13,38).trim();
+        String smarts = line.substring(39).trim();
         types.add(new AtomType(elemNo, mmType, formalCharge, desc, smarts));
       }
       br.close();
@@ -308,7 +308,7 @@ public class ForceFieldMMFF {
           + fileName + " line=" + line);
 
     }
-    Logger.info(types.size() + " force field parameters read");
+    Logger.info(types.size() + " SMARTS-based atom type read");
     atomTypes = types;
 
   }

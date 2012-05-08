@@ -308,7 +308,7 @@ public class ForceFieldMMFF {
           + fileName + " line=" + line);
 
     }
-    Logger.info(types.size() + " SMARTS-based atom types read");
+    Logger.info((types.size()-1) + " SMARTS-based atom types read");
     atomTypes = types;
 
   }

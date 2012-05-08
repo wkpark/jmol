@@ -352,9 +352,9 @@ public class ForceFieldMMFF {
         bsDone.set(i);
       }
     }
-    for (int i = bsConnected.nextSetBit(0); i >= 0; i = bsConnected.nextSetBit(i + 1)) {
-      System.out.println("atom " + atoms[i] + "\ttype " + atomTypes.get(types[i]).mmType + "\t" + atomTypes.get(types[i]).smartsCode + "\t"+ atomTypes.get(types[i]).descr);
-    }
+    if (Logger.debugging)
+      for (int i = bsConnected.nextSetBit(0); i >= 0; i = bsConnected.nextSetBit(i + 1))
+        Logger.info("atom " + atoms[i] + "\ttype " + atomTypes.get(types[i]).mmType + "\t" + atomTypes.get(types[i]).smartsCode + "\t"+ atomTypes.get(types[i]).descr);
     
     return types;
   }
@@ -417,19 +417,22 @@ public class ForceFieldMMFF {
             : type1 * 100 + type2) * 10) + bondType);
         Float bciValue = bciData.get(key);
         float bci;
-        String msg = key + " " + a1 + "/" + a2 + " mmTypes=" + type1 + "/" + type2 + " formalCharges=" + at1.formalCharge + "/" + at2.formalCharge + " bci = ";
+        String msg = (Logger.debugging ? key + " " + a1 + "/" + a2 + " mmTypes=" + type1 + "/" + type2 + " formalCharges=" + at1.formalCharge + "/" + at2.formalCharge + " bci = " : null);
         if (bciValue == null) { 
           // no bci was found; we have to use partial bond charge increments
           // a failure here indicates we don't have information
           float pa = bciData.get(Integer.valueOf(type1 * 1000)).floatValue();
           float pb = bciData.get(Integer.valueOf(type2 * 1000)).floatValue();
           bci = pa - pb;
-          msg += pa + " - " + pb + " = ";
+          if (Logger.debugging)
+            msg += pa + " - " + pb + " = ";
         } else {
           bci = bFactor * bciValue.floatValue();
         }
-        msg += bci;
-        System.out.println(msg);
+        if (Logger.debugging) {
+          msg += bci;
+          Logger.debug(msg);
+        }
         // Here's the way to do this:
         //
         // 1) The formal charge on each atom is adjusted both by

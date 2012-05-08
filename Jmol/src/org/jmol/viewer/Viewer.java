@@ -8604,7 +8604,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void addCommand(String command) {
     if (autoExit || !haveDisplay || !getPreserveState())
       return;
-    System.out.println("addCommand " + command);
+    //System.out.println("addCommand " + command);
     commandHistory.addCommand(TextFormat.replaceAllCharacters(command,
         "\r\n\t", " "));
   }
@@ -8615,7 +8615,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * @return command removed
    */
   public String removeCommand() {
-    System.out.println("removeCommand");
+    //System.out.println("removeCommand");
     return commandHistory.removeCommand();
   }
 

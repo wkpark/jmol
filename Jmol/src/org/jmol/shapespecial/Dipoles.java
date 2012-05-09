@@ -398,7 +398,7 @@ public class Dipoles extends Shape {
       return;
     clear(true);
     Bond[] bonds = modelSet.getBonds();
-    for (int i = bonds.length; --i >= 0;) {
+    for (int i = modelSet.getBondCount(); --i >= 0;) {
       Bond bond = bonds[i];
       if (!bond.isCovalent())
         continue;

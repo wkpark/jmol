@@ -8630,7 +8630,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
   @Override
   public String getSetHistory(int howFarBack) {
-    System.out.println("getSetHistory " +  howFarBack);
+    //System.out.println("getSetHistory " +  howFarBack);
     return commandHistory.getSetHistory(howFarBack);
   }
 

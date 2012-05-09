@@ -319,7 +319,12 @@ public class ForceFieldMMFF {
   /**
    * The file MMFF94-smarts.txt is derived from MMFF94-smarts.xlsx.
    * This file contains records for unique atom type/formal charge sharing/H atom type.
-   * For example, the MMFF94 type 6 is distributed over 
+   * For example, the MMFF94 type 6 is distributed over eight AtomTypes, 
+   * each with a different SMARTS match.
+   * 
+   * H atom types are given in the file as properties of other atom types, not
+   * as their own individual SMARTS searches. H atom types are determined based
+   * on their attached atom's atom type.
    * 
    * @param atoms
    * @param bsAtoms
@@ -336,6 +341,9 @@ public class ForceFieldMMFF {
     BitSet bsElements = new BitSet();
     BitSet bsHydrogen = new BitSet();
     BitSet bsConnected = BitSetUtil.copy(bsAtoms);
+    
+    // It may be important to include all attached atoms
+    
     for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) {
       Atom a = atoms[i];
       Bond[] bonds = a.getBonds();
@@ -344,6 +352,9 @@ public class ForceFieldMMFF {
           if (bonds[j].isCovalent())
             bsConnected.set(j);
     }
+    
+    // we need to identify H atoms and also make a BitSet of all the elements
+    
     for (int i = bsConnected.nextSetBit(0); i >= 0; i = bsConnected.nextSetBit(i + 1)) {
       int n = atoms[i].getElementNumber();
       switch (n) {
@@ -354,6 +365,9 @@ public class ForceFieldMMFF {
         bsElements.set(n);
       }
     }
+    
+    // generate a list of SMART codes 
+    
     int nUsed = 0;
     for (int i = 1; i < atomTypes.size(); i++) {
       AtomType at = atomTypes.get(i);
@@ -363,6 +377,11 @@ public class ForceFieldMMFF {
       nUsed++;
     }
     Logger.info(nUsed + " SMARTS matches required");
+    
+    // The SMARTS list is organized from least general to most general
+    // for each atom. So the FIRST occurrence of an atom in the list
+    // identifies that atom's MMFF94 type.
+    
     smartsMatcher.getSubstructureSets(smarts, atoms, atoms.length, 
         JmolEdge.FLAG_AROMATIC_STRICT | JmolEdge.FLAG_AROMATIC_DOUBLE, 
         bsConnected, bitSets, vAromatic56);
@@ -371,13 +390,19 @@ public class ForceFieldMMFF {
       BitSet bs = bitSets.get(j);
       if (bs == null)
         continue;
-      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-        if (bsDone.get(i))
-          continue;
+      // This is a one-pass system. We first exclude
+      // all atoms that are already identified...
+      bs.andNot(bsDone);
+      // then we set the type of what is remaining...
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
         types[i] = j;
-        bsDone.set(i);
-      }
+      // then we include these atoms in the set of atoms already identified
+      bsDone.or(bs);
     }
+    
+    // now we add in the H atom types as the negative of their MMFF94 type
+    // rather than as an index into AtomTypes. 
+    
     for (int i = bsHydrogen.nextSetBit(0); i >= 0; i = bsHydrogen.nextSetBit(i + 1)) {
       Bond[] bonds = atoms[i].getBonds();
       if (bonds != null) {

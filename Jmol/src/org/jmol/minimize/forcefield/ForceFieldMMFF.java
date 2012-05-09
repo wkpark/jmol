@@ -44,16 +44,18 @@ import org.jmol.util.Logger;
 public class ForceFieldMMFF {
 
   private class AtomType {
-    int mmType;
     int elemNo;
+    int mmType;
+    int hType;
     float formalCharge;
     float fcadj;
     boolean sbmb;
     boolean arom;
     String descr;
     String smartsCode;
-    AtomType(int elemNo, int mmType, float formalCharge, String descr, String smartsCode) {
+    AtomType(int elemNo, int mmType, int hType, float formalCharge, String descr, String smartsCode) {
       this.mmType = mmType;
+      this.hType = hType;
       this.elemNo = elemNo;
       this.smartsCode = smartsCode;
       this.descr = descr;
@@ -288,19 +290,20 @@ public class ForceFieldMMFF {
 
       BufferedReader br = new BufferedReader(new InputStreamReader(
           (InputStream) url.getContent()));
-      types.add(new AtomType(0, 0, Float.NaN, "NOT FOUND", ""));
+      types.add(new AtomType(0, 0, 0, 0, "H or NOT FOUND", ""));
       while ((line = br.readLine()) != null) {
         if (line.length() == 0 || line.startsWith("#"))
           continue;
         //0         1         2         3         4         5         6
         //0123456789012345678901234567890123456789012345678901234567890123456789
-        //O   8 32  -4 NITRATE ANION OXYGEN      $([OD1][ND3]([OD1])[OD1])
+        //O   8 32  0  -4 NITRATE ANION OXYGEN      $([OD1][ND3]([OD1])[OD1])
         int elemNo = Integer.valueOf(line.substring(3,5).trim()).intValue();
         int mmType = Integer.valueOf(line.substring(6,8).trim()).intValue();
-        float formalCharge = Float.valueOf(line.substring(9,12).trim()).floatValue()/12;
-        String desc = line.substring(13,38).trim();
-        String smarts = line.substring(39).trim();
-        types.add(new AtomType(elemNo, mmType, formalCharge, desc, smarts));
+        int hType = Integer.valueOf(line.substring(9,11).trim()).intValue();
+        float formalCharge = Float.valueOf(line.substring(12,15).trim()).floatValue()/12;
+        String desc = line.substring(16,41).trim();
+        String smarts = line.substring(42).trim();
+        types.add(new AtomType(elemNo, mmType, hType, formalCharge, desc, smarts));
       }
       br.close();
     } catch (Exception e) {
@@ -319,7 +322,8 @@ public class ForceFieldMMFF {
     List<BitSet>bitSets = new ArrayList<BitSet>();
     String[] smarts = new String[atomTypes.size()];
     int[] types = new int[atoms.length];
-    BitSet elements = new BitSet();
+    BitSet bsElements = new BitSet();
+    BitSet bsHydrogen = new BitSet();
     BitSet bsConnected = BitSetUtil.copy(bsAtoms);
     for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) {
       Atom a = atoms[i];
@@ -329,12 +333,20 @@ public class ForceFieldMMFF {
           if (bonds[j].isCovalent())
             bsConnected.set(j);
     }
-    for (int i = bsConnected.nextSetBit(0); i >= 0; i = bsConnected.nextSetBit(i + 1))
-      elements.set(atoms[i].getElementNumber());
+    for (int i = bsConnected.nextSetBit(0); i >= 0; i = bsConnected.nextSetBit(i + 1)) {
+      int n = atoms[i].getElementNumber();
+      switch (n) {
+      case 1:
+        bsHydrogen.set(i);
+        break;
+      default:
+        bsElements.set(n);
+      }
+    }
     int nUsed = 0;
     for (int i = 1; i < atomTypes.size(); i++) {
       AtomType at = atomTypes.get(i);
-      if (!elements.get(at.elemNo))
+      if (!bsElements.get(at.elemNo))
         continue;
       smarts[i] = at.smartsCode;
       nUsed++;
@@ -355,9 +367,17 @@ public class ForceFieldMMFF {
         bsDone.set(i);
       }
     }
+    for (int i = bsHydrogen.nextSetBit(0); i >= 0; i = bsHydrogen.nextSetBit(i + 1)) {
+      Bond[] bonds = atoms[i].getBonds();
+      if (bonds != null) {
+        types[i] = -atomTypes.get(types[bonds[0].getOtherAtom(atoms[i]).index]).hType;
+        //System.out.println(atoms[i] + " " + bonds[0].getOtherAtom(atoms[i]) + " " +atomTypes.get(types[bonds[0].getOtherAtom(atoms[i]).index]).mmType 
+          //    + " " + atomTypes.get(types[bonds[0].getOtherAtom(atoms[i]).index]).hType);
+      }
+    }
     if (Logger.debugging)
       for (int i = bsConnected.nextSetBit(0); i >= 0; i = bsConnected.nextSetBit(i + 1))
-        Logger.info("atom " + atoms[i] + "\ttype " + atomTypes.get(types[i]).mmType + "\t" + atomTypes.get(types[i]).smartsCode + "\t"+ atomTypes.get(types[i]).descr);
+        Logger.info("atom " + atoms[i] + "\ttype " + (types[i] < 0 ? "" + -types[i] : (atomTypes.get(types[i]).mmType + "\t" + atomTypes.get(types[i]).smartsCode + "\t"+ atomTypes.get(types[i]).descr)));
     
     return types;
   }
@@ -380,7 +400,7 @@ public class ForceFieldMMFF {
 
     float[] partialCharges = new float[atoms.length];
     for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1))
-      partialCharges[i] = atomTypes.get(types[i]).formalCharge;
+      partialCharges[i] = atomTypes.get(Math.max(0, types[i])).formalCharge;
 
     // run through all bonds, adjusting formal charges as necessary
 
@@ -394,10 +414,12 @@ public class ForceFieldMMFF {
       boolean ok2 = bsAtoms.get(a2.index); 
       if (!ok1 && !ok2)
         continue;
-      AtomType at1 = atomTypes.get(types[a1.index]);
-      AtomType at2 = atomTypes.get(types[a2.index]);
-      int type1 = at1.mmType;
-      int type2 = at2.mmType;
+      int it = types[a1.index];
+      AtomType at1 = atomTypes.get(Math.max(0, it));
+      int type1 = (it < 0 ? -it : at1.mmType);
+      it = types[a2.index];
+      AtomType at2 = atomTypes.get(Math.max(0, it));
+      int type2 = (it < 0 ? -it : at2.mmType);
       
       // we are only interested in bonds that are between different atom types
       
@@ -485,8 +507,7 @@ public class ForceFieldMMFF {
   public static String[] getAtomTypeDescs(int[] types) {
     String[] stypes = new String[types.length];
     for (int i = types.length; --i >= 0;) {
-      AtomType at = atomTypes.get(types[i]);
-      stypes[i] = String.valueOf(at.mmType);
+      stypes[i] = String.valueOf(types[i] < 0 ? -types[i] : atomTypes.get(types[i]).mmType);
     }
     return stypes;
   }

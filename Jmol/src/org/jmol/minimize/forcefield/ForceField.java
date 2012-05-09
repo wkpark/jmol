@@ -76,8 +76,10 @@ abstract public class ForceField {
 
   public ForceField() {}
   
-  public void setModel(Minimizer m) {
+  abstract public boolean setModel(Minimizer m, BitSet bsElements, int elemnoMax);
   
+  protected void setModel(Minimizer m) {
+      
     minimizer = m;
     this.atoms = m.minAtoms;
     this.bonds = m.minBonds;
@@ -92,7 +94,7 @@ abstract public class ForceField {
     coordSaved = null;
   }
     
-  public boolean setup() {
+  protected boolean setup() {
     if (calc.haveParams())
       return true;
     Map<String, FFParam> temp = getFFParameters();
@@ -459,4 +461,5 @@ abstract public class ForceField {
     return Math.abs(dE/criterion);
   }
 
+  abstract public void clear();
 }

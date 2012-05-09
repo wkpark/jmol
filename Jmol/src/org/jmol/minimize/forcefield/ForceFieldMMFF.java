@@ -35,13 +35,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.jmol.api.SmilesMatcherInterface;
+import org.jmol.minimize.Minimizer;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
 
-public class ForceFieldMMFF {
+public class ForceFieldMMFF extends ForceField {
 
   private class AtomType {
     int elemNo;
@@ -231,18 +232,18 @@ public class ForceFieldMMFF {
 
    */
   public ForceFieldMMFF() {
-    getParameters();
+    getChargeParameters();
   }
   private static List<AtomType> atomTypes;
   private static Map<Integer, Float> bciData;
   
-  private void getParameters() {
+  private void getChargeParameters() {
     if (atomTypes != null)
       return;
-    getAtomTypes("MMFF94-smarts.txt");
+    getAtomTypes("mmff/MMFF94-smarts.txt");
     Hashtable<Integer, Float> data = new Hashtable<Integer, Float>();
-    getBciData("mmffpbci.par.txt", true, data);
-    getBciData("mmffchg.par.txt", false, data);
+    getBciData("mmff/mmffpbci.par.txt", true, data);
+    getBciData("mmff/mmffchg.par.txt", false, data);
     bciData = data;
   }
 
@@ -422,13 +423,14 @@ public class ForceFieldMMFF {
    * assign partial charges ala MMFF94
    * 
    * @param bonds
+   * @param bondCount 
    * @param atoms
    * @param types
    * @param bsAtoms
    * @param vAromatic56 
    * @return   full array of partial charges
    */
-  public static float[] getPartialCharges(Bond[] bonds, Atom[] atoms,
+  public static float[] getPartialCharges(Bond[] bonds, int bondCount, Atom[] atoms,
                                           int[] types, BitSet bsAtoms, 
                                           List<BitSet> vAromatic56) {
 
@@ -440,7 +442,7 @@ public class ForceFieldMMFF {
 
     // run through all bonds, adjusting formal charges as necessary
 
-    for (int i = bonds.length; --i >= 0;) {
+    for (int i = bondCount; --i >= 0;) {
       Atom a1 = bonds[i].getAtom1();
       Atom a2 = bonds[i].getAtom2();
       // It's possible that some of our atoms are not in the atom set,
@@ -548,232 +550,28 @@ public class ForceFieldMMFF {
     return stypes;
   }
 
-  /*
-   * chemkit -- Kyle Lutz 
-   *  
-  void MmffPartialChargeModel::setMolecule(const chemkit::Molecule *molecule)
-  {
-  
-   ...
-   
-    // assign partial charges for each atom
-    for(size_t i = 0; i < molecule->size(); i++){
-        const chemkit::Atom *atom = molecule->atom(i);
-        int atomType = typer->typeNumber(atom);
-
-        const MmffAtomParameters *atomParameters = m_parameters->atomParameters(atomType);
-        if(!atomParameters){
-            continue;
-        }
-
-        chemkit::Real q0 = typer->formalCharge(atom);
-        chemkit::Real M = atomParameters->crd;
-        chemkit::Real V = m_parameters->partialChargeParameters(atomType)->fcadj;
-        chemkit::Real formalChargeSum = 0;
-        chemkit::Real partialChargeSum = 0;
-
-        if(V == 0){
-            foreach(const chemkit::Atom *neighbor, atom->neighbors()){
-                chemkit::Real neighborFormalCharge = typer->formalCharge(neighbor);
-
-                if(neighborFormalCharge < 0){
-                    q0 += neighborFormalCharge / (2 * neighbor->neighborCount());
-                }
-            }
-        }
-
-        if(atomType == 62){
-            foreach(const chemkit::Atom *neighbor, atom->neighbors()){
-                chemkit::Real neighborFormalCharge = typer->formalCharge(neighbor);
-
-                if(neighborFormalCharge > 0){
-                    q0 -= neighborFormalCharge / 2;
-                }
-            }
-        }
-
-        foreach(const chemkit::Atom *neighbor, atom->neighbors()){
-            int neighborType = typer->typeNumber(neighbor);
-
-            const MmffChargeParameters *chargeParameters = m_parameters->chargeParameters(atom, atomType, neighbor, neighborType);
-            if(chargeParameters){
-                partialChargeSum += -chargeParameters->bci;
-            }
-            else{
-                chargeParameters = m_parameters->chargeParameters(neighbor, neighborType, atom, atomType);
-                if(chargeParameters){
-                    partialChargeSum += chargeParameters->bci;
-                }
-                else{
-                    const MmffPartialChargeParameters *partialChargeParameters = m_parameters->partialChargeParameters(atomType);
-                    const MmffPartialChargeParameters *neighborPartialChargeParameters = m_parameters->partialChargeParameters(neighborType);
-                    if(!partialChargeParameters || !neighborPartialChargeParameters){
-                        continue;
-                    }
-
-                    partialChargeSum += (partialChargeParameters->pbci - neighborPartialChargeParameters->pbci);
-                }
-            }
-
-            formalChargeSum += typer->formalCharge(neighbor);
-        }
-
-        // equation 15 (p. 662)
-        m_partialCharges[i] = (1 - M * V) * q0 + V * formalChargeSum + partialChargeSum;
-    }
-
-    // cleanup typer object
-    if(!m_typer){
-        delete typer;
-    }
+  @Override
+  public List<String[]> getAtomTypes() {
+    // TODO
+    return null;
   }
 
- */
-  /* forcefieldmmff94.cpp
-   
-  bool OBForceFieldMMFF94::SetPartialCharges()
-  {
-    vector<double> charges(_mol.NumAtoms()+1, 0);
-    double M, Wab, factor, q0a, q0b, Pa, Pb;
-
-    FOR_ATOMS_OF_MOL (atom, _mol) {
-      int type = atoi(atom->GetType());
-
-      switch (type) {
-      case 32:
-      case 35:
-      case 72:
-        factor = 0.5;
-        break;
-      case 62:
-      case 76:
-        factor = 0.25;
-        break;
-      default:
-        factor = 0.0;
-        break;
-      }
-
-      M = GetCrd(type);
-      q0a = atom->GetPartialCharge();
-
-      // charge sharing
-      if (!factor)
-        FOR_NBORS_OF_ATOM (nbr, &*atom)
-          if (nbr->GetPartialCharge() < 0.0)
-            q0a += nbr->GetPartialCharge() / (2.0 * (double)(nbr->GetValence()));
-
-      // needed for SEYWUO, positive charge sharing?
-      if (type == 62)
-        FOR_NBORS_OF_ATOM (nbr, &*atom)
-          if (nbr->GetPartialCharge() > 0.0)
-            q0a -= nbr->GetPartialCharge() / 2.0;
-
-      q0b = 0.0;
-      Wab = 0.0;
-      Pa = Pb = 0.0;
-      FOR_NBORS_OF_ATOM (nbr, &*atom) {
-        int nbr_type = atoi(nbr->GetType());
-
-        q0b += nbr->GetPartialCharge();
-
-        bool bci_found = false;
-        for (unsigned int idx=0; idx < _ffchgparams.size(); idx++)
-          if (GetBondType(&*atom, &*nbr) == _ffchgparams[idx]._ipar[0]) {
-            if ((type == _ffchgparams[idx].a) && (nbr_type == _ffchgparams[idx].b)) {
-              Wab += -_ffchgparams[idx]._dpar[0];
-              bci_found = true;
-            } else if  ((type == _ffchgparams[idx].b) && (nbr_type == _ffchgparams[idx].a)) {
-              Wab += _ffchgparams[idx]._dpar[0];
-              bci_found = true;
-            }
-          }
-
-        if (!bci_found) {
-          for (unsigned int idx=0; idx < _ffpbciparams.size(); idx++) {
-            if (type == _ffpbciparams[idx].a)
-              Pa = _ffpbciparams[idx]._dpar[0];
-            if (nbr_type == _ffpbciparams[idx].a)
-              Pb = _ffpbciparams[idx]._dpar[0];
-          }
-          Wab += Pa - Pb;
-        }
-      }
-      if (factor)
-        charges[atom->GetIdx()] = (1.0 - M * factor) * q0a + factor * q0b + Wab;
-      else
-        charges[atom->GetIdx()] = q0a + Wab;
-    }
-
-    FOR_ATOMS_OF_MOL (atom, _mol)
-      atom->SetPartialCharge(charges[atom->GetIdx()]);
-
-    PrintPartialCharges();
-
-    return true;
+  @Override
+  protected Map<String, FFParam> getFFParameters() {
+    // TODO
+    return null;
   }
 
-   */
-  
-  /*  cdk charges/MMFF94PartialCharges.java
-   
-  public IAtomContainer assignMMFF94PartialCharges(IAtomContainer ac) throws Exception {
-    ForceFieldConfigurator ffc = new ForceFieldConfigurator();
-    ffc.setForceFieldConfigurator("mmff94");
-    ffc.assignAtomTyps((IMolecule)ac);
-    Map<String,Object> parameterSet = ffc.getParameterSet();
-    // for this calculation,
-    // we need some values stored in the vector "data" in the
-    // hashtable of these atomTypes:    
-    double charge = 0;
-    double formalCharge = 0;
-    double formalChargeNeigh = 0;
-    double theta = 0;
-    double sumOfFormalCharges = 0;
-    double sumOfBondIncrements = 0;
-    org.openscience.cdk.interfaces.IAtom thisAtom = null;
-    List<IAtom> neighboors;
-    Object data = null;
-    Object bondData = null;
-    Object dataNeigh = null;
-    java.util.Iterator<IAtom> atoms = ac.atoms().iterator();
-    while(atoms.hasNext()) {
-      //logger.debug("ATOM "+i+ " " +atoms[i].getSymbol());
-      thisAtom = atoms.next();
-      data = parameterSet.get("data"+thisAtom.getAtomTypeName());
-      neighboors = ac.getConnectedAtomsList(thisAtom);
-      formalCharge = thisAtom.getCharge();
-      theta = (Double)((List)data).get(5);
-      charge = formalCharge * (1 - (neighboors.size() * theta));
-      sumOfFormalCharges = 0;
-      sumOfBondIncrements = 0;
-            for (IAtom neighboor : neighboors) {
-                IAtom neighbour = (IAtom) neighboor;
-                dataNeigh = parameterSet.get("data" + neighbour.getAtomTypeName());
-                if (parameterSet.containsKey("bond" + thisAtom.getAtomTypeName() + ";" + neighbour.getAtomTypeName())) {
-                    bondData = parameterSet.get("bond" + thisAtom.getAtomTypeName() + ";" + neighbour.getAtomTypeName());
-                    sumOfBondIncrements -= (Double) ((List)bondData).get(4);
-                } else
-                if (parameterSet.containsKey("bond" + neighbour.getAtomTypeName() + ";" + thisAtom.getAtomTypeName())) {
-                    bondData = parameterSet.get("bond" + neighbour.getAtomTypeName() + ";" + thisAtom.getAtomTypeName());
-                    sumOfBondIncrements += (Double) ((List)bondData).get(4);
-                } else {
-                    // Maybe not all bonds have pbci in mmff94.prm, i.e. C-N
-                    sumOfBondIncrements += (theta - (Double) ((List)dataNeigh).get(5));
-                }
-
-
-                dataNeigh = parameterSet.get("data" + neighbour.getID());
-                formalChargeNeigh = neighbour.getCharge();
-                sumOfFormalCharges += formalChargeNeigh;
-            }
-            charge += sumOfFormalCharges * theta;
-      charge += sumOfBondIncrements;
-      thisAtom.setProperty("MMFF94charge", charge);
-      //logger.debug( "CHARGE :"+thisAtom.getProperty("MMFF94charge") );
-    }
-    return ac;
+  @Override
+  public void clear() {
+    // TODO
+    
   }
 
-   */
+  @Override
+  public boolean setModel(Minimizer m, BitSet bsElements, int elemnoMax) {
+    // TODO
+    return false;
+  }
+
 }

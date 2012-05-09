@@ -13,5 +13,5 @@ public interface MinimizerInterface {
                                    BitSet bsFixed, boolean haveFixed, boolean isSilent) throws Exception;
   public abstract void setProperty(String propertyName, Object propertyValue);
   public abstract Object getProperty(String propertyName, int param);
-  public abstract void calculatePartialCharges(Bond[] bonds, Atom[] atoms, BitSet bsAtoms, SmilesMatcherInterface smilesMatcherInterface);
+  public abstract void calculatePartialCharges(Bond[] bonds, int i, Atom[] atoms, BitSet bsAtoms, SmilesMatcherInterface smilesMatcherInterface);
 }

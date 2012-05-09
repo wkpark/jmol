@@ -56,7 +56,7 @@ abstract public class ForceField {
     return calc.getUnit();
   }
 
-  public abstract List<String[]> getAtomTypes();
+  protected abstract List<String[]> getAtomTypes();
 
   protected abstract Map<String, FFParam> getFFParameters();
 

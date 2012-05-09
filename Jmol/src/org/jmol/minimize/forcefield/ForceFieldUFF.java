@@ -47,6 +47,11 @@ public class ForceFieldUFF extends ForceField {
   private BitSet bsAromatic;
   
   @Override
+  public void clear() {
+    bsAromatic = null;
+  }
+ 
+  @Override
   public boolean setModel(Minimizer m, BitSet bsElements, int elemnoMax) {
     super.setModel(m);
     Logger.info("minimize: setting atom types...");
@@ -181,7 +186,7 @@ public class ForceFieldUFF extends ForceField {
 
     // open UFF.txt
     URL url = null;
-    String fileName = "UFF.txt";
+    String fileName = "uff/UFF.txt";
     BufferedReader br = null;
     try {
       if ((url = this.getClass().getResource(fileName)) == null) {
@@ -264,7 +269,7 @@ public class ForceFieldUFF extends ForceField {
   public List<String[]> getAtomTypes() {
     List<String[]> types = new ArrayList<String[]>(); //!< external atom type rules
     URL url = null;
-    String fileName = "UFF.txt";
+    String fileName = "uff/UFF.txt";
     try {
       if ((url = this.getClass().getResource(fileName)) == null) {
         System.err.println("Couldn't find file: " + fileName);
@@ -292,7 +297,7 @@ public class ForceFieldUFF extends ForceField {
           + fileName);
 
     }
-    Logger.info(types.size() + " force field parameters read");
+    Logger.info(types.size() + " UFF parameters read");
     return (types.size() > 0 ? types : null);
   }
   
@@ -403,9 +408,4 @@ Token[keyword(0x880001) value=")"]
        Token.tokenExpressionEnd},
   };
 
-  @Override
-  public void clear() {
-    bsAromatic = null;
-  }
- 
 }

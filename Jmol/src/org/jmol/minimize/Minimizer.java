@@ -445,11 +445,6 @@ public class Minimizer implements MinimizerInterface {
     return pFF;
   }
   
-  public List<String[]> getAtomTypes() {
-    getForceField();
-    return (pFF == null ? null : pFF.getAtomTypes());
-  }
-  
   /* ***************************************************************
    * Minimization thead support
    ****************************************************************/

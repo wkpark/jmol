@@ -316,6 +316,17 @@ public class ForceFieldMMFF {
 
   }
 
+  /**
+   * The file MMFF94-smarts.txt is derived from MMFF94-smarts.xlsx.
+   * This file contains records for unique atom type/formal charge sharing/H atom type.
+   * For example, the MMFF94 type 6 is distributed over 
+   * 
+   * @param atoms
+   * @param bsAtoms
+   * @param smartsMatcher
+   * @param vAromatic56
+   * @return  array of indexes into AtomTypes or, for H, negative of mmType
+   */
   public static int[] getTypes(Atom[] atoms, BitSet bsAtoms, 
                                SmilesMatcherInterface smartsMatcher, 
                                List<BitSet> vAromatic56) {

@@ -49,10 +49,10 @@ public class ForceFieldUFF extends ForceField {
   @Override
   public boolean setModel(Minimizer m, BitSet bsElements, int elemnoMax) {
     super.setModel(m);
-    getAllAtomTypes(m, bsElements, elemnoMax);
     Logger.info("minimize: setting atom types...");
-    if (atomTypes == null || (atomTypes = getAtomTypes()) == null)
+    if (atomTypes == null && (atomTypes = getAtomTypes()) == null)
       return false;
+    getAllAtomTypes(m, bsElements, elemnoMax);
     calc = new CalculationsUFF(this, m.minAtoms, m.minBonds, 
         m.angles, m.torsions, m.partialCharges, m.constraints);
     return setup();

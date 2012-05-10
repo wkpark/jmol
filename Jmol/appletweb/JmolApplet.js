@@ -209,7 +209,7 @@
 				Jmol._noJavaMsg2 + "</font></td></tr></table>";
 		}
 		params.loadInline = (Info.inlineModel ? sterilizeInline(Info.inlineModel) : "");
-		//params.script = (Info.script ? sterilizeScript(Info.script) : "");
+		params.script = (Info.script ? sterilizeScript(Info.script) : "");
 		var t = Jmol._getWrapper(this, true) 
 			+ tHeader + writeParams() + visitJava + tFooter 
 			+ Jmol._getWrapper(this, false) 

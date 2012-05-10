@@ -25,7 +25,7 @@
 			jmolIsSigned: false,
 			jmolJarPath: ".",
 			jmolJarFile: "JmolApplet0.jar",
-			jmolReadyFunctionName: "",
+			jmolReadyFunction: null,
 			script: null
 		});
 		Jmol._debugAlert = Info.debug;	

@@ -26,6 +26,7 @@ package org.jmol.minimize.forcefield;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.jmol.minimize.MinAtom;
 import org.jmol.minimize.MinBond;
@@ -49,6 +50,9 @@ import org.jmol.util.TextFormat;
 
 class CalculationsUFF extends Calculations {
 
+  private Map<Object, FFParam> ffParams;
+  protected FFParam parA, parB, parC;  
+
   public final static int PAR_R = 0;       // covalent radius
   public final static int PAR_THETA = 1;   // covalent angle
   public final static int PAR_X = 2;       // nonbond distance
@@ -68,10 +72,12 @@ class CalculationsUFF extends Calculations {
   VDWCalc vdwCalc;
   ESCalc esCalc;
     
-  CalculationsUFF(ForceField ff, MinAtom[] minAtoms, MinBond[] minBonds, 
+  CalculationsUFF(ForceField ff, Map<Object, FFParam> ffParams, 
+      MinAtom[] minAtoms, MinBond[] minBonds, 
       int[][] angles, int[][] torsions, double[] partialCharges,
       List<Object[]> constraints) {
     super(ff, minAtoms, minBonds, angles, torsions, partialCharges, constraints);    
+    this.ffParams = ffParams;
     bondCalc = new DistanceCalc();
     angleCalc = new AngleCalc();
     torsionCalc = new TorsionCalc();
@@ -94,12 +100,12 @@ class CalculationsUFF extends Calculations {
     calc = calculations[CALC_DISTANCE] = new ArrayList<Object[]>();
     for (int i = 0; i < bondCount; i++) {
       MinBond bond = bonds[i];
-      double bondOrder = bond.atomIndexes[2];
+      double bondOrder = bond.order;
       if (bond.isAromatic)
         bondOrder = 1.5;
       if (bond.isAmide)
         bondOrder = 1.41;  
-      distanceCalc.setData(calc, bond.atomIndexes[0], bond.atomIndexes[1], bondOrder);
+      distanceCalc.setData(calc, bond.atomIndex1, bond.atomIndex2, bondOrder);
     }
 
     calc = calculations[CALC_ANGLE] = new ArrayList<Object[]>();
@@ -228,13 +234,19 @@ class CalculationsUFF extends Calculations {
     return 0.0;
   }
 
+  FFParam getParameter(Object a) {
+    if (ffParams == null || a == null)
+      System.out.println("calcUFF?");
+    return ffParams.get(a);
+  }
+
   class DistanceCalc extends Calculation {
 
     double r0, kb;
 
     void setData(List<Object[]> calc, int ia, int ib, double bondOrder) {
-      parA = getParameter(atoms[ia].type, ffParams);
-      parB = getParameter(atoms[ib].type, ffParams);
+      parA = getParameter(atoms[ia].sType);
+      parB = getParameter(atoms[ib].sType);
       r0 = calculateR0(parA.dVal[PAR_R], parB.dVal[PAR_R], parA.dVal[PAR_XI],
           parB.dVal[PAR_XI], bondOrder);
 
@@ -290,10 +302,10 @@ class CalculationsUFF extends Calculations {
       a = atoms[ia = angle[0]];
       b = atoms[ib = angle[1]];
       c = atoms[ic = angle[2]];
-      double preliminaryMagnification = (a.type == "H_" && c.type == "H_" ? 10 : 1);
-      parA = getParameter(a.type, ffParams);
-      parB = getParameter(b.type, ffParams);
-      parC = getParameter(c.type, ffParams);
+      double preliminaryMagnification = (a.sType == "H_" && c.sType == "H_" ? 10 : 1);
+      parA = getParameter(a.sType);
+      parB = getParameter(b.sType);
+      parC = getParameter(c.sType);
 
       int coordination = parB.iVal[0]; // coordination of central atom
 
@@ -318,7 +330,7 @@ class CalculationsUFF extends Calculations {
 
       // Precompute the force constant
       MinBond bond = a.getBondTo(ib);
-      double bondorder = bond.atomIndexes[2];
+      double bondorder = bond.order;
       if (bond.isAromatic)
         bondorder = 1.5;
       if (bond.isAmide)
@@ -326,7 +338,7 @@ class CalculationsUFF extends Calculations {
       rab = calculateR0(parA.dVal[PAR_R], parB.dVal[PAR_R], parA.dVal[PAR_XI], parB.dVal[PAR_XI], bondorder);
 
       bond = c.getBondTo(ib);
-      bondorder = bond.atomIndexes[2];
+      bondorder = bond.order;
       if (bond.isAromatic)
         bondorder = 1.5;
       if (bond.isAmide)
@@ -434,14 +446,14 @@ class CalculationsUFF extends Calculations {
       c = atoms[ic = t[2]];
       d = atoms[id = t[3]];
       MinBond bc = c.getBondTo(ib);
-      double bondOrder = bc.atomIndexes[2];
+      double bondOrder = bc.order;
       if (bc.isAromatic)
         bondOrder = 1.5;
       if (bc.isAmide)
         bondOrder = 1.41;
 
-      parB = getParameter(b.type, ffParams);
-      parC = getParameter(c.type, ffParams);
+      parB = getParameter(b.sType);
+      parC = getParameter(c.sType);
 
       switch (parB.iVal[0] * parC.iVal[0]) {
       case 9: // sp3 sp3
@@ -702,13 +714,13 @@ class CalculationsUFF extends Calculations {
       double koop = KCAL6;
       switch (elemNo) {
       case 6: // carbon could be a carbonyl, which is considerably stronger
-        // added b.type == "C_2+" for cations 12.0.RC9
+        // added b.sType == "C_2+" for cations 12.0.RC9
         // added b.typ "C_2" check for H-connected 12.0.RC13
-        if (b.type == "C_2" && b.hCount > 1
-            || b.type == "C_2+" || a.type == "O_2" || c.type == "O_2" || d.type == "O_2") {
+        if (b.sType == "C_2" && b.hCount > 1
+            || b.sType == "C_2+" || a.sType == "O_2" || c.sType == "O_2" || d.sType == "O_2") {
           koop += KCAL44;
           break;
-        }/* else if (b.type.lastIndexOf("R") == 2) 
+        }/* else if (b.sType.lastIndexOf("R") == 2) 
           koop *= 10; // Bob's idea to force flat aromatic rings. 
            // Who would EVER want otherwise?
 */        break;
@@ -831,8 +843,8 @@ class CalculationsUFF extends Calculations {
       a = atoms[ia];
       b = atoms[ib];
       
-      FFParam parA = getParameter(a.type, ffParams);
-      FFParam parB = getParameter(b.type, ffParams);
+      FFParam parA = getParameter(a.sType);
+      FFParam parB = getParameter(b.sType);
 
       double Xa = parA.dVal[PAR_X];
       double Da = parA.dVal[PAR_D];
@@ -969,7 +981,7 @@ class CalculationsUFF extends Calculations {
         iVal[j + 1] = atoms[others[j]].atom.getAtomNumber();
       }
       sb.append(TextFormat.sprintf("%3d %8.3f %8.3f %8.3f  %-5s %8.3f %8.3f %8.3f" + s + "\n", 
-          new Object[] { atom.type,
+          new Object[] { atom.sType,
           new float[] { (float) atom.coord[0], (float) atom.coord[1],
             (float) atom.coord[2], (float) atom.force[0], (float) atom.force[1],
             (float) atom.force[2] }, iVal}));
@@ -1029,7 +1041,7 @@ class CalculationsUFF extends Calculations {
     case CALC_DISTANCE:
       return TextFormat.sprintf(
           "%3d %3d  %-5s %-5s  %4.2f%8.3f   %8.3f     %8.3f   %8.3f   %8.3f",
-          new Object[] { atoms[c.ia].type, atoms[c.ib].type, 
+          new Object[] { atoms[c.ia].sType, atoms[c.ib].sType, 
           new float[] { (float)c.dData[2]/*rab*/, (float)c.rab, 
               (float)c.dData[0], (float)c.dData[1], 
               (float)c.delta, (float)c.energy },
@@ -1037,8 +1049,8 @@ class CalculationsUFF extends Calculations {
     case CALC_ANGLE:
       return TextFormat.sprintf(
           "%3d %3d %3d  %-5s %-5s %-5s  %8.3f  %8.3f     %8.3f   %8.3f", 
-          new Object[] { atoms[c.ia].type, atoms[c.ib].type, 
-              atoms[c.ic].type,
+          new Object[] { atoms[c.ia].sType, atoms[c.ib].sType, 
+              atoms[c.ic].sType,
           new float[] { (float)(c.theta * RAD_TO_DEG), (float)c.dData[4] /*THETA0*/, 
               (float)c.dData[0]/*Kijk*/, (float) c.energy },
           new int[] { atoms[c.ia].atom.getAtomNumber(), atoms[c.ib].atom.getAtomNumber(),
@@ -1046,8 +1058,8 @@ class CalculationsUFF extends Calculations {
       case CALC_TORSION:
       return TextFormat.sprintf(
           "%3d %3d %3d %3d  %-5s %-5s %-5s %-5s  %3d %8.3f     %8.3f     %8.3f     %8.3f", 
-          new Object[] { atoms[c.ia].type, atoms[c.ib].type, 
-              atoms[c.ic].type, atoms[c.id].type, 
+          new Object[] { atoms[c.ia].sType, atoms[c.ib].sType, 
+              atoms[c.ic].sType, atoms[c.id].sType, 
           new float[] { (float) c.dData[1]/*cosNphi0*/, (float) c.dData[0]/*V*/, 
               (float) (c.theta * RAD_TO_DEG), (float) c.energy },
           new int[] { atoms[c.ia].atom.getAtomNumber(), atoms[c.ib].atom.getAtomNumber(),
@@ -1055,20 +1067,20 @@ class CalculationsUFF extends Calculations {
     case CALC_OOP:
       return TextFormat.sprintf("" +
           "%3d %3d %3d %3d  %-5s %-5s %-5s %-5s  %8.3f   %8.3f     %8.3f",
-          new Object[] { atoms[c.ia].type, atoms[c.ib].type, 
-              atoms[c.ic].type, atoms[c.id].type,
+          new Object[] { atoms[c.ia].sType, atoms[c.ib].sType, 
+              atoms[c.ic].sType, atoms[c.id].sType,
           new float[] { (float)(c.theta * RAD_TO_DEG), 
               (float)c.dData[0]/*koop*/, (float) c.energy },
           new int[] { atoms[c.ia].atom.getAtomNumber(), atoms[c.ib].atom.getAtomNumber(),
               atoms[c.ic].atom.getAtomNumber(), atoms[c.id].atom.getAtomNumber() } });
     case CALC_VDW:
       return TextFormat.sprintf("%3d %3d  %-5s %-5s %6.3f  %8.3f  %8.3f", 
-          new Object[] { atoms[c.iData[0]].type, atoms[c.iData[1]].type,
+          new Object[] { atoms[c.iData[0]].sType, atoms[c.iData[1]].sType,
           new float[] { (float)c.rab, (float)c.dData[0]/*kab*/, (float)c.energy},
           new int[] { atoms[c.ia].atom.getAtomNumber(), atoms[c.ib].atom.getAtomNumber() } });
     case CALC_ES:
       return TextFormat.sprintf("%3d %3d  %-5s %-5s %6.3f  %8.3f  %8.3f", 
-          new Object[] { atoms[c.iData[0]].type, atoms[c.iData[1]].type,
+          new Object[] { atoms[c.iData[0]].sType, atoms[c.iData[1]].sType,
           new float[] { (float)c.rab, (float)c.dData[0]/*qq*/, (float)c.energy },
           new int[] { atoms[c.ia].atom.getAtomNumber(), atoms[c.ib].atom.getAtomNumber() } });
     }

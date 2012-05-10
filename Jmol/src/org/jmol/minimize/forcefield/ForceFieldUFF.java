@@ -44,6 +44,7 @@ import org.jmol.util.Parser;
 public class ForceFieldUFF extends ForceField {
 
   private static List<String[]> atomTypes;
+  private static Map<Object, FFParam> ffParams;
   private BitSet bsAromatic;
   
   @Override
@@ -57,21 +58,25 @@ public class ForceFieldUFF extends ForceField {
     Logger.info("minimize: setting atom types...");
     if (atomTypes == null && (atomTypes = getAtomTypes()) == null)
       return false;
-    getAllAtomTypes(m, bsElements, elemnoMax);
-    calc = new CalculationsUFF(this, m.minAtoms, m.minBonds, 
+    if (ffParams == null  && (ffParams = getFFParameters()) == null)
+      return false;
+    setAtomTypes(m, bsElements, elemnoMax);
+    calc = new CalculationsUFF(this, ffParams, m.minAtoms, m.minBonds, 
         m.angles, m.torsions, m.partialCharges, m.constraints);
-    return setup();
+    return calc.setupCalculations();
   }
-
-  private void getAllAtomTypes(Minimizer m, BitSet bsElements, int elemnoMax) {
-    int nElements = atomTypes.size();
+  
+  private void setAtomTypes(Minimizer m, BitSet bsElements, int elemnoMax) {
+    int nTypes = atomTypes.size();
     bsElements.clear(0);
-    for (int i = 0; i < nElements; i++) {
+    System.out.println("atoms: " + m.bsAtoms);
+    for (int i = 0; i < nTypes; i++) {
       String[] data = atomTypes.get(i);
       String smarts = data[0];
       if (smarts == null)
         continue;
       BitSet search = getSearch(m, smarts, elemnoMax, bsElements);
+      System.out.println(smarts + " " + search);
       // if the 0 bit in bsElements gets set, then the element is not present,
       // and there is no need to search for it;
       // if search is null, then we are done -- max elemno exceeded
@@ -80,13 +85,9 @@ public class ForceFieldUFF extends ForceField {
       else if (search == null)
         break;
       else
-        for (int j = m.bsAtoms.nextSetBit(0), pt = 0; j < atoms.length && j >= 0; j = m.bsAtoms.nextSetBit(j + 1)) {
-            if (search.get(j)) {
-              m.minAtoms[pt].type = data[1].intern();
-              //System.out.println("pt=" +pt + " UFF type=" + data[1]);
-            }
-            pt++;
-          }
+        for (int j = m.bsAtoms.nextSetBit(0), pt = 0; j < m.atoms.length && j >= 0; j = m.bsAtoms.nextSetBit(j + 1), pt++)
+            if (search.get(j))
+              m.minAtoms[pt].sType = data[1].intern();
     }
   }
 
@@ -178,11 +179,10 @@ public class ForceFieldUFF extends ForceField {
     return bs;
   }
   
-  @Override
-  protected Map<String, FFParam> getFFParameters() {
+  private Map<Object, FFParam> getFFParameters() {
     FFParam ffParam;
 
-    Map<String, FFParam> temp = new Hashtable<String, FFParam>();
+    Map<Object, FFParam> temp = new Hashtable<Object, FFParam>();
 
     // open UFF.txt
     URL url = null;
@@ -265,8 +265,7 @@ public class ForceFieldUFF extends ForceField {
     return temp;
   }
 
-  @Override
-  public List<String[]> getAtomTypes() {
+  private List<String[]> getAtomTypes() {
     List<String[]> types = new ArrayList<String[]>(); //!< external atom type rules
     URL url = null;
     String fileName = "uff/UFF.txt";

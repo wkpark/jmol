@@ -80,6 +80,14 @@ public class Minimizer implements MinimizerInterface {
   }
 
   public void setProperty(String propertyName, Object value) {
+    if (propertyName.equals("ff")) {
+      // UFF or MMFF
+      if (!ff.equals(value)) {
+        setProperty("clear", null);
+        ff = (String) value;
+      }
+      return;
+    }
     if (propertyName.equals("cancel")) {
       stopMinimization(false);
       return;
@@ -170,7 +178,7 @@ public class Minimizer implements MinimizerInterface {
   }
   
   public boolean minimize(int steps, double crit, BitSet bsSelected,
-                          BitSet bsFixed, boolean haveFixed, boolean forceSilent) {
+                          BitSet bsFixed, boolean haveFixed, boolean forceSilent, String ff) {
     isSilent = (forceSilent || viewer.getBooleanProperty("minimizationSilent"));
     Object val;
     if (steps == Integer.MAX_VALUE) {
@@ -197,8 +205,7 @@ public class Minimizer implements MinimizerInterface {
 
     Logger.info("minimize: initializing (steps = " + steps + " criterion = "
         + crit + ") ...");
-
-    getForceField();
+    getForceField(ff);
     if (pFF == null) {
       Logger.error(GT._("Could not get class for force field {0}", ff));
       return false;
@@ -262,8 +269,6 @@ public class Minimizer implements MinimizerInterface {
 
   private boolean setupMinimization() {
 
-    // add all atoms
-
     coordSaved = null;
     atomMap = new int[atoms.length];
     minAtoms = new MinAtom[atomCount];
@@ -277,7 +282,7 @@ public class Minimizer implements MinimizerInterface {
       elemnoMax = Math.max(elemnoMax, atomicNo);
       bsElements.set(atomicNo);
       minAtoms[pt] = new MinAtom(pt, atom, new double[] { atom.x, atom.y,
-          atom.z }, null);
+          atom.z });
     }
 
     Logger.info(GT._("{0} atoms will be minimized.", "" + atomCount));
@@ -297,7 +302,7 @@ public class Minimizer implements MinimizerInterface {
   
   private void getBonds() {
     // add all bonds
-    List<int[]> bondInfo = new ArrayList<int[]>();
+    List<MinBond> bondInfo = new ArrayList<MinBond>();
     bondCount = 0;
     for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) {
       Bond[] bonds = atoms[i].getBonds();
@@ -318,17 +323,16 @@ public class Minimizer implements MinimizerInterface {
               bondOrder = 1;
             }
             bondCount++;
-            bondInfo.add(new int[] { atomMap[i], atomMap[i2], bondOrder });
+            bondInfo.add(new MinBond(atomMap[i], atomMap[i2], bondOrder, 0, null));
           }
         }
     }
 
     minBonds = new MinBond[bondCount];
     for (int i = 0; i < bondCount; i++) {
-      int[] atomIndexes = bondInfo.get(i);
-      MinBond bond = minBonds[i] = new MinBond(atomIndexes, false, false);
-      int atom1 = atomIndexes[0];
-      int atom2 = atomIndexes[1];
+      MinBond bond = minBonds[i] = bondInfo.get(i);
+      int atom1 = bond.atomIndex1;
+      int atom2 = bond.atomIndex2;
       minAtoms[atom1].bonds.add(bond);
       minAtoms[atom2].bonds.add(bond);
       minAtoms[atom1].nBonds++;
@@ -429,14 +433,15 @@ public class Minimizer implements MinimizerInterface {
   ///////////////////////////// minimize //////////////////////
   
  
-  public ForceField getForceField() {
-    if (pFF == null) {
+  public ForceField getForceField(String ff) {
+    if (pFF == null || !ff.equals(this.ff)) {
       try {
         String className = getClass().getName();
         className = className.substring(0, className.lastIndexOf(".")) 
         + ".forcefield.ForceField" + ff;
         Logger.info( "minimize: using " + className);
         pFF = (ForceField) Class.forName(className).newInstance();
+        this.ff = ff;
       } catch (Exception e) {
         Logger.error(e.getMessage());
       }
@@ -629,9 +634,9 @@ public class Minimizer implements MinimizerInterface {
                                       BitSet bsAtoms, SmilesMatcherInterface smartsMatcher) {
     //TODO -- combine SMILES and MINIMIZER in same JAR file
     new ForceFieldMMFF();
-    List<BitSet> vAromatic56 = new ArrayList<BitSet>();
-    int[] types = ForceFieldMMFF.getTypes(atoms, bsAtoms, smartsMatcher, vAromatic56);
-    float[] charges = ForceFieldMMFF.getPartialCharges(bonds, bondCount, atoms, types, bsAtoms, vAromatic56);
+    List<BitSet>[] vRings = ArrayUtil.createArrayOfArrayList(3);
+    int[] types = ForceFieldMMFF.setAtomTypes(atoms, bsAtoms, smartsMatcher, vRings);
+    float[] charges = ForceFieldMMFF.getPartialCharges(bonds, bondCount, atoms, types, bsAtoms, vRings[2]);
     viewer.setAtomProperty(bsAtoms, Token.atomtype, 0, 0, null, null, ForceFieldMMFF.getAtomTypeDescs(types));
     viewer.setAtomProperty(bsAtoms, Token.partialcharge, 0, 0, null, charges, null);
   }

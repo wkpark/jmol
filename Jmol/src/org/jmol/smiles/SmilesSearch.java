@@ -182,7 +182,8 @@ public class SmilesSearch extends JmolMolecule {
   }
 
   @SuppressWarnings("unchecked")
-  void getRingData(boolean needRingData, int flags, List<BitSet> vAromatic56) throws InvalidSmilesException {
+  void getRingData(boolean needRingData, int flags, List<BitSet>[] vRings)
+      throws InvalidSmilesException {
     boolean aromaticStrict = ((flags & JmolEdge.FLAG_AROMATIC_STRICT) != 0);
     boolean aromaticDefined = ((flags & JmolEdge.FLAG_AROMATIC_DEFINED) != 0);
     if (aromaticDefined && needAromatic) {
@@ -211,12 +212,18 @@ public class SmilesSearch extends JmolMolecule {
         continue;
       String smarts = "*1" + s.substring(0, i - 2) + "*1";
       SmilesSearch search = SmilesParser.getMolecule(smarts, true);
-      List<Object> vRings = (List<Object>) subsearch(search, false, true);
+      List<Object> vR = (List<Object>) subsearch(search, false, true);
+      if (vRings != null && i < 5) {
+        List<BitSet> v = new ArrayList<BitSet>();
+        for (int j = vR.size(); --j >= 0; )
+          v.add((BitSet) vR.get(j));
+        vRings[i-3] = v;
+      }
       if (needAromatic) {
         if (!aromaticDefined && (!aromaticStrict || i == 5 || i == 6))
-          for (int r = vRings.size(); --r >= 0;) {
-            BitSet bs = (BitSet) vRings.get(r);
-            if (aromaticDefined 
+          for (int r = vR.size(); --r >= 0;) {
+            BitSet bs = (BitSet) vR.get(r);
+            if (aromaticDefined
                 || SmilesAromatic.isFlatSp2Ring(jmolAtoms, bsSelected, bs,
                     (aromaticStrict ? 0.1f : 0.01f)))
               bsAromatic.or(bs);
@@ -224,24 +231,25 @@ public class SmilesSearch extends JmolMolecule {
         if (aromaticStrict) {
           switch (i) {
           case 5:
-            v5 = vRings;
+            v5 = vR;
             break;
           case 6:
             if (aromaticDefined)
               bsAromatic = SmilesAromatic.checkAromaticDefined(jmolAtoms,
                   bsAromatic);
             else
-              SmilesAromatic.checkAromaticStrict(jmolAtoms, bsAromatic, v5, vRings);
-           setAromatic56(v5, bsAromatic5, 5, vAromatic56);
-           setAromatic56(vRings, bsAromatic6, 6, vAromatic56);
+              SmilesAromatic.checkAromaticStrict(jmolAtoms, bsAromatic, v5, vR);
+            vRings[2] = new ArrayList<BitSet>();
+            setAromatic56(v5, bsAromatic5, 5, vRings[2]);
+            setAromatic56(vR, bsAromatic6, 6, vRings[2]);
             break;
           }
         }
       }
       if (needRingData) {
         ringData[i] = new BitSet();
-        for (int k = 0; k < vRings.size(); k++) {
-          BitSet r = (BitSet) vRings.get(k);
+        for (int k = 0; k < vR.size(); k++) {
+          BitSet r = (BitSet) vR.get(k);
           ringData[i].or(r);
           for (int j = r.nextSetBit(0); j >= 0; j = r.nextSetBit(j + 1))
             ringCounts[j]++;

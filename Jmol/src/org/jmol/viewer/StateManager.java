@@ -561,7 +561,7 @@ public class StateManager {
         + ";axesposition;axesmolecular;axesorientationrasmol;axesunitcell;axeswindow;axis1color;axis2color"
         + ";axis3color;backgroundcolor;backgroundmodel;bondsymmetryatoms;boundboxcolor;cameradepth"
         + ";debug;debugscript;defaultlatttice;defaults;diffusepercent;exportdrivers"
-        + ";_filecaching;_filecache;fontcaching;fontscaling;language"
+        + ";_filecaching;_filecache;fontcaching;fontscaling;forcefield;language"
         + ";legacyautobonding"
         + ";loglevel;logfile;loggestures;logcommands;measurestylechime"
         + ";loadformat;loadligandformat;smilesurlformat;pubchemformat;nihresolverformat;edsurlformat;edsurlcutoff;multiprocessor;navigationmode;"
@@ -848,6 +848,7 @@ public class StateManager {
       setParameterValue("fontScaling", fontScaling);
       setParameterValue("fontCaching", fontCaching);
       setParameterValue("forceAutoBond", forceAutoBond);
+      setParameterValue("forceField", forceField);
       setParameterValue("fractionalRelative", fractionalRelative);
       setParameterValue("greyscaleRendering", greyscaleRendering);
       setParameterValue("hbondsAngleMinimum", hbondsAngleMinimum);
@@ -1216,6 +1217,7 @@ public class StateManager {
     String helpPath = JmolConstants.DEFAULT_HELP_PATH;
     boolean fontScaling = false;
     boolean fontCaching = true;
+    String forceField = "UFF";
     int helixStep = 1;
     boolean hideNameInPopup = false;
     int hoverDelayMs = 500;

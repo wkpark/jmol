@@ -11664,9 +11664,11 @@ public class ScriptEvaluator {
         checkLength(2);
         break;
       case Token.partialcharge:
-        checkLength(2);
+        iToken = 1;
+        bs = (statementLength == 2 ? null : atomExpression(2));
+        checkLast(iToken);
         if (!isSyntaxCheck)
-          viewer.calculatePartialCharges(null);
+          viewer.calculatePartialCharges(bs);
         return;
       case Token.aromatic:
         checkLength(2);

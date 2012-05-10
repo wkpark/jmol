@@ -256,7 +256,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
 
   public void getSubstructureSets(String[] smarts, JmolNode[] atoms, int atomCount,
                                   int flags, BitSet bsSelected, List<BitSet> ret, 
-                                  List<BitSet> vAromatic56) {
+                                  List<BitSet>[] vRings) {
     InvalidSmilesException.setLastError(null);
     SmilesParser sp = new SmilesParser(true);
     SmilesSearch search = null;
@@ -267,7 +267,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
       search.jmolAtoms = atoms;
       search.jmolAtomCount = Math.abs(atomCount);
       search.setSelected(bsSelected);
-      search.getRingData(true, flags, vAromatic56);
+      search.getRingData(true, flags, vRings);
       search.asVector = false;
     } catch (InvalidSmilesException e) {
       // I think this is impossible.

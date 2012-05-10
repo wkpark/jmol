@@ -25,8 +25,6 @@
 package org.jmol.minimize.forcefield;
 
 import java.util.BitSet;
-import java.util.List;
-import java.util.Map;
 
 import org.jmol.minimize.MinAtom;
 import org.jmol.minimize.MinBond;
@@ -56,20 +54,16 @@ abstract public class ForceField {
     return calc.getUnit();
   }
 
-  protected abstract List<String[]> getAtomTypes();
-
-  protected abstract Map<String, FFParam> getFFParameters();
-
   private double criterion, e0, dE; 
   int currentStep;
   private int stepMax;
   private double[][] coordSaved;  
 
-  int atomCount; 
-  int bondCount;
+  int minAtomCount; 
+  int minBondCount;
 
-  MinAtom[] atoms;
-  MinBond[] bonds;
+  MinAtom[] minAtoms;
+  MinBond[] minBonds;
   BitSet bsFixed;
   
   Minimizer minimizer;
@@ -81,11 +75,11 @@ abstract public class ForceField {
   protected void setModel(Minimizer m) {
       
     minimizer = m;
-    this.atoms = m.minAtoms;
-    this.bonds = m.minBonds;
+    this.minAtoms = m.minAtoms;
+    this.minBonds = m.minBonds;
     this.bsFixed = m.bsMinFixed;
-    atomCount = atoms.length;
-    bondCount = bonds.length;
+    minAtomCount = minAtoms.length;
+    minBondCount = minBonds.length;
   }
   
   public void setConstraints(Minimizer m) {
@@ -94,16 +88,6 @@ abstract public class ForceField {
     coordSaved = null;
   }
     
-  protected boolean setup() {
-    if (calc.haveParams())
-      return true;
-    Map<String, FFParam> temp = getFFParameters();
-    if (temp == null)
-      return false;
-    calc.setParams(temp);
-    return calc.setupCalculations();
-  }
-
   //////////////////////////////////////////////////////////////////////////////////
   //
   // Energy Minimization
@@ -135,8 +119,8 @@ abstract public class ForceField {
   }
 
   private void clearForces() {
-    for (int i = 0; i < atomCount; i++)
-      atoms[i].force[0] = atoms[i].force[1] = atoms[i].force[2] = 0; 
+    for (int i = 0; i < minAtomCount; i++)
+      minAtoms[i].force[0] = minAtoms[i].force[1] = minAtoms[i].force[2] = 0; 
   }
   
   //Vector3d dir = new Vector3d();
@@ -147,9 +131,9 @@ abstract public class ForceField {
     for (int iStep = 1; iStep <= n; iStep++) {
       currentStep++;
       calc.setSilent(true);
-      for (int i = 0; i < atomCount; i++)
+      for (int i = 0; i < minAtomCount; i++)
         if (bsFixed == null || !bsFixed.get(i))
-          setForcesUsingNumericalDerivative(atoms[i], ENERGY);
+          setForcesUsingNumericalDerivative(minAtoms[i], ENERGY);
       linearSearch();
       calc.setSilent(false);
 
@@ -354,10 +338,10 @@ abstract public class ForceField {
 
     for (int iStep = 0; iStep < 10; iStep++) {
       saveCoordinates();
-      for (int i = 0; i < atomCount; ++i)
+      for (int i = 0; i < minAtomCount; ++i)
         if (bsFixed == null || !bsFixed.get(i)) {
-          double[] force = atoms[i].force;
-          double[] coord = atoms[i].coord;
+          double[] force = minAtoms[i].force;
+          double[] coord = minAtoms[i].coord;
           double f2 = (force[0] * force[0] + force[1] * force[1] + force[2]
               * force[2]);
           if (f2 > trustRadius2 / step / step) {
@@ -409,29 +393,29 @@ abstract public class ForceField {
 
   private void saveCoordinates() {
     if (coordSaved == null)
-      coordSaved = new double[atomCount][3];
-    for (int i = 0; i < atomCount; i++) 
+      coordSaved = new double[minAtomCount][3];
+    for (int i = 0; i < minAtomCount; i++) 
       for (int j = 0; j < 3; j++)
-        coordSaved[i][j] = atoms[i].coord[j];
+        coordSaved[i][j] = minAtoms[i].coord[j];
   }
   
   private void restoreCoordinates() {
-    for (int i = 0; i < atomCount; i++) 
+    for (int i = 0; i < minAtomCount; i++) 
       for (int j = 0; j < 3; j++)
-        atoms[i].coord[j] = coordSaved[i][j];
+        minAtoms[i].coord[j] = coordSaved[i][j];
   }
   
   public boolean detectExplosion() {
-    for (int i = 0; i < atomCount; i++) {
-      MinAtom atom = atoms[i];
+    for (int i = 0; i < minAtomCount; i++) {
+      MinAtom atom = minAtoms[i];
       for (int j = 0; j < 3; j++)
         if (!Util.isFinite(atom.coord[j]))
           return true;
     }
-    for (int i = 0; i < bondCount; i++) {
-      MinBond bond = bonds[i];
-      if (Util.distance2(atoms[bond.atomIndexes[0]].coord,
-          atoms[bond.atomIndexes[1]].coord) > 900.0)
+    for (int i = 0; i < minBondCount; i++) {
+      MinBond bond = minBonds[i];
+      if (Util.distance2(minAtoms[bond.atomIndex1].coord,
+          minAtoms[bond.atomIndex2].coord) > 900.0)
         return true;
     }
     return false;

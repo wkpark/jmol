@@ -25,18 +25,22 @@
 package org.jmol.minimize;
 
 public class MinBond {
-  //Bond bond;
-  public int[] atomIndexes = new int[3]; //third index is bondOrder
-  public boolean isAromatic;
-  public boolean isAmide;
+  public int atomIndex1;
+  public int atomIndex2;
+  public int order;
+  public int type;
+  public Integer key;  
+  public boolean isAromatic; // never set?
+  public boolean isAmide;    // never set?
   
-  MinBond(int[] atomIndexes, boolean isAromatic, boolean isAmide) {
-    this.atomIndexes = atomIndexes; // includes bond order
-    this.isAromatic = isAromatic;
-    this.isAmide = isAmide;
+  MinBond(int atomIndex1, int atomIndex2, int order, int type, Integer key) {
+    this.atomIndex1 = atomIndex1;
+    this.atomIndex2 = atomIndex2;
+    this.order = order;
+    this.key = key;
   }
   
   public int getOtherAtom(int index) {
-    return (atomIndexes[0] == index ? atomIndexes[1] : atomIndexes[0]);    
+    return (atomIndex1 == index ? atomIndex2 : atomIndex1);    
   }
 }

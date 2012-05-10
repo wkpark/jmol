@@ -40,7 +40,6 @@ import org.jmol.util.Logger;
 //import org.jmol.util.Measure;
 
 public class Token {
-
   public int tok;
   public Object value;
   public int intValue = Integer.MAX_VALUE;
@@ -805,7 +804,8 @@ public class Token {
   public final static int edsurlcutoff                   = strparam | 37;
   public final static int edsurlformat                   = strparam | 38;
   public final static int filecachedirectory             = strparam | 39;
-  public final static int helppath                       = strparam | 40;
+  public final static int forcefield                     = strparam | 40;
+  public final static int helppath                       = strparam | 41;
   public final static int hoverlabel                     = strparam | 42;
   public final static int language                       = strparam | 44;
   public final static int loadformat                     = strparam | 45;
@@ -1162,8 +1162,8 @@ public class Token {
   final static int middle         = misc  | 195;
   final static int minset         = misc  | 196;
   final static int mlp            = misc  | 198;
-  final static int mode           = misc  | 199;
-  public final static int modify         = misc  | 200;
+  final static int mode           = misc  | 200;
+  public final static int modify         = misc  | 201;
   public final static int modifyorcreate = misc  | 202;
   final static int modelbased     = misc  | 204;
   final static int molecular      = misc  | 206;
@@ -1786,6 +1786,7 @@ public class Token {
       "fill",            new Token(fill),
       "find",            new Token(find),
       "fixedTemperature",new Token(fixedtemp),
+      "forcefield",      new Token(forcefield),
       "formalCharge",    new Token(formalcharge),
       "charge",          null, 
       "eta",             new Token(eta),

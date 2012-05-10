@@ -25,7 +25,6 @@
 package org.jmol.minimize.forcefield;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.vecmath.Vector3d;
 
@@ -43,7 +42,7 @@ abstract class Calculations {
   final static double KCAL_TO_KJ = 4.1868;
 
   final static int CALC_DISTANCE = 0; // do not change these
-  final static int CALC_ANGLE = 1;    // first three numbers
+  final static int CALC_ANGLE = 1; // first three numbers
   final static int CALC_TORSION = 2;
   final static int CALC_OOP = 3;
   final static int CALC_VDW = 4;
@@ -52,8 +51,7 @@ abstract class Calculations {
 
   ForceField ff;
   List<Object[]>[] calculations = ArrayUtil.createArrayOfArrayList(CALC_MAX);
-  public Map<String, FFParam> ffParams;
-  
+
   int atomCount;
   int bondCount;
   MinAtom[] atoms;
@@ -69,8 +67,9 @@ abstract class Calculations {
     this.constraints = constraints;
   }
 
-  Calculations(ForceField ff, MinAtom[] minAtoms, MinBond[] minBonds, 
-      int[][] angles, int[][] torsions, double[] partialCharges, 
+  Calculations(ForceField ff, 
+      MinAtom[] minAtoms, MinBond[] minBonds,
+      int[][] angles, int[][] torsions, double[] partialCharges,
       List<Object[]> constraints) {
     this.ff = ff;
     atoms = minAtoms;
@@ -89,18 +88,6 @@ abstract class Calculations {
     if (!havePartialCharges)
       partialCharges = null;
     this.partialCharges = partialCharges;
-  }
-
-  boolean haveParams() {
-    return (ffParams != null);
-  }
-
-  void setParams(Map<String, FFParam> temp) {
-    ffParams = temp;
-  }
-
-  static FFParam getParameter(String a, Map<String, FFParam> ffParams) {
-    return ffParams.get(a);
   }
 
   abstract boolean setupCalculations();
@@ -126,12 +113,13 @@ abstract class Calculations {
   boolean gradients;
 
   boolean silent;
-  
+
   public void setSilent(boolean TF) {
     silent = TF;
   }
-  
+
   StringBuffer logData = new StringBuffer();
+
   public String getLogData() {
     return logData.toString();
   }
@@ -139,10 +127,10 @@ abstract class Calculations {
   void appendLogData(String s) {
     logData.append(s).append("\n");
   }
-  
+
   boolean logging;
   boolean loggingEnabled;
-  
+
   void setLoggingEnabled(boolean TF) {
     loggingEnabled = TF;
     if (loggingEnabled)
@@ -152,7 +140,7 @@ abstract class Calculations {
   void setPreliminary(boolean TF) {
     isPreliminary = TF;
   }
-  
+
   private double calc(int iType, boolean gradients) {
     logging = loggingEnabled && !silent;
     this.gradients = gradients;
@@ -199,7 +187,7 @@ abstract class Calculations {
   double energyES(boolean gradients) {
     return calc(CALC_ES, gradients);
   }
-  
+
   final Vector3d da = new Vector3d();
   final Vector3d db = new Vector3d();
   final Vector3d dc = new Vector3d();
@@ -209,23 +197,23 @@ abstract class Calculations {
   final Vector3d v1 = new Vector3d();
   final Vector3d v2 = new Vector3d();
   final Vector3d v3 = new Vector3d();
-  
+
   private final static double PI_OVER_2 = Math.PI / 2;
   private final static double TWO_PI = Math.PI * 2;
-  
+
   private double constraintEnergy(int iType) {
 
     double value = 0;
     double k = 0;
     double energy = 0;
 
-    for (int i = constraints.size(); --i >= 0; ) {
+    for (int i = constraints.size(); --i >= 0;) {
       Object[] c = constraints.get(i);
       int nAtoms = ((int[]) c[0])[0];
       if (nAtoms != iType + 2)
         continue;
       int[] minList = (int[]) c[1];
-      double targetValue = ((Float)c[2]).doubleValue();
+      double targetValue = ((Float) c[2]).doubleValue();
 
       switch (iType) {
       case CALC_TORSION:
@@ -252,19 +240,19 @@ abstract class Calculations {
       switch (iType) {
       case CALC_TORSION:
         targetValue *= DEG_TO_RAD;
-        value = (gradients ? Util.restorativeForceAndTorsionAngleRadians(da, db, dc, dd)
-            : Util.getTorsionAngleRadians(atoms[ia].coord, 
-              atoms[ib].coord, atoms[ic].coord, atoms[id].coord, v1, v2, v3));
+        value = (gradients ? Util.restorativeForceAndTorsionAngleRadians(da,
+            db, dc, dd) : Util.getTorsionAngleRadians(atoms[ia].coord,
+            atoms[ib].coord, atoms[ic].coord, atoms[id].coord, v1, v2, v3));
         if (value < 0 && targetValue >= PI_OVER_2)
-          value += TWO_PI; 
+          value += TWO_PI;
         else if (value > 0 && targetValue <= -PI_OVER_2)
           targetValue += TWO_PI;
-       break;
+        break;
       case CALC_ANGLE:
         targetValue *= DEG_TO_RAD;
         value = (gradients ? Util.restorativeForceAndAngleRadians(da, db, dc)
             : Util.getAngleRadiansABC(atoms[ia].coord, atoms[ib].coord,
-              atoms[ic].coord));
+                atoms[ic].coord));
         break;
       case CALC_DISTANCE:
         value = (gradients ? Util.restorativeForceAndDistance(da, db, dc)
@@ -276,7 +264,8 @@ abstract class Calculations {
     return energy;
   }
 
-  private double constrainQuadratic(double value, double targetValue, double k, int iType) {
+  private double constrainQuadratic(double value, double targetValue, double k,
+                                    int iType) {
 
     if (!Util.isFinite(value))
       return 0;
@@ -285,7 +274,7 @@ abstract class Calculations {
 
     if (gradients) {
       double dE = 2.0 * k * delta;
-      switch(iType) {
+      switch (iType) {
       case CALC_TORSION:
         addForce(dd, id, dE);
         //fall through
@@ -323,30 +312,24 @@ abstract class Calculations {
       }
       switch (iType) {
       case CALC_DISTANCE:
-        appendLogData(TextFormat
-            .sprintf(
-                "%3d %3d  %-5s %-5s  %12.6f",
-                new Object[] {
-                    atoms[ia].atom.getAtomName(),
-                    atoms[ib].atom.getAtomName(),
-                    new float[] { (float) targetValue },
-                    new int[] { atoms[ia].atom.getAtomNumber(),
-                        atoms[ib].atom.getAtomNumber(),
-                        } }));
+        appendLogData(TextFormat.sprintf("%3d %3d  %-5s %-5s  %12.6f",
+            new Object[] {
+                atoms[ia].atom.getAtomName(),
+                atoms[ib].atom.getAtomName(),
+                new float[] { (float) targetValue },
+                new int[] { atoms[ia].atom.getAtomNumber(),
+                    atoms[ib].atom.getAtomNumber(), } }));
         break;
       case CALC_ANGLE:
-        appendLogData(TextFormat
-            .sprintf(
-                "%3d %3d %3d  %-5s %-5s %-5s  %12.6f",
-                new Object[] {
-                    atoms[ia].atom.getAtomName(),
-                    atoms[ib].atom.getAtomName(),
-                    atoms[ic].atom.getAtomName(),
-                    new float[] { (float) targetValue },
-                    new int[] { atoms[ia].atom.getAtomNumber(),
-                        atoms[ib].atom.getAtomNumber(),
-                        atoms[ic].atom.getAtomNumber(),
-                        } }));
+        appendLogData(TextFormat.sprintf("%3d %3d %3d  %-5s %-5s %-5s  %12.6f",
+            new Object[] {
+                atoms[ia].atom.getAtomName(),
+                atoms[ib].atom.getAtomName(),
+                atoms[ic].atom.getAtomName(),
+                new float[] { (float) targetValue },
+                new int[] { atoms[ia].atom.getAtomNumber(),
+                    atoms[ib].atom.getAtomNumber(),
+                    atoms[ic].atom.getAtomNumber(), } }));
         break;
       case CALC_TORSION:
         appendLogData(TextFormat

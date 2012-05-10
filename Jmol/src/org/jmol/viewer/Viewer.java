@@ -9575,6 +9575,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
     // We only work on atoms that are in frame
 
+    String ff = global.forceField;
     BitSet bsInFrame = getModelUndeletedAtomsBitSet(getVisibleFramesBitSet());
 
     if (bsSelected == null)
@@ -9620,7 +9621,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (!isSilent)
         Logger.info("Minimizing " + bsSelected.cardinality() + " atoms");
       getMinimizer(true).minimize(steps, crit, bsSelected, bsMotionFixed,
-          haveFixed, isSilent);
+          haveFixed, isSilent, ff);
     } catch (Exception e) {
       e.printStackTrace();
       Logger.error(e.getMessage());
@@ -10372,9 +10373,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return (sb.length() > 0 ? sb.toString() : "<no timeouts set>");
   }
 
-  public void calculatePartialCharges(BitSet bs) {
+  public void calculatePartialCharges(BitSet bsSelected) {
+    if (bsSelected == null || bsSelected.cardinality() == 0)
+      bsSelected = getModelUndeletedAtomsBitSet(getVisibleFramesBitSet());
     getMinimizer(true).calculatePartialCharges(modelSet.getBonds(), modelSet.getBondCount(), modelSet.atoms,
-        bs == null ? getSelectionSet(false) : bs, getSmilesMatcher());
+        bsSelected, getSmilesMatcher());
   }
 
   public void cachePut(String key, String data) {

@@ -44,94 +44,6 @@ import org.jmol.util.Logger;
 
 public class ForceFieldMMFF extends ForceField {
 
-  private class AtomType {
-    int elemNo;
-    int mmType;
-    int hType;
-    float formalCharge;
-    float fcadj;
-    boolean sbmb;
-    boolean arom;
-    String descr;
-    String smartsCode;
-    AtomType(int elemNo, int mmType, int hType, float formalCharge, String descr, String smartsCode) {
-      this.mmType = mmType;
-      this.hType = hType;
-      this.elemNo = elemNo;
-      this.smartsCode = smartsCode;
-      this.descr = descr;
-      this.formalCharge = formalCharge;
-      setFlags();
-    }
-    private void setFlags() {
-      switch (mmType) {
-      
-      // Note that these are NOT fractional charges based on
-      // number of connected atoms. These are relatively arbitrary
-      // fractions of the formal charge to be shared with other atoms.
-      // That is, it is not significant that 0.5 is 1/2, and 0.25 is 1/4; 
-      // they are just numbers.
-      
-      case 32:
-      case 35:
-      case 72:
-        // 32  OXYGEN IN CARBOXYLATE ANION
-        // 32  NITRATE ANION OXYGEN
-        // 32  SINGLE TERMINAL OXYGEN ON TETRACOORD SULFUR
-        // 32  TERMINAL O-S IN SULFONES AND SULFONAMIDES
-        // 32  TERMINAL O IN SULFONATES
-        // 35  OXIDE OXYGEN ON SP2 CARBON, NEGATIVELY CHARGED
-        // 72  TERMINAL SULFUR BONDED TO PHOSPHORUS
-        fcadj = 0.5f;
-        break;
-      case 62:
-      case 76:
-        // 62  DEPROTONATED SULFONAMIDE N-; FORMAL CHARGE=-1
-        // 76  NEGATIVELY CHARGED N IN, E.G, TRI- OR TETRAZOLE ANION
-        fcadj = 0.25f;
-        break;
-      }
-      switch (mmType) {
-      case 37:
-      case 38:
-      case 39:
-      case 44:
-      case 58:
-      case 59:
-      case 63:
-      case 64:
-      case 65:
-      case 66:
-      case 69:
-      case 78:
-      case 79:
-      case 81:
-      case 82:
-        arom = true;
-      }
-      switch (mmType) {
-      case 2:
-      case 3:
-      case 4:
-      case 9:
-      case 30:
-      case 37:
-      case 39:
-      case 54:
-      case 57:
-      case 58:
-      case 63:
-      case 64:
-      case 67:
-      case 75:
-      case 78:
-      case 80:
-      case 81:
-        sbmb = true;
-      }
-    }
-  }
-
   /*
   * atype aspec crd val  pilp mltb arom lin sbmb
     1    6    4    4    0    0    0    0    0
@@ -235,21 +147,38 @@ public class ForceFieldMMFF extends ForceField {
     getChargeParameters();
   }
   private static List<AtomType> atomTypes;
-  private static Map<Integer, Float> bciData;
+  private static Map<Integer, Object> ffParams;
   
   private void getChargeParameters() {
-    if (atomTypes != null)
+    if (ffParams != null)
       return;
     getAtomTypes("mmff/MMFF94-smarts.txt");
-    Hashtable<Integer, Float> data = new Hashtable<Integer, Float>();
-    getBciData("mmff/mmffpbci.par.txt", true, data);
-    getBciData("mmff/mmffchg.par.txt", false, data);
-    bciData = data;
+    Hashtable<Integer, Object> data = new Hashtable<Integer, Object>();
+    getMmffParameters("mmff/mmffpbci.par.txt", data, 1);
+    getMmffParameters("mmff/mmffchg.par.txt", data, 22);
+    ffParams = data;
   }
 
-  private void getBciData(String fileName, boolean isPartial, Hashtable<Integer, Float> data) {    
+  private void getMinimizationParameters() {
+    // presumes charge parameters have been loaded
+    if (ffParams.containsKey(Integer.valueOf(-1)))
+      return;
+    getMmffParameters("mmff/mmffvdw.par.txt",  ffParams, 11);
+    getMmffParameters("mmff/mmffbond.par.txt", ffParams, 2);
+    getMmffParameters("mmff/mmffang.par.txt",  ffParams, 3);
+    getMmffParameters("mmff/mmffstbn.par.txt", ffParams, 33);
+    getMmffParameters("mmff/mmffdfsb.par.txt", ffParams, 333);
+    getMmffParameters("mmff/mmfftor.par.txt",  ffParams, 4);
+    getMmffParameters("mmff/mmffoop.par.txt",  ffParams, 44);
+    ffParams.put(Integer.valueOf(-1), Boolean.TRUE);
+  }
+
+  private void getMmffParameters(String fileName, Map<Integer, Object> data, int dataType) {    
     URL url = null;
     String line = null;
+    int a1, a2 = 0, a3 = 0, a4 = 0;
+    Object value = null;
+    
     try {
       if ((url = this.getClass().getResource(fileName)) == null) {
         System.err.println("Couldn't find file: " + fileName);
@@ -260,18 +189,93 @@ public class ForceFieldMMFF extends ForceField {
       while ((line = br.readLine()) != null) {
         if (line.length() < 5 || line.startsWith("*"))
           continue;
-        int bondType = line.charAt(0) - '0';
-        int a1 = Integer.valueOf(line.substring(3,5).trim()).intValue();
-        int a2 = (isPartial ? 0 : Integer.valueOf(line.substring(8,10).trim()).intValue());
-        Float value = Float.valueOf((isPartial ? line.substring(5,15) : line.substring(10,20)).trim());
-        Integer key = Integer.valueOf((a1 * 100 + a2) * 10 + bondType);
-        data.put(key, value);
+        int type = line.charAt(0) - '0';
+        switch (dataType) {
+        case 44: // oop (tor max type is 5)
+          type = 6;
+          break;
+        case 333: // default stretch bend (by row; identified by a4 = 2, not 0)
+          a4 = 2;
+          type = 0;
+          break;
+        case 33: // stretch bend identified by a4 = 1, not 0
+        case 22: // chrg (bci, identified by a4 = 1, not 0)
+          a4 = 1;
+          break;
+        case 11:  // vdw identified by a4 = 1, not 0
+          a4 = 1;
+          type = 0;
+          break;
+        case 4:  // tor
+        case 3:  // angle
+        case 2:  // bond
+        case 1:  // pbci
+          break;          
+        }
+        switch (dataType) {
+        case 44: 
+        case 4:
+          a4 = Integer.valueOf(line.substring(18,20).trim()).intValue();
+          // fall through
+        case 333:
+        case 33:
+        case 3:
+          a3 = Integer.valueOf(line.substring(13,15).trim()).intValue();
+          // fall through
+        case 22:
+        case 2:
+          a2 = Integer.valueOf(line.substring(8,10).trim()).intValue();
+          break;
+        case 11:
+        case 1:
+          break;
+        }
+        a1 = Integer.valueOf(line.substring(3,5).trim()).intValue();
+        switch (dataType) {
+        case 1: // atom pbci
+          value = Float.valueOf(line.substring(5,15).trim());
+          break;
+        case 11: // vdw alpha-i, N-i, A-i, G-i, DA
+          value = new double[] {
+              Double.valueOf(line.substring(10,15).trim()).doubleValue(),
+              Double.valueOf(line.substring(20,25).trim()).doubleValue(),
+              Double.valueOf(line.substring(30,35).trim()).doubleValue(),
+              Double.valueOf(line.substring(40,45).trim()).doubleValue(),
+              line.charAt(46) // '-', 'A', 'D'
+              };
+          break;
+        case 2: // bond stretch: kb, r0 
+          value = new double[] {
+              Double.valueOf(line.substring(11,18).trim()).doubleValue(),
+              Double.valueOf(line.substring(19,25).trim()).doubleValue() };
+          break;
+        case 22: // bond chrg
+          value = Float.valueOf(line.substring(10,20).trim());
+          break;
+        case 3:   // angles: ka, theta0
+        case 33:  // stretch-bend: kbaIJK, kbaKJI
+        case 333: // default stretch-bend: F(I_J,K),F(K_J,I)  
+          value = new double[] {
+              Double.valueOf(line.substring(19,25).trim()).doubleValue(),
+              Double.valueOf(line.substring(28,35).trim()).doubleValue() };
+          break;
+        case 4: // tor: v1, v2, v3
+          value = new double[] {
+              Double.valueOf(line.substring(22,28).trim()).doubleValue(),
+              Double.valueOf(line.substring(30,36).trim()).doubleValue(),
+              Double.valueOf(line.substring(38,44).trim()).doubleValue()
+              };
+          break;
+        case 44: // oop: koop  
+          value = Float.valueOf(line.substring(24,30).trim());
+          break;
+        }        
+        data.put(getKey(type, a1, a2, a3, a4), value);
       }
       br.close();
     } catch (Exception e) {
       System.err.println("Exception " + e.getMessage() + " in getResource "
           + fileName + " line=" + line);
-
     }
   }
 
@@ -330,12 +334,12 @@ public class ForceFieldMMFF extends ForceField {
    * @param atoms
    * @param bsAtoms
    * @param smartsMatcher
-   * @param vAromatic56
+   * @param vRings
    * @return  array of indexes into AtomTypes or, for H, negative of mmType
    */
-  public static int[] getTypes(Atom[] atoms, BitSet bsAtoms, 
+  public static int[] setAtomTypes(Atom[] atoms, BitSet bsAtoms, 
                                SmilesMatcherInterface smartsMatcher, 
-                               List<BitSet> vAromatic56) {
+                               List<BitSet>[] vRings) {
     List<BitSet>bitSets = new ArrayList<BitSet>();
     String[] smarts = new String[atomTypes.size()];
     int[] types = new int[atoms.length];
@@ -377,7 +381,7 @@ public class ForceFieldMMFF extends ForceField {
       smarts[i] = at.smartsCode;
       nUsed++;
     }
-    Logger.info(nUsed + " SMARTS matches required");
+    Logger.info(nUsed + " SMARTS matches used");
     
     // The SMARTS list is organized from least general to most general
     // for each atom. So the FIRST occurrence of an atom in the list
@@ -385,7 +389,7 @@ public class ForceFieldMMFF extends ForceField {
     
     smartsMatcher.getSubstructureSets(smarts, atoms, atoms.length, 
         JmolEdge.FLAG_AROMATIC_STRICT | JmolEdge.FLAG_AROMATIC_DOUBLE, 
-        bsConnected, bitSets, vAromatic56);
+        bsConnected, bitSets, vRings);
     BitSet bsDone = new BitSet();
     for (int j = 0; j < bitSets.size(); j++) {
       BitSet bs = bitSets.get(j);
@@ -472,20 +476,17 @@ public class ForceFieldMMFF extends ForceField {
       
       float dq;  // the difference in charge to be added or subtracted from the formal charges
       try {
-        int bondType = (isBondType1(at1, at2) && 
-            bonds[i].getCovalentOrder() == 1 
-            && !isAromaticBond(a1.index, a2.index, vAromatic56) ? 1 : 0);
+        int bondType = getBondType(bonds[i], at1, at2, a1.index, a2.index, vAromatic56);
         float bFactor = (type1 < type2 ? -1 : 1);
-        Integer key = Integer.valueOf(((bFactor == 1 ? type2 * 100 + type1
-            : type1 * 100 + type2) * 10) + bondType);
-        Float bciValue = bciData.get(key);
+        Integer key = getKey(bondType, bFactor == 1 ? type2 : type1, bFactor == 1 ? type1 : type2, 0, 1);
+        Float bciValue = (Float) ffParams.get(key);
         float bci;
-        String msg = (Logger.debugging ? key + " " + a1 + "/" + a2 + " mmTypes=" + type1 + "/" + type2 + " formalCharges=" + at1.formalCharge + "/" + at2.formalCharge + " bci = " : null);
+        String msg = (Logger.debugging ? a1 + "/" + a2 + " mmTypes=" + type1 + "/" + type2 + " formalCharges=" + at1.formalCharge + "/" + at2.formalCharge + " bci = " : null);
         if (bciValue == null) { 
           // no bci was found; we have to use partial bond charge increments
           // a failure here indicates we don't have information
-          float pa = bciData.get(Integer.valueOf(type1 * 1000)).floatValue();
-          float pb = bciData.get(Integer.valueOf(type2 * 1000)).floatValue();
+          float pa = ((Float) ffParams.get(getKey(0, type1, 0, 0, 0))).floatValue();
+          float pb = ((Float) ffParams.get(getKey(0, type2, 0, 0, 0))).floatValue();
           bci = pa - pb;
           if (Logger.debugging)
             msg += pa + " - " + pb + " = ";
@@ -551,18 +552,6 @@ public class ForceFieldMMFF extends ForceField {
   }
 
   @Override
-  public List<String[]> getAtomTypes() {
-    // TODO
-    return null;
-  }
-
-  @Override
-  protected Map<String, FFParam> getFFParameters() {
-    // TODO
-    return null;
-  }
-
-  @Override
   public void clear() {
     // TODO
     
@@ -574,4 +563,18 @@ public class ForceFieldMMFF extends ForceField {
     return false;
   }
 
+  private static int getBondType(Bond bond, AtomType at1, AtomType at2,
+                                 int index1, int index2, List<BitSet> vAromatic56) {
+    return (isBondType1(at1, at2) && 
+        bond.getCovalentOrder() == 1 
+        && !isAromaticBond(index1, index2, vAromatic56) ? 1 : 0);  
+   }
+
+  private static Integer getKey(int type, int a1, int a2, int a3, int a4) {
+    // 2^7 is 128; the highest mmff atom type is 99; key rolls over into negative numbers
+    // for a4 > 63
+    return Integer.valueOf((((((((a4 << 7) + a3) << 7) + a2) << 7) + a1) << 4) + type);
+  }
+
+  
 }

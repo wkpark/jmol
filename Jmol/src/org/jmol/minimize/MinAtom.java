@@ -27,30 +27,33 @@ package org.jmol.minimize;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jmol.minimize.forcefield.AtomType;
 import org.jmol.modelset.Atom;
 
 public class MinAtom {
 
   int index;
+  public String sType;
   public Atom atom;
+  public int type;
   public double[] coord = new double[3];
   public double[] force = new double[3];
   public List<MinBond> bonds = new ArrayList<MinBond>();
   public int nBonds;
   public int hCount;
+  public double partialCharge;
   
-  public String type;
   int[] bondedAtoms;
   
   @Override
   public String toString() {
-    return "#" + index + " " + type;
+    return "#" + index + " " + sType;
   }
-  MinAtom(int index, Atom atom, double[] coord, String type) {
+  
+  MinAtom(int index, Atom atom, double[] coord) {
     this.index = index;
     this.atom = atom;
     this.coord = coord;
-    this.type = type;
     hCount = atom.getCovalentHydrogenCount();    
   }
 

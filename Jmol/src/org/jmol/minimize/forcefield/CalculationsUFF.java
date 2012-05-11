@@ -235,8 +235,6 @@ class CalculationsUFF extends Calculations {
   }
 
   FFParam getParameter(Object a) {
-    if (ffParams == null || a == null)
-      System.out.println("calcUFF?");
     return ffParams.get(a);
   }
 

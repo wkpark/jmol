@@ -98,6 +98,7 @@ public class Escape {
     if (x instanceof int[] 
           || x instanceof int[][]
           || x instanceof float[]
+          || x instanceof double[]
           || x instanceof float[][]
           || x instanceof float[][][]) 
       return toJSON(null, x);
@@ -532,6 +533,16 @@ public class Escape {
       int imax = ((float[]) info).length;
       for (int i = 0; i < imax; i++) {
         sb.append(sep).append(((float[]) info)[i]);
+        sep = ",";
+      }
+      sb.append("]");
+      return packageJSON(infoType, sb);
+    }
+    if (info instanceof double[]) {
+      sb.append("[");
+      int imax = ((double[]) info).length;
+      for (int i = 0; i < imax; i++) {
+        sb.append(sep).append(((double[]) info)[i]);
         sep = ",";
       }
       sb.append("]");

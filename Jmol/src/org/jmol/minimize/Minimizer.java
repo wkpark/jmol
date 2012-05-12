@@ -31,10 +31,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.jmol.api.MinimizerInterface;
-import org.jmol.api.SmilesMatcherInterface;
 import org.jmol.i18n.GT;
 import org.jmol.minimize.forcefield.ForceField;
 import org.jmol.minimize.forcefield.ForceFieldMMFF;
+import org.jmol.minimize.forcefield.ForceFieldUFF;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;
@@ -51,15 +51,18 @@ public class Minimizer implements MinimizerInterface {
 
   public Viewer viewer;
   public Atom[] atoms;
+  public Bond[] bonds;
+  public int rawBondCount;
+  
   public MinAtom[] minAtoms;
   public MinBond[] minBonds;
+  public MinAngle[] minAngles;
+  public MinTorsion[] minTorsions;
   public BitSet bsMinFixed;
   private int atomCount;
   private int bondCount;
   private int[] atomMap; 
  
-  public int[][] angles;
-  public int[][] torsions;
   public double[] partialCharges;
   
   private int steps = 50;
@@ -125,7 +128,6 @@ public class Minimizer implements MinimizerInterface {
   }
   
   private Map<String, Object[]> constraintMap;
-
   private void addConstraint(Object[] c) {
     if (c == null)
       return;
@@ -159,10 +161,12 @@ public class Minimizer implements MinimizerInterface {
     atomCount = 0;
     bondCount = 0;
     atoms = null;
+    bonds = null;
+    rawBondCount = 0;
     minAtoms = null;
     minBonds = null;
-    angles = null;
-    torsions = null;
+    minAngles = null;
+    minTorsions = null;
     partialCharges = null;
     coordSaved = null;
     atomMap = null;
@@ -178,7 +182,8 @@ public class Minimizer implements MinimizerInterface {
   }
   
   public boolean minimize(int steps, double crit, BitSet bsSelected,
-                          BitSet bsFixed, boolean haveFixed, boolean forceSilent, String ff) {
+                          BitSet bsFixed, boolean haveFixed, boolean forceSilent, 
+                          String ff) {
     isSilent = (forceSilent || viewer.getBooleanProperty("minimizationSilent"));
     Object val;
     if (steps == Integer.MAX_VALUE) {
@@ -287,13 +292,14 @@ public class Minimizer implements MinimizerInterface {
 
     Logger.info(GT._("{0} atoms will be minimized.", "" + atomCount));
     Logger.info("minimize: getting bonds...");
+    bonds = viewer.getModelSet().getBonds();
+    rawBondCount = viewer.getModelSet().getBondCount();
     getBonds();
     Logger.info("minimize: getting angles...");
     getAngles();
     Logger.info("minimize: getting torsions...");
     getTorsions();
-
-    if (!pFF.setModel(this, bsElements, elemnoMax)) {
+    if (!pFF.setModel(bsElements, elemnoMax)) {
       Logger.error(GT._("could not setup force field {0}", ff));
       return false;
     }
@@ -304,41 +310,41 @@ public class Minimizer implements MinimizerInterface {
     // add all bonds
     List<MinBond> bondInfo = new ArrayList<MinBond>();
     bondCount = 0;
-    for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) {
-      Bond[] bonds = atoms[i].getBonds();
-      if (bonds != null)
-        for (int j = 0; j < bonds.length; j++) {
-          int i2 = atoms[i].getBondedAtomIndex(j);
-          if (i2 > i && bsAtoms.get(i2)) {
-            int bondOrder = bonds[j].getCovalentOrder();
-            switch (bondOrder) {
-            case 1:
-            case 2:
-            case 3:
-              break;
-            case JmolEdge.BOND_AROMATIC:
-              bondOrder = 5;
-              break;
-            default:
-              bondOrder = 1;
-            }
-            bondCount++;
-            bondInfo.add(new MinBond(atomMap[i], atomMap[i2], bondOrder, 0, null));
-          }
-        }
+    int i1, i2;
+    for (int i = rawBondCount; --i >= 0;) {
+      Bond bond = bonds[i];
+      if (!bsAtoms.get(i1 = bond.getAtomIndex1())
+          || !bsAtoms.get(i2 = bond.getAtomIndex2()))
+        continue;
+      if (i2 < i1) {
+        int ii = i1;
+        i1 = i2;
+        i2 = ii;
+      }
+      int bondOrder = bond.getCovalentOrder();
+      switch (bondOrder) {
+      case 1:
+      case 2:
+      case 3:
+        break;
+      case JmolEdge.BOND_AROMATIC:
+        bondOrder = 5;
+        break;
+      default:
+        bondOrder = 1;
+      }
+      bondInfo.add(new MinBond(i, bondCount++, atomMap[i1], atomMap[i2], bondOrder, 0, null));
     }
-
     minBonds = new MinBond[bondCount];
     for (int i = 0; i < bondCount; i++) {
       MinBond bond = minBonds[i] = bondInfo.get(i);
-      int atom1 = bond.atomIndex1;
-      int atom2 = bond.atomIndex2;
+      int atom1 = bond.data[0];
+      int atom2 = bond.data[1];
       minAtoms[atom1].bonds.add(bond);
       minAtoms[atom2].bonds.add(bond);
       minAtoms[atom1].nBonds++;
       minAtoms[atom2].nBonds++;
     }
-
     for (int i = 0; i < atomCount; i++)
       minAtoms[i].getBondedAtomIndexes();
   }
@@ -358,93 +364,107 @@ public class Minimizer implements MinimizerInterface {
 
   public void getAngles() {
 
-    List<int[]> vAngles = new ArrayList<int[]>();
-
-    for (int ib = 0; ib < atomCount; ib++) {
-      MinAtom atomB = minAtoms[ib];
-      int n = atomB.nBonds;
-      if (n < 2)
-        continue;
-      //for all central atoms....
-      int[] atomList = atomB.getBondedAtomIndexes();
-      for (int ia = 0; ia < n - 1; ia++)
-        for (int ic = ia + 1; ic < n; ic++) {
-          // note! center in center; ia < ic  (not like OpenBabel)
-          vAngles.add(new int[] { atomList[ia], ib, atomList[ic] });
-/*          System.out.println (" " 
-              + minAtoms[atomList[ia]].getIdentity() + " -- " 
-              + minAtoms[ib].getIdentity() + " -- " 
-              + minAtoms[atomList[ic]].getIdentity());
-*/        }
+    List<MinAngle> vAngles = new ArrayList<MinAngle>();
+    int[] atomList;
+    int ic;
+    for (int i = 0; i < bondCount; i++) {
+      MinBond bond = minBonds[i];
+      int ia = bond.data[0];
+      int ib = bond.data[1];
+      if (minAtoms[ib].nBonds > 1) {
+        atomList = minAtoms[ib].getBondedAtomIndexes();
+        for (int j = atomList.length; --j >= 0;)
+          if ((ic = atomList[j]) > ia) {
+            vAngles.add(new MinAngle(new int[] { ia, ib, ic, i,
+                minAtoms[ib].bonds.get(j).index}));
+/*            System.out.println (" " 
+                + minAtoms[ia].getIdentity() + " -- " 
+                + minAtoms[ib].getIdentity() + " -- " 
+                + minAtoms[ic].getIdentity());
+*/
+          }
+      }
+      if (minAtoms[ia].nBonds > 1) {
+        atomList = minAtoms[ia].getBondedAtomIndexes();
+        for (int j = atomList.length; --j >= 0;)
+          if ((ic = atomList[j]) < ib && ic > ia) {
+            vAngles
+                .add(new MinAngle(new int[] { ic, ia, ib, minAtoms[ia].bonds.get(j).index,
+                    i}));
+            System.out.println ("a " 
+                + minAtoms[ic].getIdentity() + " -- " 
+                + minAtoms[ia].getIdentity() + " -- " 
+                + minAtoms[ib].getIdentity());
+          }
+      }
     }
-    angles = vAngles.toArray(new int[vAngles.size()][]);
-    Logger.info(angles.length + " angles");
+    minAngles = vAngles.toArray(new MinAngle[vAngles.size()]);
+    Logger.info(minAngles.length + " angles");
   }
 
   public void getTorsions() {
-
-    List<int[]> vTorsions = new ArrayList<int[]>();
-
+    List<MinTorsion> vTorsions = new ArrayList<MinTorsion>();
+    int id;
     // extend all angles a-b-c by one, but only
-    // when when c > b -- other possibility will be found
-    // starting with angle d-c-b
-    for (int i = angles.length; --i >= 0;) {
-      int[] angle = angles[i];
+    // when when c > b or b > a
+    for (int i = minAngles.length; --i >= 0;) {
+      int[] angle = minAngles[i].data;
       int ia = angle[0];
       int ib = angle[1];
       int ic = angle[2];
-      if (ic > ib && minAtoms[ic].nBonds != 1) {
-        int[] atomList = minAtoms[ic].getBondedAtomIndexes();
+      int[] atomList;
+      if (ic > ib && minAtoms[ic].nBonds > 1) {
+        atomList = minAtoms[ic].getBondedAtomIndexes();
         for (int j = 0; j < atomList.length; j++) {
-          int id = atomList[j];
+          id = atomList[j];
           if (id != ia && id != ib) {
-            vTorsions.add(new int[] { ia, ib, ic, id });
-/*            System.out.println(" " + minAtoms[ia].getIdentity() + " -- "
+            vTorsions.add(new MinTorsion(new int[] { ia, ib, ic, id, 
+                angle[ForceField.ABI_IJ], angle[ForceField.ABI_JK],
+                minAtoms[ic].bonds.get(j).index }));
+/*            System.out.println("t " + minAtoms[ia].getIdentity() + " -- "
                 + minAtoms[ib].getIdentity() + " -- "
                 + minAtoms[ic].getIdentity() + " -- "
-                + minAtoms[id].getIdentity() + " ");
+                + minAtoms[id].getIdentity());
 */
           }
         }
       }
       if (ia > ib && minAtoms[ia].nBonds != 1) {
-        int[] atomList = minAtoms[ia].getBondedAtomIndexes();
+        atomList = minAtoms[ia].getBondedAtomIndexes();
         for (int j = 0; j < atomList.length; j++) {
-          int id = atomList[j];
+          id = atomList[j];
           if (id != ic && id != ib) {
-            vTorsions.add(new int[] { ic, ib, ia, id });
-/*            System.out.println(" " + minAtoms[ic].getIdentity() + " -- "
+            vTorsions.add(new MinTorsion(new int[] { ic, ib, ia, id, 
+                angle[ForceField.ABI_JK], angle[ForceField.ABI_IJ],
+                minAtoms[ia].bonds.get(j).index }));
+/*            System.out.println("t " + minAtoms[ic].getIdentity() + " -- "
                 + minAtoms[ib].getIdentity() + " -- "
                 + minAtoms[ia].getIdentity() + " -- "
-                + minAtoms[id].getIdentity() + " ");
-*/          }
+                + minAtoms[id].getIdentity());
+*/
+          }
         }
       }
-      
     }
-    torsions = vTorsions.toArray(new int[vTorsions.size()][]);
-    Logger.info(torsions.length + " torsions");
-
+    minTorsions = vTorsions.toArray(new MinTorsion[vTorsions.size()]);
+    Logger.info(minTorsions.length + " torsions");
   }
 
   
   
   
   ///////////////////////////// minimize //////////////////////
-  
- 
+
   public ForceField getForceField(String ff) {
     if (pFF == null || !ff.equals(this.ff)) {
-      try {
-        String className = getClass().getName();
-        className = className.substring(0, className.lastIndexOf(".")) 
-        + ".forcefield.ForceField" + ff;
-        Logger.info( "minimize: using " + className);
-        pFF = (ForceField) Class.forName(className).newInstance();
-        this.ff = ff;
-      } catch (Exception e) {
-        Logger.error(e.getMessage());
+      if (ff.equals("UFF")) {
+        pFF = new ForceFieldUFF(this);
+      } else if (ff.equals("MMFF")) {
+        pFF = new ForceFieldMMFF(this);
+      } else {
+        pFF = null;
       }
+      this.ff = ff;
     }
     //Logger.info("minimize: forcefield = " + pFF);
     return pFF;
@@ -630,14 +650,14 @@ public class Minimizer implements MinimizerInterface {
   }
 
   public void calculatePartialCharges(Bond[] bonds, int bondCount,
-                                      Atom[] atoms,
-                                      BitSet bsAtoms, SmilesMatcherInterface smartsMatcher) {
+                                      Atom[] atoms, BitSet bsAtoms) {
     //TODO -- combine SMILES and MINIMIZER in same JAR file
-    new ForceFieldMMFF();
-    List<BitSet>[] vRings = ArrayUtil.createArrayOfArrayList(3);
-    int[] types = ForceFieldMMFF.setAtomTypes(atoms, bsAtoms, smartsMatcher, vRings);
-    float[] charges = ForceFieldMMFF.getPartialCharges(bonds, bondCount, atoms, types, bsAtoms, vRings[2]);
-    viewer.setAtomProperty(bsAtoms, Token.atomtype, 0, 0, null, null, ForceFieldMMFF.getAtomTypeDescs(types));
-    viewer.setAtomProperty(bsAtoms, Token.partialcharge, 0, 0, null, charges, null);
+    ForceFieldMMFF ff = new ForceFieldMMFF(this);
+    ff.setArrays(atoms, bsAtoms, bonds, bondCount);
+    viewer.setAtomProperty(bsAtoms, Token.atomtype, 0, 0, null, null,
+        ff.getAtomTypeDescriptions());
+    viewer.setAtomProperty(bsAtoms, Token.partialcharge, 0, 0, null,
+        ff.getPartialCharges(), null);
   }
+
 }

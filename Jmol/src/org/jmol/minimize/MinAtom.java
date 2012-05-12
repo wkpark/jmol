@@ -35,7 +35,8 @@ public class MinAtom {
   int index;
   public String sType;
   public Atom atom;
-  public int type;
+  public AtomType ffAtomType;
+  public int ffType;
   public double[] coord = new double[3];
   public double[] force = new double[3];
   public List<MinBond> bonds = new ArrayList<MinBond>();
@@ -47,7 +48,7 @@ public class MinAtom {
   
   @Override
   public String toString() {
-    return "#" + index + " " + sType;
+    return (sType == null ? atom.getAtomName() : "#" + index + " " + sType);
   }
   
   MinAtom(int index, Atom atom, double[] coord) {

@@ -1,4 +1,5 @@
-* File: MMFFCHG.PAR
+14. MMFFCHG.PAR: This file supplies bond-charge-increment parameters used to
+                 construct MMFF94 partial atomic charges.
 *
 *            Copyright (c) Merck and Co., Inc., 1994, 1995, 1996
 *                         All Rights Reserved

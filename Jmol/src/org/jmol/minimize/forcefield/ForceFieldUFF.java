@@ -47,36 +47,38 @@ public class ForceFieldUFF extends ForceField {
   private static Map<Object, FFParam> ffParams;
   private BitSet bsAromatic;
   
+  public ForceFieldUFF(Minimizer minimizer) {
+    this.minimizer = minimizer;
+  }
+
   @Override
   public void clear() {
     bsAromatic = null;
   }
  
   @Override
-  public boolean setModel(Minimizer m, BitSet bsElements, int elemnoMax) {
-    super.setModel(m);
+  public boolean setModel(BitSet bsElements, int elemnoMax) {
+    setModelFields();
     Logger.info("minimize: setting atom types...");
     if (atomTypes == null && (atomTypes = getAtomTypes()) == null)
       return false;
     if (ffParams == null  && (ffParams = getFFParameters()) == null)
       return false;
-    setAtomTypes(m, bsElements, elemnoMax);
-    calc = new CalculationsUFF(this, ffParams, m.minAtoms, m.minBonds, 
-        m.angles, m.torsions, m.partialCharges, m.constraints);
+    setAtomTypes(bsElements, elemnoMax);
+    calc = new CalculationsUFF(this, ffParams, minAtoms, minBonds, 
+        minAngles, minTorsions, minimizer.partialCharges, minimizer.constraints);
     return calc.setupCalculations();
   }
   
-  private void setAtomTypes(Minimizer m, BitSet bsElements, int elemnoMax) {
+  private void setAtomTypes(BitSet bsElements, int elemnoMax) {
     int nTypes = atomTypes.size();
     bsElements.clear(0);
-    System.out.println("atoms: " + m.bsAtoms);
     for (int i = 0; i < nTypes; i++) {
       String[] data = atomTypes.get(i);
       String smarts = data[0];
       if (smarts == null)
         continue;
-      BitSet search = getSearch(m, smarts, elemnoMax, bsElements);
-      System.out.println(smarts + " " + search);
+      BitSet search = getSearch(smarts, elemnoMax, bsElements);
       // if the 0 bit in bsElements gets set, then the element is not present,
       // and there is no need to search for it;
       // if search is null, then we are done -- max elemno exceeded
@@ -85,9 +87,9 @@ public class ForceFieldUFF extends ForceField {
       else if (search == null)
         break;
       else
-        for (int j = m.bsAtoms.nextSetBit(0), pt = 0; j < m.atoms.length && j >= 0; j = m.bsAtoms.nextSetBit(j + 1), pt++)
+        for (int j = minimizer.bsAtoms.nextSetBit(0), pt = 0; j < minimizer.atoms.length && j >= 0; j = minimizer.bsAtoms.nextSetBit(j + 1), pt++)
             if (search.get(j))
-              m.minAtoms[pt].sType = data[1].intern();
+              minAtoms[pt].sType = data[1].intern();
     }
   }
 
@@ -107,7 +109,7 @@ public class ForceFieldUFF extends ForceField {
         Token[keyword(0x880001) value=")"]
         Token[keyword(0x80065) value="expressionEnd"]
   */
-  private BitSet getSearch(Minimizer m, String smarts, int elemnoMax, BitSet bsElements) {
+  private BitSet getSearch(String smarts, int elemnoMax, BitSet bsElements) {
     /*
      * 
      * only a few possibilities --
@@ -165,13 +167,13 @@ public class ForceFieldUFF extends ForceField {
       break;
     } 
     search[PT_ELEMENT].intValue = elemNo;
-    Object v = m.viewer.evaluateExpression(search);
+    Object v = minimizer.viewer.evaluateExpression(search);
     if (!(v instanceof BitSet))
       return null;
     BitSet bs = (BitSet) v;
     if (isAromatic && bs.cardinality() > 0) {
       if (bsAromatic == null)
-        bsAromatic = (BitSet) m.viewer.evaluateExpression(tokenTypes[TOKEN_AROMATIC]);
+        bsAromatic = (BitSet) minimizer.viewer.evaluateExpression(tokenTypes[TOKEN_AROMATIC]);
       bs.and(bsAromatic);
     }
     if (Logger.debugging && bs.cardinality() > 0)

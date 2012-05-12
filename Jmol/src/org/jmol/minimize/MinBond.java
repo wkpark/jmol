@@ -24,23 +24,23 @@
 
 package org.jmol.minimize;
 
-public class MinBond {
-  public int atomIndex1;
-  public int atomIndex2;
+public class MinBond extends MinObject {
+  public int rawIndex;
+  public int index;
   public int order;
-  public int type;
-  public Integer key;  
   public boolean isAromatic; // never set?
   public boolean isAmide;    // never set?
   
-  MinBond(int atomIndex1, int atomIndex2, int order, int type, Integer key) {
-    this.atomIndex1 = atomIndex1;
-    this.atomIndex2 = atomIndex2;
+  MinBond(int rawIndex, int index, int atomIndex1, int atomIndex2, int order, int type, Integer key) {
+    this.rawIndex = rawIndex;
+    this.index = index;
+    this.type = type;
+    data = new int[] { atomIndex1, atomIndex2 };
     this.order = order;
     this.key = key;
   }
   
   public int getOtherAtom(int index) {
-    return (atomIndex1 == index ? atomIndex2 : atomIndex1);    
+    return data[data[0] == index ? 1 : 0];    
   }
 }

@@ -1,4 +1,9 @@
-* File: MMFFPBCI.PAR
+15. MMFFPBCI.PAR: This file supplies "partial-bond-charge-increment" 
+                  parameters used in the empirical rule employed to assign
+                  missing bond-charge-increment parameters.  It also specifies
+                  the "formal-charge-sharing" parameters used to assemble the
+                  MMFF94 partiial atomic charges for systems or groups 
+                  that have a negative formal charge.
 *
 *         Copyright (c) Merck and Co., Inc., 1994, 1995, 1996
 *                         All Rights Reserved

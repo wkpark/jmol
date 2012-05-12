@@ -28,8 +28,10 @@ import java.util.List;
 
 import javax.vecmath.Vector3d;
 
+import org.jmol.minimize.MinAngle;
 import org.jmol.minimize.MinAtom;
 import org.jmol.minimize.MinBond;
+import org.jmol.minimize.MinTorsion;
 import org.jmol.minimize.Util;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.TextFormat;
@@ -41,23 +43,24 @@ abstract class Calculations {
 
   final static double KCAL_TO_KJ = 4.1868;
 
-  final static int CALC_DISTANCE = 0; // do not change these
-  final static int CALC_ANGLE = 1; // first three numbers
-  final static int CALC_TORSION = 2;
-  final static int CALC_OOP = 3;
-  final static int CALC_VDW = 4;
-  final static int CALC_ES = 5;
-  final static int CALC_MAX = 6;
+  final static int CALC_DISTANCE = 0; 
+  final static int CALC_ANGLE = 1; 
+  final static int CALC_STRETCH_BEND = 2;
+  final static int CALC_TORSION = 3;  // first 4 are calculated for constraint energies
+  final static int CALC_OOP = 4;
+  final static int CALC_VDW = 5;
+  final static int CALC_ES = 6;
+  final static int CALC_MAX = 7;
 
   ForceField ff;
   List<Object[]>[] calculations = ArrayUtil.createArrayOfArrayList(CALC_MAX);
 
   int atomCount;
   int bondCount;
-  MinAtom[] atoms;
-  MinBond[] bonds;
-  int[][] angles;
-  int[][] torsions;
+  MinAtom[] minAtoms;
+  MinBond[] minBonds;
+  MinAngle[] minAngles;
+  MinTorsion[] minTorsions;
   double[] partialCharges;
   boolean havePartialCharges;
   List<Object[]> constraints;
@@ -69,16 +72,17 @@ abstract class Calculations {
 
   Calculations(ForceField ff, 
       MinAtom[] minAtoms, MinBond[] minBonds,
-      int[][] angles, int[][] torsions, double[] partialCharges,
+      MinAngle[] minAngles, MinTorsion[] minTorsions, 
+      double[] partialCharges,
       List<Object[]> constraints) {
     this.ff = ff;
-    atoms = minAtoms;
-    bonds = minBonds;
-    this.angles = angles;
-    this.torsions = torsions;
+    this.minAtoms = minAtoms;
+    this.minBonds = minBonds;
+    this.minAngles = minAngles;
+    this.minTorsions = minTorsions;
     this.constraints = constraints;
-    atomCount = atoms.length;
-    bondCount = bonds.length;
+    atomCount = minAtoms.length;
+    bondCount = minBonds.length;
     if (partialCharges != null && partialCharges.length == atomCount)
       for (int i = atomCount; --i >= 0;)
         if (partialCharges[i] != 0) {
@@ -94,8 +98,6 @@ abstract class Calculations {
 
   abstract String getAtomList(String title);
 
-  abstract boolean setupElectrostatics();
-
   abstract String getDebugHeader(int iType);
 
   abstract String getDebugFooter(int iType, double energy);
@@ -105,9 +107,9 @@ abstract class Calculations {
   abstract double compute(int iType, Object[] dataIn);
 
   void addForce(Vector3d v, int i, double dE) {
-    atoms[i].force[0] += v.x * dE;
-    atoms[i].force[1] += v.y * dE;
-    atoms[i].force[2] += v.z * dE;
+    minAtoms[i].force[0] += v.x * dE;
+    minAtoms[i].force[1] += v.y * dE;
+    minAtoms[i].force[2] += v.z * dE;
   }
 
   boolean gradients;
@@ -139,6 +141,52 @@ abstract class Calculations {
 
   void setPreliminary(boolean TF) {
     isPreliminary = TF;
+  }
+
+  abstract class PairCalc extends Calculation {
+    
+    abstract void setData(List<Object[]> calc, int ia, int ib);
+
+  }
+  
+  protected void pairSearch(List<Object[]> calc1, PairCalc pc1, 
+                            List<Object[]> calc2, PairCalc pc2) {
+    /*A:*/ for (int i = 0; i < atomCount - 1; i++) { // one atom...
+      MinAtom atomA = minAtoms[i];
+      int[] atomList1 = atomA.getBondedAtomIndexes();
+      B: for (int j = i + 1; j < atomCount; j++) { // another atom...
+        MinAtom atomB = minAtoms[j];
+        /*nbrA:*/ for (int k = atomList1.length; --k >= 0;) { // check bonded A-B
+          MinAtom nbrA = minAtoms[atomList1[k]];
+          if (nbrA == atomB)
+            continue B; // pick another B
+          if (nbrA.nBonds == 1)
+            continue;
+          int[] atomList2 = nbrA.getBondedAtomIndexes(); // check A-X-B
+          /*nbrAA:*/ for (int l = atomList2.length; --l >= 0;) {
+            MinAtom nbrAA = minAtoms[atomList2[l]];
+            if (nbrAA == atomB)
+              continue B; // pick another B
+            
+            //this next would exclude A-X-X-B, but Rappe does not do that, he says
+            
+/*            if (nbrAA.nBonds == 1)
+              continue;
+            int[] atomList3 = nbrAA.getBondedAtomIndexes(); // check A-X-X-B
+            nbrAAA: for (int m = atomList3.length; --m >= 0;) {
+              MinAtom nbrAAA = atoms[atomList3[m]];
+              if (nbrAAA == atomB)
+                continue B; // pick another B           
+            }
+*/            
+            
+          }
+        }
+        pc1.setData(calc1, i, j);
+        if (pc2 != null)
+          pc2.setData(calc2, i, j);
+      }
+    }
   }
 
   private double calc(int iType, boolean gradients) {
@@ -174,6 +222,10 @@ abstract class Calculations {
 
   double energyTorsion(boolean gradients) {
     return calc(CALC_TORSION, gradients);
+  }
+
+  double energyStretchBend(boolean gradients) {
+    return calc(CALC_STRETCH_BEND, gradients);
   }
 
   double energyOOP(boolean gradients) {
@@ -219,19 +271,19 @@ abstract class Calculations {
       case CALC_TORSION:
         id = minList[3];
         if (gradients)
-          dd.set(atoms[id].coord);
+          dd.set(minAtoms[id].coord);
         //fall through
       case CALC_ANGLE:
         ic = minList[2];
         if (gradients)
-          dc.set(atoms[ic].coord);
+          dc.set(minAtoms[ic].coord);
         //fall through
       case CALC_DISTANCE:
         ib = minList[1];
         ia = minList[0];
         if (gradients) {
-          db.set(atoms[ib].coord);
-          da.set(atoms[ia].coord);
+          db.set(minAtoms[ib].coord);
+          da.set(minAtoms[ia].coord);
         }
       }
 
@@ -241,8 +293,8 @@ abstract class Calculations {
       case CALC_TORSION:
         targetValue *= DEG_TO_RAD;
         value = (gradients ? Util.restorativeForceAndTorsionAngleRadians(da,
-            db, dc, dd) : Util.getTorsionAngleRadians(atoms[ia].coord,
-            atoms[ib].coord, atoms[ic].coord, atoms[id].coord, v1, v2, v3));
+            db, dc, dd) : Util.getTorsionAngleRadians(minAtoms[ia].coord,
+            minAtoms[ib].coord, minAtoms[ic].coord, minAtoms[id].coord, v1, v2, v3));
         if (value < 0 && targetValue >= PI_OVER_2)
           value += TWO_PI;
         else if (value > 0 && targetValue <= -PI_OVER_2)
@@ -251,12 +303,12 @@ abstract class Calculations {
       case CALC_ANGLE:
         targetValue *= DEG_TO_RAD;
         value = (gradients ? Util.restorativeForceAndAngleRadians(da, db, dc)
-            : Util.getAngleRadiansABC(atoms[ia].coord, atoms[ib].coord,
-                atoms[ic].coord));
+            : Util.getAngleRadiansABC(minAtoms[ia].coord, minAtoms[ib].coord,
+                minAtoms[ic].coord));
         break;
       case CALC_DISTANCE:
         value = (gradients ? Util.restorativeForceAndDistance(da, db, dc)
-            : Math.sqrt(Util.distance2(atoms[ia].coord, atoms[ib].coord)));
+            : Math.sqrt(Util.distance2(minAtoms[ia].coord, minAtoms[ib].coord)));
         break;
       }
       energy += constrainQuadratic(value, targetValue, k, iType);
@@ -314,37 +366,37 @@ abstract class Calculations {
       case CALC_DISTANCE:
         appendLogData(TextFormat.sprintf("%3d %3d  %-5s %-5s  %12.6f",
             new Object[] {
-                atoms[ia].atom.getAtomName(),
-                atoms[ib].atom.getAtomName(),
+                minAtoms[ia].atom.getAtomName(),
+                minAtoms[ib].atom.getAtomName(),
                 new float[] { (float) targetValue },
-                new int[] { atoms[ia].atom.getAtomNumber(),
-                    atoms[ib].atom.getAtomNumber(), } }));
+                new int[] { minAtoms[ia].atom.getAtomNumber(),
+                    minAtoms[ib].atom.getAtomNumber(), } }));
         break;
       case CALC_ANGLE:
         appendLogData(TextFormat.sprintf("%3d %3d %3d  %-5s %-5s %-5s  %12.6f",
             new Object[] {
-                atoms[ia].atom.getAtomName(),
-                atoms[ib].atom.getAtomName(),
-                atoms[ic].atom.getAtomName(),
+                minAtoms[ia].atom.getAtomName(),
+                minAtoms[ib].atom.getAtomName(),
+                minAtoms[ic].atom.getAtomName(),
                 new float[] { (float) targetValue },
-                new int[] { atoms[ia].atom.getAtomNumber(),
-                    atoms[ib].atom.getAtomNumber(),
-                    atoms[ic].atom.getAtomNumber(), } }));
+                new int[] { minAtoms[ia].atom.getAtomNumber(),
+                    minAtoms[ib].atom.getAtomNumber(),
+                    minAtoms[ic].atom.getAtomNumber(), } }));
         break;
       case CALC_TORSION:
         appendLogData(TextFormat
             .sprintf(
                 "%3d %3d %3d %3d  %-5s %-5s %-5s %-5s  %3d %8.3f     %8.3f     %8.3f     %8.3f",
                 new Object[] {
-                    atoms[ia].atom.getAtomName(),
-                    atoms[ib].atom.getAtomName(),
-                    atoms[ic].atom.getAtomName(),
-                    atoms[id].atom.getAtomName(),
+                    minAtoms[ia].atom.getAtomName(),
+                    minAtoms[ib].atom.getAtomName(),
+                    minAtoms[ic].atom.getAtomName(),
+                    minAtoms[id].atom.getAtomName(),
                     new float[] { (float) targetValue },
-                    new int[] { atoms[ia].atom.getAtomNumber(),
-                        atoms[ib].atom.getAtomNumber(),
-                        atoms[ic].atom.getAtomNumber(),
-                        atoms[id].atom.getAtomNumber() } }));
+                    new int[] { minAtoms[ia].atom.getAtomNumber(),
+                        minAtoms[ib].atom.getAtomNumber(),
+                        minAtoms[ic].atom.getAtomNumber(),
+                        minAtoms[id].atom.getAtomNumber() } }));
         break;
       }
     }

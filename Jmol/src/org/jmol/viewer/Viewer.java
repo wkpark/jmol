@@ -5781,6 +5781,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private void setStringProperty(String key, int tok, String value) {
     switch (tok) {
+    case Token.forcefield:
+      // 12.3.25
+      global.forceField = value;
+      break;
     case Token.nmrurlformat:
       // 12.3.3
       global.nmrUrlFormat = value;
@@ -10377,7 +10381,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (bsSelected == null || bsSelected.cardinality() == 0)
       bsSelected = getModelUndeletedAtomsBitSet(getVisibleFramesBitSet());
     getMinimizer(true).calculatePartialCharges(modelSet.getBonds(), modelSet.getBondCount(), modelSet.atoms,
-        bsSelected, getSmilesMatcher());
+        bsSelected);
   }
 
   public void cachePut(String key, String data) {

@@ -213,7 +213,7 @@ public class SmilesSearch extends JmolMolecule {
       String smarts = "*1" + s.substring(0, i - 2) + "*1";
       SmilesSearch search = SmilesParser.getMolecule(smarts, true);
       List<Object> vR = (List<Object>) subsearch(search, false, true);
-      if (vRings != null && i < 5) {
+      if (vRings != null && i <= 5) {
         List<BitSet> v = new ArrayList<BitSet>();
         for (int j = vR.size(); --j >= 0; )
           v.add((BitSet) vR.get(j));
@@ -239,9 +239,9 @@ public class SmilesSearch extends JmolMolecule {
                   bsAromatic);
             else
               SmilesAromatic.checkAromaticStrict(jmolAtoms, bsAromatic, v5, vR);
-            vRings[2] = new ArrayList<BitSet>();
-            setAromatic56(v5, bsAromatic5, 5, vRings[2]);
-            setAromatic56(vR, bsAromatic6, 6, vRings[2]);
+            vRings[3] = new ArrayList<BitSet>();
+            setAromatic56(v5, bsAromatic5, 5, vRings[3]);
+            setAromatic56(vR, bsAromatic6, 6, vRings[3]);
             break;
           }
         }

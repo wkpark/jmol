@@ -26,8 +26,10 @@ package org.jmol.minimize.forcefield;
 
 import java.util.BitSet;
 
+import org.jmol.minimize.MinAngle;
 import org.jmol.minimize.MinAtom;
 import org.jmol.minimize.MinBond;
+import org.jmol.minimize.MinTorsion;
 import org.jmol.minimize.Minimizer;
 import org.jmol.minimize.Util;
 import org.jmol.util.Logger;
@@ -48,6 +50,22 @@ abstract public class ForceField {
   final static int EVDW = (1 << 6); //!< vdw term
   final static int EELECTROSTATIC = (1 << 7); //!< electrostatic term
 
+  // indexes into the int[] array for angles and torsions for MMFF94
+  
+  public final static int ABI_IJ = 3; // minBond index for IJ in IJK
+  public final static int ABI_JK = 4; // minBond index for JK in IJK
+  
+  public final static int TBI_AB = 4; // minBond index for AB in ABCD
+  public final static int TBI_BC = 5; // minBond index for BC in ABCD
+  public final static int TBI_CD = 6; // minBond index for CD in ABCD
+
+  // indexes into vRings vector list of rings from SMARTS search in MMFF94
+  
+  public static final int R3 = 0;
+  public static final int R4 = 1;
+  public static final int R5 = 2;
+  public static final int R56 = 3;
+  
   Calculations calc;
   
   private String getUnits() {
@@ -64,20 +82,21 @@ abstract public class ForceField {
 
   MinAtom[] minAtoms;
   MinBond[] minBonds;
+  MinAngle[] minAngles;
+  MinTorsion[] minTorsions;
   BitSet bsFixed;
   
   Minimizer minimizer;
 
-  public ForceField() {}
+  abstract public void clear();
+  abstract public boolean setModel(BitSet bsElements, int elemnoMax);
   
-  abstract public boolean setModel(Minimizer m, BitSet bsElements, int elemnoMax);
-  
-  protected void setModel(Minimizer m) {
-      
-    minimizer = m;
-    this.minAtoms = m.minAtoms;
-    this.minBonds = m.minBonds;
-    this.bsFixed = m.bsMinFixed;
+  protected void setModelFields() {   
+    this.minAtoms = minimizer.minAtoms;
+    this.minBonds = minimizer.minBonds;
+    this.minAngles = minimizer.minAngles;
+    this.minTorsions = minimizer.minTorsions;
+    this.bsFixed = minimizer.bsMinFixed;
     minAtomCount = minAtoms.length;
     minBondCount = minBonds.length;
   }
@@ -187,7 +206,7 @@ abstract public class ForceField {
     if ((terms & EANGLE) != 0)
       e += energyAngle(gradients);
     if ((terms & ESTRBND) != 0)
-      e += energyStrBnd(gradients);
+      e += energyStretchBend(gradients);
     if ((terms & ETORSION) != 0)
      e += energyTorsion(gradients);
     if ((terms & EOOP) != 0)
@@ -261,6 +280,7 @@ abstract public class ForceField {
     energy = energyBond(gradients) +
         energyAngle(gradients)
        + energyTorsion(gradients)
+       + energyStretchBend(gradients)
        + energyOOP(gradients)
        + energyVDW(gradients)
        + energyES(gradients);
@@ -276,8 +296,8 @@ abstract public class ForceField {
    * @param gradients
    * @return energy
    */
-  double energyStrBnd(boolean gradients) {
-    return 0.0f;
+  double energyStretchBend(boolean gradients) {
+    return calc.energyStretchBend(gradients); 
   }
 
   double energyBond(boolean gradients) {
@@ -414,8 +434,8 @@ abstract public class ForceField {
     }
     for (int i = 0; i < minBondCount; i++) {
       MinBond bond = minBonds[i];
-      if (Util.distance2(minAtoms[bond.atomIndex1].coord,
-          minAtoms[bond.atomIndex2].coord) > 900.0)
+      if (Util.distance2(minAtoms[bond.data[0]].coord,
+          minAtoms[bond.data[1]].coord) > 900.0)
         return true;
     }
     return false;
@@ -445,5 +465,4 @@ abstract public class ForceField {
     return Math.abs(dE/criterion);
   }
 
-  abstract public void clear();
 }

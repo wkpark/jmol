@@ -36,21 +36,34 @@ import org.jmol.minimize.Util;
 import org.jmol.util.TextFormat;
 
 /*
- * Java implementation by Bob Hanson 3/2008
- * based on OpenBabel code in C++ by Tim Vandermeersch 
- * and Geoffrey Hutchison, with permission.
+ * Java implementation by Bob Hanson 5/2012
+ * based on chemKit code by Kyle Lutz.
  *    
- * Original comments:
+ * Original work, as listed at http://towhee.sourceforge.net/forcefields/mmff94.html:
  * 
- * http://towhee.sourceforge.net/forcefields/uff.html
- * http://rdkit.org/
- * http://franklin.chm.colostate.edu/mmac/uff.html
- *(for the last, use the Wayback Machine: http://www.archive.org/
- * As well, the main UFF paper:
- * Rappe, A. K., et. al.; J. Am. Chem. Soc. (1992) 114(25) p. 10024-10035.
+ *    T. A. Halgren; "Merck Molecular Force Field. I. Basis, Form, Scope, 
+ *      Parameterization, and Performance of MMFF94", J. Comp. Chem. 5 & 6 490-519 (1996).
+ *    T. A. Halgren; "Merck Molecular Force Field. II. MMFF94 van der Waals 
+ *      and Electrostatic Parameters for Intermolecular Interactions", 
+ *      J. Comp. Chem. 5 & 6 520-552 (1996).
+ *    T. A. Halgren; "Merck Molecular Force Field. III. Molecular Geometries and 
+ *      Vibrational Frequencies for MMFF94", J. Comp. Chem. 5 & 6 553-586 (1996).
+ *    T. A. Halgren; R. B. Nachbar; "Merck Molecular Force Field. IV. 
+ *      Conformational Energies and Geometries for MMFF94", J. Comp. Chem. 5 & 6 587-615 (1996).
+ *    T. A. Halgren; "Merck Molecular Force Field. V. Extension of MMFF94 
+ *      Using Experimental Data, Additional Computational Data, 
+ *      and Empirical Rules", J. Comp. Chem. 5 & 6 616-641 (1996).
+ *    T. A. Halgren; "MMFF VII. Characterization of MMFF94, MMFF94s, 
+ *      and Other Widely Available Force Fields for Conformational Energies 
+ *      and for Intermolecular-Interaction Energies and Geometries", 
+ *      J. Comp. Chem. 7 730-748 (1999).
+ * 
  */
 
-class CalculationsUFF extends Calculations {
+
+// just a preliminary copy of UFF at this point
+
+class CalculationsMMFF extends Calculations {
 
   private Map<Object, FFParam> ffParams;
   protected FFParam parA, parB, parC;  
@@ -73,15 +86,17 @@ class CalculationsUFF extends Calculations {
   OOPCalc oopCalc;
   VDWCalc vdwCalc;
   ESCalc esCalc;
-    
-  CalculationsUFF(ForceField ff, Map<Object, FFParam> ffParams, 
+  SBCalc sbCalc;
+  
+  CalculationsMMFF(ForceField ff, Map<Object, FFParam> ffParams, 
       MinAtom[] minAtoms, MinBond[] minBonds, 
-      MinAngle[] minAngles, MinTorsion[] minTorsions, 
-      double[] partialCharges, List<Object[]> constraints) {
+      MinAngle[] minAngles, MinTorsion[] minTorsions, double[] partialCharges,
+      List<Object[]> constraints) {
     super(ff, minAtoms, minBonds, minAngles, minTorsions, partialCharges, constraints);    
     this.ffParams = ffParams;
     bondCalc = new DistanceCalc();
     angleCalc = new AngleCalc();
+    sbCalc = new SBCalc();
     torsionCalc = new TorsionCalc();
     oopCalc = new OOPCalc();
     vdwCalc = new VDWCalc();
@@ -100,20 +115,18 @@ class CalculationsUFF extends Calculations {
 
     DistanceCalc distanceCalc = new DistanceCalc();
     calc = calculations[CALC_DISTANCE] = new ArrayList<Object[]>();
-    for (int i = 0; i < bondCount; i++) {
-      MinBond bond = minBonds[i];
-      double bondOrder = bond.order;
-      if (bond.isAromatic)
-        bondOrder = 1.5;
-      if (bond.isAmide)
-        bondOrder = 1.41;  
-      distanceCalc.setData(calc, bond.data[0], bond.data[1], bondOrder);
-    }
+    for (int i = 0; i < bondCount; i++)
+      distanceCalc.setData(calc, minBonds[i]);
 
     calc = calculations[CALC_ANGLE] = new ArrayList<Object[]>();
     AngleCalc angleCalc = new AngleCalc();
     for (int i = minAngles.length; --i >= 0;)
       angleCalc.setData(calc, minAngles[i].data);
+
+    calc = calculations[CALC_STRETCH_BEND] = new ArrayList<Object[]>();
+    SBCalc sbCalc = new SBCalc();
+    for (int i = minAngles.length; --i >= 0;)
+      sbCalc.setData(calc, minAngles[i].data);
 
     calc = calculations[CALC_TORSION] = new ArrayList<Object[]>();
     TorsionCalc torsionCalc = new TorsionCalc();
@@ -130,15 +143,9 @@ class CalculationsUFF extends Calculations {
         oopCalc.setData(calc, i, elemNo);
     }
 
-    // Note that while the UFF paper mentions an electrostatic term,
-    // it does not actually use it. Both Towhee and the UFF FAQ
-    // discourage the use of electrostatics with UFF.
+    pairSearch(calculations[CALC_VDW] = new ArrayList<Object[]>(), new VDWCalc(),
+        calculations[CALC_ES] = new ArrayList<Object[]>(), new ESCalc());
 
-    if (partialCharges == null)
-      pairSearch(calculations[CALC_VDW] = new ArrayList<Object[]>(), new VDWCalc(), null, null);
-    else
-      pairSearch(calculations[CALC_VDW] = new ArrayList<Object[]>(), new VDWCalc(),
-          calculations[CALC_ES] = new ArrayList<Object[]>(), new ESCalc());
     return true;
   }
 
@@ -180,6 +187,8 @@ class CalculationsUFF extends Calculations {
       return bondCalc.compute(dataIn);
     case CALC_ANGLE:
       return angleCalc.compute(dataIn);
+    case CALC_STRETCH_BEND:
+      return sbCalc.compute(dataIn);
     case CALC_TORSION:
       return torsionCalc.compute(dataIn);
     case CALC_OOP:
@@ -200,7 +209,11 @@ class CalculationsUFF extends Calculations {
 
     double r0, kb;
 
-    void setData(List<Object[]> calc, int ia, int ib, double bondOrder) {
+    void setData(List<Object[]> calc, MinBond bond) {
+      ia = bond.data[0];
+      ib = bond.data[1];
+      
+      int bondOrder = bond.order;
       parA = getParameter(minAtoms[ia].sType);
       parB = getParameter(minAtoms[ib].sType);
       r0 = calculateR0(parA.dVal[PAR_R], parB.dVal[PAR_R], parA.dVal[PAR_XI],
@@ -385,6 +398,18 @@ class CalculationsUFF extends Calculations {
       if (logging)
         appendLogData(getDebugLine(CALC_ANGLE, this));
       
+      return energy;
+    }
+  }
+
+  class SBCalc extends Calculation {
+    
+    // TODO 
+    void setData(List<Object[]> calc, int[] angle) {
+    }
+
+    @Override
+    double compute(Object[] dataIn) {
       return energy;
     }
   }

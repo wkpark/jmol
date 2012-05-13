@@ -127,6 +127,7 @@ abstract class Calculations {
   }
 
   void appendLogData(String s) {
+    System.out.println("LOG " + s);
     logData.append(s).append("\n");
   }
 

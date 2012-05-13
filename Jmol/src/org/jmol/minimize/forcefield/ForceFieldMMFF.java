@@ -50,9 +50,12 @@ import org.jmol.util.Logger;
 
 public class ForceFieldMMFF extends ForceField {
 
-  private static final int A4_SB_CHRG = 1;
+  private static final int A4_SB = 1;
   private static final int A4_SBDEF = 2;
-  private static final int A4_VDW = 1;
+  private static final int A4_VDW = 3;
+  private static final int A4_CHRG = 4;
+  private static final int KEY_VDW = 0;
+  private static final int KEY_OOP = 6;
 
   private static List<AtomType> atomTypes;
   private static Map<Integer, Object> ffParams;
@@ -99,7 +102,13 @@ public class ForceFieldMMFF extends ForceField {
     setArrays(m.atoms, m.bsAtoms, m.bonds, m.rawBondCount);  
     setModelFields();
     fixTypes();
-    return false;
+    double[] partialCharges = new double[minAtoms.length];
+    for (int i = m.bsAtoms.nextSetBit(0), pt = 0; i >= 0; i = m.bsAtoms.nextSetBit(i + 1))
+      partialCharges[pt++] = rawMMFF94Charges[i];
+    calc = new CalculationsMMFF(this, ffParams, minAtoms, minBonds, 
+        minAngles, minTorsions, partialCharges, minimizer.constraints);
+    calc.setLoggingEnabled(true);
+    return calc.setupCalculations();
   }
 
   public void setArrays(Atom[] atoms, BitSet bsAtoms, Bond[] bonds, int rawBondCount) {
@@ -161,23 +170,27 @@ public class ForceFieldMMFF extends ForceField {
         int type = line.charAt(0) - '0';
         switch (dataType) {
         case 44: // oop (tor max type is 5)
-          type = 6;
+          type = KEY_OOP;
           break;
         case 333: // default stretch bend (by row; identified by a4 = 2, not 127)
           a4 = A4_SBDEF;
           type = 0;
           break;
         case 33: // stretch bend identified by a4 = 1, not 127
-        case 22: // chrg (bci, identified by a4 = 1, not 127)
-          a4 = A4_SB_CHRG;
+          a4 = A4_SB;
           if (type == 4)
             continue; // I have no idea what type=4 here would mean. It's supposed to be a bond type
           break;
-        case 11:  // vdw identified by a4 = 1, not 127
+        case 22: // chrg (bci, identified by a4 = 4, not 127)
+          a4 = A4_CHRG;
+          if (type == 4)
+            continue; // I have no idea what type=3 here would mean. It's supposed to be a bond type
+          break;
+        case 11:  // vdw identified by a4 = 3, not 127
           if (line.charAt(5) != ' ')
-            continue;
+            continue; // header stuff
           a4 = A4_VDW;
-          type = 0;
+          type = KEY_VDW;
           break;
         case 4:  // tor
         case 3:  // angle
@@ -240,7 +253,7 @@ public class ForceFieldMMFF extends ForceField {
               };
           break;
         case 44: // oop: koop  
-          value = Float.valueOf(line.substring(24,30).trim());
+          value = Double.valueOf(line.substring(24,30).trim());
           break;
         }        
         Integer key = MinObject.getKey(type, a1, a2, a3, a4);
@@ -318,9 +331,9 @@ public class ForceFieldMMFF extends ForceField {
       partialCharges[i] = atomTypes.get(Math.max(0, aTypes[i])).formalCharge;
 
     // run through all bonds, adjusting formal charges as necessary
-
+    Atom a1 = null;
     for (int i = bTypes.length; --i >= 0;) {
-      Atom a1 = bonds[i].getAtom1();
+      a1 = bonds[i].getAtom1();
       Atom a2 = bonds[i].getAtom2();
       // It's possible that some of our atoms are not in the atom set,
       // but we don't want both of them to be out of the set.
@@ -351,7 +364,7 @@ public class ForceFieldMMFF extends ForceField {
       try {
         int bondType = bTypes[i];
         float bFactor = (type1 < type2 ? -1 : 1);
-        Integer key = MinObject.getKey(bondType, bFactor == 1 ? type2 : type1, bFactor == 1 ? type1 : type2, 127, A4_SB_CHRG);
+        Integer key = MinObject.getKey(bondType, bFactor == 1 ? type2 : type1, bFactor == 1 ? type1 : type2, 127, A4_CHRG);
         Float bciValue = (Float) ffParams.get(key);
         float bci;
         String msg = (Logger.debugging ? a1 + "/" + a2 + " mmTypes=" + type1 + "/" + type2 + " formalCharges=" + at1.formalCharge + "/" + at2.formalCharge + " bci = " : null);
@@ -395,10 +408,15 @@ public class ForceFieldMMFF extends ForceField {
     
     // just rounding to 0.001 here:
     
-    for (int i = partialCharges.length; --i >= 0;)
+    float abscharge = 0;
+    for (int i = partialCharges.length; --i >= 0;) {
       partialCharges[i] = ((int) (partialCharges[i] * 1000)) / 1000f;
-    
-    // that's all thre is to it!
+      abscharge += Math.abs(partialCharges[i]);
+    }
+    if (abscharge == 0 && a1 != null) {
+      partialCharges[a1.index]= -0.0f;
+    }
+    // that's all there is to it!
     
     return partialCharges;
   }
@@ -601,7 +619,7 @@ public class ForceFieldMMFF extends ForceField {
       int typeA = minAtoms[angle.data[0]].ffType;
       int typeB = minAtoms[angle.data[1]].ffType;
       int typeC = minAtoms[angle.data[2]].ffType;
-      angle.sbKey = MinObject.getKey(angle.sbType, typeA, typeB, typeC, A4_SB_CHRG);
+      angle.sbKey = MinObject.getKey(angle.sbType, typeA, typeB, typeC, A4_SB);
       if (getFFParams(angle.sbKey) == null) {
         int r1 = getRowFor(angle.data[0]);
         int r2 = getRowFor(angle.data[1]);
@@ -762,6 +780,62 @@ public class ForceFieldMMFF extends ForceField {
     int t = a[i];
     a[i] = a[j];
     a[j] = t;
+  }
+
+  double getOutOfPlaneParameter(int[] data) {
+    // defined for typeB = 2, 3, 8, 10, 17, 26, 30, 37, 39, 40, 41, 43, 
+    // 45, 49, 54, 55, 56, 57, 58, 63, 64, 67, 69, 73, 78, 80, 81, 82
+    // but is 0 for 8 (amines), 17 (sulfoxides), 
+    // 26 (PD3), 43 (N-S), 73 (O-S(=O)R, 82 (N-oxide) 
+    // that is, just the planar ones:
+    // 2, 3, 10, 30, 37, 39, 40, 41, 
+    // 45, 49, 54, 55, 56, 57, 58, 63, 
+    // 64, 67, 69, 78, 80, 81
+    int typeB = minAtoms[data[1]].ffType;
+    switch (typeB) {
+    default:
+      return 0;
+    case 2:
+    case 3:
+    case 10:
+    case 30:
+    case 37:
+    case 39:
+    case 40:
+    case 41:
+    case 45:
+    case 49:
+    case 54:
+    case 55:
+    case 56:
+    case 57:
+    case 58:
+    case 63:
+    case 64:
+    case 67:
+    case 69:
+    case 78:
+    case 80:
+    case 81:
+      break;
+    }
+    fixOrder(data, 0, 2);
+    fixOrder(data, 2, 3);
+    int typeA = minAtoms[data[0]].ffType;
+    int typeC = minAtoms[data[2]].ffType;
+    int typeD = minAtoms[data[3]].ffType;
+    Object params = getFFParams(MinObject.getKey(KEY_OOP, 
+        typeA, typeB, typeC, typeD)); 
+    if (params == null)
+      for (int i = 0; i < 3; i++)
+        if ((params = getFFParams(
+            MinObject.getKey(KEY_OOP, 
+            getEquivalentType(typeA, i), 
+            typeB, 
+            getEquivalentType(typeC, i), 
+            getEquivalentType(typeD, i)))) != null)
+          break;
+    return ((Double) params).doubleValue();
   }
 
   /*

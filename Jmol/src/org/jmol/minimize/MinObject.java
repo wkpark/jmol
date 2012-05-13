@@ -1,6 +1,6 @@
 package org.jmol.minimize;
 
-public class MinObject {
+public abstract class MinObject {
   public int[] data;
   public int type;
   public Integer key;

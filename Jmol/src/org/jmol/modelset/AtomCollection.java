@@ -64,6 +64,8 @@ import org.jmol.viewer.Viewer;
 
 abstract public class AtomCollection {
   
+  private static final Float MINUSZERO = Float.valueOf(-0.0f);
+
   protected void releaseModelSet() {
     atoms = null;
     viewer = null;
@@ -735,7 +737,7 @@ abstract public class AtomCollection {
     if (Float.isNaN(partialCharge))
       return false;
     if (partialCharges == null) {
-      if (partialCharge == 0)
+      if (partialCharge == 0 && !Float.valueOf(partialCharge).equals(MINUSZERO))
         return false; // no need to store a 0.
       partialCharges = new float[atoms.length];
     }

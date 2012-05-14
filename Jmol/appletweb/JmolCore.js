@@ -2,7 +2,7 @@
 
 // see JmolApi.js for public user-interface. All these are private functions
 
-// last revision: 4/24/2012
+// 5/14/2012 5:28:03 PM BH: added AJAX queue for ChemDoodle option with multiple canvases 
 
 // allows Jmol applets to be created on a page with more flexibility and extendability
 // possibly using infrastructure of ChemDoodle for multiplatform doodlable structures
@@ -54,6 +54,7 @@ Jmol = (function(document) {
 		_XhtmlElement: null,
 		_XhtmlAppendChild: false,
 		_applets: {},
+		_ajaxQueue: [],
 		db: {
 			_databasePrefixes: "$=:",
 			_fileLoadScript: ";if (_loadScript = '' && defaultLoadScript == '' && _filetype == 'Pdb') { select protein or nucleic;cartoons Only;color structure; select * };",
@@ -82,6 +83,16 @@ Jmol = (function(document) {
 
 	// Jmol core functionality
 
+	Jmol._ajax = function(info) {
+xxx=info
+		Jmol._ajaxQueue.push(info)
+		if (Jmol._ajaxQueue.length == 1)
+			Jmol._ajaxDone()
+	}
+	Jmol._ajaxDone = function() {
+		var info = Jmol._ajaxQueue.shift();
+		info && jQuery.ajax(info);
+	}
 	Jmol._getGrabberOptions = function(applet, note) {
 	
 		// feel free to adjust this look to anything you want
@@ -144,12 +155,12 @@ Jmol = (function(document) {
 	}
 	
 	Jmol._loadSuccess = function(a, fSuccess) {
-		Jmol._ajaxActive=!1;
+		Jmol._ajaxDone();
 		fSuccess(a);
 	}
 
 	Jmol._loadError = function(fError){
-		Jmol._ajaxActive=!1;
+		Jmol._ajaxDone();
 		Jmol.say("Error connecting to server.");	
 		null!=fError&&fError()
 	}
@@ -198,8 +209,6 @@ Jmol = (function(document) {
 	
 	Jmol._getInfoFromDatabase = function(applet, database, query){
 		if (database == "====") {
-			if (Jmol._checkActive())
-				return;
 			var data = Jmol.db._restQueryXml.replace(/QUERY/,query);
 			var info = {
 				dataType: "text",
@@ -207,11 +216,11 @@ Jmol = (function(document) {
 				contentType:"application/x-www-form-urlencoded",
 				url: Jmol.db._restQueryUrl,
 				data: encodeURIComponent(data) + "&req=browser",
-				success: function(data) {Jmol._ajaxActive=!1;Jmol._extractInfoFromRCSB(applet, database, query, data)},
+				success: function(data) {Jmol._ajaxDone();Jmol._extractInfoFromRCSB(applet, database, query, data)},
 				error: function() {Jmol._loadError(null)},
 				async: Jmol._asynchronous
 			}
-			jQuery.ajax(info);
+			Jmol._ajax(info);
 			return;
 		}		
 		Jmol._contactServer(
@@ -238,15 +247,6 @@ Jmol = (function(document) {
 		}
 	}
 
-	Jmol._checkActive = function() {
-		if (Jmol._ajaxActive) {
-			Jmol.say("Already connecting to the server - please wait for the first request to finish.");
-			return true;
-		}		
-		Jmol._ajaxActive=!0;
-		return false;
-	}
-	
 	Jmol._loadFileData = function(applet, fileName, fSuccess, fError){
 		if (Jmol._isDatabaseCall(fileName)) {
 			Jmol._setQueryTerm(applet, fileName);
@@ -258,38 +258,35 @@ Jmol = (function(document) {
 				return;
 			}
 		}	
-		if (Jmol._checkActive())
-      return;
-    info = {
+		var info = {
 			dataType: "text",
 			url: fileName,
 			success: function(a) {Jmol._loadSuccess(a, fSuccess)},
 			error: function() {Jmol._loadError(fError)},
 			async: Jmol._asynchronous
 		}
-    var pt = fileName.indexOf("?POST?");
+		var pt = fileName.indexOf("?POST?");
 		if (pt > 0) {
-      info.url = fileName.substring(0, pt);
-      info.data = fileName.substring(pt + 6);
-      info.type = "POST";
+			info.url = fileName.substring(0, pt);
+			info.data = fileName.substring(pt + 6);
+			info.type = "POST";
 			info.contentType = "application/x-www-form-urlencoded";
-    }
-		jQuery.ajax(info);
+		}
+		Jmol._ajax(info);
 	}
 	
 	Jmol._contactServer = function(data,fSuccess,fError){
-		if (!Jmol._checkActive())
-			jQuery.ajax({
-				dataType: "text",
-				type: "GET",
-//				data: data,
-				url: Jmol._serverUrl + data,
-				success: function(a) {Jmol._loadSuccess(a, fSuccess)},
-				error:function() { Jmol._loadError(fError) },
-				async:Jmol._asynchronous
-			});
+		var info = {
+			dataType: "text",
+			type: "GET",
+//			data: data,
+			url: Jmol._serverUrl + data,
+			success: function(a) {Jmol._loadSuccess(a, fSuccess)},
+			error:function() { Jmol._loadError(fError) },
+			async:Jmol._asynchronous
+		}
+		Jmol._ajax(info);
 	}
-
 	Jmol._setQueryTerm = function(applet, query) {
 		if (!query || !applet._hasOptions)
 			return;

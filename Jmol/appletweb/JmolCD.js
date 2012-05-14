@@ -11,6 +11,8 @@
 //
 // prior to JmolCD.js
 
+// 5/14/2012 5:28:03 PM added script/default model loading for JmolCD version
+
 if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 
 (function (Jmol) {
@@ -64,18 +66,25 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 			this._infoHeader = this._jmolType + ' "' + this._id + '"'
 			this._hasOptions = Info.addSelectionOptions;
 			this._defaultModel = Info.defaultModel;
+			this._readyScript = (Info.script ? Info.script : "");
 			var t = Jmol._getWrapper(this, true);
 			if (Jmol._document) {
 				Jmol._documentWrite(t);
 				this.create(id, Info.width, Info.height);
 				this._setDefaults();
+				if (this.defaultModel)
+					this._search(this._defaultModel);
+				if (this._readyScript)
+					this._script(this._readyScript);
 				t = "";
 			} else {
 				t += '<script type="text/javascript">' 
 					+ id + '.create("'+id+'",'+Info.width+','+Info.height+');' 
 					+ id + '._setDefaults();'
 				if (Info.defaultModel)
-					t += id + "._search(" + id + "._defaultModel)";
+					t += id + "._search(" + id + "._defaultModel);";
+				if (this._readyScript)
+					t += id + '._script(' + id + '._readyScript);'
 				t += '</script>';
 			}
 			t += Jmol._getWrapper(this, false);

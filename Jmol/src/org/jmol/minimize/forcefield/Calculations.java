@@ -57,6 +57,8 @@ abstract class Calculations {
 
   int atomCount;
   int bondCount;
+  int angleCount;
+  int torsionCount;
   MinAtom[] minAtoms;
   MinBond[] minBonds;
   MinAngle[] minAngles;
@@ -80,9 +82,11 @@ abstract class Calculations {
     this.minBonds = minBonds;
     this.minAngles = minAngles;
     this.minTorsions = minTorsions;
-    this.constraints = constraints;
     atomCount = minAtoms.length;
     bondCount = minBonds.length;
+    angleCount = minAngles.length;
+    torsionCount = minTorsions.length;
+    this.constraints = constraints;
     if (partialCharges != null && partialCharges.length == atomCount)
       for (int i = atomCount; --i >= 0;)
         if (partialCharges[i] != 0) {
@@ -95,12 +99,6 @@ abstract class Calculations {
   }
 
   abstract boolean setupCalculations();
-
-  abstract String getAtomList(String title);
-
-  abstract String getDebugHeader(int iType);
-
-  abstract String getDebugFooter(int iType, double energy);
 
   abstract String getUnit();
 
@@ -127,7 +125,6 @@ abstract class Calculations {
   }
 
   void appendLogData(String s) {
-    System.out.println("LOG " + s);
     logData.append(s).append("\n");
   }
 
@@ -402,6 +399,248 @@ abstract class Calculations {
       }
     }
     appendLogData("---------------------\n");
+  }
+
+  String getAtomList(String title) {
+    String trailer =
+          "----------------------------------------"
+          + "-------------------------------------------------------\n";  
+    StringBuffer sb = new StringBuffer();
+    sb.append("\n" + title + "\n\n"
+        + " ATOM    X        Y        Z    TYPE     GRADX    GRADY    GRADZ  "
+        + "---------BONDED ATOMS--------\n"
+        + trailer);
+    for (int i = 0; i < atomCount; i++) {
+      MinAtom atom = minAtoms[i];
+      int[] others = atom.getBondedAtomIndexes();
+      int[] iVal = new int[others.length + 1];
+      iVal[0] = atom.atom.getAtomNumber();
+      String s = "   ";
+      for (int j = 0; j < others.length; j++) {
+        s += " %3d";
+        iVal[j + 1] = minAtoms[others[j]].atom.getAtomNumber();
+      }
+      sb.append(TextFormat.sprintf("%3d %8.3f %8.3f %8.3f  %-5s %8.3f %8.3f %8.3f" + s + "\n", 
+          new Object[] { atom.sType,
+          new float[] { (float) atom.coord[0], (float) atom.coord[1],
+            (float) atom.coord[2], (float) atom.force[0], (float) atom.force[1],
+            (float) atom.force[2] }, iVal}));
+    }
+    sb.append(trailer + "\n\n");
+    return sb.toString();
+  }
+
+  String getDebugHeader(int iType) {
+    switch (iType){
+    case -1:
+      //Override to give reference
+      break;
+    case CALC_DISTANCE:
+      return
+           "\nB O N D   S T R E T C H I N G (" + bondCount + " bonds)\n\n"
+          +"  ATOMS  ATOM TYPES   BOND    BOND       IDEAL      FORCE\n"
+          +"  I   J   I     J     TYPE   LENGTH     LENGTH    CONSTANT      DELTA     ENERGY\n"
+          +"--------------------------------------------------------------------------------";
+    case CALC_ANGLE:
+      return 
+           "\nA N G L E   B E N D I N G (" + minAngles.length + " angles)\n\n"
+          +"    ATOMS      ATOM TYPES        VALENCE    IDEAL        FORCE\n"
+          +"  I   J   K   I     J     K       ANGLE     ANGLE      CONSTANT     ENERGY\n"
+          +"--------------------------------------------------------------------------";
+    case CALC_TORSION:
+      return 
+           "\nT O R S I O N A L (" + minTorsions.length + " torsions)\n\n"
+          +"      ATOMS           ATOM TYPES            n    COS          FORCE      TORSION\n"
+          +"  I   J   K   L   I     J     K     L          (n phi0)      CONSTANT     ANGLE        ENERGY\n"
+          +"---------------------------------------------------------------------------------------------";
+    case CALC_OOP:
+      return 
+           "\nO U T - O F - P L A N E   B E N D I N G\n\n"
+          +"      ATOMS           ATOM TYPES             OOP        FORCE \n"
+          +"  I   J   K   L   I     J     K     L       ANGLE     CONSTANT      ENERGY\n"
+          +"--------------------------------------------------------------------------";
+    case CALC_VDW:
+      return 
+           "\nV A N   D E R   W A A L S\n\n"
+          +"  ATOMS  ATOM TYPES\n"
+          +"  I   J   I     J      Rij       kij     ENERGY\n"
+          +"-----------------------------------------------";
+    case CALC_ES:
+      return 
+          "\nE L E C T R O S T A T I C   I N T E R A C T I O N S\n\n"
+          +"  ATOMS  ATOM TYPES            QiQj\n"
+          +"  I   J   I     J      Rij    *332.17    ENERGY\n"
+          +"-----------------------------------------------";
+    }
+    return "";
+  }
+
+  String getDebugLine(int iType, Calculation c) {
+    switch (iType) {
+    case CALC_DISTANCE:
+      return TextFormat.sprintf(
+          "%3d %3d  %-5s %-5s  %4.2f%8.3f   %8.3f     %8.3f   %8.3f   %8.3f",
+          new Object[] { minAtoms[c.ia].sType, minAtoms[c.ib].sType, 
+          new float[] { 0, (float)c.rab, 
+              (float)c.dData[1], (float)c.dData[0], 
+              (float)c.delta, (float)c.energy },
+          new int[] { minAtoms[c.ia].atom.getAtomNumber(), minAtoms[c.ib].atom.getAtomNumber() }});
+    case CALC_ANGLE:
+      return TextFormat.sprintf(
+          "%3d %3d %3d  %-5s %-5s %-5s  %8.3f  %8.3f     %8.3f   %8.3f", 
+          new Object[] { minAtoms[c.ia].sType, minAtoms[c.ib].sType, 
+              minAtoms[c.ic].sType,
+          new float[] { (float)(c.theta * RAD_TO_DEG), (float) c.dData[1] /*THETA0*/, 
+              (float)c.dData[0]/*Kijk*/, (float) c.energy },
+          new int[] { minAtoms[c.ia].atom.getAtomNumber(), minAtoms[c.ib].atom.getAtomNumber(),
+              minAtoms[c.ic].atom.getAtomNumber()} });
+      case CALC_TORSION:
+        return TextFormat.sprintf(
+           "%3d %3d %3d %3d  %-5s %-5s %-5s %-5s  %3d %8.3f     %8.3f     %8.3f     %8.3f", 
+           new Object[] { minAtoms[c.ia].sType, minAtoms[c.ib].sType, 
+               minAtoms[c.ic].sType, minAtoms[c.id].sType, 
+           new float[] { (float) c.dData[1]/*cosNphi0*/, (float) c.dData[0]/*V*/, 
+               (float) (c.theta * RAD_TO_DEG), (float) c.energy },
+           new int[] { minAtoms[c.ia].atom.getAtomNumber(), minAtoms[c.ib].atom.getAtomNumber(),
+               minAtoms[c.ic].atom.getAtomNumber(), minAtoms[c.id].atom.getAtomNumber(), c.iData[4] } });
+    case CALC_OOP:
+      return TextFormat.sprintf("" +
+          "%3d %3d %3d %3d  %-5s %-5s %-5s %-5s  %8.3f   %8.3f     %8.3f",
+          new Object[] { minAtoms[c.ia].sType, minAtoms[c.ib].sType, 
+              minAtoms[c.ic].sType, minAtoms[c.id].sType,
+          new float[] { (float)(c.theta * RAD_TO_DEG), 
+              (float)c.dData[0]/*koop*/, (float) c.energy },
+          new int[] { minAtoms[c.ia].atom.getAtomNumber(), minAtoms[c.ib].atom.getAtomNumber(),
+              minAtoms[c.ic].atom.getAtomNumber(), minAtoms[c.id].atom.getAtomNumber() } });
+    case CALC_VDW:
+      return TextFormat.sprintf("%3d %3d  %-5s %-5s %6.3f  %8.3f  %8.3f", 
+          new Object[] { minAtoms[c.iData[0]].sType, minAtoms[c.iData[1]].sType,
+          new float[] { (float)c.rab, (float)c.dData[0]/*kab*/, (float)c.energy},
+          new int[] { minAtoms[c.ia].atom.getAtomNumber(), minAtoms[c.ib].atom.getAtomNumber() } });
+    case CALC_ES:
+      return TextFormat.sprintf("%3d %3d  %-5s %-5s %6.3f  %8.3f  %8.3f", 
+          new Object[] { minAtoms[c.iData[0]].sType, minAtoms[c.iData[1]].sType,
+          new float[] { (float)c.rab, (float)c.dData[0]/*qq*/, (float)c.energy },
+          new int[] { minAtoms[c.ia].atom.getAtomNumber(), minAtoms[c.ib].atom.getAtomNumber() } });
+    }
+    return "";
+  }
+
+  String getDebugFooter(int iType, double energy) {
+    String s = "";
+    switch (iType){
+    case CALC_DISTANCE:
+      s = "BOND STRETCHING";
+      break;
+    case CALC_ANGLE:
+      s = "ANGLE BENDING";
+      break;
+    case CALC_TORSION:
+      s = "TORSIONAL";
+      break;
+    case CALC_OOP:
+      s = "OUT-OF-PLANE BENDING";
+      break;
+    case CALC_VDW:
+      s = "VAN DER WAALS";
+      break;
+    case CALC_ES:
+      s = "ELECTROSTATIC ENERGY";
+      break;
+    }
+    return TextFormat.sprintf("\n     TOTAL %s ENERGY = %8.3f %s\n", 
+        new Object[] { s, getUnit(), Float.valueOf((float) energy) });
+  }
+
+  ////////////////////////////////////////////////////
+  
+  void setBondVariables(Calculation c) {
+    if (gradients) {
+      setCoords(c, 2);
+      c.rab = Util.restorativeForceAndDistance(da, db, dc);
+    } else {
+      c.rab = Math.sqrt(Util.distance2(minAtoms[c.ia].coord, minAtoms[c.ib].coord));
+    }
+  }
+
+  void setAngleVariables(Calculation c) {
+    if (gradients) {
+      setCoords(c, 3);
+      c.theta = Util.restorativeForceAndAngleRadians(da, db, dc);
+    } else {
+      c.theta = Util.getAngleRadiansABC(minAtoms[c.ia].coord, minAtoms[c.ib].coord, minAtoms[c.ic].coord);
+    }
+    if (!Util.isFinite(c.theta))
+      c.theta = 0.0;
+  }
+
+  void setOopVariables(Calculation c) {
+    setCoords(c, 4);
+    if (gradients) {
+      c.theta = Util.restorativeForceAndOutOfPlaneAngleRadians(da, db, dc, dd, v1, v2, v3);
+    } else {
+      //if (atoms[ib].atom.getAtomIndex() == 20)
+        //System.out.println(" atom palne angl " + atoms[ib].atom.getInfo());
+        
+      c.theta = Util.pointPlaneAngleRadians(da, db, dc, dd, v1, v2, v3);
+    }
+    if (!Util.isFinite(c.theta))
+      c.theta = 0.0;
+  }
+  
+  void setTorsionVariables(Calculation c) {
+    if (gradients) {
+      setCoords(c, 4);
+      c.theta = Util.restorativeForceAndTorsionAngleRadians(da, db, dc, dd);
+      if (!Util.isFinite(c.theta))
+        c.theta = 0.001 * DEG_TO_RAD;
+    } else {
+      c.theta = Util.getTorsionAngleRadians(minAtoms[c.ia].coord, minAtoms[c.ib].coord, 
+          minAtoms[c.ic].coord, minAtoms[c.id].coord, v1, v2, v3);
+    }
+  }
+  
+  void setPairVariables(Calculation c) {
+    if (gradients) {
+      setCoords(c, 2);
+      c.rab = Util.restorativeForceAndDistance(da, db, dc);
+    } else {
+      c.rab = Math.sqrt(Util.distance2(minAtoms[c.ia].coord, minAtoms[c.ib].coord));
+    }
+    if (Util.isNearZero(c.rab, 1.0e-3))
+      c.rab = 1.0e-3;
+  }
+  
+  private void setCoords(Calculation c, int n) {
+    switch(n) {
+    case 4:
+      da.set(minAtoms[c.ia].coord);
+      // fall through
+    case 3:
+      db.set(minAtoms[c.ib].coord);
+      // fall through
+    case 2:
+      dc.set(minAtoms[c.ic].coord);
+      // fall through
+    case 1:
+      dd.set(minAtoms[c.id].coord);
+    }
+  }
+
+  void addForces(Calculation c, int n) {
+    switch (n) {
+    case 4:
+      addForce(dd, c.id, c.dE);
+      // fall through
+    case 3:
+      addForce(dc, c.ic, c.dE);
+      // fall through
+    case 2:
+      addForce(db, c.ib, c.dE);
+      // fall through
+    case 1:
+      addForce(da, c.ia, c.dE);
+    }
   }
 
 }

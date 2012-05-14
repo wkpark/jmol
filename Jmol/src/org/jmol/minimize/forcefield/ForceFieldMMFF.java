@@ -578,7 +578,8 @@ public class ForceFieldMMFF extends ForceField {
     for (int i = minAtomCount; --i >= 0;) {
       int it = rawAtomTypes[minAtoms[i].atom.index];
       minAtoms[i].ffAtomType = atomTypes.get(Math.max(0, it));
-      minAtoms[i].ffType = (it < 0 ? -it : atomTypes.get(it).mmType);      
+      minAtoms[i].ffType = (it < 0 ? -it : atomTypes.get(it).mmType);
+      minAtoms[i].vdwKey = MinObject.getKey(KEY_VDW, minAtoms[i].ffType, 127, 127, A4_VDW);
     }
     
     // fix order in bonds and set type and key
@@ -783,45 +784,11 @@ public class ForceFieldMMFF extends ForceField {
   }
 
   double getOutOfPlaneParameter(int[] data) {
-    // defined for typeB = 2, 3, 8, 10, 17, 26, 30, 37, 39, 40, 41, 43, 
-    // 45, 49, 54, 55, 56, 57, 58, 63, 64, 67, 69, 73, 78, 80, 81, 82
-    // but is 0 for 8 (amines), 17 (sulfoxides), 
-    // 26 (PD3), 43 (N-S), 73 (O-S(=O)R, 82 (N-oxide) 
-    // that is, just the planar ones:
-    // 2, 3, 10, 30, 37, 39, 40, 41, 
-    // 45, 49, 54, 55, 56, 57, 58, 63, 
-    // 64, 67, 69, 78, 80, 81
-    int typeB = minAtoms[data[1]].ffType;
-    switch (typeB) {
-    default:
-      return 0;
-    case 2:
-    case 3:
-    case 10:
-    case 30:
-    case 37:
-    case 39:
-    case 40:
-    case 41:
-    case 45:
-    case 49:
-    case 54:
-    case 55:
-    case 56:
-    case 57:
-    case 58:
-    case 63:
-    case 64:
-    case 67:
-    case 69:
-    case 78:
-    case 80:
-    case 81:
-      break;
-    }
     fixOrder(data, 0, 2);
+    fixOrder(data, 0, 3);
     fixOrder(data, 2, 3);
     int typeA = minAtoms[data[0]].ffType;
+    int typeB = minAtoms[data[1]].ffType;
     int typeC = minAtoms[data[2]].ffType;
     int typeD = minAtoms[data[3]].ffType;
     Object params = getFFParams(MinObject.getKey(KEY_OOP, 

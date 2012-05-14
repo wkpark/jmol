@@ -116,23 +116,41 @@ public class Util {
     return (canBeSquared(a.x) && canBeSquared(a.y) && canBeSquared(a.z));
   }
 
-  /* Calculate the angle between point a and the plane determined by b,c,d */
+  /**
+   * 
+   * calculates angle of a to plane bcd, returning a value > pi/2 in 
+   * highly distorted trigonal pyramidal situations 
+   * 
+   * @param a
+   * @param b
+   * @param c
+   * @param d
+   * @param v1
+   * @param v2
+   * @param norm
+   * @return  Wilson angle
+   */
   public static double pointPlaneAngleRadians(Vector3d a, Vector3d b,
                                               Vector3d c, Vector3d d,
                                               Vector3d v1,Vector3d v2, 
                                               Vector3d norm) {
+    
     v1.sub(b, c);
     v2.sub(b, d);
-    norm.cross(v1, v2);
+    norm.cross(v1, v2);    
     v2.add(v1);
     v1.sub(b, a);
-    double angleA_CD = vectorAngleRadians(v2, v1);
+    // we need to allow for very distorted cases, where a, c, and d are very close to each other
+    double angleA_CD = vectorAngleRadians(v2, v1); 
+    // normally angleA_CD is > pi/2, because v1 is from a to b
     double angleNorm = vectorAngleRadians(norm, v1);
+    // angleNorm could be > PI/2, so we correct for that here:
     if (angleNorm > Math.PI / 2)
       angleNorm = Math.PI - angleNorm;
-    return Math.PI / 2.0 + (angleA_CD > Math.PI / 2.0 ? -angleNorm : angleNorm) ;
+    // for highly distorted groups, return will be > pi/2
+    return Math.PI / 2.0 + (angleA_CD > Math.PI / 2.0 ? -angleNorm : angleNorm) ;    
   }
-  
+
   private static double vectorAngleRadians(Vector3d v1, Vector3d v2) {
     double l1 = v1.length();
     double l2 = v2.length();

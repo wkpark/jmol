@@ -46,7 +46,18 @@ abstract class Calculation {
   }
 
   void getPointers(Object[] dataIn) {
-    iData = (int[])dataIn[0];
     dData = (double[])dataIn[1];
+    iData = (int[])dataIn[0];
+    switch (iData.length) {
+    default:
+      id = iData[3];
+    case 3:
+      ic = iData[2];
+    case 2:
+      ib = iData[1];
+    case 1:
+      ia = iData[0];
+    case 0:  
+    }
   }
 }

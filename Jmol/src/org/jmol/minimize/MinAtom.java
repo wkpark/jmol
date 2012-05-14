@@ -32,30 +32,31 @@ import org.jmol.modelset.Atom;
 
 public class MinAtom {
 
-  int index;
+  int rawIndex;
   public String sType;
   public Atom atom;
   public AtomType ffAtomType;
   public int ffType;
+  public Integer vdwKey;
   public double[] coord = new double[3];
   public double[] force = new double[3];
   public List<MinBond> bonds = new ArrayList<MinBond>();
   public int nBonds;
   public int hCount;
   public double partialCharge;
-  
+
   int[] bondedAtoms;
-  
+
   @Override
   public String toString() {
-    return (sType == null ? atom.getAtomName() : "#" + index + " " + sType);
+    return "#" + rawIndex + " " + sType;
   }
-  
+
   MinAtom(int index, Atom atom, double[] coord) {
-    this.index = index;
+    this.rawIndex = index;
     this.atom = atom;
     this.coord = coord;
-    hCount = atom.getCovalentHydrogenCount();    
+    hCount = atom.getCovalentHydrogenCount();
   }
 
   void set() {
@@ -76,7 +77,7 @@ public class MinAtom {
     if (bondedAtoms == null) {
       bondedAtoms = new int[nBonds];
       for (int i = nBonds; --i >= 0;)
-        bondedAtoms[i] = bonds.get(i).getOtherAtom(index);
+        bondedAtoms[i] = bonds.get(i).getOtherAtom(rawIndex);
     }
     return bondedAtoms;
   }

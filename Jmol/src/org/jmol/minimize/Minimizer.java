@@ -288,6 +288,7 @@ public class Minimizer implements MinimizerInterface {
       bsElements.set(atomicNo);
       minAtoms[pt] = new MinAtom(pt, atom, new double[] { atom.x, atom.y,
           atom.z });
+      minAtoms[pt].sType = atom.getAtomName();
     }
 
     Logger.info(GT._("{0} atoms will be minimized.", "" + atomCount));
@@ -306,12 +307,24 @@ public class Minimizer implements MinimizerInterface {
     return true;
   }
   
+  private void setAtomPositions() {
+    for (int i = 0; i < atomCount; i++)
+      minAtoms[i].set();
+    bsMinFixed = null;
+    if (bsFixed != null) {
+      bsMinFixed = new BitSet();
+      for (int i = bsAtoms.nextSetBit(0), pt = 0; i >= 0; i = bsAtoms
+          .nextSetBit(i + 1), pt++)
+        if (bsFixed.get(i))
+          bsMinFixed.set(pt);
+    }
+  }
+
   private void getBonds() {
-    // add all bonds
     List<MinBond> bondInfo = new ArrayList<MinBond>();
     bondCount = 0;
     int i1, i2;
-    for (int i = rawBondCount; --i >= 0;) {
+    for (int i = 0; i < rawBondCount; i++) {
       Bond bond = bonds[i];
       if (!bsAtoms.get(i1 = bond.getAtomIndex1())
           || !bsAtoms.get(i2 = bond.getAtomIndex2()))
@@ -349,21 +362,7 @@ public class Minimizer implements MinimizerInterface {
       minAtoms[i].getBondedAtomIndexes();
   }
 
-  private void setAtomPositions() {
-    for (int i = 0; i < atomCount; i++)
-      minAtoms[i].set();
-    bsMinFixed = null;
-    if (bsFixed != null) {
-      bsMinFixed = new BitSet();
-      for (int i = bsAtoms.nextSetBit(0), pt = 0; i >= 0; i = bsAtoms
-          .nextSetBit(i + 1), pt++)
-        if (bsFixed.get(i))
-          bsMinFixed.set(pt);
-    }
-  }
-
   public void getAngles() {
-
     List<MinAngle> vAngles = new ArrayList<MinAngle>();
     int[] atomList;
     int ic;
@@ -406,7 +405,7 @@ public class Minimizer implements MinimizerInterface {
     List<MinTorsion> vTorsions = new ArrayList<MinTorsion>();
     int id;
     // extend all angles a-b-c by one, but only
-    // when when c > b or b > a
+    // when when c > b or a > b
     for (int i = minAngles.length; --i >= 0;) {
       int[] angle = minAngles[i].data;
       int ia = angle[0];
@@ -449,9 +448,6 @@ public class Minimizer implements MinimizerInterface {
     minTorsions = vTorsions.toArray(new MinTorsion[vTorsions.size()]);
     Logger.info(minTorsions.length + " torsions");
   }
-
-  
-  
   
   ///////////////////////////// minimize //////////////////////
 

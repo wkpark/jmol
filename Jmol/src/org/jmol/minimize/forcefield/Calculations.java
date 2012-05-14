@@ -125,6 +125,7 @@ abstract class Calculations {
   }
 
   void appendLogData(String s) {
+    System.out.println("calcultions LOG: " + s);
     logData.append(s).append("\n");
   }
 
@@ -447,6 +448,12 @@ abstract class Calculations {
           +"    ATOMS      ATOM TYPES        VALENCE    IDEAL        FORCE\n"
           +"  I   J   K   I     J     K       ANGLE     ANGLE      CONSTANT     ENERGY\n"
           +"--------------------------------------------------------------------------";
+    case CALC_STRETCH_BEND:
+      return 
+           "\nS T R E T C H   B E N D I N G (" + (minAngles.length * 2) + " angles)\n\n"
+          +"    ATOMS      ATOM TYPES        VALENCE    IDEAL        FORCE\n"
+          +"  I   J   K   I     J     K       ANGLE     ANGLE      CONSTANT     ENERGY\n"
+          +"--------------------------------------------------------------------------";
     case CALC_TORSION:
       return 
            "\nT O R S I O N A L (" + minTorsions.length + " torsions)\n\n"
@@ -486,6 +493,7 @@ abstract class Calculations {
               (float)c.delta, (float)c.energy },
           new int[] { minAtoms[c.ia].atom.getAtomNumber(), minAtoms[c.ib].atom.getAtomNumber() }});
     case CALC_ANGLE:
+    case CALC_STRETCH_BEND:
       return TextFormat.sprintf(
           "%3d %3d %3d  %-5s %-5s %-5s  %8.3f  %8.3f     %8.3f   %8.3f", 
           new Object[] { minAtoms[c.ia].sType, minAtoms[c.ib].sType, 
@@ -611,7 +619,7 @@ abstract class Calculations {
       c.rab = 1.0e-3;
   }
   
-  private void setCoords(Calculation c, int n) {
+  void setCoords(Calculation c, int n) {
     switch(n) {
     case 4:
       da.set(minAtoms[c.ia].coord);

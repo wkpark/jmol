@@ -50,8 +50,8 @@ import org.jmol.util.Logger;
 
 public class ForceFieldMMFF extends ForceField {
 
-  private static final int A4_SB = 1;
-  private static final int A4_SBDEF = 2;
+  private static final int A4_SB = 125;
+  private static final int A4_SBDEF = 126;
   private static final int A4_VDW = 3;
   private static final int A4_CHRG = 4;
   private static final int KEY_VDW = 0;
@@ -71,7 +71,6 @@ public class ForceFieldMMFF extends ForceField {
   public float[] getPartialCharges() {
     return rawMMFF94Charges;
   }
-
 
   /*
    * from SMARTS search when calculating partial charges:
@@ -681,7 +680,7 @@ public class ForceFieldMMFF extends ForceField {
 
   private int getRowFor(int i) {
     int elemno = minAtoms[i].atom.getElementNumber();
-    return (elemno < 3 ? 1 : elemno < 11 ? 2 : elemno < 19 ? 3 : 4);
+    return (elemno < 3 ? 0 : elemno < 11 ? 1 : elemno < 19 ? 2 : elemno < 37 ? 3 : 4);
   }
 
   private static Object getFFParams(Integer key) {

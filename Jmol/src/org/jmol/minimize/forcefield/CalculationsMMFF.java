@@ -294,12 +294,53 @@ class CalculationsMMFF extends Calculations {
 
   class SBCalc extends Calculation {
     
-    // TODO 
     void setData(List<Object[]> calc, MinAngle angle) {
+      // not applicable for linear types
+      switch (minAtoms[angle.data[1]].ffType) {
+      case 4:
+      case 53:
+      case 61:
+        return; 
+      }
+      double[] data = (double[]) getParameter(angle.sbKey);
+      double[] datakat0 = (double[]) getParameter(angle.key);
+      double[] dataij = (double[]) getParameter(minBonds[angle.data[3]].key);
+      double[] datajk = (double[]) getParameter(minBonds[angle.data[4]].key);
+      if (data == null || datakat0 == null || dataij == null || datajk == null)
+        return;
+      double theta0 = datakat0[1];
+      double r0ij = dataij[1];
+      double r0jk = datajk[1];
+      calc.add(new Object[] { angle.data, new double[] { data[0], theta0, r0ij } });
+      calc.add(new Object[] { new int[] {angle.data[2], angle.data[1], angle.data[0]}, 
+          new double[] { data[1], theta0, r0jk } });
     }
 
     @Override
     double compute(Object[] dataIn) {
+      getPointers(dataIn);
+      double k = 2.51210 * dData[0];
+      double t0 = dData[1];
+      double r0_ab = dData[2];
+
+      setBondVariables(this);
+      setAngleVariables(this);
+      double dr_ab = rab - r0_ab;
+      delta = theta * RAD_TO_DEG - t0;
+      // equation 5
+      energy = k * dr_ab * delta;
+
+      if (logging)
+        appendLogData(getDebugLine(CALC_STRETCH_BEND, this));
+      
+      if (gradients) {
+        dE = k * dr_ab;
+        addForces(this, 3);
+        setBondVariables(this);
+        dE = k * delta;
+        addForces(this, 2);        
+      }
+      
       return energy;
     }
   }
@@ -412,18 +453,19 @@ class CalculationsMMFF extends Calculations {
       double[] dataB = (double[]) getParameter(b.vdwKey);
       if (dataA == null || dataB == null)
         return;
+      
       double alpha_a = dataA[0]; 
       double N_a = dataA[1]; 
       double A_a = dataA[2]; 
       double G_a = dataA[3]; 
-      int DA_a = (int) dataA[4]; 
+      int DA_a = (int) dataA[4];
+      
       double alpha_b = dataB[0]; 
       double N_b = dataB[1]; 
       double A_b = dataB[2]; 
       double G_b = dataB[3]; 
       int DA_b = (int) dataB[4]; 
       
-
       double rs_aa = A_a * Math.pow(alpha_a, 0.25);
       double rs_bb = A_b * Math.pow(alpha_b, 0.25);
       double gamma = (rs_aa - rs_bb) / (rs_aa + rs_bb);

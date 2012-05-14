@@ -48,6 +48,16 @@ import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
 
+/**
+ * MMFF94 implementation 5/14/2012
+ * - fully verified for atom types
+ * - not verified for energies
+ * - TODO: Electrostatic charge energy calculation
+ * - TODO: minimization (gradients not checked)
+ * - TODO: add UFF for preliminary calculation
+ * 
+ * @author Bob Hanson hansonr@stolaf.edu
+ */
 public class ForceFieldMMFF extends ForceField {
 
   private static final int A4_SB = 125;

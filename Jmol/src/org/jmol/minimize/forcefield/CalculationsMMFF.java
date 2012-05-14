@@ -513,10 +513,12 @@ class CalculationsMMFF extends Calculations {
 
     @Override
     void setData(List<Object[]> calc, int ia, int ib) {
+      // TODO -- use torsions for 1,4 business
     }
 
     @Override
     double compute(Object[] dataIn) {
+      // TODO
       return energy;
     }
   }

@@ -409,7 +409,7 @@ class CalculationsMMFF extends Calculations {
       a = minAtoms[ia];
       b = minAtoms[ib];
       double[] dataA = (double[]) getParameter(a.vdwKey);
-      double[] dataB = (double[]) getParameter(a.vdwKey);
+      double[] dataB = (double[]) getParameter(b.vdwKey);
       if (dataA == null || dataB == null)
         return;
       double alpha_a = dataA[0]; 

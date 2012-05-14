@@ -725,16 +725,20 @@ class IsoSolventReader extends AtomDataReader {
       bs.and(bsLocale[ib]);
       for (int ic = bs.nextSetBit(ib + 1); ic >= 0; ic = bs.nextSetBit(ic + 1)) {
         if (getSolventPoints(ia, ib, ic)) {
-          noFaceSpheres.clear(ia);
-          noFaceSpheres.clear(ib);
-          noFaceSpheres.clear(ic);
-          Face f = new Face(ia, ib, ic, edge, ptS1);
-          if (validateFace(f)) {
+          Face f;
+          boolean isOK = false;
+          if (validateFace(f = new Face(ia, ib, ic, edge, ptS1))) {
             vFaces.add(f);
+            isOK = true;
           }
-          f = new Face(ib, ia, ic, edge, ptS2);
-          if (validateFace(f)) {
+          if (validateFace(f = new Face(ia, ib, ic, edge, ptS2))) {
             vFaces.add(f);
+            isOK = true;
+          }
+          if (isOK) {
+            noFaceSpheres.clear(ia);
+            noFaceSpheres.clear(ib);
+            noFaceSpheres.clear(ic);
           }
         }
       }

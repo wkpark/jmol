@@ -428,13 +428,13 @@ abstract class Calculations {
           +"--------------------------------------------------------------------------";
     case CALC_VDW:
       return 
-           "\nV A N   D E R   W A A L S\n\n"
+           "\nV A N   D E R   W A A L S  (partial list)\n\n"
           +"  ATOMS  ATOM TYPES\n"
           +"  I   J   I     J      Rij       kij     ENERGY\n"
           +"-----------------------------------------------";
     case CALC_ES:
       return 
-          "\nE L E C T R O S T A T I C   I N T E R A C T I O N S\n\n"
+          "\nE L E C T R O S T A T I C   I N T E R A C T I O N S  (partial list)\n\n"
           +"  ATOMS  ATOM TYPES \n"
           +"  I   J   I     J      Rij      f          Qi          Qj    ENERGY\n"
           +"-------------------------------------------------------------------";

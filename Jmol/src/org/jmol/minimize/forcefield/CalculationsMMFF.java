@@ -500,7 +500,7 @@ class CalculationsMMFF extends Calculations {
         addForces(this, 2);
       }
 
-      if (logging)
+      if (logging && Math.abs(energy) > 0.1)
         appendLogData(getDebugLine(CALC_VDW, this));
 
       return energy;
@@ -534,7 +534,7 @@ class CalculationsMMFF extends Calculations {
         addForces(this, 2);
       }
 
-      if (logging)
+      if (logging && Math.abs(energy) > 20)
         appendLogData(getDebugLine(CALC_ES, this));
 
       return energy;

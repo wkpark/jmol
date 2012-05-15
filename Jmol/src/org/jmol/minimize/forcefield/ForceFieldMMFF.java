@@ -591,7 +591,7 @@ public class ForceFieldMMFF extends ForceField {
     }
     
     // fix order in bonds and set type and key
-    System.out.println("-- bonds --");
+    //System.out.println("-- bonds --");
     for (int i = minBondCount; --i >= 0;) {
       MinBond bond = minBonds[i];
       fixOrder(bond.data, 0, 1);
@@ -600,14 +600,16 @@ public class ForceFieldMMFF extends ForceField {
           minAtoms[bond.data[0]].ffType, 
           minAtoms[bond.data[1]].ffType, 
           127, 127);
+/*      
       System.out.println(bond 
           + " " + minAtoms[bond.data[0]]
           + " " + minAtoms[bond.data[1]]
           + "\t" + Escape.escape(getFFParams(bond.key)));
+*/      
     }
     
     // fix order in angles and set type
-    System.out.println("-- angles --");
+//    System.out.println("-- angles --");
 
     for (int i = minAngles.length; --i >= 0;) {
      MinAngle angle = minAngles[i];
@@ -619,12 +621,14 @@ public class ForceFieldMMFF extends ForceField {
           minAtoms[angle.data[1]].ffType, 
           minAtoms[angle.data[2]].ffType, 
           127);
+/*      
       System.out.println(angle
           + " " + minAtoms[angle.data[0]]
           + " " + minAtoms[angle.data[1]]
           + " " + minAtoms[angle.data[2]]
           + "\t" + Escape.escape(getFFParams(angle.key))
       );
+*/      
       int typeA = minAtoms[angle.data[0]].ffType;
       int typeB = minAtoms[angle.data[1]].ffType;
       int typeC = minAtoms[angle.data[2]].ffType;
@@ -635,16 +639,18 @@ public class ForceFieldMMFF extends ForceField {
         int r3 = getRowFor(angle.data[2]);
         angle.sbKey = MinObject.getKey(angle.sbType, r1, r2, r3, A4_SBDEF);
       }
+/*      
       System.out.println(angle
           + " " + minAtoms[angle.data[0]]
           + " " + minAtoms[angle.data[1]]
           + " " + minAtoms[angle.data[2]]
           + "\tSB " + Escape.escape(getFFParams(angle.sbKey))
       );
+*/      
     }
     
     // fix order in torsions and set type
-   System.out.println("-- torsions --");
+//   System.out.println("-- torsions --");
     for (int i = minTorsions.length; --i >= 0;) {
       MinTorsion t = minTorsions[i];
       switch (fixOrder(t.data, 1, 2)) {
@@ -677,14 +683,16 @@ public class ForceFieldMMFF extends ForceField {
           }
         }
       }
+/*
       System.out.println(t 
           + " " + minAtoms[t.data[0]]
           + " " + minAtoms[t.data[1]]
           + " " + minAtoms[t.data[2]]
           + " " + minAtoms[t.data[3]]
           + "\t" + Escape.escape(getFFParams(t.key)));
+*/      
     }
-    System.out.println("done in ForceFieldMMFF");
+//    System.out.println("done in ForceFieldMMFF");
   }
 
   private int getRowFor(int i) {

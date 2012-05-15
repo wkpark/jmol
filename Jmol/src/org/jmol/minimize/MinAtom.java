@@ -25,6 +25,7 @@
 package org.jmol.minimize;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 
 import org.jmol.minimize.forcefield.AtomType;
@@ -32,7 +33,7 @@ import org.jmol.modelset.Atom;
 
 public class MinAtom {
 
-  int rawIndex;
+  int index;
   public String sType;
   public Atom atom;
   public AtomType ffAtomType;
@@ -40,22 +41,26 @@ public class MinAtom {
   public Integer vdwKey;
   public double[] coord = new double[3];
   public double[] force = new double[3];
-  public List<MinBond> bonds = new ArrayList<MinBond>();
+  private List<MinBond> bonds = new ArrayList<MinBond>();
   public int nBonds;
   public int hCount;
   public double partialCharge;
+  public BitSet bsVdw = new BitSet();
+  public BitSet bs14 = new BitSet();
 
   int[] bondedAtoms;
 
   @Override
   public String toString() {
-    return "#" + rawIndex + " " + sType;
+    return "#" + index + " " + sType;
   }
 
-  MinAtom(int index, Atom atom, double[] coord) {
-    this.rawIndex = index;
+  MinAtom(int index, Atom atom, double[] coord, int atomCount) {
+    this.index = index;
     this.atom = atom;
     this.coord = coord;
+    bsVdw.set(index + 1, atomCount);
+    bsVdw.clear(index);
     hCount = atom.getCovalentHydrogenCount();
   }
 
@@ -77,13 +82,23 @@ public class MinAtom {
     if (bondedAtoms == null) {
       bondedAtoms = new int[nBonds];
       for (int i = nBonds; --i >= 0;)
-        bondedAtoms[i] = bonds.get(i).getOtherAtom(rawIndex);
+        bondedAtoms[i] = bonds.get(i).getOtherAtom(index);
     }
     return bondedAtoms;
   }
 
   public String getIdentity() {
     return atom.getInfo();
+  }
+
+  public void addBond(MinBond bond, int i) {
+    bonds.add(bond);
+    nBonds++;
+    bsVdw.clear(i);
+  }
+
+  public int getBondIndex(int j) {
+    return bonds.get(j).index;
   }
 
 }

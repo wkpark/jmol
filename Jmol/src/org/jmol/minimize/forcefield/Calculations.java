@@ -24,6 +24,7 @@
 
 package org.jmol.minimize.forcefield;
 
+import java.util.BitSet;
 import java.util.List;
 
 import javax.vecmath.Vector3d;
@@ -63,8 +64,6 @@ abstract class Calculations {
   MinBond[] minBonds;
   MinAngle[] minAngles;
   MinTorsion[] minTorsions;
-  double[] partialCharges;
-  boolean havePartialCharges;
   List<Object[]> constraints;
   boolean isPreliminary;
 
@@ -75,7 +74,6 @@ abstract class Calculations {
   Calculations(ForceField ff, 
       MinAtom[] minAtoms, MinBond[] minBonds,
       MinAngle[] minAngles, MinTorsion[] minTorsions, 
-      double[] partialCharges,
       List<Object[]> constraints) {
     this.ff = ff;
     this.minAtoms = minAtoms;
@@ -87,15 +85,6 @@ abstract class Calculations {
     angleCount = minAngles.length;
     torsionCount = minTorsions.length;
     this.constraints = constraints;
-    if (partialCharges != null && partialCharges.length == atomCount)
-      for (int i = atomCount; --i >= 0;)
-        if (partialCharges[i] != 0) {
-          havePartialCharges = true;
-          break;
-        }
-    if (!havePartialCharges)
-      partialCharges = null;
-    this.partialCharges = partialCharges;
   }
 
   abstract boolean setupCalculations();
@@ -125,7 +114,6 @@ abstract class Calculations {
   }
 
   void appendLogData(String s) {
-    System.out.println("calcultions LOG: " + s);
     logData.append(s).append("\n");
   }
 
@@ -150,37 +138,9 @@ abstract class Calculations {
   
   protected void pairSearch(List<Object[]> calc1, PairCalc pc1, 
                             List<Object[]> calc2, PairCalc pc2) {
-    /*A:*/ for (int i = 0; i < atomCount - 1; i++) { // one atom...
-      MinAtom atomA = minAtoms[i];
-      int[] atomList1 = atomA.getBondedAtomIndexes();
-      B: for (int j = i + 1; j < atomCount; j++) { // another atom...
-        MinAtom atomB = minAtoms[j];
-        /*nbrA:*/ for (int k = atomList1.length; --k >= 0;) { // check bonded A-B
-          MinAtom nbrA = minAtoms[atomList1[k]];
-          if (nbrA == atomB)
-            continue B; // pick another B
-          if (nbrA.nBonds == 1)
-            continue;
-          int[] atomList2 = nbrA.getBondedAtomIndexes(); // check A-X-B
-          /*nbrAA:*/ for (int l = atomList2.length; --l >= 0;) {
-            MinAtom nbrAA = minAtoms[atomList2[l]];
-            if (nbrAA == atomB)
-              continue B; // pick another B
-            
-            //this next would exclude A-X-X-B, but Rappe does not do that, he says
-            
-/*            if (nbrAA.nBonds == 1)
-              continue;
-            int[] atomList3 = nbrAA.getBondedAtomIndexes(); // check A-X-X-B
-            nbrAAA: for (int m = atomList3.length; --m >= 0;) {
-              MinAtom nbrAAA = atoms[atomList3[m]];
-              if (nbrAAA == atomB)
-                continue B; // pick another B           
-            }
-*/            
-            
-          }
-        }
+    for (int i = 0; i < atomCount - 1; i++) {
+      BitSet bsVdw = minAtoms[i].bsVdw;
+      for (int j = bsVdw.nextSetBit(0); j >= 0; j = bsVdw.nextSetBit(j + 1)) {
         pc1.setData(calc1, i, j);
         if (pc2 != null)
           pc2.setData(calc2, i, j);
@@ -475,9 +435,9 @@ abstract class Calculations {
     case CALC_ES:
       return 
           "\nE L E C T R O S T A T I C   I N T E R A C T I O N S\n\n"
-          +"  ATOMS  ATOM TYPES            QiQj\n"
-          +"  I   J   I     J      Rij    *332.17    ENERGY\n"
-          +"-----------------------------------------------";
+          +"  ATOMS  ATOM TYPES \n"
+          +"  I   J   I     J      Rij      f          Qi          Qj    ENERGY\n"
+          +"-------------------------------------------------------------------";
     }
     return "";
   }
@@ -526,9 +486,9 @@ abstract class Calculations {
           new float[] { (float)c.rab, (float)c.dData[0]/*kab*/, (float)c.energy},
           new int[] { minAtoms[c.ia].atom.getAtomNumber(), minAtoms[c.ib].atom.getAtomNumber() } });
     case CALC_ES:
-      return TextFormat.sprintf("%3d %3d  %-5s %-5s %6.3f  %8.3f  %8.3f", 
+      return TextFormat.sprintf("%3d %3d  %-5s %-5s %6.3f  %8.3f  %8.3f  %8.3f  %8.3f", 
           new Object[] { minAtoms[c.iData[0]].sType, minAtoms[c.iData[1]].sType,
-          new float[] { (float)c.rab, (float)c.dData[0]/*qq*/, (float)c.energy },
+          new float[] { (float)c.rab, (float)c.dData[0]/*q1*/, (float)c.dData[1]/*q2*/, (float)c.dData[2]/*f*/, (float)c.energy },
           new int[] { minAtoms[c.ia].atom.getAtomNumber(), minAtoms[c.ib].atom.getAtomNumber() } });
     }
     return "";
@@ -562,15 +522,17 @@ abstract class Calculations {
 
   ////////////////////////////////////////////////////
   
-  void setBondVariables(Calculation c) {
+  void setPairVariables(Calculation c) {
     if (gradients) {
       setCoords(c, 2);
       c.rab = Util.restorativeForceAndDistance(da, db, dc);
     } else {
       c.rab = Math.sqrt(Util.distance2(minAtoms[c.ia].coord, minAtoms[c.ib].coord));
     }
+    if (Util.isNearZero(c.rab, 1.0e-3))
+      c.rab = 1.0e-3;
   }
-
+  
   void setAngleVariables(Calculation c) {
     if (gradients) {
       setCoords(c, 3);
@@ -587,9 +549,6 @@ abstract class Calculations {
     if (gradients) {
       c.theta = Util.restorativeForceAndOutOfPlaneAngleRadians(da, db, dc, dd, v1, v2, v3);
     } else {
-      //if (atoms[ib].atom.getAtomIndex() == 20)
-        //System.out.println(" atom palne angl " + atoms[ib].atom.getInfo());
-        
       c.theta = Util.pointPlaneAngleRadians(da, db, dc, dd, v1, v2, v3);
     }
     if (!Util.isFinite(c.theta))
@@ -606,17 +565,6 @@ abstract class Calculations {
       c.theta = Util.getTorsionAngleRadians(minAtoms[c.ia].coord, minAtoms[c.ib].coord, 
           minAtoms[c.ic].coord, minAtoms[c.id].coord, v1, v2, v3);
     }
-  }
-  
-  void setPairVariables(Calculation c) {
-    if (gradients) {
-      setCoords(c, 2);
-      c.rab = Util.restorativeForceAndDistance(da, db, dc);
-    } else {
-      c.rab = Math.sqrt(Util.distance2(minAtoms[c.ia].coord, minAtoms[c.ib].coord));
-    }
-    if (Util.isNearZero(c.rab, 1.0e-3))
-      c.rab = 1.0e-3;
   }
   
   void setCoords(Calculation c, int n) {

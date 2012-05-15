@@ -111,11 +111,8 @@ public class ForceFieldMMFF extends ForceField {
     setArrays(m.atoms, m.bsAtoms, m.bonds, m.rawBondCount);  
     setModelFields();
     fixTypes();
-    double[] partialCharges = new double[minAtoms.length];
-    for (int i = m.bsAtoms.nextSetBit(0), pt = 0; i >= 0; i = m.bsAtoms.nextSetBit(i + 1))
-      partialCharges[pt++] = rawMMFF94Charges[i];
     calc = new CalculationsMMFF(this, ffParams, minAtoms, minBonds, 
-        minAngles, minTorsions, partialCharges, minimizer.constraints);
+        minAngles, minTorsions, minimizer.constraints);
     calc.setLoggingEnabled(true);
     return calc.setupCalculations();
   }
@@ -551,8 +548,6 @@ public class ForceFieldMMFF extends ForceField {
       Bond[] bonds = atoms[i].getBonds();
       if (bonds != null) {
         types[i] = -atomTypes.get(types[bonds[0].getOtherAtom(atoms[i]).index]).hType;
-        //System.out.println(atoms[i] + " " + bonds[0].getOtherAtom(atoms[i]) + " " +atomTypes.get(types[bonds[0].getOtherAtom(atoms[i]).index]).mmType 
-          //    + " " + atomTypes.get(types[bonds[0].getOtherAtom(atoms[i]).index]).hType);
       }
     }
     if (Logger.debugging)
@@ -585,10 +580,12 @@ public class ForceFieldMMFF extends ForceField {
   private void fixTypes() {
     // set atom types in minAtoms
     for (int i = minAtomCount; --i >= 0;) {
-      int it = rawAtomTypes[minAtoms[i].atom.index];
+      int rawIndex = minAtoms[i].atom.index;
+      int it = rawAtomTypes[rawIndex];
       minAtoms[i].ffAtomType = atomTypes.get(Math.max(0, it));
       minAtoms[i].ffType = (it < 0 ? -it : atomTypes.get(it).mmType);
       minAtoms[i].vdwKey = MinObject.getKey(KEY_VDW, minAtoms[i].ffType, 127, 127, A4_VDW);
+      minAtoms[i].partialCharge = rawMMFF94Charges[rawIndex];
     }
     
     // fix order in bonds and set type and key

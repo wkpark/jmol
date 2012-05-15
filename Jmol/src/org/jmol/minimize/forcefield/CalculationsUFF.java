@@ -71,20 +71,20 @@ class CalculationsUFF extends Calculations {
   TorsionCalc torsionCalc;
   OOPCalc oopCalc;
   VDWCalc vdwCalc;
-  ESCalc esCalc;
+  //ESCalc esCalc;
     
   CalculationsUFF(ForceField ff, Map<Object, FFParam> ffParams, 
       MinAtom[] minAtoms, MinBond[] minBonds, 
       MinAngle[] minAngles, MinTorsion[] minTorsions, 
-      double[] partialCharges, List<Object[]> constraints) {
-    super(ff, minAtoms, minBonds, minAngles, minTorsions, partialCharges, constraints);    
+      List<Object[]> constraints) {
+    super(ff, minAtoms, minBonds, minAngles, minTorsions, constraints);    
     this.ffParams = ffParams;
     bondCalc = new DistanceCalc();
     angleCalc = new AngleCalc();
     torsionCalc = new TorsionCalc();
     oopCalc = new OOPCalc();
     vdwCalc = new VDWCalc();
-    esCalc = new ESCalc();
+    //esCalc = new ESCalc();
   }
   
   @Override
@@ -133,11 +133,7 @@ class CalculationsUFF extends Calculations {
     // it does not actually use it. Both Towhee and the UFF FAQ
     // discourage the use of electrostatics with UFF.
 
-    if (partialCharges == null)
-      pairSearch(calculations[CALC_VDW] = new ArrayList<Object[]>(), new VDWCalc(), null, null);
-    else
-      pairSearch(calculations[CALC_VDW] = new ArrayList<Object[]>(), new VDWCalc(),
-          calculations[CALC_ES] = new ArrayList<Object[]>(), new ESCalc());
+    pairSearch(calculations[CALC_VDW] = new ArrayList<Object[]>(), new VDWCalc(), null, null);
     return true;
   }
 
@@ -185,8 +181,8 @@ class CalculationsUFF extends Calculations {
       return oopCalc.compute(dataIn);
     case CALC_VDW:
       return vdwCalc.compute(dataIn);
-    case CALC_ES:
-      return esCalc.compute(dataIn);
+    //case CALC_ES:
+      //return esCalc.compute(dataIn);
     }
     return 0.0;
   }
@@ -194,6 +190,8 @@ class CalculationsUFF extends Calculations {
   FFParam getParameter(Object a) {
     return ffParams.get(a);
   }
+
+  final static double KCAL332 = KCAL_TO_KJ * 332.0637;
 
   class DistanceCalc extends Calculation {
 
@@ -218,7 +216,7 @@ class CalculationsUFF extends Calculations {
       getPointers(dataIn);
       r0 = dData[0];
       kb = dData[1];     
-      setBondVariables(this);
+      setPairVariables(this);
 
       // Er = 0.5 k (r - r0)^2
       
@@ -696,9 +694,6 @@ class CalculationsUFF extends Calculations {
 
       energy = koop * (a0 + a1 * cosTheta + a2 * cosTheta * cosTheta);
 
-      //if (atoms[ib].atom.getAtomIndex() == 20)
-        //System.out.println(ib + " testing oop theta cosTheta=" + (theta * 180/Math.PI) + " " + cosTheta + " energy=" + energy + " koop=" + koop + " a0 a1 a2="+ a0 + " " + a1 + " "+ a2);
-
       if (gradients) {
         // somehow we already get the -1 from the OOPDeriv -- so we'll omit it here
         // not checked in Java
@@ -774,8 +769,7 @@ class CalculationsUFF extends Calculations {
       return energy;
     }
   } 
-
-  final static double KCAL332 = KCAL_TO_KJ * 332.0637;
+/*
   
   class ESCalc extends PairCalc {
 
@@ -811,7 +805,7 @@ class CalculationsUFF extends Calculations {
     }
   }
 
-  
+*/  
   ///////// REPORTING /////////////
   
   @Override

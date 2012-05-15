@@ -32,7 +32,6 @@ import org.jmol.minimize.MinAngle;
 import org.jmol.minimize.MinAtom;
 import org.jmol.minimize.MinBond;
 import org.jmol.minimize.MinTorsion;
-import org.jmol.minimize.Util;
 import org.jmol.util.TextFormat;
 
 /*
@@ -82,9 +81,9 @@ class CalculationsMMFF extends Calculations {
   
   CalculationsMMFF(ForceField ff, Map<Integer, Object> ffParams, 
       MinAtom[] minAtoms, MinBond[] minBonds, 
-      MinAngle[] minAngles, MinTorsion[] minTorsions, double[] partialCharges,
+      MinAngle[] minAngles, MinTorsion[] minTorsions,
       List<Object[]> constraints) {
-    super(ff, minAtoms, minBonds, minAngles, minTorsions, partialCharges, constraints);    
+    super(ff, minAtoms, minBonds, minAngles, minTorsions, constraints);    
     this.ffParams = ffParams;
     bondCalc = new DistanceCalc();
     angleCalc = new AngleCalc();
@@ -228,7 +227,7 @@ class CalculationsMMFF extends Calculations {
       getPointers(dataIn);
       kb = dData[0];
       r0 = dData[1];
-      setBondVariables(this);
+      setPairVariables(this);
       
       delta = rab - r0; 
       delta2 = delta * delta;
@@ -323,7 +322,7 @@ class CalculationsMMFF extends Calculations {
       double t0 = dData[1];
       double r0_ab = dData[2];
 
-      setBondVariables(this);
+      setPairVariables(this);
       setAngleVariables(this);
       double dr_ab = rab - r0_ab;
       delta = theta * RAD_TO_DEG - t0;
@@ -336,7 +335,7 @@ class CalculationsMMFF extends Calculations {
       if (gradients) {
         dE = k * dr_ab;
         addForces(this, 3);
-        setBondVariables(this);
+        setPairVariables(this);
         dE = k * delta;
         addForces(this, 2);        
       }
@@ -485,10 +484,9 @@ class CalculationsMMFF extends Calculations {
     @Override
     double compute(Object[] dataIn) {
       getPointers(dataIn);
+      setPairVariables(this);
       double rs = dData[0];
       double eps = dData[1];
-      
-      rab = Math.sqrt(Util.distance2(minAtoms[ia].coord, minAtoms[ib].coord));
       double r_rs = rab / rs;
       energy = eps * Math.pow(1.07/ (r_rs + 0.07), 7)  * (1.12 / (Math.pow(r_rs, 7) + 0.12) - 2);
 
@@ -511,14 +509,34 @@ class CalculationsMMFF extends Calculations {
   
   class ESCalc extends PairCalc {
 
+    private static final double BUFF = 0.05;
+
     @Override
     void setData(List<Object[]> calc, int ia, int ib) {
-      // TODO -- use torsions for 1,4 business
+      if (minAtoms[ia].partialCharge == 0 || minAtoms[ib].partialCharge == 0)
+        return;
+      calc.add(new Object[] { new int[] { ia, ib }, new double[] {
+           minAtoms[ia].partialCharge, minAtoms[ib].partialCharge, 
+           (minAtoms[ia].bs14.get(ib) ? 249.054 : 332.0716) }
+      });
     }
 
     @Override
     double compute(Object[] dataIn) {
-      // TODO
+      getPointers(dataIn);
+      double f = dData[0] * dData[1] * dData[2];
+      setPairVariables(this);
+      double d = rab + BUFF;
+      energy = f / d; // DIEL = 1 here
+      
+      if (gradients) {
+        dE = -energy / d;
+        addForces(this, 2);
+      }
+
+      if (logging)
+        appendLogData(getDebugLine(CALC_ES, this));
+
       return energy;
     }
   }

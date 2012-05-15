@@ -287,7 +287,7 @@ public class Minimizer implements MinimizerInterface {
       elemnoMax = Math.max(elemnoMax, atomicNo);
       bsElements.set(atomicNo);
       minAtoms[pt] = new MinAtom(pt, atom, new double[] { atom.x, atom.y,
-          atom.z });
+          atom.z }, atomCount);
       minAtoms[pt].sType = atom.getAtomName();
     }
 
@@ -353,10 +353,8 @@ public class Minimizer implements MinimizerInterface {
       MinBond bond = minBonds[i] = bondInfo.get(i);
       int atom1 = bond.data[0];
       int atom2 = bond.data[1];
-      minAtoms[atom1].bonds.add(bond);
-      minAtoms[atom2].bonds.add(bond);
-      minAtoms[atom1].nBonds++;
-      minAtoms[atom2].nBonds++;
+      minAtoms[atom1].addBond(bond, atom2);
+      minAtoms[atom2].addBond(bond, atom1);
     }
     for (int i = 0; i < atomCount; i++)
       minAtoms[i].getBondedAtomIndexes();
@@ -375,7 +373,8 @@ public class Minimizer implements MinimizerInterface {
         for (int j = atomList.length; --j >= 0;)
           if ((ic = atomList[j]) > ia) {
             vAngles.add(new MinAngle(new int[] { ia, ib, ic, i,
-                minAtoms[ib].bonds.get(j).index}));
+                minAtoms[ib].getBondIndex(j)}));
+            minAtoms[ia].bsVdw.clear(ic);
 /*            System.out.println (" " 
                 + minAtoms[ia].getIdentity() + " -- " 
                 + minAtoms[ib].getIdentity() + " -- " 
@@ -388,8 +387,9 @@ public class Minimizer implements MinimizerInterface {
         for (int j = atomList.length; --j >= 0;)
           if ((ic = atomList[j]) < ib && ic > ia) {
             vAngles
-                .add(new MinAngle(new int[] { ic, ia, ib, minAtoms[ia].bonds.get(j).index,
+                .add(new MinAngle(new int[] { ic, ia, ib, minAtoms[ia].getBondIndex(j),
                     i}));
+            minAtoms[ic].bsVdw.clear(ib);
             System.out.println ("a " 
                 + minAtoms[ic].getIdentity() + " -- " 
                 + minAtoms[ia].getIdentity() + " -- " 
@@ -419,7 +419,8 @@ public class Minimizer implements MinimizerInterface {
           if (id != ia && id != ib) {
             vTorsions.add(new MinTorsion(new int[] { ia, ib, ic, id, 
                 angle[ForceField.ABI_IJ], angle[ForceField.ABI_JK],
-                minAtoms[ic].bonds.get(j).index }));
+                minAtoms[ic].getBondIndex(j) }));
+              minAtoms[Math.min(ia, id)].bs14.set(Math.max(ia, id));
 /*            System.out.println("t " + minAtoms[ia].getIdentity() + " -- "
                 + minAtoms[ib].getIdentity() + " -- "
                 + minAtoms[ic].getIdentity() + " -- "
@@ -435,7 +436,8 @@ public class Minimizer implements MinimizerInterface {
           if (id != ic && id != ib) {
             vTorsions.add(new MinTorsion(new int[] { ic, ib, ia, id, 
                 angle[ForceField.ABI_JK], angle[ForceField.ABI_IJ],
-                minAtoms[ia].bonds.get(j).index }));
+                minAtoms[ia].getBondIndex(j) }));
+            minAtoms[Math.min(ic, id)].bs14.set(Math.max(ic, id));
 /*            System.out.println("t " + minAtoms[ic].getIdentity() + " -- "
                 + minAtoms[ib].getIdentity() + " -- "
                 + minAtoms[ia].getIdentity() + " -- "

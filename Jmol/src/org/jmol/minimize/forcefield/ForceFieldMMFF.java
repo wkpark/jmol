@@ -108,7 +108,7 @@ public class ForceFieldMMFF extends ForceField {
   public boolean setModel(BitSet bsElements, int elemnoMax) {
     getMinimizationParameters();
     Minimizer m = minimizer;
-    setArrays(m.atoms, m.bsAtoms, m.bonds, m.rawBondCount);  
+    setArrays(m.atoms, m.bsAtoms, m.bonds, m.rawBondCount, false);  
     setModelFields();
     fixTypes();
     calc = new CalculationsMMFF(this, ffParams, minAtoms, minBonds, 
@@ -117,17 +117,18 @@ public class ForceFieldMMFF extends ForceField {
     return calc.setupCalculations();
   }
 
-  public void setArrays(Atom[] atoms, BitSet bsAtoms, Bond[] bonds, int rawBondCount) {
+  public void setArrays(Atom[] atoms, BitSet bsAtoms, Bond[] bonds,
+                        int rawBondCount, boolean doRound) {
     Minimizer m = minimizer;
     // these are original atom-index-based, not minAtom-index based. 
-    
+
     vRings = ArrayUtil.createArrayOfArrayList(4);
-    rawAtomTypes = setAtomTypes(atoms, bsAtoms, m.viewer
-        .getSmilesMatcher(), vRings);
-    rawBondTypes = setBondTypes(bonds, rawBondCount,
-        bsAtoms, rawAtomTypes, vRings[R56]);
-    rawMMFF94Charges = getPartialCharges(bonds, rawBondTypes,
-        atoms, rawAtomTypes, bsAtoms);
+    rawAtomTypes = setAtomTypes(atoms, bsAtoms, m.viewer.getSmilesMatcher(),
+        vRings);
+    rawBondTypes = setBondTypes(bonds, rawBondCount, bsAtoms, rawAtomTypes,
+        vRings[R56]);
+    rawMMFF94Charges = getPartialCharges(bonds, rawBondTypes, atoms,
+        rawAtomTypes, bsAtoms, doRound);
   }
   
   private void getChargeParameters() {
@@ -325,10 +326,11 @@ public class ForceFieldMMFF extends ForceField {
    * @param atoms
    * @param aTypes
    * @param bsAtoms
+   * @param doRound 
    * @return   full array of partial charges
    */
   public static float[] getPartialCharges(Bond[] bonds, int[] bTypes, Atom[] atoms,
-                                          int[] aTypes, BitSet bsAtoms) {
+                                          int[] aTypes, BitSet bsAtoms, boolean doRound) {
 
     // start with formal charges specified by MMFF94 (not what is in file!)
 
@@ -414,16 +416,16 @@ public class ForceFieldMMFF extends ForceField {
     
     // just rounding to 0.001 here:
     
-    float abscharge = 0;
-    for (int i = partialCharges.length; --i >= 0;) {
-      partialCharges[i] = ((int) (partialCharges[i] * 1000)) / 1000f;
-      abscharge += Math.abs(partialCharges[i]);
-    }
-    if (abscharge == 0 && a1 != null) {
-      partialCharges[a1.index]= -0.0f;
-    }
-    // that's all there is to it!
-    
+    if (doRound) {
+      float abscharge = 0;
+      for (int i = partialCharges.length; --i >= 0;) {
+        partialCharges[i] = ((int) (partialCharges[i] * 1000)) / 1000f;
+        abscharge += Math.abs(partialCharges[i]);
+      }
+      if (abscharge == 0 && a1 != null) {
+        partialCharges[a1.index]= -0.0f;
+      }
+    }    
     return partialCharges;
   }
 

@@ -651,7 +651,7 @@ public class Minimizer implements MinimizerInterface {
                                       Atom[] atoms, BitSet bsAtoms) {
     //TODO -- combine SMILES and MINIMIZER in same JAR file
     ForceFieldMMFF ff = new ForceFieldMMFF(this);
-    ff.setArrays(atoms, bsAtoms, bonds, bondCount);
+    ff.setArrays(atoms, bsAtoms, bonds, bondCount, true);
     viewer.setAtomProperty(bsAtoms, Token.atomtype, 0, 0, null, null,
         ff.getAtomTypeDescriptions());
     viewer.setAtomProperty(bsAtoms, Token.partialcharge, 0, 0, null,

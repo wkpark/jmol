@@ -517,7 +517,7 @@ class CalculationsMMFF extends Calculations {
         return;
       calc.add(new Object[] { new int[] { ia, ib }, new double[] {
            minAtoms[ia].partialCharge, minAtoms[ib].partialCharge, 
-           (minAtoms[ia].bs14.get(ib) ? 249.054 : 332.0716) }
+           (minAtoms[ia].bs14.get(ib) ? 249.0537 : 332.0716) }
       });
     }
 

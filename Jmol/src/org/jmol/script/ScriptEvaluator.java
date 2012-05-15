@@ -6772,8 +6772,10 @@ public class ScriptEvaluator {
     BitSet bsAtoms1 = null, bsAtoms2 = null;
     List<BitSet[]> vAtomSets = null;
     List<Object[]> vQuatSets = null;
-    BitSet bsFrom = atomExpression(1);
-    BitSet bsTo = atomExpression(++iToken);
+    BitSet bsFrom = (tokAt(1) == Token.subset ? null : atomExpression(1));
+    BitSet bsTo = (tokAt(++iToken) == Token.subset ? null : atomExpression(++iToken));
+    if (bsFrom == null || bsTo == null)
+      error(ERROR_invalidArgument);
     BitSet bsSubset = null;
     boolean isSmiles = false;
     String strSmiles = null;
@@ -6865,13 +6867,21 @@ public class ScriptEvaluator {
 
     boolean isAtoms = (!isQuaternion && strSmiles == null);
     if (vAtomSets == null && vQuatSets == null) {
-      bsAtoms1 = (isAtoms ? viewer.getAtomBitSet("spine") : new BitSet());
-      bsAtoms1.and(bsFrom);
-      if (bsAtoms1.nextSetBit(0) < 0) {
-        bsAtoms1 = bsFrom;
-        bsAtoms2 = bsTo;
+      if (bsSubset == null) {
+        bsAtoms1 = (isAtoms ? viewer.getAtomBitSet("spine") : new BitSet());
+        if (bsAtoms1.nextSetBit(0) < 0) {
+          bsAtoms1 = bsFrom;
+          bsAtoms2 = bsTo;
+        } else {
+          bsAtoms2 = BitSetUtil.copy(bsAtoms1);
+          bsAtoms1.and(bsFrom);
+          bsAtoms2.and(bsTo);
+        }
       } else {
-        bsAtoms2 = BitSetUtil.copy(bsAtoms1);
+        bsAtoms1 = BitSetUtil.copy(bsFrom);
+        bsAtoms2 = BitSetUtil.copy(bsTo);
+        bsAtoms1.and(bsSubset);
+        bsAtoms2.and(bsSubset);
         bsAtoms1.and(bsFrom);
         bsAtoms2.and(bsTo);
       }

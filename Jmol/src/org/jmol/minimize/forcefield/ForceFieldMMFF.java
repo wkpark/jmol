@@ -50,11 +50,11 @@ import org.jmol.util.Logger;
 
 /**
  * MMFF94 implementation 5/14/2012
- * - fully verified for atom types
- * - not verified for energies
- * - TODO: Electrostatic charge energy calculation
- * - TODO: minimization (gradients not checked)
- * - TODO: add UFF for preliminary calculation
+ * 
+ * - fully validated for atom types and charges
+ * - not not yet validated for energies
+ * 
+ * - TODO: add UFF for preliminary/backup calculation
  * 
  * @author Bob Hanson hansonr@stolaf.edu
  */
@@ -158,6 +158,11 @@ public class ForceFieldMMFF extends ForceField {
   private void getMmffParameters(String fileName, Map<Integer, Object> data, int dataType) {    
     URL url = null;
     String line = null;
+    
+    // parameters are keyed by a 32-bit Integer 
+    // that is composed of four 7-bit atom types and one 4-bit parameter type
+    // in some cases, the last 7-bit atom type (a4) is used for additional parameter typing
+    
     int a1, a2 = 127, a3 = 127, a4 = 127;
     Object value = null;
     if (Logger.debugging)
@@ -179,19 +184,17 @@ public class ForceFieldMMFF extends ForceField {
         case 44: // oop (tor max type is 5)
           type = KEY_OOP;
           break;
-        case 333: // default stretch bend (by row; identified by a4 = 2, not 127)
+        case 333: // default stretch bend (by row; identified by a4 = 126, not 127)
           a4 = A4_SBDEF;
           type = 0;
           break;
-        case 33: // stretch bend identified by a4 = 1, not 127
+        case 33: // stretch bend identified by a4 = 125, not 127
           a4 = A4_SB;
-          if (type == 4)
-            continue; // I have no idea what type=4 here would mean. It's supposed to be a bond type
           break;
         case 22: // chrg (bci, identified by a4 = 4, not 127)
           a4 = A4_CHRG;
           if (type == 4)
-            continue; // I have no idea what type=3 here would mean. It's supposed to be a bond type
+            continue; // I have no idea what type=4 here would mean. It's supposed to be a bond type
           break;
         case 11:  // vdw identified by a4 = 3, not 127
           if (line.charAt(5) != ' ')

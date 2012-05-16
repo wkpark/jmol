@@ -31,36 +31,14 @@ import java.util.Map;
 import org.jmol.minimize.MinAngle;
 import org.jmol.minimize.MinAtom;
 import org.jmol.minimize.MinBond;
+import org.jmol.minimize.MinObject;
 import org.jmol.minimize.MinTorsion;
 import org.jmol.util.TextFormat;
 
-/*
- * Java implementation by Bob Hanson 5/2012
- * based on chemKit code by Kyle Lutz.
- *    
- * Original work, as listed at http://towhee.sourceforge.net/forcefields/mmff94.html:
- * 
- *    T. A. Halgren; "Merck Molecular Force Field. I. Basis, Form, Scope, 
- *      Parameterization, and Performance of MMFF94", J. Comp. Chem. 5 & 6 490-519 (1996).
- *    T. A. Halgren; "Merck Molecular Force Field. II. MMFF94 van der Waals 
- *      and Electrostatic Parameters for Intermolecular Interactions", 
- *      J. Comp. Chem. 5 & 6 520-552 (1996).
- *    T. A. Halgren; "Merck Molecular Force Field. III. Molecular Geometries and 
- *      Vibrational Frequencies for MMFF94", J. Comp. Chem. 5 & 6 553-586 (1996).
- *    T. A. Halgren; R. B. Nachbar; "Merck Molecular Force Field. IV. 
- *      Conformational Energies and Geometries for MMFF94", J. Comp. Chem. 5 & 6 587-615 (1996).
- *    T. A. Halgren; "Merck Molecular Force Field. V. Extension of MMFF94 
- *      Using Experimental Data, Additional Computational Data, 
- *      and Empirical Rules", J. Comp. Chem. 5 & 6 616-641 (1996).
- *    T. A. Halgren; "MMFF VII. Characterization of MMFF94, MMFF94s, 
- *      and Other Widely Available Force Fields for Conformational Energies 
- *      and for Intermolecular-Interaction Energies and Geometries", 
- *      J. Comp. Chem. 7 730-748 (1999).
+/**
+ * @author  Bob Hanson  5/10/12 - 5/15/12
  * 
  */
-
-
-// just a preliminary copy of UFF at this point
 
 class CalculationsMMFF extends Calculations {
 
@@ -135,6 +113,10 @@ class CalculationsMMFF extends Calculations {
         calculations[CALC_ES] = new ArrayList<Object[]>(), new ESCalc());
 
     return true;
+  }
+
+  protected boolean isLinear(int i) {
+    return MinAtom.isLinear(minAtoms[i]);
   }
 
   private static boolean isInvertible(MinAtom a) {
@@ -234,9 +216,7 @@ class CalculationsMMFF extends Calculations {
       energy = FSTRETCH * kb * delta2 * (1 + CS * delta + CS2  * (delta2));
 
       if (gradients) {
-        //TODO CHECK THIS CAREFULLY
-        dE = FSTRETCH * 2 * kb * delta * (1 + CS * delta + CS2 * delta2 
-            + 0.5 * delta * (CS + 2 * CS2 * delta));
+        dE = FSTRETCH * kb * delta * (2 + 3 * CS * delta + 4 * CS2 * delta2);
         addForces(this, 2);
       }
       
@@ -295,12 +275,8 @@ class CalculationsMMFF extends Calculations {
     
     void setData(List<Object[]> calc, MinAngle angle) {
       // not applicable for linear types
-      switch (minAtoms[angle.data[1]].ffType) {
-      case 4:
-      case 53:
-      case 61:
-        return; 
-      }
+      if (isLinear(angle.data[1]))
+        return;
       double[] data = (double[]) getParameter(angle.sbKey);
       double[] datakat0 = (double[]) getParameter(angle.key);
       double[] dataij = (double[]) getParameter(minBonds[angle.data[3]].key);
@@ -347,19 +323,24 @@ class CalculationsMMFF extends Calculations {
   class TorsionCalc extends Calculation {
 
     void setData(List<Object[]> calc, MinTorsion t) {
+      if (isLinear(t.data[1]) || isLinear(t.data[2]))
+        return;
       Object data = getParameter(t.key);
       if (data == null)
         return;
-      calc.add(new Object[] { t.data, data });
+      calc.add(new Object[] { t.data, data, t.key });
     }
     
     @Override
     double compute(Object[] dataIn) {
       
+      key = (Integer) dataIn[2];
+
       getPointers(dataIn);
       double v1 = dData[0];
       double v2 = dData[1];
       double v3 = dData[2];
+      
       setTorsionVariables(this);
 
       // use one single cosine calculation 
@@ -425,7 +406,7 @@ class CalculationsMMFF extends Calculations {
     double compute(Object[] dataIn) {
       
       getPointers(dataIn);
-      setOopVariables(this);
+      setOopVariables(this, false);
       double koop = dData[0];
       
       energy = FOOP * koop * theta * theta; // theta in radians
@@ -488,15 +469,21 @@ class CalculationsMMFF extends Calculations {
       double rs = dData[0];
       double eps = dData[1];
       double r_rs = rab / rs;
-      energy = eps * Math.pow(1.07/ (r_rs + 0.07), 7)  * (1.12 / (Math.pow(r_rs, 7) + 0.12) - 2);
-
+      double f1 = 1.07 / (r_rs + 0.07);
+      double f2 = 1.12 / (Math.pow(r_rs, 7) + 0.12);
+      
+      energy = eps * Math.pow(f1, 7)  * (f2 - 2);
+      
       if (gradients) {
-        //TODO CHECK CAREFULLY
-        dE = 7 * eps * Math.pow(1.07 / (r_rs + 0.07), 6) *
-        ((-1.07 * rs / Math.pow(rab + 0.07 * rs, 2)) 
-            * (1.12 / (Math.pow(r_rs, 7) + 0.12) - 2) +
-        (-1.12 * Math.pow(rs, 7) / rab 
-            + 0.12 * Math.pow(rs, 14)) * (1.07 / (r_rs + 0.07)));
+        // dE = eps ( 7(f1^6)df1(f2-2) + (f1^7)df2 )
+        // dE = eps f1^6 ( 7df1(f2-2) + f1(df2) )
+        // df1/dr = -1.07 / (r_rs + 0.07)^2 * 1/rs 
+        //        = -f1^2 / 1.07 * 1/rs
+        // df2/dr = -1.12 / (r_rs^7 + 0.12)^2 * 7(r_rs)^6 * 1/rs 
+        //        = -f2^2 / 1.12 * 7(r_rs)^6 * 1/rs
+        // dE = -7 eps f1^7 / rs ( (f2-2)(f1 /1.07) + f2^2 / 1.12 * r_rs^6
+        dE = -7 * eps * Math.pow(f1, 7) /rs 
+            * (f1 / 1.07 * (f2 - 2) + f2 * f2 * Math.pow(r_rs, 6));
         addForces(this, 2);
       }
 
@@ -565,13 +552,12 @@ class CalculationsMMFF extends Calculations {
     switch (iType) {
       case CALC_TORSION:
         return TextFormat.sprintf(
-              "%3d %3d %3d %3d  %-5s %-5s %-5s %-5s  %8.3f %8.3f %8.3f %8.3f %8.3f", 
-            new Object[] { minAtoms[c.ia].sType, minAtoms[c.ib].sType, 
-              minAtoms[c.ic].sType, minAtoms[c.id].sType, 
+              "%15s  %-5s %-5s %-5s %-5s  %8.3f %8.3f %8.3f %8.3f %8.3f", 
+            new Object[] { MinObject.decodeKey(c.key), 
+                 minAtoms[c.ia].sType, minAtoms[c.ib].sType, 
+                 minAtoms[c.ic].sType, minAtoms[c.id].sType, 
             new float[] { (float) (c.theta * RAD_TO_DEG), (float) c.dData[0]/*v1*/, (float) c.dData[1]/*v2*/, (float) c.dData[2]/*v3*/, 
-              (float) c.energy },
-            new int[] { minAtoms[c.ia].atom.getAtomNumber(), minAtoms[c.ib].atom.getAtomNumber(),
-              minAtoms[c.ic].atom.getAtomNumber(), minAtoms[c.id].atom.getAtomNumber() } });
+              (float) c.energy } });
       default:
         return super.getDebugLine(iType, c);
     }

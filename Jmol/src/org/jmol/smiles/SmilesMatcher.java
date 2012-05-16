@@ -269,6 +269,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
       search.setSelected(bsSelected);
       search.getRingData(true, flags, vRings);
       search.asVector = false;
+      search.subSearches = new SmilesSearch[1];
     } catch (InvalidSmilesException e) {
       // I think this is impossible.
     }
@@ -280,10 +281,11 @@ public class SmilesMatcher implements SmilesMatcherInterface {
         continue;
       }
       try {
-        search.bsReturn.clear();
-        //System.out.println("SmilesMatcher " + smarts[i]);
+        search.clear();
         SmilesSearch ss = sp.getSearch(search, SmilesParser.cleanPattern(smarts[i]), flags);
-        BitSet bs = BitSetUtil.copy((BitSet) search.subsearch(ss, false, false));
+        search.subSearches[0] = ss;
+        BitSet bs = BitSetUtil.copy((BitSet) search.search(false));//.subsearch(ss, false, false));
+        //System.out.println(i + " " + bs);
         ret.add(bs);
         bsDone.or(bs);
         if (bsDone.cardinality() == atomCount)

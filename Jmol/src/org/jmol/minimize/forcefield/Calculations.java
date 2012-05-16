@@ -509,6 +509,9 @@ abstract class Calculations {
     case CALC_OOP:
       s = "OUT-OF-PLANE BENDING";
       break;
+    case CALC_STRETCH_BEND:
+      s = "STRETCH BENDING";
+      break;
     case CALC_VDW:
       s = "VAN DER WAALS";
       break;
@@ -544,12 +547,12 @@ abstract class Calculations {
       c.theta = 0.0;
   }
 
-  void setOopVariables(Calculation c) {
+  void setOopVariables(Calculation c, boolean fixTheta) {
     setCoords(c, 4);
     if (gradients) {
       c.theta = Util.restorativeForceAndOutOfPlaneAngleRadians(da, db, dc, dd, v1, v2, v3);
     } else {
-      c.theta = Util.pointPlaneAngleRadians(da, db, dc, dd, v1, v2, v3);
+      c.theta = Util.pointPlaneAngleRadians(da, db, dc, dd, v1, v2, v3, fixTheta);
     }
     if (!Util.isFinite(c.theta))
       c.theta = 0.0;

@@ -207,10 +207,10 @@ abstract public class ForceField {
       e += energyAngle(gradients);
     if ((terms & ESTRBND) != 0)
       e += energyStretchBend(gradients);
-    if ((terms & ETORSION) != 0)
-     e += energyTorsion(gradients);
     if ((terms & EOOP) != 0)
       e += energyOOP(gradients);
+    if ((terms & ETORSION) != 0)
+      e += energyTorsion(gradients);
     if ((terms & EVDW) != 0)
       e += energyVDW(gradients);
     if ((terms & EELECTROSTATIC) != 0)

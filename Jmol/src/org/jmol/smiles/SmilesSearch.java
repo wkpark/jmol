@@ -34,6 +34,7 @@ import java.util.Map;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.JmolNode;
@@ -147,6 +148,14 @@ public class SmilesSearch extends JmolMolecule {
     return parent.nNested;
   }
   
+  void clear() {
+    bsReturn.clear();
+    nNested = 0;
+    htNested = null;
+    nestedBond = null;//new SmilesBond(0, false);
+    clearBsFound(-1);
+  }
+  
   void setNested(int iNested, Object o) {
     parent.htNested.put("_" + iNested, o);
   }
@@ -186,6 +195,8 @@ public class SmilesSearch extends JmolMolecule {
       throws InvalidSmilesException {
     boolean aromaticStrict = ((flags & JmolEdge.FLAG_AROMATIC_STRICT) != 0);
     boolean aromaticDefined = ((flags & JmolEdge.FLAG_AROMATIC_DEFINED) != 0);
+    if (aromaticStrict && vRings == null)
+      vRings = ArrayUtil.createArrayOfArrayList(4); 
     if (aromaticDefined && needAromatic) {
       // predefined aromatic bonds
       bsAromatic = SmilesAromatic.checkAromaticDefined(jmolAtoms, bsSelected);
@@ -292,6 +303,7 @@ public class SmilesSearch extends JmolMolecule {
     search.bsSelected = bsSelected;
     search.htNested = htNested;
     search.isSmilesFind = isSmilesFind;
+    search.bsCheck = bsCheck;
     search.isSmarts = true;
     //search.measures = measures;
     search.bsAromatic = bsAromatic;
@@ -414,12 +426,13 @@ public class SmilesSearch extends JmolMolecule {
                                    int iAtom, boolean firstAtomOnly)
       throws InvalidSmilesException {
 
+    //System.out.println("checkMatch " + patternAtom + " atomnum=" + atomNum + " iatom=" + iAtom);
     JmolNode jmolAtom;
     JmolEdge[] jmolBonds;
     if (patternAtom == null) {
       // first atom in pattern
       if (nestedBond == null)
-        bsFound.clear();
+        clearBsFound(-1);
       else
         bsReturn.clear();
     } else {
@@ -511,9 +524,11 @@ public class SmilesSearch extends JmolMolecule {
     if (!continueMatch(atomNum, iAtom, firstAtomOnly))
       return false;
     if (iAtom >= 0)
-      bsFound.clear(iAtom);
+      clearBsFound(iAtom);
     return true;
   }
+
+  private BitSet bsCheck;
 
   private boolean continueMatch(int atomNum, int iAtom, boolean firstAtomOnly)
       throws InvalidSmilesException {
@@ -533,6 +548,10 @@ public class SmilesSearch extends JmolMolecule {
       */
       
       SmilesAtom newPatternAtom = patternAtoms[atomNum];
+      
+      //System.out.println("continueMatch atomNum=" + atomNum + ", iAtom=" + iAtom + " checking " + newPatternAtom);
+
+
       // For all the pattern bonds for this atom...
       // find the bond to atoms already assigned.
       // If it is not there, then it means this is a
@@ -648,7 +667,7 @@ public class SmilesSearch extends JmolMolecule {
       // Done checking this atom from any one of the places
       // higher in this stack. Clear the atom and keep going...
 
-      bsFound.clear(iAtom);
+      clearBsFound(iAtom);
       return true;
     }
 
@@ -683,6 +702,20 @@ public class SmilesSearch extends JmolMolecule {
       return true;
     if (matchAllAtoms && bs.cardinality() != selectedAtomCount)
       return true;
+    if (bsCheck != null) {
+      if (firstAtomOnly) {
+        bsCheck.clear();
+        for (int j = 0; j < atomCount; j++) {
+          System.out.println("checking return for " + patternAtoms[j]);
+          bsCheck.set(patternAtoms[j].getMatchingAtom());
+        }
+        if (bsCheck.cardinality() != atomCount)
+          return true;
+      } else {
+        if (bs.cardinality() != atomCount)
+          return true;
+      }
+    }
     bsReturn.or(bs);
 
     if (getMaps) {
@@ -727,6 +760,16 @@ public class SmilesSearch extends JmolMolecule {
 
     return (bs.cardinality() != selectedAtomCount);
 
+  }
+
+  private void clearBsFound(int iAtom) {
+    //System.out.println("smiless " + iAtom + " " + bsFound + " " + bsFound.hashCode());
+    
+    if (iAtom < 0) {
+      if (bsCheck == null) {bsFound.clear();}
+      }
+    else
+      bsFound.clear(iAtom);    
   }
 
   private JmolNode getHydrogens(JmolNode atom, BitSet bsHydrogens) {

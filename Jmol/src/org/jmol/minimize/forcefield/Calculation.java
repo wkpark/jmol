@@ -28,6 +28,8 @@ import org.jmol.minimize.MinAtom;
 
 abstract class Calculation {
   
+  Integer key;
+  
   double dE;
   
   MinAtom a, b, c, d;

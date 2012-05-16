@@ -684,7 +684,7 @@ class CalculationsUFF extends Calculations {
       double a0 = dData[1];
       double a1 = dData[2];
       double a2 = dData[3];
-      setOopVariables(this);
+      setOopVariables(this, true);
       
       double cosTheta = Math.cos(theta);
 

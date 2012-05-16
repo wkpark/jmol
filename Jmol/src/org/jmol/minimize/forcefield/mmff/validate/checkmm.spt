@@ -11,6 +11,7 @@ function setAtomInfo() {
 		var model = ((dat[1])[1][10]).split(" ")[1]
 		var m = {}
 		mmdat[model] = m
+		m["index"] = i - 1
 		m["atomInfo"] = {}
 		var mm = m["atomInfo"]
 		for (var t = 2; t <= dat.length; t++) {
@@ -28,8 +29,15 @@ function setAtomInfo() {
 			}
 		}	
 	}
-
-	print "loading MMFF94SYMB.PAR"	
+	print "reading mmff-validation-energy.dat"		
+	var dat = load("mmff-validation-energy.dat").lines
+	for (var i = 1; i <= dat.length; i++) {
+		var tokens = dat[i].split("\t")
+		var model = tokens[1]
+		var m = mmdat[model]
+		m["energy"] = 0.0 + tokens[2]
+	}
+	print "reading MMFF94SYMB.PAR"	
 	var dat = load("MMFF94SYMB.PAR").split("SYMBOL").lines[3][0]
 	for (var i = 1; i <=dat.length; i++) {
 		var code = (dat[i])[3][9].trim()
@@ -56,7 +64,7 @@ function checkpc(name) {
 	select *
 	wireframe only
 	 A = {*}.partialcharge.all
-	calculate partialCharge
+	calculate partialCharge {*}
 	{*}.partialcharge = A.sub({*}.partialcharge.all)
 	select partialcharge > 0.01 or partialcharge < -0.01
 	labelMM "pink"
@@ -85,23 +93,17 @@ function findatom(n) {
 }
 
 function findmm(name) {
-  for (var i = 1; i <= mdat.length; i++) {
-		if (mdat[i].find(name)) {
-			model @i
-			showmm(name)
-			return
-		}
-	}
-	
+	model @{(mmdat[name])["index"]}
+	showmm(name)
 }
 
 function findfc(fc) {
   fc = "" + fc
   for (var i = 1; i <= vdat.length; i++) {
 		if (vdat[i].find(fc) && vdat[i].find(fc) > vdat[i].find("fchar")) {
-			print mdat[i-1] 
+			print mmdat[i-1] 
 			model @{i-1}
-			showmm(mdat[i-1])
+			showmm(mmdat[i-1])
 			delay 4
 		}
 	}
@@ -131,8 +133,8 @@ function checkAll(n) {
 		n = 10000
 	}
 	select *
-	print "calculating atom types for " + {*}.length + " atoms..."
-	calculate partialcharge
+	print "checking atom types for " + {*}.length + " atoms..."
+	calculate partialCharge {*}
 	var nbad = 0
 	for (var a in {*}) {
 		m = a.modelIndex
@@ -142,14 +144,35 @@ function checkAll(n) {
 		atype = a.atomType
 		mmtype = "" + mmdat[_modelName]["atomInfo"][aname]["t"]
 		if (atype != mmtype) {
-			print "" + (++nbad) + "\t" + (m + 1) + "\t" + _modelName + "\t" + a + "\t" + aname + "\t" + mmtype + "\t_" + mmdat[_modelName]["atomInfo"][aname]["s"] + "\t" + atype  + "\t" + a.atomType
+			print "" + (++nbad) + "\t" + (m + 1) + "\t" + _modelName + "\t" + a + "\t" + aname + "\t" + mmtype + "\t_" + mmdat[_modelName]["atomInfo"][aname]["s"] + "\t" + atype
 		}
 	}
 	if (nbad == 0) {
 		print "...all types match mmff94"
+		checkAllEnergies()
 	}
-
 }
+
+function checkAllEnergies() {
+	var last = {*}[0].modelIndex
+	print "checking calculated energies for " + (last + 1) + " models"
+	set forcefield "MMFF"
+	set useMinimizationThread false
+	set minimizationSilent
+	var nBad = 0;
+	for (var m = 0; m <= last; m++) {
+		model @{m+1}
+		select {modelindex=m}
+		minimize energy
+		var x = 0.0 + getproperty("minimizationinfo").split("TOTAL ENERGY =")[2].trim().split(" ")[1]
+		var ref = mmdat[_modelName]["energy"]
+		var diff = abs(x - ref)
+		if (diff > 0.1) { 
+			print "" + (++nBad) + "\t" + _modelName + "\t E= \t" + x + "\t Eref=\t" + ref + "\t diff= \t" + diff
+		}
+	}
+}
+
 
 function checkAllCharges(n) {
 	if (!n) {
@@ -158,7 +181,7 @@ function checkAllCharges(n) {
 	var max = 0.001001
 	select *
 	var A = {*}.partialcharge.all
-	calculate partialcharge
+	calculate partialCharge {*}
 	{*}.partialcharge = A.sub({*}.partialcharge.all)
 	select partialcharge > max or partialcharge < -max
 	selectionhalos on
@@ -169,9 +192,9 @@ function checkAllCharges(n) {
 		if(m>n){quit}
 		model @{m+1}
 		aname = a.atomName
-		atype = a.atomType.split(":")[1]
+		atype = a.atomType
 		mmtype = "" + mmdat[_modelName]["atomInfo"][aname]["t"]
-		print "" + (++nbad) + "\t" + (m + 1) + "\t" + _modelName + "\t" + a + "\t" + aname + "\t" + a.partialCharge +  "\t" + mmtype + "\t_" + mmdat[_modelName]["atomInfo"][aname]["s"]
+		print "" + (++nbad) + "\t" + (m + 1) + "\t" + _modelName + "\t" + a + "\t" + aname + "\t" + a.partialCharge +  "\t" + mmtype + "\t_" + mmdat[_modelName]["atomInfo"][aname]["s"] + "\t" + atype
 	}
 
 }
@@ -181,19 +204,19 @@ function checkmm(name, dodif) {
 	select *
 	wireframe only
 	 A = {*}.partialcharge.all
-	calculate partialCharge
+	calculate partialCharge {*}
 	if (dodif) {
 		{*}.partialcharge = A.sub({*}.partialcharge.all)
 		select partialcharge > 0.01 or partialcharge < -0.01
-		print {*}.partialcharge.all.stddev
+print {selected}
 	}
 	labelMM(dodif ? "pink" : "none")
 	print {*}.partialcharge.all.stddev
 //	showmm @name
-	checkatoms name
+//	checkatoms name
 }
 
-function findmm(smartsString) {
+function findsm(smartsString) {
 	var x = {within(smarts,@smartsString)}
 	print x
 	findAtom(x[1].atomIndex)	

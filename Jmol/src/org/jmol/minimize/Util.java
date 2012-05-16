@@ -133,7 +133,7 @@ public class Util {
   public static double pointPlaneAngleRadians(Vector3d a, Vector3d b,
                                               Vector3d c, Vector3d d,
                                               Vector3d v1,Vector3d v2, 
-                                              Vector3d norm) {
+                                              Vector3d norm, boolean fixTheta) {
     
     v1.sub(b, c);
     v2.sub(b, d);
@@ -141,14 +141,17 @@ public class Util {
     v2.add(v1);
     v1.sub(b, a);
     // we need to allow for very distorted cases, where a, c, and d are very close to each other
-    double angleA_CD = vectorAngleRadians(v2, v1); 
+    double angleA_CD = (fixTheta ? vectorAngleRadians(v2, v1) : Math.PI); 
     // normally angleA_CD is > pi/2, because v1 is from a to b
     double angleNorm = vectorAngleRadians(norm, v1);
     // angleNorm could be > PI/2, so we correct for that here:
     if (angleNorm > Math.PI / 2)
       angleNorm = Math.PI - angleNorm;
     // for highly distorted groups, return will be > pi/2
-    return Math.PI / 2.0 + (angleA_CD > Math.PI / 2.0 ? -angleNorm : angleNorm) ;    
+    double val = Math.PI / 2.0 + (angleA_CD > Math.PI / 2.0 ? 
+        -angleNorm 
+        : angleNorm) ;    
+    return val;
   }
 
   private static double vectorAngleRadians(Vector3d v1, Vector3d v2) {

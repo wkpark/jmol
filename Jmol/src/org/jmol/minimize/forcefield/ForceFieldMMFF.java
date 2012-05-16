@@ -52,12 +52,87 @@ import org.jmol.util.Logger;
  * MMFF94 implementation 5/14/2012
  * 
  * - fully validated for atom types and charges
- * - not not yet validated for energies
+ * - reasonably well validated for energies (see below)
  * 
  * - TODO: add UFF for preliminary/backup calculation
  * 
  * @author Bob Hanson hansonr@stolaf.edu
+ *
+ * Java implementation by Bob Hanson 5/2012
+ * based on chemKit code by Kyle Lutz.
+ *    
+ * Original work, as listed at http://towhee.sourceforge.net/forcefields/mmff94.html:
+ * 
+ *    T. A. Halgren; "Merck Molecular Force Field. I. Basis, Form, Scope, 
+ *      Parameterization, and Performance of MMFF94", J. Comp. Chem. 5 & 6 490-519 (1996).
+ *    T. A. Halgren; "Merck Molecular Force Field. II. MMFF94 van der Waals 
+ *      and Electrostatic Parameters for Intermolecular Interactions", 
+ *      J. Comp. Chem. 5 & 6 520-552 (1996).
+ *    T. A. Halgren; "Merck Molecular Force Field. III. Molecular Geometries and 
+ *      Vibrational Frequencies for MMFF94", J. Comp. Chem. 5 & 6 553-586 (1996).
+ *    T. A. Halgren; R. B. Nachbar; "Merck Molecular Force Field. IV. 
+ *      Conformational Energies and Geometries for MMFF94", J. Comp. Chem. 5 & 6 587-615 (1996).
+ *    T. A. Halgren; "Merck Molecular Force Field. V. Extension of MMFF94 
+ *      Using Experimental Data, Additional Computational Data, 
+ *      and Empirical Rules", J. Comp. Chem. 5 & 6 616-641 (1996).
+ *    T. A. Halgren; "MMFF VII. Characterization of MMFF94, MMFF94s, 
+ *      and Other Widely Available Force Fields for Conformational Energies 
+ *      and for Intermolecular-Interaction Energies and Geometries", 
+ *      J. Comp. Chem. 7 730-748 (1999).
+ *      
+ * Validation carried out using MMFF94_opti.log and MMFF94_dative.mol2 
+ * (761 models) using checkmm.spt (checkAllEnergies)
+ * 
+ * All typical compounds validate. The following 13 rather esoteric 
+ * structures do not validate to within 0.1 kcal/mol total energy;
+ * 
+
+1 COMKAQ   E=   -7.3250003   Eref=  -7.6177  diff=  0.2926998
+ -- MMFF94 ignores 1 of 5-membered ring torsions for a 1-oxo-2-oxa-bicyclo[3.2.0]heptane
+ -- MMFF94_bmin.log: WARNING - Conformational Energies May Not Be Accurate
+
+2 DUVHUX10   E=   64.759995  Eref=  64.082855  diff=  0.6771393
+ -- MMFF94 ignores 5-membered ring issue for S-S-containing ring
+ -- MMFF94_bmin.log: WARNING - Conformational Energies May Not Be Accurate
+ 
+3 FORJIF   E=   35.978   Eref=  35.833878  diff=  0.14412308
+ -- MMFF94 uses some sort of undocumented empirical rule used for 1 torsion not found in tables
+ -- MMFF94_bmin.log: WARNING - Conformational Energies May Not Be Accurate
+
+4 JADLIJ   E=   25.104   Eref=  24.7038  diff=  0.4001999
+ -- ignores 5-membered ring for S (note, however, this is not the case in BODKOU)
+ -- MMFF94_bmin.log: WARNING - Conformational Energies May Not Be Accurate
+
+5 KEPKIZ   E=   61.127   Eref=  61.816277  diff=  0.68927765
+ -- MMFF94 requires empirical rule parameters
+ -- MMFF94_bmin.log: WARNING - Conformational Energies May Not Be Accurate
+
+6 PHOSLA10   E=   111.232994   Eref=  112.07078  diff=  0.8377838
+ -- MMFF94 ignores all 5-membered ring torsions in ring with P
+ -- (note, however, this is not the case in CUVGAB)
+ -- MMFF94_bmin.log: WARNING - Conformational Energies May Not Be Accurate
+
+7 PHOSLB10   E=   -93.479004   Eref=  -92.64081  diff=  0.8381958
+ -- MMFF94 ignores all 5-membered ring torsions in ring with P
+ -- (note, however, this is not the case in CUVGAB)
+ -- MMFF94_bmin.log: WARNING - Conformational Energies May Not Be Accurate
+
+empirical-rule-requiring models: (all are nonaromatic heterocycles)
+
+8   ERULE_01   E=   -22.582  Eref=  -21.515108   diff=  1.0668926
+9   ERULE_02   E=   29.407999  Eref=  29.799572  diff=  0.39157295
+10  ERULE_03   E=   -3.326   Eref=  -2.9351802   diff=  0.3908198
+11  ERULE_04   E=   -2.572   Eref=  -2.31007   diff=  0.26193
+12  ERULE_07   E=   2.873  Eref=  3.16775  diff=  0.29474998
+13  ERULE_08   E=   33.734   Eref=  34.41382   diff=  0.6798172 
+ 
+ 
+ *
+ * 
+ * 
  */
+
+
 public class ForceFieldMMFF extends ForceField {
 
   private static final int A4_SB = 125;
@@ -250,10 +325,20 @@ public class ForceFieldMMFF extends ForceField {
           break;
         case 3:   // angles: ka, theta0
         case 33:  // stretch-bend: kbaIJK, kbaKJI
-        case 333: // default stretch-bend: F(I_J,K),F(K_J,I)  
           value = new double[] {
               Double.valueOf(line.substring(19,25).trim()).doubleValue(),
               Double.valueOf(line.substring(28,35).trim()).doubleValue() };
+          break;
+        case 333: // default stretch-bend: F(I_J,K),F(K_J,I)  
+          double v1 = Double.valueOf(line.substring(19,25).trim()).doubleValue();
+          double v2 = Double.valueOf(line.substring(28,35).trim()).doubleValue();
+          value = new double[] { v1, v2 };
+          Integer key = MinObject.getKey(type, a1, a2, a3, a4);
+          data.put(key, value);
+          value = new double[] { v2, v1 };
+          int a = a1;
+          a1 = a3;
+          a3 = a;
           break;
         case 4: // tor: v1, v2, v3
           value = new double[] {
@@ -340,7 +425,6 @@ public class ForceFieldMMFF extends ForceField {
     float[] partialCharges = new float[atoms.length];
     for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1))
       partialCharges[i] = atomTypes.get(Math.max(0, aTypes[i])).formalCharge;
-
     // run through all bonds, adjusting formal charges as necessary
     Atom a1 = null;
     for (int i = bTypes.length; --i >= 0;) {
@@ -434,6 +518,7 @@ public class ForceFieldMMFF extends ForceField {
 
   private static boolean isBondType1(AtomType at1, AtomType at2) {
     return at1.sbmb && at2.sbmb || at1.arom && at2.arom; 
+    // but what about at1.sbmb && at2.arom?
   }
 
   private static int getBondType(Bond bond, AtomType at1, AtomType at2,
@@ -496,7 +581,7 @@ public class ForceFieldMMFF extends ForceField {
       if (bonds != null)
         for (int j = bonds.length; --j >= 0;)
           if (bonds[j].isCovalent())
-            bsConnected.set(j);
+            bsConnected.set(bonds[j].getOtherAtom(a).index);
     }
     
     // we need to identify H atoms and also make a BitSet of all the elements
@@ -519,6 +604,8 @@ public class ForceFieldMMFF extends ForceField {
       AtomType at = atomTypes.get(i);
       if (!bsElements.get(at.elemNo))
         continue;
+      if (i == 100)
+        System.out.println(at.smartsCode);
       smarts[i] = at.smartsCode;
       nUsed++;
     }
@@ -533,9 +620,16 @@ public class ForceFieldMMFF extends ForceField {
         bsConnected, bitSets, vRings);
     BitSet bsDone = new BitSet();
     for (int j = 0; j < bitSets.size(); j++) {
+      if (j == 100)
+        System.out.println("working");
       BitSet bs = bitSets.get(j);
+      System.out.println(j + " " + bs);
       if (bs == null)
         continue;
+      if (j == 100)
+        System.out.println(bs);
+      if(bs.get(8245))
+        System.out.println("j = " + j + " " + atomTypes.get(j).descr);
       // This is a one-pass system. We first exclude
       // all atoms that are already identified...
       bs.andNot(bsDone);
@@ -545,7 +639,7 @@ public class ForceFieldMMFF extends ForceField {
       // then we include these atoms in the set of atoms already identified
       bsDone.or(bs);
     }
-    
+
     // now we add in the H atom types as the negative of their MMFF94 type
     // rather than as an index into AtomTypes. 
     
@@ -588,8 +682,9 @@ public class ForceFieldMMFF extends ForceField {
       int rawIndex = minAtoms[i].atom.index;
       int it = rawAtomTypes[rawIndex];
       minAtoms[i].ffAtomType = atomTypes.get(Math.max(0, it));
-      minAtoms[i].ffType = (it < 0 ? -it : atomTypes.get(it).mmType);
-      minAtoms[i].vdwKey = MinObject.getKey(KEY_VDW, minAtoms[i].ffType, 127, 127, A4_VDW);
+      int type = (it < 0 ? -it : atomTypes.get(it).mmType);
+      minAtoms[i].ffType = type;
+      minAtoms[i].vdwKey = MinObject.getKey(KEY_VDW, type, 127, 127, A4_VDW);
       minAtoms[i].partialCharge = rawMMFF94Charges[rawIndex];
     }
     
@@ -600,8 +695,8 @@ public class ForceFieldMMFF extends ForceField {
       fixOrder(bond.data, 0, 1);
       bond.type = rawBondTypes[bond.rawIndex];
       bond.key = MinObject.getKey(bond.type, 
-          minAtoms[bond.data[0]].ffType, 
-          minAtoms[bond.data[1]].ffType, 
+          typeOf(bond.data[0]), 
+          typeOf(bond.data[1]), 
           127, 127);
 /*      
       System.out.println(bond 
@@ -620,9 +715,9 @@ public class ForceFieldMMFF extends ForceField {
         swap(angle.data, ABI_IJ, ABI_JK);
       setAngleType(angle);
       angle.key = MinObject.getKey(angle.type, 
-          minAtoms[angle.data[0]].ffType, 
-          minAtoms[angle.data[1]].ffType, 
-          minAtoms[angle.data[2]].ffType, 
+          typeOf(angle.data[0]), 
+          typeOf(angle.data[1]), 
+          typeOf(angle.data[2]), 
           127);
 /*      
       System.out.println(angle
@@ -632,21 +727,21 @@ public class ForceFieldMMFF extends ForceField {
           + "\t" + Escape.escape(getFFParams(angle.key))
       );
 */      
-      int typeA = minAtoms[angle.data[0]].ffType;
-      int typeB = minAtoms[angle.data[1]].ffType;
-      int typeC = minAtoms[angle.data[2]].ffType;
+      int typeA = typeOf(angle.data[0]);
+      int typeB = typeOf(angle.data[1]);
+      int typeC = typeOf(angle.data[2]);
       angle.sbKey = MinObject.getKey(angle.sbType, typeA, typeB, typeC, A4_SB);
       if (getFFParams(angle.sbKey) == null) {
         int r1 = getRowFor(angle.data[0]);
         int r2 = getRowFor(angle.data[1]);
         int r3 = getRowFor(angle.data[2]);
-        angle.sbKey = MinObject.getKey(angle.sbType, r1, r2, r3, A4_SBDEF);
+        angle.sbKey = MinObject.getKey(0, r1, r2, r3, A4_SBDEF);
       }
 /*      
       System.out.println(angle
-          + " " + minAtoms[angle.data[0]]
-          + " " + minAtoms[angle.data[1]]
-          + " " + minAtoms[angle.data[2]]
+          + " " + typeOf(angle.data[0]]
+          + " " + typeOf(angle.data[1]]
+          + " " + typeOf(angle.data[2]]
           + "\tSB " + Escape.escape(getFFParams(angle.sbKey))
       );
 */      
@@ -669,10 +764,10 @@ public class ForceFieldMMFF extends ForceField {
         break;
       }
       setTorsionType(t);
-      int typeA = minAtoms[t.data[0]].ffType;
-      int typeB = minAtoms[t.data[1]].ffType;
-      int typeC = minAtoms[t.data[2]].ffType;
-      int typeD = minAtoms[t.data[3]].ffType;
+      int typeA = typeOf(t.data[0]);
+      int typeB = typeOf(t.data[1]);
+      int typeC = typeOf(t.data[2]);
+      int typeD = typeOf(t.data[3]);
       t.key = MinObject.getKey(t.type, typeA, typeB, typeC, typeD);
       if (getFFParams(t.key) == null) {
         t.key = MinObject.getKey(t.type, getEquivalentType(typeA, 0), typeB, typeC, getEquivalentType(typeD, 2));
@@ -688,10 +783,10 @@ public class ForceFieldMMFF extends ForceField {
       }
 /*
       System.out.println(t 
-          + " " + minAtoms[t.data[0]]
-          + " " + minAtoms[t.data[1]]
-          + " " + minAtoms[t.data[2]]
-          + " " + minAtoms[t.data[3]]
+          + " " + typeOf(t.data[0]]
+          + " " + typeOf(t.data[1]]
+          + " " + typeOf(t.data[2]]
+          + " " + typeOf(t.data[3]]
           + "\t" + Escape.escape(getFFParams(t.key)));
 */      
     }
@@ -757,18 +852,34 @@ public class ForceFieldMMFF extends ForceField {
   
   private void setTorsionType(MinTorsion t) {
     // from chemkit MmffAtomTyper::torsionInteractionType
-    if (checkRings(vRings[R4], t.data, 3)) { 
+    if (checkRings(vRings[R4], t.data, 4)) { 
       t.type = 4; // in 4-membered ring
-      return;
-    }
-    if (checkRings(vRings[R5], t.data, 4)) { 
-      t.type = 5; // in 5-membered ring
       return;
     }
     t.type = (minBonds[t.data[TBI_BC]].type == 1 ? 1 
         : minBonds[t.data[TBI_AB]].type == 0 && minBonds[t.data[TBI_CD]].type == 0 ? 0 : 2);
+    if (t.type == 0 && checkRings(vRings[R5], t.data, 4)) {
+      //if (!isPorS(t.data[0]) && !isPorS(t.data[1]) && !isPorS(t.data[2]) && !isPorS(t.data[3]))
+      t.type = 5; // in 5-membered ring
+    }
   }
-
+/*
+ * this did not work -- far more misses with it than without it
+ * 
+  private boolean isPorS(int i) {
+    switch (minAtoms[i].atom.getElementNumber()) {
+    case 15:
+    case 16:
+      return true;
+    default:
+      return false;
+    }
+  }
+*/
+  private int typeOf(int iAtom) {
+    return minAtoms[iAtom].ffType;
+  }
+  
   private boolean checkRings(List<BitSet> v, int[] minlist, int n) {
     if (v != null)
       for (int i = v.size(); --i >= 0;) {
@@ -790,7 +901,7 @@ public class ForceFieldMMFF extends ForceField {
    * @return  1 if in order, 0 if same, -1 if reversed
    */
   private int fixOrder(int[] a, int i, int j) {
-    int test = minAtoms[a[j]].ffType - minAtoms[a[i]].ffType; 
+    int test = typeOf(a[j]) - typeOf(a[i]); 
     if (test < 0)
       swap(a, i, j);
     return (test < 0 ? -1 : test > 0 ? 1 : 0);
@@ -802,26 +913,37 @@ public class ForceFieldMMFF extends ForceField {
     a[j] = t;
   }
 
+  private int[] typeData = new int[4];
+  
   double getOutOfPlaneParameter(int[] data) {
-    fixOrder(data, 0, 2);
-    fixOrder(data, 0, 3);
-    fixOrder(data, 2, 3);
-    int typeA = minAtoms[data[0]].ffType;
-    int typeB = minAtoms[data[1]].ffType;
-    int typeC = minAtoms[data[2]].ffType;
-    int typeD = minAtoms[data[3]].ffType;
-    Object params = getFFParams(MinObject.getKey(KEY_OOP, 
-        typeA, typeB, typeC, typeD)); 
-    if (params == null)
-      for (int i = 0; i < 3; i++)
-        if ((params = getFFParams(
-            MinObject.getKey(KEY_OOP, 
-            getEquivalentType(typeA, i), 
-            typeB, 
-            getEquivalentType(typeC, i), 
-            getEquivalentType(typeD, i)))) != null)
+    int typeA = typeData[0] = typeOf(data[0]);
+    /*int typeB = */typeData[1] = typeOf(data[1]);
+    int typeC = typeData[2] = typeOf(data[2]);
+    int typeD = typeData[3] = typeOf(data[3]);
+    Object params = getSortedOOPParam(typeData);
+    if (params == null) {
+      for (int i = 0; i < 3; i++) {
+        typeData[0] = getEquivalentType(typeA, i);
+        typeData[2] = getEquivalentType(typeC, i);
+        typeData[3] = getEquivalentType(typeD, i);
+        if ((params = getSortedOOPParam(typeData)) != null)
           break;
+      }
+    }
     return ((Double) params).doubleValue();
+  }
+
+  private static Object getSortedOOPParam(int[] typeData) {
+    fixTypeOrder(typeData, 0, 2);
+    fixTypeOrder(typeData, 0, 3);
+    fixTypeOrder(typeData, 2, 3);
+    return getFFParams(MinObject.getKey(KEY_OOP, 
+        typeData[0], typeData[1], typeData[2], typeData[3])); 
+  }
+
+  private static void fixTypeOrder(int[] a, int i, int j) {
+    if (a[i] > a[j])
+      swap(a, i, j);
   }
 
   /*

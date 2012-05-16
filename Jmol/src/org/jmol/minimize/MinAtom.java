@@ -101,4 +101,14 @@ public class MinAtom {
     return bonds.get(j).index;
   }
 
+  public static boolean isLinear(MinAtom minAtom) {
+    switch (minAtom.ffType) {
+    case 4:
+    case 53:
+    case 61:
+      return true; 
+    }
+    return false;
+  }
+
 }

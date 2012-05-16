@@ -5784,6 +5784,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case Token.forcefield:
       // 12.3.25
       global.forceField = value;
+      minimizer = null;
       break;
     case Token.nmrurlformat:
       // 12.3.3

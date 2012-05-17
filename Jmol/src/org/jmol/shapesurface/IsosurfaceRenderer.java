@@ -419,21 +419,21 @@ public class IsosurfaceRenderer extends MeshRenderer {
                 imesh.slabColix, colixA);
         }
       }
+      if (diam == Integer.MIN_VALUE) {
+        if (imesh.diameter <= 0) {
+          diam = viewer.getDotScale();
+        } else {
+          diam = viewer.getScreenDim() / 100;
+        }
+        if (diam < 1)
+          diam = 1;
+      }
       if (fill) {
         if (generateSet) {
           bsPolygons.set(i);
           continue;
         }
         if (iB == iC) {
-          if (diam == Integer.MIN_VALUE) {
-            if (imesh.diameter <= 0) {
-              diam = viewer.getDotScale();
-            } else {
-              diam = viewer.getScreenDim() / 100;
-            }
-            if (diam < 1)
-              diam = 1;
-          }
           setColix(colixA);
           if (iA == iB)
             g3d.fillSphere(diam, screens[iA]);
@@ -467,10 +467,10 @@ public class IsosurfaceRenderer extends MeshRenderer {
           g3d.setColix(mesh.fillTriangles ? Graphics3D.BLACK
               : contourColixes[vertexIndexes[4] % contourColixes.length]);
         } else {
-          g3d.drawTriangle(pt1i, colixA, pt2i, colixB, pt3i, colixC, check);
+          drawTriangle(pt1i, colixA, pt2i, colixB, pt3i, colixC, check, diam);
           continue;
         }
-        g3d.drawTriangle(pt1i, pt2i, pt3i, check);
+        drawTriangle(pt1i, colix, pt2i, colix, pt3i, colix, check, diam);
       }
     }
     if (generateSet)

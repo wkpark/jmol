@@ -2445,7 +2445,7 @@ final public class Graphics3D implements JmolRendererInterface {
     float newScale = font.fontSizeNominal * scale;
     return (newScale == font.fontSize ? font : Font3D.getFont3D(
         font.idFontFace,
-        (isAntialiased() ? font.idFontStyle | 1 : font.idFontStyle), 
+        (antialiasThisFrame ? font.idFontStyle | 1 : font.idFontStyle), 
         newScale, font.fontSizeNominal, platform));
   }
 

@@ -307,7 +307,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
               screens[iC], colix, nC);
           continue;
         }
-        g3d.drawTriangle(screens[iA], screens[iB], screens[iC], check);
+        drawTriangle(screens[iA], colix, screens[iB], colix, screens[iC], colix, check, 1);
         continue;
       case 4:
         int iD = vertexIndexes[3];
@@ -329,6 +329,26 @@ public abstract class MeshRenderer extends ShapeRenderer {
     }
     if (generateSet)
       exportSurface(colix);
+  }
+
+  protected void drawTriangle(Point3i screenA, short colixA, 
+                            Point3i screenB, short colixB, 
+                            Point3i screenC, short colixC, int check, int diam) {
+    if (antialias || diam != 1) {
+      if (antialias)
+        diam <<= 1;
+      if ((check & 1) == 1)
+        g3d.fillCylinder(colixA, colixB, Graphics3D.ENDCAPS_OPEN, diam, 
+            screenA.x, screenA.y, screenA.z, screenB.x, screenB.y, screenB.z);
+      if ((check & 2) == 2)
+        g3d.fillCylinder(colixB, colixC, Graphics3D.ENDCAPS_OPEN, diam, 
+            screenB.x, screenB.y, screenB.z, screenC.x, screenC.y, screenC.z);
+      if ((check & 4) == 4)
+        g3d.fillCylinder(colixA, colixC, Graphics3D.ENDCAPS_OPEN, diam, 
+            screenA.x, screenA.y, screenA.z, screenC.x, screenC.y, screenC.z);
+    } else {
+      g3d.drawTriangle(screenA, colixA, screenB, colixB, screenC, colixC, check);
+    }
   }
 
   protected int checkNormals(short nA, short nB, short nC) {

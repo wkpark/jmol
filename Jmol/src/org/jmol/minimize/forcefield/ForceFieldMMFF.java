@@ -146,12 +146,14 @@ public class ForceFieldMMFF extends ForceField {
   private static final int TYPE_PBCI = 0x1;
   private static final int TYPE_VDW = 0x11;
   private static final int TYPE_CHRG = 0x22;
-  private static final int TYPE_BOND = 0x3;  // 0011
-  private static final int TYPE_ANGLE = 0x5; // 0101
-  private static final int TYPE_SB = 0x15; // 1 0101
-  private static final int TYPE_SBDEF = 0x25; // 10 0101
-  private static final int TYPE_TORSION = 0x9; // 0 1001
-  private static final int TYPE_OOP = 0xB; // 1 1011;
+  // the following are bit flags indicating in the 0xF range 
+  // which atoms might have default parameter values
+  private static final int TYPE_BOND = 0x3;    //    0011
+  private static final int TYPE_ANGLE = 0x5;   //    0101
+  private static final int TYPE_SB = 0x15;     // 01 0101
+  private static final int TYPE_SBDEF = 0x25;  // 10 0101
+  private static final int TYPE_TORSION = 0x9; // 00 1001
+  private static final int TYPE_OOP = 0xD;     // 00 1101;
   
 
   private static List<AtomType> atomTypes;
@@ -789,8 +791,9 @@ public class ForceFieldMMFF extends ForceField {
     return false; 
   }
 
-  private Integer getKey(MinObject o, int type, int ktype) {
-    int[] data = o.data;
+  private Integer getKey(Object obj, int type, int ktype) {
+    MinObject o = (obj instanceof MinObject ? (MinObject) obj : null);
+    int[] data = (o == null ? (int[]) obj : o.data);
     int n = 4;
     switch (ktype) {
     case TYPE_BOND:
@@ -824,8 +827,14 @@ public class ForceFieldMMFF extends ForceField {
     Integer key = null;
     for (int i = 0; i < 4; i++)
       typeData[i] = (i < n ? typeOf(data[i]) : 127);
-    if (ktype == TYPE_SB)
+    switch (ktype) {
+    case TYPE_SB:
       typeData[3] = A4_SB;
+      break;
+    case TYPE_OOP:
+      sortOop(typeData);
+      break;
+    }
     key = MinObject.getKey(type, typeData[0], typeData[1], typeData[2],
         typeData[3]);
     if (ffParams.containsKey(key))
@@ -838,20 +847,14 @@ public class ForceFieldMMFF extends ForceField {
         return key;
       break;
     case TYPE_TORSION:
-      key = MinObject.getKey(type, getEquivalentType(typeData[0], 0),
-          typeData[1], typeData[2], getEquivalentType(typeData[3], 2));
-      if (ffParams.containsKey(key))
+      if (ffParams.containsKey(key = getTorsionKey(type, 0, 2)))
         return key;
-      key = MinObject.getKey(type, getEquivalentType(typeData[0], 2),
-          typeData[1], typeData[2], getEquivalentType(typeData[3], 0));
-      if (ffParams.containsKey(key))
+      if (ffParams.containsKey(key = getTorsionKey(type, 2, 0)))
         return key;
-      key = MinObject.getKey(type, getEquivalentType(typeData[0], 2),
-          typeData[1], typeData[2], getEquivalentType(typeData[3], 2));
+      if (ffParams.containsKey(key = getTorsionKey(type, 2, 2)))
+        return key;
       // set type = 0 if necessary...
-      return (ffParams.containsKey(key) ? key : MinObject.getKey(0,
-          getEquivalentType(typeData[0], 2), typeData[1], typeData[2],
-          getEquivalentType(typeData[3], 2)));
+      return getTorsionKey(0, 2, 2);
     case TYPE_SB:
       // use periodic row info
       int r1 = getRowFor(data[0]);
@@ -873,6 +876,9 @@ public class ForceFieldMMFF extends ForceField {
       case TYPE_ANGLE:
         isSwapped = (fixTypeOrder(typeData, 0, 2));
         break;
+      case TYPE_OOP:
+        sortOop(typeData);
+        break;
       }
       key = MinObject.getKey(type, typeData[0], typeData[1], typeData[2],
           typeData[3]);
@@ -893,6 +899,11 @@ public class ForceFieldMMFF extends ForceField {
     return key;
   }
 
+  private Integer getTorsionKey(int type, int i, int j) {
+    return MinObject.getKey(type, getEquivalentType(typeData[0], i),
+        typeData[1], typeData[2], getEquivalentType(typeData[3], j));  
+  }
+
   private Integer applyEmpiricalRules(MinObject o, int ktype) {
     // TODO
     return null;
@@ -906,29 +917,15 @@ public class ForceFieldMMFF extends ForceField {
   private int[] typeData = new int[4];
   
   double getOutOfPlaneParameter(int[] data) {
-    int typeA = typeData[0] = typeOf(data[0]);
-    /*int typeB = */typeData[1] = typeOf(data[1]);
-    int typeC = typeData[2] = typeOf(data[2]);
-    int typeD = typeData[3] = typeOf(data[3]);
-    Object params = getSortedOOPParam(typeData);
-    if (params == null) {
-      for (int i = 0; i < 3; i++) {
-        typeData[0] = getEquivalentType(typeA, i);
-        typeData[2] = getEquivalentType(typeC, i);
-        typeData[3] = getEquivalentType(typeD, i);
-        if ((params = getSortedOOPParam(typeData)) != null)
-          break;
-      }
-    }
-    return ((Double) params).doubleValue();
+    Integer key = getKey(data, KEY_OOP, TYPE_OOP);
+    Double params = (Double) ffParams.get(key);    
+    return (params == null ? 0 : params.doubleValue());
   }
 
-  private static Object getSortedOOPParam(int[] typeData) {
+  private static void sortOop(int[] typeData) {
     fixTypeOrder(typeData, 0, 2);
     fixTypeOrder(typeData, 0, 3);
     fixTypeOrder(typeData, 2, 3);
-    return ffParams.get(MinObject.getKey(KEY_OOP, 
-        typeData[0], typeData[1], typeData[2], typeData[3])); 
   }
 
   /**

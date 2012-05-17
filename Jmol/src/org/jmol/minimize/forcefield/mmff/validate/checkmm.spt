@@ -1,3 +1,4 @@
+set forcefield "MMFF"
 print "checkmm.spt reading mmff-validation.dat..."
 vdat = load("mmff-validation.dat").split("model ")
 tdat = {}
@@ -160,6 +161,9 @@ function checkAllEnergies() {
 	set useMinimizationThread false
 	set minimizationSilent
 	var nBad = 0;
+	var a = [];
+	var max = 0.1;
+	a[last + 1] = 0;
 	for (var m = 0; m <= last; m++) {
 		model @{m+1}
 		select {modelindex=m}
@@ -167,10 +171,12 @@ function checkAllEnergies() {
 		var x = 0.0 + getproperty("minimizationinfo").split("TOTAL ENERGY =")[2].trim().split(" ")[1]
 		var ref = mmdat[_modelName]["energy"]
 		var diff = abs(x - ref)
-		if (diff > 0.1) { 
+		a[m + 1] = diff
+		if (diff > max) { 
 			print "" + (++nBad) + "\t" + _modelName + "\t E= \t" + x + "\t Eref=\t" + ref + "\t diff= \t" + diff
 		}
 	}
+	print "for " + (last+1) + " atoms, " + nBad + " have energies differences outside the range " + (-max) + " to " + max + " with a standard deviation of " + a.stddev
 }
 
 

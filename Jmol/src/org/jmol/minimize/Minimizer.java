@@ -390,10 +390,12 @@ public class Minimizer implements MinimizerInterface {
                 .add(new MinAngle(new int[] { ic, ia, ib, minAtoms[ia].getBondIndex(j),
                     i}));
             minAtoms[ic].bsVdw.clear(ib);
+/*
             System.out.println ("a " 
                 + minAtoms[ic].getIdentity() + " -- " 
                 + minAtoms[ia].getIdentity() + " -- " 
                 + minAtoms[ib].getIdentity());
+*/            
           }
       }
     }

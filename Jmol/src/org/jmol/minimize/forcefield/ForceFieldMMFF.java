@@ -36,6 +36,7 @@ import java.util.Map;
 
 import org.jmol.api.SmilesMatcherInterface;
 import org.jmol.minimize.MinAngle;
+import org.jmol.minimize.MinAtom;
 import org.jmol.minimize.MinBond;
 import org.jmol.minimize.MinObject;
 import org.jmol.minimize.MinTorsion;
@@ -83,7 +84,7 @@ import org.jmol.util.Logger;
  * Validation carried out using MMFF94_opti.log and MMFF94_dative.mol2 
  * (761 models) using checkmm.spt (checkAllEnergies)
  * 
- * All typical compounds validate. The following 13 rather esoteric 
+ * All typical compounds validate. The following 12 rather esoteric 
  * structures do not validate to within 0.1 kcal/mol total energy;
  * 
 
@@ -123,7 +124,6 @@ empirical-rule-requiring models: (all are nonaromatic heterocycles)
 9   ERULE_02   E=   29.407999  Eref=  29.799572  diff=  0.39157295
 10  ERULE_03   E=   -3.326   Eref=  -2.9351802   diff=  0.3908198
 11  ERULE_04   E=   -2.572   Eref=  -2.31007   diff=  0.26193
-12  ERULE_07   E=   2.873  Eref=  3.16775  diff=  0.29474998
 13  ERULE_08   E=   33.734   Eref=  34.41382   diff=  0.6798172 
  
  
@@ -139,8 +139,20 @@ public class ForceFieldMMFF extends ForceField {
   private static final int A4_SBDEF = 126;
   private static final int A4_VDW = 3;
   private static final int A4_CHRG = 4;
+  private static final int KEY_SBDEF = 0;
+  private static final int KEY_PBCI = 0;
   private static final int KEY_VDW = 0;
   private static final int KEY_OOP = 6;
+  private static final int TYPE_PBCI = 0x1;
+  private static final int TYPE_VDW = 0x11;
+  private static final int TYPE_CHRG = 0x22;
+  private static final int TYPE_BOND = 0x3;  // 0011
+  private static final int TYPE_ANGLE = 0x5; // 0101
+  private static final int TYPE_SB = 0x15; // 1 0101
+  private static final int TYPE_SBDEF = 0x25; // 10 0101
+  private static final int TYPE_TORSION = 0x9; // 0 1001
+  private static final int TYPE_OOP = 0xB; // 1 1011;
+  
 
   private static List<AtomType> atomTypes;
   private static Map<Integer, Object> ffParams;
@@ -211,8 +223,8 @@ public class ForceFieldMMFF extends ForceField {
       return;
     getAtomTypes("mmff/MMFF94-smarts.txt");
     Hashtable<Integer, Object> data = new Hashtable<Integer, Object>();
-    getMmffParameters("mmff/mmffpbci.par.txt", data, 1);
-    getMmffParameters("mmff/mmffchg.par.txt", data, 22);
+    getMmffParameters("mmff/mmffpbci.par.txt", data, TYPE_PBCI);
+    getMmffParameters("mmff/mmffchg.par.txt", data, TYPE_CHRG);
     ffParams = data;
   }
 
@@ -220,13 +232,13 @@ public class ForceFieldMMFF extends ForceField {
     // presumes charge parameters have been loaded
     if (ffParams.containsKey(Integer.valueOf(-1)))
       return;
-    getMmffParameters("mmff/mmffvdw.par.txt",  ffParams, 11);
-    getMmffParameters("mmff/mmffbond.par.txt", ffParams, 2);
-    getMmffParameters("mmff/mmffang.par.txt",  ffParams, 3);
-    getMmffParameters("mmff/mmffstbn.par.txt", ffParams, 33);
-    getMmffParameters("mmff/mmffdfsb.par.txt", ffParams, 333);
-    getMmffParameters("mmff/mmfftor.par.txt",  ffParams, 4);
-    getMmffParameters("mmff/mmffoop.par.txt",  ffParams, 44);
+    getMmffParameters("mmff/mmffvdw.par.txt",  ffParams, TYPE_VDW);
+    getMmffParameters("mmff/mmffbond.par.txt", ffParams, TYPE_BOND);
+    getMmffParameters("mmff/mmffang.par.txt",  ffParams, TYPE_ANGLE);
+    getMmffParameters("mmff/mmffstbn.par.txt", ffParams, TYPE_SB);
+    getMmffParameters("mmff/mmffdfsb.par.txt", ffParams, TYPE_SBDEF);
+    getMmffParameters("mmff/mmfftor.par.txt",  ffParams, TYPE_TORSION);
+    getMmffParameters("mmff/mmffoop.par.txt",  ffParams, TYPE_OOP);
     ffParams.put(Integer.valueOf(-1), Boolean.TRUE);
   }
 
@@ -256,57 +268,59 @@ public class ForceFieldMMFF extends ForceField {
           continue;
         int type = line.charAt(0) - '0';
         switch (dataType) {
-        case 44: // oop (tor max type is 5)
+        case TYPE_OOP: // oop (tor max type is 5)
           type = KEY_OOP;
           break;
-        case 333: // default stretch bend (by row; identified by a4 = 126, not 127)
+        case TYPE_SBDEF: // default stretch bend (by row; identified by a4 = 126, not 127)
           a4 = A4_SBDEF;
-          type = 0;
+          type = KEY_SBDEF;
           break;
-        case 33: // stretch bend identified by a4 = 125, not 127
+        case TYPE_SB: // stretch bend identified by a4 = 125, not 127
           a4 = A4_SB;
           break;
-        case 22: // chrg (bci, identified by a4 = 4, not 127)
+        case TYPE_CHRG: // chrg (bci, identified by a4 = 4, not 127)
           a4 = A4_CHRG;
           if (type == 4)
             continue; // I have no idea what type=4 here would mean. It's supposed to be a bond type
           break;
-        case 11:  // vdw identified by a4 = 3, not 127
+        case TYPE_VDW:  // vdw identified by a4 = 3, not 127
           if (line.charAt(5) != ' ')
             continue; // header stuff
           a4 = A4_VDW;
           type = KEY_VDW;
           break;
-        case 4:  // tor
-        case 3:  // angle
-        case 2:  // bond
-        case 1:  // pbci
+        case TYPE_PBCI:  // pbci
+          type = KEY_PBCI;
+          break;
+        case TYPE_TORSION:  // tor
+        case TYPE_ANGLE:  // angle
+        case TYPE_BOND:  // bond
           break;          
         }
         switch (dataType) {
-        case 44: 
-        case 4:
+        case TYPE_TORSION: 
+        case TYPE_OOP:
           a4 = Integer.valueOf(line.substring(18,20).trim()).intValue();
           // fall through
-        case 333:
-        case 33:
-        case 3:
+        case TYPE_ANGLE:
+        case TYPE_SB:
+        case TYPE_SBDEF:
           a3 = Integer.valueOf(line.substring(13,15).trim()).intValue();
           // fall through
-        case 22:
-        case 2:
+        case TYPE_CHRG:
+        case TYPE_BOND:
           a2 = Integer.valueOf(line.substring(8,10).trim()).intValue();
           break;
-        case 11:
-        case 1:
+        case TYPE_VDW:
+        case TYPE_PBCI:
           break;
         }
         a1 = Integer.valueOf(line.substring(3,5).trim()).intValue();
         switch (dataType) {
-        case 1: // atom pbci
+        case TYPE_PBCI:
           value = Float.valueOf(line.substring(5,15).trim());
           break;
-        case 11: // vdw alpha-i, N-i, A-i, G-i, DA
+        case TYPE_VDW: // vdw alpha-i, N-i, A-i, G-i, DA
           value = new double[] {
               Double.valueOf(line.substring(10,15).trim()).doubleValue(),
               Double.valueOf(line.substring(20,25).trim()).doubleValue(),
@@ -315,21 +329,21 @@ public class ForceFieldMMFF extends ForceField {
               line.charAt(46) // '-', 'A', 'D'
               };
           break;
-        case 2: // bond stretch: kb, r0 
+        case TYPE_BOND: // bond stretch: kb, r0 
           value = new double[] {
               Double.valueOf(line.substring(14,20).trim()).doubleValue(),
               Double.valueOf(line.substring(25,31).trim()).doubleValue() };
           break;
-        case 22: // bond chrg
+        case TYPE_CHRG: // bond chrg
           value = Float.valueOf(line.substring(10,20).trim());
           break;
-        case 3:   // angles: ka, theta0
-        case 33:  // stretch-bend: kbaIJK, kbaKJI
+        case TYPE_ANGLE:   // angles: ka, theta0
+        case TYPE_SB:  // stretch-bend: kbaIJK, kbaKJI
           value = new double[] {
               Double.valueOf(line.substring(19,25).trim()).doubleValue(),
               Double.valueOf(line.substring(28,35).trim()).doubleValue() };
           break;
-        case 333: // default stretch-bend: F(I_J,K),F(K_J,I)  
+        case TYPE_SBDEF: // default stretch-bend: F(I_J,K),F(K_J,I)  
           double v1 = Double.valueOf(line.substring(19,25).trim()).doubleValue();
           double v2 = Double.valueOf(line.substring(28,35).trim()).doubleValue();
           value = new double[] { v1, v2 };
@@ -340,14 +354,14 @@ public class ForceFieldMMFF extends ForceField {
           a1 = a3;
           a3 = a;
           break;
-        case 4: // tor: v1, v2, v3
+        case TYPE_TORSION: // tor: v1, v2, v3
           value = new double[] {
               Double.valueOf(line.substring(22,28).trim()).doubleValue(),
               Double.valueOf(line.substring(30,36).trim()).doubleValue(),
               Double.valueOf(line.substring(38,44).trim()).doubleValue()
               };
           break;
-        case 44: // oop: koop  
+        case TYPE_OOP: // oop: koop  
           value = Double.valueOf(line.substring(24,30).trim());
           break;
         }        
@@ -466,8 +480,8 @@ public class ForceFieldMMFF extends ForceField {
         if (bciValue == null) { 
           // no bci was found; we have to use partial bond charge increments
           // a failure here indicates we don't have information
-          float pa = ((Float) ffParams.get(MinObject.getKey(0, type1, 127, 127, 127))).floatValue();
-          float pb = ((Float) ffParams.get(MinObject.getKey(0, type2, 127, 127, 127))).floatValue();
+          float pa = ((Float) ffParams.get(MinObject.getKey(KEY_PBCI, type1, 127, 127, 127))).floatValue();
+          float pb = ((Float) ffParams.get(MinObject.getKey(KEY_PBCI, type2, 127, 127, 127))).floatValue();
           bci = pa - pb;
           if (Logger.debugging)
             msg += pa + " - " + pb + " = ";
@@ -604,8 +618,6 @@ public class ForceFieldMMFF extends ForceField {
       AtomType at = atomTypes.get(i);
       if (!bsElements.get(at.elemNo))
         continue;
-      if (i == 100)
-        System.out.println(at.smartsCode);
       smarts[i] = at.smartsCode;
       nUsed++;
     }
@@ -620,16 +632,9 @@ public class ForceFieldMMFF extends ForceField {
         bsConnected, bitSets, vRings);
     BitSet bsDone = new BitSet();
     for (int j = 0; j < bitSets.size(); j++) {
-      if (j == 100)
-        System.out.println("working");
       BitSet bs = bitSets.get(j);
-      System.out.println(j + " " + bs);
       if (bs == null)
         continue;
-      if (j == 100)
-        System.out.println(bs);
-      if(bs.get(8245))
-        System.out.println("j = " + j + " " + atomTypes.get(j).descr);
       // This is a one-pass system. We first exclude
       // all atoms that are already identified...
       bs.andNot(bsDone);
@@ -679,132 +684,37 @@ public class ForceFieldMMFF extends ForceField {
   private void fixTypes() {
     // set atom types in minAtoms
     for (int i = minAtomCount; --i >= 0;) {
-      int rawIndex = minAtoms[i].atom.index;
+      MinAtom a = minAtoms[i];
+      int rawIndex = a.atom.index;
       int it = rawAtomTypes[rawIndex];
-      minAtoms[i].ffAtomType = atomTypes.get(Math.max(0, it));
+      a.ffAtomType = atomTypes.get(Math.max(0, it));
       int type = (it < 0 ? -it : atomTypes.get(it).mmType);
-      minAtoms[i].ffType = type;
-      minAtoms[i].vdwKey = MinObject.getKey(KEY_VDW, type, 127, 127, A4_VDW);
-      minAtoms[i].partialCharge = rawMMFF94Charges[rawIndex];
+      a.ffType = type;
+      a.vdwKey = MinObject.getKey(KEY_VDW, type, 127, 127, A4_VDW);
+      a.partialCharge = rawMMFF94Charges[rawIndex];
     }
     
-    // fix order in bonds and set type and key
-    //System.out.println("-- bonds --");
-    for (int i = minBondCount; --i >= 0;) {
+    for (int i = minBonds.length; --i >= 0;) {
       MinBond bond = minBonds[i];
-      fixOrder(bond.data, 0, 1);
       bond.type = rawBondTypes[bond.rawIndex];
-      bond.key = MinObject.getKey(bond.type, 
-          typeOf(bond.data[0]), 
-          typeOf(bond.data[1]), 
-          127, 127);
-/*      
-      System.out.println(bond 
-          + " " + minAtoms[bond.data[0]]
-          + " " + minAtoms[bond.data[1]]
-          + "\t" + Escape.escape(getFFParams(bond.key)));
-*/      
+      bond.key = getKey(bond, bond.type, TYPE_BOND);
     }
     
-    // fix order in angles and set type
-//    System.out.println("-- angles --");
-
     for (int i = minAngles.length; --i >= 0;) {
-     MinAngle angle = minAngles[i];
-      if (fixOrder(angle.data, 0, 2) == -1)
-        swap(angle.data, ABI_IJ, ABI_JK);
-      setAngleType(angle);
-      angle.key = MinObject.getKey(angle.type, 
-          typeOf(angle.data[0]), 
-          typeOf(angle.data[1]), 
-          typeOf(angle.data[2]), 
-          127);
-/*      
-      System.out.println(angle
-          + " " + minAtoms[angle.data[0]]
-          + " " + minAtoms[angle.data[1]]
-          + " " + minAtoms[angle.data[2]]
-          + "\t" + Escape.escape(getFFParams(angle.key))
-      );
-*/      
-      int typeA = typeOf(angle.data[0]);
-      int typeB = typeOf(angle.data[1]);
-      int typeC = typeOf(angle.data[2]);
-      angle.sbKey = MinObject.getKey(angle.sbType, typeA, typeB, typeC, A4_SB);
-      if (getFFParams(angle.sbKey) == null) {
-        int r1 = getRowFor(angle.data[0]);
-        int r2 = getRowFor(angle.data[1]);
-        int r3 = getRowFor(angle.data[2]);
-        angle.sbKey = MinObject.getKey(0, r1, r2, r3, A4_SBDEF);
-      }
-/*      
-      System.out.println(angle
-          + " " + typeOf(angle.data[0]]
-          + " " + typeOf(angle.data[1]]
-          + " " + typeOf(angle.data[2]]
-          + "\tSB " + Escape.escape(getFFParams(angle.sbKey))
-      );
-*/      
+      MinAngle angle = minAngles[i];
+      angle.key = getKey(angle, angle.type, TYPE_ANGLE);
+      angle.sbKey = getKey(angle, angle.sbType, TYPE_SB);
     }
     
-    // fix order in torsions and set type
-//   System.out.println("-- torsions --");
     for (int i = minTorsions.length; --i >= 0;) {
-      MinTorsion t = minTorsions[i];
-      switch (fixOrder(t.data, 1, 2)) {
-      case 1:
-        break;
-      case -1:
-        swap(t.data, 0, 3);
-        swap(t.data, TBI_AB, TBI_CD);
-        break;
-      case 0:
-        if(fixOrder(t.data, 0, 3) == -1)
-          swap(t.data, TBI_AB, TBI_CD);
-        break;
-      }
-      setTorsionType(t);
-      int typeA = typeOf(t.data[0]);
-      int typeB = typeOf(t.data[1]);
-      int typeC = typeOf(t.data[2]);
-      int typeD = typeOf(t.data[3]);
-      t.key = MinObject.getKey(t.type, typeA, typeB, typeC, typeD);
-      if (getFFParams(t.key) == null) {
-        t.key = MinObject.getKey(t.type, getEquivalentType(typeA, 0), typeB, typeC, getEquivalentType(typeD, 2));
-        if (getFFParams(t.key) == null) {
-          t.key = MinObject.getKey(t.type, getEquivalentType(typeA, 2), typeB, typeC, getEquivalentType(typeD, 0));
-          if (getFFParams(t.key) == null) {
-            t.key = MinObject.getKey(t.type, getEquivalentType(typeA, 2), typeB, typeC, getEquivalentType(typeD, 2));
-            if (getFFParams(t.key) == null && t.type != 0) {
-              t.key = MinObject.getKey(0, getEquivalentType(typeA, 2), typeB, typeC, getEquivalentType(typeD, 2));
-            }
-          }
-        }
-      }
-/*
-      System.out.println(t 
-          + " " + typeOf(t.data[0]]
-          + " " + typeOf(t.data[1]]
-          + " " + typeOf(t.data[2]]
-          + " " + typeOf(t.data[3]]
-          + "\t" + Escape.escape(getFFParams(t.key)));
-*/      
+      MinTorsion torsion = minTorsions[i];
+      torsion.key = getKey(torsion, torsion.type, TYPE_TORSION);
     }
-//    System.out.println("done in ForceFieldMMFF");
-  }
-
-  private int getRowFor(int i) {
-    int elemno = minAtoms[i].atom.getElementNumber();
-    return (elemno < 3 ? 0 : elemno < 11 ? 1 : elemno < 19 ? 2 : elemno < 37 ? 3 : 4);
-  }
-
-  private static Object getFFParams(Integer key) {
-    return (key == null ? null : ffParams.get(key));
   }
 
   private final static int[] sbMap = {0, 1, 3, 5, 4, 6, 8, 9, 11};
 
-  private void setAngleType(MinAngle angle) {
+  private int setAngleType(MinAngle angle) {
     /*
     0      The angle <i>i-j-k</i> is a "normal" bond angle
     1        Either bond <i>i-j</i> or bond <i>j-k</i> has a bond type of 1
@@ -848,34 +758,20 @@ public class ForceFieldMMFF extends ForceField {
       angle.sbType += minBonds[angle.data[ABI_JK]].type;
       break;
     }
+    return angle.type;
   }
   
-  private void setTorsionType(MinTorsion t) {
-    // from chemkit MmffAtomTyper::torsionInteractionType
-    if (checkRings(vRings[R4], t.data, 4)) { 
-      t.type = 4; // in 4-membered ring
-      return;
-    }
+  private int setTorsionType(MinTorsion t) {
+    if (checkRings(vRings[R4], t.data, 4)) 
+      return (t.type = 4); // in 4-membered ring
     t.type = (minBonds[t.data[TBI_BC]].type == 1 ? 1 
         : minBonds[t.data[TBI_AB]].type == 0 && minBonds[t.data[TBI_CD]].type == 0 ? 0 : 2);
     if (t.type == 0 && checkRings(vRings[R5], t.data, 4)) {
-      //if (!isPorS(t.data[0]) && !isPorS(t.data[1]) && !isPorS(t.data[2]) && !isPorS(t.data[3]))
       t.type = 5; // in 5-membered ring
     }
+    return t.type;
   }
-/*
- * this did not work -- far more misses with it than without it
- * 
-  private boolean isPorS(int i) {
-    switch (minAtoms[i].atom.getElementNumber()) {
-    case 15:
-    case 16:
-      return true;
-    default:
-      return false;
-    }
-  }
-*/
+
   private int typeOf(int iAtom) {
     return minAtoms[iAtom].ffType;
   }
@@ -893,24 +789,118 @@ public class ForceFieldMMFF extends ForceField {
     return false; 
   }
 
-  /**
-   * 
-   * @param a
-   * @param i
-   * @param j
-   * @return  1 if in order, 0 if same, -1 if reversed
-   */
-  private int fixOrder(int[] a, int i, int j) {
-    int test = typeOf(a[j]) - typeOf(a[i]); 
-    if (test < 0)
-      swap(a, i, j);
-    return (test < 0 ? -1 : test > 0 ? 1 : 0);
+  private Integer getKey(MinObject o, int type, int ktype) {
+    int[] data = o.data;
+    int n = 4;
+    switch (ktype) {
+    case TYPE_BOND:
+      fixOrder(data, 0, 1);
+      n = 2;
+      break;
+    case TYPE_ANGLE:
+      if (fixOrder(data, 0, 2) == -1)
+        swap(data, ABI_IJ, ABI_JK);
+      type = setAngleType((MinAngle) o);
+      n = 3;
+      break;
+    case TYPE_SB:
+      n = 3;
+      break;
+    case TYPE_TORSION:
+      switch (fixOrder(data, 1, 2)) {
+      case 1:
+        break;
+      case -1:
+        swap(data, 0, 3);
+        swap(data, TBI_AB, TBI_CD);
+        break;
+      case 0:
+        if (fixOrder(data, 0, 3) == -1)
+          swap(data, TBI_AB, TBI_CD);
+        break;
+      }
+      type = setTorsionType((MinTorsion) o);
+    }
+    Integer key = null;
+    for (int i = 0; i < 4; i++)
+      typeData[i] = (i < n ? typeOf(data[i]) : 127);
+    if (ktype == TYPE_SB)
+      typeData[3] = A4_SB;
+    key = MinObject.getKey(type, typeData[0], typeData[1], typeData[2],
+        typeData[3]);
+    if (ffParams.containsKey(key))
+      return key;
+    // default typing
+    switch (ktype) {
+    case TYPE_BOND:
+      key = applyEmpiricalRules(o, ktype);
+      if (key != null)
+        return key;
+      break;
+    case TYPE_TORSION:
+      key = MinObject.getKey(type, getEquivalentType(typeData[0], 0),
+          typeData[1], typeData[2], getEquivalentType(typeData[3], 2));
+      if (ffParams.containsKey(key))
+        return key;
+      key = MinObject.getKey(type, getEquivalentType(typeData[0], 2),
+          typeData[1], typeData[2], getEquivalentType(typeData[3], 0));
+      if (ffParams.containsKey(key))
+        return key;
+      key = MinObject.getKey(type, getEquivalentType(typeData[0], 2),
+          typeData[1], typeData[2], getEquivalentType(typeData[3], 2));
+      // set type = 0 if necessary...
+      return (ffParams.containsKey(key) ? key : MinObject.getKey(0,
+          getEquivalentType(typeData[0], 2), typeData[1], typeData[2],
+          getEquivalentType(typeData[3], 2)));
+    case TYPE_SB:
+      // use periodic row info
+      int r1 = getRowFor(data[0]);
+      int r2 = getRowFor(data[1]);
+      int r3 = getRowFor(data[2]);
+      return MinObject.getKey(KEY_SBDEF, r1, r2, r3, A4_SBDEF);
+    }
+    // run through equivalent types, really just 3
+    boolean isSwapped = false;
+    boolean haveKey = false;
+    for (int i = 0; i < 3 && !haveKey; i++) {
+      for (int j = 0, bit = 1; j < n; j++, bit <<= 1)
+        if ((ktype & bit) == bit)
+          typeData[j] = getEquivalentType(typeOf(data[j]), i);
+      switch (ktype) {
+      case TYPE_BOND:
+        isSwapped = (fixTypeOrder(typeData, 0, 1));
+        break;
+      case TYPE_ANGLE:
+        isSwapped = (fixTypeOrder(typeData, 0, 2));
+        break;
+      }
+      key = MinObject.getKey(type, typeData[0], typeData[1], typeData[2],
+          typeData[3]);
+      haveKey = ffParams.containsKey(key);
+    }
+    if (haveKey) {
+      if (isSwapped)
+        switch (ktype) {
+        case TYPE_ANGLE:
+          swap(data, 0, 2);
+          swap(data, ABI_IJ, ABI_JK);
+          setAngleType((MinAngle) o);
+          break;
+        }
+    } else if (type != 0 && ktype == TYPE_ANGLE) {
+      key = Integer.valueOf(key.intValue() ^ 0xFF);
+    }
+    return key;
   }
 
-  private static void swap(int[] a, int i, int j) {
-    int t = a[i];
-    a[i] = a[j];
-    a[j] = t;
+  private Integer applyEmpiricalRules(MinObject o, int ktype) {
+    // TODO
+    return null;
+  }
+
+  private int getRowFor(int i) {
+    int elemno = minAtoms[i].atom.getElementNumber();
+    return (elemno < 3 ? 0 : elemno < 11 ? 1 : elemno < 19 ? 2 : elemno < 37 ? 3 : 4);
   }
 
   private int[] typeData = new int[4];
@@ -937,114 +927,44 @@ public class ForceFieldMMFF extends ForceField {
     fixTypeOrder(typeData, 0, 2);
     fixTypeOrder(typeData, 0, 3);
     fixTypeOrder(typeData, 2, 3);
-    return getFFParams(MinObject.getKey(KEY_OOP, 
+    return ffParams.get(MinObject.getKey(KEY_OOP, 
         typeData[0], typeData[1], typeData[2], typeData[3])); 
   }
 
-  private static void fixTypeOrder(int[] a, int i, int j) {
-    if (a[i] > a[j])
+  /**
+   * 
+   * @param a
+   * @param i
+   * @param j
+   * @return true if swapped; false if not
+   */
+  private static boolean fixTypeOrder(int[] a, int i, int j) {
+    if (a[i] > a[j]) {
       swap(a, i, j);
+      return true;
+    }
+    return false;
   }
 
-  /*
-   * atype aspec crd val  pilp mltb arom lin sbmb
-     1    6    4    4    0    0    0    0    0
-     2    6    3    4    0    2    0    0    1
-     3    6    3    4    0    2    0    0    1
-     4    6    2    4    0    3    0    1    1
-     5    1    1    1    0    0    0    0    0
-     6    8    2    2    1    0    0    0    0
-     7    8    1    2    0    2    0    0    0
-     8    7    3    3    1    0    0    0    0
-     9    7    2    3    0    2    0    0    1
-    10    7    3    3    1    1    0    0    0
-    11    9    1    1    1    0    0    0    0
-    12   17    1    1    1    0    0    0    0
-    13   35    1    1    1    0    0    0    0
-    14   53    1    1    1    0    0    0    0
-    15   16    2    2    1    0    0    0    0
-    16   16    1    2    0    2    0    0    0
-    17   16    3    4    0    2    0    0    0
-    18   16    4    4    0    0    0    0    0
-    19   14    4    4    0    0    0    0    0
-    20    6    4    4    0    0    0    0    0
-    21    1    1    1    0    0    0    0    0
-    22    6    4    4    0    0    0    0    0
-    23    1    1    1    0    0    0    0    0
-    24    1    1    1    0    0    0    0    0
-    25   15    4    4    0    0    0    0    0
-    26   15    3    3    1    0    0    0    0
-    27    1    1    1    0    0    0    0    0
-    28    1    1    1    0    0    0    0    0
-    29    1    1    1    0    0    0    0    0
-    30    6    3    4    0    2    0    0    1
-    31    1    1    1    0    0    0    0    0
-    32    8    1   12    1    1    0    0    0
-    33    1    1    1    0    0    0    0    0
-    34    7    4    4    0    0    0    0    0
-    35    8    1    1    1    1    0    0    0
-    36    1    1    1    0    0    0    0    0
-    37    6    3    4    0    2    1    0    1
-    38    7    2    3    0    2    1    0    0
-    39    7    3    3    1    1    1    0    1
-    40    7    3    3    1    0    0    0    0
-    41    6    3    4    0    1    0    0    0
-    42    7    1    3    0    3    0    0    0
-    43    7    3    3    1    0    0    0    0
-    44   16    2    2    1    1    1    0    0
-    45    7    3    4    0    2    0    0    0
-    46    7    2    3    0    2    0    0    0
-    47    7    1    2    0    2    0    0    0
-    48    7    2    2    0    0    0    0    0
-    49    8    3    3    0    0    0    0    0
-    50    1    1    1    0    0    0    0    0
-    51    8    2    3    0    2    0    0    0
-    52    1    1    1    0    0    0    0    0
-    53    7    2    4    0    2    0    1    0
-    54    7    3    4    0    2    0    0    1
-    55    7    3   34    0    1    0    0    0
-    56    7    3   34    0    1    0    0    0
-    57    6    3    4    0    2    0    0    1
-    58    7    3    4    0    1    1    0    1
-    59    8    2    2    1    1    1    0    0
-    60    6    1    3    0    3    0    0    0
-    61    7    2    4    0    3    0    1    0
-    62    7    2    2    1    0    0    0    0
-    63    6    3    4    0    2    1    0    1
-    64    6    3    4    0    2    1    0    1
-    65    7    2    3    0    2    1    0    0
-    66    7    2    3    0    2    1    0    0
-    67    7    3    4    0    2    0    0    1
-    68    7    4    4    0    0    0    0    0
-    69    7    3    4    0    1    1    0    0
-    70    8    2    2    1    0    0    0    0
-    71    1    1    1    0    0    0    0    0
-    72   16    1    1    1    1    0    0    0
-    73   16    3    3    0    0    0    0    0
-    74   16    2    4    0    2    0    0    0
-    75   15    2    3    0    2    0    0    1
-    76    7    2    2    1    0    0    0    0
-    77   17    4    4    0    0    0    0    0
-    78    6    3    4    0    2    1    0    1
-    79    7    2    3    0    2    1    0    0
-    80    6    3    4    0    2    0    0    1
-    81    7    3    4    0    1    1    0    1
-    82    7    3    4    0    1    1    0    0
-    87   26    0    0    0    0    0    0    0
-    88   26    0    0    0    0    0    0    0
-    89    9    0    0    0    0    0    0    0
-    90   17    0    0    0    0    0    0    0
-    91   35    0    0    0    0    0    0    0
-    92    3    0    0    0    0    0    0    0
-    93   11    0    0    0    0    0    0    0
-    94   19    0    0    0    0    0    0    0
-    95   30    0    0    0    0    0    0    0
-    96   20    0    0    0    0    0    0    0
-    97   29    0    0    0    0    0    0    0
-    98   29    0    0    0    0    0    0    0
-    99   12    0    0    0    0    0    0    0
+  /**
+   * 
+   * @param a
+   * @param i
+   * @param j
+   * @return  1 if in order, 0 if same, -1 if reversed
+   */
+  private int fixOrder(int[] a, int i, int j) {
+    int test = typeOf(a[j]) - typeOf(a[i]); 
+    if (test < 0)
+      swap(a, i, j);
+    return (test < 0 ? -1 : test > 0 ? 1 : 0);
+  }
 
-    */
+  private static void swap(int[] a, int i, int j) {
+    int t = a[i];
+    a[i] = a[j];
+    a[j] = t;
+  }
 
   private final static int[] equivalentTypes = {
     1,  1, //  1
@@ -1140,7 +1060,7 @@ public class ForceFieldMMFF extends ForceField {
    * 
    */
   private static int getEquivalentType(int type, int level) {
-    return (type == 70 || type > 82 ? type : level == 2 ? 0 : 
+    return (type == 0 ? 0 : type == 70 || type > 82 ? type : level == 2 ? 0 : 
       equivalentTypes[((type - 1) << 1) + level]);
   }
 }

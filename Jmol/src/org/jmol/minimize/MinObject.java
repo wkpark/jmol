@@ -15,7 +15,7 @@ public abstract class MinObject {
   public static Integer getKey(int type, int a1, int a2, int a3, int a4) {
     // 2^7 is 128; the highest mmff atom type is 99; 
     // key rolls over into negative numbers for a4 > 63
-    //System.out.println("getting key for " + type + " " + a1 + " " + a2 + " " + a3 + " " + a4);
+    //System.out.println("getting key for " + type + ": " + a1 + " " + a2 + " " + a3 + " " + a4);
     return Integer.valueOf((((((((a4 << 7) + a3) << 7) + a2) << 7) + a1) << 4) + type);
   }
 

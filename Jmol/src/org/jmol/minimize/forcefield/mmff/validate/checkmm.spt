@@ -161,7 +161,7 @@ function checkAllEnergies() {
 	set useMinimizationThread false
 	set minimizationSilent
 	var nBad = 0;
-	var a = [];
+	a = [];
 	var max = 0.1;
 	a[last + 1] = 0;
 	for (var m = 0; m <= last; m++) {
@@ -176,7 +176,7 @@ function checkAllEnergies() {
 			print "" + (++nBad) + "\t" + _modelName + "\t E= \t" + x + "\t Eref=\t" + ref + "\t diff= \t" + diff
 		}
 	}
-	print "for " + (last+1) + " atoms, " + nBad + " have energies differences outside the range " + (-max) + " to " + max + " with a standard deviation of " + a.stddev
+	print "for " + (last+1) + " atoms, " + nBad + " have energy differences outside the range " + (-max) + " to " + max + " with a standard deviation of " + a.stddev
 }
 
 

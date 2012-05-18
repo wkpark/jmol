@@ -128,6 +128,7 @@ public class Util {
    * @param v1
    * @param v2
    * @param norm
+   * @param fixTheta 
    * @return  Wilson angle
    */
   public static double pointPlaneAngleRadians(Vector3d a, Vector3d b,

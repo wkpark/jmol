@@ -1084,4 +1084,65 @@ public class Elements {
     }
   }
 
+  private static float[] electroNegativities = {
+    // from http://chemwiki.ucdavis.edu/Physical_Chemistry/Physical_Properties_of_Matter/Atomic_and_Molecular_Properties/Allred-Rochow_Electronegativity
+    0,
+    2.2f,//H
+    0,//He
+    0.97f,//Li
+    1.47f,//Be
+    2.01f,//B
+    2.5f,//C
+    3.07f,//N
+    3.5f,//O
+    4.1f,//F
+    0f,//
+    1.01f,//Na
+    1.23f,//Mg
+    1.47f,//Al
+    1.74f,//Si
+    2.06f,//P
+    2.44f,//S
+    2.83f,//Cl
+    0f,//
+    0.91f,//K
+    1.04f,//Ca
+    1.2f,//Sc
+    1.32f,//Ti
+    1.45f,//V
+    1.56f,//Cr
+    1.6f,//Mn
+    1.64f,//Fe
+    1.7f,//Co
+    1.75f,//Ni
+    1.75f,//Cu
+    1.66f,//Zn
+    1.82f,//Ga
+    2.02f,//Ge
+    2.2f,//As
+    2.48f,//Se
+    2.74f,//Br
+    0f,//
+    0.89f,//Rb
+    0.99f,//Sr
+    1.11f,//Y
+    1.22f,//Zr
+    1.23f,//Nb
+    1.3f,//Mo
+    1.36f,//Te
+    1.42f,//Ru
+    1.45f,//Rh
+    1.35f,//Pd
+    1.42f,//Ag
+    1.46f,//Cd
+    1.49f,//In
+    1.72f,//Sn
+    1.82f,//Sb
+    2.01f,//Te
+    2.21f//I    
+  };
+  public static float getAllredRochowElectroNeg(int elemno) {
+    return (elemno > 0 && elemno < electroNegativities.length ? electroNegativities[elemno] : 0);
+  }
+
 }

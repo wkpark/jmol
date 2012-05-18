@@ -4,6 +4,7 @@ public abstract class MinObject {
   public int[] data;
   public int type;
   public Integer key;
+  public double[] ddata;
   
   @Override
   public String toString() {

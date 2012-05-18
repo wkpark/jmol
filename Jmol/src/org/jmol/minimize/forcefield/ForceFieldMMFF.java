@@ -45,6 +45,7 @@ import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
+import org.jmol.util.Elements;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
@@ -84,67 +85,82 @@ import org.jmol.util.Logger;
  * Validation carried out using MMFF94_opti.log and MMFF94_dative.mol2 
  * (761 models) using checkmm.spt (checkAllEnergies)
  * 
- * All typical compounds validate. The following 12 rather esoteric 
+ * All typical compounds validate. The following 7  
  * structures do not validate to within 0.1 kcal/mol total energy;
  * 
 
-1 COMKAQ   E=   -7.3250003   Eref=  -7.6177  diff=  0.2926998
+version=12.3.26_dev
+
+# code: adding empirical rules to MMFF94 calculation
+#
+# checkmm.spt;checkAllEnergies
+
+#   checking calculated energies for 761 models
+#  1  COMKAQ     E=   -7.3250003   Eref=  -7.6177    diff=  0.2926998
+#  2  DUVHUX10   E=   64.759995    Eref=  64.082855  diff=  0.6771393
+#  3  FORJIF     E=   35.978       Eref=  35.833878  diff=  0.14412308
+#  4  JADLIJ     E=   25.104       Eref=  24.7038    diff=  0.4001999
+#  5  PHOSLA10   E=   111.232994   Eref=  112.07078  diff=  0.8377838
+#  6  PHOSLB10   E=   -93.479004   Eref=  -92.64081  diff=  0.8381958
+#  7  OHMW1      E=   -20.78       Eref=  -21.726902 diff=  0.9469013
+
+# for 761 atoms, 7 have energies differences outside the 
+# range -0.1 to 0.1 with a standard deviation of 0.06309618
+
+
+COMKAQ 
  -- MMFF94 ignores 1 of 5-membered ring torsions for a 1-oxo-2-oxa-bicyclo[3.2.0]heptane
  -- MMFF94_bmin.log: WARNING - Conformational Energies May Not Be Accurate
 
-2 DUVHUX10   E=   64.759995  Eref=  64.082855  diff=  0.6771393
+DUVHUX10
  -- MMFF94 ignores 5-membered ring issue for S-S-containing ring
  -- MMFF94_bmin.log: WARNING - Conformational Energies May Not Be Accurate
  
-3 FORJIF   E=   35.978   Eref=  35.833878  diff=  0.14412308
+FORJIF
  -- MMFF94 uses some sort of undocumented empirical rule used for 1 torsion not found in tables
  -- MMFF94_bmin.log: WARNING - Conformational Energies May Not Be Accurate
 
-4 JADLIJ   E=   25.104   Eref=  24.7038  diff=  0.4001999
+JADLIJ
  -- ignores 5-membered ring for S (note, however, this is not the case in BODKOU)
  -- MMFF94_bmin.log: WARNING - Conformational Energies May Not Be Accurate
 
-5 KEPKIZ   E=   61.127   Eref=  61.816277  diff=  0.68927765
- -- MMFF94 requires empirical rule parameters
- -- MMFF94_bmin.log: WARNING - Conformational Energies May Not Be Accurate
-
-6 PHOSLA10   E=   111.232994   Eref=  112.07078  diff=  0.8377838
+PHOSLA10
  -- MMFF94 ignores all 5-membered ring torsions in ring with P
  -- (note, however, this is not the case in CUVGAB)
  -- MMFF94_bmin.log: WARNING - Conformational Energies May Not Be Accurate
 
-7 PHOSLB10   E=   -93.479004   Eref=  -92.64081  diff=  0.8381958
+PHOSLB10
  -- MMFF94 ignores all 5-membered ring torsions in ring with P
  -- (note, however, this is not the case in CUVGAB)
  -- MMFF94_bmin.log: WARNING - Conformational Energies May Not Be Accurate
 
-empirical-rule-requiring models: (all are nonaromatic heterocycles)
-
-8   ERULE_01   E=   -22.582  Eref=  -21.515108   diff=  1.0668926
-9   ERULE_02   E=   29.407999  Eref=  29.799572  diff=  0.39157295
-10  ERULE_03   E=   -3.326   Eref=  -2.9351802   diff=  0.3908198
-11  ERULE_04   E=   -2.572   Eref=  -2.31007   diff=  0.26193
-13  ERULE_08   E=   33.734   Eref=  34.41382   diff=  0.6798172 
+OHMW1
+ -- H2O complexed with hydroxide OH(-)
+ -- I don't understand (a) why the OH(-) bond has mltb=1, and even with that
+    I am not getting the correct ro/kb for that bond from empirical rules. 
+    Still working on that.... 
  
- 
- *
- * 
- * 
  */
 
 
 public class ForceFieldMMFF extends ForceField {
 
+  
+  private boolean useEmpiricalRules = true;
+  
+  private static final int A4_VDW = 122;
+  private static final int A4_BNDK = 123;
+  private static final int A4_CHRG = 124;
   private static final int A4_SB = 125;
   private static final int A4_SBDEF = 126;
-  private static final int A4_VDW = 3;
-  private static final int A4_CHRG = 4;
   private static final int KEY_SBDEF = 0;
   private static final int KEY_PBCI = 0;
   private static final int KEY_VDW = 0;
+  private static final int KEY_BNDK = 0;
   private static final int KEY_OOP = 6;
   private static final int TYPE_PBCI = 0x1;
   private static final int TYPE_VDW = 0x11;
+  private static final int TYPE_BNDK = 0x222;
   private static final int TYPE_CHRG = 0x22;
   // the following are bit flags indicating in the 0xF range 
   // which atoms might have default parameter values
@@ -214,8 +230,7 @@ public class ForceFieldMMFF extends ForceField {
     vRings = ArrayUtil.createArrayOfArrayList(4);
     rawAtomTypes = setAtomTypes(atoms, bsAtoms, m.viewer.getSmilesMatcher(),
         vRings);
-    rawBondTypes = setBondTypes(bonds, rawBondCount, bsAtoms, rawAtomTypes,
-        vRings[R56]);
+    rawBondTypes = setBondTypes(bonds, rawBondCount, bsAtoms);
     rawMMFF94Charges = getPartialCharges(bonds, rawBondTypes, atoms,
         rawAtomTypes, bsAtoms, doRound);
   }
@@ -236,6 +251,7 @@ public class ForceFieldMMFF extends ForceField {
       return;
     getMmffParameters("mmff/mmffvdw.par.txt",  ffParams, TYPE_VDW);
     getMmffParameters("mmff/mmffbond.par.txt", ffParams, TYPE_BOND);
+    getMmffParameters("mmff/mmffbndk.par.txt", ffParams, TYPE_BNDK);
     getMmffParameters("mmff/mmffang.par.txt",  ffParams, TYPE_ANGLE);
     getMmffParameters("mmff/mmffstbn.par.txt", ffParams, TYPE_SB);
     getMmffParameters("mmff/mmffdfsb.par.txt", ffParams, TYPE_SBDEF);
@@ -273,17 +289,21 @@ public class ForceFieldMMFF extends ForceField {
         case TYPE_OOP: // oop (tor max type is 5)
           type = KEY_OOP;
           break;
-        case TYPE_SBDEF: // default stretch bend (by row; identified by a4 = 126, not 127)
+        case TYPE_SBDEF: // default stretch bend, by row; identified by a4
           a4 = A4_SBDEF;
           type = KEY_SBDEF;
           break;
-        case TYPE_SB: // stretch bend identified by a4 = 125, not 127
+        case TYPE_SB: // stretch bend, identified by a4
           a4 = A4_SB;
           break;
-        case TYPE_CHRG: // chrg (bci, identified by a4 = 4, not 127)
+        case TYPE_CHRG: // chrg/bci, identified by a4 = 4
           a4 = A4_CHRG;
           if (type == 4)
             continue; // I have no idea what type=4 here would mean. It's supposed to be a bond type
+          break;
+        case TYPE_BNDK: // A4_BNDK identified by a4
+          a4 = A4_BNDK;
+          type = KEY_BNDK;
           break;
         case TYPE_VDW:  // vdw identified by a4 = 3, not 127
           if (line.charAt(5) != ' ')
@@ -310,6 +330,7 @@ public class ForceFieldMMFF extends ForceField {
           a3 = Integer.valueOf(line.substring(13,15).trim()).intValue();
           // fall through
         case TYPE_CHRG:
+        case TYPE_BNDK:
         case TYPE_BOND:
           a2 = Integer.valueOf(line.substring(8,10).trim()).intValue();
           break;
@@ -331,11 +352,16 @@ public class ForceFieldMMFF extends ForceField {
               line.charAt(46) // '-', 'A', 'D'
               };
           break;
+        case TYPE_BNDK: // empirical bond stretch: kb, r0 (reversed in file) 
+          value = new double[] {
+              Double.valueOf(line.substring(19,25).trim()).doubleValue(),
+              Double.valueOf(line.substring(13,18).trim()).doubleValue() };
+          break;
         case TYPE_BOND: // bond stretch: kb, r0 
           value = new double[] {
               Double.valueOf(line.substring(14,20).trim()).doubleValue(),
               Double.valueOf(line.substring(25,31).trim()).doubleValue() };
-          break;
+         break;
         case TYPE_CHRG: // bond chrg
           value = Float.valueOf(line.substring(10,20).trim());
           break;
@@ -364,7 +390,7 @@ public class ForceFieldMMFF extends ForceField {
               };
           break;
         case TYPE_OOP: // oop: koop  
-          value = Double.valueOf(line.substring(24,30).trim());
+          value = new double[] { Double.valueOf(line.substring(24,30).trim()).doubleValue() };
           break;
         }        
         Integer key = MinObject.getKey(type, a1, a2, a3, a4);
@@ -395,7 +421,8 @@ public class ForceFieldMMFF extends ForceField {
 
       BufferedReader br = new BufferedReader(new InputStreamReader(
           (InputStream) url.getContent()));
-      types.add(new AtomType(0, 0, 0, 0, "H or NOT FOUND", ""));
+      AtomType at;
+      types.add(new AtomType(0, 0, 0, 0, 1, "H or NOT FOUND", ""));
       while ((line = br.readLine()) != null) {
         if (line.length() == 0 || line.startsWith("#"))
           continue;
@@ -406,9 +433,11 @@ public class ForceFieldMMFF extends ForceField {
         int mmType = Integer.valueOf(line.substring(6,8).trim()).intValue();
         int hType = Integer.valueOf(line.substring(9,11).trim()).intValue();
         float formalCharge = Float.valueOf(line.substring(12,15).trim()).floatValue()/12;
-        String desc = line.substring(16,41).trim();
-        String smarts = line.substring(42).trim();
-        types.add(new AtomType(elemNo, mmType, hType, formalCharge, desc, smarts));
+        int val = Integer.valueOf(line.substring(16,18).trim()).intValue();
+        String desc = line.substring(19,44).trim();
+        String smarts = line.substring(45).trim();
+        types.add(at = new AtomType(elemNo, mmType, hType, formalCharge, val, desc, smarts));
+        setFlags(at);
       }
       br.close();
     } catch (Exception e) {
@@ -420,7 +449,158 @@ public class ForceFieldMMFF extends ForceField {
     atomTypes = types;
 
   }
+  
+  private static void setFlags(AtomType at) {
+    // fcadj
+      switch (at.mmType) {
+      
+      // Note that these are NOT fractional charges based on
+      // number of connected atoms. These are relatively arbitrary
+      // fractions of the formal charge to be shared with other atoms.
+      // That is, it is not significant that 0.5 is 1/2, and 0.25 is 1/4; 
+      // they are just numbers.
+      
+      case 32:
+      case 35:
+      case 72:
+        // 32  OXYGEN IN CARBOXYLATE ANION
+        // 32  NITRATE ANION OXYGEN
+        // 32  SINGLE TERMINAL OXYGEN ON TETRACOORD SULFUR
+        // 32  TERMINAL O-S IN SULFONES AND SULFONAMIDES
+        // 32  TERMINAL O IN SULFONATES
+        // 35  OXIDE OXYGEN ON SP2 CARBON, NEGATIVELY CHARGED
+        // 72  TERMINAL SULFUR BONDED TO PHOSPHORUS
+        at.fcadj = 0.5f;
+        break;
+      case 62:
+      case 76:
+        // 62  DEPROTONATED SULFONAMIDE N-; FORMAL CHARGE=-1
+        // 76  NEGATIVELY CHARGED N IN, E.G, TRI- OR TETRAZOLE ANION
+        at.fcadj = 0.25f;
+        break;
+      }
 
+      // arom
+      switch (at.mmType) {
+      case 37:
+      case 38:
+      case 39:
+      case 44:
+      case 58:
+      case 59:
+      case 63:
+      case 64:
+      case 65:
+      case 66:
+      case 69:
+      case 78:
+      case 79:
+      case 81:
+      case 82:
+        at.arom = true;
+      }
+      
+      // sbmb
+      switch (at.mmType) {
+      case 2:
+      case 3:
+      case 4:
+      case 9:
+      case 30:
+      case 37:
+      case 39:
+      case 54:
+      case 57:
+      case 58:
+      case 63:
+      case 64:
+      case 67:
+      case 75:
+      case 78:
+      case 80:
+      case 81:
+        at.sbmb = true;
+      }
+      
+      // pilp
+      switch(at.mmType) {
+      case 6:
+      case 8:
+      case 10:
+      case 11:
+      case 12:
+      case 13:
+      case 14:
+      case 15:
+      case 26:
+      case 32:
+      case 35:
+      case 39:
+      case 40:
+      case 43:
+      case 44:
+      case 59:
+      case 62:
+      case 70:
+      case 72:
+      case 76:
+        at.pilp = true;
+      }
+      
+      // mltb:
+      switch (at.mmType) {
+      case 10:
+      case 32:
+      case 35:
+      case 39:
+      case 41:
+      case 44:
+      case 55:
+      case 56:
+      case 58:
+      case 59:
+      case 69:
+      case 72:
+      case 81:
+      case 82:
+        at.mltb = 1;
+        break;
+      case 2:
+      case 3:
+      case 7:
+      case 9:
+      case 16:
+      case 17:
+      case 30:
+      case 37:
+      case 38:
+      case 45:
+      case 46:
+      case 47:
+      case 51:
+      case 53:
+      case 54:
+      case 57:
+      case 63:
+      case 64:
+      case 65:
+      case 66:
+      case 67:
+      case 74:
+      case 75:
+      case 78:
+      case 79:
+      case 80:
+        at.mltb = 2;
+        break;
+      case 4:
+      case 42:
+      case 60:
+      case 61:
+        at.mltb = 3;
+        break;
+  }
+  }
   /**
    * assign partial charges ala MMFF94
    * 
@@ -537,19 +717,20 @@ public class ForceFieldMMFF extends ForceField {
     // but what about at1.sbmb && at2.arom?
   }
 
-  private static int getBondType(Bond bond, AtomType at1, AtomType at2,
-                               int index1, int index2, List<BitSet> vAromatic56) {
+  private int getBondType(Bond bond, AtomType at1, AtomType at2,
+                               int index1, int index2) {
   return (isBondType1(at1, at2) && 
       bond.getCovalentOrder() == 1 
-      && !isAromaticBond(index1, index2, vAromatic56) ? 1 : 0);  
+      && !isAromaticBond(index1, index2) ? 1 : 0);  
  }
 
-  private static boolean isAromaticBond(int a1, int a2, List<BitSet> vAromatic56) {
-    for (int i = vAromatic56.size(); --i >= 0;) {
-      BitSet bsRing = vAromatic56.get(i);
-      if (bsRing.get(a1) && bsRing.get(a2))
-        return true;
-    }
+  private boolean isAromaticBond(int a1, int a2) {
+    if (vRings[R56] != null)
+      for (int i = vRings[R56].size(); --i >= 0;) {
+        BitSet bsRing = vRings[R56].get(i);
+        if (bsRing.get(a1) && bsRing.get(a2))
+          return true;
+      }
     return false;
   }
 
@@ -663,8 +844,7 @@ public class ForceFieldMMFF extends ForceField {
     return types;
   }
 
-  private static int[] setBondTypes(Bond[] bonds, int bondCount, BitSet bsAtoms,
-                                    int[] aTypes, List<BitSet> vAromatic56) {
+  private int[] setBondTypes(Bond[] bonds, int bondCount, BitSet bsAtoms) {
      int[] bTypes = new int[bondCount];
      for (int i = bondCount; --i >= 0;) {
        Atom a1 = bonds[i].getAtom1();
@@ -673,12 +853,11 @@ public class ForceFieldMMFF extends ForceField {
        boolean ok2 = bsAtoms.get(a2.index);
        if (!ok1 && !ok2)
          continue;
-       int it = aTypes[a1.index];
+       int it = rawAtomTypes[a1.index];
        AtomType at1 = atomTypes.get(Math.max(0, it));
-       it = aTypes[a2.index];
+       it = rawAtomTypes[a2.index];
        AtomType at2 = atomTypes.get(Math.max(0, it));
-       bTypes[i] = getBondType(bonds[i], at1, at2, a1.index, a2.index,
-           vAromatic56);
+       bTypes[i] = getBondType(bonds[i], at1, at2, a1.index, a2.index);
      }
      return bTypes;
    }
@@ -837,32 +1016,44 @@ public class ForceFieldMMFF extends ForceField {
     }
     key = MinObject.getKey(type, typeData[0], typeData[1], typeData[2],
         typeData[3]);
-    if (ffParams.containsKey(key))
-      return key;
+    double[] ddata = (double[]) ffParams.get(key);
     // default typing
     switch (ktype) {
     case TYPE_BOND:
-      key = applyEmpiricalRules(o, ktype);
-      if (key != null)
+      if (!useEmpiricalRules)
+        return key;
+      return (ddata != null && ddata[0] > 0 ? key : applyEmpiricalRules(o, ddata, TYPE_BOND));
+    case TYPE_ANGLE:
+      if (ddata != null && ddata[0] != 0)
         return key;
       break;
     case TYPE_TORSION:
-      if (ffParams.containsKey(key = getTorsionKey(type, 0, 2)))
+      if (ddata == null) {
+        if (!ffParams.containsKey(key = getTorsionKey(type, 0, 2))
+            && !ffParams.containsKey(key = getTorsionKey(type, 2, 0))
+            && !ffParams.containsKey(key = getTorsionKey(type, 2, 2)))
+          key = getTorsionKey(0, 2, 2);
+        ddata = (double[]) ffParams.get(key);
+      }
+      if (!useEmpiricalRules)
         return key;
-      if (ffParams.containsKey(key = getTorsionKey(type, 2, 0)))
-        return key;
-      if (ffParams.containsKey(key = getTorsionKey(type, 2, 2)))
-        return key;
-      // set type = 0 if necessary...
-      return getTorsionKey(0, 2, 2);
+      return (ddata != null ? key : applyEmpiricalRules(o, ddata, TYPE_TORSION));
     case TYPE_SB:
       // use periodic row info
+      if (ddata != null)
+        return key;
       int r1 = getRowFor(data[0]);
       int r2 = getRowFor(data[1]);
       int r3 = getRowFor(data[2]);
       return MinObject.getKey(KEY_SBDEF, r1, r2, r3, A4_SBDEF);
+    case TYPE_OOP:
+      // use periodic row info
+      if (ddata != null)
+        return key;
     }
     // run through equivalent types, really just 3
+    if (!useEmpiricalRules && ddata != null)
+      return key;
     boolean isSwapped = false;
     boolean haveKey = false;
     for (int i = 0; i < 3 && !haveKey; i++) {
@@ -871,6 +1062,7 @@ public class ForceFieldMMFF extends ForceField {
           typeData[j] = getEquivalentType(typeOf(data[j]), i);
       switch (ktype) {
       case TYPE_BOND:
+        // not really supposed to do this for MMFF94
         isSwapped = (fixTypeOrder(typeData, 0, 1));
         break;
       case TYPE_ANGLE:
@@ -896,6 +1088,17 @@ public class ForceFieldMMFF extends ForceField {
     } else if (type != 0 && ktype == TYPE_ANGLE) {
       key = Integer.valueOf(key.intValue() ^ 0xFF);
     }
+    
+    if (!useEmpiricalRules)
+      return key;
+
+    ddata = (double[]) ffParams.get(key);
+    // default typing
+    switch (ktype) {
+    case TYPE_ANGLE:
+      return (ddata != null && ddata[0] != 0 ? key : 
+        applyEmpiricalRules(o, ddata, TYPE_ANGLE));
+    }
     return key;
   }
 
@@ -904,9 +1107,252 @@ public class ForceFieldMMFF extends ForceField {
         typeData[1], typeData[2], getEquivalentType(typeData[3], j));  
   }
 
-  private Integer applyEmpiricalRules(MinObject o, int ktype) {
-    // TODO
-    return null;
+  private Integer applyEmpiricalRules(MinObject o, double[] ddata, int ktype) {
+    double rr, rr2, beta = 0;
+    MinAtom a, b, c;
+    switch (ktype) {
+    case TYPE_BOND:
+      a = minAtoms[o.data[0]];
+      b = minAtoms[o.data[1]];
+      int elemno1 = a.atom.getElementNumber();
+      int elemno2 = b.atom.getElementNumber();
+      Integer key = MinObject.getKey(KEY_BNDK, Math.min(elemno1, elemno2), Math
+          .max(elemno1, elemno2), 127, A4_BNDK);
+      ddata = (double[]) ffParams.get(key);
+      if (ddata == null)
+        return null;
+      double kbref = ddata[0];
+      double r0ref = ddata[1];
+      
+      double r0 = getRuleBondLength(a, b, ((MinBond) o).order, isAromaticBond(
+          o.data[0], o.data[1]));
+      if (r0 == 0)
+        return null;
+      
+      rr = r0ref / r0;
+      rr2 = rr * rr;
+      double rr4 = rr2 * rr;
+      double rr6 = rr4 * rr;
+      double kb = kbref * rr6;
+      o.ddata = new double[] { kb, r0 };
+      return Integer.valueOf(-1);
+    case TYPE_ANGLE:
+      // from OpenBabel
+      double theta0;
+      if (ddata == null || (theta0 = ddata[1]) == 0) {
+        b = minAtoms[o.data[1]];
+        Atom atom = b.atom;
+        int elemno = atom.getElementNumber();
+        switch (o.type) {
+        case 3:
+        case 5:
+        case 6:
+          // 3-membered rings
+          theta0 = 60;
+          beta *= 0.05;
+          break;
+        case 4:
+        case 7:
+        case 8:
+          // 4-membered rings
+          theta0 = 90;
+          break;
+         default:
+           // everything else
+           theta0 = 120;
+           int crd = atom.getCovalentBondCount();
+           switch (crd) {
+           case 2:
+             if (MinAtom.isLinear(b))
+               theta0 = 180;
+             else if (elemno == 8)
+               theta0 = 105;
+             else if (elemno > 10)
+               theta0 = 95.0;
+             break;
+           case 3:
+             if (b.ffAtomType.mltb == 0 && b.ffAtomType.val == 3)
+               theta0 = (elemno == 7 ? 107 : 92);
+             break;
+           case 4:
+             theta0 = 109.45;
+             break;
+           }
+        }
+      }
+
+      beta = 1.75;
+      switch (o.type) {
+      case 3:
+      case 5:
+      case 6:
+        // 3-membered rings
+        beta *= 0.05;
+        break;
+      case 4:
+      case 7:
+      case 8:
+        // 4-membered rings
+        beta *= 0.85;
+        break;
+      }
+      double za = getZParam(minAtoms[o.data[0]].atom.getElementNumber());
+      double cb = getCParam(minAtoms[o.data[1]].atom.getElementNumber());
+      double zc = getZParam(minAtoms[o.data[2]].atom.getElementNumber());
+      double r0ab = getR0(minBonds[o.data[ABI_IJ]]);
+      double r0bc = getR0(minBonds[o.data[ABI_JK]]);
+      rr = r0ab + r0bc;
+      rr2 = rr * rr;
+      double D = (r0ab - r0bc) / rr2;
+      double theta2 = theta0 * Calculations.DEG_TO_RAD;
+      theta2 *= theta2;
+      double ka = (beta * za * cb * zc * Math.exp(-2 * D)) / (rr * theta2);
+      o.ddata = new double[] { ka, theta0 };
+      return Integer.valueOf(-1);
+    case TYPE_TORSION:
+      int ib = o.data[1];
+      int ic = o.data[2];
+      b = minAtoms[ib];
+      c = minAtoms[ic];
+
+      // rule (a) page 631: no linear systems
+
+      if (MinAtom.isLinear(b) || MinAtom.isLinear(c))
+        return null;
+
+      MinBond bondBC = minBonds[o.data[TBI_BC]];
+
+      int elemnoB = b.atom.getElementNumber();
+      int elemnoC = c.atom.getElementNumber();
+      double ub = getUParam(elemnoB);
+      double uc = getUParam(elemnoC);
+      double vb = getVParam(elemnoB);
+      double vc = getVParam(elemnoC);
+
+      double v1 = 0,
+      v2 = 0,
+      v3 = 0;
+      double pi_bc = -1; // Eqn 21
+      double n_bc = -1; // Eqn 22
+      double wb = -1,
+      wc = 0; // Eqn 23
+      int valB = b.ffAtomType.val;
+      int valC = c.ffAtomType.val;
+      boolean pilpB = b.ffAtomType.pilp;
+      boolean pilpC = c.ffAtomType.pilp;
+      int mltbB = b.ffAtomType.mltb;
+      int mltbC = c.ffAtomType.mltb;
+
+      out: while (true) {
+
+        // rule (b) page 631: aromatics
+
+        if (isAromaticBond(ib, ic)) {
+          pi_bc = (pilpB || pilpC ? 0.3 : 0.5);
+          beta = (valB + valC == 7 ? 3 : 6);
+          break out;
+        }
+
+        // rule (c) page 631: full double bonds
+
+        if (bondBC.order == 2) {
+          beta = 6;
+          pi_bc = (mltbB == 2 && mltbC == 2 ? 1.0 : 0.4);
+          break out;
+        }
+
+        // single bonds only from here on out:
+
+        int crdB = b.atom.getCovalentBondCount();
+        int crdC = c.atom.getCovalentBondCount();
+
+        // rule (d) page 632: [XD4]-[XD4]
+
+        if (crdB == 4 && crdC == 4) {
+          vb = getVParam(elemnoB);
+          vc = getVParam(elemnoC);
+          n_bc = 9;
+          break out;
+        }
+
+        // rules (e) and (f) page 632, simplified
+
+        if (crdB != 4 && (valB > crdB || mltbB > 0) || crdC != 4
+            && (valC > crdC || mltbC > 0))
+          return null;
+
+        // rule (g) page 632 (resonant interactions)
+
+        boolean case2 = (pilpB && mltbC > 0);
+        boolean case3 = (pilpC && mltbB > 0);
+
+        if (bondBC.order == 1 && (mltbB > 0 && mltbC > 0 || case2 || case3)) {
+
+          if (pilpB && pilpC)
+            return null;
+
+          beta = 6;
+
+          if (case2) {
+            pi_bc = (mltbC == 1 ? 0.5 : elemnoB <= 10 && elemnoC <= 10 ? 0.3
+                : 0.15);
+            break out;
+          }
+
+          if (case3) {
+            pi_bc = (mltbB == 1 ? 0.5 : elemnoB <= 10 && elemnoC <= 10 ? 0.3
+                : 0.15);
+            break out;
+          }
+
+          if ((mltbB == 1 || mltbC == 1) && (elemnoB == 6 || elemnoC == 6)) {
+            pi_bc = 0.4;
+            break out;
+          }
+
+          pi_bc = 0.15;
+          break out;
+        }
+
+        // rule (h) page 632 (Eqn 23)  [XD2-XD2]
+
+        switch (elemnoB << 8 + elemnoC) {
+        case 0x808: // O, O
+          wb = wc = 2;
+          break out;
+        case 0x810: // O, S
+          wb = 2;
+          wc = 8;
+          break out;
+        case 0x1008: // S, O
+          wb = 8;
+          wc = 2;
+          break out;
+        case 0x1010: // S, S
+          wb = wc = 8;
+          break out;
+        }
+
+        // everything else -- generic Eqn 22
+
+        n_bc = crdB * crdC;
+        break out;
+      }
+      if (pi_bc > 0)
+        v2 = beta * pi_bc * Math.sqrt(ub * uc); // Eqn 21
+      else if (n_bc > 0)
+        v3 = Math.sqrt(vb * vc) / n_bc; // Eqn 22
+      else if (wb != 0)
+        v2 = -Math.sqrt(wb * wc); // Eqn 23
+      o.ddata = new double[] { v1, v2, v3 };
+      return Integer.valueOf(-1);
+    default:
+      return null;
+    }
+  }
+ 
+  private static double getR0(MinBond b) {
+    return (b.ddata == null ? ((double[]) ffParams.get(b.key)) : b.ddata)[1];   
   }
 
   private int getRowFor(int i) {
@@ -917,9 +1363,8 @@ public class ForceFieldMMFF extends ForceField {
   private int[] typeData = new int[4];
   
   double getOutOfPlaneParameter(int[] data) {
-    Integer key = getKey(data, KEY_OOP, TYPE_OOP);
-    Double params = (Double) ffParams.get(key);    
-    return (params == null ? 0 : params.doubleValue());
+    double[] ddata = (double[]) ffParams.get(getKey(data, KEY_OOP, TYPE_OOP));    
+    return (ddata == null ? 0 : ddata[0]);
   }
 
   private static void sortOop(int[] typeData) {
@@ -1060,4 +1505,227 @@ public class ForceFieldMMFF extends ForceField {
     return (type == 0 ? 0 : type == 70 || type > 82 ? type : level == 2 ? 0 : 
       equivalentTypes[((type - 1) << 1) + level]);
   }
+  
+
+  private static double getZParam(int elemno) {
+    switch (elemno) {
+    case 1:
+      return 1.395;
+    case 6:
+      return 2.494;
+    case 7:
+      return 2.711;
+    case 8:
+      return 3.045;
+    case 9:
+      return 2.847;
+    case 14:
+      return 2.350;
+    case 15:
+      return 2.350;
+    case 16:
+      return 2.980;
+    case 17:
+      return 2.909;
+    case 35:
+      return 3.017;
+    case 53:
+      return 3.086;
+    }
+    return 0.0;
+  }
+
+  private static double getCParam(int elemno) {
+    switch (elemno) {
+    case 5:
+      return 0.704;
+    case 6:
+      return 1.016;
+    case 7:
+      return 1.113;
+    case 8:
+      return 1.337;
+    case 14:
+      return 0.811;
+    case 15:
+      return 1.068;
+    case 16:
+      return 1.249;
+    case 17:
+      return 1.078;
+    case 33:
+      return 0.825;
+    }
+    return 0.0;
+  }
+
+  private static double getUParam(int elemno) {
+    switch (elemno) {
+    case 6:
+    case 7:
+    case 8:
+      return 2.0;
+    case 14:
+    case 15:
+    case 16:
+      return 1.25;
+    }
+    return 0.0;
+  }
+
+  private static double getVParam(int elemno) {
+    switch (elemno) {
+    case 6:
+      return 2.12;
+    case 7:
+      return 1.5;
+    case 8:
+      return 0.2;
+    case 14:
+      return 1.22;
+    case 15:
+      return 2.4;
+    case 16:
+      return 0.49;
+    }
+    return 0.0;
+  }
+
+  private static double getCovalentRadius(int elemno) { 
+    switch(elemno) {
+    case 1:
+      return 0.33; // corrected value from MMFF part V
+    case 5:
+      return 0.81;
+    case 6:
+      return 0.77; // corrected value from MMFF part V
+    case 7:
+      return 0.73;
+    case 8:
+      return 0.72;
+    case 9:
+      return 0.74;
+    case 13:
+      return 1.22;
+    case 14:
+      return 1.15;
+    case 15:
+      return 1.09;
+    case 16:
+      return 1.03;
+    case 17:
+      return 1.01;
+    case 31:
+      return 1.19;
+    case 32:
+      return 1.20;
+    case 33:
+      return 1.20;
+    case 34:
+      return 1.16;
+    case 35:
+      return 1.15;
+    case 44:
+      return 1.46;
+    case 50:
+      return 1.40;
+    case 51:
+      return 1.41;
+    case 52:
+      return 1.35;
+    case 53:
+      return 1.33;
+    case 81:
+      return 1.51;
+    case 82:
+      return 1.53;
+    case 83:
+      return 1.55;
+    default:
+      return Elements.getBondingRadiusFloat((short) elemno, 0);
+    }
+  }
+
+  private final static double[] r0reductions = new double[] { 
+    0.08, 0.03, 0.10, 0.17, 0.075, 0.04 
+  };
+
+  private static double getRuleBondLength(MinAtom a, MinAtom b, int boAB,
+                                          boolean isAromatic) {
+
+    switch  (boAB) {
+    case 1:
+    case 2:
+    case 3:
+      break;
+    case 5: // aromatic
+      break;
+    default:
+      return 0;
+    }
+    // Eqn 18, p. 625
+
+    // r0ij = r0i + r0j - c|xi - xj|^n - delta
+
+    int elemnoA = a.atom.getElementNumber();
+    int elemnoB = b.atom.getElementNumber();
+    double r0a = getCovalentRadius(elemnoA);
+    double r0b = getCovalentRadius(elemnoB);
+    double Xa = Elements.getAllredRochowElectroNeg(elemnoA);
+    double Xb = Elements.getAllredRochowElectroNeg(elemnoB);
+
+    double c = (elemnoA == 1 || elemnoB == 1 ? 0.05 : 0.085);
+    double delta = 0.008;
+    double n = 1.4;
+    
+    double r = r0a + r0b;
+    
+    if (isAromatic)
+      boAB = (a.ffAtomType.pilp || b.ffAtomType.pilp ? 5 : 4);
+    else
+      switch (a.ffAtomType.mltb << 4 + b.ffAtomType.mltb) {
+      case 0x11:
+        boAB = 4;
+        break;
+      case 0x12:
+      case 0x21:
+        boAB = 5;
+        break;
+      }
+
+    switch (boAB) {
+    case 1:
+      // only single bonds involve hybridization
+      
+      switch (a.ffAtomType.mltb) {
+      case 1:
+      case 2:
+        r -= r0reductions[1]; // sp2
+        break;
+      case 3:
+        r -= r0reductions[0]; // sp
+        break;
+      }
+      
+      // for some reason mltb for RO- is 1
+      
+      switch (b.ffAtomType.mltb) {
+      case 1:
+      case 2:
+        r -= r0reductions[1]; // sp2
+        break;
+      case 3:
+        r -= r0reductions[0]; // sp
+        break;
+      }
+      break;
+      
+    default:
+      r -= 2 * r0reductions[boAB];
+      break;
+    }
+    
+    return r - c * Math.pow(Math.abs(Xa - Xb), n) - delta;
+  }
+
 }

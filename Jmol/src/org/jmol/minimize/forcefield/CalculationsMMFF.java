@@ -57,11 +57,14 @@ class CalculationsMMFF extends Calculations {
   ESCalc esCalc;
   SBCalc sbCalc;
   
+  ForceFieldMMFF mmff;
+  
   CalculationsMMFF(ForceField ff, Map<Integer, Object> ffParams, 
       MinAtom[] minAtoms, MinBond[] minBonds, 
       MinAngle[] minAngles, MinTorsion[] minTorsions,
       List<Object[]> constraints) {
-    super(ff, minAtoms, minBonds, minAngles, minTorsions, constraints);    
+    super(ff, minAtoms, minBonds, minAngles, minTorsions, constraints);
+    mmff = (ForceFieldMMFF) ff;
     this.ffParams = ffParams;
     bondCalc = new DistanceCalc();
     angleCalc = new AngleCalc();
@@ -180,11 +183,13 @@ class CalculationsMMFF extends Calculations {
     return 0.0;
   }
 
-  Object getParameter(Object a) {
-    return ffParams.get(a);
+  Object getParameter(MinObject a) {
+    return (a.key == null || a.ddata != null ? a.ddata : ffParams.get(a.key));
   }
 
-
+  Object getParameter(Integer key) {
+    return ffParams.get(key);
+  }
   class DistanceCalc extends Calculation {
 
     final static double FSTRETCH = FPAR / 2;
@@ -197,7 +202,7 @@ class CalculationsMMFF extends Calculations {
     void setData(List<Object[]> calc, MinBond bond) {
       ia = bond.data[0];
       ib = bond.data[1];
-      Object data = getParameter(bond.key);
+      Object data = getParameter(bond);
       if (data == null)
         return;
       calc.add(new Object[] { new int[] { ia, ib },  data });
@@ -231,10 +236,10 @@ class CalculationsMMFF extends Calculations {
   class AngleCalc extends Calculation {
 
     void setData(List<Object[]> calc, MinAngle angle) {
-      Object data = getParameter(angle.key);
+      Object data = getParameter(angle);
       if (data == null)
         return;
-      calc.add(new Object[] { angle.data, data });      
+      calc.add(new Object[] { angle.data, data, angle.key });      
     }
 
     final static double CB = -0.4 * DEG_TO_RAD;
@@ -242,6 +247,8 @@ class CalculationsMMFF extends Calculations {
     @Override
     double compute(Object[] dataIn) {
       
+      key = (Integer) dataIn[2];
+
       getPointers(dataIn);
       double ka = dData[0];
       double t0 = dData[1];
@@ -278,9 +285,9 @@ class CalculationsMMFF extends Calculations {
       if (isLinear(angle.data[1]))
         return;
       double[] data = (double[]) getParameter(angle.sbKey);
-      double[] datakat0 = (double[]) getParameter(angle.key);
-      double[] dataij = (double[]) getParameter(minBonds[angle.data[3]].key);
-      double[] datajk = (double[]) getParameter(minBonds[angle.data[4]].key);
+      double[] datakat0 = (double[]) getParameter(angle);
+      double[] dataij = (double[]) getParameter(minBonds[angle.data[ForceField.ABI_IJ]]);
+      double[] datajk = (double[]) getParameter(minBonds[angle.data[ForceField.ABI_JK]]);
       if (data == null || datakat0 == null || dataij == null || datajk == null)
         return;
       double theta0 = datakat0[1];
@@ -325,7 +332,7 @@ class CalculationsMMFF extends Calculations {
     void setData(List<Object[]> calc, MinTorsion t) {
       if (isLinear(t.data[1]) || isLinear(t.data[2]))
         return;
-      Object data = getParameter(t.key);
+      Object data = getParameter(t);
       if (data == null)
         return;
       calc.add(new Object[] { t.data, data, t.key });
@@ -393,7 +400,7 @@ class CalculationsMMFF extends Calculations {
       list[1] = i;
       list[2] = indices[1];
       list[3] = indices[0];
-      double koop = ((ForceFieldMMFF) ff).getOutOfPlaneParameter(list);
+      double koop = mmff.getOutOfPlaneParameter(list);
       if (koop == 0)
         return;
       double[] dk = new double[] { koop };
@@ -550,6 +557,16 @@ class CalculationsMMFF extends Calculations {
   @Override
   String getDebugLine(int iType, Calculation c) {
     switch (iType) {
+    case CALC_ANGLE:
+    case CALC_STRETCH_BEND:
+      return TextFormat.sprintf(
+          "%15s  %-5s %-5s %-5s  %8.3f  %8.3f     %8.3f   %8.3f", 
+          new Object[] {  MinObject.decodeKey(c.key), minAtoms[c.ia].sType, minAtoms[c.ib].sType, 
+              minAtoms[c.ic].sType,
+          new float[] { (float)(c.theta * RAD_TO_DEG), (float) c.dData[1] /*THETA0*/, 
+              (float)c.dData[0]/*Kijk*/, (float) c.energy },
+          new int[] { minAtoms[c.ia].atom.getAtomNumber(), minAtoms[c.ib].atom.getAtomNumber(),
+              minAtoms[c.ic].atom.getAtomNumber()} });
       case CALC_TORSION:
         return TextFormat.sprintf(
               "%15s  %-5s %-5s %-5s %-5s  %8.3f %8.3f %8.3f %8.3f %8.3f", 

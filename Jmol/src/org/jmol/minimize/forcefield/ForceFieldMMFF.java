@@ -109,28 +109,28 @@ version=12.3.26_dev
 
 
 COMKAQ 
- -- MMFF94 ignores 1 of 5-membered ring torsions for a 1-oxo-2-oxa-bicyclo[3.2.0]heptane
+ -- BATCHMIN ignores 1 of 5-membered ring torsions for a 1-oxo-2-oxa-bicyclo[3.2.0]heptane
  -- MMFF94_bmin.log: WARNING - Conformational Energies May Not Be Accurate
 
 DUVHUX10
- -- MMFF94 ignores 5-membered ring issue for S-S-containing ring
+ -- BATCHMIN ignores 5-membered ring issue for S-S-containing ring
  -- MMFF94_bmin.log: WARNING - Conformational Energies May Not Be Accurate
  
 FORJIF
- -- MMFF94 uses some sort of undocumented empirical rule used for 1 torsion not found in tables
+ -- BATCHMIN misses four standard 5-membered C-C ring bonds 
  -- MMFF94_bmin.log: WARNING - Conformational Energies May Not Be Accurate
 
 JADLIJ
- -- ignores 5-membered ring for S (note, however, this is not the case in BODKOU)
+ -- BATCHMIN ignores 5-membered ring for S (note, however, this is not the case in BODKOU)
  -- MMFF94_bmin.log: WARNING - Conformational Energies May Not Be Accurate
 
 PHOSLA10
- -- MMFF94 ignores all 5-membered ring torsions in ring with P
+ -- BATCHMIN ignores all 5-membered ring torsions in ring with P
  -- (note, however, this is not the case in CUVGAB)
  -- MMFF94_bmin.log: WARNING - Conformational Energies May Not Be Accurate
 
 PHOSLB10
- -- MMFF94 ignores all 5-membered ring torsions in ring with P
+ -- BATCHMIN ignores all 5-membered ring torsions in ring with P
  -- (note, however, this is not the case in CUVGAB)
  -- MMFF94_bmin.log: WARNING - Conformational Energies May Not Be Accurate
 

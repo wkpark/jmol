@@ -94,18 +94,41 @@ version=12.3.26_dev
 # code: adding empirical rules to MMFF94 calculation
 #
 # checkmm.spt;checkAllEnergies
-
-#   checking calculated energies for 761 models
-#  1  COMKAQ     E=   -7.3250003   Eref=  -7.6177    diff=  0.2926998
-#  2  DUVHUX10   E=   64.759995    Eref=  64.082855  diff=  0.6771393
-#  3  FORJIF     E=   35.978       Eref=  35.833878  diff=  0.14412308
-#  4  JADLIJ     E=   25.104       Eref=  24.7038    diff=  0.4001999
-#  5  PHOSLA10   E=   111.232994   Eref=  112.07078  diff=  0.8377838
-#  6  PHOSLB10   E=   -93.479004   Eref=  -92.64081  diff=  0.8381958
-#  7  OHMW1      E=   -20.78       Eref=  -21.726902 diff=  0.9469013
-
-# for 761 atoms, 7 have energies differences outside the 
-# range -0.1 to 0.1 with a standard deviation of 0.06309618
+#
+# checking calculated energies for 761 models
+# 1 COMKAQ     E=   -7.3250003   Eref=  -7.6177    diff=  0.2926998
+# 2 DUVHUX10   E=   64.759995    Eref=  64.082855  diff=  0.6771393
+# 3 FORJIF     E=   35.978       Eref=  35.833878  diff=  0.14412308
+# 4 JADLIJ     E=   25.104       Eref=  24.7038    diff=  0.4001999
+# 5 PHOSLA10   E=   111.232994   Eref=  112.07078  diff=  0.8377838
+# 6 PHOSLB10   E=   -93.479004   Eref=  -92.64081  diff=  0.8381958
+#
+# for 761 atoms, 6 have energy differences outside the range -0.1 to 0.1 
+# with a standard deviation of 0.05309403
+#
+# a comment about empirical bond parameter calculation:
+#
+#    // Well, guess what? As far as I can tell, in Eqn 18 on page 625, 
+#    // the reduction term and delta are zero. 
+#   
+#    // -- at least in the program run that is at the validation site:
+#    //  OPTIMOL: Molecular and Macromolecular Optimization Package 17-Nov-98 16:01:23
+#    // SGI double-precision version ... Updated 5/6/98
+#    // 
+#    // This calculation is run only for the following three structures. In each case the
+#    // reported validation values and values from Jmol 12.3.26_dev are shown. Clearly 
+#    // the r0 calculated and final energies are very good. subtracting off 0.008 from 
+#    // r0 would certainly not give the reported values. Something is odd there.
+#    //
+#    //             bond      red*     r0(here/valid)  kb(here/valid)  Etotal(here/valid)
+#    //            ---------------------------------------------------------------------------------------
+#    // OHWM1       H1-O1     0.03      0.978/0.978       7.510/7.51   -21.727/-21.72690
+#    // ERULE_03    Si1-P1    0.0       2.223/2.224       1.614/1.609   -2.983/ -2.93518
+#    // ERULE_06    N1-F1     0.0       1.381/1.379       5.372/5.438    1.582/  1.58172
+#    //
+#    // *reduction and delta terms not used in Jmol's calculation
+#
+#
 
 
 COMKAQ 
@@ -1131,8 +1154,8 @@ public class ForceFieldMMFF extends ForceField {
       
       rr = r0ref / r0;
       rr2 = rr * rr;
-      double rr4 = rr2 * rr;
-      double rr6 = rr4 * rr;
+      double rr4 = rr2 * rr2;
+      double rr6 = rr4 * rr2;
       double kb = kbref * rr6;
       o.ddata = new double[] { kb, r0 };
       return Integer.valueOf(-1);
@@ -1675,7 +1698,7 @@ public class ForceFieldMMFF extends ForceField {
     double Xb = Elements.getAllredRochowElectroNeg(elemnoB);
 
     double c = (elemnoA == 1 || elemnoB == 1 ? 0.05 : 0.085);
-    double delta = 0.008;
+    //double delta = 0.008;
     double n = 1.4;
     
     double r = r0a + r0b;
@@ -1693,39 +1716,64 @@ public class ForceFieldMMFF extends ForceField {
         break;
       }
 
+    double red = 0;
     switch (boAB) {
     case 1:
       // only single bonds involve hybridization
-      
+      // Halgren uses a complicated way of addressing this, 
+      // but it comes down to the fact that 
+
       switch (a.ffAtomType.mltb) {
+      case 0:                   // sp3 "H = 3"
+        break;
       case 1:
       case 2:
-        r -= r0reductions[1]; // sp2
+        red += r0reductions[1]; // sp2  "H = 2"
         break;
       case 3:
-        r -= r0reductions[0]; // sp
+        red += r0reductions[0]; // sp   "H = 1"
         break;
       }
       
       // for some reason mltb for RO- is 1
       
       switch (b.ffAtomType.mltb) {
+      case 0:                   // sp3 "H = 3"
+        break;
       case 1:
       case 2:
-        r -= r0reductions[1]; // sp2
+        red += r0reductions[1]; // sp2  "H = 2"
         break;
       case 3:
-        r -= r0reductions[0]; // sp
+        red += r0reductions[0]; // sp   "H = 1"
         break;
       }
       break;
-      
     default:
-      r -= 2 * r0reductions[boAB];
+      red += 2 * r0reductions[boAB];
       break;
     }
+    r -= c * Math.pow(Math.abs(Xa - Xb), n);
+
+    // Well, guess what? Actually red and delta are not used.
     
-    return r - c * Math.pow(Math.abs(Xa - Xb), n) - delta;
+    // -- at least not in the program run that is at the validation site:
+    //  OPTIMOL: Molecular and Macromolecular Optimization Package 17-Nov-98 16:01:23
+    // SGI double-precision version ... Updated 5/6/98
+    // 
+    // This calculation is run for only the following structures:
+    //
+    //             bond      red     delta  ro(here/valid)  kb(here/valid)  Etotal(here/valid)
+    //            ---------------------------------------------------------------------------------------
+    // OHWM1       H1-O1     0.03    0.008  0.978/0.978       7.510/7.51     -21.727/-21.72690
+    // ERULE_03    Si1-P1    0.0     0.008  2.223/2.224       1.614/1.609    -2.983/ -2.93518
+    // ERULE_06    N1-F1     0.0     0.008  1.381/1.379       5.372/5.438      1.582/  1.58172
+    //
+    // and in each case, we match the results well, but only without red and delta. 
+
+    //r -= red;
+    //r -= delta; 
+    return r;
   }
 
 }

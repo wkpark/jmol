@@ -176,7 +176,7 @@ function checkAllEnergies() {
 			print "" + (++nBad) + "\t" + _modelName + "\t E= \t" + x + "\t Eref=\t" + ref + "\t diff= \t" + diff
 		}
 	}
-	print "for " + (last+1) + " atoms, " + nBad + " have energy differences outside the range " + (-max) + " to " + max + " with a standard deviation of " + a.stddev
+	print "for " + (last+1) + " models, " + nBad + " have energy differences outside the range " + (-max) + " to " + max + " with a standard deviation of " + a.stddev
 }
 
 

@@ -800,9 +800,10 @@ public class Token {
   public final static int defaultloadscript              = strparam | 30;
   public final static int defaults                       = strparam | 32;
   public final static int defaulttorsionlabel            = strparam | 34;
-  public final static int defaultvdw                     = strparam | 36;
-  public final static int edsurlcutoff                   = strparam | 37;
-  public final static int edsurlformat                   = strparam | 38;
+  public final static int defaultvdw                     = strparam | 35;
+  public final static int edsurlcutoff                   = strparam | 36;
+  public final static int edsurlformat                   = strparam | 37;
+  public final static int energyunits                    = strparam | 38; 
   public final static int filecachedirectory             = strparam | 39;
   public final static int forcefield                     = strparam | 40;
   public final static int helppath                       = strparam | 41;
@@ -2144,6 +2145,7 @@ public class Token {
       "defaultVDW",                               new Token(defaultvdw),
       "edsUrlCutoff",                             new Token(edsurlcutoff),
       "edsUrlFormat",                             new Token(edsurlformat),
+      "energyUnits",                              new Token(energyunits),
       "fileCacheDirectory",                       new Token(filecachedirectory),
       "fontsize",                                 new Token(fontsize),
       "helpPath",                                 new Token(helppath),

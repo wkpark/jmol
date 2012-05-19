@@ -68,6 +68,8 @@ public class Minimizer implements MinimizerInterface {
   private int steps = 50;
   private double crit = 1e-3;
 
+  public String units = "kJ/mol";
+  
   private ForceField pFF;
   private String ff = "UFF";
   private BitSet bsTaint, bsSelected;
@@ -128,6 +130,7 @@ public class Minimizer implements MinimizerInterface {
   }
   
   private Map<String, Object[]> constraintMap;
+  private int elemnoMax;
   private void addConstraint(Object[] c) {
     if (c == null)
       return;
@@ -186,6 +189,7 @@ public class Minimizer implements MinimizerInterface {
                           String ff) {
     isSilent = (forceSilent || viewer.getBooleanProperty("minimizationSilent"));
     Object val;
+    setEnergyUnits();
     if (steps == Integer.MAX_VALUE) {
       val = viewer.getParameter("minimizationSteps");
       if (val != null && val instanceof Integer)
@@ -208,13 +212,13 @@ public class Minimizer implements MinimizerInterface {
     if (minimizationOn)
       return false;
 
-    Logger.info("minimize: initializing (steps = " + steps + " criterion = "
-        + crit + ") ...");
     getForceField(ff);
     if (pFF == null) {
       Logger.error(GT._("Could not get class for force field {0}", ff));
       return false;
     }
+    Logger.info("minimize: initializing " + pFF.name + " (steps = " + steps + " criterion = "
+        + crit + ") ...");
     if (bsSelected.cardinality() == 0) {
       Logger.error(GT._("No atoms selected -- nothing to do!"));
       return false;
@@ -272,12 +276,17 @@ public class Minimizer implements MinimizerInterface {
     return true;
   }
 
+  private void setEnergyUnits() {
+    String s = viewer.getEnergyUnits();
+    units = (s.equalsIgnoreCase("kcal") ? "kcal" : "kJ");
+  }
+
   private boolean setupMinimization() {
 
     coordSaved = null;
     atomMap = new int[atoms.length];
     minAtoms = new MinAtom[atomCount];
-    int elemnoMax = 0;
+    elemnoMax = 0;
     BitSet bsElements = new BitSet();
     for (int i = bsAtoms.nextSetBit(0), pt = 0; i >= 0; i = bsAtoms
         .nextSetBit(i + 1), pt++) {
@@ -300,13 +309,23 @@ public class Minimizer implements MinimizerInterface {
     getAngles();
     Logger.info("minimize: getting torsions...");
     getTorsions();
+    return setModel(bsElements);
+  }
+  
+  private boolean setModel(BitSet bsElements) {
     if (!pFF.setModel(bsElements, elemnoMax)) {
+      //pFF.log("could not setup force field " + ff);
       Logger.error(GT._("could not setup force field {0}", ff));
+      if (ff.equals("MMFF")) {
+        getForceField("UFF");
+        //pFF.log("could not setup force field " + ff);
+        return setModel(bsElements);        
+      }
       return false;
     }
     return true;
   }
-  
+
   private void setAtomPositions() {
     for (int i = 0; i < atomCount; i++)
       minAtoms[i].set();
@@ -462,9 +481,12 @@ public class Minimizer implements MinimizerInterface {
       } else if (ff.equals("MMFF")) {
         pFF = new ForceFieldMMFF(this);
       } else {
-        pFF = null;
+        // default to UFF
+        pFF = new ForceFieldUFF(this);
+        ff = "UFF";
       }
       this.ff = ff;
+      viewer.setStringProperty("_minimizationForceField", ff);
     }
     //Logger.info("minimize: forcefield = " + pFF);
     return pFF;
@@ -499,11 +521,15 @@ public class Minimizer implements MinimizerInterface {
       return;
     pFF.steepestDescentInitialize(steps, crit);      
     viewer.setFloatProperty("_minimizationEnergyDiff", 0);
-    viewer.setFloatProperty("_minimizationEnergy", (float) pFF.getEnergy());
+    reportEnergy();
     viewer.setStringProperty("_minimizationStatus", "calculate");
     viewer.notifyMinimizationStatus();
   }
   
+  private void reportEnergy() {
+    viewer.setFloatProperty("_minimizationEnergy", pFF.toUserUnits(pFF.getEnergy()));
+  }
+
   public boolean startMinimization() {
    try {
       Logger.info("minimizer: startMinimization");
@@ -514,7 +540,7 @@ public class Minimizer implements MinimizerInterface {
       viewer.notifyMinimizationStatus();
       viewer.saveCoordinates("minimize", bsTaint);
       pFF.steepestDescentInitialize(steps, crit);
-      viewer.setFloatProperty("_minimizationEnergy", (float) pFF.getEnergy());
+      reportEnergy();
       saveCoordinates();
     } catch (Exception e) {
       Logger.error("minimization error viewer=" + viewer + " pFF = " + pFF);
@@ -532,8 +558,8 @@ public class Minimizer implements MinimizerInterface {
     boolean going = pFF.steepestDescentTakeNSteps(1);
     int currentStep = pFF.getCurrentStep();
     viewer.setIntProperty("_minimizationStep", currentStep);
-    viewer.setFloatProperty("_minimizationEnergy", (float) pFF.getEnergy());
-    viewer.setFloatProperty("_minimizationEnergyDiff", (float) pFF.getEnergyDiff());
+    reportEnergy();
+    viewer.setFloatProperty("_minimizationEnergyDiff", pFF.toUserUnits(pFF.getEnergyDiff()));
     viewer.notifyMinimizationStatus();
     if (doRefresh) {
       updateAtomXYZ();
@@ -549,7 +575,7 @@ public class Minimizer implements MinimizerInterface {
     if (failed)
       restoreCoordinates();
     viewer.setIntProperty("_minimizationStep", pFF.getCurrentStep());
-    viewer.setFloatProperty("_minimizationEnergy", (float) pFF.getEnergy());
+    reportEnergy();
     viewer.setStringProperty("_minimizationStatus", (failed ? "failed" : "done"));
     viewer.notifyMinimizationStatus();
     viewer.refresh(3, "Minimizer:done" + (failed ? " EXPLODED" : "OK"));
@@ -653,7 +679,7 @@ public class Minimizer implements MinimizerInterface {
                                       Atom[] atoms, BitSet bsAtoms) {
     //TODO -- combine SMILES and MINIMIZER in same JAR file
     ForceFieldMMFF ff = new ForceFieldMMFF(this);
-    ff.setArrays(atoms, bsAtoms, bonds, bondCount, true);
+    ff.setArrays(atoms, bsAtoms, bonds, bondCount, true, true);
     viewer.setAtomProperty(bsAtoms, Token.atomtype, 0, 0, null, null,
         ff.getAtomTypeDescriptions());
     viewer.setAtomProperty(bsAtoms, Token.partialcharge, 0, 0, null,

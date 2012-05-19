@@ -427,11 +427,11 @@ class StatusManager {
   }
   
   synchronized void notifyMinimizationStatus(String minStatus, Integer minSteps, 
-                                             Float minEnergy, Float minEnergyDiff) {
+                                             Float minEnergy, Float minEnergyDiff, String ff) {
     String sJmol = jmolScriptCallback(EnumCallback.MINIMIZATION);
     if (notifyEnabled(EnumCallback.MINIMIZATION))
       jmolCallbackListener.notifyCallback(EnumCallback.MINIMIZATION,
-          new Object[] { sJmol, minStatus, minSteps, minEnergy, minEnergyDiff });
+          new Object[] { sJmol, minStatus, minSteps, minEnergy, minEnergyDiff, ff });
   }
   
   synchronized void setScriptStatus(String strStatus, String statusMessage,

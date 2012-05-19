@@ -66,12 +66,10 @@ abstract public class ForceField {
   public static final int R5 = 2;
   public static final int R56 = 3;
   
+  public String name;
+
   Calculations calc;
   
-  private String getUnits() {
-    return calc.getUnit();
-  }
-
   private double criterion, e0, dE; 
   int currentStep;
   private int stepMax;
@@ -117,12 +115,15 @@ abstract public class ForceField {
   
   public void steepestDescentInitialize(int stepMax, double criterion) {
     this.stepMax = stepMax;//1000
-    this.criterion = criterion; //1e-3
+    // The criterion must be in the units of the calculation.
+    // However, the user is setting this, so they will be in Minimizer units.
+    // 
+    this.criterion = criterion / toUserUnits(1); //1e-3
     currentStep = 0;
     clearForces();
     calc.setLoggingEnabled(true);
     calc.setLoggingEnabled(stepMax == 0 || Logger.isActiveLevel(Logger.LEVEL_DEBUGHIGH));
-    String s = calc.getDebugHeader(-1) + "Jmol Minimization Version " + Viewer.getJmolVersion() + "\n";
+    String s = name + " " + calc.getDebugHeader(-1) + "Jmol Minimization Version " + Viewer.getJmolVersion() + "\n";
     calc.appendLogData(s);
     Logger.info(s);
     calc.getConstraintList();
@@ -131,8 +132,8 @@ abstract public class ForceField {
     dE = 0;
     calc.setPreliminary(stepMax > 0);
     e0 = energyFull(false, false);
-    s = TextFormat.sprintf(" Initial E = %10.3f " + calc.getUnit() + " criterion = %8.6f max steps = " + stepMax, 
-        new Object[] { Float.valueOf((float) e0), Float.valueOf((float) criterion) });
+    s = TextFormat.sprintf(" Initial " + name + " E = %10.3f " + minimizer.units + " criterion = %8.6f max steps = " + stepMax, 
+        new Object[] { Float.valueOf(toUserUnits(e0)), Float.valueOf(toUserUnits(criterion)) });
     minimizer.report(s, false);
     calc.appendLogData(s);
   }
@@ -164,7 +165,7 @@ abstract public class ForceField {
       boolean done = Util.isNear(e1, e0, criterion);
 
       if (done || currentStep % 10 == 0 || stepMax <= currentStep) {
-        String s = TextFormat.sprintf(" Step %-4d E = %10.6f    dE = %8.6f ",
+        String s = TextFormat.sprintf(name + " Step %-4d E = %10.6f    dE = %8.6f ",
             new Object[] { new float[] { (float) e1, (float) (dE), (float) criterion },
             Integer.valueOf(currentStep) });
         minimizer.report(s, false);
@@ -176,8 +177,8 @@ abstract public class ForceField {
           calc.appendLogData(calc.getAtomList("F I N A L  G E O M E T R Y"));
         if (done) {
           String s = TextFormat.formatString(
-              "\n   STEEPEST DESCENT HAS CONVERGED: E = %8.5f " + getUnits() + " after " + currentStep + " steps", "f",
-              (float) e1);
+              "\n    " + name + " STEEPEST DESCENT HAS CONVERGED: E = %8.5f " + minimizer.units + " after " + currentStep + " steps", "f",
+              toUserUnits(e1));
           calc.appendLogData(s);
           minimizer.report(s, true);
           Logger.info(s);
@@ -286,8 +287,8 @@ abstract public class ForceField {
        + energyES(gradients);
 
     if (!isSilent && calc.loggingEnabled)      
-      calc.appendLogData(TextFormat.sprintf("\nTOTAL ENERGY = %8.3f %s\n", 
-          new Object[] {Float.valueOf((float) energy), getUnits() }));
+      calc.appendLogData(TextFormat.sprintf("\nTOTAL %s ENERGY = %8.3f %s/mol\n", 
+          new Object[] {name, Float.valueOf(toUserUnits(energy)), minimizer.units }));
     return energy;
   }
 
@@ -463,6 +464,20 @@ abstract public class ForceField {
   
   double getNormalizedDE() {
     return Math.abs(dE/criterion);
+  }
+
+  public float toUserUnits(double energy) {
+    return toUnits(energy, calc.getUnits());
+  }
+  
+  private float toUnits(double energy, String units) {
+    return (float) (units.equalsIgnoreCase(minimizer.units) ? energy : energy
+        * (minimizer.units.equals("kJ") ? Calculations.KCAL_TO_KJ
+            : 1 / Calculations.KCAL_TO_KJ));
+  }
+
+  public void log(String s) {
+    calc.appendLogData(s);
   }
 
 }

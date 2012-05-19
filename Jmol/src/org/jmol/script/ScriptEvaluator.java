@@ -12583,8 +12583,9 @@ public class ScriptEvaluator {
         setStringProperty(key, stringSetting(2, isJmolSet));
       break;
     case Token.measurementunits:
+    case Token.energyunits:
       if (statementLength > 2)
-        setMeasurementUnits(stringSetting(2, isJmolSet));
+        setUnits(stringSetting(2, isJmolSet), tok);
       break;
     case Token.picking:
       if (!isSyntaxCheck)
@@ -13086,15 +13087,20 @@ public class ScriptEvaluator {
       setShapeSize(JmolConstants.SHAPE_MEASURES, getSetAxesTypeMad(2), null);
       return;
     }
-    setMeasurementUnits(parameterAsString(2));
+    setUnits(parameterAsString(2), Token.measurementunits);
   }
 
-  private boolean setMeasurementUnits(String units) throws ScriptException {
-    if (!Parser.isOneOf(units.toLowerCase(),
-        "angstroms;au;bohr;nanometers;nm;picometers;pm;vanderwaals;vdw"))
-      error(ERROR_unrecognizedParameter, "set measurementUnits ", units);
-    if (!isSyntaxCheck)
-      viewer.setMeasureDistanceUnits(units);
+  private boolean setUnits(String units, int tok) throws ScriptException {
+    if (tok == Token.measurementunits && Parser.isOneOf(units.toLowerCase(),
+        "angstroms;au;bohr;nanometers;nm;picometers;pm;vanderwaals;vdw")) {
+      if (!isSyntaxCheck)
+        viewer.setUnits(units, true); 
+    } else if (tok == Token.energyunits && Parser.isOneOf(units.toLowerCase(), "kcal;kj")) {
+      if (!isSyntaxCheck)
+        viewer.setUnits(units, false);
+    } else {
+      error(ERROR_unrecognizedParameter, "set " + Token.nameOf(tok), units);
+    }
     return true;
   }
 

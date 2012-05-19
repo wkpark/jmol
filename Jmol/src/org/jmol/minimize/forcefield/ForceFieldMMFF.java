@@ -222,6 +222,7 @@ public class ForceFieldMMFF extends ForceField {
   
   public ForceFieldMMFF(Minimizer m) {
     this.minimizer = m;
+    this.name = "MMFF";
     getChargeParameters();
   }
   
@@ -236,7 +237,8 @@ public class ForceFieldMMFF extends ForceField {
   public boolean setModel(BitSet bsElements, int elemnoMax) {
     getMinimizationParameters();
     Minimizer m = minimizer;
-    setArrays(m.atoms, m.bsAtoms, m.bonds, m.rawBondCount, false);  
+    if (!setArrays(m.atoms, m.bsAtoms, m.bonds, m.rawBondCount, false, false))
+      return false;  
     setModelFields();
     fixTypes();
     calc = new CalculationsMMFF(this, ffParams, minAtoms, minBonds, 
@@ -245,17 +247,20 @@ public class ForceFieldMMFF extends ForceField {
     return calc.setupCalculations();
   }
 
-  public void setArrays(Atom[] atoms, BitSet bsAtoms, Bond[] bonds,
-                        int rawBondCount, boolean doRound) {
+  public boolean setArrays(Atom[] atoms, BitSet bsAtoms, Bond[] bonds,
+                        int rawBondCount, boolean doRound, boolean allowUnknowns) {
     Minimizer m = minimizer;
     // these are original atom-index-based, not minAtom-index based. 
 
     vRings = ArrayUtil.createArrayOfArrayList(4);
     rawAtomTypes = setAtomTypes(atoms, bsAtoms, m.viewer.getSmilesMatcher(),
-        vRings);
+        vRings, allowUnknowns);
+    if (rawAtomTypes == null)
+      return false;
     rawBondTypes = setBondTypes(bonds, rawBondCount, bsAtoms);
     rawMMFF94Charges = getPartialCharges(bonds, rawBondTypes, atoms,
         rawAtomTypes, bsAtoms, doRound);
+    return true;
   }
   
   private void getChargeParameters() {
@@ -766,12 +771,12 @@ public class ForceFieldMMFF extends ForceField {
   }
 
   ///////////// MMFF94 object typing //////////////
-  
+
   /**
-   * The file MMFF94-smarts.txt is derived from MMFF94-smarts.xlsx.
-   * This file contains records for unique atom type/formal charge sharing/H atom type.
-   * For example, the MMFF94 type 6 is distributed over eight AtomTypes, 
-   * each with a different SMARTS match.
+   * The file MMFF94-smarts.txt is derived from MMFF94-smarts.xlsx. This file
+   * contains records for unique atom type/formal charge sharing/H atom type.
+   * For example, the MMFF94 type 6 is distributed over eight AtomTypes, each
+   * with a different SMARTS match.
    * 
    * H atom types are given in the file as properties of other atom types, not
    * as their own individual SMARTS searches. H atom types are determined based
@@ -781,20 +786,21 @@ public class ForceFieldMMFF extends ForceField {
    * @param bsAtoms
    * @param smartsMatcher
    * @param vRings
-   * @return  array of indexes into AtomTypes or, for H, negative of mmType
+   * @param allowUnknowns
+   * @return array of indexes into AtomTypes or, for H, negative of mmType
    */
-  private static int[] setAtomTypes(Atom[] atoms, BitSet bsAtoms, 
-                               SmilesMatcherInterface smartsMatcher, 
-                               List<BitSet>[] vRings) {
-    List<BitSet>bitSets = new ArrayList<BitSet>();
+  private static int[] setAtomTypes(Atom[] atoms, BitSet bsAtoms,
+                                    SmilesMatcherInterface smartsMatcher,
+                                    List<BitSet>[] vRings, boolean allowUnknowns) {
+    List<BitSet> bitSets = new ArrayList<BitSet>();
     String[] smarts = new String[atomTypes.size()];
     int[] types = new int[atoms.length];
     BitSet bsElements = new BitSet();
     BitSet bsHydrogen = new BitSet();
     BitSet bsConnected = BitSetUtil.copy(bsAtoms);
-    
+
     // It may be important to include all attached atoms
-    
+
     for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) {
       Atom a = atoms[i];
       Bond[] bonds = a.getBonds();
@@ -803,10 +809,11 @@ public class ForceFieldMMFF extends ForceField {
           if (bonds[j].isCovalent())
             bsConnected.set(bonds[j].getOtherAtom(a).index);
     }
-    
+
     // we need to identify H atoms and also make a BitSet of all the elements
-    
-    for (int i = bsConnected.nextSetBit(0); i >= 0; i = bsConnected.nextSetBit(i + 1)) {
+
+    for (int i = bsConnected.nextSetBit(0); i >= 0; i = bsConnected
+        .nextSetBit(i + 1)) {
       int n = atoms[i].getElementNumber();
       switch (n) {
       case 1:
@@ -816,9 +823,9 @@ public class ForceFieldMMFF extends ForceField {
         bsElements.set(n);
       }
     }
-    
+
     // generate a list of SMART codes 
-    
+
     int nUsed = 0;
     for (int i = 1; i < atomTypes.size(); i++) {
       AtomType at = atomTypes.get(i);
@@ -828,13 +835,13 @@ public class ForceFieldMMFF extends ForceField {
       nUsed++;
     }
     Logger.info(nUsed + " SMARTS matches used");
-    
+
     // The SMARTS list is organized from least general to most general
     // for each atom. So the FIRST occurrence of an atom in the list
     // identifies that atom's MMFF94 type.
-    
-    smartsMatcher.getSubstructureSets(smarts, atoms, atoms.length, 
-        JmolEdge.FLAG_AROMATIC_STRICT | JmolEdge.FLAG_AROMATIC_DOUBLE, 
+
+    smartsMatcher.getSubstructureSets(smarts, atoms, atoms.length,
+        JmolEdge.FLAG_AROMATIC_STRICT | JmolEdge.FLAG_AROMATIC_DOUBLE,
         bsConnected, bitSets, vRings);
     BitSet bsDone = new BitSet();
     for (int j = 0; j < bitSets.size(); j++) {
@@ -853,17 +860,29 @@ public class ForceFieldMMFF extends ForceField {
 
     // now we add in the H atom types as the negative of their MMFF94 type
     // rather than as an index into AtomTypes. 
-    
-    for (int i = bsHydrogen.nextSetBit(0); i >= 0; i = bsHydrogen.nextSetBit(i + 1)) {
+
+    for (int i = bsHydrogen.nextSetBit(0); i >= 0; i = bsHydrogen
+        .nextSetBit(i + 1)) {
       Bond[] bonds = atoms[i].getBonds();
       if (bonds != null) {
-        types[i] = -atomTypes.get(types[bonds[0].getOtherAtom(atoms[i]).index]).hType;
+        int j = types[bonds[0].getOtherAtom(atoms[i]).index];
+        if (j != 0)
+          bsDone.set(i);
+        types[i] = -atomTypes.get(j).hType;
       }
     }
     if (Logger.debugging)
-      for (int i = bsConnected.nextSetBit(0); i >= 0; i = bsConnected.nextSetBit(i + 1))
-        Logger.info("atom " + atoms[i] + "\ttype " + (types[i] < 0 ? "" + -types[i] : (atomTypes.get(types[i]).mmType + "\t" + atomTypes.get(types[i]).smartsCode + "\t"+ atomTypes.get(types[i]).descr)));
-    
+      for (int i = bsConnected.nextSetBit(0); i >= 0; i = bsConnected
+          .nextSetBit(i + 1))
+        Logger.info("atom "
+            + atoms[i]
+            + "\ttype "
+            + (types[i] < 0 ? "" + -types[i] : (atomTypes.get(types[i]).mmType
+                + "\t" + atomTypes.get(types[i]).smartsCode + "\t" + atomTypes
+                .get(types[i]).descr)));
+
+    if (!allowUnknowns && bsDone.cardinality() != bsConnected.cardinality())
+      return null;
     return types;
   }
 

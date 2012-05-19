@@ -49,6 +49,7 @@ public class ForceFieldUFF extends ForceField {
   
   public ForceFieldUFF(Minimizer minimizer) {
     this.minimizer = minimizer;
+    this.name = "UFF";
   }
 
   @Override

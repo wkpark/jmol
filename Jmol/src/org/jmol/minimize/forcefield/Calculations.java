@@ -89,7 +89,7 @@ abstract class Calculations {
 
   abstract boolean setupCalculations();
 
-  abstract String getUnit();
+  abstract String getUnits();
 
   abstract double compute(int iType, Object[] dataIn);
 
@@ -443,6 +443,7 @@ abstract class Calculations {
   }
 
   String getDebugLine(int iType, Calculation c) {
+    float energy = ff.toUserUnits(c.energy);
     switch (iType) {
     case CALC_DISTANCE:
       return TextFormat.sprintf(
@@ -450,7 +451,7 @@ abstract class Calculations {
           new Object[] { minAtoms[c.ia].sType, minAtoms[c.ib].sType, 
           new float[] { 0, (float)c.rab, 
               (float)c.dData[1], (float)c.dData[0], 
-              (float)c.delta, (float)c.energy },
+              (float)c.delta, energy },
           new int[] { minAtoms[c.ia].atom.getAtomNumber(), minAtoms[c.ib].atom.getAtomNumber() }});
     case CALC_ANGLE:
     case CALC_STRETCH_BEND:
@@ -459,7 +460,7 @@ abstract class Calculations {
           new Object[] { minAtoms[c.ia].sType, minAtoms[c.ib].sType, 
               minAtoms[c.ic].sType,
           new float[] { (float)(c.theta * RAD_TO_DEG), (float) c.dData[1] /*THETA0*/, 
-              (float)c.dData[0]/*Kijk*/, (float) c.energy },
+              (float)c.dData[0]/*Kijk*/, energy },
           new int[] { minAtoms[c.ia].atom.getAtomNumber(), minAtoms[c.ib].atom.getAtomNumber(),
               minAtoms[c.ic].atom.getAtomNumber()} });
       case CALC_TORSION:
@@ -468,7 +469,7 @@ abstract class Calculations {
            new Object[] { minAtoms[c.ia].sType, minAtoms[c.ib].sType, 
                minAtoms[c.ic].sType, minAtoms[c.id].sType, 
            new float[] { (float) c.dData[1]/*cosNphi0*/, (float) c.dData[0]/*V*/, 
-               (float) (c.theta * RAD_TO_DEG), (float) c.energy },
+               (float) (c.theta * RAD_TO_DEG), energy },
            new int[] { minAtoms[c.ia].atom.getAtomNumber(), minAtoms[c.ib].atom.getAtomNumber(),
                minAtoms[c.ic].atom.getAtomNumber(), minAtoms[c.id].atom.getAtomNumber(), c.iData[4] } });
     case CALC_OOP:
@@ -477,18 +478,18 @@ abstract class Calculations {
           new Object[] { minAtoms[c.ia].sType, minAtoms[c.ib].sType, 
               minAtoms[c.ic].sType, minAtoms[c.id].sType,
           new float[] { (float)(c.theta * RAD_TO_DEG), 
-              (float)c.dData[0]/*koop*/, (float) c.energy },
+              (float)c.dData[0]/*koop*/, energy },
           new int[] { minAtoms[c.ia].atom.getAtomNumber(), minAtoms[c.ib].atom.getAtomNumber(),
               minAtoms[c.ic].atom.getAtomNumber(), minAtoms[c.id].atom.getAtomNumber() } });
     case CALC_VDW:
       return TextFormat.sprintf("%3d %3d  %-5s %-5s %6.3f  %8.3f  %8.3f", 
           new Object[] { minAtoms[c.iData[0]].sType, minAtoms[c.iData[1]].sType,
-          new float[] { (float)c.rab, (float)c.dData[0]/*kab*/, (float)c.energy},
+          new float[] { (float)c.rab, (float)c.dData[0]/*kab*/, energy},
           new int[] { minAtoms[c.ia].atom.getAtomNumber(), minAtoms[c.ib].atom.getAtomNumber() } });
     case CALC_ES:
       return TextFormat.sprintf("%3d %3d  %-5s %-5s %6.3f  %8.3f  %8.3f  %8.3f  %8.3f", 
           new Object[] { minAtoms[c.iData[0]].sType, minAtoms[c.iData[1]].sType,
-          new float[] { (float)c.rab, (float)c.dData[0]/*q1*/, (float)c.dData[1]/*q2*/, (float)c.dData[2]/*f*/, (float)c.energy },
+          new float[] { (float)c.rab, (float)c.dData[0]/*q1*/, (float)c.dData[1]/*q2*/, (float)c.dData[2]/*f*/, energy },
           new int[] { minAtoms[c.ia].atom.getAtomNumber(), minAtoms[c.ib].atom.getAtomNumber() } });
     }
     return "";
@@ -519,8 +520,9 @@ abstract class Calculations {
       s = "ELECTROSTATIC ENERGY";
       break;
     }
-    return TextFormat.sprintf("\n     TOTAL %s ENERGY = %8.3f %s\n", 
-        new Object[] { s, getUnit(), Float.valueOf((float) energy) });
+    return TextFormat.sprintf("\n     TOTAL %s ENERGY = %8.3f %s/mol\n", 
+        new Object[] { s, ff.minimizer.units, Float.valueOf(ff.toUserUnits(energy)), 
+        ff.minimizer.units });
   }
 
   ////////////////////////////////////////////////////

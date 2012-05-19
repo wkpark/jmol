@@ -88,8 +88,8 @@ class CalculationsUFF extends Calculations {
   }
   
   @Override
-  String getUnit() {
-    return "kJ/mol"; // Note that we convert from kcal/mol internally
+  String getUnits() {
+    return "kJ";
   }
 
   @Override

@@ -5469,11 +5469,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void notifyMinimizationStatus() {
     Object step = getParameter("_minimizationStep");
+    String ff = (String) getParameter("_minimizationForceField");
     statusManager.notifyMinimizationStatus(
         (String) getParameter("_minimizationStatus"),
         step instanceof String ? Integer.valueOf(0) : (Integer) step,
         (Float) getParameter("_minimizationEnergy"),
-        (Float) getParameter("_minimizationEnergyDiff"));
+        (Float) getParameter("_minimizationEnergyDiff"), ff);
   }
 
   /*
@@ -5781,6 +5782,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private void setStringProperty(String key, int tok, String value) {
     switch (tok) {
+    case Token.measurementunits:
+      setUnits(value, true);
+      return;
+    case Token.energyunits:
+      setUnits(value, false);
+      return;
     case Token.forcefield:
       // 12.3.25
       global.forceField = value;
@@ -7560,15 +7567,24 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.measureAllModels;
   }
 
-  public void setMeasureDistanceUnits(String units) {
+  public void setUnits(String units, boolean isDistance) {
     // stateManager
     // Eval
-    global.setMeasureDistanceUnits(units);
-    setShapeProperty(JmolConstants.SHAPE_MEASURES, "reformatDistances", null);
+    global.setUnits(units);
+    if (isDistance) {
+      global.setUnits(units);
+      setShapeProperty(JmolConstants.SHAPE_MEASURES, "reformatDistances", null);
+    } else {
+      
+    }
   }
 
   public String getMeasureDistanceUnits() {
-    return global.getMeasureDistanceUnits();
+    return global.measureDistanceUnits;
+  }
+
+  public String getEnergyUnits() {
+    return global.energyUnits;
   }
 
   public boolean getUseNumberLocalization() {
@@ -9557,7 +9573,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return;
     minimize(0, 0, getModelUndeletedAtomsBitSet(-1), null, 0, false, true,
         false);
-    echoMessage("Energy = " + getParameter("_minimizationEnergy"));
+    echoMessage(getParameter("_minimizationForceField") + " Energy = " + getParameter("_minimizationEnergy"));
   }
 
   /**

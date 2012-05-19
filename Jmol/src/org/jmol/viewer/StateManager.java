@@ -843,6 +843,7 @@ public class StateManager {
       setParameterValue("ellipsoidDotCount", ellipsoidDotCount);
       setParameterValue("ellipsoidDots", ellipsoidDots);
       setParameterValue("ellipsoidFill", ellipsoidFill);
+      setParameterValue("energyUnits", energyUnits);
 //      setParameterValue("_fileCaching", _fileCaching);
 //      setParameterValue("_fileCache", _fileCache);
       setParameterValue("fontScaling", fontScaling);
@@ -1195,9 +1196,11 @@ public class StateManager {
     boolean allowMultiTouch = true; // but you still need to set the parameter multiTouchSparshUI=true
     boolean allowKeyStrokes = false;
     int animationFps = 10;
+    boolean atomPicking = true;
     boolean autoFps = false;
     EnumAxesMode axesMode = EnumAxesMode.BOUNDBOX;
     float axesScale = 2;
+    boolean bondPicking = false;
     float cameraDepth = 3.0f;
     String dataSeparator = "~~~";
     boolean debugScript = false;
@@ -1212,18 +1215,18 @@ public class StateManager {
     boolean drawHover = false;
     boolean drawPicking = false;
     boolean dsspCalcHydrogen = true;
-    boolean bondPicking = false;
-    boolean atomPicking = true;
+    String energyUnits = "kJ";
     String helpPath = JmolConstants.DEFAULT_HELP_PATH;
     boolean fontScaling = false;
     boolean fontCaching = true;
-    String forceField = "UFF";
+    String forceField = "MMFF";
     int helixStep = 1;
     boolean hideNameInPopup = false;
     int hoverDelayMs = 500;
     float loadAtomDataTolerance = 0.01f;
     boolean logCommands = false;
     boolean logGestures = false;
+    String measureDistanceUnits = "nanometers";
     boolean measurementLabels = true;
     boolean messageStyleChime = false;
     boolean monitorEnergy = false;
@@ -1337,9 +1340,9 @@ public class StateManager {
 
     //controlled access:
 
-    private String measureDistanceUnits = "nanometers";
-
-    void setMeasureDistanceUnits(String units) {
+    void setUnits(String units) {
+      String mu = measureDistanceUnits;
+      String eu = energyUnits;
       if (units.equalsIgnoreCase("angstroms"))
         measureDistanceUnits = "angstroms";
       else if (units.equalsIgnoreCase("nanometers")
@@ -1352,11 +1355,14 @@ public class StateManager {
         measureDistanceUnits = "au";
       else if (units.equalsIgnoreCase("vanderwaals") || units.equalsIgnoreCase("vdw"))
         measureDistanceUnits = "vdw";
-      setParameterValue("measurementUnits", measureDistanceUnits);
-    }
-
-    String getMeasureDistanceUnits() {
-      return measureDistanceUnits;
+      else if (units.equalsIgnoreCase("kj"))
+        energyUnits = "kJ";
+      else if (units.equalsIgnoreCase("kcal"))
+        energyUnits = "kcal";
+      if (!mu.equalsIgnoreCase(measureDistanceUnits))
+        setParameterValue("measurementUnits", measureDistanceUnits);
+      else if (!eu.equalsIgnoreCase(energyUnits)) 
+        setParameterValue("energyUnits", energyUnits);
     }
 
     boolean isJmolVariable(String key) {

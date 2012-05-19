@@ -1773,6 +1773,8 @@ public class ForceFieldMMFF extends ForceField {
       break;
     }
     r -= c * Math.pow(Math.abs(Xa - Xb), n);
+    //r -= red;
+    //r -= delta; 
 
     // Well, guess what? Actually red and delta are not used.
     
@@ -1790,8 +1792,6 @@ public class ForceFieldMMFF extends ForceField {
     //
     // and in each case, we match the results well, but only without red and delta. 
 
-    //r -= red;
-    //r -= delta; 
     return r;
   }
 

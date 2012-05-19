@@ -26,45 +26,60 @@ package org.openscience.jmol.app.jmolpanel;
 
 import java.net.URL;
 import java.net.MalformedURLException;
+
 import javax.swing.JDialog;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 import javax.swing.JScrollPane;
 import javax.swing.JFrame;
 import javax.swing.JEditorPane;
-import javax.swing.JButton;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
-import javax.swing.text.Document;
-import java.awt.Container;
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.Dimension;
-import java.awt.Cursor;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 
+import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
 import org.jmol.util.Logger;
 
-public class AboutDialog extends JDialog implements HyperlinkListener {
+class AboutDialog extends JDialog implements HyperlinkListener {
 
-  JEditorPane html;
+  protected JEditorPane html;
+  protected URL aboutURL;
+  
+  private JmolViewer viewer;
+  
+  private JScrollPane scroller;
+  
+/*  
+  private JButton backButton;
+  private List<URL> history = new ArrayList<URL>();
+  private URL thisURL;
 
-  public AboutDialog(JFrame fr) {
+  private void addToHistory(URL url) {
+    history.add(url);
+    backButton.setEnabled(true);
+    for (int i = history.size(); --i >= 0;)
+      System.out.println(i + "\t" + history.get(i));
+  }
+*/
+  
+  
+  AboutDialog(JFrame fr, JmolViewer viewer) {
 
     super(fr, GT._("About Jmol"), true);
-
+    this.viewer = viewer;
     try {
-      URL aboutURL =
-        this.getClass().getClassLoader()
-          .getResource(JmolResourceHandler.getStringX("About.aboutURL"));
+      aboutURL = this.getClass().getClassLoader().getResource(
+          JmolResourceHandler.getStringX("About.aboutURL"));
       if (aboutURL != null) {
-        html = new JEditorPane(aboutURL);
+        html = new JEditorPane();
+        html.setContentType("text/html");
+        html.setText(GuiMap.getResourceString(this, aboutURL.getPath()));
       } else {
-        html = new JEditorPane("text/plain",
-            GT._("Unable to find url \"{0}\".", JmolResourceHandler.getStringX("About.aboutURL")));
+        html = new JEditorPane("text/plain", GT._(
+            "Unable to find url \"{0}\".", JmolResourceHandler
+                .getStringX("About.aboutURL")));
       }
       html.setEditable(false);
       html.addHyperlinkListener(this);
@@ -73,7 +88,7 @@ public class AboutDialog extends JDialog implements HyperlinkListener {
     } catch (IOException e) {
       Logger.warn("IOException: " + e);
     }
-    JScrollPane scroller = new JScrollPane() {
+    scroller = new JScrollPane() {
 
       @Override
       public Dimension getPreferredSize() {
@@ -90,34 +105,70 @@ public class AboutDialog extends JDialog implements HyperlinkListener {
     JPanel htmlWrapper = new JPanel(new BorderLayout());
     htmlWrapper.setAlignmentX(LEFT_ALIGNMENT);
     htmlWrapper.add(scroller, BorderLayout.CENTER);
-
-    JPanel buttonPanel = new JPanel();
-    buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-    try {
-        JButton ok = new JButton(GT._("OK"));
-        ok.addActionListener(new ActionListener() {
-    
-          public void actionPerformed(ActionEvent e) {
-            OKPressed();
-          }
-        });
-        buttonPanel.add(ok);
-        getRootPane().setDefaultButton(ok);
-    } catch (Exception exception) {
-      Logger.error(null, exception);
-    }
-
     JPanel container = new JPanel();
     container.setLayout(new BorderLayout());
-
     container.add(htmlWrapper, BorderLayout.CENTER);
-    container.add(buttonPanel, BorderLayout.SOUTH);
 
+
+/*    
+    thisURL = aboutURL;
+    JPanel buttonPanel = new JPanel();
+    buttonPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+    buttonPanel.setLayout(new BorderLayout());
+
+    // create browser "back" button
+    backButton = new JButton(GT._("back"));
+    backButton.setEnabled(false);
+
+    backButton.addActionListener(new ActionListener() {
+
+      public void actionPerformed(ActionEvent e) {
+        back();
+      }
+    });
+
+    // create return-to-start dialog button
+    JButton returnUserGuide = new JButton(GT._("back to About"));
+    returnUserGuide.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        backTo(aboutURL);
+      }
+    });
+    buttonPanel.add(returnUserGuide, BorderLayout.WEST);
+    buttonPanel.add(backButton, BorderLayout.CENTER);
+    getRootPane().setDefaultButton(returnUserGuide);
+
+    JButton ok = new JButton(GT._("OK"));
+    final AboutDialog aboutDialog = this;
+    ok.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        aboutDialog.setVisible(false);
+      }
+    });
+    buttonPanel.add(ok, BorderLayout.EAST);
+    getRootPane().setDefaultButton(ok);
+    //container.add(buttonPanel, BorderLayout.SOUTH);
+*/
     getContentPane().add(container);
     pack();
-    centerDialog();
+    Dimension screenSize = this.getToolkit().getScreenSize();
+    Dimension size = this.getSize();
+    screenSize.height = screenSize.height / 2;
+    screenSize.width = screenSize.width / 2;
+    size.height = size.height / 2;
+    size.width = size.width / 2;
+    int y = screenSize.height - size.height;
+    int x = screenSize.width - size.width;
+    this.setLocation(x, y);
   }
-
+/*
+  private void visit(URL url) {
+    Cursor cursor = html.getCursor();
+    Cursor waitCursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
+    html.setCursor(waitCursor);
+    SwingUtilities.invokeLater(new PageLoader(url, cursor));
+  }
+*/
   public void hyperlinkUpdate(HyperlinkEvent e) {
     if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
       linkActivated(e.getURL());
@@ -125,33 +176,51 @@ public class AboutDialog extends JDialog implements HyperlinkListener {
   }
 
   /**
-   * Follows the reference in an
-   * link.  The given url is the requested reference.
-   * By default this calls <a href="#setPage">setPage</a>,
-   * and if an exception is thrown the original previous
-   * document is restored and a beep sounded.  If an
-   * attempt was made to follow a link, but it represented
-   * a malformed url, this method will be called with a
-   * null argument.
-   *
-   * @param u the URL to follow
+   * Opens a web page in an external browser
+   * 
+   * @param url
+   *        the URL to follow
    */
-  protected void linkActivated(URL u) {
-    Cursor c = html.getCursor();
-    Cursor waitCursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
-    html.setCursor(waitCursor);
-    SwingUtilities.invokeLater(new PageLoader(u, c));
+  protected void linkActivated(URL url) {
+    viewer.showUrl(url.toString());
+/*
+    if (!url.getProtocol().equals("file")) {
+      viewer.showUrl(url.toString());
+      return;
+    }
+    addToHistory(thisURL);
+    thisURL = url;
+    visit(url);
+*/    
+  }
+/*
+  protected void back() {
+    URL u = history.remove(history.size() - 1);
+    backButton.setEnabled(history.size() > 0);
+    visit(u);
   }
 
-  /**
+  protected void backTo(URL url) {
+    try {
+      html = new JEditorPane(url);
+    } catch (IOException e) {
+      return;
+    }
+    html.setEditable(false);
+    html.addHyperlinkListener(this);
+    thisURL = url;
+    scroller.getViewport().add(html);
+  }
+
+*/  /*
    * temporary class that loads synchronously (although later than
    * the request so that a cursor change can be done).
-   */
+   *
   class PageLoader implements Runnable {
 
-    PageLoader(URL u, Cursor c) {
-      url = u;
-      cursor = c;
+    PageLoader(URL url, Cursor cursor) {
+      this.url = url;
+      this.cursor = cursor;
     }
 
     public void run() {
@@ -168,8 +237,9 @@ public class AboutDialog extends JDialog implements HyperlinkListener {
       } else {
         Document doc = html.getDocument();
         try {
+          html.setContentType("text/html");
           html.setPage(url);
-        } catch (IOException ioe) {
+        } catch (Exception ioe) {
           html.setDocument(doc);
           getToolkit().beep();
         } finally {
@@ -185,23 +255,5 @@ public class AboutDialog extends JDialog implements HyperlinkListener {
     URL url;
     Cursor cursor;
   }
-
-
-  protected void centerDialog() {
-
-    Dimension screenSize = this.getToolkit().getScreenSize();
-    Dimension size = this.getSize();
-    screenSize.height = screenSize.height / 2;
-    screenSize.width = screenSize.width / 2;
-    size.height = size.height / 2;
-    size.width = size.width / 2;
-    int y = screenSize.height - size.height;
-    int x = screenSize.width - size.width;
-    this.setLocation(x, y);
-  }
-
-  public void OKPressed() {
-    this.setVisible(false);
-  }
-
+*/  
 }

@@ -23,6 +23,12 @@
  */
 package org.openscience.jmol.app.jmolpanel;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -40,8 +46,12 @@ import org.jmol.console.KeyJCheckBox;
 import org.jmol.console.KeyJCheckBoxMenuItem;
 import org.jmol.console.KeyJRadioButtonMenuItem;
 import org.jmol.i18n.GT;
+import org.jmol.util.TextFormat;
+import org.jmol.viewer.JmolConstants;
 
-class GuiMap {
+public class GuiMap {
+
+  private static Object language;
 
   Map<String, AbstractButton> map = new Hashtable<String, AbstractButton>();
   
@@ -270,6 +280,122 @@ class GuiMap {
     GT.setDoTranslate(doTranslate);
   }
 
+  public static String translate(String str) {
+    if (translations == null || !GT.getLanguage().equals(language))
+      setTranslations();
+    language = GT.getLanguage();
+    for (int i = 0; i < translations.length; i += 2)
+      str = TextFormat.simpleReplace(str, translations[i], translations[i + 1]);
+    return str;
+  }
 
+  public static URL getResource(Object object, String fileName) { 
+    return getResource(object, fileName, true);
+  }
+
+  public static URL getHtmlResource(Object object, String root) {
+    String lang = GT.getLanguage();
+    String fileName = root + "_" + lang + ".html";
+    URL url = getResource(object, fileName, false);
+    if (url == null && lang.length() == 5) {
+      fileName = root + "_" + lang.substring(0, 2) + ".html";
+      url = getResource(object, fileName, false);
+    }
+    if (url == null) {
+      fileName = root + ".html";
+      url = getResource(object, fileName, true);
+    }
+    return url;
+  }
+
+  /**
+   * @param object   UNUSED
+   * @param fileName 
+   * @param flagError 
+   * @return URL 
+   */
+  public static URL getResource(Object object, String fileName, boolean flagError) {
+    URL url = null;
+    if (fileName.indexOf("/org/") > 0)
+      fileName = fileName.substring(fileName.indexOf("/org/") + 1);
+    if (!fileName.contains("/"))fileName="org/openscience/jmol/app/webexport/html/"+fileName;
+    try {
+      if ((url = ClassLoader.getSystemResource(fileName)) == null && flagError)
+        System.err.println("Couldn't find file: " + fileName);
+    } catch (Exception e) {
+      System.err.println("Exception " + e.getMessage() + " in getResource "
+          + fileName);
+    }
+    return url;
+  }
+
+  public static String getResourceString(Object object, String name)
+      throws IOException {
+    URL url = (name.indexOf(".") >= 0 ? getResource(object, name) : getHtmlResource(object, name));
+    if (url == null) {
+      throw new FileNotFoundException("Error loading resource " + name);
+    }
+    StringBuffer sb = new StringBuffer();
+    try {
+      //turns out from the Jar file
+      // it's a sun.net.www.protocol.jar.JarURLConnection$JarURLInputStream
+      // and within Eclipse it's a BufferedInputStream
+      //LogPanel.log(name + " : " + url.getContent().toString());
+      BufferedReader br = new BufferedReader(new InputStreamReader(
+          (InputStream) url.getContent()));
+      String line;
+      while ((line = br.readLine()) != null)
+        sb.append(line).append("\n");
+      br.close();
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+    }
+    return translate(sb.toString());
+  }
+  
+  private static String[] translations;
+
+  /**
+   * allows for web page material to be internationalized, inserting language-specific code,
+   * as for WebExport, or by inserting boiler-plate information, as for About_xx.html
+   * 
+   */
+  private static void setTranslations() {
+    // for all templates and JmolPopIn.js
+    translations = new String[] {
+        "GT_JmolPopIn.js_TOGETA3DMODEL", GT.escapeHTML(GT._("To get a 3-D model you can manipulate, click {0}here{1}. Download time may be significant the first time the applet is loaded.", new String[] {"<a href=\"HREF\">", "</a>"})),
+        
+        "GT_pop_in_template.html_INSERTTITLE", GT.escapeHTML(GT._("Insert the page TITLE here.")), 
+        "GT_pop_in_template.html_INSERTINTRO", GT.escapeHTML(GT._("Insert the page INTRODUCTION here.")),
+        
+        "GT_pop_in_template2.html_INSERTCAPTION", GT.escapeHTML(GT._("Insert a caption for {0} here.","@NAME@")),
+        "GT_pop_in_template2.html_INSERTADDITIONAL", GT.escapeHTML(GT._("Insert additional explanatory text here. Long text will wrap around Jmol model {0}.","@NAME@")),
+        
+        "GT_script_button_template.html_INSERT", GT.escapeHTML(GT._("Insert your TITLE and INTRODUCTION here.")),
+        
+        "GT_script_button_template2.html_BUTTONINFO", GT.escapeHTML(GT._("The button {0} will appear in the box below.  Insert information for {0} here and below.", "@NAME@")),
+        "GT_script_button_template2.html_MORE", GT.escapeHTML(GT._("Insert more information for {0} here.", "@NAME@")),
+        
+        "About.html#weblinks", 
+    "<p><b>Jmol " + JmolConstants.version + " (" + JmolConstants.date + ")</b></p>"
+  + "<ul>"
+  + "<li><a href=\"http://sourceforge.net/projects/jmol\">SourceForge</a> (sourceforge.net/projects/jmol)</li>"
+  + "<li><a href=\"http://jmol.sourceforge.net\">Jmol Wiki</a> (jmol.sourceforge.net)</li>"
+  + "</ul>",
+        "About.html#libraries", 
+    "<ul>"
+  + "<li><a href=\"http://www.sourceforge.net/projects/jspecview\">JSpecView</a> (www.sourceforge.net/projects/jspecview, Robert Lancashire, robert.lancashire@uwimona.edu.jm)</li>"
+  + "<li><a href=\"http://www.megginson.com/SAX/\">Simple API for XML</a> (www.megginson.com/SAX, David Megginson, david@megginson.com)</li>"
+  + "<li><a href=\"http://www.javalobby.org/jfa/projects/icons\">JFA Icon collection</a> (www.javalobby.org/jfa/projects/icons, Copyright &copy; 1998, Dean S. Jones, dean@gallant.com)</li>"
+  + "<li><a href=\"http://www.acme.com/\">Acme image encoders</a> (www.acme.com, Copyright &copy; 1996,1998, Jef Poskanzer, jef@acme.com)</li>"
+  + "<li><a href=\"http://www.obrador.com/essentialjpeg/\">JPEG Encoder</a> (www.obrador.com/essentialjpeg, Copyright &copy; 1998, James R. Weeks, BioElectroMech, james@obrador.com)</li>"
+  + "<li><a href=\"http://www.junit.org/\">JUnit</a> (www.junit.org, Erich Gamma, Kent Beck)</li>"
+  + "<li><a href=\"http://jas.freehep.org/\">Java Analysis Studio</a> (jas.freehep.org)</li>"
+  + "<li><a href=\"http://www.esm.co.jp/divisions/open-sys/java/vecmath/\">Unofficial Java3D vecmath package</a> (www.esm.co.jp/divisions/open-sys/java/vecmath, Copyright &copy; 1997,1998,1999, Kenji Hiranabe</li>"
+  + "<li><a href=\"http://www.icon-king.com/projects/nuvola\">Nuvola icon library</a> (www.icon-king.com/projects/nuvola, David Vignoni)</li>"
+  + "</ul>"
+    };
+  }
+  
 }
 

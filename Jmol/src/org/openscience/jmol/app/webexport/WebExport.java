@@ -28,12 +28,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.DateFormat;
 import java.util.Date;
@@ -54,7 +50,7 @@ import org.jmol.api.JmolViewer;
 import org.jmol.export.history.HistoryFile;
 import org.jmol.i18n.GT;
 import org.jmol.util.Parser;
-import org.jmol.util.TextFormat;
+import org.openscience.jmol.app.jmolpanel.GuiMap;
 
 public class WebExport extends JPanel implements WindowListener {
 
@@ -94,14 +90,12 @@ public class WebExport extends JPanel implements WindowListener {
 
     webPanels = new WebPanel[2];
     
-    setTranslations();
-
     if (runStatus != STAND_ALONE) {
       //Add tabs to the tabbed pane
 
       JPanel introPanel = new JPanel();
       String introFileName = "WebExportIntro";
-      URL url = getHtmlResource(this, introFileName);
+      URL url = GuiMap.getHtmlResource(this, introFileName);
       if (url == null) {
         System.err.println(GT._("Couldn't find file: {0}", introFileName+".html"));
       }
@@ -316,95 +310,6 @@ public class WebExport extends JPanel implements WindowListener {
   
   static JFrame getFrame() {
     return webFrame;
-  }
-
-  static URL getResource(Object object, String fileName) { 
-    return getResource(object, fileName, true);
-  }
-
-  static URL getHtmlResource(Object object, String root) {
-    String lang = GT.getLanguage();
-    String fileName = root + "_" + lang + ".html";
-    URL url = getResource(object, fileName, false);
-    if (url == null && lang.length() == 5) {
-      fileName = root + "_" + lang.substring(0, 2) + ".html";
-      url = getResource(object, fileName, false);
-    }
-    if (url == null) {
-      fileName = root + ".html";
-      url = getResource(object, fileName, true);
-    }
-    return url;
-  }
-
-
-  /**
-   * @param object   UNUSED
-   * @param fileName 
-   * @param flagError 
-   * @return URL 
-   */
-  static URL getResource(Object object, String fileName, boolean flagError) {
-    URL url = null;
-    if (!fileName.contains("/"))fileName="org/openscience/jmol/app/webexport/html/"+fileName;
-    try {
-      if ((url = ClassLoader.getSystemResource(fileName)) == null && flagError)
-        System.err.println("Couldn't find file: " + fileName);
-    } catch (Exception e) {
-      System.err.println("Exception " + e.getMessage() + " in getResource "
-          + fileName);
-    }
-    return url;
-  }
-
-  private static String[] translations;
-  private static void setTranslations() {
-    // for all templates and JmolPopIn.js
-    translations = new String[] {
-        "GT_JmolPopIn.js_TOGETA3DMODEL", GT.escapeHTML(GT._("To get a 3-D model you can manipulate, click {0}here{1}. Download time may be significant the first time the applet is loaded.", new String[] {"<a href=\"HREF\">", "</a>"})),
-        
-        "GT_pop_in_template.html_INSERTTITLE", GT.escapeHTML(GT._("Insert the page TITLE here.")), 
-        "GT_pop_in_template.html_INSERTINTRO", GT.escapeHTML(GT._("Insert the page INTRODUCTION here.")),
-        
-        "GT_pop_in_template2.html_INSERTCAPTION", GT.escapeHTML(GT._("Insert a caption for {0} here.","@NAME@")),
-        "GT_pop_in_template2.html_INSERTADDITIONAL", GT.escapeHTML(GT._("Insert additional explanatory text here. Long text will wrap around Jmol model {0}.","@NAME@")),
-        
-        "GT_script_button_template.html_INSERT", GT.escapeHTML(GT._("Insert your TITLE and INTRODUCTION here.")),
-        
-        "GT_script_button_template2.html_BUTTONINFO", GT.escapeHTML(GT._("The button {0} will appear in the box below.  Insert information for {0} here and below.", "@NAME@")),
-        "GT_script_button_template2.html_MORE", GT.escapeHTML(GT._("Insert more information for {0} here.", "@NAME@")),
-    };
-  }
-  
-  private static String translate(String str) {
-    for (int i = 0; i < translations.length; i += 2)
-      str = TextFormat.simpleReplace(str, translations[i], translations[i + 1]);
-    return str;
-  }
-  
-  
-  static String getResourceString(Object object, String name)
-      throws IOException {
-    URL url = (name.indexOf(".") >= 0 ? getResource(object, name) : getHtmlResource(object, name));
-    if (url == null) {
-      throw new FileNotFoundException("Error loading resource " + name);
-    }
-    StringBuffer sb = new StringBuffer();
-    try {
-      //turns out from the Jar file
-      // it's a sun.net.www.protocol.jar.JarURLConnection$JarURLInputStream
-      // and within Eclipse it's a BufferedInputStream
-      //LogPanel.log(name + " : " + url.getContent().toString());
-      BufferedReader br = new BufferedReader(new InputStreamReader(
-          (InputStream) url.getContent()));
-      String line;
-      while ((line = br.readLine()) != null)
-        sb.append(line).append("\n");
-      br.close();
-    } catch (Exception e) {
-      LogPanel.log(e.getMessage());
-    }
-    return translate(sb.toString());
   }
 
   /* Window event code for cleanup*/

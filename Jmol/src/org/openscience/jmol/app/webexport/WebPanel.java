@@ -73,6 +73,7 @@ import org.jmol.i18n.GT;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.FileManager;
+import org.openscience.jmol.app.jmolpanel.GuiMap;
 import org.openscience.jmol.app.jmolpanel.HelpDialog;
 
 /*
@@ -332,7 +333,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
     helpButton.addActionListener(this);
 
     String templateImage = panelName + ".png";
-    URL pageCartoon = WebExport.getResource(this, templateImage);
+    URL pageCartoon = GuiMap.getResource(this, templateImage);
     ImageIcon pageImage = null;
     if (pageCartoon != null) {
       pageImage = new ImageIcon(pageCartoon, GT._("Cartoon of Page"));
@@ -433,7 +434,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
   public void actionPerformed(ActionEvent e) {
 
     if (e.getSource() == helpButton) {
-      HelpDialog webExportHelp = new HelpDialog(WebExport.getFrame(), WebExport
+      HelpDialog webExportHelp = new HelpDialog(WebExport.getFrame(), GuiMap
           .getHtmlResource(this, panelName + "_instructions"));
       webExportHelp.setVisible(true);
       webExportHelp.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -635,8 +636,8 @@ abstract class WebPanel extends JPanel implements ActionListener,
       LogPanel.log(GT._("Using directory {0}", datadirPath));
       LogPanel.log("  " + GT._("adding {0}", "JmolPopIn.js"));
       try{
-      viewer.writeTextFile(datadirPath + "/JmolPopIn.js", WebExport
-          .getResourceString(this, "JmolPopIn.js"));
+      viewer.writeTextFile(datadirPath + "/JmolPopIn.js", 
+          GuiMap.getResourceString(this, "JmolPopIn.js"));
       }catch (IOException IOe){
         throw IOe;
       }
@@ -668,7 +669,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
         LogPanel.log("      ..." + GT._("adding {0}", javaname + ".spt"));
         viewer.writeTextFile(datadirPath + "/" + javaname + ".spt", script);
       }
-      String html = WebExport.getResourceString(this, panelName + "_template");
+      String html = GuiMap.getResourceString(this, panelName + "_template");
       html = fixHtml(html);
       String jsStr = "";
       BitSet whichWidgets = allSelectedWidgets();
@@ -681,7 +682,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
                 + "\" type=\"text/javascript\"></script>";
             LogPanel.log("  " + GT._("adding {0}", scriptFileName));
             viewer.writeTextFile(datadirPath + "/" + scriptFileName + "",
-                WebExport.getResourceString(this, scriptFileName));
+                GuiMap.getResourceString(this, scriptFileName));
           }
           String [] supportFileNames=theWidgets.widgetList[i].getSupportFileNames();
           int nFiles = supportFileNames.length;
@@ -692,7 +693,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
               if((inFile.lastIndexOf("/"))!=-1) {
                  outFile = inFile.substring((inFile.lastIndexOf("/")+1));
               }
-              URL fileURL = WebExport.getResource(this, inFile);
+              URL fileURL = GuiMap.getResource(this, inFile);
               if (fileURL==null){
                 LogPanel.log("    "+GT._("Unable to load resource {0}", inFile));
                 errCount+=1;
@@ -717,7 +718,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
       appletInfoDivs = "";
       StringBuffer appletDefs = new StringBuffer();
       if (!useAppletJS)
-        htmlAppletTemplate = WebExport.getResourceString(this, panelName
+        htmlAppletTemplate = GuiMap.getResourceString(this, panelName
             + "_template2");
       for (int i = 0; i < listModel.getSize(); i++)
         html = getAppletDefs(i, html, appletDefs, (JmolInstance) listModel

@@ -27,7 +27,8 @@ import java.awt.Point;
 
 import javax.swing.JFrame;
 
-import org.openscience.jmol.app.jmolpanel.*;
+import org.openscience.jmol.app.jmolpanel.JmolPanel;
+import org.openscience.jmol.app.jmolpanel.Splash;
 
 public class Jmol extends JmolPanel {
 

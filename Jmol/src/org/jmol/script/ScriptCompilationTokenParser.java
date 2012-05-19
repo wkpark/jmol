@@ -98,13 +98,16 @@ abstract class ScriptCompilationTokenParser {
 
   protected boolean compileExpressions() {
     
-    isEmbeddedExpression = (tokCommand != Token.nada
+    boolean isScriptExpression = (tokCommand == Token.script && tokAt(2) == Token.leftparen);
+    isEmbeddedExpression = isScriptExpression || (tokCommand != Token.nada
         && (tokCommand != Token.function && tokCommand != Token.parallel 
             && tokCommand != Token.trycmd && tokCommand != Token.catchcmd
             || tokenCommand.intValue != Integer.MAX_VALUE) 
         && tokCommand != Token.end && !Token.tokAttrOr(tokCommand, Token.atomExpressionCommand,
             Token.implicitStringCommand));
-    isMathExpressionCommand = (tokCommand == Token.identifier || Token.tokAttr(tokCommand, Token.mathExpressionCommand));
+    isMathExpressionCommand = (tokCommand == Token.identifier 
+        || isScriptExpression
+        || Token.tokAttr(tokCommand, Token.mathExpressionCommand));
 
     boolean checkExpression = isEmbeddedExpression
         || (Token.tokAttr(tokCommand, Token.atomExpressionCommand));

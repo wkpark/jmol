@@ -416,7 +416,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
             cchToken = 0;
             continue;
           }
-          if (lookingAtImpliedString(true, true))
+          if (lookingAtImpliedString(true, true, true))
             ichEnd = ichToken + cchToken;
         }
         return commandExpected();
@@ -1036,10 +1036,11 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         }
       }
       if (!iHaveQuotedString
-          && lookingAtImpliedString(false, tokCommand == Token.load)) {
+          && lookingAtImpliedString(false, tokCommand == Token.load, 
+              tokCommand != Token.script)) {
         String str = script.substring(ichToken, ichToken + cchToken);
         if (tokCommand == Token.script && str.startsWith("javascript:")) {
-          lookingAtImpliedString(true, true);
+          lookingAtImpliedString(true, true, true);
           str = script.substring(ichToken, ichToken + cchToken);
         }
         addTokenToPrefix(new Token(Token.string, str));
@@ -1060,7 +1061,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           iHaveQuotedString = true;
           return OK;
         }
-        if (lookingAtImpliedString(true, true)) {
+        if (lookingAtImpliedString(true, true, true)) {
           int pt = cchToken;
           String str = script.substring(ichToken, ichToken + cchToken);
           if (str.indexOf(" ") < 0) {
@@ -1075,7 +1076,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     }
     if (Token.tokAttr(tokCommand, Token.implicitStringCommand)
         && !(tokCommand == Token.script && iHaveQuotedString)
-        && lookingAtImpliedString(true, true)) {
+        && lookingAtImpliedString(true, true, true)) {
       String str = script.substring(ichToken, ichToken + cchToken);
       if (tokCommand == Token.label
           && Parser.isOneOf(str.toLowerCase(), "on;off;hide;display"))
@@ -2212,7 +2213,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
    * 
    * @return true or false
    */
-  private boolean lookingAtImpliedString(boolean allowSpace, boolean allowEquals) {
+  private boolean lookingAtImpliedString(boolean allowSpace, boolean allowEquals, boolean allowLeftParen) {
     int ichT = ichToken;
     char ch = script.charAt(ichT);
     boolean parseVariables = !(Token.tokAttr(tokCommand, Token.implicitStringCommand) 
@@ -2230,6 +2231,11 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     int parenpt = 0;
     while (isOK && ichT < cchScript && !eol(ch = script.charAt(ichT))) {
       switch (ch) {
+      case '(':
+        if (!allowLeftParen) {
+          isOK = false;
+          continue;
+        }
       case '=':
         if (!allowEquals) {
           isOK = false;

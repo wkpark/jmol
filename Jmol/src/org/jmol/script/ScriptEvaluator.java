@@ -10203,6 +10203,8 @@ public class ScriptEvaluator {
     String localPath = null;
     String remotePath = null;
     String scriptPath = null;
+    List<ScriptVariable> params = null;
+    
     if (tok == Token.javascript) {
       checkLength(2);
       if (!isSyntaxCheck)
@@ -10279,6 +10281,10 @@ public class ScriptEvaluator {
               error(ERROR_invalidArgument);
           }
         }
+        if (tokAt(i) == Token.leftparen) {
+          params = parameterExpressionList(i, -1, false);
+          i = iToken + 1;
+        }
         checkLength(doStep ? i + 1 : i);
       }
     }
@@ -10305,6 +10311,12 @@ public class ScriptEvaluator {
       boolean saveLoadCheck = isCmdLine_C_Option;
       isCmdLine_C_Option &= loadCheck;
       executionStepping |= doStep;
+      
+      if (params != null) {
+        contextVariables = new Hashtable<String, ScriptVariable>();
+        contextVariables.put("arguments", ScriptVariable.getVariable(params));
+      }
+
       instructionDispatchLoop(isCheck || listCommands);
       if (debugScript && viewer.getMessageStyleChime())
         viewer.scriptStatus("script <exiting>");

@@ -61,8 +61,17 @@ import org.jmol.util.Logger;
  * @author Bob Hanson hansonr@stolaf.edu
  *
  * Java implementation by Bob Hanson 5/2012
- * based on chemKit code by Kyle Lutz.
- *    
+ * based loosely on chemKit code by Kyle Lutz and OpenBabel code by Tim Vandermeersch
+ * but primarily from what is described in 
+ *   
+ *    T. A. Halgren; "Merck Molecular Force Field. V. Extension of MMFF94 
+ *      Using Experimental Data, Additional Computational Data, 
+ *      and Empirical Rules", J. Comp. Chem. 5 & 6 616-641 (1996).
+ *
+ * Parameter files are clipped from the original Wiley FTP site supplemental material:
+ * 
+ * ftp://ftp.wiley.com/public/journals/jcc/suppmat/17/490/MMFF-I_AppendixB.ascii
+ * 
  * Original work, as listed at http://towhee.sourceforge.net/forcefields/mmff94.html:
  * 
  *    T. A. Halgren; "Merck Molecular Force Field. I. Basis, Form, Scope, 
@@ -82,8 +91,8 @@ import org.jmol.util.Logger;
  *      and for Intermolecular-Interaction Energies and Geometries", 
  *      J. Comp. Chem. 7 730-748 (1999).
  *      
- * Validation carried out using MMFF94_opti.log and MMFF94_dative.mol2 
- * (761 models) using checkmm.spt (checkAllEnergies)
+ * Validation carried out using MMFF94_opti.log and MMFF94_dative.mol2 (or MMFF94_hypervalent.mol2) 
+ * including 761 models using org/jmol/minimize/forcefield/mmff/validate/checkmm.spt (checkAllEnergies)
  * 
  * All typical compounds validate. The following 7  
  * structures do not validate to within 0.1 kcal/mol total energy;
@@ -473,7 +482,8 @@ public class ForceFieldMMFF extends ForceField {
           continue;
         //0         1         2         3         4         5         6
         //0123456789012345678901234567890123456789012345678901234567890123456789
-        //O   8 32  0  -4 NITRATE ANION OXYGEN      $([OD1][ND3]([OD1])[OD1])
+        //Mg 12 99  0  24  0 DIPOSITIVE MAGNESIUM CATI [MgD0]
+        //#AtSym ElemNo mmType HType formalCharge*12 val Desc Smiles
         int elemNo = Integer.valueOf(line.substring(3,5).trim()).intValue();
         int mmType = Integer.valueOf(line.substring(6,8).trim()).intValue();
         int hType = Integer.valueOf(line.substring(9,11).trim()).intValue();
@@ -497,154 +507,154 @@ public class ForceFieldMMFF extends ForceField {
   
   private static void setFlags(AtomType at) {
     // fcadj
-      switch (at.mmType) {
-      
-      // Note that these are NOT fractional charges based on
-      // number of connected atoms. These are relatively arbitrary
-      // fractions of the formal charge to be shared with other atoms.
-      // That is, it is not significant that 0.5 is 1/2, and 0.25 is 1/4; 
-      // they are just numbers.
-      
-      case 32:
-      case 35:
-      case 72:
-        // 32  OXYGEN IN CARBOXYLATE ANION
-        // 32  NITRATE ANION OXYGEN
-        // 32  SINGLE TERMINAL OXYGEN ON TETRACOORD SULFUR
-        // 32  TERMINAL O-S IN SULFONES AND SULFONAMIDES
-        // 32  TERMINAL O IN SULFONATES
-        // 35  OXIDE OXYGEN ON SP2 CARBON, NEGATIVELY CHARGED
-        // 72  TERMINAL SULFUR BONDED TO PHOSPHORUS
-        at.fcadj = 0.5f;
-        break;
-      case 62:
-      case 76:
-        // 62  DEPROTONATED SULFONAMIDE N-; FORMAL CHARGE=-1
-        // 76  NEGATIVELY CHARGED N IN, E.G, TRI- OR TETRAZOLE ANION
-        at.fcadj = 0.25f;
-        break;
-      }
+    switch (at.mmType) {
+    
+    // Note that these are NOT fractional charges based on
+    // number of connected atoms. These are relatively arbitrary
+    // fractions of the formal charge to be shared with other atoms.
+    // That is, it is not significant that 0.5 is 1/2, and 0.25 is 1/4; 
+    // they are just numbers.
+    
+    case 32:
+    case 35:
+    case 72:
+      // 32  OXYGEN IN CARBOXYLATE ANION
+      // 32  NITRATE ANION OXYGEN
+      // 32  SINGLE TERMINAL OXYGEN ON TETRACOORD SULFUR
+      // 32  TERMINAL O-S IN SULFONES AND SULFONAMIDES
+      // 32  TERMINAL O IN SULFONATES
+      // 35  OXIDE OXYGEN ON SP2 CARBON, NEGATIVELY CHARGED
+      // 72  TERMINAL SULFUR BONDED TO PHOSPHORUS
+      at.fcadj = 0.5f;
+      break;
+    case 62:
+    case 76:
+      // 62  DEPROTONATED SULFONAMIDE N-; FORMAL CHARGE=-1
+      // 76  NEGATIVELY CHARGED N IN, E.G, TRI- OR TETRAZOLE ANION
+      at.fcadj = 0.25f;
+      break;
+    }
 
-      // arom
-      switch (at.mmType) {
-      case 37:
-      case 38:
-      case 39:
-      case 44:
-      case 58:
-      case 59:
-      case 63:
-      case 64:
-      case 65:
-      case 66:
-      case 69:
-      case 78:
-      case 79:
-      case 81:
-      case 82:
-        at.arom = true;
-      }
-      
-      // sbmb
-      switch (at.mmType) {
-      case 2:
-      case 3:
-      case 4:
-      case 9:
-      case 30:
-      case 37:
-      case 39:
-      case 54:
-      case 57:
-      case 58:
-      case 63:
-      case 64:
-      case 67:
-      case 75:
-      case 78:
-      case 80:
-      case 81:
-        at.sbmb = true;
-      }
-      
-      // pilp
-      switch(at.mmType) {
-      case 6:
-      case 8:
-      case 10:
-      case 11:
-      case 12:
-      case 13:
-      case 14:
-      case 15:
-      case 26:
-      case 32:
-      case 35:
-      case 39:
-      case 40:
-      case 43:
-      case 44:
-      case 59:
-      case 62:
-      case 70:
-      case 72:
-      case 76:
-        at.pilp = true;
-      }
-      
-      // mltb:
-      switch (at.mmType) {
-      case 10:
-      case 32:
-      case 35:
-      case 39:
-      case 41:
-      case 44:
-      case 55:
-      case 56:
-      case 58:
-      case 59:
-      case 69:
-      case 72:
-      case 81:
-      case 82:
-        at.mltb = 1;
-        break;
-      case 2:
-      case 3:
-      case 7:
-      case 9:
-      case 16:
-      case 17:
-      case 30:
-      case 37:
-      case 38:
-      case 45:
-      case 46:
-      case 47:
-      case 51:
-      case 53:
-      case 54:
-      case 57:
-      case 63:
-      case 64:
-      case 65:
-      case 66:
-      case 67:
-      case 74:
-      case 75:
-      case 78:
-      case 79:
-      case 80:
-        at.mltb = 2;
-        break;
-      case 4:
-      case 42:
-      case 60:
-      case 61:
-        at.mltb = 3;
-        break;
-  }
+    // arom
+    switch (at.mmType) {
+    case 37:
+    case 38:
+    case 39:
+    case 44:
+    case 58:
+    case 59:
+    case 63:
+    case 64:
+    case 65:
+    case 66:
+    case 69:
+    case 78:
+    case 79:
+    case 81:
+    case 82:
+      at.arom = true;
+    }
+    
+    // sbmb
+    switch (at.mmType) {
+    case 2:
+    case 3:
+    case 4:
+    case 9:
+    case 30:
+    case 37:
+    case 39:
+    case 54:
+    case 57:
+    case 58:
+    case 63:
+    case 64:
+    case 67:
+    case 75:
+    case 78:
+    case 80:
+    case 81:
+      at.sbmb = true;
+    }
+    
+    // pilp
+    switch(at.mmType) {
+    case 6:
+    case 8:
+    case 10:
+    case 11:
+    case 12:
+    case 13:
+    case 14:
+    case 15:
+    case 26:
+    case 32:
+    case 35:
+    case 39:
+    case 40:
+    case 43:
+    case 44:
+    case 59:
+    case 62:
+    case 70:
+    case 72:
+    case 76:
+      at.pilp = true;
+    }
+    
+    // mltb:
+    switch (at.mmType) {
+    case 10:
+    case 32:
+    case 35:
+    case 39:
+    case 41:
+    case 44:
+    case 55:
+    case 56:
+    case 58:
+    case 59:
+    case 69:
+    case 72:
+    case 81:
+    case 82:
+      at.mltb = 1;
+      break;
+    case 2:
+    case 3:
+    case 7:
+    case 9:
+    case 16:
+    case 17:
+    case 30:
+    case 37:
+    case 38:
+    case 45:
+    case 46:
+    case 47:
+    case 51:
+    case 53:
+    case 54:
+    case 57:
+    case 63:
+    case 64:
+    case 65:
+    case 66:
+    case 67:
+    case 74:
+    case 75:
+    case 78:
+    case 79:
+    case 80:
+      at.mltb = 2;
+      break;
+    case 4:
+    case 42:
+    case 60:
+    case 61:
+      at.mltb = 3;
+      break;
+    }
   }
   /**
    * assign partial charges ala MMFF94

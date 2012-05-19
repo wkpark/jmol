@@ -277,14 +277,14 @@ public class ForceFieldMMFF extends ForceField {
     // presumes charge parameters have been loaded
     if (ffParams.containsKey(Integer.valueOf(-1)))
       return;
-    getMmffParameters("mmff/mmffvdw.par.txt",  ffParams, TYPE_VDW);
-    getMmffParameters("mmff/mmffbond.par.txt", ffParams, TYPE_BOND);
-    getMmffParameters("mmff/mmffbndk.par.txt", ffParams, TYPE_BNDK);
     getMmffParameters("mmff/mmffang.par.txt",  ffParams, TYPE_ANGLE);
+    getMmffParameters("mmff/mmffbndk.par.txt", ffParams, TYPE_BNDK);
+    getMmffParameters("mmff/mmffbond.par.txt", ffParams, TYPE_BOND);
+    getMmffParameters("mmff/mmffoop.par.txt",  ffParams, TYPE_OOP);
     getMmffParameters("mmff/mmffstbn.par.txt", ffParams, TYPE_SB);
     getMmffParameters("mmff/mmffdfsb.par.txt", ffParams, TYPE_SBDEF);
     getMmffParameters("mmff/mmfftor.par.txt",  ffParams, TYPE_TORSION);
-    getMmffParameters("mmff/mmffoop.par.txt",  ffParams, TYPE_OOP);
+    getMmffParameters("mmff/mmffvdw.par.txt",  ffParams, TYPE_VDW);
     ffParams.put(Integer.valueOf(-1), Boolean.TRUE);
   }
 
@@ -296,7 +296,6 @@ public class ForceFieldMMFF extends ForceField {
     // that is composed of four 7-bit atom types and one 4-bit parameter type
     // in some cases, the last 7-bit atom type (a4) is used for additional parameter typing
     
-    int a1, a2 = 127, a3 = 127, a4 = 127;
     Object value = null;
     if (Logger.debugging)
       Logger.info("reading data from " + fileName);
@@ -309,47 +308,65 @@ public class ForceFieldMMFF extends ForceField {
           (InputStream) url.getContent()));
       while ((line = br.readLine()) != null && line.length() < 5 || !line.startsWith("*"))
         continue; // skip header
+      int a1 = 0, a2 = 127, a3 = 127, a4 = 127;
+      int type = 0;
+      switch (dataType) {
+      case TYPE_BOND:  // bond
+      case TYPE_ANGLE:  // angle
+      case TYPE_TORSION:  // tor
+        break;          
+      case TYPE_CHRG: // chrg/bci, identified by a4 = 4
+        a4 = A4_CHRG;
+        break;
+      case TYPE_SB: // stretch bend, identified by a4
+        a4 = A4_SB;
+        break;
+      case TYPE_BNDK: // A4_BNDK identified by a4
+        a4 = A4_BNDK;
+        type = KEY_BNDK;
+        break;
+      case TYPE_OOP: // oop (tor max type is 5)
+        type = KEY_OOP;
+        break;
+      case TYPE_PBCI:  // pbci
+        type = KEY_PBCI;
+        break;
+      case TYPE_SBDEF: // default stretch bend, by row; identified by a4
+        a4 = A4_SBDEF;
+        type = KEY_SBDEF;
+        break;
+      case TYPE_VDW:  // vdw identified by a4 = 3, not 127
+        a4 = A4_VDW;
+        type = KEY_VDW;
+        break;
+      }
       while ((line = br.readLine()) != null) {
         if (line.length() < 5 || line.startsWith("*"))
           continue;
-        int type = line.charAt(0) - '0';
         switch (dataType) {
-        case TYPE_OOP: // oop (tor max type is 5)
-          type = KEY_OOP;
+        case TYPE_BNDK:
+        case TYPE_OOP:
+        case TYPE_PBCI:
+        case TYPE_SBDEF:
           break;
-        case TYPE_SBDEF: // default stretch bend, by row; identified by a4
-          a4 = A4_SBDEF;
-          type = KEY_SBDEF;
-          break;
-        case TYPE_SB: // stretch bend, identified by a4
-          a4 = A4_SB;
-          break;
-        case TYPE_CHRG: // chrg/bci, identified by a4 = 4
-          a4 = A4_CHRG;
-          if (type == 4)
-            continue; // I have no idea what type=4 here would mean. It's supposed to be a bond type
-          break;
-        case TYPE_BNDK: // A4_BNDK identified by a4
-          a4 = A4_BNDK;
-          type = KEY_BNDK;
-          break;
-        case TYPE_VDW:  // vdw identified by a4 = 3, not 127
+        case TYPE_VDW:
           if (line.charAt(5) != ' ')
             continue; // header stuff
-          a4 = A4_VDW;
-          type = KEY_VDW;
           break;
-        case TYPE_PBCI:  // pbci
-          type = KEY_PBCI;
+        case TYPE_CHRG: 
+          if (line.charAt(0) == '4')
+            continue; // I have no idea what type=4 here would mean. It's supposed to be a bond type
+          // fall through
+        case TYPE_ANGLE: 
+        case TYPE_BOND: 
+        case TYPE_SB: 
+        case TYPE_TORSION:
+          type = line.charAt(0) - '0';
           break;
-        case TYPE_TORSION:  // tor
-        case TYPE_ANGLE:  // angle
-        case TYPE_BOND:  // bond
-          break;          
         }
         switch (dataType) {
-        case TYPE_TORSION: 
         case TYPE_OOP:
+        case TYPE_TORSION: 
           a4 = Integer.valueOf(line.substring(18,20).trim()).intValue();
           // fall through
         case TYPE_ANGLE:
@@ -357,29 +374,17 @@ public class ForceFieldMMFF extends ForceField {
         case TYPE_SBDEF:
           a3 = Integer.valueOf(line.substring(13,15).trim()).intValue();
           // fall through
-        case TYPE_CHRG:
         case TYPE_BNDK:
         case TYPE_BOND:
+        case TYPE_CHRG:
           a2 = Integer.valueOf(line.substring(8,10).trim()).intValue();
-          break;
-        case TYPE_VDW:
+          // fall through
         case TYPE_PBCI:
+        case TYPE_VDW:
+          a1 = Integer.valueOf(line.substring(3,5).trim()).intValue();
           break;
         }
-        a1 = Integer.valueOf(line.substring(3,5).trim()).intValue();
         switch (dataType) {
-        case TYPE_PBCI:
-          value = Float.valueOf(line.substring(5,15).trim());
-          break;
-        case TYPE_VDW: // vdw alpha-i, N-i, A-i, G-i, DA
-          value = new double[] {
-              Double.valueOf(line.substring(10,15).trim()).doubleValue(),
-              Double.valueOf(line.substring(20,25).trim()).doubleValue(),
-              Double.valueOf(line.substring(30,35).trim()).doubleValue(),
-              Double.valueOf(line.substring(40,45).trim()).doubleValue(),
-              line.charAt(46) // '-', 'A', 'D'
-              };
-          break;
         case TYPE_BNDK: // empirical bond stretch: kb, r0 (reversed in file) 
           value = new double[] {
               Double.valueOf(line.substring(19,25).trim()).doubleValue(),
@@ -390,14 +395,20 @@ public class ForceFieldMMFF extends ForceField {
               Double.valueOf(line.substring(14,20).trim()).doubleValue(),
               Double.valueOf(line.substring(25,31).trim()).doubleValue() };
          break;
-        case TYPE_CHRG: // bond chrg
-          value = Float.valueOf(line.substring(10,20).trim());
-          break;
         case TYPE_ANGLE:   // angles: ka, theta0
         case TYPE_SB:  // stretch-bend: kbaIJK, kbaKJI
           value = new double[] {
               Double.valueOf(line.substring(19,25).trim()).doubleValue(),
               Double.valueOf(line.substring(28,35).trim()).doubleValue() };
+          break;
+        case TYPE_CHRG: // bond chrg
+          value = Float.valueOf(line.substring(10,20).trim());
+          break;
+        case TYPE_OOP: // oop: koop  
+          value = new double[] { Double.valueOf(line.substring(24,30).trim()).doubleValue() };
+          break;
+        case TYPE_PBCI:
+          value = Float.valueOf(line.substring(5,15).trim());
           break;
         case TYPE_SBDEF: // default stretch-bend: F(I_J,K),F(K_J,I)  
           double v1 = Double.valueOf(line.substring(19,25).trim()).doubleValue();
@@ -417,8 +428,14 @@ public class ForceFieldMMFF extends ForceField {
               Double.valueOf(line.substring(38,44).trim()).doubleValue()
               };
           break;
-        case TYPE_OOP: // oop: koop  
-          value = new double[] { Double.valueOf(line.substring(24,30).trim()).doubleValue() };
+        case TYPE_VDW: // vdw alpha-i, N-i, A-i, G-i, DA
+          value = new double[] {
+              Double.valueOf(line.substring(10,15).trim()).doubleValue(),
+              Double.valueOf(line.substring(20,25).trim()).doubleValue(),
+              Double.valueOf(line.substring(30,35).trim()).doubleValue(),
+              Double.valueOf(line.substring(40,45).trim()).doubleValue(),
+              line.charAt(46) // '-', 'A', 'D'
+              };
           break;
         }        
         Integer key = MinObject.getKey(type, a1, a2, a3, a4);

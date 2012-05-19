@@ -50,7 +50,7 @@ function setAtomInfo() {
 
 }
 setAtomInfo
-print "use checkAll() to check atom types; checkAllCharges() to check partial charges"
+print "use checkAll() to check atom types; checkAllCharges() to check partial charges; checkAllEnergies to check MMFF94 energies"
 
 function labelmm(color) { 
 		label %a %4.2[partialcharge] %[formalcharge] %[atomtype]
@@ -161,7 +161,7 @@ function checkAllEnergies() {
 	set useMinimizationThread false
 	set minimizationSilent
 	var nBad = 0;
-	a = [];
+	var a = [];
 	var max = 0.1;
 	a[last + 1] = 0;
 	var eu = energyUnits;
@@ -170,12 +170,11 @@ function checkAllEnergies() {
 		model @{m+1}
 		select {modelindex=m}
 		minimize energy
-		var x = 0.0 + getproperty("minimizationinfo").split("TOTAL ENERGY =")[2].trim().split(" ")[1]
 		var ref = mmdat[_modelName]["energy"]
-		var diff = abs(x - ref)
+		var diff = abs(_minimizationEnergy - ref)
 		a[m + 1] = diff
 		if (diff > max) { 
-			print "" + (++nBad) + "\t" + _modelName + "\t E= \t" + x + "\t Eref=\t" + ref + "\t diff= \t" + diff
+			print "" + (++nBad) + "\t" + _modelName + "\t E= \t" + _minimizationEnergy + "\t Eref=\t" + ref + "\t diff= \t" + diff
 		}
 	}
 	print "for " + (last+1) + " models, " + nBad + " have energy differences outside the range " + (-max) + " to " + max + " with a standard deviation of " + a.stddev

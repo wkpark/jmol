@@ -706,7 +706,7 @@ public class FileManager {
       if (os != null)
         bytes = getStreamAsBytes(bis, os);
       else
-        bytes = (os == null || subFileList == null || subFileList.length <= 1
+        bytes = (subFileList == null || subFileList.length <= 1
             || !ZipUtil.isZipFile(bis) && !ZipUtil.isPngZipStream(bis) ? getStreamAsBytes(
             bis, os)
             : ZipUtil.getZipFileContentsAsBytes(bis, subFileList, 1));

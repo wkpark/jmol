@@ -547,13 +547,13 @@ public class SmilesSearch extends JmolMolecule {
 
     if (++atomNum < atomCount) {
 
-      System.out.println("atomno=" + atomNum + " bsFound = " + bsFound + " " + this);
+      //System.out.println("atomno=" + atomNum + " bsFound = " + bsFound + " " + this);
       // so far, so good... not done yet... on to the next position...
 
       /*
       if (patternAtoms[atomNum].toString().indexOf("*") < 0) {
         for (int i = 0; i < atomNum; i++)System.out.println(i + " " + patternAtoms[i]);
-      System.out.println("");
+      //System.out.println("");
       }
       */
       
@@ -716,7 +716,7 @@ public class SmilesSearch extends JmolMolecule {
       if (firstAtomOnly) {
         bsCheck.clear();
         for (int j = 0; j < atomCount; j++) {
-          System.out.println("checking return for " + patternAtoms[j]);
+          //System.out.println("checking return for " + patternAtoms[j]);
           bsCheck.set(patternAtoms[j].getMatchingAtom());
         }
         if (bsCheck.cardinality() != atomCount)

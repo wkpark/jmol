@@ -136,7 +136,7 @@ public class SmilesParser {
   }
 
   private int flags;
-
+  
   /**
    * Parses a SMILES String
    * 
@@ -150,6 +150,9 @@ public class SmilesParser {
     // Logger.debug("Smiles Parser: " + pattern);
     if (pattern == null)
       throw new InvalidSmilesException("SMILES expressions must not be null");
+    SmilesSearch search = new SmilesSearch();
+    if (pattern.indexOf("\"select:") >= 0)
+      pattern = parseSelected(search, pattern);
     pattern = cleanPattern(pattern);
     while (pattern.startsWith("/")) {
       String strFlags = getSubPattern(pattern, 0, '/').toUpperCase();
@@ -171,7 +174,6 @@ public class SmilesParser {
     if (isSmarts && pattern.indexOf("[$") >= 0)
       pattern = parseVariableLength(pattern);
     if (pattern.indexOf("||") >= 0) {
-      SmilesSearch search = new SmilesSearch();
       String[] patterns = TextFormat.split(pattern, "||");  
       String toDo = "";
       search.subSearches = new SmilesSearch[patterns.length];
@@ -186,7 +188,7 @@ public class SmilesParser {
         Logger.info(toDo);
       return search;
     }
-     return getSearch(null, pattern, flags);
+     return getSearch(search, pattern, flags);
   }
 
   private String parseVariableLength(String pattern)
@@ -685,6 +687,18 @@ public class SmilesParser {
       return false;
     }
     throw new InvalidSmilesException("Unmatched '}'");
+  }
+
+  private String parseSelected(SmilesSearch molecule, String pattern) throws InvalidSmilesException {
+    int index;
+    while ((index = pattern.lastIndexOf("\"select:")) >= 0) {
+      String s = getSubPattern(pattern, index, '"');
+      int pt = index + s.length() + 2;
+      pattern = pattern.substring(0, index) 
+      + "\"_select:_" + molecule.addNested(s) + "\""
+      + pattern.substring(pt);
+    }
+    return pattern;
   }
 
   private String parseNested(SmilesSearch molecule, String pattern)

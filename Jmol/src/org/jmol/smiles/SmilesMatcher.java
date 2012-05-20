@@ -270,6 +270,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
       search.getRingData(true, flags, vRings);
       search.asVector = false;
       search.subSearches = new SmilesSearch[1];
+      search.getSelections();
     } catch (InvalidSmilesException e) {
       // I think this is impossible.
     }
@@ -372,6 +373,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
       if (atomCount < 0)
         search.isSmilesFind = true;
       search.setSelected(bsSelected);
+      search.getSelections();
       search.bsRequired = null;//(bsRequired != null && bsRequired.cardinality() > 0 ? bsRequired : null);
       search.setRingData(bsAromatic);
       search.firstMatchOnly = firstMatchOnly;

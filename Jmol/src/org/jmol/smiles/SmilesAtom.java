@@ -777,4 +777,8 @@ public class SmilesAtom extends Point3f implements JmolNode {
     return (atomType == null ? atomName : atomType);
   }
 
+  public BitSet findAtomsLike(String substring) {
+    return null;
+  }
+
 }

@@ -1458,4 +1458,9 @@ final public class Atom extends Point3fi implements JmolNode {
     return false;
   }
 
+  public BitSet findAtomsLike(String atomExpression) {
+    // for SMARTS searching
+    return group.chain.model.modelSet.viewer.getAtomBitSet(atomExpression);
+  }
+
 }

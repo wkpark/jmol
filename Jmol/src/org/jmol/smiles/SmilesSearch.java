@@ -34,6 +34,7 @@ import java.util.Map;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.adapter.smarter.Atom;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
@@ -699,7 +700,7 @@ public class SmilesSearch extends JmolMolecule {
     int nMatch = 0;
     for (int j = 0; j < atomCount; j++) {
       int i = patternAtoms[j].getMatchingAtom();
-      if (!firstAtomOnly && haveSelected && !patternAtoms[j].selected)
+      if (!firstAtomOnly && parent.haveSelected && !patternAtoms[j].selected)
         continue;
       nMatch++;
       bs.set(i);
@@ -734,7 +735,7 @@ public class SmilesSearch extends JmolMolecule {
       // every map is important always
       int[] map = new int[nMatch];
       for (int j = 0, nn = 0; j < atomCount; j++) {
-        if (!firstAtomOnly && haveSelected && !patternAtoms[j].selected)
+        if (!firstAtomOnly && parent.haveSelected && !patternAtoms[j].selected)
           continue;
         map[nn++] = patternAtoms[j].getMatchingAtom();
       }
@@ -878,7 +879,7 @@ public class SmilesSearch extends JmolMolecule {
           break;
         
         if (patternAtom.atomType != null && 
-            !patternAtom.atomType.equals(atom.getAtomType()))
+            !parent.checkAtomType(patternAtom.atomType, atom))
           break;
 
         // # <n> or Symbol Check atomic number
@@ -986,6 +987,12 @@ public class SmilesSearch extends JmolMolecule {
     }
 
     return foundAtom;
+  }
+
+  private boolean checkAtomType(String atomType, JmolNode atom) {
+    return (atomType.startsWith("_select:_") ? 
+        ((BitSet) parent.htNested.get(atomType.substring(8))).get(atom.getIndex())
+        : atomType.equals(atom.getAtomType()));
   }
 
   private boolean checkMatchBond(SmilesAtom patternAtom, SmilesAtom atom1,
@@ -1931,6 +1938,20 @@ public class SmilesSearch extends JmolMolecule {
 
   SmilesSearch getParent() {
     return (parent == this ? this : parent.getParent());
+  }
+
+  void getSelections() {
+    if (parent.htNested == null || jmolAtoms.length == 0)
+      return;
+    for (Map.Entry<String, Object> entry : parent.htNested.entrySet()) {
+      Object o = entry.getValue();
+      if (o.toString().startsWith("select:")) {
+        BitSet bs = jmolAtoms[0].findAtomsLike(((String) o).substring(7));
+        if (bs == null)
+          bs = new BitSet();
+        entry.setValue(bs);
+      }
+    }
   }
   
 }

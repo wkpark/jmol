@@ -69,4 +69,5 @@ public interface JmolNode {
   public boolean isPyrimidine();
   public boolean isDeleted();
   public String getAtomType();
+  public BitSet findAtomsLike(String substring);
 }

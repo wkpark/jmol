@@ -702,11 +702,7 @@ public class FileManager {
       return "Error:" + t;
     try {
       BufferedInputStream bis = (BufferedInputStream) t;
-      Object bytes;
-      if (os != null)
-        bytes = getStreamAsBytes(bis, os);
-      else
-        bytes = (subFileList == null || subFileList.length <= 1
+      Object bytes = (os != null || subFileList == null || subFileList.length <= 1
             || !ZipUtil.isZipFile(bis) && !ZipUtil.isPngZipStream(bis) ? getStreamAsBytes(
             bis, os)
             : ZipUtil.getZipFileContentsAsBytes(bis, subFileList, 1));
@@ -1198,6 +1194,7 @@ public class FileManager {
   Object createZipSet(String fileName, String script, boolean includeRemoteFiles) {
     List<Object> v = new ArrayList<Object>();
     List<String> fileNames = new ArrayList<String>();
+    System.out.println("F2M " + script);
     getFileReferences(script, fileNames);
     List<String> newFileNames = new ArrayList<String>();
     int nFiles = fileNames.size();
@@ -1296,7 +1293,7 @@ public class FileManager {
           int pt = Math.max(fname.lastIndexOf("|"), fname.lastIndexOf("/"));
           fnameShort = fnameShort.substring(pt + 1);
         }
-        Logger.info("...adding " + fname);
+        Logger.info("...adding " + fname + " (" + bytes.length + " bytes)");
         String key = ";" + fnameShort + ";";
         if (fileList.indexOf(key) >= 0) {
           Logger.info("duplicate entry");

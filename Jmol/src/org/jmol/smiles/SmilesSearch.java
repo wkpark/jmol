@@ -34,7 +34,6 @@ import java.util.Map;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-import org.jmol.adapter.smarter.Atom;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
@@ -99,7 +98,7 @@ public class SmilesSearch extends JmolMolecule {
 
   boolean asVector;
   boolean getMaps;
-  SmilesSearch parent = this;
+  SmilesSearch top = this;
   
   //  private data 
   
@@ -143,10 +142,10 @@ public class SmilesSearch extends JmolMolecule {
   }
 
   int addNested(String pattern) {
-    if (parent.htNested == null)
-      parent.htNested = new Hashtable<String, Object>();
-    setNested(++parent.nNested, pattern);
-    return parent.nNested;
+    if (top.htNested == null)
+      top.htNested = new Hashtable<String, Object>();
+    setNested(++top.nNested, pattern);
+    return top.nNested;
   }
   
   void clear() {
@@ -158,11 +157,11 @@ public class SmilesSearch extends JmolMolecule {
   }
   
   void setNested(int iNested, Object o) {
-    parent.htNested.put("_" + iNested, o);
+    top.htNested.put("_" + iNested, o);
   }
 
   Object getNested(int iNested) {
-    return parent.htNested.get("_" + iNested);
+    return top.htNested.get("_" + iNested);
   }
   
   int getMissingHydrogenCount() {
@@ -700,7 +699,7 @@ public class SmilesSearch extends JmolMolecule {
     int nMatch = 0;
     for (int j = 0; j < atomCount; j++) {
       int i = patternAtoms[j].getMatchingAtom();
-      if (!firstAtomOnly && parent.haveSelected && !patternAtoms[j].selected)
+      if (!firstAtomOnly && top.haveSelected && !patternAtoms[j].selected)
         continue;
       nMatch++;
       bs.set(i);
@@ -735,7 +734,7 @@ public class SmilesSearch extends JmolMolecule {
       // every map is important always
       int[] map = new int[nMatch];
       for (int j = 0, nn = 0; j < atomCount; j++) {
-        if (!firstAtomOnly && parent.haveSelected && !patternAtoms[j].selected)
+        if (!firstAtomOnly && top.haveSelected && !patternAtoms[j].selected)
           continue;
         map[nn++] = patternAtoms[j].getMatchingAtom();
       }
@@ -879,7 +878,7 @@ public class SmilesSearch extends JmolMolecule {
           break;
         
         if (patternAtom.atomType != null && 
-            !parent.checkAtomType(patternAtom.atomType, atom))
+            !top.checkAtomType(patternAtom.atomType, atom))
           break;
 
         // # <n> or Symbol Check atomic number
@@ -991,7 +990,7 @@ public class SmilesSearch extends JmolMolecule {
 
   private boolean checkAtomType(String atomType, JmolNode atom) {
     return (atomType.startsWith("_select:_") ? 
-        ((BitSet) parent.htNested.get(atomType.substring(8))).get(atom.getIndex())
+        ((BitSet) top.htNested.get(atomType.substring(8))).get(atom.getIndex())
         : atomType.equals(atom.getAtomType()));
   }
 
@@ -1929,26 +1928,35 @@ public class SmilesSearch extends JmolMolecule {
     }
   }
 
-  public void setParent(SmilesSearch parent) {
+  public void setTop(SmilesSearch parent) {
     if (parent == null)
-      this.parent = this;
+      this.top = this;
     else 
-      this.parent = parent.getParent();
+      this.top = parent.getTop();
   }
 
-  SmilesSearch getParent() {
-    return (parent == this ? this : parent.getParent());
+  SmilesSearch getTop() {
+    return (top == this ? this : top.getTop());
   }
 
+  /**
+   * htNested may contain ["select:xxxx"] primitives. 
+   * We want to clear those up before we start any search.
+   * 
+   */
   void getSelections() {
-    if (parent.htNested == null || jmolAtoms.length == 0)
+    Map<String, Object> ht = top.htNested;
+    if (ht == null || jmolAtoms.length == 0)
       return;
-    for (Map.Entry<String, Object> entry : parent.htNested.entrySet()) {
-      Object o = entry.getValue();
-      if (o.toString().startsWith("select:")) {
-        BitSet bs = jmolAtoms[0].findAtomsLike(((String) o).substring(7));
+    Map<String, Object> htNew = new Hashtable<String, Object>();
+    for (Map.Entry<String, Object> entry : ht.entrySet()) {
+      String key = entry.getValue().toString();
+      if (key.startsWith("select:")) {
+        BitSet bs = (htNew.containsKey(key) ? (BitSet) htNew.get(key) 
+            : jmolAtoms[0].findAtomsLike(key.substring(7)));
         if (bs == null)
           bs = new BitSet();
+        htNew.put(key, bs);
         entry.setValue(bs);
       }
     }

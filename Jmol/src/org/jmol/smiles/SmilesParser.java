@@ -313,7 +313,7 @@ public class SmilesParser {
     // First pass
     htMeasures = new Hashtable<String, SmilesMeasure>();
     SmilesSearch molecule = new SmilesSearch();
-    molecule.setParent(parent);
+    molecule.setTop(parent);
     molecule.isSmarts = isSmarts;
     molecule.pattern = pattern;
     molecule.flags = flags;
@@ -451,7 +451,7 @@ public class SmilesParser {
       int index = 0;
       if (currentAtom == null || bond != null && bond.order == SmilesBond.TYPE_NONE) {
         if (isBioSequence)
-          molecule.parent.needAromatic = false;
+          molecule.top.needAromatic = false;
         index = checkBioType(pattern, 0);
       }
       ch = getChar(pattern, index);
@@ -674,7 +674,7 @@ public class SmilesParser {
         break;
       // 3D SEARCH {C}CCC{C}C subset selection
       braceCount++;
-      molecule.parent.haveSelected = true;
+      molecule.top.haveSelected = true;
       return true;
     case '}':
       if (ch != type)
@@ -951,7 +951,7 @@ public class SmilesParser {
                 if (val == Integer.MIN_VALUE)
                   val = -1; // R --> !R0; !R --> R0
                 newAtom.setRingMembership(val);
-                molecule.parent.needRingData = true;
+                molecule.top.needRingData = true;
                 break;
               case 'r':
                 if (val == Integer.MIN_VALUE) {
@@ -972,7 +972,7 @@ public class SmilesParser {
                   if (val > molecule.ringDataMax)
                     molecule.ringDataMax = val;
                 }
-                molecule.parent.needRingData = true;
+                molecule.top.needRingData = true;
                 break;
               case 'v':
                 // default 1
@@ -986,7 +986,7 @@ public class SmilesParser {
                 // default > 0
                 newAtom
                     .setRingConnectivity(val == Integer.MIN_VALUE ? -1 : val);
-                molecule.parent.needRingData = true;
+                molecule.top.needRingData = true;
                 break;
               }
             }
@@ -1200,7 +1200,7 @@ public class SmilesParser {
       }
       int bondType = SmilesBond.getBondTypeFromCode(ch);
       if (bondType == SmilesBond.TYPE_RING)
-        molecule.parent.needRingMemberships = true;
+        molecule.top.needRingMemberships = true;
       if (currentAtom == null && bondType != SmilesBond.TYPE_NONE)
         throw new InvalidSmilesException("Bond without a previous atom");
       switch (bondType) {
@@ -1225,7 +1225,7 @@ public class SmilesParser {
       case SmilesBond.TYPE_DOUBLE:
       case SmilesBond.TYPE_SINGLE:
         if (currentAtom.isAromatic())
-          molecule.parent.needRingData = true;
+          molecule.top.needRingData = true;
         break;
       }
       newBond.set(bondType, isBondNot);

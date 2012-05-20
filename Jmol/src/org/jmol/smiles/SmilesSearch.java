@@ -440,8 +440,10 @@ public class SmilesSearch extends JmolMolecule {
     if (patternAtom == null) {
       // first atom in pattern
       if (nestedBond == null) {
+        // specifically for non-bioSmarts or not $(....) 
         clearBsFound(-1);
       } else {
+        // clear out the return when there's a nested bio atom when $(...) is in a biomolecule?
         bsReturn.clear();
       }
     } else {

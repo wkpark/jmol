@@ -2209,7 +2209,8 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
    * characters not involving white space.
    * echo, hover, label, message, pause are odd-valued; no initial parsing of variables for them. 
    * @param allowSpace 
-   * @param allowEquals TODO
+   * @param allowEquals    as in the load command, first parameter  load =xxx but NOT any other command
+   * @param allowLeftParen specifically for script command, first parameter xxx.spt(3,4,4)
    * 
    * @return true or false
    */

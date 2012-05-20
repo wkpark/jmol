@@ -316,7 +316,15 @@ public class SmilesSearch extends JmolMolecule {
       search.bsRequired = null;
       search.firstMatchOnly = false;
       search.matchAllAtoms = false;
-      search.bsFound = bsFound;
+      //search.bsFound = bsFound;
+      /*
+       * this statement commented out 5/19/12 revision 17146; it was introduced in 
+       * http://jmol.svn.sourceforge.net/viewvc/jmol/trunk/Jmol/src/org/jmol/smiles/SmilesSearch.java?r1=13475&r2=13476&pathrev=13476&
+       * when the  nested business was set up and apparently this was needed for something with the 3D business. 
+       * It is when nestedBond was set up as well, which makes sense, but this definitely is not a good idea. 
+       * Could be that nesting 3D is not compatible with commenting this out. 
+       * 
+       */
     } else if (isRingCheck) {
       search.bsRequired = null;
       search.isSilent = true;
@@ -431,10 +439,11 @@ public class SmilesSearch extends JmolMolecule {
     JmolEdge[] jmolBonds;
     if (patternAtom == null) {
       // first atom in pattern
-      if (nestedBond == null)
+      if (nestedBond == null) {
         clearBsFound(-1);
-      else
+      } else {
         bsReturn.clear();
+      }
     } else {
       // check for requested selection or not-selection
 
@@ -538,6 +547,7 @@ public class SmilesSearch extends JmolMolecule {
 
     if (++atomNum < atomCount) {
 
+      System.out.println("atomno=" + atomNum + " bsFound = " + bsFound + " " + this);
       // so far, so good... not done yet... on to the next position...
 
       /*

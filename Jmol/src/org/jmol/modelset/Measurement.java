@@ -301,6 +301,9 @@ public class Measurement {
       }
     }
     units = fixUnits(units);
+    int pt = label.indexOf("//"); 
+    if (pt >= 0)
+      label = label.substring(0, pt);
     float f = fixValue(value, units, (label.indexOf("%V") >= 0));
     return formatString(f, units, label);
   }
@@ -358,9 +361,6 @@ public class Measurement {
     }
     if (label.indexOf(s)==0)
       label = label.substring(2);
-    int pt = label.indexOf("//"); 
-    if (pt >= 0)
-      label = label.substring(0, pt);
     if (strFormat == null)
       strFormat = s + label;
     return label;

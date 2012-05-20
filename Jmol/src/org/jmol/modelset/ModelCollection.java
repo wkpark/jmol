@@ -3213,12 +3213,13 @@ abstract public class ModelCollection extends BondCollection {
     for (int i = 0; i < modelCount; ++i) {
       if (frames != null && !frames.get(i))
         continue;
-      String file_model = getModelNumberDotted(i);
-      sb.append("\n\nfile[\"").append(file_model).append("\"] = ").append(
-          Escape.escape(getModelFileName(i))).append("\ntitle[\"").append(
-          file_model).append("\"] = ").append(Escape.escape(getModelTitle(i)))
-          .append("\nname[\"").append(file_model).append("\"] = ").append(
-              Escape.escape(getModelName(i)));
+      String s = "[\"" + getModelNumberDotted(i) + "\"] = ";
+      sb.append("\n\nfile").append(s).append(Escape.escape(getModelFileName(i)));
+      String id = (String) getModelAuxiliaryInfo(i, "modelID");
+      if (id != null)
+        sb.append("\nid").append(s).append(Escape.escape(id));
+      sb.append("\ntitle").append(s).append(Escape.escape(getModelTitle(i)));
+      sb.append("\nname").append(s).append(Escape.escape(getModelName(i)));
     }
     return sb.toString();
   }
@@ -4201,7 +4202,7 @@ abstract public class ModelCollection extends BondCollection {
         fname = getModelFileName(i) + "#";
         mid = fname + mid;
       }
-      if (id.equals(mid))
+      if (id.equalsIgnoreCase(mid))
         return (isBaseModel ? getBaseModelIndex(i) : i);
       if (fname != null && id.startsWith(fname))
         errCode = -2;

@@ -503,6 +503,8 @@ public final class ModelLoader {
       String modelName = adapter.getAtomSetName(atomSetCollection, i);
       Map<String, Object> modelAuxiliaryInfo = adapter.getAtomSetAuxiliaryInfo(
           atomSetCollection, i);
+      if (modelAuxiliaryInfo.containsKey("modelID"))
+        modelAuxiliaryInfo.put("modelID0", modelAuxiliaryInfo.get("modelID"));
       Properties modelProperties = (Properties) modelAuxiliaryInfo.get("modelProperties");
       viewer.setStringProperty("_fileType", (String) modelAuxiliaryInfo
           .get("fileType"));

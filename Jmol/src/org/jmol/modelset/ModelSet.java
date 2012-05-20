@@ -632,6 +632,10 @@ import javax.vecmath.Vector3f;
           break;
         }
       for (int i = 0; i < modelCount; i++) {
+        String s = (String) getModelAuxiliaryInfo(i, "modelID");
+        if (s != null && !s.equals(getModelAuxiliaryInfo(i, "modelID0")))
+          commands.append("  frame " + getModelNumberDotted(i)
+              + "; frame ID " + Escape.escape(s) + ";\n");
         String t = frameTitles[i];
         if (t != null && t.length() > 0)
           commands.append("  frame " + getModelNumberDotted(i)

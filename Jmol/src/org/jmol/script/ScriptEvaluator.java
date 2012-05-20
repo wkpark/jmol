@@ -9246,6 +9246,8 @@ public class ScriptEvaluator {
         rd = new RadiusData(rangeMinMax);
       if (value == null)
         tickInfo.id = "default";
+      if (value != null && strFormat != null && tokAction == Token.opToggle)
+        tokAction = Token.define;
       setShapeProperty(JmolConstants.SHAPE_MEASURES, "measure",
           new MeasurementData(points, tokAction, rd, strFormat, null, tickInfo,
               isAllConnected, isNotConnected, intramolecular, isAll));

@@ -2776,6 +2776,7 @@ public class ScriptEvaluator {
   final static int ERROR_what = 53;
   final static int ERROR_writeWhat = 54;
   final static int ERROR_multipleModelsNotOK = 55;
+  final static int ERROR_cannotSet = 56;
 
   /**
    * @param iError
@@ -2819,6 +2820,9 @@ public class ScriptEvaluator {
       break;
     case ERROR_booleanOrWhateverExpected:
       msg = GT._("boolean, number, or {0} expected");
+      break;
+    case ERROR_cannotSet:
+      msg = GT._("cannot set value");
       break;
     case ERROR_colorExpected:
       msg = GT._("color expected");
@@ -10312,11 +10316,9 @@ public class ScriptEvaluator {
       isCmdLine_C_Option &= loadCheck;
       executionStepping |= doStep;
       
-      if (params != null) {
-        contextVariables = new Hashtable<String, ScriptVariable>();
-        contextVariables.put("arguments", ScriptVariable.getVariable(params));
-      }
-
+      contextVariables = new Hashtable<String, ScriptVariable>();
+      contextVariables.put("_arguments", ScriptVariable.getVariable(params == null ? new int[] {} : params));
+      
       instructionDispatchLoop(isCheck || listCommands);
       if (debugScript && viewer.getMessageStyleChime())
         viewer.scriptStatus("script <exiting>");
@@ -12709,7 +12711,7 @@ public class ScriptEvaluator {
     } else if (!justShow && !isContextVariable) {
       // special cases must be checked
       if (key.length() == 0 || key.charAt(0) == '_') // these cannot be set by user
-        error(ERROR_invalidArgument);
+        error(ERROR_cannotSet);
 
       // these next are not reported and do not allow calculation xxxx = a + b
 

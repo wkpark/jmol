@@ -3841,7 +3841,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public boolean haveFileSet() {
-    return (getModelCount() > 1 && getModelNumber(0) > 1000000);
+    return (getModelCount() > 1 && getModelNumber(Integer.MAX_VALUE) > 2000000);
   }
 
   public void setBackgroundModelIndex(int modelIndex) {
@@ -10411,5 +10411,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void cacheClear() {
     statusManager.cacheClear();
+  }
+
+  public void setCurrentModelID(String id) {
+    int modelIndex = getCurrentModelIndex();
+    if (modelIndex >= 0)
+      modelSet.setModelAuxiliaryInfo(modelIndex, "modelID", id);
   }
 }

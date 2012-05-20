@@ -930,6 +930,8 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public int getModelNumber(int modelIndex) {
+    if (modelIndex == Integer.MAX_VALUE)
+      modelIndex = modelCount - 1;
     return modelNumbers[modelIndex];
   }
 

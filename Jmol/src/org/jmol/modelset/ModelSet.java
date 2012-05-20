@@ -123,7 +123,8 @@ import javax.vecmath.Vector3f;
                                  boolean doSetTrajectory) {
     if (useModelNumber) {
       for (int i = 0; i < modelCount; i++)
-        if (modelNumbers[i] == modelNumber)
+        if (modelNumbers[i] == modelNumber 
+            || modelNumber < 1000000 && modelNumbers[i] == 1000000 + modelNumber)
           return i;
       return -1;
     }

@@ -12039,14 +12039,14 @@ public class ScriptEvaluator {
         return;
       BitSet bsa = new BitSet();
       bsa.set(i);
-      viewer.setCurrentModelIndex(viewer.getModelBitSet(bsa, false).nextSetBit(0));
+      viewer.setCurrentModelIndex(viewer.getModelBitSet(bsa, false).nextSetBit(
+          0));
       return;
     case Token.id:
       checkLength(3);
       String id = stringParameter(2);
-      int modelIndex = (isSyntaxCheck ? -1 : viewer.getModelIndexFromId(id));
-      if (modelIndex >=0)
-        viewer.setCurrentModelIndex(modelIndex);
+      if (!isSyntaxCheck)
+        viewer.setCurrentModelID(id);
       return;
     case Token.delay:
       long millis = 0;
@@ -12118,7 +12118,8 @@ public class ScriptEvaluator {
       case Token.string:
         if (nFrames == 2)
           error(ERROR_invalidArgument);
-        int iFrame = (theTok == Token.string ? getFloatEncodedInt((String) theToken.value) : theToken.intValue);
+        int iFrame = (theTok == Token.string ? getFloatEncodedInt((String) theToken.value)
+            : theToken.intValue);
         if (iFrame < 0 && nFrames == 1) {
           isHyphen = true;
           iFrame = -iFrame;
@@ -12127,8 +12128,19 @@ public class ScriptEvaluator {
         }
         if (theTok == Token.decimal && haveFileSet && fFrame == (int) fFrame)
           iFrame = (int) fFrame * 1000000;
-        if (iFrame == Integer.MAX_VALUE)
+        if (iFrame == Integer.MAX_VALUE) {
+          if (i == 1) {
+            String id = theToken.value.toString();
+            int modelIndex = (isSyntaxCheck ? -1 : viewer
+                .getModelIndexFromId(id));
+            if (modelIndex >= 0) {
+              checkLength(2);
+              viewer.setCurrentModelIndex(modelIndex);
+              return;
+            }
+          }
           iFrame = 0; // frame 0.0
+        }
         if (iFrame == -1) {
           checkLength(offset + 1);
           if (!isSyntaxCheck)
@@ -12187,7 +12199,10 @@ public class ScriptEvaluator {
         frameList[0]++;
         modelIndex = viewer.getModelNumberIndex(frameList[0], false, false);
         if (modelIndex >= 0) {
-          int i2 = (nFrames == 1 ? frameList[0] + 1000000 : frameList[1] == 0 ? -1 : frameList[1] % 1000000 == 0 ? frameList[1] + 1000001 : frameList[1] + 1);
+          int i2 = (nFrames == 1 ? frameList[0] + 1000000
+              : frameList[1] == 0 ? -1
+                  : frameList[1] % 1000000 == 0 ? frameList[1] + 1000001
+                      : frameList[1] + 1);
           modelIndex2 = viewer.getModelNumberIndex(i2, false, false);
           if (modelIndex2 < 0)
             modelIndex2 = viewer.getModelCount();

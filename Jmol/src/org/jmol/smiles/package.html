@@ -304,7 +304,7 @@ Jmol 12.4 adds the following primitives:
 <br/>
 <table border="1" cellpadding="5" width="500">
 <tr><td>"xxx"</td><td>atom type, in double quotes, for example: ["39"r5] (After <b>calculate partialcharge</b> this will be the MMFF94 atom type. [Jmol 12.3.24]</td></tr>
-<tr><td>"select:xxx"</td><td>external selection method. For Jmol, this is an atom expression. For example: [c"select:temperature>10"] [Jmol 12.3.26]</td></tr>
+<tr><td>$(select xxx)"</td><td>external selection method. For Jmol, this is an atom expression. For example: [c$(select temperature>10)] [Jmol 12.3.26]</td></tr>
 <tr><td>r500</td><td>a specifically aromatic 5-membered ring [Jmol 12.3.24]</td></tr>
 <tr><td>r600</td><td>a specifically aromatic 6-membered ring [Jmol 12.3.24]</td></tr>
 </table>  
@@ -692,9 +692,14 @@ includes:
    
  ######## Nested and Multiple Expressions ########
  
-   [nestedExpression] == "$(" [atomExpression] ")"
-      # note: nestedExpressions return only the first atom as a match, 
-      #       not all atoms in the expression.
+   [nestedExpression] == "$(" [atomExpression] ")" | "$(select" [contextualSearchPhrase] ")" 
+      # note: nestedExpressions return only the first atom as a match when an atom expression 
+      #       is involved, not all atoms in the expression.
+      
+   [contextualSearchPhrase] == [any characters with well-matched "(" and ")"]
+      # note: the contextual search phrase is to be processed by the context implementing
+      #       the SMARTS. In the case of Jmol, [contextualSearchPhrase] is any Jmol
+      #       atom expression that can be in a standard Jmol SELECT command. 
 
    [multipleExpression] == { "[$" [nTimes] "(" [orExpression] ")]" 
                              | "[$[nMinimum] "-" [nMaximum](" [orExpression] ")]" }  
@@ -847,7 +852,11 @@ assume a bonding scheme (PDB, GAUSSIAN, etc.).
 </p>
 
 <p>
- -- <a href="mailto:hansonr@stolaf.edu">Bob Hanson</a>  last updated 4/10/2012 : fix for [$(...)n] and [$(...)min-max]
+ -- <a href="mailto:hansonr@stolaf.edu">Bob Hanson</a>  
+ <br />updated 5/21/2012: added $(select...)
+ <br />updated 5/13/2012: added /aromaticStrict/ and /aromaticDouble/ 
+ <br />updated 5/13/2012: added [<atomType>] 
+ <br />updated 4/10/2012: fix for [$(...)n] and [$(...)min-max]
  </p>
 </body>
 </html>

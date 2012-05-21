@@ -1,4 +1,39 @@
 #AtSym ElemNo mmType HType formalCharge*12 val Desc Smiles
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Li  3 92  0  12  0 LITHIUM CATION            [LiD0]
 C   6 22  5   0  4 C IN CYCLOPROPLY          [CD4r3]
 C   6 20  5   0  4 C IN CYCLOBUTYL           [CD4r4]
@@ -47,7 +82,7 @@ N   7 62 23 -12  2 SULFONAMIDE N-            [$([ND2v2][SD4]),$([ND2v2][CD3])]
 N   7 61  0   0  4 ISONITRILE N              $([ND2]#[#6])
 N   7 61  0  12  4 diazo N (+1)              $([ND2]#[#7])
 N   7 38  0   0  3 AROMATIC N, PYRIDINE      [nD2r600]
-N   7 65  0   0  3 ALPHA AROM 5-RING N (thio $([nD2r500][sD2])
+N   7 65  0   0  3 ALPHA AROM 5-RING N (thio $([nD2r500]:[sD2])
 N   7 66  0   0  3 (BETA) AROM 5-RING N (thi $([nD2r500]:a:[sD2])
 N   7 65  0   0  3 ALPHA AROM 5-RING N (fura $([nD2r500]:[oD2])
 N   7 66  0   0  3 (BETA) AROM 5-RING N (fur $([nD2r500]:a:[oD2])
@@ -55,7 +90,7 @@ N   7 65  0   0  3 ALPHA AROM 5-RING N       [$([nD2r500]:[nD3v3])&!$([$(n:[$([n
 N   7 66  0   0  3 (BETA) AROM 5-RING N      [$([nD2r500]:a:[nD3v3])&!$([$(n:[$([nv4])&!$([#7][OD1])]),$(n:a=[$([nv4])&!$([#7][OD1])]),$(n=a:[$([nv4])&!$([#7][OD1])])])]
 N   7 76  0  -3  2 NEG N IN TETRAZOLE AN     [nD2r500][nD2r500][nD2r500][nD2r500]
 N   7 76  0  -4  2 (NEG N IN TRIAZOLE)       [nD2r500]:[nD2r500]:c:[nD2r500]
-N   7 76  0  -6  2 NEG N IN DIAZOLE          $([nD2r500][nD2r500]ccc)
+N   7 76  0  -6  2 NEG N IN DIAZOLE          $([nD2r500]:[nD2r500]:c:c:c)
 N   7 79  0   0  3 GENERAL AROM 5-RING N     [nD2r500]
 N   7 45  0   0  4 NITRO GROUP N             $([ND3](=O)O)
 
@@ -173,3 +208,52 @@ Zn 30 95  0  24  0 DIPOSITIVE ZINC CATION    [ZnD0+2]
 Br 35 13  0   0  1 BROMINE                   [BrD1]
 Br 35 91  0 -12  0 BROMIDE ANION             [BrD0]
 I  53 14  0   0  1 IODINE                    [ID1]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

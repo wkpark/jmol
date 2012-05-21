@@ -6777,7 +6777,7 @@ public class ScriptEvaluator {
     List<BitSet[]> vAtomSets = null;
     List<Object[]> vQuatSets = null;
     BitSet bsFrom = (tokAt(1) == Token.subset ? null : atomExpression(1));
-    BitSet bsTo = (tokAt(++iToken) == Token.subset ? null : atomExpression(++iToken));
+    BitSet bsTo = (tokAt(++iToken) == Token.subset ? null : atomExpression(iToken));
     if (bsFrom == null || bsTo == null)
       error(ERROR_invalidArgument);
     BitSet bsSubset = null;

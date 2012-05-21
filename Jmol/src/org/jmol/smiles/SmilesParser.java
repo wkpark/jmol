@@ -151,8 +151,8 @@ public class SmilesParser {
     if (pattern == null)
       throw new InvalidSmilesException("SMILES expressions must not be null");
     SmilesSearch search = new SmilesSearch();
-    if (pattern.indexOf("\"select:") >= 0)
-      pattern = parseSelected(search, pattern);
+    if (pattern.indexOf("$(select:") >= 0) // must do this before cleaning
+      pattern = parseNested(search, pattern, "select:");
     pattern = cleanPattern(pattern);
     while (pattern.startsWith("/")) {
       String strFlags = getSubPattern(pattern, 0, '/').toUpperCase();
@@ -318,7 +318,7 @@ public class SmilesParser {
     molecule.pattern = pattern;
     molecule.flags = flags;
     if (pattern.indexOf("$(") >= 0)
-      pattern = parseNested(molecule, pattern);
+      pattern = parseNested(molecule, pattern, "");
     parseSmiles(molecule, pattern, null, false);
 
     // Check for braces
@@ -367,6 +367,8 @@ public class SmilesParser {
       Object o = molecule.getNested(atom.iNested);
       if (o instanceof String) {
         String s = (String) o;
+        if (s.startsWith("select:"))
+          return;
         if (s.charAt(0) != '~' && atom.bioType != '\0')
           s = "~" + atom.bioType + "~" + s;
         SmilesSearch search = getSearch(molecule, s, flags);
@@ -689,22 +691,11 @@ public class SmilesParser {
     throw new InvalidSmilesException("Unmatched '}'");
   }
 
-  private String parseSelected(SmilesSearch molecule, String pattern) throws InvalidSmilesException {
-    int index;
-    while ((index = pattern.lastIndexOf("\"select:")) >= 0) {
-      String s = getSubPattern(pattern, index, '"');
-      int pt = index + s.length() + 2;
-      pattern = pattern.substring(0, index) 
-      + "\"_select:_" + molecule.addNested(s) + "\""
-      + pattern.substring(pt);
-    }
-    return pattern;
-  }
-
-  private String parseNested(SmilesSearch molecule, String pattern)
+  private String parseNested(SmilesSearch molecule, String pattern, String prefix)
       throws InvalidSmilesException {
     int index;
-    while ((index = pattern.lastIndexOf("$(")) >= 0) {
+    prefix = "$(" + prefix;
+    while ((index = pattern.lastIndexOf(prefix)) >= 0) {
       String s = getSubPattern(pattern, index + 1, '(');
       int pt = index + s.length() + 3;
       pattern = pattern.substring(0, index) 

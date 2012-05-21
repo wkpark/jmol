@@ -877,8 +877,7 @@ public class SmilesSearch extends JmolMolecule {
             && atom.getIndex() != patternAtom.jmolIndex)
           break;
         
-        if (patternAtom.atomType != null && 
-            !top.checkAtomType(patternAtom.atomType, atom))
+        if (patternAtom.atomType != null && !patternAtom.atomType.equals(atom.getAtomType())) 
           break;
 
         // # <n> or Symbol Check atomic number
@@ -986,12 +985,6 @@ public class SmilesSearch extends JmolMolecule {
     }
 
     return foundAtom;
-  }
-
-  private boolean checkAtomType(String atomType, JmolNode atom) {
-    return (atomType.startsWith("_select:_") ? 
-        ((BitSet) top.htNested.get(atomType.substring(8))).get(atom.getIndex())
-        : atomType.equals(atom.getAtomType()));
   }
 
   private boolean checkMatchBond(SmilesAtom patternAtom, SmilesAtom atom1,

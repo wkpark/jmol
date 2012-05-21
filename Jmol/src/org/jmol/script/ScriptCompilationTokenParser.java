@@ -439,7 +439,7 @@ abstract class ScriptCompilationTokenParser {
       return addNextToken();
     case Token.decimal:
       // create a file_model integer as part of the token
-      return addTokenToPostfix(Token.spec_model2, getToken().intValue, theValue);
+      return addTokenToPostfix(Token.spec_model2, fixModelSpec(getToken()), theValue);
     case Token.cell:
       return clauseCell();
     case Token.connected:
@@ -1232,18 +1232,31 @@ abstract class ScriptCompilationTokenParser {
     }
     switch (tokPeek()) {
     case Token.integer:
-      return generateResidueSpecCode(new Token(Token.spec_model, Integer.valueOf(
-          getToken().intValue)));
+      return generateResidueSpecCode(new Token(Token.spec_model, Integer
+          .valueOf(getToken().intValue)));
     case Token.decimal:
-            return generateResidueSpecCode(new Token(Token.spec_model,
-          getToken().intValue, theValue));
+      return generateResidueSpecCode(new Token(Token.spec_model, fixModelSpec(getToken()), theValue));
     case Token.comma:
     case Token.rightbrace:
     case Token.nada:
-      return generateResidueSpecCode(new Token(Token.spec_model, Integer.valueOf(1)));
+      return generateResidueSpecCode(new Token(Token.spec_model, Integer
+          .valueOf(1)));
     }
     return error(ERROR_invalidModelSpecification);
   }
+
+  private int fixModelSpec(Token token) {
+    int ival = token.intValue;
+    if (ival == Integer.MAX_VALUE) {
+      float f = ((Float) theValue).floatValue();
+      if (f == (int) f)
+        ival = ((int) f) * 1000000; 
+      if (ival < 0)
+        ival = Integer.MAX_VALUE;
+    }
+    return ival;
+  }
+
 
   private boolean clauseAtomSpec() {
     if (!tokenNext(Token.per))

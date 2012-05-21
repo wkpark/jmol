@@ -291,7 +291,7 @@ Note that these variables are any string whatsoever, not just atom sets. The syn
 <tr><td>H</td><td>exact hydrogen count</td></tr>
 <tr><td>h</td><td>"implicit" hydrogen count (atoms are not in structure)</td></tr>
 <tr><td>R</td><td>in the specified number of rings</td></tr>
-<tr><td>r</td><td>in ring of a given size</td></tr>
+<tr><td>r</td><td>in ring of a given size (not restricted to SSSR set)</td></tr>
 <tr><td>v</td><td>valence (total bond order)</td></tr>
 <tr><td>X</td><td>calculated connectivity, including implicit hydrogens</td></tr>
 <tr><td>x</td><td>number of ring bonds</td></tr>
@@ -299,11 +299,12 @@ Note that these variables are any string whatsoever, not just atom sets. The syn
 </table>
 <br/>
 
-Jmol 12.3.24 adds the following primitives:
+Jmol 12.4 adds the following primitives:
 <br/>
 <br/>
 <table border="1" cellpadding="5" width="500">
 <tr><td>"xxx"</td><td>atom type, in double quotes, for example: ["39"r5] (After <b>calculate partialcharge</b> this will be the MMFF94 atom type. [Jmol 12.3.24]</td></tr>
+<tr><td>"select:xxx"</td><td>external selection method. For Jmol, this is an atom expression. For example: [c"select:temperature>10"] [Jmol 12.3.26]</td></tr>
 <tr><td>r500</td><td>a specifically aromatic 5-membered ring [Jmol 12.3.24]</td></tr>
 <tr><td>r600</td><td>a specifically aromatic 6-membered ring [Jmol 12.3.24]</td></tr>
 </table>  

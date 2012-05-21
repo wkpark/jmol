@@ -1933,7 +1933,7 @@ public class SmilesSearch extends JmolMolecule {
   }
 
   /**
-   * htNested may contain ["select:xxxx"] primitives. 
+   * htNested may contain $(select xxxx) primitives. 
    * We want to clear those up before we start any search.
    * 
    */
@@ -1944,9 +1944,9 @@ public class SmilesSearch extends JmolMolecule {
     Map<String, Object> htNew = new Hashtable<String, Object>();
     for (Map.Entry<String, Object> entry : ht.entrySet()) {
       String key = entry.getValue().toString();
-      if (key.startsWith("select:")) {
+      if (key.startsWith("select")) {
         BitSet bs = (htNew.containsKey(key) ? (BitSet) htNew.get(key) 
-            : jmolAtoms[0].findAtomsLike(key.substring(7)));
+            : jmolAtoms[0].findAtomsLike(key.substring(6)));
         if (bs == null)
           bs = new BitSet();
         htNew.put(key, bs);

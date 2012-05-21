@@ -151,8 +151,8 @@ public class SmilesParser {
     if (pattern == null)
       throw new InvalidSmilesException("SMILES expressions must not be null");
     SmilesSearch search = new SmilesSearch();
-    if (pattern.indexOf("$(select:") >= 0) // must do this before cleaning
-      pattern = parseNested(search, pattern, "select:");
+    if (pattern.indexOf("$(select") >= 0) // must do this before cleaning
+      pattern = parseNested(search, pattern, "select");
     pattern = cleanPattern(pattern);
     while (pattern.startsWith("/")) {
       String strFlags = getSubPattern(pattern, 0, '/').toUpperCase();
@@ -367,7 +367,7 @@ public class SmilesParser {
       Object o = molecule.getNested(atom.iNested);
       if (o instanceof String) {
         String s = (String) o;
-        if (s.startsWith("select:"))
+        if (s.startsWith("select"))
           return;
         if (s.charAt(0) != '~' && atom.bioType != '\0')
           s = "~" + atom.bioType + "~" + s;

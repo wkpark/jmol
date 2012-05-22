@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2012-04-23 22:06+0200\n"
+"POT-Creation-Date: 2012-05-22 23:48+0200\n"
 "PO-Revision-Date: 2011-02-22 14:47+0000\n"
 "Last-Translator: Dimitrios - Georgios Kontopoulos <Unknown>\n"
 "Language-Team: Greek <el@li.org>\n"
@@ -193,31 +193,24 @@ msgstr "Εκτελείται το αρχείο script..."
 msgid "Executing script 2..."
 msgstr "Εκτελείται το 2ο script..."
 
-#: org/openscience/jmol/app/jmolpanel/AboutDialog.java:57
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:196
+#: org/openscience/jmol/app/jmolpanel/AboutDialog.java:70
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:206
 msgid "About Jmol"
 msgstr "Σχετικά με το Jmol"
 
-#: org/openscience/jmol/app/jmolpanel/AboutDialog.java:67
+#: org/openscience/jmol/app/jmolpanel/AboutDialog.java:81
 #: org/openscience/jmol/app/jmolpanel/HelpDialog.java:74
 #: org/openscience/jmol/app/jmolpanel/WhatsNewDialog.java:68
 #, java-format
 msgid "Unable to find url \"{0}\"."
 msgstr "Αδυναμία εύρεσης του url \"{0}\"."
 
-#: org/openscience/jmol/app/jmolpanel/AboutDialog.java:97
-#: org/openscience/jmol/app/jmolpanel/HelpDialog.java:95
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:182
-#: org/openscience/jmol/app/jmolpanel/WhatsNewDialog.java:89
-msgid "OK"
-msgstr "Εντάξει"
-
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:164
 msgid "Check"
 msgstr "Έλεγχος"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:165
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:221
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:231
 msgid "Clear"
 msgstr "Εκκαθάριση"
 
@@ -459,563 +452,615 @@ msgstr "Αποθήκευση"
 msgid "Cancel"
 msgstr "Ακύρωση"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:56
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:66
 msgid "&Macros"
 msgstr "&Μακροεντολές"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:57
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:67
 msgid "&File"
 msgstr "&Αρχείο"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:58
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:68
 msgid "&New"
 msgstr "&Νέο"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:59
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:69
 msgid "&Open"
 msgstr "&Άνοιγμα"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:60
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:70
 msgid "Open a file."
 msgstr "Άνοιγμα αρχείου."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:61
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:71
 msgid "Open &URL"
 msgstr "Άνοιγμα &URL"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:62
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:72
 msgid "&Get PDB"
 msgstr "&Λήψη PDB"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:63
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:73
 msgid "Get &MOL"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:64
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:74
 msgid "&Reload"
 msgstr "Επανα&φόρτωση"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:68
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:78
 msgid "Scrip&t Editor..."
 msgstr "Επε&ξεργαστής Script"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:69
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:79
 msgid "Conso&le..."
 msgstr "Κονσό&λα"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:70
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:80
 msgid "Jmol Java &Console"
 msgstr "Java &Κονσόλα Jmol"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:71
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:81
 msgid "AtomSet&Chooser..."
 msgstr "Επι&λογέας Ατομικών Σετ"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:72
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:82
 msgid "&Save As..."
 msgstr "&Αποθήκευση ως..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:73
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:83
 msgid "&Export"
 msgstr "&Εξαγωγή"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:74
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:84
 msgid "Export &Image..."
 msgstr "Εξαγωγή Ε&ικόνας"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:75
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:85
 msgid "Save current view as an image."
 msgstr "Αποθήκευση τρέχουσας προβολής σε μία εικόνα."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:76
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:86
 msgid "Export to &Web Page..."
 msgstr "Εξαγωγή σε &Ιστοσελίδα..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:77
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:87
 msgid "Export one or more views to a web page."
 msgstr "Εξαγωγή μιας ή περισσότερων προβολών σε μία ιστοσελίδα."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:78
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:88
 msgid "Render in POV-&Ray..."
 msgstr "Απεικόνιση σε POV-&Ray..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:79
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:89
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:114
 msgid "Render in POV-Ray"
 msgstr "Απεικόνιση σε POV-&Ray"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:80
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:90
 msgid "Write &State..."
 msgstr "Εγγραφή Κ&ατάστασης"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:81
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:91
 msgid "Save current view as a Jmol state script."
 msgstr "Αποθήκευση τρέχουσας όψης ως script κατάστασης Jmol"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:82
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:92
 msgid "&Print..."
 msgstr "&Εκτύπωση..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:83
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:93
 msgid "Print view."
 msgstr "Εκτύπωση όψης"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:84
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:94
 msgid "&Close"
 msgstr "&Κλείσιμο"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:85
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:95
 msgid "E&xit"
 msgstr "Έ&ξοδος"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:86
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:96
 msgid "Recent &Files..."
 msgstr "Πρόσφατα Αρ&χεία..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:87
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:97
 msgid "&Edit"
 msgstr "&Επεξεργασία"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:89
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:95
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:99
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:105
 msgid "Select &All"
 msgstr "Επιλογή &Όλων"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:90
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:100
 msgid "Deselect All"
 msgstr "Αποεπιλογή Όλων"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:91
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:101
 msgid "Copy &Image"
 msgstr "Αντιγραφή &Εικόνας"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:92
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:102
 msgid "Copy Script"
 msgstr "Αντιγραφή Script"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:93
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:103
 msgid "Pr&eferences..."
 msgstr "&Προτιμήσεις..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:94
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:104
 msgid "&Paste"
 msgstr "&Επικόλληση"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:96
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:97
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:106
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:107
 msgid "&Select"
 msgstr "&Επιλογή"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:98
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:108
 msgid "&All"
 msgstr "&Όλα"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:99
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:112
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:118
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:124
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:131
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:109
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:122
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:128
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:134
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:141
 msgid "&None"
 msgstr "&Κανένα"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:100
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:110
 msgid "Hydrogen"
 msgstr "Υδρογόνο"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:101
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:111
 msgid "Carbon"
 msgstr "Άνθρακας"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:102
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:112
 msgid "Nitrogen"
 msgstr "Άζωτο"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:103
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:113
 msgid "Oxygen"
 msgstr "Οξυγόνο"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:104
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:114
 msgid "Phosphorus"
 msgstr "Φώσφορος"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:105
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:115
 msgid "Sulfur"
 msgstr "Θείο"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:106
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:116
 msgid "Amino"
 msgstr "Αμινοξέα"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:107
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:117
 msgid "Nucleic"
 msgstr "Νουκλεϊκό"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:108
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:118
 msgid "Water"
 msgstr "Νερό"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:109
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:119
 msgid "Hetero"
 msgstr "Ετεροάτομα"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:110
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:120
 msgid "&Display"
 msgstr "&Εμφάνιση"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:111
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:121
 msgid "&Atom"
 msgstr "&Άτομα"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:113
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:114
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:115
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:116
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:123
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:124
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:125
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:126
 #, java-format
 msgid "{0}% van der Waals"
 msgstr "{0}% van der Waals"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:117
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:127
 msgid "&Bond"
 msgstr "&Δεσμοί"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:119
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:129
 msgid "&Wireframe"
 msgstr "&Σκελετικό Μοντέλο"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:120
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:121
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:122
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:134
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:135
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:130
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:131
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:132
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:144
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:145
 #, java-format
 msgid "{0} Å"
 msgstr "{0} Å"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:123
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:133
 msgid "&Label"
 msgstr "&Ετικέτα"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:125
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:135
 msgid "&Symbol"
 msgstr "&Σύμβολο"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:126
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:136
 msgid "&Name"
 msgstr "&Όνομα"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:127
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:137
 msgid "&Number"
 msgstr "&Αριθμός"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:128
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:138
 msgid "&Centered"
 msgstr "Στο κέντ&ρο"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:129
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:139
 msgid "&Upper right"
 msgstr "&Πάνω δεξιά"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:130
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:140
 msgid "&Vector"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:132
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:142
 msgid "&On"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:133
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:143
 #, java-format
 msgid "{0} pixels"
 msgstr "{0} εικονοστοιχεία"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:136
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:137
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:138
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:139
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:140
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:146
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:147
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:148
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:149
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:150
 #, java-format
 msgid "Scale {0}"
 msgstr "Κλίμακα {0}"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:141
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:151
 msgid "&Zoom"
 msgstr "&Εστίαση"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:142
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:143
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:144
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:145
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:146
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:152
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:153
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:154
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:155
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:156
 #, java-format
 msgid "{0}%"
 msgstr "{0}%"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:147
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:157
 msgid "&Perspective Depth"
 msgstr "&Βάθος Προοπτικής"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:148
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:158
 msgid "A&xes"
 msgstr "Ά&ξονες"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:149
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:159
 msgid "B&ounding Box"
 msgstr "Π&λαίσιο Ορίων"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:150
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:160
 msgid "&Hydrogens"
 msgstr "&Υδρογόνα"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:151
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:161
 msgid "V&ectors"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:152
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:164
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:162
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:174
 msgid "&Measurements"
 msgstr "&Μετρήσεις"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:153
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:163
 msgid "Resi&ze"
 msgstr "Αλλαγή μεγέ&θους"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:154
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:164
 msgid "&View"
 msgstr "&Όψη"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:155
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:165
 msgid "&Front"
 msgstr "&Μπροστινή"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:156
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:166
 msgid "&Top"
 msgstr "Από &πάνω"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:157
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:167
 msgid "&Bottom"
 msgstr "Από &κάτω"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:158
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:168
 msgid "&Right"
 msgstr "Από &δεξιά"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:159
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:169
 msgid "&Left"
 msgstr "Από &αριστερά"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:160
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:170
 msgid "Tr&ansform..."
 msgstr "Μετατροπή..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:161
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:171
 msgid "Define &Center"
 msgstr "&Ορισμός Κέντρου"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:162
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:172
 msgid "&Tools"
 msgstr "Ερ&γαλεία"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:163
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:173
 msgid "&Gaussian..."
 msgstr "&Gaussian..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:165
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:175
 msgid "Distance &Units"
 msgstr "Μο&νάδες Απόστασης"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:166
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:176
 msgid "&Nanometers 1E-9"
 msgstr "&Νανόμετρα 1Ε-9"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:167
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:177
 msgid "&Angstroms 1E-10"
 msgstr "&Angstroms 1E-10"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:168
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:178
 msgid "&Picometers 1E-12"
 msgstr "&Πικόμετρα 1Ε-12"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:169
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:179
 msgid "&Animate..."
 msgstr "&Δημιουργία προσομοίωσης"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:170
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:180
 msgid "&Vibrate..."
 msgstr "&Δόνηση..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:171
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:181
 msgid "&Graph..."
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:172
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:182
 msgid "Calculate chemical &shifts..."
 msgstr "Υπολογισμός &χημικών μετατοπίσεων..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:173
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:183
 msgid "&Crystal Properties"
 msgstr "Ιδιότητες &Κρυστάλλου"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:174
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:184
 msgid "&Once"
 msgstr "&Μία φορά"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:175
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:185
 msgid "&Loop"
 msgstr "&Επανάληψη"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:176
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:186
 msgid "P&alindrome"
 msgstr "Παλινδρομικά"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:177
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:187
 msgid "&Stop animation"
 msgstr "&Τερματισμός προσομοίωσης"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:178
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:188
 msgid "&Rewind to first frame"
 msgstr "&Επαναφορά στο πρώτο καρέ"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:179
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:189
 msgid "Rewind to first frame"
 msgstr "Επαναφορά στο πρώτο καρέ"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:180
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:190
 msgid "Go to &next frame"
 msgstr "Μετάβαση στο ε&πόμενο καρέ"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:181
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:191
 msgid "Go to next frame"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:182
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:192
 msgid "Go to &previous frame"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:183
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:193
 msgid "Go to previous frame"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:184
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:194
 msgid "All &frames"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:185
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:195
 msgid "All frames"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:186
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:196
 msgid "Go to &last frame"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:187
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:197
 msgid "Go to last frame"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:188
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:198
 msgid "Start &vibration"
 msgstr "Εκκίνηση &δόνησης"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:189
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:199
 msgid "&Stop vibration"
 msgstr "&Σταμάτημα δόνησης"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:190
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:200
 msgid "&First frequency"
 msgstr "&Πρώτη συχνότητα"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:191
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:201
 msgid "&Next frequency"
 msgstr "Ε&πόμενη συχνότητα"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:192
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:202
 msgid "&Previous frequency"
 msgstr "Π&ροηγούμενη συχνότητα"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:193
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:203
 msgid "SurfaceTool..."
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:194
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:204
 msgid "Control Display of Surfaces"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:195
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:205
 msgid "&Help"
 msgstr "&Βοήθεια"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:197
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:207
 msgid "User Guide"
 msgstr "Οδηγός Χρήστη"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:198
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:208
 msgid "What's New"
 msgstr "Τι νέο υπάρχει"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:199
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:209
 msgid "Hydrogens"
 msgstr "Υδρογόνα"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:200
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:210
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:66
 msgid "Measurements"
 msgstr "Μετρήσεις"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:201
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:211
 msgid "Perspective Depth"
 msgstr "Βάθος Προοπτικής"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:202
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:212
 msgid "Axes"
 msgstr "Άξονες"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:203
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:213
 msgid "Bounding Box"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:205
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:215
 msgid "RasMol/Chime compatible axes orientation/rotations"
 msgstr "Προσανατολισμός/περιστροφές αξόνων συμβατά με RasMol/Chime"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:207
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:217
 msgid "File Preview (requires restarting Jmol)"
 msgstr "Προεπισκόπηση Αρχείου (απαιτείται επανεκκίνηση του Jmol)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:209
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:219
 msgid "Clear history (requires restarting Jmol)"
 msgstr "Εκκαθάριση ιστορικού (απαιτείται επανεκκίνηση του Jmol)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:210
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:211
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:220
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:221
 msgid "Use Atom Color"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:212
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:222
 msgid "Rotate molecule."
 msgstr "Περιστροφή μορίου."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:214
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:224
 msgid "Select a set of atoms using SHIFT-LEFT-DRAG."
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:216
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:226
 msgid "Click atoms to measure distances"
 msgstr "Κάντε κλικ σε άτομα για υπολογισμό αποστάσεων"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:218
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:228
 msgid "Click an atom to center on it"
 msgstr "Κάνε κλικ σε ένα άτομο για να κεντράρεις σε αυτό"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:219
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:229
 msgid "Return molecule to home position."
 msgstr "Επιστροφή μορίου στην αρχική θέση."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:220
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:230
 msgid "Open the model kit."
 msgstr ""
+
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:366
+#, java-format
+msgid ""
+"To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
+"be significant the first time the applet is loaded."
+msgstr ""
+"Για να αποκτήσετε ένα 3-D μοντέλο που μπορείτε να χειριστείτε, κάντε κλικ {0}"
+"εδώ{1}. Ο χρόνος κατεβάσματος μπορεί να είναι σημαντικός την πρώτη φορά που "
+"φορτώνεται το applet."
+
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:368
+msgid "Insert the page TITLE here."
+msgstr "Συμπλήρωσε τον ΤΙΤΛΟ της σελίδας εδώ."
+
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:369
+msgid "Insert the page INTRODUCTION here."
+msgstr "Συμπλήρωσε την ΕΙΣΑΓΩΓΗ της σελίδας εδώ."
+
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:371
+#, java-format
+msgid "Insert a caption for {0} here."
+msgstr ""
+
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:372
+#, java-format
+msgid ""
+"Insert additional explanatory text here. Long text will wrap around Jmol "
+"model {0}."
+msgstr ""
+
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:374
+msgid "Insert your TITLE and INTRODUCTION here."
+msgstr "Συμπλήρωσε τον ΤΙΤΛΟ σου και την ΕΙΣΑΓΩΓΗ σου εδώ."
+
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:376
+#, java-format
+msgid ""
+"The button {0} will appear in the box below.  Insert information for {0} "
+"here and below."
+msgstr ""
+
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:377
+#, java-format
+msgid "Insert more information for {0} here."
+msgstr "Συμπλήρωσε περισσότερες πληροφορίες για τον/την/το {0} εδώ."
 
 #: org/openscience/jmol/app/jmolpanel/HelpDialog.java:64
 msgid "Jmol Help"
 msgstr "Βοήθεια Jmol"
+
+#: org/openscience/jmol/app/jmolpanel/HelpDialog.java:95
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:182
+#: org/openscience/jmol/app/jmolpanel/WhatsNewDialog.java:89
+msgid "OK"
+msgstr "Εντάξει"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:222
 msgid "Initializing 3D display..."
@@ -1544,202 +1589,156 @@ msgstr ""
 msgid "% of window for applet width:"
 msgstr "% του παραθύρου για πλάτος του applet"
 
-#: org/openscience/jmol/app/webexport/WebExport.java:83
-#: org/openscience/jmol/app/webexport/WebExport.java:197
-#: org/openscience/jmol/app/webexport/WebExport.java:274
+#: org/openscience/jmol/app/webexport/WebExport.java:79
+#: org/openscience/jmol/app/webexport/WebExport.java:191
+#: org/openscience/jmol/app/webexport/WebExport.java:268
 msgid "Jmol Web Page Maker"
 msgstr "Δημιουργός Ιστοσελίδας του Jmol"
 
-#: org/openscience/jmol/app/webexport/WebExport.java:106
+#: org/openscience/jmol/app/webexport/WebExport.java:100
 msgid "Couldn't find file: {0}"
 msgstr "Δε βρέθηκε το αρχείο: {0}"
 
-#: org/openscience/jmol/app/webexport/WebExport.java:125
+#: org/openscience/jmol/app/webexport/WebExport.java:119
 msgid "Introduction"
 msgstr "Εισαγωγή"
 
-#: org/openscience/jmol/app/webexport/WebExport.java:135
+#: org/openscience/jmol/app/webexport/WebExport.java:129
 msgid "Pop-In Jmol"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebExport.java:136
+#: org/openscience/jmol/app/webexport/WebExport.java:130
 msgid "ScriptButton Jmol"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebExport.java:153
+#: org/openscience/jmol/app/webexport/WebExport.java:147
 msgid "Log"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebExport.java:168
+#: org/openscience/jmol/app/webexport/WebExport.java:162
 #, java-format
 msgid ""
 "Page skeleton and JavaScript generated by export to web function using {0} "
 "on {1}."
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebExport.java:364
-#, java-format
-msgid ""
-"To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
-"be significant the first time the applet is loaded."
-msgstr ""
-"Για να αποκτήσετε ένα 3-D μοντέλο που μπορείτε να χειριστείτε, κάντε κλικ {0}"
-"εδώ{1}. Ο χρόνος κατεβάσματος μπορεί να είναι σημαντικός την πρώτη φορά που "
-"φορτώνεται το applet."
-
-#: org/openscience/jmol/app/webexport/WebExport.java:366
-msgid "Insert the page TITLE here."
-msgstr "Συμπλήρωσε τον ΤΙΤΛΟ της σελίδας εδώ."
-
-#: org/openscience/jmol/app/webexport/WebExport.java:367
-msgid "Insert the page INTRODUCTION here."
-msgstr "Συμπλήρωσε την ΕΙΣΑΓΩΓΗ της σελίδας εδώ."
-
-#: org/openscience/jmol/app/webexport/WebExport.java:369
-#, java-format
-msgid "Insert a caption for {0} here."
-msgstr ""
-
-#: org/openscience/jmol/app/webexport/WebExport.java:370
-#, java-format
-msgid ""
-"Insert additional explanatory text here. Long text will wrap around Jmol "
-"model {0}."
-msgstr ""
-
-#: org/openscience/jmol/app/webexport/WebExport.java:372
-msgid "Insert your TITLE and INTRODUCTION here."
-msgstr "Συμπλήρωσε τον ΤΙΤΛΟ σου και την ΕΙΣΑΓΩΓΗ σου εδώ."
-
-#: org/openscience/jmol/app/webexport/WebExport.java:374
-#, java-format
-msgid ""
-"The button {0} will appear in the box below.  Insert information for {0} "
-"here and below."
-msgstr ""
-
-#: org/openscience/jmol/app/webexport/WebExport.java:375
-#, java-format
-msgid "Insert more information for {0} here."
-msgstr "Συμπλήρωσε περισσότερες πληροφορίες για τον/την/το {0} εδώ."
-
-#: org/openscience/jmol/app/webexport/WebPanel.java:153
+#: org/openscience/jmol/app/webexport/WebPanel.java:154
 msgid "A web page containing Jmol applets"
 msgstr "Μια ιστοσελίδα που περιέχει applets του Jmol"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:178
+#: org/openscience/jmol/app/webexport/WebPanel.java:179
 msgid "click and drag to reorder"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:183
+#: org/openscience/jmol/app/webexport/WebPanel.java:184
 msgid "Add Present Jmol State as Instance..."
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:190
+#: org/openscience/jmol/app/webexport/WebPanel.java:191
 msgid "Delete Selected"
 msgstr "Διαγραφή Επιλεγμένων"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:222
+#: org/openscience/jmol/app/webexport/WebPanel.java:223
 msgid "Jmol Instances:"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:228
+#: org/openscience/jmol/app/webexport/WebPanel.java:229
 msgid "Select widgets:"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:331
+#: org/openscience/jmol/app/webexport/WebPanel.java:332
 msgid "Help/Instructions"
 msgstr "Βοήθεια/Οδηγίες"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:338
-#: org/openscience/jmol/app/webexport/WebPanel.java:346
+#: org/openscience/jmol/app/webexport/WebPanel.java:339
+#: org/openscience/jmol/app/webexport/WebPanel.java:347
 msgid "Cartoon of Page"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:352
+#: org/openscience/jmol/app/webexport/WebPanel.java:353
 msgid "Save HTML as..."
 msgstr "Αποθήκευση HTML ως..."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:362
+#: org/openscience/jmol/app/webexport/WebPanel.java:363
 msgid "Relative server path to jar files:"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:368
+#: org/openscience/jmol/app/webexport/WebPanel.java:369
 msgid "Relative local path to jar files:"
 msgstr "Σχετική τοπική διαδρομή για τα αρχεία jar:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:374
+#: org/openscience/jmol/app/webexport/WebPanel.java:375
 msgid "Author (your name):"
 msgstr "Συγγραφέας (το όνομά σας):"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:381
+#: org/openscience/jmol/app/webexport/WebPanel.java:382
 msgid "Browser window title for this web page:"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:467
+#: org/openscience/jmol/app/webexport/WebPanel.java:468
 msgid "Give the occurrence of Jmol a name:"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:483
+#: org/openscience/jmol/app/webexport/WebPanel.java:484
 msgid "Error creating new instance containing script(s) and image."
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:494
+#: org/openscience/jmol/app/webexport/WebPanel.java:495
 #, java-format
 msgid "added Instance {0}"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:497
+#: org/openscience/jmol/app/webexport/WebPanel.java:498
 #, java-format
 msgid "updated Instance {0}"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:534
+#: org/openscience/jmol/app/webexport/WebPanel.java:535
 msgid "Select a directory to create or an HTML file to save"
 msgstr "Επιλογή καταλόγου για δημιουργία ή αρχείου HTML για αποθήκευση"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:554
+#: org/openscience/jmol/app/webexport/WebPanel.java:555
 #, java-format
 msgid "file {0} created"
 msgstr "αρχείο {0} δημιουργήθηκε"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:556
+#: org/openscience/jmol/app/webexport/WebPanel.java:557
 msgid "Call to FileWriter unsuccessful."
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:560
+#: org/openscience/jmol/app/webexport/WebPanel.java:561
 msgid "Errors occurred during web page creation.  See Log Tab!"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:635
+#: org/openscience/jmol/app/webexport/WebPanel.java:636
 #, java-format
 msgid "Using directory {0}"
 msgstr "Χρησιμοποιείται ο κατάλογος {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:636
-#: org/openscience/jmol/app/webexport/WebPanel.java:648
-#: org/openscience/jmol/app/webexport/WebPanel.java:668
-#: org/openscience/jmol/app/webexport/WebPanel.java:682
-#: org/openscience/jmol/app/webexport/WebPanel.java:710
+#: org/openscience/jmol/app/webexport/WebPanel.java:637
+#: org/openscience/jmol/app/webexport/WebPanel.java:649
+#: org/openscience/jmol/app/webexport/WebPanel.java:669
+#: org/openscience/jmol/app/webexport/WebPanel.java:683
+#: org/openscience/jmol/app/webexport/WebPanel.java:711
 #, java-format
 msgid "adding {0}"
 msgstr "προστίθεται {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:697
+#: org/openscience/jmol/app/webexport/WebPanel.java:698
 #, java-format
 msgid "Unable to load resource {0}"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:750
+#: org/openscience/jmol/app/webexport/WebPanel.java:751
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:753
+#: org/openscience/jmol/app/webexport/WebPanel.java:754
 #, java-format
 msgid "creating {0}"
 msgstr "δημιουργείται {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:789
+#: org/openscience/jmol/app/webexport/WebPanel.java:790
 #, java-format
 msgid ""
 "Could not find or open:\n"
@@ -1748,7 +1747,7 @@ msgid ""
 "distribution."
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:794
+#: org/openscience/jmol/app/webexport/WebPanel.java:795
 #, java-format
 msgid ""
 "copying\n"
@@ -1759,7 +1758,7 @@ msgstr ""
 "{0}\n"
 "         σε"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:801
+#: org/openscience/jmol/app/webexport/WebPanel.java:802
 msgid "compressing large data file to"
 msgstr "συμπίεση μεγάλου αρχείου δεδομένων σε"
 

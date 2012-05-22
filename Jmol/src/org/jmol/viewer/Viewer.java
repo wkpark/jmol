@@ -8959,7 +8959,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         script = (modelIndex == -1 && filename != null ? script = "load "
             + Escape.escape(filename) : "");
         if (id != null)
-          script += ";model ID " + Escape.escape(id);
+          script += ";model " + Escape.escape(id);
         if (atoms != null)
           script += ";select visible & (@"
               + TextFormat.simpleReplace(atoms, ",", " or @") + ")";

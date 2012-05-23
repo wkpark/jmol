@@ -452,7 +452,14 @@ public class CastepReader extends AtomSetCollectionReader {
     do {
       if (tokens.length >= 4) {
         Atom atom = atomSetCollection.addNewAtom();
-        atom.elementSymbol = tokens[0];
+        int pt = tokens[0].indexOf(":");
+        if (pt >= 0) {
+          atom.elementSymbol = tokens[0].substring(0, pt);
+          atom.atomName = tokens[0];
+        } else {
+          atom.elementSymbol = tokens[0];
+        }
+        
         atom.set(parseFloat(tokens[1]), parseFloat(tokens[2]),
             parseFloat(tokens[3]));
         atom.scale(factor);

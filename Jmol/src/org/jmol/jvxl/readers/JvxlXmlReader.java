@@ -100,7 +100,8 @@ public class JvxlXmlReader extends VolumeFileReader {
       if (edgeDataCount > 0)
         jvxlEdgeDataRead = jvxlReadData("edge", edgeDataCount);
       params.bsExcluded = jvxlData.jvxlExcluded = new BitSet[4];
-      if (colorDataCount > 0)
+      hasColorData = (colorDataCount > 0); // for nonXML version of JVXL
+      if (hasColorData)
         jvxlColorDataRead = jvxlReadData("color", colorDataCount);
       if (excludedVertexCount > 0) {
         jvxlData.jvxlExcluded[0] = JvxlCoder.jvxlDecodeBitSet(xr.getXmlData(

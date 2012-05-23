@@ -1065,18 +1065,21 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       repaintManager.setSelectedTranslation(bsAtoms, xyz, xy);
     } else {
       switch (xyz) {
+      case 'X':
       case 'x':
         if (type == '\0')
           transformManager.translateToPercent('x', x);
         else
           transformManager.translateXYBy(xy, 0);
         break;
+      case 'Y':
       case 'y':
         if (type == '\0')
           transformManager.translateToPercent('y', x);
         else
           transformManager.translateXYBy(0, xy);
         break;
+      case 'Z':
       case 'z':
         if (type == '\0')
           transformManager.translateToPercent('z', x);

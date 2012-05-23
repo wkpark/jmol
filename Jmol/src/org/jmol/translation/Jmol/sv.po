@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-05-22 23:48+0200\n"
-"PO-Revision-Date: 2012-02-18 07:05+0000\n"
-"Last-Translator: Rikard Edgren <Unknown>\n"
+"PO-Revision-Date: 2012-05-23 00:43+0000\n"
+"Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-02-19 13:28+0000\n"
-"X-Generator: Launchpad (build 14814)\n"
+"X-Launchpad-Export-Date: 2012-05-23 19:32+0000\n"
+"X-Generator: Launchpad (build 15282)\n"
 
 #: com/json/Cookie.java:121
 msgid "name"
@@ -107,7 +107,8 @@ msgstr "ingen konsol - all output till sysout"
 
 #: org/openscience/jmol/app/JmolApp.java:165
 msgid "send only output from print messages to console (implies -i)"
-msgstr "sänd endast output från utskriftsmeddelanden till konsoll (kräver -i)"
+msgstr ""
+"sänd endast output från utskriftsmeddelanden till konsoll (kräver -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:167
 msgid "restrict local file access"
@@ -1879,18 +1880,6 @@ msgstr "Nedladdningsvy"
 msgid "unimplemented"
 msgstr "ej implementerad"
 
-#~ msgid "Get PDB file"
-#~ msgstr "Hämta PDB-fil"
-
-#~ msgid "Enter a four-digit PDB ID"
-#~ msgstr "Skriv fyrsiffrigt PRD ID"
-
-#~ msgid "Get MOL file by compound name or ID"
-#~ msgstr "Hämta MOL-fil med ämnesnamn eller ID"
-
-#~ msgid "Enter the name or identifier (SMILES, InChI, CAS) of a compound"
-#~ msgstr "Ange namn eller identifierare (SMILES, InChI, CAS) för förening."
-
 #~ msgid "All"
 #~ msgstr "Allt"
 
@@ -1906,8 +1895,17 @@ msgstr "ej implementerad"
 #~ msgid "Jump to last vector in the collection"
 #~ msgstr "Gå till sista vektorn i samlingen"
 
+#~ msgid "Get MOL file by compound name or ID"
+#~ msgstr "Hämta MOL-fil med ämnesnamn eller ID"
+
 #~ msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
 #~ msgstr "Skriv namn eller identifierare (SMILES, InChi, CAS) för molekylen"
+
+#~ msgid "Get PDB file"
+#~ msgstr "Hämta PDB-fil"
+
+#~ msgid "Enter a four-digit PDB ID"
+#~ msgstr "Skriv fyrsiffrigt PRD ID"
 
 #~ msgid "Controller"
 #~ msgstr "Kontroll"
@@ -1923,3 +1921,6 @@ msgstr "ej implementerad"
 
 #~ msgid "Jmol Script Console"
 #~ msgstr "Jmol skriptkonsol"
+
+#~ msgid "Enter the name or identifier (SMILES, InChI, CAS) of a compound"
+#~ msgstr "Ange namn eller identifierare (SMILES, InChI, CAS) för förening."

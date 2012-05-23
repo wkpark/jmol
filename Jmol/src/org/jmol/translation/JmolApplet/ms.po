@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-05-22 23:48+0200\n"
-"PO-Revision-Date: 2012-04-17 16:48+0000\n"
+"PO-Revision-Date: 2012-05-23 00:33+0000\n"
 "Last-Translator: abuyop <Unknown>\n"
 "Language-Team: Malay <ms@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-04-18 17:48+0000\n"
-"X-Generator: Launchpad (build 15108)\n"
+"X-Launchpad-Export-Date: 2012-05-23 19:32+0000\n"
+"X-Generator: Launchpad (build 15282)\n"
 
 #: org/jmol/applet/AppletWrapper.java:100
 msgid "Loading Jmol applet ..."
@@ -143,7 +143,8 @@ msgid "Check"
 msgstr "Semak"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Atas[sebagaimana \"pergi ke atas\""
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -1957,7 +1958,7 @@ msgstr "boolean, nombor, atau {0} dijangka"
 
 #: org/jmol/script/ScriptEvaluator.java:2825
 msgid "cannot set value"
-msgstr ""
+msgstr "tidak dapat tetapkan nilai"
 
 #: org/jmol/script/ScriptEvaluator.java:2828
 msgid "color expected"
@@ -2137,7 +2138,8 @@ msgstr "objek tidak dikenalpasti"
 #: org/jmol/script/ScriptEvaluator.java:2963
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
-msgstr "parameter {0} tidak dikenali didalam skrip keadaan Jmol (tetapkan jua)"
+msgstr ""
+"parameter {0} tidak dikenali didalam skrip keadaan Jmol (tetapkan jua)"
 
 #: org/jmol/script/ScriptEvaluator.java:2966
 #, java-format
@@ -2204,7 +2206,8 @@ msgstr "putar Z"
 #: org/jmol/viewer/ActionManager.java:119
 msgid ""
 "rotate Z (horizontal motion of mouse) or zoom (vertical motion of mouse)"
-msgstr "putar Z (gerakan melintang tetikus) atau zum (gerakan menegak tetikus)"
+msgstr ""
+"putar Z (gerakan melintang tetikus) atau zum (gerakan menegak tetikus)"
 
 #: org/jmol/viewer/ActionManager.java:120
 msgid "zoom"
@@ -2232,7 +2235,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:125
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 "klik pada dua titik untuk putar disekeliling paksi lawan jam (perlukan {0})"
 

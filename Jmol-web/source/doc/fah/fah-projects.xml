@@ -9356,6 +9356,15 @@
   <fah_proj number="7170" name="influenza_smp" public="n"
     server="128.143.199.96" atoms="77385" preferred="2.6" deadline="4.4"
     credit="542.0" frames="100" code="A3" contact="pela3247" kfactor="2.97"/>
+  <fah_proj number="7171" name="influenza_smp" public="n"
+    server="128.143.199.96" atoms="77373" preferred="2.6" deadline="4.4"
+    credit="542.0" frames="100" code="A3" contact="pela3247" kfactor="2.97"/>
+  <fah_proj number="7172" name="influenza_smp" public="n"
+    server="128.143.199.96" atoms="77400" preferred="2.6" deadline="4.4"
+    credit="542.0" frames="100" code="A3" contact="pela3247" kfactor="2.97"/>
+  <fah_proj number="7173" name="influenza_smp" public="n"
+    server="128.143.199.96" atoms="77385" preferred="2.6" deadline="4.4"
+    credit="542.0" frames="100" code="A3" contact="pela3247" kfactor="2.97"/>
 
   <!-- Projects 7200 to 7299 -->
   <fah_proj number="7200" name="p7200" public="y"
@@ -9446,6 +9455,15 @@
   <fah_proj number="7644" name="p7644" public="y"
     server="171.64.65.93" atoms="21443" preferred="13" deadline="18"
     credit="7718.0" frames="100" code="OG" contact="tjlane" kfactor="0.0"/>
+  <fah_proj number="7645" name="p7645" public="y"
+    server="171.64.65.101" atoms="21443" preferred="10.4" deadline="17.3"
+    credit="2250.0" frames="100" code="A4" contact="tjlane" kfactor="4.0"/>
+  <fah_proj number="7646" name="p7646" public="y"
+    server="171.64.65.101" atoms="21443" preferred="10.4" deadline="17.3"
+    credit="2250.0" frames="100" code="A4" contact="tjlane" kfactor="4.0"/>
+  <fah_proj number="7647" name="p7647" public="y"
+    server="171.64.65.101" atoms="21443" preferred="10.4" deadline="17.3"
+    credit="2250.0" frames="100" code="A4" contact="tjlane" kfactor="4.0"/>
   <fah_proj number="7698" name="p7698" public="n"
     server="171.64.65.105" atoms="21443" preferred="13" deadline="18"
     credit="6094.0" frames="100" code="OG" contact="tjlane" kfactor="0.0"/>
@@ -9579,6 +9597,9 @@
     credit="2510.0" frames="100" code="OG" contact="shukla" kfactor="0.0"/>
   <fah_proj number="8009" name="p8009" public="y"
     server="171.67.108.142" atoms="917" preferred="7.1" deadline="9.699988425925927"
+    credit="2510.0" frames="100" code="OG" contact="shukla" kfactor="0.0"/>
+  <fah_proj number="8010" name="p8010" public="y"
+    server="171.67.108.141" atoms="917" preferred="7.1" deadline="9.699988425925927"
     credit="2510.0" frames="100" code="OG" contact="shukla" kfactor="0.0"/>
   <fah_proj number="8011" name="p8011" public="y" file="xyz"
     server="171.67.108.60" atoms="23000" preferred="2.13" deadline="4.62"

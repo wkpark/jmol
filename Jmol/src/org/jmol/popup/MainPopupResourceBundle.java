@@ -119,7 +119,7 @@ class MainPopupResourceBundle extends PopupResource {
               + "backbone cartoon cartoonRockets ribbons rockets strands trace" },
 
       {   "VIBRATIONvectorMenu",
-          "vectorOff vectorOn vector3 vector005 vector01 - "
+          "vectorOff vectorOn vibScale20 vibScale05 vector3 vector005 vector01 - "
               + "vectorScale02 vectorScale05 vectorScale1 vectorScale2 vectorScale5" },
 
       {   "stereoMenu",
@@ -170,7 +170,7 @@ class MainPopupResourceBundle extends PopupResource {
               + "[set_spin_FPS]Menu" },
 
       {   "VIBRATIONMenu", 
-          "vibrationOff vibrationOn VIBRATIONvectorMenu" },
+          "vibrationOff vibrationOn vibration20 vibration05 VIBRATIONvectorMenu" },
 
           {   "spectraMenu", 
           "hnmrMenu cnmrMenu" },
@@ -364,6 +364,8 @@ class MainPopupResourceBundle extends PopupResource {
 
       { "vibrationOff", "vibration off" },
       { "vibrationOn", "vibration on" },
+      { "vibration20", "vibrationScale *= 2" },
+      { "vibration05", "vibrationScale /= 2" },
 
       { "vectorOff", "vectors off" },
       { "vectorOn", "vectors on" },
@@ -685,6 +687,8 @@ class MainPopupResourceBundle extends PopupResource {
         "VIBRATIONMenu", GT._("Vibration"),
         "vibrationOff", GT._("Off"),
         "vibrationOn", GT._("On"),
+        "vibration20", "*2",
+        "vibration05", "/2",
         "VIBRATIONvectorMenu", GT._("Vectors"),
         "spectraMenu", GT._("Spectra"),
         "hnmrMenu", GT._("1H-NMR"),

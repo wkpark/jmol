@@ -139,12 +139,12 @@ abstract class VolumeFileReader extends SurfaceFileReader {
         }
       }
       for (int i = 0; i < 3; ++i) {
+        if (!isAngstroms)
+          volumetricVectors[i].scale(ANGSTROMS_PER_BOHR);
         line = voxelCounts[i] + " " + volumetricVectors[i].x + " "
             + volumetricVectors[i].y + " " + volumetricVectors[i].z;
         jvxlFileHeaderBuffer.append(line).append('\n');
         Logger.info("voxel grid count/vector:" + line);
-        if (!isAngstroms)
-          volumetricVectors[i].scale(ANGSTROMS_PER_BOHR);
       }
       scaleIsosurface(params.scale);
       volumeData.setVolumetricXml();

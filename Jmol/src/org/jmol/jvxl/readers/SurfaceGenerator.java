@@ -127,7 +127,6 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
-import org.jmol.util.*;
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.AtomDataServer;
 import org.jmol.atomdata.RadiusData;
@@ -137,6 +136,14 @@ import org.jmol.jvxl.data.VolumeData;
 import org.jmol.jvxl.data.MeshData;
 import org.jmol.jvxl.api.MeshDataServer;
 import org.jmol.jvxl.calc.MarchingSquares;
+import org.jmol.util.ArrayUtil;
+import org.jmol.util.BinaryDocument;
+import org.jmol.util.ColorEncoder;
+import org.jmol.util.Logger;
+import org.jmol.util.Measure;
+import org.jmol.util.Parser;
+import org.jmol.util.SurfaceFileTyper;
+import org.jmol.util.TextFormat;
 
 public class SurfaceGenerator {
 
@@ -1248,6 +1255,8 @@ public class SurfaceGenerator {
       return new JaguarReader(this, br);
     if (fileType.equals("Xplor"))
       return new XplorReader(this, br);
+    if (fileType.equals("Xsf"))
+      return new XsfReader(this, br);
     if (fileType.equals("PltFormatted"))
       return new PltFormattedReader(this, br);
     if (fileType.equals("MRC")) {

@@ -801,13 +801,15 @@ public class AtomSetCollection {
   }
   
   float symmetryRange;
+
+  private boolean doCentroidUnitCell;
   void setSymmetryRange(float factor) {
     symmetryRange = factor;
     setAtomSetCollectionAuxiliaryInfo("symmetryRange", new Float(factor));
   }
   
   void setLatticeCells(int[] latticeCells, boolean applySymmetryToBonds, 
-                       boolean doPackUnitCell, String supercell) {
+                       boolean doPackUnitCell, boolean doCentroidUnitCell, String supercell) {
     //set when unit cell is determined
     // x <= 555 and y >= 555 indicate a range of cells to load
     // AROUND the central cell 555 and that
@@ -824,6 +826,7 @@ public class AtomSetCollection {
     doNormalize = latticeCells[0] != 0 && (!isLatticeRange || latticeCells[2] == 1);
     this.applySymmetryToBonds = applySymmetryToBonds;
     this.doPackUnitCell = doPackUnitCell;
+    this.doCentroidUnitCell = doCentroidUnitCell;
     if (supercell != null)
       setSuperCell(supercell, null);
   }
@@ -1049,11 +1052,13 @@ public class AtomSetCollection {
         .setFinalOperations(atoms, iAtomFirst, noSymmetryCount, doNormalize);
     int operationCount = symmetry.getSpaceGroupOperationCount();
     getSymmetry().setMinMaxLatticeParameters(minXYZ, maxXYZ);
-    if (doPackUnitCell || symmetryRange != 0 && maxXYZ.x - minXYZ.x == 1
+    if (doCentroidUnitCell || doPackUnitCell || symmetryRange != 0 && maxXYZ.x - minXYZ.x == 1
         && maxXYZ.y - minXYZ.y == 1 && maxXYZ.z - minXYZ.z == 1) {
       // weird Mac bug does not allow   new Point3i(minXYZ) !!
       minXYZ0 = new Point3i(minXYZ.x, minXYZ.y, minXYZ.z);
       maxXYZ0 = new Point3i(maxXYZ.x, maxXYZ.y, maxXYZ.z);
+      if (doCentroidUnitCell)
+        setAtomSetCollectionAuxiliaryInfo("centroidMinMax", new int[] {minXYZ.x, minXYZ.y, minXYZ.z, maxXYZ.x, maxXYZ.y, maxXYZ.z});
       dtype = (int) getSymmetry()
           .getUnitCellInfo(SimpleUnitCell.INFO_DIMENSIONS);
       switch (dtype) {

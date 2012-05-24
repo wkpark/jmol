@@ -8453,6 +8453,7 @@ public class ScriptEvaluator {
     String[] tempFileInfo = null;
     String errMsg = null;
     String sOptions = "";
+    boolean isCentroid;
     int tokType = 0;
     int tok;
 
@@ -8590,7 +8591,7 @@ public class ScriptEvaluator {
         || theTok == Token.varray || theTok == Token.leftsquare
         || theTok == Token.spacebeforesquare
         || theTok == Token.offset || theTok == Token.range
-        || theTok == Token.manifest || theTok == Token.packed
+        || theTok == Token.manifest || theTok == Token.packed || theTok == Token.centroid
         || theTok == Token.supercell || theTok == Token.filter
         && tokAt(i + 3) != Token.coord || theTok == Token.identifier
         && tokAt(i + 3) != Token.coord) {
@@ -8649,7 +8650,7 @@ public class ScriptEvaluator {
         tok = tokAt(i);
       }
 
-      if (tok == Token.packed || tok == Token.supercell) {
+      if (tok == Token.packed || tok == Token.centroid || tok == Token.supercell) {
         if (lattice == null)
           lattice = new Point3f(555, 555, -1);
         iToken = i - 1;
@@ -8666,6 +8667,10 @@ public class ScriptEvaluator {
         if (tokAt(i) == Token.packed) {
           htParams.put("packed", Boolean.TRUE);
           sOptions += " PACKED";
+          i++;
+        } else if (tokAt(i) == Token.centroid) {
+          htParams.put("centroid", Boolean.TRUE);
+          sOptions += " CENTROID";
           i++;
         }
 
@@ -8964,12 +8969,13 @@ public class ScriptEvaluator {
     if (logMessages)
       scriptStatusOrBuffer("Successfully loaded:"
           + (filenames == null ? htParams.get("fullPathName") : modelName));
+    Map<String, Object> info = viewer.getModelSetAuxiliaryInfo();
+    if (info != null && info.containsKey("centroidMinMax"))
+      viewer.setCentroid((int[]) info.get("centroidMinMax"));
     String script = viewer.getDefaultLoadScript();
     String msg = "";
     if (script.length() > 0)
       msg += "\nUsing defaultLoadScript: " + script;
-
-    Map<String, Object> info = viewer.getModelSetAuxiliaryInfo();
     if (info != null && viewer.getAllowEmbeddedScripts()) {
       String embeddedScript = (String) info.remove("jmolscript");
       if (embeddedScript != null && embeddedScript.length() > 0) {
@@ -8979,6 +8985,7 @@ public class ScriptEvaluator {
         script = "allowEmbeddedScripts = false;try{" + script
             + "} allowEmbeddedScripts = true;";
       }
+      
     }
     logLoadInfo(msg);
 

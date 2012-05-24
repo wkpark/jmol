@@ -37,6 +37,11 @@ public class Quadric {
   public boolean isThermalEllipsoid = true;
   public float scale = 1;
   
+  public void scale(float f) {
+    for (int i = 0; i < 3; i++)
+      lengths[i] *= f;
+  }
+  
   @Override
   public String toString() {
     return (vectors == null ? "" + lengths[0] : 

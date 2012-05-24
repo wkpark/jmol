@@ -1073,6 +1073,7 @@ public class Token {
   final static int cancel        = misc  | 49;
   public final static int cap           = misc  | 50 | expression;
   final static int cavity        = misc  | 52;
+  final static int centroid      = misc  | 53;
   final static int check         = misc  | 54;
   final static int chemical      = misc  | 55;
   final static int circle        = misc  | 56;
@@ -1984,6 +1985,7 @@ public class Token {
       "cancel",          new Token(cancel),
       "cap",             new Token(cap),
       "cavity",          new Token(cavity),
+      "centroid",        new Token(centroid),
       "check",           new Token(check),
       "chemical",        new Token(chemical),
       "circle",          new Token(circle),

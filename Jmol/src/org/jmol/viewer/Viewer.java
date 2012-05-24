@@ -10421,4 +10421,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (modelIndex >= 0)
       modelSet.setModelAuxiliaryInfo(modelIndex, "modelID", id);
   }
+
+  public void setCentroid(int[] minmax) {
+    modelSet.setCentroid(minmax);
+  }
 }

@@ -50,7 +50,7 @@ public class Resolver {
                  "Molden;MopacGraphf;GenNBO;NWChem;Odyssey;Psi;Qchem;Spartan;SpartanSmol;" +
                  "WebMO;",
     "simple.", ";Alchemy;Ampac;Cube;FoldingXyz;GhemicalMM;HyperChem;Jme;Mopac;ZMatrix;", 
-    "xtal.", ";Aims;Castep;Crystal;Dmol;Espresso;Gulp;Shelx;Siesta;VaspOutcar;Wien2k;"
+    "xtal.", ";Aims;Castep;Crystal;Dmol;Espresso;Gulp;MagRes;Shelx;Siesta;VaspOutcar;Wien2k;"
   };
   
   public final static String getReaderClassBase(String type) {
@@ -916,10 +916,13 @@ public class Resolver {
   private final static String[] zMatrixFileStartRecords =
   {"ZMatrix", "#ZMATRIX"};
   
+  private final static String[] magResFileStartRecords =
+  {"MagRes", "# magres"};
+
   private final static String[][] fileStartsWithRecords =
   { cubeFileStartRecords, mol2Records, webmoFileStartRecords, 
     moldenFileStartRecords, dcdFileStartRecords, tlsDataOnlyFileStartRecords,
-    zMatrixFileStartRecords };
+    zMatrixFileStartRecords, magResFileStartRecords };
 
   ////////////////////////////////////////////////////////////////
   // these test lines that startWith one of these strings

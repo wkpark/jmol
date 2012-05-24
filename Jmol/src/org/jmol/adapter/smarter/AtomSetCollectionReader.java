@@ -448,7 +448,9 @@ public abstract class AtomSetCollectionReader {
       latticeCells[0] = (int) pt.x;
       latticeCells[1] = (int) pt.y;
       latticeCells[2] = (int) pt.z;
-      doPackUnitCell = (htParams.containsKey("packed") || latticeCells[2] < 0);
+      doCentroidUnitCell = (htParams.containsKey("centroid"));
+      doPackUnitCell = !doCentroidUnitCell && (htParams.containsKey("packed") || latticeCells[2] < 0);
+      
     }
     supercell = (String) htParams.get("supercell");
     doApplySymmetry = (latticeCells[0] > 0 && latticeCells[1] > 0);
@@ -583,7 +585,7 @@ public abstract class AtomSetCollectionReader {
     if (ignoreFileSymmetryOperators)
       return;
     atomSetCollection.setLatticeCells(latticeCells, applySymmetryToBonds,
-        doPackUnitCell, supercell);
+        doPackUnitCell, doCentroidUnitCell, supercell);
     if (!atomSetCollection.addSpaceGroupOperation(xyz))
       Logger.warn("Skipping symmetry operation " + xyz);
     iHaveSymmetryOperators = true;
@@ -718,6 +720,8 @@ public abstract class AtomSetCollectionReader {
   public boolean readMolecularOrbitals;
   protected boolean reverseModels;
   private String nameRequired;
+  protected boolean doCentroidUnitCell;
+
 
   // MANY: "NOVIB" "NOMO"
   // CSF, SPARTAN: "NOORIENT"
@@ -730,7 +734,7 @@ public abstract class AtomSetCollectionReader {
   // PDB: "BIOMOLECULE n;" "NOSYMMETRY"  "CONF n"
   // Spartan: "INPUT", "ESPCHARGES"
   // P2N: "ALTNAME"
-  // CASTEP: "CHARGE=HIRSH q={i,j,k}"
+  // CASTEP: "CHARGE=HIRSH q={i,j,k}; CENTROID"
 
   protected void setFilter(String filter0) {
     if (filter0 == null) {
@@ -934,7 +938,7 @@ public abstract class AtomSetCollectionReader {
       atomSetCollection.setSymmetryRange(symmetryRange);
       if (doConvertToFractional || fileCoordinatesAreFractional) {
         atomSetCollection.setLatticeCells(latticeCells, applySymmetryToBonds,
-            doPackUnitCell, supercell);
+            doPackUnitCell, doCentroidUnitCell, supercell);
         if (ignoreFileSpaceGroupName || !iHaveSymmetryOperators) {
           if (!merging || symmetry == null)
             getSymmetry();
@@ -1214,7 +1218,7 @@ public abstract class AtomSetCollectionReader {
           fileScaling.z = 1;
         setFractionalCoordinates(true);
         latticeCells = new int[3];
-        atomSetCollection.setLatticeCells(latticeCells, true, false, supercell);
+        atomSetCollection.setLatticeCells(latticeCells, true, false, false, supercell);
         setUnitCell(plotScale.x * 2 / (maxXYZ.x - minXYZ.x), plotScale.y * 2
             / (maxXYZ.y - minXYZ.y), plotScale.z * 2
             / (maxXYZ.z == minXYZ.z ? 1 : maxXYZ.z - minXYZ.z), 90, 90, 90);

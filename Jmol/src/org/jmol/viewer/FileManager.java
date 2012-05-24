@@ -1293,7 +1293,6 @@ public class FileManager {
           int pt = Math.max(fname.lastIndexOf("|"), fname.lastIndexOf("/"));
           fnameShort = fnameShort.substring(pt + 1);
         }
-        Logger.info("...adding " + fname + " (" + bytes.length + " bytes)");
         String key = ";" + fnameShort + ";";
         if (fileList.indexOf(key) >= 0) {
           Logger.info("duplicate entry");
@@ -1301,21 +1300,24 @@ public class FileManager {
         }
         fileList += key;
         os.putNextEntry(new ZipEntry(fnameShort));
+        int nOut = 0;
         if (bytes == null) {
           // get data from disk
           FileInputStream in = new FileInputStream(fname);
           int len;
           while ((len = in.read(buf)) > 0) {
             os.write(buf, 0, len);
-            nBytesOut += len;
+            nOut += len;
           }
           in.close();
         } else {
           // data are already in byte form
           os.write(bytes, 0, bytes.length);
-          nBytesOut += bytes.length;
+          nOut += bytes.length;
         }
+        nBytesOut += nOut;
         os.closeEntry();
+        Logger.info("...added " + fname + " (" + nOut + " bytes)");
       }
       os.close();
       Logger.info(nBytesOut + " bytes prior to compression");

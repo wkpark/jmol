@@ -120,6 +120,13 @@ class PointGroup {
   private final static int c8 = firstProper + 8;
   private final static int maxAxis = axesMaxN.length;
 
+  String drawInfo;
+  Map<String, Object> info;
+  String textInfo;
+
+  private String drawType = "";
+  private int drawIndex;
+  private float scale = Float.NaN;  
   private int[]  nAxes = new int[maxAxis];
   private Operation[][] axes = new Operation[maxAxis][];
   private int nAtoms;
@@ -883,12 +890,6 @@ class PointGroup {
     }
   }
 
-  String drawInfo;
-  String drawType = "";
-  int drawIndex;
-  Map<String, Object> info;
-  String textInfo;
-  
   Object getInfo(int modelIndex, boolean asDraw, boolean asInfo, String type,
                  int index, float scaleFactor) {
     info = (asInfo ? new Hashtable<String, Object>() : null);
@@ -896,6 +897,7 @@ class PointGroup {
     Operation op;
     if (scaleFactor == 0)
       scaleFactor = 1;
+    scale = scaleFactor;
     int[][] nType = new int[4][2];
     for (int i = 1; i < maxAxis; i++)
       for (int j = nAxes[i]; --j >= 0;)
@@ -1065,8 +1067,9 @@ class PointGroup {
     return info;
   }
 
-  boolean isDrawType(String type, int index) {
-    return (drawInfo != null && drawType.equals(type == null ? "" : type) && drawIndex == index);
+  boolean isDrawType(String type, int index, float scale) {
+    return (drawInfo != null && drawType.equals(type == null ? "" : type) 
+        && drawIndex == index && this.scale  == scale);
   }
   
 }

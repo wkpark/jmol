@@ -257,10 +257,8 @@ final public class Graphics3D implements JmolRendererInterface {
 
   /**
    * Allocates a g3d object
-   * @param apiPlatform 
    * 
-   * @param isDataOnly 
-   *
+   * @param apiPlatform 
    */
   public Graphics3D(ApiPlatform apiPlatform) {
     this.apiPlatform = apiPlatform;

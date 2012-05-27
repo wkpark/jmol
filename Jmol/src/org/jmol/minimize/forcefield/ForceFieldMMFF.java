@@ -661,7 +661,6 @@ public class ForceFieldMMFF extends ForceField {
    * 
    * @param bonds
    * @param bTypes 
-   * @param bondCount 
    * @param atoms
    * @param aTypes
    * @param bsAtoms
@@ -1762,7 +1761,6 @@ public class ForceFieldMMFF extends ForceField {
         break;
       }
 
-    double red = 0;
     switch (boAB) {
     case 1:
       // only single bonds involve hybridization

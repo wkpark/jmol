@@ -1086,8 +1086,7 @@ public abstract class AtomSetCollectionReader {
    * @param atomIndexes
    *          an array either null or indicating exactly which atoms get the
    *          frequencies (used by CrystalReader)
-   * @param minLineLen 
-   * @param minlineLen TODO
+   * @param minLineLen TODO
    * @throws Exception
    */
   protected void fillFrequencyData(int iAtom0, int atomCount,

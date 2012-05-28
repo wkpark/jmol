@@ -74,6 +74,12 @@ class XsfReader extends VolumeFileReader {
       volumetricVectors[i].scale(1.0f / (voxelCounts[i] - 1));
     }
     if (isBXSF) {
+/*      
+      System.out.println("testing XSFREADER");
+      volumetricVectors[0].set(0.1f, 0, 0);
+      volumetricVectors[1].set(0, 0.1f, 0);
+      volumetricVectors[2].set(0,0, 0.1f);
+*/      
       // data are slowest-x
       // standard Jmol order
     } else {

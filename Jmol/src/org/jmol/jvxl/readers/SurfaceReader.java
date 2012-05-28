@@ -601,9 +601,9 @@ public abstract class SurfaceReader implements VertexDataServer {
     int n = addVertexCopy(ptTemp, thisValue, assocVertex);
     if (n >= 0 && params.iAddGridPoints) {
       marchingCubes.calcVertexPoint(x, y, z, vB, ptTemp);
-      addVertexCopy(valueA < valueB ? pointA : ptTemp, Float.NaN,
+      addVertexCopy(valueA < valueB ? pointA : ptTemp, Math.min(valueA, valueB),
           MarchingSquares.EDGE_POINT);
-      addVertexCopy(valueA < valueB ? ptTemp : pointA, Float.NaN,
+      addVertexCopy(valueA < valueB ? ptTemp : pointA, Math.max(valueA, valueB),
           MarchingSquares.EDGE_POINT);
     }
     return n;

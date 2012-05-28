@@ -41,6 +41,7 @@ import org.jmol.util.ArrayUtil;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.ColorUtil;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.MeshSurface;
@@ -875,77 +876,111 @@ public class IsosurfaceMesh extends Mesh {
   }
 
   /**
-   * "slabs" an isosurface into the first Brillouin zone
-   * moving points as necessary.
+   * "slabs" an isosurface into the first Brillouin zone moving points as
+   * necessary.
    * 
    */
   @Override
   protected void slabBrillouin() {
-    getUnitCell();
-    if (unitCell == null)
+    if (spanningVectors == null)
       return;
-    Point3f[] pts = unitCell.getUnitCellVertices();
-    Point3f pt0 = new Point3f();
-    pt0.add(spanningVectors[0]);
-    Point3f ptTemp = new Point3f();
-    Point4f plane = new Point4f();
-    Vector3f vGamma = new Vector3f();
-    bsSlabGhost = new BitSet();
-/*    
-    System.out.println("draw line1 {0 0 0} "
-        + Escape.escape(spanningVectors[1]));
-    System.out.println("draw line2 {0 0 0} "
-        + Escape.escape(spanningVectors[2]));
-    System.out.println("draw line3 {0 0 0} "
-        + Escape.escape(spanningVectors[3]));
-*/
-    for (int i = 1; i < 8; i++) {
-      vGamma.set(pts[i]);
-      Measure.getBisectingPlane(pt0, vGamma, ptTemp, vTemp, plane);
-//      System.out.println("isosurface s" + i + " plane " + Escape.escape(plane)
-  //        + " off");
-      getIntersection(1, plane, null, null, null, null, false, false,
-          Token.plane, true);
-    }
-    bsSlabDisplay.or(bsSlabGhost);
-    BitSet bsNew = new BitSet();
-    Map<String, Integer> mapEdge = new Hashtable<String, Integer>();
-    for (int j = bsSlabGhost.nextSetBit(0); j >= 0; j = bsSlabGhost
-        .nextSetBit(j + 1)) {
-      if (!setABC(j))
-        continue;
-      int[] p = polygonIndexes[j];
-      for (int k = 0; k < 3; k++) {
-        int pk = p[k] = copyIntersectionVertex(p[k], mapEdge);
-        if (!bsNew.get(pk)) {
-          bsNew.set(pk);
-          Point3f v = vertices[pk];
-          for (int i = 1; i < 8; i++) {
-            vGamma.set(pts[i]);
-            ptTemp.scaleAdd(1, vGamma, pt0);
-            if (v.distanceSquared(ptTemp) < v.distanceSquared(pt0)) {
-              v.sub(vGamma);
-              i = 0;
-              continue;
-            }
-            ptTemp.scaleAdd(-1, vGamma, pt0);
-            if (v.distanceSquared(ptTemp) < v.distanceSquared(pt0)) {
-              v.add(vGamma);
-              i = 0;
-              continue;
-            }
+    
+    // define 26 k-points around the origin
+    
+    Point3f[] pts = new Point3f[27];
+    pts[0] = new Point3f(spanningVectors[0]);
+    int pt = 0;
+    for (int i = -1; i <= 1; i++)
+      for (int j = -1; j <= 1; j++)
+        for (int k = -1; k <= 1; k++)
+          if (i != 0 || j != 0 || k != 0) {
+            pts[++pt] = new Point3f(pts[0]);
+            pts[pt].scaleAdd(i, spanningVectors[1], pts[pt]);
+            pts[pt].scaleAdd(j, spanningVectors[2], pts[pt]);
+            pts[pt].scaleAdd(k, spanningVectors[3], pts[pt]);
           }
+    
+    System.out.println("draw line1 {0 0 0} color red"
+        + Escape.escape(spanningVectors[1]));
+    System.out.println("draw line2 {0 0 0} color green"
+        + Escape.escape(spanningVectors[2]));
+    System.out.println("draw line3 {0 0 0} color blue"
+        + Escape.escape(spanningVectors[3]));
+    
+    Point3f ptTemp = new Point3f();
+    Point4f planeGammaK = new Point4f();
+    Vector3f vGammaToKPoint = new Vector3f();
+    Vector3f vTemp = new Vector3f();
+    BitSet bsMoved = new BitSet();
+    Map<String, Integer> mapEdge = new Hashtable<String, Integer>();    
+    bsSlabGhost = new BitSet();
+    
+    // iterate over the 26 k-points using getIntersection() to
+    // clip cleanly on the bisecting plane and identify "ghost" triangles
+    // which we will simply copy. We have to be careful here never to 
+    // move a point twice for each k-point. The iteration is restarted
+    // if any points are moved.
+    
+    for (int i = 1; i < 27; i++) {
+      vGammaToKPoint.set(pts[i]);
+      Measure.getBisectingPlane(pts[0], vGammaToKPoint, ptTemp, vTemp, planeGammaK);
+      getIntersection(1, planeGammaK, null, null, null, null, false, false,
+          Token.plane, true);
+
+      //System.out.println("#slab " + i + " " + bsSlabGhost.cardinality());
+      //System.out.println("isosurface s" + i + " plane " + Escape.escape(plane)
+        //  + "#" + vGamma);
+      bsMoved.clear();
+      mapEdge.clear();
+      for (int j = bsSlabGhost.nextSetBit(0); j >= 0; j = bsSlabGhost
+          .nextSetBit(j + 1)) {
+        if (!setABC(j))
+          continue;
+        
+        // copy points because at least some will be needed by both sides,
+        // and in some cases triangles will be split multiple times
+        
+        int[] p = polygonIndexes[j];
+        for (int k = 0; k < 3; k++) {
+          int pk = p[k];
+          p[k] = addIntersectionVertex(vertices[pk], vertexValues[pk], 
+              vertexSource == null ? 0 : vertexSource[pk], mapEdge, 0, pk);
+          // we have to be careful, because some points have already been
+          // moved 
+          if (pk != p[k] && bsMoved.get(pk))
+            bsMoved.set(p[k]);
         }
+        
+        // now move the (copied) points
+        
+        for (int k = 0; k < 3; k++)
+          if (!bsMoved.get(p[k])) {
+            bsMoved.set(p[k]);
+            vertices[p[k]].sub(vGammaToKPoint);
+          }
+      }
+      
+      if (bsSlabGhost.nextSetBit(0) >= 0) {
+
+        // append these points to the display set again
+        // and clear the ghost set
+        
+        bsSlabDisplay.or(bsSlabGhost);
+        bsSlabGhost.clear();
+      
+        // restart iteration if any points are moved, because 
+        // some triangles need to be moved and/or split multiple 
+        // times, and the order is not predictable (I don't think).
+      
+        i = 0;
       }
     }
+    
+    // all done -- clear ghost slabbing and reset the bounding box
+    
     bsSlabGhost = null;
     resetBoundingBox();
-  }
-
-  private int copyIntersectionVertex(int i,
-                                     Map<String, Integer> mapEdge) {
-    return addIntersectionVertex(vertices[i], vertexValues[i], 
-        vertexSource == null ? 0 : vertexSource[i], mapEdge, 0, i);
+    //System.out.println("Isosurface verteCount = " + vertexCount);
   }
   
   @Override

@@ -198,10 +198,14 @@ public class MeshSurface {
         && (bsSlabGhost == null || !bsSlabGhost.get(i)))
       return false;
     int[] vertexIndexes = polygonIndexes[i];
-    return vertexIndexes != null
-          && !(Float.isNaN(vertexValues[iA = vertexIndexes[0]])
-            || Float.isNaN(vertexValues[iB = vertexIndexes[1]]) 
-            || Float.isNaN(vertexValues[iC = vertexIndexes[2]]));
+    if (vertexIndexes == null)
+      return false;
+    iA = vertexIndexes[0];
+    iB = vertexIndexes[1];
+    iC = vertexIndexes[2];
+    return vertexValues == null || !(Float.isNaN(vertexValues[iA])
+            || Float.isNaN(vertexValues[iB]) 
+            || Float.isNaN(vertexValues[iC]));
   }
 
   public int polygonCount0;

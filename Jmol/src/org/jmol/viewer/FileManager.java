@@ -1194,7 +1194,7 @@ public class FileManager {
   Object createZipSet(String fileName, String script, boolean includeRemoteFiles) {
     List<Object> v = new ArrayList<Object>();
     List<String> fileNames = new ArrayList<String>();
-    System.out.println("F2M " + script);
+    //System.out.println("F2M " + script);
     getFileReferences(script, fileNames);
     List<String> newFileNames = new ArrayList<String>();
     int nFiles = fileNames.size();

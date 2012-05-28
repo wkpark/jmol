@@ -1067,20 +1067,8 @@ public abstract class SurfaceReader implements VertexDataServer {
     return -1;
   }
 
-  protected Vector3f[] spanningVectors;
-
   public Vector3f[] getSpanningVectors() {
-    if (volumetricVectors != null && spanningVectors == null) {
-      spanningVectors = new Vector3f[4];
-      spanningVectors[0] = new Vector3f();
-      spanningVectors[0].set(volumetricOrigin);
-      for (int i = 0; i < 3; i++) {
-        spanningVectors[i + 1] = new Vector3f();
-        spanningVectors[i + 1].set(volumetricVectors[i]);
-        spanningVectors[i + 1].scale(voxelCounts[i] - 1);
-      }
-    }
-    return spanningVectors;
+    return (volumeData == null ? null : volumeData.getSpanningVectors());
   }
 
 }

@@ -29,7 +29,7 @@ import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
-
+import javax.vecmath.Tuple3f;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.Quadric;
 import org.jmol.util.SimpleUnitCell;
@@ -50,6 +50,16 @@ class UnitCell extends SimpleUnitCell {
   private Point3f[] vertices; // eight corners
   private Point3f cartesianOffset = new Point3f();
   private Point3f fractionalOffset = new Point3f();
+  
+  public UnitCell(Tuple3f[] points) {
+    float[] parameters = new float[] { -1, 0, 0, 0, 0, 0, points[1].x,
+        points[1].y, points[1].z, points[2].x, points[2].y, points[2].z,
+        points[3].x, points[3].y, points[3].z };
+    set(parameters);
+    allFractionalRelative = true;
+    calcUnitcellVertices();
+    setCartesianOffset(points[0]);
+  }
   
   UnitCell(float[] notionalUnitcell) {
     super(notionalUnitcell);
@@ -135,6 +145,25 @@ class UnitCell extends SimpleUnitCell {
     matrixFractionalToCartesian.m03 = cartesianOffset.x;
     matrixFractionalToCartesian.m13 = cartesianOffset.y;
     matrixFractionalToCartesian.m23 = cartesianOffset.z;
+    if (allFractionalRelative) {
+      matrixCtoFAbsolute.set(matrixCartesianToFractional);
+      matrixFtoCAbsolute.set(matrixFractionalToCartesian);
+    }
+  }
+
+  public void setCartesianOffset(Tuple3f origin) {
+    cartesianOffset.set(origin);
+    matrixFractionalToCartesian.m03 = cartesianOffset.x;
+    matrixFractionalToCartesian.m13 = cartesianOffset.y;
+    matrixFractionalToCartesian.m23 = cartesianOffset.z;
+    fractionalOffset.set(cartesianOffset);
+    matrixCartesianToFractional.m03 = 0;
+    matrixCartesianToFractional.m13 = 0;
+    matrixCartesianToFractional.m23 = 0;
+    matrixCartesianToFractional.transform(fractionalOffset);
+    matrixCartesianToFractional.m03 = -fractionalOffset.x;
+    matrixCartesianToFractional.m13 = -fractionalOffset.y;
+    matrixCartesianToFractional.m23 = -fractionalOffset.z;
     if (allFractionalRelative) {
       matrixCtoFAbsolute.set(matrixCartesianToFractional);
       matrixFtoCAbsolute.set(matrixFractionalToCartesian);
@@ -393,6 +422,15 @@ class UnitCell extends SimpleUnitCell {
 
   public Point3f getUnitCellMultiplier() {
     return unitCellMultiplier ;
+  }
+
+  public Point3f[] getUnitCellVectors() {
+    Matrix4f m = matrixFractionalToCartesian;
+    return new Point3f[] { 
+        new Point3f(cartesianOffset),
+        new Point3f(m.m00, m.m10, m.m20), 
+        new Point3f(m.m01, m.m11, m.m21), 
+        new Point3f(m.m02, m.m12, m.m22) };
   }
 
 }

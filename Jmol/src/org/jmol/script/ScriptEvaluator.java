@@ -13762,13 +13762,28 @@ public class ScriptEvaluator {
     Point3f pt = null;
     TickInfo tickInfo = checkTicks(index, true, false, false);
     index = iToken;
-    if (statementLength == index + 2) {
-      if (getToken(index + 1).tok == Token.integer
-          && intParameter(index + 1) >= 111)
-        icell = intParameter(++index);
-    } else if (statementLength > index + 1) {
-      pt = (Point3f) getPointOrPlane(++index, false, true, false, true, 3, 3);
-      index = iToken;
+    String id = null;
+    Point3f[] points = null;
+    switch (tokAt(index + 1)) {
+    case Token.string:
+      id = objectNameParameter(++index);
+      break;
+    case Token.dollarsign:
+      index++;
+      id = objectNameParameter(++index);
+      break;
+    default:
+      if (isArrayParameter(index + 1)) {
+        points = getPointArray(++index, 4);
+        index = iToken;
+      }else if (statementLength == index + 2) {
+        if (getToken(index + 1).tok == Token.integer
+            && intParameter(index + 1) >= 111)
+          icell = intParameter(++index);
+      } else if (statementLength > index + 1) {
+        pt = (Point3f) getPointOrPlane(++index, false, true, false, true, 3, 3);
+        index = iToken;
+      }
     }
     mad = getSetAxesTypeMad(++index);
     checkLast(iToken);
@@ -13776,6 +13791,10 @@ public class ScriptEvaluator {
       return;
     if (icell != Integer.MAX_VALUE)
       viewer.setCurrentUnitCellOffset(icell);
+    else if (id != null)
+      viewer.setCurrentUnitCell(id);
+    else if (points != null)
+      viewer.setCurrentUnitCell(points);
     setObjectMad(JmolConstants.SHAPE_UCCAGE, "unitCell", mad);
     if (pt != null)
       viewer.setCurrentUnitCellOffset(pt);

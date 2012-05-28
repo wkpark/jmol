@@ -3183,6 +3183,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       unitCell.toUnitCell(pt, offset);
   }
 
+  public void setCurrentUnitCell(String isosurfaceId) {
+    Object[] data = new Object[] { isosurfaceId, null };
+    shapeManager.getShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "unitCell", data);
+    modelSet.setUnitCell(getCurrentModelIndex(), (SymmetryInterface) data[1]);    
+  }
+
+  public void setCurrentUnitCell(Point3f[] points) {
+    modelSet.setUnitCell(getCurrentModelIndex(), getSymmetry().getUnitCell(points));
+  }
+
   public void setCurrentUnitCellOffset(int ijk) {
     modelSet.setUnitCellOffset(animationManager.currentModelIndex, null, ijk);
   }
@@ -9138,8 +9148,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     repaintManager.clear(-1);
     animationManager.clear();
     animationManager.initializePointers(1);
-    if (getModelCount() > 1)
-      setCurrentModelIndex(-1, true);
+    setCurrentModelIndex(getModelCount() > 1 ? -1 : 0, getModelCount() > 1);
     hoverAtomIndex = -1;
     setFileLoadStatus(FileManager.EnumFileStatus.DELETED, null, null, null,
         null);
@@ -9827,8 +9836,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     shapeManager.deleteShapeAtoms(value, bs);
   }
 
-  public void getShapeState(StringBuffer commands, boolean isAll) {
-    shapeManager.getShapeState(commands, isAll);
+  public void getShapeState(StringBuffer commands, boolean isAll, int iShape) {
+    shapeManager.getShapeState(commands, isAll, iShape);
   }
 
   public void resetBioshapes(BitSet bsAllAtoms) {
@@ -10415,4 +10424,5 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setCentroid(int iAtom0, int iAtom1, int[] minmax) {
     modelSet.setCentroid(iAtom0, iAtom1, minmax);
   }
+
 }

@@ -230,7 +230,7 @@ public class Symmetry implements SymmetryInterface {
   }
 
   public boolean isPeriodic() {
-    return symmetryInfo.isPeriodic();
+    return (symmetryInfo == null || symmetryInfo.isPeriodic());
   }
 
   public void setSymmetryInfo(int modelIndex, Map<String, Object> modelAuxiliaryInfo) {
@@ -304,6 +304,10 @@ public class Symmetry implements SymmetryInterface {
     return unitCell.getCartesianOffset();
   }
 
+  public void setCartesianOffset(Tuple3f origin) {
+    unitCell.setCartesianOffset(origin);
+  }
+
   public Point3f getFractionalOffset() {
     return unitCell.getFractionalOffset();
   }
@@ -357,4 +361,15 @@ public class Symmetry implements SymmetryInterface {
     return unitCell.checkDistance(f1, f2, distance, dx, 
         iRange, jRange, kRange, ptOffset);
   }
+
+  public Point3f[] getUnitCellVectors() {
+    return unitCell.getUnitCellVectors();
+  }
+
+  public SymmetryInterface getUnitCell(Tuple3f[] points) {
+    Symmetry sym = new Symmetry();
+    sym.unitCell = new UnitCell(points);
+    return sym;
+  }
+
 }  

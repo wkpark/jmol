@@ -202,6 +202,11 @@ public class VolumeData implements VolumeDataInterface {
   public float minGrid;
   public float maxGrid;
   public float voxelVolume;
+  private Vector3f[] spanningVectors;
+  
+  public Vector3f[] getSpanningVectors() {
+    return spanningVectors;
+  }
   
   public int getYzCount() {
     
@@ -337,6 +342,12 @@ public class VolumeData implements VolumeDataInterface {
     origin[0] = volumetricOrigin.x;
     origin[1] = volumetricOrigin.y;
     origin[2] = volumetricOrigin.z;
+    spanningVectors = new Vector3f[4];
+    spanningVectors[0] = new Vector3f(volumetricOrigin);
+    for (int i = 0; i < 3; i++) {
+      Vector3f v = spanningVectors[i + 1] = new Vector3f();
+      v.scaleAdd(voxelCounts[i] - 1, volumetricVectors[i], v);
+    }
     return setMatrix();
   }
 
@@ -359,19 +370,19 @@ public class VolumeData implements VolumeDataInterface {
     ptXyzTemp.sub(point, volumetricOrigin);
     inverseMatrix.transform(ptXyzTemp);
     int iMax;
-    int xDown = indexDown(ptXyzTemp.x, iMax = voxelCounts[0] - 1);
-    int xUp = xDown + (ptXyzTemp.x < 0 || xDown == iMax ? 0 : 1);
-    int yDown = indexDown(ptXyzTemp.y, iMax = voxelCounts[1] - 1);
-    int yUp = yDown + (ptXyzTemp.y < 0 || yDown == iMax ? 0 : 1);
-    int zDown = indexDown(ptXyzTemp.z, iMax = voxelCounts[2] - 1);
-    int zUp = zDown + (ptXyzTemp.z < 0 || zDown == iMax ? 0 : 1);
-    float v1 = getFractional2DValue(ptXyzTemp.x - xDown, ptXyzTemp.y - yDown,
-        getVoxelValue(xDown, yDown, zDown), getVoxelValue(xUp, yDown, zDown),
-        getVoxelValue(xDown, yUp, zDown), getVoxelValue(xUp, yUp, zDown));
-    float v2 = getFractional2DValue(ptXyzTemp.x - xDown, ptXyzTemp.y - yDown,
-        getVoxelValue(xDown, yDown, zUp), getVoxelValue(xUp, yDown, zUp),
-        getVoxelValue(xDown, yUp, zUp), getVoxelValue(xUp, yUp, zUp));
-    return v1 + (ptXyzTemp.z - zDown) * (v2 - v1);
+    int xLower = indexLower(ptXyzTemp.x, iMax = voxelCounts[0] - 1);
+    int xUpper = indexUpper(ptXyzTemp.x, xLower, iMax);
+    int yLower = indexLower(ptXyzTemp.y, iMax = voxelCounts[1] - 1);
+    int yUpper = indexUpper(ptXyzTemp.y, yLower, iMax);
+    int zLower = indexLower(ptXyzTemp.z, iMax = voxelCounts[2] - 1);
+    int zUpper = indexUpper(ptXyzTemp.z, zLower, iMax);
+    float v1 = getFractional2DValue(ptXyzTemp.x - xLower, ptXyzTemp.y - yLower,
+        getVoxelValue(xLower, yLower, zLower), getVoxelValue(xUpper, yLower, zLower),
+        getVoxelValue(xLower, yUpper, zLower), getVoxelValue(xUpper, yUpper, zLower));
+    float v2 = getFractional2DValue(ptXyzTemp.x - xLower, ptXyzTemp.y - yLower,
+        getVoxelValue(xLower, yLower, zUpper), getVoxelValue(xUpper, yLower, zUpper),
+        getVoxelValue(xLower, yUpper, zUpper), getVoxelValue(xUpper, yUpper, zUpper));
+    return v1 + (ptXyzTemp.z - zLower) * (v2 - v1);
   }
 
   public float getVoxelValue(int x, int y, int z) {
@@ -388,11 +399,34 @@ public class VolumeData implements VolumeDataInterface {
     return v1 + fy * (v2 - v1);
   }
 
-  private static int indexDown(float value, int iMax) {
-    if (value < 0)
+  /**
+   * periodic grids should have val[0] == val[xMax]
+   * 
+   * voxelCount: 1....2....3....4....5
+   * xMax/index: 0....1....2....3....4....
+   * nonper.  ^ ---> [0,0]             ^ --> [4, 4]
+   * periodic ^ ---> [3,4]             ^ --> [0, 1]
+   * 
+   * @param x
+   * @param xMax
+   * @return  lower index in range
+   */
+  private int indexLower(float x, int xMax) {
+    if (isPeriodic && xMax > 0) {
+      while (x < 0)
+        x += xMax;
+      while (x >= xMax)
+        x -= xMax;
+      return (int) x;
+    } 
+    if (x < 0)
       return 0;
-    int floor = (int) value;
-    return (floor > iMax ? iMax : floor);
+    int floor = (int) x;
+    return (floor > xMax ? xMax : floor);
+  }
+
+  private int indexUpper(float x, int xLower, int xMax) {
+    return xLower + (!isPeriodic && x < 0 || xLower == xMax ? 0 : 1);
   }
 
   void offsetCenter(Point3f center) {
@@ -533,5 +567,4 @@ public class VolumeData implements VolumeDataInterface {
     return v0;
   }
 
-  
 }

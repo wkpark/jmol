@@ -324,11 +324,13 @@ public class ShapeManager {
     return info;
   }
 
-  void getShapeState(StringBuffer commands, boolean isAll) {
+  void getShapeState(StringBuffer commands, boolean isAll, int iShape) {
     if (shapes == null)
       return;
     String cmd;
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
+      if (iShape != Integer.MAX_VALUE && i != iShape)
+        continue;
       Shape shape = shapes[i];
       if (shape != null && (isAll || JmolConstants.isShapeSecondary(i))
           && (cmd = shape.getShapeState()) != null && cmd.length() > 1)

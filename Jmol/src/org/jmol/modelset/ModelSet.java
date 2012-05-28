@@ -33,7 +33,6 @@ import org.jmol.util.Measure;
 import org.jmol.util.Quaternion;
 
 import org.jmol.viewer.JmolConstants;
-import org.jmol.viewer.StateManager;
 import org.jmol.viewer.Viewer;
 import org.jmol.modelset.Bond.BondSet;
 import org.jmol.script.Token;
@@ -622,7 +621,7 @@ import javax.vecmath.Vector3f;
     if (withProteinStructure)
       commands.append(getProteinStructureState(null, isAll, false, 0));
 
-    viewer.getShapeState(commands, isAll);
+    viewer.getShapeState(commands, isAll, Integer.MAX_VALUE);
 
     if (isAll) {
       boolean needOrientations = false;
@@ -632,21 +631,28 @@ import javax.vecmath.Vector3f;
           break;
         }
       for (int i = 0; i < modelCount; i++) {
+        String fcmd = "  frame " + getModelNumberDotted(i);
         String s = (String) getModelAuxiliaryInfo(i, "modelID");
         if (s != null && !s.equals(getModelAuxiliaryInfo(i, "modelID0")))
-          commands.append("  frame " + getModelNumberDotted(i)
-              + "; frame ID " + Escape.escape(s) + ";\n");
+          commands.append(fcmd).append("; frame ID ").append(Escape.escape(s))
+              .append(";\n");
         String t = frameTitles[i];
         if (t != null && t.length() > 0)
-          commands.append("  frame " + getModelNumberDotted(i)
-              + "; frame title " + Escape.escape(t) + ";\n");
+          commands.append(fcmd).append("; frame title ").append(
+              Escape.escape(t)).append(";\n");
         if (needOrientations && models[i].orientation != null
             && !isTrajectorySubFrame(i))
-          commands.append("  frame " + getModelNumberDotted(i) + "; "
-              + models[i].orientation.getMoveToText(false) + "\n");
+          commands.append(fcmd).append("; ").append(
+              models[i].orientation.getMoveToText(false)).append(";\n");
         if (models[i].frameDelay != 0 && !isTrajectorySubFrame(i))
-          commands.append("  frame " + getModelNumberDotted(i) 
-              + "; frame delay " + models[i].frameDelay/1000f + "\n");
+          commands.append(fcmd).append("; frame delay ").append(
+              models[i].frameDelay / 1000f).append(";\n");
+        if (models[i].unitCell != null) {
+          commands.append(fcmd).append("; unitcell ").append(
+              Escape.escape(models[i].unitCell.getUnitCellVectors()))
+              .append(";\n");
+          viewer.getShapeState(commands, isAll, JmolConstants.SHAPE_UCCAGE);
+        }
       }
 
       if (unitCells != null) {
@@ -663,8 +669,9 @@ import javax.vecmath.Vector3f;
             commands.append("; set unitcell ").append(Escape.escape(pt));
           commands.append(";\n");
         }
-        if (viewer.getObjectMad(StateManager.OBJ_UNITCELL) == 0)
-          commands.append("  unitcell OFF;\n");
+        viewer.getShapeState(commands, isAll, JmolConstants.SHAPE_UCCAGE);
+//        if (viewer.getObjectMad(StateManager.OBJ_UNITCELL) == 0)
+  //        commands.append("  unitcell OFF;\n");
       }
       commands.append("  set fontScaling " + viewer.getFontScaling() + ";\n");
       if (viewer.isModelKitMode())

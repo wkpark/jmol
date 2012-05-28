@@ -148,10 +148,28 @@ abstract public class ModelCollection extends BondCollection {
     return unitCells;
   }
 
+  public boolean haveUnitCells() {
+    if (unitCells != null) 
+      return true;
+    for (int i = modelCount; --i >= 0;)
+      if (models[i].unitCell != null)
+        return true;
+    return false;
+  }
+
   public SymmetryInterface getUnitCell(int modelIndex) {
-    return (unitCells == null || modelIndex < 0
-        || modelIndex >= unitCells.length
+    if (modelIndex < 0 || modelIndex >= modelCount)
+      return null;
+    if (models[modelIndex].unitCell != null)
+      return models[modelIndex].unitCell;
+    return (unitCells == null || modelIndex >= unitCells.length
         || !unitCells[modelIndex].haveUnitCell() ? null : unitCells[modelIndex]);
+  }
+
+  public void setUnitCell(int modelIndex, SymmetryInterface unitCell) {
+    if (modelIndex < 0 || modelIndex >= modelCount)
+      return;
+    models[modelIndex].unitCell = unitCell;    
   }
 
   /**

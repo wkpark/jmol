@@ -144,4 +144,10 @@ public interface SymmetryInterface {
 
   public abstract String fcoord(Tuple3f p);
 
+  public abstract void setCartesianOffset(Tuple3f origin);
+
+  public abstract Point3f[] getUnitCellVectors();
+
+  public abstract SymmetryInterface getUnitCell(Tuple3f[] points);
+
 }

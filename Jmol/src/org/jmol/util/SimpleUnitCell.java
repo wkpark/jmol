@@ -60,7 +60,14 @@ public class SimpleUnitCell {
         && !Float.isNaN(parameters[14])));
   }
 
+  protected SimpleUnitCell() {
+  }
+  
   public SimpleUnitCell(float[] parameters) {
+    set(parameters);
+  }
+  
+  protected void set(float[] parameters) {
     if (!isValid(parameters))
       return;
     notionalUnitcell = new float[parameters.length];

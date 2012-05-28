@@ -31,6 +31,7 @@ import java.util.Properties;
 
 import javax.vecmath.Point3f;
 
+import org.jmol.api.SymmetryInterface;
 import org.jmol.constant.EnumStructure;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
@@ -196,6 +197,7 @@ public class Model {
   protected boolean structureTainted;
   boolean isJmolDataFrame;
   public long frameDelay;
+  public SymmetryInterface unitCell;
   
   public String getModelNumberDotted() {
     return modelSet.getModelNumberDotted(modelIndex);

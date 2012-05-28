@@ -425,7 +425,7 @@ public class MeshSurface {
   }
 
   /**
-   * @param unitCell 
+   * @param unitCellVectors 
    */
   protected void slabBrillouin(Point3f[] unitCellVectors) {
     // isosurfaceMesh only

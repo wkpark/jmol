@@ -854,30 +854,8 @@ public class IsosurfaceMesh extends Mesh {
 
   @Override
   public SymmetryInterface getUnitCell() {
-    if (spanningVectors == null)
-      return null;
-    unitCell = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
-    float[] parameters = new float[15];
-    parameters[0] = -1;
-    Vector3f v = null;
-    float f = 0;
-    for (int i = 0; i < 9; i++) {
-      switch (i % 3) {
-      case 0:
-        v = spanningVectors[i / 3 + 1];
-        f = v.x;
-        break;
-      case 1:
-        f = v.y;
-        break;
-      case 2:
-        f = v.z;
-        break;
-      }
-      parameters[6 + i] = f;
-    }
-    unitCell.setUnitCell(parameters);
-    return unitCell;
+    return (spanningVectors == null ? null :
+    ((SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry")).getUnitCell(spanningVectors));
   }
 
   /**

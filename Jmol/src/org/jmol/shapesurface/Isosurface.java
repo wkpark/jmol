@@ -687,6 +687,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       }
       return true;
     }
+    if (property == "unitCell") {
+      IsosurfaceMesh m = (IsosurfaceMesh) getMesh((String) data[0]);
+      return (m != null && (data[1] = m.getUnitCell()) != null);
+    }
     if (property == "getCenter") {
       int index = ((Integer)data[1]).intValue();
       if (index == Integer.MIN_VALUE) {

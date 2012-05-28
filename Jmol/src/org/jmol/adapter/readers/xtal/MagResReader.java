@@ -17,8 +17,6 @@ import jspecview.util.TextFormat;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.util.Eigen;
-import org.jmol.util.Escape;
-import org.jmol.util.Logger;
 
 public class MagResReader extends AtomSetCollectionReader {
 

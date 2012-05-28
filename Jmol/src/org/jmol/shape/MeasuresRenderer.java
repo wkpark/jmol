@@ -130,6 +130,8 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
         atomB.screenY, zB, mad);
     if (!renderLabel)
       return;
+    if (mad > 0)
+      radius <<= 1;
     int z = (zA + zB) / 2;
     if (z < 1)
       z = 1;

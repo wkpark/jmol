@@ -28,7 +28,6 @@ import java.io.BufferedReader;
 import javax.vecmath.Vector3f;
 
 import org.jmol.util.Logger;
-import org.jmol.util.Parser;
 
 class XsfReader extends VolumeFileReader {
 
@@ -36,25 +35,69 @@ class XsfReader extends VolumeFileReader {
     super(sg, br);
   }
   
+  private boolean isBXSF = false;
+
   @Override
   protected void readParameters() throws Exception {
-    if (Float.isNaN(params.cutoff))
-      params.cutoff = 0.05f;
     isAngstroms = false;
+    params.blockCubeData = true;
     jvxlFileHeaderBuffer = new StringBuffer();
-    while (readLine() != null && line.indexOf("BEGIN_DATAGRID") < 0)
-      continue;
     jvxlFileHeaderBuffer.append("XsfReader file\n");
-    readLine();
-    voxelCounts[0] = parseInt(line);
+    boolean needCutoff = params.cutoffAutomatic;
+    isAngstroms = true;
+    String beginKey = "BEGIN_DATAGRID_3D";
+    nSurfaces = 1;
+    while (readLine() != null && line.indexOf(beginKey) < 0) {
+      Logger.info(line);
+      if (line.indexOf("Fermi Energy:") >= 0) {
+        isBXSF = true;
+        beginKey = "BEGIN_BANDGRID_3D";
+        if (needCutoff) {
+          params.cutoff = parseFloat(getTokens()[2]);
+          needCutoff = false;
+        }
+      }
+      continue;
+    }
+    if (needCutoff)
+      params.cutoff = 0.05f;
+    if (isBXSF)
+      nSurfaces = parseInt(readLine());
+    voxelCounts[0] = parseInt(readLine());
     voxelCounts[1] = parseInt();
     voxelCounts[2] = parseInt();
     volumetricOrigin.set(parseFloat(readLine()), parseFloat(), parseFloat());
-    volumetricOrigin.scale(ANGSTROMS_PER_BOHR);
-    for (int i = 0; i < 3; ++i)
-      volumetricVectors[i].set(parseFloat(readLine()), parseFloat(), parseFloat());
-    nSurfaces = 1;
+    // SPANNING vectors here.
+    for (int i = 0; i < 3; ++i) {
+      volumetricVectors[i].set(parseFloat(readLine()), parseFloat(),
+          parseFloat());
+      volumetricVectors[i].scale(1.0f / (voxelCounts[i] - 1));
+    }
+    if (isBXSF) {
+      // data are slowest-x
+      // standard Jmol order
+    } else {
+      // data are slowest-z
+      // reversed order -- so we just reverse the vectors
+      Vector3f v = volumetricVectors[0];
+      volumetricVectors[0] = volumetricVectors[2];
+      volumetricVectors[2] = v;
+      int n = voxelCounts[0];
+      voxelCounts[0] = voxelCounts[2];
+      voxelCounts[2] = n;
+      params.insideOut = !params.insideOut;
+    }
   }
+  
+  @Override
+  protected void gotoData(int n, int nPoints) throws Exception {
+    if (!params.blockCubeData)
+      return;
+    if (isBXSF)
+      readLine(); //"BAND: <n>" line
+    super.gotoData(n, nPoints);
+  }
+
 }
 
 

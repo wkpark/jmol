@@ -1266,6 +1266,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     setBsVdw();
     thisMesh.insideOut = sg.isInsideOut();
     thisMesh.vertexSource = sg.getVertexSource();
+    thisMesh.spanningVectors = sg.getSpanningVectors();
     thisMesh.calculatedArea = null;
     thisMesh.calculatedVolume = null;
     // from JVXL file:

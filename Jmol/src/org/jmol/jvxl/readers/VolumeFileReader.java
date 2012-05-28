@@ -123,7 +123,6 @@ abstract class VolumeFileReader extends SurfaceFileReader {
         return 0;
 
       Logger.info("voxel grid origin:" + volumetricOrigin);
-
       int downsampleFactor = params.downsampleFactor;
       boolean downsampling = (canDownsample && downsampleFactor > 0);
       if (downsampling) {

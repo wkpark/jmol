@@ -1807,17 +1807,16 @@ abstract public class ModelCollection extends BondCollection {
     }
   }
 
-  public void setCentroid(int[] minmax) {
-    SymmetryInterface uc = getUnitCell(modelCount - 1);
+  public void setCentroid(int iAtom0, int iAtom1, int[] minmax) {
+    try {
+    SymmetryInterface uc = getUnitCell(atoms[iAtom0].modelIndex);
     if (uc == null)
       return;
     BitSet bsDelete = new BitSet();
-    Model m = models[modelCount - 1];
-    int i0 = m.firstAtomIndex;
     getMolecules();
     Point3f center = new Point3f();
-    boolean isOneMolecule = (molecules[moleculeCount - 1].firstAtomIndex == m.firstAtomIndex);
-    for (int i = moleculeCount; --i >= 0 && molecules[i].firstAtomIndex >= i0;) {
+    boolean isOneMolecule = (molecules[moleculeCount - 1].firstAtomIndex == models[atoms[iAtom1].modelIndex].firstAtomIndex);
+    for (int i = moleculeCount; --i >= 0 && molecules[i].firstAtomIndex >= iAtom0 && molecules[i].firstAtomIndex < iAtom1;) {
       BitSet bs = molecules[i].atomList;
       center.set(0, 0, 0);
       int n = 0;
@@ -1835,14 +1834,20 @@ abstract public class ModelCollection extends BondCollection {
     }
     if (bsDelete.nextSetBit(0) >= 0)
       viewer.deleteAtoms(bsDelete, false);
+    } catch (Exception e) {
+      // ignore
+    }
   }
 
-  private boolean isNotCentroid(Point3f center, int n, SymmetryInterface uc, int[] minmax) {
+  private static boolean isNotCentroid(Point3f center, int n, SymmetryInterface uc, int[] minmax) {
     center.scale(1f/n);
     uc.toFractional(center, false);
-    return (center.x <= minmax[0] || center.x > minmax[3] 
-     || center.y <= minmax[1] || center.y > minmax[4]
-     || center.z <= minmax[2] || center.z > minmax[5]);
+    System.out.println("isCentroid ? " + center);
+    // we have to disallow just a tiny slice of atoms due to rounding errors
+    // so  -0.000001 is OK, but 0.999991 is not.
+    return (center.x + 0.000005f <= minmax[0] || center.x + 0.00001f > minmax[3] 
+     || center.y + 0.000005f <= minmax[1] || center.y + 0.00001f > minmax[4]
+     || center.z + 0.000005f <= minmax[2] || center.z + 0.00001f > minmax[5]);
     
   }
 

@@ -3299,7 +3299,7 @@ class ScriptMathProcessor {
     if (isSyntaxCheck)
       return addX("");
     BoxInfo b = viewer.getBoxInfo(ScriptVariable.bsSelect(x2), 1);
-    Point3f[] pts = b.getBoundBoxPoints();
+    Point3f[] pts = b.getBoundBoxPoints(true);
     return addX(new String[] { Escape.escape(pts[0]), Escape.escape(pts[1]),
         Escape.escape(pts[2]), Escape.escape(pts[3]) });
   }

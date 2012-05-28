@@ -622,7 +622,7 @@ public String getShapeState() {
       commands.append(";\n");
     }
     if (mad >= 0)
-      commands.append(" set measurements " + (mad / 2000f));
+      commands.append(" set measurements " + (mad / 2000f)).append(";\n");
     String s = getShapeCommands(temp, null, "select measures");
     if (s != null && s.length() != 0) {
       commands.append(s);

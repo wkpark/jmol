@@ -34,6 +34,7 @@ import java.util.Map;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Point4f;
+import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 
@@ -198,7 +199,7 @@ public class BoxInfo {
     new Point3i(0, 1, 1)  //7 pt + z + 1 
   };
 
-  public final static Point3f[] getCriticalPoints(Point3f[] bbVertices, Point3f offset) {
+  public final static Point3f[] getCriticalPoints(Point3f[] bbVertices, Tuple3f offset) {
     Point3f center = new Point3f(bbVertices[0]);
     Point3f a = new Point3f(bbVertices[1]);
     Point3f b = new Point3f(bbVertices[2]);
@@ -231,10 +232,11 @@ public class BoxInfo {
     return bbVector;
   }
 
-  public Point3f[] getBoundBoxPoints() {
+  public Point3f[] getBoundBoxPoints(boolean isAll) {
     if (!isScaleSet)
       setBbcage(1);
-    return new Point3f[] {bbCenter, new Point3f(bbVector), bbCorner0, bbCorner1};
+    return (isAll ? new Point3f[] { bbCenter, new Point3f(bbVector), bbCorner0,
+        bbCorner1 } : new Point3f[] { bbCorner0, bbCorner1 });
   }
 
   public Point3fi[] getBboxVertices() {

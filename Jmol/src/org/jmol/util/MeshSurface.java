@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Tuple3f;
+import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
 import org.jmol.script.Token;
@@ -17,6 +18,8 @@ public class MeshSurface {
 
   protected static final int SEED_COUNT = 25;
 
+  public Vector3f[] spanningVectors;
+  
   public String meshType;
   public int vertexCount;
   public Point3f[] vertices;
@@ -26,6 +29,7 @@ public class MeshSurface {
   public int polygonCount;
   public int[][] polygonIndexes;
   
+  public boolean isTriangleSet; // just a set of flat polygons
   public boolean haveQuads;
   public short colix;
   public boolean isColorSolid = true;
@@ -34,8 +38,9 @@ public class MeshSurface {
 
   public short[] polygonColixes;
   public short[] vertexColixes;
-  public Tuple3f[] normals;
-  public int normalCount;
+  public Tuple3f[] normals; // for export only
+  public int normalCount;   // for export only
+  protected int normixCount;
   public BitSet bsPolygons;
   public Point3f ptOffset;
   public float scale3d;
@@ -285,20 +290,22 @@ public class MeshSurface {
     if (polygonCount0 < 0)
       return false; // disabled for some surface types
     int slabType = ((Integer) slabObject[0]).intValue();
-    if (slabType == Token.none) {
+    if (slabType == Token.none || slabType == Token.brillouin) {
       if (bsSlabDisplay != null && (polygonCount0 != 0 || vertexCount0 != 0)) {
         polygonCount = polygonCount0;
         vertexCount = vertexCount0;
         polygonCount0 = vertexCount0 = 0;
+        normixCount = (isTriangleSet ? polygonCount : vertexCount);
         bsSlabDisplay.set(0, (polygonCount == 0 ? vertexCount : polygonCount));
         slabOptions = new StringBuffer(meshType + " slab none");
         bsSlabGhost = null;
         slabMeshType = Token.none;
       }
-      return false;
+      if (slabType == Token.none)
+        return false;
     }
     Object slabbingObject = slabObject[1];
-    boolean andCap = ((Boolean) slabObject[2]).booleanValue();
+    boolean andCap = ((Boolean) slabObject[2]).booleanValue() && !(slabType == Token.brillouin);
     if (andCap && !allowCap)
       return false;
     Object[] colorData = (Object[]) slabObject[3];
@@ -337,6 +344,10 @@ public class MeshSurface {
           Graphics3D.getColixTranslucencyFractional(slabColix)).append(" ")
           .append(Graphics3D.getHexCode(slabColix)).append(" ");
     switch (slabType) {
+    case Token.brillouin:
+      sb.append("brillouin");
+      slabBrillouin();
+      break;
     case Token.plane:
       Point4f plane = (Point4f) slabbingObject;
       sb.append(Escape.escape(plane));
@@ -408,7 +419,12 @@ public class MeshSurface {
     return true;
   }
 
-  private int addIntersectionVertex(Point3f vertex, float value, int source,
+  protected void slabBrillouin() {
+    // isosurfaceMesh only
+    return;
+  }
+
+  protected int addIntersectionVertex(Point3f vertex, float value, int source,
                                     Map<String, Integer> mapEdge, int i1, int i2) {
     
     String key = (i1 > i2 ? i2 + "_" + i1 : i1 + "_" + i2);
@@ -424,11 +440,22 @@ public class MeshSurface {
         vertexSource = ArrayUtil.doubleLength(vertexSource);
       vertexSource[vertexCount] = source;
     }
-    int i = addVertexCopy(vertex, value);
+    int i = addVertexCopy(vertex, value, true, -4);
     mapEdge.put(key, Integer.valueOf(i));
     return i;    
   } 
 
+  /**
+   * @param vertex 
+   * @param value 
+   * @param assocNormals  
+   * @param iNormal 
+   * @return   new vertex index
+   */
+  protected int addVertexCopy(Point3f vertex, float value, boolean assocNormals, int iNormal) {
+    // isosurface only
+    return addVertexCopy(vertex, value);
+  }
 
   private boolean doClear;
   private boolean doGhost;
@@ -462,6 +489,7 @@ public class MeshSurface {
     if (fData == null)
       fData = vertexValues;
     Map<String, Integer> mapEdge = new Hashtable<String, Integer>();
+    
 
     /*    
     Vector3f vNorm = null;
@@ -503,7 +531,7 @@ public class MeshSurface {
     for (int i = mergePolygonCount0; i < iLast; i++) {
       if (!setABC(i))
         continue;
-      BitSet bsSlab = (bsSlabGhost != null && bsSlabGhost.get(i) ?bsSlabGhost : bsSlabDisplay);
+      BitSet bsSlab = (bsSlabGhost != null && bsSlabGhost.get(i) ? bsSlabGhost : bsSlabDisplay);
       int check1 = polygonIndexes[i][3];
       int check2 = (checkCount == 2 ? polygonIndexes[i][4] : 0);
       Point3f vA = vertices[iA];

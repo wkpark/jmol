@@ -100,7 +100,7 @@ public class SurfaceFileTyper {
       return "Obj";
     if (line.indexOf("# object with") == 0)
       return "Nff";
-    if (line.indexOf("BEGIN_DATAGRID") >= 0)
+    if (line.indexOf("BEGIN_DATAGRID_3D") >= 0 || line.indexOf("BEGIN_BANDGRID_3D") >= 0)
       return "Xsf";
     // binary formats: problem here is that the buffered reader
     // may be translating byte sequences into unicode

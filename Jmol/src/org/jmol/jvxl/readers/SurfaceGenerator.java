@@ -1439,4 +1439,8 @@ public class SurfaceGenerator {
     }
     atomDataServer.fillAtomData(atomData, mode);
   }
+
+  public Vector3f[] getSpanningVectors() {
+    return surfaceReader.getSpanningVectors();
+  }
 }

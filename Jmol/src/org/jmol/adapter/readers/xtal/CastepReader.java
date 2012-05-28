@@ -220,7 +220,7 @@ public class CastepReader extends AtomSetCollectionReader {
       }
     if (isPhonon || isOutput) {
       if (isPhonon) {
-        isTrajectory = true;
+        isTrajectory = (desiredVibrationNumber <= 0);
         atomSetCollection.allowMultiple = false;
       }
       return true; // use checkLine
@@ -305,7 +305,7 @@ public class CastepReader extends AtomSetCollectionReader {
   }
 
   private void readPhononTrajectories() throws Exception {
-    isTrajectory = true;
+    isTrajectory = (desiredVibrationNumber <= 0);
     doApplySymmetry = true;
     while (line != null && line.contains("<-- E")) {
       atomSetCollection.newAtomSet();

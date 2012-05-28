@@ -8439,8 +8439,9 @@ public class ScriptEvaluator {
     boolean appendNew = viewer.getAppendNew();
     String filter = null;
     List<Object> firstLastSteps = null;
-    int modelCount = viewer.getModelCount()
+    int modelCount0 = viewer.getModelCount()
         - (viewer.getFileName().equals("zapped") ? 1 : 0);
+    int atomCount0 = viewer.getAtomCount();
     StringBuffer loadScript = new StringBuffer("load");
     int nFiles = 1;
     Map<String, Object> htParams = new Hashtable<String, Object>();
@@ -8453,7 +8454,6 @@ public class ScriptEvaluator {
     String[] tempFileInfo = null;
     String errMsg = null;
     String sOptions = "";
-    boolean isCentroid;
     int tokType = 0;
     int tok;
 
@@ -8689,6 +8689,19 @@ public class ScriptEvaluator {
           htParams.put("supercell", supercell);
           sOptions += " supercell " + Escape.escape(supercell);
         }
+        
+        // PACKED (again)
+
+        if (tokAt(i) == Token.packed) {
+          htParams.put("packed", Boolean.TRUE);
+          sOptions += " PACKED";
+          i++;
+        } else if (tokAt(i) == Token.centroid) {
+          htParams.put("centroid", Boolean.TRUE);
+          sOptions += " CENTROID";
+          i++;
+        }
+
         float distance = 0;
         /*
          * # Jmol 11.3.9 introduces the capability of visualizing the close
@@ -8962,7 +8975,7 @@ public class ScriptEvaluator {
     }
     if (isAppend && (appendNew || nFiles > 1)) {
       viewer.setAnimationRange(-1, -1);
-      viewer.setCurrentModelIndex(modelCount);
+      viewer.setCurrentModelIndex(modelCount0);
     }
     if (scriptLevel == 0 && !isAppend && nFiles < 2)
       showString((String) viewer.getModelSetAuxiliaryInfo("modelLoadNote"));
@@ -8970,8 +8983,8 @@ public class ScriptEvaluator {
       scriptStatusOrBuffer("Successfully loaded:"
           + (filenames == null ? htParams.get("fullPathName") : modelName));
     Map<String, Object> info = viewer.getModelSetAuxiliaryInfo();
-    if (info != null && info.containsKey("centroidMinMax"))
-      viewer.setCentroid((int[]) info.get("centroidMinMax"));
+    if (info != null && info.containsKey("centroidMinMax") && viewer.getAtomCount() > 0)
+      viewer.setCentroid(isAppend ? atomCount0 : 0, viewer.getAtomCount() - 1, (int[]) info.get("centroidMinMax"));
     String script = viewer.getDefaultLoadScript();
     String msg = "";
     if (script.length() > 0)
@@ -16044,7 +16057,10 @@ public class ScriptEvaluator {
     //case Token.slicebox:
     // data = BoxInfo.getCriticalPoints(((JmolViewer)(viewer)).slicer.getSliceVert(), null);
     //iToken = i + 1;
-    //break;      
+    //break;  
+    case Token.brillouin:
+      iToken = i + 1;
+      break;
     case Token.unitcell:
       iToken = i + 1;
       SymmetryInterface unitCell = viewer.getCurrentUnitCell();

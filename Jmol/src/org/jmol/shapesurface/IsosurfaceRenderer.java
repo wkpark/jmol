@@ -57,8 +57,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
 
   @Override
   protected void render() {
-    iShowNormals = false;//viewer.getTestFlag(4);
-    showNumbers = false;//viewer.getTestFlag(3);
+    iShowNormals = viewer.getTestFlag(4);
+    showNumbers = viewer.getTestFlag(3);
     isosurface = (Isosurface) shape;
     exportPass = (isExport ? 2 : 0);
     isNavigationMode = viewer.getNavigationMode();
@@ -290,12 +290,13 @@ public class IsosurfaceRenderer extends MeshRenderer {
           continue;
         hasColorRange = true; // maybe
         if (showNumbers && screens[i].z > 10
-            && Math.abs(screens[i].x - cX) < 50
-            && Math.abs(screens[i].y - cY) < 50) {
+            && Math.abs(screens[i].x - cX) < 150
+            && Math.abs(screens[i].y - cY) < 150) {
           String s = i
               + (imesh.isColorSolid ? "" : " " + imesh.vertexValues[i]);
+          g3d.setColix(Graphics3D.BLACK);
           g3d.drawStringNoSlab(s, null, screens[i].x, screens[i].y,
-              screens[i].z);
+              screens[i].z - 30);
         }
         if (volumeRender) {
           diam = viewer.scaleToScreen(screens[i].z, ptSize);
@@ -373,19 +374,17 @@ public class IsosurfaceRenderer extends MeshRenderer {
 
     hasColorRange = !colorSolid && !isBicolorMap;
     for (int i = imesh.polygonCount; --i >= 0;) {
-      int[] vertexIndexes = polygonIndexes[i];
-      if (vertexIndexes == null || haveBsSlabDisplay && !bsSlab.get(i))
+      int[] polygon = polygonIndexes[i];
+      if (polygon == null || haveBsSlabDisplay && !bsSlab.get(i))
         continue;
-      int iA = vertexIndexes[0];
-      int iB = vertexIndexes[1];
-      int iC = vertexIndexes[2];
-      //if ( i < 3083 || i > 3085)
-      //continue;
-      //int n1 = -1605;
-      //int n2 = 1605;
-      //if (n1 >= 0 && iA != n1 && iB != n1 && iC != n1
-      //  && iA != n2 && iB != n2 && iC != n2)continue;
-      //System.out.println(i + " " + iA + " " + iB + " " + iC);
+      int iA = polygon[0];
+      int iB = polygon[1];
+      int iC = polygon[2];
+/*
+      int iTest = 6596;
+      if (iA == iTest|| iB == iTest || iC == iTest)
+        System.out.println(iA + " " + iB + " " + iC);
+*/      
       if (imesh.thisSet >= 0 && imesh.vertexSets[iA] != imesh.thisSet)
         continue;
       if (haveBsDisplay
@@ -440,7 +439,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
           else
             g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, diam, screens[iA], screens[iB]);
         } else if (iShowTriangles) {
-          g3d.fillTriangle(screens[iA], colixA, nA, screens[iB], colixB, nB,
+          g3d.fillTriangle(screens[iA], colixA, nA, 
+              screens[iB], colixB, nB,
               screens[iC], colixC, nC, 0.1f);
         } else {
           g3d.fillTriangle(screens[iA], colixA, nA, screens[iB], colixB, nB,
@@ -451,7 +451,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       } else {
         // mesh only
         // check: 1 (ab) | 2(bc) | 4(ac)
-        check &= vertexIndexes[3];
+        check &= polygon[3];
         if (iShowTriangles)
           check = 7;
         if (check == 0)
@@ -465,7 +465,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
         if (noColor) {
         } else if (colorArrayed) {
           g3d.setColix(mesh.fillTriangles ? Graphics3D.BLACK
-              : contourColixes[vertexIndexes[4] % contourColixes.length]);
+              : contourColixes[polygon[4] % contourColixes.length]);
         } else {
           drawTriangle(pt1i, colixA, pt2i, colixB, pt3i, colixC, check, diam);
           continue;
@@ -483,18 +483,20 @@ public class IsosurfaceRenderer extends MeshRenderer {
       return;
     g3d.setFont(g3d.getFontFid("Monospaced", 24));
     for (int i = vertexCount; --i >= 0;) {
-      if (vertexValues != null && Float.isNaN(vertexValues[i])) 
+      if (vertexValues != null && Float.isNaN(vertexValues[i]))
         continue;
-        ptTemp.set(vertices[i]);
-        short n = mesh.normixes[i];
-        // -n is an intensity2sided and does not correspond to a true normal
-        // index
-        if (n >= 0) {
-          ptTemp.add(Graphics3D.getNormixVector(n));
-          viewer.transformPoint(ptTemp, ptTempi);
-          g3d.drawLine(screens[i], ptTempi);
-          //g3d.drawStringNoSlab("" + n, null, ptTempi.x, ptTempi.y, ptTempi.z);
-        }
+      if (i < 7117 || i > 7119)
+        continue;
+      ptTemp.set(vertices[i]);
+      short n = mesh.normixes[i];
+      // -n is an intensity2sided and does not correspond to a true normal
+      // index
+      if (n >= 0) {
+        ptTemp.add(Graphics3D.getNormixVector(n));
+        viewer.transformPoint(ptTemp, ptTempi);
+        g3d.drawLine(screens[i], ptTempi);
+        //g3d.drawStringNoSlab("" + n, null, ptTempi.x, ptTempi.y, ptTempi.z);
+      }
     }
   }
 

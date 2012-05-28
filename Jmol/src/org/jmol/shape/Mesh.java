@@ -37,6 +37,7 @@ import org.jmol.util.Measure;
 import org.jmol.util.MeshSurface;
 import org.jmol.util.Quaternion;
 import org.jmol.api.JmolRendererInterface;
+import org.jmol.api.SymmetryInterface;
 import org.jmol.g3d.*;
 
 //import javax.vecmath.Matrix3f;
@@ -53,7 +54,6 @@ public class Mesh extends MeshSurface {
   
   public short meshColix;
   public short[] normixes;
-  private int normixCount;
   public List<Point3f[]> lineData;
   public String thisID;
   public boolean isValid = true;
@@ -66,12 +66,15 @@ public class Mesh extends MeshSurface {
 
   public float scale = 1;
   public boolean haveXyPoints;
-  public boolean isTriangleSet; // just a set of flat polygons
   public int diameter;
   public float width;
   public Point3f ptCenter = new Point3f(0,0,0);
   public Mesh linkedMesh; //for lcaoOrbitals
   public Map<String, BitSet> vertexColorMap;
+  
+  Matrix4f mat4;
+  public int color;
+  public SymmetryInterface unitCell;
   
 
   public int index;
@@ -116,37 +119,38 @@ public class Mesh extends MeshSurface {
   
 
   public void clear(String meshType) {
+    altVertices = null;
     bsDisplay = null;
     bsSlabDisplay = null;
     bsSlabGhost = null;
-    connections = null;
-    vertexCount0 = polygonCount0 = vertexCount = polygonCount = 0;
-    scale = 1;
+    cappingObject = null;
     colix = Graphics3D.GOLD;
-    diameter = 0;
-    ptOffset = null;
-    havePlanarContours = false;
-    haveXyPoints = false;
-    showPoints = false;
-    showContourLines = false;
     colorDensity = false;
+    connections = null;
+    diameter = 0;
     drawTriangles = false;
     fillTriangles = true;
-    showTriangles = false; //as distinct entities
-    isTriangleSet = false;
     frontOnly = false;
-    title = null;
+    havePlanarContours = false;
+    haveXyPoints = false;
+    isTriangleSet = false;
+    lattice = null;
+    mat4 = null;
     normixes = null;
-    vertices = null;
-    altVertices = null;
     polygonIndexes = null;
-    //data1 = null;
-    //data2 = null;
+    ptOffset = null;
+    q = null;
+    scale = 1;
+    showContourLines = false;
+    showPoints = false;
+    showTriangles = false; //as distinct entities
     slabbingObject = null;
     slabOptions = null;
-    cappingObject = null;
-    q = null;
-    
+    title = null;
+    unitCell = null;
+    vertexCount0 = polygonCount0 = vertexCount = polygonCount = 0;
+    vertices = null;
+    spanningVectors = null;    
     this.meshType = meshType;
   }
 
@@ -229,16 +233,18 @@ public class Mesh extends MeshSurface {
   protected void sumVertexNormals(Point3f[] vertices, Vector3f[] normals) {
     // subclassed in IsosurfaceMesh
     int adjustment = checkByteCount;
+    float min = getMinDistanceForVertexGrouping();
+    min *= min;
     for (int i = polygonCount; --i >= 0;) {
-      int[] pi = polygonIndexes[i];
-      if (pi == null)
+      if (!setABC(i))
         continue;
       try {
-        Point3f vA = vertices[pi[0]];
-        Point3f vB = vertices[pi[1]];
-        Point3f vC = vertices[pi[2]];
-        if (vA.distanceSquared(vB) < 0.0001 || vB.distanceSquared(vC) < 0.0001
-            || vA.distanceSquared(vC) < 0.0001)
+        Point3f vA = vertices[iA];
+        Point3f vB = vertices[iB];
+        Point3f vC = vertices[iC];
+        // no skinny triangles
+        if (vA.distanceSquared(vB) < min || vB.distanceSquared(vC) < min
+            || vA.distanceSquared(vC) < min)
           continue;
         Measure.calcNormalizedNormal(vA, vB, vC, vTemp, vAB, vAC);
         if (isTriangleSet) {
@@ -247,13 +253,17 @@ public class Mesh extends MeshSurface {
         }
         float l = vTemp.length();
         if (l > 0.9 && l < 1.1) // test for not infinity or -infinity or isNaN
-          for (int j = pi.length - adjustment; --j >= 0;) {
-            int k = pi[j];
+          for (int j = polygonIndexes[i].length - adjustment; --j >= 0;) {
+            int k = polygonIndexes[i][j];
             normals[k].add(vTemp);
           }
       } catch (Exception e) {
       }
     }
+  }
+
+  protected float getMinDistanceForVertexGrouping() {
+    return 0.0001f; // different for an isosurface
   }
 
   public String getState(String type) {
@@ -362,10 +372,6 @@ public class Mesh extends MeshSurface {
         : vertexIndex < 0 ? 0 : vertexIndex);
   }
 
-  Matrix4f mat4;
-
-  public int color;
-  
   public void updateCoordinates(Matrix4f m, BitSet bs) {
     boolean doUpdate = false;
     for (int i = 0; i < connections.length; i++)
@@ -488,6 +494,11 @@ public class Mesh extends MeshSurface {
   }
 
   public Point3f[] getBoundingBox() {
+    return null;
+  }
+
+  public SymmetryInterface getUnitCell() {
+    // isosurface only
     return null;
   }
 

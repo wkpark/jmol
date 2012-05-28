@@ -305,6 +305,14 @@ final public class Measure {
       vNormNorm.set(1, 0, 0);
   }
   
+  public static void getBisectingPlane(Point3f pointA, Vector3f vAB,
+                                                 Point3f ptTemp, Vector3f vTemp, Point4f plane) {
+    ptTemp.scaleAdd(0.5f, vAB, pointA);
+    vTemp.set(vAB);
+    vTemp.normalize();
+    getPlaneThroughPoint(ptTemp, vTemp, plane);
+    }
+    
   public static void projectOntoAxis(Point3f point, Point3f axisA,
                                      Vector3f axisUnitVector,
                                      Vector3f vectorProjection) {

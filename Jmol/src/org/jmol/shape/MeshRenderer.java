@@ -89,7 +89,11 @@ public abstract class MeshRenderer extends ShapeRenderer {
     if (mesh.lattice == null || mesh.modelIndex < 0) {
       render2(isExport);
     } else {
-      SymmetryInterface unitcell = viewer.getModelUnitCell(mesh.modelIndex);
+      SymmetryInterface unitcell = mesh.unitCell;
+      if (unitcell == null)
+        unitcell = viewer.getModelUnitCell(mesh.modelIndex);
+      if (unitcell == null) 
+        unitcell = mesh.getUnitCell();
       if (unitcell != null) {
         Point3f vTemp = new Point3f();
         Point3i minXYZ = new Point3i();
@@ -126,8 +130,10 @@ public abstract class MeshRenderer extends ShapeRenderer {
       return false;
     if (mesh.bsSlabGhost != null)
       g3d.setColix(mesh.slabColix); // forces a second pass
-    haveBsSlabGhost = (mesh.bsSlabGhost != null && (isExport ? exportPass == 2 : g3d.isPass2()));
-    isTranslucent = haveBsSlabGhost || Graphics3D.isColixTranslucent(mesh.colix);
+    haveBsSlabGhost = (mesh.bsSlabGhost != null && (isExport ? exportPass == 2
+        : g3d.isPass2()));
+    isTranslucent = haveBsSlabGhost
+        || Graphics3D.isColixTranslucent(mesh.colix);
     doRender = (setColix(mesh.colix) || mesh.showContourLines);
     if (!doRender)
       return true;
@@ -135,9 +141,8 @@ public abstract class MeshRenderer extends ShapeRenderer {
       if (!(doRender = g3d.setColix(mesh.slabColix)))
         return true;
     }
-    vertices = (mesh.ptOffset == null && mesh.scale3d == 0 
-        && mesh.q == null && mesh.mat4 == null 
-        ? mesh.vertices : mesh.getOffsetVertices(thePlane));     
+    vertices = (mesh.ptOffset == null && mesh.scale3d == 0 && mesh.q == null
+        && mesh.mat4 == null ? mesh.vertices : mesh.getOffsetVertices(thePlane));
     if (mesh.lineData == null) {
       if ((vertexCount = mesh.vertexCount) == 0)
         return false;
@@ -149,9 +154,10 @@ public abstract class MeshRenderer extends ShapeRenderer {
 
       haveBsDisplay = (mesh.bsDisplay != null);
       haveBsSlabDisplay = (haveBsSlabGhost || mesh.bsSlabDisplay != null);
-      bsSlab = (haveBsSlabGhost ? mesh.bsSlabGhost : haveBsSlabDisplay ? mesh.bsSlabDisplay : null);
-      frontOnly = !viewer.getSlabEnabled() && mesh.frontOnly 
-      && !mesh.isTwoSided && !haveBsSlabDisplay;
+      bsSlab = (haveBsSlabGhost ? mesh.bsSlabGhost
+          : haveBsSlabDisplay ? mesh.bsSlabDisplay : null);
+      frontOnly = !viewer.getSlabEnabled() && mesh.frontOnly
+          && !mesh.isTwoSided && !haveBsSlabDisplay;
       screens = viewer.allocTempScreens(vertexCount);
       transformedVectors = g3d.getTransformedVertexVectors();
     }

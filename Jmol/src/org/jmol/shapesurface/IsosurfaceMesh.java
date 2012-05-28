@@ -34,8 +34,11 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.api.Interface;
+import org.jmol.api.SymmetryInterface;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BoxInfo;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.ColorUtil;
 import org.jmol.util.Logger;
@@ -760,6 +763,34 @@ public class IsosurfaceMesh extends Mesh {
   public Point3f[] getBoundingBox() {
     return jvxlData.boundingBox;
   }
+  
+  private void resetBoundingBox() {
+    BoxInfo bi = new BoxInfo();
+    if (polygonCount == 0)
+      for (int i = vertexCount; --i >= 0;) {
+        bi.addBoundBoxPoint(vertices[i]);
+      }
+    else {
+      BitSet bsDone = new BitSet();
+      for (int i = polygonCount; --i >= 0;) {
+        if (!setABC(i))
+          continue;
+        if (!bsDone.get(iA)) {
+          bi.addBoundBoxPoint(vertices[iA]);
+          bsDone.set(iA);
+        }
+        if (!bsDone.get(iB)) {
+          bi.addBoundBoxPoint(vertices[iB]);
+          bsDone.set(iB);
+        }
+        if (!bsDone.get(iC)) {
+          bi.addBoundBoxPoint(vertices[iC]);
+          bsDone.set(iC);
+        }
+      }
+    }
+    jvxlData.boundingBox = bi.getBoundBoxPoints(false);
+  }
   //private void dumpData() {
   //for (int i =0;i<10;i++) {
   //  System.out.println("P["+i+"]="+polygonIndexes[i][0]+" "+polygonIndexes[i][1]+" "+polygonIndexes[i][2]+" "+ polygonIndexes[i][3]+" "+vertices[i]);
@@ -811,9 +842,121 @@ public class IsosurfaceMesh extends Mesh {
         for (int j = 0; j < 3; j++)
           p[j] += vertexCount;
     }
-    System.out.println("isosurfaceMesh mergePolygons " + m.polygonCount + " " + m.polygonIndexes.length);
+    //System.out.println("isosurfaceMesh mergePolygons " + m.polygonCount + " " + m.polygonIndexes.length);
     return ipt;
   }
 
+  @Override
+  public SymmetryInterface getUnitCell() {
+    if (spanningVectors == null)
+      return null;
+    unitCell = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
+    float[] parameters = new float[15];
+    parameters[0] = -1;
+    Vector3f v = null;
+    float f = 0;
+    for (int i = 0; i < 9; i++) {
+      switch (i % 3) {
+      case 0:
+        v = spanningVectors[i / 3 + 1];
+        f = v.x;
+        break;
+      case 1:
+        f = v.y;
+        break;
+      case 2:
+        f = v.z;
+        break;
+      }
+      parameters[6 + i] = f;
+    }
+    unitCell.setUnitCell(parameters);
+    return unitCell;
+  }
+
+  /**
+   * "slabs" an isosurface into the first Brillouin zone
+   * moving points as necessary.
+   * 
+   */
+  @Override
+  protected void slabBrillouin() {
+    getUnitCell();
+    if (unitCell == null)
+      return;
+    Point3f[] pts = unitCell.getUnitCellVertices();
+    Point3f pt0 = new Point3f();
+    pt0.add(spanningVectors[0]);
+    Point3f ptTemp = new Point3f();
+    Point4f plane = new Point4f();
+    Vector3f vGamma = new Vector3f();
+    bsSlabGhost = new BitSet();
+/*    
+    System.out.println("draw line1 {0 0 0} "
+        + Escape.escape(spanningVectors[1]));
+    System.out.println("draw line2 {0 0 0} "
+        + Escape.escape(spanningVectors[2]));
+    System.out.println("draw line3 {0 0 0} "
+        + Escape.escape(spanningVectors[3]));
+*/
+    for (int i = 1; i < 8; i++) {
+      vGamma.set(pts[i]);
+      Measure.getBisectingPlane(pt0, vGamma, ptTemp, vTemp, plane);
+//      System.out.println("isosurface s" + i + " plane " + Escape.escape(plane)
+  //        + " off");
+      getIntersection(1, plane, null, null, null, null, false, false,
+          Token.plane, true);
+    }
+    bsSlabDisplay.or(bsSlabGhost);
+    BitSet bsNew = new BitSet();
+    Map<String, Integer> mapEdge = new Hashtable<String, Integer>();
+    for (int j = bsSlabGhost.nextSetBit(0); j >= 0; j = bsSlabGhost
+        .nextSetBit(j + 1)) {
+      if (!setABC(j))
+        continue;
+      int[] p = polygonIndexes[j];
+      for (int k = 0; k < 3; k++) {
+        int pk = p[k] = copyIntersectionVertex(p[k], mapEdge);
+        if (!bsNew.get(pk)) {
+          bsNew.set(pk);
+          Point3f v = vertices[pk];
+          for (int i = 1; i < 8; i++) {
+            vGamma.set(pts[i]);
+            ptTemp.scaleAdd(1, vGamma, pt0);
+            if (v.distanceSquared(ptTemp) < v.distanceSquared(pt0)) {
+              v.sub(vGamma);
+              i = 0;
+              continue;
+            }
+            ptTemp.scaleAdd(-1, vGamma, pt0);
+            if (v.distanceSquared(ptTemp) < v.distanceSquared(pt0)) {
+              v.add(vGamma);
+              i = 0;
+              continue;
+            }
+          }
+        }
+      }
+    }
+    bsSlabGhost = null;
+    resetBoundingBox();
+  }
+
+  private int copyIntersectionVertex(int i,
+                                     Map<String, Integer> mapEdge) {
+    return addIntersectionVertex(vertices[i], vertexValues[i], 
+        vertexSource == null ? 0 : vertexSource[i], mapEdge, 0, i);
+  }
+  
+  @Override
+  protected float getMinDistanceForVertexGrouping() {
+    if (jvxlData.boundingBox[0] != null) {
+      float d2 = jvxlData.boundingBox[1]
+          .distanceSquared(jvxlData.boundingBox[0]);
+      if (d2 < 5)
+        return 0.00001f;
+    }
+    return 0.0001f; // different for an isosurface
+  }
 
 }

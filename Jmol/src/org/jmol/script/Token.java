@@ -1069,9 +1069,10 @@ public class Token {
   final static int blockdata     = misc  | 44;
   final static int bondset       = misc  | 46;
   final static int bottom        = misc  | 47;
-  final static int cache         = misc  | 48;
-  final static int cancel        = misc  | 49;
-  public final static int cap           = misc  | 50 | expression;
+  public final static int brillouin     = misc  | 48;
+  final static int cache         = misc  | 49;
+  final static int cancel        = misc  | 50;
+  public final static int cap    = misc  | 51 | expression;
   final static int cavity        = misc  | 52;
   final static int centroid      = misc  | 53;
   final static int check         = misc  | 54;
@@ -1755,6 +1756,9 @@ public class Token {
       "bondCount",       new Token(bondcount),
       "bottom",          new Token(bottom),
       "branch",          new Token(branch),
+      "brillouin",       new Token(brillouin),
+      "bzone",           null,
+      "wignerSeitz",     null,
       "cache",           new Token(cache), // Jmol 12.3.24 
       "carbohydrate",    new Token(carbohydrate),
       "cell",            new Token(cell),

@@ -196,18 +196,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         codeBase, commandOptions, statusListener, null);
   }
 
-  /**
-   * @param display either DisplayPanel or WrappedApplet
-   * @param modelAdapter the model reader
-   * @param fullName or null
-   * @param documentBase or null
-   * @param codeBase or null
-   * @param commandOptions or null
-   * @param statusListener or null
-   * @param implementedPlatform
-   *        -- necessary for .NET/IKVM ? or null
-   * @return a viewer instance
-   */
   public static JmolViewer allocateViewer(Object display,
                                           JmolAdapter modelAdapter,
                                           String fullName, URL documentBase,
@@ -219,7 +207,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   // these are all private now so we are certain they are not
-  // being accessed by any other classes
+  // being accesed by any other classes
 
   private Object display;
   private Graphics3D g3d;
@@ -10424,7 +10412,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       modelSet.setModelAuxiliaryInfo(modelIndex, "modelID", id);
   }
 
-  public void setCentroid(int[] minmax) {
-    modelSet.setCentroid(minmax);
+  public void setCentroid(int iAtom0, int iAtom1, int[] minmax) {
+    modelSet.setCentroid(iAtom0, iAtom1, minmax);
   }
 }

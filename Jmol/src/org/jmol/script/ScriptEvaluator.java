@@ -9355,7 +9355,7 @@ public class ScriptEvaluator {
     default:
       iToken = 1;
       error(ERROR_invalidArgument);
-    case Token.nada:
+    case Token.data:
       iToken = 1;
       type = "data";
       preSelected = "";

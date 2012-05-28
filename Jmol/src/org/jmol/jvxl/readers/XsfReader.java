@@ -99,9 +99,19 @@ class XsfReader extends VolumeFileReader {
   protected void gotoData(int n, int nPoints) throws Exception {
     if (!params.blockCubeData)
       return;
+    if (n > 0)
+      Logger.info("skipping " + n + " data sets, " + nPoints + " points each");
     if (isBXSF)
-      readLine(); //"BAND: <n>" line
-    super.gotoData(n, nPoints);
+      Logger.info(readLine()); //"BAND: <n>" line
+    for (int i = 0; i < n; i++)
+      skipData(nPoints);
+  }
+
+  @Override
+  protected void skipData(int nPoints) throws Exception {
+    super.skipData(nPoints);
+    if (isBXSF)
+      Logger.info(readLine()); //"BAND: <n>" line
   }
 
 }

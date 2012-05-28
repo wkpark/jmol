@@ -1761,6 +1761,7 @@ public class ForceFieldMMFF extends ForceField {
         break;
       }
 
+    double red = 0;
     switch (boAB) {
     case 1:
       // only single bonds involve hybridization

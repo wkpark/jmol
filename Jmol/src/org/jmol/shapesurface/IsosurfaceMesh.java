@@ -950,7 +950,7 @@ public class IsosurfaceMesh extends Mesh {
   
   @Override
   protected float getMinDistanceForVertexGrouping() {
-    if (jvxlData.boundingBox[0] != null) {
+    if (jvxlData.boundingBox != null && jvxlData.boundingBox[0] != null) {
       float d2 = jvxlData.boundingBox[1]
           .distanceSquared(jvxlData.boundingBox[0]);
       if (d2 < 5)

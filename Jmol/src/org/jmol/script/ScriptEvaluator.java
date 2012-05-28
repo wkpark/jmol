@@ -9355,6 +9355,11 @@ public class ScriptEvaluator {
     default:
       iToken = 1;
       error(ERROR_invalidArgument);
+    case Token.nada:
+      iToken = 1;
+      type = "data";
+      preSelected = "";
+      break;
     case Token.property:
       iToken = pt0 + 1;
       if (!Token.tokAttr(propertyX = tokAt(iToken++), Token.atomproperty)
@@ -9502,7 +9507,9 @@ public class ScriptEvaluator {
     if (tokCmd == Token.write)
       return viewer.streamFileData(filename, "PLOT", type, modelIndex,
           parameters);
-    String data = viewer.getPdbData(modelIndex, type, parameters);
+    
+    String data = (type.equals("data") ? "1 0 H 0 0 0 # Jmol PDB-encoded data" : viewer.getPdbData(modelIndex, type, parameters));
+    
     if (tokCmd == Token.show)
       return data;
 
@@ -9532,8 +9539,13 @@ public class ScriptEvaluator {
 
     // get post-processing script
 
+    float radius = 150;
     String script;
     switch (tok) {
+    default:
+      script = "frame 0.0; frame last; reset;select visible;wireframe only;";
+      radius = 10;
+      break;
     case Token.property:
       viewer.setFrameTitle(modelCount - 1, type + " plot for model "
           + viewer.getModelNumberDotted(modelIndex));
@@ -9550,7 +9562,6 @@ public class ScriptEvaluator {
             + "\";";
       break;
     case Token.ramachandran:
-    default:
       viewer.setFrameTitle(modelCount - 1, "ramachandran plot for model "
           + viewer.getModelNumberDotted(modelIndex));
       script = "frame 0.0; frame last; reset;"
@@ -9580,10 +9591,10 @@ public class ScriptEvaluator {
     // run the post-processing script and set rotation radius and display frame title
     runScript(script + preSelected);
     ss.setModelIndex(viewer.getCurrentModelIndex());
-    viewer.setRotationRadius(150f, true);
+    viewer.setRotationRadius(radius, true);
     shapeManager.loadShape(JmolConstants.SHAPE_ECHO);
     showString("frame " + viewer.getModelNumberDotted(modelCount - 1)
-        + " created: " + type + (isQuaternion ? qFrame : ""));
+        + (type.length() > 0 ? " created: " + type + (isQuaternion ? qFrame : "") : ""));
     return "";
   }
 
@@ -16059,41 +16070,42 @@ public class ScriptEvaluator {
     //iToken = i + 1;
     //break;  
     case Token.brillouin:
-      iToken = i + 1;
-      break;
     case Token.unitcell:
       iToken = i + 1;
       SymmetryInterface unitCell = viewer.getCurrentUnitCell();
-      if (unitCell == null)
-        error(ERROR_invalidArgument);
-      pts = BoxInfo.getCriticalPoints(unitCell.getUnitCellVertices(), unitCell
-          .getCartesianOffset());
-      int iType = (int) unitCell.getUnitCellInfo(SimpleUnitCell.INFO_DIMENSIONS);
-      Vector3f v1 = null;
-      Vector3f v2 = null;
-      switch (iType) {
-      case 3:
-        break;
-      case 1: // polymer
-        v2 = new Vector3f(pts[2]);
-        v2.sub(pts[0]);
-        v2.scale(1000f);
-        // fall through
-      case 2: // slab
-        // "a b c" is really "z y x"
-        v1 = new Vector3f(pts[1]);
-        v1.sub(pts[0]);
-        v1.scale(1000f);
-        pts[0].sub(v1);
-        pts[1].scale(2000f);
-        if (iType == 1) {
-          pts[0].sub(v2);
-          pts[2].scale(2000f);
+      if (unitCell == null) {
+        if (tok == Token.unitcell)
+          error(ERROR_invalidArgument);
+      } else {
+        pts = BoxInfo.getCriticalPoints(unitCell.getUnitCellVertices(),
+            unitCell.getCartesianOffset());
+        int iType = (int) unitCell
+            .getUnitCellInfo(SimpleUnitCell.INFO_DIMENSIONS);
+        Vector3f v1 = null;
+        Vector3f v2 = null;
+        switch (iType) {
+        case 3:
+          break;
+        case 1: // polymer
+          v2 = new Vector3f(pts[2]);
+          v2.sub(pts[0]);
+          v2.scale(1000f);
+          // fall through
+        case 2: // slab
+          // "a b c" is really "z y x"
+          v1 = new Vector3f(pts[1]);
+          v1.sub(pts[0]);
+          v1.scale(1000f);
+          pts[0].sub(v1);
+          pts[1].scale(2000f);
+          if (iType == 1) {
+            pts[0].sub(v2);
+            pts[2].scale(2000f);
+          }
+          break;
         }
-        break;
+        data = pts;
       }
-      data = pts;
-      tok = Token.boundbox;
       break;
     default:
       // isosurface SLAB n

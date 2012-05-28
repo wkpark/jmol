@@ -153,7 +153,7 @@ public class MeshSurface {
   private int lastColor;
   private short lastColix;
     
-  private int addPolygon(int[] polygon, int color, BitSet bs) {
+  protected int addPolygon(int[] polygon, int color, BitSet bs) {
     if (color != 0) {
       if (polygonColixes == null || polygonCount == 0)
         lastColor = 0;
@@ -350,7 +350,7 @@ public class MeshSurface {
     switch (slabType) {
     case Token.brillouin:
       sb.append("brillouin");
-      slabBrillouin();
+      slabBrillouin((Point3f[]) slabbingObject);
       break;
     case Token.plane:
       Point4f plane = (Point4f) slabbingObject;
@@ -358,6 +358,7 @@ public class MeshSurface {
       getIntersection(0, plane, null, null, null, null, andCap, false,
           Token.plane, isGhost);
       break;
+    case Token.unitcell:
     case Token.boundbox:
       Point3f[] box = (Point3f[]) slabbingObject;
       sb.append("within ").append(Escape.escape(box));
@@ -423,7 +424,10 @@ public class MeshSurface {
     return true;
   }
 
-  protected void slabBrillouin() {
+  /**
+   * @param unitCell 
+   */
+  protected void slabBrillouin(Point3f[] unitCellVectors) {
     // isosurfaceMesh only
     return;
   }

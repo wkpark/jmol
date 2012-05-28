@@ -78,7 +78,8 @@ public class AxesRenderer extends FontLineShapeRenderer {
     int modelIndex = viewer.getCurrentModelIndex();
     // includes check here for background model present
     boolean isUnitCell = (axesMode == EnumAxesMode.UNITCELL);
-    if (viewer.isJmolDataFrame(modelIndex)
+    if (viewer.isJmolDataFrame(modelIndex) 
+        && !viewer.getModelSet().getJmolFrameType(modelIndex).equals("plot data")
         || isUnitCell && modelIndex < 0)
       return;
     int nPoints = 6;

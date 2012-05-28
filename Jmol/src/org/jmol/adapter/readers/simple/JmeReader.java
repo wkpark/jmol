@@ -64,6 +64,7 @@ public class JmeReader extends AtomSetCollectionReader {
     atomSetCollection.setCollectionName("JME");
     atomSetCollection.newAtomSet();
     line = readLine().replace('\t', ' ');
+    checkLineForScript();
     addJmolScript("jmeString='" + line + "'");
     int atomCount = parseInt();
     int bondCount = parseInt();

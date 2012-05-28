@@ -32,6 +32,7 @@ import java.util.Map;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
+import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.api.Interface;
@@ -881,23 +882,24 @@ public class IsosurfaceMesh extends Mesh {
    * 
    */
   @Override
-  protected void slabBrillouin() {
-    if (spanningVectors == null)
-      return;
+  protected void slabBrillouin(Point3f[] unitCellPoints) {
+    Tuple3f[] vectors = (unitCellPoints == null ? spanningVectors : unitCellPoints);
+    if (vectors == null)
+      return;    
     
     // define 26 k-points around the origin
     
     Point3f[] pts = new Point3f[27];
-    pts[0] = new Point3f(spanningVectors[0]);
+    pts[0] = new Point3f(vectors[0]);
     int pt = 0;
     for (int i = -1; i <= 1; i++)
       for (int j = -1; j <= 1; j++)
         for (int k = -1; k <= 1; k++)
           if (i != 0 || j != 0 || k != 0) {
             pts[++pt] = new Point3f(pts[0]);
-            pts[pt].scaleAdd(i, spanningVectors[1], pts[pt]);
-            pts[pt].scaleAdd(j, spanningVectors[2], pts[pt]);
-            pts[pt].scaleAdd(k, spanningVectors[3], pts[pt]);
+            pts[pt].scaleAdd(i, vectors[1], pts[pt]);
+            pts[pt].scaleAdd(j, vectors[2], pts[pt]);
+            pts[pt].scaleAdd(k, vectors[3], pts[pt]);
           }
     
     System.out.println("draw line1 {0 0 0} color red"
@@ -940,7 +942,7 @@ public class IsosurfaceMesh extends Mesh {
         // copy points because at least some will be needed by both sides,
         // and in some cases triangles will be split multiple times
         
-        int[] p = polygonIndexes[j];
+        int[] p = ArrayUtil.arrayCopy(polygonIndexes[j], 0, -1, false);
         for (int k = 0; k < 3; k++) {
           int pk = p[k];
           p[k] = addIntersectionVertex(vertices[pk], vertexValues[pk], 
@@ -950,6 +952,7 @@ public class IsosurfaceMesh extends Mesh {
           if (pk != p[k] && bsMoved.get(pk))
             bsMoved.set(p[k]);
         }
+        addPolygon(p, 0, bsSlabDisplay);
         
         // now move the (copied) points
         
@@ -965,7 +968,7 @@ public class IsosurfaceMesh extends Mesh {
         // append these points to the display set again
         // and clear the ghost set
         
-        bsSlabDisplay.or(bsSlabGhost);
+        //bsSlabDisplay.or(bsSlabGhost);
         bsSlabGhost.clear();
       
         // restart iteration if any points are moved, because 

@@ -236,9 +236,9 @@ public class Mesh extends MeshSurface {
     float min = getMinDistanceForVertexGrouping();
     min *= min;
     for (int i = polygonCount; --i >= 0;) {
-      if (!setABC(i))
-        continue;
       try {
+        if (!setABC(i))
+          continue;
         Point3f vA = vertices[iA];
         Point3f vB = vertices[iB];
         Point3f vC = vertices[iC];

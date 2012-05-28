@@ -1287,9 +1287,11 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   }
 
   public void notifySurfaceMappingCompleted() {
-    if (!thisMesh.isMerged)
+    if (!thisMesh.isMerged) {
       thisMesh.initialize(sg.isFullyLit() ? Token.fullylit
           : Token.frontlit, null, sg.getPlane());
+      thisMesh.setJvxlDataRendering();
+    }
     setBsVdw();
     thisMesh.isColorSolid = false;
     thisMesh.colorDensity = jvxlData.colorDensity;

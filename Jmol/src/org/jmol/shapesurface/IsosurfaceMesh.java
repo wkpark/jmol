@@ -648,11 +648,7 @@ public class IsosurfaceMesh extends Mesh {
         jvxlData.translucency);
     if (jvxlData.meshColor != null)
       meshColix = Graphics3D.getColix(jvxlData.meshColor);
-    if (jvxlData.rendering != null) {
-      String[] tokens = Parser.getTokens(jvxlData.rendering);
-      for (int i = 0; i < tokens.length; i++)
-        setTokenProperty(Token.getTokFromName(tokens[i]), true);
-    }
+    setJvxlDataRendering();
       
     isColorSolid = !jvxlData.isBicolorMap;
     if (colorEncoder != null) {
@@ -675,6 +671,14 @@ public class IsosurfaceMesh extends Mesh {
             vertexColixes[i] = colix;
         }
     }    
+  }
+
+  void setJvxlDataRendering() {
+    if (jvxlData.rendering != null) {
+      String[] tokens = Parser.getTokens(jvxlData.rendering);
+      for (int i = 0; i < tokens.length; i++)
+        setTokenProperty(Token.getTokFromName(tokens[i]), true);
+    }
   }
 
   /**

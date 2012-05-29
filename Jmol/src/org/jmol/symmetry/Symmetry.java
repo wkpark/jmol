@@ -278,6 +278,10 @@ public class Symmetry implements SymmetryInterface {
     unitCell.toCartesian(fpt, isAbsolute);    
   }
 
+  public Point3f toSupercell(Point3f fpt) {
+    return unitCell.toSupercell(fpt);    
+  }
+
   public void toFractional(Point3f pt, boolean isAbsolute) {
     unitCell.toFractional(pt, isAbsolute);
   }
@@ -370,6 +374,10 @@ public class Symmetry implements SymmetryInterface {
     Symmetry sym = new Symmetry();
     sym.unitCell = new UnitCell(points);
     return sym;
+  }
+
+  public boolean isSupercell() {
+    return unitCell.isSupercell();
   }
 
 }  

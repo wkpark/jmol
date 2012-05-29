@@ -65,9 +65,14 @@ import javax.vecmath.Vector3f;
  * exact form of the wavevector description: -- load "xxx.phonon" FILTER
  * "q=(-0.083333 0.083333 0.500000) -- for simple fractions, you can also just
  * specify SUPERCELL {a b c} where -- the number of cells matches a given
- * wavevector -- SUPERCELL {4 4 1}, for example -- following this with ".1" ".2"
- * etc. gives first, second, third, etc. occurance: -- load "xxx.phonon" FILTER
- * "q=1.3" .... -- load "xxx.phonon" FILTER "{0 0 0}.3" ....
+ * wavevector -- SUPERCELL {4 4 1}, for example 
+ * 
+ * note: following was never implemented?
+ * 
+ * -- following this with ".1" ".2" etc. gives first, second, third, etc. occurance: 
+ * -- load "xxx.phonon" FILTER "q=1.3" .... 
+ * -- load "xxx.phonon" FILTER "{0 0 0}.3" ....  
+ * 
  * 
  * @author Joerg Meyer, FHI Berlin 2009 (meyer@fhi-berlin.mpg.de)
  * @version 1.2
@@ -691,32 +696,35 @@ Species   Ion     s      p      d      f     Total  Charge (e)
           fcoord = desiredQ;
       }
       isOK = (checkFilter("Q=" + fcoord + "." + qpt2 + ";")
-          || checkFilter("Q=" + lastQPt + "." + qpt2 + ";") || !isSecond
-          && checkFilter("Q=" + fcoord + ";") || !isSecond
-          && checkFilter("Q=" + lastQPt + ";"));
+          || checkFilter("Q=" + lastQPt + "." + qpt2 + ";") 
+          || !isSecond && checkFilter("Q=" + fcoord + ";") 
+          || !isSecond && checkFilter("Q=" + lastQPt + ";"));
       if (!isOK)
         return;
     }
     boolean isGammaPoint = (qvec.length() == 0);
-    float[] fsc = (supercell == null || !supercell.startsWith("=") ? null
-        : atomSetCollection.setSuperCell(supercell.substring(1), new float[16]));
     float nx = 1, ny = 1, nz = 1;
-    if (fsc != null && !isOK && !isSecond) {
+    if (ptSupercell != null && !isOK && !isSecond) {
+      atomSetCollection.setSupercell(ptSupercell);
+      nx = ptSupercell.x;
+      ny = ptSupercell.y;
+      nz = ptSupercell.z;
       // only select corresponding phonon vector 
       // relating to this supercell -- one that has integral dot product
-      float dx = (qvec.x == 0 ? 1 : qvec.x) * (nx = fsc[0]);
-      float dy = (qvec.y == 0 ? 1 : qvec.y) * (ny = fsc[5]);
-      float dz = (qvec.z == 0 ? 1 : qvec.z) * (nz = fsc[10]);
-      if (Math.abs(dx - 1) > 0.001 || Math.abs(dy - 1) > 0.001
-          || Math.abs(dz - 1) > 0.001)
+      float dx = (qvec.x == 0 ? 1 : qvec.x) * nx;
+      float dy = (qvec.y == 0 ? 1 : qvec.y) * ny;
+      float dz = (qvec.z == 0 ? 1 : qvec.z) * nz;
+      
+      if (Math.abs(dx - (int) dx) > 0.001 || Math.abs(dy - (int) dy) > 0.001
+          || Math.abs(dz - (int) dz) > 0.001)
         return;
       isOK = true;
     }
-    if (fsc == null || !havePhonons)
+    if (ptSupercell == null || !havePhonons)
       appendLoadNote(line);
     if (!isOK && isSecond)
       return;
-    if (!isOK && (fsc == null) == !isGammaPoint)
+    if (!isOK && (ptSupercell == null) == !isGammaPoint)
       return;
     if (havePhonons)
       return;

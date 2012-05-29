@@ -1860,12 +1860,17 @@ abstract public class ModelCollection extends BondCollection {
   private static boolean isNotCentroid(Point3f center, int n, SymmetryInterface uc, int[] minmax) {
     center.scale(1f/n);
     uc.toFractional(center, false);
-    System.out.println("isCentroid ? " + center);
+    //System.out.println("isCentroid ? " + center);
     // we have to disallow just a tiny slice of atoms due to rounding errors
     // so  -0.000001 is OK, but 0.999991 is not.
-    return (center.x + 0.000005f <= minmax[0] || center.x + 0.00001f > minmax[3] 
-     || center.y + 0.000005f <= minmax[1] || center.y + 0.00001f > minmax[4]
-     || center.z + 0.000005f <= minmax[2] || center.z + 0.00001f > minmax[5]);
+    if (minmax[6] == 0)
+      return (center.x + 0.000005f <= minmax[0] || center.x + 0.00001f > minmax[3] 
+       || center.y + 0.000005f <= minmax[1] || center.y + 0.00001f > minmax[4]
+       || center.z + 0.000005f <= minmax[2] || center.z + 0.00001f > minmax[5]);
+    return (center.x + 0.000005f <= minmax[0] || center.x - 0.000005f > minmax[3] 
+       || center.y + 0.000005f <= minmax[1] || center.y - 0.000005f > minmax[4]
+       || center.z + 0.000005f <= minmax[2] || center.z - 0.000005f > minmax[5]);
+      
     
   }
 

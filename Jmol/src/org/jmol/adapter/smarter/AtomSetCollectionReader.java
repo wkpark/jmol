@@ -177,7 +177,8 @@ public abstract class AtomSetCollectionReader {
   protected OutputStream os;
   protected boolean iHaveFractionalCoordinates;
   protected boolean doPackUnitCell;
-  protected String supercell;
+  protected String strSupercell;
+  protected Point3f ptSupercell;
 
   // private state variables
 
@@ -379,6 +380,11 @@ public abstract class AtomSetCollectionReader {
 
   @SuppressWarnings("unchecked")
   private void initialize() {
+    Object o = htParams.get("supercell");
+    if (o instanceof String)
+      strSupercell = (String) o;
+    else
+      ptSupercell = (Point3f) o;
     initializeSymmetry();
     viewer = (JmolViewer) htParams.remove("viewer"); // don't pass this on to user
     if (htParams.containsKey("stateScriptVersionInt"))
@@ -449,10 +455,10 @@ public abstract class AtomSetCollectionReader {
       latticeCells[1] = (int) pt.y;
       latticeCells[2] = (int) pt.z;
       doCentroidUnitCell = (htParams.containsKey("centroid"));
+      centroidPacked = doCentroidUnitCell && htParams.containsKey("packed");
       doPackUnitCell = !doCentroidUnitCell && (htParams.containsKey("packed") || latticeCells[2] < 0);
       
     }
-    supercell = (String) htParams.get("supercell");
     doApplySymmetry = (latticeCells[0] > 0 && latticeCells[1] > 0);
     //allows for {1 1 1} or {1 1 -1} or {555 555 0|1|-1} (-1  being "packed")
     if (!doApplySymmetry) {
@@ -539,10 +545,17 @@ public abstract class AtomSetCollectionReader {
     previousUnitCell = notionalUnitCell;
     iHaveUnitCell = ignoreFileUnitCell;
     if (!ignoreFileUnitCell) {
-      notionalUnitCell = new float[22];
-      //0-5 a b c alpha beta gamma; 6-21 m00 m01... m33 cartesian-->fractional
-      for (int i = 22; --i >= 0;)
+      notionalUnitCell = new float[25];
+      //0-5 a b c alpha beta gamma
+      //6-21 m00 m01... m33 cartesian-->fractional
+      //22-24 supercell.x supercell.y supercell.z
+      for (int i = 25; --i >= 0;)
         notionalUnitCell[i] = Float.NaN;
+      if (ptSupercell != null) {
+        notionalUnitCell[22] = Math.max(1, (int) ptSupercell.x);
+        notionalUnitCell[23] = Math.max(1, (int) ptSupercell.y);
+        notionalUnitCell[24] = Math.max(1, (int) ptSupercell.z);
+      }
       symmetry = null;
     }
     if (!ignoreFileSpaceGroupName)
@@ -585,7 +598,7 @@ public abstract class AtomSetCollectionReader {
     if (ignoreFileSymmetryOperators)
       return;
     atomSetCollection.setLatticeCells(latticeCells, applySymmetryToBonds,
-        doPackUnitCell, doCentroidUnitCell, supercell);
+        doPackUnitCell, doCentroidUnitCell, centroidPacked, strSupercell, ptSupercell);
     if (!atomSetCollection.addSpaceGroupOperation(xyz))
       Logger.warn("Skipping symmetry operation " + xyz);
     iHaveSymmetryOperators = true;
@@ -605,7 +618,7 @@ public abstract class AtomSetCollectionReader {
   public void clearUnitCell() {
     if (ignoreFileUnitCell)
       return;
-    for (int i = 6; i < notionalUnitCell.length; i++)
+    for (int i = 6; i < 22; i++)
       notionalUnitCell[i] = Float.NaN;
     checkUnitCell(6);
   }
@@ -720,7 +733,8 @@ public abstract class AtomSetCollectionReader {
   public boolean readMolecularOrbitals;
   protected boolean reverseModels;
   private String nameRequired;
-  protected boolean doCentroidUnitCell;
+  private boolean doCentroidUnitCell;
+  private boolean centroidPacked;
 
 
   // MANY: "NOVIB" "NOMO"
@@ -938,7 +952,7 @@ public abstract class AtomSetCollectionReader {
       atomSetCollection.setSymmetryRange(symmetryRange);
       if (doConvertToFractional || fileCoordinatesAreFractional) {
         atomSetCollection.setLatticeCells(latticeCells, applySymmetryToBonds,
-            doPackUnitCell, doCentroidUnitCell, supercell);
+            doPackUnitCell, doCentroidUnitCell, centroidPacked, strSupercell, ptSupercell);
         if (ignoreFileSpaceGroupName || !iHaveSymmetryOperators) {
           if (!merging || symmetry == null)
             getSymmetry();
@@ -1217,7 +1231,7 @@ public abstract class AtomSetCollectionReader {
           fileScaling.z = 1;
         setFractionalCoordinates(true);
         latticeCells = new int[3];
-        atomSetCollection.setLatticeCells(latticeCells, true, false, false, supercell);
+        atomSetCollection.setLatticeCells(latticeCells, true, false, false, false, null, null);
         setUnitCell(plotScale.x * 2 / (maxXYZ.x - minXYZ.x), plotScale.y * 2
             / (maxXYZ.y - minXYZ.y), plotScale.z * 2
             / (maxXYZ.z == minXYZ.z ? 1 : maxXYZ.z - minXYZ.z), 90, 90, 90);

@@ -70,12 +70,11 @@ class SymmetryInfo {
     }
     symmetryInfoString += "\n";
     float[] notionalUnitcell = (float[]) info.get("notionalUnitcell");
-    if (SimpleUnitCell.isValid(notionalUnitcell)) 
-      coordinatesAreFractional = info.containsKey("coordinatesAreFractional") ? 
-          ((Boolean) info.get("coordinatesAreFractional")).booleanValue() 
-          : false;    
-    else
-      notionalUnitcell = null;
+    if (!SimpleUnitCell.isValid(notionalUnitcell))
+      return null;
+    coordinatesAreFractional = info.containsKey("coordinatesAreFractional") ? 
+        ((Boolean) info.get("coordinatesAreFractional")).booleanValue() 
+        : false;    
     isMultiCell = (coordinatesAreFractional && symmetryOperations != null);
     return notionalUnitcell;
   }

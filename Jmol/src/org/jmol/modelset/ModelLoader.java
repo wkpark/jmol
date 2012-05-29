@@ -1041,8 +1041,7 @@ public final class ModelLoader {
         } else {
           modelSet.unitCells[i] = (SymmetryInterface) Interface
               .getOptionInterface("symmetry.Symmetry");
-          modelSet.unitCells[i].setSymmetryInfo(i, modelSet
-              .getModelAuxiliaryInfo(i));
+          modelSet.unitCells[i].setSymmetryInfo(i, modelSet.getModelAuxiliaryInfo(i));
         }
       }
     }
@@ -1072,7 +1071,18 @@ public final class ModelLoader {
           c = modelSet.getUnitCell(modelIndex);
         }
         if (c != null && c.getCoordinatesAreFractional())
-          c.toCartesian(atoms[i], false);
+          c.toCartesian(c.toSupercell(atoms[i]), false);
+      }
+      for (int imodel = baseModelIndex; imodel < modelSet.modelCount; imodel++) {
+        if (modelSet.isTrajectory(imodel)) {
+          c = modelSet.getUnitCell(imodel);
+          if (c != null && c.getCoordinatesAreFractional() && c.isSupercell()) {
+            Point3f[] list = modelSet.trajectorySteps.get(imodel);
+            for (int i = list.length; --i >= 0;)
+              if (list[i] != null)
+                c.toSupercell(list[i]);
+          }
+        }
       }
     }
   }

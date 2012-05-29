@@ -43,6 +43,7 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
+import org.jmol.util.Escape;
 import org.jmol.util.Quadric;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
@@ -803,13 +804,17 @@ public class AtomSetCollection {
   float symmetryRange;
 
   private boolean doCentroidUnitCell;
+
+  private boolean centroidPacked;
   void setSymmetryRange(float factor) {
     symmetryRange = factor;
     setAtomSetCollectionAuxiliaryInfo("symmetryRange", new Float(factor));
   }
   
   void setLatticeCells(int[] latticeCells, boolean applySymmetryToBonds, 
-                       boolean doPackUnitCell, boolean doCentroidUnitCell, String supercell) {
+                       boolean doPackUnitCell, boolean doCentroidUnitCell, 
+                       boolean centroidPacked,
+                       String strSupercell, Point3f ptSupercell) {
     //set when unit cell is determined
     // x <= 555 and y >= 555 indicate a range of cells to load
     // AROUND the central cell 555 and that
@@ -827,31 +832,30 @@ public class AtomSetCollection {
     this.applySymmetryToBonds = applySymmetryToBonds;
     this.doPackUnitCell = doPackUnitCell;
     this.doCentroidUnitCell = doCentroidUnitCell;
-    if (supercell != null)
-      setSuperCell(supercell, null);
+    this.centroidPacked = centroidPacked;
+    if (strSupercell != null)
+      setSuperCell(strSupercell);
+    else
+      this.ptSupercell = ptSupercell;
   }
   
-  public float[] fmatSuperCell;
-  public float[] setSuperCell(String supercell, float[] fmat) {
-    boolean isLocal = (fmat == null);
-    if (isLocal) {
-      fmat = fmatSuperCell;
-      if (fmat != null)
-        return fmat;
-      if (supercell.startsWith("=")) // negative values only for CASTEP reader 
-        supercell = supercell.substring(1).replace('-',' ');
+  public Point3f ptSupercell;
+  public void setSupercell(Point3f pt) {
+    ptSupercell = pt;
+    Logger.info("Using supercell " + Escape.escape(pt));
+  }
+  
+  public float[] fmatSupercell;
+
+  private void setSuperCell(String supercell) {
+    if (fmatSupercell != null)
+      return;
+    fmatSupercell = new float[16];
+    if (getSymmetry().getMatrixFromString(supercell, fmatSupercell, true) == null) {
+      fmatSupercell = null;
+      return;
     }
-    fmat = new float[16];
-    if (getSymmetry().getMatrixFromString(supercell, fmat, true) == null) {
-      if (isLocal)
-        fmatSuperCell = null;
-      return null;
-    }
-    if (isLocal) {
-      fmatSuperCell = fmat;
-      Logger.info("Using supercell \n" + new Matrix4f(fmat));
-    }
-    return fmat;
+    Logger.info("Using supercell \n" + new Matrix4f(fmatSupercell));
   }
  
   SymmetryInterface symmetry;
@@ -913,9 +917,9 @@ public class AtomSetCollection {
   private void applySymmetry(int maxX, int maxY, int maxZ) throws Exception {
     if (!coordinatesAreFractional || !getSymmetry().haveSpaceGroup())
       return;
-    if (fmatSuperCell != null) {
+    if (fmatSupercell != null) {
 
-      // supercell:
+      // supercell of the form nx + ny + nz
 
       // 1) get all atoms for cells necessary
 
@@ -968,12 +972,12 @@ public class AtomSetCollection {
     minXYZ = new Point3i();
     maxXYZ = new Point3i(maxX, maxY, maxZ);
     applyAllSymmetry();
-    fmatSuperCell = null;
+    fmatSupercell = null;
   }
 
   private Point3f setSym(int i, int j, int k) {
     Point3f pt = new Point3f();
-    pt.set(fmatSuperCell[i], fmatSuperCell[j], fmatSuperCell[k]);
+    pt.set(fmatSupercell[i], fmatSupercell[j], fmatSupercell[k]);
     setSymmetryMinMax(pt);
     symmetry.toCartesian(pt, false);
     return pt;
@@ -1047,20 +1051,40 @@ public class AtomSetCollection {
     int iAtomFirst = getLastAtomSetAtomIndex();
     setEllipsoids();
     bondCount0 = bondCount;
-
     symmetry
         .setFinalOperations(atoms, iAtomFirst, noSymmetryCount, doNormalize);
     int operationCount = symmetry.getSpaceGroupOperationCount();
     getSymmetry().setMinMaxLatticeParameters(minXYZ, maxXYZ);
+    dtype = (int) getSymmetry().getUnitCellInfo(SimpleUnitCell.INFO_DIMENSIONS);
+    if (doCentroidUnitCell)
+      setAtomSetCollectionAuxiliaryInfo("centroidMinMax", new int[] {
+          minXYZ.x, minXYZ.y, minXYZ.z, 
+          maxXYZ.x, maxXYZ.y, maxXYZ.z, 
+          (centroidPacked ? 1 : 0) } );
+    if (ptSupercell != null) {
+      setAtomSetAuxiliaryInfo("supercell", ptSupercell);
+      switch (dtype) {
+      case 3:
+        // standard
+        minXYZ.z *= (int) Math.abs(ptSupercell.z);
+        maxXYZ.z *= (int) Math.abs(ptSupercell.z);
+        // fall through;
+      case 2:
+        // slab or standard
+        minXYZ.y *= (int) Math.abs(ptSupercell.y);
+        maxXYZ.y *= (int) Math.abs(ptSupercell.y);
+        // fall through;
+      case 1:
+        // slab, polymer, or standard
+        minXYZ.x *= (int) Math.abs(ptSupercell.x);
+        maxXYZ.x *= (int) Math.abs(ptSupercell.x);
+      }
+    }
     if (doCentroidUnitCell || doPackUnitCell || symmetryRange != 0 && maxXYZ.x - minXYZ.x == 1
         && maxXYZ.y - minXYZ.y == 1 && maxXYZ.z - minXYZ.z == 1) {
       // weird Mac bug does not allow   new Point3i(minXYZ) !!
       minXYZ0 = new Point3i(minXYZ.x, minXYZ.y, minXYZ.z);
       maxXYZ0 = new Point3i(maxXYZ.x, maxXYZ.y, maxXYZ.z);
-      if (doCentroidUnitCell)
-        setAtomSetCollectionAuxiliaryInfo("centroidMinMax", new int[] {minXYZ.x, minXYZ.y, minXYZ.z, maxXYZ.x, maxXYZ.y, maxXYZ.z});
-      dtype = (int) getSymmetry()
-          .getUnitCellInfo(SimpleUnitCell.INFO_DIMENSIONS);
       switch (dtype) {
       case 3:
         // standard
@@ -1157,9 +1181,6 @@ public class AtomSetCollection {
       rmaxz += absRange;
     }
     
-    if (fmatSuperCell != null) {
-      
-    }
     // now apply all the translations
     
     iCell = 0;
@@ -1237,12 +1258,14 @@ public class AtomSetCollection {
     boolean checkRange111 = (symmetryRange > 0);
     boolean checkSymmetryMinMax = (isBaseCell && checkRange111);
     checkRange111 &= !isBaseCell;
+    int nOperations = symmetry.getSpaceGroupOperationCount();
+    if (nOperations == 1)
+      checkSpecial = false;
     boolean checkSymmetryRange = (checkRangeNoSymmetry || checkRange111);
     boolean checkDistances = (checkSpecial || checkSymmetryRange);
     boolean addCartesian = (checkSpecial || checkSymmetryMinMax);
     if (checkRangeNoSymmetry)
       baseCount = noSymmetryCount;
-    int nOperations = symmetry.getSpaceGroupOperationCount();
     int atomMax = iAtomFirst + noSymmetryCount;
     Point3f ptAtom = new Point3f();
     for (int iSym = 0; iSym < nOperations; iSym++) {

@@ -150,4 +150,8 @@ public interface SymmetryInterface {
 
   public abstract SymmetryInterface getUnitCell(Tuple3f[] points);
 
+  public abstract Point3f toSupercell(Point3f fpt);
+
+  public abstract boolean isSupercell();
+
 }

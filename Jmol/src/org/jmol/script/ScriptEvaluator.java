@@ -8677,17 +8677,20 @@ public class ScriptEvaluator {
         // SUPERCELL
 
         if (tokAt(i) == Token.supercell) {
-          String supercell;
+          Object supercell;
           if (isPoint3f(++i)) {
-            Point3f sc = getPoint3f(i, false);
-            supercell = "=" + (int) sc.x + "x," + (int) sc.y + "y," + (int) sc.z
-                + "z";
+            Point3f pt = getPoint3f(i, false);
+            if (pt.x != (int) pt.x || pt.y != (int) pt.y || pt.z != (int) pt.z
+                || pt.x < 1 || pt.y < 1 || pt.z < 1) {
+              iToken = i;
+              error(ERROR_invalidArgument);
+            }
+            supercell = pt;
             i = iToken + 1;
           } else {
             supercell = stringParameter(i++);
           }
           htParams.put("supercell", supercell);
-          sOptions += " supercell " + Escape.escape(supercell);
         }
         
         // PACKED (again)

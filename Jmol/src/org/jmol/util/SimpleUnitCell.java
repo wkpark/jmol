@@ -45,6 +45,12 @@ public class SimpleUnitCell {
   public Matrix4f matrixFractionalToCartesian;
 
   protected final static float toRadians = (float) Math.PI * 2 / 360;
+
+  private int na, nb, nc;
+  public boolean isSupercell() {
+    return (na > 1 || nb > 1 || nc > 1);
+  }
+
   protected float a, b, c, alpha, beta, gamma;
   protected double cosAlpha, sinAlpha;
   protected double cosBeta, sinBeta;
@@ -79,6 +85,11 @@ public class SimpleUnitCell {
     alpha = parameters[3];
     beta = parameters[4];
     gamma = parameters[5];
+    
+    // (int) Float.NaN == 0
+    na = Math.max(1, parameters.length >= 25 ? (int) parameters[22] : 1);
+    nb = Math.max(1, parameters.length >= 25 ? (int) parameters[23] : 1);
+    nc = Math.max(1, parameters.length >= 25 ? (int) parameters[24] : 1);
 
     if (a <= 0) {
       // must calculate a, b, c alpha beta gamma from vectors;
@@ -119,13 +130,18 @@ public class SimpleUnitCell {
         parameters = n;
       }
     }
+    
+    a *= na;
     if (b <= 0) {
       b = c = 1;
       dimension = 1;
     } else if (c <= 0) {
       c = 1;
+      b *= nb;
       dimension = 2;
     } else {
+      b *= nb;
+      c *= nc;
       dimension = 3;
     }
 
@@ -146,12 +162,29 @@ public class SimpleUnitCell {
     c_ = a * b * sinGamma / volume;
 
     if (parameters.length > 21 && !Float.isNaN(parameters[21])) {
-      // parameters with a 3x4 matrix
+      // parameters with a 4x4 matrix
       // [a b c alpha beta gamma m00 m01 m02 m03 m10 m11.... m20...]
       // this is for PDB and CIF reader
       float[] scaleMatrix = new float[16];
-      for (int i = 0; i < 16; i++)
-        scaleMatrix[i] = parameters[6 + i];
+      for (int i = 0; i < 16; i++) {
+        float f;
+        switch (i % 4) {
+        case 0:
+          f = na;
+          break;
+        case 1:
+          f = nb;
+          break;
+        case 2:
+          f = nc;
+          break;
+        default:
+          f = 1;
+          break;
+        }
+        scaleMatrix[i] = parameters[6 + i] * f;
+      }
+      
       matrixCartesianToFractional = new Matrix4f(scaleMatrix);
       matrixFractionalToCartesian = new Matrix4f();
       matrixFractionalToCartesian.invert(matrixCartesianToFractional);
@@ -159,9 +192,9 @@ public class SimpleUnitCell {
       // parameters with a 3 vectors
       // [a b c alpha beta gamma ax ay az bx by bz cx cy cz...]
       Matrix4f m = matrixFractionalToCartesian = new Matrix4f();
-      m.setColumn(0, parameters[6], parameters[7], parameters[8], 0);
-      m.setColumn(1, parameters[9], parameters[10], parameters[11], 0);
-      m.setColumn(2, parameters[12], parameters[13], parameters[14], 0);
+      m.setColumn(0, parameters[6] * na, parameters[7] * na, parameters[8] * na, 0);
+      m.setColumn(1, parameters[9] * nb, parameters[10] * nb, parameters[11] * nb, 0);
+      m.setColumn(2, parameters[12] * nc, parameters[13] * nc, parameters[14] * nc, 0);
       m.setColumn(3, 0, 0, 0, 1);
       matrixCartesianToFractional = new Matrix4f();
       matrixCartesianToFractional.invert(matrixFractionalToCartesian);
@@ -193,6 +226,19 @@ public class SimpleUnitCell {
   public final static int INFO_C = 2;
   public final static int INFO_B = 1;
   public final static int INFO_A = 0;
+
+  /**
+   * convenience return only after changing fpt
+   * 
+   * @param fpt
+   * @return adjusted fpt
+   */
+  public Point3f toSupercell(Point3f fpt) {
+    fpt.x /= na;
+    fpt.y /= nb;
+    fpt.z /= nc;
+    return fpt;
+  }
 
   public final void toCartesian(Point3f pt, boolean isAbsolute) {
     if (matrixFractionalToCartesian != null)

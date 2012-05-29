@@ -195,9 +195,10 @@ public class ImageCreator implements JmolImageCreatorInterface {
             bytes = JpegEncoder.getBytes(viewer.getApiPlatform(), image,
                 quality, Viewer.getJmolVersion());
           } else {
+            String caption = (includeState ? (String) viewer.getWrappedState(true, false, image
+                    .getWidth(null), image.getHeight(null)) : Viewer.getJmolVersion());
             JpegEncoder.write(viewer.getApiPlatform(), image, quality, os,
-                (String) viewer.getWrappedState(true, false, image
-                    .getWidth(null), image.getHeight(null)));
+                caption);
             bytes = null;
           }
         } else if (type.equals("JPG64") || type.equals("JPEG64")) {
@@ -270,7 +271,7 @@ public class ImageCreator implements JmolImageCreatorInterface {
           byte[] b = (appendText instanceof byte[] ? (byte[]) appendText
               : appendText instanceof String ? ((String) appendText).getBytes()
                   : null);
-          if (b != null)
+          if (b != null && b.length > 0)
             os.write(b);
         }
         if (os != null)

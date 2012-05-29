@@ -13940,6 +13940,7 @@ public class ScriptEvaluator {
     int tok = (isCommand && args.length == 1 ? Token.clipboard
         : tokAt(pt, args));
     int len = 0;
+    int nVibes = 0;
     int width = -1;
     int height = -1;
     int quality = Integer.MIN_VALUE;
@@ -14035,9 +14036,17 @@ public class ScriptEvaluator {
     case Token.identifier:
     case Token.string:
     case Token.frame:
+    case Token.vibration:
       type = ScriptVariable.sValue(tokenAt(pt, args)).toLowerCase();
       if (tok == Token.image) {
         pt++;
+      } else if (tok == Token.vibration) {
+        nVibes = intParameter(++pt, 1, 10);
+        if (!isSyntaxCheck) {
+          viewer.setVibrationOff();
+          delay(100);
+        }
+        pt++;  
       } else if (tok == Token.frame) {
         BitSet bsAtoms;
         if (pt + 1 < argCount && args[++pt].tok == Token.expressionBegin
@@ -14140,7 +14149,7 @@ public class ScriptEvaluator {
       default:
         error(ERROR_invalidArgument);
       }
-      if (type.equals("image") || type.equals("frame")) {
+      if (type.equals("image") || type.equals("frame") || type.equals("vibration")) {
         if (fileName != null && fileName.indexOf(".") >= 0)
           type = fileName.substring(fileName.lastIndexOf(".") + 1)
               .toUpperCase();
@@ -14216,7 +14225,7 @@ public class ScriptEvaluator {
           String ext = (type.equals("Idtf") ? ".tex" : ".ini");
           fileName = fullPath[0] + ext;
           msg = viewer.createImage(fileName, ext, data, Integer.MIN_VALUE, 0,
-              0, null, fullPath);
+              0, null, 0, fullPath);
           if (type.equals("Idtf"))
             data = data.substring(0, data.indexOf("\\begin{comment}"));
           data = "Created " + fullPath[0] + ":\n\n" + data;
@@ -14342,7 +14351,7 @@ public class ScriptEvaluator {
         msg = viewer.streamFileData(fileName, type, type2, 0, null);
       else
         msg = viewer.createImage(fileName, type, bytes, quality, width, height,
-            bsFrames, fullPath);
+            bsFrames, nVibes, fullPath);
     }
     if (!isSyntaxCheck && msg != null) {
       if (!msg.startsWith("OK"))

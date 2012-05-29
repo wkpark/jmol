@@ -8700,13 +8700,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * @param width
    * @param height
    * @param bsFrames
+   * @param nVibes 
    * @param fullPath
    * @return message starting with "OK" or an error message
    */
   public String createImage(String fileName, String type, Object text_or_bytes,
                             int quality, int width, int height,
-                            BitSet bsFrames, String[] fullPath) {
-    if (bsFrames == null)
+                            BitSet bsFrames, int nVibes, String[] fullPath) {
+    if (bsFrames == null && nVibes == 0)
       return (String) createImage(fileName, type, text_or_bytes, quality,
           width, height, fullPath, true);
     String info = "";
@@ -8722,22 +8723,47 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
     String froot = fileName.substring(0, ptDot);
     String fext = fileName.substring(ptDot);
-    for (int i = bsFrames.nextSetBit(0); i >= 0; i = bsFrames.nextSetBit(i + 1)) {
-      setCurrentModelIndex(i);
-      fileName = "0000" + (++n);
-      fileName = froot + fileName.substring(fileName.length() - 4) + fext;
-      if (fullPath != null)
-        fullPath[0] = fileName;
-      String msg = (String) createImage(fileName, type, text_or_bytes, quality,
-          width, height, null, false);
-      Logger.info(msg);
-      info += msg + "\n";
-      if (!msg.startsWith("OK"))
-        return "ERROR WRITING FILE SET: \n" + info;
+    StringBuffer sb = new StringBuffer();
+    text_or_bytes = new Object[] { "" };
+    if (bsFrames == null) { 
+      transformManager.vibrationOn = true;
+      sb = new StringBuffer();
+      for (int i = 0; i < nVibes; i++) {
+        for (int j = 0; j < 20; j++) {
+          transformManager.setVibrationT(j/20f+0.2501f);
+          if (!writeFrame(++n, froot, fext, fullPath, type, text_or_bytes,
+              quality, width, height, sb))
+            return "ERROR WRITING FILE SET: \n" + info;
+        }
+      }
+      setVibrationOff();
+    } else {
+      for (int i = bsFrames.nextSetBit(0); i >= 0; i = bsFrames
+          .nextSetBit(i + 1)) {
+        setCurrentModelIndex(i);
+        if (!writeFrame(++n, froot, fext, fullPath, type, text_or_bytes,
+            quality, width, height, sb))
+          return "ERROR WRITING FILE SET: \n" + info;
+      }
     }
     if (info.length() == 0)
       info = "OK\n";
     return info + "\n" + n + " files created";
+  }
+
+  private boolean writeFrame(int n, String froot, String fext,
+                             String[] fullPath, String type,
+                             Object text_or_bytes, int quality, int width,
+                             int height, StringBuffer sb) {
+    String fileName = "0000" + n;
+    fileName = froot + fileName.substring(fileName.length() - 4) + fext;
+    if (fullPath != null)
+      fullPath[0] = fileName;
+    String msg = (String) createImage(fileName, type, text_or_bytes,
+        quality, width, height, null, false);
+    scriptEcho(msg);
+    sb.append(msg).append("\n");
+    return msg.startsWith("OK");
   }
 
   private boolean creatingImage;

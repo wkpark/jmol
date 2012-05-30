@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-05-22 23:48+0200\n"
-"PO-Revision-Date: 2012-05-23 00:43+0000\n"
-"Last-Translator: Auduf <5097@mail.ru>\n"
+"PO-Revision-Date: 2012-05-30 13:45+0000\n"
+"Last-Translator: karma <Unknown>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-23 19:32+0000\n"
-"X-Generator: Launchpad (build 15282)\n"
+"X-Launchpad-Export-Date: 2012-05-30 16:40+0000\n"
+"X-Generator: Launchpad (build 15322)\n"
 
 #: com/json/Cookie.java:121
 msgid "name"
@@ -111,7 +111,7 @@ msgstr "посылать в консоль только сообщения (вл
 
 #: org/openscience/jmol/app/JmolApp.java:167
 msgid "restrict local file access"
-msgstr ""
+msgstr "ограничить доступ к локальным файлам"
 
 #: org/openscience/jmol/app/JmolApp.java:169
 msgid "independent command thread"
@@ -2005,6 +2005,3 @@ msgstr "не реализовано"
 #~ msgstr ""
 #~ "Введите сюда поясненяющий текст. Длинный текст будет обернут вокруг модели "
 #~ "Jmol {0}."
-
-#~ msgid "Enter the name or identifier (SMILES, InChI, CAS) of a compound"
-#~ msgstr "Введите имя или идентификатор (SMILES, InChI, CAS) соединения"

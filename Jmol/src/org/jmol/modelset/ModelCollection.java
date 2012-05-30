@@ -1721,10 +1721,16 @@ abstract public class ModelCollection extends BondCollection {
       getMolecules();
     BitSet bsResult = BitSetUtil.copy(bs);
     BitSet bsInitial = BitSetUtil.copy(bs);
-    int i;
+    int i = 0;
     BitSet bsTemp = new BitSet();
-    while ((i = bsInitial.length()) > 0) {
-      bsTemp = getMoleculeBitSet(i - 1);
+    while ((i = bsInitial.length() - 1) >= 0) {
+      bsTemp = getMoleculeBitSet(i);
+      if (bsTemp == null) {
+        // atom has been deleted
+        bsInitial.clear(i);
+        bsResult.clear(i);
+        continue;
+      }
       bsInitial.andNot(bsTemp);
       bsResult.or(bsTemp);
     }
@@ -1832,8 +1838,8 @@ abstract public class ModelCollection extends BondCollection {
       return;
     BitSet bsDelete = new BitSet();
     getMolecules();
-    Point3f center = new Point3f();
     boolean isOneMolecule = (molecules[moleculeCount - 1].firstAtomIndex == models[atoms[iAtom1].modelIndex].firstAtomIndex);
+    Point3f center = new Point3f();
     for (int i = moleculeCount; --i >= 0 && molecules[i].firstAtomIndex >= iAtom0 && molecules[i].firstAtomIndex < iAtom1;) {
       BitSet bs = molecules[i].atomList;
       center.set(0, 0, 0);

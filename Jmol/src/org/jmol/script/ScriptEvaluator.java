@@ -8463,6 +8463,17 @@ public class ScriptEvaluator {
       i = 0;
     } else {
       modelName = parameterAsString(i);
+      // load MENU
+      // load DATA "xxx" ...(data here)...END "xxx"
+      // load DATA "append xxx" ...(data here)...END "append xxx"
+      // load DATA "@varName"
+      // load APPEND (moves pointer forward)
+      // load XYZ
+      // load VXYZ
+      // load VIBRATION
+      // load TEMPERATURE
+      // load OCCUPANCY
+      // load PARTIALCHARGE
       switch (tok = tokAt(i)) {
       case Token.menu:
         String m = parameterAsString(checkLast(2));
@@ -8491,7 +8502,7 @@ public class ScriptEvaluator {
         break;
       case Token.append:
         isAppend = true;
-        loadScript.append(" " + modelName);
+        loadScript.append(" append");
         filename = optParameterAsString(++i);
         tok = Token.getTokFromName(filename);
         break;
@@ -8501,8 +8512,8 @@ public class ScriptEvaluator {
         tokType = (tok == Token.identifier
             && Parser.isOneOf(modelName.toLowerCase(),
                 JmolConstants.LOAD_ATOM_DATA_TYPES) ? Token
-            .getTokFromName(modelName.toLowerCase()) : 0);
-        if (tokType > 0) {
+            .getTokFromName(modelName.toLowerCase()) : Token.nada);
+        if (tokType != Token.nada) {
           // loading just some data here
           // xyz vxyz vibration temperature occupancy partialcharge
           htParams.put("atomDataOnly", Boolean.TRUE);
@@ -8513,6 +8524,13 @@ public class ScriptEvaluator {
           isAppend = true;
         }
       }
+      // LOAD [[APPEND]] FILE
+      // LOAD [[APPEND]] INLINE
+      // LOAD [[APPEND]] SMILES
+      // LOAD [[APPEND]] TRAJECTORY
+      // LOAD [[APPEND]] MODEL
+      // LOAD [[APPEND]] "fileNameInQuotes"
+
       switch (tok) {
       case Token.file:
       case Token.inline:
@@ -8546,6 +8564,7 @@ public class ScriptEvaluator {
         }
         break;
       case Token.identifier:
+        // i has been incremented; continue...
         break;
       default:
         modelName = "fileset";
@@ -8557,11 +8576,20 @@ public class ScriptEvaluator {
 
     // file name is next
 
+    // LOAD ... "xxxx"
+    // LOAD ... "xxxx" AS "yyyy"
+    
     int filePt = i;
     String localName = null;
     if (tokAt(filePt + 1) == Token.as)
       localName = stringParameter(i = i + 2);
+    
     if (statementLength == i + 1) {
+
+      // end-of-command options:
+      // LOAD SMILES "xxxx" --> load "$xxxx"
+      // LOAD "['xxxxx','yyyyy','zzzzz']"
+
       if (i == 0 || (filename = parameterAsString(filePt)).length() == 0)
         filename = viewer.getFullPathName();
       if (filename == null) {
@@ -8586,25 +8614,61 @@ public class ScriptEvaluator {
           }
         }
       }
-    } else if (getToken(i + 1).tok == Token.leftbrace
-        || theTok == Token.point3f || theTok == Token.integer
-        || theTok == Token.varray || theTok == Token.leftsquare
+    } else if (
+        getToken(i + 1).tok == Token.manifest
+        // model/vibration index or list of model indices
+        || theTok == Token.integer
+        || theTok == Token.varray 
+        || theTok == Token.leftsquare
         || theTok == Token.spacebeforesquare
-        || theTok == Token.offset || theTok == Token.range
-        || theTok == Token.manifest || theTok == Token.packed || theTok == Token.centroid
-        || theTok == Token.supercell || theTok == Token.filter
-        && tokAt(i + 3) != Token.coord || theTok == Token.identifier
-        && tokAt(i + 3) != Token.coord) {
-      if ((filename = parameterAsString(filePt)).length() == 0)
-        filename = viewer.getFullPathName();
-      if (filePt == i)
-        i++;
-      if (filename == null) {
+        // {i j k} (lattice)
+        || theTok == Token.leftbrace 
+        || theTok == Token.point3f
+        // PACKED/CENTROID, either order
+        || theTok == Token.packed 
+        || theTok == Token.centroid
+        // SUPERCELL {i j k}
+        || theTok == Token.supercell 
+        // RANGE x.x or RANGE -x.x
+        || theTok == Token.range
+        // SPACEGROUP "nameOrNumber" 
+        // or SPACEGROUP "IGNOREOPERATORS" 
+        // or SPACEGROUP "" (same as current)
+        || theTok == Token.spacegroup
+        // UNITCELL [a b c alpha beta gamma]
+        // or UNITCELL [ax ay az bx by bz cx cy cz] 
+        // or UNITCELL "" (same as current)
+        // UNITCELL "..." or UNITCELL ""
+        || theTok == Token.unitcell
+        // OFFSET {x y z}
+        || theTok == Token.offset
+        // FILTER "..."
+        || theTok == Token.filter && tokAt(i + 3) != Token.coord 
+        // don't remember what this is:
+        || theTok == Token.identifier && tokAt(i + 3) != Token.coord
+        
+        ) {
+      
+      // more complicated command options, in order
+      // (checking the tokens after "....") 
+      
+      // LOAD "" --> prevous file      
+
+      if ((filename = parameterAsString(filePt)).length() == 0
+          && (filename = viewer.getFullPathName()) == null) {
+        // no previously loaded file
         zap(false);
         return;
       }
+      if (filePt == i)
+        i++;
+      
+      // for whatever reason, we don't allow a filename with [] in it.
       if (filename.indexOf("[]") >= 0)
         return;
+      
+      // MANIFEST "..."
+      
       if ((tok = tokAt(i)) == Token.manifest) {
         String manifest = stringParameter(++i);
         htParams.put("manifest", manifest);
@@ -8612,7 +8676,9 @@ public class ScriptEvaluator {
         tok = tokAt(++i);
       }
 
-      // 1)   n >= 0: model number; n < 0: vibration number
+      // n >= 0: model number
+      // n < 0: vibration number
+      // [index1, index2, index3,...]
 
       switch (tok) {
       case Token.integer:
@@ -8641,7 +8707,8 @@ public class ScriptEvaluator {
         tok = tokAt(i);
         break;
       }
-      // 2)   {i j k}
+      
+      // {i j k}
 
       Point3f lattice = null;
       if (tok == Token.leftbrace || tok == Token.point3f) {
@@ -8650,7 +8717,16 @@ public class ScriptEvaluator {
         tok = tokAt(i);
       }
 
-      if (tok == Token.packed || tok == Token.centroid || tok == Token.supercell) {
+      // default lattice {555 555 -1} (packed) 
+      // for PACKED, CENTROID, SUPERCELL, RANGE, SPACEGROUP, UNITCELL
+
+      switch (tok) {
+      case Token.packed:
+      case Token.centroid:
+      case Token.supercell:
+      case Token.range:
+      case Token.spacegroup:
+      case Token.unitcell:
         if (lattice == null)
           lattice = new Point3f(555, 555, -1);
         iToken = i - 1;
@@ -8662,19 +8738,25 @@ public class ScriptEvaluator {
         sOptions += " {" + (int) lattice.x + " " + (int) lattice.y + " "
             + (int) lattice.z + "}";
 
-        // PACKED
+        // {i j k} PACKED, CENTROID -- either or both; either order
 
         if (tokAt(i) == Token.packed) {
           htParams.put("packed", Boolean.TRUE);
           sOptions += " PACKED";
           i++;
-        } else if (tokAt(i) == Token.centroid) {
+        } 
+        if (tokAt(i) == Token.centroid) {
           htParams.put("centroid", Boolean.TRUE);
           sOptions += " CENTROID";
           i++;
+          if (tokAt(i) == Token.packed && !htParams.containsKey("packed")) {
+            htParams.put("packed", Boolean.TRUE);
+            sOptions += " PACKED";
+            i++;
+          } 
         }
 
-        // SUPERCELL
+        // {i j k} ... SUPERCELL {i' j' k'}
 
         if (tokAt(i) == Token.supercell) {
           Object supercell;
@@ -8693,49 +8775,37 @@ public class ScriptEvaluator {
           htParams.put("supercell", supercell);
         }
         
-        // PACKED (again)
-
-        if (tokAt(i) == Token.packed) {
-          htParams.put("packed", Boolean.TRUE);
-          sOptions += " PACKED";
-          i++;
-        } else if (tokAt(i) == Token.centroid) {
-          htParams.put("centroid", Boolean.TRUE);
-          sOptions += " CENTROID";
-          i++;
-        }
+        // {i j k} ... RANGE x.y  (from full unit cell set)
+        // {i j k} ... RANGE -x.y (from non-symmetry set)
 
         float distance = 0;
-        /*
-         * # Jmol 11.3.9 introduces the capability of visualizing the close
-         * contacts around a crystalline protein (or any other cyrstal
-         * structure) that are to atoms that are in proteins in adjacent unit
-         * cells or adjacent to the protein itself. The option RANGE x, where x
-         * is a distance in angstroms, placed right after the braces containing
-         * the set of unit cells to load does this. The distance, if a positive
-         * number, is the maximum distance away from the closest atom in the {1
-         * 1 1} set. If the distance x is a negative number, then -x is the
-         * maximum distance from the {not symmetry} set. The difference is that
-         * in the first case the primary unit cell (555) is first filled as
-         * usual, using symmetry operators, and close contacts to this set are
-         * found. In the second case, only the file-based atoms ( Jones-Faithful
-         * operator x,y,z) are initially included, then close contacts to that
-         * set are found. Depending upon the application, one or the other of
-         * these options may be desirable.
-         */
-
-        // RANGE x.y
-
         if (tokAt(i) == Token.range) {
+          /*
+           * # Jmol 11.3.9 introduces the capability of visualizing the close
+           * contacts around a crystalline protein (or any other cyrstal
+           * structure) that are to atoms that are in proteins in adjacent unit
+           * cells or adjacent to the protein itself. The option RANGE x, where x
+           * is a distance in angstroms, placed right after the braces containing
+           * the set of unit cells to load does this. The distance, if a positive
+           * number, is the maximum distance away from the closest atom in the {1
+           * 1 1} set. If the distance x is a negative number, then -x is the
+           * maximum distance from the {not symmetry} set. The difference is that
+           * in the first case the primary unit cell (555) is first filled as
+           * usual, using symmetry operators, and close contacts to this set are
+           * found. In the second case, only the file-based atoms ( Jones-Faithful
+           * operator x,y,z) are initially included, then close contacts to that
+           * set are found. Depending upon the application, one or the other of
+           * these options may be desirable.
+           */
           i++;
           distance = floatParameter(i++);
           sOptions += " range " + distance;
         }
         htParams.put("symmetryRange", Float.valueOf(distance));
 
-        // SPACEGROUP "info"
-
-        // SPACEGROUP "IGNOREOPERATORS"
+        // {i j k} ... SPACEGROUP "nameOrNumber"
+        // {i j k} ... SPACEGROUP "IGNOREOPERATORS"
+        // {i j k} ... SPACEGROUP ""
 
         String spacegroup = null;
         SymmetryInterface sg;
@@ -8745,8 +8815,6 @@ public class ScriptEvaluator {
           spacegroup = TextFormat.simpleReplace(parameterAsString(i++), "''",
               "\"");
           sOptions += " spacegroup " + Escape.escape(spacegroup);
-        }
-        if (spacegroup != null) {
           if (spacegroup.equalsIgnoreCase("ignoreOperators")) {
             iGroup = -999;
           } else {
@@ -8764,11 +8832,10 @@ public class ScriptEvaluator {
           }
         }
 
-        // UNITCELL [a b c alpha beta gamma]
-        // or
-        // UNITCELL [ax ay az bx by bz cx cy cz] 
-        // or
-        // UNITCELL ""  // same as current
+        // {i j k} ... UNITCELL [a b c alpha beta gamma]
+        // {i j k} ... UNITCELL [ax ay az bx by bz cx cy cz] 
+        // {i j k} ... UNITCELL ""  // same as current
+        
         float[] fparams = null;
         if (tokAt(i) == Token.unitcell) {
           ++i;
@@ -8823,10 +8890,17 @@ public class ScriptEvaluator {
         filter = stringParameter(++i);
 
     } else {
+      
+      // list of file names 
+      // or COORD {i j k} "fileName" 
+      // or COORD ({bitset}) "fileName"
+      // or FILTER "xxxx"
+      
       if (i == 1) {
         i++;
         loadScript.append(" " + modelName);
       }
+      
       Point3f pt = null;
       BitSet bs = null;
       List<String> fNames = new ArrayList<String>();
@@ -8873,19 +8947,27 @@ public class ScriptEvaluator {
         filenames[j] = fNames.get(j);
       filename = "fileSet";
     }
+    
+    // end of parsing
+    
     if (!doLoadFiles)
       return;
+    
+    // get default filter if necessary
+    
     if (filter == null)
       filter = viewer.getDefaultLoadFilter();
     if (filter.length() > 0) {
       htParams.put("filter", filter);
-      if (filter.equalsIgnoreCase("2d"))
+      if (filter.equalsIgnoreCase("2d"))  // MOL file hack
         filter = "2D-noMin";
       sOptions += " FILTER " + Escape.escape(filter);
     }
+
+    // store inline data or variable data in htParams
+    
     boolean isVariable = false;
     if (filenames == null) {
-      // standard file loading here
       if (isInline) {
         htParams.put("fileData", filename);
       } else if (filename.startsWith("@") && filename.length() > 1) {
@@ -8897,8 +8979,8 @@ public class ScriptEvaluator {
       }
     }
 
-    // OK, we are ready to load the data and create the model set
-
+    // set up the output stream from AS keyword
+    
     OutputStream os = null;
     if (localName != null) {
       if (localName.equals("."))

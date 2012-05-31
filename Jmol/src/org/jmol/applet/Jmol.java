@@ -1027,17 +1027,10 @@ public class Jmol implements WrappedApplet {
         return;
       try {
         JSObject jso = JSObject.getWindow(appletWrapper);
-        if (callback.equals("alert")) {
+        if (callback.equals("alert"))
           jso.call(callback, new Object[] { strInfo });
-        } else if (callback.length() > 0) {
-          if (callback.indexOf(".") > 0) {
-            String[] mods = TextFormat.split(callback, '.');
-            for (int i = 0; i < mods.length - 1; i++)
-              jso = (JSObject) jso.getMember(mods[i]);
-            callback = mods[mods.length - 1];
-          }
-          jso.call(callback, data);
-        }
+        else 
+          sendCallback(jso, callback, data);
       } catch (Exception e) {
         if (!haveNotifiedError)
           if (Logger.debugging) {
@@ -1063,9 +1056,8 @@ public class Jmol implements WrappedApplet {
         return info;
       try {
         JSObject jsoWindow = JSObject.getWindow(appletWrapper);
-        if (syncCallback.length() > 0)
-          return "" + jsoWindow.call(syncCallback, new Object[] { htmlName,
-              info, appletName });
+        return sendCallback(jsoWindow, syncCallback, new Object[] { htmlName,
+          info, appletName });
       } catch (Exception e) {
         if (!haveNotifiedError)
           if (Logger.debugging) {
@@ -1307,6 +1299,18 @@ public class Jmol implements WrappedApplet {
       return null;
     }
 
+  }
+
+  protected static String sendCallback(JSObject jso, String callback, Object[] data) {
+    if (callback == null || callback.length() == 0)
+      return "";
+    if (callback.indexOf(".") > 0) {
+      String[] mods = TextFormat.split(callback, '.');
+      for (int i = 0; i < mods.length - 1; i++)
+        jso = (JSObject) jso.getMember(mods[i]);
+      callback = mods[mods.length - 1];
+    }
+    return "" + jso.call(callback, data);
   }
 
   public void register(String id, JmolSyncInterface jsi) {

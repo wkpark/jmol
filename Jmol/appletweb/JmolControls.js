@@ -41,7 +41,16 @@
 		return index;
 	}
 	
-	c._getRadio = function(appId, script, labelHtml, isChecked, separatorHtml, groupName, id, title) {
+	c._getIdForControl = function(appletOrId, script) {
+		return (typeof appletOrId == "string" ? appletOrId 
+		  : !script || appletOrId._canScript(script) ? appletOrId._id
+			: null);
+	}
+		
+	c._getRadio = function(appletOrId, script, labelHtml, isChecked, separatorHtml, groupName, id, title) {
+		var appId = c._getIdForControl(appletOrId, script);
+		if (appId == null)
+			return null;
 		++c._radioCount;
 		groupName != undefined && groupName != null || (groupName = "jmolRadioGroup" + (c._radioGroupCount - 1));
 		if (!script)

@@ -317,10 +317,6 @@ xxx=info
 		return (d || {});
 	}	
 
-	Jmol._getId = function(appletOrId) {
-		return (typeof appletOrId == "string" ? appletOrId : appletOrId._id);
-	}
-		
 	Jmol.featureDetection = (function(document, window) {
 		
 		var features = {};

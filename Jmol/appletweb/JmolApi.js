@@ -144,7 +144,9 @@
 	}
 
 	Jmol.jmolButton = function(appletOrId, script, label, id, title) {
-		var appId = Jmol._getId(appletOrId);
+		var appId = Jmol.controls._getIdForControl(appletOrId, script);
+		if (appId == null)
+			return "";
 		var c = Jmol.controls;
 		//_jmolInitCheck();
 		id != undefined && id != null || (id = "jmolButton" + c._buttonCount);
@@ -164,7 +166,12 @@
 	
 	Jmol.jmolCheckbox = function(appletOrId, scriptWhenChecked, scriptWhenUnchecked,
 												labelHtml, isChecked, id, title) {
-		var appId = Jmol._getId(appletOrId);
+		var appId = Jmol.controls.controls._getIdForControl(appletOrId, scriptWhenChecked);
+		if (appId != null)
+			appId = Jmol.controls._getIdForControl(appletOrId, scriptWhenUnchecked);
+		if (appId == null)
+			return "";
+
 		var c = Jmol.controls;
 		//_jmolInitCheck();
 		id != undefined && id != null || (id = "jmolCheckbox" + c._checkboxCount);
@@ -199,7 +206,9 @@
 	}
 
 	Jmol.jmolCommandInput = function(appletOrId, label, size, id, title) {
-		var appId = Jmol._getId(appletOrId);
+		var appId = Jmol.controls._getIdForControl(appletOrId, "x");
+		if (appId == null)
+			return "";
 		var c = Jmol.controls;
 		//_jmolInitCheck();
 		id != undefined && id != null || (id = "jmolCmd" + c._cmdCount);
@@ -218,7 +227,9 @@
 	}
 	
 	Jmol.jmolLink = function(appletOrId, script, label, id, title) {
-		var appId = Jmol._getId(appletOrId);
+		var appId = Jmol.controls._getIdForControl(appletOrId, script);
+		if (appId == null)
+			return "";
 		var c = Jmol.controls;
 		//_jmolInitCheck();
 		id != undefined && id != null || (id = "jmolLink" + c._linkCount);
@@ -235,7 +246,7 @@
 	}
 	
 	Jmol.jmolMenu = function(appletorId, arrayOfMenuItems, size, id, title) {
-		var appId = Jmol._getId(appletOrId);
+		var appId = Jmol.controls._getIdForControl(appletOrId, null);
 		var c = Jmol.controls;
 		//_jmolInitCheck();
 		id != undefined && id != null || (id = "jmolMenu" + c._menuCount);
@@ -264,12 +275,15 @@
 				} else {
 					script = text = menuItem;
 				}
+				appId = Jmol.controls._getIdForControl(appletOrId, script);
+				if (appId == null)
+					return "";
 				text == null && (text = script);
 				if (script=="#optgroup") {
 					t += "<optgroup label='" + text + "'>";
-			} else if (script=="#optgroupEnd") {
+				} else if (script=="#optgroupEnd") {
 					t += "</optgroup>";
-			} else {
+				} else {
 					var scriptIndex = c._addScript(appId, script);
 					var selectedText = isSelected ? "' selected='true'>" : "'>";
 					t += "<option value='" + scriptIndex + selectedText + text + "</option>";
@@ -283,18 +297,18 @@
 	}
 	
 	Jmol.jmolRadio = function(appletOrId, script, labelHtml, isChecked, separatorHtml, groupName, id, title) {
-		var appId = Jmol._getId(appletOrId);
 		//_jmolInitCheck();
 		if (Jmol.controls._radioGroupCount == 0)
 			++Jmol.controls._radioGroupCount;
-		var t = Jmol.controls._getRadio(appId, script, labelHtml, isChecked, separatorHtml, groupName, (id ? id : groupName + "_" + Jmol._radioCount), title ? title : 0);
+		var t = Jmol.controls._getRadio(appletOrId, script, labelHtml, isChecked, separatorHtml, groupName, (id ? id : groupName + "_" + Jmol._radioCount), title ? title : 0);
+		if (t == null)
+			return "";
 		if (Jmol._debugAlert)
 			alert(t);
 		return Jmol._documentWrite(t);
 	}
 	
 	Jmol.jmolRadioGroup = function (appletOrId, arrayOfRadioButtons, separatorHtml, groupName, id, title) {
-		var appId = Jmol._getId(appletOrId);
 		/*
 	
 			array: [radio1,radio2,radio3...]
@@ -319,11 +333,14 @@
 				separatorHtml = "";
 			var radio = arrayOfRadioButtons[i];
 			type = typeof radio;
+			var s = null;
 			if (type == "object") {
-				t += c._getRadio(appId, radio[0], radio[1], radio[2], separatorHtml, groupName, (radio.length > 3 ? radio[3]: (id ? id : groupName)+"_"+i), (radio.length > 4 ? radio[4] : 0), title);
+				t += (s = c._getRadio(appletOrId, radio[0], radio[1], radio[2], separatorHtml, groupName, (radio.length > 3 ? radio[3]: (id ? id : groupName)+"_"+i), (radio.length > 4 ? radio[4] : 0), title));
 			} else {
-				t += c._getRadio(appId, radio, null, null, separatorHtml, groupName, (id ? id : groupName)+"_"+i, title);
+				t += (s = c._getRadio(appletOrId, radio, null, null, separatorHtml, groupName, (id ? id : groupName)+"_"+i, title));
 			}
+			if (s == null)
+			  return "";
 		}
 		t+="</span>"
 		if (Jmol._debugAlert)

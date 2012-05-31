@@ -2,10 +2,16 @@
 
 // see JmolApi.js for public user-interface. All these are private functions
 
+// 5/31/2012 BH: added JSpecView interface and api -- see JmolJSV.js
+//               also changed "jmolJarPath" to just "jarPath"
+//               jmolJarFile->jarFile, jmolIsSigned->isSigned, jmolReadyFunction->readyFunction
+//               also corrects a double-loading issue
 // 5/14/2012 5:28:03 PM BH: added AJAX queue for ChemDoodle option with multiple canvases 
 
 // allows Jmol applets to be created on a page with more flexibility and extendability
-// possibly using infrastructure of ChemDoodle for multiplatform doodlable structures
+// provides an object-oriented interface for JSpecView and syncing of Jmol/JSpecView
+
+// optional use of infrastructure of ChemDoodle for multiplatform doodlable structures
 
 // required/optional libraries (preferably in the following order):
 
@@ -17,6 +23,8 @@
 //		JmolApplet.js    -- required; internal functions for _Applet and _Image; must be after JmolCore
 //		JmolControls.js  -- optional; internal functions for buttons, links, menus, etc.; must be after JmolCore
 //		JmolApi.js       -- required; all user functions; must be after JmolCore
+//		JmolJSV.js       -- optional; for creating and interacting with a JSpecView applet 
+//                          (requires JSpecViewApplet.jar or JSpecViewAppletSigned.jar
 //		JmolCD.js        -- optional; for ChemDoodle option; must be after JmolApplet
 
 // Allows Jmol-like objects to be displayed on Java-challenged (iPad/iPhone)
@@ -44,9 +52,9 @@ Jmol = (function(document) {
 			version: version = 'Jmol 12.3.23'
 		},
 		_serverUrl: "http://chemapps.stolaf.edu/jmol/jmolcd2.php",
-		_asynchronous: !0,
+		_asynchronous: true,
 		_document: document,
-		_debugAlert: !1,
+		_debugAlert: false,
 		_targetId: "jmolApplet0",
 		_target: null,
 		_isMsieRenderBug: (navigator.userAgent.toLowerCase().indexOf("msie") >= 0),
@@ -309,6 +317,10 @@ xxx=info
 		return (d || {});
 	}	
 
+	Jmol._getId = function(appletOrId) {
+		return (typeof appletOrId == "string" ? appletOrId : appletOrId._id);
+	}
+		
 	Jmol.featureDetection = (function(document, window) {
 		
 		var features = {};
@@ -503,5 +515,50 @@ xxx=info
 		return B;
 	}
 
+  /////////  general start-up syncing and Jmol/JSpecView sync support ///////
+  
+	Jmol._syncedApplets = [];
+	Jmol._syncedCommands = [];
+	Jmol._syncedReady = [];
+	Jmol._syncReady = false;
+  Jmol._isJmolJSVSync = false;
+
+  Jmol._setReady = function(applet) {
+    Jmol._syncedReady[applet] = 1;
+    var n = 0;
+    for (var i = 0; i < Jmol._syncedApplets.length; i++) {
+      if (Jmol._syncedApplets[i] == applet._id) {
+        Jmol._syncedApplets[i] = applet;
+        Jmol._syncedReady[i] = 1;
+      } else if (!Jmol._syncedReady[i]) {
+        continue;
+      }
+      n++;
+		}
+		if (n != Jmol._syncedApplets.length)
+			return;
+		Jmol._setSyncReady();
+	}
 	
+	Jmol._setSyncReady = function() {
+	  Jmol._syncReady = true;
+	  var s = ""
+    for (var i = 0; i < Jmol._syncedApplets.length; i++)
+    	if (Jmol._syncedCommands[i])
+        s += "Jmol.script(Jmol._syncedApplets[" + i + "], Jmol._syncedCommands[" + i + "]);"
+    setTimeout(s, 50);  
+	}
+
+	Jmol._mySyncCallback = function (app,msg) {
+	  if (!Jmol._syncReady || !Jmol._isJmolJSVSync)
+	  	return 1; // continue processing and ignore me
+    for (var i = 0; i < Jmol._syncedApplets.length; i++) {
+      if (msg.indexOf(Jmol._syncedApplets[i]._syncKeyword) >= 0) {
+        Jmol._syncedApplets[i]._syncScript(msg);
+      }
+    }
+	  return 0 // prevents further Jmol sync processing	
+	}
+
+
 })(Jmol);

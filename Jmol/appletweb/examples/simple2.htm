@@ -4,11 +4,11 @@
 <script type="text/javascript" src="gl-matrix-min.js" title="optional; replaces ChemDoodleWeb-lib;required if using ChemDoodle option"></script>
 <script type="text/javascript" src="mousewheel.js" title="optional; replaces ChemDoodleWeb-lib;required if using ChemDoodle option"></script>
 <script type="text/javascript" src="ChemDoodleWeb-unpacked.js" title="optional; required only if using ChemDoodle option"></script>
-<script type="text/javascript" src="JmolCore.js"></script>
-<script type="text/javascript" src="JmolApplet.js"></script>
-<script type="text/javascript" src="JmolCD.js"></script>
-<script type="text/javascript" src="JmolControls.js"></script>
-<script type="text/javascript" src="JmolApi.js"></script>
+<script type="text/javascript" src="../JmolCore.js"></script>
+<script type="text/javascript" src="../JmolApplet.js"></script>
+<script type="text/javascript" src="../JmolCD.js"></script>
+<script type="text/javascript" src="../JmolControls.js"></script>
+<script type="text/javascript" src="../JmolApi.js"></script>
 
 <script type="text/javascript">
 
@@ -43,12 +43,12 @@ var Info = {
 	useJmolOnly: useJmolOnly,
 	useWebGlIfAvailable: useWebGlIfAvailable,
 	useImageOnly: useImageOnly,
-	jmolJarPath: ".",
-	jmolJarFile: (useSignedApplet ? "JmolAppletSigned.jar" : "JmolApplet.jar"),
-	jmolIsSigned: useSignedApplet,
+	jarPath: "..",
+	jarFile: (useSignedApplet ? "JmolAppletSigned.jar" : "JmolApplet.jar"),
+	isSigned: useSignedApplet,
 	addSelectionOptions: false,
 	serverURL: "http://chemapps.stolaf.edu/jmol/jmolcd2.php",
-	jmolReadyFunction: null,
+	readyFunction: null,
 	defaultModel: null,
 	debug: false
 }
@@ -80,6 +80,12 @@ appletCheck = Jmol.getApplet(jmol, Info, true);
 		Jmol.jmolLink(jmol,"set modelkitmode", "on")
 		Jmol.jmolHtml("    ");
 		Jmol.jmolLink(jmol,"set modelkitmode off", "off")
+		Jmol.jmolBr();
+		Jmol.jmolHtml("Display calculated MMFF94 energy ")
+		Jmol.jmolLink(jmol,"set minimizationSteps 200;set loadstructcallback 'minimize energy';set minimizationcallback '';set echo top left;echo @{'' + _minimizationEnergy + ' kJ/mol'};minimize energy", "on")
+		Jmol.jmolHtml("    ");
+		Jmol.jmolLink(jmol,"echo '';set minimizationCallback '';set loadstructcallback ''", "off")
+
 	
 	} else {
 	
@@ -101,11 +107,13 @@ jmol = Jmol.getApplet(jmol, Info);
 </td><td>
 <script type="text/javascript">
 Jmol.setButtonCss(null, "style='width:160'")
-Jmol.jmolButton(jmol,"if (!molname) { molname = 'ethanol'};var x = prompt('Enter the name of a compound to see its electrostatic potential map',molname);if (!x) { quit }; molname = x; load @{':' + molname};isosurface vdw map MEP translucent","Load MOL + MEP")
+Jmol.jmolButton(jmol,"if (!molname) { molname = 'ethanol'};var x = prompt('Enter the name of a compound to see its electrostatic potential map',molname);if (!x) { quit }; molname = x; load @{':' + molname};isosurface s1 vdw map MEP translucent","Load MOL + MEP")
 Jmol.jmolBr()
 Jmol.jmolButton(jmol,"if (!molname) { molname = 'tylenol'};var x = prompt('Enter the name of a compound',molname);if (!x) { quit }; molname = x; load @{':' + molname} #alt:LOAD :??Enter a model name","Load MOL (PubChem)")
 Jmol.jmolBr()
 Jmol.jmolButton(jmol,"if (!molname) { molname = 'tylenol'};var x = prompt('Enter the name or identifier (SMILES, InChI, CAS) of a molecule',molname);if (!x) { quit }; molname = x; load @{'$' + molname} #alt:LOAD $??Enter a model name","Load MOL (NCI)")
+Jmol.jmolBr()
+Jmol.jmolButton(jmol,"minimize","Minimize (MMFF94)")
 Jmol.jmolBr()
 Jmol.jmolButton(jmol,"load ? ","Load URL")
 Jmol.jmolBr()
@@ -113,6 +121,8 @@ Jmol.jmolButton(jmol,"load ? ","Load FILE")
 Jmol.jmolBr()
 Jmol.jmolButton(jmol,"script ?.spt","Load SCRIPT")
 Jmol.jmolBr()
+Jmol.jmolBr()
+Jmol.jmolButton(jmol,"select *;if ($s1) {isosurface s1 delete} else {calculate partialcharge;isosurface s1 vdw map MEP translucent}","show/hide MEP")
 Jmol.jmolBr()
 Jmol.jmolButton(jmol,"show NMR","Predict NMR")
 Jmol.jmolBr()
@@ -123,7 +133,7 @@ Jmol.jmolButton(jmol,"write STATE ?.spt","Save STATE")
 Jmol.jmolBr()
 Jmol.jmolButton(jmol,"write IMAGE ?.jpg","Save JPG")
 Jmol.jmolBr()
-Jmol.jmolButton(jmol,"write IMAGE ?.png","Save PNG")
+Jmol.jmolButton(jmol,"write PNGJ ?.png","Save PNG")
 Jmol.jmolBr()
 
 

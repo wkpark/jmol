@@ -22,10 +22,10 @@
 			useJmolOnly: true,
 			useWebGlIfAvailable: true,
 			useImageOnly: false,
-			jmolIsSigned: false,
-			jmolJarPath: ".",
-			jmolJarFile: "JmolApplet0.jar",
-			jmolReadyFunction: null,
+			isSigned: false,
+			jarPath: ".",
+			jarFile: "JmolApplet0.jar",
+			readyFunction: null,
 			script: null
 		});
 		Jmol._debugAlert = Info.debug;	
@@ -34,8 +34,8 @@
 		var applet = null;
 		if (!Info.useChemDoodleOnly && !Info.useImageOnly && navigator.javaEnabled()) {
 		
-			Info.jmolJarFile || (Info.jmolJarFile = (Info.jmolIsSigned ? "JmolAppletSigned0.jar" : "JmolApplet0.jar")); 
-			Info.jmolJarPath || (Info.jmolJarPath = "."); 
+			Info.jarFile || (Info.jarFile = (Info.isSigned ? "JmolAppletSigned0.jar" : "JmolApplet0.jar")); 
+			Info.jarPath || (Info.jarPath = "."); 
 			 
 		// Jmol applet, signed or unsigned
 		
@@ -144,9 +144,7 @@
 	}
 
 	Jmol.jmolButton = function(appletOrId, script, label, id, title) {
-		var appId = Jmol.setTarget(appletOrId, script);
-		if (appId == null)
-			return "";
+		var appId = Jmol._getId(appletOrId);
 		var c = Jmol.controls;
 		//_jmolInitCheck();
 		id != undefined && id != null || (id = "jmolButton" + c._buttonCount);
@@ -166,9 +164,7 @@
 	
 	Jmol.jmolCheckbox = function(appletOrId, scriptWhenChecked, scriptWhenUnchecked,
 												labelHtml, isChecked, id, title) {
-		var appId = Jmol.setTarget(appletOrId, "x");
-		if (appId == null)
-			return "";
+		var appId = Jmol._getId(appletOrId);
 		var c = Jmol.controls;
 		//_jmolInitCheck();
 		id != undefined && id != null || (id = "jmolCheckbox" + c._checkboxCount);
@@ -203,9 +199,7 @@
 	}
 
 	Jmol.jmolCommandInput = function(appletOrId, label, size, id, title) {
-		var appId = Jmol.setTarget(appletOrId, "x");
-		if (appId == null)
-			return "";
+		var appId = Jmol._getId(appletOrId);
 		var c = Jmol.controls;
 		//_jmolInitCheck();
 		id != undefined && id != null || (id = "jmolCmd" + c._cmdCount);
@@ -224,9 +218,7 @@
 	}
 	
 	Jmol.jmolLink = function(appletOrId, script, label, id, title) {
-		var appId = Jmol.setTarget(appletOrId, script);
-		if (appId == null)
-			return "";
+		var appId = Jmol._getId(appletOrId);
 		var c = Jmol.controls;
 		//_jmolInitCheck();
 		id != undefined && id != null || (id = "jmolLink" + c._linkCount);
@@ -243,9 +235,7 @@
 	}
 	
 	Jmol.jmolMenu = function(appletorId, arrayOfMenuItems, size, id, title) {
-		var appId = Jmol.setTarget(appletOrId, null);
-		if (appId == null)
-			return "";
+		var appId = Jmol._getId(appletOrId);
 		var c = Jmol.controls;
 		//_jmolInitCheck();
 		id != undefined && id != null || (id = "jmolMenu" + c._menuCount);
@@ -280,8 +270,6 @@
 			} else if (script=="#optgroupEnd") {
 					t += "</optgroup>";
 			} else {
-					if (Jmol.setTarget(appletOrId, script) == null)
-						return "";
 					var scriptIndex = c._addScript(appId, script);
 					var selectedText = isSelected ? "' selected='true'>" : "'>";
 					t += "<option value='" + scriptIndex + selectedText + text + "</option>";
@@ -295,9 +283,7 @@
 	}
 	
 	Jmol.jmolRadio = function(appletOrId, script, labelHtml, isChecked, separatorHtml, groupName, id, title) {
-		var appId = Jmol.setTarget(appletOrId, script);
-		if (appId == null)
-			return "";
+		var appId = Jmol._getId(appletOrId);
 		//_jmolInitCheck();
 		if (Jmol.controls._radioGroupCount == 0)
 			++Jmol.controls._radioGroupCount;
@@ -308,7 +294,7 @@
 	}
 	
 	Jmol.jmolRadioGroup = function (appletOrId, arrayOfRadioButtons, separatorHtml, groupName, id, title) {
-		var appId = Jmol.setTarget(appletOrId, null);
+		var appId = Jmol._getId(appletOrId);
 		/*
 	
 			array: [radio1,radio2,radio3...]
@@ -334,12 +320,8 @@
 			var radio = arrayOfRadioButtons[i];
 			type = typeof radio;
 			if (type == "object") {
-				if (Jmol.setTarget(appletOrId, radio[0]) == null)
-					return "";
 				t += c._getRadio(appId, radio[0], radio[1], radio[2], separatorHtml, groupName, (radio.length > 3 ? radio[3]: (id ? id : groupName)+"_"+i), (radio.length > 4 ? radio[4] : 0), title);
 			} else {
-				if (Jmol.setTarget(appletOrId, radio) == null)
-					return "";
 				t += c._getRadio(appId, radio, null, null, separatorHtml, groupName, (id ? id : groupName)+"_"+i, title);
 			}
 		}
@@ -376,17 +358,6 @@
 		Jmol._document = doc;
 	}
 
-	Jmol.setTarget = function(appletOrId, script) {
-
-		// Specify a target for future control creation where the control is indicated as null.
-		// Really shouldn't be needing this. It is always best to be explicit.
-		
-		if (appletOrId) {
-			Jmol._targetId = (typeof appletOrId == "string" ? appletOrId : (Jmol._target = appletOrId)._id);
-		}			
-		return (script && Jmol._target && !Jmol._target._canScript(script) ? null : Jmol._targetId);
-	}
-		
 	Jmol.setXHTML = function(id) {
 		Jmol._isXHTML = true;
 		Jmol._XhtmlElement = null;
@@ -434,5 +405,10 @@
 		Jmol.controls._menuCssText = text ? text + " ": cssClass ? "class=\"" + cssClass + "\" " : "";
 	}
 
-	
+  Jmol.setAppletSync = function(applets, commands, isJmolJSV) {
+    Jmol._syncedApplets = applets;   // an array of appletIDs
+    Jmol._syncedCommands = commands; // an array of commands; one or more may be null 
+    Jmol._syncedReady = {};
+    Jmol._isJmolJSVSync = isJmolJSV;
+	}	
 })(Jmol);

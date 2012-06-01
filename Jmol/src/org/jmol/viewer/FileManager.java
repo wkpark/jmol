@@ -938,9 +938,11 @@ public class FileManager {
   private String[] classifyName(String name, boolean isFullLoad) {
     if (name == null)
       return new String[] { null };
-    if (name.startsWith("?")
-        && (name = viewer.dialogAsk("load", name.substring(1))) == null) {
-      return new String[] { isFullLoad ? "#CANCELED#" : null };
+    boolean doSetPathForAllFiles = (pathForAllFiles.length() > 0);
+    if (name.startsWith("?")) {
+       if ((name = viewer.dialogAsk("load", name.substring(1))) == null)
+         return new String[] { isFullLoad ? "#CANCELED#" : null };
+       doSetPathForAllFiles = false;
     }
     File file = null;
     URL url = null;
@@ -978,7 +980,7 @@ public class FileManager {
       names[0] = names[2] = url.toString();
       names[1] = stripPath(names[0]);
     }
-    if (pathForAllFiles.length() > 0) {
+    if (doSetPathForAllFiles) {
       String name0 = names[0];
       names[0] = pathForAllFiles + names[1];
       Logger.info("FileManager substituting " + name0 + " --> " + names[0]);

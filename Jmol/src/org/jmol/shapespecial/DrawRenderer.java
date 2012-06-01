@@ -220,7 +220,7 @@ public class DrawRenderer extends MeshRenderer {
     case ARROW:
       if (vertexCount == 2) {
         renderArrowHead(vertices[0], vertices[1], 0, false, true, dmesh.isBarb);
-        return;
+        break;
       }
       int nHermites = 5;
       if (controlHermites == null || controlHermites.length < nHermites + 1) {

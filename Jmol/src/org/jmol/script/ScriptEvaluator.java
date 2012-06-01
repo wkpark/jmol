@@ -1900,12 +1900,20 @@ public class ScriptEvaluator {
       setErrorMessage("io error reading " + data[0] + ": " + data[1]);
       return false;
     }
+    if (data[1].indexOf("\nJmolManifest.txt\n") > 0) {
+      data[0] = filename += "|JmolManifest.txt";
+      if (!viewer.getFileAsString(data, Integer.MAX_VALUE, false)) {
+        setErrorMessage("io error reading " + data[0] + ": " + data[1]);
+        return false;
+      }
+    }
     this.filename = filename;
     data[1] = ScriptCompiler.getEmbeddedScript(data[1]);
     String script = fixScriptPath(data[1], data[0]);
     if (scriptPath == null) {
       scriptPath = viewer.getFilePath(filename, false);
-      scriptPath = scriptPath.substring(0, scriptPath.lastIndexOf("/"));
+      scriptPath = scriptPath.substring(0, Math.max(
+          scriptPath.lastIndexOf("|"), scriptPath.lastIndexOf("/")));
     }
     script = FileManager.setScriptFileReferences(script, localPath, remotePath,
         scriptPath);
@@ -8581,8 +8589,14 @@ public class ScriptEvaluator {
     
     int filePt = i;
     String localName = null;
-    if (tokAt(filePt + 1) == Token.as)
+    if (tokAt(filePt + 1) == Token.as) {
       localName = stringParameter(i = i + 2);
+      if (viewer.getPathForAllFiles() != "") {
+        // we use the LOCAL name when reading from a local path only (in the case of JMOL files)
+        localName = null;
+        filePt = i;
+      }
+    }
     
     if (statementLength == i + 1) {
 
@@ -14013,7 +14027,8 @@ public class ScriptEvaluator {
       args = statement;
       pt = pt0 = 1;
       isCommand = true;
-      isShow = (viewer.isApplet() && !viewer.isSignedApplet() || viewer.isRestricted());
+      isShow = (viewer.isApplet() && !viewer.isSignedApplet() 
+          || viewer.isRestricted() || viewer.getPathForAllFiles().length() > 0);
     } else {
       isCommand = false;
       isShow = true;
@@ -14040,13 +14055,27 @@ public class ScriptEvaluator {
     boolean isExport = false;
     boolean isImage = false;
     BitSet bsFrames = null;
-    if (tok == Token.string) {
+    String[] scripts = null;
+    switch (tok) {
+    case Token.string:
       Token t = Token.getTokenFromName(ScriptVariable.sValue(args[pt])
           .toLowerCase());
       if (t != null)
         tok = t.tok;
+      break;
+    case Token.script:
+      if (isArrayParameter(pt + 1)) {
+        scripts = stringParameterSet(++pt);
+        localPath = ".";
+        remotePath = ".";
+        pt0 = pt = iToken + 1;
+        tok = tokAt(pt);
+      }
+      break;
     }
     switch (tok) {
+    case Token.nada:
+      break;
     case Token.quaternion:
     case Token.ramachandran:
     case Token.property:
@@ -14272,6 +14301,12 @@ public class ScriptEvaluator {
           type = "XYZ";
       }
       isImage = Parser.isOneOf(type, "GIF;JPEG64;JPEG;JPG64;JPG;PPM;PNG;PNGJ;PNGT");
+      if (scripts != null) {
+        if (type.equals("PNG"))
+          type = "PNGJ";
+        else if (!type.equals("PNGJ") && !type.equals("ZIPALL"))
+          error(ERROR_invalidArgument);
+      }
       if (isImage && isShow)
         type = "JPG64";
       else if (!isImage
@@ -14306,7 +14341,7 @@ public class ScriptEvaluator {
             && fullPath[0] != null) {
           String ext = (type.equals("Idtf") ? ".tex" : ".ini");
           fileName = fullPath[0] + ext;
-          msg = viewer.createImage(fileName, ext, data, Integer.MIN_VALUE, 0,
+          msg = viewer.createImage(fileName, ext, data, null, Integer.MIN_VALUE, 0,
               0, null, 0, fullPath);
           if (type.equals("Idtf"))
             data = data.substring(0, data.indexOf("\\begin{comment}"));
@@ -14376,9 +14411,9 @@ public class ScriptEvaluator {
                 remotePath, null);
         }
       } else if (data == "ZIP" || data == "ZIPALL") {
+        
         data = (String) viewer.getProperty("string", "stateInfo", null);
-        bytes = viewer.createImage(fileName, type, data, Integer.MIN_VALUE, -1,
-            -1);
+        bytes = viewer.createZip(fileName, type, data, scripts);
       } else if (data == "HIS") {
         data = viewer.getSetHistory(Integer.MAX_VALUE);
         type = "SPT";
@@ -14432,7 +14467,7 @@ public class ScriptEvaluator {
       if (doDefer)
         msg = viewer.streamFileData(fileName, type, type2, 0, null);
       else
-        msg = viewer.createImage(fileName, type, bytes, quality, width, height,
+        msg = viewer.createImage(fileName, type, bytes, scripts, quality, width, height,
             bsFrames, nVibes, fullPath);
     }
     if (!isSyntaxCheck && msg != null) {
@@ -14472,6 +14507,11 @@ public class ScriptEvaluator {
       checkLength(2);
       if (!isSyntaxCheck)
         msg = viewer.calculateStructures(null, true, false);
+      break;
+    case Token.pathforallfiles:
+      checkLength(2);
+      if (!isSyntaxCheck)
+        msg = viewer.getPathForAllFiles();
       break;
     case Token.nmr:
     case Token.smiles:
@@ -17885,12 +17925,17 @@ public class ScriptEvaluator {
               if (tokAt(i + 1) == Token.as)
                 i += 2; // skip that
             } else if (tokAt(i + 1) == Token.as) {
-              localName = viewer.getFilePath(
-                  stringParameter(iToken = (i = i + 2)), false);
+              localName = viewer.getFilePath(stringParameter(iToken = (i = i + 2)), false);
               fullPathNameOrError = viewer.getFullPathNameOrError(localName);
               localName = fullPathNameOrError[0];
-              addShapeProperty(propertyList, "localName", localName);
-              viewer.setPrivateKeyForShape(iShape); // for the "AS" keyword to work
+              if (viewer.getPathForAllFiles() != "") {
+                // we use the LOCAL name when reading from a local path only (in the case of JMOL files)
+                filename = localName;
+                localName = null;
+              } else {
+                addShapeProperty(propertyList, "localName", localName);
+                viewer.setPrivateKeyForShape(iShape); // for the "AS" keyword to work
+              }
             }
             // just checking here, and getting the full path name
             if (!filename.startsWith("cache://")) {

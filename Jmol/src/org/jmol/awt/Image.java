@@ -74,8 +74,8 @@ class Image {
    * @throws InterruptedException 
    */
   static void waitForDisplay(Object display, Object image) throws InterruptedException {
-  //  return;
-    // I have no idea why JPGEncoder was requiring this.
+    // this is important primarily for retrieving images from 
+    // files, as in set echo ID myimage "image.gif"
     if (display == null)
       display = new JPanel();
     MediaTracker mediaTracker = new MediaTracker((Component) display);

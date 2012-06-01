@@ -770,10 +770,20 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
   }
 
   private boolean compileCommand() {
-    if (ltoken.size() == 0) {
+    switch (ltoken.size()) {
+    case 0:
       // comment
       atokenInfix = new Token[0];
       return true;
+    case 4:
+      // check for a command name in name.spt
+      if (isNewSet && tokenAt(2).value.equals(".") && tokenAt(3).value.equals("spt")) {
+        String fname = tokenAt(1).value + "." + tokenAt(3).value;
+        ltoken.clear();
+        addTokenToPrefix(Token.tokenScript);
+        addTokenToPrefix(new Token(Token.string, fname));
+        isNewSet = false;
+      }
     }
     setCommand(tokenAt(0));
     int size = ltoken.size();

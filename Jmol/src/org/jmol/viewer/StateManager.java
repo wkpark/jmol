@@ -565,7 +565,7 @@ public class StateManager {
         + ";legacyautobonding"
         + ";loglevel;logfile;loggestures;logcommands;measurestylechime"
         + ";loadformat;loadligandformat;smilesurlformat;pubchemformat;nihresolverformat;edsurlformat;edsurlcutoff;multiprocessor;navigationmode;"
-        + ";perspectivedepth;phongexponent;perspectivemodel;preservestate;refreshing;repaintwaitms;rotationradius"
+        + ";pathforallfiles;perspectivedepth;phongexponent;perspectivemodel;preservestate;refreshing;repaintwaitms;rotationradius"
         + ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showunitcell"
         + ";slabenabled;slab;slabrange;depth;zshade;zshadepower;specular;specularexponent;specularpercent;specularpower;stateversion"
         + ";statusreporting;stereo;stereostate;vibrationperiod"
@@ -715,6 +715,7 @@ public class StateManager {
       setParameterValue("navX", 0);              // maintained by TransformManager
       setParameterValue("navY", 0);              // maintained by TransformManager
       setParameterValue("navZ", 0);              // maintained by TransformManager
+      setParameterValue("pathForAllFiles", "");
       setParameterValue("perspectiveModel", TransformManager.DEFAULT_PERSPECTIVE_MODEL);
       setParameterValue("picking", "identify");      // maintained by ActionManager
       setParameterValue("pickingStyle", "toggle");   // maintained by ActionManager
@@ -1435,14 +1436,13 @@ public class StateManager {
     }
 
     void unsetUserVariable(String key) {
-      key = key.toLowerCase();
-        if (key.equals("all") || key.equals("variables")) {
-          htUserVariables.clear();
-          Logger.info("all user-defined variables deleted");
-        } else if (htUserVariables.containsKey(key)) {
-          Logger.info("variable " + key + " deleted");
-          htUserVariables.remove(key);
-        }
+      if (key.equals("all") || key.equals("variables")) {
+        htUserVariables.clear();
+        Logger.info("all user-defined variables deleted");
+      } else if (htUserVariables.containsKey(key)) {
+        Logger.info("variable " + key + " deleted");
+        htUserVariables.remove(key);
+      }
     }
 
     void removeUserVariable(String key) {
@@ -1695,7 +1695,6 @@ public class StateManager {
     }
     
     private boolean haveSetStructureList;
-    
     
     public void setStructureList(float[] list, EnumStructure type) {
       haveSetStructureList = true;

@@ -895,6 +895,9 @@ public class Resolver {
 
   private final static int LEADER_CHAR_MAX = 64;
   
+  private final static String[] sptContainsRecords = 
+  { "spt", "# Jmol state", "# Jmol script" };
+  
   private final static String[] cubeFileStartRecords =
   {"Cube", "JVXL", "#JVXL"};
 
@@ -920,7 +923,7 @@ public class Resolver {
   {"MagRes", "# magres"};
 
   private final static String[][] fileStartsWithRecords =
-  { cubeFileStartRecords, mol2Records, webmoFileStartRecords, 
+  { sptContainsRecords, cubeFileStartRecords, mol2Records, webmoFileStartRecords, 
     moldenFileStartRecords, dcdFileStartRecords, tlsDataOnlyFileStartRecords,
     zMatrixFileStartRecords, magResFileStartRecords };
 
@@ -988,9 +991,6 @@ public class Resolver {
   // contains formats
   ////////////////////////////////////////////////////////////////
 
-  private final static String[] sptContainsRecords = 
-  { "spt", "# Jmol state" };
-  
   private final static String[] xmlContainsRecords = 
   { "Xml", "<?xml", "<atom", "<molecule", "<reaction", "<cml", "<bond", ".dtd\"",
     "<list>", "<entry", "<identifier", "http://www.xml-cml.org/schema/cml2/core" };

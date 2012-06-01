@@ -735,7 +735,7 @@ public class _ObjExporter extends __CartesianExporter {
       ImageCreator ic = new ImageCreator();
       // we need the viewer's private key to access the image creator
       ic.setViewer(viewer, privateKey);
-      return ic.createImage(fileName, type, image, Integer.MIN_VALUE);
+      return ic.createImage(fileName, type, image, null, Integer.MIN_VALUE);
     }
     /*  TGA test -- not worth it 
     // write simple TGA file

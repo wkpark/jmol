@@ -814,14 +814,15 @@ public class Token {
   public final static int logfile                        = strparam | 47;
   public final static int measurementunits               = strparam | 48; 
   public final static int nmrurlformat                   = strparam | 49;
-  public final static int picking                        = strparam | 50;
-  public final static int pickingstyle                   = strparam | 51;
-  public final static int picklabel                      = strparam | 52;
-  public final static int propertycolorscheme            = strparam | 54;
-  public final static int quaternionframe                = strparam | 58;
-  public final static int smilesurlformat                = strparam | 60;
-  public final static int smiles2dimageformat            = strparam | 61;
-  public final static int unitcellcolor                  = strparam | 62;
+  public final static int pathforallfiles                = strparam | 50;
+  public final static int picking                        = strparam | 52;
+  public final static int pickingstyle                   = strparam | 54;
+  public final static int picklabel                      = strparam | 56;
+  public final static int propertycolorscheme            = strparam | 58;
+  public final static int quaternionframe                = strparam | 60;
+  public final static int smilesurlformat                = strparam | 62;
+  public final static int smiles2dimageformat            = strparam | 64;
+  public final static int unitcellcolor                  = strparam | 66;
   
   public final static int axesscale                      = floatparam | 2;
   public final static int bondtolerance                  = floatparam | 4;
@@ -1055,7 +1056,7 @@ public class Token {
   final static int area          = misc  | 18;
   final static int aromatic      = misc  | 20 | predefinedset;
   final static int arrow         = misc  | 22;
-  final static int as            = misc  | 24;
+  final static int as            = misc  | 24; // for LOAD and ISOSURFACE only
   final static int atomicorbital = misc  | 26;
   public final static int auto   = misc  | 28;
   public final static int axis   = misc  | 30;
@@ -2162,6 +2163,7 @@ public class Token {
       "logFile",                                  new Token(logfile),
       "measurementUnits",                         new Token(measurementunits),
       "nmrUrlFormat",                             new Token(nmrurlformat),
+      "pathForAllFiles",                          new Token(pathforallfiles),
       "picking",                                  new Token(picking),
       "pickingStyle",                             new Token(pickingstyle),
       "pickLabel",                                new Token(picklabel),

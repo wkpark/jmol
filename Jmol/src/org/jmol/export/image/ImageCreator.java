@@ -93,11 +93,12 @@ public class ImageCreator implements JmolImageCreatorInterface {
    * @param fileName
    * @param type
    * @param text_or_bytes
+   * @param scripts 
    * @param quality
    * @return          null (canceled) or a message starting with OK or an error message
    */
   public Object createImage(String fileName, String type, Object text_or_bytes,
-                            int quality) {
+                            String[] scripts, int quality) {
     // this method may not be accessed, though public, unless 
     // accessed via viewer, which provides its private key.
     if (!viewer.checkPrivateKey(privateKey))
@@ -118,7 +119,7 @@ public class ImageCreator implements JmolImageCreatorInterface {
         return "NO DATA";
       if (isBytes) {
         if (text_or_bytes instanceof Image) {
-          getImageBytes(type, quality, fileName, text_or_bytes, null);
+          getImageBytes(type, quality, fileName, scripts, text_or_bytes, null);
           return fileName;
         }
         len = ((byte[]) text_or_bytes).length;
@@ -136,7 +137,7 @@ public class ImageCreator implements JmolImageCreatorInterface {
         os = null;
       } else {
         len = 1;
-        Object bytesOrError = getImageBytes(type, quality, fileName,
+        Object bytesOrError = getImageBytes(type, quality, fileName, scripts,
             (appendText ? text_or_bytes : null), null);
         if (bytesOrError instanceof String)
           return bytesOrError;
@@ -165,7 +166,7 @@ public class ImageCreator implements JmolImageCreatorInterface {
         + (quality == Integer.MIN_VALUE ? "" : "; quality=" + quality));
   }
 
-  public Object getImageBytes(String type, int quality, String fileName,
+  public Object getImageBytes(String type, int quality, String fileName, String[] scripts,
                               Object appendText, OutputStream os)
       throws IOException {
     byte[] bytes = null;
@@ -184,7 +185,7 @@ public class ImageCreator implements JmolImageCreatorInterface {
         boolean includeState = (asBytes && type.equals("PNGJ") || !asBytes
             && appendText == null);
         if (type.equals("PNGJ") && includeState)
-          ret = viewer.getWrappedState(true, true, image.getWidth(null), image
+          ret = viewer.getWrappedState(scripts, true, true, image.getWidth(null), image
               .getHeight(null));
         if (isOsTemp)
           os = new FileOutputStream(fileName);
@@ -195,7 +196,7 @@ public class ImageCreator implements JmolImageCreatorInterface {
             bytes = JpegEncoder.getBytes(viewer.getApiPlatform(), image,
                 quality, Viewer.getJmolVersion());
           } else {
-            String caption = (includeState ? (String) viewer.getWrappedState(true, false, image
+            String caption = (includeState ? (String) viewer.getWrappedState(null, true, false, image
                     .getWidth(null), image.getHeight(null)) : Viewer.getJmolVersion());
             JpegEncoder.write(viewer.getApiPlatform(), image, quality, os,
                 caption);
@@ -226,7 +227,7 @@ public class ImageCreator implements JmolImageCreatorInterface {
             for (int i = nbytes.length, pt = 63; --i >= 0; --pt)
               b[pt] = nbytes[i];
             if (ret == null)
-              ret = viewer.getWrappedState(true, false, image.getWidth(null),
+              ret = viewer.getWrappedState(scripts, true, false, image.getWidth(null),
                   image.getHeight(null));
             bytes = (ret instanceof byte[] ? (byte[]) ret : ((String) ret)
                 .getBytes());

@@ -28,6 +28,7 @@ import org.jmol.util.ArrayUtil;
 import org.jmol.util.Base64;
 import org.jmol.util.BinaryDocument;
 import org.jmol.util.CompoundDocument;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;
@@ -82,6 +83,18 @@ public class FileManager {
     if (viewer.getPreserveState()) {
       htParams.put("loadState", viewer.getLoadState(htParams));
     }
+  }
+
+  private String pathForAllFiles = "";
+  
+  String getPathForAllFiles() {
+    return pathForAllFiles;
+  }
+  
+  String setPathForAllFiles(String value) {
+    if (value.length() > 0 && !value.endsWith("/") && !value.endsWith("|"))
+        value += "/";
+    return pathForAllFiles = value;
   }
 
   String nameAsGiven = "zapped";
@@ -963,7 +976,12 @@ public class FileManager {
     if (url != null) {
       names = new String[3];
       names[0] = names[2] = url.toString();
-      names[1] = names[0].substring(names[0].lastIndexOf('/') + 1);
+      names[1] = stripPath(names[0]);
+    }
+    if (pathForAllFiles.length() > 0) {
+      String name0 = names[0];
+      names[0] = pathForAllFiles + names[1];
+      Logger.info("FileManager substituting " + name0 + " --> " + names[0]);
     }
     if (isFullLoad && (file != null || urlTypeIndex(names[0]) == URL_LOCAL)) {
       String path = (file == null ? TextFormat.trim(names[0].substring(5), "/")
@@ -1191,12 +1209,18 @@ public class FileManager {
     }
   }
 
-  Object createZipSet(String fileName, String script, boolean includeRemoteFiles) {
+  Object createZipSet(String fileName, String script, String[] scripts, boolean includeRemoteFiles) {
     List<Object> v = new ArrayList<Object>();
     List<String> fileNames = new ArrayList<String>();
-    //System.out.println("F2M " + script);
     getFileReferences(script, fileNames);
-    List<String> newFileNames = new ArrayList<String>();
+    boolean haveScripts = (scripts != null && scripts.length > 0);
+    if (haveScripts) {
+      String vname = "v__" + ("" + Math.random()).substring(3);
+      script = "# Jmol script\n{\n\tVar " + vname + " = pathForAllFiles\n\tpathForAllFiles=\"$SCRIPT_PATH$\"\n\ttry {\n\t\tscript " + Escape.escape(scripts[0]) + "\n\t}\n\tpathForAllFiles = " + vname + "\n}\n";
+      for (int i = 0; i < scripts.length; i++)
+        fileNames.add(scripts[i]);
+    }
+    //System.out.println("F2M " + script);
     int nFiles = fileNames.size();
     if (fileName != null)
       fileName = fileName.replace('\\', '/');
@@ -1206,14 +1230,14 @@ public class FileManager {
       if (fileRoot.indexOf(".") >= 0)
         fileRoot = fileRoot.substring(0, fileRoot.indexOf("."));
     }
+    List<String> newFileNames = new ArrayList<String>();
     for (int iFile = 0; iFile < nFiles; iFile++) {
       String name = fileNames.get(iFile);
       int itype = urlTypeIndex(name);
       boolean isLocal = (itype < 0 || itype == URL_LOCAL);
       if (isLocal || includeRemoteFiles) {
         v.add(name);
-        int pt = Math.max(name.lastIndexOf("|"), name.lastIndexOf("/"));
-        String newName = "$SCRIPT_PATH$/" + name.substring(pt + 1);
+        String newName = stripPath(name);
         if (isLocal && name.indexOf("|") < 0) {
           v.add(null); // data will be gotten from disk
         } else {
@@ -1230,7 +1254,7 @@ public class FileManager {
     v.add("JmolManifest.txt");
     String sinfo = "# Jmol Manifest Zip Format 1.0\n" + "# Created "
         + DateFormat.getDateInstance().format(new Date()) + "\n"
-        + "# JmolVersion " + Viewer.getJmolVersion() + "\n" + sname;
+        + "# JmolVersion " + Viewer.getJmolVersion() + "\n" + Escape.escape("$SCRIPT_PATH$" + sname);
     v.add(sinfo.getBytes());
     script = TextFormat.replaceQuotedStrings(script, fileNames, newFileNames);
     v.add(sname);
@@ -1238,7 +1262,7 @@ public class FileManager {
     v.add("Jmol_version_" + Viewer.getJmolVersion().replace(' ','_').replace(':','.'));
     v.add(new byte[0]);
     if (fileRoot != null) {
-      Object bytes = viewer.getImageAs("PNG", -1, -1, -1, null, null,
+      Object bytes = viewer.getImageAs("PNG", -1, -1, -1, null, null, null,
           JmolConstants.embedScript(script));
       if (bytes instanceof byte[]) {
         v.add("preview.png");
@@ -1246,6 +1270,11 @@ public class FileManager {
       }
     }
     return writeZipFile(fileName, v, false, "OK JMOL");
+  }
+
+  private static String stripPath(String name) {
+    int pt = Math.max(name.lastIndexOf("|"), name.lastIndexOf("/"));
+    return name.substring(pt + 1);
   }
 
   /**
@@ -1798,5 +1827,4 @@ public class FileManager {
       this.code = code;
     }
   }
-
 }

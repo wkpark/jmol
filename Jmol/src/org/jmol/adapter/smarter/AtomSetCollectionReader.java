@@ -190,7 +190,7 @@ public abstract class AtomSetCollectionReader {
   private int[] firstLastStep;
   private int lastModelNumber = Integer.MAX_VALUE;
   private int desiredSpaceGroupIndex = -1;
-  protected Point3f fileScaling;
+  private Point3f fileScaling;
   private Point3f fileOffset;
   private Point3f fileOffsetFractional;
   private Point3f unitCellOffset;

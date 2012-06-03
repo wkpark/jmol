@@ -7625,11 +7625,17 @@ public class ScriptEvaluator {
         i = 1;
         break;
       case Token.string:
-        String strColor = stringParameter(1);
-        boolean isTranslucent = (tokAt(2) == Token.translucent);
+        i = 1;
+        String strColor = stringParameter(i++);
+        if (isArrayParameter(i)) {
+          strColor = strColor += "=" + ScriptVariable.sValue(ScriptVariable.getVariable(stringParameterSet(i))).replace('\n',' ');
+          i = iToken + 1;
+        }
+        boolean isTranslucent = (tokAt(i) == Token.translucent);
         if (!isSyntaxCheck)
           viewer.setPropertyColorScheme(strColor, isTranslucent, true);
-        i = (isTranslucent ? 3 : 2);
+        if (isTranslucent)
+          ++i;
         if (tokAt(i) == Token.range || tokAt(i) == Token.absolute) {
           float min = floatParameter(++i);
           float max = floatParameter(++i);
@@ -7891,6 +7897,10 @@ public class ScriptEvaluator {
           String scheme = null;
           if (tokAt(index) == Token.string) {
             scheme = parameterAsString(index++).toLowerCase();
+            if (isArrayParameter(index)) {
+              scheme += "=" + ScriptVariable.sValue(ScriptVariable.getVariable(stringParameterSet(index))).replace('\n',' ');
+              index = iToken + 1;
+            }
           } else if (isIsosurface && isColorParam(index)) {
             scheme = getColorRange(index);
             index = iToken + 1;

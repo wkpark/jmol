@@ -5791,12 +5791,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private void setStringProperty(String key, int tok, String value) {
     switch (tok) {
     case Token.pathforallfiles:
+      // 12.3.29
       value = fileManager.setPathForAllFiles(value);
       break;
-    case Token.measurementunits:
-      setUnits(value, true);
-      return;
     case Token.energyunits:
+      // 12.3.26
       setUnits(value, false);
       return;
     case Token.forcefield:
@@ -5808,6 +5807,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       // 12.3.3
       global.nmrUrlFormat = value;
       break;
+    case Token.measurementunits:
+      setUnits(value, true);
+      return;
     case Token.loadligandformat:
       // /12.1.51//
       global.loadLigandFormat = value;

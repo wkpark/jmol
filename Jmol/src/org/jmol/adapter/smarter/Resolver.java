@@ -45,7 +45,7 @@ public class Resolver {
   private final static String[] readerSets = new String[] {
     "cifpdb.", ";Cif;Pdb;",
     "molxyz.", ";Mol3D;Mol;Xyz;",
-    "more.", ";BinaryDcd;Gromacs;Jcampdx;MdCrd;MdTop;Mol2;Pqr;P2n;TlsDataOnly;",
+    "more.", ";BinaryDcd;Gromacs;Jcampdx;MdCrd;MdTop;Mol2;MopacArchive;Pqr;P2n;TlsDataOnly;",
     "quantum.", ";Adf;Csf;Dgrid;GamessUK;GamessUS;Gaussian;GausianWfn;Jaguar;" +
                  "Molden;MopacGraphf;GenNBO;NWChem;Odyssey;Psi;Qchem;Spartan;SpartanSmol;" +
                  "WebMO;",
@@ -1057,13 +1057,18 @@ public class Resolver {
   { "Siesta", "MD.TypeOfRun", "SolutionMethod", "MeshCutoff", 
     "WELCOME TO SIESTA" };
 
+  private final static String[] mopacArchiveContainsRecords =
+  { "MopacArchive", "SUMMARY OF PM7 CALCULATION" };
+  
+  
   private final static String[][] headerContainsRecords =
   { sptContainsRecords, xmlContainsRecords, gaussianContainsRecords, 
     ampacContainsRecords, mopacContainsRecords, qchemContainsRecords, 
     gamessUKContainsRecords, gamessUSContainsRecords,
     spartanBinaryContainsRecords, spartanContainsRecords, mol2Records, adfContainsRecords, psiContainsRecords,
     nwchemContainsRecords, uicrcifContainsRecords, dgridContainsRecords, crystalContainsRecords, 
-    dmolContainsRecords, gulpContainsRecords, espressoContainsRecords, siestaContainsRecords
+    dmolContainsRecords, gulpContainsRecords, espressoContainsRecords, siestaContainsRecords,
+    mopacArchiveContainsRecords
   };
 }
 

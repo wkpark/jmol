@@ -1058,7 +1058,7 @@ public class Resolver {
     "WELCOME TO SIESTA" };
 
   private final static String[] mopacArchiveContainsRecords =
-  { "MopacArchive", "SUMMARY OF PM7 CALCULATION" };
+  { "MopacArchive", "SUMMARY OF PM" };
   
   
   private final static String[][] headerContainsRecords =

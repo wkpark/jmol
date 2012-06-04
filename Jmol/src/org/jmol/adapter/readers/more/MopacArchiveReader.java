@@ -79,36 +79,6 @@ MERS=(1,2,2)   GNORM=4
           setSpaceGroupName("P1");
         }
         tvs[nTv++] = new Point3f(x, y, z);
-        if (nTv == 3) {
-          Atom[] atoms = atomSetCollection.getAtoms();
-          int atomCount = atomSetCollection.getAtomCount();
-          Point3f ptCenter = new Point3f();
-          if (doCentralize) {
-            for (int i = atomCount; --i >= 0;) {
-              ptCenter.x += atoms[i].x;
-              ptCenter.y += atoms[i].y;
-              ptCenter.z += atoms[i].z;
-            }
-            ptCenter.scale(-1f / atomCount);
-            for (int i = 0; i < 3; i++)
-              ptCenter.scaleAdd(0.5f, tvs[i], ptCenter);
-          }
-          float[] xyz = new float[3];
-          fileScaling = new Point3f(1, 1, 1);
-          if (fileOffset == null)
-            fileOffset = new Point3f();
-          fileOffset.add(ptCenter);
-          for (int i = 0; i < 3; i++) { 
-            xyz[0] = tvs[i].x;
-            xyz[1] = tvs[i].y;
-            xyz[2] = tvs[i].z;
-            addPrimitiveLatticeVector(i, xyz, 0);
-          }
-          for (int i = atomCount; --i >= 0;) {
-            setAtomCoord(atoms[i]);           
-          }
-          doCentralize = false;
-        }
         continue;
       }
       Atom atom = atomSetCollection.addNewAtom();
@@ -116,6 +86,48 @@ MERS=(1,2,2)   GNORM=4
       atom.partialCharge = parseFloat(line.substring(76, 84));
       setAtomCoord(atom, x, y, z);
     }
+    if (nTv > 0) {
+      for (int i = nTv; i < 3; i++)
+        tvs[i] = new Point3f(0, 0, 0);
+      Atom[] atoms = atomSetCollection.getAtoms();
+      int atomCount = atomSetCollection.getAtomCount();
+      float[] xyz = new float[3];
+      for (int i = 0; i < 3; i++) { 
+        xyz[0] = tvs[i].x;
+        xyz[1] = tvs[i].y;
+        xyz[2] = tvs[i].z;
+        addPrimitiveLatticeVector(i, xyz, 0);
+      }
+      for (int i = atomCount; --i >= 0;)
+        setAtomCoord(atoms[i]);
+      Point3f ptMax = new Point3f(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
+      Point3f ptMin = new Point3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
+      if (doCentralize) {
+        for (int i = atomCount; --i >= 0;) {
+          ptMax.x = Math.max(ptMax.x, atoms[i].x);
+          ptMax.y = Math.max(ptMax.y, atoms[i].y);
+          ptMax.z = Math.max(ptMax.z, atoms[i].z);
+          ptMin.x = Math.min(ptMin.x, atoms[i].x);
+          ptMin.y = Math.min(ptMin.y, atoms[i].y);
+          ptMin.z = Math.min(ptMin.z, atoms[i].z);
+        }
+        Point3f ptCenter = new Point3f();
+        switch (nTv) {
+        case 3:
+          ptCenter.x = 0.5f;
+        case 2:
+          ptCenter.y = 0.5f;
+        case 1:
+          ptCenter.z = 0.5f;
+        }
+        ptCenter.scaleAdd(-0.5f, ptMin, ptCenter);
+        ptCenter.scaleAdd(-0.5f, ptMax, ptCenter);
+        for (int i = atomCount; --i >= 0;)
+          atoms[i].add(ptCenter);
+      }
+      doCentralize = false;
+    }
+
     return true;
   }
 }

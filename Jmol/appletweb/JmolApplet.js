@@ -139,10 +139,13 @@
 
 		applet._initialize(Info.jarPath, Info.jarFile);
 
-		//size is set to 100% of containers' size
-		var widthAndHeight = " width='" + "100%" + "' height='" + "100%" + "' ";
+		// size is set to 100% of containers' size, but only if resizable. 
+		// Note that resizability in MSIE requires: 
+		// <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+		var w = (applet._containerWidth.indexOf("px") >= 0 ? applet._containerWidth : "100%");
+		var h = (applet._containerHeight.indexOf("px") >= 0 ? applet._containerHeight : "100%");
+		var widthAndHeight = " style=\"width:" + w + ";height:" + h + "\" ";
 		var tHeader, tFooter;
-			
 		if (Jmol.featureDetection.useIEObject || Jmol.featureDetection.useHtml4Object) {
 			params.archive = applet._jarFile;
 			if (script)
@@ -221,11 +224,14 @@
 		if ((!this._isInfoVisible) == (!tf))
 			return;
 		this._isInfoVisible = tf;
+		// 1px does not work for MSIE
 		Jmol._getElement(this, "infotablediv").style.display = (tf ? "block" : "none");
-		Jmol._getElement(this, "appletdiv").style.height = (tf ? "1px" : "100%");
-		Jmol._getElement(this, "appletdiv").style.width = (tf ? "1px" : "100%");
-		if (!tf)//&& Jmol._isMsieRenderBug -- occurring also on Mac systems)
-			alert("returning to applet...");
+		var w = (tf ? "2px" : this._containerWidth.indexOf("px") >= 0 ? this._containerWidth : "100%");
+		var h = (tf ? "2px" : this._containerHeight.indexOf("px") >= 0 ? this._containerHeight : "100%");
+		Jmol._getElement(this, "appletdiv").style.height = w;
+		Jmol._getElement(this, "appletdiv").style.width = h;
+		if (false && !tf)// -- occurring on Mac systems?)
+			alert("returning to applet..." + w + " " + h);
 		this._show(!tf);
 		if (tf) {
 			Jmol._getElement(this, "infoheaderdiv").innerHTML = this._infoHeader;
@@ -264,10 +270,10 @@
 	}
 	
 	Jmol._Applet.prototype._show = function(tf) {
-		var w = (tf ? "100%" : "1px");
-		var h = (tf ? "100%" : "1px");
-			document.getElementById(this._id).style.width = w; 
-			document.getElementById(this._id).style.height = h; 
+		var w = (!tf ? "2px" : this._containerWidth.indexOf("px") >= 0 ? this._containerWidth : "100%");
+		var h = (!tf ? "2px" : this._containerHeight.indexOf("px") >= 0 ? this._containerHeight : "100%");
+		document.getElementById(this._id).style.width = w; 
+		document.getElementById(this._id).style.height = h; 
 	}
 	
 	Jmol._Applet.prototype._script = function(script) {

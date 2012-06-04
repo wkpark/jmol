@@ -49,8 +49,10 @@
 			Jmol._document && model && applet._search(model);
 		}
 		// keyed to both its string id and itself
-		if (!checkOnly)
-			Jmol._applets[id] = Jmol._applets[applet] = applet;		
+		if (!checkOnly) {
+		  Jmol._lastAppletID = id;
+			Jmol._applets[id] = Jmol._applets[applet] = applet;
+		}		
 		return applet;
 	}
 
@@ -166,7 +168,7 @@
 	
 	Jmol.jmolCheckbox = function(appletOrId, scriptWhenChecked, scriptWhenUnchecked,
 												labelHtml, isChecked, id, title) {
-		var appId = Jmol.controls.controls._getIdForControl(appletOrId, scriptWhenChecked);
+		var appId = Jmol.controls._getIdForControl(appletOrId, scriptWhenChecked);
 		if (appId != null)
 			appId = Jmol.controls._getIdForControl(appletOrId, scriptWhenUnchecked);
 		if (appId == null)

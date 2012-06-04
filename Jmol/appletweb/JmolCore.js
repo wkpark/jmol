@@ -2,6 +2,7 @@
 
 // see JmolApi.js for public user-interface. All these are private functions
 
+// 6/4/2012 BH: corrects problem with MSIE requiring mouse-hover to activate applet
 // 5/31/2012 BH: added JSpecView interface and api -- see JmolJSV.js
 //               also changed "jmolJarPath" to just "jarPath"
 //               jmolJarFile->jarFile, jmolIsSigned->isSigned, jmolReadyFunction->readyFunction
@@ -62,6 +63,7 @@ Jmol = (function(document) {
 		_XhtmlElement: null,
 		_XhtmlAppendChild: false,
 		_applets: {},
+		_lastAppletID: null,
 		_ajaxQueue: [],
 		db: {
 			_databasePrefixes: "$=:",
@@ -92,7 +94,6 @@ Jmol = (function(document) {
 	// Jmol core functionality
 
 	Jmol._ajax = function(info) {
-xxx=info
 		Jmol._ajaxQueue.push(info)
 		if (Jmol._ajaxQueue.length == 1)
 			Jmol._ajaxDone()
@@ -117,14 +118,19 @@ xxx=info
 	Jmol._getWrapper = function(applet, isHeader) {
 		var height = applet._height;
 		var width = applet._width;
-		if (typeof height !== "string")
+		if (typeof height !== "string" || height.indexOf("%") < 0)
 			height += "px";
-		if (typeof width !== "string")
+		if (typeof width !== "string" || width.indexOf("%") < 0)
 			width += "px";
-		var s = (isHeader ? "<div id=\"ID_appletinfotablediv\" style=\"width:Wpx;height:Hpx\"><div id=\"ID_appletdiv\" style=\"width:100%;height:100%\">"
+			// for whatever reason, this outer table tag is required for MSIE compatibility
+		var s = (isHeader ? "<table style=\"width:Wpx;height:Hpx\" cellpadding=\"0\" cellspacing=\"0\"><tr><td><div id=\"ID_appletinfotablediv\" style=\"width:100%;height:100%\"><div id=\"ID_appletdiv\" style=\"width:100%;height:100%\">"
 				: "</div><div id=\"ID_infotablediv\" style=\"width:100%;height:100%;display:none;position:relative\">\
 			<div style=\"height:20px;width:100%;background:yellow\"><span id=\"ID_infoheaderdiv\"></span><span style=\"position:absolute;width:10px;right:10px\"><a href=\"javascript:Jmol.showInfo(ID,false)\">[x]</a></span></div>\
-			<div id=\"ID_infodiv\" style=\"position:absolute;top:20px;bottom:0px;width:100%;overflow-y:scroll\"></div></div></div>");
+			<div id=\"ID_infodiv\" style=\"position:absolute;top:20px;bottom:0px;width:100%;height:95%;overflow-y:scroll\"></div></div></div></td></tr></table>");
+		if (width.indexOf("px") >= 0)
+			s = s.replace(/width:100%/g, "width:" + width);
+		if (height.indexOf("px") >= 0)
+			s = s.replace(/height:100%/g, "height:" + height);
 		return s.replace(/Hpx/g, height).replace(/Wpx/g, width).replace(/ID/g, applet._id);
 	}
 

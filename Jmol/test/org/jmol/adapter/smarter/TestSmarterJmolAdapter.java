@@ -91,6 +91,7 @@ public class TestSmarterJmolAdapter extends TestSuite {
     result.addDirectory("mol", "v3000;mol;sdf", "Mol");
     result.addDirectory("mol2", "mol2", "Mol2");
     result.addDirectory("molpro", "xml", "XmlMolpro");
+    result.addDirectory("mopac", "arc;archive", "MopacArchive");
     result.addDirectory("mopac", "out", "Mopac");
     result.addDirectory("mopac", "gpt2", "MopacGraphf");
     result.addDirectory("mopac", "mgf", "MopacGraphf");

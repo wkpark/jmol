@@ -190,8 +190,8 @@ public abstract class AtomSetCollectionReader {
   private int[] firstLastStep;
   private int lastModelNumber = Integer.MAX_VALUE;
   private int desiredSpaceGroupIndex = -1;
-  private Point3f fileScaling;
-  private Point3f fileOffset;
+  protected Point3f fileScaling;
+  protected Point3f fileOffset;
   private Point3f fileOffsetFractional;
   private Point3f unitCellOffset;
   private boolean unitCellOffsetFractional;
@@ -727,7 +727,7 @@ public abstract class AtomSetCollectionReader {
   private int filterN;
   private int nFiltered;
   private boolean doSetOrientation;
-  private boolean doCentralize;
+  protected boolean doCentralize;
   protected boolean addVibrations;
   protected boolean useAltNames;
   public boolean readMolecularOrbitals;

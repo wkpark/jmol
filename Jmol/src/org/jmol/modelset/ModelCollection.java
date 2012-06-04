@@ -1840,20 +1840,28 @@ abstract public class ModelCollection extends BondCollection {
     getMolecules();
     boolean isOneMolecule = (molecules[moleculeCount - 1].firstAtomIndex == models[atoms[iAtom1].modelIndex].firstAtomIndex);
     Point3f center = new Point3f();
+    boolean centroidPacked = (minmax[6] == 1);
     for (int i = moleculeCount; --i >= 0 && molecules[i].firstAtomIndex >= iAtom0 && molecules[i].firstAtomIndex < iAtom1;) {
       BitSet bs = molecules[i].atomList;
       center.set(0, 0, 0);
       int n = 0;
+      boolean haveCellAtom = false;
       for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1)) {
         center.add(atoms[j]);
-        if (isOneMolecule) {
-          if (isNotCentroid(center, 1, uc, minmax))
-            bsDelete.set(j);
-          continue;
+        if (isOneMolecule || centroidPacked) {
+          if (isNotCentroid(center, 1, uc, minmax, centroidPacked)) {
+            if (isOneMolecule)
+              bsDelete.set(j);
+          } else {
+            haveCellAtom = true;
+          }
+          if (isOneMolecule)
+            continue;
         }
         n++;
       }
-      if (n > 0 && isNotCentroid(center, n, uc, minmax))
+      if (n > 0 && 
+          (centroidPacked ? !haveCellAtom : isNotCentroid(center, n, uc, minmax, false)))
         bsDelete.or(bs);
     }
     if (bsDelete.nextSetBit(0) >= 0)
@@ -1863,21 +1871,19 @@ abstract public class ModelCollection extends BondCollection {
     }
   }
 
-  private static boolean isNotCentroid(Point3f center, int n, SymmetryInterface uc, int[] minmax) {
+  private static boolean isNotCentroid(Point3f center, int n, SymmetryInterface uc, int[] minmax, boolean centroidPacked) {
     center.scale(1f/n);
     uc.toFractional(center, false);
     //System.out.println("isCentroid ? " + center);
     // we have to disallow just a tiny slice of atoms due to rounding errors
     // so  -0.000001 is OK, but 0.999991 is not.
-    if (minmax[6] == 0)
-      return (center.x + 0.000005f <= minmax[0] || center.x + 0.00001f > minmax[3] 
-       || center.y + 0.000005f <= minmax[1] || center.y + 0.00001f > minmax[4]
-       || center.z + 0.000005f <= minmax[2] || center.z + 0.00001f > minmax[5]);
-    return (center.x + 0.000005f <= minmax[0] || center.x - 0.000005f > minmax[3] 
-       || center.y + 0.000005f <= minmax[1] || center.y - 0.000005f > minmax[4]
-       || center.z + 0.000005f <= minmax[2] || center.z - 0.000005f > minmax[5]);
-      
-    
+    if (centroidPacked)
+      return (center.x + 0.000005f <= minmax[0] || center.x - 0.000005f > minmax[3] 
+         || center.y + 0.000005f <= minmax[1] || center.y - 0.000005f > minmax[4]
+         || center.z + 0.000005f <= minmax[2] || center.z - 0.000005f > minmax[5]);
+    return (center.x + 0.000005f <= minmax[0] || center.x + 0.00001f > minmax[3] 
+     || center.y + 0.000005f <= minmax[1] || center.y + 0.00001f > minmax[4]
+     || center.z + 0.000005f <= minmax[2] || center.z + 0.00001f > minmax[5]);
   }
 
   public JmolMolecule[] getMolecules() {

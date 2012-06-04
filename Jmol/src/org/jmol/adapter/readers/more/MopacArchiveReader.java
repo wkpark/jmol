@@ -24,18 +24,20 @@
 
 package org.jmol.adapter.readers.more;
 
-import org.jmol.adapter.smarter.*;
-import org.jmol.util.Logger;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.vecmath.Point3f;
 
+import org.jmol.adapter.smarter.Atom;
+import org.jmol.adapter.smarter.AtomSetCollectionReader;
+
 /**
- * Amber Coordinate File Reader
  * 
- * not a stand-alone reader -- must be after COORD keyword in LOAD command
+ * Mopac Archive reader -- presumes "zMatrix" is really Cartesians
+ * 
+ * use FILTER "CENTER" to center atoms in unit cell
+ * use CENTROID FILTER "CENTER" for complete molecules with centroids within unit cell
+ * use PACKED CENTROID FILTER "CENTER" for complete molecules with any atoms within unit cell 
+ * 
+ * @author Bob Hanson hansonr@stolaf.edu
  * 
  */
 
@@ -65,7 +67,7 @@ MERS=(1,2,2)   GNORM=4
     atomSetCollection.setAtomSetName(readLine().trim());
     readLine();
     int nTv = 0;
-    float[] xyz = new float[3];
+    Point3f[] tvs = new Point3f[3]; 
     while (readLine() != null && line.length() > 0) {
       float x = parseFloat(line.substring(5, 18));
       float y = parseFloat(line.substring(21, 34));
@@ -76,14 +78,36 @@ MERS=(1,2,2)   GNORM=4
           setFractionalCoordinates(false);
           setSpaceGroupName("P1");
         }
-        xyz[0] = x;
-        xyz[1] = y;
-        xyz[2] = z;
-        addPrimitiveLatticeVector(nTv++, xyz, 0);
+        tvs[nTv++] = new Point3f(x, y, z);
         if (nTv == 3) {
           Atom[] atoms = atomSetCollection.getAtoms();
-          for (int i = atomSetCollection.getAtomCount(); --i >= 0;)
-            setAtomCoord(atoms[i]);            
+          int atomCount = atomSetCollection.getAtomCount();
+          Point3f ptCenter = new Point3f();
+          if (doCentralize) {
+            for (int i = atomCount; --i >= 0;) {
+              ptCenter.x += atoms[i].x;
+              ptCenter.y += atoms[i].y;
+              ptCenter.z += atoms[i].z;
+            }
+            ptCenter.scale(-1f / atomCount);
+            for (int i = 0; i < 3; i++)
+              ptCenter.scaleAdd(0.5f, tvs[i], ptCenter);
+          }
+          float[] xyz = new float[3];
+          fileScaling = new Point3f(1, 1, 1);
+          if (fileOffset == null)
+            fileOffset = new Point3f();
+          fileOffset.add(ptCenter);
+          for (int i = 0; i < 3; i++) { 
+            xyz[0] = tvs[i].x;
+            xyz[1] = tvs[i].y;
+            xyz[2] = tvs[i].z;
+            addPrimitiveLatticeVector(i, xyz, 0);
+          }
+          for (int i = atomCount; --i >= 0;) {
+            setAtomCoord(atoms[i]);           
+          }
+          doCentralize = false;
         }
         continue;
       }

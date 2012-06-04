@@ -1831,6 +1831,16 @@ abstract public class ModelCollection extends BondCollection {
     }
   }
 
+  /**
+   * deletes molecules based on:
+   * CENTROID -- molecular centroid is not in unit cell
+   * CENTROID PACKED -- all molecule atoms are not in unit cell
+   * 
+   * @param iAtom0
+   * @param iAtom1
+   * @param minmax 
+   *          fractional [xmin, ymin, zmin, xmax, ymax, zmax, 1=packed]
+   */
   public void setCentroid(int iAtom0, int iAtom1, int[] minmax) {
     try {
     SymmetryInterface uc = getUnitCell(atoms[iAtom0].modelIndex);

@@ -1,3 +1,4 @@
+
 /* $RCSfile$
  * $Author$
  * $Date$
@@ -114,7 +115,7 @@ import netscape.javascript.JSObject;
  * 
  * In addition, you can turn off JUST EVAL, by setting on the web page
  * 
- * _jmol.noEval = true
+ * _jmol.noEval = true or Jmol._noEval = true
  * 
  * This allows callbacks but does not allow the script constructs: 
  * 
@@ -1114,13 +1115,13 @@ public class Jmol implements WrappedApplet {
         return "";
       }
       try {
-        //System.out.println(jsoDocument.eval("!!_jmol.noEval"));
         if (!haveDocumentAccess
-            || ((Boolean) jsoDocument.eval("!!_jmol.noEval")).booleanValue())
+            || ((Boolean) jsoDocument.eval("_jmol && !!_jmol.noEval")).booleanValue() 
+            || ((Boolean) jsoDocument.eval("Jmol && !!Jmol._noEval")).booleanValue())
           return "NO EVAL ALLOWED";
       } catch (Exception e) {
         Logger
-            .error("# no _jmol in evaluating " + strEval + ":" + e.toString());
+            .error("# no Jmol or _jmol in evaluating " + strEval + ":" + e.toString());
         return "";
       }
       try {

@@ -1841,27 +1841,26 @@ abstract public class ModelCollection extends BondCollection {
     boolean isOneMolecule = (molecules[moleculeCount - 1].firstAtomIndex == models[atoms[iAtom1].modelIndex].firstAtomIndex);
     Point3f center = new Point3f();
     boolean centroidPacked = (minmax[6] == 1);
-    for (int i = moleculeCount; --i >= 0 && molecules[i].firstAtomIndex >= iAtom0 && molecules[i].firstAtomIndex < iAtom1;) {
+    nextMol: for (int i = moleculeCount; --i >= 0 && molecules[i].firstAtomIndex >= iAtom0 && molecules[i].firstAtomIndex < iAtom1;) {
       BitSet bs = molecules[i].atomList;
       center.set(0, 0, 0);
       int n = 0;
-      boolean haveCellAtom = false;
       for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1)) {
-        center.add(atoms[j]);
         if (isOneMolecule || centroidPacked) {
+          center.set(atoms[j]);
           if (isNotCentroid(center, 1, uc, minmax, centroidPacked)) {
             if (isOneMolecule)
               bsDelete.set(j);
           } else {
-            haveCellAtom = true;
+            System.out.println(atoms[j]);
+            continue nextMol;
           }
-          if (isOneMolecule)
-            continue;
+        } else {
+          center.add(atoms[j]);
+          n++;
         }
-        n++;
       }
-      if (n > 0 && 
-          (centroidPacked ? !haveCellAtom : isNotCentroid(center, n, uc, minmax, false)))
+      if (centroidPacked || n > 0 && isNotCentroid(center, n, uc, minmax, false))
         bsDelete.or(bs);
     }
     if (bsDelete.nextSetBit(0) >= 0)

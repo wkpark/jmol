@@ -1851,8 +1851,7 @@ abstract public class ModelCollection extends BondCollection {
           if (isNotCentroid(center, 1, uc, minmax, centroidPacked)) {
             if (isOneMolecule)
               bsDelete.set(j);
-          } else {
-            System.out.println(atoms[j]);
+          } else if (!isOneMolecule) {
             continue nextMol;
           }
         } else {

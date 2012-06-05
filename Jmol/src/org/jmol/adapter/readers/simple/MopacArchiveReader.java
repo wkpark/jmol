@@ -51,20 +51,37 @@ public class MopacArchiveReader extends ZMatrixReader {
       doCentralize = true;
   }
   
+  /*
+          HEAT OF FORMATION       =      -2179.37980 KCAL/MOL =   -9118.52509 KJ/MOL
+          H.o.F. per unit cell    =        -68.10562 KCAL, for  32 unit cells
+          TOTAL ENERGY            =      -7442.50807 EV
+          ELECTRONIC ENERGY       =   -7684437.23375 EV
+          CORE-CORE REPULSION     =    7676994.72567 EV
+          NO. OF FILLED LEVELS    =        128
+          IONIZATION POTENTIAL    =          9.958165 EV
+          HOMO LUMO ENERGIES (EV) =         -9.958  0.439
+          MOLECULAR WEIGHT        =       5312.090
+
+   */
   @Override
   protected boolean checkLine() throws Exception {
-    if (line.indexOf("TOTAL ENERGY") >= 0)
-      return getEnergy();
+    if (line.indexOf("=") == 34)
+      return getValue();
     if (line.indexOf("FINAL GEOMETRY OBTAINED") >= 0)
       return readCoordinates();
     return true;
   }
 
   String energyWithUnits;
-  private boolean getEnergy() {
-    String[] tokens = getTokens();
-    energyWithUnits = " (" + tokens[3] + " " + tokens[4] + ")";
-    atomSetCollection.setAtomSetEnergy(tokens[3], parseFloat(tokens[3]));      
+  private boolean getValue() {
+    String key = line.substring(0, 34).trim().replace(' ', '_');
+    String value = line.substring(35).trim();
+    atomSetCollection.setAtomSetAuxiliaryInfo(key, value);
+    if (line.indexOf("TOTAL ENERGY") >= 0) {
+      String[] tokens = getTokens();
+      energyWithUnits = " (" + tokens[3] + " " + tokens[4] + ")";
+      atomSetCollection.setAtomSetEnergy(tokens[3], parseFloat(tokens[3]));      
+    }
     return true;
   }
 

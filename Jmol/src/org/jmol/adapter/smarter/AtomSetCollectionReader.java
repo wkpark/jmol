@@ -760,7 +760,7 @@ public abstract class AtomSetCollectionReader {
       filter0 = filter0.toUpperCase();
     filter = filter0;
     doSetOrientation = !checkFilter("NOORIENT");
-    doCentralize = checkFilter("CENTER");
+    doCentralize = (!checkFilter("NOCENTER") && checkFilter("CENTER"));
     addVibrations = !checkFilter("NOVIB");
     readMolecularOrbitals = !checkFilter("NOMO");
     useAltNames = checkFilter("ALTNAME");

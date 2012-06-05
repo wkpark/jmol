@@ -186,8 +186,8 @@ No distinction between "Variable:" and "Constant:" is made by Jmol.
 
    */
 
-  private int atomCount;
-  private List<Atom> vAtoms = new ArrayList<Atom>();
+  protected int atomCount;
+  protected List<Atom> vAtoms = new ArrayList<Atom>();
   private Map<String, Integer> atomMap = new Hashtable<String, Integer>();
   private String[] tokens;
   private boolean isJmolZformat;
@@ -409,7 +409,7 @@ No distinction between "Variable:" and "Constant:" is made by Jmol.
   private final Point4f plane1 = new Point4f();
   private final Point4f plane2 = new Point4f();
   
-  private Atom setAtom(Atom atom, int ia, int ib, int ic, float d,
+  protected Atom setAtom(Atom atom, int ia, int ib, int ic, float d,
                        float theta1, float theta2) {
     if (Float.isNaN(theta1) || Float.isNaN(theta2))
       return null;

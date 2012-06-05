@@ -45,11 +45,11 @@ public class Resolver {
   private final static String[] readerSets = new String[] {
     "cifpdb.", ";Cif;Pdb;",
     "molxyz.", ";Mol3D;Mol;Xyz;",
-    "more.", ";BinaryDcd;Gromacs;Jcampdx;MdCrd;MdTop;Mol2;MopacArchive;Pqr;P2n;TlsDataOnly;",
+    "more.", ";BinaryDcd;Gromacs;Jcampdx;MdCrd;MdTop;Mol2;Pqr;P2n;TlsDataOnly;",
     "quantum.", ";Adf;Csf;Dgrid;GamessUK;GamessUS;Gaussian;GausianWfn;Jaguar;" +
                  "Molden;MopacGraphf;GenNBO;NWChem;Odyssey;Psi;Qchem;Spartan;SpartanSmol;" +
                  "WebMO;",
-    "simple.", ";Alchemy;Ampac;Cube;FoldingXyz;GhemicalMM;HyperChem;Jme;Mopac;ZMatrix;", 
+    "simple.", ";Alchemy;Ampac;Cube;FoldingXyz;GhemicalMM;HyperChem;Jme;Mopac;MopacArchive;ZMatrix;", 
     "xtal.", ";Aims;Castep;Crystal;Dmol;Espresso;Gulp;MagRes;Shelx;Siesta;VaspOutcar;Wien2k;"
   };
   

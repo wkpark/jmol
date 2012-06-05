@@ -22,12 +22,12 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.adapter.readers.more;
+package org.jmol.adapter.readers.simple;
 
 import javax.vecmath.Point3f;
 
 import org.jmol.adapter.smarter.Atom;
-import org.jmol.adapter.smarter.AtomSetCollectionReader;
+import org.jmol.api.JmolAdapter;
 
 /**
  * 
@@ -41,13 +41,30 @@ import org.jmol.adapter.smarter.AtomSetCollectionReader;
  * 
  */
 
-public class MopacArchiveReader extends AtomSetCollectionReader {
+public class MopacArchiveReader extends ZMatrixReader {
 
 
   @Override
+  protected void initializeReader() {
+    atomSetCollection.newAtomSet();
+    if (!checkFilter("NOCENTER"))
+      doCentralize = true;
+  }
+  
+  @Override
   protected boolean checkLine() throws Exception {
+    if (line.indexOf("TOTAL ENERGY") >= 0)
+      return getEnergy();
     if (line.indexOf("FINAL GEOMETRY OBTAINED") >= 0)
       return readCoordinates();
+    return true;
+  }
+
+  String energyWithUnits;
+  private boolean getEnergy() {
+    String[] tokens = getTokens();
+    energyWithUnits = " (" + tokens[3] + " " + tokens[4] + ")";
+    atomSetCollection.setAtomSetEnergy(tokens[3], parseFloat(tokens[3]));      
     return true;
   }
 
@@ -63,53 +80,77 @@ MERS=(1,2,2)   GNORM=4
   
   private boolean readCoordinates() throws Exception {
     readLine();
-    atomSetCollection.newAtomSet();
-    atomSetCollection.setAtomSetName(readLine().trim());
+    line = readLine().trim();
+    atomSetCollection.setAtomSetName(line + (energyWithUnits == null ? "" : energyWithUnits));
     readLine();
-    int nTv = 0;
-    Point3f[] tvs = new Point3f[3]; 
-    while (readLine() != null && line.length() > 0) {
-      float x = parseFloat(line.substring(5, 18));
-      float y = parseFloat(line.substring(21, 34));
-      float z = parseFloat(line.substring(37, 50));
-      String sym = line.substring(1,3).trim();
-      if (sym.equals("Tv")) {
-        if (nTv == 0) {
-          setFractionalCoordinates(false);
-          setSpaceGroupName("P1");
+    Atom atom = null;
+    String sym = null;
+    setFractionalCoordinates(false);
+    while (readLine() != null && line.length() >= 50) {
+      vAtoms.add(atom = new Atom());
+      atom.x = parseFloat(line.substring(5, 18));
+      atom.y = parseFloat(line.substring(21, 34));
+      atom.z = parseFloat(line.substring(37, 50));
+      if (line.length() > 58 && line.charAt(58) != ' ') {
+        // internal coordinates
+        switch (atomCount) {
+        case 0:
+          break;
+        case 1:
+          atom.sub(vAtoms.get(0));
+          break;
+        case 2:
+          setAtom(atom, 0, 1, 0, atom.x, atom.y, Float.MAX_VALUE);
+          break;
+        default:
+          setAtom(atom, 
+              parseInt(line.substring(54, 59)) - 1, 
+              parseInt(line.substring(60, 65)) - 1, 
+              parseInt(line.substring(66, 71)) - 1, 
+              atom.x, atom.y, atom.z);
         }
-        tvs[nTv++] = new Point3f(x, y, z);
-        continue;
       }
-      Atom atom = atomSetCollection.addNewAtom();
+      sym = line.substring(1,3).trim();
       atom.elementSymbol = sym;
-      atom.partialCharge = parseFloat(line.substring(76, 84));
-      setAtomCoord(atom, x, y, z);
+      if (!sym.equals("Tv")) {
+        atomCount++;
+        if (line.length() >= 84)
+          atom.partialCharge = parseFloat(line.substring(76, 84));
+        if (JmolAdapter.getElementNumber(sym) != 0)
+          atomSetCollection.addAtom(atom);
+        setAtomCoord(atom);
+      }
     }
-    if (nTv > 0) {
+    if (sym.equals("Tv")) {
+      // last element was "Tv" -- translation vector
+      setSpaceGroupName("P1");
+      int nTv = vAtoms.size() - atomCount;
       for (int i = nTv; i < 3; i++)
-        tvs[i] = new Point3f(0, 0, 0);
-      Atom[] atoms = atomSetCollection.getAtoms();
-      int atomCount = atomSetCollection.getAtomCount();
-      float[] xyz = new float[3];
-      for (int i = 0; i < 3; i++) { 
-        xyz[0] = tvs[i].x;
-        xyz[1] = tvs[i].y;
-        xyz[2] = tvs[i].z;
-        addPrimitiveLatticeVector(i, xyz, 0);
+        vAtoms.add(new Atom()); 
+      float[] xyz = new float[9];
+      for (int i = 0; i < 3; i++) {
+        int j = i * 3;
+        atom = vAtoms.get(atomCount + i);
+        if (!Float.isNaN(atom.x)) {
+          xyz[j] = atom.x;
+          xyz[j + 1] = atom.y;
+          xyz[j + 2] = atom.z;
+        }
+        addPrimitiveLatticeVector(i, xyz, j);
       }
       for (int i = atomCount; --i >= 0;)
-        setAtomCoord(atoms[i]);
+        setAtomCoord(vAtoms.get(i));
       Point3f ptMax = new Point3f(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
       Point3f ptMin = new Point3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
       if (doCentralize) {
         for (int i = atomCount; --i >= 0;) {
-          ptMax.x = Math.max(ptMax.x, atoms[i].x);
-          ptMax.y = Math.max(ptMax.y, atoms[i].y);
-          ptMax.z = Math.max(ptMax.z, atoms[i].z);
-          ptMin.x = Math.min(ptMin.x, atoms[i].x);
-          ptMin.y = Math.min(ptMin.y, atoms[i].y);
-          ptMin.z = Math.min(ptMin.z, atoms[i].z);
+          atom = vAtoms.get(i);
+          ptMax.x = Math.max(ptMax.x, atom.x);
+          ptMax.y = Math.max(ptMax.y, atom.y);
+          ptMax.z = Math.max(ptMax.z, atom.z);
+          ptMin.x = Math.min(ptMin.x, atom.x);
+          ptMin.y = Math.min(ptMin.y, atom.y);
+          ptMin.z = Math.min(ptMin.z, atom.z);
         }
         Point3f ptCenter = new Point3f();
         switch (nTv) {
@@ -123,11 +164,10 @@ MERS=(1,2,2)   GNORM=4
         ptCenter.scaleAdd(-0.5f, ptMin, ptCenter);
         ptCenter.scaleAdd(-0.5f, ptMax, ptCenter);
         for (int i = atomCount; --i >= 0;)
-          atoms[i].add(ptCenter);
+          vAtoms.get(i).add(ptCenter);
       }
       doCentralize = false;
     }
-
     return true;
   }
 }

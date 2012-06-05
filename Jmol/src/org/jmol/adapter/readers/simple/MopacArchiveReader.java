@@ -33,9 +33,9 @@ import org.jmol.api.JmolAdapter;
  * 
  * Mopac Archive reader -- presumes "zMatrix" is really Cartesians
  * 
- * use FILTER "CENTER" to center atoms in unit cell
- * use CENTROID FILTER "CENTER" for complete molecules with centroids within unit cell
- * use PACKED CENTROID FILTER "CENTER" for complete molecules with any atoms within unit cell 
+ * use FILTER "NOCENTER" to NOT center atoms in unit cell
+ * use CENTROID for complete molecules with centroids within unit cell
+ * use PACKED CENTROID for complete molecules with any atoms within unit cell 
  * 
  * @author Bob Hanson hansonr@stolaf.edu
  * 

@@ -737,18 +737,21 @@ public abstract class AtomSetCollectionReader {
   private boolean centroidPacked;
 
 
+  // ALL:  "CENTER" "REVERSEMODELS"
   // MANY: "NOVIB" "NOMO"
-  // CSF, SPARTAN: "NOORIENT"
+  // CASTEP: "CHARGE=HIRSH q={i,j,k};"
   // CRYSTAL: "CONV" (conventional), "INPUT"
+  // CSF, SPARTAN: "NOORIENT"
   // GAMESS-US:  "CHARGE=LOW"
   // JME, MOL: "NOMIN"
   // MOL:  "2D"
   // Molden: "INPUT" "GEOM" "NOGEOM"
+  // MopacArchive: "NOCENTER"
   // MOReaders: "NBOCHARGES"
+  // P2N: "ALTNAME"
   // PDB: "BIOMOLECULE n;" "NOSYMMETRY"  "CONF n"
   // Spartan: "INPUT", "ESPCHARGES"
-  // P2N: "ALTNAME"
-  // CASTEP: "CHARGE=HIRSH q={i,j,k}; CENTROID"
+  // 
 
   protected void setFilter(String filter0) {
     if (filter0 == null) {

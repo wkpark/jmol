@@ -6181,6 +6181,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private void setIntProperty(String key, int tok, int value) {
     switch (tok) {
+    case Token.meshscale:
+      // 12.3.29
+      global.meshScale = value;
+      break;
     case Token.minpixelselradius:
       // 12.2.RC6
       global.minPixelSelRadius = value;
@@ -7008,6 +7012,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public int getDotScale() {
     return global.dotScale;
+  }
+
+  public int getMeshScale() {
+    return global.meshScale;
   }
 
   public boolean isRangeSelected() {

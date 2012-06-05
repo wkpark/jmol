@@ -352,11 +352,15 @@ public class MeshSurface {
       sb.append("brillouin");
       slabBrillouin((Point3f[]) slabbingObject);
       break;
+    case Token.decimal:
+      getIntersection(0, null, null, null, null, (BitSet) slabbingObject, null, andCap,
+          false, Token.decimal, isGhost);
+      break;
     case Token.plane:
       Point4f plane = (Point4f) slabbingObject;
       sb.append(Escape.escape(plane));
-      getIntersection(0, plane, null, null, null, null, andCap, false,
-          Token.plane, isGhost);
+      getIntersection(0, plane, null, null, null, null, null, andCap,
+          false, Token.plane, isGhost);
       break;
     case Token.unitcell:
     case Token.boundbox:
@@ -364,13 +368,13 @@ public class MeshSurface {
       sb.append("within ").append(Escape.escape(box));
       Point4f[] faces = BoxInfo.getFacesFromCriticalPoints(box);
       for (int i = 0; i < faces.length; i++) {
-        getIntersection(0, faces[i], null, null, null, null, andCap, false,
-            Token.plane, isGhost);
+        getIntersection(0, faces[i], null, null, null, null, null, andCap,
+            false, Token.plane, isGhost);
       }
       break;
     case Token.data:
       getIntersection(0, null, null, null, (float[]) slabbingObject, null,
-          false, false, Token.min, isGhost);
+          null, false, false, Token.min, isGhost);
       break;
     case Token.within:
     case Token.range:
@@ -383,8 +387,8 @@ public class MeshSurface {
         BitSet bs = (BitSet) o[2];
         sb.append("within ").append(distance).append(
             bs == null ? Escape.escape(points) : Escape.escape(bs));
-        getIntersection(distance, null, points, null, null, null, andCap,
-            false, (distance > 0 ? Token.distance : Token.sphere), isGhost);
+        getIntersection(distance, null, points, null, null, null, null,
+            andCap, false, (distance > 0 ? Token.distance : Token.sphere), isGhost);
         break;
       case Token.range:
         // isosurface slab within range x.x y.y
@@ -395,12 +399,12 @@ public class MeshSurface {
         sb.append("within range ").append(distance).append(" ").append(
             distanceMax);
         bs = (distanceMax < distance ? BitSetUtil.copy(bsSlabDisplay) : null);
-        getIntersection(distance, null, null, null, null, null, andCap, false,
-            Token.min, isGhost);
+        getIntersection(distance, null, null, null, null, null, null, andCap,
+            false, Token.min, isGhost);
         BitSet bsA = (bs == null ? null : BitSetUtil.copy(bsSlabDisplay));
         BitSetUtil.copy(bs, bsSlabDisplay);
-        getIntersection(distanceMax, null, null, null, null, null, andCap,
-            false, Token.max, isGhost);
+        getIntersection(distanceMax, null, null, null, null, null, null,
+            andCap, false, Token.max, isGhost);
         if (bsA != null)
           bsSlabDisplay.or(bsA);
         break;
@@ -408,8 +412,8 @@ public class MeshSurface {
         //NOT IMPLEMENTED
         MeshSurface mesh = (MeshSurface) o[1];
         //distance = -1;
-        getIntersection(0, null, null, null, null, mesh, andCap, false,
-            distance < 0 ? Token.min : Token.max, isGhost);
+        getIntersection(0, null, null, null, null, null, mesh, andCap,
+            false, distance < 0 ? Token.min : Token.max, isGhost);
         //TODO: unresolved how exactly to store this in the state
         // -- must indicate exact set of triangles to slab and how!
         break;
@@ -481,6 +485,7 @@ public class MeshSurface {
    * @param ptCenters     a set of atoms to measure distance from
    * @param vData         when not null, this is a query, not an actual slabbing
    * @param fData         vertex values or other data to overlay
+   * @param bsSource TODO
    * @param meshSurface   second surface; not implemented -- still some problems there
    * @param andCap        to cap this off, crudely only
    * @param doClean       compact set - draw only
@@ -489,9 +494,9 @@ public class MeshSurface {
    */
   public void getIntersection(float distance, Point4f plane,
                               Point3f[] ptCenters, List<Point3f[]> vData,
-                              float[] fData, MeshSurface meshSurface,
-                              boolean andCap, boolean doClean, int tokType,
-                              boolean isGhost) {
+                              float[] fData, BitSet bsSource,
+                              MeshSurface meshSurface, boolean andCap, boolean doClean,
+                              int tokType, boolean isGhost) {
     boolean isSlab = (vData == null);
     Point3f[] pts = null;
     if (fData == null)
@@ -530,7 +535,7 @@ public class MeshSurface {
       for (int i = mergeVertexCount0; i < vertexCount; i++) {
         if (Float.isNaN(fData[i])
             || checkSlab(tokType, vertices[i], fData[i], distance, plane,
-                ptCenters) > 0)
+                ptCenters, bsSource) > 0)
           bsSlabDisplay.clear(i);
       }
       return;
@@ -553,9 +558,9 @@ public class MeshSurface {
         sourceB = vertexSource[iB];
         sourceC = vertexSource[iC];
       }
-      d1 = checkSlab(tokType, vA, valA, distance, plane, ptCenters);
-      d2 = checkSlab(tokType, vB, valB, distance, plane, ptCenters);
-      d3 = checkSlab(tokType, vC, valC, distance, plane, ptCenters);
+      d1 = checkSlab(tokType, vA, valA, (bsSource == null ? distance : sourceA), plane, ptCenters, bsSource);
+      d2 = checkSlab(tokType, vB, valB, (bsSource == null ? distance : sourceB), plane, ptCenters, bsSource);
+      d3 = checkSlab(tokType, vC, valC, (bsSource == null ? distance : sourceC), plane, ptCenters, bsSource);
       int test1 = (d1 != 0 && d1 < 0 ? 1 : 0) + (d2 != 0 && d2 < 0 ? 2 : 0)
           + (d3 != 0 && d3 < 0 ? 4 : 0);
 
@@ -885,9 +890,11 @@ public class MeshSurface {
   }            
 
   private static float checkSlab(int tokType, Point3f v, float val, float distance,
-                          Point4f plane, Point3f[] ptCenters) {
+                          Point4f plane, Point3f[] ptCenters, BitSet bs) {
     float d;
     switch (tokType) {
+    case Token.decimal:
+      return (bs.get((int)val) ? 1 : -1);
     case Token.min:
       d = distance - val;
       break;

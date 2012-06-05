@@ -881,6 +881,7 @@ public class StateManager {
       setParameterValue("measureAllModels", measureAllModels);
       setParameterValue("measurementLabels", measurementLabels);
       setParameterValue("measurementUnits", measureDistanceUnits);
+      setParameterValue("meshScale", meshScale);
       setParameterValue("messageStyleChime", messageStyleChime);
       setParameterValue("minBondDistance", minBondDistance);
       setParameterValue("minPixelSelRadius", minPixelSelRadius);
@@ -1146,6 +1147,7 @@ public class StateManager {
     boolean dotSurface = true;
     int dotDensity = 3;
     int dotScale = 1;
+    int meshScale = 1;
     boolean dynamicMeasurements = false;
     boolean greyscaleRendering = false;
     boolean isosurfaceKey = false;

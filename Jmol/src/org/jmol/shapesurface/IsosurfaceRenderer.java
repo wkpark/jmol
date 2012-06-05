@@ -420,7 +420,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       }
       if (diam == Integer.MIN_VALUE) {
         if (imesh.diameter <= 0) {
-          diam = viewer.getDotScale();
+          diam = viewer.getMeshScale();
         } else {
           diam = viewer.getScreenDim() / 100;
         }

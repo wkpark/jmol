@@ -881,10 +881,11 @@ public class Token {
   public final static int historylevel                   = intparam | 20;
   public final static int isosurfacepropertysmoothingpower=intparam | 21;
   public final static int loglevel                       = intparam | 22;
-  public final static int minimizationsteps              = intparam | 23;
-  public final static int minpixelselradius              = intparam | 24;
-  public final static int percentvdwatom                 = intparam | 25;
-  public final static int perspectivemodel               = intparam | 26;
+  public final static int meshscale                      = intparam | 23;
+  public final static int minimizationsteps              = intparam | 24;
+  public final static int minpixelselradius              = intparam | 25;
+  public final static int percentvdwatom                 = intparam | 26;
+  public final static int perspectivemodel               = intparam | 27;
   public final static int phongexponent                  = intparam | 28;
   public final static int pickingspinrate                = intparam | 30;
   public final static int propertyatomnumberfield        = intparam | 31;
@@ -2238,6 +2239,7 @@ public class Token {
       "historyLevel",                             new Token(historylevel),
       "lighting",                                 new Token(lighting),
       "logLevel",                                 new Token(loglevel),
+      "meshScale",                                new Token(meshscale),
       "minimizationSteps",                        new Token(minimizationsteps),
       "minPixelSelRadius",                        new Token(minpixelselradius),
       "percentVdwAtom",                           new Token(percentvdwatom),

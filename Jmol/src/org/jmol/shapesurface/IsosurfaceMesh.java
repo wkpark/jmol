@@ -908,8 +908,8 @@ public class IsosurfaceMesh extends Mesh {
     for (int i = 1; i < 27; i++) {
       vGammaToKPoint.set(pts[i]);
       Measure.getBisectingPlane(pts[0], vGammaToKPoint, ptTemp, vTemp, planeGammaK);
-      getIntersection(1, planeGammaK, null, null, null, null, false, false,
-          Token.plane, true);
+      getIntersection(1, planeGammaK, null, null, null, null, null, false,
+          false, Token.plane, true);
 
       //System.out.println("#slab " + i + " " + bsSlabGhost.cardinality());
       //System.out.println("isosurface s" + i + " plane " + Escape.escape(plane)

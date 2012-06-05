@@ -16176,6 +16176,12 @@ public class ScriptEvaluator {
     }
     //TODO: check for compatibility with LCAOCARTOONS
     switch (tok) {
+    case Token.bitset:
+    case Token.expressionBegin:
+      data = atomExpression(i + 1);
+      tok = Token.decimal;
+      iToken++;
+      break;
     case Token.off:
       iToken = i + 1;
       return new Integer(Integer.MIN_VALUE);

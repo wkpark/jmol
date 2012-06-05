@@ -650,7 +650,7 @@ public void initShape() {
   
   private void setSlabData() {
     if (plane != null) {
-      slabData.getIntersection(0, plane, null, null, null, null, false, true, Token.plane, false);
+      slabData.getIntersection(0, plane, null, null, null, null, null, false, true, Token.plane, false);
       polygon = new ArrayList<Object>();
       polygon.add(slabData.vertices);
       polygon.add(slabData.polygonIndexes);

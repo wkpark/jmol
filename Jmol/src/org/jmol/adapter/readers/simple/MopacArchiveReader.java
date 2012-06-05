@@ -74,6 +74,8 @@ public class MopacArchiveReader extends ZMatrixReader {
 
   String energyWithUnits;
   private boolean getValue() {
+    if (line.substring(0, 10).trim().length() != 0)
+      return true;
     String key = line.substring(0, 34).trim().replace(' ', '_');
     String value = line.substring(35).trim();
     atomSetCollection.setAtomSetAuxiliaryInfo(key, value);

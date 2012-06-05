@@ -476,7 +476,7 @@ Jmol = (function(document) {
 		}
 		Ptr[0] = ++pt;
 		while (Ptr[0] < data.length) {
-			var child = _jmolGetDomElement(data, Ptr, "/" + tagname, lvel+1);
+			var child = Jmol._getDomElement(data, Ptr, "/" + tagname, lvel+1);
 			if (!child)
 				break;
 			e.appendChild(child);
@@ -493,8 +493,8 @@ Jmol = (function(document) {
 				s = s.replace(/\ \|\ /g, "\n");
 			return s;
 		}
-		var A = (new Function( "return " + data ) )();
-		return (!A ? null : key && A[key] ? A : A);
+		var A = (new Function( "return " + s ) )();
+		return (!A ? null : key && A[key] ? A[key] : A);
 	}
 
 	Jmol._sortMessages = function(A){

@@ -1090,6 +1090,8 @@ public class Jmol implements WrappedApplet {
       consoleMessage("Available callbacks include: " + EnumCallback.getNameList().replace(';',' ').trim());
     }
 
+    private Boolean allowJSEval;
+    
     public String eval(String strEval) {
       // may be appletName\1script
       int pt = strEval.indexOf("\1");
@@ -1110,20 +1112,29 @@ public class Jmol implements WrappedApplet {
         return "NO EVAL ALLOWED";
       }
       if (callbacks.get(EnumCallback.EVAL) != null) {
-        notifyCallback(EnumCallback.EVAL, new Object[] { null,
-            strEval });
+        notifyCallback(EnumCallback.EVAL, new Object[] { null, strEval });
         return "";
       }
-      try {
-        if (!haveDocumentAccess
-            || ((Boolean) jsoDocument.eval("_jmol && !!_jmol.noEval")).booleanValue() 
-            || ((Boolean) jsoDocument.eval("Jmol && !!Jmol._noEval")).booleanValue())
-          return "NO EVAL ALLOWED";
-      } catch (Exception e) {
-        Logger
-            .error("# no Jmol or _jmol in evaluating " + strEval + ":" + e.toString());
-        return "";
+
+      if (allowJSEval == null) {
+        try {
+          if (((Boolean) jsoDocument.eval("!!Jmol._noEval")).booleanValue())
+            allowJSEval = Boolean.FALSE;
+        } catch (Exception e) {
+          try {
+            if (((Boolean) jsoDocument.eval("!!_jmol.noEval")).booleanValue())
+              allowJSEval = Boolean.FALSE;
+          } catch (Exception e2) {
+            allowJSEval = Boolean.FALSE;
+            Logger.error("# no Jmol or _jmol object in evaluating " + strEval
+                + ":" + e.toString());
+            return "";
+          }
+        }
+        allowJSEval = Boolean.TRUE;
       }
+      if (allowJSEval == Boolean.FALSE)
+        return "NO EVAL ALLOWED";
       try {
         return "" + jsoDocument.eval(strEval);
       } catch (Exception e) {

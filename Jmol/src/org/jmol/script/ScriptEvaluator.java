@@ -9060,26 +9060,12 @@ public class ScriptEvaluator {
         evalError(errMsg, null);
       return;
     }
-    // with "@t" we do not save the load command but instead the data statement
-    // but there could state problems here because then we don't have the
-    // option to save load options with that... Hmm.
     if (errMsg != null && !isCmdLine_c_or_C_Option) {
       if (errMsg.indexOf("NOTE: file recognized as a script file:") == 0) {
         filename = errMsg.substring(errMsg.indexOf("file:") + 5).trim();
         script(0, filename, false);
         return;
       }
-      /* no longer used 
-      if (isAuto) {
-        String surfaceType = (errMsg.indexOf("java.io.FileNotFound") >= 0 ? null
-            : SurfaceFileTyper.determineSurfaceFileType(viewer
-                .getBufferedInputStream(filename)));
-        if (surfaceType != null) {
-          runScript("isosurface " + Escape.escape(filename));
-          return;
-        }
-      }
-      */
       evalError(errMsg, null);
     }
     if (isAppend && (appendNew || nFiles > 1)) {

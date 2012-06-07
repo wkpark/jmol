@@ -3923,6 +3923,8 @@ abstract public class ModelCollection extends BondCollection {
     int j = s.indexOf("load /*file*/");
     if (j >= 0 && j < i)
       i = j;
+    if ((j = s.indexOf("load \"@")) >= 0 && j < i)
+      i = j;
     if (i >= 0)
       s = s.substring(0, i) + "zap;" + s.substring(i);
     cmds.append(s);

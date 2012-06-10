@@ -1364,7 +1364,11 @@ all support for previous versions removed
     </jar>
   </target>
 
-  <target name="dist" id="dist"
+	  <!-- target name="dist" id="dist"
+	          depends="main-i18n,main,signed-applet" 
+	          Bob's computer chokes on doc -->
+
+	<target name="dist" id="dist"
           depends="doc,main-i18n,main,signed-applet">
     <!-- first build binary distribution -->
     <delete dir="build/dist/jmol-${version}"/>

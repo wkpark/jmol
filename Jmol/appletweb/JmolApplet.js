@@ -20,6 +20,7 @@
 	Jmol._setCommonMethods = function(proto) {
 		proto._showInfo = Jmol._Applet.prototype._showInfo;	
 		proto._search = Jmol._Applet.prototype._search;
+		proto._readyCallback = Jmol._Applet.prototype._readyCallback;
 	}
 
 	// _Applet -- the main, full-featured, object
@@ -196,18 +197,19 @@
 			alert(t);
 		applet._code = Jmol._documentWrite(t);
 	}
-	
+
 	Jmol._Applet.prototype._readyCallback = function(id, fullid, isReady, applet) {
 		if (!isReady)
 			return; // ignore -- page is closing
 		this._ready = true;
 		var script = this._readyScript;
-		
-		this._applet = applet;		
+		this._applet = applet;
 		if (this._defaultModel)
 			this._search(this._defaultModel, (script ? ";" + script : ""));
 		else if (script)
 			this._script(script);
+		else if (this._src)
+			this._script('load "' + this._src + '"');
 		this._readyFunction && this._readyFunction(this);
 		Jmol._setReady(this);
 	}
@@ -495,6 +497,7 @@
 
   Jmol._Image.prototype._create = function(id, Info, caption) {
   	Jmol._setObject(this, id, Info);
+  	this._src || (this._src = "");
 		var t = Jmol._getWrapper(this, true) 
 			+ '<img id="'+id+'_image" width="' + Info.width + '" height="' + Info.height + '" src=""/>'
 		 	+	Jmol._getWrapper(this, false)
@@ -503,6 +506,9 @@
 			alert(t);
 		this._code = Jmol._documentWrite(t);
 		this._canScript = function(script) {return (script.indexOf("#alt:LOAD") >= 0);};
+		this._ready = true;
+		if (Jmol._document)
+			this._readyCallback(id, null, true, null);
   }
 
 	Jmol._setCommonMethods(Jmol._Image.prototype);

@@ -4,19 +4,11 @@
 
 	Jmol.getVersion = function(){return _version};
 
-	Jmol.getApplet = function(id, Info, checkOnly) {
-	
-	// note that the variable name the return is assigned to MUST match the first parameter in quotes
-	// applet = Jmol.getApplet("applet", Info)
-
-		checkOnly || (checkOnly = !1);
-		id || (id = "jmolApplet0");
-		Info || (Info = {
+	Jmol._defaultInfo = {
 			color: "#FFFFFF", // applet object background color, as for older jmolSetBackgroundColor(s)
 			width: 300,
 			height: 300,
-			debug: false,
-			addSelectionOptions: true,
+			addSelectionOptions: false,
 			serverURL: "http://chemapps.stolaf.edu/jmol/jmolcd.php",
 			defaultModel: "",
 			useNoApplet: false,
@@ -27,8 +19,22 @@
 			jarPath: ".",
 			jarFile: "JmolApplet0.jar",
 			readyFunction: null,
-			script: null
-		});
+			script: null,
+			src: null,
+			debug: false
+		};
+ 
+	Jmol.getApplet = function(id, Info, checkOnly) {
+	
+	// note that the variable name the return is assigned to MUST match the first parameter in quotes
+	// applet = Jmol.getApplet("applet", Info)
+
+		checkOnly || (checkOnly = !1);
+		id || (id = "jmolApplet0");
+		Info || (Info = {});
+		for (x in Jmol._defaultInfo)
+		  if (typeof Info[x] == "undefined")
+		  	Info[x] = Jmol._defaultInfo[x];
 		Jmol._debugAlert = Info.debug;	
 		Info.serverURL && (Jmol._serverUrl = Info.serverURL);
 		var model = (checkOnly ? null : Info.defaultModel);
@@ -43,11 +49,11 @@
 			applet = new Jmol._Applet(id, Info, null, checkOnly);
 		} 
  		if (applet == null) {
-			if (!Info.useJmolOnly && !Info.useImageOnly)
+			if (!Info.useJmolOnly && !Info.useImageOnly) {
 				applet = Jmol._getCanvas(id, Info, checkOnly);
+			} 
 			if (applet == null)
 				applet = new Jmol._Image(id, Info, null, checkOnly);
-			Jmol._document && model && applet._search(model);
 		}
 		// keyed to both its string id and itself
 		if (!checkOnly) {

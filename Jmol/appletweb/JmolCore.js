@@ -103,9 +103,9 @@ Jmol = (function(document) {
 		info && jQuery.ajax(info);
 	}
 	Jmol._getGrabberOptions = function(applet, note) {
-	
 		// feel free to adjust this look to anything you want
-		
+		if (!jQuery)
+			return ""
 		return '<br /><input type="text" id="ID_query" onkeypress="13==event.which&&Jmol._applets[\'ID\']._search()"\
 			size="32" value="" /><br /><nobr><select id="ID_select">\
 			<option value="$" selected>NCI(small molecules)</option>\
@@ -570,9 +570,10 @@ Jmol = (function(document) {
 		obj._containerHeight = obj._height + ((obj._height==parseFloat(obj._height))? "px":"");
 		obj._info = "";
 		obj._infoHeader = obj._jmolType + ' "' + obj._id + '"'
-		obj._hasOptions = Info.addSelectionOptions;
+		obj._hasOptions = (Info.addSelectionOptions && jQuery);
 		obj._defaultModel = Info.defaultModel;
 		obj._readyScript = (Info.script ? Info.script : "");
+		obj._src = Info.src;
 	}
 
 })(Jmol);

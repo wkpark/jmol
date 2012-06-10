@@ -26,7 +26,11 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 		var canvas = null;
 		if (Info.useWebGlIfAvailable && ChemDoodle.featureDetection.supports_webgl())
 			canvas = new Jmol._Canvas3D(id, Info, null, checkOnly);
-		return (canvas ? canvas : new Jmol._Canvas(id, Info, null, checkOnly));
+		if (canvas == null)
+			canvas = new Jmol._Canvas(id, Info, null, checkOnly);
+		if (Jmol._document)
+			canvas._readyCallback(id, id, true, null);
+		return canvas;
 	}
 
 	Jmol._Canvas3D = function(id, Info, caption, checkOnly){

@@ -27,7 +27,7 @@ var jmolApplet0; // set up in HTML table, below
 // and, of course, a little tweaking of the logic would let you do anything
 
 var useJmolOnly = (document.location.href.indexOf("NOCD") >= 0);
-var useChemDoodleOnly = (!useJmolOnly && document.location.href.indexOf("CD") >= 0);
+var useNoApplet = (!useJmolOnly && document.location.href.indexOf("CD") >= 0);
 var useWebGlIfAvailable = (document.location.href.indexOf("NOWEBGL") < 0);
 var useImageOnly = (document.location.href.indexOf("IMAGE") >= 0);
 var useSignedApplet = (document.location.href.indexOf("SIGNED") >= 0);
@@ -42,7 +42,7 @@ var Info = {
 	debug: false,
 	addSelectionOptions: true,
 	serverURL: "http://chemapps.stolaf.edu/jmol/jmolcd2.php",
-	useChemDoodleOnly: useChemDoodleOnly,
+	useNoApplet: useNoApplet,
 	useJmolOnly: useJmolOnly,
 	useWebGlIfAvailable: useWebGlIfAvailable,
 	useImageOnly: useImageOnly,
@@ -133,6 +133,13 @@ all files loading; basic functionality only; Jmol.js no longer necessary for cre
  <a href="javascript:Jmol.loadFile(jmolApplet0,'y1237.cif', '{1 1 1}')">load y1237.cif</a>
  <br /> 
  <a href="javascript:Jmol.loadFile(jmolApplet0,'quartz.cif', '{1 1 1}')">load quartz.cif</a>
+ <br /> 
+ <br /> 
+ <b>scripted image</b> 
+ <br /> 
+ <a href="javascript:Jmol.script(jmolApplet0,'load 2bxa-hbond.png')">2bxa-hbond.png</a>
+ <br /> 
+
  </td><td valign=top>
 	<b>direct database calls - no server</b> 
  <br />

@@ -562,4 +562,17 @@ Jmol = (function(document) {
 	  return 0 // prevents further Jmol sync processing	
 	}
 
+	Jmol._setObject = function(obj, id, Info) {
+		obj._id = id;
+		obj._width = Info.width;
+		obj._height = Info.height;
+		obj._containerWidth = obj._width + ((obj._width==parseFloat(obj._width))? "px":"");
+		obj._containerHeight = obj._height + ((obj._height==parseFloat(obj._height))? "px":"");
+		obj._info = "";
+		obj._infoHeader = obj._jmolType + ' "' + obj._id + '"'
+		obj._hasOptions = Info.addSelectionOptions;
+		obj._defaultModel = Info.defaultModel;
+		obj._readyScript = (Info.script ? Info.script : "");
+	}
+
 })(Jmol);

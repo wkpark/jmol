@@ -28,16 +28,6 @@
 		this._jmolType = "Jmol._Applet" + (Info.isSigned ? " (signed)" : "");
 		if (checkOnly)
 			return this;
-		this._id = id;
-		this._width = Info.width;
-		this._height = Info.height;
-		this._containerWidth = this._width + ((this._width==parseFloat(this._width))? "px":"");
-		this._containerHeight = this._height + ((this._height==parseFloat(this._height))? "px":"");
-		this._info = "";
-		this._infoHeader = this._jmolType + ' "' + this._id + '"'
-		this._hasOptions = Info.addSelectionOptions;
-		this._defaultModel = Info.defaultModel;
-		this._readyScript = (Info.script ? Info.script : "");
 		this._isSigned = Info.isSigned;
 		this._dataMultiplier=1;
 		this._readyFunction = Info.readyFunction;
@@ -91,12 +81,14 @@
 			Jmol.controls == undefined || Jmol.controls._onloadResetForms();		
 		}
 		
-		this._create(Info, caption);		  	
+		this._create(id, Info, caption);
 		return this;
 		
 	}
 
-	Jmol._Applet.prototype._create = function(Info, caption){
+	Jmol._Applet.prototype._create = function(id, Info, caption){
+
+		Jmol._setObject(this, id, Info);
 
 		var params = {
 			syncId: ("" + Math.random()).substring(3),
@@ -497,16 +489,12 @@
 		this._jmolType = "image";
 		if (checkOnly)
 			return this;
-		this._id = id;
-		this._width = Info.width;
-		this._height = Info.height;
-		this._info = "";
-		this._infoHeader = this._jmolType + ' "' + this._id + '"'
-		this._hasOptions = Info.addSelectionOptions;
-		this._defaultModel = Info.defaultModel;
-		this._readyScript = (Info.script ? Info.script : "");
-		this._containerWidth = this._width + ((this._width==parseFloat(this._width))? "px":"");
-		this._containerHeight = this._height + ((this._height==parseFloat(this._height))? "px":"");
+		this._create(id, Info, caption);
+		return this;
+	}
+
+  Jmol._Image.prototype._create = function(id, Info, caption) {
+  	Jmol._setObject(this, id, Info);
 		var t = Jmol._getWrapper(this, true) 
 			+ '<img id="'+id+'_image" width="' + Info.width + '" height="' + Info.height + '" src=""/>'
 		 	+	Jmol._getWrapper(this, false)
@@ -515,8 +503,7 @@
 			alert(t);
 		this._code = Jmol._documentWrite(t);
 		this._canScript = function(script) {return (script.indexOf("#alt:LOAD") >= 0);};
-		return this;
-	}
+  }
 
 	Jmol._setCommonMethods(Jmol._Image.prototype);
 

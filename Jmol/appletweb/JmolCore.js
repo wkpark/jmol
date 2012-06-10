@@ -2,6 +2,8 @@
 
 // see JmolApi.js for public user-interface. All these are private functions
 
+// 6/10/2012 Info.useChemDoodleOnly --> Info.disableJmol (expanding possibilities beyond just Jmol)
+// 6/5/2012 BH: fixes problem with Jmol "javascript" command not working and getPropertyAsArray not working
 // 6/4/2012 BH: corrects problem with MSIE requiring mouse-hover to activate applet
 // 5/31/2012 BH: added JSpecView interface and api -- see JmolJSV.js
 //               also changed "jmolJarPath" to just "jarPath"
@@ -372,7 +374,6 @@ Jmol = (function(document) {
 		}
 	  	
 	  	features.useIEObject = (features.os() == "win" && features.browserName == "msie" && features.browserVersion >= 5.5);
-	  
 	  	features.useHtml4Object = (features.browserName == "mozilla" && features.browserVersion >= 5) ||
 	   		(features.browserName == "opera" && features.browserVersion >= 8) ||
 	   		(features.browserName == "webkit" && features.browserVersion >= 412.2);

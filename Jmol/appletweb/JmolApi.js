@@ -12,13 +12,14 @@
 		checkOnly || (checkOnly = !1);
 		id || (id = "jmolApplet0");
 		Info || (Info = {
+			color: "#FFFFFF", // applet object background color, as for older jmolSetBackgroundColor(s)
 			width: 300,
 			height: 300,
 			debug: false,
 			addSelectionOptions: true,
 			serverURL: "http://chemapps.stolaf.edu/jmol/jmolcd.php",
 			defaultModel: "",
-			useChemDoodleOnly: false,
+			disableJmol: false,
 			useJmolOnly: true,
 			useWebGlIfAvailable: true,
 			useImageOnly: false,
@@ -32,7 +33,7 @@
 		Info.serverURL && (Jmol._serverUrl = Info.serverURL);
 		var model = (checkOnly ? null : Info.defaultModel);
 		var applet = null;
-		if (!Info.useChemDoodleOnly && !Info.useImageOnly && navigator.javaEnabled()) {
+		if (!Info.disableJmol && !Info.useImageOnly && navigator.javaEnabled()) {
 		
 			Info.jarFile || (Info.jarFile = (Info.isSigned ? "JmolAppletSigned0.jar" : "JmolApplet0.jar")); 
 			Info.jarPath || (Info.jarPath = "."); 

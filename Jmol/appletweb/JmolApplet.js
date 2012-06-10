@@ -501,7 +501,7 @@
 		this._height = Info.height;
 		this._hasOptions = Info.addSelectionOptions;
 		this._info = "";
-		this._infoHeader = this._jmolType + ' "' + this._id + '"';
+		this._infoHeader = this._jmolType + ' "' + id + '"';
 		var t = Jmol._getWrapper(this, true) 
 			+ '<img id="'+id+'_image" width="' + Info.width + '" height="' + Info.height + '" src=""/>'
 		 	+	Jmol._getWrapper(this, false)
@@ -516,7 +516,38 @@
 	Jmol._setCommonMethods(Jmol._Image.prototype);
 
 	Jmol._Image.prototype._script = function(script) {
-	} // not implemented
+		var slc = script.toLowerCase().replace(/[\",\']/g, '');
+		// single command only
+		// "script ..." or "load ..." only
+		// PNG or JPG only
+		var ipt = slc.length;
+		if (slc.indexOf(";") < 0 && slc.indexOf("\n") < 0
+		  && (slc.indexOf("script ") == 0 || slc.indexOf("load ") == 0)
+		  && (slc.indexOf(".png") == ipt - 4 || slc.indexOf(".jpg") == ipt - 4)) {
+			var imageFile = script.substring(script.indexOf(" ") + 1);
+			ipt = imageFile.length;
+			for (var i = 0; i < ipt; i++) {
+				switch (imageFile.charAt(i)) {
+				case " ":
+					continue;
+				case '"':
+					imageFile = imageFile.substring(i + 1, imageFile.indexOf('"', i + 1))
+					i = ipt;
+					continue;
+				case "'":
+					imageFile = imageFile.substring(i + 1, imageFile.indexOf("'", i + 1))
+					i = ipt;
+					continue;
+				default:
+					imageFile = imageFile.substring(i)
+					i = ipt;
+					continue;
+				}
+			}
+			document.getElementById(this._id + "_image").src = imageFile
+		}
+		// could implement server-side scripting here
+	}
 	
 	Jmol._Image.prototype._show = function(tf) {
 		Jmol._getElement(this, "appletdiv").style.display = (tf ? "block" : "none");

@@ -325,6 +325,8 @@ public class SmarterJmolAdapter extends JmolAdapter {
     boolean exceptFiles = (manifest.indexOf("EXCEPT_FILES") >= 0);
     if (selectAll || subFileName != null)
       haveManifest = false;
+    if (haveManifest && manifest.indexOf(".spt") >= 0)
+      return NOTE_SCRIPT_FILE + fileName + "\n";
     List<Object> vCollections = new ArrayList<Object>();
     Map<String, Object> htCollections = (haveManifest ? new Hashtable<String, Object>() : null);
     int nFiles = 0;

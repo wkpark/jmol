@@ -1239,7 +1239,9 @@ public class FileManager {
       boolean isLocal = (itype < 0 || itype == URL_LOCAL);
       if (isLocal || includeRemoteFiles) {
         v.add(name);
-        String newName = stripPath(name);
+        String newName = "$SCRIPT_PATH$/" + stripPath(name);
+        if (newName.indexOf("?") > 0)
+          newName = newName.substring(0, newName.indexOf("?")).trim();
         if (isLocal && name.indexOf("|") < 0) {
           v.add(null); // data will be gotten from disk
         } else {
@@ -1254,7 +1256,7 @@ public class FileManager {
     }
     String sname = "state.spt";
     v.add("JmolManifest.txt");
-    String sinfo = "# Jmol Manifest Zip Format 1.0\n" + "# Created "
+    String sinfo = "# Jmol Manifest Zip Format 1.1\n" + "# Created "
         + DateFormat.getDateInstance().format(new Date()) + "\n"
         + "# JmolVersion " + Viewer.getJmolVersion() + "\n" + Escape.escape("$SCRIPT_PATH$" + sname);
     v.add(sinfo.getBytes());

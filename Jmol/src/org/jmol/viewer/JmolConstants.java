@@ -103,6 +103,8 @@ final public class JmolConstants {
 
   public final static String EMBEDDED_SCRIPT_TAG = "**** Jmol Embedded Script ****";
 
+  public static final String NOTE_SCRIPT_FILE = "NOTE: file recognized as a script file: ";
+
   public static String embedScript(String s) {
     return "\n/**" + EMBEDDED_SCRIPT_TAG + " \n" + s + "\n**/";
   }

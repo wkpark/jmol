@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.jmol.api.JmolAdapter;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
@@ -245,7 +246,7 @@ public class Resolver {
         errMsg = "unrecognized file format for file " + fullName + "\n"
             + readerName;
       else if (readerName.equals("spt"))
-        errMsg = "NOTE: file recognized as a script file: " + fullName + "\n";
+        errMsg = JmolAdapter.NOTE_SCRIPT_FILE + fullName + "\n";
       else if (!fullName.equals("ligand"))
         Logger.info("The Resolver thinks " + readerName);
     }

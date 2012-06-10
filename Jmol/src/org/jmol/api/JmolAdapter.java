@@ -89,6 +89,7 @@ public abstract class JmolAdapter {
   public final static int        SHELL_F_SPHERICAL = EnumQuantumShell.F_SPHERICAL.id;
   public final static int        SHELL_F_CARTESIAN = EnumQuantumShell.F_CARTESIAN.id;
   public static final String SUPPORTED_BASIS_FUNCTIONS = EnumQuantumShell.SUPPORTED_BASIS_FUNCTIONS;
+  public static final String NOTE_SCRIPT_FILE = JmolConstants.NOTE_SCRIPT_FILE;
   
   public static String getElementSymbol(int elementNumber) {
     return Elements.elementSymbolFromNumber(elementNumber);

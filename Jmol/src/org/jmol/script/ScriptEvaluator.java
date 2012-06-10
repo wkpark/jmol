@@ -9061,8 +9061,8 @@ public class ScriptEvaluator {
       return;
     }
     if (errMsg != null && !isCmdLine_c_or_C_Option) {
-      if (errMsg.indexOf("NOTE: file recognized as a script file:") == 0) {
-        filename = errMsg.substring(errMsg.indexOf("file:") + 5).trim();
+      if (errMsg.indexOf(JmolConstants.NOTE_SCRIPT_FILE) == 0) {
+        filename = errMsg.substring(JmolConstants.NOTE_SCRIPT_FILE.length()).trim();
         script(0, filename, false);
         return;
       }

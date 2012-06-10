@@ -30,7 +30,7 @@ if (xxxx.length == 0) {
 }
 
 var useJmolOnly = (document.location.href.indexOf("NOCD") >= 0);
-var useChemDoodleOnly = (!useJmolOnly && document.location.href.indexOf("CD") >= 0);
+var useNoApplet = (!useJmolOnly && document.location.href.indexOf("CD") >= 0);
 var useWebGlIfAvailable = (document.location.href.indexOf("NOWEBGL") < 0);
 var useImageOnly = (document.location.href.indexOf("IMAGE") >= 0);
 var useSignedApplet = true;//(document.location.href.indexOf("SIGNED") >= 0);
@@ -39,7 +39,7 @@ var Info = {
 	width: 450,
 	height: 450,
 	script: script,
-	useChemDoodleOnly: useChemDoodleOnly,
+	useNoApplet: useNoApplet,
 	useJmolOnly: useJmolOnly,
 	useWebGlIfAvailable: useWebGlIfAvailable,
 	useImageOnly: useImageOnly,
@@ -74,7 +74,7 @@ appletCheck = Jmol.getApplet(jmol, Info, true);
 		Jmol.jmolHtml("Drag-Minimize ");
 		Jmol.jmolLink(jmol,"set picking dragMinimize", "on");  
 		Jmol.jmolHtml("    ");
-		Jmol.jmolLink(jmol,"set picking dragMinimize off", "off")
+		Jmol.jmolLink(jmol,"set picking ident", "off")
 		Jmol.jmolBr();
 		Jmol.jmolHtml("Model Kit Mode ")
 		Jmol.jmolLink(jmol,"set modelkitmode", "on")

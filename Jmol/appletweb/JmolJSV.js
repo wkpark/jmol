@@ -50,7 +50,7 @@
 
 	Jmol._JSVApplet = function(id, Info, caption){
 		this._jmolType = "Jmol._JSVApplet" + (Info.isSigned ? " (signed)" : "");
-		Jmol._targetId = this._id = id;
+		this._id = id;
 		this._width = Info.width;
 		this._height = Info.height;
 		this._isSigned = Info.isSigned;

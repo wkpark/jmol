@@ -59,7 +59,7 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 		Jmol._setCommonMethods(proto);
 
 		proto._create = function(id, Info, caption) {
-			Jmol._targetId = this._id = id;
+			this._id = id;
 			this._width = Info.width;
 			this._height = Info.height;
 			this._info = "";
@@ -67,6 +67,8 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 			this._hasOptions = Info.addSelectionOptions;
 			this._defaultModel = Info.defaultModel;
 			this._readyScript = (Info.script ? Info.script : "");
+			this._containerWidth = this._width + ((this._width==parseFloat(this._width))? "px":"");
+			this._containerHeight = this._height + ((this._height==parseFloat(this._height))? "px":"");
 			var t = Jmol._getWrapper(this, true);
 			if (Jmol._document) {
 				Jmol._documentWrite(t);

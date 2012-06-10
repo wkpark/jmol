@@ -58,8 +58,6 @@ Jmol = (function(document) {
 		_asynchronous: true,
 		_document: document,
 		_debugAlert: false,
-		_targetId: "jmolApplet0",
-		_target: null,
 		_isMsieRenderBug: (navigator.userAgent.toLowerCase().indexOf("msie") >= 0),
 		_isXHTML: false,
 		_XhtmlElement: null,
@@ -247,6 +245,7 @@ Jmol = (function(document) {
 	}
 	
 	Jmol._extractInfoFromRCSB = function(applet, database, query, output) {
+	alert(output)
 		var n = output.length/5;
 		if (n == 0)
 			return;	
@@ -552,7 +551,7 @@ Jmol = (function(document) {
     setTimeout(s, 50);  
 	}
 
-	Jmol._mySyncCallback = function (app,msg) {
+	Jmol._mySyncCallback = function(app,msg) {
 	  if (!Jmol._syncReady || !Jmol._isJmolJSVSync)
 	  	return 1; // continue processing and ignore me
     for (var i = 0; i < Jmol._syncedApplets.length; i++) {
@@ -562,6 +561,5 @@ Jmol = (function(document) {
     }
 	  return 0 // prevents further Jmol sync processing	
 	}
-
 
 })(Jmol);

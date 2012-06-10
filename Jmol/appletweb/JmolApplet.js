@@ -31,14 +31,16 @@
 		this._id = id;
 		this._width = Info.width;
 		this._height = Info.height;
-		this._isSigned = Info.isSigned;
-		this._dataMultiplier=1;
-		this._hasOptions = Info.addSelectionOptions;
+		this._containerWidth = this._width + ((this._width==parseFloat(this._width))? "px":"");
+		this._containerHeight = this._height + ((this._height==parseFloat(this._height))? "px":"");
 		this._info = "";
 		this._infoHeader = this._jmolType + ' "' + this._id + '"'
+		this._hasOptions = Info.addSelectionOptions;
 		this._defaultModel = Info.defaultModel;
-		this._readyFunction = Info.readyFunction;
 		this._readyScript = (Info.script ? Info.script : "");
+		this._isSigned = Info.isSigned;
+		this._dataMultiplier=1;
+		this._readyFunction = Info.readyFunction;
 		this._ready = false; 
 		this._applet = null;
 		this._jarFile = Info.jarFile || (Info.isSigned ? "JmolAppletSigned0.jar" : "JmolApplet0.jar"); 
@@ -46,8 +48,6 @@
 		this._memoryLimit = Info.memoryLimit || 512;
 		this._canScript = function(script) {return true;};
 		this._savedOrientations = [];
-		this._containerWidth = this._width + ((this._width==parseFloat(this._width))? "px":"");
-		this._containerHeight = this._height + ((this._height==parseFloat(this._height))? "px":"");
 		this._syncKeyword = "Select:";
 		
 		/*
@@ -254,8 +254,9 @@
 		if (database == "=" && query.length == 3)
 			query = "=" + query; // this is a ligand			
 		var dm = database + query;
-		if (!query || dm.indexOf("?") < 0 && dm == this._thisJmolModel)
+		if (!query || dm.indexOf("?") < 0 && dm == this._thisJmolModel) {
 			return;
+		}
 		this._thisJmolModel = dm;
 		if (database == "$" || database == ":")
 			this._jmolFileType = "MOL";
@@ -496,12 +497,16 @@
 		this._jmolType = "image";
 		if (checkOnly)
 			return this;
-		Jmol._targetId = this._id = id;
+		this._id = id;
 		this._width = Info.width;
 		this._height = Info.height;
-		this._hasOptions = Info.addSelectionOptions;
 		this._info = "";
-		this._infoHeader = this._jmolType + ' "' + id + '"';
+		this._infoHeader = this._jmolType + ' "' + this._id + '"'
+		this._hasOptions = Info.addSelectionOptions;
+		this._defaultModel = Info.defaultModel;
+		this._readyScript = (Info.script ? Info.script : "");
+		this._containerWidth = this._width + ((this._width==parseFloat(this._width))? "px":"");
+		this._containerHeight = this._height + ((this._height==parseFloat(this._height))? "px":"");
 		var t = Jmol._getWrapper(this, true) 
 			+ '<img id="'+id+'_image" width="' + Info.width + '" height="' + Info.height + '" src=""/>'
 		 	+	Jmol._getWrapper(this, false)
@@ -577,8 +582,10 @@
 	}
 
 	Jmol._Image.prototype._searchDatabase = function(query, database, script){
-		if (query.indexOf("?") == query.length - 1)
+		if (query.indexOf("?") == query.length - 1) {
+			Jmol._getInfoFromDatabase(this, database, query.split("?")[0]);
 			return;
+		}
 		this._showInfo(false);
 		script || (script = Jmol._getScriptForDatabase(database));
 		var src = Jmol._serverUrl 

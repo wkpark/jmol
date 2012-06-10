@@ -19,7 +19,7 @@
 			addSelectionOptions: true,
 			serverURL: "http://chemapps.stolaf.edu/jmol/jmolcd.php",
 			defaultModel: "",
-			disableJmol: false,
+			useNoApplet: false,
 			useJmolOnly: true,
 			useWebGlIfAvailable: true,
 			useImageOnly: false,
@@ -33,7 +33,7 @@
 		Info.serverURL && (Jmol._serverUrl = Info.serverURL);
 		var model = (checkOnly ? null : Info.defaultModel);
 		var applet = null;
-		if (!Info.disableJmol && !Info.useImageOnly && navigator.javaEnabled()) {
+		if (!Info.useNoApplet && !Info.useImageOnly && navigator.javaEnabled()) {
 		
 			Info.jarFile || (Info.jarFile = (Info.isSigned ? "JmolAppletSigned0.jar" : "JmolApplet0.jar")); 
 			Info.jarPath || (Info.jarPath = "."); 

@@ -612,13 +612,17 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     return (nTokens == 0 ? OK2 : CONTINUE);
   }
 
+  private boolean isComment;
+  
   private int processTokenList(short iLine, boolean doCompile) {
     if (nTokens > 0 || comment != null) {
       if (nTokens == 0) {
         // just a comment
         ichCurrentCommand = ichToken;
-        if (comment != null)
+        if (comment != null) {
+          isComment = true;
           addTokenToPrefix(new Token(Token.nada, comment));
+        }
       } else if (setBraceCount > 0 && endOfLine && ichToken < cchScript) {
         return CONTINUE;
       }
@@ -740,14 +744,16 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
 
     }
     if (endOfLine) {
-      if (flowContext != null && tokCommand != Token.nada && flowContext.checkForceEndIf()) {
-        forceFlowEnd(flowContext.token);
+      if (flowContext != null && flowContext.checkForceEndIf()) {
+        if (!isComment)
+          forceFlowEnd(flowContext.token);
         isEndOfCommand = true;
         cchToken = 0;
         ichCurrentCommand = ichToken;
         lineCurrent--;
         return CONTINUE;
       }
+      isComment = false;
       isShowCommand = false;
       ++lineCurrent;
     }

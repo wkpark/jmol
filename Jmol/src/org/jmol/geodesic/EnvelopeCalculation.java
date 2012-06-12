@@ -224,6 +224,8 @@ public final class EnvelopeCalculation {
       map = emptySet;
     else
       map = new FastBitSet(geodesicMap);
+    if (index >= dotsConvexMaps.length)
+      return;
     dotsConvexMaps[index] = map;
     dotsConvexMax = Math.max(dotsConvexMax, index);
   }
@@ -400,7 +402,8 @@ public final class EnvelopeCalculation {
   }
 */  
   public float getAppropriateRadius(int atomIndex) {
-    return (mads != null ? mads[atomIndex]/1000f : atomData.atomRadius[atomIndex]);
+    return (mads != null ? (atomIndex >= mads.length ? 0 : mads[atomIndex]/1000f) 
+        : atomData.atomRadius[atomIndex]);
   }
 
   private int indexI;

@@ -85,11 +85,17 @@ public class DotsRenderer extends ShapeRenderer {
       if (map == null || !atom.isVisible(myVisibilityFlag)
           || !g3d.isInDisplayRange(atom.screenX, atom.screenY))
         continue;
-      int nPoints = calcScreenPoints(map, dots.ec.getAppropriateRadius(i) + testRadiusAdjust,
-          atom.screenX, atom.screenY, atom.screenZ);
-      if (nPoints != 0)
-        renderConvex(Graphics3D.getColixInherited(dots.colixes[i],
-            atom.getColix()), map, nPoints);
+      try {
+        int nPoints = calcScreenPoints(map, dots.ec.getAppropriateRadius(i) + testRadiusAdjust,
+            atom.screenX, atom.screenY, atom.screenZ);
+        if (nPoints != 0)
+          renderConvex(Graphics3D.getColixInherited(dots.colixes[i],
+              atom.getColix()), map, nPoints);
+      } catch (Exception e) {
+        System.out.println("Dots rendering error");
+        e.printStackTrace();
+        // ignore -- some sort of fluke
+      }
     }
     //dots.timeEndExecution = System.currentTimeMillis();
     //Logger.debug("dots rendering time = "+ gs.getExecutionWalltime());

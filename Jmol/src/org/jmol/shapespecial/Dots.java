@@ -109,11 +109,15 @@ public class Dots extends AtomShape {
     }
     if ("atom" == propertyName) {
       thisAtom = ((Integer) value).intValue();
+      if (thisAtom >= atoms.length)
+        return;
       atoms[thisAtom].setShapeVisibility(myVisibilityFlag, true);
       ec.allocDotsConvexMaps(atomCount);
       return;
     }
     if ("dots" == propertyName) {
+      if (thisAtom >= atoms.length)
+        return;
       isActive = true;
       ec.setFromBits(thisAtom, (BitSet) value);
       atoms[thisAtom].setShapeVisibility(myVisibilityFlag, true);
@@ -123,7 +127,11 @@ public class Dots extends AtomShape {
         for (int i = 0; i < atomCount; i++)          
           if (atoms[i].isInFrame() && atoms[i].isShapeVisible(myVisibilityFlag)) 
             // was there a reason we were not checking for hidden?
-            mads[i] = (short) (ec.getAppropriateRadius(i) * 1000);
+            try {
+              mads[i] = (short) (ec.getAppropriateRadius(i) * 1000);
+            } catch (Exception e) {
+              // ignore - someone is messing with the state file
+            }
         ec.setMads(mads);
       }
       mads[thisAtom] = (short) (thisRadius * 1000f);

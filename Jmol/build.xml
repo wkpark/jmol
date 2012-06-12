@@ -1402,7 +1402,8 @@ all support for previous versions removed
 
     <copy todir="build/dist/jmol-${version}" >
       <fileset dir="./appletweb">
-        <include name="Jmol.js" />
+        <include name="README*.txt" />
+        <include name="Jmol*.js" />
         <include name="JSpecViewApplet.jar" />
         <include name="JSpecViewAppletSigned.jar" />
       </fileset>

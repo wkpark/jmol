@@ -266,7 +266,7 @@
 		return Jmol._documentWrite(t);
 	}
 	
-	Jmol.jmolMenu = function(appletorId, arrayOfMenuItems, size, id, title) {
+	Jmol.jmolMenu = function(appletOrId, arrayOfMenuItems, size, id, title) {
 		var appId = Jmol.controls._getIdForControl(appletOrId, null);
 		var c = Jmol.controls;
 		//_jmolInitCheck();

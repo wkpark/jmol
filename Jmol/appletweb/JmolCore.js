@@ -358,6 +358,19 @@ Jmol = (function(document) {
 		
 		features.supportsXhr2 = function() {return jQuery && jQuery.support.cors}
 
+		features._webGLtest = 0;
+		
+		features.supportsWebGL = function() {
+			if (!Jmol.featureDetection._webGLtest) { 
+				var canvas;
+				Jmol.featureDetection._webGLtest = ( 
+					window.WebGLRenderingContext 
+						&& ((canvas = document.createElement("canvas")).getContext("webgl") 
+							|| canvas.getContext("experimental-webgl")) ? 1 : -1);
+			}
+			return (Jmol.featureDetection._webGLtest > 0);
+		};
+		
 		features.compliantBrowser = function() {
 			var a = !!document.getElementById;
 			var os = features.os()
@@ -578,4 +591,37 @@ Jmol = (function(document) {
 		obj._src = Info.src;
 	}
 
+	Jmol._cleanFileData = function(data) {
+		if (data.indexOf("\r") >= 0 && data.indexOf("\n") >= 0) {
+			return data.replace(/\r\n/g,"\n");
+		}
+		if (data.indexOf("\r") >= 0) {
+			return data.replace(/\r/g,"\n");
+		}
+		return data;
+	};
+
+	Jmol._getFileType = function(name) {
+		var database = name.substring(0, 1);
+		if (database == "$" || database == ":")
+			return "MOL";
+		if (database == "=")
+			return (name.substring(1,2) == "=" ? "LCIF" : "PDB");
+		// just the extension, which must be PDB, XYZ..., CIF, or MOL
+		name = name.split('.').pop().toUpperCase();
+		return name.substring(0, Math.min(name.length, 3));
+	};
+
+	Jmol._searchDatabase = function(applet, query, database, script) {
+		applet._showInfo(false);
+		if (query.indexOf("?") >= 0) {
+			Jmol._getInfoFromDatabase(applet, database, query.split("?")[0]);
+			return true;
+		}
+		if (Jmol.db._DirectDatabaseCalls[database]) {
+			applet._loadFile(database + query, script);
+			return true;
+		}
+		return false;
+	}
 })(Jmol);

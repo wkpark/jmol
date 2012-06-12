@@ -11,16 +11,16 @@
 			addSelectionOptions: false,
 			serverURL: "http://chemapps.stolaf.edu/jmol/jmolcd.php",
 			defaultModel: "",
+			script: null,
+			src: null,
+			readyFunction: null,
 			useNoApplet: false,
 			useJmolOnly: true,
 			useWebGlIfAvailable: true,
 			useImageOnly: false,
-			isSigned: false,
 			jarPath: ".",
 			jarFile: "JmolApplet0.jar",
-			readyFunction: null,
-			script: null,
-			src: null,
+			isSigned: false,
 			debug: false
 		};
  

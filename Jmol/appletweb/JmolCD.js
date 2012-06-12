@@ -24,7 +24,7 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 		// overrides the function in JmolCore.js
 		// ChemDoodle: first try with WebGL unless that doesn't work or we have indicated NOWEBGL
 		var canvas = null;
-		if (Info.useWebGlIfAvailable && ChemDoodle.featureDetection.supports_webgl())
+		if (Info.useWebGlIfAvailable && Jmol.featureDetection.supportsWebGL())
 			canvas = new Jmol._Canvas3D(id, Info, null, checkOnly);
 		if (canvas == null)
 			canvas = new Jmol._Canvas(id, Info, null, checkOnly);
@@ -35,7 +35,7 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 
 	Jmol._Canvas3D = function(id, Info, caption, checkOnly){
 		this._is2D = false;
-		this._jmolType = "Jmol._Canvas3D";
+		this._jmolType = "Jmol._Canvas3D (ChemDoodle)";
 		if (checkOnly)
 			return this;
 		this._dataMultiplier=1;
@@ -45,7 +45,7 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 
 	Jmol._Canvas = function(id, Info, caption, checkOnly){
 		this._is2D = true;				
-		this._jmolType = "Jmol._Canvas";
+		this._jmolType = "Jmol._Canvas (ChemDoodle)";
 		if (checkOnly)
 			return this;
 		this._dataMultiplier=20;
@@ -69,10 +69,6 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 				Jmol._documentWrite(t);
 				this.create(id, Info.width, Info.height);
 				this._setDefaults();
-				if (this.defaultModel)
-					this._search(this._defaultModel);
-				if (this._readyScript)
-					this._script(this._readyScript);
 				t = "";
 			} else {
 				t += '<script type="text/javascript">' 
@@ -133,15 +129,8 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 		}
 				
 		proto._searchDatabase = function(query, database, script){
-			this._showInfo(false);
-			if (query.indexOf("?") >= 0) {
-				Jmol._getInfoFromDatabase(this, database, query.split("?")[0]);
+			if (Jmol._searchDatabase(this, query, database, script))
 				return;
-			}
-			if (Jmol.db._DirectDatabaseCalls[database]) {
-				this._loadFile(database + query);
-				return;
-			}
 			this.emptyMessage="Searching...";
 			this.molecule=null;
 			this.repaint();
@@ -163,7 +152,7 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 			this.emptyMessage="Retrieving data...";
 			this.molecule=null;
 			this.repaint();
-			this._jmolFileType = Jmol._cdGetFileType(fileName);
+			this._jmolFileType = Jmol._getFileType(fileName);
 			var cdcanvas = this;
 			Jmol._loadFileData(this, fileName, function(data){Jmol._cdProcessFileData(cdcanvas, data)});
 		}
@@ -190,20 +179,9 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 		this.specs.bonds_clearOverlaps_2D = true;
 	}
 	
-	Jmol._cdGetFileType = function(name) {
-		var database = name.substring(0, 1);
-		if (database == "$" || database == ":")
-			return "MOL";
-		if (database == "=")
-			return (name.substring(1,2) == "=" ? "LCIF" : "PDB");
-		// just the extension, which must be PDB, XYZ..., CIF, or MOL
-		name = name.split('.').pop().toUpperCase();
-		return name.substring(0, Math.min(name.length, 3));
-	}
-
 	Jmol._cdProcessFileData = function(cdcanvas, data) {
 		var factor = cdcanvas._dataMultiplier;
-		data = Jmol._cdCleanFileData(data);
+		data = Jmol._cleanFileData(data);
 		var molecule;
 		switch(cdcanvas._jmolFileType) {
 		case "PDB":
@@ -230,16 +208,6 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 			return;
 		}
 		cdcanvas.loadMolecule(Jmol._cdScaleMolecule(molecule, factor));
-	}
-
-	Jmol._cdCleanFileData = function(data) {
-		if (data.indexOf("\r") >= 0 && data.indexOf("\n") >= 0) {
-			return data.replace(/\r\n/g,"\n");
-		}
-		if (data.indexOf("\r") >= 0) {
-			return data.replace(/\r/g,"\n");
-		}
-		return data;
 	}
 
 	Jmol._cdScaleMolecule = function(molecule, multiplier) {

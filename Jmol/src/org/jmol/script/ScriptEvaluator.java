@@ -80,6 +80,7 @@ import org.jmol.util.Point3fi;
 import org.jmol.util.Quaternion;
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.TextFormat;
+import org.jmol.util.ZipUtil;
 import org.jmol.modelset.TickInfo;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.FileManager;
@@ -1905,6 +1906,14 @@ public class ScriptEvaluator {
       if (!viewer.getFileAsString(data, Integer.MAX_VALUE, false)) {
         setErrorMessage("io error reading " + data[0] + ": " + data[1]);
         return false;
+      }
+      String path = ZipUtil.getManifestScriptPath(data[1]);
+      if (path != null && path.length() > 0) {
+        data[0] = filename = filename.substring(0, filename.lastIndexOf("|")) + path; 
+        if (!viewer.getFileAsString(data, Integer.MAX_VALUE, false)) {
+          setErrorMessage("io error reading " + data[0] + ": " + data[1]);
+          return false;
+        }
       }
     }
     this.filename = filename;
@@ -7469,10 +7478,11 @@ public class ScriptEvaluator {
         return;
       String[] retFileName = new String[1];
       Object image = null;
-      if (!file.equalsIgnoreCase("none") && file.length() > 0)
+      if (!file.equalsIgnoreCase("none") && file.length() > 0) {
         image = viewer.getFileAsImage(file, retFileName);
-      if (image == null)
-        evalError(retFileName[0], null);
+        if (image == null)
+          evalError(retFileName[0], null);
+      }
       viewer.setBackgroundImage(retFileName[0], image);
       return;
     }
@@ -14823,7 +14833,7 @@ public class ScriptEvaluator {
         msg = (String) getShapeProperty(JmolConstants.SHAPE_DRAW, "command");
       break;
     case Token.file:
-      // as as string
+      // as a string
       if (statementLength == 2) {
         if (!isSyntaxCheck)
           msg = viewer.getCurrentFileAsString();

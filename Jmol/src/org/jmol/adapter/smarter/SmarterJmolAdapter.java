@@ -312,21 +312,24 @@ public class SmarterJmolAdapter extends JmolAdapter {
 
     // zipDirectory[0] is the manifest if present
     String manifest = (String) htParams.get("manifest");
-    if (manifest == null)
+    boolean useFileManifest = (manifest == null);
+    if (useFileManifest)
       manifest = (zipDirectory.length > 0 ? zipDirectory[0] : "");
     boolean haveManifest = (manifest.length() > 0);
     if (haveManifest) {
       if (Logger.debugging)
         Logger.info("manifest for  " + fileName + ":\n" + manifest);
-      manifest = '|' + manifest.replace('\r', '|').replace('\n', '|') + '|';
     }
     boolean ignoreErrors = (manifest.indexOf("IGNORE_ERRORS") >= 0);
     boolean selectAll = (manifest.indexOf("IGNORE_MANIFEST") >= 0);
     boolean exceptFiles = (manifest.indexOf("EXCEPT_FILES") >= 0);
     if (selectAll || subFileName != null)
       haveManifest = false;
-    if (haveManifest && manifest.indexOf(".spt") >= 0)
-      return NOTE_SCRIPT_FILE + fileName + "\n";
+    if (useFileManifest && haveManifest) {
+      String path = ZipUtil.getManifestScriptPath(manifest);
+      if (path != null)
+        return NOTE_SCRIPT_FILE + fileName + path + "\n";
+    }
     List<Object> vCollections = new ArrayList<Object>();
     Map<String, Object> htCollections = (haveManifest ? new Hashtable<String, Object>() : null);
     int nFiles = 0;
@@ -338,9 +341,8 @@ public class SmarterJmolAdapter extends JmolAdapter {
     // running in FileManager now.
 
     Object ret = Resolver.checkSpecialData(is, zipDirectory);
-    if (ret instanceof String) {
+    if (ret instanceof String)
       return ret;
-    }
     StringBuffer data = (StringBuffer) ret;
     try {
       if (data != null) {
@@ -371,6 +373,8 @@ public class SmarterJmolAdapter extends JmolAdapter {
         is = ZipUtil.checkPngZipStream((BufferedInputStream) is);
       ZipInputStream zis = ZipUtil.getStream(is);
       ZipEntry ze;
+      if (haveManifest)
+        manifest = '|' + manifest.replace('\r', '|').replace('\n', '|') + '|';
       while ((ze = zis.getNextEntry()) != null
           && (selectedFile <= 0 || vCollections.size() < selectedFile)) {
         if (ze.isDirectory())

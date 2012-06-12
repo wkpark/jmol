@@ -494,14 +494,14 @@ public class FileManager {
     String[] dir = null;
     dir = getZipDirectory(fileName, false);
     if (dir.length == 0) {
-      String state = viewer.getFileAsString(fileName);
+      String state = viewer.getFileAsString(fileName, Integer.MAX_VALUE, false, true);
       return (state.indexOf(JmolConstants.EMBEDDED_SCRIPT_TAG) < 0 ? ""
           : ScriptCompiler.getEmbeddedScript(state));
     }
     for (int i = 0; i < dir.length; i++)
       if (dir[i].indexOf(".spt") >= 0) {
         String[] data = new String[] { fileName + "|" + dir[i], null };
-        getFileDataOrErrorAsString(data, Integer.MAX_VALUE, false);
+        getFileDataOrErrorAsString(data, Integer.MAX_VALUE, false, false);
         return data[1];
       }
     return "";
@@ -754,15 +754,16 @@ public class FileManager {
   /**
    * 
    * @param data
-   *          [0] initially path name, but returned as full path name; [1]file
-   *          contents (directory listing for a ZIP/JAR file) or error string
+   *        [0] initially path name, but returned as full path name; [1]file
+   *        contents (directory listing for a ZIP/JAR file) or error string
    * @param nBytesMax
-   * @param doSpecialLoad 
+   * @param doSpecialLoad
+   * @param allowBinary 
    * @return true if successful; false on error
    */
 
   boolean getFileDataOrErrorAsString(String[] data, int nBytesMax,
-                                     boolean doSpecialLoad) {
+                                     boolean doSpecialLoad, boolean allowBinary) {
     data[1] = "";
     String name = data[0];
     if (name == null)
@@ -778,8 +779,14 @@ public class FileManager {
       StringBuffer sb = new StringBuffer(8192);
       String line;
       if (nBytesMax == Integer.MAX_VALUE) {
-        while ((line = br.readLine()) != null)
+        line = br.readLine();
+        if (allowBinary || line != null && line.indexOf('\0') < 0
+            && (line.length() != 4 || line.charAt(0) != 65533
+            || line.indexOf("PNG") != 1)) {
           sb.append(line).append('\n');
+          while ((line = br.readLine()) != null)
+            sb.append(line).append('\n');
+        }
       } else {
         int n = 0;
         int len;
@@ -865,8 +872,6 @@ public class FileManager {
     }
     Object image = null;
     ApiPlatform apiPlatform = viewer.getApiPlatform();
-
-    //try {
     String fullPathName = names[0].replace('\\', '/');
     if (fullPathName.indexOf("|") > 0) {
       Object ret = getFileAsBytes(fullPathName, null);
@@ -1239,7 +1244,7 @@ public class FileManager {
       boolean isLocal = (itype < 0 || itype == URL_LOCAL);
       if (isLocal || includeRemoteFiles) {
         v.add(name);
-        String newName = "$SCRIPT_PATH$/" + stripPath(name);
+        String newName = "$SCRIPT_PATH$" + stripPath(name);
         if (newName.indexOf("?") > 0)
           newName = newName.substring(0, newName.indexOf("?")).trim();
         if (isLocal && name.indexOf("|") < 0) {
@@ -1258,7 +1263,7 @@ public class FileManager {
     v.add("JmolManifest.txt");
     String sinfo = "# Jmol Manifest Zip Format 1.1\n" + "# Created "
         + DateFormat.getDateInstance().format(new Date()) + "\n"
-        + "# JmolVersion " + Viewer.getJmolVersion() + "\n" + Escape.escape("$SCRIPT_PATH$" + sname);
+        + "# JmolVersion " + Viewer.getJmolVersion() + "\n" + sname;
     v.add(sinfo.getBytes());
     script = TextFormat.replaceQuotedStrings(script, fileNames, newFileNames);
     v.add(sname);

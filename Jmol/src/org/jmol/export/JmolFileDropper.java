@@ -95,7 +95,7 @@ public class JmolFileDropper implements DropTargetListener {
       fname = (fname.startsWith("/") ? "file://" : "file:///") + fname;
     if (statusListener != null) {
       try {
-        String data = viewer.getFileAsString(fname);
+        String data = viewer.getEmbeddedFileState(fname);
         if (data.indexOf("preferredWidthHeight") >= 0)
           statusListener.resizeInnerPanel(data);
       } catch (Throwable e) {

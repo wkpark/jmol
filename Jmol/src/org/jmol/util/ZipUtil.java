@@ -433,5 +433,25 @@ public class ZipUtil {
     }
     
   }
+
+  /**
+   * check a JmolManifest for a reference to a script file (.spt)
+   * 
+   * @param manifest
+   * @return  null, "", or a directory entry in the ZIP file
+   */
+  
+  public static String getManifestScriptPath(String manifest) {
+    if (manifest.indexOf("$SCRIPT_PATH$") >= 0)
+      return "";
+    char ch = (manifest.indexOf('\n') >= 0 ? '\n' : '\r');
+    if (manifest.indexOf(".spt") >= 0) {
+      String[] s = TextFormat.split(manifest, ch);
+      for (int i = s.length; --i >= 0;)
+        if (s[i].indexOf(".spt") >= 0)
+          return "|" + TextFormat.trim(s[i], "\r\n \t");
+    }
+    return null;
+  }
   
 }

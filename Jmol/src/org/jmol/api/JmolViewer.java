@@ -305,6 +305,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public String getModelSetName();
   abstract public String getModelSetFileName();
   abstract public String getModelSetPathName();
+  abstract public String getEmbeddedFileState(String filename);
   abstract public String getFileAsString(String filename);
   abstract public boolean getFileAsString(String[] data, int nBytesMax, boolean doSpecialLoad);
   abstract public Properties getModelSetProperties();
@@ -542,6 +543,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   public static String getJmolValueAsString(JmolViewer jmolViewer, String var) {
     return (jmolViewer == null ? "" : "" + jmolViewer.getParameter(var));
   }
+
 
 }
 

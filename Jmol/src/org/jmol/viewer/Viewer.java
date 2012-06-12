@@ -2511,6 +2511,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   @Override
+  public String getEmbeddedFileState(String filename) {
+    return fileManager.getEmbeddedFileState(filename);
+  }
+
+  @Override
   public Object getFileAsBytes(String pathName, OutputStream os) {
     return fileManager.getFileAsBytes(pathName, os);
   }
@@ -2527,7 +2532,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     String pathName = modelManager.getModelSetPathName();
     if (pathName == null)
       return null;
-    return getFileAsString(pathName, Integer.MAX_VALUE, true);
+    return getFileAsString(pathName, Integer.MAX_VALUE, true, false);
   }
 
   public String getFullPathName() {
@@ -2550,29 +2555,35 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   @Override
   public String getFileAsString(String name) {
-    return getFileAsString(name, Integer.MAX_VALUE, false);
+    return getFileAsString(name, Integer.MAX_VALUE, false, false);
   }
 
   public String getFileAsString(String name, int nBytesMax,
-                                boolean doSpecialLoad) {
+                                boolean doSpecialLoad, boolean allowBinary) {
     if (name == null)
       return getCurrentFileAsString();
     String[] data = new String[2];
     data[0] = name;
     // ignore error completely
-    getFileAsString(data, nBytesMax, doSpecialLoad);
+    getFileAsString(data, nBytesMax, doSpecialLoad, allowBinary);
     return data[1];
-  }
-
-  public String getFilePath(String name, boolean asShortName) {
-    return fileManager.getFilePath(name, false, asShortName);
   }
 
   @Override
   public boolean getFileAsString(String[] data, int nBytesMax,
                                  boolean doSpecialLoad) {
+    return getFileAsString(data, nBytesMax, doSpecialLoad, true);
+  }
+  
+  
+  private boolean getFileAsString(String[] data, int nBytesMax,
+                                  boolean doSpecialLoad, boolean allowBinary) {
     return fileManager.getFileDataOrErrorAsString(data, nBytesMax,
-        doSpecialLoad);
+        doSpecialLoad, allowBinary);
+  }
+
+  public String getFilePath(String name, boolean asShortName) {
+    return fileManager.getFilePath(name, false, asShortName);
   }
 
   public String[] getFileInfo() {
@@ -8621,7 +8632,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     String s = (String) setLoadFormat("_" + smiles, type, false);
     if (type == '/')
       s += TextFormat.simpleReplace(info, " ", "%20");
-    return getFileAsString(s, Integer.MAX_VALUE, false);
+    return getFileAsString(s, Integer.MAX_VALUE, false, false);
   }
 
   // ///////////////////////////////////////////////////////////////
@@ -10361,10 +10372,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public int getMinPixelSelRadius() {
     return global.minPixelSelRadius;
-  }
-
-  public String getEmbeddedFileState(String fileName) {
-    return fileManager.getEmbeddedFileState(fileName);
   }
 
   public void setFrameDelayMs(long millis) {

@@ -222,18 +222,15 @@ public class ImageCreator implements JmolImageCreatorInterface {
           bytes = PngEncoder.getBytes(image, quality, bgcolor, type);
           byte[] b = null;
           if (includeState) {
-            byte[] nbytes = ("" + bytes.length).getBytes();
+            int nPNG = bytes.length;
             b = bytes;
-            for (int i = nbytes.length, pt = 63; --i >= 0; --pt)
-              b[pt] = nbytes[i];
             if (ret == null)
               ret = viewer.getWrappedState(scripts, true, false, image.getWidth(null),
                   image.getHeight(null));
             bytes = (ret instanceof byte[] ? (byte[]) ret : ((String) ret)
                 .getBytes());
-            nbytes = ("" + bytes.length).getBytes();
-            for (int i = nbytes.length, pt = 73; --i >= 0; --pt)
-              b[pt] = nbytes[i];
+            int nState = bytes.length;
+            PngEncoder.setJmolTypeText(b, nPNG, nState, type);
           }
           if (!asBytes) {
             if (b != null)

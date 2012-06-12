@@ -2113,7 +2113,7 @@ class ScriptMathProcessor {
     int nBytesMax = (args.length == 2 ? ScriptVariable.iValue(args[1])
         : Integer.MAX_VALUE);
     return addX(tok == Token.load ? viewer.getFileAsString(file, nBytesMax,
-        false) : viewer.getFilePath(file, false));
+        false, false) : viewer.getFilePath(file, false));
   }
 
   private boolean evaluateWrite(ScriptVariable[] args) throws ScriptException {

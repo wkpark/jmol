@@ -121,6 +121,8 @@ public class PngEncoder extends Object {
 
   private Integer transparentColor;
 
+  private static int ptJmolByteText;
+
   private void setTransparentColor(int bgcolor) {
     if (bgcolor != 0)
       transparentColor = Integer.valueOf(bgcolor);
@@ -234,8 +236,10 @@ public class PngEncoder extends Object {
     hdrPos = bytePos;
     writeHeader();
     
-    // new Jmol 12.3.7
-    writeText("Jmol Type\0" + type + "000000000+000000000");
+    // new Jmol 12.3.7; checksum fixed in Jmol 12.3.30 (6/11/2012)
+    ptJmolByteText = bytePos + 4;
+    writeText(getJmolTypeText(type, 0, 0));
+    
     writeText("Software\0Jmol " + Viewer.getJmolVersion());
     writeText("Creation Time\0" + 
         (new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z"))
@@ -251,6 +255,14 @@ public class PngEncoder extends Object {
       pngBytes = null;
     }
     return pngBytes;
+  }
+
+  private static String getJmolTypeText(String type, int nPNG, int nState) {
+    String sPNG = "000000000" + nPNG;
+    sPNG = sPNG.substring(sPNG.length() - 9);
+    String sState = "000000000" + nState;
+    sState = sState.substring(sState.length() - 9);
+    return "Jmol Type\0" + type + (type.equals("PNG") ? "0" : "") + sPNG + "+" + sState;
   }
 
   /**
@@ -326,7 +338,7 @@ public class PngEncoder extends Object {
    * Increase or decrease the length of a byte array.
    *
    * @param array The original array.
-   * @param newLength The length you wish the new array to have.
+   * @param newLength The length you wish the array to have.
    * @return Array of newly desired length. If shorter than the
    *         original, the trailing elements are truncated.
    */
@@ -384,6 +396,9 @@ public class PngEncoder extends Object {
     return offset + nBytes;
   }
 
+  byte[] int2 = new byte[2];
+  byte[] int4 = new byte[4];
+
   /**
    * Write a two-byte integer into the pngBytes array at a given position.
    *
@@ -392,10 +407,9 @@ public class PngEncoder extends Object {
    * @return The next place to be written to in the pngBytes array.
    */
   protected int writeInt2(int n, int offset) {
-    byte[] temp = {
-      (byte) ((n >> 8) & 0xff), (byte) (n & 0xff)
-    };
-    return writeBytes(temp, offset);
+    int2[0] = (byte) ((n >> 8) & 0xff);
+    int2[1] = (byte) (n & 0xff);
+    return writeBytes(int2, offset);
   }
 
   /**
@@ -407,11 +421,15 @@ public class PngEncoder extends Object {
    */
   protected int writeInt4(int n, int offset) {
 
-    byte[] temp = {
-      (byte) ((n >> 24) & 0xff), (byte) ((n >> 16) & 0xff),
-      (byte) ((n >> 8) & 0xff), (byte) (n & 0xff)
-    };
-    return writeBytes(temp, offset);
+    getInt4(n, int4);
+    return writeBytes(int4, offset);
+  }
+
+  private static void getInt4(int n, byte[] int4) {
+    int4[0] = (byte) ((n >> 24) & 0xff);
+    int4[1] = (byte) ((n >> 16) & 0xff);
+    int4[2] = (byte) ((n >> 8) & 0xff);
+    int4[3] = (byte) (n & 0xff);
   }
 
   /**
@@ -684,6 +702,35 @@ public class PngEncoder extends Object {
     crc.update("IEND".getBytes());
     crcValue = crc.getValue();
     bytePos = writeInt4((int) crcValue, bytePos);
+  }
+
+  /**
+   * Fill in the Jmol type text area with number of bytes of PNG data
+   * and number of bytes of Jmol state data and fix checksum.
+   * 
+   * If we do not do this, then the checksum will be wrong, and Jmol
+   * and some other programs may not be able to read the PNG image.
+   * 
+   * This was corrected for Jmol 12.3.30. Between 12.3.7 and 
+   * 12.3.29, PNG files created by Jmol have incorrect checksums.
+   * 
+   * @param b
+   * @param nPNG
+   * @param nState
+   * @param type
+   */
+  public static void setJmolTypeText(byte[] b, int nPNG, int nState, String type) {
+    String s = "iTXt" + getJmolTypeText(type, nPNG, nState);
+    byte[] bytes = s.getBytes();
+    int pt = ptJmolByteText;
+    for (int i = 0; i < bytes.length; i++)
+      b[pt++] = bytes[i];
+    CRC32 crc = new CRC32();
+    crc.update(bytes);
+    long crcValue = crc.getValue();
+    getInt4((int) crcValue, bytes);
+    for (int i = 0; i < 4; i++)
+      b[pt++] = bytes[i];
   }
 
 }

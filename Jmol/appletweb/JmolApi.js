@@ -39,6 +39,7 @@
 		Info.serverURL && (Jmol._serverUrl = Info.serverURL);
 		var model = (checkOnly ? null : Info.defaultModel);
 		var applet = null;
+
 		if (!Info.useNoApplet && !Info.useImageOnly && navigator.javaEnabled()) {
 		
 			Info.jarFile || (Info.jarFile = (Info.isSigned ? "JmolAppletSigned0.jar" : "JmolApplet0.jar")); 
@@ -59,7 +60,7 @@
 		if (!checkOnly) {
 		  Jmol._lastAppletID = id;
 			Jmol._applets[id] = Jmol._applets[applet] = applet;
-		}		
+		}	
 		return applet;
 	}
 

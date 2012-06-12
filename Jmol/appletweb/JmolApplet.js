@@ -147,8 +147,8 @@
 			params.codebase = applet._jarPath;
 			params.code = myClass + ".class";
 			tHeader =
-				"<object name='" + applet._id +
-				"' id='" + applet._id + "' " + "\n" +
+				"<object name='_" + applet._id +
+				"' id='_" + applet._id + "' " + "\n" +
 				widthAndHeight + "\n";
 			tFooter = "</object>";
 		}
@@ -160,8 +160,8 @@
 			tHeader += " type='application/x-java-applet'\n>\n";
 		} else { // use applet tag
 			tHeader =
-				"<applet name='" + applet._id +
-				"' id='" + applet._id + "' \n" +
+				"<applet name='_" + applet._id +
+				"' id='_" + applet._id + "' \n" +
 				widthAndHeight + "\n" +
 				" code='" + myClass + "'" +
 				" archive='" + applet._jarFile + "' codebase='" + applet._jarPath + "'\n" +

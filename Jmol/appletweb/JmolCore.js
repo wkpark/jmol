@@ -245,7 +245,6 @@ Jmol = (function(document) {
 	}
 	
 	Jmol._extractInfoFromRCSB = function(applet, database, query, output) {
-	alert(output)
 		var n = output.length/5;
 		if (n == 0)
 			return;	

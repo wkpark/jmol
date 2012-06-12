@@ -147,8 +147,8 @@
 			params.codebase = applet._jarPath;
 			params.code = myClass + ".class";
 			tHeader =
-				"<object name='_" + applet._id +
-				"' id='_" + applet._id + "' " + "\n" +
+				"<object name='" + applet._id +
+				"_object' id='" + applet._id + "_object' " + "\n" +
 				widthAndHeight + "\n";
 			tFooter = "</object>";
 		}
@@ -160,8 +160,8 @@
 			tHeader += " type='application/x-java-applet'\n>\n";
 		} else { // use applet tag
 			tHeader =
-				"<applet name='_" + applet._id +
-				"' id='_" + applet._id + "' \n" +
+				"<applet name='" + applet._id +
+				"_object' id='" + applet._id + "_object' \n" +
 				widthAndHeight + "\n" +
 				" code='" + myClass + "'" +
 				" archive='" + applet._jarFile + "' codebase='" + applet._jarPath + "'\n" +
@@ -267,8 +267,8 @@
 	Jmol._Applet.prototype._show = function(tf) {
 		var w = (!tf ? "2px" : this._containerWidth.indexOf("px") >= 0 ? this._containerWidth : "100%");
 		var h = (!tf ? "2px" : this._containerHeight.indexOf("px") >= 0 ? this._containerHeight : "100%");
-		document.getElementById(this._id).style.width = w; 
-		document.getElementById(this._id).style.height = h; 
+		Jmol._getElement(this, "object").style.width = w; 
+		Jmol._getElement(this, "object").style.height = h; 
 	}
 	
 	Jmol._Applet.prototype._script = function(script) {

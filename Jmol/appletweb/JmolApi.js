@@ -140,11 +140,22 @@
 		alert(msg);
 	}
 
+	Jmol.setInfo = function(applet, info, isShown) {
+		applet._info = info;
+		if (arguments.length > 2)
+			applet._showInfo(isShown);
+	}
+
+	Jmol.getInfo = function(applet) {
+		return applet._info;
+	}
+
 	Jmol.showInfo = function(applet, tf) {
 		applet._showInfo(tf);
 	}
 
 
+	
 
 //////////// controls and HTML /////////////
 

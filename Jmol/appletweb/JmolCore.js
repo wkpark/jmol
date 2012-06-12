@@ -2,9 +2,12 @@
 
 // see JmolApi.js for public user-interface. All these are private functions
 
-// 6/10/2012 Info.useChemDoodleOnly --> Info.useNoApplet (expanding possibilities beyond just ChemDoodle)
-// 6/5/2012 BH: fixes problem with Jmol "javascript" command not working and getPropertyAsArray not working
-// 6/4/2012 BH: corrects problem with MSIE requiring mouse-hover to activate applet
+// 6/12/2012 BH: JmolApi.js: adds Jmol.setInfo(applet, info, isShown) -- third parameter optional 
+// 6/12/2012 BH: JmolApi.js: adds Jmol.getInfo(applet) 
+// 6/12/2012 BH: JmolApplet.js: Fixes for MSIE 8
+// 6/10/2012 BH: Info.useChemDoodleOnly --> Info.useNoApplet (expanding possibilities beyond just ChemDoodle)
+// 6/5/2012  BH: fixes problem with Jmol "javascript" command not working and getPropertyAsArray not working
+// 6/4/2012  BH: corrects problem with MSIE requiring mouse-hover to activate applet
 // 5/31/2012 BH: added JSpecView interface and api -- see JmolJSV.js
 //               also changed "jmolJarPath" to just "jarPath"
 //               jmolJarFile->jarFile, jmolIsSigned->isSigned, jmolReadyFunction->readyFunction

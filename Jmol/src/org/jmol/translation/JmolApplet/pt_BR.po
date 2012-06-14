@@ -7,14 +7,14 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-05-22 23:48+0200\n"
-"PO-Revision-Date: 2010-10-21 21:58+0000\n"
-"Last-Translator: Nicolas Vervelle <Unknown>\n"
+"PO-Revision-Date: 2012-06-09 11:09+0000\n"
+"Last-Translator: Leonardo Lemos <Unknown>\n"
 "Language-Team: Brazilian Portuguese <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-12-18 14:49+0000\n"
-"X-Generator: Launchpad (build 14525)\n"
+"X-Launchpad-Export-Date: 2012-06-14 07:56+0000\n"
+"X-Generator: Launchpad (build 15405)\n"
 "X-Poedit-Country: BRAZIL\n"
 "X-Poedit-Language: Portuguese\n"
 "X-Poedit-Basepath: ../../../..\n"
@@ -146,7 +146,8 @@ msgid "Check"
 msgstr "Conferir"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Início"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -361,11 +362,11 @@ msgstr "Árabe"
 
 #: org/jmol/i18n/GT.java:140
 msgid "Asturian"
-msgstr ""
+msgstr "Asturiano"
 
 #: org/jmol/i18n/GT.java:141
 msgid "Bosnian"
-msgstr ""
+msgstr "Bósnio"
 
 #: org/jmol/i18n/GT.java:142
 msgid "Catalan"
@@ -389,7 +390,7 @@ msgstr "Grego"
 
 #: org/jmol/i18n/GT.java:147
 msgid "Australian English"
-msgstr ""
+msgstr "Inglês australiano"
 
 #: org/jmol/i18n/GT.java:148
 msgid "British English"
@@ -421,15 +422,15 @@ msgstr "Francês"
 
 #: org/jmol/i18n/GT.java:155
 msgid "Frisian"
-msgstr ""
+msgstr "Frísio"
 
 #: org/jmol/i18n/GT.java:156
 msgid "Galician"
-msgstr ""
+msgstr "Galego"
 
 #: org/jmol/i18n/GT.java:157
 msgid "Croatian"
-msgstr ""
+msgstr "Croata"
 
 #: org/jmol/i18n/GT.java:158
 msgid "Hungarian"
@@ -437,7 +438,7 @@ msgstr "Húngaro"
 
 #: org/jmol/i18n/GT.java:159
 msgid "Armenian"
-msgstr ""
+msgstr "Armênio"
 
 #: org/jmol/i18n/GT.java:160
 msgid "Indonesian"
@@ -453,7 +454,7 @@ msgstr "Japonês"
 
 #: org/jmol/i18n/GT.java:163
 msgid "Javanese"
-msgstr ""
+msgstr "Javanês"
 
 #: org/jmol/i18n/GT.java:164
 msgid "Korean"
@@ -461,7 +462,7 @@ msgstr "Coreano"
 
 #: org/jmol/i18n/GT.java:165
 msgid "Malay"
-msgstr ""
+msgstr "Malasiano"
 
 #: org/jmol/i18n/GT.java:166
 msgid "Norwegian Bokmal"
@@ -2242,7 +2243,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:125
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 "clique em dois pontos para girar o eixo no sentido anti-horário ({0} é "
 "necessário)"
@@ -2339,7 +2341,8 @@ msgstr "Mover átomo ({0} é necessário)"
 #: org/jmol/viewer/ActionManager.java:143
 #, java-format
 msgid "move atom and minimize molecule (requires {0})"
-msgstr "Mover átomo e molécula (utilizando campo de força - {0} é necessário)"
+msgstr ""
+"Mover átomo e molécula (utilizando campo de força - {0} é necessário)"
 
 #: org/jmol/viewer/ActionManager.java:144
 #, java-format
@@ -2473,7 +2476,8 @@ msgstr "Arraste para mover rótulo"
 
 #: org/jmol/viewer/Viewer.java:8685
 msgid "clipboard is not accessible -- use signed applet"
-msgstr "área de transferência não está acessível -- use o \"applet\" assinado"
+msgstr ""
+"área de transferência não está acessível -- use o \"applet\" assinado"
 
 #: org/jmol/viewer/Viewer.java:9492
 msgid "Cannot set log file path."
@@ -2496,15 +2500,17 @@ msgstr "Arquivo de log definido para {0}"
 #~ msgid "About Jmol"
 #~ msgstr "Sobre o Jmol"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to string value: {0}"
 #~ msgstr ""
 #~ "ERRO: impossível designar um sinalizador booleano para uma \"string\": {0}"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 #~ msgstr ""
-#~ "ERRO: impossível designar um sinalizador booleano para um valor numérico: "
-#~ "{0}"
+#~ "ERRO: impossível designar um sinalizador booleano para um valor numérico: {0}"
 
+#, java-format
 #~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 #~ msgstr ""
 #~ "ERRO: impossível designar o valor desta variável para um booleano: {0}"
@@ -2512,12 +2518,12 @@ msgstr "Arquivo de log definido para {0}"
 #~ msgid "File creation failed."
 #~ msgstr "Criação de arquivo falhou."
 
+#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 #~ msgstr ""
-#~ "Criação de arquivo por este \"applet\" não é permitida. Para formato "
-#~ "Base64 JPEG, use {0}."
+#~ "Criação de arquivo por este \"applet\" não é permitida. Para formato Base64 "
+#~ "JPEG, use {0}."
 
 #~ msgid "File from PDB"
 #~ msgstr "Arquivo do PDB"
@@ -2525,6 +2531,7 @@ msgstr "Arquivo de log definido para {0}"
 #~ msgid "File or URL"
 #~ msgstr "Arquivo ou URL"
 
+#, java-format
 #~ msgid "File {0}"
 #~ msgstr "Arquivo {0}"
 
@@ -2534,12 +2541,14 @@ msgstr "Arquivo de log definido para {0}"
 #~ msgid "Script with history"
 #~ msgstr "\"Script\" com histórico"
 
+#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "{0} Imagem"
 
 #~ msgid "JVXL Isosurface"
 #~ msgstr "Isosuperfície JVXL"
 
+#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "{0} modelos 3D"
 

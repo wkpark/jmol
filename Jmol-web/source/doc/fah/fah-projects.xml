@@ -9153,6 +9153,9 @@
   <fah_proj number="7082" name="hipin" public="n"
     server="129.74.85.15" atoms="573" preferred="8" deadline="11"
     credit="600.0" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75"/>
+  <fah_proj number="7084" name="proinsulin WT" public="n"
+    server="129.74.85.15" atoms="1293" preferred="5.64" deadline="9.39"
+    credit="1220.83" frames="100" code="A4" contact="Yong Kim" kfactor="3.0"/>
 
   <!-- Projects 7100 to 7199 -->
   <fah_proj number="7100" name="2kxa_bax" public="y"

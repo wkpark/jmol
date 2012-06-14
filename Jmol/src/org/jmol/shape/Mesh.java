@@ -134,6 +134,7 @@ public class Mesh extends MeshSurface {
     havePlanarContours = false;
     haveXyPoints = false;
     isTriangleSet = false;
+    isTwoSided = false;
     lattice = null;
     mat4 = null;
     normixes = null;

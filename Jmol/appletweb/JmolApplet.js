@@ -42,49 +42,33 @@
 		this._syncKeyword = "Select:";
 		
 		/*
-		 * private variables
-		 */
-		var that = this;
-		
-		/*
-		 * private methods
-		 */
-		var getJarFilename=function(fileNameOrFlag){
-			that._jarFile =
-	    	(typeof(fileNameOrFlag) == "string"  ? fileNameOrFlag : (fileNameOrFlag ?  "JmolAppletSigned" : "JmolApplet") + "0.jar");
-		}
-		var setCodebase=function(codebase) {
- 			that._jarPath = codebase ? codebase : ".";
-		}
-		
-		/*
 		 * privileged methods
 		 */
-		this._initialize = function(codebaseDirectory, fileNameOrUseSignedApplet) {
+		this._initialize = function(jarPath, jarFile) {
+			var doReport = false;
 			if(this._jarFile) {
 				var f = this._jarFile;
 				if(f.indexOf("/") >= 0) {
 					alert("This web page URL is requesting that the applet used be " + f + ". This is a possible security risk, particularly if the applet is signed, because signed applets can read and write files on your local machine or network.");
 					var ok = prompt("Do you want to use applet " + f + "? ", "yes or no")
 					if(ok == "yes") {
-						codebaseDirectory = f.substring(0, f.lastIndexOf("/"));
-						fileNameOrUseSignedApplet = f.substring(f.lastIndexOf("/") + 1);
+						jarPath = f.substring(0, f.lastIndexOf("/"));
+						jarFile = f.substring(f.lastIndexOf("/") + 1);
 					} else {
-						getJarFilename(fileNameOrUseSignedApplet);
-						alert("The web page URL was ignored. Continuing using " + this._jarFile + ' in directory "' + codebaseDirectory + '"');
+						doReport = true;
 					}
 				} else {
-					fileNameOrUseSignedApplet = f;
+					jarFile = f;
 				}
 			}
-			setCodebase(codebaseDirectory);
-			getJarFilename(fileNameOrUseSignedApplet);
+ 			this._jarPath = jarPath || ".";
+			this._jarFile = (typeof(jarFile) == "string" ? jarFile : (jarFile ?  "JmolAppletSigned" : "JmolApplet") + "0.jar");
+	    if (doReport)
+				alert("The web page URL was ignored. Continuing using " + this._jarFile + ' in directory "' + this._jarPath + '"');
 			Jmol.controls == undefined || Jmol.controls._onloadResetForms();		
-		}
-		
+		}		
 		this._create(id, Info, caption);
 		return this;
-		
 	}
 
 	Jmol._Applet.prototype._create = function(id, Info, caption){
@@ -97,7 +81,8 @@
 			progresscolor: "blue",
 			boxbgcolor: Info.color || "black",
 			boxfgcolor: "white",
-			boxmessage: "Downloading JmolApplet ..."
+			boxmessage: "Downloading JmolApplet ...",
+			script: (Info.color ? "background " + Info.color : "")
 		};
 
 		var availableValues = "'progressbar','progresscolor','boxbgcolor','boxfgcolor','boxmessage',\
@@ -119,36 +104,27 @@
 		params.loadInline = (Info.inlineModel ? sterilizeInline(Info.inlineModel) : "");
 		params.appletReadyCallback = this._id + "._readyCallback";
 
-		var myClass = "JmolApplet"
-		Jmol._createApplet(this, params, Info, myClass, null, caption);
-
-	}
-	
-	Jmol._createApplet = function(applet, params, Info, myClass, script, caption) {
-
 		if (Jmol._syncedApplets.length)
 		  params.synccallback = "Jmol._mySyncCallback";
-		params.java_arguments = "-Xmx" + Math.round(Info.memoryLimit || applet._memoryLimit) + "m";
+		params.java_arguments = "-Xmx" + Math.round(Info.memoryLimit || this._memoryLimit) + "m";
 
-		applet._initialize(Info.jarPath, Info.jarFile);
+		this._initialize(Info.jarPath, Info.jarFile);
 
 		// size is set to 100% of containers' size, but only if resizable. 
 		// Note that resizability in MSIE requires: 
 		// <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-		var w = (applet._containerWidth.indexOf("px") >= 0 ? applet._containerWidth : "100%");
-		var h = (applet._containerHeight.indexOf("px") >= 0 ? applet._containerHeight : "100%");
+		var w = (this._containerWidth.indexOf("px") >= 0 ? this._containerWidth : "100%");
+		var h = (this._containerHeight.indexOf("px") >= 0 ? this._containerHeight : "100%");
 		var widthAndHeight = " style=\"width:" + w + ";height:" + h + "\" ";
 		var tHeader, tFooter;
 		if (Jmol.featureDetection.useIEObject || Jmol.featureDetection.useHtml4Object) {
-			params.archive = applet._jarFile;
-			if (script)
-  			params.script = script;
+			params.archive = this._jarFile;
 			params.mayscript = 'true';
-			params.codebase = applet._jarPath;
-			params.code = myClass + ".class";
+			params.codebase = this._jarPath;
+			params.code = "JmolApplet.class";
 			tHeader =
-				"<object name='" + applet._id +
-				"_object' id='" + applet._id + "_object' " + "\n" +
+				"<object name='" + this._id +
+				"_object' id='" + this._id + "_object' " + "\n" +
 				widthAndHeight + "\n";
 			tFooter = "</object>";
 		}
@@ -160,20 +136,20 @@
 			tHeader += " type='application/x-java-applet'\n>\n";
 		} else { // use applet tag
 			tHeader =
-				"<applet name='" + applet._id +
-				"_object' id='" + applet._id + "_object' \n" +
+				"<applet name='" + this._id + "_object' "
+				+ "id='" + this._id + "_object' \n" +
 				widthAndHeight + "\n" +
-				" code='" + myClass + "'" +
-				" archive='" + applet._jarFile + "' codebase='" + applet._jarPath + "'\n" +
+				" code='JmolApplet'" +
+				" archive='" + this._jarFile + "' codebase='" + this._jarPath + "'\n" +
 				" mayscript='true'>\n";
 			tFooter = "</applet>";
 		}
 		var visitJava;
 		if (Jmol.featureDetection.useIEObject || Jmol.featureDetection.useHtml4Object) {
-			var szX = "width:" + applet._width;
+			var szX = "width:" + this._width;
 			if ( szX.indexOf("%")==-1 ) 
 				szX+="px";
-			var szY = "height:" + applet._height;
+			var szY = "height:" + this._height;
 			if ( szY.indexOf("%")==-1 )
 				szY+="px";
 			visitJava = "<p style='background-color:yellow; color:black; " + szX + ";" + szY + ";" +
@@ -186,16 +162,16 @@
 				Jmol._noJavaMsg2 + "</font></td></tr></table>";
 		}
 	
-		var t = Jmol._getWrapper(applet, true) + tHeader;
+		var t = Jmol._getWrapper(this, true) + tHeader;
  		for (var i in params)
 			if(params[i])
 		 		t+="  <param name='"+i+"' value='"+params[i]+"' />\n";
 		t += visitJava + tFooter 
-			+ Jmol._getWrapper(applet, false) 
-			+ (Info.addSelectionOptions ? Jmol._getGrabberOptions(applet, caption) : "");
+			+ Jmol._getWrapper(this, false) 
+			+ (Info.addSelectionOptions ? Jmol._getGrabberOptions(this, caption) : "");
 		if (Jmol._debugAlert)
 			alert(t);
-		applet._code = Jmol._documentWrite(t);
+		this._code = Jmol._documentWrite(t);
 	}
 
 	Jmol._Applet.prototype._readyCallback = function(id, fullid, isReady, applet) {
@@ -215,26 +191,30 @@
 	}
 	
 	Jmol._Applet.prototype._showInfo = function(tf) {
+		Jmol._getElement(this, "infoheaderspan").innerHTML = this._infoHeader;
+		if (this._info)
+			Jmol._getElement(this, "infodiv").innerHTML = this._info;
 		if ((!this._isInfoVisible) == (!tf))
 			return;
 		this._isInfoVisible = tf;
 		// 1px does not work for MSIE
-		Jmol._getElement(this, "infotablediv").style.display = (tf ? "block" : "none");
 		var w = (tf ? "2px" : this._containerWidth.indexOf("px") >= 0 ? this._containerWidth : "100%");
 		var h = (tf ? "2px" : this._containerHeight.indexOf("px") >= 0 ? this._containerHeight : "100%");
-		Jmol._getElement(this, "appletdiv").style.height = w;
-		Jmol._getElement(this, "appletdiv").style.width = h;
+		Jmol._getElement(this, "appletdiv").style.width = w;
+		Jmol._getElement(this, "appletdiv").style.height = h;
+		if (this._infoObject) {
+			this._infoObject._showInfo(tf);
+		} else {
+			Jmol._getElement(this, "infotablediv").style.display = (tf ? "block" : "none");
+		}
 		if (false && !tf)// -- occurring on Mac systems?)
 			alert("returning to applet..." + w + " " + h);
 		this._show(!tf);
-		if (tf) {
-			Jmol._getElement(this, "infoheaderdiv").innerHTML = this._infoHeader;
-			Jmol._getElement(this, "infodiv").innerHTML = this._info;
-		}
 	}
 
 	Jmol._Applet.prototype._search = function(query, script){
 		this._showInfo(false);
+		arguments.length > 1 || (query = null);
 		Jmol._setQueryTerm(this, query);
 		query || (query = Jmol._getElement(this, "query").value);
 		query && (query = query.replace(/\"/g, ""));

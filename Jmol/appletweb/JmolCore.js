@@ -83,7 +83,7 @@ Jmol = (function(document) {
 			_restQueryXml: "<orgPdbQuery><queryType>org.pdb.query.simple.AdvancedKeywordQuery</queryType><description>Text Search</description><keywords>QUERY</keywords></orgPdbQuery>",
 			_restReportUrl: "http://www.pdb.org/pdb/rest/customReport?pdbids=IDLIST&customReportColumns=structureId,structureTitle"
 		},
-		_getCanvas: function(){ /* only in JmolCD.js */ return null },
+		_getCanvas: function(){ /* only in JmolCD.js or JmolGLmol.js */ return null },
 		_allowedJmolSize: [25, 2048, 300]   // min, max, default (pixels)
     /*  By setting the Jmol.allowedJmolSize[] variable in the webpage
         before calling Jmol.getApplet(), limits for applet size can be overriden.
@@ -105,17 +105,26 @@ Jmol = (function(document) {
 		var info = Jmol._ajaxQueue.shift();
 		info && jQuery.ajax(info);
 	}
+	
+	Jmol._grabberOptions = [
+	  ["$", "NCI(small molecules)"],
+	  [":", "PubChem(small molecules)"],
+	  ["=", "RCSB(macromolecules)"]
+	];
+	
 	Jmol._getGrabberOptions = function(applet, note) {
 		// feel free to adjust this look to anything you want
 		if (!jQuery)
 			return ""
-		return '<br /><input type="text" id="ID_query" onkeypress="13==event.which&&Jmol._applets[\'ID\']._search()"\
-			size="32" value="" /><br /><nobr><select id="ID_select">\
-			<option value="$" selected>NCI(small molecules)</option>\
-			<option value=":">PubChem(small molecules)</option>\
-			<option value="=">RCSB(macromolecules)</option>\
-			</select>\<button id="ID_submit" onclick="Jmol._applets[\'ID\']._search()">Search</button></nobr>'
+		var s = '<br /><input type="text" id="ID_query" onkeypress="13==event.which&&Jmol._applets[\'ID\']._search()"\
+			size="32" value="" /><br /><nobr><select id="ID_select">'
+			for (var i = 0; i < Jmol._grabberOptions.length; i++) {
+				var opt = Jmol._grabberOptions[i];
+			  s += '<option value="' + opt[0] + '" ' + (i == 0 ? 'selected' : '') + '>' + opt[1] + '</option>';
+			}
+			s = (s + '</select>\<button id="ID_submit" onclick="Jmol._applets[\'ID\']._search()">Search</button></nobr>')
 				.replace(/ID/g, applet._id) + (note ? note : "");
+		return s;
 	}
 
 	Jmol._getWrapper = function(applet, isHeader) {
@@ -126,9 +135,18 @@ Jmol = (function(document) {
 		if (typeof width !== "string" || width.indexOf("%") < 0)
 			width += "px";
 			// for whatever reason, this outer table tag is required for MSIE compatibility
+			
+			// id_appletinfotablediv
+			//     id_appletdiv
+			//     id_infotablediv
+			//       id_infoheaderdiv
+			//          id_infoheaderspan
+			//          id_infocheckboxspan
+			//       id_infodiv
+			
 		var s = (isHeader ? "<table style=\"width:Wpx;height:Hpx\" cellpadding=\"0\" cellspacing=\"0\"><tr><td><div id=\"ID_appletinfotablediv\" style=\"width:100%;height:100%\"><div id=\"ID_appletdiv\" style=\"width:100%;height:100%\">"
 				: "</div><div id=\"ID_infotablediv\" style=\"width:100%;height:100%;display:none;position:relative\">\
-			<div style=\"height:20px;width:100%;background:yellow\"><span id=\"ID_infoheaderdiv\"></span><span style=\"position:absolute;width:10px;right:10px\"><a href=\"javascript:Jmol.showInfo(ID,false)\">[x]</a></span></div>\
+			<div id=\"ID_infoheaderdiv\" style=\"height:20px;width:100%;background:yellow\"><span id=\"ID_infoheaderspan\"></span><span id=\"ID_infocheckboxspan\" style=\"position:absolute;width:10px;right:10px\"><a href=\"javascript:Jmol.showInfo(ID,false)\">[x]</a></span></div>\
 			<div id=\"ID_infodiv\" style=\"position:absolute;top:20px;bottom:0px;width:100%;height:95%;overflow-y:scroll\"></div></div></div></td></tr></table>");
 		if (width.indexOf("px") >= 0)
 			s = s.replace(/width:100%/g, "width:" + width);
@@ -591,6 +609,12 @@ Jmol = (function(document) {
 		obj._src = Info.src;
 	}
 
+	Jmol._addDefaultInfo = function(Info, DefaultInfo) {
+		for (x in DefaultInfo)
+		  if (typeof Info[x] == "undefined")
+		  	Info[x] = DefaultInfo[x];
+	}
+	
 	Jmol._cleanFileData = function(data) {
 		if (data.indexOf("\r") >= 0 && data.indexOf("\n") >= 0) {
 			return data.replace(/\r\n/g,"\n");

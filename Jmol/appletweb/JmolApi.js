@@ -4,7 +4,15 @@
 
 	Jmol.getVersion = function(){return _version};
 
-	Jmol._defaultInfo = {
+	Jmol.getApplet = function(id, Info, checkOnly) {
+	
+	// note that the variable name the return is assigned to MUST match the first parameter in quotes
+	// applet = Jmol.getApplet("applet", Info)
+
+		checkOnly || (checkOnly = !1);
+		id || (id = "jmolApplet0");
+		Info || (Info = {});
+		var DefaultInfo = {
 			color: "#FFFFFF", // applet object background color, as for older jmolSetBackgroundColor(s)
 			width: 300,
 			height: 300,
@@ -22,19 +30,8 @@
 			jarFile: "JmolApplet0.jar",
 			isSigned: false,
 			debug: false
-		};
- 
-	Jmol.getApplet = function(id, Info, checkOnly) {
-	
-	// note that the variable name the return is assigned to MUST match the first parameter in quotes
-	// applet = Jmol.getApplet("applet", Info)
-
-		checkOnly || (checkOnly = !1);
-		id || (id = "jmolApplet0");
-		Info || (Info = {});
-		for (x in Jmol._defaultInfo)
-		  if (typeof Info[x] == "undefined")
-		  	Info[x] = Jmol._defaultInfo[x];
+		};	 
+		Jmol._addDefaultInfo(Info, DefaultInfo);
 		Jmol._debugAlert = Info.debug;	
 		Info.serverURL && (Jmol._serverUrl = Info.serverURL);
 		var model = (checkOnly ? null : Info.defaultModel);
@@ -62,6 +59,23 @@
 			Jmol._applets[id] = Jmol._applets[applet] = applet;
 		}	
 		return applet;
+	}
+
+	Jmol.getJMEApplet = function(id, Info, linkedApplet) {
+	
+	// note that the variable name the return is assigned to MUST match the first parameter in quotes
+	// jme = Jmol.getJMEApplet("jme", Info)
+
+		id || (id = "jme");
+		Info || (Info = {});
+		var DefaultInfo = {
+			width: 300,
+			height: 300,
+			jarPath: ".",
+			jarFile: "JME.jar",
+		};		
+		Jmol._addDefaultInfo(Info, DefaultInfo);
+		return new Jmol._JMEApplet(id, Info, linkedApplet);
 	}
 
 	Jmol.script = function(applet, script) {	
@@ -448,5 +462,19 @@
     Jmol._syncedCommands = commands; // an array of commands; one or more may be null 
     Jmol._syncedReady = {};
     Jmol._isJmolJSVSync = isJmolJSV;
-	}	
+	}
+	
+	/*
+	Jmol._grabberOptions = [
+	  ["$", "NCI(small molecules)"],
+	  [":", "PubChem(small molecules)"],
+	  ["=", "RCSB(macromolecules)"]
+	];
+	*/
+	
+	Jmol.setGrabberOptions = function(options) {
+	  Jmol._grabberOptions = options;
+	}
+	
+	
 })(Jmol);

@@ -21,12 +21,11 @@ if(typeof(GLmol)=="undefined") GLmol = null;
 	Jmol._getCanvas = function(id, Info, checkOnly) {
 		// overrides the function in JmolCore.js
 		var canvas = null;
-		if (Info.useWebGlIfAvailable && Jmol.featureDetection.supportsWebGL())
+		if (Info.useWebGlIfAvailable && Jmol.featureDetection.supportsWebGL()) {
 			canvas = new Jmol._Canvas3D(id, Info, null, checkOnly);
-		else
-			return null;
-		if (Jmol._document)
-			canvas._readyCallback(id, id, true, null);
+			if (Jmol._document)
+				canvas._readyCallback(id, id, true, null);
+		}
 		return canvas;
 	}
 
@@ -49,9 +48,7 @@ if(typeof(GLmol)=="undefined") GLmol = null;
       //console.log(this);
 			if (Jmol._document) {
 				Jmol._documentWrite(t);				
-        this.glmol = new GLmol(id + "_appletdiv", true);
-     		this.glmol.defineRepresentation = Jmol._glmol_DefineRep;
-        this.glmol.wrapper = this;
+        this.create(id + "_appletdiv", true);
 				this._setDefaults();
 				t = "";
 			} else {
@@ -83,12 +80,12 @@ if(typeof(GLmol)=="undefined") GLmol = null;
 			switch (Cmd.substring(0, pt)) {
 			case "SETTING":
 			    switch (what) {
-			    case "Ball and Stick": this.hetatmMode = 'ballAndStick2'; break;
-			    case "Line": this.hetatmMode = 'line'; break;
-			    case "van der Waals Spheres": this.hetatmMode = 'sphere'; break;
+			    case "Ball and Stick": this._hetatmMode = 'ballAndStick2'; break;
+			    case "Line": this._hetatmMode = 'line'; break;
+			    case "van der Waals Spheres": this._hetatmMode = 'sphere'; break;
 			    }
-			    this.glmol.rebuildScene();
-			    this.glmol.show();
+			    this.rebuildScene();
+			    this.show();
 			    return;
 			case "LOAD":
 			    if (what.indexOf("??") >= 0) {
@@ -129,102 +126,102 @@ if(typeof(GLmol)=="undefined") GLmol = null;
 			Jmol._loadFileData(glcanvas, fileName, function(data){Jmol._glProcessFileData(glcanvas, data, script)});
 		};
 
+    proto.defineRepresentation = function() {
+		  var all = this.getAllAtoms();
+		  var allHet = this.getHetatms(all);
+			var hetatm = this.removeSolvents(allHet);
+		  this.colorByAtom(all, {});
+		  switch (this._colorMode) {
+		  case 'ss': this.colorByStructure(all, 0xcc00cc, 0x00cccc); break;
+		  case 'chain': this.colorByChain(all); break;
+		  case 'chainbow': this.colorChainbow(all); break;
+		  case 'b': this.colorByBFactor(all); break;
+		  case 'polarity': this.colorByPolarity(all, 0xcc0000, 0xcccccc); break;
+		  }
+	
+		  var asu = new THREE.Object3D();
+		  switch (this._mainchainMode) {
+		  case 'ribbon':
+				this.drawCartoon(asu, all, this.wraper.doNotSmoothen);
+				this.drawCartoonNucleicAcid(asu, all);
+				break;
+		  case 'thickRibbon':
+				this.drawCartoon(asu, all, this.doNotSmoothen, this.thickness);
+				this.drawCartoonNucleicAcid(asu, all, null, this.thickness);
+				break;
+		  case 'strand':
+				this.drawStrand(asu, all, null, null, null, null, null, doNotSmoothen);
+				this.drawStrandNucleicAcid(asu, all);
+				break;
+		  case 'chain':
+				this.drawMainchainCurve(asu, all, this.curveWidth, 'CA', 1);
+				this.drawMainchainCurve(asu, all, this.curveWidth, 'O3\'', 1);
+				break;
+		  case 'tube':
+				this.drawMainchainTube(asu, all, 'CA');
+				this.drawMainchainTube(asu, all, 'O3\'');
+				break;
+		  case 'bonds':
+				this.drawBondsAsLine(asu, all, this.lineWidth);
+				break;
+		  }
+		        
+		  if (this.drawSidechains)
+				this.drawBondsAsLine(this.modelGroup, this.getSidechains(all), this.lineWidth);
+		    
+		  switch (this.baseMode) {
+		  case 'nuclStick': this.drawNucleicAcidStick(this.modelGroup, all); break;
+		  case 'nuclLine': this.drawNucleicAcidLine(this.modelGroup, all); break;
+		  case 'nuclPolygon': this.drawNucleicAcidLadder(this.modelGroup, all); break;
+		  }
+		    
+		  var target = this.symopAtoms ? asu : this.modelGroup;
+		  if (this.showNonbonded) {
+				var nonBonded = this.getNonbonded(allHet);
+				if (this.nbMode == 'nb_sphere') {
+			    this.drawAtomsAsIcosahedron(target, nonBonded, 0.3, true);
+				} else if (this.nbMode == 'nb_cross') {
+			    this.drawAsCross(target, nonBonded, 0.3, true);   
+				}
+		  }
+		    
+		  switch (this._hetatmMode) {
+		  case 'stick': this.drawBondsAsStick(target, hetatm, this.cylinderRadius, this.cylinderRadius, true); break;
+		  case 'sphere': this.drawAtomsAsSphere(target, hetatm, this.sphereRadius); break;
+			case 'line': this.drawBondsAsLine(target, hetatm, this.curveWidth); break;
+		  case 'ballAndStick': this.drawBondsAsStick(target, hetatm, this.cylinderRadius / 2.0, this.cylinderRadius, true, false, 0.3); break;
+		  case 'ballAndStick2': this.drawBondsAsStick(target, hetatm, this.cylinderRadius / 2.0, this.cylinderRadius, true, true, 0.3); break;
+		  } 
+		    
+		  this.setBackground(this._backgroundColor);
+		    
+		  if (this.showCell)
+				this.drawUnitcell(this.modelGroup);
+		    
+		  if (this.drawBiomt)
+				this.drawSymmetryMates2(this.modelGroup, asu, this.protein.biomtMatrices);
+		    
+		  if (this.drawPacking)
+				this.drawSymmetryMatesWithTranslation2(this.modelGroup, asu, this.protein.symMat);
+		  this.modelGroup.add(asu);
+		};
+
 		return proto;
 	};
 
-	Jmol._Canvas3D.prototype = _glSetPrototype({});
+	Jmol._Canvas3D.prototype = _glSetPrototype(new GLmol);
 
-    Jmol._Canvas3D.prototype._setDefaults = function() {
-        this.backgroundColor = 0x000000;
-        this.hetatmMode = 'ballAndStick2';
-        this.mainchainMode = 'thickRibbon';
-        this.colorMode = 'chainbow';
-    };
+  Jmol._Canvas3D.prototype._setDefaults = function() {
+    this._backgroundColor = 0x000000;
+    this._hetatmMode = 'ballAndStick2';
+    this._mainchainMode = 'thickRibbon';
+    this._colorMode = 'chainbow';
+  };
      
 	Jmol._glProcessFileData = function(glcanvas, data, script) {
-    glcanvas.glmol.loadMoleculeStr(false, Jmol._cleanFileData(data));
+    glcanvas.loadMoleculeStr(false, Jmol._cleanFileData(data));
     script && Jmol.script(glcanvas, script);
 	};
 
-  Jmol._glmol_DefineRep = function() {
-    // "this" is glcanvas.glmol
-	  var all = this.getAllAtoms();
-	  var allHet = this.getHetatms(all);
-		var hetatm = this.removeSolvents(allHet);
-	  this.colorByAtom(all, {});
-	  switch (this.wrapper.colorMode) {
-	  case 'ss': this.colorByStructure(all, 0xcc00cc, 0x00cccc); break;
-	  case 'chain': this.colorByChain(all); break;
-	  case 'chainbow': this.colorChainbow(all); break;
-	  case 'b': this.colorByBFactor(all); break;
-	  case 'polarity': this.colorByPolarity(all, 0xcc0000, 0xcccccc); break;
-	  }
-
-	  var asu = new THREE.Object3D();
-	  switch (this.wrapper.mainchainMode) {
-	  case 'ribbon':
-			this.drawCartoon(asu, all, this.wraper.doNotSmoothen);
-			this.drawCartoonNucleicAcid(asu, all);
-			break;
-	  case 'thickRibbon':
-			this.drawCartoon(asu, all, this.wrapper.doNotSmoothen, this.thickness);
-			this.drawCartoonNucleicAcid(asu, all, null, this.thickness);
-			break;
-	  case 'strand':
-			this.drawStrand(asu, all, null, null, null, null, null, doNotSmoothen);
-			this.drawStrandNucleicAcid(asu, all);
-			break;
-	  case 'chain':
-			this.drawMainchainCurve(asu, all, this.curveWidth, 'CA', 1);
-			this.drawMainchainCurve(asu, all, this.curveWidth, 'O3\'', 1);
-			break;
-	  case 'tube':
-			this.drawMainchainTube(asu, all, 'CA');
-			this.drawMainchainTube(asu, all, 'O3\'');
-			break;
-	  case 'bonds':
-			this.drawBondsAsLine(asu, all, this.lineWidth);
-			break;
-	  }
-	        
-	  if (this.wrapper.drawSidechains)
-			this.drawBondsAsLine(this.modelGroup, this.getSidechains(all), this.lineWidth);
-	    
-	  switch (this.wrapper.baseMode) {
-	  case 'nuclStick': this.drawNucleicAcidStick(this.modelGroup, all); break;
-	  case 'nuclLine': this.drawNucleicAcidLine(this.modelGroup, all); break;
-	  case 'nuclPolygon': this.drawNucleicAcidLadder(this.modelGroup, all); break;
-	  }
-	    
-	  var target = this.wrapper.symopAtoms ? asu : this.modelGroup;
-	  if (this.wrapper.showNonbonded) {
-			var nonBonded = this.getNonbonded(allHet);
-			if (this.wrapper.nbMode == 'nb_sphere') {
-		    this.drawAtomsAsIcosahedron(target, nonBonded, 0.3, true);
-			} else if (this.wrapper.nbMode == 'nb_cross') {
-		    this.drawAsCross(target, nonBonded, 0.3, true);   
-			}
-	  }
-	    
-	  switch (this.wrapper.hetatmMode) {
-	  case 'stick': this.drawBondsAsStick(target, hetatm, this.cylinderRadius, this.cylinderRadius, true); break;
-	  case 'sphere': this.drawAtomsAsSphere(target, hetatm, this.sphereRadius); break;
-		case 'line': this.drawBondsAsLine(target, hetatm, this.curveWidth); break;
-	  case 'ballAndStick': this.drawBondsAsStick(target, hetatm, this.cylinderRadius / 2.0, this.cylinderRadius, true, false, 0.3); break;
-	  case 'ballAndStick2': this.drawBondsAsStick(target, hetatm, this.cylinderRadius / 2.0, this.cylinderRadius, true, true, 0.3); break;
-	  } 
-	    
-	  this.setBackground(this.wrapper.backgroundColor);
-	    
-	  if (this.wrapper.showCell)
-			this.drawUnitcell(this.modelGroup);
-	    
-	  if (this.wrapper.drawBiomt)
-			this.drawSymmetryMates2(this.modelGroup, asu, this.protein.biomtMatrices);
-	    
-	  if (this.wrapper.drawPacking)
-			this.drawSymmetryMatesWithTranslation2(this.modelGroup, asu, this.protein.symMat);
-	  this.modelGroup.add(asu);
-	};
   
 })(Jmol);

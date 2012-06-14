@@ -3285,6 +3285,7 @@ public class ScriptEvaluator {
                                 Object value) {
     if (isSyntaxCheck)
       return;
+    System.out.println("addshapeprop " + key + " " + value);
     propertyList.add(new Object[] { key, value });
   }
 
@@ -8882,9 +8883,9 @@ public class ScriptEvaluator {
             }
           } else {
             fparams = floatParameterSet(i, 6, 9);
-            if (fparams.length != 6 && fparams.length != 9)
-              error(ERROR_invalidArgument);
           }
+          if (fparams == null || fparams.length != 6 && fparams.length != 9)
+            error(ERROR_invalidArgument);
           sOptions += " unitcell {";
           for (int j = 0; j < fparams.length; j++)
             sOptions += (j == 0 ? "" : " ") + fparams[j];
@@ -18030,7 +18031,9 @@ public class ScriptEvaluator {
       addShapeProperty(propertyList, "sasurface", Float.valueOf(0));
     }
 
-    if (planeSeen && !surfaceObjectSeen) {
+    if (planeSeen && !surfaceObjectSeen && !isMapped) {
+      // !isMapped added 6/14/2012 12.3.30
+      // because it was preventing planes from being mapped properly
       addShapeProperty(propertyList, "nomap", Float.valueOf(0));
       surfaceObjectSeen = true;
     }

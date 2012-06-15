@@ -33,6 +33,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;
 import org.jmol.util.ZipUtil;
+import org.jmol.viewer.Viewer.ACCESS;
 
 import org.jmol.api.JmolFilesReaderInterface;
 import org.jmol.api.JmolViewer;
@@ -391,12 +392,18 @@ public class FileManager {
 
   Object getBufferedInputStreamOrErrorMessageFromName(String name, boolean showMsg,
                                               boolean checkOnly, byte[] bytes) {
-    boolean isPngj = (name.indexOf("?POST?_PNGJ_") >= 0);
+    boolean isPngjBinary = (name.indexOf("?POST?_PNGJBIN_") >= 0);
+    boolean isPngj = (isPngjBinary || name.indexOf("?POST?_PNGJ_") >= 0);
     if (name.indexOf("?POST?_PNG_") > 0 || isPngj) {
       Object o = viewer.getImageAs(isPngj ? "PNGJ" : "PNG", -1, 0, 0, null, null);
       if (! (o instanceof byte[]))
         return o;
-      name = (new StringBuffer(name)).append("=").append(Base64.getBase64((byte[]) o)).toString();
+      if (isPngjBinary) {
+        bytes = (byte[]) o;
+        name = TextFormat.simpleReplace(name, "?_", "=_");
+      } else {        
+        name = (new StringBuffer(name)).append("=").append(Base64.getBase64((byte[]) o)).toString();
+      }
     }
     String errorMessage = null;
     int iurl;
@@ -968,7 +975,10 @@ public class FileManager {
       }
     } else {
       // This code is for the app -- no local file reading for headless
-      if (urlTypeIndex(name) >= 0 || viewer.isRestricted()) {
+      if (urlTypeIndex(name) >= 0 
+          || viewer.isRestricted(ACCESS.NONE) 
+          || viewer.isRestricted(ACCESS.READSPT) 
+              && !name.endsWith(".spt") && !name.endsWith("/")) {
         try {
           url = new URL(name);
         } catch (MalformedURLException e) {

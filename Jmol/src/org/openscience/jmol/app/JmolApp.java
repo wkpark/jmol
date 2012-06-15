@@ -165,6 +165,8 @@ public class JmolApp {
         ._("send only output from print messages to console (implies -i)"));
     options.addOption("R", "restricted", false, GT
         ._("restrict local file access"));
+    options.addOption("r", "restrictSpt", false, GT
+        ._("restrict local file access (allow reading of SPT files)"));
     options.addOption("t", "threaded", false, GT
         ._("independent command thread"));
     options.addOption("x", "exit", false, GT
@@ -333,6 +335,10 @@ public class JmolApp {
     // restricted file access
     if (line.hasOption("R"))
       commandOptions += "-R";
+    
+    // restricted file access (allow reading of SPT files)
+    if (line.hasOption("r"))
+      commandOptions += "-r";
     
     // independent command thread
     if (line.hasOption("t"))

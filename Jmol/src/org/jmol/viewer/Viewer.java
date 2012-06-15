@@ -213,6 +213,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private Graphics3D g3d;
   private JmolAdapter modelAdapter;
 
+  public enum ACCESS { NONE, READSPT, ALL }
+  
+  private ACCESS access;
+  
+  public boolean isRestricted(ACCESS a) {
+    // disables WRITE, LOAD file:/, set logFile 
+    // command line -g and -w options ARE available for final writing of image
+    return access == a;
+  }
+
   @Override
   public JmolAdapter getModelAdapter() {
     if (modelAdapter == null)
@@ -333,7 +343,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     appletDocumentBase = (documentBase == null ? "" : documentBase.toString());
     appletCodeBase = (codeBase == null ? "" : codeBase.toString());
     noGraphicsAllowed = (display == null && commandOptions.indexOf("-n") >= 0);
-    restrictedFileAccess = (commandOptions.indexOf("-R") >= 0);
+    access = (commandOptions.indexOf("-r") >= 0 ? ACCESS.READSPT 
+        : commandOptions.indexOf("-R") >= 0 ? ACCESS.NONE : ACCESS.ALL);
     apiPlatform = implementedPlatform;
     if (apiPlatform == null)
       apiPlatform = (ApiPlatform) Interface.getInterface(commandOptions == null
@@ -451,8 +462,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           + strJavaVersion
           + "\nos.name: "
           + strOSName
-          + "\nrestrictedFileAccess: "
-          + restrictedFileAccess
+          + "\nAccess: " + access
           + "\nmemory: "
           + getParameter("_memory")
           + "\nprocessors available: "
@@ -488,13 +498,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private String commandOptions;
   private boolean noGraphicsAllowed;
-  private boolean restrictedFileAccess;
-
-  public boolean isRestricted() {
-    // disables WRITE, LOAD file:/, set logFile 
-    // command line -g and -w options ARE available for final writing of image
-    return restrictedFileAccess;
-  }
 
   public boolean isHeadless() {
     // determined by GraphicsEnvironment.isHeadless()
@@ -513,7 +516,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     setBooleanProperty("_applet", isApplet);
     setBooleanProperty("_signedApplet", isSignedApplet);
     setBooleanProperty("_headless", apiPlatform.isHeadless());
-    setBooleanProperty("_restricted", restrictedFileAccess);
+    setStringProperty("_restrict", "\"" + access + "\"");
     setBooleanProperty("_useCommandThread", useCommandThread);
   }
 
@@ -526,8 +529,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public String getExportDriverList() {
-    return (restrictedFileAccess ? "" : (String) global
-        .getParameter("exportDrivers"));
+    return (isRestricted(ACCESS.ALL) ? (String) global
+        .getParameter("exportDrivers") : "");
   }
 
   String getHtmlName() {
@@ -5630,7 +5633,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public String dialogAsk(String type, String fileName) {
-    return (isKiosk || restrictedFileAccess ? null : statusManager.dialogAsk(
+    return (isKiosk || !isRestricted(ACCESS.ALL) ? null : statusManager.dialogAsk(
         type, fileName));
   }
 
@@ -8704,7 +8707,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
   @Override
   public String clipImage(String text) {
-    if (isRestricted())
+    if (!isRestricted(ACCESS.ALL))
       return "no";
     JmolImageCreatorInterface c;
     try {
@@ -9288,7 +9291,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       dir = ".";
     }
     dir = fileManager.getDefaultDirectory(dir
-        + (dir.equals("=") ? "" : dir.endsWith("/") ? "X" : "/X"));
+        + (dir.equals("=") ? "" : dir.endsWith("/") ? "X.spt" : "/X.spt"));
     if (dir.length() > 0)
       setStringProperty("defaultDirectory", dir);
     String path = fileManager.getFilePath(dir + "/", true, false);
@@ -9461,7 +9464,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public OutputStream getOutputStream(String localName, String[] fullPath) {
-    if (isRestricted())
+    if (!isRestricted(ACCESS.ALL))
       return null;
     Object ret = createImage(localName, "OutputStream", null, null,
         Integer.MIN_VALUE, 0, 0, fullPath, true);
@@ -9556,7 +9559,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         value = null;
       }
     }
-    if (value == null || isRestricted()) {
+    if (value == null || !isRestricted(ACCESS.ALL)) {
       Logger.info(GT._("Cannot set log file path."));
       value = null;
     } else {

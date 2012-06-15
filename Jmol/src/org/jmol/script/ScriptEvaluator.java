@@ -89,6 +89,7 @@ import org.jmol.viewer.PropertyManager;
 import org.jmol.viewer.ShapeManager;
 import org.jmol.viewer.StateManager;
 import org.jmol.viewer.Viewer;
+import org.jmol.viewer.Viewer.ACCESS;
 
 public class ScriptEvaluator {
 
@@ -14035,7 +14036,7 @@ public class ScriptEvaluator {
       pt = pt0 = 1;
       isCommand = true;
       isShow = (viewer.isApplet() && !viewer.isSignedApplet() 
-          || viewer.isRestricted() || viewer.getPathForAllFiles().length() > 0);
+          || !viewer.isRestricted(ACCESS.NONE) || viewer.getPathForAllFiles().length() > 0);
     } else {
       isCommand = false;
       isShow = true;
@@ -14261,7 +14262,7 @@ public class ScriptEvaluator {
           if (type != "VAR" && pt == pt0 + 1)
             type = "image";
         }
-        if (fileName.equalsIgnoreCase("clipboard") || viewer.isRestricted())
+        if (fileName.equalsIgnoreCase("clipboard") || !viewer.isRestricted(ACCESS.ALL))
           fileName = null;
         break;
       default:

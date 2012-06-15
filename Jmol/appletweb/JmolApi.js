@@ -72,7 +72,7 @@
 			width: 300,
 			height: 300,
 			jarPath: ".",
-			jarFile: "JME.jar",
+			jarFile: "JME.jar"
 		};		
 		Jmol._addDefaultInfo(Info, DefaultInfo);
 		return new Jmol._JMEApplet(id, Info, linkedApplet);

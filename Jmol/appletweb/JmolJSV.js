@@ -150,11 +150,11 @@
 	
 	Jmol._JSVApplet.prototype._showInfo = Jmol._Applet.prototype._showInfo;
 	
-	Jmol._Applet.prototype._show = function(tf) {
-		var w = (tf ? "100%" : "1px");
-		var h = (tf ? "100%" : "1px");
-			document.getElementById(this._id).style.width = w; 
-			document.getElementById(this._id).style.height = h; 
+	Jmol._JSVApplet.prototype._show = function(tf) {
+		var w = (tf ? "100%" : "2px");
+		var h = (tf ? "100%" : "2px");
+		document.getElementById(this._id).style.width = w; 
+		document.getElementById(this._id).style.height = h; 
 	}
 	
 	Jmol._JSVApplet.prototype._script = function(script) {
@@ -254,8 +254,8 @@
    * 
    */
 
-  Jmol.jsvExport = function(jsvApplet, type, n) {
-    return "" + jsvApplet._applet.export(type, n);
+  Jmol.jsvExport = function(jsvApplet, exportType, n) {
+    return "" + jsvApplet._applet.exportSpectrum(exportType, n);
   }
 
   /**

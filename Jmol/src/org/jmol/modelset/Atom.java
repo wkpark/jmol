@@ -1276,7 +1276,7 @@ final public class Atom extends Point3fi implements JmolNode {
     case Token.screenx:
       return atom.screenX;
     case Token.screeny:
-      return atom.screenY;
+      return atom.group.chain.model.modelSet.viewer.getScreenHeight() - atom.screenY;
     case Token.screenz:
       return atom.screenZ;
     case Token.ionic:
@@ -1412,7 +1412,7 @@ final public class Atom extends Point3fi implements JmolNode {
       return (atom.group.chain.model.isJmolDataFrame ? atom.getFractionalCoord(false) 
           : atom.getFractionalUnitCoord(false));
     case Token.screenxyz:
-      return new Point3f(atom.screenX, atom.screenY, atom.screenZ);
+      return new Point3f(atom.screenX, atom.group.chain.model.modelSet.viewer.getScreenHeight() - atom.screenY, atom.screenZ);
     case Token.vibxyz:
       Vector3f v = atom.getVibrationVector();
       if (v == null)

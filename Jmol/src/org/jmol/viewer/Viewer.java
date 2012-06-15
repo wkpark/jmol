@@ -4021,7 +4021,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   // //////////// screen/image methods ///////////////
 
-  final Dimension dimScreen = new Dimension();
+  private final Dimension dimScreen = new Dimension();
 
   // final Rectangle rectClip = new Rectangle();
 

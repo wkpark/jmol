@@ -71,6 +71,80 @@
 		return this;
 	}
 
+	Jmol._Applet._createApplet = function(applet, Info, params, myClass, script, caption) {
+
+		if (Jmol._syncedApplets.length)
+		  params.synccallback = "Jmol._mySyncCallback";
+		params.java_arguments = "-Xmx" + Math.round(Info.memoryLimit || applet._memoryLimit) + "m";
+
+		applet._initialize(Info.jarPath, Info.jarFile);
+
+		// size is set to 100% of containers' size, but only if resizable. 
+		// Note that resizability in MSIE requires: 
+		// <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+		var w = (applet._containerWidth.indexOf("px") >= 0 ? applet._containerWidth : "100%");
+		var h = (applet._containerHeight.indexOf("px") >= 0 ? applet._containerHeight : "100%");
+		var widthAndHeight = " style=\"width:" + w + ";height:" + h + "\" ";
+		var tHeader, tFooter;
+		if (Jmol.featureDetection.useIEObject || Jmol.featureDetection.useHtml4Object) {
+			params.archive = applet._jarFile;
+			if (script)
+  			params.script = script;
+			params.mayscript = 'true';
+			params.codebase = applet._jarPath;
+			params.code = myClass + ".class";
+			tHeader =
+				"<object name='" + applet._id +
+				"_object' id='" + applet._id + "_object' " + "\n" +
+				widthAndHeight + "\n";
+			tFooter = "</object>";
+		}
+		if (Jmol.featureDetection.useIEObject) { // use MSFT IE6 object tag with .cab file reference
+			var _windowsClassId = "clsid:8AD9C840-044E-11D1-B3E9-00805F499D93";
+			var _windowsCabUrl = "http://java.sun.com/update/1.6.0/jinstall-6u22-windows-i586.cab";
+			tHeader += " classid='" + _windowsClassId + "'\n" + " codebase='" + _windowsCabUrl + "'\n>\n";
+		} else if (Jmol.featureDetection.useHtml4Object) { // use HTML4 object tag
+			tHeader += " type='application/x-java-applet'\n>\n";
+		} else { // use applet tag
+			tHeader =
+				"<applet name='" + applet._id +
+				"_object' id='" + applet._id + "_object' \n" +
+				widthAndHeight + "\n" +
+				" code='" + myClass + "'" +
+				" archive='" + applet._jarFile + "' codebase='" + applet._jarPath + "'\n" +
+				" mayscript='true'>\n";
+			tFooter = "</applet>";
+		}
+		var visitJava;
+		if (Jmol.featureDetection.useIEObject || Jmol.featureDetection.useHtml4Object) {
+			var szX = "width:" + applet._width;
+			if ( szX.indexOf("%")==-1 ) 
+				szX+="px";
+			var szY = "height:" + applet._height;
+			if ( szY.indexOf("%")==-1 )
+				szY+="px";
+			visitJava = "<p style='background-color:yellow; color:black; " + szX + ";" + szY + ";" +
+					// why doesn't this vertical-align work?
+				"text-align:center;vertical-align:middle;'>\n" +
+				Jmol._noJavaMsg + "</p>";
+		} else {
+			visitJava = "<table bgcolor='yellow'><tr>" +
+				"<td align='center' valign='middle' " + widthAndHeight + "><font color='black'>\n" +
+				Jmol._noJavaMsg2 + "</font></td></tr></table>";
+		}
+	
+		var t = Jmol._getWrapper(applet, true) + tHeader;
+ 		for (var i in params)
+			if(params[i])
+		 		t+="  <param name='"+i+"' value='"+params[i]+"' />\n";
+		t += visitJava + tFooter 
+			+ Jmol._getWrapper(applet, false) 
+			+ (Info.addSelectionOptions ? Jmol._getGrabberOptions(applet, caption) : "");
+		if (Jmol._debugAlert)
+			alert(t);
+		applet._code = Jmol._documentWrite(t);
+	}
+
 	Jmol._Applet.prototype._create = function(id, Info, caption){
 
 		Jmol._setObject(this, id, Info);
@@ -82,7 +156,7 @@
 			boxbgcolor: Info.color || "black",
 			boxfgcolor: "white",
 			boxmessage: "Downloading JmolApplet ...",
-			script: (Info.color ? "background " + Info.color : "")
+			script: (!Info.color ? "" : "background " + (Info.color.indexOf("#") == 0 ? "[0x" + Info.color.substring(1) + "]" : Info.color))
 		};
 
 		var availableValues = "'progressbar','progresscolor','boxbgcolor','boxfgcolor','boxmessage',\
@@ -109,69 +183,7 @@
 		params.java_arguments = "-Xmx" + Math.round(Info.memoryLimit || this._memoryLimit) + "m";
 
 		this._initialize(Info.jarPath, Info.jarFile);
-
-		// size is set to 100% of containers' size, but only if resizable. 
-		// Note that resizability in MSIE requires: 
-		// <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-		var w = (this._containerWidth.indexOf("px") >= 0 ? this._containerWidth : "100%");
-		var h = (this._containerHeight.indexOf("px") >= 0 ? this._containerHeight : "100%");
-		var widthAndHeight = " style=\"width:" + w + ";height:" + h + "\" ";
-		var tHeader, tFooter;
-		if (Jmol.featureDetection.useIEObject || Jmol.featureDetection.useHtml4Object) {
-			params.archive = this._jarFile;
-			params.mayscript = 'true';
-			params.codebase = this._jarPath;
-			params.code = "JmolApplet.class";
-			tHeader =
-				"<object name='" + this._id +
-				"_object' id='" + this._id + "_object' " + "\n" +
-				widthAndHeight + "\n";
-			tFooter = "</object>";
-		}
-		if (Jmol.featureDetection.useIEObject) { // use MSFT IE6 object tag with .cab file reference
-			var _windowsClassId = "clsid:8AD9C840-044E-11D1-B3E9-00805F499D93";
-			var _windowsCabUrl = "http://java.sun.com/update/1.6.0/jinstall-6u22-windows-i586.cab";
-			tHeader += " classid='" + _windowsClassId + "'\n" + " codebase='" + _windowsCabUrl + "'\n>\n";
-		} else if (Jmol.featureDetection.useHtml4Object) { // use HTML4 object tag
-			tHeader += " type='application/x-java-applet'\n>\n";
-		} else { // use applet tag
-			tHeader =
-				"<applet name='" + this._id + "_object' "
-				+ "id='" + this._id + "_object' \n" +
-				widthAndHeight + "\n" +
-				" code='JmolApplet'" +
-				" archive='" + this._jarFile + "' codebase='" + this._jarPath + "'\n" +
-				" mayscript='true'>\n";
-			tFooter = "</applet>";
-		}
-		var visitJava;
-		if (Jmol.featureDetection.useIEObject || Jmol.featureDetection.useHtml4Object) {
-			var szX = "width:" + this._width;
-			if ( szX.indexOf("%")==-1 ) 
-				szX+="px";
-			var szY = "height:" + this._height;
-			if ( szY.indexOf("%")==-1 )
-				szY+="px";
-			visitJava = "<p style='background-color:yellow; color:black; " + szX + ";" + szY + ";" +
-					// why doesn't this vertical-align work?
-				"text-align:center;vertical-align:middle;'>\n" +
-				Jmol._noJavaMsg + "</p>";
-		} else {
-			visitJava = "<table bgcolor='yellow'><tr>" +
-				"<td align='center' valign='middle' " + widthAndHeight + "><font color='black'>\n" +
-				Jmol._noJavaMsg2 + "</font></td></tr></table>";
-		}
-	
-		var t = Jmol._getWrapper(this, true) + tHeader;
- 		for (var i in params)
-			if(params[i])
-		 		t+="  <param name='"+i+"' value='"+params[i]+"' />\n";
-		t += visitJava + tFooter 
-			+ Jmol._getWrapper(this, false) 
-			+ (Info.addSelectionOptions ? Jmol._getGrabberOptions(this, caption) : "");
-		if (Jmol._debugAlert)
-			alert(t);
-		this._code = Jmol._documentWrite(t);
+		Jmol._Applet._createApplet(this, Info, params, "JmolApplet", null);
 	}
 
 	Jmol._Applet.prototype._readyCallback = function(id, fullid, isReady, applet) {

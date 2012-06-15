@@ -119,7 +119,7 @@
 
 	Jmol._JSVApplet.prototype._create = function(id, Info, caption){
 
-		this._readyScript = (Info.script ? Info.script : "");
+		Jmol._setObject(this, id, Info);
 
 		var params = {
 			syncId: ("" + Math.random()).substring(3),
@@ -130,14 +130,12 @@
 			boxmessage: "Downloading JSpecViewApplet ..."
 		};
 		
-		var myClass = "jspecview.applet.JSVApplet" + (this._jsvIsSigned >= 0 ? "Pro" : "");
 
+		var myClass = "jspecview.applet.JSVApplet" + (this._jsvIsSigned >= 0 ? "Pro" : "");
 		var script = 'appletID ' + this._id + ';syncID '+ this._syncId
 		+ ';appletReadyCallbackFunctionName ' + this._id + '._readyCallback'
-		+ ';syncCallbackFunctionName Jmol._mySyncCallback;'
-		
-		;
-    Jmol._createApplet(this, params, Info, myClass, script, caption);
+		+ ';syncCallbackFunctionName Jmol._mySyncCallback;';
+    Jmol._Applet._createApplet(this, Info, params, myClass, script);
 	}
 	
 	Jmol._JSVApplet.prototype._readyCallback = function(id, fullid, isReady, applet) {

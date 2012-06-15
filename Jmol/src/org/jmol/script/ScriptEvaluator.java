@@ -14037,7 +14037,7 @@ public class ScriptEvaluator {
       pt = pt0 = 1;
       isCommand = true;
       isShow = (viewer.isApplet() && !viewer.isSignedApplet() 
-          || !viewer.isRestricted(ACCESS.NONE) || viewer.getPathForAllFiles().length() > 0);
+          || !viewer.isRestricted(ACCESS.ALL) || viewer.getPathForAllFiles().length() > 0);
     } else {
       isCommand = false;
       isShow = true;

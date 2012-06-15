@@ -215,6 +215,8 @@ public class MarchingSquares {
           value = calcContourPoint(value, valueA, valueB, ptTemp);
           if (!Float.isNaN(value)) {
             iPt = addContourVertex(ptTemp, value);
+            if (iPt < 0)
+              return -1;
             contourVertexes[iPt].setValue(value);
           } else {
 //            System.out.println("#MarchingSquares nonlinear problem for contour " + (i + 1) + " at " + ptTemp + " " + valueA + " " + valueB 

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2012-05-22 23:48+0200\n"
+"POT-Creation-Date: 2012-06-15 17:29+0200\n"
 "PO-Revision-Date: 2012-05-19 05:53+0000\n"
 "Last-Translator: Gong Zhang <u5094634@anu.edu.au>\n"
 "Language-Team: Simplified Chinese <zh_CN@li.org>\n"
@@ -114,76 +114,80 @@ msgid "restrict local file access"
 msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:169
+msgid "restrict local file access (allow reading of SPT files)"
+msgstr ""
+
+#: org/openscience/jmol/app/JmolApp.java:171
 msgid "independent command thread"
 msgstr "独立命令线程"
 
-#: org/openscience/jmol/app/JmolApp.java:171
+#: org/openscience/jmol/app/JmolApp.java:173
 msgid "exit after script (implicit with -n)"
 msgstr "执行脚本后退出（隐含 -n 参数）"
 
-#: org/openscience/jmol/app/JmolApp.java:174
+#: org/openscience/jmol/app/JmolApp.java:176
 msgid "port for JSON/MolecularPlayground-style communication"
 msgstr "JSON 端口号/分子运动场-风格通讯"
 
-#: org/openscience/jmol/app/JmolApp.java:180
+#: org/openscience/jmol/app/JmolApp.java:182
 msgid "script file to execute or '-' for System.in"
 msgstr "需执行的脚本文件，或“-”表示使用system.in"
 
-#: org/openscience/jmol/app/JmolApp.java:186
+#: org/openscience/jmol/app/JmolApp.java:188
 msgid "use multitouch interface (requires \"sparshui\" parameter"
 msgstr "使用多点触控(multitouch)界面（需要“sparshui”参数）"
 
-#: org/openscience/jmol/app/JmolApp.java:193
+#: org/openscience/jmol/app/JmolApp.java:195
 msgid "Jmol script to execute BEFORE -s option"
 msgstr "在 -s 选项之前运行的Jmol脚本"
 
-#: org/openscience/jmol/app/JmolApp.java:199
+#: org/openscience/jmol/app/JmolApp.java:201
 msgid "Jmol script to execute AFTER -s option"
 msgstr "在 -s 选项之后运行的Jmol脚本"
 
-#: org/openscience/jmol/app/JmolApp.java:213
+#: org/openscience/jmol/app/JmolApp.java:215
 msgid "property=value"
 msgstr "属性=值"
 
-#: org/openscience/jmol/app/JmolApp.java:216
+#: org/openscience/jmol/app/JmolApp.java:218
 msgid "supported options are given below"
 msgstr "所支持的选项列出如下"
 
-#: org/openscience/jmol/app/JmolApp.java:222
+#: org/openscience/jmol/app/JmolApp.java:224
 #, java-format
 msgid "window width x height, e.g. {0}"
 msgstr "窗口宽度×高度，例如 {0}"
 
-#: org/openscience/jmol/app/JmolApp.java:232
+#: org/openscience/jmol/app/JmolApp.java:234
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
 msgstr "JPG图像质量(1-100; 默认75)或PNG图像压缩率(0-9; 默认2，最大压缩率9)"
 
-#: org/openscience/jmol/app/JmolApp.java:237
+#: org/openscience/jmol/app/JmolApp.java:239
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr "{0} 或 {1}:文件名"
 
-#: org/openscience/jmol/app/JmolApp.java:251
+#: org/openscience/jmol/app/JmolApp.java:253
 msgid "For example:"
 msgstr "例如:"
 
-#: org/openscience/jmol/app/JmolApp.java:257
+#: org/openscience/jmol/app/JmolApp.java:259
 msgid ""
 "The -D options are as follows (defaults in parenthesis) and must be called "
 "preceding '-jar Jmol.jar':"
 msgstr "-D 选项如下(默认在圆括号中)且必须在'-jar Jmol.jar'之前调用:"
 
-#: org/openscience/jmol/app/JmolApp.java:534
+#: org/openscience/jmol/app/JmolApp.java:540
 msgid "Executing script 1..."
 msgstr "执行脚本1..."
 
-#: org/openscience/jmol/app/JmolApp.java:544
+#: org/openscience/jmol/app/JmolApp.java:550
 msgid "Executing script file..."
 msgstr "执行脚本文件"
 
-#: org/openscience/jmol/app/JmolApp.java:565
+#: org/openscience/jmol/app/JmolApp.java:571
 msgid "Executing script 2..."
 msgstr "执行脚本2..."
 
@@ -1003,7 +1007,9 @@ msgstr "打开 model kit."
 msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
 "be significant the first time the applet is loaded."
-msgstr "请点击 {0} 启动Jmol {1} 以显示可以操纵的三维模型。（Java 小程序首次载入时可能下载时间较长）"
+msgstr ""
+"请点击 {0} 启动Jmol {1} 以显示可以操纵的三维模型。（Java 小程序首次载入时可能"
+"下载时间较长）"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:368
 msgid "Insert the page TITLE here."
@@ -1129,7 +1135,8 @@ msgid ""
 "with \":\" to load from PubChem; otherwise Jmol will use the NCI/NIH "
 "Resolver."
 msgstr ""
-"输入一个化合物的名字或ID (SMILES, InChl, CAS). 前言带“:”从PubChem导入;不然 Jmol 将会用 NCI/NIH 分解器"
+"输入一个化合物的名字或ID (SMILES, InChl, CAS). 前言带“:”从PubChem导入;不然 "
+"Jmol 将会用 NCI/NIH 分解器"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1375
 msgid "IO Exception:"
@@ -1881,7 +1888,6 @@ msgstr "未实现"
 #~ msgid "Output Conso&le..."
 #~ msgstr "输出控制台(&L)..."
 
-#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
@@ -1896,15 +1902,12 @@ msgstr "未实现"
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "正在增加 JmolPopIn.js"
 
-#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "正在增加 {0}.png"
 
-#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "正在增加 {0}.spt"
 
-#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"
@@ -1912,7 +1915,6 @@ msgstr "未实现"
 #~ "无法找到或打开：\n"
 #~ "{0}"
 
-#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "跳转到集合中的最后一个 {0}"
 
@@ -1922,19 +1924,15 @@ msgstr "未实现"
 #~ msgid "vector"
 #~ msgstr "矢量"
 
-#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "跳转到集合中的第一个 {0}"
 
-#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "跳转到集合中的前一个{0}"
 
-#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "播放 {0} 的整个集合"
 
-#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "跳转到集合中的下一个 {0}"
 

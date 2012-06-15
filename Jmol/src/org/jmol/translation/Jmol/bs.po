@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2012-05-22 23:48+0200\n"
+"POT-Creation-Date: 2012-06-15 17:29+0200\n"
 "PO-Revision-Date: 2011-08-03 10:15+0000\n"
 "Last-Translator: Kenan Dervišević <kenan3008@gmail.com>\n"
 "Language-Team: Bosnian <bs@li.org>\n"
@@ -114,76 +114,80 @@ msgid "restrict local file access"
 msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:169
-msgid "independent command thread"
+msgid "restrict local file access (allow reading of SPT files)"
 msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:171
+msgid "independent command thread"
+msgstr ""
+
+#: org/openscience/jmol/app/JmolApp.java:173
 msgid "exit after script (implicit with -n)"
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:174
+#: org/openscience/jmol/app/JmolApp.java:176
 msgid "port for JSON/MolecularPlayground-style communication"
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:180
+#: org/openscience/jmol/app/JmolApp.java:182
 msgid "script file to execute or '-' for System.in"
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:186
+#: org/openscience/jmol/app/JmolApp.java:188
 msgid "use multitouch interface (requires \"sparshui\" parameter"
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:193
+#: org/openscience/jmol/app/JmolApp.java:195
 msgid "Jmol script to execute BEFORE -s option"
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:199
+#: org/openscience/jmol/app/JmolApp.java:201
 msgid "Jmol script to execute AFTER -s option"
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:213
+#: org/openscience/jmol/app/JmolApp.java:215
 msgid "property=value"
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:216
+#: org/openscience/jmol/app/JmolApp.java:218
 msgid "supported options are given below"
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:222
+#: org/openscience/jmol/app/JmolApp.java:224
 #, java-format
 msgid "window width x height, e.g. {0}"
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:232
+#: org/openscience/jmol/app/JmolApp.java:234
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:237
+#: org/openscience/jmol/app/JmolApp.java:239
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:251
+#: org/openscience/jmol/app/JmolApp.java:253
 msgid "For example:"
 msgstr "Na primjer:"
 
-#: org/openscience/jmol/app/JmolApp.java:257
+#: org/openscience/jmol/app/JmolApp.java:259
 msgid ""
 "The -D options are as follows (defaults in parenthesis) and must be called "
 "preceding '-jar Jmol.jar':"
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:534
+#: org/openscience/jmol/app/JmolApp.java:540
 msgid "Executing script 1..."
 msgstr "Izvršavam skriptu 1..."
 
-#: org/openscience/jmol/app/JmolApp.java:544
+#: org/openscience/jmol/app/JmolApp.java:550
 msgid "Executing script file..."
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:565
+#: org/openscience/jmol/app/JmolApp.java:571
 msgid "Executing script 2..."
 msgstr "Izvršavam skriptu 2..."
 

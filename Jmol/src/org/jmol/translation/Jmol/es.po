@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2012-05-22 23:48+0200\n"
+"POT-Creation-Date: 2012-06-15 17:29+0200\n"
 "PO-Revision-Date: 2012-05-23 00:46+0000\n"
 "Last-Translator: Angel Herráez <aherraez@users.sourceforge.net>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
@@ -111,55 +111,59 @@ msgstr "sin consola; toda la salida va a sysout"
 
 #: org/openscience/jmol/app/JmolApp.java:165
 msgid "send only output from print messages to console (implies -i)"
-msgstr ""
-"enviar solo salida de mensajes de impresión a la consola (implica -i)"
+msgstr "enviar solo salida de mensajes de impresión a la consola (implica -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:167
 msgid "restrict local file access"
 msgstr "restringir el acceso de archivos locales"
 
 #: org/openscience/jmol/app/JmolApp.java:169
+#, fuzzy
+msgid "restrict local file access (allow reading of SPT files)"
+msgstr "restringir el acceso de archivos locales"
+
+#: org/openscience/jmol/app/JmolApp.java:171
 msgid "independent command thread"
 msgstr "hebra de instrucciones independiente"
 
-#: org/openscience/jmol/app/JmolApp.java:171
+#: org/openscience/jmol/app/JmolApp.java:173
 msgid "exit after script (implicit with -n)"
 msgstr "salir tras el guión (implícito con -n)"
 
-#: org/openscience/jmol/app/JmolApp.java:174
+#: org/openscience/jmol/app/JmolApp.java:176
 msgid "port for JSON/MolecularPlayground-style communication"
 msgstr "puerto para la comunicación del tipo JSON/MolecularPlayground"
 
-#: org/openscience/jmol/app/JmolApp.java:180
+#: org/openscience/jmol/app/JmolApp.java:182
 msgid "script file to execute or '-' for System.in"
 msgstr "archivo de guión a ejecutar, o bien «-» para System.in"
 
-#: org/openscience/jmol/app/JmolApp.java:186
+#: org/openscience/jmol/app/JmolApp.java:188
 msgid "use multitouch interface (requires \"sparshui\" parameter"
 msgstr "usar interfaz multitáctil (requiere el parámetro «sparshui»)"
 
-#: org/openscience/jmol/app/JmolApp.java:193
+#: org/openscience/jmol/app/JmolApp.java:195
 msgid "Jmol script to execute BEFORE -s option"
 msgstr "Guión de Jmol que debe ejecutarse antes de la opción -s"
 
-#: org/openscience/jmol/app/JmolApp.java:199
+#: org/openscience/jmol/app/JmolApp.java:201
 msgid "Jmol script to execute AFTER -s option"
 msgstr "Guión de Jmol que debe ejecutarse tras la opción -s"
 
-#: org/openscience/jmol/app/JmolApp.java:213
+#: org/openscience/jmol/app/JmolApp.java:215
 msgid "property=value"
 msgstr "propiedad=valor"
 
-#: org/openscience/jmol/app/JmolApp.java:216
+#: org/openscience/jmol/app/JmolApp.java:218
 msgid "supported options are given below"
 msgstr "las opciones admitidas se muestran a continuación"
 
-#: org/openscience/jmol/app/JmolApp.java:222
+#: org/openscience/jmol/app/JmolApp.java:224
 #, java-format
 msgid "window width x height, e.g. {0}"
 msgstr "ancho x alto de ventana, p.ej. {0}"
 
-#: org/openscience/jmol/app/JmolApp.java:232
+#: org/openscience/jmol/app/JmolApp.java:234
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
@@ -167,16 +171,16 @@ msgstr ""
 "Calidad de imagen JPG (de 1 a 100; 75 predet.) o compresión de imagen PNG "
 "(de 0 a 9; 2 predet.; 9 es la máxima compresión)"
 
-#: org/openscience/jmol/app/JmolApp.java:237
+#: org/openscience/jmol/app/JmolApp.java:239
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr "{0} o {1}:NombreDeArchivo"
 
-#: org/openscience/jmol/app/JmolApp.java:251
+#: org/openscience/jmol/app/JmolApp.java:253
 msgid "For example:"
 msgstr "Por ejemplo:"
 
-#: org/openscience/jmol/app/JmolApp.java:257
+#: org/openscience/jmol/app/JmolApp.java:259
 msgid ""
 "The -D options are as follows (defaults in parenthesis) and must be called "
 "preceding '-jar Jmol.jar':"
@@ -184,15 +188,15 @@ msgstr ""
 "Las opciones -D son éstas (valores predeterminados entre paréntesis) y deben "
 "invocarse antes de «-jar Jmol.jar»:"
 
-#: org/openscience/jmol/app/JmolApp.java:534
+#: org/openscience/jmol/app/JmolApp.java:540
 msgid "Executing script 1..."
 msgstr "Ejecutando guión 1..."
 
-#: org/openscience/jmol/app/JmolApp.java:544
+#: org/openscience/jmol/app/JmolApp.java:550
 msgid "Executing script file..."
 msgstr "Ejecutando archivo de guión..."
 
-#: org/openscience/jmol/app/JmolApp.java:565
+#: org/openscience/jmol/app/JmolApp.java:571
 msgid "Executing script 2..."
 msgstr "Ejecutando guión 2..."
 
@@ -1937,23 +1941,18 @@ msgstr "no implementado"
 #~ msgid "vector"
 #~ msgstr "vector"
 
-#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Ir al primer {0} de la colección"
 
-#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Ir al {0} anterior de la colección"
 
-#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Reproducir toda la colección de {0}"
 
-#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Ir al siguiente {0} de la colección"
 
-#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Ir al último {0} de la colección"
 
@@ -1966,7 +1965,6 @@ msgstr "no implementado"
 #~ msgid "Show Selected"
 #~ msgstr "Mostrar las seleccionadas"
 
-#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"
@@ -1975,15 +1973,12 @@ msgstr "no implementado"
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "añadiendo JmolPopIn.js"
 
-#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "añadiendo {0}.png"
 
-#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "añadiendo {0}.spt"
 
-#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."

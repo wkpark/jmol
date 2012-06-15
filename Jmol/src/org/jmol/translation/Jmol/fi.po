@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2012-05-22 23:48+0200\n"
+"POT-Creation-Date: 2012-06-15 17:29+0200\n"
 "PO-Revision-Date: 2011-09-27 22:41+0000\n"
 "Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: Finland <Jmol-developers@lists.sf.net>\n"
@@ -116,47 +116,51 @@ msgid "restrict local file access"
 msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:169
+msgid "restrict local file access (allow reading of SPT files)"
+msgstr ""
+
+#: org/openscience/jmol/app/JmolApp.java:171
 msgid "independent command thread"
 msgstr "riippumaton komentoketju"
 
-#: org/openscience/jmol/app/JmolApp.java:171
+#: org/openscience/jmol/app/JmolApp.java:173
 msgid "exit after script (implicit with -n)"
 msgstr "lopettaa komentosarjan jälkeen (epäsuora, jos -n)"
 
-#: org/openscience/jmol/app/JmolApp.java:174
+#: org/openscience/jmol/app/JmolApp.java:176
 msgid "port for JSON/MolecularPlayground-style communication"
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:180
+#: org/openscience/jmol/app/JmolApp.java:182
 msgid "script file to execute or '-' for System.in"
 msgstr "komentosarja-tiedosto suoritettavaksi tai '-' for System.in"
 
-#: org/openscience/jmol/app/JmolApp.java:186
+#: org/openscience/jmol/app/JmolApp.java:188
 msgid "use multitouch interface (requires \"sparshui\" parameter"
 msgstr "käyttää multitouch käyttöliittymää (vaatii \"sparshui \" parametrin"
 
-#: org/openscience/jmol/app/JmolApp.java:193
+#: org/openscience/jmol/app/JmolApp.java:195
 msgid "Jmol script to execute BEFORE -s option"
 msgstr "Jmol-komentosarja toteutetaan -s valinnan ENNEN"
 
-#: org/openscience/jmol/app/JmolApp.java:199
+#: org/openscience/jmol/app/JmolApp.java:201
 msgid "Jmol script to execute AFTER -s option"
 msgstr "Jmol-komentosarja toteutetaan -s valinnan JÄLKEEN"
 
-#: org/openscience/jmol/app/JmolApp.java:213
+#: org/openscience/jmol/app/JmolApp.java:215
 msgid "property=value"
 msgstr "ominaisuus=arvo"
 
-#: org/openscience/jmol/app/JmolApp.java:216
+#: org/openscience/jmol/app/JmolApp.java:218
 msgid "supported options are given below"
 msgstr "alla tuetut valinnat"
 
-#: org/openscience/jmol/app/JmolApp.java:222
+#: org/openscience/jmol/app/JmolApp.java:224
 #, java-format
 msgid "window width x height, e.g. {0}"
 msgstr "ikkunan leveys x korkeus, esim. {0}"
 
-#: org/openscience/jmol/app/JmolApp.java:232
+#: org/openscience/jmol/app/JmolApp.java:234
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
@@ -164,16 +168,16 @@ msgstr ""
 "JPG kuvanlaatu (1-100; oletusarvo 75) tai PNG pakkaaminen (0-9; oletusarvo "
 "2, maksimi 9)"
 
-#: org/openscience/jmol/app/JmolApp.java:237
+#: org/openscience/jmol/app/JmolApp.java:239
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr "{0} tai {1}:tiedostonimi"
 
-#: org/openscience/jmol/app/JmolApp.java:251
+#: org/openscience/jmol/app/JmolApp.java:253
 msgid "For example:"
 msgstr "Esimerkiksi:"
 
-#: org/openscience/jmol/app/JmolApp.java:257
+#: org/openscience/jmol/app/JmolApp.java:259
 msgid ""
 "The -D options are as follows (defaults in parenthesis) and must be called "
 "preceding '-jar Jmol.jar':"
@@ -181,15 +185,15 @@ msgstr ""
 "D-valinnat ovat seuraavat (oletusarvot sulkeiden sisällä) ja ne täytyy "
 "kutsua edellisen '-jar Jmol.jar'"
 
-#: org/openscience/jmol/app/JmolApp.java:534
+#: org/openscience/jmol/app/JmolApp.java:540
 msgid "Executing script 1..."
 msgstr "Toteutetaan komentosarja 1..."
 
-#: org/openscience/jmol/app/JmolApp.java:544
+#: org/openscience/jmol/app/JmolApp.java:550
 msgid "Executing script file..."
 msgstr "Toteutetaan komentosarja-tiedosto..."
 
-#: org/openscience/jmol/app/JmolApp.java:565
+#: org/openscience/jmol/app/JmolApp.java:571
 msgid "Executing script 2..."
 msgstr "Toteutetaan komentosarja 2..."
 

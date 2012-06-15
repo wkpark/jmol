@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2012-05-22 23:48+0200\n"
+"POT-Creation-Date: 2012-06-15 17:29+0200\n"
 "PO-Revision-Date: 2012-05-24 01:03+0000\n"
 "Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: French <Jmol-developers@lists.sf.net>\n"
@@ -79,8 +79,7 @@ msgstr "pas d'affichage (et également quitter lorsque vous avez terminé)"
 
 #: org/openscience/jmol/app/JmolApp.java:151
 msgid "check script syntax only - no file loading"
-msgstr ""
-"vérifier la syntaxe de script seulement - pas de chargement de fichier"
+msgstr "vérifier la syntaxe de script seulement - pas de chargement de fichier"
 
 #: org/openscience/jmol/app/JmolApp.java:153
 msgid "check script syntax only - with file loading"
@@ -121,47 +120,52 @@ msgid "restrict local file access"
 msgstr "restreindre l'accès au fichier local"
 
 #: org/openscience/jmol/app/JmolApp.java:169
+#, fuzzy
+msgid "restrict local file access (allow reading of SPT files)"
+msgstr "restreindre l'accès au fichier local"
+
+#: org/openscience/jmol/app/JmolApp.java:171
 msgid "independent command thread"
 msgstr "commande de thread indépendante"
 
-#: org/openscience/jmol/app/JmolApp.java:171
+#: org/openscience/jmol/app/JmolApp.java:173
 msgid "exit after script (implicit with -n)"
 msgstr "quitter après le script (implicite avec -n)"
 
-#: org/openscience/jmol/app/JmolApp.java:174
+#: org/openscience/jmol/app/JmolApp.java:176
 msgid "port for JSON/MolecularPlayground-style communication"
 msgstr "port pour JSON / MolecularPlayground style de communication"
 
-#: org/openscience/jmol/app/JmolApp.java:180
+#: org/openscience/jmol/app/JmolApp.java:182
 msgid "script file to execute or '-' for System.in"
 msgstr "fichier de script à exécuter ou '-' pour System.in"
 
-#: org/openscience/jmol/app/JmolApp.java:186
+#: org/openscience/jmol/app/JmolApp.java:188
 msgid "use multitouch interface (requires \"sparshui\" parameter"
 msgstr "utiliser l’interface multitouch (requiert le paramètre « sparshui »)"
 
-#: org/openscience/jmol/app/JmolApp.java:193
+#: org/openscience/jmol/app/JmolApp.java:195
 msgid "Jmol script to execute BEFORE -s option"
 msgstr "script Jmol à exécuter AVANT l’option -s"
 
-#: org/openscience/jmol/app/JmolApp.java:199
+#: org/openscience/jmol/app/JmolApp.java:201
 msgid "Jmol script to execute AFTER -s option"
 msgstr "script Jmol à exécuter APRÈS l’option -s"
 
-#: org/openscience/jmol/app/JmolApp.java:213
+#: org/openscience/jmol/app/JmolApp.java:215
 msgid "property=value"
 msgstr "propriété=valeur"
 
-#: org/openscience/jmol/app/JmolApp.java:216
+#: org/openscience/jmol/app/JmolApp.java:218
 msgid "supported options are given below"
 msgstr "les options supportées sont données ci-dessous"
 
-#: org/openscience/jmol/app/JmolApp.java:222
+#: org/openscience/jmol/app/JmolApp.java:224
 #, java-format
 msgid "window width x height, e.g. {0}"
 msgstr "taille de la fenêtre (largeur x hauteur), par exemple {0}"
 
-#: org/openscience/jmol/app/JmolApp.java:232
+#: org/openscience/jmol/app/JmolApp.java:234
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
@@ -169,16 +173,16 @@ msgstr ""
 "qualité d’image JPG (1-100; 75 par défaut) ou compression d’image PNG (0-9; "
 "2 par défaut, compression maximale 9)"
 
-#: org/openscience/jmol/app/JmolApp.java:237
+#: org/openscience/jmol/app/JmolApp.java:239
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr "{0} ou {1} :nomFichier"
 
-#: org/openscience/jmol/app/JmolApp.java:251
+#: org/openscience/jmol/app/JmolApp.java:253
 msgid "For example:"
 msgstr "Par exemple :"
 
-#: org/openscience/jmol/app/JmolApp.java:257
+#: org/openscience/jmol/app/JmolApp.java:259
 msgid ""
 "The -D options are as follows (defaults in parenthesis) and must be called "
 "preceding '-jar Jmol.jar':"
@@ -186,15 +190,15 @@ msgstr ""
 "Les options -D sont comme suit (valeurs par défaut entre parenthèses), et "
 "doivent être toujours précédées de « -jar Jmol.jar » :"
 
-#: org/openscience/jmol/app/JmolApp.java:534
+#: org/openscience/jmol/app/JmolApp.java:540
 msgid "Executing script 1..."
 msgstr "Script 1 en cours d’exécution..."
 
-#: org/openscience/jmol/app/JmolApp.java:544
+#: org/openscience/jmol/app/JmolApp.java:550
 msgid "Executing script file..."
 msgstr "Fichier de script en cours d’exécution..."
 
-#: org/openscience/jmol/app/JmolApp.java:565
+#: org/openscience/jmol/app/JmolApp.java:571
 msgid "Executing script 2..."
 msgstr "Script 2 en cours d’exécution..."
 
@@ -1216,8 +1220,7 @@ msgstr "Afficher pendant le calcul"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:245
 msgid "Should POV-Ray attempt to display while rendering?"
-msgstr ""
-"Est-ce que POV-Ray doit essayer d’afficher l’image durant le calcul ?"
+msgstr "Est-ce que POV-Ray doit essayer d’afficher l’image durant le calcul ?"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:268
 msgid "width:"
@@ -1697,8 +1700,8 @@ msgstr "Donner un nom à l’instance de Jmol:"
 #: org/openscience/jmol/app/webexport/WebPanel.java:484
 msgid "Error creating new instance containing script(s) and image."
 msgstr ""
-"Erreur lors de la création d’une nouvelle instance contenant un(des) "
-"script(s) et une image"
+"Erreur lors de la création d’une nouvelle instance contenant un(des) script"
+"(s) et une image"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:495
 #, java-format
@@ -1940,23 +1943,18 @@ msgstr "non-implémenté"
 #~ msgid "vector"
 #~ msgstr "vecteur"
 
-#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Aller au premier {0} de la collection"
 
-#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Aller au {0} précédent de la collection"
 
-#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Jouer la collection complète de {0}"
 
-#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Aller au {0} suivant de la collection"
 
-#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Aller au dernier {0} de la collection"
 
@@ -1982,26 +1980,22 @@ msgstr "non-implémenté"
 #~ msgid "Show Selected"
 #~ msgstr "Afficher les options sélectionnées"
 
-#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 #~ msgstr ""
-#~ "Insérer un texte explicatif pertinente ici. Long texte sera coupé entourent "
-#~ "le modèle de Jmol {0}."
+#~ "Insérer un texte explicatif pertinente ici. Long texte sera coupé "
+#~ "entourent le modèle de Jmol {0}."
 
-#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "ajoutant {0}. spt"
 
-#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "ajoutant {0}. png"
 
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "ajoutant JmolPopIn.js"
 
-#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"

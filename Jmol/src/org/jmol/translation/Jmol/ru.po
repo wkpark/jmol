@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2012-05-22 23:48+0200\n"
+"POT-Creation-Date: 2012-06-15 17:29+0200\n"
 "PO-Revision-Date: 2012-05-30 13:45+0000\n"
 "Last-Translator: karma <Unknown>\n"
 "Language-Team: Russian <ru@li.org>\n"
@@ -114,47 +114,52 @@ msgid "restrict local file access"
 msgstr "ограничить доступ к локальным файлам"
 
 #: org/openscience/jmol/app/JmolApp.java:169
+#, fuzzy
+msgid "restrict local file access (allow reading of SPT files)"
+msgstr "ограничить доступ к локальным файлам"
+
+#: org/openscience/jmol/app/JmolApp.java:171
 msgid "independent command thread"
 msgstr "независимый поток команд"
 
-#: org/openscience/jmol/app/JmolApp.java:171
+#: org/openscience/jmol/app/JmolApp.java:173
 msgid "exit after script (implicit with -n)"
 msgstr "Выход после скрипта (неявно с -n)"
 
-#: org/openscience/jmol/app/JmolApp.java:174
+#: org/openscience/jmol/app/JmolApp.java:176
 msgid "port for JSON/MolecularPlayground-style communication"
 msgstr "порт для связи в режиме JSON/MolecularPlayground"
 
-#: org/openscience/jmol/app/JmolApp.java:180
+#: org/openscience/jmol/app/JmolApp.java:182
 msgid "script file to execute or '-' for System.in"
 msgstr "файл скрипта для выполнения или '-' для System.in"
 
-#: org/openscience/jmol/app/JmolApp.java:186
+#: org/openscience/jmol/app/JmolApp.java:188
 msgid "use multitouch interface (requires \"sparshui\" parameter"
 msgstr "используйте мультитач интерфейс (требуется параметр \"sparshui\""
 
-#: org/openscience/jmol/app/JmolApp.java:193
+#: org/openscience/jmol/app/JmolApp.java:195
 msgid "Jmol script to execute BEFORE -s option"
 msgstr "Jmol скрипт выполняется ДО опции -s"
 
-#: org/openscience/jmol/app/JmolApp.java:199
+#: org/openscience/jmol/app/JmolApp.java:201
 msgid "Jmol script to execute AFTER -s option"
 msgstr "Jmol скрипт выполняется ПОСЛЕ опции -s"
 
-#: org/openscience/jmol/app/JmolApp.java:213
+#: org/openscience/jmol/app/JmolApp.java:215
 msgid "property=value"
 msgstr "свойство=значение"
 
-#: org/openscience/jmol/app/JmolApp.java:216
+#: org/openscience/jmol/app/JmolApp.java:218
 msgid "supported options are given below"
 msgstr "поддерживаемые опции приведены ниже"
 
-#: org/openscience/jmol/app/JmolApp.java:222
+#: org/openscience/jmol/app/JmolApp.java:224
 #, java-format
 msgid "window width x height, e.g. {0}"
 msgstr "ширина x высота окна, напр. {0}"
 
-#: org/openscience/jmol/app/JmolApp.java:232
+#: org/openscience/jmol/app/JmolApp.java:234
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
@@ -162,16 +167,16 @@ msgstr ""
 "качество JPG (1-100; по умолчанию 75) или сжатие PNG  (0-9; по умолчанию 2, "
 "максимальное сжатие 9)"
 
-#: org/openscience/jmol/app/JmolApp.java:237
+#: org/openscience/jmol/app/JmolApp.java:239
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr "{0} или {1}:filename"
 
-#: org/openscience/jmol/app/JmolApp.java:251
+#: org/openscience/jmol/app/JmolApp.java:253
 msgid "For example:"
 msgstr "Например:"
 
-#: org/openscience/jmol/app/JmolApp.java:257
+#: org/openscience/jmol/app/JmolApp.java:259
 msgid ""
 "The -D options are as follows (defaults in parenthesis) and must be called "
 "preceding '-jar Jmol.jar':"
@@ -179,15 +184,15 @@ msgstr ""
 "Опции -D, описанные ниже (в скобках значения по умолчанию) должны быть "
 "указаны перед объявлением '-jar Jmol.jar':"
 
-#: org/openscience/jmol/app/JmolApp.java:534
+#: org/openscience/jmol/app/JmolApp.java:540
 msgid "Executing script 1..."
 msgstr "Выполняется сценарий 1..."
 
-#: org/openscience/jmol/app/JmolApp.java:544
+#: org/openscience/jmol/app/JmolApp.java:550
 msgid "Executing script file..."
 msgstr "Выполняется файл сценария..."
 
-#: org/openscience/jmol/app/JmolApp.java:565
+#: org/openscience/jmol/app/JmolApp.java:571
 msgid "Executing script 2..."
 msgstr "Выполняется сценарий 2..."
 
@@ -1008,9 +1013,8 @@ msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
 "be significant the first time the applet is loaded."
 msgstr ""
-"Чтобы получить 3D модель, которой можно манипулировать, щёлкните "
-"{0}здесь{1}. Время загрузки может быть существенным при первой загрузке "
-"апплета."
+"Чтобы получить 3D модель, которой можно манипулировать, щёлкните {0}здесь"
+"{1}. Время загрузки может быть существенным при первой загрузке апплета."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:368
 msgid "Insert the page TITLE here."
@@ -1031,8 +1035,8 @@ msgid ""
 "Insert additional explanatory text here. Long text will wrap around Jmol "
 "model {0}."
 msgstr ""
-"Вставьте дополнительный поясняющий текст здесь. Длинный текст будет "
-"\"обёрнут\" вокруг Jmol модели {0}."
+"Вставьте дополнительный поясняющий текст здесь. Длинный текст будет \"обёрнут"
+"\" вокруг Jmol модели {0}."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:374
 msgid "Insert your TITLE and INTRODUCTION here."
@@ -1884,7 +1888,6 @@ msgstr "не реализовано"
 #~ msgid "Jmol Script Console"
 #~ msgstr "Консоль сценариев Jmol"
 
-#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Перейти к следующему {0} в коллекции"
 
@@ -1924,37 +1927,30 @@ msgstr "не реализовано"
 #~ msgid "atom set"
 #~ msgstr "Набор атомов"
 
-#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Идти к первой {0} в коллекции"
 
-#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Идти к предыдущей {0} в коллекции"
 
-#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Смотреть всю коллекцию {0}"
 
-#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Перейти к последней {0} в коллекции"
 
 #~ msgid "Show Selected"
 #~ msgstr "Показать Выбранное"
 
-#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "добавление {0}.spt"
 
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "добавление JmolPopIn.js"
 
-#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "добавление {0}.png"
 
-#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"
@@ -1998,10 +1994,9 @@ msgstr "не реализовано"
 #~ msgid "The -D options are as follows (defaults in parenthesis):"
 #~ msgstr "Варианты -D следующие (в скобках значения по умолчанию):"
 
-#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 #~ msgstr ""
-#~ "Введите сюда поясненяющий текст. Длинный текст будет обернут вокруг модели "
-#~ "Jmol {0}."
+#~ "Введите сюда поясненяющий текст. Длинный текст будет обернут вокруг "
+#~ "модели Jmol {0}."

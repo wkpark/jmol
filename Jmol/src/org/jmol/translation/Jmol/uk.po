@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2012-05-22 23:48+0200\n"
+"POT-Creation-Date: 2012-06-15 17:29+0200\n"
 "PO-Revision-Date: 2012-05-24 01:03+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@gmail.com>\n"
 "Language-Team: Ukrainian <translation@linux.org.ua>\n"
@@ -61,8 +61,8 @@ msgstr "Адреса-запиту"
 #: org/openscience/jmol/app/JmolApp.java:109
 msgid "Error starting Jmol: the property 'user.home' is not defined."
 msgstr ""
-"Помилка під час спроби запуску Jmol: не вказано значення властивості "
-"«user.home»."
+"Помилка під час спроби запуску Jmol: не вказано значення властивості «user."
+"home»."
 
 #: org/openscience/jmol/app/JmolApp.java:146
 msgid "transparent background"
@@ -117,49 +117,54 @@ msgid "restrict local file access"
 msgstr "обмежити локальний доступ до файлів"
 
 #: org/openscience/jmol/app/JmolApp.java:169
+#, fuzzy
+msgid "restrict local file access (allow reading of SPT files)"
+msgstr "обмежити локальний доступ до файлів"
+
+#: org/openscience/jmol/app/JmolApp.java:171
 msgid "independent command thread"
 msgstr "окремий потік виконання команд"
 
-#: org/openscience/jmol/app/JmolApp.java:171
+#: org/openscience/jmol/app/JmolApp.java:173
 msgid "exit after script (implicit with -n)"
 msgstr "вийти після виконання скрипту (неявно, якщо вказано -n)"
 
-#: org/openscience/jmol/app/JmolApp.java:174
+#: org/openscience/jmol/app/JmolApp.java:176
 msgid "port for JSON/MolecularPlayground-style communication"
 msgstr "порт для обміну даними у стилі JSON/MolecularPlayground"
 
-#: org/openscience/jmol/app/JmolApp.java:180
+#: org/openscience/jmol/app/JmolApp.java:182
 msgid "script file to execute or '-' for System.in"
 msgstr "файл скрипту, який слід виконати або «-» для виконання System.in"
 
-#: org/openscience/jmol/app/JmolApp.java:186
+#: org/openscience/jmol/app/JmolApp.java:188
 msgid "use multitouch interface (requires \"sparshui\" parameter"
 msgstr ""
 "використовувати інтерфейс з декількома засобами сенсорного керування "
 "(потрібен параметр «sparshui»)"
 
-#: org/openscience/jmol/app/JmolApp.java:193
+#: org/openscience/jmol/app/JmolApp.java:195
 msgid "Jmol script to execute BEFORE -s option"
 msgstr "скрипт Jmol, який слід виконати ДО параметра -s"
 
-#: org/openscience/jmol/app/JmolApp.java:199
+#: org/openscience/jmol/app/JmolApp.java:201
 msgid "Jmol script to execute AFTER -s option"
 msgstr "скрипт Jmol, який слід виконати ПІСЛЯ параметра -s"
 
-#: org/openscience/jmol/app/JmolApp.java:213
+#: org/openscience/jmol/app/JmolApp.java:215
 msgid "property=value"
 msgstr "властивість=значення"
 
-#: org/openscience/jmol/app/JmolApp.java:216
+#: org/openscience/jmol/app/JmolApp.java:218
 msgid "supported options are given below"
 msgstr "підтримувані параметри наведено нижче"
 
-#: org/openscience/jmol/app/JmolApp.java:222
+#: org/openscience/jmol/app/JmolApp.java:224
 #, java-format
 msgid "window width x height, e.g. {0}"
 msgstr "розміри вікна, ширина x висота, наприклад, {0}"
 
-#: org/openscience/jmol/app/JmolApp.java:232
+#: org/openscience/jmol/app/JmolApp.java:234
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
@@ -167,16 +172,16 @@ msgstr ""
 "якість зображення JPG (1-100; типова — 75) або рівень стискання зображення "
 "PNG (0-9; типовий — 2, максимальне стискання — 9)"
 
-#: org/openscience/jmol/app/JmolApp.java:237
+#: org/openscience/jmol/app/JmolApp.java:239
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr "{0} або {1}:назва файла"
 
-#: org/openscience/jmol/app/JmolApp.java:251
+#: org/openscience/jmol/app/JmolApp.java:253
 msgid "For example:"
 msgstr "Приклад:"
 
-#: org/openscience/jmol/app/JmolApp.java:257
+#: org/openscience/jmol/app/JmolApp.java:259
 msgid ""
 "The -D options are as follows (defaults in parenthesis) and must be called "
 "preceding '-jar Jmol.jar':"
@@ -184,15 +189,15 @@ msgstr ""
 "Параметри -D (типові значення вказано в дужках), слід викликати до «-jar "
 "Jmol.jar»:"
 
-#: org/openscience/jmol/app/JmolApp.java:534
+#: org/openscience/jmol/app/JmolApp.java:540
 msgid "Executing script 1..."
 msgstr "Виконання скрипту 1…"
 
-#: org/openscience/jmol/app/JmolApp.java:544
+#: org/openscience/jmol/app/JmolApp.java:550
 msgid "Executing script file..."
 msgstr "Виконання файла скрипту…"
 
-#: org/openscience/jmol/app/JmolApp.java:565
+#: org/openscience/jmol/app/JmolApp.java:571
 msgid "Executing script 2..."
 msgstr "Виконання скрипту 2…"
 
@@ -989,8 +994,7 @@ msgstr "Обертати молекулу."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:224
 msgid "Select a set of atoms using SHIFT-LEFT-DRAG."
-msgstr ""
-"Вкажіть набір атомів за допомогою SHIFT-СТРІЛКА ЛІВОРУЧ-ПЕРЕТЯГУВАННЯ."
+msgstr "Вкажіть набір атомів за допомогою SHIFT-СТРІЛКА ЛІВОРУЧ-ПЕРЕТЯГУВАННЯ."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:226
 msgid "Click atoms to measure distances"
@@ -1015,8 +1019,8 @@ msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
 "be significant the first time the applet is loaded."
 msgstr ""
-"Щоб отримати просторову модель, з якою можна буде працювати, натисніть "
-"{0}тут{1}. Перше звантаження за допомогою аплету може бути доволі тривалим."
+"Щоб отримати просторову модель, з якою можна буде працювати, натисніть {0}тут"
+"{1}. Перше звантаження за допомогою аплету може бути доволі тривалим."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:368
 msgid "Insert the page TITLE here."
@@ -1913,23 +1917,18 @@ msgstr "не реалізовано"
 #~ msgid "atom set"
 #~ msgstr "набір атомів"
 
-#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Перейти до першого {0} у збірці"
 
-#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Перейти до попереднього {0} у збірці"
 
-#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Відтворити усю збірку {0}"
 
-#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Перейти до наступного {0} у збірці"
 
-#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Перейти до останнього {0} у збірці"
 
@@ -1942,15 +1941,12 @@ msgstr "не реалізовано"
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "додавання JmolPopIn.js"
 
-#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "додавання {0}.png"
 
-#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "додавання {0}.spt"
 
-#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"
@@ -1961,16 +1957,16 @@ msgstr "не реалізовано"
 #~ msgid "Clear console button (requires restarting Jmol)"
 #~ msgstr "Кнопка спорожнення консолі (потрібен перезапуску Jmol)"
 
-#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 #~ msgstr ""
-#~ "Тут ви можете вставити додатковий текст пояснення. Довгі рядки буде поділено "
-#~ "на частини і розташовано навколо моделі Jmol {0}."
+#~ "Тут ви можете вставити додатковий текст пояснення. Довгі рядки буде "
+#~ "поділено на частини і розташовано навколо моделі Jmol {0}."
 
 #~ msgid "double-click and drag to reorder"
-#~ msgstr "двічі клацніть лівою кнопкою миші і перетягніть, щоб змінити порядок"
+#~ msgstr ""
+#~ "двічі клацніть лівою кнопкою миші і перетягніть, щоб змінити порядок"
 
 #~ msgid "The -D options are as follows (defaults in parenthesis):"
 #~ msgstr "Параметри -D (типові значення вказано у дужках):"

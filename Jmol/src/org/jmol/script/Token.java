@@ -541,11 +541,12 @@ public class Token {
   public final static int boundbox  = 9 | mathproperty | deprecatedparam | shapeCommand | defaultON;
   public final static int xyz       =10 | mathproperty | atomproperty | settable;
   public final static int fracxyz   =11 | mathproperty | atomproperty | settable;
-  public final static int fuxyz     =12 | mathproperty | atomproperty | settable;
-  public final static int unitxyz   =13 | mathproperty | atomproperty;
-  public final static int vibxyz    =14 | mathproperty | atomproperty | settable;
-  final static int w                =15 | mathproperty;
-  final static int keys              =16 | mathproperty; 
+  public final static int screenxyz =12 | mathproperty | atomproperty | settable;
+  public final static int fuxyz     =13 | mathproperty | atomproperty | settable;
+  public final static int unitxyz   =14 | mathproperty | atomproperty;
+  public final static int vibxyz    =15 | mathproperty | atomproperty | settable;
+  final static int w                =16 | mathproperty;
+  final static int keys             =17 | mathproperty; 
   
   // occupancy, radius, and structure are odd, because they takes different meanings when compared
   
@@ -606,12 +607,15 @@ public class Token {
   public final static int omega           = floatproperty | 6;
   public final static int phi             = floatproperty | 7;
   public final static int psi             = floatproperty | 8;
-  public final static int straightness    = floatproperty | 9;
-  public final static int surfacedistance = floatproperty | 10;
-  public final static int theta           = floatproperty | 11; // Jmol 12.0.RC23
-  public final static int unitx           = floatproperty | 12;
-  public final static int unity           = floatproperty | 13;
-  public final static int unitz           = floatproperty | 14;
+  public final static int screenx         = floatproperty | 9;
+  public final static int screeny         = floatproperty | 10;
+  public final static int screenz         = floatproperty | 11;
+  public final static int straightness    = floatproperty | 12;
+  public final static int surfacedistance = floatproperty | 13;
+  public final static int theta           = floatproperty | 14; // Jmol 12.0.RC23
+  public final static int unitx           = floatproperty | 15;
+  public final static int unity           = floatproperty | 16;
+  public final static int unitz           = floatproperty | 17;
   public final static int atomx           = floatproperty | 1 | settable;
   public final static int atomy           = floatproperty | 2 | settable;
   public final static int atomz           = floatproperty | 3 | settable;
@@ -1940,6 +1944,10 @@ public class Token {
       "surface",         new Token(surface),
       "surfaceDistance", new Token(surfacedistance),
       "symop",           new Token(symop),
+      "sx",              new Token(screenx),
+      "sy",              new Token(screeny),
+      "sz",              new Token(screenz),
+      "sxyz",            new Token(screenxyz),
       "temperature",     new Token(temperature),
       "relativeTemperature", null,
       "theta",           new Token(theta),

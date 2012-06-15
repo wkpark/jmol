@@ -1240,6 +1240,7 @@ public class ScriptEvaluator {
     case Token.fuxyz:
     case Token.unitxyz:
     case Token.color:
+    case Token.screenxyz:
       isPt = true;
       break;
     case Token.function:

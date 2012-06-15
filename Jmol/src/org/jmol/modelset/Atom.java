@@ -1273,6 +1273,12 @@ final public class Atom extends Point3fi implements JmolNode {
       return atom.getFractionalCoord('Y', false);
     case Token.fuz:
       return atom.getFractionalCoord('Z', false);
+    case Token.screenx:
+      return atom.screenX;
+    case Token.screeny:
+      return atom.screenY;
+    case Token.screenz:
+      return atom.screenZ;
     case Token.ionic:
       return atom.getBondingRadiusFloat();
     case Token.mass:
@@ -1405,6 +1411,8 @@ final public class Atom extends Point3fi implements JmolNode {
     case Token.unitxyz:
       return (atom.group.chain.model.isJmolDataFrame ? atom.getFractionalCoord(false) 
           : atom.getFractionalUnitCoord(false));
+    case Token.screenxyz:
+      return new Point3f(atom.screenX, atom.screenY, atom.screenZ);
     case Token.vibxyz:
       Vector3f v = atom.getVibrationVector();
       if (v == null)

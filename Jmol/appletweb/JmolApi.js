@@ -9,8 +9,7 @@
 	// note that the variable name the return is assigned to MUST match the first parameter in quotes
 	// applet = Jmol.getApplet("applet", Info)
 
-		checkOnly || (checkOnly = !1);
-		id || (id = "jmolApplet0");
+		checkOnly || (checkOnly = false);
 		Info || (Info = {});
 		var DefaultInfo = {
 			color: "#FFFFFF", // applet object background color, as for older jmolSetBackgroundColor(s)
@@ -39,9 +38,6 @@
 
 		if (!Info.useNoApplet && !Info.useImageOnly && navigator.javaEnabled()) {
 		
-			Info.jarFile || (Info.jarFile = (Info.isSigned ? "JmolAppletSigned0.jar" : "JmolApplet0.jar")); 
-			Info.jarPath || (Info.jarPath = "."); 
-			 
 		// Jmol applet, signed or unsigned
 		
 			applet = new Jmol._Applet(id, Info, null, checkOnly);
@@ -54,19 +50,15 @@
 				applet = new Jmol._Image(id, Info, null, checkOnly);
 		}
 		// keyed to both its string id and itself
-		if (!checkOnly) {
-		  Jmol._lastAppletID = id;
-			Jmol._applets[id] = Jmol._applets[applet] = applet;
-		}	
-		return applet;
+		return (checkOnly ? applet : Jmol._registerApplet(id, applet));
 	}
 
 	Jmol.getJMEApplet = function(id, Info, linkedApplet) {
 	
+	// requires JmolJME.js and JME.jar
 	// note that the variable name the return is assigned to MUST match the first parameter in quotes
 	// jme = Jmol.getJMEApplet("jme", Info)
 
-		id || (id = "jme");
 		Info || (Info = {});
 		var DefaultInfo = {
 			width: 300,
@@ -75,7 +67,29 @@
 			jarFile: "JME.jar"
 		};		
 		Jmol._addDefaultInfo(Info, DefaultInfo);
-		return new Jmol._JMEApplet(id, Info, linkedApplet);
+		return Jmol._registerApplet(id, new Jmol._JMEApplet(id, Info, linkedApplet));
+	}
+
+	Jmol.getJSVApplet = function(id, Info) {
+	
+	// requires JmolJSV.js and either JSpecViewApplet.jar or JSpecViewAppletSigned.jar
+	// note that the variable name the return is assigned to MUST match the first parameter in quotes
+	// applet = Jmol.getJSVApplet("applet", Info)
+
+		Info || (Info = {});
+		var DefaultInfo = {
+			width: 500,
+			height: 300,
+			debug: false,
+			jarPath: ".",
+			jarFile: "JSpecViewApplet.jar",
+			isSigned: false,
+			initParams: null,
+			readyFunction: null,
+			script: null
+		};
+		Jmol._addDefaultInfo(Info, DefaultInfo);
+		return Jmol._registerApplet(id, new Jmol._JSVApplet(id, Info, null));
 	}
 
 	Jmol.script = function(applet, script) {	

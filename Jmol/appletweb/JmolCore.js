@@ -96,6 +96,10 @@ Jmol = (function(document) {
 
 	// Jmol core functionality
 
+	Jmol._registerApplet = function(id, applet) {
+		return Jmol._applets[id] = Jmol._applets[applet] = applet;
+	}	
+
 	Jmol._ajax = function(info) {
 		Jmol._ajaxQueue.push(info)
 		if (Jmol._ajaxQueue.length == 1)

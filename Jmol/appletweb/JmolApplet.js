@@ -34,8 +34,6 @@
 		this._readyFunction = Info.readyFunction;
 		this._ready = false; 
 		this._applet = null;
-		this._jarFile = Info.jarFile || (Info.isSigned ? "JmolAppletSigned0.jar" : "JmolApplet0.jar"); 
-		this._jarPath =	Info.jarPath || "."; 
 		this._memoryLimit = Info.memoryLimit || 512;
 		this._canScript = function(script) {return true;};
 		this._savedOrientations = [];

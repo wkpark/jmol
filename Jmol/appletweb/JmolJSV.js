@@ -19,35 +19,6 @@
 	
 	Jmol._JSVVersion="2.0";
 
-	Jmol.getJSVApplet = function(id, Info) {
-	
-	// note that the variable name the return is assigned to MUST match the first parameter in quotes
-	// applet = Jmol.getJSVApplet("applet", Info)
-
-		id || (id = "jsvApplet");
-		Info || (Info = {
-			width: 500,
-			height: 300,
-			debug: false,
-			serverURL: "http://chemapps.stolaf.edu/jmol/jmolcd.php",
-			jarPath: ".",
-			jarFile: "JSpecViewAppletSigned.jar",
-			isSigned: true,
-			readyFunction: null,
-			script: null
-		});
-		Jmol._debugAlert = Info.debug;	
-		Info.serverURL && (Jmol._serverUrl = Info.serverURL);
-		Info.jarFile || (Info.jarFile = (Info.sSigned ? "JSpecViewAppletSigned.jar" : "JSpecViewApplet.jar")); 
-		Info.jarPath || (Info.jarPath = "."); 
-			 
-		// JSpecView applet, signed or unsigned
-		
-		var applet = new Jmol._JSVApplet(id, Info, null);
-		Jmol._applets[id] = Jmol._applets[applet] = applet;		
-		return applet;
-	}
-
 	Jmol._JSVApplet = function(id, Info, caption){
 		this._jmolType = "Jmol._JSVApplet" + (Info.isSigned ? " (signed)" : "");
 		this._id = id;
@@ -70,51 +41,12 @@
 		this._containerHeight = this._height + ((this._height==parseFloat(this._height))? "px":"");
 		this._syncKeyword = "JSpecView:"
 
-
-		/*
-		 * private variables
-		 */
-		var that = this;
-		
-		/*
-		 * private methods
-		 */
-		var getJarFilename=function(fileNameOrFlag){
-			that._jarFile =
-	    	(typeof(fileNameOrFlag) == "string"  ? fileNameOrFlag : (fileNameOrFlag ?  "JSpecViewAppletSigned" : "JSpecViewApplet") + ".jar");
-		}
-		var setCodebase=function(codebase) {
- 			that._jarPath = codebase ? codebase : ".";
-		}
-		
-		/*
-		 * privileged methods
-		 */
 		this._initialize = function(codebaseDirectory, fileNameOrUseSignedApplet) {
-			if(this._jarFile) {
-				var f = this._jarFile;
-				if(f.indexOf("/") >= 0) {
-					alert("This web page URL is requesting that the applet used be " + f + ". This is a possible security risk, particularly if the applet is signed, because signed applets can read and write files on your local machine or network.");
-					var ok = prompt("Do you want to use applet " + f + "? ", "yes or no")
-					if(ok == "yes") {
-						codebaseDirectory = f.substring(0, f.lastIndexOf("/"));
-						fileNameOrUseSignedApplet = f.substring(f.lastIndexOf("/") + 1);
-					} else {
-						getJarFilename(fileNameOrUseSignedApplet);
-						alert("The web page URL was ignored. Continuing using " + this._jarFile + ' in directory "' + codebaseDirectory + '"');
-					}
-				} else {
-					fileNameOrUseSignedApplet = f;
-				}
-			}
-			setCodebase(codebaseDirectory);
-			getJarFilename(fileNameOrUseSignedApplet);
 			Jmol.controls == undefined || Jmol.controls._onloadResetForms();		
 		}
-		
+				
 		this._create(id, Info, caption);
 		return this;
-		
 	}
 
 	Jmol._JSVApplet.prototype._create = function(id, Info, caption){
@@ -130,9 +62,8 @@
 			boxmessage: "Downloading JSpecViewApplet ..."
 		};
 		
-
 		var myClass = "jspecview.applet.JSVApplet" + (this._jsvIsSigned >= 0 ? "Pro" : "");
-		var script = 'appletID ' + this._id + ';syncID '+ this._syncId
+		var script = (Info.initParams ? Info._initParams : "") + ';appletID ' + this._id + ';syncID '+ this._syncId
 		+ ';appletReadyCallbackFunctionName ' + this._id + '._readyCallback'
 		+ ';syncCallbackFunctionName Jmol._mySyncCallback;';
     Jmol._Applet._createApplet(this, Info, params, myClass, script);

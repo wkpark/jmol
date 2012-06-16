@@ -63,7 +63,7 @@
 		};
 		
 		var myClass = "jspecview.applet.JSVApplet" + (this._jsvIsSigned >= 0 ? "Pro" : "");
-		var script = (Info.initParams ? Info._initParams : "") + ';appletID ' + this._id + ';syncID '+ this._syncId
+		var script = (Info.initParams ? Info.initParams : "") + ';appletID ' + this._id + ';syncID '+ this._syncId
 		+ ';appletReadyCallbackFunctionName ' + this._id + '._readyCallback'
 		+ ';syncCallbackFunctionName Jmol._mySyncCallback;';
     Jmol._Applet._createApplet(this, Info, params, myClass, script);

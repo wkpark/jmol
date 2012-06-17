@@ -98,9 +98,13 @@ public class SticksRenderer extends ShapeRenderer {
     }
   }
 
+  private Atom atomA0;
+  private Atom atomB0;
+  
   private void renderBond() {
-    atomA = bond.getAtom1();
-    atomB = bond.getAtom2();
+    atomA = atomA0 = bond.getAtom1();
+    atomB = atomB0 = bond.getAtom2();
+    
     int order = bond.order & ~JmolEdge.BOND_NEW;
     if (bondsBackbone) {
       if (ssbondsBackbone && (order & JmolEdge.BOND_SULFUR_MASK) != 0) {
@@ -133,14 +137,14 @@ public class SticksRenderer extends ShapeRenderer {
           (g3d.isClippedZ(atomA.screenZ) || g3d.isClippedZ(atomB.screenZ)))
         return;          
     }
-    colixA = atomA.getColix();
-    colixB = atomB.getColix();
+    colixA = atomA0.getColix();
+    colixB = atomB0.getColix();
     if (((colix = bond.getColix()) & Graphics3D.OPAQUE_MASK) == Graphics3D.USE_PALETTE) {
       colix = (short) (colix & ~Graphics3D.OPAQUE_MASK);
       colixA = Graphics3D.getColixInherited((short) (colix | viewer
-          .getColixAtomPalette(atomA, EnumPalette.CPK.id)), colixA);
+          .getColixAtomPalette(atomA0, EnumPalette.CPK.id)), colixA);
       colixB = Graphics3D.getColixInherited((short) (colix | viewer
-          .getColixAtomPalette(atomB, EnumPalette.CPK.id)), colixB);
+          .getColixAtomPalette(atomB0, EnumPalette.CPK.id)), colixB);
     } else {
       colixA = Graphics3D.getColixInherited(colix, colixA);
       colixB = Graphics3D.getColixInherited(colix, colixB);

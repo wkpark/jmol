@@ -4730,6 +4730,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
       return TextFormat.formatString(format, "FILE", f);
     case '$':
+      if (f.startsWith("$")) {
+        // 2D version
+        f = f.substring(1);
+        format = TextFormat.simpleReplace(global.smilesUrlFormat, "&get3d=True", "");
+        return TextFormat.formatString(format, "FILE", Escape.escapeUrl(f));
+      }
     case 'N':
     case '2':
     case 'I':

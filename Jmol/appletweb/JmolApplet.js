@@ -142,8 +142,6 @@
 			+ (Info.addSelectionOptions ? Jmol._getGrabberOptions(applet, caption) : "");
 		if (Jmol._debugAlert)
 			alert(t);
-			
-			alert(t)
 		applet._code = Jmol._documentWrite(t);
 	}
 

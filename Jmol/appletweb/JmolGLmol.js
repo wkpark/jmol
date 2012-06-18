@@ -3,8 +3,8 @@
 
 // This library requires
 //
-//	json2.js 
 //	JmolCore.js
+//  JmolApplet.js
 //	jQuery.min.js
 //      Three49cusom.js
 //      GLmol.js
@@ -40,8 +40,7 @@ if(typeof(GLmol)=="undefined") GLmol = null;
 	};
 
 	var _glSetPrototype = function(proto) {
-		Jmol._setCommonMethods(proto);
-
+		Jmol._Applet._setCommonMethods(proto);
 		proto._create = function(id, Info, caption) {
 			Jmol._setObject(this, id, Info);
       var t = Jmol._getWrapper(this, true);

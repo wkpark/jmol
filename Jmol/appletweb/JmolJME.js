@@ -25,9 +25,10 @@
 	Jmol._JMEApplet = function(id, Info, linkedApplet) {
 		this._jmolType = "Jmol._JME";
 		Jmol._setObject(this, id, Info);
+		this._options = Info.options;
 		this._linkedApplet = linkedApplet;
-		this._jarFile = Info.jarFile || "JME.jar"; 
-		this._jarPath =	Info.jarPath || ".";
+ 		this._jarPath = Info.jarPath || ".";
+		this._jarFile = Info.jarFile || "JME.jar";
 		if (Jmol._document) {
 			if (this._linkedApplet) {
 				this._linkedApplet._infoObject = this;
@@ -51,11 +52,40 @@
 		var h = (this._linkedApplet ? "2px" : this._containerHeight);
 		var s = '<applet code="JME.class" id="' + this._id + '_object" name="' + this._id 
 			+ '_object" archive="' + this._jarFile + '" codebase="' + this._jarPath + '" width="'+w+'" height="'+h+'">'
-			+ '<param name="options" value="autoez" />'	
+			+ '<param name="options" value="' + this._options + '" />'	
 			+ '</applet>';
 		return this._code = Jmol._documentWrite(s);
 	}
 
+	Jmol._JMEApplet.prototype._searchDatabase = function(query, database){
+		this._showInfo(false);
+		if (database == "$")
+			query = "$" + query; // 2D variant
+		var dm = database + query;
+		if (Jmol.db._DirectDatabaseCalls[database]) {
+			this._loadFile(dm, script);
+			return;
+		}
+		var self=this;
+		Jmol._getRawDataFromServer(
+			database,
+			query,
+			function(data){self._loadModel(data)}
+		);
+	}
+	
+	Jmol._JMEApplet.prototype._loadFile = function(fileName){
+		this._showInfo(false);
+		params || (params = "");
+		this._thisJmolModel = "" + Math.random();
+		var self = this;
+		Jmol._loadFileData(this, fileName, function(data){self._loadModel(data)});
+	}
+	
+	Jmol._JMEApplet.prototype._loadModel = function(jmeOrMolData) {
+		Jmol.jmeReadMolecule(this, jmeOrMolData);
+	}
+	
 	Jmol._JMEApplet.prototype._showInfo = function(tf) {
 	  // from applet, so here is where we do the SMILES transfer
 	  var jme = this._applet = Jmol._getElement(this, "object");
@@ -66,7 +96,7 @@
 	  if (!isOK) {
 		  if (tf) {
 		    // toJME
-		    this._molData = Jmol.evaluate(jmol, "write('mol')")
+		    this._molData = Jmol.evaluate(jmol, "write('mol')")//Jmol.evaluate(jmol, "script('show chemical sdf')");//
 		    setTimeout(this._id+"._applet.reset();"+this._id+"._applet.readMolFile("+this._id+"._molData)",100);
 		  } else {
 		    // toJmol
@@ -95,5 +125,32 @@
 		d.style.width = w;
 		d.style.height = h;
 	}
+
+  //////  additional API for JME /////////
+
+  // see also http://www2.chemie.uni-erlangen.de/services/fragment/editor/jme_functions.html
+	  
+  Jmol.jmeSmiles = function(jme, withStereoChemistry) {
+  	return (arguments.length == 1 || withStereoChemistry ? jme._applet.smiles() : jme._applet.nonisomericSmiles())
+  }
+  
+  Jmol.jmeReadMolecule = function(jme, jmeOrMolData) {
+    // JME data is a single line with no line ending
+  	if (jmeOrMolData.indexOf("\n") < 0 && jmeOrMolData.indexOf("\r") < 0)
+	  	return  jme._applet.readMolecule(jmeOrMolData);
+  	return  jme._applet.readMolFile(jmeOrMolData);
+	}
+	
+  Jmol.jmeGetFile = function(jme, asJME) {
+  	return  (asJME ? jme._applet.jmeFile() : jme._applet.molFile());
+  }
+  
+  Jmol.jmeReset = function(jme) {
+  	jme._applet.reset();
+  }
+  
+  Jmol.jmeOptions = function(jme, options) {
+  	jme._applet.options(options);
+  }
 	
 })(Jmol, document);

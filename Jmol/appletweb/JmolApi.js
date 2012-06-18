@@ -64,7 +64,19 @@
 			width: 300,
 			height: 300,
 			jarPath: ".",
-			jarFile: "JME.jar"
+			jarFile: "JME.jar",
+			options: "autoez"
+			// see http://www2.chemie.uni-erlangen.de/services/fragment/editor/jme_functions.html
+			// rbutton, norbutton - show / hide R button
+			// hydrogens, nohydrogens - display / hide hydrogens
+			// query, noquery - enable / disable query features
+			// autoez, noautoez - automatic generation of SMILES with E,Z stereochemistry
+			// nocanonize - SMILES canonicalization and detection of aromaticity supressed
+			// nostereo - stereochemistry not considered when creating SMILES
+			// reaction, noreaction - enable / disable reaction input
+			// multipart - possibility to enter multipart structures
+			// number - possibility to number (mark) atoms
+			// depict - the applet will appear without editing butons,this is used for structure display only
 		};		
 		Jmol._addDefaultInfo(Info, DefaultInfo);
 		return Jmol._registerApplet(id, new Jmol._JMEApplet(id, Info, linkedApplet));

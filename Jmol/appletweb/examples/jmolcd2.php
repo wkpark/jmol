@@ -24,20 +24,19 @@ function getValueSimple($json, $key, $default) {
  return $val;
 }
 
-function getDatabase($values) {
-	$database = getValueSimple($values, "database", "$");
-	if ($database == "$") {
-		$database = '\\$';
-	}
-	return $database;
-}
-
-
 $values= file_get_contents("php://input");
 $call = getValueSimple($values, "call", "getMoleculeFromDatabase");
 $query = getValueSimple($values, "query", "morphine");
-$database = getDatabase($values);
+$database = getValueSimple($values, "database", "$");
 $postLoad = getValueSimple($values, "script","");
+
+if ($database == '$') {
+	$database = '\\$';  // NCI query
+}
+
+if (substr($query, 0, 1) == '$') {
+	$query = '\\'.$query;  // 2D query
+}
 
 $imagedata = "";
 $output = "";
@@ -102,7 +101,10 @@ if ($call == "getInfoFromDatabase") {
 
 } else if ($call == "getRawDataFromDatabase") {
 	if ($database == '\\$') { // NCI -- needs post load
-		$cmd = $cmd.'"load \\"'.$database.$query.'\\"'.$postLoad.';write MOL"'; 
+		if (substr($query, 0, 2) == '\\$')
+			$cmd = $cmd.'"print load(\\"'.$database.$query.'\\")"'; 
+		else
+			$cmd = $cmd.'"load \\"'.$database.$query.'\\"'.$postLoad.';write MOL"'; 
 		exec($cmd, $result);
 		$output = implode("\n",$result);
 	} else if ($database == ":") { // PubChem -- just get file, including charge data

@@ -75,6 +75,7 @@ Jmol = (function(document) {
 			_pubChemLoadScript: "",
 			_DirectDatabaseCalls:{
 				"$": "http://cactus.nci.nih.gov/chemical/structure/%FILE/file?format=sdf&get3d=True",
+				"$$": "http://cactus.nci.nih.gov/chemical/structure/%FILE/file?format=sdf",
 				"=": "http://www.rcsb.org/pdb/files/%FILE.pdb",
 				"==": "http://www.rcsb.org/pdb/files/ligand/%FILE.cif",
 				":": "http://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/%FILE/SDF?record_type=3d"
@@ -118,17 +119,23 @@ Jmol = (function(document) {
 	
 	Jmol._getGrabberOptions = function(applet, note) {
 		// feel free to adjust this look to anything you want
-		if (!jQuery)
+		if (!jQuery || Jmol._grabberOptions.length == 0)
 			return ""
-		var s = '<br /><input type="text" id="ID_query" onkeypress="13==event.which&&Jmol._applets[\'ID\']._search()"\
-			size="32" value="" /><br /><nobr><select id="ID_select">'
-			for (var i = 0; i < Jmol._grabberOptions.length; i++) {
-				var opt = Jmol._grabberOptions[i];
-			  s += '<option value="' + opt[0] + '" ' + (i == 0 ? 'selected' : '') + '>' + opt[1] + '</option>';
-			}
-			s = (s + '</select>\<button id="ID_submit" onclick="Jmol._applets[\'ID\']._search()">Search</button></nobr>')
-				.replace(/ID/g, applet._id) + (note ? note : "");
-		return s;
+		var s = '<input type="text" id="ID_query" onkeypress="13==event.which&&Jmol._applets[\'ID\']._search()" size="32" value="" />';
+		var b = '<button id="ID_submit" onclick="Jmol._applets[\'ID\']._search()">Search</button></nobr>'
+		if (Jmol._grabberOptions.length == 1) {
+			s = '<nobr>' + s + '<span style="display:none">';
+			b = '</span>' + b;
+		} else {
+			s += '<br /><nobr>'
+		}
+		s += '<select id="ID_select">'
+		for (var i = 0; i < Jmol._grabberOptions.length; i++) {
+			var opt = Jmol._grabberOptions[i];
+		 	s += '<option value="' + opt[0] + '" ' + (i == 0 ? 'selected' : '') + '>' + opt[1] + '</option>';
+		}
+		s = (s + '</select>' + b).replace(/ID/g, applet._id) + (note ? note : "");
+		return '<br />' + s;
 	}
 
 	Jmol._getWrapper = function(applet, isHeader) {

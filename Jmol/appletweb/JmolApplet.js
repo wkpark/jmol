@@ -3,26 +3,6 @@
 (function (Jmol, document) {
 
 
-  /*  AngelH, mar2007:
-    By (re)setting these variables in the webpage before calling jmolApplet(),
-    a custom message can be provided (e.g. localized for user's language) when no Java is installed.
-  */
-		Jmol._noJavaMsg == undefined && (Jmol._noJavaMsg =
-        "You do not have Java applets enabled in your web browser, or your browser is blocking this applet.<br />\
-        Check the warning message from your browser and/or enable Java applets in<br />\
-        your web browser preferences, or install the Java Runtime Environment from <a href='http://www.java.com'>www.java.com</a>");
-		Jmol._noJavaMsg2 == undefined && (Jmol._noJavaMsg2 =
-        "You do not have the<br />\
-        Java Runtime Environment<br />\
-        installed for applet support.<br />\
-        Visit <a href='http://www.java.com'>www.java.com</a>");
-
-	Jmol._setCommonMethods = function(proto) {
-		proto._showInfo = Jmol._Applet.prototype._showInfo;	
-		proto._search = Jmol._Applet.prototype._search;
-		proto._readyCallback = Jmol._Applet.prototype._readyCallback;
-	}
-
 	// _Applet -- the main, full-featured, object
 	
 	Jmol._Applet = function(id, Info, caption, checkOnly){
@@ -69,6 +49,26 @@
 		return this;
 	}
 
+  /*  AngelH, mar2007:
+    By (re)setting these variables in the webpage before calling Jmol.getApplet(),
+    a custom message can be provided (e.g. localized for user's language) when no Java is installed.
+  */
+	Jmol._Applet._noJavaMsg == undefined && (Jmol._noJavaMsg =
+      "You do not have Java applets enabled in your web browser, or your browser is blocking this applet.<br />\
+      Check the warning message from your browser and/or enable Java applets in<br />\
+      your web browser preferences, or install the Java Runtime Environment from <a href='http://www.java.com'>www.java.com</a>");
+	Jmol._Applet._noJavaMsg2 == undefined && (Jmol._noJavaMsg2 =
+      "You do not have the<br />\
+      Java Runtime Environment<br />\
+      installed for applet support.<br />\
+      Visit <a href='http://www.java.com'>www.java.com</a>");
+
+	Jmol._Applet._setCommonMethods = function(proto) {
+		proto._showInfo = Jmol._Applet.prototype._showInfo;	
+		proto._search = Jmol._Applet.prototype._search;
+		proto._readyCallback = Jmol._Applet.prototype._readyCallback;
+	}
+
 	Jmol._Applet._createApplet = function(applet, Info, params, myClass, script, caption) {
 
 		if (Jmol._syncedApplets.length)
@@ -104,6 +104,8 @@
 		} else if (Jmol.featureDetection.useHtml4Object) { // use HTML4 object tag
 			tHeader += " type='application/x-java-applet'\n>\n";
 		} else { // use applet tag
+			if (script)
+  			params.script = script;
 			tHeader =
 				"<applet name='" + applet._id +
 				"_object' id='" + applet._id + "_object' \n" +
@@ -124,11 +126,11 @@
 			visitJava = "<p style='background-color:yellow; color:black; " + szX + ";" + szY + ";" +
 					// why doesn't this vertical-align work?
 				"text-align:center;vertical-align:middle;'>\n" +
-				Jmol._noJavaMsg + "</p>";
+				Jmol._Applet._noJavaMsg + "</p>";
 		} else {
 			visitJava = "<table bgcolor='yellow'><tr>" +
 				"<td align='center' valign='middle' " + widthAndHeight + "><font color='black'>\n" +
-				Jmol._noJavaMsg2 + "</font></td></tr></table>";
+				Jmol._Applet._noJavaMsg2 + "</font></td></tr></table>";
 		}
 	
 		var t = Jmol._getWrapper(applet, true) + tHeader;
@@ -140,13 +142,40 @@
 			+ (Info.addSelectionOptions ? Jmol._getGrabberOptions(applet, caption) : "");
 		if (Jmol._debugAlert)
 			alert(t);
+			
+			alert(t)
 		applet._code = Jmol._documentWrite(t);
 	}
 
+  Jmol._Applet._search = function(applet, query, script) {
+  		applet._showInfo(false);
+		arguments.length > 1 || (query = null);
+		Jmol._setQueryTerm(applet, query);
+		query || (query = Jmol._getElement(applet, "query").value);
+		query && (query = query.replace(/\"/g, ""));
+		var database;
+		if (Jmol._isDatabaseCall(query)) {
+			database = query.substring(0, 1);
+			query = query.substring(1);
+		} else {
+			database = (applet._hasOptions ? Jmol._getElement(applet, "select").value : "$");
+		}
+		if (database == "=" && query.length == 3)
+			query = "=" + query; // this is a ligand			
+		var dm = database + query;
+		if (!query || dm.indexOf("?") < 0 && dm == applet._thisJmolModel) {
+			return;
+		}
+		applet._thisJmolModel = dm;
+		if (database == "$" || database == ":")
+			applet._jmolFileType = "MOL";
+		else if (database == "=")
+			applet._jmolFileType = "PDB";
+		applet._searchDatabase(query, database, script);
+	}
+	
 	Jmol._Applet.prototype._create = function(id, Info, caption){
-
 		Jmol._setObject(this, id, Info);
-
 		var params = {
 			syncId: ("" + Math.random()).substring(3),
 			progressbar: "true",
@@ -223,30 +252,7 @@
 	}
 
 	Jmol._Applet.prototype._search = function(query, script){
-		this._showInfo(false);
-		arguments.length > 1 || (query = null);
-		Jmol._setQueryTerm(this, query);
-		query || (query = Jmol._getElement(this, "query").value);
-		query && (query = query.replace(/\"/g, ""));
-		var database;
-		if (Jmol._isDatabaseCall(query)) {
-			database = query.substring(0, 1);
-			query = query.substring(1);
-		} else {
-			database = (this._hasOptions ? Jmol._getElement(this, "select").value : "$");
-		}
-		if (database == "=" && query.length == 3)
-			query = "=" + query; // this is a ligand			
-		var dm = database + query;
-		if (!query || dm.indexOf("?") < 0 && dm == this._thisJmolModel) {
-			return;
-		}
-		this._thisJmolModel = dm;
-		if (database == "$" || database == ":")
-			this._jmolFileType = "MOL";
-		else if (database == "=")
-			this._jmolFileType = "PDB";
-		this._searchDatabase(query, database, script);
+		Jmol._Applet._search(this, query, script);
 	}
 	
 	Jmol._Applet.prototype._loadModel = function(mol, params) {
@@ -444,8 +450,8 @@
 			this._script("load \"" + fileName + "\"" + params);
 			return;
 		}
-		var c = this;
-		Jmol._loadFileData(this, fileName, function(data){c._loadModel(data, params)});
+		var self = this;
+		Jmol._loadFileData(this, fileName, function(data){self._loadModel(data, params)});
 	}
 	
 	Jmol._Applet.prototype._searchDatabase = function(query, database, script){
@@ -465,11 +471,11 @@
 			this._script("load \"" + dm + "\";" + script);
 		} else {
 			// need to do the postLoad here as well
-			var c=this;
+			var self = this;
 			Jmol._getRawDataFromServer(
 				database,
 				query,
-				function(data){c._loadModel(data, ";" + script)}
+				function(data){self._loadModel(data, ";" + script)}
 			);
 		}
 	}
@@ -501,7 +507,7 @@
 			this._readyCallback(id, null, true, null);
   }
 
-	Jmol._setCommonMethods(Jmol._Image.prototype);
+	Jmol._Applet._setCommonMethods(Jmol._Image.prototype);
 
 	Jmol._Image.prototype._script = function(script) {
 		var slc = script.toLowerCase().replace(/[\",\']/g, '');

@@ -2,10 +2,11 @@
 
 // This library requires
 //
-//	json2.js 
-//	JmolCore.js
-//	gl-matrix-min.js 
+//	json2.js
 //	jQuery.min.js
+//	JmolCore.js
+//	JmolApplet.js
+//	gl-matrix-min.js 
 //	mousewheel.js 
 //	ChemDoodleWeb.js
 //
@@ -60,7 +61,7 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 
 	var _cdSetPrototype = function(proto) {
 
-		Jmol._setCommonMethods(proto);
+		Jmol._Applet._setCommonMethods(proto);
 
 		proto._create = function(id, Info, caption) {
 		  Jmol._setObject(this, id, Info);

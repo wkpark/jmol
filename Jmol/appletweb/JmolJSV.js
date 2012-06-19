@@ -74,19 +74,14 @@
 			return; // ignore -- page is closing
 		this._ready = true;
 		this._applet = applet;
-		this._readyScript && this._script(this._readyScript);
+		this._readyScript && setTimeout(this._id + "._script(" + this._id  + "._readyScript)",50);
 		this._readyFunction && this._readyFunction(this);
     Jmol._setReady(this);
 	}
 	
 	Jmol._JSVApplet.prototype._showInfo = Jmol._Applet.prototype._showInfo;
 	
-	Jmol._JSVApplet.prototype._show = function(tf) {
-		var w = (tf ? "100%" : "2px");
-		var h = (tf ? "100%" : "2px");
-		document.getElementById(this._id).style.width = w; 
-		document.getElementById(this._id).style.height = h; 
-	}
+	Jmol._JSVApplet.prototype._show = Jmol._Applet.prototype._show;
 	
 	Jmol._JSVApplet.prototype._script = function(script) {
 		if (!this._ready) {
@@ -121,8 +116,8 @@
 			this._script("load \"" + fileName + "\"" + params);
 			return;
 		}
-		var c = this;
-		Jmol._loadFileData(this, fileName, function(data){Jmol.jsvLoadInline(c, data, params)});
+		var self = this;
+		Jmol._loadFileData(this, fileName, function(data){Jmol.jsvLoadInline(self, data, params)});
 	}
 
 ////// additional API for JSpecView ////////////

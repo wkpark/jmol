@@ -270,12 +270,11 @@
 		var appId = Jmol.controls._getIdForControl(appletOrId, "x");
 		if (appId == null)
 			return "";
-		var c = Jmol.controls;
 		//_jmolInitCheck();
-		id != undefined && id != null || (id = "jmolCmd" + c._cmdCount);
+		id != undefined && id != null || (id = "jmolCmd" + Jmol.controls._cmdCount);
 		label != undefined && label != null || (label = "Execute");
 		size != undefined && !isNaN(size) || (size = 60);
-		++c._cmdCount;
+		++Jmol.controls._cmdCount;
 		var t = "<span id=\"span_"+id+"\""+(title ? " title=\"" + title + "\"":"")+"><input name='" + id + "' id='" + id +
 						"' size='"+size+"' onkeypress='Jmol.controls._commandKeyPress(event,\""+id+"\",\"" + appId + "\")'><input type=button value = '"+label+"' onclick='Jmol.controls._commandKeyPress(13,\""+id+"\",\"" + appId + "\")' /></span>";
 		if (Jmol._debugAlert)

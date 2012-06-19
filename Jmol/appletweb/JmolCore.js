@@ -158,7 +158,7 @@ Jmol = (function(document) {
 		var s = (isHeader ? "<table style=\"width:Wpx;height:Hpx\" cellpadding=\"0\" cellspacing=\"0\"><tr><td><div id=\"ID_appletinfotablediv\" style=\"width:100%;height:100%\"><div id=\"ID_appletdiv\" style=\"width:100%;height:100%\">"
 				: "</div><div id=\"ID_infotablediv\" style=\"width:100%;height:100%;display:none;position:relative\">\
 			<div id=\"ID_infoheaderdiv\" style=\"height:20px;width:100%;background:yellow\"><span id=\"ID_infoheaderspan\"></span><span id=\"ID_infocheckboxspan\" style=\"position:absolute;width:10px;right:10px\"><a href=\"javascript:Jmol.showInfo(ID,false)\">[x]</a></span></div>\
-			<div id=\"ID_infodiv\" style=\"position:absolute;top:20px;bottom:0px;width:100%;height:95%;overflow-y:scroll\"></div></div></div></td></tr></table>");
+			<div id=\"ID_infodiv\" style=\"position:absolute;top:20px;bottom:0px;width:100%;height:95%;overflow-y:scroll;overflow-x:scroll\"></div></div></div></td></tr></table>");
 		if (width.indexOf("px") >= 0)
 			s = s.replace(/width:100%/g, "width:" + width);
 		if (height.indexOf("px") >= 0)

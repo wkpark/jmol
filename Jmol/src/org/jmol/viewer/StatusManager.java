@@ -35,6 +35,8 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import javax.vecmath.Point3f;
+
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAppConsoleInterface;
 import org.jmol.api.JmolCallbackListener;
@@ -340,6 +342,13 @@ class StatusManager {
     if (notifyEnabled(EnumCallback.HOVER))
       jmolCallbackListener.notifyCallback(EnumCallback.HOVER, 
           new Object[] {sJmol, strInfo, Integer.valueOf(iatom) });
+  }
+  
+  synchronized void setStatusObjectHovered(String id, String strInfo, Point3f pt) {
+    String sJmol = jmolScriptCallback(EnumCallback.HOVER);
+    if (notifyEnabled(EnumCallback.HOVER))
+      jmolCallbackListener.notifyCallback(EnumCallback.HOVER, 
+          new Object[] {sJmol, strInfo, Integer.valueOf(-1), id, Float.valueOf(pt.x), Float.valueOf(pt.y), Float.valueOf(pt.z) });
   }
   
   synchronized void setFileLoadStatus(String fullPathName, String fileName,

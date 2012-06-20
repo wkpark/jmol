@@ -4950,7 +4950,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.modelKitMode ? 20 : global.hoverDelayMs;
   }
 
-  public void hoverOn(int x, int y, String text) {
+  public void hoverOn(int x, int y, String text, String id, Point3f pt) {
     if (!isHoverEnabled())
       return;
     // from draw for drawhover on
@@ -4963,6 +4963,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     setShapeProperty(JmolConstants.SHAPE_HOVER, "text", text);
     hoverAtomIndex = -1;
     hoverText = text;
+    if (id != null && pt != null)
+      setStatusObjectHovered(id, text, pt);
     refresh(3, "hover on point");
   }
 
@@ -5386,6 +5388,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setStatusAtomHovered(int atomIndex, String info) {
     global.setParameterValue("_atomhovered", atomIndex);
     statusManager.setStatusAtomHovered(atomIndex, info);
+  }
+
+  public void setStatusObjectHovered(String id, String info, Point3f pt) {
+    global.setParameterValue("_objecthovered", id);
+    statusManager.setStatusObjectHovered(id, info, pt);
   }
 
   /*

@@ -1471,7 +1471,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       x <<= 1;
       y <<= 1;
     }      
-    viewer.hoverOn(x, y, s);
+    viewer.hoverOn(x, y, pickedMesh.thisID + ": " + s, pickedMesh.thisID, pickedPt);
     return true;
   }
 
@@ -1505,7 +1505,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         x <<= 1;
         y <<= 1;
       }
-      viewer.hoverOn(x, y, s);
+      viewer.hoverOn(x, y, s, null, null);
     } catch (Exception e) {
       // never mind!
     }
@@ -1722,6 +1722,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
               dmin2 = d2;
               pickedContour = vc;
               pickedJ = j;
+              pickedMesh = m;
+              pickedPt = v; 
             }
           }
         }
@@ -1736,6 +1738,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
           if (d2 >= 0) {
             dmin2 = d2;
             pickedVertex = k;
+            pickedMesh = m;
+            pickedPt = v; 
           }
         }
         if (pickedVertex != -1)
@@ -1747,6 +1751,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
           if (d2 >= 0) {
             dmin2 = d2;
             pickedVertex = k;
+            pickedMesh = m;
+            pickedPt = v; 
           }
         }
         if (pickedVertex != -1)

@@ -1158,7 +1158,7 @@ public void initShape() {
         : pickedMesh.title[0]);
     if (s.length() > 1 && s.charAt(0) == '>')
       s = s.substring(1);
-    viewer.hoverOn(x, y, s);
+    viewer.hoverOn(x, y, s, pickedMesh.thisID, pickedPt);
     return true;
   }
 
@@ -1233,11 +1233,13 @@ public void initShape() {
    * 
    * @param x
    * @param y
-   * @param isPicking IGNORED
+   * @param isPicking
+   *        IGNORED
    * @param bsVisible
-   * @return  true if found
+   * @return true if found
    */
-  private boolean findPickedObject(int x, int y, boolean isPicking, BitSet bsVisible) {
+  private boolean findPickedObject(int x, int y, boolean isPicking,
+                                   BitSet bsVisible) {
     int dmin2 = MAX_OBJECT_CLICK_DISTANCE_SQUARED;
     if (g3d.isAntialiased()) {
       x <<= 1;
@@ -1250,25 +1252,27 @@ public void initShape() {
     for (int i = 0; i < meshCount; i++) {
       DrawMesh m = dmeshes[i];
       if (m.visibilityFlags != 0) {
-        int mCount = (m.isTriangleSet ? m.polygonCount 
-                : m.modelFlags == null ? 1 
-                : viewer.getModelCount());
+        int mCount = (m.isTriangleSet ? m.polygonCount
+            : m.modelFlags == null ? 1 : viewer.getModelCount());
         for (int iModel = mCount; --iModel >= 0;) {
-          if (m.modelFlags != null && !m.modelFlags.get(iModel) 
-              || m.polygonIndexes == null 
-              || !m.isTriangleSet  && (iModel >= m.polygonIndexes.length || m.polygonIndexes[iModel] == null)
-              )
+          if (m.modelFlags != null
+              && !m.modelFlags.get(iModel)
+              || m.polygonIndexes == null
+              || !m.isTriangleSet
+              && (iModel >= m.polygonIndexes.length || m.polygonIndexes[iModel] == null))
             continue;
-          for (int iVertex = (m.isTriangleSet ? 3 : m.polygonIndexes[iModel].length); --iVertex >= 0;) {
-            try{
-            int d2 = coordinateInRange(x, y, m.vertices[m.polygonIndexes[iModel][iVertex]], dmin2, ptXY);
-            
-            if (d2 >= 0) {
-              pickedMesh = m;
-              dmin2 = d2;
-              pickedModel = iModel;
-              pickedVertex = iVertex;
-            }
+          for (int iVertex = (m.isTriangleSet ? 3
+              : m.polygonIndexes[iModel].length); --iVertex >= 0;) {
+            try {
+              Point3f pt = m.vertices[m.polygonIndexes[iModel][iVertex]];
+              int d2 = coordinateInRange(x, y, pt, dmin2, ptXY);
+              if (d2 >= 0) {
+                pickedMesh = m;
+                dmin2 = d2;
+                pickedModel = iModel;
+                pickedVertex = iVertex;
+                pickedPt = pt;
+              }
             } catch (Exception e) {
               System.out.println(e);
             }

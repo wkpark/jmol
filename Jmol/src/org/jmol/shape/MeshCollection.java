@@ -67,6 +67,7 @@ public abstract class MeshCollection extends Shape {
   protected Mesh pickedMesh;
   protected int pickedModel;
   protected int pickedVertex;
+  protected Point3f pickedPt;
   
   protected int[] connections;
 

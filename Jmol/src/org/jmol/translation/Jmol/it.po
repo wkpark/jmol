@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-06-15 17:29+0200\n"
-"PO-Revision-Date: 2011-10-05 19:24+0000\n"
-"Last-Translator: Marco Buono <Unknown>\n"
+"PO-Revision-Date: 2012-06-18 10:24+0000\n"
+"Last-Translator: leonardo corato <leocor@gmail.com>\n"
 "Language-Team: Italian <it@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-12-18 14:49+0000\n"
-"X-Generator: Launchpad (build 14525)\n"
+"X-Launchpad-Export-Date: 2012-06-20 11:28+0000\n"
+"X-Generator: Launchpad (build 15435)\n"
 
 #: com/json/Cookie.java:121
 msgid "name"
@@ -107,15 +107,17 @@ msgstr "nessuna console -- tutto l'output inviato a sysout"
 
 #: org/openscience/jmol/app/JmolApp.java:165
 msgid "send only output from print messages to console (implies -i)"
-msgstr "inviare l'output di stampa solo dai messaggi alla console (implica -i)"
+msgstr ""
+"inviare l'output di stampa solo dai messaggi alla console (implica -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:167
 msgid "restrict local file access"
-msgstr ""
+msgstr "restringi l'accesso ai file locali"
 
 #: org/openscience/jmol/app/JmolApp.java:169
 msgid "restrict local file access (allow reading of SPT files)"
 msgstr ""
+"restringi l'accesso ai file locali (consentendo la lettura dei file SPT)"
 
 #: org/openscience/jmol/app/JmolApp.java:171
 msgid "independent command thread"
@@ -135,7 +137,8 @@ msgstr "file di script da eseguire o '-' per System.in"
 
 #: org/openscience/jmol/app/JmolApp.java:188
 msgid "use multitouch interface (requires \"sparshui\" parameter"
-msgstr "l'uso dell'interfaccia multitouch (richiede il parametro \"sparshui\""
+msgstr ""
+"l'uso dell'interfaccia multitouch (richiede il parametro \"sparshui\""
 
 #: org/openscience/jmol/app/JmolApp.java:195
 msgid "Jmol script to execute BEFORE -s option"
@@ -163,8 +166,8 @@ msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
 msgstr ""
-"Qualità delle immagini JPG (1-100; default 75) o compressione delle "
-"immagini  PNG (0-9; default e, compressione massima 9)"
+"Qualità delle immagini JPG (1-100; default 75) o compressione delle immagini "
+" PNG (0-9; default e, compressione massima 9)"
 
 #: org/openscience/jmol/app/JmolApp.java:239
 #, java-format
@@ -321,14 +324,12 @@ msgid "Period"
 msgstr "Periodo"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:355
-#, fuzzy
 msgid "Frame"
-msgstr "Ultimo Fotogramma"
+msgstr "Riquadro"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:355
-#, fuzzy
 msgid "Vibration"
-msgstr "Animazione"
+msgstr "Vibrazione"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:363
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:372
@@ -360,11 +361,11 @@ msgstr "Salta all'ultimo insieme dell'atomo nella raccolta"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:374
 msgid "Vibration ON"
-msgstr ""
+msgstr "Vibrazione attiva"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:375
 msgid "Vibration OFF"
-msgstr ""
+msgstr "Vibrazione disattiva"
 
 #: org/openscience/jmol/app/jmolpanel/ConsoleTextArea.java:87
 #, java-format
@@ -1141,6 +1142,8 @@ msgstr "Inserisci URL di un modello molecolare"
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1199
 msgid "Enter a four-digit PDB model ID or \"=\" and a three-digit ligand ID"
 msgstr ""
+"Inserisci un ID di quattro cifre per un modello PDB oppure \"=\" e l'ID di "
+"un lingando (legante)"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1208
 msgid ""
@@ -1148,6 +1151,9 @@ msgid ""
 "with \":\" to load from PubChem; otherwise Jmol will use the NCI/NIH "
 "Resolver."
 msgstr ""
+"Inserisci il nome o l'identificatore (SMILES, InChI, CAS)  di un composto. "
+"Anteponi \":\" per caricare da PubChem; altrimenti Jmol userà il risolutore "
+"NCI/NIH."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1375
 msgid "IO Exception:"
@@ -1213,7 +1219,8 @@ msgstr "Mostra durante Rendering"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:245
 msgid "Should POV-Ray attempt to display while rendering?"
-msgstr "Deve il POV-Ray tentare di visualizzare durante la fare di rendering?"
+msgstr ""
+"Deve il POV-Ray tentare di visualizzare durante la fare di rendering?"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:268
 msgid "width:"
@@ -1429,14 +1436,12 @@ msgid "id"
 msgstr "id"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:534
-#, fuzzy
 msgid "startup"
-msgstr "startup_script"
+msgstr "avvio"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:535
-#, fuzzy
 msgid "filename"
-msgstr "Nome file:"
+msgstr "nome del file"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:542
 msgid "startup_script"
@@ -1895,38 +1900,8 @@ msgstr "Scarica vista"
 msgid "unimplemented"
 msgstr "non implementato"
 
-#~ msgid "Get PDB file"
-#~ msgstr "Ottieni documento PDB"
-
-#~ msgid "Enter a four-digit PDB ID"
-#~ msgstr "Inserisci un ID di 4 caratteri per PDB"
-
-#~ msgid "Get MOL file by compound name or ID"
-#~ msgstr "Ottieni il file MOL dall'ID o dal nome del composto"
-
-#, fuzzy
-#~ msgid "Enter the name or identifier (SMILES, InChI, CAS) of a compound"
-#~ msgstr ""
-#~ "Inserisci il nome o il numero identificativo (SMILES, InChI, CAS) di una "
-#~ "molecola"
-
 #~ msgid "Controller"
 #~ msgstr "Controller"
-
-#~ msgid "Go to first vector in the collection"
-#~ msgstr "Vai al primo vettore nella raccolta"
-
-#~ msgid "Go to previous vector in the collection"
-#~ msgstr "Vai al vettore precedente della raccolta"
-
-#~ msgid "Play the whole collection of vectors"
-#~ msgstr "Mostra l'intera raccolta di vettori"
-
-#~ msgid "Go to next vector in the collection"
-#~ msgstr "Val al successivo vettore nella raccolta"
-
-#~ msgid "Jump to last vector in the collection"
-#~ msgstr "Salta all'ultimo vettore nella raccolta"
 
 #~ msgid "atom set"
 #~ msgstr "atom set"
@@ -1934,15 +1909,19 @@ msgstr "non implementato"
 #~ msgid "vector"
 #~ msgstr "vettore"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Vai al primo {0} nella raccolta"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Vai al precedente {0} nella raccolta"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Riproduci la collezione completa di {0}"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Vai al prossimo {0} nella raccolta"
 
@@ -1958,12 +1937,15 @@ msgstr "non implementato"
 #~ msgid "Show Selected"
 #~ msgstr "Mostra Selezionati."
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "aggiungendo {0}.spt"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "aggiungendo {0}.png"
 
+#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"
@@ -1974,12 +1956,39 @@ msgstr "non implementato"
 #~ msgid "Output Conso&le..."
 #~ msgstr "Output Conso&le..."
 
+#~ msgid "Go to previous vector in the collection"
+#~ msgstr "Vai al vettore precedente della raccolta"
+
+#~ msgid "Go to first vector in the collection"
+#~ msgstr "Vai al primo vettore nella raccolta"
+
+#~ msgid "Go to next vector in the collection"
+#~ msgstr "Val al successivo vettore nella raccolta"
+
+#~ msgid "Play the whole collection of vectors"
+#~ msgstr "Mostra l'intera raccolta di vettori"
+
+#~ msgid "Jump to last vector in the collection"
+#~ msgstr "Salta all'ultimo vettore nella raccolta"
+
 #~ msgid "Clear console button (requires restarting Jmol)"
 #~ msgstr "Pulsante pulisci console (richiede il riavvio di Jmol)"
 
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "aggiungendo JmolPopIn.js"
 
+#~ msgid "Get PDB file"
+#~ msgstr "Ottieni documento PDB"
+
+#~ msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
+#~ msgstr ""
+#~ "Inserisci il nome o il numero identificativo (SMILES, InChI, CAS) di una "
+#~ "molecola"
+
+#~ msgid "Enter a four-digit PDB ID"
+#~ msgstr "Inserisci un ID di 4 caratteri per PDB"
+
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
@@ -1995,6 +2004,9 @@ msgstr "non implementato"
 
 #~ msgid "Centered"
 #~ msgstr "Centrato"
+
+#~ msgid "Get MOL file by compound name or ID"
+#~ msgstr "Ottieni il file MOL dall'ID o dal nome del composto"
 
 #~ msgid "Wireframe"
 #~ msgstr "Wireframe"

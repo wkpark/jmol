@@ -122,7 +122,7 @@ public abstract class JmolConsole implements JmolCallbackListener, ActionListene
   public int nTab = 0;
   private String incompleteCmd;
   
-  protected String completeCommand(String thisCmd) {
+  public String completeCommand(String thisCmd) {
     if (thisCmd.length() == 0)
       return null;
     String strCommand = (nTab <= 0 || incompleteCmd == null ? thisCmd

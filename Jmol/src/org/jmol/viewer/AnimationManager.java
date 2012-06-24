@@ -69,7 +69,7 @@ class AnimationManager {
   
   private float firstFrameDelay;
   private int intAnimThread;
-  private float lastFrameDelay;
+  float lastFrameDelay = 1;
 
   void setCurrentModelIndex(int modelIndex) {
     setCurrentModelIndex(modelIndex, true);  

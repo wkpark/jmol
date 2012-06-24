@@ -81,7 +81,7 @@ class TimeoutThread extends Thread {
           viewer.timeouts.remove(name);
         if (triggered) {
           triggered = false;
-          viewer.evalStringQuiet(script + (looping ? ";\ntimeout ID \"" + name + "\";" : ""));
+          viewer.evalStringQuiet((looping ? script + ";\ntimeout ID \"" + name + "\";" : script));
         } else {
         }
         if (!looping)

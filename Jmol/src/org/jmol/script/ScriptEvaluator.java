@@ -198,7 +198,7 @@ public class ScriptEvaluator {
 
   public ScriptEvaluator(Viewer viewer) {
     this.viewer = viewer;
-    compiler = viewer.compiler;
+    this.compiler = (compiler == null ? viewer.compiler : compiler);
     definedAtomSets = viewer.definedAtomSets;
     currentThread = Thread.currentThread();
   }
@@ -511,17 +511,22 @@ public class ScriptEvaluator {
 
   public static Object evaluateExpression(Viewer viewer, Object expr) {
     // Text.formatText for MESSAGE and ECHO
+    // prior to 12.[2/3].32 was not thread-safe for compilation.
     ScriptEvaluator e = new ScriptEvaluator(viewer);
+    return (e.evaluate(expr));
+  }
+  
+  private Object evaluate(Object expr) {
     try {
       if (expr instanceof String) {
-        if (e.compileScript(null, EXPRESSION_KEY + " = " + expr, false)) {
-          e.contextVariables = viewer.getContextVariables();
-          e.setStatement(0);
-          return e.parameterExpressionString(2, 0);
+        if (compileScript(null, EXPRESSION_KEY + " = " + expr, false)) {
+          contextVariables = viewer.getContextVariables();
+          setStatement(0);
+          return parameterExpressionString(2, 0);
         }
       } else if (expr instanceof Token[]) {
-        e.contextVariables = viewer.getContextVariables();
-        return e.atomExpression((Token[]) expr, 0, 0, true, false, true, false);
+        contextVariables = viewer.getContextVariables();
+        return atomExpression((Token[]) expr, 0, 0, true, false, true, false);
       }
     } catch (Exception ex) {
       Logger.error("Error evaluating: " + expr + "\n" + ex);
@@ -1903,7 +1908,7 @@ public class ScriptEvaluator {
       setErrorMessage("io error reading " + data[0] + ": " + data[1]);
       return false;
     }
-    if (data[1].indexOf("\nJmolManifest.txt\n") > 0) {
+    if (("\n" + data[1]).indexOf("\nJmolManifest.txt\n") >= 0) {
       data[0] = filename += "|JmolManifest.txt";
       if (!viewer.getFileAsString(data, Integer.MAX_VALUE, false)) {
         setErrorMessage("io error reading " + data[0] + ": " + data[1]);
@@ -8494,6 +8499,21 @@ public class ScriptEvaluator {
       i = 0;
     } else {
       modelName = parameterAsString(i);
+      if (statementLength == 2 && !isSyntaxCheck) {
+        // spt, png, and pngj files may be
+        // run using the LOAD command, but
+        // we transfer them to the script command
+        // if it is just LOAD "xxxx.xxx"
+        // so as to avoid the ZAP in case these
+        // do not contain a full state script
+        if (modelName.endsWith(".spt") 
+            || modelName.endsWith(".png")
+            || modelName.endsWith(".pngj")) {
+          script(0, modelName, false);
+          return;
+        }
+      }
+
       // load MENU
       // load DATA "xxx" ...(data here)...END "xxx"
       // load DATA "append xxx" ...(data here)...END "append xxx"
@@ -8609,7 +8629,7 @@ public class ScriptEvaluator {
 
     // LOAD ... "xxxx"
     // LOAD ... "xxxx" AS "yyyy"
-    
+
     int filePt = i;
     String localName = null;
     if (tokAt(filePt + 1) == Token.as) {
@@ -8620,7 +8640,7 @@ public class ScriptEvaluator {
         filePt = i;
       }
     }
-    
+
     if (statementLength == i + 1) {
 
       // end-of-command options:
@@ -8651,21 +8671,16 @@ public class ScriptEvaluator {
           }
         }
       }
-    } else if (
-        getToken(i + 1).tok == Token.manifest
+    } else if (getToken(i + 1).tok == Token.manifest
         // model/vibration index or list of model indices
-        || theTok == Token.integer
-        || theTok == Token.varray 
-        || theTok == Token.leftsquare
-        || theTok == Token.spacebeforesquare
+        || theTok == Token.integer || theTok == Token.varray
+        || theTok == Token.leftsquare || theTok == Token.spacebeforesquare
         // {i j k} (lattice)
-        || theTok == Token.leftbrace 
-        || theTok == Token.point3f
+        || theTok == Token.leftbrace || theTok == Token.point3f
         // PACKED/CENTROID, either order
-        || theTok == Token.packed 
-        || theTok == Token.centroid
+        || theTok == Token.packed || theTok == Token.centroid
         // SUPERCELL {i j k}
-        || theTok == Token.supercell 
+        || theTok == Token.supercell
         // RANGE x.x or RANGE -x.x
         || theTok == Token.range
         // SPACEGROUP "nameOrNumber" 
@@ -8680,15 +8695,15 @@ public class ScriptEvaluator {
         // OFFSET {x y z}
         || theTok == Token.offset
         // FILTER "..."
-        || theTok == Token.filter && tokAt(i + 3) != Token.coord 
+        || theTok == Token.filter && tokAt(i + 3) != Token.coord
         // don't remember what this is:
         || theTok == Token.identifier && tokAt(i + 3) != Token.coord
-        
-        ) {
-      
+
+    ) {
+
       // more complicated command options, in order
       // (checking the tokens after "....") 
-      
+
       // LOAD "" --> prevous file      
 
       if ((filename = parameterAsString(filePt)).length() == 0
@@ -8699,20 +8714,19 @@ public class ScriptEvaluator {
       }
       if (filePt == i)
         i++;
-      
+
       // for whatever reason, we don't allow a filename with [] in it.
       if (filename.indexOf("[]") >= 0)
         return;
-      
+
       // MANIFEST "..."
-      
+
       if ((tok = tokAt(i)) == Token.manifest) {
         String manifest = stringParameter(++i);
         htParams.put("manifest", manifest);
         sOptions += " MANIFEST " + Escape.escape(manifest);
         tok = tokAt(++i);
       }
-
       // n >= 0: model number
       // n < 0: vibration number
       // [index1, index2, index3,...]
@@ -8733,9 +8747,9 @@ public class ScriptEvaluator {
         float[] data = floatParameterSet(i, 1, Integer.MAX_VALUE);
         i = iToken;
         BitSet bs = new BitSet();
-        for (int j = 0; j < data.length; j++) 
+        for (int j = 0; j < data.length; j++)
           if (data[j] >= 1 && data[j] == (int) data[j])
-            bs.set((int)data[j] - 1);
+            bs.set((int) data[j] - 1);
         htParams.put("bsModels", bs);
         int[] iArray = new int[bs.cardinality()];
         for (int pt = 0, j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1))
@@ -8744,7 +8758,7 @@ public class ScriptEvaluator {
         tok = tokAt(i);
         break;
       }
-      
+
       // {i j k}
 
       Point3f lattice = null;
@@ -8781,7 +8795,7 @@ public class ScriptEvaluator {
           htParams.put("packed", Boolean.TRUE);
           sOptions += " PACKED";
           i++;
-        } 
+        }
         if (tokAt(i) == Token.centroid) {
           htParams.put("centroid", Boolean.TRUE);
           sOptions += " CENTROID";
@@ -8790,7 +8804,7 @@ public class ScriptEvaluator {
             htParams.put("packed", Boolean.TRUE);
             sOptions += " PACKED";
             i++;
-          } 
+          }
         }
 
         // {i j k} ... SUPERCELL {i' j' k'}
@@ -8811,7 +8825,7 @@ public class ScriptEvaluator {
           }
           htParams.put("supercell", supercell);
         }
-        
+
         // {i j k} ... RANGE x.y  (from full unit cell set)
         // {i j k} ... RANGE -x.y (from non-symmetry set)
 
@@ -8872,7 +8886,7 @@ public class ScriptEvaluator {
         // {i j k} ... UNITCELL [a b c alpha beta gamma]
         // {i j k} ... UNITCELL [ax ay az bx by bz cx cy cz] 
         // {i j k} ... UNITCELL ""  // same as current
-        
+
         float[] fparams = null;
         if (tokAt(i) == Token.unitcell) {
           ++i;
@@ -8927,17 +8941,17 @@ public class ScriptEvaluator {
         filter = stringParameter(++i);
 
     } else {
-      
+
       // list of file names 
       // or COORD {i j k} "fileName" 
       // or COORD ({bitset}) "fileName"
       // or FILTER "xxxx"
-      
+
       if (i == 1) {
         i++;
         loadScript.append(" " + modelName);
       }
-      
+
       Point3f pt = null;
       BitSet bs = null;
       List<String> fNames = new ArrayList<String>();
@@ -8984,25 +8998,25 @@ public class ScriptEvaluator {
         filenames[j] = fNames.get(j);
       filename = "fileSet";
     }
-    
+
     // end of parsing
-    
+
     if (!doLoadFiles)
       return;
-    
+
     // get default filter if necessary
-    
+
     if (filter == null)
       filter = viewer.getDefaultLoadFilter();
     if (filter.length() > 0) {
       htParams.put("filter", filter);
-      if (filter.equalsIgnoreCase("2d"))  // MOL file hack
+      if (filter.equalsIgnoreCase("2d")) // MOL file hack
         filter = "2D-noMin";
       sOptions += " FILTER " + Escape.escape(filter);
     }
 
     // store inline data or variable data in htParams
-    
+
     boolean isVariable = false;
     if (filenames == null) {
       if (isInline) {
@@ -9017,7 +9031,7 @@ public class ScriptEvaluator {
     }
 
     // set up the output stream from AS keyword
-    
+
     OutputStream os = null;
     if (localName != null) {
       if (localName.equals("."))
@@ -9075,7 +9089,8 @@ public class ScriptEvaluator {
     }
     if (errMsg != null && !isCmdLine_c_or_C_Option) {
       if (errMsg.indexOf(JmolConstants.NOTE_SCRIPT_FILE) == 0) {
-        filename = errMsg.substring(JmolConstants.NOTE_SCRIPT_FILE.length()).trim();
+        filename = errMsg.substring(JmolConstants.NOTE_SCRIPT_FILE.length())
+            .trim();
         script(0, filename, false);
         return;
       }
@@ -9091,8 +9106,10 @@ public class ScriptEvaluator {
       scriptStatusOrBuffer("Successfully loaded:"
           + (filenames == null ? htParams.get("fullPathName") : modelName));
     Map<String, Object> info = viewer.getModelSetAuxiliaryInfo();
-    if (info != null && info.containsKey("centroidMinMax") && viewer.getAtomCount() > 0)
-      viewer.setCentroid(isAppend ? atomCount0 : 0, viewer.getAtomCount() - 1, (int[]) info.get("centroidMinMax"));
+    if (info != null && info.containsKey("centroidMinMax")
+        && viewer.getAtomCount() > 0)
+      viewer.setCentroid(isAppend ? atomCount0 : 0, viewer.getAtomCount() - 1,
+          (int[]) info.get("centroidMinMax"));
     String script = viewer.getDefaultLoadScript();
     String msg = "";
     if (script.length() > 0)
@@ -9106,7 +9123,7 @@ public class ScriptEvaluator {
         script = "allowEmbeddedScripts = false;try{" + script
             + "} allowEmbeddedScripts = true;";
       }
-      
+
     }
     logLoadInfo(msg);
 
@@ -14152,10 +14169,12 @@ public class ScriptEvaluator {
       type = "FILE";
       pt++;
       break;
-    case Token.image:
-    case Token.identifier:
-    case Token.string:
     case Token.frame:
+    case Token.identifier:
+    case Token.image:
+    case Token.menu:
+    case Token.scene:
+    case Token.string:
     case Token.vibration:
       type = ScriptVariable.sValue(tokenAt(pt, args)).toLowerCase();
       if (tok == Token.image) {
@@ -14193,6 +14212,9 @@ public class ScriptEvaluator {
         pt++;
       } else if (type.equals("zipall")) {
         type = "ZIPALL";
+        pt++;
+      } else if (type.equals("scene")) {
+        type = "SCENE";
         pt++;
       } else {
         type = "(image)";
@@ -14309,7 +14331,7 @@ public class ScriptEvaluator {
         else
           type = "XYZ";
       }
-      isImage = Parser.isOneOf(type, "GIF;JPEG64;JPEG;JPG64;JPG;PPM;PNG;PNGJ;PNGT");
+      isImage = Parser.isOneOf(type, "GIF;JPEG64;JPEG;JPG64;JPG;PPM;PNG;PNGJ;PNGT;SCENE");
       if (scripts != null) {
         if (type.equals("PNG"))
           type = "PNGJ";
@@ -14323,7 +14345,7 @@ public class ScriptEvaluator {
           && !Parser
               .isOneOf(
                   type,
-                  "JMOL;ZIP;ZIPALL;SPT;HIS;MO;ISO;ISOX;MESH;PMESH;VAR;FILE;FUNCS;CD;CML;XYZ;XYZRN;XYZVIB;MENU;MOL;PDB;PGRP;PQR;QUAT;RAMA;SDF;V2000;V3000;"))
+                  "SCENE;JMOL;ZIP;ZIPALL;SPT;HIS;MO;ISO;ISOX;MESH;PMESH;VAR;FILE;FUNCS;CD;CML;XYZ;XYZRN;XYZVIB;MENU;MOL;PDB;PGRP;PQR;QUAT;RAMA;SDF;V2000;V3000;"))
         error(
             ERROR_writeWhat,
             "COORDS|FILE|FUNCTIONS|HISTORY|IMAGE|ISOSURFACE|JMOL|MENU|MO|POINTGROUP|QUATERNION [w,x,y,z] [derivative]"
@@ -14489,6 +14511,7 @@ public class ScriptEvaluator {
     return "";
   }
 
+  
   private void show() throws ScriptException {
     String value = null;
     String str = parameterAsString(1);
@@ -18415,7 +18438,7 @@ public class ScriptEvaluator {
    * @param strDecimal
    * @return float encoded as an integer
    */
-  public static int getFloatEncodedInt(String strDecimal) {
+  static int getFloatEncodedInt(String strDecimal) {
     int pt = strDecimal.indexOf(".");
     if (pt < 1 || strDecimal.charAt(0) == '-'
         || strDecimal.endsWith(".") 
@@ -18449,19 +18472,19 @@ public class ScriptEvaluator {
    * @param bondOrderInteger
    * @return Bond order partial mask
    */
-  public final static int getPartialBondOrderFromFloatEncodedInt(
+  static int getPartialBondOrderFromFloatEncodedInt(
                                                  int bondOrderInteger) {
     return (((bondOrderInteger / 1000000) % 6) << 5)
         + ((bondOrderInteger % 1000000) & 0x1F);
   }
 
-  public final static int getBondOrderFromString(String s) {
+  static int getBondOrderFromString(String s) {
     return (s.indexOf(' ') < 0 ? JmolEdge.getBondOrderFromString(s)
         : s.toLowerCase().indexOf("partial ") == 0 ? getPartialBondOrderFromString(s
             .substring(8).trim()) : JmolEdge.BOND_ORDER_NULL);
   }
 
-  public static int getPartialBondOrderFromString(String s) {
+  private static int getPartialBondOrderFromString(String s) {
     return getPartialBondOrderFromFloatEncodedInt(getFloatEncodedInt(s));
   }
 

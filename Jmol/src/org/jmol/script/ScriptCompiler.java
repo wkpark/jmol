@@ -89,27 +89,9 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
   
   private ScriptFunction thisFunction;
   
- 
-  /**
-   * return a structure that is only the first part of the process - identifying lines and commands
-   * for the scriptEditor
-   * 
-   * @param script
-   * @return        ScriptContext
-   */
-  
-  ScriptContext parseScriptForTokens(String script) {
-    this.script = script;
-    filename = null;
-    isCheckOnly = true;
-    isSilent = true;
-    logMessages = false;
-    preDefining = false;
-    return parseScript(false);
-  }
- 
   private ScriptContext parseScript(boolean doFull) {
-    if (!compile0(doFull))
+    boolean isOK = compile0(doFull);
+    if (!isOK)
       handleError();
     ScriptContext sc = new ScriptContext();
     sc.script = script;
@@ -129,7 +111,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     return sc;
   }
 
-  ScriptContext compile(String filename, String script, boolean isPredefining,
+  synchronized ScriptContext compile(String filename, String script, boolean isPredefining,
                   boolean isSilent, boolean debugScript, boolean isCheckOnly) {
     this.isCheckOnly = isCheckOnly;
     this.filename = filename;
@@ -283,7 +265,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         viewer.setStateScriptVersion(script.substring(
             ichToken + Viewer.STATE_VERSION_STAMP.length(), ptSemi).trim());
     }
-    cchScript = this.script.length();
+    cchScript = script.length();
 
     // these four will be returned:
     contextVariables = null;

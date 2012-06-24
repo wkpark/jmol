@@ -1229,15 +1229,21 @@ public class FileManager {
   Object createZipSet(String fileName, String script, String[] scripts, boolean includeRemoteFiles) {
     List<Object> v = new ArrayList<Object>();
     List<String> fileNames = new ArrayList<String>();
-    getFileReferences(script, fileNames);
-    boolean haveScripts = (scripts != null && scripts.length > 0);
+    boolean haveSceneScript = (scripts != null && scripts.length == 3 
+        && scripts[1].startsWith("###scene.spt###"));
+    boolean sceneScriptOnly = (haveSceneScript && scripts[2].equals("min"));
+    if (!sceneScriptOnly) {
+      getFileReferences(script, fileNames);
+      if (haveSceneScript)
+        getFileReferences(scripts[1], fileNames);
+    }
+    boolean haveScripts = (!haveSceneScript && scripts != null && scripts.length > 0);
     if (haveScripts) {
       String vname = "v__" + ("" + Math.random()).substring(3);
       script = "# Jmol script\n{\n\tVar " + vname + " = pathForAllFiles\n\tpathForAllFiles=\"$SCRIPT_PATH$\"\n\ttry {\n\t\tscript " + Escape.escape(scripts[0]) + "\n\t}\n\tpathForAllFiles = " + vname + "\n}\n";
       for (int i = 0; i < scripts.length; i++)
         fileNames.add(scripts[i]);
     }
-    //System.out.println("F2M " + script);
     int nFiles = fileNames.size();
     if (fileName != null)
       fileName = fileName.replace('\\', '/');
@@ -1254,9 +1260,12 @@ public class FileManager {
       boolean isLocal = (itype < 0 || itype == URL_LOCAL);
       if (isLocal || includeRemoteFiles) {
         v.add(name);
-        String newName = "$SCRIPT_PATH$" + stripPath(name);
+        String newName = name;
         if (newName.indexOf("?") > 0)
-          newName = newName.substring(0, newName.indexOf("?")).trim();
+          newName = TextFormat.replaceAllCharacters(newName, "/:?\"'=&", "_");
+        else
+          newName = stripPath(name);
+        v.add(newName);
         if (isLocal && name.indexOf("|") < 0) {
           v.add(null); // data will be gotten from disk
         } else {
@@ -1265,30 +1274,47 @@ public class FileManager {
             return ret;
           v.add(ret);
         }
-        name = newName;
+        name = "$SCRIPT_PATH$" + newName;
       }
       newFileNames.add(name);
     }
-    String sname = "state.spt";
+    if (!sceneScriptOnly) {
+      script = TextFormat.replaceQuotedStrings(script, fileNames, newFileNames);
+      v.add("state.spt");
+      v.add(null);
+      v.add(script.getBytes());
+    }
+    if (haveSceneScript) {
+      if (scripts[0] != null) {
+        v.add("animate.spt");
+        v.add(null);
+        v.add(scripts[0].getBytes());
+      }
+      v.add("scene.spt");
+      v.add(null);
+      script = TextFormat.replaceQuotedStrings(scripts[1], fileNames, newFileNames);
+      v.add(script.getBytes());
+    }
+    String sname = (haveSceneScript ? "scene.spt" : "state.spt");
     v.add("JmolManifest.txt");
+    v.add(null);
     String sinfo = "# Jmol Manifest Zip Format 1.1\n" + "# Created "
         + DateFormat.getDateInstance().format(new Date()) + "\n"
         + "# JmolVersion " + Viewer.getJmolVersion() + "\n" + sname;
     v.add(sinfo.getBytes());
-    script = TextFormat.replaceQuotedStrings(script, fileNames, newFileNames);
-    v.add(sname);
-    v.add(script.getBytes());
     v.add("Jmol_version_" + Viewer.getJmolVersion().replace(' ','_').replace(':','.'));
+    v.add(null);
     v.add(new byte[0]);
     if (fileRoot != null) {
       Object bytes = viewer.getImageAs("PNG", -1, -1, -1, null, null, null,
           JmolConstants.embedScript(script));
       if (bytes instanceof byte[]) {
         v.add("preview.png");
+        v.add(null);
         v.add(bytes);
       }
     }
-    return writeZipFile(fileName, v, false, "OK JMOL");
+    return writeZipFile(fileName, v, "OK JMOL");
   }
 
   private static String stripPath(String name) {
@@ -1304,17 +1330,16 @@ public class FileManager {
    *        or null to return byte[]
    * @param fileNamesAndByteArrays
    *        Vector of [filename1, bytes|null, filename2, bytes|null, ...]
-   * @param preservePath
    * @param msg
    * @return msg bytes filename or errorMessage or byte[]
    */
   private Object writeZipFile(String outFileName,
                               List<Object> fileNamesAndByteArrays,
-                              boolean preservePath, String msg) {
+                              String msg) {
     byte[] buf = new byte[1024];
     long nBytesOut = 0;
     long nBytes = 0;
-    Logger.info("creating zip file " + outFileName + "...");
+    Logger.info("creating zip file " + (outFileName == null ? "" : outFileName) + "...");
     String fullFilePath = null;
     String fileList = "";
     try {
@@ -1323,7 +1348,7 @@ public class FileManager {
           : null);
       ZipOutputStream os = new ZipOutputStream(
           bos == null ? (OutputStream) new FileOutputStream(outFileName) : bos);
-      for (int i = 0; i < fileNamesAndByteArrays.size(); i += 2) {
+      for (int i = 0; i < fileNamesAndByteArrays.size(); i += 3) {
         String fname = (String) fileNamesAndByteArrays.get(i);
         byte[] bytes = null;
         if (fname.indexOf("file:/") == 0) {
@@ -1334,13 +1359,11 @@ public class FileManager {
           fname = fname.substring(8);
           bytes = viewer.cacheGet(fname).getBytes();
         }
+        String fnameShort = (String) fileNamesAndByteArrays.get(i + 1);
+        if (fnameShort == null)
+          fnameShort = fname;
         if (bytes == null)
-          bytes = (byte[]) fileNamesAndByteArrays.get(i + 1);
-        String fnameShort = fname;
-        if (!preservePath || fname.indexOf("|") >= 0) {
-          int pt = Math.max(fname.lastIndexOf("|"), fname.lastIndexOf("/"));
-          fnameShort = fnameShort.substring(pt + 1);
-        }
+          bytes = (byte[]) fileNamesAndByteArrays.get(i + 2);
         String key = ";" + fnameShort + ";";
         if (fileList.indexOf(key) >= 0) {
           Logger.info("duplicate entry");

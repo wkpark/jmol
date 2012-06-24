@@ -8899,6 +8899,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
             type = "ZIPALL";
           err = fileManager.createZipSet(fileName, (String) text_or_bytes, scripts, type
               .equals("ZIPALL"));
+        } else if (type.equals("SCENE")) {
+          err = createSceneSet(fileName, width, height);
         } else {
           // see if application wants to do it (returns non-null String)
           // both Jmol application and applet return null
@@ -10505,6 +10507,118 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public String getPathForAllFiles() {
     return fileManager.getPathForAllFiles(); 
+  }
+
+
+  /**
+   *
+   * @param sceneFile
+   * @param width
+   * @param height
+   * @return  "OK" or error
+   */
+  private String createSceneSet(String sceneFile, int width, int height) {
+    
+    String sceneFileSource = TextFormat.simpleReplace(
+        TextFormat.simpleReplace(sceneFile, ".png", ".spt"), ".pngj", ".spt");
+    String script0 = getFileAsString(sceneFileSource);
+    if (script0 == null)
+      return "no such file: " + sceneFileSource;
+    if (sceneFile.indexOf(".png") < 0)
+      sceneFile += ".pngj";
+    // no ".spt.png" -- that's for the sceneScript-only version
+    // that we will create here.
+    sceneFile = TextFormat.simpleReplace(sceneFile, ".spt.png", ".png");
+    String fileRoot = TextFormat.split(sceneFile, ".png")[0];
+    String fileExt = (sceneFile.endsWith(".pngj") ? "j" : "");
+    
+    // extract scenes based on "pause scene ..." commands
+    String[] scenes = TextFormat.split(script0, "pause scene ");
+    Map<String, String> htScenes = new Hashtable<String, String>();
+    List<Integer> list = new ArrayList<Integer>();
+    int iSceneLast = 0;
+    StringBuffer sceneScript = new StringBuffer("###scene.spt###\n{\nsceneScripts={");
+    for (int i = 1; i < scenes.length; i++) {
+      scenes[i - 1] = TextFormat.trim(scenes[i - 1], "\t\n\r ");
+      int[] pt = new int[1];
+      int iScene = Parser.parseInt(scenes[i], pt);
+      if (iScene == Integer.MIN_VALUE)
+        return "bad scene ID: " + iScene;
+      scenes[i] = scenes[i].substring(pt[0]);
+      list.add(Integer.valueOf(iScene));
+      String key = iSceneLast + "-" + iScene;
+      htScenes.put(key, scenes[i - 1]);
+      if (i > 1)
+        sceneScript.append(",");
+      sceneScript.append('\n')
+        .append(Escape.escape(key))
+        .append(": ")
+        .append(Escape.escape(scenes[i - 1]));
+      iSceneLast = iScene;
+    }
+    sceneScript.append("\n}\n");
+    if (list.size() == 0) 
+      return "no lines 'pause scene n'";
+    
+    sceneScript
+      .append("\nthisSceneRoot = '$SCRIPT_PATH$'.split('_scene_')[1];\n")
+      .append("thisSceneID = 0 + ('$SCRIPT_PATH$'.split('_scene_')[2]).split('.')[1];\n")
+      .append("var thisSceneState = '$SCRIPT_PATH$'.replace('.min.png','.all.png') + 'state.spt';\n")
+      .append("var spath = ''+currentSceneID+'-'+thisSceneID;\n")
+      .append("print thisSceneRoot + ' ' + spath;\n")
+      .append("var sscript = sceneScripts[spath];\n")
+      .append("var isOK = true;\n")
+    	.append("try{\n")
+    	.append("if (thisSceneRoot != currentSceneRoot){\n")
+      .append(" isOK = false;\n")
+    	.append("} else if (sscript != '') {\n")
+      .append(" isOK = true;\n")
+    	.append("} else if (thisSceneID <= currentSceneID){\n")
+      .append(" isOK = false;\n")
+      .append("} else {\n")
+      .append(" sscript = '';\n")
+      .append(" for (var i = currentSceneID; i < thisSceneID; i++){\n")
+      .append("  var key = ''+i+'-'+(i + 1); var script = sceneScripts[key];\n")
+      .append("  if (script = '') {isOK = false;break;}\n")
+      .append("  sscript += ';'+script;\n")
+      .append(" }\n")
+      .append("}\n}catch(e){print e;isOK = false}\n")
+      .append("if (isOK) {try{script inline @sscript}catch(e){print e;isOK = false}}\n")
+      .append("if (!isOK){script @thisSceneState}\n")
+      .append("currentSceneRoot = thisSceneRoot; currentSceneID = thisSceneID;\n}\n");
+    String script = sceneScript.toString();
+    Logger.debug(script);
+    script0 = TextFormat.simpleReplace(script0, "pause scene", "delay " 
+        + animationManager.lastFrameDelay + " # scene");
+    String[] str = new String[] { script0, script, null };
+    saveState("_scene0");
+    int nFiles = 0;
+    if (scenes[0] != "")
+      zap(true, true, false);
+    for (int i = 0; i < scenes.length - 1; i++) {
+      try {
+        eval.runScript(scenes[i]);
+        str[2] = "all"; // full PNGJ
+        String fileName = fileRoot + "_scene_" + (i + 1) + ".all.png" + fileExt;
+        String msg = (String) createImage(fileName, "PNGJ", null, 
+            str, -1, width, height, null, false);
+        str[0] = null; // script0 only saved in first file
+        str[2] = "min"; // script only -- for fast loading
+        fileName = fileRoot + "_scene_" + (i + 1) + ".min.png" + fileExt;
+        msg += "\n" + (String) createImage(fileName, "PNGJ", null, 
+            str, -1, Math.min(width, 200), Math.min(height, 200), null, false);
+        showString(msg, false);
+        nFiles += 2;
+      } catch (Exception e) {
+        return "script error " + e.getMessage();
+      }
+    }
+    try {
+      eval.runScript(getSavedState("_scene0"));
+    } catch (Exception e) {
+      // ignore
+    }
+    return "OK " + nFiles + " files created";
   }
 
 }

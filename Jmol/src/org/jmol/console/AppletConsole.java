@@ -369,11 +369,6 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
       input.requestFocus();
   }
 
-  @Override
-  protected String completeCommand(String thisCmd) {
-    return super.completeCommand(thisCmd);
-  }
-  
   class ControlEnterTextArea extends JTextArea {
     @SuppressWarnings("deprecation")
     @Override

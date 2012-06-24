@@ -486,7 +486,8 @@ public class Mesh extends MeshSurface {
     info.put("vertexCount", Integer.valueOf(vertexCount));
     info.put("polygonCount", Integer.valueOf(polygonCount));
     info.put("haveQuads", Boolean.valueOf(haveQuads));
-    info.put("vertices", ArrayUtil.setLength(vertices, vertexCount));
+    if (vertexCount > 0)
+      info.put("vertices", ArrayUtil.setLength(vertices, vertexCount));
     if (vertexValues != null)
       info.put("vertexValues", ArrayUtil.setLength(vertexValues, vertexCount));
     if (polygonCount > 0)

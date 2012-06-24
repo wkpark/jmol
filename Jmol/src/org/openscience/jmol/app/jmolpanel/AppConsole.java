@@ -753,11 +753,6 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
   }
 
   @Override
-  protected String completeCommand(String thisCmd) {
-    return super.completeCommand(thisCmd);
-  }
-
-  @Override
   public String getText() {
     return console.getText();
   }

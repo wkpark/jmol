@@ -198,5 +198,211 @@
 		}
 	}
 
+	c._getButton = function(appletOrId, script, label, id, title) {
+		var c = Jmol.controls;
+		var appId = c._getIdForControl(appletOrId, script);
+		if (appId == null)
+			return "";
+		var c = Jmol.controls;
+		//_jmolInitCheck();
+		id != undefined && id != null || (id = "jmolButton" + c._buttonCount);
+		label != undefined && label != null || (label = script.substring(0, 32));
+		++c._buttonCount;
+		var scriptIndex = c._addScript(appId, script);
+		var t = "<span id=\"span_"+id+"\""+(title ? " title=\"" + title + "\"":"")+"><input type='button' name='" + id + "' id='" + id +
+						"' value='" + label +
+						"' onclick='Jmol.controls._click(this," + scriptIndex +
+						")' onmouseover='Jmol.controls._mouseOver(" + scriptIndex +
+						");return true' onmouseout='Jmol.controls._mouseOut()' " +
+						c._buttonCssText + " /></span>";
+		if (Jmol._debugAlert)
+			alert(t);
+		return Jmol._documentWrite(t);
+	}
 
+	c._getCheckbox = function(appletOrId, scriptWhenChecked, scriptWhenUnchecked,
+			labelHtml, isChecked, id, title) {
+
+		var c = Jmol.controls;
+
+		var appId = c._getIdForControl(appletOrId, scriptWhenChecked);
+		if (appId != null)
+			appId = c._getIdForControl(appletOrId, scriptWhenUnchecked);
+		if (appId == null)
+			return "";
+
+		//_jmolInitCheck();
+		id != undefined && id != null || (id = "jmolCheckbox" + c._checkboxCount);
+		++c._checkboxCount;
+		if (scriptWhenChecked == undefined || scriptWhenChecked == null ||
+				scriptWhenUnchecked == undefined || scriptWhenUnchecked == null) {
+			alert("jmolCheckbox requires two scripts");
+			return;
+		}
+		if (labelHtml == undefined || labelHtml == null) {
+			alert("jmolCheckbox requires a label");
+			return;
+		}
+		var indexChecked = c._addScript(appId, scriptWhenChecked);
+		var indexUnchecked = c._addScript(appId, scriptWhenUnchecked);
+		var eospan = "</span>"
+		var t = "<span id=\"span_"+id+"\""+(title ? " title=\"" + title + "\"":"")+"><input type='checkbox' name='" + id + "' id='" + id +
+						"' onclick='Jmol.controls._cbClick(this," +
+						indexChecked + "," + indexUnchecked +
+						")' onmouseover='Jmol.controls._cbOver(this," + indexChecked + "," +
+						indexUnchecked +
+						");return true' onmouseout='Jmol.controls._mouseOut()' " +
+			(isChecked ? "checked='true' " : "")+ c._checkboxCssText + " />"
+		if (labelHtml.toLowerCase().indexOf("<td>")>=0) {
+			t += eospan
+			eospan = "";
+		}
+		t += "<label for=\"" + id + "\">" + labelHtml + "</label>" +eospan;
+		if (Jmol._debugAlert)
+			alert(t);
+		return Jmol._documentWrite(t);
+	}
+
+	c._getCommandInput = function(appletOrId, label, size, id, title) {
+		var c = Jmol.controls;
+		var appId = c._getIdForControl(appletOrId, "x");
+		if (appId == null)
+			return "";
+		//_jmolInitCheck();
+		id != undefined && id != null || (id = "jmolCmd" + c._cmdCount);
+		label != undefined && label != null || (label = "Execute");
+		size != undefined && !isNaN(size) || (size = 60);
+		++c._cmdCount;
+		var t = "<span id=\"span_"+id+"\""+(title ? " title=\"" + title + "\"":"")+"><input name='" + id + "' id='" + id +
+						"' size='"+size+"' onkeypress='Jmol.controls._commandKeyPress(event,\""+id+"\",\"" + appId + "\")'><input type=button value = '"+label+"' onclick='Jmol.controls._commandKeyPress(13,\""+id+"\",\"" + appId + "\")' /></span>";
+		if (Jmol._debugAlert)
+			alert(t);
+		return Jmol._documentWrite(t);
+	}
+
+	c._getLink = function(appletOrId, script, label, id, title) {
+		var c = Jmol.controls;
+		var appId = c._getIdForControl(appletOrId, script);
+		if (appId == null)
+			return "";
+		//_jmolInitCheck();
+		id != undefined && id != null || (id = "jmolLink" + c._linkCount);
+		label != undefined && label != null || (label = script.substring(0, 32));
+		++c._linkCount;
+		var scriptIndex = c._addScript(appId, script);
+		var t = "<span id=\"span_"+id+"\""+(title ? " title=\"" + title + "\"":"")+"><a name='" + id + "' id='" + id +
+						"' href='javascript:Jmol.controls._click(this," + scriptIndex + ");' onmouseover='Jmol.controls._mouseOver(" + scriptIndex +
+						");return true;' onmouseout='Jmol.controls._mouseOut()' " +
+						c._linkCssText + ">" + label + "</a></span>";
+		if (Jmol._debugAlert)
+			alert(t);
+		return Jmol._documentWrite(t);
+	}
+
+	c._getMenu = function(appletOrId, arrayOfMenuItems, size, id, title) {
+		var c = Jmol.controls;
+		var appId = c._getIdForControl(appletOrId, null);
+		var optgroup = null;
+		//_jmolInitCheck();
+		id != undefined && id != null || (id = "jmolMenu" + c._menuCount);
+		++c._menuCount;
+		var type = typeof arrayOfMenuItems;
+		if (type != null && type == "object" && arrayOfMenuItems.length) {
+			var len = arrayOfMenuItems.length;
+			if (typeof size != "number" || size == 1)
+				size = null;
+			else if (size < 0)
+				size = len;
+			var sizeText = size ? " size='" + size + "' " : "";
+			var t = "<span id=\"span_"+id+"\""+(title ? " title=\"" + title + "\"":"")+"><select name='" + id + "' id='" + id +
+							"' onChange='Jmol.controls._menuSelected(this,\"" + appId + "\")'" +
+							sizeText + c._menuCssText + ">";
+			for (var i = 0; i < len; ++i) {
+				var menuItem = arrayOfMenuItems[i];
+				type = typeof menuItem;
+				var script = null;
+				var text = null;
+				var isSelected = null;
+				if (type == "object" && menuItem != null) {
+					script = menuItem[0];
+					text = menuItem[1];
+					isSelected = menuItem[2];
+				} else {
+					script = text = menuItem;
+				}
+				appId = c._getIdForControl(appletOrId, script);
+				if (appId == null)
+					return "";
+				text == null && (text = script);
+				if (script=="#optgroup") {
+					t += "<optgroup label='" + text + "'>";
+				} else if (script=="#optgroupEnd") {
+					t += "</optgroup>";
+				} else {
+					var scriptIndex = c._addScript(appId, script);
+					var selectedText = isSelected ? "' selected='true'>" : "'>";
+					t += "<option value='" + scriptIndex + selectedText + text + "</option>";
+				}
+			}
+			t += "</select></span>";
+			if (Jmol._debugAlert)
+				alert(t);
+			return Jmol._documentWrite(t);
+		}
+	}
+	
+	c._getRadio = function(appletOrId, script, labelHtml, isChecked, separatorHtml, groupName, id, title) {
+		//_jmolInitCheck();
+		var c = Jmol.controls;
+		if (c._radioGroupCount == 0)
+			++c._radioGroupCount;
+		var t = c._getRadio(appletOrId, script, labelHtml, isChecked, separatorHtml, groupName, (id ? id : groupName + "_" + Jmol._radioCount), title ? title : 0);
+		if (t == null)
+			return "";
+		if (Jmol._debugAlert)
+			alert(t);
+		return Jmol._documentWrite(t);
+	}
+	
+	c._getRadioGroup = function(appletOrId, arrayOfRadioButtons, separatorHtml, groupName, id, title) {
+		/*
+	
+			array: [radio1,radio2,radio3...]
+			where radioN = ["script","label",isSelected,"id","title"]
+	
+		*/
+	
+		//_jmolInitCheck();
+		var type = typeof arrayOfRadioButtons;
+		if (type != "object" || type == null || ! arrayOfRadioButtons.length) {
+			alert("invalid arrayOfRadioButtons");
+			return;
+		}
+		var c = Jmol.controls;
+		separatorHtml != undefined && separatorHtml != null || (separatorHtml = "&nbsp; ");
+		var len = arrayOfRadioButtons.length;
+		++c._radioGroupCount;
+		groupName || (groupName = "jmolRadioGroup" + (c._radioGroupCount - 1));
+		var t = "<span id='"+(id ? id : groupName)+"'>";
+		for (var i = 0; i < len; ++i) {
+			if (i == len - 1)
+				separatorHtml = "";
+			var radio = arrayOfRadioButtons[i];
+			type = typeof radio;
+			var s = null;
+			if (type == "object") {
+				t += (s = c._getRadio(appletOrId, radio[0], radio[1], radio[2], separatorHtml, groupName, (radio.length > 3 ? radio[3]: (id ? id : groupName)+"_"+i), (radio.length > 4 ? radio[4] : 0), title));
+			} else {
+				t += (s = c._getRadio(appletOrId, radio, null, null, separatorHtml, groupName, (id ? id : groupName)+"_"+i, title));
+			}
+			if (s == null)
+			  return "";
+		}
+		t+="</span>"
+		if (Jmol._debugAlert)
+			alert(t);
+		return Jmol._documentWrite(t);
+	}
+	
+	
 })(Jmol);

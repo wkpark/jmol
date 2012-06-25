@@ -54,6 +54,8 @@ import javax.vecmath.Point3f;
  *
  * @author Miguel, Egon, and Bob (hansonr@stolaf.edu)
  * 
+ * pqr and gromacs pdb_wide_format added by Bob 
+ * 
  * symmetry added by Bob Hanson:
  * 
  *  setFractionalCoordinates()
@@ -80,6 +82,8 @@ public class PdbReader extends AtomSetCollectionReader {
   private boolean isConnectStateBug;
   private boolean isLegacyModelType;
 
+  private boolean gromacsWideFormat;
+  protected boolean isPQR;
   
   private final Map<String, Map<String, Boolean>> htFormul = new Hashtable<String, Map<String, Boolean>>();
   private Map<String, String> htHetero;
@@ -254,6 +258,14 @@ public class PdbReader extends AtomSetCollectionReader {
       formul();
       return true;
     case 17:
+      if (line.contains("The B-factors in this file hold atomic radii")) {
+        isPQR = true;
+        return true;
+      }
+      if (line.contains("This file does not adhere to the PDB standard")) {
+        gromacsWideFormat = true;
+        return true;
+      }
       if (line.startsWith("REMARK 350")) {
         remark350();
         return false;
@@ -631,9 +643,14 @@ REMARK 290 REMARK: NULL
         }
       }
     }
-  }
-
+  } 
   
+  // Gromacs pdb_wide_format:
+  //%-6s%5u %-4.4s %3.3s %c%4d%c   %10.5f%10.5f%10.5f%8.4f%8.4f    %2s\n")
+  //0         1         2         3         4         5         6         7
+  //01234567890123456789012345678901234567890123456789012345678901234567890123456789
+  //aaaaaauuuuu ssss sss cnnnnc   xxxxxxxxxxyyyyyyyyyyzzzzzzzzzzccccccccrrrrrrrr
+ 
   private void atom(int serial) {
     Atom atom = new Atom();
     atom.atomName = line.substring(12, 16).trim();
@@ -660,7 +677,8 @@ REMARK 290 REMARK: NULL
         currentResno = Integer.MIN_VALUE;
         htElementsInCurrentGroup = null;
       }
-    } else if (!atom.group3.equals(currentGroup3) || atom.sequenceNumber != currentResno) {
+    } else if (!atom.group3.equals(currentGroup3)
+        || atom.sequenceNumber != currentResno) {
       currentGroup3 = atom.group3;
       currentResno = atom.sequenceNumber;
       htElementsInCurrentGroup = htFormul.get(atom.group3);
@@ -668,32 +686,33 @@ REMARK 290 REMARK: NULL
       if (atom.group3.equals("UNK"))
         nUNK++;
     }
-    //calculate the charge from cols 79 & 80 (1-based): 2+, 3-, etc
-    int charge = 0;
-    if (lineLength >= 80) {
-      char chMagnitude = line.charAt(78);
-      char chSign = line.charAt(79);
-      if (chSign >= '0' && chSign <= '7') {
-        char chT = chSign;
-        chSign = chMagnitude;
-        chMagnitude = chT;
+
+    if (gromacsWideFormat) {
+      setAtomCoord(atom, parseFloat(line, 30, 40), parseFloat(line, 40, 50),
+          parseFloat(line, 50, 60));
+    } else {
+      //calculate the charge from cols 79 & 80 (1-based): 2+, 3-, etc
+      int charge = 0;
+      if (lineLength >= 80) {
+        char chMagnitude = line.charAt(78);
+        char chSign = line.charAt(79);
+        if (chSign >= '0' && chSign <= '7') {
+          char chT = chSign;
+          chSign = chMagnitude;
+          chMagnitude = chT;
+        }
+        if ((chSign == '+' || chSign == '-' || chSign == ' ')
+            && chMagnitude >= '0' && chMagnitude <= '7') {
+          charge = chMagnitude - '0';
+          if (chSign == '-')
+            charge = -charge;
+        }
       }
-      if ((chSign == '+' || chSign == '-' || chSign == ' ')
-          && chMagnitude >= '0' && chMagnitude <= '7') {
-        charge = chMagnitude - '0';
-        if (chSign == '-')
-          charge = -charge;
-      }
+      atom.formalCharge = charge;
+      setAtomCoord(atom, parseFloat(line, 30, 38), parseFloat(line, 38, 46),
+          parseFloat(line, 46, 54));
     }
-    atom.formalCharge = charge;
-
-    setAtomCoord(atom, parseFloat(line, 30, 38), parseFloat(line, 38, 46),
-        parseFloat(line, 46, 54));
-
     setAdditionalAtomParameters(atom);
-
-    lastAtomData = line.substring(6, 26);
-    lastAtomIndex = atomSetCollection.getAtomCount();
     if (haveMappedSerials)
       atomSetCollection.addAtomWithMappedSerialNumber(atom);
     else
@@ -708,6 +727,8 @@ REMARK 290 REMARK: NULL
       }
     }
   }
+  
+  
 
   @Override
   protected boolean filterAtom(Atom atom, int iAtom) {
@@ -749,19 +770,41 @@ REMARK 290 REMARK: NULL
    * @param atom
    */
   protected void setAdditionalAtomParameters(Atom atom) {
+    if (isPQR) {
+      if (gromacsWideFormat) {
+        atom.partialCharge = parseFloat(line.substring(60, 68));
+        atom.radius = fixRadius(parseFloat(line.substring(68, 76)));
+      } else {
+        String[] tokens = getTokens();
+        int pt = tokens.length - 2 - (line.length() > 75 ? 1 : 0);
+        atom.partialCharge = parseFloat(tokens[pt++]);
+        atom.radius = fixRadius(parseFloat(tokens[pt]));
+      }
+      return;
+    }
+    
+    float floatOccupancy;
+    
+    if (gromacsWideFormat) {
+      floatOccupancy = parseFloat(line.substring(60, 68));
+      atom.bfactor = fixRadius(parseFloat(line.substring(68, 76)));
+    } else {
+      /****************************************************************
+       * read the occupancy from cols 55-60 (1-based) 
+       * --should be in the range 0.00 - 1.00
+       ****************************************************************/
+    
+      floatOccupancy = parseFloat(line, 54, 60);
 
-    /****************************************************************
-     * read the occupancy from cols 55-60 (1-based)
-     * should be in the range 0.00 - 1.00
-     ****************************************************************/
-    float floatOccupancy = parseFloat(line, 54, 60);
-    atom.occupancy = (Float.isNaN(floatOccupancy) ? 100 : (int) (floatOccupancy * 100));
-
-    /****************************************************************
-     * read the bfactor from cols 61-66 (1-based)
-     ****************************************************************/
-    atom.bfactor = parseFloat(line, 60, 66);
-
+      /****************************************************************
+       * read the bfactor from cols 61-66 (1-based)
+       ****************************************************************/
+        atom.bfactor = parseFloat(line, 60, 66);
+    }
+    
+    atom.occupancy = (Float.isNaN(floatOccupancy) ? 100
+        : (int) (floatOccupancy * 100));
+    
   }
 
   /**
@@ -786,7 +829,7 @@ REMARK 290 REMARK: NULL
    * @param isHetero
    * @return           an atom symbol
    */
-  private String deduceElementSymbol(boolean isHetero) {
+  protected String deduceElementSymbol(boolean isHetero) {
     if (lineLength >= 78) {
       char ch76 = line.charAt(76);
       char ch77 = line.charAt(77);
@@ -1625,5 +1668,16 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     sbTlsErrors.append(fileName).append('\t').append("TLS group ").append(
         tlsGroupID).append('\t').append(error).append('\n');
   }
+
+  protected static float fixRadius(float r) {    
+    return (r < 0.9f ? 1 : r);
+    // based on parameters in http://pdb2pqr.svn.sourceforge.net/viewvc/pdb2pqr/trunk/pdb2pqr/dat/
+    // AMBER forcefield, H atoms may be given 0 (on O) or 0.6 (on N) for radius
+    // PARSE forcefield, lots of H atoms may be given 0 radius
+    // CHARMM forcefield, HN atoms may be given 0.2245 radius
+    // PEOEPB forcefield, no atoms given 0 radius
+    // SWANSON forcefield, HW (on water) will be given 0 radius, and H on oxygen given 0.9170
+  }
+
 }
 

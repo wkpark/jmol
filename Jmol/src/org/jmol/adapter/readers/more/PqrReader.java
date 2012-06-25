@@ -25,12 +25,15 @@
 package org.jmol.adapter.readers.more;
 
 import org.jmol.adapter.readers.cifpdb.PdbReader;
-import org.jmol.adapter.smarter.Atom;
 
 /**
  * PQR file reader.
  *
 Angel Herraez, 2009 04 19
+
+free form added Bob Hanson hansonr@stolaf.edu 2012 06 25
+
+filter "FREE"
 
 PQR format is a format based on pdb, where the occupancy is replaced with the atomic
 charge and the temperature (or B factor) is replaced with atomic radius (however, 
@@ -56,24 +59,14 @@ PDB files can be converted to PQR by the PDB2PQR software[3], which adds missing
 
 public class PqrReader extends PdbReader {
 
-  @Override
-  protected void setAdditionalAtomParameters(Atom atom) {
-
-    String[] tokens = getTokens();
-    int offset = (line.length() > 75 ? 1 : 0);
-    atom.radius = parseFloat(tokens[tokens.length - 1 - offset]);
-    if (atom.radius < 0.9f)
-      atom.radius = 1; 
-    // based on parameters in http://pdb2pqr.svn.sourceforge.net/viewvc/pdb2pqr/trunk/pdb2pqr/dat/
-    // AMBER forcefield, H atoms may be given 0 (on O) or 0.6 (on N) for radius
-    // PARSE forcefield, lots of H atoms may be given 0 radius
-    // CHARMM forcefield, HN atoms may be given 0.2245 radius
-    // PEOEPB forcefield, no atoms given 0 radius
-    // SWANSON forcefield, HW (on water) will be given 0 radius, and H on oxygen given 0.9170
-    
-    atom.partialCharge = parseFloat(tokens[tokens.length - 2 - offset]);
-
-  }
   
+  protected boolean gromacsWideFormat;
+
+  @Override
+  protected void initializeReader() throws Exception {
+    isPQR = true;
+    super.initializeReader();
+  }
+      
 }
 

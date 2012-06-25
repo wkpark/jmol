@@ -55,6 +55,7 @@ import javax.vecmath.Point3f;
  * @author Miguel, Egon, and Bob (hansonr@stolaf.edu)
  * 
  * pqr and gromacs pdb_wide_format added by Bob 
+ * see http://repo.or.cz/w/gromacs.git/blob/HEAD:/src/gmxlib/pdbio.c line 323
  * 
  * symmetry added by Bob Hanson:
  * 

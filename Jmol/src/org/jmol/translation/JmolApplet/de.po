@@ -14,14 +14,14 @@ msgstr ""
 "Project-Id-Version: JmolApplet 11\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-05-22 23:48+0200\n"
-"PO-Revision-Date: 2012-04-13 01:56+0000\n"
-"Last-Translator: Dennis Baudys <Unknown>\n"
+"PO-Revision-Date: 2012-07-01 18:53+0000\n"
+"Last-Translator: Daniel Winzen <d@winzen4.de>\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-04-14 07:50+0000\n"
-"X-Generator: Launchpad (build 15070)\n"
+"X-Launchpad-Export-Date: 2012-07-02 16:04+0000\n"
+"X-Generator: Launchpad (build 15520)\n"
 
 #: org/jmol/applet/AppletWrapper.java:100
 msgid "Loading Jmol applet ..."
@@ -1969,7 +1969,7 @@ msgstr "Logischer Term (Boolean), Zahl oder {0} erwartet"
 
 #: org/jmol/script/ScriptEvaluator.java:2825
 msgid "cannot set value"
-msgstr ""
+msgstr "Wert konnte nicht gesetzt werden"
 
 #: org/jmol/script/ScriptEvaluator.java:2828
 msgid "color expected"

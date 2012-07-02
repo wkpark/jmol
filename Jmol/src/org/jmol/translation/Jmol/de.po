@@ -14,14 +14,14 @@ msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-06-15 17:29+0200\n"
-"PO-Revision-Date: 2012-03-26 08:15+0000\n"
-"Last-Translator: Dennis Baudys <Unknown>\n"
+"PO-Revision-Date: 2012-07-01 18:53+0000\n"
+"Last-Translator: Daniel Winzen <d@winzen4.de>\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-04-11 16:16+0000\n"
-"X-Generator: Launchpad (build 15070)\n"
+"X-Launchpad-Export-Date: 2012-07-02 16:04+0000\n"
+"X-Generator: Launchpad (build 15520)\n"
 
 #: com/json/Cookie.java:121
 msgid "name"
@@ -33,11 +33,11 @@ msgstr "Wert"
 
 #: com/json/Cookie.java:126
 msgid "expires"
-msgstr ""
+msgstr "läuft ab"
 
 #: com/json/Cookie.java:130
 msgid "domain"
-msgstr ""
+msgstr "domain"
 
 #: com/json/Cookie.java:134
 msgid "path"
@@ -53,7 +53,7 @@ msgstr "Status-Code"
 
 #: com/json/HTTP.java:136
 msgid "Reason-Phrase"
-msgstr ""
+msgstr "Bedründung"
 
 #: com/json/HTTP.java:138
 msgid "Method"
@@ -99,7 +99,7 @@ msgstr "stille Start Operation"
 
 #: org/openscience/jmol/app/JmolApp.java:157
 msgid "kiosk mode -- no frame"
-msgstr ""
+msgstr "Kiosk Modus -- ohne Frames"
 
 #: org/openscience/jmol/app/JmolApp.java:159
 msgid "list commands during script execution"
@@ -135,7 +135,7 @@ msgstr "nach Skript automatisch beenden (wird von -n impliziert)"
 
 #: org/openscience/jmol/app/JmolApp.java:176
 msgid "port for JSON/MolecularPlayground-style communication"
-msgstr ""
+msgstr "Port für JSON/MolecularPlayground-style Kommunikation"
 
 #: org/openscience/jmol/app/JmolApp.java:182
 msgid "script file to execute or '-' for System.in"
@@ -143,7 +143,8 @@ msgstr "Skript Datei zum Ausführen oder '-' für System.in"
 
 #: org/openscience/jmol/app/JmolApp.java:188
 msgid "use multitouch interface (requires \"sparshui\" parameter"
-msgstr "benutze die Multitouch Schnittstelle (benötigt \"sparshui\" Parameter"
+msgstr ""
+"benutze die Multitouch Schnittstelle (benötigt \"sparshui\" Parameter"
 
 #: org/openscience/jmol/app/JmolApp.java:195
 msgid "Jmol script to execute BEFORE -s option"
@@ -330,7 +331,7 @@ msgstr "Periode"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:355
 msgid "Frame"
-msgstr ""
+msgstr "Rahmen"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:355
 msgid "Vibration"
@@ -1407,55 +1408,55 @@ msgstr "Neues in Jmol"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:477
 msgid "magic"
-msgstr ""
+msgstr "magisch"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:478
 msgid "role"
-msgstr ""
+msgstr "Rolle"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:497
 msgid "type"
-msgstr ""
+msgstr "Typ"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:503
 msgid "text"
-msgstr ""
+msgstr "Text"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:504
 msgid "visibility"
-msgstr ""
+msgstr "Sichtbarkeit"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:509
 msgid "command"
-msgstr ""
+msgstr "Befehl"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:516
 msgid "id"
-msgstr ""
+msgstr "ID"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:534
 msgid "startup"
-msgstr ""
+msgstr "Programmstart"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:535
 msgid "filename"
-msgstr ""
+msgstr "Dateiname"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:542
 msgid "startup_script"
-msgstr ""
+msgstr "Startscript"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:548
 msgid "banner"
-msgstr ""
+msgstr "Banner"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:549
 msgid "banner_text"
-msgstr ""
+msgstr "Bannertext"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:553
 msgid "style"
-msgstr ""
+msgstr "Stil"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:596
 msgid "x"
@@ -1467,7 +1468,7 @@ msgstr "y"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:614
 msgid "sync"
-msgstr ""
+msgstr "synchronisieren"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:69
 msgid "Degrees"
@@ -1895,15 +1896,6 @@ msgstr "Ansicht herunterladen"
 msgid "unimplemented"
 msgstr "nicht implementiert"
 
-#~ msgid "Get PDB file"
-#~ msgstr "Hole PDB-Datei"
-
-#~ msgid "Enter a four-digit PDB ID"
-#~ msgstr "Trage eine vierstellige PDB ID ein"
-
-#~ msgid "Get MOL file by compound name or ID"
-#~ msgstr "Hole MOL-Datei per zusammengesetzten Namen oder ID"
-
 #~ msgid "All"
 #~ msgstr "Alle"
 
@@ -1946,18 +1938,23 @@ msgstr "nicht implementiert"
 #~ msgid "vector"
 #~ msgstr "Vektor"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Springe zum ersten {0} der Sammlung"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Springe zum vorherigen {0} der Sammlung"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Spiele die gesamte {0}-Sammlung ab"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Springe zum nächsten {0} der Sammlung"
 
+#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Springe zum letzten {0} der Sammlung"
 
@@ -1967,6 +1964,7 @@ msgstr "nicht implementiert"
 #~ msgid "double-click and drag to reorder"
 #~ msgstr "Doppelklick und ziehen um neu anzuordnen"
 
+#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"
@@ -1977,6 +1975,7 @@ msgstr "nicht implementiert"
 #~ msgid "Jmol Script Console"
 #~ msgstr "Jmol Skript Konsole"
 
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
@@ -1987,12 +1986,14 @@ msgstr "nicht implementiert"
 #~ msgid "Show Selected"
 #~ msgstr "Auswahl anzeigen"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "hinzufügen von {0}.png"
 
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "hinzufügen von JmolPopIn.js"
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "hinzufügen von {0}.spt"
 
@@ -2000,8 +2001,7 @@ msgstr "nicht implementiert"
 #~ msgstr "Konsole leeren Button (benötigt Neustart von Jmol)"
 
 #~ msgid "The -D options are as follows (defaults in parenthesis):"
-#~ msgstr ""
-#~ "Folgende -D-Optionen werden unterstützt (Standardwerte in Klammern):"
+#~ msgstr "Folgende -D-Optionen werden unterstützt (Standardwerte in Klammern):"
 
 #~ msgid "Output Conso&le..."
 #~ msgstr "Skrip&t..."
@@ -2023,5 +2023,14 @@ msgstr "nicht implementiert"
 
 #~ msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
 #~ msgstr ""
-#~ "Trage den Namen oder die Identifikation (SMILE, InCHI, CAS) eines "
-#~ "Moleküls ein"
+#~ "Trage den Namen oder die Identifikation (SMILE, InCHI, CAS) eines Moleküls "
+#~ "ein"
+
+#~ msgid "Get MOL file by compound name or ID"
+#~ msgstr "Hole MOL-Datei per zusammengesetzten Namen oder ID"
+
+#~ msgid "Get PDB file"
+#~ msgstr "Hole PDB-Datei"
+
+#~ msgid "Enter a four-digit PDB ID"
+#~ msgstr "Trage eine vierstellige PDB ID ein"

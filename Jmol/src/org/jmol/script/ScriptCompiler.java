@@ -1042,7 +1042,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       }
       if (!iHaveQuotedString
           && lookingAtImpliedString(false, tokCommand == Token.load, 
-              tokCommand != Token.script)) {
+              nTokens > 1 || tokCommand != Token.script)) {
         String str = script.substring(ichToken, ichToken + cchToken);
         if (tokCommand == Token.script && str.startsWith("javascript:")) {
           lookingAtImpliedString(true, true, true);
@@ -2209,23 +2209,30 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
 
   /**
    * An "implied string" is a parameter that is not quoted but because of its
-   * position in a command is implied to be a string. First we must exclude @xxxx.
-   * Then we consume the entire math syntax @{......} or any set of
-   * characters not involving white space.
-   * echo, hover, label, message, pause are odd-valued; no initial parsing of variables for them. 
-   * @param allowSpace 
-   * @param allowEquals    as in the load command, first parameter  load =xxx but NOT any other command
-   * @param allowLeftParen specifically for script command, first parameter xxx.spt(3,4,4)
+   * position in a command is implied to be a string. First we must exclude
+   * @xxxx. Then we consume the entire math syntax @{......} or any set of
+   * characters not involving white space. echo, hover, label, message, pause
+   * are odd-valued; no initial parsing of variables for them.
+   * 
+   * @param allowSpace
+   * @param allowEquals
+   *        as in the load command, first parameter load =xxx but NOT any other
+   *        command
+   * @param allowSptParen
+   *        specifically for script/load command, first parameter xxx.spt(3,4,4)
    * 
    * @return true or false
    */
-  private boolean lookingAtImpliedString(boolean allowSpace, boolean allowEquals, boolean allowLeftParen) {
+  private boolean lookingAtImpliedString(boolean allowSpace,
+                                         boolean allowEquals,
+                                         boolean allowSptParen) {
     int ichT = ichToken;
     char ch = script.charAt(ichT);
-    boolean parseVariables = !(Token.tokAttr(tokCommand, Token.implicitStringCommand) 
-        || (tokCommand & 1) == 0); 
+    boolean parseVariables = !(Token.tokAttr(tokCommand,
+        Token.implicitStringCommand) || (tokCommand & 1) == 0);
     boolean isVariable = (ch == '@');
-    boolean isMath = (isVariable && ichT + 3 < cchScript && script.charAt(ichT + 1) == '{');
+    boolean isMath = (isVariable && ichT + 3 < cchScript && script
+        .charAt(ichT + 1) == '{');
     if (isMath && parseVariables) {
       ichT = ichMathTerminator(script, ichToken + 1, cchScript);
       return (ichT != cchScript && (cchToken = ichT + 1 - ichToken) > 0);
@@ -2238,16 +2245,23 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     while (isOK && ichT < cchScript && !eol(ch = script.charAt(ichT))) {
       switch (ch) {
       case '(':
-        if (!allowLeftParen) {
-          isOK = false;
-          continue;
+        if (!allowSptParen) {
+          // script command
+          if (ichT >= 5 && ( 
+              script.substring(ichT - 4, ichT).equals(".spt")
+              || script.substring(ichT - 4, ichT).equals(".png")
+              || script.substring(ichT - 5, ichT).equals(".pngj"))) {
+            isOK = false;
+            continue;
+          }
         }
+        break;
       case '=':
         if (!allowEquals) {
           isOK = false;
           continue;
         }
-          break;
+        break;
       case '{':
         parenpt++;
         break;

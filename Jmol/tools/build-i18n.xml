@@ -100,6 +100,7 @@
           <arg value="--msgid-bugs-address=jmol-developers@lists.sourceforge.net"/>
           <arg value="--output-dir=${basedir}/${Jmol.po.dir}/tmp" />
           <arg value="--output=Jmol.pot" />
+          <arg value="--add-comments=/" />
           <fileset refid="Jmol.java.files" />
         </apply>
         <if>
@@ -177,12 +178,13 @@
           <arg value="--msgid-bugs-address=jmol-developers@lists.sourceforge.net"/>
           <arg value="--output-dir=${basedir}/${JmolApplet.po.dir}/tmp" />
           <arg value="--output=JmolApplet.pot" />
-            <fileset dir="${basedir}/${src.dir}">
-              <include name="JmolApplet*.java"/>
-              <include name="org/jmol/**/*.java"/>
-              <exclude name="org/jmol/**/cdk/*.java"/>
-              <include name="org/openscience/jmol/ui/*.java"/>
-            </fileset>
+          <arg value="--add-comments=/" />
+          <fileset dir="${basedir}/${src.dir}">
+            <include name="JmolApplet*.java"/>
+            <include name="org/jmol/**/*.java"/>
+            <exclude name="org/jmol/**/cdk/*.java"/>
+            <include name="org/openscience/jmol/ui/*.java"/>
+          </fileset>
         </apply>
         <if>
           <and>

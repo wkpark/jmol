@@ -9153,7 +9153,10 @@
   <fah_proj number="7082" name="hipin" public="n"
     server="129.74.85.15" atoms="573" preferred="8" deadline="11"
     credit="600.0" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75"/>
-  <fah_proj number="7084" name="proinsulin WT" public="n"
+  <fah_proj number="7083" name="proinsulin MT" public="y"
+    server="129.74.85.15" atoms="1303" preferred="5.64" deadline="9.39"
+    credit="1220.83" frames="100" code="A4" contact="Yong Kim" kfactor="3.0"/>
+  <fah_proj number="7084" name="proinsulin WT" public="y"
     server="129.74.85.15" atoms="1293" preferred="5.64" deadline="9.39"
     credit="1220.83" frames="100" code="A4" contact="Yong Kim" kfactor="3.0"/>
 
@@ -9434,6 +9437,18 @@
   <fah_proj number="7622" name="p7622" public="y"
     server="171.64.65.105" atoms="1980" preferred="12.6" deadline="17.899988425925926"
     credit="5187.0" frames="100" code="OG" contact="tjlane" kfactor="0.0"/>
+  <fah_proj number="7623" name="p7623" public="y"
+    server="171.64.65.105" atoms="1980" preferred="12.6" deadline="17.899988425925926"
+    credit="5187.0" frames="100" code="OG" contact="tjlane" kfactor="0.0"/>
+  <fah_proj number="7624" name="p7624" public="y"
+    server="171.64.65.105" atoms="1980" preferred="12.6" deadline="17.899988425925926"
+    credit="5187.0" frames="100" code="OG" contact="tjlane" kfactor="0.0"/>
+  <fah_proj number="7625" name="p7625" public="y"
+    server="171.64.65.105" atoms="1980" preferred="12.6" deadline="17.899988425925926"
+    credit="5187.0" frames="100" code="OG" contact="tjlane" kfactor="0.0"/>
+  <fah_proj number="7626" name="p7626" public="y"
+    server="171.64.65.105" atoms="1980" preferred="12.6" deadline="17.899988425925926"
+    credit="5187.0" frames="100" code="OG" contact="tjlane" kfactor="0.0"/>
   <fah_proj number="7630" name="p7630" public="n"
     server="171.64.65.105" atoms="21443" preferred="13" deadline="18"
     credit="6094.0" frames="100" code="OG" contact="tjlane" kfactor="0.0"/>
@@ -9445,7 +9460,7 @@
     credit="6094.0" frames="100" code="OG" contact="tjlane" kfactor="0.0"/>
   <fah_proj number="7640" name="p7640" public="y"
     server="171.64.65.93" atoms="21443" preferred="13" deadline="18"
-    credit="7718.0" frames="100" code="OG" contact="tjlane" kfactor="0.0"/>
+    credit="7718.0" frames="100" code="GG2" contact="tjlane" kfactor="0.0"/>
   <fah_proj number="7641" name="p7641" public="y"
     server="171.64.65.93" atoms="21443" preferred="13" deadline="18"
     credit="7718.0" frames="100" code="OG" contact="tjlane" kfactor="0.0"/>
@@ -9661,6 +9676,15 @@
   <fah_proj number="8042" name="p8042" public="y"
     server="171.67.108.59" atoms="39000" preferred="4.4" deadline="9.5"
     credit="236.0" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
+  <fah_proj number="8046" name="p8046" public="y"
+    server="171.67.108.60" atoms="18000" preferred="1.6" deadline="3.4"
+    credit="84.4" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
+  <fah_proj number="8047" name="p8047" public="y"
+    server="171.67.108.58" atoms="18000" preferred="1.6" deadline="3.4"
+    credit="84.4" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
+  <fah_proj number="8048" name="p8048" public="y"
+    server="171.67.108.58" atoms="18000" preferred="1.6" deadline="3.4"
+    credit="84.4" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
 
   <!-- Projects 8100 to 8199 -->
   <fah_proj number="8101" name="ha_formarta" public="y"

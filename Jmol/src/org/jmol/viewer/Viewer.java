@@ -5568,7 +5568,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (msg != null)
       scriptEcho(Logger.debugging ? peak : msg);
     peak = fullName + "JSpecView: " + peak;
-    Logger.info("Jmol sending to JSpecView: " + peak);
+    Logger.info("Jmol>JSV " + peak);
     statusManager.syncSend(peak, ">", 0);
   }
 

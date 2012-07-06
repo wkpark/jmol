@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-05-22 23:48+0200\n"
-"PO-Revision-Date: 2012-03-07 00:51+0000\n"
+"PO-Revision-Date: 2012-07-04 12:42+0000\n"
 "Last-Translator: Peter Sahlin <Unknown>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-03-18 22:56+0000\n"
-"X-Generator: Launchpad (build 14951)\n"
+"X-Launchpad-Export-Date: 2012-07-06 05:24+0000\n"
+"X-Generator: Launchpad (build 15558)\n"
 
 #: org/jmol/applet/AppletWrapper.java:100
 msgid "Loading Jmol applet ..."
@@ -143,7 +143,8 @@ msgid "Check"
 msgstr "Kontrollera"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Överst"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -235,11 +236,11 @@ msgstr "Detaljer"
 
 #: org/jmol/export/dialog/Dialog.java:442
 msgid "Directory"
-msgstr "Katalog"
+msgstr "Mapp"
 
 #: org/jmol/export/dialog/Dialog.java:445
 msgid "Open selected directory"
-msgstr "Öppna vald katalog"
+msgstr "Öppna vald mapp"
 
 #: org/jmol/export/dialog/Dialog.java:446
 msgid "Attributes"
@@ -586,7 +587,7 @@ msgstr "spara fil"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:94
 msgid "save state"
-msgstr "spara status"
+msgstr "spara tillstånd"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:95
 msgid "invert ring stereochemistry"
@@ -665,7 +666,7 @@ msgid ""
 "\n"
 msgstr ""
 "NOTERA: Backbone-amiders vätepositioner finns men ignoreras. Deras "
-"positioner approximeras, som i standart DSSP-analys.\n"
+"positioner approximeras, som i standard DSSP-analys.\n"
 "Använd {0} för att inte utnyttja denna approximation.\n"
 "\n"
 
@@ -677,8 +678,8 @@ msgid ""
 "Use {0} to ignore these hydrogen positions.\n"
 "\n"
 msgstr ""
-"NOTERA: Backbone amide hydrogen positioner finns och kommer att användas. "
-"Resultet kan skilja signifikant från standard DSSP analys.\n"
+"NOTERA: Backbone-amiders vätepositioner finns och kommer att användas. "
+"Resultaet kan skilja signifikant från standard DSSP-analys.\n"
 "Använd {0} för att ignorera dessa vätepositioner.\n"
 "\n"
 
@@ -910,7 +911,7 @@ msgstr "Uppifrån"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:591
 msgid "Bottom"
-msgstr "Nederst"
+msgstr "Underifrån"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:592
 msgid "Back"
@@ -925,7 +926,7 @@ msgstr "Protein"
 #: org/jmol/popup/MainPopupResourceBundle.java:677
 #: org/jmol/popup/MainPopupResourceBundle.java:772
 msgid "Backbone"
-msgstr "Stickor"
+msgstr "Backbone"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:597
 msgid "Side Chains"
@@ -1017,7 +1018,7 @@ msgstr "Inget av ovanstående"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:625
 msgid "Style"
-msgstr "Stil"
+msgstr "Vy"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:626
 msgid "Scheme"
@@ -1134,7 +1135,7 @@ msgstr "Bestäm vätebindningars sidokedjor"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:657
 msgid "Set H-Bonds Backbone"
-msgstr "Bestäm vätebindningars trådmodell"
+msgstr "Bestäm vätebindningar i grundstruktur"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:664
 #: org/jmol/popup/MainPopupResourceBundle.java:770
@@ -1147,7 +1148,7 @@ msgstr "Bestäm SS-bindningars sidokedja"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:668
 msgid "Set SS-Bonds Backbone"
-msgstr "Bestäm SS-bindningars trådmodell"
+msgstr "Bestäm SS-bindningar i grundstruktur"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:675
 #: org/jmol/popup/MainPopupResourceBundle.java:771
@@ -1210,7 +1211,7 @@ msgstr "Skala {0}"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:703
 msgid "Stereographic"
-msgstr "Stereografisk"
+msgstr "3D-vy"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:705
 msgid "Red+Cyan glasses"
@@ -2228,7 +2229,8 @@ msgstr "klicka på två punkter för att rotera runt axel medurs (kräver {0})"
 
 #: org/jmol/viewer/ActionManager.java:125
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr "klicka på två punkter för att rotera runt axel moturs (kräver {0})"
 
 #: org/jmol/viewer/ActionManager.java:126
@@ -2448,20 +2450,20 @@ msgstr "{0} väte tillagda"
 
 #: org/jmol/viewer/Viewer.java:4914
 msgid "Drag to move label"
-msgstr ""
+msgstr "Drag för att flytta etikett"
 
 #: org/jmol/viewer/Viewer.java:8685
 msgid "clipboard is not accessible -- use signed applet"
-msgstr ""
+msgstr "urklipp är inte tillgängligt - används den signerade appleten"
 
 #: org/jmol/viewer/Viewer.java:9492
 msgid "Cannot set log file path."
-msgstr ""
+msgstr "Kan inte etablera väg till loggfil"
 
 #: org/jmol/viewer/Viewer.java:9496
 #, java-format
 msgid "Setting log file to {0}"
-msgstr ""
+msgstr "Loggfil sätts till {0}"
 
 #~ msgid "Minimize"
 #~ msgstr "Minimera"
@@ -2469,27 +2471,30 @@ msgstr ""
 #~ msgid "Top"
 #~ msgstr "Överst"
 
+#, java-format
 #~ msgid "File {0}"
 #~ msgstr "Fil {0}"
 
 #~ msgid "File or URL"
 #~ msgstr "Fil eller URL"
 
+#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "{0} 3D-modell"
 
+#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "{0} Bild"
 
 #~ msgid "About Jmol"
 #~ msgstr "Om Jmol"
 
+#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 #~ msgstr ""
-#~ "Skapande av filer genom det här programmet är inte tillåtet. För Base64 "
-#~ "JPEG-format, använd {0}."
+#~ "Skapande av filer genom det här programmet är inte tillåtet. För Base64 JPEG-"
+#~ "format, använd {0}."
 
 #~ msgid "File creation failed."
 #~ msgstr "Skapande av en fil misslyckades."

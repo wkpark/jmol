@@ -124,6 +124,7 @@
 		var d = Jmol._getElement(this._linkedApplet, "infotablediv");
 		d.style.width = w;
 		d.style.height = h;
+		d.style.overflowX = "hidden";
 	}
 
   //////  additional API for JME /////////

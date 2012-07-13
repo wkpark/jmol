@@ -1,4 +1,4 @@
-// JmolCore.js -- Jmol core capability
+// JmolCore.js -- Jmol core capability  6/27/2012 11:39:30 AM
 
 // see JmolApi.js for public user-interface. All these are private functions
 

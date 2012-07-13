@@ -5301,6 +5301,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (syncMode != StatusManager.SYNC_DRIVER)
       return;
     String peak = (String) getModelAuxiliaryInfo(modelIndex, "jdxModelSelect");
+    // problem is that SECOND load in jmol will not load new model in JSpecView
     if (peak != null)
       sendJSpecView(peak);
   }
@@ -5552,7 +5553,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return;
     String peak = modelSet.getPeakAtomRecord(atomIndex);
     if (peak != null)
-      sendJSpecView(peak);
+      sendJSpecView(peak + " src=\"JmolAtomSelect\"");
   }
 
   /*

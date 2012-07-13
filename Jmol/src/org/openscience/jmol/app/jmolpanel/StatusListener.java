@@ -259,8 +259,12 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
     else if (modelName != null)
       title = modelName;
     jmol.notifyFileOpen(fullPathName, title);    
-    if (jSpecViewFrame != null && fullPathName.endsWith(".jdx"))
-      jSpecViewFrame.syncScript("load CHECK " + Escape.escape(fullPathName));
+    if (jSpecViewFrame != null) {
+      if (fullPathName == null) {
+        jSpecViewFrame.syncScript("close ALL");
+      } else if (fullPathName.endsWith(".jdx"))
+        jSpecViewFrame.syncScript("load CHECK " + Escape.escape(fullPathName));
+    }
   }
 
   private void sendConsoleMessage(String strStatus) {

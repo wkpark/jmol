@@ -116,7 +116,6 @@ public class MeasurementData implements JmolMeasurementClient {
    * if this is the client, then this method
    * can be called to get the result vector
    * 
-   * @param viewer
    * @param asMinArray 
    * @return Vector of formatted Strings or array of minimum-distance values
    * 

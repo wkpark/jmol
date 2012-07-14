@@ -421,7 +421,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
           Token.atomno, Integer.valueOf(atoms[atomIndex].getAtomNumber()))
           : (Object) m.getAtom(i));
     }
-    MeasurementData md = new MeasurementData(points, 
+    MeasurementData md = new MeasurementData(viewer, points, 
                    tokAction,
                    radiusData, 
                    strFormat, null,

@@ -556,6 +556,8 @@ class ScriptMathProcessor {
       break;
     case Token.opAnd:
     case Token.opOr:
+      if (!wasSyntaxCheck && xPt < 0)
+        return false;
       if (!wasSyntaxCheck && xStack[xPt].tok != Token.bitset && xStack[xPt].tok != Token.varray) {
         // check to see if we need to evaluate the second operand or not
         // if not, then set this to syntax check in order to skip :)
@@ -1260,9 +1262,9 @@ class ScriptMathProcessor {
           return addX("");
       rd = (vdw == Float.MAX_VALUE ? new RadiusData(rangeMinMax)
           : new RadiusData(vdw, RadiusData.EnumType.FACTOR, EnumVdw.AUTO));
-      MeasurementData md = new MeasurementData(points, 0, rd, strFormat, units,
+      MeasurementData md = new MeasurementData(viewer, points, 0, rd, strFormat, units,
           null, isAllConnected, isNotConnected, null, true);
-      return addX(md.getMeasurements(viewer, asArray));
+      return addX(md.getMeasurements(asArray));
     case Token.angle:
       if ((nPoints = args.length) != 3 && nPoints != 4)
         return false;

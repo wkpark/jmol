@@ -29,6 +29,7 @@ import java.util.List;
 
 import org.jmol.api.JmolMeasurementClient;
 import org.jmol.atomdata.RadiusData;
+import org.jmol.util.BitSetUtil;
 import org.jmol.util.Point3fi;
 import org.jmol.viewer.Viewer;
 
@@ -62,13 +63,19 @@ public class MeasurementData implements JmolMeasurementClient {
    * the general constructor. tokAction is not used here, but simply
    * passed back to the 
    */
-  public MeasurementData(List<Object> points, int tokAction,
+  public MeasurementData(Viewer viewer, List<Object> points, int tokAction,
                  RadiusData radiusData, String strFormat, String units,
                  TickInfo tickInfo,
                  boolean mustBeConnected, boolean mustNotBeConnected,
                  Boolean intramolecular, boolean isAll) {
+    this.viewer = viewer;
     this.tokAction = tokAction;
     this.points = points;
+    if (points.size() >= 2 && points.get(0) instanceof BitSet && points.get(1) instanceof BitSet) {
+      justOneModel = BitSetUtil.haveCommon(
+          viewer.getModelBitSet((BitSet) points.get(0), false),
+          viewer.getModelBitSet((BitSet) points.get(1), false)); 
+    }
     //this.rangeMinMax = rangeMinMax;
     this.radiusData = radiusData;
     this.strFormat = strFormat;
@@ -95,7 +102,9 @@ public class MeasurementData implements JmolMeasurementClient {
     //System.out.println(Escape.escapeArray(m.getCountPlusIndices()));
     if (measurementStrings == null) {
       float f = minArray[iFirstAtom];
-      minArray[iFirstAtom] = (1/f == Float.NEGATIVE_INFINITY ? value : Math.min(f, m.fixValue(units, false)));
+      m.value = value;
+      value = m.fixValue(units, false);
+      minArray[iFirstAtom] = (1/f == Float.NEGATIVE_INFINITY ? value : Math.min(f, value));
       return;
     }
     
@@ -112,8 +121,7 @@ public class MeasurementData implements JmolMeasurementClient {
    * @return Vector of formatted Strings or array of minimum-distance values
    * 
    */
-  public Object getMeasurements(Viewer viewer, boolean asMinArray) {
-    this.viewer = viewer;
+  public Object getMeasurements(boolean asMinArray) {
     if (asMinArray) {
       minArray = new float[((BitSet) points.get(0)).cardinality()];
       for (int i = 0; i < minArray.length; i++)
@@ -129,6 +137,7 @@ public class MeasurementData implements JmolMeasurementClient {
   
   private Viewer viewer;
   private int iFirstAtom;
+  private boolean justOneModel = true;
   
   /**
    * called by the client to generate a set of measurements
@@ -211,7 +220,7 @@ public class MeasurementData implements JmolMeasurementClient {
       if (i == thisAtomIndex)
         continue;
       int modelIndex = atoms[i].getModelIndex();
-      if (thisModel >= 0) {
+      if (thisModel >= 0 && justOneModel) {
         if (thispt == 0)
           thisModel = modelIndex;
         else if (thisModel != modelIndex)

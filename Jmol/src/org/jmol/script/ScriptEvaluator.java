@@ -3807,7 +3807,8 @@ public class ScriptEvaluator {
         break;
       default:
         if (Token.tokAttr(instruction.tok, Token.mathop)) {
-          rpn.addOp(instruction);
+          if (!rpn.addOp(instruction))
+            error(ERROR_invalidArgument);
           break;
         }
         if (!(value instanceof String)) {
@@ -9394,7 +9395,7 @@ public class ScriptEvaluator {
       if (value != null && strFormat != null && tokAction == Token.opToggle)
         tokAction = Token.define;
       setShapeProperty(JmolConstants.SHAPE_MEASURES, "measure",
-          new MeasurementData(points, tokAction, rd, strFormat, null, tickInfo,
+          new MeasurementData(viewer, points, tokAction, rd, strFormat, null, tickInfo,
               isAllConnected, isNotConnected, intramolecular, isAll));
       return;
     }

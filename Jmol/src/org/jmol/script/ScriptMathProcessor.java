@@ -1197,6 +1197,7 @@ class ScriptMathProcessor {
       // measure({a},{b},{c}, min, max, format, units)
       // measure({a},{b}, min, max, format, units)
       // measure({a},{b},{c},{d}, min, max, format, units)
+      // measure({a} {b} "minArray") -- returns array of minimum distance values
       List<Object> points = new ArrayList<Object>();
       float[] rangeMinMax = new float[] { Float.MAX_VALUE, Float.MAX_VALUE };
       String strFormat = null;
@@ -1208,6 +1209,7 @@ class ScriptMathProcessor {
       RadiusData rd = null;
       int nBitSets = 0;
       float vdw = Float.MAX_VALUE;
+      boolean asArray = false;
       for (int i = 0; i < args.length; i++) {
         switch (args[i].tok) {
         case Token.bitset:
@@ -1237,6 +1239,8 @@ class ScriptMathProcessor {
             isNotConnected = true;
           else if (s.equalsIgnoreCase("connected"))
             isAllConnected = true;
+          else if (s.equalsIgnoreCase("minArray"))
+          	asArray = (nBitSets >= 1);
           else if (Parser.isOneOf(s.toLowerCase(),
               "nm;nanometers;pm;picometers;angstroms;ang;au"))
             units = s.toLowerCase();
@@ -1258,7 +1262,7 @@ class ScriptMathProcessor {
           : new RadiusData(vdw, RadiusData.EnumType.FACTOR, EnumVdw.AUTO));
       MeasurementData md = new MeasurementData(points, 0, rd, strFormat, units,
           null, isAllConnected, isNotConnected, null, true);
-      return addX(md.getMeasurements(viewer));
+      return addX(md.getMeasurements(viewer, asArray));
     case Token.angle:
       if ((nPoints = args.length) != 3 && nPoints != 4)
         return false;
@@ -3617,4 +3621,5 @@ class ScriptMathProcessor {
     }
     return data;
   }
+  
 }

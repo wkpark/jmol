@@ -58,8 +58,9 @@ class DataManager {
     dataValues.clear();
   }
   
-  void setData(String type, Object[] data, int atomCount, int matchField,
-               int matchFieldColumnCount, int field, int fieldColumnCount) {
+  void setData(String type, Object[] data, int arrayCount, int actualAtomCount,
+               int matchField, int matchFieldColumnCount, int field,
+               int fieldColumnCount) {
     //Eval
     /*
      * data[0] -- label
@@ -93,19 +94,20 @@ class DataManager {
         userVdwMars[i] = (int) (userVdws[i] * 1000);
       return;
     }
-    if (data[2] != null && atomCount > 0) {
+    if (data[2] != null && arrayCount > 0) {
       boolean createNew = (matchField != 0 || field != Integer.MIN_VALUE
           && field != Integer.MAX_VALUE);
       Object[] oldData = dataValues.get(type);
       BitSet bs;
-      float[] f = (oldData == null || createNew ? new float[atomCount]
-          : ArrayUtil.ensureLength(((float[]) oldData[1]), atomCount));
+      float[] f = (oldData == null || createNew ? new float[actualAtomCount]
+          : ArrayUtil.ensureLength(((float[]) oldData[1]), actualAtomCount));
 
       // check to see if the data COULD be interpreted as a string of float values
       // and if so, do that. This pre-fetches the tokens in that case.
 
       String stringData = (data[1] instanceof String ? (String) data[1] : null);
-      float[] floatData = (data[1] instanceof float[] ? (float[]) data[1] : null);
+      float[] floatData = (data[1] instanceof float[] ? (float[]) data[1]
+          : null);
       String[] strData = null;
       if (field == Integer.MIN_VALUE
           && (strData = Parser.getTokens(stringData)).length > 1)
@@ -119,11 +121,16 @@ class DataManager {
         // just get the selected token values
         bs = (BitSet) data[2];
         if (floatData != null) {
-          for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) 
-            f[i] = floatData[i];
+          if (floatData.length == bs.cardinality())
+            for (int i = bs.nextSetBit(0), pt = 0; i >= 0; i = bs
+                .nextSetBit(i + 1), pt++)
+              f[i] = floatData[pt];
+          else
+            for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
+              f[i] = floatData[i];
         } else {
           Parser.parseFloatArray(strData == null ? Parser.getTokens(stringData)
-            : strData, bs, f);
+              : strData, bs, f);
         }
       } else if (matchField <= 0) {
         // get the specified field >= 1 for the selected atoms

@@ -3538,10 +3538,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     colorManager.setPropertyColorRange(min, max);
   }
 
-  public void setData(String type, Object[] data, int atomCount,
+  public void setData(String type, Object[] data, int arrayCount,
                       int matchField, int matchFieldColumnCount, int field,
                       int fieldColumnCount) {
-    dataManager.setData(type, data, atomCount, matchField,
+    dataManager.setData(type, data, arrayCount, getAtomCount(), matchField,
         matchFieldColumnCount, field, fieldColumnCount);
   }
 

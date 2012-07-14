@@ -25,6 +25,7 @@ package org.jmol.util;
 
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 
 import javax.vecmath.Matrix4f;

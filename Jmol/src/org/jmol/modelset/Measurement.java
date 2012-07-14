@@ -304,7 +304,7 @@ public class Measurement {
     int pt = label.indexOf("//"); 
     if (pt >= 0)
       label = label.substring(0, pt);
-    float f = fixValue(value, units, (label.indexOf("%V") >= 0));
+    float f = fixValue(units, (label.indexOf("%V") >= 0));
     return formatString(f, units, label);
   }
 
@@ -320,7 +320,10 @@ public class Measurement {
     return units;
   }
   
-  private float fixValue(float dist, String units, boolean andRound) {
+  public float fixValue(String units, boolean andRound) {
+    if (count != 2)
+      return value;
+    float dist = value;
     if (units != null) {
       if (units.equals("%")) {
         int i1 = getAtomIndex(1);
@@ -496,7 +499,7 @@ public class Measurement {
   }
 
   public String getInfoAsString(String units) {
-    float f = (count == 2 ? fixValue(value, units, true) : value);
+    float f = fixValue(units, true);
     StringBuffer sb = new StringBuffer();
     sb.append(count == 2 ? "distance" : count == 3 ? "angle" : "dihedral");
     sb.append(" \t").append(f);

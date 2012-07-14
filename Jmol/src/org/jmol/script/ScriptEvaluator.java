@@ -13650,8 +13650,10 @@ public class ScriptEvaluator {
       if (propertyName.startsWith("property_")) {
         viewer.setData(propertyName, new Object[] {
             propertyName,
-            tv.tok == Token.varray ? ScriptVariable.flistValue(tv, viewer
-                .getAtomCount()) : tv.asString(), BitSetUtil.copy(bs) }, viewer
+            tv.tok == Token.varray ? ScriptVariable.flistValue(tv, 
+                ((List<?>)tv.value).size() == bs.cardinality() ? bs.cardinality() : viewer
+                .getAtomCount()) : tv.asString(), 
+                BitSetUtil.copy(bs) }, viewer
             .getAtomCount(), 0, 0, tv.tok == Token.varray ? Integer.MAX_VALUE
             : Integer.MIN_VALUE, 0);
         return;
@@ -13669,11 +13671,11 @@ public class ScriptEvaluator {
     Object vv = ScriptVariable.oValue(tv);
 
     if (key.startsWith("property_")) {
-      int n = viewer.getAtomCount();
       if (tv.tok == Token.varray)
         vv = tv.asString();
       viewer.setData(key, new Object[] { key, "" + vv,
-          BitSetUtil.copy(viewer.getSelectionSet(false)) }, n, 0, 0,
+          BitSetUtil.copy(viewer.getSelectionSet(false)) }, 
+          viewer.getAtomCount(), 0, 0,
           Integer.MIN_VALUE, 0);
       return;
     }

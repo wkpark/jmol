@@ -56,6 +56,7 @@ public class MeasurementData implements JmolMeasurementClient {
 
   private String units;
   public Boolean intramolecular;
+  private float[] minArray;
   
   /*
    * the general constructor. tokAction is not used here, but simply
@@ -92,7 +93,14 @@ public class MeasurementData implements JmolMeasurementClient {
     if (radiusData != null && !m.isInRange(radiusData, value))
       return;
     //System.out.println(Escape.escapeArray(m.getCountPlusIndices()));
+    if (measurementStrings == null) {
+      float f = minArray[iFirstAtom];
+      minArray[iFirstAtom] = (1/f == Float.NEGATIVE_INFINITY ? value : Math.min(f, m.fixValue(units, false)));
+      return;
+    }
+    
     measurementStrings.add(m.getString(viewer, strFormat, units));
+   
   }
 
   /**
@@ -100,17 +108,27 @@ public class MeasurementData implements JmolMeasurementClient {
    * can be called to get the result vector
    * 
    * @param viewer
-   * @return Vector of formatted Strings
+   * @param asMinArray 
+   * @return Vector of formatted Strings or array of minimum-distance values
    * 
    */
-  public List<String> getMeasurements(Viewer viewer) {
+  public Object getMeasurements(Viewer viewer, boolean asMinArray) {
     this.viewer = viewer;
+    if (asMinArray) {
+      minArray = new float[((BitSet) points.get(0)).cardinality()];
+      for (int i = 0; i < minArray.length; i++)
+        minArray[i] = -0f;
+      define(null, viewer.getModelSet());
+      return minArray;      
+    }
+      
     measurementStrings = new ArrayList<String>();
     define(null, viewer.getModelSet());
     return measurementStrings;
   }
   
   private Viewer viewer;
+  private int iFirstAtom;
   
   /**
    * called by the client to generate a set of measurements
@@ -150,6 +168,8 @@ public class MeasurementData implements JmolMeasurementClient {
         if (nAtoms > 1)
           modelIndex = 0;
         ptLastAtom = i;
+        if (i == 0)
+          iFirstAtom = 0;
         indices[i + 1] = bs.nextSetBit(0);
       } else {
         if (pts == null)
@@ -187,7 +207,7 @@ public class MeasurementData implements JmolMeasurementClient {
       return;
     }
     boolean haveNext = false;
-    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+    for (int i = bs.nextSetBit(0), pt = 0; i >= 0; i = bs.nextSetBit(i + 1), pt++) {
       if (i == thisAtomIndex)
         continue;
       int modelIndex = atoms[i].getModelIndex();
@@ -198,6 +218,8 @@ public class MeasurementData implements JmolMeasurementClient {
           continue;
       }
       indices[thispt + 1] = i;
+      if (thispt == 0)
+        iFirstAtom = pt;
       haveNext = true;
       nextMeasure(thispt + 1, ptLastAtom, m, thisModel);
     }
@@ -206,5 +228,4 @@ public class MeasurementData implements JmolMeasurementClient {
   }
     
 }
-
 

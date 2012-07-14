@@ -1392,6 +1392,7 @@ all support for previous versions removed
       </fileset>
     </copy>
     <copy file="src/org/jmol/viewer/Jmol.properties" tofile="build/dist/jmol-${version}/CHANGES.txt" />
+    <copy file="src/org/jmol/viewer/Jmol.properties" tofile="build/dist/Jmol.properties" />
     <chmod perm="ugo+rx">
       <fileset dir="build/dist/jmol-${version}">
         <include name="jmol"/>

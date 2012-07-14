@@ -20,7 +20,7 @@
   <property name="path.release"    value="Jmol Prerelease Tests/Prerelease 12.3" />
   <property name="prefix.release"  value="Prerelease " />
 
-  <property file="${src.dir}/org/jmol/viewer/Jmol.properties" prefix="Jmol.properties" />
+  <property file="${dist.dir}/Jmol.properties" prefix="Jmol.properties" />
   <property name="version" value="${Jmol.properties.version}" />
 
   <!-- Copying files to website -->
@@ -58,7 +58,7 @@
     <copy todir="${temp.dir}/${path.release}/${prefix.release}${version}"
           file="${dist.dir}/Jmol-${version}-full.tar.gz" />
     <copy tofile="${temp.dir}/${path.release}/${prefix.release}${version}/README-${version}.properties"
-          file="${src.dir}/org/jmol/viewer/Jmol.properties" />
+          file="${dist.dir}/Jmol.properties" />
 
     <!-- Do the copy using scp -->
     <echo message="Copying release files to Jmol website" level="info"/>

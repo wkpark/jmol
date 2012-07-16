@@ -928,7 +928,8 @@ public class IsosurfaceMesh extends Mesh {
         for (int k = 0; k < 3; k++) {
           int pk = p[k];
           p[k] = addIntersectionVertex(vertices[pk], vertexValues[pk], 
-              vertexSource == null ? 0 : vertexSource[pk], mapEdge, 0, pk);
+              vertexSource == null ? 0 : vertexSource[pk], 
+                  vertexSets == null ? 0 : vertexSets[pk], mapEdge, 0, pk);
           // we have to be careful, because some points have already been
           // moved 
           if (pk != p[k] && bsMoved.get(pk))

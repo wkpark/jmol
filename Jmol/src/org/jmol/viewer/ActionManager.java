@@ -1682,10 +1682,10 @@ public class ActionManager {
       return;
     case PICKING_MEASURE_TORSION:
       n++;
-      // fall through
+      //$FALL-THROUGH$
     case PICKING_MEASURE_ANGLE:
       n++;
-      // fall through
+      //$FALL-THROUGH$
     case PICKING_MEASURE:
     case PICKING_MEASURE_DISTANCE:
     case PICKING_MEASURE_SEQUENCE:

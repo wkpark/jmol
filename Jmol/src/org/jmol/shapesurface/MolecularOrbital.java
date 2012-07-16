@@ -156,7 +156,7 @@ public class MolecularOrbital extends Isosurface {
       super.setProperty("color", value, bs);
       propertyName = "colorRGB";
       myColorPt = 0;
-      //fall through
+      //$FALL-THROUGH$
     }
 
     if ("colorRGB" == propertyName) {

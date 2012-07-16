@@ -1263,6 +1263,7 @@ abstract public class ModelCollection extends BondCollection {
             case 3:
               if (iOther < iThis)
                 continue; // only one entry in this case -- pseudo-PDB style
+              //$FALL-THROUGH$
             case 1:
               sbCONECT.append("CONECT").append(
                   TextFormat.formatString("%5i", "i", iThis));

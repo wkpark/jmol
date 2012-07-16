@@ -90,10 +90,10 @@ class UnitCell extends SimpleUnitCell {
       switch (dimension) {
       case 3:
         pt.z = toFractional(pt.z);  
-        // fall through
+        //$FALL-THROUGH$
       case 2:
         pt.y = toFractional(pt.y);
-        // fall through
+        //$FALL-THROUGH$
       case 1:
         pt.x = toFractional(pt.x);
       }
@@ -104,10 +104,10 @@ class UnitCell extends SimpleUnitCell {
       switch (dimension) {
       case 3:
         pt.z = toFractional(pt.z);  
-        // fall through
+        //$FALL-THROUGH$
       case 2:
         pt.y = toFractional(pt.y);
-        // fall through
+        //$FALL-THROUGH$
       case 1:
         pt.x = toFractional(pt.x);
       }
@@ -195,7 +195,7 @@ class UnitCell extends SimpleUnitCell {
     case 1: // polymer
       minXYZ.y = 0;
       maxXYZ.y = 1;
-      // fall through
+      //$FALL-THROUGH$
     case 2: // slab
       minXYZ.z = 0;
       maxXYZ.z = 1;

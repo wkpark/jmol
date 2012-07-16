@@ -1084,6 +1084,7 @@ abstract public class AtomCollection {
           if (v == null)
             v = new Vector3f();
           s.append(v.x).append(" ").append(v.y).append(" ").append(v.z);
+          break;
         case TAINT_ELEMENT:
           s.append(atoms[i].getAtomicAndIsotopeNumber());
           break;
@@ -1304,7 +1305,7 @@ abstract public class AtomCollection {
             hAtoms[i][hPt++] = pt;
             if (vConnect != null)
               vConnect.add(atom);
-            // fall through
+            //$FALL-THROUGH$
           case 3:
             z.set(-0.635f, -0.635f, 0.635f);
             pt = new Point3f(z);
@@ -1312,7 +1313,7 @@ abstract public class AtomCollection {
             hAtoms[i][hPt++] = pt;
             if (vConnect != null)
               vConnect.add(atom);
-            // fall through
+            //$FALL-THROUGH$
           case 2:
             z.set(-0.635f, 0.635f, -0.635f);
             pt = new Point3f(z);
@@ -1320,7 +1321,7 @@ abstract public class AtomCollection {
             hAtoms[i][hPt++] = pt;
             if (vConnect != null)
               vConnect.add(atom);
-            // fall through
+            //$FALL-THROUGH$
           case 1:
             z.set(0.635f, -0.635f, -0.635f);
             pt = new Point3f(z);
@@ -1560,7 +1561,7 @@ abstract public class AtomCollection {
             break;
           }
           // C=C, no other atoms
-          // fall through
+          //$FALL-THROUGH$
         case 2:
           hybridization = (isSp ? "sp" : "sp2");
           break;
@@ -1690,7 +1691,7 @@ abstract public class AtomCollection {
           break;
         }
         // C=C, no other atoms
-        // fall through
+        //$FALL-THROUGH$
       case 2:
         // R-C=C* or C=C=C*
         // get third atom

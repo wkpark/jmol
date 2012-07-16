@@ -668,7 +668,7 @@ class PointGroup {
     case c8:
       if (nAxes[c3] > 0)
         return false;
-      // fall through;
+      //$FALL-THROUGH$;
     case c6:
     case c4:
       if (nAxes[c5] > 0)

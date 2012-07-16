@@ -53,13 +53,18 @@ abstract class Calculation {
     switch (iData.length) {
     default:
       id = iData[3];
+      //$FALL-THROUGH$
     case 3:
       ic = iData[2];
+      //$FALL-THROUGH$
     case 2:
       ib = iData[1];
+      //$FALL-THROUGH$
     case 1:
       ia = iData[0];
+      //$FALL-THROUGH$
     case 0:  
+      break;
     }
   }
 }

@@ -333,7 +333,7 @@ public class IsosurfaceMesh extends Mesh {
     case 1:
       if (f1 == 0)
         return; //because at A and not along BC, so only at A
-      // fall through
+      //$FALL-THROUGH$
     case 2:
       // check CA only if v not found only at C already in testing BC
       f2 = (f2 == 1 ? Float.NaN : checkPt(vertexValues, iC, iA, value));

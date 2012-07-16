@@ -302,7 +302,7 @@ class SymmetryOperation extends Matrix4f {
       case '0':
         if (!isDecimal && (isDenominator || !allowScaling))
           continue;
-        //allow to pass through
+        //$FALL-THROUGH$
       default:
         //Logger.debug(isDecimal + " " + ch + " " + iValue);
         int ich = ch - '0';

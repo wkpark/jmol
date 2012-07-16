@@ -231,12 +231,12 @@ abstract class Calculations {
         id = minList[3];
         if (gradients)
           dd.set(minAtoms[id].coord);
-        //fall through
+        //$FALL-THROUGH$
       case CALC_ANGLE:
         ic = minList[2];
         if (gradients)
           dc.set(minAtoms[ic].coord);
-        //fall through
+        //$FALL-THROUGH$
       case CALC_DISTANCE:
         ib = minList[1];
         ia = minList[0];
@@ -288,10 +288,10 @@ abstract class Calculations {
       switch (iType) {
       case CALC_TORSION:
         addForce(dd, id, dE);
-        //fall through
+        //$FALL-THROUGH$
       case CALC_ANGLE:
         addForce(dc, ic, dE);
-        //fall through
+        //$FALL-THROUGH$
       case CALC_DISTANCE:
         addForce(db, ib, dE);
         addForce(da, ia, dE);
@@ -313,10 +313,10 @@ abstract class Calculations {
       switch (iType) {
       case CALC_TORSION:
         id = minList[3];
-        //fall through
+        //$FALL-THROUGH$
       case CALC_ANGLE:
         ic = minList[2];
-        //fall through
+        //$FALL-THROUGH$
       case CALC_DISTANCE:
         ib = minList[1];
         ia = minList[0];
@@ -576,13 +576,13 @@ abstract class Calculations {
     switch(n) {
     case 4:
       da.set(minAtoms[c.ia].coord);
-      // fall through
+      //$FALL-THROUGH$
     case 3:
       db.set(minAtoms[c.ib].coord);
-      // fall through
+      //$FALL-THROUGH$
     case 2:
       dc.set(minAtoms[c.ic].coord);
-      // fall through
+      //$FALL-THROUGH$
     case 1:
       dd.set(minAtoms[c.id].coord);
     }
@@ -592,13 +592,13 @@ abstract class Calculations {
     switch (n) {
     case 4:
       addForce(dd, c.id, c.dE);
-      // fall through
+      //$FALL-THROUGH$
     case 3:
       addForce(dc, c.ic, c.dE);
-      // fall through
+      //$FALL-THROUGH$
     case 2:
       addForce(db, c.ib, c.dE);
-      // fall through
+      //$FALL-THROUGH$
     case 1:
       addForce(da, c.ia, c.dE);
     }

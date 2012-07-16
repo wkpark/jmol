@@ -1256,7 +1256,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     case Token.endifcmd:
       if (flowContext != null)
         flowContext.forceEndIf = false;
-      // fall through
+      //$FALL-THROUGH$
     case Token.elsecmd:
       if (nTokens > 0) {
         isEndOfCommand = true;
@@ -1267,7 +1267,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     case Token.forcmd:
       if (bracketCount > 0) // ignore [FOR], as in 1C4D 
         break;
-      // fall through
+      //$FALL-THROUGH$
     case Token.casecmd:
     case Token.defaultcmd:
     case Token.elseif:
@@ -1322,7 +1322,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           flowContext.forceEndIf = false;
         return CONTINUE;
       }
-      // fall through
+      //$FALL-THROUGH$
     case Token.leftparen:
       parenCount++;
       // the select() function uses dual semicolon notation
@@ -1348,7 +1348,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         }
       }
       braceCount--;
-      // fall through
+      //$FALL-THROUGH$
     case Token.rightparen:
       parenCount--;
       if (parenCount < 0)
@@ -1975,7 +1975,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       case Token.catchcmd:
         pushCount++;
         vPush.add(ct);
-        // fall through
+        //$FALL-THROUGH$
       case Token.ifcmd:
       case Token.switchcmd:
       default:
@@ -2162,7 +2162,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           break;
         case 'r':
           ch = '\r';
-        // fall into
+          //$FALL-THROUGH$
         case '"':
         case '\\':
         case '\'':
@@ -2512,6 +2512,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         case '*':
           if (!allowWildID)
             return false;
+          break;
         case '~':
         case '_':
           break;
@@ -2551,6 +2552,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     case '/':
       if (ichT < cchScript && script.charAt(ichT) == '/')
         break;
+      //$FALL-THROUGH$
     case '\\':  // leftdivide
     case '!':
       if (ichT < cchScript && script.charAt(ichT) == '=')
@@ -2588,7 +2590,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     default:
       if (!Character.isLetter(ch))
         return false;
-    //fall through
+    //$FALL-THROUGH$
     case '~':
     case '_':
     case '\'':

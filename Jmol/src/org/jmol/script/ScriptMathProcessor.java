@@ -414,7 +414,7 @@ class ScriptMathProcessor {
     case Token.opNot:
     case Token.leftparen:
       isLeftOp = true;
-      // fall through
+      //$FALL-THROUGH$
     default:
       if (isMathFunc) {
         if (!isDotSelector && wasX && !isArgument)
@@ -615,7 +615,7 @@ class ScriptMathProcessor {
     switch (var.tok) {
     default:
       var = new ScriptVariable(Token.string, ScriptVariable.sValue(var));
-      // fall through
+      //$FALL-THROUGH$
     case Token.bitset:
     case Token.varray:
     case Token.string:
@@ -1496,7 +1496,7 @@ class ScriptMathProcessor {
           return addX("");
         return addX(Measure.getIntersection(pt2, null, plane, pt3, norm, vTemp));
       }
-      // fall through
+      //$FALL-THROUGH$
     case 3:
     case 4:
       switch (tok) {
@@ -2551,7 +2551,7 @@ class ScriptMathProcessor {
         break;
       case Token.decimal:
         haveDecimal = true;
-        // fall through
+        //$FALL-THROUGH$
       default:
         int n = ScriptVariable.iValue(var);
         float f = ScriptVariable.fValue(var);
@@ -2840,9 +2840,8 @@ class ScriptMathProcessor {
           break;
         case Token.decimal:
           return addX(x1.intValue + ScriptVariable.fValue(x2));
-        default:
-          return addX(x1.intValue + ScriptVariable.iValue(x2));
         }
+        return addX(x1.intValue + ScriptVariable.iValue(x2));
       case Token.string:
         return addX(new ScriptVariable(Token.string, ScriptVariable.sValue(x1)
             + ScriptVariable.sValue(x2)));
@@ -3463,7 +3462,7 @@ class ScriptMathProcessor {
         case Token.sum2:
         case Token.stddev:
           sum2 += ((double) v) * v;
-          // fall through
+          //$FALL-THROUGH$
         case Token.sum:
         case Token.average:
           sum += v;

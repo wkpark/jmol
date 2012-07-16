@@ -247,7 +247,7 @@ class HallInfo {
           c = code.charAt(2);
           ptr++;
         }
-        // fall through
+        //$FALL-THROUGH$
       case '*':
         axisType = c;
         break;

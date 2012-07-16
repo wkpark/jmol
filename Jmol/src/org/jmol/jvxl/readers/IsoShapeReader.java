@@ -120,7 +120,7 @@ class IsoShapeReader extends VolumeDataReader {
       break;
     case Parameters.SURFACE_ELLIPSOID2:
       type = "ellipsoid";
-      // fall through
+      //$FALL-THROUGH$
     case Parameters.SURFACE_SPHERE:
     default:
       radius = 1.2f * sphere_radiusAngstroms * eccentricityScale;

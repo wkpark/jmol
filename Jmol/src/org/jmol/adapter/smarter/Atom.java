@@ -97,7 +97,7 @@ public class Atom extends Point3f implements Cloneable {
             elementSymbol = "" + chFirst + chSecond;
             break;
           }
-          // fall into
+          //$FALL-THROUGH$
         case 1:
           if (isValidElementSymbol(chFirst))
             elementSymbol = "" + chFirst;

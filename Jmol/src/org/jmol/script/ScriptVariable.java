@@ -526,6 +526,7 @@ public class ScriptVariable extends Token {
       int i = x.intValue;
       if (i == Integer.MAX_VALUE)
         return ((ScriptVariable)x).getList().size();
+      //$FALL-THROUGH$
     case string:
       return toFloat(sValue(x));
     case bitset:

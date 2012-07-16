@@ -690,7 +690,7 @@ abstract class ScriptCompilationTokenParser {
         break;
       case Token.branch:
         allowComma = false;
-        // fall through
+        //$FALL-THROUGH$
       case Token.atomtype:
       case Token.atomname:
       case Token.basepair:

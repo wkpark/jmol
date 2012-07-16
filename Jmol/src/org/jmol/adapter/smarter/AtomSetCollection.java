@@ -1068,12 +1068,12 @@ public class AtomSetCollection {
         // standard
         minXYZ.z *= (int) Math.abs(ptSupercell.z);
         maxXYZ.z *= (int) Math.abs(ptSupercell.z);
-        // fall through;
+        //$FALL-THROUGH$;
       case 2:
         // slab or standard
         minXYZ.y *= (int) Math.abs(ptSupercell.y);
         maxXYZ.y *= (int) Math.abs(ptSupercell.y);
-        // fall through;
+        //$FALL-THROUGH$;
       case 1:
         // slab, polymer, or standard
         minXYZ.x *= (int) Math.abs(ptSupercell.x);
@@ -1090,12 +1090,12 @@ public class AtomSetCollection {
         // standard
         minXYZ.z--;
         maxXYZ.z++;
-        // fall through;
+        //$FALL-THROUGH$;
       case 2:
         // slab or standard
         minXYZ.y--;
         maxXYZ.y++;
-        // fall through;
+        //$FALL-THROUGH$;
       case 1:
         // slab, polymer, or standard
         minXYZ.x--;

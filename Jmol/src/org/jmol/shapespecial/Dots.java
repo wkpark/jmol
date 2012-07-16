@@ -206,7 +206,7 @@ public class Dots extends AtomShape {
       if (rd.value == 0)
         isVisible = false;
       setRadius = rd.value;
-      // fall through
+      //$FALL-THROUGH$
     default:
       rd.valueExtended = viewer.getCurrentSolventProbeRadius();
     }

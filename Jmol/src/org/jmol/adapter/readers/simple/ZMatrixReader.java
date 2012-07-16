@@ -279,7 +279,7 @@ No distinction between "Variable:" and "Constant:" is made by Jmol.
     case 6:
       // angle + bond order 
       bondOrder = (int) getValue(tokens.length - 1);
-      // fall through
+      //$FALL-THROUGH$
     case 5:
       // angle  
       // Gaussian Sym 0 x y z 
@@ -288,6 +288,7 @@ No distinction between "Variable:" and "Constant:" is made by Jmol.
         bondOrder = 0;
         break;
       }
+      //$FALL-THROUGH$
     case 7:
       // angle + dihedral or angle + angle
       int ib, ic;
@@ -314,7 +315,7 @@ No distinction between "Variable:" and "Constant:" is made by Jmol.
         break;
       }
       bondOrder = (int) getValue(3);
-      // fall through
+      //$FALL-THROUGH$
     case 3:
       // angle
       f = getValue(2);

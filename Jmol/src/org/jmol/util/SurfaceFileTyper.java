@@ -68,6 +68,7 @@ public class SurfaceFileTyper {
     case '@':
       if (line.indexOf("@text") == 0)
         return "Kinemage";
+      break;
     case '#':
       if (line.indexOf(".obj") >= 0)
         return "Obj"; // #file: pymol.obj

@@ -175,8 +175,10 @@ MERS=(1,2,2)   GNORM=4
         switch (nTv) {
         case 3:
           ptCenter.x = 0.5f;
+          //$FALL-THROUGH$
         case 2:
           ptCenter.y = 0.5f;
+          //$FALL-THROUGH$
         case 1:
           ptCenter.z = 0.5f;
         }

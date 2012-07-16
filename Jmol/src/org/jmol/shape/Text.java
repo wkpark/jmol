@@ -416,7 +416,7 @@ public class Text extends Object2d {
       } else {
         strOff = "[" + movableXPercent + " " + movableYPercent + "%]";
       }
-      //fall through
+      //$FALL-THROUGH$
     case VALIGN_XYZ:
       if (strOff == null)
         strOff = Escape.escape(xyz);

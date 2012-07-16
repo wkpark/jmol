@@ -3701,7 +3701,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     switch (tok) {
     case Token.playrev:
       animationManager.reverseAnimation();
-      // fall through
+      //$FALL-THROUGH$
     case Token.play:
     case Token.resume:
       if (!animationManager.animationOn)
@@ -4736,6 +4736,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         format = TextFormat.simpleReplace(global.smilesUrlFormat, "&get3d=True", "");
         return TextFormat.formatString(format, "FILE", Escape.escapeUrl(f));
       }
+      //$FALL-THROUGH$
     case 'N':
     case '2':
     case 'I':
@@ -10002,7 +10003,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         break;
       case 0:
         n = Integer.MAX_VALUE;
-        // fall through
+        //$FALL-THROUGH$
       default:
         if (n > MAX_ACTION_UNDO)
           n = (action == Token.undomove ? actionStates : actionStatesRedo)

@@ -823,6 +823,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
           ret[1] = -1;
         }
       }
+      break;
     case 1:
     case 2:
       // dna/rna
@@ -1095,8 +1096,10 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     switch (group3.length()){
     case 1:
       sb.append("  ");
+      break;
     case 2:
       sb.append(" ");
+      break;
     }
     int pt = group3List.indexOf(sb.toString());
     return (pt < 0 ? Integer.MAX_VALUE : pt / 6 + 1);

@@ -799,7 +799,7 @@ import javax.vecmath.Vector3f;
     case Token.trace:
       if (fValue > Shape.RADIUS_MAX)
         fValue = Shape.RADIUS_MAX;
-      // fall through
+      //$FALL-THROUGH$
     case Token.halo:
     case Token.star:
       RadiusData rd = null;

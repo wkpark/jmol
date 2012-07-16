@@ -365,7 +365,7 @@ public class ForceFieldMMFF extends ForceField {
         case TYPE_CHRG: 
           if (line.charAt(0) == '4')
             continue; // I have no idea what type=4 here would mean. It's supposed to be a bond type
-          // fall through
+          //$FALL-THROUGH$
         case TYPE_ANGLE: 
         case TYPE_BOND: 
         case TYPE_SB: 
@@ -377,17 +377,17 @@ public class ForceFieldMMFF extends ForceField {
         case TYPE_OOP:
         case TYPE_TORSION: 
           a4 = Integer.valueOf(line.substring(18,20).trim()).intValue();
-          // fall through
+          //$FALL-THROUGH$
         case TYPE_ANGLE:
         case TYPE_SB:
         case TYPE_SBDEF:
           a3 = Integer.valueOf(line.substring(13,15).trim()).intValue();
-          // fall through
+          //$FALL-THROUGH$
         case TYPE_BNDK:
         case TYPE_BOND:
         case TYPE_CHRG:
           a2 = Integer.valueOf(line.substring(8,10).trim()).intValue();
-          // fall through
+          //$FALL-THROUGH$
         case TYPE_PBCI:
         case TYPE_VDW:
           a1 = Integer.valueOf(line.substring(3,5).trim()).intValue();

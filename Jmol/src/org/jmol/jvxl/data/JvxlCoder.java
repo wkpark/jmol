@@ -1168,7 +1168,7 @@ public class JvxlCoder {
         case '%':
           next[0]++;
           dataOut.append(chLast = ++ch);
-          //fall through
+          //$FALL-THROUGH$
         case '1':
         case '2':
         case '3':

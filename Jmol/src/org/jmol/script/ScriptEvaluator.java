@@ -915,7 +915,7 @@ public class ScriptEvaluator {
           tok = Token.all;
           iToken += 2;
         }
-        // fall through
+        //$FALL-THROUGH$
       case Token.all:
         if (tok == Token.all)
           v = viewer.getModelUndeletedAtomsBitSet(-1);
@@ -960,7 +960,7 @@ public class ScriptEvaluator {
             if (tokAt(iToken + 3) == Token.per
                 && tokAt(iToken + 4) == Token.bin)
               tok2 = Token.selectedfloat;
-            // fall through
+            //$FALL-THROUGH$
           case Token.min:
           case Token.max:
           case Token.stddev:
@@ -1416,7 +1416,7 @@ public class ScriptEvaluator {
           case Token.sum2:
           case Token.stddev:
             sum2 += ((double) fv) * fv;
-            // fall through
+            //$FALL-THROUGH$
           case Token.sum:
           default:
             sum += fv;
@@ -1467,6 +1467,7 @@ public class ScriptEvaluator {
           case Token.configuration:
           case Token.cell:
             error(ERROR_unrecognizedAtomProperty, Token.nameOf(tok));
+            break;
           default:
             iv = Atom.atomPropertyInt(atom, tok);
           }
@@ -1488,7 +1489,7 @@ public class ScriptEvaluator {
           case Token.sum2:
           case Token.stddev:
             sum2 += ((double) iv) * iv;
-            // fall through
+            //$FALL-THROUGH$
           case Token.sum:
           default:
             sum += iv;
@@ -1551,7 +1552,7 @@ public class ScriptEvaluator {
           case Token.sum2:
           case Token.stddev:
             sum2 += (double) fv * fv;
-            // fall through
+            //$FALL-THROUGH$
           case Token.sum:
           default:
             sum += fv;
@@ -3191,7 +3192,7 @@ public class ScriptEvaluator {
         sb.append(' ');
         // if (token.intValue == Integer.MAX_VALUE)
         sb.append(inBrace ? "-" : "- ");
-        // fall through
+        //$FALL-THROUGH$
       case Token.spec_seqcode:
         if (token.intValue != Integer.MAX_VALUE)
           sb.append(token.intValue);
@@ -3209,7 +3210,7 @@ public class ScriptEvaluator {
         continue;
       case Token.spec_model:
         sb.append("*/");
-        // fall through
+        //$FALL-THROUGH$
       case Token.spec_model2:
       case Token.decimal:
         if (token.intValue < Integer.MAX_VALUE) {
@@ -4213,7 +4214,7 @@ public class ScriptEvaluator {
     switch (tokAt(index)) {
     case Token.integer:
       useModelNumber = true;
-      // fall through
+      //$FALL-THROUGH$
     case Token.decimal:
       iFrame = getToken(index).intValue; // decimal Token intValue is
       // model/frame number encoded
@@ -4717,7 +4718,7 @@ public class ScriptEvaluator {
           plane = getPoint4f(i);
           break;
         }
-        // fall through
+        //$FALL-THROUGH$
       case Token.bitset:
       case Token.expressionBegin:
         Point3f pt1 = atomCenterOrCoordinateParameter(i);
@@ -4866,7 +4867,7 @@ public class ScriptEvaluator {
       default:
         if (!Token.tokAttr(theTok, Token.identifier))
           break;
-        // fall through
+        //$FALL-THROUGH$
       case Token.navy:
       case Token.string:
         return ColorUtil.getArgbFromString(parameterAsString(index));
@@ -5317,7 +5318,7 @@ public class ScriptEvaluator {
         case Token.loop:
           if (viewer.isHeadless())
             break;
-          //  fall through
+          //$FALL-THROUGH$
         case Token.catchcmd:
         case Token.breakcmd:
         case Token.continuecmd:
@@ -6654,7 +6655,7 @@ public class ScriptEvaluator {
             viewer.navigate(timeSec, path, theta, 0, Integer.MAX_VALUE);
           continue;
         }
-        // fall through
+        //$FALL-THROUGH$
       default:
         error(ERROR_invalidArgument);
       }
@@ -6774,7 +6775,7 @@ public class ScriptEvaluator {
         stereoMode = EnumStereoMode.getStereoMode(parameterAsString(i));
         if (stereoMode != null)
           break;
-        // fall into
+        //$FALL-THROUGH$
       default:
         error(ERROR_invalidArgument);
       }
@@ -6820,7 +6821,7 @@ public class ScriptEvaluator {
         break;
       case Token.smiles:
         isSmiles = true;
-        // fall through
+        //$FALL-THROUGH$
       case Token.search:
         strSmiles = stringParameter(++i);
         break;
@@ -7302,7 +7303,7 @@ public class ScriptEvaluator {
         if (!haveOperation)
           operation = Token.modifyorcreate;
         haveOperation = true;
-        // fall through
+        //$FALL-THROUGH$
       case Token.identifier:
       case Token.aromatic:
       case Token.hbond:
@@ -7549,6 +7550,7 @@ public class ScriptEvaluator {
           else if (iShape == JmolConstants.SHAPE_PMESH && !isWild)
             return getIsosurfaceJvxl(true, JmolConstants.SHAPE_PMESH);
           s += (String) getShapeProperty(iShape, "command") + "\n";
+          break;
         case Token.color:
           colorShape(iShape, iTok + 1, false);
           break;
@@ -7728,6 +7730,7 @@ public class ScriptEvaluator {
         if (changeElementColor(str, argb))
           return;
         error(ERROR_invalidArgument);
+        break;
       case Token.isosurface:
       case Token.contact:
         setShapeProperty(JmolConstants.shapeTokenIndex(tok), "thisID",
@@ -8203,7 +8206,7 @@ public class ScriptEvaluator {
     case 5:
       // parameters 3 and 4 are just for the ride: [end] and ["key"]
       dataString = parameterAsString(2);
-      // fall through
+      //$FALL-THROUGH$
     case 4:
     case 2:
       dataLabel = parameterAsString(1);
@@ -9246,8 +9249,10 @@ public class ScriptEvaluator {
       switch (getToken(i).tok) {
       case Token.identifier:
         error(ERROR_keywordExpected, "ALL, ALLCONNECTED, DELETE");
+        break;
       default:
         error(ERROR_expressionOrIntegerExpected);
+        break;
       case Token.opNot:
         if (tokAt(i + 1) != Token.connected)
           error(ERROR_invalidArgument);
@@ -9408,6 +9413,7 @@ public class ScriptEvaluator {
       break;
     case Token.off:
       setShapeProperty(JmolConstants.SHAPE_MEASURES, "hide", countPlusIndexes);
+      break;
     default:
       setShapeProperty(JmolConstants.SHAPE_MEASURES,
           (strFormat == null ? "toggle" : "toggleOn"), countPlusIndexes);
@@ -9481,6 +9487,7 @@ public class ScriptEvaluator {
     default:
       iToken = 1;
       error(ERROR_invalidArgument);
+      break;
     case Token.data:
       iToken = 1;
       type = "data";
@@ -10053,6 +10060,7 @@ public class ScriptEvaluator {
           }
         }
         error(ERROR_invalidArgument);
+        break;
       case Token.minus:
         direction = -1;
         continue;
@@ -11133,7 +11141,7 @@ public class ScriptEvaluator {
       case Token.on:
         checkLength(2);
         TF = true;
-        // fall through
+        //$FALL-THROUGH$
       case Token.off:
         checkLength(2);
         setBooleanProperty("slabEnabled", TF);
@@ -11377,7 +11385,7 @@ public class ScriptEvaluator {
       break;
     case Token.decimal:
       isOnly = (floatParameter(1) < 0);
-      // fall through
+      //$FALL-THROUGH$
     case Token.integer:
     default:
       rd = encodeRadiusParameter(1, isOnly, true);
@@ -11667,7 +11675,7 @@ public class ScriptEvaluator {
         break;
       case Token.bitset:
         propertyName = "atomBitset";
-        // fall through
+        //$FALL-THROUGH$
       case Token.expressionBegin:
         if (propertyName == null)
           propertyName = (iHaveAtoms || iHaveCoord ? "endSet" : "startSet");
@@ -11795,6 +11803,7 @@ public class ScriptEvaluator {
       return;
     case Token.identifier:
       error(ERROR_invalidArgument);
+      break;
     default:
       period = -1;
     }
@@ -11930,7 +11939,7 @@ public class ScriptEvaluator {
       case Token.surface:
         isSurface = true;
         // deprecated
-        // fall through
+        //$FALL-THROUGH$
       case Token.surfacedistance:
         /*
          * preferred:
@@ -12099,7 +12108,7 @@ public class ScriptEvaluator {
     switch (getToken(1).tok) {
     case Token.on:
       animate = true;
-      // fall through
+      //$FALL-THROUGH$
     case Token.off:
       if (!isSyntaxCheck)
         viewer.setAnimationOn(animate);
@@ -12270,7 +12279,7 @@ public class ScriptEvaluator {
         useModelNumber = false;
         if ((fFrame = floatParameter(i)) < 0)
           error(ERROR_invalidArgument);
-        // fall through
+        //$FALL-THROUGH$
       case Token.integer:
       case Token.string:
         if (nFrames == 2)
@@ -12463,12 +12472,12 @@ public class ScriptEvaluator {
       if (scaleAngstromsPerPixel >= 5) // actually a zoom value
         scaleAngstromsPerPixel = viewer.getZoomSetting()
             / scaleAngstromsPerPixel / viewer.getScalePixelsPerAngstrom(false);
-      // fall through
+      //$FALL-THROUGH$
     case 5:
       if (getToken(4).tok != Token.identifier)
         error(ERROR_invalidArgument);
       fontstyle = parameterAsString(4);
-      // fall through
+      //$FALL-THROUGH$
     case 4:
       if (getToken(3).tok != Token.identifier)
         error(ERROR_invalidArgument);
@@ -12706,7 +12715,7 @@ public class ScriptEvaluator {
         return;
       }
       newTok = Token.defaultvdw;
-      // fall through
+      //$FALL-THROUGH$
     case Token.defaultvdw:
       // allows unquoted string for known vdw type
       if (statementLength > 2) {
@@ -13017,7 +13026,7 @@ public class ScriptEvaluator {
       break;
     case Token.none:
       echoShapeActive = false;
-      // fall through
+      //$FALL-THROUGH$
     case Token.all:
       // all and none get NO additional parameters;
       id = parameterAsString(2);
@@ -13213,6 +13222,7 @@ public class ScriptEvaluator {
           break;
         case Token.background:
           flags |= Object2d.POINTER_BACKGROUND;
+          //$FALL-THROUGH$
         case Token.on:
           flags |= Object2d.POINTER_ON;
           break;
@@ -13327,13 +13337,13 @@ public class ScriptEvaluator {
     switch (tokAt(checkLast(2))) {
     case Token.backbone:
       bool = true;
-      // fall into
+      //$FALL-THROUGH$
     case Token.sidechain:
       setBooleanProperty("hbondsBackbone", bool);
       break;
     case Token.solid:
       bool = true;
-      // falll into
+      //$FALL-THROUGH$
     case Token.dotted:
       setBooleanProperty("hbondsSolid", bool);
       break;
@@ -13369,6 +13379,7 @@ public class ScriptEvaluator {
         else
           i = 3;
       }
+      break;
     case Token.delete:
       break;
     default:
@@ -13428,7 +13439,7 @@ public class ScriptEvaluator {
     case Token.measure:
       isMeasure = true;
       type = "MEASURE";
-      // fall through
+      //$FALL-THROUGH$
     case Token.select:
       if (checkLength34() == 4)
         i = 3;
@@ -13940,6 +13951,7 @@ public class ScriptEvaluator {
     case Token.on:
     case Token.selected:
       showHalo = true;
+      //$FALL-THROUGH$
     case Token.off:
     case Token.none:
     case Token.normal:
@@ -15774,7 +15786,7 @@ public class ScriptEvaluator {
         }
         if (tok == Token.nada)
           break;
-        // fall through to translucent
+        //$FALL-THROUGH$ to translucent
       case Token.translucent:
       case Token.opaque:
         okNoAtoms = true;
@@ -15840,12 +15852,12 @@ public class ScriptEvaluator {
       case Token.sasurface:
         if (isFloatParameter(i + 1))
           saProbeRadius = floatParameter(++i);
-        // fall through
+        //$FALL-THROUGH$
       case Token.cap:
       case Token.nci:
       case Token.surface:
         localOnly = false;
-        // fall through
+        //$FALL-THROUGH$
       case Token.trim:
       case Token.full:
       case Token.plane:
@@ -16284,7 +16296,7 @@ public class ScriptEvaluator {
           v2 = new Vector3f(pts[2]);
           v2.sub(pts[0]);
           v2.scale(1000f);
-          // fall through
+          //$FALL-THROUGH$
         case 2: // slab
           // "a b c" is really "z y x"
           v1 = new Vector3f(pts[1]);
@@ -16381,7 +16393,7 @@ public class ScriptEvaluator {
           error(ERROR_invalidArgument);
         }
         isNegOffset = true;
-        // fall through
+        //$FALL-THROUGH$
       case Token.homo:
       case Token.lumo:
         linearCombination = null;
@@ -16448,6 +16460,7 @@ public class ScriptEvaluator {
         break;
       case Token.identifier:
         error(ERROR_invalidArgument);
+        break;
       default:
         if (isArrayParameter(i)) {
           linearCombination = floatParameterSet(i, 2, Integer.MAX_VALUE);
@@ -17262,6 +17275,7 @@ public class ScriptEvaluator {
         switch (tokAt(++i)) {
         case Token.nada:
           error(ERROR_badArgumentCount);
+          break;
         case Token.homo:
         case Token.lumo:
           offset = moOffset(i);
@@ -18285,7 +18299,7 @@ public class ScriptEvaluator {
         iToken++;
       else
         break;
-      // fall through
+      //$FALL-THROUGH$
     case Token.opaque:
     case Token.translucent:
       if (!checkOnly)
@@ -18321,7 +18335,7 @@ public class ScriptEvaluator {
           tok = Token.on;
         break;
       }
-      // fall through for on/off/display
+      //$FALL-THROUGH$ for on/off/display
     case Token.frontlit:
     case Token.backlit:
     case Token.fullylit:

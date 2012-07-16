@@ -1097,7 +1097,7 @@ public class MOCalculation extends QuantumCalculation implements
             switch(d) {
             case 3:
               value *= r;
-              //fall through
+              //$FALL-THROUGH$
             case 2:
               value *= r2;
               break;
@@ -1130,7 +1130,7 @@ public class MOCalculation extends QuantumCalculation implements
             switch(d) {
             case 3:
               value *= r;
-              //fall through
+              //$FALL-THROUGH$
             case 2:
               value *= r2;
               break;
@@ -1150,7 +1150,7 @@ public class MOCalculation extends QuantumCalculation implements
         switch(a) {
         case 3:
           vdx *= X[ix];
-          //fall through
+          //$FALL-THROUGH$
         case 2:
           vdx *= dx2;
           break;
@@ -1167,7 +1167,7 @@ public class MOCalculation extends QuantumCalculation implements
           switch(b) {
           case 3:
             vdy *= Y[iy];
-            //fall through
+            //$FALL-THROUGH$
           case 2:
             vdy *= dy2;
             break;
@@ -1187,7 +1187,7 @@ public class MOCalculation extends QuantumCalculation implements
             switch(c) {
             case 3:
               value *= Z[iz];
-              //fall through
+              //$FALL-THROUGH$
             case 2:
               value *= dz2;
               break;
@@ -1198,7 +1198,7 @@ public class MOCalculation extends QuantumCalculation implements
             switch(d) {
             case 3:
               value *= r;
-              //fall through
+              //$FALL-THROUGH$
             case 2:
               value *= r2;
               break;

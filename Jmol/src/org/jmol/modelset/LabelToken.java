@@ -546,6 +546,7 @@ public class LabelToken {
           break;
         case Token.atomproperty:
           ptT = Atom.atomPropertyTuple(atom, t.tok);
+          break;
         default:
           // any dual case would be here -- must handle specially
         }

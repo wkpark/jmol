@@ -274,7 +274,7 @@ public class Measurement {
         vectorBA.scale(0.5f);
         pointArc = new Point3f(vectorBA);
       }
-      // fall through
+      //$FALL-THROUGH$
     case 4:
       strMeasurement = formatAngle(value);
       return;

@@ -685,6 +685,7 @@ public class SmilesParser {
         braceCount--;
         return true;
       }
+      break;
     default:
       return false;
     }

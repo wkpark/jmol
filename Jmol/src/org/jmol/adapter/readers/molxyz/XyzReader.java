@@ -140,7 +140,7 @@ public class XyzReader extends AtomSetCollectionReader {
           atom.atomSerial = parseInt(tokens[8]);
         }
         vpt++;
-        //fall through:
+        //$FALL-THROUGH$:
       default:
         // or       sym x y z vx vy vz
         float vx = parseFloat(tokens[vpt++]);

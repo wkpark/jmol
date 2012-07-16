@@ -9159,6 +9159,9 @@
   <fah_proj number="7084" name="proinsulin WT" public="y"
     server="129.74.85.15" atoms="1293" preferred="5.64" deadline="9.39"
     credit="1220.83" frames="100" code="A4" contact="Yong Kim" kfactor="3.0"/>
+  <fah_proj number="7085" name="proinsulin WT" public="n"
+    server="129.74.85.15" atoms="1293" preferred="5.64" deadline="9.39"
+    credit="1220.83" frames="100" code="A4" contact="Yong Kim" kfactor="3.0"/>
 
   <!-- Projects 7100 to 7199 -->
   <fah_proj number="7100" name="2kxa_bax" public="y"
@@ -9409,6 +9412,18 @@
     server="128.143.199.97" atoms="77095" preferred="3.4" deadline="5.599988425925926"
     credit="700.0" frames="100" code="A3" contact="kasson" kfactor="3.02"/>
   <fah_proj number="7511" name="ctx-acyl" public="y"
+    server="128.143.199.97" atoms="87451" preferred="3.8" deadline="6.3"
+    credit="785.0" frames="100" code="A3" contact="kasson" kfactor="3.01"/>
+  <fah_proj number="7512" name="new_shv-lig" public="n"
+    server="128.143.199.97" atoms="77922" preferred="3.5" deadline="5.8"
+    credit="715.0" frames="100" code="A3" contact="kasson" kfactor="2.97"/>
+  <fah_proj number="7513" name="new_shv-acyl" public="n"
+    server="128.143.199.97" atoms="77895" preferred="3.4" deadline="5.8"
+    credit="715.0" frames="100" code="A3" contact="kasson" kfactor="2.98"/>
+  <fah_proj number="7514" name="kpc2-acyl" public="y"
+    server="128.143.199.97" atoms="77095" preferred="3.4" deadline="5.599988425925926"
+    credit="700.0" frames="100" code="A3" contact="kasson" kfactor="3.02"/>
+  <fah_proj number="7515" name="ctx-acyl" public="y"
     server="128.143.199.97" atoms="87451" preferred="3.8" deadline="6.3"
     credit="785.0" frames="100" code="A3" contact="kasson" kfactor="3.01"/>
 

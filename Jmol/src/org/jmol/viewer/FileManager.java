@@ -1239,8 +1239,7 @@ public class FileManager {
     }
     boolean haveScripts = (!haveSceneScript && scripts != null && scripts.length > 0);
     if (haveScripts) {
-      String vname = "v__" + ("" + Math.random()).substring(3);
-      script = "# Jmol script\n{\n\tVar " + vname + " = pathForAllFiles\n\tpathForAllFiles=\"$SCRIPT_PATH$\"\n\ttry {\n\t\tscript " + Escape.escape(scripts[0]) + "\n\t}\n\tpathForAllFiles = " + vname + "\n}\n";
+      script = wrapPathForAllFiles("script " + Escape.escape(scripts[0]), "");
       for (int i = 0; i < scripts.length; i++)
         fileNames.add(scripts[i]);
     }
@@ -1315,6 +1314,11 @@ public class FileManager {
       }
     }
     return writeZipFile(fileName, v, "OK JMOL");
+  }
+
+  static String wrapPathForAllFiles(String cmd, String strCatch) {
+    String vname = "v__" + ("" + Math.random()).substring(3);
+    return "# Jmol script\n{\n\tVar " + vname + " = pathForAllFiles\n\tpathForAllFiles=\"$SCRIPT_PATH$\"\n\ttry{\n\t\t" + cmd + "\n\t}catch(e){" + strCatch + "}\n\tpathForAllFiles = " + vname + "\n}\n";
   }
 
   private static String stripPath(String name) {

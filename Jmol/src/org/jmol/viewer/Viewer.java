@@ -10539,11 +10539,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     Map<String, String> htScenes = new Hashtable<String, String>();
     List<Integer> list = new ArrayList<Integer>();
     int iSceneLast = 0;
+    int iScene = 0;
     StringBuffer sceneScript = new StringBuffer("###scene.spt###\n{\nsceneScripts={");
     for (int i = 1; i < scenes.length; i++) {
       scenes[i - 1] = TextFormat.trim(scenes[i - 1], "\t\n\r ");
       int[] pt = new int[1];
-      int iScene = Parser.parseInt(scenes[i], pt);
+      iScene = Parser.parseInt(scenes[i], pt);
       if (iScene == Integer.MIN_VALUE)
         return "bad scene ID: " + iScene;
       scenes[i] = scenes[i].substring(pt[0]);
@@ -10585,7 +10586,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       .append("  sscript += ';'+script;\n")
       .append(" }\n")
       .append("}\n}catch(e){print e;isOK = false}\n")
-      .append("if (isOK) {try{script inline @sscript}catch(e){print e;isOK = false}}\n")
+      .append("if (isOK) {" 
+          + FileManager.wrapPathForAllFiles("script inline @sscript", "print e;isOK = false") 
+          + "}\n")
       .append("if (!isOK){script @thisSceneState}\n")
       .append("currentSceneRoot = thisSceneRoot; currentSceneID = thisSceneID;\n}\n");
     String script = sceneScript.toString();
@@ -10597,16 +10600,23 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     int nFiles = 0;
     if (scenes[0] != "")
       zap(true, true, false);
+    iSceneLast = -1;
     for (int i = 0; i < scenes.length - 1; i++) {
       try {
+        iScene = list.get(i).intValue();
+        if (iScene > iSceneLast)
+          showString("Creating Scene " + iScene, false);
         eval.runScript(scenes[i]);
+        if (iScene <= iSceneLast)
+          continue;
+        iSceneLast = iScene;
         str[2] = "all"; // full PNGJ
-        String fileName = fileRoot + "_scene_" + (i + 1) + ".all.png" + fileExt;
+        String fileName = fileRoot + "_scene_" + iScene + ".all.png" + fileExt;
         String msg = (String) createImage(fileName, "PNGJ", null, 
             str, -1, width, height, null, false);
         str[0] = null; // script0 only saved in first file
         str[2] = "min"; // script only -- for fast loading
-        fileName = fileRoot + "_scene_" + (i + 1) + ".min.png" + fileExt;
+        fileName = fileRoot + "_scene_" + iScene + ".min.png" + fileExt;
         msg += "\n" + (String) createImage(fileName, "PNGJ", null, 
             str, -1, Math.min(width, 200), Math.min(height, 200), null, false);
         showString(msg, false);

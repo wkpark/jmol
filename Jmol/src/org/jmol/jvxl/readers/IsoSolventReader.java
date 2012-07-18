@@ -451,10 +451,37 @@ class IsoSolventReader extends AtomDataReader {
     // created when the toroidal surfaces are split by faces.
     setVertexSource();
     if (doCalculateTroughs && bsSurfacePoints != null) {
+      BitSet bsAll = new BitSet();
       BitSet[] bsSurfaces = meshData.getSurfaceSet();
-      for (int i = 0; i < meshData.nSets; i++)
-        if (!bsSurfaces[i].intersects(bsSurfacePoints))
-          meshData.invalidateSurfaceSet(i);
+      BitSet[] bsSources = null;
+      double[] volumes = (double[]) (isPocket ? null : meshData
+          .calculateVolumeOrArea(-1, true, false));
+      for (int i = 0; i < meshData.nSets; i++) {
+        BitSet bss = bsSurfaces[i];
+        if (bss.intersects(bsSurfacePoints)) {
+          if (volumes == null || Math.abs(volumes[i]) > 1.7) // 1.2^3
+            //doesn't allow for cavities, but doCalculateTroughs takes care of that 
+            if (params.vertexSource != null) {
+              BitSet bs = new BitSet();
+              if (bsSources == null)
+                bsSources = new BitSet[bsSurfaces.length];
+              // don't allow two surfaces to involve the same atom.
+              for (int j = bss.nextSetBit(0); j >= 0; j = bss.nextSetBit(j + 1)) {
+                int iatom = params.vertexSource[j];
+                if (iatom < 0)
+                  continue;
+                if (bsAll.get(iatom)) {
+                  meshData.invalidateSurfaceSet(i);
+                  break;
+                }
+                bs.set(iatom);
+              }
+              bsAll.or(bs);
+              continue;
+            }
+        }
+        meshData.invalidateSurfaceSet(i);
+      }
       updateSurfaceData();
       if (meshDataServer != null) {
         meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_SETS, null);

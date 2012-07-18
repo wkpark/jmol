@@ -306,13 +306,6 @@ public class MeshData extends MeshSurface {
         || val1 <= 0 && val2 <= 0 && val3 <= 0);
   }
 
-  public Object calculateVolumes() {
-    // TODO
-    return null;
-  }
-  
-  
-  
   public Object calculateVolumeOrArea(int thisSet, boolean isArea, boolean getSets) {
     if (getSets)
       getSurfaceSet();
@@ -361,6 +354,6 @@ public class MeshData extends MeshSurface {
     for (int i = bsInvalid.nextSetBit(0); i >= 0; i = bsInvalid.nextSetBit(i + 1))
       vertexValues[i] = Float.NaN;
   }
-  
+
 }
 

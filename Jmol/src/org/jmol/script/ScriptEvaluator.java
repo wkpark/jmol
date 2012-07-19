@@ -7545,10 +7545,10 @@ public class ScriptEvaluator {
               tokCommand == Token.display ? Boolean.FALSE : Boolean.TRUE);
           break;
         case Token.show:
-          if (iShape == JmolConstants.SHAPE_ISOSURFACE && !isWild)
-            return getIsosurfaceJvxl(false, JmolConstants.SHAPE_ISOSURFACE);
-          else if (iShape == JmolConstants.SHAPE_PMESH && !isWild)
-            return getIsosurfaceJvxl(true, JmolConstants.SHAPE_PMESH);
+          //if (iShape == JmolConstants.SHAPE_ISOSURFACE && !isWild)
+            //return getIsosurfaceJvxl(false, JmolConstants.SHAPE_ISOSURFACE);
+          //else if (iShape == JmolConstants.SHAPE_PMESH && !isWild)
+            //return getIsosurfaceJvxl(true, JmolConstants.SHAPE_PMESH);
           s += (String) getShapeProperty(iShape, "command") + "\n";
           break;
         case Token.color:
@@ -15029,7 +15029,7 @@ public class ScriptEvaluator {
   private String getIsosurfaceJvxl(boolean asMesh, int iShape) {
     if (isSyntaxCheck)
       return "";
-    return (String) getShapeProperty(iShape, asMesh ? "jvxlMeshXml"
+    return (String) getShapeProperty(iShape, asMesh ? "jvxlMeshX"
         : "jvxlDataXml");
   }
 

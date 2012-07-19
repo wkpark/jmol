@@ -57,6 +57,7 @@ import java.io.StringReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
+import java.util.zip.CRC32;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -1229,6 +1230,8 @@ public class FileManager {
   Object createZipSet(String fileName, String script, String[] scripts, boolean includeRemoteFiles) {
     List<Object> v = new ArrayList<Object>();
     List<String> fileNames = new ArrayList<String>();
+    Long crcValue;
+    Hashtable<Object,String> crcMap = new Hashtable<Object,String>();
     boolean haveSceneScript = (scripts != null && scripts.length == 3 
         && scripts[1].startsWith("###scene.spt###"));
     boolean sceneScriptOnly = (haveSceneScript && scripts[2].equals("min"));
@@ -1257,24 +1260,49 @@ public class FileManager {
       String name = fileNames.get(iFile);
       int itype = urlTypeIndex(name);
       boolean isLocal = (itype < 0 || itype == URL_LOCAL);
+      String newName = name;
+      // also check that somehow we don't have a local file with the same name as
+      // a fixed remote file name (because someone extracted the files and then used them)
       if (isLocal || includeRemoteFiles) {
-        v.add(name);
-        String newName = name;
-        if (newName.indexOf("?") > 0)
-          newName = TextFormat.replaceAllCharacters(newName, "/:?\"'=&", "_");
-        else
-          newName = stripPath(name);
-        v.add(newName);
+        int ptSlash = name.lastIndexOf("/");
+        newName = (name.indexOf("?") > 0 && name.indexOf("|") < 0 ?
+            TextFormat.replaceAllCharacters(name, "/:?\"'=&", "_") : stripPath(name));
+        newName = TextFormat.replaceAllCharacters(newName, "#", "_");
         if (isLocal && name.indexOf("|") < 0) {
+          v.add(name);
+          v.add(newName);
           v.add(null); // data will be gotten from disk
         } else {
+          // all remote files, and any file that was opened from a ZIP collection
           Object ret = getFileAsBytes(name, null);
           if (!(ret instanceof byte[]))
             return ret;
-          v.add(ret);
+          CRC32 crc = new CRC32();
+          crc.update((byte[])ret);
+          crcValue = Long.valueOf(crc.getValue());
+          // only add to the data list v when the data in the file is new
+          if(crcMap.containsKey(crcValue)){
+            // let newName point to the already added data
+            newName = crcMap.get(crcValue); 
+          }else{
+            if (crcMap.containsKey(newName)) {
+              // now we have a conflict. To different files with the same name
+              // append "[iFile]" to the new file name to ensure it's unique
+              int pt = newName.lastIndexOf(".");
+              if (pt > ptSlash) // is a file extension, probably
+                newName = newName.substring(0, pt) + "[" + iFile + "]" + newName.substring(pt);
+              else
+                newName = newName + "[" + iFile + "]";
+            }
+            v.add(name);
+            v.add(newName);
+            v.add(ret);
+            crcMap.put(crcValue,newName);
+          }
         }
         name = "$SCRIPT_PATH$" + newName;
       }
+      crcMap.put(newName, newName);
       newFileNames.add(name);
     }
     if (!sceneScriptOnly) {

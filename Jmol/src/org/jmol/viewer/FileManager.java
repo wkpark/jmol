@@ -1267,7 +1267,7 @@ public class FileManager {
         int ptSlash = name.lastIndexOf("/");
         newName = (name.indexOf("?") > 0 && name.indexOf("|") < 0 ?
             TextFormat.replaceAllCharacters(name, "/:?\"'=&", "_") : stripPath(name));
-        newName = TextFormat.replaceAllCharacters(newName, "#", "_");
+        newName = TextFormat.replaceAllCharacters(newName, "[]", "_");
         if (isLocal && name.indexOf("|") < 0) {
           v.add(name);
           v.add(newName);

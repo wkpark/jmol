@@ -380,6 +380,8 @@ public class GaussianReader extends MOReader {
    4        2PY         0.00000   0.00000   0.50891   0.00000   0.00000
    5        2PZ        -0.00134  -0.09475   0.00000   0.55774   0.00000
    6        3S          0.00415   0.43535   0.00000   0.32546   0.00000
+   ...can have...
+  16       10PX         0.00000   0.00000   0.00000   0.00000   0.00000
 
   but:
 
@@ -446,6 +448,8 @@ public class GaussianReader extends MOReader {
       try {
         tokens = getTokens();
         String type = tokens[tokens.length - nThisLine - 1].substring(1);
+        if (Character.isDigit(type.charAt(0)))
+          type = type.substring(2); // "11XX"
         if (!isQuantumBasisSupported(type.charAt(0))
             && "XYZ".indexOf(type.charAt(0)) >= 0)
           type = (type.length() == 2 ? "D" : "F") + type;

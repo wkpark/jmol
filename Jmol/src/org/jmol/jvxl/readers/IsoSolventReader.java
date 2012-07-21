@@ -455,7 +455,7 @@ class IsoSolventReader extends AtomDataReader {
       BitSet[] bsSurfaces = meshData.getSurfaceSet();
       BitSet[] bsSources = null;
       double[] volumes = (double[]) (isPocket ? null : meshData
-          .calculateVolumeOrArea(-1, true, false));
+          .calculateVolumeOrArea(-1, false, false));
       for (int i = 0; i < meshData.nSets; i++) {
         BitSet bss = bsSurfaces[i];
         if (bss.intersects(bsSurfacePoints)) {

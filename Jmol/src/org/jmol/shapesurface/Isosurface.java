@@ -616,6 +616,14 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         Mesh m = meshes[i];
         if (m == null)
           continue;
+        if (m.connections != null) {
+          int iAtom = m.connections[0];
+          if (iAtom >= firstAtomDeleted + nAtomsDeleted)
+            m.connections[0] = iAtom - nAtomsDeleted;
+          else if (iAtom >= firstAtomDeleted)
+            m.connections = null;
+        }
+        m.connections = null; // just no way to 
         if (m.modelIndex == modelIndex) {
           meshCount--;
           if (m == currentMesh)

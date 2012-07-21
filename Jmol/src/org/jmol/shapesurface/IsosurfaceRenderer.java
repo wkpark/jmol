@@ -70,6 +70,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
     isosurface.keyXy = null;
     for (int i = isosurface.meshCount; --i >= 0;) {
       imesh = (IsosurfaceMesh) isosurface.meshes[i];
+      if (imesh.connections != null && !viewer.getModelSet().atoms[imesh.connections[0]].isVisible(0))
+        continue;
       hasColorRange = false;
       if (renderMesh(mySlabValue, slabValue)) {
         //System.out.println("render isossurface " + i + " " + isosurface.meshCount);

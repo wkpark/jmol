@@ -456,10 +456,11 @@ class IsoSolventReader extends AtomDataReader {
       BitSet[] bsSources = null;
       double[] volumes = (double[]) (isPocket ? null : meshData
           .calculateVolumeOrArea(-1, false, false));
+      float minVolume = (float)(1.5 * Math.PI * Math.pow(solventRadius, 3));
       for (int i = 0; i < meshData.nSets; i++) {
         BitSet bss = bsSurfaces[i];
         if (bss.intersects(bsSurfacePoints)) {
-          if (volumes == null || Math.abs(volumes[i]) > 1.7) // 1.2^3
+          if (volumes == null || Math.abs(volumes[i]) > minVolume) // roughly 4/3 PI r^3
             //doesn't allow for cavities, but doCalculateTroughs takes care of that 
             if (params.vertexSource != null) {
               BitSet bs = new BitSet();

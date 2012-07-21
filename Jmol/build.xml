@@ -22,9 +22,21 @@
   <property name="debug" value="off" />
   <property name="deprecation" value="off" />
   <property name="optimization" value="off" />
-
-  <property file="src/org/jmol/viewer/Jmol.properties" prefix="Jmol.properties" />
-  <property name="version" value="${Jmol.properties.version}" />
+	<copy todir="" >
+	  <fileset dir="src/org/jmol/viewer/">
+	    <include name="Jmol.properties" />
+	  </fileset>
+	  <filterchain>
+	    <striplinecomments>
+	      <comment value="#" />
+	    </striplinecomments>
+	    <linecontains>
+	      <contains value="___" />
+	    </linecontains>
+	  </filterchain>
+	</copy>
+  <property file="Jmol.properties" prefix="Jmol.properties" />
+  <property name="version" value="${Jmol.properties.___version}" />
   <property name="jvxl_version" value="0.1" />
 
   <property name="tests.source.dir" value="source-tests" />
@@ -234,6 +246,7 @@
         <include name="**/*.txt" />
       </fileset>
     </copy>
+    <copy file="Jmol.properties" tofile="${classes.dir}/org/jmol/viewer/Jmol.properties" />
   </target>
   
   <target name="applet-classes" id="applet-classes" depends="init">
@@ -294,16 +307,7 @@ all support for previous versions removed
         <include name="jmol75x29x8.gif" />
       </fileset>
     </copy>
-    <copy todir="${applet.classes.dir}" >
-      <fileset dir="src">
-        <include name="org/jmol/viewer/Jmol.properties" />
-      </fileset>
-      <filterchain>
-        <linecontains>
-          <contains value="___" />
-        </linecontains>
-      </filterchain>
-    </copy>
+    <copy file="Jmol.properties" tofile="${applet.classes.dir}/org/jmol/viewer/Jmol.properties" />
     <copy todir="${applet.classes.dir}" >
       <fileset dir="${classes.dir}">
         <include name="**/JmolApplet/*/*.class" />
@@ -1389,7 +1393,6 @@ all support for previous versions removed
       </fileset>
     </copy>
     <copy file="src/org/jmol/viewer/Jmol.properties" tofile="build/dist/jmol-${version}/CHANGES.txt" />
-    <copy file="src/org/jmol/viewer/Jmol.properties" tofile="build/dist/Jmol.properties" />
     <chmod perm="ugo+rx">
       <fileset dir="build/dist/jmol-${version}">
         <include name="jmol"/>

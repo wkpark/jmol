@@ -20,8 +20,8 @@
   <property name="path.release"    value="Jmol Prerelease Tests/Prerelease 12.3" />
   <property name="prefix.release"  value="Prerelease " />
 
-  <property file="${dist.dir}/Jmol.properties" prefix="Jmol.properties" />
-  <property name="version" value="${Jmol.properties.version}" />
+  <property file="Jmol.properties" prefix="Jmol.properties" />
+  <property name="version" value="${Jmol.properties.___version}" />
 
   <!-- Copying files to website -->
   <target name="deploy" >

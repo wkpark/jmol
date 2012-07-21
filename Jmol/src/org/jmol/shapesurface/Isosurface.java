@@ -428,8 +428,13 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     }
 
     if ("connections" == propertyName) {
-      if (currentMesh != null)
-        connections = currentMesh.connections = (int[]) value;
+      if (currentMesh != null) {
+        connections = (int[]) value;
+        if (connections[0] >= 0)
+          currentMesh.connections = connections;
+        else
+          connections = currentMesh.connections = null;
+      }
       return;
     }
 

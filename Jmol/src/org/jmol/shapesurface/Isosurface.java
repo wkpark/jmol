@@ -430,7 +430,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if ("connections" == propertyName) {
       if (currentMesh != null) {
         connections = (int[]) value;
-        if (connections[0] >= 0)
+        if (connections[0] >= 0 && connections[0] < viewer.getAtomCount())
           currentMesh.connections = connections;
         else
           connections = currentMesh.connections = null;

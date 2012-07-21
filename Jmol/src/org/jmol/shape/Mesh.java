@@ -412,7 +412,7 @@ public class Mesh extends MeshSurface {
     recalcAltVertices = true;
   }
 
-  BitSet getVisibleVertexBitSet() {
+  public BitSet getVisibleVertexBitSet() {
     BitSet bs = new BitSet();
     if (polygonCount == 0 && bsSlabDisplay != null)
       BitSetUtil.copy(bsSlabDisplay, bs);

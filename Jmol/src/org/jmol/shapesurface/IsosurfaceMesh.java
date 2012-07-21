@@ -66,6 +66,7 @@ public class IsosurfaceMesh extends Mesh {
   Object calculatedVolume;
   Object info;
   
+
   IsosurfaceMesh(String thisID, Graphics3D g3d, short colix, int index) {
     super(thisID, g3d, colix, index);
     checkByteCount = 2;
@@ -977,5 +978,16 @@ public class IsosurfaceMesh extends Mesh {
     }
     return 0.0001f; // different for an isosurface
   }
+
+  @Override
+  public BitSet getVisibleVertexBitSet() {
+    BitSet bs = super.getVisibleVertexBitSet();
+    if (jvxlData.thisSet >= 0)
+      for (int i = 0; i < vertexCount; i++)
+        if (vertexSets[i] != jvxlData.thisSet)
+          bs.clear(i);
+   return bs;
+  }
+
 
 }

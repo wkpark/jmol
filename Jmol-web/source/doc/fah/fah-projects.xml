@@ -9619,6 +9619,9 @@
   <fah_proj number="8004" name="p8004" public="y" file="xyz"
     server="171.67.108.59" atoms="21376" preferred="1.64" deadline="3.54"
     credit="88.59" frames="100" code="A4" contact="shukla" kfactor="0.75" contrib="Wylko Zillmer"/>
+  <fah_proj number="8005" name="p8005" public="y"
+    server="171.67.108.142" atoms="917" preferred="7.1" deadline="9.699988425925927"
+    credit="2510.0" frames="100" code="OG" contact="shukla" kfactor="0.0"/>
   <fah_proj number="8006" name="p8006" public="y"
     server="171.67.108.144" atoms="917" preferred="7.1" deadline="9.699988425925927"
     credit="2510.0" frames="100" code="OG" contact="shukla" kfactor="0.0"/>
@@ -9719,6 +9722,11 @@
   <fah_proj number="8411" name="p8411" public="n"
     server="171.64.65.55" atoms="32657" preferred="3" deadline="4"
     credit="497.0" frames="100" code="A3" contact="dvanatta" kfactor="0.75"/>
+
+  <!-- Projects 8400 to 8499 -->
+  <fah_proj number="8500" name="opa60_micelle" public="n"
+    server="128.143.199.96" atoms="182763" preferred="9.4" deadline="15.6"
+    credit="1940.0" frames="100" code="A3" contact="pela3247" kfactor="3.0"/>
 
   <!-- Projects 9900 to 9999 -->
   <fah_proj number="9900" name="p9900_supervillin_e1" public="y"

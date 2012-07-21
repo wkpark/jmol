@@ -1905,20 +1905,20 @@ public class ScriptEvaluator {
           debugScript);
     String[] data = new String[2];
     data[0] = filename;
-    if (!viewer.getFileAsString(data, Integer.MAX_VALUE, false)) {
+    if (!viewer.getFileAsString(data, Integer.MAX_VALUE, false)) { // first opening
       setErrorMessage("io error reading " + data[0] + ": " + data[1]);
       return false;
     }
     if (("\n" + data[1]).indexOf("\nJmolManifest.txt\n") >= 0) {
       data[0] = filename += "|JmolManifest.txt";
-      if (!viewer.getFileAsString(data, Integer.MAX_VALUE, false)) {
+      if (!viewer.getFileAsString(data, Integer.MAX_VALUE, false)) { // second entry
         setErrorMessage("io error reading " + data[0] + ": " + data[1]);
         return false;
       }
       String path = ZipUtil.getManifestScriptPath(data[1]);
       if (path != null && path.length() > 0) {
         data[0] = filename = filename.substring(0, filename.lastIndexOf("|")) + path; 
-        if (!viewer.getFileAsString(data, Integer.MAX_VALUE, false)) {
+        if (!viewer.getFileAsString(data, Integer.MAX_VALUE, false)) { // third entry
           setErrorMessage("io error reading " + data[0] + ": " + data[1]);
           return false;
         }

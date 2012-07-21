@@ -93,7 +93,6 @@ public class IsosurfaceMesh extends Mesh {
     polygonColixes = null;
     showPoints = iAddGridPoints;
     surfaceSet = null;
-    thisSet = -1;
     vertexColixes = null;
     vertexColorMap = null;
     vertexIncrement = 1;
@@ -149,7 +148,6 @@ public class IsosurfaceMesh extends Mesh {
             isTranslucent, iLevel);
   }
 
-  int thisSet = -1;
   private int mergeAssociatedNormalCount;
   public void setMerged(boolean TF) {
     isMerged = TF;

@@ -523,7 +523,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       newSg();
     } else if ("getSurfaceSets" == propertyName) {
       if (thisMesh != null) {
-        thisMesh.thisSet = ((Integer) value).intValue();
+        thisMesh.jvxlData.thisSet = ((Integer) value).intValue();
         thisMesh.calculatedVolume = null;
         thisMesh.calculatedArea = null;
       }
@@ -795,7 +795,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       f *= (thisMesh.bsSlabDisplay == null ? thisMesh.vertexCount : thisMesh.bsSlabDisplay.cardinality());
       return  thisMesh.calculatedVolume = Float.valueOf(f); 
     }
-    Object ret = meshData.calculateVolumeOrArea(thisMesh.thisSet, isArea, false);
+    Object ret = meshData.calculateVolumeOrArea(thisMesh.jvxlData.thisSet, isArea, false);
     if (isArea)
       thisMesh.calculatedArea = ret;
     else
@@ -859,6 +859,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       cmd += " LINK"; // for lcaoCartoon state
     appendCmd(sb, cmd);
     String id = myType + " ID " + Escape.escape(imesh.thisID);
+    if (imesh.jvxlData.thisSet >= 0)
+      appendCmd(sb, id + " set " + (imesh.jvxlData.thisSet + 1));
     if (imesh.q != null && imesh.q.q0 != 1)
       appendCmd(sb, id + " rotate " + imesh.q.toString());
     if (imesh.ptOffset != null)

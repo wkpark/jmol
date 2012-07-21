@@ -282,8 +282,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
       for (int i = (!imesh.hasGridPoints || imesh.firstRealVertex < 0 ? 0
           : imesh.firstRealVertex); i < vertexCount; i += incr) {
         if (vertexValues != null && Float.isNaN(vertexValues[i]) || frontOnly
-            && transformedVectors[normixes[i]].z < 0 || imesh.thisSet >= 0
-            && imesh.vertexSets[i] != imesh.thisSet || !imesh.isColorSolid
+            && transformedVectors[normixes[i]].z < 0 || imesh.jvxlData.thisSet >= 0
+            && imesh.vertexSets[i] != imesh.jvxlData.thisSet || !imesh.isColorSolid
             && imesh.vertexColixes != null && !setColix(imesh.vertexColixes[i])
             || haveBsDisplay && !imesh.bsDisplay.get(i)
             || slabPoints && !bsSlab.get(i))
@@ -385,7 +385,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
       if (iA == iTest|| iB == iTest || iC == iTest)
         System.out.println(iA + " " + iB + " " + iC);
 */      
-      if (imesh.thisSet >= 0 && imesh.vertexSets[iA] != imesh.thisSet)
+      if (imesh.jvxlData.thisSet >= 0 && imesh.vertexSets != null 
+          && imesh.vertexSets[iA] != imesh.jvxlData.thisSet)
         continue;
       if (haveBsDisplay
           && (!imesh.bsDisplay.get(iA) || !imesh.bsDisplay.get(iB) || !imesh.bsDisplay

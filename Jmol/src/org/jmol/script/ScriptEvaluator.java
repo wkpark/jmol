@@ -17036,8 +17036,8 @@ public class ScriptEvaluator {
         break;
       case Token.set:
         thisSetNumber = intParameter(++i);
-        if (!toCache)
-          sbCommand.append(" set " + thisSetNumber);
+        //if (!toCache)
+          //sbCommand.append(" set " + thisSetNumber);
         break;
       case Token.center:
         propertyName = "center";

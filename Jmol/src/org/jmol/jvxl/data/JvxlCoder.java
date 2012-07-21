@@ -324,6 +324,8 @@ public class JvxlCoder {
       addAttrib(attribs, "\n  colorScheme", jvxlData.colorScheme);
     if (jvxlData.rendering != null)
       addAttrib(attribs, "\n  rendering", jvxlData.rendering);
+    if (jvxlData.thisSet >= 0)
+      addAttrib(attribs, "\n  set", "" + (jvxlData.thisSet + 1));
     if (jvxlData.slabValue != Integer.MIN_VALUE)
       addAttrib(attribs, "\n  slabValue", "" + jvxlData.slabValue);
     if (jvxlData.isSlabbable)

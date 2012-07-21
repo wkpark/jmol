@@ -99,7 +99,7 @@ class AtomPropertyMapper extends AtomDataReader {
 
     setHeader("property", params.calculationType);
     // for plane mapping
-    setRanges(params.solvent_ptsPerAngstrom, params.solvent_gridMax);
+    setRanges(params.solvent_ptsPerAngstrom, params.solvent_gridMax, 0);
     params.cutoff = 0;
   }
 

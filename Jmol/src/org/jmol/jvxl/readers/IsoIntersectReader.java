@@ -93,7 +93,7 @@ class IsoIntersectReader extends AtomDataReader {
       for (int i = bsB.nextSetBit(0); i >= 0; i = bsB.nextSetBit(i + 1))
         myBsB.set(myIndex[i]);
       setHeader("VDW intersection surface", params.calculationType);
-      setRanges(params.solvent_ptsPerAngstrom, params.solvent_gridMax);
+      setRanges(params.solvent_ptsPerAngstrom, params.solvent_gridMax, 0);
       margin = 5f;
     } else {
       setVolumeData();

@@ -135,12 +135,12 @@ class IsoShapeReader extends VolumeDataReader {
 
   @Override
   protected void setVolumeData() {
-    setVoxelRange(0, -radius, radius, ptsPerAngstrom, maxGrid);
-    setVoxelRange(1, -radius, radius, ptsPerAngstrom, maxGrid);
+    setVoxelRange(0, -radius, radius, ptsPerAngstrom, maxGrid, 0);
+    setVoxelRange(1, -radius, radius, ptsPerAngstrom, maxGrid, 0);
     if (allowNegative)
-      setVoxelRange(2, -radius, radius, ptsPerAngstrom, maxGrid);
+      setVoxelRange(2, -radius, radius, ptsPerAngstrom, maxGrid, 0);
     else
-      setVoxelRange(2, 0, radius / eccentricityRatio, ptsPerAngstrom, maxGrid);
+      setVoxelRange(2, 0, radius / eccentricityRatio, ptsPerAngstrom, maxGrid, 0);
   }
 
   @Override

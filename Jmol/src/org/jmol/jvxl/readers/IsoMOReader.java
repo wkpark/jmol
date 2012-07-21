@@ -80,7 +80,7 @@ class IsoMOReader extends AtomDataReader {
     else
       setHeader("MO", "calculation type: "
           + params.moData.get("calculationType"));
-    setRanges(params.qm_ptsPerAngstrom, params.qm_gridMax);
+    setRanges(params.qm_ptsPerAngstrom, params.qm_gridMax, 0);
     String className = (isNci ? "quantum.NciCalculation"
         : "quantum.MOCalculation");
     if (haveVolumeData) {

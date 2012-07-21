@@ -151,8 +151,20 @@ class VolumeDataReader extends SurfaceReader {
     ptTemp.add(params.origin);
     Logger.info("grid max xyz = " + ptTemp);
   }
+  
+  /**
+   * 
+   * @param index
+   * @param min
+   * @param max
+   * @param ptsPerAngstrom
+   * @param gridMax
+   * @param minPointsPerAngstrom for solvent calc, this is necessary; otherwise set to 0
+   * @return  number of grid points total
+   */
   protected int setVoxelRange(int index, float min, float max,
-                              float ptsPerAngstrom, int gridMax) {
+                              float ptsPerAngstrom, int gridMax, 
+                              float minPointsPerAngstrom) {
     int nGrid;
     float d;
     if (min >= max) {
@@ -161,9 +173,9 @@ class VolumeDataReader extends SurfaceReader {
     }
     float range = max - min;
     float resolution = params.resolution;
-    if (resolution != Float.MAX_VALUE) {
+    if (resolution != Float.MAX_VALUE)
       ptsPerAngstrom = resolution;
-    }
+      
     nGrid = (int) (range * ptsPerAngstrom) + 1;
     if (nGrid > gridMax) {
       if ((dataType & Parameters.HAS_MAXGRID) > 0) {
@@ -181,6 +193,11 @@ class VolumeDataReader extends SurfaceReader {
       }
     }
     ptsPerAngstrom = (nGrid - 1) / range;
+    if (ptsPerAngstrom < minPointsPerAngstrom) {
+      ptsPerAngstrom = minPointsPerAngstrom;
+      nGrid = (int) (ptsPerAngstrom * range + 1);
+      ptsPerAngstrom = (nGrid - 1) / range;
+    }
     d = volumeData.volumetricVectorLengths[index] = 1f / ptsPerAngstrom;
     voxelCounts[index] = nGrid;// + ((dataType & Parameters.IS_SOLVENTTYPE) != 0 ? 3 : 0);
     if (!isQuiet)

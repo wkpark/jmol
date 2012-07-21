@@ -77,6 +77,7 @@ abstract class AtomDataReader extends VolumeDataReader {
   protected boolean doAddHydrogens;
   protected boolean havePlane;
   protected boolean doUseIterator;
+  private float minPtsPerAng;
 
   @Override
   protected void setup(boolean isMapData) {
@@ -121,7 +122,7 @@ abstract class AtomDataReader extends VolumeDataReader {
         xyzMax = new Point3f(10, 10, 10);
       }
     }
-    setRanges(params.plane_ptsPerAngstrom, params.plane_gridMax); 
+    setRanges(params.plane_ptsPerAngstrom, params.plane_gridMax, 0); 
   }
 
   /**
@@ -323,11 +324,12 @@ abstract class AtomDataReader extends VolumeDataReader {
         "\n");
   }
 
-  protected void setRanges(float ptsPerAngstrom, int maxGrid) {
+  protected void setRanges(float ptsPerAngstrom, int maxGrid, float minPtsPerAng) {
     if (xyzMin == null)
       return;
     this.ptsPerAngstrom = ptsPerAngstrom;
     this.maxGrid = maxGrid;
+    this.minPtsPerAng = minPtsPerAng;
     setVolumeData();
     JvxlCoder.jvxlCreateHeader(volumeData, jvxlFileHeaderBuffer);
   }
@@ -335,9 +337,9 @@ abstract class AtomDataReader extends VolumeDataReader {
   @Override
   protected void setVolumeData() {
     if (!setVolumeDataParams()) {
-      setVoxelRange(0, xyzMin.x, xyzMax.x, ptsPerAngstrom, maxGrid);
-      setVoxelRange(1, xyzMin.y, xyzMax.y, ptsPerAngstrom, maxGrid);
-      setVoxelRange(2, xyzMin.z, xyzMax.z, ptsPerAngstrom, maxGrid);
+      setVoxelRange(0, xyzMin.x, xyzMax.x, ptsPerAngstrom, maxGrid, minPtsPerAng);
+      setVoxelRange(1, xyzMin.y, xyzMax.y, ptsPerAngstrom, maxGrid, minPtsPerAng);
+      setVoxelRange(2, xyzMin.z, xyzMax.z, ptsPerAngstrom, maxGrid, minPtsPerAng);
     }
   }
 

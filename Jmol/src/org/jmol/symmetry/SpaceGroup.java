@@ -339,8 +339,6 @@ class SpaceGroup {
         sg = new SpaceGroup("0;--;--;--");
         sg.doNormalize = false;
         sg.generateOperatorsFromXyzInfo(name);
-      } else {
-        sg = null;
       }
     }
     if (sg != null)

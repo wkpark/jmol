@@ -109,8 +109,7 @@ class SelectionManager {
       bsHidden.or(bs);
     }
     BitSetUtil.andNot(bsHidden, bsDeleted);
-    if (modelSet != null)
-      modelSet.setBsHidden(bsHidden);
+    modelSet.setBsHidden(bsHidden);
     if (!isQuiet)
       viewer.reportSelection(GT._("{0} atoms hidden", ""
           + bsHidden.cardinality()));

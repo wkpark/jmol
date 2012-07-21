@@ -540,42 +540,39 @@ public class PovrayDialog extends JDialog {
   void goPressed() {
 
     // File theFile = new.getSelectedFile();
-  	String basename = saveField.getText();
+    String basename = saveField.getText();
     String filename = basename;
     String savePath = savePathLabel.getText();
     File theFile = new File(savePath, filename);
-    if (theFile != null) {
-      basename = filename = theFile.getAbsolutePath();
-        /*
-        boolean allFrames = false;
-        if (allFramesCheck != null) {
-         allFrames = allFramesCheck.isSelected();   
-        }
-        */
-        //int width = outputWidth;
-        //int height = outputHeight;
-        //if ((imageSizeCheck != null) && (imageSizeCheck.isSelected())) {
-          int height = Integer.parseInt(imageSizeTextHeight.getValue().toString());
-          int width = Integer.parseInt(imageSizeTextWidth.getValue().toString());
-        //}
-        String[] fullPath = new String[] { filename + ":::" + getINI() };
-        String data = viewer.generateOutput("Povray", fullPath, width, height);
-        if (data == null)
-          return;
-        viewer.writeTextFile(filename + ".ini", data);        
+    basename = filename = theFile.getAbsolutePath();
+    /*
+    boolean allFrames = false;
+    if (allFramesCheck != null) {
+     allFrames = allFramesCheck.isSelected();   
     }
-    
+    */
+    //int width = outputWidth;
+    //int height = outputHeight;
+    //if ((imageSizeCheck != null) && (imageSizeCheck.isSelected())) {
+    int height = Integer.parseInt(imageSizeTextHeight.getValue().toString());
+    int width = Integer.parseInt(imageSizeTextWidth.getValue().toString());
+    //}
+    String[] fullPath = new String[] { filename + ":::" + getINI() };
+    String data = viewer.generateOutput("Povray", fullPath, width, height);
+    if (data == null)
+      return;
+    viewer.writeTextFile(filename + ".ini", data);
+
     // Run Povray if needed
     boolean callPovray = runPovCheck.isSelected();
     if (callPovray) {
       String[] commandLineArgs = null;
-//      if (useIniFile) {
-      	commandLineArgs = new String[] {
-      	  povrayPathLabel.getText(), filename + ".ini"
-      	};
-//      } else {
-//        commandLineArgs = getCommandLineArgs();
-//      }
+      //      if (useIniFile) {
+      commandLineArgs = new String[] { povrayPathLabel.getText(),
+          filename + ".ini" };
+      //      } else {
+      //        commandLineArgs = getCommandLineArgs();
+      //      }
       try {
         Runtime.getRuntime().exec(commandLineArgs);
       } catch (java.io.IOException e) {

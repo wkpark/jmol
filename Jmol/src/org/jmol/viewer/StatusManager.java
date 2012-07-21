@@ -512,7 +512,7 @@ class StatusManager {
 
     if (viewer.appConsole != null) {
       if (msWalltime == 0) {
-        String strInfo = (data == null || data[1] == null ? null : data[1]
+        String strInfo = (data[1] == null ? null : data[1]
             .toString());
         viewer.appConsole.sendConsoleMessage(strInfo);
       }

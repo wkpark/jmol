@@ -875,7 +875,6 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
               } catch (IOException e) {
                 // Nothing
               }
-              macro = null;
             }
           }
         }

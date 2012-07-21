@@ -116,7 +116,6 @@ class ScriptMathProcessor {
   ScriptVariable getResult(boolean allowUnderflow)
       throws ScriptException {
     boolean isOK = true;
-    ScriptVariable x = null;
     while (isOK && oPt >= 0)
       isOK = operate();
     if (isOK) {
@@ -127,8 +126,7 @@ class ScriptMathProcessor {
         return new ScriptVariable(Token.vector, result);
       }
       if (xPt == 0) {
-        if (x == null)
-          x = xStack[0];
+        ScriptVariable x = xStack[0];
         if (x.tok == Token.bitset || x.tok == Token.varray
             || x.tok == Token.string || x.tok == Token.matrix3f
             || x.tok == Token.matrix4f)
@@ -190,19 +188,13 @@ class ScriptMathProcessor {
 
   boolean addX(BitSet bs) {
     // the standard entry point for bit sets
-    ScriptVariable v = new ScriptVariable(Token.bitset, bs);
-    if (v == null)
-      return false;
-    putX(v);
+    putX(new ScriptVariable(Token.bitset, bs));
     return wasX = true;
   }
 
   boolean addX(Point3f pt) {
     // the standard entry point for bit sets
-    ScriptVariable v = new ScriptVariable(Token.point3f, pt);
-    if (v == null)
-      return false;
-    putX(v);
+    putX(new ScriptVariable(Token.point3f, pt));
     return wasX = true;
   }
 

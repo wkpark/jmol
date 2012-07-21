@@ -299,11 +299,8 @@ all support for previous versions removed
         <include name="org/jmol/viewer/Jmol.properties" />
       </fileset>
       <filterchain>
-        <striplinecomments>
-          <comment value="#" />
-        </striplinecomments>
         <linecontains>
-          <contains value="=" />
+          <contains value="___" />
         </linecontains>
       </filterchain>
     </copy>

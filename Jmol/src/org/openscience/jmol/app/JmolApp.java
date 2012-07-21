@@ -399,7 +399,7 @@ public class JmolApp {
       script2 = line.getOptionValue("j");
     }
 
-    Point b = null;    
+    //Point b = null;    
     if (haveDisplay && historyFile != null) {
       Dimension size;
       String vers = System.getProperty("java.version");
@@ -418,10 +418,10 @@ public class JmolApp {
       // first one is just approximate, but this is set in doClose()
       // so it will reset properly -- still, not perfect
       // since it is always one step behind.
-      if (b == null || b.x > 50)
+      //if (b == null || b.x > 50)
         border = new Point(12, 116);
-      else
-        border = new Point(b.x, b.y);
+      //else
+        //border = new Point(b.x, b.y);
         // note -- the first time this is run after changes it will not work
       // because there is a bootstrap problem.
       }

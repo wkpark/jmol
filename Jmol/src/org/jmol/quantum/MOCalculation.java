@@ -1250,7 +1250,7 @@ public class MOCalculation extends QuantumCalculation implements
     String[] so = getShellOrder(shell);
     for (int i = 0; i < so.length; i++) {
       double c = coeffs[i];
-        Logger.debug("MO coeff " + (so == null ? "?" + i : so[i]) + " "
+        Logger.debug("MO coeff " + so[i] + " "
             + (map[i] + moCoeff - map.length + i + 1) + "\t" + c + "\t" + thisAtom.atom);
     }
   }

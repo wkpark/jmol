@@ -834,7 +834,7 @@ public class _IdtfExporter extends __CartesianExporter {
       boolean isAll = (bsPolygons == null);
       int i0 = (isAll ? nPolygons - 1 : bsPolygons.nextSetBit(0));
       for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsPolygons.nextSetBit(i + 1))) {
-        if (polygonColixes == null) {
+        //if (polygonColixes == null) {
           sbColorIndexes.append(" "
               + htColixes.get("" + colixes[indices[i][0]]) + " "
               + htColixes.get("" + colixes[indices[i][1]]) + " "
@@ -844,10 +844,10 @@ public class _IdtfExporter extends __CartesianExporter {
                 + htColixes.get("" + colixes[indices[i][0]]) + " "
                 + htColixes.get("" + colixes[indices[i][2]]) + " "
                 + htColixes.get("" + colixes[indices[i][3]]));
-        } else {
+        //} else {
           // TODO polygon colixes
           // output(htColixes.get("" + polygonColixes[i]) + "\n");
-        }
+        //}
       }
     }
 

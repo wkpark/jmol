@@ -326,7 +326,7 @@ public final class ModelLoader {
       iterateOverAllNewModels(adapter, atomSetCollection);
       iterateOverAllNewAtoms(adapter, atomSetCollection);
       iterateOverAllNewBonds(adapter, atomSetCollection);
-      if (adapter != null && merging && !appendNew) {
+      if (merging && !appendNew) {
         Map<String, Object> info = adapter.getAtomSetAuxiliaryInfo(
             atomSetCollection, 0);
         modelSet.setModelAuxiliaryInfo(baseModelIndex, "initialAtomCount", info

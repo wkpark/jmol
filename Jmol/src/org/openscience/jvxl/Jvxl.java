@@ -62,10 +62,8 @@ public class Jvxl {
     float cutoff = Float.NaN;
     boolean isPositiveOnly = false;
 
-    String phase = null;
     Point4f plane = null;
 
-    String colorScheme = null;
     boolean bicolor = false;
     boolean reverseColor = false;
     float min = Float.NaN;
@@ -279,8 +277,8 @@ public class Jvxl {
       sg.setParameter("sign", null);
     if (reverseColor)
       sg.setParameter("reverseColor", null);
-    if (phase != null)
-      sg.setParameter("phase", phase);
+    //if (phase != null)
+      //sg.setParameter("phase", phase);
 
     if (progressive)
       sg.setParameter("progressive", null);
@@ -309,11 +307,11 @@ public class Jvxl {
 
     //color scheme is only for VMRL
 
-    if (colorScheme != null) {
-      ColorEncoder ce = new ColorEncoder(null);
-      ce.setColorScheme(colorScheme, false);
-      sg.setParameter("colorScheme", ce);
-    }
+    //if (colorScheme != null) {
+     // ColorEncoder ce = new ColorEncoder(null);
+     // ce.setColorScheme(colorScheme, false);
+     // sg.setParameter("colorScheme", ce);
+   // }
     if (!Float.isNaN(min))
       sg.setParameter("red", new Float(min));
     if (!Float.isNaN(max))

@@ -54,40 +54,35 @@ final public class JmolConstants {
     Properties props = new Properties();
 
     // Reading version from resource   inside jar
-    if ((tmpVersion == null) || (tmpDate == null)) {
-      BufferedInputStream bis = null;
-      InputStream is = null;
-      try {
-        is = JmolConstants.class.getClassLoader().getResourceAsStream("org/jmol/viewer/Jmol.properties");        
-        bis = new BufferedInputStream(is);
-        props.load(bis);
-        if (tmpVersion == null) {
-          tmpVersion = props.getProperty("version", tmpVersion);
+    BufferedInputStream bis = null;
+    InputStream is = null;
+    try {
+      is = JmolConstants.class.getClassLoader().getResourceAsStream(
+          "org/jmol/viewer/Jmol.properties");
+      bis = new BufferedInputStream(is);
+      props.load(bis);
+      tmpVersion = props.getProperty("___version", tmpVersion);
+      tmpDate = props.getProperty("___date", tmpDate);
+      if (tmpDate != null) {
+        tmpDate = tmpDate.substring(7, 23);
+        // NOTE : date is update in the properties by SVN, and is in the format
+        // $Date$"
+      }
+    } catch (IOException e) {
+      // Nothing to do
+    } finally {
+      if (bis != null) {
+        try {
+          bis.close();
+        } catch (IOException e) {
+          // Nothing to do
         }
-        if (tmpDate == null) {
-          tmpDate = props.getProperty("date", tmpDate);
-          if (tmpDate != null) {
-            tmpDate = tmpDate.substring(7, 23);
-            // NOTE : date is update in the properties by SVN, and is in the format
-            // $Date$"
-          }
-        }
-      } catch (IOException e) {
-        // Nothing to do
-      } finally {
-        if (bis != null) {
-          try {
-            bis.close();
-          } catch (IOException e) {
-            // Nothing to do
-          }
-        }
-        if (is != null) {
-          try {
-            is.close();
-          } catch (IOException e) {
-            // Nothing to do
-          }
+      }
+      if (is != null) {
+        try {
+          is.close();
+        } catch (IOException e) {
+          // Nothing to do
         }
       }
     }

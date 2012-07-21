@@ -1038,19 +1038,18 @@ class SymmetryOperation extends Matrix4f {
         TriangleData.intersectPlane(plane, v, 3);
 
         // returns triangles and lines
-        if (v != null)
-          for (int i = v.size(); --i >= 0;) {
-            Point3f[] pts = (Point3f[]) v.get(i);
-            draw1.append(drawid).append("planep").append(i).append(
-                Escape.escape(pts[0])).append(Escape.escape(pts[1]));
-            if (pts.length == 3)
-              draw1.append(Escape.escape(pts[2]));
-            draw1.append(" color translucent ").append(color);
-          }
+        for (int i = v.size(); --i >= 0;) {
+          Point3f[] pts = (Point3f[]) v.get(i);
+          draw1.append(drawid).append("planep").append(i).append(
+              Escape.escape(pts[0])).append(Escape.escape(pts[1]));
+          if (pts.length == 3)
+            draw1.append(Escape.escape(pts[2]));
+          draw1.append(" color translucent ").append(color);
+        }
 
         // and JUST in case that does not work, at least draw a circle
 
-        if (v == null || v.size() == 0) {
+        if (v.size() == 0) {
           ptemp.set(pa1);
           ptemp.add(ax1);
           draw1.append(drawid).append("planeCircle scale 2.0 circle ").append(
@@ -1156,15 +1155,13 @@ class SymmetryOperation extends Matrix4f {
     if (ax1 != null)
       ax1.normalize();
     Matrix4f m2 = null;
-    if (m != null) {
-      m2 = new Matrix4f(m);
-      if (vtrans.length() != 0) {
-        m2.m03 += vtrans.x;
-        m2.m13 += vtrans.y;
-        m2.m23 += vtrans.z;
-      }
-      xyz = getXYZFromMatrix(m2, false, false, false);
+    m2 = new Matrix4f(m);
+    if (vtrans.length() != 0) {
+      m2.m03 += vtrans.x;
+      m2.m13 += vtrans.y;
+      m2.m23 += vtrans.z;
     }
+    xyz = getXYZFromMatrix(m2, false, false, false);
     return new Object[] { xyz, xyzOriginal, info1, cmds, approx0(ftrans),
         approx0(trans), approx0(ipt), approx0(pa1), approx0(ax1),
         Integer.valueOf(ang1), m2, vtrans };

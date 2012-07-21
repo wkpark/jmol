@@ -1,5 +1,7 @@
 // JmolApplet.js -- Jmol._Applet and Jmol._Image
 
+// BH 7/16/2012 1:50:03 PM adds server-side scripting for image
+
 (function (Jmol, document) {
 
 
@@ -499,13 +501,20 @@
 		if (Jmol._debugAlert)
 			alert(t);
 		this._code = Jmol._documentWrite(t);
-		this._canScript = function(script) {return (script.indexOf("#alt:LOAD") >= 0);};
 		this._ready = true;
 		if (Jmol._document)
 			this._readyCallback(id, null, true, null);
   }
 
 	Jmol._Applet._setCommonMethods(Jmol._Image.prototype);
+
+	Jmol._Image.prototype._canScript = function(script) {
+		var slc = script.toLowerCase().replace(/[\",\']/g, '');
+		var ipt = slc.length;
+		return (script.indexOf("#alt:LOAD") >= 0 || slc.indexOf(";") < 0 && slc.indexOf("\n") < 0
+		  && (slc.indexOf("script ") == 0 || slc.indexOf("load ") == 0)
+		  && (slc.indexOf(".png") == ipt - 4 || slc.indexOf(".jpg") == ipt - 4));
+	}
 
 	Jmol._Image.prototype._script = function(script) {
 		var slc = script.toLowerCase().replace(/[\",\']/g, '');
@@ -537,8 +546,18 @@
 				}
 			}
 			document.getElementById(this._id + "_image").src = imageFile
-		}
-		// could implement server-side scripting here
+		} else if (script.indexOf("#alt:LOAD ") >= 0) {
+		  imageFile = script.split("#alt:LOAD ")[1]
+			if (imageFile.indexOf("??") >= 0) {
+				var db = imageFile.split("??")[0];
+				imageFile = prompt(imageFile.split("??")[1], "");
+				if (!imageFile)
+					return;
+				if (!Jmol.db._DirectDatabaseCalls[imageFile.substring(0,1)])
+					imageFile = db + imageFile;
+			}
+			this._loadFile(imageFile);
+    }
 	}
 	
 	Jmol._Image.prototype._show = function(tf) {

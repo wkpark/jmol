@@ -262,7 +262,7 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
         continue;
       }
       m2.add(item);
-      if (i + 1 == commands.length && m2 != null) {
+      if (i + 1 == commands.length) {
         m2.setText(firstCommand + " - " + cmd);
         m.add(m2);
       }

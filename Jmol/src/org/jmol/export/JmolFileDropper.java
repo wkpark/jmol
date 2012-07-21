@@ -219,7 +219,6 @@ public class JmolFileDropper implements DropTargetListener {
          */
 
         try {
-          o = null;
           if (!isAccepted)
             dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
           isAccepted = true;
@@ -257,7 +256,6 @@ public class JmolFileDropper implements DropTargetListener {
          */
 
         try {
-          o = null;
           if (!isAccepted)
             dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
           isAccepted = true;

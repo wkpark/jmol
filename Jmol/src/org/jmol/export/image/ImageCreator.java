@@ -93,9 +93,9 @@ public class ImageCreator implements JmolImageCreatorInterface {
    * @param fileName
    * @param type
    * @param text_or_bytes
-   * @param scripts 
+   * @param scripts
    * @param quality
-   * @return          null (canceled) or a message starting with OK or an error message
+   * @return null (canceled) or a message starting with OK or an error message
    */
   public Object createImage(String fileName, String type, Object text_or_bytes,
                             String[] scripts, int quality) {
@@ -147,10 +147,8 @@ public class ImageCreator implements JmolImageCreatorInterface {
         len = (new File(fileName)).length();
       }
     } catch (IOException exc) {
-      if (exc != null) {
-        Logger.error("IO Exception", exc);
-        return exc.toString();
-      }
+      Logger.error("IO Exception", exc);
+      return exc.toString();
     } finally {
       if (os != null) {
         try {
@@ -200,7 +198,6 @@ public class ImageCreator implements JmolImageCreatorInterface {
                     .getWidth(null), image.getHeight(null)) : Viewer.getJmolVersion());
             JpegEncoder.write(viewer.getApiPlatform(), image, quality, os,
                 caption);
-            bytes = null;
           }
         } else if (type.equals("JPG64") || type.equals("JPEG64")) {
           if (quality <= 0)
@@ -249,14 +246,12 @@ public class ImageCreator implements JmolImageCreatorInterface {
             bytes = PpmEncoder.getBytes(image);
           } else {
             PpmEncoder.write(image, os);
-            bytes = null;
           }
         } else if (type.equals("GIF")) {
           if (asBytes) {
             bytes = GifEncoder.getBytes(image);
           } else {
             GifEncoder.write(image, os);
-            bytes = null;
           }
         } else if (type.equals("PDF")) {
           // applet will not have this interface

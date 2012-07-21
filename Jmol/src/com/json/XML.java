@@ -500,7 +500,7 @@ public class XML {
       }
       return sb.toString();
     }
-    string = (object == null) ? "null" : escape(object.toString());
+    string = escape(object.toString());
     return (tagName == null) ? "\"" + string + "\""
         : (string.length() == 0) ? "<" + tagName + "/>" : "<" + tagName + ">"
             + string + "</" + tagName + ">";

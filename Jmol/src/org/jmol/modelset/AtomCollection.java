@@ -440,12 +440,12 @@ abstract public class AtomCollection {
       xyz = (Point3f) xyzValues;
     } else if (xyzValues instanceof List<?>) {
       v = (List<Point3f>) xyzValues;
-      if (v == null || (nValues = v.size()) == 0)
+      if ((nValues = v.size()) == 0)
         return;
       type = 1;
     } else if (xyzValues instanceof Point3f[]){
       values = (Point3f[]) xyzValues;
-      if (values == null || (nValues = values.length) == 0)
+      if ((nValues = values.length) == 0)
         return;
       type = 2;
     } else {

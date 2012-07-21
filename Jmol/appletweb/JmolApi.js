@@ -1,4 +1,21 @@
-// JmolApi.js -- Jmol user functions
+// JmolApi.js -- Jmol user functions  Bob Hanson hansonr@stolaf.edu
+
+// along with this file you need at least JmolCore.js and JmolApplet.js. Also, if you want buttons, JmolControls.js
+// in that order. Then include JmolApi.js. 
+
+// default settings are below. Generally you would do something like this:
+
+// jmol = "jmol"
+// Info = {.....your settings if not default....}
+// Jmol.jmolButton(jmol,....)
+// jmol = Jmol.getApplet(jmol, Info)
+// Jmol.script(jmol,"....")
+// Jmol.jmolLink(jmol,....)
+// etc. 
+// first parameter is always the applet id, either the string "jmol" or the object defined by Jmol.getApplet()
+// no need for waiting to start giving script commands. You can also define a callback function as part of Info.
+
+// see JmolCore.js for details
 
 (function (Jmol) {
 

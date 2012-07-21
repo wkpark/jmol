@@ -388,8 +388,6 @@ abstract public class GenericPopup {
         if (basename.indexOf("??") >= 0) {
           what = setCheckBoxOption(item, basename, what);
         } else {
-          if (what == null)
-            return;
           if (!TF)
             return;
           what = "set picking " + basename.substring(0, basename.length() - 2);
@@ -746,8 +744,6 @@ abstract public class GenericPopup {
       script ="SELECT " + name;
       name += "  (" + n + ")";
       nItems++;
-    } else {
-      script = null;
     }
     Object item = addMenuItem(menu, name, script, getId(menu) + "." + name);
     if (n == 0)

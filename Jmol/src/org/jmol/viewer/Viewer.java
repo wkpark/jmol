@@ -347,8 +347,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         : commandOptions.indexOf("-R") >= 0 ? ACCESS.NONE : ACCESS.ALL);
     apiPlatform = implementedPlatform;
     if (apiPlatform == null)
-      apiPlatform = (ApiPlatform) Interface.getInterface(commandOptions == null
-          || !commandOptions.contains("platform=") ? "org.jmol.awt.Platform"
+      apiPlatform = (ApiPlatform) Interface.getInterface(
+          !commandOptions.contains("platform=") ? "org.jmol.awt.Platform"
           : commandOptions.substring(commandOptions.indexOf("platform=") + 9));
     apiPlatform.setViewer(this, display);
     g3d = new Graphics3D(apiPlatform);
@@ -2404,7 +2404,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       errMsg = (String) atomSetCollection;
       setFileLoadStatus(FileManager.EnumFileStatus.NOT_LOADED, fullPathName,
           null, null, errMsg);
-      if (displayLoadErrors && errMsg != null && !isAppend
+      if (displayLoadErrors && !isAppend
           && !errMsg.equals("#CANCELED#"))
         zap(errMsg);
       return errMsg;

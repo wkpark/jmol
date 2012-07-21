@@ -1162,7 +1162,6 @@ public class ScriptEvaluator {
   private ScriptVariable getBitsetPropertySelector(int i, boolean mustBeSettable)
       throws ScriptException {
     int tok = getToken(i).tok;
-    String s = null;
     switch (tok) {
     case Token.min:
     case Token.max:
@@ -1188,9 +1187,8 @@ public class ScriptEvaluator {
     }
     if (mustBeSettable && !Token.tokAttr(tok, Token.settable))
       return null;
-    if (s == null)
-      s = parameterAsString(i).toLowerCase();
-    return new ScriptVariable(Token.propselector, tok, s);
+    return new ScriptVariable(Token.propselector, tok, parameterAsString(i)
+        .toLowerCase());
   }
 
   private float[] getBitsetPropertyFloat(BitSet bs, int tok, float min,
@@ -18006,8 +18004,7 @@ public class ScriptEvaluator {
               filename = localName;
             if (!surfaceObjectSeen || !toCache)
               sbCommand.append(" /*file*/").append(Escape.escape(filename));
-            propertyValue = null;
-            // null value indicates that we need a reader based on the fileName
+            // null propertyValue indicates that we need a reader based on the fileName
           }
           if (!surfaceObjectSeen || !toCache)
             if (fileIndex >= 0)

@@ -104,6 +104,10 @@
 		return this._applet.getPropertyAsJavaObject(sKey);
 	}
 
+	Jmol._JSVApplet.prototype._getPropertyAsArray = function(sKey,sValue) {
+		return Jmol._evalJSON(this._getPropertyAsJSON(sKey,sValue),sKey);
+	}
+
 	Jmol._JSVApplet.prototype._resizeApplet = Jmol._Applet.prototype._resizeApplet;
 
 	Jmol._JSVApplet.prototype._loadFile = function(fileName, params){

@@ -144,7 +144,7 @@ public abstract class JmolConsole implements JmolCallbackListener, ActionListene
       String stub = TextFormat.trim(splitCmd[2], "\"\'");
       cmd = nextFileName(stub, nTab);
       if (cmd != null)
-        cmd = splitCmd[0] + splitCmd[1] + q + (cmd == null ? notThis : cmd) + q;
+        cmd = splitCmd[0] + splitCmd[1] + q + cmd + q;
     } else {
       Map<String, Token> map = null;
       if (!asCommand) {

@@ -270,7 +270,7 @@ public class ZipUtil {
         if (!fileName.equals(ze.getName()))
           continue;
         byte[] bytes = getStreamBytes(zis, ze.getSize());
-        if (isZipFile(bytes) && list != null && ++listPtr < list.length)
+        if (isZipFile(bytes) && ++listPtr < list.length)
           return getZipFileContentsAsBytes(new BufferedInputStream(
               new ByteArrayInputStream(bytes)), list, listPtr);
         return bytes;

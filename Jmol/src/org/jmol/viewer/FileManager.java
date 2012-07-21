@@ -1698,7 +1698,7 @@ public class FileManager {
       if (line == null)
         return 0;
       int linept = 0;
-      int linelen = (line == null ? -1 : line.length());
+      int linelen = line.length();
       for (int i = 0; i < buf.length && linelen >= 0; i++) {
         if (linept >= linelen) {
           linept = 0;

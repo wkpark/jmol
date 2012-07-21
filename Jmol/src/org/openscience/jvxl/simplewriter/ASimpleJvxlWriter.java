@@ -82,8 +82,7 @@ public class ASimpleJvxlWriter {
     writeFile(outputFile + "A", jvxlGetData(null, params,
         volumeData, title, surfacePointsReturn, areaVolumeReturn));
 
-    if (areaVolumeReturn != null)
-      System.out.println("calculated area = " + areaVolumeReturn[0] 
+     System.out.println("calculated area = " + areaVolumeReturn[0] 
                          + " volume = " + areaVolumeReturn[1]
                          + " for " + surfacePointsReturn.size() 
                          + " surface points");

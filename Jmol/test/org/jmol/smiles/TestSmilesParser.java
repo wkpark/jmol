@@ -1266,7 +1266,7 @@ public class TestSmilesParser extends TestCase {
       return b;
     if (atom1.getElementNumber() == 1)
       addExplicitH(atom2);
-    if (atom2 !=  null && atom2.getElementNumber() == 1)
+    if (atom2.getElementNumber() == 1)
       addExplicitH(atom1);
     return b;
   }

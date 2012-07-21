@@ -1198,16 +1198,10 @@ abstract public class ModelCollection extends BondCollection {
               "\nREMARK   6 Total charge on this protein: " + charge
                   + " e\nREMARK   6\n");
     }
-    int lastAtomIndex = bs.length() - 1; 
+    int lastAtomIndex = bs.length() - 1;
     boolean showModels = (iModel != atoms[lastAtomIndex].modelIndex);
     StringBuffer sbCONECT = (showModels ? null : new StringBuffer());
     boolean isMultipleBondPDB = models[iModel].isPdbWithMultipleBonds;
-    LabelToken[] t4x = null;
-    LabelToken[] t3x = null;
-    LabelToken[] t4h = null;
-    LabelToken[] t3h = null;
-    LabelToken[] t4a = null;
-    LabelToken[] t3a = null;
     LabelToken[] tokens;
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       Atom a = atoms[i];
@@ -1223,26 +1217,26 @@ abstract public class ModelCollection extends BondCollection {
       boolean isBiomodel = models[a.modelIndex].isBioModel;
       boolean isHetero = a.isHetero();
       if (!isBiomodel)
-        tokens = (leftJustify ? (t4x == null ? LabelToken.compile(viewer,
+        tokens = (leftJustify ? LabelToken.compile(viewer,
             "HETATM%5.-5i %-4.4a%1AUNK %1c   1%1E   %8.3x%8.3y%8.3z" + occTemp,
-            '\0', null) : t4x) : (t3x == null ? LabelToken
+            '\0', null) : LabelToken
             .compile(viewer,
                 "HETATM%5.-5i  %-3.3a%1AUNK %1c   1%1E   %8.3x%8.3y%8.3z"
-                    + occTemp, '\0', null) : t3x));
+                    + occTemp, '\0', null)
+
+        );
       else if (isHetero)
-        tokens = (leftJustify ? (t4h == null ? LabelToken.compile(viewer,
+        tokens = (leftJustify ? LabelToken.compile(viewer,
             "HETATM%5.-5i %-4.4a%1A%3.-3n %1c%4.-4R%1E   %8.3x%8.3y%8.3z"
-                + occTemp, '\0', null) : t4h) : (t3h == null ? LabelToken
-            .compile(viewer,
-                "HETATM%5.-5i  %-3.3a%1A%3.-3n %1c%4.-4R%1E   %8.3x%8.3y%8.3z"
-                    + occTemp, '\0', null) : t3h));
+                + occTemp, '\0', null) : LabelToken.compile(viewer,
+            "HETATM%5.-5i  %-3.3a%1A%3.-3n %1c%4.-4R%1E   %8.3x%8.3y%8.3z"
+                + occTemp, '\0', null));
       else
-        tokens = (leftJustify ? (t4a == null ? LabelToken.compile(viewer,
+        tokens = (leftJustify ? LabelToken.compile(viewer,
             "ATOM  %5.-5i %-4.4a%1A%3.-3n %1c%4.-4R%1E   %8.3x%8.3y%8.3z"
-                + occTemp, '\0', null) : t4a) : (t3a == null ? LabelToken
-            .compile(viewer,
-                "ATOM  %5.-5i  %-3.3a%1A%3.-3n %1c%4.-4R%1E   %8.3x%8.3y%8.3z"
-                    + occTemp, '\0', null) : t3a));
+                + occTemp, '\0', null) : LabelToken.compile(viewer,
+            "ATOM  %5.-5i  %-3.3a%1A%3.-3n %1c%4.-4R%1E   %8.3x%8.3y%8.3z"
+                + occTemp, '\0', null));
       String XX = a.getElementSymbol(false).toUpperCase();
       sb.append(LabelToken.formatLabel(viewer, a, tokens, '\0', null)).append(
           XX.length() == 1 ? " " + XX : XX.substring(0, 2)).append("  \n");

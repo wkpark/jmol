@@ -667,7 +667,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
     try {
       if (json != null) {
         msg = json.toString();
-      } else if (json == null && msg != null && msg.indexOf("{") != 0) {
+      } else if (msg != null && msg.indexOf("{") != 0) {
         json = new JSONObject();
         if (msg.equalsIgnoreCase("!script_terminated!")) {
           json.put("type", "script");

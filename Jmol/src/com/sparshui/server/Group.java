@@ -81,7 +81,7 @@ public class Group {
     System.out.println();
     */
     
-    List<TouchPoint> clonedPoints = null;
+    //List<TouchPoint> clonedPoints = null;
     /*
      * // until this is implemented somewhere, why go to the trouble? -- BH
      * 
@@ -94,8 +94,11 @@ public class Group {
       Gesture gesture = _gestures.get(i);
       // System.out.println(_gestures.size());
       // System.out.println("Gesture allowed: " + gesture.getName());
-      events.addAll(gesture.processChange(clonedPoints == null ? _touchPoints
-          : clonedPoints, changedPoint));
+      events.addAll(gesture.processChange(
+          //clonedPoints == null ? 
+          _touchPoints
+          //: clonedPoints
+          , changedPoint));
       // System.out.println("Got some events - size: " + events.size());
     }
 

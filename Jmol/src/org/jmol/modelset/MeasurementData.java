@@ -180,8 +180,6 @@ public class MeasurementData implements JmolMeasurementClient {
           iFirstAtom = 0;
         indices[i + 1] = bs.nextSetBit(0);
       } else {
-        if (pts == null)
-          pts = new Point3fi[4];
         pts[i] = (Point3fi)obj;
         indices[i + 1] = -2 - i; 
       }

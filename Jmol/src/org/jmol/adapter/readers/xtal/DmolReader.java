@@ -162,7 +162,7 @@ public class DmolReader extends AtomSetCollectionReader {
       int iAtom0 = 0;
 
       for (int i = 0; i < frequencyCount; i++) {
-        ignore[i] = (!doGetVibration(++vibrationNumber) || tokens == null);
+        ignore[i] = (!doGetVibration(++vibrationNumber));
         if (ignore[i])
           continue;
         applySymmetryAndSetTrajectory();

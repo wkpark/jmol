@@ -391,15 +391,17 @@ public class FileManager {
         : null);
   }
 
+  ZipUtil jmolZip;
+  
   Object getBufferedInputStreamOrErrorMessageFromName(String name, boolean showMsg,
                                               boolean checkOnly, byte[] bytes) {
-    boolean isPngjBinary = (name.indexOf("?POST?_PNGJBIN_") >= 0);
-    boolean isPngj = (isPngjBinary || name.indexOf("?POST?_PNGJ_") >= 0);
-    if (name.indexOf("?POST?_PNG_") > 0 || isPngj) {
-      Object o = viewer.getImageAs(isPngj ? "PNGJ" : "PNG", -1, 0, 0, null, null);
+    boolean isPngjBinaryPost = (name.indexOf("?POST?_PNGJBIN_") >= 0);
+    boolean isPngjPost = (isPngjBinaryPost || name.indexOf("?POST?_PNGJ_") >= 0);
+    if (name.indexOf("?POST?_PNG_") > 0 || isPngjPost) {
+      Object o = viewer.getImageAs(isPngjPost ? "PNGJ" : "PNG", -1, 0, 0, null, null);
       if (! (o instanceof byte[]))
         return o;
-      if (isPngjBinary) {
+      if (isPngjBinaryPost) {
         bytes = (byte[]) o;
         name = TextFormat.simpleReplace(name, "?_", "=_");
       } else {        
@@ -565,6 +567,7 @@ public class FileManager {
 
     if (name.indexOf("|") >= 0) {
       subFileList = TextFormat.split(name, "|");
+      Logger.info("FileManager opening " + name);
       name = subFileList[0];
     }
     Object t = getBufferedInputStreamOrErrorMessageFromName(name, true, false, null);

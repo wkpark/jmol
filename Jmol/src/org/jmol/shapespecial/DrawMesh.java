@@ -87,8 +87,8 @@ public class DrawMesh extends Mesh {
       }
       if (n > 0 && (i == iModel || i == 0)) {
         center.scale(1.0f / n);
-        if (ptOffset != null)
-          center.add(ptOffset);
+        if (mat4 != null)
+          mat4.transform(center);
         break;
       }
     }
@@ -100,13 +100,8 @@ public class DrawMesh extends Mesh {
   }
 
   void offset(Vector3f offset) {
-    if (ptOffset == null)
-      ptOffset = new Point3f();
-    ptOffset.add(offset);
-//    for (int i = vertexCount; --i >= 0;)
-  //    vertices[i].add(offset);
+    rotateTranslate(null, offset, false);
     setCenters();
-    recalcAltVertices = true;
   }
 
   public void deleteAtoms(int modelIndex) {

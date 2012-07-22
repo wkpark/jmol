@@ -1412,8 +1412,11 @@ public void initShape() {
         str.append(s);
       }
     }
-    if (mesh.ptOffset != null)
-      str.append(" offset ").append(Escape.escape(mesh.ptOffset));
+    if (mesh.mat4 != null) {
+      Vector3f v = new Vector3f();
+      mesh.mat4.get(v);
+      str.append(" offset ").append(Escape.escape(v));
+    }
     if (mesh.title != null) {
       String s = "";
       for (int i = 0; i < mesh.title.length; i++)

@@ -16743,6 +16743,12 @@ public class ScriptEvaluator {
         continue;
         // offset, rotate, and scale3d don't need to be saved in sbCommand
         // because they are display properties
+      case Token.move: // Jmol 13.0.RC2 -- required for state saving after coordinate-based translate/rotate
+        propertyName = "moveIsosurface";
+        if (tokAt(++i) != Token.matrix4f)
+          error(ERROR_invalidArgument);
+        propertyValue = getToken(i++).value; 
+        break;
       case Token.offset:
         propertyName = "offset";
         propertyValue = centerParameter(++i);

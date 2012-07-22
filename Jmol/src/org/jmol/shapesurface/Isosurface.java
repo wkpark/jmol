@@ -181,7 +181,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   private short defaultColix;
   private short meshColix;
   private Point3f center;
-  private Point3f offset;
   private float scale3d;
   private boolean isPhaseColored;
   private boolean isColorExplicit;
@@ -317,12 +316,20 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return;
     }
 
+    if ("moveIsosurface" == propertyName) {
+      if (thisMesh != null) {
+        thisMesh.updateCoordinates((Matrix4f) value, null);
+        thisMesh.altVertices = null;
+      }
+      return;
+    }
+
     if ("refreshTrajectories" == propertyName) {
       for (int i = meshCount; --i >= 0;)
         if (meshes[i].connections != null
             && meshes[i].modelIndex == ((Integer) ((Object[]) value)[0])
                 .intValue())
-          meshes[i].updateCoordinates((Matrix4f) ((Object[]) value)[2],
+          ((IsosurfaceMesh) meshes[i]).updateCoordinates((Matrix4f) ((Object[]) value)[2],
               (BitSet) ((Object[]) value)[1]);
       return;
     }
@@ -372,11 +379,11 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     }
 
     if ("offset" == propertyName) {
-      offset = new Point3f((Point3f) value);
+      Point3f offset = new Point3f((Point3f) value);
       if (offset.equals(JmolConstants.center))
         offset = null;
       if (thisMesh != null) {
-        thisMesh.ptOffset = offset;
+        thisMesh.rotateTranslate(null, offset, true);
         thisMesh.altVertices = null;
       }
       return;
@@ -385,9 +392,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if ("rotate" == propertyName) {
       Point4f pt4 = (Point4f) value;
       if (thisMesh != null) {
-        if (pt4 == null || thisMesh.q == null)
-          thisMesh.q = new Quaternion();
-        thisMesh.q = thisMesh.q.mul(new Quaternion(pt4));
+        thisMesh.rotateTranslate(new Quaternion(pt4), null, true);
         thisMesh.altVertices = null;
       }
       return;
@@ -690,12 +695,14 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       if (m == null || m.vertices == null)
         return false;
       data[2] = m.jvxlData.boundingBox;
-      if (m.ptOffset != null) {
+      if (m.mat4 != null) {
         Point3f[] d = new Point3f[2];
         d[0] = new Point3f(m.jvxlData.boundingBox[0]);
         d[1] = new Point3f(m.jvxlData.boundingBox[1]);
-        d[0].add(m.ptOffset);
-        d[1].add(m.ptOffset);
+        Vector3f v = new Vector3f();
+        m.mat4.get(v);
+        d[0].add(v);
+        d[1].add(v);
         data[2] = d;
       }
       return true;
@@ -714,8 +721,11 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         Point3f p = new Point3f(m.jvxlData.boundingBox[0]);
         p.add(m.jvxlData.boundingBox[1]);
         p.scale(0.5f);
-        if (m.ptOffset != null)
-          p.add(m.ptOffset);
+        if (m.mat4 != null) {
+          Vector3f v = new Vector3f();
+          m.mat4.get(v);
+          p.add(v);
+        }
         data[2] = p;
         return true;
       }
@@ -874,10 +884,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     String id = myType + " ID " + Escape.escape(imesh.thisID);
     if (imesh.jvxlData.thisSet >= 0)
       appendCmd(sb, id + " set " + (imesh.jvxlData.thisSet + 1));
-    if (imesh.q != null && imesh.q.q0 != 1)
-      appendCmd(sb, id + " rotate " + imesh.q.toString());
-    if (imesh.ptOffset != null)
-      appendCmd(sb, id + " offset " + Escape.escape(imesh.ptOffset));
+    if (imesh.mat4 != null)
+      appendCmd(sb, id + " move " + Escape.matrixToScript(imesh.mat4));
     if (imesh.scale3d != 0)
       appendCmd(sb, id + " scale3d " + imesh.scale3d);
     if (imesh.jvxlData.slabValue != Integer.MIN_VALUE)
@@ -990,7 +998,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     isPhaseColored = isColorExplicit = false;
     //allowContourLines = true; //but not for f(x,y) or plane, which use mesh
     center = new Point3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
-    offset = null;
     scale3d = 0;
     withinPoints = null;
     cutoffRange = null;
@@ -1019,7 +1026,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       thisMesh.modelIndex = viewer.getCurrentModelIndex();
     thisMesh.scriptCommand = script;
     thisMesh.ptCenter.set(center);
-    thisMesh.ptOffset = offset;
     thisMesh.scale3d = (thisMesh.jvxlData.jvxlPlane == null ? 0 : scale3d);
 //    if (thisMesh.bsSlabDisplay != null)
 //      thisMesh.jvxlData.vertexDataOnly = true;
@@ -1438,10 +1444,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       info.put("area", mesh.calculatedArea);
     if (mesh.ptCenter.x != Float.MAX_VALUE)
       info.put("center", mesh.ptCenter);
-    if (mesh.ptOffset != null)
-      info.put("offset", mesh.ptOffset);
-    if (mesh.q != null)
-      info.put("rotation", mesh.q.toPoint4f());
+    if (mesh.mat4 != null)
+      info.put("mat4", mesh.mat4);
     if (mesh.scale3d != 0)
       info.put("scale3d", new Float(mesh.scale3d));
     info.put("xyzMin", mesh.jvxlData.boundingBox[0]);
@@ -1745,7 +1749,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         if (pickedContour != null)
           return pickedContour.get(JvxlCoder.CONTOUR_VALUE).toString() + (Logger.debugging ? " " + pickedJ : "");
       } else if (m.jvxlData.jvxlPlane != null && m.vertexValues != null) {
-        Point3f[] vertices = (m.ptOffset == null && m.scale3d == 0 
+        Point3f[] vertices = (m.mat4 == null && m.scale3d == 0 
             ? m.vertices : m.getOffsetVertices(m.jvxlData.jvxlPlane)); 
         for (int k = m.vertexCount; --k >= ilast;) {
           Point3f v = vertices[k];

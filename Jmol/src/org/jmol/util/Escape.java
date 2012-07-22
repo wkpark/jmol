@@ -71,6 +71,10 @@ public class Escape {
     return "{" + xyz.x + " " + xyz.y + " " + xyz.z + "}";
   }
 
+  public static String matrixToScript(Object m) {
+    return TextFormat.replaceAllCharacters(m.toString(), "\n\r ","").replace('\t',' ');
+  }
+  
   @SuppressWarnings("unchecked")
   public static String escape(Object x) {
     if (x instanceof String)

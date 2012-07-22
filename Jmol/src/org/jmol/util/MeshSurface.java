@@ -6,6 +6,8 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import javax.vecmath.Matrix3f;
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Tuple3f;
@@ -42,8 +44,7 @@ public class MeshSurface {
   public int normalCount;   // for export only
   protected int normixCount;
   public BitSet bsPolygons;
-  public Point3f ptOffset;
-  public float scale3d;
+  public Matrix4f mat4;
   public BitSet[] surfaceSet;
   public int[] vertexSets;
   public int nSets = 0;

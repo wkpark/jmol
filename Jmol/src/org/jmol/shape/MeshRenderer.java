@@ -141,8 +141,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
       if (!(doRender = g3d.setColix(mesh.slabColix)))
         return true;
     }
-    vertices = (mesh.ptOffset == null && mesh.scale3d == 0 && mesh.q == null
-        && mesh.mat4 == null ? mesh.vertices : mesh.getOffsetVertices(thePlane));
+    vertices = (mesh.scale3d == 0 && mesh.mat4 == null ? mesh.vertices : mesh.getOffsetVertices(thePlane));
     if (mesh.lineData == null) {
       if ((vertexCount = mesh.vertexCount) == 0)
         return false;

@@ -41,9 +41,11 @@ import org.jmol.api.SymmetryInterface;
 import org.jmol.g3d.*;
 
 //import javax.vecmath.Matrix3f;
+import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
+import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 public class Mesh extends MeshSurface {
@@ -62,7 +64,6 @@ public class Mesh extends MeshSurface {
   public Point3f lattice;
   public boolean visible = true;
   public int lighting = Token.frontlit;
-  public Quaternion q;
 
   public float scale = 1;
   public boolean haveXyPoints;
@@ -72,10 +73,10 @@ public class Mesh extends MeshSurface {
   public Mesh linkedMesh; //for lcaoOrbitals
   public Map<String, BitSet> vertexColorMap;
   
-  Matrix4f mat4;
   public int color;
   public SymmetryInterface unitCell;
   
+  public float scale3d = 0;
 
   public int index;
   public int atomIndex = -1;
@@ -138,9 +139,8 @@ public class Mesh extends MeshSurface {
     lattice = null;
     mat4 = null;
     normixes = null;
+    scale3d = 1;
     polygonIndexes = null;
-    ptOffset = null;
-    q = null;
     scale = 1;
     showContourLines = false;
     showPoints = false;
@@ -317,19 +317,18 @@ public class Mesh extends MeshSurface {
         normal = new Vector3f(thePlane.x, thePlane.y, thePlane.z);
         normal.normalize();
         normal.scale(scale3d);
-        if (q != null)
-          normal = q.transform(normal);
+        if (mat4 != null) {
+          Matrix3f m3 = new Matrix3f();
+          mat4.get(m3); 
+          m3.transform(normal);
+        }
     }
     for (int i = 0; i < vertexCount; i++) {
       if (vertexValues != null && Float.isNaN(val = vertexValues[i]))
         continue;
       if (mat4 != null)
         mat4.transform((Point3f) altVertices[i]);
-      if (q != null)
-        altVertices[i] = q.transform((Point3f) altVertices[i]);
       Point3f pt = (Point3f) altVertices[i];
-      if (ptOffset != null)
-        pt.add(ptOffset);
       if (normal != null && val != 0)
         pt.scaleAdd(val, normal, pt);
     }
@@ -371,45 +370,6 @@ public class Mesh extends MeshSurface {
       vertexIndex = vertexCount + vertexIndex;
     return (vertexCount <= vertexIndex ? vertexCount - 1
         : vertexIndex < 0 ? 0 : vertexIndex);
-  }
-
-  public void updateCoordinates(Matrix4f m, BitSet bs) {
-    boolean doUpdate = false;
-    for (int i = 0; i < connections.length; i++)
-      if (connections[i] >= 0 && bs.get(connections[i])) {
-        doUpdate = true;
-        break;
-      }
-    if (!doUpdate)
-      return;
-    /* problem is that the state will not be reproduced
-     * 
-    if (q == null)
-      q = new Quaternion();
-    if (ptOffset == null)
-      ptOffset = new Point3f();
-    Vector3f v = new Vector3f(ptOffset);
-    
-    Matrix4f m4 = new Matrix4f();
-    m4.set(q.getMatrix());
-    m4.setTranslation(v);
-    m4.mul(m, m4);
-
-    Matrix3f m3 = new Matrix3f();
-    m4.get(m3);
-    m4.get(v);
-    q.set(m3);
-    ptOffset.set(v);
-
-     */
-    
-    if (mat4 == null) {
-      mat4 = new Matrix4f();
-      mat4.setIdentity();
-    }
-    mat4.mul(m, mat4);
-    
-    recalcAltVertices = true;
   }
 
   public BitSet getVisibleVertexBitSet() {
@@ -502,6 +462,30 @@ public class Mesh extends MeshSurface {
   public SymmetryInterface getUnitCell() {
     // isosurface only
     return null;
+  }
+
+  public void rotateTranslate(Quaternion q, Tuple3f offset, boolean isAbsolute) {
+    if (q == null && offset == null) {
+      mat4 = null;
+      return;
+    }
+    Matrix3f m3 = new Matrix3f();
+    Vector3f v = new Vector3f();
+    if (mat4 == null) {
+      mat4 = new Matrix4f();
+      mat4.setIdentity();
+    }
+    float f = mat4.get(m3, v);
+    if (q == null) {
+      if (isAbsolute)
+        v.set(offset);
+      else
+        v.add(offset);
+    } else {
+      m3.mul(q.getMatrix());
+    }
+    mat4 = new Matrix4f(m3, v, f);
+    recalcAltVertices = true;
   }
 
 }

@@ -30,6 +30,8 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import javax.vecmath.Matrix3f;
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Tuple3f;
@@ -47,6 +49,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.MeshSurface;
 import org.jmol.util.Parser;
+import org.jmol.util.Quaternion;
 import org.jmol.viewer.Viewer;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.JvxlData;
@@ -989,5 +992,30 @@ public class IsosurfaceMesh extends Mesh {
    return bs;
   }
 
+  /**
+   * 
+   * bs will be null if this is a set from the new isosurface MOVE [mat4] command
+   * 
+   * @param m
+   * @param bs
+   */
+  public void updateCoordinates(Matrix4f m, BitSet bs) {
+    boolean doUpdate = (bs == null);
+    if (!doUpdate)
+      for (int i = 0; i < connections.length; i++)
+        if (connections[i] >= 0 && bs.get(connections[i])) {
+          doUpdate = true;
+          break;
+        }
+    if (!doUpdate)
+      return;
+
+    if (mat4 == null) {
+      mat4 = new Matrix4f();
+      mat4.setIdentity();
+    }
+    mat4.mul(m, mat4);
+    recalcAltVertices = true;
+  }
 
 }

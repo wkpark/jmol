@@ -173,7 +173,8 @@ public class GaussianReader extends MOReader {
       return true;
     }
     if (line.indexOf("Molecular Orbital Coefficients") >= 0 
-        || line.indexOf("Natural Orbital Coefficients") >= 0) {
+        || line.indexOf("Natural Orbital Coefficients") >= 0
+        || line.indexOf("Natural Transition Orbitals") >= 0) {
       if (!filterMO())
         return true;
       readMolecularOrbitals();
@@ -403,7 +404,7 @@ public class GaussianReader extends MOReader {
     Map<String, Object>[] mos = ArrayUtil.createArrayOfHashtable(5);
     List<String>[] data = ArrayUtil.createArrayOfArrayList(5);
     int nThisLine = 0;
-    boolean isNOtype = line.contains("Natural"); //gfprint pop(full,NO)
+    boolean isNOtype = line.contains("Natural Orbital"); //gfprint pop(full,NO)
     while (readLine() != null && line.toUpperCase().indexOf("DENS") < 0) {
       String[] tokens;
       if (line.indexOf("                    ") == 0) {

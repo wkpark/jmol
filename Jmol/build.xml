@@ -1499,6 +1499,18 @@ all support for previous versions removed
                   mode="755"
                   includes="*/jmol,*/jmol.sh" />
     </tar>
+
+    <!-- Copy other files to have a complete distribution -->
+  	<copy file="src/org/jmol/viewer/Jmol.properties" tofile="build/dist/Jmol.properties" />
+  	<copy file="${jmol.build.dir}/Jmol.jar" tofile="build/dist/Jmol.jar" />
+    <filter token="version" value="${version}"/>
+    <copy file="tools/pom.xml.template" tofile="build/dist/pom.xml" filtering="true" />
+    <jar jarfile="build/dist/jmol-${version}-javadoc.jar">
+      <fileset dir="build/javadoc" />
+    </jar>
+    <jar jarfile="build/dist/jmol-${version}-sources.jar">
+      <fileset dir="src" />
+    </jar>
   </target>
 
   <target name="clean-after-dist" id="clean-after-dist">

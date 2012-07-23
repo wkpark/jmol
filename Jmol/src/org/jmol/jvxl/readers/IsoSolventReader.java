@@ -195,7 +195,7 @@ class IsoSolventReader extends AtomDataReader {
       if (havePlane || !isMapData) {
         // when we have molecular or solvent calculation, we can have a problem if we go too low in 
         // resolution. this avoids the problem. "1.5" was determined empirically using 1u19.
-        float minPtsPerAng = (doCalculateTroughs && params.solventRadius >= 1 ? 1.5f / solventRadius : 0); 
+        float minPtsPerAng = 0;//(doCalculateTroughs && params.solventRadius >= 1 ? 1.5f / solventRadius : 0); 
         setRanges(params.solvent_ptsPerAngstrom, params.solvent_gridMax, minPtsPerAng);
         volumeData.getYzCount();
         margin = volumeData.maxGrid * 2.0f;
@@ -630,6 +630,8 @@ class IsoSolventReader extends AtomDataReader {
       while (iter.hasNext()) {
         int iB = iter.next();
         int iatomB = myIndex[iB];
+        if (iatomA >= firstNearbyAtom && iatomB >= firstNearbyAtom)
+          continue;
         Point3f ptB = atomXyz[iatomB];
         float rB = atomRadius[iatomB] + solventRadius;
         float dAB = ptA.distance(ptB);

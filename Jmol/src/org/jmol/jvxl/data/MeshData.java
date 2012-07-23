@@ -120,6 +120,7 @@ import java.util.Comparator;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.MeshSurface;
 
 public class MeshData extends MeshSurface {
@@ -187,7 +188,7 @@ public class MeshData extends MeshSurface {
     for (int i = 0; i < nSets; i++)
       if (surfaceSet[i] != null)
         n++;
-    BitSet[] temp = new BitSet[100];
+    BitSet[] temp = new BitSet[surfaceSet.length];
     n = 0;
     for (int i = 0; i < nSets; i++)
       if (surfaceSet[i] != null)
@@ -268,10 +269,8 @@ public class MeshData extends MeshSurface {
     for (i = 0; i < nSets; i++)
       if (surfaceSet[i] == null)
         break;
-    if (i >= 100) {
-      setsSuccessful = false;
-      return;
-    }
+    if (i == surfaceSet.length)
+      surfaceSet = (BitSet[]) ArrayUtil.ensureLength(surfaceSet, surfaceSet.length + 100);
     surfaceSet[i] = new BitSet();
     surfaceSet[i].set(v1);
     surfaceSet[i].set(v2);

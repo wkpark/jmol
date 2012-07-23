@@ -159,7 +159,7 @@ class VolumeDataReader extends SurfaceReader {
    * @param max
    * @param ptsPerAngstrom
    * @param gridMax
-   * @param minPointsPerAngstrom for solvent calc, this is necessary; otherwise set to 0
+   * @param minPointsPerAngstrom -- added, but not necessary
    * @return  number of grid points total
    */
   protected int setVoxelRange(int index, float min, float max,

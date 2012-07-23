@@ -30,7 +30,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
@@ -49,7 +48,6 @@ import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.MeshSurface;
 import org.jmol.util.Parser;
-import org.jmol.util.Quaternion;
 import org.jmol.viewer.Viewer;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.JvxlData;

@@ -1490,7 +1490,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       x <<= 1;
       y <<= 1;
     }      
-    viewer.hoverOn(x, y, pickedMesh.thisID + ": " + s, pickedMesh.thisID, pickedPt);
+    viewer.hoverOn(x, y, s, pickedMesh.thisID, pickedPt);
     return true;
   }
 
@@ -1779,7 +1779,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       }
     }
     return (pickedVertex == -1 ? null 
-        : (Logger.debugging ? "v" + pickedVertex + " "  + m.vertices[pickedVertex] + ": " : "") + m.vertexValues[pickedVertex]);
+        : (Logger.debugging ? "$" + m.thisID + "[" + (pickedVertex + 1) + "] "  
+            + m.vertices[pickedVertex] + ": " : m.thisID + ": ") + m.vertexValues[pickedVertex]);
   }
 
   @Override

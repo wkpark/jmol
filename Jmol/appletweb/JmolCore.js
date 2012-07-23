@@ -1,4 +1,4 @@
-// JmolCore.js -- Jmol core capability  6/27/2012 11:39:30 AM
+// JmolCore.js -- Jmol core capability  7/22/2012 2:00:15 PM
 
 // see JmolApi.js for public user-interface. All these are private functions
 
@@ -538,7 +538,7 @@ Jmol = (function(document) {
 			return s;
 		}
 		var A = (new Function( "return " + s ) )();
-		return (!A ? null : key && A[key] ? A[key] : A);
+		return (!A ? null : key && A[key] != undefined ? A[key] : A);
 	}
 
 	Jmol._sortMessages = function(A){

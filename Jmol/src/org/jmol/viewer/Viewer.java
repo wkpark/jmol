@@ -10495,6 +10495,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void cacheClear() {
     statusManager.cacheClear();
+    fileManager.clearPngjCache();
   }
 
   public void setCurrentModelID(String id) {

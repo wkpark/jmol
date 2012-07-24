@@ -1908,14 +1908,21 @@ public class ScriptEvaluator {
       return false;
     }
     if (("\n" + data[1]).indexOf("\nJmolManifest.txt\n") >= 0) {
-      data[0] = filename += "|JmolManifest.txt";
-      if (!viewer.getFileAsString(data, Integer.MAX_VALUE, false)) { // second entry
-        setErrorMessage("io error reading " + data[0] + ": " + data[1]);
-        return false;
+      String path;
+      if (filename.endsWith(".all.pngj") || filename.endsWith(".all.png")) {
+        path = "|state.spt";
+        filename += "|";
+      } else {
+        data[0] = filename += "|JmolManifest.txt";
+        if (!viewer.getFileAsString(data, Integer.MAX_VALUE, false)) { // second entry
+          setErrorMessage("io error reading " + data[0] + ": " + data[1]);
+          return false;
+        }
+        path = ZipUtil.getManifestScriptPath(data[1]);
       }
-      String path = ZipUtil.getManifestScriptPath(data[1]);
       if (path != null && path.length() > 0) {
-        data[0] = filename = filename.substring(0, filename.lastIndexOf("|")) + path; 
+        data[0] = filename = filename.substring(0, filename.lastIndexOf("|"))
+            + path;
         if (!viewer.getFileAsString(data, Integer.MAX_VALUE, false)) { // third entry
           setErrorMessage("io error reading " + data[0] + ": " + data[1]);
           return false;

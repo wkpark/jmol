@@ -453,5 +453,40 @@ public class ZipUtil {
     }
     return null;
   }
+
+
+  /**
+   * caches an entire pngj file's contents into a Map
+   * 
+   * @param bis
+   * @param fileName 
+   * @param cache 
+   * @return  file listing, separated by \n
+   */
+  public static String cacheZipContents(BufferedInputStream bis, String fileName, Map<String, byte[]> cache) {
+    ZipInputStream zis = getStream(bis);
+    ZipEntry ze;
+    StringBuffer listing = new StringBuffer();
+    long n = 0;
+    try {
+      while ((ze = zis.getNextEntry()) != null) {
+        String name = ze.getName();
+        listing.append(name).append('\n');
+        long nBytes = ze.getSize();
+        byte[] bytes = getStreamBytes(zis, nBytes);
+        n += bytes.length;
+        cache.put(fileName + "|" + name, bytes );
+      }
+      zis.close();
+    } catch (Exception e) {
+      try {
+        zis.close();
+      } catch (IOException e1) {
+      }
+      return null;
+    }
+    Logger.info("ZipUtil cached " + n + " bytes from " + fileName);
+    return listing.toString();
+  }
   
 }

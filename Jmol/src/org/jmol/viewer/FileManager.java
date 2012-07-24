@@ -43,6 +43,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.net.MalformedURLException;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.BufferedInputStream;
@@ -190,7 +191,7 @@ public class FileManager {
   private String getZipDirectoryAsString(String fileName) {
     return ZipUtil
         .getZipDirectoryAsStringAndClose((BufferedInputStream) getBufferedInputStreamOrErrorMessageFromName(
-            fileName, false, false, null));
+            fileName, fileName, false, false, null));
   }
 
   /////////////// createAtomSetCollectionFromXXX methods /////////////////
@@ -393,8 +394,9 @@ public class FileManager {
 
   ZipUtil jmolZip;
   
-  Object getBufferedInputStreamOrErrorMessageFromName(String name, boolean showMsg,
+  Object getBufferedInputStreamOrErrorMessageFromName(String name, String fullName, boolean showMsg,
                                               boolean checkOnly, byte[] bytes) {
+    byte[] cacheBytes = (fullName == null ? null : getCachedPngjBytes(fullName));
     boolean isPngjBinaryPost = (name.indexOf("?POST?_PNGJBIN_") >= 0);
     boolean isPngjPost = (isPngjBinaryPost || name.indexOf("?POST?_PNGJ_") >= 0);
     if (name.indexOf("?POST?_PNG_") > 0 || isPngjPost) {
@@ -422,8 +424,10 @@ public class FileManager {
     boolean isApplet = (appletDocumentBase != null);
     BufferedInputStream bis = null;
     // int length;
-    try {
-      if (isApplet || isURL) {
+    try {      
+      if (cacheBytes != null)
+        bis = new BufferedInputStream(new ByteArrayInputStream(cacheBytes));
+      else if (isApplet || isURL) {
         if (isApplet && isURL && appletProxy != null)
           name = appletProxy + "?url=" + URLEncoder.encode(name, "utf-8");
         URL url = (isApplet ? new URL(appletDocumentBase, name) : new URL(name));
@@ -452,6 +456,7 @@ public class FileManager {
         // length = (int) file.length();
         bis = new BufferedInputStream(new FileInputStream(file));
       }
+      
       if (checkOnly) {
         bis.close();
         bis = null;
@@ -480,9 +485,8 @@ public class FileManager {
       return new String[] { null, "cannot read file name: " + filename };
     String name = names[0];
     String fullPath = names[0].replace('\\', '/');
-    if (name.indexOf("|") >= 0)
-      name = TextFormat.split(name, "|")[0];
-    Object errMsg = getBufferedInputStreamOrErrorMessageFromName(name, false, true, null);
+    name = getZipRoot(name);
+    Object errMsg = getBufferedInputStreamOrErrorMessageFromName(name, fullPath, false, true, null);
     return new String[] { fullPath,
         (errMsg instanceof String ? (String) errMsg : null) };
   }
@@ -565,24 +569,29 @@ public class FileManager {
       // script or load command should be used)
     }
 
+    byte[] bytes = getCachedPngjBytes(name);
+    String fullName = name;
     if (name.indexOf("|") >= 0) {
       subFileList = TextFormat.split(name, "|");
-      Logger.info("FileManager opening " + name);
+      if (bytes == null)
+        Logger.info("FileManager opening " + name);
       name = subFileList[0];
     }
-    Object t = getBufferedInputStreamOrErrorMessageFromName(name, true, false, null);
+    Object t = (bytes == null ? 
+        getBufferedInputStreamOrErrorMessageFromName(name, fullName, true, false, null)
+        : new BufferedInputStream(new ByteArrayInputStream(bytes)));
     if (t instanceof String)
       return t;
     try {
       BufferedInputStream bis = (BufferedInputStream) t;
-      if (CompoundDocument.isCompoundDocument(bis)) {
-        CompoundDocument doc = new CompoundDocument(bis);
-        return getBufferedReaderForString(doc.getAllData("Molecule", "Input")
-            .toString());
-      } else if (ZipUtil.isGzip(bis)) {
+      if (ZipUtil.isGzip(bis)) {
         do {
           bis = new BufferedInputStream(new GZIPInputStream(bis));
         } while (ZipUtil.isGzip(bis));
+      } else if (CompoundDocument.isCompoundDocument(bis)) {
+        CompoundDocument doc = new CompoundDocument(bis);
+        return getBufferedReaderForString(doc.getAllData("Molecule", "Input")
+            .toString());
       } else {
         bis = ZipUtil.checkPngZipStream(bis);
         if (ZipUtil.isZipFile(bis)) {
@@ -598,6 +607,7 @@ public class FileManager {
           return getBufferedReaderForString(s);
         }
       }
+      
       if (asInputStream)
         return bis;
       return new BufferedReader(new InputStreamReader(bis));
@@ -614,7 +624,7 @@ public class FileManager {
    */
   String[] getZipDirectory(String fileName, boolean addManifest) {
     return ZipUtil.getZipDirectoryAndClose(
-        (BufferedInputStream) getBufferedInputStreamOrErrorMessageFromName(fileName, false,
+        (BufferedInputStream) getBufferedInputStreamOrErrorMessageFromName(fileName, fileName, false,
             false, null), addManifest);
   }
 
@@ -645,13 +655,14 @@ public class FileManager {
       fileData.put(name0, name0 + "\n");
       return name0;
     }
+    String fullName = name;
     if (name.indexOf("|") >= 0) {
       subFileList = TextFormat.split(name, "|");
       name = subFileList[0];
     }
     BufferedInputStream bis = null;
     try {
-      Object t = getBufferedInputStreamOrErrorMessageFromName(name, false, false, null);
+      Object t = getBufferedInputStreamOrErrorMessageFromName(name, fullName, false, false, null);
       if (t instanceof String) {
         fileData.put(name0, (String) t + "\n");
         return name0;
@@ -715,12 +726,13 @@ public class FileManager {
     // will be full path name
     if (name == null)
       return null;
+    String fullName = name;
     String[] subFileList = null;
     if (name.indexOf("|") >= 0) {
       subFileList = TextFormat.split(name, "|");
       name = subFileList[0];
     }
-    Object t = getBufferedInputStreamOrErrorMessageFromName(name, false, false,
+    Object t = getBufferedInputStreamOrErrorMessageFromName(name, fullName, false, false,
         null);
     if (t instanceof String)
       return "Error:" + t;
@@ -1236,7 +1248,7 @@ public class FileManager {
     Long crcValue;
     Hashtable<Object,String> crcMap = new Hashtable<Object,String>();
     boolean haveSceneScript = (scripts != null && scripts.length == 3 
-        && scripts[1].startsWith("###scene.spt###"));
+        && scripts[1].startsWith(SCENE_TAG));
     boolean sceneScriptOnly = (haveSceneScript && scripts[2].equals("min"));
     if (!sceneScriptOnly) {
       getFileReferences(script, fileNames);
@@ -1450,7 +1462,7 @@ public class FileManager {
   }
 
   private String postByteArray(String outFileName, byte[] bytes) {
-    Object ret = getBufferedInputStreamOrErrorMessageFromName(outFileName, false,
+    Object ret = getBufferedInputStreamOrErrorMessageFromName(outFileName, null, false,
         false, bytes);
     if (ret instanceof String)
       return (String) ret;
@@ -1657,8 +1669,8 @@ public class FileManager {
         if (subFileList != null)
           htParams.put("subFileList", subFileList);
         String[] zipDirectory = getZipDirectory(name, true);
-        BufferedInputStream bis = (BufferedInputStream) getBufferedInputStreamOrErrorMessageFromName(name, false,
-                false, null);
+        BufferedInputStream bis = (BufferedInputStream) getBufferedInputStreamOrErrorMessageFromName(name, fullPathNamesIn[i], 
+            false, false, null);
         t = viewer.getModelAdapter()
             .getAtomSetCollectionOrBufferedReaderFromZip(bis, name,
                 zipDirectory, htParams, true, isBinary);
@@ -1904,4 +1916,160 @@ public class FileManager {
       this.code = code;
     }
   }
+  
+  private Map<String, byte[]> pngjCache;
+  
+  void clearPngjCache() {
+    pngjCache = null;
+  }
+  
+  private byte[] getCachedPngjBytes(String pathName) {
+    if (pathName.indexOf(".png") < 0)
+      return null;
+    Logger.info("FileManager checking PNGJ cache for " + pathName);
+    String shortName = shortSceneFilename(pathName);
+
+    if (pngjCache == null && !cachePngjFile(new String[] { pathName, null }))
+      return null;
+    boolean isMin = (pathName.indexOf(".min.") >= 0);
+    if (!isMin) {
+      String cName = getCannonicalName(getZipRoot(pathName));
+      if (!pngjCache.containsKey(cName)
+          && !cachePngjFile(new String[] { pathName, null }))
+        return null;
+      if (pathName.indexOf("|") < 0)
+        shortName = cName;
+    }
+    if (pngjCache.containsKey(shortName)) {
+      Logger.info("FileManager using memory cache " + shortName);
+      return pngjCache.get(shortName);
+    }
+    for (String key : pngjCache.keySet())
+      System.out.println(key);
+    System.out.println("FileManager memory cache (" + pngjCache.size()
+        + ") did not find " + pathName + " as " + shortName);
+    if (!isMin || !cachePngjFile(new String[] { pathName, null }))
+      return null;
+    Logger.info("FileManager using memory cache " + shortName);
+    return pngjCache.get(shortName);
+  }
+
+  boolean cachePngjFile(String[] data) {
+    pngjCache = new Hashtable<String, byte[]>();
+    data[1] = null;
+    if (data[0] == null)
+      return false;
+    data[0] = getZipRoot(data[0]);
+    String shortName = shortSceneFilename(data[0]);
+    try {
+      data[1] = ZipUtil
+          .cacheZipContents(
+              ZipUtil
+                  .checkPngZipStream((BufferedInputStream) getBufferedInputStreamOrErrorMessageFromName(
+                      data[0], null, false, false, null)), shortName, pngjCache);
+    } catch (Exception e) {
+      return false;
+    }
+    if (data[1] == null)
+      return false;
+    byte[] bytes = data[1].getBytes();
+    pngjCache.put(getCannonicalName(data[0]), bytes); // marker in case the .all. file is changed
+    if (shortName.indexOf("_scene_") >= 0) {
+      pngjCache.put(shortSceneFilename(data[0]), bytes); // good for all .min. files of this scene set
+      bytes = pngjCache.remove(shortName + "|state.spt");
+      if (bytes != null) 
+        pngjCache.put(shortSceneFilename(data[0] + "|state.spt"), bytes);
+    }
+    for (String key: pngjCache.keySet())
+      System.out.println(key);
+    return true;
+  }
+  
+  private static String getZipRoot(String fileName) {
+    int pt = fileName.indexOf("|");
+    return (pt < 0 ? fileName : fileName.substring(0, pt));
+  }
+
+  private String getCannonicalName(String pathName) {
+    String[] names = classifyName(pathName, true);
+    return (names == null ? pathName : names[2]);
+  }
+  
+  private String shortSceneFilename(String pathName) {
+    pathName = getCannonicalName(pathName);
+    int pt = pathName.indexOf("_scene_") + 7;
+    if (pt < 7)
+      return pathName;
+    String s = "";
+    if (pathName.endsWith("|state.spt")) {
+      int pt1 = pathName.indexOf('.', pt);
+      if (pt1 < 0)
+        return pathName;
+      s = pathName.substring(pt, pt1);
+    }
+    int pt2 = pathName.lastIndexOf("|");
+    return pathName.substring(0, pt) + s
+        + (pt2 > 0 ? pathName.substring(pt2) : "");
+  }
+
+  private final static String SCENE_TAG = "###scene.spt###";
+  public static String getSceneScript(String[] scenes, Map<String, String> htScenes, List<Integer> list) {
+    // no ".spt.png" -- that's for the sceneScript-only version
+    // that we will create here.
+    // extract scenes based on "pause scene ..." commands
+    int iSceneLast = 0;
+    int iScene = 0;
+    StringBuffer sceneScript = new StringBuffer(SCENE_TAG + " Jmol " + JmolViewer.getJmolVersion() + "\n{\nsceneScripts={");
+    for (int i = 1; i < scenes.length; i++) {
+      scenes[i - 1] = TextFormat.trim(scenes[i - 1], "\t\n\r ");
+      int[] pt = new int[1];
+      iScene = Parser.parseInt(scenes[i], pt);
+      if (iScene == Integer.MIN_VALUE)
+        return "bad scene ID: " + iScene;
+      scenes[i] = scenes[i].substring(pt[0]);
+      list.add(Integer.valueOf(iScene));
+      String key = iSceneLast + "-" + iScene;
+      htScenes.put(key, scenes[i - 1]);
+      if (i > 1)
+        sceneScript.append(",");
+      sceneScript.append('\n')
+        .append(Escape.escape(key))
+        .append(": ")
+        .append(Escape.escape(scenes[i - 1]));
+      iSceneLast = iScene;
+    }
+    sceneScript.append("\n}\n");
+    if (list.size() == 0) 
+      return "no lines 'pause scene n'";
+    sceneScript
+      .append("\nthisSceneRoot = '$SCRIPT_PATH$'.split('_scene_')[1];\n")
+      .append("thisSceneID = 0 + ('$SCRIPT_PATH$'.split('_scene_')[2]).split('.')[1];\n")
+      .append("var thisSceneState = '$SCRIPT_PATH$'.replace('.min.png','.all.png') + 'state.spt';\n")
+      .append("var spath = ''+currentSceneID+'-'+thisSceneID;\n")
+      .append("print thisSceneRoot + ' ' + spath;\n")
+      .append("var sscript = sceneScripts[spath];\n")
+      .append("var isOK = true;\n")
+      .append("try{\n")
+      .append("if (thisSceneRoot != currentSceneRoot){\n")
+      .append(" isOK = false;\n")
+      .append("} else if (sscript != '') {\n")
+      .append(" isOK = true;\n")
+      .append("} else if (thisSceneID <= currentSceneID){\n")
+      .append(" isOK = false;\n")
+      .append("} else {\n")
+      .append(" sscript = '';\n")
+      .append(" for (var i = currentSceneID; i < thisSceneID; i++){\n")
+      .append("  var key = ''+i+'-'+(i + 1); var script = sceneScripts[key];\n")
+      .append("  if (script = '') {isOK = false;break;}\n")
+      .append("  sscript += ';'+script;\n")
+      .append(" }\n")
+      .append("}\n}catch(e){print e;isOK = false}\n")
+      .append("if (isOK) {" 
+          + FileManager.wrapPathForAllFiles("script inline @sscript", "print e;isOK = false") 
+          + "}\n")
+      .append("if (!isOK){script @thisSceneState}\n")
+      .append("currentSceneRoot = thisSceneRoot; currentSceneID = thisSceneID;\n}\n");
+    return sceneScript.toString();
+  }
+
 }

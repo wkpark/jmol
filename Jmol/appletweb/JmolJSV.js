@@ -62,10 +62,11 @@
 			boxmessage: "Downloading JSpecViewApplet ..."
 		};
 		
-		var myClass = "jspecview.applet.JSVApplet" + (this._isSigned >= 0 ? "Pro" : "");
+		var myClass = "jspecview.applet.JSVApplet" + (this._isSigned ? "Pro" : "");
 		var script = (Info.initParams ? Info.initParams : "") + ';appletID ' + this._id + ';syncID '+ params.syncId
 		+ ';appletReadyCallbackFunctionName ' + this._id + '._readyCallback'
 		+ ';syncCallbackFunctionName Jmol._mySyncCallback;';
+		
     Jmol._Applet._createApplet(this, Info, params, myClass, script);
 	}
 	

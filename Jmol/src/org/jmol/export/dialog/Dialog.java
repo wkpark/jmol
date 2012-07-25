@@ -215,6 +215,8 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     File file = null;
     if (fileName == null) {
       fileName = viewer.getModelSetFileName();
+      if (fileName.indexOf("?") >= 0)
+        fileName = fileName.substring(0, fileName.indexOf("?"));
       String pathName = imageChooser.getCurrentDirectory().getPath();
       if (fileName != null && pathName != null) {
         int extensionStart = fileName.lastIndexOf('.');

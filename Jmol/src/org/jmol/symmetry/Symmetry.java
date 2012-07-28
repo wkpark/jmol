@@ -149,6 +149,8 @@ public class Symmetry implements SymmetryInterface {
   public boolean haveSpaceGroup() {
     return (spaceGroup != null);
   }
+  
+  
 
   public String getSpaceGroupInfo(String name, SymmetryInterface cellInfo) {
     return SpaceGroup.getInfo(name, cellInfo);

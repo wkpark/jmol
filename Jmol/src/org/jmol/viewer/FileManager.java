@@ -1933,7 +1933,7 @@ public class FileManager {
       return null;
     boolean isMin = (pathName.indexOf(".min.") >= 0);
     if (!isMin) {
-      String cName = getCannonicalName(getZipRoot(pathName));
+      String cName = getCanonicalName(getZipRoot(pathName));
       if (!pngjCache.containsKey(cName)
           && !cachePngjFile(new String[] { pathName, null }))
         return null;
@@ -1973,7 +1973,7 @@ public class FileManager {
     if (data[1] == null)
       return false;
     byte[] bytes = data[1].getBytes();
-    pngjCache.put(getCannonicalName(data[0]), bytes); // marker in case the .all. file is changed
+    pngjCache.put(getCanonicalName(data[0]), bytes); // marker in case the .all. file is changed
     if (shortName.indexOf("_scene_") >= 0) {
       pngjCache.put(shortSceneFilename(data[0]), bytes); // good for all .min. files of this scene set
       bytes = pngjCache.remove(shortName + "|state.spt");
@@ -1990,13 +1990,13 @@ public class FileManager {
     return (pt < 0 ? fileName : fileName.substring(0, pt));
   }
 
-  private String getCannonicalName(String pathName) {
+  private String getCanonicalName(String pathName) {
     String[] names = classifyName(pathName, true);
     return (names == null ? pathName : names[2]);
   }
   
   private String shortSceneFilename(String pathName) {
-    pathName = getCannonicalName(pathName);
+    pathName = getCanonicalName(pathName);
     int pt = pathName.indexOf("_scene_") + 7;
     if (pt < 7)
       return pathName;

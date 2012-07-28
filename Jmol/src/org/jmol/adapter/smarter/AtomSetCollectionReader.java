@@ -560,7 +560,6 @@ public abstract class AtomSetCollectionReader {
     }
     if (!ignoreFileSpaceGroupName)
       spaceGroup = "unspecified!";
-
     doCheckUnitCell = false;
   }
 

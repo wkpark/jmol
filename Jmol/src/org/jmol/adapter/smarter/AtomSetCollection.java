@@ -1051,8 +1051,7 @@ public class AtomSetCollection {
     int iAtomFirst = getLastAtomSetAtomIndex();
     setEllipsoids();
     bondCount0 = bondCount;
-    symmetry
-        .setFinalOperations(atoms, iAtomFirst, noSymmetryCount, doNormalize);
+    finalizeSymmetry(iAtomFirst, noSymmetryCount);
     int operationCount = symmetry.getSpaceGroupOperationCount();
     getSymmetry().setMinMaxLatticeParameters(minXYZ, maxXYZ);
     dtype = (int) getSymmetry().getUnitCellInfo(SimpleUnitCell.INFO_DIMENSIONS);
@@ -1211,6 +1210,13 @@ public class AtomSetCollection {
   }
 
   
+  private void finalizeSymmetry(int iAtomFirst, int noSymmetryCount) {
+    symmetry.setFinalOperations(atoms, iAtomFirst, noSymmetryCount, doNormalize);
+    String name = (String) getAtomSetAuxiliaryInfo(currentAtomSetIndex, "spaceGroup");
+    if (name == null || name.equals("unspecified!"))
+      setAtomSetSpaceGroupName(symmetry.getSpaceGroupName());
+  }
+
   private void setSymmetryOps() {
     int operationCount = symmetry.getSpaceGroupOperationCount();
     if (operationCount > 0) {
@@ -1449,7 +1455,7 @@ public class AtomSetCollection {
     setAtomSetAuxiliaryInfo("presymmetryAtomCount", Integer.valueOf(noSymmetryCount));
     setAtomSetAuxiliaryInfo("biosymmetryCount", Integer.valueOf(len));
     if (symmetry != null) {
-      symmetry.setFinalOperations(atoms, iAtomFirst, noSymmetryCount, doNormalize);
+      finalizeSymmetry(iAtomFirst, noSymmetryCount);
       setSymmetryOps();
     }
     symmetry = null;

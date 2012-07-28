@@ -83,9 +83,8 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   
   @Override
   public void initializeReader() throws Exception {
-    if (checkFilter("CONF ")) {
+    if (checkFilter("CONF "))
       configurationPtr = parseInt(filter, filter.indexOf("CONF ") + 5);
-    }
 
     isMolecular = (filter != null && filter.indexOf("MOLECUL") >= 0);
     if (isMolecular) {
@@ -163,7 +162,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       if (!skipping) {
         key = key.replace('.', '_');
         if (key.startsWith("_chemical_name") || key.equals("_chem_comp_name")) {
-          atomSetCollection.setAtomSetCollectionAuxiliaryInfo("modelLoadNote", processChemicalInfo("name"));
+          processChemicalInfo("name");
         } else if (key.startsWith("_chemical_formula_structural")) {
           processChemicalInfo("structuralFormula");
         } else if (key.startsWith("_chemical_formula_sum") || key.equals("_chem_comp_formula")) {
@@ -241,20 +240,24 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   }
   
   /**
-   * reads some of the more interesting info 
-   * into specific atomSetAuxiliaryInfo elements
+   * reads some of the more interesting info into specific atomSetAuxiliaryInfo
+   * elements
    * 
-   * @param type    "name" "formula" etc.
+   * @param type
+   *        "name" "formula" etc.
    * @return data
    * @throws Exception
    */
   private String processChemicalInfo(String type) throws Exception {
-    if (type.equals("name"))
+    if (type.equals("name")) {
       chemicalName = data = tokenizer.fullTrim(data);
-    else if (type.equals("structuralFormula"))
+      if (!data.equals("?"))
+        atomSetCollection.setAtomSetCollectionAuxiliaryInfo("modelLoadNote", data);
+    } else if (type.equals("structuralFormula")) {
       thisStructuralFormula = data = tokenizer.fullTrim(data);
-    else if (type.equals("formula"))
+    } else if (type.equals("formula")) {
       thisFormula = data = tokenizer.fullTrim(data);
+    }
     if (Logger.debugging) {
       Logger.debug(type + " = " + data);
     }

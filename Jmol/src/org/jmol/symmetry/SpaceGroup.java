@@ -73,6 +73,7 @@ import org.jmol.util.TextFormat;
 class SpaceGroup {
 
   int index;
+  String name = "unknown!";
   String hallSymbol;
   //String schoenfliesSymbol; //parsed but not read
   String hmSymbol; 
@@ -100,6 +101,7 @@ class SpaceGroup {
   SpaceGroup(boolean doNormalize) {
     this.doNormalize = doNormalize;
     addSymmetry("x,y,z", 0);
+    index = ++sgIndex;
   }
   
   private SpaceGroup(String cifLine) {
@@ -133,14 +135,19 @@ class SpaceGroup {
    
   SymmetryOperation[] finalOperations;
   
-  void setFinalOperations(Point3f[] atoms, int atomIndex,
-                                                int count, boolean doNormalize) {
+  void setFinalOperations(Point3f[] atoms, int atomIndex, int count,
+                          boolean doNormalize) {
     //from AtomSetCollection.applySymmetry only
     if (hallInfo == null && latticeParameter != 0) {
       HallInfo h = new HallInfo(Translation
           .getHallLatticeEquivalent(latticeParameter));
       generateAllOperators(h);
-      doNormalize = false;
+      //doNormalize = false;
+    }
+    if (index >= spaceGroupDefinitions.length) {
+      SpaceGroup sg = getDerivedSpaceGroup();
+      if (sg != null)
+        name = sg.getName();
     }
 
     finalOperations = new SymmetryOperation[operationCount];
@@ -246,7 +253,7 @@ class SpaceGroup {
   }
 
   String getName() {
-    return hallSymbol + " ["+hmSymbolFull+"]";  
+    return name;  
   }
 /*  
   int getLatticeParameter() {
@@ -277,10 +284,38 @@ class SpaceGroup {
   
   private static String[] canonicalSeitzList;
   
+  /**
+   * 
+   * @return either a String or a SpaceGroup, depending on index.
+   */
   private Object dumpCanonicalSeitzList() {
     if (hallInfo == null)
       hallInfo = new HallInfo(hallSymbol);
     generateAllOperators(null);
+    String s = getCanonicalSeitzList();
+    if (index >= spaceGroupDefinitions.length) {
+      SpaceGroup sgDerived = findSpaceGroup(s);
+      if (sgDerived != null)
+        return sgDerived;
+    }
+    return (index >= 0 && index < spaceGroupDefinitions.length 
+        ? hallSymbol + " = " : "") + s;
+  }
+  
+  /**
+   * 
+   * @return valid space group or null
+   */
+  SpaceGroup getDerivedSpaceGroup() {
+    if (index >= 0 && index < spaceGroupDefinitions.length)
+      return this;
+    if (finalOperations != null)
+      setFinalOperations(null, 0, 0, false);
+    String s = getCanonicalSeitzList();
+    return findSpaceGroup(s);
+  }
+  
+  private String getCanonicalSeitzList() {
     String[] list = new String[operationCount];
     for (int i = 0; i < operationCount; i++)
       list[i] = SymmetryOperation.dumpCanonicalSeitz(operations[i]);
@@ -289,21 +324,22 @@ class SpaceGroup {
     for (int i = 0; i < operationCount; i++)
       sb.append(list[i].replace('\t',' ').replace('\n',' ')).append("; ");
     sb.append("]");
-    if (index >= spaceGroupDefinitions.length) {
-      if (canonicalSeitzList == null) {
-      canonicalSeitzList = new String[spaceGroupDefinitions.length];
-      for (int i = 0; i < spaceGroupDefinitions.length; i++)
-        canonicalSeitzList[i] = (String) spaceGroupDefinitions[i].dumpCanonicalSeitzList();
-      }
-      String s = sb.toString();
-      for (int i = 0; i < spaceGroupDefinitions.length; i++)
-        if (canonicalSeitzList[i].indexOf(s) >= 0)
-          return spaceGroupDefinitions[i];
-    }
-    return (index >= 0 && index < spaceGroupDefinitions.length 
-        ? hallSymbol + " = " : "") + sb.toString();
+    return sb.toString();
   }
-  
+
+  private static SpaceGroup findSpaceGroup(String s) {
+    if (canonicalSeitzList == null)
+      canonicalSeitzList = new String[spaceGroupDefinitions.length];
+    for (int i = 0; i < spaceGroupDefinitions.length; i++) {
+      if (canonicalSeitzList[i] == null)
+        canonicalSeitzList[i] = (String) spaceGroupDefinitions[i] 
+            .dumpCanonicalSeitzList();
+      if (canonicalSeitzList[i].indexOf(s) >= 0)
+        return spaceGroupDefinitions[i];
+    }
+    return null;
+  }
+
   private final static String dumpAll() {
    StringBuilder sb = new StringBuilder();
    for (int i = 0; i < spaceGroupDefinitions.length; i++)
@@ -706,6 +742,7 @@ class SpaceGroup {
     if (intlTableNumber.charAt(0) != '0' && lastInfo.equals(info))
       ambiguousNames += hmSymbol + ";";
     lastInfo = info;
+    name = "#" + intlTableNumber + ": " + hallSymbol + " [" + hmSymbolFull + "]";
 
 //    System.out.println(intlTableNumber + (intlTableNumberExt.equals("") ? "" : ":" + intlTableNumberExt) + "\t"
   //      + hmSymbol + "\t" + hmSymbolAbbr + "\t" + hmSymbolAbbrShort + "\t"

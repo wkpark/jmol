@@ -259,7 +259,7 @@ public class MoldenReader extends MopacSlaterReader {
     }
       
     fixOrbitalType();
-    // TODO we are assuming Jmol-cannonical order for orbital coefficients.
+    // TODO we are assuming Jmol-canonical order for orbital coefficients.
     // see BasisFunctionReader
     // TODO no check here for G orbitals
     

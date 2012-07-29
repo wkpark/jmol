@@ -295,7 +295,7 @@ public final class ModelLoader {
           }
           for (int i = 0; i < modelSet.trajectorySteps.size(); i++) {
             mergeModelSet.trajectorySteps.add(modelSet.trajectorySteps.get(i));
-            mergeModelSet.vibrationSteps.add(modelSet.vibrationSteps.get(i));
+            mergeModelSet.vibrationSteps.add(modelSet.vibrationSteps == null ? null  : modelSet.vibrationSteps.get(i));
           }
         }
         modelSet.trajectorySteps = mergeModelSet.trajectorySteps;

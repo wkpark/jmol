@@ -742,7 +742,7 @@ class SpaceGroup {
     if (intlTableNumber.charAt(0) != '0' && lastInfo.equals(info))
       ambiguousNames += hmSymbol + ";";
     lastInfo = info;
-    name = "#" + intlTableNumber + ": " + hallSymbol + " [" + hmSymbolFull + "]";
+    name = hallSymbol + " [" + hmSymbolFull + "] (#" + intlTableNumber + ")";
 
 //    System.out.println(intlTableNumber + (intlTableNumberExt.equals("") ? "" : ":" + intlTableNumberExt) + "\t"
   //      + hmSymbol + "\t" + hmSymbolAbbr + "\t" + hmSymbolAbbrShort + "\t"

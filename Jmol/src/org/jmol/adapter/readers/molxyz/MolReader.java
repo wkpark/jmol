@@ -113,7 +113,7 @@ public class MolReader extends AtomSetCollectionReader {
     if (isV3000)
       return;
     while (readLine() != null && line.indexOf("$$$$") != 0) {
-      if (line.toUpperCase().contains("PUBCHEM_MMFF94_PARTIAL_CHARGES")) {
+      if (line.toUpperCase().contains("_PARTIAL_CHARGES")) {
         try {
           Atom[] atoms = atomSetCollection.getAtoms();
           for (int i = parseInt(readLine()); --i >= 0;) {

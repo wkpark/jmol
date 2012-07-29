@@ -3122,7 +3122,8 @@ abstract public class ModelCollection extends BondCollection {
     }
     for (int i = bsAtoms.nextSetBit(0), n = 0; i >= 0; i = bsAtoms
         .nextSetBit(i + 1))
-      getAtomRecordMOL(mol, atomMap[i] = ++n, atoms[i], q, pTemp, asV3000, asChemDoodle);
+      getAtomRecordMOL(mol, atomMap[i] = ++n, atoms[i], q, pTemp, asV3000,
+          asChemDoodle);
     if (asV3000) {
       mol.append("M  V30 END ATOM\nM  V30 BEGIN BOND\n");
     } else if (asChemDoodle) {
@@ -3135,10 +3136,21 @@ abstract public class ModelCollection extends BondCollection {
     if (asV3000) {
       mol.append("M  V30 END BOND\nM  V30 END CTAB\n");
     }
-    if (asChemDoodle) 
+    if (asChemDoodle)
       mol.append("]}}");
-    else
+    else {
       mol.append("M  END\n");
+    }
+    if (!asChemDoodle && !asV3000) {
+      float[] pc = getPartialCharges();
+      if (pc != null) {
+        mol.append("> <JMOL_PARTIAL_CHARGES>\n").append(nAtoms)
+            .append('\n');
+        for (int i = bsAtoms.nextSetBit(0), n = 0; i >= 0; i = bsAtoms
+            .nextSetBit(i + 1))
+          mol.append(++n).append(" ").append(pc[i]).append('\n');
+      }
+    }
     return true;
   }
 

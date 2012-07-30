@@ -142,7 +142,7 @@ class SpaceGroup {
       HallInfo h = new HallInfo(Translation
           .getHallLatticeEquivalent(latticeParameter));
       generateAllOperators(h);
-      //doNormalize = false;
+      //doNormalize = false;  // why this here?
     }
     if (index >= spaceGroupDefinitions.length) {
       SpaceGroup sg = getDerivedSpaceGroup();
@@ -269,6 +269,7 @@ class SpaceGroup {
   }  
  
   void setLattice(int latticeParameter) {
+    // Wien2K and Shelx readers only
     // implication here is that we do NOT have a Hall symbol.
     // so we generate one.
     // The idea here is that we can represent any LATT number
@@ -742,7 +743,7 @@ class SpaceGroup {
     if (intlTableNumber.charAt(0) != '0' && lastInfo.equals(info))
       ambiguousNames += hmSymbol + ";";
     lastInfo = info;
-    name = hallSymbol + " [" + hmSymbolFull + "] (#" + intlTableNumber + ")";
+    name = hallSymbol + " [" + hmSymbolFull + "] #" + intlTableNumber;
 
 //    System.out.println(intlTableNumber + (intlTableNumberExt.equals("") ? "" : ":" + intlTableNumberExt) + "\t"
   //      + hmSymbol + "\t" + hmSymbolAbbr + "\t" + hmSymbolAbbrShort + "\t"

@@ -32,7 +32,7 @@ public class ScriptContext {
    * 
    */
   public String fullpath = "";
-  public String filename;
+  public String scriptFileName;
   public ParallelProcessor parallelProcessor;
   public String functionName;
   public String script;
@@ -68,7 +68,7 @@ public class ScriptContext {
   StringBuffer getContextTrace(StringBuffer sb, boolean isTop) {
     if (sb == null)
       sb = new StringBuffer();
-    sb.append(ScriptEvaluator.setErrorLineMessage(functionName, filename,
+    sb.append(ScriptEvaluator.setErrorLineMessage(functionName, scriptFileName,
         lineNumbers[pc], pc, ScriptEvaluator.statementAsString(statement, (isTop ? iToken : 9999), false)));
     if (parentContext != null)
       parentContext.getContextTrace(sb, false);

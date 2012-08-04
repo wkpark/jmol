@@ -324,6 +324,7 @@ public class Token {
 //final static int load         see mathfunc
   final static int loop         = scriptCommand | 26 | defaultON;
   final static int mapProperty  = scriptCommand | 28 | expression;
+  final static int menu         = scriptCommand | 29;
   final static int minimize     = scriptCommand | 30;
 //final static int model        see mathfunc
 //final static int measure      see mathfunc
@@ -1165,7 +1166,6 @@ public class Token {
   final static int lumo           = misc  | 184;
   final static int manifest       = misc  | 186;
   final static int maxset         = misc  | 190;
-  final static int menu           = misc  | 191;
   final static int mep            = misc  | 192;
   public final static int mesh    = misc  | 194;
   final static int middle         = misc  | 195;

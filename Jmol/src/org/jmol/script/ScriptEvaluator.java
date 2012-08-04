@@ -410,7 +410,7 @@ public class ScriptEvaluator {
    * @return a string indicating the statement
    */
   public String getNextStatement() {
-    return (pc < aatoken.length ? setErrorLineMessage(functionName, filename,
+    return (pc < aatoken.length ? setErrorLineMessage(functionName, scriptFileName,
         getLinenumber(null), pc, statementAsString(aatoken[pc], -9999,
             logMessages)) : "");
   }
@@ -1799,7 +1799,7 @@ public class ScriptEvaluator {
   private StringBuffer outputBuffer;
 
   private String contextPath = "";
-  private String filename;
+  private String scriptFileName;
   private String functionName;
   private boolean isStateScript;
   int scriptLevel;
@@ -1839,7 +1839,7 @@ public class ScriptEvaluator {
 
   private boolean compileScript(String filename, String strScript,
                                 boolean debugCompiler) {
-    this.filename = filename;
+    scriptFileName = filename;
     strScript = fixScriptPath(strScript, filename);
     restoreScriptContext(compiler.compile(filename, strScript, false, false,
         debugCompiler, false), false, false, false);
@@ -1929,7 +1929,7 @@ public class ScriptEvaluator {
         }
       }
     }
-    this.filename = filename;
+    scriptFileName = filename;
     data[1] = ScriptCompiler.getEmbeddedScript(data[1]);
     String script = fixScriptPath(data[1], data[0]);
     if (scriptPath == null) {
@@ -2510,7 +2510,7 @@ public class ScriptEvaluator {
     if (debugScript || isCmdLine_c_or_C_Option)
       Logger.info("-->>-------------".substring(0, Math
           .max(17, scriptLevel + 5))
-          + scriptLevel + " " + filename + " " + token + " " + thisContext);
+          + scriptLevel + " " + scriptFileName + " " + token + " " + thisContext);
   }
 
   public ScriptContext getScriptContext() {
@@ -2518,7 +2518,7 @@ public class ScriptEvaluator {
     context.scriptLevel = scriptLevel;
     context.parentContext = thisContext;
     context.contextPath = contextPath;
-    context.filename = filename;
+    context.scriptFileName = scriptFileName;
     context.parallelProcessor = parallelProcessor;
     context.functionName = functionName;
     context.script = script;
@@ -2561,7 +2561,7 @@ public class ScriptEvaluator {
           .max(17, scriptLevel + 5))
           + scriptLevel
           + " "
-          + filename
+          + scriptFileName
           + " "
           + (thisContext == null ? "" : "" + thisContext.token)
           + " "
@@ -2591,7 +2591,7 @@ public class ScriptEvaluator {
     scriptExtensions = context.scriptExtensions;
     if (isPopContext) {
       contextPath = context.contextPath;
-      filename = context.filename;
+      scriptFileName = context.scriptFileName;
       parallelProcessor = context.parallelProcessor;
       functionName = context.functionName;
       iToken = context.iToken;
@@ -2618,7 +2618,7 @@ public class ScriptEvaluator {
               true, false));
         }
       } else {
-        sb.append(setErrorLineMessage(context.functionName, context.filename,
+        sb.append(setErrorLineMessage(context.functionName, context.scriptFileName,
             getLinenumber(context), context.pc, statementAsString(
                 context.statement, -9999, logMessages)));
       }
@@ -2631,7 +2631,7 @@ public class ScriptEvaluator {
             false));
       }
     } else {
-      sb.append(setErrorLineMessage(functionName, filename,
+      sb.append(setErrorLineMessage(functionName, scriptFileName,
           getLinenumber(null), pc, statementAsString(statement, -9999,
               logMessages)));
     }
@@ -2646,7 +2646,7 @@ public class ScriptEvaluator {
   private String getScriptID(ScriptContext context) {
     String fuName = (context == null ? functionName : "function "
         + context.functionName);
-    String fiName = (context == null ? filename : context.filename);
+    String fiName = (context == null ? scriptFileName : context.scriptFileName);
     return "\n# " + fuName + " (file " + fiName + ")\n";
   }
 
@@ -5468,6 +5468,9 @@ public class ScriptEvaluator {
         case Token.mapProperty:
           mapProperty();
           break;
+        case Token.menu:
+          menu();
+          break;
         case Token.message:
           message();
           break;
@@ -5608,6 +5611,12 @@ public class ScriptEvaluator {
         executionPaused = (isCommandDisplayable(pc + 1));
       }
     }
+  }
+
+  private void menu() {
+    // possible problems with this. May hang browser?
+    if (!isSyntaxCheck)
+      viewer.getProperty("DATA_API", "getPopupMenu", "\0");
   }
 
   private void setCursorWait(boolean TF) {
@@ -8494,7 +8503,6 @@ public class ScriptEvaluator {
     if (isStateScript && forceNoAddHydrogens)
       htParams.put("doNotAddHydrogens", Boolean.TRUE);
     String modelName = null;
-    String filename = null;
     String[] filenames = null;
     String[] tempFileInfo = null;
     String errMsg = null;
@@ -8563,8 +8571,8 @@ public class ScriptEvaluator {
       case Token.append:
         isAppend = true;
         loadScript.append(" append");
-        filename = optParameterAsString(++i);
-        tok = Token.getTokFromName(filename);
+        modelName = optParameterAsString(++i);
+        tok = Token.getTokFromName(modelName);
         break;
       case Token.identifier:
         i++;
@@ -8650,6 +8658,7 @@ public class ScriptEvaluator {
       }
     }
 
+    String filename = null;
     if (statementLength == i + 1) {
 
       // end-of-command options:

@@ -5172,6 +5172,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public String getMenu(String type) {
     getPopupMenu();
+    if (type.equals("\0")) {
+      popupMenu(dimScreen.width - 120, 0, 'j');
+      return "OK";
+    }
     return (jmolpopup == null ? "" : jmolpopup.getMenuAsString("Jmol version "
         + Viewer.getJmolVersion() + "|_GET_MENU|" + type));
   }

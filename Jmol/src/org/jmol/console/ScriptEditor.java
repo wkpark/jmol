@@ -245,7 +245,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
     if (context.script.indexOf(JmolConstants.SCRIPT_EDITOR_IGNORE) >= 0)
       return; 
     parsedContext = context;
-    filename = context.filename;
+    filename = context.scriptFileName;
     setTitle(title + parsedContext.contextPath);
     if (filename == null && context.functionName != null)
       filename = "function " + context.functionName; 

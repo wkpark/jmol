@@ -285,7 +285,7 @@ public final class ModelLoader {
     currentModel = null;
     if (merging) {
       baseModelCount = mergeModelSet.modelCount;
-      baseTrajectoryCount = mergeModelSet.getTrajectoryCount();
+      baseTrajectoryCount = mergeModelSet.getTrajectoryCount(isTrajectory);
       if (baseTrajectoryCount > 0) {
         if (isTrajectory) {
           if (mergeModelSet.vibrationSteps == null) {

@@ -833,11 +833,13 @@ abstract public class ModelCollection extends BondCollection {
   protected List<Point3f[]> trajectorySteps;
   protected List<Vector3f[]> vibrationSteps;
 
-  protected int getTrajectoryCount(boolean isTrajectory) {
-    if (trajectorySteps != null || !isTrajectory)
-      return (trajectorySteps == null ? 0 : trajectorySteps.size());
-    trajectorySteps = new ArrayList<Point3f[]>();
-    for (int i = 0; i < modelCount; i++)
+  protected int getMergeTrajectoryCount(boolean isTrajectory) {
+    if (trajectorySteps == null) {
+      if (!isTrajectory)
+        return 0;
+      trajectorySteps = new ArrayList<Point3f[]>();
+    }
+    for (int i = trajectorySteps.size(); i < modelCount; i++)
       trajectorySteps.add(null);
     return modelCount;
   }

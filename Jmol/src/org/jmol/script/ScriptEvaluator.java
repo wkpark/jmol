@@ -11860,13 +11860,6 @@ public class ScriptEvaluator {
       case Token.identifier:
         checkLength(2);
         break;
-      case Token.partialcharge:
-        iToken = 1;
-        bs = (statementLength == 2 ? null : atomExpression(2));
-        checkLast(iToken);
-        if (!isSyntaxCheck)
-          viewer.calculatePartialCharges(bs);
-        return;
       case Token.aromatic:
         checkLength(2);
         if (!isSyntaxCheck)
@@ -11899,6 +11892,13 @@ public class ScriptEvaluator {
         checkLast(iToken);
         if (!isSyntaxCheck)
           viewer.addHydrogens(bs, false, false);
+        return;
+      case Token.partialcharge:
+        iToken = 1;
+        bs = (statementLength == 2 ? null : atomExpression(2));
+        checkLast(iToken);
+        if (!isSyntaxCheck)
+          viewer.calculatePartialCharges(bs);
         return;
       case Token.pointgroup:
         pointGroup();
@@ -11973,15 +11973,16 @@ public class ScriptEvaluator {
         if (!isSyntaxCheck)
           viewer.calculateSurface(bs, (isFrom ? Float.MAX_VALUE : -1));
         return;
-      case Token.volume:
-        checkLength(2);
-        if (!isSyntaxCheck) {
-          float val = viewer.getVolume(null, null);
-          showString("" + Math.round(val * 10) / 10f + " A^3; "
-              + Math.round(val * 6.02) / 10f + " cm^3/mole (VDW "
-              + viewer.getDefaultVdwTypeNameOrData(Integer.MIN_VALUE, null) + ")");
-        }
-        return;
+// Removed in Jmol 13.0.RC4
+//      case Token.volume:
+//        checkLength(2);
+//        if (!isSyntaxCheck) {
+//          float val = viewer.getVolume(null, null);
+//          showString("" + Math.round(val * 10) / 10f + " A^3; "
+//              + Math.round(val * 6.02) / 10f + " cm^3/mole (VDW "
+//              + viewer.getDefaultVdwTypeNameOrData(Integer.MIN_VALUE, null) + ")");
+//        }
+//        return;
       }
       if (n != Integer.MIN_VALUE) {
         scriptStatusOrBuffer(GT._("{0} hydrogen bonds", Math.abs(n)));
@@ -11991,7 +11992,7 @@ public class ScriptEvaluator {
     error(
         ERROR_what,
         "CALCULATE",
-        "aromatic? hbonds? straightness? structure? strut? surfaceDistance FROM? surfaceDistance WITHIN? volume?");
+        "aromatic? hbonds? hydrogen? partialCharge? pointgroup? straightness? structure? struts? surfaceDistance FROM? surfaceDistance WITHIN?");
   }
 
   private void pointGroup() throws ScriptException {

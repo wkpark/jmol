@@ -2612,15 +2612,19 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
   }
 
-  public float getVolume(BitSet bs, String type) {
-    // Eval.calculate(), math function volume({atomExpression},"type")
-    if (bs == null)
-      bs = getSelectionSet(false);
-    EnumVdw vType = EnumVdw.getVdwType(type);
-    if (vType == null)
-      vType = EnumVdw.AUTO;
-    return modelSet.calculateVolume(bs, vType);
-  }
+// This was just the sum of the atomic volumes, not considering overlap
+// It was never documented.
+// Removed in Jmol 13.0.RC4
+  
+//  public float getVolume(BitSet bs, String type) {
+//    // Eval.calculate(), math function volume({atomExpression},"type")
+//    if (bs == null)
+//      bs = getSelectionSet(false);
+//    EnumVdw vType = EnumVdw.getVdwType(type);
+//    if (vType == null)
+//      vType = EnumVdw.AUTO;
+//    return modelSet.calculateVolume(bs, vType);
+//  }
 
   int getSurfaceDistanceMax() {
     return modelSet.getSurfaceDistanceMax();

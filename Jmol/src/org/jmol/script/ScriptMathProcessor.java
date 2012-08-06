@@ -749,8 +749,8 @@ class ScriptMathProcessor {
       return evaluateSort(args, tok);
     case Token.symop:
       return evaluateSymop(args, op.tok == Token.propselector);
-    case Token.volume:
-      return evaluateVolume(args);
+//    case Token.volume:
+  //    return evaluateVolume(args);
     case Token.within:
       return evaluateWithin(args);
     case Token.contact:
@@ -881,13 +881,13 @@ class ScriptMathProcessor {
     return (isStdDev || Float.isNaN(stddev) ? addX(stddev) : addX(m));
   }
 
-  private boolean evaluateVolume(ScriptVariable[] args) throws ScriptException {
-    ScriptVariable x1 = getX();
-    if (x1.tok != Token.bitset)
-      return false;
-    String type = (args.length == 0 ? null : ScriptVariable.sValue(args[0]));
-    return addX(viewer.getVolume((BitSet) x1.value, type));
-  }
+//  private boolean evaluateVolume(ScriptVariable[] args) throws ScriptException {
+//    ScriptVariable x1 = getX();
+//    if (x1.tok != Token.bitset)
+//      return false;
+//    String type = (args.length == 0 ? null : ScriptVariable.sValue(args[0]));
+//    return addX(viewer.getVolume((BitSet) x1.value, type));
+//  }
 
   private boolean evaluateSort(ScriptVariable[] args, int tok)
       throws ScriptException {

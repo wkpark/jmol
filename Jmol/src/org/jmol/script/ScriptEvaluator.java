@@ -5468,9 +5468,6 @@ public class ScriptEvaluator {
         case Token.mapProperty:
           mapProperty();
           break;
-        case Token.menu:
-          menu();
-          break;
         case Token.message:
           message();
           break;
@@ -5611,12 +5608,6 @@ public class ScriptEvaluator {
         executionPaused = (isCommandDisplayable(pc + 1));
       }
     }
-  }
-
-  private void menu() {
-    // possible problems with this. May hang browser?
-    if (!isSyntaxCheck)
-      viewer.getProperty("DATA_API", "getPopupMenu", "\0");
   }
 
   private void setCursorWait(boolean TF) {

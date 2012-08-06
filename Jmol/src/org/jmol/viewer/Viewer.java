@@ -4471,6 +4471,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         scriptStatus("", "paused -- type RESUME to continue", 0, null);
       return true;
     }
+    if (str.equalsIgnoreCase("menu")) {
+      getProperty("DATA_API", "getPopupMenu", "\0");
+      return true;
+    }
     str = str.toLowerCase();
     boolean exitScript = false;
     String haltType = null;

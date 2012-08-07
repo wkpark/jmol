@@ -1503,8 +1503,7 @@ all support for previous versions removed
     <!-- Copy other files to have a complete distribution -->
   	<copy file="src/org/jmol/viewer/Jmol.properties" tofile="build/dist/Jmol.properties" />
   	<copy file="${jmol.build.dir}/Jmol.jar" tofile="build/dist/Jmol.jar" />
-    <filter token="version" value="${version}"/>
-    <copy file="tools/pom.xml.template" tofile="build/dist/pom.xml" filtering="true" />
+    <copy file="tools/pom.xml.template" tofile="build/dist/pom.xml.template" />
     <jar jarfile="build/dist/jmol-${version}-javadoc.jar">
       <fileset dir="build/javadoc" />
     </jar>

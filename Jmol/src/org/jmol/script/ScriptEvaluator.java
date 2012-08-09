@@ -14146,7 +14146,6 @@ public class ScriptEvaluator {
         pt++;
       break;
     case Token.coord:
-      type = "coord";
       pt++;
       isCoord = true;
       break;
@@ -14312,11 +14311,8 @@ public class ScriptEvaluator {
       }
       if (type.equals("IMAGE") || type.equals("FRAME")
           || type.equals("VIBRATION")) {
-        if (fileName != null && fileName.indexOf(".") >= 0)
-          type = fileName.substring(fileName.lastIndexOf(".") + 1)
-              .toUpperCase();
-        else
-          type = "JPG";
+        type = (fileName != null && fileName.indexOf(".") >= 0 ? fileName
+            .substring(fileName.lastIndexOf(".") + 1).toUpperCase() : "JPG");
         if (type.equals("MNU"))
           type = "MENU";
         else if (type.equals("WRL") || type.equals("VRML")) {
@@ -14335,30 +14331,25 @@ public class ScriptEvaluator {
           type = "Obj";
           isExport = true;
         } else if (type.equals("JVXL")) {
-          type = "ISOX";
+          type = "ISOSURFACE";
         } else if (type.equals("XJVXL")) {
-          type = "ISOX";
-        } else if (type.equals("MESH")) {
-          type = "MESH";
+          type = "ISOSURFACE";
         } else if (type.equals("JMOL")) {
           type = "ZIPALL";
         } else if (type.equals("HIS")) {
           type = "HISTORY";
         }
       }
-      if (type.equals("coord")) {
-        if (fileName != null && fileName.indexOf(".") >= 0)
-          type = fileName.substring(fileName.lastIndexOf(".") + 1)
-              .toUpperCase();
-        else
-          type = "XYZ";
-      }
+      if (type.equals("COORD"))
+        type = (fileName != null && fileName.indexOf(".") >= 0 ?
+          fileName.substring(fileName.lastIndexOf(".") + 1)
+              .toUpperCase() : "XYZ");
       isImage = Parser.isOneOf(type,
           "GIF;JPEG64;JPEG;JPG64;JPG;PPM;PNG;PNGJ;PNGT;SCENE");
       if (scripts != null) {
         if (type.equals("PNG"))
           type = "PNGJ";
-        else if (!type.equals("PNGJ") && !type.equals("ZIPALL"))
+        if (!type.equals("PNGJ") && !type.equals("ZIPALL"))
           error(ERROR_invalidArgument);
       }
       if (isImage && isShow)
@@ -14368,7 +14359,7 @@ public class ScriptEvaluator {
           && !Parser
               .isOneOf(
                   type,
-                  "SCENE;JMOL;ZIP;ZIPALL;SPT;HISTORY;MO;ISOSURFACE;ISOX;MESH;PMESH;VAR;FILE;FUNCTION;CD;CML;XYZ;XYZRN;XYZVIB;MENU;MOL;PDB;PGRP;PQR;QUAT;RAMA;SDF;V2000;V3000;"))
+                  "SCENE;JMOL;ZIP;ZIPALL;SPT;HISTORY;MO;ISOSURFACE;MESH;PMESH;VAR;FILE;FUNCTION;CD;CML;XYZ;XYZRN;XYZVIB;MENU;MOL;PDB;PGRP;PQR;QUAT;RAMA;SDF;V2000;V3000;"))
         error(
             ERROR_writeWhat,
             "COORDS|FILE|FUNCTIONS|HISTORY|IMAGE|ISOSURFACE|JMOL|MENU|MO|POINTGROUP|QUATERNION [w,x,y,z] [derivative]"
@@ -14435,8 +14426,7 @@ public class ScriptEvaluator {
         if ("?".equals(fileName))
           fileName = "?Jmol." + viewer.getParameter("_fileType");
       } else if ((data == "SDF" || data == "MOL" || data == "V2000"
-          || data == "V3000" || data == "CD")
-          && isCoord) {
+          || data == "V3000" || data == "CD") && isCoord) {
         data = viewer.getModelExtract("selected", true, data);
         if (data.startsWith("ERROR:"))
           bytes = data;
@@ -14479,7 +14469,7 @@ public class ScriptEvaluator {
         if ((data = getIsosurfaceJvxl(true, JmolConstants.SHAPE_PMESH)) == null)
           error(ERROR_noData);
         type = "XJVXL";
-      } else if (data == "ISOSURFACE" || data == "ISOX" || data == "MESH") {
+      } else if (data == "ISOSURFACE" || data == "MESH") {
         if ((data = getIsosurfaceJvxl(data == "MESH",
             JmolConstants.SHAPE_ISOSURFACE)) == null)
           error(ERROR_noData);

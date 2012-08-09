@@ -14074,22 +14074,21 @@ public class ScriptEvaluator {
       args = statement;
       pt = pt0 = 1;
       isCommand = true;
-      isShow = (viewer.isApplet() && !viewer.isSignedApplet() 
-          || !viewer.isRestricted(ACCESS.ALL) || viewer.getPathForAllFiles().length() > 0);
+      isShow = (viewer.isApplet() && !viewer.isSignedApplet()
+          || !viewer.isRestricted(ACCESS.ALL) || viewer.getPathForAllFiles()
+          .length() > 0);
     } else {
       isCommand = false;
       isShow = true;
     }
     int argCount = (isCommand ? statementLength : args.length);
-    int tok = (isCommand && args.length == 1 ? Token.clipboard
-        : tokAt(pt, args));
     int len = 0;
     int nVibes = 0;
     int width = -1;
     int height = -1;
     int quality = Integer.MIN_VALUE;
     String driverList = viewer.getExportDriverList();
-    String type = "SPT";
+    String sceneType = "PNGJ";
     String data = "";
     String type2 = "";
     String fileName = null;
@@ -14103,12 +14102,19 @@ public class ScriptEvaluator {
     boolean isImage = false;
     BitSet bsFrames = null;
     String[] scripts = null;
+    String type = "SPT";
+    int tok = (isCommand && args.length == 1 ? Token.clipboard
+        : tokAt(pt, args));
     switch (tok) {
+    case Token.nada:
+      break;
     case Token.string:
       Token t = Token.getTokenFromName(ScriptVariable.sValue(args[pt])
           .toLowerCase());
-      if (t != null)
+      if (t != null) {
         tok = t.tok;
+        type = ScriptVariable.sValue(t).toUpperCase();
+      }
       break;
     case Token.script:
       if (isArrayParameter(pt + 1)) {
@@ -14119,6 +14125,8 @@ public class ScriptEvaluator {
         tok = tokAt(pt);
       }
       break;
+    default:
+      type = ScriptVariable.sValue(tokenAt(pt, args)).toUpperCase();
     }
     switch (tok) {
     case Token.nada:
@@ -14137,10 +14145,6 @@ public class ScriptEvaluator {
       if (type2.equals("draw"))
         pt++;
       break;
-    case Token.function:
-      type = "FUNCS";
-      pt++;
-      break;
     case Token.coord:
       type = "coord";
       pt++;
@@ -14158,24 +14162,14 @@ public class ScriptEvaluator {
       }
       type = "SPT";
       break;
-    case Token.mo:
-      type = "MO";
-      pt++;
-      break;
-    case Token.pmesh:
-      type = "PMESH";
-      pt++;
-      break;
-    case Token.mesh:
-      type = "MESH";
-      pt++;
-      break;
-    case Token.isosurface:
-      type = "ISO";
-      pt++;
-      break;
+    case Token.file:
+    case Token.function:
     case Token.history:
-      type = "HIS";
+    case Token.isosurface:
+    case Token.menu:
+    case Token.mesh:
+    case Token.mo:
+    case Token.pmesh:
       pt++;
       break;
     case Token.jmol:
@@ -14186,28 +14180,25 @@ public class ScriptEvaluator {
       type = "VAR";
       pt += 2;
       break;
-    case Token.file:
-      type = "FILE";
-      pt++;
-      break;
     case Token.frame:
     case Token.identifier:
     case Token.image:
-    case Token.menu:
     case Token.scene:
     case Token.string:
     case Token.vibration:
-      type = ScriptVariable.sValue(tokenAt(pt, args)).toLowerCase();
-      if (tok == Token.image) {
+      switch (tok) {
+      case Token.image:
         pt++;
-      } else if (tok == Token.vibration) {
+        break;
+      case Token.vibration:
         nVibes = intParameter(++pt, 1, 10);
         if (!isSyntaxCheck) {
           viewer.setVibrationOff();
           delay(100);
         }
-        pt++;  
-      } else if (tok == Token.frame) {
+        pt++;
+        break;
+      case Token.frame:
         BitSet bsAtoms;
         if (pt + 1 < argCount && args[++pt].tok == Token.expressionBegin
             || args[pt].tok == Token.bitset) {
@@ -14218,27 +14209,32 @@ public class ScriptEvaluator {
         }
         if (!isSyntaxCheck)
           bsFrames = viewer.getModelBitSet(bsAtoms, true);
-      } else if (Parser.isOneOf(type, driverList.toLowerCase())) {
-        // povray, maya, vrml, idtf
-        pt++;
-        type = type.substring(0, 1).toUpperCase() + type.substring(1);
-        isExport = true;
-        if (isCommand)
-          fileName = "Jmol." + type;
-      } else if (type.equals("menu")) {
-        pt++;
-        type = "MENU";
-      } else if (type.equals("zip")) {
-        type = "ZIP";
-        pt++;
-      } else if (type.equals("zipall")) {
-        type = "ZIPALL";
-        pt++;
-      } else if (type.equals("scene")) {
-        type = "SCENE";
-        pt++;
-      } else {
-        type = "(image)";
+        break;
+      case Token.scene:
+        val = ScriptVariable.sValue(tokenAt(++pt, args)).toUpperCase();
+        if (Parser.isOneOf(val, "PNG;PNGJ")) {
+          sceneType = val;
+          pt++;
+        }
+        break;
+      default:
+        if (Parser.isOneOf(type, driverList.toUpperCase())) {
+          // povray, maya, vrml, idtf
+          pt++;
+          type = type.substring(0, 1).toUpperCase()
+              + type.substring(1).toLowerCase();
+          // Povray, Maya, Vrml, Idtf
+          isExport = true;
+          if (isCommand)
+            fileName = "Jmol." + type;
+        } else if (type.equals("ZIP")) {
+          pt++;
+        } else if (type.equals("ZIPALL")) {
+          pt++;
+        } else {
+          type = "(image)";
+        }
+        break;
       }
       if (tokAt(pt, args) == Token.integer) {
         width = ScriptVariable.iValue(tokenAt(pt++, args));
@@ -14255,7 +14251,8 @@ public class ScriptEvaluator {
         // if (isApplet)
         // evalError(GT._("The {0} command is not available for the applet.",
         // "WRITE CLIPBOARD"));
-      } else if (Parser.isOneOf(val.toLowerCase(), "png;pngj;pngt;jpg;jpeg;jpg64;jpeg64")
+      } else if (Parser.isOneOf(val.toLowerCase(),
+          "png;pngj;pngt;jpg;jpeg;jpg64;jpeg64")
           && tokAt(pt + 1, args) == Token.integer) {
         quality = ScriptVariable.iValue(tokenAt(++pt, args));
       } else if (Parser.isOneOf(val.toLowerCase(),
@@ -14299,20 +14296,22 @@ public class ScriptEvaluator {
           fileName += "." + ScriptVariable.sValue(tokenAt(pt + 2, args));
         }
         if (type != "VAR" && pt == pt0)
-          type = "image";
+          type = "IMAGE";
         else if (fileName.length() > 0 && fileName.charAt(0) == '.'
             && (pt == pt0 + 1 || pt == pt0 + 2)) {
           fileName = ScriptVariable.sValue(tokenAt(pt - 1, args)) + fileName;
           if (type != "VAR" && pt == pt0 + 1)
-            type = "image";
+            type = "IMAGE";
         }
-        if (fileName.equalsIgnoreCase("clipboard") || !viewer.isRestricted(ACCESS.ALL))
+        if (fileName.equalsIgnoreCase("clipboard")
+            || !viewer.isRestricted(ACCESS.ALL))
           fileName = null;
         break;
       default:
         error(ERROR_invalidArgument);
       }
-      if (type.equals("image") || type.equals("frame") || type.equals("vibration")) {
+      if (type.equals("IMAGE") || type.equals("FRAME")
+          || type.equals("VIBRATION")) {
         if (fileName != null && fileName.indexOf(".") >= 0)
           type = fileName.substring(fileName.lastIndexOf(".") + 1)
               .toUpperCase();
@@ -14343,6 +14342,8 @@ public class ScriptEvaluator {
           type = "MESH";
         } else if (type.equals("JMOL")) {
           type = "ZIPALL";
+        } else if (type.equals("HIS")) {
+          type = "HISTORY";
         }
       }
       if (type.equals("coord")) {
@@ -14352,7 +14353,8 @@ public class ScriptEvaluator {
         else
           type = "XYZ";
       }
-      isImage = Parser.isOneOf(type, "GIF;JPEG64;JPEG;JPG64;JPG;PPM;PNG;PNGJ;PNGT;SCENE");
+      isImage = Parser.isOneOf(type,
+          "GIF;JPEG64;JPEG;JPG64;JPG;PPM;PNG;PNGJ;PNGT;SCENE");
       if (scripts != null) {
         if (type.equals("PNG"))
           type = "PNGJ";
@@ -14366,7 +14368,7 @@ public class ScriptEvaluator {
           && !Parser
               .isOneOf(
                   type,
-                  "SCENE;JMOL;ZIP;ZIPALL;SPT;HIS;MO;ISO;ISOX;MESH;PMESH;VAR;FILE;FUNCS;CD;CML;XYZ;XYZRN;XYZVIB;MENU;MOL;PDB;PGRP;PQR;QUAT;RAMA;SDF;V2000;V3000;"))
+                  "SCENE;JMOL;ZIP;ZIPALL;SPT;HISTORY;MO;ISOSURFACE;ISOX;MESH;PMESH;VAR;FILE;FUNCTION;CD;CML;XYZ;XYZRN;XYZVIB;MENU;MOL;PDB;PGRP;PQR;QUAT;RAMA;SDF;V2000;V3000;"))
         error(
             ERROR_writeWhat,
             "COORDS|FILE|FUNCTIONS|HISTORY|IMAGE|ISOSURFACE|JMOL|MENU|MO|POINTGROUP|QUATERNION [w,x,y,z] [derivative]"
@@ -14393,8 +14395,8 @@ public class ScriptEvaluator {
             && fullPath[0] != null) {
           String ext = (type.equals("Idtf") ? ".tex" : ".ini");
           fileName = fullPath[0] + ext;
-          msg = viewer.createImage(fileName, ext, data, null, Integer.MIN_VALUE, 0,
-              0, null, 0, fullPath);
+          msg = viewer.createImage(fileName, ext, data, null,
+              Integer.MIN_VALUE, 0, 0, null, 0, fullPath);
           if (type.equals("Idtf"))
             data = data.substring(0, data.indexOf("\\begin{comment}"));
           data = "Created " + fullPath[0] + ":\n\n" + data;
@@ -14432,7 +14434,8 @@ public class ScriptEvaluator {
           doDefer = true;
         if ("?".equals(fileName))
           fileName = "?Jmol." + viewer.getParameter("_fileType");
-      } else if ((data == "SDF" || data == "MOL" || data == "V2000" || data == "V3000" || data ==  "CD")
+      } else if ((data == "SDF" || data == "MOL" || data == "V2000"
+          || data == "V3000" || data == "CD")
           && isCoord) {
         data = viewer.getModelExtract("selected", true, data);
         if (data.startsWith("ERROR:"))
@@ -14443,7 +14446,7 @@ public class ScriptEvaluator {
         data = viewer.getData("selected", data);
         if (data.startsWith("ERROR:"))
           bytes = data;
-      } else if (data == "FUNCS") {
+      } else if (data == "FUNCTION") {
         data = viewer.getFunctionCalls(null);
         type = "TXT";
       } else if (data == "VAR") {
@@ -14463,10 +14466,10 @@ public class ScriptEvaluator {
                 remotePath, null);
         }
       } else if (data == "ZIP" || data == "ZIPALL") {
-        
+
         data = (String) viewer.getProperty("string", "stateInfo", null);
         bytes = viewer.createZip(fileName, type, data, scripts);
-      } else if (data == "HIS") {
+      } else if (data == "HISTORY") {
         data = viewer.getSetHistory(Integer.MAX_VALUE);
         type = "SPT";
       } else if (data == "MO") {
@@ -14476,7 +14479,7 @@ public class ScriptEvaluator {
         if ((data = getIsosurfaceJvxl(true, JmolConstants.SHAPE_PMESH)) == null)
           error(ERROR_noData);
         type = "XJVXL";
-      } else if (data == "ISO" || data == "ISOX" || data == "MESH") {
+      } else if (data == "ISOSURFACE" || data == "ISOX" || data == "MESH") {
         if ((data = getIsosurfaceJvxl(data == "MESH",
             JmolConstants.SHAPE_ISOSURFACE)) == null)
           error(ERROR_noData);
@@ -14514,13 +14517,15 @@ public class ScriptEvaluator {
         scriptStatusOrBuffer((String) bytes);
         return (String) bytes;
       }
-      if (bytes == null && (!isImage || fileName != null))
+      if (type.equals("SCENE"))
+        bytes = sceneType;
+      else if (bytes == null && (!isImage || fileName != null))
         bytes = data;
       if (doDefer)
         msg = viewer.streamFileData(fileName, type, type2, 0, null);
       else
-        msg = viewer.createImage(fileName, type, bytes, scripts, quality, width, height,
-            bsFrames, nVibes, fullPath);
+        msg = viewer.createImage(fileName, type, bytes, scripts, quality,
+            width, height, bsFrames, nVibes, fullPath);
     }
     if (!isSyntaxCheck && msg != null) {
       if (!msg.startsWith("OK"))

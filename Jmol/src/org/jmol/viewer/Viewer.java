@@ -8888,6 +8888,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
      * Note: this method is the gateway to all file writing for the applet.
      */
 
+    if (type.equals("JMOL"))
+      type = "ZIPALL";
     int saveWidth = dimScreen.width;
     int saveHeight = dimScreen.height;
     creatingImage = true;
@@ -8914,7 +8916,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           err = fileManager.createZipSet(fileName, (String) text_or_bytes, scripts, type
               .equals("ZIPALL"));
         } else if (type.equals("SCENE")) {
-          err = createSceneSet(fileName, width, height);
+          err = createSceneSet(fileName, (String) text_or_bytes, width, height);
         } else {
           // see if application wants to do it (returns non-null String)
           // both Jmol application and applet return null
@@ -10528,22 +10530,19 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   /**
    *
    * @param sceneFile
+   * @param type 
    * @param width
    * @param height
    * @return  "OK" or error
    */
-  String createSceneSet(String sceneFile, int width, int height) {
+  String createSceneSet(String sceneFile, String type, int width, int height) {
     
-    String sceneFileSource = TextFormat.simpleReplace(
-        TextFormat.simpleReplace(sceneFile, ".png", ".spt"), ".pngj", ".spt");
-    String script0 = getFileAsString(sceneFileSource);
+    String script0 = getFileAsString(sceneFile);
     if (script0 == null)
-      return "no such file: " + sceneFileSource;
-    if (sceneFile.indexOf(".png") < 0)
-      sceneFile += ".pngj";
-    sceneFile = TextFormat.simpleReplace(sceneFile, ".spt.png", ".png");
-    String fileRoot = TextFormat.split(sceneFile, ".png")[0];
-    String fileExt = (sceneFile.endsWith(".pngj") ? "j" : "");    
+      return "no such file: " + sceneFile;
+    sceneFile = TextFormat.simpleReplace(sceneFile, ".spt", "");
+    String fileRoot = sceneFile;
+    String fileExt = type.toLowerCase();
     String[] scenes = TextFormat.split(script0, "pause scene ");
     Map<String, String> htScenes = new Hashtable<String, String>();
     List<Integer> list = new ArrayList<Integer>();
@@ -10567,12 +10566,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           continue;
         iSceneLast = iScene;
         str[2] = "all"; // full PNGJ
-        String fileName = fileRoot + "_scene_" + iScene + ".all.png" + fileExt;
+        String fileName = fileRoot + "_scene_" + iScene + ".all." + fileExt;
         String msg = (String) createImage(fileName, "PNGJ", null, 
             str, -1, width, height, null, false);
         str[0] = null; // script0 only saved in first file
         str[2] = "min"; // script only -- for fast loading
-        fileName = fileRoot + "_scene_" + iScene + ".min.png" + fileExt;
+        fileName = fileRoot + "_scene_" + iScene + ".min." + fileExt;
         msg += "\n" + (String) createImage(fileName, "PNGJ", null, 
             str, -1, Math.min(width, 200), Math.min(height, 200), null, false);
         showString(msg, false);

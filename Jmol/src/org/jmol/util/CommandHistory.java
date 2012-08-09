@@ -211,7 +211,8 @@ final public class CommandHistory {
     }
     String str = "";
     for (int i = n; i < nextCommand; i++)
-      str += commandList.get(i) + "\n";
+      if (!commandList.get(i).toUpperCase().startsWith("WRITE HISTORY"))
+        str += commandList.get(i) + "\n";
     return str;
   }
 

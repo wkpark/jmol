@@ -121,7 +121,6 @@ public class ServerToClientProtocol extends ClientProtocol {
    * 
    * @param errCode
    *          EventType.DRIVER_NONE
-   * @param events
    * @throws IOException
    *           If there is a communication error.
    */

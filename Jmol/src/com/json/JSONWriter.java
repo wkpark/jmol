@@ -267,7 +267,6 @@ public class JSONWriter {
     /**
      * Push an array or object scope.
      * @param jo 
-     * @param c The scope to open.
      * @throws JSONException If nesting is too deep.
      */
     private void push(JSONObject jo) throws JSONException {

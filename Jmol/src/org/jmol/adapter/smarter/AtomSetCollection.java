@@ -1617,6 +1617,11 @@ public class AtomSetCollection {
     Vector3f[] vibrations = (vibrationSteps == null ? null : vibrationSteps
         .get(0));
     Vector3f v = new Vector3f();
+    if (vibrationSteps != null && vibrations.length < atomCount 
+        || trajectory.length < atomCount) {
+      errorMessage = "File cannot be loaded as a trajectory";
+      return;
+    }
     for (int i = 0; i < atomCount; i++) {
       if (vibrationSteps != null) {
         if (vibrations != null)

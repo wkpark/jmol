@@ -253,17 +253,24 @@ public class SmarterJmolAdapter extends JmolAdapter {
         }
       }
     }
+    AtomSetCollection result;
     if (htParams.containsKey("trajectorySteps")) {
       // this is one model with a set of coordinates from a 
       // molecular dynamics calculation
       // all the htParams[] entries point to the same Hashtable
-      asc[0].finalizeTrajectory(
-          (List<Point3f[]>) htParams.get("trajectorySteps"),
-          (List<Vector3f[]>) htParams.get("vibrationSteps"));
-      return asc[0];
+      result = asc[0];
+      try {
+        result.finalizeTrajectory(
+            (List<Point3f[]>) htParams.get("trajectorySteps"),
+            (List<Vector3f[]>) htParams.get("vibrationSteps"));
+      } catch (Exception e) {
+        if (result.errorMessage == null)
+          result.errorMessage = e.getMessage();
+      }
+    } else { 
+      result = new AtomSetCollection(asc);
     }
-    AtomSetCollection result = new AtomSetCollection(asc);
-    return (result.errorMessage == null ? result : (Object) result.errorMessage);
+    return (result.errorMessage == null ? result : result.errorMessage);
   }
 
   /**

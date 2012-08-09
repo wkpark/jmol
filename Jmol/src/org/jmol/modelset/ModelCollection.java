@@ -3328,7 +3328,7 @@ abstract public class ModelCollection extends BondCollection {
   public Map<String, Object> getAuxiliaryInfo(BitSet bsModels) {
     Map<String, Object> info = modelSetAuxiliaryInfo;
     if (info == null)
-      return info;
+      return null;
     List<Map<String, Object>> models = new ArrayList<Map<String, Object>>();
     for (int i = 0; i < modelCount; ++i) {
       if (bsModels != null && !bsModels.get(i)) {

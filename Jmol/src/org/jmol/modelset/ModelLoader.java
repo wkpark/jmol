@@ -170,13 +170,12 @@ public final class ModelLoader {
     }
     jmolData = (String) modelSet.getModelSetAuxiliaryInfo("jmolData");
     fileHeader = (String) modelSet.getModelSetAuxiliaryInfo("fileHeader");
-    isTrajectory = (modelSet.trajectorySteps != null && modelSet.getModelCount() > 1);
-    modelSet.trajectorySteps = (isTrajectory ? (List<Point3f[]>) modelSet
-        .getModelSetAuxiliaryInfo("trajectorySteps") : null);
-    modelSet.vibrationSteps = (isTrajectory ? (List<Vector3f[]>) modelSet
-        .getModelSetAuxiliaryInfo("vibrationSteps") : null);
+    modelSet.trajectorySteps = (List<Point3f[]>) modelSet
+        .getModelSetAuxiliaryInfo("trajectorySteps");
+    isTrajectory = (modelSet.trajectorySteps != null);
     if (isTrajectory) {
       info.remove("trajectorySteps");
+      modelSet.vibrationSteps = (List<Vector3f[]>) info.get("vibrationSteps");
       info.remove("vibrationSteps");
     }
     doAddHydrogens = (jbr != null && !isTrajectory

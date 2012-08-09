@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-06-15 17:29+0200\n"
-"PO-Revision-Date: 2011-03-09 16:53+0000\n"
+"PO-Revision-Date: 2012-08-04 05:55+0000\n"
 "Last-Translator: zvacet <ikoli@yahoo.com>\n"
 "Language-Team: Croatian <hr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-12-18 14:49+0000\n"
-"X-Generator: Launchpad (build 14525)\n"
+"X-Launchpad-Export-Date: 2012-08-09 16:12+0000\n"
+"X-Generator: Launchpad (build 15761)\n"
 
 #: com/json/Cookie.java:121
 msgid "name"
@@ -399,7 +399,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:254
 msgid "Method: "
-msgstr "Metoda "
+msgstr "Metoda: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:261
 msgid "Basis Set: "
@@ -1862,14 +1862,14 @@ msgstr ""
 msgid "unimplemented"
 msgstr ""
 
-#~ msgid "Go to first vector in the collection"
-#~ msgstr "Idi na prvi vektor u zbirci"
-
-#~ msgid "Go to previous vector in the collection"
-#~ msgstr "Idi na prethodni vektor u zbirci"
-
 #~ msgid "Go to next vector in the collection"
 #~ msgstr "Idi na slijedeći vektor u zbirci"
 
 #~ msgid "Jump to last vector in the collection"
 #~ msgstr "Skoči na zadnji vektor u zbirci"
+
+#~ msgid "Go to first vector in the collection"
+#~ msgstr "Idi na prvi vektor u zbirci"
+
+#~ msgid "Go to previous vector in the collection"
+#~ msgstr "Idi na prethodni vektor u zbirci"

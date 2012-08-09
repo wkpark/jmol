@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-06-15 17:29+0200\n"
-"PO-Revision-Date: 2012-06-18 10:24+0000\n"
-"Last-Translator: leonardo corato <leocor@gmail.com>\n"
+"PO-Revision-Date: 2012-08-09 05:31+0000\n"
+"Last-Translator: Marco Buono <Unknown>\n"
 "Language-Team: Italian <it@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-06-20 11:28+0000\n"
-"X-Generator: Launchpad (build 15435)\n"
+"X-Launchpad-Export-Date: 2012-08-09 16:12+0000\n"
+"X-Generator: Launchpad (build 15761)\n"
 
 #: com/json/Cookie.java:121
 msgid "name"
@@ -142,7 +142,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:195
 msgid "Jmol script to execute BEFORE -s option"
-msgstr "Script Jmol per eseguire PRIMA dell'opzione -s"
+msgstr "Script Jmol da eseguire PRIMA dell'opzione -s"
 
 #: org/openscience/jmol/app/JmolApp.java:201
 msgid "Jmol script to execute AFTER -s option"
@@ -352,12 +352,12 @@ msgstr "Pausa riproduzione"
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:367
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:376
 msgid "Go to next atom set in the collection"
-msgstr "Vai ai prossimi insiemi dell'atomo della raccolta"
+msgstr "Vai al successivo insieme atomico della raccolta"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:368
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:377
 msgid "Jump to last atom set in the collection"
-msgstr "Salta all'ultimo insieme dell'atomo nella raccolta"
+msgstr "Salta all'ultimo insieme atomico della raccolta"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:374
 msgid "Vibration ON"
@@ -378,7 +378,7 @@ msgstr "Cancella atomi"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:187
 msgid "Export Gaussian Input File"
-msgstr "Esprota file di Input gaussiano"
+msgstr "Esporta il file di input gaussiano"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:194
 msgid "Basic"
@@ -402,7 +402,7 @@ msgstr "Numero di Processori:"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:248
 msgid "Route"
-msgstr "Percorso"
+msgstr "Itinerario"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:254
 msgid "Method: "
@@ -422,7 +422,7 @@ msgstr "Opzioni Lavoro: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:288
 msgid "Molecular Properties"
-msgstr "Proprietà Molecolare"
+msgstr "Proprietà Molecolari"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:294
 msgid "Total Charge: "
@@ -1565,7 +1565,7 @@ msgstr "Spessore del ritaglio"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:261
 msgid "Select Surface(s)"
-msgstr "Seleziona superficie(ci)"
+msgstr "Seleziona superfici"
 
 #: org/openscience/jmol/app/webexport/JmolInstance.java:81
 msgid "Attempt to make scratch directory failed."
@@ -2013,3 +2013,7 @@ msgstr "non implementato"
 
 #~ msgid "independent commmand thread"
 #~ msgstr "comando indipendente"
+
+#, java-format
+#~ msgid "Jump to last {0} in the collection"
+#~ msgstr "Salta all ultimo {0} nella raccolta"

@@ -9,14 +9,14 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-06-15 17:29+0200\n"
-"PO-Revision-Date: 2010-11-18 00:27+0000\n"
-"Last-Translator: Nicolas Vervelle <Unknown>\n"
+"PO-Revision-Date: 2012-08-07 13:15+0000\n"
+"Last-Translator: Martin Slavík <Unknown>\n"
 "Language-Team: Czech <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-12-18 14:49+0000\n"
-"X-Generator: Launchpad (build 14525)\n"
+"X-Launchpad-Export-Date: 2012-08-09 16:12+0000\n"
+"X-Generator: Launchpad (build 15761)\n"
 "X-Poedit-Country: CZECH REPUBLIC\n"
 "X-Poedit-Language: Czech\n"
 
@@ -324,14 +324,12 @@ msgid "Period"
 msgstr "Perioda"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:355
-#, fuzzy
 msgid "Frame"
-msgstr "Poslední snímek"
+msgstr "Snímek"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:355
-#, fuzzy
 msgid "Vibration"
-msgstr "Animace"
+msgstr "Vibrace"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:363
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:372
@@ -1041,7 +1039,8 @@ msgstr "Vložte zde titulek pro {0}."
 msgid ""
 "Insert additional explanatory text here. Long text will wrap around Jmol "
 "model {0}."
-msgstr "Zde vlož text s vysvětlením. Dlouhý text bude obtékat Jmol model {0}."
+msgstr ""
+"Zde vlož text s vysvětlením. Dlouhý text bude obtékat Jmol model {0}."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:374
 msgid "Insert your TITLE and INTRODUCTION here."
@@ -1433,9 +1432,8 @@ msgid "startup"
 msgstr ""
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:535
-#, fuzzy
 msgid "filename"
-msgstr "Název souboru:"
+msgstr "název souboru"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:542
 msgid "startup_script"
@@ -1888,37 +1886,6 @@ msgstr "Ulož pohled"
 msgid "unimplemented"
 msgstr "neimplementováno"
 
-#~ msgid "Get PDB file"
-#~ msgstr "Získat PDB soubor"
-
-#~ msgid "Enter a four-digit PDB ID"
-#~ msgstr "Zadej čtyřčíselný PDB ID"
-
-#~ msgid "Get MOL file by compound name or ID"
-#~ msgstr "Získat MOL soubor podle jména sloučeniny nebo ID"
-
-#, fuzzy
-#~ msgid "Enter the name or identifier (SMILES, InChI, CAS) of a compound"
-#~ msgstr "Zadej jméno nebo identifikátor (SMILES, InChI, CAS) molekuly"
-
-#~ msgid "Controller"
-#~ msgstr "Ovládací prvek"
-
-#~ msgid "Go to first vector in the collection"
-#~ msgstr "Jít na první vektor v kolekci"
-
-#~ msgid "Go to previous vector in the collection"
-#~ msgstr "Jít na předchozí vektor v kolekci"
-
-#~ msgid "Play the whole collection of vectors"
-#~ msgstr "Přehrát celou kolekci vektorů"
-
-#~ msgid "Go to next vector in the collection"
-#~ msgstr "Jít na další vektor v kolekci"
-
-#~ msgid "Jump to last vector in the collection"
-#~ msgstr "Skočit na poslední vektor v kolekci"
-
 #~ msgid "All"
 #~ msgstr "Vše"
 
@@ -1952,24 +1919,32 @@ msgstr "neimplementováno"
 #~ msgid "Left"
 #~ msgstr "Zleva"
 
+#~ msgid "Controller"
+#~ msgstr "Ovládací prvek"
+
 #~ msgid "atom set"
 #~ msgstr "sada atomů"
 
 #~ msgid "vector"
 #~ msgstr "vektor"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Přejít na první {0} v kolekci"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Přejít na předchozí {0} v kolekci"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Přehrát celou kolekci {0}"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Přejít na další {0} ve sbírce"
 
+#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Přejít na poslední  {0} ve sbírce"
 
@@ -1991,12 +1966,14 @@ msgstr "neimplementováno"
 #~ msgid "double-click and drag to reorder"
 #~ msgstr "poklepejte a táhněte pro změnu pořadí"
 
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 #~ msgstr ""
 #~ "Zde vložte vysvětlující text. Delší text bude obtékat Jmol model {0}."
 
+#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"
@@ -2004,9 +1981,11 @@ msgstr "neimplementováno"
 #~ "Nemohu najít nebo otevřít:\n"
 #~ "{0}"
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "přidávám {0}.spt"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "přidávám {0}.png"
 
@@ -2015,3 +1994,30 @@ msgstr "neimplementováno"
 
 #~ msgid "Clear console button (requires restarting Jmol)"
 #~ msgstr "Vyčistit tlačítka konzole (vyžaduje restart Jmolu)"
+
+#~ msgid "Go to next vector in the collection"
+#~ msgstr "Jít na další vektor v kolekci"
+
+#~ msgid "Play the whole collection of vectors"
+#~ msgstr "Přehrát celou kolekci vektorů"
+
+#~ msgid "Go to first vector in the collection"
+#~ msgstr "Jít na první vektor v kolekci"
+
+#~ msgid "Go to previous vector in the collection"
+#~ msgstr "Jít na předchozí vektor v kolekci"
+
+#~ msgid "Jump to last vector in the collection"
+#~ msgstr "Skočit na poslední vektor v kolekci"
+
+#~ msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
+#~ msgstr "Zadej jméno nebo identifikátor (SMILES, InChI, CAS) molekuly"
+
+#~ msgid "Get MOL file by compound name or ID"
+#~ msgstr "Získat MOL soubor podle jména sloučeniny nebo ID"
+
+#~ msgid "Get PDB file"
+#~ msgstr "Získat PDB soubor"
+
+#~ msgid "Enter a four-digit PDB ID"
+#~ msgstr "Zadej čtyřčíselný PDB ID"

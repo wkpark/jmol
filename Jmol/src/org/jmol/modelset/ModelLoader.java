@@ -170,18 +170,18 @@ public final class ModelLoader {
     }
     jmolData = (String) modelSet.getModelSetAuxiliaryInfo("jmolData");
     fileHeader = (String) modelSet.getModelSetAuxiliaryInfo("fileHeader");
-    modelSet.trajectorySteps = (List<Point3f[]>) modelSet
-        .getModelSetAuxiliaryInfo("trajectorySteps");
-    modelSet.vibrationSteps = (List<Vector3f[]>) modelSet
-        .getModelSetAuxiliaryInfo("vibrationSteps");
-    isTrajectory = (modelSet.trajectorySteps != null);
+    isTrajectory = (modelSet.trajectorySteps != null && modelSet.getModelCount() > 1);
+    modelSet.trajectorySteps = (isTrajectory ? (List<Point3f[]>) modelSet
+        .getModelSetAuxiliaryInfo("trajectorySteps") : null);
+    modelSet.vibrationSteps = (isTrajectory ? (List<Vector3f[]>) modelSet
+        .getModelSetAuxiliaryInfo("vibrationSteps") : null);
     if (isTrajectory) {
       info.remove("trajectorySteps");
       info.remove("vibrationSteps");
     }
-    doAddHydrogens = jbr != null && !isTrajectory
+    doAddHydrogens = (jbr != null && !isTrajectory
         && modelSet.getModelSetAuxiliaryInfo("pdbNoHydrogens") == null
-        && viewer.getBooleanProperty("pdbAddHydrogens");
+        && viewer.getBooleanProperty("pdbAddHydrogens"));
     if (info != null)
       info.remove("pdbNoHydrogens");
     noAutoBond = modelSet.getModelSetAuxiliaryInfoBoolean("noAutoBond");

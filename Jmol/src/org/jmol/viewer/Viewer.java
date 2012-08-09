@@ -5811,7 +5811,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       global.setParameterValue(key, value);
       return;
     }
-    int tok = Token.getTokFromName(key.toLowerCase());
+    int tok = Token.getTokFromName(key);
     switch (Token.getParamType(tok)) {
     case Token.booleanparam:
       setBooleanProperty(key, tok, ScriptVariable.bValue(ScriptVariable
@@ -6016,7 +6016,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       global.setParameterValue(key, value);
       return;
     }
-    int tok = Token.getTokFromName(key.toLowerCase());
+    int tok = Token.getTokFromName(key);
     switch (Token.getParamType(tok)) {
     case Token.strparam:
       setStringProperty(key, tok, "" + value);
@@ -6204,7 +6204,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       global.setParameterValue(key, value);
       return;
     }
-    int tok = Token.getTokFromName(key.toLowerCase());
+    int tok = Token.getTokFromName(key);
     switch (Token.getParamType(tok)) {
     case Token.strparam:
       setStringProperty(key, tok, "" + value);
@@ -6399,7 +6399,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       global.setParameterValue(key, value);
       return;
     }
-    int tok = Token.getTokFromName(key.toLowerCase());
+    int tok = Token.getTokFromName(key);
     switch (Token.getParamType(tok)) {
     case Token.strparam:
       setStringProperty(key, tok, "" + value);

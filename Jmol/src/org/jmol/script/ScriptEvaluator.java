@@ -8571,7 +8571,7 @@ public class ScriptEvaluator {
         tokType = (tok == Token.identifier
             && Parser.isOneOf(modelName.toLowerCase(),
                 JmolConstants.LOAD_ATOM_DATA_TYPES) ? Token
-            .getTokFromName(modelName.toLowerCase()) : Token.nada);
+            .getTokFromName(modelName) : Token.nada);
         if (tokType != Token.nada) {
           // loading just some data here
           // xyz vxyz vibration temperature occupancy partialcharge

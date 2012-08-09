@@ -312,6 +312,8 @@ public abstract class AtomSetCollectionReader {
   }
 
   protected void finalizeReader() throws Exception {
+    if (atomSetCollection.getAtomSetCount() == 1)
+      isTrajectory = false;
     applySymmetryAndSetTrajectory();
     if (loadNote.length() > 0)
       atomSetCollection.setAtomSetCollectionAuxiliaryInfo("modelLoadNote", loadNote.toString());

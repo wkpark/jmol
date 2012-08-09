@@ -1043,7 +1043,7 @@ class ScriptMathProcessor {
     // helix(pt1, pt2, dq)
     int pt = (args.length > 2 ? 3 : 1);
     String type = (pt >= args.length ? "array" : ScriptVariable
-        .sValue(args[pt])).toLowerCase();
+        .sValue(args[pt]));
     int tok = Token.getTokFromName(type);
     if (args.length > 2) {
       // helix(pt1, pt2, dq ...)
@@ -2243,7 +2243,7 @@ class ScriptMathProcessor {
     String withinStr = "" + withinSpec;
     int tok = args[0].tok;
     if (tok == Token.string)
-      tok = Token.getTokFromName(withinStr.toLowerCase());
+      tok = Token.getTokFromName(withinStr);
     boolean isVdw = (tok == Token.vanderwaals);
     if (isVdw) {
       distance = 100;

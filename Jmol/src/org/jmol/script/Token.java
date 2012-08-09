@@ -1320,11 +1320,12 @@ public class Token {
   }
   
   public static Token getTokenFromName(String name) {
+    // this one needs to NOT be lower case for ScriptCompiler
     return tokenMap.get(name);
   }
   
   public static int getTokFromName(String name) {
-    Token token = getTokenFromName(name);
+    Token token = getTokenFromName(name.toLowerCase());
     return (token == null ? nada : token.tok);
   }
 

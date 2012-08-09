@@ -1005,15 +1005,18 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         return OK;
       }
       if (tokCommand == Token.load) {
-        if (nTokens == 1 && lookingAtLoadFormat()) {
+        if ((nTokens == 1 || nTokens == 2 && tokAt(1) == Token.append) && lookingAtLoadFormat()) {
           String strFormat = script.substring(ichToken, ichToken + cchToken);
           Token token = Token.getTokenFromName(strFormat.toLowerCase());
           switch (token == null ? Token.nada : token.tok) {
+          case Token.menu:
           case Token.append:
+            if (nTokens != 1)
+              return ERROR;
+            //$FALL-THROUGH$
           case Token.data:
           case Token.file:
           case Token.inline:
-          case Token.menu:
           case Token.model:
           case Token.smiles:
           case Token.trajectory:

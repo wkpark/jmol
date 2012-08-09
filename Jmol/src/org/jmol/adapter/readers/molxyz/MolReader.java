@@ -133,6 +133,7 @@ public class MolReader extends AtomSetCollectionReader {
   public void finalizeReader() throws Exception {
     if (is2D)
       set2D();
+    isTrajectory = false;
     super.finalizeReader();
   }
 

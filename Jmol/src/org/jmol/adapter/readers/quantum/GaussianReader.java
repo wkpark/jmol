@@ -24,7 +24,8 @@
 
 package org.jmol.adapter.readers.quantum;
 
-import org.jmol.adapter.smarter.*;
+import org.jmol.adapter.smarter.Atom;
+import org.jmol.adapter.smarter.SmarterJmolAdapter;
 
 import java.io.IOException;
 import java.util.ArrayList;

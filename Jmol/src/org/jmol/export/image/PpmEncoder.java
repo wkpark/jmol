@@ -28,9 +28,11 @@
 
 package org.jmol.export.image;
 
-import java.io.*;
 import java.awt.Image;
-import java.awt.image.*;
+import java.awt.image.ImageProducer;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 /// Write out an image as a PPM.
 // <P>

@@ -24,7 +24,8 @@
 
 package org.jmol.adapter.readers.more;
 
-import org.jmol.adapter.smarter.*;
+import org.jmol.adapter.smarter.Bond;
+import org.jmol.adapter.smarter.Atom;
 
 import org.jmol.api.JmolAdapter;
 

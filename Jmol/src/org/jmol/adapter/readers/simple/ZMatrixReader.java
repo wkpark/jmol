@@ -33,7 +33,9 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
-import org.jmol.adapter.smarter.*;
+import org.jmol.adapter.smarter.AtomSetCollectionReader;
+import org.jmol.adapter.smarter.Bond;
+import org.jmol.adapter.smarter.Atom;
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;

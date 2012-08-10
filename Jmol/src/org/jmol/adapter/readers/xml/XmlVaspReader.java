@@ -29,8 +29,8 @@ import java.util.Map;
 
 import javax.vecmath.Vector3f;
 
-import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.AtomSetCollection;
+import org.jmol.adapter.smarter.Atom;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 

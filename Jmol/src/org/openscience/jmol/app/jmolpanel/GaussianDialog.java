@@ -23,7 +23,7 @@
  */
 package org.openscience.jmol.app.jmolpanel;
 
-import org.jmol.api.*;
+import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
 import org.jmol.viewer.Viewer;
 

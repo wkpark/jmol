@@ -24,9 +24,6 @@
 /*package org.openscience.jmol.app.webexport;
 
 
-import java.io.*;
-import javax.swing.*;
-
 import org.jmol.export.history.HistoryFile;
 import org.jmol.i18n.GT;
 

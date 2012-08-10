@@ -24,7 +24,8 @@
 
 package org.jmol.shape;
 
-import org.jmol.g3d.*;
+import org.jmol.g3d.Font3D;
+import org.jmol.g3d.Graphics3D;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Escape;
 

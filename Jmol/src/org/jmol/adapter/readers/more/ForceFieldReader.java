@@ -26,7 +26,8 @@ package org.jmol.adapter.readers.more;
 
 import java.util.Properties;
 
-import org.jmol.adapter.smarter.*;
+import org.jmol.adapter.smarter.AtomSetCollectionReader;
+import org.jmol.adapter.smarter.Atom;
 
 /*
  * MdTopReader and Mol2Reader must determine element from force-field atom type, if possible.

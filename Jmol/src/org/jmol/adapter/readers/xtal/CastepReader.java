@@ -45,7 +45,8 @@ package org.jmol.adapter.readers.xtal;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jmol.adapter.smarter.*;
+import org.jmol.adapter.smarter.AtomSetCollectionReader;
+import org.jmol.adapter.smarter.Atom;
 import org.jmol.util.Eigen;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;

@@ -33,7 +33,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 import org.jmol.script.Token;
 
-import org.jmol.g3d.*;
+import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.BondIterator;

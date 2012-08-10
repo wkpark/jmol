@@ -24,8 +24,8 @@
 
 package org.jmol.adapter.readers.cifpdb;
 
-import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
+import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.Structure;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;

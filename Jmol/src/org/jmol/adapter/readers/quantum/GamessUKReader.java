@@ -24,7 +24,8 @@
 
 package org.jmol.adapter.readers.quantum;
 
-import org.jmol.adapter.smarter.*;
+import org.jmol.adapter.smarter.AtomSetCollectionReader;
+import org.jmol.adapter.smarter.Atom;
 
 import java.util.ArrayList;
 import java.util.List;

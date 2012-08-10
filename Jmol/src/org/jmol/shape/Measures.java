@@ -26,7 +26,8 @@ package org.jmol.shape;
 
 import org.jmol.api.JmolMeasurementClient;
 import org.jmol.atomdata.RadiusData;
-import org.jmol.g3d.*;
+import org.jmol.g3d.Font3D;
+import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Measurement;
 import org.jmol.modelset.MeasurementData;

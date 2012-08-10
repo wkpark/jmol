@@ -29,7 +29,8 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import org.jmol.adapter.smarter.*;
+import org.jmol.adapter.smarter.Atom;
+import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;

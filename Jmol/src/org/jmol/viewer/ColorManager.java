@@ -23,6 +23,7 @@
  */
 package org.jmol.viewer;
 
+import org.jmol.g3d.Graphics3D;
 import org.jmol.script.Token;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.ColorUtil;
@@ -33,7 +34,6 @@ import java.util.BitSet;
 
 import org.jmol.constant.EnumPalette;
 import org.jmol.constant.StaticConstants;
-import org.jmol.g3d.*;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Model;

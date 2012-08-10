@@ -14,8 +14,8 @@ package org.jmol.adapter.readers.xtal;
 
 import jspecview.util.TextFormat;
 
-import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
+import org.jmol.adapter.smarter.Atom;
 import org.jmol.util.Eigen;
 
 public class MagResReader extends AtomSetCollectionReader {

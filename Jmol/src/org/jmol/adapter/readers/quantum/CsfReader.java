@@ -23,8 +23,8 @@
  */
 package org.jmol.adapter.readers.quantum; 
 
-import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.Bond;
+import org.jmol.adapter.smarter.Atom;
 import org.jmol.api.JmolAdapter;
 
 import java.util.ArrayList;

@@ -22,9 +22,8 @@
  */
 package org.jmol.adapter.readers.xml;
 
+import org.xml.sax.Attributes;
 import java.util.Map;
-
-import org.xml.sax.*;
 
 /**
  * A Molpro 2005 reader

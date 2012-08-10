@@ -12,8 +12,8 @@ package org.jmol.adapter.readers.xtal;
  * @version 1.0
  */
 
-import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
+import org.jmol.adapter.smarter.Atom;
 
 public class EspressoReader extends AtomSetCollectionReader {
 

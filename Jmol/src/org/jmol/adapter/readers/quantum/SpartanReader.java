@@ -24,7 +24,7 @@
 
 package org.jmol.adapter.readers.quantum;
 
-import org.jmol.adapter.smarter.*;
+import org.jmol.adapter.smarter.Atom;
 
 import java.util.Hashtable;
 

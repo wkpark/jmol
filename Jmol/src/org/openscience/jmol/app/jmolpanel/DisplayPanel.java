@@ -23,15 +23,31 @@
  */
 package org.openscience.jmol.app.jmolpanel;
 
-import org.jmol.api.*;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ComponentListener;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
+
+import javax.swing.AbstractAction;
+import javax.swing.AbstractButton;
+import javax.swing.Action;
+import javax.swing.ButtonGroup;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+import org.jmol.api.JmolViewer;
 import org.jmol.console.JmolFrame;
 import org.jmol.i18n.GT;
 import org.openscience.jmol.app.jmolpanel.JmolPanel;
-
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.print.*;
-import javax.swing.*;
 
 public class DisplayPanel extends JPanel
   implements JmolFrame, ComponentListener, Printable {

@@ -24,16 +24,22 @@
  */
 package org.openscience.jmol.app.webexport;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import org.jmol.util.TextFormat;
-import org.jmol.viewer.*;
+import org.jmol.viewer.Viewer;
 
 public class Test extends JPanel implements ActionListener {
 

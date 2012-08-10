@@ -138,6 +138,8 @@ public abstract class AtomSetCollectionReader {
   protected BinaryDocument doc;
   protected String readerName;
   public Map<String, Object> htParams;
+  public List<Point3f[]> trajectorySteps;
+
   //protected String parameterData;
 
   // buffer
@@ -311,9 +313,16 @@ public abstract class AtomSetCollectionReader {
     loadNote.append(info).append("\n");
   }
 
+  @SuppressWarnings("unchecked")
+  protected void initializeTrajectoryFile() {
+    // add a dummy atom, just so not "no atoms found"
+    atomSetCollection.addAtom(new Atom());
+    trajectorySteps = (List<Point3f[]>) htParams.get("trajectorySteps");
+    if (trajectorySteps == null)
+      htParams.put("trajectorySteps", trajectorySteps = new ArrayList<Point3f[]>());
+  }
+
   protected void finalizeReader() throws Exception {
-    if (atomSetCollection.getAtomSetCount() == 1)
-      isTrajectory = false;
     applySymmetryAndSetTrajectory();
     if (loadNote.length() > 0)
       atomSetCollection.setAtomSetCollectionAuxiliaryInfo("modelLoadNote", loadNote.toString());

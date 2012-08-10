@@ -23,7 +23,10 @@
  */
 package org.jmol.adapter.readers.cifpdb;
 
-import org.jmol.adapter.smarter.*;
+import org.jmol.adapter.smarter.AtomSetCollectionReader;
+import org.jmol.adapter.smarter.AtomSetCollection;
+import org.jmol.adapter.smarter.Atom;
+import org.jmol.adapter.smarter.Structure;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolLineReader;
 import org.jmol.constant.EnumStructure;

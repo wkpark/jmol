@@ -25,7 +25,8 @@
 package org.jmol.shape;
 
 import org.jmol.constant.EnumPalette;
-import org.jmol.g3d.*;
+import org.jmol.g3d.Font3D;
+import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.LabelToken;
 import org.jmol.util.ArrayUtil;

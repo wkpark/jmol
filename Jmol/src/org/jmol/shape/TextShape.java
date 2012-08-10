@@ -24,10 +24,10 @@
 
 package org.jmol.shape;
 
-import org.jmol.g3d.*;
-
 import java.util.BitSet;
 import java.util.Iterator;
+
+import org.jmol.g3d.Font3D;
 
 public abstract class TextShape extends Object2dShape {
 

@@ -8,7 +8,14 @@ import com.sparshui.GestureType;
 import com.sparshui.common.ClientProtocol;
 import com.sparshui.common.Event;
 import com.sparshui.common.Location;
-import com.sparshui.common.messages.events.*;
+import com.sparshui.common.messages.events.DragEvent;
+import com.sparshui.common.messages.events.EventType;
+import com.sparshui.common.messages.events.FlickEvent;
+import com.sparshui.common.messages.events.RelativeDragEvent;
+import com.sparshui.common.messages.events.RotateEvent;
+import com.sparshui.common.messages.events.SpinEvent;
+import com.sparshui.common.messages.events.TouchEvent;
+import com.sparshui.common.messages.events.ZoomEvent;
 import com.sparshui.common.utils.Converter;
 
 /**

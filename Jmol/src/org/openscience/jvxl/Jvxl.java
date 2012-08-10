@@ -44,9 +44,9 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.PosixParser;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.HelpFormatter;
-
-import org.jmol.jvxl.readers.*;
-import org.jmol.util.*;
+import org.jmol.jvxl.readers.SurfaceGenerator;
+import org.jmol.util.Logger;
+import org.jmol.util.Parser;
 
 public class Jvxl {
 

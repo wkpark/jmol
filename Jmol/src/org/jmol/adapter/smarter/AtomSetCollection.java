@@ -342,7 +342,7 @@ public class AtomSetCollection {
     //Logger.debug("AtomSetCollection.freeze; atomCount = " + atomCount);
     if (reverseModels)
       reverseAtomSets();
-    if (isTrajectory)
+    if (trajectoryStepCount > 1)
       finalizeTrajectory();
     getList(true);
     getList(false);

@@ -24,11 +24,8 @@
 
 package org.jmol.adapter.readers.more;
 
-import org.jmol.adapter.smarter.*;
+import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.util.Logger;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.vecmath.Point3f;
 
@@ -41,17 +38,9 @@ import javax.vecmath.Point3f;
 
 public class MdCrdReader extends AtomSetCollectionReader {
 
-  private List<Point3f[]> trajectorySteps;
-
-  @SuppressWarnings("unchecked")
   @Override
   protected void initializeReader() {
-    // add a dummy atom, just so not "no atoms found"
-    atomSetCollection.addAtom(new Atom());
-    trajectorySteps = (List<Point3f[]>) htParams.get("trajectorySteps");
-    if (trajectorySteps == null) {
-      htParams.put("trajectorySteps", trajectorySteps = new ArrayList<Point3f[]>());
-    }
+    initializeTrajectoryFile();
   }
 
   @Override

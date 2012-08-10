@@ -25,7 +25,9 @@
 
 package org.openscience.jmol.app.surfacetool;
 
-import javax.vecmath.*;
+import javax.vecmath.Point3f;
+import javax.vecmath.Point4f;
+import javax.vecmath.Vector3f;
 
 import org.jmol.util.Measure;
 

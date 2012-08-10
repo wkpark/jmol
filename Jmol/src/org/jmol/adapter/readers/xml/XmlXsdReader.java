@@ -27,8 +27,8 @@ import java.io.BufferedReader;
 import java.util.BitSet;
 import java.util.Map;
 
-import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.AtomSetCollection;
+import org.jmol.adapter.smarter.Atom;
 import org.jmol.util.TextFormat;
 
 /**

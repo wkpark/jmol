@@ -38,7 +38,7 @@ import org.jmol.util.MeshSurface;
 import org.jmol.util.Quaternion;
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.api.SymmetryInterface;
-import org.jmol.g3d.*;
+import org.jmol.g3d.Graphics3D;
 
 //import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix3f;

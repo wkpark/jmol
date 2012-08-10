@@ -23,9 +23,9 @@
  */
 package org.jmol.adapter.readers.xml;
 
-import org.jmol.adapter.smarter.Atom;
-import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
+import org.jmol.adapter.smarter.AtomSetCollection;
+import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.Resolver;
 
 

@@ -23,7 +23,9 @@
  */
 package org.jmol.adapter.readers.xml;
 
-import org.jmol.adapter.smarter.*;
+import org.jmol.adapter.smarter.Bond;
+import org.jmol.adapter.smarter.AtomSetCollection;
+import org.jmol.adapter.smarter.Atom;
 
 import java.util.Map;
 import java.util.NoSuchElementException;

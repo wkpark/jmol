@@ -33,10 +33,10 @@ import java.util.List;
 import jspecview.util.TextFormat;
 
 import org.jmol.adapter.readers.molxyz.MolReader;
-import org.jmol.adapter.smarter.Atom;
-import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Bond;
+import org.jmol.adapter.smarter.AtomSetCollection;
+import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 
 import org.jmol.util.Escape;

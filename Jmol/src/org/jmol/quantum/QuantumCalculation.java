@@ -26,6 +26,7 @@ package org.jmol.quantum;
 import javax.vecmath.Point3f;
 
 import org.jmol.modelset.Atom;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
 import java.util.BitSet;
@@ -117,10 +118,12 @@ abstract class QuantumCalculation {
         stepBohr[i] = stepsXYZ[i] * unitFactor;
         volume *= stepBohr[i];
       }
-      Logger.info("QuantumCalculation:\n origin(Bohr)= " + originBohr[0] + " "
-          + originBohr[1] + " " + originBohr[2] + "\n steps(Bohr)= "
-          + stepBohr[0] + " " + stepBohr[1] + " " + stepBohr[2] + "\n counts= "
-          + nX + " " + nY + " " + nZ);
+      Logger.info("QuantumCalculation:"
+          + "\n origin = " + Escape.escape(originXYZ) 
+          + "\n steps = " + Escape.escape(stepsXYZ)
+          + "\n origin(Bohr)= " + Escape.escape(originBohr) 
+          + "\n steps(Bohr)= " + Escape.escape(stepBohr)
+          + "\n counts= " + nX + " " + nY + " " + nZ);
     }
 
     /* 

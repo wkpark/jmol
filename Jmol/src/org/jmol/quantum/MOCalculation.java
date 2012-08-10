@@ -1277,7 +1277,6 @@ public class MOCalculation extends QuantumCalculation implements
   public void calculateElectronDensity() {
     if (points != null)
       return;
-    //TODO
     for (int ix = nX; --ix >= 0;)
       for (int iy = nY; --iy >= 0;)
         for (int iz = nZ; --iz >= 0;) {

@@ -35,8 +35,11 @@ import java.util.Map;
 
 import javax.vecmath.Vector3f;
 
+import jspecview.util.TextFormat;
+
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
@@ -299,6 +302,7 @@ public class GaussianReader extends MOReader {
         (scanPoint>=0?(SmarterJmolAdapter.PATH_SEPARATOR+"Scan Point "+scanPoint):"")+
         SmarterJmolAdapter.PATH_SEPARATOR+path);
   }
+
   /* SAMPLE BASIS OUTPUT */
   /*
    * see also http://www.gaussian.com/g_ur/k_gen.htm  -- thank you, Rick Spinney
@@ -321,6 +325,39 @@ public class GaussianReader extends MOReader {
    There are     0 symmetry adapted basis functions of A2  symmetry.
    There are     1 symmetry adapted basis functions of B1  symmetry.
    There are     2 symmetry adapted basis functions of B2  symmetry.
+   
+   or
+   
+    AO basis set in the form of general basis input (Overlap normalization):
+      1 0
+ S   3 1.00       0.000000000000
+      0.1508000000D 01 -0.1754110411D 00
+      0.5129000000D 00 -0.4465363900D 00
+      0.1362000000D 00  0.1295841966D 01
+ S   3 1.00       0.000000000000
+      0.2565000000D 01 -0.1043105923D 01
+      0.1508000000D 01  0.1331478902D 01
+      0.5129000000D 00  0.5613064585D 00
+ S   1 1.00       0.000000000000
+      0.4170000000D-01  0.1000000000D 01
+ P   3 1.00       0.000000000000
+      0.4859000000D 01 -0.9457549473D-01
+      0.1219000000D 01  0.7434797586D 00
+      0.4413000000D 00  0.3668143796D 00
+ P   2 1.00       0.000000000000
+      0.5725000000D 00 -0.8808640317D-01
+      0.8300000000D-01  0.1028397037D 01
+ P   1 1.00       0.000000000000
+      0.2500000000D-01  0.1000000000D 01
+ D   3 1.00       0.000000000000
+      0.4195000000D 01  0.4857290090D-01
+      0.1377000000D 01  0.5105223094D 00
+      0.4828000000D 00  0.5730028106D 00
+ D   1 1.00       0.000000000000
+      0.1501000000D 00  0.1000000000D 01
+ ****
+      2 0
+...
    */
 
   private void readBasis() throws Exception {
@@ -331,30 +368,69 @@ public class GaussianReader extends MOReader {
     shellCount = 0;
     String lastAtom = "";
     String[] tokens;
-    
-    boolean doSphericalD = (calculationType != null && (calculationType.indexOf("5D") > 0));
-    boolean doSphericalF = (calculationType != null && (calculationType.indexOf("7F") > 0));
-    while (readLine() != null && line.startsWith(" Atom")) {
-      shellCount++;
-      tokens = getTokens();
-      int[] slater = new int[4];
-      if (!tokens[1].equals(lastAtom))
+
+    boolean doSphericalD = (calculationType != null && (calculationType
+        .indexOf("5D") > 0));
+    boolean doSphericalF = (calculationType != null && (calculationType
+        .indexOf("7F") > 0));
+    boolean isGeneral = (line.indexOf("general basis input") >= 0);
+    if (isGeneral) {
+      while (readLine() != null && line.length() > 0) {
+        shellCount++;
+        tokens = getTokens();
         atomCount++;
-      lastAtom = tokens[1];
-      slater[0] = atomCount - 1;
-      String oType = tokens[4];
-      if (doSphericalF && oType.indexOf("F") >= 0 || doSphericalD && oType.indexOf("D") >= 0)
-        slater[1] = JmolAdapter.getQuantumShellTagIDSpherical(oType);
-      else
-        slater[1] = JmolAdapter.getQuantumShellTagID(oType);
-      
-      int nGaussians = parseInt(tokens[5]);
-      slater[2] = gaussianCount; // or parseInt(tokens[7]) - 1
-      slater[3] = nGaussians;
-      shells.add(slater);
-      gaussianCount += nGaussians;
-      for (int i = 0; i < nGaussians; i++) {
-        gdata.add(getTokens(readLine()));
+        while (readLine().indexOf("****") < 0) {
+          int[] slater = new int[4];
+          slater[0] = atomCount - 1;
+          tokens = getTokens();
+          String oType = tokens[0];
+          if (doSphericalF && oType.indexOf("F") >= 0 || doSphericalD
+              && oType.indexOf("D") >= 0)
+            slater[1] = JmolAdapter.getQuantumShellTagIDSpherical(oType);
+          else
+            slater[1] = JmolAdapter.getQuantumShellTagID(oType);
+
+          int nGaussians = parseInt(tokens[1]);
+          slater[2] = gaussianCount; // or parseInt(tokens[7]) - 1
+          slater[3] = nGaussians;
+          if (Logger.debugging)
+            Logger.info("Slater " + shells.size() + " " + Escape.escape(slater));
+          shells.add(slater);
+          gaussianCount += nGaussians;
+          for (int i = 0; i < nGaussians; i++) {
+            readLine();
+            line = TextFormat.simpleReplace(line, "D ", "D+");
+            tokens = getTokens();
+            if (Logger.debugging)
+              Logger.info("Gaussians " + (i + 1) + " " + Escape.escape(tokens));
+            gdata.add(tokens);
+          }
+        }
+      }
+    } else {
+      while (readLine() != null && line.startsWith(" Atom")) {
+        shellCount++;
+        tokens = getTokens();
+        int[] slater = new int[4];
+        if (!tokens[1].equals(lastAtom))
+          atomCount++;
+        lastAtom = tokens[1];
+        slater[0] = atomCount - 1;
+        String oType = tokens[4];
+        if (doSphericalF && oType.indexOf("F") >= 0 || doSphericalD
+            && oType.indexOf("D") >= 0)
+          slater[1] = JmolAdapter.getQuantumShellTagIDSpherical(oType);
+        else
+          slater[1] = JmolAdapter.getQuantumShellTagID(oType);
+
+        int nGaussians = parseInt(tokens[5]);
+        slater[2] = gaussianCount; // or parseInt(tokens[7]) - 1
+        slater[3] = nGaussians;
+        shells.add(slater);
+        gaussianCount += nGaussians;
+        for (int i = 0; i < nGaussians; i++) {
+          gdata.add(getTokens(readLine()));
+        }
       }
     }
     if (atomCount == 0)
@@ -448,10 +524,12 @@ public class GaussianReader extends MOReader {
         continue;
       }
       try {
+        // must fix "7D 0 " to be "7D0  " and "7F 0 " to be "7F0  " Jmol 13.0.RC6
+        line = TextFormat.simpleReplace(line, " 0 ", "0  ");
         tokens = getTokens();
         String type = tokens[tokens.length - nThisLine - 1].substring(1);
         if (Character.isDigit(type.charAt(0)))
-          type = type.substring(2); // "11XX"
+          type = type.substring(1); // "11XX"
         if (!isQuantumBasisSupported(type.charAt(0))
             && "XYZ".indexOf(type.charAt(0)) >= 0)
           type = (type.length() == 2 ? "D" : "F") + type;

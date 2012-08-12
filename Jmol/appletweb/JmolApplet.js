@@ -1,6 +1,8 @@
 // JmolApplet.js -- Jmol._Applet and Jmol._Image
 
 // BH 7/16/2012 1:50:03 PM adds server-side scripting for image
+// BH 8/11/2012 11:00:01 AM adds Jmol._readyCallback for MSIE not in Quirks mode
+// BH 8/12/2012 3:56:40 AM allows .min.png to be replaced by .all.png in Image file name
 
 (function (Jmol, document) {
 
@@ -203,8 +205,7 @@
 		}
 
 		params.loadInline = (Info.inlineModel ? sterilizeInline(Info.inlineModel) : "");
-		params.appletReadyCallback = this._id + "._readyCallback";
-
+		params.appletReadyCallback = "Jmol._readyCallback";//this._id + "._readyCallback";
 		if (Jmol._syncedApplets.length)
 		  params.synccallback = "Jmol._mySyncCallback";
 		params.java_arguments = "-Xmx" + Math.round(Info.memoryLimit || this._memoryLimit) + "m";
@@ -520,11 +521,12 @@
 		var slc = script.toLowerCase().replace(/[\",\']/g, '');
 		// single command only
 		// "script ..." or "load ..." only
-		// PNG or JPG only
+		// PNG or PNGJ or JPG only
+		// automatically switches to .all.png(j) from .min.png(j)
 		var ipt = slc.length;
 		if (slc.indexOf(";") < 0 && slc.indexOf("\n") < 0
 		  && (slc.indexOf("script ") == 0 || slc.indexOf("load ") == 0)
-		  && (slc.indexOf(".png") == ipt - 4 || slc.indexOf(".jpg") == ipt - 4)) {
+		  && (slc.indexOf(".png") == ipt - 4 || slc.indexOf(".pngj") == ipt - 5 || slc.indexOf(".jpg") == ipt - 4)) {
 			var imageFile = script.substring(script.indexOf(" ") + 1);
 			ipt = imageFile.length;
 			for (var i = 0; i < ipt; i++) {
@@ -545,6 +547,7 @@
 					continue;
 				}
 			}
+			imageFile = imageFile.replace(/\.min\.png/,".all.png")
 			document.getElementById(this._id + "_image").src = imageFile
 		} else if (script.indexOf("#alt:LOAD ") >= 0) {
 		  imageFile = script.split("#alt:LOAD ")[1]

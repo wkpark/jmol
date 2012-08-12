@@ -1,3 +1,5 @@
+// BH 8:36 AM 7/27/2012  adds name/id for cmd button 
+
 (function(Jmol) {
 
 	var c = Jmol.controls = {
@@ -274,7 +276,8 @@
 		size != undefined && !isNaN(size) || (size = 60);
 		++c._cmdCount;
 		var t = "<span id=\"span_"+id+"\""+(title ? " title=\"" + title + "\"":"")+"><input name='" + id + "' id='" + id +
-						"' size='"+size+"' onkeypress='Jmol.controls._commandKeyPress(event,\""+id+"\",\"" + appId + "\")'><input type=button value = '"+label+"' onclick='Jmol.controls._commandKeyPress(13,\""+id+"\",\"" + appId + "\")' /></span>";
+						"' size='"+size+"' onkeypress='Jmol.controls._commandKeyPress(event,\""+id+"\",\"" + appId + "\")'><input " +
+						" type='button' name='" + id + "Btn' id='" + id + "Btn' value = '"+label+"' onclick='Jmol.controls._commandKeyPress(13,\""+id+"\",\"" + appId + "\")' /></span>";
 		if (Jmol._debugAlert)
 			alert(t);
 		return Jmol._documentWrite(t);

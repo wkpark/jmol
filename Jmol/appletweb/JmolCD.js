@@ -13,6 +13,7 @@
 // prior to JmolCD.js
 
 // 5/14/2012 5:28:03 PM added script/default model loading for JmolCD version
+// 8/12/2012 6:12:09 AM added support for the jQuery .html() method
 
 if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 
@@ -72,6 +73,7 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 				this._setDefaults();
 				t = "";
 			} else {
+			  t += '<canvas class="ChemDoodleWebComponent" id="' + id + '" width="' + Info.width + '" height="' + Info.height + '" alt="ChemDoodle Web Component">This browser does not support HTML5/Canvas.</canvas>';
 				t += '<script type="text/javascript">' 
 					+ id + '.create("'+id+'",'+Info.width+','+Info.height+');' 
 					+ id + '._setDefaults();'

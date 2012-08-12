@@ -12,7 +12,8 @@
 //               also changed "jmolJarPath" to just "jarPath"
 //               jmolJarFile->jarFile, jmolIsSigned->isSigned, jmolReadyFunction->readyFunction
 //               also corrects a double-loading issue
-// 5/14/2012 5:28:03 PM BH: added AJAX queue for ChemDoodle option with multiple canvases 
+// 5/14/2012 BH: added AJAX queue for ChemDoodle option with multiple canvases 
+// 8/12/2012 BH: adds support for MSIE xdr cross-domain request (jQuery.iecors.js)
 
 // allows Jmol applets to be created on a page with more flexibility and extendability
 // provides an object-oriented interface for JSpecView and syncing of Jmol/JSpecView
@@ -22,6 +23,7 @@
 // required/optional libraries (preferably in the following order):
 
 //		jQuery.min.js    -- required for ChemDoodle or any server-based options
+//		jQuery.iecors.js -- optional; allows MSIE to use direct cross-domain AJAX requests like other browsers
 //		gl-matrix-min.js -- required for ChemDoodle option
 //		mousewheel.js    -- required for ChemDoodle option
 //		ChemDoodleWeb.js -- required for ChemDoodle option; must be after jQuery, gl-matrix-min, and mousewheel
@@ -36,7 +38,7 @@
 // Allows Jmol-like objects to be displayed on Java-challenged (iPad/iPhone)
 // or applet-challenged (Android/iPhone) platforms, with automatic switching to 
 // whatever is appropriate. You can specify "ChemDoodle-only", "Jmol-only", "Image-only"
-// or some combination of those -- and of course, you are free to rewrite the logic below! 
+// or some combination of those -- and of course, you are free to rewrite the logic at the top of JmolApi.js! 
 
 // Allows ChemDoodle-like 3D and 3D-faked 2D canvases that can load files via a privately hosted 
 // server that delivers raw data files rather than specialized JSON mol data.
@@ -100,6 +102,12 @@ Jmol = (function(document) {
 	Jmol._registerApplet = function(id, applet) {
 		return Jmol._applets[id] = Jmol._applets[applet] = applet;
 	}	
+
+  Jmol._readyCallback = function (a,b,c,d) {
+		// necessary for MSIE in strict mode -- apparently, we can't call 
+		// jmol._readyCallback, but we can call Jmol._readyCallback. Go figure...
+		Jmol._applets[a.split("_object")[0]]._readyCallback(a,b,c,d);
+	}
 
 	Jmol._ajax = function(info) {
 		Jmol._ajaxQueue.push(info)

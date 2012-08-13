@@ -17,6 +17,8 @@
 
 // see JmolCore.js for details
 
+// BH 8/12/2012 5:15:11 PM added Jmol.getAppletHtml()
+
 (function (Jmol) {
 
 	Jmol.getVersion = function(){return _version};
@@ -121,6 +123,10 @@
 		return Jmol._registerApplet(id, new Jmol._JSVApplet(id, Info, null));
 	}
 
+  Jmol.getAppletHtml = function(applet) {
+    return applet._code;
+	}
+		
 	Jmol.script = function(applet, script) {	
 		applet._script(script);
 	}
@@ -348,6 +354,6 @@
 	Jmol.setGrabberOptions = function(options) {
 	  Jmol._grabberOptions = options;
 	}
-	
+
 	
 })(Jmol);

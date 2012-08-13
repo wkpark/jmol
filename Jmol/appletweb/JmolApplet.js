@@ -3,6 +3,7 @@
 // BH 7/16/2012 1:50:03 PM adds server-side scripting for image
 // BH 8/11/2012 11:00:01 AM adds Jmol._readyCallback for MSIE not in Quirks mode
 // BH 8/12/2012 3:56:40 AM allows .min.png to be replaced by .all.png in Image file name
+// BH 8/13/2012 6:16:55 PM fix for no-java message not displaying
 
 (function (Jmol, document) {
 
@@ -57,15 +58,15 @@
     By (re)setting these variables in the webpage before calling Jmol.getApplet(),
     a custom message can be provided (e.g. localized for user's language) when no Java is installed.
   */
-	Jmol._Applet._noJavaMsg == undefined && (Jmol._noJavaMsg =
+	Jmol._Applet._noJavaMsg =
       "You do not have Java applets enabled in your web browser, or your browser is blocking this applet.<br />\
       Check the warning message from your browser and/or enable Java applets in<br />\
-      your web browser preferences, or install the Java Runtime Environment from <a href='http://www.java.com'>www.java.com</a>");
-	Jmol._Applet._noJavaMsg2 == undefined && (Jmol._noJavaMsg2 =
+      your web browser preferences, or install the Java Runtime Environment from <a href='http://www.java.com'>www.java.com</a>";
+	Jmol._Applet._noJavaMsg2 =
       "You do not have the<br />\
       Java Runtime Environment<br />\
       installed for applet support.<br />\
-      Visit <a href='http://www.java.com'>www.java.com</a>");
+      Visit <a href='http://www.java.com'>www.java.com</a>";
 
 	Jmol._Applet._setCommonMethods = function(proto) {
 		proto._showInfo = Jmol._Applet.prototype._showInfo;	

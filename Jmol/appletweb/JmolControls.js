@@ -1,4 +1,6 @@
 // BH 8:36 AM 7/27/2012  adds name/id for cmd button 
+// BH 8/12/2012 6:51:53 AM adds function() {...} option for all controls:
+//    Jmol.jmolButton(jmol, function(jmol) {...}, "xxxx")
 
 (function(Jmol) {
 
@@ -81,6 +83,8 @@
 		var script = scriptInfo[1];
 		if (typeof(script) == "object")
 			script[0](element, script, applet);
+		else if (typeof(script) == "function")
+		  script(applet);
 		else
 			Jmol.script(applet, script);
 	}

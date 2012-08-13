@@ -393,7 +393,7 @@ Jmol = (function(document) {
 			return !!navigator.javaEnabled()
 		}
 		
-		features.supportsXhr2 = function() {return jQuery && jQuery.support.cors}
+		features.supportsXhr2 = function() {return jQuery && (jQuery.support.cors || jQuery.support.iecors)}
 
 		features._webGLtest = 0;
 		

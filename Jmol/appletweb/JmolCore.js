@@ -57,13 +57,13 @@ Jmol = (function(document) {
 	return {
 		_jmolInfo: {
 			userAgent:navigator.userAgent, 
-			version: version = 'Jmol 12.3.23'
+			version: version = 'Jmol-JSO 13.0'
 		},
 		_serverUrl: "http://chemapps.stolaf.edu/jmol/jmolcd2.php",
 		_asynchronous: true,
 		_document: document,
 		_debugAlert: false,
-		_isMsieRenderBug: (navigator.userAgent.toLowerCase().indexOf("msie") >= 0),
+		_isMsie: (navigator.userAgent.toLowerCase().indexOf("msie") >= 0),
 		_isXHTML: false,
 		_XhtmlElement: null,
 		_XhtmlAppendChild: false,
@@ -162,6 +162,24 @@ Jmol = (function(document) {
 			//          id_infoheaderspan
 			//          id_infocheckboxspan
 			//       id_infodiv
+			
+			
+			ah:
+			
+					var s = (isHeader ? "<div id=\"ID_appletinfotablediv\" style=\"width:Wpx;height:Hpx\"><div id=\"ID_appletdiv\" style=\"width:100%;height:100%\">"
+				: "</div><div id=\"ID_infotablediv\" style=\"width:100%;height:100%;display:none;position:relative\">\
+			<div id=\"ID_infoheaderdiv\" style=\"height:20px;width:100%;background:yellow\"><span id=\"ID_infoheaderspan\"></span><span id=\"ID_infocheckboxspan\" style=\"position:absolute;text-align:right;right:1px;\"><a href=\"javascript:Jmol.showInfo(ID,false)\">[x]</a></span></div>\
+			<div id=\"ID_infodiv\" style=\"position:absolute;top:20px;bottom:0;width:100%;height:auto;overflow:auto;\"></div></div></div>");
+		/*
+		if (width.indexOf("px") >= 0)
+			s = s.replace(/width:100%/g, "width:" + width);
+		if (height.indexOf("px") >= 0)
+			s = s.replace(/height:100%/g, "height:" + height);
+		*/
+		return s.replace(/Hpx/g, height).replace(/Wpx/g, width).replace(/ID/g, applet._id);
+
+
+
 			
 		var s = (isHeader ? "<table style=\"width:Wpx;height:Hpx\" cellpadding=\"0\" cellspacing=\"0\"><tr><td><div id=\"ID_appletinfotablediv\" style=\"width:100%;height:100%\"><div id=\"ID_appletdiv\" style=\"width:100%;height:100%\">"
 				: "</div><div id=\"ID_infotablediv\" style=\"width:100%;height:100%;display:none;position:relative\">\
@@ -389,10 +407,6 @@ Jmol = (function(document) {
 		features.browserName = features.browser();
 	  features.browserVersion= parseFloat(features.ua.substring(features.ua.indexOf(features.browserName)+features.browserName.length+1));
 	  
-		features.supportsJava = function() {
-			return !!navigator.javaEnabled()
-		}
-		
 		features.supportsXhr2 = function() {return jQuery && (jQuery.support.cors || jQuery.support.iecors)}
 
 		features._webGLtest = 0;
@@ -408,6 +422,18 @@ Jmol = (function(document) {
 			return (Jmol.featureDetection._webGLtest > 0);
 		};
 		
+		features.supportsJava = function() {
+			if (!Jmol.featureDetection._javaEnabled) {
+				if (Jmol._isMsie) {
+				  return true;
+				  // sorry just can't deal with intentionally turning off Java in MSIE
+				} else {
+				  Jmol.featureDetection._javaEnabled = (navigator.javaEnabled() ? 1 : -1);
+				}
+			}
+			return (Jmol.featureDetection._javaEnabled > 0);
+    };
+			
 		features.compliantBrowser = function() {
 			var a = !!document.getElementById;
 			var os = features.os()

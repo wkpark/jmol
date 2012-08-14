@@ -21,7 +21,7 @@
 
 (function (Jmol) {
 
-	Jmol.getVersion = function(){return _version};
+	Jmol.getVersion = function(){return Jmol._jmolInfo.version};
 
 	Jmol.getApplet = function(id, Info, checkOnly) {
 	
@@ -40,10 +40,7 @@
 			script: null,
 			src: null,
 			readyFunction: null,
-			useNoApplet: false,
-			useJmolOnly: true,
-			useWebGlIfAvailable: true,
-			useImageOnly: false,
+			use: "Java noWebGL noHTML5 noImage",//remove "no" to enables other options (order important)
 			jarPath: ".",
 			jarFile: "JmolApplet0.jar",
 			isSigned: false,
@@ -54,19 +51,61 @@
 		Info.serverURL && (Jmol._serverUrl = Info.serverURL);
 		var model = (checkOnly ? null : Info.defaultModel);
 		var applet = null;
+		
+		if (Info.use) {
+		
+		// better idea....
+		// order matters; must have JAVA, WEBGL, HTML5, or IMAGE in some order, separated by a single space
+		
+		  var List = Info.use.toUpperCase().split(" ");
+		  var javaAllowed = false;
+		  for (var i = 0; i < List.length; i++) {
+		    switch (List[i]) {
+		    case "JAVA":
+		    	javaAllowed = true;
+		    	if (Jmol.featureDetection.supportsJava())
+						applet = new Jmol._Applet(id, Info, null, checkOnly);
+					break;
+		    case "WEBGL":
+					Info.useWebGlIfAvailable = true;
+					applet = Jmol._getCanvas(id, Info, checkOnly);
+		      break;
+		    case "HTML5":
+					Info.useWebGlIfAvailable = false;
+					applet = Jmol._getCanvas(id, Info, checkOnly);
+		      break;
+		    case "IMAGE":
+					applet = new Jmol._Image(id, Info, null, checkOnly);
+					break;
+		    }
+		    if (applet != null)
+		    	break;		  
+		  }
+		  if (applet == null) {
+		  	if (checkOnly || !javaAllowed)
+		  		applet = {_jmolType : "none" };
+		  	else
+	 		  	applet = new Jmol._Applet(id, Info, null, false);
+			}
+			
+		} else {
 
-		if (!Info.useNoApplet && !Info.useImageOnly && navigator.javaEnabled()) {
-		
-		// Jmol applet, signed or unsigned
-		
-			applet = new Jmol._Applet(id, Info, null, checkOnly);
-		} 
- 		if (applet == null) {
-			if (!Info.useJmolOnly && !Info.useImageOnly) {
-				applet = Jmol._getCanvas(id, Info, checkOnly);
+			// early idea
+			
+			if (!Info.useNoApplet && !Info.useImageOnly 
+				&& (navigator.javaEnabled() || Info.useJmolOnly)) {
+			
+			// Jmol applet, signed or unsigned
+			
+				applet = new Jmol._Applet(id, Info, null, checkOnly);
 			} 
-			if (applet == null)
-				applet = new Jmol._Image(id, Info, null, checkOnly);
+			if (applet == null) {
+				if (!Info.useJmolOnly && !Info.useImageOnly) {
+					applet = Jmol._getCanvas(id, Info, checkOnly);
+				} 
+				if (applet == null)
+					applet = new Jmol._Image(id, Info, null, checkOnly);
+			}
 		}
 		// keyed to both its string id and itself
 		return (checkOnly ? applet : Jmol._registerApplet(id, applet));

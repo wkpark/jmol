@@ -1,6 +1,7 @@
 // source: https://github.com/dkastner/jquery.iecors
 // author: Derek Kastner dkastner@gmail.com http://dkastner.github.com 
 // modification by Bob Hanson hansonr@stolaf.edu: jQuery.support.cors |= jQuery.support.iecors
+
 (function( jQuery ) {
   // Create the request object
   // (This is still attached to ajaxSettings for backward compatibility)
@@ -11,7 +12,6 @@
   // Determine support properties
   (function( xdr ) {
     jQuery.extend( jQuery.support, { iecors: !!xdr });
-    jQuery.support.cors |= jQuery.support.iecors;
   })( jQuery.ajaxSettings.xdr() );
 
   // Create transport if the browser can provide an xdr

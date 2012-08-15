@@ -239,8 +239,11 @@
 			return;
 		this._isInfoVisible = tf;
 		// 1px does not work for MSIE
-		var w = (tf ? "2px" : this._containerWidth.indexOf("px") >= 0 ? this._containerWidth : "100%");
-		var h = (tf ? "2px" : this._containerHeight.indexOf("px") >= 0 ? this._containerHeight : "100%");
+	
+		var w = (tf ? "2px" : "100%");
+		var h = (tf ? "2px" : "100%");
+//		var w = (tf ? "2px" : this._containerWidth.indexOf("px") >= 0 ? this._containerWidth : "100%");
+//		var h = (tf ? "2px" : this._containerHeight.indexOf("px") >= 0 ? this._containerHeight : "100%");
 		Jmol._getElement(this, "appletdiv").style.width = w;
 		Jmol._getElement(this, "appletdiv").style.height = h;
 		if (this._infoObject) {
@@ -263,8 +266,10 @@
 	}
 	
 	Jmol._Applet.prototype._show = function(tf) {
-		var w = (!tf ? "2px" : this._containerWidth.indexOf("px") >= 0 ? this._containerWidth : "100%");
-		var h = (!tf ? "2px" : this._containerHeight.indexOf("px") >= 0 ? this._containerHeight : "100%");
+		var w = (!tf ? "2px" : "100%");
+		var h = (!tf ? "2px" : "100%");
+		//var w = (!tf ? "2px" : this._containerWidth.indexOf("px") >= 0 ? this._containerWidth : "100%");
+		//var h = (!tf ? "2px" : this._containerHeight.indexOf("px") >= 0 ? this._containerHeight : "100%");
 		Jmol._getElement(this, "object").style.width = w; 
 		Jmol._getElement(this, "object").style.height = h; 
 	}
@@ -406,39 +411,42 @@
 		// See _jmolGetAppletSize() for the formats accepted as size [same used by jmolApplet()]
 		//  Special case: an empty value for width or height is accepted, meaning no change in that dimension.
 		
-			/*
-			 * private functions
+		/*
+		 * private functions
+		 */
+		function _getAppletSize(size, units) {
+			/* Accepts single number, 2-value array, or object with width and height as mroperties, each one can be one of:
+			 percent (text string ending %), decimal 0 to 1 (percent/100), number, or text string (interpreted as nr.)
+			 [width, height] array of strings is returned, with units added if specified.
+			 Percent is relative to container div or element (which should have explicitly set size).
 			 */
-			function _getAppletSize(size, units) {
-				/* Accepts single number, 2-value array, or object with width and height as mroperties, each one can be one of:
-				 percent (text string ending %), decimal 0 to 1 (percent/100), number, or text string (interpreted as nr.)
-				 [width, height] array of strings is returned, with units added if specified.
-				 Percent is relative to container div or element (which should have explicitly set size).
-				 */
-				var width, height;
-				if(( typeof size) == "object" && size != null) {
-					width = size[0]||size.width;
-					height = size[1]||size.height;
-				} else {
-					width = height = size;
-				}
-				return [_fixDim(width, units), _fixDim(height, units)];
+			var width, height;
+			if(( typeof size) == "object" && size != null) {
+				width = size[0]||size.width;
+				height = size[1]||size.height;
+			} else {
+				width = height = size;
 			}
+			return [_fixDim(width, units), _fixDim(height, units)];
+		}
 
-			function _fixDim(x, units) {
-				var sx = "" + x;
-				return (sx.length == 0 ? ( units ? "" : Jmol._allowedJmolSize[2]) : sx.indexOf("%") == sx.length - 1 ? sx : ( x = parseFloat(x)) <= 1 && x > 0 ? x * 100 + "%" : (isNaN( x = Math.floor(x)) ? Jmol._allowedJmolSize[2] : x < Jmol._allowedJmolSize[0] ? Jmol._allowedJmolSize[0] : x > Jmol._allowedJmolSize[1] ? Jmol._allowedJmolSize[1] : x) + ( units ? units : ""));
-			}
-			
-			function _setDomNodeSize(id, sz){
-				var domNode = Jmol._document.getElementById(id);
-				domNode.style.width = sz[0];
-				domNode.style.height = sz[1];
-			}
-
+		function _fixDim(x, units) {
+			var sx = "" + x;
+			return (sx.length == 0 ? (units ? "" : Jmol._allowedJmolSize[2]) 
+				: sx.indexOf("%") == sx.length - 1 ? sx 
+				: (x = parseFloat(x)) <= 1 && x > 0 ? x * 100 + "%" 
+				: (isNaN(x = Math.floor(x)) ? Jmol._allowedJmolSize[2] 
+				: x < Jmol._allowedJmolSize[0] ? Jmol._allowedJmolSize[0] 
+				: x > Jmol._allowedJmolSize[1] ? Jmol._allowedJmolSize[1] 
+				: x)
+				+ (units ? units : "")
+			);
+		}
+		
 		var sz = _getAppletSize(size, "px");
-		console.log(sz)
-		_setDomNodeSize(this._id+"_appletinfotablediv",sz);
+		var d = Jmol._getElement(this, "appletinfotablediv");
+		d.style.width = sz[0];
+		d.style.height = sz[1];
 		this._containerWidth = sz[0];
 		this._containerHeight = sz[1];
 	}

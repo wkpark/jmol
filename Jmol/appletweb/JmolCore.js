@@ -153,7 +153,6 @@ Jmol = (function(document) {
 			height += "px";
 		if (typeof width !== "string" || width.indexOf("%") < 0)
 			width += "px";
-			// for whatever reason, this outer table tag is required for MSIE compatibility
 			
 			// id_appletinfotablediv
 			//     id_appletdiv
@@ -164,32 +163,32 @@ Jmol = (function(document) {
 			//       id_infodiv
 			
 			
-			ah:
-			
-					var s = (isHeader ? "<div id=\"ID_appletinfotablediv\" style=\"width:Wpx;height:Hpx\"><div id=\"ID_appletdiv\" style=\"width:100%;height:100%\">"
+			// for whatever reason, without DOCTYPE, with MSIE, "height:auto" does not work, 
+			// and the text scrolls off the page.
+			// So I'm using height:95% here.
+			// It is fine as long as the applet size is greater than 200 in height. 
+			// The table was a fix for MSIE with no DOCTYPE tag to fix the miscalculation
+			// in height of the div when using either 95% for height. 
+			// But it turns out the table has problems with DOCTYPE tags, so that's out. 
+			// The 95% is a compromise that we need until the no-DOCTYPE MSIE solution is found.  
+
+			var s = (isHeader ? "<div id=\"ID_appletinfotablediv\" style=\"width:Wpx;height:Hpx\"><div id=\"ID_appletdiv\" style=\"width:100%;height:100%\">"
 				: "</div><div id=\"ID_infotablediv\" style=\"width:100%;height:100%;display:none;position:relative\">\
 			<div id=\"ID_infoheaderdiv\" style=\"height:20px;width:100%;background:yellow\"><span id=\"ID_infoheaderspan\"></span><span id=\"ID_infocheckboxspan\" style=\"position:absolute;text-align:right;right:1px;\"><a href=\"javascript:Jmol.showInfo(ID,false)\">[x]</a></span></div>\
-			<div id=\"ID_infodiv\" style=\"position:absolute;top:20px;bottom:0;width:100%;height:auto;overflow:auto;\"></div></div></div>");
-		/*
-		if (width.indexOf("px") >= 0)
-			s = s.replace(/width:100%/g, "width:" + width);
-		if (height.indexOf("px") >= 0)
-			s = s.replace(/height:100%/g, "height:" + height);
-		*/
+			<div id=\"ID_infodiv\" style=\"position:absolute;top:20px;bottom:0;width:100%;height:95%;overflow:auto\"></div></div></div>");
 		return s.replace(/Hpx/g, height).replace(/Wpx/g, width).replace(/ID/g, applet._id);
-
-
-
-			
+		
+  				
 		var s = (isHeader ? "<table style=\"width:Wpx;height:Hpx\" cellpadding=\"0\" cellspacing=\"0\"><tr><td><div id=\"ID_appletinfotablediv\" style=\"width:100%;height:100%\"><div id=\"ID_appletdiv\" style=\"width:100%;height:100%\">"
 				: "</div><div id=\"ID_infotablediv\" style=\"width:100%;height:100%;display:none;position:relative\">\
 			<div id=\"ID_infoheaderdiv\" style=\"height:20px;width:100%;background:yellow\"><span id=\"ID_infoheaderspan\"></span><span id=\"ID_infocheckboxspan\" style=\"position:absolute;width:10px;right:10px\"><a href=\"javascript:Jmol.showInfo(ID,false)\">[x]</a></span></div>\
-			<div id=\"ID_infodiv\" style=\"position:absolute;top:20px;bottom:0px;width:100%;height:95%;overflow-y:scroll;overflow-x:scroll\"></div></div></div></td></tr></table>");
+			<div id=\"ID_infodiv\" style=\"position:absolute;top:20px;bottom:0px;width:100%;height:95%;overflow:auto\"></div></div></div></td></tr></table>");
 		if (width.indexOf("px") >= 0)
 			s = s.replace(/width:100%/g, "width:" + width);
 		if (height.indexOf("px") >= 0)
 			s = s.replace(/height:100%/g, "height:" + height);
 		return s.replace(/Hpx/g, height).replace(/Wpx/g, width).replace(/ID/g, applet._id);
+		
 	}
 
 	Jmol._getScriptForDatabase = function(database) {

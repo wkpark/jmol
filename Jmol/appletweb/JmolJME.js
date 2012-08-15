@@ -39,7 +39,7 @@
 				Jmol._document = null;
 				d.innerHTML =  this.create();
 				Jmol._document = document;
-				this._showContainer(false);
+				this._showContainer(false, false);
 			} else {
 				this.create();
 			}
@@ -88,43 +88,44 @@
 	
 	Jmol._JMEApplet.prototype._showInfo = function(tf) {
 	  // from applet, so here is where we do the SMILES transfer
-	  var jme = this._applet = Jmol._getElement(this, "object");
 	  var jmol = this._linkedApplet;
-	  var jmeSMILES = jme.smiles();
-	  var jmolAtoms = jmeSMILES ? Jmol.evaluate(jmol, "{*}.find('SMILES', '" + jmeSMILES + "')") : "({})";
-	  var isOK = (jmolAtoms != "({})");
-	  if (!isOK) {
-		  if (tf) {
-		    // toJME
-		    this._molData = Jmol.evaluate(jmol, "write('mol')")//Jmol.evaluate(jmol, "script('show chemical sdf')");//
-		    setTimeout(this._id+"._applet.reset();"+this._id+"._applet.readMolFile("+this._id+"._molData)",100);
-		  } else {
-		    // toJmol
-		    if (jmeSMILES)
-			    Jmol.script(jmol, "load \"$" + jmeSMILES + "\"");
-		  }
+	  if (jmol) {
+		  var jme = this._applet = Jmol._getElement(this, "object");
+		  var jmeSMILES = jme.smiles();
+		  var jmolAtoms = jmeSMILES ? Jmol.evaluate(jmol, "{*}.find('SMILES', '" + jmeSMILES + "')") : "({})";
+		  var isOK = (jmolAtoms != "({})");
+		  if (!isOK) {
+			  if (tf) {
+			    // toJME
+			    this._molData = Jmol.evaluate(jmol, "write('mol')")//Jmol.evaluate(jmol, "script('show chemical sdf')");//
+			    setTimeout(this._id+"._applet.reset();"+this._id+"._applet.readMolFile("+this._id+"._molData)",100);
+			  } else {
+			    // toJmol
+			    if (jmeSMILES)
+				    Jmol.script(jmol, "load \"$" + jmeSMILES + "\"");
+			  }
+			}
+		  this._showContainer(tf, true);
 		}
-	  this._showContainer(tf);
-		this._show(tf);
 	}
 
-	Jmol._JMEApplet.prototype._show = function(tf) {
-		var w = (!tf ? "2px" : "100%");
+  Jmol._JMEApplet.prototype._showContainer = function(tf, andShow) {
+		Jmol._getElement(this._linkedApplet, "infoheaderdiv").style.display = "none";
+  	var w = (!tf ? "2px" : "100%");
 		var h = (!tf ? "2px" : "100%");
-		Jmol._getElement(this, "object").style.width = w; 
-		Jmol._getElement(this, "object").style.height = h; 
-		Jmol._getElement(this._linkedApplet, "infoheaderspan").innerHTML = (tf ? this : this._linkedApplet)._infoHeader;
-	}
-
-  Jmol._JMEApplet.prototype._showContainer = function(tf) {
-		var d = Jmol._getElement(this._linkedApplet, "infoheaderdiv");
-		d.style.display = (tf ? "block" : "none");
-  	var w = (!tf ? "2px" : this._linkedApplet ? "100%" : this._containerWidth);
-		var h = (!tf ? "2px" : this._linkedApplet ? "100%" : this._containerHeight);
-		var d = Jmol._getElement(this._linkedApplet, "infotablediv");
+		d = Jmol._getElement(this._linkedApplet, "infotablediv");
 		d.style.width = w;
 		d.style.height = h;
-		d.style.overflowX = "hidden";
+		d = Jmol._getElement(this._linkedApplet, "infodiv");
+		d.style.overflow = "hidden";
+		if (andShow) {
+			d = Jmol._getElement(this, "object");
+			d.style.width = w; 
+			d.style.height = h; 
+			Jmol._getElement(this._linkedApplet, "infoheaderspan").innerHTML = (tf ? this : this._linkedApplet)._infoHeader;	
+		}
+		if (tf)
+			Jmol._getElement(this._linkedApplet, "infoheaderdiv").style.display = "block";		
 	}
 
   //////  additional API for JME /////////

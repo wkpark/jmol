@@ -552,7 +552,8 @@ public class FileManager {
         }
         // load each file individually, but return files IN ORDER
         StringBuffer sb = new StringBuffer();
-        sb.append(fileData.get(fileData.get("OUTPUT")));
+        if (fileData.get("OUTPUT") != null)
+          sb.append(fileData.get(fileData.get("OUTPUT")));
         for (int i = 2; i < info.length; i++) {
           name = info[i];
           name = getObjectAsSections(name, header, fileData);
@@ -1549,7 +1550,7 @@ public class FileManager {
         } else if (t instanceof ZipInputStream) {
           String name = fullPathNameIn;
           String[] subFileList = null;
-          if (name.indexOf("|") >= 0) {
+          if (name.indexOf("|") >= 0 && !name.endsWith(".zip")) {
             subFileList = TextFormat.split(name, "|");
             name = subFileList[0];
           }

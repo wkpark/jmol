@@ -112,7 +112,7 @@ public class Resolver {
         return new String[] { null, null, null }; // DO NOT actually load any file
       // check for zipped up spardir -- we'll automatically take first file there
       if (name.endsWith(".spardir.zip"))
-        return new String[] { "SpartanSmol", "Directory Entry ", "?|output"};
+        return new String[] { "SpartanSmol", "Directory Entry ", name + "|output"};
       name = name.replace('\\', '/');
       if (!name.endsWith(".spardir") && name.indexOf(".spardir/") < 0)
         return null; 

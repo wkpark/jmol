@@ -17453,9 +17453,8 @@ public class ScriptEvaluator {
             : 10f);
         if (envelopeRadius > 10f)
           integerOutOfRange(0, 10);
-        if (surfaceObjectSeen)
-          sbCommand.append(" cavity ").append(cavityRadius).append(" ").append(
-              envelopeRadius);
+        sbCommand.append(" cavity ").append(cavityRadius).append(" ").append(
+            envelopeRadius);
         addShapeProperty(propertyList, "envelopeRadius", Float
             .valueOf(envelopeRadius));
         addShapeProperty(propertyList, "cavityRadius", Float

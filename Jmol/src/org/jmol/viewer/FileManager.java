@@ -80,6 +80,7 @@ public class FileManager {
 
   void clear() {
     fullPathName = fileName = nameAsGiven = viewer.getZapName();
+    spardirCache = null;
   }
 
   private void setLoadState(Map<String, Object> htParams) {
@@ -530,6 +531,7 @@ public class FileManager {
     String[] subFileList = null;
     String[] info = (doSpecialLoad ? viewer.getModelAdapter().specialLoad(name,
         "filesNeeded?") : null);
+    String name00 = name;
     if (info != null) {
       if (isTypeCheckOnly)
         return info;
@@ -554,14 +556,19 @@ public class FileManager {
         StringBuffer sb = new StringBuffer();
         if (fileData.get("OUTPUT") != null)
           sb.append(fileData.get(fileData.get("OUTPUT")));
+        String s;
         for (int i = 2; i < info.length; i++) {
           name = info[i];
           name = getObjectAsSections(name, header, fileData);
           Logger.info("reading " + name);
-          String s = fileData.get(name);
+          s = fileData.get(name);
           sb.append(s);
         }
-        return getBufferedReaderForString(sb.toString());
+        s = sb.toString();
+        if (spardirCache == null)
+          spardirCache = new Hashtable<String, byte[]>();
+        spardirCache.put(name00.replace('\\','/'), s.getBytes());
+        return getBufferedReaderForString(s);
       }
       // continuing...
       // here, for example, for an SPT file load that is not just a type check
@@ -1284,13 +1291,15 @@ public class FileManager {
         newName = (name.indexOf("?") > 0 && name.indexOf("|") < 0 ?
             TextFormat.replaceAllCharacters(name, "/:?\"'=&", "_") : stripPath(name));
         newName = TextFormat.replaceAllCharacters(newName, "[]", "_");
-        if (isLocal && name.indexOf("|") < 0) {
+        boolean isSparDir = (spardirCache != null && spardirCache.containsKey(name)); 
+        if (isLocal && name.indexOf("|") < 0 
+            && !isSparDir) {
           v.add(name);
           v.add(newName);
           v.add(null); // data will be gotten from disk
         } else {
           // all remote files, and any file that was opened from a ZIP collection
-          Object ret = getFileAsBytes(name, null);
+          Object ret = (isSparDir ? spardirCache.get(name) : getFileAsBytes(name, null));
           if (!(ret instanceof byte[]))
             return ret;
           CRC32 crc = new CRC32();
@@ -1301,6 +1310,8 @@ public class FileManager {
             // let newName point to the already added data
             newName = crcMap.get(crcValue); 
           }else{
+            if (isSparDir)
+              newName = newName.replace('.', '_');
             if (crcMap.containsKey(newName)) {
               // now we have a conflict. To different files with the same name
               // append "[iFile]" to the new file name to ensure it's unique
@@ -1919,11 +1930,14 @@ public class FileManager {
   }
   
   private Map<String, byte[]> pngjCache;
+  private Map<String, byte[]> spardirCache;
   
-  void clearPngjCache() {
-    pngjCache = null;
+  void clearPngjCache(String fileName) {
+    if (fileName == null || pngjCache != null && pngjCache.containsKey(getCanonicalName(getZipRoot(fileName))))
+      pngjCache = null;
   }
-  
+
+
   private byte[] getCachedPngjBytes(String pathName) {
     if (pathName.indexOf(".png") < 0)
       return null;

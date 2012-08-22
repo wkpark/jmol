@@ -183,7 +183,7 @@ public class ImageCreator implements JmolImageCreatorInterface {
         boolean includeState = (asBytes && type.equals("PNGJ") || !asBytes
             && appendText == null);
         if (type.equals("PNGJ") && includeState)
-          ret = viewer.getWrappedState(scripts, true, true, image.getWidth(null), image
+          ret = viewer.getWrappedState(fileName, scripts, true, true, image.getWidth(null), image
               .getHeight(null));
         if (isOsTemp)
           os = new FileOutputStream(fileName);
@@ -194,8 +194,8 @@ public class ImageCreator implements JmolImageCreatorInterface {
             bytes = JpegEncoder.getBytes(viewer.getApiPlatform(), image,
                 quality, Viewer.getJmolVersion());
           } else {
-            String caption = (includeState ? (String) viewer.getWrappedState(null, true, false, image
-                    .getWidth(null), image.getHeight(null)) : Viewer.getJmolVersion());
+            String caption = (includeState ? (String) viewer.getWrappedState(null, null, true, false, image
+                            .getWidth(null), image.getHeight(null)) : Viewer.getJmolVersion());
             JpegEncoder.write(viewer.getApiPlatform(), image, quality, os,
                 caption);
           }
@@ -222,8 +222,8 @@ public class ImageCreator implements JmolImageCreatorInterface {
             int nPNG = bytes.length;
             b = bytes;
             if (ret == null)
-              ret = viewer.getWrappedState(scripts, true, false, image.getWidth(null),
-                  image.getHeight(null));
+              ret = viewer.getWrappedState(null, scripts, true, false,
+                  image.getWidth(null), image.getHeight(null));
             bytes = (ret instanceof byte[] ? (byte[]) ret : ((String) ret)
                 .getBytes());
             int nState = bytes.length;

@@ -3417,13 +3417,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getAllPolymerInfo(getAtomBitSet(atomExpression));
   }
 
-  public Object getWrappedState(String[] scripts, boolean isImage, boolean asJmolZip, int width,
-                                int height) {
+  public Object getWrappedState(String fileName, String[] scripts, boolean isImage, boolean asJmolZip,
+                                int width, int height) {
     if (isImage && !global.imageState && !asJmolZip || !global.preserveState)
       return "";
     String s = getStateInfo(null, width, height);
-    if (asJmolZip)
+    if (asJmolZip) {
+      if (fileName != null)
+        fileManager.clearPngjCache(fileName); 
+      // when writing a file, we need to make sure
+      // the pngj cache for that file is cleared
       return fileManager.createZipSet(null, s, scripts, true);
+    }
     // we remove local file references in the embedded states for images
     try {
       s = JmolConstants.embedScript(FileManager.setScriptFileReferences(s, ".",
@@ -10509,7 +10514,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void cacheClear() {
     statusManager.cacheClear();
-    fileManager.clearPngjCache();
+    fileManager.clearPngjCache(null);
   }
 
   public void setCurrentModelID(String id) {

@@ -8997,37 +8997,37 @@
   <fah_proj number="7028" name="WW gtt ext/folded 395K" public="y" file="xyz"
     server="129.74.85.15" atoms="570" preferred="8" deadline="11"
     credit="600.0" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75" contrib="Danny Nielsen"/>
-  <fah_proj number="7029" name="hipin-0" public="n"
+  <fah_proj number="7029" name="hipin-0" public="y"
     server="129.74.85.15" atoms="4679" preferred="33.30" deadline="72.10"
     credit="1804.65" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75"/>
-  <fah_proj number="7030" name="hipin-5" public="n"
+  <fah_proj number="7030" name="hipin-5" public="y"
     server="129.74.85.15" atoms="4663" preferred="33.30" deadline="72.10"
     credit="1804.65" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75"/>
-  <fah_proj number="7031" name="hipin-6" public="n"
+  <fah_proj number="7031" name="hipin-6" public="y"
     server="129.74.85.15" atoms="4682" preferred="33.30" deadline="72.10"
     credit="1804.65" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75"/>
-  <fah_proj number="7032" name="hipin-11" public="n"
+  <fah_proj number="7032" name="hipin-11" public="y"
     server="129.74.85.15" atoms="4687" preferred="33.30" deadline="72.10"
     credit="1804.65" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75"/>
-  <fah_proj number="7033" name="hipin-27" public="n"
+  <fah_proj number="7033" name="hipin-27" public="y"
     server="129.74.85.15" atoms="4684" preferred="33.30" deadline="72.10"
     credit="1804.65" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75"/>
-  <fah_proj number="7034" name="hipin-28" public="n"
+  <fah_proj number="7034" name="hipin-28" public="y"
     server="129.74.85.15" atoms="4700" preferred="33.30" deadline="72.10"
     credit="1804.65" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75"/>
-  <fah_proj number="7035" name="hipin-29" public="n"
+  <fah_proj number="7035" name="hipin-29" public="y"
     server="129.74.85.15" atoms="4678" preferred="33.30" deadline="72.10"
     credit="1804.65" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75"/>
-  <fah_proj number="7036" name="hipin-30" public="n"
+  <fah_proj number="7036" name="hipin-30" public="y"
     server="129.74.85.15" atoms="4685" preferred="33.30" deadline="72.10"
     credit="1804.65" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75"/>
-  <fah_proj number="7037" name="hipin-42" public="n"
+  <fah_proj number="7037" name="hipin-42" public="y"
     server="129.74.85.15" atoms="4682" preferred="33.30" deadline="72.10"
     credit="1804.65" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75"/>
-  <fah_proj number="7038" name="hipin-45" public="n"
+  <fah_proj number="7038" name="hipin-45" public="y"
     server="129.74.85.15" atoms="4694" preferred="33.30" deadline="72.10"
     credit="1804.65" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75"/>
-  <fah_proj number="7039" name="hipin-47" public="n"
+  <fah_proj number="7039" name="hipin-47" public="y"
     server="129.74.85.15" atoms="4689" preferred="33.30" deadline="72.10"
     credit="1804.65" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75"/>
   <fah_proj number="7040" name="hipin" public="n"
@@ -9168,6 +9168,9 @@
  y<fah_proj number="7085" name="proinsulin WT" public="y"
     server="129.74.85.15" atoms="1293" preferred="5.64" deadline="9.39"
     credit="1220.83" frames="100" code="A4" contact="Yong Kim" kfactor="3.0"/>
+  <fah_proj number="7087" name="proinsulinEXP MT" public="y"
+    server="129.74.85.15" atoms="185692" preferred="5.34" deadline="8.9"
+    credit="1157.48" frames="100" code="A4" contact="Yong Kim" kfactor="3.0"/>
 
   <!-- Projects 7100 to 7199 -->
   <fah_proj number="7100" name="2kxa_bax" public="y"
@@ -9718,6 +9721,27 @@
   <fah_proj number="8050" name="p8050" public="y"
     server="171.67.108.60" atoms="76000" preferred="7.4" deadline="16"
     credit="401.2" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
+  <fah_proj number="8061" name="p8061" public="n"
+    server="171.67.108.58" atoms="22000" preferred="3.7" deadline="8.1"
+    credit="201.6" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
+  <fah_proj number="8062" name="p8062" public="n"
+    server="171.67.108.58" atoms="22000" preferred="3.7" deadline="8.1"
+    credit="201.6" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
+  <fah_proj number="8063" name="p8063" public="n"
+    server="171.67.108.58" atoms="22000" preferred="3.7" deadline="8.1"
+    credit="201.6" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
+  <fah_proj number="8064" name="p8064" public="n"
+    server="171.67.108.58" atoms="22000" preferred="3.7" deadline="8.1"
+    credit="201.6" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
+  <fah_proj number="8065" name="p8065" public="n"
+    server="171.67.108.58" atoms="22000" preferred="3.7" deadline="8.1"
+    credit="201.6" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
+  <fah_proj number="8066" name="p8066" public="n"
+    server="171.67.108.58" atoms="22000" preferred="3.7" deadline="8.1"
+    credit="201.6" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
+  <fah_proj number="8067" name="p8067" public="n"
+    server="171.67.108.58" atoms="22000" preferred="3.7" deadline="8.1"
+    credit="201.6" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
 
   <!-- Projects 8100 to 8199 -->
   <fah_proj number="8101" name="ha_formarta" public="y"

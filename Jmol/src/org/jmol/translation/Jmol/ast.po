@@ -8,54 +8,54 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-06-15 17:29+0200\n"
-"PO-Revision-Date: 2011-08-03 21:25+0000\n"
+"PO-Revision-Date: 2012-08-24 00:07+0000\n"
 "Last-Translator: Xuacu Saturio <xuacusk8@gmail.com>\n"
 "Language-Team: Asturian <ast@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-12-18 14:49+0000\n"
-"X-Generator: Launchpad (build 14525)\n"
+"X-Launchpad-Export-Date: 2012-08-24 17:16+0000\n"
+"X-Generator: Launchpad (build 15843)\n"
 
 #: com/json/Cookie.java:121
 msgid "name"
-msgstr ""
+msgstr "nome"
 
 #: com/json/Cookie.java:123
 msgid "value"
-msgstr ""
+msgstr "valor"
 
 #: com/json/Cookie.java:126
 msgid "expires"
-msgstr ""
+msgstr "caduca"
 
 #: com/json/Cookie.java:130
 msgid "domain"
-msgstr ""
+msgstr "dominiu"
 
 #: com/json/Cookie.java:134
 msgid "path"
-msgstr ""
+msgstr "camín"
 
 #: com/json/HTTP.java:132 com/json/HTTP.java:144
 msgid "HTTP-Version"
-msgstr ""
+msgstr "Versión HTTP"
 
 #: com/json/HTTP.java:134
 msgid "Status-Code"
-msgstr ""
+msgstr "Códigu d'estáu"
 
 #: com/json/HTTP.java:136
 msgid "Reason-Phrase"
-msgstr ""
+msgstr "Frase de motivu"
 
 #: com/json/HTTP.java:138
 msgid "Method"
-msgstr ""
+msgstr "Métodu"
 
 #: com/json/HTTP.java:141
 msgid "Request-URI"
-msgstr ""
+msgstr "Direición de pidimientu"
 
 #: org/openscience/jmol/app/JmolApp.java:109
 msgid "Error starting Jmol: the property 'user.home' is not defined."
@@ -91,7 +91,7 @@ msgstr "operación con aniciu silenciosu"
 
 #: org/openscience/jmol/app/JmolApp.java:157
 msgid "kiosk mode -- no frame"
-msgstr ""
+msgstr "mou quioscu -- ensin marcu"
 
 #: org/openscience/jmol/app/JmolApp.java:159
 msgid "list commands during script execution"
@@ -103,85 +103,91 @@ msgstr "comenzar ensin pantalla d'aniciu"
 
 #: org/openscience/jmol/app/JmolApp.java:163
 msgid "no console -- all output to sysout"
-msgstr ""
+msgstr "ensin consola -- tola salida sedrá a la de sistema"
 
 #: org/openscience/jmol/app/JmolApp.java:165
 msgid "send only output from print messages to console (implies -i)"
 msgstr ""
+"unvia namái la salida de los mensaxes d'impresión a la consola (implica -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:167
 msgid "restrict local file access"
-msgstr ""
+msgstr "torga l'accesu a los ficheros llocales"
 
 #: org/openscience/jmol/app/JmolApp.java:169
 msgid "restrict local file access (allow reading of SPT files)"
 msgstr ""
+"torga l'accesu a los ficheros llocales (permite llectura de ficheros SPT)"
 
 #: org/openscience/jmol/app/JmolApp.java:171
 msgid "independent command thread"
-msgstr ""
+msgstr "filu d'ordes independiente"
 
 #: org/openscience/jmol/app/JmolApp.java:173
 msgid "exit after script (implicit with -n)"
-msgstr ""
+msgstr "sal dempués del 'script (implícito con -n)"
 
 #: org/openscience/jmol/app/JmolApp.java:176
 msgid "port for JSON/MolecularPlayground-style communication"
-msgstr ""
+msgstr "puertu pa la comunicación del tipu JSON/MolecularPlayground"
 
 #: org/openscience/jmol/app/JmolApp.java:182
 msgid "script file to execute or '-' for System.in"
-msgstr ""
+msgstr "ficheru de script a executar, o '-' pa System.in"
 
 #: org/openscience/jmol/app/JmolApp.java:188
 msgid "use multitouch interface (requires \"sparshui\" parameter"
-msgstr ""
+msgstr "utiliza la interfaz multitáctil (requier el parámetru «sparshui»)"
 
 #: org/openscience/jmol/app/JmolApp.java:195
 msgid "Jmol script to execute BEFORE -s option"
-msgstr ""
+msgstr "Script de Jmol a executar ENANTES de la opción -s"
 
 #: org/openscience/jmol/app/JmolApp.java:201
 msgid "Jmol script to execute AFTER -s option"
-msgstr ""
+msgstr "Script de Jmol a executar DEMPUÉS de la opción -s"
 
 #: org/openscience/jmol/app/JmolApp.java:215
 msgid "property=value"
-msgstr ""
+msgstr "propiedá=valor"
 
 #: org/openscience/jmol/app/JmolApp.java:218
 msgid "supported options are given below"
-msgstr ""
+msgstr "darréu s'amuesen les opciones almitíes"
 
 #: org/openscience/jmol/app/JmolApp.java:224
 #, java-format
 msgid "window width x height, e.g. {0}"
-msgstr ""
+msgstr "anchu x altu de la ventana, p. ex. {0}"
 
 #: org/openscience/jmol/app/JmolApp.java:234
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
 msgstr ""
+"Calidá de la imaxe JPG (1-100; predeterminao 75) o compresión de la imaxe "
+"PNG (0-9; predeterminao 2, compresión máxima 9)"
 
 #: org/openscience/jmol/app/JmolApp.java:239
 #, java-format
 msgid "{0} or {1}:filename"
-msgstr ""
+msgstr "{0} o {1}:nomeficheru"
 
 #: org/openscience/jmol/app/JmolApp.java:253
 msgid "For example:"
-msgstr ""
+msgstr "Por casu:"
 
 #: org/openscience/jmol/app/JmolApp.java:259
 msgid ""
 "The -D options are as follows (defaults in parenthesis) and must be called "
 "preceding '-jar Jmol.jar':"
 msgstr ""
+"Les opciones -D son como sigue (predeterminao en paréntesis) y hai que les "
+"lllamar precediendo a '-jar Jmol.jar':"
 
 #: org/openscience/jmol/app/JmolApp.java:540
 msgid "Executing script 1..."
-msgstr ""
+msgstr "Executando el script 1..."
 
 #: org/openscience/jmol/app/JmolApp.java:550
 msgid "Executing script file..."

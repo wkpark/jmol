@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-06-15 17:29+0200\n"
-"PO-Revision-Date: 2012-04-30 14:02+0000\n"
+"PO-Revision-Date: 2012-08-24 02:01+0000\n"
 "Last-Translator: abuyop <Unknown>\n"
 "Language-Team: Malay <ms@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-03 18:32+0000\n"
-"X-Generator: Launchpad (build 15190)\n"
+"X-Launchpad-Export-Date: 2012-08-24 17:16+0000\n"
+"X-Generator: Launchpad (build 15843)\n"
 
 #: com/json/Cookie.java:121
 msgid "name"
@@ -114,9 +114,8 @@ msgid "restrict local file access"
 msgstr "sekat capaian fail setempat"
 
 #: org/openscience/jmol/app/JmolApp.java:169
-#, fuzzy
 msgid "restrict local file access (allow reading of SPT files)"
-msgstr "sekat capaian fail setempat"
+msgstr "hadkan capaian fail setempat (benarkan pembacaan fail SPT)"
 
 #: org/openscience/jmol/app/JmolApp.java:171
 msgid "independent command thread"
@@ -1919,6 +1918,7 @@ msgstr "tidak dilaksanakan"
 #~ msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
 #~ msgstr "Masukkan nama atau pengecam (SMILES, InChI, CAS) molekul"
 
+#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"
@@ -1932,27 +1932,34 @@ msgstr "tidak dilaksanakan"
 #~ msgid "vector"
 #~ msgstr "vektor"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Pergi ke {0} yang pertama didalam koleksi"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Pergi ke {0} yang terdahulu didalam koleksi"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Main keseluruhan koleksi {0}"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Pergi ke {0} yang berikutnya didalam koleksi"
 
+#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Pergi ke {0} yang terakhir didalam koleksi"
 
 #~ msgid "atom set"
 #~ msgstr "set atom"
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "menambah {0}.spt"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "menambah {0}.png"
 
@@ -1968,6 +1975,7 @@ msgstr "tidak dilaksanakan"
 #~ msgid "Clear console button (requires restarting Jmol)"
 #~ msgstr "Kosongkan butang kosong (perlu mulakan semula Jmol)"
 
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."

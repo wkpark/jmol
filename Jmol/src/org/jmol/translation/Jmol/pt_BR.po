@@ -7,14 +7,14 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-06-15 17:29+0200\n"
-"PO-Revision-Date: 2011-10-24 10:16+0000\n"
-"Last-Translator: Nicolas Vervelle <Unknown>\n"
+"PO-Revision-Date: 2012-08-23 21:28+0000\n"
+"Last-Translator: Rafael Neri <Unknown>\n"
 "Language-Team: Brazilian Portuguese <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-12-18 14:50+0000\n"
-"X-Generator: Launchpad (build 14525)\n"
+"X-Launchpad-Export-Date: 2012-08-24 17:12+0000\n"
+"X-Generator: Launchpad (build 15843)\n"
 "X-Poedit-Country: BRAZIL\n"
 "X-Poedit-Language: Portuguese\n"
 "X-Poedit-Basepath: ../../../..\n"
@@ -29,7 +29,7 @@ msgstr "valor"
 
 #: com/json/Cookie.java:126
 msgid "expires"
-msgstr ""
+msgstr "validade"
 
 #: com/json/Cookie.java:130
 msgid "domain"
@@ -37,15 +37,15 @@ msgstr "domínio"
 
 #: com/json/Cookie.java:134
 msgid "path"
-msgstr ""
+msgstr "caminho"
 
 #: com/json/HTTP.java:132 com/json/HTTP.java:144
 msgid "HTTP-Version"
-msgstr ""
+msgstr "Versão HTTP"
 
 #: com/json/HTTP.java:134
 msgid "Status-Code"
-msgstr ""
+msgstr "Código do status"
 
 #: com/json/HTTP.java:136
 msgid "Reason-Phrase"
@@ -53,11 +53,11 @@ msgstr ""
 
 #: com/json/HTTP.java:138
 msgid "Method"
-msgstr ""
+msgstr "Método"
 
 #: com/json/HTTP.java:141
 msgid "Request-URI"
-msgstr ""
+msgstr "URI da solicitação"
 
 #: org/openscience/jmol/app/JmolApp.java:109
 msgid "Error starting Jmol: the property 'user.home' is not defined."
@@ -93,7 +93,7 @@ msgstr "operação inicial silenciosa"
 
 #: org/openscience/jmol/app/JmolApp.java:157
 msgid "kiosk mode -- no frame"
-msgstr ""
+msgstr "modo kiosk - sem quadro"
 
 #: org/openscience/jmol/app/JmolApp.java:159
 msgid "list commands during script execution"
@@ -114,11 +114,12 @@ msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:167
 msgid "restrict local file access"
-msgstr ""
+msgstr "restringir o acesso de arquivos locais"
 
 #: org/openscience/jmol/app/JmolApp.java:169
 msgid "restrict local file access (allow reading of SPT files)"
 msgstr ""
+"restringir o acesso de arquivos locais (permitir leitura de arquivos SPT)"
 
 #: org/openscience/jmol/app/JmolApp.java:171
 msgid "independent command thread"
@@ -130,7 +131,7 @@ msgstr "sair após o \"script\" (implícito com -n)"
 
 #: org/openscience/jmol/app/JmolApp.java:176
 msgid "port for JSON/MolecularPlayground-style communication"
-msgstr ""
+msgstr "porta para comunicação JSON/MolecularPlayground-style"
 
 #: org/openscience/jmol/app/JmolApp.java:182
 msgid "script file to execute or '-' for System.in"
@@ -324,14 +325,12 @@ msgid "Period"
 msgstr "Período"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:355
-#, fuzzy
 msgid "Frame"
-msgstr "Último Quadro"
+msgstr "Quadro"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:355
-#, fuzzy
 msgid "Vibration"
-msgstr "Animação"
+msgstr "Vibração"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:363
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:372
@@ -363,11 +362,11 @@ msgstr "Ir para o último conjunto de átomos na coleção"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:374
 msgid "Vibration ON"
-msgstr ""
+msgstr "Vibração ativada"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:375
 msgid "Vibration OFF"
-msgstr ""
+msgstr "Vibração desativada"
 
 #: org/openscience/jmol/app/jmolpanel/ConsoleTextArea.java:87
 #, java-format
@@ -931,11 +930,11 @@ msgstr "Frequência anterior"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:203
 msgid "SurfaceTool..."
-msgstr ""
+msgstr "Ferramenta de superfície..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:204
 msgid "Control Display of Surfaces"
-msgstr ""
+msgstr "Controle da exibição de superfícies"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:205
 msgid "&Help"
@@ -1403,40 +1402,39 @@ msgstr "Novidades no Jmol"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:477
 msgid "magic"
-msgstr ""
+msgstr "mágica"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:478
 msgid "role"
-msgstr ""
+msgstr "papel"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:497
 msgid "type"
-msgstr ""
+msgstr "tipo"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:503
 msgid "text"
-msgstr ""
+msgstr "texto"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:504
 msgid "visibility"
-msgstr ""
+msgstr "visibilidade"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:509
 msgid "command"
-msgstr ""
+msgstr "comando"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:516
 msgid "id"
-msgstr ""
+msgstr "id"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:534
 msgid "startup"
-msgstr ""
+msgstr "inicialização"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:535
-#, fuzzy
 msgid "filename"
-msgstr "Nome do arquivo:"
+msgstr "nome do arquivo"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:542
 msgid "startup_script"
@@ -1444,7 +1442,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:548
 msgid "banner"
-msgstr ""
+msgstr "banner"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:549
 msgid "banner_text"
@@ -1452,31 +1450,31 @@ msgstr ""
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:553
 msgid "style"
-msgstr ""
+msgstr "estilo"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:596
 msgid "x"
-msgstr ""
+msgstr "x"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:597
 msgid "y"
-msgstr ""
+msgstr "y"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:614
 msgid "sync"
-msgstr ""
+msgstr "sincronizar"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:69
 msgid "Degrees"
-msgstr ""
+msgstr "Graus"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:69
 msgid "Radians"
-msgstr ""
+msgstr "Radianos"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:70
 msgid "Gradians"
-msgstr ""
+msgstr "Gradianos"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:70
 msgid "Circle Fraction"
@@ -1504,15 +1502,15 @@ msgstr ""
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:153
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:156
 msgid "Absolute"
-msgstr ""
+msgstr "Absoluto"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:164
 msgid "Origin"
-msgstr ""
+msgstr "Origem"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:167
 msgid "Cap"
-msgstr ""
+msgstr "Chapéu"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:170
 msgid ""
@@ -1887,37 +1885,6 @@ msgstr "Baixar vista"
 msgid "unimplemented"
 msgstr "não implementado"
 
-#~ msgid "Get PDB file"
-#~ msgstr "Obter arquivo PDB"
-
-#~ msgid "Enter a four-digit PDB ID"
-#~ msgstr "Digite quatro digitos do ID PDB"
-
-#~ msgid "Get MOL file by compound name or ID"
-#~ msgstr "Obter arquivo MOL pelo nome da mistura ou ID"
-
-#, fuzzy
-#~ msgid "Enter the name or identifier (SMILES, InChI, CAS) of a compound"
-#~ msgstr "Digite o nome ou identificador (SMILES, InChi, CAS) de uma molécula"
-
-#~ msgid "Controller"
-#~ msgstr "Controles"
-
-#~ msgid "Go to first vector in the collection"
-#~ msgstr "Ir para o primeiro vetor na coleção"
-
-#~ msgid "Go to previous vector in the collection"
-#~ msgstr "Ir para o vetor anterior na coleção"
-
-#~ msgid "Play the whole collection of vectors"
-#~ msgstr "Ver toda a coleção de vetores"
-
-#~ msgid "Go to next vector in the collection"
-#~ msgstr "Ir para o próximo vetor na coleção"
-
-#~ msgid "Jump to last vector in the collection"
-#~ msgstr "Ir para o último vetor na coleção"
-
 #~ msgid "All"
 #~ msgstr "Todos"
 
@@ -1951,24 +1918,32 @@ msgstr "não implementado"
 #~ msgid "Left"
 #~ msgstr "Lateral esquerda"
 
+#~ msgid "Controller"
+#~ msgstr "Controles"
+
 #~ msgid "atom set"
 #~ msgstr "conjunto de átomos"
 
 #~ msgid "vector"
 #~ msgstr "vetor"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Voltar para o primeiro {0} na coleção"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Voltar para o {0} anterior na coleção"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Tocar toda a coleção de {0}'s"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Avançar para o {0} seguinte na coleção"
 
+#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Avançar para o último {0} na coleção"
 
@@ -1978,6 +1953,7 @@ msgstr "não implementado"
 #~ msgid "Show Selected"
 #~ msgstr "Mostrar selecionado"
 
+#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"
@@ -1988,16 +1964,19 @@ msgstr "não implementado"
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "adicionando JmolPopIn.js"
 
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 #~ msgstr ""
-#~ "Insira texto explanatório adicional aqui. Textos longos fluirão ao redor "
-#~ "do modelo Jmol {0}."
+#~ "Insira texto explanatório adicional aqui. Textos longos fluirão ao redor do "
+#~ "modelo Jmol {0}."
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "adicionando {0}.png"
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "adicionando {0}.spt"
 
@@ -2015,3 +1994,30 @@ msgstr "não implementado"
 
 #~ msgid "independent commmand thread"
 #~ msgstr "sequência de comando independente"
+
+#~ msgid "Go to next vector in the collection"
+#~ msgstr "Ir para o próximo vetor na coleção"
+
+#~ msgid "Jump to last vector in the collection"
+#~ msgstr "Ir para o último vetor na coleção"
+
+#~ msgid "Go to first vector in the collection"
+#~ msgstr "Ir para o primeiro vetor na coleção"
+
+#~ msgid "Go to previous vector in the collection"
+#~ msgstr "Ir para o vetor anterior na coleção"
+
+#~ msgid "Play the whole collection of vectors"
+#~ msgstr "Ver toda a coleção de vetores"
+
+#~ msgid "Get MOL file by compound name or ID"
+#~ msgstr "Obter arquivo MOL pelo nome da mistura ou ID"
+
+#~ msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
+#~ msgstr "Digite o nome ou identificador (SMILES, InChi, CAS) de uma molécula"
+
+#~ msgid "Get PDB file"
+#~ msgstr "Obter arquivo PDB"
+
+#~ msgid "Enter a four-digit PDB ID"
+#~ msgstr "Digite quatro digitos do ID PDB"

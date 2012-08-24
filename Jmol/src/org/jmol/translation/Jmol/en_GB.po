@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-06-15 17:29+0200\n"
-"PO-Revision-Date: 2011-10-03 23:28+0000\n"
-"Last-Translator: Anthony Harrington <untaintableangel@hotmail.co.uk>\n"
+"PO-Revision-Date: 2012-08-23 21:01+0000\n"
+"Last-Translator: Alfredo Hernández <Unknown>\n"
 "Language-Team: English (United Kingdom) <en_GB@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-12-18 14:49+0000\n"
-"X-Generator: Launchpad (build 14525)\n"
+"X-Launchpad-Export-Date: 2012-08-24 17:12+0000\n"
+"X-Generator: Launchpad (build 15843)\n"
 
 #: com/json/Cookie.java:121
 msgid "name"
@@ -111,11 +111,11 @@ msgstr "send only output from print messages to console (implies -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:167
 msgid "restrict local file access"
-msgstr ""
+msgstr "restrict local file access"
 
 #: org/openscience/jmol/app/JmolApp.java:169
 msgid "restrict local file access (allow reading of SPT files)"
-msgstr ""
+msgstr "restrict local file access (allow reading of SPT files)"
 
 #: org/openscience/jmol/app/JmolApp.java:171
 msgid "independent command thread"
@@ -321,14 +321,12 @@ msgid "Period"
 msgstr "Period"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:355
-#, fuzzy
 msgid "Frame"
-msgstr "Last Frame"
+msgstr "Frame"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:355
-#, fuzzy
 msgid "Vibration"
-msgstr "Animation"
+msgstr "Vibration"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:363
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:372
@@ -360,11 +358,11 @@ msgstr "Jump to last atom set in the collection"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:374
 msgid "Vibration ON"
-msgstr ""
+msgstr "Vibration ON"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:375
 msgid "Vibration OFF"
-msgstr ""
+msgstr "Vibration OFF"
 
 #: org/openscience/jmol/app/jmolpanel/ConsoleTextArea.java:87
 #, java-format
@@ -1137,7 +1135,7 @@ msgstr "Enter URL of molecular model"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1199
 msgid "Enter a four-digit PDB model ID or \"=\" and a three-digit ligand ID"
-msgstr ""
+msgstr "Enter a four-digit PDB model ID or '=' and a three-digit ligand ID"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1208
 msgid ""
@@ -1145,6 +1143,8 @@ msgid ""
 "with \":\" to load from PubChem; otherwise Jmol will use the NCI/NIH "
 "Resolver."
 msgstr ""
+"Enter the name or identifier (SMILES, InChI, CAS) of a compound. Preface "
+"with ':' to load from PubChem; otherwise Jmol will use the NCI/NIH Resolver."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1375
 msgid "IO Exception:"
@@ -1426,14 +1426,12 @@ msgid "id"
 msgstr "id"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:534
-#, fuzzy
 msgid "startup"
-msgstr "startup_script"
+msgstr "startup"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:535
-#, fuzzy
 msgid "filename"
-msgstr "File Name:"
+msgstr "filename"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:542
 msgid "startup_script"
@@ -1888,36 +1886,8 @@ msgstr "Download view"
 msgid "unimplemented"
 msgstr "unimplemented"
 
-#~ msgid "Get PDB file"
-#~ msgstr "Get PDB file"
-
-#~ msgid "Enter a four-digit PDB ID"
-#~ msgstr "Enter a four-digit PDB ID"
-
-#~ msgid "Get MOL file by compound name or ID"
-#~ msgstr "Get MOL file by compound name or ID"
-
-#, fuzzy
-#~ msgid "Enter the name or identifier (SMILES, InChI, CAS) of a compound"
-#~ msgstr "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
-
 #~ msgid "Controller"
 #~ msgstr "Controller"
-
-#~ msgid "Go to first vector in the collection"
-#~ msgstr "Go to first vector in the collection"
-
-#~ msgid "Go to previous vector in the collection"
-#~ msgstr "Go to previous vector in the collection"
-
-#~ msgid "Play the whole collection of vectors"
-#~ msgstr "Play the whole collection of vectors"
-
-#~ msgid "Go to next vector in the collection"
-#~ msgstr "Go to next vector in the collection"
-
-#~ msgid "Jump to last vector in the collection"
-#~ msgstr "Jump to last vector in the collection"
 
 #~ msgid "vector"
 #~ msgstr "vector"
@@ -1925,18 +1895,23 @@ msgstr "unimplemented"
 #~ msgid "atom set"
 #~ msgstr "atom set"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Go to first {0} in the collection"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Go to previous {0} in the collection"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Play the whole collection of {0}'s"
 
+#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Jump to last {0} in the collection"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Go to next {0} in the collection"
 
@@ -1952,6 +1927,7 @@ msgstr "unimplemented"
 #~ msgid "double-click and drag to reorder"
 #~ msgstr "double-click and drag to reorder"
 
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
@@ -1959,15 +1935,18 @@ msgstr "unimplemented"
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "adding {0}.spt"
 
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "adding JmolPopIn.js"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "adding {0}.png"
 
+#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"
@@ -1983,6 +1962,33 @@ msgstr "unimplemented"
 
 #~ msgid "Output Conso&le..."
 #~ msgstr "Output Conso&le..."
+
+#~ msgid "Go to next vector in the collection"
+#~ msgstr "Go to next vector in the collection"
+
+#~ msgid "Play the whole collection of vectors"
+#~ msgstr "Play the whole collection of vectors"
+
+#~ msgid "Jump to last vector in the collection"
+#~ msgstr "Jump to last vector in the collection"
+
+#~ msgid "Go to first vector in the collection"
+#~ msgstr "Go to first vector in the collection"
+
+#~ msgid "Go to previous vector in the collection"
+#~ msgstr "Go to previous vector in the collection"
+
+#~ msgid "Get PDB file"
+#~ msgstr "Get PDB file"
+
+#~ msgid "Enter a four-digit PDB ID"
+#~ msgstr "Enter a four-digit PDB ID"
+
+#~ msgid "Get MOL file by compound name or ID"
+#~ msgstr "Get MOL file by compound name or ID"
+
+#~ msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
+#~ msgstr "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
 
 #~ msgid "Wireframe"
 #~ msgstr "Wireframe"

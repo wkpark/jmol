@@ -105,19 +105,6 @@ public final class Bspf {
     Logger.info("<<<<");
   }
   
-/*
-  public SphereIterator getSphereIterator(int bsptIndex) {
-    if (bsptIndex >= sphereIterators.length) {
-      SphereIterator[] t = new SphereIterator[bsptIndex + 1];
-      System.arraycopy(sphereIterators, 0, t, 0, sphereIterators.length);
-      sphereIterators = t;
-    }
-    if (sphereIterators[bsptIndex] == null &&
-        bspts[bsptIndex] != null)
-      sphereIterators[bsptIndex] = bspts[bsptIndex].allocateSphereIterator();
-    return sphereIterators[bsptIndex];
-  }
-*/  
   /**
    * @param bsptIndex  a model index
    * @return           either a cached or a new CubeIterator

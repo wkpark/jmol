@@ -874,7 +874,7 @@ public class _ObjExporter extends __CartesianExporter {
     //    sb.append(" Ka " + rgbFractionalFromColix(colix, ' ') + "\n");
     sb.append(" Ka 0.20 0.20 0.20\n");
     // Diffuse
-    sb.append(" Kd " + rgbFractionalFromColix(colix, ' ') + "\n");
+    sb.append(" Kd " + rgbFractionalFromColix(colix) + "\n");
     // Specular
     sb.append(" Ks 0.25 0.25 0.25\n");
 

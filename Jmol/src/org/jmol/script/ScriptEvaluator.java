@@ -14326,6 +14326,9 @@ public class ScriptEvaluator {
         } else if (type.equals("MA")) {
           type = "Maya";
           isExport = true;
+        } else if (type.equals("JS")) {
+          type = "Js";
+          isExport = true;
         } else if (type.equals("OBJ")) {
           type = "Obj";
           isExport = true;

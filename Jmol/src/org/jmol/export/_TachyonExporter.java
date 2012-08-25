@@ -113,7 +113,7 @@ public class _TachyonExporter extends __RayTracerExporter {
     output("End_Camera\n");
     output("Directional_Light Direction " + round(lightSource) + " Color 1 1 1\n");
     output("\n");
-    output("Background " + rgbFractionalFromColix(backgroundColix, ' ')
+    output("Background " + rgbFractionalFromColix(backgroundColix)
         + "\n");
     output("\n");
   }
@@ -146,12 +146,12 @@ public class _TachyonExporter extends __RayTracerExporter {
   }
 
   private void outputTexture(short colix, boolean useTexDef) {
-    outputTexture2(rgbFractionalFromColix(colix, ' '), 
+    outputTexture2(rgbFractionalFromColix(colix), 
         opacityFractionalFromColix(colix), useTexDef);
   }
 
   private void outputTexture(int argb, boolean useTexDef) {
-    outputTexture2(rgbFractionalFromArgb(argb, ' '), 
+    outputTexture2(rgbFractionalFromArgb(argb), 
         opacityFractionalFromArgb(argb), useTexDef);
   }
   
@@ -275,10 +275,10 @@ public class _TachyonExporter extends __RayTracerExporter {
       setTempVertex(vertices[i], offset, tempP1);
       output(triad(getScreenNormal(tempP1, normals[i], 10)) + "\n");
     }
-    String rgb = (colixes == null ? rgbFractionalFromColix(colix, ' ') : null);
+    String rgb = (colixes == null ? rgbFractionalFromColix(colix) : null);
     output("\nColors\n");
     for (int i = 0; i < nVertices; i++) {
-      output((colixes == null ? rgb : rgbFractionalFromColix(colixes[i], ' ')) + "\n");
+      output((colixes == null ? rgb : rgbFractionalFromColix(colixes[i])) + "\n");
     }
     outputTextureCode();
     output("\nTriMesh " + nFaces + "\n");

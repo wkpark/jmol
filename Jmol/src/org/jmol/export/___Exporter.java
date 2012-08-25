@@ -292,6 +292,8 @@ public abstract class ___Exporter {
 
   protected String commentChar;
   protected String getJmolPerspective() {
+    if (commentChar == null)
+      return "";
     StringBuffer sb = new StringBuffer();
     sb.append(commentChar).append("Jmol perspective:");
     sb.append("\n").append(commentChar).append("screen width height dim: " + screenWidth + " " + screenHeight + " " + viewer.getScreenDim());
@@ -334,17 +336,24 @@ public abstract class ___Exporter {
     return new SimpleDateFormat("yyyy-MM-dd', 'HH:mm").format(new Date());
   }
 
-  protected String rgbFractionalFromColix(short colix, char sep) {
-    return rgbFractionalFromArgb(g3d.getColorArgbOrGray(colix), sep);
+  protected String rgbFractionalFromColix(short colix) {
+    return rgbFractionalFromArgb(g3d.getColorArgbOrGray(colix));
   }
 
-  protected static String rgbFractionalFromArgb(int argb, char sep) {
+  protected String getTriad(Tuple3f t) {
+    return round(t.x) + " " + round(t.y) + " " + round(t.z); 
+  }
+  
+  final private Point3f tempC = new Point3f();
+
+  protected String rgbFractionalFromArgb(int argb) {
     int red = (argb >> 16) & 0xFF;
     int green = (argb >> 8) & 0xFF;
     int blue = argb & 0xFF;
-    return "" + round(red == 0 ? 0 : (red + 1)/ 256f) + sep 
-        + round(green == 0 ? 0 : (green + 1) / 256f) + sep
-        + round(blue == 0 ? 0 : (blue + 1) / 256f);
+    tempC.set(red == 0 ? 0 : (red + 1)/ 256f, 
+        green == 0 ? 0 : (green + 1) / 256f, 
+        blue == 0 ? 0 : (blue + 1) / 256f);
+    return getTriad(tempC);
   }
 
   protected static String translucencyFractionalFromColix(short colix) {

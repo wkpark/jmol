@@ -71,7 +71,7 @@ public class _X3dExporter extends _VrmlExporter {
     output("<NavigationInfo type='EXAMINE'/>\n");
     // puts the viewer into model-rotation mode
     output("<Background skyColor='" 
-      + rgbFractionalFromColix(backgroundColix, ' ') + "'/>\n");
+      + rgbFractionalFromColix(backgroundColix) + "'/>\n");
     // next is an approximation only 
     float angle = (float) (aperatureAngle * Math.PI / 180);
     viewer.getAxisAngle(viewpoint);
@@ -104,7 +104,7 @@ public class _X3dExporter extends _VrmlExporter {
     String def = useTable.getDef((isText ? "T" : "") + colix);
     output("<Appearance ");
     if (def.charAt(0) == '_') {
-      String color = rgbFractionalFromColix(colix, ' ');
+      String color = rgbFractionalFromColix(colix);
       output("DEF='" + def + "'><Material diffuseColor='");
       if (isText)
         output("0 0 0' specularColor='0 0 0' ambientIntensity='0.0' shininess='0.0' emissiveColor='" 
@@ -383,7 +383,7 @@ public class _X3dExporter extends _VrmlExporter {
   @Override
   protected void outputTextPixel(Point3f pt, int argb) {
     // text only
-    String color = rgbFractionalFromArgb(argb, ' ');
+    String color = rgbFractionalFromArgb(argb);
     output("<Transform translation='");
     output(pt);
     output("'>\n<Shape ");

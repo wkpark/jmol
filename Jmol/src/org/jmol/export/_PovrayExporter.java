@@ -100,7 +100,7 @@ public class _PovrayExporter extends __RayTracerExporter {
     output("\n");
 
     output("background { color rgb <" + 
-        rgbFractionalFromColix(backgroundColix, ',')
+        rgbFractionalFromColix(backgroundColix)
         + "> }\n");
     output("\n");
 
@@ -293,18 +293,19 @@ public class _PovrayExporter extends __RayTracerExporter {
     haveMacros = true;
   }
   
-  private String triad(Tuple3f pt) {
+  @Override
+  protected String getTriad(Tuple3f pt) {
     if (Float.isNaN(pt.x))
       return "0,0,0";
     return pt.x + "," + pt.y + "," + pt.z;
   }
 
-  private String triad(int[] i) {
+  private String getTriad(int[] i) {
     return i[0] + "," + i[1] + "," + i[2];
   }
 
   private String color4(short colix) {
-    return rgbFractionalFromColix(colix, ',') + ","
+    return rgbFractionalFromColix(colix) + ","
         + translucencyFractionalFromColix(colix);
   }
 
@@ -333,7 +334,7 @@ public class _PovrayExporter extends __RayTracerExporter {
 
   @Override
   protected void output(Tuple3f pt) {
-    output(", <" + triad(pt) + ">");    
+    output(", <" + getTriad(pt) + ">");    
   }
   
   @Override
@@ -354,11 +355,11 @@ public class _PovrayExporter extends __RayTracerExporter {
       tempP1.set(screenBase.x, screenTip.y, 12345.6789f);
       Measure.getPlaneThroughPoints(screenBase, screenTip, tempP1, tempV1,
           tempV2, tempV3, plane);
-      output("barb(" + triad(screenBase) + "," + radius + ","
-          + triad(screenTip) + ",0" + "," + color4(colix) + "," + plane.x + ","
+      output("barb(" + getTriad(screenBase) + "," + radius + ","
+          + getTriad(screenTip) + ",0" + "," + color4(colix) + "," + plane.x + ","
           + plane.y + "," + plane.z + "," + -plane.w + ")\n");
     } else {
-      output("b(" + triad(screenBase) + "," + radius + "," + triad(screenTip)
+      output("b(" + getTriad(screenBase) + "," + radius + "," + getTriad(screenTip)
           + ",0" + "," + color4(colix) + ")\n");
     }
   }
@@ -368,14 +369,14 @@ public class _PovrayExporter extends __RayTracerExporter {
                               short colix, boolean withCaps) {
     String color = color4(colix);
     output((withCaps ? "b(" : "c(") 
-        + triad(screenA) + "," + radius + "," + triad(screenB) + ","
+        + getTriad(screenA) + "," + radius + "," + getTriad(screenB) + ","
         + radius + "," + color + ")\n");
   }
   
   @Override
   protected void outputCylinderConical(Point3f screenA, Point3f screenB,
                                        float radius1, float radius2, short colix) {
-    output("b(" + triad(screenA) + "," + radius1 + "," + triad(screenB) + ","
+    output("b(" + getTriad(screenA) + "," + radius1 + "," + getTriad(screenB) + ","
         + radius2 + "," + color4(colix) + ")\n");
   }
 
@@ -446,7 +447,7 @@ public class _PovrayExporter extends __RayTracerExporter {
     boolean isAll = (bsPolygons == null);
     int i0 = (isAll ? nPolygons - 1 : bsPolygons.nextSetBit(0));
     for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsPolygons.nextSetBit(i + 1))) {
-      output(", <" + triad(indices[i]) + ">");
+      output(", <" + getTriad(indices[i]) + ">");
       if (colixes != null) {
         output("," + htColixes.get(Short.valueOf(colixes[indices[i][0]])));
         output("," + htColixes.get(Short.valueOf(colixes[indices[i][1]])));
@@ -518,7 +519,7 @@ public class _PovrayExporter extends __RayTracerExporter {
       writeMacros2();
     //text only
     output("p(" + x + "," + y + "," + z + "," + 
-        rgbFractionalFromArgb(argb, ',') + ")\n");
+        rgbFractionalFromArgb(argb) + ")\n");
   }
   
   @Override
@@ -526,7 +527,7 @@ public class _PovrayExporter extends __RayTracerExporter {
     if (!haveMacros)
       writeMacros2();
     //cartoons, mesh, isosurface
-    output("r(" + triad(ptA) + "," + triad(ptB) + "," + triad(ptC) + ","
+    output("r(" + getTriad(ptA) + "," + getTriad(ptB) + "," + getTriad(ptC) + ","
         + color4(colix) + ")\n");
   }
 }

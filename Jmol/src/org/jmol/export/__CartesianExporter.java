@@ -132,8 +132,7 @@ abstract public class __CartesianExporter extends ___Exporter {
           bsValid.clear(i);
         continue;
       }
-      s = (round(normals[i].x) + " " + round(normals[i].y) + " "
-          + round(normals[i].z) + "\n");
+      s = getTriad(normals[i]) + "\n";
       if (htNormals.containsKey(s)) {
         normalMap[i] = htNormals.get(s).intValue();
       } else {

@@ -333,7 +333,7 @@ public class _IdtfExporter extends __CartesianExporter {
         + "\n3Dc2c=0.0 0.0 1.0,"
         + "\n3Daac=" + aperatureAngle + ","
         + "\n% 3Droll=0.0," 
-        + "\n3Dbg=" + rgbFractionalFromColix(backgroundColix, ' ') + "," 
+        + "\n3Dbg=" + rgbFractionalFromColix(backgroundColix) + "," 
         + "\n3Dlights=Headlamp," 
         + "\ninline=true," 
         + "\n  ]{0.9\\textwidth}{0.9\\textwidth}{" + name + ".u3d}" 
@@ -363,7 +363,7 @@ public class _IdtfExporter extends __CartesianExporter {
     String key = "_" + colix;
     if (htDefs.containsKey(key))
       return;
-    String color = (haveColors ? "1.0 1.0 1.0" : rgbFractionalFromColix(colix, ' '));
+    String color = (haveColors ? "1.0 1.0 1.0" : rgbFractionalFromColix(colix));
     htDefs.put(key, Boolean.TRUE);
     resources.append("RESOURCE_LIST \"SHADER\" {\n");
     resources.append("RESOURCE_COUNT 1\n");
@@ -875,7 +875,7 @@ public class _IdtfExporter extends __CartesianExporter {
       nColors = colorList.size();
       for (int i = 0; i < nColors; i++) {
         short c = colorList.get(i).shortValue();
-        sbColors.append(rgbFractionalFromColix(c, ' ')).append(" ").append(
+        sbColors.append(rgbFractionalFromColix(c)).append(" ").append(
             translucencyFractionalFromColix(c)).append(" ");
       }
     }

@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-08-25 08:08+0200\n"
-"PO-Revision-Date: 2012-08-23 23:24+0000\n"
+"PO-Revision-Date: 2012-08-25 15:09+0000\n"
 "Last-Translator: Asier Iturralde Sarasola <Unknown>\n"
 "Language-Team: Basque <eu@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-25 09:00+0000\n"
+"X-Launchpad-Export-Date: 2012-08-25 21:40+0000\n"
 "X-Generator: Launchpad (build 15843)\n"
 
 #: org/jmol/applet/AppletWrapper.java:100
@@ -364,7 +364,7 @@ msgstr "Asturiera"
 
 #: org/jmol/i18n/GT.java:141
 msgid "Azerbaijani"
-msgstr ""
+msgstr "Azerbaijanera"
 
 #: org/jmol/i18n/GT.java:142
 msgid "Bosnian"
@@ -412,7 +412,7 @@ msgstr "Estoniera"
 
 #: org/jmol/i18n/GT.java:153
 msgid "Basque"
-msgstr ""
+msgstr "Euskara"
 
 #: org/jmol/i18n/GT.java:154
 msgid "Finnish"
@@ -532,7 +532,7 @@ msgstr "Ukrainera"
 
 #: org/jmol/i18n/GT.java:183
 msgid "Uzbek"
-msgstr ""
+msgstr "Uzbekera"
 
 #: org/jmol/i18n/GT.java:184
 msgid "Simplified Chinese"
@@ -545,11 +545,11 @@ msgstr "Txinera tradizionala"
 #: org/jmol/minimize/Minimizer.java:217
 #, java-format
 msgid "Could not get class for force field {0}"
-msgstr ""
+msgstr "Ezin izan da {0} indar-eremuarentzako klasea eskuratu"
 
 #: org/jmol/minimize/Minimizer.java:223
 msgid "No atoms selected -- nothing to do!"
-msgstr ""
+msgstr "Ez dago atomorik hautatuta -- egitekorik ez!"
 
 #: org/jmol/minimize/Minimizer.java:303
 #, java-format
@@ -559,7 +559,7 @@ msgstr "{0} atomo minimizatuko dira."
 #: org/jmol/minimize/Minimizer.java:318
 #, java-format
 msgid "could not setup force field {0}"
-msgstr ""
+msgstr "ezin izan da {0} eremua konfiguratu"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:85
 msgid "new"
@@ -604,7 +604,7 @@ msgstr "gorde egoera"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:95
 msgid "invert ring stereochemistry"
-msgstr ""
+msgstr "alderantzikatu eraztunaren estereokimika"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:96
 msgid "delete atom"
@@ -632,11 +632,11 @@ msgstr ""
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:110
 msgid "increase charge"
-msgstr ""
+msgstr "handitu karga"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:111
 msgid "decrease charge"
-msgstr ""
+msgstr "txikiagotu karga"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:112
 msgid "delete bond"
@@ -691,7 +691,7 @@ msgstr ""
 #: org/jmol/popup/GenericPopup.java:546
 #: org/jmol/popup/MainPopupResourceBundle.java:550
 msgid "No atoms loaded"
-msgstr ""
+msgstr "Atomorik ez kargatuta"
 
 #: org/jmol/popup/GenericPopup.java:794
 #: org/jmol/popup/MainPopupResourceBundle.java:562
@@ -770,7 +770,7 @@ msgstr "Elementua"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:554
 msgid "Model/Frame"
-msgstr ""
+msgstr "Eredua/Markoa"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:555
 msgid "Language"
@@ -871,12 +871,12 @@ msgstr "Biomolekulak"
 #: org/jmol/popup/MainPopupResourceBundle.java:578
 #, java-format
 msgid "biomolecule {0} ({1} atoms)"
-msgstr ""
+msgstr "{0} biomolekula ({1} atomo)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:579
 #, java-format
 msgid "load biomolecule {0} ({1} atoms)"
-msgstr ""
+msgstr "kargatu {0} biomolekula ({1} atomo)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:584
 #: org/jmol/popup/MainPopupResourceBundle.java:708
@@ -1083,7 +1083,7 @@ msgstr "Desaktibatuta"
 #: org/jmol/popup/MainPopupResourceBundle.java:643
 #, java-format
 msgid "{0}% van der Waals"
-msgstr ""
+msgstr "%{0} van der Waals"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:645
 #: org/jmol/popup/MainPopupResourceBundle.java:772
@@ -1885,11 +1885,11 @@ msgstr ""
 #: org/jmol/script/ScriptCompilationTokenParser.java:1374
 #: org/jmol/script/ScriptEvaluator.java:2940
 msgid "number expected"
-msgstr ""
+msgstr "zenbakia espero zen"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1377
 msgid "number or variable name expected"
-msgstr ""
+msgstr "zenbakia edo aldagai-izena espero zen"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1380
 msgid "residue specification (ALA, AL?, A*) expected"
@@ -1898,12 +1898,12 @@ msgstr ""
 #: org/jmol/script/ScriptCompilationTokenParser.java:1383
 #, java-format
 msgid "{0} expected"
-msgstr ""
+msgstr "{0} espero zen"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1386
 #, java-format
 msgid "{0} unexpected"
-msgstr ""
+msgstr "ez zen {0} espero"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1389
 #, java-format
@@ -1923,7 +1923,7 @@ msgstr ""
 
 #: org/jmol/script/ScriptCompiler.java:2650
 msgid "script compiler ERROR: "
-msgstr ""
+msgstr "script-konpilatzailearen ERROREA: "
 
 #: org/jmol/script/ScriptEvaluator.java:2682
 #: org/jmol/script/ScriptEvaluator.java:10500
@@ -1932,7 +1932,7 @@ msgstr "script ERROREA: "
 
 #: org/jmol/script/ScriptEvaluator.java:2831
 msgid "x y z axis expected"
-msgstr ""
+msgstr "x y z ardatza espero zen"
 
 #: org/jmol/script/ScriptEvaluator.java:2834
 #, java-format
@@ -1949,16 +1949,16 @@ msgstr "[R,G,B] kolore okerra"
 
 #: org/jmol/script/ScriptEvaluator.java:2846
 msgid "boolean expected"
-msgstr ""
+msgstr "boolearra espero zen"
 
 #: org/jmol/script/ScriptEvaluator.java:2849
 msgid "boolean or number expected"
-msgstr ""
+msgstr "boolearra edo zenbakia espero zen"
 
 #: org/jmol/script/ScriptEvaluator.java:2852
 #, java-format
 msgid "boolean, number, or {0} expected"
-msgstr ""
+msgstr "boolearra, zenbakia edo {0} espero zen"
 
 #: org/jmol/script/ScriptEvaluator.java:2855
 msgid "cannot set value"
@@ -1966,11 +1966,11 @@ msgstr "ezin da balioa ezarri"
 
 #: org/jmol/script/ScriptEvaluator.java:2858
 msgid "color expected"
-msgstr ""
+msgstr "kolorea espero zen"
 
 #: org/jmol/script/ScriptEvaluator.java:2861
 msgid "a color or palette name (Jmol, Rasmol) is required"
-msgstr ""
+msgstr "kolore bat edo paleta-izen bat (Jmol, Rasmol) behar da"
 
 #: org/jmol/script/ScriptEvaluator.java:2867
 msgid "{x y z} or $name or (atom expression) required"
@@ -1990,7 +1990,7 @@ msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2882
 msgid "filename expected"
-msgstr ""
+msgstr "fitxategi-izena espero zen"
 
 #: org/jmol/script/ScriptEvaluator.java:2885
 msgid "file not found"
@@ -2002,16 +2002,16 @@ msgstr "argumentu bateraezinak"
 
 #: org/jmol/script/ScriptEvaluator.java:2891
 msgid "insufficient arguments"
-msgstr ""
+msgstr "argumentu gutxiegi"
 
 #: org/jmol/script/ScriptEvaluator.java:2894
 msgid "integer expected"
-msgstr ""
+msgstr "osokoa espero zen"
 
 #: org/jmol/script/ScriptEvaluator.java:2897
 #, java-format
 msgid "integer out of range ({0} - {1})"
-msgstr ""
+msgstr "osokoa ({0} - {1} tartetik kanpo)"
 
 #: org/jmol/script/ScriptEvaluator.java:2900
 msgid "invalid argument"
@@ -2023,7 +2023,7 @@ msgstr "parametroen ordena baliogabea"
 
 #: org/jmol/script/ScriptEvaluator.java:2906
 msgid "keyword expected"
-msgstr ""
+msgstr "gako-hitza espero zen"
 
 #: org/jmol/script/ScriptEvaluator.java:2909
 msgid "no MO coefficient data available"
@@ -2044,7 +2044,7 @@ msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2921
 msgid "Only one molecular orbital is available in this file"
-msgstr ""
+msgstr "Orbital molekular bakarra dago eskuragarri fitxategi honetan"
 
 #: org/jmol/script/ScriptEvaluator.java:2924
 #, java-format
@@ -2065,6 +2065,8 @@ msgid ""
 "No partial charges were read from the file; Jmol needs these to render the "
 "MEP data."
 msgstr ""
+"Ez da karga partzialik irakurri fitxategitik; Jmol-ek MEP datuak "
+"errendatzeko beharrezkoak dira."
 
 #: org/jmol/script/ScriptEvaluator.java:2937
 msgid "No unit cell"
@@ -2078,11 +2080,11 @@ msgstr "zenbakiak ({0} edo {1}) izan behar du"
 #: org/jmol/script/ScriptEvaluator.java:2946
 #, java-format
 msgid "decimal number out of range ({0} - {1})"
-msgstr ""
+msgstr "zenbaki hamartarra ({0} - {1}) tartetik kanpo"
 
 #: org/jmol/script/ScriptEvaluator.java:2949
 msgid "object name expected after '$'"
-msgstr ""
+msgstr "objektu-izena espero zen '$'ren ondoren"
 
 #: org/jmol/script/ScriptEvaluator.java:2953
 #, java-format
@@ -2093,7 +2095,7 @@ msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2956
 msgid "property name expected"
-msgstr ""
+msgstr "propietate-izena espero zen"
 
 #: org/jmol/script/ScriptEvaluator.java:2959
 #, java-format
@@ -2102,27 +2104,27 @@ msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2962
 msgid "quoted string expected"
-msgstr ""
+msgstr "kakotx arteko katea espero zen"
 
 #: org/jmol/script/ScriptEvaluator.java:2965
 msgid "quoted string or identifier expected"
-msgstr ""
+msgstr "kakotx arteko katea edo identifikatzailea espero zen"
 
 #: org/jmol/script/ScriptEvaluator.java:2968
 msgid "too many rotation points were specified"
-msgstr ""
+msgstr "errotazio-puntu gehiegi zehaztu dira"
 
 #: org/jmol/script/ScriptEvaluator.java:2971
 msgid "too many script levels"
-msgstr ""
+msgstr "script-maila gehiegi"
 
 #: org/jmol/script/ScriptEvaluator.java:2974
 msgid "unrecognized atom property"
-msgstr ""
+msgstr "atomoaren propietate ezezaguna"
 
 #: org/jmol/script/ScriptEvaluator.java:2977
 msgid "unrecognized bond property"
-msgstr ""
+msgstr "loturaren propietate ezezaguna"
 
 #: org/jmol/script/ScriptEvaluator.java:2980
 msgid "unrecognized command"
@@ -2149,12 +2151,12 @@ msgstr ""
 #: org/jmol/script/ScriptEvaluator.java:3002
 #, java-format
 msgid "write what? {0} or {1} \"filename\""
-msgstr ""
+msgstr "zer idatzi? {0} ala {1} \"fitxategi-izena\""
 
 #: org/jmol/script/ScriptEvaluator.java:7422
 #, java-format
 msgid "{0} connections deleted"
-msgstr ""
+msgstr "{0} lotura ezabatuta"
 
 #: org/jmol/script/ScriptEvaluator.java:7443
 #, java-format
@@ -2189,32 +2191,34 @@ msgstr ""
 
 #: org/jmol/shape/Frank.java:75
 msgid "Click for menu..."
-msgstr ""
+msgstr "Klikatu menurako..."
 
 #: org/jmol/viewer/ActionManager.java:116
 msgid "translate"
-msgstr ""
+msgstr "translazioa"
 
 #: org/jmol/viewer/ActionManager.java:117
 msgid "rotate"
-msgstr ""
+msgstr "biratu"
 
 #: org/jmol/viewer/ActionManager.java:118
 msgid "rotate Z"
-msgstr ""
+msgstr "biratu Z"
 
 #: org/jmol/viewer/ActionManager.java:119
 msgid ""
 "rotate Z (horizontal motion of mouse) or zoom (vertical motion of mouse)"
 msgstr ""
+"biratu Z (saguaren mugimendu horizontala) edo egin zoom (saguaren mugimendu "
+"bertikala)"
 
 #: org/jmol/viewer/ActionManager.java:120
 msgid "zoom"
-msgstr ""
+msgstr "zooma"
 
 #: org/jmol/viewer/ActionManager.java:121
 msgid "zoom (along right edge of window)"
-msgstr ""
+msgstr "zooma (leihoaren eskuineko ertzean zehar)"
 
 #: org/jmol/viewer/ActionManager.java:122
 #, java-format
@@ -2229,12 +2233,14 @@ msgstr ""
 #, java-format
 msgid "click on two points to spin around axis clockwise (requires {0})"
 msgstr ""
+"klikatu bi puntutan ardatzaren inguruan eskuinera biratzeko ({0} behar du)"
 
 #: org/jmol/viewer/ActionManager.java:125
 #, java-format
 msgid ""
 "click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
+"klikatu bi puntutan ardatzaren inguruan ezkerrera biratzeko ({0} behar du)"
 
 #: org/jmol/viewer/ActionManager.java:126
 #, java-format
@@ -2272,12 +2278,12 @@ msgstr ""
 #: org/jmol/viewer/ActionManager.java:133
 #, java-format
 msgid "toggle selection (requires {0})"
-msgstr ""
+msgstr "txandakatu hautapena ({0} behar du)"
 
 #: org/jmol/viewer/ActionManager.java:134
 #, java-format
 msgid "unselect this group of atoms (requires {0})"
-msgstr ""
+msgstr "desautatu atomo-talde hau ({0} behar du)"
 
 #: org/jmol/viewer/ActionManager.java:135
 #, java-format
@@ -2294,47 +2300,47 @@ msgstr ""
 #: org/jmol/viewer/ActionManager.java:137
 #, java-format
 msgid "move selected atoms (requires {0})"
-msgstr ""
+msgstr "mugitu hautatutako atomoak ({0} behar du)"
 
 #: org/jmol/viewer/ActionManager.java:138
 #, java-format
 msgid "select and drag atoms (requires {0})"
-msgstr ""
+msgstr "hautatu eta arrastatu atomoak ({0} behar du)"
 
 #: org/jmol/viewer/ActionManager.java:139
 #, java-format
 msgid "drag atoms in Z direction (requires {0})"
-msgstr ""
+msgstr "arrastatu atomoak Z norabidean ({0} behar du)"
 
 #: org/jmol/viewer/ActionManager.java:140
 #, java-format
 msgid "rotate selected atoms (requires {0})"
-msgstr ""
+msgstr "biratu hautatutako atomoak ({0} behar du)"
 
 #: org/jmol/viewer/ActionManager.java:141
 #, java-format
 msgid "rotate branch around bond (requires {0})"
-msgstr ""
+msgstr "biratu adarra loturaren inguruan ({0} behar du)"
 
 #: org/jmol/viewer/ActionManager.java:142
 #, java-format
 msgid "move atom (requires {0})"
-msgstr ""
+msgstr "mugitu atomoa ({0} behar du)"
 
 #: org/jmol/viewer/ActionManager.java:143
 #, java-format
 msgid "move atom and minimize molecule (requires {0})"
-msgstr ""
+msgstr "mugitu atomoa eta minimizatu molekula ({0} behar du)"
 
 #: org/jmol/viewer/ActionManager.java:144
 #, java-format
 msgid "move and minimize molecule (requires {0})"
-msgstr ""
+msgstr "mugitu eta minimizatu molekula ({0} behar du)"
 
 #: org/jmol/viewer/ActionManager.java:145
 #, java-format
 msgid "move label (requires {0})"
-msgstr ""
+msgstr "mugitu etiketa ({0} behar du)"
 
 #: org/jmol/viewer/ActionManager.java:146
 #, java-format
@@ -2348,7 +2354,7 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:148
 msgid "pick an atom"
-msgstr ""
+msgstr "aukeratu atomo bat"
 
 #: org/jmol/viewer/ActionManager.java:149
 #, java-format
@@ -2358,7 +2364,7 @@ msgstr ""
 #: org/jmol/viewer/ActionManager.java:150
 #, java-format
 msgid "pick a label to toggle it hidden/displayed (requires {0})"
-msgstr ""
+msgstr "aukeratu etiketa bat ezkutatu/bistaratu txandakatzeko ({0} behar du)"
 
 #: org/jmol/viewer/ActionManager.java:151
 #, java-format
@@ -2369,7 +2375,7 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:152
 msgid "pick an atom to initiate or conclude a measurement"
-msgstr ""
+msgstr "aukeratu atomo bat neurketa bat hasi edo bukatzeko"
 
 #: org/jmol/viewer/ActionManager.java:153
 #, java-format
@@ -2384,17 +2390,17 @@ msgstr ""
 #: org/jmol/viewer/ActionManager.java:155
 #, java-format
 msgid "delete atom (requires {0})"
-msgstr ""
+msgstr "ezabatu atomoa ({0} behar du)"
 
 #: org/jmol/viewer/ActionManager.java:156
 #, java-format
 msgid "delete bond (requires {0})"
-msgstr ""
+msgstr "ezabatu lotura ({0} behar du)"
 
 #: org/jmol/viewer/ActionManager.java:157
 #, java-format
 msgid "connect atoms (requires {0})"
-msgstr ""
+msgstr "konektatu atomoak ({0} behar du)"
 
 #: org/jmol/viewer/ActionManager.java:158
 #, java-format
@@ -2403,12 +2409,12 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:159
 msgid "reset (when clicked off the model)"
-msgstr ""
+msgstr "leheneratu (eredutik kanpora klikatzean)"
 
 #: org/jmol/viewer/ActionManager.java:160
 #, java-format
 msgid "stop motion (requires {0})"
-msgstr ""
+msgstr "gelditu mugimendua ({0} behar du)"
 
 #: org/jmol/viewer/ActionManager.java:161
 msgid "simulate multi-touch using the mouse)"
@@ -2416,20 +2422,20 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:1875
 msgid "pick one more atom in order to spin the model around an axis"
-msgstr ""
+msgstr "aukeratu beste atomo bat eredua ardatz baten inguruan biratzeko"
 
 #: org/jmol/viewer/ActionManager.java:1876
 msgid "pick two atoms in order to spin the model around an axis"
-msgstr ""
+msgstr "aukeratu bi atomo eredua ardatz baten inguruan biratzeko"
 
 #: org/jmol/viewer/ActionManager.java:1879
 msgid "pick one more atom in order to display the symmetry relationship"
-msgstr ""
+msgstr "aukeratu beste atomo bat simetria-erlazioa bistaratzeko"
 
 #: org/jmol/viewer/ActionManager.java:1880
 msgid ""
 "pick two atoms in order to display the symmetry relationship between them"
-msgstr ""
+msgstr "aukeratu bi atomo beren arteko simetria-erlazioa bistaratzeko"
 
 #: org/jmol/viewer/SelectionManager.java:95
 #: org/jmol/viewer/SelectionManager.java:114
@@ -2457,9 +2463,9 @@ msgstr ""
 
 #: org/jmol/viewer/Viewer.java:9599
 msgid "Cannot set log file path."
-msgstr ""
+msgstr "Ezin da egunkari-fitxategiaren bidea ezarri."
 
 #: org/jmol/viewer/Viewer.java:9603
 #, java-format
 msgid "Setting log file to {0}"
-msgstr ""
+msgstr "{0} egunkari-fitxategia ezartzen"

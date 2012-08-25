@@ -136,8 +136,9 @@ public class GT {
     boolean wasTranslating = doTranslate;
     doTranslate = false;
     languageList = new Language[] {
-      new Language("ar",    GT._("Arabic"),               "العربية",              false),
+      new Language("ar",    GT._("Arabic"),               "العربية",                  false),
       new Language("ast",   GT._("Asturian"),             "Asturian",             false),
+      new Language("az",    GT._("Azerbaijani"),          "azərbaycan dili",      false),
       new Language("bs",    GT._("Bosnian"),              "bosanski jezik",       false),
       new Language("ca",    GT._("Catalan"),              "Català",               true),
       new Language("cs",    GT._("Czech"),                "Čeština",              true),

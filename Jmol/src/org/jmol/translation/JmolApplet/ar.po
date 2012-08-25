@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-12-18 14:49+0000\n"
-"X-Generator: Launchpad (build 14525)\n"
+"X-Launchpad-Export-Date: 2012-08-25 09:00+0000\n"
+"X-Generator: Launchpad (build 15843)\n"
 
 #: org/jmol/applet/AppletWrapper.java:100
 msgid "Loading Jmol applet ..."
@@ -140,7 +140,8 @@ msgid "Check"
 msgstr "تحقق"
 
 #: org/jmol/console/ScriptEditor.java:137
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:138
@@ -406,9 +407,8 @@ msgid "Estonian"
 msgstr "إستونية"
 
 #: org/jmol/i18n/GT.java:153
-#, fuzzy
 msgid "Basque"
-msgstr "الأسس"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:154
 msgid "Finnish"
@@ -2228,7 +2228,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:125
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:126
@@ -2468,12 +2469,12 @@ msgstr ""
 #~ msgid "File creation failed."
 #~ msgstr "فشل إنشاء ملف"
 
+#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 #~ msgstr ""
-#~ "الملف المنشأ بواسطة هذا البرنامج غير مسموح به، لأجل صيغة JPEG Base64 "
-#~ "إستعمل {0}"
+#~ "الملف المنشأ بواسطة هذا البرنامج غير مسموح به، لأجل صيغة JPEG Base64 إستعمل "
+#~ "{0}"
 
 #~ msgid "Java memory usage"
 #~ msgstr "المساحة المستعملة من برنامج  الـ Java"

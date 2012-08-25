@@ -8,54 +8,54 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-06-15 17:29+0200\n"
-"PO-Revision-Date: 2011-08-03 09:23+0000\n"
-"Last-Translator: Joel Pickett <jlkpcktt@gmail.com>\n"
+"PO-Revision-Date: 2012-08-25 07:18+0000\n"
+"Last-Translator: Cruz Bishop <Unknown>\n"
 "Language-Team: English (Australia) <en_AU@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-12-18 14:50+0000\n"
-"X-Generator: Launchpad (build 14525)\n"
+"X-Launchpad-Export-Date: 2012-08-25 09:01+0000\n"
+"X-Generator: Launchpad (build 15843)\n"
 
 #: com/json/Cookie.java:121
 msgid "name"
-msgstr ""
+msgstr "name"
 
 #: com/json/Cookie.java:123
 msgid "value"
-msgstr ""
+msgstr "value"
 
 #: com/json/Cookie.java:126
 msgid "expires"
-msgstr ""
+msgstr "expires"
 
 #: com/json/Cookie.java:130
 msgid "domain"
-msgstr ""
+msgstr "domain"
 
 #: com/json/Cookie.java:134
 msgid "path"
-msgstr ""
+msgstr "path"
 
 #: com/json/HTTP.java:132 com/json/HTTP.java:144
 msgid "HTTP-Version"
-msgstr ""
+msgstr "HTTP-Version"
 
 #: com/json/HTTP.java:134
 msgid "Status-Code"
-msgstr ""
+msgstr "Status-Code"
 
 #: com/json/HTTP.java:136
 msgid "Reason-Phrase"
-msgstr ""
+msgstr "Reason-Phrase"
 
 #: com/json/HTTP.java:138
 msgid "Method"
-msgstr ""
+msgstr "Method"
 
 #: com/json/HTTP.java:141
 msgid "Request-URI"
-msgstr ""
+msgstr "Request-URI"
 
 #: org/openscience/jmol/app/JmolApp.java:109
 msgid "Error starting Jmol: the property 'user.home' is not defined."
@@ -91,7 +91,7 @@ msgstr "silent startup operation"
 
 #: org/openscience/jmol/app/JmolApp.java:157
 msgid "kiosk mode -- no frame"
-msgstr ""
+msgstr "kiosk mode -- no frame"
 
 #: org/openscience/jmol/app/JmolApp.java:159
 msgid "list commands during script execution"

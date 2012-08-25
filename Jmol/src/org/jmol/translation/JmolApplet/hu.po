@@ -15,8 +15,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-12-18 14:49+0000\n"
-"X-Generator: Launchpad (build 14525)\n"
+"X-Launchpad-Export-Date: 2012-08-25 09:00+0000\n"
+"X-Generator: Launchpad (build 15843)\n"
 "X-Poedit-Country: HUNGARY\n"
 "X-Poedit-Language: Hungarian\n"
 "X-Poedit-SourceCharset: utf-8\n"
@@ -115,8 +115,8 @@ msgid ""
 "console Help menu item for on-line help, which will appear in a new browser "
 "window."
 msgstr ""
-"Az üzenetek itt fognak megjelenni. A parancsokat az alábbi mezőbe írja be."
-"Kattintson a konzol Súgó menüpontjára segítségért, mely egy új böngésző-"
+"Az üzenetek itt fognak megjelenni. A parancsokat az alábbi mezőbe írja "
+"be.Kattintson a konzol Súgó menüpontjára segítségért, mely egy új böngésző-"
 "ablakban fog megjelenni."
 
 #: org/jmol/console/JmolConsole.java:86
@@ -148,7 +148,8 @@ msgid "Check"
 msgstr "Ellenőrzés"
 
 #: org/jmol/console/ScriptEditor.java:137
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:138
@@ -414,9 +415,8 @@ msgid "Estonian"
 msgstr "Észt"
 
 #: org/jmol/i18n/GT.java:153
-#, fuzzy
 msgid "Basque"
-msgstr "Bázisok"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:154
 msgid "Finnish"
@@ -2242,7 +2242,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:125
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:126
@@ -2485,12 +2486,12 @@ msgstr ""
 #~ msgid "About Jmol"
 #~ msgstr "A Jmol programról"
 
+#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 #~ msgstr ""
-#~ "A kisalkalmazás nem hozhat létre fájlt. A Base64 JPEG formátumhoz "
-#~ "használja ezt: {0}."
+#~ "A kisalkalmazás nem hozhat létre fájlt. A Base64 JPEG formátumhoz használja "
+#~ "ezt: {0}."
 
 #~ msgid "File creation failed."
 #~ msgstr "Fájl létrehozása sikertelen."
@@ -2504,6 +2505,7 @@ msgstr ""
 #~ msgid "File or URL"
 #~ msgstr "Fájl vagy URL:"
 
+#, java-format
 #~ msgid "File {0}"
 #~ msgstr "{0} fájl"
 
@@ -2513,20 +2515,25 @@ msgstr ""
 #~ msgid "Script with history"
 #~ msgstr "Skript történettel"
 
+#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "{0} kép"
 
 #~ msgid "JVXL Isosurface"
 #~ msgstr "JVXL Iso-felület"
 
+#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "{0} 3D modell"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to string value: {0}"
 #~ msgstr "HIBA: a logikai jelzőt nem lehet {0} string értékre állítani"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 #~ msgstr "HIBA: a logikai jelzőt nem lehet {0} számértékre állítani"
 
+#, java-format
 #~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 #~ msgstr "HIBA: ezt a változót nem lehet logikai értékre állítani: {0}"

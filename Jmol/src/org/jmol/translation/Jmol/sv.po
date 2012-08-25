@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-30 16:40+0000\n"
-"X-Generator: Launchpad (build 15322)\n"
+"X-Launchpad-Export-Date: 2012-08-25 09:01+0000\n"
+"X-Generator: Launchpad (build 15843)\n"
 
 #: com/json/Cookie.java:121
 msgid "name"
@@ -107,7 +107,8 @@ msgstr "ingen konsol - all output till sysout"
 
 #: org/openscience/jmol/app/JmolApp.java:165
 msgid "send only output from print messages to console (implies -i)"
-msgstr "sänd endast output från utskriftsmeddelanden till konsoll (kräver -i)"
+msgstr ""
+"sänd endast output från utskriftsmeddelanden till konsoll (kräver -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:167
 msgid "restrict local file access"

@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-04-10 04:40+0000\n"
-"X-Generator: Launchpad (build 15070)\n"
+"X-Launchpad-Export-Date: 2012-08-25 09:00+0000\n"
+"X-Generator: Launchpad (build 15843)\n"
 "X-Poedit-Language: Turkish\n"
 
 #: org/jmol/applet/AppletWrapper.java:100
@@ -411,9 +411,8 @@ msgid "Estonian"
 msgstr "Estonyaca"
 
 #: org/jmol/i18n/GT.java:153
-#, fuzzy
 msgid "Basque"
-msgstr "Bazlar"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:154
 msgid "Finnish"

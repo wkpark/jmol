@@ -285,7 +285,7 @@ public class AtomSetCollection {
     for (int atomSetNum = 0; atomSetNum < collection.atomSetCount; atomSetNum++) {
       newAtomSet();
       // must fix referencing for someModelsHaveCONECT business
-      Map info = atomSetAuxiliaryInfo[currentAtomSetIndex] = collection.atomSetAuxiliaryInfo[atomSetNum];
+      Map<String, Object> info = atomSetAuxiliaryInfo[currentAtomSetIndex] = collection.atomSetAuxiliaryInfo[atomSetNum];
       int[] atomInfo = (int[]) info.get("PDB_CONECT_firstAtom_count_max");
       if (atomInfo != null)
         atomInfo[0] += existingAtomsCount;

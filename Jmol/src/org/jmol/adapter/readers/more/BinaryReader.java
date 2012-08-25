@@ -28,7 +28,7 @@ import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.util.BinaryDocument;
 
 public abstract class BinaryReader extends AtomSetCollectionReader {
-  protected BinaryDocument doc;
+  protected BinaryDocument binaryDoc;
   
   BinaryReader() {
     isBinary = true;  
@@ -36,7 +36,7 @@ public abstract class BinaryReader extends AtomSetCollectionReader {
   
   @Override
   public void processBinaryDocument(BinaryDocument doc) throws Exception {
-    this.doc = doc;
+    this.binaryDoc = doc;
     readDocument();
   }
   

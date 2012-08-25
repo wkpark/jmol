@@ -154,7 +154,7 @@ public class CompoundDocument extends BinaryDocument {
       String name = thisEntry.entryName;
       Logger.info("reading " + name);
       if (!thisEntry.isEmpty && thisEntry.entryType != 5) {
-        boolean isBinary = (binaryFileList != null && binaryFileList.indexOf("|" + thisEntry.entryName + "|") >= 0);
+        boolean isBinary = (binaryFileList.indexOf("|" + thisEntry.entryName + "|") >= 0);
         if (isBinary)
           name += ":asBinaryString";
         StringBuilder data = new StringBuilder();
@@ -191,7 +191,7 @@ public class CompoundDocument extends BinaryDocument {
         if (name.endsWith(".gz"))
           name = name.substring(0, name.length() - 3);
         data.append("BEGIN Directory Entry ").append(name).append("\n");            
-        data.append(getFileAsString(thisEntry, binaryFileList != null && binaryFileList.indexOf("|" + thisEntry.entryName + "|") >= 0));
+        data.append(getFileAsString(thisEntry, binaryFileList.indexOf("|" + thisEntry.entryName + "|") >= 0));
         data.append("\n");
         data.append("END Directory Entry ").append(thisEntry.entryName).append("\n");            
       }

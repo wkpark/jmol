@@ -657,11 +657,10 @@ public class ScriptEvaluator {
    * @throws ScriptException
    *         errors are thrown directly to the Eval error system.
    */
-  @SuppressWarnings("unchecked")
   private Object parameterExpression(int pt, int ptMax, String key,
                                      boolean ignoreComma, boolean asVector,
                                      int ptAtom, boolean isArrayItem,
-                                     Map localVars, String localVar)
+                                     Map<String, ScriptVariable> localVars, String localVar)
       throws ScriptException {
 
     /*
@@ -699,7 +698,7 @@ public class ScriptEvaluator {
             && localVars.containsKey(theToken.value) ? null
             : getBitsetPropertySelector(i, false));
         if (token != null) {
-          rpn.addX((ScriptVariable) localVars.get(localVar));
+          rpn.addX(localVars.get(localVar));
           if (!rpn.addOp(token, (tokAt(i + 1) == Token.leftparen)))
             error(ERROR_invalidArgument);
           if ((token.intValue == Token.function || token.intValue == Token.parallel)
@@ -730,7 +729,7 @@ public class ScriptEvaluator {
         if (getToken(++i).tok != Token.leftparen)
           error(ERROR_invalidArgument);
         if (localVars == null)
-          localVars = new Hashtable();
+          localVars = new Hashtable<String, ScriptVariable>();
         res = parameterExpression(++i, -1, null, ignoreComma, false, -1, false,
             localVars, localVar);
         boolean TF = ((Boolean) res).booleanValue();

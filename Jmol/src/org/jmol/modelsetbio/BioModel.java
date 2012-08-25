@@ -397,7 +397,7 @@ public final class BioModel extends Model{
         if (group instanceof Monomer) {
           Monomer monomer = (Monomer) group;
           if (monomer.getBioPolymer() != null
-              && (modelsExcluded == null || !modelsExcluded.get(monomer.getModelIndex())))
+              && (!modelsExcluded.get(monomer.getModelIndex())))
             monomer.setBioPolymer(null, -1);
         }
       }

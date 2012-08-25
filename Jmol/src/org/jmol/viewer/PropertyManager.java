@@ -499,7 +499,7 @@ public class PropertyManager {
       if (!key.equals(keyLast)) {
         if (haveType && keyLast.equals(type))
           return sb.toString();
-        if (sb != null && !haveType) {
+        if (!haveType) {
           ht.put(keyLast, sb.toString());
           sb = new StringBuilder();
         }
@@ -508,7 +508,7 @@ public class PropertyManager {
       if (!haveType || key.equals(type))
         sb.append(line.substring(10).trim()).append('\n');      
     }
-    if (sb != null && !haveType) {
+    if (!haveType) {
       ht.put(keyLast, sb.toString());
     }
     if (haveType)

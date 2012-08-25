@@ -106,47 +106,47 @@ ICNTRL(20)=VERNUM ! version number
     
     // read DCD header
     
-    int n = doc.readInt(); 
-    doc.setIsBigEndian(n != 0x54);
-    n = doc.readInt(); // "CORD"
-    nModels = doc.readInt();
-    /* int nPriv = */ doc.readInt();
-    /* int nSaveC = */ doc.readInt();
-    /* int nStep = */ doc.readInt();
-    doc.readInt();
-    doc.readInt();
-    doc.readInt();
-    int ndegf = doc.readInt();
+    int n = binaryDoc.readInt(); 
+    binaryDoc.setIsBigEndian(n != 0x54);
+    n = binaryDoc.readInt(); // "CORD"
+    nModels = binaryDoc.readInt();
+    /* int nPriv = */ binaryDoc.readInt();
+    /* int nSaveC = */ binaryDoc.readInt();
+    /* int nStep = */ binaryDoc.readInt();
+    binaryDoc.readInt();
+    binaryDoc.readInt();
+    binaryDoc.readInt();
+    int ndegf = binaryDoc.readInt();
     nFree = ndegf / 3;
-    int nFixed = doc.readInt();
-    /* int delta4 = */ doc.readInt();
-    doc.readByteArray(bytes, 0, 36);
-    /* int nTitle = */ doc.readInt();
-    n = doc.readInt();  // TRAILER
+    int nFixed = binaryDoc.readInt();
+    /* int delta4 = */ binaryDoc.readInt();
+    binaryDoc.readByteArray(bytes, 0, 36);
+    /* int nTitle = */ binaryDoc.readInt();
+    n = binaryDoc.readInt();  // TRAILER
     
     // read titles
     
-    n = doc.readInt();  // HEADER
-    n = doc.readInt();
+    n = binaryDoc.readInt();  // HEADER
+    n = binaryDoc.readInt();
     StringBuffer sb = new StringBuffer();
     for (int i = 0; i < n; i++)
-      sb.append(doc.readString(80).trim()).append('\n');
-    n = doc.readInt(); // TRAILER
+      sb.append(binaryDoc.readString(80).trim()).append('\n');
+    n = binaryDoc.readInt(); // TRAILER
     Logger.info("BinaryDcdReadaer:\n" + sb);
 
     // read number of atoms and free-atom list
     
-    n = doc.readInt(); // HEADER
-    nAtoms = doc.readInt();
-    n = doc.readInt(); // TRAILER
+    n = binaryDoc.readInt(); // HEADER
+    nAtoms = binaryDoc.readInt();
+    n = binaryDoc.readInt(); // TRAILER
     nFree = nAtoms - nFixed;
     if (nFixed != 0) {
       // read list of free atoms
-      doc.readInt(); // HEADER
+      binaryDoc.readInt(); // HEADER
       bsFree = new BitSet(nFree);
       for (int i = 0; i < nFree; i++)
-        bsFree.set(doc.readInt() - 1);
-      n = doc.readInt() / 4; // TRAILER
+        bsFree.set(binaryDoc.readInt() - 1);
+      n = binaryDoc.readInt() / 4; // TRAILER
       Logger.info("free: " + bsFree.cardinality() + " " + Escape.escape(bsFree));
     }
     
@@ -156,13 +156,13 @@ ICNTRL(20)=VERNUM ! version number
   }
 
   private float[] readFloatArray() throws Exception {
-    int n = doc.readInt() / 4; // HEADER
+    int n = binaryDoc.readInt() / 4; // HEADER
     float[] data = new float[n];
     for (int i = 0; i < n; i++)
-      data[i] = doc.readFloat();
-    n = doc.readInt() / 4; // TRAILER
+      data[i] = binaryDoc.readFloat();
+    n = binaryDoc.readInt() / 4; // TRAILER
     if (Logger.debugging)
-      System.out.println(modelNumber + " " + doc.getPosition() + ": " + n + " " + data[0]+ "\t" + data[1]+ "\t" + data[2]);
+      System.out.println(modelNumber + " " + binaryDoc.getPosition() + ": " + n + " " + data[0]+ "\t" + data[1]+ "\t" + data[2]);
     return data;
   }
 

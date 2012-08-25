@@ -161,7 +161,7 @@ public class GT {
       new Language("hy",    GT._("Armenian"),             "Հայերեն",                false),
       new Language("id",    GT._("Indonesian"),           "Indonesia",            true),
       new Language("it",    GT._("Italian"),              "Italiano",             true),
-      new Language("ja",    GT._("Japanese"),             "日本語",               false),
+      new Language("ja",    GT._("Japanese"),             "日本語",                false),
       new Language("jv",    GT._("Javanese"),             "Basa Jawa",            false),
       new Language("ko",    GT._("Korean"),               "한국어",               true),
       new Language("ms",    GT._("Malay"),                "Bahasa Melayu",        true),
@@ -180,7 +180,7 @@ public class GT {
       new Language("tr",    GT._("Turkish"),              "Türkçe",               true),
       new Language("ug",    GT._("Uyghur"),               "Uyƣurqə",              false),
       new Language("uk",    GT._("Ukrainian"),            "Українська",           true),
-      new Language("uz",    GT._("Uzbek"),                "O'zbek",               true),
+      new Language("uz",    GT._("Uzbek"),                "O'zbek",               false),
       new Language("zh_CN", GT._("Simplified Chinese"),   "简体中文",              true),
       new Language("zh_TW", GT._("Traditional Chinese"),  "繁體中文",              true),
     };

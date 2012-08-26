@@ -46,7 +46,7 @@ import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-import jspecview.util.TextFormat;
+import org.jmol.util.TextFormat;
 
 /*
  * Notes 9/2006 Bob Hanson

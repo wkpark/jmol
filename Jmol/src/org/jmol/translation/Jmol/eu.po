@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-06-15 17:29+0200\n"
-"PO-Revision-Date: 2012-08-25 14:32+0000\n"
+"PO-Revision-Date: 2012-08-26 12:03+0000\n"
 "Last-Translator: Asier Iturralde Sarasola <Unknown>\n"
 "Language-Team: Basque <eu@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-25 21:41+0000\n"
+"X-Launchpad-Export-Date: 2012-08-26 15:24+0000\n"
 "X-Generator: Launchpad (build 15843)\n"
 
 #: com/json/Cookie.java:121
@@ -100,7 +100,7 @@ msgstr "zerrendatu komandoak scripta exekutatzean"
 
 #: org/openscience/jmol/app/JmolApp.java:161
 msgid "start with no splash screen"
-msgstr ""
+msgstr "hasi ongietorri-pantailarik gabe"
 
 #: org/openscience/jmol/app/JmolApp.java:163
 msgid "no console -- all output to sysout"
@@ -121,7 +121,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:171
 msgid "independent command thread"
-msgstr ""
+msgstr "komando-hari independentea"
 
 #: org/openscience/jmol/app/JmolApp.java:173
 msgid "exit after script (implicit with -n)"
@@ -182,6 +182,8 @@ msgid ""
 "The -D options are as follows (defaults in parenthesis) and must be called "
 "preceding '-jar Jmol.jar':"
 msgstr ""
+"-D aukerak ondorengoak dira (lehenetsiak parentesi artean) eta '-jar "
+"Jmol.jar'-en aurretik deitu behar dira:"
 
 #: org/openscience/jmol/app/JmolApp.java:540
 msgid "Executing script 1..."
@@ -262,11 +264,11 @@ msgstr "Aldagaiak"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:165
 msgid "AtomSetChooser"
-msgstr ""
+msgstr "Atomo-sorta hautatzailea"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:169
 msgid "No AtomSets"
-msgstr ""
+msgstr "Atomo-sortarik ez"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:198
 msgid "Properties"
@@ -274,7 +276,7 @@ msgstr "Propietateak"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:206
 msgid "Atom Set Collection"
-msgstr ""
+msgstr "Atomo-sorta bilduma"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:227
 msgid "Collection"
@@ -331,16 +333,16 @@ msgstr "Bibrazioa"
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:363
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:372
 msgid "Go to first atom set in the collection"
-msgstr ""
+msgstr "Joan bildumako lehen atomo-sortara"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:364
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:373
 msgid "Go to previous atom set in the collection"
-msgstr ""
+msgstr "Joan bildumako aurreko atomo-sortara"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:365
 msgid "Play the whole collection of atom sets"
-msgstr ""
+msgstr "Erreproduzitu atomo-sorta bilduma osoa"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:366
 msgid "Pause playing"
@@ -349,12 +351,12 @@ msgstr "Pausatu erreprodukzioa"
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:367
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:376
 msgid "Go to next atom set in the collection"
-msgstr ""
+msgstr "Joan bildumako hurrengo atomo-sortara"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:368
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:377
 msgid "Jump to last atom set in the collection"
-msgstr ""
+msgstr "Joan bildumako azken atomo-sortara"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:374
 msgid "Vibration ON"
@@ -387,7 +389,7 @@ msgstr "Aurreratua"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:224
 msgid "Checkpoint File: "
-msgstr ""
+msgstr "Kontrol-puntu fitxategia: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:229
 msgid "Amount of Memory:"
@@ -399,7 +401,7 @@ msgstr "Prozesatzaile kopurua:"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:248
 msgid "Route"
-msgstr ""
+msgstr "Ibilbidea"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:254
 msgid "Method: "
@@ -407,7 +409,7 @@ msgstr "Metodoa: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:261
 msgid "Basis Set: "
-msgstr ""
+msgstr "Oinarrizko sorta: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:269
 msgid "Density Fitting Basis Set (DFT Only): "
@@ -415,7 +417,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:275
 msgid "Job Options: "
-msgstr ""
+msgstr "Atazaren aukerak: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:288
 msgid "Molecular Properties"
@@ -502,7 +504,7 @@ msgstr "Jmol Java &kontsola"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:81
 msgid "AtomSet&Chooser..."
-msgstr ""
+msgstr "Atomo-sorta &hautatzailea..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:82
 msgid "&Save As..."
@@ -673,7 +675,7 @@ msgstr "&Lotura"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:129
 msgid "&Wireframe"
-msgstr ""
+msgstr "&Burdin-haria"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:130
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:131
@@ -702,7 +704,7 @@ msgstr "&Zenbakia"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:138
 msgid "&Centered"
-msgstr ""
+msgstr "&Erdian"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:139
 msgid "&Upper right"
@@ -714,7 +716,7 @@ msgstr "&Bektorea"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:142
 msgid "&On"
-msgstr ""
+msgstr "&Aktibo"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:143
 #, java-format
@@ -728,7 +730,7 @@ msgstr "{0} pixel"
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:150
 #, java-format
 msgid "Scale {0}"
-msgstr ""
+msgstr "{0} eskala"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:151
 msgid "&Zoom"
@@ -745,7 +747,7 @@ msgstr "%{0}"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:157
 msgid "&Perspective Depth"
-msgstr ""
+msgstr "&Perspektiba sakonera"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:158
 msgid "A&xes"
@@ -798,11 +800,11 @@ msgstr "E&zkerra"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:170
 msgid "Tr&ansform..."
-msgstr ""
+msgstr "&Transformatu..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:171
 msgid "Define &Center"
-msgstr ""
+msgstr "Definitu &erdia"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:172
 msgid "&Tools"
@@ -842,7 +844,7 @@ msgstr "&Grafikoa..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:182
 msgid "Calculate chemical &shifts..."
-msgstr ""
+msgstr "Kalkulatu &desplazamendu kimikoak..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:183
 msgid "&Crystal Properties"
@@ -955,7 +957,7 @@ msgstr "Neurketak"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:211
 msgid "Perspective Depth"
-msgstr ""
+msgstr "Perspektiba sakonera"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:212
 msgid "Axes"
@@ -990,6 +992,7 @@ msgstr "Biratu molekula"
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:224
 msgid "Select a set of atoms using SHIFT-LEFT-DRAG."
 msgstr ""
+"Hautatu atomo sorta bat SHIFT sakatuta ezkerreko botoiarekin arrastatuz."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:226
 msgid "Click atoms to measure distances"
@@ -997,15 +1000,15 @@ msgstr "Klikatu atomoak distantziak neurtzeko"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:228
 msgid "Click an atom to center on it"
-msgstr ""
+msgstr "Klikatu atomo bat erdian jartzeko"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:229
 msgid "Return molecule to home position."
-msgstr ""
+msgstr "Itzuli molekula hasierako posiziora"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:230
 msgid "Open the model kit."
-msgstr ""
+msgstr "Ireki modelatze tresna-jokoa."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:366
 #, java-format
@@ -1013,6 +1016,8 @@ msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
 "be significant the first time the applet is loaded."
 msgstr ""
+"Manipula dezakezun 3Dko eredu bat eskuratzeko klikatu {0}hemen{1}. Deskarga-"
+"denbora handia izan daiteke appleta kargatzen den lehen aldian."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:368
 msgid "Insert the page TITLE here."
@@ -1070,7 +1075,7 @@ msgstr "Script leihoa hasieratzen..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:276
 msgid "Building Command Hooks..."
-msgstr ""
+msgstr "Komando-kakoak eraikitzen..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:291
 msgid "Building Menubar..."
@@ -1131,6 +1136,8 @@ msgstr "Sartu molekula-ereduaren URLa"
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1199
 msgid "Enter a four-digit PDB model ID or \"=\" and a three-digit ligand ID"
 msgstr ""
+"Sartu lau zenbakiko PDB eredu baten IDa edo \"=\" eta hiru zenbakiko "
+"lotugaiaren IDa"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1208
 msgid ""
@@ -1138,6 +1145,9 @@ msgid ""
 "with \":\" to load from PubChem; otherwise Jmol will use the NCI/NIH "
 "Resolver."
 msgstr ""
+"Sartu konposatu baten izen edo identifikatzailea (SMILES, InChI, CAS). Jarri "
+"\":\" aurretik PubChem-etik kargatzeko; bestela Jmol-ek NCI/NIH Resolver "
+"erabiliko du."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1375
 msgid "IO Exception:"
@@ -1486,7 +1496,7 @@ msgstr "Gainazal-tresna"
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:152
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:155
 msgid "View Center"
-msgstr ""
+msgstr "Ikusi erdia"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:153
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:156
@@ -1575,7 +1585,7 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/PopInJmol.java:110
 #, java-format
 msgid "insert a note for {0} here."
-msgstr ""
+msgstr "sartu {0}-(r)entzako ohar bat hemen."
 
 #: org/openscience/jmol/app/webexport/ScriptButtons.java:44
 msgid "These names will be used for button labels"
@@ -1583,7 +1593,7 @@ msgstr "Izen hauek botoien etiketetan erabiliko dira"
 
 #: org/openscience/jmol/app/webexport/ScriptButtons.java:57
 msgid "% of window for applet width:"
-msgstr ""
+msgstr "Appletaren zabalera (leihoaren %):"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:79
 #: org/openscience/jmol/app/webexport/WebExport.java:191
@@ -1628,7 +1638,7 @@ msgstr "klikatu eta arrastatu birrordenatzeko"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:184
 msgid "Add Present Jmol State as Instance..."
-msgstr ""
+msgstr "Gehitu uneko Jmol egoera instantzia bezala..."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:191
 msgid "Delete Selected"
@@ -1636,7 +1646,7 @@ msgstr "Ezabatu hautapena"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:223
 msgid "Jmol Instances:"
-msgstr ""
+msgstr "Jmol instantziak:"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:229
 msgid "Select widgets:"
@@ -1657,11 +1667,11 @@ msgstr "Gorde HTML honela..."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:363
 msgid "Relative server path to jar files:"
-msgstr ""
+msgstr "jar fitxategietarako bide-erlatiboa zerbitzarian:"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:369
 msgid "Relative local path to jar files:"
-msgstr ""
+msgstr "jar fitxategietarako bide-erlatibo lokala:"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:375
 msgid "Author (your name):"
@@ -1677,17 +1687,17 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:484
 msgid "Error creating new instance containing script(s) and image."
-msgstr ""
+msgstr "Errorea scripta(k) eta irudia dituen instantzia berria sortzean."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:495
 #, java-format
 msgid "added Instance {0}"
-msgstr ""
+msgstr "{0} instantzia gehituta"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:498
 #, java-format
 msgid "updated Instance {0}"
-msgstr ""
+msgstr "{0} instantzia eguneratuta"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:535
 msgid "Select a directory to create or an HTML file to save"
@@ -1764,15 +1774,15 @@ msgstr "datu-fitxategi handia konprimatzen hona:"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:62
 msgid "Spin on/off"
-msgstr ""
+msgstr "Biraketa aktibo/inaktibo"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:80
 msgid "enable/disable spin"
-msgstr ""
+msgstr "gaitu/desgaitu biraketa"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:82
 msgid "Spin on"
-msgstr ""
+msgstr "Biraketa aktibo"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:88
 msgid "Background Color"
@@ -1784,15 +1794,15 @@ msgstr "atzeko planoaren kolorea:"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:119
 msgid "Stereo Viewing"
-msgstr ""
+msgstr "Estereo ikuspegia"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:136
 msgid "select stereo type"
-msgstr ""
+msgstr "hautatu estereo mota"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:140
 msgid "Stereo Off"
-msgstr ""
+msgstr "Estereo inaktibo"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:141
 msgid "Red/Blue"

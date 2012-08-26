@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-08-25 08:08+0200\n"
-"PO-Revision-Date: 2012-08-26 08:55+0000\n"
+"PO-Revision-Date: 2012-08-26 08:57+0000\n"
 "Last-Translator: Andika Triwidada <andika@gmail.com>\n"
 "Language-Team: Indonesian <id@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-26 08:56+0000\n"
+"X-Launchpad-Export-Date: 2012-08-26 15:24+0000\n"
 "X-Generator: Launchpad (build 15843)\n"
 
 #: org/jmol/applet/AppletWrapper.java:100
@@ -363,7 +363,7 @@ msgstr "Asturia"
 
 #: org/jmol/i18n/GT.java:141
 msgid "Azerbaijani"
-msgstr ""
+msgstr "Azerbaijan"
 
 #: org/jmol/i18n/GT.java:142
 msgid "Bosnian"
@@ -411,7 +411,7 @@ msgstr "Estonia"
 
 #: org/jmol/i18n/GT.java:153
 msgid "Basque"
-msgstr ""
+msgstr "Basque"
 
 #: org/jmol/i18n/GT.java:154
 msgid "Finnish"
@@ -531,7 +531,7 @@ msgstr "Ukraina"
 
 #: org/jmol/i18n/GT.java:183
 msgid "Uzbek"
-msgstr ""
+msgstr "Uzbek"
 
 #: org/jmol/i18n/GT.java:184
 msgid "Simplified Chinese"
@@ -1969,7 +1969,7 @@ msgstr "bolean, angka, atau {0} diharapkan"
 
 #: org/jmol/script/ScriptEvaluator.java:2855
 msgid "cannot set value"
-msgstr ""
+msgstr "tak bisa menata nilai"
 
 #: org/jmol/script/ScriptEvaluator.java:2858
 msgid "color expected"
@@ -2197,7 +2197,7 @@ msgstr "{0} batang ditambahkan"
 
 #: org/jmol/script/ScriptEvaluator.java:15984
 msgid "Note: More than one model is involved in this contact!"
-msgstr ""
+msgstr "Catatan: Lebih dari satu model terlibat dalam kontak ini!"
 
 #: org/jmol/shape/Frank.java:75
 msgid "Click for menu..."
@@ -2325,7 +2325,7 @@ msgstr "pilih dan geser atom (memerlukan {0})"
 #: org/jmol/viewer/ActionManager.java:139
 #, java-format
 msgid "drag atoms in Z direction (requires {0})"
-msgstr ""
+msgstr "seret atom dalam arah Z (memerlukan {0})"
 
 #: org/jmol/viewer/ActionManager.java:140
 #, java-format

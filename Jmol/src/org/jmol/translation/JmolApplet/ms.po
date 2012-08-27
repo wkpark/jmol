@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-08-25 08:08+0200\n"
-"PO-Revision-Date: 2012-05-23 00:33+0000\n"
+"PO-Revision-Date: 2012-08-27 17:09+0000\n"
 "Last-Translator: abuyop <Unknown>\n"
 "Language-Team: Malay <ms@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-25 09:00+0000\n"
+"X-Launchpad-Export-Date: 2012-08-27 21:12+0000\n"
 "X-Generator: Launchpad (build 15843)\n"
 
 #: org/jmol/applet/AppletWrapper.java:100
@@ -363,7 +363,7 @@ msgstr "Asturia"
 
 #: org/jmol/i18n/GT.java:141
 msgid "Azerbaijani"
-msgstr ""
+msgstr "Azerbaijan"
 
 #: org/jmol/i18n/GT.java:142
 msgid "Bosnian"
@@ -411,7 +411,7 @@ msgstr "Estonia"
 
 #: org/jmol/i18n/GT.java:153
 msgid "Basque"
-msgstr ""
+msgstr "Basque"
 
 #: org/jmol/i18n/GT.java:154
 msgid "Finnish"
@@ -531,7 +531,7 @@ msgstr "Ukraine"
 
 #: org/jmol/i18n/GT.java:183
 msgid "Uzbek"
-msgstr ""
+msgstr "Uzbek"
 
 #: org/jmol/i18n/GT.java:184
 msgid "Simplified Chinese"
@@ -2489,3 +2489,66 @@ msgstr "Tetapkan fail log ke {0}"
 
 #~ msgid "Top"
 #~ msgstr "Atas"
+
+#~ msgid "Minimize"
+#~ msgstr "Minimumkan"
+
+#~ msgid "Molecular Orbitals"
+#~ msgstr "Orbit Molekul"
+
+#, java-format
+#~ msgid ""
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
+#~ msgstr ""
+#~ "Penciptaan fail oleh aplet ini tidak dibenarkan. Untuk format JPEG Base64, "
+#~ "guna {0}."
+
+#~ msgid "File creation failed."
+#~ msgstr "Penciptaan fail gagal."
+
+#, java-format
+#~ msgid "File {0}"
+#~ msgstr "Fail {0}"
+
+#~ msgid "File from PDB"
+#~ msgstr "Fail dari PDB"
+
+#~ msgid "File or URL"
+#~ msgstr "Fail atau URL"
+
+#~ msgid "Script with state"
+#~ msgstr "Skrip dengan keadaan"
+
+#~ msgid "Script with history"
+#~ msgstr "Skrip dengan sejarah"
+
+#~ msgid "Java memory usage"
+#~ msgstr "Penggunaan ingatan Java"
+
+#, java-format
+#~ msgid "{0} 3D Model"
+#~ msgstr "Model 3D {0}"
+
+#~ msgid "JVXL Isosurface"
+#~ msgstr "Permukaan Iso JVXL"
+
+#, java-format
+#~ msgid "{0} Image"
+#~ msgstr "Imej {0}"
+
+#, java-format
+#~ msgid "ERROR: cannot set boolean flag to string value: {0}"
+#~ msgstr ""
+#~ "RALAT: tidak dapat tetapkan bendera boolean kepada nilai rentetan: {0}"
+
+#, java-format
+#~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
+#~ msgstr "RALAT: tidak dapat tetapkan bendera boolean kepada nilai angka: {0}"
+
+#, java-format
+#~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
+#~ msgstr ""
+#~ "RALAT: tidak dapat tetapkan nilai pembolehubah ini kepada boolean: {0}"
+
+#~ msgid "About Jmol"
+#~ msgstr "Perihal Jmol"

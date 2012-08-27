@@ -137,7 +137,6 @@ import org.jmol.jvxl.data.MeshData;
 import org.jmol.jvxl.api.MeshDataServer;
 import org.jmol.jvxl.calc.MarchingSquares;
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.BinaryDocument;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
@@ -1416,7 +1415,7 @@ public class SurfaceGenerator {
       atomDataServer.log(msg);
   }
 
-  void setOutputStream(BinaryDocument binaryDoc, OutputStream os) {
+  void setOutputStream(Object binaryDoc, OutputStream os) {
     if (meshDataServer == null)
       return;
      meshDataServer.setOutputStream(binaryDoc, os);    

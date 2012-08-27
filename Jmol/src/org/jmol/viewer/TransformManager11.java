@@ -24,8 +24,8 @@
 package org.jmol.viewer;
 
 import org.jmol.api.Event;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.util.Escape;
+import org.jmol.util.Hermite;
 import org.jmol.util.Logger;
 
 import javax.vecmath.Point3f;
@@ -846,14 +846,14 @@ class TransformManager11 extends TransformManager {
       iNext2 = Math.min(i + 2, nSegments) + indexStart;
       iNext3 = Math.min(i + 3, nSegments) + indexStart;
       if (isPathGuide) {
-        Graphics3D.getHermiteList(7, pathGuide[iPrev][0], pathGuide[pt][0],
+        Hermite.getHermiteList(7, pathGuide[iPrev][0], pathGuide[pt][0],
             pathGuide[iNext][0], pathGuide[iNext2][0], pathGuide[iNext3][0],
             points, i * nPer, nPer + 1);
-        Graphics3D.getHermiteList(7, pathGuide[iPrev][1], pathGuide[pt][1],
+        Hermite.getHermiteList(7, pathGuide[iPrev][1], pathGuide[pt][1],
             pathGuide[iNext][1], pathGuide[iNext2][1], pathGuide[iNext3][1],
             pointGuides, i * nPer, nPer + 1);
       } else {
-        Graphics3D.getHermiteList(7, path[iPrev], path[pt], path[iNext],
+        Hermite.getHermiteList(7, path[iPrev], path[pt], path[iNext],
             path[iNext2], path[iNext3], points, i * nPer, nPer + 1);
       }
     }

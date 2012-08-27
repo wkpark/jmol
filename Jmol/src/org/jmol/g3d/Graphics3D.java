@@ -28,7 +28,6 @@ import java.util.BitSet;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Point3f;
-import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Matrix3f;
 
@@ -1326,15 +1325,6 @@ final public class Graphics3D implements JmolRendererInterface {
                      s0, s1, s2, s3);
   }
   
-  public static void getHermiteList(int tension, Tuple3f s0, Tuple3f s1, Tuple3f s2, Tuple3f s3, Tuple3f s4, Tuple3f[] list, int index0, int n) {
-    Hermite3D.getHermiteList(tension, s0, s1, s2, s3, s4, list, index0, n);
-  }
-
-  /*
-   * *************************************************************** triangles
-   * **************************************************************
-   */
-
   public void drawTriangle(Point3i screenA, short colixA, Point3i screenB,
                            short colixB, Point3i screenC, short colixC,
                            int check) {

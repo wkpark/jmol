@@ -36,6 +36,7 @@ import org.jmol.g3d.Graphics3D;
 import org.jmol.shape.Mesh;
 import org.jmol.shape.MeshRenderer;
 import org.jmol.shapespecial.Draw.EnumDrawType;
+import org.jmol.util.Hermite;
 import org.jmol.util.Measure;
 import org.jmol.viewer.ActionManager;
 
@@ -226,7 +227,7 @@ public class DrawRenderer extends MeshRenderer {
       if (controlHermites == null || controlHermites.length < nHermites + 1) {
         controlHermites = new Point3f[nHermites + 1];
       }
-      Graphics3D.getHermiteList(tension, vertices[vertexCount - 3],
+      Hermite.getHermiteList(tension, vertices[vertexCount - 3],
           vertices[vertexCount - 2], vertices[vertexCount - 1],
           vertices[vertexCount - 1], vertices[vertexCount - 1],
           controlHermites, 0, nHermites);

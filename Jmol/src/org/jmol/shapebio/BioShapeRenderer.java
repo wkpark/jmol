@@ -41,6 +41,7 @@ import org.jmol.modelsetbio.ProteinStructure;
 import org.jmol.script.Token;
 import org.jmol.shape.MeshRenderer;
 import org.jmol.shape.Mesh;
+import org.jmol.util.Hermite;
 import org.jmol.util.Logger;
 
 import java.util.BitSet;
@@ -507,7 +508,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     if (controlHermites == null || controlHermites.length < nHermites + 1) {
       controlHermites = new Point3f[nHermites + 1];
     }
-    Graphics3D.getHermiteList(isNucleic ? 4 : 7, controlPoints[iPrev],
+    Hermite.getHermiteList(isNucleic ? 4 : 7, controlPoints[iPrev],
         controlPoints[i], controlPoints[iNext], controlPoints[iNext2],
         controlPoints[iNext3], controlHermites, 0, nHermites);
     //System.out.println("create mesh " + thisChain + " mesh_" + shapeID + "_"+i+controlPoints[i] + controlPoints[iNext]);
@@ -518,7 +519,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
       wing.set(wingVectors[iPrev]);
       if (madEnd == 0)
         wing.scale(2.0f); //adds a flair to an arrow
-      Graphics3D.getHermiteList(isNucleic ? 4 : 7, wing, wingVectors[i],
+      Hermite.getHermiteList(isNucleic ? 4 : 7, wing, wingVectors[i],
           wingVectors[iNext], wingVectors[iNext2], wingVectors[iNext3],
           wingHermites, 0, nHermites);
     }
@@ -535,7 +536,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
       pt1.set(radius2, radius3, 0);
       ptNext.set(radius3, radius3, 0);
       // two for the price of one!
-      Graphics3D.getHermiteList(4, ptPrev, pt, pt1, ptNext, ptNext,
+      Hermite.getHermiteList(4, ptPrev, pt, pt1, ptNext, ptNext,
           radiusHermites, 0, (nHermites + 1) >> 1);
     }
     if (!isEccentric) {

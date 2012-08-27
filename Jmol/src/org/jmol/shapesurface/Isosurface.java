@@ -1209,8 +1209,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
   private double privateKey;
   
-  public void setOutputStream(BinaryDocument binaryDoc, OutputStream os) {
-    binaryDoc.setOutputStream(os, viewer, privateKey);
+  public void setOutputStream(Object binaryDoc, OutputStream os) {
+    ((BinaryDocument) binaryDoc).setOutputStream(os, viewer, privateKey);
   }
 
   public void fillMeshData(MeshData meshData, int mode, IsosurfaceMesh mesh) {

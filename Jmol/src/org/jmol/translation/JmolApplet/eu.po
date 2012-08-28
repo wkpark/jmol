@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-08-25 08:08+0200\n"
-"PO-Revision-Date: 2012-08-26 12:05+0000\n"
+"PO-Revision-Date: 2012-08-28 14:48+0000\n"
 "Last-Translator: Asier Iturralde Sarasola <Unknown>\n"
 "Language-Team: Basque <eu@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-26 15:24+0000\n"
-"X-Generator: Launchpad (build 15843)\n"
+"X-Launchpad-Export-Date: 2012-08-28 17:28+0000\n"
+"X-Generator: Launchpad (build 15864)\n"
 
 #: org/jmol/applet/AppletWrapper.java:100
 msgid "Loading Jmol applet ..."
@@ -1049,13 +1049,13 @@ msgstr "Burdin-haria"
 #: org/jmol/popup/MainPopupResourceBundle.java:680
 #: org/jmol/popup/MainPopupResourceBundle.java:778
 msgid "Cartoon"
-msgstr ""
+msgstr "Marrazkia"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:634
 #: org/jmol/popup/MainPopupResourceBundle.java:685
 #: org/jmol/popup/MainPopupResourceBundle.java:777
 msgid "Trace"
-msgstr ""
+msgstr "Arrastoa"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:636
 #: org/jmol/popup/MainPopupResourceBundle.java:730
@@ -1554,7 +1554,7 @@ msgstr "Klikatu bihurdura (angelu diedroa) neurtzeko"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:845
 msgid "Click two atoms to display a sequence in the console"
-msgstr ""
+msgstr "Klikatu bi atomo kontsolan sekuentzia bat bistaratzeko"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:846
 msgid "Delete measurements"
@@ -1749,7 +1749,7 @@ msgstr "Gainazal molekularra"
 #: org/jmol/popup/MainPopupResourceBundle.java:915
 #, java-format
 msgid "Solvent Surface ({0}-Angstrom probe)"
-msgstr ""
+msgstr "Disolbatzaile-gainazala ({0}-Angstromeko zunda)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:917
 #, java-format
@@ -1858,15 +1858,15 @@ msgstr ""
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1356
 msgid "identifier or residue specification expected"
-msgstr ""
+msgstr "identifikatzailea edo hondarraren zehaztapena espero zen"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1359
 msgid "invalid atom specification"
-msgstr ""
+msgstr "atomoaren zehaztapen baliogabea"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1362
 msgid "invalid chain specification"
-msgstr ""
+msgstr "katearen zehaztapen baliogabea"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1365
 #, java-format
@@ -1875,7 +1875,7 @@ msgstr ""
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1368
 msgid "invalid model specification"
-msgstr ""
+msgstr "ereduaren zehaztapen baliogabea"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1371
 #, java-format
@@ -1941,7 +1941,7 @@ msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2840
 msgid "Miller indices cannot all be zero."
-msgstr ""
+msgstr "Miller indize guztiek ezin dute zero izan"
 
 #: org/jmol/script/ScriptEvaluator.java:2843
 msgid "bad [R,G,B] color"
@@ -2027,12 +2027,12 @@ msgstr "gako-hitza espero zen"
 
 #: org/jmol/script/ScriptEvaluator.java:2909
 msgid "no MO coefficient data available"
-msgstr ""
+msgstr "ez dago orbital molekularren koefizienterik eskuragarri"
 
 #: org/jmol/script/ScriptEvaluator.java:2912
 #, java-format
 msgid "An MO index from 1 to {0} is required"
-msgstr ""
+msgstr "1 eta {0} arteko orbital molekular indizea behar da"
 
 #: org/jmol/script/ScriptEvaluator.java:2915
 msgid "no MO basis/coefficient data available for this frame"
@@ -2070,7 +2070,7 @@ msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2937
 msgid "No unit cell"
-msgstr ""
+msgstr "Unitate-gelaxkarik ez"
 
 #: org/jmol/script/ScriptEvaluator.java:2943
 #, java-format
@@ -2141,12 +2141,12 @@ msgstr "objektu ezezaguna"
 #: org/jmol/script/ScriptEvaluator.java:2993
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
-msgstr ""
+msgstr "{0} parametro ezezaguna Jmol egoera-scriptean (ezarri hala ere)"
 
 #: org/jmol/script/ScriptEvaluator.java:2996
 #, java-format
 msgid "unrecognized SHOW parameter --  use {0}"
-msgstr ""
+msgstr "SHOW parametro ezezaguna -- erabili {0}"
 
 #: org/jmol/script/ScriptEvaluator.java:3002
 #, java-format
@@ -2288,7 +2288,7 @@ msgstr "desautatu atomo-talde hau ({0} behar du)"
 #: org/jmol/viewer/ActionManager.java:135
 #, java-format
 msgid "add this group of atoms to the set of selected atoms (requires {0})"
-msgstr ""
+msgstr "gehitu atomo-talde hau hautatutako atomo-sortara ({0} behar du)"
 
 #: org/jmol/viewer/ActionManager.java:136
 #, java-format
@@ -2296,6 +2296,8 @@ msgid ""
 "if all are selected, unselect all, otherwise add this group of atoms to the "
 "set of selected atoms (requires {0})"
 msgstr ""
+"guztiak hautatuta badaude, desautatu guztiak, bestela gehitu atomo-talde hau "
+"hautatutako atomo-sortara ({0} behar du)"
 
 #: org/jmol/viewer/ActionManager.java:137
 #, java-format

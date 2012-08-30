@@ -190,6 +190,8 @@ class BioShape {
   }
   
   void setMad(short mad, BitSet bsSelected, float[] values) {
+    if (monomerCount < 2)
+      return;
     isActive = true;
     if (bsSizeSet == null)
       bsSizeSet = new BitSet();
@@ -202,7 +204,7 @@ class BioShape {
             continue;
           mad = (short) (values[leadAtomIndex] * 2000);
         }
-        boolean isVisible = ((mads[i] = setMad(i, mad)) > 0);
+        boolean isVisible = ((mads[i] = getMad(i, mad)) > 0);
         bsSizeSet.set(i, isVisible);
         monomers[i].setShapeVisibility(flag, isVisible);
         shape.atoms[leadAtomIndex].setShapeVisibility(flag,isVisible);
@@ -213,8 +215,7 @@ class BioShape {
       mads[monomerCount] = mads[monomerCount - 1];
   }
 
-  private short setMad(int groupIndex, short mad) {
-    //undocumented
+  private short getMad(int groupIndex, short mad) {
     bsSizeDefault.set(groupIndex, mad == -1 || mad == -2);
     if (mad >= 0)
       return mad;      

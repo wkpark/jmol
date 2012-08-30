@@ -560,7 +560,7 @@ public class StateManager {
         + ";antialiasdisplay;antialiasimages;antialiastranslucent;appendnew;axescolor"
         + ";axesposition;axesmolecular;axesorientationrasmol;axesunitcell;axeswindow;axis1color;axis2color"
         + ";axis3color;backgroundcolor;backgroundmodel;bondsymmetryatoms;boundboxcolor;cameradepth"
-        + ";debug;debugscript;defaultlatttice;defaults;diffusepercent;exportdrivers"
+        + ";debug;debugscript;defaultlatttice;defaults;defaultdropscript;diffusepercent;exportdrivers"
         + ";_filecaching;_filecache;fontcaching;fontscaling;forcefield;language"
         + ";legacyautobonding"
         + ";loglevel;logfile;loggestures;logcommands;measurestylechime"
@@ -813,6 +813,7 @@ public class StateManager {
       setParameterValue("defaultDrawArrowScale", defaultDrawArrowScale);
       setParameterValue("defaultDirectory", defaultDirectory);
       setParameterValue("defaultDistanceLabel", defaultDistanceLabel);
+      setParameterValue("defaultDropScript", defaultDropScript);
       setParameterValue("defaultLabelPDB", defaultLabelPDB);
       setParameterValue("defaultLabelXYZ", defaultLabelXYZ);
       setParameterValue("defaultLoadFilter", defaultLoadFilter);
@@ -1010,6 +1011,7 @@ public class StateManager {
     final Point3f ptDefaultLattice = new Point3f();
     String defaultLoadScript = "";
     String defaultLoadFilter = "";
+    String defaultDropScript = "zap; load %FILE;if (%ALLOWCARTOONS && _loadScript = '' && defaultLoadScript == '' && _filetype == 'Pdb' && {(protein or nucleic)&*/1.1} && {*/1.1}[1].groupindex != {*/1.1}[0].groupindex) { select protein or nucleic;cartoons Only;if ({visible}){color structure}else{wireframe -0.1};if (!{visible}){spacefill 23%}; select * }";
 //    boolean _fileCaching = false;
 //    String _fileCache = "";
     boolean forceAutoBond = false;

@@ -1885,9 +1885,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       } else if (type.equals("Cube")) {
         cmd = "isosurface sign red blue ";
       } else if (!type.equals("spt")) {
-        evalString("zap; load "
-            + Escape.escape(fileName)
-            + ";if (" + pdbCartoons + " && _loadScript = '' && defaultLoadScript == '' && _filetype == 'Pdb' && {(protein or nucleic)&*/1.1} && {*/1.1}[1].groupindex != {*/1.1}[0].groupindex) { select protein or nucleic;cartoons Only;color structure; select * }");
+        cmd = global.defaultDropScript;
+        cmd = TextFormat.simpleReplace(cmd, "%FILE", fileName);
+        cmd = TextFormat.simpleReplace(cmd, "%ALLOWCARTOONS", "" + pdbCartoons);
+        evalString(cmd);
         return;
       }
     }
@@ -5841,6 +5842,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private void setStringProperty(String key, int tok, String value) {
     switch (tok) {
+      // 13.1.2
+    case Token.defaultdropscript:
+      // for File|Open and Drag/drop
+      global.defaultDropScript = value;
+      break;
+
     case Token.pathforallfiles:
       // 12.3.29
       value = fileManager.setPathForAllFiles(value);

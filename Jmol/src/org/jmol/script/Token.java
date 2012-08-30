@@ -799,7 +799,8 @@ public class Token {
   public final static int defaultlabelxyz                = strparam | 24;
   public final static int defaultcolorscheme             = strparam | 25;
   public final static int defaultdirectory               = strparam | 26;
-  public final static int defaultdistancelabel           = strparam | 28;
+  public final static int defaultdistancelabel           = strparam | 27;
+  public final static int defaultdropscript              = strparam | 28;
   public final static int defaultloadfilter              = strparam | 29;
   public final static int defaultloadscript              = strparam | 30;
   public final static int defaults                       = strparam | 32;
@@ -2155,6 +2156,7 @@ public class Token {
       "defaultColors",                            null,
       "defaultDirectory",                         new Token(defaultdirectory),
       "defaultDistanceLabel",                     new Token(defaultdistancelabel),
+      "defaultDropScript",                        new Token(defaultdropscript), 
       "defaultLabelPDB",                          new Token(defaultlabelpdb),
       "defaultLabelXYZ",                          new Token(defaultlabelxyz),
       "defaultLoadFilter",                        new Token(defaultloadfilter),

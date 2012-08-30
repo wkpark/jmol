@@ -40,6 +40,7 @@ import javax.swing.JPanel;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
+import org.jmol.util.TextFormat;
 import org.jmol.viewer.FileManager;
 
 /**
@@ -137,7 +138,8 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
   /**
    * Update preview
    * 
-   * @param file File selected
+   * @param file
+   *        File selected
    */
   void updatePreview(File file) {
     String script;
@@ -152,12 +154,15 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
         fileName = url;
       //doesn't update from use input?
       script = " \"" + fileName + "\"";
-      if (fileName.indexOf(".spt") >= 0) 
+      if (fileName.indexOf(".spt") >= 0) {
         script = "script " + script;
-      else
-        script = "zap;set zoomlarge false;load " + script
-            + " 1;if (" + isCartoonsSelected() + " && _loadScript = '' && defaultLoadScript == '' && _filetype == 'Pdb' && {(protein or nucleic)&*/1.1} && {*/1.1}[1].groupindex != {*/1.1}[0].groupindex) { select protein or nucleic;cartoons Only;color structure; select * }";
-    }      
+      } else {
+        script = TextFormat.simpleReplace((String) display.getViewer()
+            .getParameter("defaultdropscript"), "%FILE", script + " 1");
+        script = TextFormat.simpleReplace(script, "%ALLOWCARTOONS", ""
+            + isCartoonsSelected());
+      }
+    }
     display.getViewer().evalStringQuiet(script);
     //display.repaint();
   }

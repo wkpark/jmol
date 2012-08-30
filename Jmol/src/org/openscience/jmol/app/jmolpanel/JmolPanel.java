@@ -1153,13 +1153,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
     @Override
     public void actionPerformed(ActionEvent e) {
-      String fileName = getOpenFileNameFromDialog(null);
-      if (fileName == null)
-        return;
-      if (fileName.startsWith("load append"))
-        viewer.scriptWait(fileName);
-      else
-        viewer.openFileAsynchronously(fileName);
+      openFile();
     }
   }
 
@@ -1448,9 +1442,18 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     return dir == null ? null : new File(System.getProperty("user.dir"));
   }
 
-  String getOpenFileNameFromDialog(String fileName) {
-    return (new Dialog()).getOpenFileNameFromDialog(appletContext,
-        viewer, fileName, historyFile, FILE_OPEN_WINDOW_NAME, (fileName == null));
+  void openFile() {
+    String fileName = (new Dialog()).getOpenFileNameFromDialog(appletContext,
+        viewer, null, historyFile, FILE_OPEN_WINDOW_NAME, true);
+    if (fileName == null)
+      return;
+    boolean pdbCartoons = !fileName.startsWith("#NOC#;");
+    if (!pdbCartoons)
+      fileName = fileName.substring(6);
+    if (fileName.startsWith("load append"))
+      viewer.scriptWait(fileName);
+    else
+      viewer.openFileAsynchronously(fileName, pdbCartoons);
   }
 
   static final String chemFileProperty = "chemFile";

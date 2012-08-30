@@ -488,7 +488,11 @@ abstract public class JmolViewer extends JmolSimpleViewer {
 
   abstract public JmolAdapter getModelAdapter();
 
-  abstract public void openFileAsynchronously(String fileName);
+  abstract public void openFileAsynchronously(String fileName, boolean pdbCartoons);
+  public void openFileAsynchronously(String fileName) {
+    openFileAsynchronously(fileName, false);    
+  }
+  
   abstract public Object getFileAsBytes(String fullPathName, OutputStream os);
 
   abstract public String getErrorMessage();

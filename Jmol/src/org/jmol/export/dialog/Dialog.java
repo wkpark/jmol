@@ -23,15 +23,20 @@
  */
 package org.jmol.export.dialog;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Point;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.File;
+
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.swing.JSlider;
 import javax.swing.JPanel;
-import javax.swing.JComboBox;
+import javax.swing.JSlider;
 import javax.swing.LookAndFeel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -41,11 +46,6 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
-
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.FlowLayout;
-import java.io.File;
 
 import org.jmol.api.JmolDialogInterface;
 import org.jmol.api.JmolViewer;
@@ -149,10 +149,11 @@ public class Dialog extends JPanel implements JmolDialogInterface {
       fileName = file.getAbsolutePath();
     }
     boolean doAppend = (allowAppend && openPreview != null && openPreview.isAppendSelected());
+    boolean doCartoons = (allowAppend && openPreview != null && openPreview.isCartoonsSelected());
     closePreview();
     if (fileName.startsWith("/"))
       fileName = "file://" + fileName; // for Macs
-    return (doAppend ? "load append " + Escape.escape(fileName) : fileName);
+    return (doCartoons ? "" : "#NOC#;") + (doAppend ? "load append " + Escape.escape(fileName) : fileName);
   }
 
   String closePreview() {

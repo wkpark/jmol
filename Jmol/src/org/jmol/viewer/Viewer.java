@@ -1842,6 +1842,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   // //////////////// methods that open a file to create a model set ///////////
 
+  @Override
+  public void openFileAsynchronously(String fileName) {
+    openFileAsynchronously(fileName, false);
+  }
+
   /**
    * opens a file as a model, a script, or a surface via the creation of a
    * script that is queued \t at the beginning disallows script option - used by
@@ -1851,7 +1856,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * @param fileName
    */
   @Override
-  public void openFileAsynchronously(String fileName) {
+  public void openFileAsynchronously(String fileName, boolean pdbCartoons) {
     fileName = fileName.trim();
     boolean allowScript = (!fileName.startsWith("\t"));
     if (!allowScript)
@@ -1882,7 +1887,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       } else if (!type.equals("spt")) {
         evalString("zap; load "
             + Escape.escape(fileName)
-            + ";if (_loadScript = '' && defaultLoadScript == '' && _filetype == 'Pdb') { select protein or nucleic;cartoons Only;color structure; select * }");
+            + ";if (" + pdbCartoons + " && _loadScript = '' && defaultLoadScript == '' && _filetype == 'Pdb' && {(protein or nucleic)&*/1.1} && {*/1.1}[1].groupindex != {*/1.1}[0].groupindex) { select protein or nucleic;cartoons Only;color structure; select * }");
         return;
       }
     }

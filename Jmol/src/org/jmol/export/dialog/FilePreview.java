@@ -47,10 +47,10 @@ import org.jmol.viewer.FileManager;
  */
 public class FilePreview extends JPanel implements PropertyChangeListener {
 
-  JCheckBox active = null;
-  JCheckBox append = null;
-  JFileChooser chooser = null;
-  private FPPanel display = null;
+  JCheckBox active, append, cartoons;
+  JFileChooser chooser;
+  private static boolean pdbCartoonChecked = true;
+  private FPPanel display;
 
   /**
    * Constructor
@@ -87,9 +87,19 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
     box.add(display);
 
     if (allowAppend) {
-      // Add a checkbox to append date
+      // Add a checkbox to append data
       append = new JCheckBox(GT._("Append models"), false);
       box.add(append);
+      cartoons = new JCheckBox(GT._("PDB cartoons"), pdbCartoonChecked);
+      cartoons.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          if (active.isSelected()) {
+            updatePreview(chooser.getSelectedFile());
+          }
+        }
+      });
+      box.add(cartoons);
+      
     }
 
     // Add the preview to the File Chooser
@@ -102,10 +112,14 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
    * @return Indicates if Append is selected.
    */
   public boolean isAppendSelected() {
-    if (append != null) {
-      return append.isSelected();
-    }
-    return false;
+    return (append != null && append.isSelected());
+  }
+
+  /**
+   * @return Indicates if Cartoons is selected.
+   */
+  public boolean isCartoonsSelected() {
+    return pdbCartoonChecked = (cartoons != null && cartoons.isSelected());
   }
 
   /* (non-Javadoc)
@@ -142,8 +156,8 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
         script = "script " + script;
       else
         script = "zap;set zoomlarge false;load " + script
-            + " 1;select protein or dna;cartoons only;color structure;"; 
-    }
+            + " 1;if (" + isCartoonsSelected() + " && _loadScript = '' && defaultLoadScript == '' && _filetype == 'Pdb' && {(protein or nucleic)&*/1.1} && {*/1.1}[1].groupindex != {*/1.1}[0].groupindex) { select protein or nucleic;cartoons Only;color structure; select * }";
+    }      
     display.getViewer().evalStringQuiet(script);
     //display.repaint();
   }

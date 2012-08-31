@@ -168,8 +168,8 @@ public class FileManager {
       return fileName.substring(0, pt);
     if (fileName.startsWith("="))
       return "pdb";
-    Object br = getUnzippedBufferedReaderOrErrorMessageFromName(fileName, true,
-        false, true, true);
+    Object br = getUnzippedBufferedReaderOrErrorMessageFromName(fileName, null,
+        true, false, true, true);
     if (br instanceof BufferedReader)
       return viewer.getModelAdapter().getFileTypeName(br);
     if (br instanceof ZipInputStream) {
@@ -374,10 +374,10 @@ public class FileManager {
    * @return fileData
    */
   Object createAtomSetCollectionFromReader(String fullPathName, String name,
-                                           Reader reader,
+                                           Object reader,
                                            Map<String, Object> htParams) {
     FileReader fileReader = new FileReader(name, fullPathName, name, null,
-        new BufferedReader(reader), htParams, false);
+        reader, htParams, false);
     fileReader.run();
     return fileReader.atomSetCollection;
   }
@@ -395,25 +395,32 @@ public class FileManager {
 
   ZipUtil jmolZip;
   
-  Object getBufferedInputStreamOrErrorMessageFromName(String name, String fullName, boolean showMsg,
-                                              boolean checkOnly, byte[] bytes) {
+  Object getBufferedInputStreamOrErrorMessageFromName(String name,
+                                                      String fullName,
+                                                      boolean showMsg,
+                                                      boolean checkOnly,
+                                                      byte[] outputBytes) {
     byte[] cacheBytes = (fullName == null ? null : getCachedPngjBytes(fullName));
+    if (cacheBytes == null)
+      cacheBytes = (byte[]) cacheGet(fullName, true);
     boolean isPngjBinaryPost = (name.indexOf("?POST?_PNGJBIN_") >= 0);
     boolean isPngjPost = (isPngjBinaryPost || name.indexOf("?POST?_PNGJ_") >= 0);
     if (name.indexOf("?POST?_PNG_") > 0 || isPngjPost) {
-      Object o = viewer.getImageAs(isPngjPost ? "PNGJ" : "PNG", -1, 0, 0, null, null);
-      if (! (o instanceof byte[]))
+      Object o = viewer.getImageAs(isPngjPost ? "PNGJ" : "PNG", -1, 0, 0, null,
+          null);
+      if (!(o instanceof byte[]))
         return o;
       if (isPngjBinaryPost) {
-        bytes = (byte[]) o;
+        outputBytes = (byte[]) o;
         name = TextFormat.simpleReplace(name, "?_", "=_");
-      } else {        
-        name = (new StringBuffer(name)).append("=").append(Base64.getBase64((byte[]) o)).toString();
+      } else {
+        name = (new StringBuffer(name)).append("=").append(
+            Base64.getBase64((byte[]) o)).toString();
       }
     }
     String errorMessage = null;
-    int iurl;
-    for (iurl = urlPrefixes.length; --iurl >= 0;)
+    int iurl = (cacheBytes == null ? urlPrefixes.length : -1);
+    for (; --iurl >= 0;)
       if (name.startsWith(urlPrefixes[iurl]))
         break;
     boolean isURL = (iurl >= 0);
@@ -425,52 +432,56 @@ public class FileManager {
     boolean isApplet = (appletDocumentBase != null);
     BufferedInputStream bis = null;
     // int length;
-    try {      
-      if (cacheBytes != null)
-        bis = new BufferedInputStream(new ByteArrayInputStream(cacheBytes));
-      else if (isApplet || isURL) {
-        if (isApplet && isURL && appletProxy != null)
-          name = appletProxy + "?url=" + URLEncoder.encode(name, "utf-8");
-        URL url = (isApplet ? new URL(appletDocumentBase, name) : new URL(name));
-        name = url.toString();
-        if (showMsg && !checkOnly && name.toLowerCase().indexOf("password") < 0)
-          Logger.info("FileManager opening " + name);
-        URLConnection conn = url.openConnection();
-        if (bytes != null && !checkOnly) {
-          conn.setRequestProperty("Content-Type", "application/octet-stream;");
-          conn.setDoOutput(true);
-          conn.getOutputStream().write(bytes);
-          conn.getOutputStream().flush();
-        } else if (post != null && !checkOnly) {
-          conn.setRequestProperty("Content-Type",
-              "application/x-www-form-urlencoded");
-          conn.setDoOutput(true);
-          OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-          wr.write(post);
-          wr.flush();
-        }
-        bis = new BufferedInputStream(conn.getInputStream());
-      } else {
-        if (showMsg)
-          Logger.info("FileManager opening " + name);
-        File file = new File(name);
-        // length = (int) file.length();
-        bis = new BufferedInputStream(new FileInputStream(file));
-      }
-      
-      if (checkOnly) {
-        bis.close();
-        bis = null;
-      }
-      return bis;
-    } catch (Exception e) {
       try {
-        if (bis != null)
+        if (cacheBytes == null && (isApplet || isURL)) {
+          if (isApplet && isURL && appletProxy != null)
+            name = appletProxy + "?url=" + URLEncoder.encode(name, "utf-8");
+          URL url = (isApplet ? new URL(appletDocumentBase, name) : new URL(
+              name));
+          name = url.toString();
+          if (showMsg && !checkOnly
+              && name.toLowerCase().indexOf("password") < 0)
+            Logger.info("FileManager opening " + name);
+          URLConnection conn = url.openConnection();
+          if (outputBytes != null && !checkOnly) {
+            conn
+                .setRequestProperty("Content-Type", "application/octet-stream;");
+            conn.setDoOutput(true);
+            conn.getOutputStream().write(outputBytes);
+            conn.getOutputStream().flush();
+          } else if (post != null && !checkOnly) {
+            conn.setRequestProperty("Content-Type",
+                "application/x-www-form-urlencoded");
+            conn.setDoOutput(true);
+            OutputStreamWriter wr = new OutputStreamWriter(conn
+                .getOutputStream());
+            wr.write(post);
+            wr.flush();
+          }
+          bis = new BufferedInputStream(conn.getInputStream());
+        } else if (cacheBytes == null && (cacheBytes = (byte[]) cacheGet(name, true)) == null) {
+          if (showMsg)
+            Logger.info("FileManager opening " + name);
+          
+          File file = new File(name);
+          // length = (int) file.length();
+          bis = new BufferedInputStream(new FileInputStream(file));
+        }
+        if (cacheBytes != null)
+          bis = new BufferedInputStream(new ByteArrayInputStream(cacheBytes));
+        if (checkOnly) {
           bis.close();
-      } catch (IOException e1) {
+          bis = null;
+        }
+        return bis;
+      } catch (Exception e) {
+        try {
+          if (bis != null)
+            bis.close();
+        } catch (IOException e1) {
+        }
+        errorMessage = "" + e;
       }
-      errorMessage = "" + e;
-    }
     return errorMessage;
   }
 
@@ -496,13 +507,24 @@ public class FileManager {
                                                  String[] fullPathNameReturn,
                                                  boolean isBinary,
                                                  boolean doSpecialLoad) {
+    Object data = cacheGet(name, false);
+    byte[] bytes = (data instanceof byte[] ? (byte[]) data : null);
+    if (name.startsWith("cache://")) {
+      if (data == null)
+        return "cannot read " + name;
+      if (data instanceof byte[]) {
+        bytes = (byte[]) data;
+      } else {
+        return new BufferedReader(new StringReader((String) data));
+      }
+    }
     String[] names = classifyName(name, true);
     if (names == null)
       return "cannot read file name: " + name;
     if (fullPathNameReturn != null)
       fullPathNameReturn[0] = names[0].replace('\\', '/');
-    return getUnzippedBufferedReaderOrErrorMessageFromName(names[0], false,
-        isBinary, false, doSpecialLoad);
+    return getUnzippedBufferedReaderOrErrorMessageFromName(names[0], bytes,
+        false, isBinary, false, doSpecialLoad);
   }
 
   public String getEmbeddedFileState(String fileName) {
@@ -524,12 +546,12 @@ public class FileManager {
 
   Object getUnzippedBufferedReaderOrErrorMessageFromName(
                                                          String name,
+                                                         byte[] bytes,
                                                          boolean allowZipStream,
                                                          boolean asInputStream,
-                                                         boolean isTypeCheckOnly,
-                                                         boolean doSpecialLoad) {
+                                                         boolean isTypeCheckOnly, boolean doSpecialLoad) {
     String[] subFileList = null;
-    String[] info = (doSpecialLoad ? viewer.getModelAdapter().specialLoad(name,
+    String[] info = (bytes == null && doSpecialLoad ? viewer.getModelAdapter().specialLoad(name,
         "filesNeeded?") : null);
     String name00 = name;
     if (info != null) {
@@ -577,7 +599,8 @@ public class FileManager {
       // script or load command should be used)
     }
 
-    byte[] bytes = getCachedPngjBytes(name);
+    if (bytes == null) 
+      bytes = getCachedPngjBytes(name);
     String fullName = name;
     if (name.indexOf("|") >= 0) {
       subFileList = TextFormat.split(name, "|");
@@ -729,7 +752,7 @@ public class FileManager {
     return name0;
   }
 
-  Object getFileAsBytes(String name, OutputStream os) {
+  Object getFileAsBytes(String name, OutputStream os, boolean  allowZip) {
     // ?? used by eval of "WRITE FILE"
     // will be full path name
     if (name == null)
@@ -739,6 +762,7 @@ public class FileManager {
     if (name.indexOf("|") >= 0) {
       subFileList = TextFormat.split(name, "|");
       name = subFileList[0];
+      allowZip = true;
     }
     Object t = getBufferedInputStreamOrErrorMessageFromName(name, fullName, false, false,
         null);
@@ -747,7 +771,7 @@ public class FileManager {
     try {
       BufferedInputStream bis = (BufferedInputStream) t;
       Object bytes = (os != null || subFileList == null || subFileList.length <= 1
-            || !ZipUtil.isZipFile(bis) && !ZipUtil.isPngZipStream(bis) ? getStreamAsBytes(
+            || !allowZip || !ZipUtil.isZipFile(bis) && !ZipUtil.isPngZipStream(bis) ? getStreamAsBytes(
             bis, os)
             : ZipUtil.getZipFileContentsAsBytes(bis, subFileList, 1));
       bis.close();
@@ -905,7 +929,7 @@ public class FileManager {
     ApiPlatform apiPlatform = viewer.getApiPlatform();
     String fullPathName = names[0].replace('\\', '/');
     if (fullPathName.indexOf("|") > 0) {
-      Object ret = getFileAsBytes(fullPathName, null);
+      Object ret = getFileAsBytes(fullPathName, null, true);
       if (!(ret instanceof byte[])) {
         retFileNameOrError[0] = "" + ret;
         return null;
@@ -983,6 +1007,12 @@ public class FileManager {
     File file = null;
     URL url = null;
     String[] names = null;
+    if (name.startsWith("cache://")) {
+      names = new String[3];
+      names[0] = names[2] = name;
+      names[1] = stripPath(names[0]);
+      return names;
+    }
     name = viewer.resolveDatabaseFormat(name);
     if (name.indexOf(":") < 0 && name.indexOf("/") != 0)
       name = addDirectory(viewer.getDefaultDirectory(), name);
@@ -1299,7 +1329,7 @@ public class FileManager {
           v.add(null); // data will be gotten from disk
         } else {
           // all remote files, and any file that was opened from a ZIP collection
-          Object ret = (isSparDir ? spardirCache.get(name) : getFileAsBytes(name, null));
+          Object ret = (isSparDir ? spardirCache.get(name) : getFileAsBytes(name, null, true));
           if (!(ret instanceof byte[]))
             return ret;
           CRC32 crc = new CRC32();
@@ -1415,8 +1445,9 @@ public class FileManager {
           if (fname.length() > 2 && fname.charAt(2) == ':') // "/C:..." DOS/Windows
             fname = fname.substring(1);
         } else if (fname.indexOf("cache://") == 0) {
+          Object data = cacheGet(fname, false); 
           fname = fname.substring(8);
-          bytes = viewer.cacheGet(fname).getBytes();
+          bytes = (data instanceof byte[] ? (byte[]) data : ((String) data).getBytes());
         }
         String fnameShort = (String) fileNamesAndByteArrays.get(i + 1);
         if (fnameShort == null)
@@ -1522,15 +1553,17 @@ public class FileManager {
     private BufferedReader reader;
     private Map<String, Object> htParams;
     private boolean isAppend;
+    private byte[] bytes;
 
     FileReader(String fileName, String fullPathName, String nameAsGiven,
-        String type, BufferedReader reader, Map<String, Object> htParams,
+        String type, Object reader, Map<String, Object> htParams,
         boolean isAppend) {
       fileNameIn = fileName;
       fullPathNameIn = fullPathName;
       nameAsGivenIn = nameAsGiven;
       fileTypeIn = type;
-      this.reader = reader;
+      this.reader = (reader instanceof BufferedReader ? (BufferedReader) reader : reader instanceof Reader ? new BufferedReader((Reader) reader) : null);
+      this.bytes = (reader instanceof byte[] ? (byte[]) reader : null);
       this.htParams = htParams;
       this.isAppend = isAppend;
     }
@@ -1544,7 +1577,7 @@ public class FileManager {
       Object t = null;
       if (reader == null) {
         t = getUnzippedBufferedReaderOrErrorMessageFromName(fullPathNameIn,
-            true, false, false, true);
+            bytes, true, false, false, true);
         if (t == null || t instanceof String) {
           errorMessage = (t == null ? "error opening:" + nameAsGivenIn
               : (String) t);
@@ -1675,8 +1708,8 @@ public class FileManager {
         subFileList = TextFormat.split(name, "|");
         name = subFileList[0];
       }
-      Object t = getUnzippedBufferedReaderOrErrorMessageFromName(name, true,
-          isBinary, false, true);
+      Object t = getUnzippedBufferedReaderOrErrorMessageFromName(name, null,
+          true, isBinary, false, true);
       if (t instanceof ZipInputStream) {
         if (subFileList != null)
           htParams.put("subFileList", subFileList);
@@ -2085,6 +2118,57 @@ public class FileManager {
       .append("if (!isOK){script @thisSceneState}\n")
       .append("currentSceneRoot = thisSceneRoot; currentSceneID = thisSceneID;\n}\n");
     return sceneScript.toString();
+  }
+
+  private Map<String, Object> cache = new Hashtable<String, Object>();
+  void cachePut(String key, Object data) {
+    key = key.replace('\\', '/');
+    if (Logger.debugging)
+      Logger.info("cachePut " + key);
+    if (data == null || data.equals(""))
+      cache.remove(key);
+    else
+      cache.put(key, data);
+  }
+  
+  Object cacheGet(String key, boolean bytesOnly) {
+    key = key.replace('\\', '/');
+    if (Logger.debugging && cache.containsKey(key))
+      Logger.info("cacheGet " + key);
+    Object data = cache.get(key);
+    return (bytesOnly && (data instanceof String) ? null : data);
+  }
+
+  void cacheClear() {
+    cache.clear();
+  }
+
+  public int cacheFile(String fileName, boolean isAdd) {
+    if (fileName == null || !isAdd && fileName.equalsIgnoreCase("")) {
+      cacheClear();
+      return -1;
+    }
+    Object data;
+    if (isAdd) {
+      fileName = viewer.resolveDatabaseFormat(fileName);
+      data = getFileAsBytes(fileName, null, true);
+      if (data instanceof String)
+        return 0;
+      cachePut(fileName, data);
+    } else {
+      data = cache.remove(fileName.replace('\\', '/'));
+    }
+    return (data == null ? 0 : data instanceof String ? ((String) data).length()
+        : ((byte[]) data).length);
+  }
+
+  Map<String, Integer> cacheList() {
+    Map<String, Integer> map = new Hashtable<String, Integer>();
+    for (Map.Entry<String, Object> entry : cache.entrySet())
+      map.put(entry.getKey(), Integer
+          .valueOf(entry.getValue() instanceof byte[] ? ((byte[]) entry
+              .getValue()).length : entry.getValue().toString().length()));
+    return map;
   }
 
 }

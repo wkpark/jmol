@@ -548,6 +548,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
     return (jmolViewer == null ? "" : "" + jmolViewer.getParameter(var));
   }
 
-
+  abstract public void cacheFile(String fileName, byte[] bytes);
+  
 }
 

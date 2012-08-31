@@ -694,21 +694,5 @@ class StatusManager {
             + (myParam == null || myParam.length() == 0 ? "" : ":" + myParam)));
   }
 
-  Map<String, String> cache = new Hashtable<String, String>();
-  void cachePut(String key, String data) {
-    cache.put(key, data);
-    //if (jmolStatusListener != null)
-      //jmolStatusListener.createImage("cache", key, data, Integer.MIN_VALUE);
-  }
-  
-  String cacheGet(String key) {
-    return cache.get(key);
-    //if (jmolStatusListener != null)
-      //jmolStatusListener.createImage("cache", key, data, Integer.MAX_VALUE);
-  }
-
-  void cacheClear() {
-    cache.clear();
-  }
 }
 

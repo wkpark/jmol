@@ -5357,6 +5357,9 @@ public class ScriptEvaluator {
         case Token.calculate:
           calculate();
           break;
+        case Token.cache:
+          cache();
+          break;
         case Token.cd:
           cd();
           break;
@@ -5606,6 +5609,26 @@ public class ScriptEvaluator {
       if (executionStepping) {
         executionPaused = (isCommandDisplayable(pc + 1));
       }
+    }
+  }
+
+  private void cache() throws ScriptException {
+    checkLength(3);
+    int tok = tokAt(1);
+    String fileName = parameterAsString(2);
+    switch (tok) {
+    case Token.add:
+    case Token.remove:
+      if (!isSyntaxCheck) {
+        if (tok == Token.remove && tokAt(2) == Token.all)
+          fileName = null;
+        int nBytes = viewer.cacheFile(fileName, tok == Token.add);
+        showString(nBytes < 0 ? "cache cleared" : nBytes + " bytes "
+            + (tok == Token.add ? " cached" : " removed"));
+      }
+      break;
+    default:
+      error(ERROR_invalidArgument);
     }
   }
 
@@ -14088,7 +14111,7 @@ public class ScriptEvaluator {
     int quality = Integer.MIN_VALUE;
     String driverList = viewer.getExportDriverList();
     String sceneType = "PNGJ";
-    String data = "";
+    String data = null;
     String type2 = "";
     String fileName = null;
     String localPath = null;
@@ -14136,6 +14159,11 @@ public class ScriptEvaluator {
       msg = plot(args);
       if (!isCommand)
         return msg;
+      break;
+    case Token.inline:
+      type = "INLINE";
+      data = ScriptVariable.sValue(tokenAt(++pt, args));
+      pt++;
       break;
     case Token.pointgroup:
       type = "PGRP";
@@ -14343,9 +14371,8 @@ public class ScriptEvaluator {
         }
       }
       if (type.equals("COORD"))
-        type = (fileName != null && fileName.indexOf(".") >= 0 ?
-          fileName.substring(fileName.lastIndexOf(".") + 1)
-              .toUpperCase() : "XYZ");
+        type = (fileName != null && fileName.indexOf(".") >= 0 ? fileName
+            .substring(fileName.lastIndexOf(".") + 1).toUpperCase() : "XYZ");
       isImage = Parser.isOneOf(type,
           "GIF;JPEG64;JPEG;JPG64;JPG;PPM;PNG;PNGJ;PNGT;SCENE");
       if (scripts != null) {
@@ -14361,142 +14388,144 @@ public class ScriptEvaluator {
           && !Parser
               .isOneOf(
                   type,
-                  "SCENE;JMOL;ZIP;ZIPALL;SPT;HISTORY;MO;ISOSURFACE;MESH;PMESH;VAR;FILE;FUNCTION;CD;CML;XYZ;XYZRN;XYZVIB;MENU;MOL;PDB;PGRP;PQR;QUAT;RAMA;SDF;V2000;V3000;"))
+                  "SCENE;JMOL;ZIP;ZIPALL;SPT;HISTORY;MO;ISOSURFACE;MESH;PMESH;VAR;FILE;FUNCTION;CD;CML;XYZ;XYZRN;XYZVIB;MENU;MOL;PDB;PGRP;PQR;QUAT;RAMA;SDF;V2000;V3000;INLINE"))
         error(
             ERROR_writeWhat,
-            "COORDS|FILE|FUNCTIONS|HISTORY|IMAGE|ISOSURFACE|JMOL|MENU|MO|POINTGROUP|QUATERNION [w,x,y,z] [derivative]"
+            "COORDS|FILE|FUNCTIONS|HISTORY|IMAGE|INLINE|ISOSURFACE|JMOL|MENU|MO|POINTGROUP|QUATERNION [w,x,y,z] [derivative]"
                 + "|RAMACHANDRAN|SPT|STATE|VAR x|ZIP|ZIPALL  CLIPBOARD",
             "CML|GIF|JPG|JPG64|JMOL|JVXL|MESH|MOL|PDB|PMESH|PNG|PNGJ|PNGT|PPM|PQR|SDF|V2000|V3000|SPT|XJVXL|XYZ|XYZRN|XYZVIB|ZIP"
                 + driverList.toUpperCase().replace(';', '|'));
       if (isSyntaxCheck)
         return "";
-      data = type.intern();
       Object bytes = null;
       boolean doDefer = false;
-      if (isExport) {
-        // POV-Ray uses a BufferedWriter instead of a StringBuffer.
-        // todo -- there's no reason this data has to be done this way. 
-        // we could send all of them out to file directly
-        fullPath[0] = fileName;
-        data = viewer.generateOutput(data,
-            isCommand || fileName != null ? fullPath : null, width, height);
-        if (data == null || data.length() == 0)
+      if (data == null) {
+        data = type.intern();
+        if (isExport) {
+          // POV-Ray uses a BufferedWriter instead of a StringBuffer.
+          // todo -- there's no reason this data has to be done this way. 
+          // we could send all of them out to file directly
+          fullPath[0] = fileName;
+          data = viewer.generateOutput(data,
+              isCommand || fileName != null ? fullPath : null, width, height);
+          if (data == null || data.length() == 0)
+            return "";
+          if (!isCommand)
+            return data;
+          if ((type.equals("Povray") || type.equals("Idtf"))
+              && fullPath[0] != null) {
+            String ext = (type.equals("Idtf") ? ".tex" : ".ini");
+            fileName = fullPath[0] + ext;
+            msg = viewer.createImage(fileName, ext, data, null,
+                Integer.MIN_VALUE, 0, 0, null, 0, fullPath);
+            if (type.equals("Idtf"))
+              data = data.substring(0, data.indexOf("\\begin{comment}"));
+            data = "Created " + fullPath[0] + ":\n\n" + data;
+          } else {
+            msg = data;
+          }
+          if (msg != null) {
+            if (!msg.startsWith("OK"))
+              evalError(msg, null);
+            scriptStatusOrBuffer(data);
+          }
           return "";
-        if (!isCommand)
-          return data;
-        if ((type.equals("Povray") || type.equals("Idtf"))
-            && fullPath[0] != null) {
-          String ext = (type.equals("Idtf") ? ".tex" : ".ini");
-          fileName = fullPath[0] + ext;
-          msg = viewer.createImage(fileName, ext, data, null,
-              Integer.MIN_VALUE, 0, 0, null, 0, fullPath);
-          if (type.equals("Idtf"))
-            data = data.substring(0, data.indexOf("\\begin{comment}"));
-          data = "Created " + fullPath[0] + ":\n\n" + data;
-        } else {
-          msg = data;
-        }
-        if (msg != null) {
-          if (!msg.startsWith("OK"))
-            evalError(msg, null);
-          scriptStatusOrBuffer(data);
-        }
-        return "";
+        } else if (data == "MENU") {
+          data = viewer.getMenu("");
+        } else if (data == "PGRP") {
+          data = viewer.getPointGroupAsString(type2.equals("draw"), null, 0,
+              1.0f);
+        } else if (data == "PDB" || data == "PQR") {
+          if (isShow) {
+            data = viewer.getPdbData(null, null);
+          } else {
+            doDefer = true;
+            /*
+             * OutputStream os = viewer.getOutputStream(fileName, fullPath); msg =
+             * viewer.getPdbData(null, new BufferedOutputStream(os)); if (msg !=
+             * null) msg = "OK " + msg + " " + fullPath[0]; try { os.close(); }
+             * catch (IOException e) { // TODO }
+             */
+          }
+        } else if (data == "FILE") {
+          if (isShow)
+            data = viewer.getCurrentFileAsString();
+          else
+            doDefer = true;
+          if ("?".equals(fileName))
+            fileName = "?Jmol." + viewer.getParameter("_fileType");
+        } else if ((data == "SDF" || data == "MOL" || data == "V2000"
+            || data == "V3000" || data == "CD")
+            && isCoord) {
+          data = viewer.getModelExtract("selected", true, data);
+          if (data.startsWith("ERROR:"))
+            bytes = data;
+        } else if (data == "XYZ" || data == "XYZRN" || data == "XYZVIB"
+            || data == "MOL" || data == "SDF" || data == "V2000"
+            || data == "V3000" || data == "CML" || data == "CD") {
+          data = viewer.getData("selected", data);
+          if (data.startsWith("ERROR:"))
+            bytes = data;
+        } else if (data == "FUNCTION") {
+          data = viewer.getFunctionCalls(null);
+          type = "TXT";
+        } else if (data == "VAR") {
+          data = ((ScriptVariable) getParameter(ScriptVariable.sValue(tokenAt(
+              isCommand ? 2 : 1, args)), Token.variable)).asString();
+          type = "TXT";
+        } else if (data == "SPT") {
+          if (isCoord) {
+            BitSet tainted = viewer.getTaintedAtoms(AtomCollection.TAINT_COORD);
+            viewer.setAtomCoordRelative(new Point3f(0, 0, 0), null);
+            data = (String) viewer.getProperty("string", "stateInfo", null);
+            viewer.setTaintedAtoms(tainted, AtomCollection.TAINT_COORD);
+          } else {
+            data = (String) viewer.getProperty("string", "stateInfo", null);
+            if (localPath != null || remotePath != null)
+              data = FileManager.setScriptFileReferences(data, localPath,
+                  remotePath, null);
+          }
+        } else if (data == "ZIP" || data == "ZIPALL") {
 
-      } else if (data == "MENU") {
-        data = viewer.getMenu("");
-      } else if (data == "PGRP") {
-        data = viewer
-            .getPointGroupAsString(type2.equals("draw"), null, 0, 1.0f);
-      } else if (data == "PDB" || data == "PQR") {
-        if (isShow) {
-          data = viewer.getPdbData(null, null);
-        } else {
-          doDefer = true;
-          /*
-           * OutputStream os = viewer.getOutputStream(fileName, fullPath); msg =
-           * viewer.getPdbData(null, new BufferedOutputStream(os)); if (msg !=
-           * null) msg = "OK " + msg + " " + fullPath[0]; try { os.close(); }
-           * catch (IOException e) { // TODO }
-           */
-        }
-      } else if (data == "FILE") {
-        if (isShow)
-          data = viewer.getCurrentFileAsString();
-        else
-          doDefer = true;
-        if ("?".equals(fileName))
-          fileName = "?Jmol." + viewer.getParameter("_fileType");
-      } else if ((data == "SDF" || data == "MOL" || data == "V2000"
-          || data == "V3000" || data == "CD") && isCoord) {
-        data = viewer.getModelExtract("selected", true, data);
-        if (data.startsWith("ERROR:"))
-          bytes = data;
-      } else if (data == "XYZ" || data == "XYZRN" || data == "XYZVIB"
-          || data == "MOL" || data == "SDF" || data == "V2000"
-          || data == "V3000" || data == "CML" || data == "CD") {
-        data = viewer.getData("selected", data);
-        if (data.startsWith("ERROR:"))
-          bytes = data;
-      } else if (data == "FUNCTION") {
-        data = viewer.getFunctionCalls(null);
-        type = "TXT";
-      } else if (data == "VAR") {
-        data = ((ScriptVariable) getParameter(ScriptVariable.sValue(tokenAt(
-            isCommand ? 2 : 1, args)), Token.variable)).asString();
-        type = "TXT";
-      } else if (data == "SPT") {
-        if (isCoord) {
-          BitSet tainted = viewer.getTaintedAtoms(AtomCollection.TAINT_COORD);
-          viewer.setAtomCoordRelative(new Point3f(0, 0, 0), null);
           data = (String) viewer.getProperty("string", "stateInfo", null);
-          viewer.setTaintedAtoms(tainted, AtomCollection.TAINT_COORD);
+          bytes = viewer.createZip(fileName, type, data, scripts);
+        } else if (data == "HISTORY") {
+          data = viewer.getSetHistory(Integer.MAX_VALUE);
+          type = "SPT";
+        } else if (data == "MO") {
+          data = getMoJvxl(Integer.MAX_VALUE);
+          type = "XJVXL";
+        } else if (data == "PMESH") {
+          if ((data = getIsosurfaceJvxl(true, JmolConstants.SHAPE_PMESH)) == null)
+            error(ERROR_noData);
+          type = "XJVXL";
+        } else if (data == "ISOSURFACE" || data == "MESH") {
+          if ((data = getIsosurfaceJvxl(data == "MESH",
+              JmolConstants.SHAPE_ISOSURFACE)) == null)
+            error(ERROR_noData);
+          type = (data.indexOf("<?xml") >= 0 ? "XJVXL" : "JVXL");
+          if (!isShow)
+            showString((String) getShapeProperty(
+                JmolConstants.SHAPE_ISOSURFACE, "jvxlFileInfo"));
         } else {
-          data = (String) viewer.getProperty("string", "stateInfo", null);
-          if (localPath != null || remotePath != null)
-            data = FileManager.setScriptFileReferences(data, localPath,
-                remotePath, null);
+          // image
+          len = -1;
+          if (quality < 0)
+            quality = -1;
         }
-      } else if (data == "ZIP" || data == "ZIPALL") {
-
-        data = (String) viewer.getProperty("string", "stateInfo", null);
-        bytes = viewer.createZip(fileName, type, data, scripts);
-      } else if (data == "HISTORY") {
-        data = viewer.getSetHistory(Integer.MAX_VALUE);
-        type = "SPT";
-      } else if (data == "MO") {
-        data = getMoJvxl(Integer.MAX_VALUE);
-        type = "XJVXL";
-      } else if (data == "PMESH") {
-        if ((data = getIsosurfaceJvxl(true, JmolConstants.SHAPE_PMESH)) == null)
-          error(ERROR_noData);
-        type = "XJVXL";
-      } else if (data == "ISOSURFACE" || data == "MESH") {
-        if ((data = getIsosurfaceJvxl(data == "MESH",
-            JmolConstants.SHAPE_ISOSURFACE)) == null)
-          error(ERROR_noData);
-        type = (data.indexOf("<?xml") >= 0 ? "XJVXL" : "JVXL");
-        if (!isShow)
-          showString((String) getShapeProperty(JmolConstants.SHAPE_ISOSURFACE,
-              "jvxlFileInfo"));
-      } else {
-        // image
-        len = -1;
-        if (quality < 0)
-          quality = -1;
-      }
-      if (data == null && !doDefer)
-        data = "";
-      if (len == 0 && !doDefer)
-        len = (bytes == null ? data.length()
-            : bytes instanceof String ? ((String) bytes).length()
-                : ((byte[]) bytes).length);
-      if (isImage) {
-        refresh();
-        if (width < 0)
-          width = viewer.getScreenWidth();
-        if (height < 0)
-          height = viewer.getScreenHeight();
+        if (data == null && !doDefer)
+          data = "";
+        if (len == 0 && !doDefer)
+          len = (bytes == null ? data.length()
+              : bytes instanceof String ? ((String) bytes).length()
+                  : ((byte[]) bytes).length);
+        if (isImage) {
+          refresh();
+          if (width < 0)
+            width = viewer.getScreenWidth();
+          if (height < 0)
+            height = viewer.getScreenHeight();
+        }
       }
       if (!isCommand)
         return data;
@@ -14552,6 +14581,9 @@ public class ScriptEvaluator {
     switch (tok) {
     case Token.nada:
       msg = ((ScriptVariable) theToken).escape();
+      break;
+    case Token.cache:
+      msg = Escape.escape(viewer.cacheList());
       break;
     case Token.dssp:
       checkLength(2);
@@ -18142,8 +18174,8 @@ public class ScriptEvaluator {
         error(ERROR_invalidArgument);
     }
 
-//    if (isSyntaxCheck)
-  //    return;
+    if (isSyntaxCheck)
+      return;
     Object area = null;
     Object volume = null;
     if (doCalcArea) {
@@ -18205,8 +18237,7 @@ public class ScriptEvaluator {
     setShapeProperty(iShape, "clear", null);
     if (toCache) {
       String id = (String) getShapeProperty(iShape, "ID");
-      viewer.cachePut("isosurface_" + id, write(new Token[] { new Token(
-          Token.isosurface, "isosurface") }));
+      viewer.cachePut("cache://isosurface_" + id, getShapeProperty(iShape, "jvxlDataXml"));
       runScript("isosurface ID \"" + id + "\" delete;isosurface ID \"" + id
           + "\"" + (modelIndex >= 0 ? " model " + modelIndex : "")
           + " \"cache://isosurface_" + getShapeProperty(iShape, "ID") + "\"");

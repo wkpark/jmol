@@ -301,6 +301,7 @@ public class Token {
   final static int bind         = scriptCommand | 4;
   final static int bondorder    = scriptCommand | 5;
   final static int calculate    = scriptCommand | 6;
+//final static int cache        see mathfunc
   final static int cd           = scriptCommand | 8 /* must be even */| implicitStringCommand | expression; // must be even
   final static int centerAt     = scriptCommand | 9;
 //final static int color        see intproperty
@@ -692,7 +693,7 @@ public class Token {
   final static int count            = 19 | 0 << 9 | mathfunc | mathproperty;
   public final static int within    = 20 | 0 << 9 | mathfunc;
   final static int write            = 21 | 0 << 9 | mathfunc | scriptCommand;
-
+  final static int cache            = 22 | 0 << 9 | mathfunc | scriptCommand; // new in Jmol 13.1.2
   // xxx(a)
   
   final static int acos         = 3 | 1 << 9 | mathfunc;
@@ -1077,7 +1078,6 @@ public class Token {
   final static int bondset       = misc  | 46;
   final static int bottom        = misc  | 47;
   public final static int brillouin     = misc  | 48;
-  final static int cache         = misc  | 49;
   final static int cancel        = misc  | 50;
   public final static int cap    = misc  | 51 | expression;
   final static int cavity        = misc  | 52;

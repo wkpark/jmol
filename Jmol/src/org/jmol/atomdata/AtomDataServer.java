@@ -23,8 +23,6 @@ public interface AtomDataServer {
   
   public BufferedInputStream getBufferedInputStream(String fullPathName);
 
-  public String cacheGet(String id);
-
   public void log(String msg);
   
   public float evalFunctionFloat(Object func, Object params, float[] values);

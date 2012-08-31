@@ -744,6 +744,8 @@ class ScriptMathProcessor {
     case Token.smiles:
     case Token.substructure:
       return evaluateSubstructure(args, tok);
+    case Token.cache:
+      return evaluateCache(args);
     case Token.sort:
     case Token.count:
       return evaluateSort(args, tok);
@@ -759,6 +761,12 @@ class ScriptMathProcessor {
       return evaluateWrite(args);
     }
     return false;
+  }
+
+  private boolean evaluateCache(ScriptVariable[] args) {
+    if (args.length > 0)
+      return false;
+    return addX(viewer.cacheList());
   }
 
   private boolean evaluateCompare(ScriptVariable[] args) throws ScriptException {

@@ -1800,9 +1800,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                                         String name,
                                                         String[] fullPathNameReturn,
                                                         boolean isBinary) {
-    // used by isosurface reader
-    if (name.startsWith("cache://"))
-      return new BufferedReader(new StringReader(cacheGet(name.substring(8))));
     return fileManager.getBufferedReaderOrErrorMessageFromName(name,
         fullPathNameReturn, isBinary, true);
   }
@@ -2024,7 +2021,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       // 3) a file reader (not used by Jmol) 
 
       atomSetCollection = fileManager.createAtomSetCollectionFromReader(
-          fullPathName, fileName, (Reader) reader, htParams);
+          fullPathName, fileName, reader, htParams);
 
     } else {
 
@@ -2526,7 +2523,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   @Override
   public Object getFileAsBytes(String pathName, OutputStream os) {
-    return fileManager.getFileAsBytes(pathName, os);
+    return fileManager.getFileAsBytes(pathName, os, true);
   }
 
   public String getCurrentFileAsString() {
@@ -10516,16 +10513,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         bsSelected);
   }
 
-  public void cachePut(String key, String data) {
-    statusManager.cachePut(key, data);
-  }
-
-  public String cacheGet(String key) {
-    return statusManager.cacheGet(key);
+  public void cachePut(String key, Object data) {
+    fileManager.cachePut(key, data);
   }
 
   public void cacheClear() {
-    statusManager.cacheClear();
+    fileManager.cacheClear();
     fileManager.clearPngjCache(null);
   }
 
@@ -10603,6 +10596,23 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       // ignore
     }
     return "OK " + nFiles + " files created";
+  }
+
+  /**
+   * JmolViewer interface -- allows saving files in memory for later retrieval
+   * @param fileName
+   */
+  @Override
+  public void cacheFile(String fileName, byte[] bytes) {
+    fileManager.cachePut(fileName, bytes);
+  }
+
+  public int cacheFile(String fileName, boolean isAdd) {
+    return fileManager.cacheFile(fileName, isAdd);
+  }
+
+  public Map<String, Integer> cacheList() {
+    return fileManager.cacheList();
   }
 
 }

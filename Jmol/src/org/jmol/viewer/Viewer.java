@@ -10607,8 +10607,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     fileManager.cachePut(fileName, bytes);
   }
 
-  public int cacheFile(String fileName, boolean isAdd) {
-    return fileManager.cacheFile(fileName, isAdd);
+  public int cacheFileByName(String fileName, boolean isAdd) {
+    return fileManager.cacheFileByName(fileName, isAdd);
   }
 
   public Map<String, Integer> cacheList() {

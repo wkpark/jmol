@@ -5622,7 +5622,7 @@ public class ScriptEvaluator {
       if (!isSyntaxCheck) {
         if (tok == Token.remove && tokAt(2) == Token.all)
           fileName = null;
-        int nBytes = viewer.cacheFile(fileName, tok == Token.add);
+        int nBytes = viewer.cacheFileByName(fileName, tok == Token.add);
         showString(nBytes < 0 ? "cache cleared" : nBytes + " bytes "
             + (tok == Token.add ? " cached" : " removed"));
       }

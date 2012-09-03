@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2012-08-25 08:08+0200\n"
+"POT-Creation-Date: 2012-09-03 17:36+0200\n"
 "PO-Revision-Date: 2010-04-16 18:38+0000\n"
 "Last-Translator: Bundo <bundo@bundo.biz>\n"
 "Language-Team: Korean <Jmol-developers@lists.sf.net>\n"
@@ -101,7 +101,9 @@ msgstr "불러옴"
 
 #: org/jmol/console/AppletConsole.java:210
 msgid "press CTRL-ENTER for new line or paste model data and press Load"
-msgstr "CTRL-ENTER를 누르면 다음줄로 넘어가며 혹은 모델 데이타를 붙여넣기한 후에 불러옴을 누르세요"
+msgstr ""
+"CTRL-ENTER를 누르면 다음줄로 넘어가며 혹은 모델 데이타를 붙여넣기한 후에 불러"
+"옴을 누르세요"
 
 #: org/jmol/console/AppletConsole.java:212
 msgid ""
@@ -124,9 +126,9 @@ msgid "Console"
 msgstr "콘솔"
 
 #: org/jmol/console/ScriptEditor.java:134
-#: org/jmol/export/dialog/Dialog.java:445
-#: org/jmol/export/dialog/Dialog.java:469
-#: org/jmol/export/dialog/Dialog.java:472
+#: org/jmol/export/dialog/Dialog.java:446
+#: org/jmol/export/dialog/Dialog.java:470
+#: org/jmol/export/dialog/Dialog.java:473
 msgid "Open"
 msgstr "열기"
 
@@ -139,8 +141,7 @@ msgid "Check"
 msgstr "검사"
 
 #: org/jmol/console/ScriptEditor.java:137
-msgid ""
-"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:138
@@ -173,181 +174,186 @@ msgstr "닫기"
 msgid "File or URL:"
 msgstr "파일 혹은 URL:"
 
-#: org/jmol/export/dialog/Dialog.java:271
+#: org/jmol/export/dialog/Dialog.java:272
 msgid "Image Type"
 msgstr "그림 형식"
 
-#: org/jmol/export/dialog/Dialog.java:286
-#: org/jmol/export/dialog/Dialog.java:327
+#: org/jmol/export/dialog/Dialog.java:287
+#: org/jmol/export/dialog/Dialog.java:328
 #, java-format
 msgid "JPEG Quality ({0})"
 msgstr "JPEG 화질 ({0})"
 
-#: org/jmol/export/dialog/Dialog.java:300
+#: org/jmol/export/dialog/Dialog.java:301
 #, java-format
 msgid "PNG Compression  ({0})"
 msgstr "PNG 압축 ({0})"
 
-#: org/jmol/export/dialog/Dialog.java:330
+#: org/jmol/export/dialog/Dialog.java:331
 #, java-format
 msgid "PNG Quality ({0})"
 msgstr "PNG 품질 ({0})"
 
-#: org/jmol/export/dialog/Dialog.java:376
-#: org/jmol/export/dialog/Dialog.java:488
+#: org/jmol/export/dialog/Dialog.java:377
+#: org/jmol/export/dialog/Dialog.java:489
 msgid "Yes"
 msgstr "확인"
 
-#: org/jmol/export/dialog/Dialog.java:376
-#: org/jmol/export/dialog/Dialog.java:486
+#: org/jmol/export/dialog/Dialog.java:377
+#: org/jmol/export/dialog/Dialog.java:487
 msgid "No"
 msgstr "취소"
 
-#: org/jmol/export/dialog/Dialog.java:378
+#: org/jmol/export/dialog/Dialog.java:379
 #, java-format
 msgid "Do you want to overwrite file {0}?"
 msgstr "파일 {0}을(를) 덮어쓸까요?"
 
-#: org/jmol/export/dialog/Dialog.java:379
+#: org/jmol/export/dialog/Dialog.java:380
 msgid "Warning"
 msgstr "주의"
 
-#: org/jmol/export/dialog/Dialog.java:437
+#: org/jmol/export/dialog/Dialog.java:438
 msgid "All Files"
 msgstr "모든 파일"
 
-#: org/jmol/export/dialog/Dialog.java:438
-#: org/jmol/export/dialog/Dialog.java:485
+#: org/jmol/export/dialog/Dialog.java:439
+#: org/jmol/export/dialog/Dialog.java:486
 msgid "Cancel"
 msgstr "취소"
 
-#: org/jmol/export/dialog/Dialog.java:440
+#: org/jmol/export/dialog/Dialog.java:441
 msgid "Abort file chooser dialog"
 msgstr "파일 선택 대화창 취소"
 
-#: org/jmol/export/dialog/Dialog.java:442
 #: org/jmol/export/dialog/Dialog.java:443
+#: org/jmol/export/dialog/Dialog.java:444
 msgid "Details"
 msgstr "자세히"
 
-#: org/jmol/export/dialog/Dialog.java:444
+#: org/jmol/export/dialog/Dialog.java:445
 msgid "Directory"
 msgstr "디렉토리"
 
-#: org/jmol/export/dialog/Dialog.java:447
+#: org/jmol/export/dialog/Dialog.java:448
 msgid "Open selected directory"
 msgstr "선택된 디렉토리 열기"
 
-#: org/jmol/export/dialog/Dialog.java:448
+#: org/jmol/export/dialog/Dialog.java:449
 msgid "Attributes"
 msgstr "속성"
 
-#: org/jmol/export/dialog/Dialog.java:449
+#: org/jmol/export/dialog/Dialog.java:450
 msgid "Modified"
 msgstr "수정됨"
 
-#: org/jmol/export/dialog/Dialog.java:450
+#: org/jmol/export/dialog/Dialog.java:451
 msgid "Generic File"
 msgstr "일반 파일"
 
-#: org/jmol/export/dialog/Dialog.java:451
+#: org/jmol/export/dialog/Dialog.java:452
 msgid "Name"
 msgstr "이름"
 
-#: org/jmol/export/dialog/Dialog.java:452
+#: org/jmol/export/dialog/Dialog.java:453
 msgid "File Name:"
 msgstr "파일 이름:"
 
-#: org/jmol/export/dialog/Dialog.java:453
+#: org/jmol/export/dialog/Dialog.java:454
 msgid "Size"
 msgstr "크기"
 
-#: org/jmol/export/dialog/Dialog.java:454
+#: org/jmol/export/dialog/Dialog.java:455
 msgid "Files of Type:"
 msgstr "파일 형식:"
 
-#: org/jmol/export/dialog/Dialog.java:455
+#: org/jmol/export/dialog/Dialog.java:456
 msgid "Type"
 msgstr "종류"
 
-#: org/jmol/export/dialog/Dialog.java:456
+#: org/jmol/export/dialog/Dialog.java:457
 msgid "Help"
 msgstr "도움말"
 
-#: org/jmol/export/dialog/Dialog.java:458
+#: org/jmol/export/dialog/Dialog.java:459
 msgid "FileChooser help"
 msgstr "파일 선택기 도움말"
 
-#: org/jmol/export/dialog/Dialog.java:459
 #: org/jmol/export/dialog/Dialog.java:460
+#: org/jmol/export/dialog/Dialog.java:461
 msgid "Home"
 msgstr "홈"
 
-#: org/jmol/export/dialog/Dialog.java:461
 #: org/jmol/export/dialog/Dialog.java:462
+#: org/jmol/export/dialog/Dialog.java:463
 msgid "List"
 msgstr "목록"
 
-#: org/jmol/export/dialog/Dialog.java:463
+#: org/jmol/export/dialog/Dialog.java:464
 msgid "Look In:"
 msgstr "보기 방식:"
 
-#: org/jmol/export/dialog/Dialog.java:465
+#: org/jmol/export/dialog/Dialog.java:466
 msgid "Error creating new folder"
 msgstr "새 폴더 만들기 실패"
 
-#: org/jmol/export/dialog/Dialog.java:466
+#: org/jmol/export/dialog/Dialog.java:467
 msgid "New Folder"
 msgstr "새 폴더"
 
-#: org/jmol/export/dialog/Dialog.java:468
+#: org/jmol/export/dialog/Dialog.java:469
 msgid "Create New Folder"
 msgstr "새 폴더 만들기"
 
-#: org/jmol/export/dialog/Dialog.java:471
+#: org/jmol/export/dialog/Dialog.java:472
 msgid "Open selected file"
 msgstr "선택한 파일 열기"
 
-#: org/jmol/export/dialog/Dialog.java:473
-#: org/jmol/export/dialog/Dialog.java:476
+#: org/jmol/export/dialog/Dialog.java:474
+#: org/jmol/export/dialog/Dialog.java:477
 msgid "Save"
 msgstr "저장"
 
-#: org/jmol/export/dialog/Dialog.java:475
+#: org/jmol/export/dialog/Dialog.java:476
 msgid "Save selected file"
 msgstr "선택한 파일 저장"
 
-#: org/jmol/export/dialog/Dialog.java:477
+#: org/jmol/export/dialog/Dialog.java:478
 msgid "Save In:"
 msgstr ""
 
-#: org/jmol/export/dialog/Dialog.java:478
+#: org/jmol/export/dialog/Dialog.java:479
 msgid "Update"
 msgstr "갱신"
 
-#: org/jmol/export/dialog/Dialog.java:480
+#: org/jmol/export/dialog/Dialog.java:481
 msgid "Update directory listing"
 msgstr "디렉토리 리스트 갱신"
 
-#: org/jmol/export/dialog/Dialog.java:481
+#: org/jmol/export/dialog/Dialog.java:482
 msgid "Up"
 msgstr "위로"
 
-#: org/jmol/export/dialog/Dialog.java:482
+#: org/jmol/export/dialog/Dialog.java:483
 msgid "Up One Level"
 msgstr "상위 폴더"
 
-#: org/jmol/export/dialog/Dialog.java:487
+#: org/jmol/export/dialog/Dialog.java:488
 msgid "OK"
 msgstr "확인"
 
-#: org/jmol/export/dialog/FilePreview.java:71
+#: org/jmol/export/dialog/FilePreview.java:72
 msgid "Preview"
 msgstr "미리보기"
 
-#: org/jmol/export/dialog/FilePreview.java:91
+#: org/jmol/export/dialog/FilePreview.java:92
 msgid "Append models"
 msgstr "모델 추가"
+
+#: org/jmol/export/dialog/FilePreview.java:94
+#, fuzzy
+msgid "PDB cartoons"
+msgstr "카툰"
 
 #: org/jmol/i18n/GT.java:139
 msgid "Arabic"
@@ -1824,7 +1830,7 @@ msgid "Element?"
 msgstr ""
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1338
-#: org/jmol/script/ScriptEvaluator.java:2837
+#: org/jmol/script/ScriptEvaluator.java:2836
 msgid "bad argument count"
 msgstr "인자 개수 오류"
 
@@ -1834,7 +1840,7 @@ msgid "invalid context for {0}"
 msgstr "{0}에 대한 잘못된 컨텍스트"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1344
-#: org/jmol/script/ScriptEvaluator.java:2864
+#: org/jmol/script/ScriptEvaluator.java:2863
 msgid "command expected"
 msgstr "명령이 필요함"
 
@@ -1843,7 +1849,7 @@ msgid "{ number number number } expected"
 msgstr "{ 숫자 숫자 숫자 } 필요"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1350
-#: org/jmol/script/ScriptEvaluator.java:2873
+#: org/jmol/script/ScriptEvaluator.java:2872
 msgid "unexpected end of script command"
 msgstr "예상치않은 스크립트 명령"
 
@@ -1878,7 +1884,7 @@ msgid "missing END for {0}"
 msgstr "{0}에 END가 없습니다"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1374
-#: org/jmol/script/ScriptEvaluator.java:2940
+#: org/jmol/script/ScriptEvaluator.java:2939
 msgid "number expected"
 msgstr "숫자 필요"
 
@@ -1906,7 +1912,7 @@ msgid "unrecognized expression token: {0}"
 msgstr "이해할  수 없는 수식 토큰: {0}"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1392
-#: org/jmol/script/ScriptEvaluator.java:2989
+#: org/jmol/script/ScriptEvaluator.java:2988
 #, java-format
 msgid "unrecognized {0} parameter"
 msgstr "이해할 수 없는 {0} 파라메터"
@@ -1920,265 +1926,267 @@ msgstr "이해할 수 없는 토큰: {0}"
 msgid "script compiler ERROR: "
 msgstr "스크립트 컴파일러 오류: "
 
-#: org/jmol/script/ScriptEvaluator.java:2682
-#: org/jmol/script/ScriptEvaluator.java:10500
+#: org/jmol/script/ScriptEvaluator.java:2681
+#: org/jmol/script/ScriptEvaluator.java:10522
 msgid "script ERROR: "
 msgstr "스크립트 오류: "
 
-#: org/jmol/script/ScriptEvaluator.java:2831
+#: org/jmol/script/ScriptEvaluator.java:2830
 msgid "x y z axis expected"
 msgstr "x y z 축 필요"
 
-#: org/jmol/script/ScriptEvaluator.java:2834
+#: org/jmol/script/ScriptEvaluator.java:2833
 #, java-format
 msgid "{0} not allowed with background model displayed"
 msgstr ""
 
-#: org/jmol/script/ScriptEvaluator.java:2840
+#: org/jmol/script/ScriptEvaluator.java:2839
 msgid "Miller indices cannot all be zero."
 msgstr "밀러 지수는 모든 값이 0일 수 없음"
 
-#: org/jmol/script/ScriptEvaluator.java:2843
+#: org/jmol/script/ScriptEvaluator.java:2842
 msgid "bad [R,G,B] color"
 msgstr "잘못된 [R,G,B] 색상"
 
-#: org/jmol/script/ScriptEvaluator.java:2846
+#: org/jmol/script/ScriptEvaluator.java:2845
 msgid "boolean expected"
 msgstr "부울린값 필요"
 
-#: org/jmol/script/ScriptEvaluator.java:2849
+#: org/jmol/script/ScriptEvaluator.java:2848
 msgid "boolean or number expected"
 msgstr "부울린 혹은 숫자 필요"
 
-#: org/jmol/script/ScriptEvaluator.java:2852
+#: org/jmol/script/ScriptEvaluator.java:2851
 #, java-format
 msgid "boolean, number, or {0} expected"
 msgstr "부울린, 숫자 혹은 {0} 필요"
 
-#: org/jmol/script/ScriptEvaluator.java:2855
+#: org/jmol/script/ScriptEvaluator.java:2854
 msgid "cannot set value"
 msgstr ""
 
-#: org/jmol/script/ScriptEvaluator.java:2858
+#: org/jmol/script/ScriptEvaluator.java:2857
 msgid "color expected"
 msgstr "색상 필요"
 
-#: org/jmol/script/ScriptEvaluator.java:2861
+#: org/jmol/script/ScriptEvaluator.java:2860
 msgid "a color or palette name (Jmol, Rasmol) is required"
 msgstr "색상 혹은 팔레트 이름 (Jmol, Rasmol)이 필요"
 
-#: org/jmol/script/ScriptEvaluator.java:2867
+#: org/jmol/script/ScriptEvaluator.java:2866
 msgid "{x y z} or $name or (atom expression) required"
 msgstr ""
 
-#: org/jmol/script/ScriptEvaluator.java:2870
+#: org/jmol/script/ScriptEvaluator.java:2869
 msgid "draw object not defined"
 msgstr "그림 객체가 정의 안됨"
 
-#: org/jmol/script/ScriptEvaluator.java:2876
+#: org/jmol/script/ScriptEvaluator.java:2875
 msgid "valid (atom expression) expected"
 msgstr "유효한 (원자 표현식) 필요"
 
-#: org/jmol/script/ScriptEvaluator.java:2879
+#: org/jmol/script/ScriptEvaluator.java:2878
 msgid "(atom expression) or integer expected"
 msgstr "(원자 표현식) 혹은 정수 필요"
 
-#: org/jmol/script/ScriptEvaluator.java:2882
+#: org/jmol/script/ScriptEvaluator.java:2881
 msgid "filename expected"
 msgstr "파일 이름 필요"
 
-#: org/jmol/script/ScriptEvaluator.java:2885
+#: org/jmol/script/ScriptEvaluator.java:2884
 msgid "file not found"
 msgstr "파일 없음"
 
-#: org/jmol/script/ScriptEvaluator.java:2888
+#: org/jmol/script/ScriptEvaluator.java:2887
 msgid "incompatible arguments"
 msgstr "비호환 인자"
 
-#: org/jmol/script/ScriptEvaluator.java:2891
+#: org/jmol/script/ScriptEvaluator.java:2890
 msgid "insufficient arguments"
 msgstr "부족한 인자"
 
-#: org/jmol/script/ScriptEvaluator.java:2894
+#: org/jmol/script/ScriptEvaluator.java:2893
 msgid "integer expected"
 msgstr "정수가 필요"
 
-#: org/jmol/script/ScriptEvaluator.java:2897
+#: org/jmol/script/ScriptEvaluator.java:2896
 #, java-format
 msgid "integer out of range ({0} - {1})"
 msgstr "정수가 범위에 벗어남 ({0} - {1})"
 
-#: org/jmol/script/ScriptEvaluator.java:2900
+#: org/jmol/script/ScriptEvaluator.java:2899
 msgid "invalid argument"
 msgstr "잘못된 인자"
 
-#: org/jmol/script/ScriptEvaluator.java:2903
+#: org/jmol/script/ScriptEvaluator.java:2902
 msgid "invalid parameter order"
 msgstr "잘못된 인자 순서"
 
-#: org/jmol/script/ScriptEvaluator.java:2906
+#: org/jmol/script/ScriptEvaluator.java:2905
 msgid "keyword expected"
 msgstr "키워드 필요"
 
-#: org/jmol/script/ScriptEvaluator.java:2909
+#: org/jmol/script/ScriptEvaluator.java:2908
 msgid "no MO coefficient data available"
 msgstr "MO 계수 정보 없음"
 
-#: org/jmol/script/ScriptEvaluator.java:2912
+#: org/jmol/script/ScriptEvaluator.java:2911
 #, java-format
 msgid "An MO index from 1 to {0} is required"
 msgstr "1에서 {0} 사이의 MO 지정값이 필요함"
 
-#: org/jmol/script/ScriptEvaluator.java:2915
+#: org/jmol/script/ScriptEvaluator.java:2914
 msgid "no MO basis/coefficient data available for this frame"
 msgstr "현재 프레임에 대한 MO basis/계수 정보가 없음"
 
-#: org/jmol/script/ScriptEvaluator.java:2918
+#: org/jmol/script/ScriptEvaluator.java:2917
 msgid "no MO occupancy data available"
 msgstr "MO 점유값이 없음"
 
-#: org/jmol/script/ScriptEvaluator.java:2921
+#: org/jmol/script/ScriptEvaluator.java:2920
 msgid "Only one molecular orbital is available in this file"
 msgstr "단 하나의 분자궤도가 있습니다"
 
-#: org/jmol/script/ScriptEvaluator.java:2924
+#: org/jmol/script/ScriptEvaluator.java:2923
 #, java-format
 msgid "{0} require that only one model be displayed"
 msgstr "{0}(은)는 단 하나의 모델만 표시됨"
 
-#: org/jmol/script/ScriptEvaluator.java:2927
+#: org/jmol/script/ScriptEvaluator.java:2926
 #, java-format
 msgid "{0} requires that only one model be loaded"
 msgstr ""
 
-#: org/jmol/script/ScriptEvaluator.java:2930
+#: org/jmol/script/ScriptEvaluator.java:2929
 msgid "No data available"
 msgstr "아무 정보가 없음"
 
-#: org/jmol/script/ScriptEvaluator.java:2934
+#: org/jmol/script/ScriptEvaluator.java:2933
 msgid ""
 "No partial charges were read from the file; Jmol needs these to render the "
 "MEP data."
-msgstr "부분 전하 정보가 없습니다; Jmol은 MEP 정보를 보여주기 위해 이 정보가필요합니다."
+msgstr ""
+"부분 전하 정보가 없습니다; Jmol은 MEP 정보를 보여주기 위해 이 정보가필요합니"
+"다."
 
-#: org/jmol/script/ScriptEvaluator.java:2937
+#: org/jmol/script/ScriptEvaluator.java:2936
 msgid "No unit cell"
 msgstr "단위 cell 없음"
 
-#: org/jmol/script/ScriptEvaluator.java:2943
+#: org/jmol/script/ScriptEvaluator.java:2942
 #, java-format
 msgid "number must be ({0} or {1})"
 msgstr "유효한 숫자는 ({0} 혹은 {1})"
 
-#: org/jmol/script/ScriptEvaluator.java:2946
+#: org/jmol/script/ScriptEvaluator.java:2945
 #, java-format
 msgid "decimal number out of range ({0} - {1})"
 msgstr "십진수가 범위에 벗어남 ({0} - {1})"
 
-#: org/jmol/script/ScriptEvaluator.java:2949
+#: org/jmol/script/ScriptEvaluator.java:2948
 msgid "object name expected after '$'"
 msgstr "'$' 뒤에 객체 이름이 필요"
 
-#: org/jmol/script/ScriptEvaluator.java:2953
+#: org/jmol/script/ScriptEvaluator.java:2952
 #, java-format
 msgid ""
 "plane expected -- either three points or atom expressions or {0} or {1} or "
 "{2}"
 msgstr "평면이 필요함 -- 세개의 점 혹은 원자 표현식 혹은 {0} 혹은 {1} 혹은 {2}"
 
-#: org/jmol/script/ScriptEvaluator.java:2956
+#: org/jmol/script/ScriptEvaluator.java:2955
 msgid "property name expected"
 msgstr "속성 이름 필요"
 
-#: org/jmol/script/ScriptEvaluator.java:2959
+#: org/jmol/script/ScriptEvaluator.java:2958
 #, java-format
 msgid "space group {0} was not found."
 msgstr "공간 그룹 {0}(을)를 찾을 수 없음"
 
-#: org/jmol/script/ScriptEvaluator.java:2962
+#: org/jmol/script/ScriptEvaluator.java:2961
 msgid "quoted string expected"
 msgstr "따옴표로 감싼 문자열 필요"
 
-#: org/jmol/script/ScriptEvaluator.java:2965
+#: org/jmol/script/ScriptEvaluator.java:2964
 msgid "quoted string or identifier expected"
 msgstr "인용된 문자열 혹은 지정자 필요"
 
-#: org/jmol/script/ScriptEvaluator.java:2968
+#: org/jmol/script/ScriptEvaluator.java:2967
 msgid "too many rotation points were specified"
 msgstr "너무 많은 회전 포인트가 지정됨"
 
-#: org/jmol/script/ScriptEvaluator.java:2971
+#: org/jmol/script/ScriptEvaluator.java:2970
 msgid "too many script levels"
 msgstr "너무 많은 스크립트 단계"
 
-#: org/jmol/script/ScriptEvaluator.java:2974
+#: org/jmol/script/ScriptEvaluator.java:2973
 msgid "unrecognized atom property"
 msgstr "모르는 원자 속성"
 
-#: org/jmol/script/ScriptEvaluator.java:2977
+#: org/jmol/script/ScriptEvaluator.java:2976
 msgid "unrecognized bond property"
 msgstr "모르는 결합 속성"
 
-#: org/jmol/script/ScriptEvaluator.java:2980
+#: org/jmol/script/ScriptEvaluator.java:2979
 msgid "unrecognized command"
 msgstr "모르는 명령"
 
-#: org/jmol/script/ScriptEvaluator.java:2983
+#: org/jmol/script/ScriptEvaluator.java:2982
 msgid "runtime unrecognized expression"
 msgstr "런타임시 인식안되는 표현식"
 
-#: org/jmol/script/ScriptEvaluator.java:2986
+#: org/jmol/script/ScriptEvaluator.java:2985
 msgid "unrecognized object"
 msgstr "모르는 객체"
 
-#: org/jmol/script/ScriptEvaluator.java:2993
+#: org/jmol/script/ScriptEvaluator.java:2992
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
 msgstr ""
 
-#: org/jmol/script/ScriptEvaluator.java:2996
+#: org/jmol/script/ScriptEvaluator.java:2995
 #, java-format
 msgid "unrecognized SHOW parameter --  use {0}"
 msgstr "SHOW 인자가 인식안됨 -- {0} 사용"
 
-#: org/jmol/script/ScriptEvaluator.java:3002
+#: org/jmol/script/ScriptEvaluator.java:3001
 #, java-format
 msgid "write what? {0} or {1} \"filename\""
 msgstr "무엇을 쓰나요? {0} 혹은 {1} \"파일이름\""
 
-#: org/jmol/script/ScriptEvaluator.java:7422
+#: org/jmol/script/ScriptEvaluator.java:7444
 #, java-format
 msgid "{0} connections deleted"
 msgstr "{0} 결함 제거"
 
-#: org/jmol/script/ScriptEvaluator.java:7443
+#: org/jmol/script/ScriptEvaluator.java:7465
 #, java-format
 msgid "{0} new bonds; {1} modified"
 msgstr "{0} 새 결합: {1} 변경됨"
 
-#: org/jmol/script/ScriptEvaluator.java:9085
+#: org/jmol/script/ScriptEvaluator.java:9107
 #, java-format
 msgid "file {0} created"
 msgstr ""
 
-#: org/jmol/script/ScriptEvaluator.java:10656
-#: org/jmol/script/ScriptEvaluator.java:10922
+#: org/jmol/script/ScriptEvaluator.java:10678
+#: org/jmol/script/ScriptEvaluator.java:10944
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "{0} 원자 지움"
 
-#: org/jmol/script/ScriptEvaluator.java:11569
-#: org/jmol/script/ScriptEvaluator.java:11988
+#: org/jmol/script/ScriptEvaluator.java:11591
+#: org/jmol/script/ScriptEvaluator.java:12010
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} 수소 결합"
 
-#: org/jmol/script/ScriptEvaluator.java:11941
+#: org/jmol/script/ScriptEvaluator.java:11963
 #, java-format
 msgid "{0} struts added"
 msgstr ""
 
-#: org/jmol/script/ScriptEvaluator.java:15984
+#: org/jmol/script/ScriptEvaluator.java:16018
 msgid "Note: More than one model is involved in this contact!"
 msgstr ""
 
@@ -2227,8 +2235,7 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:125
 #, java-format
-msgid ""
-"click on two points to spin around axis counterclockwise (requires {0})"
+msgid "click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:126
@@ -2437,24 +2444,24 @@ msgstr "{0} 원자 숨김"
 msgid "{0} atoms selected"
 msgstr "{0} 원자 선택"
 
-#: org/jmol/viewer/Viewer.java:4872
+#: org/jmol/viewer/Viewer.java:4875
 #, java-format
 msgid "{0} hydrogens added"
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:4953
+#: org/jmol/viewer/Viewer.java:4956
 msgid "Drag to move label"
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:8752
+#: org/jmol/viewer/Viewer.java:8761
 msgid "clipboard is not accessible -- use signed applet"
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:9599
+#: org/jmol/viewer/Viewer.java:9608
 msgid "Cannot set log file path."
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:9603
+#: org/jmol/viewer/Viewer.java:9612
 #, java-format
 msgid "Setting log file to {0}"
 msgstr ""
@@ -2471,38 +2478,34 @@ msgstr ""
 #~ msgid "Java memory usage"
 #~ msgstr "자바 메모리 사용량"
 
-#, java-format
 #~ msgid "ERROR: cannot set boolean flag to string value: {0}"
 #~ msgstr "오류: 문자열값에 부울린값을 지정할 수 없음: {0}"
 
-#, java-format
 #~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 #~ msgstr "오류: 숫자에 부울린값을 지정할 수 없음: {0}"
 
-#, java-format
 #~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 #~ msgstr "오류: 부울린에 이 값을 넣을 수 없음: {0}"
 
-#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
-#~ msgstr "애플릿이 파일을 만들 수 없습니다. Base64 방식의 JPEG 포맷은 {0}을(를) 사용하세요."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
+#~ "{0}."
+#~ msgstr ""
+#~ "애플릿이 파일을 만들 수 없습니다. Base64 방식의 JPEG 포맷은 {0}을(를) 사용"
+#~ "하세요."
 
 #~ msgid "File creation failed."
 #~ msgstr "파일 생성 오류."
 
-#, java-format
 #~ msgid "File {0}"
 #~ msgstr "파일 {0}"
 
 #~ msgid "File or URL"
 #~ msgstr "파일 혹은 URL"
 
-#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "{0} 삼차원 모델"
 
-#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "{0} 그림"
 

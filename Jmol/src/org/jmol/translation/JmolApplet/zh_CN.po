@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2012-08-25 08:08+0200\n"
+"POT-Creation-Date: 2012-09-03 17:36+0200\n"
 "PO-Revision-Date: 2012-08-24 11:16+0000\n"
 "Last-Translator: Wang Dianjin <Unknown>\n"
 "Language-Team: Simplified Chinese <zh_CN@li.org>\n"
@@ -107,7 +107,9 @@ msgid ""
 "Messages will appear here. Enter commands in the box below. Click the "
 "console Help menu item for on-line help, which will appear in a new browser "
 "window."
-msgstr "信息会显示于此。在下方窗口中键入命令。点击控制台的帮助(Help)菜单可得到在线帮助信息（新窗口中显示）。"
+msgstr ""
+"信息会显示于此。在下方窗口中键入命令。点击控制台的帮助(Help)菜单可得到在线帮"
+"助信息（新窗口中显示）。"
 
 #: org/jmol/console/JmolConsole.java:86
 msgid "Jmol Script Console"
@@ -123,9 +125,9 @@ msgid "Console"
 msgstr "控制台"
 
 #: org/jmol/console/ScriptEditor.java:134
-#: org/jmol/export/dialog/Dialog.java:445
-#: org/jmol/export/dialog/Dialog.java:469
-#: org/jmol/export/dialog/Dialog.java:472
+#: org/jmol/export/dialog/Dialog.java:446
+#: org/jmol/export/dialog/Dialog.java:470
+#: org/jmol/export/dialog/Dialog.java:473
 msgid "Open"
 msgstr "打开"
 
@@ -138,8 +140,7 @@ msgid "Check"
 msgstr "勾选"
 
 #: org/jmol/console/ScriptEditor.java:137
-msgid ""
-"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "回到顶端"
 
 #: org/jmol/console/ScriptEditor.java:138
@@ -172,181 +173,186 @@ msgstr "关闭"
 msgid "File or URL:"
 msgstr "文件或网址(URL)："
 
-#: org/jmol/export/dialog/Dialog.java:271
+#: org/jmol/export/dialog/Dialog.java:272
 msgid "Image Type"
 msgstr "图片格式"
 
-#: org/jmol/export/dialog/Dialog.java:286
-#: org/jmol/export/dialog/Dialog.java:327
+#: org/jmol/export/dialog/Dialog.java:287
+#: org/jmol/export/dialog/Dialog.java:328
 #, java-format
 msgid "JPEG Quality ({0})"
 msgstr "JPEG 品质 ({0})"
 
-#: org/jmol/export/dialog/Dialog.java:300
+#: org/jmol/export/dialog/Dialog.java:301
 #, java-format
 msgid "PNG Compression  ({0})"
 msgstr "PNG 压缩 ({0})"
 
-#: org/jmol/export/dialog/Dialog.java:330
+#: org/jmol/export/dialog/Dialog.java:331
 #, java-format
 msgid "PNG Quality ({0})"
 msgstr "PNG 品质 ({0})"
 
-#: org/jmol/export/dialog/Dialog.java:376
-#: org/jmol/export/dialog/Dialog.java:488
+#: org/jmol/export/dialog/Dialog.java:377
+#: org/jmol/export/dialog/Dialog.java:489
 msgid "Yes"
 msgstr "确定"
 
-#: org/jmol/export/dialog/Dialog.java:376
-#: org/jmol/export/dialog/Dialog.java:486
+#: org/jmol/export/dialog/Dialog.java:377
+#: org/jmol/export/dialog/Dialog.java:487
 msgid "No"
 msgstr "否"
 
-#: org/jmol/export/dialog/Dialog.java:378
+#: org/jmol/export/dialog/Dialog.java:379
 #, java-format
 msgid "Do you want to overwrite file {0}?"
 msgstr "是否覆盖现有文件 {0}?"
 
-#: org/jmol/export/dialog/Dialog.java:379
+#: org/jmol/export/dialog/Dialog.java:380
 msgid "Warning"
 msgstr "警告"
 
-#: org/jmol/export/dialog/Dialog.java:437
+#: org/jmol/export/dialog/Dialog.java:438
 msgid "All Files"
 msgstr "所有文件"
 
-#: org/jmol/export/dialog/Dialog.java:438
-#: org/jmol/export/dialog/Dialog.java:485
+#: org/jmol/export/dialog/Dialog.java:439
+#: org/jmol/export/dialog/Dialog.java:486
 msgid "Cancel"
 msgstr "取消"
 
-#: org/jmol/export/dialog/Dialog.java:440
+#: org/jmol/export/dialog/Dialog.java:441
 msgid "Abort file chooser dialog"
 msgstr "取消文件选择对话框"
 
-#: org/jmol/export/dialog/Dialog.java:442
 #: org/jmol/export/dialog/Dialog.java:443
+#: org/jmol/export/dialog/Dialog.java:444
 msgid "Details"
 msgstr "详细资料"
 
-#: org/jmol/export/dialog/Dialog.java:444
+#: org/jmol/export/dialog/Dialog.java:445
 msgid "Directory"
 msgstr "目录"
 
-#: org/jmol/export/dialog/Dialog.java:447
+#: org/jmol/export/dialog/Dialog.java:448
 msgid "Open selected directory"
 msgstr "打开已选择的目录"
 
-#: org/jmol/export/dialog/Dialog.java:448
+#: org/jmol/export/dialog/Dialog.java:449
 msgid "Attributes"
 msgstr "属性"
 
-#: org/jmol/export/dialog/Dialog.java:449
+#: org/jmol/export/dialog/Dialog.java:450
 msgid "Modified"
 msgstr "已修改"
 
-#: org/jmol/export/dialog/Dialog.java:450
+#: org/jmol/export/dialog/Dialog.java:451
 msgid "Generic File"
 msgstr "一般文件"
 
-#: org/jmol/export/dialog/Dialog.java:451
+#: org/jmol/export/dialog/Dialog.java:452
 msgid "Name"
 msgstr "名称"
 
-#: org/jmol/export/dialog/Dialog.java:452
+#: org/jmol/export/dialog/Dialog.java:453
 msgid "File Name:"
 msgstr "文件名："
 
-#: org/jmol/export/dialog/Dialog.java:453
+#: org/jmol/export/dialog/Dialog.java:454
 msgid "Size"
 msgstr "文件大小"
 
-#: org/jmol/export/dialog/Dialog.java:454
+#: org/jmol/export/dialog/Dialog.java:455
 msgid "Files of Type:"
 msgstr "文件类型"
 
-#: org/jmol/export/dialog/Dialog.java:455
+#: org/jmol/export/dialog/Dialog.java:456
 msgid "Type"
 msgstr "类型"
 
-#: org/jmol/export/dialog/Dialog.java:456
+#: org/jmol/export/dialog/Dialog.java:457
 msgid "Help"
 msgstr "帮助"
 
-#: org/jmol/export/dialog/Dialog.java:458
+#: org/jmol/export/dialog/Dialog.java:459
 msgid "FileChooser help"
 msgstr "文件选择器帮助"
 
-#: org/jmol/export/dialog/Dialog.java:459
 #: org/jmol/export/dialog/Dialog.java:460
+#: org/jmol/export/dialog/Dialog.java:461
 msgid "Home"
 msgstr "用户主目录"
 
-#: org/jmol/export/dialog/Dialog.java:461
 #: org/jmol/export/dialog/Dialog.java:462
+#: org/jmol/export/dialog/Dialog.java:463
 msgid "List"
 msgstr "清单"
 
-#: org/jmol/export/dialog/Dialog.java:463
+#: org/jmol/export/dialog/Dialog.java:464
 msgid "Look In:"
 msgstr "查找位置："
 
-#: org/jmol/export/dialog/Dialog.java:465
+#: org/jmol/export/dialog/Dialog.java:466
 msgid "Error creating new folder"
 msgstr "创建文件夹出错"
 
-#: org/jmol/export/dialog/Dialog.java:466
+#: org/jmol/export/dialog/Dialog.java:467
 msgid "New Folder"
 msgstr "新文件夹"
 
-#: org/jmol/export/dialog/Dialog.java:468
+#: org/jmol/export/dialog/Dialog.java:469
 msgid "Create New Folder"
 msgstr "新建文件夹"
 
-#: org/jmol/export/dialog/Dialog.java:471
+#: org/jmol/export/dialog/Dialog.java:472
 msgid "Open selected file"
 msgstr "打开已选定的文件"
 
-#: org/jmol/export/dialog/Dialog.java:473
-#: org/jmol/export/dialog/Dialog.java:476
+#: org/jmol/export/dialog/Dialog.java:474
+#: org/jmol/export/dialog/Dialog.java:477
 msgid "Save"
 msgstr "保存"
 
-#: org/jmol/export/dialog/Dialog.java:475
+#: org/jmol/export/dialog/Dialog.java:476
 msgid "Save selected file"
 msgstr "保存已选定的文件"
 
-#: org/jmol/export/dialog/Dialog.java:477
+#: org/jmol/export/dialog/Dialog.java:478
 msgid "Save In:"
 msgstr "保存位置："
 
-#: org/jmol/export/dialog/Dialog.java:478
+#: org/jmol/export/dialog/Dialog.java:479
 msgid "Update"
 msgstr "更新"
 
-#: org/jmol/export/dialog/Dialog.java:480
+#: org/jmol/export/dialog/Dialog.java:481
 msgid "Update directory listing"
 msgstr "更新目录列表"
 
-#: org/jmol/export/dialog/Dialog.java:481
+#: org/jmol/export/dialog/Dialog.java:482
 msgid "Up"
 msgstr "向上"
 
-#: org/jmol/export/dialog/Dialog.java:482
+#: org/jmol/export/dialog/Dialog.java:483
 msgid "Up One Level"
 msgstr "向上提升一层"
 
-#: org/jmol/export/dialog/Dialog.java:487
+#: org/jmol/export/dialog/Dialog.java:488
 msgid "OK"
 msgstr "确定"
 
-#: org/jmol/export/dialog/FilePreview.java:71
+#: org/jmol/export/dialog/FilePreview.java:72
 msgid "Preview"
 msgstr "预览"
 
-#: org/jmol/export/dialog/FilePreview.java:91
+#: org/jmol/export/dialog/FilePreview.java:92
 msgid "Append models"
 msgstr "附加模型"
+
+#: org/jmol/export/dialog/FilePreview.java:94
+#, fuzzy
+msgid "PDB cartoons"
+msgstr "卡通"
 
 #: org/jmol/i18n/GT.java:139
 msgid "Arabic"
@@ -672,7 +678,8 @@ msgid ""
 "Use {0} to not use this approximation.\n"
 "\n"
 msgstr ""
-"注意：骨架酰胺氢原子位置存在，将会被忽略。它们的位置将被近似化，象标准DSSP分析中一样。\n"
+"注意：骨架酰胺氢原子位置存在，将会被忽略。它们的位置将被近似化，象标准DSSP分"
+"析中一样。\n"
 "使用 {0} 以停止使用这种近似化。\n"
 "\n"
 
@@ -1829,7 +1836,7 @@ msgid "Element?"
 msgstr "元素？"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1338
-#: org/jmol/script/ScriptEvaluator.java:2837
+#: org/jmol/script/ScriptEvaluator.java:2836
 msgid "bad argument count"
 msgstr "参数数目错误"
 
@@ -1839,7 +1846,7 @@ msgid "invalid context for {0}"
 msgstr "上下文对 {0} 无效"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1344
-#: org/jmol/script/ScriptEvaluator.java:2864
+#: org/jmol/script/ScriptEvaluator.java:2863
 msgid "command expected"
 msgstr "需要指令"
 
@@ -1848,7 +1855,7 @@ msgid "{ number number number } expected"
 msgstr "需要 {数值 数值 数值}"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1350
-#: org/jmol/script/ScriptEvaluator.java:2873
+#: org/jmol/script/ScriptEvaluator.java:2872
 msgid "unexpected end of script command"
 msgstr "非预期的脚本命令结尾"
 
@@ -1883,7 +1890,7 @@ msgid "missing END for {0}"
 msgstr "{0} 缺失 END 结束符"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1374
-#: org/jmol/script/ScriptEvaluator.java:2940
+#: org/jmol/script/ScriptEvaluator.java:2939
 msgid "number expected"
 msgstr "需要数值"
 
@@ -1911,7 +1918,7 @@ msgid "unrecognized expression token: {0}"
 msgstr "无法识别的表达式标记：{0}"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1392
-#: org/jmol/script/ScriptEvaluator.java:2989
+#: org/jmol/script/ScriptEvaluator.java:2988
 #, java-format
 msgid "unrecognized {0} parameter"
 msgstr "无法识别参数：{0}"
@@ -1925,265 +1932,265 @@ msgstr "无法识别标记：{0}"
 msgid "script compiler ERROR: "
 msgstr "脚本编译器错误： "
 
-#: org/jmol/script/ScriptEvaluator.java:2682
-#: org/jmol/script/ScriptEvaluator.java:10500
+#: org/jmol/script/ScriptEvaluator.java:2681
+#: org/jmol/script/ScriptEvaluator.java:10522
 msgid "script ERROR: "
 msgstr "脚本错误： "
 
-#: org/jmol/script/ScriptEvaluator.java:2831
+#: org/jmol/script/ScriptEvaluator.java:2830
 msgid "x y z axis expected"
 msgstr "需要 x y z 轴"
 
-#: org/jmol/script/ScriptEvaluator.java:2834
+#: org/jmol/script/ScriptEvaluator.java:2833
 #, java-format
 msgid "{0} not allowed with background model displayed"
 msgstr "在显示背景模型时不允许 {0}"
 
-#: org/jmol/script/ScriptEvaluator.java:2840
+#: org/jmol/script/ScriptEvaluator.java:2839
 msgid "Miller indices cannot all be zero."
 msgstr "米勒指数(Miller Index)不可为 0"
 
-#: org/jmol/script/ScriptEvaluator.java:2843
+#: org/jmol/script/ScriptEvaluator.java:2842
 msgid "bad [R,G,B] color"
 msgstr "[R,G,B] 颜色值无效"
 
-#: org/jmol/script/ScriptEvaluator.java:2846
+#: org/jmol/script/ScriptEvaluator.java:2845
 msgid "boolean expected"
 msgstr "需要布尔真假值"
 
-#: org/jmol/script/ScriptEvaluator.java:2849
+#: org/jmol/script/ScriptEvaluator.java:2848
 msgid "boolean or number expected"
 msgstr "需要布尔真假值或数值"
 
-#: org/jmol/script/ScriptEvaluator.java:2852
+#: org/jmol/script/ScriptEvaluator.java:2851
 #, java-format
 msgid "boolean, number, or {0} expected"
 msgstr "需要布尔真假值、数值或{0}"
 
-#: org/jmol/script/ScriptEvaluator.java:2855
+#: org/jmol/script/ScriptEvaluator.java:2854
 msgid "cannot set value"
 msgstr "无法设置值"
 
-#: org/jmol/script/ScriptEvaluator.java:2858
+#: org/jmol/script/ScriptEvaluator.java:2857
 msgid "color expected"
 msgstr "需要颜色"
 
-#: org/jmol/script/ScriptEvaluator.java:2861
+#: org/jmol/script/ScriptEvaluator.java:2860
 msgid "a color or palette name (Jmol, Rasmol) is required"
 msgstr "必须有颜色或调色盘名称 (Jmol, Rasmol)"
 
-#: org/jmol/script/ScriptEvaluator.java:2867
+#: org/jmol/script/ScriptEvaluator.java:2866
 msgid "{x y z} or $name or (atom expression) required"
 msgstr "必须有{x y z} 或 $name 或 (原子表示式)"
 
-#: org/jmol/script/ScriptEvaluator.java:2870
+#: org/jmol/script/ScriptEvaluator.java:2869
 msgid "draw object not defined"
 msgstr "未定义绘图对象"
 
-#: org/jmol/script/ScriptEvaluator.java:2876
+#: org/jmol/script/ScriptEvaluator.java:2875
 msgid "valid (atom expression) expected"
 msgstr "需要有效的原子表达式"
 
-#: org/jmol/script/ScriptEvaluator.java:2879
+#: org/jmol/script/ScriptEvaluator.java:2878
 msgid "(atom expression) or integer expected"
 msgstr "需要原子表达式或整数"
 
-#: org/jmol/script/ScriptEvaluator.java:2882
+#: org/jmol/script/ScriptEvaluator.java:2881
 msgid "filename expected"
 msgstr "需要文件名"
 
-#: org/jmol/script/ScriptEvaluator.java:2885
+#: org/jmol/script/ScriptEvaluator.java:2884
 msgid "file not found"
 msgstr "文件未找到"
 
-#: org/jmol/script/ScriptEvaluator.java:2888
+#: org/jmol/script/ScriptEvaluator.java:2887
 msgid "incompatible arguments"
 msgstr "参数不相容"
 
-#: org/jmol/script/ScriptEvaluator.java:2891
+#: org/jmol/script/ScriptEvaluator.java:2890
 msgid "insufficient arguments"
 msgstr "缺少参数"
 
-#: org/jmol/script/ScriptEvaluator.java:2894
+#: org/jmol/script/ScriptEvaluator.java:2893
 msgid "integer expected"
 msgstr "需要整数"
 
-#: org/jmol/script/ScriptEvaluator.java:2897
+#: org/jmol/script/ScriptEvaluator.java:2896
 #, java-format
 msgid "integer out of range ({0} - {1})"
 msgstr "整数超出({0} - {1})范围"
 
-#: org/jmol/script/ScriptEvaluator.java:2900
+#: org/jmol/script/ScriptEvaluator.java:2899
 msgid "invalid argument"
 msgstr "无效参数"
 
-#: org/jmol/script/ScriptEvaluator.java:2903
+#: org/jmol/script/ScriptEvaluator.java:2902
 msgid "invalid parameter order"
 msgstr "参数顺序无效"
 
-#: org/jmol/script/ScriptEvaluator.java:2906
+#: org/jmol/script/ScriptEvaluator.java:2905
 msgid "keyword expected"
 msgstr "需要关键词"
 
-#: org/jmol/script/ScriptEvaluator.java:2909
+#: org/jmol/script/ScriptEvaluator.java:2908
 msgid "no MO coefficient data available"
 msgstr "无分子轨域(MO)的系数数据可用"
 
-#: org/jmol/script/ScriptEvaluator.java:2912
+#: org/jmol/script/ScriptEvaluator.java:2911
 #, java-format
 msgid "An MO index from 1 to {0} is required"
 msgstr "分子轨域(MO)索引值必须介在1到{0}之间"
 
-#: org/jmol/script/ScriptEvaluator.java:2915
+#: org/jmol/script/ScriptEvaluator.java:2914
 msgid "no MO basis/coefficient data available for this frame"
 msgstr "这个结构没有分子轨域(MO)的基底(basis)或参数资料可用"
 
-#: org/jmol/script/ScriptEvaluator.java:2918
+#: org/jmol/script/ScriptEvaluator.java:2917
 msgid "no MO occupancy data available"
 msgstr "没有分子轨域(MO)的占据数据可用"
 
-#: org/jmol/script/ScriptEvaluator.java:2921
+#: org/jmol/script/ScriptEvaluator.java:2920
 msgid "Only one molecular orbital is available in this file"
 msgstr "在这个文件中只有一个分子轨域(MO)可用"
 
-#: org/jmol/script/ScriptEvaluator.java:2924
+#: org/jmol/script/ScriptEvaluator.java:2923
 #, java-format
 msgid "{0} require that only one model be displayed"
 msgstr "{0} 要求只显示一个模型"
 
-#: org/jmol/script/ScriptEvaluator.java:2927
+#: org/jmol/script/ScriptEvaluator.java:2926
 #, java-format
 msgid "{0} requires that only one model be loaded"
 msgstr "{0} 要求仅有一个模型被加载"
 
-#: org/jmol/script/ScriptEvaluator.java:2930
+#: org/jmol/script/ScriptEvaluator.java:2929
 msgid "No data available"
 msgstr "无可用数据"
 
-#: org/jmol/script/ScriptEvaluator.java:2934
+#: org/jmol/script/ScriptEvaluator.java:2933
 msgid ""
 "No partial charges were read from the file; Jmol needs these to render the "
 "MEP data."
 msgstr "未从文件中读取到局部电荷；Jmol需要它们来 MEP 数据。"
 
-#: org/jmol/script/ScriptEvaluator.java:2937
+#: org/jmol/script/ScriptEvaluator.java:2936
 msgid "No unit cell"
 msgstr "无单位晶格"
 
-#: org/jmol/script/ScriptEvaluator.java:2943
+#: org/jmol/script/ScriptEvaluator.java:2942
 #, java-format
 msgid "number must be ({0} or {1})"
 msgstr "数值必需是({0} 或 {1})"
 
-#: org/jmol/script/ScriptEvaluator.java:2946
+#: org/jmol/script/ScriptEvaluator.java:2945
 #, java-format
 msgid "decimal number out of range ({0} - {1})"
 msgstr "十进位数值超出({0} - {1})之间"
 
-#: org/jmol/script/ScriptEvaluator.java:2949
+#: org/jmol/script/ScriptEvaluator.java:2948
 msgid "object name expected after '$'"
 msgstr "'$'之后应该是对象名"
 
-#: org/jmol/script/ScriptEvaluator.java:2953
+#: org/jmol/script/ScriptEvaluator.java:2952
 #, java-format
 msgid ""
 "plane expected -- either three points or atom expressions or {0} or {1} or "
 "{2}"
 msgstr "需要有平面——3个点或原子表示式，或 {0} 或 {1} 或 {2}"
 
-#: org/jmol/script/ScriptEvaluator.java:2956
+#: org/jmol/script/ScriptEvaluator.java:2955
 msgid "property name expected"
 msgstr "需要属性名"
 
-#: org/jmol/script/ScriptEvaluator.java:2959
+#: org/jmol/script/ScriptEvaluator.java:2958
 #, java-format
 msgid "space group {0} was not found."
 msgstr "空间群{0} 未发现"
 
-#: org/jmol/script/ScriptEvaluator.java:2962
+#: org/jmol/script/ScriptEvaluator.java:2961
 msgid "quoted string expected"
 msgstr "需要有加引号的字符串"
 
-#: org/jmol/script/ScriptEvaluator.java:2965
+#: org/jmol/script/ScriptEvaluator.java:2964
 msgid "quoted string or identifier expected"
 msgstr "需要有加引号的字符或标识符"
 
-#: org/jmol/script/ScriptEvaluator.java:2968
+#: org/jmol/script/ScriptEvaluator.java:2967
 msgid "too many rotation points were specified"
 msgstr "指定了太多的旋转点"
 
-#: org/jmol/script/ScriptEvaluator.java:2971
+#: org/jmol/script/ScriptEvaluator.java:2970
 msgid "too many script levels"
 msgstr "脚本层次太多"
 
-#: org/jmol/script/ScriptEvaluator.java:2974
+#: org/jmol/script/ScriptEvaluator.java:2973
 msgid "unrecognized atom property"
 msgstr "无法辩识的原子属性"
 
-#: org/jmol/script/ScriptEvaluator.java:2977
+#: org/jmol/script/ScriptEvaluator.java:2976
 msgid "unrecognized bond property"
 msgstr "无法辩识的化学键属性"
 
-#: org/jmol/script/ScriptEvaluator.java:2980
+#: org/jmol/script/ScriptEvaluator.java:2979
 msgid "unrecognized command"
 msgstr "无法辨识的指令"
 
-#: org/jmol/script/ScriptEvaluator.java:2983
+#: org/jmol/script/ScriptEvaluator.java:2982
 msgid "runtime unrecognized expression"
 msgstr "执行时无法辨识的表示式"
 
-#: org/jmol/script/ScriptEvaluator.java:2986
+#: org/jmol/script/ScriptEvaluator.java:2985
 msgid "unrecognized object"
 msgstr "无法辨识的对象"
 
-#: org/jmol/script/ScriptEvaluator.java:2993
+#: org/jmol/script/ScriptEvaluator.java:2992
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
 msgstr "Jmol 状态脚本中参数 {0} 无法辨识"
 
-#: org/jmol/script/ScriptEvaluator.java:2996
+#: org/jmol/script/ScriptEvaluator.java:2995
 #, java-format
 msgid "unrecognized SHOW parameter --  use {0}"
 msgstr "无法辨识 SHOW 的参数 -- 使用{0}"
 
-#: org/jmol/script/ScriptEvaluator.java:3002
+#: org/jmol/script/ScriptEvaluator.java:3001
 #, java-format
 msgid "write what? {0} or {1} \"filename\""
 msgstr "写什么呢？{0} 或 {1} \"文件名\""
 
-#: org/jmol/script/ScriptEvaluator.java:7422
+#: org/jmol/script/ScriptEvaluator.java:7444
 #, java-format
 msgid "{0} connections deleted"
 msgstr "己删除 {0} 个连接"
 
-#: org/jmol/script/ScriptEvaluator.java:7443
+#: org/jmol/script/ScriptEvaluator.java:7465
 #, java-format
 msgid "{0} new bonds; {1} modified"
 msgstr "{0} 个新化学键; {1} 个己修改"
 
-#: org/jmol/script/ScriptEvaluator.java:9085
+#: org/jmol/script/ScriptEvaluator.java:9107
 #, java-format
 msgid "file {0} created"
 msgstr "已创建文件： {0}"
 
-#: org/jmol/script/ScriptEvaluator.java:10656
-#: org/jmol/script/ScriptEvaluator.java:10922
+#: org/jmol/script/ScriptEvaluator.java:10678
+#: org/jmol/script/ScriptEvaluator.java:10944
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "己删除 {0} 个原子"
 
-#: org/jmol/script/ScriptEvaluator.java:11569
-#: org/jmol/script/ScriptEvaluator.java:11988
+#: org/jmol/script/ScriptEvaluator.java:11591
+#: org/jmol/script/ScriptEvaluator.java:12010
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} 个氢键"
 
-#: org/jmol/script/ScriptEvaluator.java:11941
+#: org/jmol/script/ScriptEvaluator.java:11963
 #, java-format
 msgid "{0} struts added"
 msgstr "已增加 {0} struts"
 
-#: org/jmol/script/ScriptEvaluator.java:15984
+#: org/jmol/script/ScriptEvaluator.java:16018
 msgid "Note: More than one model is involved in this contact!"
 msgstr ""
 
@@ -2232,8 +2239,7 @@ msgstr "点击两点以绕轴顺时钟转动 (需要{0} )"
 
 #: org/jmol/viewer/ActionManager.java:125
 #, java-format
-msgid ""
-"click on two points to spin around axis counterclockwise (requires {0})"
+msgid "click on two points to spin around axis counterclockwise (requires {0})"
 msgstr "点击两点以绕轴逆时钟转动 (需要{0} )"
 
 #: org/jmol/viewer/ActionManager.java:126
@@ -2442,24 +2448,24 @@ msgstr "{0} 个原子己隐藏"
 msgid "{0} atoms selected"
 msgstr "{0} 个原子己选定"
 
-#: org/jmol/viewer/Viewer.java:4872
+#: org/jmol/viewer/Viewer.java:4875
 #, java-format
 msgid "{0} hydrogens added"
 msgstr "{0} 个氢原子已增加"
 
-#: org/jmol/viewer/Viewer.java:4953
+#: org/jmol/viewer/Viewer.java:4956
 msgid "Drag to move label"
 msgstr "拖拽移动标签"
 
-#: org/jmol/viewer/Viewer.java:8752
+#: org/jmol/viewer/Viewer.java:8761
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "不能存取剪贴板——请用使用签署过的小程序 (applet)"
 
-#: org/jmol/viewer/Viewer.java:9599
+#: org/jmol/viewer/Viewer.java:9608
 msgid "Cannot set log file path."
 msgstr "无法设置日志文件路径"
 
-#: org/jmol/viewer/Viewer.java:9603
+#: org/jmol/viewer/Viewer.java:9612
 #, java-format
 msgid "Setting log file to {0}"
 msgstr "设定日志文件为 {0}"
@@ -2467,21 +2473,18 @@ msgstr "设定日志文件为 {0}"
 #~ msgid "Molecular Orbitals"
 #~ msgstr "分子轨道"
 
-#, java-format
 #~ msgid "ERROR: cannot set boolean flag to string value: {0}"
 #~ msgstr "错误：不能把布尔真假值设定为字符串值：{0}"
 
-#, java-format
 #~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 #~ msgstr "错误：不能把布尔真假值标设定为数值：{0}"
 
-#, java-format
 #~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 #~ msgstr "错误：不能把这个变量值设为布尔真假值：{0}"
 
-#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
+#~ "{0}."
 #~ msgstr "不允许用这个小程序创建文件。欲使用 Base64 JPEC 格式，请使用 {0}。"
 
 #~ msgid "File creation failed."
@@ -2493,18 +2496,15 @@ msgstr "设定日志文件为 {0}"
 #~ msgid "About Jmol"
 #~ msgstr "关于 Jmol"
 
-#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "{0} 3D 模型"
 
 #~ msgid "JVXL Isosurface"
 #~ msgstr "JVXL 等值面"
 
-#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "{0} 图像"
 
-#, java-format
 #~ msgid "File {0}"
 #~ msgstr "文件 {0}"
 

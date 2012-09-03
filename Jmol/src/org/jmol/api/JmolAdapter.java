@@ -27,16 +27,12 @@ package org.jmol.api;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.util.Hashtable;
-import java.util.BitSet;
 import java.util.Map;
 
-import javax.vecmath.Point3f;
-
-import org.jmol.constant.EnumStructure;
+import org.jmol.api.JmolFilesReaderInterface;
 import org.jmol.constant.EnumQuantumShell;
 import org.jmol.modelset.Group;
 import org.jmol.util.Elements;
-import org.jmol.util.Quadric;
 import org.jmol.util.JmolEdge;
 import org.jmol.viewer.JmolConstants;
 
@@ -387,9 +383,9 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
    * <p>This method may not return <code>null</code>.
    * @param atomSetCollection The client file
    * @return An AtomIterator
-   * @see AtomIterator
+   * @see JmolAdapterAtomIterator
    */
-  abstract public AtomIterator getAtomIterator(Object atomSetCollection);
+  abstract public JmolAdapterAtomIterator getAtomIterator(Object atomSetCollection);
   /**
    * Get a BondIterator for retrieval of all bonds in the file.
    * 
@@ -398,9 +394,9 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
    * rebonding code to build bonds between atoms.
    * @param atomSetCollection The client file
    * @return A BondIterator or <code>null</code>
-   * @see BondIterator
+   * @see JmolAdapterBondIterator
    */
-  abstract public BondIterator getBondIterator(Object atomSetCollection);
+  abstract public JmolAdapterBondIterator getBondIterator(Object atomSetCollection);
 
   /**
    * Get a StructureIterator.
@@ -408,75 +404,8 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
    * @return A StructureIterator or <code>null</code>
    */
 
-  abstract public StructureIterator getStructureIterator(Object atomSetCollection);
+  abstract public JmolAdapterStructureIterator getStructureIterator(Object atomSetCollection);
 
-  /****************************************************************
-   * AtomIterator is used to enumerate all the <code>clientAtom</code>
-   * objects in a specified frame. 
-   * Note that Java 1.1 does not have java.util.Iterator
-   * so we will define our own AtomIterator
-   ****************************************************************/
-  public abstract class AtomIterator {
-    public abstract boolean hasNext();
-    public int getAtomSetIndex() { return 0; }
-    public BitSet getAtomSymmetry() { return null; }
-    public int getAtomSite() { return Integer.MIN_VALUE; }
-    abstract public Object getUniqueID();
-    public short getElementNumber() { return -1; } // may be atomicNumber + isotopeNumber*128
-    public String getAtomName() { return null; }
-    public int getFormalCharge() { return 0; }
-    public float getPartialCharge() { return Float.NaN; }
-    public Quadric[] getEllipsoid() { return null; }
-    public float getRadius() { return Float.NaN; }
-    abstract public float getX();
-    abstract public float getY();
-    abstract public float getZ();
-    abstract public Point3f getXYZ();
-    public float getVectorX() { return Float.NaN; }
-    public float getVectorY() { return Float.NaN; }
-    public float getVectorZ() { return Float.NaN; }
-    public float getBfactor() { return Float.NaN; }
-    public int getOccupancy() { return 100; }
-    public boolean getIsHetero() { return false; }
-    public int getAtomSerial() { return Integer.MIN_VALUE; }
-    public char getChainID() { return (char)0; }
-    public char getAlternateLocationID() { return (char)0; }
-    public String getGroup3() { return null; }
-    public int getSequenceNumber() { return Integer.MIN_VALUE; }
-    public char getInsertionCode() { return (char)0; }
-  }
-
-  /****************************************************************
-   * BondIterator is used to enumerate all the bonds
-   ****************************************************************/
-
-  public abstract class BondIterator {
-    public abstract boolean hasNext();
-    public abstract Object getAtomUniqueID1();
-    public abstract Object getAtomUniqueID2();
-    public abstract int getEncodedOrder();
-  }
-
-  /****************************************************************
-   * StructureIterator is used to enumerate Structures
-   * Helix, Sheet, Turn
-   ****************************************************************/
-
-  public abstract class StructureIterator {
-    public abstract boolean hasNext();
-    public abstract int getModelIndex();
-    public abstract EnumStructure getStructureType();
-    public abstract EnumStructure getSubstructureType();
-    public abstract String getStructureID();
-    public abstract int getSerialID();
-    public abstract int getStrandCount();
-    public abstract char getStartChainID();
-    public abstract int getStartSequenceNumber();
-    public abstract char getStartInsertionCode();
-    public abstract char getEndChainID();
-    public abstract int getEndSequenceNumber();
-    public abstract char getEndInsertionCode();
-  }
   
   //////////////////////////////////////////////////////////////////
   // range-checking routines

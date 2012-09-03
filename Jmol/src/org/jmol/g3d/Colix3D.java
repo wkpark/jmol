@@ -23,7 +23,6 @@
  */
 
 package org.jmol.g3d;
-
 import org.jmol.util.ColorUtil;
 import org.jmol.util.Int2IntHash;
 import org.jmol.util.Shader;
@@ -74,11 +73,8 @@ class Colix3D {
     if (argb == 0)
       return 0;
     int translucentFlag = 0;
-    if ((argb & 0xFF000000) != 0xFF000000) {
-      //if ((argb & 0xFF000000) == 0) {
-      //  Logger.error("zero alpha channel + non-zero rgb not supported");
-      //  throw new IndexOutOfBoundsException();
-      //}
+    // in JavaScript argb & 0xFF000000 will be a long
+    if ((argb & 0xFF000000) != (0xFF000000 & 0xFF000000)) {
       argb |= 0xFF000000;
       translucentFlag = Graphics3D.TRANSLUCENT_50;
     }
@@ -92,7 +88,8 @@ class Colix3D {
   synchronized static int allocateColix(int argb) {
     // double-check to make sure that someone else did not allocate
     // something of the same color while we were waiting for the lock
-    if ((argb & 0xFF000000) != 0xFF000000)
+    // in JavaScript argb & 0xFF000000 will be a long
+    if ((argb & 0xFF000000) != (0xFF000000 & 0xFF000000))
       throw new IndexOutOfBoundsException();
     for (int i = colixMax; --i >= Graphics3D.SPECIAL_COLIX_MAX; )
       if (argb == argbs[i])

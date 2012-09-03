@@ -40,6 +40,9 @@ import org.jmol.viewer.Viewer;
 
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
+import org.jmol.api.JmolAdapterAtomIterator;
+import org.jmol.api.JmolAdapterBondIterator;
+import org.jmol.api.JmolAdapterStructureIterator;
 import org.jmol.api.JmolBioResolver;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
@@ -733,7 +736,7 @@ public final class ModelLoader {
     int iLast = -1;
     boolean isPdbThisModel = false;
     boolean addH = false;
-    JmolAdapter.AtomIterator iterAtom = adapter.getAtomIterator(atomSetCollection);
+    JmolAdapterAtomIterator iterAtom = adapter.getAtomIterator(atomSetCollection);
     int nRead = 0;
     Model[] models = modelSet.models;
     if (modelSet.modelCount > 0)
@@ -883,7 +886,7 @@ public final class ModelLoader {
   }
 
   private void iterateOverAllNewBonds(JmolAdapter adapter, Object atomSetCollection) {
-    JmolAdapter.BondIterator iterBond = adapter.getBondIterator(atomSetCollection);
+    JmolAdapterBondIterator iterBond = adapter.getBondIterator(atomSetCollection);
     if (iterBond == null)
       return;
     short mad = viewer.getMadBond();
@@ -951,7 +954,7 @@ public final class ModelLoader {
    */
   private void iterateOverAllNewStructures(JmolAdapter adapter,
                                            Object atomSetCollection) {
-    JmolAdapter.StructureIterator iterStructure = adapter
+    JmolAdapterStructureIterator iterStructure = adapter
         .getStructureIterator(atomSetCollection);
     if (iterStructure != null)
       while (iterStructure.hasNext()) {
@@ -1498,7 +1501,7 @@ public final class ModelLoader {
     int n = 0;
     boolean loadAllData = (BitSetUtil.cardinalityOf(bsSelected) == viewer
         .getAtomCount());
-    for (JmolAdapter.AtomIterator iterAtom = adapter
+    for (JmolAdapterAtomIterator iterAtom = adapter
         .getAtomIterator(atomSetCollection); iterAtom.hasNext();) {
       float x = iterAtom.getX();
       float y = iterAtom.getY();

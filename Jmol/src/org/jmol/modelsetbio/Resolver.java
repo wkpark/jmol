@@ -48,6 +48,7 @@ import org.jmol.util.Measure;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.api.JmolAdapter;
+import org.jmol.api.JmolAdapterAtomIterator;
 import org.jmol.api.JmolBioResolver;
 
 /**
@@ -261,7 +262,7 @@ public final class Resolver implements JmolBioResolver {
   private String[][] getLigandBondInfo(JmolAdapter adapter, Object model, String group3) {
     String[][] dataIn = adapter.getBondList(model);
     Map<String, Point3f> htAtoms = new Hashtable<String, Point3f>();
-    JmolAdapter.AtomIterator iterAtom = adapter.getAtomIterator(model);
+    JmolAdapterAtomIterator iterAtom = adapter.getAtomIterator(model);
     while (iterAtom.hasNext())
       htAtoms.put(iterAtom.getAtomName(), iterAtom.getXYZ());      
     String[][] bondInfo = new String[dataIn.length * 2][];

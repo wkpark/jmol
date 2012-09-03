@@ -28,6 +28,7 @@ import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Quaternion;
+import org.jmol.viewer.J2SRequireImport;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.constant.EnumStructure;
 import org.jmol.script.Token;
@@ -40,6 +41,7 @@ import java.util.Map;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
+@J2SRequireImport({java.lang.Short.class,org.jmol.viewer.JmolConstants.class})
 public class Group {
 
   protected int groupIndex;

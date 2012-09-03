@@ -432,6 +432,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       return;
     }
     if (str.startsWith("_symmetry_equiv_pos")
+        || str.startsWith("_space_group_symop")
         || str.startsWith("_space_group_symop")) {
       if (ignoreFileSymmetryOperators) {
         Logger.warn("ignoring file-based symmetry operators");
@@ -1465,10 +1466,12 @@ _struct_site_gen.details
 
   final private static byte SYMOP_XYZ = 0;
   final private static byte SYM_EQUIV_XYZ = 1;
+  final private static byte SYM_SSG_OP = 2;
 
   final private static String[] symmetryOperationsFields = {
       "_space_group_symop_operation_xyz", 
       "_symmetry_equiv_pos_as_xyz", 
+      "_space_group_symop_ssg_operation_algebraic"
   };
 
   /**
@@ -1492,6 +1495,7 @@ _struct_site_gen.details
         switch (fieldProperty(i)) {
         case SYMOP_XYZ:
         case SYM_EQUIV_XYZ:
+        case SYM_SSG_OP:
           setSymmetryOperator(field);
           break;
         }

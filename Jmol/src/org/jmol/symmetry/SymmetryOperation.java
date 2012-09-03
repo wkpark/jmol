@@ -33,6 +33,8 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
+import jspecview.util.TextFormat;
+
 import org.jmol.api.SymmetryInterface;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
@@ -226,6 +228,13 @@ class SymmetryOperation extends Matrix4f {
     String strT;
     int rowPt = -1;
     float decimalMultiplier = 1f;
+    while (xyz.indexOf("x4") >= 0) {
+      Logger.info("ignoring last parameter in " + xyz);
+      xyz = xyz.substring(0, xyz.lastIndexOf(","));
+      xyz = TextFormat.simpleReplace(xyz, "x1", "x");
+      xyz = TextFormat.simpleReplace(xyz, "x2", "y");
+      xyz = TextFormat.simpleReplace(xyz, "x3", "z");
+    }
     xyz += ",";
     for (int i = 0; i < xyz.length(); i++) {
       ch = xyz.charAt(i);

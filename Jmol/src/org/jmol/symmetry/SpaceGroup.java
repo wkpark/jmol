@@ -127,7 +127,7 @@ class SpaceGroup {
 
   int addSymmetry(String xyz, int opId) {
     xyz = xyz.toLowerCase();
-    if (xyz.indexOf("[[") < 0 && 
+    if (xyz.indexOf("[[") < 0 && xyz.indexOf("x4") < 0 &&
         (xyz.indexOf("x") < 0 || xyz.indexOf("y") < 0 || xyz.indexOf("z") < 0))
       return -1;
     return addOperation(xyz, opId);

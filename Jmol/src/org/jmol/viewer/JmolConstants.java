@@ -38,7 +38,8 @@ import java.util.Properties;
 
 import javax.vecmath.Vector3f;
 
-final public class JmolConstants {
+@J2SRequireImport({java.util.Properties.class,java.io.BufferedInputStream.class,java.lang.StringBuffer.class})
+public class JmolConstants {
 
   // axes mode constants --> org.jmol.constant.EnumAxesMode
   // callback constants --> org.jmol.constant.EnumCallback
@@ -68,20 +69,20 @@ final public class JmolConstants {
         // NOTE : date is update in the properties by SVN, and is in the format
         // $Date$"
       }
-    } catch (IOException e) {
+    } catch (Exception e) {
       // Nothing to do
     } finally {
       if (bis != null) {
         try {
           bis.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
           // Nothing to do
         }
       }
       if (is != null) {
         try {
           is.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
           // Nothing to do
         }
       }
@@ -1072,7 +1073,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
         && allCarbohydrates.indexOf("[" + group3.toUpperCase() + "]") >= 0);
   }
 
-  private final static String getGroup3List() {
+  private static String getGroup3List() {
     StringBuffer s = new StringBuffer();
     //for menu presentation order
     for (int i = 1; i < GROUPID_WATER; i++)

@@ -28,12 +28,12 @@ import org.jmol.shape.Shape;
 import org.jmol.util.BitSetUtil;
 
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.Colix;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 import org.jmol.script.Token;
 
-import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.BondIterator;
@@ -52,8 +52,8 @@ public class Dipoles extends Shape {
   final static short DEFAULT_MAD = 5;
   final static float DEFAULT_OFFSETSIDE = 0.40f;
 
-  int dipoleCount = 0;
-  Dipole[] dipoles = new Dipole[4];
+  public int dipoleCount = 0;
+  public Dipole[] dipoles = new Dipole[4];
 
   private Dipole currentDipole;
   private Dipole tempDipole;
@@ -195,7 +195,7 @@ public class Dipoles extends Shape {
     }
 
     if ("color" == propertyName) {
-      colix = Graphics3D.getColix(value);
+      colix = Colix.getColix(value);
       if (isBond) {
         setColixDipole(colix, JmolEdge.BOND_COVALENT_MASK, bs);
       } else if (value != null) {
@@ -416,7 +416,7 @@ public class Dipoles extends Shape {
   }
 
   private void setColixDipole(short colix, int bondTypeMask, BitSet bs) {
-    if (colix == Graphics3D.USE_PALETTE)
+    if (colix == Colix.USE_PALETTE)
       return; // not implemented
     BondIterator iter = modelSet.getBondIterator(bondTypeMask, bs);
     while (iter.hasNext()) {

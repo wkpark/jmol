@@ -33,7 +33,6 @@ import java.util.Map;
 import javax.vecmath.Point3f;
 
 import org.jmol.api.Event;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.i18n.GT;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
@@ -41,6 +40,7 @@ import org.jmol.modelset.MeasurementPending;
 import org.jmol.script.ScriptEvaluator;
 import org.jmol.script.Token;
 import org.jmol.util.BitSetUtil;
+import org.jmol.util.Colix;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Point3fi;
@@ -1054,10 +1054,10 @@ public class ActionManager {
           enterMeasurementMode(nearestAtomIndex);
         }
         addToMeasurement(nearestAtomIndex, null, true);
-        measurementPending.setColix(Graphics3D.MAGENTA);
+        measurementPending.setColix(Colix.MAGENTA);
       } else if (measurementPending != null) {
         measurementPending.setCount(1);
-        measurementPending.setColix(Graphics3D.GOLD);
+        measurementPending.setColix(Colix.GOLD);
       }
       if (measurementPending == null)
         return;

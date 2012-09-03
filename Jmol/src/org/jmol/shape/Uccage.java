@@ -35,7 +35,7 @@ public class Uccage extends FontLineShape {
   @Override
   public void initShape() {
     super.initShape();
-    font3d = g3d.getFont3D(JmolConstants.AXES_DEFAULT_FONTSIZE);
+    font3d = gdata.getFont3D(JmolConstants.AXES_DEFAULT_FONTSIZE);
     myType = "unitcell";
   }
 }

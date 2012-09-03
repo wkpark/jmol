@@ -24,8 +24,8 @@
 
 package org.jmol.shape;
 
-import org.jmol.g3d.Font3D;
 import org.jmol.i18n.GT;
+import org.jmol.util.JmolFont;
 
 import java.util.BitSet;
 
@@ -36,21 +36,21 @@ public class Frank extends FontShape {
   final static String defaultFontName = "SansSerif";
   final static String defaultFontStyle = "Bold";
   final static int defaultFontSize = 16;
-  final static int frankMargin = 4;
+  public final static int frankMargin = 4;
 
-  String frankString = "Jmol";
-  Font3D currentMetricsFont3d;
-  Font3D baseFont3d;
-  int frankWidth;
-  int frankAscent;
-  int frankDescent;
+  public String frankString = "Jmol";
+  JmolFont currentMetricsFont3d;
+  JmolFont baseFont3d;
+  public int frankWidth;
+  public int frankAscent;
+  public int frankDescent;
   int x, y, dx, dy;
 
   @Override
   public void initShape() {
     super.initShape();
     myType = "frank";
-    baseFont3d = font3d = g3d.getFont3D(defaultFontName, defaultFontStyle, defaultFontSize);
+    baseFont3d = font3d = gdata.getFont3D(defaultFontName, defaultFontStyle, defaultFontSize);
     calcMetrics();
   }
 
@@ -67,7 +67,7 @@ public class Frank extends FontShape {
   public boolean checkObjectHovered(int x, int y, BitSet bsVisible) {
     if (!viewer.getShowFrank() || !wasClicked(x, y) || !viewer.menuEnabled())
       return false;
-    if (g3d.isDisplayAntialiased()) {
+    if (gdata.isDisplayAntialiased()) {
       //because hover rendering is done in FIRST pass only
       x <<= 1;
       y <<= 1;
@@ -87,8 +87,8 @@ public class Frank extends FontShape {
     frankAscent = font3d.getAscent();
   }
 
-  void getFont(float imageFontScaling) {
-    font3d = g3d.getFont3DScaled(baseFont3d, imageFontScaling);
+  public void getFont(float imageFontScaling) {
+    font3d = gdata.getFont3DScaled(baseFont3d, imageFontScaling);
     calcMetrics();
   }
 }

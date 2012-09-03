@@ -98,6 +98,7 @@ import org.jmol.shape.Shape;
 import org.jmol.util.Escape;
 
 import org.jmol.util.BinaryDocument;
+import org.jmol.util.Colix;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.ColorUtil;
@@ -132,7 +133,6 @@ import javax.vecmath.Point3i;
 import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
-import org.jmol.g3d.Graphics3D;
 import org.jmol.jvxl.api.MeshDataServer;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.JvxlData;
@@ -151,7 +151,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     meshes = isomeshes = (IsosurfaceMesh[]) ArrayUtil.ensureLength(isomeshes,
         meshCount * 2);
     currentMesh = thisMesh = isomeshes[index] = (m == null ? new IsosurfaceMesh(
-        thisID, g3d, colix, index) : (IsosurfaceMesh) m);
+        thisID, colix, index) : (IsosurfaceMesh) m);
     currentMesh.index = index;
     sg.setJvxlData(jvxlData = thisMesh.jvxlData);
   }
@@ -240,11 +240,11 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
           setProperty("property", new float[viewer.getAtomCount()], null);
           if (colix != 0) {
             thisMesh.colorCommand = "color isosurface "
-                + Graphics3D.getHexCode(colix);
-            setProperty("color", new Integer(Graphics3D.getArgb(colix)), null);
+                + Colix.getHexCode(colix);
+            setProperty("color", new Integer(Colix.getArgb(colix)), null);
           }
         }
-        thisMesh.colorAtoms(Graphics3D.getColix(value), bs);
+        thisMesh.colorAtoms(Colix.getColix(value), bs);
       }
       return;
     }
@@ -258,7 +258,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
     if ("vertexcolor" == propertyName) {
       if (thisMesh != null) {
-        thisMesh.colorVertices(Graphics3D.getColix(value), bs);
+        thisMesh.colorVertices(Colix.getColix(value), bs);
       }
       return;
     }
@@ -268,8 +268,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       Object[] colors = (Object[]) value;
       if (thisMesh != null) {
         thisMesh.colorPhased = true;
-        thisMesh.colix = thisMesh.jvxlData.minColorIndex = Graphics3D.getColix(((Integer) colors[0]).intValue());
-        thisMesh.jvxlData.maxColorIndex = Graphics3D.getColix(((Integer) colors[1]).intValue());
+        thisMesh.colix = thisMesh.jvxlData.minColorIndex = Colix.getColix(((Integer) colors[0]).intValue());
+        thisMesh.jvxlData.maxColorIndex = Colix.getColix(((Integer) colors[1]).intValue());
         thisMesh.jvxlData.isBicolorMap = true;
         thisMesh.jvxlData.colorDensity = false;
         thisMesh.isColorSolid = false;
@@ -372,7 +372,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
     if ("meshcolor" == propertyName) {
       int rgb = ((Integer) value).intValue();
-      meshColix = Graphics3D.getColix(rgb);
+      meshColix = Colix.getColix(rgb);
       if (thisMesh != null)
         thisMesh.meshColix = meshColix;
       return;
@@ -522,7 +522,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       center.set((Point3f) value);
     } else if ("colorRGB" == propertyName) {
       int rgb = ((Integer) value).intValue();
-      defaultColix = Graphics3D.getColix(rgb);
+      defaultColix = Colix.getColix(rgb);
     } else if ("contour" == propertyName) {
       explicitContours = true;
     } else if ("functionXY" == propertyName) {
@@ -839,7 +839,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       if (done || colixes[i] != colix) {
         if (count != 0)
           list1.append(" ").append(count).append(" ").append(
-              (colix == 0 ? 0 : Graphics3D.getArgb(colix)));
+              (colix == 0 ? 0 : Colix.getArgb(colix)));
         if (done)
           break;
         colix = colixes[i];
@@ -895,7 +895,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if (cmd.charAt(0) != '#') {
       if (allowMesh)
         appendCmd(sb, imesh.getState(myType));
-      if (!imesh.isColorSolid && Graphics3D.isColixTranslucent(imesh.colix))
+      if (!imesh.isColorSolid && Colix.isColixTranslucent(imesh.colix))
         appendCmd(sb, "color " + myType + " " + getTranslucentLabel(imesh.colix));
       if (imesh.colorCommand != null) {
         appendCmd(sb, imesh.colorCommand);
@@ -993,7 +993,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     title = null;
     explicitContours = false;
     atomIndex = -1;
-    colix = Graphics3D.ORANGE;
+    colix = Colix.ORANGE;
     defaultColix = meshColix = 0;
     isPhaseColored = isColorExplicit = false;
     //allowContourLines = true; //but not for f(x,y) or plane, which use mesh
@@ -1067,7 +1067,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return colix; // orange
     int argb = (sg.getCutoff() >= 0 ? JmolConstants.argbsIsosurfacePositive
         : JmolConstants.argbsIsosurfaceNegative);
-    return Graphics3D.getColix(argb);
+    return Colix.getColix(argb);
   }
 
   ///////////////////////////////////////////////////
@@ -1079,8 +1079,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     String lcaoCartoon = sg.setLcao();
     //really rotRadians is just one of these -- x, y, or z -- not all
     float rotRadians = rotAxis.x + rotAxis.y + rotAxis.z;
-    defaultColix = Graphics3D.getColix(sg.getColor(1));
-    short colixNeg = Graphics3D.getColix(sg.getColor(-1));
+    defaultColix = Colix.getColix(sg.getColor(1));
+    short colixNeg = Colix.getColix(sg.getColor(-1));
     Vector3f y = new Vector3f();
     boolean isReverse = (lcaoCartoon.length() > 0 && lcaoCartoon.charAt(0) == '-');
     if (isReverse)
@@ -1454,7 +1454,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if (s != null)
       info.put("jvxlInfo", s.replace('\n', ' '));
     info.put("modelIndex", Integer.valueOf(mesh.modelIndex));
-    info.put("color", ColorUtil.colorPointFromInt2(Graphics3D
+    info.put("color", ColorUtil.colorPointFromInt2(Colix
         .getArgb(mesh.colix)));
     if (mesh.colorEncoder != null)
       info.put("colorKey", mesh.colorEncoder.getColorKey());
@@ -1485,7 +1485,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     String s = findValue(x, y, false, bsVisible);
     if (s == null)
       return false;
-    if (g3d.isDisplayAntialiased()) {
+    if (gdata.isDisplayAntialiased()) {
       //because hover rendering is done in FIRST pass only
       x <<= 1;
       y <<= 1;
@@ -1520,7 +1520,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         f = thisMesh.colorEncoder.quantize(f, false);
         s = "" + g + " - " + f;
       }
-      if (g3d.isAntialiased()) {
+      if (gdata.isAntialiased()) {
         x <<= 1;
         y <<= 1;
       }
@@ -1531,7 +1531,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   }
   private final static int MAX_OBJECT_CLICK_DISTANCE_SQUARED = 10 * 10;
   private final Point3i ptXY = new Point3i();
-  int[] keyXy;
+  public int[] keyXy;
 
   @Override
   public Map<String, Object> checkObjectClicked(int x, int y, int action, BitSet bsVisible) {
@@ -1540,7 +1540,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if (!viewer.isBound(action, ActionManager.ACTION_pickIsosurface))
       return null;
     int dmin2 = MAX_OBJECT_CLICK_DISTANCE_SQUARED;
-    if (g3d.isAntialiased()) {
+    if (gdata.isAntialiased()) {
       x <<= 1;
       y <<= 1;
       dmin2 <<= 1;
@@ -1601,7 +1601,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
   private boolean isPickable(IsosurfaceMesh m, BitSet bsVisible) {
     return m.visibilityFlags != 0 && (m.modelIndex < 0
-        || bsVisible.get(m.modelIndex)) && !Graphics3D
+        || bsVisible.get(m.modelIndex)) && !Colix
         .isColixTranslucent(m.colix);
   }
 
@@ -1715,7 +1715,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
    */
   private String findValue(int x, int y, boolean isPicking, BitSet bsVisible) {
     int dmin2 = MAX_OBJECT_CLICK_DISTANCE_SQUARED;
-    if (g3d.isAntialiased()) {
+    if (gdata.isAntialiased()) {
       x <<= 1;
       y <<= 1;
       dmin2 <<= 1;

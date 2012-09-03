@@ -38,9 +38,9 @@ import java.util.Map;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-import org.jmol.g3d.Font3D;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.util.Escape;
+import org.jmol.util.JmolFont;
+import org.jmol.util.GData;
 import org.jmol.viewer.Viewer;
 
 public class _X3dExporter extends _VrmlExporter {
@@ -135,7 +135,7 @@ public class _X3dExporter extends _VrmlExporter {
       tempV1.scale(0.5f);
       output(tempV1);
       output("'><Billboard axisOfRotation='0 0 0'><Transform rotation='1 0 0 1.5708'>");
-      outputCylinderChild(pt1, tempP3, colix, Graphics3D.ENDCAPS_FLAT, radius);
+      outputCylinderChild(pt1, tempP3, colix, GData.ENDCAPS_FLAT, radius);
       output("</Transform></Billboard>");
       output("</Transform>\n");
       
@@ -222,7 +222,7 @@ public class _X3dExporter extends _VrmlExporter {
     output(">\n");
     outputCylinderChild(pt1, pt2, colix, endcaps, radius);
     output("\n</Transform>\n");
-    if (endcaps == Graphics3D.ENDCAPS_SPHERICAL) {
+    if (endcaps == GData.ENDCAPS_SPHERICAL) {
       outputSphere(pt1, radius * 1.01f, colix, true);
       outputSphere(pt2, radius * 1.01f, colix, true);
     }
@@ -247,7 +247,7 @@ public class _X3dExporter extends _VrmlExporter {
             + "' radius='"
             + radius
             + "'"
-            + (endcaps == Graphics3D.ENDCAPS_FLAT ? ""
+            + (endcaps == GData.ENDCAPS_FLAT ? ""
                 : " top='false' bottom='false'") + "/>");
       } else {
         output(cyl + "/>");
@@ -402,7 +402,7 @@ public class _X3dExporter extends _VrmlExporter {
   }
 
   @Override
-  void plotText(int x, int y, int z, short colix, String text, Font3D font3d) {
+  void plotText(int x, int y, int z, short colix, String text, JmolFont font3d) {
     if (z < 3)
       z = viewer.getFrontPlane();
     String useFontStyle = font3d.fontStyle.toUpperCase();

@@ -41,7 +41,8 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
-import org.jmol.g3d.Graphics3D;
+import org.jmol.util.Colix;
+import org.jmol.util.GData;
 import org.jmol.util.Geodesic;
 import org.jmol.util.MeshSurface;
 import org.jmol.util.Quaternion;
@@ -619,7 +620,7 @@ public class _IdtfExporter extends __CartesianExporter {
                                    short colix, byte endcaps, float radius,
                                    Point3f ptX, Point3f ptY, boolean checkRadius) {
     if (ptX != null) {
-      if (endcaps == Graphics3D.ENDCAPS_FLAT) {
+      if (endcaps == GData.ENDCAPS_FLAT) {
         outputEllipse(ptCenter, pt1, ptX, ptY, colix);
         tempP3.set(ptCenter);
         tempP3.sub(ptX);
@@ -627,10 +628,10 @@ public class _IdtfExporter extends __CartesianExporter {
         outputEllipse(ptCenter, pt2, tempP3, ptY, colix);
       }
 
-    } else if (endcaps == Graphics3D.ENDCAPS_SPHERICAL) {
+    } else if (endcaps == GData.ENDCAPS_SPHERICAL) {
       outputSphere(pt1, radius * 1.01f, colix, true);
       outputSphere(pt2, radius * 1.01f, colix, true);
-    } else if (endcaps == Graphics3D.ENDCAPS_FLAT) {
+    } else if (endcaps == GData.ENDCAPS_FLAT) {
       outputCircle(pt1, pt2, colix, radius);
       outputCircle(pt2, pt1, colix, radius);
     }
@@ -638,14 +639,14 @@ public class _IdtfExporter extends __CartesianExporter {
       models.append(getCylinderResource(false));
       haveCylinder = true;
     }
-    if (ptX != null && endcaps == Graphics3D.ENDCAPS_NONE && !haveCylinderIn) {
+    if (ptX != null && endcaps == GData.ENDCAPS_NONE && !haveCylinderIn) {
       models.append(getCylinderResource(true));
       haveCylinderIn = true;
     }
     checkPoint(pt1);
     checkPoint(pt2);
     addColix(colix, false);
-    int n = (ptX != null && endcaps == Graphics3D.ENDCAPS_NONE ? 2 : 1);
+    int n = (ptX != null && endcaps == GData.ENDCAPS_NONE ? 2 : 1);
     for (int i = 0; i < n; i++) {
       String key = "Cylinder" + (i == 0 ? "_" : "In_") + colix;
       List<String> v = htNodes.get(key);
@@ -687,7 +688,7 @@ public class _IdtfExporter extends __CartesianExporter {
     }
     radius = (int) (0.02f * radius);
     for (int i = 0; i < 72; i++) {
-      outputCylinder(pts[i], pts[i + 1], colix, Graphics3D.ENDCAPS_FLAT, radius);
+      outputCylinder(pts[i], pts[i + 1], colix, GData.ENDCAPS_FLAT, radius);
     }
     */
   }
@@ -977,7 +978,7 @@ public class _IdtfExporter extends __CartesianExporter {
 
   @Override
   protected void outputTextPixel(Point3f pt, int argb) {    
-    short colix = Graphics3D.getColix(argb); 
+    short colix = Colix.getColix(argb); 
     outputSphere(pt, 0.02f, colix, true);
   }
 

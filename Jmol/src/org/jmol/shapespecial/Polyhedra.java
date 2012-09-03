@@ -26,14 +26,15 @@ package org.jmol.shapespecial;
 
 import org.jmol.api.AtomIndexIterator;
 import org.jmol.constant.EnumPalette;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.script.Token;
 import org.jmol.shape.AtomShape;
+import org.jmol.util.Colix;
 import org.jmol.util.Escape;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
+import org.jmol.util.Normix;
 
 import java.util.BitSet;
 import javax.vecmath.Point3i;
@@ -47,15 +48,15 @@ public class Polyhedra extends AtomShape {
   private final static float DEFAULT_DISTANCE_FACTOR = 1.85f;
   private final static float DEFAULT_FACECENTEROFFSET = 0.25f;
   private final static int EDGES_NONE = 0;
-  final static int EDGES_ALL = 1;
-  final static int EDGES_FRONT = 2;
+  public final static int EDGES_ALL = 1;
+  public final static int EDGES_FRONT = 2;
   private final static int MAX_VERTICES = 150;
   private final static int FACE_COUNT_MAX = MAX_VERTICES - 3;
   private Point3f[] otherAtoms = new Point3f[MAX_VERTICES + 1];
 
-  int polyhedronCount;
-  Polyhedron[] polyhedrons = new Polyhedron[32];
-  int drawEdges;
+  public int polyhedronCount;
+  public Polyhedron[] polyhedrons = new Polyhedron[32];
+  public int drawEdges;
 
   private float radius;
   private int nVertices;
@@ -243,7 +244,7 @@ public class Polyhedra extends AtomShape {
       Polyhedron p = polyhedrons[i];
       int iAtom = p.centralAtom.getIndex();
       if (centers.get(iAtom))
-        setColixAndPalette(Graphics3D.INHERIT_ALL, pid, iAtom);
+        setColixAndPalette(Colix.INHERIT_ALL, pid, iAtom);
       else
         polyhedrons[newCount++] = p;
     }
@@ -475,8 +476,8 @@ public class Polyhedra extends AtomShape {
             planesT[ipt++] = (byte) nRef;
             Measure.getNormalFromCenter(points[k], points[i], points[j],
                 ptRef, false, normal);
-            normixesT[planeCount++] = (isFlat ? Graphics3D
-                .get2SidedNormix(normal, bsTemp) : Graphics3D.getNormix(normal, bsTemp));
+            normixesT[planeCount++] = (isFlat ? Normix
+                .get2SidedNormix(normal, bsTemp) : Normix.getNormix(normal, bsTemp));
           }
           facet = faceId(i, k, -1);
           if (isCollapsed || isFlat && facetCatalog.indexOf(facet) < 0) {
@@ -486,8 +487,8 @@ public class Polyhedra extends AtomShape {
             planesT[ipt++] = (byte) (isWindingOK ? k : i);
             Measure.getNormalFromCenter(points[j], points[i], ptRef,
                 points[k], false, normal);
-            normixesT[planeCount++] = (isFlat ? Graphics3D
-                .get2SidedNormix(normal, bsTemp) : Graphics3D.getNormix(normal, bsTemp));
+            normixesT[planeCount++] = (isFlat ? Normix
+                .get2SidedNormix(normal, bsTemp) : Normix.getNormix(normal, bsTemp));
           }
           facet = faceId(j, k, -1);
           if (isCollapsed || isFlat && facetCatalog.indexOf(facet) < 0) {
@@ -497,8 +498,8 @@ public class Polyhedra extends AtomShape {
             planesT[ipt++] = (byte) (isWindingOK ? k : j);
             Measure.getNormalFromCenter(points[i], ptRef, points[j],
                 points[k], false, normal);
-            normixesT[planeCount++] = (isFlat ? Graphics3D
-                .get2SidedNormix(normal, bsTemp) : Graphics3D.getNormix(normal, bsTemp));
+            normixesT[planeCount++] = (isFlat ? Normix
+                .get2SidedNormix(normal, bsTemp) : Normix.getNormix(normal, bsTemp));
           }
           if (!isFlat) {
             if (isCollapsed) {
@@ -508,7 +509,7 @@ public class Polyhedra extends AtomShape {
               planesT[ipt++] = (byte) (isWindingOK ? i : j);
               planesT[ipt++] = (byte) (isWindingOK ? j : i);
               planesT[ipt++] = (byte) k;
-              normixesT[planeCount++] = Graphics3D.getNormix(normal, bsTemp);
+              normixesT[planeCount++] = Normix.getNormix(normal, bsTemp);
             }
           }
         }
@@ -550,16 +551,16 @@ public class Polyhedra extends AtomShape {
     return (Math.abs(d) < minDistanceForPlanarity);
   }
 
-  class Polyhedron {
+  public class Polyhedron {
     int modelIndex;
-    final Atom centralAtom;
-    final Point3f[] vertices;
+    public final Atom centralAtom;
+    public final Point3f[] vertices;
     int ptCenter;
     boolean visible;
-    final short[] normixes;
-    byte[] planes;
+    public final short[] normixes;
+    public byte[] planes;
     //int planeCount;
-    int visibilityFlags = 0;
+    public int visibilityFlags = 0;
     boolean collapsed = false;
     float myFaceCenterOffset, myDistanceFactor;
     boolean isFullyLit;

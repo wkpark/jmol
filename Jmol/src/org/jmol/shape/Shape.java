@@ -25,14 +25,15 @@
 
 package org.jmol.shape;
 
+import org.jmol.util.Colix;
+import org.jmol.util.JmolFont;
+import org.jmol.util.GData;
 import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.StateManager;
 import org.jmol.viewer.Viewer;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumPalette;
-import org.jmol.g3d.Font3D;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Group;
@@ -94,7 +95,7 @@ public abstract class Shape {
   public static final float RADIUS_MAX = 4;
   public Viewer viewer; //public for now for Backbone
   public ModelSet modelSet;
-  public Graphics3D g3d;
+  public GData gdata;
   public int shapeID;
   public int myVisibilityFlag;
   protected float translucentLevel;
@@ -105,10 +106,10 @@ public abstract class Shape {
     return viewer;
   }
   
-  final public void initializeShape(Viewer viewer, Graphics3D g3d, ModelSet modelSet,
+  final public void initializeShape(Viewer viewer, GData g3d, ModelSet modelSet,
                                int shapeID) {
     this.viewer = viewer;
-    this.g3d = g3d;
+    this.gdata = g3d;
     this.shapeID = shapeID;
     this.myVisibilityFlag = JmolConstants.getShapeVisibilityFlag(shapeID);
     setModelSet(modelSet);
@@ -389,12 +390,12 @@ public abstract class Shape {
   }
 
   protected short setColix(short colix, byte paletteID, Atom atom) {
-    return (colix == Graphics3D.USE_PALETTE ? viewer.getColixAtomPalette(atom,
+    return (colix == Colix.USE_PALETTE ? viewer.getColixAtomPalette(atom,
         paletteID) : colix);
   }
 
   protected short setColix(short colix, int pid, Bond bond) {
-    return (colix == Graphics3D.USE_PALETTE ? viewer.getColixBondPalette(bond,
+    return (colix == Colix.USE_PALETTE ? viewer.getColixBondPalette(bond,
         pid) : colix);
   }
 
@@ -438,7 +439,7 @@ public abstract class Shape {
     StateManager.appendCmd(s, cmd);
   }
 
-  static public String getFontCommand(String type, Font3D font) {
+  static public String getFontCommand(String type, JmolFont font) {
     if (font == null)
       return "";
     return "font " + type + " " + font.fontSizeNominal + " " + font.fontFace + " "
@@ -450,14 +451,14 @@ public abstract class Shape {
   }
 
   public String getColorCommand(String type, byte pid, short colix) {
-    if (pid == EnumPalette.UNKNOWN.id && colix == Graphics3D.INHERIT_ALL)
+    if (pid == EnumPalette.UNKNOWN.id && colix == Colix.INHERIT_ALL)
       return "";
     return "color " + type + " " + encodeTransColor(pid, colix, translucentAllowed);
   }
 
   private static String encodeTransColor(byte pid, short colix,
                                   boolean translucentAllowed) {
-    if (pid == EnumPalette.UNKNOWN.id && colix == Graphics3D.INHERIT_ALL)
+    if (pid == EnumPalette.UNKNOWN.id && colix == Colix.INHERIT_ALL)
       return "";
     /* nuance here is that some palettes depend upon a
      * point-in-time calculation that takes into account
@@ -475,18 +476,18 @@ public abstract class Shape {
 
   protected static String encodeColor(short colix) {
     // used also by labels for background state (no translucent issues there?)
-    return (Graphics3D.isColixColorInherited(colix) ? "none" : Graphics3D
+    return (Colix.isColixColorInherited(colix) ? "none" : Colix
         .getHexCode(colix));
   }
 
   protected static String getTranslucentLabel(short colix) {
-    return (Graphics3D.isColixTranslucent(colix) ? "translucent "
-        + Graphics3D.getColixTranslucencyFractional(colix): "opaque");
+    return (Colix.isColixTranslucent(colix) ? "translucent "
+        + Colix.getColixTranslucencyFractional(colix): "opaque");
   }
 
   public static short getColix(short[] colixes, int i, Atom atom) {
-    return Graphics3D.getColixInherited(
-        (colixes == null || i >= colixes.length ? Graphics3D.INHERIT_ALL
+    return Colix.getColixInherited(
+        (colixes == null || i >= colixes.length ? Colix.INHERIT_ALL
             : colixes[i]), atom.getColix());
   }
 

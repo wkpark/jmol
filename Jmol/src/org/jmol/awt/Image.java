@@ -46,7 +46,7 @@ import java.net.URL;
 import javax.swing.JPanel;
 
 import org.jmol.api.ApiPlatform;
-import org.jmol.g3d.Font3D;
+import org.jmol.util.JmolFont;
 import org.jmol.util.JpegEncoder;
 import org.jmol.viewer.Viewer;
 
@@ -136,7 +136,7 @@ class Image {
     return grabPixels(imageOffscreen, width, height);
   }
 
-  public static int[] getTextPixels(String text, Font3D font3d, Object gObj,
+  public static int[] getTextPixels(String text, JmolFont font3d, Object gObj,
                                     Object image, int width, int height,
                                     int ascent) {
     Graphics g = (Graphics) gObj;

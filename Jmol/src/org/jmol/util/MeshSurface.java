@@ -12,7 +12,6 @@ import javax.vecmath.Point4f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
-import org.jmol.g3d.Graphics3D;
 import org.jmol.script.Token;
 
 public class MeshSurface {
@@ -157,7 +156,7 @@ public class MeshSurface {
     if (color != 0) {
       if (polygonColixes == null || polygonCount == 0)
         lastColor = 0;
-      short colix = (color == lastColor ? lastColix : (lastColix = Graphics3D
+      short colix = (color == lastColor ? lastColix : (lastColix = Colix
           .getColix(lastColor = color)));      
       setPolygonColix(polygonCount, colix);
     }
@@ -221,18 +220,18 @@ public class MeshSurface {
     bsSlabDisplay = bsDisplay;
     bsSlabGhost = bsGhost;
     slabMeshType = (type.equalsIgnoreCase("mesh") ? Token.mesh : Token.fill);
-    slabColix = Graphics3D.getColixTranslucent(Graphics3D.getColix(color),
+    slabColix = Colix.getColixTranslucent(Colix.getColix(color),
         true, translucency);
   }
 
 
   public BitSet bsDisplay;
   public String getSlabColor() {
-    return (bsSlabGhost == null ? null : Graphics3D.getHexCode(slabColix));
+    return (bsSlabGhost == null ? null : Colix.getHexCode(slabColix));
   }
 
   public String getSlabTranslucency() {
-    return (bsSlabGhost == null ? null : "" + Graphics3D.getColixTranslucencyFractional(slabColix));
+    return (bsSlabGhost == null ? null : "" + Colix.getColixTranslucencyFractional(slabColix));
   }
 
   public String getSlabType() {
@@ -334,10 +333,10 @@ public class MeshSurface {
         bsSlabGhost = new BitSet();
       slabMeshType = ((Integer) colorData[0]).intValue();
       slabColix = ((Short) colorData[1]).shortValue();
-      if (Graphics3D.isColixColorInherited(slabColix))
-        slabColix = Graphics3D.copyColixTranslucency(slabColix, colix);
+      if (Colix.isColixColorInherited(slabColix))
+        slabColix = Colix.copyColixTranslucency(slabColix, colix);
       andCap = false;
-      colix = Graphics3D.getColixTranslucent(colix, false, 0);
+      colix = Colix.getColixTranslucent(colix, false, 0);
     }
 
     
@@ -345,8 +344,8 @@ public class MeshSurface {
     sb.append(andCap ? " cap " : " slab ");
     if (isGhost)
       sb.append("translucent ").append(
-          Graphics3D.getColixTranslucencyFractional(slabColix)).append(" ")
-          .append(Graphics3D.getHexCode(slabColix)).append(" ");
+          Colix.getColixTranslucencyFractional(slabColix)).append(" ")
+          .append(Colix.getHexCode(slabColix)).append(" ");
     switch (slabType) {
     case Token.brillouin:
       sb.append("brillouin");

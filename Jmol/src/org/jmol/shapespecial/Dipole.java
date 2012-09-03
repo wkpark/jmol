@@ -26,40 +26,41 @@ package org.jmol.shapespecial;
 
 import javax.vecmath.Vector3f;
 import javax.vecmath.Point3f;
-import org.jmol.g3d.Graphics3D;
+
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
+import org.jmol.util.Colix;
 import org.jmol.util.Escape;
 
-class Dipole {
+public class Dipole {
   
   String thisID = "";
-  short mad;
-  short colix = 0;
+  public short mad;
+  public short colix = 0;
   short type;
 
-  Point3f origin;
-  Point3f center;
-  Vector3f vector;
+  public Point3f origin;
+  public Point3f center;
+  public Vector3f vector;
 
   String dipoleInfo = "";
-  float dipoleValue;
+  public float dipoleValue;
   
   boolean isUserValue;
-  float offsetSide;
-  float offsetAngstroms;
+  public float offsetSide;
+  public float offsetAngstroms;
   int offsetPercent;
-  int visibilityFlags;
+  public int visibilityFlags;
   int modelIndex;
 
   boolean visible;
-  boolean noCross;
+  public boolean noCross;
   boolean haveAtoms;
   boolean isValid;
 
-  Atom[] atoms = new Atom[2]; //for reference only
+  public Atom[] atoms = new Atom[2]; //for reference only
   Point3f[] coords = new Point3f[2]; //for reference only
-  Bond bond;
+  public Bond bond;
 
   final static short DIPOLE_TYPE_UNKNOWN = 0;
   final static short DIPOLE_TYPE_POINTS = 1;
@@ -83,7 +84,7 @@ class Dipole {
   }
 
   void setTranslucent(boolean isTranslucent, float translucentLevel) {
-    colix = Graphics3D.getColixTranslucent(colix, isTranslucent, translucentLevel);
+    colix = Colix.getColixTranslucent(colix, isTranslucent, translucentLevel);
   }
 
   void set(String thisID, String dipoleInfo, Atom[] atoms, float dipoleValue,

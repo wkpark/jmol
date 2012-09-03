@@ -27,7 +27,7 @@ package org.jmol.shape;
 import java.util.BitSet;
 import java.util.Iterator;
 
-import org.jmol.g3d.Font3D;
+import org.jmol.util.JmolFont;
 
 public abstract class TextShape extends Object2dShape {
 
@@ -52,7 +52,7 @@ public abstract class TextShape extends Object2dShape {
     }
 
     if ("font" == propertyName) {
-      currentFont = (Font3D) value;
+      currentFont = (JmolFont) value;
       if (currentObject == null) {
         if (isAll) {
           Iterator<Text> e = objects.values().iterator();

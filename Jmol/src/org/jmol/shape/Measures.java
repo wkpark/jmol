@@ -26,14 +26,14 @@ package org.jmol.shape;
 
 import org.jmol.api.JmolMeasurementClient;
 import org.jmol.atomdata.RadiusData;
-import org.jmol.g3d.Font3D;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Measurement;
 import org.jmol.modelset.MeasurementData;
 import org.jmol.modelset.MeasurementPending;
 import org.jmol.util.BitSetUtil;
+import org.jmol.util.Colix;
 import org.jmol.util.Escape;
+import org.jmol.util.JmolFont;
 import org.jmol.util.Point3fi;
 import org.jmol.modelset.TickInfo;
 import org.jmol.viewer.JmolConstants;
@@ -58,14 +58,14 @@ public class Measures extends Shape implements JmolMeasurementClient {
 
   private Atom[] atoms;
 
-  int measurementCount = 0;
-  final List<Measurement> measurements = new ArrayList<Measurement>();
-  MeasurementPending measurementPending;
+  public int measurementCount = 0;
+  public final List<Measurement> measurements = new ArrayList<Measurement>();
+  public MeasurementPending measurementPending;
   
-  short mad = (short)-1;
-  short colix; // default to none in order to contrast with background
+  public short mad = (short)-1;
+  public short colix; // default to none in order to contrast with background
   
-  Font3D font3d;
+  public JmolFont font3d;
 
   TickInfo tickInfo;
   TickInfo defaultTickInfo;
@@ -83,7 +83,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
   @Override
   public void initShape() {
     super.initShape();
-    font3d = g3d.getFont3D(JmolConstants.MEASURE_DEFAULT_FONTSIZE);
+    font3d = gdata.getFont3D(JmolConstants.MEASURE_DEFAULT_FONTSIZE);
   }
 
   @Override
@@ -103,7 +103,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
     }
     
     if ("color" == propertyName) {
-      setColor(value == null ? Graphics3D.INHERIT_ALL : Graphics3D.getColix(value));
+      setColor(value == null ? Colix.INHERIT_ALL : Colix.getColix(value));
       return;
     } 
 
@@ -114,7 +114,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
     } 
     
     if ("font" == propertyName) {
-      font3d = (Font3D) value;
+      font3d = (JmolFont) value;
       return;
     }
     
@@ -329,7 +329,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
     for (int i = measurements.size(); --i >= 0; )
       if ((mt = measurements.get(i)) != null
           && (bsSelected != null && bsSelected.get(i) || bsSelected == null
-              && (colix == Graphics3D.INHERIT_ALL || mt.getColix() == Graphics3D.INHERIT_ALL))) {
+              && (colix == Colix.INHERIT_ALL || mt.getColix() == Colix.INHERIT_ALL))) {
         mt.setColix(colix);
         bsColixSet.set(i);
       }
@@ -564,7 +564,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
     return measurements.get(index).getInfoAsString(null);
   }
   
-  void setVisibilityInfo() {
+  public void setVisibilityInfo() {
     BitSet bsModels = viewer.getVisibleFramesBitSet();
     out:
     for (int i = measurementCount; --i >= 0; ) {

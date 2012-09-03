@@ -30,8 +30,8 @@ import java.util.Map;
 
 import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumPalette;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
+import org.jmol.util.Colix;
 import org.jmol.viewer.JmolConstants;
 
 import java.util.Hashtable;
@@ -55,16 +55,16 @@ public class Balls extends AtomShape {
   @Override
   public void setProperty(String propertyName, Object value, BitSet bs) {
     if ("color" == propertyName) {
-      short colix = Graphics3D.getColix(value);
-      if (colix == Graphics3D.INHERIT_ALL)
-        colix = Graphics3D.USE_PALETTE;
+      short colix = Colix.getColix(value);
+      if (colix == Colix.INHERIT_ALL)
+        colix = Colix.USE_PALETTE;
       if (bsColixSet == null)
         bsColixSet = new BitSet();
       byte pid = EnumPalette.pidOf(value);
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
         Atom atom = atoms[i];
         atom.setColixAtom(setColix(colix, pid, atom));
-        bsColixSet.set(i, colix != Graphics3D.USE_PALETTE
+        bsColixSet.set(i, colix != Colix.USE_PALETTE
             || pid != EnumPalette.NONE.id);
         atom.setPaletteID(pid);
       }
@@ -82,13 +82,13 @@ public class Balls extends AtomShape {
         if (n >= values.length)
           return;
         color = Integer.valueOf(values[n++]);
-        short colix = Graphics3D.getColix(color);
-        if (colix == Graphics3D.INHERIT_ALL)
-          colix = Graphics3D.USE_PALETTE;
+        short colix = Colix.getColix(color);
+        if (colix == Colix.INHERIT_ALL)
+          colix = Colix.USE_PALETTE;
         byte pid = EnumPalette.pidOf(color);
         Atom atom = atoms[i];
         atom.setColixAtom(setColix(colix, pid, atom));
-        bsColixSet.set(i, colix != Graphics3D.USE_PALETTE
+        bsColixSet.set(i, colix != Colix.USE_PALETTE
             || pid != EnumPalette.NONE.id);
         atom.setPaletteID(pid);
       }

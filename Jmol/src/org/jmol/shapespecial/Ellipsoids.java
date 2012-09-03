@@ -34,32 +34,32 @@ import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-import org.jmol.g3d.Graphics3D;
 import org.jmol.shape.AtomShape;
+import org.jmol.util.Colix;
 import org.jmol.util.Escape;
 import org.jmol.util.Quadric;
 import org.jmol.viewer.StateManager;
 
 public class Ellipsoids extends AtomShape {
 
-  Map<String, Ellipsoid> htEllipsoids = new Hashtable<String, Ellipsoid>();
-  boolean haveEllipsoids;
-  short[][] colixset;
+  public Map<String, Ellipsoid> htEllipsoids = new Hashtable<String, Ellipsoid>();
+  public boolean haveEllipsoids;
+  public short[][] colixset;
   byte[][] paletteIDset;
-  short[][] madset;
+  public short[][] madset;
 
-  static class Ellipsoid {
+  public static class Ellipsoid {
 
     String id;
-    Vector3f[] axes;
-    float[] lengths;
-    Point3f center = new Point3f(0, 0, 0);
+    public Vector3f[] axes;
+    public float[] lengths;
+    public Point3f center = new Point3f(0, 0, 0);
     double[] coef;
-    short colix = Graphics3D.GOLD;
+    public short colix = Colix.GOLD;
     int modelIndex;
     float scale = 1;
-    boolean visible;
-    boolean isValid;
+    public boolean visible;
+    public boolean isValid;
     boolean isOn = true;
 
     Ellipsoid(String id, int modelIndex) {
@@ -192,7 +192,7 @@ public class Ellipsoids extends AtomShape {
         return;
       }
       if ("color" == propertyName) {
-        ellipsoid.colix = Graphics3D.getColix(value);
+        ellipsoid.colix = Colix.getColix(value);
         return;
       }
       if ("translucentLevel" == propertyName) {
@@ -201,7 +201,7 @@ public class Ellipsoids extends AtomShape {
       }
       if ("translucency" == propertyName) {
         boolean isTranslucent = (value.equals("translucent"));
-        ellipsoid.colix = Graphics3D.getColixTranslucent(ellipsoid.colix,
+        ellipsoid.colix = Colix.getColixTranslucent(ellipsoid.colix,
             isTranslucent, translucentLevel);
         return;
       }

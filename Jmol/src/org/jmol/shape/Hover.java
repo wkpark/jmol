@@ -24,10 +24,10 @@
 
 package org.jmol.shape;
 
-import org.jmol.g3d.Font3D;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.Colix;
 import org.jmol.util.Escape;
+import org.jmol.util.JmolFont;
 
 import java.util.BitSet;
 import java.util.Hashtable;
@@ -41,22 +41,22 @@ public class Hover extends TextShape {
   private final static String FONTSTYLE = "Plain";
   private final static int FONTSIZE = 12;
 
-  Text hoverText;
-  int atomIndex = -1;
-  Point3i xy;
-  String text;
-  String labelFormat = "%U";
-  String[] atomFormats;
-  String specialLabel;
+  public Text hoverText;
+  public int atomIndex = -1;
+  public Point3i xy;
+  public String text;
+  public String labelFormat = "%U";
+  public String[] atomFormats;
+  public String specialLabel;
 
   @Override
   public void initShape() {
     super.initShape();
     isHover = true;
-    Font3D font3d = g3d.getFont3D(FONTFACE, FONTSTYLE, FONTSIZE);
-    short bgcolix = Graphics3D.getColix("#FFFFC3"); // 255, 255, 195
-    short colix = Graphics3D.BLACK;
-    currentObject = hoverText = new Text(g3d, font3d, null, colix, bgcolix, 0, 0,
+    JmolFont font3d = gdata.getFont3D(FONTFACE, FONTSTYLE, FONTSIZE);
+    short bgcolix = Colix.getColix("#FFFFC3"); // 255, 255, 195
+    short colix = Colix.BLACK;
+    currentObject = hoverText = new Text(gdata, font3d, null, colix, bgcolix, 0, 0,
         1, Integer.MIN_VALUE, Object2d.ALIGN_LEFT, 0);
     hoverText.setAdjustForWindow(true);
   }

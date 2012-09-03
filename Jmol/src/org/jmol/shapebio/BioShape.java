@@ -30,7 +30,6 @@ import java.util.Map;
 
 import javax.vecmath.Vector3f;
 
-import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.modelsetbio.BioPolymer;
 import org.jmol.modelsetbio.Monomer;
@@ -38,23 +37,24 @@ import org.jmol.modelsetbio.NucleicMonomer;
 import org.jmol.modelsetbio.NucleicPolymer;
 import org.jmol.shape.Shape;
 import org.jmol.shape.Mesh;
+import org.jmol.util.Colix;
 import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
 
-class BioShape {
+public class BioShape {
 
-  int modelIndex;
-  int modelVisibilityFlags = 0;
+  public int modelIndex;
+  public int modelVisibilityFlags = 0;
 
   BioShapeCollection shape;
   
-  BioPolymer bioPolymer;
+  public BioPolymer bioPolymer;
   
-  Mesh[] meshes;
-  boolean[] meshReady;
+  public Mesh[] meshes;
+  public boolean[] meshReady;
 
-  short[] mads;
-  short[] colixes;
+  public short[] mads;
+  public short[] colixes;
   byte[] paletteIDs;
 
   BitSet bsColixSet;
@@ -62,10 +62,10 @@ class BioShape {
   BitSet bsSizeDefault = new BitSet();
   boolean isActive;
   
-  int monomerCount;
-  Monomer[] monomers;
+  public int monomerCount;
+  public Monomer[] monomers;
 
-  Vector3f[] wingVectors;
+  public Vector3f[] wingVectors;
   int[] leadAtomIndices;
 
   BioShape(BioShapeCollection shape, int modelIndex, BioPolymer bioPolymer) {
@@ -259,7 +259,7 @@ class BioShape {
     return 0;
   }
 
-  void falsifyMesh() {
+  public void falsifyMesh() {
     if (meshReady == null)
       return;
     for (int i = 0; i < monomerCount; i++)
@@ -285,7 +285,7 @@ class BioShape {
       if (bsSelected.get(atomIndex)) {
         colixes[i] = shape.setColix(colix, pid, atomIndex);
         paletteIDs[i] = pid;
-        bsColixSet.set(i, colixes[i] != Graphics3D.INHERIT_ALL);
+        bsColixSet.set(i, colixes[i] != Colix.INHERIT_ALL);
       }
     }
   }
@@ -296,8 +296,8 @@ class BioShape {
       bsColixSet = new BitSet();
     for (int i = monomerCount; --i >= 0; )
       if (bsSelected.get(leadAtomIndices[i])) {
-        colixes[i] = Graphics3D.getColixTranslucent(colixes[i], isTranslucent, translucentLevel);
-        bsColixSet.set(i, colixes[i] != Graphics3D.INHERIT_ALL);
+        colixes[i] = Colix.getColixTranslucent(colixes[i], isTranslucent, translucentLevel);
+        bsColixSet.set(i, colixes[i] != Colix.INHERIT_ALL);
     }
   }
 

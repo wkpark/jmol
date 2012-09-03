@@ -25,11 +25,11 @@
 
 package org.jmol.modelset;
 
-import org.jmol.g3d.Graphics3D;
 
 import java.util.BitSet;
 
 import org.jmol.util.BitSetUtil;
+import org.jmol.util.Colix;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolNode;
 import org.jmol.viewer.JmolConstants;
@@ -175,11 +175,11 @@ public class Bond extends JmolEdge {
   }
 
   public void setTranslucent(boolean isTranslucent, float translucentLevel) {
-    colix = Graphics3D.getColixTranslucent(colix, isTranslucent, translucentLevel);
+    colix = Colix.getColixTranslucent(colix, isTranslucent, translucentLevel);
   }
   
   boolean isTranslucent() {
-    return Graphics3D.isColixTranslucent(colix);
+    return Colix.isColixTranslucent(colix);
     //but may show up translucent anyway!
   }
 
@@ -227,11 +227,11 @@ public class Bond extends JmolEdge {
   }
 
   short getColix1() {
-    return Graphics3D.getColixInherited(colix, atom1.colixAtom);
+    return Colix.getColixInherited(colix, atom1.colixAtom);
   }
 
   short getColix2() {
-    return Graphics3D.getColixInherited(colix, atom2.colixAtom);
+    return Colix.getColixInherited(colix, atom2.colixAtom);
   }
 
   public Atom getOtherAtom(Atom thisAtom) {

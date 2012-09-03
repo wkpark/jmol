@@ -49,6 +49,10 @@ public class Normix {
   private final static Vector3f[] vertexVectors = Geodesic.getVertexVectors(); 
   private final static short[] inverseNormixes = new short[normixCount];
   
+  public static Vector3f getVector(short normix) {
+    return vertexVectors[normix];
+  }
+  
   public static short getInverseNormix(short normix) {
     return inverseNormixes[normix];
   }
@@ -152,10 +156,6 @@ public class Normix {
     return (short)~getNormix(v.x, v.y, v.z, Normix.NORMIX_GEODESIC_LEVEL, bsTemp);
   }
 
-  public static Vector3f getVector(short normix) {
-    return vertexVectors[normix];
-  }
-  
   static short getNormix(double x, double y, double z, int geodesicLevel, BitSet bsConsidered) {
     short champion;
     double t;
@@ -272,134 +272,4 @@ public class Normix {
         : normix < 0 ? shadeIndexes2Sided[~normix] : shadeIndexes[normix]);
   }
 
-  /*
-   * unused in Jmol
-
-  private static double dist2(Vector3f v1, Vector3f v2) {
-    double dx = v1.x - v2.x;
-    double dy = v1.y - v2.y;
-    double dz = v1.z - v2.z;
-    return dx*dx + dy*dy + dz*dz;
-  }
-    
-  private static double dist2(Vector3f v1, double x, double y, double z) {
-    double dx = v1.x - x;
-    double dy = v1.y - y;
-    double dz = v1.z - z;
-    return dx*dx + dy*dy + dz*dz;
-  }
-    
-
-  short[] getFaceNormixes(int level) {
-    if (faceNormixesArrays == null)
-      faceNormixesArrays = new short[NORMIX_GEODESIC_LEVEL + 1][];
-    short[] faceNormixes = faceNormixesArrays[level];
-    if (faceNormixes != null)
-      return faceNormixes;
-    return calcFaceNormixes(level);
-  }
-
-  private final static short[][] faceVertexesArrays = Geodesic.getFaceVertexesArrays();
-  private static short[][] faceNormixesArrays;
-  private final static boolean DEBUG_FACE_VECTORS = false;
-
-  private synchronized short[] calcFaceNormixes(int level) {
-    //Logger.debug("calcFaceNormixes(" + level + ")");
-    short[] faceNormixes = faceNormixesArrays[level];
-    if (faceNormixes != null)
-      return faceNormixes;
-    Vector3f t = new Vector3f();
-    short[] faceVertexes = faceVertexesArrays[level];
-    int j = faceVertexes.length;
-    int faceCount = j / 3;
-    faceNormixes = new short[faceCount];
-    for (int i = faceCount; --i >= 0; ) {
-      Vector3f vA = vertexVectors[faceVertexes[--j]];
-      Vector3f vB = vertexVectors[faceVertexes[--j]];
-      Vector3f vC = vertexVectors[faceVertexes[--j]];
-      t.add(vA, vB);
-      t.add(vC);
-      short normix = getNormix(t);
-      faceNormixes[i] = normix;
-      if (DEBUG_FACE_VECTORS) {
-        Vector3f vN = vertexVectors[normix];
-        
-        double d2At = dist2(t, vA);
-        double d2Bt = dist2(t, vB);
-        double d2Ct = dist2(t, vC);
-        double d2Nt = dist2(t, vN);
-        if (d2At < d2Nt ||
-            d2Bt < d2Nt ||
-            d2Ct < d2Nt) {
-          if (Logger.debugging) {
-            Logger.debug(
-                " d2At =" + d2At +
-                " d2Bt =" + d2Bt +
-                " d2Ct =" + d2Ct +
-                " d2Nt =" + d2Nt);
-          }
-        }
-      }
- 
-      / *
-      double champD = dist2(vertexVectors[normix], t);
-      int champ = normix;
-      for (int k = normixCount; --k >= 0; ) {
-        double d = dist2(vertexVectors[k], t);
-        if (d < champD) {
-          champ = k;
-          champD = d;
-        }
-      }
-      if (champ != normix) {
-        Logger.debug("normix " + normix + " @ " +
-                           dist2(vertexVectors[normix], t) +
-                           "\n" +
-                           "champ " + champ + " @ " +
-                           dist2(vertexVectors[champ], t) +
-                           "\n");
-      }
-      * /
-    }
-    faceNormixesArrays[level] = faceNormixes;
-    return faceNormixes;
-  }
-  
-  short getVisibleNormix(double x, double y, double z,
-                         int[] visibilityBitmap, int level) {
-    int minMapped = Bmp.getMinMappedBit(visibilityBitmap);
-    //Logger.debug("minMapped =" + minMapped);
-    if (minMapped < 0)
-      return -1;
-    int maxMapped = Bmp.getMaxMappedBit(visibilityBitmap);
-    int maxVisible = Geodesic.getVertexCount(level);
-    int max = maxMapped < maxVisible ? maxMapped : maxVisible;
-    Vector3f v;
-    double d;
-    double championDist2;
-    int champion = minMapped;
-    v = vertexVectors[champion];
-    d = x - v.x;
-    championDist2 = d * d;
-    d = y - v.y;
-    championDist2 += d * d;
-    d = z - v.z;
-    championDist2 += d * d;
-
-    for (int challenger = minMapped + 1; challenger < max; ++challenger) {
-      if (! Bmp.getBit(visibilityBitmap, challenger))
-        continue;
-      double challengerDist2 = dist2(vertexVectors[challenger],
-                                     x, y, z);
-      if (challengerDist2 < championDist2) {
-        champion = challenger;
-        championDist2 = challengerDist2;
-      }
-    }
-    //Logger.debug("visible champion=" + champion);
-    if (! Bmp.getBit(visibilityBitmap, champion))
-      throw new IndexOutOfBoundsException();
-    return (short)champion;
-  }
-  */
 }

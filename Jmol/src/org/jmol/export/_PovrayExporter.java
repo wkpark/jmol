@@ -35,7 +35,7 @@ import javax.vecmath.Point4f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
-import org.jmol.g3d.Graphics3D;
+import org.jmol.util.GData;
 import org.jmol.util.Measure;
 import org.jmol.viewer.Viewer;
 
@@ -122,9 +122,9 @@ public class _PovrayExporter extends __RayTracerExporter {
 
   private void writeMacros() {
     output("#default { finish {\n" + "  ambient "
-        + Graphics3D.getAmbientPercent() / 100f + "\n" + "  diffuse "
-        + Graphics3D.getDiffusePercent() / 100f + "\n" + "  specular "
-        + Graphics3D.getSpecularPercent() / 100f + "\n"
+        + GData.getAmbientPercent() / 100f + "\n" + "  diffuse "
+        + GData.getDiffusePercent() / 100f + "\n" + "  specular "
+        + GData.getSpecularPercent() / 100f + "\n"
         + "  roughness .00001\n  metallic\n  phong 0.9\n  phong_size 120\n}}"
         + "\n\n");
 
@@ -191,9 +191,9 @@ public class _PovrayExporter extends __RayTracerExporter {
         + "  #declare shineFactor = 0;\n"
         + " #end\n"
         + " finish {\n" + "  ambient "
-        + Graphics3D.getAmbientPercent() / 100f + "\n" + "  diffuse "
-        + Graphics3D.getDiffusePercent() / 100f + "\n" + "  specular "
-        + Graphics3D.getSpecularPercent() / 100f + "\n"
+        + GData.getAmbientPercent() / 100f + "\n" + "  diffuse "
+        + GData.getDiffusePercent() / 100f + "\n" + "  specular "
+        + GData.getSpecularPercent() / 100f + "\n"
         + "  roughness .00001\n"  
         + "  metallic shineFactor\n"  
         + "  phong 0.9*shineFactor\n"  

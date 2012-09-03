@@ -23,11 +23,12 @@
  */
 package org.jmol.viewer;
 
-import org.jmol.g3d.Graphics3D;
 import org.jmol.script.Token;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.Colix;
 import org.jmol.util.ColorUtil;
 import org.jmol.util.Elements;
+import org.jmol.util.GData;
 import org.jmol.util.Logger;
 
 import java.util.BitSet;
@@ -52,7 +53,7 @@ class ColorManager {
 
   private ColorEncoder propertyColorEncoder = new ColorEncoder(null);
   private Viewer viewer;
-  private Graphics3D g3d;
+  private GData g3d;
 
   // for atoms -- color CPK:
 
@@ -63,9 +64,9 @@ class ColorManager {
 
   private float[] colorData;
 
-  ColorManager(Viewer viewer, Graphics3D g3d) {
+  ColorManager(Viewer viewer, GData gdata) {
     this.viewer = viewer;
-    this.g3d = g3d;
+    g3d = gdata;
     argbsCpk = EnumPalette.argbsCpk;
     altArgbsCpk = ArrayUtil.arrayCopy(JmolConstants.altArgbsCpk, 0, -1, false);
   }
@@ -102,10 +103,10 @@ class ColorManager {
           altArgbsCpk[i]);
   }
 
-  short colixRubberband = Graphics3D.HOTPINK;
+  short colixRubberband = Colix.HOTPINK;
 
   void setRubberbandArgb(int argb) {
-    colixRubberband = (argb == 0 ? 0 : Graphics3D.getColix(argb));
+    colixRubberband = (argb == 0 ? 0 : Colix.getColix(argb));
   }
 
   /*
@@ -117,8 +118,8 @@ class ColorManager {
   short colixBackgroundContrast;
 
   void setColixBackgroundContrast(int argb) {
-    colixBackgroundContrast = ((ColorUtil.calcGreyscaleRgbFromRgb(argb) & 0xFF) < 128 ? Graphics3D.WHITE
-        : Graphics3D.BLACK);
+    colixBackgroundContrast = ((ColorUtil.calcGreyscaleRgbFromRgb(argb) & 0xFF) < 128 ? Colix.WHITE
+        : Colix.BLACK);
   }
 
   short getColixBondPalette(Bond bond, int pid) {
@@ -128,7 +129,7 @@ class ColorManager {
       return propertyColorEncoder.getColorIndexFromPalette(bond.getEnergy(),
           -2.5f, -0.5f, ColorEncoder.BWR, false);
     }
-    return (argb == 0 ? Graphics3D.RED : Graphics3D.getColix(argb));
+    return (argb == 0 ? Colix.RED : Colix.getColix(argb));
   }
 
   short getColixAtomPalette(Atom atom, byte pid) {
@@ -142,7 +143,7 @@ class ColorManager {
     switch (pid) {
     case StaticConstants.PALETTE_PROPERTY:
       return (colorData == null || atom.index >= colorData.length
-          ? Graphics3D.GRAY : getColixForPropertyValue(colorData[atom.index]));
+          ? Colix.GRAY : getColixForPropertyValue(colorData[atom.index]));
     case StaticConstants.PALETTE_NONE:
     case StaticConstants.PALETTE_CPK:
       // Note that CPK colors can be changed based upon user preference
@@ -255,7 +256,7 @@ class ColorManager {
           : JmolConstants.argbsChainAtom)[chain];
       break;
     }
-    return (argb == 0 ? Graphics3D.HOTPINK : Graphics3D.getColix(argb));
+    return (argb == 0 ? Colix.HOTPINK : Colix.getColix(argb));
   }
 
   private int getJmolOrRasmolArgb(int id, int argb) {

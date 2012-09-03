@@ -30,7 +30,6 @@ import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
 import java.io.BufferedInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Hashtable;
 import java.util.Map;
@@ -1459,17 +1458,17 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     return -1;
   }
   
-  public final static String getShapeClassName(int shapeID) {
+  public final static String getShapeClassName(int shapeID, String renderer) {
     if (shapeID < 0)
       return shapeClassBases[~shapeID];
     return CLASSBASE_OPTIONS + "shape" 
         + (shapeID >= SHAPE_MIN_SECONDARY && shapeID < SHAPE_MAX_SECONDARY 
-            ? "bio."
+            ? "bio"
         : shapeID >= SHAPE_MIN_SPECIAL && shapeID < SHAPE_MAX_SPECIAL 
-            ? "special." 
+            ? "special" 
         : shapeID >= SHAPE_MIN_SURFACE && shapeID < SHAPE_MAX_SURFACE 
-            ? "surface." 
-        : ".") + shapeClassBases[shapeID];
+            ? "surface" 
+        : "") + renderer + "." + shapeClassBases[shapeID];
   }
 
   

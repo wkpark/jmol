@@ -25,8 +25,10 @@ import javax.vecmath.Vector3f;
 import org.jmol.export.image.ImageCreator;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
+import org.jmol.util.Colix;
 import org.jmol.util.ColorUtil;
 import org.jmol.util.Escape;
+import org.jmol.util.GData;
 import org.jmol.util.Logger;
 import org.jmol.util.MeshSurface;
 import org.jmol.util.Quaternion;
@@ -189,9 +191,9 @@ public class _ObjExporter extends __CartesianExporter {
           + String.format("%04x", new Short(colix)));
       debugPrint("  ptCenter=" + ptCenter);
       debugPrint("  pt1=" + pt1);
-      debugPrint("  endcaps=" + endcaps + " NONE=" + Graphics3D.ENDCAPS_NONE
-          + " FLAT=" + Graphics3D.ENDCAPS_FLAT + " SPHERICAL="
-          + Graphics3D.ENDCAPS_SPHERICAL);
+      debugPrint("  endcaps=" + endcaps + " NONE=" + GData.ENDCAPS_NONE
+          + " FLAT=" + GData.ENDCAPS_FLAT + " SPHERICAL="
+          + GData.ENDCAPS_SPHERICAL);
       debugPrint("  radius=" + radius);
       debugPrint("  pt2=" + pt2);
       debugPrint("  ptX=" + ptX);
@@ -203,7 +205,7 @@ public class _ObjExporter extends __CartesianExporter {
     }
 
     if (ptX != null) {
-      if (endcaps == Graphics3D.ENDCAPS_FLAT) {
+      if (endcaps == GData.ENDCAPS_FLAT) {
         outputEllipse1(ptCenter, pt1, ptX, ptY, colix);
         tempP3.set(ptCenter);
         tempP3.sub(ptX);
@@ -211,10 +213,10 @@ public class _ObjExporter extends __CartesianExporter {
         outputEllipse1(ptCenter, pt2, tempP3, ptY, colix);
       }
 
-    } else if (endcaps == Graphics3D.ENDCAPS_SPHERICAL) {
+    } else if (endcaps == GData.ENDCAPS_SPHERICAL) {
       outputSphere(pt1, radius * 1.01f, colix, true);
       outputSphere(pt2, radius * 1.01f, colix, true);
-    } else if (endcaps == Graphics3D.ENDCAPS_FLAT) {
+    } else if (endcaps == GData.ENDCAPS_FLAT) {
       outputCircle1(pt1, pt2, colix, radius);
       outputCircle1(pt2, pt1, colix, radius);
     }
@@ -287,7 +289,7 @@ public class _ObjExporter extends __CartesianExporter {
       return;
     }
 
-    short colix = Graphics3D.getColix(argb);
+    short colix = Colix.getColix(argb);
     outputSphere(pt, pixelSize, colix, true);
   }
 
@@ -809,7 +811,7 @@ public class _ObjExporter extends __CartesianExporter {
     Matrix4f matrix = new Matrix4f();
     addTexture(colix, null);
     String name = "Cylinder" + cylinderNum++;
-    int n = (ptX != null && endcaps == Graphics3D.ENDCAPS_NONE ? 2 : 1);
+    int n = (ptX != null && endcaps == GData.ENDCAPS_NONE ? 2 : 1);
     for (int i = 0; i < n; i++) {
       if (ptX == null)
         matrix.set(getRotationMatrix(pt1, pt2, radius));

@@ -33,7 +33,6 @@ import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
 import org.jmol.api.QuantumPlaneCalculationInterface;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.jvxl.api.MeshDataServer;
 import org.jmol.jvxl.api.VertexDataServer;
 import org.jmol.jvxl.calc.MarchingCubes;
@@ -43,6 +42,7 @@ import org.jmol.jvxl.data.JvxlData;
 import org.jmol.jvxl.data.MeshData;
 import org.jmol.jvxl.data.VolumeData;
 import org.jmol.util.BoxInfo;
+import org.jmol.util.Colix;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
@@ -746,11 +746,11 @@ public abstract class SurfaceReader implements VertexDataServer {
     jvxlData.isColorReversed = params.isColorReversed;
     if (!params.colorDensity)
       if (params.isBicolorMap && !params.isContoured || params.colorBySign) {
-        jvxlData.minColorIndex = Graphics3D
-            .getColixTranslucent(Graphics3D.getColix(params.isColorReversed ? params.colorPos
+        jvxlData.minColorIndex = Colix
+            .getColixTranslucent(Colix.getColix(params.isColorReversed ? params.colorPos
                 : params.colorNeg), jvxlData.translucency != 0, jvxlData.translucency);
-        jvxlData.maxColorIndex = Graphics3D
-        .getColixTranslucent(Graphics3D.getColix(params.isColorReversed ? params.colorNeg
+        jvxlData.maxColorIndex = Colix
+        .getColixTranslucent(Colix.getColix(params.isColorReversed ? params.colorNeg
                 : params.colorPos), jvxlData.translucency != 0, jvxlData.translucency);
       }
     jvxlData.isTruncated = (jvxlData.minColorIndex >= 0 && !params.isContoured);
@@ -857,10 +857,10 @@ public abstract class SurfaceReader implements VertexDataServer {
       for (int i = 0; i < n; i++) {
         float v = (values == null ? valueRed + (i + 1) * dv : values[i]);
         jvxlData.contourValuesUsed[i] = v;
-        colors[i] = Graphics3D.getColixTranslucent(params.colorEncoder.getArgb(v));
+        colors[i] = Colix.getColixTranslucent(params.colorEncoder.getArgb(v));
       }
       //TODO -- this strips translucency
-      jvxlData.contourColors = Graphics3D.getHexCodes(colors);
+      jvxlData.contourColors = Colix.getHexCodes(colors);
     }
   }
   

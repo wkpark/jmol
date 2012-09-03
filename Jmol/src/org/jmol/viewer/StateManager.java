@@ -35,7 +35,6 @@ import org.jmol.constant.EnumAxesMode;
 import org.jmol.constant.EnumCallback;
 import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumStereoMode;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.ModelSet;
 import org.jmol.script.ScriptFunction;
@@ -44,6 +43,7 @@ import org.jmol.script.Token;
 import org.jmol.util.Escape;
 
 import org.jmol.util.BitSetUtil;
+import org.jmol.util.GData;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 
@@ -976,7 +976,7 @@ public class StateManager {
       setParameterValue("zSlab", zSlab);  
     }
 
-    //lighting (see Graphics3D.Shade3D
+    //lighting (see GData.Shade3D
 
     int ambientPercent = 45;
     int diffusePercent = 84;
@@ -1321,18 +1321,18 @@ public class StateManager {
 
     String getSpecularState() {
       StringBuffer str = new StringBuffer("");
-      appendCmd(str, "set ambientPercent " + Graphics3D.getAmbientPercent());
-      appendCmd(str, "set diffusePercent " + Graphics3D.getDiffusePercent());
-      appendCmd(str, "set specular " + Graphics3D.getSpecular());
-      appendCmd(str, "set specularPercent " + Graphics3D.getSpecularPercent());
-      appendCmd(str, "set specularPower " + Graphics3D.getSpecularPower());
-      int se = Graphics3D.getSpecularExponent();
-      int pe = Graphics3D.getPhongExponent();
+      appendCmd(str, "set ambientPercent " + GData.getAmbientPercent());
+      appendCmd(str, "set diffusePercent " + GData.getDiffusePercent());
+      appendCmd(str, "set specular " + GData.getSpecular());
+      appendCmd(str, "set specularPercent " + GData.getSpecularPercent());
+      appendCmd(str, "set specularPower " + GData.getSpecularPower());
+      int se = GData.getSpecularExponent();
+      int pe = GData.getPhongExponent();
       if (Math.pow(2, se) == pe)
         appendCmd(str, "set specularExponent " + se);
       else
         appendCmd(str, "set phongExponent " + pe);        
-      appendCmd(str, "set zShadePower " + Graphics3D.getZShadePower());
+      appendCmd(str, "set zShadePower " + GData.getZShadePower());
       return str.toString();
     }
 

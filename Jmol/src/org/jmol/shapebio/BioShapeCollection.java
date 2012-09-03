@@ -31,7 +31,6 @@ import java.util.Map;
 
 import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumPalette;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.Model;
@@ -41,6 +40,7 @@ import org.jmol.modelsetbio.Monomer;
 import org.jmol.shape.Shape;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
+import org.jmol.util.Colix;
 import org.jmol.viewer.JmolConstants;
 /****************************************************************
  * Mps stands for Model-Polymer-Shape
@@ -66,7 +66,7 @@ public abstract class BioShapeCollection extends Shape {
   short madDnaRna = 5000;
   boolean isActive = false;
   
-  BioShape[] bioShapes;
+  public BioShape[] bioShapes;
   
   @Override
   public final void initModelSet() {
@@ -133,7 +133,7 @@ public abstract class BioShapeCollection extends Shape {
     initialize();
     if ("color" == propertyName) {
       byte pid = EnumPalette.pidOf(value);
-      short colix = Graphics3D.getColix(value);
+      short colix = Colix.getColix(value);
       for (int i = bioShapes.length; --i >= 0;) {
         BioShape bioShape = bioShapes[i];
         if (bioShape.monomerCount > 0)
@@ -216,7 +216,7 @@ public abstract class BioShapeCollection extends Shape {
     return bioShapes.length;
   }
 
-  BioShape getBioShape(int i) {
+  public BioShape getBioShape(int i) {
     return bioShapes[i];
   }  
 }

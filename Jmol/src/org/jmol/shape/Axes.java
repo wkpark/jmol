@@ -35,26 +35,26 @@ import org.jmol.viewer.JmolConstants;
 
 public class Axes extends FontLineShape {
 
-  Point3f axisXY = new Point3f();
-  float scale;
+  public Point3f axisXY = new Point3f();
+  public float scale;
   
   private Point3f fixedOrigin;
   final Point3f originPoint = new Point3f();
   final Point3f[] axisPoints = new Point3f[6];
   final static Point3f pt0 = new Point3f();
-  String[] labels;
+  public String[] labels;
   
   {
     for (int i = 6; --i >= 0; )
       axisPoints[i] = new Point3f();
   }
 
-  Point3f getOriginPoint(boolean isDataFrame) {
+  public Point3f getOriginPoint(boolean isDataFrame) {
     return (isDataFrame ? pt0 : originPoint);
   }
   
   final Point3f ptTemp = new Point3f();
-  Point3f getAxisPoint(int i, boolean isDataFrame) {
+  public Point3f getAxisPoint(int i, boolean isDataFrame) {
     if (!isDataFrame && axisXY.z == 0)
       return axisPoints[i];
     ptTemp.set(axisPoints[i]);
@@ -105,7 +105,7 @@ public class Axes extends FontLineShape {
   public void initShape() {
     super.initShape();
     myType = "axes";
-    font3d = g3d.getFont3D(JmolConstants.AXES_DEFAULT_FONTSIZE);
+    font3d = gdata.getFont3D(JmolConstants.AXES_DEFAULT_FONTSIZE);
     EnumAxesMode axesMode = viewer.getAxesMode();
     if (fixedOrigin == null)
       originPoint.set(0, 0, 0);

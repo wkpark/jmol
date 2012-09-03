@@ -4,8 +4,8 @@ import java.util.BitSet;
 
 import javax.vecmath.Point3f;
 
-import org.jmol.api.JmolRendererInterface;
-import org.jmol.g3d.Graphics3D;
+import org.jmol.util.Colix;
+import org.jmol.util.GData;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 
@@ -18,7 +18,7 @@ public abstract class Object2d {
   protected final static String[] hAlignNames = { "", "left", "center", "right",
       "" };
 
-  final protected static int ALIGN_NONE = 0;
+  public final static int ALIGN_NONE = 0;
   final public static int ALIGN_LEFT = 1;
   final protected static int ALIGN_CENTER = 2;
   final protected static int ALIGN_RIGHT = 3;
@@ -31,38 +31,41 @@ public abstract class Object2d {
   final protected static int VALIGN_MIDDLE = 3;
   final public static int VALIGN_XYZ = 4;
 
-  protected boolean isLabelOrHover;
+  public boolean isLabelOrHover;
   protected Viewer viewer;
-  protected JmolRendererInterface g3d;
+  protected GData gdata;
   public Point3f xyz;
   String target;
   protected String script;
-  protected short colix;
-  protected short bgcolix;
-  protected int pointer;
+  public short colix;
+  public short bgcolix;
+  public int pointer;
   
   protected int align;
   public int valign;
-  protected int movableX;
-  protected int movableY;
-  protected int movableZ;
+  public int movableX;
+  public int movableY;
+  public int movableZ;
   protected int movableXPercent = Integer.MAX_VALUE;
   protected int movableYPercent = Integer.MAX_VALUE;
-  protected int movableZPercent = Integer.MAX_VALUE;
+  public int movableZPercent = Integer.MAX_VALUE;
   protected int offsetX;
   protected int offsetY;
-  protected int z;
-  protected int zSlab; // z for slabbing purposes -- may be near an atom
+  public int z;
+  public int zSlab; // z for slabbing purposes -- may be near an atom
   protected int windowWidth;
   protected int windowHeight;
   protected boolean adjustForWindow;
-  protected float boxWidth, boxHeight, boxX, boxY;
+  public float boxWidth;
+  public float boxHeight;
+  public float boxX;
+  public float boxY;
 
   int modelIndex = -1;
-  boolean visible = true;
-  boolean hidden = false;
+  public boolean visible = true;
+  public boolean hidden = false;
 
-  protected float[] boxXY = new float[5];
+  public float[] boxXY = new float[5];
   
   protected float scalePixelsPerMicron;
 
@@ -80,11 +83,11 @@ public abstract class Object2d {
     // not used
   }
   
-  protected Object2d(Viewer viewer, Graphics3D g3d, String target, 
+  protected Object2d(Viewer viewer, GData gdata, String target, 
                      short colix, int valign, int align,
                      float scalePixelsPerMicron) {
     this.viewer = viewer;
-    this.g3d = g3d;
+    this.gdata = gdata;
     isLabelOrHover = false;
     this.target = target;
     if (target.equals("error"))
@@ -116,30 +119,30 @@ public abstract class Object2d {
     adjustForWindow = TF;
   }
 
-  void setColix(short colix) {
+  public void setColix(short colix) {
     this.colix = colix;
   }
 
   void setColix(Object value) {
-    colix = Graphics3D.getColix(value);
+    colix = Colix.getColix(value);
   }
 
   void setTranslucent(float level, boolean isBackground) {
     if (isBackground) {
       if (bgcolix != 0)
-        bgcolix = Graphics3D.getColixTranslucent(bgcolix, !Float.isNaN(level),
+        bgcolix = Colix.getColixTranslucent(bgcolix, !Float.isNaN(level),
             level);
     } else {
-      colix = Graphics3D.getColixTranslucent(colix, !Float.isNaN(level), level);
+      colix = Colix.getColixTranslucent(colix, !Float.isNaN(level), level);
     }
   }
 
-  void setBgColix(short colix) {
+  public void setBgColix(short colix) {
     this.bgcolix = colix;
   }
 
   void setBgColix(Object value) {
-    bgcolix = (value == null ? (short) 0 : Graphics3D.getColix(value));
+    bgcolix = (value == null ? (short) 0 : Colix.getColix(value));
   }
 
   public void setMovableX(int x) {
@@ -180,12 +183,12 @@ public abstract class Object2d {
     movableZPercent = z;
   }
 
-  void setXY(int x, int y) {
+  public void setXY(int x, int y) {
     setMovableX(x);
     setMovableY(y);
   }
 
-  void setZs(int z, int zSlab) {
+  public void setZs(int z, int zSlab) {
     this.z = z;
     this.zSlab = zSlab;
   }
@@ -204,14 +207,14 @@ public abstract class Object2d {
     return script;
   }
 
-  void setOffset(int offset) {
+  public void setOffset(int offset) {
     //Labels only
     offsetX = getXOffset(offset);
     offsetY = getYOffset(offset);
     valign = VALIGN_XY;
   }
 
-  static int getXOffset(int offset) {
+  public static int getXOffset(int offset) {
     switch (offset) {
     case 0:
       return JmolConstants.LABEL_DEFAULT_X_OFFSET;
@@ -222,7 +225,7 @@ public abstract class Object2d {
     }
   }
 
-  static int getYOffset(int offset) {
+  public static int getYOffset(int offset) {
     switch (offset) {
     case 0:
       return -JmolConstants.LABEL_DEFAULT_Y_OFFSET;
@@ -247,7 +250,7 @@ public abstract class Object2d {
     return hAlignNames[align & 3];
   }
 
-  boolean setAlignment(int align) {
+  public boolean setAlignment(int align) {
     if (this.align != align) {
       this.align = align;
       recalc();
@@ -255,29 +258,13 @@ public abstract class Object2d {
     return true;
   }
 
-  void setPointer(int pointer) {
+  public void setPointer(int pointer) {
     this.pointer = pointer;
   }
 
   static String getPointer(int pointer) {
     return ((pointer & POINTER_ON) == 0 ? ""
         : (pointer & POINTER_BACKGROUND) > 0 ? "background" : "on");
-  }
-
-  protected void drawPointer(JmolRendererInterface g3d) {
-    // now draw the pointer, if requested
-
-    if ((pointer & POINTER_ON) != 0) {
-      if (!g3d.setColix((pointer & POINTER_BACKGROUND) != 0 && bgcolix != 0 ? bgcolix
-              : colix))
-        return;
-      if (boxX > movableX)
-        g3d.drawLine(movableX, movableY, zSlab, (int) boxX, (int) (boxY + boxHeight / 2),
-            zSlab);
-      else if (boxX + boxWidth < movableX)
-        g3d.drawLine(movableX, movableY, zSlab, (int) (boxX + boxWidth), 
-            (int) (boxY + boxHeight / 2), zSlab);
-    }
   }
 
   protected void setBoxOffsetsInWindow(float margin, float vMargin, float vTop) {
@@ -302,9 +289,9 @@ public abstract class Object2d {
     boxY = y;
   }
 
-  protected void setWindow(JmolRendererInterface g3d, float scalePixelsPerMicron) {
-    windowWidth = g3d.getRenderWidth();
-    windowHeight = g3d.getRenderHeight();
+  public void setWindow(int width, int height, float scalePixelsPerMicron) {
+    windowWidth = width;
+    windowHeight = height;
     if (this.scalePixelsPerMicron < 0 && scalePixelsPerMicron != 0)
       this.scalePixelsPerMicron = scalePixelsPerMicron;
   }
@@ -312,7 +299,7 @@ public abstract class Object2d {
   public boolean checkObjectClicked(int x, int y, BitSet bsVisible) {
     if (modelIndex >= 0 && !bsVisible.get(modelIndex) || hidden)
       return false;
-    if (g3d.isAntialiased()) {
+    if (gdata.isAntialiased()) {
       x <<= 1;
       y <<= 1;
     }

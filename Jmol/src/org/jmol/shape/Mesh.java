@@ -32,13 +32,14 @@ import java.util.Map;
 import org.jmol.script.Token;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
+import org.jmol.util.Colix;
 import org.jmol.util.Escape;
+import org.jmol.util.GData;
 import org.jmol.util.Measure;
 import org.jmol.util.MeshSurface;
+import org.jmol.util.Normix;
 import org.jmol.util.Quaternion;
-import org.jmol.api.JmolRendererInterface;
 import org.jmol.api.SymmetryInterface;
-import org.jmol.g3d.Graphics3D;
 
 //import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix3f;
@@ -101,11 +102,10 @@ public class Mesh extends MeshSurface {
   /**
    * 
    * @param thisID
-   * @param g3d     IGNORED
    * @param colix
    * @param index
    */
-  public Mesh(String thisID, JmolRendererInterface g3d, short colix, int index) {
+  public Mesh(String thisID, short colix, int index) {
     if (PREVIOUS_MESH_ID.equals(thisID))
       thisID = null;
     this.thisID = thisID;
@@ -125,7 +125,7 @@ public class Mesh extends MeshSurface {
     bsSlabDisplay = null;
     bsSlabGhost = null;
     cappingObject = null;
-    colix = Graphics3D.GOLD;
+    colix = Colix.GOLD;
     colorDensity = false;
     connections = null;
     diameter = 0;
@@ -163,10 +163,10 @@ public class Mesh extends MeshSurface {
     BitSet bsTemp = new BitSet();
     if (haveXyPoints)
       for (int i = normixCount; --i >= 0;)
-        normixes[i] = Graphics3D.NORMIX_NULL;
+        normixes[i] = GData.NORMIX_NULL;
     else
       for (int i = normixCount; --i >= 0;)
-        normixes[i] = Graphics3D.getNormix(normals[i], bsTemp);
+        normixes[i] = Normix.getNormix(normals[i], bsTemp);
     this.lighting = Token.frontlit;
     if (insideOut)
       invertNormixes();
@@ -209,11 +209,11 @@ public class Mesh extends MeshSurface {
 
   private void invertNormixes() {
     for (int i = normixCount; --i >= 0;)
-      normixes[i] = Graphics3D.getInverseNormix(normixes[i]);
+      normixes[i] = Normix.getInverseNormix(normixes[i]);
   }
 
   public void setTranslucent(boolean isTranslucent, float iLevel) {
-    colix = Graphics3D.getColixTranslucent(colix, isTranslucent, iLevel);
+    colix = Colix.getColixTranslucent(colix, isTranslucent, iLevel);
   }
 
   public final Vector3f vAB = new Vector3f();
@@ -278,7 +278,7 @@ public class Mesh extends MeshSurface {
     if (lattice != null)
       s.append(" lattice ").append(Escape.escape(lattice));
     if (meshColix != 0)
-      s.append(" color mesh ").append(Graphics3D.getHexCode(meshColix));
+      s.append(" color mesh ").append(Colix.getHexCode(meshColix));
     s.append(getRendering());
     if (!visible)
       s.append(" hidden");

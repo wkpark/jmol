@@ -24,6 +24,7 @@
 
 package org.jmol.util;
 import javax.vecmath.Point3f;
+import javax.vecmath.Point3i;
 
 /**
  * the Point3fi class allows storage of critical information involving
@@ -58,6 +59,12 @@ public class Point3fi extends Point3f {
 
   public Point3fi(float x, float y, float z) {
     super(x, y, z);
+  }
+
+  public static void set(Point3f p3f, Point3i p3i) {
+    p3f.x = p3i.x;
+    p3f.y = p3i.y;
+    p3f.z = p3i.z;
   }
 
 }

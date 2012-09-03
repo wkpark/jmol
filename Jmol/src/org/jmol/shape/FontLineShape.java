@@ -33,7 +33,7 @@ public abstract class FontLineShape extends FontShape {
 
   // Axes, Bbcage, Uccage
   
-  TickInfo[] tickInfos = new TickInfo[4];
+  public TickInfo[] tickInfos = new TickInfo[4];
 
   @Override
   public void setProperty(String propertyName, Object value, BitSet bs) {

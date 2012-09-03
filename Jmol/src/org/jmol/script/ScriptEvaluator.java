@@ -47,8 +47,6 @@ import org.jmol.constant.EnumPalette;
 import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumStereoMode;
 import org.jmol.constant.EnumVdw;
-import org.jmol.g3d.Font3D;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.i18n.GT;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
@@ -69,8 +67,11 @@ import org.jmol.util.Escape;
 
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BoxInfo;
+import org.jmol.util.Colix;
 import org.jmol.util.ColorUtil;
 import org.jmol.util.Elements;
+import org.jmol.util.JmolFont;
+import org.jmol.util.GData;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
@@ -9733,7 +9734,7 @@ public class ScriptEvaluator {
     case Token.helix:
       viewer.setFrameTitle(modelCount - 1, type.replace('w', ' ') + qFrame
           + " for model " + viewer.getModelNumberDotted(modelIndex));
-      String color = (Graphics3D
+      String color = (Colix
           .getHexCode(viewer.getColixBackgroundContrast()));
       script = "frame 0.0; frame last; reset;"
           + "select visible; wireframe 0; spacefill 3.0; "
@@ -12546,11 +12547,11 @@ public class ScriptEvaluator {
     }
     if (isSyntaxCheck)
       return;
-    if (Graphics3D.getFontStyleID(fontface) >= 0) {
+    if (GData.getFontStyleID(fontface) >= 0) {
       fontstyle = fontface;
       fontface = "SansSerif";
     }
-    Font3D font3d = viewer.getFont3D(fontface, fontstyle, fontsize);
+    JmolFont font3d = viewer.getFont3D(fontface, fontstyle, fontsize);
     shapeManager.loadShape(shapeType);
     setShapeProperty(shapeType, "font", font3d);
     if (scaleAngstromsPerPixel >= 0)
@@ -16227,13 +16228,13 @@ public class ScriptEvaluator {
       float slabTranslucency = (isFloatParameter(++i + 1) ? floatParameter(++i)
           : 0.5f);
       if (isColorParam(i + 1)) {
-        slabColix = Short.valueOf(Graphics3D.getColixTranslucent(Graphics3D
+        slabColix = Short.valueOf(Colix.getColixTranslucent(Colix
             .getColix(getArgbParam(i + 1)), slabTranslucency != 0,
             slabTranslucency));
         i = iToken;
       } else {
-        slabColix = Short.valueOf(Graphics3D.getColixTranslucent(
-            Graphics3D.INHERIT_COLOR, slabTranslucency != 0, slabTranslucency));
+        slabColix = Short.valueOf(Colix.getColixTranslucent(
+            Colix.INHERIT_COLOR, slabTranslucency != 0, slabTranslucency));
       }
       switch (tok = tokAt(i + 1)) {
       case Token.mesh:
@@ -17104,7 +17105,7 @@ public class ScriptEvaluator {
           if (getToken(i + 1).tok == Token.string) {
             colorScheme = parameterAsString(++i);
             if (colorScheme.indexOf(" ") > 0) {
-              discreteColixes = Graphics3D.getColixArray(colorScheme);
+              discreteColixes = Colix.getColixArray(colorScheme);
               if (discreteColixes == null)
                 error(ERROR_badRGBColor);
             }

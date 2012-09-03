@@ -43,11 +43,11 @@ import org.jmol.bspt.Bspf;
 import org.jmol.constant.EnumPalette;
 import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumVdw;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.geodesic.EnvelopeCalculation;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Elements;
+import org.jmol.util.GData;
 import org.jmol.util.Quadric;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
@@ -111,7 +111,7 @@ abstract public class AtomCollection {
   }
   
   public Viewer viewer;
-  protected Graphics3D g3d;
+  protected GData g3d;
 
   public Atom[] atoms;
   int atomCount;

@@ -24,7 +24,7 @@
 
 package org.jmol.shape;
 
-import org.jmol.g3d.Graphics3D;
+import org.jmol.util.Colix;
 import org.jmol.util.Escape;
 import org.jmol.util.TextFormat;
 
@@ -45,7 +45,7 @@ public class Echo extends TextShape {
 
   private final static String FONTFACE = "Serif";
   private final static int FONTSIZE = 20;
-  private final static short COLOR = Graphics3D.RED;
+  private final static short COLOR = Colix.RED;
     
   @Override
   public void initShape() {
@@ -147,7 +147,7 @@ public class Echo extends TextShape {
           } else if ("bottom" == target) {
             valign = Object2d.VALIGN_BOTTOM;
           }
-          text = new Text(viewer, g3d, g3d.getFont3D(FONTFACE, FONTSIZE),
+          text = new Text(viewer, gdata, gdata.getFont3D(FONTFACE, FONTSIZE),
               target, COLOR, valign, halign, 0);
           text.setAdjustForWindow(true);
           objects.put(target, text);

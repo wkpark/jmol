@@ -25,8 +25,6 @@ package org.jmol.g3d;
 
 import org.jmol.api.ApiPlatform;
 
-//import org.jmol.awt.Image;
-
 /**
  *<p>
  * Specifies the API to an underlying int[] buffer of ARGB values that
@@ -45,25 +43,24 @@ class Platform3D {
   int[] zBuffer, zBufferT;
 
   int widthOffscreen, heightOffscreen;
-  Object imageForText;
+  Object offscreenImage;
   Object graphicForText;
-  Object graphicsOffscreen;
   
-  final static boolean forcePlatformAWT = false;
   final static boolean desireClearingThread = false;
-  boolean useClearingThread = true;
+  boolean useClearingThread = false;
 
-  ClearingThread clearingThread;
+  private ClearingThread clearingThread;
   ApiPlatform apiPlatform;
 
-  static Platform3D createInstance(ApiPlatform apiPlatform) {
-    Platform3D platform = new Platform3D();
-    platform.initialize(desireClearingThread);
-    platform.apiPlatform = apiPlatform;
-    platform.graphicsOffscreen = apiPlatform.getGraphics(platform.allocateOffscreenImage(1, 1));
-    return platform;
+  Platform3D(ApiPlatform apiPlatform) {
+    initialize(desireClearingThread);
+    this.apiPlatform = apiPlatform;
   }
-
+  
+  Object getGraphicsForMetrics() {
+    return apiPlatform.getGraphics(allocateOffscreenImage(1, 1));
+  }
+  
   final void initialize(boolean useClearingThread) {
     this.useClearingThread = useClearingThread;
     if (useClearingThread) {
@@ -163,20 +160,24 @@ class Platform3D {
   void notifyEndOfRendering() {
   }
 
-  boolean checkOffscreenSize(int width, int height) {
-    if (width <= widthOffscreen && height <= heightOffscreen)
-      return true;
-    if (imageForText != null) {
-      apiPlatform.disposeGraphics(graphicForText);
-      apiPlatform.flushImage(imageForText);
+  Object getOffScreenGraphics(int width, int height) {
+    if (width > widthOffscreen || height > heightOffscreen) {
+      if (offscreenImage != null) {
+        apiPlatform.disposeGraphics(graphicForText);
+        apiPlatform.flushImage(offscreenImage);
+      }
+      if (width > widthOffscreen)
+        widthOffscreen = (width + 63) & ~63;
+      if (height > heightOffscreen)
+        heightOffscreen = (height + 15) & ~15;
+      offscreenImage = allocateOffscreenImage(widthOffscreen, heightOffscreen);
+      graphicForText = apiPlatform.getStaticGraphics(offscreenImage, backgroundTransparent);
     }
-    if (width > widthOffscreen)
-      widthOffscreen = (width + 63) & ~63;
-    if (height > heightOffscreen)
-      heightOffscreen = (height + 15) & ~15;
-    imageForText = allocateOffscreenImage(widthOffscreen, heightOffscreen);
-    graphicForText = getGraphics(imageForText);
-    return false;
+    return graphicForText;
+  }
+
+  private Object allocateOffscreenImage(int width, int height) {
+    return apiPlatform.newBufferedRgbImage(width, height);
   }
 
   void setBackgroundTransparent(boolean tf) {
@@ -241,13 +242,5 @@ class Platform3D {
   }
 
   private static boolean backgroundTransparent = false;
-  
-  private Object allocateOffscreenImage(int width, int height) {
-    return apiPlatform.newBufferedRgbImage(width, height);
-  }
-
-  private Object getGraphics(Object image) {
-    return apiPlatform.getStaticGraphics(image, backgroundTransparent);
-  }
   
 }

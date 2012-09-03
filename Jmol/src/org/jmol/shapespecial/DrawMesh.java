@@ -33,17 +33,17 @@ import org.jmol.shape.Mesh;
 import org.jmol.shapespecial.Draw.EnumDrawType;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
-import org.jmol.g3d.Graphics3D;
+
 
 public class DrawMesh extends Mesh {
   
-  DrawMesh(String thisID, Graphics3D g3d, short colix, int index) {
-    super(thisID, g3d, colix, index);
+  DrawMesh(String thisID, short colix, int index) {
+    super(thisID, colix, index);
   }
 
-  BitSet modelFlags;
+  public BitSet modelFlags;
   
-  EnumDrawType drawType = EnumDrawType.NONE;
+  public EnumDrawType drawType = EnumDrawType.NONE;
   EnumDrawType[] drawTypes;
   Point3f ptCenters[];
   Vector3f axis = new Vector3f(1,0,0);
@@ -51,13 +51,13 @@ public class DrawMesh extends Mesh {
   int drawVertexCount;
   int[] drawVertexCounts;
   boolean isFixed;
-  boolean isVector;
-  float drawArrowScale;
-  boolean noHead;
-  boolean isBarb;
+  public boolean isVector;
+  public float drawArrowScale;
+  public boolean noHead;
+  public boolean isBarb;
   
 
-  BitSet bsMeshesVisible = new BitSet();
+  public BitSet bsMeshesVisible = new BitSet();
 
   void setCenters() {
     if (ptCenters == null)

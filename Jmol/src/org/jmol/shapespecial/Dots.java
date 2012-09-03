@@ -26,12 +26,12 @@ package org.jmol.shapespecial;
 
 import org.jmol.shape.AtomShape;
 import org.jmol.util.BitSetUtil;
+import org.jmol.util.Colix;
 import org.jmol.util.Escape;
 import org.jmol.util.FastBitSet;
 import org.jmol.util.Logger;
 
 import org.jmol.atomdata.RadiusData;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.geodesic.EnvelopeCalculation;
 import org.jmol.modelset.Atom;
 
@@ -52,7 +52,7 @@ public class Dots extends AtomShape {
   BitSet bsOn = new BitSet();
   private BitSet bsSelected, bsIgnore;
 
-  static int MAX_LEVEL = EnvelopeCalculation.MAX_LEVEL;
+  public static int MAX_LEVEL = EnvelopeCalculation.MAX_LEVEL;
 
   int thisAtom;
   float thisRadius;
@@ -139,7 +139,7 @@ public class Dots extends AtomShape {
         colixes = new short[atomCount];
         paletteIDs = new byte[atomCount];
       }
-      colixes[thisAtom] = Graphics3D.getColix(thisArgb);
+      colixes[thisAtom] = Colix.getColix(thisArgb);
       bsOn.set(thisAtom);
       //all done!
       return;

@@ -34,12 +34,12 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
-import org.jmol.g3d.Graphics3D;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.JvxlData;
 import org.jmol.jvxl.data.MeshData;
 import org.jmol.shapesurface.IsosurfaceMesh;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.Colix;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.ColorUtil;
 import org.jmol.util.Escape;
@@ -211,10 +211,10 @@ public class JvxlXmlReader extends VolumeFileReader {
         }
         s = XmlReader.getXmlAttrib(data, "contourColors");
         if (s.length() > 0) {
-          jvxlData.contourColixes = params.contourColixes = Graphics3D.getColixArray(s);
-          jvxlData.contourColors = Graphics3D.getHexCodes(jvxlData.contourColixes);
+          jvxlData.contourColixes = params.contourColixes = Colix.getColixArray(s);
+          jvxlData.contourColors = Colix.getHexCodes(jvxlData.contourColixes);
           Logger.info("JVXL read: contourColixes " +
-              Graphics3D.getHexCodes(jvxlData.contourColixes));        }
+              Colix.getHexCodes(jvxlData.contourColixes));        }
         params.contourFromZero = XmlReader.getXmlAttrib(data, "contourFromZero").equals("true");
       }
       params.nContours = (haveContourData ? nContourData : nContoursRead);
@@ -576,9 +576,9 @@ public class JvxlXmlReader extends VolumeFileReader {
     //hasColorData = true;
     short colixNeg = 0, colixPos = 0;
     if (params.colorBySign) {
-      colixPos = Graphics3D.getColix(params.isColorReversed ? params.colorNeg
+      colixPos = Colix.getColix(params.isColorReversed ? params.colorNeg
           : params.colorPos);
-      colixNeg = Graphics3D.getColix(params.isColorReversed ? params.colorPos
+      colixNeg = Colix.getColix(params.isColorReversed ? params.colorPos
           : params.colorNeg);
     }
     int vertexIncrement = meshData.vertexIncrement;
@@ -613,7 +613,7 @@ public class JvxlXmlReader extends VolumeFileReader {
         short colix = (!params.colorBySign ? params.colorEncoder
             .getColorIndex(value) : (params.isColorReversed ? value > 0
             : value <= 0) ? colixNeg : colixPos);
-        colixes[i] = Graphics3D.getColixTranslucent(colix, true,
+        colixes[i] = Colix.getColixTranslucent(colix, true,
             jvxlData.translucency);
       }
     return jvxlColorDataRead + "\n";
@@ -791,9 +791,9 @@ public class JvxlXmlReader extends VolumeFileReader {
       String s = xr.getXmlData("jvxlContour", data.substring(pt), true, false);
       float value = parseFloat(XmlReader.getXmlAttrib(s, "value"));
       values.append(" ").append(value);
-      short colix = Graphics3D.getColix(ColorUtil.getArgbFromString(XmlReader.getXmlAttrib(s,
+      short colix = Colix.getColix(ColorUtil.getArgbFromString(XmlReader.getXmlAttrib(s,
           "color")));
-      int color = Graphics3D.getArgb(colix);
+      int color = Colix.getArgb(colix);
       colors.append(" ").append(Escape.escapeColor(color));
       String fData = JvxlCoder.jvxlUncompressString(XmlReader.getXmlAttrib(s, "data"));
       BitSet bs = JvxlCoder.jvxlDecodeBitSet(xr.getXmlData("jvxlContour", s, false, false));
@@ -814,7 +814,7 @@ public class JvxlXmlReader extends VolumeFileReader {
             .floatValue();
         jvxlData.contourColixes[i] = ((short[]) jvxlData.vContours[i].get(3))[0];
       }
-      jvxlData.contourColors = Graphics3D.getHexCodes(jvxlData.contourColixes);
+      jvxlData.contourColors = Colix.getHexCodes(jvxlData.contourColixes);
       Logger.info("JVXL read: " + n + " discrete contours");
       Logger.info("JVXL read: contour values: " + values);
       Logger.info("JVXL read: contour colors: " + colors);

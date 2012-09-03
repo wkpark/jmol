@@ -25,10 +25,11 @@ package org.jmol.jvxl.readers;
 
 import javax.vecmath.Point4f;
 import java.io.BufferedReader;
+
+import org.jmol.util.Colix;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.jvxl.data.JvxlCoder;
 
 public class JvxlReader extends JvxlXmlReader {
@@ -204,8 +205,8 @@ public class JvxlReader extends JvxlXmlReader {
         if (line.charAt(next[0]) == '[') {
            jvxlData.contourValues = params.contoursDiscrete = parseFloatArray();
            Logger.info("JVXL read: contourValues " + Escape.escapeArray(jvxlData.contourValues));            
-           jvxlData.contourColixes = params.contourColixes = Graphics3D.getColixArray(getNextQuotedString());
-           jvxlData.contourColors = Graphics3D.getHexCodes(jvxlData.contourColixes);
+           jvxlData.contourColixes = params.contourColixes = Colix.getColixArray(getNextQuotedString());
+           jvxlData.contourColors = Colix.getHexCodes(jvxlData.contourColixes);
            Logger.info("JVXL read: contourColixes " + jvxlData.contourColors); 
            params.nContours = jvxlData.contourValues.length;
                  }

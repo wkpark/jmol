@@ -152,7 +152,7 @@ public final class ModelLoader {
 
   @SuppressWarnings("unchecked")
   private void initializeInfo(String name, Map<String, Object> info) {
-    modelSet.g3d = viewer.getGraphics3D();
+    modelSet.g3d = viewer.getGraphicsData();
     //long timeBegin = System.currentTimeMillis();
     modelSet.modelSetTypeName = name;
     modelSet.isXYZ = (name == "xyz");

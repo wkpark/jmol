@@ -31,8 +31,8 @@ import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumPalette;
 import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumVdw;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.script.Token;
+import org.jmol.util.Colix;
 import org.jmol.util.ColorUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.Quadric;
@@ -318,11 +318,11 @@ final public class Atom extends Point3fi implements JmolNode {
   }
 
   public void setTranslucent(boolean isTranslucent, float translucentLevel) {
-    colixAtom = Graphics3D.getColixTranslucent(colixAtom, isTranslucent, translucentLevel);    
+    colixAtom = Colix.getColixTranslucent(colixAtom, isTranslucent, translucentLevel);    
   }
 
   public boolean isTranslucent() {
-    return Graphics3D.isColixTranslucent(colixAtom);
+    return Colix.isColixTranslucent(colixAtom);
   }
 
   public short getElementNumber() {

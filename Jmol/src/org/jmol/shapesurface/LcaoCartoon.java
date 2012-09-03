@@ -28,8 +28,8 @@ package org.jmol.shapesurface;
 import java.util.BitSet;
 import javax.vecmath.Vector3f;
 
-import org.jmol.g3d.Graphics3D;
 import org.jmol.shape.Shape;
+import org.jmol.util.Colix;
 import org.jmol.util.Escape;
 import org.jmol.util.TextFormat;
 
@@ -311,8 +311,8 @@ public class LcaoCartoon extends Isosurface {
     }
     if (isCpk) {
       short colix = viewer.getModelSet().getAtomColix(iAtom);
-      if (Graphics3D.isColixTranslucent(colix)) {
-        super.setProperty("translucentLevel", new Float(Graphics3D.getColixTranslucencyLevel(colix)), null);
+      if (Colix.isColixTranslucent(colix)) {
+        super.setProperty("translucentLevel", new Float(Colix.getColixTranslucencyLevel(colix)), null);
         super.setProperty("translucency", "translucent", null);
       }
     } else if (isTranslucent)

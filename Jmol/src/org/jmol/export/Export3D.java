@@ -32,10 +32,11 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.api.JmolRendererInterface;
-import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
-import org.jmol.g3d.Hermite3D;
+import org.jmol.g3d.HermiteRenderer;
 import org.jmol.modelset.Atom;
+import org.jmol.util.JmolFont;
+import org.jmol.util.GData;
 import org.jmol.util.MeshSurface;
 import org.jmol.viewer.Viewer;
 
@@ -53,7 +54,7 @@ final public class Export3D implements JmolRendererInterface {
 
   private Graphics3D g3d;
   private short colix;
-  private Hermite3D hermite3d;
+  private HermiteRenderer hermite3d;
   private int width;
   private int height;
   private int slab;
@@ -61,7 +62,7 @@ final public class Export3D implements JmolRendererInterface {
   String exportName;
 
   public Export3D() {
-    hermite3d = new Hermite3D(this);
+    hermite3d = new HermiteRenderer(this);
 
   }
 
@@ -73,7 +74,7 @@ final public class Export3D implements JmolRendererInterface {
     return exportName;
   }
 
-  public boolean initializeExporter(String type, Viewer viewer, double privateKey, Graphics3D g3d,
+  public boolean initializeExporter(String type, Viewer viewer, double privateKey, GData gdata,
                                     Object output) {
     exportName = type;
     try {
@@ -86,7 +87,7 @@ final public class Export3D implements JmolRendererInterface {
     } catch (Exception e) {
       return false;
     }
-    this.g3d = g3d;
+    g3d = (Graphics3D) gdata;
     exporter.setRenderer(this);
     g3d.setNewWindowParametersForExport();
     slab = g3d.getSlab();
@@ -105,9 +106,14 @@ final public class Export3D implements JmolRendererInterface {
     g3d.setSlab(slabValue);
   }
 
-  public void renderBackground() {
+  public void setDepth(int depthValue) {
+    // no equivalent in exporters?
+    g3d.setDepth(depthValue);
+  }
+
+  public void renderBackground(JmolRendererInterface me) {
     if (exporter.exportType == Graphics3D.EXPORT_RAYTRACER)
-      g3d.renderBackground(this);
+      g3d.renderBackground(me);
   }
 
   public void drawAtom(Atom atom) {
@@ -321,7 +327,7 @@ final public class Export3D implements JmolRendererInterface {
    *          z for slab calculation
    */
 
-  public void drawString(String str, Font3D font3d, int xBaseline,
+  public void drawString(String str, JmolFont font3d, int xBaseline,
                          int yBaseline, int z, int zSlab) {
     // axis, labels, measures
     if (str == null)
@@ -347,7 +353,7 @@ final public class Export3D implements JmolRendererInterface {
    *          baseline z
    */
 
-  public void drawStringNoSlab(String str, Font3D font3d, int xBaseline,
+  public void drawStringNoSlab(String str, JmolFont font3d, int xBaseline,
                                int yBaseline, int z) {
     // echo, frank, hover, molecularOrbital, uccage
     if (str == null)
@@ -445,7 +451,7 @@ final public class Export3D implements JmolRendererInterface {
   public void drawLine(short colixA, short colixB, int xA, int yA, int zA,
                        int xB, int yB, int zB) {
     // line bonds, line backbone, drawTriangle
-    fillCylinder(colixA, colixB, Graphics3D.ENDCAPS_FLAT, exporter.lineWidthMad, xA, yA, zA,
+    fillCylinder(colixA, colixB, GData.ENDCAPS_FLAT, exporter.lineWidthMad, xA, yA, zA,
         xB, yB, zB);
   }
 
@@ -453,7 +459,7 @@ final public class Export3D implements JmolRendererInterface {
     // draw quadrilateral and hermite, stars
     ptA.set(pointA.x, pointA.y, pointA.z);
     ptB.set(pointB.x, pointB.y, pointB.z);
-    exporter.fillCylinderScreenMad(colix, Graphics3D.ENDCAPS_FLAT, exporter.lineWidthMad, ptA, ptB);
+    exporter.fillCylinderScreenMad(colix, GData.ENDCAPS_FLAT, exporter.lineWidthMad, ptA, ptB);
   }
 
   public void drawBond(Atom atomA, Atom atomB, short colixA, short colixB,
@@ -697,6 +703,10 @@ final public class Export3D implements JmolRendererInterface {
    * **************************************************************
    */
 
+  public GData getGData() {
+    return g3d;
+  }
+
   /**
    * is full scene / oversampling antialiasing in effect
    * 
@@ -775,7 +785,7 @@ final public class Export3D implements JmolRendererInterface {
     g3d.setFont(fid);
   }
 
-  public Font3D getFont3DCurrent() {
+  public JmolFont getFont3DCurrent() {
     return g3d.getFont3DCurrent();
   }
 
@@ -831,7 +841,7 @@ final public class Export3D implements JmolRendererInterface {
     return g3d.getTransformedVertexVectors();
   }
 
-  public Font3D getFont3DScaled(Font3D font, float scale) {
+  public JmolFont getFont3DScaled(JmolFont font, float scale) {
     return g3d.getFont3DScaled(font, scale);
   }
 

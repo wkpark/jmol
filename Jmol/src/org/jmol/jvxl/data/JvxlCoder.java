@@ -31,8 +31,8 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
 
-import org.jmol.g3d.Graphics3D;
 import org.jmol.util.BitSetUtil;
+import org.jmol.util.Colix;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
@@ -301,8 +301,8 @@ public class JvxlCoder {
         addAttrib(attribs, "\n  colorMapped", "true");
       } else if (jvxlData.isBicolorMap) {
         addAttrib(attribs, "\n  bicolorMap", "true");
-        addAttrib(attribs, "\n  colorNegative", Graphics3D.getHexCode(jvxlData.minColorIndex));
-        addAttrib(attribs, "\n  colorPositive", Graphics3D.getHexCode(jvxlData.maxColorIndex));
+        addAttrib(attribs, "\n  colorNegative", Colix.getHexCode(jvxlData.minColorIndex));
+        addAttrib(attribs, "\n  colorPositive", Colix.getHexCode(jvxlData.maxColorIndex));
       } else if (nColorData > 0) {
         addAttrib(attribs, "\n  colorMapped", "true");
       }

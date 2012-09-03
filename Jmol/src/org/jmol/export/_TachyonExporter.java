@@ -36,6 +36,7 @@ import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
+import org.jmol.util.GData;
 import org.jmol.viewer.Viewer;
 
 /*
@@ -64,10 +65,10 @@ public class _TachyonExporter extends __RayTracerExporter {
   }
   
   private void getLightingInfo() {
-    lighting = " AMBIENT " + round(Graphics3D.getAmbientPercent() / 100f)
-        + " DIFFUSE " + round(Graphics3D.getDiffusePercent()/100f) 
-        + " SPECULAR " + round(Graphics3D.getSpecularPercent() / 100f);
-    phong = " Phong Plastic 0.5 Phong_size " + Graphics3D.getSpecularExponent();
+    lighting = " AMBIENT " + round(GData.getAmbientPercent() / 100f)
+        + " DIFFUSE " + round(GData.getDiffusePercent()/100f) 
+        + " SPECULAR " + round(GData.getSpecularPercent() / 100f);
+    phong = " Phong Plastic 0.5 Phong_size " + GData.getSpecularExponent();
   }  
   
   /* 

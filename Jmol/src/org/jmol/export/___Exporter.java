@@ -50,10 +50,12 @@ import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.api.JmolRendererInterface;
-import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.script.Token;
+import org.jmol.util.Colix;
+import org.jmol.util.JmolFont;
+import org.jmol.util.GData;
 import org.jmol.util.MeshSurface;
 import org.jmol.util.Quaternion;
 import org.jmol.viewer.StateManager;
@@ -158,7 +160,7 @@ public abstract class ___Exporter {
   protected int screenHeight;
   protected int slabZ;
   protected int depthZ;
-  protected Point3f lightSource = Graphics3D.getLightSource();
+  protected Point3f lightSource = GData.getLightSource();
   protected Point3f fixedRotationCenter;
   protected Point3f referenceCenter;
   protected Point3f cameraPosition;
@@ -357,11 +359,11 @@ public abstract class ___Exporter {
   }
 
   protected static String translucencyFractionalFromColix(short colix) {
-    return round(Graphics3D.getColixTranslucencyFractional(colix));
+    return round(Colix.getColixTranslucencyFractional(colix));
   }
 
   protected static String opacityFractionalFromColix(short colix) {
-    return round(1 - Graphics3D.getColixTranslucencyFractional(colix));
+    return round(1 - Colix.getColixTranslucencyFractional(colix));
   }
 
   protected static String opacityFractionalFromArgb(int argb) {
@@ -595,7 +597,7 @@ public abstract class ___Exporter {
     outputComment("end image " + nImage);
   }
 
-  void plotText(int x, int y, int z, short colix, String text, Font3D font3d) {
+  void plotText(int x, int y, int z, short colix, String text, JmolFont font3d) {
     // trick here is that we use Jmol's standard g3d package to construct
     // the bitmap, but then output to jmolRenderer, which returns control
     // here via drawPixel.

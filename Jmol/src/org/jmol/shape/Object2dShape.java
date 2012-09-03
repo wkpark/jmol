@@ -7,7 +7,7 @@ import java.util.Map;
 
 import javax.vecmath.Point3f;
 
-import org.jmol.g3d.Font3D;
+import org.jmol.util.JmolFont;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
@@ -16,9 +16,9 @@ public class Object2dShape extends Shape {
 
   // Echo, Hover, JmolImage
 
-  Map<String, Text> objects = new Hashtable<String, Text>();
+  public Map<String, Text> objects = new Hashtable<String, Text>();
   Object2d currentObject;
-  Font3D currentFont;
+  JmolFont currentFont;
   Object currentColor;
   Object currentBgColor;
   float currentTranslucentLevel;

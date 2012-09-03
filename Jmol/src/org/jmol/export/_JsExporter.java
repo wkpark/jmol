@@ -37,9 +37,9 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
-import org.jmol.g3d.Font3D;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.util.Escape;
+import org.jmol.util.JmolFont;
+import org.jmol.util.GData;
 import org.jmol.util.Quaternion;
 
 public class _JsExporter extends __CartesianExporter {
@@ -112,7 +112,7 @@ public class _JsExporter extends __CartesianExporter {
       tempV1.scale(0.5f);
       output(tempV1);
       output(", children: {type:'circle', rotation:[ 1, 0, 0, 1.5708],");
-      outputCylinderChild(pt1, pt2, colix, Graphics3D.ENDCAPS_FLAT,
+      outputCylinderChild(pt1, pt2, colix, GData.ENDCAPS_FLAT,
           (int) (radius * 2000));
       output("}}}\n");
       return;
@@ -162,7 +162,7 @@ public class _JsExporter extends __CartesianExporter {
     }
     outputCylinderChild(pt1, pt2, colix, endcaps, radius);
     output("}\n");
-    if (endcaps == Graphics3D.ENDCAPS_SPHERICAL) {
+    if (endcaps == GData.ENDCAPS_SPHERICAL) {
       outputSphere(pt1, radius * 1.01f, colix, checkRadius);
       outputSphere(pt2, radius * 1.01f, colix, checkRadius);
     }
@@ -182,7 +182,7 @@ public class _JsExporter extends __CartesianExporter {
       if (cyl.charAt(0) == '_') {
         output("DEF " + cyl + " Cylinder{height " 
             + round(length) + " radius " + radius 
-            + (endcaps == Graphics3D.ENDCAPS_FLAT ? "" : " top FALSE bottom FALSE") + "}");
+            + (endcaps == GData.ENDCAPS_FLAT ? "" : " top FALSE bottom FALSE") + "}");
       } else {
         output(cyl);
       }
@@ -462,7 +462,7 @@ public class _JsExporter extends __CartesianExporter {
   }
 
   @Override
-  void plotText(int x, int y, int z, short colix, String text, Font3D font3d) {
+  void plotText(int x, int y, int z, short colix, String text, JmolFont font3d) {
     if (true)
       return;
     if (z < 3)

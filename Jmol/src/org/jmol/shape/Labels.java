@@ -25,13 +25,13 @@
 package org.jmol.shape;
 
 import org.jmol.constant.EnumPalette;
-import org.jmol.g3d.Font3D;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.LabelToken;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
+import org.jmol.util.Colix;
 import org.jmol.util.Escape;
+import org.jmol.util.JmolFont;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.JmolConstants;
 
@@ -41,11 +41,11 @@ import java.util.Map;
 
 public class Labels extends AtomShape {
 
-  String[] strings;
-  String[] formats;
-  short[] bgcolixes;
-  byte[] fids;
-  int[] offsets;
+  public String[] strings;
+  public String[] formats;
+  public short[] bgcolixes;
+  public byte[] fids;
+  public int[] offsets;
 
   private Map<Integer, Text> atomLabels = new Hashtable<Integer, Text>();
   private Text text;
@@ -65,7 +65,7 @@ public class Labels extends AtomShape {
   private static int zeroOffset = (JmolConstants.LABEL_DEFAULT_X_OFFSET << 8)
       | JmolConstants.LABEL_DEFAULT_Y_OFFSET;
 
-  byte zeroFontId;
+  public byte zeroFontId;
 
   private boolean defaultsOnlyForNone = true;
   private boolean setDefaults = false;
@@ -75,7 +75,7 @@ public class Labels extends AtomShape {
   @Override
   public void initShape() {
     super.initShape();
-    defaultFontId = zeroFontId = g3d.getFont3D(JmolConstants.DEFAULT_FONTFACE,
+    defaultFontId = zeroFontId = gdata.getFont3D(JmolConstants.DEFAULT_FONTFACE,
         JmolConstants.DEFAULT_FONTSTYLE, JmolConstants.LABEL_DEFAULT_FONTSIZE).fid;
     defaultColix = 0; //"none" -- inherit from atom
     defaultBgcolix = 0; //"none" -- off
@@ -98,7 +98,7 @@ public class Labels extends AtomShape {
     if ("color" == propertyName) {
       isActive = true;
       byte pid = EnumPalette.pidOf(value);
-      short colix = Graphics3D.getColix(value);
+      short colix = Colix.getColix(value);
       if (!setDefaults)
         for (int i = atomCount; --i >= 0;)
           if (bsSelected.get(i))
@@ -121,7 +121,7 @@ public class Labels extends AtomShape {
             continue;
           text = getLabel(i);
           if (text == null) {
-            text = new Text(g3d, null, strings[i], (short) 0, (short) 0, 0, 0,
+            text = new Text(gdata, null, strings[i], (short) 0, (short) 0, 0, 0,
                 0, 0, 0, scalePixelsPerMicron);
             putLabel(i, text);
           } else {
@@ -155,7 +155,7 @@ public class Labels extends AtomShape {
       isActive = true;
       if (bsBgColixSet == null)
         bsBgColixSet = new BitSet();
-      short bgcolix = Graphics3D.getColix(value);
+      short bgcolix = Colix.getColix(value);
       if (!setDefaults)
         for (int i = atomCount; --i >= 0;)
           if (bsSelected.get(i))
@@ -176,7 +176,7 @@ public class Labels extends AtomShape {
         fids = null;
         return;
       }
-      byte fid = g3d.getFontFid(fontsize);
+      byte fid = gdata.getFontFid(fontsize);
       if (!setDefaults)
         for (int i = atomCount; --i >= 0;)
           if (bsSelected.get(i))
@@ -187,7 +187,7 @@ public class Labels extends AtomShape {
     }
 
     if ("font" == propertyName) {
-      byte fid = ((Font3D) value).fid;
+      byte fid = ((JmolFont) value).fid;
       if (!setDefaults)
         for (int i = atomCount; --i >= 0;)
           if (bsSelected.get(i))
@@ -383,7 +383,7 @@ public class Labels extends AtomShape {
     bsSizeSet.set(i, (strLabel != null));
     text = getLabel(i);
     if (isScaled) {
-      text = new Text(g3d, null, label, (short) 0, (short) 0, 0, 0, 0, 0, 0,
+      text = new Text(gdata, null, label, (short) 0, (short) 0, 0, 0, 0, 0, 0,
           scalePixelsPerMicron);
       putLabel(i, text);
     } else if (text != null) {
@@ -419,24 +419,24 @@ public class Labels extends AtomShape {
     return null;
   }
 
-  void putLabel(int i, Text text) {
+  public void putLabel(int i, Text text) {
     if (text == null)
       atomLabels.remove(Integer.valueOf(i));
     else
       atomLabels.put(Integer.valueOf(i), text);
   }
 
-  Text getLabel(int i) {
+  public Text getLabel(int i) {
     return atomLabels.get(Integer.valueOf(i));
   }
 
-  void putBox(int i, float[] boxXY) {
+  public void putBox(int i, float[] boxXY) {
     if (labelBoxes == null)
       labelBoxes = new Hashtable<Integer, float[]>(); 
     labelBoxes.put(Integer.valueOf(i), boxXY);
   }
 
-  float[] getBox(int i) {
+  public float[] getBox(int i) {
     if (labelBoxes == null)
       return null;
     return labelBoxes.get(Integer.valueOf(i));
@@ -462,15 +462,15 @@ public class Labels extends AtomShape {
       text.setBgColix(bgcolix);
   }
 
-  final static int POINTER_FLAGS = 0x03;
-  final static int ALIGN_FLAGS   = 0x0C;
-  final static int ZPOS_FLAGS    = 0x30;
-  final static int GROUP_FLAG    = 0x10;
-  final static int FRONT_FLAG    = 0x20;
-  final static int SCALE_FLAG    = 0x40;
-  final static int EXACT_OFFSET_FLAG = 0x80;
-  final static int FLAGS         = 0xFF;
-  final static int FLAG_OFFSET   = 8;
+  public final static int POINTER_FLAGS = 0x03;
+  public final static int ALIGN_FLAGS   = 0x0C;
+  public final static int ZPOS_FLAGS    = 0x30;
+  public final static int GROUP_FLAG    = 0x10;
+  public final static int FRONT_FLAG    = 0x20;
+  public final static int SCALE_FLAG    = 0x40;
+  public final static int EXACT_OFFSET_FLAG = 0x80;
+  public final static int FLAGS         = 0xFF;
+  public final static int FLAG_OFFSET   = 8;
 
   private void setOffsets(int i, int offset, boolean isExact) {
     //entry is just xxxxxxxxyyyyyyyy
@@ -509,7 +509,7 @@ public class Labels extends AtomShape {
       text.setAlignment(alignment);
   }
 
-  static int getAlignment(int offsetFull) {
+  public static int getAlignment(int offsetFull) {
     return (offsetFull & ALIGN_FLAGS) >> 2;
   }
   
@@ -584,7 +584,7 @@ public class Labels extends AtomShape {
       appendCmd(s, "set labelFront");
     else if ((defaultZPos & GROUP_FLAG) != 0)
       appendCmd(s, "set labelGroup");
-    appendCmd(s, getFontCommand("label", Font3D.getFont3D(defaultFontId)));
+    appendCmd(s, getFontCommand("label", JmolFont.getFont3D(defaultFontId)));
     return s.toString();
   }
 
@@ -633,7 +633,7 @@ public class Labels extends AtomShape {
       if (mads != null && mads[i] < 0)
         setStateInfo(temp2, i, "set toggleLabel");
       if (bsFontSet != null && bsFontSet.get(i))
-        setStateInfo(temp2, i, getFontCommand("label", Font3D
+        setStateInfo(temp2, i, getFontCommand("label", JmolFont
             .getFont3D(fids[i])));
     }
     return getShapeCommands(temp, temp2)

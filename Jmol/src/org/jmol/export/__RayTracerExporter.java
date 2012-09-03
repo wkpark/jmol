@@ -33,6 +33,7 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
+import org.jmol.util.GData;
 
 /*
  * for PovRay and related ray tracers that use screen coordinates
@@ -156,7 +157,7 @@ abstract class __RayTracerExporter extends ___Exporter {
       fillConicalCylinder(screenA, tempP1, madBond, colix1, endcaps);
       fillConicalCylinder(tempP1, screenB, madBond, colix2, endcaps);
     }
-    if (endcaps != Graphics3D.ENDCAPS_SPHERICAL)
+    if (endcaps != GData.ENDCAPS_SPHERICAL)
       return;
     
     float radius = viewer.scaleToScreen((int) screenA.z, madBond) / 2f;
@@ -210,8 +211,8 @@ abstract class __RayTracerExporter extends ___Exporter {
       outputSphere(screenA.x, screenA.y, screenA.z, radius, colix);
       return;
     }
-    outputCylinder(screenA, screenB, radius, colix, endcaps == Graphics3D.ENDCAPS_FLAT);
-    if (endcaps != Graphics3D.ENDCAPS_SPHERICAL || radius <= 1)
+    outputCylinder(screenA, screenB, radius, colix, endcaps == GData.ENDCAPS_FLAT);
+    if (endcaps != GData.ENDCAPS_SPHERICAL || radius <= 1)
       return;
     outputSphere(screenA.x, screenA.y, screenA.z, radius, colix);
     outputSphere(screenB.x, screenB.y, screenB.z, radius, colix);

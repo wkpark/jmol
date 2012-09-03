@@ -38,9 +38,11 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Tuple3f;
 
-import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
+import org.jmol.util.Colix;
+import org.jmol.util.JmolFont;
+import org.jmol.util.GData;
 
 /*
  * for programs that use the standard 3D coordinates.
@@ -182,7 +184,7 @@ abstract public class __CartesianExporter extends ___Exporter {
   @Override
   void drawAtom(Atom atom) {
     short colix = atom.getColix();
-    outputSphere(atom, atom.madAtom / 2000f, colix, Graphics3D.isColixTranslucent(colix));
+    outputSphere(atom, atom.madAtom / 2000f, colix, Colix.isColixTranslucent(colix));
   }
 
   @Override
@@ -211,7 +213,7 @@ abstract public class __CartesianExporter extends ___Exporter {
     tempP2.set(ptCenter);
     tempP2.add(tempV2);
     return outputCylinder(ptCenter, tempP1, tempP2, colix,
-        doFill ? Graphics3D.ENDCAPS_FLAT : Graphics3D.ENDCAPS_NONE, 1.01f, ptX,
+        doFill ? GData.ENDCAPS_FLAT : GData.ENDCAPS_NONE, 1.01f, ptX,
         ptY, true);
   }
 
@@ -255,12 +257,12 @@ abstract public class __CartesianExporter extends ___Exporter {
       tempV2.scale(0.5f);
       tempP3.set(tempV2);
       outputCylinder(null, tempP1, tempP3, colix1,
-          (endcaps == Graphics3D.ENDCAPS_SPHERICAL ? Graphics3D.ENDCAPS_NONE
+          (endcaps == GData.ENDCAPS_SPHERICAL ? GData.ENDCAPS_NONE
               : endcaps), radius, null, null, true);
       outputCylinder(null, tempP3, tempP2, colix2,
-          (endcaps == Graphics3D.ENDCAPS_SPHERICAL ? Graphics3D.ENDCAPS_NONE
+          (endcaps == GData.ENDCAPS_SPHERICAL ? GData.ENDCAPS_NONE
               : endcaps), radius, null, null, true);
-      if (endcaps == Graphics3D.ENDCAPS_SPHERICAL) {
+      if (endcaps == GData.ENDCAPS_SPHERICAL) {
         outputSphere(tempP1, radius * 1.01f, colix1, bondOrder != -1);
         outputSphere(tempP2, radius * 1.01f, colix2, bondOrder != -1);
       }
@@ -315,7 +317,7 @@ abstract public class __CartesianExporter extends ___Exporter {
   }
 
   @Override
-  void plotText(int x, int y, int z, short colix, String text, Font3D font3d) {
+  void plotText(int x, int y, int z, short colix, String text, JmolFont font3d) {
     // over-ridden in VRML and X3D
     // trick here is that we use Jmol's standard g3d package to construct
     // the bitmap, but then output to jmolRenderer, which returns control

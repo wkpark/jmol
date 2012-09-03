@@ -37,6 +37,7 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
+import org.jmol.util.Colix;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.MeshSurface;
@@ -45,7 +46,6 @@ import org.jmol.util.Measure;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.JmolConstants;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.script.Token;
 import org.jmol.shape.Mesh;
 import org.jmol.shape.MeshCollection;
@@ -67,7 +67,7 @@ public class Draw extends MeshCollection {
     meshes = dmeshes = (DrawMesh[]) ArrayUtil.ensureLength(dmeshes,
         meshCount * 2);
     currentMesh = thisMesh = dmeshes[index] = (m == null ? new DrawMesh(thisID,
-        g3d, colix, index) : (DrawMesh) m);
+        colix, index) : (DrawMesh) m);
     currentMesh.color = color;
     currentMesh.index = index;
     if (thisID != null && thisID != MeshCollection.PREVIOUS_MESH_ID
@@ -135,7 +135,7 @@ public void initShape() {
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
     if ("init" == propertyName) {
-      colix = Graphics3D.ORANGE;
+      colix = Colix.ORANGE;
       color = 0xFFFFFFFF;
       newScale = 0;
       isFixed = isReversed = isRotated45 = isCrossed = noHead = isBarb = false;
@@ -1109,7 +1109,7 @@ public void initShape() {
     boolean isSpinMode = (viewer.getPickingMode() == ActionManager.PICKING_SPIN);
     boolean isDrawPicking = viewer.getDrawPicking();
     if (!isPickingMode && !isDrawPicking && !isSpinMode
-        || Graphics3D.isColixTranslucent(colix))
+        || Colix.isColixTranslucent(colix))
       return null;
     if (!findPickedObject(x, y, false, bsVisible))
       return null;
@@ -1145,11 +1145,11 @@ public void initShape() {
   public boolean checkObjectHovered(int x, int y, BitSet bsVisible) {
     if (!viewer.getDrawHover())
       return false;
-    if (Graphics3D.isColixTranslucent(colix))
+    if (Colix.isColixTranslucent(colix))
       return false;
     if (!findPickedObject(x, y, false, bsVisible))
       return false;
-    if (g3d.isDisplayAntialiased()) {
+    if (gdata.isDisplayAntialiased()) {
       //because hover rendering is done in FIRST pass only
       x <<= 1;
       y <<= 1;
@@ -1197,7 +1197,7 @@ public void initShape() {
                       boolean moveAll) {
     if (vertexes == null || vertexes.length == 0)
       return;
-    if (g3d.isAntialiased()) {
+    if (gdata.isAntialiased()) {
       x <<= 1;
       y <<= 1;
     }
@@ -1241,7 +1241,7 @@ public void initShape() {
   private boolean findPickedObject(int x, int y, boolean isPicking,
                                    BitSet bsVisible) {
     int dmin2 = MAX_OBJECT_CLICK_DISTANCE_SQUARED;
-    if (g3d.isAntialiased()) {
+    if (gdata.isAntialiased()) {
       x <<= 1;
       y <<= 1;
       dmin2 <<= 1;
@@ -1429,7 +1429,7 @@ public void initShape() {
     return str.toString();
   }
 
-  static boolean isPolygonDisplayable(Mesh mesh, int i) {
+  public static boolean isPolygonDisplayable(Mesh mesh, int i) {
     return (i < mesh.polygonIndexes.length 
         && mesh.polygonIndexes[i] != null 
         && mesh.polygonIndexes[i].length > 0);
@@ -1534,11 +1534,11 @@ public void initShape() {
     return s.toString();
   }
 
-  static Point3f randomPoint() {
+  public static Point3f randomPoint() {
     return new Point3f((float) Math.random(), (float) Math.random(), (float) Math.random());
   }
 
-  enum EnumDrawType {
+  public enum EnumDrawType {
     MULTIPLE(-1,"multiple"),
     NONE(0,"none"),
     

@@ -32,7 +32,6 @@ import javax.vecmath.Point3f;
 
 import org.jmol.viewer.JmolConstants;
 import org.jmol.constant.EnumPalette;
-import org.jmol.g3d.Graphics3D;
 
 /*
  * 
@@ -379,14 +378,14 @@ import org.jmol.g3d.Graphics3D;
   public short getColorIndexFromPalette(float val, float lo,
                                                      float hi, int palette,
                                                      boolean isTranslucent) {
-    short colix = Graphics3D.getColix(getArgbFromPalette(val, lo, hi, palette));
+    short colix = Colix.getColix(getArgbFromPalette(val, lo, hi, palette));
     if (isTranslucent) {
       float f = (hi - val) / (hi - lo); 
       if (f > 1)
         f = 1; // transparent
       else if (f < 0.125f) // never fully opaque
         f = 0.125f;
-      colix = Graphics3D.getColixTranslucent(colix, true, f);
+      colix = Colix.getColixTranslucent(colix, true, f);
     }
     return colix;
   }

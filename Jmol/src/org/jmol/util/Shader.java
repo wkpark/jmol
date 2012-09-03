@@ -180,7 +180,7 @@ public final class Shader {
 
   public static int getShadeIndex(float x, float y, float z) {
     // from Cylinder3D.calcArgbEndcap and renderCone
-    // from Graphics3D.getShadeIndex and getShadeIndex
+    // from GData.getShadeIndex and getShadeIndex
     double magnitude = Math.sqrt(x*x + y*y + z*z);
     return (int) (getFloatShadeIndexNormalized((float)(x/magnitude),
                                                (float)(y/magnitude),

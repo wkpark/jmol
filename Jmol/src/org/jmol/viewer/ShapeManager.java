@@ -36,18 +36,18 @@ import javax.vecmath.Vector3f;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumPalette;
 import org.jmol.constant.EnumVdw;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.ModelSet;
 import org.jmol.script.Token;
 import org.jmol.shape.Shape;
+import org.jmol.util.GData;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
 
 public class ShapeManager {
 
-  private Graphics3D g3d;
+  private GData gdata;
   private ModelSet modelSet;
   private Shape[] shapes;
   private Viewer viewer;
@@ -61,7 +61,7 @@ public class ShapeManager {
 
   ShapeManager(Viewer viewer) {
     this.viewer = viewer;
-    g3d = viewer.getGraphics3D();
+    gdata = viewer.getGraphicsData();
   }
 
   // public methods 
@@ -131,12 +131,12 @@ public class ShapeManager {
         || shapeID == JmolConstants.SHAPE_SSSTICKS
         || shapeID == JmolConstants.SHAPE_STRUTS)
       return null;
-    String className = JmolConstants.getShapeClassName(shapeID);
+    String className = JmolConstants.getShapeClassName(shapeID, "");
     try {
       Class<?> shapeClass = Class.forName(className);
       Shape shape = (Shape) shapeClass.newInstance();
       viewer.setShapeErrorState(shapeID, "allocate");
-      shape.initializeShape(viewer, g3d, modelSet, shapeID);
+      shape.initializeShape(viewer, gdata, modelSet, shapeID);
       viewer.setShapeErrorState(-1, null);
       return shapes[shapeID] = shape;
     } catch (Exception e) {
@@ -438,8 +438,8 @@ public class ShapeManager {
     if (viewer.getSlabEnabled()) {
       boolean slabByMolecule = viewer.getSlabByMolecule();
       boolean slabByAtom = viewer.getSlabByAtom();
-      int minZ = g3d.getSlab();
-      int maxZ = g3d.getDepth();
+      int minZ = gdata.getSlab();
+      int maxZ = gdata.getDepth();
       if (slabByMolecule) {
         JmolMolecule[] molecules = modelSet.getMolecules();
         int moleculeCount = modelSet.getMoleculeCountInModel(-1);
@@ -450,7 +450,7 @@ public class ShapeManager {
           if (!bsRenderableAtoms.get(pt))
             continue;
           for (; j < m.atomCount; j++, pt++)
-            if (g3d.isClippedZ(atoms[pt].screenZ
+            if (gdata.isClippedZ(atoms[pt].screenZ
                 - (atoms[pt].screenDiameter >> 1)))
               break;
           if (j != m.atomCount) {
@@ -465,14 +465,14 @@ public class ShapeManager {
       for (int i = bsRenderableAtoms.nextSetBit(0); i >= 0; i = bsRenderableAtoms
           .nextSetBit(i + 1)) {
         Atom atom = atoms[i];
-        if (g3d.isClippedZ(atom.screenZ
+        if (gdata.isClippedZ(atom.screenZ
             - (slabByAtom ? atoms[i].screenDiameter >> 1 : 0))) {
           atom.setClickable(0);
           // note that in the case of navigation,
           // maxZ is set to Integer.MAX_VALUE.
           int r = (slabByAtom ? -1 : 1) * atom.screenDiameter / 2;
           if (atom.screenZ + r < minZ || atom.screenZ - r > maxZ
-              || !g3d.isInDisplayRange(atom.screenX, atom.screenY)) {
+              || !gdata.isInDisplayRange(atom.screenX, atom.screenY)) {
             bsRenderableAtoms.clear(i);
           }
         }

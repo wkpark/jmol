@@ -25,7 +25,6 @@
 package org.jmol.shape;
 
 import org.jmol.viewer.StateManager;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.script.ScriptVariable;
 import org.jmol.script.Token;
 
@@ -36,6 +35,7 @@ import java.util.Map;
 
 import javax.vecmath.Point3f;
 
+import org.jmol.util.Colix;
 import org.jmol.util.Escape;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
@@ -105,7 +105,7 @@ public abstract class MeshCollection extends Shape {
     // isosurface and draw both have overriding methods
     int index = meshCount++;
     meshes = (Mesh[])ArrayUtil.ensureLength(meshes, meshCount * 2);
-    currentMesh = meshes[index] = (m == null ? new Mesh(thisID, g3d, colix, index) : m);
+    currentMesh = meshes[index] = (m == null ? new Mesh(thisID, colix, index) : m);
     currentMesh.color = color;
     currentMesh.index = index;
     if (thisID != null && htObjects != null)
@@ -141,7 +141,7 @@ public abstract class MeshCollection extends Shape {
   @Override
   public void initShape() {
     super.initShape();
-    colix = Graphics3D.ORANGE;
+    colix = Colix.ORANGE;
     color = 0xFFFFFFFF;
   }
   
@@ -226,7 +226,7 @@ public abstract class MeshCollection extends Shape {
     if ("color" == propertyName) {
       if (value == null)
         return;
-      colix = Graphics3D.getColix(value);
+      colix = Colix.getColix(value);
       color = ((Integer) value).intValue();
       if (currentMesh != null)
         currentMesh.color = color;

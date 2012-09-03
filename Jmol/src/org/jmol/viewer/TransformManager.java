@@ -33,7 +33,7 @@ import javax.vecmath.Matrix3f;
 import javax.vecmath.AxisAngle4f;
 
 import org.jmol.constant.EnumStereoMode;
-import org.jmol.g3d.Text3D;
+import org.jmol.g3d.Graphics3D;
 import org.jmol.script.Token;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
@@ -1457,7 +1457,7 @@ abstract class TransformManager {
     if (zoomPercent != newZoom) {
       zoomPercent = newZoom;
       if (!viewer.getFontCaching())
-        Text3D.clearFontCache();
+        ((Graphics3D) viewer.getGraphicsData()).clearFontCache();
     }
     calcCameraFactors();
     calcTransformMatrix();

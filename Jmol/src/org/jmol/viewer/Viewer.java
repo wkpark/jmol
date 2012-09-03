@@ -32,8 +32,6 @@ import org.jmol.script.ScriptFunction;
 import org.jmol.script.ScriptVariable;
 import org.jmol.script.Token;
 import org.jmol.shape.Shape;
-import org.jmol.g3d.Font3D;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.i18n.GT;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
@@ -75,12 +73,15 @@ import org.jmol.util.Base64;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.CifDataReader;
+import org.jmol.util.Colix;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.ColorUtil;
 import org.jmol.util.CommandHistory;
 import org.jmol.util.Dimension;
 import org.jmol.util.Elements;
 import org.jmol.util.Escape;
+import org.jmol.util.JmolFont;
+import org.jmol.util.GData;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
 import org.jmol.util.OutputStringBuffer;
@@ -210,7 +211,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // being accesed by any other classes
 
   private Object display;
-  private Graphics3D g3d;
+  private GData gdata;
   private JmolAdapter modelAdapter;
 
   public enum ACCESS { NONE, READSPT, ALL }
@@ -351,7 +352,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           !commandOptions.contains("platform=") ? "org.jmol.awt.Platform"
           : commandOptions.substring(commandOptions.indexOf("platform=") + 9));
     apiPlatform.setViewer(this, display);
-    g3d = new Graphics3D(apiPlatform);
+    gdata = (GData) Interface.getInterface("org.jmol.g3d.Graphics3D");
+    gdata.initialize(apiPlatform);
     haveDisplay = (display != null && !isHeadless() && commandOptions
         .indexOf("-n") < 0);
     mustRender = haveDisplay;
@@ -364,7 +366,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     strJavaVersion = System.getProperty("java.version");
     multiTouch = (haveDisplay && commandOptions.indexOf("-multitouch") >= 0);
     stateManager = new StateManager(this);
-    colorManager = new ColorManager(this, g3d);
+    colorManager = new ColorManager(this, gdata);
     statusManager = new StatusManager(this);
     scriptManager = new ScriptManager(this);
     transformManager = new TransformManager11(this);
@@ -430,7 +432,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         setMaximumSize(Parser.parseInt(str.substring(i + 13)));
     } else {
       // not an applet -- used to pass along command line options
-      g3d.setBackgroundTransparent(str.indexOf("-b") >= 0);
+      gdata.setBackgroundTransparent(str.indexOf("-b") >= 0);
       isSilent = (str.indexOf("-i") >= 0);
       if (isSilent)
         Logger.setLogLevel(Logger.LEVEL_WARN); // no info, but warnings and
@@ -576,7 +578,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * final Hashtable imageCache = new Hashtable();
    * 
    * void flushCachedImages() { imageCache.clear();
-   * Graphics3D.flushCachedColors(); }
+   * GData.flushCachedColors(); }
    */
 
   Map<String, Object> getAppletInfo() {
@@ -618,14 +620,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
     // transfer default global settings to managers and g3d
 
-    Graphics3D.setAmbientPercent(global.ambientPercent);
-    Graphics3D.setDiffusePercent(global.diffusePercent);
-    Graphics3D.setSpecular(global.specular);
-    Graphics3D.setSpecularPercent(global.specularPercent);
-    Graphics3D.setSpecularPower(-global.specularExponent);
-    Graphics3D.setPhongExponent(global.phongExponent);
-    Graphics3D.setSpecularPower(global.specularPower);
-    Graphics3D.setZShadePower(global.zShadePower);
+    GData.setAmbientPercent(global.ambientPercent);
+    GData.setDiffusePercent(global.diffusePercent);
+    GData.setSpecular(global.specular);
+    GData.setSpecularPercent(global.specularPercent);
+    GData.setSpecularPower(-global.specularExponent);
+    GData.setPhongExponent(global.phongExponent);
+    GData.setSpecularPower(global.specularPower);
+    GData.setZShadePower(global.zShadePower);
     if (modelSet != null)
       animationManager.setAnimationOn(false);
     animationManager.setAnimationFps(global.animationFps);
@@ -1191,8 +1193,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // InitializeModel
 
     transformManager.finalizeTransformParameters();
-    g3d.setSlabAndDepthValues(transformManager.slabValue,
-        transformManager.depthValue, transformManager.zShadeEnabled,
+    gdata.setSlab(transformManager.slabValue);
+    gdata.setDepth(transformManager.depthValue);
+    gdata.setZShade(transformManager.zShadeEnabled,
         transformManager.zSlabValue, transformManager.zDepthValue);
   }
 
@@ -1365,7 +1368,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public int getColorArgbOrGray(short colix) {
-    return g3d.getColorArgbOrGray(colix);
+    return gdata.getColorArgbOrGray(colix);
   }
 
   public void setRubberbandArgb(int argb) {
@@ -1458,7 +1461,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     global.objColors[objId] = argb;
     switch (objId) {
     case StateManager.OBJ_BACKGROUND:
-      g3d.setBackgroundArgb(argb);
+      gdata.setBackgroundArgb(argb);
       colorManager.setColixBackgroundContrast(argb);
       break;
     }
@@ -1467,7 +1470,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void setBackgroundImage(String fileName, Object image) {
     global.backgroundImageFileName = fileName;
-    g3d.setBackgroundImage(image);
+    gdata.setBackgroundImage(image);
   }
 
   int getObjectArgb(int objId) {
@@ -1478,7 +1481,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     int argb = getObjectArgb(objId);
     if (argb == 0)
       return getColixBackgroundContrast();
-    return Graphics3D.getColix(argb);
+    return Colix.getColix(argb);
   }
 
   public String getObjectState(String name) {
@@ -1574,7 +1577,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public Point3f getColorPointForPropertyValue(float val) {
     // x = {atomno=3}.partialcharge.color
-    return ColorUtil.colorPointFromInt2(g3d.getColorArgbOrGray(colorManager
+    return ColorUtil.colorPointFromInt2(gdata.getColorArgbOrGray(colorManager
         .getColixForPropertyValue(val)));
   }
 
@@ -1746,7 +1749,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       stopAnimationThreads("setModeMouse NONE");
       scriptManager.startCommandWatcher(false);
       scriptManager.interruptQueueThreads();
-      g3d.destroy();
+      gdata.destroy();
       if (jmolpopup != null)
         jmolpopup.dispose();
       if (modelkitPopup != null)
@@ -4090,7 +4093,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     transformManager.setScreenParameters(width, height,
         isImageWrite || isReset ? global.zoomLarge : false, antialiasDisplay,
         false, false);
-    g3d.setWindowParameters(width, height, antialiasDisplay);
+    gdata.setWindowParameters(width, height, antialiasDisplay);
   }
 
   @Override
@@ -4125,7 +4128,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     int saveHeight = dimScreen.height;
     resizeImage(width, height, true, true, false);
     setModelVisibility();
-    String data = repaintManager.renderExport(type, g3d, modelSet, fName);
+    String data = repaintManager.renderExport(type, gdata, modelSet, fName);
     // mth 2003-01-09 Linux Sun JVM 1.4.2_02
     // Sun is throwing a NullPointerExceptions inside graphics routines
     // while the window is resized.
@@ -4185,10 +4188,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private Object getImage(boolean isDouble) {
     Object image = null;
     try {
-      g3d.beginRendering(transformManager.getStereoRotationMatrix(isDouble));
+      gdata.beginRendering(transformManager.getStereoRotationMatrix(isDouble));
       render();
-      g3d.endRendering();
-      image = g3d.getScreenImage();
+      gdata.endRendering();
+      image = gdata.getScreenImage();
     } catch (Error er) {
       handleError(er, false);
       setErrorMessage("Error during rendering: " + er);
@@ -4206,38 +4209,24 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (!refreshing && !creatingImage)
       return;
     boolean antialias2 = antialiasDisplay && global.antialiasTranslucent;
-    repaintManager.render(g3d, modelSet, true);
-    if (g3d.setPass2(antialias2)) {
+    repaintManager.render(gdata, modelSet, true);
+    if (gdata.setPass2(antialias2)) {
       transformManager.setAntialias(antialias2);
-      repaintManager.render(g3d, modelSet, false);
+      repaintManager.render(gdata, modelSet, false);
       transformManager.setAntialias(antialiasDisplay);
     }
   }
 
-  @SuppressWarnings("incomplete-switch")
   private Object getStereoImage(EnumStereoMode stereoMode) {
-    g3d.beginRendering(transformManager.getStereoRotationMatrix(true));
+    gdata.beginRendering(transformManager.getStereoRotationMatrix(true));
     render();
-    g3d.endRendering();
-    g3d.snapshotAnaglyphChannelBytes();
-    g3d.beginRendering(transformManager.getStereoRotationMatrix(false));
+    gdata.endRendering();
+    gdata.snapshotAnaglyphChannelBytes();
+    gdata.beginRendering(transformManager.getStereoRotationMatrix(false));
     render();
-    g3d.endRendering();
-    switch (stereoMode) {
-    case REDCYAN:
-      g3d.applyCyanAnaglyph();
-      break;
-    case CUSTOM:
-      g3d.applyCustomAnaglyph(transformManager.stereoColors);
-      break;
-    case REDBLUE:
-      g3d.applyBlueAnaglyph();
-      break;
-    case REDGREEN:
-      g3d.applyGreenAnaglyph();
-      break;
-    }
-    return g3d.getScreenImage();
+    gdata.endRendering();
+    gdata.applyAnaglygh(stereoMode, transformManager.stereoColors);
+    return gdata.getScreenImage();
   }
 
   private void render1(Object graphic, Object img, int x, int y) {
@@ -4249,7 +4238,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         Logger.error("Sun!! ... fix graphics your bugs!");
       }
     }
-    g3d.releaseScreenImage();
+    gdata.releaseScreenImage();
   }
 
   @Override
@@ -4342,7 +4331,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   @Override
   public void releaseScreenImage() {
-    g3d.releaseScreenImage();
+    gdata.releaseScreenImage();
   }
 
   // ///////////////////////////////////////////////////////////////
@@ -5013,7 +5002,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   short getColix(Object object) {
-    return Graphics3D.getColix(object);
+    return Colix.getColix(object);
   }
 
   public boolean getRasmolSetting(int tok) {
@@ -6266,7 +6255,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case Token.phongexponent:
       // 11.9.13
       value = checkIntRange(value, 0, 1000);
-      Graphics3D.setPhongExponent(value);
+      GData.setPhongExponent(value);
       break;
     case Token.helixstep:
       // 11.8.RC3
@@ -6326,11 +6315,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         value = checkIntRange(value, -10, -1);
       else
         value = checkIntRange(value, 0, 100);
-      Graphics3D.setSpecularPower(value);
+      GData.setSpecularPower(value);
       break;
     case Token.specularexponent:
       value = checkIntRange(-value, -10, -1);
-      Graphics3D.setSpecularPower(value);
+      GData.setSpecularPower(value);
       break;
     case Token.bondradiusmilliangstroms:
       setMarBond((short) value);
@@ -6341,15 +6330,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return;
     case Token.specularpercent:
       value = checkIntRange(value, 0, 100);
-      Graphics3D.setSpecularPercent(value);
+      GData.setSpecularPercent(value);
       break;
     case Token.diffusepercent:
       value = checkIntRange(value, 0, 100);
-      Graphics3D.setDiffusePercent(value);
+      GData.setDiffusePercent(value);
       break;
     case Token.ambientpercent:
       value = checkIntRange(value, 0, 100);
-      Graphics3D.setAmbientPercent(value);
+      GData.setAmbientPercent(value);
       break;
     case Token.zdepth:
       transformManager.zDepthToPercent(value);
@@ -6364,7 +6353,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       transformManager.slabToPercent(value);
       break;
     case Token.zshadepower:
-      Graphics3D.setZShadePower(Math.max(value, 1));
+      GData.setZShadePower(Math.max(value, 1));
       break;
     case Token.ribbonaspectratio:
       global.ribbonAspectRatio = value;
@@ -6736,7 +6725,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       global.hbondsSolid = value;
       break;
     case Token.specular:
-      Graphics3D.setSpecular(value);
+      GData.setSpecular(value);
       break;
     case Token.slabenabled:
       // Eval.slab
@@ -6817,7 +6806,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       global.rocketBarrels = value;
       break;
     case Token.greyscalerendering:
-      g3d.setGreyscaleMode(global.greyscaleRendering = value);
+      gdata.setGreyscaleMode(global.greyscaleRendering = value);
       break;
     case Token.measurementlabels:
       global.measurementLabels = value;
@@ -7758,8 +7747,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // //////////////////////////////////////////////////////////////
   // font stuff
   // //////////////////////////////////////////////////////////////
-  public Font3D getFont3D(String fontFace, String fontStyle, float fontSize) {
-    return g3d.getFont3D(fontFace, fontStyle, fontSize);
+  public JmolFont getFont3D(String fontFace, String fontStyle, float fontSize) {
+    return gdata.getFont3D(fontFace, fontStyle, fontSize);
   }
 
   public String formatText(String text0) {
@@ -7847,7 +7836,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   @Override
   public int getAtomArgb(int i) {
-    return g3d.getColorArgbOrGray(modelSet.getAtomColix(i));
+    return gdata.getColorArgbOrGray(modelSet.getAtomColix(i));
   }
 
   String getAtomChain(int i) {
@@ -7887,7 +7876,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   @Override
   public int getBondArgb1(int i) {
-    return g3d.getColorArgbOrGray(modelSet.getBondColix1(i));
+    return gdata.getColorArgbOrGray(modelSet.getBondColix1(i));
   }
 
   @Override
@@ -7898,7 +7887,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   @Override
   public int getBondArgb2(int i) {
-    return g3d.getColorArgbOrGray(modelSet.getBondColix2(i));
+    return gdata.getColorArgbOrGray(modelSet.getBondColix2(i));
   }
 
   @Override
@@ -7943,8 +7932,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return strJavaVersion;
   }
 
-  public Graphics3D getGraphics3D() {
-    return g3d;
+  public GData getGraphicsData() {
+    return gdata;
   }
 
   @Override
@@ -9384,7 +9373,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (modelSet != null)
       shapeManager.releaseShape(currentShapeID);
     repaintManager.clear(currentShapeID);
-    return JmolConstants.getShapeClassName(currentShapeID) + " "
+    return JmolConstants.getShapeClassName(currentShapeID, "") + " "
         + currentShapeState;
   }
 
@@ -10354,7 +10343,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   boolean initializeExporter(JmolRendererInterface g3dExport, String type,
                              Object output) {
-    return g3dExport.initializeExporter(type, this, privateKey, g3d, output);
+    return g3dExport.initializeExporter(type, this, privateKey, gdata, output);
   }
 
   public void setPrivateKeyForShape(int iShape) {

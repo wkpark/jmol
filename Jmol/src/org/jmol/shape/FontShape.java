@@ -24,7 +24,7 @@
 
 package org.jmol.shape;
 
-import org.jmol.g3d.Font3D;
+import org.jmol.util.JmolFont;
 
 import java.util.BitSet;
 
@@ -32,7 +32,7 @@ public abstract class FontShape extends Shape {
 
   // Frank, Axes, Bbcage, Uccage
 
-  Font3D font3d;
+  public JmolFont font3d;
   protected String myType;
 
   @Override
@@ -43,7 +43,7 @@ public abstract class FontShape extends Shape {
   @Override
   public void setProperty(String propertyName, Object value, BitSet bs) {
     if ("font" == propertyName) {
-      font3d = (Font3D) value;
+      font3d = (JmolFont) value;
       return;
     }
   }

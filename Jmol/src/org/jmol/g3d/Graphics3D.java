@@ -23,8 +23,6 @@
  */
 package org.jmol.g3d;
 
-import java.util.BitSet;
-
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Point3f;
@@ -33,19 +31,27 @@ import javax.vecmath.Matrix3f;
 
 import org.jmol.api.ApiPlatform;
 import org.jmol.api.JmolRendererInterface;
-import org.jmol.constant.EnumPalette;
+import org.jmol.constant.EnumStereoMode;
 import org.jmol.modelset.Atom;
-import org.jmol.util.ColorUtil;
-import org.jmol.util.Escape;
-import org.jmol.util.Logger;
+import org.jmol.util.Colix;
+import org.jmol.util.JmolFont;
+import org.jmol.util.GData;
 import org.jmol.util.MeshSurface;
 import org.jmol.util.Normix;
-import org.jmol.util.Parser;
+import org.jmol.util.Rgb16;
 import org.jmol.util.Shader;
 import org.jmol.viewer.Viewer;
 
 /**
- * Provides high-level graphics primitives for 3D visualization.
+ * Provides high-level graphics primitives for 3D visualization
+ * for the software renderers. These methods should not have to 
+ * be used with WebGL or OpenGL or other hardware accelerators.
+ * 
+ * This module is linked to via reflection from org.jmol.viewer.Viewer
+ * 
+ * Bob Hanson 9/2/2012
+ * 
+ * 
  *<p>
  * A pure software implementation of a 3D graphics engine.
  * No hardware required.
@@ -139,173 +145,110 @@ import org.jmol.viewer.Viewer;
  * savings isn't that great, and if you are going to the trouble of
  * having antialiasing, you probably what it all.
  * 
+ * 
  */
 
-final public class Graphics3D implements JmolRendererInterface {
+final public class Graphics3D extends GData implements JmolRendererInterface {
 
   Platform3D platform;
-  Line3D line3d;
-  Circle3D circle3d;
-  Sphere3D sphere3d;
-  //Colix3D colix3d;
-  Triangle3D triangle3d;
-  Cylinder3D cylinder3d;
-  Hermite3D hermite3d;
-  Normix normix3d;
-  boolean isFullSceneAntialiasingEnabled;
-  private boolean antialiasThisFrame;
+  LineRenderer line3d;
+  
+  private CircleRenderer circle3d;
+  private SphereRenderer sphere3d;
+  private TriangleRenderer triangle3d;
+  private CylinderRenderer cylinder3d;
+  private HermiteRenderer hermite3d;
+  private Normix normix3d;
+  private boolean isFullSceneAntialiasingEnabled;
   private boolean antialias2; 
-  private boolean antialiasEnabled;
-    
+
+  @Override
   public void destroy() {
     releaseBuffers();
     platform = null;
+    graphicsForMetrics = null;
   }
 
   /**
-   * is full scene / oversampling antialiasing GENERALLY in effect
-   *
-   * @return the answer
+   * underlying GData object handles all general graphics setup. 
+   * @return "this" in the case of Graphics3D and this.g3d in the case of Export3D
+   * 
    */
-  public boolean isDisplayAntialiased() {
-    return antialiasEnabled;
+  public GData getGData() {
+    return this;
   }
 
-  /**
-   * is full scene / oversampling antialiasing in effect
-   *
-   * @return the answer
-   */
-  public boolean isAntialiased() {
-    return antialiasThisFrame;
-  }
-
-  boolean inGreyscaleMode;
-  byte[] anaglyphChannelBytes;
+  private byte[] anaglyphChannelBytes;
   
-  boolean twoPass = false;
-  boolean isPass2;
+  private boolean twoPass = false;
+  protected boolean isPass2;
+  
   public boolean isPass2() {
     return isPass2;
   }
   
-  boolean addAllPixels;
-  boolean haveTranslucentObjects;
-  boolean translucentCoverOnly = false;
+  private boolean addAllPixels;
+  private boolean haveTranslucentObjects;
+  protected boolean translucentCoverOnly = false;
   public void setTranslucentCoverOnly(boolean TF) {
     translucentCoverOnly = TF;
   }
   
-  int windowWidth, windowHeight;
-  int width, height;
-  
-  int displayMinX, displayMaxX, displayMinY, displayMaxY;
-  int slab, depth;
-  int zSlab, zDepth;
-  boolean zShade;
-  int xLast, yLast;
-  int[] pbuf;
-  int[] pbufT;
-  int[] zbuf;
-  int[] zbufT;
-  int bufferSize;
+  protected int[] pbuf;
+  protected int[] pbufT;
+  protected int[] zbuf;
+  protected int[] zbufT;
+  protected int translucencyMask;
 
   //int clipX;
   //int clipY;
   //int clipWidth;
   //int clipHeight;
 
-  short colixCurrent;
-  int[] shadesCurrent;
-  int argbCurrent;
-  //boolean isTranslucent;
-  boolean isScreened;
-  int translucencyMask;
-  int argbNoisyUp, argbNoisyDn;
+  private short colixCurrent;
+  private int[] shadesCurrent;
+  private int argbCurrent;
+  private int anaglyphLength;
+  private boolean isScreened;
+  private int argbNoisyUp, argbNoisyDn;
 
-  Font3D font3dCurrent;
-  ApiPlatform apiPlatform;
+  private JmolFont currentFont;
+  private Pixel pixel;
 
-  public final static byte ENDCAPS_NONE = 0;
-  public final static byte ENDCAPS_OPEN = 1;
-  public final static byte ENDCAPS_FLAT = 2;
-  public final static byte ENDCAPS_SPHERICAL = 3;
-  public final static byte ENDCAPS_OPENEND = 4;
+  protected int zMargin;
   
-  public final static short BLACK = 4;
-  public final static short ORANGE = 5;
-  public final static short PINK = 6;
-  public final static short BLUE = 7;
-  public final static short WHITE = 8;
-  public final static short CYAN = 9;
-  public final static short RED = 10;
-  public final static short GREEN = 11;
-  public final static short GRAY = 12;
-  public final static short SILVER = 13;
-  public final static short LIME = 14;
-  public final static short MAROON = 15;
-  public final static short NAVY = 16;
-  public final static short OLIVE = 17;
-  public final static short PURPLE = 18;
-  public final static short TEAL = 19;
-  public final static short MAGENTA = 20;
-  public final static short YELLOW = 21;
-  public final static short HOTPINK = 22;
-  public final static short GOLD = 23;
+  void setZMargin(int dz) {
+    zMargin = dz;
+  }
 
 
-  /**
-   * Allocates a g3d object
-   * 
-   * @param apiPlatform 
-   */
-  public Graphics3D(ApiPlatform apiPlatform) {
-    this.apiPlatform = apiPlatform;
-    platform = Platform3D.createInstance(apiPlatform);
-    this.line3d = new Line3D(this);
-    this.circle3d = new Circle3D(this);
-    this.sphere3d = new Sphere3D(this);
-    this.triangle3d = new Triangle3D(this);
-    this.cylinder3d = new Cylinder3D(this);
-    this.hermite3d = new Hermite3D(this);
+  public Graphics3D() {
+  }
+  
+  @Override
+  public void initialize(ApiPlatform apiPlatform) {
+    super.initialize(apiPlatform);
+    platform = new Platform3D(apiPlatform);
+    graphicsForMetrics = platform.getGraphicsForMetrics();
+    
+    this.line3d = new LineRenderer(this);
+    this.circle3d = new CircleRenderer(this);
+    this.sphere3d = new SphereRenderer(this);
+    this.triangle3d = new TriangleRenderer(this);
+    this.cylinder3d = new CylinderRenderer(this);
+    this.hermite3d = new HermiteRenderer(this);
     this.normix3d = new Normix();
   }
   
-  int newWindowWidth, newWindowHeight;
-  boolean newAntialiasing;
-
   public boolean currentlyRendering() {
     return currentlyRendering;
   }
   
+  @Override
   public void setWindowParameters(int width, int height, boolean antialias) {
-    newWindowWidth = width;
-    newWindowHeight = height;
-    newAntialiasing = antialias;
+    super.setWindowParameters(width, height, antialias);
     if (currentlyRendering)
       endRendering();
-  }
-  
-  public void setNewWindowParametersForExport() {
-    windowWidth = newWindowWidth;
-    windowHeight = newWindowHeight;
-    setWidthHeight(false);
-  }
-
-  private void setWidthHeight(boolean isAntialiased) {
-    width = windowWidth;
-    height = windowHeight;
-    if (isAntialiased) {
-      width <<= 1;
-      height <<= 1;
-    }
-    xLast = width - 1;
-    yLast = height - 1;
-    displayMinX = -(width >> 1);
-    displayMaxX = width - displayMinX;
-    displayMinY = -(height >> 1);
-    displayMaxY = height - displayMinY;
-    bufferSize = width * height;
   }
   
   public boolean checkTranslucent(boolean isAlphaTranslucent) {
@@ -314,6 +257,7 @@ final public class Graphics3D implements JmolRendererInterface {
     return (!twoPass || twoPass && (isPass2 == isAlphaTranslucent));
   }
   
+  @Override
   public void beginRendering(Matrix3f rotationMatrix) {
     if (currentlyRendering)
       endRendering();
@@ -342,9 +286,13 @@ final public class Graphics3D implements JmolRendererInterface {
     platform.obtainScreenBuffer();
     if (backgroundImage != null)
       plotImage(Integer.MIN_VALUE, 0, Integer.MIN_VALUE, backgroundImage, null, (short) 0, 0, 0);
-    random = Math.random();
   }
-  public double random;
+
+  @Override
+  public void setBackgroundTransparent(boolean TF) {
+    if (platform != null)
+    platform.setBackgroundTransparent(TF);
+  }
 
   private void releaseBuffers() {
     pbuf = null;
@@ -354,6 +302,7 @@ final public class Graphics3D implements JmolRendererInterface {
     platform.releaseBuffers();
   }
   
+  @Override
   public boolean setPass2(boolean antialiasTranslucent) {
     if (!haveTranslucentObjects || !currentlyRendering)
       return false;
@@ -373,6 +322,7 @@ final public class Graphics3D implements JmolRendererInterface {
   }
   
   
+  @Override
   public void endRendering() {
     if (!currentlyRendering)
       return;
@@ -388,7 +338,29 @@ final public class Graphics3D implements JmolRendererInterface {
     currentlyRendering = false;
   }
 
-  int anaglyphLength;
+  @Override
+  public void applyAnaglygh(EnumStereoMode stereoMode, int[] stereoColors) {
+    switch (stereoMode) {
+    case REDCYAN:
+      applyCyanAnaglyph();
+      break;
+    case CUSTOM:
+      applyCustomAnaglyph(stereoColors);
+      break;
+    case REDBLUE:
+      applyBlueAnaglyph();
+      break;
+    case REDGREEN:
+      applyGreenAnaglyph();
+      break;
+    case DOUBLE:
+      break;
+    case NONE:
+      break;
+    }
+  }
+  
+  @Override
   public void snapshotAnaglyphChannelBytes() {
     if (currentlyRendering)
       throw new NullPointerException();
@@ -433,10 +405,12 @@ final public class Graphics3D implements JmolRendererInterface {
     }
   }
   
+  @Override
   public Object getScreenImage() {
     return platform.imagePixelBuffer;
   }
 
+  @Override
   public void releaseScreenImage() {
     platform.clearScreenBufferThreaded();
   }
@@ -445,137 +419,20 @@ final public class Graphics3D implements JmolRendererInterface {
     return haveTranslucentObjects;
   }
   
-  /**
-   * gets g3d width
-   *
-   * @return width pixel count;
-   */
-  public int getRenderWidth() {
-    return width;
-  }
-
-  /**
-   * gets g3d height
-   *
-   * @return height pixel count
-   */
-  public int getRenderHeight() {
-    return height;
-  }
-
-  /**
-   * gets g3d slab
-   *
-   * @return slab
-   */
-  public int getSlab() {
-    return slab;
-  }
-
-  /**
-   * gets g3d depth
-   *
-   * @return depth
-   */
-  public int getDepth() {
-    return depth;
-  }
-
-  public Object backgroundImage;
-  
-  public void setBackgroundTransparent(boolean TF) {
-    if (platform != null)
-    platform.setBackgroundTransparent(TF);
-  }
-
-  public int bgcolor;
-  
-  /**
-   * sets background color to the specified argb value
-   *
-   * @param argb an argb value with alpha channel
-   */
-  public void setBackgroundArgb(int argb) {
-    bgcolor = argb;
-    // background of Jmol transparent in front of certain applications (VLC Player)
-    // when background [0,0,1]. 
-  }
-
-  public void setBackgroundImage(Object image) {
-    backgroundImage = image;
-  }
-
-
-  /**
-   * controls greyscale rendering
-   * @param greyscaleMode Flag for greyscale rendering
-   */
-  public void setGreyscaleMode(boolean greyscaleMode) {
-    this.inGreyscaleMode = greyscaleMode;
-  }
-
-  /**
-   * clipping from the front and the back
-   *<p>
-   * the plane is defined as a percentage from the back of the image
-   * to the front
-   *<p>
-   * For slab values:
-   * <ul>
-   *  <li>100 means 100% is shown
-   *  <li>75 means the back 75% is shown
-   *  <li>50 means the back half is shown
-   *  <li>0 means that nothing is shown
-   * </ul>
-   *<p>
-   * for depth values:
-   * <ul>
-   *  <li>0 means 100% is shown
-   *  <li>25 means the back 25% is <i>not</i> shown
-   *  <li>50 means the back half is <i>not</i> shown
-   *  <li>100 means that nothing is shown
-   * </ul>
-   *<p>
-   * @param slabValue front clipping percentage [0,100]
-   * @param depthValue rear clipping percentage [0,100]
-   * @param zShade whether to shade along z front to back
-   * @param zSlab for zShade
-   * @param zDepth for zShade
-   */
-  public void setSlabAndDepthValues(int slabValue, int depthValue,
-                                    boolean zShade, int zSlab, int zDepth) {
-    slab = slabValue < 0 ? 0 : slabValue;
-    depth = depthValue < 0 ? 0 : depthValue;
-    this.zShade = zShade;
-    if (zShade) {
-      this.zSlab = zSlab < 0 ? 0 : zSlab;
-      this.zDepth = zDepth < 0 ? 0 : zDepth;
-      zShadeR = bgcolor & 0xFF;
-      zShadeG = (bgcolor & 0xFF00) >> 8;
-      zShadeB = (bgcolor & 0xFF0000) >> 16;
-      pixel = new ShadePixel();
-    } else {
-      pixel = new Pixel();
-    }
-  }
-
   public void setTempZSlab(int zSlab) {
     this.zSlab = zSlab;
   }
   
-  Pixel pixel;
-  int zShadeR;
-  int zShadeG;
-  int zShadeB;
+  @Override
+  public void setZShade(boolean zShade, int zSlab, int zDepth) {
+    super.setZShade(zShade, zSlab, zDepth);
+    if (zShade) {
+      pixel = new ShadePixel();
+    } else {
+      pixel = new Pixel();
+    }
 
-  public void setSlab(int slabValue) {
-    slab = slabValue;
   }
-  
-//  int getZShift(int z) {
-//    return (zShade ? (z - slab) * 5 / (depth - slab): 0);
-//  }
-  
   private void downsampleFullSceneAntialiasing(boolean downsampleZBuffer) {
     int width4 = width;
     int offset1 = 0;
@@ -645,7 +502,7 @@ final public class Graphics3D implements JmolRendererInterface {
     for (int offset = 0; offset < bufferSize; offset++)
       mergeBufferPixel(pbuf, pbufT[offset], offset, bgcolor);
   }
-  
+/*  
   static void averageBufferPixel(int[] pIn, int[] pOut, int pt, int dp) {
     int argbA = pIn[pt - dp];
     int argbB = pIn[pt + dp];
@@ -655,7 +512,7 @@ final public class Graphics3D implements JmolRendererInterface {
         | (((argbA & 0x00FF00FF) + (argbB & 0x00FF00FF)) >> 1) & 0x00FF00FF
         | (((argbA & 0x0000FF00) + (argbB & 0x0000FF00)) >> 1) & 0x0000FF00;
   }
-  
+*/  
   static void mergeBufferPixel(int[] pbuf, int argbB, int pt, int bgcolor) {
     if (argbB == 0)
       return;
@@ -721,10 +578,6 @@ final public class Graphics3D implements JmolRendererInterface {
     argbCurrent = argbNoisyUp = argbNoisyDn = argb;
   }
   
-  public static boolean isColixLastAvailable(short colix) {
-    return (colix > 0 && (colix & UNMASK_CHANGEABLE_TRANSLUCENT) == UNMASK_CHANGEABLE_TRANSLUCENT);
-  }
-
 
   /**
    * sets current color from colix color index
@@ -732,19 +585,19 @@ final public class Graphics3D implements JmolRendererInterface {
    * @return true or false if this is the right pass
    */
   public boolean setColix(short colix) {
-    boolean isLast = isColixLastAvailable(colix); 
+    boolean isLast = Colix.isColixLastAvailable(colix); 
     if (!isLast && colix == colixCurrent && currentShadeIndex == -1)
       return true;
-    int mask = colix & TRANSLUCENT_MASK;
-    if (mask == TRANSPARENT)
+    int mask = colix & Colix.TRANSLUCENT_MASK;
+    if (mask == Colix.TRANSPARENT)
       return false;
     boolean isTranslucent = mask != 0;
-    isScreened = isTranslucent && mask == TRANSLUCENT_SCREENED;
+    isScreened = isTranslucent && mask == Colix.TRANSLUCENT_SCREENED;
     if (!checkTranslucent(isTranslucent && !isScreened))
       return false;
     addAllPixels = isPass2 || !isTranslucent;
     if (isPass2) {
-      translucencyMask = (mask << ALPHA_SHIFT) | 0xFFFFFF;
+      translucencyMask = (mask << Colix.ALPHA_SHIFT) | 0xFFFFFF;
     }
     colixCurrent = colix;
     if (isLast) {
@@ -752,8 +605,8 @@ final public class Graphics3D implements JmolRendererInterface {
         if (argbCurrent == 0)
           argbCurrent = 0xFFFFFFFF;
         lastRawColor = argbCurrent;
-        Colix3D.allocateColix(argbCurrent);
-        Colix3D.getShades(argbCurrent, inGreyscaleMode);
+        Colix.allocateColix(argbCurrent);
+        Colix.getShades(argbCurrent, inGreyscaleMode);
       }
     }
     shadesCurrent = getShades(colix);
@@ -762,17 +615,11 @@ final public class Graphics3D implements JmolRendererInterface {
     return true;
   }
 
-  int zMargin;
-  
-  void setZMargin(int dz) {
-    zMargin = dz;
-  }
-
   void addPixel(int offset, int z, int p) {
     pixel.addPixel(offset, z, p);
   }
   
-  class Pixel {
+  protected class Pixel {
     void addPixel(int offset, int z, int p) {
       if (!isPass2) {
         zbuf[offset] = z;
@@ -796,7 +643,7 @@ final public class Graphics3D implements JmolRendererInterface {
     }
   }
   
-  class ShadePixel extends Pixel {
+  protected class ShadePixel extends Pixel {
     @Override
     void addPixel(int offset, int z, int p) {
       if (z > zDepth)
@@ -858,8 +705,6 @@ final public class Graphics3D implements JmolRendererInterface {
     else
       circle3d.plotFilledCircleCenteredUnclipped(x, y, z, diameter);
   }
-
-
   
   /**
    * fills a solid sphere
@@ -877,10 +722,10 @@ final public class Graphics3D implements JmolRendererInterface {
     case 0:
       return;
     }
-    if (diameter <= (antialiasThisFrame ? Sphere3D.maxSphereDiameter2
-        : Sphere3D.maxSphereDiameter))
+    if (diameter <= (antialiasThisFrame ? SphereRenderer.maxSphereDiameter2
+        : SphereRenderer.maxSphereDiameter))
       sphere3d.render(shadesCurrent, !addAllPixels, diameter, x, y, z, null,
-          null, null, -1, null);
+          null, null, -1, null, addAllPixels);
   }
 
   private int saveAmbient, saveDiffuse;
@@ -889,11 +734,11 @@ final public class Graphics3D implements JmolRendererInterface {
     if (TF) {
       saveAmbient = Shader.ambientPercent;
       saveDiffuse = Shader.diffusePercent;
-      setAmbientPercent(100);
-      setDiffusePercent(0);
+      GData.setAmbientPercent(100);
+      GData.setDiffusePercent(0);
     } else {
-      setAmbientPercent(saveAmbient);
-      setDiffusePercent(saveDiffuse);
+      GData.setAmbientPercent(saveAmbient);
+      GData.setDiffusePercent(saveDiffuse);
     }
   }
   /**
@@ -928,10 +773,10 @@ final public class Graphics3D implements JmolRendererInterface {
     case 0:
       return;
     }
-    if (diameter <= (antialiasThisFrame ? Sphere3D.maxSphereDiameter2
-        : Sphere3D.maxSphereDiameter))
+    if (diameter <= (antialiasThisFrame ? SphereRenderer.maxSphereDiameter2
+        : SphereRenderer.maxSphereDiameter))
       sphere3d.render(shadesCurrent, !addAllPixels, diameter, x, y, z,
-          mToEllipsoidal, coef, mDeriv, selectedOctant, octantPoints);
+          mToEllipsoidal, coef, mDeriv, selectedOctant, octantPoints, addAllPixels);
   }
 
   /**
@@ -1072,7 +917,7 @@ final public class Graphics3D implements JmolRendererInterface {
    * @param zSlab z for slab calculation
    */
   
-  public void drawString(String str, Font3D font3d,
+  public void drawString(String str, JmolFont font3d,
                          int xBaseline, int yBaseline, int z, int zSlab) {
     //axis, labels, measures    
     if (str == null)
@@ -1093,20 +938,20 @@ final public class Graphics3D implements JmolRendererInterface {
    * @param z baseline z
    */
   
-  public void drawStringNoSlab(String str, Font3D font3d, 
+  public void drawStringNoSlab(String str, JmolFont font3d, 
                                int xBaseline, int yBaseline,
                                int z) {
     // echo, frank, hover, molecularOrbital, uccage
     if (str == null)
       return;
     if(font3d != null)
-      font3dCurrent = font3d;
-    plotText(xBaseline, yBaseline, z, argbCurrent, str, font3dCurrent, null);
+      currentFont = font3d;
+    plotText(xBaseline, yBaseline, z, argbCurrent, str, currentFont, null);
   }
   
   public void plotText(int x, int y, int z, int argb,
-                String text, Font3D font3d, JmolRendererInterface jmolRenderer) {
-    Text3D.plot(x, y, z, argb, text, font3d, this, jmolRenderer, 
+                String text, JmolFont font3d, JmolRendererInterface jmolRenderer) {
+    TextRenderer.plot(x, y, z, argb, text, font3d, this, jmolRenderer, 
         antialiasThisFrame);    
   }
   
@@ -1124,20 +969,20 @@ final public class Graphics3D implements JmolRendererInterface {
     setColix(bgcolix);
     if (bgcolix == 0)
       argbCurrent = 0;
-    Text3D.plotImage(x, y, z, image, this, jmolRenderer, antialiasThisFrame, argbCurrent, 
+    ImageRenderer.plotImage(x, y, z, image, this, jmolRenderer, antialiasThisFrame, argbCurrent, 
         width, height);
   }
 
   public void setFont(byte fid) {
-    font3dCurrent = Font3D.getFont3D(fid);
+    currentFont = JmolFont.getFont3D(fid);
   }
   
-  public void setFont(Font3D font3d) {
-    font3dCurrent = font3d;
+  public void setFont(JmolFont font3d) {
+    currentFont = font3d;
   }
   
-  public Font3D getFont3DCurrent() {
-    return font3dCurrent;
+  public JmolFont getFont3DCurrent() {
+    return currentFont;
   }
 
   boolean currentlyRendering;
@@ -1446,17 +1291,17 @@ final public class Graphics3D implements JmolRendererInterface {
   private boolean setTriangleTranslucency(short colixA, short colixB, short colixC) {
     if (!isPass2)
       return true;
-    int maskA = colixA & TRANSLUCENT_MASK;
-    int maskB = colixB & TRANSLUCENT_MASK;
-    int maskC = colixC & TRANSLUCENT_MASK;
-    maskA &= ~TRANSPARENT;
-    maskB &= ~TRANSPARENT;
-    maskC &= ~TRANSPARENT;
+    int maskA = colixA & Colix.TRANSLUCENT_MASK;
+    int maskB = colixB & Colix.TRANSLUCENT_MASK;
+    int maskC = colixC & Colix.TRANSLUCENT_MASK;
+    maskA &= ~Colix.TRANSPARENT;
+    maskB &= ~Colix.TRANSPARENT;
+    maskC &= ~Colix.TRANSPARENT;
     //if (maskA == 0 && maskB == 0 && maskC == 0)
       //return false;
-    int mask = ((maskA + maskB + maskC) / 3) & TRANSLUCENT_MASK;
+    int mask = ((maskA + maskB + maskC) / 3) & Colix.TRANSLUCENT_MASK;
    // System.out.println(mask >> TRANSLUCENT_SHIFT);
-    translucencyMask = (mask << ALPHA_SHIFT) | 0xFFFFFF;
+    translucencyMask = (mask << Colix.ALPHA_SHIFT) | 0xFFFFFF;
     return true;
   }
 
@@ -1499,66 +1344,6 @@ final public class Graphics3D implements JmolRendererInterface {
     // Export3D only
   }
   
-  /* ***************************************************************
-   * lower-level plotting routines
-   * ***************************************************************/
-
-  public boolean isClipped(int x, int y, int z) {
-    // this is the one that could be augmented with slabPlane
-    return (x < 0 || x >= width || y < 0 || y >= height || z < slab || z > depth);
-  }
-  
-  public boolean isClipped(int x, int y) {
-    return (x < 0 || x >= width || y < 0 || y >= height);
-  }
-
-  public boolean isInDisplayRange(int x, int y) {
-    return (x >= displayMinX && x < displayMaxX && y >= displayMinY && y < displayMaxY);
-  }
-  
-  public boolean isClippedXY(int diameter, int x, int y) {
-    int r = (diameter + 1) >> 1;
-    return (x < -r || x >= width + r || y < -r || y >= height + r);
-  }
-  
-  public boolean isClippedZ(int z) {
-    return (z != Integer.MIN_VALUE  && (z < slab || z > depth));
-  }
-  
-  final static int yGT = 1;
-  final static int yLT = 2;
-  final static int xGT = 4;
-  final static int xLT = 8;
-  final static int zGT = 16;
-  final static int zLT = 32;
-
-  public int clipCode(int x, int y, int z) {
-    int code = 0;
-    if (x < 0)
-      code |= xLT;
-    else if (x >= width)
-      code |= xGT;
-    if (y < 0)
-      code |= yLT;
-    else if (y >= height)
-      code |= yGT;
-    if (z < slab)
-      code |= zLT;
-    else if (z > depth) // note that this is .GT., not .GE.
-      code |= zGT;
-  
-    return code;
-  }
-
-  public int clipCode(int z) {
-    int code = 0;
-    if (z < slab)
-      code |= zLT;
-    else if (z > depth) // note that this is .GT., not .GE.
-      code |= zGT;  
-    return code;
-  }
-
   void plotPixelClipped(int x, int y, int z) {
     //circle3D, drawPixel, plotPixelClipped(point3)
     if (isClipped(x, y, z))
@@ -1921,433 +1706,6 @@ final public class Graphics3D implements JmolRendererInterface {
   }
 
   
-  /* ***************************************************************
-   * color indexes -- colix
-   * ***************************************************************/
-
-  /* entries 0 and 1 are reserved and are special inheritance
-     0 INHERIT_ALL inherits both color and translucency
-     1 INHERIT_COLOR is used to inherit just the color
-     
-     
-     0x8000 changeable flag (elements and isotopes, about 200; negative)
-     0x7800 translucent flag set
-
-     NEW:
-     0x0000 translucent level 0  (opaque)
-     0x0800 translucent level 1
-     0x1000 translucent level 2
-     0x1800 translucent level 3
-     0x2000 translucent level 4
-     0x2800 translucent level 5
-     0x3000 translucent level 6
-     0x3800 translucent level 7
-     0x4000 translucent level 8 (invisible)
-
-     0x0000 inherit color and translucency
-     0x0001 inherit color; translucency determined by mask     
-     0x0002 special palette ("group", "structure", etc.); translucency by mask
-
-     Note that inherited colors and special palettes are not handled here. 
-     They could be anything, including totally variable quantities such as 
-     distance to an object. So there are two stages of argb color determination
-     from a colix. The special palette flag is only used transiently - just to
-     indicate that the color selected isn't a known color. The actual palette-based
-     colix is saved here, and and the atom or shape's byte paletteID is set as well.
-     
-     Shapes/ColorManager: responsible for assigning argb colors based on 
-     color palettes. These argb colors are then used directly.
-     
-     Graphics3D: responsible for "system" colors and caching of user-defined rgbs.
-     
-     
-     
-     0x0004 black...
-       ....
-     0x0017  ...gold
-     0x00?? additional colors used from JavaScript list or specified by user
-     
-     0x0177 last available colix
-
-     Bob Hanson 3/2007
-     
-  */
-  
-  private final static short UNMASK_CHANGEABLE_TRANSLUCENT =0x07FF;
-  private final static short CHANGEABLE_MASK          = (short)0x8000; // negative
-  public final static int    LAST_AVAILABLE_COLIX     = UNMASK_CHANGEABLE_TRANSLUCENT;
-  private final static int   TRANSLUCENT_SHIFT        = 11; 
-  private final static int   ALPHA_SHIFT              = 24 - TRANSLUCENT_SHIFT;
-  private final static int   TRANSLUCENT_MASK         = 0xF << TRANSLUCENT_SHIFT; //0x7800
-  private final static int   TRANSLUCENT_SCREENED     = TRANSLUCENT_MASK;  
-  private final static int   TRANSPARENT              =  8 << TRANSLUCENT_SHIFT;  //0x4000
-  final static int           TRANSLUCENT_50           =  4 << TRANSLUCENT_SHIFT;  //0x2000
-  public final static short  OPAQUE_MASK              = ~TRANSLUCENT_MASK;
-
-
-  public final static short  INHERIT_ALL         = 0;
-  public final static short INHERIT_COLOR       = 1;
-  public final static short  USE_PALETTE         = 2;
-  final static short         RAW_RGB             = 3;
-  final static short         SPECIAL_COLIX_MAX   = 4;
-
-  public static short getColix(int argb) {
-    return Colix3D.getColix(argb); 
-  }
-
-  public short[] getBgColixes(short[] bgcolixes) {
-    return bgcolixes;
-  }
-  public static short getColixTranslucent(int argb) {
-    int a = (argb >> 24) & 0xFF;
-    if (a == 0xFF)
-      return getColix(argb);
-    return getColixTranslucent(getColix(argb), true, a / 255f);
-  }
-
-
-  public static String getHexCodes(short[] colixes) {
-    if (colixes == null)
-      return null;
-    StringBuffer s = new StringBuffer();
-    for (int i = 0; i < colixes.length; i++)
-      s.append(i == 0 ? "" : " ")
-        .append(getHexCode(colixes[i]));
-    return s.toString();
-  }
-
-  public static String getHexCode(short colix) {
-    return Escape.escapeColor(getArgb(colix));
-  }
-
-  public static short[] getColixArray(String colorNames) {
-    if (colorNames == null || colorNames.length() == 0)
-      return null;
-    String[] colors = Parser.getTokens(colorNames);
-    short[] colixes = new short[colors.length];
-    for (int j = 0; j < colors.length; j++) {
-      colixes[j] = getColix(ColorUtil.getArgbFromString(colors[j]));
-      if (colixes[j] == 0)
-        return null;
-    }
-    return colixes;
-  }
-
-  public static short getColix(String colorName) {
-    int argb = ColorUtil.getArgbFromString(colorName);
-    if (argb != 0)
-      return Colix3D.getColix(argb);
-    if ("none".equalsIgnoreCase(colorName))
-      return INHERIT_ALL;
-    if ("opaque".equalsIgnoreCase(colorName))
-      return INHERIT_COLOR;
-    return USE_PALETTE;
-  }
-
-  private final static short applyColorTranslucencyLevel(short colix,
-                                                         float translucentLevel) {
-    // 0.0 to 1.0 ==> MORE translucent   
-    //                 1/8  1/4 3/8 1/2 5/8 3/4 7/8 8/8
-    //     t            32  64  96  128 160 192 224 255 or 256
-    //     t >> 5        1   2   3   4   5   6   7   8
-    //     (t >> 5) + 1  2   3   4   5   6   7   8   9 
-    // 15 is reserved for screened, so 9-14 just map to 9, "invisible"
-
-    if (translucentLevel == 0) //opaque
-      return (short) (colix & ~TRANSLUCENT_MASK);
-    if (translucentLevel < 0) //screened
-      return (short) (colix & ~TRANSLUCENT_MASK | TRANSLUCENT_SCREENED);
-    if (Float.isNaN(translucentLevel) || translucentLevel >= 255 || translucentLevel == 1.0)
-      return (short) ((colix & ~TRANSLUCENT_MASK) | TRANSPARENT);
-    int iLevel = (int) (translucentLevel < 1 ? translucentLevel * 256
-            : translucentLevel <= 9 ? ((int) (translucentLevel-1)) << 5
-               : translucentLevel < 15 ? 8 << 5 : translucentLevel);
-    iLevel = (iLevel >> 5) % 16;
-    return (short) (colix & ~TRANSLUCENT_MASK | (iLevel << TRANSLUCENT_SHIFT));
-  }
-
-  public final static int getColixTranslucencyLevel(short colix) {
-    int logAlpha = (colix >> TRANSLUCENT_SHIFT) & 0xF;
-    switch (logAlpha) {
-    case 0:
-      return 0;
-    case 1: //  32
-    case 2: //  64
-    case 3: //  96
-    case 4: // 128
-    case 5: // 160
-    case 6: // 192
-    case 7: // 224
-      return logAlpha << 5;
-    case 15:
-      return -1;
-    default:
-      return 255;
-    }
-  }
-  
-  public static float getColixTranslucencyFractional(short colix) {
-    int translevel = getColixTranslucencyLevel(colix);
-    return (
-          translevel == -1 ? 0.5f 
-        : translevel == 0 ? 0 
-        : translevel == 255 ? 1 
-        : translevel / 256f
-        );
-  }
-
-  public static short getColix(Object obj) {
-    if (obj == null)
-      return INHERIT_ALL;
-    if (obj instanceof EnumPalette)
-      return (((EnumPalette) obj) == EnumPalette.NONE ? INHERIT_ALL
-          : USE_PALETTE);
-    if (obj instanceof Integer)
-      return Colix3D.getColix(((Integer) obj).intValue());
-    if (obj instanceof String)
-      return getColix((String) obj);
-    if (obj instanceof Byte)
-      return (((Byte) obj).byteValue() == 0 ? INHERIT_ALL
-          : USE_PALETTE);
-    if (Logger.debugging) {
-      Logger.debug("?? getColix(" + obj + ")");
-    }
-    return HOTPINK;
-  }
-
-  public final static short getColixTranslucent(short colix, boolean isTranslucent, float translucentLevel) {
-    if (colix == INHERIT_ALL)
-      colix = INHERIT_COLOR;
-    colix &= ~TRANSLUCENT_MASK;
-    return (isTranslucent ? applyColorTranslucencyLevel(colix, translucentLevel) : colix);
-  }
-
-  public final static short copyColixTranslucency(short colixFrom, short colixTo) {
-    return getColixTranslucent(colixTo, isColixTranslucent(colixFrom), getColixTranslucencyLevel(colixFrom));  
-  }
-  
-  public int getColorArgbOrGray(short colix) {
-    if (colix < 0)
-      colix = changeableColixMap[colix & UNMASK_CHANGEABLE_TRANSLUCENT];
-    return (inGreyscaleMode ? Colix3D.getArgbGreyscale(colix) : Colix3D.getArgb(colix));
-  }
-
-  int[] getShades(short colix) {
-    if (colix < 0)
-      colix = changeableColixMap[colix & UNMASK_CHANGEABLE_TRANSLUCENT];
-    return (inGreyscaleMode ? Colix3D.getShadesGreyscale(colix) : Colix3D.getShades(colix));
-  }
-
-  public final static short getChangeableColixIndex(short colix) {
-    return (colix >= 0 ? -1 : (short)(colix & UNMASK_CHANGEABLE_TRANSLUCENT));
-  }
-
-  public final static boolean isColixTranslucent(short colix) {
-    return ((colix & TRANSLUCENT_MASK) != 0);
-  }
-
-  public final static short getColixInherited(short myColix, short parentColix) {
-    switch (myColix) {
-    case INHERIT_ALL:
-      return parentColix;
-    case INHERIT_COLOR:
-      return (short) (parentColix & OPAQUE_MASK);
-    default:
-      //check this colix irrespective of translucency, and if inherit, then
-      //it must be inherit color but not translucent level; 
-      return ((myColix & OPAQUE_MASK) == INHERIT_COLOR ? (short) (parentColix
-          & OPAQUE_MASK | myColix & TRANSLUCENT_MASK) : myColix);
-    }
-  }
-
-  public final static boolean isColixColorInherited(short colix) {
-    switch (colix) {
-    case INHERIT_ALL:
-    case INHERIT_COLOR:
-      return true;
-    default: //could be translucent of some sort
-      return (colix & OPAQUE_MASK) == INHERIT_COLOR; 
-    }
-  }
-  
-  public static int getArgb(short colix) {
-    return Colix3D.getArgb(colix);  
-  }
-  
-  /****************************************************************
-   * changeable colixes
-   * give me a short ID and a color, and I will give you a colix
-   * later, you can reassign the color if you want
-   * Used only for colorManager coloring of elements
-   ****************************************************************/
-
-  private short[] changeableColixMap = new short[16];
-
-  public short getChangeableColix(short id, int argb) {
-    if (id >= changeableColixMap.length) {
-      short[] t = new short[id + 16];
-      System.arraycopy(changeableColixMap, 0, t, 0, changeableColixMap.length);
-      changeableColixMap = t;
-    }
-    if (changeableColixMap[id] == 0)
-      changeableColixMap[id] = Colix3D.getColix(argb);
-    return (short)(id | CHANGEABLE_MASK);
-  }
-
-  public void changeColixArgb(short id, int argb) {
-    if (id < changeableColixMap.length && changeableColixMap[id] != 0)
-      changeableColixMap[id] = Colix3D.getColix(argb);
-  }
-
-  /* ***************************************************************
-   * shading and lighting
-   * ***************************************************************/
-
-  private static void flushCaches() {
-    Colix3D.flushShades();
-    Sphere3D.flushSphereCache();
-  }
-
-  public static Point3f getLightSource() {
-    return new Point3f(Shader.xLight, Shader.yLight, Shader.zLight);
-  }
-
-  public synchronized static void setSpecular(boolean val) {
-    if (Shader.specularOn == val)
-      return;
-    Shader.specularOn = val;
-    flushCaches();
-  }
-
-  public static boolean getSpecular() {
-    return Shader.specularOn;
-  }
-
-  /**
-   *  fractional distance from black for ambient color
-   * 
-   * @param val
-   */
-  public synchronized static void setZShadePower(int val) {
-    Shader.zPower = val;
-  }
-
-  public static int getZShadePower() {
-    return Shader.zPower;
-  }
-  
-  /**
-   *  fractional distance from black for ambient color
-   * 
-   * @param val
-   */
-  public synchronized static void setAmbientPercent(int val) {
-    if (Shader.ambientPercent == val)
-      return;
-    Shader.ambientPercent = val;
-    Shader.ambientFraction = val / 100f;
-    flushCaches();
-  }
-
-  public static int getAmbientPercent() {
-    return Shader.ambientPercent;
-  }
-  
-  /**
-   *  df in I = df * (N dot L) + sf * (R dot V)^p
-   * 
-   * @param val
-   */
-  public synchronized static void setDiffusePercent(int val) {
-    if (Shader.diffusePercent == val)
-      return;
-    Shader.diffusePercent = val;
-    Shader.diffuseFactor = val / 100f;
-    flushCaches();
-  }
-
-  public static int getDiffusePercent() {
-    return Shader.diffusePercent;
-  }
-  
-  /**
-   *  p in I = df * (N dot L) + sf * (R dot V)^p
-   * 
-   * @param val
-   */
-  public synchronized static void setPhongExponent(int val) {
-    if (Shader.phongExponent == val && Shader.usePhongExponent)
-      return;
-    Shader.phongExponent = val;
-    float x = (float) (Math.log(val) / Math.log(2));
-    Shader.usePhongExponent = (x != (int) x);
-    if (!Shader.usePhongExponent)
-      Shader.specularExponent = (int) x;
-    flushCaches();
-  }
-
-  public static int getPhongExponent() {
-    return Shader.phongExponent;
-  }
-
-  /**
-   *  log_2(p) in I = df * (N dot L) + sf * (R dot V)^p
-   *  for faster calculation of shades
-   *  
-   * @param val
-   */
-  public synchronized static void setSpecularExponent(int val) {
-    if (Shader.specularExponent == val)
-      return;
-    Shader.specularExponent = val;
-    Shader.phongExponent = (int) Math.pow(2, val);
-    Shader.usePhongExponent = false;
-    flushCaches();
-  }
-  
-  public static int getSpecularExponent() {
-    return Shader.specularExponent;
-  }
-  
-  /**
-   *  sf in I = df * (N dot L) + sf * (R dot V)^p
-   *  not a percent of anything, really
-   *
-   * @param val
-   */
-  public synchronized static void setSpecularPercent(int val) {
-    if (Shader.specularPercent == val)
-      return;
-    Shader.specularPercent = val;
-    Shader.specularFactor = val / 100f;
-    flushCaches();
-  }
-
-  public static int getSpecularPercent() {
-    return Shader.specularPercent;
-  }
-
-  /**
-   *  fractional distance to white for specular dot
-   * 
-   * @param val
-   */
-  public synchronized static void setSpecularPower(int val) {
-    if (val < 0) {
-      setSpecularExponent(-val);
-      return;
-    }
-    if (Shader.specularPower == val)
-      return;
-    Shader.specularPower = val;
-    Shader.intenseFraction = val / 100f;
-    flushCaches();
-  }
-  
-  public static int getSpecularPower() {
-    return Shader.specularPower;
-  }
-  
   private final Vector3f vectorAB = new Vector3f();
   private final Vector3f vectorAC = new Vector3f();
   private final Vector3f vectorNormal = new Vector3f();
@@ -2399,89 +1757,18 @@ final public class Graphics3D implements JmolRendererInterface {
             : Shader.getShadeIndex(vectorNormal.x, vectorNormal.y,
                                     -vectorNormal.z));
   }
-
-  /* ***************************************************************
-   * fontID stuff
-   * a fontID is a byte that contains the size + the face + the style
-   * ***************************************************************/
-
-  public Font3D getFont3D(float fontSize) {
-    return Font3D.getFont3D(Font3D.FONT_FACE_SANS,
-                            Font3D.FONT_STYLE_PLAIN, fontSize, fontSize, platform);
-  }
-
-  public Font3D getFont3D(String fontFace, float fontSize) {
-    return Font3D.getFont3D(Font3D.getFontFaceID(fontFace),
-                            Font3D.FONT_STYLE_PLAIN, fontSize, fontSize, platform);
-  }
     
-  // {"Plain", "Bold", "Italic", "BoldItalic"};
-  public static int getFontStyleID(String fontStyle) {
-    return Font3D.getFontStyleID(fontStyle);
-  }
-  
-  public Font3D getFont3D(String fontFace, String fontStyle, float fontSize) {
-    int iStyle = Font3D.getFontStyleID(fontStyle);
-    if (iStyle < 0)
-      iStyle = 0;
-    return Font3D.getFont3D(Font3D.getFontFaceID(fontFace),
-                            iStyle, fontSize, fontSize, platform);
-  }
-
-  public Font3D getFont3DScaled(Font3D font, float scale) {
-    // TODO: problem here is that we are assigning a bold font, then not DEassigning it
-    float newScale = font.fontSizeNominal * scale;
-    return (newScale == font.fontSize ? font : Font3D.getFont3D(
-        font.idFontFace,
-        (antialiasThisFrame ? font.idFontStyle | 1 : font.idFontStyle), 
-        newScale, font.fontSizeNominal, platform));
-  }
-
-  public byte getFontFid(float fontSize) {
-    return getFont3D(fontSize).fid;
-  }
-
-  public byte getFontFid(String fontFace, float fontSize) {
-    return getFont3D(fontFace, fontSize).fid;
-  }
-
-  
-  /* ***************************************************************
-   * normals and normal indexes -- normix
-   * ***************************************************************/
-
-  public static final short NORMIX_NULL = Normix.NORMIX_NULL;
-  
-  public static short getInverseNormix(short normix) {
-    return Normix.getInverseNormix(normix);
-  }
-
-  public static short getNormix(Vector3f vector, BitSet bsTemp) {
-    return Normix.getNormix(vector, bsTemp);
-  }
-
-  public static short get2SidedNormix(Vector3f vector, BitSet bsTemp) {
-    return Normix.get2SidedNormix(vector, bsTemp);
-  }
-
-  public static Vector3f getNormixVector(short normix) {
-    return Normix.getVector(normix);
-  }
-
   public boolean isDirectedTowardsCamera(short normix) {
-    //polyhedra
+    //polyhedra renderer
     return normix3d.isDirectedTowardsCamera(normix);
   }
 
   public Vector3f[] getTransformedVertexVectors() {
+    // mesh renderer
     return normix3d.getTransformedVectors();
   }
 
   //////////////////////////////////////////////////////////
-  
-  public void renderBackground() {
-    renderBackground(null);
-  }
   
   public void renderBackground(JmolRendererInterface jmolRenderer) {
     if (backgroundImage != null)
@@ -2516,7 +1803,7 @@ final public class Graphics3D implements JmolRendererInterface {
     return false;
   }
 
-  public boolean initializeExporter(String type, Viewer viewer, double privateKey, Graphics3D g3d,
+  public boolean initializeExporter(String type, Viewer viewer, double privateKey, GData g3d,
                                     Object output) {
     return false;
   }
@@ -2537,6 +1824,10 @@ final public class Graphics3D implements JmolRendererInterface {
   public double getPrivateKey() {
     // exporter only
     return 0;
+  }
+
+  public void clearFontCache() {
+    TextRenderer.clearFontCache();
   }
 
 

@@ -31,10 +31,10 @@ import java.util.Map;
 
 import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumPalette;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
+import org.jmol.util.Colix;
 import org.jmol.viewer.JmolConstants;
 
 public abstract class AtomShape extends Shape {
@@ -103,7 +103,7 @@ public abstract class AtomShape extends Shape {
   public void setProperty(String propertyName, Object value, BitSet bs) {
     if ("color" == propertyName) {
       isActive = true;
-      short colix = Graphics3D.getColix(value);
+      short colix = Colix.getColix(value);
       byte pid = EnumPalette.pidOf(value);
       if (bsColixSet == null)
         bsColixSet = new BitSet();
@@ -121,7 +121,7 @@ public abstract class AtomShape extends Shape {
           colixes = new short[atomCount];
           paletteIDs = new byte[atomCount];
         }
-        colixes[i] = Graphics3D.getColixTranslucent(colixes[i], isTranslucent,
+        colixes[i] = Colix.getColixTranslucent(colixes[i], isTranslucent,
             translucentLevel);
         if (isTranslucent)
           bsColixSet.set(i);
@@ -149,7 +149,7 @@ public abstract class AtomShape extends Shape {
 
   protected void setColixAndPalette(short colix, byte paletteID, int atomIndex) {
     if (colixes == null || atomIndex >= colixes.length) {
-      if (colix == Graphics3D.INHERIT_ALL)
+      if (colix == Colix.INHERIT_ALL)
         return;
       colixes = ArrayUtil.ensureLength(colixes, atomIndex + 1);
       paletteIDs = ArrayUtil.ensureLength(paletteIDs, atomIndex + 1);
@@ -157,7 +157,7 @@ public abstract class AtomShape extends Shape {
     if (bsColixSet == null)
       bsColixSet = new BitSet();
     colixes[atomIndex] = colix = setColix(colix, paletteID, atomIndex);
-    bsColixSet.set(atomIndex, colix != Graphics3D.INHERIT_ALL);
+    bsColixSet.set(atomIndex, colix != Colix.INHERIT_ALL);
     paletteIDs[atomIndex] = paletteID;
   }
 

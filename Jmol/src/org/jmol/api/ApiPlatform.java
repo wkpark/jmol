@@ -2,7 +2,7 @@ package org.jmol.api;
 
 import javax.vecmath.Point3f;
 
-import org.jmol.g3d.Font3D;
+import org.jmol.util.JmolFont;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.Viewer;
 
@@ -80,7 +80,7 @@ public interface ApiPlatform {
   
   void renderScreenImage(JmolViewer jmolViewer, Object g, Object currentSize);
 
-  int[] getTextPixels(String text, Font3D font3d, Object gObj,
+  int[] getTextPixels(String text, JmolFont font3d, Object gObj,
                       Object image, int mapWidth, int height,
                       int ascent);
 

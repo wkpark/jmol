@@ -33,12 +33,12 @@ public class Bbcage extends FontLineShape {
   @Override
   public void initShape() {
     super.initShape();
-    font3d = g3d.getFont3D(JmolConstants.AXES_DEFAULT_FONTSIZE);
+    font3d = gdata.getFont3D(JmolConstants.AXES_DEFAULT_FONTSIZE);
     myType = "boundBox";
   }
 
-  boolean isVisible;
-  int mad;
+  public boolean isVisible;
+  public int mad;
   
   @Override
   public void setVisibilityFlags(BitSet bs) {

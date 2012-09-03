@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-06-15 17:29+0200\n"
-"PO-Revision-Date: 2012-08-26 09:08+0000\n"
-"Last-Translator: Andika Triwidada <andika@gmail.com>\n"
+"PO-Revision-Date: 2012-09-02 02:48+0000\n"
+"Last-Translator: Waluyo Adi Siswanto <Unknown>\n"
 "Language-Team: Indonesian <id@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-26 15:24+0000\n"
-"X-Generator: Launchpad (build 15843)\n"
+"X-Launchpad-Export-Date: 2012-09-03 16:00+0000\n"
+"X-Generator: Launchpad (build 15890)\n"
 
 #: com/json/Cookie.java:121
 msgid "name"
@@ -1492,12 +1492,12 @@ msgstr "Penskalaan persentase belum diimplementasi!"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:133
 msgid "SurfaceTool"
-msgstr ""
+msgstr "AlatSurface"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:152
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:155
 msgid "View Center"
-msgstr ""
+msgstr "Pusat Tampilan"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:153
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:156
@@ -1510,7 +1510,7 @@ msgstr "Asal"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:167
 msgid "Cap"
-msgstr ""
+msgstr "Cap"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:170
 msgid ""
@@ -1520,11 +1520,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:174
 msgid "Slice Planes"
-msgstr ""
+msgstr "Bidang Potong"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:176
 msgid "Shows planes at slicing surfaces."
-msgstr ""
+msgstr "Tampilkan bidang potong pada permukaan potong"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:183
 msgid "Ghost On"
@@ -1536,27 +1536,27 @@ msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:206
 msgid "Angle from X-axis in XY plane"
-msgstr ""
+msgstr "Ausut dari sumbu-X pada bidang XY"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:217
 msgid "Angle from Z-axis"
-msgstr ""
+msgstr "Sudut dari sumbu-Z"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:228
 msgid "Direction vector of normal to slice"
-msgstr ""
+msgstr "Arah vektor normal ke potongan"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:231
 msgid "Distance of slice from origin"
-msgstr ""
+msgstr "Jarak potongan dari asal"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:243
 msgid "Thickness of slice"
-msgstr ""
+msgstr "Tebal Potongan"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:261
 msgid "Select Surface(s)"
-msgstr ""
+msgstr "Pilih Permukaan"
 
 #: org/openscience/jmol/app/webexport/JmolInstance.java:81
 msgid "Attempt to make scratch directory failed."
@@ -1717,7 +1717,7 @@ msgstr "Gagal Memanggil FileWriter"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:561
 msgid "Errors occurred during web page creation.  See Log Tab!"
-msgstr ""
+msgstr "Terjadi kesalahn ketika membuat halaman web.  Lihat pada Tab Log!"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:636
 #, java-format
@@ -1756,6 +1756,9 @@ msgid ""
 "Please check that you are using a Jmol.jar that is part of a full Jmol "
 "distribution."
 msgstr ""
+"Tidak dapat menemukan atau membuka:\n"
+"{0}\n"
+"Periksa apakah anda menggunakan Jmol.jar dari distribusi Jmol."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:795
 #, java-format

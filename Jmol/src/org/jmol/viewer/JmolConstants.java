@@ -26,6 +26,7 @@ package org.jmol.viewer;
 
 import org.jmol.script.Token;
 import org.jmol.util.Elements;
+import org.jmol.util.J2SRequireImport;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 

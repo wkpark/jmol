@@ -1507,9 +1507,15 @@ public class StateManager {
     Object getParameter(String name, boolean asVariable) {
       name = name.toLowerCase();
       if (name.equals("_memory")) {
-        Runtime runtime = Runtime.getRuntime();
-        float bTotal = runtime.totalMemory() / 1000000f;
-        float bFree = runtime.freeMemory() / 1000000f;
+      	float bTotal = 0;
+      	float bFree = 0;
+      	try {
+          Runtime runtime = Runtime.getRuntime();
+          bTotal = runtime.totalMemory() / 1000000f;
+          bFree = runtime.freeMemory() / 1000000f;
+        } catch (Throwable e) {
+      		// Runtime absent (JavaScript)
+      	}
         String value = TextFormat.formatDecimal(bTotal - bFree, 1) + "/"
             + TextFormat.formatDecimal(bTotal, 1);
         htNonbooleanParameterValues.put("_memory", value);

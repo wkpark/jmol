@@ -301,14 +301,14 @@ public final class Logger {
   }
   
   public static void checkMemory() {
-    Runtime runtime = Runtime.getRuntime();
-    runtime.gc();
-    long bTotal = runtime.totalMemory();
-    long bFree = runtime.freeMemory();
-    long bMax = 0;
+    long bTotal = 0, bFree = 0, bMax = 0;
     try {
+      Runtime runtime = Runtime.getRuntime();
+      runtime.gc();
+      bTotal = runtime.totalMemory();
+      bFree = runtime.freeMemory();
       bMax = runtime.maxMemory();
-    } catch (Exception e) {
+    } catch (Throwable e) {
     }
     info("Memory: Total-Free="+ (bTotal - bFree)+"; Total=" +  bTotal + "; Free=" + bFree 
         + "; Max=" + bMax);

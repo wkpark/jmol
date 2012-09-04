@@ -1,4 +1,4 @@
-package org.jmol.viewer;
+package org.jmol.util;
 
 public @interface J2SRequireImport {
 

@@ -9833,7 +9833,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // parallel processing
 
   private Object executor;
-  public static int nProcessors = Runtime.getRuntime().availableProcessors();
+  public static int nProcessors = 1;
+  static {
+    try {
+      nProcessors = Runtime.getRuntime().availableProcessors();
+    } catch (Throwable e) {
+      // Runtime absent (JavaScript)
+    }
+  }
 
   public Object getExecutor() {
     // a Java 1.5 function

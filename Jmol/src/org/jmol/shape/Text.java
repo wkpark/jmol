@@ -49,7 +49,7 @@ public class Text extends Object2d {
   private byte fid;
   private int ascent;
   private int descent;
-  public int lineHeight;
+  private int lineHeight;
 
   private int textWidth;
   private int textHeight;
@@ -421,7 +421,7 @@ public class Text extends Object2d {
         xy[2] += adj;
       }
       xy[0] = xy[2];
-      xy[1] = boxY + ascent - lineHeight + adj;
+      xy[1] = boxY + ascent - 2 * lineHeight + adj;
     } else {
       switch (align) {
       case ALIGN_CENTER:
@@ -431,6 +431,7 @@ public class Text extends Object2d {
         xy[0] = xy[2] - widths[i];
       }
     }
+    xy[1] += lineHeight; 
   }
 
 }

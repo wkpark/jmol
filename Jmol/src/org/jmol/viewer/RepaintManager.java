@@ -26,8 +26,8 @@ package org.jmol.viewer;
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.ModelSet;
+import org.jmol.render.ShapeRenderer;
 import org.jmol.shape.Shape;
-import org.jmol.shaperenderer.ShapeRenderer;
 import org.jmol.util.Colix;
 import org.jmol.util.GData;
 import org.jmol.util.Logger;
@@ -119,7 +119,7 @@ class RepaintManager {
   private ShapeRenderer getRenderer(int shapeID, Graphics3D g3d) {
     if (renderers[shapeID] != null)
       return renderers[shapeID];
-    String className = JmolConstants.getShapeClassName(shapeID, "renderer") + "Renderer";
+    String className = JmolConstants.getShapeClassName(shapeID, true) + "Renderer";
     try {
       Class<?> shapeClass = Class.forName(className);
       ShapeRenderer renderer = (ShapeRenderer) shapeClass.newInstance();
@@ -160,7 +160,7 @@ class RepaintManager {
           continue;
         getRenderer(i, g3d).render(g3d, modelSet, shape);
         if (logTime)
-          Logger.checkTimer("render time " + JmolConstants.getShapeClassName(i, ""));
+          Logger.checkTimer("render time " + JmolConstants.getShapeClassName(i, false));
       }
     } catch (Exception e) {
       e.printStackTrace();

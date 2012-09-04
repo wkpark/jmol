@@ -1458,17 +1458,17 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     return -1;
   }
   
-  public final static String getShapeClassName(int shapeID, String renderer) {
+  public final static String getShapeClassName(int shapeID, boolean isRenderer) {
     if (shapeID < 0)
       return shapeClassBases[~shapeID];
-    return CLASSBASE_OPTIONS + "shape" 
+    return CLASSBASE_OPTIONS + (isRenderer ? "render" : "shape") 
         + (shapeID >= SHAPE_MIN_SECONDARY && shapeID < SHAPE_MAX_SECONDARY 
-            ? "bio"
+            ? "bio."
         : shapeID >= SHAPE_MIN_SPECIAL && shapeID < SHAPE_MAX_SPECIAL 
-            ? "special" 
+            ? "special." 
         : shapeID >= SHAPE_MIN_SURFACE && shapeID < SHAPE_MAX_SURFACE 
-            ? "surface" 
-        : "") + renderer + "." + shapeClassBases[shapeID];
+            ? "surface." 
+        : ".") + shapeClassBases[shapeID];
   }
 
   

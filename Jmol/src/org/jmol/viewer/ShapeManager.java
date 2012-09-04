@@ -131,7 +131,7 @@ public class ShapeManager {
         || shapeID == JmolConstants.SHAPE_SSSTICKS
         || shapeID == JmolConstants.SHAPE_STRUTS)
       return null;
-    String className = JmolConstants.getShapeClassName(shapeID, "");
+    String className = JmolConstants.getShapeClassName(shapeID, false);
     try {
       Class<?> shapeClass = Class.forName(className);
       Shape shape = (Shape) shapeClass.newInstance();

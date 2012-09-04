@@ -690,14 +690,14 @@ all support for previous versions removed
     <jar destfile="${jmol.applet.build.dir}/JmolApplet0_ShapeBio.jar" manifest="manifest/applet.txt" >
 	  <fileset dir="${applet.classes.dir}">
 	    <include name="org/jmol/modelsetbio/**" />
-	    <include name="org/jmol/shapebiorenderer/**" />
+	    <include name="org/jmol/renderbio/**" />
 	    <include name="org/jmol/shapebio/**" />
 	  </fileset>
 	</jar>
 	  	
   	<jar destfile="${jmol.applet.build.dir}/JmolApplet0_ShapeSpecial.jar" manifest="manifest/applet.txt" >
       <fileset dir="${applet.classes.dir}">
-        <include name="org/jmol/shapespecialrenderer/**" />
+        <include name="org/jmol/renderspecial/**" />
         <include name="org/jmol/shapespecial/**" />
       </fileset>
     </jar>
@@ -706,7 +706,7 @@ all support for previous versions removed
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/jvxl/**" />
         <include name="org/jmol/shapesurface/**" />
-        <include name="org/jmol/shapesurfacerenderer/**" />
+        <include name="org/jmol/rendersurface/**" />
       </fileset>
     </jar>
 
@@ -751,7 +751,7 @@ all support for previous versions removed
         <include name="org/jmol/modelset/**" />
         <include name="org/jmol/script/**" />
         <include name="org/jmol/shape/**" />
-        <include name="org/jmol/shaperenderer/**" />
+        <include name="org/jmol/render/**" />
         <include name="org/jmol/util/**" />
         <include name="org/jmol/viewer/**" />
       </fileset>
@@ -986,7 +986,7 @@ all support for previous versions removed
 		<include name="org/jmol/modelset/**" />
         <include name="org/jmol/script/**" />
 		<include name="org/jmol/shape/**" />
-        <include name="org/jmol/shaperenderer/**" />
+        <include name="org/jmol/render/**" />
 		<include name="org/jmol/viewer/**" />
 		<include name="org/jmol/util/**" />
 		<include name="org/jmol/i18n/**" />
@@ -1156,14 +1156,14 @@ all support for previous versions removed
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/modelsetbio/**" />
         <include name="org/jmol/shapebio/**" />
-        <include name="org/jmol/shapebiorenderer/**" />
+        <include name="org/jmol/renderbio/**" />
       </fileset>
     </jar>
 
     <jar destfile="${jmol.applet.build.dir}/JmolApplet0_ShapeSpecial.jar" manifest="manifest/applet.txt" >
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/shapespecial/**" />
-        <include name="org/jmol/shapespecialrenderer/**" />
+        <include name="org/jmol/renderspecial/**" />
       </fileset>
     </jar>
 
@@ -1171,7 +1171,7 @@ all support for previous versions removed
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/jvxl/**" />
         <include name="org/jmol/shapesurface/**" />
-        <include name="org/jmol/shapesurfacerenderer/**" />
+        <include name="org/jmol/rendersurface/**" />
       </fileset>
     </jar>
 
@@ -1215,7 +1215,7 @@ all support for previous versions removed
         <include name="org/jmol/modelset/**" />
         <include name="org/jmol/script/**" />
         <include name="org/jmol/shape/**" />
-        <include name="org/jmol/shaperenderer/**" />
+        <include name="org/jmol/render/**" />
         <include name="org/jmol/util/**" />
         <include name="org/jmol/viewer/**" />
       </fileset>
@@ -1271,7 +1271,7 @@ all support for previous versions removed
     <jar destfile="${jmol.applet.build.dir}/JmolApplet0_1e.jar" manifest="manifest/applet.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/shape/**" />
-        <include name="org/jmol/shaperenderer/**" />
+        <include name="org/jmol/render/**" />
         <include name="org/jmol/util/**" />
       </fileset>
     </jar>

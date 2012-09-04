@@ -55,10 +55,16 @@ public class SurfaceFileTyper {
 
     // Apbs, Jvxl, or Cube, also efvet
 
-    String line;
-    LimitedLineReader br = new LimitedLineReader(bufferedReader, 16000);
-    //sure bets, but not REQUIRED:
-    if ((line = br.info()).length() == 0)
+    String line = null;
+    LimitedLineReader br = null;
+    
+    try {
+      br = new LimitedLineReader(bufferedReader, 16000);
+      line = br.getHeader(0);
+    } catch (Exception e) {
+      //
+    }
+    if (br == null || line == null || line.length() == 0)
       return null;
 
     //for (int i = 0; i < 220; i++)
@@ -120,12 +126,12 @@ public class SurfaceFileTyper {
     }
     // Apbs, Jvxl, Obj, or Cube, maybe formatted Plt
 
-    line = br.readNonCommentLine();
+    line = br.readLineWithNewline();
     if (line.indexOf("object 1 class gridpositions counts") == 0)
       return "Apbs";
 
     String[] tokens = Parser.getTokens(line);
-    String line2 = br.readNonCommentLine();// second line
+    String line2 = br.readLineWithNewline();// second line
     if (tokens.length == 2 && Parser.parseInt(tokens[0]) == 3
         && Parser.parseInt(tokens[1]) != Integer.MIN_VALUE) {
       tokens = Parser.getTokens(line2);
@@ -134,7 +140,7 @@ public class SurfaceFileTyper {
           && Parser.parseInt(tokens[2]) != Integer.MIN_VALUE)
         return "PltFormatted";
     }
-    String line3 = br.readNonCommentLine(); // third line
+    String line3 = br.readLineWithNewline(); // third line
     if (line.startsWith("v ") && line2.startsWith("v ") && line3.startsWith("v "))
         return "Obj";
     //next line should be the atom line
@@ -145,7 +151,7 @@ public class SurfaceFileTyper {
       return "Cube"; //Can't be a Jvxl file
     nAtoms = -nAtoms;
     for (int i = 4 + nAtoms; --i >= 0;)
-      if ((line = br.readNonCommentLine()) == null)
+      if ((line = br.readLineWithNewline()) == null)
         return null;
     int nSurfaces = Parser.parseInt(line);
     if (nSurfaces == Integer.MIN_VALUE)
@@ -153,46 +159,5 @@ public class SurfaceFileTyper {
     return (nSurfaces < 0 ? "Jvxl" : "Cube"); //Final test looks at surface definition line
   }
   
-}
-
-class LimitedLineReader {
-  //from Resolver
-  private char[] buf;
-  private int cchBuf;
-  private int ichCurrent;
-
-  LimitedLineReader(BufferedReader bufferedReader, int readLimit) {
-    buf = new char[readLimit];
-    try {
-      bufferedReader.mark(readLimit);
-      cchBuf = bufferedReader.read(buf);
-      ichCurrent = 0;
-      bufferedReader.reset();
-    } catch (Exception e) {      
-    }
-  }
-
-  protected String info() {
-    return new String(buf);  
-  }
-  
-  protected String readNonCommentLine() {
-    while (ichCurrent < cchBuf) {
-      int ichBeginningOfLine = ichCurrent;
-      char ch = 0;
-      while (ichCurrent < cchBuf &&
-             (ch = buf[ichCurrent++]) != '\r' && ch != '\n') {
-      }
-      int cchLine = ichCurrent - ichBeginningOfLine;
-      if (ch == '\r' && ichCurrent < cchBuf && buf[ichCurrent] == '\n')
-        ++ichCurrent;
-      if (buf[ichBeginningOfLine] == '#') // flush comment lines;
-        continue;
-      StringBuffer sb = new StringBuffer(cchLine);
-      sb.append(buf, ichBeginningOfLine, cchLine);
-      return sb.toString();
-    }
-    return "";
-  }
 }
 

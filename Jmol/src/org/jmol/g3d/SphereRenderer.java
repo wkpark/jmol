@@ -72,8 +72,6 @@ public class SphereRenderer {
   final static int maxSphereDiameter = 1000;
   final static int maxSphereDiameter2 = maxSphereDiameter * 2;
   private double[] zroot = new double[2];
-  public static int nOut;
-  public static int nIn;
   private Matrix3f mat;
   private double[] coef;
   private Matrix4f mDeriv;
@@ -111,7 +109,7 @@ public class SphereRenderer {
     if (maxZ < slab || minZ > depth)
       return;
     
-    nOut = nIn = 0;
+    Shader.nOut = Shader.nIn = 0;
     zbuf = g3d.zbuf;
     this.addAllPixels = addAllPixels;
     offsetPbufBeginLine = width * y + x;

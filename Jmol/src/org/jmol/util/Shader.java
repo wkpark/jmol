@@ -26,7 +26,6 @@ package org.jmol.util;
 
 import javax.vecmath.Matrix4f;
 
-import org.jmol.g3d.SphereRenderer;
 
 
 
@@ -373,6 +372,14 @@ public final class Shader {
     return t >> 23;
   }
 
+  private final static int SLIM = 20;
+  private final static int SDIM = SLIM * 2;
+  public final static int maxSphereCache = 128;
+  public final static int[][] sphereShapeCache = new int[maxSphereCache][];
+  public static byte[][][] ellipsoidShades;
+  public static int nOut;
+  public static int nIn;
+
   public static int getEllipsoidShade(float x, float y, float z, int radius,
                                        Matrix4f mDeriv) {
     float tx = mDeriv.m00 * x + mDeriv.m01 * y + mDeriv.m02 * z + mDeriv.m03;
@@ -384,50 +391,43 @@ public final class Shader {
     int i = (int) (-tx * f);
     int j = (int) (-ty * f);
     int k = (int) (tz * f);
-    boolean outside = i < -Shader.SLIM || i >= Shader.SLIM || j < -Shader.SLIM || j >= Shader.SLIM
-        || k < 0 || k >= Shader.SDIM;
+    boolean outside = i < -SLIM || i >= SLIM || j < -SLIM || j >= SLIM
+        || k < 0 || k >= SDIM;
     if (outside) {
       while (i % 2 == 0 && j % 2 == 0 && k % 2 == 0 && i + j + k > 0) {
         i >>= 1;
         j >>= 1;
         k >>= 1;
       }
-      outside = i < -Shader.SLIM || i >= Shader.SLIM || j < -Shader.SLIM || j >= Shader.SLIM || k < 0
-          || k >= Shader.SDIM;
+      outside = i < -SLIM || i >= SLIM || j < -SLIM || j >= SLIM || k < 0
+          || k >= SDIM;
     }
     
     if (outside)
-      SphereRenderer.nOut++;
+      nOut++;
     else
-      SphereRenderer.nIn++;
+      nIn++;
   
     return (outside ? getShadeIndex(i, j, k)
-        : Shader.ellipsoidShades[i + Shader.SLIM][j + Shader.SLIM][k]);
+        : ellipsoidShades[i + SLIM][j + SLIM][k]);
   }
-
-  public final static int SLIM = 20;
-  public final static int SDIM = SLIM * 2;
 
   public static void createEllipsoidShades() {
     
     // we don't need to cache rear-directed normals (kk < 0)
     
-    Shader.ellipsoidShades = new byte[SDIM][SDIM][SDIM];
+    ellipsoidShades = new byte[SDIM][SDIM][SDIM];
     for (int ii = 0; ii < SDIM; ii++)
       for (int jj = 0; jj < SDIM; jj++)
         for (int kk = 0; kk < SDIM; kk++)
-          Shader.ellipsoidShades[ii][jj][kk] = (byte) getShadeIndex(ii - SLIM, jj
+          ellipsoidShades[ii][jj][kk] = (byte) getShadeIndex(ii - SLIM, jj
               - SLIM, kk);
   }
 
   public static synchronized void flushSphereCache() {
-    for (int i =  Shader.maxSphereCache; --i >= 0;)
-      Shader.sphereShapeCache[i] = null;
-    Shader.ellipsoidShades = null;
+    for (int i =  maxSphereCache; --i >= 0;)
+      sphereShapeCache[i] = null;
+    ellipsoidShades = null;
   }
-
-  public final static int maxSphereCache = 128;
-  public final static int[][] sphereShapeCache = new int[maxSphereCache][];
-  public static byte[][][] ellipsoidShades;
 
 }

@@ -9506,6 +9506,18 @@
   <fah_proj number="7647" name="p7647" public="y"
     server="171.64.65.101" atoms="21443" preferred="10.4" deadline="17.3"
     credit="2250.0" frames="100" code="A4" contact="tjlane" kfactor="4.0"/>
+  <fah_proj number="7650" name="p7650" public="n"
+    server="171.64.65.124" atoms="131935" preferred="5.57" deadline="9.289988425925927"
+    credit="1208.0" frames="100" code="A4" contact="tjlane" kfactor="4.0"/>
+  <fah_proj number="7651" name="p7651" public="n"
+    server="171.64.65.124" atoms="131935" preferred="5.57" deadline="9.289988425925927"
+    credit="1208.0" frames="100" code="A4" contact="tjlane" kfactor="4.0"/>
+  <fah_proj number="7652" name="p7652" public="n"
+    server="171.64.65.124" atoms="131935" preferred="5.57" deadline="9.289988425925927"
+    credit="1208.0" frames="100" code="A4" contact="tjlane" kfactor="4.0"/>
+  <fah_proj number="7653" name="p7653" public="n"
+    server="171.64.65.124" atoms="131935" preferred="5.57" deadline="9.289988425925927"
+    credit="1208.0" frames="100" code="A4" contact="tjlane" kfactor="4.0"/>
   <fah_proj number="7698" name="p7698" public="n"
     server="171.64.65.105" atoms="21443" preferred="13" deadline="18"
     credit="6094.0" frames="100" code="OG" contact="tjlane" kfactor="0.0"/>
@@ -9613,13 +9625,13 @@
     credit="487.0" frames="100" code="A4" contact="jimenc@rpi.edu" kfactor="0.58"/>
   <fah_proj number="7903" name="p7903" public="y"
     server="128.113.12.161" atoms="29334" preferred="14" deadline="30"
-    credit="766.0" frames="100" code="A4" contact="jimenc@rpi.edu" kfactor="0.58"/>
+    credit="766.0" frames="100" code="A4" contact="jimenc@rpi.edu" kfactor="0.75"/>
   <fah_proj number="7904" name="p7904" public="y"
     server="128.113.12.162" atoms="60264" preferred="12" deadline="25"
-    credit="626.0" frames="100" code="A4" contact="jimenc@rpi.edu" kfactor="0.58"/>
+    credit="626.0" frames="100" code="A4" contact="jimenc@rpi.edu" kfactor="0.75"/>
   <fah_proj number="7905" name="p7905" public="y"
     server="128.113.12.163" atoms="93636" preferred="9" deadline="19"
-    credit="487.0" frames="100" code="A4" contact="jimenc@rpi.edu" kfactor="0.58"/>
+    credit="487.0" frames="100" code="A4" contact="jimenc@rpi.edu" kfactor="0.75"/>
 
   <!-- Projects 8000 to 8099 -->
   <fah_proj number="8001" name="p8001" public="y" file="xyz"
@@ -9721,6 +9733,12 @@
   <fah_proj number="8050" name="p8050" public="y"
     server="171.67.108.60" atoms="76000" preferred="7.4" deadline="16"
     credit="401.2" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
+  <fah_proj number="8051" name="p8051" public="y"
+    server="171.67.108.59" atoms="18000" preferred="1.6" deadline="3.4"
+    credit="84.4" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
+  <fah_proj number="8052" name="p8052" public="y"
+    server="171.67.108.58" atoms="18000" preferred="1.6" deadline="3.4"
+    credit="84.4" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
   <fah_proj number="8061" name="p8061" public="n"
     server="171.67.108.58" atoms="22000" preferred="3.7" deadline="8.1"
     credit="201.6" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
@@ -9730,16 +9748,16 @@
   <fah_proj number="8063" name="p8063" public="n"
     server="171.67.108.58" atoms="22000" preferred="3.7" deadline="8.1"
     credit="201.6" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
-  <fah_proj number="8064" name="p8064" public="n"
+  <fah_proj number="8064" name="p8064" public="y"
     server="171.67.108.58" atoms="22000" preferred="3.7" deadline="8.1"
     credit="201.6" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
-  <fah_proj number="8065" name="p8065" public="n"
+  <fah_proj number="8065" name="p8065" public="y"
     server="171.67.108.58" atoms="22000" preferred="3.7" deadline="8.1"
     credit="201.6" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
-  <fah_proj number="8066" name="p8066" public="n"
+  <fah_proj number="8066" name="p8066" public="y"
     server="171.67.108.58" atoms="22000" preferred="3.7" deadline="8.1"
     credit="201.6" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
-  <fah_proj number="8067" name="p8067" public="n"
+  <fah_proj number="8067" name="p8067" public="y"
     server="171.67.108.58" atoms="22000" preferred="3.7" deadline="8.1"
     credit="201.6" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
 
@@ -10203,7 +10221,7 @@
     credit="1798" frames="100" code="A3" contact="gbowman" kfactor="0.75"/>
   <fah_proj number="10115" name="p10115" public="y"
     server="171.64.65.75" atoms="35081" preferred="28" deadline="48"
-    credit="1338" frames="100" code="A3" contact="gbowman" kfactor="0.74"/>
+    credit="1338" frames="100" code="A3" contact="gregoryrbowman@gmail.com" kfactor="0.74"/>
   <fah_proj number="10116" name="p10116" public="n" file="xyz"
     server="171.64.65.76" atoms="0" preferred="14" deadline="24"
     credit="669" frames="100" code="A4" contact="gbowman" kfactor="0.74" contrib="Danny Nielsen"/>
@@ -10215,13 +10233,13 @@
     credit="1338.0" frames="100" code="A3" contact="gbowman" kfactor="0.74"/>
   <fah_proj number="10119" name="p10119" public="y"
     server="171.64.65.75" atoms="34367" preferred="28" deadline="48"
-    credit="1338.0" frames="100" code="A3" contact="gbowman" kfactor="0.74"/>
+    credit="1338.0" frames="100" code="A3" contact="gregoryrbowman@gmail.com" kfactor="0.74"/>
   <fah_proj number="10120" name="p10120" public="y"
     server="171.64.65.71" atoms="1174" preferred="2" deadline="3"
     credit="494.0" frames="100" code="GG2" contact="gbowman" kfactor="0.0"/>
   <fah_proj number="10121" name="p10121" public="y"
     server="171.64.65.75" atoms="35824" preferred="32" deadline="56"
-    credit="2245.0" frames="100" code="A3" contact="gbowman" kfactor="0.74"/>
+    credit="2245.0" frames="100" code="A3" contact="gregoryrbowman@gmail.com" kfactor="0.74"/>
   <fah_proj number="10122" name="p10122" public="y"
     server="171.64.65.71" atoms="1174" preferred="2" deadline="3"
     credit="494.0" frames="100" code="GG2" contact="gbowman" kfactor="0.0"/>
@@ -10230,43 +10248,43 @@
     credit="494.0" frames="100" code="GG2" contact="gbowman" kfactor="0.0"/>
   <fah_proj number="10124" name="p10124" public="y"
     server="171.64.65.75" atoms="34366" preferred="8" deadline="13"
-    credit="1705.0" frames="100" code="A3" contact="gbowman" kfactor="3.0"/>
+    credit="1705.0" frames="100" code="A3" contact="gregoryrbowman@gmail.com" kfactor="3.0"/>
   <fah_proj number="10125" name="p10125" public="y"
     server="171.64.65.75" atoms="29648" preferred="5.47" deadline="9.119988425925927"
-    credit="1186.0" frames="100" code="A3" contact="gbowman" kfactor="3.0"/>
+    credit="1186.0" frames="100" code="A3" contact="gregoryrbowman@gmail.com" kfactor="3.0"/>
   <fah_proj number="10126" name="p10126" public="y"
     server="171.64.65.75" atoms="29043" preferred="5.57" deadline="9.289988425925927"
-    credit="1208.0" frames="100" code="A3" contact="gbowman" kfactor="3.0"/>
+    credit="1208.0" frames="100" code="A3" contact="gregoryrbowman@gmail.com" kfactor="3.0"/>
   <fah_proj number="10127" name="p10127" public="y"
     server="171.64.65.75" atoms="84533" preferred="15.05" deadline="25.09"
-    credit="3262.0" frames="100" code="A3" contact="gbowman" kfactor="3.0"/>
+    credit="3262.0" frames="100" code="A3" contact="gregoryrbowman@gmail.com" kfactor="3.0"/>
   <fah_proj number="10128" name="p10128" public="y"
     server="171.64.65.75" atoms="29584" preferred="5.54" deadline="9.24"
-    credit="1200.79" frames="100" code="A3" contact="gbowman" kfactor="3.0"/>
+    credit="1200.79" frames="100" code="A3" contact="gregoryrbowman@gmail.com" kfactor="3.0"/>
   <fah_proj number="10129" name="p10129" public="y"
     server="171.64.65.75" atoms="32890" preferred="6.28" deadline="10.46"
-    credit="1359.62" frames="100" code="A3" contact="gbowman" kfactor="3.0"/>
+    credit="1359.62" frames="100" code="A3" contact="gregoryrbowman@gmail.com" kfactor="3.0"/>
   <fah_proj number="10130" name="p10130" public="y"
     server="171.64.65.75" atoms="34894" preferred="6.58" deadline="10.97"
-    credit="1426.67" frames="100" code="A3" contact="gbowman" kfactor="3.0"/>
+    credit="1426.67" frames="100" code="A3" contact="gregoryrbowman@gmail.com" kfactor="3.0"/>
   <fah_proj number="10131" name="p10131" public="y"
     server="171.64.65.75" atoms="28841" preferred="5.42" deadline="9.03"
-    credit="1173.33" frames="100" code="A3" contact="gbowman" kfactor="3.0"/>
+    credit="1173.33" frames="100" code="A3" contact="gregoryrbowman@gmail.com" kfactor="3.0"/>
   <fah_proj number="10132" name="p10132" public="y"
     server="171.64.65.75" atoms="28029" preferred="5.29" deadline="8.81"
-    credit="1145.36" frames="100" code="A3" contact="gbowman" kfactor="3.0"/>
+    credit="1145.36" frames="100" code="A3" contact="gregoryrbowman@gmail.com" kfactor="3.0"/>
   <fah_proj number="10133" name="p10133" public="y"
     server="171.64.65.75" atoms="32784" preferred="6.26" deadline="10.44"
-    credit="1357.17" frames="100" code="A3" contact="gbowman" kfactor="3.0"/>
+    credit="1357.17" frames="100" code="A3" contact="gregoryrbowman@gmail.com" kfactor="3.0"/>
   <fah_proj number="10134" name="p10134" public="y"
     server="171.64.65.75" atoms="32216" preferred="5.83" deadline="9.72"
-    credit="1264.12" frames="100" code="A3" contact="gbowman" kfactor="3.0"/>
+    credit="1264.12" frames="100" code="A3" contact="gregoryrbowman@gmail.com" kfactor="3.0"/>
   <fah_proj number="10135" name="p10135" public="y"
     server="171.64.65.75" atoms="37170" preferred="28" deadline="48"
-    credit="1612.0" frames="100" code="A3" contact="gbowman" kfactor="0.75"/>
+    credit="1612.0" frames="100" code="A3" contact="gregoryrbowman@gmail.com" kfactor="0.75"/>
   <fah_proj number="10136" name="p10136" public="y"
     server="171.64.65.75" atoms="39130" preferred="32" deadline="52"
-    credit="1670.0" frames="100" code="A3" contact="gbowman" kfactor="0.75"/>
+    credit="1670.0" frames="100" code="A3" contact="gregoryrbowman@gmail.com" kfactor="0.75"/>
   <fah_proj number="10137" name="p10137" public="n"
     server="171.64.65.71" atoms="1174" preferred="2" deadline="3"
     credit="494.0" frames="100" code="GG2" contact="gbowman" kfactor="0.0"/>

@@ -215,24 +215,26 @@ public abstract class Object2d {
   }
 
   public static int getXOffset(int offset) {
+    // ----48------FF--
     switch (offset) {
     case 0:
       return JmolConstants.LABEL_DEFAULT_X_OFFSET;
     case Short.MAX_VALUE:
       return 0;
     default:
-      return - - (int) (byte) ((offset >> 8) & 0xFF);
+      return (int) (((long) offset << 48) >> 56);
     }
   }
 
   public static int getYOffset(int offset) {
+    // ----56--------FF
     switch (offset) {
     case 0:
       return -JmolConstants.LABEL_DEFAULT_Y_OFFSET;
     case Short.MAX_VALUE:
       return 0;
     default:
-      return -(int) (byte) (offset & 0xFF);
+      return -(int) (((long) offset << 56) >> 56);
     }
   }
 

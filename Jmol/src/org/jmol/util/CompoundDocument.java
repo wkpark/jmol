@@ -31,9 +31,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.jmol.util.ZipUtil.GZipData;
-
-
 /* a simple compound document reader. 
  * See http://sc.openoffice.org/compdocfileformat.pdf
  * 
@@ -463,7 +460,7 @@ public class CompoundDocument extends BinaryDocument {
                                              boolean asBinaryString) {
     StringBuffer data = new StringBuffer();
     byte[] byteBuf = new byte[sectorSize];
-    GZipData gzipData =  (new ZipUtil()).new GZipData(nBytes);
+    ZipData gzipData = new ZipData(nBytes);
     try {
       while (thisSID > 0 && nBytes > 0) {
         gotoSector(thisSID);
@@ -482,7 +479,7 @@ public class CompoundDocument extends BinaryDocument {
 
   private int getSectorData(StringBuffer data, byte[] byteBuf,
                             int nSectorBytes, int nBytes, 
-                            boolean asBinaryString, GZipData gzipData)
+                            boolean asBinaryString, ZipData gzipData)
       throws Exception {
     readByteArray(byteBuf);
     int n = gzipData.addBytes(byteBuf, nSectorBytes, nBytes);
@@ -513,7 +510,7 @@ public class CompoundDocument extends BinaryDocument {
     int thisSID = rootEntry.SIDfirstSector;
     int ptShort = 0;
     byte[] byteBuf = new byte[shortSectorSize];
-    GZipData gzipData =  (new ZipUtil()).new GZipData(nBytes);
+    ZipData gzipData = new ZipData(nBytes);
     try {
       //System.out.println("CD shortSID=" + shortSID);
       // point to correct short data sector, 512/64 = 4 per page
@@ -534,7 +531,5 @@ public class CompoundDocument extends BinaryDocument {
     if (gzipData.isEnabled)
       gzipData.addTo(data);
     return data;
-  }
-
-  
+  }  
 }

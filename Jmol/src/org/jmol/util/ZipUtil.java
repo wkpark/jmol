@@ -404,36 +404,6 @@ public class ZipUtil {
     }
   }
   
-  public class GZipData {
-    boolean isEnabled = true;
-    byte[] buf;
-    int pt;
-    int nBytes;
-    
-    public GZipData(int nBytes) {
-      this.nBytes = nBytes;
-    }
-    
-    public int addBytes(byte[] byteBuf, int nSectorBytes, int nBytesRemaining) {
-      if (pt == 0) {
-        if (!isGzip(byteBuf)) {
-          isEnabled = false;
-          return -1;
-        }
-        buf = new byte[nBytesRemaining];
-      }
-      int nToAdd = Math.min(nSectorBytes, nBytesRemaining);
-      System.arraycopy(byteBuf, 0, buf, pt, nToAdd);
-      pt += nToAdd;
-      return nBytesRemaining - nToAdd;
-    }    
-
-    public void addTo(StringBuffer data) {
-      data.append(getGzippedBytesAsString(buf));
-    }
-    
-  }
-
   /**
    * check a JmolManifest for a reference to a script file (.spt)
    * 

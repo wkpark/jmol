@@ -1826,6 +1826,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     return 0;
   }
 
+  @Override
   public void clearFontCache() {
     TextRenderer.clearFontCache();
   }

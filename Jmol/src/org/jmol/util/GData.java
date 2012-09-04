@@ -7,7 +7,6 @@ import javax.vecmath.Point3f;
 import org.jmol.api.ApiPlatform;
 import org.jmol.api.JmolGraphicsInterface;
 import org.jmol.constant.EnumStereoMode;
-import org.jmol.g3d.SphereRenderer;
 
 public class GData implements JmolGraphicsInterface {
 
@@ -355,7 +354,7 @@ public class GData implements JmolGraphicsInterface {
 
   private static void flushCaches() {
     Colix.flushShades();
-    SphereRenderer.flushSphereCache();
+    Shader.flushSphereCache();
   }
 
   public static Point3f getLightSource() {
@@ -546,6 +545,9 @@ public class GData implements JmolGraphicsInterface {
   }
 
   public void destroy() {
+  }
+
+  public void clearFontCache() {
   }
 
 }

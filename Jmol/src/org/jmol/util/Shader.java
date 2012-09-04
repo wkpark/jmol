@@ -24,6 +24,10 @@
 
 package org.jmol.util;
 
+import javax.vecmath.Matrix4f;
+
+import org.jmol.g3d.SphereRenderer;
+
 
 
 /**
@@ -368,5 +372,62 @@ public final class Shader {
     seed = t = ((t << 16) + (t << 1) + t) & 0x7FFFFFFF;
     return t >> 23;
   }
+
+  public static int getEllipsoidShade(float x, float y, float z, int radius,
+                                       Matrix4f mDeriv) {
+    float tx = mDeriv.m00 * x + mDeriv.m01 * y + mDeriv.m02 * z + mDeriv.m03;
+    float ty = mDeriv.m10 * x + mDeriv.m11 * y + mDeriv.m12 * z + mDeriv.m13;
+    float tz = mDeriv.m20 * x + mDeriv.m21 * y + mDeriv.m22 * z + mDeriv.m23;
+    float f = Math.min(radius/2f, 45) / 
+        (float) Math.sqrt(tx * tx + ty * ty + tz * tz);
+    // optimized for about 30-100% inclusion
+    int i = (int) (-tx * f);
+    int j = (int) (-ty * f);
+    int k = (int) (tz * f);
+    boolean outside = i < -Shader.SLIM || i >= Shader.SLIM || j < -Shader.SLIM || j >= Shader.SLIM
+        || k < 0 || k >= Shader.SDIM;
+    if (outside) {
+      while (i % 2 == 0 && j % 2 == 0 && k % 2 == 0 && i + j + k > 0) {
+        i >>= 1;
+        j >>= 1;
+        k >>= 1;
+      }
+      outside = i < -Shader.SLIM || i >= Shader.SLIM || j < -Shader.SLIM || j >= Shader.SLIM || k < 0
+          || k >= Shader.SDIM;
+    }
+    
+    if (outside)
+      SphereRenderer.nOut++;
+    else
+      SphereRenderer.nIn++;
+  
+    return (outside ? getShadeIndex(i, j, k)
+        : Shader.ellipsoidShades[i + Shader.SLIM][j + Shader.SLIM][k]);
+  }
+
+  public final static int SLIM = 20;
+  public final static int SDIM = SLIM * 2;
+
+  public static void createEllipsoidShades() {
+    
+    // we don't need to cache rear-directed normals (kk < 0)
+    
+    Shader.ellipsoidShades = new byte[SDIM][SDIM][SDIM];
+    for (int ii = 0; ii < SDIM; ii++)
+      for (int jj = 0; jj < SDIM; jj++)
+        for (int kk = 0; kk < SDIM; kk++)
+          Shader.ellipsoidShades[ii][jj][kk] = (byte) getShadeIndex(ii - SLIM, jj
+              - SLIM, kk);
+  }
+
+  public static synchronized void flushSphereCache() {
+    for (int i =  Shader.maxSphereCache; --i >= 0;)
+      Shader.sphereShapeCache[i] = null;
+    Shader.ellipsoidShades = null;
+  }
+
+  public final static int maxSphereCache = 128;
+  public final static int[][] sphereShapeCache = new int[maxSphereCache][];
+  public static byte[][][] ellipsoidShades;
 
 }

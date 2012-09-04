@@ -1457,7 +1457,7 @@ abstract class TransformManager {
     if (zoomPercent != newZoom) {
       zoomPercent = newZoom;
       if (!viewer.getFontCaching())
-        ((Graphics3D) viewer.getGraphicsData()).clearFontCache();
+        viewer.getGraphicsData().clearFontCache();
     }
     calcCameraFactors();
     calcTransformMatrix();

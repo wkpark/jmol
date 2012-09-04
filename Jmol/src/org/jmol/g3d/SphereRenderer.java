@@ -68,14 +68,12 @@ public class SphereRenderer {
   private boolean tScreened;
   private int[] shades;
   
-  private final static int maxSphereCache = 128;
   private final static int maxOddSizeSphere = 49;
   final static int maxSphereDiameter = 1000;
   final static int maxSphereDiameter2 = maxSphereDiameter * 2;
-  private final static int[][] sphereShapeCache = new int[maxSphereCache][];
-
   private double[] zroot = new double[2];
-  private static int nOut, nIn;
+  public static int nOut;
+  public static int nIn;
   private Matrix3f mat;
   private double[] coef;
   private Matrix4f mDeriv;
@@ -89,12 +87,6 @@ public class SphereRenderer {
   private int slab;
   private int offsetPbufBeginLine;
   private boolean addAllPixels;
-
-  public static synchronized void flushSphereCache() {
-    for (int i =  maxSphereCache; --i >= 0;)
-      sphereShapeCache[i] = null;
-    ellipsoidShades = null;
-  }
 
   void render(int[] shades, boolean tScreened, int diameter, int x, int y,
               int z, Matrix3f mat, double[] coef, Matrix4f mDeriv,
@@ -136,7 +128,7 @@ public class SphereRenderer {
       this.selectedOctant = selectedOctant;
       this.octantPoints = octantPoints;
     }
-    if (mat != null || diameter > maxSphereCache) {
+    if (mat != null || diameter > Shader.maxSphereCache) {
       renderLarge();
       if (mat != null) {
         this.mat = null;
@@ -159,7 +151,7 @@ public class SphereRenderer {
   
   private static int[] getSphereShape(int diameter) {
     int[] ss;
-    return ((ss = sphereShapeCache[diameter - 1]) == null ? createSphereShape(diameter): ss);
+    return ((ss = Shader.sphereShapeCache[diameter - 1]) == null ? createSphereShape(diameter): ss);
   }
 
   private synchronized static int[] createSphereShape(int diameter) {
@@ -208,7 +200,7 @@ public class SphereRenderer {
       }
       sphereShape[offset - 1] |= 0x80000000;
     }
-    return sphereShapeCache[diameter - 1] = sphereShape;
+    return Shader.sphereShapeCache[diameter - 1] = sphereShape;
   }
 
   private void renderShapeUnclipped(int[] sphereShape) {
@@ -387,8 +379,8 @@ public class SphereRenderer {
 
   private void renderLarge() {
     if (mat != null) {
-      if (ellipsoidShades == null)
-        createEllipsoidShades();
+      if (Shader.ellipsoidShades == null)
+        Shader.createEllipsoidShades();
       if (octantPoints != null)
         setPlaneDerivatives();
     } else if (!Shader.sphereShadingCalculated)
@@ -553,7 +545,7 @@ public class SphereRenderer {
           mode = 1;
           break;
         case 2: //ellipsoid
-          iShade = getEllipsoidShade(xCurrent, yCurrent, (float) zroot[iRoot], radius, mDeriv);
+          iShade = Shader.getEllipsoidShade(xCurrent, yCurrent, (float) zroot[iRoot], radius, mDeriv);
           break;
         case 3: //ellipsoid fill
           break;
@@ -612,54 +604,6 @@ public class SphereRenderer {
     }
     zroot[0] = zMin;
     return planeShades[iMin];
-  }
-  
-  private static byte[][][] ellipsoidShades;
-  
-  final private static int SLIM = 20;
-  final private static int SDIM = SLIM * 2;
-  private static void createEllipsoidShades() {
-    
-    // we don't need to cache rear-directed normals (kk < 0)
-    
-    ellipsoidShades = new byte[SDIM][SDIM][SDIM];
-    for (int ii = 0; ii < SDIM; ii++)
-      for (int jj = 0; jj < SDIM; jj++)
-        for (int kk = 0; kk < SDIM; kk++)
-          ellipsoidShades[ii][jj][kk] = (byte) Shader.getShadeIndex(ii - SLIM, jj
-              - SLIM, kk);
-  }
-
-  private static int getEllipsoidShade(float x, float y, float z, int radius,
-                                       Matrix4f mDeriv) {
-    float tx = mDeriv.m00 * x + mDeriv.m01 * y + mDeriv.m02 * z + mDeriv.m03;
-    float ty = mDeriv.m10 * x + mDeriv.m11 * y + mDeriv.m12 * z + mDeriv.m13;
-    float tz = mDeriv.m20 * x + mDeriv.m21 * y + mDeriv.m22 * z + mDeriv.m23;
-    float f = Math.min(radius/2f, 45) / 
-        (float) Math.sqrt(tx * tx + ty * ty + tz * tz);
-    // optimized for about 30-100% inclusion
-    int i = (int) (-tx * f);
-    int j = (int) (-ty * f);
-    int k = (int) (tz * f);
-    boolean outside = i < -SLIM || i >= SLIM || j < -SLIM || j >= SLIM
-        || k < 0 || k >= SDIM;
-    if (outside) {
-      while (i % 2 == 0 && j % 2 == 0 && k % 2 == 0 && i + j + k > 0) {
-        i >>= 1;
-        j >>= 1;
-        k >>= 1;
-      }
-      outside = i < -SLIM || i >= SLIM || j < -SLIM || j >= SLIM || k < 0
-          || k >= SDIM;
-    }
-    
-    if (outside)
-      nOut++;
-    else
-      nIn++;
-
-    return (outside ? Shader.getShadeIndex(i, j, k)
-        : ellipsoidShades[i + SLIM][j + SLIM][k]);
   }
   
 

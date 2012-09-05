@@ -190,4 +190,11 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
       viewer.renderScreenImage(g, currentSize.width, currentSize.height);
     }
   }
+
+  public void setPreviewOptions(boolean TF) {
+    if (append == null)
+      return;
+    append.setVisible(TF);
+    cartoons.setVisible(TF);
+  }
 }

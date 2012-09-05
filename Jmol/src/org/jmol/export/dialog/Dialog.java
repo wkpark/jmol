@@ -113,6 +113,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     }
 
     openChooser.resetChoosableFileFilters();
+    openPreview.setPreviewOptions(allowAppend);
 
     if (fileName != null) {
       int pt = fileName.lastIndexOf(".");
@@ -153,7 +154,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     closePreview();
     if (fileName.startsWith("/"))
       fileName = "file://" + fileName; // for Macs
-    return (doCartoons ? "" : "#NOC#;") + (doAppend ? "load append " + Escape.escape(fileName) : fileName);
+    return (!allowAppend || doCartoons ? "" : "#NOC#;") + (doAppend ? "load append " + Escape.escape(fileName) : fileName);
   }
 
   String closePreview() {
@@ -542,7 +543,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
           if (dialogType.equals("load")) {
             outputFileName = getOpenFileNameFromDialog(
                 viewer.getCommandOptions(), viewer, inputFileName, null, null, false);
-            return;
+            return; 
           }
           if (dialogType.equals("save")) {
             outputFileName = getSaveFileNameFromDialog(viewer,

@@ -77,4 +77,5 @@ public class FileChooser extends JFileChooser {
   public JDialog getDialog() {
     return dialog;
   }
+
 }

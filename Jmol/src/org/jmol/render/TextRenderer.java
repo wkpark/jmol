@@ -51,7 +51,7 @@ public class TextRenderer {
       if (text.image != null) {
         g3d.drawImage(text.image, (int) text.boxX, (int) text.boxY, text.z, text.zSlab, text.bgcolix,
             (int) text.boxWidth, (int) text.boxHeight);
-      } else {
+      } else if (text.lines != null) {
         // now write properly aligned text
         float[] xy = new float[3];
         for (int i = 0; i < text.lines.length; i++) {

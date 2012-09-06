@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-06-15 17:29+0200\n"
-"PO-Revision-Date: 2012-05-24 01:03+0000\n"
-"Last-Translator: Nicolas Vervelle <Unknown>\n"
+"PO-Revision-Date: 2012-09-05 20:45+0000\n"
+"Last-Translator: Peter Sahlin <Unknown>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-25 09:01+0000\n"
-"X-Generator: Launchpad (build 15843)\n"
+"X-Launchpad-Export-Date: 2012-09-06 18:20+0000\n"
+"X-Generator: Launchpad (build 15909)\n"
 
 #: com/json/Cookie.java:121
 msgid "name"
@@ -112,11 +112,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:167
 msgid "restrict local file access"
-msgstr ""
+msgstr "begränsa accessen till lokala filer"
 
 #: org/openscience/jmol/app/JmolApp.java:169
 msgid "restrict local file access (allow reading of SPT files)"
-msgstr ""
+msgstr "begränsa accessen till lokala filer (tillåt läsning av SPT-filer)"
 
 #: org/openscience/jmol/app/JmolApp.java:171
 msgid "independent command thread"
@@ -552,7 +552,7 @@ msgstr "Skriv &ut..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:93
 msgid "Print view."
-msgstr "Print vy."
+msgstr "Skriv ut."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:94
 msgid "&Close"
@@ -775,7 +775,7 @@ msgstr "Ändra sto&rlek"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:164
 msgid "&View"
-msgstr "&Vy"
+msgstr "V&y"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:165
 msgid "&Front"
@@ -1137,6 +1137,7 @@ msgstr "Skriv URL för molekylmodellen"
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1199
 msgid "Enter a four-digit PDB model ID or \"=\" and a three-digit ligand ID"
 msgstr ""
+"Skriv ett fyrsiffrigt PDB-model-ID eller \"=\" och ett tresiffrigt ligand-ID"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1208
 msgid ""
@@ -1144,6 +1145,9 @@ msgid ""
 "with \":\" to load from PubChem; otherwise Jmol will use the NCI/NIH "
 "Resolver."
 msgstr ""
+"Skriv namnet eller identifierare (SMILES, InChi, CAS) för ett ämne. Skriv "
+"ett \":\" först för att hämta från PubChem; i annat fall kommer Jmol att "
+"använda NCI/NIH-Resolver."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1375
 msgid "IO Exception:"

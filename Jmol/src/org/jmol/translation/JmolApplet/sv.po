@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-09-03 17:36+0200\n"
-"PO-Revision-Date: 2012-07-04 12:42+0000\n"
+"PO-Revision-Date: 2012-09-05 20:55+0000\n"
 "Last-Translator: Peter Sahlin <Unknown>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-25 09:00+0000\n"
-"X-Generator: Launchpad (build 15843)\n"
+"X-Launchpad-Export-Date: 2012-09-06 18:20+0000\n"
+"X-Generator: Launchpad (build 15909)\n"
 
 #: org/jmol/applet/AppletWrapper.java:100
 msgid "Loading Jmol applet ..."
@@ -353,9 +353,8 @@ msgid "Append models"
 msgstr "Lägg till modeller"
 
 #: org/jmol/export/dialog/FilePreview.java:94
-#, fuzzy
 msgid "PDB cartoons"
-msgstr "Avbild"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:139
 msgid "Arabic"
@@ -905,7 +904,7 @@ msgstr "Omvänd markering"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:588
 msgid "View"
-msgstr "Visa"
+msgstr "Vy"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:589
 msgid "Front"
@@ -1034,7 +1033,7 @@ msgstr "Inget av ovanstående"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:627
 msgid "Style"
-msgstr "Vy"
+msgstr "Visa"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:628
 msgid "Scheme"

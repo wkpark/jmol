@@ -29,12 +29,22 @@ import org.jmol.api.JmolAdapterAtomIterator;
 import org.jmol.api.JmolAdapterBondIterator;
 import org.jmol.api.JmolAdapterStructureIterator;
 import org.jmol.api.JmolFilesReaderInterface;
+import org.jmol.util.CompoundDocument;
 import org.jmol.util.Logger;
+import org.jmol.util.TextFormat;
+import org.jmol.util.ZipUtil;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -53,7 +63,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
 
   public final static String PATH_KEY = ".PATH";
   public final static String PATH_SEPARATOR =
-    System.getProperty("path.separator", "/"); // will be NULL for JavaScript
+    System.getProperty("path.separator");
 
   /**
    * Just get the resolved file type; if a file, does NOT close the reader
@@ -279,9 +289,9 @@ public class SmarterJmolAdapter extends JmolAdapter {
   @Override
   public Object getAtomSetCollectionOrBufferedReaderFromZip(InputStream is, String fileName, String[] zipDirectory,
                              Map<String, Object> htParams, boolean asBufferedReader, boolean asBufferedInputStream) {
-    return "NOT IMPLEMENTED";//staticGetAtomSetCollectionOrBufferedReaderFromZip(is, fileName, zipDirectory, htParams, 1, asBufferedReader, asBufferedInputStream);
+    return staticGetAtomSetCollectionOrBufferedReaderFromZip(is, fileName, zipDirectory, htParams, 1, asBufferedReader, asBufferedInputStream);
   }
-/*
+
   private static Object staticGetAtomSetCollectionOrBufferedReaderFromZip(
                                     InputStream is, String fileName,
                                     String[] zipDirectory, Map<String, Object> htParams,
@@ -501,7 +511,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
       return "" + er;
     }
   }
-*/
+
   /**
    * Direct DOM HTML4 page reading; Egon was interested in this at one point.
    * 
@@ -629,7 +639,6 @@ public class SmarterJmolAdapter extends JmolAdapter {
   }
   
   ////////////////////////////////////////////////////////////////
-  
 
   @Override
   public JmolAdapterAtomIterator

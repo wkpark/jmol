@@ -94,7 +94,7 @@ public class CubeReader extends AtomSetCollectionReader {
       readLine();
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementNumber = (short)parseInt(line); //allowing atomicAndIsotope for JVXL format
-      atom.partialCharge = parseFloat();
+      parseFloat();
       setAtomCoord(atom, parseFloat() * f, parseFloat() * f, parseFloat() * f);
     }
   }

@@ -15662,9 +15662,11 @@ public class ScriptEvaluator {
       case Token.to:
         if (nAtomSets > 1)
           error(ERROR_invalidParameterOrder);
-        if (getToken(i + 1).tok == Token.bitset) {
+        if (tokAt(i + 1) == Token.bitset 
+            || tokAt(i + 1) == Token.expressionBegin && !needsGenerating) {
           propertyName = "toBitSet";
-          propertyValue = getToken(++i).value;
+          propertyValue = atomExpression(++i);
+          i = iToken;
           needsGenerating = true;
           break;
         } else if (!needsGenerating) {
@@ -16745,6 +16747,7 @@ public class ScriptEvaluator {
     BitSet bsIgnore = null;
     StringBuffer sbCommand = new StringBuffer();
     Point3f pt;
+    Point3f lattice = null;
     Point3f[] pts;
     String str = null;
     int modelIndex = (isSyntaxCheck ? 0 : Integer.MIN_VALUE);
@@ -17785,8 +17788,13 @@ public class ScriptEvaluator {
         }
         //surfaceObjectSeen = !isCavity;
         sbCommand.append("; isosurface map");
-        propertyName = "map";
-        propertyValue = (surfaceObjectSeen ? Boolean.TRUE : Boolean.FALSE);
+        addShapeProperty(propertyList, "map", (surfaceObjectSeen ? Boolean.TRUE
+            : Boolean.FALSE));
+        if (planeSeen && lattice != null) {
+          propertyName = "lattice";
+          propertyValue = lattice;
+        }
+        lattice = null;
         break;
       case Token.maxset:
         propertyName = "maxset";
@@ -18066,6 +18074,24 @@ public class ScriptEvaluator {
         if (!surfaceObjectSeen)
           sbCommand.append(" link");
         break;
+      case Token.lattice:
+        if (iShape != JmolConstants.SHAPE_ISOSURFACE)
+          error(ERROR_invalidArgument);
+        lattice = getPoint3f(iToken + 1, false);
+        i = iToken;
+        if (lattice.x <= 0 || lattice.y <= 0 || lattice.z <= 0) {
+          lattice = null;
+          break;
+        }
+        lattice.x = (int) lattice.x;
+        lattice.y = (int) lattice.y;
+        lattice.z = (int) lattice.z;
+        sbCommand.append("lattice ").append(Escape.escape(lattice));
+        if (isMapped) {
+          propertyName = "lattice";
+          propertyValue = lattice;
+        }
+        break;
       default:
         if (theTok == Token.identifier) {
           propertyName = "thisID";
@@ -18127,8 +18153,7 @@ public class ScriptEvaluator {
           addShapeProperty(propertyList, "remapColor", ce);
         }
       }
-      if (surfaceObjectSeen && !isLcaoCartoon
-          && sbCommand.indexOf(";") != 0) {
+      if (surfaceObjectSeen && !isLcaoCartoon && sbCommand.indexOf(";") != 0) {
         propertyList.add(0, new Object[] { "newObject", null });
         boolean needSelect = (bsSelect == null);
         if (needSelect)
@@ -18170,6 +18195,8 @@ public class ScriptEvaluator {
         sbCommand.append(" mesh nofill frontOnly");
       }
     }
+    if (lattice != null && !isMapped)
+      setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "lattice", lattice);
     if (iptDisplayProperty > 0) {
       if (!setMeshDisplayProperty(iShape, iptDisplayProperty, 0))
         error(ERROR_invalidArgument);
@@ -18238,7 +18265,8 @@ public class ScriptEvaluator {
     setShapeProperty(iShape, "clear", null);
     if (toCache) {
       String id = (String) getShapeProperty(iShape, "ID");
-      viewer.cachePut("cache://isosurface_" + id, getShapeProperty(iShape, "jvxlDataXml"));
+      viewer.cachePut("cache://isosurface_" + id, getShapeProperty(iShape,
+          "jvxlDataXml"));
       runScript("isosurface ID \"" + id + "\" delete;isosurface ID \"" + id
           + "\"" + (modelIndex >= 0 ? " model " + modelIndex : "")
           + " \"cache://isosurface_" + getShapeProperty(iShape, "ID") + "\"");
@@ -18313,18 +18341,6 @@ public class ScriptEvaluator {
     if (!checkOnly)
       tok = getToken(i).tok;
     switch (tok) {
-    case Token.lattice:
-      if (shape != JmolConstants.SHAPE_ISOSURFACE)
-        return false;
-      if (checkOnly)
-        return true;
-      Point3f lattice = getPoint3f(iToken + 1, false);
-      lattice.x = (int) lattice.x;
-      lattice.y = (int) lattice.y;
-      lattice.z = (int) lattice.z;
-      propertyName = "lattice";
-      propertyValue = lattice;
-      break;
     case Token.color:
       if (allowCOLOR)
         iToken++;

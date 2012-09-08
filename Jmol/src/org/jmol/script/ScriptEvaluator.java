@@ -17863,7 +17863,7 @@ public class ScriptEvaluator {
           sbCommand.append(" msms");
         continue;
       case Token.phase:
-        //if (surfaceObjectSeen)
+        if (surfaceObjectSeen)
           error(ERROR_invalidArgument);
         propertyName = "phase";
         isPhased = true;

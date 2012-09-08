@@ -482,6 +482,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       }
     }
     if ("map" == propertyName) {
+      if (sg != null)
+        sg.getParams().isMapped = true;
       setProperty("squareData", Boolean.FALSE, null);
       if (thisMesh == null || thisMesh.vertexCount == 0)
         return;
@@ -869,6 +871,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     int modelCount = viewer.getModelCount();
     if (modelCount > 1)
       appendCmd(sb, "frame " + viewer.getModelNumberDotted(imesh.modelIndex));
+    cmd = TextFormat.simpleReplace(cmd, ";; isosurface map"," map");
     cmd = TextFormat.simpleReplace(cmd, "; isosurface map", " map");
     cmd = cmd.replace('\t', ' ');
     cmd = TextFormat.simpleReplace(cmd, ";#", "; #");

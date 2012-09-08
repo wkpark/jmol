@@ -133,7 +133,8 @@ public class JvxlCoder {
     sb = new StringBuffer();
     
     XmlUtil.openTag(sb, "jvxlSurfaceData", (vertexDataOnly || jvxlData.jvxlPlane == null ? null :
-      new String[] { "plane", Escape.escape(jvxlData.jvxlPlane) }));
+      jvxlData.mapLattice == null ? new String[] { "plane", Escape.escape(jvxlData.jvxlPlane) }
+      :  new String[] { "plane", Escape.escape(jvxlData.jvxlPlane),  "maplattice", Escape.escape(jvxlData.mapLattice)  }));
     if (vertexDataOnly) {
       appendXmlVertexOnlyData(sb, jvxlData, meshData, true);
     } else if (jvxlData.jvxlPlane == null) {
@@ -309,6 +310,8 @@ public class JvxlCoder {
       if (jvxlData.vContours != null && jvxlData.vContours.length > 0)
         addAttrib(attribs, "\n  nContourData", "" + jvxlData.vContours.length);
     } else {
+      if (jvxlData.mapLattice != null)
+        addAttrib(attribs, "\n  mapLattice", "" + jvxlData.mapLattice);
       if (jvxlData.scale3d != 0)
         addAttrib(attribs, "\n  scale3d", "" + jvxlData.scale3d);
       if (nColorData > 0)

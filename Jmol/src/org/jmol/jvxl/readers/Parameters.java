@@ -239,8 +239,10 @@ public class Parameters {
     isSquared = false;
     isContoured = false;
     isEccentric = isAnisotropic = false;
+    isMapped = false;
     isPeriodic = false;
     isSilent = false;
+    mapLattice = null;
     logCube = logCompression = false;
     logMessages = Logger.debugging;
     mappedDataMin = Float.MAX_VALUE;
@@ -811,6 +813,8 @@ public class Parameters {
   public Point3f points;
   public VolumeData volumeData;
   public ContactPair contactPair;
+  public Point3f mapLattice;
+  public boolean isMapped;
   
   void setMapRanges(SurfaceReader surfaceReader, boolean haveData) {
     if (!colorDensity)
@@ -844,6 +848,7 @@ public class Parameters {
   public void resetForMapping(boolean haveSurface) {
     if (!haveSurface) 
       state = Parameters.STATE_DATA_READ;
+    isMapped = true;
     qmOrbitalType = QM_TYPE_UNKNOWN; 
     parameters = null;
     colorDensity = false;

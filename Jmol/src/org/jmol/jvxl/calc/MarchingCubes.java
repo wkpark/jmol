@@ -138,9 +138,18 @@ public class MarchingCubes extends TriangleData {
     isXLowToHigh = params.isXLowToHigh;
 
     cubeCountX = volumeData.voxelCounts[0] - 1;
-    cubeCountY = (nY = volumeData.voxelCounts[1]) - 1;
-    cubeCountZ = (nZ = volumeData.voxelCounts[2]) - 1;
-    yzCount = volumeData.getYzCount();
+    cubeCountY = volumeData.voxelCounts[1] - 1;
+    cubeCountZ = volumeData.voxelCounts[2] - 1;
+    volumeData.getYzCount();
+    if (params.mapLattice != null) {
+      // extend plane out to full lattice, if specified
+      cubeCountX *= Math.abs(params.mapLattice.x);
+      cubeCountY *= Math.abs(params.mapLattice.y);
+      cubeCountZ *= Math.abs(params.mapLattice.z);
+    }
+    nY = cubeCountY + 1;
+    nZ = cubeCountZ + 1;
+    yzCount = nY * nZ;
     if (bsVoxels == null)
       bsVoxels = new BitSet();
     edgeVertexPointers = (isXLowToHigh ? edgeVertexPointersLowToHigh : edgeVertexPointersHighToLow);

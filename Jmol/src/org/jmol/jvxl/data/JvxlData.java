@@ -164,6 +164,7 @@ public class JvxlData {
   public String slabInfo;
   public boolean allowVolumeRender;
   public float voxelVolume;
+  public Point3f mapLattice;
 
   public void clear() {
     allowVolumeRender = true;
@@ -179,6 +180,7 @@ public class JvxlData {
     contourColixes = null;
     contourColors = null;
     isSlabbable = false;
+    mapLattice = null;
     meshColor = null;
     nPointsX = 0;
     nVertexColors = 0;
@@ -192,19 +194,23 @@ public class JvxlData {
     voxelVolume = 0;
   }
 
-  public void setSurfaceInfo(Point4f thePlane, int nSurfaceInts, String surfaceData) {
+  public void setSurfaceInfo(Point4f thePlane, Point3f mapLattice, int nSurfaceInts, String surfaceData) {
     jvxlSurfaceData = surfaceData;
     if (jvxlSurfaceData.indexOf("--") == 0)
       jvxlSurfaceData = jvxlSurfaceData.substring(2);
     jvxlPlane = thePlane;
+    this.mapLattice = mapLattice;
     this.nSurfaceInts = nSurfaceInts;
   }
 
   public void setSurfaceInfoFromBitSet(BitSet bs, Point4f thePlane) {
+    setSurfaceInfoFromBitSet(bs, thePlane, null);
+  }
+  public void setSurfaceInfoFromBitSet(BitSet bs, Point4f thePlane, Point3f mapLattice) {
     StringBuffer sb = new StringBuffer();
-    int nPoints = nPointsX * nPointsY * nPointsZ;
-    int nSurfaceInts = (thePlane != null ? 0 : JvxlCoder.jvxlEncodeBitSet(bs, nPoints, sb));
-    setSurfaceInfo(thePlane, nSurfaceInts, sb.toString());
+    int nSurfaceInts = (thePlane != null ? 0 : JvxlCoder.jvxlEncodeBitSet(bs,
+        nPointsX * nPointsY * nPointsZ, sb));
+    setSurfaceInfo(thePlane, mapLattice, nSurfaceInts, sb.toString());
   }
     
   public void jvxlUpdateInfo(String[] title, long nBytes) {

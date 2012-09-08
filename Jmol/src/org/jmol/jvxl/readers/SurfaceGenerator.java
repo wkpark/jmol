@@ -798,6 +798,12 @@ public class SurfaceGenerator {
       params.contourFromZero = !((Boolean) value).booleanValue();
       return true;
     }
+    
+    if ("mapLattice" == propertyName) {
+      params.mapLattice = (Point3f) value;
+      return true;
+    }
+
     // / final actions ///
 
     if ("property" == propertyName) {
@@ -1166,6 +1172,8 @@ public class SurfaceGenerator {
       params.isSquared = isSquared;
       params.mappedDataMin = Float.MAX_VALUE;
       surfaceReader.readVolumeData(true);
+      if (params.mapLattice != null)
+        volumeData.isPeriodic = true;
     } else if (!params.colorBySets && !params.colorDensity) {
       surfaceReader.readAndSetVolumeParameters(true);
       params.mappedDataMin = Float.MAX_VALUE;

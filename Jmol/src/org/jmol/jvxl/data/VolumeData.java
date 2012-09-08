@@ -376,13 +376,17 @@ public class VolumeData implements VolumeDataInterface {
     int yUpper = indexUpper(ptXyzTemp.y, yLower, iMax);
     int zLower = indexLower(ptXyzTemp.z, iMax = voxelCounts[2] - 1);
     int zUpper = indexUpper(ptXyzTemp.z, zLower, iMax);
-    float v1 = getFractional2DValue(ptXyzTemp.x - xLower, ptXyzTemp.y - yLower,
+    float v1 = getFractional2DValue(mantissa(ptXyzTemp.x - xLower), mantissa(ptXyzTemp.y - yLower),
         getVoxelValue(xLower, yLower, zLower), getVoxelValue(xUpper, yLower, zLower),
         getVoxelValue(xLower, yUpper, zLower), getVoxelValue(xUpper, yUpper, zLower));
-    float v2 = getFractional2DValue(ptXyzTemp.x - xLower, ptXyzTemp.y - yLower,
+    float v2 = getFractional2DValue(mantissa(ptXyzTemp.x - xLower), mantissa(ptXyzTemp.y - yLower),
         getVoxelValue(xLower, yLower, zUpper), getVoxelValue(xUpper, yLower, zUpper),
         getVoxelValue(xLower, yUpper, zUpper), getVoxelValue(xUpper, yUpper, zUpper));
-    return v1 + (ptXyzTemp.z - zLower) * (v2 - v1);
+    return v1 + mantissa(ptXyzTemp.z - zLower) * (v2 - v1);
+  }
+
+  private float mantissa(float f) {
+    return (isPeriodic ? f - (float) Math.floor(f) : f);
   }
 
   public float getVoxelValue(int x, int y, int z) {
@@ -426,7 +430,7 @@ public class VolumeData implements VolumeDataInterface {
   }
 
   private int indexUpper(float x, int xLower, int xMax) {
-    return xLower + (!isPeriodic && x < 0 || xLower == xMax ? 0 : 1);
+    return (!isPeriodic && x < 0 || xLower == xMax ? xLower : xLower + 1);
   }
 
   void offsetCenter(Point3f center) {

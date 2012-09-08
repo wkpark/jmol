@@ -245,17 +245,29 @@ public class JvxlXmlReader extends VolumeFileReader {
       jvxlData.allowVolumeRender = params.allowVolumeRender = (s.length() == 0 || s.equalsIgnoreCase("true"));
     s = XmlReader.getXmlAttrib(data, "plane");
     if (s.indexOf("{") >= 0) {
+      params.thePlane = null;
+      params.mapLattice = null;
       try {
         params.thePlane = (Point4f) Escape.unescapePoint(s);
+        s = XmlReader.getXmlAttrib(data, "maplattice");
         Logger.info("JVXL read: plane " + params.thePlane);
+        if (s.indexOf("{") >= 0) {
+          params.mapLattice = (Point3f) Escape.unescapePoint(s);
+          Logger.info("JVXL read: mapLattice " + params.mapLattice);
+        }
         if (params.scale3d == 0)
           params.scale3d = parseFloat(XmlReader.getXmlAttrib(data, "scale3d"));
         if (Float.isNaN(params.scale3d))
           params.scale3d = 0;
       } catch (Exception e) {
-        Logger
-            .error("Error reading 4 floats for PLANE definition -- setting to 0 0 1 0  (z=0)");
-        params.thePlane = new Point4f(0, 0, 1, 0);
+        if (params.thePlane == null) {
+          Logger
+              .error("JVXL Error reading plane definition -- setting to 0 0 1 0  (z=0)");
+          params.thePlane = new Point4f(0, 0, 1, 0);
+        } else {
+          Logger
+          .error("JVXL Error reading mapLattice definition -- ignored");
+        }
       }
       surfaceDataCount = 0;
       edgeDataCount = 0;
@@ -390,7 +402,7 @@ public class JvxlXmlReader extends VolumeFileReader {
       volumeData.setDataDistanceToPlane(params.thePlane);
       setVolumeData(volumeData);
       params.cutoff = 0f;
-      jvxlData.setSurfaceInfo(params.thePlane, 0, "");
+      jvxlData.setSurfaceInfo(params.thePlane, params.mapLattice, 0, "");
       jvxlData.scale3d = params.scale3d;
       return true;
     }

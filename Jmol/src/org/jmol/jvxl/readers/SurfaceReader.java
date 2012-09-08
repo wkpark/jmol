@@ -566,7 +566,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     if (params.thePlane == null)
       edgeData = data;
     jvxlData.setSurfaceInfoFromBitSet(marchingCubes.getBsVoxels(),
-        params.thePlane);
+        params.thePlane, params.mapLattice);
     jvxlData.jvxlExcluded = params.bsExcluded;
     if (isJvxl)
       edgeData = jvxlEdgeDataRead;

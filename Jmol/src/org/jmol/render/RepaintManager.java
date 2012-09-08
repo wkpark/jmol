@@ -154,19 +154,14 @@ public class RepaintManager implements JmolRepaintInterface {
   private boolean logTime;
   
   
-  public void render(GData gdata, ModelSet modelSet, boolean isFirstPass, BitSet bsAtoms, Point3f ptOffset) {
-    if (modelSet == null || !viewer.mustRenderFlag())
-      return;
+  public void render(GData gdata, ModelSet modelSet, boolean isFirstPass, int[] minMax) {
     logTime = false;//viewer.getTestFlag(2);
     if (logTime)
       Logger.startTimer();
-    viewer.finalizeTransformParameters();
     try {
       Graphics3D g3d = (Graphics3D) gdata;
       g3d.renderBackground(null);
       if (isFirstPass)  {
-        int[] minMax = shapeManager.transformAtoms(bsAtoms, ptOffset);
-        bsAtoms = null;
         if (minMax != null)
           renderCrossHairs(g3d, minMax);
         renderSelectionRubberBand(g3d);

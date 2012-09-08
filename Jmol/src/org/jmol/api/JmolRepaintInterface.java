@@ -1,9 +1,5 @@
 package org.jmol.api;
 
-import java.util.BitSet;
-
-import javax.vecmath.Point3f;
-
 import org.jmol.modelset.ModelSet;
 import org.jmol.util.GData;
 import org.jmol.viewer.ShapeManager;
@@ -27,8 +23,7 @@ public interface JmolRepaintInterface {
 
   void clear(int iShape);
 
-  void render(GData gdata, ModelSet modelSet, boolean isFirstPass,
-              BitSet bsAtoms, Point3f ptOffset);
+  void render(GData gdata, ModelSet modelSet, boolean isFirstPass, int[] minMax);
 
   String renderExport(String type, GData gdata, ModelSet modelSet,
                       String fileName);

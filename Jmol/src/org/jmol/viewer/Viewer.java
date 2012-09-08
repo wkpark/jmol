@@ -540,11 +540,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return htmlName;
   }
 
-  public boolean mustRenderFlag() {
-    // from repaintManager
-    return mustRender && (refreshing || creatingImage);
-  }
-
   @Override
   public Object getDisplay() {
     return display;
@@ -4222,13 +4217,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   private void render() {
-    if (!refreshing && !creatingImage || repaintManager == null)
+    if (modelSet == null || !mustRender  
+        || !refreshing && !creatingImage || repaintManager == null)
       return;
     boolean antialias2 = antialiasDisplay && global.antialiasTranslucent;
-    repaintManager.render(gdata, modelSet, true, transformManager.bsSelectedAtoms, transformManager.ptOffset);
+    finalizeTransformParameters();
+    int[] minMax = shapeManager.transformAtoms(transformManager.bsSelectedAtoms, 
+        transformManager.ptOffset);
+    transformManager.bsSelectedAtoms = null;
+    repaintManager.render(gdata, modelSet, true, minMax);
     if (gdata.setPass2(antialias2)) {
       transformManager.setAntialias(antialias2);
-      repaintManager.render(gdata, modelSet, false, null, null);
+      repaintManager.render(gdata, modelSet, false, null);
       transformManager.setAntialias(antialiasDisplay);
     }
   }

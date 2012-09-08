@@ -301,7 +301,7 @@ public class ShapeManager {
     return bsRenderableAtoms;
   }
   
-  Shape getShape(int i) {
+  public Shape getShape(int i) {
     //RepaintManager
     return (shapes == null ? null : shapes[i]);
   }
@@ -402,7 +402,7 @@ public class ShapeManager {
 
   private final int[] navigationCrossHairMinMax = new int[4];
 
-  int[] transformAtoms(BitSet bsAtoms, Point3f ptOffset) {
+  public int[] transformAtoms(BitSet bsAtoms, Point3f ptOffset) {
     if (bsAtoms != null) {
       // translateSelected operation
       Point3f ptCenter = viewer.getAtomSetCenter(bsAtoms);

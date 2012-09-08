@@ -52,6 +52,7 @@ import org.jmol.api.JmolAppConsoleInterface;
 import org.jmol.api.JmolCallbackListener;
 import org.jmol.api.JmolImageCreatorInterface;
 import org.jmol.api.JmolRendererInterface;
+import org.jmol.api.JmolRepaintInterface;
 import org.jmol.api.JmolScriptEditorInterface;
 import org.jmol.api.JmolSelectionListener;
 import org.jmol.api.JmolStatusListener;
@@ -289,7 +290,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private ShapeManager shapeManager;
   private ModelManager modelManager;
   private ModelSet modelSet;
-  private RepaintManager repaintManager;
+  private JmolRepaintInterface repaintManager;
   private ScriptManager scriptManager;
   private SelectionManager selectionManager;
   private StateManager stateManager;
@@ -391,7 +392,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     tempManager = new TempArray();
     dataManager = new DataManager(this);
     animationManager = new AnimationManager(this);
-    repaintManager = new RepaintManager(this, shapeManager);
+    repaintManager = (JmolRepaintInterface) (Interface
+        .getOptionInterface("render.RepaintManager"));
+    if (repaintManager != null)
+      repaintManager.set(this, shapeManager);
     initialize(true);
     fileManager = new FileManager(this);
     compiler = new ScriptCompiler(this);
@@ -539,7 +543,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return htmlName;
   }
 
-  boolean mustRenderFlag() {
+  public boolean mustRenderFlag() {
     return mustRender && (refreshing || creatingImage);
   }
 
@@ -1057,7 +1061,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (bsAtoms != null) {
       if (xy == 0)
         return;
-      repaintManager.setSelectedTranslation(bsAtoms, xyz, xy);
+      transformManager.setSelectedTranslation(bsAtoms, xyz, xy);
     } else {
       switch (xyz) {
       case 'X':
@@ -1188,7 +1192,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return transformManager.getUnscaledTransformMatrix();
   }
 
-  void finalizeTransformParameters() {
+  public void finalizeTransformParameters() {
     // FrameRenderer
     // InitializeModel
 
@@ -1769,7 +1773,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
   }
 
-  Rectangle getRubberBandSelection() {
+  public Rectangle getRubberBandSelection() {
     return (haveDisplay ? actionManager.getRubberBand() : null);
   }
 
@@ -2740,7 +2744,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       ligandModelSet = null;
       clearModelDependentObjects();
       fileManager.clear();
-      repaintManager.clear(-1);
+      clearRepaintManager(-1);
       animationManager.clear();
       transformManager.clear();
       selectionManager.clear();
@@ -3924,27 +3928,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     pushHoldRepaint(null);
   }
 
-  /**
-   * 
-   * @param why
-   */
-  public void pushHoldRepaint(String why) {
-    // System.out.println("viewer pushHoldRepaint " + why);
-    repaintManager.pushHoldRepaint();
-  }
-
-  @Override
-  public void popHoldRepaint() {
-    //System.out.println("viewer popHoldRepaint don't know why");
-    repaintManager.popHoldRepaint(true);
-  }
-
-  public void popHoldRepaint(String why) {
-    //if (!why.equals("pause"))
-    //System.out.println("viewer popHoldRepaint " + why);
-    repaintManager.popHoldRepaint(!why.equals("pause"));
-  }
-
   private boolean refreshing = true;
 
   private void setRefreshing(boolean TF) {
@@ -3953,6 +3936,30 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public boolean getRefreshing() {
     return refreshing;
+  }
+
+  /**
+   * 
+   * @param why
+   */
+  public void pushHoldRepaint(String why) {
+    // System.out.println("viewer pushHoldRepaint " + why);
+    if (repaintManager != null)
+      repaintManager.pushHoldRepaint();
+  }
+
+  @Override
+  public void popHoldRepaint() {
+    //System.out.println("viewer popHoldRepaint don't know why");
+    if (repaintManager != null)
+      repaintManager.popHoldRepaint(true);
+  }
+
+  public void popHoldRepaint(String why) {
+    //if (!why.equals("pause"))
+    //System.out.println("viewer popHoldRepaint " + why);
+    if (repaintManager != null)
+      repaintManager.popHoldRepaint(!why.equals("pause"));
   }
 
   /**
@@ -4009,20 +4016,24 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // called by AnimationThread run()
     // called by TransformationManager move and moveTo
     // called by TransformationManager11 navigate, navigateSurface, navigateTo
-    if (!haveDisplay)
+    if (!haveDisplay || repaintManager == null)
       return;
     repaintManager.requestRepaintAndWait();
     setSync();
   }
 
-  private void setSync() {
-    if (statusManager.doSync())
-      statusManager.setSync(null);
+  public void clearShapeRenderers() {
+    clearRepaintManager(-1);
+  }
+
+  boolean isRepaintPending() {
+    return (repaintManager == null ? false : repaintManager.isRepaintPending());
   }
 
   @Override
   public void notifyViewerRepaintDone() {
-    repaintManager.repaintDone();
+    if (repaintManager != null)
+      repaintManager.repaintDone();
     animationManager.repaintDone();
   }
 
@@ -4114,7 +4125,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   @Override
   public String generateOutput(String type, String[] fileName, int width,
                                int height) {
-    if (noGraphicsAllowed)
+    if (noGraphicsAllowed || repaintManager == null)
       return null;
     String fName = null;
     if (fileName != null) {
@@ -4136,6 +4147,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return data;
   }
 
+  private void clearRepaintManager(int iShape) {
+    if (repaintManager != null)
+      repaintManager.clear(iShape);
+  }
+
   @Override
   public void renderScreenImage(Object gLeft, Object gRight, int width,
                                 int height) {
@@ -4151,13 +4167,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (isTainted || getSlabEnabled())
         setModelVisibility();
       isTainted = false;
-      if (width != 0)
-        setScreenDimension(width, height);
-      if (gRight == null) {
-        getScreenImage(gLeft);
-      } else {
-        render1(gRight, getImage(true), 0, 0);
-        render1(gLeft, getImage(false), 0, 0);
+      if (repaintManager != null) {
+        if (width != 0)
+          setScreenDimension(width, height);
+        if (gRight == null) {
+          getScreenImage(gLeft);
+        } else {
+          render1(gRight, getImage(true), 0, 0);
+          render1(gLeft, getImage(false), 0, 0);
+        }
       }
     }
     // System.out.println(Thread.currentThread() +
@@ -4206,13 +4224,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   private void render() {
-    if (!refreshing && !creatingImage)
+    if (!refreshing && !creatingImage || repaintManager == null)
       return;
     boolean antialias2 = antialiasDisplay && global.antialiasTranslucent;
-    repaintManager.render(gdata, modelSet, true);
+    repaintManager.render(gdata, modelSet, true, transformManager.bsAtoms, transformManager.ptOffset);
     if (gdata.setPass2(antialias2)) {
       transformManager.setAntialias(antialias2);
-      repaintManager.render(gdata, modelSet, false);
+      repaintManager.render(gdata, modelSet, false, null, null);
       transformManager.setAntialias(antialiasDisplay);
     }
   }
@@ -4993,10 +5011,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       refresh(3, "hover off");
   }
 
-  public void clearShapeRenderers() {
-    repaintManager.clear(-1);
-  }
-
   public int getBfactor100Hi() {
     return modelSet.getBfactor100Hi();
   }
@@ -5126,6 +5140,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   // //////////////status manager dispatch//////////////
+
+  private void setSync() {
+    if (statusManager.doSync())
+      statusManager.setSync(null);
+  }
 
   @Override
   public void setJmolCallbackListener(JmolCallbackListener jmolCallbackListener) {
@@ -9247,7 +9266,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     selectionManager.processDeletedModelAtoms(bsDeleted);
     setAnimationRange(0, 0);
     eval.deleteAtomsInVariables(bsDeleted);
-    repaintManager.clear(-1);
+    clearRepaintManager(-1);
     animationManager.clear();
     animationManager.initializePointers(1);
     setCurrentModelIndex(getModelCount() > 1 ? -1 : 0, getModelCount() > 1);
@@ -9372,7 +9391,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return "";
     if (modelSet != null)
       shapeManager.releaseShape(currentShapeID);
-    repaintManager.clear(currentShapeID);
+    clearRepaintManager(currentShapeID);
     return JmolConstants.getShapeClassName(currentShapeID, false) + " "
         + currentShapeState;
   }
@@ -9438,10 +9457,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getMoInfo(modelIndex);
   }
 
-  boolean isRepaintPending() {
-    return repaintManager.repaintPending;
-  }
-
   public Map<String, ScriptVariable> getContextVariables() {
     return eval.getContextVariables();
   }
@@ -9491,7 +9506,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         animationManager.currentModelIndex);
   }
 
-  void repaint() {
+  public void repaint() {
     // from RepaintManager
     if (haveDisplay)
       apiPlatform.repaint(display);
@@ -9934,7 +9949,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     shapeManager.resetShapes();
     if (andCreateNew) {
       shapeManager.loadDefaultShapes(modelSet);
-      repaintManager.clear(-1);
+      clearRepaintManager(-1);
     }
   }
 
@@ -10348,7 +10363,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // reset after a state script is read
   }
 
-  boolean initializeExporter(JmolRendererInterface g3dExport, String type,
+  public boolean initializeExporter(JmolRendererInterface g3dExport, String type,
                              Object output) {
     return g3dExport.initializeExporter(type, this, privateKey, gdata, output);
   }

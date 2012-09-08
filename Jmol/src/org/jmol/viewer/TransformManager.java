@@ -2809,6 +2809,7 @@ abstract class TransformManager {
 
   Point3f[] frameOffsets;
   final Point3f frameOffset = new Point3f();
+
   void setFrameOffset(int modelIndex) {
     if (frameOffsets == null || modelIndex < 0 || modelIndex >= frameOffsets.length)
       frameOffset.set(0, 0, 0);
@@ -2827,5 +2828,29 @@ abstract class TransformManager {
   void navigateSurface(float timeSeconds, String name) {
   }
 
+  /////////// Allow during-rendering mouse operations ///////////
+  
+  BitSet bsAtoms;
+  Point3f ptOffset = new Point3f();
+  
+  void setSelectedTranslation(BitSet bsAtoms, char xyz, int xy) {
+    this.bsAtoms = bsAtoms;
+    switch (xyz) {
+    case 'X':
+    case 'x':
+      ptOffset.x += xy;
+      break;
+    case 'Y':
+    case 'y':
+      ptOffset.y += xy;
+      break;
+    case 'Z':
+    case 'z':
+      ptOffset.z += xy;
+      break;
+    }
+    //System.out.println(xyz + " " + xy + " " + ptOffset);
+  }
+  
 
 }

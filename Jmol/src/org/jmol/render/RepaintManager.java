@@ -21,29 +21,36 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.jmol.viewer;
+package org.jmol.render;
 
 import org.jmol.api.JmolRendererInterface;
+import org.jmol.api.JmolRepaintInterface;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.ModelSet;
-import org.jmol.render.ShapeRenderer;
 import org.jmol.shape.Shape;
 import org.jmol.util.Colix;
 import org.jmol.util.GData;
 import org.jmol.util.Logger;
 import org.jmol.util.Rectangle;
+import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.ShapeManager;
+import org.jmol.viewer.Viewer;
 
 import java.util.BitSet;
 
 import javax.vecmath.Point3f;
 
-class RepaintManager {
+public class RepaintManager implements JmolRepaintInterface {
 
   private Viewer viewer;
   private ShapeManager shapeManager;
   private ShapeRenderer[] renderers;
+
+  public RepaintManager() {
+    // required for reflection
+  }
   
-  RepaintManager(Viewer viewer, ShapeManager shapeManager) {
+  public void set(Viewer viewer, ShapeManager shapeManager) {
     this.viewer = viewer;
     this.shapeManager = shapeManager;
   }
@@ -51,14 +58,21 @@ class RepaintManager {
   /////////// thread management ///////////
   
   private int holdRepaint = 0;
-  boolean repaintPending;
-
-  void pushHoldRepaint() {
+  private boolean repaintPending;
+  
+  
+  public boolean isRepaintPending() {
+    return repaintPending;
+  }
+  
+  
+  public void pushHoldRepaint() {
     ++holdRepaint;
     //System.out.println("repaintManager pushHoldRepaint holdRepaint=" + holdRepaint + " thread=" + Thread.currentThread().getName());
   }
 
-  void popHoldRepaint(boolean andRepaint) {
+  
+  public void popHoldRepaint(boolean andRepaint) {
     --holdRepaint;
     //System.out.println("repaintManager popHoldRepaint holdRepaint=" + holdRepaint + " thread=" + Thread.currentThread().getName());
     if (holdRepaint <= 0) {
@@ -71,7 +85,8 @@ class RepaintManager {
     }
   }
 
-  boolean refresh() {
+  
+  public boolean refresh() {
     if (repaintPending)
       return false;
     repaintPending = true;
@@ -82,13 +97,15 @@ class RepaintManager {
     return true;
   }
 
-  synchronized void repaintDone() {
+  
+  synchronized public void repaintDone() {
     repaintPending = false;
     //System.out.println("repaintManager repaintDone thread=" + Thread.currentThread().getName());
     notify(); // to cancel any wait in requestRepaintAndWait()
   }
 
-  synchronized void requestRepaintAndWait() {
+  
+  synchronized public void requestRepaintAndWait() {
     //System.out.println("RM requestRepaintAndWait() " + (test++));
     viewer.repaint();
     try {
@@ -106,7 +123,8 @@ class RepaintManager {
 
   /////////// renderer management ///////////
   
-  void clear(int iShape) {
+  
+  public void clear(int iShape) {
     if (renderers ==  null)
       return;
     if (iShape >= 0)
@@ -135,7 +153,8 @@ class RepaintManager {
   
   private boolean logTime;
   
-  void render(GData gdata, ModelSet modelSet, boolean isFirstPass) {
+  
+  public void render(GData gdata, ModelSet modelSet, boolean isFirstPass, BitSet bsAtoms, Point3f ptOffset) {
     if (modelSet == null || !viewer.mustRenderFlag())
       return;
     logTime = false;//viewer.getTestFlag(2);
@@ -168,7 +187,8 @@ class RepaintManager {
     }
   }
 
-  String renderExport(String type, GData gdata, ModelSet modelSet,
+  
+  public String renderExport(String type, GData gdata, ModelSet modelSet,
                       String fileName) {
 
     JmolRendererInterface g3dExport = null;
@@ -197,30 +217,6 @@ class RepaintManager {
     return g3dExport.finalizeOutput();
   }
 
-  /////////// Allow during-rendering mouse operations ///////////
-  
-  private BitSet bsAtoms;
-  private Point3f ptOffset = new Point3f();
-  
-  void setSelectedTranslation(BitSet bsAtoms, char xyz, int xy) {
-    this.bsAtoms = bsAtoms;
-    switch (xyz) {
-    case 'X':
-    case 'x':
-      ptOffset.x += xy;
-      break;
-    case 'Y':
-    case 'y':
-      ptOffset.y += xy;
-      break;
-    case 'Z':
-    case 'z':
-      ptOffset.z += xy;
-      break;
-    }
-    //System.out.println(xyz + " " + xy + " " + ptOffset);
-  }
-  
   /////////// special rendering ///////////
   
   private void renderCrossHairs(Graphics3D g3d, int[] minMax) {
@@ -261,5 +257,5 @@ class RepaintManager {
     if (band != null && g3d.setColix(viewer.getColixRubberband()))
       g3d.drawRect(band.x, band.y, 0, 0, band.width, band.height);
   }
-  
+
 }

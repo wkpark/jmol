@@ -1151,7 +1151,7 @@ public class FileManager {
       localDir = (String) viewer.getParameter("defaultDirectoryLocal");
     if (localDir.length() == 0)
       return (viewer.isApplet() ? null : new File(System
-          .getProperty("user.dir")));
+          .getProperty("user.dir", ".")));
     if (viewer.isApplet() && localDir.indexOf("file:/") == 0)
       localDir = localDir.substring(6);
     File f = new File(localDir);

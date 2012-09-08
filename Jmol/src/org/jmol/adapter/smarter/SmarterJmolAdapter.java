@@ -63,7 +63,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
 
   public final static String PATH_KEY = ".PATH";
   public final static String PATH_SEPARATOR =
-    System.getProperty("path.separator");
+    System.getProperty("path.separator", "/");
 
   /**
    * Just get the resolved file type; if a file, does NOT close the reader

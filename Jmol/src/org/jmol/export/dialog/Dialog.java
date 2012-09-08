@@ -490,7 +490,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     UIManager.put("OptionPane.yesButtonText", GT._("Yes"));
   }
   
-  private static boolean isMac = System.getProperty("os.name").startsWith("Mac");
+  private static boolean isMac = System.getProperty("os.name", "").startsWith("Mac");
   
   private static void getXPlatformLook(JFileChooser fc) {
     if (isMac) {

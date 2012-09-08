@@ -308,9 +308,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private TempArray tempManager;
   private TransformManager transformManager;
 
-  private String strJavaVendor;
-  private String strJavaVersion;
-  private String strOSName;
+  private final static String strJavaVendor = System.getProperty("java.vendor", "j2s");
+  private final static String strOSName = System.getProperty("os.name", "j2s");
+  private final static String strJavaVersion = System.getProperty("java.version", "0.0");
   private String htmlName = "";
 
   private String fullName = "";
@@ -362,9 +362,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       display = null;
     this.display = display;
     this.modelAdapter = modelAdapter;
-    strJavaVendor = System.getProperty("java.vendor");
-    strOSName = System.getProperty("os.name");
-    strJavaVersion = System.getProperty("java.version");
     multiTouch = (haveDisplay && commandOptions.indexOf("-multitouch") >= 0);
     stateManager = new StateManager(this);
     colorManager = new ColorManager(this, gdata);
@@ -544,6 +541,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public boolean mustRenderFlag() {
+    // from repaintManager
     return mustRender && (refreshing || creatingImage);
   }
 
@@ -4227,7 +4225,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (!refreshing && !creatingImage || repaintManager == null)
       return;
     boolean antialias2 = antialiasDisplay && global.antialiasTranslucent;
-    repaintManager.render(gdata, modelSet, true, transformManager.bsAtoms, transformManager.ptOffset);
+    repaintManager.render(gdata, modelSet, true, transformManager.bsSelectedAtoms, transformManager.ptOffset);
     if (gdata.setPass2(antialias2)) {
       transformManager.setAntialias(antialias2);
       repaintManager.render(gdata, modelSet, false, null, null);

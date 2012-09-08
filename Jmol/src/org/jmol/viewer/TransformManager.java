@@ -2830,11 +2830,11 @@ abstract class TransformManager {
 
   /////////// Allow during-rendering mouse operations ///////////
   
-  BitSet bsAtoms;
+  BitSet bsSelectedAtoms;
   Point3f ptOffset = new Point3f();
   
   void setSelectedTranslation(BitSet bsAtoms, char xyz, int xy) {
-    this.bsAtoms = bsAtoms;
+    this.bsSelectedAtoms = bsAtoms;
     switch (xyz) {
     case 'X':
     case 'x':

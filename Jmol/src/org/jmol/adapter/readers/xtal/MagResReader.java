@@ -12,7 +12,7 @@ package org.jmol.adapter.readers.xtal;
  * @version 1.0
  */
 
-import jspecview.util.TextFormat;
+import org.jmol.util.TextFormat;
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;

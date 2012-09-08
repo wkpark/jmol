@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 
-import jspecview.util.TextFormat;
+import org.jmol.util.TextFormat;
 
 import org.jmol.adapter.readers.molxyz.MolReader;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;

@@ -35,7 +35,7 @@ import java.util.Map;
 
 import javax.vecmath.Vector3f;
 
-import jspecview.util.TextFormat;
+import org.jmol.util.TextFormat;
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.ArrayUtil;

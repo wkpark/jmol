@@ -33,7 +33,7 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
-import jspecview.util.TextFormat;
+import org.jmol.util.TextFormat;
 
 import org.jmol.api.SymmetryInterface;
 import org.jmol.util.Escape;

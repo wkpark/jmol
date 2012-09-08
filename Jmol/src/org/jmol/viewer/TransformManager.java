@@ -33,7 +33,6 @@ import javax.vecmath.Matrix3f;
 import javax.vecmath.AxisAngle4f;
 
 import org.jmol.constant.EnumStereoMode;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.script.Token;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;

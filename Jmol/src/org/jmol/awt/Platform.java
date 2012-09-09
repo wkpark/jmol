@@ -209,7 +209,7 @@ public class Platform implements ApiPlatform {
 
   private FileAdapter fileAdapter;
   public FileAdapterInterface getFileAdapter() {
-    return (fileAdapter == null  ? fileAdapter = new FileAdapter() : fileAdapter);
+    return (fileAdapter == null ? fileAdapter = new FileAdapter() : fileAdapter);
   }
 
 }

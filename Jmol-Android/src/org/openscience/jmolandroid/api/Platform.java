@@ -3,8 +3,10 @@ package org.openscience.jmolandroid.api;
 import javax.vecmath.Point3f;
 
 import org.jmol.api.ApiPlatform;
+import org.jmol.api.FileAdapterInterface;
 import org.jmol.api.JmolPopupInterface;
 import org.jmol.api.JmolViewer;
+import org.jmol.awt.FileAdapter;
 import org.jmol.g3d.Font3D;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.Viewer;
@@ -187,6 +189,11 @@ public class Platform implements ApiPlatform {
   @Override
   public boolean isHeadless() {
     return false;
+  }
+
+  @Override
+  public FileAdapterInterface getFileAdapter() {
+    return null; // N/A
   }
 
 }

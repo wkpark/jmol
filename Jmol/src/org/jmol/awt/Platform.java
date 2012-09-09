@@ -10,6 +10,7 @@ import org.jmol.api.ApiPlatform;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolPopupInterface;
 import org.jmol.api.JmolViewer;
+import org.jmol.api.FileAdapterInterface;
 import org.jmol.util.JmolFont;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.Viewer;
@@ -204,6 +205,11 @@ public class Platform implements ApiPlatform {
 
   public boolean isHeadless() {
     return GraphicsEnvironment.isHeadless();
+  }
+
+  private FileAdapter fileAdapter;
+  public FileAdapterInterface getFileAdapter() {
+    return (fileAdapter == null  ? fileAdapter = new FileAdapter() : fileAdapter);
   }
 
 }

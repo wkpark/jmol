@@ -36,8 +36,6 @@ import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.ShapeManager;
 import org.jmol.viewer.Viewer;
 
-import java.util.BitSet;
-
 import javax.vecmath.Point3f;
 
 public class RepaintManager implements JmolRepaintInterface {

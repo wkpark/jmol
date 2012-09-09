@@ -354,6 +354,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           : commandOptions.substring(commandOptions.indexOf("platform=") + 9));
     apiPlatform.setViewer(this, display);
     gdata = (GData) Interface.getInterface("org.jmol.g3d.Graphics3D");
+    if (gdata == null)
+      gdata = new GData();
     gdata.initialize(apiPlatform);
     haveDisplay = (display != null && !isHeadless() && commandOptions
         .indexOf("-n") < 0);

@@ -35,13 +35,12 @@ import org.jmol.util.TextFormat;
 import org.jmol.util.ZipUtil;
 import org.jmol.viewer.Viewer.ACCESS;
 
+import org.jmol.api.FileAdapterInterface;
 import org.jmol.api.JmolFilesReaderInterface;
 import org.jmol.api.JmolViewer;
 import org.jmol.api.ApiPlatform;
 
 import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
 import java.net.MalformedURLException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -53,10 +52,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+
 import java.text.DateFormat;
 import java.util.zip.CRC32;
 import java.util.zip.GZIPInputStream;
@@ -431,60 +430,47 @@ public class FileManager {
     }
     boolean isApplet = (appletDocumentBase != null);
     BufferedInputStream bis = null;
+    ApiPlatform apiPlatform = viewer.getApiPlatform();
+    Object ret = null;
     // int length;
-      try {
-        if (cacheBytes == null && (isApplet || isURL)) {
-          if (isApplet && isURL && appletProxy != null)
-            name = appletProxy + "?url=" + URLEncoder.encode(name, "utf-8");
-          URL url = (isApplet ? new URL(appletDocumentBase, name) : new URL(
-              name));
-          name = url.toString();
-          if (showMsg && !checkOnly
-              && name.toLowerCase().indexOf("password") < 0)
-            Logger.info("FileManager opening " + name);
-          URLConnection conn = url.openConnection();
-          if (outputBytes != null && !checkOnly) {
-            conn
-                .setRequestProperty("Content-Type", "application/octet-stream;");
-            conn.setDoOutput(true);
-            conn.getOutputStream().write(outputBytes);
-            conn.getOutputStream().flush();
-          } else if (post != null && !checkOnly) {
-            conn.setRequestProperty("Content-Type",
-                "application/x-www-form-urlencoded");
-            conn.setDoOutput(true);
-            OutputStreamWriter wr = new OutputStreamWriter(conn
-                .getOutputStream());
-            wr.write(post);
-            wr.flush();
-          }
-          bis = new BufferedInputStream(conn.getInputStream());
-        } else if (cacheBytes == null && (cacheBytes = (byte[]) cacheGet(name, true)) == null) {
-          if (showMsg)
-            Logger.info("FileManager opening " + name);
-          
-          File file = new File(name);
-          // length = (int) file.length();
-          bis = new BufferedInputStream(new FileInputStream(file));
-        }
-        if (cacheBytes != null)
-          bis = new BufferedInputStream(new ByteArrayInputStream(cacheBytes));
-        if (checkOnly) {
-          bis.close();
-          bis = null;
-        }
-        return bis;
-      } catch (Exception e) {
-        try {
-          if (bis != null)
-            bis.close();
-        } catch (IOException e1) {
-        }
-        errorMessage = "" + e;
+    try {
+      FileAdapterInterface fai = apiPlatform.getFileAdapter();
+      if (cacheBytes == null && (isApplet || isURL)) {
+        if (isApplet && isURL && appletProxy != null)
+          name = appletProxy + "?url=" + fai.urlEncode(name);
+        URL url = (isApplet ? new URL(appletDocumentBase, name) : new URL(name));
+        name = url.toString();
+        if (showMsg && !checkOnly && name.toLowerCase().indexOf("password") < 0)
+          Logger.info("FileManager opening " + name);
+        ret = fai.getBufferedURLInputStream(url, outputBytes, post, checkOnly);
+      } else if (cacheBytes == null
+          && (cacheBytes = (byte[]) cacheGet(name, true)) == null) {
+        if (showMsg)
+          Logger.info("FileManager opening " + name);
+        ret = fai.getBufferedFileInputStream(name);
       }
+      if (ret instanceof String)
+        return ret;
+      if (cacheBytes == null)
+        bis = (BufferedInputStream) ret;
+      else
+        bis = new BufferedInputStream(new ByteArrayInputStream(cacheBytes));
+      if (checkOnly) {
+        bis.close();
+        bis = null;
+      }
+      return bis;
+    } catch (Exception e) {
+      try {
+        if (bis != null)
+          bis.close();
+      } catch (IOException e1) {
+      }
+      errorMessage = "" + e;
+    }
     return errorMessage;
   }
-
+  
   /**
    * just check for a file as being readable. Do not go into a zip file
    * 

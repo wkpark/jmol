@@ -40,7 +40,8 @@ public class Interface {
 
   public static Object getInterface(String name) {
     try {
-      return Class.forName(name).newInstance();
+      Class<?> x = Class.forName(name);
+      return (x == null ? null : x.newInstance());
     } catch (Exception e) {
       Logger.error("Interface.java Error creating instance for " + name + ": \n" + e.getMessage());
       return null;

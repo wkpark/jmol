@@ -3,25 +3,14 @@ package org.jmol.awt;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLEncoder;
 
 import org.jmol.api.FileAdapterInterface;
 
 public class FileAdapter implements FileAdapterInterface {
-
-  public String urlEncode(String name) {
-    try {
-      return URLEncoder.encode(name, "utf-8");
-    } catch (UnsupportedEncodingException e) {
-      return name;
-    }
-  }
 
   public Object getBufferedURLInputStream(URL url, byte[] outputBytes,
                                           String post, boolean checkOnly) {

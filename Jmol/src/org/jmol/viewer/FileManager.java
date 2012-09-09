@@ -42,6 +42,7 @@ import org.jmol.api.ApiPlatform;
 
 import java.net.URL;
 import java.net.MalformedURLException;
+import java.net.URLEncoder;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
@@ -437,7 +438,7 @@ public class FileManager {
       FileAdapterInterface fai = apiPlatform.getFileAdapter();
       if (cacheBytes == null && (isApplet || isURL)) {
         if (isApplet && isURL && appletProxy != null)
-          name = appletProxy + "?url=" + fai.urlEncode(name);
+          name = appletProxy + "?url=" + urlEncode(name);
         URL url = (isApplet ? new URL(appletDocumentBase, name) : new URL(name));
         name = url.toString();
         if (showMsg && !checkOnly && name.toLowerCase().indexOf("password") < 0)
@@ -471,6 +472,14 @@ public class FileManager {
     return errorMessage;
   }
   
+  private String urlEncode(String name) {
+    try {
+      return URLEncoder.encode(name, "utf-8");
+    } catch (UnsupportedEncodingException e) {
+      return name;
+    }
+  }
+
   /**
    * just check for a file as being readable. Do not go into a zip file
    * 

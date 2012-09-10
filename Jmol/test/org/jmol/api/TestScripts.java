@@ -11,7 +11,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JFrame;
 
@@ -196,7 +198,10 @@ class TestScriptsImpl extends TestCase {
    */
   public void runPerformanceTest() {
     JFrame frame = new JFrame();
-    Jmol jmol = Jmol.getJmol(frame, 500, 500, checkOnly ? "-c " : "");
+    Map<String, Object> viewerOptions = new Hashtable<String, Object>();
+    if (checkOnly)
+      viewerOptions.put("check", Boolean.TRUE);
+    Jmol jmol = Jmol.getJmol(frame, 500, 500, viewerOptions);
     JmolViewer viewer = jmol.viewer;
     long beginFull = Profiling.getTime();
     for (int i = 0; i < nbExecutions; i++) {

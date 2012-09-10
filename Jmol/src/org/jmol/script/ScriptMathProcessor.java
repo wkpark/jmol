@@ -3222,9 +3222,6 @@ class ScriptMathProcessor {
       switch (x1.tok) {
       default:
         float f1 = ScriptVariable.fValue(x1);
-        if (f2 == 0)
-          return addX(f1 == 0 ? 0f : f1 < 0 ? Float.POSITIVE_INFINITY
-              : Float.POSITIVE_INFINITY);
         return addX(f1 / f2);
       case Token.point3f:
         pt = new Point3f((Point3f) x1.value);

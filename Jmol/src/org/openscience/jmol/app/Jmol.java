@@ -24,6 +24,8 @@
 package org.openscience.jmol.app;
 
 import java.awt.Point;
+import java.util.Hashtable;
+import java.util.Map;
 
 import javax.swing.JFrame;
 
@@ -33,8 +35,8 @@ import org.openscience.jmol.app.jmolpanel.Splash;
 public class Jmol extends JmolPanel {
 
   public Jmol(JmolApp jmolApp, Splash splash, JFrame frame, Jmol parent, int startupWidth,
-      int startupHeight, String commandOptions, Point loc) {
-    super(jmolApp, splash, frame, parent, startupWidth, startupHeight, commandOptions, loc);
+      int startupHeight, Map<String, Object> viewerOptions, Point loc) {
+    super(jmolApp, splash, frame, parent, startupWidth, startupHeight, viewerOptions, loc);
   }
 
   public static void main(String[] args) {
@@ -43,11 +45,11 @@ public class Jmol extends JmolPanel {
   }
 
   public static Jmol getJmol(JFrame baseframe, 
-                             int width, int height, String commandOptions) {
+                             int width, int height, Map<String, Object> viewerOptions) {
     JmolApp jmolApp = new JmolApp(new String[] {});
     jmolApp.startupHeight = height;
     jmolApp.startupWidth = width;
-    jmolApp.commandOptions = commandOptions;
+    jmolApp.info = (viewerOptions == null ? new Hashtable<String, Object>() : viewerOptions);
     return getJmol(jmolApp, baseframe);
   }
   

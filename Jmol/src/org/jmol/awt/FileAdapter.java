@@ -9,6 +9,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import org.jmol.api.FileAdapterInterface;
+import org.jmol.api.JmolFileInterface;
 
 public class FileAdapter implements FileAdapterInterface {
 
@@ -43,6 +44,10 @@ public class FileAdapter implements FileAdapterInterface {
     } catch (IOException e) {
       return e.getMessage();
     }
+  }
+
+  public static JmolFileInterface newFile(String name) {
+    return new JmolFile(name);
   }
 
 }

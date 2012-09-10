@@ -31,13 +31,13 @@ package org.jmol;
  *  ran with: java -classpath `pwd`:/where/ever/jmol-10.2.0/Jmol.jar JmolExportExample
  * */
 
+import java.util.Hashtable;
 import java.util.Map;
 
 import javax.swing.JFrame;
 import javax.swing.JTextField;
 
 import org.jmol.api.JmolStatusListener;
-import org.jmol.api.JmolViewer;
 import org.jmol.constant.EnumCallback;
 import org.openscience.jmol.app.Jmol;
 
@@ -52,15 +52,13 @@ public class Export {
 
     // build Jmol
     JFrame baseframe = new JFrame();
-    Jmol jmol = Jmol.getJmol(baseframe,300, 300, "");
-    JmolViewer viewer = jmol.viewer;
-
     // build and register event listener (implementation of JmolStatusListener)
     // point "monitor"-variable in event listener to "monitor"
     MyStatusListener myStatusListener = new MyStatusListener();
     myStatusListener.monitor = monitor;
-    viewer.setJmolStatusListener(myStatusListener);
-
+    Map<String, Object> viewerOptions = new Hashtable<String, Object>();
+    viewerOptions.put("statusListener", myStatusListener);
+    Jmol.getJmol(baseframe, 300, 300, viewerOptions);
     // showing monitor frame on top of Jmol
     monitorFrame.setVisible(true);
   } 

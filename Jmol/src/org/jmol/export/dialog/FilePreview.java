@@ -31,17 +31,18 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.util.Map;
 
 import javax.swing.Box;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 
-import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.FileManager;
+import org.jmol.viewer.Viewer;
 
 /**
  * File previsualisation before opening
@@ -52,37 +53,42 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
   JFileChooser chooser;
   private static boolean pdbCartoonChecked = true;
   private FPPanel display;
+  JmolViewer viewer;
 
   /**
    * Constructor
-   * @param fileChooser File chooser
-   * @param modelAdapter Model adapter
-   * @param allowAppend 
-   * @param appletContext 
+   * 
+   * @param viewer
+   * @param fileChooser
+   *        File chooser
+   * @param allowAppend
+   * @param viewerOptions
    */
-  public FilePreview(JFileChooser fileChooser, JmolAdapter modelAdapter,
-      boolean allowAppend, String appletContext) {
+  public FilePreview(JmolViewer viewer, JFileChooser fileChooser, 
+      boolean allowAppend, Map<String, Object> viewerOptions) {
     super();
+    this.viewer = viewer;
     chooser = fileChooser;
 
     // Create a box to do the layout
     Box box = Box.createVerticalBox();
 
     // Add a checkbox to activate / deactivate preview
+    final JmolViewer v = viewer;
     active = new JCheckBox(GT._("Preview"), false);
     active.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         if (active.isSelected()) {
-          updatePreview(chooser.getSelectedFile());
+          updatePreview(v, chooser.getSelectedFile());
         } else {
-          updatePreview(null);
+          updatePreview(null, null);
         }
       }
     });
     box.add(active);
 
     // Add a preview area
-    display = new FPPanel(modelAdapter, appletContext);
+    display = new FPPanel(viewerOptions);
     display.setPreferredSize(new Dimension(80, 80));
     display.setMinimumSize(new Dimension(50, 50));
     box.add(display);
@@ -95,12 +101,12 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
       cartoons.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           if (active.isSelected()) {
-            updatePreview(chooser.getSelectedFile());
+            updatePreview(v, chooser.getSelectedFile());
           }
         }
       });
       box.add(cartoons);
-      
+
     }
 
     // Add the preview to the File Chooser
@@ -130,25 +136,27 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
     if (active.isSelected()) {
       String prop = evt.getPropertyName();
       if (JFileChooser.SELECTED_FILE_CHANGED_PROPERTY.equals(prop)) {
-        updatePreview((File) evt.getNewValue());
+        updatePreview(viewer, (File) evt.getNewValue());
       }
     }
   }
 
   /**
    * Update preview
+   * @param viewer 
    * 
    * @param file
    *        File selected
    */
-  void updatePreview(File file) {
+  void updatePreview(JmolViewer viewer, File file) {
     String script;
     if (file == null) {
       script = "zap";
     } else {
       String fileName = file.getAbsolutePath();
       //System.out.println("updatePreview "+ fileName + " " + chooser.getSelectedFile());
-      String url = FileManager.getLocalUrl(file);
+      String url = FileManager.getLocalUrl(viewer.apiPlatform
+          .newFile(fileName));
       //System.out.println("updatePreview + " + fileName + " " + url);
       if (url != null)
         fileName = url;
@@ -170,9 +178,12 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
   private static class FPPanel extends JPanel {
     JmolViewer viewer;
 
-    FPPanel(JmolAdapter modelAdapter, String appletContext) {
-      viewer = JmolViewer.allocateViewer(this, modelAdapter,
-          "", null, null, "#previewOnly " + appletContext, null);
+    FPPanel(Map<String, Object> info) {
+      info.put("previewOnly", Boolean.TRUE);
+      Object display = info.get("display");
+      info.put("display", this);
+      viewer = new Viewer(info);
+      info.put("display", display);
     }
 
     public JmolViewer getViewer() {

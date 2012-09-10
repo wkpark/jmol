@@ -28,6 +28,7 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.net.URL;
 import java.util.BitSet;
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
 import java.util.List;
@@ -48,10 +49,14 @@ import org.jmol.viewer.Viewer;
  *
  **/
 
-abstract public class JmolViewer extends JmolSimpleViewer {
+abstract public class JmolViewer {
 
   /**
-   * This is the main access point for creating an application or applet viewer.
+   * This is the older main access point for creating an application or applet viewer.
+   * 
+   * You can also use That is necessary when
+   * compiled into JavaScript using Java2Script
+   * 
    * In Jmol 11.6 it was manditory that one of the next commands is either
    * 
    * viewer.evalString("ZAP");
@@ -70,9 +75,9 @@ abstract public class JmolViewer extends JmolSimpleViewer {
    * Starting with Jmol 12.3.13, we allow for preconstructed ApiPlatform
    * 
    * 
-   * @param container
-   * @param jmolAdapter
-   * @param htmlName
+   * @param display
+   * @param modelAdapter
+   * @param fullName
    * @param documentBase
    * @param codeBase
    * @param commandOptions
@@ -80,40 +85,64 @@ abstract public class JmolViewer extends JmolSimpleViewer {
    * @param implementedPlatform
    * @return a JmolViewer object
    */
-  static public JmolViewer allocateViewer(Object container,
-                                          JmolAdapter jmolAdapter,
-                                          String htmlName, URL documentBase,
+  protected static JmolViewer allocateViewer(Object display,
+                                          JmolAdapter modelAdapter,
+                                          String fullName, URL documentBase,
                                           URL codeBase, String commandOptions,
                                           JmolStatusListener statusListener,
                                           ApiPlatform implementedPlatform) {
-
-    return Viewer.allocateViewer(container, jmolAdapter, htmlName,
-        documentBase, codeBase, commandOptions, statusListener,
-        implementedPlatform);
+    Map<String, Object> info = new Hashtable<String, Object>();
+    if (display != null)
+      info.put("display", display);
+    if (modelAdapter != null)
+      info.put("adapter", modelAdapter);
+    if (statusListener != null)
+      info.put("statusListener", statusListener);
+    if (implementedPlatform != null)
+      info.put("platform", implementedPlatform);
+    if (commandOptions != null)
+       info.put("options", commandOptions);
+    if (fullName != null)
+      info.put("fullName", fullName);
+    if (documentBase != null)
+      info.put("documentBase", documentBase);
+    if (codeBase != null)
+      info.put("codeBase", codeBase);    
+    return new Viewer(info);
   }
-
-  static public JmolViewer allocateViewer(Object container,
-                                          JmolAdapter jmolAdapter,
-                                          String htmlName, URL documentBase, 
-                                          URL codeBase,
-                                          String commandOptions, 
-                                          JmolStatusListener statusListener) {
-    
-    return Viewer.allocateViewer(container, jmolAdapter,
-        htmlName, documentBase, codeBase, commandOptions, statusListener, null);
-  }
-
+  
   /**
-   * default null htmlName, URL bases, comandOptions, and statusListener.
+   * a simpler option
    * 
    * @param container
    * @param jmolAdapter
-   * @return             a viewer
+   * @return JmolViewer object
    */
   public static JmolViewer allocateViewer(Object container, JmolAdapter jmolAdapter) {
-    return Viewer.allocateViewer(container, jmolAdapter, null, null, null, null, null, null);
+    return allocateViewer(container, jmolAdapter, null, null, null, null, null, null);
   }
   
+  /**
+   * legacy only
+   * 
+   * @param display
+   * @param modelAdapter
+   * @param fullName
+   * @param documentBase
+   * @param codeBase
+   * @param commandOptions
+   * @param statusListener
+   * @return JmolViewer object
+   */
+  public static JmolViewer allocateViewer(Object display,
+                                          JmolAdapter modelAdapter,
+                                          String fullName, URL documentBase,
+                                          URL codeBase, String commandOptions,
+                                          JmolStatusListener statusListener) {
+    return allocateViewer(display, modelAdapter, fullName, documentBase,
+        codeBase, commandOptions, statusListener, null);
+  }
+
   /**
    * sets a custom console -- should be called IMMEDIATELY following allocateViewer
    * 
@@ -528,6 +557,15 @@ abstract public class JmolViewer extends JmolSimpleViewer {
     handleOldJvm10Event(id, x, y, modifiers, when);
   }
 
+  public ApiPlatform apiPlatform; // used in Viewer and JmolViewer
+
+  private FileAdapterInterface fileAdapter;
+
+  public FileAdapterInterface getFileAdapter() {
+    return (fileAdapter == null ? fileAdapter = apiPlatform.getFileAdapter()
+        : fileAdapter);
+  }
+
   /**
    * old -- not used in 12.2
    * 
@@ -549,6 +587,36 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   }
 
   abstract public void cacheFile(String fileName, byte[] bytes);
+
+  abstract public void renderScreenImage(Object g, int width, int height);
+  abstract public String evalFile(String strFilename);
+  abstract public String evalString(String strScript);
+
+  abstract public String openStringInline(String strModel);
+  abstract public String openDOM(Object DOMNode);
+  abstract public String openFile(String fileName);
+  abstract public String openFiles(String[] fileNames);
+  // File reading now returns the error directly.
+  // The following was NOT what you think it was:
+  //   abstract public String getOpenFileError();
+  // Somewhere way back when, "openFile" became a method that did not create
+  // the model set, but just an intermediary AtomSetCollection called the "clientFile"
+  // (and did not necessarily close the file)
+  // then "getOpenFileError()" actually created the model set, deallocated the file open thread,
+  // and closed the file.
+  //
+  // For Jmol 11.7.14, the openXXX methods in this interface do everything --
+  // open the file, create the intermediary atomSetCollection, close the file,
+  // deallocate the file open thread, create the ModelSet, and return any error message.
+  // so there is no longer any need for getOpenFileError().
   
+  /**
+   * @param returnType "JSON", "string", "readable", and anything else returns the Java object.
+   * @param infoType 
+   * @param paramInfo  
+   * @return            property data -- see org.jmol.viewer.PropertyManager.java
+   */
+  abstract public Object getProperty(String returnType, String infoType, Object paramInfo);
+
 }
 

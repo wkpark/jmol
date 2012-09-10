@@ -27,6 +27,8 @@ import java.awt.Dimension;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 import java.io.File;
+import java.util.Hashtable;
+import java.util.Map;
 import java.util.Scanner;
 
 import org.jmol.export.history.HistoryFile;
@@ -58,32 +60,21 @@ public class JmolApp {
   public File userPropsFile;
   public HistoryFile historyFile;
 
-  public String menuFile;
-  
-  public boolean splashEnabled = true;
-  public boolean useIndependentCommandThread;
-  public boolean transparentBackground;
-  public boolean checkScriptNoFiles;
-  public boolean checkScriptAndOpenFiles;
-  public boolean exitUponCompletion;
-
   public boolean haveConsole = true;
   public boolean haveDisplay = true;
+  public boolean splashEnabled = true;
   public boolean isDataOnly;
   public boolean isKiosk;
   public boolean isPrintOnly;
   public boolean isSilent;
-  public String commandOptions = "";
+  public Map<String, Object>info = new Hashtable<String, Object>();
   public Point jmolPosition;
   
-  private boolean listCommands;  
   private String modelFilename;
   private String scriptFilename;
   private String script1 = "";
   private String script2 = "";
-  private boolean doExit;
-  private Object headlessWriteCmd;
-  private int headlessMaxTimeSec = 60;
+
   
   //private JmolViewer viewer;
   //private JmolAdapter modelAdapter;
@@ -286,23 +277,19 @@ public class JmolApp {
     // invoked with just new JmolApp(), we can 
     // set options ourselves. 
     
-    commandOptions = (isDataOnly ? "JmolData " : "Jmol ");
+    info.put(isDataOnly ? "JmolData" : "Jmol", Boolean.TRUE);
 
     // kiosk mode -- no frame
     
     if (line.hasOption("k"))
-      isKiosk = true;
-    if (isKiosk) {
-      commandOptions += "-k";
-    }
+      info.put("isKiosk", Boolean.valueOf(isKiosk = true));
 
     // port for JSON mode communication
     
     if (line.hasOption("P"))
       port =  Parser.parseInt(line.getOptionValue("P"));
-    if (port > 0) {
-      commandOptions += "-P";
-    }
+    if (port > 0)
+      info.put("port", Integer.valueOf(port));
 
 
     // print command output only (implies silent)
@@ -310,7 +297,7 @@ public class JmolApp {
     if (line.hasOption("p"))
       isPrintOnly = true;
     if (isPrintOnly) {
-      commandOptions += "-p";
+      info.put("printOnly", Boolean.TRUE);
       isSilent = true;
     }
 
@@ -318,84 +305,63 @@ public class JmolApp {
     if (line.hasOption("i"))
       isSilent = true;
     if (isSilent)
-      commandOptions += "-i";
+      info.put("silent", Boolean.TRUE);
 
     // output to sysout
     if (line.hasOption("o"))
       haveConsole = false;
-    if (!haveConsole)
-      commandOptions += "-o";
+    if (!haveConsole) // might also be set in JmolData
+      info.put("noConsole", Boolean.TRUE);
 
     // transparent background
     if (line.hasOption("b"))
-      transparentBackground = true;
-    if (transparentBackground)
-      commandOptions += "-b";
+      info.put("transparentBackground", Boolean.TRUE);
 
     // restricted file access
     if (line.hasOption("R"))
-      commandOptions += "-R";
+      info.put("access:NONE", Boolean.TRUE);
     
     // restricted file access (allow reading of SPT files)
     if (line.hasOption("r"))
-      commandOptions += "-r";
+      info.put("access:READSPT", Boolean.TRUE);
     
     // independent command thread
     if (line.hasOption("t"))
-      useIndependentCommandThread = true;
-    if (useIndependentCommandThread)
-      commandOptions += "-t";
+      info.put("useCommandThread", Boolean.TRUE);
 
     // list commands during script operation
     if (line.hasOption("l"))
-      listCommands = true;
-    if (listCommands)
-      commandOptions += "-l";
+      info.put("listCommands", Boolean.TRUE);
 
     // no splash screen
     if (line.hasOption("L"))
-      splashEnabled = false;
-    if (!splashEnabled)
-      commandOptions += "-L";
+      splashEnabled  = false;
 
     // check script only -- don't open files
     if (line.hasOption("c"))
-      checkScriptNoFiles = true;
-    else if (line.hasOption("C"))
-      checkScriptAndOpenFiles = true;
-    
-    if (checkScriptNoFiles)
-      commandOptions += "-c";
-    else if (checkScriptAndOpenFiles)
-      commandOptions += "-c";
-      
+      info.put("check", Boolean.TRUE);
+    if (line.hasOption("C"))
+      info.put("checkLoad", Boolean.TRUE);
+
     // menu file
     if (line.hasOption("m"))
-      menuFile = line.getOptionValue("m");
-
-    // headless max time
-    if (line.hasOption("T"))
-      headlessMaxTimeSec = Parser.parseInt(line.getOptionValue("T"));
+      info.put("menuFile", line.getOptionValue("m"));
 
     // run pre Jmol script
-    if (line.hasOption("J")) {
-      commandOptions += "-J";
+    if (line.hasOption("J"))
       script1 = line.getOptionValue("J");
-    }
 
     // use SparshUI
     if (line.hasOption("M"))
-      commandOptions += "-multitouch-" + line.getOptionValue("M");
+      info.put("multitouch", line.getOptionValue("M"));
 
     // run script from file
     if (line.hasOption("s")) {
-      commandOptions += "-s";
       scriptFilename = line.getOptionValue("s");
     }
 
     // run post Jmol script
     if (line.hasOption("j")) {
-      commandOptions += "-j";
       script2 = line.getOptionValue("j");
     }
 
@@ -471,24 +437,27 @@ public class JmolApp {
           type.substring(0, type.indexOf(" "));
         }
         if (GraphicsEnvironment.isHeadless()) {
-          headlessWriteCmd = new Object[] { 
+          info.put("headlessImage", new Object[] { 
               type_name, 
               type, 
               Integer.valueOf(quality),
               Integer.valueOf(width),
-              Integer.valueOf(height) };
+              Integer.valueOf(height) });
 
         }
         else
           script2 += ";write image " + width + " " + height + " " + type + " " + quality + " " + Escape.escape(type_name);
       }
     }
+    if (GraphicsEnvironment.isHeadless())
+        info.put("headlistMaxTimeMs", Integer.valueOf(1000 * (line.hasOption("T") ? Parser.parseInt(line.getOptionValue("T")) : 60)));
 
     // the next two are coupled -- if the -n command line option is 
     // given, then the -x is added, but not vice-versa. 
     // however, if this is an application-embedded object, then
     // it is ok to have no display and no exit.
     
+    boolean exitUponCompletion = false;
     if (line.hasOption("n")) {
        // no display (and exit)
       haveDisplay = false;
@@ -499,10 +468,10 @@ public class JmolApp {
       exitUponCompletion = true;
 
     if (!haveDisplay)
-      commandOptions += "-n";
+      info.put("noDisplay", Boolean.TRUE);
     if (exitUponCompletion) {
-      commandOptions += "-x";
-      script2 += ";exitJmol // " + commandOptions;
+      info.put("exit", Boolean.TRUE);
+      script2 += ";exitJmol;";
     }
     
   }
@@ -514,13 +483,6 @@ public class JmolApp {
       t.printStackTrace();
     }
     
-    if (GraphicsEnvironment.isHeadless()) {
-      // 60-second timeout for exit
-      viewer.getProperty("DATA_API", "headlessMaxTime", Integer.valueOf(headlessMaxTimeSec  * 1000));
-      if (headlessWriteCmd != null) {
-        viewer.getProperty("DATA_API", "headlessImage", headlessWriteCmd);
-      }    
-    }
     // Open a file if one is given as an argument -- note, this CAN be a
     // script file
     if (modelFilename != null) {
@@ -571,8 +533,6 @@ public class JmolApp {
         splash.showStatus(GT._("Executing script 2..."));
       runScript(script2, isJmolData, viewer);
     }    
-    if (doExit)
-      System.exit(0);
   }
 
   private void runScript(String script, boolean outputResults, JmolViewer viewer) {

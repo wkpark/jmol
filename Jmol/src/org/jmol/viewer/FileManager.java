@@ -36,6 +36,7 @@ import org.jmol.util.ZipUtil;
 import org.jmol.viewer.Viewer.ACCESS;
 
 import org.jmol.api.FileAdapterInterface;
+import org.jmol.api.JmolFileInterface;
 import org.jmol.api.JmolFilesReaderInterface;
 import org.jmol.api.JmolViewer;
 import org.jmol.api.ApiPlatform;
@@ -49,7 +50,6 @@ import java.io.FileOutputStream;
 import java.io.BufferedInputStream;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -126,20 +126,19 @@ public class FileManager {
   }
 
   // for applet proxy
-  private URL appletDocumentBase = null;
-  private URL appletCodeBase = null; //unused currently
+  private URL appletDocumentBaseURL = null;
   private String appletProxy;
 
   String getAppletDocumentBase() {
-    return (appletDocumentBase == null ? "" : appletDocumentBase.toString());
+    return (appletDocumentBaseURL == null ? "" : appletDocumentBaseURL.toString());
   }
 
-  void setAppletContext(URL documentBase, URL codeBase, String jmolAppletProxy) {
-    appletDocumentBase = documentBase;
-    appletCodeBase = codeBase;
-    appletProxy = jmolAppletProxy;
-    Logger.info("appletDocumentBase=" + appletDocumentBase
-        + "\nappletCodeBase=" + appletCodeBase);
+  void setAppletContext(String documentBase) {
+    try {
+      appletDocumentBaseURL = (documentBase.length() == 0 ? null : new URL(documentBase));
+    } catch (MalformedURLException e) {
+      // never mind
+    }
   }
 
   void setAppletProxy(String appletProxy) {
@@ -429,17 +428,16 @@ public class FileManager {
       post = name.substring(iurl + 6);
       name = name.substring(0, iurl);
     }
-    boolean isApplet = (appletDocumentBase != null);
+    boolean isApplet = (appletDocumentBaseURL != null);
     BufferedInputStream bis = null;
-    ApiPlatform apiPlatform = viewer.getApiPlatform();
     Object ret = null;
     // int length;
     try {
-      FileAdapterInterface fai = apiPlatform.getFileAdapter();
+      FileAdapterInterface fai = viewer.getFileAdapter();
       if (cacheBytes == null && (isApplet || isURL)) {
         if (isApplet && isURL && appletProxy != null)
           name = appletProxy + "?url=" + urlEncode(name);
-        URL url = (isApplet ? new URL(appletDocumentBase, name) : new URL(name));
+        URL url = (isApplet ? new URL(appletDocumentBaseURL, name) : new URL(name));
         name = url.toString();
         if (showMsg && !checkOnly && name.toLowerCase().indexOf("password") < 0)
           Logger.info("FileManager opening " + name);
@@ -921,7 +919,7 @@ public class FileManager {
       return null;
     }
     Object image = null;
-    ApiPlatform apiPlatform = viewer.getApiPlatform();
+    ApiPlatform apiPlatform = viewer.apiPlatform;
     String fullPathName = names[0].replace('\\', '/');
     if (fullPathName.indexOf("|") > 0) {
       Object ret = getFileAsBytes(fullPathName, null, true);
@@ -975,7 +973,7 @@ public class FileManager {
   private final static String[] urlPrefixes = { "http:", "https:", "ftp:",
       "file:" };
 
-  private static int urlTypeIndex(String name) {
+  public static int urlTypeIndex(String name) {
     for (int i = 0; i < urlPrefixes.length; ++i) {
       if (name.startsWith(urlPrefixes[i])) {
         return i;
@@ -999,7 +997,7 @@ public class FileManager {
          return new String[] { isFullLoad ? "#CANCELED#" : null };
        doSetPathForAllFiles = false;
     }
-    File file = null;
+    JmolFileInterface file = null;
     URL url = null;
     String[] names = null;
     if (name.startsWith("cache://")) {
@@ -1011,14 +1009,14 @@ public class FileManager {
     name = viewer.resolveDatabaseFormat(name);
     if (name.indexOf(":") < 0 && name.indexOf("/") != 0)
       name = addDirectory(viewer.getDefaultDirectory(), name);
-    if (appletDocumentBase != null) {
+    if (appletDocumentBaseURL != null) {
       // This code is only for the applet
       try {
         if (name.indexOf(":\\") == 1 || name.indexOf(":/") == 1)
           name = "file:/" + name;
         //        else if (name.indexOf("/") == 0 && viewer.isSignedApplet())
         //        name = "file:" + name;
-        url = new URL(appletDocumentBase, name);
+        url = new URL(appletDocumentBaseURL, name);
       } catch (MalformedURLException e) {
         return new String[] { isFullLoad ? e.getMessage() : null };
       }
@@ -1034,7 +1032,7 @@ public class FileManager {
           return new String[] { isFullLoad ? e.getMessage() : null };
         }
       } else {
-        file = new File(name);
+        file = viewer.apiPlatform.newFile(name);
         names = new String[] { file.getAbsolutePath(), file.getName(),
             "file:/" + file.getAbsolutePath().replace('\\', '/') };
       }
@@ -1120,7 +1118,7 @@ public class FileManager {
       "http://www.", "https:", "https://", "ftp:", "ftp://", "file:",
       "file:///" };
 
-  public static String getLocalUrl(File file) {
+  public static String getLocalUrl(JmolFileInterface file) {
     // entering a url on a file input box will be accepted,
     // but cause an error later. We can fix that...
     // return null if there is no problem, the real url if there is
@@ -1139,18 +1137,18 @@ public class FileManager {
     return null;
   }
 
-  public static File getLocalDirectory(JmolViewer viewer, boolean forDialog) {
+  public static JmolFileInterface getLocalDirectory(JmolViewer viewer, boolean forDialog) {
     String localDir = (String) viewer
         .getParameter(forDialog ? "currentLocalPath" : "defaultDirectoryLocal");
     if (forDialog && localDir.length() == 0)
       localDir = (String) viewer.getParameter("defaultDirectoryLocal");
     if (localDir.length() == 0)
-      return (viewer.isApplet() ? null : new File(System
+      return (viewer.isApplet() ? null : viewer.apiPlatform.newFile(System
           .getProperty("user.dir", ".")));
     if (viewer.isApplet() && localDir.indexOf("file:/") == 0)
       localDir = localDir.substring(6);
-    File f = new File(localDir);
-    return f.isDirectory() ? f : f.getParentFile();
+    JmolFileInterface f = viewer.apiPlatform.newFile(localDir);
+    return f.isDirectory() ? f : f.getParentAsFile();
   }
 
   /**
@@ -1189,7 +1187,7 @@ public class FileManager {
       return file.substring(6);
     if (file.indexOf("/") == 0 || file.indexOf(":") >= 0)
       return file;
-    File dir = getLocalDirectory(viewer, false);
+    JmolFileInterface dir = getLocalDirectory(viewer, false);
     return (dir == null ? file : fixPath(dir.toString() + "/" + file));
   }
 
@@ -1488,7 +1486,7 @@ public class FileManager {
           return ret;
         msg += " " + ret;
       } else {
-        File f = new File(outFileName);
+        JmolFileInterface f = viewer.apiPlatform.newFile(outFileName);
         fullFilePath = f.getAbsolutePath().replace('\\', '/');
         nBytes = f.length();
       }
@@ -1529,7 +1527,7 @@ public class FileManager {
     }
 
     void run() {
-      htParams.put("nameSpaceInfo", viewer.getApiPlatform().getJsObjectInfo(aDOMNode, null, null));
+      htParams.put("nameSpaceInfo", viewer.apiPlatform.getJsObjectInfo(aDOMNode, null, null));
       atomSetCollection = viewer.getModelAdapter().getAtomSetCollectionFromDOM(
           aDOMNode, htParams);
       if (atomSetCollection instanceof String)

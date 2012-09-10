@@ -41,6 +41,7 @@ import org.openscience.jmol.app.surfacetool.SurfaceTool;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.Viewer;
 import org.openscience.jmol.app.Jmol;
 import org.openscience.jmol.app.JmolApp;
 import org.openscience.jmol.app.SplashInterface;
@@ -149,6 +150,8 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
   private PasteClipboardAction pasteClipboardAction = new PasteClipboardAction();
   private ViewMeasurementTableAction viewMeasurementTableAction = new ViewMeasurementTableAction();
 
+  private Map<String, Object> viewerOptions;
+
   private static int numWindows = 0;
   private static KioskFrame kioskFrame;
   private static BannerFrame bannerFrame;
@@ -195,7 +198,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
   public JmolPanel(JmolApp jmolApp, Splash splash, JFrame frame,
       JmolPanel parent, int startupWidth, int startupHeight,
-      String commandOptions, Point loc) {
+      Map<String, Object> viewerOptions, Point loc) {
     super(true);
     this.jmolApp = jmolApp;
     this.frame = frame;
@@ -243,9 +246,13 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
      * 
      */
     display = new DisplayPanel(this);
+    viewerOptions.put("display", display);
     myStatusListener = new StatusListener(this, display);
-    viewer = JmolViewer.allocateViewer(display, modelAdapter, null, null, null,
-        appletContext = commandOptions, myStatusListener);
+    viewerOptions.put("statusListener", myStatusListener);
+    if (modelAdapter != null)
+      viewerOptions.put("modelAdapter", modelAdapter);
+    this.viewerOptions = viewerOptions;
+    viewer = new Viewer(viewerOptions);
     display.setViewer(viewer);
     myStatusListener.setViewer(viewer);
 
@@ -305,11 +312,6 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
     say(GT._("Starting display..."));
     display.start();
-
-    if (jmolApp.menuFile != null) {
-      viewer.getProperty("DATA_API", "setMenu", viewer
-          .getFileAsString(jmolApp.menuFile));
-    }
 
     if (jmolApp.isKiosk) {
       bannerFrame = new BannerFrame(jmolApp.startupWidth, 75);
@@ -500,14 +502,12 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
   public static Jmol getJmol(JmolApp jmolApp, JFrame frame) {
 
-    String commandOptions = jmolApp.commandOptions;
     Splash splash = null;
     if (jmolApp.haveDisplay && jmolApp.splashEnabled) {
       ImageIcon splash_image = JmolResourceHandler.getIconX("splash");
       if (!jmolApp.isSilent)
         Logger.info("splash_image=" + splash_image);
-      splash = new Splash((commandOptions != null
-          && commandOptions.indexOf("-L") >= 0 ? null : frame), splash_image);
+      splash = new Splash(frame, splash_image);
       splash.setCursor(new Cursor(Cursor.WAIT_CURSOR));
       splash.showStatus(GT._("Creating main window..."));
       splash.showStatus(GT._("Initializing Swing..."));
@@ -524,7 +524,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       splash.showStatus(GT._("Initializing Jmol..."));
 
     Jmol window = new Jmol(jmolApp, splash, frame, null, jmolApp.startupWidth,
-        jmolApp.startupHeight, commandOptions, null);
+        jmolApp.startupHeight, jmolApp.info, null);
     if (jmolApp.haveDisplay)
       frame.setVisible(true);
     return window;
@@ -1063,7 +1063,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
     public void actionPerformed(ActionEvent e) {
       JFrame newFrame = new JFrame();
-      new Jmol(jmolApp, null, newFrame, (Jmol) JmolPanel.this, startupWidth, startupHeight, "", null);
+      new Jmol(jmolApp, null, newFrame, (Jmol) JmolPanel.this, startupWidth, startupHeight, null, null);
       newFrame.setVisible(true);
     }
 
@@ -1443,7 +1443,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
   }
 
   void openFile() {
-    String fileName = (new Dialog()).getOpenFileNameFromDialog(appletContext,
+    String fileName = (new Dialog()).getOpenFileNameFromDialog(viewerOptions,
         viewer, null, historyFile, FILE_OPEN_WINDOW_NAME, true);
     if (fileName == null)
       return;

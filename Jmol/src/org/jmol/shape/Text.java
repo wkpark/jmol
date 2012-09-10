@@ -151,8 +151,8 @@ public class Text extends Object2d {
   protected void recalc() {
     if (image != null) {
       textWidth = textHeight = 0;
-      boxWidth = viewer.getApiPlatform().getImageWidth(image) * fontScale * imageScale;
-      boxHeight = viewer.getApiPlatform().getImageHeight(image) * fontScale * imageScale;
+      boxWidth = viewer.apiPlatform.getImageWidth(image) * fontScale * imageScale;
+      boxHeight = viewer.apiPlatform.getImageHeight(image) * fontScale * imageScale;
       ascent = 0;
       return;
     }

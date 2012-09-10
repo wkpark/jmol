@@ -34,6 +34,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
+import org.jmol.api.JmolMouseInterface;
 import org.jmol.export.image.ImageCreator;
 import org.jmol.script.Token;
 import org.jmol.util.Escape;
@@ -52,7 +53,7 @@ import org.jmol.viewer.binding.Binding;
  */
 
 class Mouse implements MouseWheelListener, MouseListener,
-    MouseMotionListener, KeyListener {
+    MouseMotionListener, KeyListener, JmolMouseInterface {
 
   private Viewer viewer;
   private ActionManager actionManager;
@@ -67,11 +68,11 @@ class Mouse implements MouseWheelListener, MouseListener,
     display.addMouseWheelListener(this);
   }
 
-  void clear() {
+  public void clear() {
     // nothing to do here now -- see ActionManager
   }
 
-  void dispose() {
+  public void dispose() {
     Component display = (Component) viewer.getDisplay();
     actionManager.dispose();
     display.removeMouseListener(this);
@@ -80,7 +81,7 @@ class Mouse implements MouseWheelListener, MouseListener,
     display.removeKeyListener(this);
   }
 
-  boolean handleOldJvm10Event(int id, int x, int y, int modifiers, long time) {
+  public boolean handleOldJvm10Event(int id, int x, int y, int modifiers, long time) {
     modifiers = applyLeftMouse(modifiers);
     switch (id) {
     case Event.MOUSE_DOWN:

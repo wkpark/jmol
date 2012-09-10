@@ -8,6 +8,8 @@ import netscape.javascript.JSObject;
 
 import org.jmol.api.ApiPlatform;
 import org.jmol.api.Interface;
+import org.jmol.api.JmolFileInterface;
+import org.jmol.api.JmolMouseInterface;
 import org.jmol.api.JmolPopupInterface;
 import org.jmol.api.JmolViewer;
 import org.jmol.api.FileAdapterInterface;
@@ -16,8 +18,6 @@ import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.Viewer;
 
 public class Platform implements ApiPlatform {
-
-  private Mouse mouse;
 
   public void setViewer(JmolViewer viewer, Object display) {
     // ignored
@@ -77,24 +77,14 @@ public class Platform implements ApiPlatform {
     Display.setCursor(c, display);
   }
 
+  public FileAdapterInterface getFileAdapter() {
+    return new FileAdapter();
+  }
+
   ////// Mouse
 
-  public void getMouseManager(Viewer viewer, ActionManager actionManager) {
-    mouse = new Mouse(viewer, actionManager);
-  }
-
-  public boolean handleOldJvm10Event(int id, int x, int y, int modifiers,
-                                     long time) {
-    return mouse.handleOldJvm10Event(id, x, y, modifiers, time);
-  }
-
-  public void clearMouse() {
-    mouse.clear();
-  }
-
-  public void disposeMouse() {
-    mouse.dispose();
-    mouse = null;
+  public JmolMouseInterface getMouseManager(Viewer viewer, ActionManager actionManager) {
+    return new Mouse(viewer, actionManager);
   }
 
   ////// Image 
@@ -207,9 +197,8 @@ public class Platform implements ApiPlatform {
     return GraphicsEnvironment.isHeadless();
   }
 
-  private FileAdapter fileAdapter;
-  public FileAdapterInterface getFileAdapter() {
-    return (fileAdapter == null ? fileAdapter = new FileAdapter() : fileAdapter);
+  public JmolFileInterface newFile(String name) {
+    return FileAdapter.newFile(name);
   }
 
 }

@@ -26,7 +26,7 @@
 package org.jmol.util;
 
 
-import java.text.DecimalFormat;
+//import java.text.DecimalFormat;
 import java.util.List;
 
 import javax.vecmath.Point3f;
@@ -35,10 +35,14 @@ import javax.vecmath.Point4f;
 
 public class TextFormat {
 
-  private final static DecimalFormat[] formatters = new DecimalFormat[10];
+//  private final static DecimalFormat[] formatters = new DecimalFormat[10];
 
   private final static String[] formattingStrings = { "0", "0.0", "0.00", "0.000",
       "0.0000", "0.00000", "0.000000", "0.0000000", "0.00000000", "0.000000000" };
+  private final static String zeros = "0000000000000000000000000000000000000000";
+
+  private final static float[] formatAdds = { 0.5f, 0.05f, 0.005f, 0.0005f,
+    0.00005f, 0.000005f, 0.0000005f, 0.00000005f, 0.000000005f, 0.0000000005f };
 
   private final static Boolean[] useNumberLocalization = new Boolean[1];
   {
@@ -49,9 +53,19 @@ public class TextFormat {
     useNumberLocalization[0] = (TF ? Boolean.TRUE : Boolean.FALSE);
   }
 
+  /**
+   * a simple alternative to DecimalFormat (which Java2Script does not have
+   * and which is quite too complex for our use here.
+   * 
+   * @param value
+   * @param decimalDigits
+   * @return  formatted decimal
+   */
   public static String formatDecimal(float value, int decimalDigits) {
-    if (decimalDigits == Integer.MAX_VALUE)
+    if (decimalDigits == Integer.MAX_VALUE 
+        || value == Float.NEGATIVE_INFINITY || value == Float.POSITIVE_INFINITY || Float.isNaN(value))
       return "" + value;
+    int n;
     if (decimalDigits < 0) {
       decimalDigits = -decimalDigits;
       if (decimalDigits > formattingStrings.length)
@@ -59,7 +73,7 @@ public class TextFormat {
       if (value == 0)
         return formattingStrings[decimalDigits] + "E+0";
       //scientific notation
-      int n = 0;
+      n = 0;
       double d;
       if (Math.abs(value) < 1) {
         n = 10;
@@ -78,12 +92,63 @@ public class TextFormat {
 
     if (decimalDigits >= formattingStrings.length)
       decimalDigits = formattingStrings.length - 1;
-    DecimalFormat formatter = formatters[decimalDigits];
-    if (formatter == null)
-      formatter = formatters[decimalDigits] = new DecimalFormat(
-          formattingStrings[decimalDigits]);
-    String s = formatter.format(value);
-    return (Boolean.TRUE.equals(useNumberLocalization[0]) ? s : s.replace(',','.'));
+//    DecimalFormat formatter = formatters[decimalDigits];
+//    if (formatter == null)
+//      formatter = formatters[decimalDigits] = new DecimalFormat(
+//          formattingStrings[decimalDigits]);
+//    String s = formatter.format(value);
+
+    String s1 = ("" + value).toUpperCase();
+    boolean isNeg = s1.startsWith("-");
+    if (isNeg)
+      s1 = s1.substring(1);
+    int pt = s1.indexOf(".");
+    if (pt < 0)
+      return s1 + formattingStrings[decimalDigits].substring(1);
+    int pt1 = s1.indexOf("E-");
+    if (pt1 > 0) {
+      n = Parser.parseInt(s1.substring(pt1 + 1));
+      // 3.567E-2
+      // 0.03567
+      s1 = "0." + zeros.substring(0, -n - 1) + s1.substring(0, 1) + s1.substring(2, pt1);
+      pt = 1; 
+    }
+
+    pt1 = s1.indexOf("E");
+    // 3.5678E+3
+    // 3567.800000000
+    // 1.234E10 %3.8f -> 12340000000.00000000
+    if (pt1 > 0) {
+      n = Parser.parseInt(s1.substring(pt1 + 1));
+      s1 = s1.substring(0, 1) + s1.substring(2, pt1) + zeros;
+      s1 = s1.substring(0, n + 1) + "." + s1.substring(n + 1);
+      pt = s1.indexOf(".");
+    } 
+    // "234.345667  len == 10; pt = 3
+    // "  0.0 "  decimalDigits = 1
+    
+    int len = s1.length();
+    int pt2 = decimalDigits + pt + 1;
+    if (pt2 < len && s1.charAt(pt2) >= '5') {
+//      System.out.print(value + " " + s1 + "/" + s + " ");
+      return formatDecimal(
+          value + (isNeg ? -1 : 1) * formatAdds[decimalDigits], decimalDigits);
+    }
+
+    StringBuffer sb = new StringBuffer(s1.substring(0, (decimalDigits == 0 ? pt
+        : ++pt)));
+    for (int i = 0; i < decimalDigits; i++, pt++) {
+      if (pt < len)
+        sb.append(s1.charAt(pt));
+      else
+        sb.append('0');
+    }
+    s1 = (isNeg ? "-" : "") + sb;
+//    System.out.print(value + " " + s1 + "/");
+//    System.out.println(s);
+
+    return (Boolean.TRUE.equals(useNumberLocalization[0]) ? s1 : s1.replace(',',
+        '.'));
   }
 
   public static String format(float value, int width, int precision,

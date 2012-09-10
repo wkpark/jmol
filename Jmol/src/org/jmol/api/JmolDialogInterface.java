@@ -1,5 +1,7 @@
 package org.jmol.api;
 
+import java.util.Map;
+
 import org.jmol.viewer.Viewer;
 
 public interface JmolDialogInterface {
@@ -18,7 +20,7 @@ public interface JmolDialogInterface {
    */
   public abstract int getQuality(String sType);
 
-  public abstract String getOpenFileNameFromDialog(String appletContext,
+  public abstract String getOpenFileNameFromDialog(Map<String, Object> viewerOptions,
                                                    JmolViewer viewer,
                                                    String fileName,
                                                    Object historyFile,

@@ -47,7 +47,7 @@ public abstract class JmolMultiTouchClientAdapter implements JmolMultiTouchAdapt
                               boolean isSimulation) {
     this.viewer = viewer;
     actionManager = client; // ActionManagerMT
-    viewer.getApiPlatform().getFullScreenDimensions(viewer.getDisplay(), screen);
+    viewer.apiPlatform.getFullScreenDimensions(viewer.getDisplay(), screen);
     if (Logger.debugging)
       Logger.info("screen resolution: " + screen[0] + " x " + screen[1]);
     return true;
@@ -62,6 +62,6 @@ public abstract class JmolMultiTouchClientAdapter implements JmolMultiTouchAdapt
   protected void fixXY(float x, float y, boolean isAbsolute) {
     ptTemp.set(x * screen[0], y * screen[1], Float.NaN);
     if (isAbsolute)
-      viewer.getApiPlatform().convertPointFromScreen(viewer.getDisplay(), ptTemp);
+      viewer.apiPlatform.convertPointFromScreen(viewer.getDisplay(), ptTemp);
   }
 } 

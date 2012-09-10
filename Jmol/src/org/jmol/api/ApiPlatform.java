@@ -32,13 +32,7 @@ public interface ApiPlatform {
 
   ////  Mouse 
 
-  void clearMouse();
-
-  void disposeMouse();
-
-  void getMouseManager(Viewer viewer, ActionManager actionManager);
-
-  boolean handleOldJvm10Event(int id, int x, int y, int modifiers, long time);
+  JmolMouseInterface getMouseManager(Viewer viewer, ActionManager actionManager);
 
   ///// Font
   
@@ -128,5 +122,7 @@ public interface ApiPlatform {
   Object getJsObjectInfo(Object jsObject, String method, Object[] args);
 
   FileAdapterInterface getFileAdapter();
+
+  JmolFileInterface newFile(String name);
 
 }

@@ -24,7 +24,9 @@
 package org.openscience.jmol.app;
 
 import org.jmol.api.JmolViewer;
+import org.jmol.util.Escape;
 import org.jmol.util.TextFormat;
+import org.jmol.viewer.Viewer;
 
 public class JmolData {
   
@@ -43,25 +45,17 @@ public class JmolData {
   
   public static JmolData getJmol(int width, int height, String commandOptions) {
     JmolApp jmolApp = new JmolApp();
-    //jmolApp.haveDisplay = false;
     jmolApp.startupHeight = height;
     jmolApp.startupWidth = width;
+    jmolApp.haveConsole = false;
     jmolApp.isDataOnly = true;
-    jmolApp.exitUponCompletion = true;
+    //jmolApp.info.put("exit", Boolean.TRUE);
 
     String[] args = TextFormat.split(commandOptions, ' '); // doesn't allow for double-quoted 
     jmolApp.parseCommandLine(args);
     return new JmolData(jmolApp);
   }
 
-  public JmolData(JmolApp jmolApp) {
-    this.jmolApp = jmolApp;
-    viewer = JmolViewer.allocateViewer(null, null, 
-        null, null, null, jmolApp.commandOptions, null);
-    viewer.setScreenDimension(jmolApp.startupWidth, jmolApp.startupHeight);
-    jmolApp.startViewer(viewer, null, true);
-  }
-  
   public static void main(String[] args) {
     // note that -o-x are implied, but -n is not. 
     // in this case -n means "no GRAPHICS" for speed
@@ -69,14 +63,21 @@ public class JmolData {
     jmolApp.isDataOnly = true;
     jmolApp.haveConsole = false;
     //jmolApp.haveDisplay = false;
-    jmolApp.exitUponCompletion = true;
+    jmolApp.info.put("exit", Boolean.TRUE);
     jmolApp.parseCommandLine(args);
     if (!jmolApp.isSilent) {
-      System.out.println("JmolData using command options " + jmolApp.commandOptions);
-      if (jmolApp.commandOptions.indexOf("-n") < 0) 
-        System.out.println("Add -n (NOGRAPHICS) if you are not creating images for faster performance.");
+      System.out.println("JmolData using command options " + Escape.escape(args));
+      if (!jmolApp.info.containsKey("noGraphics")) 
+        System.out.println("Add -n (NOGRAPHICS) for faster performance if you are not creating images.");
     }
     new JmolData(jmolApp);
+  }
+  
+  private JmolData(JmolApp jmolApp) {
+    this.jmolApp = jmolApp;
+    viewer = new Viewer(jmolApp.info);
+    viewer.setScreenDimension(jmolApp.startupWidth, jmolApp.startupHeight);
+    jmolApp.startViewer(viewer, null, true);
   }
   
 }  

@@ -5,6 +5,7 @@ import javax.vecmath.Point3f;
 import org.jmol.api.ApiPlatform;
 import org.jmol.api.FileAdapterInterface;
 import org.jmol.api.JmolFileInterface;
+import org.jmol.api.JmolMouseInterface;
 import org.jmol.api.JmolPopupInterface;
 import org.jmol.api.JmolViewer;
 import org.jmol.util.JmolFont;
@@ -12,8 +13,6 @@ import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.Viewer;
 
 public class Platform implements ApiPlatform {
-
-  private Mouse mouse;
 
   public void setViewer(JmolViewer viewer, Object display) {
     ((AndroidUpdateListener) display).setViewer(viewer);
@@ -70,22 +69,8 @@ public class Platform implements ApiPlatform {
 
   ////// Mouse
 
-  public void getMouseManager(Viewer viewer, ActionManager actionManager) {
-    mouse = new Mouse(viewer, actionManager);
-  }
-
-  public boolean handleOldJvm10Event(int id, int x, int y, int modifiers,
-                                     long time) {
-    return mouse.handleOldJvm10Event(id, x, y, modifiers, time);
-  }
-
-  public void clearMouse() {
-    mouse.clear();
-  }
-
-  public void disposeMouse() {
-    mouse.dispose();
-    mouse = null;
+  JmolMouseInterface getMouseManager(Viewer viewer, ActionManager actionManager) {
+  	return new Mouse(viewer, actionManager);
   }
 
   ////// Image 

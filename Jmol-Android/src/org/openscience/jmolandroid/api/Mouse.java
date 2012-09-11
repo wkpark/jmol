@@ -24,6 +24,7 @@
 package org.openscience.jmolandroid.api;
 
 import org.jmol.api.Event;
+import org.jmol.api.JmolMouseInterface;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.Viewer;
 import org.jmol.viewer.binding.Binding;
@@ -38,7 +39,7 @@ import org.jmol.viewer.binding.Binding;
  * 
  */
 
-class Mouse {
+class Mouse implements JmolMouseInterface {
 
   //private Viewer viewer;
   private ActionManager actionManager;
@@ -53,15 +54,15 @@ class Mouse {
     this.actionManager = actionManager;
   }
 
-  void clear() {
+  public void clear() {
     // nothing to do here now -- see ActionManager
   }
 
-  void dispose() {
+  public void dispose() {
     actionManager.dispose();
   }
 
-  boolean handleOldJvm10Event(int id, int x, int y, int modifiers, long time) {
+  public boolean handleOldJvm10Event(int id, int x, int y, int modifiers, long time) {
     modifiers = applyLeftMouse(modifiers);
     switch (id) {
     case Event.MOUSE_DOWN:

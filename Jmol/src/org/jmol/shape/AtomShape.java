@@ -30,6 +30,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.jmol.atomdata.RadiusData;
+import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.constant.EnumPalette;
 import org.jmol.modelset.Atom;
 import org.jmol.util.ArrayUtil;
@@ -73,7 +74,7 @@ public abstract class AtomShape extends Shape {
     if (size == 0)
       setSize(null, bsSelected);
     else
-      setSize(new RadiusData(size, RadiusData.EnumType.SCREEN, null), bsSelected);
+      setSize(new RadiusData(size, EnumType.SCREEN, null), bsSelected);
   }
 
   @Override

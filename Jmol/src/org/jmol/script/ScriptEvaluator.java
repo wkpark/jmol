@@ -42,6 +42,7 @@ import javax.vecmath.Vector3f;
 import org.jmol.api.MinimizerInterface;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
+import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.constant.EnumAnimationMode;
 import org.jmol.constant.EnumPalette;
 import org.jmol.constant.EnumStructure;
@@ -11423,7 +11424,7 @@ public class ScriptEvaluator {
         error(ERROR_invalidArgument);
     }
     if (rd == null)
-      rd = new RadiusData(scale, RadiusData.EnumType.FACTOR, EnumVdw.AUTO);
+      rd = new RadiusData(scale, EnumType.FACTOR, EnumVdw.AUTO);
     if (isOnly)
       restrictSelected(false, false);
     setShapeSize(shape, rd);
@@ -11447,7 +11448,7 @@ public class ScriptEvaluator {
       throws ScriptException {
 
     float value = Float.NaN;
-    RadiusData.EnumType factorType = RadiusData.EnumType.ABSOLUTE;
+    EnumType factorType = EnumType.ABSOLUTE;
     EnumVdw vdwType = null;
 
     int tok = (index == -1 ? Token.vanderwaals : getToken(index).tok);
@@ -11459,7 +11460,7 @@ public class ScriptEvaluator {
     case Token.temperature:
     case Token.vanderwaals:
       value = 1;
-      factorType = RadiusData.EnumType.FACTOR;
+      factorType = EnumType.FACTOR;
       vdwType = (tok == Token.vanderwaals ? null : EnumVdw.getVdwType2(Token.nameOf(tok)));
       tok = tokAt(++index);
       break;
@@ -11473,7 +11474,7 @@ public class ScriptEvaluator {
     case Token.babel21:
     case Token.jmol:
       value = 1;
-      factorType = RadiusData.EnumType.FACTOR;
+      factorType = EnumType.FACTOR;
       iToken = index - 1;
       break;
     case Token.plus:
@@ -11484,7 +11485,7 @@ public class ScriptEvaluator {
       } else if (tokAt(index + 1) == Token.percent) {
         value = Math.round(floatParameter(index));
         iToken = ++index;
-        factorType = RadiusData.EnumType.FACTOR;
+        factorType = EnumType.FACTOR;
         if (value < 0 || value > 200)
           integerOutOfRange(0, 200);
         value /= 100;
@@ -11497,19 +11498,19 @@ public class ScriptEvaluator {
           integerOutOfRange(-200, 749);
         if (value > 0) {
           value /= 250;
-          factorType = RadiusData.EnumType.ABSOLUTE;
+          factorType = EnumType.ABSOLUTE;
         } else {
           value /= -100;
-          factorType = RadiusData.EnumType.FACTOR;
+          factorType = EnumType.FACTOR;
         }
         break;
       }
       value = floatParameter(index,
           (isOnly || !allowAbsolute ? -Atom.RADIUS_MAX : 0), Atom.RADIUS_MAX);
       if (tok == Token.plus || !allowAbsolute) {
-        factorType = RadiusData.EnumType.OFFSET;
+        factorType = EnumType.OFFSET;
       } else {
-        factorType = RadiusData.EnumType.ABSOLUTE;
+        factorType = EnumType.ABSOLUTE;
         vdwType = EnumVdw.NADA;
       }
       if (isOnly)
@@ -11634,7 +11635,7 @@ public class ScriptEvaluator {
   }
 
   private void vector() throws ScriptException {
-    RadiusData.EnumType type = RadiusData.EnumType.SCREEN;
+    EnumType type = EnumType.SCREEN;
     float value = 1;
     checkLength(-3);
     switch (iToken = statementLength) {
@@ -11653,7 +11654,7 @@ public class ScriptEvaluator {
         break;
       case Token.decimal:
         // radius angstroms
-        type = RadiusData.EnumType.ABSOLUTE;
+        type = EnumType.ABSOLUTE;
         value = floatParameter(1, 0, 3);
         break;
       default:
@@ -12051,17 +12052,17 @@ public class ScriptEvaluator {
       shapeManager.loadShape(iShape);
     setShapeProperty(iShape, "init", null);
     float value = Float.NaN;
-    RadiusData.EnumType type = RadiusData.EnumType.ABSOLUTE;
+    EnumType type = EnumType.ABSOLUTE;
     int ipt = 1;
     switch (getToken(ipt).tok) {
     case Token.only:
       restrictSelected(false, false);
       value = 1;
-      type = RadiusData.EnumType.FACTOR;
+      type = EnumType.FACTOR;
       break;
     case Token.on:
       value = 1;
-      type = RadiusData.EnumType.FACTOR;
+      type = EnumType.FACTOR;
       break;
     case Token.off:
       value = 0;
@@ -15934,7 +15935,7 @@ public class ScriptEvaluator {
     if (bsA != null) {
       // bond mode, intramolec set here
       RadiusData rd1 = (rd == null ? new RadiusData(0.26f,
-          RadiusData.EnumType.OFFSET, EnumVdw.AUTO) : rd);
+          EnumType.OFFSET, EnumVdw.AUTO) : rd);
       if (displayType == Token.nci && bsB == null && intramolecular != null
           && intramolecular.booleanValue())
         bsB = bsA;

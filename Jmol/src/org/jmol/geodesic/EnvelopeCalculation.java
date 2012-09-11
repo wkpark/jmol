@@ -35,6 +35,7 @@ import org.jmol.api.AtomIndexIterator;
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.AtomDataServer;
 import org.jmol.atomdata.RadiusData;
+import org.jmol.atomdata.RadiusData.EnumType;
 
 import java.util.BitSet;
 
@@ -354,7 +355,7 @@ public final class EnvelopeCalculation {
   
   public Point3f[] getPoints() {
     if (dotsConvexMaps == null) {
-      calculate(new RadiusData(SURFACE_DISTANCE_FOR_CALCULATION, RadiusData.EnumType.ABSOLUTE, null),
+      calculate(new RadiusData(SURFACE_DISTANCE_FOR_CALCULATION, EnumType.ABSOLUTE, null),
           Float.MAX_VALUE, bsMySelected, null, false, false, false, false);
     }
     if (currentPoints != null)

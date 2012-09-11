@@ -28,6 +28,7 @@ package org.jmol.modelset;
 
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
+import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.constant.EnumPalette;
 import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumVdw;
@@ -254,7 +255,7 @@ final public class Atom extends Point3fi implements JmolNode {
       default:
         r = getVanderwaalsRadiusFloat(viewer, rd.vdwType);
       }
-      if (rd.factorType == RadiusData.EnumType.FACTOR)
+      if (rd.factorType == EnumType.FACTOR)
         f *= r;
       else
         f += r;

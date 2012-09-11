@@ -39,6 +39,7 @@ import org.jmol.util.TextFormat;
 
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.RadiusData;
+import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.constant.EnumVdw;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.MeshData;
@@ -153,7 +154,7 @@ abstract class AtomDataReader extends VolumeDataReader {
     // if it hasn't already been set.
     if (getRadii) {
       if (params.atomRadiusData == null)
-        params.atomRadiusData = new RadiusData(1, RadiusData.EnumType.FACTOR,
+        params.atomRadiusData = new RadiusData(1, EnumType.FACTOR,
             EnumVdw.AUTO);
       atomData.radiusData = params.atomRadiusData;
       atomData.radiusData.valueExtended = params.solventExtendedAtomRadius;

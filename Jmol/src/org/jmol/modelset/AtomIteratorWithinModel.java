@@ -31,6 +31,7 @@ import javax.vecmath.Point3f;
 
 import org.jmol.api.AtomIndexIterator;
 import org.jmol.atomdata.RadiusData;
+import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.bspt.Bspf;
 import org.jmol.bspt.CubeIterator;
 import org.jmol.viewer.Viewer;
@@ -105,7 +106,7 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
       radiusData = rd;
       atoms = modelSet.atoms;
       viewer = modelSet.viewer;
-      distance = (rd.factorType == RadiusData.EnumType.OFFSET ? 5f + rd.value : 5f * rd.value);
+      distance = (rd.factorType == EnumType.OFFSET ? 5f + rd.value : 5f * rd.value);
       vdw1 = atoms[atomIndex].getVanderwaalsRadiusFloat(viewer, rd.vdwType);
     }
     checkGreater = (isGreaterOnly && atomIndex != Integer.MAX_VALUE);

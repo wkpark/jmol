@@ -37,6 +37,7 @@ import javax.vecmath.Vector3f;
 import org.jmol.api.AtomIndexIterator;
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.RadiusData;
+import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.constant.EnumHBondType;
 import org.jmol.constant.EnumVdw;
 import org.jmol.jvxl.data.MeshData;
@@ -81,7 +82,7 @@ public class Contact extends Isosurface {
   private float minData, maxData;
   //private final static String hbondH = "_H & connected(_O|_N and his and not *.N |_S)";
   //private final static float HBOND_CUTOFF = -0.8f;
-  private final static RadiusData rdVDW =  new RadiusData(1, RadiusData.EnumType.FACTOR, EnumVdw.AUTO);
+  private final static RadiusData rdVDW =  new RadiusData(1, EnumType.FACTOR, EnumVdw.AUTO);
   
   private void setContacts(Object[] value, boolean doEditCpList) {
     Logger.startTimer();
@@ -98,7 +99,7 @@ public class Contact extends Isosurface {
     if (Float.isNaN(saProbeRadius))
       saProbeRadius = 0;
     if (rd == null)
-      rd = new RadiusData(saProbeRadius, RadiusData.EnumType.OFFSET, EnumVdw.AUTO);
+      rd = new RadiusData(saProbeRadius, EnumType.OFFSET, EnumVdw.AUTO);
     if (colorDensity) {
       switch (displayType) {
       case Token.full:
@@ -204,7 +205,7 @@ public class Contact extends Isosurface {
     case Token.connect:
     case Token.plane:
       /*      if (rd == null)
-              rd = new RadiusData(0.25f, RadiusData.EnumType.OFFSET,
+              rd = new RadiusData(0.25f, EnumType.OFFSET,
                   EnumVdw.AUTO);
       */
       float volume = 0;
@@ -507,7 +508,7 @@ public class Contact extends Isosurface {
       RadiusData rdA, rdB;
       if (displayType == Token.surface) {
         rdA = rdVDW;
-        rdB = new RadiusData((rd.factorType == RadiusData.EnumType.OFFSET ? rd.value * 2 : (rd.value - 1) * 2 + 1), 
+        rdB = new RadiusData((rd.factorType == EnumType.OFFSET ? rd.value * 2 : (rd.value - 1) * 2 + 1), 
             rd.factorType, rd.vdwType);
       } else {
         rdA = rdB = rd;

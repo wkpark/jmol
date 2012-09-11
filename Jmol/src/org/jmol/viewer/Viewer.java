@@ -65,6 +65,7 @@ import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.AtomDataServer;
 import org.jmol.atomdata.RadiusData;
+import org.jmol.atomdata.RadiusData.EnumType;
 
 import org.jmol.constant.EnumAnimationMode;
 import org.jmol.constant.EnumAxesMode;
@@ -7593,7 +7594,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     global.setParameterValue("percentVdwAtom", value);
     global.percentVdwAtom = value;
     rd.value = value / 100f;
-    rd.factorType = RadiusData.EnumType.FACTOR;
+    rd.factorType = EnumType.FACTOR;
     rd.vdwType = EnumVdw.AUTO;
     setShapeSize(JmolConstants.SHAPE_BALLS, rd, null);
   }

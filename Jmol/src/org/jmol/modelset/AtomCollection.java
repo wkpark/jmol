@@ -39,6 +39,7 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.RadiusData;
+import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.bspt.Bspf;
 import org.jmol.constant.EnumPalette;
 import org.jmol.constant.EnumStructure;
@@ -396,7 +397,7 @@ abstract public class AtomCollection {
     if (envelopeRadius < 0)
       envelopeRadius = EnvelopeCalculation.SURFACE_DISTANCE_FOR_CALCULATION;
     EnvelopeCalculation ec = new EnvelopeCalculation(viewer, atomCount, null);
-    ec.calculate(new RadiusData(envelopeRadius, RadiusData.EnumType.ABSOLUTE, null), 
+    ec.calculate(new RadiusData(envelopeRadius, EnumType.ABSOLUTE, null), 
         Float.MAX_VALUE, 
         bsSelected, BitSetUtil.copyInvert(bsSelected, atomCount), 
         false, false, false, true);
@@ -1237,7 +1238,7 @@ abstract public class AtomCollection {
         r = atom.getVanderwaalsRadiusFloat(viewer,
             atomData.radiusData.vdwType);
       }
-      if (rd.factorType == RadiusData.EnumType.FACTOR)
+      if (rd.factorType == EnumType.FACTOR)
         r *= rd.value;
       else
         r += rd.value;

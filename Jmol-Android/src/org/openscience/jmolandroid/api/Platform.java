@@ -69,7 +69,7 @@ public class Platform implements ApiPlatform {
 
   ////// Mouse
 
-  JmolMouseInterface getMouseManager(Viewer viewer, ActionManager actionManager) {
+  public JmolMouseInterface getMouseManager(Viewer viewer, ActionManager actionManager) {
   	return new Mouse(viewer, actionManager);
   }
 

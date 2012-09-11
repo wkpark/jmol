@@ -28,7 +28,7 @@ package org.openscience.jmolandroid.api;
 import java.io.InputStream;
 
 import org.jmol.api.ApiPlatform;
-import org.jmol.g3d.Font3D;
+import org.jmol.util.JmolFont;
 import org.jmol.viewer.Viewer;
 
 import android.graphics.Bitmap;
@@ -121,7 +121,7 @@ class Image {
    * @param ascent
    * @return
    */
-  public static int[] getTextPixels(String text, Font3D font3d, Object gObj,
+  public static int[] getTextPixels(String text, JmolFont font3d, Object gObj,
                                     Object imgObj, int width, int height,
                                     int ascent) {
     

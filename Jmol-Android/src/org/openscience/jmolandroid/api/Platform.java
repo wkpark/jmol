@@ -4,10 +4,10 @@ import javax.vecmath.Point3f;
 
 import org.jmol.api.ApiPlatform;
 import org.jmol.api.FileAdapterInterface;
+import org.jmol.api.JmolFileInterface;
 import org.jmol.api.JmolPopupInterface;
 import org.jmol.api.JmolViewer;
-import org.jmol.awt.FileAdapter;
-import org.jmol.g3d.Font3D;
+import org.jmol.util.JmolFont;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.Viewer;
 
@@ -117,7 +117,7 @@ public class Platform implements ApiPlatform {
     return Image.drawImageToBuffer(gOffscreen, imageOffscreen, imageobj, width, height, bgcolor);
   }
 
-  public int[] getTextPixels(String text, Font3D font3d, Object gObj,
+  public int[] getTextPixels(String text, JmolFont font3d, Object gObj,
                              Object image, int width, int height, int ascent) {
     return Image.getTextPixels(text, font3d, gObj, image, width, height, ascent);
   }
@@ -196,4 +196,11 @@ public class Platform implements ApiPlatform {
     return null; // N/A
   }
 
+
+  @Override
+  public JmolFileInterface newFile(String name) {
+  	return null;
+  }
+  
+  
 }

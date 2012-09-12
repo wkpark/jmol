@@ -226,7 +226,7 @@ public final class Resolver implements JmolBioResolver {
     for (int i = 0; i < nH; i++)
       modelSet.addAtom(modelSet.atoms[iFirst].modelIndex, modelSet.atoms[iFirst].getGroup(), (short) 1, "H", 0,
           0, Float.NaN, Float.NaN, Float.NaN, Float.NaN, Float.NaN, Float.NaN, Float.NaN, 0, 0, 1, 0,
-          null, isHetero, '\0', (byte) 0, null).delete(null);
+          null, isHetero, (byte) 0, null).delete(null);
   }
 
   public void getBondInfo(JmolAdapter adapter, String group3, Object model) {

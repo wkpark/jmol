@@ -993,7 +993,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       if (iident == Integer.MIN_VALUE || Math.abs(iident) < 1000)
         addTokenToPrefix(new Token(Token.identifier, ident));
       else
-        addTokenToPrefix(new Token(Token.integer, iident));
+        addTokenToPrefix(Token.intToken(iident));
       return CONTINUE;
     }
     switch (tokCommand) {

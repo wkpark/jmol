@@ -4069,7 +4069,7 @@ abstract public class ModelCollection extends BondCollection {
                          int atomSerial, int atomSite, float x, float y, float z) {
     return addAtom(modelIndex, group, atomicAndIsotopeNumber, atomName,
         atomSerial, atomSite, x, y, z, Float.NaN, Float.NaN, Float.NaN,
-        Float.NaN, 0, 0, 100, Float.NaN, null, false, '\0', (byte) 0, null);
+        Float.NaN, 0, 0, 100, Float.NaN, null, false, (byte) 0, null);
   }
 
   public Atom addAtom(int modelIndex, Group group,
@@ -4078,11 +4078,9 @@ abstract public class ModelCollection extends BondCollection {
                       float radius, float vectorX, float vectorY,
                       float vectorZ, int formalCharge, float partialCharge,
                       int occupancy, float bfactor, Quadric[] ellipsoid,
-                      boolean isHetero, char alternateLocationID,
-                      byte specialAtomID, BitSet atomSymmetry) {
+                      boolean isHetero, byte specialAtomID, BitSet atomSymmetry) {
     Atom atom = new Atom(modelIndex, atomCount, x, y, z, radius, atomSymmetry,
-        atomSite, atomicAndIsotopeNumber, formalCharge, isHetero,
-        alternateLocationID);
+        atomSite, atomicAndIsotopeNumber, formalCharge, isHetero);
     models[modelIndex].atomCount++;
     models[modelIndex].bsAtoms.set(atomCount);
     if (atomicAndIsotopeNumber % 128 == 1)

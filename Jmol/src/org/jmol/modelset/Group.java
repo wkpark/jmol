@@ -303,7 +303,20 @@ public class Group {
     return getSeqcodeString(seqcode);
   }
 
+  /**
+   * necessary for JavaScript due to problem with char
+   * @param sequenceNumber
+   * @param insertionCode
+   * @return seqcode << 8 + insertionCode 
+   */
+  public static int getSeqcode(int sequenceNumber, String insertionCode) {
+    return getSeqcode2(sequenceNumber, insertionCode.charAt(0));
+  }
+  
   public static int getSeqcode(int sequenceNumber, char insertionCode) {
+    return getSeqcode2(sequenceNumber, insertionCode);
+  }
+  public static int getSeqcode2(int sequenceNumber, char insertionCode) {
     if (sequenceNumber == Integer.MIN_VALUE)
       return sequenceNumber;
     if (! ((insertionCode >= 'A' && insertionCode <= 'Z') ||

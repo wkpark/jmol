@@ -35,6 +35,7 @@ import javax.vecmath.Matrix3f;
 
 import org.jmol.script.ScriptEvaluator;
 import org.jmol.script.ScriptVariable;
+import org.jmol.script.ScriptVariableInt;
 import org.jmol.script.Token;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
@@ -200,7 +201,7 @@ public class PropertyManager {
     int n;
     for (int i = 1; i < names.length; i++) {
       if ((n = Parser.parseInt(names[i])) != Integer.MIN_VALUE)
-        args[i] = new ScriptVariable(Token.integer, n);
+        args[i] = new ScriptVariableInt(n);
       else
         args[i] = new ScriptVariable(Token.string, names[i]);
     }

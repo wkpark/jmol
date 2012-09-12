@@ -80,10 +80,6 @@ public class ScriptVariable extends Token {
     super(tok, value);
   }
 
-  public ScriptVariable(int tok, int intValue) {
-    super(tok, intValue);
-  }
-
   public ScriptVariable(BitSet bs, int index) {
     value = bs;
     this.index = index;
@@ -150,10 +146,6 @@ public class ScriptVariable extends Token {
     }
   }
 
-  public static ScriptVariable intVariable(int intValue) {
-    return new ScriptVariable(integer, intValue);
-  }
-
   static public boolean isVariableType(Object x) {
     return (x instanceof ScriptVariable
         || x instanceof BitSet
@@ -199,7 +191,7 @@ public class ScriptVariable extends Token {
     if (x instanceof Boolean)
       return getBoolean(((Boolean) x).booleanValue());
     if (x instanceof Integer)
-      return new ScriptVariable(integer, ((Integer) x).intValue());
+      return new ScriptVariableInt(((Integer) x).intValue());
     if (x instanceof Float)
       return new ScriptVariable(decimal, x);
     if (x instanceof String) {
@@ -564,15 +556,14 @@ public class ScriptVariable extends Token {
     case bitset:
       return Escape.escapeBs(bsSelectToken(x), !(x.value instanceof BondSet));
     case varray:
+      List<ScriptVariable> sv = ((ScriptVariable) x).getList();
+      i = x.intValue;
+      if (i <= 0)
+        i = sv.size() - i;
+      if (i != Integer.MAX_VALUE)
+        return (i < 1 || i > sv.size() ? "" : sValue(sv.get(i - 1)));
+      //$FALL-THROUGH$
     case hash:
-      if (x.tok == Token.varray) {
-        List<ScriptVariable> sv = ((ScriptVariable) x).getList();
-        i = x.intValue;
-        if (i <= 0)
-          i = sv.size() - i;
-        if (i != Integer.MAX_VALUE)
-          return (i < 1 || i > sv.size() ? "" : sValue(sv.get(i - 1)));
-      }
       sb = new StringBuffer();
       map = new Hashtable<Object, Boolean>();
       sValueArray(sb, (ScriptVariable) x, map, 0, false);
@@ -790,7 +781,7 @@ public class ScriptVariable extends Token {
     }
     int len = 0;
     boolean isInputSelected = (tokenIn instanceof ScriptVariable && ((ScriptVariable) tokenIn).index != Integer.MAX_VALUE);
-    ScriptVariable tokenOut = new ScriptVariable(tokenIn.tok, Integer.MAX_VALUE);
+    ScriptVariable tokenOut = new ScriptVariableInt(Integer.MAX_VALUE);
 
     switch (tokenIn.tok) {
     case bitset:

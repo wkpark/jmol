@@ -213,7 +213,7 @@ class ScriptMathProcessor {
       case Token.integer:
         if (x.intValue < 0) {
           addOp(Token.tokenMinus);
-          x = ScriptVariable.intVariable(-x.intValue);
+          x = new ScriptVariableInt(-x.intValue);
         }
         break;
       case Token.decimal:
@@ -235,7 +235,7 @@ class ScriptMathProcessor {
 
   private boolean addXInt(int x) {
     // no check for unary minus
-    putX(ScriptVariable.intVariable(x));
+    putX(new ScriptVariableInt(x));
     return wasX = true;
   }
 
@@ -949,7 +949,7 @@ class ScriptMathProcessor {
         y.add(count);
         counts.add(ScriptVariable.getVariable(y));
       }
-      count = ScriptVariable.intVariable(1);
+      count = new ScriptVariableInt(1);
       last = a; 
     }
     if (match == null)

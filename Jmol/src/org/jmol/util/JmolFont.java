@@ -47,7 +47,7 @@ final public class JmolFont {
   public final int idFontStyle;
   public final float fontSize;
   public final Object font;
-  public final Object fontMetrics;
+  private final Object fontMetrics;
   private ApiPlatform apiPlatform;
   private JmolFont(ApiPlatform apiPlatform, byte fid,
                  int idFontFace, int idFontStyle, float fontSize,

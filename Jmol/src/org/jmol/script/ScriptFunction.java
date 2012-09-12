@@ -82,7 +82,7 @@ public class ScriptFunction {
       contextVariables.put(name, (var == null ? 
           (new ScriptVariable(Token.string, "")).setName(name) : var));
     }
-    contextVariables.put("_retval", ScriptVariable.intVariable(tok == Token.trycmd ? Integer.MAX_VALUE : 0));
+    contextVariables.put("_retval", new ScriptVariableInt(tok == Token.trycmd ? Integer.MAX_VALUE : 0));
   }
 
   public void unsetVariables(Map<String, ScriptVariable> contextVariables, List<ScriptVariable> params) {

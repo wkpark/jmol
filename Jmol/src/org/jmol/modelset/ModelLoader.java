@@ -835,7 +835,8 @@ public final class ModelLoader {
     Atom atom = modelSet.addAtom(currentModelIndex, nullGroup, atomicAndIsotopeNumber,
         atomName, atomSerial, atomSite, x, y, z, radius, vectorX, vectorY,
         vectorZ, formalCharge, partialCharge, occupancy, bfactor, ellipsoid,
-        isHetero, alternateLocationID, specialAtomID, atomSymmetry);
+        isHetero, specialAtomID, atomSymmetry);
+    atom.setAltLoc(alternateLocationID);
     htAtomMap.put(atomUid, atom);
   }
 

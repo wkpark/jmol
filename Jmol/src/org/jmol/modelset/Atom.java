@@ -58,7 +58,7 @@ final public class Atom extends Point3fi implements JmolNode {
   
   public static final int RADIUS_MAX = 16;
 
-  char alternateLocationID;
+  char alternateLocationID = '\0';
   public byte atomID;
   int atomSite;
   Group group;
@@ -108,7 +108,7 @@ final public class Atom extends Point3fi implements JmolNode {
         float x, float y, float z, float radius,
         BitSet atomSymmetry, int atomSite,
         short atomicAndIsotopeNumber, int formalCharge, 
-        boolean isHetero, char alternateLocationID) {
+        boolean isHetero) {
     this.modelIndex = (short)modelIndex;
     this.atomSymmetry = atomSymmetry;
     this.atomSite = atomSite;
@@ -117,11 +117,18 @@ final public class Atom extends Point3fi implements JmolNode {
     if (isHetero)
       formalChargeAndFlags = IS_HETERO_FLAG;
     setFormalCharge(formalCharge);
-    this.alternateLocationID = alternateLocationID;
     userDefinedVanDerWaalRadius = radius;
     set(x, y, z);
   }
 
+  public void setAltLoc(String altLoc) {
+    alternateLocationID = altLoc.charAt(0);
+  }
+  
+  public void setAltLoc(char altLoc) {
+    alternateLocationID = altLoc;
+  }
+  
   public final void setShapeVisibilityFlags(int flag) {
     shapeVisibilityFlags = flag;
   }

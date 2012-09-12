@@ -332,20 +332,20 @@ Token[keyword(0x880001) value=")"]
   private final static Token[][] tokenTypes = new Token[][] {
          /*0*/  new Token[]{
        Token.tokenExpressionBegin,
-       new Token(Token.opEQ, Token.elemno), 
+       Token.newToken(Token.opEQ, Token.elemno), 
        Token.intToken(0), //2
        Token.tokenExpressionEnd},
          /*1*/  new Token[]{
        Token.tokenExpressionBegin,
-       new Token(Token.opEQ, Token.elemno), 
+       Token.newToken(Token.opEQ, Token.elemno), 
        Token.intToken(0), //2
        Token.tokenAnd, 
-       new Token(Token.opEQ, Token.formalcharge),
+       Token.newToken(Token.opEQ, Token.formalcharge),
        Token.intToken(0), //5
        Token.tokenExpressionEnd},
          /*2*/  new Token[]{
        Token.tokenExpressionBegin,
-       new Token(Token.opEQ, Token.elemno), 
+       Token.newToken(Token.opEQ, Token.elemno), 
        Token.intToken(0)  ,  // 2
        Token.tokenAnd, 
        Token.tokenConnected,
@@ -359,7 +359,7 @@ Token[keyword(0x880001) value=")"]
        Token.tokenExpressionEnd},
          /*4*/  new Token[]{ //sp == connected(1,"triple") or connected(2, "double")
        Token.tokenExpressionBegin,
-       new Token(Token.opEQ, Token.elemno), 
+       Token.newToken(Token.opEQ, Token.elemno), 
        Token.intToken(0)  ,  // 2
        Token.tokenAnd, 
        Token.tokenLeftParen,
@@ -380,7 +380,7 @@ Token[keyword(0x880001) value=")"]
        Token.tokenExpressionEnd},
          /*5*/  new Token[]{  // sp2 == connected(1, double)
        Token.tokenExpressionBegin,
-       new Token(Token.opEQ, Token.elemno), 
+       Token.newToken(Token.opEQ, Token.elemno), 
        Token.intToken(0)  ,  // 2
        Token.tokenAnd, 
        new Token(Token.connected, "connected"),
@@ -392,7 +392,7 @@ Token[keyword(0x880001) value=")"]
        Token.tokenExpressionEnd},
        /*6*/  new Token[]{ //Nv vinylic == connected(3) && connected(connected("double"))
        Token.tokenExpressionBegin,
-       new Token(Token.opEQ, Token.elemno), 
+       Token.newToken(Token.opEQ, Token.elemno), 
        Token.intToken(0)  ,  // 2
        Token.tokenAnd, 
        Token.tokenConnected,

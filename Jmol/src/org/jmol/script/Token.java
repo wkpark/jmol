@@ -60,18 +60,21 @@ public class Token {
     this.tok = tok;
   }
 
-  public Token(int tok, int intValue) {
-    this.tok = tok;
-    this.intValue = intValue;
-  }
-
   public Token(int tok, Object value) {
     this.tok = tok;
     this.value = value;
   }
 
+  public final static Token newToken(int tok, int intValue) {
+    Token token = new Token(tok);
+    token.intValue = intValue;
+    return token;
+  }
+
   public final static Token intToken(int intValue) {
-    return new Token(integer, intValue);
+    Token token = new Token(integer);
+    token.intValue = intValue;
+    return token;
   }
 
   public final static int nada       =  0;
@@ -101,11 +104,11 @@ public class Token {
   };
 
   public static boolean tokAttr(int a, int b) {
-    return (a & b) == b;
+    return (a & b) == (b & b);
   }
   
   public static boolean tokAttrOr(int a, int b1, int b2) {
-    return (a & b1) == b1 || (a & b2) == b2;
+    return (a & b1) == (b1 & b1) || (a & b2) == (b2 & b2);
   }
   
  
@@ -1305,7 +1308,7 @@ public class Token {
   final static Token tokenCoordinateBegin = new Token(leftbrace, "{");
   final static Token tokenRightBrace = new Token(rightbrace, "}");
   final static Token tokenCoordinateEnd = tokenRightBrace;
-  final static Token tokenColon           = new Token(colon, ':');
+  final static Token tokenColon           = new Token(colon, ":");
   final static Token tokenSetCmd          = new Token(set, "set");
   final static Token tokenSet             = new Token(set, '=', "");
   final static Token tokenSetArray        = new Token(set, '[', "");

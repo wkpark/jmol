@@ -30,6 +30,7 @@ import org.jmol.script.ScriptContext;
 import org.jmol.script.ScriptEvaluator;
 import org.jmol.script.ScriptFunction;
 import org.jmol.script.ScriptVariable;
+import org.jmol.script.ScriptVariableInt;
 import org.jmol.script.Token;
 import org.jmol.shape.Shape;
 import org.jmol.i18n.GT;
@@ -447,7 +448,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     o = info.get("repaintManager");
     if (o == null)
       o = (Interface.getOptionInterface("render.RepaintManager"));
-    if (o != null)
+    if (o != null && !o.equals(""))
       (repaintManager = (JmolRepaintInterface) o).set(this, shapeManager);
     initialize(true);
     fileManager = new FileManager(this);
@@ -6477,7 +6478,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     default:
       // stateversion is not tokenized
       if (!global.htNonbooleanParameterValues.containsKey(key)) {
-        global.setUserVariable(key, ScriptVariable.intVariable(value));
+        global.setUserVariable(key, new ScriptVariableInt(value));
         return;
       }
     }

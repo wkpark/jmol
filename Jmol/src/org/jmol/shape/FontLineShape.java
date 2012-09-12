@@ -82,17 +82,17 @@ public abstract class FontLineShape extends FontShape {
   }
 
   public static void addTickInfo(StringBuffer sb, TickInfo tickInfo, boolean addFirst) {
-    sb.append(" ticks ").append(tickInfo.type).append(" ").append(Escape.escape(tickInfo.ticks));
+    sb.append(" ticks ").append(tickInfo.type).append(" ").append(Escape.escapePt(tickInfo.ticks));
     boolean isUnitCell = (tickInfo.scale != null && Float.isNaN(tickInfo.scale.x));
     if (isUnitCell)
       sb.append(" UNITCELL");
     if (tickInfo.tickLabelFormats != null)
-      sb.append(" format ").append(Escape.escape(tickInfo.tickLabelFormats, false));
+      sb.append(" format ").append(Escape.escapeStrA(tickInfo.tickLabelFormats, false));
     if (!isUnitCell && tickInfo.scale != null)
-      sb.append(" scale ").append(Escape.escape(tickInfo.scale));
+      sb.append(" scale ").append(Escape.escapePt(tickInfo.scale));
     if (addFirst && !Float.isNaN(tickInfo.first) && tickInfo.first != 0)
       sb.append(" first ").append(tickInfo.first);
     if (tickInfo.reference != null) // not implemented
-      sb.append(" point ").append(Escape.escape(tickInfo.reference)); 
+      sb.append(" point ").append(Escape.escapePt(tickInfo.reference)); 
   }
 }

@@ -122,7 +122,7 @@ public class ScriptVariable extends Token {
   public static int sizeOf(Token x) {
     switch (x == null ? nada : x.tok) {
     case bitset:
-      return BitSetUtil.cardinalityOf(bsSelect(x));
+      return BitSetUtil.cardinalityOf(bsSelectToken(x));
     case on:
     case off:
       return -1;
@@ -142,7 +142,7 @@ public class ScriptVariable extends Token {
       return ((String) x.value).length();
     case varray:
       return x.intValue == Integer.MAX_VALUE ? ((ScriptVariable)x).getList().size()
-          : sizeOf(selectItem(x));
+          : sizeOf(selectItemTok(x));
     case hash:
       return ((Map<String, ScriptVariable>) x.value).size();
     default:
@@ -431,7 +431,7 @@ public class ScriptVariable extends Token {
     case bitset:
 //      return bsSelect(x);
     case array:
-      return selectItem(x).value;
+      return selectItemVar(x).value;
     default:
       return x.value;
     }
@@ -506,7 +506,7 @@ public class ScriptVariable extends Token {
     case matrix4f:
       return (int) fValue(x);
     case bitset:
-      return BitSetUtil.cardinalityOf(bsSelect(x));
+      return BitSetUtil.cardinalityOf(bsSelectToken(x));
     default:
       return 0;
     }
@@ -562,7 +562,7 @@ public class ScriptVariable extends Token {
     case integer:
       return "" + x.intValue;
     case bitset:
-      return Escape.escape(bsSelect(x), !(x.value instanceof BondSet));
+      return Escape.escapeBs(bsSelectToken(x), !(x.value instanceof BondSet));
     case varray:
     case hash:
       if (x.tok == Token.varray) {
@@ -618,7 +618,7 @@ public class ScriptVariable extends Token {
         String sep = "";
         for (int i = 0; i < keys.length; i++) {
           String key = (String) keys[i];
-          sb.append(sep).append(Escape.escape(key)).append(':');
+          sb.append(sep).append(Escape.escapeStr(key)).append(':');
           sValueArray(sb, ht.get(key), map, level + 1, true);
           sep = ", ";
         }
@@ -725,42 +725,42 @@ public class ScriptVariable extends Token {
     return getVariable(vlist);
   }
 
-  public static BitSet bsSelect(Token x) {
-    x = selectItem(x, Integer.MIN_VALUE);
+  public static BitSet bsSelectToken(Token x) {
+    x = selectItemTok(x, Integer.MIN_VALUE);
     return (BitSet) x.value;
   }
 
-  public static BitSet bsSelect(ScriptVariable var) {
+  public static BitSet bsSelectVar(ScriptVariable var) {
     if (var.index == Integer.MAX_VALUE)
-      var = selectItem(var);
+      var = selectItemVar(var);
     return (BitSet) var.value;
   }
 
   public static BitSet bsSelectRange(Token x, int n) {
-    x = selectItem(x);
-    x = selectItem(x, (n <= 0 ? n : 1));
-    x = selectItem(x, (n <= 0 ? Integer.MAX_VALUE - 1 : n));
+    x = selectItemTok(x);
+    x = selectItemTok(x, (n <= 0 ? n : 1));
+    x = selectItemTok(x, (n <= 0 ? Integer.MAX_VALUE - 1 : n));
     return (BitSet) x.value;
   }
 
-  public static ScriptVariable selectItem(ScriptVariable var) {
+  public static ScriptVariable selectItemVar(ScriptVariable var) {
     // pass bitsets created by the select() or for() commands
     // and all arrays by reference
     if (var.index != Integer.MAX_VALUE || 
         var.tok == varray && var.intValue == Integer.MAX_VALUE)
       return var;
-    return selectItem(var, Integer.MIN_VALUE);
+    return selectItemVar(var, Integer.MIN_VALUE);
   }
 
-  public static Token selectItem(Token var) {
-    return selectItem(var, Integer.MIN_VALUE);
+  public static Token selectItemTok(Token var) {
+    return selectItemTok(var, Integer.MIN_VALUE);
   }
 
-  public static ScriptVariable selectItem(ScriptVariable var, int i2) {
-    return (ScriptVariable) selectItem((Token) var, i2);
+  public static ScriptVariable selectItemVar(ScriptVariable var, int i2) {
+    return (ScriptVariable) selectItemTok(var, i2);
   }
 
-  public static Token selectItem(Token tokenIn, int i2) {
+  public static Token selectItemTok(Token tokenIn, int i2) {
     switch (tokenIn.tok) {
     case matrix3f:
     case matrix4f:
@@ -1115,7 +1115,7 @@ public class ScriptVariable extends Token {
   public static BitSet getBitSet(ScriptVariable x, boolean allowNull) {
     switch (x.tok) {
     case bitset:
-      return bsSelect(x);
+      return bsSelectVar(x);
     case varray:
       BitSet bs = new BitSet();
       List<ScriptVariable> sv = (ArrayList<ScriptVariable>) x.value;

@@ -183,7 +183,7 @@ abstract class TransformManager {
       StateManager.appendCmd(commands, "set navigationMode true");
     StateManager.appendCmd(commands, viewer.getBoundBoxCommand(false));
     StateManager.appendCmd(commands, "center "
-        + Escape.escape(fixedRotationCenter));
+        + Escape.escapePt(fixedRotationCenter));
     commands.append(viewer.getSavedOrienationText(null));
     
     
@@ -204,7 +204,7 @@ abstract class TransformManager {
       commands.append("  set zShade;\n");
     try {
     if (zSlabPoint != null)
-      commands.append("  set zSlab ").append(Escape.escape(zSlabPoint)).append(
+      commands.append("  set zSlab ").append(Escape.escapePt(zSlabPoint)).append(
       ";\n");
     } catch (Exception e) {
       // don't care
@@ -249,9 +249,9 @@ abstract class TransformManager {
       Point3f pt = new Point3f(internalRotationCenter);
       pt.sub(rotationAxis);
       s += prefix + " spin " + rotationRate + " "
-          + Escape.escape(internalRotationCenter) + " " + Escape.escape(pt);
+          + Escape.escapePt(internalRotationCenter) + " " + Escape.escapePt(pt);
     } else if (isSpinFixed) {
-      s += prefix + " spin axisangle " + Escape.escape(rotationAxis) + " "
+      s += prefix + " spin axisangle " + Escape.escapePt(rotationAxis) + " "
           + rotationRate;
     } else {
       s += " spin on";
@@ -741,7 +741,7 @@ abstract class TransformManager {
     info.put("modelRadius", new Float(modelRadius));
     if (mode == MODE_NAVIGATION) {
       info.put("navigationCenter", "navigate center "
-          + Escape.escape(navigationCenter));
+          + Escape.escapePt(navigationCenter));
       info.put("navigationOffsetXPercent", new Float(
           getNavigationOffsetPercent('X')));
       info.put("navigationOffsetYPercent", new Float(
@@ -2064,7 +2064,7 @@ abstract class TransformManager {
   }
 
   private String getCenterText() {
-    return Escape.escape(fixedRotationCenter);
+    return Escape.escapePt(fixedRotationCenter);
   }
 
   private String getRotateXyzText() {
@@ -2126,7 +2126,7 @@ abstract class TransformManager {
       sb.append(";");
     }
     if (mode == MODE_NAVIGATION) {
-      sb.append("navigate 0 center ").append(Escape.escape(navigationCenter));
+      sb.append("navigate 0 center ").append(Escape.escapePt(navigationCenter));
       sb.append(";navigate 0 translate");
       truncate2(sb, getNavigationOffsetPercent('X'));
       truncate2(sb, getNavigationOffsetPercent('Y'));

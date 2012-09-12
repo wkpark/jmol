@@ -475,7 +475,7 @@ public class MolecularOrbital extends Isosurface {
       appendCmd(s, "mo plane {" + moPlane.x + " " + moPlane.y + " " + moPlane.z
           + " " + moPlane.w + "}");
     if (moTitleFormat != null)
-      appendCmd(s, "mo titleFormat " + Escape.escape(moTitleFormat));
+      appendCmd(s, "mo titleFormat " + Escape.escapeStr(moTitleFormat));
     //the following is a correct object==object test
     if (moColorNeg != null)
       appendCmd(s, "mo color "

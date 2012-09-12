@@ -992,7 +992,7 @@ class TransformManager11 extends TransformManager {
   protected String getNavigationText(boolean addComments) {
     getNavigationOffset();
     return (addComments ? " /* navigation center, translation, depth */ " : " ")
-        + Escape.escape(navigationCenter)
+        + Escape.escapePt(navigationCenter)
         + " "
         + getNavigationOffsetPercent('X')
         + " "
@@ -1004,7 +1004,7 @@ class TransformManager11 extends TransformManager {
     if (mode != MODE_NAVIGATION)
       return "";
     return "# navigation state;\nnavigate 0 center "
-        + Escape.escape(getNavigationCenter()) + ";\nnavigate 0 translate "
+        + Escape.escapePt(getNavigationCenter()) + ";\nnavigate 0 translate "
         + getNavigationOffsetPercent('X') + " "
         + getNavigationOffsetPercent('Y') + ";\nset navigationDepth "
         + getNavigationDepthPercent() + ";\nset navigationSlab "

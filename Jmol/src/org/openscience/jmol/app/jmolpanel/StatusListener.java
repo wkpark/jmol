@@ -263,7 +263,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
       if (fullPathName == null) {
         jSpecViewFrame.syncScript("close ALL");
       } else if (fullPathName.endsWith(".jdx"))
-        jSpecViewFrame.syncScript("load CHECK " + Escape.escape(fullPathName));
+        jSpecViewFrame.syncScript("load CHECK " + Escape.escapeStr(fullPathName));
     }
   }
 
@@ -370,7 +370,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
       if (peaks.length() == 0) {
         String s = "" + viewer.getParameter("_modelfile");
         if (s.indexOf("/") >= 0)
-          peaks = "hidden false; load " + Escape.escape(s);
+          peaks = "hidden false; load " + Escape.escapeStr(s);
       }
     }
     if (!jSpecViewFrame.isVisible() && !peaks.toLowerCase().startsWith("hidden")) {

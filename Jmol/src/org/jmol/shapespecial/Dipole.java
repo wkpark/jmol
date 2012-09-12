@@ -196,8 +196,8 @@ public class Dipole {
     else if (coords[0] == null)
       return "";
     else
-      s.append(" ").append(Escape.escape(coords[0])).
-        append(" ").append(Escape.escape(coords[1]));
+      s.append(" ").append(Escape.escapePt(coords[0])).
+        append(" ").append(Escape.escapePt(coords[1]));
     if (isUserValue)
       s.append(" value ").append(dipoleValue);
     if (mad != Dipoles.DEFAULT_MAD)

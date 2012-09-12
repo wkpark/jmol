@@ -181,7 +181,7 @@ public String getShapeState() {
     sb.append("  axes scale ").append(viewer.getAxesScale()).append(";\n"); 
     if (fixedOrigin != null)
       sb.append("  axes center ")
-          .append(Escape.escape(fixedOrigin)).append(";\n");
+          .append(Escape.escapePt(fixedOrigin)).append(";\n");
     if (axisXY.z != 0)
       sb.append("  axes position [")
           .append((int) axisXY.x).append(" ")
@@ -190,7 +190,7 @@ public String getShapeState() {
     if (labels != null) {
       sb.append("  axes labels ");
       for (int i = 0; i < labels.length; i++)
-        sb.append(Escape.escape(labels[i])).append(" ");
+        sb.append(Escape.escapeStr(labels[i])).append(" ");
       sb.append(";\n");
     }
     return super.getShapeState() + sb;

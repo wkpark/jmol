@@ -935,27 +935,27 @@ class SymmetryOperation extends Matrix4f {
             vtemp.scale(3);
             ptemp.scaleAdd(-1, vtemp, pa1);
             draw1.append(drawid).append("rotVector2 diameter 0.1 ").append(
-                Escape.escape(pa1)).append(Escape.escape(ptemp)).append(
+                Escape.escapePt(pa1)).append(Escape.escapePt(ptemp)).append(
                 " color red");
           }
           scale = p0.distance(pt1);
-          draw1.append(drawid).append("rotLine1 ").append(Escape.escape(pt1))
-              .append(Escape.escape(ptinv)).append(" color red");
-          draw1.append(drawid).append("rotLine2 ").append(Escape.escape(pt1))
-              .append(Escape.escape(p0)).append(" color red");
+          draw1.append(drawid).append("rotLine1 ").append(Escape.escapePt(pt1))
+              .append(Escape.escapePt(ptinv)).append(" color red");
+          draw1.append(drawid).append("rotLine2 ").append(Escape.escapePt(pt1))
+              .append(Escape.escapePt(p0)).append(" color red");
         } else if (pitch1 == 0) {
           boolean isSpecial = (pt00.distance(p0) < 0.2f);
           if (!isSpecial) {
             draw1.append(drawid).append("rotLine1 ")
-                .append(Escape.escape(pt00)).append(Escape.escape(pa1)).append(
+                .append(Escape.escapePt(pt00)).append(Escape.escapePt(pa1)).append(
                     " color red");
-            draw1.append(drawid).append("rotLine2 ").append(Escape.escape(p0))
-                .append(Escape.escape(pa1)).append(" color red");
+            draw1.append(drawid).append("rotLine2 ").append(Escape.escapePt(p0))
+                .append(Escape.escapePt(pa1)).append(" color red");
           }
           vtemp.scale(3);
           ptemp.scaleAdd(-1, vtemp, pa1);
           draw1.append(drawid).append("rotVector2 diameter 0.1 ").append(
-              Escape.escape(pa1)).append(Escape.escape(ptemp)).append(
+              Escape.escapePt(pa1)).append(Escape.escapePt(ptemp)).append(
               " color red");
           pt1.set(pa1);
           if (pitch1 == 0 && pt00.distance(p0) < 0.2)
@@ -963,12 +963,12 @@ class SymmetryOperation extends Matrix4f {
         } else {
           // screw
           color = "orange";
-          draw1.append(drawid).append("rotLine1 ").append(Escape.escape(pt00))
-              .append(Escape.escape(pa1)).append(" color red");
+          draw1.append(drawid).append("rotLine1 ").append(Escape.escapePt(pt00))
+              .append(Escape.escapePt(pa1)).append(" color red");
           ptemp.set(pa1);
           ptemp.add(vtemp);
-          draw1.append(drawid).append("rotLine2 ").append(Escape.escape(p0))
-              .append(Escape.escape(ptemp)).append(" color red");
+          draw1.append(drawid).append("rotLine2 ").append(Escape.escapePt(p0))
+              .append(Escape.escapePt(ptemp)).append(" color red");
           pt1.scaleAdd(0.5f, vtemp, pa1);
         }
 
@@ -977,14 +977,14 @@ class SymmetryOperation extends Matrix4f {
         ptemp.set(pt1);
         ptemp.add(vtemp);
         if (haveinversion && pitch1 != 0) {
-          draw1.append(drawid).append("rotRotLine1").append(Escape.escape(pt1))
-              .append(Escape.escape(ptinv)).append(" color red");
-          draw1.append(drawid).append("rotRotLine2").append(Escape.escape(pt1))
-              .append(Escape.escape(p0)).append(" color red");
+          draw1.append(drawid).append("rotRotLine1").append(Escape.escapePt(pt1))
+              .append(Escape.escapePt(ptinv)).append(" color red");
+          draw1.append(drawid).append("rotRotLine2").append(Escape.escapePt(pt1))
+              .append(Escape.escapePt(p0)).append(" color red");
         }
         draw1.append(drawid).append(
             "rotRotArrow arrow width 0.10 scale " + scale + " arc ").append(
-            Escape.escape(pt1)).append(Escape.escape(ptemp));
+            Escape.escapePt(pt1)).append(Escape.escapePt(ptemp));
         if (haveinversion)
           ptemp.set(ptinv);
         else
@@ -992,13 +992,13 @@ class SymmetryOperation extends Matrix4f {
         if (ptemp.distance(p0) < 0.1f)
           ptemp.set((float) Math.random(), (float) Math.random(), (float) Math
               .random());
-        draw1.append(Escape.escape(ptemp));
+        draw1.append(Escape.escapePt(ptemp));
         ptemp.set(0, ang, 0);
-        draw1.append(Escape.escape(ptemp)).append(" color red");
+        draw1.append(Escape.escapePt(ptemp)).append(" color red");
         // draw the main vector
 
         draw1.append(drawid).append("rotVector1 vector diameter 0.1 ").append(
-            Escape.escape(pa1)).append(Escape.escape(vtemp)).append("color ")
+            Escape.escapePt(pa1)).append(Escape.escapePt(vtemp)).append("color ")
             .append(color);
       }
 
@@ -1008,7 +1008,7 @@ class SymmetryOperation extends Matrix4f {
 
         if (pt00.distance(pt0) > 0.2)
           draw1.append(drawid).append("planeVector arrow ").append(
-              Escape.escape(pt00)).append(Escape.escape(pt0)).append(
+              Escape.escapePt(pt00)).append(Escape.escapePt(pt0)).append(
               " color indigo");
 
         // faint inverted frame if trans is not null
@@ -1050,9 +1050,9 @@ class SymmetryOperation extends Matrix4f {
         for (int i = v.size(); --i >= 0;) {
           Point3f[] pts = (Point3f[]) v.get(i);
           draw1.append(drawid).append("planep").append(i).append(
-              Escape.escape(pts[0])).append(Escape.escape(pts[1]));
+              Escape.escapePt(pts[0])).append(Escape.escapePt(pts[1]));
           if (pts.length == 3)
-            draw1.append(Escape.escape(pts[2]));
+            draw1.append(Escape.escapePt(pts[2]));
           draw1.append(" color translucent ").append(color);
         }
 
@@ -1062,7 +1062,7 @@ class SymmetryOperation extends Matrix4f {
           ptemp.set(pa1);
           ptemp.add(ax1);
           draw1.append(drawid).append("planeCircle scale 2.0 circle ").append(
-              Escape.escape(pa1)).append(Escape.escape(ptemp)).append(
+              Escape.escapePt(pa1)).append(Escape.escapePt(ptemp)).append(
               " color translucent ").append(color).append(" mesh fill");
         }
       }
@@ -1072,9 +1072,9 @@ class SymmetryOperation extends Matrix4f {
         // draw a faint frame showing the inversion
 
         draw1.append(drawid).append("invPoint diameter 0.4 ").append(
-            Escape.escape(ipt));
+            Escape.escapePt(ipt));
         draw1.append(drawid).append("invArrow arrow ").append(
-            Escape.escape(pt00)).append(Escape.escape(ptinv)).append(
+            Escape.escapePt(pt00)).append(Escape.escapePt(ptinv)).append(
             " color indigo");
         if (!isinversion) {
           ptemp.set(ptinv);
@@ -1101,13 +1101,13 @@ class SymmetryOperation extends Matrix4f {
         if (pt0 == null)
           pt0 = new Point3f(pt00);
         draw1.append(drawid).append("transVector vector ").append(
-            Escape.escape(pt0)).append(Escape.escape(trans));
+            Escape.escapePt(pt0)).append(Escape.escapePt(trans));
       }
 
       // color the targeted atoms opaque and add another frame if necessary
 
-      draw1.append("\nvar pt00 = " + Escape.escape(pt00));
-      draw1.append("\nvar p0 = " + Escape.escape(p0));
+      draw1.append("\nvar pt00 = " + Escape.escapePt(pt00));
+      draw1.append("\nvar p0 = " + Escape.escapePt(p0));
       draw1.append("\nif (within(0.2,p0).length == 0) {");
       draw1.append("\nvar set2 = within(0.2,p0.uxyz.xyz)");
       draw1.append("\nif (set2) {");
@@ -1115,13 +1115,13 @@ class SymmetryOperation extends Matrix4f {
           .append("cellOffsetVector arrow @p0 @set2 color grey");
       draw1.append(drawid).append(
           "offsetFrameX diameter 0.20 @{set2.xyz} @{set2.xyz + ").append(
-          Escape.escape(v01)).append("*0.9} color red");
+          Escape.escapePt(v01)).append("*0.9} color red");
       draw1.append(drawid).append(
           "offsetFrameY diameter 0.20 @{set2.xyz} @{set2.xyz + ").append(
-          Escape.escape(v02)).append("*0.9} color green");
+          Escape.escapePt(v02)).append("*0.9} color green");
       draw1.append(drawid).append(
           "offsetFrameZ diameter 0.20 @{set2.xyz} @{set2.xyz + ").append(
-          Escape.escape(v03)).append("*0.9} color purple");
+          Escape.escapePt(v03)).append("*0.9} color purple");
       draw1.append("\n}}\n");
 
       cmds = draw1.toString();
@@ -1179,7 +1179,7 @@ class SymmetryOperation extends Matrix4f {
   private static void drawLine(StringBuffer s, String id, float diameter, Point3f pt0, Point3f pt1,
                         String color) {
     s.append(id).append(" diameter ").append(diameter)
-        .append(Escape.escape(pt0)).append(Escape.escape(pt1))
+        .append(Escape.escapePt(pt0)).append(Escape.escapePt(pt1))
         .append(" color ").append(color);
   }
 

@@ -457,7 +457,7 @@ public class Measurement {
     //  draw symop({3}), which the compiler will interpret as symop()
     return (atomIndex < 0 
         ? (withModelIndex ? "modelIndex " + getAtom(i).modelIndex + " " : "")
-            + Escape.escape(getAtom(i))
+            + Escape.escapePt(getAtom(i))
         : asBitSet ? "(({" + atomIndex + "}))"
         : viewer.getAtomInfo(atomIndex));
   }

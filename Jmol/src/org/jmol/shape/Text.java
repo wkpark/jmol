@@ -273,7 +273,7 @@ public class Text extends Object2d {
     boolean isImage = (image != null);
     //    if (isDefine) {
     String strOff = null;
-    String echoCmd = "set echo ID " + Escape.escape(target);
+    String echoCmd = "set echo ID " + Escape.escapeStr(target);
     switch (valign) {
     case VALIGN_XY:
       if (movableXPercent == Integer.MAX_VALUE
@@ -288,7 +288,7 @@ public class Text extends Object2d {
       //$FALL-THROUGH$
     case VALIGN_XYZ:
       if (strOff == null)
-        strOff = Escape.escape(xyz);
+        strOff = Escape.escapePt(xyz);
       s.append("  ").append(echoCmd).append(" ").append(strOff);
       if (align != ALIGN_LEFT)
         s.append(";  ").append(echoCmd).append(" ").append(hAlignNames[align]);
@@ -303,13 +303,13 @@ public class Text extends Object2d {
       s.append("; ").append(echoCmd).append(" IMAGE /*file*/");
     else
       s.append("; echo ");
-    s.append(Escape.escape(text)); // was textUnformatted, but that is not really the STATE
+    s.append(Escape.escapeStr(text)); // was textUnformatted, but that is not really the STATE
     s.append(";\n");
     if (isImage && imageScale != 1)
       s.append("  ").append(echoCmd).append(" scale ").append(imageScale).append(";\n");
     if (script != null)
       s.append("  ").append(echoCmd).append(" script ").append(
-          Escape.escape(script)).append(";\n");
+          Escape.escapeStr(script)).append(";\n");
     if (modelIndex >= 0)
       s.append("  ").append(echoCmd).append(" model ").append(
           viewer.getModelNumberDotted(modelIndex)).append(";\n");

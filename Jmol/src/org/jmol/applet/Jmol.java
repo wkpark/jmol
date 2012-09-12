@@ -708,13 +708,13 @@ public class Jmol implements WrappedApplet {
             "Jmol Applet version {0} {1}.\n\nAn OpenScience project.\n\nSee http://www.jmol.org for more information",
             new Object[] { JmolConstants.version, JmolConstants.date })
         + "\nhtmlName = "
-        + Escape.escape(htmlName)
+        + Escape.escapeStr(htmlName)
         + "\nsyncId = "
-        + Escape.escape(syncId)
+        + Escape.escapeStr(syncId)
         + "\ndocumentBase = "
-        + Escape.escape("" + appletWrapper.getDocumentBase())
+        + Escape.escapeStr("" + appletWrapper.getDocumentBase())
         + "\ncodeBase = "
-        + Escape.escape("" + appletWrapper.getCodeBase());
+        + Escape.escapeStr("" + appletWrapper.getCodeBase());
   }
 
   public Object getProperty(String infoType) {

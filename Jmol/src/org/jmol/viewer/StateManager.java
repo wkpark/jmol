@@ -1057,18 +1057,18 @@ public class StateManager {
       if (allowEmbeddedScripts)
         setParameterValue("allowEmbeddedScripts", true);
       appendCmd(str, "set appendNew " + appendNew);
-      appendCmd(str, "set appletProxy " + Escape.escape(appletProxy));
+      appendCmd(str, "set appletProxy " + Escape.escapeStr(appletProxy));
       appendCmd(str, "set applySymmetryToBonds " + applySymmetryToBonds);
       if (atomTypes.length() > 0)
-        appendCmd(str, "set atomTypes " + Escape.escape(atomTypes));
+        appendCmd(str, "set atomTypes " + Escape.escapeStr(atomTypes));
       appendCmd(str, "set autoBond " + autoBond);
 //      appendCmd(str, "set autoLoadOrientation " + autoLoadOrientation);
       if (axesOrientationRasmol)
         appendCmd(str, "set axesOrientationRasmol true");
       appendCmd(str, "set bondRadiusMilliAngstroms " + bondRadiusMilliAngstroms);
       appendCmd(str, "set bondTolerance " + bondTolerance);
-      appendCmd(str, "set defaultLattice " + Escape.escape(ptDefaultLattice));
-      appendCmd(str, "set defaultLoadFilter " + Escape.escape(defaultLoadFilter)) ;
+      appendCmd(str, "set defaultLattice " + Escape.escapePt(ptDefaultLattice));
+      appendCmd(str, "set defaultLoadFilter " + Escape.escapeStr(defaultLoadFilter)) ;
       appendCmd(str, "set defaultLoadScript \"\"");
       if (defaultLoadScript.length() > 0)
         setParameterValue("defaultLoadScript", defaultLoadScript);
@@ -1078,14 +1078,14 @@ public class StateManager {
       if (sMode.equals("User"))
         appendCmd(str, viewer.getDefaultVdwTypeNameOrData(Integer.MAX_VALUE, null));
       appendCmd(str, "set forceAutoBond " + forceAutoBond);
-      appendCmd(str, "#set defaultDirectory " + Escape.escape(defaultDirectory));
-      appendCmd(str, "#set loadFormat " + Escape.escape(loadFormat));
-      appendCmd(str, "#set loadLigandFormat " + Escape.escape(loadLigandFormat));
-      appendCmd(str, "#set smilesUrlFormat " + Escape.escape(smilesUrlFormat));
-      appendCmd(str, "#set nihResolverFormat " + Escape.escape(nihResolverFormat));
-      appendCmd(str, "#set pubChemFormat " + Escape.escape(pubChemFormat));
-      appendCmd(str, "#set edsUrlFormat " + Escape.escape(edsUrlFormat));
-      appendCmd(str, "#set edsUrlCutoff " + Escape.escape(edsUrlCutoff));
+      appendCmd(str, "#set defaultDirectory " + Escape.escapeStr(defaultDirectory));
+      appendCmd(str, "#set loadFormat " + Escape.escapeStr(loadFormat));
+      appendCmd(str, "#set loadLigandFormat " + Escape.escapeStr(loadLigandFormat));
+      appendCmd(str, "#set smilesUrlFormat " + Escape.escapeStr(smilesUrlFormat));
+      appendCmd(str, "#set nihResolverFormat " + Escape.escapeStr(nihResolverFormat));
+      appendCmd(str, "#set pubChemFormat " + Escape.escapeStr(pubChemFormat));
+      appendCmd(str, "#set edsUrlFormat " + Escape.escapeStr(edsUrlFormat));
+      appendCmd(str, "#set edsUrlCutoff " + Escape.escapeStr(edsUrlCutoff));
 //      if (autoLoadOrientation)
   //      appendCmd(str, "set autoLoadOrientation true");
       appendCmd(str, "set legacyAutoBonding " + legacyAutoBonding);
@@ -1311,7 +1311,7 @@ public class StateManager {
           appendCmd(str, getObjectNameFromId(i) + "Color = \""
               + Escape.escapeColor(objColors[i]) + '"');
       if (backgroundImageFileName != null)
-        appendCmd(str, "background IMAGE /*file*/" + Escape.escape(backgroundImageFileName));
+        appendCmd(str, "background IMAGE /*file*/" + Escape.escapeStr(backgroundImageFileName));
       str.append(getSpecularState());
       appendCmd(str, "statusReporting  = " + statusReporting);
       if (sfunc != null)
@@ -1559,7 +1559,7 @@ public class StateManager {
                 .indexOf(_prefix) == 0)) {
           Object value = htNonbooleanParameterValues.get(key);
           if (value instanceof String)
-            value = chop(Escape.escape((String) value));
+            value = chop(Escape.escapeStr((String) value));
           list[n++] = (key.indexOf("_") == 0 ? key + " = " : "set " + key + " ")
               + value;
         }
@@ -1570,7 +1570,7 @@ public class StateManager {
         if (prefix == null || key.indexOf(prefix) == 0) {
           ScriptVariable value = htUserVariables.get(key);
           String s = value.asString();
-          list[n++] = key + " " + (key.startsWith("@") ? "" : "= ") + (value.tok == Token.string ? chop(Escape.escape(s)) : s);
+          list[n++] = key + " " + (key.startsWith("@") ? "" : "= ") + (value.tok == Token.string ? chop(Escape.escapeStr(s)) : s);
         }
       }
       Arrays.sort(list, 0, n);

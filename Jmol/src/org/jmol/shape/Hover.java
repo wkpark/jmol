@@ -133,8 +133,8 @@ public class Hover extends TextShape {
     if (atomFormats != null)
       for (int i = viewer.getAtomCount(); --i >= 0;)
         if (atomFormats[i] != null)
-          setStateInfo(temp, i, "set hoverLabel " + Escape.escape(atomFormats[i]));
-    return "\n  hover " + Escape.escape((labelFormat == null ? "" : labelFormat)) 
+          setStateInfo(temp, i, "set hoverLabel " + Escape.escapeStr(atomFormats[i]));
+    return "\n  hover " + Escape.escapeStr((labelFormat == null ? "" : labelFormat)) 
     + ";\n" + getShapeCommands(temp, null);
   }
 }

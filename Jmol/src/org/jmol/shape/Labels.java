@@ -597,7 +597,7 @@ public class Labels extends AtomShape {
     Map<String, BitSet> temp3 = new Hashtable<String, BitSet>();
     for (int i = bsSizeSet.nextSetBit(0); i >= 0; i = bsSizeSet
         .nextSetBit(i + 1)) {
-      setStateInfo(temp, i, "label " + Escape.escape(formats[i]));
+      setStateInfo(temp, i, "label " + Escape.escapeStr(formats[i]));
       if (bsColixSet != null && bsColixSet.get(i))
         setStateInfo(temp2, i, getColorCommand("label", paletteIDs[i],
             colixes[i]));

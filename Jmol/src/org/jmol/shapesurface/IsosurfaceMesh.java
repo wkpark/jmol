@@ -886,11 +886,11 @@ public class IsosurfaceMesh extends Mesh {
           }
     
     System.out.println("draw line1 {0 0 0} color red"
-        + Escape.escape(spanningVectors[1]));
+        + Escape.escapePt(spanningVectors[1]));
     System.out.println("draw line2 {0 0 0} color green"
-        + Escape.escape(spanningVectors[2]));
+        + Escape.escapePt(spanningVectors[2]));
     System.out.println("draw line3 {0 0 0} color blue"
-        + Escape.escape(spanningVectors[3]));
+        + Escape.escapePt(spanningVectors[3]));
     
     Point3f ptTemp = new Point3f();
     Point4f planeGammaK = new Point4f();

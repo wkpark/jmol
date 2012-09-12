@@ -856,7 +856,7 @@ public class ActionManager {
               Point3f ptNew = new Point3f(x, y, a.screenZ);
               viewer.unTransformPoint(ptNew, ptNew);
               viewer.script("assign atom ({" + dragAtomIndex + "}) \""
-                  + pickAtomAssignType + "\" " + Escape.escape(ptNew));
+                  + pickAtomAssignType + "\" " + Escape.escapePt(ptNew));
             }
           }
         }
@@ -1202,7 +1202,7 @@ public class ActionManager {
             + (iatom >= 0 ? "" + iatom : "") + "})");
         if (iatom >= 0)
           script = TextFormat.simpleReplace(script, "_POINT", Escape
-              .escape(viewer.getModelSet().atoms[iatom]));
+              .escapePt(viewer.getModelSet().atoms[iatom]));
       }
       if (!drawMode
           && (script.indexOf("_POINT") >= 0 || script.indexOf("_OBJECT") >= 0 || script
@@ -1214,9 +1214,9 @@ public class ActionManager {
             script = TextFormat.simpleReplace(script, "_BOND", "[{"
                 + t.get("index") + "}]");
           script = TextFormat.simpleReplace(script, "_POINT", Escape
-              .escape(nearestPoint));
+              .escapePt(nearestPoint));
           script = TextFormat
-              .simpleReplace(script, "_OBJECT", Escape.escape(t));
+              .simpleReplace(script, "_OBJECT", Escape.escapeMap(t));
         }
         script = TextFormat.simpleReplace(script, "_BOND", "[{}]");
         script = TextFormat.simpleReplace(script, "_OBJECT", "{}");
@@ -1729,7 +1729,7 @@ public class ActionManager {
         viewer.script("zoomTo (atomindex=" + atomIndex + ")");
         viewer.setStatusAtomPicked(atomIndex, null);
       } else {
-        viewer.script("zoomTo " + Escape.escape(ptClicked));
+        viewer.script("zoomTo " + Escape.escapePt(ptClicked));
       }
       return;
     case PICKING_SPIN:

@@ -198,7 +198,7 @@ class Mouse implements MouseWheelListener, MouseListener,
           if (ret == null)
             break;
           if (ret.startsWith("http://") && ret.indexOf("\n") < 0) {
-            viewer.evalString("load " + Escape.escape(ret));
+            viewer.evalString("load " + Escape.escapeStr(ret));
             break;
           }
           ret = viewer.loadInline(ret, false);
@@ -269,7 +269,7 @@ class Mouse implements MouseWheelListener, MouseListener,
     if (viewer.getBooleanProperty("showKeyStrokes"))
       viewer
           .evalStringQuiet("!set echo _KEYSTROKES; set echo bottom left;echo "
-              + Escape.escape("\1" + keyBuffer));
+              + Escape.escapeStr("\1" + keyBuffer));
   }
 
   private void sendKeyBuffer() {
@@ -277,7 +277,7 @@ class Mouse implements MouseWheelListener, MouseListener,
     if (viewer.getBooleanProperty("showKeyStrokes"))
       viewer
           .evalStringQuiet("!set echo _KEYSTROKES; set echo bottom left;echo "
-              + Escape.escape(keyBuffer));
+              + Escape.escapeStr(keyBuffer));
     clearKeyBuffer();
     viewer.script(kb);
   }

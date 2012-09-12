@@ -388,8 +388,8 @@ public abstract class SurfaceReader implements VertexDataServer {
     if (params.contactPair == null)
       setBoundingBox();
     if (!params.isSilent)
-      Logger.info("boundbox corners " + Escape.escape(xyzMin) + " "
-          + Escape.escape(xyzMax));
+      Logger.info("boundbox corners " + Escape.escapePt(xyzMin) + " "
+          + Escape.escapePt(xyzMax));
     jvxlData.boundingBox = new Point3f[] { xyzMin, xyzMax };
     jvxlData.dataMin = dataMin;
     jvxlData.dataMax = dataMax;

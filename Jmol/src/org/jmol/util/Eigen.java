@@ -1080,7 +1080,7 @@ public class Eigen {
       n.set(evec[i]);
       n.normalize();
       cross.cross(evec[i], evec[(i + 1)%3]);
-      Logger.info("draw id eigv" + i + " " + Escape.escape(evec[i]) + " color " + (i ==  0 ? "red": i == 1 ? "green" : "blue") + " # " + n + " " + cross);
+      Logger.info("draw id eigv" + i + " " + Escape.escapePt(evec[i]) + " color " + (i ==  0 ? "red": i == 1 ? "green" : "blue") + " # " + n + " " + cross);
     }
     Logger.info("eigVl (" + eigen.d[0] + " + " + eigen.e[0] 
         + "I) (" + eigen.d[1] + " + " + eigen.e[1] 

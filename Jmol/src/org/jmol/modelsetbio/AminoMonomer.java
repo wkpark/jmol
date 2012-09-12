@@ -242,7 +242,7 @@ public class AminoMonomer extends AlphaMonomer {
     nitrogenHydrogenPoint = new Point3f(aminoHydrogenPoint);
     if (Logger.debugging)
       Logger.info("draw ID \"pta" + monomerIndex + "_" + nitrogenPoint.index + "\" "
-          + Escape.escape(nitrogenPoint) + Escape.escape(aminoHydrogenPoint)
+          + Escape.escapePt(nitrogenPoint) + Escape.escapePt(aminoHydrogenPoint)
           + " # " + nitrogenPoint);
     return true;
   }

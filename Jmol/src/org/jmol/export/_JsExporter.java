@@ -490,7 +490,7 @@ public class _JsExporter extends __CartesianExporter {
       } else {
         output(fontstyle);
       }
-      output(" string " + Escape.escape(text) + "}}}}");
+      output(" string " + Escape.escapeStr(text) + "}}}}");
     } else {
       output(child);
     }

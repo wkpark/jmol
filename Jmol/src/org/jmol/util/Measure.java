@@ -172,11 +172,11 @@ final public class Measure {
           +"measure " + Escape.escape(a) + Escape.escape(pt_a_prime) + Escape.escape(pt_b_prime) + Escape.escape(b));
     */
     if (tokType == Token.draw)
-      return "draw ID \"" + id + "\" VECTOR " + Escape.escape(pt_a_prime)
-          + " " + Escape.escape(n) + " color "
+      return "draw ID \"" + id + "\" VECTOR " + Escape.escapePt(pt_a_prime)
+          + " " + Escape.escapePt(n) + " color "
           + (theta < 0 ? "{255.0 200.0 0.0}" : "{255.0 0.0 128.0}");
     if (tokType == Token.measure)
-      return "measure " + Escape.escape(a) + Escape.escape(pt_a_prime) + Escape.escape(pt_b_prime) + Escape.escape(b);
+      return "measure " + Escape.escapePt(a) + Escape.escapePt(pt_a_prime) + Escape.escapePt(pt_b_prime) + Escape.escapePt(b);
     // for now... array:
     float residuesPerTurn = Math.abs(theta == 0 ? 0 : 360f / theta);
     float pitch = Math.abs(v_dot_n == Float.MIN_VALUE ? 0 : n.length() * (theta == 0 ? 1 : 360f / theta));
@@ -185,10 +185,10 @@ final public class Measure {
       return new Object[] {pt_a_prime, n, r,  new Point3f(theta, pitch, residuesPerTurn)};
     case Token.list:
       return new String[] { 
-          Escape.escape(pt_a_prime), // a' 
-          Escape.escape(n), // n
-          Escape.escape(r), // r
-          Escape.escape(new Point3f(theta /*(degrees)*/,pitch, residuesPerTurn))
+          Escape.escapePt(pt_a_prime), // a' 
+          Escape.escapePt(n), // n
+          Escape.escapePt(r), // r
+          Escape.escapePt(new Point3f(theta /*(degrees)*/,pitch, residuesPerTurn))
           };
     default:
       return null;

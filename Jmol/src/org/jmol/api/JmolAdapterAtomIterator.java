@@ -107,11 +107,11 @@ public abstract class JmolAdapterAtomIterator {
 	}
 
 	public char getChainID() {
-		return (char) 0;
+		return '\0';
 	}
 
 	public char getAlternateLocationID() {
-		return (char) 0;
+		return '\0';
 	}
 
 	public String getGroup3() {
@@ -123,6 +123,6 @@ public abstract class JmolAdapterAtomIterator {
 	}
 
 	public char getInsertionCode() {
-		return (char) 0;
+		return '\0';
 	}
 }

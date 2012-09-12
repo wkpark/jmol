@@ -551,7 +551,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
       Map<String, Object> atomInfo = new Hashtable<String, Object>();
       int atomIndex = m.getAtomIndex(i);
       atomInfo.put("_ipt", Integer.valueOf(atomIndex));
-      atomInfo.put("coord", Escape.escape(m.getAtom(i)));
+      atomInfo.put("coord", Escape.escapePt(m.getAtom(i)));
       atomInfo.put("atomno", Integer.valueOf(atomIndex < 0 ? -1 : atoms[atomIndex].getAtomNumber()));
       atomInfo.put("info", (atomIndex < 0 ? "<point>" : atoms[atomIndex].getInfo()));
       atomsInfo.add(atomInfo);
@@ -608,7 +608,7 @@ public String getShapeState() {
         setStateInfo(temp, i, getColorCommand("measure", m.getColix()));
       if (m.getStrFormat() != null)
         setStateInfo(temp, i, "measure "
-            + Escape.escape(m.getStrFormat()));
+            + Escape.escapeStr(m.getStrFormat()));
     }
     if (nHidden > 0)
       if (nHidden == measurementCount)

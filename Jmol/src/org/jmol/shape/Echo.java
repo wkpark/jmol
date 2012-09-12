@@ -196,7 +196,7 @@ public class Echo extends TextShape {
       Text t = e.next();
       s.append(t.getState());
       if (t.hidden)
-        s.append("  set echo ID ").append(Escape.escape(t.target)).append(" hidden;\n");
+        s.append("  set echo ID ").append(Escape.escapeStr(t.target)).append(" hidden;\n");
     }
     return s.toString();
   }

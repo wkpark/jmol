@@ -59,7 +59,7 @@ public class _X3dExporter extends _VrmlExporter {
       + "xsd:noNamespaceSchemaLocation=' http://www.web3d.org/specifications/x3d-3.1.xsd '>"
       + "\n");
     output("<head>\n");
-    output("<meta name='title' content=" + Escape.escape(viewer.getModelSetName()).replace('<',' ').replace('>',' ').replace('&',' ') + "/>\n");
+    output("<meta name='title' content=" + Escape.escapeStr(viewer.getModelSetName()).replace('<',' ').replace('>',' ').replace('&',' ') + "/>\n");
     output("<meta name='description' content='Jmol rendering'/>\n");
     output("<meta name='creator' content=' '/>\n");
     output("<meta name='created' content='" + getExportDate() + "'/>\n");
@@ -423,7 +423,7 @@ public class _X3dExporter extends _VrmlExporter {
         + "<Transform translation='0.0 0.0 0.0'>"
         + "<Shape>");
       outputAppearance(colix, true);
-      output("<Text string=" + Escape.escape(text) + ">");
+      output("<Text string=" + Escape.escapeStr(text) + ">");
       output("<FontStyle ");
       String fontstyle = useTable.getDef("F" + useFontFace + useFontStyle);
       if (fontstyle.charAt(0) == '_') {

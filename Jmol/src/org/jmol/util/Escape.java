@@ -65,7 +65,7 @@ public class Escape {
    * @param xyz
    * @return  {x y z}
    */
-  public static String escape(Tuple3f xyz) {
+  public static String escapePt(Tuple3f xyz) {
     if (xyz == null)
       return "null";
     return "{" + xyz.x + " " + xyz.y + " " + xyz.z + "}";
@@ -78,17 +78,17 @@ public class Escape {
   @SuppressWarnings("unchecked")
   public static String escape(Object x) {
     if (x instanceof String)
-      return escape((String) x);
+      return escapeStr((String) x);
     if (x instanceof List<?>)
-      return escape((ArrayList<ScriptVariable>) x);
+      return escapeVar((ArrayList<ScriptVariable>) x);
     if (x instanceof BitSet) 
-      return escape((BitSet) x, true);
+      return escapeBs((BitSet) x, true);
     if (x instanceof Matrix3f) 
       return TextFormat.simpleReplace(((Matrix3f) x).toString(), "\t", ",\t");
     if (x instanceof Matrix4f) 
       return TextFormat.simpleReplace(((Matrix4f) x).toString(), "\t", ",\t");
     if (x instanceof Tuple3f)
-      return escape((Tuple3f) x);
+      return escapePt((Tuple3f) x);
     if (x instanceof Point4f) {
       Point4f xyzw = (Point4f) x;
       return "{" + xyzw.x + " " + xyzw.y + " " + xyzw.z + " " + xyzw.w + "}";
@@ -98,7 +98,7 @@ public class Escape {
       return "{" + a.x + " " + a.y + " " + a.z + " " + (float) (a.angle * 180d/Math.PI) + "}";
     }    
     if (x instanceof String[])
-      return escape((String[]) x, true);
+      return escapeStrA((String[]) x, true);
     if (x instanceof int[] 
           || x instanceof int[][]
           || x instanceof float[]
@@ -109,7 +109,7 @@ public class Escape {
     if (x instanceof Point3f[])
       return escapeArray(x);
     if (x instanceof Map)
-      return escape((Map<String, Object>) x);
+      return escapeMap((Map<String, Object>) x);
     return (x == null ? "null" : x.toString());
   }
 
@@ -118,7 +118,7 @@ public class Escape {
 
   private final static String escapable = "\\\\\tt\rr\nn\"\""; 
 
-  public static String escape(String str) {
+  public static String escapeStr(String str) {
     if (str == null)
       return "\"\"";
     boolean haveEscape = false;
@@ -154,9 +154,9 @@ public class Escape {
     return "\\u" + s.substring(s.length() - 4);
   }
 
-  public static String escape(ArrayList<ScriptVariable> list) {
+  public static String escapeVar(ArrayList<ScriptVariable> list) {
     if (list == null)
-      return escape("");
+      return escapeStr("");
     StringBuilder s = new StringBuilder();
     s.append("[");
     for (int i = 0; i < list.size(); i++) {
@@ -168,13 +168,13 @@ public class Escape {
     return s.toString();
   }
 
-  public static String escape(Map<String, Object> ht) {
+  public static String escapeMap(Map<String, Object> ht) {
     StringBuilder sb = new StringBuilder();
     sb.append("{ ");
     String sep = "";
     for (Map.Entry<String, Object> entry : ht.entrySet()) {
       String key = entry.getKey();
-      sb.append(sep).append(escape(key)).append(':');
+      sb.append(sep).append(escapeStr(key)).append(':');
       Object val = entry.getValue();
       if (!(val instanceof ScriptVariable))
         val = ScriptVariable.getVariable(val);
@@ -191,7 +191,7 @@ public class Escape {
    * @param asArray -- FALSE allows bypassing of escape(Object f); TRUE: unnecssary
    * @return tabular string
    */
-  public static String escape(float[] f, boolean asArray) {
+  public static String escapeFloatA(float[] f, boolean asArray) {
     if (asArray)
       return toJSON(null, f); // or just use escape(f)
     StringBuilder sb = new StringBuilder();
@@ -203,7 +203,7 @@ public class Escape {
     return sb.toString();
   }
 
-  public static String escape(float[][] f, boolean addSemi) {
+  public static String escapeFloatAA(float[][] f, boolean addSemi) {
     StringBuilder sb = new StringBuilder();
     String eol = (addSemi ? ";\n" : "\n");
     for (int i = 0; i < f.length; i++)
@@ -216,7 +216,7 @@ public class Escape {
     return sb.toString();
   }
 
-  public static String escape(float[][][] f, boolean addSemi) {
+  public static String escapeFloatAAA(float[][][] f, boolean addSemi) {
     StringBuilder sb = new StringBuilder();
     String eol = (addSemi ? ";\n" : "\n");
     if (f[0] == null || f[0][0] == null)
@@ -244,15 +244,15 @@ public class Escape {
    * @param nicely TODO
    * @return serialized array
    */
-  public static String escape(String[] list, boolean nicely) {
+  public static String escapeStrA(String[] list, boolean nicely) {
     if (list == null)
-      return escape("");
+      return escapeStr("");
     StringBuilder s = new StringBuilder();
     s.append("[");
     for (int i = 0; i < list.length; i++) {
       if (i > 0)
         s.append(", ");
-      s.append(nicely ? escapeNice(list[i]) : escape(list[i]));
+      s.append(nicely ? escapeNice(list[i]) : escapeStr(list[i]));
     }
     s.append("]");
     return s.toString();
@@ -261,7 +261,7 @@ public class Escape {
   public static String escapeArray(Object x) {
     // from isosurface area or volume calc
     if (x == null)
-      return escape("");
+      return escapeStr("");
     if (x instanceof Float)
       return "" + x;
     StringBuilder s = new StringBuilder();
@@ -293,7 +293,7 @@ public class Escape {
       for (int i = 0; i < plist.length; i++) {
         if (i > 0)
           s.append(", ");
-        s.append(escape(plist[i]));
+        s.append(escapePt(plist[i]));
       }
       return s.append("]").toString();
     }
@@ -306,7 +306,7 @@ public class Escape {
     if (s == null)
       return "null";
     float f = Parser.parseFloatStrict(s);
-    return (Float.isNaN(f) ? escape(s) : s);
+    return (Float.isNaN(f) ? escapeStr(s) : s);
   }
 
   public static Object unescapePointOrBitsetOrMatrixOrArray(String s) {
@@ -450,7 +450,7 @@ public class Escape {
     return points;
   }
 */
-  public static String escape(BitSet bs, boolean isAtoms) {
+  public static String escapeBs(BitSet bs, boolean isAtoms) {
     char chOpen = (isAtoms ? '(' : '[');
     char chClose = (isAtoms ? ')' : ']');
     if (bs == null)
@@ -691,12 +691,12 @@ public class Escape {
     if (info == null)
       return "null";
     if (info instanceof String)
-      return packageReadable(name, null, escape((String) info));
+      return packageReadable(name, null, escapeStr((String) info));
     if (info instanceof String[]) {
       sb.append("[");
       int imax = ((String[]) info).length;
       for (int i = 0; i < imax; i++) {
-        sb.append(sep).append(escape(((String[]) info)[i]));
+        sb.append(sep).append(escapeStr(((String[]) info)[i]));
         sep = ",";
       }
       sb.append("]");
@@ -726,7 +726,7 @@ public class Escape {
       sb.append("[");
       int imax = ((Point3f[]) info).length;
       for (int i = 0; i < imax; i++) {
-        sb.append(sep).append(escape(((Point3f[])info)[i]));
+        sb.append(sep).append(escapePt(((Point3f[])info)[i]));
         sep = ",";
       }
       sb.append("]");
@@ -808,9 +808,9 @@ public class Escape {
   public static Object encapsulateData(String name, Object data) {
     return "  DATA \"" + name + "\"\n" + 
         (data instanceof float[][] ?
-          escape((float[][]) data, true) + ";\n"
+          escapeFloatAA((float[][]) data, true) + ";\n"
           : data instanceof float[][][] ?
-              escape((float[][][]) data, true) + ";\n"
+              escapeFloatAAA((float[][][]) data, true) + ";\n"
           : data) + "    END \"" + name + "\";\n";
   }
 

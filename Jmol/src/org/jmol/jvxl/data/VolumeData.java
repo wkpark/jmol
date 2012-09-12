@@ -502,12 +502,12 @@ public class VolumeData implements VolumeDataInterface {
       XmlUtil.appendTag(sb, "jvxlVolumeData", null);
     } else {   
       XmlUtil.openTag(sb, "jvxlVolumeData", new String[] {
-          "origin", Escape.escape(volumetricOrigin) });
+          "origin", Escape.escapePt(volumetricOrigin) });
       for (int i = 0; i < 3; i++) 
         XmlUtil.appendTag(sb, "jvxlVolumeVector", new String[] {
             "type", "" + i,
             "count", "" + voxelCounts[i],
-            "vector", Escape.escape(volumetricVectors[i]) } );
+            "vector", Escape.escapePt(volumetricVectors[i]) } );
       XmlUtil.closeTag(sb, "jvxlVolumeData");
     }
     return xmlData = sb.toString();

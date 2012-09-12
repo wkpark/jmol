@@ -842,7 +842,7 @@ public class AtomSetCollection {
   public Point3f ptSupercell;
   public void setSupercell(Point3f pt) {
     ptSupercell = pt;
-    Logger.info("Using supercell " + Escape.escape(pt));
+    Logger.info("Using supercell " + Escape.escapePt(pt));
   }
   
   public float[] fmatSupercell;

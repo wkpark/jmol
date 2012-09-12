@@ -118,7 +118,7 @@ public class JcampdxReader extends MolReader {
     }
     selectedModel = desiredModelNumber;
     desiredModelNumber = Integer.MIN_VALUE;
-    peakFilePath = Escape.escape(filePath);
+    peakFilePath = Escape.escapeStr(filePath);
     htParams.remove("modelNumber");
     // peakIndex will be passed on to additional files in a ZIP file load
     // the peak file path is stripped of the "|xxxx.jdx" part 
@@ -129,7 +129,7 @@ public class JcampdxReader extends MolReader {
         htParams.put("peakIndex", peakIndex);
       }
       if (!htParams.containsKey("subFileName"))
-        peakFilePath = Escape.escape(TextFormat.split(filePath, '|')[0]);
+        peakFilePath = Escape.escapeStr(TextFormat.split(filePath, '|')[0]);
     } else {
       peakIndex = new int[1];
     }

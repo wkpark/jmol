@@ -469,7 +469,7 @@ public class Parameters {
   
   private String getScriptParams() {
     return " center "
-        + Escape.escape(center) + (Float.isNaN(scale) ? "" : " scale " + scale);
+        + Escape.escapePt(center) + (Float.isNaN(scale) ? "" : " scale " + scale);
   }
 
   void setLp(Point4f v) {
@@ -481,7 +481,7 @@ public class Parameters {
         cutoff = cutoff * cutoff;
     } 
     isSilent = !logMessages;
-    script = " center " + Escape.escape(center)
+    script = " center " + Escape.escapePt(center)
         + (Float.isNaN(scale) ? "" : " scale " + scale) + " LP {" + v.x + " "
         + v.y + " " + v.z + " " + v.w + "};";
   }
@@ -495,7 +495,7 @@ public class Parameters {
         cutoff = cutoff * cutoff;
     }
     isSilent = !logMessages;
-    script = " center " + Escape.escape(center)
+    script = " center " + Escape.escapePt(center)
         + (Float.isNaN(scale) ? "" : " scale " + scale) + " RAD {" + v.x + " "
         + v.y + " " + v.z + " " + v.w + "};";
   }

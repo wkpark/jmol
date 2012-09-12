@@ -419,7 +419,7 @@ abstract public class AtomCollection {
         for (int j = points.length; --j >= 0;) {
           float d = Math.abs(points[j].distance(atom) - radiusAdjust);
           if (d < 0 && Logger.debugging)
-            Logger.debug("draw d" + j + " " + Escape.escape(points[j])
+            Logger.debug("draw d" + j + " " + Escape.escapePt(points[j])
                 + " \"" + d + " ? " + atom.getInfo() + "\"");
           dMin = Math.min(d, dMin);
         }

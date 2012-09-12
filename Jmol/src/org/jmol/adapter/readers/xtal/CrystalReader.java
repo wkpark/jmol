@@ -316,13 +316,13 @@ public class CrystalReader extends AtomSetCollectionReader {
     directLatticeVectors = read3Vectors(isBohr);
     if (Logger.debugging) {
       addJmolScript("draw va vector {0 0 0} "
-          + Escape.escape(directLatticeVectors[0]) + " color red");
+          + Escape.escapePt(directLatticeVectors[0]) + " color red");
       if (!isPolymer) {
         addJmolScript("draw vb vector {0 0 0} "
-            + Escape.escape(directLatticeVectors[1]) + " color green");
+            + Escape.escapePt(directLatticeVectors[1]) + " color green");
         if (!isSlab)
           addJmolScript("draw vc vector {0 0 0} "
-              + Escape.escape(directLatticeVectors[2]) + " color blue");
+              + Escape.escapePt(directLatticeVectors[2]) + " color blue");
       }
     }
     Vector3f a = new Vector3f();

@@ -917,7 +917,7 @@ class PointGroup {
       if (!haveType || type.equalsIgnoreCase("Ci"))
         sb.append("draw pg0").append(m).append(
             haveInversionCenter ? "inv " : " ").append(
-            Escape.escape(center)).append(haveInversionCenter ? "\"i\";\n" : ";\n");
+            Escape.escapePt(center)).append(haveInversionCenter ? "\"i\";\n" : ";\n");
       float offset = 0.1f;
       for (int i = 2; i < maxAxis; i++) {
         if (i == firstProper)
@@ -939,10 +939,10 @@ class PointGroup {
               scale = -scale;
             sb.append("draw pgva").append(m).append(label).append("_").append(
                 j + 1).append(" width 0.05 scale ").append(scale).append(" ").append(
-                Escape.escape(v));
+                Escape.escapePt(v));
             v.scaleAdd(-2, op.normalOrAxis, v);
             boolean isPA = (principalAxis != null && op.index == principalAxis.index);
-            sb.append(Escape.escape(v)).append(
+            sb.append(Escape.escapePt(v)).append(
                 "\"").append(label).append(isPA ? "*" : "").append("\" color ").append(
                 isPA ? "red" : op.type == OPERATION_IMPROPER_AXIS ? "blue"
                     : "yellow").append(";\n");
@@ -955,22 +955,22 @@ class PointGroup {
           op = axes[0][j];
           sb.append("draw pgvp").append(m).append(j + 1).append(
               "disk scale ").append(scaleFactor * radius * 2).append(" CIRCLE PLANE ")
-              .append(Escape.escape(center));
+              .append(Escape.escapePt(center));
           v.set(op.normalOrAxis);
           v.add(center);
-          sb.append(Escape.escape(v)).append(" color translucent yellow;\n");
+          sb.append(Escape.escapePt(v)).append(" color translucent yellow;\n");
           v.set(op.normalOrAxis);
           v.add(center);
           sb.append("draw pgvp").append(m).append(j + 1).append(
               "ring width 0.05 scale ").append(scaleFactor * radius * 2).append(" arc ")
-              .append(Escape.escape(v));
+              .append(Escape.escapePt(v));
           v.scaleAdd(-2, op.normalOrAxis, v);
-          sb.append(Escape.escape(v));
+          sb.append(Escape.escapePt(v));
           v.x += 0.011;
           v.y += 0.012;
           v.z += 0.013;
           sb
-              .append(Escape.escape(v))
+              .append(Escape.escapePt(v))
               .append("{0 360 0.5} color ")
               .append(
                   principalPlane != null && op.index == principalPlane.index ? "red"
@@ -997,7 +997,7 @@ class PointGroup {
     if (haveInversionCenter)
       nTotal++;
     if (info == null)
-      sb.append("\n\n").append(name).append("\t").append(ctype).append("\t").append(Escape.escape(center));
+      sb.append("\n\n").append(name).append("\t").append(ctype).append("\t").append(Escape.escapePt(center));
     else
       info.put(ctype, center);
     for (int i = maxAxis; --i >= 0;) {

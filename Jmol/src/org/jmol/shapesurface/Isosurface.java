@@ -884,7 +884,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if (imesh.linkedMesh != null)
       cmd += " LINK"; // for lcaoCartoon state
     appendCmd(sb, cmd);
-    String id = myType + " ID " + Escape.escape(imesh.thisID);
+    String id = myType + " ID " + Escape.escapeStr(imesh.thisID);
     if (imesh.jvxlData.thisSet >= 0)
       appendCmd(sb, id + " set " + (imesh.jvxlData.thisSet + 1));
     if (imesh.mat4 != null)
@@ -915,7 +915,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         for (Map.Entry<String, BitSet> entry : imesh.vertexColorMap.entrySet()) {
           BitSet bs = entry.getValue();
           if (!bs.isEmpty())
-            appendCmd(sb, "color " + myType + " " + Escape.escape(bs, true)
+            appendCmd(sb, "color " + myType + " " + Escape.escapeBs(bs, true)
                 + " " + entry.getKey());
         }
     }
@@ -1400,7 +1400,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     thisMesh.scale3d = sg.getParams().scale3d;
     if (script != null) {
       if (script.charAt(0) == ' ') {
-        script = myType + " ID " + Escape.escape(thisMesh.thisID) + script;
+        script = myType + " ID " + Escape.escapeStr(thisMesh.thisID) + script;
         pt = script.indexOf("; isosurface map");
       }
     }    

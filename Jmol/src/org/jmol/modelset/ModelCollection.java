@@ -365,13 +365,13 @@ abstract public class ModelCollection extends BondCollection {
       return "boundbox " + Escape.escape(bboxAtoms);
     ptTemp.set(boxInfo.getBoundBoxCenter());
     Vector3f bbVector = boxInfo.getBoundBoxCornerVector();
-    String s = (withOptions ? "boundbox " + Escape.escape(ptTemp) + " "
-        + Escape.escape(bbVector) + "\n#or\n" : "");
+    String s = (withOptions ? "boundbox " + Escape.escapePt(ptTemp) + " "
+        + Escape.escapePt(bbVector) + "\n#or\n" : "");
     ptTemp.sub(bbVector);
-    s += "boundbox corners " + Escape.escape(ptTemp) + " ";
+    s += "boundbox corners " + Escape.escapePt(ptTemp) + " ";
     ptTemp.scaleAdd(2, bbVector, ptTemp);
     float v = Math.abs(8 * bbVector.x * bbVector.y * bbVector.z);
-    s += Escape.escape(ptTemp) + " # volume = " + v;
+    s += Escape.escapePt(ptTemp) + " # volume = " + v;
     return s;
   }
 
@@ -609,7 +609,7 @@ abstract public class ModelCollection extends BondCollection {
       
       StringBuffer sb = new StringBuffer(script1);
       if (bsBonds != null)
-        sb.append(" ").append(Escape.escape(bsBonds, false));
+        sb.append(" ").append(Escape.escapeBs(bsBonds, false));
       if (bsAtoms1 != null)
         sb.append(" ").append(Escape.escape(bsAtoms1));
       if (bsAtoms2 != null)
@@ -1328,10 +1328,10 @@ abstract public class ModelCollection extends BondCollection {
       sb.append("REMARK   6 Jmol PDB-encoded data: ").append(type)
           .append(";\n");
       sb.append("REMARK   6 Jmol data").append(" min = ").append(
-          Escape.escape(minXYZ)).append(" max = ")
-          .append(Escape.escape(maxXYZ)).append(" unScaledXyz = xyz * ")
-          .append(Escape.escape(factors)).append(" + ").append(
-              Escape.escape(center)).append(";\n");
+          Escape.escapePt(minXYZ)).append(" max = ")
+          .append(Escape.escapePt(maxXYZ)).append(" unScaledXyz = xyz * ")
+          .append(Escape.escapePt(factors)).append(" + ").append(
+              Escape.escapePt(center)).append(";\n");
       String strExtra = "";
       Atom atomLast = null;
       for (int i = bsAtoms.nextSetBit(0), n = 0; i >= 0; i = bsAtoms
@@ -2946,19 +2946,19 @@ abstract public class ModelCollection extends BondCollection {
       while (e.hasMoreElements()) {
         String propertyName = (String) e.nextElement();
         sb.append("\n <property name=\"").append(propertyName).append("\" value=").append(
-            Escape.escape(modelSetProperties.getProperty(propertyName))).append(" />");
+            Escape.escapeStr(modelSetProperties.getProperty(propertyName))).append(" />");
       }
       sb.append("\n</properties>");
     }
     for (int i = 0; i < modelCount; ++i) {
       sb.append("\n<model index=\"").append(i)
           .append("\" n=\"").append(getModelNumberDotted(i))
-          .append("\" id=").append(Escape.escape("" + getModelAuxiliaryInfo(i, "modelID")));
+          .append("\" id=").append(Escape.escapeStr("" + getModelAuxiliaryInfo(i, "modelID")));
           int ib = getBaseModelIndex(i);
           if (ib != i)
             sb.append(" baseModelId=").append(Escape.escape(getModelAuxiliaryInfo(ib, "jdxModelID")));
-          sb.append(" name=").append(Escape.escape(getModelName(i)))
-          .append(" title=").append(Escape.escape(
+          sb.append(" name=").append(Escape.escapeStr(getModelName(i)))
+          .append(" title=").append(Escape.escapeStr(
               getModelTitle(i)))
            .append(" hasVibrationVectors=\"").append(
               modelHasVibrationVectors(i)).append("\" />");
@@ -3315,12 +3315,12 @@ abstract public class ModelCollection extends BondCollection {
       if (frames != null && !frames.get(i))
         continue;
       String s = "[\"" + getModelNumberDotted(i) + "\"] = ";
-      sb.append("\n\nfile").append(s).append(Escape.escape(getModelFileName(i)));
+      sb.append("\n\nfile").append(s).append(Escape.escapeStr(getModelFileName(i)));
       String id = (String) getModelAuxiliaryInfo(i, "modelID");
       if (id != null)
-        sb.append("\nid").append(s).append(Escape.escape(id));
-      sb.append("\ntitle").append(s).append(Escape.escape(getModelTitle(i)));
-      sb.append("\nname").append(s).append(Escape.escape(getModelName(i)));
+        sb.append("\nid").append(s).append(Escape.escapeStr(id));
+      sb.append("\ntitle").append(s).append(Escape.escapeStr(getModelTitle(i)));
+      sb.append("\nname").append(s).append(Escape.escapeStr(getModelName(i)));
     }
     return sb.toString();
   }
@@ -3665,9 +3665,9 @@ abstract public class ModelCollection extends BondCollection {
           (String) info[1],
           (String) info[2],
           // skipping DRAW commands here
-          Escape.escape((Vector3f) info[4]), Escape.escape((Vector3f) info[5]),
-          Escape.escape((Point3f) info[6]), Escape.escape((Point3f) info[7]),
-          Escape.escape((Vector3f) info[8]), "" + info[9],
+          Escape.escapePt((Vector3f) info[4]), Escape.escapePt((Vector3f) info[5]),
+          Escape.escapePt((Point3f) info[6]), Escape.escapePt((Point3f) info[7]),
+          Escape.escapePt((Vector3f) info[8]), "" + info[9],
           "" + Escape.escape(info[10]) };
       return sinfo;
     case Token.info:

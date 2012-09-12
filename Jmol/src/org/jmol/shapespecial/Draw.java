@@ -1311,7 +1311,7 @@ public void initShape() {
     int modelCount = viewer.getModelCount();
     if (!mesh.isFixed && iModel >= 0 && modelCount > 1)
       appendCmd(str, "frame " + viewer.getModelNumberDotted(iModel));
-    str.append("  draw ID ").append(Escape.escape(mesh.thisID));
+    str.append("  draw ID ").append(Escape.escapeStr(mesh.thisID));
     if (mesh.isFixed)
       str.append(" fixed");
     if (iModel < 0)
@@ -1335,9 +1335,9 @@ public void initShape() {
       int n = mesh.lineData.size();
       for (int j = 0; j < n;) {
         Point3f[] pts = mesh.lineData.get(j);
-        str.append(Escape.escape(pts[0]));
+        str.append(Escape.escapePt(pts[0]));
         str.append(" ");
-        str.append(Escape.escape(pts[1]));
+        str.append(Escape.escapePt(pts[1]));
         if (++j < n)
           str.append(", ");
       }
@@ -1398,7 +1398,7 @@ public void initShape() {
           }
       } else if (mesh.drawType == EnumDrawType.POLYGON) {
         for (int i = 0; i < mesh.vertexCount; i++)
-          str.append(" ").append(Escape.escape(mesh.vertices[i]));
+          str.append(" ").append(Escape.escapePt(mesh.vertices[i]));
         str.append(" ").append(mesh.polygonCount);
         for (int i = 0; i < mesh.polygonCount; i++)
           if (mesh.polygonIndexes[i] == null)
@@ -1415,13 +1415,13 @@ public void initShape() {
     if (mesh.mat4 != null) {
       Vector3f v = new Vector3f();
       mesh.mat4.get(v);
-      str.append(" offset ").append(Escape.escape(v));
+      str.append(" offset ").append(Escape.escapePt(v));
     }
     if (mesh.title != null) {
       String s = "";
       for (int i = 0; i < mesh.title.length; i++)
         s += "|" + mesh.title[i];
-      str.append(Escape.escape(s.substring(1)));
+      str.append(Escape.escapeStr(s.substring(1)));
     }
     str.append(";\n");
     appendCmd(str, mesh.getState("draw"));
@@ -1448,9 +1448,9 @@ public void initShape() {
         } else if (adjustPt && i == 1){
           Point3f pt1 = new Point3f(pt);
           pt1.sub(mesh.vertices[mesh.polygonIndexes[iModel][0]]);
-          str += " " + Escape.escape(pt1);
+          str += " " + Escape.escapePt(pt1);
         } else {
-          str += " " + Escape.escape(pt);
+          str += " " + Escape.escapePt(pt);
         }
       }
     } catch (Exception e) {

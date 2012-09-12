@@ -268,11 +268,11 @@ public class Ellipsoids extends AtomShape {
         continue;
       sb.append("  Ellipsoid ID ").append(ellipsoid.id).append(" modelIndex ")
           .append(ellipsoid.modelIndex).append(" center ").append(
-              Escape.escape(ellipsoid.center)).append(" axes");
+              Escape.escapePt(ellipsoid.center)).append(" axes");
       for (int i = 0; i < 3; i++) {
         v1.set(ellipsoid.axes[i]);
         v1.scale(ellipsoid.lengths[i]);
-        sb.append(" ").append(Escape.escape(v1));
+        sb.append(" ").append(Escape.escapePt(v1));
       }
       sb.append(" " + getColorCommand("", ellipsoid.colix));
       if (!ellipsoid.isOn)

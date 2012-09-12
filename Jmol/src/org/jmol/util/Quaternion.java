@@ -618,15 +618,15 @@ public class Quaternion {
 
   public String draw(String prefix, String id, Point3f ptCenter, 
                      float scale) {
-    String strV = " VECTOR " + Escape.escape(ptCenter) + " ";
+    String strV = " VECTOR " + Escape.escapePt(ptCenter) + " ";
     if (scale == 0)
       scale = 1f;
     return "draw " + prefix + "x" + id + strV
-        + Escape.escape(getVector(0, scale)) + " color red\n"
+        + Escape.escapePt(getVector(0, scale)) + " color red\n"
         + "draw " + prefix + "y" + id + strV
-        + Escape.escape(getVector(1, scale)) + " color green\n"
+        + Escape.escapePt(getVector(1, scale)) + " color green\n"
         + "draw " + prefix + "z" + id + strV
-        + Escape.escape(getVector(2, scale)) + " color blue\n";
+        + Escape.escapePt(getVector(2, scale)) + " color blue\n";
   }
 
   /**

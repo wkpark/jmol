@@ -134,7 +134,7 @@ public class JvxlCoder {
     
     XmlUtil.openTag(sb, "jvxlSurfaceData", (vertexDataOnly || jvxlData.jvxlPlane == null ? null :
       jvxlData.mapLattice == null ? new String[] { "plane", Escape.escape(jvxlData.jvxlPlane) }
-      :  new String[] { "plane", Escape.escape(jvxlData.jvxlPlane),  "maplattice", Escape.escape(jvxlData.mapLattice)  }));
+      :  new String[] { "plane", Escape.escape(jvxlData.jvxlPlane),  "maplattice", Escape.escapePt(jvxlData.mapLattice)  }));
     if (vertexDataOnly) {
       appendXmlVertexOnlyData(sb, jvxlData, meshData, true);
     } else if (jvxlData.jvxlPlane == null) {
@@ -369,8 +369,8 @@ public class JvxlCoder {
     else if (jvxlData.isXLowToHigh)
       addAttrib(attribs, "\n  note", "progressive JVXL+ -- X values read from low(0) to high("
               + (jvxlData.nPointsX - 1) + ")");
-    addAttrib(attribs, "\n  xyzMin", Escape.escape(jvxlData.boundingBox[0]));
-    addAttrib(attribs, "\n  xyzMax", Escape.escape(jvxlData.boundingBox[1]));
+    addAttrib(attribs, "\n  xyzMin", Escape.escapePt(jvxlData.boundingBox[0]));
+    addAttrib(attribs, "\n  xyzMax", Escape.escapePt(jvxlData.boundingBox[1]));
     addAttrib(attribs, "\n  approximateCompressionRatio", "not calculated");
     addAttrib(attribs, "\n  jmolVersion", jvxlData.version);
     
@@ -805,8 +805,8 @@ public class JvxlCoder {
     XmlUtil.appendTag(sb, "jvxlVertexData",
         new String[] { 
             "count", "" + n, 
-            "min", Escape.escape(min), 
-            "max", Escape.escape(max), 
+            "min", Escape.escapePt(min), 
+            "max", Escape.escapePt(max), 
             "encoding", "base90xyz2", 
             "data", jvxlCompressString(list1.toString(), escapeXml),
             }, null);

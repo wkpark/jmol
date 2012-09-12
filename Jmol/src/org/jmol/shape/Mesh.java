@@ -274,9 +274,9 @@ public class Mesh extends MeshSurface {
       //s.append("/** XML ** ").append(sxml).append(" ** XML **/\n");
     s.append(type);
     if (!type.equals("mo"))
-      s.append(" ID ").append(Escape.escape(thisID));
+      s.append(" ID ").append(Escape.escapeStr(thisID));
     if (lattice != null)
-      s.append(" lattice ").append(Escape.escape(lattice));
+      s.append(" lattice ").append(Escape.escapePt(lattice));
     if (meshColix != 0)
       s.append(" color mesh ").append(Colix.getHexCode(meshColix));
     s.append(getRendering());
@@ -285,7 +285,7 @@ public class Mesh extends MeshSurface {
     if (bsDisplay != null) {
       s.append(";\n  ").append(type);
       if (!type.equals("mo"))
-        s.append(" ID ").append(Escape.escape(thisID));
+        s.append(" ID ").append(Escape.escapeStr(thisID));
       s.append(" display " + Escape.escape(bsDisplay));
     }
     return s.toString();

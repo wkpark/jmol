@@ -368,7 +368,7 @@ class DataManager {
     String tag = (isAppend ? "append" : "model") + " inline";
     loadScript.append("load /*data*/ data \"").append(tag).append("\"\n")
         .append(strModel).append("end \"").append(tag)
-        .append(loadFilter == null || loadFilter.length() == 0 ? "" : " filter" + Escape.escape(loadFilter))
+        .append(loadFilter == null || loadFilter.length() == 0 ? "" : " filter" + Escape.escapeStr(loadFilter))
         .append("\";");
   }
 }

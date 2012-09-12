@@ -121,7 +121,7 @@ public interface ApiPlatform {
 
   Object getJsObjectInfo(Object jsObject, String method, Object[] args);
 
-  FileAdapterInterface getFileAdapter();
+  JmolFileAdapterInterface getFileAdapter();
 
   JmolFileInterface newFile(String name);
 

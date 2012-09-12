@@ -559,9 +559,9 @@ abstract public class JmolViewer {
 
   public ApiPlatform apiPlatform; // used in Viewer and JmolViewer
 
-  private FileAdapterInterface fileAdapter;
+  private JmolFileAdapterInterface fileAdapter;
 
-  public FileAdapterInterface getFileAdapter() {
+  public JmolFileAdapterInterface getFileAdapter() {
     return (fileAdapter == null ? fileAdapter = apiPlatform.getFileAdapter()
         : fileAdapter);
   }

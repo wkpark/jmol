@@ -35,7 +35,7 @@ import org.jmol.util.TextFormat;
 import org.jmol.util.ZipUtil;
 import org.jmol.viewer.Viewer.ACCESS;
 
-import org.jmol.api.FileAdapterInterface;
+import org.jmol.api.JmolFileAdapterInterface;
 import org.jmol.api.JmolFileInterface;
 import org.jmol.api.JmolFilesReaderInterface;
 import org.jmol.api.JmolViewer;
@@ -184,14 +184,21 @@ public class FileManager {
     return null;
   }
 
+  static BufferedInputStream getInputStreamForStringBuffer(Object t) {
+    return new BufferedInputStream(new ByteArrayInputStream(((StringBuffer) t)
+        .toString().getBytes()));
+    }
+
   static BufferedReader getBufferedReaderForString(String string) {
     return new BufferedReader(new StringReader(string));
   }
 
   private String getZipDirectoryAsString(String fileName) {
-    return ZipUtil
-        .getZipDirectoryAsStringAndClose((BufferedInputStream) getBufferedInputStreamOrErrorMessageFromName(
-            fileName, fileName, false, false, null));
+  	Object t = getBufferedInputStreamOrErrorMessageFromName(
+        fileName, fileName, false, false, null);
+  	if (t instanceof StringBuffer)
+  		t = getInputStreamForStringBuffer(t);
+    return ZipUtil.getZipDirectoryAsStringAndClose((BufferedInputStream) t);
   }
 
   /////////////// createAtomSetCollectionFromXXX methods /////////////////
@@ -433,15 +440,19 @@ public class FileManager {
     Object ret = null;
     // int length;
     try {
-      FileAdapterInterface fai = viewer.getFileAdapter();
+      JmolFileAdapterInterface fai = viewer.getFileAdapter();
       if (cacheBytes == null && (isApplet || isURL)) {
         if (isApplet && isURL && appletProxy != null)
           name = appletProxy + "?url=" + urlEncode(name);
         URL url = (isApplet ? new URL(appletDocumentBaseURL, name) : new URL(name));
+        if (checkOnly)
+        	return null;
         name = url.toString();
-        if (showMsg && !checkOnly && name.toLowerCase().indexOf("password") < 0)
+        if (showMsg && name.toLowerCase().indexOf("password") < 0)
           Logger.info("FileManager opening " + name);
-        ret = fai.getBufferedURLInputStream(url, outputBytes, post, checkOnly);
+        ret = fai.getBufferedURLInputStream(url, outputBytes, post);
+        if (ret instanceof StringBuffer || ret instanceof String)
+          return ret;
       } else if (cacheBytes == null
           && (cacheBytes = (byte[]) cacheGet(name, true)) == null) {
         if (showMsg)
@@ -508,7 +519,7 @@ public class FileManager {
       if (data instanceof byte[]) {
         bytes = (byte[]) data;
       } else {
-        return new BufferedReader(new StringReader((String) data));
+        return getBufferedReaderForString((String) data);
       }
     }
     String[] names = classifyName(name, true);
@@ -606,6 +617,8 @@ public class FileManager {
         : new BufferedInputStream(new ByteArrayInputStream(bytes)));
     if (t instanceof String)
       return t;
+    if (t instanceof StringBuffer)
+      return getInputStreamForStringBuffer(t);
     try {
       BufferedInputStream bis = (BufferedInputStream) t;
       if (ZipUtil.isGzip(bis)) {
@@ -644,12 +657,14 @@ public class FileManager {
    * 
    * @param fileName
    * @param addManifest
-   * @return  [] if not a zip file; 
+   * @return [] if not a zip file;
    */
   String[] getZipDirectory(String fileName, boolean addManifest) {
-    return ZipUtil.getZipDirectoryAndClose(
-        (BufferedInputStream) getBufferedInputStreamOrErrorMessageFromName(fileName, fileName, false,
-            false, null), addManifest);
+    Object t = getBufferedInputStreamOrErrorMessageFromName(fileName, fileName,
+        false, false, null);
+    if (t instanceof StringBuffer)
+      t = getInputStreamForStringBuffer(t);
+    return ZipUtil.getZipDirectoryAndClose((BufferedInputStream) t, addManifest);
   }
 
   /**
@@ -691,6 +706,8 @@ public class FileManager {
         fileData.put(name0, (String) t + "\n");
         return name0;
       }
+      if (t instanceof StringBuffer)
+        t = getInputStreamForStringBuffer(t);
       bis = (BufferedInputStream) t;
       if (CompoundDocument.isCompoundDocument(bis)) {
         CompoundDocument doc = new CompoundDocument(bis);
@@ -761,6 +778,8 @@ public class FileManager {
         null);
     if (t instanceof String)
       return "Error:" + t;
+    if (t instanceof StringBuffer)
+      t = getInputStreamForStringBuffer(t);
     try {
       BufferedInputStream bis = (BufferedInputStream) t;
       Object bytes = (os != null || subFileList == null || subFileList.length <= 1
@@ -1502,6 +1521,8 @@ public class FileManager {
         false, bytes);
     if (ret instanceof String)
       return (String) ret;
+    if (ret instanceof StringBuffer)
+    	ret = getInputStreamForStringBuffer(ret);
     try {
       ret = getStreamAsBytes((BufferedInputStream) ret, null);
     } catch (IOException e) {
@@ -1707,8 +1728,11 @@ public class FileManager {
         if (subFileList != null)
           htParams.put("subFileList", subFileList);
         String[] zipDirectory = getZipDirectory(name, true);
-        BufferedInputStream bis = (BufferedInputStream) getBufferedInputStreamOrErrorMessageFromName(name, fullPathNamesIn[i], 
+        t = getBufferedInputStreamOrErrorMessageFromName(name, fullPathNamesIn[i], 
             false, false, null);
+        BufferedInputStream bis = (t instanceof StringBuffer 
+        		? getInputStreamForStringBuffer(t)
+        		: (BufferedInputStream) t);
         t = viewer.getModelAdapter()
             .getAtomSetCollectionOrBufferedReaderFromZip(bis, name,
                 zipDirectory, htParams, true, isBinary);
@@ -1985,11 +2009,9 @@ public class FileManager {
     data[0] = getZipRoot(data[0]);
     String shortName = shortSceneFilename(data[0]);
     try {
-      data[1] = ZipUtil
-          .cacheZipContents(
-              ZipUtil
-                  .checkPngZipStream((BufferedInputStream) getBufferedInputStreamOrErrorMessageFromName(
-                      data[0], null, false, false, null)), shortName, pngjCache);
+      data[1] = ZipUtil.cacheZipContents(
+          ZipUtil.checkPngZipStream((BufferedInputStream) getBufferedInputStreamOrErrorMessageFromName(
+              data[0], null, false, false, null)), shortName, pngjCache);
     } catch (Exception e) {
       return false;
     }

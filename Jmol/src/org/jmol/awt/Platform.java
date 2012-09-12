@@ -12,7 +12,7 @@ import org.jmol.api.JmolFileInterface;
 import org.jmol.api.JmolMouseInterface;
 import org.jmol.api.JmolPopupInterface;
 import org.jmol.api.JmolViewer;
-import org.jmol.api.FileAdapterInterface;
+import org.jmol.api.JmolFileAdapterInterface;
 import org.jmol.util.JmolFont;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.Viewer;
@@ -77,8 +77,8 @@ public class Platform implements ApiPlatform {
     Display.setCursor(c, display);
   }
 
-  public FileAdapterInterface getFileAdapter() {
-    return new FileAdapter();
+  public JmolFileAdapterInterface getFileAdapter() {
+    return new JmolFileAdapter();
   }
 
   ////// Mouse
@@ -198,7 +198,7 @@ public class Platform implements ApiPlatform {
   }
 
   public JmolFileInterface newFile(String name) {
-    return FileAdapter.newFile(name);
+    return JmolFileAdapter.newFile(name);
   }
 
 }

@@ -2,10 +2,10 @@ package org.jmol.api;
 
 import java.net.URL;
 
-public interface FileAdapterInterface {
+public interface JmolFileAdapterInterface {
 
   public Object getBufferedURLInputStream(URL url, byte[] outputBytes,
-                                          String post, boolean checkOnly);
+                                          String post);
 
   public Object getBufferedFileInputStream(String name);
 

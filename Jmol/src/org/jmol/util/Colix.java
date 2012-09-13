@@ -224,10 +224,6 @@ public class Colix {
     argbsGreyscale = a;
   }
 
-  public final static int getArgb1(short colix) {
-    return argbs[colix & OPAQUE_MASK];
-  }
-
   public final static int getArgbGreyscale(short colix) {
     if (argbsGreyscale == null)
       calcArgbsGreyscale();
@@ -373,7 +369,7 @@ public class Colix {
   }
 
   public static int getArgb(short colix) {
-    return getArgb1(colix);
+    return argbs[colix & OPAQUE_MASK];
   }
 
   public final static boolean isColixColorInherited(short colix) {

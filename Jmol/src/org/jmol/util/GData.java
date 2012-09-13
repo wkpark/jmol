@@ -195,8 +195,7 @@ public class GData implements JmolGraphicsInterface {
   public int getColorArgbOrGray(short colix) {
     if (colix < 0)
       colix = changeableColixMap[colix & Colix.UNMASK_CHANGEABLE_TRANSLUCENT];
-    return (inGreyscaleMode ? Colix.getArgbGreyscale(colix) : Colix
-        .getArgb1(colix));
+    return (inGreyscaleMode ? Colix.getArgbGreyscale(colix) : Colix.getArgb(colix));
   }
 
   public int[] getShades(short colix) {

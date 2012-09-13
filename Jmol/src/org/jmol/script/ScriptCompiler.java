@@ -2078,11 +2078,20 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     return ch == ' ' || ch == '\t';
   }
 
+  @SuppressWarnings("unused")
+  private boolean eol(String ch) {
+    // for JavaScript
+    return eol2(ch.charAt(0));  
+  }
   private boolean eol(char ch) {
-    return eol(ch, nSemiSkip);  
+    return eol2(ch);  
+  }
+
+  private boolean eol2(char ch) {
+    return eol3(ch, nSemiSkip);  
   }
   
-  static boolean eol(char ch, int nSkip) {
+  static boolean eol3(char ch, int nSkip) {
     return (ch == '\r' || ch == '\n' || ch == ';' && nSkip <= 0);  
   }
   

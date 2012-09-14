@@ -73,9 +73,9 @@ class HallInfo {
     try {
       String str = this.hallSymbol = hallSymbol.trim();
       str = extractLatticeInfo(str);
-      if (Translation.getLatticeIndex(latticeCode) == 0)
+      if (HallTranslation.getLatticeIndex(latticeCode) == 0)
         return;
-      latticeExtension = Translation.getLatticeExtension(latticeCode,
+      latticeExtension = HallTranslation.getLatticeExtension(latticeCode,
           isCentrosymmetric);
       str = extractVectorInfo(str) + latticeExtension;
       Logger.info("Hallinfo: " + hallSymbol + " " + str);
@@ -120,7 +120,7 @@ class HallInfo {
   }
 */
   private String getLatticeDesignation() {    
-    return Translation.getLatticeDesignation(latticeCode, isCentrosymmetric);
+    return HallTranslation.getLatticeDesignation(latticeCode, isCentrosymmetric);
   }  
    
   private String extractLatticeInfo(String name) {
@@ -186,8 +186,8 @@ class HallInfo {
     String primitiveCode;
     String lookupCode;
     String translationString;
-    Rotation rotation;
-    Translation translation;
+    HallRotation rotation;
+    HallTranslation translation;
     Matrix4f seitzMatrix12ths = new Matrix4f();
     boolean isImproper;
     int order;
@@ -285,7 +285,7 @@ class HallInfo {
         ptr = 3;
       }
       lookupCode = code.substring(0, ptr);
-      rotation = Rotation.lookup(lookupCode);
+      rotation = HallRotation.lookup(lookupCode);
       if (rotation == null) {
         Logger.error("Rotation lookup could not find " + inputCode + " ? "
             + lookupCode);
@@ -297,12 +297,12 @@ class HallInfo {
       // primitive notation. This made coding FAR simpler -- all lattice
       // operations indicated by one to three 1xxx or -1 extensions.
 
-      translation = new Translation();
+      translation = new HallTranslation();
       translationString = "";
       int len = code.length();
       for (int i = ptr; i < len; i++) {
         char translationCode = code.charAt(i);
-        Translation t = new Translation(translationCode, order);
+        HallTranslation t = new HallTranslation(translationCode, order);
         if (t.translationCode != '\0') {
           translationString += "" + t.translationCode;
           translation.rotationShift12ths += t.rotationShift12ths;
@@ -356,221 +356,3 @@ class HallInfo {
   }  
 }
 
-class Translation {
-  
-  char translationCode = '\0';
-  int rotationOrder;
-  int rotationShift12ths;
-  Point3i vectorShift12ths = new Point3i();
-
-  Translation() {
-  }
-  
-  Translation(char translationCode, int order) {
-    for (int i = 0; i < hallTranslationTerms.length; i++) {
-      Translation h = hallTranslationTerms[i];
-      if (h.translationCode == translationCode) {
-        if (h.rotationOrder == 0 || h.rotationOrder == order) {
-          this.translationCode = translationCode;
-          rotationShift12ths = h.rotationShift12ths;
-          vectorShift12ths = h.vectorShift12ths;
-          return;
-        }
-      }
-    }
-  }
-
-  private Translation(char translationCode, 
-      Point3i vectorShift12ths) {
-    this.translationCode = translationCode;
-    this.rotationOrder = 0;
-    this.rotationShift12ths = 0;
-    this.vectorShift12ths = vectorShift12ths;        
-  }
-  
-  private Translation(char translationCode, int order, 
-      int rotationShift12ths) {
-    this.translationCode = translationCode;
-    this.rotationOrder = order;
-    this.rotationShift12ths = rotationShift12ths;
-    this.vectorShift12ths = new Point3i();        
-  }
-
-  final static String getHallLatticeEquivalent(int latticeParameter) {
-   // SHELX LATT --> Hall term
-    char latticeCode = Translation.getLatticeCode(latticeParameter);
-    boolean isCentrosymmetric = (latticeParameter > 0);
-    return (isCentrosymmetric ? "-" : "") + latticeCode + " 1";
-  }
-  
-  final static int getLatticeIndex(char latt) {
-    /*
-     * returns lattice code (1-9, including S and T) for a given lattice type
-     * 1-7 match SHELX codes
-     * 
-     */
-    for (int i = 1, ipt = 3; i <= nLatticeTypes; i++, ipt+=3)
-      if (latticeTranslationData[ipt].charAt(0) == latt)
-        return i;
-    return 0;
-  }
-  
-  /**
-   * 
-   * @param latt SHELX index or character
-   * @return lattice character P I R F A B C S T or \0
-   * 
-   */
-  final static char getLatticeCode(int latt) {
-    if (latt < 0)
-      latt = -latt;
-    return (latt == 0 ? '\0' : latt > nLatticeTypes ?
-        getLatticeCode(getLatticeIndex((char)latt))
-        : latticeTranslationData[latt * 3].charAt(0));
-  }
-
-  final static String getLatticeDesignation(int latt) {
-    boolean isCentrosymmetric = (latt > 0);
-    String str = (isCentrosymmetric ? "-" : "");
-    if (latt < 0)
-      latt = -latt;
-    if (latt == 0 || latt > nLatticeTypes)
-      return "";
-    return str + getLatticeCode(latt) + ": "
-        + (isCentrosymmetric ? "centrosymmetric " : "")
-        + latticeTranslationData[latt * 3 + 1];
-  }  
- 
-  final static String getLatticeDesignation(char latticeCode, boolean isCentrosymmetric) {
-    int latt = getLatticeIndex(latticeCode);
-    if (!isCentrosymmetric)
-      latt = - latt;
-    return getLatticeDesignation(latt);
-  }  
- 
-  final static String getLatticeExtension(char latt, boolean isCentrosymmetric) {
-    /*
-     * returns a set of rotation terms that are equivalent to the lattice code
-     * 
-     */
-    for (int i = 1, ipt = 3; i <= nLatticeTypes; i++, ipt += 3)
-      if (latticeTranslationData[ipt].charAt(0) == latt)
-        return latticeTranslationData[ipt + 2]
-            + (isCentrosymmetric ? " -1" : "");
-    return "";
-  }
-
-  final static String[] latticeTranslationData = {
-    "\0", "unknown",         ""
-    ,"P", "primitive",       ""
-    ,"I", "body-centered",   " 1n"
-    ,"R", "rhombohedral",    " 1r 1r"
-    ,"F", "face-centered",   " 1ab 1bc 1ac"
-    ,"A", "A-centered",      " 1bc"
-    ,"B", "B-centered",      " 1ac"
-    ,"C", "C-centered",      " 1ab"
-    ,"S", "rhombohedral(S)", " 1s 1s"
-    ,"T", "rhombohedral(T)", " 1t 1t"
-  };
-  
-  final static int nLatticeTypes = latticeTranslationData.length/3 - 1;
- 
-
-  final static Translation[] hallTranslationTerms = {
-    // all units are 12ths
-    new Translation('a', new Point3i(6, 0, 0))
-    , new Translation('b', new Point3i(0, 6, 0))
-    , new Translation('c', new Point3i(0, 0, 6))
-    , new Translation('n', new Point3i(6, 6, 6))
-    , new Translation('u', new Point3i(3, 0, 0))
-    , new Translation('v', new Point3i(0, 3, 0))
-    , new Translation('w', new Point3i(0, 0, 3))
-    , new Translation('d', new Point3i(3, 3, 3))
-    , new Translation('1', 2, 6)
-    , new Translation('1', 3, 4)
-    , new Translation('2', 3, 8)
-    , new Translation('1', 4, 3)
-    , new Translation('3', 4, 9)
-    , new Translation('1', 6, 2)
-    , new Translation('2', 6, 4)
-    , new Translation('4', 6, 8)
-    , new Translation('5', 6, 10)
-    // extension to handle rhombohedral lattice as primitive
-    , new Translation('r', new Point3i(4, 8, 8))
-    , new Translation('s', new Point3i(8, 8, 4))
-    , new Translation('t', new Point3i(8, 4, 8))
-  };
-}
-
-class Rotation {
-  String rotCode;
-  //int order;
-  Matrix4f seitzMatrix = new Matrix4f();
-  Matrix4f seitzMatrixInv = new Matrix4f();
-  
-  Rotation () {
-  }
-  
-  private Rotation (String code, String matrixData) {
-    rotCode = code;
-    //order = code.charAt(0) - '0';
-    float[] data = new float[16];
-    float[] dataInv = new float[16];
-    data[15] = dataInv[15] = 1f;
-    
-    for (int i = 0, ipt = 0; ipt < 11; i++) {
-      int value = 0;
-      switch(matrixData.charAt(i)) {
-      case ' ':
-        ipt++;
-        continue;
-      case '+':
-      case '1':
-        value = 1;
-        break;
-      case '-':
-        value = -1;
-        break;
-      }
-      data[ipt] = value;
-      dataInv[ipt] = -value; 
-      ipt++;
-    }
-    seitzMatrix.set(data);
-    seitzMatrixInv.set(dataInv);
-  }
-  
-  final static Rotation lookup(String code) {
-    for (int i = hallRotationTerms.length; --i >= 0;)
-      if (hallRotationTerms[i].rotCode.equals(code))
-        return hallRotationTerms[i];
-    return null;
-  }
-  
-  final static Rotation[] hallRotationTerms = {
-    // in matrix definitions, "+" = 1; "-" = -1;
-    // just a compact way of indicating a 3x3
-      new Rotation("1_"   , "+00 0+0 00+")
-    , new Rotation("2x"   , "+00 0-0 00-")
-    , new Rotation("2y"   , "-00 0+0 00-")
-    , new Rotation("2z"   , "-00 0-0 00+")
-    , new Rotation("2\'"  , "0-0 -00 00-") //z implied
-    , new Rotation("2\""  , "0+0 +00 00-") //z implied
-    , new Rotation("2x\'" , "-00 00- 0-0")
-    , new Rotation("2x\"" , "-00 00+ 0+0")
-    , new Rotation("2y\'" , "00- 0-0 -00")
-    , new Rotation("2y\"" , "00+ 0-0 +00")
-    , new Rotation("2z\'" , "0-0 -00 00-")
-    , new Rotation("2z\"" , "0+0 +00 00-")
-    , new Rotation("3x"   , "+00 00- 0+-")
-    , new Rotation("3y"   , "-0+ 0+0 -00")
-    , new Rotation("3z"   , "0-0 +-0 00+")
-    , new Rotation("3*"   , "00+ +00 0+0")
-    , new Rotation("4x"   , "+00 00- 0+0")
-    , new Rotation("4y"   , "00+ 0+0 -00")
-    , new Rotation("4z"   , "0-0 +00 00+")
-    , new Rotation("6x"   , "+00 0+- 0+0")
-    , new Rotation("6y"   , "00+ 0+0 -0+")
-    , new Rotation("6z"   , "+-0 +00 00+")
-  };    
-}  

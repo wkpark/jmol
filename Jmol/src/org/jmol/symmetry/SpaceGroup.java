@@ -139,7 +139,7 @@ class SpaceGroup {
                           boolean doNormalize) {
     //from AtomSetCollection.applySymmetry only
     if (hallInfo == null && latticeParameter != 0) {
-      HallInfo h = new HallInfo(Translation
+      HallInfo h = new HallInfo(HallTranslation
           .getHallLatticeEquivalent(latticeParameter));
       generateAllOperators(h);
       //doNormalize = false;  // why this here?
@@ -265,7 +265,7 @@ class SpaceGroup {
   }
 */ 
   String getLatticeDesignation() {    
-    return latticeCode + ": " + Translation.getLatticeDesignation(latticeParameter);
+    return latticeCode + ": " + HallTranslation.getLatticeDesignation(latticeParameter);
   }  
  
   void setLattice(int latticeParameter) {
@@ -275,9 +275,9 @@ class SpaceGroup {
     // The idea here is that we can represent any LATT number
     // as a simple set of rotation/translation operations
     this.latticeParameter = latticeParameter;
-    latticeCode = Translation.getLatticeCode(latticeParameter);
+    latticeCode = HallTranslation.getLatticeCode(latticeParameter);
     if (latticeParameter > 10) { // use negative
-      this.latticeParameter = -Translation.getLatticeIndex(latticeCode);
+      this.latticeParameter = -HallTranslation.getLatticeIndex(latticeCode);
     }
   }
 
@@ -357,7 +357,7 @@ class SpaceGroup {
    
   private void setLattice(char latticeCode, boolean isCentrosymmetric) {
     this.latticeCode = latticeCode;
-    latticeParameter = Translation.getLatticeIndex(latticeCode);
+    latticeParameter = HallTranslation.getLatticeIndex(latticeCode);
     if (!isCentrosymmetric)
       latticeParameter = -latticeParameter;
   }

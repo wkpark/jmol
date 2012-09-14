@@ -184,7 +184,7 @@ public class FileManager {
     return null;
   }
 
-  static BufferedInputStream getInputStreamForStringBuffer(Object t) {
+  static BufferedInputStream getBISForStringBuffer(Object t) {
     return new BufferedInputStream(new ByteArrayInputStream(((StringBuffer) t)
         .toString().getBytes()));
     }
@@ -197,7 +197,7 @@ public class FileManager {
   	Object t = getBufferedInputStreamOrErrorMessageFromName(
         fileName, fileName, false, false, null);
   	if (t instanceof StringBuffer)
-  		t = getInputStreamForStringBuffer(t);
+  		t = getBISForStringBuffer(t);
     return ZipUtil.getZipDirectoryAsStringAndClose((BufferedInputStream) t);
   }
 
@@ -617,8 +617,8 @@ public class FileManager {
         : new BufferedInputStream(new ByteArrayInputStream(bytes)));
     if (t instanceof String)
       return t;
-    if (t instanceof StringBuffer)
-      return getInputStreamForStringBuffer(t);
+    if (t instanceof StringBuffer) // JavaScript from org.jmol.awtjs.JmolURLConnection.doAjax(URL)
+      return getBufferedReaderForString(((StringBuffer) t).toString());
     try {
       BufferedInputStream bis = (BufferedInputStream) t;
       if (ZipUtil.isGzip(bis)) {
@@ -663,7 +663,7 @@ public class FileManager {
     Object t = getBufferedInputStreamOrErrorMessageFromName(fileName, fileName,
         false, false, null);
     if (t instanceof StringBuffer)
-      t = getInputStreamForStringBuffer(t);
+      t = getBISForStringBuffer(t);
     return ZipUtil.getZipDirectoryAndClose((BufferedInputStream) t, addManifest);
   }
 
@@ -707,7 +707,7 @@ public class FileManager {
         return name0;
       }
       if (t instanceof StringBuffer)
-        t = getInputStreamForStringBuffer(t);
+        t = getBISForStringBuffer(t);
       bis = (BufferedInputStream) t;
       if (CompoundDocument.isCompoundDocument(bis)) {
         CompoundDocument doc = new CompoundDocument(bis);
@@ -779,7 +779,7 @@ public class FileManager {
     if (t instanceof String)
       return "Error:" + t;
     if (t instanceof StringBuffer)
-      t = getInputStreamForStringBuffer(t);
+      t = getBISForStringBuffer(t);
     try {
       BufferedInputStream bis = (BufferedInputStream) t;
       Object bytes = (os != null || subFileList == null || subFileList.length <= 1
@@ -1522,7 +1522,7 @@ public class FileManager {
     if (ret instanceof String)
       return (String) ret;
     if (ret instanceof StringBuffer)
-    	ret = getInputStreamForStringBuffer(ret);
+    	ret = getBISForStringBuffer(ret);
     try {
       ret = getStreamAsBytes((BufferedInputStream) ret, null);
     } catch (IOException e) {
@@ -1731,7 +1731,7 @@ public class FileManager {
         t = getBufferedInputStreamOrErrorMessageFromName(name, fullPathNamesIn[i], 
             false, false, null);
         BufferedInputStream bis = (t instanceof StringBuffer 
-        		? getInputStreamForStringBuffer(t)
+        		? getBISForStringBuffer(t)
         		: (BufferedInputStream) t);
         t = viewer.getModelAdapter()
             .getAtomSetCollectionOrBufferedReaderFromZip(bis, name,

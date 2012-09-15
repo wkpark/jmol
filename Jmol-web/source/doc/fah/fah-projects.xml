@@ -9435,6 +9435,9 @@
   <fah_proj number="7515" name="ctx-acyl" public="y"
     server="128.143.199.97" atoms="87451" preferred="3.8" deadline="6.3"
     credit="785.0" frames="100" code="A3" contact="kasson" kfactor="3.01"/>
+  <fah_proj number="7516" name="nmc-acyl" public="n"
+    server="128.143.199.97" atoms="80128" preferred="3.5" deadline="5.9"
+    credit="732.0" frames="100" code="A3" contact="kasson" kfactor="2.99"/>
 
   <!-- Projects 7600 to 7699 -->
   <fah_proj number="7600" name="p7600" public="y" file="xyz"

@@ -38,6 +38,7 @@ import org.jmol.util.ArrayUtil;
 //import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 //import org.jmol.util.Measure;
+import org.jmol.viewer.JmolConstants;
 
 public class Token {
   public int tok;
@@ -1388,7 +1389,7 @@ public class Token {
       if ((token.tok & scriptCommand) != 0
           && (s == null || name.indexOf(s) == 0)
           && (isMultiCharacter || ((String) token.value).equals(name)))
-        htSet.put(name, Boolean.TRUE);
+        htSet.put(name, JmolConstants.TRUE);
     }
     for (Map.Entry<String, Boolean> entry : htSet.entrySet()) {
       String name = entry.getKey();

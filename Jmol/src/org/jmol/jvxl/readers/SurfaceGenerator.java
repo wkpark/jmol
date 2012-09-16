@@ -1236,7 +1236,7 @@ public class SurfaceGenerator {
 
       String fname = params.fileName;
       fname = fname.substring(0, fname.indexOf("/", 10));
-      fname += Parser.getNextQuotedString(fileType,
+      fname += Parser.getQuotedStringAt(fileType,
           fileType.indexOf("A HREF") + 1);
       params.fileName = fname;
         value = atomDataServer.getBufferedInputStream(fname);

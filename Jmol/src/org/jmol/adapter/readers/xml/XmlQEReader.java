@@ -115,7 +115,7 @@ public class XmlQEReader extends XmlReader {
         break;
 
       if ("NUMBER_OF_ATOMS".equals(localName)) {
-        atomCount = parseInt(chars);
+        atomCount = parseIntStr(chars);
         break;
       }
 

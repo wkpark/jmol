@@ -94,42 +94,6 @@ public abstract class BioPolymer {
         monomers[monomerCount - 1].lastAtomIndex + 1);
   }
 
-  static BioPolymer allocateBioPolymer(Group[] groups, int firstGroupIndex,
-                                       boolean checkConnections) {
-    Monomer previous = null;
-    int count = 0;
-    for (int i = firstGroupIndex; i < groups.length; ++i) {
-      Group group = groups[i];
-      Monomer current;
-      if (!(group instanceof Monomer)
-          || (current = (Monomer) group).bioPolymer != null || previous != null
-          && previous.getClass() != current.getClass() || checkConnections
-          && !current.isConnectedAfter(previous))
-        break;
-      previous = current;
-      count++;
-    }
-    if (count == 0)
-      return null;
-    Monomer[] monomers = new Monomer[count];
-    for (int j = 0; j < count; ++j)
-      monomers[j] = (Monomer) groups[firstGroupIndex + j];
-    if (previous instanceof AminoMonomer)
-      return new AminoPolymer(monomers);
-    if (previous instanceof AlphaMonomer)
-      return new AlphaPolymer(monomers);
-    if (previous instanceof NucleicMonomer)
-      return new NucleicPolymer(monomers);
-    if (previous instanceof PhosphorusMonomer)
-      return new PhosphorusPolymer(monomers);
-    if (previous instanceof CarbohydrateMonomer)
-      return new CarbohydratePolymer(monomers);
-    Logger
-        .error("Polymer.allocatePolymer() ... no matching polymer for monomor "
-            + previous);
-    throw new NullPointerException();
-  }
-
   public void clearStructures() {
     for (int i = 0; i < monomerCount; i++)
       monomers[i].setStructure(null);

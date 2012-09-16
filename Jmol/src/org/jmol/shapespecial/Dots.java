@@ -177,7 +177,7 @@ public class Dots extends AtomShape {
   }
 
   @Override
-  protected void setSize(RadiusData rd, BitSet bsSelected) {
+  protected void setSizeRD(RadiusData rd, BitSet bsSelected) {
     if (rd == null)
       rd = new RadiusData(0, EnumType.ABSOLUTE, null);
     if (this.bsSelected != null)

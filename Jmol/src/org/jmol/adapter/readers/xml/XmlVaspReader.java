@@ -115,7 +115,7 @@ public class XmlVaspReader extends XmlReader {
         atomSetCollection.setAtomSetAuxiliaryInfo("enthalpy", Double.valueOf(enthalpy));
       }
       if (gibbsEnergy != null) {
-        atomSetCollection.setAtomSetEnergy("" + gibbsEnergy, parseFloat(gibbsEnergy));
+        atomSetCollection.setAtomSetEnergy("" + gibbsEnergy, parseFloatStr(gibbsEnergy));
         atomSetCollection.setAtomSetAuxiliaryInfo("gibbsEnergy", Double.valueOf(gibbsEnergy));
       }
       if (enthalpy != null && gibbsEnergy != null)
@@ -202,7 +202,7 @@ public class XmlVaspReader extends XmlReader {
       }
 
       if ("atoms".equals(localName)) {
-        atomCount = parseInt(chars);
+        atomCount = parseIntStr(chars);
         atomNames = new String[atomCount];
         atomSyms = new String[atomCount];
         iAtom = 0;

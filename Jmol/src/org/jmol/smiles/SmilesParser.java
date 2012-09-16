@@ -174,7 +174,7 @@ public class SmilesParser {
     if (isSmarts && pattern.indexOf("[$") >= 0)
       pattern = parseVariableLength(pattern);
     if (pattern.indexOf("||") >= 0) {
-      String[] patterns = TextFormat.split(pattern, "||");  
+      String[] patterns = TextFormat.splitChars(pattern, "||");  
       String toDo = "";
       search.subSearches = new SmilesSearch[patterns.length];
       for (int i = 0; i < patterns.length; i++) {
@@ -218,7 +218,7 @@ public class SmilesParser {
       }
     }
     if (pattern.indexOf("||") >= 0) {
-      String[] patterns = TextFormat.split(pattern, "||");
+      String[] patterns = TextFormat.splitChars(pattern, "||");
       for (int i = 0; i < patterns.length; i++)
         sout.append("||").append(parseVariableLength(patterns[i]));
     } else {
@@ -821,7 +821,7 @@ public class SmilesParser {
         } else {
           switch (ch) {
           case '"':
-            String type = Parser.getNextQuotedString(pattern, index);
+            String type = Parser.getQuotedStringAt(pattern, index);
             index += type.length() + 2;
             newAtom.setAtomType(type);
             break;

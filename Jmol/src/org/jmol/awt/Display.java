@@ -99,7 +99,7 @@ class Display {
       if (!asButtons)
         return JOptionPane.showInputDialog(label, data);
       if (data != null)
-        list = TextFormat.split(data, "|");
+        list = TextFormat.splitChars(data, "|");
       int i = JOptionPane.showOptionDialog(null, label, "Jmol prompt",
           JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null,
           list, list[0]);

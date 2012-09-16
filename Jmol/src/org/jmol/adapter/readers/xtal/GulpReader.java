@@ -43,7 +43,7 @@ public class GulpReader extends AtomSetCollectionReader {
 
   @Override
   protected void initializeReader() throws Exception {
-    isPrimitive = !checkFilter("CONV");
+    isPrimitive = !checkFilterKey("CONV");
     coordinatesArePrimitive = true;
     setFractionalCoordinates(readDimensionality());
   }
@@ -118,7 +118,7 @@ public class GulpReader extends AtomSetCollectionReader {
   private boolean readDimensionality() throws Exception {
     discardLinesUntilContains("Dimensionality");
     String[] tokens = getTokens();
-    switch (parseInt(tokens[2])) {
+    switch (parseIntStr(tokens[2])) {
     case 0:
       isMolecular = true;
       isPrimitive = false;
@@ -236,10 +236,10 @@ public class GulpReader extends AtomSetCollectionReader {
       //isPrimitive = false;
     readLine();
     while (readLine() != null && line.contains("="))  {
-      String[] tokens = getTokens(line.replace('=', ' '));
+      String[] tokens = getTokensStr(line.replace('=', ' '));
       for (int i = i0; i < i0 + 4; i += 2)
         if (tokens.length > i + 1)
-          setParameter(tokens[i], parseFloat(tokens[i + 1]));
+          setParameter(tokens[i], parseFloatStr(tokens[i + 1]));
     }
   }
 
@@ -268,7 +268,7 @@ public class GulpReader extends AtomSetCollectionReader {
     discardLinesUntilContains(sep);
     String tokens[];
     while (readLine() != null && (tokens = getTokens()).length >= 2)
-      setParameter(tokens[0], parseFloat(tokens[1]));
+      setParameter(tokens[0], parseFloatStr(tokens[1]));
     if (primitiveData != null) {
       scalePrimitiveData(0, a);
       scalePrimitiveData(3, b);
@@ -279,10 +279,10 @@ public class GulpReader extends AtomSetCollectionReader {
           if (line.indexOf("Non-primitive lattice parameters") > 0) {
             readLine();
             for (int i = 0; i < 2; i++) {
-              tokens = getTokens(readLine().replace('=', ' '));
-              setParameter(tokens[0], parseFloat(tokens[1]));
-              setParameter(tokens[2], parseFloat(tokens[3]));
-              setParameter(tokens[4], parseFloat(tokens[5]));
+              tokens = getTokensStr(readLine().replace('=', ' '));
+              setParameter(tokens[0], parseFloatStr(tokens[1]));
+              setParameter(tokens[2], parseFloatStr(tokens[3]));
+              setParameter(tokens[4], parseFloatStr(tokens[5]));
             }
             break;
           }
@@ -390,8 +390,8 @@ public class GulpReader extends AtomSetCollectionReader {
         continue;
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = tokens[1];
-      setAtomCoord(atom, parseFloat(tokens[3]), parseFloat(tokens[4]),
-          parseFloat(tokens[5]));
+      setAtomCoord(atom, parseFloatStr(tokens[3]), parseFloatStr(tokens[4]),
+          parseFloatStr(tokens[5]));
     }
     if (finalizeSymmetry)
       applySymmetryAndSetTrajectory();
@@ -418,11 +418,11 @@ public class GulpReader extends AtomSetCollectionReader {
     discardLinesUntilContains(sep);
     discardLinesUntilContains(sep);
     String[] tokens;
-    while ((tokens = getTokens(readLine())).length > 5) {
+    while ((tokens = getTokensStr(readLine())).length > 5) {
       String species = tokens[0];
       Float charge = atomCharges.get(species);
       float f = (charge == null ? 0 : charge.floatValue());
-      atomCharges.put(species, Float.valueOf((f + parseFloat(tokens[4]))));
+      atomCharges.put(species, Float.valueOf((f + parseFloatStr(tokens[4]))));
     }
   }
 
@@ -452,7 +452,7 @@ public class GulpReader extends AtomSetCollectionReader {
     // note that in some cases this is in Kcal/mol
     if (line.indexOf("=") < 0)
       discardLinesUntilContains("=");
-    String[] tokens = getTokens(line.substring(line.indexOf("=")));
+    String[] tokens = getTokensStr(line.substring(line.indexOf("=")));
     totEnergy = Double.valueOf(Double.parseDouble(tokens[1]));
     energyUnits = tokens[2];
     discardLinesUntilContains(sep);

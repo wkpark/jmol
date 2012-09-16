@@ -55,7 +55,7 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
   protected void initializeReader() {
     setSpaceGroupName("P1");
     setFractionalCoordinates(true);
-    inputOnly = checkFilter("INPUT");
+    inputOnly = checkFilterKey("INPUT");
   }
 
   @Override
@@ -111,7 +111,7 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
       int pt = (line.contains("_") ? 2 : 1);
       if (pt == 2)
         line = line.replace("_", " ");
-      String[] tokens = getTokens(line.substring(line.indexOf(":") + 1));
+      String[] tokens = getTokensStr(line.substring(line.indexOf(":") + 1));
       String sym = tokens[pt];
       String key = ";" + sym + ";";
       if (elementList.indexOf(key) >= 0)
@@ -136,10 +136,10 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
   private void readAtomCountAndSetNames() throws Exception {
     int[] numofElement = new int[100];
     //    readLine();
-    String[] tokens = getTokens(line.substring(line.indexOf("=") + 1));
+    String[] tokens = getTokensStr(line.substring(line.indexOf("=") + 1));
     atomCount = 0;
     for (int i = 0; i < tokens.length; i++)
-      atomCount += (numofElement[i] = parseInt(tokens[i].trim()));
+      atomCount += (numofElement[i] = parseIntStr(tokens[i].trim()));
     //this is to reconstruct the atomMappedarray containing the atom
     atomNames = new String[atomCount];
     int nElements = elementNames.size();
@@ -197,9 +197,9 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
       Atom atom = atomSetCollection.addNewAtom();
       String[] tokens = getTokens();
       atom.atomName = atomNames[counter++];
-      float x = parseFloat(tokens[0]);
-      float y = parseFloat(tokens[1]);
-      float z = parseFloat(tokens[2]);
+      float x = parseFloatStr(tokens[0]);
+      float y = parseFloatStr(tokens[1]);
+      float z = parseFloatStr(tokens[2]);
       setAtomCoord(atom, x, y, z);
     }
     atomSetCollection.setAtomSetName("Initial Coordinates");
@@ -225,9 +225,9 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
       Atom atom = atomSetCollection.addNewAtom();
       String[] tokens = getTokens();
       atom.atomName = atomNames[counter];
-      float x = parseFloat(tokens[0]);
-      float y = parseFloat(tokens[1]);
-      float z = parseFloat(tokens[2]);
+      float x = parseFloatStr(tokens[0]);
+      float y = parseFloatStr(tokens[1]);
+      float z = parseFloatStr(tokens[2]);
       setAtomCoord(atom, x, y, z);
       counter++;
     }
@@ -244,10 +244,10 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
 
   private void readEnergy() throws Exception {
     readLine();
-    String[] tokens = getTokens(readLine());
+    String[] tokens = getTokensStr(readLine());
     gibbsEnergy = Double.valueOf(Double.parseDouble(tokens[4]));
     readLine();
-    tokens = getTokens(readLine());
+    tokens = getTokensStr(readLine());
     /* please double-check:
 
     entropy T*S    EENTRO =        -0.01255935
@@ -294,13 +294,13 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
   private void readMdyn() throws Exception {
     String[] tokens = getTokens();
     readLine();
-    tokens = getTokens(readLine());
+    tokens = getTokensStr(readLine());
     electronEne = Double.valueOf(Double.parseDouble(tokens[4]));
-    tokens = getTokens(readLine());
+    tokens = getTokensStr(readLine());
     kinEne = Double.valueOf(Double.parseDouble(tokens[4]));
-    temp = parseFloat(tokens[6]);
+    temp = parseFloatStr(tokens[6]);
     readLines(3);
-    tokens = getTokens(readLine());
+    tokens = getTokensStr(readLine());
     totEne = Double.valueOf(Double.parseDouble(tokens[4]));
     setAtomSetInfoMd();
   }

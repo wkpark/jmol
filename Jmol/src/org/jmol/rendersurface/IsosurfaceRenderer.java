@@ -38,6 +38,7 @@ import org.jmol.shapesurface.IsosurfaceMesh;
 import org.jmol.util.Colix;
 import org.jmol.util.GData;
 import org.jmol.util.Normix;
+import org.jmol.viewer.JmolConstants;
 
 public class IsosurfaceRenderer extends MeshRenderer {
 
@@ -69,7 +70,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     isNavigationMode = viewer.getNavigationMode();
     int mySlabValue = Integer.MAX_VALUE;
     int slabValue = g3d.getSlab();
-    showKey = (viewer.getIsosurfaceKey() ? Boolean.TRUE : null);
+    showKey = (viewer.getIsosurfaceKey() ? JmolConstants.TRUE : null);
     if (isNavigationMode)
       mySlabValue = (int) viewer.getNavigationOffset().z;
     isosurface.keyXy = null;
@@ -92,12 +93,12 @@ public class IsosurfaceRenderer extends MeshRenderer {
   }
 
   protected void renderInfo() {
-    if (hasColorRange && imesh.colorEncoder != null && Boolean.TRUE == showKey)
+    if (hasColorRange && imesh.colorEncoder != null && JmolConstants.TRUE == showKey)
       showKey();
   }
   
   private void showKey() {
-    showKey = Boolean.FALSE; // once only
+    showKey = JmolConstants.FALSE; // once only
     int[] colors = null;
     short[] colixes = null;
     List<Object>[] vContours = null;

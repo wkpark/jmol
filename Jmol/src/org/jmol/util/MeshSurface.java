@@ -13,6 +13,7 @@ import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.script.Token;
+import org.jmol.viewer.JmolConstants;
 
 public class MeshSurface {
 
@@ -243,7 +244,7 @@ public class MeshSurface {
   
   public static Object[] getSlabWithinRange(float min, float max) {
     return new Object[] { Integer.valueOf(Token.range), 
-        new Float[] {Float.valueOf(min), Float.valueOf(max)}, Boolean.FALSE, null };
+        new Float[] {Float.valueOf(min), Float.valueOf(max)}, JmolConstants.FALSE, null };
   }
 
   public void resetSlab() {
@@ -264,7 +265,7 @@ public class MeshSurface {
   public static Object[] getCapSlabObject(String s, boolean isCap) {
     try {
       if (s.indexOf("array") == 0) {
-        String[] pts = TextFormat.split(s.substring(6, s.length() - 1), ",");
+        String[] pts = TextFormat.splitChars(s.substring(6, s.length() - 1), ",");
         return getSlabObject(Token.boundbox, new Point3f[] {
             (Point3f) Escape.unescapePoint(pts[0]),
             (Point3f) Escape.unescapePoint(pts[1]),

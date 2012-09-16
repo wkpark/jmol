@@ -158,7 +158,7 @@ public final class ModelLoader {
     modelSet.isXYZ = (name == "xyz");
     modelSet.modelSetAuxiliaryInfo = info;
     modelSet.modelSetProperties = (Properties) modelSet
-        .getModelSetAuxiliaryInfo("properties");
+        .getModelSetAuxiliaryInfoValue("properties");
     //isMultiFile = getModelSetAuxiliaryInfoBoolean("isMultiFile"); -- no longer necessary
     isPDB = modelSet.isPDB = modelSet.getModelSetAuxiliaryInfoBoolean("isPDB");
     if (isPDB) {
@@ -171,10 +171,10 @@ public final class ModelLoader {
             .error("developer error: org.jmol.modelsetbio.Resolver could not be found");
       }
     }
-    jmolData = (String) modelSet.getModelSetAuxiliaryInfo("jmolData");
-    fileHeader = (String) modelSet.getModelSetAuxiliaryInfo("fileHeader");
+    jmolData = (String) modelSet.getModelSetAuxiliaryInfoValue("jmolData");
+    fileHeader = (String) modelSet.getModelSetAuxiliaryInfoValue("fileHeader");
     modelSet.trajectorySteps = (List<Point3f[]>) modelSet
-        .getModelSetAuxiliaryInfo("trajectorySteps");
+        .getModelSetAuxiliaryInfoValue("trajectorySteps");
     isTrajectory = (modelSet.trajectorySteps != null);
     if (isTrajectory) {
       info.remove("trajectorySteps");
@@ -182,7 +182,7 @@ public final class ModelLoader {
       info.remove("vibrationSteps");
     }
     doAddHydrogens = (jbr != null && !isTrajectory
-        && modelSet.getModelSetAuxiliaryInfo("pdbNoHydrogens") == null
+        && modelSet.getModelSetAuxiliaryInfoValue("pdbNoHydrogens") == null
         && viewer.getBooleanProperty("pdbAddHydrogens"));
     if (info != null)
       info.remove("pdbNoHydrogens");
@@ -319,7 +319,7 @@ public final class ModelLoader {
             + " in this collection. Use getProperty \"modelInfo\" or"
             + " getProperty \"auxiliaryInfo\" to inspect them.");
       }
-      Quaternion q = (Quaternion) modelSet.getModelSetAuxiliaryInfo("defaultOrientationQuaternion");
+      Quaternion q = (Quaternion) modelSet.getModelSetAuxiliaryInfoValue("defaultOrientationQuaternion");
       if (q != null) {
         Logger.info("defaultOrientationQuaternion = " + q);
         Logger
@@ -389,7 +389,7 @@ public final class ModelLoader {
     if (sb.length() == 0)
       return;
     sb.append("select *;");
-    String script = (String) modelSet.getModelSetAuxiliaryInfo("jmolscript");
+    String script = (String) modelSet.getModelSetAuxiliaryInfoValue("jmolscript");
     if (script == null)
       script = "";
     sb.append(script);
@@ -405,7 +405,7 @@ public final class ModelLoader {
     Model[] models = modelSet.models;
     for (int i = baseModelIndex; i < modelCount; atomIndex += modelAtomCount, i++) {
       modelAtomCount = models[i].bsAtoms.cardinality();
-      Map<String, String> atomProperties = (Map<String, String>) modelSet.getModelAuxiliaryInfo(i,
+      Map<String, String> atomProperties = (Map<String, String>) modelSet.getModelAuxiliaryInfoValue(i,
           "atomProperties");
       if (atomProperties == null)
         continue;
@@ -518,14 +518,14 @@ public final class ModelLoader {
           modelName, modelNumber, modelProperties, modelAuxiliaryInfo,
           jmolData);
       if (isPDBModel) {
-        group3Lists[ipt + 1] = JmolConstants.group3List;
-        group3Counts[ipt + 1] = new int[JmolConstants.group3Count + 10];
+        group3Lists[ipt + 1] = JmolConstants.getGroup3List();
+        group3Counts[ipt + 1] = new int[JmolConstants.getGroup3Count() + 10];
         if (group3Lists[0] == null) {
-          group3Lists[0] = JmolConstants.group3List;
-          group3Counts[0] = new int[JmolConstants.group3Count + 10];
+          group3Lists[0] = JmolConstants.getGroup3List();
+          group3Counts[0] = new int[JmolConstants.getGroup3Count() + 10];
         }
       }
-      if (modelSet.getModelAuxiliaryInfo(ipt, "periodicOriginXyz") != null)
+      if (modelSet.getModelAuxiliaryInfoValue(ipt, "periodicOriginXyz") != null)
         modelSet.someModelsHaveSymmetry = true;
     }
     Model m = modelSet.models[baseModelIndex];
@@ -569,7 +569,7 @@ public final class ModelLoader {
                                                Map<String, Object> modelAuxiliaryInfo,
                                                String jmolData) {
     boolean modelIsPDB = (modelAuxiliaryInfo != null 
-        && Boolean.TRUE.equals(modelAuxiliaryInfo.get("isPDB")));
+        && JmolConstants.TRUE.equals(modelAuxiliaryInfo.get("isPDB")));
     if (appendNew) {
       modelSet.models[modelIndex] = (modelIsPDB ? 
           jbr.getBioModel(modelSet, modelIndex, trajectoryBaseIndex,
@@ -590,7 +590,7 @@ public final class ModelLoader {
     Atom[] atoms = modelSet.atoms;
     models[modelIndex].bsAtoms.set(atoms.length + 1);
     models[modelIndex].bsAtoms.clear(atoms.length + 1);
-    String codes = (String) modelSet.getModelAuxiliaryInfo(modelIndex, "altLocs");
+    String codes = (String) modelSet.getModelAuxiliaryInfoValue(modelIndex, "altLocs");
     models[modelIndex].setNAltLocs(codes == null ? 0 : codes.length());
     if (codes != null) {
       char[] altlocs = codes.toCharArray();
@@ -598,12 +598,12 @@ public final class ModelLoader {
       codes = String.valueOf(altlocs);
       modelSet.setModelAuxiliaryInfo(modelIndex, "altLocs", codes);
     }
-    codes = (String) modelSet.getModelAuxiliaryInfo(modelIndex, "insertionCodes");
+    codes = (String) modelSet.getModelAuxiliaryInfoValue(modelIndex, "insertionCodes");
     models[modelIndex].setNInsertions(codes == null ? 0 : codes.length());
     boolean isModelKit = (modelSet.modelSetName != null
         && modelSet.modelSetName.startsWith("Jmol Model Kit")
         || modelName.startsWith("Jmol Model Kit") || "Jme"
-        .equals(modelSet.getModelAuxiliaryInfo(modelIndex, "fileType")));
+        .equals(modelSet.getModelAuxiliaryInfoValue(modelIndex, "fileType")));
     models[modelIndex].isModelKit = isModelKit;
     return modelIsPDB;
   }
@@ -722,7 +722,7 @@ public final class ModelLoader {
       modelSet.setModelAuxiliaryInfo(i, "modelNumber", Integer.valueOf(modelNumbers[i] % 1000000));
       modelSet.setModelAuxiliaryInfo(i, "modelFileNumber", Integer.valueOf(modelSet.modelFileNumbers[i]));
       modelSet.setModelAuxiliaryInfo(i, "modelNumberDotted", modelSet.getModelNumberDotted(i));
-      String codes = (String) modelSet.getModelAuxiliaryInfo(i, "altLocs");
+      String codes = (String) modelSet.getModelAuxiliaryInfoValue(i, "altLocs");
       if (codes != null) {
         Logger.info("model " + modelSet.getModelNumberDotted(i)
             + " alternative locations: " + codes);
@@ -1096,7 +1096,7 @@ public final class ModelLoader {
     // 1. apply CONECT records and set bsExclude to omit them
     // 2. apply stereochemistry from JME
 
-    BitSet bsExclude = (modelSet.getModelSetAuxiliaryInfo("someModelsHaveCONECT") == null ? null
+    BitSet bsExclude = (modelSet.getModelSetAuxiliaryInfoValue("someModelsHaveCONECT") == null ? null
         : new BitSet());
     if (bsExclude != null)
       modelSet.setPdbConectBonding(baseAtomIndex, baseModelIndex, bsExclude);

@@ -195,7 +195,7 @@ public class PropertyManager {
     propertyName = propertyName.replace(']', ' ').replace('[', ' ').replace(
         '.', ' ');
     propertyName = TextFormat.simpleReplace(propertyName, "  ", " ");
-    String[] names = TextFormat.split(TextFormat.trim(propertyName, " "), " ");
+    String[] names = TextFormat.splitChars(TextFormat.trim(propertyName, " "), " ");
     ScriptVariable[] args = new ScriptVariable[names.length];
     propertyName = names[0];
     int n;

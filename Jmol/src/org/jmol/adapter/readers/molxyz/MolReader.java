@@ -82,7 +82,7 @@ public class MolReader extends AtomSetCollectionReader {
   
   @Override
   public void initializeReader() throws Exception {
-    is2D = checkFilter("2D");
+    is2D = checkFilterKey("2D");
   }
 
   @Override
@@ -118,10 +118,10 @@ public class MolReader extends AtomSetCollectionReader {
       if (line.toUpperCase().contains("_PARTIAL_CHARGES")) {
         try {
           Atom[] atoms = atomSetCollection.getAtoms();
-          for (int i = parseInt(readLine()); --i >= 0;) {
-            String[] tokens = getTokens(readLine());
-            int atomIndex = parseInt(tokens[0]) + atom0 - 1;
-            float partialCharge = parseFloat(tokens[1]);
+          for (int i = parseIntStr(readLine()); --i >= 0;) {
+            String[] tokens = getTokensStr(readLine());
+            int atomIndex = parseIntStr(tokens[0]) + atom0 - 1;
+            float partialCharge = parseFloatStr(tokens[1]);
             if (!Float.isNaN(partialCharge))
               atoms[atomIndex].partialCharge = partialCharge; 
           }
@@ -202,8 +202,8 @@ public class MolReader extends AtomSetCollectionReader {
     }
     if (line == null)
       return;
-    int atomCount = (isV3000 ? parseInt(tokens[3]) : parseInt(line, 0, 3));
-    int bondCount = (isV3000 ? parseInt(tokens[4]) : parseInt(line, 3, 6));
+    int atomCount = (isV3000 ? parseIntStr(tokens[3]) : parseIntRange(line, 0, 3));
+    int bondCount = (isV3000 ? parseIntStr(tokens[4]) : parseIntRange(line, 3, 6));
     int atom0 = atomSetCollection.getAtomCount();
     readAtoms(atomCount);
     readBonds(atom0, bondCount);
@@ -224,15 +224,15 @@ public class MolReader extends AtomSetCollectionReader {
         checkLineContinuation();
         String[] tokens = getTokens();
         elementSymbol = tokens[3];
-        x = parseFloat(tokens[4]);
-        y = parseFloat(tokens[5]);
-        z = parseFloat(tokens[6]);
+        x = parseFloatStr(tokens[4]);
+        y = parseFloatStr(tokens[5]);
+        z = parseFloatStr(tokens[6]);
         for (int j = 7; j < tokens.length; j++) {
           String s = tokens[j].toUpperCase();
           if (s.startsWith("CHG="))
-            charge = parseInt(tokens[j].substring(4));
+            charge = parseIntStr(tokens[j].substring(4));
           else if (s.startsWith("MASS="))
-            isotope = parseInt(tokens[j].substring(5));
+            isotope = parseIntStr(tokens[j].substring(5));
         }
         if (isotope > 1 && elementSymbol.equals("H"))
           isotope = 1 - isotope;
@@ -243,14 +243,14 @@ public class MolReader extends AtomSetCollectionReader {
           // deal with older Mol format where nothing after the symbol is used
           elementSymbol = line.substring(31).trim();
         }
-        x = parseFloat(line, 0, 10);
-        y = parseFloat(line, 10, 20);
-        z = parseFloat(line, 20, 30);
+        x = parseFloatRange(line, 0, 10);
+        y = parseFloatRange(line, 10, 20);
+        z = parseFloatRange(line, 20, 30);
         if (line.length() >= 39) {
-          int code = parseInt(line, 36, 39);
+          int code = parseIntRange(line, 36, 39);
           if (code >= 1 && code <= 7)
             charge = 4 - code;
-          code = parseInt(line, 34, 36);
+          code = parseIntRange(line, 34, 36);
           if (code != 0 && code >= -3 && code <= 4) {
             isotope = JmolAdapter.getNaturalIsotope(JmolAdapter
                 .getElementNumber(elementSymbol));
@@ -305,22 +305,22 @@ public class MolReader extends AtomSetCollectionReader {
       if (isV3000) {
         checkLineContinuation();
         String[] tokens = getTokens();
-        order = parseInt(tokens[3]);
-        atomIndex1 = parseInt(tokens[4]);
-        atomIndex2 = parseInt(tokens[5]);
+        order = parseIntStr(tokens[3]);
+        atomIndex1 = parseIntStr(tokens[4]);
+        atomIndex2 = parseIntStr(tokens[5]);
           for (int j = 6; j < tokens.length; j++) {
           String s = tokens[j].toUpperCase();
           if (s.startsWith("CFG=")) {
-            stereo = parseInt(tokens[j].substring(4));
+            stereo = parseIntStr(tokens[j].substring(4));
             break;
           }
         }
       } else {
-        atomIndex1 = parseInt(line, 0, 3);
-        atomIndex2 = parseInt(line, 3, 6);
-        order = parseInt(line, 6, 9);
+        atomIndex1 = parseIntRange(line, 0, 3);
+        atomIndex2 = parseIntRange(line, 3, 6);
+        order = parseIntRange(line, 6, 9);
         if (is2D && order == 1 && line.length() >= 12)
-          stereo = parseInt(line.substring(9, 12));
+          stereo = parseIntStr(line.substring(9, 12));
       }
       switch (order) {
       case 0:

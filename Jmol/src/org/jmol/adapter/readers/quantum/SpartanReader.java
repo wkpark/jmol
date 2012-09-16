@@ -75,13 +75,13 @@ public class SpartanReader extends BasisFunctionReader {
 
   private void readAtoms() throws Exception {
     discardLinesUntilBlank();
-    while (readLine() != null && (/* atomNum = */parseInt(line, 0, 3)) > 0) {
-      String elementSymbol = parseToken(line, 4, 6);
-      String atomName = parseToken(line, 7, 13);
+    while (readLine() != null && (/* atomNum = */parseIntRange(line, 0, 3)) > 0) {
+      String elementSymbol = parseTokenRange(line, 4, 6);
+      String atomName = parseTokenRange(line, 7, 13);
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementSymbol = elementSymbol;
       atom.atomName = atomName;
-      setAtomCoord(atom, parseFloat(line, 17, 30), parseFloat(line, 31, 44), parseFloat(
+      setAtomCoord(atom, parseFloatRange(line, 17, 30), parseFloatRange(line, 31, 44), parseFloatRange(
           line, 45, 58));
     }
   }
@@ -112,9 +112,9 @@ public class SpartanReader extends BasisFunctionReader {
         readLine();
         for (int j = 0; j < lineFreqCount; ++j) {
           int ichCoords = j * 23 + 10;
-          float x = parseFloat(line, ichCoords, ichCoords + 7);
-          float y = parseFloat(line, ichCoords + 7, ichCoords + 14);
-          float z = parseFloat(line, ichCoords + 14, ichCoords + 21);
+          float x = parseFloatRange(line, ichCoords, ichCoords + 7);
+          float y = parseFloatRange(line, ichCoords + 7, ichCoords + 14);
+          float z = parseFloatRange(line, ichCoords + 14, ichCoords + 21);
           if (!ignore[j])
             atomSetCollection.addVibrationVector(i + (lineBaseFreqCount + j)
                 * atomCount, x, y, z);

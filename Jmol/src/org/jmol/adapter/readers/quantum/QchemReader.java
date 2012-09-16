@@ -159,9 +159,9 @@ public class QchemReader extends MOReader {
       if (JmolAdapter.getElementNumber(symbol) < 1)
         continue;
       //q-chem specific offsets
-      float x = parseFloat(tokens[2]);
-      float y = parseFloat(tokens[3]);
-      float z = parseFloat(tokens[4]);
+      float x = parseFloatStr(tokens[2]);
+      float y = parseFloatStr(tokens[3]);
+      float z = parseFloatStr(tokens[4]);
       if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
         continue;
       Atom atom = atomSetCollection.addNewAtom();
@@ -215,7 +215,7 @@ public class QchemReader extends MOReader {
     Atom[] atoms = atomSetCollection.getAtoms();
     int atomCount = atomSetCollection.getLastAtomSetAtomCount();
     for (int i = 0; i < atomCount && readLine() != null; ++i)
-      atoms[i].partialCharge = parseFloat(getTokens()[2]);
+      atoms[i].partialCharge = parseFloatStr(getTokens()[2]);
   }
 
 
@@ -289,16 +289,16 @@ $end
       }
       shellCount++;
       int[] slater = new int[4];
-      tokens = getTokens(line);
+      tokens = getTokensStr(line);
       slater[0] = atomCount;
       slater[1] = JmolAdapter.getQuantumShellTagID(tokens[0]); // default cartesian
       slater[2] = gaussianCount;
-      int nGaussians = parseInt(tokens[1]);
+      int nGaussians = parseIntStr(tokens[1]);
       slater[3] = nGaussians;
       shells.add(slater);
       gaussianCount += nGaussians;
       for (int i = 0; i < nGaussians; i++) {
-        gdata.add(getTokens(readLine()));
+        gdata.add(getTokensStr(readLine()));
       }
     }
     // now rearrange the gaussians (direct copy from GaussianReader)
@@ -307,16 +307,16 @@ $end
       tokens = gdata.get(i);
       gaussians[i] = new float[tokens.length];
       for (int j = 0; j < tokens.length; j++)
-        gaussians[i][j] = parseFloat(tokens[j]);
+        gaussians[i][j] = parseFloatStr(tokens[j]);
     }
     if (Logger.debugging) {
       Logger.debug(shellCount + " slater shells read");
       Logger.debug(gaussianCount + " gaussian primitives read");
     }
     discardLinesUntilStartsWith(" There are");
-    tokens = getTokens(line);
+    tokens = getTokensStr(line);
     //nShell = parseInt(tokens[2]);
-    nBasis = parseInt(tokens[5]);
+    nBasis = parseIntStr(tokens[5]);
   }
 
   // since the orbital coefficients don't show the symmetry, I will read them here
@@ -453,7 +453,7 @@ $end
     boolean readBetas = false;
 
     discardLinesUntilStartsWith(" Alpha");
-    String[] tokens = getTokens(line); // initialize tokens for later as well
+    String[] tokens = getTokensStr(line); // initialize tokens for later as well
     moInfos = alphas;
     for (int e = 0; e < 2; e++) { // do for A and B electrons
       int nMO = 0;
@@ -470,7 +470,7 @@ $end
           e = 2; // pretend I did read beta whether it happened or not
           break; // done....
         }
-        int nOrbs = getTokens(line).length;
+        int nOrbs = getTokensStr(line).length;
         if (nOrbs == 0 || line.startsWith(" Warning")) {
           discardLinesUntilStartsWith(" Beta"); // now the beta ones.
           readBetas = true;
@@ -478,7 +478,7 @@ $end
           break;
         }
         if (haveSym)
-          tokens = getTokens(readLine());
+          tokens = getTokensStr(readLine());
         for (int i = 0, j = 0; i < nOrbs; i++, j += 2) {
           MOInfo info = new MOInfo();
           info.ne = ne;
@@ -577,7 +577,7 @@ $end
      * 
      */
     int nMOs; // total number of MOs that were read
-    String orbitalType = getTokens(line)[0]; // is RESTRICTED or ALPHA
+    String orbitalType = getTokensStr(line)[0]; // is RESTRICTED or ALPHA
     alphaBeta = (orbitalType.equals("RESTRICTTED") ? "" : "A");
     nMOs = readMOs(orbitalType.equals("RESTRICTED"), alphas);
     if (orbitalType.equals("ALPHA")) { // we also have BETA orbitals....
@@ -623,16 +623,16 @@ $end
     int nMOs = 0;
 
     while (readLine().length() > 2) {
-      tokens = getTokens(line);
+      tokens = getTokensStr(line);
       int nMO = tokens.length; // number of MO columns
-      energy = getTokens(readLine().substring(13));
+      energy = getTokensStr(readLine().substring(13));
       for (int i = 0; i < nMO; i++) {
-        moid[i] = parseInt(tokens[i]) - 1;
+        moid[i] = parseIntStr(tokens[i]) - 1;
         mocoef[i] = new float[nBasis];
         mos[i] = new Hashtable<String, Object>();
       }
       for (int i = 0, pt = 0; i < nBasis; i++) {
-        tokens = getTokens(readLine());
+        tokens = getTokensStr(readLine());
         String s = line.substring(12, 17).trim(); // collect the shell labels
         char ch = s.charAt(0);
         switch (ch) {
@@ -668,7 +668,7 @@ $end
           break;
         }
         for (int j = tokens.length - nMO, k = 0; k < nMO; j++, k++)
-          mocoef[k][pt] = parseFloat(tokens[j]);
+          mocoef[k][pt] = parseFloatStr(tokens[j]);
         pt++;
       }
       // we have all the info we need 

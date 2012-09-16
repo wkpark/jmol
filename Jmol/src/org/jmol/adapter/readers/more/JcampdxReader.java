@@ -133,7 +133,7 @@ public class JcampdxReader extends MolReader {
     } else {
       peakIndex = new int[1];
     }
-    if (!checkFilter("NOSYNC"))
+    if (!checkFilterKey("NOSYNC"))
       addJmolScript("sync on");
   }
 
@@ -159,7 +159,7 @@ public class JcampdxReader extends MolReader {
   private int findModelById(String modelID) {
     for (int i = atomSetCollection.getAtomSetCount(); --i >= 0;)
       if (modelID.equals(atomSetCollection
-          .getAtomSetAuxiliaryInfo(i, "modelID")))
+          .getAtomSetAuxiliaryInfoValue(i, "modelID")))
         return i;
     return -1;
   }
@@ -206,7 +206,7 @@ public class JcampdxReader extends MolReader {
       return;
     }
     for (int pt = 0, i = model0; ++i < n;) {
-      atomSetCollection.setAtomSetAuxiliaryInfo("modelID", modelID + "."
+      atomSetCollection.setAtomSetAuxiliaryInfoForSet("modelID", modelID + "."
           + (++pt), i);
     }
   }
@@ -228,7 +228,7 @@ public class JcampdxReader extends MolReader {
     modelIdList += key;
     String baseModel = getAttribute(line, "baseModel");
     String modelType = getAttribute(line, "type").toLowerCase();
-    float vibScale = Parser.parseFloat(getAttribute(line, "vibrationScale"));
+    float vibScale = Parser.parseFloatStr(getAttribute(line, "vibrationScale"));
     if (modelType.equals("xyzvib"))
       modelType = "xyz";
     else if (modelType.length() == 0)
@@ -256,9 +256,9 @@ public class JcampdxReader extends MolReader {
       int ibase = findModelById(baseModel);
       if (ibase >= 0) {
         atomSetCollection
-            .setAtomSetAuxiliaryInfo("jdxModelID", baseModel, ibase);
+            .setAtomSetAuxiliaryInfoForSet("jdxModelID", baseModel, ibase);
         for (int i = a.getAtomSetCount(); --i >= 0;)
-          a.setAtomSetAuxiliaryInfo("jdxBaseModel", baseModel, i);
+          a.setAtomSetAuxiliaryInfoForSet("jdxBaseModel", baseModel, i);
         if (a.getBondCount() == 0)
           setBonding(a, ibase);
       }
@@ -348,16 +348,16 @@ public class JcampdxReader extends MolReader {
       String s;
       if (getAttribute(line, "atoms").length() != 0) {
         List<String> peaks = (List<String>) atomSetCollection
-            .getAtomSetAuxiliaryInfo(i, key);
+            .getAtomSetAuxiliaryInfoValue(i, key);
         if (peaks == null)
-          atomSetCollection.setAtomSetAuxiliaryInfo(key,
+          atomSetCollection.setAtomSetAuxiliaryInfoForSet(key,
               peaks = new ArrayList<String>(), i);
         peaks.add(line);
         s = type + ": ";
-      } else if (atomSetCollection.getAtomSetAuxiliaryInfo(i, "jdxModelSelect") == null) {
+      } else if (atomSetCollection.getAtomSetAuxiliaryInfoValue(i, "jdxModelSelect") == null) {
         // assign name and jdxModelSelect ONLY if first found.
-        atomSetCollection.setAtomSetAuxiliaryInfo("name", title, i);
-        atomSetCollection.setAtomSetAuxiliaryInfo("jdxModelSelect", line, i);
+        atomSetCollection.setAtomSetAuxiliaryInfoForSet("name", title, i);
+        atomSetCollection.setAtomSetAuxiliaryInfoForSet("jdxModelSelect", line, i);
         s = "model: ";
       } else {
         s = "ignored: ";
@@ -367,7 +367,7 @@ public class JcampdxReader extends MolReader {
     n = atomSetCollection.getAtomSetCount();
     for (int i = n; --i >= 0;) {
       modelID = (String) atomSetCollection
-          .getAtomSetAuxiliaryInfo(i, "modelID");
+          .getAtomSetAuxiliaryInfoValue(i, "modelID");
       if (havePeaks && !bsModels.get(i) && modelID.indexOf(".") >= 0) {
         atomSetCollection.removeAtomSet(i);
         n--;
@@ -383,7 +383,7 @@ public class JcampdxReader extends MolReader {
         if (i + 1 != selectedModel)
           atomSetCollection.removeAtomSet(i);
       if (n > 0)
-        appendLoadNote((String) atomSetCollection.getAtomSetAuxiliaryInfo(0, "name"));
+        appendLoadNote((String) atomSetCollection.getAtomSetAuxiliaryInfoValue(0, "name"));
     }
     for (int i = atomSetCollection.getAtomSetCount(); --i >= 0;)
       atomSetCollection.setAtomSetNumber(i, i + 1);
@@ -398,10 +398,10 @@ public class JcampdxReader extends MolReader {
    * @param type
    */
   private void addType(int imodel, String type) {
-    String types = addType((String) atomSetCollection.getAtomSetAuxiliaryInfo(imodel, "spectrumTypes"), type);
+    String types = addType((String) atomSetCollection.getAtomSetAuxiliaryInfoValue(imodel, "spectrumTypes"), type);
     if (types == null)
       return;
-    atomSetCollection.setAtomSetAuxiliaryInfo("spectrumTypes", types, imodel);
+    atomSetCollection.setAtomSetAuxiliaryInfoForSet("spectrumTypes", types, imodel);
     String s = addType(allTypes, type);
     if (s != null)
       allTypes = s;

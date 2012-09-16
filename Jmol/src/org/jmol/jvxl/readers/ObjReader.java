@@ -111,8 +111,8 @@ class ObjReader extends PmeshReader {
       switch (line.charAt(0)) {
       case 'v':
         next[0] = 2;
-        pt.set(Parser.parseFloat(line, next), Parser.parseFloat(line, next),
-            Parser.parseFloat(line, next));
+        pt.set(Parser.parseFloatNext(line, next), Parser.parseFloatNext(line, next),
+            Parser.parseFloatNext(line, next));
         boolean addHt = false;
         if (htPymol == null) {
           i = nVertices;

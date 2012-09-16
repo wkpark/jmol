@@ -1739,7 +1739,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public Boolean getNoneSelected() {
-    return (noneSelected ? Boolean.TRUE : Boolean.FALSE);
+    return (noneSelected ? JmolConstants.TRUE : JmolConstants.FALSE);
   }
 
   @Override
@@ -1900,11 +1900,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (!htParams.containsKey("lattice"))
       htParams.put("lattice", global.getDefaultLattice());
     if (global.applySymmetryToBonds)
-      htParams.put("applySymmetryToBonds", Boolean.TRUE);
+      htParams.put("applySymmetryToBonds", JmolConstants.TRUE);
     if (global.pdbGetHeader)
-      htParams.put("getHeader", Boolean.TRUE);
+      htParams.put("getHeader", JmolConstants.TRUE);
     if (global.pdbSequential)
-      htParams.put("isSequential", Boolean.TRUE);
+      htParams.put("isSequential", JmolConstants.TRUE);
     htParams.put("stateScriptVersionInt", Integer
         .valueOf(stateScriptVersionInt));
     if (!htParams.containsKey("filter")) {
@@ -1913,7 +1913,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         htParams.put("filter", filter);
     }
     if (isAppend && !global.appendNew && getAtomCount() > 0)
-      htParams.put("merging", Boolean.TRUE);
+      htParams.put("merging", JmolConstants.TRUE);
     return htParams;
   }
 
@@ -2172,7 +2172,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     id = id.toUpperCase();
     if (ligandModelSet == null)
       ligandModelSet = new Hashtable<String, Boolean>();
-    ligandModelSet.put(id, Boolean.TRUE);
+    ligandModelSet.put(id, JmolConstants.TRUE);
     if (ligandModels == null)
       ligandModels = new Hashtable<String, Object>();
     Object model = ligandModels.get(id);
@@ -2198,7 +2198,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       // TODO: check for errors in reading file
       if (data.length() != 0) {
         Map<String, Object> htParams = new Hashtable<String, Object>();
-        htParams.put("modelOnly", Boolean.TRUE);
+        htParams.put("modelOnly", JmolConstants.TRUE);
         model = getModelAdapter().getAtomSetCollectionReader("ligand", null,
             FileManager.getBufferedReaderForString(data), htParams);
         isError = (model instanceof String);
@@ -2213,7 +2213,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     if (isError) {
       scriptEcho(model.toString());
-      ligandModels.put(id, Boolean.FALSE);
+      ligandModels.put(id, JmolConstants.FALSE);
       return null;
     }
     return model;
@@ -2508,7 +2508,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           loadScript, atomSetCollection, bsNew, isAppend);
       if (bsNew.cardinality() > 0) {
         String jmolScript = (String) modelSet
-            .getModelSetAuxiliaryInfo("jmolscript");
+            .getModelSetAuxiliaryInfoValue("jmolscript");
         if (modelSet.getModelSetAuxiliaryInfoBoolean("doMinimize"))
           minimize(Integer.MAX_VALUE, 0, bsNew, null, 0, true, true, true);
         else
@@ -2929,7 +2929,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public Object getModelSetAuxiliaryInfo(String strKey) {
-    return modelSet.getModelSetAuxiliaryInfo(strKey);
+    return modelSet.getModelSetAuxiliaryInfoValue(strKey);
   }
 
   @Override
@@ -3129,8 +3129,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   @Override
-  public Object getModelAuxiliaryInfo(int modelIndex, String keyName) {
-    return modelSet.getModelAuxiliaryInfo(modelIndex, keyName);
+  public Object getModelAuxiliaryInfoValue(int modelIndex, String keyName) {
+    return modelSet.getModelAuxiliaryInfoValue(modelIndex, keyName);
   }
 
   public int getModelNumberIndex(int modelNumber, boolean useModelNumber,
@@ -5403,11 +5403,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private void sendJSpecViewModelChange(int modelIndex) {
     int syncMode = ("sync on".equals(modelSet
-        .getModelSetAuxiliaryInfo("jmolscript")) ? StatusManager.SYNC_DRIVER
+        .getModelSetAuxiliaryInfoValue("jmolscript")) ? StatusManager.SYNC_DRIVER
         : statusManager.getSyncMode());
     if (syncMode != StatusManager.SYNC_DRIVER)
       return;
-    String peak = (String) getModelAuxiliaryInfo(modelIndex, "jdxModelSelect");
+    String peak = (String) getModelAuxiliaryInfoValue(modelIndex, "jdxModelSelect");
     // problem is that SECOND load in jmol will not load new model in JSpecView
     if (peak != null)
       sendJSpecView(peak);
@@ -5807,7 +5807,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // Eval
     try {
       if (appConsole == null)
-        getProperty("DATA_API", "getAppConsole", Boolean.TRUE);
+        getProperty("DATA_API", "getAppConsole", JmolConstants.TRUE);
       appConsole.setVisible(showConsole);
     } catch (Throwable e) {
       // no console for this client... maybe no Swing
@@ -5916,7 +5916,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           .getVariable(value)));
       break;
     case Token.floatparam:
-      setFloatProperty(key, tok, Parser.parseFloat(value));
+      setFloatProperty(key, tok, Parser.parseFloatStr(value));
       break;
     default:
       setStringProperty(key, tok, value);
@@ -8118,7 +8118,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case 100:
       if (appConsole == null && paramInfo != null
           && ((Boolean) paramInfo).booleanValue()) {
-        getProperty("DATA_API", "getAppConsole", Boolean.TRUE);
+        getProperty("DATA_API", "getAppConsole", JmolConstants.TRUE);
         scriptEditor = (appConsole == null ? null : appConsole
             .getScriptEditor());
       }
@@ -8157,7 +8157,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     String filename = file_text[0];
     String msg = file_text[1];
     JmolScriptEditorInterface scriptEditor = (JmolScriptEditorInterface) getProperty(
-        "DATA_API", "getScriptEditor", Boolean.TRUE);
+        "DATA_API", "getScriptEditor", JmolConstants.TRUE);
     if (scriptEditor == null)
       return;
     if (msg != null) {
@@ -9170,7 +9170,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     switch (tokens.length) {
     case 3:
       if (key.equals("zoomByFactor"))
-        zoomByFactor(Parser.parseFloat(tokens[2]), Integer.MAX_VALUE,
+        zoomByFactor(Parser.parseFloatStr(tokens[2]), Integer.MAX_VALUE,
             Integer.MAX_VALUE);
       else if (key.equals("zoomBy"))
         zoomBy(Parser.parseInt(tokens[2]));
@@ -9180,32 +9180,32 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       break;
     case 4:
       if (key.equals("rotateXYBy"))
-        rotateXYBy(Parser.parseFloat(tokens[2]), Parser.parseFloat(tokens[3]));
+        rotateXYBy(Parser.parseFloatStr(tokens[2]), Parser.parseFloatStr(tokens[3]));
       else if (key.equals("translateXYBy"))
         translateXYBy(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]));
       else if (key.equals("rotateMolecule"))
-        rotateSelected(Parser.parseFloat(tokens[2]), Parser
-            .parseFloat(tokens[3]), null);
+        rotateSelected(Parser.parseFloatStr(tokens[2]), Parser
+            .parseFloatStr(tokens[3]), null);
       break;
     case 5:
       if (key.equals("spinXYBy"))
         spinXYBy(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]), Parser
-            .parseFloat(tokens[4]));
+            .parseFloatStr(tokens[4]));
       else if (key.equals("zoomByFactor"))
-        zoomByFactor(Parser.parseFloat(tokens[2]), Parser.parseInt(tokens[3]),
+        zoomByFactor(Parser.parseFloatStr(tokens[2]), Parser.parseInt(tokens[3]),
             Parser.parseInt(tokens[4]));
       else if (key.equals("rotateZBy"))
         rotateZBy(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]),
             Parser.parseInt(tokens[4]));
       else if (key.equals("rotateArcBall"))
         rotateArcBall(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]),
-            Parser.parseFloat(tokens[4]));
+            Parser.parseFloatStr(tokens[4]));
       break;
     case 7:
       if (key.equals("centerAt"))
         centerAt(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]),
-            new Point3f(Parser.parseFloat(tokens[4]), Parser
-                .parseFloat(tokens[5]), Parser.parseFloat(tokens[6])));
+            new Point3f(Parser.parseFloatStr(tokens[4]), Parser
+                .parseFloatStr(tokens[5]), Parser.parseFloatStr(tokens[6])));
     }
     if (disableSend)
       setSyncDriver(StatusManager.SYNC_ENABLE);
@@ -10160,8 +10160,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         // must save current state, coord, etc.
         // but this destroys actionStatesRedo
         int[] pt = new int[] { 1 };
-        type = Parser.parseInt(s, pt);
-        taintedAtom = Parser.parseInt(s, pt);
+        type = Parser.parseIntNext(s, pt);
+        taintedAtom = Parser.parseIntNext(s, pt);
         undoMoveAction(taintedAtom, type, false);
       }
       //System.out.println("redo type = " + type + " size=" + actionStates.size()
@@ -10630,7 +10630,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     sceneFile = TextFormat.simpleReplace(sceneFile, ".spt", "");
     String fileRoot = sceneFile;
     String fileExt = type.toLowerCase();
-    String[] scenes = TextFormat.split(script0, "pause scene ");
+    String[] scenes = TextFormat.splitChars(script0, "pause scene ");
     Map<String, String> htScenes = new Hashtable<String, String>();
     List<Integer> list = new ArrayList<Integer>();
     String script = FileManager.getSceneScript(scenes, htScenes, list);

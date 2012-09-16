@@ -41,6 +41,7 @@ import org.jmol.util.Escape;
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
 import org.jmol.util.Quaternion;
+import org.jmol.viewer.JmolConstants;
 
 public class _JsExporter extends __CartesianExporter {
 
@@ -378,7 +379,7 @@ public class _JsExporter extends __CartesianExporter {
     String check = round(ptCenter) + (checkRadius ? " " + (int) (radius * 100) : "");
     if (htSpheresRendered.get(check) != null)
       return;
-    htSpheresRendered.put(check, Boolean.TRUE);
+    htSpheresRendered.put(check, JmolConstants.TRUE);
     outputSphereChild(ptCenter, radius, colix);
   }
 

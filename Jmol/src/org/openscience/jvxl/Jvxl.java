@@ -238,21 +238,21 @@ public class Jvxl {
         isPositiveOnly = true;
         s = s.substring(1);
       }
-      cutoff = Parser.parseFloat(s);
+      cutoff = Parser.parseFloatStr(s);
     }
 
     if (line.hasOption("n")) {
       if (bicolor)
         Logger.warn("--min option ignored; incompatible with --bicolor");
       else
-        min = Parser.parseFloat(line.getOptionValue("n"));
+        min = Parser.parseFloatStr(line.getOptionValue("n"));
     }
 
     if (line.hasOption("x")) {
       if (bicolor)
         Logger.warn("--max option ignored; incompatible with --bicolor");
       else
-        max = Parser.parseFloat(line.getOptionValue("x"));
+        max = Parser.parseFloatStr(line.getOptionValue("x"));
     }
 
     //    if (line.hasOption("P")) {
@@ -357,19 +357,19 @@ public class Jvxl {
     if (str.equalsIgnoreCase("yz"))
       return new Point4f(1, 0, 0, 0);
     if (str.indexOf("x=") == 0) {
-      return new Point4f(1, 0, 0, -Parser.parseFloat(str.substring(2)));
+      return new Point4f(1, 0, 0, -Parser.parseFloatStr(str.substring(2)));
     }
     if (str.indexOf("y=") == 0) {
-      return new Point4f(0, 1, 0, -Parser.parseFloat(str.substring(2)));
+      return new Point4f(0, 1, 0, -Parser.parseFloatStr(str.substring(2)));
     }
     if (str.indexOf("z=") == 0) {
-      return new Point4f(0, 0, 1, -Parser.parseFloat(str.substring(2)));
+      return new Point4f(0, 0, 1, -Parser.parseFloatStr(str.substring(2)));
     }
     if (str.indexOf("{") == 0) {
       str = str.replace(',', ' ');
       int[] next = new int[1];
-      return new Point4f(Parser.parseFloat(str, next), Parser.parseFloat(str,
-          next), Parser.parseFloat(str, next), Parser.parseFloat(str, next));
+      return new Point4f(Parser.parseFloatNext(str, next), Parser.parseFloatNext(str,
+          next), Parser.parseFloatNext(str, next), Parser.parseFloatNext(str, next));
     }
     return null;
   }

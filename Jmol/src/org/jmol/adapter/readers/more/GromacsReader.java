@@ -64,7 +64,7 @@ public class GromacsReader extends AtomSetCollectionReader {
 
    */
   private void readAtoms() throws Exception {
-    int modelAtomCount = parseInt(readLine());
+    int modelAtomCount = parseIntStr(readLine());
     for (int i = 0; i < modelAtomCount; ++i) {
       readLine();
       int len = line.length();
@@ -73,12 +73,12 @@ public class GromacsReader extends AtomSetCollectionReader {
         continue;
       }
       Atom atom = new Atom();
-      atom.sequenceNumber = parseInt(line, 0, 5);
-      setAtomName(atom, parseToken(line, 5, 9).trim(), line.substring(11, 15).trim());
-      atom.atomSerial = parseInt(line, 15, 20);
-      atom.x = parseFloat(line, 20, 28) * 10;
-      atom.y = parseFloat(line, 28, 36) * 10;
-      atom.z = parseFloat(line, 36, 44) * 10;
+      atom.sequenceNumber = parseIntRange(line, 0, 5);
+      setAtomName(atom, parseTokenRange(line, 5, 9).trim(), line.substring(11, 15).trim());
+      atom.atomSerial = parseIntRange(line, 15, 20);
+      atom.x = parseFloatRange(line, 20, 28) * 10;
+      atom.y = parseFloatRange(line, 28, 36) * 10;
+      atom.z = parseFloatRange(line, 36, 44) * 10;
       if (Float.isNaN(atom.x) || Float.isNaN(atom.y) || Float.isNaN(atom.z)) {
         Logger.warn("line cannot be read for GROMACS atom data: " + line);
         atom.set(0, 0, 0);
@@ -91,9 +91,9 @@ public class GromacsReader extends AtomSetCollectionReader {
       atomSetCollection.addAtom(atom);
       if (len < 69) 
         continue;
-      float vx = parseFloat(line, 44, 52) * 10;
-      float vy = parseFloat(line, 52, 60) * 10;
-      float vz = parseFloat(line, 60, 68) * 10;
+      float vx = parseFloatRange(line, 44, 52) * 10;
+      float vy = parseFloatRange(line, 52, 60) * 10;
+      float vz = parseFloatRange(line, 60, 68) * 10;
       if (Float.isNaN(vx) || Float.isNaN(vy) || Float.isNaN(vz))
         continue;
       atomSetCollection.addVibrationVector(atom.atomIndex, vx, vy, vz);
@@ -126,12 +126,12 @@ public class GromacsReader extends AtomSetCollectionReader {
   private void readUnitCell() throws Exception {
     if (readLine() == null)
       return;
-    String[] tokens = getTokens(line);
+    String[] tokens = getTokensStr(line);
     if (tokens.length < 3 || !doApplySymmetry)
       return;
-    float a = 10 * parseFloat(tokens[0]);
-    float b = 10 * parseFloat(tokens[1]);
-    float c = 10 * parseFloat(tokens[2]);
+    float a = 10 * parseFloatStr(tokens[0]);
+    float b = 10 * parseFloatStr(tokens[1]);
+    float c = 10 * parseFloatStr(tokens[2]);
     setUnitCell(a, b, c, 90, 90, 90);
     setSpaceGroupName("P1");
     Atom[] atoms = atomSetCollection.getAtoms();

@@ -607,7 +607,7 @@ public class FileManager {
       bytes = getCachedPngjBytes(name);
     String fullName = name;
     if (name.indexOf("|") >= 0) {
-      subFileList = TextFormat.split(name, "|");
+      subFileList = TextFormat.splitChars(name, "|");
       if (bytes == null)
         Logger.info("FileManager opening " + name);
       name = subFileList[0];
@@ -696,7 +696,7 @@ public class FileManager {
     }
     String fullName = name;
     if (name.indexOf("|") >= 0) {
-      subFileList = TextFormat.split(name, "|");
+      subFileList = TextFormat.splitChars(name, "|");
       name = subFileList[0];
     }
     BufferedInputStream bis = null;
@@ -770,7 +770,7 @@ public class FileManager {
     String fullName = name;
     String[] subFileList = null;
     if (name.indexOf("|") >= 0) {
-      subFileList = TextFormat.split(name, "|");
+      subFileList = TextFormat.splitChars(name, "|");
       name = subFileList[0];
       allowZip = true;
     }
@@ -1284,9 +1284,9 @@ public class FileManager {
       String tag = scriptFilePrefixes[ipt];
       int i = -1;
       while ((i = script.indexOf(tag, i + 1)) >= 0) {
-        String s = Parser.getNextQuotedString(script, i);
+        String s = Parser.getQuotedStringAt(script, i);
         if (s.indexOf("::") >= 0)
-          s = TextFormat.split(s, "::")[1];
+          s = TextFormat.splitChars(s, "::")[1];
         fileList.add(s);
       }
     }
@@ -1609,7 +1609,7 @@ public class FileManager {
           String name = fullPathNameIn;
           String[] subFileList = null;
           if (name.indexOf("|") >= 0 && !name.endsWith(".zip")) {
-            subFileList = TextFormat.split(name, "|");
+            subFileList = TextFormat.splitChars(name, "|");
             name = subFileList[0];
           }
           if (subFileList != null)
@@ -1719,7 +1719,7 @@ public class FileManager {
       String[] subFileList = null;
       htParams.remove("subFileList");
       if (name.indexOf("|") >= 0) {
-        subFileList = TextFormat.split(name, "|");
+        subFileList = TextFormat.splitChars(name, "|");
         name = subFileList[0];
       }
       Object t = getUnzippedBufferedReaderOrErrorMessageFromName(name, null,
@@ -2068,7 +2068,7 @@ public class FileManager {
     for (int i = 1; i < scenes.length; i++) {
       scenes[i - 1] = TextFormat.trim(scenes[i - 1], "\t\n\r ");
       int[] pt = new int[1];
-      iScene = Parser.parseInt(scenes[i], pt);
+      iScene = Parser.parseIntNext(scenes[i], pt);
       if (iScene == Integer.MIN_VALUE)
         return "bad scene ID: " + iScene;
       scenes[i] = scenes[i].substring(pt[0]);

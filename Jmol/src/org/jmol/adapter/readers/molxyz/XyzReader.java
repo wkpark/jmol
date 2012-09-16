@@ -54,7 +54,7 @@ public class XyzReader extends AtomSetCollectionReader {
 
   @Override
   protected boolean checkLine() throws Exception {
-    int modelAtomCount = parseInt(line);
+    int modelAtomCount = parseIntStr(line);
     if (modelAtomCount == Integer.MIN_VALUE) {
       continuing = false;
       return false;
@@ -104,9 +104,9 @@ public class XyzReader extends AtomSetCollectionReader {
       }
       Atom atom = atomSetCollection.addNewAtom();
       setElementAndIsotope(atom, tokens[0]);
-      atom.x = parseFloat(tokens[1]);
-      atom.y = parseFloat(tokens[2]);
-      atom.z = parseFloat(tokens[3]);
+      atom.x = parseFloatStr(tokens[1]);
+      atom.y = parseFloatStr(tokens[2]);
+      atom.z = parseFloatStr(tokens[3]);
       if (Float.isNaN(atom.x) || Float.isNaN(atom.y) || Float.isNaN(atom.z)) {
         Logger.warn("line cannot be read for XYZ atom data: " + line);
         atom.set(0, 0, 0);
@@ -125,9 +125,9 @@ public class XyzReader extends AtomSetCollectionReader {
         // accepts  sym x y z c vx vy vz
         // accepts  sym x y z c vx vy vz atomno
         if (tokens[4].indexOf(".") >= 0) {
-          atom.partialCharge = parseFloat(tokens[4]);
+          atom.partialCharge = parseFloatStr(tokens[4]);
         } else {
-          int charge = parseInt(tokens[4]);
+          int charge = parseIntStr(tokens[4]);
           if (charge != Integer.MIN_VALUE)
             atom.formalCharge = charge;
         }
@@ -135,18 +135,18 @@ public class XyzReader extends AtomSetCollectionReader {
         case 5:
           continue;
         case 6:
-          atom.radius = parseFloat(tokens[5]);
+          atom.radius = parseFloatStr(tokens[5]);
           continue;
         case 9:
-          atom.atomSerial = parseInt(tokens[8]);
+          atom.atomSerial = parseIntStr(tokens[8]);
         }
         vpt++;
         //$FALL-THROUGH$:
       default:
         // or       sym x y z vx vy vz
-        float vx = parseFloat(tokens[vpt++]);
-        float vy = parseFloat(tokens[vpt++]);
-        float vz = parseFloat(tokens[vpt++]);
+        float vx = parseFloatStr(tokens[vpt++]);
+        float vy = parseFloatStr(tokens[vpt++]);
+        float vz = parseFloatStr(tokens[vpt++]);
         if (Float.isNaN(vx) || Float.isNaN(vy) || Float.isNaN(vz))
           continue;
         atomSetCollection.addVibrationVector(atom.atomIndex, vx, vy, vz);

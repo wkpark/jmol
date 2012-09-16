@@ -34,6 +34,7 @@ import org.jmol.script.Token;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.FileManager;
+import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 
 import java.awt.Container;
@@ -285,7 +286,7 @@ public abstract class JmolConsole implements JmolCallbackListener, ActionListene
     // if the viewer is an applet, when we close the console
     // we 
     if (viewer.isApplet())
-      viewer.getProperty("DATA_API", "getAppConsole", Boolean.FALSE);
+      viewer.getProperty("DATA_API", "getAppConsole", JmolConstants.FALSE);
   }
 
   /**

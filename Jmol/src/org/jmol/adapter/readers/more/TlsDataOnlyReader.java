@@ -68,7 +68,7 @@ public class TlsDataOnlyReader extends AtomSetCollectionReader {
     Map<String, Object> range = null;
     tlsGroups = new ArrayList<Map<String, Object>>();
     while (readLine() != null) {
-      String[] tokens = getTokens(line.replace('\'', ' '));
+      String[] tokens = getTokensStr(line.replace('\'', ' '));
       if (tokens.length == 0)
         continue;
       if (tokens[0].equals("TLS")) {
@@ -104,8 +104,8 @@ public class TlsDataOnlyReader extends AtomSetCollectionReader {
         */
         Point3f origin = new Point3f();
         tlsGroup.put("origin", origin);
-        origin.set(parseFloat(tokens[1]), parseFloat(tokens[2]),
-            parseFloat(tokens[3]));
+        origin.set(parseFloatStr(tokens[1]), parseFloatStr(tokens[2]),
+            parseFloatStr(tokens[3]));
         if (Float.isNaN(origin.x) || Float.isNaN(origin.y)
             || Float.isNaN(origin.z)) {
           origin.set(Float.NaN, Float.NaN, Float.NaN);
@@ -126,7 +126,7 @@ public class TlsDataOnlyReader extends AtomSetCollectionReader {
         for (int i = 1; i < tokens.length; i++) {
           int ti = nn[i].charAt(0) - '1';
           int tj = nn[i].charAt(1) - '1';
-          tensor[ti][tj] = parseFloat(tokens[++i]);
+          tensor[ti][tj] = parseFloatStr(tokens[++i]);
           if (ti < tj)
             tensor[tj][ti] = tensor[ti][tj];
         }

@@ -109,7 +109,7 @@ public class AimsReader extends AtomSetCollectionReader {
       Logger.warn("more than 3 FHI-aims lattice vectors found with line: "
           + line);
     } else {
-      addPrimitiveLatticeVector(nLatticeVectors++, new float[] {parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3])}, 0);
+      addPrimitiveLatticeVector(nLatticeVectors++, new float[] {parseFloatStr(tokens[1]), parseFloatStr(tokens[2]), parseFloatStr(tokens[3])}, 0);
       setFractionalCoordinates(nLatticeVectors == 3);
     }
   }
@@ -130,8 +130,8 @@ public class AimsReader extends AtomSetCollectionReader {
     if (this.isFractional != isFractional)
       setFractionalCoordinates(this.isFractional = isFractional);
     Atom atom = atomSetCollection.addNewAtom();
-    setAtomCoord(atom, parseFloat(tokens[1]), parseFloat(tokens[2]),
-        parseFloat(tokens[3]));        
+    setAtomCoord(atom, parseFloatStr(tokens[1]), parseFloatStr(tokens[2]),
+        parseFloatStr(tokens[3]));        
     atom.elementSymbol = tokens[4];
   }
 
@@ -143,7 +143,7 @@ public class AimsReader extends AtomSetCollectionReader {
       Logger.warn("cannot read line with FHI-aims atom data: " + line);
       return;
     }
-    int order = parseInt(tokens[4]);
+    int order = parseIntStr(tokens[4]);
     if (order > 0) {
       Logger
           .warn("multipole line ignored since only monopoles are currently supported: "
@@ -153,9 +153,9 @@ public class AimsReader extends AtomSetCollectionReader {
     if (this.isFractional)
       setFractionalCoordinates(this.isFractional = false);
     Atom atom = atomSetCollection.addNewAtom();
-    setAtomCoord(atom, parseFloat(tokens[1]), parseFloat(tokens[2]),
-        parseFloat(tokens[3]));
-    atom.partialCharge = parseFloat(tokens[5]);
+    setAtomCoord(atom, parseFloatStr(tokens[1]), parseFloatStr(tokens[2]),
+        parseFloatStr(tokens[3]));
+    atom.partialCharge = parseFloatStr(tokens[5]);
     // we generally do not do this: atom.formalCharge = Math.round(atom.partialCharge);
   }
 

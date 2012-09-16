@@ -388,13 +388,13 @@ public class ColorUtil {
     if (strColor.charAt(0) == '[' && strColor.charAt(len - 1) == ']') {
       String check;
       if (strColor.indexOf(",") >= 0) {
-        String[] tokens = TextFormat.split(strColor.substring(1, strColor
+        String[] tokens = TextFormat.splitChars(strColor.substring(1, strColor
             .length() - 1), ",");
         if (tokens.length != 3)
           return 0;
-        red = Parser.parseFloat(tokens[0]);
-        grn = Parser.parseFloat(tokens[1]);
-        blu = Parser.parseFloat(tokens[2]);
+        red = Parser.parseFloatStr(tokens[0]);
+        grn = Parser.parseFloatStr(tokens[1]);
+        blu = Parser.parseFloatStr(tokens[2]);
         return colorTriadToInt(red, grn, blu);
       }
       switch (len) {

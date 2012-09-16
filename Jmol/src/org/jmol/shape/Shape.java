@@ -139,13 +139,13 @@ public abstract class Shape {
   
   protected List<Object> xmlProperties;
   
-  public void setShapeSize(int size, RadiusData rd, BitSet bsSelected) {
+  public void setShapeSizeRD(int size, RadiusData rd, BitSet bsSelected) {
     setXmlProperty("size", (rd == null ? Integer.valueOf(size) : (Object) rd),
           bsSelected);
     if (rd == null)
       setSize(size, bsSelected);
     else
-      setSize(rd, bsSelected);
+      setSizeRD(rd, bsSelected);
   }
 
   /**
@@ -162,7 +162,7 @@ public abstract class Shape {
    * @param rd
    * @param bsSelected
    */
-  protected void setSize(RadiusData rd, BitSet bsSelected) {
+  protected void setSizeRD(RadiusData rd, BitSet bsSelected) {
     // balls, dots, other atomshapes
   }
 
@@ -287,7 +287,7 @@ public abstract class Shape {
    * @param data
    * @return true if serviced
    */
-  public boolean getProperty(String property, Object[] data) {
+  public boolean getPropertyData(String property, Object[] data) {
     return false;
   }
 

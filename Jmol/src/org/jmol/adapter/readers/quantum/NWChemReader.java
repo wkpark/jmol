@@ -219,7 +219,7 @@ public class NWChemReader extends MOReader {
         equivalentAtomSets);
     atomSetCollection.setAtomSetNames(energyKey + " = " + energyValue,
         equivalentAtomSets);
-    atomSetCollection.setAtomSetEnergy(value, parseFloat(value));
+    atomSetCollection.setAtomSetEnergy(value, parseFloatStr(value));
     haveEnergy = true;
   }
 
@@ -236,7 +236,7 @@ public class NWChemReader extends MOReader {
    * @throws Exception If an error occurs.
    */
   private void readSymmetry() throws Exception {
-    String tokens[] = getTokens(readLines(3));
+    String tokens[] = getTokensStr(readLines(3));
     atomSetCollection.setAtomSetPropertyForSets("Symmetry group name",
         tokens[tokens.length - 1], equivalentAtomSets);
   }
@@ -313,8 +313,8 @@ public class NWChemReader extends MOReader {
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = fixTag(tokens[1]);
       atomTypes.add(atom.atomName);
-      setAtomCoord(atom, parseFloat(tokens[3]), parseFloat(tokens[4]),
-          parseFloat(tokens[5]));
+      setAtomCoord(atom, parseFloatStr(tokens[3]), parseFloatStr(tokens[4]),
+          parseFloatStr(tokens[5]));
     }
     // only if was converged, use the last energy for the name and properties
     if (converged) {
@@ -362,15 +362,15 @@ public class NWChemReader extends MOReader {
         break; // make sure I have enough tokens
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = fixTag(tokens[1]);
-      setAtomCoord(atom, parseFloat(tokens[2]) * ANGSTROMS_PER_BOHR,
-          parseFloat(tokens[3]) * ANGSTROMS_PER_BOHR, parseFloat(tokens[4])
+      setAtomCoord(atom, parseFloatStr(tokens[2]) * ANGSTROMS_PER_BOHR,
+          parseFloatStr(tokens[3]) * ANGSTROMS_PER_BOHR, parseFloatStr(tokens[4])
               * ANGSTROMS_PER_BOHR);
       // Keep gradients in a.u. (larger value that way)
       // need to multiply with -1 so the direction is in the direction the
       // atom needs to move to lower the energy
       atomSetCollection.addVibrationVector(atom.atomIndex,
-          -parseFloat(tokens[5]), -parseFloat(tokens[6]),
-          -parseFloat(tokens[7]));
+          -parseFloatStr(tokens[5]), -parseFloatStr(tokens[6]),
+          -parseFloatStr(tokens[7]));
     }
   }
 
@@ -481,8 +481,8 @@ public class NWChemReader extends MOReader {
       tokens = getTokens();
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = fixTag(tokens[0]);
-      setAtomCoord(atom, parseFloat(tokens[2]) * ANGSTROMS_PER_BOHR,
-          parseFloat(tokens[3]) * ANGSTROMS_PER_BOHR, parseFloat(tokens[4])
+      setAtomCoord(atom, parseFloatStr(tokens[2]) * ANGSTROMS_PER_BOHR,
+          parseFloatStr(tokens[3]) * ANGSTROMS_PER_BOHR, parseFloatStr(tokens[4])
               * ANGSTROMS_PER_BOHR);
     }
 
@@ -491,7 +491,7 @@ public class NWChemReader extends MOReader {
 
     boolean firstTime = true;
     while (readLine() != null && line.indexOf("P.Frequency") >= 0) {
-      tokens = getTokens(line, 12);
+      tokens = getTokensAt(line, 12);
       int frequencyCount = tokens.length;
       int iAtom0 = atomSetCollection.getAtomCount();
       int atomCount = atomSetCollection.getLastAtomSetAtomCount();
@@ -560,7 +560,7 @@ public class NWChemReader extends MOReader {
           return;
         tokens = getTokens();
       } while (tokens[0].indexOf(".") >= 0);
-      atoms[i].partialCharge = parseInt(tokens[2]) - parseFloat(tokens[3]);
+      atoms[i].partialCharge = parseIntStr(tokens[2]) - parseFloatStr(tokens[3]);
     }
   }
 
@@ -710,7 +710,7 @@ public class NWChemReader extends MOReader {
       }
       if (nBlankLines >= 2)
         break;
-      if (parseInt(line) == Integer.MIN_VALUE) {
+      if (parseIntStr(line) == Integer.MIN_VALUE) {
         // next atom type
         atomSym = getTokens()[0];
         atomData = new ArrayList<List<Object[]>>();
@@ -722,7 +722,7 @@ public class NWChemReader extends MOReader {
       while (line != null && line.length() > 3) {
         String[] tokens = getTokens();
         Object[] o = new Object[] { tokens[1],
-            new float[] { parseFloat(tokens[2]), parseFloat(tokens[3]) } };
+            new float[] { parseFloatStr(tokens[2]), parseFloatStr(tokens[3]) } };
         shellData.add(o);
         readLine();
       }
@@ -841,9 +841,9 @@ public class NWChemReader extends MOReader {
       line = line.replace('=', ' ');
       //  Vector    9  Occ=2.000000D+00  E=-1.152419D+00  Symmetry=a1
       String[] tokens = getTokens();
-      int iMo = parseInt(tokens[1]);
-      float occupancy = parseFloat(tokens[3]);
-      float energy = parseFloat(tokens[5]);
+      int iMo = parseIntStr(tokens[1]);
+      float occupancy = parseFloatStr(tokens[3]);
+      float energy = parseFloatStr(tokens[5]);
       String symmetry = tokens[7];
       readLines(3);
       Map<String, Object> mo = new Hashtable<String, Object>();
@@ -864,10 +864,10 @@ public class NWChemReader extends MOReader {
       while (readLine() != null && line.length() > 3) {
         if (readROHFonly) {
           tokens = getTokens();
-          coefs[parseInt(tokens[0]) - 1] = parseFloat(tokens[1]);
+          coefs[parseIntStr(tokens[0]) - 1] = parseFloatStr(tokens[1]);
           int pt = tokens.length / 2;
           if (pt == 5 || pt == 6)
-            coefs[parseInt(tokens[pt]) - 1] = parseFloat(tokens[pt + 1]);
+            coefs[parseIntStr(tokens[pt]) - 1] = parseFloatStr(tokens[pt + 1]);
         }
       }
     }
@@ -911,7 +911,7 @@ public class NWChemReader extends MOReader {
     boolean isBeta = false;
     boolean betaOnly = !filterMO();
     while (readLine() != null) {
-      if (parseInt(line) != iListed + 1) {
+      if (parseIntStr(line) != iListed + 1) {
         if (line.indexOf("beta") < 0)
           break;
         alphaBeta = "beta ";
@@ -946,7 +946,7 @@ public class NWChemReader extends MOReader {
         float[] coefs = new float[data[iMo].size()];
         int iCoeff = 0;
         while (iCoeff < coefs.length) {
-          coefs[iCoeff] = parseFloat(data[iMo].get(iCoeff));
+          coefs[iCoeff] = parseFloatStr(data[iMo].get(iCoeff));
           iCoeff++;
         }
         mos[iMo].put("coefficients", coefs);

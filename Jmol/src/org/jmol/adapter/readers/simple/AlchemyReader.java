@@ -48,9 +48,9 @@ public class AlchemyReader extends AtomSetCollectionReader {
   @Override
   public void initializeReader() throws Exception {
     atomSetCollection.newAtomSet();
-    String[] tokens = getTokens(readLine());
-    atomCount = parseInt(tokens[0]);
-    bondCount = parseInt(tokens[2]);
+    String[] tokens = getTokensStr(readLine());
+    atomCount = parseIntStr(tokens[0]);
+    bondCount = parseIntStr(tokens[2]);
     readAtoms();
     readBonds();
     continuing = false;
@@ -114,9 +114,9 @@ public class AlchemyReader extends AtomSetCollectionReader {
    */
   private void readAtoms() throws Exception {
     for (int i = atomCount; --i >= 0;) {
-      String[] tokens = getTokens(readLine());
+      String[] tokens = getTokensStr(readLine());
       Atom atom = new Atom();
-      atom.atomSerial = parseInt(tokens[0]);
+      atom.atomSerial = parseIntStr(tokens[0]);
       String name = atom.atomName = tokens[1];
       atom.elementSymbol = name.substring(0, 1);
       char c1 = name.charAt(0);
@@ -129,18 +129,18 @@ public class AlchemyReader extends AtomSetCollectionReader {
               || name.equals("Du"))
            ? 2 : 1);
       atom.elementSymbol = (nChar == 1 ? "" + c1 : "" + c1 + c2);
-      setAtomCoord(atom, parseFloat(tokens[2]), parseFloat(tokens[3]),
-          parseFloat(tokens[4]));
-      atom.partialCharge = (tokens.length >= 6 ? parseFloat(tokens[5]) : 0);
+      setAtomCoord(atom, parseFloatStr(tokens[2]), parseFloatStr(tokens[3]),
+          parseFloatStr(tokens[4]));
+      atom.partialCharge = (tokens.length >= 6 ? parseFloatStr(tokens[5]) : 0);
       atomSetCollection.addAtomWithMappedSerialNumber(atom);
     }
   }
 
   private void readBonds() throws Exception {
     for (int i = bondCount; --i >= 0;) {
-      String[] tokens = getTokens(readLine());
-      int atomSerial1 = parseInt(tokens[1]);
-      int atomSerial2 = parseInt(tokens[2]);
+      String[] tokens = getTokensStr(readLine());
+      int atomSerial1 = parseIntStr(tokens[1]);
+      int atomSerial2 = parseIntStr(tokens[2]);
       String sOrder = (tokens.length < 4 ? "1" : tokens[3].toUpperCase());
       int order = 0;
       switch (sOrder.charAt(0)) {

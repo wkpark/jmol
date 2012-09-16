@@ -51,7 +51,7 @@ class UnitCell extends SimpleUnitCell {
   private Point3f cartesianOffset = new Point3f();
   private Point3f fractionalOffset = new Point3f();
   
-  public UnitCell(Tuple3f[] points) {
+  UnitCell(Tuple3f[] points, @SuppressWarnings("unused") boolean ignored) {
     float[] parameters = new float[] { -1, 0, 0, 0, 0, 0, points[1].x,
         points[1].y, points[1].z, points[2].x, points[2].y, points[2].z,
         points[3].x, points[3].y, points[3].z };

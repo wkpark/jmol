@@ -32,6 +32,8 @@ import java.util.List;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 
+import org.jmol.viewer.JmolConstants;
+
 
 public class TextFormat {
 
@@ -46,11 +48,11 @@ public class TextFormat {
 
   private final static Boolean[] useNumberLocalization = new Boolean[1];
   {
-    useNumberLocalization[0] = Boolean.TRUE;
+    useNumberLocalization[0] = JmolConstants.TRUE;
   }
   
   public static void setUseNumberLocalization(boolean TF) {
-    useNumberLocalization[0] = (TF ? Boolean.TRUE : Boolean.FALSE);
+    useNumberLocalization[0] = (TF ? JmolConstants.TRUE : JmolConstants.FALSE);
   }
 
   /**
@@ -85,7 +87,7 @@ public class TextFormat {
       String s = ("" + d).toUpperCase();
       int i = s.indexOf("E");
       n = Parser.parseInt(s.substring(i + 1)) + n;
-      return (i < 0 ? "" + value : formatDecimal(Parser.parseFloat(s.substring(
+      return (i < 0 ? "" + value : formatDecimal(Parser.parseFloatStr(s.substring(
           0, i)), decimalDigits - 1)
           + "E" + (n >= 0 ? "+" : "") + n);
     }
@@ -147,7 +149,7 @@ public class TextFormat {
 //    System.out.print(value + " " + s1 + "/");
 //    System.out.println(s);
 
-    return (Boolean.TRUE.equals(useNumberLocalization[0]) ? s1 : s1.replace(',',
+    return (JmolConstants.TRUE.equals(useNumberLocalization[0]) ? s1 : s1.replace(',',
         '.'));
   }
 
@@ -469,7 +471,7 @@ public class TextFormat {
    * @param run
    * @return  String array
    */
-  public static String[] split(String text, String run) {
+  public static String[] splitChars(String text, String run) {
     if (text.length() == 0)
       return new String[0];
     int n = 1;
@@ -584,7 +586,7 @@ public class TextFormat {
   }
 
   public static String[] split(String text, char ch) {
-    return split(text, "" + ch);
+    return splitChars(text, "" + ch);
   }
   
   public static void lFill(StringBuffer s, String s1, String s2) {

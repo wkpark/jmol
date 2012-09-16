@@ -91,9 +91,9 @@ public class DgridReader extends SlaterReader {
       String symbol = tokens[0];
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementSymbol = symbol;
-      setAtomCoord(atom, parseFloat(tokens[2]) * ANGSTROMS_PER_BOHR, 
-          parseFloat(tokens[3]) * ANGSTROMS_PER_BOHR, 
-          parseFloat(tokens[4]) * ANGSTROMS_PER_BOHR);
+      setAtomCoord(atom, parseFloatStr(tokens[2]) * ANGSTROMS_PER_BOHR, 
+          parseFloatStr(tokens[3]) * ANGSTROMS_PER_BOHR, 
+          parseFloatStr(tokens[4]) * ANGSTROMS_PER_BOHR);
     }
   }
 
@@ -126,7 +126,7 @@ public class DgridReader extends SlaterReader {
         code += "_" + ch++;
       }
       String exp = line.substring(34);
-      htExponents.put(code, Float.valueOf(parseFloat(exp)));
+      htExponents.put(code, Float.valueOf(parseFloatStr(exp)));
     }
   }
 
@@ -149,12 +149,12 @@ sym: A1                 1 1s            2 1s            3 1s            4 1s    
       data.append(line.substring(15));
       while (readLine() != null && line.length() >= 15)
         data.append(line);
-      String[] tokens = getTokens(data.toString());
+      String[] tokens = getTokensStr(data.toString());
       int nFuncs = tokens.length / 2;
       int[] ptSlater = new int[nFuncs];
       Atom[] atoms = atomSetCollection.getAtoms();
       for (int i = 0, pt = 0; i < tokens.length;) {
-        int iAtom = parseInt(tokens[i++]) - 1;
+        int iAtom = parseIntStr(tokens[i++]) - 1;
         String code = tokens[i++];
         String key = iAtom + "_" + code;
         if (htFuncMap.containsKey(key)) {
@@ -170,8 +170,8 @@ sym: A1                 1 1s            2 1s            3 1s            4 1s    
       discardLinesUntilContains(":-");
       readLine();
       while (line != null && line.length() >= 20) {
-        int iOrb = parseInt(line.substring(0, 10));
-        float energy = parseFloat(line.substring(10, 20));
+        int iOrb = parseIntStr(line.substring(0, 10));
+        float energy = parseFloatStr(line.substring(10, 20));
         StringBuffer cData = new StringBuffer();
         cData.append(line.substring(20));
         while (readLine() != null && line.length() >= 10) {
@@ -180,13 +180,13 @@ sym: A1                 1 1s            2 1s            3 1s            4 1s    
           cData.append(line);
         }
         float[] list = new float[slaters.size()];
-        tokens = getTokens(cData.toString());
+        tokens = getTokensStr(cData.toString());
         if (tokens.length != nFuncs)
           Logger
               .error("DgridReader: number of coefficients (" + tokens.length + ") does not equal number of functions (" + nFuncs + ")");
         for (int i = 0; i < tokens.length; i++) {
           int pt = ptSlater[i];
-          list[pt] = parseFloat(tokens[i]);
+          list[pt] = parseFloatStr(tokens[i]);
         }
         Map<String, Object> mo = new Hashtable<String, Object>();
         mo.put("energy", new Float(energy));
@@ -215,7 +215,7 @@ sym: A1                 1 1s            2 1s            3 1s            4 1s    
     readLine();
     for (int i = 0; i < orbitals.size(); i++) {
       readLine();
-      float occupancy = parseFloat(line.substring(31, 45)) + parseFloat(line.substring(47, 61));
+      float occupancy = parseFloatStr(line.substring(31, 45)) + parseFloatStr(line.substring(47, 61));
       orbitals.get(i).put("occupancy", Float.valueOf(occupancy));
     }
     sortOrbitals();

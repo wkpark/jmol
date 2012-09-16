@@ -47,7 +47,7 @@ public class MopacArchiveReader extends ZMatrixReader {
   @Override
   protected void initializeReader() {
     atomSetCollection.newAtomSet();
-    if (!checkFilter("NOCENTER"))
+    if (!checkFilterKey("NOCENTER"))
       doCentralize = true;
   }
   
@@ -82,7 +82,7 @@ public class MopacArchiveReader extends ZMatrixReader {
     if (line.indexOf("TOTAL ENERGY") >= 0) {
       String[] tokens = getTokens();
       energyWithUnits = " (" + tokens[3] + " " + tokens[4] + ")";
-      atomSetCollection.setAtomSetEnergy(tokens[3], parseFloat(tokens[3]));      
+      atomSetCollection.setAtomSetEnergy(tokens[3], parseFloatStr(tokens[3]));      
     }
     return true;
   }
@@ -107,9 +107,9 @@ MERS=(1,2,2)   GNORM=4
     setFractionalCoordinates(false);
     while (readLine() != null && line.length() >= 50) {
       vAtoms.add(atom = new Atom());
-      atom.x = parseFloat(line.substring(5, 18));
-      atom.y = parseFloat(line.substring(21, 34));
-      atom.z = parseFloat(line.substring(37, 50));
+      atom.x = parseFloatStr(line.substring(5, 18));
+      atom.y = parseFloatStr(line.substring(21, 34));
+      atom.z = parseFloatStr(line.substring(37, 50));
       if (line.length() > 58 && line.charAt(58) != ' ') {
         // internal coordinates
         switch (atomCount) {
@@ -123,9 +123,9 @@ MERS=(1,2,2)   GNORM=4
           break;
         default:
           setAtom(atom, 
-              parseInt(line.substring(54, 59)) - 1, 
-              parseInt(line.substring(60, 65)) - 1, 
-              parseInt(line.substring(66, 71)) - 1, 
+              parseIntStr(line.substring(54, 59)) - 1, 
+              parseIntStr(line.substring(60, 65)) - 1, 
+              parseIntStr(line.substring(66, 71)) - 1, 
               atom.x, atom.y, atom.z);
         }
       }
@@ -134,7 +134,7 @@ MERS=(1,2,2)   GNORM=4
       if (!sym.equals("Tv")) {
         atomCount++;
         if (line.length() >= 84)
-          atom.partialCharge = parseFloat(line.substring(76, 84));
+          atom.partialCharge = parseFloatStr(line.substring(76, 84));
         if (JmolAdapter.getElementNumber(sym) != 0)
           atomSetCollection.addAtom(atom);
         setAtomCoord(atom);

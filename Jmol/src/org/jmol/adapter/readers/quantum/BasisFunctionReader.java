@@ -65,7 +65,7 @@ abstract class BasisFunctionReader extends AtomSetCollectionReader {
     String ucline = line.toUpperCase();
     if (filterTokens == null) {
       filterIsNot = (filter.indexOf("!") >= 0);
-      filterTokens = getTokens(filter.replace('!', ' ').replace(',', ' ')
+      filterTokens = getTokensStr(filter.replace('!', ' ').replace(',', ' ')
           .replace(';', ' '));
     }
     for (int i = 0; i < filterTokens.length; i++)
@@ -164,7 +164,7 @@ abstract class BasisFunctionReader extends AtomSetCollectionReader {
     //                    [4     0     0     0    -4]
     // meaning add that number to the pointer for this coef.
    getDfCoefMaps();
-    String[] tokens = getTokens(fileList);
+    String[] tokens = getTokensStr(fileList);
     boolean isOK = true;
     for (int i = 0; i < dfCoefMaps[shellType].length && isOK; i++) {
       String key = tokens[i];

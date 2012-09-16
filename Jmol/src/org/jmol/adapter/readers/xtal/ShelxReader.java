@@ -127,7 +127,7 @@ public class ShelxReader extends AtomSetCollectionReader {
       setSymmetryOperator("x,y,z");
       break;
     case 2: // SPGR
-      setSpaceGroupName(parseTrimmed(line, 4));
+      setSpaceGroupName(parseTrimmedAt(line, 4));
       break;
     case 3: // SFAC
       parseSfacRecord();
@@ -149,7 +149,7 @@ public class ShelxReader extends AtomSetCollectionReader {
   }
 
   private void parseLattRecord() throws Exception {
-    parseToken(line);
+    parseTokenStr(line);
     int latt = parseInt();
     atomSetCollection.setLatticeParameter(latt);
   }
@@ -172,9 +172,9 @@ public class ShelxReader extends AtomSetCollectionReader {
     int ioff = tokens.length - 6;
     if (ioff == 2)
       atomSetCollection.setAtomSetCollectionAuxiliaryInfo("wavelength",
-          new Float(parseFloat(tokens[1])));
+          new Float(parseFloatStr(tokens[1])));
     for (int ipt = 0; ipt < 6; ipt++)
-      setUnitCellItem(ipt, parseFloat(tokens[ipt + ioff]));
+      setUnitCellItem(ipt, parseFloatStr(tokens[ipt + ioff]));
   }
 
   private void parseSfacRecord() {
@@ -186,7 +186,7 @@ public class ShelxReader extends AtomSetCollectionReader {
       String token = tokens[i];
       allElementSymbols = Atom.isValidElementSymbolNoCaseSecondChar(token);
     }
-    String[] sfacTokens = getTokens(line.substring(4));
+    String[] sfacTokens = getTokensStr(line.substring(4));
     if (allElementSymbols)
       parseSfacElementSymbols(sfacTokens);
     else
@@ -206,11 +206,11 @@ public class ShelxReader extends AtomSetCollectionReader {
   }
   
   private void parseSfacCoefficients(String[] sfacTokens) {
-    float a1 = parseFloat(sfacTokens[1]);
-    float a2 = parseFloat(sfacTokens[3]);
-    float a3 = parseFloat(sfacTokens[5]);
-    float a4 = parseFloat(sfacTokens[7]);
-    float c = parseFloat(sfacTokens[9]);
+    float a1 = parseFloatStr(sfacTokens[1]);
+    float a2 = parseFloatStr(sfacTokens[3]);
+    float a3 = parseFloatStr(sfacTokens[5]);
+    float a4 = parseFloatStr(sfacTokens[7]);
+    float c = parseFloatStr(sfacTokens[9]);
     // element # is these floats rounded to nearest int
     int z = (int) (a1 + a2 + a3 + a4 + c + 0.5f);
     String elementSymbol = getElementSymbol(z);
@@ -229,10 +229,10 @@ public class ShelxReader extends AtomSetCollectionReader {
     // this line gives an atom, because any line not starting with
     // a SHELX command is an atom
     String atomName = tokens[0];
-    int elementIndex = parseInt(tokens[1]);
-    float x = parseFloat(tokens[2]);
-    float y = parseFloat(tokens[3]);
-    float z = parseFloat(tokens[4]);
+    int elementIndex = parseIntStr(tokens[1]);
+    float x = parseFloatStr(tokens[2]);
+    float y = parseFloatStr(tokens[3]);
+    float z = parseFloatStr(tokens[4]);
     if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z)) {
       Logger.error("skipping line " + line);
       return;
@@ -247,12 +247,12 @@ public class ShelxReader extends AtomSetCollectionReader {
     
     if (tokens.length == 12) {
       float[] data = new float[8];
-      data[0] = parseFloat(tokens[6]);  //U11
-      data[1] = parseFloat(tokens[7]);  //U22
-      data[2] = parseFloat(tokens[8]);  //U33
-      data[3] = parseFloat(tokens[11]); //U12
-      data[4] = parseFloat(tokens[10]); //U13
-      data[5] = parseFloat(tokens[9]);  //U23
+      data[0] = parseFloatStr(tokens[6]);  //U11
+      data[1] = parseFloatStr(tokens[7]);  //U22
+      data[2] = parseFloatStr(tokens[8]);  //U33
+      data[3] = parseFloatStr(tokens[11]); //U12
+      data[4] = parseFloatStr(tokens[10]); //U13
+      data[5] = parseFloatStr(tokens[9]);  //U23
       for (int i = 0; i < 6; i++)
         if (Float.isNaN(data[i])) {
             Logger.error("Bad anisotropic Uij data: " + line);
@@ -269,8 +269,8 @@ public class ShelxReader extends AtomSetCollectionReader {
       tokens = getTokens();
       atom.elementSymbol = getSymbol(tokens[0]);
       atom.atomName = tokens[1];
-      setAtomCoord(atom, parseFloat(tokens[2]), parseFloat(tokens[3]),
-          parseFloat(tokens[4]));
+      setAtomCoord(atom, parseFloatStr(tokens[2]), parseFloatStr(tokens[3]),
+          parseFloatStr(tokens[4]));
     }
   }
 

@@ -47,7 +47,7 @@ public class MagResReader extends AtomSetCollectionReader {
     String[] tokens = getTokens();
         cellParams = new float[9];
     for (int i = 0; i < 9; i++)
-      cellParams[i] = parseFloat(tokens[i + 1]) * ANGSTROMS_PER_BOHR;
+      cellParams[i] = parseFloatStr(tokens[i + 1]) * ANGSTROMS_PER_BOHR;
     addPrimitiveLatticeVector(0, cellParams, 0);
     addPrimitiveLatticeVector(1, cellParams, 3);
     addPrimitiveLatticeVector(2, cellParams, 6);
@@ -65,9 +65,9 @@ public class MagResReader extends AtomSetCollectionReader {
     atom = atomSetCollection.addNewAtom();
     atom.elementSymbol = tokens[0];
     atom.atomName = tokens[0] + tokens[1];
-    float x = parseFloat(tokens[3]) * f;
-    float y = parseFloat(tokens[4]) * f;
-    float z = parseFloat(tokens[5]) * f;
+    float x = parseFloatStr(tokens[3]) * f;
+    float y = parseFloatStr(tokens[4]) * f;
+    float z = parseFloatStr(tokens[5]) * f;
     atom.set(x, y, z);
     setAtomCoord(atom);
   }
@@ -99,7 +99,7 @@ TOTAL tensor
     float f = 3;
     if (isJ) {
       discardLinesUntilContains("Isotropic");
-      float iso = parseFloat(getTokens()[3]);
+      float iso = parseFloatStr(getTokens()[3]);
       if (Math.abs(iso) > maxIso)
         return;
       f = 0.04f;

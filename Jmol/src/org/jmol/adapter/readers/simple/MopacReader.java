@@ -121,7 +121,7 @@ void processAtomicCharges() throws Exception {
     baseAtomIndex = atomSetCollection.getAtomCount();
     int expectedAtomNumber = 0;
     while (readLine() != null) {
-      int atomNumber = parseInt(line);
+      int atomNumber = parseIntStr(line);
       if (atomNumber == Integer.MIN_VALUE) // a blank line
         break;
       ++expectedAtomNumber;
@@ -170,7 +170,7 @@ void processAtomicCharges() throws Exception {
     }
     Atom[] atoms = atomSetCollection.getAtoms();
     while (readLine() != null) {
-      int atomNumber = parseInt(line);
+      int atomNumber = parseIntStr(line);
       if (atomNumber == Integer.MIN_VALUE) // blank line
         break;
       ++expectedAtomNumber;
@@ -184,7 +184,7 @@ void processAtomicCharges() throws Exception {
       }
       atom.atomSerial = atomNumber;
       setAtomCoord(atom, parseFloat(), parseFloat(), parseFloat());
-      int atno = parseInt(elementSymbol); 
+      int atno = parseIntStr(elementSymbol); 
       if (atno != Integer.MIN_VALUE)
         elementSymbol = getElementSymbol(atno);
       atom.elementSymbol = elementSymbol;
@@ -257,8 +257,8 @@ void processAtomicCharges() throws Exception {
       discardLinesUntilContains("DESCRIPTION");
     while (discardLinesUntilContains("VIBRATION") != null) {
       tokens = getTokens();
-      int freqNo = parseInt(tokens[1]); 
-      tokens[0] = getTokens(readLine())[1]; // FREQ
+      int freqNo = parseIntStr(tokens[1]); 
+      tokens[0] = getTokensStr(readLine())[1]; // FREQ
       if (tokens[2].equals("ATOM"))
         tokens[2] = null;
       info[freqNo - 1] = tokens;

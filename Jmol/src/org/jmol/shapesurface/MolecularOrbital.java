@@ -35,6 +35,7 @@ import javax.vecmath.Point4f;
 
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Escape;
+import org.jmol.viewer.JmolConstants;
 import org.jmol.script.Token;
 import org.jmol.shape.Shape;
 import org.jmol.constant.EnumQuantumShell;
@@ -124,7 +125,7 @@ public class MolecularOrbital extends Isosurface {
 
     if ("cutoff" == propertyName) {
       thisModel.put("moCutoff", value);
-      thisModel.put("moIsPositiveOnly", Boolean.FALSE);
+      thisModel.put("moIsPositiveOnly", JmolConstants.FALSE);
       return;
     }
 
@@ -135,7 +136,7 @@ public class MolecularOrbital extends Isosurface {
 
     if ("cutoffPositive" == propertyName) {
       thisModel.put("moCutoff", value);
-      thisModel.put("moIsPositiveOnly", Boolean.TRUE);
+      thisModel.put("moIsPositiveOnly", JmolConstants.TRUE);
       return;
     }
 
@@ -390,7 +391,7 @@ public class MolecularOrbital extends Isosurface {
   private void setOrbital(int moNumber, float[] linearCombination) {
     super.setProperty("reset", strID, null);
     if (moDebug)
-      super.setProperty("debug", Boolean.TRUE, null);
+      super.setProperty("debug", JmolConstants.TRUE, null);
     getSettings(strID);
     if (moScale != null)
       super.setProperty("scale", moScale, null);

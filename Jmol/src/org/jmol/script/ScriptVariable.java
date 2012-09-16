@@ -48,6 +48,7 @@ import org.jmol.util.Parser;
 import org.jmol.util.Measure;
 import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
+import org.jmol.viewer.JmolConstants;
 
 public class ScriptVariable extends Token {
 
@@ -414,10 +415,10 @@ public class ScriptVariable extends Token {
   public static Object oValue(ScriptVariable x) {
     switch (x == null ? nada : x.tok) {
     case on:
-      return Boolean.TRUE;
+      return JmolConstants.TRUE;
     case nada:
     case off:
-      return Boolean.FALSE;
+      return JmolConstants.FALSE;
     case integer:
       return Integer.valueOf(x.intValue);
     case bitset:
@@ -599,7 +600,7 @@ public class ScriptVariable extends Token {
             : "<" + vx.myName + ">");
         break;
       }
-      map.put(vx, Boolean.TRUE);
+      map.put(vx, JmolConstants.TRUE);
       Map<String, ScriptVariable> ht = (Map<String, ScriptVariable>) vx.value;
       Object[] keys = ht.keySet().toArray();
       Arrays.sort(keys);
@@ -632,7 +633,7 @@ public class ScriptVariable extends Token {
             : "<" + vx.myName + ">");
         break;
       }
-      map.put(vx, Boolean.TRUE);
+      map.put(vx, JmolConstants.TRUE);
       if (isEscaped)
         sb.append("[");
       List<ScriptVariable> sx = vx.getList();

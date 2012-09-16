@@ -114,7 +114,7 @@ public class GaussianReader extends MOReader {
       // check for scan point information
       int scanPointIndex = line.indexOf("scan point");
       if (scanPointIndex > 0) {
-        scanPoint = parseInt(line, scanPointIndex + 10);
+        scanPoint = parseIntAt(line, scanPointIndex + 10);
       } else {
         scanPoint = -1; // no scan point information
       }
@@ -206,11 +206,11 @@ public class GaussianReader extends MOReader {
    *           If an error occurs
    **/
   private void readSCFDone() throws Exception {
-    String tokens[] = getTokens(line, 11);
+    String tokens[] = getTokensAt(line, 11);
     if (tokens.length < 4)
       return;
     energyKey = tokens[0];
-    atomSetCollection.setAtomSetEnergy(tokens[2], parseFloat(tokens[2]));
+    atomSetCollection.setAtomSetEnergy(tokens[2], parseFloatStr(tokens[2]));
     energyString = tokens[2] + " " + tokens[3];
     // now set the names for the last equivalentAtomSets
     atomSetCollection.setAtomSetNames(energyKey + " = " + energyString,
@@ -218,14 +218,14 @@ public class GaussianReader extends MOReader {
     // also set the properties for them
     atomSetCollection.setAtomSetPropertyForSets(energyKey, energyString,
         equivalentAtomSets);
-    tokens = getTokens(readLine());
+    tokens = getTokensStr(readLine());
     if (tokens.length > 2) {
       atomSetCollection.setAtomSetPropertyForSets(tokens[0], tokens[2],
           equivalentAtomSets);
       if (tokens.length > 5)
         atomSetCollection.setAtomSetPropertyForSets(tokens[3], tokens[5],
             equivalentAtomSets);
-      tokens = getTokens(readLine());
+      tokens = getTokensStr(readLine());
     }
     if (tokens.length > 2)
       atomSetCollection.setAtomSetPropertyForSets(tokens[0], tokens[2],
@@ -241,7 +241,7 @@ public class GaussianReader extends MOReader {
     energyKey = "Energy";
     energyString = tokens[1];
     atomSetCollection.setAtomSetNames("Energy = "+tokens[1], equivalentAtomSets);
-    atomSetCollection.setAtomSetEnergy(energyString, parseFloat(energyString));
+    atomSetCollection.setAtomSetEnergy(energyString, parseFloatStr(energyString));
   }
   
   /* GAUSSIAN STRUCTURAL INFORMATION THAT IS EXPECTED
@@ -279,7 +279,7 @@ public class GaussianReader extends MOReader {
     // if energy information is found for this structure the reader
     // will overwrite this setting later.
     atomSetCollection.setAtomSetName(energyKey + " = " + energyString);
-    atomSetCollection.setAtomSetEnergy(energyString, parseFloat(energyString));
+    atomSetCollection.setAtomSetEnergy(energyString, parseFloatStr(energyString));
 //  atomSetCollection.setAtomSetName("Last read atomset.");
     String path = getTokens()[0]; // path = type of orientation
     readLines(4);
@@ -289,13 +289,13 @@ public class GaussianReader extends MOReader {
       tokens = getTokens(); // get the tokens in the line
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementNumber =
-        (short)parseInt(tokens[STD_ORIENTATION_ATOMIC_NUMBER_OFFSET]);
+        (short)parseIntStr(tokens[STD_ORIENTATION_ATOMIC_NUMBER_OFFSET]);
       if (atom.elementNumber < 0)
         atom.elementNumber = 0; // dummy atoms have -1 -> 0
       int offset = tokens.length-3;
-      setAtomCoord(atom, parseFloat(tokens[offset]), 
-          parseFloat(tokens[++offset]), 
-          parseFloat(tokens[++offset]));
+      setAtomCoord(atom, parseFloatStr(tokens[offset]), 
+          parseFloatStr(tokens[++offset]), 
+          parseFloatStr(tokens[++offset]));
     }
     atomSetCollection.setAtomSetModelProperty(SmarterJmolAdapter.PATH_KEY,
         "Calculation "+calculationNumber+
@@ -390,7 +390,7 @@ public class GaussianReader extends MOReader {
           else
             slater[1] = JmolAdapter.getQuantumShellTagID(oType);
 
-          int nGaussians = parseInt(tokens[1]);
+          int nGaussians = parseIntStr(tokens[1]);
           slater[2] = gaussianCount; // or parseInt(tokens[7]) - 1
           slater[3] = nGaussians;
           if (Logger.debugging)
@@ -423,13 +423,13 @@ public class GaussianReader extends MOReader {
         else
           slater[1] = JmolAdapter.getQuantumShellTagID(oType);
 
-        int nGaussians = parseInt(tokens[5]);
+        int nGaussians = parseIntStr(tokens[5]);
         slater[2] = gaussianCount; // or parseInt(tokens[7]) - 1
         slater[3] = nGaussians;
         shells.add(slater);
         gaussianCount += nGaussians;
         for (int i = 0; i < nGaussians; i++) {
-          gdata.add(getTokens(readLine()));
+          gdata.add(getTokensStr(readLine()));
         }
       }
     }
@@ -440,7 +440,7 @@ public class GaussianReader extends MOReader {
       tokens = gdata.get(i);
       gaussians[i] = new float[tokens.length];
       for (int j = 0; j < tokens.length; j++)
-        gaussians[i][j] = parseFloat(tokens[j]);
+        gaussians[i][j] = parseFloatStr(tokens[j]);
     }
     Logger.info(shellCount + " slater shells read");
     Logger.info(gaussianCount + " gaussian primitives read");
@@ -487,11 +487,11 @@ public class GaussianReader extends MOReader {
       if (line.indexOf("                    ") == 0) {
         addMOData(nThisLine, data, mos);
         if (isNOtype) {
-          tokens = getTokens(line);
+          tokens = getTokensStr(line);
           nThisLine = tokens.length;
-          tokens = getTokens(readLine());
+          tokens = getTokensStr(readLine());
         } else {
-          tokens = getTokens(readLine());
+          tokens = getTokensStr(readLine());
           nThisLine = tokens.length;
         }
         for (int i = 0; i < nThisLine; i++) {
@@ -500,7 +500,7 @@ public class GaussianReader extends MOReader {
           String sym;
           if (isNOtype) {
             mos[i]
-                .put("occupancy", new Float(Parser.parseFloat(tokens[i + 2])));
+                .put("occupancy", new Float(Parser.parseFloatStr(tokens[i + 2])));
           } else {
             sym = tokens[i];
             mos[i].put("symmetry", sym);
@@ -604,14 +604,14 @@ public class GaussianReader extends MOReader {
       throw (new Exception("No frequencies encountered"));
     while ((line= readLine()) != null && line.length() > 15) {
       // we now have the line with the vibration numbers in them, but don't need it
-      String[] symmetries = getTokens(readLine());
-      String[] frequencies = getTokens(
+      String[] symmetries = getTokensStr(readLine());
+      String[] frequencies = getTokensAt(
           discardLinesUntilStartsWith(" Frequencies"), 15);
-      String[] red_masses = getTokens(
+      String[] red_masses = getTokensAt(
           discardLinesUntilStartsWith(" Red. masses"), 15);
-      String[] frc_consts = getTokens(
+      String[] frc_consts = getTokensAt(
           discardLinesUntilStartsWith(" Frc consts"), 15);
-      String[] intensities = getTokens(
+      String[] intensities = getTokensAt(
           discardLinesUntilStartsWith(" IR Inten"), 15);
       int iAtom0 = atomSetCollection.getAtomCount();
       int atomCount = atomSetCollection.getLastAtomSetAtomCount();
@@ -638,11 +638,11 @@ public class GaussianReader extends MOReader {
   
   void readDipoleMoment() throws Exception {
     //  X=     0.0000    Y=     0.0000    Z=    -1.2917  Tot=     1.2917
-    String tokens[] = getTokens(readLine());
+    String tokens[] = getTokensStr(readLine());
     if (tokens.length != 8)
       return;
-    Vector3f dipole = new Vector3f(parseFloat(tokens[1]),
-        parseFloat(tokens[3]), parseFloat(tokens[5]));
+    Vector3f dipole = new Vector3f(parseFloatStr(tokens[1]),
+        parseFloatStr(tokens[3]), parseFloatStr(tokens[5]));
     Logger.info("Molecular dipole for model " + atomSetCollection.getAtomSetCount()
         + " = " + dipole);
     atomSetCollection.setAtomSetAuxiliaryInfo("dipole", dipole);
@@ -676,7 +676,7 @@ public class GaussianReader extends MOReader {
       while (atoms[i].elementNumber == 0)
         ++i;
       // assign the partial charge
-      float charge = parseFloat(getTokens(readLine())[2]);
+      float charge = parseFloatStr(getTokensStr(readLine())[2]);
       atoms[i].partialCharge = charge;
     }
     Logger.info("Mulliken charges found for Model " + atomSetCollection.getAtomSetCount());

@@ -41,6 +41,9 @@ import javax.vecmath.Vector3f;
 @J2SRequireImport({java.util.Properties.class,java.io.BufferedInputStream.class,java.lang.StringBuffer.class})
 public class JmolConstants {
 
+  public static final Boolean FALSE = Boolean.valueOf(false); // not BOOLEAN.FALSE here, for JavaScript
+  public static final Boolean TRUE = Boolean.valueOf(true); // not BOOLEAN.TRUE here, for JavaScript
+
   // axes mode constants --> org.jmol.constant.EnumAxesMode
   // callback constants --> org.jmol.constant.EnumCallback
   // draw constants --> org.jmol.shapespecial.draw.EnumCallback
@@ -667,8 +670,9 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static byte ATOMID_HO3_PRIME       = 89;
   public final static byte ATOMID_HO5_PRIME       = 90;
 
-  private static Map<String, Integer> htSpecialAtoms = new Hashtable<String, Integer>();
-  static {
+  private static Map<String, Integer> htSpecialAtoms;
+  private static void getSpecialAtomNames() {
+    htSpecialAtoms = new Hashtable<String, Integer>();
     for (int i = specialAtomNames.length; --i >= 0; ) {
       String specialAtomName = specialAtomNames[i];
       if (specialAtomName != null)
@@ -677,6 +681,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   }
 
   public static byte lookupSpecialAtomID(String atomName) {
+    if (htSpecialAtoms == null)
+      getSpecialAtomNames();
     Integer boxedAtomID = htSpecialAtoms.get(atomName);
     if (boxedAtomID != null)
       return (byte) (boxedAtomID.intValue());
@@ -1073,13 +1079,16 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
         && allCarbohydrates.indexOf("[" + group3.toUpperCase() + "]") >= 0);
   }
 
-  private static String getGroup3List() {
+  public static String getGroup3List() {
+    if (group3List != null)
+      return group3List;
     StringBuffer s = new StringBuffer();
     //for menu presentation order
     for (int i = 1; i < GROUPID_WATER; i++)
       s.append(",[").append((predefinedGroup3Names[i]+"   ").substring(0,3)+"]");
     s.append(allCarbohydrates);
-    return s.toString();
+    group3Count = s.length() / 6;
+    return group3List = s.toString();
   }
   
   public final static boolean isHetero(String group3) {
@@ -1101,8 +1110,14 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     return (pt < 0 ? Integer.MAX_VALUE : pt / 6 + 1);
   }
 
-  public final static String group3List = getGroup3List();
-  public final static int group3Count = group3List.length() / 6;
+  private static String group3List;
+  private static int group3Count;
+  public static int getGroup3Count() {
+    if (group3Count > 0)
+      return group3Count;
+    getGroup3List();
+    return group3Count = group3List.length() / 6;
+  }
 
   public final static char[] predefinedGroup1Names = {
     /* rmh

@@ -55,6 +55,7 @@ import org.jmol.i18n.GT;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.viewer.FileManager;
+import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 
 public class Dialog extends JPanel implements JmolDialogInterface {
@@ -288,7 +289,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     qPanelJPEG.setBorder(new TitledBorder(GT._("JPEG Quality ({0})",
         qualityJPG)));
     qSliderJPEG = new JSlider(SwingConstants.HORIZONTAL, 50, 100, qualityJPG);
-    qSliderJPEG.putClientProperty("JSlider.isFilled", Boolean.TRUE);
+    qSliderJPEG.putClientProperty("JSlider.isFilled", JmolConstants.TRUE);
     qSliderJPEG.setPaintTicks(true);
     qSliderJPEG.setMajorTickSpacing(10);
     qSliderJPEG.setPaintLabels(true);
@@ -301,7 +302,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     qPanelPNG
         .setBorder(new TitledBorder(GT._("PNG Compression  ({0})", qualityPNG)));
     qSliderPNG = new JSlider(SwingConstants.HORIZONTAL, 0, 9, qualityPNG);
-    qSliderPNG.putClientProperty("JSlider.isFilled", Boolean.TRUE);
+    qSliderPNG.putClientProperty("JSlider.isFilled", JmolConstants.TRUE);
     qSliderPNG.setPaintTicks(true);
     qSliderPNG.setMajorTickSpacing(2);
     qSliderPNG.setPaintLabels(true);

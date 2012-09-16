@@ -79,7 +79,7 @@ public class GamessUSReader extends GamessReader {
 
   @Override
   protected void initializeReader() throws Exception {
-    lowdenCharges = checkFilter("CHARGE=LOW");
+    lowdenCharges = checkFilterKey("CHARGE=LOW");
     super.initializeReader();
   }
   
@@ -225,11 +225,11 @@ public class GamessUSReader extends GamessReader {
       //It does however put the nuclear charge in the last column
       if (atomName.charAt(0) == 'Z')
         atomName = line.substring(2, 3);
-      else if (parseFloat(line, 67, 73) == 0)
+      else if (parseFloatRange(line, 67, 73) == 0)
         continue;
-      float x = parseFloat(line, 8, 25);
-      float y = parseFloat(line, 25, 40);
-      float z = parseFloat(line, 40, 56);
+      float x = parseFloatRange(line, 8, 25);
+      float y = parseFloatRange(line, 25, 40);
+      float z = parseFloatRange(line, 40, 56);
       if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
         break;
       Atom atom = atomSetCollection.addNewAtom();
@@ -257,14 +257,14 @@ public class GamessUSReader extends GamessReader {
     atomSetCollection.newAtomSet();
     int n = 0;
     while (readLine() != null
-        && (atomName = parseToken(line, 1, 11)) != null) {
-      float x = parseFloat(line, 17, 37);
-      float y = parseFloat(line, 37, 57);
-      float z = parseFloat(line, 57, 77);
+        && (atomName = parseTokenRange(line, 1, 11)) != null) {
+      float x = parseFloatRange(line, 17, 37);
+      float y = parseFloatRange(line, 37, 57);
+      float z = parseFloatRange(line, 57, 77);
       if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
         break;
       Atom atom = atomSetCollection.addNewAtom();
-      atom.elementSymbol = getElementSymbol(parseInt(line.substring(11, 14)));
+      atom.elementSymbol = getElementSymbol(parseIntStr(line.substring(11, 14)));
       atom.atomName = atom.elementSymbol + (++n);
       setAtomCoord(atom, x * ANGSTROMS_PER_BOHR, y * ANGSTROMS_PER_BOHR, z * ANGSTROMS_PER_BOHR);
       atomNames.add(atomName);
@@ -288,15 +288,15 @@ public class GamessUSReader extends GamessReader {
 */
     int n = 0;
     while (readLine() != null
-        && (atomName = parseToken(line, 1, 11)) != null) {
-      float x = parseFloat(line, 16, 31);
-      float y = parseFloat(line, 31, 46);
-      float z = parseFloat(line, 46, 61);
+        && (atomName = parseTokenRange(line, 1, 11)) != null) {
+      float x = parseFloatRange(line, 16, 31);
+      float y = parseFloatRange(line, 31, 46);
+      float z = parseFloatRange(line, 46, 61);
       if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
         break;
       Atom atom = atomSetCollection.addNewAtom();
       setAtomCoord(atom, x, y, z);
-      atom.elementSymbol = getElementSymbol(parseInt(line.substring(11, 14)));
+      atom.elementSymbol = getElementSymbol(parseIntStr(line.substring(11, 14)));
       atom.atomName = atom.elementSymbol + (++n);
       atomNames.add(atomName);
     }
@@ -333,16 +333,16 @@ public class GamessUSReader extends GamessReader {
         
         //at least for FRAGNAME=H2ORHF, the atoms come out as ZO1, ZH2, ZH3
         while (readLine() != null
-        && (atomName = parseToken(line, 1, 2)) != null) {
-              if (parseToken(line,1,2).equals("Z")) //Z means nuclear position
-                    atomName = parseToken(line, 2, 3);
-              else if (parseToken(line,1,9).equals("FRAGNAME"))//Z is a deprecated requirement
+        && (atomName = parseTokenRange(line, 1, 2)) != null) {
+              if (parseTokenRange(line,1,2).equals("Z")) //Z means nuclear position
+                    atomName = parseTokenRange(line, 2, 3);
+              else if (parseTokenRange(line,1,9).equals("FRAGNAME"))//Z is a deprecated requirement
                   continue;
               else
-                    atomName = parseToken(line, 1, 2); 
-              float x = parseFloat(line, 16, 31);
-              float y = parseFloat(line, 31, 46);
-              float z = parseFloat(line, 46, 61);
+                    atomName = parseTokenRange(line, 1, 2); 
+              float x = parseFloatRange(line, 16, 31);
+              float y = parseFloatRange(line, 31, 46);
+              float z = parseFloatRange(line, 46, 61);
               if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
                     break;
               Atom atom = atomSetCollection.addNewAtom();
@@ -423,7 +423,7 @@ ATOM         MULL.POP.    CHARGE          LOW.POP.     CHARGE
     int startAtom = atomSetCollection.getLastAtomSetAtomIndex();
     int endAtom = atomSetCollection.getAtomCount();
     for (int i = startAtom; i < endAtom && readLine() != null; ++i)
-      atoms[i].partialCharge = parseFloat(getTokens(prevline)[poploc]);
+      atoms[i].partialCharge = parseFloatStr(getTokensStr(prevline)[poploc]);
   }
  /*
            ---------------------
@@ -441,14 +441,14 @@ ATOM         MULL.POP.    CHARGE          LOW.POP.     CHARGE
     while (line != null && ("".equals(line.trim()) || line.indexOf("DX") < 0)) {
       readLine();
     }
-    tokens = getTokens(line);
+    tokens = getTokensStr(line);
     if (tokens.length != 5)
       return;
     if ("DX".equals(tokens[0]) && "DY".equals(tokens[1])
         && "DZ".equals(tokens[2])) {
-      tokens = getTokens(readLine());
-      Vector3f dipole = new Vector3f(parseFloat(tokens[0]),
-          parseFloat(tokens[1]), parseFloat(tokens[2]));
+      tokens = getTokensStr(readLine());
+      Vector3f dipole = new Vector3f(parseFloatStr(tokens[0]),
+          parseFloatStr(tokens[1]), parseFloatStr(tokens[2]));
       Logger.info("Molecular dipole for model "
           + atomSetCollection.getAtomSetCount() + " = " + dipole);
       atomSetCollection.setAtomSetAuxiliaryInfo("dipole", dipole);

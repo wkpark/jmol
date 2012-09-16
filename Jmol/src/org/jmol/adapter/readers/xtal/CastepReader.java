@@ -104,7 +104,7 @@ public class CastepReader extends AtomSetCollectionReader {
   @Override
   public void initializeReader() throws Exception {
     if (filter != null) {
-      if (checkFilter("CHARGE=")) {
+      if (checkFilterKey("CHARGE=")) {
         chargeType = filter.substring(filter.indexOf("CHARGE=") + 7);
         if (chargeType.length() > 4)
           chargeType = chargeType.substring(0, 4);
@@ -135,7 +135,7 @@ public class CastepReader extends AtomSetCollectionReader {
         denom = 1;
         break;
       case '/':
-        num = parseFloat(s.substring(ipt, i));
+        num = parseFloatStr(s.substring(ipt, i));
         ipt = i + 1;
         denom = 0;
         break;
@@ -147,9 +147,9 @@ public class CastepReader extends AtomSetCollectionReader {
         else if ((c == ' ') != useSpace)
           break;
         if (denom == 0) {
-          denom = parseFloat(s.substring(ipt, i));
+          denom = parseFloatStr(s.substring(ipt, i));
         } else {
-          num = parseFloat(s.substring(ipt, i));
+          num = parseFloatStr(s.substring(ipt, i));
         }
         num /= denom;
         switch (xyz++) {
@@ -305,8 +305,8 @@ public class CastepReader extends AtomSetCollectionReader {
       atom.elementSymbol = tokens[1];
       atom.atomName = tokens[1] + tokens[2];
       atomSetCollection.addAtomWithMappedName(atom);
-      setAtomCoord(atom, parseFloat(tokens[3]), parseFloat(tokens[4]),
-          parseFloat(tokens[5]));
+      setAtomCoord(atom, parseFloatStr(tokens[3]), parseFloatStr(tokens[4]),
+          parseFloatStr(tokens[5]));
     }
   }
 
@@ -325,8 +325,8 @@ public class CastepReader extends AtomSetCollectionReader {
         tokens = getTokens();
         Atom atom = atomSetCollection.addNewAtom();
         atom.elementSymbol = tokens[0];
-        setAtomCoord(atom, parseFloat(tokens[2]) * ANGSTROMS_PER_BOHR,
-            parseFloat(tokens[3]) * ANGSTROMS_PER_BOHR, parseFloat(tokens[4])
+        setAtomCoord(atom, parseFloatStr(tokens[2]) * ANGSTROMS_PER_BOHR,
+            parseFloatStr(tokens[3]) * ANGSTROMS_PER_BOHR, parseFloatStr(tokens[4])
                 * ANGSTROMS_PER_BOHR);
         readLine();
       }
@@ -372,9 +372,9 @@ public class CastepReader extends AtomSetCollectionReader {
       return;
     float factor = readLengthUnit(tokens[0]);
     if (tokens.length >= 3) {
-      a = parseFloat(tokens[0]) * factor;
-      b = parseFloat(tokens[1]) * factor;
-      c = parseFloat(tokens[2]) * factor;
+      a = parseFloatStr(tokens[0]) * factor;
+      b = parseFloatStr(tokens[1]) * factor;
+      c = parseFloatStr(tokens[2]) * factor;
     } else {
       Logger
           .warn("error reading a,b,c in %BLOCK LATTICE_ABC in CASTEP .cell file");
@@ -384,9 +384,9 @@ public class CastepReader extends AtomSetCollectionReader {
     if (tokenizeCastepCell() == 0)
       return;
     if (tokens.length >= 3) {
-      alpha = parseFloat(tokens[0]);
-      beta = parseFloat(tokens[1]);
-      gamma = parseFloat(tokens[2]);
+      alpha = parseFloatStr(tokens[0]);
+      beta = parseFloatStr(tokens[1]);
+      gamma = parseFloatStr(tokens[2]);
     } else {
       Logger
           .warn("error reading alpha,beta,gamma in %BLOCK LATTICE_ABC in CASTEP .cell file");
@@ -400,9 +400,9 @@ public class CastepReader extends AtomSetCollectionReader {
     float x, y, z;
     for (int i = 0; i < 3; i++) {
       if (tokens.length >= 3) {
-        x = parseFloat(tokens[0]) * factor;
-        y = parseFloat(tokens[1]) * factor;
-        z = parseFloat(tokens[2]) * factor;
+        x = parseFloatStr(tokens[0]) * factor;
+        y = parseFloatStr(tokens[1]) * factor;
+        z = parseFloatStr(tokens[2]) * factor;
         abc[i] = new Vector3f(x, y, z);
       } else {
         Logger.warn("error reading coordinates of lattice vector "
@@ -466,8 +466,8 @@ public class CastepReader extends AtomSetCollectionReader {
           atom.elementSymbol = tokens[0];
         }
         
-        atom.set(parseFloat(tokens[1]), parseFloat(tokens[2]),
-            parseFloat(tokens[3]));
+        atom.set(parseFloatStr(tokens[1]), parseFloatStr(tokens[2]),
+            parseFloatStr(tokens[3]));
         atom.scale(factor);
       } else {
         Logger.warn("cannot read line with CASTEP atom data: " + line);
@@ -519,7 +519,7 @@ public class CastepReader extends AtomSetCollectionReader {
 
 
   private int readOutputAtomIndex() {
-    tokens = getTokens(line);
+    tokens = getTokensStr(line);
     return atomSetCollection.getAtomIndexFromName(tokens[0] + tokens[1]);
   }
 
@@ -598,7 +598,7 @@ Species   Ion     s      p      d      f     Total  Charge (e)
         spins[i] = "0";
     while (readLine() != null && line.indexOf('=') < 0) {
       int index = readOutputAtomIndex();
-      float charge = parseFloat(tokens[haveSpin ? tokens.length - 2 : tokens.length - 1]);
+      float charge = parseFloatStr(tokens[haveSpin ? tokens.length - 2 : tokens.length - 1]);
       atoms[index].partialCharge = charge;
       if (haveSpin)
         spins[index] = tokens[tokens.length - 1];
@@ -634,10 +634,10 @@ Species   Ion     s      p      d      f     Total  Charge (e)
     while (readLine() != null && line.indexOf("END") < 0) {
       tokens = getTokens();
       Atom atom = atomSetCollection.addNewAtom();
-      setAtomCoord(atom, parseFloat(tokens[1]), parseFloat(tokens[2]),
-          parseFloat(tokens[3]));
+      setAtomCoord(atom, parseFloatStr(tokens[1]), parseFloatStr(tokens[2]),
+          parseFloatStr(tokens[3]));
       atom.elementSymbol = tokens[4];
-      atom.bfactor = parseFloat(tokens[5]); // mass, actually
+      atom.bfactor = parseFloatStr(tokens[5]); // mass, actually
     }
     atomCount = atomSetCollection.getAtomCount();
     // we collect the atom points, because any supercell business
@@ -675,8 +675,8 @@ Species   Ion     s      p      d      f     Total  Charge (e)
   private void readPhononFrequencies() throws Exception {
     tokens = getTokens();
     Vector3f v = new Vector3f();
-    Vector3f qvec = new Vector3f(parseFloat(tokens[2]), parseFloat(tokens[3]),
-        parseFloat(tokens[4]));
+    Vector3f qvec = new Vector3f(parseFloatStr(tokens[2]), parseFloatStr(tokens[3]),
+        parseFloatStr(tokens[4]));
     String fcoord = getFractionalCoord(qvec);
     String qtoks = "{" + tokens[2] + " " + tokens[3] + " " + tokens[4] + "}";
     if (fcoord == null)
@@ -689,17 +689,17 @@ Species   Ion     s      p      d      f     Total  Charge (e)
 
     lastQPt = tokens[1];
     //TODO not quite right: can have more than two options. 
-    if (filter != null && checkFilter("Q=")) {
+    if (filter != null && checkFilterKey("Q=")) {
       // check for an explicit q=n or q={1/4 1/2 1/4}
       if (desiredQpt != null) {
         v.sub(desiredQpt, qvec);
         if (v.length() < 0.001f)
           fcoord = desiredQ;
       }
-      isOK = (checkFilter("Q=" + fcoord + "." + qpt2 + ";")
-          || checkFilter("Q=" + lastQPt + "." + qpt2 + ";") 
-          || !isSecond && checkFilter("Q=" + fcoord + ";") 
-          || !isSecond && checkFilter("Q=" + lastQPt + ";"));
+      isOK = (checkFilterKey("Q=" + fcoord + "." + qpt2 + ";")
+          || checkFilterKey("Q=" + lastQPt + "." + qpt2 + ";") 
+          || !isSecond && checkFilterKey("Q=" + fcoord + ";") 
+          || !isSecond && checkFilterKey("Q=" + lastQPt + ";"));
       if (!isOK)
         return;
     }
@@ -737,7 +737,7 @@ Species   Ion     s      p      d      f     Total  Charge (e)
     List<Float> freqs = new ArrayList<Float>();
     while (readLine() != null && line.indexOf("Phonon") < 0) {
       tokens = getTokens();
-      freqs.add(Float.valueOf(parseFloat(tokens[1])));
+      freqs.add(Float.valueOf(parseFloatStr(tokens[1])));
     }
     readLine();
     int frequencyCount = freqs.size();

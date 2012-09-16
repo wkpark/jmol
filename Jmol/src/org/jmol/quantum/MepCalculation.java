@@ -234,7 +234,7 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
           continue;
         if (Logger.debugging)
           Logger.info(line);
-        htAtomicPotentials.put(vs[0], new Float(Parser.parseFloat(vs[1])));
+        htAtomicPotentials.put(vs[0], new Float(Parser.parseFloatStr(vs[1])));
       }
       br.close();
     } catch (Exception e) {

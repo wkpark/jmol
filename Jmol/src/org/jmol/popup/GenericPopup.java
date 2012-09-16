@@ -172,7 +172,7 @@ abstract public class GenericPopup {
   }
 
   private static boolean checkBoolean(Map<String, Object> info, String key) {
-    return (info != null && !Boolean.FALSE.equals(info.get(key)));
+    return (info != null && !JmolConstants.FALSE.equals(info.get(key)));
   }
 
   @SuppressWarnings("unchecked")
@@ -872,7 +872,7 @@ abstract public class GenericPopup {
       }
       String script = "" + viewer.getModelNumberDotted(i);
       String entryName = viewer.getModelName(i);
-      String spectrumTypes = (String) viewer.getModelAuxiliaryInfo(i, "spectrumTypes");
+      String spectrumTypes = (String) viewer.getModelAuxiliaryInfoValue(i, "spectrumTypes");
       if (spectrumTypes != null && entryName.startsWith(spectrumTypes))
         spectrumTypes = null;
       if (!entryName.equals(script)) {
@@ -962,7 +962,7 @@ abstract public class GenericPopup {
       enableMenu(submenu, false);
       List<Map<String, Object>> biomolecules;
       if (modelIndex >= 0
-          && (biomolecules = (List<Map<String, Object>>) viewer.getModelAuxiliaryInfo(modelIndex,
+          && (biomolecules = (List<Map<String, Object>>) viewer.getModelAuxiliaryInfoValue(modelIndex,
               "biomolecules")) != null) {
         enableMenu(submenu, true);
         int nBiomolecules = biomolecules.size();

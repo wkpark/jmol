@@ -55,12 +55,12 @@ public class DmolReader extends AtomSetCollectionReader {
   private void readCellParam() throws Exception {
     unitCellData = new float[9];
     for (int n = 0, i = 0; n < 3; n++) {
-      String[] tokens = getTokens(readLine());
-      unitCellData[i++] = parseFloat(!geomOpt ? tokens[0] : tokens[4])
+      String[] tokens = getTokensStr(readLine());
+      unitCellData[i++] = parseFloatStr(!geomOpt ? tokens[0] : tokens[4])
       * ANGSTROMS_PER_BOHR;
-      unitCellData[i++] = parseFloat(!geomOpt ? tokens[1] : tokens[5])
+      unitCellData[i++] = parseFloatStr(!geomOpt ? tokens[1] : tokens[5])
       * ANGSTROMS_PER_BOHR;
-      unitCellData[i++] = parseFloat(!geomOpt ? tokens[2] : tokens[6])
+      unitCellData[i++] = parseFloatStr(!geomOpt ? tokens[2] : tokens[6])
       * ANGSTROMS_PER_BOHR;
     }
   }
@@ -108,9 +108,9 @@ public class DmolReader extends AtomSetCollectionReader {
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = !geomOpt ? tokens[0] : tokens[1];
       float factor = (float) (!geomOpt ? ANGSTROMS_PER_BOHR : 1.00);
-      float x = parseFloat(!geomOpt ? tokens[1] : tokens[2]) * factor;
-      float y = parseFloat(!geomOpt ? tokens[2] : tokens[3]) * factor;
-      float z = parseFloat(!geomOpt ? tokens[3] : tokens[4]) * factor;
+      float x = parseFloatStr(!geomOpt ? tokens[1] : tokens[2]) * factor;
+      float y = parseFloatStr(!geomOpt ? tokens[2] : tokens[3]) * factor;
+      float z = parseFloatStr(!geomOpt ? tokens[3] : tokens[4]) * factor;
       atom.set(x, y, z);
       setAtomCoord(atom);
     }
@@ -119,7 +119,7 @@ public class DmolReader extends AtomSetCollectionReader {
   private void readEnergy() throws Exception {
     readLine();
     if (line.contains("Ef"))
-      totE = Double.valueOf(Double.parseDouble(getTokens(line.substring(line.indexOf("Ef") +1 , line.indexOf("Ha")  ))[1]));
+      totE = Double.valueOf(Double.parseDouble(getTokensStr(line.substring(line.indexOf("Ef") +1 , line.indexOf("Ha")  ))[1]));
   }
 
   private void setEnergy() {
@@ -149,11 +149,11 @@ public class DmolReader extends AtomSetCollectionReader {
     int lastAtomCount = 0;
     int atomCount = atomSetCollection.getLastAtomSetAtomCount();
     while (readLine() != null && line.charAt(1) == ' ') {
-      String[] tokens = getTokens(line);
+      String[] tokens = getTokensStr(line);
       int frequencyCount = tokens.length / 2;
       float[] frequencies = new float[frequencyCount];
       for (int i = 1, n = 0; i < tokens.length; i += 2, n++) {
-        frequencies[n] = parseFloat(tokens[i]);
+        frequencies[n] = parseFloatStr(tokens[i]);
         if (Logger.debugging)
           Logger.debug((vibrationNumber + n) + " frequency=" + frequencies[n]);
       }

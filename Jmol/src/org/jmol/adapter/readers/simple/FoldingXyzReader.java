@@ -77,7 +77,7 @@ public class FoldingXyzReader extends AtomSetCollectionReader {
       if (line != null && line.length() > 0) {
         //Logger.debug("Line: " + line);
         Atom atom = atomSetCollection.addNewAtom();
-        parseInt(line);
+        parseIntStr(line);
         atom.atomName = parseToken();
         if (atom.atomName != null) {
           int carCount = 1;

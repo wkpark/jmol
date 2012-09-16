@@ -102,7 +102,7 @@ abstract public class GamessReader extends MOReader {
       tokens = gdata.get(i);
       gaussians[i] = new float[tokens.length - 3];
       for (int j = 3; j < tokens.length; j++)
-        gaussians[i][j - 3] = parseFloat(tokens[j]);
+        gaussians[i][j - 3] = parseFloatStr(tokens[j]);
     }
     int atomCount = atomNames.size();
     if (shells == null && atomCount > 0) {
@@ -143,7 +143,7 @@ abstract public class GamessReader extends MOReader {
       String[] tokens = getTokens();
       float[] frequencies = new float[tokens.length];
       for (int i = 0; i < tokens.length; i++) {
-        float frequency = parseFloat(tokens[i]);
+        float frequency = parseFloatStr(tokens[i]);
         if (tokens[i].equals("I"))
           frequencies[frequencyCount - 1] = -frequencies[frequencyCount - 1];
         if (Float.isNaN(frequency))
@@ -248,7 +248,7 @@ $SYSTEM OPTIONS
     boolean PFunc = !"0".equals(calcOptions.get("basis_options_NPFUNC"));
     boolean FFunc = !"0".equals(calcOptions.get("basis_options_NFFUNC"));
     String DFTtype = calcOptions.get("contrl_options_DFTTYP");
-    int perturb = parseInt(calcOptions.get("contrl_options_MPLEVL"));
+    int perturb = parseIntStr(calcOptions.get("contrl_options_MPLEVL"));
     String CItype = calcOptions.get("contrl_options_CITYP");
     String CCtype = calcOptions.get("contrl_options_CCTYP");
 
@@ -370,7 +370,7 @@ $SYSTEM OPTIONS
     while (readLine() != null && (line = line.trim()).length() > 0) {
       if (line.indexOf("=") < 0)
         continue;
-      String[] tokens = getTokens(TextFormat.simpleReplace(line, "="," = ") + " ?");
+      String[] tokens = getTokensStr(TextFormat.simpleReplace(line, "="," = ") + " ?");
       for (int i = 0; i < tokens.length; i++) {
         if (!tokens[i].equals("="))
           continue;

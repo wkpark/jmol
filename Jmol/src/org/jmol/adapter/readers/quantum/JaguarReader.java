@@ -64,7 +64,7 @@ public class JaguarReader extends MOReader {
       return true;
     }
     if (line.startsWith("  number of basis functions....")) {
-      moCount = parseInt(line.substring(32).trim());
+      moCount = parseIntStr(line.substring(32).trim());
       return true;
     }
     if (line.startsWith("  basis set:")) {
@@ -82,7 +82,7 @@ public class JaguarReader extends MOReader {
       return true;
     }
     if (line.startsWith(" LUMO energy:")) {
-      lumoEnergy = parseFloat(line.substring(13));
+      lumoEnergy = parseFloatStr(line.substring(13));
       return true;
     }
     if (line.indexOf("final wvfn") >= 0) {
@@ -106,9 +106,9 @@ public class JaguarReader extends MOReader {
     while (readLine() != null && line.length() >= 60 && line.charAt(2) != ' ') {
       String[] tokens = getTokens();
       String atomName = tokens[0];
-      float x = parseFloat(tokens[1]);
-      float y = parseFloat(tokens[2]);
-      float z = parseFloat(tokens[3]);
+      float x = parseFloatStr(tokens[1]);
+      float y = parseFloatStr(tokens[2]);
+      float z = parseFloatStr(tokens[3]);
       if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z)
           || atomName.length() < 2)
         return;
@@ -142,7 +142,7 @@ public class JaguarReader extends MOReader {
         continue;
       String[] tokens = getTokens();
       for (int i = 1; i < tokens.length; i++)
-        atomSetCollection.getAtom(iAtom++).partialCharge = parseFloat(tokens[i]);
+        atomSetCollection.getAtom(iAtom++).partialCharge = parseFloatStr(tokens[i]);
     }
   }
 
@@ -183,13 +183,13 @@ public class JaguarReader extends MOReader {
 
     discardLinesUntilContains("--------");
     while (readLine() != null && (tokens = getTokens()).length == 9) {
-      int jCont = parseInt(tokens[2]);
+      int jCont = parseIntStr(tokens[2]);
       if (jCont > 0) {
         if (!tokens[0].equals(lastAtom))
           iAtom++;
         lastAtom = tokens[0];
-        int iFunc = parseInt(tokens[5]);
-        int iType = parseInt(tokens[4]);
+        int iFunc = parseIntStr(tokens[5]);
+        int iType = parseIntStr(tokens[4]);
         if (iType <= 2)
           iType--; // s,p --> 0,1 because SP is 2
         if (sgdata[iFunc] == null) {
@@ -201,13 +201,13 @@ public class JaguarReader extends MOReader {
         }
         float factor = 1;//(iType == 3 ? 1.73205080756887729f : 1);
         //System.out.println("slater: " + iAtom + " " + iType + " " + gaussianCount + " " + nGaussians);
-        sgdata[iFunc].add(new float[] { parseFloat(tokens[6]),
-            parseFloat(tokens[8]) * factor });
+        sgdata[iFunc].add(new float[] { parseFloatStr(tokens[6]),
+            parseFloatStr(tokens[8]) * factor });
         gaussianCount += jCont;
         for (int i = jCont - 1; --i >= 0;) {
-          tokens = getTokens(readLine());
-          sgdata[iFunc].add(new float[] { parseFloat(tokens[6]),
-              parseFloat(tokens[8]) * factor });
+          tokens = getTokensStr(readLine());
+          sgdata[iFunc].add(new float[] { parseFloatStr(tokens[6]),
+              parseFloatStr(tokens[8]) * factor });
         }
       }
     }
@@ -279,7 +279,7 @@ public class JaguarReader extends MOReader {
       lastAtom = tokens[0];
       id = tokens[2];
       int iType = JmolAdapter.getQuantumShellTagID(id);
-      iFunc = parseInt(tokens[3]) - 1;
+      iFunc = parseIntStr(tokens[3]) - 1;
       if (iFunc == iFuncLast) {
       } else {
         sdata = new int[] { iAtom, iType, gaussianCount, 0 };
@@ -288,8 +288,8 @@ public class JaguarReader extends MOReader {
       }
       gaussianCount++;
       sdata[3]++;
-      float z = parseFloat(tokens[4]);
-      float rCoef = parseFloat(tokens[5]);
+      float z = parseFloatStr(tokens[4]);
+      float rCoef = parseFloatStr(tokens[5]);
       if (id.equals("XX"))
         rCoef *= ROOT3;
       gdata.add(new float[] { z, rCoef });
@@ -304,7 +304,7 @@ public class JaguarReader extends MOReader {
       Logger.info(sarray.size() + " slater shells read");
       Logger.info(gaussianCount + " gaussian primitives read");
     }
-    moData.put("isNormalized", Boolean.TRUE);
+    moData.put("isNormalized", JmolAdapter.TRUE);
   }
 
   /*
@@ -344,7 +344,7 @@ public class JaguarReader extends MOReader {
       for (int iOrb = 0; iOrb < n; iOrb++) {
         float[] coefs = new float[moCount];
         Map<String, Object> mo = new Hashtable<String, Object>();
-        float energy = parseFloat(eigenValues[iOrb + 1]);
+        float energy = parseFloatStr(eigenValues[iOrb + 1]);
         mo.put("energy", new Float(energy));
         if (Math.abs(energy - lumoEnergy) < 0.0001) {
           moData.put("HOMO", Integer.valueOf(nMo));
@@ -356,7 +356,7 @@ public class JaguarReader extends MOReader {
           //char ch = type.charAt(0);
           //if (!isQuantumBasisSupported(ch))
             //continue;
-          coefs[pt++] = parseFloat(dataBlock[i][iOrb + 3]);
+          coefs[pt++] = parseFloatStr(dataBlock[i][iOrb + 3]);
         }
         mo.put("coefficients", coefs);
         setMO(mo);

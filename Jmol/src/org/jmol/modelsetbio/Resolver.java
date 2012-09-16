@@ -240,7 +240,7 @@ public final class Resolver implements JmolBioResolver {
     }
     if (bondInfo == null)
       return;
-    htGroupBonds.put(group3, Boolean.TRUE);
+    htGroupBonds.put(group3, JmolConstants.TRUE);
     for (int i = 0; i < bondInfo.length; i++) {
       if (bondInfo[i] == null)
         continue;
@@ -524,7 +524,7 @@ public final class Resolver implements JmolBioResolver {
       String type = htBondMap.get(skey);
       if (type == null)
         continue;
-      htKeysUsed.put(skey, Boolean.TRUE);
+      htKeysUsed.put(skey, JmolConstants.TRUE);
       bonds[i].setOrder(Integer.valueOf(type).intValue());
     }
 
@@ -532,13 +532,13 @@ public final class Resolver implements JmolBioResolver {
       if (htKeysUsed.get(key) != null)
         continue;
       if (key.indexOf(":") < 0) {
-        htKeysUsed.put(key, Boolean.TRUE);
+        htKeysUsed.put(key, JmolConstants.TRUE);
         continue;
       }
       String value = htBondMap.get(key);
       Logger.info("bond " + key + " was not used; order=" + value);
       if (htBondMap.get(key).equals("1")) {
-        htKeysUsed.put(key, Boolean.TRUE);
+        htKeysUsed.put(key, JmolConstants.TRUE);
         continue; // that's ok
       }
     }
@@ -569,7 +569,7 @@ public final class Resolver implements JmolBioResolver {
       return;
     Atom[] atoms = modelSet.atoms;
     if (lastSetH == Integer.MIN_VALUE || atoms[iAtom].modelIndex != atoms[lastSetH].modelIndex) 
-      maxSerial = ((int[]) modelSet.getModelAuxiliaryInfo(atoms[lastSetH = iAtom].modelIndex, "PDB_CONECT_firstAtom_count_max"))[2];
+      maxSerial = ((int[]) modelSet.getModelAuxiliaryInfoValue(atoms[lastSetH = iAtom].modelIndex, "PDB_CONECT_firstAtom_count_max"))[2];
     bsAddedHydrogens.clear(iAtom);
     modelSet.setAtomName(iAtom, name);
     atoms[iAtom].set(pt);
@@ -593,6 +593,42 @@ public final class Resolver implements JmolBioResolver {
       newData[iAtom] = lastData;
     }
     return TextFormat.join(newData, '\n', 0);
+  }
+
+  static BioPolymer allocateBioPolymer(Group[] groups, int firstGroupIndex,
+                                       boolean checkConnections) {
+    Monomer previous = null;
+    int count = 0;
+    for (int i = firstGroupIndex; i < groups.length; ++i) {
+      Group group = groups[i];
+      Monomer current;
+      if (!(group instanceof Monomer)
+          || (current = (Monomer) group).bioPolymer != null || previous != null
+          && previous.getClass() != current.getClass() || checkConnections
+          && !current.isConnectedAfter(previous))
+        break;
+      previous = current;
+      count++;
+    }
+    if (count == 0)
+      return null;
+    Monomer[] monomers = new Monomer[count];
+    for (int j = 0; j < count; ++j)
+      monomers[j] = (Monomer) groups[firstGroupIndex + j];
+    if (previous instanceof AminoMonomer)
+      return new AminoPolymer(monomers);
+    if (previous instanceof AlphaMonomer)
+      return new AlphaPolymer(monomers);
+    if (previous instanceof NucleicMonomer)
+      return new NucleicPolymer(monomers);
+    if (previous instanceof PhosphorusMonomer)
+      return new PhosphorusPolymer(monomers);
+    if (previous instanceof CarbohydrateMonomer)
+      return new CarbohydratePolymer(monomers);
+    Logger
+        .error("Polymer.allocatePolymer() ... no matching polymer for monomor "
+            + previous);
+    throw new NullPointerException();
   }
 
 }

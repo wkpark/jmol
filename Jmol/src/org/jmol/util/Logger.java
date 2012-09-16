@@ -25,6 +25,8 @@
 
 package org.jmol.util;
 
+import org.jmol.viewer.JmolConstants;
+
 
 /**
  * Logger mechanism.
@@ -62,7 +64,7 @@ public final class Logger {
     try {
       String property = System.getProperty("jmol.logger." + level);
       if (property != null) {
-        return Boolean.TRUE.equals(Boolean.valueOf(property));
+        return JmolConstants.TRUE.equals(Boolean.valueOf(property));
       }
     } catch (Exception e) {
       // applet can't do this.

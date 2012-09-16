@@ -214,11 +214,11 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public String getModelTitle(int modelIndex) {
-    return (String) getModelAuxiliaryInfo(modelIndex, "title");
+    return (String) getModelAuxiliaryInfoValue(modelIndex, "title");
   }
 
   public String getModelFileName(int modelIndex) {
-    return (String) getModelAuxiliaryInfo(modelIndex, "fileName");
+    return (String) getModelAuxiliaryInfoValue(modelIndex, "fileName");
   }
 
   public void setFrameTitle(BitSet bsFrames, Object title) {
@@ -780,7 +780,7 @@ abstract public class ModelCollection extends BondCollection {
     boolean ok = false;
     for (int i = modelCount; --i >= 0;)
       if (modelIndex < 0 || i == modelIndex) {
-        Map<String, String> ht = (Map<String, String>) getModelAuxiliaryInfo(i,
+        Map<String, String> ht = (Map<String, String>) getModelAuxiliaryInfoValue(i,
             "hetNames");
         if (ht == null)
           continue;
@@ -791,7 +791,7 @@ abstract public class ModelCollection extends BondCollection {
         }
       }
     return (ok ? htFull
-        : (Map<String, String>) getModelSetAuxiliaryInfo("hetNames"));
+        : (Map<String, String>) getModelSetAuxiliaryInfoValue("hetNames"));
   }
 
   public Properties getModelSetProperties() {
@@ -808,16 +808,26 @@ abstract public class ModelCollection extends BondCollection {
         .getProperty(propertyName));
   }
 
-  public Object getModelSetAuxiliaryInfo(String keyName) {
+  public Object getModelSetAuxiliaryInfoValue(String keyName) {
     // the preferred method now
     return (modelSetAuxiliaryInfo == null ? null : modelSetAuxiliaryInfo
         .get(keyName));
   }
 
   public boolean getModelSetAuxiliaryInfoBoolean(String keyName) {
-    return (modelSetAuxiliaryInfo != null
-        && modelSetAuxiliaryInfo.containsKey(keyName) && ((Boolean) modelSetAuxiliaryInfo
-        .get(keyName)).booleanValue());
+    if (modelSetAuxiliaryInfo == null
+        || !modelSetAuxiliaryInfo.containsKey(keyName))
+      return false;
+    Object o = modelSetAuxiliaryInfo.get(keyName);
+    /**
+     * @j2sNative
+     * return o.valueOf();
+     *     
+     */
+    {
+    return ((Boolean) o).booleanValue();
+    }
+    
   }
 
   /*
@@ -981,7 +991,7 @@ abstract public class ModelCollection extends BondCollection {
     models[modelIndex].auxiliaryInfo.put((String) key, value);
   }
 
-  public Object getModelAuxiliaryInfo(int modelIndex, String key) {
+  public Object getModelAuxiliaryInfoValue(int modelIndex, String key) {
     if (modelIndex < 0) {
       return null;
     }
@@ -1003,7 +1013,7 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public String getModelAtomProperty(Atom atom, String text) {
-    Object data = getModelAuxiliaryInfo(atom.modelIndex, text);
+    Object data = getModelAuxiliaryInfoValue(atom.modelIndex, text);
     if (!(data instanceof Object[]))
       return "";
     Object[] sdata = (Object[]) data;
@@ -1016,7 +1026,7 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public String getModelFileType(int modelIndex) {
-    return (String) getModelAuxiliaryInfo(modelIndex, "fileType");
+    return (String) getModelAuxiliaryInfoValue(modelIndex, "fileType");
   }
 
   public static int modelFileNumberFromFloat(float fDotM) {
@@ -1454,7 +1464,7 @@ abstract public class ModelCollection extends BondCollection {
       return "";
     if (models[modelIndex].isBioModel)
       return models[modelIndex].getFullPDBHeader();
-    String info = (String) getModelAuxiliaryInfo(modelIndex, "fileHeader");
+    String info = (String) getModelAuxiliaryInfoValue(modelIndex, "fileHeader");
     if (info == null)
       info = modelSetName;
     if (info != null)
@@ -1551,7 +1561,7 @@ abstract public class ModelCollection extends BondCollection {
       s = getModelFileName(i);
       if (s != null)
         model.put("file", s);
-      s = (String) getModelAuxiliaryInfo(i, "modelID");
+      s = (String) getModelAuxiliaryInfoValue(i, "modelID");
       if (s != null)
         model.put("id", s);      
       model.put("vibrationVectors", Boolean
@@ -1566,7 +1576,7 @@ abstract public class ModelCollection extends BondCollection {
       if (models[i].properties != null) {
         model.put("modelProperties", models[i].properties);
       }
-      Float energy = (Float) getModelAuxiliaryInfo(i, "Energy");
+      Float energy = (Float) getModelAuxiliaryInfoValue(i, "Energy");
       if (energy != null) {
         model.put("energy", energy);
       }
@@ -1602,12 +1612,12 @@ abstract public class ModelCollection extends BondCollection {
   public String getAltLocListInModel(int modelIndex) {
     if (modelIndex < 0)
       return "";
-    String str = (String) getModelAuxiliaryInfo(modelIndex, "altLocs");
+    String str = (String) getModelAuxiliaryInfoValue(modelIndex, "altLocs");
     return (str == null ? "" : str);
   }
 
   private String getInsertionListInModel(int modelIndex) {
-    String str = (String) getModelAuxiliaryInfo(modelIndex, "insertionCodes");
+    String str = (String) getModelAuxiliaryInfoValue(modelIndex, "insertionCodes");
     return (str == null ? "" : str);
   }
 
@@ -1751,9 +1761,9 @@ abstract public class ModelCollection extends BondCollection {
   public Vector3f getModelDipole(int modelIndex) {
     if (modelIndex < 0)
       return null;
-    Vector3f dipole = (Vector3f) getModelAuxiliaryInfo(modelIndex, "dipole");
+    Vector3f dipole = (Vector3f) getModelAuxiliaryInfoValue(modelIndex, "dipole");
     if (dipole == null)
-      dipole = (Vector3f) getModelAuxiliaryInfo(modelIndex, "DIPOLE_VEC");
+      dipole = (Vector3f) getModelAuxiliaryInfoValue(modelIndex, "DIPOLE_VEC");
     return dipole;
   }
 
@@ -2953,10 +2963,10 @@ abstract public class ModelCollection extends BondCollection {
     for (int i = 0; i < modelCount; ++i) {
       sb.append("\n<model index=\"").append(i)
           .append("\" n=\"").append(getModelNumberDotted(i))
-          .append("\" id=").append(Escape.escapeStr("" + getModelAuxiliaryInfo(i, "modelID")));
+          .append("\" id=").append(Escape.escapeStr("" + getModelAuxiliaryInfoValue(i, "modelID")));
           int ib = getBaseModelIndex(i);
           if (ib != i)
-            sb.append(" baseModelId=").append(Escape.escape(getModelAuxiliaryInfo(ib, "jdxModelID")));
+            sb.append(" baseModelId=").append(Escape.escape(getModelAuxiliaryInfoValue(ib, "jdxModelID")));
           sb.append(" name=").append(Escape.escapeStr(getModelName(i)))
           .append(" title=").append(Escape.escapeStr(
               getModelTitle(i)))
@@ -3316,7 +3326,7 @@ abstract public class ModelCollection extends BondCollection {
         continue;
       String s = "[\"" + getModelNumberDotted(i) + "\"] = ";
       sb.append("\n\nfile").append(s).append(Escape.escapeStr(getModelFileName(i)));
-      String id = (String) getModelAuxiliaryInfo(i, "modelID");
+      String id = (String) getModelAuxiliaryInfoValue(i, "modelID");
       if (id != null)
         sb.append("\nid").append(s).append(Escape.escapeStr(id));
       sb.append("\ntitle").append(s).append(Escape.escapeStr(getModelTitle(i)));
@@ -3544,7 +3554,7 @@ abstract public class ModelCollection extends BondCollection {
         info.put("spaceGroupInfo", strOperations);
         info.put("symmetryInfo", "");
       } else if (pt1 == null && drawID == null && symOp != 0) {
-        info = (Map<String, Object>) getModelAuxiliaryInfo(modelIndex,
+        info = (Map<String, Object>) getModelAuxiliaryInfoValue(modelIndex,
             "spaceGroupInfo");
       }
       if (info != null)
@@ -3726,8 +3736,8 @@ abstract public class ModelCollection extends BondCollection {
     frameTitles = (String[]) ArrayUtil.deleteElements(frameTitles, modelIndex,
         1);
     thisStateModel = -1;
-    String[] group3Lists = (String[]) getModelSetAuxiliaryInfo("group3Lists");
-    int[][] group3Counts = (int[][]) getModelSetAuxiliaryInfo("group3Counts");
+    String[] group3Lists = (String[]) getModelSetAuxiliaryInfoValue("group3Lists");
+    int[][] group3Counts = (int[][]) getModelSetAuxiliaryInfoValue("group3Counts");
     int ptm = modelIndex + 1;
     if (group3Lists != null && group3Lists[ptm] != null) {
       for (int i = group3Lists[ptm].length() / 6; --i >= 0;)
@@ -3771,7 +3781,7 @@ abstract public class ModelCollection extends BondCollection {
         continue;
       }
       Map<String, Object> moData = (Map<String, Object>) viewer
-          .getModelAuxiliaryInfo(m, "moData");
+          .getModelAuxiliaryInfoValue(m, "moData");
       if (moData == null) {
         continue;
       }
@@ -3800,7 +3810,7 @@ abstract public class ModelCollection extends BondCollection {
           type += sym;
         }
         String energy = "" + mo.get("energy");
-        if (Float.isNaN(Parser.parseFloat(energy)))
+        if (Float.isNaN(Parser.parseFloatStr(energy)))
           sb.append(TextFormat.sprintf("model %-2s;  mo %-2i # %s\n",
               new Object[] { getModelNumberDotted(m), Integer.valueOf(i + 1),
                   type }));
@@ -4296,7 +4306,7 @@ abstract public class ModelCollection extends BondCollection {
     int errCode = -1;
     String fname = null;
     for (int i = 0; i < modelCount; i++) {
-      String mid = (String) getModelAuxiliaryInfo(i, "modelID");
+      String mid = (String) getModelAuxiliaryInfoValue(i, "modelID");
       if (mid == null && (mid = getModelTitle(i)) == null)
         continue;
       if (haveFile) {
@@ -4326,7 +4336,7 @@ abstract public class ModelCollection extends BondCollection {
     default:
       return null;
     }
-    List<String> peaks = (List<String>) getModelAuxiliaryInfo(iModel,
+    List<String> peaks = (List<String>) getModelAuxiliaryInfoValue(iModel,
         "jdxAtomSelect_" + type);
     if (peaks == null)
       return null;
@@ -4369,10 +4379,10 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   private int getBaseModelIndex(int modelIndex) {
-    String baseModel = (String) getModelAuxiliaryInfo(modelIndex, "jdxBaseModel");
+    String baseModel = (String) getModelAuxiliaryInfoValue(modelIndex, "jdxBaseModel");
     if (baseModel != null)
       for (int i = models.length; --i >= 0;)
-        if (baseModel.equals(getModelAuxiliaryInfo(i, "jdxModelID"))) 
+        if (baseModel.equals(getModelAuxiliaryInfoValue(i, "jdxModelID"))) 
           return i;
     return modelIndex;
   }

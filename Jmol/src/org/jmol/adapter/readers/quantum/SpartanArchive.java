@@ -67,7 +67,7 @@ class SpartanArchive {
 
   private void initialize(BasisFunctionReader r, String bondData) {
     this.r = r;
-    r.moData.put("isNormalized", Boolean.TRUE);
+    r.moData.put("isNormalized", JmolAdapter.TRUE);
     r.moData.put("energyUnits","");
     this.bondData = bondData;
   }
@@ -591,15 +591,15 @@ class SpartanArchive {
   }
   
   private int parseInt(String info) {
-    return r.parseInt(info);
+    return r.parseIntStr(info);
   }
 
   private float parseFloat(String info) {
-    return r.parseFloat(info);
+    return r.parseFloatStr(info);
   }
 
   private String[] getTokens(String s) {
-    return AtomSetCollectionReader.getTokens(s);
+    return AtomSetCollectionReader.getTokensStr(s);
   }
   
   private String line;

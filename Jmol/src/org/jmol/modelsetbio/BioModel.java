@@ -410,7 +410,7 @@ public final class BioModel extends Model{
       boolean doCheck = checkPolymerConnections 
         && !modelSet.isJmolDataFrame(modelSet.atoms[g.firstAtomIndex].modelIndex);
       BioPolymer bp = (((Monomer) g).getBioPolymer() == null ?
-          BioPolymer.allocateBioPolymer(groups, i, doCheck) : null);
+          Resolver.allocateBioPolymer(groups, i, doCheck) : null);
       if (bp == null || bp.monomerCount == 0)
         continue;
       ((BioModel) model).addBioPolymer(bp);
@@ -461,7 +461,7 @@ public final class BioModel extends Model{
     int atomCount = modelSet.getAtomCount();
     Atom[] atoms = modelSet.atoms;
     sb.append("\nMolecule name ....... "
-        + modelSet.getModelSetAuxiliaryInfo("COMPND"));
+        + modelSet.getModelSetAuxiliaryInfoValue("COMPND"));
     sb.append("\nSecondary Structure . PDB Data Records");
     sb.append("\nBrookhaven Code ..... " + modelSet.modelSetName);
     for (int i = modelCount; --i >= 0;)

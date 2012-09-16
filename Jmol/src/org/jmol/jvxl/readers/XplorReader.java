@@ -107,7 +107,7 @@ MRC header: mapc,mapr,maps: 2,1,3
   protected void readParameters() throws Exception {
 
     jvxlFileHeaderBuffer = new StringBuffer();
-    int nLines = parseInt(getLine());
+    int nLines = parseIntStr(getLine());
     for (int i = nLines; --i >= 0; ) {
       line = br.readLine().trim();
       Logger.info("XplorReader: " + line);
@@ -115,7 +115,7 @@ MRC header: mapc,mapr,maps: 2,1,3
     }
     jvxlFileHeaderBuffer.append("Xplor data\nJmol " + Viewer.getJmolVersion() + '\n');
 
-    na = parseInt(getLine());
+    na = parseIntStr(getLine());
     nxyzStart[0] = parseInt();
     nx = parseInt() - nxyzStart[0] + 1;
     
@@ -127,7 +127,7 @@ MRC header: mapc,mapr,maps: 2,1,3
     nxyzStart[2] = parseInt();
     nz = parseInt() - nxyzStart[2] + 1;
     
-    a = parseFloat(getLine());
+    a = parseFloatStr(getLine());
     b = parseFloat();
     c = parseFloat();
     alpha = parseFloat();
@@ -172,7 +172,7 @@ MRC header: mapc,mapr,maps: 2,1,3
     }
     if (line == null)
       return 0;
-    float val = parseFloat(line.substring(linePt, linePt+12));
+    float val = parseFloatStr(line.substring(linePt, linePt+12));
     linePt += 12;
     nRead++;
     //System.out.println("val " + val);

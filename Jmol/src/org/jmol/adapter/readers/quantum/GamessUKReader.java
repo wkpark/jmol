@@ -108,10 +108,10 @@ public class GamessUKReader extends GamessReader {
         continue;
       String[] tokens = getTokens();
       String atomName = tokens[1];
-      int atomicNumber = (int) parseFloat(tokens[2]);
-      float x = parseFloat(tokens[3]);
-      float y = parseFloat(tokens[4]);
-      float z = parseFloat(tokens[5]);
+      int atomicNumber = (int) parseFloatStr(tokens[2]);
+      float x = parseFloatStr(tokens[3]);
+      float y = parseFloatStr(tokens[4]);
+      float z = parseFloatStr(tokens[5]);
       if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
         break;
       Atom atom = atomSetCollection.addNewAtom();
@@ -197,9 +197,9 @@ public class GamessUKReader extends GamessReader {
      symmetries = new ArrayList<String>();
      occupancies = new ArrayList<Float>();
      while (readLine() != null && line.indexOf("====") < 0) {
-       String[] tokens = getTokens(line.substring(20));
+       String[] tokens = getTokensStr(line.substring(20));
        symmetries.add(tokens[0] + " " + tokens[1]);
-       occupancies.add(new Float(parseFloat(tokens[5])));
+       occupancies.add(new Float(parseFloatStr(tokens[5])));
      }
    }
 

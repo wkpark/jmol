@@ -54,7 +54,7 @@ public class Backbone extends BioShapeCollection {
   }
 
   @Override
-  public void setShapeSize(int size, RadiusData rd, BitSet bsSelected) {
+  public void setShapeSizeRD(int size, RadiusData rd, BitSet bsSelected) {
     short mad = (short) size;
     initialize();
     boolean useThisBsSelected = (this.bsSelected != null);

@@ -425,7 +425,7 @@ class SpaceGroup {
   private void generateOperatorsFromXyzInfo(String xyzInfo) {
     addOperation(null, 0);
     addSymmetry("x,y,z", 0);
-    String[] terms = TextFormat.split(xyzInfo.toLowerCase(), ";");
+    String[] terms = TextFormat.splitChars(xyzInfo.toLowerCase(), ";");
     for (int i = 0; i < terms.length; i++)
       addSymmetry(terms[i], 0);
   }
@@ -692,12 +692,12 @@ class SpaceGroup {
   
   private void buildSpaceGroup(String cifLine) {
     index = ++sgIndex;
-    String[] terms = TextFormat.split(cifLine.toLowerCase(), ";");
+    String[] terms = TextFormat.splitChars(cifLine.toLowerCase(), ";");
     String[] parts;
 
     intlTableNumberFull = terms[0].trim(); // International Table Number :
                                            // options
-    parts = TextFormat.split(intlTableNumberFull, ":");
+    parts = TextFormat.splitChars(intlTableNumberFull, ":");
     intlTableNumber = parts[0];
     intlTableNumberExt = (parts.length == 1 ? "" : parts[1]);
     ambiguityType = '\0';
@@ -723,7 +723,7 @@ class SpaceGroup {
 
     hmSymbolFull = Character.toUpperCase(terms[2].charAt(0))
         + terms[2].substring(1);
-    parts = TextFormat.split(hmSymbolFull, ":");
+    parts = TextFormat.splitChars(hmSymbolFull, ":");
     hmSymbol = parts[0];
     hmSymbolExt = (parts.length == 1 ? "" : parts[1]);
     int pt = hmSymbol.indexOf(" -3");

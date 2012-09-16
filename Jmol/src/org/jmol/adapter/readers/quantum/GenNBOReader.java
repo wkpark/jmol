@@ -92,7 +92,7 @@ public class GenNBOReader extends MOReader {
       isOK = readFile31();
       super.initializeReader();
       // keep going -- we need to read the file using MOReader
-      moData.put("isNormalized", Boolean.TRUE);
+      moData.put("isNormalized", JmolAdapter.TRUE);
     } else if (line.indexOf("s in the AO basis:") >= 0) {
       moType = line.substring(1, line.indexOf("s"));
       atomSetCollection.setCollectionName(line1 + ": " + moType + "s");
@@ -117,7 +117,7 @@ public class GenNBOReader extends MOReader {
     readFile46();
     readOrbitalData(!moType.equals("AO"));
     setMOData(false);
-    moData.put("isNormalized", Boolean.TRUE);
+    moData.put("isNormalized", JmolAdapter.TRUE);
   }
 
   @Override
@@ -227,24 +227,24 @@ public class GenNBOReader extends MOReader {
 
     // read atomCount, shellCount, and gaussianCount
     readLine(); // ----------
-    String[] tokens = getTokens(readLine());
-    int atomCount = parseInt(tokens[0]);
-    shellCount = parseInt(tokens[1]);
-    gaussianCount = parseInt(tokens[2]);
+    String[] tokens = getTokensStr(readLine());
+    int atomCount = parseIntStr(tokens[0]);
+    shellCount = parseIntStr(tokens[1]);
+    gaussianCount = parseIntStr(tokens[2]);
 
     // read atom types and positions
     readLine(); // ----------
     atomSetCollection.newAtomSet();
     atomSetCollection.setAtomSetName(moType + "s: " + line1.trim());
     for (int i = 0; i < atomCount; i++) {
-      tokens = getTokens(readLine());
-      int z = parseInt(tokens[0]);
+      tokens = getTokensStr(readLine());
+      int z = parseIntStr(tokens[0]);
       if (z < 0) // dummy atom
         continue;
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementNumber = (short) z;
-      setAtomCoord(atom, parseFloat(tokens[1]), parseFloat(tokens[2]),
-          parseFloat(tokens[3]));
+      setAtomCoord(atom, parseFloatStr(tokens[1]), parseFloatStr(tokens[2]),
+          parseFloatStr(tokens[3]));
     }
 
     // read basis functions
@@ -255,10 +255,10 @@ public class GenNBOReader extends MOReader {
     readLine(); // ----------
     nOrbitals = 0;
     for (int i = 0; i < shellCount; i++) {
-      tokens = getTokens(readLine());
+      tokens = getTokensStr(readLine());
       int[] slater = new int[4];
-      slater[0] = parseInt(tokens[0]) - 1; // atom pointer; 1-based
-      int n = parseInt(tokens[1]);
+      slater[0] = parseIntStr(tokens[0]) - 1; // atom pointer; 1-based
+      int n = parseIntStr(tokens[1]);
       nOrbitals += n;
       line = readLine().trim();
       switch (n) {
@@ -296,8 +296,8 @@ public class GenNBOReader extends MOReader {
         slater[1] = JmolAdapter.SHELL_F_CARTESIAN;
         break;
       }
-      slater[2] = parseInt(tokens[2]) - 1; // gaussian list pointer
-      slater[3] = parseInt(tokens[3]);     // number of gaussians
+      slater[2] = parseIntStr(tokens[2]) - 1; // gaussian list pointer
+      slater[3] = parseIntStr(tokens[3]);     // number of gaussians
       shells.add(slater);
     }
 
@@ -326,19 +326,19 @@ public class GenNBOReader extends MOReader {
   }
 
   private boolean readData46() throws Exception {
-    String[] tokens = getTokens(readLine());
+    String[] tokens = getTokensStr(readLine());
     int ipt = 1;
     if (tokens[1].equals("ALPHA")) {
       ipt = 2;
       if (haveNboOrbitals) {
-        tokens = getTokens(discardLinesUntilContains("BETA"));
+        tokens = getTokensStr(discardLinesUntilContains("BETA"));
         alphaBeta = "beta";
       } else {
         alphaBeta = "alpha";
         haveNboOrbitals = true;
       }
     }
-    if (parseInt(tokens[ipt]) != nOrbitals) {
+    if (parseIntStr(tokens[ipt]) != nOrbitals) {
       Logger.error("file 46 number of orbitals does not match nOrbitals: " + nOrbitals);
       return false;
     }
@@ -382,7 +382,7 @@ public class GenNBOReader extends MOReader {
       sb.append(c);
     }
     Logger.info(sb.toString());
-    tokens = getTokens(sb.toString());
+    tokens = getTokensStr(sb.toString());
     for (int i = 0; i < tokens.length; i++) {
       Map<String, Object> mo = new Hashtable<String, Object>();
       setMO(mo);
@@ -409,7 +409,7 @@ public class GenNBOReader extends MOReader {
       mo.put("coefficients", coefs);
       if (isMO) {
         if (line == null) {
-          while (readLine() != null && Float.isNaN(parseFloat(line))) {
+          while (readLine() != null && Float.isNaN(parseFloatStr(line))) {
             // skip lines            
           }
         } else {

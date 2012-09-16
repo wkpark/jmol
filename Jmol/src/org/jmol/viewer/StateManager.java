@@ -1385,7 +1385,7 @@ public class StateManager {
       name = name.toLowerCase();
       if (htNonbooleanParameterValues.containsKey(name))
         return; // don't allow setting boolean of a numeric
-      htBooleanParameterFlags.put(name, value ? Boolean.TRUE : Boolean.FALSE);
+      htBooleanParameterFlags.put(name, value ? JmolConstants.TRUE : JmolConstants.FALSE);
     }
 
     void setParameterValue(String name, int value) {
@@ -1423,7 +1423,7 @@ public class StateManager {
       if (htBooleanParameterFlags.containsKey(key)) {
         htBooleanParameterFlags.remove(key);
         if (!htPropertyFlagsRemoved.containsKey(key))
-          htPropertyFlagsRemoved.put(key, Boolean.FALSE);
+          htPropertyFlagsRemoved.put(key, JmolConstants.FALSE);
         return;
       }
       if (htNonbooleanParameterValues.containsKey(key))
@@ -1525,7 +1525,7 @@ public class StateManager {
       if (htBooleanParameterFlags.containsKey(name))
         return htBooleanParameterFlags.get(name);
       if (htPropertyFlagsRemoved.containsKey(name))
-        return Boolean.FALSE;
+        return JmolConstants.FALSE;
       if (htUserVariables.containsKey(name)) {
         ScriptVariable v = htUserVariables.get(name);
         return (asVariable ? v : ScriptVariable.oValue(v));

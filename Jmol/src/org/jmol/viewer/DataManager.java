@@ -116,7 +116,7 @@ class DataManager {
       if (field == Integer.MIN_VALUE) {
         // set the selected data elements to a single value
         bs = (BitSet) data[2];
-        Parser.setSelectedFloats(Parser.parseFloat(stringData), bs, f);
+        Parser.setSelectedFloats(Parser.parseFloatStr(stringData), bs, f);
       } else if (field == 0 || field == Integer.MAX_VALUE) {
         // just get the selected token values
         bs = (BitSet) data[2];
@@ -129,7 +129,7 @@ class DataManager {
             for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
               f[i] = floatData[i];
         } else {
-          Parser.parseFloatArray(strData == null ? Parser.getTokens(stringData)
+          Parser.parseFloatArrayBsData(strData == null ? Parser.getTokens(stringData)
               : strData, bs, f);
         }
       } else if (matchField <= 0) {

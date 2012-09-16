@@ -92,7 +92,7 @@ public abstract class BioShapeCollection extends Shape {
   }
   
   @Override
-  public void setShapeSize(int size, RadiusData rd, BitSet bsSelected) {
+  public void setShapeSizeRD(int size, RadiusData rd, BitSet bsSelected) {
     short mad = (short) size;
     initialize();
     for (int i = bioShapes.length; --i >= 0;) {

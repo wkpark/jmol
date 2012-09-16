@@ -85,12 +85,12 @@ public class XmlMolproReader extends XmlCmlReader {
         return;
       int atomCount = atomSetCollection.getLastAtomSetAtomCount();
       int baseAtomIndex = atomSetCollection.getLastAtomSetAtomIndex();
-      tokens = getTokens(chars);
+      tokens = getTokensStr(chars);
       for (int offset = tokens.length - atomCount * 3, i = 0; i < atomCount; i++) {
         atomSetCollection.addVibrationVector(i + baseAtomIndex,
-            parseFloat(tokens[offset++]),
-            parseFloat(tokens[offset++]),
-            parseFloat(tokens[offset++])
+            parseFloatStr(tokens[offset++]),
+            parseFloatStr(tokens[offset++]),
+            parseFloatStr(tokens[offset++])
         );
       }
     }

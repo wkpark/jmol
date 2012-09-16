@@ -70,8 +70,8 @@ public class Ellipsoids extends AtomShape {
   }
 
   @Override
-  public boolean getProperty(String property, Object[] data) {
-    return super.getProperty(property, data);
+  public boolean getPropertyData(String property, Object[] data) {
+    return super.getPropertyData(property, data);
   }
 
   @Override

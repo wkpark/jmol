@@ -108,8 +108,8 @@ public class XmlXsdReader extends XmlReader {
       atom.sequenceNumber = iGroup;
       String xyz = atts.get("XYZ");
       if (xyz != null) {
-        tokens = getTokens(xyz.replace(',',' '));
-        atom.set(parseFloat(tokens[0]), parseFloat(tokens[1]), parseFloat(tokens[2]));
+        tokens = getTokensStr(xyz.replace(',',' '));
+        atom.set(parseFloatStr(tokens[0]), parseFloatStr(tokens[1]), parseFloatStr(tokens[2]));
       }
       boolean isBackbone = "1".equals(atts.get("IsBackboneAtom"));
       if (isBackbone)

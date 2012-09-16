@@ -108,7 +108,7 @@ public class Mol2Reader extends ForceFieldReader {
     chainID = 'A' - 1;
     readLine();
     line += " 0 0 0 0 0 0";
-    atomCount = parseInt(line);
+    atomCount = parseIntStr(line);
     int bondCount = parseInt();
     int resCount = parseInt();
     readLine();//mol_type
@@ -168,16 +168,16 @@ public class Mol2Reader extends ForceFieldReader {
     int i0 = atomSetCollection.getAtomCount();
     for (int i = 0; i < atomCount; ++i) {
       Atom atom = atomSetCollection.addNewAtom();
-      String[] tokens = getTokens(readLine());
+      String[] tokens = getTokensStr(readLine());
       //Logger.debug(tokens.length + " -" + tokens[5] + "- " + line);
       String atomType = tokens[5];
       atom.atomName = tokens[1] + '\0' + atomType;
-      atom.set(parseFloat(tokens[2]), parseFloat(tokens[3]),
-          parseFloat(tokens[4]));
+      atom.set(parseFloatStr(tokens[2]), parseFloatStr(tokens[3]),
+          parseFloatStr(tokens[4]));
       // apparently "NO_CHARGES" is not strictly enforced
       //      if (iHaveCharges)
       if (tokens.length > 6) {
-        atom.sequenceNumber = parseInt(tokens[6]);
+        atom.sequenceNumber = parseIntStr(tokens[6]);
         if (atom.sequenceNumber < lastSequenceNumber) {
           if (chainID == 'Z')
             chainID = 'a' - 1;
@@ -189,7 +189,7 @@ public class Mol2Reader extends ForceFieldReader {
       if (tokens.length > 7)
         atom.group3 = tokens[7];
       if (tokens.length > 8) {
-        atom.partialCharge = parseFloat(tokens[8]);
+        atom.partialCharge = parseFloatStr(tokens[8]);
         if (atom.partialCharge == (int) atom.partialCharge)
           atom.formalCharge = (int) atom.partialCharge;
       }
@@ -238,10 +238,10 @@ public class Mol2Reader extends ForceFieldReader {
     //     6     1    42    1
     // free format, but no blank lines
     for (int i = 0; i < bondCount; ++i) {
-      String[] tokens = getTokens(readLine());
-      int atomIndex1 = parseInt(tokens[1]);
-      int atomIndex2 = parseInt(tokens[2]);
-      int order = parseInt(tokens[3]);
+      String[] tokens = getTokensStr(readLine());
+      int atomIndex1 = parseIntStr(tokens[1]);
+      int atomIndex2 = parseIntStr(tokens[2]);
+      int order = parseIntStr(tokens[3]);
       if (order == Integer.MIN_VALUE)
         order = (tokens[3].equals("ar") ? JmolAdapter.ORDER_AROMATIC
             : tokens[3].equals("am") ? 1 : JmolAdapter.ORDER_UNSPECIFIED);
@@ -276,7 +276,7 @@ public class Mol2Reader extends ForceFieldReader {
     if (ignoreFileUnitCell)
       return;
     for (int i = 0; i < 6; i++)
-      setUnitCellItem(i, parseFloat(tokens[i]));
+      setUnitCellItem(i, parseFloatStr(tokens[i]));
     Atom[] atoms = atomSetCollection.getAtoms();
     for (int i = 0; i < atomCount; ++i)
       setAtomCoord(atoms[nAtoms + i]);

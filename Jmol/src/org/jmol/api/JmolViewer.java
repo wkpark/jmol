@@ -345,7 +345,8 @@ abstract public class JmolViewer {
   abstract public Properties getModelProperties(int modelIndex);
   abstract public String getModelProperty(int modelIndex, String propertyName);
   abstract public Map<String, Object> getModelAuxiliaryInfo(int modelIndex);
-  abstract public Object getModelAuxiliaryInfo(int modelIndex, String keyName);
+  // changed in Jmol 13.1.5 to remove ambiguity in JavaScript
+  abstract public Object getModelAuxiliaryInfoValue(int modelIndex, String keyName);
   abstract public boolean modelHasVibrationVectors(int modelIndex);
 
   abstract public int getModelCount();

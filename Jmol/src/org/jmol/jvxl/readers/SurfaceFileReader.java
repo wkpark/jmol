@@ -78,42 +78,42 @@ abstract class SurfaceFileReader extends SurfaceReader {
   protected int[] next = new int[1];
   
   protected String[] getTokens() {
-    return Parser.getTokens(line, 0);
+    return Parser.getTokensAt(line, 0);
   }
 
   protected float parseFloat() {
-    return Parser.parseFloat(line, next);
+    return Parser.parseFloatNext(line, next);
   }
 
-  protected float parseFloat(String s) {
+  protected float parseFloatStr(String s) {
     next[0] = 0;
-    return Parser.parseFloat(s, next);
+    return Parser.parseFloatNext(s, next);
   }
 
   protected int parseInt() {
-    return Parser.parseInt(line, next);
+    return Parser.parseIntNext(line, next);
   }
   
-  protected int parseInt(String s) {
+  protected int parseIntStr(String s) {
     next[0] = 0;
-    return Parser.parseInt(s, next);
+    return Parser.parseIntNext(s, next);
   }
   
   protected int parseIntNext(String s) {
-    return Parser.parseInt(s, next);
+    return Parser.parseIntNext(s, next);
   }
     
-  protected float[] parseFloatArray(String s) {
+  protected float[] parseFloatArrayStr(String s) {
     next[0] = 0;
-    return Parser.parseFloatArray(s, next);
+    return Parser.parseFloatArrayNext(s, next);
   }
 
   protected float[] parseFloatArray() {
-    return Parser.parseFloatArray(line, next);
+    return Parser.parseFloatArrayNext(line, next);
   }
 
-  protected String getNextQuotedString() {
-    return Parser.getNextQuotedString(line, next);
+  protected String getQuotedStringNext() {
+    return Parser.getQuotedStringNext(line, next);
   }
 
   protected void skipTo(String info, String what) throws Exception {

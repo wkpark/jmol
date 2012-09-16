@@ -10,6 +10,7 @@ import java.util.Map;
 import org.jmol.api.Event;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.viewer.JmolConstants;
 
 abstract public class Binding {
 
@@ -60,7 +61,7 @@ abstract public class Binding {
   }
   
   public void bind(int mouseAction, String name) {
-    addBinding(mouseAction + "\t", Boolean.TRUE);
+    addBinding(mouseAction + "\t", JmolConstants.TRUE);
     addBinding(mouseAction + "\t" + name, new String[] { getMouseActionName(mouseAction, false), name });
   }
 

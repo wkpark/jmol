@@ -61,21 +61,21 @@ public class JvxlReader extends JvxlXmlReader {
     jvxlFileHeaderBuffer.append(line).append('\n');
     jvxlFileHeaderBuffer.append(skipComments(false));
     String atomLine = line;
-    String[] tokens = Parser.getTokens(atomLine, 0);
+    String[] tokens = Parser.getTokensAt(atomLine, 0);
     isXLowToHigh = false;
     negativeAtomCount = true;
     atomCount = 0;
     if (tokens[0] == "-0") {
     } else if (tokens[0].charAt(0) == '+') {
       isXLowToHigh = true;
-      atomCount = parseInt(tokens[0].substring(1));
+      atomCount = parseIntStr(tokens[0].substring(1));
     } else {
-      atomCount = -parseInt(tokens[0]);
+      atomCount = -parseIntStr(tokens[0]);
     }
     if (atomCount == Integer.MIN_VALUE)
       return;
-    volumetricOrigin.set(parseFloat(tokens[1]), parseFloat(tokens[2]),
-        parseFloat(tokens[3]));
+    volumetricOrigin.set(parseFloatStr(tokens[1]), parseFloatStr(tokens[2]),
+        parseFloatStr(tokens[3]));
     isAngstroms = VolumeFileReader.checkAtomLine(isXLowToHigh, isAngstroms,
         null, atomLine, jvxlFileHeaderBuffer);
     if (!isAngstroms)
@@ -87,7 +87,7 @@ public class JvxlReader extends JvxlXmlReader {
     for (int i = 0; i < atomCount; ++i)
       jvxlFileHeaderBuffer.append(readLine() + "\n");    
     Logger.info("Reading extra JVXL information line: " + line);
-    nSurfaces = parseInt(line);
+    nSurfaces = parseIntStr(line);
     if (!(isJvxl = (nSurfaces < 0)))
       return;
     nSurfaces = -nSurfaces;
@@ -149,7 +149,7 @@ public class JvxlReader extends JvxlXmlReader {
     if (showMsg)
       Logger.info("reading jvxl data set: " + comment + line);
     haveContourData = (comment.indexOf("+contourlines") >= 0);
-    jvxlCutoff = parseFloat(line);
+    jvxlCutoff = parseFloatStr(line);
     Logger.info("JVXL read: cutoff " + jvxlCutoff);
 
     //  optional comment line for compatibility with earlier Jmol versions:
@@ -205,7 +205,7 @@ public class JvxlReader extends JvxlXmlReader {
         if (line.charAt(next[0]) == '[') {
            jvxlData.contourValues = params.contoursDiscrete = parseFloatArray();
            Logger.info("JVXL read: contourValues " + Escape.escapeArray(jvxlData.contourValues));            
-           jvxlData.contourColixes = params.contourColixes = Colix.getColixArray(getNextQuotedString());
+           jvxlData.contourColixes = params.contourColixes = Colix.getColixArray(getQuotedStringNext());
            jvxlData.contourColors = Colix.getHexCodes(jvxlData.contourColixes);
            Logger.info("JVXL read: contourColixes " + jvxlData.contourColors); 
            params.nContours = jvxlData.contourValues.length;
@@ -289,7 +289,7 @@ public class JvxlReader extends JvxlXmlReader {
 
   private int countData(String str) {
     int count = 0;
-    int n = parseInt(str);
+    int n = parseIntStr(str);
     while (n != Integer.MIN_VALUE) {
       count += n;
       n = parseIntNext(str);

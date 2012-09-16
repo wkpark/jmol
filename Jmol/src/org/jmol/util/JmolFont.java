@@ -78,8 +78,8 @@ final public class JmolFont {
   public static synchronized JmolFont getFont3D(int fontface, int fontstyle,
                                        float fontsize, float fontsizeNominal,
                                        ApiPlatform apiPlatform, Object graphicsForMetrics) {
-    if (graphicsForMetrics == null)
-      return null;
+    //if (graphicsForMetrics == null)
+     // return null;
     if (fontsize > 0xFF)
       fontsize = 0xFF;
     int fontsizeX16 = ((int) fontsize) << 4;

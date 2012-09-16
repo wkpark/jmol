@@ -1498,7 +1498,7 @@ public class ScriptEvaluator {
           String s = Atom.atomPropertyString(viewer, atom, tok);
           switch (minmaxtype) {
           case Token.allfloat:
-            fout[i] = Parser.parseFloat(s);
+            fout[i] = Parser.parseFloatStr(s);
             break;
           default:
             if (vout == null)
@@ -1607,7 +1607,7 @@ public class ScriptEvaluator {
             fout[i] = ((Integer) v).floatValue();
             break;
           case 2:
-            fout[i] = Parser.parseFloat((String) v);
+            fout[i] = Parser.parseFloatStr((String) v);
             break;
           case 3:
             fout[i] = ((Point3f) v).distance(zero);
@@ -1774,7 +1774,7 @@ public class ScriptEvaluator {
         for (int i = nValues; --i >= 0;)
           fvalues[i] = (tok == Token.element ? Elements
               .elementNumberFromSymbol(list[i], false) : Parser
-              .parseFloat(list[i]));
+              .parseFloatStr(list[i]));
       }
       if (tokenValue.tok != Token.varray && nValues == 1) {
         if (isStrProperty)
@@ -2180,7 +2180,7 @@ public class ScriptEvaluator {
 
   private void defineAtomSet(String script) {
     if (script.indexOf("#") == 0) {
-      definedAtomSets.put(script, Boolean.TRUE);
+      definedAtomSets.put(script, JmolConstants.TRUE);
       return;
     }
     ScriptContext sc = compiler.compile("#predefine", script, true, false,
@@ -7570,7 +7570,7 @@ public class ScriptEvaluator {
         case Token.hide:
         case Token.display:
           setShapeProperty(iShape, "hidden",
-              tokCommand == Token.display ? Boolean.FALSE : Boolean.TRUE);
+              tokCommand == Token.display ? JmolConstants.FALSE : JmolConstants.TRUE);
           break;
         case Token.show:
           //if (iShape == JmolConstants.SHAPE_ISOSURFACE && !isWild)
@@ -8477,7 +8477,7 @@ public class ScriptEvaluator {
     case Token.hide:
     case Token.display:
       setShapeProperty(JmolConstants.SHAPE_LABELS, "display",
-          theTok == Token.display ? Boolean.TRUE : Boolean.FALSE);
+          theTok == Token.display ? JmolConstants.TRUE : JmolConstants.FALSE);
       return;
     default:
       strLabel = parameterAsString(index);
@@ -8515,7 +8515,7 @@ public class ScriptEvaluator {
     Map<String, Object> htParams = new Hashtable<String, Object>();
     // ignore optional file format
     if (isStateScript && forceNoAddHydrogens)
-      htParams.put("doNotAddHydrogens", Boolean.TRUE);
+      htParams.put("doNotAddHydrogens", JmolConstants.TRUE);
     String modelName = null;
     String[] filenames = null;
     String[] tempFileInfo = null;
@@ -8573,7 +8573,7 @@ public class ScriptEvaluator {
             : parameterAsString(++i));
         strModel = viewer.fixInlineString(strModel, viewer.getInlineChar());
         htParams.put("fileData", strModel);
-        htParams.put("isData", Boolean.TRUE);
+        htParams.put("isData", JmolConstants.TRUE);
         //note: ScriptCompiler will remove an initial \n if present
         loadScript.append('\n');
         loadScript.append(strModel);
@@ -8598,7 +8598,7 @@ public class ScriptEvaluator {
         if (tokType != Token.nada) {
           // loading just some data here
           // xyz vxyz vibration temperature occupancy partialcharge
-          htParams.put("atomDataOnly", Boolean.TRUE);
+          htParams.put("atomDataOnly", JmolConstants.TRUE);
           htParams.put("modelNumber", Integer.valueOf(1));
           if (tokType == Token.vibration)
             tokType = Token.vibxyz;
@@ -8629,7 +8629,7 @@ public class ScriptEvaluator {
         i++;
         loadScript.append(" " + modelName);
         if (tok == Token.trajectory)
-          htParams.put("isTrajectory", Boolean.TRUE);
+          htParams.put("isTrajectory", JmolConstants.TRUE);
         if (isPoint3f(i)) {
           Point3f pt = getPoint3f(i, false);
           i = iToken + 1;
@@ -8824,16 +8824,16 @@ public class ScriptEvaluator {
         // {i j k} PACKED, CENTROID -- either or both; either order
 
         if (tokAt(i) == Token.packed) {
-          htParams.put("packed", Boolean.TRUE);
+          htParams.put("packed", JmolConstants.TRUE);
           sOptions += " PACKED";
           i++;
         }
         if (tokAt(i) == Token.centroid) {
-          htParams.put("centroid", Boolean.TRUE);
+          htParams.put("centroid", JmolConstants.TRUE);
           sOptions += " CENTROID";
           i++;
           if (tokAt(i) == Token.packed && !htParams.containsKey("packed")) {
-            htParams.put("packed", Boolean.TRUE);
+            htParams.put("packed", JmolConstants.TRUE);
             sOptions += " PACKED";
             i++;
           }
@@ -8957,7 +8957,7 @@ public class ScriptEvaluator {
         if (coordinatesAreFractional) {
           offset.set(fractionalPoint);
           htParams.put("unitCellOffsetFractional",
-              (coordinatesAreFractional ? Boolean.TRUE : Boolean.FALSE));
+              (coordinatesAreFractional ? JmolConstants.TRUE : JmolConstants.FALSE));
           sOptions += " offset {" + offset.x + " " + offset.y + " " + offset.z
               + "/1}";
         } else {
@@ -9178,7 +9178,7 @@ public class ScriptEvaluator {
       sb.append(modelCount).append(" models\n");
     for (int i = 0; i < modelCount; i++) {
       Map<String, Object> moData = (Map<String, Object>) viewer
-          .getModelAuxiliaryInfo(i, "moData");
+          .getModelAuxiliaryInfoValue(i, "moData");
       if (moData == null)
         continue;
       sb.append(((List<Map<String, Object>>) moData.get("mos")).size()).append(
@@ -9217,10 +9217,10 @@ public class ScriptEvaluator {
       switch (getToken(1).tok) {
       case Token.nada:
       case Token.on:
-        setShapeProperty(JmolConstants.SHAPE_MEASURES, "hideAll", Boolean.FALSE);
+        setShapeProperty(JmolConstants.SHAPE_MEASURES, "hideAll", JmolConstants.FALSE);
         return;
       case Token.off:
-        setShapeProperty(JmolConstants.SHAPE_MEASURES, "hideAll", Boolean.TRUE);
+        setShapeProperty(JmolConstants.SHAPE_MEASURES, "hideAll", JmolConstants.TRUE);
         return;
       case Token.list:
         if (!isSyntaxCheck)
@@ -9377,7 +9377,7 @@ public class ScriptEvaluator {
           nBitSets++;
         if (atomIndex >= 0)
           error(ERROR_invalidArgument);
-        expressionResult = Boolean.FALSE;
+        expressionResult = JmolConstants.FALSE;
         value = centerParameter(i);
         if (expressionResult instanceof BitSet) {
           value = bs = (BitSet) expressionResult;
@@ -11333,18 +11333,18 @@ public class ScriptEvaluator {
           key = "translucency";
           break;
         case Token.delete:
-          value = Boolean.TRUE;
+          value = JmolConstants.TRUE;
           checkLength(3);
           break;
         case Token.modelindex:
           value = Integer.valueOf(intParameter(++i));
           break;
         case Token.on:
-          value = Boolean.TRUE;
+          value = JmolConstants.TRUE;
           break;
         case Token.off:
           key = "on";
-          value = Boolean.FALSE;
+          value = JmolConstants.FALSE;
           break;
         case Token.scale:
           value = Float.valueOf(floatParameter(++i));
@@ -11734,11 +11734,11 @@ public class ScriptEvaluator {
         break;
       case Token.cross:
         propertyName = "cross";
-        propertyValue = Boolean.TRUE;
+        propertyValue = JmolConstants.TRUE;
         break;
       case Token.nocross:
         propertyName = "cross";
-        propertyValue = Boolean.FALSE;
+        propertyValue = JmolConstants.FALSE;
         break;
       case Token.offset:
         float v = floatParameter(++i);
@@ -13116,12 +13116,12 @@ public class ScriptEvaluator {
       case Token.displayed:
       case Token.on:
         propertyName = "hidden";
-        propertyValue = Boolean.FALSE;
+        propertyValue = JmolConstants.FALSE;
         break;
       case Token.hide:
       case Token.hidden:
         propertyName = "hidden";
-        propertyValue = Boolean.TRUE;
+        propertyValue = JmolConstants.TRUE;
         break;
       case Token.model:
         int modelIndex = (isSyntaxCheck ? 0 : modelNumberParameter(pt++));
@@ -13278,14 +13278,14 @@ public class ScriptEvaluator {
           error(ERROR_invalidArgument);
         if (!TF)
           str = "front";
-        propertyValue = (TF ? Boolean.TRUE : Boolean.FALSE);
+        propertyValue = (TF ? JmolConstants.TRUE : JmolConstants.FALSE);
         break;
       }
       if (str.equals("atom")) {
         if (!TF && tokAt(2) != Token.off)
           error(ERROR_invalidArgument);
         str = "front";
-        propertyValue = (TF ? Boolean.FALSE : Boolean.TRUE);
+        propertyValue = (TF ? JmolConstants.FALSE : JmolConstants.TRUE);
         break;
       }
       return false;
@@ -15079,7 +15079,7 @@ public class ScriptEvaluator {
     if (modelIndex < 0)
       error(ERROR_multipleModelsDisplayedNotOK, "MO isosurfaces");
     Map<String, Object> moData = (Map<String, Object>) viewer
-        .getModelAuxiliaryInfo(modelIndex, "moData");
+        .getModelAuxiliaryInfoValue(modelIndex, "moData");
     if (moData == null)
       error(ERROR_moModelError);
     Integer n = (Integer) getShapeProperty(JmolConstants.SHAPE_MO, "moNumber");
@@ -15428,11 +15428,11 @@ public class ScriptEvaluator {
         break;
       case Token.modelbased:
         propertyName = "fixed";
-        propertyValue = Boolean.FALSE;
+        propertyValue = JmolConstants.FALSE;
         break;
       case Token.fixed:
         propertyName = "fixed";
-        propertyValue = Boolean.TRUE;
+        propertyValue = JmolConstants.TRUE;
         break;
       case Token.offset:
         Point3f pt = getPoint3f(++i, true);
@@ -15450,7 +15450,7 @@ public class ScriptEvaluator {
         break;
       case Token.line:
         propertyName = "line";
-        propertyValue = Boolean.TRUE;
+        propertyValue = JmolConstants.TRUE;
         break;
       case Token.curve:
         propertyName = "curve";
@@ -15713,8 +15713,8 @@ public class ScriptEvaluator {
       case Token.collapsed:
       case Token.flat:
         propertyName = "collapsed";
-        propertyValue = (theTok == Token.collapsed ? Boolean.TRUE
-            : Boolean.FALSE);
+        propertyValue = (theTok == Token.collapsed ? JmolConstants.TRUE
+            : JmolConstants.FALSE);
         if (typeSeen)
           error(ERROR_incompatibleArguments);
         typeSeen = true;
@@ -15876,8 +15876,8 @@ public class ScriptEvaluator {
         break;
       case Token.intermolecular:
       case Token.intramolecular:
-        intramolecular = (tok == Token.intramolecular ? Boolean.TRUE
-            : Boolean.FALSE);
+        intramolecular = (tok == Token.intramolecular ? JmolConstants.TRUE
+            : JmolConstants.FALSE);
         sbCommand.append(" ").append(theToken.value);
         break;
       case Token.minset:
@@ -16490,7 +16490,7 @@ public class ScriptEvaluator {
         break;
       case Token.squared:
         propertyName = "squareData";
-        propertyValue = Boolean.TRUE;
+        propertyValue = JmolConstants.TRUE;
         break;
       case Token.titleformat:
         if (i + 1 < statementLength && tokAt(i + 1) == Token.string) {
@@ -16596,7 +16596,7 @@ public class ScriptEvaluator {
         error(ERROR_multipleModelsDisplayedNotOK, "MO isosurfaces");
     }
     int firstMoNumber = moNumber;
-    Map moData = (Map) viewer.getModelAuxiliaryInfo(modelIndex, "moData");
+    Map moData = (Map) viewer.getModelAuxiliaryInfoValue(modelIndex, "moData");
     if (linearCombination == null) {
       if (moData == null)
         error(ERROR_moModelError);
@@ -16777,8 +16777,8 @@ public class ScriptEvaluator {
       switch (theTok) {
       // settings only
       case Token.isosurfacepropertysmoothing:
-        smoothing = (getToken(++i).tok == Token.on ? Boolean.TRUE
-            : theTok == Token.off ? Boolean.FALSE : null);
+        smoothing = (getToken(++i).tok == Token.on ? JmolConstants.TRUE
+            : theTok == Token.off ? JmolConstants.FALSE : null);
         if (smoothing == null)
           error(ERROR_invalidArgument);
         continue;
@@ -16972,19 +16972,19 @@ public class ScriptEvaluator {
           }
           propertyName = "property";
           if (smoothing == null)
-            smoothing = viewer.getIsosurfacePropertySmoothing(false) == 1 ? Boolean.TRUE
-                : Boolean.FALSE;
+            smoothing = viewer.getIsosurfacePropertySmoothing(false) == 1 ? JmolConstants.TRUE
+                : JmolConstants.FALSE;
           addShapeProperty(propertyList, "propertySmoothing", smoothing);
           sbCommand.append(" isosurfacePropertySmoothing " + smoothing);
           if (smoothingPower == Integer.MAX_VALUE)
             smoothingPower = viewer.getIsosurfacePropertySmoothing(true);
           addShapeProperty(propertyList, "propertySmoothingPower", Integer
               .valueOf(smoothingPower));
-          if (smoothing == Boolean.TRUE)
+          if (smoothing == JmolConstants.TRUE)
             sbCommand.append(" isosurfacePropertySmoothingPower "
                 + smoothingPower);
           if (viewer.isRangeSelected())
-            addShapeProperty(propertyList, "rangeSelected", Boolean.TRUE);
+            addShapeProperty(propertyList, "rangeSelected", JmolConstants.TRUE);
         } else {
           propertyName = mepOrMlp;
         }
@@ -17046,7 +17046,7 @@ public class ScriptEvaluator {
         sbCommand.append(" model " + modelIndex);
         if (modelIndex < 0) {
           propertyName = "fixed";
-          propertyValue = Boolean.TRUE;
+          propertyValue = JmolConstants.TRUE;
           break;
         }
         propertyName = "modelIndex";
@@ -17093,7 +17093,7 @@ public class ScriptEvaluator {
         boolean isSign = (theTok == Token.sign);
         if (isSign) {
           sbCommand.append(" sign");
-          addShapeProperty(propertyList, "sign", Boolean.TRUE);
+          addShapeProperty(propertyList, "sign", JmolConstants.TRUE);
         } else {
           if (tokAt(i + 1) == Token.density) {
             i++;
@@ -17418,7 +17418,7 @@ public class ScriptEvaluator {
         break;
       case Token.addhydrogens:
         propertyName = "addHydrogens";
-        propertyValue = Boolean.TRUE;
+        propertyValue = JmolConstants.TRUE;
         sbCommand.append(" addHydrogens");
         break;
       case Token.angstroms:
@@ -17473,7 +17473,7 @@ public class ScriptEvaluator {
       case Token.blockdata:
         sbCommand.append(" blockData");
         propertyName = "blockData";
-        propertyValue = Boolean.TRUE;
+        propertyValue = JmolConstants.TRUE;
         break;
       case Token.cap:
       case Token.slab:
@@ -17575,17 +17575,17 @@ public class ScriptEvaluator {
       case Token.nodebug:
         sbCommand.append(" ").append(theToken.value);
         propertyName = "debug";
-        propertyValue = (theTok == Token.debug ? Boolean.TRUE : Boolean.FALSE);
+        propertyValue = (theTok == Token.debug ? JmolConstants.TRUE : JmolConstants.FALSE);
         break;
       case Token.fixed:
         sbCommand.append(" fixed");
         propertyName = "fixed";
-        propertyValue = Boolean.TRUE;
+        propertyValue = JmolConstants.TRUE;
         break;
       case Token.fullplane:
         sbCommand.append(" fullPlane");
         propertyName = "fullPlane";
-        propertyValue = Boolean.TRUE;
+        propertyValue = JmolConstants.TRUE;
         break;
       case Token.functionxy:
       case Token.functionxyz:
@@ -17742,7 +17742,7 @@ public class ScriptEvaluator {
         //if (!surfaceObjectSeen)
           sbCommand.append(" ").append(theToken.value);
         propertyName = "pocket";
-        propertyValue = (theTok == Token.pocket ? Boolean.TRUE : Boolean.FALSE);
+        propertyValue = (theTok == Token.pocket ? JmolConstants.TRUE : JmolConstants.FALSE);
         break;
       case Token.lobe:
         // lobe {eccentricity}
@@ -17791,8 +17791,8 @@ public class ScriptEvaluator {
           error(ERROR_invalidArgument);
         }
         sbCommand.append("; isosurface map");
-        addShapeProperty(propertyList, "map", (surfaceObjectSeen ? Boolean.TRUE
-            : Boolean.FALSE));
+        addShapeProperty(propertyList, "map", (surfaceObjectSeen ? JmolConstants.TRUE
+            : JmolConstants.FALSE));
         break;
       case Token.maxset:
         propertyName = "maxset";
@@ -17815,7 +17815,7 @@ public class ScriptEvaluator {
         break;
       case Token.modelbased:
         propertyName = "fixed";
-        propertyValue = Boolean.FALSE;
+        propertyValue = JmolConstants.FALSE;
         sbCommand.append(" modelBased");
         break;
       case Token.molecular:
@@ -17881,7 +17881,7 @@ public class ScriptEvaluator {
         break;
       case Token.reversecolor:
         propertyName = "reverseColor";
-        propertyValue = Boolean.TRUE;
+        propertyValue = JmolConstants.TRUE;
         sbCommand.append(" reversecolor");
         break;
       case Token.sigma:
@@ -17899,7 +17899,7 @@ public class ScriptEvaluator {
         break;
       case Token.squared:
         propertyName = "squareData";
-        propertyValue = Boolean.TRUE;
+        propertyValue = JmolConstants.TRUE;
         sbCommand.append(" squared");
         break;
       case Token.inline:
@@ -17992,10 +17992,10 @@ public class ScriptEvaluator {
             if (modelIndex < 0)
               modelIndex = viewer.getCurrentModelIndex();
             if (surfaceObjectSeen || planeSeen)
-              propertyValue = viewer.getModelAuxiliaryInfo(modelIndex,
+              propertyValue = viewer.getModelAuxiliaryInfoValue(modelIndex,
                   "jmolMappedDataInfo");
             if (propertyValue == null)
-              propertyValue = viewer.getModelAuxiliaryInfo(modelIndex,
+              propertyValue = viewer.getModelAuxiliaryInfoValue(modelIndex,
                   "jmolSurfaceInfo");
             if (propertyValue != null) {
               surfaceObjectSeen = true;
@@ -18177,7 +18177,7 @@ public class ScriptEvaluator {
         if (!surfaceObjectSeen)
           addShapeProperty(propertyList, "sasurface", Float.valueOf(0));
         if (!isMapped) {
-          addShapeProperty(propertyList, "map", Boolean.TRUE);
+          addShapeProperty(propertyList, "map", JmolConstants.TRUE);
           addShapeProperty(propertyList, "select", bs);
           addShapeProperty(propertyList, "sasurface", Float.valueOf(0));
         }

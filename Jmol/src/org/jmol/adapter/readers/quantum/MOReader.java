@@ -172,9 +172,9 @@ abstract public class MOReader extends BasisFunctionReader {
       while (atoms[i].elementNumber == 0)
         ++i;
       // assign the partial charge
-      String[] tokens = getTokens(readLine());
+      String[] tokens = getTokensStr(readLine());
       float charge;
-      if (tokens == null || tokens.length < 3 || Float.isNaN(charge = parseFloat(tokens[2]))) {
+      if (tokens == null || tokens.length < 3 || Float.isNaN(charge = parseFloatStr(tokens[2]))) {
         Logger.info("Error reading NBO charges: " + line);
         return;
       }
@@ -209,7 +209,7 @@ abstract public class MOReader extends BasisFunctionReader {
     int n = 0;
     int pt = 0;
     while (line != null && (pt = line.indexOf(".")) >= 0 && pt < 10) {
-      if (parseInt(line.substring(0, pt)) != n + 1)
+      if (parseIntStr(line.substring(0, pt)) != n + 1)
         break;
       moTypes.add(n++, line.substring(pt + 1, Math.min(40, line.length())).trim());
       while (readLine() != null && line.startsWith("       ")) {
@@ -384,7 +384,7 @@ abstract public class MOReader extends BasisFunctionReader {
           float[] coefs = new float[data[iMo].size()];
           int iCoeff = 0;
           while (iCoeff < coefs.length) {
-            coefs[iCoeff] = parseFloat(data[iMo].get(iCoeff));
+            coefs[iCoeff] = parseFloatStr(data[iMo].get(iCoeff));
             iCoeff++;
           }
           haveMOs = true;
@@ -502,7 +502,7 @@ abstract public class MOReader extends BasisFunctionReader {
       // this is the original functionality
       tokens = getTokens();
       if (tokens.length == 0)
-        tokens = getTokens(readLine());
+        tokens = getTokensStr(readLine());
       for (int i = 0; i < nThisLine; i++) {
         mos[i].put("energy", new Float(tokens[i]));
       }
@@ -514,7 +514,7 @@ abstract public class MOReader extends BasisFunctionReader {
       tokens = getTokens();
       for (int i = 0; i < nThisLine; i++)
         mos[i].put("occupancy", new Float(tokens[i].charAt(0) == '-' ? 2.0f
-            : parseFloat(tokens[i])));
+            : parseFloatStr(tokens[i])));
       readLine(); // blank or symmetry
       if (!haveSymmetry)
         return;
@@ -532,7 +532,7 @@ abstract public class MOReader extends BasisFunctionReader {
     for (int i = 0; i < nColumns; i++) {
       float[] coefs = new float[data[i].size()];
       for (int j = coefs.length; --j >= 0;)
-        coefs[j] = parseFloat(data[i].get(j));
+        coefs[j] = parseFloatStr(data[i].get(j));
       mos[i].put("coefficients", coefs);
       setMO(mos[i]);
     }
@@ -602,8 +602,8 @@ xxxxxxxxxxxxxxxxxxxxxxxxxx yyyyyyyyyyyyyyyyyyyyyyyyyyy zzzzzzz ....... ffffffff
       IMO = ht.get(a[1]);
       if (IMO != null)
         secondOrderData[i][1] = IMO.intValue();
-      secondOrderData[i][2] = parseFloat(a[2]);
-      secondOrderData[i][3] = parseFloat(a[3]);
+      secondOrderData[i][2] = parseFloatStr(a[2]);
+      secondOrderData[i][3] = parseFloatStr(a[3]);
     }
   }
   

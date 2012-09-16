@@ -47,11 +47,11 @@ public class Parser {
    * @return  number of floats
    */
   public static int parseStringInfestedFloatArray(String str, BitSet bs, float[] data) {
-    return parseFloatArray(getTokens(str), bs, data);
+    return parseFloatArrayBsData(getTokens(str), bs, data);
   }
 
   public static float[] parseFloatArray(String str) {
-    return parseFloatArray(str, new int[1]);
+    return parseFloatArrayNext(str, new int[1]);
   }
 
   /**
@@ -60,7 +60,7 @@ public class Parser {
    * @return array of float values
    *
    */
-  public static float[] parseFloatArray(String str, int[] next) {
+  public static float[] parseFloatArrayNext(String str, int[] next) {
     int pt = next[0];
     if (pt < 0)
       return new float[0];
@@ -76,13 +76,13 @@ public class Parser {
     next[0] += pt + 1;
     String[] tokens = getTokens(str);
     float[] f = new float[tokens.length];
-    int n = parseFloatArray(tokens, null, f);
+    int n = parseFloatArrayBsData(tokens, null, f);
     for (int i = n; i < f.length; i++)
       f[i] = Float.NaN;
     return f;
   }
   
-  public static int parseFloatArray(String[] tokens, BitSet bs, float[] data) {
+  public static int parseFloatArrayBsData(String[] tokens, BitSet bs, float[] data) {
     int len = data.length;
     int nTokens = tokens.length;
     int n = 0;
@@ -90,7 +90,7 @@ public class Parser {
     boolean haveBitSet = (bs != null);
     for (int i = (haveBitSet ? bs.nextSetBit(0) : 0); i >= 0 && i < len && n < nTokens; i = (haveBitSet ? bs.nextSetBit(i + 1) : i + 1)) {
       float f;
-      while (Float.isNaN(f = Parser.parseFloat(tokens[n++])) 
+      while (Float.isNaN(f = Parser.parseFloatStr(tokens[n++])) 
           && n < nTokens) {
       }
       if (!Float.isNaN(f))
@@ -116,7 +116,7 @@ public class Parser {
     float[][] data = new float[nLines][];
     for (int iLine = 0, pt = 0; iLine < nLines; pt = lines[iLine++]) {
       String[] tokens = getTokens(str.substring(pt, lines[iLine]));
-      parseFloatArray(tokens, data[iLine] = new float[tokens.length]);
+      parseFloatArrayData(tokens, data[iLine] = new float[tokens.length]);
     }
     return data;
   }
@@ -140,7 +140,7 @@ public class Parser {
       tokens = getTokens(str.substring(pt, lines[iLine]));
       if (tokens.length < nZ)
         continue;
-      parseFloatArray(tokens, data[iX][iY] = new float[tokens.length]);
+      parseFloatArrayData(tokens, data[iX][iY] = new float[tokens.length]);
       if (++iY == nY) {
         iX++;
         iY = 0;
@@ -216,11 +216,11 @@ public class Parser {
       // and parse data
       if (fieldColumnCount <= 0) {
         if (tokens.length < minLen
-            || Float.isNaN(f = parseFloat(tokens[field - 1])))
+            || Float.isNaN(f = parseFloatStr(tokens[field - 1])))
           continue;
       } else {
         if (line.length() < minLen
-            || Float.isNaN(f = parseFloat(line.substring(field - 1, field
+            || Float.isNaN(f = parseFloatStr(line.substring(field - 1, field
                 + fieldColumnCount - 1))))
           continue;
       }
@@ -259,8 +259,8 @@ public class Parser {
    *  @param tokens  the strings to parse
    *  @param data    the array to fill
    */
-  public static void parseFloatArray(String[] tokens, float[] data) {
-    parseFloatArray(tokens, data, data.length);
+  public static void parseFloatArrayData(String[] tokens, float[] data) {
+    parseFloatArrayDataN(tokens, data, data.length);
   }
   
   /**
@@ -270,13 +270,13 @@ public class Parser {
    *  @param data    the array to fill
    *  @param nData   the number of elements
    */
-  public static void parseFloatArray(String[] tokens, float[] data, int nData) {
+  public static void parseFloatArrayDataN(String[] tokens, float[] data, int nData) {
     for (int i = nData; --i >= 0;)
-      data[i] = (i >= tokens.length ? Float.NaN : Parser.parseFloat(tokens[i]));
+      data[i] = (i >= tokens.length ? Float.NaN : Parser.parseFloatStr(tokens[i]));
   }
  
-  public static float parseFloat(String str) {
-    return parseFloat(str, new int[] {0});
+  public static float parseFloatStr(String str) {
+    return parseFloatNext(str, new int[] {0});
   }
 
   public static float parseFloatStrict(String str) {
@@ -288,26 +288,26 @@ public class Parser {
   }
 
   public static int parseInt(String str) {
-    return parseInt(str, new int[] {0});
+    return parseIntNext(str, new int[] {0});
   }
 
   public static String[] getTokens(String line) {
-    return getTokens(line, 0);
+    return getTokensAt(line, 0);
   }
 
   public static String parseToken(String str) {
-    return parseToken(str, new int[] {0});
+    return parseTokenNext(str, new int[] {0});
   }
 
   public static String parseTrimmed(String str) {
-    return parseTrimmed(str, 0, str.length());
+    return parseTrimmedRange(str, 0, str.length());
   }
   
-  public static String parseTrimmed(String str, int ichStart) {
-    return parseTrimmed(str, ichStart, str.length());
+  public static String parseTrimmedAt(String str, int ichStart) {
+    return parseTrimmedRange(str, ichStart, str.length());
   }
   
-  public static String parseTrimmed(String str, int ichStart, int ichMax) {
+  public static String parseTrimmedRange(String str, int ichStart, int ichMax) {
     int cch = str.length();
     if (ichMax < cch)
       cch = ichMax;
@@ -329,14 +329,14 @@ public class Parser {
     return lines;
   }
 
-  public static float parseFloat(String str, int[] next) {
+  public static float parseFloatNext(String str, int[] next) {
     int cch = str.length();
     if (next[0] < 0 || next[0] >= cch)
       return Float.NaN;
     return parseFloatChecked(str, cch, next, false);
   }
 
-  public static float parseFloat(String str, int ichMax, int[] next) {
+  public static float parseFloatRange(String str, int ichMax, int[] next) {
     int cch = str.length();
     if (ichMax > cch)
       ichMax = cch;
@@ -423,14 +423,14 @@ public class Parser {
     return (ich == ichMax);
   }
   
-  public static int parseInt(String str, int[] next) {
+  public static int parseIntNext(String str, int[] next) {
     int cch = str.length();
     if (next[0] < 0 || next[0] >= cch)
       return Integer.MIN_VALUE;
     return parseIntChecked(str, cch, next);
   }
 
-  public static int parseInt(String str, int ichMax, int[] next) {
+  public static int parseIntRange(String str, int ichMax, int[] next) {
     int cch = str.length();
     if (ichMax > cch)
       ichMax = cch;
@@ -466,7 +466,7 @@ public class Parser {
     return value;
   }
 
-  public static String[] getTokens(String line, int ich) {
+  public static String[] getTokensAt(String line, int ich) {
     if (line == null)
       return null;
     int cchLine = line.length();
@@ -499,14 +499,14 @@ public class Parser {
     return tokenCount;
   }
 
-  public static String parseToken(String str, int[] next) {
+  public static String parseTokenNext(String str, int[] next) {
     int cch = str.length();
     if (next[0] < 0 || next[0] >= cch)
       return null;
     return parseTokenChecked(str, cch, next);
   }
 
-  public static String parseToken(String str, int ichMax, int[] next) {
+  public static String parseTokenRange(String str, int ichMax, int[] next) {
     int cch = str.length();
     if (ichMax > cch)
       ichMax = cch;
@@ -551,12 +551,12 @@ public class Parser {
     return str;
   }
   
-  public static String getNextQuotedString(String line, int ipt0) {
+  public static String getQuotedStringAt(String line, int ipt0) {
     int[] next = new int[] { ipt0 };
-    return getNextQuotedString(line, next);
+    return getQuotedStringNext(line, next);
   }
   
-  public static String getNextQuotedString(String line, int[] next) {
+  public static String getQuotedStringNext(String line, int[] next) {
     String value = line;
     int i = next[0];
     if (i < 0 || (i = value.indexOf("\"", i)) < 0)
@@ -582,6 +582,6 @@ public class Parser {
 
   public static String getQuotedAttribute(String info, String name) {
     int i = info.indexOf(name + "=");
-    return (i < 0 ? null : getNextQuotedString(info, i));
+    return (i < 0 ? null : getQuotedStringAt(info, i));
   }
 }

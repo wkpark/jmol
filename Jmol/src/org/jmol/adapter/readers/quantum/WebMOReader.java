@@ -102,7 +102,7 @@ public class WebMOReader extends MopacSlaterReader {
   }
   
   void readHeader() throws Exception {
-    moData.put("isNormalized", Boolean.TRUE);
+    moData.put("isNormalized", JmolAdapter.TRUE);
     while (readLine() != null && line.length() > 0) {
       moData.put("calculationType", "?");
       String[] tokens = getTokens();
@@ -131,15 +131,15 @@ public class WebMOReader extends MopacSlaterReader {
       String[] tokens = getTokens();
       if (tokens.length == 0)
         continue;
-      int atNo = parseInt(line);
+      int atNo = parseIntStr(line);
       Atom atom = atomSetCollection.addNewAtom();
       if (atNo == Integer.MIN_VALUE)
         atom.elementSymbol = tokens[0];
       else
         atom.elementSymbol = getElementSymbol(atNo);
-      setAtomCoord(atom, parseFloat(tokens[1]) * ANGSTROMS_PER_BOHR, 
-          parseFloat(tokens[2]) * ANGSTROMS_PER_BOHR,
-          parseFloat(tokens[3])* ANGSTROMS_PER_BOHR);
+      setAtomCoord(atom, parseFloatStr(tokens[1]) * ANGSTROMS_PER_BOHR, 
+          parseFloatStr(tokens[2]) * ANGSTROMS_PER_BOHR,
+          parseFloatStr(tokens[3])* ANGSTROMS_PER_BOHR);
     }
   }
 
@@ -157,9 +157,9 @@ public class WebMOReader extends MopacSlaterReader {
       String[] tokens = getTokens();
       if (tokens.length == 0)
         continue;
-      int atomIndex1 = parseInt(tokens[0]);
-      int atomIndex2 = parseInt(tokens[1]);
-      int order = parseInt(tokens[2]);
+      int atomIndex1 = parseIntStr(tokens[0]);
+      int atomIndex2 = parseIntStr(tokens[1]);
+      int order = parseIntStr(tokens[2]);
       atomSetCollection
           .addBond(new Bond(atomIndex1 - 1, atomIndex2 - 1, order));
     }
@@ -265,19 +265,19 @@ public class WebMOReader extends MopacSlaterReader {
       if (tokens.length != 1) // VERY unlikely event -- might as well note it, though.
         throw new Exception("Error reading GTOs: missing atom index");
       int[] slater = new int[4];
-      atomIndex = parseInt(tokens[0]) - 1;
-      tokens = getTokens(readLine());
-      int nGaussians = parseInt(tokens[1]);
+      atomIndex = parseIntStr(tokens[0]) - 1;
+      tokens = getTokensStr(readLine());
+      int nGaussians = parseIntStr(tokens[1]);
       slater[0] = atomIndex;
       slater[1] = JmolAdapter.getQuantumShellTagID(tokens[0]);
       slater[2] = gaussianPtr;
       slater[3] = nGaussians;
       for (int i = 0; i < nGaussians; i++) {
-        String[] strData = getTokens(readLine());
+        String[] strData = getTokensStr(readLine());
         int nData = strData.length;
         float[] data = new float[nData];
         for (int d = 0; d < nData; d++) {
-          data[d] = parseFloat(strData[d]);
+          data[d] = parseFloatStr(strData[d]);
         }
         gdata.add(data);
         gaussianPtr++;
@@ -307,9 +307,9 @@ public class WebMOReader extends MopacSlaterReader {
       String[] tokens = getTokens();
       if (tokens.length < 7)
         continue;
-      addSlater(parseInt(tokens[0]) - 1, parseInt(tokens[1]),
-          parseInt(tokens[2]), parseInt(tokens[3]), parseInt(tokens[4]),
-          parseFloat(tokens[5]), parseFloat(tokens[6]));
+      addSlater(parseIntStr(tokens[0]) - 1, parseIntStr(tokens[1]),
+          parseIntStr(tokens[2]), parseIntStr(tokens[3]), parseIntStr(tokens[4]),
+          parseFloatStr(tokens[5]), parseFloatStr(tokens[6]));
     }
     setSlaters(false, false);
   }
@@ -333,8 +333,8 @@ public class WebMOReader extends MopacSlaterReader {
     }
     Map<String, Object> mo = new Hashtable<String, Object>();
     List<String> data = new ArrayList<String>();
-    float energy = parseFloat(readLine());
-    float occupancy = parseFloat(readLine());
+    float energy = parseFloatStr(readLine());
+    float occupancy = parseFloatStr(readLine());
     while (getLine()) {
       String[] tokens = getTokens();
       if (tokens.length == 0) {
@@ -344,7 +344,7 @@ public class WebMOReader extends MopacSlaterReader {
     }
     float[] coefs = new float[data.size()];
     for (int i = data.size(); --i >= 0;) {
-      coefs[i] = parseFloat(data.get(i));
+      coefs[i] = parseFloatStr(data.get(i));
     }
     mo.put("energy", Float.valueOf(energy));
     mo.put("occupancy", Float.valueOf(occupancy));

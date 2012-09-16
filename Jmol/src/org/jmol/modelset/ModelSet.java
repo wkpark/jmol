@@ -470,12 +470,12 @@ import javax.vecmath.Vector3f;
                                   BitSet bsExclude) {
     short mad = viewer.getMadBond();
     for (int i = baseModelIndex; i < modelCount; i++) {
-      List<int[]> vConnect = (List<int[]>) getModelAuxiliaryInfo(i, "PDB_CONECT_bonds");
+      List<int[]> vConnect = (List<int[]>) getModelAuxiliaryInfoValue(i, "PDB_CONECT_bonds");
       if (vConnect == null)
         continue;
       int nConnect = vConnect.size();
       setModelAuxiliaryInfo(i, "initialBondCount", Integer.valueOf(nConnect));
-      int[] atomInfo = (int[]) getModelAuxiliaryInfo(i, "PDB_CONECT_firstAtom_count_max");
+      int[] atomInfo = (int[]) getModelAuxiliaryInfoValue(i, "PDB_CONECT_firstAtom_count_max");
       int firstAtom = atomInfo[0] +  baseAtomIndex;
       int atomMax = firstAtom + atomInfo[1];
       int max = atomInfo[2];
@@ -632,8 +632,8 @@ import javax.vecmath.Vector3f;
         }
       for (int i = 0; i < modelCount; i++) {
         String fcmd = "  frame " + getModelNumberDotted(i);
-        String s = (String) getModelAuxiliaryInfo(i, "modelID");
-        if (s != null && !s.equals(getModelAuxiliaryInfo(i, "modelID0")))
+        String s = (String) getModelAuxiliaryInfoValue(i, "modelID");
+        if (s != null && !s.equals(getModelAuxiliaryInfoValue(i, "modelID0")))
           commands.append(fcmd).append("; frame ID ").append(Escape.escapeStr(s))
               .append(";\n");
         String t = frameTitles[i];
@@ -824,7 +824,7 @@ import javax.vecmath.Vector3f;
   public Object getFileData(int modelIndex) {
     if (modelIndex < 0)
       return "";
-    Map<String, Object> fileData = (Map<String, Object>) getModelAuxiliaryInfo(modelIndex, "fileData");
+    Map<String, Object> fileData = (Map<String, Object>) getModelAuxiliaryInfoValue(modelIndex, "fileData");
     if (fileData != null)
       return fileData;
     if (!getModelAuxiliaryInfoBoolean(modelIndex, "isCIF"))

@@ -49,6 +49,7 @@ import org.jmol.util.Elements;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
+import org.jmol.viewer.JmolConstants;
 
 /**
  * MMFF94 implementation 5/14/2012
@@ -294,7 +295,7 @@ public class ForceFieldMMFF extends ForceField {
     getMmffParameters("mmff/mmffdfsb.par.txt", ffParams, TYPE_SBDEF);
     getMmffParameters("mmff/mmfftor.par.txt",  ffParams, TYPE_TORSION);
     getMmffParameters("mmff/mmffvdw.par.txt",  ffParams, TYPE_VDW);
-    ffParams.put(Integer.valueOf(-1), Boolean.TRUE);
+    ffParams.put(Integer.valueOf(-1), JmolConstants.TRUE);
   }
 
   private void getMmffParameters(String fileName, Map<Integer, Object> data, int dataType) {    

@@ -86,10 +86,10 @@ public class SimpleUnitCell {
     beta = parameters[4];
     gamma = parameters[5];
     
-    // (int) Float.NaN == 0
-    na = Math.max(1, parameters.length >= 25 ? (int) parameters[22] : 1);
-    nb = Math.max(1, parameters.length >= 25 ? (int) parameters[23] : 1);
-    nc = Math.max(1, parameters.length >= 25 ? (int) parameters[24] : 1);
+    // (int) Float.NaN == 0 (but not in JavaScript!)
+    na = Math.max(1, parameters.length >= 25 && !Float.isNaN(parameters[22]) ? (int) parameters[22] : 1);
+    nb = Math.max(1, parameters.length >= 25 && !Float.isNaN(parameters[23]) ? (int) parameters[23] : 1);
+    nc = Math.max(1, parameters.length >= 25 && !Float.isNaN(parameters[24]) ? (int) parameters[24] : 1);
 
     if (a <= 0) {
       // must calculate a, b, c alpha beta gamma from vectors;

@@ -229,7 +229,7 @@ class ScriptMathProcessor {
   }
 
   private boolean addXBool(boolean x) {
-    putX(ScriptVariable.getVariable(x ? Boolean.TRUE : Boolean.FALSE));
+    putX(ScriptVariable.getVariable(x ? JmolConstants.TRUE : JmolConstants.FALSE));
     return wasX = true;
   }
 
@@ -1686,7 +1686,7 @@ class ScriptMathProcessor {
           s += Escape.escape(bs);
         }
       }
-      return addXObj(TextFormat.split(s, sArg));
+      return addXObj(TextFormat.splitChars(s, sArg));
     case Token.join:
       if (s.length() > 0 && s.charAt(s.length() - 1) == '\n')
         s = s.substring(0, s.length() - 1);
@@ -1761,9 +1761,9 @@ class ScriptMathProcessor {
     if (x1.tok == Token.varray) {
       len = alist1.size();
     } else {
-      sList1 = (TextFormat.split((String) x1.value, "\n"));
+      sList1 = (TextFormat.splitChars((String) x1.value, "\n"));
       list1 = new float[len = sList1.length];
-      Parser.parseFloatArray(sList1, list1);
+      Parser.parseFloatArrayData(sList1, list1);
     }
 
     if (isAll) {
@@ -1785,9 +1785,9 @@ class ScriptMathProcessor {
     } else if (x2.tok == Token.varray) {
       len = Math.min(len, alist2.size());
     } else {
-      sList2 = TextFormat.split((String) x2.value, "\n");
+      sList2 = TextFormat.splitChars((String) x2.value, "\n");
       list2 = new float[sList2.length];
-      Parser.parseFloatArray(sList2, list2);
+      Parser.parseFloatArrayData(sList2, list2);
       len = Math.min(list1.length, list2.length);
     }
     

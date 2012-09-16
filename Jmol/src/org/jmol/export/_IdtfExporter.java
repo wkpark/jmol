@@ -46,6 +46,7 @@ import org.jmol.util.GData;
 import org.jmol.util.Geodesic;
 import org.jmol.util.MeshSurface;
 import org.jmol.util.Quaternion;
+import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 
 public class _IdtfExporter extends __CartesianExporter {
@@ -365,7 +366,7 @@ public class _IdtfExporter extends __CartesianExporter {
     if (htDefs.containsKey(key))
       return;
     String color = (haveColors ? "1.0 1.0 1.0" : rgbFractionalFromColix(colix));
-    htDefs.put(key, Boolean.TRUE);
+    htDefs.put(key, JmolConstants.TRUE);
     resources.append("RESOURCE_LIST \"SHADER\" {\n");
     resources.append("RESOURCE_COUNT 1\n");
     resources.append("RESOURCE 0 {\n");

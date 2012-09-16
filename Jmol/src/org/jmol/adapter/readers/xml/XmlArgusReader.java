@@ -104,7 +104,7 @@ public class XmlArgusReader extends XmlReader {
   }
 
   int parseBondToken(String str) {
-    float floatOrder = parseFloat(str);
+    float floatOrder = parseFloatStr(str);
     if (Float.isNaN(floatOrder) && str.length() >= 1) {
       str = str.toUpperCase();
       switch (str.charAt(0)) {
@@ -117,7 +117,7 @@ public class XmlArgusReader extends XmlReader {
       case 'A':
         return JmolAdapter.ORDER_AROMATIC;
       }
-      return parseInt(str);
+      return parseIntStr(str);
     }
     if (floatOrder == 1.5)
       return JmolAdapter.ORDER_AROMATIC;
@@ -174,18 +174,18 @@ public class XmlArgusReader extends XmlReader {
     }
     if (atom != null && elementContext == ATOM) {
       if ("x".equals(localName)) {
-        atom.x = parseFloat(chars);
+        atom.x = parseFloatStr(chars);
       } else if ("y".equals(localName)) {
-        atom.y = parseFloat(chars);
+        atom.y = parseFloatStr(chars);
         return;
       } else if ("z".equals(localName)) {
-        atom.z = parseFloat(chars);
+        atom.z = parseFloatStr(chars);
         return;
       } else if ("atsym".equals(localName)) {
         atom.elementSymbol = chars;
         return;
       } else if ("formalchg".equals(localName)) {
-        atom.formalCharge = parseInt(chars);
+        atom.formalCharge = parseIntStr(chars);
       } else if ("atomkey".equals(localName)) {
         atom.atomName = chars;
       }
@@ -204,7 +204,7 @@ public class XmlArgusReader extends XmlReader {
     }
     
     if (elementContext == TRANSFORMMAT) {
-      trans[ptTrans++] = parseFloat(chars);
+      trans[ptTrans++] = parseFloatStr(chars);
       setKeepChars(false);
       return;
     }

@@ -170,7 +170,7 @@ public class Echo extends TextShape {
   }
 
   @Override
-  public boolean getProperty(String property, Object[] data) {
+  public boolean getPropertyData(String property, Object[] data) {
     if (property == "checkID") {
       String key = ((String) data[0]).toUpperCase();
       boolean isWild = TextFormat.isWild(key);
@@ -185,7 +185,7 @@ public class Echo extends TextShape {
       }
       return false;
     }
-    return super.getProperty(property, data);
+    return super.getPropertyData(property, data);
   }
 
   @Override

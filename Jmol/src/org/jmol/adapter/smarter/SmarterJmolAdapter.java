@@ -119,7 +119,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
         //
       }
       bufferedReader = null;
-      Logger.error(null, e);
+      Logger.error("" + e);
       return "" + e;
     }
   }
@@ -154,7 +154,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
         //
       }
       br = null;
-      Logger.error(null, e);
+      Logger.error("" + e);
       return "" + e;
     }
   }
@@ -211,7 +211,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
             return atomsets[i].errorMessage;
         }
       } catch (Throwable e) {
-        Logger.error(null, e);
+        Logger.error("" + e);
         return "" + e;
       }
     }
@@ -248,7 +248,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
           if (asc[i].errorMessage != null)
             return asc[i].errorMessage;
         } catch (Throwable e) {
-          Logger.error(null, e);
+          Logger.error("" + e);
           return "" + e;
         }
       }
@@ -265,7 +265,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
             (List<Vector3f[]>) htParams.get("vibrationSteps"));
       } catch (Exception e) {
         if (result.errorMessage == null)
-          result.errorMessage = e.getMessage();
+          result.errorMessage = "" + e;
       }
     } else { 
       result = new AtomSetCollection(asc);
@@ -504,7 +504,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
     } catch (Exception e) {
       if (ignoreErrors)
         return null;
-      Logger.error(null, e);
+      Logger.error("" + e);
       return "" + e;
     } catch (Error er) {
       Logger.error(null, er);
@@ -536,7 +536,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
         return asc.errorMessage;
       return asc;
     } catch (Throwable e) {
-      Logger.error(null, e);
+      Logger.error("" + e);
       return "" + e;
     }
   }

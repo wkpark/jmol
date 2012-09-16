@@ -56,7 +56,7 @@ public class EspressoReader extends AtomSetCollectionReader {
 
   private void readAparam() throws Exception {
     // lattice parameter (alat)  =       5.3033  a.u.
-    aPar = parseFloat(getTokens()[4]) * ANGSTROMS_PER_BOHR;
+    aPar = parseFloatStr(getTokens()[4]) * ANGSTROMS_PER_BOHR;
   }
 
   /*
@@ -94,7 +94,7 @@ public class EspressoReader extends AtomSetCollectionReader {
      */
 
     if (andAPar && line.contains("="))
-      aPar = parseFloat(line.substring(line.indexOf("=") + 1))
+      aPar = parseFloatStr(line.substring(line.indexOf("=") + 1))
       * ANGSTROMS_PER_BOHR;
 
     //Can you look at the example HAP_fullopt_40_r1.fullopt from the 2nd model on the representation is correct 
@@ -105,10 +105,10 @@ public class EspressoReader extends AtomSetCollectionReader {
 
     cellParams = new float[9];
     for (int n = 0, i = 0; n < 3; n++) {
-      String[] tokens = getTokens(readLine());
-      cellParams[i++] = parseFloat(tokens[i0]) * aPar;
-      cellParams[i++] = parseFloat(tokens[i0 + 1]) * aPar;
-      cellParams[i++] = parseFloat(tokens[i0 + 2]) * aPar;
+      String[] tokens = getTokensStr(readLine());
+      cellParams[i++] = parseFloatStr(tokens[i0]) * aPar;
+      cellParams[i++] = parseFloatStr(tokens[i0 + 1]) * aPar;
+      cellParams[i++] = parseFloatStr(tokens[i0 + 2]) * aPar;
     }
   }
 
@@ -173,9 +173,9 @@ public class EspressoReader extends AtomSetCollectionReader {
       atom.atomName = tokens[(isBohr || tokens.length == 4 || !firstStr ? 0 : 1)];
       int i1 = (isBohr || tokens.length == 4 || !firstStr ? 1
           : tokens.length - 4);
-      float x = parseFloat(tokens[i1++]);
-      float y = parseFloat(tokens[i1++]);
-      float z = parseFloat(tokens[i1++]);
+      float x = parseFloatStr(tokens[i1++]);
+      float y = parseFloatStr(tokens[i1++]);
+      float z = parseFloatStr(tokens[i1++]);
       atom.set(x, y, z);
       if (isBohr) {
         atom.scale(ANGSTROMS_PER_BOHR);
@@ -197,7 +197,7 @@ public class EspressoReader extends AtomSetCollectionReader {
   //!    total energy              =   -1668.20791579 Ry
 
   private void readEnergy() throws Exception {
-    totEnergy = Double.valueOf(Double.parseDouble(getTokens(line.substring(line
+    totEnergy = Double.valueOf(Double.parseDouble(getTokensStr(line.substring(line
         .indexOf("=") + 1))[0]));
   }
 

@@ -197,11 +197,11 @@ public class MdTopReader extends ForceFieldReader {
      */
     private void getPointers() throws Exception {
       String[] tokens = getDataBlock();
-      atomCount = parseInt(tokens[0]);
+      atomCount = parseIntStr(tokens[0]);
       boolean isPeriodic = (tokens[27].charAt(0) != '0');
       if (isPeriodic) {
         Logger.info("Periodic type: " + tokens[27]);
-        htParams.put("isPeriodic", Boolean.TRUE);
+        htParams.put("isPeriodic", JmolAdapter.TRUE);
       }
       Logger.info("Total number of atoms read=" + atomCount);
       htParams.put("templateAtomCount", Integer.valueOf(atomCount));
@@ -228,7 +228,7 @@ public class MdTopReader extends ForceFieldReader {
       return;
     Atom[] atoms = atomSetCollection.getAtoms();
     for (int i = atomCount; --i >= 0;)
-      atoms[i].partialCharge = parseFloat(data[i]);
+      atoms[i].partialCharge = parseFloatStr(data[i]);
   }
 
   private void getResiduePointers() throws Exception {
@@ -238,7 +238,7 @@ public class MdTopReader extends ForceFieldReader {
     int pt2;
     Atom[] atoms = atomSetCollection.getAtoms();
     for (int i = resPtrs.length; --i >= 0;) {
-      int ptr = pt2 = parseInt(resPtrs[i]) - 1;
+      int ptr = pt2 = parseIntStr(resPtrs[i]) - 1;
       while (ptr < pt1) {
         if (group3s != null)
           atoms[ptr].group3 = group3s[i];

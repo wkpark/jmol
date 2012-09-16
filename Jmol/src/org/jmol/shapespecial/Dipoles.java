@@ -358,7 +358,7 @@ public class Dipoles extends Shape {
 
 //  @SuppressWarnings("unchecked")
   @Override
-  public boolean getProperty(String property, Object[] data) {
+  public boolean getPropertyData(String property, Object[] data) {
     if (property == "getNames") {
       /* just implemented for MeshCollection
       Map<String, Token> map = (Map<String, Token>) data[0];

@@ -86,8 +86,8 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   
   @Override
   public void initializeReader() throws Exception {
-    if (checkFilter("CONF "))
-      configurationPtr = parseInt(filter, filter.indexOf("CONF ") + 5);
+    if (checkFilterKey("CONF "))
+      configurationPtr = parseIntAt(filter, filter.indexOf("CONF ") + 5);
 
     isMolecular = (filter != null && filter.indexOf("MOLECUL") >= 0);
     if (isMolecular) {
@@ -293,7 +293,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   private void processCellParameter() throws Exception {
     for (int i = cellParamNames.length; --i >= 0;)
       if (isMatch(key, cellParamNames[i])) {
-        setUnitCellItem(i, parseFloat(data));
+        setUnitCellItem(i, parseFloatStr(data));
         return;
       }
   }
@@ -334,7 +334,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
      _atom_sites.fract_transf_vector[3]      0.00000 
 
      */
-    float v = parseFloat(data);
+    float v = parseFloatStr(data);
     if (Float.isNaN(v))
       return;
     for (int i = 0; i < TransformFields.length; i++) {
@@ -494,7 +494,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
           atomTypeSymbol = field;
           break;
         case ATOM_TYPE_OXIDATION_NUMBER:
-          oxidationNumber = parseFloat(field);
+          oxidationNumber = parseFloatStr(field);
           break;
         }
       }
@@ -717,45 +717,45 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
           atom.atomName = field;
           break;
         case CHEM_COMP_AC_X_IDEAL:
-          float x = parseFloat(field);
+          float x = parseFloatStr(field);
           if (!Float.isNaN(x))
             atom.x = x;
           break;
         case CHEM_COMP_AC_Y_IDEAL:
-          float y = parseFloat(field);
+          float y = parseFloatStr(field);
           if (!Float.isNaN(y))
             atom.y = y;
           break;
         case CHEM_COMP_AC_Z_IDEAL:
-          float z = parseFloat(field);
+          float z = parseFloatStr(field);
           if (!Float.isNaN(z))
             atom.z = z;
           break;
         case CHEM_COMP_AC_X:
         case CARTN_X:
         case FRACT_X:
-          atom.x = parseFloat(field);
+          atom.x = parseFloatStr(field);
           break;
         case CHEM_COMP_AC_Y:
         case CARTN_Y:
         case FRACT_Y:
-          atom.y = parseFloat(field);
+          atom.y = parseFloatStr(field);
           break;
         case CHEM_COMP_AC_Z:
         case CARTN_Z:
         case FRACT_Z:
-          atom.z = parseFloat(field);
+          atom.z = parseFloatStr(field);
           break;
         case CHEM_COMP_AC_CHARGE:
-          atom.formalCharge = parseInt(field);
+          atom.formalCharge = parseIntStr(field);
           break;
         case OCCUPANCY:
-          float floatOccupancy = parseFloat(field);
+          float floatOccupancy = parseFloatStr(field);
           if (!Float.isNaN(floatOccupancy))
             atom.occupancy = (int) (floatOccupancy * 100);
           break;
         case B_ISO:
-          atom.bfactor = parseFloat(field) * (isPDB ? 1 : 100f);
+          atom.bfactor = parseFloatStr(field) * (isPDB ? 1 : 100f);
           break;
         case CHEM_COMP_AC_ID:
         case COMP_ID:
@@ -768,7 +768,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
           atom.chainID = firstChar;
           break;
         case SEQ_ID:
-          atom.sequenceNumber = parseInt(field);
+          atom.sequenceNumber = parseIntStr(field);
           break;
         case INS_CODE:
           atom.insertionCode = firstChar;
@@ -793,7 +793,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
             atom.isHetero = true;
           break;
         case MODEL_NO:
-          int modelNO = parseInt(field);
+          int modelNO = parseIntStr(field);
           if (modelNO != currentModelNO) {
             atomSetCollection.newAtomSet();
             currentModelNO = modelNO;
@@ -814,7 +814,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
               data = atomSetCollection.getAnisoBorU(atom);
               if (data == null)
                 atomSetCollection.setAnisoBorU(atom, data = new float[8], 8);
-              data[7] = parseFloat(tokenizer.loopData[j]);
+              data[7] = parseFloatStr(tokenizer.loopData[j]);
               // Ortep Type 8: D = 2pi^2, C = 2, a*b*
             }
           }
@@ -846,7 +846,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
             // Ortep type 8: D = 2pi^2, C = 2, a*b*
           }
           int iType = (propertyOf[i] - ANISO_U11) % 6;
-          data[iType] = parseFloat(field);
+          data[iType] = parseFloatStr(field);
           break;
         case ANISO_B11:
         case ANISO_B22:
@@ -860,7 +860,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
             // Ortep Type 4: D = 1/4, C = 2, a*b*
           }
            int iTypeB = (propertyOf[i] - ANISO_B11) % 6;
-           data[iTypeB] = parseFloat(field);
+           data[iTypeB] = parseFloatStr(field);
           break;
         case ANISO_Beta_11:
         case ANISO_Beta_22:
@@ -874,7 +874,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
             //Ortep Type 0: D = 1, c = 2 -- see org.jmol.symmetry/UnitCell.java
           }
           int iTypeBeta = (propertyOf[i] - ANISO_Beta_11) % 6;
-          data[iTypeBeta] = parseFloat(field);
+          data[iTypeBeta] = parseFloatStr(field);
           break;
         }
       }
@@ -882,7 +882,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         Logger.warn("atom " + atom.atomName
             + " has invalid/unknown coordinates");
       } else {
-        if (isAnisoData || !filterAtom(atom, iAtom))
+        if (isAnisoData || !filterCIFAtom(atom, iAtom))
           continue;
         setAtomCoord(atom);
         atomSetCollection.addAtomWithMappedName(atom);
@@ -897,14 +897,13 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
     if (isPDB) {
       setIsPDB();
     }
-    atomSetCollection.setAtomSetAuxiliaryInfo("isCIF", Boolean.TRUE);
+    atomSetCollection.setAtomSetAuxiliaryInfo("isCIF", JmolAdapter.TRUE);
     return true;
   }
      
   
-  @Override
-  protected boolean filterAtom(Atom atom, int iAtom) {
-    if (!super.filterAtom(atom, iAtom))
+  protected boolean filterCIFAtom(Atom atom, int iAtom) {
+    if (!filterAtom(atom, iAtom))
       return false;
     if (configurationPtr > 0) {
       if (!disorderAssembly.equals(lastDisorderAssembly)) {
@@ -1047,7 +1046,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
           atomIndex2 = atomSetCollection.getAtomIndexFromName(name2 = field);
           break;
         case GEOM_BOND_DISTANCE:
-          distance = parseFloat(field);
+          distance = parseFloatStr(field);
           int pt = field.indexOf('('); 
           if (pt >= 0) {
             char[] data = field.toCharArray();
@@ -1058,7 +1057,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
                 --j;
                data[j] = (--n < 0 ? '0' : sdx.charAt(n));
             }
-            dx = parseFloat(String.valueOf(data));
+            dx = parseFloatStr(String.valueOf(data));
             if (Float.isNaN(dx)) {
               Logger.info("error reading uncertainty for " + line);
               dx = 0.015f;
@@ -1250,7 +1249,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
           structure.startChainID = firstChar;
           break;
         case BEG_SEQ_ID:
-          structure.startSequenceNumber = parseInt(field);
+          structure.startSequenceNumber = parseIntStr(field);
           break;
         case BEG_INS_CODE:
           structure.startInsertionCode = firstChar;
@@ -1259,10 +1258,10 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
           structure.endChainID = firstChar;
           break;
         case END_SEQ_ID:
-          structure.endSequenceNumber = parseInt(field);
+          structure.endSequenceNumber = parseIntStr(field);
           break;
         case HELIX_CLASS:
-          structure.substructureType = Structure.getHelixType(parseInt(field));
+          structure.substructureType = Structure.getHelixType(parseIntStr(field));
           break;
         case END_INS_CODE:
           structure.endInsertionCode = firstChar;
@@ -1271,7 +1270,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
           structure.structureID = field;
           break;
         case SERIAL_NO:
-          structure.serialID = parseInt(field);
+          structure.serialID = parseIntStr(field);
           break;
         }
       }
@@ -1318,7 +1317,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
           structure.startChainID = firstChar;
           break;
         case BEG_SEQ_ID:
-          structure.startSequenceNumber = parseInt(field);
+          structure.startSequenceNumber = parseIntStr(field);
           break;
         case BEG_INS_CODE:
           structure.startInsertionCode = firstChar;
@@ -1327,7 +1326,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
           structure.endChainID = firstChar;
           break;
         case END_SEQ_ID:
-          structure.endSequenceNumber = parseInt(field);
+          structure.endSequenceNumber = parseIntStr(field);
           break;
         case END_INS_CODE:
           structure.endInsertionCode = firstChar;
@@ -1337,7 +1336,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
           structure.structureID = field;
           break;
         case STRAND_ID:
-          structure.serialID = parseInt(field);
+          structure.serialID = parseIntStr(field);
           break;
         }
       }
@@ -1730,8 +1729,8 @@ _struct_site_gen.details
     // Set return info to enable desired defaults.
 
     if (bondTypes.size() > 0)
-      atomSetCollection.setAtomSetAuxiliaryInfo("hasBonds", Boolean.TRUE);
-    atomSetCollection.setAtomSetAuxiliaryInfo("fileHasUnitCell", Boolean.TRUE);
+      atomSetCollection.setAtomSetAuxiliaryInfo("hasBonds", JmolAdapter.TRUE);
+    atomSetCollection.setAtomSetAuxiliaryInfo("fileHasUnitCell", JmolAdapter.TRUE);
 
     // Clear temporary fields.
 

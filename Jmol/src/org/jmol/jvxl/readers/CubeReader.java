@@ -40,13 +40,13 @@ class CubeReader extends VolumeFileReader {
     jvxlFileHeaderBuffer.append(readLine()).append('\n');
     jvxlFileHeaderBuffer.append(readLine()).append('\n');
     String atomLine = readLine();
-    String[] tokens = Parser.getTokens(atomLine, 0);
-    atomCount = parseInt(tokens[0]);
+    String[] tokens = Parser.getTokensAt(atomLine, 0);
+    atomCount = parseIntStr(tokens[0]);
     negativeAtomCount = (atomCount < 0); // MO list
     if (negativeAtomCount)
       atomCount = -atomCount;
-    volumetricOrigin.set(parseFloat(tokens[1]), parseFloat(tokens[2]),
-        parseFloat(tokens[3]));
+    volumetricOrigin.set(parseFloatStr(tokens[1]), parseFloatStr(tokens[2]),
+        parseFloatStr(tokens[3]));
     VolumeFileReader.checkAtomLine(isXLowToHigh, isAngstroms, tokens[0],
         atomLine, jvxlFileHeaderBuffer);
     if (!isAngstroms)
@@ -61,7 +61,7 @@ class CubeReader extends VolumeFileReader {
     } else {
       readLine();
       Logger.info("Reading extra CUBE information line: " + line);
-      nSurfaces = parseInt(line);
+      nSurfaces = parseIntStr(line);
     }
   }  
 }

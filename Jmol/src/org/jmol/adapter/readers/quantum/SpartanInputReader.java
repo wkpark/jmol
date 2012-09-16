@@ -49,7 +49,7 @@ public abstract class SpartanInputReader extends BasisFunctionReader {
       while (readLine() != null) {
         String[] tokens = getTokens();
         //charge and spin
-        if (tokens.length == 2 && parseInt(tokens[0]) != Integer.MIN_VALUE && parseInt(tokens[1]) >= 0)
+        if (tokens.length == 2 && parseIntStr(tokens[0]) != Integer.MIN_VALUE && parseIntStr(tokens[1]) >= 0)
           break;
       }
       if (line == null)
@@ -88,16 +88,16 @@ public abstract class SpartanInputReader extends BasisFunctionReader {
 
   private void readTransform() throws Exception {
     readLine();
-    String[] tokens = getTokens(readLine() + " " + readLine());
+    String[] tokens = getTokensStr(readLine() + " " + readLine());
     //BEGINMOLSTATE
     //MODEL=3~HYDROGEN=1~LABELS=0
     //0.70925283  0.69996750 -0.08369886  0.00000000 -0.70480913  0.70649898 -0.06405880  0.00000000
     //0.01429412  0.10442561  0.99443018  0.00000000  0.00000000  0.00000000  0.00000000  1.00000000
     //ENDMOLSTATE
     setTransform(
-        parseFloat(tokens[0]), parseFloat(tokens[1]), parseFloat(tokens[2]),
-        parseFloat(tokens[4]), parseFloat(tokens[5]), parseFloat(tokens[6]),
-        parseFloat(tokens[8]), parseFloat(tokens[9]), parseFloat(tokens[10])
+        parseFloatStr(tokens[0]), parseFloatStr(tokens[1]), parseFloatStr(tokens[2]),
+        parseFloatStr(tokens[4]), parseFloatStr(tokens[5]), parseFloatStr(tokens[6]),
+        parseFloatStr(tokens[8]), parseFloatStr(tokens[9]), parseFloatStr(tokens[10])
     );
   }
   
@@ -115,8 +115,8 @@ public abstract class SpartanInputReader extends BasisFunctionReader {
         && !line.startsWith("ENDCART")) {
       String[] tokens = getTokens();
       Atom atom = atomSetCollection.addNewAtom();
-      atom.elementSymbol = getElementSymbol(parseInt(tokens[0]));
-      setAtomCoord(atom, parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3]));
+      atom.elementSymbol = getElementSymbol(parseIntStr(tokens[0]));
+      setAtomCoord(atom, parseFloatStr(tokens[1]), parseFloatStr(tokens[2]), parseFloatStr(tokens[3]));
       modelAtomCount++;
     }
     atomCount = atomSetCollection.getAtomCount();
@@ -151,9 +151,9 @@ public abstract class SpartanInputReader extends BasisFunctionReader {
       String[] tokens = getTokens();
       bondData += line + " ";
       if (nAtoms == 0) {
-        int sourceIndex = parseInt(tokens[0]) - 1 + atomCount0;
-        int targetIndex = parseInt(tokens[1]) - 1 + atomCount0;
-        int bondOrder = parseInt(tokens[2]);
+        int sourceIndex = parseIntStr(tokens[0]) - 1 + atomCount0;
+        int targetIndex = parseIntStr(tokens[1]) - 1 + atomCount0;
+        int bondOrder = parseIntStr(tokens[2]);
         if (bondOrder > 0) {
           atomSetCollection.addBond(new Bond(sourceIndex, targetIndex,
               bondOrder < 4 ? bondOrder : bondOrder == 5 ? JmolAdapter.ORDER_AROMATIC : 1));

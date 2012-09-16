@@ -336,7 +336,7 @@ public class Escape {
     str = str.substring(1, str.length() - 1);
     int[] next = new int[1];
     for (; nPoints < 5; nPoints++) {
-      points[nPoints] = Parser.parseFloat(str, next);
+      points[nPoints] = Parser.parseFloatNext(str, next);
       if (Float.isNaN(points[nPoints])) {
         if (next[0] >= str.length() || str.charAt(next[0]) != ',')
           break;
@@ -423,12 +423,12 @@ public class Escape {
     int[] next = new int[1];
     int nPoints = 0;
     for (; nPoints < 16; nPoints++) {
-      points[nPoints] = Parser.parseFloat(str, next);
+      points[nPoints] = Parser.parseFloatNext(str, next);
       if (Float.isNaN(points[nPoints])) {
         break;
       }
     }
-    if (!Float.isNaN(Parser.parseFloat(str, next)))
+    if (!Float.isNaN(Parser.parseFloatNext(str, next)))
       return strMatrix; // overflow
     if (nPoints == 9)
       return new Matrix3f(points);
@@ -872,7 +872,7 @@ public class Escape {
     int[] next = new int[1];
     next[0] = 1;
     while (next[0] < data.length()) {
-      String s = Parser.getNextQuotedString(data, next);
+      String s = Parser.getQuotedStringNext(data, next);
       if (s == null)
         return null;
       v.add(s);

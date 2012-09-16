@@ -217,7 +217,7 @@ public class JvxlCoder {
           "\n" + (cmd.indexOf("#") < 0 ? cmd : cmd.substring(0, cmd.indexOf("#"))) + "\n");
     if (state != null) {
       if (state.indexOf("** XML ** ") >=0) {
-        state = TextFormat.split(state, "** XML **")[1].trim(); 
+        state = TextFormat.splitChars(state, "** XML **")[1].trim(); 
         XmlUtil.appendTag(data, "jvxlIsosurfaceState",  "\n" + state + "\n");
       } else {
         XmlUtil.appendCdata(data, "jvxlIsosurfaceState", null, "\n" + state);
@@ -1061,7 +1061,7 @@ public class JvxlCoder {
     boolean isset = false;
     int[] next = new int[1];
     while (true) {
-      dataCount = (nPrev++ < 0 ? dataCount : Parser.parseInt(data, next));
+      dataCount = (nPrev++ < 0 ? dataCount : Parser.parseIntNext(data, next));
       if (dataCount == Integer.MIN_VALUE) 
         break;
       if (dataCount < 0) {
@@ -1183,7 +1183,7 @@ public class JvxlCoder {
         case '7':
         case '8':
         case '9':
-          int nChar = Parser.parseInt(data, next);
+          int nChar = Parser.parseIntNext(data, next);
           for (int c = 0; c < nChar; c++)
             dataOut.append(chLast);
           i = next[0];

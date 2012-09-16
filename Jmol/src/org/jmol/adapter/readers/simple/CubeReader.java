@@ -85,7 +85,7 @@ public class CubeReader extends AtomSetCollectionReader {
     String[] tokens = getTokens();
     if (tokens[0].charAt(0) == '+') //Jvxl progressive reader -- ignore and consider negative
       tokens[0] = tokens[0].substring(1);
-    atomCount = Math.abs(parseInt(tokens[0]));
+    atomCount = Math.abs(parseIntStr(tokens[0]));
   }
   
   private void readAtoms() throws Exception {
@@ -93,7 +93,7 @@ public class CubeReader extends AtomSetCollectionReader {
     for (int i = 0; i < atomCount; ++i) {
       readLine();
       Atom atom = atomSetCollection.addNewAtom();
-      atom.elementNumber = (short)parseInt(line); //allowing atomicAndIsotope for JVXL format
+      atom.elementNumber = (short)parseIntStr(line); //allowing atomicAndIsotope for JVXL format
       parseFloat();
       setAtomCoord(atom, parseFloat() * f, parseFloat() * f, parseFloat() * f);
     }

@@ -374,7 +374,7 @@ public class Symmetry implements SymmetryInterface {
 
   public SymmetryInterface getUnitCell(Tuple3f[] points) {
     Symmetry sym = new Symmetry();
-    sym.unitCell = new UnitCell(points);
+    sym.unitCell = new UnitCell(points, false);
     return sym;
   }
 

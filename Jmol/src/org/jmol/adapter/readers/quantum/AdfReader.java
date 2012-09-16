@@ -94,14 +94,14 @@ public class AdfReader extends SlaterReader {
     }
     if (line.indexOf(" ======  Eigenvectors (rows) in BAS representation") >= 0) {
       if (readMolecularOrbitals)
-        readMolecularOrbitals(getTokens(symLine)[1]);
+        readMolecularOrbitals(getTokensStr(symLine)[1]);
       return true;
     }
     if (!doProcessLines)
       return true;
     
     if (line.indexOf("Energy:") >= 0) {
-      String[] tokens = getTokens(line.substring(line.indexOf("Energy:")));
+      String[] tokens = getTokensStr(line.substring(line.indexOf("Energy:")));
       energy = tokens[1];
       return true;
     }
@@ -114,7 +114,7 @@ public class AdfReader extends SlaterReader {
       return true;
     }
     if (line.indexOf(" ======  Eigenvectors (rows) in BAS representation") >= 0) {
-      readMolecularOrbitals(getTokens(symLine)[1]);
+      readMolecularOrbitals(getTokensStr(symLine)[1]);
       return true;
     }
     return true;
@@ -167,8 +167,8 @@ OR
       }
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementSymbol = symbol;
-      setAtomCoord(atom, parseFloat(tokens[pt0]), parseFloat(tokens[pt0 + 1]),
-          parseFloat(tokens[pt0 + 2]));
+      setAtomCoord(atom, parseFloatStr(tokens[pt0]), parseFloatStr(tokens[pt0 + 1]),
+          parseFloatStr(tokens[pt0 + 2]));
     }
   }
 
@@ -238,7 +238,7 @@ OR
     String syms = "";
     while (readLine() != null && line.length() > 1)
       syms += line;
-    String[] tokens = getTokens(syms);
+    String[] tokens = getTokensStr(syms);
     for (int i = 0; i < tokens.length; i++) {
       SymmetryData sd = new SymmetryData(index++, tokens[i]);
       htSymmetries.put(tokens[i], sd);
@@ -283,17 +283,17 @@ OR
      36    48    34    46    42    54    39    51    37    40
      49    52
      */
-      sd.nSFO = parseInt(readLine().substring(15)); 
-      sd.nBF = parseInt(readLine().substring(75));
+      sd.nSFO = parseIntStr(readLine().substring(15)); 
+      sd.nBF = parseIntStr(readLine().substring(75));
       String funcList = "";
       while (readLine() != null && line.length() > 1)
         funcList += line;
-      String[] tokens = getTokens(funcList);
+      String[] tokens = getTokensStr(funcList);
       if (tokens.length != sd.nBF)
         return;
       sd.basisFunctions = new int[tokens.length];
       for (int j = tokens.length; --j >= 0; ) {
-        int n = parseInt(tokens[j]);
+        int n = parseIntStr(tokens[j]);
         if (n > nBF)
           nBF = n;
         sd.basisFunctions[j] = n - 1;
@@ -329,26 +329,26 @@ OR
       String data = line;
       while (readLine().indexOf("---") < 0)
         data += line;
-      String[] tokens = getTokens(data);
+      String[] tokens = getTokensStr(data);
       int nAtoms = tokens.length - 1;
       int[] atomList = new int[nAtoms];
       for (int i = 1; i <= nAtoms; i++)
-        atomList[i - 1] = parseInt(tokens[i]) - 1;
+        atomList[i - 1] = parseIntStr(tokens[i]) - 1;
       readLine();
       while (line.length() >= 10) {
         data = line;
         while (readLine().length() > 35 && line.substring(0, 35).trim().length() == 0)
           data += line;
-        tokens = getTokens(data);
+        tokens = getTokensStr(data);
         boolean isCore = tokens[0].equals("Core");
         int pt = (isCore ? 1 : 0);
-        int x = parseInt(tokens[pt++]);
-        int y = parseInt(tokens[pt++]);
-        int z = parseInt(tokens[pt++]);
-        int r = parseInt(tokens[pt++]);
-        float zeta = parseFloat(tokens[pt++]);
+        int x = parseIntStr(tokens[pt++]);
+        int y = parseIntStr(tokens[pt++]);
+        int z = parseIntStr(tokens[pt++]);
+        int r = parseIntStr(tokens[pt++]);
+        float zeta = parseFloatStr(tokens[pt++]);
         for (int i = 0; i < nAtoms; i++) {
-          int ptBF = parseInt(tokens[pt++]) - 1;
+          int ptBF = parseIntStr(tokens[pt++]) - 1;
           slaterArray[ptBF] = new SlaterData(atomList[i], x, y, z, r, zeta, 1);
           slaterArray[ptBF].index = ptBF;
         }
@@ -376,7 +376,7 @@ OR
     sd.coefs = new float[sd.nSFO][nBF];
     while (n < sd.nBF) {
       readLine();
-      int nLine = getTokens(readLine()).length;
+      int nLine = getTokensStr(readLine()).length;
       readLine();
       sd.mos = ArrayUtil.createArrayOfHashtable(sd.nSFO);
       String[][] data = new String[sd.nSFO][];
@@ -384,7 +384,7 @@ OR
       for (int j = 1; j < nLine; j++) {
         int pt = sd.basisFunctions[n++];
         for (int i = 0; i < sd.nSFO; i++)
-          sd.coefs[i][pt] = parseFloat(data[i][j]);
+          sd.coefs[i][pt] = parseFloatStr(data[i][j]);
       }
     }
     for (int i = 0; i < sd.nSFO; i++) {
@@ -411,10 +411,10 @@ OR
       String[] tokens = getTokens();
       int len = tokens.length;
       sym = tokens[0];
-      int moPt = parseInt(tokens[1]);
+      int moPt = parseIntStr(tokens[1]);
       // could be spin here?
-      float occ = parseFloat(tokens[len - 3]);
-      float energy = parseFloat(tokens[len - 1]); // eV
+      float occ = parseFloatStr(tokens[len - 3]);
+      float energy = parseFloatStr(tokens[len - 1]); // eV
       sd = htSymmetries.get(sym);
       if (sd == null) {
         for (Map.Entry<String, SymmetryData> entry : htSymmetries.entrySet()) {

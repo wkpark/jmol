@@ -61,12 +61,12 @@ class CastepDensityReader extends VolumeFileReader {
     }
     for (int i = 0; i < 3; ++i) {
       Vector3f voxelVector = volumetricVectors[i];
-      voxelVector.set(parseFloat(line), parseFloat(), parseFloat());
+      voxelVector.set(parseFloatStr(line), parseFloat(), parseFloat());
       readLine();
     }
-    nSurfaces = parseInt(readLine());
+    nSurfaces = parseIntStr(readLine());
     readLine();
-    voxelCounts[0] = (nPointsX = parseInt(line)) + 1;
+    voxelCounts[0] = (nPointsX = parseIntStr(line)) + 1;
     voxelCounts[1] = (nPointsY = parseInt()) + 1;
     voxelCounts[2] = (nPointsZ = parseInt()) + 1;
     nFilePoints = (nPointsX++) * (nPointsY++) * (nPointsZ++);
@@ -100,7 +100,7 @@ class CastepDensityReader extends VolumeFileReader {
       nSkip = 0;
     }
     for (int i = 0; i < nFilePoints; i++) {
-      int x = parseInt(line) - 1;
+      int x = parseIntStr(line) - 1;
       int y = parseInt() - 1;
       int z = parseInt() - 1;
       if (nSkip > 0)

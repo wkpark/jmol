@@ -65,7 +65,7 @@ class ScriptManager {
     if (commandWatcherThread == null && useCommandWatcherThread)
       startCommandWatcher(true);
     if (commandWatcherThread != null && strScript.indexOf("/*SPLIT*/") >= 0) {
-      String[] scripts = TextFormat.split(strScript, "/*SPLIT*/");
+      String[] scripts = TextFormat.splitChars(strScript, "/*SPLIT*/");
       for (int i = 0; i < scripts.length; i++)
         addScript(returnType, scripts[i], statusList, isScriptFile, isQuiet);
       return "split into " + scripts.length + " sections for processing";
@@ -78,8 +78,8 @@ class ScriptManager {
     scriptItem.add(strScript);
     scriptItem.add(statusList);
     scriptItem.add(returnType);
-    scriptItem.add(isScriptFile ? Boolean.TRUE : Boolean.FALSE);
-    scriptItem.add(isQuiet ? Boolean.TRUE : Boolean.FALSE);
+    scriptItem.add(isScriptFile ? JmolConstants.TRUE : JmolConstants.FALSE);
+    scriptItem.add(isQuiet ? JmolConstants.TRUE : JmolConstants.FALSE);
     scriptItem.add(Integer.valueOf(useCommandThread ? -1 : 1));
     scriptQueue.add(scriptItem);
     //if (Logger.debugging)

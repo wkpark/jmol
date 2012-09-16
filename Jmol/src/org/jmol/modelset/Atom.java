@@ -121,10 +121,6 @@ final public class Atom extends Point3fi implements JmolNode {
     set(x, y, z);
   }
 
-  public void setAltLoc(String altLoc) {
-    alternateLocationID = altLoc.charAt(0);
-  }
-  
   public void setAltLoc(char altLoc) {
     alternateLocationID = altLoc;
   }

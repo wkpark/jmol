@@ -291,11 +291,11 @@ class PmeshReader extends PolygonFileReader {
   }
 
   private int getInt() throws Exception {
-    return (isBinary ? binarydoc.readInt() : parseInt(nextToken()));
+    return (isBinary ? binarydoc.readInt() : parseIntStr(nextToken()));
   }
 
   private float getFloat() throws Exception {
-    return (isBinary ? binarydoc.readFloat() : parseFloat(nextToken()));
+    return (isBinary ? binarydoc.readFloat() : parseFloatStr(nextToken()));
   }
 
 }

@@ -69,9 +69,9 @@ public class XmlOdysseyReader extends XmlReader {
         atom.atomName = atts.get("id");
       if (atts.containsKey("xyz")) {
         String xyz = atts.get("xyz");
-        String[] tokens = getTokens(xyz);
-        atom.set(parseFloat(tokens[0]), parseFloat(tokens[1]),
-            parseFloat(tokens[2]));
+        String[] tokens = getTokensStr(xyz);
+        atom.set(parseFloatStr(tokens[0]), parseFloatStr(tokens[1]),
+            parseFloatStr(tokens[2]));
       }
       if (atts.containsKey("element")) {
         atom.elementSymbol = atts.get("element");
@@ -90,10 +90,10 @@ public class XmlOdysseyReader extends XmlReader {
     }
 
     if ("boundary".equals(localName)) {
-      String[] boxDim = getTokens(atts.get("box"));
-      float x = parseFloat(boxDim[0]);
-      float y = parseFloat(boxDim[1]);
-      float z = parseFloat(boxDim[2]);
+      String[] boxDim = getTokensStr(atts.get("box"));
+      float x = parseFloatStr(boxDim[0]);
+      float y = parseFloatStr(boxDim[1]);
+      float z = parseFloatStr(boxDim[2]);
       parent.setUnitCellItem(0, x);
       parent.setUnitCellItem(1, y);
       parent.setUnitCellItem(2, z);
@@ -140,7 +140,7 @@ public class XmlOdysseyReader extends XmlReader {
       case 'a':
         return JmolAdapter.ORDER_AROMATIC;
       }
-      return parseInt(str);
+      return parseIntStr(str);
     }
     return 1;
   }

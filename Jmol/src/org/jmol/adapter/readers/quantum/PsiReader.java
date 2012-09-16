@@ -148,13 +148,13 @@ public class PsiReader extends MOReader {
         if (tokens[0].length() <= 2)
           atom.elementNumber = JmolAdapter.getElementNumber(tokens[0]);
       } else {
-        atom.elementNumber = (short) parseInt(tokens[0]);
+        atom.elementNumber = (short) parseIntStr(tokens[0]);
       }
       if (atom.elementNumber < 0)
         atom.elementNumber = 0; // dummy atoms have -1 -> 0
-      setAtomCoord(atom, parseFloat(tokens[1]) * ANGSTROMS_PER_BOHR, 
-          parseFloat(tokens[2]) * ANGSTROMS_PER_BOHR, 
-          parseFloat(tokens[3]) * ANGSTROMS_PER_BOHR);
+      setAtomCoord(atom, parseFloatStr(tokens[1]) * ANGSTROMS_PER_BOHR, 
+          parseFloatStr(tokens[2]) * ANGSTROMS_PER_BOHR, 
+          parseFloatStr(tokens[3]) * ANGSTROMS_PER_BOHR);
     }
   }
 
@@ -238,7 +238,7 @@ public class PsiReader extends MOReader {
       tokens = gdata.get(i);
       garray[i] = new float[tokens.length];
       for (int j = 0; j < tokens.length; j++)
-        garray[i][j] = parseFloat(tokens[j]);
+        garray[i][j] = parseFloatStr(tokens[j]);
     }
     moData.put("gaussians", garray);
     if (Logger.debugging) {
@@ -399,7 +399,7 @@ Orbital energies (a.u.):
       if (line.indexOf("                    ") == 0) {
         addMOData(nThisLine, data, mos);
         nThisLine = tokens.length;
-        tokens = getTokens(readLine());
+        tokens = getTokensStr(readLine());
         for (int i = 0; i < nThisLine; i++) {
           mos[i] = new Hashtable<String, Object>();
           data[i] = new ArrayList<String>();

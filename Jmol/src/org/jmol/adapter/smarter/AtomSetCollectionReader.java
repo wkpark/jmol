@@ -334,7 +334,7 @@ public abstract class AtomSetCollectionReader {
 
   public void setIsPDB() {
     atomSetCollection.setGlobalBoolean(AtomSetCollection.GLOBAL_ISPDB);
-    atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
+    atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", JmolAdapter.TRUE);
     if (htParams.get("pdbNoHydrogens") != null)
       atomSetCollection.setAtomSetCollectionAuxiliaryInfo("pdbNoHydrogens",
           htParams.get("pdbNoHydrogens"));
@@ -365,8 +365,8 @@ public abstract class AtomSetCollectionReader {
     if (fileType.indexOf("(") >= 0)
       fileType = fileType.substring(0, fileType.indexOf("("));
     for (int i = atomSetCollection.getAtomSetCount(); --i >= 0;) {
-      atomSetCollection.setAtomSetAuxiliaryInfo("fileName", filePath, i);
-      atomSetCollection.setAtomSetAuxiliaryInfo("fileType", fileType, i);
+      atomSetCollection.setAtomSetAuxiliaryInfoForSet("fileName", filePath, i);
+      atomSetCollection.setAtomSetAuxiliaryInfoForSet("fileType", fileType, i);
     }
     atomSetCollection.freeze(reverseModels);
     if (atomSetCollection.errorMessage != null)
@@ -582,7 +582,7 @@ public abstract class AtomSetCollectionReader {
     } else {
       atomSetCollection.setCollectionName(name);
     }
-    atomSetCollection.setAtomSetAuxiliaryInfo("name", name, Math.max(0, atomSetCollection.getCurrentAtomSetIndex()));
+    atomSetCollection.setAtomSetAuxiliaryInfoForSet("name", name, Math.max(0, atomSetCollection.getCurrentAtomSetIndex()));
   }
 
   protected int cloneLastAtomSet(int atomCount, Point3f[] pts) throws Exception {
@@ -772,36 +772,36 @@ public abstract class AtomSetCollectionReader {
     if (filter0 != null)
       filter0 = filter0.toUpperCase();
     filter = filter0;
-    doSetOrientation = !checkFilter("NOORIENT");
-    doCentralize = (!checkFilter("NOCENTER") && checkFilter("CENTER"));
-    addVibrations = !checkFilter("NOVIB");
-    readMolecularOrbitals = !checkFilter("NOMO");
-    useAltNames = checkFilter("ALTNAME");
-    reverseModels = checkFilter("REVERSEMODELS");
-    if (checkFilter("NAME=")) {
+    doSetOrientation = !checkFilterKey("NOORIENT");
+    doCentralize = (!checkFilterKey("NOCENTER") && checkFilterKey("CENTER"));
+    addVibrations = !checkFilterKey("NOVIB");
+    readMolecularOrbitals = !checkFilterKey("NOMO");
+    useAltNames = checkFilterKey("ALTNAME");
+    reverseModels = checkFilterKey("REVERSEMODELS");
+    if (checkFilterKey("NAME=")) {
       nameRequired = filter.substring(filter.indexOf("NAME=") + 5);
       if (nameRequired.startsWith("'"))
-        nameRequired = TextFormat.split(nameRequired, "'")[1]; 
+        nameRequired = TextFormat.splitChars(nameRequired, "'")[1]; 
       else if (nameRequired.startsWith("\""))
-        nameRequired = TextFormat.split(nameRequired, "\"")[1]; 
+        nameRequired = TextFormat.splitChars(nameRequired, "\"")[1]; 
       filter0 = filter = TextFormat.simpleReplace(filter, nameRequired,"");
       filter0 = filter = TextFormat.simpleReplace(filter, "NAME=","");
     }
     if (filter == null)
       return;
-    filterAtomType = checkFilter("*.") || checkFilter("!.");
-    filterElement = checkFilter("_");
-    filterHetero = checkFilter("HETATM"); // PDB
-    filterGroup3 = checkFilter("[");
-    filterChain = checkFilter(":");
-    filterAltLoc = checkFilter("%");
-    filterEveryNth = checkFilter("/=");
+    filterAtomType = checkFilterKey("*.") || checkFilterKey("!.");
+    filterElement = checkFilterKey("_");
+    filterHetero = checkFilterKey("HETATM"); // PDB
+    filterGroup3 = checkFilterKey("[");
+    filterChain = checkFilterKey(":");
+    filterAltLoc = checkFilterKey("%");
+    filterEveryNth = checkFilterKey("/=");
     if (filterEveryNth)
-      filterN = parseInt(filter.substring(filter.indexOf("/=") + 2));
+      filterN = parseIntStr(filter.substring(filter.indexOf("/=") + 2));
     if (filterN == Integer.MIN_VALUE)
       filterEveryNth = false;
     haveAtomFilter = filterAtomType || filterElement || filterGroup3 || filterChain
-        || filterAltLoc || filterHetero || filterEveryNth || checkFilter("/=");
+        || filterAltLoc || filterHetero || filterEveryNth || checkFilterKey("/=");
     if (bsFilter == null) {
       // bsFilter is usually null, but from MDTOP it gets set to indicate
       // which atoms were selected by the filter. This then
@@ -824,7 +824,7 @@ public abstract class AtomSetCollectionReader {
 
   private String filter1, filter2;
 
-  public boolean checkFilter(String key) {
+  public boolean checkFilterKey(String key) {
     return (filter != null && filter.indexOf(key) >= 0);
   }
 
@@ -868,10 +868,10 @@ public abstract class AtomSetCollectionReader {
 
   protected void set2D() {
     // MOL and JME
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("is2D", Boolean.TRUE);
-    if (!checkFilter("NOMIN"))
+    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("is2D", JmolAdapter.TRUE);
+    if (!checkFilterKey("NOMIN"))
       atomSetCollection.setAtomSetCollectionAuxiliaryInfo("doMinimize",
-          Boolean.TRUE);
+          JmolAdapter.TRUE);
   }
 
   public boolean doGetVibration(int vibrationNumber) {
@@ -1046,7 +1046,7 @@ public abstract class AtomSetCollectionReader {
   protected void fillDataBlock(String[][] data, int minLineLen) throws Exception {
     int nLines = data.length;
     for (int i = 0; i < nLines; i++) { 
-      data[i] = getTokens(discardLinesUntilNonBlank());
+      data[i] = getTokensStr(discardLinesUntilNonBlank());
       if (data[i].length < minLineLen)
         --i;
     }
@@ -1070,7 +1070,7 @@ public abstract class AtomSetCollectionReader {
         if (s == null)
           s = readLine();
         if (width == 0) {
-          tokens = getTokens(s);
+          tokens = getTokensStr(s);
         } else {
           tokens = new String[s.length() / width];
           for (int j = 0; j < tokens.length; j++)
@@ -1081,7 +1081,7 @@ public abstract class AtomSetCollectionReader {
       }
       if (tokens == null)
         break;
-      data[i] = parseFloat(tokens[pt++]);
+      data[i] = parseFloatStr(tokens[pt++]);
     }
     return data;
   }
@@ -1137,9 +1137,9 @@ public abstract class AtomSetCollectionReader {
         String x = values[dataPt];
         if (x.charAt(0) == ')') // AMPAC reader!
           x = x.substring(1);
-        float vx = parseFloat(x);
-        float vy = parseFloat(isWide ? values[++dataPt] : valuesY[dataPt]);
-        float vz = parseFloat(isWide ? values[++dataPt] : valuesZ[dataPt]);
+        float vx = parseFloatStr(x);
+        float vy = parseFloatStr(isWide ? values[++dataPt] : valuesY[dataPt]);
+        float vz = parseFloatStr(isWide ? values[++dataPt] : valuesZ[dataPt]);
         if (ignore[jj])
           continue;
         int iAtom = (atomIndexes == null ? atomPt : atomIndexes[atomPt]);
@@ -1337,86 +1337,86 @@ public abstract class AtomSetCollectionReader {
 
   // parser functions are static, so they need notstatic counterparts
 
-  protected void parseStringInfestedFloatArray(String s, float[] data) {
-    Parser.parseStringInfestedFloatArray(s, null, data);
-  }
-
   protected String[] getTokens() {
     return Parser.getTokens(line);
+  }
+
+  protected void parseStringInfestedFloatArray(String s, float[] data) {
+    Parser.parseStringInfestedFloatArray(s, null, data);
   }
 
   protected static float[] getTokensFloat(String s, float[] f, int n) {
     if (f == null)
       f = new float[n];
-    Parser.parseFloatArray(getTokens(s), f, n);
+    Parser.parseFloatArrayDataN(getTokensStr(s), f, n);
     return f;
   }
 
-  public static String[] getTokens(String s) {
+  public static String[] getTokensStr(String s) {
     return Parser.getTokens(s);
   }
 
-  protected static String[] getTokens(String s, int iStart) {
-    return Parser.getTokens(s, iStart);
+  protected static String[] getTokensAt(String s, int iStart) {
+    return Parser.getTokensAt(s, iStart);
   }
 
   protected float parseFloat() {
-    return Parser.parseFloat(line, next);
+    return Parser.parseFloatNext(line, next);
   }
 
-  public float parseFloat(String s) {
+  public float parseFloatStr(String s) {
     next[0] = 0;
-    return Parser.parseFloat(s, next);
+    return Parser.parseFloatNext(s, next);
   }
 
-  protected float parseFloat(String s, int iStart, int iEnd) {
+  protected float parseFloatRange(String s, int iStart, int iEnd) {
     next[0] = iStart;
-    return Parser.parseFloat(s, iEnd, next);
+    return Parser.parseFloatRange(s, iEnd, next);
   }
 
   protected int parseInt() {
-    return Parser.parseInt(line, next);
+    return Parser.parseIntNext(line, next);
   }
 
-  public int parseInt(String s) {
+  public int parseIntStr(String s) {
     next[0] = 0;
-    return Parser.parseInt(s, next);
+    return Parser.parseIntNext(s, next);
   }
 
-  protected int parseInt(String s, int iStart) {
+  protected int parseIntAt(String s, int iStart) {
     next[0] = iStart;
-    return Parser.parseInt(s, next);
+    return Parser.parseIntNext(s, next);
   }
 
-  protected int parseInt(String s, int iStart, int iEnd) {
+  protected int parseIntRange(String s, int iStart, int iEnd) {
     next[0] = iStart;
-    return Parser.parseInt(s, iEnd, next);
+    return Parser.parseIntRange(s, iEnd, next);
   }
 
   protected String parseToken() {
-    return Parser.parseToken(line, next);
+    return Parser.parseTokenNext(line, next);
   }
 
-  protected String parseToken(String s) {
+  protected String parseTokenStr(String s) {
     next[0] = 0;
-    return Parser.parseToken(s, next);
+    return Parser.parseTokenNext(s, next);
   }
 
   protected String parseTokenNext(String s) {
-    return Parser.parseToken(s, next);
+    return Parser.parseTokenNext(s, next);
   }
 
-  protected String parseToken(String s, int iStart, int iEnd) {
+  protected String parseTokenRange(String s, int iStart, int iEnd) {
     next[0] = iStart;
-    return Parser.parseToken(s, iEnd, next);
+    return Parser.parseTokenRange(s, iEnd, next);
   }
 
-  protected static String parseTrimmed(String s, int iStart) {
-    return Parser.parseTrimmed(s, iStart);
+  protected static String parseTrimmedAt(String s, int iStart) {
+    return Parser.parseTrimmedAt(s, iStart);
   }
 
-  protected static String parseTrimmed(String s, int iStart, int iEnd) {
-    return Parser.parseTrimmed(s, iStart, iEnd);
+  protected static String parseTrimmedRange(String s, int iStart, int iEnd) {
+    return Parser.parseTrimmedRange(s, iStart, iEnd);
   }
 
   /**
@@ -1492,7 +1492,7 @@ public abstract class AtomSetCollectionReader {
     Vector3f[] vectors = new Vector3f[3];   
     float[] f = new float[3];
     for (int i = 0; i < 3; i++) {
-      if (i > 0 || Float.isNaN(parseFloat(line))) {
+      if (i > 0 || Float.isNaN(parseFloatStr(line))) {
         readLine();
         if (i == 0 && line != null) {
           i = -1;
@@ -1514,7 +1514,7 @@ public abstract class AtomSetCollectionReader {
    * @param str
    */
   protected void setElementAndIsotope(Atom atom, String str) {
-    int isotope = parseInt(str);
+    int isotope = parseIntStr(str);
     if (isotope == Integer.MIN_VALUE) {
       atom.elementSymbol = str;
     } else {

@@ -1123,21 +1123,21 @@ public class Jmol implements WrappedApplet {
       if (allowJSEval == null) {
         try {
           if (((Boolean) jsoDocument.eval("!!Jmol._noEval")).booleanValue())
-            allowJSEval = Boolean.FALSE;
+            allowJSEval = JmolConstants.FALSE;
         } catch (Exception e) {
           try {
             if (((Boolean) jsoDocument.eval("!!_jmol.noEval")).booleanValue())
-              allowJSEval = Boolean.FALSE;
+              allowJSEval = JmolConstants.FALSE;
           } catch (Exception e2) {
-            allowJSEval = Boolean.FALSE;
+            allowJSEval = JmolConstants.FALSE;
             Logger.error("# no Jmol or _jmol object in evaluating " + strEval
                 + ":" + e.toString());
             return "";
           }
         }
-        allowJSEval = Boolean.TRUE;
+        allowJSEval = JmolConstants.TRUE;
       }
-      if (allowJSEval == Boolean.FALSE)
+      if (allowJSEval == JmolConstants.FALSE)
         return "NO EVAL ALLOWED";
       try {
         return "" + jsoDocument.eval(strEval);
@@ -1249,7 +1249,7 @@ public class Jmol implements WrappedApplet {
     private void showStatus(String message) {
       try {
         System.out.println(message);
-        appletWrapper.showStatus(TextFormat.simpleReplace(TextFormat.split(message, "\n")[0], "'", "\\'"));
+        appletWrapper.showStatus(TextFormat.simpleReplace(TextFormat.splitChars(message, "\n")[0], "'", "\\'"));
         sendJsTextStatus(message);
       } catch (Exception e) {
         //ignore if page is closing

@@ -36,6 +36,7 @@ import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.TextFormat;
+import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 
 //import java.util.ArrayList;
@@ -987,7 +988,7 @@ public class AminoPolymer extends AlphaPolymer {
       String key = nitrogen.index + " " + oxygen.index;
       if (htTemp.containsKey(key))
         return;
-      htTemp.put(key, Boolean.TRUE);
+      htTemp.put(key, JmolConstants.TRUE);
     }
     vHBonds.add(new HBond(nitrogen, oxygen, type, iEnergy / 1000f));
   }
@@ -1088,7 +1089,7 @@ public class AminoPolymer extends AlphaPolymer {
     }
     
     private void addLadder(Map<int[][], Boolean> htLadders) {
-      htLadders.put(ladder, (isAntiparallel ? Boolean.TRUE : Boolean.FALSE));
+      htLadders.put(ladder, (isAntiparallel ? JmolConstants.TRUE : JmolConstants.FALSE));
     }
 
     @Override

@@ -819,7 +819,7 @@ abstract public class AtomCollection {
         Atom atom = atoms[atomIndex];
         n++;
         int pt = tokens.length - 1;
-        float x = Parser.parseFloat(tokens[pt]);
+        float x = Parser.parseFloatStr(tokens[pt]);
         switch (type) {
         case TAINT_MAX:
           fData[atomIndex] = x;
@@ -879,9 +879,9 @@ abstract public class AtomCollection {
         String[] tokens = Parser.getTokens(Parser.parseTrimmed(data.substring(
             lines[i], lines[i + 1])));
         int atomIndex = Parser.parseInt(tokens[0]) - 1;
-        float x = Parser.parseFloat(tokens[3]);
-        float y = Parser.parseFloat(tokens[4]);
-        float z = Parser.parseFloat(tokens[5]);
+        float x = Parser.parseFloatStr(tokens[3]);
+        float y = Parser.parseFloatStr(tokens[4]);
+        float z = Parser.parseFloatStr(tokens[5]);
         if (isVibrationVectors) {
           setAtomVibrationVector(atomIndex, x, y, z);
         } else {

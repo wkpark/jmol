@@ -455,7 +455,7 @@ public void initShape() {
   }
 
   @Override
-  public boolean getProperty(String property, Object[] data) {
+  public boolean getPropertyData(String property, Object[] data) {
     if (property == "getCenter") {
       String id = (String) data[0];
       int index = ((Integer) data[1]).intValue();
@@ -469,7 +469,7 @@ public void initShape() {
       data[2] =  getSpinAxis(id, index);
       return (data[2] != null);
     }
-    return super.getProperty(property, data);
+    return super.getPropertyData(property, data);
   }
 
   @Override
@@ -1467,7 +1467,7 @@ public void initShape() {
       if (mesh.vertexCount == 0)
         continue;
       Map<String, Object> info = new Hashtable<String, Object>();
-      info.put("fixed", mesh.ptCenters == null ? Boolean.TRUE : Boolean.FALSE);
+      info.put("fixed", mesh.ptCenters == null ? JmolConstants.TRUE : JmolConstants.FALSE);
       info.put("ID", (mesh.thisID == null ? "<noid>" : mesh.thisID));
       info.put("drawType", mesh.drawType.name);
       if (mesh.diameter > 0)

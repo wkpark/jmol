@@ -1533,7 +1533,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         if (thisFunction != null)
           vFunctionStack.add(0, thisFunction);
         thisFunction = (tokCommand == Token.parallel ? new ParallelProcessor(ident, tokCommand) : new ScriptFunction(ident, tokCommand));
-        htUserFunctions.put(ident, Boolean.TRUE);
+        htUserFunctions.put(ident, JmolConstants.TRUE);
         flowContext.setFunction(thisFunction);
         break; // function f
       }
@@ -2078,23 +2078,10 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     return ch == ' ' || ch == '\t';
   }
 
-  @SuppressWarnings("unused")
-  private boolean eol(String ch) {
-    // for JavaScript
-    return eol2(ch.charAt(0));  
-  }
   private boolean eol(char ch) {
-    return eol2(ch);  
+    return (ch == '\r' || ch == '\n' || ch == ';' && nSemiSkip <= 0);  
   }
 
-  private boolean eol2(char ch) {
-    return eol3(ch, nSemiSkip);  
-  }
-  
-  static boolean eol3(char ch, int nSkip) {
-    return (ch == '\r' || ch == '\n' || ch == ';' && nSkip <= 0);  
-  }
-  
   private boolean lookingAtBraceSyntax() {
     // isSetBrace: {xxx}.yyy =  or {xxx}[xx].
     int ichT = ichToken;

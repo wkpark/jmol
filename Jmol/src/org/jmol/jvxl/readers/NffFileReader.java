@@ -84,7 +84,7 @@ class NffFileReader extends PolygonFileReader {
           vertexMap.clear();
           continue;
         case 'f':
-          color = ColorUtil.colorTriadToInt(parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3]));
+          color = ColorUtil.colorTriadToInt(parseFloatStr(tokens[1]), parseFloatStr(tokens[2]), parseFloatStr(tokens[3]));
           continue;
         case 'p':
           if (line.equals("pp 3")) {
@@ -111,7 +111,7 @@ class NffFileReader extends PolygonFileReader {
     Integer i = vertexMap.get(readLine());
     if (i == null) {
       String[] tokens = getTokens();
-      pt.set(parseFloat(tokens[0]), parseFloat(tokens[1]), parseFloat(tokens[2]));
+      pt.set(parseFloatStr(tokens[0]), parseFloatStr(tokens[1]), parseFloatStr(tokens[2]));
       if (!Float.isNaN(params.scale))
         pt.scale(params.scale);
       if (isAnisotropic)

@@ -90,7 +90,7 @@ public class ShapeManager {
     if (shapes == null || shapes[shapeID] == null)
       return false;
     viewer.setShapeErrorState(shapeID, "get " + propertyName);
-    boolean result = shapes[shapeID].getProperty(propertyName, data);
+    boolean result = shapes[shapeID].getPropertyData(propertyName, data);
     viewer.setShapeErrorState(-1, null);
     return result;
   }
@@ -175,7 +175,7 @@ public class ShapeManager {
     if (rd != null && rd.value != 0 || rd == null && size != 0)
       loadShape(shapeID);
     if (shapes[shapeID] != null) {
-      shapes[shapeID].setShapeSize(size, rd, bsSelected);
+      shapes[shapeID].setShapeSizeRD(size, rd, bsSelected);
     }
     viewer.setShapeErrorState(-1, null);
   }
@@ -359,7 +359,7 @@ public class ShapeManager {
     for (int i = 0; i < shapes.length; ++i)
       if (shapes[i] != null && shapes[i].isBioShape) {
         shapes[i].setModelSet(modelSet);
-        shapes[i].setShapeSize(0, null, bsAllAtoms);
+        shapes[i].setShapeSizeRD(0, null, bsAllAtoms);
         shapes[i].setShapeProperty("color",
             EnumPalette.NONE, bsAllAtoms);
       }

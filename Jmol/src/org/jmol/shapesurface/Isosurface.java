@@ -236,7 +236,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         if (thisMesh.vertexSource == null) {
           short colix = (!thisMesh.isColorSolid ? 0 : thisMesh.colix);
           setProperty("init", null, null);
-          setProperty("map", Boolean.FALSE, null);
+          setProperty("map", JmolConstants.FALSE, null);
           setProperty("property", new float[viewer.getAtomCount()], null);
           if (colix != 0) {
             thisMesh.colorCommand = "color isosurface "
@@ -484,7 +484,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if ("map" == propertyName) {
       if (sg != null)
         sg.getParams().isMapped = true;
-      setProperty("squareData", Boolean.FALSE, null);
+      setProperty("squareData", JmolConstants.FALSE, null);
       if (thisMesh == null || thisMesh.vertexCount == 0)
         return;
     }
@@ -599,7 +599,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       scriptAppendix = "";
       String script = (value instanceof String ? (String) value : null);
       int pt = (script == null ? -1 : script.indexOf("# ID="));
-      actualID = (pt >= 0 ? Parser.getNextQuotedString(script, pt) : null);
+      actualID = (pt >= 0 ? Parser.getQuotedStringAt(script, pt) : null);
       setPropertySuper("thisID", MeshCollection.PREVIOUS_MESH_ID, null);
       if (script != null && !(iHaveBitSets = getScriptBitSets(script, null)))
         sg.setParameter("select", bs);
@@ -676,7 +676,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
   @SuppressWarnings("unchecked")
   @Override
-  public boolean getProperty(String property, Object[] data) {
+  public boolean getPropertyData(String property, Object[] data) {
     if (property == "colorEncoder") {
       IsosurfaceMesh mesh = (IsosurfaceMesh) getMesh((String) data[0]);
       if (mesh == null || (data[1] = mesh.colorEncoder) == null)
@@ -734,7 +734,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       // continue to super
     }
 
-    return super.getProperty(property, data);
+    return super.getPropertyData(property, data);
   }
 
   @Override
@@ -976,10 +976,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   protected void getCapSlabInfo(String script) {
     int i = script.indexOf("# SLAB=");
     if (i >= 0)
-      sg.setParameter("slab", MeshSurface.getCapSlabObject(Parser.getNextQuotedString(script, i), false));
+      sg.setParameter("slab", MeshSurface.getCapSlabObject(Parser.getQuotedStringAt(script, i), false));
     i = script.indexOf("# CAP=");
     if (i >= 0)
-      sg.setParameter("slab", MeshSurface.getCapSlabObject(Parser.getNextQuotedString(script, i), true));
+      sg.setParameter("slab", MeshSurface.getCapSlabObject(Parser.getQuotedStringAt(script, i), true));
   }
 
   private boolean iHaveModelIndex;
@@ -1409,7 +1409,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     else
       thisMesh.scriptCommand = script + scriptAppendix;
     if (!explicitID && script != null && (pt = script.indexOf("# ID=")) >= 0)
-      thisMesh.thisID = Parser.getNextQuotedString(script, pt);
+      thisMesh.thisID = Parser.getQuotedStringAt(script, pt);
   }
 
   public void addRequiredFile(String fileName) {

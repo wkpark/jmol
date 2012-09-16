@@ -107,11 +107,11 @@ public class CsfReader extends MopacSlaterReader {
 
    */
   private void processLocalTransform() throws Exception {
-    String[] tokens = getTokens(readLine() + " " + readLine() + " "+ readLine() + " " + readLine());
+    String[] tokens = getTokensStr(readLine() + " " + readLine() + " "+ readLine() + " " + readLine());
     setTransform(
-        parseFloat(tokens[0]), parseFloat(tokens[1]), parseFloat(tokens[2]), 
-        parseFloat(tokens[4]), parseFloat(tokens[5]), parseFloat(tokens[6]),
-        parseFloat(tokens[8]), parseFloat(tokens[9]), parseFloat(tokens[10])
+        parseFloatStr(tokens[0]), parseFloatStr(tokens[1]), parseFloatStr(tokens[2]), 
+        parseFloatStr(tokens[4]), parseFloatStr(tokens[5]), parseFloatStr(tokens[6]),
+        parseFloatStr(tokens[8]), parseFloatStr(tokens[9]), parseFloatStr(tokens[10])
         );
   }
 
@@ -139,7 +139,7 @@ public class CsfReader extends MopacSlaterReader {
     while (line != null) {
       tokens = getTokens();
       if (line.indexOf("property ") == 0)
-        propertyItemCounts.put(tokens[1], Integer.valueOf((tokens[6].equals("STRING") ? 1 : parseInt(tokens[5]))));
+        propertyItemCounts.put(tokens[1], Integer.valueOf((tokens[6].equals("STRING") ? 1 : parseIntStr(tokens[5]))));
       else if (line.indexOf("ID") == 0)
         break;
       readLine();
@@ -167,14 +167,14 @@ public class CsfReader extends MopacSlaterReader {
     for (int i = 0; i < n; i++) {
       int ipt = ioffset + i;
       if (ipt == tokens.length) {
-        tokens = getTokens(readLine());
+        tokens = getTokensStr(readLine());
         ioffset -= ipt - i0;
         ipt = i0;
       }
       if (isInteger)
-        ((int[]) f)[i] = parseInt(tokens[ipt]);
+        ((int[]) f)[i] = parseIntStr(tokens[ipt]);
       else
-        ((float[]) f)[i] = parseFloat(tokens[ipt]);
+        ((float[]) f)[i] = parseFloatStr(tokens[ipt]);
     }
   }
 
@@ -233,7 +233,7 @@ public class CsfReader extends MopacSlaterReader {
         case objID2:
           thisBondID = field2+field;
           if (isVibration)
-            nVibrations = Math.max(nVibrations, parseInt(field));
+            nVibrations = Math.max(nVibrations, parseIntStr(field));
           break;
         default:
         }
@@ -308,13 +308,13 @@ public class CsfReader extends MopacSlaterReader {
           strAtomicNumbers += field + " "; // for MO slater basis calc
           break;
         case chrg:
-          atom.formalCharge = parseInt(field);
+          atom.formalCharge = parseIntStr(field);
           break;
         case pchrg:
-          atom.partialCharge = parseFloat(field);
+          atom.partialCharge = parseFloatStr(field);
           break;
         case xyz_coordinates:
-          setAtomCoord(atom, parseFloat(field), parseFloat(tokens[i + 1]), parseFloat(tokens[i + 2]));
+          setAtomCoord(atom, parseFloatStr(field), parseFloatStr(tokens[i + 1]), parseFloatStr(tokens[i + 2]));
           break;
         }
       }
@@ -409,7 +409,7 @@ public class CsfReader extends MopacSlaterReader {
           String field = tokens[i];
           switch (fieldTypes[i]) {
           case ID:
-            thisvib = parseInt(field) - 1;
+            thisvib = parseIntStr(field) - 1;
             break;
           case normalMode:
             fillCsfArray("normalMode", tokens, i, vibData[thisvib]);
@@ -527,13 +527,13 @@ public class CsfReader extends MopacSlaterReader {
         for (int i = 0; i < fieldCount; ++i) {
           switch (fieldTypes[i]) {
           case ID:
-            ipt = parseInt(tokens[i]) - 1;
+            ipt = parseIntStr(tokens[i]) - 1;
             break;
           case eig_val:
-            energy[ipt] = parseFloat(tokens[i]);
+            energy[ipt] = parseFloatStr(tokens[i]);
             break;
           case mo_occ:
-            occupancy[ipt] = parseFloat(tokens[i]);
+            occupancy[ipt] = parseFloatStr(tokens[i]);
             break;
           case eig_vec:
             fillCsfArray("eig_vec", tokens, i, list[ipt]);
@@ -581,10 +581,10 @@ public class CsfReader extends MopacSlaterReader {
   }
 
   private void processBasisObject(String sto_gto) throws Exception {
-    String[] atomNos = getTokens(strAtomicNumbers);
+    String[] atomNos = getTokensStr(strAtomicNumbers);
     atomicNumbers = new int[atomNos.length];
     for (int i = 0; i < atomicNumbers.length; i++)
-      atomicNumbers[i] = parseInt(atomNos[i]);
+      atomicNumbers[i] = parseIntStr(atomNos[i]);
 
     /*
      ID dflag bfxn_ang contr_len Nquant sto_exp  shell
@@ -615,7 +615,7 @@ public class CsfReader extends MopacSlaterReader {
           String field = tokens[i];
           switch (fieldTypes[i]) {
           case ID:
-            ipt = parseInt(field) - 1;
+            ipt = parseIntStr(field) - 1;
             break;
           case bfxn_ang:
             types[ipt] = field;
@@ -626,7 +626,7 @@ public class CsfReader extends MopacSlaterReader {
             fillCsfArray(sto_gto + "_exp", tokens, i, zetas[ipt]);
             break;
           case shell:
-            shells[ipt] = parseInt(field);
+            shells[ipt] = parseIntStr(field);
             break;
           case contractions:
             if (contractionCoefs == null)

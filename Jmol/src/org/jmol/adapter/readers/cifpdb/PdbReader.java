@@ -156,14 +156,14 @@ public class PdbReader extends AtomSetCollectionReader {
  protected void initializeReader() throws Exception {
    setIsPDB();
    pdbHeader = (getHeader ? new StringBuffer() : null);
-   applySymmetry = !checkFilter("NOSYMMETRY");
-   getTlsGroups = checkFilter("TLS");
+   applySymmetry = !checkFilterKey("NOSYMMETRY");
+   getTlsGroups = checkFilterKey("TLS");
    if (htParams.containsKey("vTlsModels")) {
      // from   load files "tls.out" "xxxx.pdb"
      vTlsModels = (List<Map<String, Object>>) htParams.remove("vTlsModels");
    }
-   if (checkFilter("CONF ")) {
-     configurationPtr = parseInt(filter, filter.indexOf("CONF ") + 5);
+   if (checkFilterKey("CONF ")) {
+     configurationPtr = parseIntAt(filter, filter.indexOf("CONF ") + 5);
      sbIgnored = new StringBuffer();
      sbSelected = new StringBuffer();
    }
@@ -178,7 +178,7 @@ public class PdbReader extends AtomSetCollectionReader {
         .indexOf(line.substring(0, 6))) >> 3;
     boolean isAtom = (ptOption == 0 || ptOption == 1);
     boolean isModel = (ptOption == 2);
-    int serial = (isAtom ? parseInt(line, 6, 11) : 0);
+    int serial = (isAtom ? parseIntRange(line, 6, 11) : 0);
     boolean isNewModel = ((isTrajectory || isSequential) && !isMultiModel
         && isAtom && serial == 1);
     if (getHeader) {
@@ -539,7 +539,7 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
                 + nBiomt);
           info = new Hashtable<String, Object>();
           biomts = new ArrayList<Matrix4f>();
-          iMolecule = parseInt(line.substring(line.indexOf(":") + 1));
+          iMolecule = parseIntStr(line.substring(line.indexOf(":") + 1));
           title = line.trim();
           info.put("molecule", Integer.valueOf(iMolecule));
           info.put("title", title);
@@ -561,7 +561,7 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
           needLine = false;
           while (readLine() != null && line.indexOf("BIOMT") < 0)
             chainlist += ":" + line.substring(11).trim().replace(' ', ':');
-          if (checkFilter("BIOMOLECULE " + iMolecule + ";")) {
+          if (checkFilterKey("BIOMOLECULE " + iMolecule + ";")) {
             setFilter(filter.replace(':', '_') + chainlist);
             Logger.info("filter set to \"" + filter + "\"");
             this.vBiomts = biomts;
@@ -579,10 +579,10 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
           float[] mat = new float[16];
           for (int i = 0; i < 12;) {
             String[] tokens = getTokens();
-            mat[i++] = parseFloat(tokens[4]);
-            mat[i++] = parseFloat(tokens[5]);
-            mat[i++] = parseFloat(tokens[6]);
-            mat[i++] = parseFloat(tokens[7]);
+            mat[i++] = parseFloatStr(tokens[4]);
+            mat[i++] = parseFloatStr(tokens[5]);
+            mat[i++] = parseFloatStr(tokens[6]);
+            mat[i++] = parseFloatStr(tokens[7]);
             if (i == 4 || i == 8)
               readLine();
           }
@@ -659,16 +659,16 @@ REMARK 290 REMARK: NULL
     char ch = line.charAt(16);
     if (ch != ' ')
       atom.alternateLocationID = ch;
-    atom.group3 = parseToken(line, 17, 20);
+    atom.group3 = parseTokenRange(line, 17, 20);
     ch = line.charAt(21);
     if (chainAtomCounts != null)
       chainAtomCounts[ch]++;
     atom.chainID = ch;
-    atom.sequenceNumber = parseInt(line, 22, 26);
+    atom.sequenceNumber = parseIntRange(line, 22, 26);
     atom.insertionCode = JmolAdapter.canonizeInsertionCode(line.charAt(26));
     atom.isHetero = line.startsWith("HETATM");
     atom.elementSymbol = deduceElementSymbol(atom.isHetero);
-    if (!filterAtom(atom, fileAtomIndex++))
+    if (!filterPDBAtom(atom, fileAtomIndex++))
       return;
     atom.atomSerial = serial;
     if (serial > maxSerial)
@@ -690,8 +690,8 @@ REMARK 290 REMARK: NULL
     }
 
     if (gromacsWideFormat) {
-      setAtomCoord(atom, parseFloat(line, 30, 40), parseFloat(line, 40, 50),
-          parseFloat(line, 50, 60));
+      setAtomCoord(atom, parseFloatRange(line, 30, 40), parseFloatRange(line, 40, 50),
+          parseFloatRange(line, 50, 60));
     } else {
       //calculate the charge from cols 79 & 80 (1-based): 2+, 3-, etc
       int charge = 0;
@@ -711,8 +711,8 @@ REMARK 290 REMARK: NULL
         }
       }
       atom.formalCharge = charge;
-      setAtomCoord(atom, parseFloat(line, 30, 38), parseFloat(line, 38, 46),
-          parseFloat(line, 46, 54));
+      setAtomCoord(atom, parseFloatRange(line, 30, 38), parseFloatRange(line, 38, 46),
+          parseFloatRange(line, 46, 54));
     }
     setAdditionalAtomParameters(atom);
     if (haveMappedSerials)
@@ -720,7 +720,7 @@ REMARK 290 REMARK: NULL
     else
       atomSetCollection.addAtom(atom);
     if (atomCount++ == 0)
-      atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
+      atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", JmolAdapter.TRUE);
     // note that values are +1 in this serial map
     if (atom.isHetero) {
       if (htHetero != null) {
@@ -732,9 +732,8 @@ REMARK 290 REMARK: NULL
   
   
 
-  @Override
-  protected boolean filterAtom(Atom atom, int iAtom) {
-    if (!super.filterAtom(atom, iAtom))
+  protected boolean filterPDBAtom(Atom atom, int iAtom) {
+    if (!filterAtom(atom, iAtom))
       return false;
     if (configurationPtr > 0) {
       if (atom.sequenceNumber != lastGroup || atom.insertionCode != lastInsertion) {
@@ -774,13 +773,13 @@ REMARK 290 REMARK: NULL
   protected void setAdditionalAtomParameters(Atom atom) {
     if (isPQR) {
       if (gromacsWideFormat) {
-        atom.partialCharge = parseFloat(line.substring(60, 68));
-        atom.radius = fixRadius(parseFloat(line.substring(68, 76)));
+        atom.partialCharge = parseFloatStr(line.substring(60, 68));
+        atom.radius = fixRadius(parseFloatStr(line.substring(68, 76)));
       } else {
         String[] tokens = getTokens();
         int pt = tokens.length - 2 - (line.length() > 75 ? 1 : 0);
-        atom.partialCharge = parseFloat(tokens[pt++]);
-        atom.radius = fixRadius(parseFloat(tokens[pt]));
+        atom.partialCharge = parseFloatStr(tokens[pt++]);
+        atom.radius = fixRadius(parseFloatStr(tokens[pt]));
       }
       return;
     }
@@ -788,20 +787,20 @@ REMARK 290 REMARK: NULL
     float floatOccupancy;
     
     if (gromacsWideFormat) {
-      floatOccupancy = parseFloat(line.substring(60, 68));
-      atom.bfactor = fixRadius(parseFloat(line.substring(68, 76)));
+      floatOccupancy = parseFloatStr(line.substring(60, 68));
+      atom.bfactor = fixRadius(parseFloatStr(line.substring(68, 76)));
     } else {
       /****************************************************************
        * read the occupancy from cols 55-60 (1-based) 
        * --should be in the range 0.00 - 1.00
        ****************************************************************/
     
-      floatOccupancy = parseFloat(line, 54, 60);
+      floatOccupancy = parseFloatRange(line, 54, 60);
 
       /****************************************************************
        * read the bfactor from cols 61-66 (1-based)
        ****************************************************************/
-        atom.bfactor = parseFloat(line, 60, 66);
+        atom.bfactor = parseFloatRange(line, 60, 66);
     }
     
     atom.occupancy = (Float.isNaN(floatOccupancy) ? 100
@@ -883,13 +882,13 @@ REMARK 290 REMARK: NULL
       sb.setLength(0);
     }
     int sourceSerial = -1;
-    sourceSerial = parseInt(line, 6, 11);
+    sourceSerial = parseIntRange(line, 6, 11);
     if (sourceSerial < 0)
       return;
     for (int i = 0; i < 9; i += (i == 5 ? 2 : 1)) {
       int offset = i * 5 + 11;
       int offsetEnd = offset + 5;
-      int targetSerial = (offsetEnd <= lineLength ? parseInt(line, offset,
+      int targetSerial = (offsetEnd <= lineLength ? parseIntRange(line, offset,
           offsetEnd) : -1);
       if (targetSerial < 0)
         continue;
@@ -978,14 +977,14 @@ Polyproline 10
       endChainIDIndex = 31;
       endIndex = 33;
       if (line.length() >= 40)
-      substructureType = Structure.getHelixType(parseInt(line.substring(38, 40)));
+      substructureType = Structure.getHelixType(parseIntStr(line.substring(38, 40)));
     } else if (line.startsWith("SHEET ")) {
       structureType = EnumStructure.SHEET;
       startChainIDIndex = 21;
       startIndex = 22;
       endChainIDIndex = 32;
       endIndex = 33;
-      strandCount = parseInt(line.substring(14, 16));
+      strandCount = parseIntStr(line.substring(14, 16));
     } else if (line.startsWith("TURN  ")) {
       structureType = EnumStructure.TURN;
       startChainIDIndex = 19;
@@ -999,12 +998,12 @@ Polyproline 10
       return;
 
     String structureID = line.substring(11, 15).trim();
-    int serialID = parseInt(line.substring(7, 10));
+    int serialID = parseIntStr(line.substring(7, 10));
     char startChainID = line.charAt(startChainIDIndex);
-    int startSequenceNumber = parseInt(line, startIndex, startIndex + 4);
+    int startSequenceNumber = parseIntRange(line, startIndex, startIndex + 4);
     char startInsertionCode = line.charAt(startIndex + 4);
     char endChainID = line.charAt(endChainIDIndex);
-    int endSequenceNumber = parseInt(line, endIndex, endIndex + 4);
+    int endSequenceNumber = parseIntRange(line, endIndex, endIndex + 4);
     // some files are chopped to remove trailing whitespace
     char endInsertionCode = ' ';
     if (lineLength > endIndex + 4)
@@ -1026,7 +1025,7 @@ Polyproline 10
     int endModelColumn = 14;
     if (endModelColumn > lineLength)
       endModelColumn = lineLength;
-    int iModel = parseInt(line, startModelColumn, endModelColumn);
+    int iModel = parseIntRange(line, startModelColumn, endModelColumn);
     return (iModel == Integer.MIN_VALUE ? 0 : iModel);
   }
   
@@ -1046,7 +1045,7 @@ Polyproline 10
     haveMappedSerials = false;
     sbConect = null;
     atomSetCollection.newAtomSet();
-    atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
+    atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", JmolAdapter.TRUE);
     atomSetCollection.setAtomSetNumber(modelNumber);
   }
 
@@ -1057,7 +1056,7 @@ Polyproline 10
     // be no center of symmetry, no rotation-inversions, 
     // no atom-centered rotation axes, and no mirror or glide planes. 
     atomSetCollection.setCheckSpecial(!isPDB);
-    atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", isPDB ? Boolean.TRUE : Boolean.FALSE);
+    atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", isPDB ? JmolAdapter.TRUE : JmolAdapter.FALSE);
     nUNK = nRes = 0;
     currentGroup3 = null;
   }
@@ -1068,11 +1067,11 @@ Polyproline 10
       a = Float.NaN; // 1 for a means no unit cell
     setUnitCell(a, getFloat(15, 9), getFloat(24, 9), getFloat(33,
         7), getFloat(40, 7), getFloat(47, 7));
-    setSpaceGroupName(parseTrimmed(line, 55, 66));
+    setSpaceGroupName(parseTrimmedRange(line, 55, 66));
   }
 
   private float getFloat(int ich, int cch) throws Exception {
-    return parseFloat(line, ich, ich+cch);
+    return parseFloatRange(line, ich, ich+cch);
   }
 
   private void scale(int n) throws Exception {
@@ -1089,15 +1088,15 @@ Polyproline 10
   }
 
   private void formul() {
-    String groupName = parseToken(line, 12, 15);
-    String formula = parseTrimmed(line, 19, 70);
+    String groupName = parseTokenRange(line, 12, 15);
+    String formula = parseTrimmedRange(line, 19, 70);
     int ichLeftParen = formula.indexOf('(');
     if (ichLeftParen >= 0) {
       int ichRightParen = formula.indexOf(')');
       if (ichRightParen < 0 || ichLeftParen >= ichRightParen ||
           ichLeftParen + 1 == ichRightParen ) // pick up () case in 1SOM.pdb
         return; // invalid formula;
-      formula = parseTrimmed(formula, ichLeftParen + 1, ichRightParen);
+      formula = parseTrimmedRange(formula, ichLeftParen + 1, ichRightParen);
     }
     Map<String, Boolean> htElementsInGroup = htFormul.get(groupName);
     if (htElementsInGroup == null)
@@ -1111,9 +1110,9 @@ Polyproline 10
       char chFirst = elementWithCount.charAt(0);
       char chSecond = elementWithCount.charAt(1);
       if (Atom.isValidElementSymbolNoCaseSecondChar(chFirst, chSecond))
-        htElementsInGroup.put("" + chFirst + chSecond, Boolean.TRUE);
+        htElementsInGroup.put("" + chFirst + chSecond, JmolAdapter.TRUE);
       else if (Atom.isValidElementSymbol(chFirst))
-        htElementsInGroup.put("" + chFirst, Boolean.TRUE);
+        htElementsInGroup.put("" + chFirst, JmolAdapter.TRUE);
     }
   }
   
@@ -1124,11 +1123,11 @@ Polyproline 10
     if (htHetero == null) {
       htHetero = new Hashtable<String, String>();
     }
-    String groupName = parseToken(line, 7, 10);
+    String groupName = parseTokenRange(line, 7, 10);
     if (htHetero.containsKey(groupName)) {
       return;
     }
-    String hetName = parseTrimmed(line, 30, 70);
+    String hetName = parseTrimmedRange(line, 30, 70);
     htHetero.put(groupName, hetName);
   }
   
@@ -1136,8 +1135,8 @@ Polyproline 10
     if (htHetero == null) {
       htHetero = new Hashtable<String, String>();
     }
-    String groupName = parseToken(line, 11, 14);
-    String hetName = parseTrimmed(line, 15, 70);
+    String groupName = parseTokenRange(line, 11, 14);
+    String hetName = parseTrimmedRange(line, 15, 70);
     if (groupName == null) {
       Logger.error("ERROR: HETNAM record does not contain a group name: " + line);
       return;
@@ -1203,7 +1202,7 @@ Details
   private void anisou() {
     float[] data = new float[8];
     data[6] = 1; //U not B
-    int serial = parseInt(line, 6, 11);
+    int serial = parseIntRange(line, 6, 11);
     int index;
     if (line.substring(6, 26).equals(lastAtomData)) {
       index = lastAtomIndex;
@@ -1220,7 +1219,7 @@ Details
     }
     Atom atom = atomSetCollection.getAtom(index);
     for (int i = 28, pt = 0; i < 70; i += 7, pt++)
-      data[pt] = parseFloat(line, i, i + 7);
+      data[pt] = parseFloatRange(line, i, i + 7);
     for (int i = 0; i < 6; i++) {
       if (Float.isNaN(data[i])) {
           Logger.error("Bad ANISOU record: " + line);
@@ -1268,8 +1267,8 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
       htSites = new Hashtable<String, Map<String, Object>>();
     }
     //int seqNum = parseInt(line, 7, 10);
-    int nResidues = parseInt(line, 15, 17);
-    String siteID = parseTrimmed(line, 11, 14);
+    int nResidues = parseIntRange(line, 15, 17);
+    String siteID = parseTrimmedRange(line, 11, 14);
     Map<String, Object> htSite = htSites.get(siteID);
     if (htSite == null) {
       htSite = new Hashtable<String, Object>();
@@ -1281,12 +1280,12 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     String groups = (String)htSite.get("groups");
     for (int i = 0; i < 4; i++) {
       int pt = 18 + i * 11;
-      String resName = parseTrimmed(line, pt, pt + 3);
+      String resName = parseTrimmedRange(line, pt, pt + 3);
       if (resName.length() == 0)
         break;
-      String chainID = parseTrimmed(line, pt + 4, pt + 5);
-      String seq = parseTrimmed(line, pt + 5, pt + 9);
-      String iCode = parseTrimmed(line, pt + 9, pt + 10);
+      String chainID = parseTrimmedRange(line, pt + 4, pt + 5);
+      String seq = parseTrimmedRange(line, pt + 5, pt + 9);
+      String iCode = parseTrimmedRange(line, pt + 9, pt + 10);
       groups += (groups.length() == 0 ? "" : ",") + "[" + resName + "]" + seq;
       if (iCode.length() > 0)
         groups += "^" + iCode;
@@ -1341,7 +1340,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     String remark = line.substring(0, 11);
     while (readLine() != null && line.startsWith(remark)) {
       try {
-        String[] tokens = getTokens(line.substring(10).replace(':', ' '));
+        String[] tokens = getTokensStr(line.substring(10).replace(':', ' '));
         if (tokens.length < 2)
           continue;
         Logger.info(line);
@@ -1350,13 +1349,13 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
           ranges = new ArrayList<Map<String, Object>>();
           tlsGroup.put("ranges", ranges);
           tlsGroups.add(tlsGroup);
-          tlsGroupID = parseInt(tokens[tokens.length - 1]);
+          tlsGroupID = parseIntStr(tokens[tokens.length - 1]);
           tlsGroup.put("id", Integer.valueOf(tlsGroupID));
         } else if (tokens[0].equalsIgnoreCase("NUMBER")) {
           if (tokens[2].equalsIgnoreCase("COMPONENTS")) {
             // ignore
           } else {
-            nGroups = parseInt(tokens[tokens.length - 1]);
+            nGroups = parseIntStr(tokens[tokens.length - 1]);
             if (nGroups < 1)
               break;
             if (vTlsModels == null)
@@ -1377,15 +1376,15 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
           if (tokens.length == 6) {
             chain1 = tokens[2].charAt(0);
             chain2 = tokens[4].charAt(0);
-            res1 = parseInt(tokens[3]);
-            res2 = parseInt(tokens[5]);
+            res1 = parseIntStr(tokens[3]);
+            res2 = parseIntStr(tokens[5]);
           } else {
             int toC = components.indexOf(" C ");
             int fromC = components.indexOf(" C ", toC + 4);
             chain1 = line.charAt(fromC);
             chain2 = line.charAt(toC);
-            res1 = parseInt(line.substring(fromC + 1, toC));
-            res2 = parseInt(line.substring(toC + 1));
+            res1 = parseIntStr(line.substring(fromC + 1, toC));
+            res2 = parseIntStr(line.substring(toC + 1));
           }
           if (chain1 == chain2) {
             range.put("chains", "" + chain1 + chain2);
@@ -1410,11 +1409,11 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
               chain = tokens[++i].charAt(0);
               continue;
             }
-            int resno = parseInt(tokens[i]);
+            int resno = parseIntStr(tokens[i]);
             if (resno == Integer.MIN_VALUE)
               continue;
             range = new Hashtable<String, Object>();
-            range.put("residues", new int[] { resno, parseInt(tokens[++i]) });
+            range.put("residues", new int[] { resno, parseIntStr(tokens[++i]) });
             if (chain != '\0')
               range.put("chains", "" + chain + chain);
             ranges.add(range);
@@ -1430,12 +1429,12 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
           Point3f origin = new Point3f();
           tlsGroup.put("origin", origin);
           if (tokens.length == 8) {
-            origin.set(parseFloat(tokens[5]), parseFloat(tokens[6]),
-                parseFloat(tokens[7]));
+            origin.set(parseFloatStr(tokens[5]), parseFloatStr(tokens[6]),
+                parseFloatStr(tokens[7]));
           } else {
             int n = line.length();
-            origin.set(parseFloat(line.substring(n - 27, n - 18)),
-                parseFloat(line.substring(n - 18, n - 9)), parseFloat(line
+            origin.set(parseFloatStr(line.substring(n - 27, n - 18)),
+                parseFloatStr(line.substring(n - 18, n - 9)), parseFloatStr(line
                     .substring(n - 9, n)));
           }
           if (Float.isNaN(origin.x) || Float.isNaN(origin.y) || Float.isNaN(origin.z)) {
@@ -1454,13 +1453,13 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
               + readLine().substring(10) + readLine().substring(10)).replace(
                   tensorType, ' ').replace(':', ' ');
           //System.out.println("Tensor data = " + s);
-          tokens = getTokens(s);
+          tokens = getTokensStr(s);
           float[][] tensor = new float[3][3];
           tlsGroup.put("t" + tensorType, tensor);
           for (int i = 0; i < tokens.length; i++) {
             int ti = tokens[i].charAt(0) - '1';
             int tj = tokens[i].charAt(1) - '1';
-            tensor[ti][tj] = parseFloat(tokens[++i]);
+            tensor[ti][tj] = parseFloatStr(tokens[++i]);
             if (ti < tj)
               tensor[tj][ti] = tensor[ti][tj];
           }
@@ -1559,7 +1558,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
       sdata.append(data[i]).append('\n');
     atomSetCollection.setAtomSetAtomProperty("tlsGroup", sdata.toString(),
         iModel);
-    atomSetCollection.setAtomSetAuxiliaryInfo("TLS", tlsGroupInfo, iModel);
+    atomSetCollection.setAtomSetAuxiliaryInfoForSet("TLS", tlsGroupInfo, iModel);
     atomSetCollection.setEllipsoids();
   }
 

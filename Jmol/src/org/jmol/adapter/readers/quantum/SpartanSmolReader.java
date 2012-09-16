@@ -27,6 +27,7 @@ package org.jmol.adapter.readers.quantum;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
 
 /*
@@ -45,8 +46,8 @@ public class SpartanSmolReader extends SpartanInputReader {
   protected void initializeReader() throws Exception {
     modelName = "Spartan file";
     isCompoundDocument = (readLine().indexOf("Compound Document File Directory") >= 0);
-    inputOnly = checkFilter("INPUT");
-    espCharges = !checkFilter("MULLIKEN"); // changed default in Jmol 12.1.41, 12.0.38
+    inputOnly = checkFilterKey("INPUT");
+    espCharges = !checkFilterKey("MULLIKEN"); // changed default in Jmol 12.1.41, 12.0.38
     
   }
 
@@ -70,7 +71,7 @@ public class SpartanSmolReader extends SpartanInputReader {
       if (modelAtomCount == 0)
         atomSetCollection.newAtomSet();
       moData = new Hashtable<String, Object>();
-      moData.put("isNormalized", Boolean.TRUE);
+      moData.put("isNormalized", JmolAdapter.TRUE);
       if (modelNo == Integer.MIN_VALUE) {
         modelNo = modelNumber;
         title = "Model " + modelNo;
@@ -80,7 +81,7 @@ public class SpartanSmolReader extends SpartanInputReader {
       }
       Logger.info(title);
       atomSetCollection.setAtomSetName(title);
-      atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.FALSE);
+      atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", JmolAdapter.FALSE);
       atomSetCollection.setAtomSetNumber(modelNo);
       if (isCompoundDocument)
         readTransform();
@@ -146,7 +147,7 @@ public class SpartanSmolReader extends SpartanInputReader {
     float[] mat;
     String binaryCodes = readLine();
     // last 16x4 bytes constitutes the 4x4 matrix, using doubles
-      String[] tokens = getTokens(binaryCodes.trim());
+      String[] tokens = getTokensStr(binaryCodes.trim());
       if (tokens.length < 16)
         return;
       byte[] bytes = new byte[tokens.length];
@@ -188,7 +189,7 @@ public class SpartanSmolReader extends SpartanInputReader {
     while (readLine() != null && !line.startsWith("END ")) {
       header.append(line).append("\n");
       if ((pt = line.indexOf(")")) > 0)
-        titles.put("Title"+parseInt(line.substring(0, pt))
+        titles.put("Title"+parseIntStr(line.substring(0, pt))
             , (line.substring(pt + 1).trim()));
     }
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("fileHeader", header.toString());
@@ -229,7 +230,7 @@ public class SpartanSmolReader extends SpartanInputReader {
   private int getModelNumber() {
     try {
       int pt = line.indexOf("JMOL_MODEL ") + 11;
-      return parseInt(line, pt);
+      return parseIntAt(line, pt);
     } catch (NumberFormatException e) {
       return 0;
     }

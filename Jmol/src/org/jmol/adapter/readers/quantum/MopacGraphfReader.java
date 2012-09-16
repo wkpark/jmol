@@ -63,17 +63,17 @@ public class MopacGraphfReader extends MopacSlaterReader {
     
   private void readAtoms() throws Exception {
     atomSetCollection.newAtomSet();
-    atomCount = parseInt(line);
+    atomCount = parseIntStr(line);
     atomicNumbers = new int[atomCount];
     for (int i = 0; i < atomCount; i++) {
       readLine();
-      atomicNumbers[i] = parseInt(line.substring(0, 4));
+      atomicNumbers[i] = parseIntStr(line.substring(0, 4));
       Atom atom = atomSetCollection.addNewAtom();
-      setAtomCoord(atom, parseFloat(line.substring(4, 17)), 
-          parseFloat(line.substring(17, 29)), 
-          parseFloat(line.substring(29, 41)));
+      setAtomCoord(atom, parseFloatStr(line.substring(4, 17)), 
+          parseFloatStr(line.substring(17, 29)), 
+          parseFloatStr(line.substring(29, 41)));
       if (line.length() > 41)
-        atom.partialCharge = parseFloat(line.substring(41));
+        atom.partialCharge = parseFloatStr(line.substring(41));
       atom.elementSymbol = AtomSetCollectionReader.getElementSymbol(atomicNumbers[i]);
       //System.out.println(atom.elementSymbol + " " + atom.x + " " + atom.y + " " + atom.z);
     }
@@ -227,8 +227,8 @@ public class MopacGraphfReader extends MopacSlaterReader {
       if (orbitalInfo != null) {
         line = orbitalInfo.get(iMo);
         String[] tokens = getTokens();
-        mo.put("energy", new Float(parseFloat(tokens[3])));
-        mo.put("occupancy", new Float(parseFloat(tokens[1])));
+        mo.put("energy", new Float(parseFloatStr(tokens[3])));
+        mo.put("occupancy", new Float(parseFloatStr(tokens[1])));
       } else if (readLine() != null) {
         getTokensFloat(line, values, 2);
         mo.put("energy", new Float(values[0]));

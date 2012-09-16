@@ -215,7 +215,7 @@ No distinction between "Variable:" and "Constant:" is made by Jmol.
       line = line.substring(0, line.indexOf("#"));
     if (line.indexOf(":") >= 0)
       return true; // Variables: or Constants:
-    tokens = getTokens(line);
+    tokens = getTokensStr(line);
     if (tokens.length == 2) {
       getSymbolic();
       return true;
@@ -245,7 +245,7 @@ No distinction between "Variable:" and "Constant:" is made by Jmol.
   private void getSymbolic() {
     if (symbolicMap.containsKey(tokens[0]))
       return;
-    float f = parseFloat(tokens[1]);
+    float f = parseFloatStr(tokens[1]);
     symbolicMap.put(tokens[0], Float.valueOf(f));
     Logger.info("symbolic " + tokens[0] + " = " + f);
   }
@@ -367,7 +367,7 @@ No distinction between "Variable:" and "Constant:" is made by Jmol.
   private float getValue(int i) throws Exception {
     float f = getSymbolic(tokens[i]);
     if (Float.isNaN(f))
-      f = parseFloat(tokens[i]);
+      f = parseFloatStr(tokens[i]);
     if (Float.isNaN(f))
       throw new Exception("Bad Z-matrix value: " + tokens[i]);
     return f;
@@ -379,7 +379,7 @@ No distinction between "Variable:" and "Constant:" is made by Jmol.
         || (name = tokens[i]).indexOf(".") >= 0
         || !Character.isLetterOrDigit(name.charAt(0)))
       return -1;
-    int ia = parseInt(name);
+    int ia = parseIntStr(name);
     if (ia <= 0 || name.length() != ("" + ia).length()) {
       // check for clean integer, not "13C1"
       Integer I = atomMap.get(name);

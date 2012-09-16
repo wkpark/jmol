@@ -60,7 +60,7 @@ final class JmolAppletRegistry {
   synchronized static void findApplets(String appletName, String mySyncId,
                                        String excludeName, List<String> apps) {
     if (appletName != null && appletName.indexOf(",") >= 0) {
-      String[] names = TextFormat.split(appletName, ",");
+      String[] names = TextFormat.splitChars(appletName, ",");
       for (int i = 0; i < names.length; i++)
         findApplets(names[i], mySyncId, excludeName, apps);
       return;

@@ -42,6 +42,7 @@ import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.FileManager;
+import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 
 /**
@@ -179,7 +180,7 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
     JmolViewer viewer;
 
     FPPanel(Map<String, Object> info) {
-      info.put("previewOnly", Boolean.TRUE);
+      info.put("previewOnly", JmolConstants.TRUE);
       Object display = info.get("display");
       info.put("display", this);
       viewer = new Viewer(info);

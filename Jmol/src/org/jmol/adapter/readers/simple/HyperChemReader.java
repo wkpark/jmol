@@ -82,14 +82,14 @@ public class HyperChemReader extends AtomSetCollectionReader {
   }
 
   private String getMolName() {
-    parseToken(line);
+    parseTokenStr(line);
     parseToken();
     return parseToken();
   }
 
   private void processAtom() throws Exception {
 
-    int fileAtomNumber = parseInt(line, 5);
+    int fileAtomNumber = parseIntAt(line, 5);
     if (fileAtomNumber - 1 != atomIndex) {
       throw new Exception ("bad atom number sequence ... expected:" +
         (atomIndex + 1) + " found:" + fileAtomNumber);

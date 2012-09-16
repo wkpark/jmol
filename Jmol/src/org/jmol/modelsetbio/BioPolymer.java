@@ -884,7 +884,7 @@ public abstract class BioPolymer {
         pdbATOM.append(TextFormat
             .sprintf("%8.2f%8.2f%8.2f      %6.3f          %2s    %s\n",
                 new Object[] {
-                    a.getElementSymbol(false).toUpperCase(),
+                    a.getElementSymbolIso(false).toUpperCase(),
                     strExtra,
                     new float[] { x * factor, y * factor, z * factor,
                         w * factor } }));

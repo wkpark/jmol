@@ -1254,7 +1254,7 @@ abstract public class ModelCollection extends BondCollection {
                 + occTemp, '\0', null) : LabelToken.compile(viewer,
             "ATOM  %5.-5i  %-3.3a%1A%3.-3n %1c%4.-4R%1E   %8.3x%8.3y%8.3z"
                 + occTemp, '\0', null));
-      String XX = a.getElementSymbol(false).toUpperCase();
+      String XX = a.getElementSymbolIso(false).toUpperCase();
       sb.append(LabelToken.formatLabel(viewer, a, tokens, '\0', null)).append(
           XX.length() == 1 ? " " + XX : XX.substring(0, 2)).append("  \n");
       if (!showModels && (!isBiomodel || isHetero || isMultipleBondPDB)) {
@@ -1357,7 +1357,7 @@ abstract public class ModelCollection extends BondCollection {
           bsWritten.set(i);
         sb.append(TextFormat.sprintf(
             "%-8.2f%-8.2f%-10.2f    %6.3f          %2s    %s\n", new Object[] {
-                a.getElementSymbol(false).toUpperCase(), strExtra,
+                a.getElementSymbolIso(false).toUpperCase(), strExtra,
                 new float[] { x, y, z, 0f } }));
         if (atomLast != null
             && atomLast.getPolymerIndexInModel() == a.getPolymerIndexInModel())
@@ -2264,7 +2264,7 @@ abstract public class ModelCollection extends BondCollection {
           if (!bsCheck.get(iModel))
             continue;
           if (distance < 0) {
-            getAtomsWithin(distance, atoms[i].getFractionalUnitCoord(true),
+            getAtomsWithin(distance, atoms[i].getFractionalUnitCoordPt(true),
                 bsResult, -1);
             continue;
           }
@@ -3215,7 +3215,7 @@ abstract public class ModelCollection extends BondCollection {
     //    3.4920    4.0920    5.8700 Cl  0  0  0  0  0
     //012345678901234567890123456789012
     if (models[a.modelIndex].isTrajectory)
-      a.setFractionalCoord(ptTemp, trajectorySteps.get(a.modelIndex)[a.index
+      a.setFractionalCoordPt(ptTemp, trajectorySteps.get(a.modelIndex)[a.index
           - models[a.modelIndex].firstAtomIndex], true);
     else
       pTemp.set(a);

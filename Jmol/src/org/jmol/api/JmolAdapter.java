@@ -57,9 +57,6 @@ import org.jmol.viewer.JmolConstants;
  ****************************************************************/
 public abstract class JmolAdapter {
 
-  public final static Boolean FALSE = JmolConstants.FALSE;
-  public final static Boolean TRUE = JmolConstants.TRUE;
-  
   public final static short ORDER_COVALENT_SINGLE = JmolEdge.BOND_COVALENT_SINGLE;
   public final static short ORDER_COVALENT_DOUBLE = JmolEdge.BOND_COVALENT_DOUBLE;
   public final static short ORDER_COVALENT_TRIPLE = JmolEdge.BOND_COVALENT_TRIPLE;

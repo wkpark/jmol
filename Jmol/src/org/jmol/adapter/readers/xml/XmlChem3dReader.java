@@ -164,7 +164,7 @@ public class XmlChem3dReader extends XmlReader {
       if (moData == null) {
         moData = new Hashtable<String, Object>();
         moData.put("defaultCutoff", Float.valueOf((float) 0.01));
-        moData.put("haveVolumeData", JmolAdapter.TRUE);
+        moData.put("haveVolumeData", Boolean.TRUE);
         moData.put("calculationType", "Chem3D");
         orbitals = new ArrayList<Map<String, Object>>();
         moData.put("mos", orbitals);

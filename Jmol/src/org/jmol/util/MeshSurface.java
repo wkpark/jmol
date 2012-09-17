@@ -244,7 +244,7 @@ public class MeshSurface {
   
   public static Object[] getSlabWithinRange(float min, float max) {
     return new Object[] { Integer.valueOf(Token.range), 
-        new Float[] {Float.valueOf(min), Float.valueOf(max)}, JmolConstants.FALSE, null };
+        new Float[] {Float.valueOf(min), Float.valueOf(max)}, Boolean.FALSE, null };
   }
 
   public void resetSlab() {

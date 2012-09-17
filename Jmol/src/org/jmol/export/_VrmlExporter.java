@@ -397,7 +397,7 @@ public class _VrmlExporter extends __CartesianExporter {
     String check = round(ptCenter) + (checkRadius ? " " + (int) (radius * 100) : "");
     if (htSpheresRendered.get(check) != null)
       return;
-    htSpheresRendered.put(check, JmolConstants.TRUE);
+    htSpheresRendered.put(check, Boolean.TRUE);
     outputSphereChild(ptCenter, radius, colix);
   }
 

@@ -897,7 +897,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
     if (isPDB) {
       setIsPDB();
     }
-    atomSetCollection.setAtomSetAuxiliaryInfo("isCIF", JmolAdapter.TRUE);
+    atomSetCollection.setAtomSetAuxiliaryInfo("isCIF", Boolean.TRUE);
     return true;
   }
      
@@ -1729,8 +1729,8 @@ _struct_site_gen.details
     // Set return info to enable desired defaults.
 
     if (bondTypes.size() > 0)
-      atomSetCollection.setAtomSetAuxiliaryInfo("hasBonds", JmolAdapter.TRUE);
-    atomSetCollection.setAtomSetAuxiliaryInfo("fileHasUnitCell", JmolAdapter.TRUE);
+      atomSetCollection.setAtomSetAuxiliaryInfo("hasBonds", Boolean.TRUE);
+    atomSetCollection.setAtomSetAuxiliaryInfo("fileHasUnitCell", Boolean.TRUE);
 
     // Clear temporary fields.
 

@@ -194,7 +194,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
   @Override
   public void setVisible(boolean b) {
     super.setVisible(b);
-    viewer.getProperty("DATA_API", "scriptEditorState", b ? JmolConstants.TRUE : JmolConstants.FALSE);
+    viewer.getProperty("DATA_API", "scriptEditorState", b ? Boolean.TRUE : Boolean.FALSE);
     if (b)
       editor.grabFocus();
   }

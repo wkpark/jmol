@@ -1123,21 +1123,21 @@ public class Jmol implements WrappedApplet {
       if (allowJSEval == null) {
         try {
           if (((Boolean) jsoDocument.eval("!!Jmol._noEval")).booleanValue())
-            allowJSEval = JmolConstants.FALSE;
+            allowJSEval = Boolean.FALSE;
         } catch (Exception e) {
           try {
             if (((Boolean) jsoDocument.eval("!!_jmol.noEval")).booleanValue())
-              allowJSEval = JmolConstants.FALSE;
+              allowJSEval = Boolean.FALSE;
           } catch (Exception e2) {
-            allowJSEval = JmolConstants.FALSE;
+            allowJSEval = Boolean.FALSE;
             Logger.error("# no Jmol or _jmol object in evaluating " + strEval
                 + ":" + e.toString());
             return "";
           }
         }
-        allowJSEval = JmolConstants.TRUE;
+        allowJSEval = Boolean.TRUE;
       }
-      if (allowJSEval == JmolConstants.FALSE)
+      if (allowJSEval == Boolean.FALSE)
         return "NO EVAL ALLOWED";
       try {
         return "" + jsoDocument.eval(strEval);

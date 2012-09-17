@@ -201,7 +201,7 @@ public class MdTopReader extends ForceFieldReader {
       boolean isPeriodic = (tokens[27].charAt(0) != '0');
       if (isPeriodic) {
         Logger.info("Periodic type: " + tokens[27]);
-        htParams.put("isPeriodic", JmolAdapter.TRUE);
+        htParams.put("isPeriodic", Boolean.TRUE);
       }
       Logger.info("Total number of atoms read=" + atomCount);
       htParams.put("templateAtomCount", Integer.valueOf(atomCount));

@@ -720,7 +720,7 @@ REMARK 290 REMARK: NULL
     else
       atomSetCollection.addAtom(atom);
     if (atomCount++ == 0)
-      atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", JmolAdapter.TRUE);
+      atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
     // note that values are +1 in this serial map
     if (atom.isHetero) {
       if (htHetero != null) {
@@ -1045,7 +1045,7 @@ Polyproline 10
     haveMappedSerials = false;
     sbConect = null;
     atomSetCollection.newAtomSet();
-    atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", JmolAdapter.TRUE);
+    atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
     atomSetCollection.setAtomSetNumber(modelNumber);
   }
 
@@ -1056,7 +1056,7 @@ Polyproline 10
     // be no center of symmetry, no rotation-inversions, 
     // no atom-centered rotation axes, and no mirror or glide planes. 
     atomSetCollection.setCheckSpecial(!isPDB);
-    atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", isPDB ? JmolAdapter.TRUE : JmolAdapter.FALSE);
+    atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", isPDB ? Boolean.TRUE : Boolean.FALSE);
     nUNK = nRes = 0;
     currentGroup3 = null;
   }
@@ -1110,9 +1110,9 @@ Polyproline 10
       char chFirst = elementWithCount.charAt(0);
       char chSecond = elementWithCount.charAt(1);
       if (Atom.isValidElementSymbolNoCaseSecondChar(chFirst, chSecond))
-        htElementsInGroup.put("" + chFirst + chSecond, JmolAdapter.TRUE);
+        htElementsInGroup.put("" + chFirst + chSecond, Boolean.TRUE);
       else if (Atom.isValidElementSymbol(chFirst))
-        htElementsInGroup.put("" + chFirst, JmolAdapter.TRUE);
+        htElementsInGroup.put("" + chFirst, Boolean.TRUE);
     }
   }
   

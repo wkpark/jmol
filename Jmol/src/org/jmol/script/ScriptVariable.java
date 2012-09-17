@@ -415,10 +415,10 @@ public class ScriptVariable extends Token {
   public static Object oValue(ScriptVariable x) {
     switch (x == null ? nada : x.tok) {
     case on:
-      return JmolConstants.TRUE;
+      return Boolean.TRUE;
     case nada:
     case off:
-      return JmolConstants.FALSE;
+      return Boolean.FALSE;
     case integer:
       return Integer.valueOf(x.intValue);
     case bitset:
@@ -600,7 +600,7 @@ public class ScriptVariable extends Token {
             : "<" + vx.myName + ">");
         break;
       }
-      map.put(vx, JmolConstants.TRUE);
+      map.put(vx, Boolean.TRUE);
       Map<String, ScriptVariable> ht = (Map<String, ScriptVariable>) vx.value;
       Object[] keys = ht.keySet().toArray();
       Arrays.sort(keys);
@@ -633,7 +633,7 @@ public class ScriptVariable extends Token {
             : "<" + vx.myName + ">");
         break;
       }
-      map.put(vx, JmolConstants.TRUE);
+      map.put(vx, Boolean.TRUE);
       if (isEscaped)
         sb.append("[");
       List<ScriptVariable> sx = vx.getList();

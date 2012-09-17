@@ -92,7 +92,7 @@ public class GenNBOReader extends MOReader {
       isOK = readFile31();
       super.initializeReader();
       // keep going -- we need to read the file using MOReader
-      moData.put("isNormalized", JmolAdapter.TRUE);
+      moData.put("isNormalized", Boolean.TRUE);
     } else if (line.indexOf("s in the AO basis:") >= 0) {
       moType = line.substring(1, line.indexOf("s"));
       atomSetCollection.setCollectionName(line1 + ": " + moType + "s");
@@ -117,7 +117,7 @@ public class GenNBOReader extends MOReader {
     readFile46();
     readOrbitalData(!moType.equals("AO"));
     setMOData(false);
-    moData.put("isNormalized", JmolAdapter.TRUE);
+    moData.put("isNormalized", Boolean.TRUE);
   }
 
   @Override

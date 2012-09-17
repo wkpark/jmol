@@ -144,7 +144,7 @@ public class Axes extends FontLineShape {
     if (property == "origin")
       return fixedOrigin;
     if (property == "axesTypeXY")
-      return (axisXY.z == 0 ? JmolConstants.FALSE : JmolConstants.TRUE);
+      return (axisXY.z == 0 ? Boolean.FALSE : Boolean.TRUE);
     return null;
   }
 

@@ -41,9 +41,6 @@ import javax.vecmath.Vector3f;
 @J2SRequireImport({java.util.Properties.class,java.io.BufferedInputStream.class,java.lang.StringBuffer.class})
 public class JmolConstants {
 
-  public static final Boolean FALSE = Boolean.valueOf(false); // not BOOLEAN.FALSE here, for JavaScript
-  public static final Boolean TRUE = Boolean.valueOf(true); // not BOOLEAN.TRUE here, for JavaScript
-
   // axes mode constants --> org.jmol.constant.EnumAxesMode
   // callback constants --> org.jmol.constant.EnumCallback
   // draw constants --> org.jmol.shapespecial.draw.EnumCallback

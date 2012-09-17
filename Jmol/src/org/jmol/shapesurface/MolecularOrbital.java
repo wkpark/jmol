@@ -125,7 +125,7 @@ public class MolecularOrbital extends Isosurface {
 
     if ("cutoff" == propertyName) {
       thisModel.put("moCutoff", value);
-      thisModel.put("moIsPositiveOnly", JmolConstants.FALSE);
+      thisModel.put("moIsPositiveOnly", Boolean.FALSE);
       return;
     }
 
@@ -136,7 +136,7 @@ public class MolecularOrbital extends Isosurface {
 
     if ("cutoffPositive" == propertyName) {
       thisModel.put("moCutoff", value);
-      thisModel.put("moIsPositiveOnly", JmolConstants.TRUE);
+      thisModel.put("moIsPositiveOnly", Boolean.TRUE);
       return;
     }
 
@@ -391,7 +391,7 @@ public class MolecularOrbital extends Isosurface {
   private void setOrbital(int moNumber, float[] linearCombination) {
     super.setProperty("reset", strID, null);
     if (moDebug)
-      super.setProperty("debug", JmolConstants.TRUE, null);
+      super.setProperty("debug", Boolean.TRUE, null);
     getSettings(strID);
     if (moScale != null)
       super.setProperty("scale", moScale, null);

@@ -1533,7 +1533,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         if (thisFunction != null)
           vFunctionStack.add(0, thisFunction);
         thisFunction = (tokCommand == Token.parallel ? new ParallelProcessor(ident, tokCommand) : new ScriptFunction(ident, tokCommand));
-        htUserFunctions.put(ident, JmolConstants.TRUE);
+        htUserFunctions.put(ident, Boolean.TRUE);
         flowContext.setFunction(thisFunction);
         break; // function f
       }

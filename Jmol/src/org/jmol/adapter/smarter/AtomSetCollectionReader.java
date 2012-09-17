@@ -334,7 +334,7 @@ public abstract class AtomSetCollectionReader {
 
   public void setIsPDB() {
     atomSetCollection.setGlobalBoolean(AtomSetCollection.GLOBAL_ISPDB);
-    atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", JmolAdapter.TRUE);
+    atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
     if (htParams.get("pdbNoHydrogens") != null)
       atomSetCollection.setAtomSetCollectionAuxiliaryInfo("pdbNoHydrogens",
           htParams.get("pdbNoHydrogens"));
@@ -868,10 +868,10 @@ public abstract class AtomSetCollectionReader {
 
   protected void set2D() {
     // MOL and JME
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("is2D", JmolAdapter.TRUE);
+    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("is2D", Boolean.TRUE);
     if (!checkFilterKey("NOMIN"))
       atomSetCollection.setAtomSetCollectionAuxiliaryInfo("doMinimize",
-          JmolAdapter.TRUE);
+          Boolean.TRUE);
   }
 
   public boolean doGetVibration(int vibrationNumber) {

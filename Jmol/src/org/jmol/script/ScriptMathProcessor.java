@@ -229,7 +229,7 @@ class ScriptMathProcessor {
   }
 
   private boolean addXBool(boolean x) {
-    putX(ScriptVariable.getVariable(x ? JmolConstants.TRUE : JmolConstants.FALSE));
+    putX(ScriptVariable.getVariable(x ? Boolean.TRUE : Boolean.FALSE));
     return wasX = true;
   }
 

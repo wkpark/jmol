@@ -102,7 +102,7 @@ public class WebMOReader extends MopacSlaterReader {
   }
   
   void readHeader() throws Exception {
-    moData.put("isNormalized", JmolAdapter.TRUE);
+    moData.put("isNormalized", Boolean.TRUE);
     while (readLine() != null && line.length() > 0) {
       moData.put("calculationType", "?");
       String[] tokens = getTokens();

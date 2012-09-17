@@ -988,7 +988,7 @@ public class AminoPolymer extends AlphaPolymer {
       String key = nitrogen.index + " " + oxygen.index;
       if (htTemp.containsKey(key))
         return;
-      htTemp.put(key, JmolConstants.TRUE);
+      htTemp.put(key, Boolean.TRUE);
     }
     vHBonds.add(new HBond(nitrogen, oxygen, type, iEnergy / 1000f));
   }
@@ -1089,7 +1089,7 @@ public class AminoPolymer extends AlphaPolymer {
     }
     
     private void addLadder(Map<int[][], Boolean> htLadders) {
-      htLadders.put(ladder, (isAntiparallel ? JmolConstants.TRUE : JmolConstants.FALSE));
+      htLadders.put(ladder, (isAntiparallel ? Boolean.TRUE : Boolean.FALSE));
     }
 
     @Override

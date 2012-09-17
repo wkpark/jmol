@@ -1739,7 +1739,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public Boolean getNoneSelected() {
-    return (noneSelected ? JmolConstants.TRUE : JmolConstants.FALSE);
+    return (noneSelected ? Boolean.TRUE : Boolean.FALSE);
   }
 
   @Override
@@ -1900,11 +1900,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (!htParams.containsKey("lattice"))
       htParams.put("lattice", global.getDefaultLattice());
     if (global.applySymmetryToBonds)
-      htParams.put("applySymmetryToBonds", JmolConstants.TRUE);
+      htParams.put("applySymmetryToBonds", Boolean.TRUE);
     if (global.pdbGetHeader)
-      htParams.put("getHeader", JmolConstants.TRUE);
+      htParams.put("getHeader", Boolean.TRUE);
     if (global.pdbSequential)
-      htParams.put("isSequential", JmolConstants.TRUE);
+      htParams.put("isSequential", Boolean.TRUE);
     htParams.put("stateScriptVersionInt", Integer
         .valueOf(stateScriptVersionInt));
     if (!htParams.containsKey("filter")) {
@@ -1913,7 +1913,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         htParams.put("filter", filter);
     }
     if (isAppend && !global.appendNew && getAtomCount() > 0)
-      htParams.put("merging", JmolConstants.TRUE);
+      htParams.put("merging", Boolean.TRUE);
     return htParams;
   }
 
@@ -2172,7 +2172,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     id = id.toUpperCase();
     if (ligandModelSet == null)
       ligandModelSet = new Hashtable<String, Boolean>();
-    ligandModelSet.put(id, JmolConstants.TRUE);
+    ligandModelSet.put(id, Boolean.TRUE);
     if (ligandModels == null)
       ligandModels = new Hashtable<String, Object>();
     Object model = ligandModels.get(id);
@@ -2198,7 +2198,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       // TODO: check for errors in reading file
       if (data.length() != 0) {
         Map<String, Object> htParams = new Hashtable<String, Object>();
-        htParams.put("modelOnly", JmolConstants.TRUE);
+        htParams.put("modelOnly", Boolean.TRUE);
         model = getModelAdapter().getAtomSetCollectionReader("ligand", null,
             FileManager.getBufferedReaderForString(data), htParams);
         isError = (model instanceof String);
@@ -2213,7 +2213,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     if (isError) {
       scriptEcho(model.toString());
-      ligandModels.put(id, JmolConstants.FALSE);
+      ligandModels.put(id, Boolean.FALSE);
       return null;
     }
     return model;
@@ -5807,7 +5807,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // Eval
     try {
       if (appConsole == null)
-        getProperty("DATA_API", "getAppConsole", JmolConstants.TRUE);
+        getProperty("DATA_API", "getAppConsole", Boolean.TRUE);
       appConsole.setVisible(showConsole);
     } catch (Throwable e) {
       // no console for this client... maybe no Swing
@@ -8118,7 +8118,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case 100:
       if (appConsole == null && paramInfo != null
           && ((Boolean) paramInfo).booleanValue()) {
-        getProperty("DATA_API", "getAppConsole", JmolConstants.TRUE);
+        getProperty("DATA_API", "getAppConsole", Boolean.TRUE);
         scriptEditor = (appConsole == null ? null : appConsole
             .getScriptEditor());
       }
@@ -8157,7 +8157,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     String filename = file_text[0];
     String msg = file_text[1];
     JmolScriptEditorInterface scriptEditor = (JmolScriptEditorInterface) getProperty(
-        "DATA_API", "getScriptEditor", JmolConstants.TRUE);
+        "DATA_API", "getScriptEditor", Boolean.TRUE);
     if (scriptEditor == null)
       return;
     if (msg != null) {

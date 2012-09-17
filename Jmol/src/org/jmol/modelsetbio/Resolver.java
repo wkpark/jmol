@@ -240,7 +240,7 @@ public final class Resolver implements JmolBioResolver {
     }
     if (bondInfo == null)
       return;
-    htGroupBonds.put(group3, JmolConstants.TRUE);
+    htGroupBonds.put(group3, Boolean.TRUE);
     for (int i = 0; i < bondInfo.length; i++) {
       if (bondInfo[i] == null)
         continue;
@@ -524,7 +524,7 @@ public final class Resolver implements JmolBioResolver {
       String type = htBondMap.get(skey);
       if (type == null)
         continue;
-      htKeysUsed.put(skey, JmolConstants.TRUE);
+      htKeysUsed.put(skey, Boolean.TRUE);
       bonds[i].setOrder(Integer.valueOf(type).intValue());
     }
 
@@ -532,13 +532,13 @@ public final class Resolver implements JmolBioResolver {
       if (htKeysUsed.get(key) != null)
         continue;
       if (key.indexOf(":") < 0) {
-        htKeysUsed.put(key, JmolConstants.TRUE);
+        htKeysUsed.put(key, Boolean.TRUE);
         continue;
       }
       String value = htBondMap.get(key);
       Logger.info("bond " + key + " was not used; order=" + value);
       if (htBondMap.get(key).equals("1")) {
-        htKeysUsed.put(key, JmolConstants.TRUE);
+        htKeysUsed.put(key, Boolean.TRUE);
         continue; // that's ok
       }
     }

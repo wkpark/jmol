@@ -295,7 +295,7 @@ public class ForceFieldMMFF extends ForceField {
     getMmffParameters("mmff/mmffdfsb.par.txt", ffParams, TYPE_SBDEF);
     getMmffParameters("mmff/mmfftor.par.txt",  ffParams, TYPE_TORSION);
     getMmffParameters("mmff/mmffvdw.par.txt",  ffParams, TYPE_VDW);
-    ffParams.put(Integer.valueOf(-1), JmolConstants.TRUE);
+    ffParams.put(Integer.valueOf(-1), Boolean.TRUE);
   }
 
   private void getMmffParameters(String fileName, Map<Integer, Object> data, int dataType) {    

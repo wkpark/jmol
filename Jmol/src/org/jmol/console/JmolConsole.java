@@ -286,7 +286,7 @@ public abstract class JmolConsole implements JmolCallbackListener, ActionListene
     // if the viewer is an applet, when we close the console
     // we 
     if (viewer.isApplet())
-      viewer.getProperty("DATA_API", "getAppConsole", JmolConstants.FALSE);
+      viewer.getProperty("DATA_API", "getAppConsole", Boolean.FALSE);
   }
 
   /**

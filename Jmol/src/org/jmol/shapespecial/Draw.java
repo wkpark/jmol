@@ -1467,7 +1467,7 @@ public void initShape() {
       if (mesh.vertexCount == 0)
         continue;
       Map<String, Object> info = new Hashtable<String, Object>();
-      info.put("fixed", mesh.ptCenters == null ? JmolConstants.TRUE : JmolConstants.FALSE);
+      info.put("fixed", mesh.ptCenters == null ? Boolean.TRUE : Boolean.FALSE);
       info.put("ID", (mesh.thisID == null ? "<noid>" : mesh.thisID));
       info.put("drawType", mesh.drawType.name);
       if (mesh.diameter > 0)

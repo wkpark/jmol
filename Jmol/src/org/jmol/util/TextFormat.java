@@ -48,11 +48,11 @@ public class TextFormat {
 
   private final static Boolean[] useNumberLocalization = new Boolean[1];
   {
-    useNumberLocalization[0] = JmolConstants.TRUE;
+    useNumberLocalization[0] = Boolean.TRUE;
   }
   
   public static void setUseNumberLocalization(boolean TF) {
-    useNumberLocalization[0] = (TF ? JmolConstants.TRUE : JmolConstants.FALSE);
+    useNumberLocalization[0] = (TF ? Boolean.TRUE : Boolean.FALSE);
   }
 
   /**
@@ -149,7 +149,7 @@ public class TextFormat {
 //    System.out.print(value + " " + s1 + "/");
 //    System.out.println(s);
 
-    return (JmolConstants.TRUE.equals(useNumberLocalization[0]) ? s1 : s1.replace(',',
+    return (Boolean.TRUE.equals(useNumberLocalization[0]) ? s1 : s1.replace(',',
         '.'));
   }
 

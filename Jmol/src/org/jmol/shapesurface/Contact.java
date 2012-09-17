@@ -167,7 +167,7 @@ public class Contact extends Isosurface {
       params.bsSelected = bs;
       params.bsSolvent = bsB;
       sg.setParameter("parameters", parameters);
-      super.setProperty("nci", JmolConstants.TRUE, null);
+      super.setProperty("nci", Boolean.TRUE, null);
       break;
     case Token.sasurface:
     case Token.surface:
@@ -526,7 +526,7 @@ public class Contact extends Isosurface {
       }
       params.volumeData = volumeData;
       super.setProperty("sasurface", Float.valueOf(sasurfaceRadius), null);
-      super.setProperty("map", JmolConstants.TRUE, null);
+      super.setProperty("map", Boolean.TRUE, null);
       if (cp == null) {
         params.atomRadiusData = rdB;
         params.bsIgnore = BitSetUtil.copyInvert(bs2, atomCount);
@@ -565,7 +565,7 @@ public class Contact extends Isosurface {
         super.setProperty("cutoffRange", new float[] { -5f, 0f }, null);
       super.setProperty("sasurface", Float.valueOf(0), null);
       // mapping
-      super.setProperty("map", JmolConstants.TRUE, null);
+      super.setProperty("map", Boolean.TRUE, null);
       params.volumeData = volumeData;
       super.setProperty("sasurface", Float.valueOf(0), null);
       if (displayType != Token.connect)

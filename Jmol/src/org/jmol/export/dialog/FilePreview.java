@@ -180,7 +180,7 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
     JmolViewer viewer;
 
     FPPanel(Map<String, Object> info) {
-      info.put("previewOnly", JmolConstants.TRUE);
+      info.put("previewOnly", Boolean.TRUE);
       Object display = info.get("display");
       info.put("display", this);
       viewer = new Viewer(info);

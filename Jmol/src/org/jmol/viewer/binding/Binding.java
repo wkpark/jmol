@@ -61,7 +61,7 @@ abstract public class Binding {
   }
   
   public void bind(int mouseAction, String name) {
-    addBinding(mouseAction + "\t", JmolConstants.TRUE);
+    addBinding(mouseAction + "\t", Boolean.TRUE);
     addBinding(mouseAction + "\t" + name, new String[] { getMouseActionName(mouseAction, false), name });
   }
 

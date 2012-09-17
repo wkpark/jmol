@@ -70,7 +70,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     isNavigationMode = viewer.getNavigationMode();
     int mySlabValue = Integer.MAX_VALUE;
     int slabValue = g3d.getSlab();
-    showKey = (viewer.getIsosurfaceKey() ? JmolConstants.TRUE : null);
+    showKey = (viewer.getIsosurfaceKey() ? Boolean.TRUE : null);
     if (isNavigationMode)
       mySlabValue = (int) viewer.getNavigationOffset().z;
     isosurface.keyXy = null;
@@ -93,12 +93,12 @@ public class IsosurfaceRenderer extends MeshRenderer {
   }
 
   protected void renderInfo() {
-    if (hasColorRange && imesh.colorEncoder != null && JmolConstants.TRUE == showKey)
+    if (hasColorRange && imesh.colorEncoder != null && Boolean.TRUE == showKey)
       showKey();
   }
   
   private void showKey() {
-    showKey = JmolConstants.FALSE; // once only
+    showKey = Boolean.FALSE; // once only
     int[] colors = null;
     short[] colixes = null;
     List<Object>[] vContours = null;

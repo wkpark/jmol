@@ -78,8 +78,8 @@ class ScriptManager {
     scriptItem.add(strScript);
     scriptItem.add(statusList);
     scriptItem.add(returnType);
-    scriptItem.add(isScriptFile ? JmolConstants.TRUE : JmolConstants.FALSE);
-    scriptItem.add(isQuiet ? JmolConstants.TRUE : JmolConstants.FALSE);
+    scriptItem.add(isScriptFile ? Boolean.TRUE : Boolean.FALSE);
+    scriptItem.add(isQuiet ? Boolean.TRUE : Boolean.FALSE);
     scriptItem.add(Integer.valueOf(useCommandThread ? -1 : 1));
     scriptQueue.add(scriptItem);
     //if (Logger.debugging)

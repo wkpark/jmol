@@ -67,7 +67,7 @@ class SpartanArchive {
 
   private void initialize(BasisFunctionReader r, String bondData) {
     this.r = r;
-    r.moData.put("isNormalized", JmolAdapter.TRUE);
+    r.moData.put("isNormalized", Boolean.TRUE);
     r.moData.put("energyUnits","");
     this.bondData = bondData;
   }

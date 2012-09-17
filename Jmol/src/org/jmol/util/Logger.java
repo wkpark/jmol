@@ -62,9 +62,9 @@ public final class Logger {
 
   private static boolean getProperty(String level, boolean defaultValue) {
     try {
-      String property = System.getProperty("jmol.logger." + level);
+      String property = System.getProperty("jmol.logger." + level, null);
       if (property != null) {
-        return JmolConstants.TRUE.equals(Boolean.valueOf(property));
+        return (property.equalsIgnoreCase("true"));
       }
     } catch (Exception e) {
       // applet can't do this.

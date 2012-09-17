@@ -71,7 +71,7 @@ public class SpartanSmolReader extends SpartanInputReader {
       if (modelAtomCount == 0)
         atomSetCollection.newAtomSet();
       moData = new Hashtable<String, Object>();
-      moData.put("isNormalized", JmolAdapter.TRUE);
+      moData.put("isNormalized", Boolean.TRUE);
       if (modelNo == Integer.MIN_VALUE) {
         modelNo = modelNumber;
         title = "Model " + modelNo;
@@ -81,7 +81,7 @@ public class SpartanSmolReader extends SpartanInputReader {
       }
       Logger.info(title);
       atomSetCollection.setAtomSetName(title);
-      atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", JmolAdapter.FALSE);
+      atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.FALSE);
       atomSetCollection.setAtomSetNumber(modelNo);
       if (isCompoundDocument)
         readTransform();

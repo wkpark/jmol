@@ -366,7 +366,7 @@ public class _IdtfExporter extends __CartesianExporter {
     if (htDefs.containsKey(key))
       return;
     String color = (haveColors ? "1.0 1.0 1.0" : rgbFractionalFromColix(colix));
-    htDefs.put(key, JmolConstants.TRUE);
+    htDefs.put(key, Boolean.TRUE);
     resources.append("RESOURCE_LIST \"SHADER\" {\n");
     resources.append("RESOURCE_COUNT 1\n");
     resources.append("RESOURCE 0 {\n");

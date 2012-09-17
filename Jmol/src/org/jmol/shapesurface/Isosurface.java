@@ -236,7 +236,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         if (thisMesh.vertexSource == null) {
           short colix = (!thisMesh.isColorSolid ? 0 : thisMesh.colix);
           setProperty("init", null, null);
-          setProperty("map", JmolConstants.FALSE, null);
+          setProperty("map", Boolean.FALSE, null);
           setProperty("property", new float[viewer.getAtomCount()], null);
           if (colix != 0) {
             thisMesh.colorCommand = "color isosurface "
@@ -484,7 +484,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if ("map" == propertyName) {
       if (sg != null)
         sg.getParams().isMapped = true;
-      setProperty("squareData", JmolConstants.FALSE, null);
+      setProperty("squareData", Boolean.FALSE, null);
       if (thisMesh == null || thisMesh.vertexCount == 0)
         return;
     }

@@ -1389,7 +1389,7 @@ public class Token {
       if ((token.tok & scriptCommand) != 0
           && (s == null || name.indexOf(s) == 0)
           && (isMultiCharacter || ((String) token.value).equals(name)))
-        htSet.put(name, JmolConstants.TRUE);
+        htSet.put(name, Boolean.TRUE);
     }
     for (Map.Entry<String, Boolean> entry : htSet.entrySet()) {
       String name = entry.getKey();

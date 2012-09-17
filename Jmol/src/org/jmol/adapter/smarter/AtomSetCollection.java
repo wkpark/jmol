@@ -94,11 +94,11 @@ public class AtomSetCollection {
   }
   
   public void setGlobalBoolean(int globalIndex) {
-    setAtomSetCollectionAuxiliaryInfo(globalBooleans[globalIndex], JmolAdapter.TRUE);
+    setAtomSetCollectionAuxiliaryInfo(globalBooleans[globalIndex], Boolean.TRUE);
   }
   
   boolean getGlobalBoolean(int globalIndex) {
-    return (getAtomSetCollectionAuxiliaryInfo(globalBooleans[globalIndex]) == JmolAdapter.TRUE);
+    return (getAtomSetCollectionAuxiliaryInfo(globalBooleans[globalIndex]) == Boolean.TRUE);
   }
   
   final public static String[] notionalUnitcellTags =
@@ -214,7 +214,7 @@ public class AtomSetCollection {
       if (array[i].atomCount > 0)
         appendAtomSetCollection(n++, array[i]);
     if (n > 1)
-      setAtomSetCollectionAuxiliaryInfo("isMultiFile", JmolAdapter.TRUE);
+      setAtomSetCollectionAuxiliaryInfo("isMultiFile", Boolean.TRUE);
   }
 
   /**
@@ -226,7 +226,7 @@ public class AtomSetCollection {
   
   public AtomSetCollection(List<?> list) {
     this("Array", null);
-    setAtomSetCollectionAuxiliaryInfo("isMultiFile", JmolAdapter.TRUE);
+    setAtomSetCollectionAuxiliaryInfo("isMultiFile", Boolean.TRUE);
     appendAtomSetCollection(list);
   }
 
@@ -328,14 +328,14 @@ public class AtomSetCollection {
     }
     // Set globals
     for (int i = globalBooleans.length; --i >= 0;)
-      if (JmolAdapter.TRUE.equals(collection
+      if (Boolean.TRUE.equals(collection
           .getAtomSetCollectionAuxiliaryInfo(globalBooleans[i])))
         setGlobalBoolean(i);
 
   }
 
   void setNoAutoBond() {
-      setAtomSetCollectionAuxiliaryInfo("noAutoBond", JmolAdapter.TRUE);
+      setAtomSetCollectionAuxiliaryInfo("noAutoBond", Boolean.TRUE);
   }
   
   void freeze(boolean reverseModels) {
@@ -1205,7 +1205,7 @@ public class AtomSetCollection {
     notionalUnitCell = new float[6];
     coordinatesAreFractional = false;
     // turn off global fractional conversion -- this will be model by model
-    setAtomSetAuxiliaryInfo("hasSymmetry", JmolAdapter.TRUE);
+    setAtomSetAuxiliaryInfo("hasSymmetry", Boolean.TRUE);
     setGlobalBoolean(GLOBAL_SYMMETRY);
   }
 
@@ -1460,7 +1460,7 @@ public class AtomSetCollection {
     }
     symmetry = null;
     coordinatesAreFractional = false; 
-    setAtomSetAuxiliaryInfo("hasSymmetry", JmolAdapter.TRUE);
+    setAtomSetAuxiliaryInfo("hasSymmetry", Boolean.TRUE);
     setGlobalBoolean(GLOBAL_SYMMETRY);
     //TODO: need to clone bonds
   }

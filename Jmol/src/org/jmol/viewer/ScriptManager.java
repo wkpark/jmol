@@ -45,19 +45,25 @@ class ScriptManager {
     startCommandWatcher(false);
   }
 
-  public String addScript(String strScript) {
-    return (String) addScript("string", strScript, "", false, false);
-  }
+  //public String addScript(String strScript) {
+  //  return (String) addScript("string", strScript, "", false, false);
+  //}
 
-  public String addScript(String strScript, boolean isScriptFile,
+  String addScript(String strScript, boolean isScriptFile,
                           boolean isQuiet) {
     return (String) addScript("String", strScript, "", isScriptFile, isQuiet);
   }
 
-  public Object addScript(String returnType, String strScript,
+  private Object addScript(String returnType, String strScript,
                           String statusList, boolean isScriptFile,
                           boolean isQuiet) {
-    //System.out.println("ScriptMan addScript " + strScript);
+    /**
+     * @j2sNative
+     *  // from ScriptManager.addScript -- just run immediately 
+     *  return this.viewer.evalStringWaitStatus(returnType, strScript, statusList, isScriptFile, isQuiet, true);
+     */
+    {}
+        
     if (!viewer.usingScriptQueue()) {
       clearQueue();
       viewer.haltScriptExecution();
@@ -90,15 +96,15 @@ class ScriptManager {
     return "pending";
   }
 
-  public int getScriptCount() {
-    return scriptQueue.size();
-  }
+  //public int getScriptCount() {
+  //  return scriptQueue.size();
+  //}
 
   void clearQueue() {
     scriptQueue.clear();
   }
 
-  public void waitForQueue() {
+  void waitForQueue() {
     int n = 0;
     while (queueThreads[0] != null || queueThreads[1] != null) {
       try {
@@ -113,7 +119,7 @@ class ScriptManager {
     }
   }
 
-  public synchronized void flushQueue(String command) {
+  synchronized void flushQueue(String command) {
     for (int i = scriptQueue.size(); --i >= 0;) {
       String strScript = (String) (scriptQueue.get(i).get(0));
       if (strScript.indexOf(command) == 0) {
@@ -152,7 +158,7 @@ class ScriptManager {
     boolean startedByCommandThread = false;
     int pt;
 
-    public ScriptQueueRunnable(boolean startedByCommandThread, int pt) {
+    protected ScriptQueueRunnable(boolean startedByCommandThread, int pt) {
       this.startedByCommandThread = startedByCommandThread;
       this.pt = pt;
     }

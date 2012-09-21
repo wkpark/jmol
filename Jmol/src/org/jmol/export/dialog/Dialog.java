@@ -55,7 +55,6 @@ import org.jmol.i18n.GT;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.viewer.FileManager;
-import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 
 public class Dialog extends JPanel implements JmolDialogInterface {

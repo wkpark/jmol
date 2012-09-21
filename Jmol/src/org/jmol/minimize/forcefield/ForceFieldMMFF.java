@@ -49,7 +49,6 @@ import org.jmol.util.Elements;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
-import org.jmol.viewer.JmolConstants;
 
 /**
  * MMFF94 implementation 5/14/2012

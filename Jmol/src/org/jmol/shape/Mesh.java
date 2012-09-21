@@ -34,7 +34,6 @@ import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Colix;
 import org.jmol.util.Escape;
-import org.jmol.util.GData;
 import org.jmol.util.Measure;
 import org.jmol.util.MeshSurface;
 import org.jmol.util.Normix;
@@ -163,7 +162,7 @@ public class Mesh extends MeshSurface {
     BitSet bsTemp = new BitSet();
     if (haveXyPoints)
       for (int i = normixCount; --i >= 0;)
-        normixes[i] = GData.NORMIX_NULL;
+        normixes[i] = Normix.NORMIX_NULL;
     else
       for (int i = normixCount; --i >= 0;)
         normixes[i] = Normix.getNormix(normals[i], bsTemp);
@@ -200,7 +199,7 @@ public class Mesh extends MeshSurface {
   }
   
   private void flipLighting(int lighting) {
-    if (lighting == Token.fullylit)
+    if (lighting == Token.fullylit) // this will not be a WebGL option
       for (int i = normixCount; --i >= 0;)
         normixes[i] = (short)~normixes[i];
     else if ((lighting == Token.frontlit) == insideOut)
@@ -208,6 +207,7 @@ public class Mesh extends MeshSurface {
   }
 
   private void invertNormixes() {
+    Normix.setInverseNormixes();
     for (int i = normixCount; --i >= 0;)
       normixes[i] = Normix.getInverseNormix(normixes[i]);
   }

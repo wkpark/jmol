@@ -13,7 +13,7 @@ import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.script.Token;
-import org.jmol.viewer.JmolConstants;
+
 
 public class MeshSurface {
 

@@ -190,6 +190,7 @@ class MeshData {
    * @return The data.
    */
   static MeshSurface getSphereData() {
+    // _ObjExporter only
     int vertexCount = Geodesic.getVertexCount(2);
     short[] f = Geodesic.getFaceVertexes(2);
     int nFaces = f.length / 3;

@@ -25,8 +25,6 @@
 
 package org.jmol.util;
 
-import org.jmol.viewer.JmolConstants;
-
 
 /**
  * Logger mechanism.

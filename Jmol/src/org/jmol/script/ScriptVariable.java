@@ -48,7 +48,6 @@ import org.jmol.util.Parser;
 import org.jmol.util.Measure;
 import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
-import org.jmol.viewer.JmolConstants;
 
 public class ScriptVariable extends Token {
 

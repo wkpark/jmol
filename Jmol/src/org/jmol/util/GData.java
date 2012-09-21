@@ -41,8 +41,6 @@ public class GData implements JmolGraphicsInterface {
   public final static byte ENDCAPS_SPHERICAL = 3;
   public final static byte ENDCAPS_OPENEND = 4;
   
-  public static final short NORMIX_NULL = Normix.NORMIX_NULL;
-
   public GData() {
     
   }

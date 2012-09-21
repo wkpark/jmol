@@ -41,7 +41,6 @@ import org.jmol.util.Escape;
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
 import org.jmol.util.Quaternion;
-import org.jmol.viewer.JmolConstants;
 
 public class _JsExporter extends __CartesianExporter {
 

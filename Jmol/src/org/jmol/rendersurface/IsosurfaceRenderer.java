@@ -38,7 +38,6 @@ import org.jmol.shapesurface.IsosurfaceMesh;
 import org.jmol.util.Colix;
 import org.jmol.util.GData;
 import org.jmol.util.Normix;
-import org.jmol.viewer.JmolConstants;
 
 public class IsosurfaceRenderer extends MeshRenderer {
 
@@ -491,6 +490,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     if (!g3d.setColix(Colix.WHITE))
       return;
     g3d.setFont(g3d.getFontFid("Monospaced", 24));
+    Vector3f[] vertexVectors = Normix.getVertexVectors();
     for (int i = vertexCount; --i >= 0;) {
       if (vertexValues != null && Float.isNaN(vertexValues[i]))
         continue;
@@ -501,7 +501,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       // -n is an intensity2sided and does not correspond to a true normal
       // index
       if (n >= 0) {
-        ptTemp.add(Normix.getVector(n));
+        ptTemp.add(vertexVectors[n]);
         viewer.transformPoint(ptTemp, ptTempi);
         g3d.drawLine(screens[i], ptTempi);
         //g3d.drawStringNoSlab("" + n, null, ptTempi.x, ptTempi.y, ptTempi.z);

@@ -187,18 +187,16 @@ public class Geodesic {
      return neighborVertexesArrays;
   }
   
-  static public int getVertexCount(int level) {
+  static public short getVertexCount(int level) {
     if (vertexCounts == null)
       createGeodesic();
     return vertexCounts[level];
   }
+
+  // these next all require preliminary call to getVertexCount()
   
   static public Vector3f[] getVertexVectors() {
     return vertexVectors;
-  }
-
-  static public int getVertexVectorsCount() {
-    return (vertexVectors == null ? 0 : vertexVectors.length);
   }
 
   static public Vector3f getVertexVector(int i) {
@@ -212,6 +210,7 @@ public class Geodesic {
   ////////////// private methods ///////////////
   
   synchronized private static void createGeodesic() {
+    // from getVertexCount()
     //only one per applet set
     if (vertexCounts != null)
       return;

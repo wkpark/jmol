@@ -27,7 +27,6 @@ package org.jmol.adapter.readers.quantum;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
 
 /*

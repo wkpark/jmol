@@ -32,7 +32,7 @@ import java.util.List;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 
-import org.jmol.viewer.JmolConstants;
+
 
 
 public class TextFormat {

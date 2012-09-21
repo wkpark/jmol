@@ -158,7 +158,6 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   private TriangleRenderer triangle3d;
   private CylinderRenderer cylinder3d;
   private HermiteRenderer hermite3d;
-  private Normix normix3d;
   private boolean isFullSceneAntialiasingEnabled;
   private boolean antialias2; 
 
@@ -237,7 +236,6 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     this.triangle3d = new TriangleRenderer(this);
     this.cylinder3d = new CylinderRenderer(this);
     this.hermite3d = new HermiteRenderer(this);
-    this.normix3d = new Normix();
   }
   
   public boolean currentlyRendering() {
@@ -268,7 +266,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
       isFullSceneAntialiasingEnabled = newAntialiasing;
       releaseBuffers();
     }
-    normix3d.setRotationMatrix(rotationMatrix);
+    setRotationMatrix(rotationMatrix);
     antialiasEnabled = antialiasThisFrame = newAntialiasing;
     currentlyRendering = true;
     twoPass = true; //only for testing -- set false to disallow second pass
@@ -1220,7 +1218,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
                            int xScreenB, int yScreenB, int zScreenB,
                            int xScreenC, int yScreenC, int zScreenC) {
     // polyhedra
-    setColorNoisy(normix3d.getShadeIndex(normix));
+    setColorNoisy(getShadeIndex(normix));
     triangle3d.fillTriangle( xScreenA, yScreenA, zScreenA,
         xScreenB, yScreenB, zScreenB,
         xScreenC, yScreenC, zScreenC, false);
@@ -1246,14 +1244,14 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     boolean useGouraud;
     if (!isPass2 && normixA == normixB && normixA == normixC && colixA == colixB
         && colixA == colixC) {
-      setTriangleColixAndShadeIndex(colixA, normix3d.getShadeIndex(normixA));
+      setTriangleColixAndShadeIndex(colixA, getShadeIndex(normixA));
       useGouraud = false;
     } else {
       if (!setTriangleTranslucency(colixA, colixB, colixC))
         return;
-      triangle3d.setGouraud(getShades(colixA)[normix3d.getShadeIndex(normixA)],
-          getShades(colixB)[normix3d.getShadeIndex(normixB)],
-          getShades(colixC)[normix3d.getShadeIndex(normixC)]);
+      triangle3d.setGouraud(getShades(colixA)[getShadeIndex(normixA)],
+          getShades(colixB)[getShadeIndex(normixB)],
+          getShades(colixC)[getShadeIndex(normixC)]);
       useGouraud = true;
     }
     triangle3d.fillTriangle(screenA, screenB, screenC, factor,
@@ -1267,14 +1265,14 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     boolean useGouraud;
     if (!isPass2 && normixA == normixB && normixA == normixC &&
         colixA == colixB && colixA == colixC) {
-      setTriangleColixAndShadeIndex(colixA, normix3d.getShadeIndex(normixA));
+      setTriangleColixAndShadeIndex(colixA, getShadeIndex(normixA));
       useGouraud = false;
     } else {
       if (!setTriangleTranslucency(colixA, colixB, colixC))
         return;
-      triangle3d.setGouraud(getShades(colixA)[normix3d.getShadeIndex(normixA)],
-                            getShades(colixB)[normix3d.getShadeIndex(normixB)],
-                            getShades(colixC)[normix3d.getShadeIndex(normixC)]);
+      triangle3d.setGouraud(getShades(colixA)[getShadeIndex(normixA)],
+                            getShades(colixB)[getShadeIndex(normixB)],
+                            getShades(colixC)[getShadeIndex(normixC)]);
       useGouraud = true;
     }
     triangle3d.fillTriangle(screenA, screenB, screenC, useGouraud);
@@ -1758,16 +1756,6 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
                                     -vectorNormal.z));
   }
     
-  public boolean isDirectedTowardsCamera(short normix) {
-    //polyhedra renderer
-    return normix3d.isDirectedTowardsCamera(normix);
-  }
-
-  public Vector3f[] getTransformedVertexVectors() {
-    // mesh renderer
-    return normix3d.getTransformedVectors();
-  }
-
   //////////////////////////////////////////////////////////
   
   public void renderBackground(JmolRendererInterface jmolRenderer) {
@@ -1830,6 +1818,57 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   public void clearFontCache() {
     TextRenderer.clearFontCache();
   }
+
+  // Normix/Shading related methods
+  
+  // only these three instance variables depend upon current orientation:
+
+  private final static short normixCount = Normix.getNormixCount();
+  
+  private final Vector3f[] transformedVectors = new Vector3f[normixCount];
+  {
+    for (int i = normixCount; --i >= 0; )
+      transformedVectors[i] = new Vector3f();
+  }
+  private final byte[] shadeIndexes = new byte[normixCount];
+  private final byte[] shadeIndexes2Sided = new byte[normixCount];
+
+  public Vector3f[] getTransformedVertexVectors() {
+    return transformedVectors;
+  }
+  
+  public boolean isDirectedTowardsCamera(short normix) {
+    // normix < 0 means a double sided normix, so always visible
+    return (normix < 0) || (transformedVectors[normix].z > 0);
+    
+  }
+
+  public void setRotationMatrix(Matrix3f rotationMatrix) {
+    Vector3f[] vertexVectors = Normix.getVertexVectors();
+    for (int i = normixCount; --i >= 0; ) {
+      Vector3f tv = transformedVectors[i];
+      rotationMatrix.transform(vertexVectors[i], tv);
+//        if (i == 0)
+  //        System.out.println(i + " " + shadeIndexes[i]);
+
+      shadeIndexes[i] = Shader.getShadeIndexNormalized(tv.x, -tv.y, tv.z);
+    //  if (i == 0 || i == 219 || i == 162 || i == 193)
+      //  System.out.println(i + " " + shadeIndexes[i]);
+      shadeIndexes2Sided[i] = (tv.z >= 0 ? shadeIndexes[i] 
+          : Shader.getShadeIndexNormalized(-tv.x, tv.y, -tv.z));
+    }
+  }
+
+  private static byte nullShadeIndex = 50;
+  
+  public int getShadeIndex(short normix) {
+    // from Graphics3D.fillTriangle
+    return (normix == ~Normix.NORMIX_NULL
+        || normix == Normix.NORMIX_NULL 
+        ? nullShadeIndex
+        : normix < 0 ? shadeIndexes2Sided[~normix] : shadeIndexes[normix]);
+  }
+
 
 
 }

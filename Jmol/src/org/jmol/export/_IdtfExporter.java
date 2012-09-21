@@ -46,7 +46,6 @@ import org.jmol.util.GData;
 import org.jmol.util.Geodesic;
 import org.jmol.util.MeshSurface;
 import org.jmol.util.Quaternion;
-import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 
 public class _IdtfExporter extends __CartesianExporter {

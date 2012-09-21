@@ -34,7 +34,6 @@ import org.jmol.script.Token;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.FileManager;
-import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 
 import java.awt.Container;

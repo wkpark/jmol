@@ -4044,17 +4044,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * 
    * Sequence is as follows:
    * 
-   * 1) RepaintManager.refresh() checks flags and then calls Viewer.repaint() 2)
-   * Viewer.repaint() invokes display.repaint(), provided display is not null
-   * (headless) 3) The system responds with an invocation of
-   * Jmol.update(Graphics g), which we are routing through Jmol.paint(Graphics
-   * g). 4) Jmol.update invokes Viewer.setScreenDimension(size), which makes the
-   * necessary changes in parameters for any new window size. 5) Jmol.update
-   * invokes Viewer.renderScreenImage(g, size, rectClip) 6)
-   * Viewer.renderScreenImage checks object visibility, invokes render1 to do
+   * 1) RepaintManager.refresh() checks flags and then calls Viewer.repaint() 
+   * 2) Viewer.repaint() invokes display.repaint(), provided display is not null
+   * (headless) 
+   * 3) The system responds with an invocation of Jmol.update(Graphics g), which we are routing through Jmol.paint(Graphics g). 
+   * 4) Jmol.update invokes Viewer.setScreenDimension(size), which makes the
+   * necessary changes in parameters for any new window size. 
+   * 5) Jmol.update invokes Viewer.renderScreenImage(g, size, rectClip) 
+   * 6) Viewer.renderScreenImage checks object visibility, invokes render1 to do
    * the actual creation of the image pixel map and send it to the screen, and
-   * then invokes repaintView() 7) Viewer.repaintView() invokes
-   * RepaintManager.repaintDone(), to clear the flags and then use notify() to
+   * then invokes repaintView() 
+   * 7) Viewer.repaintView() invokes RepaintManager.repaintDone(), to clear the flags and then use notify() to
    * release any threads holding on wait().
    * 
    * @param mode

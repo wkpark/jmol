@@ -39,6 +39,7 @@ import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.MeasurementPending;
 import org.jmol.script.ScriptEvaluator;
 import org.jmol.script.Token;
+import org.jmol.thread.HoverWatcherThread;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Colix;
 import org.jmol.util.Escape;
@@ -398,51 +399,11 @@ public class ActionManager {
     mouseWheelFactor = factor;
   }
   
-  protected class Mouse {
-    protected int x = -1000;
-    protected int y = -1000;
-    protected int modifiers = 0;
-    protected long time = -1;
-    //private int type;
-    
-    /**
-     * @param type  -- for debugging 
-     */
-    protected Mouse(int type) {
-      //this.type = type;
-    }
-    
-    protected void set(long time, int x, int y, int modifiers) {
-      this.time = time;
-      this.x = x;
-      this.y = y;
-      this.modifiers = modifiers;
-    }
-
-    /**
-     * @param why  - for debugging purposes 
-     */
-    protected void setCurrent(int why) {
-      time = current.time;
-      x = current.x;
-      y = current.y;
-      modifiers = current.modifiers;
-    }
-
-    public boolean inRange(int x, int y) {
-      return (Math.abs(this.x - x) <= xyRange && Math.abs(this.y - y) <= xyRange);
-    }
-    
-    public boolean check(int x, int y, int modifiers, long time, long delayMax) {
-      return (inRange(x, y) && this.modifiers == modifiers && (time - this.time) < delayMax);
-    }
-  }
-  
-  protected final Mouse current = new Mouse(0);
-  protected final Mouse moved = new Mouse(1);
-  private final Mouse clicked = new Mouse(2);
-  private final Mouse pressed = new Mouse(3);
-  private final Mouse dragged = new Mouse(4);
+  protected final MouseState current = new MouseState();
+  protected final MouseState moved = new MouseState();
+  private final MouseState clicked = new MouseState();
+  private final MouseState pressed = new MouseState();
+  private final MouseState dragged = new MouseState();
 
   protected void setCurrent(long time, int x, int y, int mods) {
     hoverOff();
@@ -552,9 +513,7 @@ public class ActionManager {
         if (hoverWatcherThread != null)
           return;
         current.time = -1;
-        hoverWatcherThread = new Thread(new HoverWatcher());
-        hoverWatcherThread.setName("HoverWatcher");
-        hoverWatcherThread.start();
+        hoverWatcherThread = new HoverWatcherThread(this, current, moved, viewer);
       } else {
         if (hoverWatcherThread == null)
           return;
@@ -672,7 +631,7 @@ public class ActionManager {
     switch (action) {
     case Binding.MOVED:
       setCurrent(time, x, y, modifiers);
-      moved.setCurrent(Binding.MOVED);
+      moved.setCurrent(current, Binding.MOVED);
       if (measurementPending != null || hoverActive)
         checkPointOrAtomClicked(x, y, 0, 0, time, false, Binding.MOVED);
       else if (isZoomArea(x))
@@ -693,9 +652,9 @@ public class ActionManager {
     case Binding.CLICKED:
       setMouseMode();
       setCurrent(time, x, y, modifiers);
-      clickedCount = (count > 1 ? count : clicked.check(x, y, modifiers, time,
+      clickedCount = (count > 1 ? count : clicked.check(xyRange, x, y, modifiers, time,
           MAX_DOUBLE_CLICK_MILLIS) ? clickedCount + 1 : 1);
-      clicked.setCurrent(Binding.CLICKED);
+      clicked.setCurrent(current, Binding.CLICKED);
       viewer.setFocus();
       if (atomPickingMode != PICKING_SELECT_ATOM
           && isBound(Binding.getMouseAction(Integer.MIN_VALUE, modifiers),
@@ -709,7 +668,7 @@ public class ActionManager {
       int deltaX = x - dragged.x;
       int deltaY = y - dragged.y;
       setCurrent(time, x, y, modifiers);
-      dragged.setCurrent(Binding.DRAGGED);
+      dragged.setCurrent(current, Binding.DRAGGED);
       if (atomPickingMode != PICKING_ASSIGN_ATOM)
         exitMeasurementMode();
       action = Binding.getMouseAction(pressedCount, modifiers);
@@ -719,10 +678,10 @@ public class ActionManager {
     case Binding.PRESSED:
       setMouseMode();
       setCurrent(time, x, y, modifiers);
-      pressedCount = (pressed.check(x, y, modifiers, time,
+      pressedCount = (pressed.check(xyRange, x, y, modifiers, time,
           MAX_DOUBLE_CLICK_MILLIS) ? pressedCount + 1 : 1);
-      pressed.setCurrent(Binding.PRESSED);
-      dragged.setCurrent(Binding.PRESSED);
+      pressed.setCurrent(current, Binding.PRESSED);
+      dragged.setCurrent(current, Binding.PRESSED);
       viewer.setFocus();
       boolean isSelectAndDrag = isBound(Binding.getMouseAction(
           Integer.MIN_VALUE, modifiers), ACTION_selectAndDrag);
@@ -809,7 +768,7 @@ public class ActionManager {
     case Binding.RELEASED:
       setCurrent(time, x, y, modifiers);
       viewer.spinXYBy(0, 0, 0);
-      boolean dragRelease = !pressed.check(x, y, modifiers, time,
+      boolean dragRelease = !pressed.check(xyRange, x, y, modifiers, time,
           Long.MAX_VALUE);
       viewer.setInMotion(false);
       viewer.setCursor(JmolConstants.CURSOR_DEFAULT);
@@ -836,7 +795,7 @@ public class ActionManager {
           exitMeasurementMode();
           viewer.refresh(3, "bond dropped");
         } else {
-          if (pressed.inRange(dragged.x, dragged.y)) {
+          if (pressed.inRange(xyRange, dragged.x, dragged.y)) {
             String s = "assign atom ({" + dragAtomIndex + "}) \""
                 + pickAtomAssignType + "\"";
             if (isPickAtomAssignCharge) {
@@ -1470,9 +1429,15 @@ public class ActionManager {
       viewer.script("!measure " + measurementPending.getMeasurementScript(" ", true));
     exitMeasurementMode();
   }
-
-  public void hoverOn(int atomIndex) {
-    viewer.hoverOn(atomIndex, Binding.getMouseAction(clickedCount, moved.modifiers));
+  
+  public void checkHover() {
+    if (!viewer.getInMotion()
+        && !viewer.getSpinOn() && !viewer.getNavOn()
+        && !viewer.checkObjectHovered(current.x, current.y)) {
+      int atomIndex = viewer.findNearestAtomIndex(current.x, current.y);
+      if (atomIndex >= 0)
+        viewer.hoverOn(atomIndex, Binding.getMouseAction(clickedCount, moved.modifiers));
+    }
   }
 
   public void hoverOff() {
@@ -1483,40 +1448,6 @@ public class ActionManager {
     }
   }
 
-  class HoverWatcher implements Runnable {
-    public void run() {
-      Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-      int hoverDelay;
-      try {
-        while (Thread.currentThread().equals(hoverWatcherThread) && (hoverDelay = viewer.getHoverDelay()) > 0) {
-          Thread.sleep(hoverDelay);
-          if (current.x == moved.x && current.y == moved.y
-              && current.time == moved.time) { // the last event was mouse
-                                                  // move
-            long currentTime = System.currentTimeMillis();
-            int howLong = (int) (currentTime - moved.time);
-            if (howLong > hoverDelay) {
-              if (Thread.currentThread().equals(hoverWatcherThread) && !viewer.getInMotion()
-                  && !viewer.getSpinOn() && !viewer.getNavOn()
-                  && !viewer.checkObjectHovered(current.x, current.y)) {
-                int atomIndex = viewer.findNearestAtomIndex(current.x, current.y);
-                if (atomIndex >= 0) {
-                  hoverOn(atomIndex);
-                }
-              }
-            }
-          }
-        }
-      } catch (InterruptedException ie) {
-        Logger.debug("Hover interrupted");
-      } catch (Exception ie) {
-        Logger.debug("Hover Exception: " + ie);
-      }
-    }
-  }
-  
-  //////////////// picking ///////////////////
-  
   private MeasurementPending measurementQueued;
   
   private void resetMeasurement() {

@@ -621,7 +621,7 @@ public class StateManager {
     return version;
   }
 
-  class GlobalSettings {
+  public class GlobalSettings {
 
     Map<String, Object> htNonbooleanParameterValues;
     Map<String, Boolean> htBooleanParameterFlags;
@@ -1381,7 +1381,7 @@ public class StateManager {
       setParameterValue(name, g == null ? "" : (String) g.getParameter(name));
     }
     
-    void setParameterValue(String name, boolean value) {
+    public void setParameterValue(String name, boolean value) {
       name = name.toLowerCase();
       if (htNonbooleanParameterValues.containsKey(name))
         return; // don't allow setting boolean of a numeric

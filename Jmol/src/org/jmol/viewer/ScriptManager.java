@@ -26,16 +26,18 @@ package org.jmol.viewer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jmol.thread.CommandWatcherThread;
+import org.jmol.thread.ScriptQueueThread;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 
-class ScriptManager {
+public class ScriptManager {
 
   Viewer viewer;
   Thread[] queueThreads = new Thread[2];
   boolean[] scriptQueueRunning = new boolean[2];
-  List<List<Object>> scriptQueue = new ArrayList<List<Object>>();
-  Thread commandWatcherThread;
+  public List<List<Object>> scriptQueue = new ArrayList<List<Object>>();
+  CommandWatcherThread commandWatcherThread;
 
   ScriptManager(Viewer viewer) {
     this.viewer = viewer;
@@ -43,6 +45,7 @@ class ScriptManager {
 
   void clear() {
     startCommandWatcher(false);
+    interruptQueueThreads();
   }
 
   //public String addScript(String strScript) {
@@ -130,20 +133,16 @@ class ScriptManager {
     }
   }
 
-  void startScriptQueue(boolean startedByCommandWatcher) {
+  private void startScriptQueue(boolean startedByCommandWatcher) {
     int pt = (startedByCommandWatcher ? 1 : 0);
     if (scriptQueueRunning[pt])
       return;
-    //System.out.println("Script Queue["+pt+"] started with size " + scriptQueue.size());
     scriptQueueRunning[pt] = true;
-    queueThreads[pt] = new Thread(new ScriptQueueRunnable(
-        startedByCommandWatcher, pt));
-    //System.out.println("ScriptManager started " + queueThreads[pt].getName() + " as QueueThread" + pt);
-    queueThreads[pt].setName("QueueThread" + pt);
-    queueThreads[pt].start();
+    queueThreads[pt] = new ScriptQueueThread(
+        this, viewer, startedByCommandWatcher, pt);
   }
 
-  List<Object> getScriptItem(boolean watching, boolean isByCommandWatcher) {
+  public List<Object> getScriptItem(boolean watching, boolean isByCommandWatcher) {
     List<Object> scriptItem = scriptQueue.get(0);
     int flag = (((Integer) scriptItem.get(5)).intValue());
     boolean isOK = (watching ? flag < 0 
@@ -153,81 +152,6 @@ class ScriptManager {
     return (isOK ? scriptItem : null);
   }
 
-  //int level;
-  class ScriptQueueRunnable implements Runnable {
-    boolean startedByCommandThread = false;
-    int pt;
-
-    protected ScriptQueueRunnable(boolean startedByCommandThread, int pt) {
-      this.startedByCommandThread = startedByCommandThread;
-      this.pt = pt;
-    }
-
-    public void run() {
-        while (scriptQueue.size() != 0) {
-          /*  System.out.println("run while size != 0: " + this + " pt=" + this.pt + " size=" + scriptQueue.size());
-           for (int i = 0; i < scriptQueue.size(); i++)
-           System.out.println("queue: " + i + " " + scriptQueue.get(i));
-           System.out.println("running: " + scriptQueueRunning[0] + " "  + queueThreads[0]);
-           System.out.println("running: " + scriptQueueRunning[1] + " "  + queueThreads[1]);
-           */
-          if (!runNextScript())
-            try {
-              Thread.sleep(100); //cycle for the command watcher thread
-            } catch (Exception e) {
-              Logger.error(this + " Exception " + e.getMessage());
-              break; //-- interrupt? 
-            }
-        }
-      //System.out.println("scriptquenerunnable " + pt + " done " + this);
-      queueThreads[pt].interrupt();
-      stop();
-    }
-
-    public void stop() {
-      scriptQueueRunning[pt] = false;
-      queueThreads[pt] = null;      
-      viewer.setSyncDriver(StatusManager.SYNC_ENABLE);
-    }
-
-    private boolean runNextScript() {
-      if (scriptQueue.size() == 0)
-        return false;
-      //Logger.info("SCRIPT QUEUE BUSY" +  scriptQueue.size());
-      List<Object> scriptItem = getScriptItem(false, startedByCommandThread);
-      if (scriptItem == null)
-        return false;
-      String script = (String) scriptItem.get(0);
-      String statusList = (String) scriptItem.get(1);
-      String returnType = (String) scriptItem.get(2);
-      boolean isScriptFile = ((Boolean) scriptItem.get(3)).booleanValue();
-      boolean isQuiet = ((Boolean) scriptItem.get(4)).booleanValue();
-      if (Logger.debugging) {
-        Logger.info("Queue[" + pt + "][" + scriptQueue.size()
-            + "] scripts; running: " + script);
-      }
-      //System.out.println("removing: " + scriptItem);
-      scriptQueue.remove(0);
-      //System.out.println("removed: " + scriptItem);
-      runScript(returnType, script, statusList, isScriptFile, isQuiet);
-      if (scriptQueue.size() == 0) {// might have been cleared with an exit
-        //Logger.info("SCRIPT QUEUE READY", 0);
-        return false;
-      }
-      return true;
-    }
-
-    private void runScript(String returnType, String strScript,
-                           String statusList, boolean isScriptFile,
-                           boolean isQuiet) {
-      //System.out.println("runScript evalstrngwait " + strScript);
-      viewer.evalStringWaitStatus(returnType, strScript, statusList,
-          isScriptFile, isQuiet, true);
-      //System.out.println("runScript evalstrngwait DONE");
-    }
-
-  }
-
   boolean useCommandWatcherThread = false;
 
   synchronized void startCommandWatcher(boolean isStart) {
@@ -235,14 +159,11 @@ class ScriptManager {
     if (isStart) {
       if (commandWatcherThread != null)
         return;
-      commandWatcherThread = new Thread(new CommandWatcher());
-      commandWatcherThread.setName("CommmandWatcherThread");
-      commandWatcherThread.start();
+      commandWatcherThread = new CommandWatcherThread(this);
     } else {
       if (commandWatcherThread == null)
         return;
-      commandWatcherThread.interrupt();
-      commandWatcherThread = null;
+      clearCommandWatcherThread();
     }
     if (Logger.debugging) {
       Logger.info("command watcher " + (isStart ? "started" : "stopped")
@@ -283,42 +204,35 @@ class ScriptManager {
    *  
    */
 
-  class CommandWatcher implements Runnable {
-    public void run() {
-      Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-      int commandDelay = 50; // was 200
-      while (commandWatcherThread != null) {
-        try {
-          Thread.sleep(commandDelay);
-          if (commandWatcherThread != null) {
-            if (scriptQueue.size() > 0) {
-              List<Object> scriptItem = getScriptItem(true, true);
-              if (scriptItem != null) {
-                scriptItem.set(5, Integer.valueOf(0));
-                startScriptQueue(true);
-              }
-            }
-          }
-        } catch (InterruptedException ie) {
-          Logger.warn("CommandWatcher InterruptedException! " + this);
-          break;
-        } catch (Exception ie) {
-          String s = "script processing ERROR:\n\n" + ie.toString();
-          for (int i = 0; i < ie.getStackTrace().length; i++) {
-            s += "\n" + ie.getStackTrace()[i].toString();
-          }
-          Logger.warn("CommandWatcher Exception! " + s);
-          break;
-        }
-      }
-      commandWatcherThread = null;
-    }
-  }
-
   void interruptQueueThreads() {
     for (int i = 0; i < queueThreads.length; i++) {
       if (queueThreads[i] != null)
         queueThreads[i].interrupt();
+    }
+  }
+
+  public void clearCommandWatcherThread() {
+    if (commandWatcherThread == null)
+      return;
+    commandWatcherThread.interrupt();
+    commandWatcherThread = null;
+  }
+
+  public void queueThreadFinished(int pt) {
+    queueThreads[pt].interrupt();
+    scriptQueueRunning[pt] = false;
+    queueThreads[pt] = null;      
+    viewer.setSyncDriver(StatusManager.SYNC_ENABLE);
+  }
+
+  public void runScriptNow() {
+    // from ScriptQueueThread
+    if (scriptQueue.size() > 0) {
+      List<Object> scriptItem = getScriptItem(true, true);
+      if (scriptItem != null) {
+        scriptItem.set(5, Integer.valueOf(0));
+        startScriptQueue(true);
+      }
     }
   }
 }

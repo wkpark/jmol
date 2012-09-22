@@ -24,7 +24,6 @@
 package org.jmol.viewer;
 
 import org.jmol.api.JmolPopupInterface;
-import org.jmol.script.ParallelProcessor;
 import org.jmol.script.ScriptCompiler;
 import org.jmol.script.ScriptContext;
 import org.jmol.script.ScriptEvaluator;
@@ -33,6 +32,8 @@ import org.jmol.script.ScriptVariable;
 import org.jmol.script.ScriptVariableInt;
 import org.jmol.script.Token;
 import org.jmol.shape.Shape;
+import org.jmol.thread.ScriptParallelProcessor;
+import org.jmol.thread.TimeoutThread;
 import org.jmol.i18n.GT;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
@@ -259,7 +260,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private StateManager stateManager;
   private StateManager.GlobalSettings global;
 
-  StateManager.GlobalSettings getGlobalSettings() {
+  public StateManager.GlobalSettings getGlobalSettings() {
     return global;
   }
 
@@ -1380,7 +1381,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     transformManager.setSpinOn(spinOn);
   }
 
-  boolean getSpinOn() {
+  public boolean getSpinOn() {
     return transformManager.getSpinOn();
   }
 
@@ -1390,7 +1391,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     transformManager.setNavOn(navOn);
   }
 
-  boolean getNavOn() {
+  public boolean getNavOn() {
     return transformManager.getNavOn();
   }
 
@@ -1824,8 +1825,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       clearScriptQueue();
       haltScriptExecution();
       stopAnimationThreads("setModeMouse NONE");
-      scriptManager.startCommandWatcher(false);
-      scriptManager.interruptQueueThreads();
+      scriptManager.clear();
       gdata.destroy();
       if (jmolpopup != null)
         jmolpopup.dispose();
@@ -3016,7 +3016,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getBoxInfo(bs, scale);
   }
 
-  float calcRotationRadius(Point3f center) {
+  public float calcRotationRadius(Point3f center) {
     return modelSet.calcRotationRadius(animationManager.currentModelIndex,
         center);
   }
@@ -4639,7 +4639,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   int scriptIndex;
   boolean isScriptQueued = true;
 
-  synchronized Object evalStringWaitStatus(String returnType, String strScript,
+  public synchronized Object evalStringWaitStatus(String returnType, String strScript,
                                            String statusList,
                                            boolean isScriptFile,
                                            boolean isQuiet, boolean isQueued) {
@@ -5048,7 +5048,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     refresh(3, "hover on atom");
   }
 
-  int getHoverDelay() {
+  public int getHoverDelay() {
     return global.modelKitMode ? 20 : global.hoverDelayMs;
   }
 
@@ -8200,7 +8200,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         getVisibleFramesBitSet());
   }
 
-  boolean checkObjectHovered(int x, int y) {
+  public boolean checkObjectHovered(int x, int y) {
     return (shapeManager != null && shapeManager.checkObjectHovered(x, y,
         getVisibleFramesBitSet(), getBondPicking()));
   }
@@ -9926,7 +9926,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (executor != null || nProcessors < 2)
       return executor; // note -- a Java 1.5 function
     try {
-      executor = ParallelProcessor.getExecutor();
+      executor = ScriptParallelProcessor.getExecutor();
     } catch (Exception e) {
       executor = null;
     } catch (Error er) {
@@ -10503,7 +10503,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelSet.setFrameDelayMs(millis, getVisibleFramesBitSet());
   }
 
-  long getFrameDelayMs(int i) {
+  public long getFrameDelayMs(int i) {
     return modelSet.getFrameDelayMs(i);
   }
 
@@ -10517,18 +10517,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getBaseModelBitSet(getCurrentModelIndex());
   }
 
-  Map<String, TimeoutThread> timeouts;
+  Map<String, Object> timeouts;
+
+  public Map<String, Object> getTimeouts() {
+    return timeouts;
+  }
 
   public void clearTimeouts() {
-    if (timeouts == null)
-      return;
-    Iterator<TimeoutThread> e = timeouts.values().iterator();
-    while (e.hasNext()) {
-      TimeoutThread t = e.next();
-      if (!t.script.equals("exitJmol"))
-        t.interrupt();
-    }
-    timeouts.clear();
+    if (timeouts != null)
+      TimeoutThread.clear(timeouts);
   }
 
   public void setTimeout(String name, int mSec, String script) {
@@ -10537,31 +10534,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return;
     }
     if (timeouts == null) {
-      timeouts = new Hashtable<String, TimeoutThread>();
+      timeouts = new Hashtable<String, Object>();
     }
-    if (mSec == 0) {
-      Thread t = timeouts.get(name);
-      if (t != null) {
-        t.interrupt();
-        timeouts.remove(name);
-      }
-      return;
-    }
-    TimeoutThread t = timeouts.get(name);
-    if (t != null) {
-      t.set(mSec, script);
-      return;
-    }
-    t = new TimeoutThread(this, name, mSec, script);
-    timeouts.put(name, t);
-    t.start();
+    TimeoutThread.setTimeout(this, timeouts, name, mSec, script);
   }
 
   public void triggerTimeout(String name) {
-    TimeoutThread t;
-    if (!haveDisplay || timeouts == null || (t = timeouts.get(name)) == null)
+    if (!haveDisplay || timeouts == null)
       return;
-    t.trigger();
+    TimeoutThread.trigger(timeouts, name);
   }
 
   public void clearTimeout(String name) {
@@ -10569,18 +10550,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public String showTimeout(String name) {
-    if (!haveDisplay)
-      return "";
-    StringBuffer sb = new StringBuffer();
-    if (timeouts != null) {
-      Iterator<TimeoutThread> e = timeouts.values().iterator();
-      while (e.hasNext()) {
-        TimeoutThread t = e.next();
-        if (name == null || t.name.equalsIgnoreCase(name))
-          sb.append(t.toString()).append("\n");
-      }
-    }
-    return (sb.length() > 0 ? sb.toString() : "<no timeouts set>");
+    return (haveDisplay ? TimeoutThread.showTimeout(timeouts, name) : "");
   }
 
   public void calculatePartialCharges(BitSet bsSelected) {

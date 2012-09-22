@@ -23,8 +23,8 @@
  */
 package org.jmol.viewer;
 
+import org.jmol.thread.AnimationThread;
 import org.jmol.util.Escape;
-import org.jmol.util.Logger;
 
 import org.jmol.constant.EnumAnimationMode;
 import org.jmol.modelset.ModelSet;
@@ -33,7 +33,7 @@ import java.util.Hashtable;
 import java.util.BitSet;
 import java.util.Map;
 
-class AnimationManager {
+public class AnimationManager {
 
   protected Viewer viewer;
   
@@ -43,21 +43,21 @@ class AnimationManager {
 
   EnumAnimationMode animationReplayMode = EnumAnimationMode.ONCE;
 
-  boolean animationOn;
+  public boolean animationOn;
   boolean animationPaused;
   boolean inMotion;
   
-  int animationFps;  // set in stateManager
+  public int animationFps;  // set in stateManager
   int animationDirection = 1;
   int currentDirection = 1;
-  int currentModelIndex;
+  public int currentModelIndex;
   int firstModelIndex;
   int frameStep;
   int lastModelIndex;
    
-  protected int firstFrameDelayMs;
-  protected int lastFrameDelayMs;
-  protected int lastModelPainted;
+  public int firstFrameDelayMs;
+  public int lastFrameDelayMs;
+  public int lastModelPainted;
   
   private AnimationThread animationThread;
   private int backgroundModelIndex = -1;
@@ -296,7 +296,7 @@ class AnimationManager {
     viewer.setBooleanProperty("_animating", TF);
   }
   
-  void setAnimationOn(boolean animationOn) {
+  public void setAnimationOn(boolean animationOn) {
     if (!animationOn || !viewer.haveModelSet() || viewer.isHeadless()) {
       setAnimationOff(false);
       return;
@@ -307,7 +307,7 @@ class AnimationManager {
     resumeAnimation();
   }
 
-  void setAnimationOff(boolean isPaused) {
+  public void setAnimationOff(boolean isPaused) {
     if (animationThread != null) {
       animationThread.interrupt();
       animationThread = null;
@@ -344,12 +344,12 @@ class AnimationManager {
     animationPaused = false;
     if (animationThread == null) {
       intAnimThread++;
-      animationThread = new AnimationThread(firstModelIndex, lastModelIndex, intAnimThread);
+      animationThread = new AnimationThread(this, viewer, firstModelIndex, lastModelIndex, intAnimThread);
       animationThread.start();
     }
   }
   
-  boolean setAnimationNext() {
+  public boolean setAnimationNext() {
     return setAnimationRelative(animationDirection);
   }
 
@@ -407,79 +407,6 @@ class AnimationManager {
     for (int i = i0; i <= i1; i++)
       nsec += viewer.getFrameDelayMs(i) / 1000f;
     return nsec;
-  }
-
-  class AnimationThread extends Thread {
-    final int framePointer;
-    final int framePointer2;
-    int intThread;
-
-    AnimationThread(int framePointer, int framePointer2, int intAnimThread) {
-      this.framePointer = framePointer;
-      this.framePointer2 = framePointer2;
-      this.setName("AnimationThread");
-      intThread = intAnimThread;
-    }
-
-    @Override
-    public void run() {
-      long timeBegin = System.currentTimeMillis();
-      int targetTime = 0;
-      int sleepTime;
-      //int holdTime = 0;
-      if (Logger.debugging)
-        Logger.debug("animation thread " + intThread + " running");
-      viewer.requestRepaintAndWait();
-
-      try {
-        sleepTime = targetTime - (int) (System.currentTimeMillis() - timeBegin);
-        if (sleepTime > 0)
-          Thread.sleep(sleepTime);
-        boolean isFirst = true;
-        while (!isInterrupted() && animationOn) {
-          if (currentModelIndex == framePointer) {
-            targetTime += firstFrameDelayMs;
-            sleepTime = targetTime
-                - (int) (System.currentTimeMillis() - timeBegin);
-            if (sleepTime > 0)
-              Thread.sleep(sleepTime);
-          }
-          if (currentModelIndex == framePointer2) {
-            targetTime += lastFrameDelayMs;
-            sleepTime = targetTime
-                - (int) (System.currentTimeMillis() - timeBegin);
-            if (sleepTime > 0)
-              Thread.sleep(sleepTime);
-          }
-          if (!isFirst && lastModelPainted == currentModelIndex && !setAnimationNext()) {
-            Logger.debug("animation thread " + intThread + " exiting");
-            setAnimationOff(false);
-            return;
-          }
-          isFirst = false;
-          targetTime += (int)((1000f / animationFps) + viewer.getFrameDelayMs(currentModelIndex));
-          sleepTime = targetTime
-              - (int) (System.currentTimeMillis() - timeBegin);
-
-          while(!isInterrupted() && animationOn && !viewer.getRefreshing()) {
-            Thread.sleep(10); 
-          }
-          if (!viewer.getSpinOn())
-            viewer.refresh(1, "animationThread");
-          sleepTime = targetTime
-              - (int) (System.currentTimeMillis() - timeBegin);
-          if (sleepTime > 0)
-            Thread.sleep(sleepTime);
-        }
-      } catch (InterruptedException ie) {
-        Logger.debug("animation thread interrupted!");
-        try {
-          setAnimationOn(false);
-        } catch (Exception e) {
-          // null pointer -- don't care;
-        }
-      }
-    }
   }
  
 }

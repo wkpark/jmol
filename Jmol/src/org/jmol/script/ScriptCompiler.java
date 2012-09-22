@@ -23,6 +23,7 @@
 
 package org.jmol.script;
 
+import org.jmol.thread.ScriptParallelProcessor;
 import org.jmol.util.Escape;
 import org.jmol.util.CommandHistory;
 import org.jmol.util.JpegEncoder;
@@ -1532,7 +1533,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       if (nTokens == 1) {
         if (thisFunction != null)
           vFunctionStack.add(0, thisFunction);
-        thisFunction = (tokCommand == Token.parallel ? new ParallelProcessor(ident, tokCommand) : new ScriptFunction(ident, tokCommand));
+        thisFunction = (tokCommand == Token.parallel ? new ScriptParallelProcessor(ident, tokCommand) : new ScriptFunction(ident, tokCommand));
         htUserFunctions.put(ident, Boolean.TRUE);
         flowContext.setFunction(thisFunction);
         break; // function f
@@ -1958,7 +1959,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         flowContext = new ScriptFlowContext(this, ct, pt, flowContext);
         if (thisFunction != null)
           vFunctionStack.add(0, thisFunction);
-        thisFunction = new ParallelProcessor("", tokCommand);
+        thisFunction = new ScriptParallelProcessor("", tokCommand);
         flowContext.setFunction(thisFunction);
         pushCount++;
         vPush.add(ct);

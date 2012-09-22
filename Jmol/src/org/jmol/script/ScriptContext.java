@@ -27,13 +27,15 @@ package org.jmol.script;
 
 import java.util.Map;
 
+import org.jmol.thread.ScriptParallelProcessor;
+
 public class ScriptContext {
   /**
    * 
    */
   public String fullpath = "";
   public String scriptFileName;
-  public ParallelProcessor parallelProcessor;
+  public ScriptParallelProcessor parallelProcessor;
   public String functionName;
   public String script;
   public short[] lineNumbers;

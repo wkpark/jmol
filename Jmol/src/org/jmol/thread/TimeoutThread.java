@@ -23,33 +23,36 @@
  *  02110-1301, USA.
  */
 
-package org.jmol.viewer;
+package org.jmol.thread;
+
+import java.util.Iterator;
+import java.util.Map;
 
 import org.jmol.util.Logger;
+import org.jmol.viewer.Viewer;
 
-class TimeoutThread extends Thread {
-  String name;
+public class TimeoutThread extends JmolThread {
+  public String script;
   private int ms;
   private long targetTime;
   private int status;
-  String script;
   private boolean triggered = true;
   private Viewer viewer;
   
-  TimeoutThread(Viewer viewer, String name, int ms, String script) {
+  public TimeoutThread(Viewer viewer, String name, int ms, String script) {
     this.viewer = viewer;
-    this.name = name;
+    setMyName(name);
     set(ms, script);
   }
   
-  void set(int ms, String script) {
+  public void set(int ms, String script) {
     this.ms = ms;
     targetTime = System.currentTimeMillis() + Math.abs(ms);
     if (script != null)
       this.script = script; 
   }
 
-  void trigger() {
+  public void trigger() {
     triggered = (ms < 0);
   }
   
@@ -63,11 +66,11 @@ class TimeoutThread extends Thread {
   public void run() {
     if (script == null || script.length() == 0 || ms == 0)
       return;
-    Thread.currentThread().setName("timeout " + name);
     //if (true || Logger.debugging) 
     //Logger.info(toString());
     Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
     try {
+      Map<String, Object> timeouts = viewer.getTimeouts();
       while (true) {
         Thread.sleep(26);
         if (targetTime > System.currentTimeMillis())
@@ -75,10 +78,10 @@ class TimeoutThread extends Thread {
         status++;
         boolean looping = (ms < 0);
         targetTime += Math.abs(ms);
-        if (viewer.timeouts.get(name) == null)
+        if (timeouts.get(name) == null)
           break;
         if (!looping)
-          viewer.timeouts.remove(name);
+          timeouts.remove(name);
         if (triggered) {
           triggered = false;
           viewer.evalStringQuiet((looping ? script + ";\ntimeout ID \"" + name + "\";" : script));
@@ -92,6 +95,53 @@ class TimeoutThread extends Thread {
     } catch (Exception ie) {
       Logger.info("Timeout " + name + " Exception: " + ie);
     }
-    viewer.timeouts.remove(name);
+    viewer.getTimeouts().remove(name);
+  }
+
+  public static void clear(Map<String, Object> timeouts) {
+    Iterator<Object> e = timeouts.values().iterator();
+    while (e.hasNext()) {
+      TimeoutThread t = (TimeoutThread) e.next();
+      if (!t.script.equals("exitJmol"))
+        t.interrupt();
+    }
+    timeouts.clear();
+  }
+
+  public static void setTimeout(Viewer viewer, Map<String, Object> timeouts, String name, int mSec, String script) {
+    TimeoutThread t = (TimeoutThread) timeouts.get(name);
+    if (mSec == 0) {
+      if (t != null) {
+        t.interrupt();
+        timeouts.remove(name);
+      }
+      return;
+    }
+    if (t != null) {
+      t.set(mSec, script);
+      return;
+    }
+    t = new TimeoutThread(viewer, name, mSec, script);
+    timeouts.put(name, t);
+    t.start();
+  }
+
+  public static void trigger(Map<String, Object> timeouts, String name) {
+    TimeoutThread t = (TimeoutThread) timeouts.get(name);
+    if (t != null)
+      t.trigger();
+  }
+
+  public static String showTimeout(Map<String, Object> timeouts, String name) {
+    StringBuffer sb = new StringBuffer();
+    if (timeouts != null) {
+      Iterator<Object> e = timeouts.values().iterator();
+      while (e.hasNext()) {
+        TimeoutThread t = (TimeoutThread) e.next();
+        if (name == null || t.name.equalsIgnoreCase(name))
+          sb.append(t.toString()).append("\n");
+      }
+    }
+    return (sb.length() > 0 ? sb.toString() : "<no timeouts set>");
   }
 }

@@ -296,7 +296,7 @@ public class Token {
   final static int casecmd      = 11 | flowCommand;
   final static int catchcmd     = 12 | flowCommand;
   final static int defaultcmd   = 13 | flowCommand;
-  final static int trycmd       = 14 | flowCommand | noArgs;
+  public final static int trycmd       = 14 | flowCommand | noArgs;
   
   final static int animation    = scriptCommand | 1;
   final static int assign       = scriptCommand | 2;

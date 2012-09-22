@@ -15,4 +15,8 @@ public interface MinimizerInterface {
   public abstract void setProperty(String propertyName, Object propertyValue);
   public abstract Object getProperty(String propertyName, int param);
   public abstract void calculatePartialCharges(Bond[] bonds, int bondCount, Atom[] atoms, BitSet bsAtoms);
+  public abstract boolean startMinimization();
+  public abstract boolean stepMinimization();
+  public abstract void endMinimization();
+  public abstract boolean minimizationOn();
 }

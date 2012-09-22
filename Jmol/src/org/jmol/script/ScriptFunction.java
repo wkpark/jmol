@@ -53,7 +53,7 @@ public class ScriptFunction {
   public String name;
   int nParameters;
   List<String> names = new ArrayList<String>();
-  int tok;
+  public int tok;
 
   Map<String, String> variables = new Hashtable<String, String>();
   public boolean isVariable(String ident) {
@@ -66,7 +66,7 @@ public class ScriptFunction {
   short[] lineNumbers;
   String script;
 
-  ScriptFunction(String name, int tok) {
+  protected ScriptFunction(String name, int tok) {
     this.name = name;
     this.tok = tok;
     typeName = Token.nameOf(tok);

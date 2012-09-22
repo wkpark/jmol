@@ -38,6 +38,7 @@ import org.jmol.minimize.forcefield.ForceFieldUFF;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;
+import org.jmol.thread.MinimizationThread;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
@@ -496,7 +497,10 @@ public class Minimizer implements MinimizerInterface {
    * Minimization thead support
    ****************************************************************/
 
-  boolean minimizationOn;
+  private boolean minimizationOn;
+  public boolean minimizationOn() {
+    return  minimizationOn();
+  }
 
   private MinimizationThread minimizationThread;
 
@@ -511,7 +515,7 @@ public class Minimizer implements MinimizerInterface {
       return;
     }
     if (minimizationThread == null) {
-      minimizationThread = new MinimizationThread();
+      minimizationThread = new MinimizationThread(this);
       minimizationThread.start();
     }
   }
@@ -550,7 +554,7 @@ public class Minimizer implements MinimizerInterface {
     return true;
   }
 
-  boolean stepMinimization() {
+  public boolean stepMinimization() {
     if (!minimizationOn)
       return false;
     boolean doRefresh = (!isSilent && viewer.getBooleanProperty("minimizationRefresh"));
@@ -568,7 +572,7 @@ public class Minimizer implements MinimizerInterface {
     return going;
   }
 
-  void endMinimization() {
+  public void endMinimization() {
     updateAtomXYZ();
     setMinimizationOn(false);
     boolean failed = pFF.detectExplosion();
@@ -601,7 +605,7 @@ public class Minimizer implements MinimizerInterface {
     updateAtomXYZ();
   }
 
-  private void stopMinimization(boolean coordAreOK) {
+  public void stopMinimization(boolean coordAreOK) {
     if (!minimizationOn)
       return;
     setMinimizationOn(false);
@@ -633,39 +637,6 @@ public class Minimizer implements MinimizerInterface {
     endMinimization();
   }
   
-  class MinimizationThread extends Thread {
-    
-    MinimizationThread() {
-      this.setName("MinimizationThread");
-    }
-    
-    @Override
-    public void run() {
-      long startTime = System.currentTimeMillis();
-      long lastRepaintTime = startTime;
-      
-      //should save the atom coordinates
-      if (!startMinimization())
-          return;
-      try {
-        do {
-          long currentTime = System.currentTimeMillis();
-          int elapsed = (int) (currentTime - lastRepaintTime);
-          int sleepTime = 33 - elapsed;
-          if (sleepTime > 0)
-            Thread.sleep(sleepTime);
-          lastRepaintTime = currentTime = System.currentTimeMillis();
-          if (!stepMinimization())
-            endMinimization();            
-          elapsed = (int) (currentTime - startTime);
-        } while (minimizationOn && !isInterrupted());
-      } catch (Exception e) {
-        if (minimizationOn)
-          Logger.error(e.getMessage());
-      }
-    }
-  }
-
   public void report(String msg, boolean isEcho) {
     if (isSilent)
       Logger.info(msg);

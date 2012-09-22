@@ -21,21 +21,24 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.script;
+package org.jmol.thread;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import org.jmol.script.ScriptContext;
+import org.jmol.script.ScriptFunction;
+import org.jmol.script.ScriptProcess;
 import org.jmol.util.Logger;
 import org.jmol.viewer.ShapeManager;
 import org.jmol.viewer.Viewer;
 
-public class ParallelProcessor extends ScriptFunction {
+public class ScriptParallelProcessor extends ScriptFunction {
 
   
-  ParallelProcessor(String name, int tok) {
+  public ScriptParallelProcessor(String name, int tok) {
     super(name, tok);
   }
 
@@ -43,26 +46,9 @@ public class ParallelProcessor extends ScriptFunction {
     return Executors.newCachedThreadPool();
   }
   
-  /**
-   * the idea here is that the process { ... } command would collect and
-   * preprocess the scripts, then pass them here for storage until the end of
-   * the parallel block is reached.
-   */
-
-  static class Process {
-    String processName;
-    ScriptContext context;
-
-    Process(String name, ScriptContext context) {
-      //System.out.println("Creating process " + name);
-      processName = name;
-      this.context = context;
-    }
-  }
-
   Viewer viewer;
-  volatile int counter = 0;
-  volatile Error error = null;
+  public volatile int counter = 0;
+  public volatile Error error = null;
   Object lock = new Object() ;
   
   public void runAllProcesses(Viewer viewer, boolean inParallel) {
@@ -113,66 +99,30 @@ public class ParallelProcessor extends ScriptFunction {
     }
   }
 
-  void clearShapeManager(Error er) {
+  public void clearShapeManager(Error er) {
     synchronized (this) {
       this.error = er;
       this.notifyAll();
     }
   }
 
-  List<Process> processes = new ArrayList<Process>();
+  List<ScriptProcess> processes = new ArrayList<ScriptProcess>();
 
-  void addProcess(String name, ScriptContext context) {
-    processes.add(new Process(name, context));
+  public void addProcess(String name, ScriptContext context) {
+    processes.add(new ScriptProcess(name, context));
   }
 
-  class RunProcess implements Runnable {
-    private Process process;
-    private Object processLock;
-    private ShapeManager shapeManager;
-    /**
-     * 
-     * @param process
-     * @param lock
-     * @param shapeManager 
-     */
-    public RunProcess(Process process, Object lock, ShapeManager shapeManager) {
-      this.process = process;
-      processLock = lock;
-      this.shapeManager = shapeManager;
-    }
-
-    public void run() {
-      try {
-        if (error == null) {
-          if (Logger.debugging)
-            Logger.debug("Running process " + process.processName + " "
-                + process.context.pc + " - " + (process.context.pcEnd - 1));
-          viewer.eval(process.context, shapeManager);
-          if (Logger.debugging)
-            Logger.debug("Process " + process.processName + " complete");
-        }
-      } catch (Exception e) {
-        if (tok != Token.trycmd)
-          e.printStackTrace();
-      } catch (Error er) {
-        clearShapeManager(er);
-      } finally {
-        synchronized (processLock) {
-          --counter;
-          processLock.notifyAll();
-        }
-      }
-    }
-  }
-
-  private void runProcess(final Process process, ShapeManager shapeManager) {
-    RunProcess r = new RunProcess(process, lock, shapeManager);
+  private void runProcess(final ScriptProcess process, ShapeManager shapeManager) {
+    ScriptProcessRunnable r = new ScriptProcessRunnable(this, process, lock, shapeManager);
     Executor exec = (shapeManager == null ? null : (Executor) viewer.getExecutor());
     if (exec != null) {
       exec.execute(r);
     } else {
       r.run();
     }
+  }
+
+  public void eval(ScriptContext context, ShapeManager shapeManager) {
+    viewer.eval(context, shapeManager);
   }
 }

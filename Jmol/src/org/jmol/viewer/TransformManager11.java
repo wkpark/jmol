@@ -459,7 +459,7 @@ class TransformManager11 extends TransformManager {
   }
 
   @Override
-  protected void setNavigationOffsetRelative(boolean navigatingSurface) {
+  public void setNavigationOffsetRelative(boolean navigatingSurface) {
     if (navigatingSurface) {
       navigateSurface(Integer.MAX_VALUE);
       return;
@@ -631,7 +631,7 @@ class TransformManager11 extends TransformManager {
   }
 
   @Override
-  void navigate(float seconds, Point3f pt) {
+  public void navigate(float seconds, Point3f pt) {
     if (seconds > 0) {
       navigateTo(seconds, null, Float.NaN, pt, Float.NaN, Float.NaN, Float.NaN);
       return;
@@ -660,7 +660,7 @@ class TransformManager11 extends TransformManager {
   }
 
   @Override
-  void setNavigationDepthPercent(float timeSec, float percent) {
+  public void setNavigationDepthPercent(float timeSec, float percent) {
     if (timeSec > 0) {
       navigateTo(timeSec, null, Float.NaN, null, percent, Float.NaN, Float.NaN);
       return;
@@ -680,7 +680,7 @@ class TransformManager11 extends TransformManager {
   }
 
   @Override
-  void navTranslatePercent(float seconds, float x, float y) {
+  public void navTranslatePercent(float seconds, float x, float y) {
     // if either is Float.NaN, then the other is RELATIVE to current
     transformPoint(navigationCenter, navigationOffset);
     if (seconds >= 0) {
@@ -938,7 +938,7 @@ class TransformManager11 extends TransformManager {
   }
 
   @Override
-  float getNavigationDepthPercent() {
+  public float getNavigationDepthPercent() {
     return navigationDepth;
   }
 
@@ -980,7 +980,7 @@ class TransformManager11 extends TransformManager {
   }
 
   @Override
-  float getNavigationOffsetPercent(char XorY) {
+  public float getNavigationOffsetPercent(char XorY) {
     getNavigationOffset();
     if (width == 0 || height == 0)
       return 0;

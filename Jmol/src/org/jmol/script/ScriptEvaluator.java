@@ -62,6 +62,7 @@ import org.jmol.modelset.ModelCollection.StateScript;
 import org.jmol.shape.MeshCollection;
 import org.jmol.shape.Object2d;
 import org.jmol.shape.Shape;
+import org.jmol.thread.ScriptParallelProcessor;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
@@ -2023,7 +2024,7 @@ public class ScriptEvaluator {
     return v;
   }
 
-  private ParallelProcessor parallelProcessor;
+  private ScriptParallelProcessor parallelProcessor;
 
   @SuppressWarnings("unchecked")
   public float evalFunctionFloat(Object func, Object params, float[] values) {
@@ -2060,10 +2061,10 @@ public class ScriptEvaluator {
     thisContext.isFunction = !isTry;
     functionName = name;
 
-    if (function instanceof ParallelProcessor) {
+    if (function instanceof ScriptParallelProcessor) {
       synchronized (function) // can't do this -- too general
       {
-        parallelProcessor = (ParallelProcessor) function;
+        parallelProcessor = (ScriptParallelProcessor) function;
         vProcess = null;
         runFunction(function, params, tokenAtom);
 
@@ -2074,7 +2075,7 @@ public class ScriptEvaluator {
           viewer.resetError();
           parallelProcessor.addProcess("try", sc);
         }
-        ((ParallelProcessor) function).runAllProcesses(viewer, !isTry);
+        ((ScriptParallelProcessor) function).runAllProcesses(viewer, !isTry);
         if (isTry) {
           String err = (String) viewer.getParameter("_errormessage");
           if (err.length() > 0) {

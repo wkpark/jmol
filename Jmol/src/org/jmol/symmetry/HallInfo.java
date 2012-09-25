@@ -78,7 +78,8 @@ class HallInfo {
       latticeExtension = HallTranslation.getLatticeExtension(latticeCode,
           isCentrosymmetric);
       str = extractVectorInfo(str) + latticeExtension;
-      Logger.info("Hallinfo: " + hallSymbol + " " + str);
+      if (Logger.debugging)
+        Logger.info("Hallinfo: " + hallSymbol + " " + str);
       int prevOrder = 0;
       char prevAxisType = '\0';
       primitiveHallSymbol = "P";

@@ -24,7 +24,6 @@
 package org.jmol.awt;
 
 import java.awt.Component;
-import java.awt.Event;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -35,6 +34,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
 import org.jmol.api.JmolMouseInterface;
+import org.jmol.api.Event;
 import org.jmol.export.image.ImageCreator;
 import org.jmol.script.Token;
 import org.jmol.util.Escape;

@@ -1292,6 +1292,9 @@ public class AtomSetCollection {
       for (int i = iAtomFirst; i < atomMax; i++) {
         if (atoms[i].ignoreSymmetry)
           continue;
+        if (bsAtoms != null && !bsAtoms.get(i))
+          continue;
+
         symmetry.newSpaceGroupPoint(iSym, atoms[i], ptAtom, transX, transY,
             transZ);
         Atom special = null;
@@ -1420,12 +1423,16 @@ public class AtomSetCollection {
       Matrix4f mat = biomts.get(i);
       //Vector3f trans = new Vector3f();    
       for (int iAtom = iAtomFirst; iAtom < atomMax; iAtom++) {
+        if (bsAtoms != null && !bsAtoms.get(iAtom))
+          continue;
         try {
           int atomSite = atoms[iAtom].atomSite;
           Atom atom1;
           if (addBonds)
             atomMap[atomSite] = atomCount;
             atom1 = newCloneAtom(atoms[iAtom]);
+            if (bsAtoms != null)
+              bsAtoms.set(atom1.atomIndex);
             atom1.atomSite = atomSite;
           mat.transform(atom1);
           atom1.bsSymmetry = BitSetUtil.setBit(i);

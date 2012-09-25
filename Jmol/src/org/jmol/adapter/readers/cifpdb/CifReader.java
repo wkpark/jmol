@@ -31,16 +31,21 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolLineReader;
 import org.jmol.constant.EnumStructure;
 
+import java.io.BufferedReader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 
 import org.jmol.util.CifDataReader;
 import org.jmol.util.Logger;
+import org.jmol.util.SimpleUnitCell;
+import org.jmol.util.TextFormat;
 
 /**
  * A true line-free CIF file reader for CIF and mmCIF files.
@@ -82,14 +87,26 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   private char lastAltLoc;
   private int configurationPtr = Integer.MIN_VALUE;
   private int conformationIndex;
+  private boolean filterAssembly;
+  
 
+  private List<Matrix4f> vBiomts;
+  private List<Map<String, Object>> vBiomolecules;
+  private Map<String,Matrix4f> htBiomts;
+
+  private Map<String, BitSet> assemblyIdAtoms;
+  
+  private String appendedData;
+  private boolean skipping;
+  private int nAtoms;
   
   @Override
   public void initializeReader() throws Exception {
     if (checkFilterKey("CONF "))
       configurationPtr = parseIntAt(filter, filter.indexOf("CONF ") + 5);
-
+    appendedData = (String) htParams.get("appendedData");
     isMolecular = (filter != null && filter.indexOf("MOLECUL") >= 0);
+    filterAssembly = (filter != null && filter.indexOf("$") >= 0);
     if (isMolecular) {
       if (!doApplySymmetry) {
         doApplySymmetry = true;
@@ -100,7 +117,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       molecularType = "filter \"MOLECULAR\"";
     }
 
-    int nAtoms = 0;
+    nAtoms = 0;
     /*
      * Modified for 10.9.64 9/23/06 by Bob Hanson to remove as much as possible
      * of line dependence. a loop could now go:
@@ -113,76 +130,16 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
      * report if it finds data where a key is supposed to be.
      */
     line = "";
-    boolean skipping = false;
-    while ((key = tokenizer.peekToken()) != null) {
-      if (key.startsWith("data_")) {
-        if (iHaveDesiredModel)
+    skipping = false;
+    while ((key = tokenizer.peekToken()) != null)
+      if (!readAllData())
+        break;
+    if (appendedData != null) {
+      tokenizer = new CifDataReader(new BufferedReader(new StringReader(appendedData)));
+      while ((key = tokenizer.peekToken()) != null)
+        if (!readAllData())
           break;
-        skipping = !doGetModel(++modelNumber, null);
-        if (skipping) {
-          tokenizer.getTokenPeeked();
-        } else {
-          chemicalName = "";
-          thisStructuralFormula = "";
-          thisFormula = "";
-          if (nAtoms == atomSetCollection.getAtomCount())
-            // we found no atoms -- must revert
-            atomSetCollection.removeAtomSet();
-          else
-            applySymmetryAndSetTrajectory();
-          processDataParameter();
-          iHaveDesiredModel = (isLastModel(modelNumber));
-          nAtoms = atomSetCollection.getAtomCount();
-        }
-        continue;
-      }
-      if (key.startsWith("loop_")) {
-        if (skipping) {
-          tokenizer.getTokenPeeked();
-          skipLoop();
-        } else {
-          processLoopBlock();
-        }
-        continue;
-      }
-      // global_ and stop_ are reserved STAR keywords
-      // see http://www.iucr.org/iucr-top/lists/comcifs-l/msg00252.html
-      // http://www.iucr.org/iucr-top/cif/spec/version1.1/cifsyntax.html#syntax
-
-      // stop_ is not allowed, because nested loop_ is not allowed
-      // global_ is a reserved STAR word; not allowed in CIF
-      // ah, heck, let's just flag them as CIF ERRORS
-      /*
-       * if (key.startsWith("global_") || key.startsWith("stop_")) {
-       * tokenizer.getTokenPeeked(); continue; }
-       */
-      if (key.indexOf("_") != 0) {
-        Logger.warn("CIF ERROR ? should be an underscore: " + key);
-        tokenizer.getTokenPeeked();
-      } else if (!getData()) {
-        continue;
-      }
-      if (!skipping) {
-        key = key.replace('.', '_');
-        if (key.startsWith("_chemical_name") || key.equals("_chem_comp_name")) {
-          processChemicalInfo("name");
-        } else if (key.startsWith("_chemical_formula_structural")) {
-          processChemicalInfo("structuralFormula");
-        } else if (key.startsWith("_chemical_formula_sum") || key.equals("_chem_comp_formula")) {
-          processChemicalInfo("formula");
-        } else if (key.startsWith("_cell_")) {
-          processCellParameter();
-        } else if (key.startsWith("_symmetry_space_group_name_H-M")
-            || key.startsWith("_symmetry_space_group_name_Hall")) {
-          processSymmetrySpaceGroupName();
-        } else if (key.startsWith("_atom_sites_fract_tran")) {
-          processUnitCellTransformMatrix();
-        } else if (key.startsWith("_pdbx_entity_nonpoly")) {
-          processNonpolyData();
-        }
-      }
-    }
-
+    }    
     if (atomSetCollection.getAtomCount() == nAtoms)
       atomSetCollection.removeAtomSet();
     else
@@ -194,13 +151,126 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
     continuing = false;
   }
 
+  private boolean readAllData() throws Exception {
+    if (key.startsWith("data_")) {
+      if (iHaveDesiredModel)
+        return false;
+      skipping = !doGetModel(++modelNumber, null);
+      if (skipping) {
+        tokenizer.getTokenPeeked();
+      } else {
+        chemicalName = "";
+        thisStructuralFormula = "";
+        thisFormula = "";
+        if (nAtoms == atomSetCollection.getAtomCount())
+          // we found no atoms -- must revert
+          atomSetCollection.removeAtomSet();
+        else
+          applySymmetryAndSetTrajectory();
+        processDataParameter();
+        iHaveDesiredModel = (isLastModel(modelNumber));
+        nAtoms = atomSetCollection.getAtomCount();
+      }
+      return true;
+    }
+    if (key.startsWith("loop_")) {
+      if (skipping) {
+        tokenizer.getTokenPeeked();
+        skipLoop();
+      } else {
+        processLoopBlock();
+      }
+      return true;
+    }
+    // global_ and stop_ are reserved STAR keywords
+    // see http://www.iucr.org/iucr-top/lists/comcifs-l/msg00252.html
+    // http://www.iucr.org/iucr-top/cif/spec/version1.1/cifsyntax.html#syntax
+
+    // stop_ is not allowed, because nested loop_ is not allowed
+    // global_ is a reserved STAR word; not allowed in CIF
+    // ah, heck, let's just flag them as CIF ERRORS
+    /*
+     * if (key.startsWith("global_") || key.startsWith("stop_")) {
+     * tokenizer.getTokenPeeked(); continue; }
+     */
+    if (key.indexOf("_") != 0) {
+      Logger.warn("CIF ERROR ? should be an underscore: " + key);
+      tokenizer.getTokenPeeked();
+    } else if (!getData()) {
+      return true;
+    }
+    if (!skipping) {
+      key = key.replace('.', '_');
+      if (key.startsWith("_chemical_name") || key.equals("_chem_comp_name")) {
+        processChemicalInfo("name");
+      } else if (key.startsWith("_chemical_formula_structural")) {
+        processChemicalInfo("structuralFormula");
+      } else if (key.startsWith("_chemical_formula_sum") || key.equals("_chem_comp_formula")) {
+        processChemicalInfo("formula");
+      } else if (key.startsWith("_cell_")) {
+        processCellParameter();
+      } else if (key.startsWith("_symmetry_space_group_name_H-M")
+          || key.startsWith("_symmetry_space_group_name_Hall")) {
+        processSymmetrySpaceGroupName();
+      } else if (key.startsWith("_atom_sites_fract_tran")) {
+        processUnitCellTransformMatrix();
+      } else if (key.startsWith("_pdbx_entity_nonpoly")) {
+        processNonpolyData();
+      } else if (key.startsWith("_pdbx_struct_assembly_gen")) {
+        processAssemblyGen();
+      }
+    }
+    return true;
+  }
+  
   @Override
   protected void finalizeReader() throws Exception {
+    if (vBiomolecules != null && vBiomolecules.size() == 1
+        && atomSetCollection.getAtomCount() > 0) {
+      atomSetCollection.setAtomSetAuxiliaryInfo("biomolecules", vBiomolecules);
+      setBiomolecules();
+      if (vBiomts != null && vBiomts.size() > 1) {
+        atomSetCollection.applySymmetry(vBiomts, notionalUnitCell, applySymmetryToBonds, filter);
+      }
+    }
     super.finalizeReader();
     String header = tokenizer.getFileHeader();
     if (header.length() > 0)
         atomSetCollection.setAtomSetCollectionAuxiliaryInfo("fileHeader",
           header);
+  }
+
+  private void setBiomolecules() {
+    Matrix4f mident = new Matrix4f();
+    mident.setIdentity();
+    if (assemblyIdAtoms == null)
+      return;
+    for (int i = vBiomolecules.size(); --i >= 0;) {
+      Map<String, Object> biomolecule = vBiomolecules.get(i);
+      String[] ops = TextFormat.split((String) biomolecule.get("operators"), ',');
+      String assemblies = (String) biomolecule.get("assemblies");
+      vBiomts = new ArrayList<Matrix4f>();
+      biomolecule.put("biomts", vBiomts);
+      vBiomts.add(mident);
+      for (int j = 0; j < ops.length; j++) {
+        Matrix4f m = htBiomts.get(ops[j]);
+        if (m != null && !m.equals(mident))
+          vBiomts.add(m);
+      }
+      if (vBiomts.size() < 2)
+        return;
+      BitSet bsAll = new BitSet();
+      for (int j = assemblies.length() - 1; --j >= 0;)
+        if (assemblies.charAt(j) == '$') {
+          BitSet bs = assemblyIdAtoms.get("" + assemblies.charAt(j + 1));
+          if (bs != null)
+            bsAll.or(bs);
+        }
+      int nAtoms = bsAll.cardinality();
+      if (nAtoms < atomSetCollection.getAtomCount())
+        atomSetCollection.bsAtoms = bsAll;
+      biomolecule.put("atomCount", Integer.valueOf(nAtoms * ops.length));
+    }
   }
 
   private int nMolecular = 0;
@@ -446,6 +516,14 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       processStructSiteBlock();
       return;
     }
+    if (str.startsWith("_pdbx_struct_oper_list")) {
+      processStructOperListBlock();
+      return;
+    }
+    if (str.startsWith("_pdbx_struct_assembly_gen")) {
+      processAssemblyGenBlock();
+      return;
+    }
     skipLoop();
   }
 
@@ -459,7 +537,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
 
   private String disorderAssembly = ".";
   private String lastDisorderAssembly;
-  
+
   final private static byte ATOM_TYPE_SYMBOL = 0;
   final private static byte ATOM_TYPE_OXIDATION_NUMBER = 1;
 
@@ -523,7 +601,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   final private static byte OCCUPANCY = 9;
   final private static byte B_ISO = 10;
   final private static byte COMP_ID = 11;
-  final private static byte ASYM_ID = 12;
+  final private static byte AUTH_ASYM_ID = 12;
   final private static byte SEQ_ID = 13;
   final private static byte INS_CODE = 14;
   final private static byte ALT_ID = 15;
@@ -571,6 +649,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   final private static byte CHEM_COMP_AC_Y_IDEAL = 56;
   final private static byte CHEM_COMP_AC_Z_IDEAL = 57;
   final private static byte DISORDER_ASSEMBLY = 58;
+  final private static byte ASYM_ID = 59;
 
 
   final private static String[] atomFields = { 
@@ -632,7 +711,8 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       "_chem_comp_atom_pdbx_model_Cartn_x_ideal", 
       "_chem_comp_atom_pdbx_model_Cartn_y_ideal", 
       "_chem_comp_atom_pdbx_model_Cartn_z_ideal", 
-      "_atom_site_disorder_assembly"
+      "_atom_site_disorder_assembly",
+      "_atom_site_label_asym_id"
   };
 
   /* to: hansonr@stolaf.edu
@@ -654,6 +734,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   boolean processAtomSiteLoopBlock(boolean isLigand) throws Exception {
     int currentModelNO = -1;
     boolean isAnisoData = false;
+    char assemblyId = '\0';
     parseLoopParameters(atomFields);
     if (fieldOf[CHEM_COMP_AC_X_IDEAL] != NONE) {
       isPDB = false;
@@ -683,6 +764,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
     float[] data;
     while (tokenizer.getData()) {
       Atom atom = new Atom();
+      assemblyId = '\0';
       for (int i = 0; i < tokenizer.fieldCount; ++i) {
         switch (fieldProperty(i)) {
         case NONE:
@@ -762,6 +844,9 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
           atom.group3 = field;
           break;
         case ASYM_ID:
+          assemblyId = firstChar;
+          break;
+        case AUTH_ASYM_ID:
           if (field.length() > 1)
             Logger.warn("Don't know how to deal with chains more than 1 char: "
                 + field);
@@ -882,10 +967,18 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         Logger.warn("atom " + atom.atomName
             + " has invalid/unknown coordinates");
       } else {
-        if (isAnisoData || !filterCIFAtom(atom, iAtom))
+        if (isAnisoData || !filterCIFAtom(atom, iAtom, assemblyId))
           continue;
         setAtomCoord(atom);
         atomSetCollection.addAtomWithMappedName(atom);
+        if (assemblyId != '\0') {
+          if (assemblyIdAtoms == null)
+            assemblyIdAtoms = new Hashtable<String, BitSet>();
+          BitSet bs = assemblyIdAtoms.get("" + assemblyId);
+          if (bs == null)
+            assemblyIdAtoms.put("" + assemblyId, bs = new BitSet());
+          bs.set(atom.atomIndex);
+        }          
         if (atom.isHetero && htHetero != null) {
           atomSetCollection.setAtomSetAuxiliaryInfo("hetNames", htHetero);
           atomSetCollection.setAtomSetCollectionAuxiliaryInfo("hetNames",
@@ -902,8 +995,10 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   }
      
   
-  protected boolean filterCIFAtom(Atom atom, int iAtom) {
+  protected boolean filterCIFAtom(Atom atom, int iAtom, char assemblyId) {
     if (!filterAtom(atom, iAtom))
+      return false;
+    if (filterAssembly && filterReject(filter, "$", "" + assemblyId))
       return false;
     if (configurationPtr > 0) {
       if (!disorderAssembly.equals(lastDisorderAssembly)) {
@@ -925,6 +1020,167 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       }
     }
     return true;
+  }
+
+
+  ////////////////////////////////////////////////////////////////
+  // assembly data
+  ////////////////////////////////////////////////////////////////
+
+  final private static byte OPER_ID = 12;
+  final private static byte OPER_XYZ = 13;
+  final private static String[] operFields = {
+    "_pdbx_struct_oper_list_matrix[1][1]",
+    "_pdbx_struct_oper_list_matrix[1][2]", 
+    "_pdbx_struct_oper_list_matrix[1][3]", 
+    "_pdbx_struct_oper_list_vector[1]", 
+    "_pdbx_struct_oper_list_matrix[2][1]", 
+    "_pdbx_struct_oper_list_matrix[2][2]", 
+    "_pdbx_struct_oper_list_matrix[2][3]", 
+    "_pdbx_struct_oper_list_vector[2]", 
+    "_pdbx_struct_oper_list_matrix[3][1]", 
+    "_pdbx_struct_oper_list_matrix[3][2]", 
+    "_pdbx_struct_oper_list_matrix[3][3]", 
+    "_pdbx_struct_oper_list_vector[3]",
+    "_pdbx_struct_oper_list_id", 
+    "_pdbx_struct_oper_list_symmetry_operation" 
+  };
+
+  final private static byte ASSEM_ID = 0;
+  final private static byte ASSEM_OPERS = 1;
+  final private static byte ASSEM_LIST = 2;
+  final private static String[] assemblyFields = {
+    "_pdbx_struct_assembly_gen_assembly_id", 
+    "_pdbx_struct_assembly_gen_oper_expression", 
+    "_pdbx_struct_assembly_gen_asym_id_list" 
+  };
+
+  /*
+_pdbx_struct_assembly_gen.assembly_id       1 
+_pdbx_struct_assembly_gen.oper_expression   1,2,3,4 
+_pdbx_struct_assembly_gen.asym_id_list      A,B,C 
+# 
+loop_
+_pdbx_struct_oper_list.id 
+_pdbx_struct_oper_list.type 
+_pdbx_struct_oper_list.name 
+_pdbx_struct_oper_list.symmetry_operation 
+_pdbx_struct_oper_list.matrix[1][1] 
+_pdbx_struct_oper_list.matrix[1][2] 
+_pdbx_struct_oper_list.matrix[1][3] 
+_pdbx_struct_oper_list.vector[1] 
+_pdbx_struct_oper_list.matrix[2][1] 
+_pdbx_struct_oper_list.matrix[2][2] 
+_pdbx_struct_oper_list.matrix[2][3] 
+_pdbx_struct_oper_list.vector[2] 
+_pdbx_struct_oper_list.matrix[3][1] 
+_pdbx_struct_oper_list.matrix[3][2] 
+_pdbx_struct_oper_list.matrix[3][3] 
+_pdbx_struct_oper_list.vector[3] 
+1 'identity operation'         1_555  x,y,z          1.0000000000  0.0000000000  0.0000000000 0.0000000000  0.0000000000  
+1.0000000000  0.0000000000 0.0000000000  0.0000000000 0.0000000000 1.0000000000  0.0000000000  
+2 'crystal symmetry operation' 15_556 y,x,-z+1       0.0000000000  1.0000000000  0.0000000000 0.0000000000  1.0000000000  
+0.0000000000  0.0000000000 0.0000000000  0.0000000000 0.0000000000 -1.0000000000 52.5900000000 
+3 'crystal symmetry operation' 10_665 -x+1,-y+1,z    -1.0000000000 0.0000000000  0.0000000000 68.7500000000 0.0000000000  
+-1.0000000000 0.0000000000 68.7500000000 0.0000000000 0.0000000000 1.0000000000  0.0000000000  
+4 'crystal symmetry operation' 8_666  -y+1,-x+1,-z+1 0.0000000000  -1.0000000000 0.0000000000 68.7500000000 -1.0000000000 
+0.0000000000  0.0000000000 68.7500000000 0.0000000000 0.0000000000 -1.0000000000 52.5900000000 
+# 
+
+   */
+
+  private String[] assem = null; 
+  private void processAssemblyGen() throws Exception {
+    if (assem == null)
+      assem = new String[3];
+    if (key.indexOf("assembly_id") >= 0)
+      assem[ASSEM_ID] = data = tokenizer.fullTrim(data);
+    else if (key.indexOf("oper_expression") >= 0)
+      assem[ASSEM_OPERS] = data = tokenizer.fullTrim(data);
+    else if (key.indexOf("asym_id_list") >= 0)
+      assem[ASSEM_LIST] = data = tokenizer.fullTrim(data);
+    if (assem[0] != null && assem[1] != null && assem[2] != null)
+      addAssembly();
+  }
+
+  private void processAssemblyGenBlock() throws Exception {
+    parseLoopParameters(assemblyFields);
+    assem = new String[3];
+    while (tokenizer.getData()) {
+      int count = 0;
+      int p;
+      for (int i = 0; i < tokenizer.fieldCount; ++i) {
+        switch (p = fieldProperty(i)) {
+        case ASSEM_ID:
+        case ASSEM_OPERS:
+        case ASSEM_LIST:
+          count++;
+          assem[p] = field;
+          break;
+        }
+      }
+      if (count == 3)
+        addAssembly();
+    }
+    assem = null;
+  }
+
+  private void addAssembly() throws Exception {
+    int iMolecule = parseIntStr(assem[ASSEM_ID]);
+    if (!checkFilterKey("ASSEMBLY " + iMolecule + ";"))
+      return;
+    if (vBiomolecules == null) {
+      vBiomolecules = new ArrayList<Map<String,Object>>();
+    }
+    Map<String, Object> info = new Hashtable<String, Object>();
+    info.put("molecule", Integer.valueOf(iMolecule));
+    info.put("assemblies", "$" + assem[ASSEM_LIST].replace(',', '$'));
+    info.put("operators", assem[ASSEM_OPERS]);
+    info.put("biomts", new ArrayList<Matrix4f>());
+    Logger.info("assembly " + iMolecule + " operators " + assem[ASSEM_OPERS] + " ASYM_IDs " + assem[ASSEM_LIST]);
+    vBiomolecules.add(info);
+    assem = null;
+  }
+
+  private void processStructOperListBlock() throws Exception {
+    parseLoopParameters(operFields);
+    float[] m = new float[16];
+    m[15] = 1;
+    while (tokenizer.getData()) {
+      int count = 0;
+      int p;
+      String id = null;
+      String xyz = null;
+      for (int i = 0; i < tokenizer.fieldCount; ++i) {
+        switch (p = fieldProperty(i)) {
+        case NONE:
+          break;
+        case OPER_ID:
+          id = field;
+          break;
+        case OPER_XYZ:
+          xyz = field;
+          break;
+        default:
+          m[p] = parseFloatStr(field);
+          ++count;
+        }
+      }
+      if (id != null && (count == 12 || xyz != null && symmetry != null)) {
+        Logger.info("assembly operator " + id + " " + xyz);
+        Matrix4f m4 = new Matrix4f();
+        if (count != 12) {
+          symmetry.getMatrixFromString(xyz, m, false);
+          m[3] *= symmetry.getUnitCellInfo(SimpleUnitCell.INFO_A) / 12;
+          m[7] *= symmetry.getUnitCellInfo(SimpleUnitCell.INFO_B) / 12;
+          m[11] *= symmetry.getUnitCellInfo(SimpleUnitCell.INFO_C) / 12;
+        }
+        m4.set(m);
+        if (htBiomts == null)
+          htBiomts = new Hashtable<String, Matrix4f>();
+        htBiomts.put(id, m4);
+      }
+    }
   }
 
 

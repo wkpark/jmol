@@ -861,7 +861,7 @@ public abstract class AtomSetCollectionReader {
             atom.isHetero ? "HETATM" : "ATOM"));
   }
 
-  private boolean filterReject(String f, String code, String atomCode) {
+  protected boolean filterReject(String f, String code, String atomCode) {
     return (f.indexOf(code) >= 0 && (f.indexOf("!" + code) >= 0 ? f
         .indexOf(code + atomCode) >= 0 : f.indexOf(code + atomCode) < 0));
   }

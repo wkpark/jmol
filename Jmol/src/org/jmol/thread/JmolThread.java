@@ -7,18 +7,31 @@ public class JmolThread extends Thread {
   
   protected void setMyName(String name) {
     this.name = name;
+    
     super.setName(name);
   }
 
   @Override
   public synchronized void start() {
+    /**
+     * @j2sNative
+     * 
+     */
+    {
     super.start();
+    }
   }
 
   @Override
   public void interrupt() {
     interrupted = true;
-    super.interrupt();
+    /**
+     * @j2sNative
+     * 
+     */
+    {
+      super.interrupt();
+    }
   }
   
 

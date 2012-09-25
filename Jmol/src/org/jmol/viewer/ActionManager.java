@@ -626,8 +626,7 @@ public class ActionManager {
                           int modifiers) {
     if (!viewer.getMouseEnabled())
       return;
-    //if (Logger.debugging)
-      //Logger.info("ActionManager mouseAction action=" + action + " x y = " + x + " " + y + " count = " + count + " mods = " + modifiers);
+      //System.out.println("ActionManager mouseAction action=" + action + " x y = " + x + " " + y + " count = " + count + " mods = " + modifiers);
     switch (action) {
     case Binding.MOVED:
       setCurrent(time, x, y, modifiers);
@@ -931,6 +930,7 @@ public class ActionManager {
   private void checkAction(int action, int x, int y, int deltaX, int deltaY,
                            long time, int mode) {
     int mods = Binding.getModifiers(action);
+    //System.out.println("checkAction " + x + " " + y + " mode " + mode + " action " + action + " mods " + mods);
     if (Binding.getModifiers(action) != 0) {
       int newAction = viewer.notifyMouseClicked(x, y, Binding.getMouseAction(
           -pressedCount, mods), mode);

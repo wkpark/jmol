@@ -16,10 +16,10 @@ abstract public class Binding {
 
   public final static int WHEEL = Event.MOUSE_WHEEL; 
   public final static int LEFT = Event.MOUSE_LEFT;
-  public final static int MIDDLE = Event.ALT_MASK; // 8 note that MIDDLE
-  public final static int ALT = Event.ALT_MASK; // 8 and ALT are the same
-  public final static int RIGHT = Event.META_MASK; // 4
-  public final static int CTRL = Event.CTRL_MASK; // 2
+  public final static int MIDDLE = Event.MOUSE_MIDDLE;
+  public final static int RIGHT = Event.MOUSE_RIGHT; // 4
+  public final static int ALT = Event.ALT_MASK; // MIDDLE and ALT are the same
+  public final static int CTRL = Event.CTRL_MASK;  // 2
   public final static int SHIFT = Event.SHIFT_MASK; // 1
   public final static int CTRL_ALT = CTRL | ALT;
   public final static int CTRL_SHIFT = CTRL | SHIFT;

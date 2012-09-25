@@ -8674,6 +8674,9 @@ public class ScriptEvaluator {
     }
 
     String filename = null;
+    String appendedData = null;
+    String appendedKey = null;
+    
     if (statementLength == i + 1) {
 
       // end-of-command options:
@@ -8729,6 +8732,8 @@ public class ScriptEvaluator {
         || theTok == Token.offset
         // FILTER "..."
         || theTok == Token.filter && tokAt(i + 3) != Token.coord
+        // Jmol 13.1.5 -- APPEND "data..."
+        || theTok == Token.append
         // don't remember what this is:
         || theTok == Token.identifier && tokAt(i + 3) != Token.coord
 
@@ -8968,7 +8973,24 @@ public class ScriptEvaluator {
         i = iToken + 1;
       }
 
-      // FILTER
+      // .... APPEND DATA "appendedData" .... end "appendedData"
+      // option here to designate other than "appendedData"
+      // .... APPEND "appendedData" @x ....
+      
+
+      if (tokAt(i) == Token.append) {
+        // for CIF reader -- experimental
+        if (tokAt(++i) == Token.data) {
+          i += 2;
+          appendedData = (String) getToken(i++).value;
+          appendedKey = stringParameter(++i);
+          ++i;
+        } else {
+          appendedKey = stringParameter(i++);
+          appendedData = stringParameter(i++);
+        }
+        htParams.put(appendedKey, appendedData);
+      }
 
       if (tokAt(i) == Token.filter)
         filter = stringParameter(++i);
@@ -9039,6 +9061,10 @@ public class ScriptEvaluator {
 
     // get default filter if necessary
 
+    if (appendedData != null) {
+      sOptions += " APPEND data \"" + appendedKey + "\"\n" + appendedData 
+      + (appendedData.endsWith("\n") ? "" : "\n") + "end \"" + appendedKey + "\""; 
+    }
     if (filter == null)
       filter = viewer.getDefaultLoadFilter();
     if (filter.length() > 0) {

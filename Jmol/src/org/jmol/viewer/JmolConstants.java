@@ -1093,6 +1093,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   }
 
   private static int getGroup3Pt(String group3) {
+    getGroup3List();
     StringBuffer sb = new StringBuffer("[");
     sb.append(group3);
     switch (group3.length()){

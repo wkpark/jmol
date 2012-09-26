@@ -4081,7 +4081,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
      * @j2sNative
      * if ((mode == 2 || mode == 7) && typeof Jmol != "undefined") {
      *   this.transformManager.finalizeTransformParameters();
-     *   Jmol.refresh(this.htmlName, mode, strWhy, 
+     *   if (Jmol._refresh)
+     *   Jmol._refresh(this.htmlName, mode, strWhy, 
      *    [this.transformManager.fixedRotationCenter, 
      *     this.transformManager.getRotationQuaternion(),
      *     this.transformManager.xTranslationFraction, 

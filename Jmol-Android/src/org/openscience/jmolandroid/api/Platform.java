@@ -14,6 +14,10 @@ import org.jmol.viewer.Viewer;
 
 public class Platform implements ApiPlatform {
 
+	public boolean isSingleThreaded() {
+		return false;
+	}
+	
   public void setViewer(JmolViewer viewer, Object display) {
     ((AndroidUpdateListener) display).setViewer(viewer);
   }

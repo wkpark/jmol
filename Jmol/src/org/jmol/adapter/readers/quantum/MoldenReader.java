@@ -344,11 +344,11 @@ public class MoldenReader extends MopacSlaterReader {
   private boolean readFreqsAndModes() throws Exception {
     String[] tokens;
     List<String> frequencies = new ArrayList<String>();
-    BitSet bsOK = new BitSet();
-    int iFreq = 0;
+ //   BitSet bsOK = new BitSet();
+ //   int iFreq = 0;
     while (readLine() != null && line.indexOf('[') < 0) {
       String f = getTokens()[0];
-      bsOK.set(iFreq++, parseFloatStr(f) != 0);
+//      bsOK.set(iFreq++, parseFloatStr(f) != 0);
       frequencies.add(f);
     }
     int nFreqs = frequencies.size();
@@ -359,8 +359,10 @@ public class MoldenReader extends MopacSlaterReader {
     boolean haveVib = false;
     for (int nFreq = 0; nFreq < nFreqs; nFreq++) {
       skipTo("vibration");
-      if (!bsOK.get(nFreq) || !doGetVibration(++vibrationNumber)) 
-        continue;
+// RPFK: if the frequency was given, the mode should be read (even when 0.0)
+//      if (!bsOK.get(nFreq) || !doGetVibration(++vibrationNumber)) 
+//        continue;
+      doGetVibration(++vibrationNumber);
       if (haveVib)
         atomSetCollection.cloneLastAtomSet();
       haveVib = true;
@@ -430,8 +432,11 @@ max-force
   }
 
   private void skipTo(String key) throws Exception {
-    if (line == null || !line.contains(key))
-      discardLinesUntilContains(key);
+    key = key.toUpperCase();
+    if (line == null || !line.toUpperCase().contains(key))
+//      discardLinesUntilContains(key);
+      while (readLine() != null && line.toUpperCase().indexOf(key) < 0) {
+      }
     
   }
 

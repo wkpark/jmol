@@ -24,11 +24,11 @@
 
 package org.jmol.render;
 
-import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Measurement;
 import org.jmol.modelset.MeasurementPending;
 import org.jmol.shape.Measures;
 import org.jmol.util.Colix;
+import org.jmol.util.GData;
 import org.jmol.util.Point3fi;
 
 import javax.vecmath.Point3f;
@@ -258,7 +258,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
   protected int drawLine(int x1, int y1, int z1, int x2, int y2, int z2,
                          int mad) {
     // small numbers refer to pixels already? 
-    int diameter = (mad >= 20 && exportType != Graphics3D.EXPORT_CARTESIAN ?
+    int diameter = (mad >= 20 && exportType != GData.EXPORT_CARTESIAN ?
       viewer.scaleToScreen((z1 + z2) / 2, mad) : mad);
     return super.drawLine(x1, y1, z1, x2, y2, z2, diameter);
   }

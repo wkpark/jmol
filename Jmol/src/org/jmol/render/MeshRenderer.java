@@ -31,7 +31,6 @@ import javax.vecmath.Vector3f;
 import javax.vecmath.Point3i;
 
 import org.jmol.api.SymmetryInterface;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.script.Token;
 import org.jmol.shape.Mesh;
 import org.jmol.shape.MeshCollection;
@@ -382,7 +381,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
     if (width == 0) {
       if (diameter == 0)
         diameter = (mesh.diameter > 0 ? mesh.diameter : iA == iB ? 7 : 3);
-      if (exportType == Graphics3D.EXPORT_CARTESIAN) {
+      if (exportType == GData.EXPORT_CARTESIAN) {
         pt1f.set(vA);
         pt1f.add(vB);
         pt1f.scale(1f / 2f);
@@ -400,7 +399,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
       pt1f.scale(1f / 2f);
       viewer.transformPoint(pt1f, pt1i);
       int mad = (int) (Math.abs(width) * 1000); 
-      diameter = (exportType == Graphics3D.EXPORT_CARTESIAN ? mad 
+      diameter = (exportType == GData.EXPORT_CARTESIAN ? mad 
           : viewer.scaleToScreen(pt1i.z, mad));
       if (diameter == 0)
         diameter = 1;

@@ -1771,12 +1771,8 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
 
   // implemented only for Export3D:
 
-  public final static int EXPORT_NOT = 0;
-  public final static int EXPORT_CARTESIAN = 1;
-  public final static int EXPORT_RAYTRACER = 2;
-  
   public int getExportType() {
-    return EXPORT_NOT;
+    return GData.EXPORT_NOT;
   }
 
   public String getExportName() {

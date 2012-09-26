@@ -25,9 +25,9 @@
 package org.jmol.render;
 
 import org.jmol.api.JmolRendererInterface;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.ModelSet;
 import org.jmol.shape.Shape;
+import org.jmol.util.GData;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 
@@ -70,9 +70,9 @@ public abstract class ShapeRenderer {
     this.modelSet = modelSet;
     this.shape = shape;
     exportType = g3d.getExportType();
-    isExport = (exportType != Graphics3D.EXPORT_NOT);
+    isExport = (exportType != GData.EXPORT_NOT);
     render();
-    exportType = Graphics3D.EXPORT_NOT;
+    exportType = GData.EXPORT_NOT;
     isExport = false;
   }
 

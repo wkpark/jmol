@@ -31,7 +31,6 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
-import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.util.GData;
 
@@ -47,7 +46,7 @@ abstract class __RayTracerExporter extends ___Exporter {
   protected int minScreenDimension;
   
   public __RayTracerExporter() {
-    exportType = Graphics3D.EXPORT_RAYTRACER;
+    exportType = GData.EXPORT_RAYTRACER;
     lineWidthMad = 2;
   }
 

@@ -97,6 +97,12 @@ public class GData implements JmolGraphicsInterface {
 
   protected Object graphicsForMetrics;
 
+  public final static int EXPORT_RAYTRACER = 2;
+
+  public final static int EXPORT_CARTESIAN = 1;
+
+  public final static int EXPORT_NOT = 0;
+
   /**
    * @param zShade
    *        whether to shade along z front to back

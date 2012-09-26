@@ -29,7 +29,6 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
-import org.jmol.g3d.Graphics3D;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.readers.Parameters;
 import org.jmol.render.MeshRenderer;
@@ -354,7 +353,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
         frontOnly = false;
       bsPolygons.clear();
     }
-    if (exportType == Graphics3D.EXPORT_CARTESIAN) {
+    if (exportType == GData.EXPORT_CARTESIAN) {
       frontOnly = false;
     }
     boolean colorSolid = (haveBsSlabGhost && (!isBicolorMap)

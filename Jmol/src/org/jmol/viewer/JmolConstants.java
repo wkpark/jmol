@@ -115,7 +115,7 @@ public class JmolConstants {
 
   //note: Eval.write() processing requires drivers to be first-letter-capitalized.
   //do not capitalize any other letter in the word. Separate by semicolon.
-  public static final String EXPORT_DRIVER_LIST = "Idtf;Js;Maya;Povray;Vrml;X3d;Tachyon;Obj"; 
+  public static final String EXPORT_DRIVER_LIST = "Idtf;Maya;Povray;Vrml;X3d;Tachyon;Obj"; 
 
   public final static Vector3f center = new Vector3f(0, 0, 0);
   public final static Vector3f axisX = new Vector3f(1, 0, 0);

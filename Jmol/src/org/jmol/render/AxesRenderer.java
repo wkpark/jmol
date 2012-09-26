@@ -25,7 +25,6 @@ package org.jmol.render;
 
 import org.jmol.api.SymmetryInterface;
 import org.jmol.constant.EnumAxesMode;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.shape.Axes;
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
@@ -107,7 +106,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
     int diameter = mad;
     boolean drawTicks = false;
     if (isXY) {
-      if (exportType == Graphics3D.EXPORT_CARTESIAN)
+      if (exportType == GData.EXPORT_CARTESIAN)
         return;
       if (mad >= 20) {
         // width given in angstroms as mAng.

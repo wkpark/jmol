@@ -30,7 +30,6 @@ import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
 import org.jmol.constant.EnumPalette;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.util.Colix;
@@ -237,7 +236,7 @@ public class SticksRenderer extends ShapeRenderer {
   }
     
   private void drawBond(int dottedMask) {
-    if (exportType == Graphics3D.EXPORT_CARTESIAN && bondOrder == 1) {
+    if (exportType == GData.EXPORT_CARTESIAN && bondOrder == 1) {
       // bypass screen rendering and just use the atoms themselves
       g3d.drawBond(atomA, atomB, colixA, colixB, endcaps, mad);
       return;

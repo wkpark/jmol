@@ -38,7 +38,6 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Tuple3f;
 
-import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.util.Colix;
 import org.jmol.util.JmolFont;
@@ -51,7 +50,7 @@ import org.jmol.util.GData;
 abstract public class __CartesianExporter extends ___Exporter {
 
   public __CartesianExporter() {
-    exportType = Graphics3D.EXPORT_CARTESIAN;
+    exportType = GData.EXPORT_CARTESIAN;
     lineWidthMad = 100;
   }
 

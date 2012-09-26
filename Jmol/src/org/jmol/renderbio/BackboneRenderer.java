@@ -25,7 +25,6 @@
 
 package org.jmol.renderbio;
 
-import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.shapebio.BioShape;
 import org.jmol.util.Colix;
@@ -54,7 +53,7 @@ public class BackboneRenderer extends BioShapeRenderer {
       if (mad < 0) {
         g3d.drawLine(colixA, colixB, xA, yA, zA, xB, yB, zB);
       } else {
-        int width = (exportType == Graphics3D.EXPORT_CARTESIAN ? mad 
+        int width = (exportType == GData.EXPORT_CARTESIAN ? mad 
             : viewer.scaleToScreen((zA + zB) / 2, mad));
         g3d.fillCylinder(colixA, colixB, GData.ENDCAPS_SPHERICAL, width,
             xA, yA, zA, xB, yB, zB);

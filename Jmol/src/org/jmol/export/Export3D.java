@@ -112,7 +112,7 @@ final public class Export3D implements JmolRendererInterface {
   }
 
   public void renderBackground(JmolRendererInterface me) {
-    if (exporter.exportType == Graphics3D.EXPORT_RAYTRACER)
+    if (exporter.exportType == GData.EXPORT_RAYTRACER)
       g3d.renderBackground(me);
   }
 
@@ -680,7 +680,7 @@ final public class Export3D implements JmolRendererInterface {
 
   public short[] getBgColixes(short[] bgcolixes) {
     // 3D exporters cannot do background labels
-    return exporter.exportType == Graphics3D.EXPORT_CARTESIAN ? null : bgcolixes;
+    return exporter.exportType == GData.EXPORT_CARTESIAN ? null : bgcolixes;
   }
 
   public void fillEllipsoid(Point3f center, Point3f[] points, int x, int y,
@@ -790,7 +790,7 @@ final public class Export3D implements JmolRendererInterface {
   }
 
   public boolean isInDisplayRange(int x, int y) {
-    if (exporter.exportType == Graphics3D.EXPORT_CARTESIAN)
+    if (exporter.exportType == GData.EXPORT_CARTESIAN)
       return true;
     return g3d.isInDisplayRange(x, y);
   }
@@ -800,11 +800,11 @@ final public class Export3D implements JmolRendererInterface {
   }
 
   public int clipCode(int x, int y, int z) {
-    return (exporter.exportType == Graphics3D.EXPORT_CARTESIAN ? g3d.clipCode(z) : g3d.clipCode(x, y, z));
+    return (exporter.exportType == GData.EXPORT_CARTESIAN ? g3d.clipCode(z) : g3d.clipCode(x, y, z));
   }
 
   public boolean isClippedXY(int diameter, int x, int y) {
-    if (exporter.exportType == Graphics3D.EXPORT_CARTESIAN)
+    if (exporter.exportType == GData.EXPORT_CARTESIAN)
       return false;
     return g3d.isClippedXY(diameter, x, y);
   }
@@ -814,7 +814,7 @@ final public class Export3D implements JmolRendererInterface {
   }
 
   protected boolean isClipped(int x, int y) {
-    if (exporter.exportType == Graphics3D.EXPORT_CARTESIAN)
+    if (exporter.exportType == GData.EXPORT_CARTESIAN)
       return false;
     return g3d.isClipped(x, y);
   }

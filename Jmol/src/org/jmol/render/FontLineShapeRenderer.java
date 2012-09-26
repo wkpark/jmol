@@ -28,7 +28,6 @@ import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
 import org.jmol.constant.EnumAxesMode;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.TickInfo;
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
@@ -71,7 +70,7 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
     int diameter;
     boolean isMad = (madOrPixels > 20);
     switch (exportType) {
-    case Graphics3D.EXPORT_CARTESIAN:
+    case GData.EXPORT_CARTESIAN:
       diameter = (isMad ? madOrPixels 
           : (int) (viewer.unscaleToScreen(z, madOrPixels * 2) * 1000));
       break;

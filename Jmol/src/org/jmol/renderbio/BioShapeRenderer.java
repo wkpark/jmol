@@ -31,7 +31,6 @@ import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
 import org.jmol.constant.EnumStructure;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.modelsetbio.AlphaMonomer;
 import org.jmol.modelsetbio.CarbohydratePolymer;
@@ -104,7 +103,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     aspectRatio = val;
 
     val = viewer.getHermiteLevel();
-    if (val == 0 && exportType == Graphics3D.EXPORT_CARTESIAN)
+    if (val == 0 && exportType == GData.EXPORT_CARTESIAN)
       val = 5; // forces hermite for 3D exporters
     val = (val <= 0 ? -val : viewer.getInMotion() ? 0 : val);
     if (val != hermiteLevel && val != 0)
@@ -416,7 +415,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
         controlPointScreens[iNext], controlPointScreens[iNext2], aspectRatio);
     if (ribbonBorder && aspectRatio == 0) {
       g3d.fillCylinder(colix, colix, GData.ENDCAPS_SPHERICAL, 
-          (exportType == Graphics3D.EXPORT_CARTESIAN ? 50 : 3), //may not be right 0.05 
+          (exportType == GData.EXPORT_CARTESIAN ? 50 : 3), //may not be right 0.05 
           screenArrowTop.x, screenArrowTop.y, screenArrowTop.z,
           screenArrowBot.x, screenArrowBot.y, screenArrowBot.z);
     }

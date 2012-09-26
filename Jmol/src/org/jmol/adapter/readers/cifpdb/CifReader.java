@@ -141,7 +141,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
           break;
     }    
     if (atomSetCollection.getAtomCount() == nAtoms)
-      atomSetCollection.removeAtomSet();
+      atomSetCollection.removeCurrentAtomSet();
     else
       applySymmetryAndSetTrajectory();
     if (htSites != null)
@@ -164,7 +164,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         thisFormula = "";
         if (nAtoms == atomSetCollection.getAtomCount())
           // we found no atoms -- must revert
-          atomSetCollection.removeAtomSet();
+          atomSetCollection.removeCurrentAtomSet();
         else
           applySymmetryAndSetTrajectory();
         processDataParameter();
@@ -776,7 +776,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
             elementSymbol = field;
           } else {
             char ch1 = Character.toLowerCase(field.charAt(1));
-            if (Atom.isValidElementSymbol(firstChar, ch1))
+            if (Atom.isValidElementSymbol2(firstChar, ch1))
               elementSymbol = "" + firstChar + ch1;
             else
               elementSymbol = "" + firstChar;
@@ -1249,7 +1249,7 @@ _pdbx_struct_oper_list.vector[3]
           order = JmolAdapter.ORDER_AROMATIC_DOUBLE;
           break;
         }
-      atomSetCollection.addNewBond(atomIndex1, atomIndex2, order);
+      atomSetCollection.addNewBondWithOrder(atomIndex1, atomIndex2, order);
     }
   }
 
@@ -1490,7 +1490,7 @@ _pdbx_struct_oper_list.vector[3]
         return;
       }
     while (tokenizer.getData()) {
-      Structure structure = new Structure(EnumStructure.HELIX);
+      Structure structure = new Structure(-1, EnumStructure.HELIX, EnumStructure.HELIX, null, 0, 0, '\0', 0, '\0', '\0', 0, '\0');
       for (int i = 0; i < tokenizer.fieldCount; ++i) {
         switch (fieldProperty(i)) {
         case NONE:
@@ -1566,7 +1566,7 @@ _pdbx_struct_oper_list.vector[3]
         return;
       }
     while (tokenizer.getData()) {
-      Structure structure = new Structure(EnumStructure.SHEET);
+      Structure structure = new Structure(-1, EnumStructure.SHEET, EnumStructure.SHEET, null, 0, 0, '\0', 0, '\0', '\0', 0, '\0');
       for (int i = 0; i < tokenizer.fieldCount; ++i) {
         switch (fieldProperty(i)) {
         case BEG_ASYM_ID:
@@ -1810,7 +1810,7 @@ _struct_site_gen.details
   public String readLine() throws Exception {
     super.readLine();
     if (line.indexOf("#jmolscript:") >= 0)
-      checkLineForScript();
+      checkCurrentLineForScript();
     return line;
   }
   

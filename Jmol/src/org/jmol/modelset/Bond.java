@@ -249,7 +249,7 @@ public class Bond extends JmolEdge {
   }
 
   @Override
-  public JmolNode getOtherAtom(JmolNode thisAtom) {
+  public JmolNode getOtherAtomNode(JmolNode thisAtom) {
     return (atom1 == thisAtom ? atom2 : atom2 == thisAtom ? atom1 : null);
   }
   

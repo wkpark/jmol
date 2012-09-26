@@ -78,9 +78,9 @@ public class ScriptFunction {
       String name = names.get(i).toLowerCase();
       ScriptVariable var = (i < nParameters && i < nParams ? params.get(i) : null);
       if (var != null && var.tok != Token.varray)  // TODO: list type?
-        var = new ScriptVariable(var);
+        var = ScriptVariable.newScriptVariableToken(var);
       contextVariables.put(name, (var == null ? 
-          (new ScriptVariable(Token.string, "")).setName(name) : var));
+          ScriptVariable.newScriptVariableObj(Token.string, "").setName(name) : var));
     }
     contextVariables.put("_retval", new ScriptVariableInt(tok == Token.trycmd ? Integer.MAX_VALUE : 0));
   }

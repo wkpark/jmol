@@ -243,7 +243,7 @@ public class ShelxReader extends AtomSetCollectionReader {
     atom.atomName = atomName;
     if (sfacElementSymbols != null && elementIndex >= 0 && elementIndex < sfacElementSymbols.length)
         atom.elementSymbol = sfacElementSymbols[elementIndex];
-    setAtomCoord(atom, x, y, z);
+    setAtomCoordXYZ(atom, x, y, z);
     
     if (tokens.length == 12) {
       float[] data = new float[8];
@@ -269,7 +269,7 @@ public class ShelxReader extends AtomSetCollectionReader {
       tokens = getTokens();
       atom.elementSymbol = getSymbol(tokens[0]);
       atom.atomName = tokens[1];
-      setAtomCoord(atom, parseFloatStr(tokens[2]), parseFloatStr(tokens[3]),
+      setAtomCoordXYZ(atom, parseFloatStr(tokens[2]), parseFloatStr(tokens[3]),
           parseFloatStr(tokens[4]));
     }
   }

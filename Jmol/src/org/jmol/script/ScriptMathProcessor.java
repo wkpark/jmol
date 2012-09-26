@@ -124,7 +124,7 @@ class ScriptMathProcessor {
         List<ScriptVariable> result = new ArrayList<ScriptVariable>();
         for (int i = 0; i <= xPt; i++)
           result.add(ScriptVariable.selectItemVar(xStack[i]));
-        return new ScriptVariable(Token.vector, result);
+        return ScriptVariable.newScriptVariableObj(Token.vector, result);
       }
       if (xPt == 0) {
         ScriptVariable x = xStack[0];
@@ -134,7 +134,7 @@ class ScriptMathProcessor {
           x = ScriptVariable.selectItemVar(x);
         if (asBitSet && x.tok == 
           Token.varray)
-          x = new ScriptVariable(Token.bitset, ScriptVariable.unEscapeBitSetArray((ArrayList<ScriptVariable>)x.value, false));
+          x = ScriptVariable.newScriptVariableObj(Token.bitset, ScriptVariable.unEscapeBitSetArray((ArrayList<ScriptVariable>)x.value, false));
         return x;
       }
     }
@@ -189,19 +189,19 @@ class ScriptMathProcessor {
 
   boolean addXStr(String x) {
     // the standard entry point
-    putX(new ScriptVariable(Token.string, x));
+    putX(ScriptVariable.newScriptVariableObj(Token.string, x));
     return wasX = true;
   }
 
   boolean addXBs(BitSet bs) {
     // the standard entry point for bit sets
-    putX(new ScriptVariable(Token.bitset, bs));
+    putX(ScriptVariable.newScriptVariableObj(Token.bitset, bs));
     return wasX = true;
   }
 
   boolean addXPt(Point3f pt) {
     // the standard entry point for bit sets
-    putX(new ScriptVariable(Token.point3f, pt));
+    putX(ScriptVariable.newScriptVariableObj(Token.point3f, pt));
     return wasX = true;
   }
 
@@ -220,7 +220,7 @@ class ScriptMathProcessor {
         float f = ((Float) x.value).floatValue();
         if (f < 0 || f == 0 && 1 / f == Float.NEGATIVE_INFINITY) {
           addOp(Token.tokenMinus);
-          x = new ScriptVariable(Token.decimal, new Float(-f));
+          x = ScriptVariable.newScriptVariableObj(Token.decimal, new Float(-f));
         }
         break;
       }
@@ -395,7 +395,7 @@ class ScriptMathProcessor {
         if (isSyntaxCheck)
           return true;
         ScriptVariable x = xStack[xPt];
-        xStack[xPt] = (new ScriptVariable()).set(x, false);
+        xStack[xPt] = ScriptVariable.newScriptVariableObj(Token.string, "").set(x, false);
         return x.increment(incrementX);
       }
       break;
@@ -403,7 +403,7 @@ class ScriptMathProcessor {
       if (wasX)
         break;
       addXInt(0);
-      op = new ScriptVariable(Token.unaryMinus, "-");
+      op = ScriptVariable.newScriptVariableObj(Token.unaryMinus, "-");
       break;
     case Token.rightparen: // () without argument allowed only for math funcs
       if (!wasX && oPt >= 1 && tok0 == Token.leftparen
@@ -456,7 +456,7 @@ class ScriptMathProcessor {
       }
       if (op.tok == Token.rightsquare && tok0 == Token.leftsquare) {
         if (isArrayItem && squareCount == 1 && equalCount == 0) {
-          addXVar(new ScriptVariable(Token.tokenArraySelector));
+          addXVar(ScriptVariable.newScriptVariableToken(Token.tokenArraySelector));
           break;
         }
         if (!doBitsetSelect())
@@ -474,7 +474,7 @@ class ScriptMathProcessor {
     // now add a marker on the xStack if necessary
 
     if (newOp != null)
-      addXVar(new ScriptVariable(Token.opEQ, newOp));
+      addXVar(ScriptVariable.newScriptVariableObj(Token.opEQ, newOp));
 
     // fix up counts and operand flag
     // right ) and ] are not added to the stack
@@ -603,7 +603,7 @@ class ScriptMathProcessor {
       // allow for x[1]["test"][1]["here"]
       // common in getproperty business
       // prior to 12.2/3.18, x[1]["id"] was misread as x[1][0]
-      var = ScriptVariable.selectItemVar(var, Integer.MIN_VALUE);
+      var = ScriptVariable.selectItemVar2(var, Integer.MIN_VALUE);
     }
     if (var.tok == Token.hash) {
       ScriptVariable v = var.mapValue(ScriptVariable.sValue(var1));
@@ -613,14 +613,14 @@ class ScriptMathProcessor {
     int i = ScriptVariable.iValue(var1);
     switch (var.tok) {
     default:
-      var = new ScriptVariable(Token.string, ScriptVariable.sValue(var));
+      var = ScriptVariable.newScriptVariableObj(Token.string, ScriptVariable.sValue(var));
       //$FALL-THROUGH$
     case Token.bitset:
     case Token.varray:
     case Token.string:
     case Token.matrix3f:
     case Token.matrix4f:
-      xStack[xPt] = ScriptVariable.selectItemVar(var, i);
+      xStack[xPt] = ScriptVariable.selectItemVar2(var, i);
       break;
     }
     return true;
@@ -1267,8 +1267,8 @@ class ScriptMathProcessor {
         return addXStr("");
       if (vdw != Float.MAX_VALUE && (nBitSets != 2 || nPoints != 2))
           return addXStr("");
-      rd = (vdw == Float.MAX_VALUE ? new RadiusData(rangeMinMax)
-          : new RadiusData(vdw, EnumType.FACTOR, EnumVdw.AUTO));
+      rd = (vdw == Float.MAX_VALUE ? new RadiusData(rangeMinMax, 0, null, null)
+          : new RadiusData(null, vdw, EnumType.FACTOR, EnumVdw.AUTO));
       MeasurementData md = new MeasurementData(viewer, points, 0, rd, strFormat, units,
           null, isAllConnected, isNotConnected, null, true);
       return addXObj(md.getMeasurements(asArray));
@@ -1313,7 +1313,7 @@ class ScriptMathProcessor {
           null, null, x1.value, new Object[] { name, params }, false, x1.index,
           false));
     }
-    ScriptVariable var = eval.runFunction(null, name, params, null, true, true);
+    ScriptVariable var = eval.runFunctionRet(null, name, params, null, true, true);
     return (var == null ? false : addXVar(var));
   }
 
@@ -1905,7 +1905,7 @@ class ScriptMathProcessor {
     }
     ScriptVariable[] a = new ScriptVariable[args.length];
     for (int i = a.length; --i >= 0;)
-      a[i] = new ScriptVariable(args[i]);
+      a[i] = ScriptVariable.newScriptVariableToken(args[i]);
     return addXObj(a);
   }
 
@@ -2149,7 +2149,7 @@ class ScriptMathProcessor {
       if (!appID.equals("."))
         sb.append(viewer.jsEval(appID + "\1" + s));
       if (appID.equals(".") || appID.equals("*"))
-        eval.runScript(s, sb);
+        eval.runScriptBuffer(s, sb);
       break;
     case Token.javascript:
       sb.append(viewer.jsEval(s));
@@ -2241,7 +2241,7 @@ class ScriptMathProcessor {
     String format = (args.length == 0 ? "%U" : ScriptVariable.sValue(args[0]));
     boolean asArray = Token.tokAttr(intValue, Token.minmaxmask);
     if (x1 == null)
-      return addXStr(ScriptVariable.sprintf(args));
+      return addXStr(ScriptVariable.sprintfArray(args));
     BitSet bs = ScriptVariable.getBitSet(x1, true);
     if (bs == null)
       return addXObj(ScriptVariable.sprintf(TextFormat.formatCheck(format), x1));
@@ -2416,9 +2416,9 @@ class ScriptMathProcessor {
     if (isWithinGroup)
       return addXBs(viewer.getGroupsWithin((int) distance, bs));
     if (isVdw)
-      rd = new RadiusData((distance > 10 ? distance / 100 : distance), 
-          (distance > 10 ? EnumType.FACTOR : EnumType.OFFSET), 
-          EnumVdw.AUTO);
+      rd = new RadiusData(null, 
+          (distance > 10 ? distance / 100 : distance), 
+          (distance > 10 ? EnumType.FACTOR : EnumType.OFFSET), EnumVdw.AUTO);
     return addXBs(viewer.getAtomsWithin(distance, bs, isWithinModelSet, rd));
   }
 
@@ -2445,9 +2445,9 @@ class ScriptMathProcessor {
       return addXBs(new BitSet());
     BitSet bsB = (i < args.length ? BitSetUtil.copy(ScriptVariable
         .bsSelectVar(args[i])) : null);
-    RadiusData rd = new RadiusData((distance > 10 ? distance / 100 : distance),
-        (distance > 10 ? EnumType.FACTOR : EnumType.OFFSET),
-        EnumVdw.AUTO);
+    RadiusData rd = new RadiusData(null,
+        (distance > 10 ? distance / 100 : distance),
+        (distance > 10 ? EnumType.FACTOR : EnumType.OFFSET), EnumVdw.AUTO);
     bsB = eval.setContactBitSets(bsA, bsB, true, Float.NaN, rd, false);
     bsB.or(bsA);
     return addXBs(bsB);
@@ -2594,7 +2594,7 @@ class ScriptMathProcessor {
           .makeConnections(fmin, fmax, order,
               Token.identify, atoms1, atoms2, bsBonds,
               isBonds, false, 0);
-      return addXVar(new ScriptVariable(Token.bitset, new BondSet(bsBonds, viewer
+      return addXVar(ScriptVariable.newScriptVariableObj(Token.bitset, new BondSet(bsBonds, viewer
           .getAtomIndices(viewer.getAtomBits(Token.bonds, bsBonds)))));
     }
     return addXBs(viewer.getAtomsConnected(min, max, order, atoms1));
@@ -2761,7 +2761,7 @@ class ScriptMathProcessor {
     if (isSyntaxCheck) {
       if (op == Token.tokenAndFALSE || op == Token.tokenOrTRUE)
         isSyntaxCheck = false;
-      return addXVar(new ScriptVariable(x1));
+      return addXVar(ScriptVariable.newScriptVariableToken(x1));
     }
     switch (op.tok) {
     case Token.opAND:
@@ -2850,7 +2850,7 @@ class ScriptMathProcessor {
         }
         return addXInt(x1.intValue + ScriptVariable.iValue(x2));
       case Token.string:
-        return addXVar(new ScriptVariable(Token.string, ScriptVariable.sValue(x1)
+        return addXVar(ScriptVariable.newScriptVariableObj(Token.string, ScriptVariable.sValue(x1)
             + ScriptVariable.sValue(x2)));
       case Token.point4f:
         Quaternion q1 = new Quaternion((Point4f) x1.value);
@@ -3409,7 +3409,7 @@ class ScriptMathProcessor {
       Object val = eval.getBitsetProperty(bs, op.intValue, null, null,
           x2.value, op.value, false, x2.index, true);
       if (op.intValue == Token.bonds)
-        val = new ScriptVariable(Token.bitset, new BondSet((BitSet) val, viewer
+        val = ScriptVariable.newScriptVariableObj(Token.bitset, new BondSet((BitSet) val, viewer
             .getAtomIndices(bs)));
       return addXObj(val);
     }

@@ -127,19 +127,18 @@ public class RadiusData {
   public float valueExtended = 0;
   public float[] values;
   
-  public RadiusData() {
-  }
-
-  public RadiusData(float value, EnumType factorType, EnumVdw vdwType) {
+  public RadiusData(float[] values, float value, EnumType factorType, EnumVdw vdwType) {
+    if (factorType == null)
+      return;
+    if (values != null) {
+      this.values = values;
+      this.value = Integer.MAX_VALUE;
+      return;
+    }
     this.factorType = factorType;
     this.value = value;
     if (vdwType != null)
       this.vdwType = vdwType;
-  }
-
-  public RadiusData(float[] values) {
-    this.values = values;
-    value = Integer.MAX_VALUE;
   }
 
   @Override

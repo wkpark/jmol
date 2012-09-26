@@ -203,7 +203,7 @@ public class PropertyManager {
       if ((n = Parser.parseInt(names[i])) != Integer.MIN_VALUE)
         args[i] = new ScriptVariableInt(n);
       else
-        args[i] = new ScriptVariable(Token.string, names[i]);
+        args[i] = ScriptVariable.newScriptVariableObj(Token.string, names[i]);
     }
     return extractProperty(getProperty(viewer, null, propertyName, propertyValue), args, 1);
   }

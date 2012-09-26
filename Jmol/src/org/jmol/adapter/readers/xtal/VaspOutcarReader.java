@@ -200,7 +200,7 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
       float x = parseFloatStr(tokens[0]);
       float y = parseFloatStr(tokens[1]);
       float z = parseFloatStr(tokens[2]);
-      setAtomCoord(atom, x, y, z);
+      setAtomCoordXYZ(atom, x, y, z);
     }
     atomSetCollection.setAtomSetName("Initial Coordinates");
   }
@@ -228,7 +228,7 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
       float x = parseFloatStr(tokens[0]);
       float y = parseFloatStr(tokens[1]);
       float z = parseFloatStr(tokens[2]);
-      setAtomCoord(atom, x, y, z);
+      setAtomCoordXYZ(atom, x, y, z);
       counter++;
     }
   }

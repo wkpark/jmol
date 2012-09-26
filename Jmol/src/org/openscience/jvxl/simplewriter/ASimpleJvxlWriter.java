@@ -87,7 +87,7 @@ public class ASimpleJvxlWriter {
                          + " for " + surfacePointsReturn.size() 
                          + " surface points");
     // streaming option: null voxelData
-    volumeData.setVoxelData(null);
+    volumeData.setVoxelDataAsArray(null);
     params.isXLowToHigh = true;
     writeFile(outputFile + "B", jvxlGetData(vdc, params,
         volumeData, title, surfacePointsReturn, areaVolumeReturn));

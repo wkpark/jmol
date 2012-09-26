@@ -34,14 +34,12 @@ import org.jmol.modelset.Atom;
 class Leaf extends Element {
   Point3f[] tuples;
     
-  Leaf(Bspt bspt) {
+  Leaf(Bspt bspt, Leaf leaf, int countToKeep) {
     this.bspt = bspt;
     count = 0;
     tuples = new Point3f[Bspt.leafCountMax];
-  }
-    
-  Leaf(Bspt bspt, Leaf leaf, int countToKeep) {
-    this(bspt);
+    if (leaf == null)
+      return;
     for (int i = countToKeep; i < Bspt.leafCountMax; ++i) {
       tuples[count++] = leaf.tuples[i];
       leaf.tuples[i] = null;

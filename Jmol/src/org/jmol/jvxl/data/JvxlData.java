@@ -204,11 +204,11 @@ public class JvxlData {
   }
 
   public void setSurfaceInfoFromBitSet(BitSet bs, Point4f thePlane) {
-    setSurfaceInfoFromBitSet(bs, thePlane, null);
+    setSurfaceInfoFromBitSetPts(bs, thePlane, null);
   }
-  public void setSurfaceInfoFromBitSet(BitSet bs, Point4f thePlane, Point3f mapLattice) {
+  public void setSurfaceInfoFromBitSetPts(BitSet bs, Point4f thePlane, Point3f mapLattice) {
     StringBuffer sb = new StringBuffer();
-    int nSurfaceInts = (thePlane != null ? 0 : JvxlCoder.jvxlEncodeBitSet(bs,
+    int nSurfaceInts = (thePlane != null ? 0 : JvxlCoder.jvxlEncodeBitSetBuffer(bs,
         nPointsX * nPointsY * nPointsZ, sb));
     setSurfaceInfo(thePlane, mapLattice, nSurfaceInts, sb.toString());
   }

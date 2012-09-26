@@ -305,7 +305,7 @@ public class CastepReader extends AtomSetCollectionReader {
       atom.elementSymbol = tokens[1];
       atom.atomName = tokens[1] + tokens[2];
       atomSetCollection.addAtomWithMappedName(atom);
-      setAtomCoord(atom, parseFloatStr(tokens[3]), parseFloatStr(tokens[4]),
+      setAtomCoordXYZ(atom, parseFloatStr(tokens[3]), parseFloatStr(tokens[4]),
           parseFloatStr(tokens[5]));
     }
   }
@@ -325,7 +325,7 @@ public class CastepReader extends AtomSetCollectionReader {
         tokens = getTokens();
         Atom atom = atomSetCollection.addNewAtom();
         atom.elementSymbol = tokens[0];
-        setAtomCoord(atom, parseFloatStr(tokens[2]) * ANGSTROMS_PER_BOHR,
+        setAtomCoordXYZ(atom, parseFloatStr(tokens[2]) * ANGSTROMS_PER_BOHR,
             parseFloatStr(tokens[3]) * ANGSTROMS_PER_BOHR, parseFloatStr(tokens[4])
                 * ANGSTROMS_PER_BOHR);
         readLine();
@@ -634,7 +634,7 @@ Species   Ion     s      p      d      f     Total  Charge (e)
     while (readLine() != null && line.indexOf("END") < 0) {
       tokens = getTokens();
       Atom atom = atomSetCollection.addNewAtom();
-      setAtomCoord(atom, parseFloatStr(tokens[1]), parseFloatStr(tokens[2]),
+      setAtomCoordXYZ(atom, parseFloatStr(tokens[1]), parseFloatStr(tokens[2]),
           parseFloatStr(tokens[3]));
       atom.elementSymbol = tokens[4];
       atom.bfactor = parseFloatStr(tokens[5]); // mass, actually
@@ -706,7 +706,7 @@ Species   Ion     s      p      d      f     Total  Charge (e)
     boolean isGammaPoint = (qvec.length() == 0);
     float nx = 1, ny = 1, nz = 1;
     if (ptSupercell != null && !isOK && !isSecond) {
-      atomSetCollection.setSupercell(ptSupercell);
+      atomSetCollection.setSupercellFromPoint(ptSupercell);
       nx = ptSupercell.x;
       ny = ptSupercell.y;
       nz = ptSupercell.z;
@@ -773,7 +773,7 @@ Species   Ion     s      p      d      f     Total  Charge (e)
             t.y *= ny;
             t.z *= nz;
             setPhononVector(data, atoms[k], t, qvec, v);
-            atomSetCollection.addVibrationVector(k, v.x, v.y, v.z, true);
+            atomSetCollection.addVibrationVectorWithSymmetry(k, v.x, v.y, v.z, true);
           }
       }
       if (isTrajectory)

@@ -280,7 +280,7 @@ public class PdbReader extends AtomSetCollectionReader {
         if (line.indexOf("TLS DETAILS") > 0)
           return remarkTls();
       }
-      checkLineForScript();
+      checkCurrentLineForScript();
       return true;
     case 18:
       header();
@@ -690,7 +690,7 @@ REMARK 290 REMARK: NULL
     }
 
     if (gromacsWideFormat) {
-      setAtomCoord(atom, parseFloatRange(line, 30, 40), parseFloatRange(line, 40, 50),
+      setAtomCoordXYZ(atom, parseFloatRange(line, 30, 40), parseFloatRange(line, 40, 50),
           parseFloatRange(line, 50, 60));
     } else {
       //calculate the charge from cols 79 & 80 (1-based): 2+, 3-, etc
@@ -711,7 +711,7 @@ REMARK 290 REMARK: NULL
         }
       }
       atom.formalCharge = charge;
-      setAtomCoord(atom, parseFloatRange(line, 30, 38), parseFloatRange(line, 38, 46),
+      setAtomCoordXYZ(atom, parseFloatRange(line, 30, 38), parseFloatRange(line, 38, 46),
           parseFloatRange(line, 46, 54));
     }
     setAdditionalAtomParameters(atom);
@@ -836,7 +836,7 @@ REMARK 290 REMARK: NULL
       char ch77 = line.charAt(77);
       if (ch76 == ' ' && Atom.isValidElementSymbol(ch77))
         return "" + ch77;
-      if (Atom.isValidElementSymbolNoCaseSecondChar(ch76, ch77))
+      if (Atom.isValidElementSymbolNoCaseSecondChar2(ch76, ch77))
         return "" + ch76 + ch77;
     }
     char ch12 = line.charAt(12);
@@ -845,7 +845,7 @@ REMARK 290 REMARK: NULL
     // But they could be right-aligned or left-aligned
     if ((htElementsInCurrentGroup == null ||
          htElementsInCurrentGroup.get(line.substring(12, 14)) != null) &&
-        Atom.isValidElementSymbolNoCaseSecondChar(ch12, ch13))
+        Atom.isValidElementSymbolNoCaseSecondChar2(ch12, ch13))
       return (isHetero || ch12 != 'H' ? "" + ch12 + ch13 : "H");
     // not a known two-letter code
     if (ch12 == 'H') // added check for PQR files "HD22" for example
@@ -866,7 +866,7 @@ REMARK 290 REMARK: NULL
     char ch14 = line.charAt(14);
     if (ch12 == ' ' && ch13 != 'X' && (htElementsInCurrentGroup == null ||
         htElementsInCurrentGroup.get(line.substring(13, 15)) != null) &&
-        Atom.isValidElementSymbolNoCaseSecondChar(ch13, ch14))
+        Atom.isValidElementSymbolNoCaseSecondChar2(ch13, ch14))
      return  "" + ch13 + ch14;
     return "Xx";
   }
@@ -1046,7 +1046,7 @@ Polyproline 10
     sbConect = null;
     atomSetCollection.newAtomSet();
     atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
-    atomSetCollection.setAtomSetNumber(modelNumber);
+    atomSetCollection.setCurrentAtomSetNumber(modelNumber);
   }
 
   private void checkNotPDB() {
@@ -1109,7 +1109,7 @@ Polyproline 10
         continue;
       char chFirst = elementWithCount.charAt(0);
       char chSecond = elementWithCount.charAt(1);
-      if (Atom.isValidElementSymbolNoCaseSecondChar(chFirst, chSecond))
+      if (Atom.isValidElementSymbolNoCaseSecondChar2(chFirst, chSecond))
         htElementsInGroup.put("" + chFirst + chSecond, Boolean.TRUE);
       else if (Atom.isValidElementSymbol(chFirst))
         htElementsInGroup.put("" + chFirst, Boolean.TRUE);

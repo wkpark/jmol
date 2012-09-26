@@ -366,7 +366,7 @@ public class AminoPolymer extends AlphaPolymer {
     default:
       order = JmolEdge.BOND_H_CALC;
     }
-    vHBonds.add(new HBond(nitrogen, oxygen, order, energy));
+    vHBonds.add(new HBond(nitrogen, oxygen, order, (short) 1, (short) 0, energy));
   }
 
   ////////////////////// DSSP /////////////////////
@@ -989,7 +989,7 @@ public class AminoPolymer extends AlphaPolymer {
         return;
       htTemp.put(key, Boolean.TRUE);
     }
-    vHBonds.add(new HBond(nitrogen, oxygen, type, iEnergy / 1000f));
+    vHBonds.add(new HBond(nitrogen, oxygen, type, (short) 1, (short) 0, iEnergy / 1000f));
   }
 
   /**

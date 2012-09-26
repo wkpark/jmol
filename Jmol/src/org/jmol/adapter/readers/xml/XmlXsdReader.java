@@ -126,7 +126,7 @@ public class XmlXsdReader extends XmlReader {
         else if (type.equals("Triple"))
           order = 3;
       }
-      atomSetCollection.addNewBond(atoms[0], atoms[1], order);
+      atomSetCollection.addNewBondFromNames(atoms[0], atoms[1], order);
       return;
     }
   }

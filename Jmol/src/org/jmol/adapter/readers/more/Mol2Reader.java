@@ -76,7 +76,7 @@ public class Mol2Reader extends ForceFieldReader {
        * Comment lines (starting with '#' as per Tripos spec) may contain an
        * inline Jmol script.
        */
-      checkLineForScript();
+      checkCurrentLineForScript();
     }
     return true;
   }
@@ -125,7 +125,7 @@ public class Mol2Reader extends ForceFieldReader {
             Any comments written before the 'jmolscript:' will be preserved (and added to the model's title).
         */
         if (line.indexOf("jmolscript:") >= 0) {
-          checkLineForScript();
+          checkCurrentLineForScript();
           if (line.equals("#")) {
             line = "";
           }

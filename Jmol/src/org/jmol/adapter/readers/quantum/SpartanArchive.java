@@ -147,7 +147,7 @@ class SpartanArchive {
           : r.atomSetCollection.getAtom(atomCount0 - modelAtomCount + i));
       atom.elementSymbol = AtomSetCollectionReader
           .getElementSymbol(parseInt(tokens[0]));
-      r.setAtomCoord(atom, parseFloat(tokens[1]) * AtomSetCollectionReader.ANGSTROMS_PER_BOHR, 
+      r.setAtomCoordXYZ(atom, parseFloat(tokens[1]) * AtomSetCollectionReader.ANGSTROMS_PER_BOHR, 
           parseFloat(tokens[2]) * AtomSetCollectionReader.ANGSTROMS_PER_BOHR, 
           parseFloat(tokens[3]) * AtomSetCollectionReader.ANGSTROMS_PER_BOHR);
     }

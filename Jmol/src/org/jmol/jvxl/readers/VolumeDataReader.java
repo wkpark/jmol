@@ -98,7 +98,7 @@ class VolumeDataReader extends SurfaceReader {
     if (isMapData && !allowMapData)
       return; //not applicable
     if (!isMapData || volumeData.sr != null) {
-      volumeData.setVoxelData(voxelData = null);
+      volumeData.setVoxelDataAsArray(voxelData = null);
       return;      
     }
     newVoxelDataCube();

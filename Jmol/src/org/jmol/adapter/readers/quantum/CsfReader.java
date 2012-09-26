@@ -314,7 +314,7 @@ public class CsfReader extends MopacSlaterReader {
           atom.partialCharge = parseFloatStr(field);
           break;
         case xyz_coordinates:
-          setAtomCoord(atom, parseFloatStr(field), parseFloatStr(tokens[i + 1]), parseFloatStr(tokens[i + 2]));
+          setAtomCoordXYZ(atom, parseFloatStr(field), parseFloatStr(tokens[i + 1]), parseFloatStr(tokens[i + 2]));
           break;
         }
       }
@@ -367,7 +367,7 @@ public class CsfReader extends MopacSlaterReader {
             order = 3;
           else
             Logger.warn("unknown CSF bond order: " + field);
-          Bond bond = new Bond();
+          Bond bond = new Bond(-1, -1, 1);
           bond.order = order;
           if (connectors == null) {
             if (htBonds == null)

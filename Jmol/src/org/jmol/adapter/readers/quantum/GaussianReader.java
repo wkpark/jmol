@@ -293,7 +293,7 @@ public class GaussianReader extends MOReader {
       if (atom.elementNumber < 0)
         atom.elementNumber = 0; // dummy atoms have -1 -> 0
       int offset = tokens.length-3;
-      setAtomCoord(atom, parseFloatStr(tokens[offset]), 
+      setAtomCoordXYZ(atom, parseFloatStr(tokens[offset]), 
           parseFloatStr(tokens[++offset]), 
           parseFloatStr(tokens[++offset]));
     }

@@ -51,18 +51,15 @@ public class Structure extends AtomSetObject {
     return EnumStructure.HELIX;
   }
   
-
-  public Structure(EnumStructure type) {
-    structureType = substructureType = type;
-  }
-
   public Structure(int modelIndex, EnumStructure structureType, EnumStructure substructureType,
             String structureID, int serialID, int strandCount,
             char startChainID, int startSequenceNumber, char startInsertionCode,
             char endChainID, int endSequenceNumber, char endInsertionCode) {
-    this.atomSetIndex = modelIndex;
     this.structureType = structureType;
     this.substructureType = substructureType;
+    if (structureID == null)
+      return;
+    this.atomSetIndex = modelIndex;
     this.structureID = structureID;
     this.strandCount = strandCount; // 1 for sheet initially; 0 for helix or turn
     this.serialID = serialID;

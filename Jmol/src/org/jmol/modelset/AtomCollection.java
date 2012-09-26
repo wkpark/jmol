@@ -270,7 +270,7 @@ abstract public class AtomCollection {
     if (bs != null)
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
         atoms[i].setFormalCharge(formalCharge);
-        taint(i, TAINT_FORMALCHARGE);
+        taintAtom(i, TAINT_FORMALCHARGE);
       }
   }
   
@@ -397,7 +397,7 @@ abstract public class AtomCollection {
     if (envelopeRadius < 0)
       envelopeRadius = EnvelopeCalculation.SURFACE_DISTANCE_FOR_CALCULATION;
     EnvelopeCalculation ec = new EnvelopeCalculation(viewer, atomCount, null);
-    ec.calculate(new RadiusData(envelopeRadius, EnumType.ABSOLUTE, null), 
+    ec.calculate(new RadiusData(null, envelopeRadius, EnumType.ABSOLUTE, null), 
         Float.MAX_VALUE, 
         bsSelected, BitSetUtil.copyInvert(bsSelected, atomCount), 
         false, false, false, true);
@@ -472,12 +472,12 @@ abstract public class AtomCollection {
           setAtomCoord(i, xyz.x, xyz.y, xyz.z);
           break;
         case Token.fracxyz:
-          atoms[i].setFractionalCoord(xyz, true);
-          taint(i, TAINT_COORD);
+          atoms[i].setFractionalCoordTo(xyz, true);
+          taintAtom(i, TAINT_COORD);
           break;
         case Token.fuxyz:
-          atoms[i].setFractionalCoord(xyz, false);
-          taint(i, TAINT_COORD);
+          atoms[i].setFractionalCoordTo(xyz, false);
+          taintAtom(i, TAINT_COORD);
           break;
         case Token.vibxyz:
           setAtomVibrationVector(i, xyz.x, xyz.y, xyz.z);
@@ -488,7 +488,7 @@ abstract public class AtomCollection {
 
   private void setAtomVibrationVector(int atomIndex, float x, float y, float z) {
     setVibrationVector(atomIndex, x, y, z);  
-    taint(atomIndex, TAINT_VIBRATION);
+    taintAtom(atomIndex, TAINT_VIBRATION);
   }
   
   public void setAtomCoord(int atomIndex, float x, float y, float z) {
@@ -497,7 +497,7 @@ abstract public class AtomCollection {
     atoms[atomIndex].x = x;
     atoms[atomIndex].y = y;
     atoms[atomIndex].z = z;
-    taint(atomIndex, TAINT_COORD);
+    taintAtom(atomIndex, TAINT_COORD);
   }
 
   public void setAtomCoordRelative(int atomIndex, float x, float y, float z) {
@@ -506,10 +506,10 @@ abstract public class AtomCollection {
     atoms[atomIndex].x += x;
     atoms[atomIndex].y += y;
     atoms[atomIndex].z += z;
-    taint(atomIndex, TAINT_COORD);
+    taintAtom(atomIndex, TAINT_COORD);
   }
 
-  protected void setAtomCoordRelative(BitSet bs, float x, float y,
+  protected void setAtomsCoordRelative(BitSet bs, float x, float y,
                                       float z) {
     if (bs != null)
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i+1))
@@ -540,15 +540,15 @@ abstract public class AtomCollection {
       Atom atom = atoms[i];
       switch (tok) {
       case Token.atomname:
-        taint(i, TAINT_ATOMNAME);
+        taintAtom(i, TAINT_ATOMNAME);
         setAtomName(i, sValue);
         break;
       case Token.atomno:
-        taint(i, TAINT_ATOMNO);
+        taintAtom(i, TAINT_ATOMNO);
         setAtomNumber(i, iValue);
         break;
       case Token.atomtype:
-        taint(i, TAINT_ATOMTYPE);
+        taintAtom(i, TAINT_ATOMTYPE);
         setAtomType(i, sValue);
         break;
       case Token.atomx:
@@ -572,13 +572,13 @@ abstract public class AtomCollection {
       case Token.fracy:
       case Token.fracz:
         atom.setFractionalCoord(tok, fValue, true);
-        taint(i, TAINT_COORD);
+        taintAtom(i, TAINT_COORD);
         break;
       case Token.fux:
       case Token.fuy:
       case Token.fuz:
         atom.setFractionalCoord(tok, fValue, false);
-        taint(i, TAINT_COORD);
+        taintAtom(i, TAINT_COORD);
         break;
       case Token.elemno:
       case Token.element:
@@ -586,11 +586,11 @@ abstract public class AtomCollection {
         break;
       case Token.formalcharge:
         atom.setFormalCharge(iValue);
-        taint(i, TAINT_FORMALCHARGE);
+        taintAtom(i, TAINT_FORMALCHARGE);
         break;
       case Token.hydrophobic:
         if (setHydrophobicity(i, fValue))
-          taint(i, TAINT_HYDROPHOBICITY);
+          taintAtom(i, TAINT_HYDROPHOBICITY);
         break;
       case Token.label:
       case Token.format:
@@ -600,15 +600,15 @@ abstract public class AtomCollection {
         if (iValue < 2)
           iValue = (int) (100 * fValue);
         if (setOccupancy(i, iValue))
-          taint(i, TAINT_OCCUPANCY);
+          taintAtom(i, TAINT_OCCUPANCY);
         break;
       case Token.partialcharge:
         if (setPartialCharge(i, fValue))
-          taint(i, TAINT_PARTIALCHARGE);
+          taintAtom(i, TAINT_PARTIALCHARGE);
         break;
       case Token.ionic:
         if (setIonicRadius(i, fValue))
-          taint(i, TAINT_IONICRADIUS);
+          taintAtom(i, TAINT_IONICRADIUS);
         break;
       case Token.radius:
       case Token.spacefill:
@@ -623,15 +623,15 @@ abstract public class AtomCollection {
         break;
       case Token.temperature:
         if (setBFactor(i, fValue))
-          taint(i, TAINT_TEMPERATURE);
+          taintAtom(i, TAINT_TEMPERATURE);
         break;
       case Token.valence:
         atom.setValence(iValue);
-        taint(i, TAINT_VALENCE);
+        taintAtom(i, TAINT_VALENCE);
         break;
       case Token.vanderwaals:
         if (atom.setRadius(fValue))
-          taint(i, TAINT_VANDERWAALS);
+          taintAtom(i, TAINT_VANDERWAALS);
         else
           untaint(i, TAINT_VANDERWAALS);
         break;
@@ -645,7 +645,7 @@ abstract public class AtomCollection {
   }
 
   protected void setElement(Atom atom, int atomicNumber) {
-    taint(atom.index, TAINT_ELEMENT);
+    taintAtom(atom.index, TAINT_ELEMENT);
     atom.setAtomicAndIsotopeNumber(atomicNumber);
     atom.setPaletteID(EnumPalette.CPK.id);
     atom.setColixAtom(viewer.getColixAtomPalette(atom,
@@ -861,7 +861,7 @@ abstract public class AtomCollection {
           atom.setRadius(x);          
           break;
         }
-        taint(atomIndex, (byte) type);
+        taintAtom(atomIndex, (byte) type);
       }
       if (type == TAINT_MAX && n > 0)
         viewer.setData(name, new Object[] {name, fData, bs}, 0, 0, 0, 0, 0);
@@ -905,9 +905,9 @@ abstract public class AtomCollection {
       bspf.validate(isValid);
   }
 
-  void validateBspf(int modelIndex, boolean isValid) {
+  void validateBspfForModel(int modelIndex, boolean isValid) {
     if (bspf != null)
-      bspf.validate(modelIndex, isValid);
+      bspf.validateModel(modelIndex, isValid);
   }
 
   // state tainting
@@ -979,15 +979,15 @@ abstract public class AtomCollection {
     return tainted == null ? null : tainted[type];
   }
   
-  public void taint(BitSet bsAtoms, byte type) {
+  public void taintAtoms(BitSet bsAtoms, byte type) {
     canSkipLoad = false;
     if (!preserveState)
       return;
     for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1))
-      taint(i, type);
+      taintAtom(i, type);
   }
 
-  protected void taint(int atomIndex, byte type) {
+  protected void taintAtom(int atomIndex, byte type) {
     if (!preserveState)
       return;
     if (tainted == null)
@@ -996,7 +996,7 @@ abstract public class AtomCollection {
       tainted[type] = new BitSet(atomCount);
     tainted[type].set(atomIndex);
     if (type  == TAINT_COORD)
-      validateBspf(atoms[atomIndex].modelIndex, false);
+      validateBspfForModel(atoms[atomIndex].modelIndex, false);
   }
 
   private void untaint(int atomIndex, byte type) {
@@ -1040,11 +1040,11 @@ abstract public class AtomCollection {
     for (byte i = 0; i < TAINT_MAX; i++)
       if (taintWhat < 0 || i == taintWhat)
       if((bs = (bsSelected != null ? bsSelected : getTaintedAtoms(i))) != null)
-        getAtomicPropertyState(commands, i, bs, null, null);
+        getAtomicPropertyStateBuffer(commands, i, bs, null, null);
     return commands.toString();
   }
   
-  public void getAtomicPropertyState(StringBuffer commands, 
+  public void getAtomicPropertyStateBuffer(StringBuffer commands, 
                                      byte type, BitSet bs,
                                      String label, float[] fData) {
     if (!viewer.getPreserveState())
@@ -2607,7 +2607,7 @@ abstract public class AtomCollection {
     return bsResult;
   }
   
-  public BitSet getAtomsWithin(float distance, Point3f[] points,
+  public BitSet getAtomsWithinBs(float distance, Point3f[] points,
                                BitSet bsInclude) {
     BitSet bsResult = new BitSet();
     if (points.length == 0 || bsInclude != null && bsInclude.cardinality() == 0)

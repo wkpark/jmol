@@ -81,7 +81,7 @@ public class SpartanReader extends BasisFunctionReader {
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementSymbol = elementSymbol;
       atom.atomName = atomName;
-      setAtomCoord(atom, parseFloatRange(line, 17, 30), parseFloatRange(line, 31, 44), parseFloatRange(
+      setAtomCoordXYZ(atom, parseFloatRange(line, 17, 30), parseFloatRange(line, 31, 44), parseFloatRange(
           line, 45, 58));
     }
   }

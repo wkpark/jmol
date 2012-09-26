@@ -82,7 +82,7 @@ public class Contact extends Isosurface {
   private float minData, maxData;
   //private final static String hbondH = "_H & connected(_O|_N and his and not *.N |_S)";
   //private final static float HBOND_CUTOFF = -0.8f;
-  private final static RadiusData rdVDW =  new RadiusData(1, EnumType.FACTOR, EnumVdw.AUTO);
+  private final static RadiusData rdVDW =  new RadiusData(null, 1, EnumType.FACTOR, EnumVdw.AUTO);
   
   private void setContacts(Object[] value, boolean doEditCpList) {
     Logger.startTimer();
@@ -99,7 +99,7 @@ public class Contact extends Isosurface {
     if (Float.isNaN(saProbeRadius))
       saProbeRadius = 0;
     if (rd == null)
-      rd = new RadiusData(saProbeRadius, EnumType.OFFSET, EnumVdw.AUTO);
+      rd = new RadiusData(null, saProbeRadius, EnumType.OFFSET, EnumVdw.AUTO);
     if (colorDensity) {
       switch (displayType) {
       case Token.full:
@@ -508,8 +508,8 @@ public class Contact extends Isosurface {
       RadiusData rdA, rdB;
       if (displayType == Token.surface) {
         rdA = rdVDW;
-        rdB = new RadiusData((rd.factorType == EnumType.OFFSET ? rd.value * 2 : (rd.value - 1) * 2 + 1), 
-            rd.factorType, rd.vdwType);
+        rdB = new RadiusData(null, 
+            (rd.factorType == EnumType.OFFSET ? rd.value * 2 : (rd.value - 1) * 2 + 1), rd.factorType, rd.vdwType);
       } else {
         rdA = rdB = rd;
       }

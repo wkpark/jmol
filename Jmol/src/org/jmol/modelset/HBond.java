@@ -39,13 +39,6 @@ public class HBond extends Bond {
       Logger.info("HBond energy = " + energy + " #" + getIdentity());
   }
   
-  public HBond(Atom atom1, Atom atom2, int order, float energy) {
-    super(atom1, atom2, order, (short) 1, (short) 0);
-    this.energy= energy;
-    if (Logger.debugging)
-      Logger.info("HBond energy = " + energy + " #" + getIdentity());
-  }
-
   @Override
   public float getEnergy() {
     return energy;

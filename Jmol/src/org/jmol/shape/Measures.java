@@ -340,7 +340,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
       format = null;
     for (int i = measurements.size(); --i >= 0;)
       if (bsSelected == null || bsSelected.get(i))
-        measurements.get(i).formatMeasurement(format, null, false);
+        measurements.get(i).formatMeasurementAs(format, null, false);
   }
   
   private void showHide(boolean isHide) {
@@ -459,7 +459,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
       if (tokAction == Token.delete) {
         deleteMeasurement(iThis);
       } else if (strFormat != null) {
-        measurements.get(iThis).formatMeasurement(strFormat,
+        measurements.get(iThis).formatMeasurementAs(strFormat,
             null, true);
       } else {
         measurements.get(iThis).setHidden(tokAction == Token.off);

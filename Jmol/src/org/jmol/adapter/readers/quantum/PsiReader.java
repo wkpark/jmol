@@ -152,7 +152,7 @@ public class PsiReader extends MOReader {
       }
       if (atom.elementNumber < 0)
         atom.elementNumber = 0; // dummy atoms have -1 -> 0
-      setAtomCoord(atom, parseFloatStr(tokens[1]) * ANGSTROMS_PER_BOHR, 
+      setAtomCoordXYZ(atom, parseFloatStr(tokens[1]) * ANGSTROMS_PER_BOHR, 
           parseFloatStr(tokens[2]) * ANGSTROMS_PER_BOHR, 
           parseFloatStr(tokens[3]) * ANGSTROMS_PER_BOHR);
     }

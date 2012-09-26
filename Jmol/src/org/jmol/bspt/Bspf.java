@@ -48,7 +48,7 @@ public final class Bspf {
     this.isValid = isValid;
   }
 
-  public void validate(int i, boolean isValid) {
+  public void validateModel(int i, boolean isValid) {
     bsptsValid[i] = isValid;
   }
 
@@ -56,7 +56,7 @@ public final class Bspf {
     return isValid;
   }
 
-  public boolean isInitialized(int bsptIndex) {
+  public boolean isInitializedIndex(int bsptIndex) {
     return bspts.length > bsptIndex && bspts[bsptIndex] != null
         && bsptsValid[bsptIndex];
   }

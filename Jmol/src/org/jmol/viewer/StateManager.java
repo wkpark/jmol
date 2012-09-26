@@ -1500,7 +1500,7 @@ public class StateManager {
         name = "x";
       Object v = getParameter(name, true);
       return (v == null && doSet && name.charAt(0) != '_' ?
-        setUserVariable(name, new ScriptVariable())
+        setUserVariable(name, ScriptVariable.newScriptVariableObj(Token.string, ""))
          : ScriptVariable.getVariable(v));
     }
 

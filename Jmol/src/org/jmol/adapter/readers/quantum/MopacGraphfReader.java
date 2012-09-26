@@ -69,7 +69,7 @@ public class MopacGraphfReader extends MopacSlaterReader {
       readLine();
       atomicNumbers[i] = parseIntStr(line.substring(0, 4));
       Atom atom = atomSetCollection.addNewAtom();
-      setAtomCoord(atom, parseFloatStr(line.substring(4, 17)), 
+      setAtomCoordXYZ(atom, parseFloatStr(line.substring(4, 17)), 
           parseFloatStr(line.substring(17, 29)), 
           parseFloatStr(line.substring(29, 41)));
       if (line.length() > 41)

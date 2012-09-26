@@ -7,7 +7,7 @@ import javax.vecmath.Vector3f;
 
 public interface VolumeDataInterface {
 
-  public abstract void setVoxelData(float[][][] voxelData);
+  public abstract void setVoxelDataAsArray(float[][][] voxelData);
 
   public abstract float[][][] getVoxelData();
 

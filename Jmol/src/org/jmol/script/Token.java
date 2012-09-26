@@ -48,21 +48,23 @@ public class Token {
     
   }
 
-  public Token(int tok, int intValue, Object value) {
-    this.tok = tok;
-    this.intValue = intValue;
-    this.value = value;
-  }
- 
   //integer tokens or have a value that is (more likely to be) non-null
   //null token values can cause problems in Eval.statementAsString()
   public Token(int tok) {
     this.tok = tok;
   }
 
-  public Token(int tok, Object value) {
-    this.tok = tok;
-    this.value = value;
+  public final static Token newTokenIntVal(int tok, int intValue, Object value) {
+    Token token = new Token(tok);
+    token.intValue = intValue;
+    token.value = value;
+    return token;
+  }
+ 
+  public final static Token newTokenObj(int tok, Object value) {
+    Token token = new Token(tok);
+    token.value = value;
+    return token;
   }
 
   public final static Token newToken(int tok, int intValue) {
@@ -1279,44 +1281,44 @@ public class Token {
   
   // predefined Tokens: 
   
-  final static Token tokenSpaceBeforeSquare = new Token(spacebeforesquare, " ");
-  final static Token tokenOn  = new Token(on, 1, "on");
-  final static Token tokenOff = new Token(off, 0, "off");
-  final static Token tokenAll = new Token(all, "all");
-  final static Token tokenIf = new Token(ifcmd, "if");
-  public final static Token tokenAnd = new Token(opAnd, "and");
-  public final static Token tokenAND = new Token(opAND, "");
-  public final static Token tokenOr  = new Token(opOr, "or");
-  public final static Token tokenAndFALSE = new Token(opAnd, "and");
-  public final static Token tokenOrTRUE = new Token(opOr, "or");
-  public final static Token tokenOpIf  = new Token(opIf, "?");
-  public final static Token tokenComma = new Token(comma, ",");
-  final static Token tokenDefineString = new Token(define, string, "@");
-  final static Token tokenPlus = new Token(plus, "+");
-  final static Token tokenMinus = new Token(minus, "-");
-  final static Token tokenTimes = new Token(times, "*");
-  final static Token tokenDivide = new Token(divide, "/");
+  final static Token tokenSpaceBeforeSquare = newTokenObj(spacebeforesquare, " ");
+  final static Token tokenOn  = newTokenIntVal(on, 1, "on");
+  final static Token tokenOff = newTokenIntVal(off, 0, "off");
+  final static Token tokenAll = newTokenObj(all, "all");
+  final static Token tokenIf = newTokenObj(ifcmd, "if");
+  public final static Token tokenAnd = newTokenObj(opAnd, "and");
+  public final static Token tokenAND = newTokenObj(opAND, "");
+  public final static Token tokenOr  = newTokenObj(opOr, "or");
+  public final static Token tokenAndFALSE = newTokenObj(opAnd, "and");
+  public final static Token tokenOrTRUE = newTokenObj(opOr, "or");
+  public final static Token tokenOpIf  = newTokenObj(opIf, "?");
+  public final static Token tokenComma = newTokenObj(comma, ",");
+  final static Token tokenDefineString = newTokenIntVal(define, string, "@");
+  final static Token tokenPlus = newTokenObj(plus, "+");
+  final static Token tokenMinus = newTokenObj(minus, "-");
+  final static Token tokenTimes = newTokenObj(times, "*");
+  final static Token tokenDivide = newTokenObj(divide, "/");
 
-  public final static Token tokenLeftParen = new Token(leftparen, "(");
-  public final static Token tokenRightParen = new Token(rightparen, ")");
-  final static Token tokenArraySquare = new Token(array, "[");
-  final static Token tokenArraySelector = new Token(leftsquare, "[");
+  public final static Token tokenLeftParen = newTokenObj(leftparen, "(");
+  public final static Token tokenRightParen = newTokenObj(rightparen, ")");
+  final static Token tokenArraySquare = newTokenObj(array, "[");
+  final static Token tokenArraySelector = newTokenObj(leftsquare, "[");
  
-  public final static Token tokenExpressionBegin = new Token(expressionBegin, "expressionBegin");
-  public final static Token tokenExpressionEnd   = new Token(expressionEnd, "expressionEnd");
-  public final static Token tokenConnected       = new Token(connected, "connected");
-  final static Token tokenCoordinateBegin = new Token(leftbrace, "{");
-  final static Token tokenRightBrace = new Token(rightbrace, "}");
+  public final static Token tokenExpressionBegin = newTokenObj(expressionBegin, "expressionBegin");
+  public final static Token tokenExpressionEnd   = newTokenObj(expressionEnd, "expressionEnd");
+  public final static Token tokenConnected       = newTokenObj(connected, "connected");
+  final static Token tokenCoordinateBegin = newTokenObj(leftbrace, "{");
+  final static Token tokenRightBrace = newTokenObj(rightbrace, "}");
   final static Token tokenCoordinateEnd = tokenRightBrace;
-  final static Token tokenColon           = new Token(colon, ":");
-  final static Token tokenSetCmd          = new Token(set, "set");
-  final static Token tokenSet             = new Token(set, '=', "");
-  final static Token tokenSetArray        = new Token(set, '[', "");
-  final static Token tokenSetProperty     = new Token(set, '.', "");
-  final static Token tokenSetVar          = new Token(set, '=', "var");
-  final static Token tokenEquals          = new Token(opEQ, "=");
-  final static Token tokenScript          = new Token(script, "script");
-  final static Token tokenSwitch          = new Token(switchcmd, "switch");
+  final static Token tokenColon           = newTokenObj(colon, ":");
+  final static Token tokenSetCmd          = newTokenObj(set, "set");
+  final static Token tokenSet             = newTokenIntVal(set, '=', "");
+  final static Token tokenSetArray        = newTokenIntVal(set, '[', "");
+  final static Token tokenSetProperty     = newTokenIntVal(set, '.', "");
+  final static Token tokenSetVar          = newTokenIntVal(set, '=', "var");
+  final static Token tokenEquals          = newTokenObj(opEQ, "=");
+  final static Token tokenScript          = newTokenObj(script, "script");
+  final static Token tokenSwitch          = newTokenObj(switchcmd, "switch");
     
   private static Map<String, Token> tokenMap = new Hashtable<String, Token>();
   public static void addToken(String ident, Token token) {
@@ -1410,7 +1412,7 @@ public class Token {
       Token token = entry.getValue();
       if (tokAttr(token.tok, atomproperty) && (isAll || name.toLowerCase().startsWith(type))) {
         if (isAll || !((String) token.value).toLowerCase().startsWith(type))
-          token = new Token(token.tok, name);
+          token = newTokenObj(token.tok, name);
         v.add(token);
       }
     }

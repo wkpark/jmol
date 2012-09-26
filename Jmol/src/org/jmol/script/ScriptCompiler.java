@@ -124,7 +124,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
   }
 
   private void addContextVariable(String ident) {
-    theToken = new Token(Token.identifier, ident);
+    theToken = Token.newTokenObj(Token.identifier, ident);
     if (pushCount > 0) {
       ContextToken ct = (ContextToken) vPush.get(pushCount - 1);
       ct.addName(ident);
@@ -141,7 +141,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
   }
   
   static void addContextVariable(Map<String, ScriptVariable> contextVariables, String ident) {
-    contextVariables.put(ident, (new ScriptVariable(Token.string, "")).setName(ident));
+    contextVariables.put(ident, ScriptVariable.newScriptVariableObj(Token.string, "").setName(ident));
   }
 
   private boolean isContextVariable(String ident) {
@@ -363,7 +363,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           continue;
         setAaTokenCompiled();
         return (flowContext == null 
-            || error(ERROR_missingEnd, Token.nameOf(flowContext.token.tok)));
+            || errorStr(ERROR_missingEnd, Token.nameOf(flowContext.token.tok)));
       }
       
       if (nTokens > 0) {
@@ -404,7 +404,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         }
         return commandExpected();
       }
-      return error(ERROR_unrecognizedToken, script.substring(ichToken,
+      return errorStr(ERROR_unrecognizedToken, script.substring(ichToken,
           ichToken + 1));
     }
   }
@@ -604,7 +604,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         ichCurrentCommand = ichToken;
         if (comment != null) {
           isComment = true;
-          addTokenToPrefix(new Token(Token.nada, comment));
+          addTokenToPrefix(Token.newTokenObj(Token.nada, comment));
         }
       } else if (setBraceCount > 0 && endOfLine && ichToken < cchScript) {
         return CONTINUE;
@@ -770,7 +770,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         String fname = tokenAt(1).value + "." + tokenAt(3).value;
         ltoken.clear();
         addTokenToPrefix(Token.tokenScript);
-        addTokenToPrefix(new Token(Token.string, fname));
+        addTokenToPrefix(Token.newTokenObj(Token.string, fname));
         isNewSet = false;
       }
     }
@@ -876,16 +876,16 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       // allocate a new Token with the original character preserved
       if ((theToken = Token.getTokenFromName(ident)) == null
           && (theToken = Token.getTokenFromName(identLC)) != null)
-        theToken = new Token(theToken.tok, theToken.intValue, ident);
+        theToken = Token.newTokenIntVal(theToken.tok, theToken.intValue, ident);
     } else {
       ident = identLC;
       theToken = Token.getTokenFromName(ident);
     }
     if (theToken == null) {
       if (ident.indexOf("property_") == 0)
-        theToken = new Token(Token.property, ident);
+        theToken = Token.newTokenObj(Token.property, ident);
       else
-        theToken = new Token(Token.identifier, ident);
+        theToken = Token.newTokenObj(Token.identifier, ident);
     }    
     theTok = theToken.tok;
     return ident;
@@ -928,11 +928,11 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           cchToken = 1;
           switch (ch) {
           case '[':
-            addTokenToPrefix(new Token(Token.leftsquare, "["));
+            addTokenToPrefix(Token.newTokenObj(Token.leftsquare, "["));
             bracketCount++;
             return CONTINUE;
           case '.':
-            addTokenToPrefix(new Token(Token.per, "."));
+            addTokenToPrefix(Token.newTokenObj(Token.per, "."));
             return CONTINUE;
           case '-':
           case '+':
@@ -982,7 +982,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         if (!getData(str))
           return ERROR(ERROR_missingEnd, "data");
       } else {
-        addTokenToPrefix(new Token(Token.string, str));
+        addTokenToPrefix(Token.newTokenObj(Token.string, str));
         if (Token.tokAttr(tokCommand, Token.implicitStringCommand))
           isEndOfCommand = true;
       }
@@ -992,7 +992,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       String ident = script.substring(ichToken, ichToken + cchToken);
       int iident = Parser.parseInt(ident);
       if (iident == Integer.MIN_VALUE || Math.abs(iident) < 1000)
-        addTokenToPrefix(new Token(Token.identifier, ident));
+        addTokenToPrefix(Token.newTokenObj(Token.identifier, ident));
       else
         addTokenToPrefix(Token.intToken(iident));
       return CONTINUE;
@@ -1030,7 +1030,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
                 strFormat = strFormat.toLowerCase(),
                 JmolConstants.LOAD_ATOM_DATA_TYPES) ? Token.identifier : 0);
             if (tok != 0) {
-              addTokenToPrefix(new Token(tok, strFormat));
+              addTokenToPrefix(Token.newTokenObj(tok, strFormat));
               iHaveQuotedString = (tok == Token.string);
             }
           }
@@ -1040,7 +1040,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         if (script.charAt(ichToken) == '{' || parenCount > 0)
           break;
         if ((bs = lookingAtBitset()) != null) {
-          addTokenToPrefix(new Token(Token.bitset, bs));
+          addTokenToPrefix(Token.newTokenObj(Token.bitset, bs));
           return CONTINUE;
         }
       }
@@ -1052,7 +1052,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           lookingAtImpliedString(true, true, true);
           str = script.substring(ichToken, ichToken + cchToken);
         }
-        addTokenToPrefix(new Token(Token.string, str));
+        addTokenToPrefix(Token.newTokenObj(Token.string, str));
         iHaveQuotedString = true;
         return CONTINUE;
       }
@@ -1074,7 +1074,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           int pt = cchToken;
           String str = script.substring(ichToken, ichToken + cchToken);
           if (str.indexOf(" ") < 0) {
-            addTokenToPrefix(new Token(Token.string, str));
+            addTokenToPrefix(Token.newTokenObj(Token.string, str));
             iHaveQuotedString = true;
             return CONTINUE;
           }
@@ -1091,17 +1091,17 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           && Parser.isOneOf(str.toLowerCase(), "on;off;hide;display"))
         addTokenToPrefix(Token.getTokenFromName(str.toLowerCase()));
       else
-        addTokenToPrefix(new Token(Token.string, str));
+        addTokenToPrefix(Token.newTokenObj(Token.string, str));
       return CONTINUE;
     }
     float value;
     if (!Float.isNaN(value = lookingAtExponential())) {
-      addTokenToPrefix(new Token(Token.decimal, new Float(value)));
+      addTokenToPrefix(Token.newTokenObj(Token.decimal, new Float(value)));
       return CONTINUE;
     }
     if (lookingAtObjectID(nTokens == 1)) {
       addTokenToPrefix(Token.getTokenFromName("$"));
-      addTokenToPrefix(new Token(Token.identifier, script.substring(ichToken,
+      addTokenToPrefix(Token.newTokenObj(Token.identifier, script.substring(ichToken,
           ichToken + cchToken)));
       return CONTINUE;
     }
@@ -1110,7 +1110,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           .floatValue();
       int intValue = (ScriptEvaluator.getFloatEncodedInt(script.substring(ichToken,
           ichToken + cchToken)));
-      addTokenToPrefix(new Token(Token.decimal, intValue, new Float(value)));
+      addTokenToPrefix(Token.newTokenIntVal(Token.decimal, intValue, new Float(value)));
       return CONTINUE;
     }
     if (lookingAtSeqcode()) {
@@ -1126,7 +1126,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           addTokenToPrefix(Token.tokenMinus);
         }
         int seqcode = Group.getSeqcode(seqNum, insertionCode);
-        addTokenToPrefix(new Token(Token.seqcode, seqcode, "seqcode"));
+        addTokenToPrefix(Token.newTokenIntVal(Token.seqcode, seqcode, "seqcode"));
         return CONTINUE;
       } catch (NumberFormatException nfe) {
         return ERROR(ERROR_invalidExpressionToken, "" + ch);
@@ -1146,7 +1146,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       }
       if (val == 0 && intString.equals("-0"))
         addTokenToPrefix(Token.tokenMinus);
-      addTokenToPrefix(new Token(Token.integer, val, intString));
+      addTokenToPrefix(Token.newTokenIntVal(Token.integer, val, intString));
       return CONTINUE;
     }
     if (!isMathExpressionCommand && parenCount == 0
@@ -1169,16 +1169,16 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         if (isBondOrMatrix) {
           Object m = lookingAtMatrix();
           if (m instanceof Matrix3f || m instanceof Matrix4f) {
-            addTokenToPrefix(new Token((m instanceof Matrix3f ? Token.matrix3f
+            addTokenToPrefix(Token.newTokenObj((m instanceof Matrix3f ? Token.matrix3f
                 : Token.matrix4f), m));
             return CONTINUE;
           }
         }
       } else {
         if (isBondOrMatrix)
-          addTokenToPrefix(new Token(Token.bitset, new BondSet(bs)));
+          addTokenToPrefix(Token.newTokenObj(Token.bitset, new BondSet(bs)));
         else
-          addTokenToPrefix(new Token(Token.bitset, bs));
+          addTokenToPrefix(Token.newTokenObj(Token.bitset, bs));
         return CONTINUE;
       }
     }
@@ -1653,7 +1653,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         Token token = tokenAt(0);
         if (theTok == Token.leftparen || isUserFunction(token.value.toString())) {
           // mysub(xxx,xxx,xxx)
-          ltoken.set(0, setCommand(new Token(Token.identifier, 0, token.value)));
+          ltoken.set(0, setCommand(Token.newTokenIntVal(Token.identifier, 0, token.value)));
           setBraceCount = 0;
           break;
         }
@@ -1662,7 +1662,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           if (isNewSet)
             commandExpected();
           else
-            error(ERROR_unrecognizedParameter, "SET", ": " + ident);
+            errorIntStr2(ERROR_unrecognizedParameter, "SET", ": " + ident);
           return ERROR;
         }
         if (nTokens == 1
@@ -1693,7 +1693,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           if (theTok != Token.identifier) {
             if (preDefining) {
               if (!Token.tokAttr(theTok, Token.predefinedset)) {
-                error(
+                errorStr2(
                     "ERROR IN Token.java or JmolConstants.java -- the following term was used in JmolConstants.java but not listed as predefinedset in Token.java: "
                         + ident, null);
                 return ERROR;
@@ -1757,7 +1757,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     bracketCount = 0;
     setEqualPt = Integer.MAX_VALUE;
     ptNewSetModifier = (isNewSet ? (ident.equals("(") ? 2 : 1) : Integer.MAX_VALUE);
-    return ((isSetBrace || theToken.tok == Token.plusPlus || theToken.tok == Token.minusMinus)? theToken : new Token(Token.identifier, ident));
+    return ((isSetBrace || theToken.tok == Token.plusPlus || theToken.tok == Token.minusMinus)? theToken : Token.newTokenObj(Token.identifier, ident));
   }
 
   private char nextChar() {
@@ -1774,7 +1774,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     }
     String name = script.substring(ichToken, ichT).replace('\\','/');
     cchToken = ichT - ichToken;
-    theToken = new Token(Token.string, name);   
+    theToken = Token.newTokenObj(Token.string, name);   
   }
 
   private boolean checkFlowStartBrace(boolean atEnd) {
@@ -1832,7 +1832,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
 
   private int forceFlowEnd(Token token) {    
     Token t0 = tokenCommand;    
-    setCommand(new Token(Token.end, "end"));
+    setCommand(Token.newTokenObj(Token.end, "end"));
     if (!checkFlowCommand("end"))
       return Token.nada;
     addTokenToPrefix(tokenCommand);
@@ -1875,15 +1875,15 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     case Token.function:
     case Token.parallel:
       if (flowContext != null)
-        return error(ERROR_badContext, Token.nameOf(tokCommand));
+        return errorStr(ERROR_badContext, Token.nameOf(tokCommand));
       break;
     case Token.end:
       if (flowContext == null)
-        return error(ERROR_badContext, ident);
+        return errorStr(ERROR_badContext, ident);
       isEnd = true;
       if (flowContext.token.tok != Token.function && flowContext.token.tok != Token.parallel
           && flowContext.token.tok != Token.trycmd)
-        setCommand(new Token(tokCommand, (flowContext.ptDefault > 0 ? flowContext.ptDefault : -flowContext.pt0), ident)); //copy
+        setCommand(Token.newTokenIntVal(tokCommand, (flowContext.ptDefault > 0 ? flowContext.ptDefault : -flowContext.pt0), ident)); //copy
       break;
     case Token.trycmd:
     case Token.catchcmd:
@@ -1901,12 +1901,12 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           && flowContext.token.tok != Token.process
           && flowContext.token.tok != Token.elsecmd
           && flowContext.token.tok != Token.elseif)
-        return error(ERROR_badContext, ident);
+        return errorStr(ERROR_badContext, ident);
       break;
     case Token.elsecmd:
       if (flowContext == null || flowContext.token.tok != Token.ifcmd
           && flowContext.token.tok != Token.elseif)
-        return error(ERROR_badContext, ident);
+        return errorStr(ERROR_badContext, ident);
       flowContext.token.intValue = flowContext.setPt0(pt, false);
       break;
     case Token.breakcmd:
@@ -1917,15 +1917,15 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         while (f != null  && f.token.tok != Token.forcmd && f.token.tok != Token.whilecmd)
           f = f.getParent();
       if (f == null)
-        return error(ERROR_badContext, ident);
-      setCommand( new Token(tokCommand, f.pt0, ident)); //copy
+        return errorStr(ERROR_badContext, ident);
+      setCommand( Token.newTokenIntVal(tokCommand, f.pt0, ident)); //copy
       break;
     case Token.defaultcmd:
       if (flowContext == null 
           || flowContext.token.tok != Token.switchcmd
           && flowContext.token.tok != Token.casecmd
           && flowContext.ptDefault > 0)
-        return error(ERROR_badContext, ident);
+        return errorStr(ERROR_badContext, ident);
       flowContext.token.intValue = flowContext.setPt0(pt, true);
       break;
     case Token.casecmd:
@@ -1933,14 +1933,14 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           || flowContext.token.tok != Token.switchcmd
           && flowContext.token.tok != Token.casecmd
           && flowContext.token.tok != Token.defaultcmd)
-        return error(ERROR_badContext, ident);
+        return errorStr(ERROR_badContext, ident);
       flowContext.token.intValue = flowContext.setPt0(pt, false);
       break;
     case Token.elseif:
       if (flowContext == null || flowContext.token.tok != Token.ifcmd
           && flowContext.token.tok != Token.elseif
           && flowContext.token.tok != Token.elsecmd)
-        return error(ERROR_badContext, "elseif");
+        return errorStr(ERROR_badContext, "elseif");
       flowContext.token.intValue = flowContext.setPt0(pt, false);
       break;
     }
@@ -2006,7 +2006,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         isOK = false;
       }
       if (!isOK)
-        return error(ERROR_badContext, "end " + ident);
+        return errorStr(ERROR_badContext, "end " + ident);
     }
     switch (tok) {
     case Token.ifcmd:
@@ -2022,7 +2022,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     case Token.function:
     case Token.trycmd:
       if (!isCheckOnly) {
-        addTokenToPrefix(new Token(tok, thisFunction));
+        addTokenToPrefix(Token.newTokenObj(tok, thisFunction));
         ScriptFunction.setFunction(thisFunction, script, pt1, lltoken.size(),
             lineNumbers, lineIndices, lltoken);
       }
@@ -2032,14 +2032,14 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         vPush.remove(--pushCount);
       break;
     default:
-      return error(ERROR_unrecognizedToken, "end " + ident);
+      return errorStr(ERROR_unrecognizedToken, "end " + ident);
     }
     flowContext = flowContext.getParent();
     return true;
   }
 
   private boolean getData(String key) {
-    addTokenToPrefix(new Token(Token.string, key));
+    addTokenToPrefix(Token.newTokenObj(Token.string, key));
     ichToken += key.length() + 2;
     if (script.length() > ichToken && script.charAt(ichToken) == '\r') {
       lineCurrent++;ichToken++;
@@ -2052,9 +2052,9 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       return false;
     String str = script.substring(ichToken, i);
     incrementLineCount(str);
-    addTokenToPrefix(new Token(Token.data, str));
-    addTokenToPrefix(new Token(Token.identifier, "end"));
-    addTokenToPrefix(new Token(Token.string, key));
+    addTokenToPrefix(Token.newTokenObj(Token.data, str));
+    addTokenToPrefix(Token.newTokenObj(Token.identifier, "end"));
+    addTokenToPrefix(Token.newTokenObj(Token.string, key));
     cchToken = i - ichToken + key.length() + 6;
     return true;
   }
@@ -2627,12 +2627,12 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
  
   
   private int ERROR(int error) {
-    error(error, null, null);
+    errorIntStr2(error, null, null);
     return ERROR;
   }
   
   private int ERROR(int error, String value) {
-    error(error, value);
+    errorStr(error, value);
     return ERROR;
   }
   

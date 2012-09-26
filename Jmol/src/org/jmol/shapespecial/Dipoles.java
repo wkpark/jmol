@@ -418,7 +418,7 @@ public class Dipoles extends Shape {
   private void setColixDipole(short colix, int bondTypeMask, BitSet bs) {
     if (colix == Colix.USE_PALETTE)
       return; // not implemented
-    BondIterator iter = modelSet.getBondIterator(bondTypeMask, bs);
+    BondIterator iter = modelSet.getBondIteratorForType(bondTypeMask, bs);
     while (iter.hasNext()) {
       Dipole d = findBondDipole(iter.next());
       if (d != null)

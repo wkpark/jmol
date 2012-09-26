@@ -89,7 +89,7 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
   private Viewer viewer;
   
   
-  public void set(ModelCollection modelSet, int modelIndex, int firstModelAtom, int atomIndex, Point3f center, float distance, RadiusData rd) {
+  public void setModel(ModelCollection modelSet, int modelIndex, int firstModelAtom, int atomIndex, Point3f center, float distance, RadiusData rd) {
     if (threadSafe)
       modelIndex = -1 - modelIndex; // no caching
     if (modelIndex != this.modelIndex || cubeIterator == null) {
@@ -110,10 +110,10 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
       vdw1 = atoms[atomIndex].getVanderwaalsRadiusFloat(viewer, rd.vdwType);
     }
     checkGreater = (isGreaterOnly && atomIndex != Integer.MAX_VALUE);
-    set(center, distance);
+    setCenter(center, distance);
   }
 
-  public void set(Point3f center, float distance) {
+  public void setCenter(Point3f center, float distance) {
     if (cubeIterator == null)
       return;
     cubeIterator.initialize(center, distance, hemisphereOnly);

@@ -101,7 +101,7 @@ public class HyperChemReader extends AtomSetCollectionReader {
     parseToken(); // discard
     parseToken(); // discard
     atom.partialCharge = parseFloat();
-    setAtomCoord(atom, parseFloat(), parseFloat(), parseFloat());
+    setAtomCoordXYZ(atom, parseFloat(), parseFloat(), parseFloat());
     
     int bondCount = parseInt();
     for (int i = 0; i < bondCount; ++i) {
@@ -127,7 +127,7 @@ public class HyperChemReader extends AtomSetCollectionReader {
         throw new Exception ("unrecognized bond type:" + bondTypeToken +
           " atom #" + fileAtomNumber);
       }
-      atomSetCollection.addNewBond(baseAtomIndex + atomIndex,
+      atomSetCollection.addNewBondWithOrder(baseAtomIndex + atomIndex,
                        baseAtomIndex + otherAtomNumber - 1,
                        bondOrder);
     }

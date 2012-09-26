@@ -179,7 +179,7 @@ public class Wien2kReader extends AtomSetCollectionReader {
       c = ar * 1 / 3 + br * 1 / 3 + cr * 1 / 3;        
     }
 */    Atom atom = atomSetCollection.addNewAtom();
-    setAtomCoord(atom, a, b, c);
+    setAtomCoordXYZ(atom, a, b, c);
   }
   
   private void readSymmetry() throws Exception {
@@ -216,7 +216,7 @@ public class Wien2kReader extends AtomSetCollectionReader {
   
   private void readEmbeddedScript() throws Exception {
     while (line != null) {
-      checkLineForScript();
+      checkCurrentLineForScript();
       readLine();
     }
   }

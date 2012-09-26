@@ -72,10 +72,10 @@ public class CubeReader extends AtomSetCollectionReader {
     if (readLine().indexOf("#JVXL") == 0)
       while (readLine().indexOf("#") == 0) {
       }
-    checkLineForScript();
+    checkCurrentLineForScript();
     String name = line.trim();
     readLine();
-    checkLineForScript();
+    checkCurrentLineForScript();
     atomSetCollection.setAtomSetName(name + " - " + line.trim());
   }
 
@@ -95,7 +95,7 @@ public class CubeReader extends AtomSetCollectionReader {
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementNumber = (short)parseIntStr(line); //allowing atomicAndIsotope for JVXL format
       parseFloat();
-      setAtomCoord(atom, parseFloat() * f, parseFloat() * f, parseFloat() * f);
+      setAtomCoordXYZ(atom, parseFloat() * f, parseFloat() * f, parseFloat() * f);
     }
   }
 

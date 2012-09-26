@@ -142,7 +142,7 @@ public class VolumeData implements VolumeDataInterface {
     return voxelData;
   }
   
-  public void setVoxelData(float[][][] voxelData) {
+  public void setVoxelDataAsArray(float[][][] voxelData) {
     this.voxelData = voxelData;
   }
 
@@ -245,7 +245,7 @@ public class VolumeData implements VolumeDataInterface {
     return nPointsX * nPointsY * nPointsZ;
   }
 
-  public float getVoxelData(int pt) {
+  public float getVoxelDataAt(int pt) {
     int ix = pt / yzCount;
     pt -= ix * yzCount;
     int iy = pt / voxelCounts[2];

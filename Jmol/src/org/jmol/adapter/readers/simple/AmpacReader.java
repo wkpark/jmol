@@ -99,7 +99,7 @@ public class AmpacReader extends AtomSetCollectionReader {
         String symbol = tokens[1];
         Atom atom = atomSetCollection.addNewAtom();
         atom.elementSymbol = symbol;
-        setAtomCoord(atom, parseFloatStr(tokens[2]), parseFloatStr(tokens[3]), parseFloatStr(tokens[4]));
+        setAtomCoordXYZ(atom, parseFloatStr(tokens[2]), parseFloatStr(tokens[3]), parseFloatStr(tokens[4]));
       }
       atomCount++;
     }

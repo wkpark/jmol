@@ -177,12 +177,12 @@ final public class Atom extends Point3fi implements JmolNode {
     if (bonds != null)
       for (int i = bonds.length; --i >= 0;)
         if (bonds[i] == bond) {
-          deleteBond(i);
+          deleteBondAt(i);
           return;
         }
   }
 
-  private void deleteBond(int i) {
+  private void deleteBondAt(int i) {
     int newLength = bonds.length - 1;
     if (newLength == 0) {
       bonds = null;
@@ -801,7 +801,7 @@ final public class Atom extends Point3fi implements JmolNode {
       c.toCartesian(this, asAbsolute);
   }
   
-  void setFractionalCoord(Point3f ptNew, boolean asAbsolute) {
+  void setFractionalCoordTo(Point3f ptNew, boolean asAbsolute) {
     setFractionalCoordPt(this, ptNew, asAbsolute);
   }
   

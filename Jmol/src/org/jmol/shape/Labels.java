@@ -305,7 +305,7 @@ public class Labels extends AtomShape {
               strLabel = strLabelPDB;
               tokens = tokensPDB;
             }
-            strings[atomIndex] = LabelToken.formatLabel(viewer, atom, tokens, '\0', null);
+            strings[atomIndex] = LabelToken.formatLabelAtomArray(viewer, atom, tokens, '\0', null);
             formats[atomIndex] = strLabel;
             bsSizeSet.set(atomIndex);
             if ((bsBgColixSet == null || !bsBgColixSet.get(atomIndex))
@@ -370,7 +370,7 @@ public class Labels extends AtomShape {
     LabelToken[] tokens = temp[0];
     if (tokens == null)
       tokens = temp[0] = LabelToken.compile(viewer, strLabel, '\0', null);
-    String label = (tokens == null ? null : LabelToken.formatLabel(viewer,
+    String label = (tokens == null ? null : LabelToken.formatLabelAtomArray(viewer,
         atom, tokens, '\0', null));
     atom.setShapeVisibility(myVisibilityFlag, label != null);
     if (strings == null || i >= strings.length)

@@ -140,7 +140,7 @@ class CastepDensityReader extends VolumeFileReader {
       }
       voxelData = null;
     }
-    volumeData.setVoxelData(voxelData);
+    volumeData.setVoxelDataAsArray(voxelData);
     if (dataMin > params.cutoff)
       params.cutoff = 2 * dataMin;
   }

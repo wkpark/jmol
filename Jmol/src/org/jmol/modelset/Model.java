@@ -223,7 +223,7 @@ public class Model {
     return chainCount;
   }
 
-  public int getGroupCount(boolean isHetero) {
+  public int getGroupCountHetero(boolean isHetero) {
     int n = 0;
     for (int i = chainCount; --i >= 0;)
       for (int j = chains[i].groupCount; --j >= 0;)
@@ -246,7 +246,7 @@ public class Model {
     return groupCount;
   }
 
-  Chain getChain(int i) {
+  Chain getChainAt(int i) {
     return (i < chainCount ? chains[i] : null);
   }
 

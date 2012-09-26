@@ -303,15 +303,15 @@ public class Group {
     return getSeqcodeString(seqcode);
   }
 
-  /**
-   * necessary for JavaScript due to problem with char
-   * @param sequenceNumber
-   * @param insertionCode
-   * @return seqcode << 8 + insertionCode 
-   */
-  public static int getSeqcode(int sequenceNumber, String insertionCode) {
-    return getSeqcode2(sequenceNumber, insertionCode.charAt(0));
-  }
+//  /**
+//   * necessary for JavaScript due to problem with char
+//   * @param sequenceNumber
+//   * @param insertionCode
+//   * @return seqcode << 8 + insertionCode 
+//   */
+//  public static int getSeqcode(int sequenceNumber, String insertionCode) {
+//    return getSeqcode2(sequenceNumber, insertionCode.charAt(0));
+//  }
   
   public static int getSeqcode(int sequenceNumber, char insertionCode) {
     return getSeqcode2(sequenceNumber, insertionCode);
@@ -435,7 +435,7 @@ public class Group {
     return false;
   }
   
-  public Atom getLeadAtom(Atom atom) { //for sticks
+  public Atom getLeadAtomOr(Atom atom) { //for sticks
     Atom a = getLeadAtom();
     return (a == null ? atom : a);
   }

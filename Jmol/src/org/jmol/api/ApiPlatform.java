@@ -125,4 +125,6 @@ public interface ApiPlatform {
 
   JmolFileInterface newFile(String name);
 
+  boolean isSingleThreaded();
+
 }

@@ -163,7 +163,7 @@ import javax.vecmath.Vector3f;
     return bsModels;
   }
 
-  public void setTrajectory(BitSet bsModels) {
+  public void setTrajectoryBs(BitSet bsModels) {
     for (int i = 0; i < modelCount; i++)
       if (bsModels.get(i))
         setTrajectory(i);
@@ -209,7 +209,7 @@ import javax.vecmath.Vector3f;
     for (int pt = 0, i = iFirst; i < iMax && pt < trajectory.length
         && trajectory[pt] != null; i++, pt++) {
       if (isFractional)
-        atoms[i].setFractionalCoord(trajectory[pt], true);
+        atoms[i].setFractionalCoordTo(trajectory[pt], true);
       else
         atoms[i].set(trajectory[pt]);
       atoms[i].modelIndex = (short) modelIndex;
@@ -223,7 +223,7 @@ import javax.vecmath.Vector3f;
     // Clear the Binary Search so that select within(),
     // isosurface, and dots will work properly
     initializeBspf();
-    validateBspf(baseModelIndex, false);
+    validateBspfForModel(baseModelIndex, false);
     // Recalculate critical points for cartoons and such
     // note that models[baseModel] and models[modelIndex]
     // point to the same model. So there is only one copy of 
@@ -414,7 +414,7 @@ import javax.vecmath.Vector3f;
     int i0 = (isAll ? atomCount - 1 : bsAtoms.nextSetBit(0));
     for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsAtoms.nextSetBit(i + 1))) {
       int modelIndex = models[atoms[i].modelIndex].trajectoryBaseIndex;
-      if (isJmolDataFrame(modelIndex))
+      if (isJmolDataFrameForModel(modelIndex))
         continue;
       bsModels.set(modelIndex);
       bsAllAtoms.set(i);
@@ -437,13 +437,13 @@ import javax.vecmath.Vector3f;
   
   
   protected void assignAromaticBonds(boolean isUserCalculation) {
-    super.assignAromaticBonds(isUserCalculation, null);
+    super.assignAromaticBondsBs(isUserCalculation, null);
     // send a message to STICKS indicating that these bonds
     // should be part of the state of the model. They will 
     // appear in the state as bondOrder commands.
     
     if (isUserCalculation)
-      shapeManager.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MIN_VALUE, null, bsAromatic);
+      shapeManager.setShapeSizeBs(JmolConstants.SHAPE_STICKS, Integer.MIN_VALUE, null, bsAromatic);
   }
 
   @Override
@@ -699,7 +699,7 @@ import javax.vecmath.Vector3f;
         continue;
       }
       if (isTrajectory(i) && bsModels.get(models[i].trajectoryBaseIndex)
-          || isJmolDataFrame(i) && bsModels.get(models[i].dataSourceFrame))
+          || isJmolDataFrameForModel(i) && bsModels.get(models[i].dataSourceFrame))
         bsModels.set(i);
     }
   }
@@ -811,10 +811,10 @@ import javax.vecmath.Vector3f;
           fValue = 0;
         mar = (int) (fValue * 2000);
       } else {
-        rd = new RadiusData(values);
+        rd = new RadiusData(values, 0, null, null);
       }
       shapeManager
-          .setShapeSize(JmolConstants.shapeTokenIndex(tok), mar, rd, bs);
+          .setShapeSizeBs(JmolConstants.shapeTokenIndex(tok), mar, rd, bs);
       return;
     }
     super.setAtomProperty(bs, tok, iValue, fValue, sValue, values, list);
@@ -871,7 +871,9 @@ import javax.vecmath.Vector3f;
       // hmm. atom1.group will not be expanded, though...
       // something like within(group,...) will not select these atoms!
       Atom atom2 = addAtom(modelIndex, atom1.group, (short) 1, "H"
-          + n, n, n, pts[i].x, pts[i].y, pts[i].z);
+          + n, n, n, pts[i].x, pts[i].y, pts[i].z, Float.NaN, Float.NaN, Float.NaN,
+          Float.NaN, 0, 0, 100, Float.NaN, null, false, (byte) 0, null);
+      
       atom2.setMadAtom(viewer, rd);
       bs.set(atom2.index);
       bondAtoms(atom1, atom2, JmolEdge.BOND_COVALENT_SINGLE, mad, null, 0, false, false);
@@ -882,7 +884,7 @@ import javax.vecmath.Vector3f;
   }
 
   public void setAtomCoordRelative(Tuple3f offset, BitSet bs) {
-    setAtomCoordRelative(bs, offset.x, offset.y, offset.z);
+    setAtomsCoordRelative(bs, offset.x, offset.y, offset.z);
     mat4.setIdentity();
     vTemp.set(offset);
     mat4.setTranslation(vTemp);
@@ -995,7 +997,7 @@ import javax.vecmath.Vector3f;
         mat4.transform(atoms[i]);
         ptTemp.sub(atoms[i]);
       }
-      taint(i, TAINT_COORD);
+      taintAtom(i, TAINT_COORD);
     }
     if (!isInternal) {
       ptTemp.scale(1f / bs.cardinality());

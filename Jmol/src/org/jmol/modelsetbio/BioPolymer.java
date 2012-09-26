@@ -880,7 +880,7 @@ public abstract class BioPolymer {
         if (pdbATOM == null)// || bsSelected != null && !bsSelected.get(a.getIndex()))
           continue;
         bsWritten.set(((Monomer) a.getGroup()).leadAtomIndex);
-        pdbATOM.append(LabelToken.formatLabel(viewer, a, tokens, '\0', null));
+        pdbATOM.append(LabelToken.formatLabelAtomArray(viewer, a, tokens, '\0', null));
         pdbATOM.append(TextFormat
             .sprintf("%8.2f%8.2f%8.2f      %6.3f          %2s    %s\n",
                 new Object[] {

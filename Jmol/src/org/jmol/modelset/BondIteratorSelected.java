@@ -43,18 +43,10 @@ class BondIteratorSelected implements BondIterator {
       BitSet bsSelected, boolean bondSelectionModeOr) {
     this.bonds = bonds;
     this.bondCount = bondCount;
-    this.bondType = bondType;
     this.bsSelected = bsSelected;
+    this.bondType = bondType;
     this.bondSelectionModeOr = bondSelectionModeOr;
     isBondBitSet = false;
-    iBond = 0;
-  }
-
-  BondIteratorSelected(Bond[] bonds, int bondCount, BitSet bsSelected) {
-    this.bonds = bonds;
-    this.bondCount = bondCount;
-    this.bsSelected = bsSelected;
-    isBondBitSet = true;
     iBond = 0;
   }
 

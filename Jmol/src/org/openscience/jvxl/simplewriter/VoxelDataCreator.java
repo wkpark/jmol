@@ -24,7 +24,7 @@ public class VoxelDataCreator {
       int nY = counts[1];
       int nZ = counts[2];
       float[][][] voxelData = new float[nX][nY][nZ];
-      volumeData.setVoxelData(voxelData);
+      volumeData.setVoxelDataAsArray(voxelData);
       // whatever method here that is desired;
       // it is not necessary to create a whole block.
       // you can set volumeData.voxelData = null, in

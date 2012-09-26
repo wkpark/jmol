@@ -238,7 +238,7 @@ public class SmilesBond extends JmolEdge {
   }
 
   @Override
-  public JmolNode getOtherAtom(JmolNode atom) {
+  public JmolNode getOtherAtomNode(JmolNode atom) {
     return (atom == atom1 ? atom2 : atom == atom2 ? atom1 : null);
   }
 

@@ -223,7 +223,7 @@ public abstract class AtomSetCollectionReader {
 
   Object readData() throws Exception {
     initialize();
-    atomSetCollection = new AtomSetCollection(readerName, this);
+    atomSetCollection = new AtomSetCollection(readerName, this, null, null);
     try {
       initializeReader();
       if (doc == null) {
@@ -246,9 +246,9 @@ public abstract class AtomSetCollectionReader {
     return finish();
   }
 
-  protected Object readData(Object node) throws Exception {
+  protected Object readDataObject(Object node) throws Exception {
     initialize();
-    atomSetCollection = new AtomSetCollection(readerName, this);
+    atomSetCollection = new AtomSetCollection(readerName, this, null, null);
     initializeReader();
     processXml(node);
     return finish();
@@ -587,7 +587,7 @@ public abstract class AtomSetCollectionReader {
 
   protected int cloneLastAtomSet(int atomCount, Point3f[] pts) throws Exception {
     int lastAtomCount = atomSetCollection.getLastAtomSetAtomCount();
-    atomSetCollection.cloneLastAtomSet(atomCount, pts);
+    atomSetCollection.cloneLastAtomSetFromPoints(atomCount, pts);
     if (atomSetCollection.haveUnitCell) {
       iHaveUnitCell = true;
       doCheckUnitCell = true;
@@ -910,7 +910,7 @@ public abstract class AtomSetCollectionReader {
 
   /////////////////////////////
 
-  public void setAtomCoord(Atom atom, float x, float y, float z) {
+  public void setAtomCoordXYZ(Atom atom, float x, float y, float z) {
     atom.set(x, y, z);
     setAtomCoord(atom);
   }
@@ -973,7 +973,7 @@ public abstract class AtomSetCollectionReader {
               (spaceGroup.indexOf("!") >= 0 ? "P1" : spaceGroup), notionalUnitCell)) {
             atomSetCollection.setAtomSetSpaceGroupName(symmetry
                 .getSpaceGroupName());
-            atomSetCollection.applySymmetry(symmetry);
+            atomSetCollection.applySymmetryUsing(symmetry);
           }
         } else {
           atomSetCollection.applySymmetry();
@@ -1019,7 +1019,7 @@ public abstract class AtomSetCollectionReader {
    * @param minLineLen TODO
    * @throws Exception
    */
-  protected void fillDataBlock(String[][] data, int col0, int colWidth, int minLineLen)
+  protected void fillDataBlockFixed(String[][] data, int col0, int colWidth, int minLineLen)
       throws Exception {
     if (colWidth == 0) {
       fillDataBlock(data, minLineLen);
@@ -1126,7 +1126,7 @@ public abstract class AtomSetCollectionReader {
     int nLines = (isWide ? atomCount : atomCount * 3);
     int nFreq = ignore.length;
     String[][] data = new String[nLines][];
-    fillDataBlock(data, col0, colWidth, minLineLen);
+    fillDataBlockFixed(data, col0, colWidth, minLineLen);
     for (int i = 0, atomPt = 0; i < nLines; i++, atomPt++) {
       String[] values = data[i];
       String[] valuesY = (isWide ? null : data[++i]);
@@ -1148,7 +1148,7 @@ public abstract class AtomSetCollectionReader {
         if (Logger.debugging)
           Logger.debug("atom " + iAtom + " vib" + j + ": " + vx + " " + vy + " "
               + vz);
-        atomSetCollection.addVibrationVector(iAtom0 + modelAtomCount * j++
+        atomSetCollection.addVibrationVectorWithSymmetry(iAtom0 + modelAtomCount * j++
             + iAtom, vx, vy, vz, withSymmetry);
       }
     }
@@ -1174,7 +1174,7 @@ public abstract class AtomSetCollectionReader {
     return line;
   }
 
-  protected String discardLinesUntilContains(String s1, String s2)
+  protected String discardLinesUntilContains2(String s1, String s2)
       throws Exception {
     while (readLine() != null && line.indexOf(s1) < 0 && line.indexOf(s2) < 0) {
     }
@@ -1194,10 +1194,10 @@ public abstract class AtomSetCollectionReader {
 
   protected void checkLineForScript(String line) {
     this.line = line;
-    checkLineForScript();
+    checkCurrentLineForScript();
   }
 
-  public void checkLineForScript() {
+  public void checkCurrentLineForScript() {
     if (line.indexOf("Jmol") >= 0) {
       if (line.indexOf("Jmol PDB-encoded data") >= 0) {
         atomSetCollection.setAtomSetCollectionAuxiliaryInfo("jmolData", line);

@@ -96,7 +96,7 @@ public final class Bspt {
   }
 
   void reset() {
-    eleRoot = new Leaf(this);
+    eleRoot = new Leaf(this, null, 0);
     treeDepth = 1;
   }
 

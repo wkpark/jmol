@@ -170,11 +170,8 @@ public class LabelToken {
       Token.fracz, Token.unitx, Token.unity, Token.unitz, Token.vibx,
       Token.viby, Token.vibz, };
 
-  private LabelToken(String text) {
+  private LabelToken(String text, int pt) {
     this.text = text;
-  }
-
-  private LabelToken(int pt) {
     this.pt = pt;
   }
 
@@ -193,7 +190,7 @@ public class LabelToken {
     if (strFormat == null || strFormat.length() == 0)
       return null;
     if (strFormat.indexOf("%") < 0 || strFormat.length() < 2)
-      return new LabelToken[] { new LabelToken(strFormat) };
+      return new LabelToken[] { new LabelToken(strFormat, -1) };
     int n = 0;
     int ich = -1;
     int cch = strFormat.length();
@@ -204,13 +201,13 @@ public class LabelToken {
     int i = 0;
     for (ich = 0; (ichPercent = strFormat.indexOf('%', ich)) >= 0;) {
       if (ich != ichPercent)
-        tokens[i++] = new LabelToken(strFormat.substring(ich, ichPercent));
-      LabelToken lt = tokens[i++] = new LabelToken(ichPercent);
+        tokens[i++] = new LabelToken(strFormat.substring(ich, ichPercent), -1);
+      LabelToken lt = tokens[i++] = new LabelToken(null, ichPercent);
       viewer.autoCalculate(lt.tok);
       ich = setToken(viewer, strFormat, lt, cch, chAtom, htValues);
     }
     if (ich < cch)
-      tokens[i++] = new LabelToken(strFormat.substring(ich));
+      tokens[i++] = new LabelToken(strFormat.substring(ich), -1);
     return tokens;
   }
 
@@ -220,7 +217,7 @@ public class LabelToken {
     if (strFormat == null || strFormat.length() == 0)
       return null;
     LabelToken[] tokens = compile(viewer, strFormat, '\0', null);
-    return formatLabel(viewer, atom, tokens, '\0', null);    
+    return formatLabelAtomArray(viewer, atom, tokens, '\0', null);    
   }
 
   /**
@@ -233,7 +230,7 @@ public class LabelToken {
    * @param indices
    * @return   formatted string
    */
-  public static String formatLabel(Viewer viewer, Atom atom,
+  public static String formatLabelAtomArray(Viewer viewer, Atom atom,
                                    LabelToken[] tokens, char chAtom,
                                    int[] indices) {
     if (atom == null)
@@ -269,7 +266,7 @@ public class LabelToken {
     return htValues;
   }
 
-  public static String formatLabel(Viewer viewer, Bond bond,
+  public static String formatLabelBond(Viewer viewer, Bond bond,
                                    LabelToken[] tokens,
                                    Map<String, Object> values, int[] indices) {
     values.put("#", "" + (bond.index + 1));
@@ -278,12 +275,12 @@ public class LabelToken {
     values.put("LENGTH", new Float(bond.atom1.distance(bond.atom2)));
     values.put("ENERGY", new Float(bond.getEnergy()));
     setValues(tokens, values);
-    formatLabel(viewer, bond.atom1, tokens, '1', indices);
-    formatLabel(viewer, bond.atom2, tokens, '2', indices);
+    formatLabelAtomArray(viewer, bond.atom1, tokens, '1', indices);
+    formatLabelAtomArray(viewer, bond.atom2, tokens, '2', indices);
     return getLabel(tokens);
   }
 
-  public static String formatLabel(Viewer viewer, Measurement measurement,
+  public static String formatLabelMeasure(Viewer viewer, Measurement measurement,
                                    String label, float value, String units) {
     Map<String, Object> htValues = new Hashtable<String, Object>();
     htValues.put("#", "" + (measurement.getIndex() + 1));
@@ -295,7 +292,7 @@ public class LabelToken {
     int[] indices = measurement.getCountPlusIndices();
     for (int i = indices[0]; i >= 1; --i)
       if (indices[i] >= 0)
-        formatLabel(viewer, atoms[indices[i]], tokens, (char) ('0' + i), null);
+        formatLabelAtomArray(viewer, atoms[indices[i]], tokens, (char) ('0' + i), null);
     label = getLabel(tokens);
     return (label == null ? "" : label);
   }

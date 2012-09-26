@@ -261,7 +261,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
       // all the htParams[] entries point to the same Hashtable
       result = asc[0];
       try {
-        result.finalizeTrajectory(
+        result.finalizeTrajectoryAs(
             (List<Point3f[]>) htParams.get("trajectorySteps"),
             (List<Vector3f[]>) htParams.get("vibrationSteps"));
       } catch (Exception e) {
@@ -269,7 +269,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
           result.errorMessage = "" + e;
       }
     } else { 
-      result = new AtomSetCollection(asc);
+      result = new AtomSetCollection("Array", null, asc, null);
     }
     return (result.errorMessage == null ? result : result.errorMessage);
   }
@@ -490,7 +490,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
       }
       if (!doCombine)
         return vCollections;
-      AtomSetCollection result = new AtomSetCollection(vCollections);
+      AtomSetCollection result = new AtomSetCollection("Array", null, null, vCollections);
       if (result.errorMessage != null) {
         if (ignoreErrors)
           return null;
@@ -529,7 +529,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
         return ret;
       AtomSetCollectionReader a = (AtomSetCollectionReader) ret;
       a.setup("DOM node", htParams, null);
-      ret = a.readData(DOMNode);
+      ret = a.readDataObject(DOMNode);
       if (!(ret instanceof AtomSetCollection))
         return ret;
       AtomSetCollection asc = (AtomSetCollection) ret;
@@ -561,7 +561,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
   
   @Override
   public Map<String, Object> getAtomSetCollectionAuxiliaryInfo(Object atomSetCollection) {
-    return ((AtomSetCollection)atomSetCollection).getAtomSetCollectionAuxiliaryInfo();
+    return ((AtomSetCollection)atomSetCollection).getAtomSetCollectionAuxiliaryInfoMap();
   }
 
   @Override

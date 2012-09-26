@@ -268,7 +268,7 @@ public abstract class SurfaceReader implements VertexDataServer {
   }
  
   protected void newVoxelDataCube() {
-    volumeData.setVoxelData(voxelData = new float[nPointsX][nPointsY][nPointsZ]);
+    volumeData.setVoxelDataAsArray(voxelData = new float[nPointsX][nPointsY][nPointsZ]);
   }
 
   protected void setVolumeData(VolumeData v) {
@@ -565,7 +565,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     String data = marchingCubes.getEdgeData();
     if (params.thePlane == null)
       edgeData = data;
-    jvxlData.setSurfaceInfoFromBitSet(marchingCubes.getBsVoxels(),
+    jvxlData.setSurfaceInfoFromBitSetPts(marchingCubes.getBsVoxels(),
         params.thePlane, params.mapLattice);
     jvxlData.jvxlExcluded = params.bsExcluded;
     if (isJvxl)

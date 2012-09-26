@@ -137,7 +137,7 @@ public class WebMOReader extends MopacSlaterReader {
         atom.elementSymbol = tokens[0];
       else
         atom.elementSymbol = getElementSymbol(atNo);
-      setAtomCoord(atom, parseFloatStr(tokens[1]) * ANGSTROMS_PER_BOHR, 
+      setAtomCoordXYZ(atom, parseFloatStr(tokens[1]) * ANGSTROMS_PER_BOHR, 
           parseFloatStr(tokens[2]) * ANGSTROMS_PER_BOHR,
           parseFloatStr(tokens[3])* ANGSTROMS_PER_BOHR);
     }

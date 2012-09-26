@@ -171,7 +171,7 @@ public abstract class ForceFieldReader extends AtomSetCollectionReader {
     if (XX.indexOf("'") > 0 || XX.indexOf("*") >= 0 || "HCNO".indexOf(ch1) >= 0
         && ch2 <= 'H' || XX.startsWith("CM"))
       return "" + ch1;
-    if (isHetero && Atom.isValidElementSymbolNoCaseSecondChar(ch1, ch2))
+    if (isHetero && Atom.isValidElementSymbolNoCaseSecondChar2(ch1, ch2))
       return ("" + ch1 + ch2).trim();
     if (Atom.isValidElementSymbol(ch1))
       return "" + ch1;

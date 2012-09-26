@@ -167,7 +167,7 @@ OR
       }
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementSymbol = symbol;
-      setAtomCoord(atom, parseFloatStr(tokens[pt0]), parseFloatStr(tokens[pt0 + 1]),
+      setAtomCoordXYZ(atom, parseFloatStr(tokens[pt0]), parseFloatStr(tokens[pt0 + 1]),
           parseFloatStr(tokens[pt0 + 2]));
     }
   }

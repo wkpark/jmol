@@ -124,12 +124,12 @@ public class AlchemyReader extends AtomSetCollectionReader {
       // any name > 2 characters -- just read first character
       // any name = 2 characters -- check for known atom or "Du"
       int nChar = (name.length() == 2
-          && (Atom.isValidElementSymbol(c1, 
+          && (Atom.isValidElementSymbol2(c1, 
               c2 = Character.toLowerCase(name.charAt(1)))
               || name.equals("Du"))
            ? 2 : 1);
       atom.elementSymbol = (nChar == 1 ? "" + c1 : "" + c1 + c2);
-      setAtomCoord(atom, parseFloatStr(tokens[2]), parseFloatStr(tokens[3]),
+      setAtomCoordXYZ(atom, parseFloatStr(tokens[2]), parseFloatStr(tokens[3]),
           parseFloatStr(tokens[4]));
       atom.partialCharge = (tokens.length >= 6 ? parseFloatStr(tokens[5]) : 0);
       atomSetCollection.addAtomWithMappedSerialNumber(atom);

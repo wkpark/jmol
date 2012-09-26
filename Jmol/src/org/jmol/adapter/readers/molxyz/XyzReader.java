@@ -65,7 +65,7 @@ public class XyzReader extends AtomSetCollectionReader {
     if (desiredVibrationNumber <= 0 ? doGetModel(modelNumber, null)
         : doGetVibration(vibrationNumber)) {
       readLine();
-      checkLineForScript();
+      checkCurrentLineForScript();
       atomSetCollection.newAtomSet();
       String name = line;
       readAtoms(modelAtomCount);

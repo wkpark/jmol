@@ -119,7 +119,7 @@ public class JvxlCoder {
     if (jvxlData.jvxlColorData != null && jvxlData.jvxlColorData.length() > 0)
       type = "mapped " + type;
     XmlUtil.openTag(data, "jvxlSurface", new String[] { "type", type });
-    data.append(jvxlGetInfo(jvxlData, vertexDataOnly));
+    data.append(jvxlGetInfoData(jvxlData, vertexDataOnly));
     jvxlAppendCommandState(data, comment, state);
     if (title != null || msg != null && msg.length() > 0) {
       sb = new StringBuffer();
@@ -182,7 +182,7 @@ public class JvxlCoder {
     if (count == 0)
       return;
     StringBuffer sb1 = new StringBuffer("\n ");
-    jvxlEncodeBitSet(bs, -1, sb1);
+    jvxlEncodeBitSetBuffer(bs, -1, sb1);
     XmlUtil.appendTag(sb, name, new Object[] {
         attribs,
         "bsEncoding", "base90+35",
@@ -245,10 +245,10 @@ public class JvxlCoder {
 
   
   public static String jvxlGetInfo(JvxlData jvxlData) {
-    return jvxlGetInfo(jvxlData, jvxlData.vertexDataOnly);
+    return jvxlGetInfoData(jvxlData, jvxlData.vertexDataOnly);
   }
 
-  public static String jvxlGetInfo(JvxlData jvxlData, boolean vertexDataOnly) {
+  public static String jvxlGetInfoData(JvxlData jvxlData, boolean vertexDataOnly) {
     if (jvxlData.jvxlSurfaceData == null)
       return "";
     List<String[]> attribs = new ArrayList<String[]>();
@@ -432,7 +432,7 @@ public class JvxlCoder {
       int nPolygons = ((Integer) contours[i].get(CONTOUR_NPOLYGONS)).intValue();
       StringBuffer sb1 = new StringBuffer("\n");
       BitSet bs = (BitSet) contours[i].get(CONTOUR_BITSET);
-      jvxlEncodeBitSet(bs, nPolygons, sb1);
+      jvxlEncodeBitSetBuffer(bs, nPolygons, sb1);
       XmlUtil.appendTag(sb, "jvxlContour", new String[] {
           "index", "" + i,
           "value", "" + contours[i].get(CONTOUR_VALUE),
@@ -850,10 +850,10 @@ public class JvxlCoder {
    * 
    */
   public static char jvxlFractionAsCharacter(float fraction) {
-    return jvxlFractionAsCharacter(fraction, defaultEdgeFractionBase, defaultEdgeFractionRange);  
+    return jvxlFractionAsCharacterRange(fraction, defaultEdgeFractionBase, defaultEdgeFractionRange);  
   }
   
-  public static char jvxlFractionAsCharacter(float fraction, int base, int range) {
+  public static char jvxlFractionAsCharacterRange(float fraction, int base, int range) {
     if (fraction > 0.9999f)
       fraction = 0.9999f;
     else if (Float.isNaN(fraction))
@@ -873,10 +873,10 @@ public class JvxlCoder {
                                            StringBuffer list1,
                                            StringBuffer list2) {
     float fraction = (min == max ? value : (value - min) / (max - min));
-    char ch1 = jvxlFractionAsCharacter(fraction, base, range);
+    char ch1 = jvxlFractionAsCharacterRange(fraction, base, range);
     list1.append(ch1);
     fraction -= jvxlFractionFromCharacter(ch1, base, range, 0);
-    list2.append(jvxlFractionAsCharacter(fraction * range, base, range));
+    list2.append(jvxlFractionAsCharacterRange(fraction * range, base, range));
   }
 
   public static float jvxlFractionFromCharacter(int ich, int base, int range,
@@ -905,7 +905,7 @@ public class JvxlCoder {
   public static char jvxlValueAsCharacter(float value, float min, float max, int base,
                                    int range) {
     float fraction = (min == max ? value : (value - min) / (max - min));
-    return jvxlFractionAsCharacter(fraction, base, range);
+    return jvxlFractionAsCharacterRange(fraction, base, range);
   }
 
   protected static float jvxlValueFromCharacter2(int ich, int ich2, float min,
@@ -955,11 +955,11 @@ public class JvxlCoder {
   
   public static String jvxlEncodeBitSet(BitSet bs) {
     StringBuffer sb = new StringBuffer();
-    jvxlEncodeBitSet(bs, -1, sb);
+    jvxlEncodeBitSetBuffer(bs, -1, sb);
     return sb.toString();
   }
   
-  public static int jvxlEncodeBitSet(BitSet bs, int nPoints, StringBuffer sb) {
+  public static int jvxlEncodeBitSetBuffer(BitSet bs, int nPoints, StringBuffer sb) {
     //System.out.println("jvxlcoder " + Escape.escape(bs));
     int dataCount = 0;
     int n = 0;
@@ -1002,7 +1002,7 @@ public class JvxlCoder {
       sb.append(" ");
   }
 
-  public static BitSet jvxlDecodeBitSet(String data, int base, int range) {
+  public static BitSet jvxlDecodeBitSetRange(String data, int base, int range) {
     BitSet bs = new BitSet();
     int dataCount = 0;
     int ptr = 0;
@@ -1051,7 +1051,7 @@ public class JvxlCoder {
 
   public static BitSet jvxlDecodeBitSet(String data) {
     if (data.startsWith("-"))
-      return jvxlDecodeBitSet(jvxlUncompressString(data.substring(1)), defaultEdgeFractionBase, defaultEdgeFractionRange);
+      return jvxlDecodeBitSetRange(jvxlUncompressString(data.substring(1)), defaultEdgeFractionBase, defaultEdgeFractionRange);
     // nunset nset nunset ...
     BitSet bs = new BitSet();
     int dataCount = 0;

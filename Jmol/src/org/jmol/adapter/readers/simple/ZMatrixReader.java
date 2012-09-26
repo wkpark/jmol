@@ -208,7 +208,7 @@ No distinction between "Variable:" and "Constant:" is made by Jmol.
       if (line.startsWith("#ZMATRIX"))
         isJmolZformat = line.toUpperCase().indexOf("GAUSSIAN") < 0
             && !(isMopac = (line.toUpperCase().indexOf("MOPAC") >= 0));
-      checkLineForScript();
+      checkCurrentLineForScript();
       return true;
     }
     if (line.indexOf("#") >= 0)

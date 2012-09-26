@@ -166,7 +166,7 @@ public class JcampdxReader extends MolReader {
 
   private boolean readModels() throws Exception {
     if (line.indexOf("<Models") < 0) {
-      discardLinesUntilContains("<Models", "##");
+      discardLinesUntilContains2("<Models", "##");
       if (line.indexOf("<Models") < 0)
         return false;
     }
@@ -302,13 +302,13 @@ public class JcampdxReader extends MolReader {
         return;
       }      
       for (int i = b0; i < b1; i++) 
-        a.addNewBond(bonds[i].atomIndex1 + i0, bonds[i].atomIndex2 + i0, bonds[i].order);      
+        a.addNewBondWithOrder(bonds[i].atomIndex1 + i0, bonds[i].atomIndex2 + i0, bonds[i].order);      
     }
   }
 
   private boolean readPeaks() throws Exception {
     if (line.indexOf("<Peaks") < 0)
-      discardLinesUntilContains("<Peaks", "##");
+      discardLinesUntilContains2("<Peaks", "##");
     if (line.indexOf("<Peaks") < 0)
       return false;
     String type = getAttribute(line, "type").toUpperCase();

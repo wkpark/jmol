@@ -112,7 +112,7 @@ public class MdTopReader extends ForceFieldReader {
       if (filter == null || bsFilter.get(i)) {
         if (k % 100 == 0)
           j++;
-        setAtomCoord(atoms[i], (i % 100) * 2, j * 2, 0);
+        setAtomCoordXYZ(atoms[i], (i % 100) * 2, j * 2, 0);
       }
     }
     if (atoms2 != null) {

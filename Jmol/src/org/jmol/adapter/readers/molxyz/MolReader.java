@@ -185,7 +185,7 @@ public class MolReader extends AtomSetCollectionReader {
       return;
     header += line + "\n";
     Logger.info(header);
-    checkLineForScript();
+    checkCurrentLineForScript();
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("fileHeader", header);
     newAtomSet(thisDataSetName);
   }
@@ -283,7 +283,7 @@ public class MolReader extends AtomSetCollectionReader {
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementSymbol = elementSymbol;
       atom.formalCharge = charge;
-      setAtomCoord(atom, x, y, z);
+      setAtomCoordXYZ(atom, x, y, z);
     }
   }
 

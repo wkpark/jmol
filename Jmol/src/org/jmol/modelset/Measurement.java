@@ -92,10 +92,10 @@ public class Measurement {
     return strMeasurement;
   }
   
-  public String getString(Viewer viewer, String strFormat, String units) {
+  public String getStringUsing(Viewer viewer, String strFormat, String units) {
     this.viewer = viewer;
     value = getMeasurement();
-    formatMeasurement(strFormat, units, true);
+    formatMeasurementAs(strFormat, units, true);
     if (strFormat == null)
       return getInfoAsString(units);
     return strMeasurement;
@@ -204,7 +204,7 @@ public class Measurement {
     count = (indices == null ? 0 : indices[0]);
     if (count > 0) {
       System.arraycopy(indices, 0, countPlusIndices, 0, count + 1);
-      isTrajectory = modelSet.isTrajectory(countPlusIndices);
+      isTrajectory = modelSet.isTrajectoryMeasurement(countPlusIndices);
     }
     this.value = (Float.isNaN(value) || isTrajectory ? getMeasurement() : value);
     formatMeasurement(null);
@@ -223,7 +223,7 @@ public class Measurement {
 
   public void refresh() {
     value = getMeasurement();
-    isTrajectory = modelSet.isTrajectory(countPlusIndices);
+    isTrajectory = modelSet.isTrajectoryMeasurement(countPlusIndices);
     formatMeasurement(null);
   }
   
@@ -242,7 +242,7 @@ public class Measurement {
     return str;  
   }
   
-  public void formatMeasurement(String strFormat, String units, boolean useDefault) {
+  public void formatMeasurementAs(String strFormat, String units, boolean useDefault) {
     if (strFormat != null && strFormat.length() == 0)
       strFormat = null;
     if (!useDefault && strFormat != null && strFormat.indexOf(countPlusIndices[0]+":")!=0)
@@ -371,10 +371,10 @@ public class Measurement {
   }
 
   private String formatString(float value, String units, String label) {
-    return LabelToken.formatLabel(viewer, this, label, value, units);
+    return LabelToken.formatLabelMeasure(viewer, this, label, value, units);
   }
 
-  public boolean sameAs(int[] indices, Point3fi[] points) {
+  public boolean sameAsPoints(int[] indices, Point3fi[] points) {
     if (count != indices[0]) 
       return false;
     boolean isSame = true;
@@ -391,21 +391,21 @@ public class Measurement {
     default:
       return true;
     case 2:
-      return sameAs(indices, points, 1, 2) 
-          && sameAs(indices, points, 2, 1);
+      return sameAsIJ(indices, points, 1, 2) 
+          && sameAsIJ(indices, points, 2, 1);
     case 3:
-      return sameAs(indices, points, 1, 3)
-          && sameAs(indices, points, 2, 2)
-          && sameAs(indices, points, 3, 1);
+      return sameAsIJ(indices, points, 1, 3)
+          && sameAsIJ(indices, points, 2, 2)
+          && sameAsIJ(indices, points, 3, 1);
     case 4:  
-      return  sameAs(indices, points, 1, 4)
-          && sameAs(indices, points, 2, 3) 
-          && sameAs(indices, points, 3, 2)
-          && sameAs(indices, points, 4, 1);
+      return  sameAsIJ(indices, points, 1, 4)
+          && sameAsIJ(indices, points, 2, 3) 
+          && sameAsIJ(indices, points, 3, 2)
+          && sameAsIJ(indices, points, 4, 1);
     } 
   }
 
-  private boolean sameAs(int[] atoms, Point3fi[] points, int i, int j) {
+  private boolean sameAsIJ(int[] atoms, Point3fi[] points, int i, int j) {
     int ipt = countPlusIndices[i];
     int jpt = atoms[j];
     return (ipt >= 0 || jpt >= 0 ? ipt == jpt 
@@ -413,7 +413,7 @@ public class Measurement {
   }
 
   public boolean sameAs(int i, int j) {
-    return sameAs(countPlusIndices, pts, i, j);
+    return sameAsIJ(countPlusIndices, pts, i, j);
   }
 
   public List<String> toVector(boolean asBitSet) {
@@ -480,7 +480,7 @@ public class Measurement {
     int[] indices = m.getCountPlusIndices();
     Point3fi[] points = m.getPoints();
     for (int i = measurements.size(); --i >= 0; )
-      if (measurements.get(i).sameAs(indices, points))
+      if (measurements.get(i).sameAsPoints(indices, points))
         return i;
     return -1;
   }

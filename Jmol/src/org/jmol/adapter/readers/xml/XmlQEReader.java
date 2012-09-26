@@ -78,7 +78,7 @@ public class XmlQEReader extends XmlReader {
       float[] xyz = getTokensFloat(atts.get("TAU"), null, 3);
       atom = atomSetCollection.addNewAtom();
       atom.elementSymbol = atts.get("SPECIES").trim();
-      parent.setAtomCoord(atom, xyz[0] * ANGSTROMS_PER_BOHR, xyz[1] * ANGSTROMS_PER_BOHR, xyz[2] * ANGSTROMS_PER_BOHR);
+      parent.setAtomCoordXYZ(atom, xyz[0] * ANGSTROMS_PER_BOHR, xyz[1] * ANGSTROMS_PER_BOHR, xyz[2] * ANGSTROMS_PER_BOHR);
     }
     if ("structure".equals(localName)) {
       if (!parent.doGetModel(++parent.modelNumber, null)) {

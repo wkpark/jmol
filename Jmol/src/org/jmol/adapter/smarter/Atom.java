@@ -93,7 +93,7 @@ public class Atom extends Point3f implements Cloneable {
           break;
         default:
           char chSecond = atomName.charAt(ichFirst + 1);
-          if (isValidElementSymbolNoCaseSecondChar(chFirst, chSecond)) {
+          if (isValidElementSymbolNoCaseSecondChar2(chFirst, chSecond)) {
             elementSymbol = "" + chFirst + chSecond;
             break;
           }
@@ -261,13 +261,13 @@ public class Atom extends Point3f implements Cloneable {
     return ch >= 'A' && ch <= 'Z' && elementCharMasks[ch - 'A'] < 0;
   }
 
-  public static boolean isValidElementSymbol(char chFirst, char chSecond) {
+  public static boolean isValidElementSymbol2(char chFirst, char chSecond) {
     if (chFirst < 'A' || chFirst > 'Z' || chSecond < 'a' || chSecond > 'z')
       return false;
     return ((elementCharMasks[chFirst - 'A'] >> (chSecond - 'a')) & 1) != 0;
   }
 
-  public static boolean isValidElementSymbolNoCaseSecondChar(char chFirst,
+  public static boolean isValidElementSymbolNoCaseSecondChar2(char chFirst,
                                                       char chSecond) {
     if (chSecond >= 'A' && chSecond <= 'Z')
       chSecond += 'a' - 'A';
@@ -292,7 +292,7 @@ public class Atom extends Point3f implements Cloneable {
     if (length > 2)
       return false;
     char chSecond = str.charAt(1);
-    return isValidElementSymbolNoCaseSecondChar(chFirst, chSecond);
+    return isValidElementSymbolNoCaseSecondChar2(chFirst, chSecond);
   }
 
   public void scaleVector(float vibScale) {

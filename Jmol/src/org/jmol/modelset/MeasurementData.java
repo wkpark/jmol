@@ -108,7 +108,7 @@ public class MeasurementData implements JmolMeasurementClient {
       return;
     }
     
-    measurementStrings.add(m.getString(viewer, strFormat, units));
+    measurementStrings.add(m.getStringUsing(viewer, strFormat, units));
    
   }
 

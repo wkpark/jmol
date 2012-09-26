@@ -154,8 +154,8 @@ abstract class AtomDataReader extends VolumeDataReader {
     // if it hasn't already been set.
     if (getRadii) {
       if (params.atomRadiusData == null)
-        params.atomRadiusData = new RadiusData(1, EnumType.FACTOR,
-            EnumVdw.AUTO);
+        params.atomRadiusData = new RadiusData(null, 1,
+            EnumType.FACTOR, EnumVdw.AUTO);
       atomData.radiusData = params.atomRadiusData;
       atomData.radiusData.valueExtended = params.solventExtendedAtomRadius;
       if (doAddHydrogens)

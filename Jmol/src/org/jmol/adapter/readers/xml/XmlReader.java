@@ -119,7 +119,7 @@ import org.jmol.util.Logger;
   public void initializeReader() throws Exception {
     XMLReader xmlReader = getXMLReader();
     if (xmlReader == null) {
-      atomSetCollection = new AtomSetCollection("xml", this);
+      atomSetCollection = new AtomSetCollection("xml", this, null, null);
       atomSetCollection.errorMessage = "No XML reader found";
       return;
     }
@@ -144,7 +144,7 @@ import org.jmol.util.Logger;
   }
 
   private Object processXml(XMLReader xmlReader) throws Exception {
-    atomSetCollection = new AtomSetCollection(readerName, this);
+    atomSetCollection = new AtomSetCollection(readerName, this, null, null);
     Object res = getXmlReader();
     if (res instanceof String)
       return res;
@@ -211,7 +211,7 @@ import org.jmol.util.Logger;
   
   @Override
   protected void processXml(Object DOMNode) {
-    atomSetCollection = new AtomSetCollection(readerName, this);
+    atomSetCollection = new AtomSetCollection(readerName, this, null, null);
     String className = null;
     Class<?> atomSetCollectionReaderClass;
     XmlReader thisReader = null;

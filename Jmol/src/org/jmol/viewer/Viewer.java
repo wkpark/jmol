@@ -1670,7 +1670,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (isGroup)
       bs = getUndeletedGroupAtomBits(bs);
     selectionManager.select(bs, addRemove, isQuiet);
-    shapeManager.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MAX_VALUE,
+    shapeManager.setShapeSizeBs(JmolConstants.SHAPE_STICKS, Integer.MAX_VALUE,
         null, null);
   }
 
@@ -1681,7 +1681,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void selectBonds(BitSet bs) {
-    shapeManager.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MAX_VALUE,
+    shapeManager.setShapeSizeBs(JmolConstants.SHAPE_STICKS, Integer.MAX_VALUE,
         null, bs);
   }
 
@@ -2965,7 +2965,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public BitSet getMoleculeBitSet(int atomIndex) {
-    return modelSet.getMoleculeBitSet(atomIndex);
+    return modelSet.getMoleculeBitSetForAtom(atomIndex);
   }
 
   public BitSet getModelUndeletedAtomsBitSet(int modelIndex) {
@@ -2975,7 +2975,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public BitSet getModelUndeletedAtomsBitSet(BitSet bsModels) {
-    BitSet bs = modelSet.getModelAtomBitSetIncludingDeleted(bsModels);
+    BitSet bs = modelSet.getModelAtomBitSetIncludingDeletedBs(bsModels);
     excludeAtoms(bs, false);
     return bs;
   }
@@ -3025,7 +3025,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public float calcRotationRadius(BitSet bs) {
-    return modelSet.calcRotationRadius(bs);
+    return modelSet.calcRotationRadiusBs(bs);
   }
 
   @Override
@@ -3289,7 +3289,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void setCurrentUnitCell(String isosurfaceId) {
     Object[] data = new Object[] { isosurfaceId, null };
-    shapeManager.getShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "unitCell", data);
+    shapeManager.getShapePropertyData(JmolConstants.SHAPE_ISOSURFACE, "unitCell", data);
     modelSet.setUnitCell(getCurrentModelIndex(), (SymmetryInterface) data[1]);    
   }
 
@@ -3383,7 +3383,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public BitSet getAtomsWithin(float distance, Point3f[] points,
                                BitSet bsInclude) {
-    return modelSet.getAtomsWithin(distance, points, bsInclude);
+    return modelSet.getAtomsWithinBs(distance, points, bsInclude);
   }
 
   public BitSet getAtomsWithin(float distance, Point4f plane) {
@@ -3392,7 +3392,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public BitSet getAtomsWithin(float distance, BitSet bs,
                                boolean withinAllModels, RadiusData rd) {
-    return modelSet.getAtomsWithin(distance, bs, withinAllModels, rd);
+    return modelSet.getAtomsWithinBs(distance, bs, withinAllModels, rd);
   }
 
   public BitSet getAtomsConnected(float min, float max, int intType, BitSet bs) {
@@ -3904,7 +3904,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void setTrajectory(BitSet bsModels) {
-    modelSet.setTrajectory(bsModels);
+    modelSet.setTrajectoryBs(bsModels);
   }
 
   public boolean isTrajectory(int modelIndex) {
@@ -5012,7 +5012,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       sb.append("H ").append(pts[i].x).append(" ").append(pts[i].y).append(" ")
           .append(pts[i].z).append(" - - - - ").append(++atomno).append('\n');
     loadInlineScript(sb.toString(), '\n', true, null);
-    eval.runScript(sbConnect.toString(), null);
+    eval.runScriptBuffer(sbConnect.toString(), null);
     BitSet bsB = getModelUndeletedAtomsBitSet(modelIndex);
     bsB.andNot(bsA);
     return bsB;
@@ -5232,7 +5232,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // only for MeasurementTable and actionManager
     return (atomOrPointIndex >= 0 ? modelSet
         .getAtomInfo(atomOrPointIndex, null) : (String) shapeManager
-        .getShapeProperty(JmolConstants.SHAPE_MEASURES, "pointInfo",
+        .getShapePropertyIndex(JmolConstants.SHAPE_MEASURES, "pointInfo",
             -atomOrPointIndex));
   }
 
@@ -6121,7 +6121,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         break;
       }
       if (!global.htNonbooleanParameterValues.containsKey(key.toLowerCase())) {
-        global.setUserVariable(key, new ScriptVariable(Token.string, value));
+        global.setUserVariable(key, ScriptVariable.newScriptVariableObj(Token.string, value));
         return;
       }
       // a few String parameters may not be tokenized. Save them anyway.
@@ -6311,7 +6311,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       break;
     default:
       if (!global.htNonbooleanParameterValues.containsKey(key.toLowerCase())) {
-        global.setUserVariable(key, new ScriptVariable(Token.decimal,
+        global.setUserVariable(key, ScriptVariable.newScriptVariableObj(Token.decimal,
             new Float(value)));
         return;
       }
@@ -7572,7 +7572,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     clearModelDependentObjects();
     modelSet.deleteAllBonds();
     boolean isLegacy = isStateScript && checkAutoBondLegacy();
-    modelSet.autoBond(null, null, null, null, getMadBond(), isLegacy);
+    modelSet.autoBondBs4(null, null, null, null, getMadBond(), isLegacy);
     addStateScript((isLegacy ? "set legacyAutoBonding TRUE;connect;set legacyAutoBonding FALSE;" : "connect;"), false, true);
   }
 
@@ -7584,7 +7584,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelSet.setPdbConectBonding(0, 0, bsExclude);
     if (isAuto) {
       boolean isLegacy = isStateScript && checkAutoBondLegacy();
-      modelSet.autoBond(null, null, bsExclude, null, getMadBond(), isLegacy);
+      modelSet.autoBondBs4(null, null, bsExclude, null, getMadBond(), isLegacy);
       addStateScript(
           (isLegacy ? "set legacyAutoBonding TRUE;connect PDB AUTO;set legacyAutoBonding FALSE;" : "connect PDB auto;"), false, true);
       return;
@@ -7612,7 +7612,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // delegated to stateManager
   // ///////////////////////////////////////////////////////////////
 
-  private RadiusData rd = new RadiusData();
+  private RadiusData rd = new RadiusData(null, 0, null, null);
 
   @Override
   public void setPercentVdwAtom(int value) {
@@ -8370,11 +8370,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public boolean isJmolDataFrame(int modelIndex) {
-    return modelSet.isJmolDataFrame(modelIndex);
+    return modelSet.isJmolDataFrameForModel(modelIndex);
   }
 
   public boolean isJmolDataFrame() {
-    return modelSet.isJmolDataFrame(animationManager.currentModelIndex);
+    return modelSet.isJmolDataFrameForModel(animationManager.currentModelIndex);
   }
 
   public int getJmolDataFrameIndex(int modelIndex, String type) {
@@ -9876,7 +9876,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   void getAtomicPropertyState(StringBuffer commands, byte type, BitSet bs,
                               String name, float[] data) {
-    modelSet.getAtomicPropertyState(commands, type, bs, name, data);
+    modelSet.getAtomicPropertyStateBuffer(commands, type, bs, name, data);
   }
 
   public Point3f[][] getCenterAndPoints(List<BitSet[]> atomSets,
@@ -9980,7 +9980,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       bs = getSelectionSet(false);
     loadShape(JmolConstants.SHAPE_LABELS);
     // setShapeSize(JmolConstants.SHAPE_LABELS, 0, Float.NaN, bs);
-    shapeManager.setShapeProperty(JmolConstants.SHAPE_LABELS, "toggleLabel",
+    shapeManager.setShapePropertyBs(JmolConstants.SHAPE_LABELS, "toggleLabel",
         null, bs);
   }
 
@@ -9992,32 +9992,32 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // might be atoms or bonds
     if (bsSelected == null)
       bsSelected = getSelectionSet(false);
-    shapeManager.setShapeSize(shapeID, mad, null, bsSelected);
+    shapeManager.setShapeSizeBs(shapeID, mad, null, bsSelected);
   }
 
   public void setShapeSize(int shapeID, RadiusData rd, BitSet bsAtoms) {
-    shapeManager.setShapeSize(shapeID, 0, rd, bsAtoms);
+    shapeManager.setShapeSizeBs(shapeID, 0, rd, bsAtoms);
   }
 
   public void setShapeProperty(int shapeID, String propertyName, Object value) {
     // Eval, BondCollection, StateManager, local
     if (shapeID < 0)
       return; // not applicable
-    shapeManager.setShapeProperty(shapeID, propertyName, value, null);
+    shapeManager.setShapePropertyBs(shapeID, propertyName, value, null);
   }
 
   public Object getShapeProperty(int shapeType, String propertyName) {
-    return shapeManager.getShapeProperty(shapeType, propertyName,
+    return shapeManager.getShapePropertyIndex(shapeType, propertyName,
         Integer.MIN_VALUE);
   }
 
   public boolean getShapeProperty(int shapeType, String propertyName,
                                   Object[] data) {
-    return shapeManager.getShapeProperty(shapeType, propertyName, data);
+    return shapeManager.getShapePropertyData(shapeType, propertyName, data);
   }
 
   public Object getShapeProperty(int shapeType, String propertyName, int index) {
-    return shapeManager.getShapeProperty(shapeType, propertyName, index);
+    return shapeManager.getShapePropertyIndex(shapeType, propertyName, index);
   }
 
   private int getShapePropertyAsInt(int shapeID, String propertyName) {
@@ -10209,7 +10209,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       sb.append("#" + type + " " + taintedAtom + " " + (new Date()) + "\n");
       if (taintedAtom >= 0) {
         bs = getModelUndeletedAtomsBitSet(modelIndex);
-        modelSet.taint(bs, (byte) type);
+        modelSet.taintAtoms(bs, (byte) type);
         sb.append(modelSet.getAtomicPropertyState(-1, null));
       } else {
         bs = getModelUndeletedAtomsBitSet(modelIndex);
@@ -10683,6 +10683,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public Map<String, Integer> cacheList() {
     return fileManager.cacheList();
+  }
+
+  public boolean isSingleThreaded() {
+    return apiPlatform.isSingleThreaded();
   }
 
 

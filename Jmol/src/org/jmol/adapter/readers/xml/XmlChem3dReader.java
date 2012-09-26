@@ -95,7 +95,7 @@ public class XmlChem3dReader extends XmlReader {
       int order = 1;
       if (atts.containsKey("bondOrder"))
         order = parseIntStr(atts.get("bondOrder"));
-      atomSetCollection.addNewBond(atom1, atom2, order);
+      atomSetCollection.addNewBondFromNames(atom1, atom2, order);
       return;
     }
 
@@ -159,7 +159,7 @@ public class XmlChem3dReader extends XmlReader {
       vd.setVolumetricVector(1, 0, yStep, 0);
       vd.setVolumetricVector(2, 0, 0, zStep);
       vd.setVolumetricOrigin(ox, oy, oz);
-      vd.setVoxelData(voxelData);
+      vd.setVoxelDataAsArray(voxelData);
       if (moData == null) {
         moData = new Hashtable<String, Object>();
         moData.put("defaultCutoff", Float.valueOf((float) 0.01));

@@ -118,11 +118,11 @@ public class SticksRenderer extends ShapeRenderer {
          render(bond, atomA, atomB);
          */
 
-        atomA = atomA.getGroup().getLeadAtom(atomA);
-        atomB = atomB.getGroup().getLeadAtom(atomB);
+        atomA = atomA.getGroup().getLeadAtomOr(atomA);
+        atomB = atomB.getGroup().getLeadAtomOr(atomB);
       } else if (hbondsBackbone && Bond.isHydrogen(order)) {
-        atomA = atomA.getGroup().getLeadAtom(atomA);
-        atomB = atomB.getGroup().getLeadAtom(atomB);
+        atomA = atomA.getGroup().getLeadAtomOr(atomA);
+        atomB = atomB.getGroup().getLeadAtomOr(atomB);
       }
     }
     if (!atomA.isInFrame() || !atomB.isInFrame()

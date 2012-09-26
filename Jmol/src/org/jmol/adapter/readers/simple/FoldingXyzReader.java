@@ -85,7 +85,7 @@ public class FoldingXyzReader extends AtomSetCollectionReader {
           	char c1 = atom.atomName.charAt(0);
           	char c2 = atom.atomName.charAt(1);
           	if (Character.isUpperCase(c1) && Character.isLowerCase(c2) &&
-          	    Atom.isValidElementSymbol(c1, c2)) {
+          	    Atom.isValidElementSymbol2(c1, c2)) {
           	  carCount = 2;
           	}
           	if ((c1 == 'C') && (c2 =='L')) {
@@ -94,7 +94,7 @@ public class FoldingXyzReader extends AtomSetCollectionReader {
           }
           atom.elementSymbol = atom.atomName.substring(0, carCount);
         }
-        setAtomCoord(atom, parseFloat(), parseFloat(), parseFloat());
+        setAtomCoordXYZ(atom, parseFloat(), parseFloat(), parseFloat());
 
         // Memorise bond informations
         int bondCount = 0;

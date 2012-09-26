@@ -586,7 +586,7 @@ public class SmilesSearch extends JmolMolecule {
             // clear out all atoms connected to the last atom only
             jmolBonds = a.getEdges();
             for (int k = 0; k < jmolBonds.length; k++)
-              bs.set(jmolBonds[k].getOtherAtom(a).getIndex());
+              bs.set(jmolBonds[k].getOtherAtomNode(a).getIndex());
           } else {
             // clear out adjacent residues
             int ii = a.getOffsetResidueAtom("0", 1);
@@ -1518,7 +1518,7 @@ public class SmilesSearch extends JmolMolecule {
       JmolEdge[] bonds = dbAtom1.getEdges();
       for (int k = bonds.length; --k >= 0;) {
         JmolEdge bond = bonds[k];
-        JmolNode atom = bond.getOtherAtom(dbAtom1);
+        JmolNode atom = bond.getOtherAtomNode(dbAtom1);
         if (atom == dbAtom2)
           continue;
         atom.set(-1, (nBonds++ == 0) ? -1 : 1, 0);
@@ -1538,7 +1538,7 @@ public class SmilesSearch extends JmolMolecule {
       bonds = dbAtom2.getEdges();
       for (int k = bonds.length; --k >= 0;) {
         JmolEdge bond = bonds[k];
-        JmolNode atom = bond.getOtherAtom(dbAtom2);
+        JmolNode atom = bond.getOtherAtomNode(dbAtom2);
         if (atom == dbAtom1)
           continue;
         atoms[nBonds] = atom;
@@ -1574,21 +1574,21 @@ public class SmilesSearch extends JmolMolecule {
       int dir = 0;
       for (int k = bonds.length; --k >= 0;) {
         JmolEdge bond = bonds[k];
-        if (bond.getOtherAtom(dbAtom1) == dbAtom2) {
+        if (bond.getOtherAtomNode(dbAtom1) == dbAtom2) {
           dir = (bond.order == JmolEdge.BOND_PARTIAL01 ? 1 : -1);
           break;
         }
       }
       for (int k = bonds.length; --k >= 0;) {
         JmolEdge bond = bonds[k];
-        JmolNode atom = bond.getOtherAtom(dbAtom1);
+        JmolNode atom = bond.getOtherAtomNode(dbAtom1);
         if (atom != dbAtom2)
           atom.set(-1, 1, 0);
       }    
       bonds = dbAtom2.getEdges();
       for (int k = bonds.length; --k >= 0;) {
         JmolEdge bond = bonds[k];
-        JmolNode atom = bond.getOtherAtom(dbAtom2);
+        JmolNode atom = bond.getOtherAtomNode(dbAtom2);
         if (atom != dbAtom1)
           atom.set(1, 1, -dir/2.0f);
       }
@@ -1705,13 +1705,13 @@ public class SmilesSearch extends JmolMolecule {
     JmolEdge[] b2 = (a2 == null ? null : a2.getEdges());
     for (int i = 0; i < map.length; i++) {
       for (k = 0; k < bonds.length; k++)
-        if (bonds[k].getOtherAtom(atom) == cAtoms[i])
+        if (bonds[k].getOtherAtomNode(atom) == cAtoms[i])
           break;
       if (k < bonds.length) {
         map[i] = (k * 10 + 100) + i;
       } else if (a2 != null) {
         for (k = 0; k < b2.length; k++)
-          if (b2[k].getOtherAtom(a2) == cAtoms[i])
+          if (b2[k].getOtherAtomNode(a2) == cAtoms[i])
             break;
         if (k < b2.length)
           map[i] = (k * 10 + 300) + i;

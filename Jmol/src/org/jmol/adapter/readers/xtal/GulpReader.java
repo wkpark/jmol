@@ -390,7 +390,7 @@ public class GulpReader extends AtomSetCollectionReader {
         continue;
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = tokens[1];
-      setAtomCoord(atom, parseFloatStr(tokens[3]), parseFloatStr(tokens[4]),
+      setAtomCoordXYZ(atom, parseFloatStr(tokens[3]), parseFloatStr(tokens[4]),
           parseFloatStr(tokens[5]));
     }
     if (finalizeSymmetry)

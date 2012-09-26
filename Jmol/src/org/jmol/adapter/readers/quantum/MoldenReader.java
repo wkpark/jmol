@@ -145,7 +145,7 @@ public class MoldenReader extends MopacSlaterReader {
       } 
       nPrevAtom = nCurAtom;
       atom.elementNumber = (short) parseIntStr(tokens[2]);
-      setAtomCoord(atom, parseFloatStr(tokens[3]) * f, 
+      setAtomCoordXYZ(atom, parseFloatStr(tokens[3]) * f, 
           parseFloatStr(tokens[4]) * f, 
           parseFloatStr(tokens[5]) * f);
     }    
@@ -447,7 +447,7 @@ max-force
           continue;
         Atom atom = atomSetCollection.addNewAtom();
         atom.atomName = tokens[0];
-        setAtomCoord(atom, parseFloatStr(tokens[1]) * f, 
+        setAtomCoordXYZ(atom, parseFloatStr(tokens[1]) * f, 
             parseFloatStr(tokens[2]) * f, 
             parseFloatStr(tokens[3]) * f);
       }    
@@ -459,7 +459,7 @@ max-force
     for (int i = 0; i < modelAtomCount; i++) {
       String[] tokens = getTokensStr(readLine());
       Atom atom = atoms[i + i0];
-      setAtomCoord(atom, parseFloatStr(tokens[1]) * f, 
+      setAtomCoordXYZ(atom, parseFloatStr(tokens[1]) * f, 
           parseFloatStr(tokens[2]) * f, 
           parseFloatStr(tokens[3]) * f);
     }

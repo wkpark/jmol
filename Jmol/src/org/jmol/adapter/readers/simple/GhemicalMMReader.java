@@ -144,7 +144,7 @@ public class GhemicalMMReader extends AtomSetCollectionReader {
       default:
         order = JmolAdapter.ORDER_COVALENT_SINGLE;
       }
-      atomSetCollection.addNewBond(atomIndex1, atomIndex2, order);
+      atomSetCollection.addNewBondWithOrder(atomIndex1, atomIndex2, order);
     }
   }
 
@@ -157,7 +157,7 @@ public class GhemicalMMReader extends AtomSetCollectionReader {
       if (atomIndex != i)
         throw new Exception("bad atom index in !Coord" + "expected: " + i
             + " saw:" + atomIndex);
-      setAtomCoord(atoms[i], parseFloat() * 10, parseFloat() * 10, parseFloat() * 10);
+      setAtomCoordXYZ(atoms[i], parseFloat() * 10, parseFloat() * 10, parseFloat() * 10);
     }
   }
 

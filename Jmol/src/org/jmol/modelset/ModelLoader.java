@@ -88,23 +88,12 @@ public final class ModelLoader {
   private int[][] group3Counts;
   private final int[] specialAtomIndexes = new int[JmolConstants.ATOMID_MAX];
   
-  public ModelLoader(Viewer viewer, String name) {
-    this.viewer = viewer;
-    modelSet = new ModelSet(viewer, name);
-    viewer.resetShapes(false);
-    modelSet.preserveState = viewer.getPreserveState();
-    initializeInfo(name, null);
-    createModelSet(null, null, null);
-    viewer.setStringProperty("_fileType", "");
-  }
-
-  public ModelLoader(Viewer viewer, StringBuffer loadScript,
-      Object atomSetCollection, ModelSet mergeModelSet, String modelSetName,
+  public ModelLoader(Viewer viewer, String modelSetName,
+      StringBuffer loadScript, Object atomSetCollection, ModelSet mergeModelSet,
       BitSet bsNew) {
     this.viewer = viewer;
     modelSet = new ModelSet(viewer, modelSetName);
     this.mergeModelSet = mergeModelSet;
-    JmolAdapter adapter = viewer.getModelAdapter();
     merging = (mergeModelSet != null && mergeModelSet.atomCount > 0);
     if (merging) {
       modelSet.canSkipLoad = false;
@@ -112,8 +101,15 @@ public final class ModelLoader {
       viewer.resetShapes(false);
     }
     modelSet.preserveState = viewer.getPreserveState();
+    if (bsNew == null) {
+      initializeInfo(modelSetName, null);
+      createModelSet(null, null, null);
+      viewer.setStringProperty("_fileType", "");
+      return;
+    }    
     if (!modelSet.preserveState)
       modelSet.canSkipLoad = false;
+    JmolAdapter adapter = viewer.getModelAdapter();
     Map<String, Object> info = adapter.getAtomSetCollectionAuxiliaryInfo(atomSetCollection);
     info.put("loadScript", loadScript);
     initializeInfo(adapter.getFileTypeName(atomSetCollection).toLowerCase().intern(), info);
@@ -1148,7 +1144,7 @@ public final class ModelLoader {
         }
       }
     if (autoBonding) {
-      modelSet.autoBond(bs, bs, bsExclude, null, modelSet.defaultCovalentMad, viewer.checkAutoBondLegacy());
+      modelSet.autoBondBs4(bs, bs, bsExclude, null, modelSet.defaultCovalentMad, viewer.checkAutoBondLegacy());
       Logger
           .info("ModelSet: autobonding; use  autobond=false  to not generate bonds automatically");
     } else {
@@ -1420,7 +1416,7 @@ public final class ModelLoader {
     if (modelSet.someModelsHaveAromaticBonds && viewer.getSmartAromatic())
       modelSet.assignAromaticBonds(false);
     if (merging && baseModelCount == 1)
-        modelSet.shapeManager.setShapeProperty(JmolConstants.SHAPE_MEASURES, "clearModelIndex", null, null);
+        modelSet.shapeManager.setShapePropertyBs(JmolConstants.SHAPE_MEASURES, "clearModelIndex", null, null);
   }
 
   /**

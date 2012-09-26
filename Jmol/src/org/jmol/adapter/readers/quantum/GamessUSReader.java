@@ -234,7 +234,7 @@ public class GamessUSReader extends GamessReader {
         break;
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = atomName + (++atomCountInFirstModel);
-      setAtomCoord(atom, x * ANGSTROMS_PER_BOHR, y * ANGSTROMS_PER_BOHR, z * ANGSTROMS_PER_BOHR);
+      setAtomCoordXYZ(atom, x * ANGSTROMS_PER_BOHR, y * ANGSTROMS_PER_BOHR, z * ANGSTROMS_PER_BOHR);
       atomNames.add(atomName);
     }
   }
@@ -266,7 +266,7 @@ public class GamessUSReader extends GamessReader {
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementSymbol = getElementSymbol(parseIntStr(line.substring(11, 14)));
       atom.atomName = atom.elementSymbol + (++n);
-      setAtomCoord(atom, x * ANGSTROMS_PER_BOHR, y * ANGSTROMS_PER_BOHR, z * ANGSTROMS_PER_BOHR);
+      setAtomCoordXYZ(atom, x * ANGSTROMS_PER_BOHR, y * ANGSTROMS_PER_BOHR, z * ANGSTROMS_PER_BOHR);
       atomNames.add(atomName);
     }
   }
@@ -295,7 +295,7 @@ public class GamessUSReader extends GamessReader {
       if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
         break;
       Atom atom = atomSetCollection.addNewAtom();
-      setAtomCoord(atom, x, y, z);
+      setAtomCoordXYZ(atom, x, y, z);
       atom.elementSymbol = getElementSymbol(parseIntStr(line.substring(11, 14)));
       atom.atomName = atom.elementSymbol + (++n);
       atomNames.add(atomName);
@@ -347,7 +347,7 @@ public class GamessUSReader extends GamessReader {
                     break;
               Atom atom = atomSetCollection.addNewAtom();
               atom.atomName = atomName + (++n);
-              setAtomCoord(atom, x, y, z);
+              setAtomCoordXYZ(atom, x, y, z);
               atomNames.add(atomName);
         } 
           

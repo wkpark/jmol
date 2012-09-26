@@ -75,7 +75,7 @@ public class SiestaReader extends AtomSetCollectionReader {
       float x = parseFloatStr(tokens[0]);
       float y = parseFloatStr(tokens[1]);
       float z = parseFloatStr(tokens[2]);
-      setAtomCoord(atom, x, y, z); // will be set after reading unit cell
+      setAtomCoordXYZ(atom, x, y, z); // will be set after reading unit cell
     }
     noAtoms = atomSetCollection.getAtomCount();
   }

@@ -112,7 +112,7 @@ public abstract class JmolEdge {
 
   abstract public int getCovalentOrder();
 
-  abstract public JmolNode getOtherAtom(JmolNode atom);
+  abstract public JmolNode getOtherAtomNode(JmolNode atom);
 
   abstract public boolean isCovalent();
 

@@ -85,7 +85,7 @@ public class XmlOdysseyReader extends XmlReader {
       int order = 1;
       if (atts.containsKey("order"))
         order = parseBondToken(atts.get("order"));
-      atomSetCollection.addNewBond(atom1, atom2, order);
+      atomSetCollection.addNewBondFromNames(atom1, atom2, order);
       return;
     }
 

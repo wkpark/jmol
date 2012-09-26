@@ -36,16 +36,11 @@ public class AtomIteratorWithinModelSet extends AtomIteratorWithinModel {
     this.bsModels = bsModels;
   }
 
-  public AtomIteratorWithinModelSet() {
-    // gotta have a set of models!
-    throw new NullPointerException();
-  }
-
   private Point3f center;
   private float distance;
 
   @Override
-  public void set(Point3f center, float distance) {
+  public void setCenter(Point3f center, float distance) {
     this.center = center;
     this.distance = distance;
     set(0);
@@ -55,7 +50,7 @@ public class AtomIteratorWithinModelSet extends AtomIteratorWithinModel {
     if ((modelIndex = bsModels.nextSetBit(iModel)) < 0
         || (cubeIterator = bspf.getCubeIterator(modelIndex)) == null)
       return false;
-    super.set(center, distance);
+    super.setCenter(center, distance);
     return true;
   }
 

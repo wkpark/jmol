@@ -71,7 +71,7 @@ abstract public class BondCollection extends AtomCollection {
     return bondCount;
   }
   
-  public BondIterator getBondIterator(int bondType, BitSet bsSelected) {
+  public BondIterator getBondIteratorForType(int bondType, BitSet bsSelected) {
     //Dipoles, Sticks
     return new BondIteratorSelected(bonds, bondCount, bondType, bsSelected, 
         viewer.getBondSelectionModeOr());
@@ -79,7 +79,7 @@ abstract public class BondCollection extends AtomCollection {
 
   public BondIterator getBondIterator(BitSet bsSelected) {
     //Sticks
-    return new BondIteratorSelected(bonds, bondCount, bsSelected);
+    return new BondIteratorSelected(bonds, bondCount, 0, bsSelected, false);
   }
   
   public Atom getBondAtom1(int i) {
@@ -480,7 +480,7 @@ abstract public class BondCollection extends AtomCollection {
   }
   
   public void assignAromaticBonds() {
-    assignAromaticBonds(true, null);
+    assignAromaticBondsBs(true, null);
   }
 
   /**
@@ -491,7 +491,7 @@ abstract public class BondCollection extends AtomCollection {
    *                            were a bondOrder command.
    * @param bsBonds  passed to us by autoBond routine
    */
-  protected void assignAromaticBonds(boolean isUserCalculation, BitSet bsBonds) {
+  protected void assignAromaticBondsBs(boolean isUserCalculation, BitSet bsBonds) {
     // bsAromatic tracks what was originally in the file, but
     // individual bonds are cleared if the connect command has been used.
     // in this way, users can override the file designations.
@@ -568,8 +568,8 @@ abstract public class BondCollection extends AtomCollection {
     if (bsAromaticDouble.get(bondIndex))
       return true;
     bsAromaticDouble.set(bondIndex);
-    if (!assignAromaticSingle(bond.atom1, bondIndex)
-        || !assignAromaticSingle(bond.atom2, bondIndex)) {
+    if (!assignAromaticSingleForAtom(bond.atom1, bondIndex)
+        || !assignAromaticSingleForAtom(bond.atom2, bondIndex)) {
       bsAromaticDouble.clear(bondIndex);
       return false;
     }
@@ -590,7 +590,7 @@ abstract public class BondCollection extends AtomCollection {
     if (bsAromaticSingle.get(bondIndex))
       return true;
     bsAromaticSingle.set(bondIndex);
-    if (!assignAromaticDouble(bond.atom1) || !assignAromaticDouble(bond.atom2)) {
+    if (!assignAromaticDoubleForAtom(bond.atom1) || !assignAromaticDoubleForAtom(bond.atom2)) {
       bsAromaticSingle.clear(bondIndex);
       return false;
     }
@@ -606,7 +606,7 @@ abstract public class BondCollection extends AtomCollection {
    * @param notBondIndex  that index of the bond leading to this atom --- to be ignored
    * @return      true if successful, false if not
    */
-  private boolean assignAromaticSingle(Atom atom, int notBondIndex) {
+  private boolean assignAromaticSingleForAtom(Atom atom, int notBondIndex) {
     Bond[] bonds = atom.bonds;
     if (bonds == null || assignAromaticSingleHetero(atom))
       return false;
@@ -631,7 +631,7 @@ abstract public class BondCollection extends AtomCollection {
    * @param atom
    * @return      true if successful, false if not
    */
-  private boolean assignAromaticDouble(Atom atom) {
+  private boolean assignAromaticDoubleForAtom(Atom atom) {
     Bond[] bonds = atom.bonds;
     if (bonds == null)
       return false;

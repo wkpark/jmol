@@ -355,7 +355,7 @@ public final class EnvelopeCalculation {
   
   public Point3f[] getPoints() {
     if (dotsConvexMaps == null) {
-      calculate(new RadiusData(SURFACE_DISTANCE_FOR_CALCULATION, EnumType.ABSOLUTE, null),
+      calculate(new RadiusData(null, SURFACE_DISTANCE_FOR_CALCULATION, EnumType.ABSOLUTE, null),
           Float.MAX_VALUE, bsMySelected, null, false, false, false, false);
     }
     if (currentPoints != null)

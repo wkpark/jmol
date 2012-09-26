@@ -21,8 +21,8 @@ public interface AtomIndexIterator {
    * @param distance
    * @param rd 
    */
-  public void set(ModelCollection modelSet, int modelIndex, int zeroBase, int atomIndex, Point3f center, float distance, RadiusData rd);
-  public void set(Point3f center, float distance);
+  public void setModel(ModelCollection modelSet, int modelIndex, int zeroBase, int atomIndex, Point3f center, float distance, RadiusData rd);
+  public void setCenter(Point3f center, float distance);
   public void addAtoms(BitSet bsResult);
   public boolean hasNext();
   public int next();

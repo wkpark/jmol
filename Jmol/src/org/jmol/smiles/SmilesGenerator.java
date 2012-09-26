@@ -321,7 +321,7 @@ public class SmilesGenerator {
         int index = bond.index;
         if (bsDone.get(index))
           continue;
-        JmolNode atom2 = bond.getOtherAtom(atom1);
+        JmolNode atom2 = bond.getOtherAtomNode(atom1);
         if (bond.getCovalentOrder() != 2
             || SmilesSearch.isRingBond(ringSets, i, atom2.getIndex()))
           continue;
@@ -381,7 +381,7 @@ public class SmilesGenerator {
         // could ever get that with a real molecule. 
         
         char c0 = getBondStereochemistry(b0, atom12[i0]);
-        a0 = b0.getOtherAtom(atom12[i0]);
+        a0 = b0.getOtherAtomNode(atom12[i0]);
         if (a0 == null)
           continue;
         for (int j = 0; j < 2; j++)
@@ -390,7 +390,7 @@ public class SmilesGenerator {
             if (b1 == null || b1 == b0)
               continue;
             int bi = b1.index;
-            JmolNode a1 = b1.getOtherAtom(atom12[j]);
+            JmolNode a1 = b1.getOtherAtomNode(atom12[j]);
             if (a1 == null)
               continue;
             char c1 = getBondStereochemistry(b1, atom12[j]);
@@ -457,7 +457,7 @@ public class SmilesGenerator {
         JmolEdge bond = bonds[i];
         if (!bond.isCovalent())
           continue;
-        JmolNode atom1 = bonds[i].getOtherAtom(atom);
+        JmolNode atom1 = bonds[i].getOtherAtomNode(atom);
         int index1 = atom1.getIndex();
         if (index1 == prevIndex) {
           bondPrev = bonds[i];
@@ -513,7 +513,7 @@ public class SmilesGenerator {
     if (allowBranches)
       for (int i = 0; i < v.size(); i++) {
         JmolEdge bond = v.get(i);
-        JmolNode a = bond.getOtherAtom(atom);
+        JmolNode a = bond.getOtherAtomNode(atom);
         int n = a.getCovalentBondCount() - a.getCovalentHydrogenCount();
         int order = bond.getCovalentOrder();
         if (order == 1 && n == 1 && i < v.size() - (bond0 == null ? 1 : 0)) {
@@ -524,7 +524,7 @@ public class SmilesGenerator {
           bond0 = bond;
         }
       }
-    JmolNode atomNext = (bond0 == null ? null : bond0.getOtherAtom(atom));
+    JmolNode atomNext = (bond0 == null ? null : bond0.getOtherAtomNode(atom));
     int orderNext = (bond0 == null ? 0 : bond0.getCovalentOrder());
 
     if (stereoFlag < 7 && bondPrev != null) {
@@ -551,7 +551,7 @@ public class SmilesGenerator {
       JmolEdge bond = v.get(i);
       if (!bsBranches.get(bond.index))
         continue;
-      JmolNode a = bond.getOtherAtom(atom);
+      JmolNode a = bond.getOtherAtomNode(atom);
       StringBuffer s2 = new StringBuffer();
       s2.append("(");
       prevAtom = atom;
@@ -600,7 +600,7 @@ public class SmilesGenerator {
       JmolEdge bond = v.get(i);
       if (bond == bond0)
         continue;
-      JmolNode a = bond.getOtherAtom(atom);
+      JmolNode a = bond.getOtherAtomNode(atom);
       String s = getRingCache(atomIndex, a.getIndex(), htRings);
       strBond = SmilesBond.getBondOrderString(bond.order);
       if (!deferStereo) {
@@ -700,7 +700,7 @@ public class SmilesGenerator {
     String s = "";
     for (int i = 0; i < n; i++) {
       bond1 = v.get(i);
-      stereo[0] = a1 = bond1.getOtherAtom(atom);
+      stereo[0] = a1 = bond1.getOtherAtomNode(atom);
       if (i == 0)
         s = addStereoCheck(atomIndex, stereo, 0, "");
       else if (isOK && addStereoCheck(atomIndex, stereo, 0, s) != null)
@@ -713,7 +713,7 @@ public class SmilesGenerator {
         if (bsDone.get(j))
           continue;
         bond2 = v.get(j);
-        a2 = bond2.getOtherAtom(atom);
+        a2 = bond2.getOtherAtomNode(atom);
         if (SmilesSearch.isDiaxial(atom, atom, a1, a2, vTemp, -0.95f)) {
           axialPairs.add(new JmolEdge[] { bond1, bond2 });
           isAxial = true;
@@ -734,7 +734,7 @@ public class SmilesGenerator {
       return "";
     pair0 = axialPairs.get(0);
     bond1 = pair0[0];
-    stereo[0] = bond1.getOtherAtom(atom);
+    stereo[0] = bond1.getOtherAtomNode(atom);
     
     // now sort them into the ligand vector in the proper order
     
@@ -751,7 +751,7 @@ public class SmilesGenerator {
     for (int i = 0; i < bonds.size(); i++) {
       bond1 = bonds.get(i);
       v.add(bond1);
-      stereo[i + 1] = bond1.getOtherAtom(atom);
+      stereo[i + 1] = bond1.getOtherAtomNode(atom);
     }
     v.add(pair0[1]);
     

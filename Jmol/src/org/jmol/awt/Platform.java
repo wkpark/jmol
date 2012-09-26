@@ -201,4 +201,8 @@ public class Platform implements ApiPlatform {
     return JmolFileAdapter.newFile(name);
   }
 
+  public boolean isSingleThreaded() {
+    return false;
+  }
+
 }

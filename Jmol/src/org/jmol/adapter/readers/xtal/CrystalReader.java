@@ -235,7 +235,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       if (line.startsWith(" ********"))
         discardLinesUntilContains("SYMMETRY ALLOWED");
       else if (line.startsWith(" TTTTTTTT"))
-        discardLinesUntilContains("PREDICTED ENERGY CHANGE", "HHHHHHH");
+        discardLinesUntilContains2("PREDICTED ENERGY CHANGE", "HHHHHHH");
       return true;
     }
 
@@ -679,7 +679,7 @@ public class CrystalReader extends AtomSetCollectionReader {
         if (z < 0 && doNormalizePrimitive)
           z += 1;
       }
-      setAtomCoord(atom, x, y, z);
+      setAtomCoordXYZ(atom, x, y, z);
     }
     atomCount = atomSetCollection.getAtomCount() - atomIndexLast;
     return true;
@@ -748,7 +748,7 @@ public class CrystalReader extends AtomSetCollectionReader {
        * if (x < 0) x += 1; if (y < 0) y += 1; if (z < 0) z += 1;
        */
 
-      setAtomCoord(atom, x, y, z);
+      setAtomCoordXYZ(atom, x, y, z);
       atom.elementSymbol = getElementSymbol(atomicNumber);
     }
     vInputCoords = null;

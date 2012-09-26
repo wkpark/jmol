@@ -378,7 +378,7 @@ public class MarchingCubes extends TriangleData {
     int pti = pt + linearOffsets[i];
     switch (mode) {
     case MODE_PLANES:
-      v = vertexValues[i] = getValue(x + offset.x, y + offset.y, z
+      v = vertexValues[i] = getValueArray(x + offset.x, y + offset.y, z
           + offset.z, pti, yzPlanes[yzPlanePts[i]]);
       isInside = (allInside || bsVoxels.get(pti));
       break;
@@ -462,7 +462,7 @@ public class MarchingCubes extends TriangleData {
 
   protected BitSet bsValues = new BitSet();
 
-  protected float getValue(int x, int y, int z, int pt, float[] tempValues) {
+  protected float getValueArray(int x, int y, int z, int pt, float[] tempValues) {
     int ptyz = pt % yzCount;
     //if (bsValues.get(pt))
       //return tempValues[ptyz];

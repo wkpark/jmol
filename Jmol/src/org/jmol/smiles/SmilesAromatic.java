@@ -289,7 +289,7 @@ public class SmilesAromatic {
         JmolEdge[] bonds = jmolAtoms[i].getEdges();
         for (int j = 0; j < bonds.length; j++)
           if (bonds[j].order == JmolEdge.BOND_COVALENT_DOUBLE) {
-            int i2 = bonds[j].getOtherAtom(jmolAtoms[i]).getIndex();
+            int i2 = bonds[j].getOtherAtomNode(jmolAtoms[i]).getIndex();
             if (!bsRing.get(i2)) {
               boolean piShared = false;
               for (int k = v5.size(); --k >= 0 && !piShared;) {
@@ -339,7 +339,7 @@ public class SmilesAromatic {
       JmolEdge[] bonds = atom.getEdges();
       boolean haveDouble = false;
       for (int k = 0; k < bonds.length; k++) {
-        int j = bonds[k].getOtherAtom(atom).getIndex();
+        int j = bonds[k].getOtherAtomNode(atom).getIndex();
         if (bsRing.get(j)) {
           switch (bonds[k].order) {
           case JmolEdge.BOND_AROMATIC_DOUBLE:

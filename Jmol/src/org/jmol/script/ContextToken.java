@@ -30,11 +30,14 @@ class ContextToken extends Token {
   Map<String, ScriptVariable> contextVariables;
 
   ContextToken(int tok, int intValue, Object value) {
-    super(tok, intValue, value);
+    super(tok);
+    this.intValue = intValue;
+    this.value = value;
   }
 
   ContextToken(int tok, Object value) {
-    super(tok, value);
+    super(tok);
+    this.value = value;
     if (tok == Token.switchcmd)
       addName("_var");      
   }

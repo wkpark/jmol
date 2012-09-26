@@ -80,7 +80,7 @@ public class Sticks extends Shape {
     if (bsSizeSet == null)
       bsSizeSet = new BitSet();
     BondIterator iter = (selectedBonds != null ? modelSet.getBondIterator(selectedBonds)
-        : modelSet.getBondIterator(myMask, bsSelected));
+        : modelSet.getBondIteratorForType(myMask, bsSelected));
     short mad = (short) size;
     while (iter.hasNext()) {
       bsSizeSet.set(iter.nextIndex());
@@ -115,7 +115,7 @@ public class Sticks extends Shape {
         bsOrderSet = new BitSet();
       int order = ((Integer) value).shortValue();
       BondIterator iter = (selectedBonds != null ? modelSet.getBondIterator(selectedBonds)
-          : modelSet.getBondIterator(JmolEdge.BOND_ORDER_ANY, bs));
+          : modelSet.getBondIteratorForType(JmolEdge.BOND_ORDER_ANY, bs));
       while (iter.hasNext()) {
         bsOrderSet.set(iter.nextIndex());
         iter.next().setOrder(order);
@@ -131,7 +131,7 @@ public class Sticks extends Shape {
         //only for hydrogen bonds
         boolean isEnergy = (pal == EnumPalette.ENERGY);
         BondIterator iter = (selectedBonds != null ? modelSet.getBondIterator(selectedBonds)
-            : modelSet.getBondIterator(myMask, bs));
+            : modelSet.getBondIteratorForType(myMask, bs));
         while (iter.hasNext()) {
           bsColixSet.set(iter.nextIndex());
           Bond bond = iter.next();
@@ -147,7 +147,7 @@ public class Sticks extends Shape {
       if (colix == Colix.USE_PALETTE && pal != EnumPalette.CPK)
         return; //palettes not implemented for bonds
       BondIterator iter = (selectedBonds != null ? modelSet.getBondIterator(selectedBonds)
-          : modelSet.getBondIterator(myMask, bs));
+          : modelSet.getBondIteratorForType(myMask, bs));
       while (iter.hasNext()) {
         int iBond = iter.nextIndex();
         Bond bond = iter.next();
@@ -162,7 +162,7 @@ public class Sticks extends Shape {
         bsColixSet = new BitSet();
       boolean isTranslucent = (((String) value).equals("translucent"));
       BondIterator iter = (selectedBonds != null ? modelSet.getBondIterator(selectedBonds)
-          : modelSet.getBondIterator(myMask, bs));
+          : modelSet.getBondIteratorForType(myMask, bs));
       while (iter.hasNext()) {
         bsColixSet.set(iter.nextIndex());
         iter.next().setTranslucent(isTranslucent, translucentLevel);

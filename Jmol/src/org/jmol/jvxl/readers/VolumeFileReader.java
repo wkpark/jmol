@@ -286,7 +286,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
       }
       //Jvxl getNextVoxelValue records the data read on its own.
     }
-    volumeData.setVoxelData(voxelData);
+    volumeData.setVoxelDataAsArray(voxelData);
   }
 
   // For a progressive reader, we need to build two planes at a time

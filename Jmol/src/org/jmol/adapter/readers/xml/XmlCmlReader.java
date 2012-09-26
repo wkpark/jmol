@@ -434,7 +434,7 @@ public class XmlCmlReader extends XmlReader {
       atomSetCollection.addNewBondWithMappedSerialNumbers(Parser.parseInt(a1.substring(1)),
           Parser.parseInt(a2.substring(1)), order);
       else
-        atomSetCollection.addNewBond(a1, a2, order);
+        atomSetCollection.addNewBondFromNames(a1, a2, order);
   }
 
   private void getDictRefValue(Map<String, String> atts) {
@@ -704,7 +704,7 @@ public class XmlCmlReader extends XmlReader {
       if (newBondCount > bondArray.length)
         bondArray = new Bond[newBondCount];
       for (int i = newBondCount; --i >= 0;)
-        bondArray[i] = new Bond();
+        bondArray[i] = new Bond(-1, -1, 1);
       bondCount = newBondCount;
     } else if (newBondCount != bondCount) {
       throw new IndexOutOfBoundsException("bad bond attribute length");

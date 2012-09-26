@@ -313,7 +313,7 @@ public class NWChemReader extends MOReader {
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = fixTag(tokens[1]);
       atomTypes.add(atom.atomName);
-      setAtomCoord(atom, parseFloatStr(tokens[3]), parseFloatStr(tokens[4]),
+      setAtomCoordXYZ(atom, parseFloatStr(tokens[3]), parseFloatStr(tokens[4]),
           parseFloatStr(tokens[5]));
     }
     // only if was converged, use the last energy for the name and properties
@@ -362,7 +362,7 @@ public class NWChemReader extends MOReader {
         break; // make sure I have enough tokens
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = fixTag(tokens[1]);
-      setAtomCoord(atom, parseFloatStr(tokens[2]) * ANGSTROMS_PER_BOHR,
+      setAtomCoordXYZ(atom, parseFloatStr(tokens[2]) * ANGSTROMS_PER_BOHR,
           parseFloatStr(tokens[3]) * ANGSTROMS_PER_BOHR, parseFloatStr(tokens[4])
               * ANGSTROMS_PER_BOHR);
       // Keep gradients in a.u. (larger value that way)
@@ -481,7 +481,7 @@ public class NWChemReader extends MOReader {
       tokens = getTokens();
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = fixTag(tokens[0]);
-      setAtomCoord(atom, parseFloatStr(tokens[2]) * ANGSTROMS_PER_BOHR,
+      setAtomCoordXYZ(atom, parseFloatStr(tokens[2]) * ANGSTROMS_PER_BOHR,
           parseFloatStr(tokens[3]) * ANGSTROMS_PER_BOHR, parseFloatStr(tokens[4])
               * ANGSTROMS_PER_BOHR);
     }

@@ -142,10 +142,10 @@ public class MeshData extends MeshSurface {
   }
 
   public BitSet[] getSurfaceSet() {
-    return (surfaceSet == null ? getSurfaceSet(0) : surfaceSet);
+    return (surfaceSet == null ? getSurfaceSetForLevel(0) : surfaceSet);
   }
   
-  public BitSet[] getSurfaceSet(int level) {
+  public BitSet[] getSurfaceSetForLevel(int level) {
     if (level == 0) {
       surfaceSet = new BitSet[100];
       nSets = 0;
@@ -196,7 +196,7 @@ public class MeshData extends MeshSurface {
     nSets = n;
     surfaceSet = temp;
     if (!setsSuccessful && level < 2)
-      getSurfaceSet(level + 1);
+      getSurfaceSetForLevel(level + 1);
     if (level == 0) {
       sortSurfaceSets();
       setVertexSets(false);      

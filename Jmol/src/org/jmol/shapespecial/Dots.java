@@ -59,7 +59,7 @@ public class Dots extends AtomShape {
   float thisRadius;
   int thisArgb;
 
-  RadiusData rdLast = new RadiusData();
+  RadiusData rdLast = new RadiusData(null, 0, null, null);
 
   @Override
   public void initShape() {
@@ -179,7 +179,7 @@ public class Dots extends AtomShape {
   @Override
   protected void setSizeRD(RadiusData rd, BitSet bsSelected) {
     if (rd == null)
-      rd = new RadiusData(0, EnumType.ABSOLUTE, null);
+      rd = new RadiusData(null, 0, EnumType.ABSOLUTE, null);
     if (this.bsSelected != null)
       bsSelected = this.bsSelected;
 

@@ -149,7 +149,7 @@ public class XmlArgusReader extends XmlReader {
     }
     if ("bond".equals(localName)) {
       if (atomName2 != null)
-        atomSetCollection.addNewBond(atomName1, atomName2, bondOrder);
+        atomSetCollection.addNewBondFromNames(atomName1, atomName2, bondOrder);
       elementContext = UNSET;
       return;
     }

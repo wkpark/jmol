@@ -77,7 +77,7 @@ public class ShapeManager {
     return shapes;
   }
   
-  public Object getShapeProperty(int shapeID, String propertyName, int index) {
+  public Object getShapePropertyIndex(int shapeID, String propertyName, int index) {
     if (shapes == null || shapes[shapeID] == null)
       return null;
     viewer.setShapeErrorState(shapeID, "get " + propertyName);
@@ -86,7 +86,7 @@ public class ShapeManager {
     return result;
   }
 
-  public boolean getShapeProperty(int shapeID, String propertyName, Object[] data) {
+  public boolean getShapePropertyData(int shapeID, String propertyName, Object[] data) {
     if (shapes == null || shapes[shapeID] == null)
       return false;
     viewer.setShapeErrorState(shapeID, "get " + propertyName);
@@ -150,7 +150,7 @@ public class ShapeManager {
     BitSet bsModelAtoms = viewer.getModelUndeletedAtomsBitSet(baseModel);
     for (int i = 0; i < JmolConstants.SHAPE_MAX; i++)
       if (shapes[i] != null)
-        setShapeProperty(i, "refreshTrajectories", new Object[] { Imodel, bs, mat }, bsModelAtoms);    
+        setShapePropertyBs(i, "refreshTrajectories", new Object[] { Imodel, bs, mat }, bsModelAtoms);    
   }
 
   public void releaseShape(int shapeID) {
@@ -163,7 +163,7 @@ public class ShapeManager {
       shapes = new Shape[JmolConstants.SHAPE_MAX];
   }
   
-  public void setShapeSize(int shapeID, int size, RadiusData rd, BitSet bsSelected) {
+  public void setShapeSizeBs(int shapeID, int size, RadiusData rd, BitSet bsSelected) {
     if (shapes == null)
       return;
     if (bsSelected == null && 
@@ -183,12 +183,12 @@ public class ShapeManager {
   public void setLabel(String strLabel, BitSet bsSelection) {
     if (strLabel != null) { // force the class to load and display
       loadShape(JmolConstants.SHAPE_LABELS);
-      setShapeSize(JmolConstants.SHAPE_LABELS, 0, null, bsSelection);
+      setShapeSizeBs(JmolConstants.SHAPE_LABELS, 0, null, bsSelection);
     }
-    setShapeProperty(JmolConstants.SHAPE_LABELS, "label", strLabel, bsSelection);
+    setShapePropertyBs(JmolConstants.SHAPE_LABELS, "label", strLabel, bsSelection);
   }
 
-  public void setShapeProperty(int shapeID, String propertyName, Object value,
+  public void setShapePropertyBs(int shapeID, String propertyName, Object value,
                                BitSet bsSelected) {
     if (shapes == null || shapes[shapeID] == null)
       return;
@@ -258,7 +258,7 @@ public class ShapeManager {
     if (shapes != null)
       for (int j = 0; j < JmolConstants.SHAPE_MAX; j++)
         if (shapes[j] != null)
-          setShapeProperty(j, "deleteModelAtoms", value, bs);
+          setShapePropertyBs(j, "deleteModelAtoms", value, bs);
   }
 
   void deleteVdwDependentShapes(BitSet bs) {
@@ -286,7 +286,7 @@ public class ShapeManager {
       return;
     Boolean bDollar = Boolean.valueOf(withDollar);
       for (int i = JmolConstants.SHAPE_MIN_SPECIAL; i < JmolConstants.SHAPE_MAX_MESH_COLLECTION; ++i)
-          getShapeProperty(i, "getNames", new Object[] { map , bDollar } );
+          getShapePropertyData(i, "getNames", new Object[] { map , bDollar } );
   }
 
   Object getProperty(Object paramInfo) {

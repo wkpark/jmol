@@ -408,7 +408,7 @@ public final class BioModel extends Model{
       if (!model.isBioModel || ! (g instanceof Monomer))
         continue;
       boolean doCheck = checkPolymerConnections 
-        && !modelSet.isJmolDataFrame(modelSet.atoms[g.firstAtomIndex].modelIndex);
+        && !modelSet.isJmolDataFrameForModel(modelSet.atoms[g.firstAtomIndex].modelIndex);
       BioPolymer bp = (((Monomer) g).getBioPolymer() == null ?
           Resolver.allocateBioPolymer(groups, i, doCheck) : null);
       if (bp == null || bp.monomerCount == 0)
@@ -469,10 +469,10 @@ public final class BioModel extends Model{
     sb.append("\nNumber of Chains .... " + n);
     n = 0;
     for (int i = modelCount; --i >= 0;)
-      n += models[i].getGroupCount(false);
+      n += models[i].getGroupCountHetero(false);
     nHetero = 0;
     for (int i = modelCount; --i >= 0;)
-      nHetero += models[i].getGroupCount(true);
+      nHetero += models[i].getGroupCountHetero(true);
     sb.append("\nNumber of Groups .... " + n);
     if (nHetero > 0)
       sb.append(" (" + nHetero + ")");

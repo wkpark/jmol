@@ -133,7 +133,7 @@ abstract class ScriptCompilationTokenParser {
     size -= nDefined;
     if (isNewSet) {
       if (size == 1) {
-        atokenInfix[0] = new Token(Token.function, 0, atokenInfix[0].value);
+        atokenInfix[0] = Token.newTokenIntVal(Token.function, 0, atokenInfix[0].value);
         isNewSet = false;
       }
     }
@@ -160,11 +160,11 @@ abstract class ScriptCompilationTokenParser {
         ptNewSetModifier = 4;
         isMathExpressionCommand = true;
         isEmbeddedExpression = true;
-        addTokenToPostfix(Token.tokenSetProperty);
-        addTokenToPostfix(Token.tokenExpressionBegin);
+        addTokenToPostfixToken(Token.tokenSetProperty);
+        addTokenToPostfixToken(Token.tokenExpressionBegin);
         addNextToken();
         addNextToken();
-        addTokenToPostfix(Token.tokenExpressionEnd);
+        addTokenToPostfixToken(Token.tokenExpressionEnd);
         firstToken = 0;
       }
       break;
@@ -190,7 +190,7 @@ abstract class ScriptCompilationTokenParser {
     while (moreTokens()) {
       if (isEmbeddedExpression) {
         while (!isExpressionNext()) {
-          if (tokPeek(Token.identifier) && !(tokCommand == Token.load && itokenInfix == 1)) {
+          if (tokPeekIs(Token.identifier) && !(tokCommand == Token.load && itokenInfix == 1)) {
             String name = (String) atokenInfix[itokenInfix].value;
             Token t = Token.getTokenFromName(name); 
             if (t != null)
@@ -218,13 +218,13 @@ abstract class ScriptCompilationTokenParser {
         continue;
       }
       if (!isMathExpressionCommand)
-        addTokenToPostfix(tokenBegin = new Token(Token.expressionBegin, "implicitExpressionBegin"));
+        addTokenToPostfixToken(tokenBegin = Token.newTokenObj(Token.expressionBegin, "implicitExpressionBegin"));
       if (!clauseOr(isCommaAsOrAllowed || !isMathExpressionCommand
-          && tokPeek(Token.leftparen)))
+          && tokPeekIs(Token.leftparen)))
         return false;
       if (!isMathExpressionCommand
           && !(isEmbeddedExpression && lastToken == Token.tokenCoordinateEnd)) {
-        addTokenToPostfix(Token.tokenExpressionEnd);
+        addTokenToPostfixToken(Token.tokenExpressionEnd);
       }
       if (moreTokens()) {
         if (tokCommand != Token.select && !isEmbeddedExpression)
@@ -250,10 +250,10 @@ abstract class ScriptCompilationTokenParser {
   }
 
   private boolean isExpressionNext() {
-    return tokPeek(Token.leftbrace) 
+    return tokPeekIs(Token.leftbrace) 
     && !(tokAt(itokenInfix + 1) == Token.string
          && tokAt(itokenInfix + 2) == Token.colon)
-    || !isMathExpressionCommand && tokPeek(Token.leftparen);
+    || !isMathExpressionCommand && tokPeekIs(Token.leftparen);
   }
 
   protected static boolean tokenAttr(Token token, int tok) {
@@ -273,7 +273,7 @@ abstract class ScriptCompilationTokenParser {
         : atokenInfix[itokenInfix].tok);
   }
 
-  private boolean tokPeek(int tok) {
+  private boolean tokPeekIs(int tok) {
     return (tokAt(itokenInfix) == tok);
   }
 
@@ -295,7 +295,7 @@ abstract class ScriptCompilationTokenParser {
         : atokenInfix[itokenInfix++]);
   }
   
-  private boolean tokenNext(int tok) {
+  private boolean tokenNextTok(int tok) {
     Token token = tokenNext();
     return (token != null && token.tok == tok);
   }
@@ -334,14 +334,14 @@ abstract class ScriptCompilationTokenParser {
   }
 
   private boolean addTokenToPostfix(int tok, Object value) {
-    return addTokenToPostfix(new Token(tok, value));
+    return addTokenToPostfixToken(Token.newTokenObj(tok, value));
   }
 
-  private boolean addTokenToPostfix(int tok, int intValue, Object value) {
-    return addTokenToPostfix(new Token(tok, intValue, value));
+  private boolean addTokenToPostfixInt(int tok, int intValue, Object value) {
+    return addTokenToPostfixToken(Token.newTokenIntVal(tok, intValue, value));
   }
 
-  private boolean addTokenToPostfix(Token token) {
+  private boolean addTokenToPostfixToken(Token token) {
     if (token == null)
       return false;
     if (logMessages)
@@ -352,18 +352,18 @@ abstract class ScriptCompilationTokenParser {
   }
 
   private boolean addNextToken() {
-    return addTokenToPostfix(tokenNext());
+    return addTokenToPostfixToken(tokenNext());
   }
   
   private boolean addNextTokenIf(int tok) {
-    return (tokPeek(tok) && addNextToken());
+    return (tokPeekIs(tok) && addNextToken());
   }
   
   private boolean addSubstituteTokenIf(int tok, Token token) {
-    if (!tokPeek(tok))
+    if (!tokPeekIs(tok))
       return false;
     itokenInfix++;
-    return addTokenToPostfix(token);
+    return addTokenToPostfixToken(token);
   }
   
   boolean haveString;
@@ -397,7 +397,7 @@ abstract class ScriptCompilationTokenParser {
       return false;
     if (isEmbeddedExpression && lastToken.tok == Token.expressionEnd)
       return true;
-    while (tokPeek(Token.opAnd)) {
+    while (tokPeekIs(Token.opAnd)) {
       addNextToken();
       if (!clauseNot())
         return false;
@@ -407,7 +407,7 @@ abstract class ScriptCompilationTokenParser {
 
   // for RPN processor, not reversed
   private boolean clauseNot() {
-    if (tokPeek(Token.opNot)) {
+    if (tokPeekIs(Token.opNot)) {
       addNextToken();
       return clauseNot();
     }
@@ -439,7 +439,7 @@ abstract class ScriptCompilationTokenParser {
       return addNextToken();
     case Token.decimal:
       // create a file_model integer as part of the token
-      return addTokenToPostfix(Token.spec_model2, fixModelSpec(getToken()), theValue);
+      return addTokenToPostfixInt(Token.spec_model2, fixModelSpec(getToken()), theValue);
     case Token.cell:
       return clauseCell();
     case Token.connected:
@@ -455,9 +455,9 @@ abstract class ScriptCompilationTokenParser {
     case Token.bonds:
     case Token.measure:
       addNextToken();
-      if (tokPeek(Token.bitset))
+      if (tokPeekIs(Token.bitset))
         addNextToken();
-      else if (tokPeek(Token.define))
+      else if (tokPeekIs(Token.define))
         return clauseDefine(false, false);
       return true;
     case Token.leftparen:
@@ -465,7 +465,7 @@ abstract class ScriptCompilationTokenParser {
       if (!clauseOr(true))
         return false;
       if (!addNextTokenIf(Token.rightparen))
-        return error(ERROR_tokenExpected, ")");
+        return errorStr(ERROR_tokenExpected, ")");
       return checkForItemSelector(true);
     case Token.leftbrace:
       return checkForCoordinate(isMathExpressionCommand);
@@ -520,7 +520,7 @@ abstract class ScriptCompilationTokenParser {
     boolean isCoordinate = false;
     int pt = ltokenPostfix.size();
     if (isImplicitExpression) {
-      addTokenToPostfix(Token.tokenExpressionBegin);
+      addTokenToPostfixToken(Token.tokenExpressionBegin);
       tokenNext();
     } else if (isEmbeddedExpression) {
       tokenNext();
@@ -528,7 +528,7 @@ abstract class ScriptCompilationTokenParser {
     } else {
       addNextToken();
     }
-    boolean isHash = tokPeek(Token.string);
+    boolean isHash = tokPeekIs(Token.string);
     if (isHash) {
       isImplicitExpression = false;
       returnToken();
@@ -536,41 +536,41 @@ abstract class ScriptCompilationTokenParser {
       addNextToken();
       int nBrace = 1;
       while (nBrace != 0) {
-        if (tokPeek(Token.leftbrace)) {
+        if (tokPeekIs(Token.leftbrace)) {
           if (isExpressionNext()) {
-            addTokenToPostfix(new Token(Token.expressionBegin,
+            addTokenToPostfixToken(Token.newTokenObj(Token.expressionBegin,
                 "implicitExpressionBegin"));
             if (!clauseOr(true))
               return false;
             if (lastToken != Token.tokenCoordinateEnd) {
-              addTokenToPostfix(Token.tokenExpressionEnd);
+              addTokenToPostfixToken(Token.tokenExpressionEnd);
             }
           } else {
             nBrace++;
           }
         }
-        if (tokPeek(Token.rightbrace))
+        if (tokPeekIs(Token.rightbrace))
           nBrace--;
         addNextToken();
       }
     } else {
-      if (!tokPeek(Token.rightbrace) && !clauseOr(false))
+      if (!tokPeekIs(Token.rightbrace) && !clauseOr(false))
         return false;
       int n = 1;
-      while (!tokPeek(Token.rightbrace)) {
+      while (!tokPeekIs(Token.rightbrace)) {
         boolean haveComma = addNextTokenIf(Token.comma);
         if (!clauseOr(false))
-          return (haveComma || n < 3 ? false : error(ERROR_tokenExpected, "}"));
+          return (haveComma || n < 3 ? false : errorStr(ERROR_tokenExpected, "}"));
         n++;
       }
       isCoordinate = (n >= 2); // could be {1 -2 3}
     }
     if (isCoordinate && (isImplicitExpression || isEmbeddedExpression)) {
       ltokenPostfix.set(pt, Token.tokenCoordinateBegin);
-      addTokenToPostfix(Token.tokenCoordinateEnd);
+      addTokenToPostfixToken(Token.tokenCoordinateEnd);
       tokenNext();
     } else if (isImplicitExpression) {
-      addTokenToPostfix(Token.tokenExpressionEnd);
+      addTokenToPostfixToken(Token.tokenExpressionEnd);
       tokenNext();
     } else if (isEmbeddedExpression && !isHash) {
       tokenNext();
@@ -594,7 +594,7 @@ abstract class ScriptCompilationTokenParser {
       if (!clauseItemSelector())
         return false;
       if (!addNextTokenIf(Token.rightsquare))
-        return error(ERROR_tokenExpected, "]");
+        return errorStr(ERROR_tokenExpected, "]");
     }
     return true;
   }
@@ -653,7 +653,7 @@ abstract class ScriptCompilationTokenParser {
       distance = floatValue();
       break;
     case Token.define:
-      addTokenToPostfix(theToken);
+      addTokenToPostfixToken(theToken);
       if (!clauseDefine(true, false))
         return false;
       key = "";
@@ -717,7 +717,7 @@ abstract class ScriptCompilationTokenParser {
         key = ((String) theValue).toLowerCase();
         break;
       default:
-        return error(ERROR_unrecognizedParameter, "WITHIN", ": "
+        return errorIntStr2(ERROR_unrecognizedParameter, "WITHIN", ": "
             + theToken.value);
       }
     if (key == null)
@@ -737,7 +737,7 @@ abstract class ScriptCompilationTokenParser {
         case Token.integer:
         case Token.decimal:
           if (tok == Token.on || tok == Token.off) {
-            addTokenToPostfix(getToken());
+            addTokenToPostfixToken(getToken());
             if (!addNextTokenIf(Token.comma))
               break;
             tok = tokPeek();
@@ -766,7 +766,7 @@ abstract class ScriptCompilationTokenParser {
           case Token.leftbrace:
             returnToken();
             isCoordOrPlane = true;
-            addTokenToPostfix(Token
+            addTokenToPostfixToken(Token
                 .getTokenFromName(distance == Float.MAX_VALUE ? "plane"
                     : "coord"));
           }
@@ -778,32 +778,32 @@ abstract class ScriptCompilationTokenParser {
       if (done)
         break;
       if (isCoordOrPlane) {
-        while (!tokPeek(Token.rightparen)) {
+        while (!tokPeekIs(Token.rightparen)) {
           switch (tokPeek()) {
           case Token.nada:
             return error(ERROR_endOfCommandUnexpected);
           case Token.leftparen:
-            addTokenToPostfix(Token.tokenExpressionBegin);
+            addTokenToPostfixToken(Token.tokenExpressionBegin);
             addNextToken();
             if (!clauseOr(false))
-              return error(ERROR_unrecognizedParameter, "WITHIN", ": ?");
+              return errorIntStr2(ERROR_unrecognizedParameter, "WITHIN", ": ?");
             if (!addNextTokenIf(Token.rightparen))
-              return error(ERROR_tokenExpected, ", / )");
-            addTokenToPostfix(Token.tokenExpressionEnd);
+              return errorStr(ERROR_tokenExpected, ", / )");
+            addTokenToPostfixToken(Token.tokenExpressionEnd);
             break;
           case Token.define:
             if (!clauseDefine(false, false))
               return false;
             break;
           default:
-            addTokenToPostfix(getToken());
+            addTokenToPostfixToken(getToken());
           }
         }
       } else if (!clauseOr(allowComma)) {// *expression*        return error(ERROR_badArgumentCount);
       }
     }
     if (!addNextTokenIf(Token.rightparen))
-      return error(ERROR_tokenExpected, ")");
+      return errorStr(ERROR_tokenExpected, ")");
     return true;
   }
 
@@ -811,8 +811,8 @@ abstract class ScriptCompilationTokenParser {
     addNextToken();
     // connected (1,3, single, .....)
     if (!addNextTokenIf(Token.leftparen)) {
-      addTokenToPostfix(Token.tokenLeftParen);
-      addTokenToPostfix(Token.tokenRightParen);
+      addTokenToPostfixToken(Token.tokenLeftParen);
+      addTokenToPostfixToken(Token.tokenRightParen);
       return true;
     }
     while (true) {
@@ -838,19 +838,19 @@ abstract class ScriptCompilationTokenParser {
         }
       if (addNextTokenIf(Token.rightparen))
         return true;
-      if (!clauseOr(tokPeek(Token.leftparen))) // *expression*
+      if (!clauseOr(tokPeekIs(Token.leftparen))) // *expression*
         return false;
       if (addNextTokenIf(Token.rightparen))
         return true;
       if (!addNextTokenIf(Token.comma))
         return false;
-      if (!clauseOr(tokPeek(Token.leftparen))) // *expression*
+      if (!clauseOr(tokPeekIs(Token.leftparen))) // *expression*
         return false;
 
       break;
     }
     if (!addNextTokenIf(Token.rightparen))
-      return error(ERROR_tokenExpected, ")");
+      return errorStr(ERROR_tokenExpected, ")");
     return true;
   }
 
@@ -858,17 +858,17 @@ abstract class ScriptCompilationTokenParser {
     addNextToken();
     if (!addNextTokenIf(Token.leftparen))
       return false;
-    if (tokPeek(Token.define)) {
+    if (tokPeekIs(Token.define)) {
       if (!clauseDefine(false, true))
         return false;
     } else if (!addNextTokenIf(Token.string)) {
-      return error(ERROR_tokenExpected, "\"...\"");
+      return errorStr(ERROR_tokenExpected, "\"...\"");
     }
     if (addNextTokenIf(Token.comma))
-      if (!clauseOr(tokPeek(Token.leftparen))) // *expression*
+      if (!clauseOr(tokPeekIs(Token.leftparen))) // *expression*
         return false;
     if (!addNextTokenIf(Token.rightparen))
-      return error(ERROR_tokenExpected, ")");
+      return errorStr(ERROR_tokenExpected, ")");
     return true;
   }
 
@@ -890,7 +890,7 @@ abstract class ScriptCompilationTokenParser {
     Token tokenComparator = tokenNext();
     if (!tokenAttr(tokenComparator, Token.comparator)) {
       if (!isOptional)
-        return error(ERROR_tokenExpected, "== != < > <= >=");
+        return errorStr(ERROR_tokenExpected, "== != < > <= >=");
       if (tokenComparator != null)
         returnToken();
       returnToken();
@@ -899,9 +899,9 @@ abstract class ScriptCompilationTokenParser {
     if (tokenAttr(tokenAtomProperty, Token.strproperty) 
         && tokenComparator.tok != Token.opEQ 
         && tokenComparator.tok != Token.opNE)
-      return error(ERROR_tokenExpected, "== !=");
+      return errorStr(ERROR_tokenExpected, "== !=");
     if (getToken() == null)
-      return error(ERROR_unrecognizedExpressionToken, "" + valuePeek());
+      return errorStr(ERROR_unrecognizedExpressionToken, "" + valuePeek());
     boolean isNegative = (isToken(Token.minus));
     if (isNegative && getToken() == null)
       return error(ERROR_numberExpected);
@@ -917,15 +917,15 @@ abstract class ScriptCompilationTokenParser {
       if (!Token.tokAttr(theToken.tok, Token.misc))
         return error(ERROR_numberOrVariableNameExpected);
     }
-    addTokenToPostfix(tokenComparator.tok, tokenAtomProperty.tok,
+    addTokenToPostfixInt(tokenComparator.tok, tokenAtomProperty.tok,
         tokenComparator.value + (isNegative ? " -" : ""));
     if (tokenAtomProperty.tok == Token.property)
-      addTokenToPostfix(tokenAtomProperty);
+      addTokenToPostfixToken(tokenAtomProperty);
     if (isToken(Token.leftbrace)) {
       returnToken();
       return clausePrimitive();
     }
-    addTokenToPostfix(theToken);
+    addTokenToPostfixToken(theToken);
     if (theToken.tok == Token.define)
       return clauseDefine(false, false);
     return true;
@@ -934,8 +934,8 @@ abstract class ScriptCompilationTokenParser {
   private boolean clauseCell() {
     Point3f cell = new Point3f();
     tokenNext(); // CELL
-    if (!tokenNext(Token.opEQ)) // =
-      return error(ERROR_tokenExpected, "=");
+    if (!tokenNextTok(Token.opEQ)) // =
+      return errorStr(ERROR_tokenExpected, "=");
     if (getToken() == null)
       return error(ERROR_coordinateExpected);
     // 555 = {1 1 1}
@@ -950,14 +950,14 @@ abstract class ScriptCompilationTokenParser {
     if (!isToken(Token.leftbrace) || !getNumericalToken())
       return error(ERROR_coordinateExpected); // i
     cell.x = floatValue();
-    if (tokPeek(Token.comma)) // ,
+    if (tokPeekIs(Token.comma)) // ,
       tokenNext();
     if (!getNumericalToken())
       return error(ERROR_coordinateExpected); // j
     cell.y = floatValue();
-    if (tokPeek(Token.comma)) // ,
+    if (tokPeekIs(Token.comma)) // ,
       tokenNext();
-    if (!getNumericalToken() || !tokenNext(Token.rightbrace))
+    if (!getNumericalToken() || !tokenNextTok(Token.rightbrace))
       return error(ERROR_coordinateExpected); // k
     cell.z = floatValue();
     return addTokenToPostfix(Token.cell, cell);
@@ -968,7 +968,7 @@ abstract class ScriptCompilationTokenParser {
       Token token = tokenNext();
       if (forceString) // we know it is @, this forces string type
         token = Token.tokenDefineString;
-      addTokenToPostfix(token);
+      addTokenToPostfixToken(token);
     }
     if (tokPeek() == Token.nada)
       return error(ERROR_endOfCommandUnexpected);
@@ -976,8 +976,8 @@ abstract class ScriptCompilationTokenParser {
     // otherwise [1] gets read as a general atom name selector
     if (!addSubstituteTokenIf(Token.leftbrace, Token.tokenExpressionBegin))
       return addNextToken() && checkForItemSelector(true);
-    while (moreTokens() && !tokPeek(Token.rightbrace)) {
-      if (tokPeek(Token.leftbrace)) {
+    while (moreTokens() && !tokPeekIs(Token.rightbrace)) {
+      if (tokPeekIs(Token.leftbrace)) {
         if (!checkForCoordinate(true))
           return false;
       } else {
@@ -992,8 +992,8 @@ abstract class ScriptCompilationTokenParser {
 
   private boolean generateResidueSpecCode(Token token) {
     if (residueSpecCodeGenerated)
-      addTokenToPostfix(Token.tokenAND);
-    addTokenToPostfix(token);
+      addTokenToPostfixToken(Token.tokenAND);
+    addTokenToPostfixToken(token);
     residueSpecCodeGenerated = true;
     return true;
   }
@@ -1046,7 +1046,7 @@ abstract class ScriptCompilationTokenParser {
     boolean wasInteger = false;
     if (tok == Token.times || tok == Token.integer || tok == Token.seqcode) {
       wasInteger = (tok == Token.integer);
-      if (tokPeek(Token.times))
+      if (tokPeekIs(Token.times))
         getToken();
       else if (!clauseSequenceSpec())
         return false;
@@ -1083,7 +1083,7 @@ abstract class ScriptCompilationTokenParser {
       return error(ERROR_residueSpecificationExpected);
     if (!residueSpecCodeGenerated) {
       // nobody generated any code, so everybody was a * (or equivalent)
-      addTokenToPostfix(Token.tokenAll);
+      addTokenToPostfixToken(Token.tokenAll);
     }
     return true;
   }
@@ -1106,17 +1106,17 @@ abstract class ScriptCompilationTokenParser {
           && pt != strSpec.length() - 1)
         return error(ERROR_residueSpecificationExpected);
       strSpec = strSpec.toUpperCase();
-      return generateResidueSpecCode(new Token(Token.spec_name_pattern, strSpec));
+      return generateResidueSpecCode(Token.newTokenObj(Token.spec_name_pattern, strSpec));
     default:
       //check for a * in the next token, which
       //would indicate this must be a name with wildcard
 
       String res = (String) theValue;
-      if (tokPeek(Token.times)) {
+      if (tokPeekIs(Token.times)) {
         res = theValue + "*";
         getToken();
       }
-      return generateResidueSpecCode(new Token(Token.identifier, res));
+      return generateResidueSpecCode(Token.newTokenObj(Token.identifier, res));
     }
   }
 
@@ -1136,7 +1136,7 @@ abstract class ScriptCompilationTokenParser {
       }
       seqToken.tok = Token.spec_seqcode_range;
       generateResidueSpecCode(seqToken);
-      return addTokenToPostfix(getSequenceCode(true));
+      return addTokenToPostfixToken(getSequenceCode(true));
     }
     return generateResidueSpecCode(seqToken);
   }
@@ -1154,7 +1154,7 @@ abstract class ScriptCompilationTokenParser {
       // can have open-ended range  
       // select 3-
     }
-    return new Token(Token.spec_seqcode, seqvalue, Integer.valueOf(seqcode));
+    return Token.newTokenIntVal(Token.spec_seqcode, seqvalue, Integer.valueOf(seqcode));
   }
 
   private boolean clauseChainSpec(int tok) {
@@ -1162,7 +1162,7 @@ abstract class ScriptCompilationTokenParser {
       tokenNext();
       tok = tokPeek();
       if (isSpecTerminator(tok))
-        return generateResidueSpecCode(new Token(Token.spec_chain, '\0',
+        return generateResidueSpecCode(Token.newTokenIntVal(Token.spec_chain, '\0',
             "spec_chain"));
     }
     char chain;
@@ -1185,7 +1185,7 @@ abstract class ScriptCompilationTokenParser {
         return true;
       break;
     }
-    return generateResidueSpecCode(new Token(Token.spec_chain, chain,
+    return generateResidueSpecCode(Token.newTokenIntVal(Token.spec_chain, chain,
         "spec_chain"));
   }
 
@@ -1209,7 +1209,7 @@ abstract class ScriptCompilationTokenParser {
     tokenNext();
     int tok = tokPeek();
     if (isSpecTerminator(tok))
-      return generateResidueSpecCode(new Token(Token.spec_alternate, null));
+      return generateResidueSpecCode(Token.newTokenObj(Token.spec_alternate, null));
     String alternate = (String) getToken().value;
     switch (theToken.tok) {
     case Token.times:
@@ -1221,25 +1221,25 @@ abstract class ScriptCompilationTokenParser {
       return error(ERROR_invalidModelSpecification);
     }
     //Logger.debug("alternate specification seen:" + alternate);
-    return generateResidueSpecCode(new Token(Token.spec_alternate, alternate));
+    return generateResidueSpecCode(Token.newTokenObj(Token.spec_alternate, alternate));
   }
 
   private boolean clauseModelSpec() {
     getToken();
-    if (tokPeek(Token.times)) {
+    if (tokPeekIs(Token.times)) {
       getToken();
       return true;
     }
     switch (tokPeek()) {
     case Token.integer:
-      return generateResidueSpecCode(new Token(Token.spec_model, Integer
+      return generateResidueSpecCode(Token.newTokenObj(Token.spec_model, Integer
           .valueOf(getToken().intValue)));
     case Token.decimal:
-      return generateResidueSpecCode(new Token(Token.spec_model, fixModelSpec(getToken()), theValue));
+      return generateResidueSpecCode(Token.newTokenIntVal(Token.spec_model, fixModelSpec(getToken()), theValue));
     case Token.comma:
     case Token.rightbrace:
     case Token.nada:
-      return generateResidueSpecCode(new Token(Token.spec_model, Integer
+      return generateResidueSpecCode(Token.newTokenObj(Token.spec_model, Integer
           .valueOf(1)));
     }
     return error(ERROR_invalidModelSpecification);
@@ -1259,7 +1259,7 @@ abstract class ScriptCompilationTokenParser {
 
 
   private boolean clauseAtomSpec() {
-    if (!tokenNext(Token.per))
+    if (!tokenNextTok(Token.per))
       return error(ERROR_invalidAtomSpecification);
     if (getToken() == null)
       return true;
@@ -1282,13 +1282,13 @@ abstract class ScriptCompilationTokenParser {
       //return error(ERROR_invalidAtomSpecification);
     }
     atomSpec += "" + theToken.value;
-    if (tokPeek(Token.times)) {
+    if (tokPeekIs(Token.times)) {
       tokenNext();
       // this one is a '*' as a prime, not a wildcard
       atomSpec += "'";
     }
     int atomID = JmolConstants.lookupSpecialAtomID(atomSpec.toUpperCase());
-    return generateResidueSpecCode(new Token(Token.spec_atom, atomID, atomSpec));
+    return generateResidueSpecCode(Token.newTokenIntVal(Token.spec_atom, atomID, atomSpec));
   }
   
 //----------------------------------------------------------------------------------------
@@ -1416,24 +1416,24 @@ abstract class ScriptCompilationTokenParser {
   }
 
   protected boolean error(int error) {
-    return error(error, null, null);
+    return errorIntStr2(error, null, null);
   }
 
-  protected boolean error(int error, String value) {
-    return error(error, value, null);
+  protected boolean errorStr(int error, String value) {
+    return errorIntStr2(error, value, null);
   }
   
-  protected boolean error(int iError, String value, String more) {
+  protected boolean errorIntStr2(int iError, String value, String more) {
     String strError = errorString(iError, value, more, true);
     String strUntranslated = (GT.getDoTranslate() ? errorString(iError, value, more, false) : null);
-    return error(strError, strUntranslated);
+    return errorStr2(strError, strUntranslated);
   }
 
   private boolean isError() {
     return errorMessage != null;
   }
   
-  protected boolean error(String errorMessage, String strUntranslated) {
+  protected boolean errorStr2(String errorMessage, String strUntranslated) {
     this.errorMessage = errorMessage;
     errorMessageUntranslated = strUntranslated;
     return false;

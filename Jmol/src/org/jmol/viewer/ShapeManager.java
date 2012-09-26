@@ -402,7 +402,7 @@ public class ShapeManager {
 
   private final int[] navigationCrossHairMinMax = new int[4];
 
-  public int[] transformAtoms(BitSet bsAtoms, Point3f ptOffset) {
+  public void finalizeAtoms(BitSet bsAtoms, Point3f ptOffset) {
     if (bsAtoms != null) {
       // translateSelected operation
       Point3f ptCenter = viewer.getAtomSetCenter(bsAtoms);
@@ -416,25 +416,31 @@ public class ShapeManager {
     }
     bsRenderableAtoms.clear();
     Atom[] atoms = modelSet.atoms;
-    Vector3f[] vibrationVectors = modelSet.vibrationVectors;
     for (int i = modelSet.getAtomCount(); --i >= 0;) {
       Atom atom = atoms[i];
       if ((atom.getShapeVisibilityFlags() & JmolConstants.ATOM_IN_FRAME) == 0)
         continue;
       bsRenderableAtoms.set(i);
+    }
+  }
+
+  public int[] transformAtoms() {
+    Vector3f[] vibrationVectors = modelSet.vibrationVectors;
+    Atom[] atoms = modelSet.atoms;
+    for (int i = bsRenderableAtoms.nextSetBit(0); i >= 0; i = bsRenderableAtoms.nextSetBit(i + 1)) {
       // note that this vibration business is not compatible with
       // PDB objects such as cartoons and traces, which 
       // use Cartesian coordinates, not screen coordinates
-      Point3i screen = (vibrationVectors != null && atom.hasVibration() 
-          ? viewer.transformPoint(atom, vibrationVectors[i]) 
-              : viewer.transformPoint(atom));
+      Atom atom = atoms[i];
+      Point3i screen = (vibrationVectors != null && atom.hasVibration() ? viewer
+          .transformPoint(atom, vibrationVectors[i])
+          : viewer.transformPoint(atom));
       atom.screenX = screen.x;
       atom.screenY = screen.y;
       atom.screenZ = screen.z;
       atom.screenDiameter = viewer.scaleToScreen(screen.z, Math
           .abs(atom.madAtom));
     }
-
     if (viewer.getSlabEnabled()) {
       boolean slabByMolecule = viewer.getSlabByMolecule();
       boolean slabByAtom = viewer.getSlabByAtom();

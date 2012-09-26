@@ -132,7 +132,7 @@ public class RepaintManager implements JmolRepaintInterface {
         renderers[i] = null;
   }
 
-  private ShapeRenderer getRenderer(int shapeID, Graphics3D g3d) {
+  private ShapeRenderer getRenderer(int shapeID, JmolRendererInterface g3d) {
     if (renderers[shapeID] != null)
       return renderers[shapeID];
     String className = JmolConstants.getShapeClassName(shapeID, true) + "Renderer";
@@ -189,7 +189,8 @@ public class RepaintManager implements JmolRepaintInterface {
     boolean isOK;
     viewer.finalizeTransformParameters();
     try {
-      shapeManager.transformAtoms(null, null);
+      shapeManager.finalizeAtoms(null, null);
+      shapeManager.transformAtoms();
       output = (fileName == null ? new StringBuffer() : fileName);
       Class<?> export3Dclass = Class.forName("org.jmol.export.Export3D");
       g3dExport = (JmolRendererInterface) export3Dclass.newInstance();

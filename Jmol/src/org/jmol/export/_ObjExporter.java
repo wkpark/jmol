@@ -23,7 +23,6 @@ import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.export.image.ImageCreator;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.util.Colix;
 import org.jmol.util.ColorUtil;
@@ -435,7 +434,7 @@ public class _ObjExporter extends __CartesianExporter {
    * @see org.jmol.export.___Exporter#initializeOutput(org.jmol.viewer.Viewer, org.jmol.g3d.Graphics3D, java.lang.Object)
    */
   @Override
-  boolean initializeOutput(Viewer viewer, double privateKey, Graphics3D g3d, Object output) {
+  boolean initializeOutput(Viewer viewer, double privateKey, GData g3d, Object output) {
     debugPrint("initializeOutput: + output");
     // Call the super method
     boolean retVal = super.initializeOutput(viewer, privateKey, g3d, output);

@@ -32,7 +32,6 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.api.JmolRendererInterface;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.g3d.HermiteRenderer;
 import org.jmol.modelset.Atom;
 import org.jmol.util.JmolFont;
@@ -52,7 +51,7 @@ final public class Export3D implements JmolRendererInterface {
   private ___Exporter exporter;
   private double privateKey;
 
-  private Graphics3D g3d;
+  private GData g3d;
   private short colix;
   private HermiteRenderer hermite3d;
   private int width;
@@ -87,7 +86,7 @@ final public class Export3D implements JmolRendererInterface {
     } catch (Exception e) {
       return false;
     }
-    g3d = (Graphics3D) gdata;
+    g3d = gdata;
     exporter.setRenderer(this);
     g3d.setNewWindowParametersForExport();
     slab = g3d.getSlab();

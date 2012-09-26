@@ -35,7 +35,6 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
-import org.jmol.g3d.Graphics3D;
 import org.jmol.util.GData;
 import org.jmol.viewer.Viewer;
 
@@ -57,7 +56,7 @@ public class _TachyonExporter extends __RayTracerExporter {
   }
  
   @Override
-  boolean initializeOutput(Viewer viewer, double privateKey, Graphics3D g3d, Object output) {
+  boolean initializeOutput(Viewer viewer, double privateKey, GData g3d, Object output) {
     //wasPerspectiveDepth = viewer.getPerspectiveDepth();
     //viewer.setPerspectiveDepth(false);
     getLightingInfo();

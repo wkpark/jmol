@@ -180,12 +180,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   private byte[] anaglyphChannelBytes;
   
   private boolean twoPass = false;
-  protected boolean isPass2;
-  
-  public boolean isPass2() {
-    return isPass2;
-  }
-  
+
   private boolean addAllPixels;
   private boolean haveTranslucentObjects;
   protected boolean translucentCoverOnly = false;
@@ -204,9 +199,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   //int clipWidth;
   //int clipHeight;
 
-  private short colixCurrent;
   private int[] shadesCurrent;
-  private int argbCurrent;
   private int anaglyphLength;
   private boolean isScreened;
   private int argbNoisyUp, argbNoisyDn;
@@ -572,8 +565,10 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   private int currentShadeIndex;
   private int lastRawColor;
   
+  @Override
   public void setColor(int argb) {
-    argbCurrent = argbNoisyUp = argbNoisyDn = argb;
+    super.setColor(argb);
+    argbNoisyUp = argbNoisyDn = argb;
   }
   
 
@@ -582,6 +577,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
    * @param colix the color index
    * @return true or false if this is the right pass
    */
+  @Override
   public boolean setColix(short colix) {
     boolean isLast = Colix.isColixLastAvailable(colix); 
     if (!isLast && colix == colixCurrent && currentShadeIndex == -1)
@@ -947,6 +943,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     plotText(xBaseline, yBaseline, z, argbCurrent, str, currentFont, null);
   }
   
+  @Override
   public void plotText(int x, int y, int z, int argb,
                 String text, JmolFont font3d, JmolRendererInterface jmolRenderer) {
     TextRenderer.plot(x, y, z, argb, text, font3d, this, jmolRenderer, 
@@ -971,14 +968,17 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
         width, height);
   }
 
+  @Override
   public void setFont(byte fid) {
     currentFont = JmolFont.getFont3D(fid);
   }
   
+  @Override
   public void setFont(JmolFont font3d) {
     currentFont = font3d;
   }
   
+  @Override
   public JmolFont getFont3DCurrent() {
     return currentFont;
   }
@@ -1723,6 +1723,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
    * @param screenB 
    * @param screenC 
    */
+  @Override
   public void setNoisySurfaceShade(Point3i screenA, Point3i screenB, Point3i screenC) {
     vectorAB.set(screenB.x - screenA.x, screenB.y - screenA.y, screenB.z
         - screenA.z);
@@ -1758,6 +1759,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     
   //////////////////////////////////////////////////////////
   
+  @Override
   public void renderBackground(JmolRendererInterface jmolRenderer) {
     if (backgroundImage != null)
       plotImage(Integer.MIN_VALUE, 0, Integer.MIN_VALUE, backgroundImage,
@@ -1829,10 +1831,12 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   private final byte[] shadeIndexes = new byte[normixCount];
   private final byte[] shadeIndexes2Sided = new byte[normixCount];
 
+  @Override
   public Vector3f[] getTransformedVertexVectors() {
     return transformedVectors;
   }
   
+  @Override
   public boolean isDirectedTowardsCamera(short normix) {
     // normix < 0 means a double sided normix, so always visible
     return (normix < 0) || (transformedVectors[normix].z > 0);

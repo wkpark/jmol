@@ -4325,8 +4325,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return;
     boolean antialias2 = antialiasDisplay && global.antialiasTranslucent;
     finalizeTransformParameters();
-    int[] minMax = shapeManager.transformAtoms(transformManager.bsSelectedAtoms, 
-        transformManager.ptOffset);
+    shapeManager.finalizeAtoms(transformManager.bsSelectedAtoms, transformManager.ptOffset);
+    int[] minMax = shapeManager.transformAtoms();
     transformManager.bsSelectedAtoms = null;
     repaintManager.render(gdata, modelSet, true, minMax);
     if (gdata.setPass2(antialias2)) {

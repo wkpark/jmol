@@ -25,8 +25,6 @@
 
 package org.jmol.thread;
 
-import java.util.List;
-
 import org.jmol.util.Logger;
 import org.jmol.viewer.ScriptManager;
 

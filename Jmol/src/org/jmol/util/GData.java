@@ -1,11 +1,16 @@
 package org.jmol.util;
 
 
+import java.awt.Image;
+
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
+import javax.vecmath.Point3i;
+import javax.vecmath.Vector3f;
 
 import org.jmol.api.ApiPlatform;
 import org.jmol.api.JmolGraphicsInterface;
+import org.jmol.api.JmolRendererInterface;
 import org.jmol.constant.EnumStereoMode;
 
 public class GData implements JmolGraphicsInterface {
@@ -32,6 +37,8 @@ public class GData implements JmolGraphicsInterface {
   public int width, height;
   public int zSlab, zDepth;
 
+  protected short colixCurrent;
+  protected int argbCurrent;
 
   public int bufferSize;
 
@@ -551,6 +558,100 @@ public class GData implements JmolGraphicsInterface {
   }
 
   public void clearFontCache() {
+  }
+
+  /**
+   * @param x  
+   * @param y 
+   * @param z 
+   * @param image 
+   * @param jmolRenderer
+   * @param bgcolix
+   * @param width
+   * @param height
+   *  
+   */
+  public void plotImage(int x, int y, int z, Image image,
+                        JmolRendererInterface jmolRenderer, short bgcolix,
+                        int width, int height) {
+  }
+
+  /**
+   * @param x  
+   * @param y 
+   * @param z 
+   * @param colorArgbOrGray
+   * @param text
+   * @param font3d 
+   * @param jmolRenderer
+   *  
+   */
+  public void plotText(int x, int y, int z, int colorArgbOrGray, String text,
+                       JmolFont font3d, JmolRendererInterface jmolRenderer) {
+  }
+
+  /**
+   * @param jmolRenderer  
+   */
+  public void renderBackground(JmolRendererInterface jmolRenderer) {
+  }
+
+  public JmolFont getFont3DCurrent() {
+    return null;
+  }
+
+  /**
+   * @param font3d  
+   */
+  public void setFont(JmolFont font3d) {
+  }
+
+  /**
+   * @param fid  
+   */
+  public void setFont(byte fid) {
+  }
+
+  /**
+   * @param color  
+   */
+  public void setColor(int color) {
+    argbCurrent = color;
+  }
+
+  public boolean isPass2;
+  
+  public boolean isPass2() {
+    return isPass2;
+  }  
+
+  /**
+   * @param colix  
+   * @return TRUE if correct pass (translucent or opaque)
+   */
+  public boolean setColix(short colix) {    
+    return true;
+  }
+
+  /**
+   * @param normix  
+   * @return true if front
+   */
+  public boolean isDirectedTowardsCamera(short normix) {
+    return true;
+  }
+
+  public Vector3f[] getTransformedVertexVectors() {
+    return null;
+  }
+
+  /**
+   * @param pointA  
+   * @param pointB  
+   * @param pointC  
+   */
+  public void setNoisySurfaceShade(Point3i pointA, Point3i pointB,
+                                   Point3i pointC) {
   }
 
 }

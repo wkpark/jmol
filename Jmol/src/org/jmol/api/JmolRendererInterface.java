@@ -208,8 +208,8 @@ public interface JmolRendererInterface extends JmolGraphicsInterface {
   public abstract void drawLine(short colixA, short colixB, int x1, int y1,
                                 int z1, int x2, int y2, int z2);
 
-  public abstract void drawBond(Atom atomA, Atom atomB, short colixA,
-                                short colixB, byte endcaps, short mad);
+  public abstract void drawBond(Point3f atomA, Point3f atomB, short colixA,
+                                short colixB, byte endcaps, short mad, int bondOrder);
 
   public abstract void fillCylinder(short colixA, short colixB, byte endcaps,
                                     int diameter, int xA, int yA, int zA,

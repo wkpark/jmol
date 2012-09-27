@@ -1798,8 +1798,8 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     return null;
   }
 
-  public void drawBond(Atom atomA, Atom atomB, short colixA, short colixB,
-                           byte endcaps, short mad) {
+  public void drawBond(Point3f atomA, Point3f atomB, short colixA, short colixB,
+                           byte endcaps, short mad, int bondOrder) {
   }
 
   public boolean drawEllipse(Point3f ptAtom, Point3f ptX, Point3f ptY,

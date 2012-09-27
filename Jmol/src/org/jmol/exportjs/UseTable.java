@@ -43,15 +43,19 @@ class UseTable extends Hashtable<String, String> {
    * The calling method must then make that definition.
    * 
    * @param key
-   * @return "_n" or "[keyword]_n"
+   * @param ret 
+   * @return found
    */
 
-  String getDef(String key) {
-    if (containsKey(key))
-      return "+" + get(key);
+  boolean getDef(String key, String[] ret) {
+    if (containsKey(key)) {
+      ret[0] = get(key);
+      return true;
+    }
     String id = "_" + key.charAt(0) + (iObj++);
     put(key, id);
-    return id;
+    ret[0] = id;
+    return false;
   }
     
 }

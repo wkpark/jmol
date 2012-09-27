@@ -34,7 +34,6 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
 
 import org.jmol.util.ColorUtil;
-import org.jmol.util.GData;
 import org.jmol.util.J2SRequireImport;
 
 @J2SRequireImport({org.jmol.exportjs.___Exporter.class, org.jmol.exportjs.__CartesianExporter.class, org.jmol.exportjs.Export3D.class})
@@ -54,8 +53,18 @@ public class _JSExporter extends __CartesianExporter {
 
   private Map<String, Boolean> htSpheresRendered = new Hashtable<String, Boolean>();
 
-  private Map<String, Object> htObjects = new Hashtable<String, Object>();
+  private Map<String, Object[]> htObjects = new Hashtable<String, Object[]>();
   
+  private void useSphere(String id, boolean isNew, Point3f pt, Object[] o) {
+    // implemented in JavaScript only
+    System.out.println(id + " " + isNew + " " + pt + " " + o);
+  }
+  
+  private void useCylinder(String id, boolean isNew, Point3f pt1, Point3f pt2, Object[] o) {
+    // implemented in JavaScript only
+    System.out.println(id + " " + isNew + " " + pt1 + " " + pt2 + " " + o);
+  }
+
 	@Override
 	protected void outputSphere(Point3f ptCenter, float radius, short colix,
 			boolean checkRadius) {
@@ -64,17 +73,17 @@ public class _JSExporter extends __CartesianExporter {
     if (htSpheresRendered.get(check) != null)
       return;
     htSpheresRendered.put(check, Boolean.TRUE);
-    String id = useTable.getDef("S" + colix + "_" + iRad);
-    if (id.charAt(0) != '_')
-      htObjects.put(id, new Object[] {getColor(colix), Float.valueOf(radius)});
-    useSphereAt(id, ptCenter);
+    boolean found = useTable.getDef("S" + colix + "_" + iRad, ret);
+    Object[] o;
+    if (found)
+      o = htObjects.get(ret[0]);
+    else
+      htObjects.put(ret[0], o = new Object[] {getColor(colix), Float.valueOf(radius)});
+    useSphere(ret[0], !found, ptCenter, o);
 	}
 
-  private void useSphereAt(String id, Point3f pt) {
-    // implemented in JavaScript only
-    System.out.println(id + " " + pt);
-  }
-  
+	private String[] ret = new String[1];
+	
   @Override
   protected boolean outputCylinder(Point3f ptCenter, Point3f pt1, Point3f pt2,
       short colix, byte endcaps, float radius, Point3f ptX, Point3f ptY,
@@ -84,17 +93,15 @@ public class _JSExporter extends __CartesianExporter {
     if (ptX != null)
       return false;
     float length = pt1.distance(pt2);
-    String id = useTable.getDef("C" + colix + "_" + (int) (length * 100) + "_" + radius
-        + "_" + endcaps);
-    if (id.charAt(0) != '_')
-      htObjects.put(id, new Object[] { getColor(colix), new Float(length), new Float(radius) });
-    useCylinder(id, ptCenter, pt1, pt2);
+    boolean found = useTable.getDef("C" + colix + "_" + (int) (length * 100) + "_" + radius
+        + "_" + endcaps, ret);
+    Object[] o;
+    if (found)
+      o = htObjects.get(ret[0]);
+    else
+      htObjects.put(ret[0], o = new Object[] { getColor(colix), new Float(length), new Float(radius) });
+    useCylinder(ret[0], !found, pt1, pt2, o);
     return true;
-  }
-
-  private void useCylinder(String id, Point3f ptCenter, Point3f pt1, Point3f pt2) {
-    // implemented in JavaScript only
-    System.out.println(id + " " + ptCenter + " " + pt1 + " " + pt2);
   }
 
   @Override

@@ -460,14 +460,15 @@ final public class Export3D implements JmolRendererInterface {
     exporter.fillCylinderScreenMad(colix, GData.ENDCAPS_FLAT, exporter.lineWidthMad, ptA, ptB);
   }
 
-  public void drawBond(Atom atomA, Atom atomB, short colixA, short colixB,
-                       byte endcaps, short mad) {
+  public void drawBond(Point3f atomA, Point3f atomB, short colixA, short colixB,
+                       byte endcaps, short mad, int bondOrder) {
     // from SticksRenderer to allow for a direct
     // writing of single bonds -- just for efficiency here 
-    // bondOrder == -1 indicates we have cartesian coordinates
+    // bondOrder == -1 indicates we have cartesian coordinates and we want to draw endcaps
+    // bondOrder == -2 indicates we have
     if (mad == 1)
       mad = exporter.lineWidthMad;
-    exporter.drawCylinder(atomA, atomB, colixA, colixB, endcaps, mad, -1);
+    exporter.drawCylinder(atomA, atomB, colixA, colixB, endcaps, mad, bondOrder);
   }
 
   public void fillCylinder(short colixA, short colixB, byte endcaps,

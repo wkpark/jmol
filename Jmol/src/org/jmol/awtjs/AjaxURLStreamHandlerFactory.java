@@ -15,7 +15,6 @@ class AjaxURLStreamHandlerFactory implements URLStreamHandlerFactory {
 
 	Map<String, AjaxURLStreamHandler> htFactories = new Hashtable<String, AjaxURLStreamHandler>();
 	
-	@Override
 	public URLStreamHandler createURLStreamHandler(String protocol) {
 		AjaxURLStreamHandler fac = htFactories.get(protocol);
 		if (fac == null)

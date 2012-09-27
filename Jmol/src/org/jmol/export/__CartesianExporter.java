@@ -243,10 +243,14 @@ abstract public class __CartesianExporter extends ___Exporter {
     outputCone(tempP1, tempP2, radius, colix);
   }
 
+  /**
+   * bond order -1 -- single bond, Cartesian
+   * bond order -2 -- multiple bond, Cartesian 
+   */
   @Override
   void drawCylinder(Point3f ptA, Point3f ptB, short colix1, short colix2,
                     byte endcaps, int mad, int bondOrder) {
-    setTempPoints(ptA, ptB, bondOrder == -1);
+    setTempPoints(ptA, ptB, bondOrder < 0);
     float radius = mad / 2000f;
     if (colix1 == colix2) {
       outputCylinder(null, tempP1, tempP2, colix1, endcaps, radius, null, null, bondOrder != -1);
@@ -262,8 +266,8 @@ abstract public class __CartesianExporter extends ___Exporter {
           (endcaps == GData.ENDCAPS_SPHERICAL ? GData.ENDCAPS_NONE
               : endcaps), radius, null, null, true);
       if (endcaps == GData.ENDCAPS_SPHERICAL) {
-        outputSphere(tempP1, radius * 1.01f, colix1, bondOrder != -1);
-        outputSphere(tempP2, radius * 1.01f, colix2, bondOrder != -1);
+        outputSphere(tempP1, radius * 1.01f, colix1, bondOrder != -2);
+        outputSphere(tempP2, radius * 1.01f, colix2, bondOrder != -2);
       }
     }
   }

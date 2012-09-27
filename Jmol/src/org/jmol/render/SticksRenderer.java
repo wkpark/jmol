@@ -238,7 +238,7 @@ public class SticksRenderer extends ShapeRenderer {
   private void drawBond(int dottedMask) {
     if (exportType == GData.EXPORT_CARTESIAN && bondOrder == 1) {
       // bypass screen rendering and just use the atoms themselves
-      g3d.drawBond(atomA, atomB, colixA, colixB, endcaps, mad);
+      g3d.drawBond(atomA, atomB, colixA, colixB, endcaps, mad, -1);
       return;
     }
     boolean isEndOn = (dx == 0 && dy == 0);
@@ -246,9 +246,9 @@ public class SticksRenderer extends ShapeRenderer {
       return;
     boolean doFixedSpacing = (bondOrder > 1
         && multipleBondSpacing > 0
-        && (viewer.getHybridizationAndAxes(atomA.index, z, x, "pz") != null 
-            || viewer.getHybridizationAndAxes(atomB.index, z, x, "pz") != null) 
-        && !Float.isNaN(x.x));
+        && (viewer.getHybridizationAndAxes(atomA.index, z, x, "pz") != null || viewer
+            .getHybridizationAndAxes(atomB.index, z, x, "pz") != null) && !Float
+        .isNaN(x.x));
     if (isEndOn && !doFixedSpacing) {
       // end-on view
       int space = width / 8 + 3;
@@ -260,8 +260,9 @@ public class SticksRenderer extends ShapeRenderer {
       } while (--bondOrder > 0);
       return;
     }
-    if (bondOrder == 1) {
-      if ((dottedMask & 1) != 0)
+    boolean isDashed = (dottedMask & 1) != 0;
+    if (bondOrder == 1 && exportType != GData.EXPORT_CARTESIAN) {
+      if (isDashed)
         drawDashed(xA, yA, zA, xB, yB, zB, dashDots);
       else
         fillCylinder(colixA, colixB, endcaps, width, xA, yA, zA, xB, yB, zB);
@@ -277,18 +278,24 @@ public class SticksRenderer extends ShapeRenderer {
       p1.sub(atomA, x);
       p2.sub(atomB, x);
       while (true) {
-        viewer.transformPtScr(p1, s1);
-        viewer.transformPtScr(p2, s2);
-        p1.add(y);
-        p2.add(y);
-        if ((dottedMask & 1) != 0)
-          drawDashed(s1.x, s1.y, s1.z, s2.x, s2.y, s2.z, dashDots);
-        else
-          fillCylinder(colixA, colixB, endcaps, width, s1.x, s1.y, s1.z, s2.x,
-              s2.y, s2.z);
-        dottedMask >>= 1;
+        if (exportType == GData.EXPORT_CARTESIAN && !isDashed) {
+          // bypass screen rendering and just use the atoms themselves
+          g3d.drawBond(p1, p2, colixA, colixB, endcaps, mad, -2);
+        } else {
+          viewer.transformPtScr(p1, s1);
+          viewer.transformPtScr(p2, s2);
+          if (isDashed)
+            drawDashed(s1.x, s1.y, s1.z, s2.x, s2.y, s2.z, dashDots);
+          else
+            fillCylinder(colixA, colixB, endcaps, width, s1.x, s1.y, s1.z,
+                s2.x, s2.y, s2.z);
+          dottedMask >>= 1;
+          isDashed = (dottedMask & 1) != 0;
+        }
         if (--bondOrder <= 0)
           break;
+        p1.add(y);
+        p2.add(y);
         stepAxisCoordinates();
       }
       return;

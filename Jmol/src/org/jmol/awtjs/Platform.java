@@ -213,7 +213,6 @@ public class Platform implements ApiPlatform {
     return (fileAdapter == null  ? fileAdapter = new JmolFileAdapter() : fileAdapter);
   }
 
-	@Override
 	public JmolFileInterface newFile(String name) {
 		return new JmolFile(name);
 	}

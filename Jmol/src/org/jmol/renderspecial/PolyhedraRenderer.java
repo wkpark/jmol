@@ -68,7 +68,7 @@ public class PolyhedraRenderer extends ShapeRenderer {
     for (int i = vertices.length; --i >= 0;) {
       Atom atom = (vertices[i] instanceof Atom ? (Atom) vertices[i] : null);
       if (atom == null)
-        viewer.transformPoint(vertices[i], screens[i]);
+        viewer.transformPtScr(vertices[i], screens[i]);
       else
         screens[i].set(atom.screenX, atom.screenY, atom.screenZ);
     }

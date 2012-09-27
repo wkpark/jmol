@@ -72,7 +72,7 @@ public class Frank extends FontShape {
       x <<= 1;
       y <<= 1;
     }      
-    viewer.hoverOn(x, y, GT._("Click for menu..."), null, null);
+    viewer.hoverOnPt(x, y, GT._("Click for menu..."), null, null);
     return true;
   }
   

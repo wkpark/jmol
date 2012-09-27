@@ -60,7 +60,7 @@ public class HoverRenderer extends ShapeRenderer {
   String fixLabel(Atom atom, String label) {
     if (label == null)
       return null;
-    return (viewer.isJmolDataFrame(atom.getModelIndex()) 
+    return (viewer.isJmolDataFrameForModel(atom.getModelIndex()) 
         && label.equals("%U") ?"%W" : label);
   }
 }

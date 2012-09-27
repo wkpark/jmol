@@ -326,7 +326,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       pt1.scaleAdd(fx * factoredLengths[0], axes[0], ptAtom);
       pt1.scaleAdd(fy * factoredLengths[1], axes[1], pt1);
       pt1.scaleAdd(fz * factoredLengths[2], axes[2], pt1);
-      viewer.transformPoint(pt1, s1);
+      viewer.transformPtScr(pt1, s1);
       coords[i++] = s1.x;
       coords[i++] = s1.y;
       coords[i++] = s1.z;
@@ -369,7 +369,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     for (int i = 0, pt = 0; i < 18; i++, pt += 2) {
       pt2.scaleAdd(cossin[pt] * d1, v1, ptAtom);
       pt2.scaleAdd(cossin[pt + 1] * d2, v2, pt2);
-      viewer.transformPoint(pt2, s2);
+      viewer.transformPtScr(pt2, s2);
       if (fillArc)
         g3d.fillTriangle(s0, colix, normix, s1, colix, normix, s2, colix,
             normix);
@@ -395,7 +395,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     axes = ellipsoid.axes;
     for (int i = 0; i < 3; i++)
       factoredLengths[i] = ellipsoid.lengths[i];
-    viewer.transformPoint(ellipsoid.center, s0);
+    viewer.transformPtScr(ellipsoid.center, s0);
     setMatrices();
     center = ellipsoid.center;
     setAxes(1);

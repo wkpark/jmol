@@ -1789,9 +1789,9 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     return false;
   }
 
-  public boolean initializeExporter(String type, Viewer viewer, double privateKey, GData g3d,
+  public JmolRendererInterface initializeExporter(String type, Viewer viewer, double privateKey, GData g3d,
                                     Object output) {
-    return false;
+    return null;
   }
 
   public String finalizeOutput() {
@@ -1869,6 +1869,44 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
         : normix < 0 ? shadeIndexes2Sided[~normix] : shadeIndexes[normix]);
   }
 
-
-
+  /////////// special rendering ///////////
+  
+  /**
+   * @param minMax 
+   * @param screenWidth  
+   * @param screenHeight 
+   * @param navOffset 
+   * @param navDepth 
+   */
+  public void renderCrossHairs(int[] minMax, int screenWidth, 
+                               int screenHeight, Point3f navOffset, float navDepth) {
+    // this is the square and crosshairs for the navigator
+    boolean antialiased = isAntialiased();
+    setColix(navDepth < 0 ? Colix.RED
+        : navDepth > 100 ? Colix.GREEN : Colix.GOLD);
+    int x = Math.max(Math.min(width, (int) navOffset.x), 0);
+    int y = Math.max(Math.min(height, (int) navOffset.y), 0);
+    int z = (int) navOffset.z + 1;
+    // TODO: fix for antialiasDisplay
+    int off = (antialiased ? 8 : 4);
+    int h = (antialiased ? 20 : 10);
+    int w = (antialiased ? 2 : 1);
+    drawRect(x - off, y, z, 0, h, w);
+    drawRect(x, y - off, z, 0, w, h);
+    drawRect(x - off, y - off, z, 0, h, h);
+    off = h;
+    h = h >> 1;
+    setColix(minMax[1] < navOffset.x ? Colix.YELLOW
+            : Colix.GREEN);
+    drawRect(x - off, y, z, 0, h, w);
+    setColix(minMax[0] > navOffset.x ? Colix.YELLOW
+            : Colix.GREEN);
+    drawRect(x + h, y, z, 0, h, w);
+    setColix(minMax[3] < navOffset.y ? Colix.YELLOW
+            : Colix.GREEN);
+    drawRect(x, y - off, z, 0, w, h);
+    setColix(minMax[2] > navOffset.y ? Colix.YELLOW
+            : Colix.GREEN);
+    drawRect(x, y + h, z, 0, w, h);
+  }
 }

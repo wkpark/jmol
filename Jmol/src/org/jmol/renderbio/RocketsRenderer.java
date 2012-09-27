@@ -157,12 +157,12 @@ public class RocketsRenderer extends BioShapeRenderer {
   private void renderPendingRocketSegment(int i, Point3f pointStart,
                                           Point3f pointBeforeEnd,
                                           Point3f pointEnd, boolean tEnd) {
-    viewer.transformPoint(pointStart, screenA);
-    viewer.transformPoint(pointEnd, screenB);
+    viewer.transformPt3f(pointStart, screenA);
+    viewer.transformPt3f(pointEnd, screenB);
     int zMid = (int) Math.floor((screenA.z + screenB.z) / 2f);
     int diameter = viewer.scaleToScreen(zMid, mad);
     if (tEnd && renderArrowHeads) {
-      viewer.transformPoint(pointBeforeEnd, screenC);
+      viewer.transformPt3f(pointBeforeEnd, screenC);
       if (g3d.setColix(colix)) {
         if (pointBeforeEnd.distance(pointEnd) <= MIN_CONE_HEIGHT)
           g3d.fillCylinderBits(GData.ENDCAPS_FLAT, diameter, screenB,
@@ -231,7 +231,7 @@ public class RocketsRenderer extends BioShapeRenderer {
         corner.add(scaledHeightVector);
       if ((i & 4) != 0)
         corner.add(lengthVector);
-      viewer.transformPoint(corner, screenCorners[i]);
+      viewer.transformPt3f(corner, screenCorners[i]);
     }
   }
 
@@ -244,12 +244,12 @@ public class RocketsRenderer extends BioShapeRenderer {
         corner.add(scaledWidthVector);
       if ((i & 2) != 0)
         corner.add(scaledHeightVector);
-      viewer.transformPoint(corner, screenCorners[i]);
+      viewer.transformPt3f(corner, screenCorners[i]);
     }
     corners[4].set(pointTip);
-    viewer.transformPoint(pointTip, screenCorners[4]);
+    viewer.transformPt3f(pointTip, screenCorners[4]);
     corners[5].add(pointTip, scaledHeightVector);
-    viewer.transformPoint(corners[5], screenCorners[5]);
+    viewer.transformPt3f(corners[5], screenCorners[5]);
   }
 
   private final Vector3f lengthVector = new Vector3f();

@@ -224,7 +224,7 @@ public class MotionThread extends JmolThread {
       if (navCenter != null && transformManager.mode == TransformManager.MODE_NAVIGATION) {
         Point3f pt = new Point3f(transformManager.navigationCenter);
         pt.add(aaStepNavCenter);
-        transformManager.navigate(0, pt);
+        transformManager.navigatePt(0, pt);
         if (!Float.isNaN(xNav) && !Float.isNaN(yNav))
           transformManager.navTranslatePercent(0, xNavTransStart + xNavTransDelta * fStep,
               yNavTransStart + yNavTransDelta * fStep);

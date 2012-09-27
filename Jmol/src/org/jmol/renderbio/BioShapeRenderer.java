@@ -144,7 +144,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
   }
 
   private boolean initializePolymer(BioShape bioShape) {
-    if (viewer.isJmolDataFrame(bioShape.modelIndex)) {
+    if (viewer.isJmolDataFrameForModel(bioShape.modelIndex)) {
       controlPoints = bioShape.bioPolymer.getControlPoints(true, 0, false);
     } else {
       controlPoints = bioShape.bioPolymer.getControlPoints(isTraceAlpha,
@@ -212,7 +212,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     int count = monomerCount + 1;
     controlPointScreens = viewer.allocTempScreens(count);
     for (int i = count; --i >= 0;) {
-      viewer.transformPoint(points[i], controlPointScreens[i]);
+      viewer.transformPtScr(points[i], controlPointScreens[i]);
     }
     haveControlPointScreens = true;
   }
@@ -229,7 +229,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     Point3i[] screens = viewer.allocTempScreens(count);
     if (offsetFraction == 0) {
       for (int i = count; --i >= 0;)
-        viewer.transformPoint(controlPoints[i], screens[i]);
+        viewer.transformPtScr(controlPoints[i], screens[i]);
     } else {
       float offset_1000 = offsetFraction / 1000f;
       for (int i = count; --i >= 0;)
@@ -246,7 +246,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     pointT.set(vector);
     float scale = mad * offset_1000;
     pointT.scaleAdd(scale, center);
-    viewer.transformPoint(pointT, screen);
+    viewer.transformPtScr(pointT, screen);
   }
 
   protected short getLeadColix(int i) {

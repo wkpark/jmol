@@ -253,7 +253,7 @@ public class ScriptEvaluator {
                                      StringBuffer outputBuffer) {
     boolean tempOpen = this.isCmdLine_C_Option;
     this.isCmdLine_C_Option = isCmdLine_C_Option;
-    viewer.pushHoldRepaint("runEval");
+    viewer.pushHoldRepaintWhy("runEval");
     interruptExecution = executionPaused = false;
     executionStepping = false;
     isExecuting = true;
@@ -292,7 +292,7 @@ public class ScriptEvaluator {
       viewer.scriptStatus(SCRIPT_COMPLETED);
     isExecuting = isSyntaxCheck = isCmdLine_c_or_C_Option = historyDisabled = false;
     viewer.setTainted(true);
-    viewer.popHoldRepaint("runEval");
+    viewer.popHoldRepaintWhy("runEval");
   }
 
   /**
@@ -378,7 +378,7 @@ public class ScriptEvaluator {
       return;
     if (withDelay)
       delayMillis(-100);
-    viewer.popHoldRepaint("pauseExecution");
+    viewer.popHoldRepaintWhy("pauseExecution");
     executionStepping = false;
     executionPaused = true;
   }
@@ -1905,7 +1905,7 @@ public class ScriptEvaluator {
           debugScript);
     String[] data = new String[2];
     data[0] = filename;
-    if (!viewer.getFileAsString(data, Integer.MAX_VALUE, false)) { // first opening
+    if (!viewer.getFileAsStringBin(data, Integer.MAX_VALUE, false)) { // first opening
       setErrorMessage("io error reading " + data[0] + ": " + data[1]);
       return false;
     }
@@ -1916,7 +1916,7 @@ public class ScriptEvaluator {
         filename += "|";
       } else {
         data[0] = filename += "|JmolManifest.txt";
-        if (!viewer.getFileAsString(data, Integer.MAX_VALUE, false)) { // second entry
+        if (!viewer.getFileAsStringBin(data, Integer.MAX_VALUE, false)) { // second entry
           setErrorMessage("io error reading " + data[0] + ": " + data[1]);
           return false;
         }
@@ -1925,7 +1925,7 @@ public class ScriptEvaluator {
       if (path != null && path.length() > 0) {
         data[0] = filename = filename.substring(0, filename.lastIndexOf("|"))
             + path;
-        if (!viewer.getFileAsString(data, Integer.MAX_VALUE, false)) { // third entry
+        if (!viewer.getFileAsStringBin(data, Integer.MAX_VALUE, false)) { // third entry
           setErrorMessage("io error reading " + data[0] + ": " + data[1]);
           return false;
         }
@@ -5155,7 +5155,7 @@ public class ScriptEvaluator {
       return false;
 
     if (executionStepping && isCommandDisplayable(pc)) {
-      viewer.scriptStatus("Next: " + getNextStatement(),
+      viewer.setScriptStatus("Next: " + getNextStatement(),
           "stepping -- type RESUME to continue", 0, null);
       executionPaused = true;
     } else if (!executionPaused) {
@@ -5170,7 +5170,7 @@ public class ScriptEvaluator {
     try {
       refresh();
       while (executionPaused) {
-        viewer.popHoldRepaint("pause"); // does not actually do a repaint
+        viewer.popHoldRepaintWhy("pause"); // does not actually do a repaint
         Thread.sleep(100);
         String script = viewer.getInterruptScript();
         if (script != "") {
@@ -5192,14 +5192,14 @@ public class ScriptEvaluator {
           restoreScriptContext(scSave, true, false, false);
           pauseExecution(false);
         }
-        viewer.pushHoldRepaint("pause");
+        viewer.pushHoldRepaintWhy("pause");
       }
       if (!isSyntaxCheck && !interruptExecution && !executionStepping) {
         viewer.scriptStatus("script execution "
             + (error || interruptExecution ? "interrupted" : "resumed"));
       }
     } catch (Exception e) {
-      viewer.pushHoldRepaint("pause");
+      viewer.pushHoldRepaintWhy("pause");
     }
     Logger.debug("script execution resumed");
     // once more to trap quit during pause
@@ -6569,7 +6569,7 @@ public class ScriptEvaluator {
         pt = centerParameter(++i);
         i = iToken;
         if (!isSyntaxCheck)
-          viewer.navigate(timeSec, pt);
+          viewer.navigatePt(timeSec, pt);
         continue;
       case Token.rotate:
         switch (getToken(++i).tok) {
@@ -6596,7 +6596,7 @@ public class ScriptEvaluator {
         }
         float degrees = floatParameter(i);
         if (!isSyntaxCheck)
-          viewer.navigate(timeSec, rotAxis, degrees);
+          viewer.navigateAxis(timeSec, rotAxis, degrees);
         continue;
       case Token.translate:
         float x = Float.NaN;
@@ -6639,7 +6639,7 @@ public class ScriptEvaluator {
           for (int j = 0; j < n; j++) {
             pathGuide[j] = vp.get(j);
           }
-          viewer.navigate(timeSec, pathGuide);
+          viewer.navigateGuide(timeSec, pathGuide);
           continue;
         }
         break;
@@ -6670,7 +6670,7 @@ public class ScriptEvaluator {
           int indexEnd = (int) (isFloatParameter(i + 1) ? floatParameter(++i)
               : Integer.MAX_VALUE);
           if (!isSyntaxCheck)
-            viewer.navigate(timeSec, path, theta, indexStart, indexEnd);
+            viewer.navigatePath(timeSec, path, theta, indexStart, indexEnd);
           continue;
         }
         List<Point3f> v = new ArrayList<Point3f>();
@@ -6681,7 +6681,7 @@ public class ScriptEvaluator {
         if (v.size() > 0) {
           path = v.toArray(new Point3f[v.size()]);
           if (!isSyntaxCheck)
-            viewer.navigate(timeSec, path, theta, 0, Integer.MAX_VALUE);
+            viewer.navigatePath(timeSec, path, theta, 0, Integer.MAX_VALUE);
           continue;
         }
         //$FALL-THROUGH$
@@ -7229,7 +7229,7 @@ public class ScriptEvaluator {
 
     if (statementLength == 1) {
       if (!isSyntaxCheck)
-        viewer.rebond(isStateScript); 
+        viewer.rebondState(isStateScript); 
       return;
     }
 
@@ -7239,7 +7239,7 @@ public class ScriptEvaluator {
       case Token.off:
         checkLength(2);
         if (!isSyntaxCheck)
-          viewer.rebond(isStateScript);
+          viewer.rebondState(isStateScript);
         return;
       case Token.integer:
       case Token.decimal:
@@ -7985,7 +7985,7 @@ public class ScriptEvaluator {
             } else if (data == null) {
               viewer.setCurrentColorRange(name);
             } else {
-              viewer.setCurrentColorRange((float[]) data, bsSelected);
+              viewer.setCurrentColorRangeData((float[]) data, bsSelected);
             }
             if (isIsosurface) {
               checkLength(index);
@@ -9160,7 +9160,7 @@ public class ScriptEvaluator {
       viewer.setCurrentModelIndex(modelCount0);
     }
     if (scriptLevel == 0 && !isAppend && nFiles < 2)
-      showString((String) viewer.getModelSetAuxiliaryInfo("modelLoadNote"));
+      showString((String) viewer.getModelSetAuxiliaryInfoValue("modelLoadNote"));
     if (logMessages)
       scriptStatusOrBuffer("Successfully loaded:"
           + (filenames == null ? htParams.get("fullPathName") : modelName));
@@ -9391,7 +9391,7 @@ public class ScriptEvaluator {
           nAtoms++;
           BitSet bs2 = BitSetUtil.copy(bs);
           BitSetUtil.invertInPlace(bs2, viewer.getAtomCount());
-          bs2.and(viewer.getAtomsWithin(5, bs, false, null));
+          bs2.and(viewer.getAtomsWithinRadius(5, bs, false, null));
           points.add(bs2);
         }
         break;
@@ -9622,7 +9622,7 @@ public class ScriptEvaluator {
       if (ptDataFrame > 0 && tokCmd != Token.write && tokCmd != Token.show) {
         // no -- this is that way we switch frames. viewer.deleteAtoms(viewer.getModelUndeletedAtomsBitSet(ptDataFrame), true);
         // data frame can't be 0.
-        viewer.setCurrentModelIndex(ptDataFrame, true);
+        viewer.setCurrentModelIndexClear(ptDataFrame, true);
         // BitSet bs2 = viewer.getModelAtomBitSet(ptDataFrame);
         // bs2.and(bs);
         // need to be able to set data directly as well.
@@ -9829,7 +9829,7 @@ public class ScriptEvaluator {
     msg = (msg.length() == 0 ? ": RESUME to continue." : ": "
         + viewer.formatText(msg));
     pauseExecution(true);
-    viewer.scriptStatus("script execution paused" + msg,
+    viewer.scriptStatusMsg("script execution paused" + msg,
         "script paused for RESUME");
     return true;
   }
@@ -10297,12 +10297,12 @@ public class ScriptEvaluator {
         nPoints = 1;
     }
     if (invPoint != null) {
-      viewer.invertAtomCoord(invPoint, bsAtoms);
+      viewer.invertAtomCoordPt(invPoint, bsAtoms);
       if (rotAxis == null)
         return;
     }
     if (invPlane != null) {
-      viewer.invertAtomCoord(invPlane, bsAtoms);
+      viewer.invertAtomCoordPlane(invPlane, bsAtoms);
       if (rotAxis == null)
         return;
     }
@@ -10885,7 +10885,7 @@ public class ScriptEvaluator {
         return;
       bs = viewer.getSelectionSet(false);
       pt = viewer.getAtomSetCenter(bs);
-      viewer.invertAtomCoord(pt, bs);
+      viewer.invertAtomCoordPt(pt, bs);
       return;
     case Token.stereo:
       iAtom = atomExpressionAt(2).nextSetBit(0);
@@ -11087,7 +11087,7 @@ public class ScriptEvaluator {
             error(ERROR_invalidArgument);
         }
       } else {
-        r = viewer.calcRotationRadius(bs);       
+        r = viewer.calcRotationRadiusBs(bs);       
       }
       if (Float.isNaN(r))
         error(ERROR_invalidArgument);        
@@ -11170,12 +11170,12 @@ public class ScriptEvaluator {
       millis = 1;
     while (seconds >= 0 && millis > 0 && !interruptExecution
         && currentThread == Thread.currentThread()) {
-      viewer.popHoldRepaint("delay");
+      viewer.popHoldRepaintWhy("delay");
       try {
         Thread.sleep((seconds--) > 0 ? 1000 : millis);
       } catch (InterruptedException e) {
       }
-      viewer.pushHoldRepaint("delay");
+      viewer.pushHoldRepaintWhy("delay");
     }
   }
 
@@ -11641,7 +11641,7 @@ public class ScriptEvaluator {
     BitSet bsAtoms;
     if (statementLength == 1) {
       bsAtoms = viewer.setConformation();
-      viewer.addStateScript("select", null, viewer.getSelectionSet(false),
+      viewer.addStateScriptRet("select", null, viewer.getSelectionSet(false),
           null, "configuration", true, false);
     } else {
       int n = intParameter(checkLast(1));
@@ -12289,7 +12289,7 @@ public class ScriptEvaluator {
     case Token.title:
       if (checkLength23() > 0)
         if (!isSyntaxCheck)
-          viewer.setFrameTitle(statementLength == 2 ? "@{_modelName}"
+          viewer.setFrameTitleObj(statementLength == 2 ? "@{_modelName}"
               : (tokAt(2) == Token.varray ? ScriptVariable
                   .listValue(statement[2]) : parameterAsString(2)));
       return;
@@ -12447,7 +12447,7 @@ public class ScriptEvaluator {
     }
 
     if (!isPlay && !isRange || modelIndex >= 0)
-      viewer.setCurrentModelIndex(modelIndex, false);
+      viewer.setCurrentModelIndexClear(modelIndex, false);
     if (isPlay && nFrames == 2 || isRange || isHyphen) {
       if (modelIndex2 < 0)
         modelIndex2 = viewer.getModelNumberIndex(frameList[1], useModelNumber,
@@ -12455,7 +12455,7 @@ public class ScriptEvaluator {
       viewer.setAnimationOn(false);
       viewer.setAnimationDirection(1);
       viewer.setAnimationRange(modelIndex, modelIndex2);
-      viewer.setCurrentModelIndex(isHyphen && !isRange ? -1
+      viewer.setCurrentModelIndexClear(isHyphen && !isRange ? -1
           : modelIndex >= 0 ? modelIndex : 0, false);
     }
     if (isPlay)
@@ -13991,10 +13991,10 @@ public class ScriptEvaluator {
     else if (id != null)
       viewer.setCurrentUnitCell(id);
     else if (points != null)
-      viewer.setCurrentUnitCell(points);
+      viewer.setCurrentUnitCellPts(points);
     setObjectMad(JmolConstants.SHAPE_UCCAGE, "unitCell", mad);
     if (pt != null)
-      viewer.setCurrentUnitCellOffset(pt);
+      viewer.setCurrentUnitCellOffsetPt(pt);
     if (tickInfo != null)
       setShapeProperty(JmolConstants.SHAPE_UCCAGE, "tickInfo", tickInfo);
   }
@@ -14446,7 +14446,7 @@ public class ScriptEvaluator {
               && fullPath[0] != null) {
             String ext = (type.equals("Idtf") ? ".tex" : ".ini");
             fileName = fullPath[0] + ext;
-            msg = viewer.createImage(fileName, ext, data, null,
+            msg = viewer.createImageSet(fileName, ext, data, null,
                 Integer.MIN_VALUE, 0, 0, null, 0, fullPath);
             if (type.equals("Idtf"))
               data = data.substring(0, data.indexOf("\\begin{comment}"));
@@ -14575,7 +14575,7 @@ public class ScriptEvaluator {
       if (doDefer)
         msg = viewer.streamFileData(fileName, type, type2, 0, null);
       else
-        msg = viewer.createImage(fileName, type, bytes, scripts, quality,
+        msg = viewer.createImageSet(fileName, type, bytes, scripts, quality,
             width, height, bsFrames, nVibes, fullPath);
     }
     if (!isSyntaxCheck && msg != null) {
@@ -16053,17 +16053,17 @@ public class ScriptEvaluator {
     if (!bsA.equals(bsB)) {
       boolean setBfirst = (!localOnly || bsA.cardinality() < bsB.cardinality());
       if (setBfirst) {
-        bs = viewer.getAtomsWithin(distance, bsA, withinAllModels, (Float
+        bs = viewer.getAtomsWithinRadius(distance, bsA, withinAllModels, (Float
             .isNaN(distance) ? rd : null));
         bsB.and(bs);
       }
       if (localOnly) {
         // we can just get the near atoms for A as well.
-        bs = viewer.getAtomsWithin(distance, bsB, withinAllModels, (Float
+        bs = viewer.getAtomsWithinRadius(distance, bsB, withinAllModels, (Float
             .isNaN(distance) ? rd : null));
         bsA.and(bs);
         if (!setBfirst) {
-          bs = viewer.getAtomsWithin(distance, bsA, withinAllModels, (Float
+          bs = viewer.getAtomsWithinRadius(distance, bsA, withinAllModels, (Float
               .isNaN(distance) ? rd : null));
           bsB.and(bs);
         }
@@ -16881,10 +16881,10 @@ public class ScriptEvaluator {
         } else if (tokAt(iToken + 1) == Token.expressionBegin
             || tokAt(iToken + 1) == Token.bitset) {
           bs = atomExpressionAt(++iToken);
-          bs.and(viewer.getAtomsWithin(5.0f, bsSelect, false, null));
+          bs.and(viewer.getAtomsWithinRadius(5.0f, bsSelect, false, null));
         } else {
           // default is "within(5.0, selected) and not within(molecule,selected)"
-          bs = viewer.getAtomsWithin(5.0f, bsSelect, true, null);
+          bs = viewer.getAtomsWithinRadius(5.0f, bsSelect, true, null);
           bs.andNot(viewer.getAtomBits(Token.molecule, bsSelect));
         }
         bs.andNot(bsSelect);
@@ -18508,12 +18508,12 @@ public class ScriptEvaluator {
       return new BitSet();
     if (getShapePropertyData(JmolConstants.SHAPE_ISOSURFACE, "getVertices",
             data))
-    return viewer.getAtomsWithin(distance, (Point3f[]) data[1],
+    return viewer.getAtomsNearPts(distance, (Point3f[]) data[1],
         (BitSet) data[2]);
     data[1] = Integer.valueOf(0);
     data[2] = Integer.valueOf(-1);
     if (getShapePropertyData(JmolConstants.SHAPE_DRAW, "getCenter", data))
-      return viewer.getAtomsWithin(distance, (Point3f) data[2]);
+      return viewer.getAtomsNearPt(distance, (Point3f) data[2]);
     return new BitSet();
   }
 

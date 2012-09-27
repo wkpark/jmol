@@ -277,8 +277,8 @@ public class SticksRenderer extends ShapeRenderer {
       p1.sub(atomA, x);
       p2.sub(atomB, x);
       while (true) {
-        viewer.transformPoint(p1, s1);
-        viewer.transformPoint(p2, s2);
+        viewer.transformPtScr(p1, s1);
+        viewer.transformPtScr(p2, s2);
         p1.add(y);
         p2.add(y);
         if ((dottedMask & 1) != 0)

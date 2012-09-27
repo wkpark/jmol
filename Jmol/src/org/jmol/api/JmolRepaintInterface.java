@@ -13,7 +13,7 @@ public interface JmolRepaintInterface {
 
   void popHoldRepaint(boolean andRepaint);
 
-  boolean refresh();
+  boolean repaintIfReady();
 
   void pushHoldRepaint();
 

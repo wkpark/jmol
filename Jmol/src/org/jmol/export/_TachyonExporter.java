@@ -240,7 +240,7 @@ public class _TachyonExporter extends __RayTracerExporter {
 
   @Override
   protected void outputEllipsoid(Point3f center, float radius, double[] coef, short colix) {
-    viewer.transformPoint(center, tempP1);
+    viewer.transformPt3f(center, tempP1);
     // no support for ellipsoids -- just draw ball
     outputSphere(tempP1.x, tempP1.y, tempP1.z, radius, colix);
   }
@@ -259,9 +259,9 @@ public class _TachyonExporter extends __RayTracerExporter {
         setTempVertex(vertices[indices[i][0]], offset, tempP1);
         setTempVertex(vertices[indices[i][1]], offset, tempP2);
         setTempVertex(vertices[indices[i][2]], offset, tempP3);
-        viewer.transformPoint(tempP1, tempP1);
-        viewer.transformPoint(tempP2, tempP2);
-        viewer.transformPoint(tempP3, tempP3);
+        viewer.transformPt3f(tempP1, tempP1);
+        viewer.transformPt3f(tempP2, tempP2);
+        viewer.transformPt3f(tempP3, tempP3);
         outputTriangle(tempP1, tempP2, tempP3, colix);
       }
       return;

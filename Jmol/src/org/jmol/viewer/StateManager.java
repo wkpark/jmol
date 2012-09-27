@@ -345,7 +345,7 @@ public class StateManager {
     Orientation(boolean asDefault) {
       if (asDefault) {
         Matrix3f rotationMatrix = (Matrix3f) viewer
-          .getModelSetAuxiliaryInfo("defaultOrientationMatrix");
+          .getModelSetAuxiliaryInfoValue("defaultOrientationMatrix");
         if (rotationMatrix == null)
           this.rotationMatrix.setIdentity();
         else

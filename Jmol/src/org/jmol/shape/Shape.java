@@ -380,7 +380,7 @@ public abstract class Shape {
   }
 
   protected int coordinateInRange(int x, int y, Point3f vertex, int dmin2, Point3i ptXY) {
-    viewer.transformPoint(vertex, ptXY);
+    viewer.transformPtScr(vertex, ptXY);
     int d2 = (x - ptXY.x) * (x - ptXY.x) + (y - ptXY.y) * (y - ptXY.y);
     return (d2 < dmin2 ? d2 : -1);
   }

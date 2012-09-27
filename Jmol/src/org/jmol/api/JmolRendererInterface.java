@@ -20,7 +20,7 @@ public interface JmolRendererInterface extends JmolGraphicsInterface {
 
   public abstract String getExportName();
 
-  public abstract boolean initializeExporter(String type, Viewer viewer,
+  public abstract Object initializeExporter(String type, Viewer viewer,
                                              double privateKey, GData gdata,
                                              Object output);
 
@@ -327,5 +327,15 @@ public interface JmolRendererInterface extends JmolGraphicsInterface {
   public abstract void renderBackground(JmolRendererInterface jre);
 
   public abstract GData getGData();
+
+  // g3d only
+  
+  public abstract boolean currentlyRendering();
+
+  public abstract void renderCrossHairs(int[] minMax, int screenWidth,
+                                        int screenHeight,
+                                        Point3f navigationOffset,
+                                        float navigationDepthPercent);
+
 
 }

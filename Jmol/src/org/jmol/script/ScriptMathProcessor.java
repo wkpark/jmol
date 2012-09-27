@@ -2125,7 +2125,7 @@ class ScriptMathProcessor {
     String file = ScriptVariable.sValue(args[0]);
     int nBytesMax = (args.length == 2 ? ScriptVariable.iValue(args[1])
         : Integer.MAX_VALUE);
-    return addXObj(tok == Token.load ? viewer.getFileAsString(file, nBytesMax,
+    return addXObj(tok == Token.load ? viewer.getFileAsStringBin(file, nBytesMax,
         false, false) : viewer.getFilePath(file, false));
   }
 
@@ -2403,9 +2403,9 @@ class ScriptMathProcessor {
         && !(args[i].value instanceof BitSet))
       return false;
     if (plane != null)
-      return addXBs(viewer.getAtomsWithin(distance, plane));
+      return addXBs(viewer.getAtomsNearPlane(distance, plane));
     if (pt != null)
-      return addXBs(viewer.getAtomsWithin(distance, pt));
+      return addXBs(viewer.getAtomsNearPt(distance, pt));
     bs = (args[i].tok == Token.bitset ? ScriptVariable.bsSelectVar(args[i]) : null);
     if (tok == Token.sequence)
       return addXBs(viewer.getSequenceBits(withinStr, bs));
@@ -2419,7 +2419,7 @@ class ScriptMathProcessor {
       rd = new RadiusData(null, 
           (distance > 10 ? distance / 100 : distance), 
           (distance > 10 ? EnumType.FACTOR : EnumType.OFFSET), EnumVdw.AUTO);
-    return addXBs(viewer.getAtomsWithin(distance, bs, isWithinModelSet, rd));
+    return addXBs(viewer.getAtomsWithinRadius(distance, bs, isWithinModelSet, rd));
   }
 
   private boolean evaluateContact(ScriptVariable[] args) {
@@ -2493,7 +2493,7 @@ class ScriptMathProcessor {
       // isosurface color scheme      
       String id = colorScheme.substring(1);
       Object[] data = new Object[] { id, null};
-      if (!viewer.getShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "colorEncoder", data))
+      if (!viewer.getShapePropertyData(JmolConstants.SHAPE_ISOSURFACE, "colorEncoder", data))
         return addXStr("");
       ce = (ColorEncoder) data[1];
     } else {

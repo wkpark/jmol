@@ -966,7 +966,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         return false;
       bs = Escape.unescapeBitset(script.substring(i + 3, j + 1));
       if (bsCmd == null)
-        viewer.setTrajectory(bs);
+        viewer.setTrajectoryBs(bs);
       else
         bsCmd[2] = bs;
     }
@@ -1493,7 +1493,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       x <<= 1;
       y <<= 1;
     }      
-    viewer.hoverOn(x, y, s, pickedMesh.thisID, pickedPt);
+    viewer.hoverOnPt(x, y, s, pickedMesh.thisID, pickedPt);
     return true;
   }
 
@@ -1527,7 +1527,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         x <<= 1;
         y <<= 1;
       }
-      viewer.hoverOn(x, y, s, null, null);
+      viewer.hoverOnPt(x, y, s, null, null);
     } catch (Exception e) {
       // never mind!
     }
@@ -1623,7 +1623,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     Point3f pt2 = new Point3f(ptRet);
     pt2.add(vNorm);
     Point3f pt2s = new Point3f();
-    viewer.transformPoint(pt2, pt2s);
+    viewer.transformPt3f(pt2, pt2s);
     if (pt2s.y > navPt.y)
       vNorm.scale(-1);
     setHeading(ptRet, vNorm, 0);     
@@ -1637,7 +1637,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     Orientation o1 = viewer.getOrientation();
     
     // move to point
-    viewer.navigate(0, pt);
+    viewer.navigatePt(0, pt);
     
     Point3f toPts = new Point3f();
     
@@ -1645,7 +1645,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     Point3f toPt = new Point3f(vNorm);
     //viewer.script("draw test2 vector " + Escape.escape(pt) + " " + Escape.escape(toPt));
     toPt.add(pt);
-    viewer.transformPoint(toPt, toPts);
+    viewer.transformPt3f(toPt, toPts);
     
     // subtract the navigation point to get a relative point
     // that we can project into the xy plane by setting z = 0
@@ -1657,14 +1657,14 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     // less 20 degrees for the normal upward sloping view
     float angle = Measure.computeTorsion(JmolConstants.axisNY, 
         JmolConstants.center, JmolConstants.axisZ, toPts, true);
-    viewer.navigate(0, JmolConstants.axisZ, angle);        
+    viewer.navigateAxis(0, JmolConstants.axisZ, angle);        
     toPt.set(vNorm);
     toPt.add(pt);
-    viewer.transformPoint(toPt, toPts);
+    viewer.transformPt3f(toPt, toPts);
     toPts.sub(navPt);
     angle = Measure.computeTorsion(JmolConstants.axisNY,
         JmolConstants.center, JmolConstants.axisX, toPts, true);
-    viewer.navigate(0, JmolConstants.axisX, 20 - angle);
+    viewer.navigateAxis(0, JmolConstants.axisX, 20 - angle);
     
     // save this orientation, restore the first, and then
     // use TransformManager.moveto to smoothly transition to it

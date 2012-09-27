@@ -51,7 +51,7 @@ public class EchoRenderer extends ShapeRenderer {
         continue;
       }
       if (t.valign == Object2d.VALIGN_XYZ) {
-        viewer.transformPoint(t.xyz, pt);
+        viewer.transformPtScr(t.xyz, pt);
         t.setXYZs(pt.x, pt.y, pt.z, pt.z);
       } else if (t.movableZPercent != Integer.MAX_VALUE) {
         int z = viewer.zValueFromPercent(t.movableZPercent);

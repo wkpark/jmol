@@ -89,8 +89,8 @@ public class AnimationManager {
     boolean isSameSource = false;
     if (currentModelIndex != modelIndex) {
       if (modelCount > 0) {
-        boolean toDataFrame = viewer.isJmolDataFrame(modelIndex);
-        boolean fromDataFrame = viewer.isJmolDataFrame(currentModelIndex);
+        boolean toDataFrame = viewer.isJmolDataFrameForModel(modelIndex);
+        boolean fromDataFrame = viewer.isJmolDataFrameForModel(currentModelIndex);
         if (fromDataFrame)
           viewer.setJmolDataFrame(null, -1, currentModelIndex);
         if (currentModelIndex != -1)
@@ -161,12 +161,12 @@ public class AnimationManager {
     int nDisplayed = 0;
     int frameDisplayed = 0;
     for (int i = firstModelIndex; i != lastModelIndex; i += frameStep)
-      if (!viewer.isJmolDataFrame(i)) {
+      if (!viewer.isJmolDataFrameForModel(i)) {
         bsVisibleFrames.set(i);
         nDisplayed++;
         frameDisplayed = i;
       }
-    if (firstModelIndex == lastModelIndex || !viewer.isJmolDataFrame(lastModelIndex)
+    if (firstModelIndex == lastModelIndex || !viewer.isJmolDataFrameForModel(lastModelIndex)
         || nDisplayed == 0) {
       bsVisibleFrames.set(lastModelIndex);
       if (nDisplayed == 0)

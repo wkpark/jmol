@@ -54,9 +54,8 @@ public abstract class ShapeRenderer {
   protected int exportType;
   protected boolean isExport;
 
-  public final void setViewerG3dShapeID(Viewer viewer, JmolRendererInterface g3d, int shapeID) {
+  public final void setViewerG3dShapeID(Viewer viewer, int shapeID) {
     this.viewer = viewer;
-    this.g3d = g3d;
     this.shapeID = shapeID;
     myVisibilityFlag = JmolConstants.getShapeVisibilityFlag(shapeID);
     initRenderer();

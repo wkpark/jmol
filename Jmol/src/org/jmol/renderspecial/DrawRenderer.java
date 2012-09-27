@@ -120,7 +120,7 @@ public class DrawRenderer extends MeshRenderer {
       for (int i = 0; i < n; i++)
         pt1f.add(vertices[i]);
       pt1f.scale(1f / n);
-      viewer.transformPoint(pt1f, pt1i);
+      viewer.transformPtScr(pt1f, pt1i);
       diameter = viewer.scaleToScreen(pt1i.z, (int) (width * 1000));
       if (diameter == 0)
         diameter = 1;
@@ -152,7 +152,7 @@ public class DrawRenderer extends MeshRenderer {
       super.render2(false);
       break;
     case CIRCLE:
-      viewer.transformPoint(vertices[0], pt1i);
+      viewer.transformPtScr(vertices[0], pt1i);
       if (diameter == 0 && width == 0)
         width = 1.0f;
       if (dmesh.scale > 0)
@@ -212,12 +212,12 @@ public class DrawRenderer extends MeshRenderer {
         vpt1.scaleAdd(1, vTemp2, pt1f);
         if (i == 0)
           vpt2.set(vpt1);
-        viewer.transformPoint(vpt1, screens[i]);
+        viewer.transformPtScr(vpt1, screens[i]);
         mat.transform(vTemp2);
       }
       if (dmesh.isVector && !dmesh.noHead) {
         renderArrowHead(vpt0, vpt1, 0.3f, false, false, dmesh.isBarb);
-        viewer.transformPoint(pt1f, screens[nPoints - 1]);
+        viewer.transformPtScr(pt1f, screens[nPoints - 1]);
       }
       pt1f.set(vpt2);
       break;
@@ -294,7 +294,7 @@ public class DrawRenderer extends MeshRenderer {
     vertices[2] = new Point3f(vpt2);
 
     for (int i = 0; i < 4; i++)
-      viewer.transformPoint(vertices[i], screens[i]);
+      viewer.transformPtScr(vertices[i], screens[i]);
 
     float f = 1; // bendiness
     float endoffset = 0.2f;
@@ -323,7 +323,7 @@ public class DrawRenderer extends MeshRenderer {
     vTemp.scale(endoffset); 
     vertices[2].add(vTemp);
     for (int i = 0; i < 3; i++) {
-      viewer.transformPoint(vertices[i], screens[i]);
+      viewer.transformPtScr(vertices[i], screens[i]);
       if (offsetside != 0) {
         screens[i].x += (int) vpt2.x;
         screens[i].y += (int) vpt2.y;
@@ -338,8 +338,8 @@ public class DrawRenderer extends MeshRenderer {
       diameter = 3;
     for (int i = lineData.size(); --i >= 0;) {
       Point3f[] pts = lineData.get(i);
-      viewer.transformPoint(pts[0], pt1i);
-      viewer.transformPoint(pts[1], pt2i);
+      viewer.transformPtScr(pts[0], pt1i);
+      viewer.transformPtScr(pts[1], pt2i);
       drawLine(-1, -2, true, pts[0], pts[1], pt1i, pt2i);
     }
   }
@@ -403,9 +403,9 @@ public class DrawRenderer extends MeshRenderer {
       pt1i.set((int) pt1f.x, (int) pt1f.y, (int) pt1f.z);
       pt2i.set((int) pt2f.x, (int) pt2f.y, (int) pt2f.z);
     } else {
-      viewer.transformPoint(pt2f, pt2i);
-      viewer.transformPoint(pt1f, pt1i);
-      viewer.transformPoint(pt0f, pt0i);
+      viewer.transformPtScr(pt2f, pt2i);
+      viewer.transformPtScr(pt1f, pt1i);
+      viewer.transformPtScr(pt0f, pt0i);
     }
     if (pt2i.z == 1 || pt1i.z == 1) //slabbed
       return;
@@ -475,7 +475,7 @@ public class DrawRenderer extends MeshRenderer {
         }
         if (drawType != EnumDrawType.ARC)
           pt1f.set(vertices[dmesh.polygonIndexes[i][pt]]);
-        viewer.transformPoint(pt1f, pt1i);
+        viewer.transformPtScr(pt1f, pt1i);
         int offset = (int) (5 * imageFontScaling);
         g3d.drawString(s, null, pt1i.x + offset, pt1i.y - offset, pt1i.z,
             pt1i.z);

@@ -159,7 +159,7 @@ public class ImageCreator implements JmolImageCreatorInterface {
       }
     }
     return (len < 0 ? "Creation of " + fileName + " failed: "
-        + viewer.getErrorMessageUntranslated() : "OK " + type + " " + len + " "
+        + viewer.getErrorMessageUn() : "OK " + type + " " + len + " "
         + fileName
         + (quality == Integer.MIN_VALUE ? "" : "; quality=" + quality));
   }

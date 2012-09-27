@@ -88,7 +88,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
     latticeOffset.set(0, 0, 0);
     for (int i = vertexCount; --i >= 0;)
       if (vertices[i] != null)
-        viewer.transformPoint(vertices[i], screens[i]);
+        viewer.transformPtScr(vertices[i], screens[i]);
     if (mesh.lattice == null || mesh.modelIndex < 0) {
       render2(isExport);
     } else {
@@ -111,7 +111,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
               for (int i = vertexCount; --i >= 0;) {
                 vTemp.set(vertices[i]);
                 vTemp.add(latticeOffset);
-                viewer.transformPoint(vTemp, screens[i]);
+                viewer.transformPtScr(vTemp, screens[i]);
               }
               render2(isExport);
             }
@@ -388,7 +388,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
         pt1f.set(vA);
         pt1f.add(vB);
         pt1f.scale(1f / 2f);
-        viewer.transformPoint(pt1f, pt1i);
+        viewer.transformPtScr(pt1f, pt1i);
         diameter = (int) (viewer.unscaleToScreen(pt1i.z, diameter) * 1000);
       }
       if (iA == iB) {
@@ -400,14 +400,14 @@ public abstract class MeshRenderer extends ShapeRenderer {
       pt1f.set(vA);
       pt1f.add(vB);
       pt1f.scale(1f / 2f);
-      viewer.transformPoint(pt1f, pt1i);
+      viewer.transformPtScr(pt1f, pt1i);
       int mad = (int) (Math.abs(width) * 1000); 
       diameter = (exportType == GData.EXPORT_CARTESIAN ? mad 
           : viewer.scaleToScreen(pt1i.z, mad));
       if (diameter == 0)
         diameter = 1;
-      viewer.transformPoint(vA, pt1f);
-      viewer.transformPoint(vB, pt2f);
+      viewer.transformPt3f(vA, pt1f);
+      viewer.transformPt3f(vB, pt2f);
       g3d.fillCylinderBits(endCap, diameter, pt1f, pt2f);
     }
   }

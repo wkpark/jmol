@@ -535,7 +535,7 @@ public class FileManager {
     String[] dir = null;
     dir = getZipDirectory(fileName, false);
     if (dir.length == 0) {
-      String state = viewer.getFileAsString(fileName, Integer.MAX_VALUE, false, true);
+      String state = viewer.getFileAsStringBin(fileName, Integer.MAX_VALUE, false, true);
       return (state.indexOf(JmolConstants.EMBEDDED_SCRIPT_TAG) < 0 ? ""
           : ScriptCompiler.getEmbeddedScript(state));
     }
@@ -1402,7 +1402,7 @@ public class FileManager {
     v.add(null);
     v.add(new byte[0]);
     if (fileRoot != null) {
-      Object bytes = viewer.getImageAs("PNG", -1, -1, -1, null, null, null,
+      Object bytes = viewer.getImageAsWithComment("PNG", -1, -1, -1, null, null, null,
           JmolConstants.embedScript(script));
       if (bytes instanceof byte[]) {
         v.add("preview.png");

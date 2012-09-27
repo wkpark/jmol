@@ -185,7 +185,7 @@ import javax.vecmath.Vector3f;
     int m = viewer.getCurrentModelIndex();
     if (m >= 0 && m != modelIndex 
         && models[m].fileIndex == models[modelIndex].fileIndex)
-      viewer.setCurrentModelIndex(modelIndex, false);
+      viewer.setCurrentModelIndexClear(modelIndex, false);
   }  
 
   /**
@@ -297,7 +297,7 @@ import javax.vecmath.Vector3f;
   }
 
   public String getAtomLabel(int i) {
-    return (String) viewer.getShapeProperty(JmolConstants.SHAPE_LABELS, "label", i);
+    return (String) viewer.getShapePropertyIndex(JmolConstants.SHAPE_LABELS, "label", i);
   }
   
   protected final Atom[] closest = new Atom[1];
@@ -391,7 +391,7 @@ import javax.vecmath.Vector3f;
       bs = viewer.getModelUndeletedAtomsBitSet(modelIndex);
       iAtom = bs.nextSetBit(0);
     }
-    Object obj = viewer.getShapeProperty(JmolConstants.SHAPE_VECTORS, "mad", iAtom);
+    Object obj = viewer.getShapePropertyIndex(JmolConstants.SHAPE_VECTORS, "mad", iAtom);
     boolean haveVibration = (obj != null && ((Integer) obj).intValue() != 0 || viewer
         .isVibrationOn());
     SymmetryInterface symmetry = (SymmetryInterface) Interface

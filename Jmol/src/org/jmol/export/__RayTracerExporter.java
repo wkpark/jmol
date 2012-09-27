@@ -53,7 +53,7 @@ abstract class __RayTracerExporter extends ___Exporter {
   @Override
   protected void outputVertex(Point3f pt, Point3f offset) {
     setTempVertex(pt, offset, tempP1);
-    viewer.transformPoint(tempP1, tempP1);
+    viewer.transformPt3f(tempP1, tempP1);
     output(tempP1);
   }
 
@@ -86,8 +86,8 @@ abstract class __RayTracerExporter extends ___Exporter {
     }
     tempP1.set(pt);
     tempP1.add(normal);
-    viewer.transformPoint(pt, tempP2);
-    viewer.transformPoint(tempP1, tempP3);
+    viewer.transformPt3f(pt, tempP2);
+    viewer.transformPt3f(tempP1, tempP3);
     tempP3.sub(tempP2);
     tempP3.scale(factor);
     return tempP3;

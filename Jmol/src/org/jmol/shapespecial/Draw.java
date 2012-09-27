@@ -381,7 +381,7 @@ public void initShape() {
       vData.add(new Object[] { Integer.valueOf(PT_BITSET), bsAtoms });
       nbitsets++;
       if (isCircle && diameter == 0 && width == 0)
-        width = viewer.calcRotationRadius(bsAtoms) * 2.0f;
+        width = viewer.calcRotationRadiusBs(bsAtoms) * 2.0f;
       return;
     }
 
@@ -637,7 +637,7 @@ public void initShape() {
     } else if (plane != null && intersectID != null) {
       List<Point3f[]> vData = new ArrayList<Point3f[]>();
       Object[] data = new Object[] { intersectID, plane, vData, null };
-      viewer.getShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "intersectPlane",
+      viewer.getShapePropertyData(JmolConstants.SHAPE_ISOSURFACE, "intersectPlane",
           data);
       if (vData.size() == 0)
         return;
@@ -1158,7 +1158,7 @@ public void initShape() {
         : pickedMesh.title[0]);
     if (s.length() > 1 && s.charAt(0) == '>')
       s = s.substring(1);
-    viewer.hoverOn(x, y, s, pickedMesh.thisID, pickedPt);
+    viewer.hoverOnPt(x, y, s, pickedMesh.thisID, pickedPt);
     return true;
   }
 
@@ -1206,7 +1206,7 @@ public void initShape() {
     Point3f coord = new Point3f(mesh.vertices[ptVertex]);
     Point3f newcoord = new Point3f();
     Vector3f move = new Vector3f();
-    viewer.transformPoint(coord, pt);
+    viewer.transformPt3f(coord, pt);
     pt.x = x;
     pt.y = y;
     viewer.unTransformPoint(pt, newcoord);

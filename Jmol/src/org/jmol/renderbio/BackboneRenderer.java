@@ -34,7 +34,7 @@ public class BackboneRenderer extends BioShapeRenderer {
 
   @Override
   protected void renderBioShape(BioShape bioShape) {
-    boolean isDataFrame = viewer.isJmolDataFrame(bioShape.modelIndex);
+    boolean isDataFrame = viewer.isJmolDataFrameForModel(bioShape.modelIndex);
     for (int i = bsVisible.nextSetBit(0); i >= 0; i = bsVisible.nextSetBit(i + 1)) {
       Atom atomA = modelSet.atoms[leadAtomIndices[i]];
       Atom atomB = modelSet.atoms[leadAtomIndices[i + 1]];

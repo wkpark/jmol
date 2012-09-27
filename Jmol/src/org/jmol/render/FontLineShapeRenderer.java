@@ -184,7 +184,7 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
     } else {
       pointT3.set(ptRef);
     }
-    viewer.transformPoint(pointT3, pt2);
+    viewer.transformPtScr(pointT3, pt2);
     //too annoying! float tx = vectorT2.x * ((ptA.screenX + ptB.screenX) / 2 - pt2.x);
     //float ty = vectorT2.y * ((ptA.screenY + ptB.screenY) / 2 - pt2.y);
     //if (tx + ty < -0.1)
@@ -202,7 +202,7 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
     while (p < d) {
       if (p >= tickInfo.first) {
         pointT2.set(pointT);
-        viewer.transformPoint(pointT2, pointT2);
+        viewer.transformPt3f(pointT2, pointT2);
         drawLine((int) pointT2.x, (int) pointT2.y, (int) z,
             (x = (int) (pointT2.x + vectorT2.x)),
             (y = (int) (pointT2.y + vectorT2.y)), (int) z, diameter);

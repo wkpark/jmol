@@ -73,18 +73,17 @@ final public class Export3D implements JmolRendererInterface {
     return exportName;
   }
 
-  public boolean initializeExporter(String type, Viewer viewer, double privateKey, GData gdata,
+  public Object initializeExporter(String type, Viewer viewer, double privateKey, GData gdata,
                                     Object output) {
     exportName = type;
     try {
-      String name = "org.jmol.export._"
-          + type + "Exporter";
+      String name = (type.equals("JS") ? "org.jmol.exportjs._JSExporter" : "org.jmol.export._" + type + "Exporter");
       Class<?> exporterClass = Class.forName(name);
       // Class exporterClass =
       // Class.forName("org.jmol.export.NewPovrayExporter");
       exporter = (___Exporter) exporterClass.newInstance();
     } catch (Exception e) {
-      return false;
+      return null;
     }
     g3d = gdata;
     exporter.setRenderer(this);
@@ -93,7 +92,7 @@ final public class Export3D implements JmolRendererInterface {
     width = g3d.getRenderWidth();
     height = g3d.getRenderHeight();
     this.privateKey = privateKey;
-    return exporter.initializeOutput(viewer, privateKey, g3d, output);
+    return (exporter.initializeOutput(viewer, privateKey, g3d, output) ? exporter : null);
   }
 
   public String finalizeOutput() {
@@ -863,6 +862,16 @@ final public class Export3D implements JmolRendererInterface {
   public void volumeRender(int diam, int x, int y, int z) {
     fillSphere(diam, x, y, z);
     
+  }
+
+  // Graphics3D only:
+  public boolean currentlyRendering() {
+    return false;
+  }
+
+  public void renderCrossHairs(int[] minMax, int screenWidth, int screenHeight,
+                               Point3f navigationOffset,
+                               float navigationDepthPercent) {    
   }
 
 }

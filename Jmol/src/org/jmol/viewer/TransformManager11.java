@@ -272,7 +272,7 @@ class TransformManager11 extends TransformManager {
     if (pt != null) {
       navigationCenter.set(pt);
       navTranslatePercent(-1, ptoff.x * width, ptoff.y * height);
-      navigate(0, pt);
+      navigatePt(0, pt);
     }
   }
 
@@ -474,7 +474,7 @@ class TransformManager11 extends TransformManager {
     transformPoint(pt, pts);
     pts.z += navZ;
     unTransformPoint(pts, pt);
-    navigate(0, pt);
+    navigatePt(0, pt);
   }
 
   @Override
@@ -631,7 +631,7 @@ class TransformManager11 extends TransformManager {
   }
 
   @Override
-  public void navigate(float seconds, Point3f pt) {
+  public void navigatePt(float seconds, Point3f pt) {
     if (seconds > 0) {
       navigateTo(seconds, null, Float.NaN, pt, Float.NaN, Float.NaN, Float.NaN);
       return;
@@ -644,7 +644,7 @@ class TransformManager11 extends TransformManager {
   }
 
   @Override
-  void navigate(float seconds, Vector3f rotAxis, float degrees) {
+  void navigateAxis(float seconds, Vector3f rotAxis, float degrees) {
     if (degrees == 0)
       return;
     if (seconds > 0) {
@@ -748,10 +748,10 @@ class TransformManager11 extends TransformManager {
         navigating = true;
         float fStep = iStep / (totalSteps - 1f);
         if (!Float.isNaN(degrees))
-          navigate(0, axis, degreeStep);
+          navigateAxis(0, axis, degreeStep);
         if (center != null) {
           centerStart.add(aaStepCenter);
-          navigate(0, centerStart);
+          navigatePt(0, centerStart);
         }
         if (!Float.isNaN(xTrans) || !Float.isNaN(yTrans)) {
           float x = Float.NaN;
@@ -801,12 +801,12 @@ class TransformManager11 extends TransformManager {
   }
 
   @Override
-  void navigate(float seconds, Point3f[][] pathGuide) {
+  void navigateGuide(float seconds, Point3f[][] pathGuide) {
     navigate(seconds, pathGuide, null, null, 0, Integer.MAX_VALUE);
   }
 
   @Override
-  void navigate(float seconds, Point3f[] path, float[] theta, int indexStart,
+  void navigatePath(float seconds, Point3f[] path, float[] theta, int indexStart,
                 int indexEnd) {
     navigate(seconds, null, path, theta, indexStart, indexEnd);
   }
@@ -862,7 +862,7 @@ class TransformManager11 extends TransformManager {
     int frameTimeMillis = (int) (1000 / navFps);
     long targetTime = System.currentTimeMillis();
     for (int iStep = 0; iStep < totalSteps; ++iStep) {
-      navigate(0, points[iStep]);
+      navigatePt(0, points[iStep]);
       if (isPathGuide) {
         alignZX(points[iStep], points[iStep + 1], pointGuides[iStep]);
       }
@@ -906,7 +906,7 @@ class TransformManager11 extends TransformManager {
     float angle = vPath.angle(v);
     v.cross(vPath, v);
     if (angle != 0)
-      navigate(0, v, (float) (angle * degreesPerRadian));
+      navigateAxis(0, v, (float) (angle * degreesPerRadian));
     matrixRotate.transform(pt0, pt0s);
     Point3f pt2 = new Point3f(ptVectorWing);
     pt2.add(pt0);
@@ -921,11 +921,11 @@ class TransformManager11 extends TransformManager {
       angle = -angle;
     v.set(0, 0, 1);
     if (angle != 0)
-      navigate(0, v, (float) (angle * degreesPerRadian));
+      navigateAxis(0, v, (float) (angle * degreesPerRadian));
     if (viewer.getNavigateSurface()) {
       // set downward viewpoint 20 degrees to horizon
       v.set(1, 0, 0);
-      navigate(0, v, 20);
+      navigateAxis(0, v, 20);
     }
     matrixRotate.transform(pt0, pt0s);
     matrixRotate.transform(pt1, pt1s);

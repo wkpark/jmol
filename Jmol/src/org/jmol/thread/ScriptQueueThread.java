@@ -89,7 +89,7 @@ public class ScriptQueueThread extends JmolThread {
     //System.out.println("removing: " + scriptItem);
     scriptManager.scriptQueue.remove(0);
     //System.out.println("removed: " + scriptItem);
-    viewer.evalStringWaitStatus(returnType, script, statusList, isScriptFile, isQuiet, true);
+    viewer.evalStringWaitStatusQueued(returnType, script, statusList, isScriptFile, isQuiet, true);
     if (scriptManager.scriptQueue.size() == 0) {// might have been cleared with an exit
       //Logger.info("SCRIPT QUEUE READY", 0);
       return false;

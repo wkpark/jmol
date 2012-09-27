@@ -76,7 +76,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
   private Point3fi getAtom(int i) {
     Point3fi a = measurement.getAtom(i);
     if (a.screenDiameter < 0) {
-      viewer.transformPoint(a, pt0);
+      viewer.transformPtScr(a, pt0);
       a.screenX = pt0.x;
       a.screenY = pt0.y;
       a.screenZ = pt0.z;
@@ -183,7 +183,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
       pointT.add(atomB);
       // NOTE! Point3i screen is just a pointer 
       //  to viewer.transformManager.point3iScreenTemp
-      Point3i point3iScreenTemp = viewer.transformPoint(pointT);
+      Point3i point3iScreenTemp = viewer.transformPt(pointT);
       int zArc = point3iScreenTemp.z - zOffset;
       if (zArc < 0) zArc = 0;
       g3d.drawPixel(point3iScreenTemp.x, point3iScreenTemp.y, zArc);
@@ -193,7 +193,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
         // next line modifies Point3i point3iScreenTemp
         matrixT.transform(pointT);
         pointT.add(atomB);
-        viewer.transformPoint(pointT);
+        viewer.transformPt(pointT);
         int zLabel = point3iScreenTemp.z - zOffset;
         drawString(point3iScreenTemp.x, 
             point3iScreenTemp.y, zLabel, radius, 

@@ -304,7 +304,7 @@ class ColorManager {
     return new float[] { propertyColorEncoder.lo, propertyColorEncoder.hi };
   }
 
-  void setPropertyColorRange(float[] data, BitSet bs, String colorScheme) {
+  void setPropertyColorRangeData(float[] data, BitSet bs, String colorScheme) {
     colorData = data;
     propertyColorEncoder.currentPalette = propertyColorEncoder.getColorScheme(
         colorScheme, true, false);

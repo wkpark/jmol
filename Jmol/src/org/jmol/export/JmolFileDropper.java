@@ -102,7 +102,7 @@ public class JmolFileDropper implements DropTargetListener {
         // ignore
       }
     }
-    viewer.openFileAsynchronously(fname, true);
+    viewer.openFileAsyncPDB(fname, true);
   }
 
   private void loadFiles(List<File> fileList) {

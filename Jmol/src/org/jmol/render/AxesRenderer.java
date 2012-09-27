@@ -79,7 +79,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
     int modelIndex = viewer.getCurrentModelIndex();
     // includes check here for background model present
     boolean isUnitCell = (axesMode == EnumAxesMode.UNITCELL);
-    if (viewer.isJmolDataFrame(modelIndex) 
+    if (viewer.isJmolDataFrameForModel(modelIndex) 
         && !viewer.getModelSet().getJmolFrameType(modelIndex).equals("plot data")
         || isUnitCell && modelIndex < 0)
       return;
@@ -119,7 +119,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
           diameter += diameter;
       }
       g3d.setSlab(0);
-      pt0.set(viewer.transformPoint(axes.axisXY));
+      pt0.set(viewer.transformPt(axes.axisXY));
       originScreen.set(pt0.x, pt0.y, pt0.z);
       float zoomDimension = viewer.getScreenDim();
       float scaleFactor = zoomDimension / 10f * axes.scale;
@@ -139,11 +139,11 @@ public class AxesRenderer extends FontLineShapeRenderer {
         }
         atomA.set(axes.getOriginPoint(isDataFrame));
       }
-      viewer.transformPointNoClip(axes.getOriginPoint(isDataFrame),
+      viewer.transformPtNoClip(axes.getOriginPoint(isDataFrame),
           originScreen);
       diameter = getDiameter((int) originScreen.z, mad);
       for (int i = nPoints; --i >= 0;)
-        viewer.transformPointNoClip(axes.getAxisPoint(i, isDataFrame),
+        viewer.transformPtNoClip(axes.getAxisPoint(i, isDataFrame),
             screens[i]);
     }
     float xCenter = originScreen.x;

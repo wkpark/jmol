@@ -565,7 +565,7 @@ public class Jmol implements WrappedApplet {
       viewer.notifyViewerRepaintDone();
     } else {
       if (!isStereoSlave)
-        viewer.renderScreenImage(g, gRight, size.width, size.height);
+        viewer.renderScreenImageStereo(g, gRight, size.width, size.height);
     }
 
     if (showPaintTime) {

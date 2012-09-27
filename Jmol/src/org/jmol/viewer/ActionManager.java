@@ -726,7 +726,7 @@ public class ActionManager {
         break;
       }
       if (isBound) {
-        dragAtomIndex = viewer.findNearestAtomIndex(x, y, true);
+        dragAtomIndex = viewer.findNearestAtomIndexMovable(x, y, true);
         if (dragAtomIndex >= 0
             && (atomPickingMode == PICKING_ASSIGN_ATOM 
                 || atomPickingMode == PICKING_INVERT_STEREO)
@@ -750,7 +750,7 @@ public class ActionManager {
       if (dragSelectedMode) {
         haveSelection = true;
         if (isSelectAndDrag) {
-          haveSelection = (viewer.findNearestAtomIndex(x, y, true) >= 0);
+          haveSelection = (viewer.findNearestAtomIndexMovable(x, y, true) >= 0);
           // checkPointOrAtomClicked(x, y, mods, pressedCount, true);
         }
         if (!haveSelection)
@@ -787,7 +787,7 @@ public class ActionManager {
         // H C + -, etc.
         // also check valence and add/remove H atoms as necessary?
         if (measurementPending.getCount() == 2) {
-          viewer.undoMoveAction(-1, Token.save, true);
+          viewer.undoMoveActionClear(-1, Token.save, true);
           viewer.script("assign connect "
               + measurementPending.getMeasurementScript(" ", false));
         } else if (pickAtomAssignType.equals("Xx")) {
@@ -799,14 +799,14 @@ public class ActionManager {
                 + pickAtomAssignType + "\"";
             if (isPickAtomAssignCharge) {
               s += ";{atomindex=" + dragAtomIndex + "}.label='%C'; ";
-              viewer.undoMoveAction(dragAtomIndex,
+              viewer.undoMoveActionClear(dragAtomIndex,
                   AtomCollection.TAINT_FORMALCHARGE, true);
             } else {
-              viewer.undoMoveAction(-1, Token.save, true);
+              viewer.undoMoveActionClear(-1, Token.save, true);
             }
             viewer.script(s);
           } else if (!isPickAtomAssignCharge) {
-            viewer.undoMoveAction(-1, Token.save, true);
+            viewer.undoMoveActionClear(-1, Token.save, true);
             Atom a = viewer.getModelSet().atoms[dragAtomIndex];
             if (a.getElementNumber() == 1) {
               viewer.script("assign atom ({" + dragAtomIndex + "}) \"X\"");
@@ -977,7 +977,7 @@ public class ActionManager {
       case PICKING_DRAG_MINIMIZE:
       case PICKING_DRAG_MINIMIZE_MOLECULE:
         if (dragGesture.getPointCount() == 1)
-          viewer.undoMoveAction(dragAtomIndex, AtomCollection.TAINT_COORD, true);
+          viewer.undoMoveActionClear(dragAtomIndex, AtomCollection.TAINT_COORD, true);
         checkMotion(JmolConstants.CURSOR_MOVE);
         if (isBound(action, ACTION_rotateSelected)) {
           bs = viewer.getAtomBits(Token.molecule, BitSetUtil
@@ -1005,7 +1005,7 @@ public class ActionManager {
 
     if (dragAtomIndex >= 0 && isBound(action, ACTION_assignNew)
         && atomPickingMode == PICKING_ASSIGN_ATOM) {
-      int nearestAtomIndex = viewer.findNearestAtomIndex(x, y, false);
+      int nearestAtomIndex = viewer.findNearestAtomIndexMovable(x, y, false);
       if (nearestAtomIndex >= 0) {
         if (measurementPending != null) {
           measurementPending.setCount(1);
@@ -1052,7 +1052,7 @@ public class ActionManager {
       if (iatom < 0)
         return;
       if (dragGesture.getPointCount() == 1)
-        viewer.undoMoveAction(iatom, AtomCollection.TAINT_COORD, true);
+        viewer.undoMoveActionClear(iatom, AtomCollection.TAINT_COORD, true);
       else
         viewer.moveSelected(Integer.MAX_VALUE, 0, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, null, false, false);
       checkMotion(JmolConstants.CURSOR_MOVE);
@@ -1306,7 +1306,7 @@ public class ActionManager {
           || bondPickingMode == PICKING_ASSIGN_BOND ? ACTION_assignNew
           : ACTION_deleteBond)) {
         if (bondPickingMode == PICKING_ASSIGN_BOND)
-          viewer.undoMoveAction(-1, Token.save, true);
+          viewer.undoMoveActionClear(-1, Token.save, true);
         int index = ((Integer) t.get("index")).intValue();
         switch (bondPickingMode) {
         case PICKING_ASSIGN_BOND:
@@ -1370,7 +1370,7 @@ public class ActionManager {
 
   private int findNearestAtom(int x, int y, Point3fi nearestPoint, boolean isClicked) {
     int index = (drawMode || nearestPoint != null ? -1 : viewer
-        .findNearestAtomIndex(x, y, false));
+        .findNearestAtomIndexMovable(x, y, false));
     return (index >= 0
         && (isClicked || measurementPending == null)
         && !viewer.isInSelectionSubset(index) ? -1 : index);
@@ -1717,7 +1717,7 @@ public class ActionManager {
             bs.clear(imax);
           }
         }
-        viewer.undoMoveAction(atomIndex, AtomCollection.TAINT_COORD, true);
+        viewer.undoMoveActionClear(atomIndex, AtomCollection.TAINT_COORD, true);
         viewer.invertSelected(null, null, atomIndex, bs);
         viewer.setStatusAtomPicked(atomIndex, "inverted: " + Escape.escape(bs));
       }
@@ -1856,7 +1856,7 @@ public class ActionManager {
     try {
       if (eval == null)
         eval = new ScriptEvaluator(viewer);
-      return viewer.getAtomBitSet(eval, script);
+      return viewer.getAtomBitSetEval(eval, script);
     } catch (Exception e) {
       // ignore
     }

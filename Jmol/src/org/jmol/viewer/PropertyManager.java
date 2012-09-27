@@ -388,7 +388,7 @@ public class PropertyManager {
     case PROP_DATA_INFO:
       return viewer.getData(myParam.toString());
     case PROP_ERROR_MESSAGE:
-      return viewer.getErrorMessageUntranslated();
+      return viewer.getErrorMessageUn();
     case PROP_EVALUATE:
       return ScriptEvaluator.evaluateExpression(viewer, myParam.toString());
     case PROP_EXTRACT_MODEL:

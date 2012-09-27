@@ -407,7 +407,7 @@ public class ShapeManager {
       // translateSelected operation
       Point3f ptCenter = viewer.getAtomSetCenter(bsAtoms);
       Point3f pt = new Point3f();
-      viewer.transformPoint(ptCenter, pt);
+      viewer.transformPt3f(ptCenter, pt);
       pt.add(ptOffset);
       viewer.unTransformPoint(pt, pt);
       pt.sub(ptCenter);
@@ -433,8 +433,8 @@ public class ShapeManager {
       // use Cartesian coordinates, not screen coordinates
       Atom atom = atoms[i];
       Point3i screen = (vibrationVectors != null && atom.hasVibration() ? viewer
-          .transformPoint(atom, vibrationVectors[i])
-          : viewer.transformPoint(atom));
+          .transformPtVib(atom, vibrationVectors[i])
+          : viewer.transformPt(atom));
       atom.screenX = screen.x;
       atom.screenY = screen.y;
       atom.screenZ = screen.z;

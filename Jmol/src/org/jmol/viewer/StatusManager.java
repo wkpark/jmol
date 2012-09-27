@@ -267,7 +267,7 @@ class StatusManager {
     //System.out.println("callback " + iCallback + " + " + JmolConstants.getCallbackName(iCallback));
     String s = jmolScriptCallbacks.get(callback);
     if (s != null)
-      viewer.evalStringQuiet(s, true, false);
+      viewer.evalStringQuietSync(s, true, false);
     return s;
   }
   

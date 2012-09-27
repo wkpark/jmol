@@ -132,7 +132,7 @@ public abstract class TransformManager {
     matrixRotate.setIdentity(); // no rotations
     //if (viewer.autoLoadOrientation()) {
       Matrix3f m = (Matrix3f) viewer
-          .getModelSetAuxiliaryInfo("defaultOrientationMatrix");
+          .getModelSetAuxiliaryInfoValue("defaultOrientationMatrix");
       if (m != null)
         matrixRotate.set(m);
     //}
@@ -1627,7 +1627,7 @@ public abstract class TransformManager {
    * @param vibrationVector
    * @return POINTER TO TEMPORARY VARIABLE (caution!) point3iScreenTemp
    */
-  Point3i transformPoint(Point3f pointAngstroms, Vector3f vibrationVector) {
+  Point3i transformPointVib(Point3f pointAngstroms, Vector3f vibrationVector) {
     point3fVibrationTemp.set(pointAngstroms);
     if (vibrationOn && vibrationVector != null)
       point3fVibrationTemp.scaleAdd(vibrationAmplitude, vibrationVector,
@@ -1940,7 +1940,7 @@ public abstract class TransformManager {
 
   private String getRotateZyzText(boolean iAddComment) {
     StringBuffer sb = new StringBuffer();
-    Matrix3f m = (Matrix3f) viewer.getModelSetAuxiliaryInfo("defaultOrientationMatrix");
+    Matrix3f m = (Matrix3f) viewer.getModelSetAuxiliaryInfoValue("defaultOrientationMatrix");
     if (m == null) {
       m = matrixRotate;
     } else {
@@ -2330,7 +2330,7 @@ public abstract class TransformManager {
    * @param seconds
    * @param center
    */
-  public void navigate(float seconds, Point3f center) {
+  public void navigatePt(float seconds, Point3f center) {
   }
 
   /**
@@ -2340,7 +2340,7 @@ public abstract class TransformManager {
    * @param rotAxis
    * @param degrees
    */
-  void navigate(float seconds, Vector3f rotAxis, float degrees) {
+  void navigateAxis(float seconds, Vector3f rotAxis, float degrees) {
   }
 
   /** 
@@ -2355,7 +2355,7 @@ public abstract class TransformManager {
    *                 
    *                 not implemented yet
    */
-  void navigate(float seconds, Point3f[] path, float[] theta, int indexStart,
+  void navigatePath(float seconds, Point3f[] path, float[] theta, int indexStart,
                 int indexEnd) {
   }
 
@@ -2364,7 +2364,7 @@ public abstract class TransformManager {
    * @param timeSeconds
    * @param pathGuide
    */
-  void navigate(float timeSeconds, Point3f[][] pathGuide) {
+  void navigateGuide(float timeSeconds, Point3f[][] pathGuide) {
   }
 
   /**

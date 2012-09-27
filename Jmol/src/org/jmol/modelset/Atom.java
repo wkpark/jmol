@@ -486,7 +486,7 @@ final public class Atom extends Point3fi implements JmolNode {
     // AtomCollection.getAtomPropertyState with VDW_AUTO
     // AtomCollection.getVdwRadius with passed on type
     return (Float.isNaN(userDefinedVanDerWaalRadius) 
-        ? viewer.getVanderwaalsMar(atomicAndIsotopeNumber % 128, getVdwType(type)) / 1000f
+        ? viewer.getVanderwaalsMarType(atomicAndIsotopeNumber % 128, getVdwType(type)) / 1000f
         : userDefinedVanDerWaalRadius);
   }
 
@@ -525,7 +525,7 @@ final public class Atom extends Point3fi implements JmolNode {
   float getVolume(Viewer viewer, EnumVdw vType) {
     float r1 = (vType == null ? userDefinedVanDerWaalRadius : Float.NaN);
     if (Float.isNaN(r1))
-      r1 = viewer.getVanderwaalsMar(getElementNumber(), getVdwType(vType)) / 1000f;
+      r1 = viewer.getVanderwaalsMarType(getElementNumber(), getVdwType(vType)) / 1000f;
     double volume = 0;
     if (bonds != null)
       for (int j = 0; j < bonds.length; j++) {
@@ -534,7 +534,7 @@ final public class Atom extends Point3fi implements JmolNode {
         Atom atom2 = bonds[j].getOtherAtom(this);
         float r2 = (vType == null ? atom2.userDefinedVanDerWaalRadius : Float.NaN);
         if (Float.isNaN(r2))
-          r2 = viewer.getVanderwaalsMar(atom2.getElementNumber(), atom2
+          r2 = viewer.getVanderwaalsMarType(atom2.getElementNumber(), atom2
               .getVdwType(vType)) / 1000f;
         float d = distance(atom2);
         if (d > r1 + r2)

@@ -25,18 +25,14 @@ package org.jmol.render;
 
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.api.JmolRepaintInterface;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.ModelSet;
 import org.jmol.shape.Shape;
-import org.jmol.util.Colix;
 import org.jmol.util.GData;
 import org.jmol.util.Logger;
 import org.jmol.util.Rectangle;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.ShapeManager;
 import org.jmol.viewer.Viewer;
-
-import javax.vecmath.Point3f;
 
 public class RepaintManager implements JmolRepaintInterface {
 
@@ -58,17 +54,14 @@ public class RepaintManager implements JmolRepaintInterface {
   private int holdRepaint = 0;
   private boolean repaintPending;
   
-  
   public boolean isRepaintPending() {
     return repaintPending;
   }
-  
   
   public void pushHoldRepaint() {
     ++holdRepaint;
     //System.out.println("repaintManager pushHoldRepaint holdRepaint=" + holdRepaint + " thread=" + Thread.currentThread().getName());
   }
-
   
   public void popHoldRepaint(boolean andRepaint) {
     --holdRepaint;
@@ -78,47 +71,87 @@ public class RepaintManager implements JmolRepaintInterface {
       if (andRepaint) {
         repaintPending = true;
         //System.out.println("RM popholdrepaint TRUE " + (test++));
-        viewer.repaint();
+        repaintNow();
       }
     }
   }
 
-  
-  public boolean refresh() {
+  synchronized public void requestRepaintAndWait() {
+    /**
+     * @j2sNative
+     * 
+     *  if (typeof Jmol != "undefined" && Jmol._repaint) 
+     *    Jmol._repaint(this.viewer.htmlName, false);
+     *  this.repaintDone();
+     */
+    {
+      //System.out.println("RM requestRepaintAndWait() " + (test++));
+      try {
+        repaintNow();
+        //System.out.println("repaintManager requestRepaintAndWait I am waiting for a repaint: thread=" + Thread.currentThread().getName());
+        wait(viewer.getRepaintWait()); // more than a second probably means we are locked up here
+        if (repaintPending) {
+          Logger.error("repaintManager requestRepaintAndWait timeout");
+          repaintDone();
+        }
+      } catch (InterruptedException e) {
+        //System.out.println("repaintManager requestRepaintAndWait interrupted thread=" + Thread.currentThread().getName());
+      }
+    }
+    //System.out.println("repaintManager requestRepaintAndWait I am no longer waiting for a repaint: thread=" + Thread.currentThread().getName());
+  }
+
+  public boolean repaintIfReady() {
     if (repaintPending)
       return false;
     repaintPending = true;
     if (holdRepaint == 0) {
       //System.out.println("RM refresh() " + (test++));
-      viewer.repaint();
+      repaintNow();
     }
     return true;
   }
 
-  
+  private void repaintNow() {
+    // from RepaintManager to the System
+    // -- "Send me an asynchronous update() event!"
+    if (!viewer.haveDisplay)
+      return;    
+    /**
+     * Jmol._repaint(appletId,asNewThread)
+     * 
+     * should invoke 
+     * 
+     *   setTimeout(Jmol.getApplet(appletId)._applet.viewer.updateJS(width, height)) // may be 0,0
+     *   
+     * when it is ready to do so.
+     * 
+     * @j2sNative
+     * 
+     * if (typeof Jmol != "undefined" && Jmol._repaint)
+     *   Jmol._repaint(this.viewer.htmlName,true);
+     * 
+     */
+    {
+      viewer.apiPlatform.repaint(viewer.getDisplay());
+    }
+     
+  }
+
   synchronized public void repaintDone() {
     repaintPending = false;
-    //System.out.println("repaintManager repaintDone thread=" + Thread.currentThread().getName());
-    notify(); // to cancel any wait in requestRepaintAndWait()
+    /**
+     * @j2sNative
+     * 
+     */
+    {
+      //System.out.println("repaintManager repaintDone thread=" + Thread.currentThread().getName());
+      // ignored in JavaScript
+      notify(); // to cancel any wait in requestRepaintAndWait()
+    }
   }
 
   
-  synchronized public void requestRepaintAndWait() {
-    //System.out.println("RM requestRepaintAndWait() " + (test++));
-    viewer.repaint();
-    try {
-      //System.out.println("repaintManager requestRepaintAndWait I am waiting for a repaint: thread=" + Thread.currentThread().getName());
-      wait(viewer.getRepaintWait());  // more than a second probably means we are locked up here
-      if (repaintPending) {
-        Logger.error("repaintManager requestRepaintAndWait timeout");
-        repaintDone();
-      }
-    } catch (InterruptedException e) {
-      //System.out.println("repaintManager requestRepaintAndWait interrupted thread=" + Thread.currentThread().getName());
-    }
-    //System.out.println("repaintManager requestRepaintAndWait I am no longer waiting for a repaint: thread=" + Thread.currentThread().getName());
-  }
-
   /////////// renderer management ///////////
   
   
@@ -132,14 +165,14 @@ public class RepaintManager implements JmolRepaintInterface {
         renderers[i] = null;
   }
 
-  private ShapeRenderer getRenderer(int shapeID, JmolRendererInterface g3d) {
+  private ShapeRenderer getRenderer(int shapeID) {
     if (renderers[shapeID] != null)
       return renderers[shapeID];
     String className = JmolConstants.getShapeClassName(shapeID, true) + "Renderer";
     try {
       Class<?> shapeClass = Class.forName(className);
       ShapeRenderer renderer = (ShapeRenderer) shapeClass.newInstance();
-      renderer.setViewerG3dShapeID(viewer, g3d, shapeID);
+      renderer.setViewerG3dShapeID(viewer, shapeID);
       return renderers[shapeID] = renderer;
     } catch (Exception e) {
       Logger.error("Could not instantiate renderer:" + className, e);
@@ -157,12 +190,15 @@ public class RepaintManager implements JmolRepaintInterface {
     if (logTime)
       Logger.startTimer();
     try {
-      Graphics3D g3d = (Graphics3D) gdata;
+      JmolRendererInterface g3d = (JmolRendererInterface) gdata;
       g3d.renderBackground(null);
       if (isFirstPass)  {
         if (minMax != null)
-          renderCrossHairs(g3d, minMax);
-        renderSelectionRubberBand(g3d);
+          g3d.renderCrossHairs(minMax, viewer.getScreenWidth(), viewer.getScreenHeight(), 
+              viewer.getNavigationOffset(), viewer.getNavigationDepthPercent());
+        Rectangle band = viewer.getRubberBandSelection();
+          if (band != null && g3d.setColix(viewer.getColixRubberband()))
+            g3d.drawRect(band.x, band.y, 0, 0, band.width, band.height);
       }
       if (renderers == null)
         renderers = new ShapeRenderer[JmolConstants.SHAPE_MAX];
@@ -170,7 +206,7 @@ public class RepaintManager implements JmolRepaintInterface {
         Shape shape = shapeManager.getShape(i);
         if (shape == null)
           continue;
-        getRenderer(i, g3d).render(g3d, modelSet, shape);
+        getRenderer(i).render(g3d, modelSet, shape);
         if (logTime)
           Logger.checkTimer("render time " + JmolConstants.getShapeClassName(i, false));
       }
@@ -183,73 +219,25 @@ public class RepaintManager implements JmolRepaintInterface {
   
   public String renderExport(String type, GData gdata, ModelSet modelSet,
                       String fileName) {
-
-    JmolRendererInterface g3dExport = null;
-    Object output = null;
     boolean isOK;
     viewer.finalizeTransformParameters();
-    try {
-      shapeManager.finalizeAtoms(null, null);
-      shapeManager.transformAtoms();
-      output = (fileName == null ? new StringBuffer() : fileName);
-      Class<?> export3Dclass = Class.forName("org.jmol.export.Export3D");
-      g3dExport = (JmolRendererInterface) export3Dclass.newInstance();
-      isOK = viewer.initializeExporter(g3dExport, type, output);
-    } catch (Exception e) {
-      isOK = false;
-    }
+    shapeManager.finalizeAtoms(null, null);
+    shapeManager.transformAtoms();
+    JmolRendererInterface g3dExport = viewer.initializeExporter(type, fileName);
+    isOK = (g3dExport != null);
     if (!isOK) {
       Logger.error("Cannot export " + type);
       return null;
     }
     g3dExport.renderBackground(g3dExport);
+    if (renderers == null)
+      renderers = new ShapeRenderer[JmolConstants.SHAPE_MAX];
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
       Shape shape = shapeManager.getShape(i);
       if (shape != null)
-        getRenderer(i, (Graphics3D) gdata).render(g3dExport, modelSet, shape);
+        getRenderer(i).render(g3dExport, modelSet, shape);
     }
     return g3dExport.finalizeOutput();
-  }
-
-  /////////// special rendering ///////////
-  
-  private void renderCrossHairs(Graphics3D g3d, int[] minMax) {
-    // this is the square and crosshairs for the navigator
-    Point3f navOffset = new Point3f(viewer.getNavigationOffset());
-    boolean antialiased = g3d.isAntialiased();
-    float navDepth = viewer.getNavigationDepthPercent();
-    g3d.setColix(navDepth < 0 ? Colix.RED
-        : navDepth > 100 ? Colix.GREEN : Colix.GOLD);
-    int x = Math.max(Math.min(viewer.getScreenWidth(), (int) navOffset.x), 0);
-    int y = Math.max(Math.min(viewer.getScreenHeight(), (int) navOffset.y), 0);
-    int z = (int) navOffset.z + 1;
-    // TODO: fix for antialiasDisplay
-    int off = (antialiased ? 8 : 4);
-    int h = (antialiased ? 20 : 10);
-    int w = (antialiased ? 2 : 1);
-    g3d.drawRect(x - off, y, z, 0, h, w);
-    g3d.drawRect(x, y - off, z, 0, w, h);
-    g3d.drawRect(x - off, y - off, z, 0, h, h);
-    off = h;
-    h = h >> 1;
-    g3d.setColix(minMax[1] < navOffset.x ? Colix.YELLOW
-            : Colix.GREEN);
-    g3d.drawRect(x - off, y, z, 0, h, w);
-    g3d.setColix(minMax[0] > navOffset.x ? Colix.YELLOW
-            : Colix.GREEN);
-    g3d.drawRect(x + h, y, z, 0, h, w);
-    g3d.setColix(minMax[3] < navOffset.y ? Colix.YELLOW
-            : Colix.GREEN);
-    g3d.drawRect(x, y - off, z, 0, w, h);
-    g3d.setColix(minMax[2] > navOffset.y ? Colix.YELLOW
-            : Colix.GREEN);
-    g3d.drawRect(x, y + h, z, 0, w, h);
-  }
-
-  private void renderSelectionRubberBand(Graphics3D g3d) {
-    Rectangle band = viewer.getRubberBandSelection();
-    if (band != null && g3d.setColix(viewer.getColixRubberband()))
-      g3d.drawRect(band.x, band.y, 0, 0, band.width, band.height);
   }
 
 }

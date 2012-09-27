@@ -123,9 +123,9 @@ public class DipolesRenderer extends ShapeRenderer {
     for (int i = 0; i < 6; i++)
       points[i].add(offset);
     for (int i = 0; i < 6; i++)
-      viewer.transformPoint(points[i], screens[i]);
-    viewer.transformPoint(points[cross], cross0);
-    viewer.transformPoint(points[crossEnd], cross1);
+      viewer.transformPtScr(points[i], screens[i]);
+    viewer.transformPt3f(points[cross], cross0);
+    viewer.transformPt3f(points[crossEnd], cross1);
     mad = dipole.mad;
     diameter = viewer.scaleToScreen(screens[center].z, mad);
     headWidthPixels = (int) (diameter * arrowHeadWidthFactor);

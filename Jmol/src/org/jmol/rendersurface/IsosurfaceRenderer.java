@@ -157,7 +157,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
         pt2f.set(points[0]);
         pt2f.add(points[1]);
         pt2f.scale(0.5f); // center
-        viewer.transformPoint(pt2f, pt2f);
+        viewer.transformPt3f(pt2f, pt2f);
         int r = viewer.scaleToScreen((int)pt2f.z, (int) points[0].distance(points[1]) * 500);
         mySlabValue = (int) (pt2f.z + r * (1 - meshSlabValue / 50f));
       }
@@ -201,7 +201,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
   
   private void renderLonePair(boolean isRadical) {
     pt2f.set(vertices[1]);
-    viewer.transformPoint(pt2f, pt2f);
+    viewer.transformPt3f(pt2f, pt2f);
     int r = viewer.scaleToScreen((int)pt2f.z, 100);
     if (r < 1)
       r = 1;
@@ -209,7 +209,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       Vector3f v1 = new Vector3f();
       Vector3f v2 = new Vector3f();
       pt1f.set(vertices[0]);
-      viewer.transformPoint(pt1f, pt1f);
+      viewer.transformPt3f(pt1f, pt1f);
       v1.sub(pt2f, pt1f);
       v2.set(v1.x, v1.y, v1.z + 1);
       v2.cross(v2,v1);
@@ -250,8 +250,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
       for (int j = JvxlCoder.CONTOUR_POINTS; j < n; j++) {
         Point3f pt1 = (Point3f) v.get(j);
         Point3f pt2 = (Point3f) v.get(++j);
-        viewer.transformPoint(pt1, pt1i);
-        viewer.transformPoint(pt2, pt2i);
+        viewer.transformPtScr(pt1, pt1i);
+        viewer.transformPtScr(pt2, pt2i);
         if (Float.isNaN(pt1.x) || Float.isNaN(pt2.x))
           break;
         pt1i.z -= 2;
@@ -501,7 +501,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       // index
       if (n >= 0) {
         ptTemp.add(vertexVectors[n]);
-        viewer.transformPoint(ptTemp, ptTempi);
+        viewer.transformPtScr(ptTemp, ptTempi);
         g3d.drawLine(screens[i], ptTempi);
         //g3d.drawStringNoSlab("" + n, null, ptTempi.x, ptTempi.y, ptTempi.z);
       }

@@ -1179,7 +1179,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
           if (!url.startsWith("="))
             url = "http://" + url;
         }
-        viewer.openFileAsynchronously(url);
+        viewer.openFileAsync(url);
       }
     }
   }
@@ -1283,7 +1283,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       recentFiles.setVisible(true);
       String selection = recentFiles.getFile();
       if (selection != null)
-        viewer.openFileAsynchronously(selection);
+        viewer.openFileAsync(selection);
     }
   }
 
@@ -1453,7 +1453,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     if (fileName.startsWith("load append"))
       viewer.scriptWait(fileName);
     else
-      viewer.openFileAsynchronously(fileName, pdbCartoons);
+      viewer.openFileAsyncPDB(fileName, pdbCartoons);
   }
 
   static final String chemFileProperty = "chemFile";

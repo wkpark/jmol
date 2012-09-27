@@ -23,7 +23,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.export;
+package org.jmol.exportjs;
 
 import java.util.Hashtable;
 
@@ -31,19 +31,15 @@ import java.util.Hashtable;
 
 class UseTable extends Hashtable<String, String> {
   private int iObj;
-  private String keyword;
-  private char term;
 
-  UseTable(String keyword) {
-    this.keyword = keyword;
-    term = keyword.charAt(keyword.length() - 1);
+  UseTable() {
   }
   
   /**
-   * Hashtable htDefs contains references to _n where n is a number. 
+   * Hashtable contains references to _n where n is a number. 
    * we look up a key for anything and see if an object has been assigned.
    * If it is there, we just return the phrase "USE _n".
-   * If it is not there, we return the DEF name that needs to be assigned.
+   * It it is not there, we return the DEF name that needs to be assigned.
    * The calling method must then make that definition.
    * 
    * @param key
@@ -52,8 +48,8 @@ class UseTable extends Hashtable<String, String> {
 
   String getDef(String key) {
     if (containsKey(key))
-      return keyword + get(key) + term;
-    String id = "_" + (iObj++);
+      return "+" + get(key);
+    String id = "_" + key.charAt(0) + (iObj++);
     put(key, id);
     return id;
   }

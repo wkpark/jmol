@@ -4290,12 +4290,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
   public void updateJS(int width, int height) {
     /**
-     * j2sNative
+     * @j2sNative
      * 
-     * if (this.updateWindow(width, height) {
+     * if (this.updateWindow(width, height)) {
      *   this.render();
      * }
-     * notifyViewerRepaintDone();
+     * this.notifyViewerRepaintDone();
      * 
      */
     {}

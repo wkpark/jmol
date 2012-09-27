@@ -609,35 +609,5 @@ public abstract class ___Exporter {
 
 }
 
-class UseTable extends Hashtable<String, String> {
-  private int iObj;
-  private String keyword;
-  private char term;
-
-  UseTable(String keyword) {
-    this.keyword = keyword;
-    term = keyword.charAt(keyword.length() - 1);
-  }
-  
-  /**
-   * Hashtable htDefs contains references to _n where n is a number. 
-   * we look up a key for anything and see if an object has been assigned.
-   * If it is there, we just return the phrase "USE _n".
-   * It it is not there, we return the DEF name that needs to be assigned.
-   * The calling method must then make that definition.
-   * 
-   * @param key
-   * @return "_n" or "[keyword]_n"
-   */
-
-  String getDef(String key) {
-    if (containsKey(key))
-      return keyword + get(key) + term;
-    String id = "_" + (iObj++);
-    put(key, id);
-    return id;
-  }
-    
-}
 
 

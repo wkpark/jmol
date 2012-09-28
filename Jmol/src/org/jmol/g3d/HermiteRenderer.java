@@ -468,7 +468,7 @@ public class HermiteRenderer {
     depth.scale(T1.length() / depth.length());
   }
   
-  private void setPoint(Point3f a1, Point3f a, Vector3f depth, int direction) {
+  private static void setPoint(Point3f a1, Point3f a, Vector3f depth, int direction) {
     a1.set(a);
     if (direction == 1)
       a1.add(depth);

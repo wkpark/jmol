@@ -124,8 +124,8 @@ public class _JSExporter extends __CartesianExporter {
     
   }
 
-  private Point3f getColor(short colix) {
-    return ColorUtil.colorPointFromInt2(g3d.getColorArgbOrGray(colix));
+  private Integer getColor(short colix) {
+    return Integer.valueOf(g3d.getColorArgbOrGray(colix));
   }
 
   void addObject(String id, Object o) {

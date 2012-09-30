@@ -14,10 +14,6 @@ import org.jmol.viewer.Viewer;
 
 public class Platform implements ApiPlatform {
 
-	public boolean isSingleThreaded() {
-		return false;
-	}
-	
   public void setViewer(JmolViewer viewer, Object display) {
     ((AndroidUpdateListener) display).setViewer(viewer);
   }
@@ -175,21 +171,16 @@ public class Platform implements ApiPlatform {
     return null;
   }
 
-  @Override
   public boolean isHeadless() {
     return false;
   }
 
-  @Override
-  public FileAdapterInterface getFileAdapter() {
-    return null; // N/A
-  }
-
-
-  @Override
   public JmolFileInterface newFile(String name) {
-  	return null;
+  	return JmolFileAdapter.newFile(name);
   }
   
-  
+  public boolean isSingleThreaded() {
+    return false;
+  }
+
 }

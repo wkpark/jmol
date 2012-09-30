@@ -3,7 +3,7 @@ package org.openscience.jmolandroid.api;
 import javax.vecmath.Point3f;
 
 import org.jmol.api.ApiPlatform;
-import org.jmol.api.FileAdapterInterface;
+import org.jmol.api.JmolFileAdapterInterface;
 import org.jmol.api.JmolFileInterface;
 import org.jmol.api.JmolMouseInterface;
 import org.jmol.api.JmolPopupInterface;

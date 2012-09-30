@@ -25,7 +25,7 @@
 
 package org.jmol.renderspecial;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Iterator;
 
 import javax.vecmath.Matrix3f;
@@ -131,10 +131,8 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     }
 
     Matrix4f m4 = viewer.getMatrixtransform();
-    mat.setRow(0, m4.m00, m4.m01, m4.m02);
-    mat.setRow(1, m4.m10, m4.m11, m4.m12);
-    mat.setRow(2, m4.m20, m4.m21, m4.m22);
-    matScreenToCartesian.invert(mat);
+    m4.setRotationScale(mat);
+    matScreenToCartesian.invertM(mat);
 
     Atom[] atoms = modelSet.atoms;
     for (int i = modelSet.getAtomCount(); --i >= 0;) {
@@ -247,11 +245,11 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   private void setMatrices() {
     Quadric.setEllipsoidMatrix(axes, factoredLengths, v1, mat);
     // make this screen coordinates to ellisoidal coordinates
-    matScreenToEllipsoid.mul(mat, matScreenToCartesian);
-    matEllipsoidToScreen.invert(matScreenToEllipsoid);
+    matScreenToEllipsoid.mul2(mat, matScreenToCartesian);
+    matEllipsoidToScreen.invertM(matScreenToEllipsoid);
     //matEllipsoidToScreen.mul(viewer.scaleToScreen(s0.z, 1000));
     perspectiveFactor = viewer.scaleToPerspective(s0.z, 1.0f);
-    matScreenToEllipsoid.mul(1f/perspectiveFactor);
+    matScreenToEllipsoid.mulf(1f/perspectiveFactor);
   }
   
   private final static Vector3f[] unitVectors = {
@@ -267,9 +265,9 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     for (int i = 0; i < 6; i++) {
       int iAxis = axisPoints[i];
       int i012 = Math.abs(iAxis) - 1;
-      points[i].scaleAdd(f * factoredLengths[i012] * (iAxis < 0 ? -1 : 1),
+      points[i].scaleAdd2(f * factoredLengths[i012] * (iAxis < 0 ? -1 : 1),
           axes[i012], center);
-      pt1.set(unitAxisVectors[i]);
+      pt1.setT(unitAxisVectors[i]);
       pt1.scale(f);
 
       matEllipsoidToScreen.transform(pt1);
@@ -323,9 +321,9 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       if (Float.isNaN(fz))
         continue;
       fz = (Math.random() > 0.5 ? -1 : 1) * fz;
-      pt1.scaleAdd(fx * factoredLengths[0], axes[0], ptAtom);
-      pt1.scaleAdd(fy * factoredLengths[1], axes[1], pt1);
-      pt1.scaleAdd(fz * factoredLengths[2], axes[2], pt1);
+      pt1.scaleAdd2(fx * factoredLengths[0], axes[0], ptAtom);
+      pt1.scaleAdd2(fy * factoredLengths[1], axes[1], pt1);
+      pt1.scaleAdd2(fz * factoredLengths[2], axes[2], pt1);
       viewer.transformPtScr(pt1, s1);
       coords[i++] = s1.x;
       coords[i++] = s1.y;
@@ -352,23 +350,23 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   private BitSet bsTemp = new BitSet();
   
   private void renderArc(Point3f ptAtom, int ptA, int ptB) {
-    v1.set(points[ptA]);
+    v1.setT(points[ptA]);
     v1.sub(ptAtom);
-    v2.set(points[ptB]);
+    v2.setT(points[ptB]);
     v2.sub(ptAtom);
     float d1 = v1.length();
     float d2 = v2.length();
     v1.normalize();
     v2.normalize();
     v3.cross(v1, v2);
-    pt1.set(points[ptA]);
-    s1.set(screens[ptA]);
+    pt1.setT(points[ptA]);
+    s1.setT(screens[ptA]);
     short normix = Normix.get2SidedNormix(v3, bsTemp);
     if (!fillArc && !wireframeOnly)
-      screens[6].set(s1);
+      screens[6].setT(s1);
     for (int i = 0, pt = 0; i < 18; i++, pt += 2) {
-      pt2.scaleAdd(cossin[pt] * d1, v1, ptAtom);
-      pt2.scaleAdd(cossin[pt + 1] * d2, v2, pt2);
+      pt2.scaleAdd2(cossin[pt] * d1, v1, ptAtom);
+      pt2.scaleAdd2(cossin[pt + 1] * d2, v2, pt2);
       viewer.transformPtScr(pt2, s2);
       if (fillArc)
         g3d.fillTriangle(s0, colix, normix, s1, colix, normix, s2, colix,
@@ -376,9 +374,9 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       else if (wireframeOnly)
         g3d.fillCylinder(GData.ENDCAPS_FLAT, diameter, s1, s2);
       else
-        screens[i + 7].set(s2);
-      pt1.set(pt2);
-      s1.set(s2);
+        screens[i + 7].setT(s2);
+      pt1.setT(pt2);
+      s1.setT(s2);
     }
     if (!fillArc && !wireframeOnly)
       for (int i = 0; i < 18; i++) {
@@ -430,7 +428,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
         }
       }
       //TODO -- adjust x and y for perspective?
-      s1.set(selectedPoints[0] = screens[octants[iCutout * 3]]);
+      s1.setT(selectedPoints[0] = screens[octants[iCutout * 3]]);
       s1.add(selectedPoints[1] = screens[octants[iCutout * 3 + 1]]);
       s1.add(selectedPoints[2] = screens[octants[iCutout * 3 + 2]]);
       s1.scaleAdd(-3, s0, s1);

@@ -576,7 +576,7 @@ public class PovrayDialog extends JDialog {
       try {
         Runtime.getRuntime().exec(commandLineArgs);
       } catch (java.io.IOException e) {
-        Logger.error("Caught IOException in povray exec", e);
+        Logger.errorEx("Caught IOException in povray exec", e);
         Logger.error("CmdLine:");
         for (int i = 0; i < commandLineArgs.length; i++) {
           Logger.error("  <" + commandLineArgs[i] + ">");

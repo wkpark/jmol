@@ -24,7 +24,7 @@
 
 package org.jmol.shape;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 
 import org.jmol.modelset.TickInfo;
 import org.jmol.util.Escape;

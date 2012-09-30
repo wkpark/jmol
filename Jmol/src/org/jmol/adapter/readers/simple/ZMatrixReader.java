@@ -416,20 +416,20 @@ No distinction between "Variable:" and "Constant:" is made by Jmol.
                        float theta1, float theta2) {
     if (Float.isNaN(theta1) || Float.isNaN(theta2))
       return null;
-    pt0.set(vAtoms.get(ia));
-    v1.sub(vAtoms.get(ib), pt0);
+    pt0.setT(vAtoms.get(ia));
+    v1.sub2(vAtoms.get(ib), pt0);
     v1.normalize();
     if (theta2 == Float.MAX_VALUE) {
       // just the first angle being set
       v2.set(0, 0, 1);
-      (new Quaternion(v2, theta1)).transform(v1, v2);
+      (Quaternion.newVA(v2, theta1)).transformP2(v1, v2);
     } else if (d >= 0) {
       // theta2 is a dihedral angle
       // just do two quaternion rotations
-      v2.sub(vAtoms.get(ic), pt0);
+      v2.sub2(vAtoms.get(ic), pt0);
       v2.cross(v1, v2);
-      (new Quaternion(v2, theta1)).transform(v1, v2);
-      (new Quaternion(v1, -theta2)).transform(v2, v2);
+      (Quaternion.newVA(v2, theta1)).transformP2(v1, v2);
+      (Quaternion.newVA(v1, -theta2)).transformP2(v2, v2);
     } else {
       // d < 0
       // theta1 and theta2 are simple angles atom-ia-ib and atom-ia-ic 
@@ -438,15 +438,15 @@ No distinction between "Variable:" and "Constant:" is made by Jmol.
           v1, plane1);
       Measure.getPlaneThroughPoint(setAtom(atom, ia, ic, ib, -d, theta2, 0),
           v1, plane2);
-      List<Object> list = Measure.getIntersection(plane1, plane2);
+      List<Object> list = Measure.getIntersectionPP(plane1, plane2);
       if (list.size() == 0)
         return null;
-      pt0.set((Point3f) list.get(0));
+      pt0.setT((Point3f) list.get(0));
       d = (float) Math.sqrt(d * d - pt0.distanceSquared(vAtoms.get(ia)))
           * Math.signum(theta1) * Math.signum(theta2);
-      v2.set((Vector3f) list.get(1));
+      v2.setT((Vector3f) list.get(1));
     }
-    atom.scaleAdd(d, v2, pt0);
+    atom.scaleAdd2(d, v2, pt0);
     return atom;
   }
 }

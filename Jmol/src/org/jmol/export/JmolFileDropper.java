@@ -224,7 +224,7 @@ public class JmolFileDropper implements DropTargetListener {
           isAccepted = true;
           o = t.getTransferData(flavor);
         } catch (Exception e) {
-          Logger.error(null, e);
+          Logger.errorEx(null, e);
         }
 
         if (o instanceof String) {
@@ -261,7 +261,7 @@ public class JmolFileDropper implements DropTargetListener {
           isAccepted = true;
           o = t.getTransferData(df[i]);
         } catch (Exception e) {
-          Logger.error(null, e);
+          Logger.errorEx(null, e);
         }
 
         if (o instanceof String) {

@@ -40,7 +40,7 @@ import org.jmol.viewer.JmolConstants;
 import org.jmol.script.Token;
 
 import java.util.ArrayList;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.List;
 import java.util.Hashtable;
 import java.util.Map;
@@ -597,7 +597,7 @@ public String getShapeState() {
     appendCmd(commands, getFontCommand("measures", font3d));
     int nHidden = 0;
     Map<String, BitSet> temp = new Hashtable<String, BitSet>();
-    BitSet bs = new BitSet(measurementCount);
+    BitSet bs = BitSetUtil.newBitSet(measurementCount);
     for (int i = 0; i < measurementCount; i++) {
       Measurement m = measurements.get(i);
       if (m.isHidden()) {

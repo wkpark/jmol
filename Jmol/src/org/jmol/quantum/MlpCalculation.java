@@ -23,7 +23,7 @@
  */
 package org.jmol.quantum;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 
 import org.jmol.modelset.Atom;
 import org.jmol.util.Logger;

@@ -39,7 +39,7 @@ public class ContactPair {
     // r is not necessarily VDW(B). That's certainly true for clashes,
     // for attractive Van der Waals forces R and r will be larger
     
-    Vector3f v = new Vector3f(myAtoms[1]);
+    Vector3f v = Vector3f.newV(myAtoms[1]);
     v.sub(myAtoms[0]);
     d = v.length();
     
@@ -49,7 +49,7 @@ public class ContactPair {
 
     float f = (R - r + d) / (2 * d);
     pt = new Point3f();
-    pt.scaleAdd(f, v, myAtoms[0]);
+    pt.scaleAdd2(f, v, myAtoms[0]);
 
     // http://mathworld.wolfram.com/Sphere-SphereIntersection.html
     //  volume = pi * (R + r - d)^2 (d^2 + 2dr - 3r^2 + 2dR + 6rR - 3R^2)/(12d)

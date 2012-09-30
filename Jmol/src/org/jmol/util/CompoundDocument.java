@@ -273,7 +273,7 @@ public class CompoundDocument extends BinaryDocument {
         for (int i = 0; i < 109; i++)
           MSAT0[i] = readInt();
       } catch (Exception e) {
-        Logger.error(null, e);
+        Logger.errorEx(null, e);
         return false;
       }
       return true;
@@ -323,7 +323,7 @@ public class CompoundDocument extends BinaryDocument {
         lenStream = readInt();
         readByteArray(unused);
       } catch (Exception e) {
-        Logger.error(null, e);
+        Logger.errorEx(null, e);
         return false;
       }
       entryName = "";
@@ -398,7 +398,7 @@ public class CompoundDocument extends BinaryDocument {
         thisSID = MSAT[nIntPerSector - 1];
       }
     } catch (Exception e) {
-      Logger.error(null, e);
+      Logger.errorEx(null, e);
     }
   }
 
@@ -417,7 +417,7 @@ public class CompoundDocument extends BinaryDocument {
         thisSID = SAT[thisSID];
       }
     } catch (Exception e) {
-      Logger.error(null, e);
+      Logger.errorEx(null, e);
     }
   }
 
@@ -441,7 +441,7 @@ public class CompoundDocument extends BinaryDocument {
         thisSID = SAT[thisSID];
       }
     } catch (Exception e) {
-      Logger.error(null, e);
+      Logger.errorEx(null, e);
     }
     if (Logger.debugging)
       Logger.debug("CompoundDocument directory entry: \n"
@@ -470,7 +470,7 @@ public class CompoundDocument extends BinaryDocument {
       if (nBytes == -9999)
         return new StringBuffer();
     } catch (Exception e) {
-      Logger.error(null, e);
+      Logger.errorEx(null, e);
     }
     if (gzipData.isEnabled)
       gzipData.addTo(data);
@@ -526,7 +526,7 @@ public class CompoundDocument extends BinaryDocument {
       }
     } catch (Exception e) {
       Logger.error(data.toString());
-      Logger.error(null, e);
+      Logger.errorEx(null, e);
     }
     if (gzipData.isEnabled)
       gzipData.addTo(data);

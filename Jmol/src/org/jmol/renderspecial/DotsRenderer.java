@@ -28,7 +28,7 @@ import org.jmol.modelset.Atom;
 import org.jmol.render.ShapeRenderer;
 import org.jmol.shapespecial.Dots;
 import org.jmol.util.Colix;
-import org.jmol.util.FastBitSet;
+import javax.util.BitSet;
 import org.jmol.util.Geodesic;
 
 import javax.vecmath.Vector3f;
@@ -79,10 +79,10 @@ public class DotsRenderer extends ShapeRenderer {
     for (int i = screenDotCount; --i >= 0;)
       viewer.transformVector(Geodesic.getVertexVector(i),
           verticesTransformed[i]);
-    FastBitSet[] maps = dots.ec.getDotsConvexMaps();
+    BitSet[] maps = dots.ec.getDotsConvexMaps();
     for (int i = dots.ec.getDotsConvexMax(); --i >= 0;) {
       Atom atom = modelSet.atoms[i];
-      FastBitSet map = maps[i];
+      BitSet map = maps[i];
       if (map == null || !atom.isVisible(myVisibilityFlag)
           || !g3d.isInDisplayRange(atom.screenX, atom.screenY))
         continue;
@@ -112,7 +112,7 @@ public class DotsRenderer extends ShapeRenderer {
    * @param z
    * @return number of points
    */
-  private int calcScreenPoints(FastBitSet visibilityMap, float radius, int x, int y, int z) {
+  private int calcScreenPoints(BitSet visibilityMap, float radius, int x, int y, int z) {
     int nPoints = 0;
     int i = 0;
     float scaledRadius = viewer.scaleToPerspective(z, radius);
@@ -141,7 +141,7 @@ public class DotsRenderer extends ShapeRenderer {
    * @param map
    * @param nPoints
    */
-  protected void renderConvex(short colix, FastBitSet map, int nPoints) {
+  protected void renderConvex(short colix, BitSet map, int nPoints) {
     this.colix = Colix.getColixTranslucent(colix, false, 0);
     renderDots(nPoints);
   }

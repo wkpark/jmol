@@ -24,10 +24,11 @@
 
 package org.jmol.adapter.readers.more;
 
+import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 
 import javax.vecmath.Point3f;
 
@@ -143,7 +144,7 @@ ICNTRL(20)=VERNUM ! version number
     if (nFixed != 0) {
       // read list of free atoms
       binaryDoc.readInt(); // HEADER
-      bsFree = new BitSet(nFree);
+      bsFree = BitSetUtil.newBitSet(nFree);
       for (int i = 0; i < nFree; i++)
         bsFree.set(binaryDoc.readInt() - 1);
       n = binaryDoc.readInt() / 4; // TRAILER

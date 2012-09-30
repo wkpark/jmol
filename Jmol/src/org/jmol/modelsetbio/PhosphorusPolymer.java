@@ -23,7 +23,7 @@
  */
 package org.jmol.modelsetbio;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 
 import org.jmol.modelset.LabelToken;
 import org.jmol.util.OutputStringBuffer;

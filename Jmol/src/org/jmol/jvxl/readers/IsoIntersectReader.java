@@ -24,7 +24,7 @@
 
 package org.jmol.jvxl.readers;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 
 import javax.vecmath.Point3f;
 

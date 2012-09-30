@@ -27,7 +27,7 @@ package org.jmol.shape;
 import org.jmol.i18n.GT;
 import org.jmol.util.JmolFont;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 
 public class Frank extends FontShape {
 
@@ -50,7 +50,7 @@ public class Frank extends FontShape {
   public void initShape() {
     super.initShape();
     myType = "frank";
-    baseFont3d = font3d = gdata.getFont3D(defaultFontName, defaultFontStyle, defaultFontSize);
+    baseFont3d = font3d = gdata.getFont3DFSS(defaultFontName, defaultFontStyle, defaultFontSize);
     calcMetrics();
   }
 

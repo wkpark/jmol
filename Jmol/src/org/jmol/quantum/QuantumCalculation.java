@@ -29,7 +29,7 @@ import org.jmol.modelset.Atom;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 
 abstract class QuantumCalculation {
 
@@ -148,7 +148,7 @@ abstract class QuantumCalculation {
     doDebug = false;
     if (points == null || nX != 1)
       initializeOnePoint();
-    points[0].set(pt);
+    points[0].setT(pt);
     voxelData[0][0][0] = 0;
     setXYZBohr(points);
     processPoints();
@@ -232,7 +232,7 @@ abstract class QuantumCalculation {
       this.atom = atom;
       
       isExcluded = (bsExcluded != null && bsExcluded.get(i));
-      set(atom);
+      setT(atom);
       scale(unitFactor);
       znuc = atom.getElementNumber();
     }

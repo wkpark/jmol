@@ -31,7 +31,7 @@ import org.jmol.util.Logger;
 import javax.vecmath.Point3f;
 
 import java.util.List;
-import java.util.BitSet;
+import javax.util.BitSet;
 
 /*
  * See J. Computational Chemistry, vol 7, p 359, 1986.

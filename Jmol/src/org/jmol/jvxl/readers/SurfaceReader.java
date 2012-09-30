@@ -24,7 +24,7 @@
 package org.jmol.jvxl.readers;
 
 import java.io.OutputStream;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.List;
 
 import javax.vecmath.Matrix3f;
@@ -652,7 +652,7 @@ public abstract class SurfaceReader implements VertexDataServer {
       fraction = Float.NaN;
     }
     fReturn[0] = fraction;
-    ptReturn.scaleAdd(fraction, edgeVector, pointA);
+    ptReturn.scaleAdd2(fraction, edgeVector, pointA);
     return valueA + fraction * diff;
   }
 
@@ -997,7 +997,7 @@ public abstract class SurfaceReader implements VertexDataServer {
   public void slabIsosurface(List<Object[]> slabInfo) {
     if (meshDataServer != null)
       meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
-    meshData.slabPolygons(slabInfo, true);
+    meshData.slabPolygonsList(slabInfo, true);
     if (meshDataServer != null)
       meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_VERTICES, null);
   }
@@ -1029,7 +1029,7 @@ public abstract class SurfaceReader implements VertexDataServer {
   }
   
   protected void setVolumetricOriginAnisotropy() {
-    volumetricOrigin.set(center);
+    volumetricOrigin.setT(center);
   }
 
   private void setBoundingBox() {
@@ -1045,8 +1045,8 @@ public abstract class SurfaceReader implements VertexDataServer {
 
   protected void setBoundingBox(Point3f pt, float margin) {
     if (xyzMin == null) {
-      xyzMin = new Point3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
-      xyzMax = new Point3f(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
+      xyzMin = Point3f.new3(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
+      xyzMax = Point3f.new3(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
     }
     BoxInfo.addPoint(pt, xyzMin, xyzMax, margin);
   }

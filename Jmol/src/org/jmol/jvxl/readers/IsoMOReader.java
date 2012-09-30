@@ -141,13 +141,13 @@ class IsoMOReader extends AtomDataReader {
       return;
     int rep = 0;
     if (line.indexOf("%F") >= 0)
-      line = TextFormat.formatString(line, "F", params.fileName);
+      line = TextFormat.formatStringS(line, "F", params.fileName);
     if (line.indexOf("%I") >= 0)
-      line = TextFormat.formatString(line, "I",
+      line = TextFormat.formatStringS(line, "I",
           params.qm_moLinearCombination == null ? "" + params.qm_moNumber
               : EnumQuantumShell.getMOString(params.qm_moLinearCombination));
     if (line.indexOf("%N") >= 0)
-      line = TextFormat.formatString(line, "N", "" + params.qmOrbitalCount);
+      line = TextFormat.formatStringS(line, "N", "" + params.qmOrbitalCount);
     Float energy = null;
     if (mo == null) {
       // check to see if all orbitals have the same energy
@@ -170,22 +170,22 @@ class IsoMOReader extends AtomDataReader {
     }
 
     if (line.indexOf("%E") >= 0)
-      line = TextFormat.formatString(line, "E",
+      line = TextFormat.formatStringS(line, "E",
           energy != null && ++rep != 0 ? "" + energy : "");
     if (line.indexOf("%U") >= 0)
-      line = TextFormat.formatString(line, "U",
+      line = TextFormat.formatStringS(line, "U",
           energy != null && params.moData.containsKey("energyUnits")
               && ++rep != 0 ? (String) params.moData.get("energyUnits") : "");
     if (line.indexOf("%S") >= 0)
-      line = TextFormat.formatString(line, "S", mo != null
+      line = TextFormat.formatStringS(line, "S", mo != null
           && mo.containsKey("symmetry") && ++rep != 0 ? "" + mo.get("symmetry")
           : "");
     if (line.indexOf("%O") >= 0)
-      line = TextFormat.formatString(line, "O", mo != null
+      line = TextFormat.formatStringS(line, "O", mo != null
           && mo.containsKey("occupancy") && ++rep != 0 ? ""
           + mo.get("occupancy") : "");
     if (line.indexOf("%T") >= 0)
-      line = TextFormat.formatString(line, "T", mo != null
+      line = TextFormat.formatStringS(line, "T", mo != null
           && mo.containsKey("type") && ++rep != 0 ? "" + mo.get("type") : "");
     boolean isOptional = (line.indexOf("?") == 0);
     params.title[iLine] = (!isOptional ? line : rep > 0

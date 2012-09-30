@@ -26,7 +26,7 @@ package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
 import java.util.ArrayList;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -145,7 +145,7 @@ public class JvxlXmlReader extends VolumeFileReader {
     jvxlFileHeaderBuffer = new StringBuffer(s);
     xr.toTag("jvxlVolumeData");
     String data = tempDataXml = xr.getXmlData("jvxlVolumeData", null, true, false);
-    volumetricOrigin.set(xr.getXmlPoint(data, "origin"));
+    volumetricOrigin.setT(xr.getXmlPoint(data, "origin"));
    isAngstroms = true;
    readVector(0);
    readVector(1);
@@ -165,7 +165,7 @@ public class JvxlXmlReader extends VolumeFileReader {
     if (n == Integer.MIN_VALUE)
       vertexDataOnly = true;
     voxelCounts[voxelVectorIndex] = (n < 0 ? 0 : n);
-    volumetricVectors[voxelVectorIndex].set(xr.getXmlPoint(data, "vector"));
+    volumetricVectors[voxelVectorIndex].setT(xr.getXmlPoint(data, "vector"));
     if (isAnisotropic)
       setVectorAnisotropy(volumetricVectors[voxelVectorIndex]);
   }
@@ -263,7 +263,7 @@ public class JvxlXmlReader extends VolumeFileReader {
         if (params.thePlane == null) {
           Logger
               .error("JVXL Error reading plane definition -- setting to 0 0 1 0  (z=0)");
-          params.thePlane = new Point4f(0, 0, 1, 0);
+          params.thePlane = Point4f.new4(0, 0, 1, 0);
         } else {
           Logger
           .error("JVXL Error reading mapLattice definition -- ignored");
@@ -476,7 +476,7 @@ public class JvxlXmlReader extends VolumeFileReader {
     if (edgeDataCount <= 0)
       return super.getSurfacePointAndFraction(cutoff, isCutoffAbsolute, valueA,
           valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn);
-    ptReturn.scaleAdd(fReturn[0] = jvxlGetNextFraction(edgeFractionBase,
+    ptReturn.scaleAdd2(fReturn[0] = jvxlGetNextFraction(edgeFractionBase,
         edgeFractionRange, 0.5f), edgeVector, pointA);
     if (Float.isNaN(valueMin))
       setValueMinMax();      

@@ -27,7 +27,7 @@ package org.jmol.adapter.readers.more;
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.List;
 
 import org.jmol.util.TextFormat;

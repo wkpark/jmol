@@ -11,7 +11,7 @@ import java.io.IOException;
 //import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -206,7 +206,7 @@ public class _ObjExporter extends __CartesianExporter {
     if (ptX != null) {
       if (endcaps == GData.ENDCAPS_FLAT) {
         outputEllipse1(ptCenter, pt1, ptX, ptY, colix);
-        tempP3.set(ptCenter);
+        tempP3.setT(ptCenter);
         tempP3.sub(ptX);
         tempP3.add(ptCenter);
         outputEllipse1(ptCenter, pt2, tempP3, ptY, colix);
@@ -371,7 +371,7 @@ public class _ObjExporter extends __CartesianExporter {
       faces[ipt++] = (meshSurface.haveQuads ? polygon : new int[] {
           polygon[0], polygon[1], polygon[2] });
     }
-    MeshSurface data = new MeshSurface(faces, meshSurface.vertices, meshSurface.vertexCount,
+    MeshSurface data = MeshSurface.newMesh(meshSurface.vertices, meshSurface.vertexCount, faces,
         meshSurface.normals, 0);
     data.vertexColixes = meshSurface.vertexColixes;
     // Do the texture
@@ -423,7 +423,7 @@ public class _ObjExporter extends __CartesianExporter {
 
     Matrix4f matrix = new Matrix4f();
     matrix.setIdentity();
-    matrix.setTranslation(new Vector3f(meshSurface.offset));
+    matrix.setTranslation(Vector3f.newV(meshSurface.offset));
     BitSet bsValid = new BitSet();
     addMesh(name, data, matrix, null, colix, dim, bsValid);
   }
@@ -1006,7 +1006,7 @@ public class _ObjExporter extends __CartesianExporter {
     for (int i = 0; i < nPts; i++) {
       if (bsValid != null && !bsValid.get(i))
         continue;
-      ptTemp.set(pts[i]);
+      ptTemp.setT(pts[i]);
       if (m != null)
         m.transform(ptTemp);
       output(prefix + ptTemp.x + " " + ptTemp.y + " " + ptTemp.z + "\n");

@@ -117,13 +117,13 @@ public class JmolConstants {
   //do not capitalize any other letter in the word. Separate by semicolon.
   public static final String EXPORT_DRIVER_LIST = "Idtf;Maya;Povray;Vrml;X3d;Tachyon;Obj"; 
 
-  public final static Vector3f center = new Vector3f(0, 0, 0);
-  public final static Vector3f axisX = new Vector3f(1, 0, 0);
-  public final static Vector3f axisY = new Vector3f(0, 1, 0);
-  public final static Vector3f axisZ = new Vector3f(0, 0, 1);
-  public final static Vector3f axisNX = new Vector3f(-1, 0, 0);
-  public final static Vector3f axisNY = new Vector3f(0, -1, 0);
-  public final static Vector3f axisNZ = new Vector3f(0, 0, -1);
+  public final static Vector3f center = Vector3f.new3(0, 0, 0);
+  public final static Vector3f axisX = Vector3f.new3(1, 0, 0);
+  public final static Vector3f axisY = Vector3f.new3(0, 1, 0);
+  public final static Vector3f axisZ = Vector3f.new3(0, 0, 1);
+  public final static Vector3f axisNX = Vector3f.new3(-1, 0, 0);
+  public final static Vector3f axisNY = Vector3f.new3(0, -1, 0);
+  public final static Vector3f axisNZ = Vector3f.new3(0, 0, -1);
   public final static Vector3f[] unitAxisVectors = {
     axisX, axisY, axisZ, axisNX, axisNY, axisNZ };
 

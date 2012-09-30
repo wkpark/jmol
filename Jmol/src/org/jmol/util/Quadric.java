@@ -80,7 +80,7 @@ public class Quadric {
   public void rotate(Matrix4f mat) {
     if (vectors != null)
     for (int i = 0; i < 3; i++)
-      mat.transform(vectors[i]);
+      mat.transformV(vectors[i]);
   }
   
   public void setSize(int size) {
@@ -99,7 +99,7 @@ public class Quadric {
     mat[0][1] = mat[1][0] = coef[3] / 2; //XY
     mat[0][2] = mat[2][0] = coef[4] / 2; //XZ
     mat[1][2] = mat[2][1] = coef[5] / 2; //YZ
-    new Eigen(mat, unitVectors, lengths);
+    Eigen.getUnitVectors(mat, unitVectors, lengths);
   }
 
   public static Matrix3f setEllipsoidMatrix(Vector3f[] unitAxes, float[] lengths, Vector3f vTemp, Matrix3f mat) {
@@ -111,11 +111,11 @@ public class Quadric {
      */
     
     for (int i = 0; i < 3; i++) {
-      vTemp.set(unitAxes[i]);
+      vTemp.setT(unitAxes[i]);
       vTemp.scale(lengths[i]);
-      mat.setColumn(i, vTemp);
+      mat.setColumnV(i, vTemp);
     }
-    mat.invert(mat);
+    mat.invertM(mat);
     return mat;
   }
 
@@ -135,7 +135,7 @@ public class Quadric {
     vTemp.set(x, y, z);
     mToElliptical.transform(vTemp);
     double f = 1 - vTemp.dot(vTemp); // J
-    mTemp.transpose(mToElliptical);
+    mTemp.transposeM(mToElliptical);
     mTemp.transform(vTemp);
     mTemp.mul(mToElliptical);
     coef[0] = mTemp.m00 / f;     // A = aXX

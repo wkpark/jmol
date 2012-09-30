@@ -30,13 +30,14 @@ import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.script.Token;
 import org.jmol.shape.AtomShape;
+import org.jmol.util.BitSetUtil;
 import org.jmol.util.Colix;
 import org.jmol.util.Escape;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Normix;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import javax.vecmath.Point3i;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -335,7 +336,7 @@ public class Polyhedra extends AtomShape {
 
   private short[] normixesT = new short[MAX_VERTICES];
   private byte[] planesT = new byte[MAX_VERTICES * 3];
-  private final static Point3f randomPoint = new Point3f(3141f, 2718f, 1414f);
+  private final static Point3f randomPoint = Point3f.new3(3141f, 2718f, 1414f);
 
   private Polyhedron validatePolyhedronNew(Atom centralAtom, int vertexCount,
                                    Point3f[] otherAtoms) {
@@ -355,7 +356,7 @@ public class Polyhedra extends AtomShape {
     }
     dAverage = dAverage / ptCenter;
     float factor = distanceFactor;
-    BitSet bs = new BitSet(ptCenter);
+    BitSet bs = BitSetUtil.newBitSet(ptCenter);
     boolean isOK = (dAverage == 0);
 
     // here we are assuring that at least ONE face is drawn to 
@@ -458,9 +459,9 @@ public class Polyhedra extends AtomShape {
           normal.scale(isCollapsed && !isFlat ? faceCenterOffset
               : 0.001f);
           int nRef = nPoints;
-          ptRef.set(points[ptCenter]);
+          ptRef.setT(points[ptCenter]);
           if (isCollapsed && !isFlat) {
-            points[nPoints] = new Point3f(points[ptCenter]);
+            points[nPoints] = Point3f.newP(points[ptCenter]);
             points[nPoints].add(normal);
             otherAtoms[nPoints] = points[nPoints];
           } else if (isFlat) {
@@ -477,7 +478,7 @@ public class Polyhedra extends AtomShape {
             Measure.getNormalFromCenter(points[k], points[i], points[j],
                 ptRef, false, normal);
             normixesT[planeCount++] = (isFlat ? Normix
-                .get2SidedNormix(normal, bsTemp) : Normix.getNormix(normal, bsTemp));
+                .get2SidedNormix(normal, bsTemp) : Normix.getNormixV(normal, bsTemp));
           }
           facet = faceId(i, k, -1);
           if (isCollapsed || isFlat && facetCatalog.indexOf(facet) < 0) {
@@ -488,7 +489,7 @@ public class Polyhedra extends AtomShape {
             Measure.getNormalFromCenter(points[j], points[i], ptRef,
                 points[k], false, normal);
             normixesT[planeCount++] = (isFlat ? Normix
-                .get2SidedNormix(normal, bsTemp) : Normix.getNormix(normal, bsTemp));
+                .get2SidedNormix(normal, bsTemp) : Normix.getNormixV(normal, bsTemp));
           }
           facet = faceId(j, k, -1);
           if (isCollapsed || isFlat && facetCatalog.indexOf(facet) < 0) {
@@ -499,7 +500,7 @@ public class Polyhedra extends AtomShape {
             Measure.getNormalFromCenter(points[i], ptRef, points[j],
                 points[k], false, normal);
             normixesT[planeCount++] = (isFlat ? Normix
-                .get2SidedNormix(normal, bsTemp) : Normix.getNormix(normal, bsTemp));
+                .get2SidedNormix(normal, bsTemp) : Normix.getNormixV(normal, bsTemp));
           }
           if (!isFlat) {
             if (isCollapsed) {
@@ -509,7 +510,7 @@ public class Polyhedra extends AtomShape {
               planesT[ipt++] = (byte) (isWindingOK ? i : j);
               planesT[ipt++] = (byte) (isWindingOK ? j : i);
               planesT[ipt++] = (byte) k;
-              normixesT[planeCount++] = Normix.getNormix(normal, bsTemp);
+              normixesT[planeCount++] = Normix.getNormixV(normal, bsTemp);
             }
           }
         }
@@ -520,15 +521,15 @@ public class Polyhedra extends AtomShape {
   }
 
   private String faceId(int i, int j, int k) {
-    return (new Point3i(i, j, k)).toString();
+    return (Point3i.new3(i, j, k)).toString();
   }
 
   private Vector3f align1 = new Vector3f();
   private Vector3f align2 = new Vector3f();
 
   private boolean isAligned(Point3f pt1, Point3f pt2, Point3f pt3) {
-    align1.sub(pt1, pt3);
-    align2.sub(pt2, pt3);
+    align1.sub2(pt1, pt3);
+    align2.sub2(pt2, pt3);
     float angle = align1.angle(align2);
     return (angle < 0.01f || angle > 3.13f);
   }

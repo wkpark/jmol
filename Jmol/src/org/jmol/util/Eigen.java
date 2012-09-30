@@ -70,14 +70,15 @@ public class Eigen {
     e = new double[n];
   }
 
-  public Eigen(double[][] A) {
-    this(A.length);
-    calc(A);
+  
+  public static Eigen newM(double[][] m) {
+    Eigen e = new Eigen(m.length);
+    e.calc(m);
+    return e;
   }
 
-  public Eigen(double[][] mat, Vector3f[] unitVectors, float[] lengths) {
-    this(mat);
-    set(unitVectors, lengths);
+  public static void getUnitVectors(double[][] m, Vector3f[] unitVectors, float[] lengths) {
+    newM(m).set(unitVectors, lengths);
     sort(unitVectors, lengths);
   }
 
@@ -88,7 +89,7 @@ public class Eigen {
     for (int i = 0; i < n; i++) {
       if (unitVectors[i] == null)
         unitVectors[i] = new Vector3f();
-      unitVectors[i].set(eigenVectors[i]);
+      unitVectors[i].setA(eigenVectors[i]);
       lengths[i] = (float) Math.sqrt(Math.abs(eigenValues[i]));
       //if (eigenValues[i] < 0)
         //unitVectors[i].scale(-1);
@@ -188,7 +189,7 @@ public class Eigen {
   public Vector3f[] getEigenVectors3() {
     Vector3f[] v = new Vector3f[3];
     for (int i = 0; i < 3; i++) {
-      v[i] = new Vector3f((float)V[0][i], (float)V[1][i], (float)V[2][i]);
+      v[i] = Vector3f.new3((float)V[0][i], (float)V[1][i], (float)V[2][i]);
     }
     return v;
   }
@@ -1059,7 +1060,7 @@ public class Eigen {
     return r;
   }
 
-  public static Quadric getEllipsoid(double[][] a) {
+  public static Quadric getEllipsoidDD(double[][] a) {
     Eigen eigen = new Eigen(3);      
     eigen.calc(a);
     Matrix3f m = new Matrix3f();
@@ -1067,17 +1068,17 @@ public class Eigen {
     for (int i = 0, p=0; i < 3; i++)
       for (int j = 0; j < 3; j++)
         mm[p++] = (float) a[i][j];
-    m.set(mm);
+    m.setA(mm);
     
     Vector3f[] evec = eigen.getEigenVectors3();
     Vector3f n = new Vector3f();
     Vector3f cross = new Vector3f();
     for (int i = 0; i < 3; i++) {
-      n.set(evec[i]);
+      n.setT(evec[i]);
       m.transform(n);
       cross.cross(n, evec[i]);
       Logger.info("v[i], n, n x v[i]"+ evec[i] + " " + n + " "  + cross);
-      n.set(evec[i]);
+      n.setT(evec[i]);
       n.normalize();
       cross.cross(evec[i], evec[(i + 1)%3]);
       Logger.info("draw id eigv" + i + " " + Escape.escapePt(evec[i]) + " color " + (i ==  0 ? "red": i == 1 ? "green" : "blue") + " # " + n + " " + cross);
@@ -1113,7 +1114,7 @@ public class Eigen {
         new Object[] { vectors[2], Float.valueOf(Math.abs(lengths[2])) } }; 
     Arrays.sort(o, new EigenSort());
     for (int i = 0; i < 3; i++) {
-      vectors[i] = new Vector3f((Vector3f) o[i][0]);
+      vectors[i] = Vector3f.newV((Vector3f) o[i][0]);
       vectors[i].normalize();
       lengths[i] = ((Float) o[i][1]).floatValue();
     }

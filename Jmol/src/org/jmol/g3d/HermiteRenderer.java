@@ -104,9 +104,9 @@ public class HermiteRenderer {
     int yT2 = ((p3.y - y1) * tension) / 8;
     int zT2 = ((p3.z - z1) * tension) / 8;
     sLeft[0] = 0;
-    pLeft[0].set(p1);
+    pLeft[0].setT(p1);
     sRight[0] = 1;
-    pRight[0].set(p2);
+    pRight[0].setT(p2);
     int sp = 0;
     int n=0;
     int dDiameterFirstHalf = 0;
@@ -157,7 +157,7 @@ public class HermiteRenderer {
       pRight[sp] = pMid;
       sRight[sp] = (float)s;
       ++sp;
-      pLeft[sp].set(pMid);
+      pLeft[sp].setT(pMid);
       sLeft[sp] = (float)s;
     } while (sp >= 0);
   }
@@ -194,8 +194,8 @@ public class HermiteRenderer {
     int xT2 = ((p3.x - x1) * tension) / 8;
     int yT2 = ((p3.y - y1) * tension) / 8;
     int zT2 = ((p3.z - z1) * tension) / 8;
-    Point3fi.set(pTopLeft[0], p1);
-    Point3fi.set(pTopRight[0], p2);
+    Point3fi.set2(pTopLeft[0], p1);
+    Point3fi.set2(pTopRight[0], p2);
 
     int x5 = p5.x, y5 = p5.y, z5 = p5.z;
     int x6 = p6.x, y6 = p6.y, z6 = p6.z;
@@ -205,8 +205,8 @@ public class HermiteRenderer {
     int xT6 = ((p7.x - x5) * tension) / 8;
     int yT6 = ((p7.y - y5) * tension) / 8;
     int zT6 = ((p7.z - z5) * tension) / 8;
-    Point3fi.set(pBotLeft[0], p5);
-    Point3fi.set(pBotRight[0], p6);
+    Point3fi.set2(pBotLeft[0], p5);
+    Point3fi.set2(pBotRight[0], p6);
 
     sLeft[0] = 0;
     sRight[0] = 1;
@@ -292,8 +292,8 @@ public class HermiteRenderer {
       sRight[spNext] = sRight[sp];
       sRight[sp] = (float) s;
       needToFill[spNext] = needToFill[sp];
-      pTopLeft[spNext].set(pMidTop);
-      pBotLeft[spNext].set(pMidBot);
+      pTopLeft[spNext].setT(pMidTop);
+      pBotLeft[spNext].setT(pMidBot);
       sLeft[spNext] = (float) s;
       ++sp;
     } while (sp >= 0);
@@ -349,9 +349,9 @@ public class HermiteRenderer {
     int yT2 = ( (p3.y - y1) * tension) / 8;
     int zT2 = ( (p3.z - z1) * tension) / 8;
     sLeft[0] = 0;
-    pLeft[0].set(p1);
+    pLeft[0].setT(p1);
     sRight[0] = 1;
-    pRight[0].set(p2);
+    pRight[0].setT(p2);
     int sp = 0;
 
     for (int strands = 2; strands > 0; strands--) {
@@ -365,9 +365,9 @@ public class HermiteRenderer {
          yT2 = ( (p7.y - y1) * tension) / 8;
          zT2 = ( (p7.z - z1) * tension) / 8;
          sLeft[0] = 0;
-         pLeft[0].set(p5);
+         pLeft[0].setT(p5);
          sRight[0] = 1;
-         pRight[0].set(p6);
+         pRight[0].setT(p6);
          sp = 0;
        }
 
@@ -390,7 +390,7 @@ public class HermiteRenderer {
 
            if (s < 1.0f - currentInt) { //if first point over the interval
              Point3i temp = new Point3i();
-             temp.set(a);
+             temp.setT(a);
              points.add(temp); //store it
              currentInt += interval; // increase to next interval
              if (strands == 2) {
@@ -418,7 +418,7 @@ public class HermiteRenderer {
            pRight[sp] = pMid;
            sRight[sp] = (float) s;
            ++sp;
-           pLeft[sp].set(pMid);
+           pLeft[sp].setT(pMid);
            sLeft[sp] = (float) s;
          }
        } while (sp >= 0);
@@ -461,15 +461,15 @@ public class HermiteRenderer {
   private final Vector3f T1 = new Vector3f();
   private final Vector3f T2 = new Vector3f();
   private void setDepth(Vector3f depth, Point3f c, Point3f a, Point3f b, float ratio) {
-    T1.sub(a, c);
+    T1.sub2(a, c);
     T1.scale(ratio);
-    T2.sub(a, b);
+    T2.sub2(a, b);
     depth.cross(T1, T2);
     depth.scale(T1.length() / depth.length());
   }
   
   private static void setPoint(Point3f a1, Point3f a, Vector3f depth, int direction) {
-    a1.set(a);
+    a1.setT(a);
     if (direction == 1)
       a1.add(depth);
     else

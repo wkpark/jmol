@@ -1,6 +1,5 @@
 package org.jmol.awtjs;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.net.UnknownServiceException;

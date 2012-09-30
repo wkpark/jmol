@@ -26,7 +26,7 @@ package org.jmol.script;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
@@ -205,7 +205,7 @@ public class ScriptVariable extends Token {
     if (x instanceof Point3f)
       return newScriptVariableObj(point3f, x);
     if (x instanceof Vector3f)
-      return newScriptVariableObj(point3f, new Point3f((Vector3f) x));
+      return newScriptVariableObj(point3f, Point3f.newP((Vector3f) x));
     if (x instanceof BitSet)
       return newScriptVariableObj(bitset, x);
     if (x instanceof Point4f)
@@ -307,7 +307,7 @@ public class ScriptVariable extends Token {
         objects.add(getVariable(fx[i]));
       return newScriptVariableObj(varray, objects);
     }
-    return newScriptVariableObj(string, Escape.toReadable(x));
+    return newScriptVariableObj(string, Escape.toReadableNoName(x));
   }
 
   /**

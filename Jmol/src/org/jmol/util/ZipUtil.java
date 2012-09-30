@@ -56,7 +56,7 @@ public class ZipUtil {
       return false;
     }
   */
-  public static boolean isZipFile(InputStream is) {
+  public static boolean isZipStream(InputStream is) {
     byte[] abMagic = new byte[4];
     try {
       is.mark(5);
@@ -70,7 +70,7 @@ public class ZipUtil {
 
 
   public static boolean isPngZipStream(InputStream is) {
-    if (isZipFile(is))
+    if (isZipStream(is))
       return false;
     try {
       is.mark(56);
@@ -351,7 +351,7 @@ public class ZipUtil {
         && (len = is.read(buf)) > 0) {
       totalLen += len;
       if (totalLen > bytes.length)
-        bytes = ArrayUtil.ensureLength(bytes, totalLen * 2);
+        bytes = ArrayUtil.ensureLengthByte(bytes, totalLen * 2);
       System.arraycopy(buf, 0, bytes, totalLen - len, len);
     }
     if (totalLen == bytes.length)

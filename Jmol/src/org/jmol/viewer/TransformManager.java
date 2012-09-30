@@ -41,7 +41,7 @@ import org.jmol.util.Escape;
 
 import org.jmol.util.Quaternion;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -124,7 +124,7 @@ public abstract class TransformManager {
     setNavOn(false);
     navFps = DEFAULT_NAV_FPS;
     navX = navY = navZ = 0;
-    rotationCenterDefault.set(viewer.getBoundBoxCenter());
+    rotationCenterDefault.setT(viewer.getBoundBoxCenter());
     setFixedRotationCenter(rotationCenterDefault);
     rotationRadiusDefault = setRotationRadius(0, true);
     windowCentered = true;
@@ -247,7 +247,7 @@ public abstract class TransformManager {
         + Escape.escape(viewer.getSelectionSet(false)) + ";\n  rotateSelected"
         : "\n ");
     if (isSpinInternal) {
-      Point3f pt = new Point3f(internalRotationCenter);
+      Point3f pt = Point3f.newP(internalRotationCenter);
       pt.sub(rotationAxis);
       s += prefix + " spin " + rotationRate + " "
           + Escape.escapePt(internalRotationCenter) + " " + Escape.escapePt(pt);
@@ -291,7 +291,7 @@ public abstract class TransformManager {
   public final AxisAngle4f fixedRotationAxis = new AxisAngle4f();
   public final AxisAngle4f internalRotationAxis = new AxisAngle4f();
   protected Vector3f internalTranslation;
-  private final Point3f internalRotationCenter = new Point3f(0, 0, 0);
+  private final Point3f internalRotationCenter = Point3f.new3(0, 0, 0);
   private float internalRotationAngle = 0;
 
   /* ***************************************************************
@@ -314,7 +314,7 @@ public abstract class TransformManager {
   private void setFixedRotationCenter(Point3f center) {
     if (center == null)
       return;
-    fixedRotationCenter.set(center);
+    fixedRotationCenter.setT(center);
   }
 
   void setRotationPointXY(Point3f center) {
@@ -333,10 +333,10 @@ public abstract class TransformManager {
       return;
     }
     clearSpin();
-    Point3f pt1 = new Point3f(fixedRotationCenter);
+    Point3f pt1 = Point3f.newP(fixedRotationCenter);
     Point3f ptScreen = new Point3f();
     transformPoint(pt1, ptScreen);
-    Point3f pt2 = new Point3f(-yDelta, xDelta, 0);
+    Point3f pt2 = Point3f.new3(-yDelta, xDelta, 0);
     pt2.add(ptScreen);
     unTransformPoint(pt2, pt2);
     viewer.setInMotion(false);
@@ -368,7 +368,7 @@ public abstract class TransformManager {
     arcBall1.set(x, -y, z);
     arcBall1.normalize();
     arcBallAxis.cross(arcBall0, arcBall1);
-    axisangleT.set(arcBallAxis, factor * (float) Math.acos(arcBall0.dot(arcBall1)));
+    axisangleT.setVA(arcBallAxis, factor * (float) Math.acos(arcBall0.dot(arcBall1)));
     matrixRotate.set(arcBall0Rotation);
     rotateAxisAngle(axisangleT, null);
   }
@@ -403,7 +403,7 @@ public abstract class TransformManager {
 
   private void applyRotation(Matrix3f mNew, boolean isInternal, BitSet bsAtoms, Vector3f translation) {
     if (bsAtoms == null) {
-      matrixRotate.mul(mNew, matrixRotate);
+      matrixRotate.mul2(mNew, matrixRotate);
       return;
     }
     viewer.moveAtoms(mNew, matrixRotate, translation,
@@ -429,13 +429,13 @@ public abstract class TransformManager {
   }
 
   protected void rotateAxisAngle(Vector3f rotAxis, float radians) {
-    axisangleT.set(rotAxis, radians);
+    axisangleT.setVA(rotAxis, radians);
     rotateAxisAngle(axisangleT, null);
   }
 
   synchronized void rotateAxisAngle(AxisAngle4f axisAngle, BitSet bsAtoms) {
     //matrixTemp3.setIdentity();
-    matrixTemp3.set(axisAngle);
+    matrixTemp3.setAA(axisAngle);
     applyRotation(matrixTemp3, false, bsAtoms, null);
   }
 
@@ -469,10 +469,10 @@ public abstract class TransformManager {
       setRotationPointXY(rotCenter);
     }
     setFixedRotationCenter(rotCenter);
-    rotationAxis.set(rotAxis);
+    rotationAxis.setT(rotAxis);
     rotationRate = degreesPerSecond;
     if (isSpin) {
-      fixedRotationAxis.set(rotAxis, degreesPerSecond * JmolConstants.radiansPerDegree);
+      fixedRotationAxis.setVA(rotAxis, degreesPerSecond * JmolConstants.radiansPerDegree);
       isSpinInternal = false;
       isSpinFixed = true;
       isSpinSelected = (bsAtoms != null);
@@ -480,7 +480,7 @@ public abstract class TransformManager {
       return false;
     }
     float radians = endDegrees * JmolConstants.radiansPerDegree;
-    fixedRotationAxis.set(rotAxis, endDegrees);
+    fixedRotationAxis.setVA(rotAxis, endDegrees);
     rotateAxisAngleRadiansFixed(radians, bsAtoms);
     return true;
   }
@@ -488,7 +488,7 @@ public abstract class TransformManager {
   public synchronized void rotateAxisAngleRadiansFixed(float angleRadians,
                                                 BitSet bsAtoms) {
     // for spinning -- reduced number of radians
-    axisangleT.set(fixedRotationAxis);
+    axisangleT.setAA(fixedRotationAxis);
     axisangleT.angle = angleRadians;
     rotateAxisAngle(axisangleT, bsAtoms);
   }
@@ -520,17 +520,17 @@ public abstract class TransformManager {
         && (isSpin || endDegrees == 0))
       return false;
 
-    Vector3f axis = new Vector3f(point2);
+    Vector3f axis = Vector3f.newV(point2);
     axis.sub(point1);
     if (isClockwise)
       axis.scale(-1f);
-    internalRotationCenter.set(point1);
-    rotationAxis.set(axis);
+    internalRotationCenter.setT(point1);
+    rotationAxis.setT(axis);
     rotationRate = degreesPerSecond;
     if (translation == null) {
       internalTranslation = null;
     } else {
-      internalTranslation = new Vector3f(translation);
+      internalTranslation = Vector3f.newV(translation);
       //System.out.println("TM TRANSLATE " + internalTranslation);
     }
     boolean isSelected = (bsAtoms != null);
@@ -544,7 +544,7 @@ public abstract class TransformManager {
         if (translation != null)
         internalTranslation.scale(1f / (nFrames));
       }
-      internalRotationAxis.set(axis, rotationRate
+      internalRotationAxis.setVA(axis, rotationRate
           * JmolConstants.radiansPerDegree);
       isSpinInternal = true;
       isSpinFixed = false;
@@ -553,7 +553,7 @@ public abstract class TransformManager {
       return false;
     }
     float radians = endDegrees * JmolConstants.radiansPerDegree;
-    internalRotationAxis.set(axis, radians);
+    internalRotationAxis.setVA(axis, radians);
     rotateAxisAngleRadiansInternal(radians, bsAtoms);
     return true;
   }
@@ -568,12 +568,12 @@ public abstract class TransformManager {
     internalRotationAngle = radians;
     vectorT.set(internalRotationAxis.x, internalRotationAxis.y,
         internalRotationAxis.z);
-    matrixRotate.transform(vectorT, vectorT2);
-    axisangleT.set(vectorT2, radians);
+    matrixRotate.transform2(vectorT, vectorT2);
+    axisangleT.setVA(vectorT2, radians);
 
     // NOW apply that rotation  
 
-    matrixTemp3.set(axisangleT);
+    matrixTemp3.setAA(axisangleT);
     applyRotation(matrixTemp3, true, bsAtoms, internalTranslation);
     if (bsAtoms == null)
       getNewFixedRotationCenter();
@@ -594,18 +594,18 @@ public abstract class TransformManager {
      */
 
     // fractional OPPOSITE of angle of rotation
-    axisangleT.set(internalRotationAxis);
+    axisangleT.setAA(internalRotationAxis);
     axisangleT.angle = -internalRotationAngle;
     //this is a fraction of the original for spinning
-    matrixTemp4.set(axisangleT);
+    matrixTemp4.setAA(axisangleT);
 
     // apply this to the fixed center point in the internal frame
 
-    vectorT.set(internalRotationCenter);
-    pointT2.set(fixedRotationCenter);
+    vectorT.setT(internalRotationCenter);
+    pointT2.setT(fixedRotationCenter);
     pointT2.sub(vectorT);
     Point3f pt = new Point3f();
-    matrixTemp4.transform(pointT2, pt);
+    matrixTemp4.transform2(pointT2, pt);
 
     // return this point to the fixed frame
 
@@ -738,7 +738,7 @@ public abstract class TransformManager {
     AxisAngle4f aa = new AxisAngle4f();
     getAxisAngle(aa);
     info.put("axisAngle", aa);
-    info.put("quaternion", new Quaternion(aa).toPoint4f());
+    info.put("quaternion", Quaternion.newAA(aa).toPoint4f());
     info.put("rotationMatrix", matrixRotate);
     info.put("rotateZYZ", getRotateZyzText(false));
     info.put("rotateXYZ", getRotateXyzText());
@@ -760,7 +760,7 @@ public abstract class TransformManager {
   }
 
   void getAxisAngle(AxisAngle4f axisAngle) {
-    axisAngle.set(matrixRotate);
+    axisAngle.setM(matrixRotate);
   }
 
   String getTransformText() {
@@ -897,7 +897,7 @@ public abstract class TransformManager {
   Point3f zSlabPoint;
   
   void setZslabPoint(Point3f pt) {
-    zSlabPoint = (pt == null ? null : new Point3f(pt));
+    zSlabPoint = (pt == null ? null : Point3f.newP(pt));
   }
   
   int slabValue;
@@ -1039,7 +1039,7 @@ public abstract class TransformManager {
         return slabPlane;
     }
     Matrix4f m = matrixTransform;
-    return new Point4f(-m.m20, -m.m21, -m.m22, -m.m23
+    return Point4f.new4(-m.m20, -m.m21, -m.m22, -m.m23
         + (isDepth ? depthValue : slabValue));
   }
 
@@ -1225,7 +1225,7 @@ public abstract class TransformManager {
         referencePlaneOffset) * 2 * 180 / Math.PI);
     cameraDistanceFromCenter = referencePlaneOffset / scalePixelsPerAngstrom;
     
-    Point3f ptRef = new Point3f(screenWidth / 2, screenHeight / 2,
+    Point3f ptRef = Point3f.new3(screenWidth / 2, screenHeight / 2,
         referencePlaneOffset);
     unTransformPoint(ptRef, ptRef);
 
@@ -1244,10 +1244,10 @@ public abstract class TransformManager {
     // in these renderers. 
     
     
-    Point3f ptCamera = new Point3f(screenWidth / 2, screenHeight / 2, 0);
+    Point3f ptCamera = Point3f.new3(screenWidth / 2, screenHeight / 2, 0);
     viewer.unTransformPoint(ptCamera, ptCamera);
     ptCamera.sub(fixedRotationCenter);
-    Point3f pt = new Point3f(screenWidth / 2, screenHeight / 2, cameraDistanceFromCenter * scalePixelsPerAngstrom);
+    Point3f pt = Point3f.new3(screenWidth / 2, screenHeight / 2, cameraDistanceFromCenter * scalePixelsPerAngstrom);
     viewer.unTransformPoint(pt, pt);
     pt.sub(fixedRotationCenter);
     ptCamera.add(pt);
@@ -1261,7 +1261,7 @@ public abstract class TransformManager {
         ptRef,
         ptCamera,
         fixedRotationCenter,
-        new Point3f(cameraDistanceFromCenter, aperatureAngle,
+        Point3f.new3(cameraDistanceFromCenter, aperatureAngle,
             scalePixelsPerAngstrom) };
   }
   
@@ -1303,12 +1303,12 @@ public abstract class TransformManager {
     //for povray only
     Matrix4f unscaled = new Matrix4f();
     unscaled.setIdentity();
-    vectorTemp.set(fixedRotationCenter);
+    vectorTemp.setT(fixedRotationCenter);
     matrixTemp.setZero();
     matrixTemp.setTranslation(vectorTemp);
     unscaled.sub(matrixTemp);
     matrixTemp.set(matrixRotate);
-    unscaled.mul(matrixTemp, unscaled);
+    unscaled.mul2(matrixTemp, unscaled);
     return unscaled;
   }
 
@@ -1457,7 +1457,7 @@ public abstract class TransformManager {
 
   synchronized void finalizeTransformParameters() {
     haveNotifiedNaN = false;
-    fixedRotationOffset.set(fixedTranslation);
+    fixedRotationOffset.setT(fixedTranslation);
     internalSlab = slabEnabled && (slabPlane != null || depthPlane != null);
     float newZoom = getZoomSetting();
     if (zoomPercent != newZoom) {
@@ -1530,7 +1530,7 @@ public abstract class TransformManager {
 
     // first, translate the coordinates back to the center
 
-    vectorTemp.set(fixedRotationCenter);
+    vectorTemp.setT(fixedRotationCenter);
     vectorTemp.sub(frameOffset);
     matrixTemp.setZero();
     matrixTemp.setTranslation(vectorTemp);
@@ -1539,18 +1539,18 @@ public abstract class TransformManager {
     // multiply by angular rotations
     // this is *not* the same as  matrixTransform.mul(matrixRotate);
     matrixTemp.set(stereoFrame ? matrixStereo : matrixRotate);
-    matrixTransform.mul(matrixTemp, matrixTransform);
+    matrixTransform.mul2(matrixTemp, matrixTransform);
     // cale to screen coordinates
     matrixTemp.setZero();
-    matrixTemp.set(scalePixelsPerAngstrom);
+    matrixTemp.m00 = matrixTemp.m11 = matrixTemp.m22 = scalePixelsPerAngstrom;
     // negate y (for screen) and z (for zbuf)
     matrixTemp.m11 = matrixTemp.m22 = -scalePixelsPerAngstrom;
 
-    matrixTransform.mul(matrixTemp, matrixTransform);
+    matrixTransform.mul2(matrixTemp, matrixTransform);
     //z-translate to set rotation center at midplane (Nav) or front plane (V10)
     matrixTransform.m23 += modelCenterOffset;
     try {
-      matrixTransformInv.invert(matrixTransform);
+      matrixTransformInv.invertM(matrixTransform);
     } catch (Exception e) {
       // ignore -- this is a Mac issue on applet startup
     }
@@ -1559,21 +1559,21 @@ public abstract class TransformManager {
   }
 
   void rotatePoint(Point3f pt, Point3f ptRot) {
-    matrixRotate.transform(pt, ptRot);
+    matrixRotate.transform2(pt, ptRot);
     ptRot.y = -ptRot.y;
   }
 
   void transformPoints(int count, Point3f[] angstroms, Point3i[] screens) {
     for (int i = count; --i >= 0;)
-      screens[i].set(transformPoint(angstroms[i]));
+      screens[i].setT(transformPoint(angstroms[i]));
   }
 
   void transformPoint(Point3f pointAngstroms, Point3i pointScreen) {
-    pointScreen.set(transformPoint(pointAngstroms));
+    pointScreen.setT(transformPoint(pointAngstroms));
   }
 
   void transformPointNoClip(Point3f pointAngstroms, Point3f pointScreen) {
-    pointScreen.set(transformPointNoClip(pointAngstroms));
+    pointScreen.setT(transformPointNoClip(pointAngstroms));
   }
 
   /** 
@@ -1585,7 +1585,7 @@ public abstract class TransformManager {
     if (pointAngstroms.z == Float.MAX_VALUE
         || pointAngstroms.z == -Float.MAX_VALUE)
       return transformScreenPoint(pointAngstroms);
-    matrixTransform.transform(pointAngstroms, point3fScreenTemp);
+    matrixTransform.transform2(pointAngstroms, point3fScreenTemp);
     adjustTemporaryScreenPoint();
     if (internalSlab && checkInternalSlab(pointAngstroms))
       point3iScreenTemp.z = 1;
@@ -1606,7 +1606,7 @@ public abstract class TransformManager {
       point3iScreenTemp.x <<= 1;
       point3iScreenTemp.y <<= 1;
     }
-    matrixTransform.transform(fixedRotationCenter, pointTsp);
+    matrixTransform.transform2(fixedRotationCenter, pointTsp);
     point3iScreenTemp.z = (int) pointTsp.z;
     return point3iScreenTemp;
   }
@@ -1617,7 +1617,7 @@ public abstract class TransformManager {
    * @return POINTER TO point3iScreenTemp
    */
   synchronized Point3f transformPointNoClip(Point3f pointAngstroms) {
-    matrixTransform.transform(pointAngstroms, point3fScreenTemp);
+    matrixTransform.transform2(pointAngstroms, point3fScreenTemp);
     adjustTemporaryScreenPoint();
     return point3fScreenTemp;
   }
@@ -1628,11 +1628,11 @@ public abstract class TransformManager {
    * @return POINTER TO TEMPORARY VARIABLE (caution!) point3iScreenTemp
    */
   Point3i transformPointVib(Point3f pointAngstroms, Vector3f vibrationVector) {
-    point3fVibrationTemp.set(pointAngstroms);
+    point3fVibrationTemp.setT(pointAngstroms);
     if (vibrationOn && vibrationVector != null)
-      point3fVibrationTemp.scaleAdd(vibrationAmplitude, vibrationVector,
+      point3fVibrationTemp.scaleAdd2(vibrationAmplitude, vibrationVector,
           pointAngstroms);
-    matrixTransform.transform(point3fVibrationTemp, point3fScreenTemp);
+    matrixTransform.transform2(point3fVibrationTemp, point3fScreenTemp);
     adjustTemporaryScreenPoint();
     if (internalSlab && checkInternalSlab(pointAngstroms))
       point3iScreenTemp.z = 1;
@@ -1640,22 +1640,22 @@ public abstract class TransformManager {
   }
 
   void transformPoint(Point3f pointAngstroms, Point3f screen) {
-    matrixTransform.transform(pointAngstroms, point3fScreenTemp);
+    matrixTransform.transform2(pointAngstroms, point3fScreenTemp);
     adjustTemporaryScreenPoint();
     if (internalSlab && checkInternalSlab(pointAngstroms))
       point3fScreenTemp.z = 1;
-    screen.set(point3fScreenTemp);
+    screen.setT(point3fScreenTemp);
   }
 
   void transformVector(Vector3f vectorAngstroms, Vector3f vectorTransformed) {
     //dots renderer, geodesic only
-    matrixTransform.transform(vectorAngstroms, vectorTransformed);
+    matrixTransform.transformV2(vectorAngstroms, vectorTransformed);
   }
 
   final protected Point3f untransformedPoint = new Point3f();
   void unTransformPoint(Point3f screenPt, Point3f coordPt) {
     //draw move2D
-    untransformedPoint.set(screenPt);
+    untransformedPoint.setT(screenPt);
     switch (mode) {
     case MODE_NAVIGATION:
       untransformedPoint.x -= navigationOffset.x;
@@ -1684,7 +1684,7 @@ public abstract class TransformManager {
       untransformedPoint.y += perspectiveShiftXY.y;
       break;
     }
-    matrixTransformInv.transform(untransformedPoint, coordPt);
+    matrixTransformInv.transform2(untransformedPoint, coordPt);
   }
 
   /* ***************************************************************
@@ -1755,12 +1755,12 @@ public abstract class TransformManager {
   boolean isInPosition(Vector3f axis, float degrees) {
     if (Float.isNaN(degrees))
       return true;
-    aaTest1.set(axis, (float) (degrees / degreesPerRadian));
+    aaTest1.setVA(axis, (float) (degrees / degreesPerRadian));
     ptTest1.set(4.321f, 1.23456f, 3.14159f);
     getRotation(matrixTest);
-    matrixTest.transform(ptTest1, ptTest2);
-    matrixTest.set(aaTest1);
-    matrixTest.transform(ptTest1, ptTest3);
+    matrixTest.transform2(ptTest1, ptTest2);
+    matrixTest.setAA(aaTest1);
+    matrixTest.transform2(ptTest1, ptTest3);
     return (ptTest3.distance(ptTest2) < 0.1);
   }
 
@@ -1773,7 +1773,7 @@ public abstract class TransformManager {
               float xNav, float yNav, float navDepth) {
     if (matrixEnd == null) {
       matrixEnd = new Matrix3f();
-      Vector3f axis = new Vector3f(rotAxis);
+      Vector3f axis = Vector3f.newV(rotAxis);
       if (Float.isNaN(degrees)) {
         matrixEnd.m00 = Float.NaN;
       } else if (degrees < 0.01f && degrees > -0.01f) {
@@ -1790,8 +1790,8 @@ public abstract class TransformManager {
           return;
         }
         AxisAngle4f aaMoveTo = new AxisAngle4f();
-        aaMoveTo.set(axis, (float) (degrees / degreesPerRadian));
-        matrixEnd.set(aaMoveTo);
+        aaMoveTo.setVA(axis, (float) (degrees / degreesPerRadian));
+        matrixEnd.setAA(aaMoveTo);
       }
     }
     try {
@@ -1816,7 +1816,7 @@ public abstract class TransformManager {
   }
 
   Quaternion getRotationQuaternion() {
-    return new Quaternion(matrixRotate);
+    return Quaternion.newM(matrixRotate);
     /*
     axisangleT.set(matrixRotate);
     float degrees = (float) (axisangleT.angle * degreesPerRadian);
@@ -1826,7 +1826,7 @@ public abstract class TransformManager {
   }
   
   String getRotationText() {
-    axisangleT.set(matrixRotate);
+    axisangleT.setM(matrixRotate);
     float degrees = (float) (axisangleT.angle * degreesPerRadian);
     StringBuffer sb = new StringBuffer();
     vectorT.set(axisangleT.x, axisangleT.y, axisangleT.z);
@@ -1944,9 +1944,9 @@ public abstract class TransformManager {
     if (m == null) {
       m = matrixRotate;
     } else {
-      m = new Matrix3f(m);
+      m = Matrix3f.newM(m);
       m.invert();
-      m.mul(matrixRotate, m);
+      m.mul2(matrixRotate, m);
     }
     float m22 = m.m22;
     float rY = (float) (Math.acos(m22) * degreesPerRadian);
@@ -2215,7 +2215,7 @@ public abstract class TransformManager {
     if (!stereoFrame)
       return matrixRotate;
     matrixTemp3.rotY(-stereoRadians);
-    matrixStereo.mul(matrixTemp3, matrixRotate);
+    matrixStereo.mul2(matrixTemp3, matrixRotate);
     return matrixStereo;
   }
 
@@ -2264,13 +2264,13 @@ public abstract class TransformManager {
   }
 
   private void setRotationCenterAndRadiusXYZ(String relativeTo, Point3f pt) {
-    Point3f pt1 = new Point3f(pt);
+    Point3f pt1 = Point3f.newP(pt);
     if (relativeTo == "average")
       pt1.add(viewer.getAverageAtomPoint());
     else if (relativeTo == "boundbox")
       pt1.add(viewer.getBoundBoxCenter());
     else if (relativeTo != "absolute")
-      pt1.set(rotationCenterDefault);
+      pt1.setT(rotationCenterDefault);
     setRotationCenterAndRadiusXYZ(pt1, true);
   }
 
@@ -2459,7 +2459,7 @@ public abstract class TransformManager {
     if (frameOffsets == null || modelIndex < 0 || modelIndex >= frameOffsets.length)
       frameOffset.set(0, 0, 0);
     else
-      frameOffset.set(frameOffsets[modelIndex]);
+      frameOffset.setT(frameOffsets[modelIndex]);
   }
   
   void setFrameOffsets(Point3f[] offsets) {

@@ -26,7 +26,7 @@
 package org.jmol.export;
 
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.List;
 import java.util.Map;
 
@@ -111,12 +111,12 @@ public class _MayaExporter extends __CartesianExporter {
     id = "nurbsCylinderShape" + nCyl;
     output(" createNode transform -n \"" + name + "\";\n");
     float length = pt1.distance(pt2);
-    tempV1.set(pt2);
+    tempV1.setT(pt2);
     tempV1.add(pt1);
     tempV1.scale(0.5f);
     setAttr("t", tempV1);
     tempV1.sub(pt1);
-    tempV2.set(tempV1);
+    tempV2.setT(tempV1);
     tempV2.normalize();
     float r = tempV1.length();
     float rX = (float) Math.acos(tempV1.y / r) * degreesPerRadian;

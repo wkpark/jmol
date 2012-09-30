@@ -120,7 +120,7 @@ public class Colix {
   private static int[] argbsGreyscale;
   private static int[][] ashades = new int[128][];
   private static int[][] ashadesGreyscale;
-  private static final Int2IntHash colixHash = new Int2IntHash();
+  private static final Int2IntHash colixHash = new Int2IntHash(256);
   private static final int RAW_RGB_INT = RAW_RGB;
   public final static short UNMASK_CHANGEABLE_TRANSLUCENT = 0x07FF;
   public final static short CHANGEABLE_MASK = (short) 0x8000; // negative
@@ -187,25 +187,16 @@ public class Colix {
       int newSize = oldSize * 2;
       if (newSize > LAST_AVAILABLE_COLIX + 1)
         newSize = LAST_AVAILABLE_COLIX + 1;
-      int[] t0 = new int[newSize];
-      System.arraycopy(argbs, 0, t0, 0, oldSize);
-      argbs = t0;
+      argbs = ArrayUtil.arrayCopyI(argbs, newSize);
+      //int[] t0 = new int[newSize];
+      //System.arraycopy(argbs, 0, t0, 0, oldSize);
+      //argbs = t0;
 
-      if (argbsGreyscale != null) {
-        t0 = new int[newSize];
-        System.arraycopy(argbsGreyscale, 0, t0, 0, oldSize);
-        argbsGreyscale = t0;
-      }
-
-      int[][] t2 = new int[newSize][];
-      System.arraycopy(ashades, 0, t2, 0, oldSize);
-      ashades = t2;
-
-      if (ashadesGreyscale != null) {
-        t2 = new int[newSize][];
-        System.arraycopy(ashadesGreyscale, 0, t2, 0, oldSize);
-        ashadesGreyscale = t2;
-      }
+      if (argbsGreyscale != null)
+        argbsGreyscale = ArrayUtil.arrayCopyI(argbsGreyscale, newSize);
+      ashades = ArrayUtil.arrayCopyII(ashades, newSize);
+      if (ashadesGreyscale != null)
+        ashadesGreyscale = ArrayUtil.arrayCopyII(ashadesGreyscale, newSize);
     }
     argbs[colixMax] = argb;
     //System.out.println("Colix "+colixMax + " = "+Integer.toHexString(argb) + " " + argb);

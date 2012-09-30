@@ -1344,7 +1344,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   
   void plotPixelClipped(int x, int y, int z) {
     //circle3D, drawPixel, plotPixelClipped(point3)
-    if (isClipped(x, y, z))
+    if (isClipped3(x, y, z))
       return;
     int offset = y * width + x;
     if (z < zbuf[offset])
@@ -1358,7 +1358,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
 
   void plotPixelClipped(int argb, int x, int y, int z) {
     // cylinder3d plotRaster
-    if (isClipped(x, y, z))
+    if (isClipped3(x, y, z))
       return;
     int offset = y * width + x;
     if (z < zbuf[offset])
@@ -1375,7 +1375,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   }
 
   void plotPixelClipped(int argb, boolean isScreened, int x, int y, int z) {
-    if (isClipped(x, y, z))
+    if (isClipped3(x, y, z))
       return;
     if (isScreened && ((x ^ y) & 1) != 0)
       return;
@@ -1683,20 +1683,20 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
       int z = coordinates[--i];
       int y = coordinates[--i] + yOffset;
       int x = coordinates[--i] + xOffset;
-      if (isClipped(x, y, z))
+      if (isClipped3(x, y, z))
         continue;
       int offset = y * width + x++;
       if (z < zbuf[offset])
         addPixel(offset, z, argbCurrent);
       if (antialiasThisFrame) {
         offset = y * width + x;
-        if (!isClipped(x, y, z) && z < zbuf[offset])
+        if (!isClipped3(x, y, z) && z < zbuf[offset])
           addPixel(offset, z, argbCurrent);
         offset = (++y)* width + x;
-        if (!isClipped(x, y, z) && z < zbuf[offset])
+        if (!isClipped3(x, y, z) && z < zbuf[offset])
           addPixel(offset, z, argbCurrent);
         offset = y * width + (--x);
-        if (!isClipped(x, y, z) && z < zbuf[offset])
+        if (!isClipped3(x, y, z) && z < zbuf[offset])
           addPixel(offset, z, argbCurrent);
       }
 
@@ -1746,8 +1746,8 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   private int getShadeIndex(Point3f screenA,
                                  Point3f screenB, Point3f screenC) {
     // for fillTriangle and fillQuad.
-    vectorAB.sub(screenB, screenA);
-    vectorAC.sub(screenC, screenA);
+    vectorAB.sub2(screenB, screenA);
+    vectorAC.sub2(screenC, screenA);
     vectorNormal.cross(vectorAB, vectorAC);
     return
       (vectorNormal.z >= 0
@@ -1847,7 +1847,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     Vector3f[] vertexVectors = Normix.getVertexVectors();
     for (int i = normixCount; --i >= 0; ) {
       Vector3f tv = transformedVectors[i];
-      rotationMatrix.transform(vertexVectors[i], tv);
+      rotationMatrix.transform2(vertexVectors[i], tv);
 //        if (i == 0)
   //        System.out.println(i + " " + shadeIndexes[i]);
 

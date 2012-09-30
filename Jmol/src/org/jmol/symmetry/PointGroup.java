@@ -25,7 +25,7 @@
 package org.jmol.symmetry;
 
 import java.util.ArrayList;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -197,7 +197,7 @@ class PointGroup {
     if (haveVibration) {
       Point3f[] atomVibs = new Point3f[points.length];
       for (int i = points.length; --i >= 0;) {
-        atomVibs[i] = new Point3f(points[i]);
+        atomVibs[i] = Point3f.newP(points[i]);
         Vector3f v = atoms[i].getVibrationVector();
         if (v != null)
           atomVibs[i].add(v);
@@ -214,7 +214,7 @@ class PointGroup {
       } else {
         name = "C(infinity)v";
       }
-      vTemp.sub(points[1], points[0]);
+      vTemp.sub2(points[1], points[0]);
       addAxis(c2, vTemp);
       principalAxis = axes[c2][0];
       if (haveInversionCenter) {
@@ -372,7 +372,7 @@ class PointGroup {
       return true;
     nAtoms = 0;
     for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) {
-        points[nAtoms] = new Point3f(atomset[i]);
+        points[nAtoms] = Point3f.newP(atomset[i]);
         atoms[nAtoms] = atomset[i];
         int bondIndex = 1 + Math.max(3, atomset[i].getCovalentBondCount());
         elements[nAtoms] = atomset[i].getElementNumber() * bondIndex;
@@ -407,12 +407,12 @@ class PointGroup {
         Point3f a1 = points[i];
         int e1 = elements[i];
         if (q != null) {
-          pt.set(a1);
+          pt.setT(a1);
           pt.sub(center);
-          q.transform(pt, pt);
+          q.transformP2(pt, pt);
           pt.add(center);
         } else {
-          pt.set(a1);
+          pt.setT(a1);
         }
         if (isInversion) {
           // A trick here: rather than 
@@ -422,8 +422,8 @@ class PointGroup {
           // For S3 and S6, we play the trick of 
           // rotating as C6 and C3, respectively, 
           // THEN doing the rotation/inversion. 
-          vTemp.sub(center, pt);
-          pt.scaleAdd(2, vTemp, pt);
+          vTemp.sub2(center, pt);
+          pt.scaleAdd2(2, vTemp, pt);
         }
         if ((q != null || isInversion) && pt.distance(a1) < distanceTolerance) {
           nFound++;
@@ -451,12 +451,12 @@ class PointGroup {
         continue;
       if (v1 == null) {
         v1 = new Vector3f();
-        v1.sub(atoms[i], center);
+        v1.sub2(atoms[i], center);
         v1.normalize();
-        vTemp.set(v1);
+        vTemp.setT(v1);
         continue;
       }
-      vTemp.sub(atoms[i], center);
+      vTemp.sub2(atoms[i], center);
       vTemp.normalize();
       if (!isParallel(v1, vTemp))
         return false;
@@ -507,8 +507,8 @@ class PointGroup {
 
         // check if A - 0 - B is linear
 
-        v1.sub(a1, center);
-        v2.sub(a2, center);
+        v1.sub2(a1, center);
+        v2.sub2(a2, center);
         v1.normalize();
         v2.normalize();
         if (isParallel(v1, v2)) {
@@ -519,7 +519,7 @@ class PointGroup {
         // look for all axes to average position of A and B
 
         if (nAxes[c2] < axesMaxN[c2]) {
-          v3.set(a1);
+          v3.setT(a1);
           v3.add(a2);
           v3.scale(0.5f);
           v3.sub(center);
@@ -547,14 +547,14 @@ class PointGroup {
       vs[i] = new Vector3f();
     int n = 0;
     for (int i = 0; i < nAxes[c2]; i++) {
-      vs[n++].set(axes[c2][i].normalOrAxis);
-      vs[n].set(axes[c2][i].normalOrAxis);
+      vs[n++].setT(axes[c2][i].normalOrAxis);
+      vs[n].setT(axes[c2][i].normalOrAxis);
       vs[n++].scale(-1);
     }
     for (int i = vs.length; --i >= 2;)
       for (int j = i; --j >= 1;)
         for (int k = j; --k >= 0;) {
-          v3.set(vs[i]);
+          v3.setT(vs[i]);
           v3.add(vs[j]);
           v3.add(vs[k]);
           if (v3.length() < 1.0)
@@ -588,14 +588,14 @@ class PointGroup {
           if (elements[j] == iMin)
             for (int k = j + 1; k < points.length; k++)
               if (elements[k] == iMin) {
-                v1.sub(points[i], points[j]);
-                v2.sub(points[i], points[k]);
+                v1.sub2(points[i], points[j]);
+                v2.sub2(points[i], points[k]);
                 v1.normalize();
                 v2.normalize();
                 v3.cross(v1, v2);
                 getAllAxes(v3);
 //                checkAxisOrder(3, v3, center);
-                v1.set(points[i]);
+                v1.setT(points[i]);
                 v1.add(points[j]);
                 v1.add(points[k]);
                 v1.normalize();
@@ -634,7 +634,7 @@ class PointGroup {
           if (haveInversionCenter) {
            v1.cross(vs[i], vs[j]);
           } else {
-            v1.set(vs[i]);
+            v1.setT(vs[i]);
             v1.sub(vs[j]);
           }
           checkAxisOrder(c2, v1, center);
@@ -687,7 +687,7 @@ class PointGroup {
     v.normalize();
     if (haveAxis(iOrder, v))
       return false;
-    Quaternion q = new Quaternion(v, (iOrder < firstProper ? 180 : 0) + 360 / (iOrder % firstProper));
+    Quaternion q = Quaternion.newVA(v, (iOrder < firstProper ? 180 : 0) + 360 / (iOrder % firstProper));
     if (!checkOperation(q, center, iOrder))
       return false;
     addAxis(iOrder, v);
@@ -769,10 +769,10 @@ class PointGroup {
         // or perpendicular to a linear A -- 0 -- B set
 
         Point3f a2 = points[j];
-        pt.add(a1, a2);
+        pt.add2(a1, a2);
         pt.scale(0.5f);
-        v1.sub(a1, center);
-        v2.sub(a2, center);
+        v1.sub2(a1, center);
+        v2.sub2(a2, center);
         if (!isParallel(v1, v2)) {
           v3.cross(v1, v2);
           v3.normalize();
@@ -781,7 +781,7 @@ class PointGroup {
 
         // second, look for planes perpendicular to the A -- B line
 
-        v3.set(a2);
+        v3.setT(a2);
         v3.sub(a1);
         v3.normalize();
         nPlanes = getPlane(v3);
@@ -800,7 +800,7 @@ class PointGroup {
 
   private int getPlane(Vector3f v3) {
     if (!haveAxis(0, v3)
-        && checkOperation(new Quaternion(v3, 180), center,
+        && checkOperation(Quaternion.newVA(v3, 180), center,
             -1))
       axes[0][nAxes[0]++] = new Operation(v3);
     return nAxes[0];
@@ -825,7 +825,7 @@ class PointGroup {
       // check for C2 axis relating 
       for (int i = 0; i < nPlanes - 1; i++) {
         for (int j = i + 1; j < nPlanes; j++) {
-          vTemp.add(planes[1].normalOrAxis, planes[2].normalOrAxis);
+          vTemp.add2(planes[1].normalOrAxis, planes[2].normalOrAxis);
           //if (
           checkAxisOrder(c2, vTemp, center);
           //)
@@ -862,7 +862,7 @@ class PointGroup {
       index = ++nOps;
       type = (i < firstProper ? OPERATION_IMPROPER_AXIS : OPERATION_PROPER_AXIS);
       order = i % firstProper;
-      normalOrAxis = new Quaternion(v, 180).getNormal();
+      normalOrAxis = Quaternion.newVA(v, 180).getNormal();
       if (Logger.debugging)
         Logger.info("new operation -- " + (order == i ? "S" : "C") + order + " "
             + normalOrAxis);
@@ -873,7 +873,7 @@ class PointGroup {
         return;
       index = ++nOps;
       type = OPERATION_PLANE;
-      normalOrAxis = new Quaternion(v, 180).getNormal();
+      normalOrAxis = Quaternion.newVA(v, 180).getNormal();
       if (Logger.debugging)
         Logger.info("new operation -- plane " + normalOrAxis);
     }
@@ -933,14 +933,14 @@ class PointGroup {
             if (index > 0 && j + 1 != index)
               continue;
             op = axes[i][j];
-            v.set(op.normalOrAxis);
+            v.setT(op.normalOrAxis);
             v.add(center);
             if (op.type == OPERATION_IMPROPER_AXIS)
               scale = -scale;
             sb.append("draw pgva").append(m).append(label).append("_").append(
                 j + 1).append(" width 0.05 scale ").append(scale).append(" ").append(
                 Escape.escapePt(v));
-            v.scaleAdd(-2, op.normalOrAxis, v);
+            v.scaleAdd2(-2, op.normalOrAxis, v);
             boolean isPA = (principalAxis != null && op.index == principalAxis.index);
             sb.append(Escape.escapePt(v)).append(
                 "\"").append(label).append(isPA ? "*" : "").append("\" color ").append(
@@ -956,15 +956,15 @@ class PointGroup {
           sb.append("draw pgvp").append(m).append(j + 1).append(
               "disk scale ").append(scaleFactor * radius * 2).append(" CIRCLE PLANE ")
               .append(Escape.escapePt(center));
-          v.set(op.normalOrAxis);
+          v.setT(op.normalOrAxis);
           v.add(center);
           sb.append(Escape.escapePt(v)).append(" color translucent yellow;\n");
-          v.set(op.normalOrAxis);
+          v.setT(op.normalOrAxis);
           v.add(center);
           sb.append("draw pgvp").append(m).append(j + 1).append(
               "ring width 0.05 scale ").append(scaleFactor * radius * 2).append(" arc ")
               .append(Escape.escapePt(v));
-          v.scaleAdd(-2, op.normalOrAxis, v);
+          v.scaleAdd2(-2, op.normalOrAxis, v);
           sb.append(Escape.escapePt(v));
           v.x += 0.011;
           v.y += 0.012;

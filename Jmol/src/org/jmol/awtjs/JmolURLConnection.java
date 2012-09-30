@@ -1,7 +1,6 @@
 package org.jmol.awtjs;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -30,6 +29,7 @@ public class JmolURLConnection extends URLConnection {
    * 
    * the method is "private", but in JavaScript that can still be overloaded.
    * Just set something to org.jmol.awtjs.JmolURLConnection.prototype.doAjax
+	 * @return file data
    * 
    * 
    */

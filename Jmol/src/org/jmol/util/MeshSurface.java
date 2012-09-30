@@ -1,7 +1,7 @@
 package org.jmol.util;
 
 import java.util.ArrayList;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -53,27 +53,31 @@ public class MeshSurface {
   public MeshSurface() {
   }
   
-  public MeshSurface(int[][] polygonIndexes, Tuple3f[] vertices, int nVertices,
+  public static MeshSurface newMesh(Tuple3f[] vertices, int vertexCount, int[][] polygonIndexes,
       Tuple3f[] normals, int nNormals) {
-    this.polygonIndexes = polygonIndexes;
+    MeshSurface ms = new MeshSurface();
+    ms.polygonIndexes = polygonIndexes;
     if (vertices instanceof Point3f[])
-      this.vertices = (Point3f[]) vertices;
+      ms.vertices = (Point3f[]) vertices;
     else
-      this.altVertices = vertices;
-    this.vertexCount = (nVertices == 0 ? vertices.length : nVertices);
-    this.normals = normals;
-    this.normalCount = (nNormals == 0  && normals != null ? normals.length : nNormals);
+      ms.altVertices = vertices;
+    ms.vertexCount = (vertexCount == 0 ? vertices.length : vertexCount);
+    ms.normals = normals;
+    ms.normalCount = (nNormals == 0  && normals != null ? normals.length : nNormals);
+    return ms;
   }
   
-  public MeshSurface(Point3f[] vertices, float[] vertexValues, int vertexCount,
+  public static MeshSurface newSlab(Point3f[] vertices, int vertexCount, float[] vertexValues,
       int[][] polygonIndexes, int polygonCount, int checkCount) {
     // from DRAW only
-    this.vertices = vertices;
-    this.vertexValues = vertexValues;
-    this.vertexCount = vertexCount;
-    this.polygonIndexes = polygonIndexes;
-    this.polygonCount = polygonCount;
-    this.checkCount = checkCount; // will be 1
+    MeshSurface ms = new MeshSurface();
+    ms.vertices = vertices;
+    ms.vertexValues = vertexValues;
+    ms.vertexCount = vertexCount;
+    ms.polygonIndexes = polygonIndexes;
+    ms.polygonCount = polygonCount;
+    ms.checkCount = checkCount; // will be 1
+    return ms;
   }
 
   /**
@@ -99,7 +103,7 @@ public class MeshSurface {
       vertices = new Point3f[SEED_COUNT];
     else if (vertexCount == vertices.length)
       vertices = (Point3f[]) ArrayUtil.doubleLength(vertices);
-    vertices[vertexCount] = new Point3f(vertex);
+    vertices[vertexCount] = Point3f.newP(vertex);
     return vertexCount++;
   }
 
@@ -120,11 +124,11 @@ public class MeshSurface {
       polygonIndexes = new int[polygonCount][];
   }
 
-  public int addVertexCopy(Point3f vertex, float value) {
+  public int addVertexCopyVal(Point3f vertex, float value) {
     if (vertexCount == 0)
       vertexValues = new float[SEED_COUNT];
     else if (vertexCount >= vertexValues.length)
-      vertexValues = ArrayUtil.doubleLength(vertexValues);
+      vertexValues = ArrayUtil.doubleLengthF(vertexValues);
     vertexValues[vertexCount] = value;
     return addVertexCopy(vertex);
   } 
@@ -140,20 +144,20 @@ public class MeshSurface {
         || Float.isNaN(vertices[vertexB].x) 
         || Float.isNaN(vertices[vertexC].x) 
         ? -1 
-      : addPolygon(vertexA, vertexB, vertexC, check, check2, color, null));
+      : addPolygonV3(vertexA, vertexB, vertexC, check, check2, color, null));
   }
 
-  private int addPolygon(int vertexA, int vertexB, int vertexC, int check,
+  private int addPolygonV3(int vertexA, int vertexB, int vertexC, int check,
                          int check2, int color, BitSet bs) {
     return (checkCount == 2 ? 
-        addPolygon(new int[] { vertexA, vertexB, vertexC, check, check2 }, color, bs)
+        addPolygonC(new int[] { vertexA, vertexB, vertexC, check, check2 }, color, bs)
       : addPolygon(new int[] { vertexA, vertexB, vertexC, check }, bs) );
   }
 
   private int lastColor;
   private short lastColix;
     
-  protected int addPolygon(int[] polygon, int color, BitSet bs) {
+  protected int addPolygonC(int[] polygon, int color, BitSet bs) {
     if (color != 0) {
       if (polygonColixes == null || polygonCount == 0)
         lastColor = 0;
@@ -180,7 +184,7 @@ public class MeshSurface {
     if (polygonColixes == null) {
       polygonColixes = new short[SEED_COUNT];
     } else if (index >= polygonColixes.length) {
-      polygonColixes = ArrayUtil.doubleLength(polygonColixes);
+      polygonColixes = ArrayUtil.doubleLengthShort(polygonColixes);
     }
     polygonColixes[index] = colix;
   }
@@ -284,7 +288,7 @@ public class MeshSurface {
 
 
   
-  public void slabPolygons(List<Object[]> slabInfo, boolean allowCap) {
+  public void slabPolygonsList(List<Object[]> slabInfo, boolean allowCap) {
     for (int i = 0; i < slabInfo.size(); i++)
       if (!slabPolygons(slabInfo.get(i), allowCap))
           break;
@@ -402,7 +406,7 @@ public class MeshSurface {
         getIntersection(distance, null, null, null, null, null, null, andCap,
             false, Token.min, isGhost);
         BitSet bsA = (bs == null ? null : BitSetUtil.copy(bsSlabDisplay));
-        BitSetUtil.copy(bs, bsSlabDisplay);
+        BitSetUtil.copy2(bs, bsSlabDisplay);
         getIntersection(distanceMax, null, null, null, null, null, null,
             andCap, false, Token.max, isGhost);
         if (bsA != null)
@@ -449,12 +453,12 @@ public class MeshSurface {
     
     if (vertexSource != null) {
       if (vertexCount >= vertexSource.length)
-        vertexSource = ArrayUtil.doubleLength(vertexSource);
+        vertexSource = ArrayUtil.doubleLengthI(vertexSource);
       vertexSource[vertexCount] = source;
     }
     if (vertexSets != null) {
       if (vertexCount >= vertexSets.length)
-        vertexSets = ArrayUtil.doubleLength(vertexSets);
+        vertexSets = ArrayUtil.doubleLengthI(vertexSets);
       vertexSets[vertexCount] = set;
     }
     int i = addVertexCopy(vertex, value, true, -4);
@@ -471,7 +475,7 @@ public class MeshSurface {
    */
   protected int addVertexCopy(Point3f vertex, float value, boolean assocNormals, int iNormal) {
     // isosurface only
-    return addVertexCopy(vertex, value);
+    return addVertexCopyVal(vertex, value);
   }
 
   private boolean doClear;
@@ -690,7 +694,7 @@ public class MeshSurface {
               iE = addIntersectionVertex(pts[1], values[1], sourceA, setA,
                   mapEdge, iA, iC);
             bs = (tossBC ? bsSlab : bsSlabGhost);
-            addPolygon(iA, iD, iE, check1 & 5 | 2, check2, 0, bs);
+            addPolygonV3(iA, iD, iE, check1 & 5 | 2, check2, 0, bs);
             if (!isGhost)
               break;
           }
@@ -701,12 +705,12 @@ public class MeshSurface {
           if (iE < 0) {
             iE = addIntersectionVertex(pts[0], values[0], sourceB, setA, mapEdge,
                 iA, iB);
-            addPolygon(iE, iB, iC, check1 & 3, check2, 0, bs);
+            addPolygonV3(iE, iB, iC, check1 & 3, check2, 0, bs);
           }
           if (iD < 0) {
             iD = addIntersectionVertex(pts[1], values[1], sourceC, setA, mapEdge,
                 iA, iC);
-            addPolygon(iD, iE, iC, check1 & 4 | 1, check2, 0, bs);
+            addPolygonV3(iD, iE, iC, check1 & 4 | 1, check2, 0, bs);
           }
           break;
         case 5:
@@ -729,7 +733,7 @@ public class MeshSurface {
             if (iD < 0)
               iD = addIntersectionVertex(pts[1], values[1], sourceB, setA,
                   mapEdge, iB, iC);
-            addPolygon(iE, iB, iD, check1 & 3 | 4, check2, 0, bs);
+            addPolygonV3(iE, iB, iD, check1 & 3 | 4, check2, 0, bs);
             if (!isGhost)
               break;
           }
@@ -740,12 +744,12 @@ public class MeshSurface {
           if (iD < 0) {
             iD = addIntersectionVertex(pts[0], values[0], sourceA, setA, mapEdge,
                 iB, iA);
-            addPolygon(iA, iD, iC, check1 & 5, check2, 0, bs);
+            addPolygonV3(iA, iD, iC, check1 & 5, check2, 0, bs);
           }
           if (iE < 0) {
             iE = addIntersectionVertex(pts[1], values[1], sourceC, setA, mapEdge,
                 iB, iC);
-            addPolygon(iD, iE, iC, check1 & 2 | 1, check2, 0, bs);
+            addPolygonV3(iD, iE, iC, check1 & 2 | 1, check2, 0, bs);
           }
           break;
         case 4:
@@ -767,7 +771,7 @@ public class MeshSurface {
               iE = addIntersectionVertex(pts[1], values[1], sourceC, setA,
                   mapEdge, iB, iC); //CB
             bs = (tossAB ? bsSlab : bsSlabGhost);
-            addPolygon(iD, iE, iC, check1 & 6 | 1, check2, 0, bs);
+            addPolygonV3(iD, iE, iC, check1 & 6 | 1, check2, 0, bs);
             if (!isGhost)
               break;
           }
@@ -778,12 +782,12 @@ public class MeshSurface {
           if (iE < 0) {
             iE = addIntersectionVertex(pts[0], values[0], sourceA, setA, mapEdge,
                 iA, iC); //CA
-            addPolygon(iA, iB, iE, check1 & 5, check2, 0, bs);
+            addPolygonV3(iA, iB, iE, check1 & 5, check2, 0, bs);
           }
           if (iD < 0) {
             iD = addIntersectionVertex(pts[1], values[1], sourceB, setA, mapEdge,
                 iB, iC); //CB
-            addPolygon(iE, iB, iD, check1 & 2 | 4, check2, 0, bs);
+            addPolygonV3(iE, iB, iD, check1 & 2 | 4, check2, 0, bs);
           }
           break;
         }
@@ -811,7 +815,7 @@ public class MeshSurface {
       for (int i = iPts.size(); --i >= 0;) {
         int[] ipts = iPts.get(i);
         //int p =
-        addPolygon(ipts[0], v0, ipts[1], 0, 0, 0, bsSlabDisplay);
+        addPolygonV3(ipts[0], v0, ipts[1], 0, 0, 0, bsSlabDisplay);
       }
     }
     
@@ -929,7 +933,7 @@ public class MeshSurface {
     for (int i = 0; i < meshSurface.polygonCount; i++) {
       Point3f pt = meshSurface.getTriangleIntersection(i, vA, vB, vC, plane, vNorm, vAB, pts[1], pts[2], vAC, pTemp, vTemp3);
       if (pt != null) {
-        pts[0] = new Point3f(pt);
+        pts[0] = Point3f.new3(pt);
         return true; 
       }
     }
@@ -969,7 +973,7 @@ public class MeshSurface {
       f = 1;
     fracs[i] = f;
     values[i] = (val2 - val1) * f + val1;
-    return new Point3f(v1.x + (v2.x - v1.x) * f, 
+    return Point3f.new3(v1.x + (v2.x - v1.x) * f, 
         v1.y + (v2.y - v1.y) * f, 
         v1.z + (v2.z - v1.z) * f);
   }

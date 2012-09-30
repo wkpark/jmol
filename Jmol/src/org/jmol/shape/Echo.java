@@ -28,7 +28,7 @@ import org.jmol.util.Colix;
 import org.jmol.util.Escape;
 import org.jmol.util.TextFormat;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Iterator;
 
 public class Echo extends TextShape {
@@ -147,7 +147,7 @@ public class Echo extends TextShape {
           } else if ("bottom" == target) {
             valign = Object2d.VALIGN_BOTTOM;
           }
-          text = new Text(viewer, gdata, gdata.getFont3D(FONTFACE, FONTSIZE),
+          text = new Text(viewer, gdata, gdata.getFont3DFS(FONTFACE, FONTSIZE),
               target, COLOR, valign, halign, 0);
           text.setAdjustForWindow(true);
           objects.put(target, text);

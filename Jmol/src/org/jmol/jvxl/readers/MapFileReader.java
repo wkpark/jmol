@@ -87,7 +87,7 @@ abstract class MapFileReader extends VolumeFileReader {
         + maps);
     Logger.info("grid parameters: originX,Y,Z: " + origin);
 
-    SimpleUnitCell unitCell = new SimpleUnitCell( new float[] { a / na, b / nb, c / nc, alpha,
+    SimpleUnitCell unitCell = SimpleUnitCell.newA( new float[] { a / na, b / nb, c / nc, alpha,
         beta, gamma });
 
     /*
@@ -133,9 +133,9 @@ abstract class MapFileReader extends VolumeFileReader {
      This is because our x is the slowest running variable.
     */               
         
-    vectors[0] = new Point3f(1, 0, 0);
-    vectors[1] = new Point3f(0, 1, 0);
-    vectors[2] = new Point3f(0, 0, 1);
+    vectors[0] = Point3f.new3(1, 0, 0);
+    vectors[1] = Point3f.new3(0, 1, 0);
+    vectors[2] = Point3f.new3(0, 0, 1);
     unitCell.toCartesian(vectors[0], false);
     unitCell.toCartesian(vectors[1], false);
     unitCell.toCartesian(vectors[2], false);
@@ -149,9 +149,9 @@ abstract class MapFileReader extends VolumeFileReader {
     voxelCounts[1] = ny;
     voxelCounts[2] = nx; // fastest
 
-    volumetricVectors[0].set(vectors[maps - 1]);
-    volumetricVectors[1].set(vectors[mapr - 1]);
-    volumetricVectors[2].set(vectors[mapc - 1]);
+    volumetricVectors[0].setT(vectors[maps - 1]);
+    volumetricVectors[1].setT(vectors[mapr - 1]);
+    volumetricVectors[2].setT(vectors[mapc - 1]);
 
     // only use nxyzStart if the origin is {0, 0, 0}
 
@@ -167,13 +167,13 @@ abstract class MapFileReader extends VolumeFileReader {
       int yIndex = xyz2crs[1]; // yIndex = 0
       int zIndex = xyz2crs[2]; // zIndex = 2
 
-      origin.scaleAdd(nxyzStart[xIndex] + adjustment.x, vectors[0], origin);
-      origin.scaleAdd(nxyzStart[yIndex] + adjustment.y, vectors[1], origin);
-      origin.scaleAdd(nxyzStart[zIndex] + adjustment.z, vectors[2], origin);
+      origin.scaleAdd2(nxyzStart[xIndex] + adjustment.x, vectors[0], origin);
+      origin.scaleAdd2(nxyzStart[yIndex] + adjustment.y, vectors[1], origin);
+      origin.scaleAdd2(nxyzStart[zIndex] + adjustment.z, vectors[2], origin);
 
     }
 
-    volumetricOrigin.set(origin);
+    volumetricOrigin.setT(origin);
 
     Logger.info("Jmol grid origin in Cartesian coordinates: " + origin);
     Logger.info("Use  isosurface OFFSET {x y z}  if you want to shift it.\n");

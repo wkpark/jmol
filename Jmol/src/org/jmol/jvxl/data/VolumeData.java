@@ -280,9 +280,9 @@ public class VolumeData implements VolumeDataInterface {
   
   private boolean setMatrix() {
     for (int i = 0; i < 3; i++)
-      volumetricMatrix.setColumn(i, volumetricVectors[i]);
+      volumetricMatrix.setColumnV(i, volumetricVectors[i]);
     try {
-      inverseMatrix.invert(volumetricMatrix);
+      inverseMatrix.invertM(volumetricMatrix);
     } catch (Exception e) {
       Logger.error("VolumeData error setting matrix -- bad unit vectors? ");
       return false;
@@ -291,7 +291,7 @@ public class VolumeData implements VolumeDataInterface {
   }
 
   public void transform(Vector3f v1, Vector3f v2) {
-    volumetricMatrix.transform(v1, v2);
+    volumetricMatrix.transform2(v1, v2);
   }
 
   public void setPlaneParameters(Point4f plane) {
@@ -321,9 +321,9 @@ public class VolumeData implements VolumeDataInterface {
   }
 
   public void voxelPtToXYZ(int x, int y, int z, Point3f pt) {
-    pt.scaleAdd(x, volumetricVectors[0], volumetricOrigin);
-    pt.scaleAdd(y, volumetricVectors[1], pt);
-    pt.scaleAdd(z, volumetricVectors[2], pt);
+    pt.scaleAdd2(x, volumetricVectors[0], volumetricOrigin);
+    pt.scaleAdd2(y, volumetricVectors[1], pt);
+    pt.scaleAdd2(z, volumetricVectors[2], pt);
   }
 
   public boolean setUnitVectors() {
@@ -336,17 +336,18 @@ public class VolumeData implements VolumeDataInterface {
       if (d > maxVectorLength)
         maxVectorLength = d;
       voxelVolume *= d;
-      unitVolumetricVectors[i].normalize(volumetricVectors[i]);
+      unitVolumetricVectors[i].setT(volumetricVectors[i]);
+      unitVolumetricVectors[i].normalize();      
     }
     minToPlaneDistance = maxVectorLength * 2;
     origin[0] = volumetricOrigin.x;
     origin[1] = volumetricOrigin.y;
     origin[2] = volumetricOrigin.z;
     spanningVectors = new Vector3f[4];
-    spanningVectors[0] = new Vector3f(volumetricOrigin);
+    spanningVectors[0] = Vector3f.newV(volumetricOrigin);
     for (int i = 0; i < 3; i++) {
       Vector3f v = spanningVectors[i + 1] = new Vector3f();
-      v.scaleAdd(voxelCounts[i] - 1, volumetricVectors[i], v);
+      v.scaleAdd2(voxelCounts[i] - 1, volumetricVectors[i], v);
     }
     return setMatrix();
   }
@@ -367,7 +368,7 @@ public class VolumeData implements VolumeDataInterface {
       float v = sr.getValueAtPoint(point);
       return (isSquared ? v * v : v);
     }
-    ptXyzTemp.sub(point, volumetricOrigin);
+    ptXyzTemp.sub2(point, volumetricOrigin);
     inverseMatrix.transform(ptXyzTemp);
     int iMax;
     int xLower = indexLower(ptXyzTemp.x, iMax = voxelCounts[0] - 1);
@@ -435,10 +436,10 @@ public class VolumeData implements VolumeDataInterface {
 
   void offsetCenter(Point3f center) {
     Point3f pt = new Point3f();
-    pt.scaleAdd((voxelCounts[0] - 1) / 2f, volumetricVectors[0], pt);
-    pt.scaleAdd((voxelCounts[1] - 1) / 2f, volumetricVectors[1], pt);
-    pt.scaleAdd((voxelCounts[2] - 1) / 2f, volumetricVectors[2], pt);
-    volumetricOrigin.sub(center, pt);
+    pt.scaleAdd2((voxelCounts[0] - 1) / 2f, volumetricVectors[0], pt);
+    pt.scaleAdd2((voxelCounts[1] - 1) / 2f, volumetricVectors[1], pt);
+    pt.scaleAdd2((voxelCounts[2] - 1) / 2f, volumetricVectors[2], pt);
+    volumetricOrigin.sub2(center, pt);
   }
 
   public void setDataDistanceToPlane(Point4f plane) {
@@ -482,7 +483,7 @@ public class VolumeData implements VolumeDataInterface {
     int nx = voxelCounts[0];
     int ny = voxelCounts[1];
     int nz = voxelCounts[2];
-    Vector3f normal = new Vector3f(plane.x, plane.y, plane.z);
+    Vector3f normal = Vector3f.new3(plane.x, plane.y, plane.z);
     normal.normalize();
     float f = 1f;
     for (int x = 0; x < nx; x++)
@@ -501,7 +502,7 @@ public class VolumeData implements VolumeDataInterface {
     if (voxelCounts[0] == 0) {
       XmlUtil.appendTag(sb, "jvxlVolumeData", null);
     } else {   
-      XmlUtil.openTag(sb, "jvxlVolumeData", new String[] {
+      XmlUtil.openTagAttr(sb, "jvxlVolumeData", new String[] {
           "origin", Escape.escapePt(volumetricOrigin) });
       for (int i = 0; i < 3; i++) 
         XmlUtil.appendTag(sb, "jvxlVolumeVector", new String[] {
@@ -536,8 +537,8 @@ public class VolumeData implements VolumeDataInterface {
                                         float valueB, Point3f pt) {
     float d = (valueB - valueA);
     float fraction = (cutoff - valueA) / d;
-    edgeVector.sub(pointB, pointA);
-    pt.scaleAdd(fraction, edgeVector, pointA);
+    edgeVector.sub2(pointB, pointA);
+    pt.scaleAdd2(fraction, edgeVector, pointA);
     if (sr == null || !doIterate || valueB == valueA 
         || fraction < 0.01f || fraction > 0.99f 
         || (edgeVector.length()) < 0.01f)
@@ -549,7 +550,7 @@ public class VolumeData implements VolumeDataInterface {
     // or because the projected point is not between pointA and pointB
     // In that case we invalidate the point.
     int n = 0;
-    ptTemp.set(pt);
+    ptTemp.setT(pt);
     float v = lookupInterpolatedVoxelValue(ptTemp);
     float v0 = Float.NaN;
     
@@ -561,11 +562,11 @@ public class VolumeData implements VolumeDataInterface {
       fraction += diff;
       if (fraction < 0 || fraction > 1)
         break;
-      pt.set(ptTemp);
+      pt.setT(ptTemp);
       v0 = v;
       if (Math.abs(diff) < 0.005f)
         break;
-      ptTemp.scaleAdd(diff, edgeVector, pt);
+      ptTemp.scaleAdd2(diff, edgeVector, pt);
       v = lookupInterpolatedVoxelValue(ptTemp);
     }
     return v0;

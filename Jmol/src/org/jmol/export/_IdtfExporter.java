@@ -30,7 +30,7 @@
 package org.jmol.export;
 
 import java.util.ArrayList;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -228,8 +228,8 @@ public class _IdtfExporter extends __CartesianExporter {
     sb.append(round(pt.x)).append(" ").append(round(pt.y)).append(" ").append(round(pt.z)).append(" ");
   }
   
-  private Point3f ptMin = new Point3f(1e10f,1e10f,1e10f);
-  private Point3f ptMax = new Point3f(-1e10f,-1e10f,-1e10f);
+  private Point3f ptMin = Point3f.new3(1e10f,1e10f,1e10f);
+  private Point3f ptMax = Point3f.new3(-1e10f,-1e10f,-1e10f);
   
   private void checkPoint(Tuple3f pt) {
     if (pt.x < ptMin.x)
@@ -279,7 +279,7 @@ public class _IdtfExporter extends __CartesianExporter {
     m.setIdentity();
     Quaternion q = viewer.getRotationQuaternion();
     m.set(q.getMatrix());
-    q.transform(referenceCenter, tempP1);
+    q.transformP2(referenceCenter, tempP1);
     m.m03 = -tempP1.x;
     m.m13 = -tempP1.y;
     m.m23 = -tempP1.z;
@@ -622,7 +622,7 @@ public class _IdtfExporter extends __CartesianExporter {
     if (ptX != null) {
       if (endcaps == GData.ENDCAPS_FLAT) {
         outputEllipse(ptCenter, pt1, ptX, ptY, colix);
-        tempP3.set(ptCenter);
+        tempP3.setT(ptCenter);
         tempP3.sub(ptX);
         tempP3.add(ptCenter);
         outputEllipse(ptCenter, pt2, tempP3, ptY, colix);
@@ -682,7 +682,7 @@ public class _IdtfExporter extends __CartesianExporter {
     float rpd = 3.1415926f / 180;
     Point3f[] pts = new Point3f[73];
     for (int i = 0, p = 0; i <= 360; i += 5, p++) {
-      pts[p] = new Point3f((float) (Math.cos(i * rpd) * radius), (float) (Math
+      pts[p] = Point3f.new3((float) (Math.cos(i * rpd) * radius), (float) (Math
           .sin(i * rpd) * radius), 0);
       pts[p].add(pt1);
     }
@@ -767,13 +767,13 @@ public class _IdtfExporter extends __CartesianExporter {
     for (int i = 0; i < n; i++) {
       float x = (float) (Math.cos(i * ndeg / 180. * Math.PI)); 
       float y = (float) (Math.sin(i * ndeg / 180. * Math.PI)); 
-      vertexes[i] = new Point3f(x, y, 0);
-      normals[i] =  new Point3f(x, y, 0);
+      vertexes[i] = Point3f.new3(x, y, 0);
+      normals[i] =  Point3f.new3(x, y, 0);
     }
     for (int i = 0; i < n; i++) {
       float x = (float) (Math.cos((i + 0.5) * ndeg / 180 * Math.PI)); 
       float y = (float) (Math.sin((i + 0.5) * ndeg / 180 * Math.PI)); 
-      vertexes[i + n] = new Point3f(x, y, 1);
+      vertexes[i + n] = Point3f.new3(x, y, 1);
       normals[i + n] = normals[i];
     }
     if (inSide)
@@ -962,11 +962,11 @@ public class _IdtfExporter extends __CartesianExporter {
     for (int i = 0; i < n; i++) {
       float x = (float) (Math.cos(i * ndeg / 180. * Math.PI));
       float y = (float) (Math.sin(i * ndeg / 180. * Math.PI));
-      vertexes[i] = new Point3f(x, y, 0);
-      normals[i] = new Point3f(0, 0, 1);
+      vertexes[i] = Point3f.new3(x, y, 0);
+      normals[i] = Point3f.new3(0, 0, 1);
     }
-    vertexes[n] = new Point3f(0, 0, 0);
-    normals[n] = new Point3f(0, 0, 1);
+    vertexes[n] = Point3f.new3(0, 0, 0);
+    normals[n] = Point3f.new3(0, 0, 1);
     return getMeshData("Circle", faces, vertexes, normals);
   }
   
@@ -1004,9 +1004,9 @@ public class _IdtfExporter extends __CartesianExporter {
   private String getTriangleResource(String key, Point3f pt1,
                                      Point3f pt2, Point3f pt3) {
     Point3f[] vertexes = new Point3f[] { pt1, pt2, pt3 };
-    tempV1.set(pt3);
+    tempV1.setT(pt3);
     tempV1.sub(pt1);
-    tempV2.set(pt2);
+    tempV2.setT(pt2);
     tempV2.sub(pt1);
     tempV2.cross(tempV2, tempV1);
     tempV2.normalize();

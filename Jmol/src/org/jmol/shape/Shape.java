@@ -42,7 +42,7 @@ import org.jmol.modelset.ModelSet;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.List;
 import java.util.Map;
 

@@ -119,7 +119,7 @@ import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
 import java.util.ArrayList;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -202,7 +202,7 @@ public class Parameters {
     bsSelected = null;
     bsSolvent = null;
     calculationType = "";
-    center = new Point3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
+    center = Point3f.new3(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
     colorBySign = colorByPhase = colorBySets = false;
     colorDensity = false;
     colorEncoder = null;
@@ -380,20 +380,20 @@ public class Parameters {
      *    rotation turns {0 0 1} into ecc. 
      * 
      */
-    Vector3f ecc = new Vector3f(info.x, info.y, info.z);
+    Vector3f ecc = Vector3f.new3(info.x, info.y, info.z);
     float c = (scale > 0 ? scale : info.w < 0 ? 1f : ecc.length());
     float fab_c = Math.abs(info.w);
     ecc.normalize();
-    Vector3f z = new Vector3f(0, 0, 1);
+    Vector3f z = Vector3f.new3(0, 0, 1);
     ecc.add(z);
     ecc.normalize();
     if (Float.isNaN(ecc.x)) // was exactly {0 0 -1} -- just rotate about x
       ecc.set(1, 0, 0);
     eccentricityMatrix = new Matrix3f();
     eccentricityMatrix.setIdentity();
-    eccentricityMatrix.set(new AxisAngle4f(ecc, (float) Math.PI));
+    eccentricityMatrix.setAA(AxisAngle4f.newVA(ecc, (float) Math.PI));
     eccentricityMatrixInverse = new Matrix3f();
-    eccentricityMatrixInverse.invert(eccentricityMatrix);
+    eccentricityMatrixInverse.invertM(eccentricityMatrix);
     isEccentric = isAnisotropic = true;
     eccentricityScale = c;
     eccentricityRatio = fab_c;
@@ -417,7 +417,7 @@ public class Parameters {
   void setSphere(float radius) {
     dataType = SURFACE_SPHERE;
     distance = radius;
-    setEccentricity(new Point4f(0, 0, 1, 1));
+    setEccentricity(Point4f.new4(0, 0, 1, 1));
     cutoff = Float.MIN_VALUE;
     isCutoffAbsolute = false;
     isSilent = !logMessages;
@@ -592,7 +592,7 @@ public class Parameters {
 
   boolean setAtomicOrbital(float[] nlmZprs) {
     dataType = SURFACE_ATOMICORBITAL;
-    setEccentricity(new Point4f(0, 0, 1, 1));
+    setEccentricity(Point4f.new4(0, 0, 1, 1));
     psi_n = (int) nlmZprs[0];
     psi_l = (int) nlmZprs[1];
     psi_m = (int) nlmZprs[2];

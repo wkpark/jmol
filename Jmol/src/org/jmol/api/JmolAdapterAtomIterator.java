@@ -24,7 +24,7 @@
 
 package org.jmol.api;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import javax.vecmath.Point3f;
 
 import org.jmol.util.Quadric;

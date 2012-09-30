@@ -96,8 +96,8 @@ public class Dipole {
     this.offsetAngstroms = offsetAngstroms;
     this.offsetPercent = offsetPercent;
     this.offsetSide = offsetSide;
-    this.vector = new Vector3f(vector);
-    this.origin = new Point3f(origin);
+    this.vector = Vector3f.newV(vector);
+    this.origin = Point3f.newP(origin);
     this.haveAtoms = (atoms[0] != null);
     if (haveAtoms) {
       this.atoms[0] = atoms[0];
@@ -109,17 +109,17 @@ public class Dipole {
   }
 
   private void set(Point3f pt1, Point3f pt2) {
-    coords[0] = new Point3f(pt1);
-    coords[1] = new Point3f(pt2);
+    coords[0] = Point3f.newP(pt1);
+    coords[1] = Point3f.newP(pt2);
     isValid = (coords[0].distance(coords[1]) > 0.1f);
     
     if (dipoleValue < 0) { 
-      origin = new Point3f(pt2);
-      vector = new Vector3f(pt1);
+      origin = Point3f.newP(pt2);
+      vector = Vector3f.newV(pt1);
       dipoleValue = -dipoleValue;
     } else {
-      origin = new Point3f(pt1);
-      vector = new Vector3f(pt2);
+      origin = Point3f.newP(pt1);
+      vector = Vector3f.newV(pt2);
     }
     dipoleInfo = "" + origin + vector;
     vector.sub(origin);
@@ -150,7 +150,7 @@ public class Dipole {
 
   void set(Point3f pt1, Vector3f dipole) {
     set(dipole.length());
-    Point3f pt2 = new Point3f(pt1);
+    Point3f pt2 = Point3f.newP(pt1);
     pt2.add(dipole);
     set(pt1, pt2);
     type = DIPOLE_TYPE_POINTVECTOR;
@@ -174,9 +174,9 @@ public class Dipole {
       return;
     float f = atoms[0].distance(atoms[1]) / (2 * dipoleValue)
         - 0.5f;
-    origin.scaleAdd(f, vector, atoms[0]);
+    origin.scaleAdd2(f, vector, atoms[0]);
     center = new Point3f();
-    center.scaleAdd(0.5f, vector, origin);
+    center.scaleAdd2(0.5f, vector, origin);
     bond = atoms[0].getBond(atoms[1]);
     type = (bond == null ? Dipole.DIPOLE_TYPE_ATOMS : Dipole.DIPOLE_TYPE_BOND);
   }

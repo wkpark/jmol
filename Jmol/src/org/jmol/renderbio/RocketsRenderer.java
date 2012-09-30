@@ -73,27 +73,27 @@ public class RocketsRenderer extends BioShapeRenderer {
       point = cordMidPoints[i];
       Monomer residue = monomers[i];
       if (isNewStyle && renderArrowHeads) {
-          point.set(controlPoints[i]);
+          point.setT(controlPoints[i]);
       } else if (isHelix(i) ||  !isNewStyle && isSheet(i)) {
         ProteinStructure proteinstructure = residue.getProteinStructure();
-        point.set(i - 1 != proteinstructure.getMonomerIndex() ?
+        point.setT(i - 1 != proteinstructure.getMonomerIndex() ?
             proteinstructure.getAxisStartPoint() :
             proteinstructure.getAxisEndPoint());
         proteinstructurePrev = proteinstructure;
       } else {
         if (proteinstructurePrev != null)
-          point.set(proteinstructurePrev.getAxisEndPoint());
+          point.setT(proteinstructurePrev.getAxisEndPoint());
         else {
-          point.set(controlPoints[i]);        
+          point.setT(controlPoints[i]);        
         }
         proteinstructurePrev = null;
       }
     }
     point = cordMidPoints[monomerCount];
     if (proteinstructurePrev != null)
-      point.set(proteinstructurePrev.getAxisEndPoint());
+      point.setT(proteinstructurePrev.getAxisEndPoint());
     else {
-      point.set(controlPoints[monomerCount]);        
+      point.setT(controlPoints[monomerCount]);        
     }
   }
 
@@ -224,7 +224,7 @@ public class RocketsRenderer extends BioShapeRenderer {
                 Vector3f scaledHeightVector, Vector3f lengthVector) {
     for (int i = 8; --i >= 0; ) {
       Point3f corner = corners[i];
-      corner.set(pointCorner);
+      corner.setT(pointCorner);
       if ((i & 1) != 0)
         corner.add(scaledWidthVector);
       if ((i & 2) != 0)
@@ -239,16 +239,16 @@ public class RocketsRenderer extends BioShapeRenderer {
                          Vector3f scaledHeightVector, Point3f pointTip) {
     for (int i = 4; --i >= 0; ) {
       Point3f corner = corners[i];
-      corner.set(pointCorner);
+      corner.setT(pointCorner);
       if ((i & 1) != 0)
         corner.add(scaledWidthVector);
       if ((i & 2) != 0)
         corner.add(scaledHeightVector);
       viewer.transformPt3f(corner, screenCorners[i]);
     }
-    corners[4].set(pointTip);
+    corners[4].setT(pointTip);
     viewer.transformPt3f(pointTip, screenCorners[4]);
-    corners[5].add(pointTip, scaledHeightVector);
+    corners[5].add2(pointTip, scaledHeightVector);
     viewer.transformPt3f(corners[5], screenCorners[5]);
   }
 
@@ -258,13 +258,13 @@ public class RocketsRenderer extends BioShapeRenderer {
   void drawBox(Point3f pointA, Point3f pointB) {
     Sheet sheet = (Sheet)proteinstructurePending;
     float scale = mad / 1000f;
-    scaledWidthVector.set(sheet.getWidthUnitVector());
+    scaledWidthVector.setT(sheet.getWidthUnitVector());
     scaledWidthVector.scale(scale);
-    scaledHeightVector.set(sheet.getHeightUnitVector());
+    scaledHeightVector.setT(sheet.getHeightUnitVector());
     scaledHeightVector.scale(scale / 4);
-    pointCorner.add(scaledWidthVector, scaledHeightVector);
+    pointCorner.add2(scaledWidthVector, scaledHeightVector);
     pointCorner.scaleAdd(-0.5f, pointA);
-    lengthVector.sub(pointB, pointA);
+    lengthVector.sub2(pointB, pointA);
     buildBox(pointCorner, scaledWidthVector,
              scaledHeightVector, lengthVector);
     for (int i = 0; i < 6; ++i) {
@@ -282,13 +282,13 @@ public class RocketsRenderer extends BioShapeRenderer {
   void drawArrowHeadBox(Point3f base, Point3f tip) {
     Sheet sheet = (Sheet)proteinstructurePending;
     float scale = mad / 1000f;
-    scaledWidthVector.set(sheet.getWidthUnitVector());
+    scaledWidthVector.setT(sheet.getWidthUnitVector());
     scaledWidthVector.scale(scale * 1.25f);
-    scaledHeightVector.set(sheet.getHeightUnitVector());
+    scaledHeightVector.setT(sheet.getHeightUnitVector());
     scaledHeightVector.scale(scale / 3);
-    pointCorner.add(scaledWidthVector, scaledHeightVector);
+    pointCorner.add2(scaledWidthVector, scaledHeightVector);
     pointCorner.scaleAdd(-0.5f, base);
-    pointTipOffset.set(scaledHeightVector);
+    pointTipOffset.setT(scaledHeightVector);
     pointTipOffset.scaleAdd(-0.5f, tip);
     buildArrowHeadBox(pointCorner, scaledWidthVector,
                       scaledHeightVector, pointTipOffset);

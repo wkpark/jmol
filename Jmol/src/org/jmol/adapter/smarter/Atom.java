@@ -28,7 +28,7 @@ import javax.vecmath.Point3f;
 
 import org.jmol.util.Quadric;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 
 public class Atom extends Point3f implements Cloneable {
   public int atomSetIndex;

@@ -100,10 +100,10 @@ public class SurfaceTool {
 
     BoxInfo box = new BoxInfo();
     viewer.calcAtomsMinMax(null, box);
-    center.set(box.getBoundBoxCenter());
-    boxVec.set(box.getBoundBoxCornerVector());
-    posCorner.add(center, boxVec);
-    negCorner.sub(center, boxVec);
+    center.setT(box.getBoundBoxCenter());
+    boxVec.setT(box.getBoundBoxCornerVector());
+    posCorner.add2(center, boxVec);
+    negCorner.sub2(center, boxVec);
     Shape[] shapes = (Shape[]) viewer.getProperty("DATA_API", "shapeManager",
         "getShapes");
     //now iterate through all the shapes and get their XYZmin and XYZmax.  Expand
@@ -112,10 +112,10 @@ public class SurfaceTool {
     box = checkMeshBB(shapes, JmolConstants.SHAPE_PMESH, box);
     box = checkMeshBB(shapes, JmolConstants.SHAPE_MO, box);
     if (box != null) {
-      center.set(box.getBoundBoxCenter());
-      negCorner.sub(center, box.getBoundBoxCornerVector());
-      posCorner.add(center, box.getBoundBoxCornerVector());
-      boxVec.set(box.getBoundBoxCornerVector());
+      center.setT(box.getBoundBoxCenter());
+      negCorner.sub2(center, box.getBoundBoxCornerVector());
+      posCorner.add2(center, box.getBoundBoxCornerVector());
+      boxVec.setT(box.getBoundBoxCornerVector());
     }
   }
 
@@ -148,7 +148,7 @@ public class SurfaceTool {
       //set positionMin to minimum of BBoxCornerMin.x .y or .z or if all are 
       //negative -1* distance from origin. PositionMax similarly.
       if (negCorner.x < 0 && negCorner.y < 0 && negCorner.z < 0) {
-        positionMin = -1 * negCorner.distance(new Point3f(0, 0, 0));
+        positionMin = -1 * negCorner.distance(Point3f.new3(0, 0, 0));
       } else {
         positionMin = Math.min(negCorner.x, negCorner.y);
         positionMin = Math.min(negCorner.z, positionMin);

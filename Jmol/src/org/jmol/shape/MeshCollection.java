@@ -28,7 +28,7 @@ import org.jmol.viewer.StateManager;
 import org.jmol.script.ScriptVariable;
 import org.jmol.script.Token;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -399,7 +399,7 @@ public abstract class MeshCollection extends Shape {
       if ((m = getMesh(id)) == null || m.vertices == null)
         return false;
       if (index == Integer.MAX_VALUE)
-        data[2] = new Point3f(m.index + 1, meshCount, m.vertexCount);
+        data[2] = Point3f.new3(m.index + 1, meshCount, m.vertexCount);
       else
         data[2] = m.vertices[m.getVertexIndexFromNumber(index)];
       return true;

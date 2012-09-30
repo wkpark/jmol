@@ -31,84 +31,72 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import javax.vecmath.Point3f;
+
 final public class ArrayUtil {
 
   public static Object ensureLength(Object array, int minimumLength) {
     if (array != null && Array.getLength(array) >= minimumLength)
       return array;
-    return setLength(array, minimumLength);
+    return arrayCopyOpt(array, minimumLength);
   }
 
-  public static String[] ensureLength(String[] array, int minimumLength) {
+  public static String[] ensureLengthS(String[] array, int minimumLength) {
     if (array != null && array.length >= minimumLength)
       return array;
-    return setLength(array, minimumLength);
+    return arrayCopyS(array, minimumLength);
   }
 
-  public static float[] ensureLength(float[] array, int minimumLength) {
+  public static float[] ensureLengthA(float[] array, int minimumLength) {
     if (array != null && array.length >= minimumLength)
       return array;
-    return setLength(array, minimumLength);
+    return arrayCopyF(array, minimumLength);
   }
 
-  public static int[] ensureLength(int[] array, int minimumLength) {
+  public static int[] ensureLengthI(int[] array, int minimumLength) {
     if (array != null && array.length >= minimumLength)
       return array;
-    return setLength(array, minimumLength);
+    return arrayCopyI(array, minimumLength);
   }
 
-  public static short[] ensureLength(short[] array, int minimumLength) {
+  public static short[] ensureLengthShort(short[] array, int minimumLength) {
     if (array != null && array.length >= minimumLength)
       return array;
-    return setLength(array, minimumLength);
+    return arrayCopyShort(array, minimumLength);
   }
 
-  public static byte[] ensureLength(byte[] array, int minimumLength) {
+  public static byte[] ensureLengthByte(byte[] array, int minimumLength) {
     if (array != null && array.length >= minimumLength)
       return array;
-    return setLength(array, minimumLength);
+    return arrayCopyByte(array, minimumLength);
   }
 
   public static Object doubleLength(Object array) {
-    return setLength(array, (array == null ? 16 : 2 * Array.getLength(array)));
+    return arrayCopyOpt(array, (array == null ? 16 : 2 * Array.getLength(array)));
   }
 
-  public static String[] doubleLength(String[] array) {
-    return setLength(array, (array == null ? 16 : 2 * array.length));
+  public static String[] doubleLengthS(String[] array) {
+    return arrayCopyS(array, (array == null ? 16 : 2 * array.length));
   }
 
-  public static float[] doubleLength(float[] array) {
-    return setLength(array, (array == null ? 16 : 2 * array.length));
+  public static float[] doubleLengthF(float[] array) {
+    return arrayCopyF(array, (array == null ? 16 : 2 * array.length));
   }
 
-  public static int[] doubleLength(int[] array) {
-    return setLength(array, (array == null ? 16 : 2 * array.length));
+  public static int[] doubleLengthI(int[] array) {
+    return arrayCopyI(array, (array == null ? 16 : 2 * array.length));
   }
 
-  public static short[] doubleLength(short[] array) {
-    return setLength(array, (array == null ? 16 : 2 * array.length));
+  public static short[] doubleLengthShort(short[] array) {
+    return arrayCopyShort(array, (array == null ? 16 : 2 * array.length));
   }
 
-  public static byte[] doubleLength(byte[] array) {
-    return setLength(array, (array == null ? 16 : 2 * array.length));
+  public static byte[] doubleLengthByte(byte[] array) {
+    return arrayCopyByte(array, (array == null ? 16 : 2 * array.length));
   }
 
-  public static boolean[] doubleLength(boolean[] array) {
-    return setLength(array, (array == null ? 16 : 2 * array.length));
-  }
-
-  public static Object setLength(Object array, int newLength) {
-    if (array == null) {
-      return null; // We can't allocate since we don't know the type of array
-    }
-    int oldLength = Array.getLength(array);
-    if (newLength == oldLength)
-      return array;
-    Object t = Array
-        .newInstance(array.getClass().getComponentType(), newLength);
-    System.arraycopy(array, 0, t, 0, oldLength < newLength ? oldLength
-        : newLength);
-    return t;
+  public static boolean[] doubleLengthBool(boolean[] array) {
+    return arrayCopyBool(array, (array == null ? 16 : 2 * array.length));
   }
 
   public static Object deleteElements(Object array, int firstElement,
@@ -130,7 +118,22 @@ final public class ArrayUtil {
     return t;
   }
 
-  public static String[] setLength(String[] array, int newLength) {
+  public static Object arrayCopyOpt(Object array, int newLength) {
+    //System.out.println("ArrayUtil.copy " + newLength + " " + array + "  ");
+    if (array == null) {
+      return null; // We can't allocate since we don't know the type of array
+    }
+    int oldLength = Array.getLength(array);
+    if (newLength == oldLength)
+      return array;
+    Object t = Array
+        .newInstance(array.getClass().getComponentType(), newLength);
+    System.arraycopy(array, 0, t, 0, oldLength < newLength ? oldLength
+        : newLength);
+    return t;
+  }
+
+  public static String[] arrayCopyS(String[] array, int newLength) {
     String[] t = new String[newLength];
     if (array != null) {
       int oldLength = array.length;
@@ -140,7 +143,27 @@ final public class ArrayUtil {
     return t;
   }
 
-  public static float[] setLength(float[] array, int newLength) {
+  public static int[][] arrayCopyII(int[][] array, int newLength) {
+    int[][] t = new int[newLength][];
+    if (array != null) {
+      int oldLength = array.length;
+      System.arraycopy(array, 0, t, 0, oldLength < newLength ? oldLength
+          : newLength);
+    }
+    return t;
+  }
+
+  public static Point3f[] arrayCopyPt(Point3f[] array, int newLength) {
+    Point3f[] t = new Point3f[newLength];
+    if (array != null) {
+      int oldLength = array.length;
+      System.arraycopy(array, 0, t, 0, oldLength < newLength ? oldLength
+          : newLength);
+    }
+    return t;
+  }
+
+  public static float[] arrayCopyF(float[] array, int newLength) {
     float[] t = new float[newLength];
     if (array != null) {
       int oldLength = array.length;
@@ -150,7 +173,7 @@ final public class ArrayUtil {
     return t;
   }
 
-  public static int[] setLength(int[] array, int newLength) {
+  public static int[] arrayCopyI(int[] array, int newLength) {
     int[] t = new int[newLength];
     if (array != null) {
       int oldLength = array.length;
@@ -160,7 +183,15 @@ final public class ArrayUtil {
     return t;
   }
 
-  public static int[] arrayCopy(int[] array, int i0, int n, boolean isReverse) {
+  /**
+   * a specialized method that allows copying from a starting point either
+   * to the end or to the middle (color schemes, especially)
+   * @param array
+   * @param i0
+   * @param n
+   * @return array or null
+   */
+  public static int[] arrayCopyRangeI(int[] array, int i0, int n) {
     if (array == null)
       return null;
     int oldLength = array.length;
@@ -169,13 +200,19 @@ final public class ArrayUtil {
     n = n - i0;
     int[] t = new int[n];
     System.arraycopy(array, i0, t, 0, n);
-    if (isReverse)
-      for (int i = n / 2; --i >= 0;)
-        swap(t, i, n - 1 - i);
     return t;
   }
 
-  public static short[] setLength(short[] array, int newLength) {
+  public static int[] arrayCopyRangeRevI(int[] array, int i0, int n) {
+    if (array == null)
+      return null;
+    int[] t = arrayCopyRangeI(array, i0, n);
+    for (int i = n / 2; --i >= 0;)
+      swapInt(t, i, n - 1 - i);
+    return t;
+  }
+
+  public static short[] arrayCopyShort(short[] array, int newLength) {
     short[] t = new short[newLength];
     if (array != null) {
       int oldLength = array.length;
@@ -185,7 +222,7 @@ final public class ArrayUtil {
     return t;
   }
 
-  public static byte[] setLength(byte[] array, int newLength) {
+  public static byte[] arrayCopyByte(byte[] array, int newLength) {
     byte[] t = new byte[newLength];
     if (array != null) {
       int oldLength = array.length;
@@ -195,7 +232,7 @@ final public class ArrayUtil {
     return t;
   }
 
-  public static boolean[] setLength(boolean[] array, int newLength) {
+  public static boolean[] arrayCopyBool(boolean[] array, int newLength) {
     boolean[] t = new boolean[newLength];
     if (array != null) {
       int oldLength = array.length;
@@ -205,7 +242,7 @@ final public class ArrayUtil {
     return t;
   }
 
-  public static void swap(int[] array, int indexA, int indexB) {
+  public static void swapInt(int[] array, int indexA, int indexB) {
     int t = array[indexA];
     array[indexA] = array[indexB];
     array[indexB] = t;

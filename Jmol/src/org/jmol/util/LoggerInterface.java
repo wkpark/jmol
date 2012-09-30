@@ -57,7 +57,7 @@ public interface LoggerInterface {
    * @param txt String to write.
    * @param e Exception.
    */
-  public void warn(String txt, Throwable e);
+  public void warnEx(String txt, Throwable e);
 
   /**
    * Writes a log at ERROR level.
@@ -72,7 +72,7 @@ public interface LoggerInterface {
    * @param txt String to write.
    * @param e Exception.
    */
-  public void error(String txt, Throwable e);
+  public void errorEx(String txt, Throwable e);
 
   /**
    * Writes a log at FATAL level.
@@ -87,5 +87,5 @@ public interface LoggerInterface {
    * @param txt String to write.
    * @param e Exception.
    */
-  public void fatal(String txt, Throwable e);
+  public void fatalEx(String txt, Throwable e);
 }

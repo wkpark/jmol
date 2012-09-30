@@ -588,7 +588,7 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
           }
           mat[15] = 1;
           Matrix4f m4 = new Matrix4f();
-          m4.set(mat);
+          m4.setA(mat);
           if (m4.equals(mIdent))
             biomts.add(0, m4);
           else

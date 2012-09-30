@@ -30,7 +30,7 @@ import org.jmol.shape.Halos;
 import org.jmol.util.Colix;
 import org.jmol.viewer.JmolConstants;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 
 public class HalosRenderer extends ShapeRenderer {
 

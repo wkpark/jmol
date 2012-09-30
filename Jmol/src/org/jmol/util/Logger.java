@@ -154,7 +154,7 @@ public final class Logger {
    * 
    * @param log Indicator.
    */
-  public static void logLevel(boolean log) {
+  public static void doLogLevel(boolean log) {
     _logLevel = log;
   }
 
@@ -209,10 +209,10 @@ public final class Logger {
    * @param txt String to write.
    * @param e Exception.
    */
-  public static void warn(String txt, Throwable e) {
+  public static void warnEx(String txt, Throwable e) {
     try {
       if (isActiveLevel(LEVEL_WARN)) {
-        _logger.warn(txt, e);
+        _logger.warnEx(txt, e);
       }
     } catch (Throwable t) {
       //
@@ -240,10 +240,10 @@ public final class Logger {
    * @param txt String to write.
    * @param e Exception.
    */
-  public static void error(String txt, Throwable e) {
+  public static void errorEx(String txt, Throwable e) {
     try {
       if (isActiveLevel(LEVEL_ERROR)) {
-        _logger.error(txt, e);
+        _logger.errorEx(txt, e);
       }
     } catch (Throwable t) {
       //
@@ -278,10 +278,10 @@ public final class Logger {
    * @param txt String to write.
    * @param e Exception.
    */
-  public static void fatal(String txt, Throwable e) {
+  public static void fatalEx(String txt, Throwable e) {
     try {
       if (isActiveLevel(LEVEL_FATAL)) {
-        _logger.fatal(txt, e);
+        _logger.fatalEx(txt, e);
       }
     } catch (Throwable t) {
       //

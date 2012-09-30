@@ -106,7 +106,7 @@ public class JUnitLogger implements LoggerInterface {
   /* (non-Javadoc)
    * @see org.jmol.util.LoggerInterface#warn(java.lang.String, java.lang.Throwable)
    */
-  public void warn(String txt, Throwable e) {
+  public void warnEx(String txt, Throwable e) {
     logError(txt, e);
   }
 
@@ -120,7 +120,7 @@ public class JUnitLogger implements LoggerInterface {
   /* (non-Javadoc)
    * @see org.jmol.util.LoggerInterface#error(java.lang.String, java.lang.Throwable)
    */
-  public void error(String txt, Throwable e) {
+  public void errorEx(String txt, Throwable e) {
     logError(txt, e);
   }
 
@@ -134,7 +134,7 @@ public class JUnitLogger implements LoggerInterface {
   /* (non-Javadoc)
    * @see org.jmol.util.LoggerInterface#fatal(java.lang.String, java.lang.Throwable)
    */
-  public void fatal(String txt, Throwable e) {
+  public void fatalEx(String txt, Throwable e) {
     logError(txt, e);
   }
 

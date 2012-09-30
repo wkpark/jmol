@@ -84,7 +84,7 @@ abstract class __RayTracerExporter extends ___Exporter {
       tempP3.set(0, 0, 0);
       return tempP3;
     }
-    tempP1.set(pt);
+    tempP1.setT(pt);
     tempP1.add(normal);
     viewer.transformPt3f(pt, tempP2);
     viewer.transformPt3f(tempP1, tempP3);
@@ -149,10 +149,10 @@ abstract class __RayTracerExporter extends ___Exporter {
     if (colix1 == colix2) {
       fillConicalCylinder(screenA, screenB, madBond, colix1, endcaps);
     } else {
-      tempV2.set(screenB);
+      tempV2.setT(screenB);
       tempV2.add(screenA);
       tempV2.scale(0.5f);
-      tempP1.set(tempV2);
+      tempP1.setT(tempV2);
       fillConicalCylinder(screenA, tempP1, madBond, colix1, endcaps);
       fillConicalCylinder(tempP1, screenB, madBond, colix2, endcaps);
     }

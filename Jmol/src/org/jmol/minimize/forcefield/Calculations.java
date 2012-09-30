@@ -24,7 +24,7 @@
 
 package org.jmol.minimize.forcefield;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.List;
 
 import javax.vecmath.Vector3d;
@@ -230,19 +230,19 @@ abstract class Calculations {
       case CALC_TORSION:
         id = minList[3];
         if (gradients)
-          dd.set(minAtoms[id].coord);
+          dd.setA(minAtoms[id].coord);
         //$FALL-THROUGH$
       case CALC_ANGLE:
         ic = minList[2];
         if (gradients)
-          dc.set(minAtoms[ic].coord);
+          dc.setA(minAtoms[ic].coord);
         //$FALL-THROUGH$
       case CALC_DISTANCE:
         ib = minList[1];
         ia = minList[0];
         if (gradients) {
-          db.set(minAtoms[ib].coord);
-          da.set(minAtoms[ia].coord);
+          db.setA(minAtoms[ib].coord);
+          da.setA(minAtoms[ia].coord);
         }
       }
 
@@ -575,16 +575,16 @@ abstract class Calculations {
   void setCoords(Calculation c, int n) {
     switch(n) {
     case 4:
-      da.set(minAtoms[c.ia].coord);
+      da.setA(minAtoms[c.ia].coord);
       //$FALL-THROUGH$
     case 3:
-      db.set(minAtoms[c.ib].coord);
+      db.setA(minAtoms[c.ib].coord);
       //$FALL-THROUGH$
     case 2:
-      dc.set(minAtoms[c.ic].coord);
+      dc.setA(minAtoms[c.ic].coord);
       //$FALL-THROUGH$
     case 1:
-      dd.set(minAtoms[c.id].coord);
+      dd.setA(minAtoms[c.id].coord);
     }
   }
 

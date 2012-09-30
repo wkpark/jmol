@@ -69,15 +69,16 @@ public class SimpleUnitCell {
   protected SimpleUnitCell() {
   }
   
-  public SimpleUnitCell(float[] parameters) {
-    set(parameters);
+  public static SimpleUnitCell newA(float[] parameters) {
+    SimpleUnitCell c = new SimpleUnitCell();
+    c.set(parameters);
+    return c;
   }
   
   protected void set(float[] parameters) {
     if (!isValid(parameters))
       return;
-    notionalUnitcell = new float[parameters.length];
-    System.arraycopy(parameters, 0, notionalUnitcell, 0, parameters.length);
+    notionalUnitcell = ArrayUtil.arrayCopyF(parameters, parameters.length);
 
     a = parameters[0];
     b = parameters[1];
@@ -93,9 +94,9 @@ public class SimpleUnitCell {
 
     if (a <= 0) {
       // must calculate a, b, c alpha beta gamma from vectors;
-      Vector3f va = new Vector3f(parameters[6], parameters[7], parameters[8]);
-      Vector3f vb = new Vector3f(parameters[9], parameters[10], parameters[11]);
-      Vector3f vc = new Vector3f(parameters[12], parameters[13], parameters[14]);
+      Vector3f va = Vector3f.new3(parameters[6], parameters[7], parameters[8]);
+      Vector3f vb = Vector3f.new3(parameters[9], parameters[10], parameters[11]);
+      Vector3f vc = Vector3f.new3(parameters[12], parameters[13], parameters[14]);
       a = va.length();
       b = vb.length();
       c = vc.length();
@@ -185,33 +186,33 @@ public class SimpleUnitCell {
         scaleMatrix[i] = parameters[6 + i] * f;
       }
       
-      matrixCartesianToFractional = new Matrix4f(scaleMatrix);
+      matrixCartesianToFractional = Matrix4f.newA(scaleMatrix);
       matrixFractionalToCartesian = new Matrix4f();
-      matrixFractionalToCartesian.invert(matrixCartesianToFractional);
+      matrixFractionalToCartesian.invertM(matrixCartesianToFractional);
     } else if (parameters.length > 14 && !Float.isNaN(parameters[14])) {
       // parameters with a 3 vectors
       // [a b c alpha beta gamma ax ay az bx by bz cx cy cz...]
       Matrix4f m = matrixFractionalToCartesian = new Matrix4f();
-      m.setColumn(0, parameters[6] * na, parameters[7] * na, parameters[8] * na, 0);
-      m.setColumn(1, parameters[9] * nb, parameters[10] * nb, parameters[11] * nb, 0);
-      m.setColumn(2, parameters[12] * nc, parameters[13] * nc, parameters[14] * nc, 0);
-      m.setColumn(3, 0, 0, 0, 1);
+      m.setColumn4(0, parameters[6] * na, parameters[7] * na, parameters[8] * na, 0);
+      m.setColumn4(1, parameters[9] * nb, parameters[10] * nb, parameters[11] * nb, 0);
+      m.setColumn4(2, parameters[12] * nc, parameters[13] * nc, parameters[14] * nc, 0);
+      m.setColumn4(3, 0, 0, 0, 1);
       matrixCartesianToFractional = new Matrix4f();
-      matrixCartesianToFractional.invert(matrixFractionalToCartesian);
+      matrixCartesianToFractional.invertM(matrixFractionalToCartesian);
     } else {
       Matrix4f m = matrixFractionalToCartesian = new Matrix4f();
       // 1. align the a axis with x axis
-      m.setColumn(0, a, 0, 0, 0);
+      m.setColumn4(0, a, 0, 0, 0);
       // 2. place the b is in xy plane making a angle gamma with a
-      m.setColumn(1, (float) (b * cosGamma), (float) (b * sinGamma), 0, 0);
+      m.setColumn4(1, (float) (b * cosGamma), (float) (b * sinGamma), 0, 0);
       // 3. now the c axis,
       // http://server.ccl.net/cca/documents/molecular-modeling/node4.html
-      m.setColumn(2, (float) (c * cosBeta), (float) (c
+      m.setColumn4(2, (float) (c * cosBeta), (float) (c
           * (cosAlpha - cosBeta * cosGamma) / sinGamma), (float) (volume / (a
           * b * sinGamma)), 0);
-      m.setColumn(3, 0, 0, 0, 1);
+      m.setColumn4(3, 0, 0, 0, 1);
       matrixCartesianToFractional = new Matrix4f();
-      matrixCartesianToFractional.invert(matrixFractionalToCartesian);
+      matrixCartesianToFractional.invertM(matrixFractionalToCartesian);
     }
     matrixCtoFAbsolute = matrixCartesianToFractional;
     matrixFtoCAbsolute = matrixFractionalToCartesian;

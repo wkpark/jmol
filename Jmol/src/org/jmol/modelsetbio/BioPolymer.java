@@ -43,7 +43,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import java.util.ArrayList;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -151,18 +151,18 @@ public abstract class BioPolymer {
     if (groupIndex == monomerCount) {
       --groupIndex;
     } else if (groupIndex > 0) {
-      midPoint.set(getLeadPoint(groupIndex));
+      midPoint.setT(getLeadPoint(groupIndex));
       midPoint.add(getLeadPoint(groupIndex - 1));
       midPoint.scale(0.5f);
       return;
     }
-    midPoint.set(getLeadPoint(groupIndex));
+    midPoint.setT(getLeadPoint(groupIndex));
   }
 
   void getLeadPoint(int groupIndex, Point3f midPoint) {
     if (groupIndex == monomerCount)
       --groupIndex;
-    midPoint.set(getLeadPoint(groupIndex));
+    midPoint.setT(getLeadPoint(groupIndex));
   }
 
   // this might change in the future ... if we calculate a wing point
@@ -286,20 +286,20 @@ public abstract class BioPolymer {
     for (int i = 1; i < monomerCount; ++i) {
       leadPointPrev = leadPoint;
       leadPoints[i] = leadPoint = getLeadPoint(i);
-      Point3f midpoint = new Point3f(leadPoint);
+      Point3f midpoint = Point3f.newP(leadPoint);
       midpoint.add(leadPointPrev);
       midpoint.scale(0.5f);
       leadMidpoints[i] = midpoint;
       if (hasWingPoints) {
-        vectorA.sub(leadPoint, leadPointPrev);
-        vectorB.sub(leadPointPrev, getWingPoint(i - 1));
+        vectorA.sub2(leadPoint, leadPointPrev);
+        vectorB.sub2(leadPointPrev, getWingPoint(i - 1));
         vectorC.cross(vectorA, vectorB);
         vectorD.cross(vectorA, vectorC);
         vectorD.normalize();
         if (previousVectorD != null
             && previousVectorD.angle(vectorD) > Math.PI / 2)
           vectorD.scale(-1);
-        previousVectorD = wingVectors[i] = new Vector3f(vectorD);
+        previousVectorD = wingVectors[i] = Vector3f.newV(vectorD);
       }
     }
     leadPoints[monomerCount] = leadMidpoints[monomerCount] = getTerminatorPoint();
@@ -311,14 +311,14 @@ public abstract class BioPolymer {
         Vector3f previousVectorC = null;
         for (int i = 1; i < monomerCount; ++i) {
           // perfect for traceAlpha on; reasonably OK for traceAlpha OFF
-          vectorA.sub(leadMidpoints[i], leadPoints[i]);
-          vectorB.sub(leadPoints[i], leadMidpoints[i + 1]);
+          vectorA.sub2(leadMidpoints[i], leadPoints[i]);
+          vectorB.sub2(leadPoints[i], leadMidpoints[i + 1]);
           vectorC.cross(vectorA, vectorB);
           vectorC.normalize();
           if (previousVectorC != null
               && previousVectorC.angle(vectorC) > Math.PI / 2)
             vectorC.scale(-1);
-          previousVectorC = wingVectors[i] = new Vector3f(vectorC);
+          previousVectorC = wingVectors[i] = Vector3f.newV(vectorC);
         }
       }
     }
@@ -326,7 +326,7 @@ public abstract class BioPolymer {
     wingVectors[monomerCount] = wingVectors[monomerCount - 1];
   }
 
-  private final Vector3f unitVectorX = new Vector3f(1, 0, 0);
+  private final Vector3f unitVectorX = Vector3f.new3(1, 0, 0);
 
   public void findNearestAtomIndex(int xMouse, int yMouse, Atom[] closest,
                                    short[] mads, int myVisibilityFlag,
@@ -377,15 +377,15 @@ public abstract class BioPolymer {
     int count = monomerCount;
     for (int j = 0; j < count; j++)
       if (bs.get(monomers[j].leadAtomIndex)) {
-        vList.add(new Point3f[] { points[j], new Point3f(vectors[j]) });
+        vList.add(new Point3f[] { points[j], Point3f.newP(vectors[j]) });
         last = j;
       } else if (last != Integer.MAX_VALUE - 1) {
-        vList.add(new Point3f[] { points[j], new Point3f(vectors[j]) });
+        vList.add(new Point3f[] { points[j], Point3f.newP(vectors[j]) });
         last = Integer.MAX_VALUE - 1;
       }
     if (last + 1 < count)
       vList.add(new Point3f[] { points[last + 1],
-          new Point3f(vectors[last + 1]) });
+          Point3f.newP(vectors[last + 1]) });
     return last;
   }
 
@@ -647,34 +647,34 @@ public abstract class BioPolymer {
                     Escape.escapePt(a)).append(
                     Escape.escapePt(aa.getCarbonylCarbonAtom())).append(
                     Escape.escapePt(pt)).append(" \"phi = ").append(
-                    String.valueOf((int) x)).append('\"').append(" color ")
-                .append(qColor[2]).append('\n');
+                    String.valueOf((int) x)).append("\" color ").append(
+                    qColor[2]).append("\n");
             pt.set(0, y, 0.5f);
             pdbATOM.append("draw ID \"psi").append(id).append("\" ARROW ARC ")
                 .append(Escape.escapePt(a)).append(
                     Escape.escapePt(aa.getCarbonylCarbonAtom())).append(
                     Escape.escapePt(aa.getNitrogenAtom())).append(
                     Escape.escapePt(pt)).append(" \"psi = ").append(
-                    String.valueOf((int) y)).append('\"').append(" color ")
-                .append(qColor[1]).append('\n');
+                    String.valueOf((int) y)).append("\" color ").append(
+                    qColor[1]).append("\n");
             pdbATOM.append("draw ID \"planeNCC").append(id).append("\" ")
                 .append(Escape.escapePt(aa.getNitrogenAtom())).append(
                     Escape.escapePt(a)).append(
-                    Escape.escapePt(aa.getCarbonylCarbonAtom()))
-                .append(" color ").append(qColor[0]).append('\n');
+                    Escape.escapePt(aa.getCarbonylCarbonAtom())).append(
+                    " color ").append(qColor[0]).append("\n");
             pdbATOM.append("draw ID \"planeCNC").append(id).append("\" ")
                 .append(
                     Escape.escapePt(((AminoMonomer) p.monomers[m - 1])
                         .getCarbonylCarbonAtom())).append(
                     Escape.escapePt(aa.getNitrogenAtom())).append(
                     Escape.escapePt(a)).append(" color ").append(qColor[1])
-                .append('\n');
+                .append("\n");
             pdbATOM.append("draw ID \"planeCCN").append(id).append("\" ")
                 .append(Escape.escapePt(a)).append(
                     Escape.escapePt(aa.getCarbonylCarbonAtom())).append(
                     Escape.escapePt(((AminoMonomer) p.monomers[m + 1])
                         .getNitrogenAtom())).append(" color ")
-                .append(qColor[2]).append('\n');
+                .append(qColor[2]).append("\n");
             continue;
           }
           if (Float.isNaN(angledeg)) {
@@ -682,7 +682,7 @@ public abstract class BioPolymer {
             if (writeRamachandranStraightness)
               continue;
           } else {
-            q = new Quaternion(new Point3f(1, 0, 0), angledeg);
+            q = Quaternion.newVA(Point3f.new3(1, 0, 0), angledeg);
             strExtra = q.getInfo();
             if (writeRamachandranStraightness) {
               z = angledeg;
@@ -697,7 +697,7 @@ public abstract class BioPolymer {
           q = monomer.getQuaternion(qtype);
           if (q != null) {
             q.setRef(qref);
-            qref = new Quaternion(q);
+            qref = Quaternion.newQ(q);
           }
           if (derivType == 2)
             monomer.setGroupParameter(Token.straightness, Float.NaN);
@@ -847,22 +847,22 @@ public abstract class BioPolymer {
                     .getNitrogenHydrogenPoint();
                 if (ptH != null)
                   pdbATOM.append("draw ID \"").append(prefix).append("nh")
-                      .append(id).append('\"').append(" width 0.1 ").append(
-                          Escape.escapePt(ptH)).append('\n');
+                      .append(id).append("\" width 0.1 ")
+                      .append(Escape.escapePt(ptH)).append("\n");
               }
             }
             if (derivType == 1) {
               pdbATOM.append(
                   (String) monomer.getHelixData(Token.draw, qtype, mStep))
-                  .append('\n');
+                  .append("\n");
               continue;
             }
             pt.set(x * 2, y * 2, z * 2);
             pdbATOM.append("draw ID \"").append(prefix).append("a").append(id)
-                .append('\"').append(" VECTOR ")
-                .append(Escape.escapePt(ptCenter)).append(Escape.escapePt(pt))
-                .append(" \">").append(String.valueOf(deg)).append('\"')
-                .append(" color ").append(qColor[derivType]).append('\n');
+                .append("\" VECTOR ").append(
+                    Escape.escapePt(ptCenter)).append(Escape.escapePt(pt))
+                .append(" \">").append(String.valueOf(deg)).append("\" color ")
+                .append(qColor[derivType]).append("\n");
             continue;
           }
           strExtra = q.getInfo()
@@ -880,7 +880,8 @@ public abstract class BioPolymer {
         if (pdbATOM == null)// || bsSelected != null && !bsSelected.get(a.getIndex()))
           continue;
         bsWritten.set(((Monomer) a.getGroup()).leadAtomIndex);
-        pdbATOM.append(LabelToken.formatLabelAtomArray(viewer, a, tokens, '\0', null));
+        pdbATOM.append(LabelToken.formatLabelAtomArray(viewer, a, tokens, '\0',
+            null));
         pdbATOM.append(TextFormat
             .sprintf("%8.2f%8.2f%8.2f      %6.3f          %2s    %s\n",
                 new Object[] {
@@ -891,8 +892,8 @@ public abstract class BioPolymer {
         if (atomLast != null
             && atomLast.getPolymerIndexInModel() == a.getPolymerIndexInModel()) {
           pdbCONECT.append("CONECT").append(
-              TextFormat.formatString("%5i", "i", atomLast.getAtomNumber()))
-              .append(TextFormat.formatString("%5i", "i", a.getAtomNumber()))
+              TextFormat.formatStringI("%5i", "i", atomLast.getAtomNumber()))
+              .append(TextFormat.formatStringI("%5i", "i", a.getAtomNumber()))
               .append('\n');
         }
         atomLast = a;

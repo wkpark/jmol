@@ -27,7 +27,7 @@ package org.jmol.modelset;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Comparator;
 import java.util.List;
 
@@ -676,7 +676,7 @@ abstract public class AtomCollection {
     if (vibrationVectors == null || vibrationVectors.length < atomIndex)
       vibrationVectors = new Vector3f[atoms.length];
     if (vibrationVectors[atomIndex] == null)
-      vibrationVectors[atomIndex] = new Vector3f(x, y, z);
+      vibrationVectors[atomIndex] = Vector3f.new3(x, y, z);
     else
       vibrationVectors[atomIndex].set(x, y, z);
     atoms[atomIndex].setVibrationVector();
@@ -803,7 +803,7 @@ abstract public class AtomCollection {
       return;
     case TAINT_MAX:
       fData = new float[atomCount];
-      bs = new BitSet(atomCount);
+      bs = BitSetUtil.newBitSet(atomCount);
       break;
     }
     int[] lines = Parser.markLines(dataString, ';');
@@ -993,7 +993,7 @@ abstract public class AtomCollection {
     if (tainted == null)
       tainted = new BitSet[TAINT_MAX];
     if (tainted[type] == null)
-      tainted[type] = new BitSet(atomCount);
+      tainted[type] = BitSetUtil.newBitSet(atomCount);
     tainted[type].set(atomIndex);
     if (type  == TAINT_COORD)
       validateBspfForModel(atoms[atomIndex].modelIndex, false);
@@ -1019,8 +1019,8 @@ abstract public class AtomCollection {
     if (tainted == null)
       tainted = new BitSet[TAINT_MAX];
     if (tainted[type] == null)
-      tainted[type] = new BitSet(atomCount);
-    BitSetUtil.copy(bs, tainted[type]);
+      tainted[type] = BitSetUtil.newBitSet(atomCount);
+    BitSetUtil.copy2(bs, tainted[type]);
   }
 
   public void unTaintAtoms(BitSet bs, byte type) {
@@ -1301,7 +1301,7 @@ abstract public class AtomCollection {
           switch (n) {
           case 4:
             z.set(0.635f, 0.635f, 0.635f);
-            pt = new Point3f(z);
+            pt = Point3f.newP(z);
             pt.add(atom);
             hAtoms[i][hPt++] = pt;
             if (vConnect != null)
@@ -1309,7 +1309,7 @@ abstract public class AtomCollection {
             //$FALL-THROUGH$
           case 3:
             z.set(-0.635f, -0.635f, 0.635f);
-            pt = new Point3f(z);
+            pt = Point3f.newP(z);
             pt.add(atom);
             hAtoms[i][hPt++] = pt;
             if (vConnect != null)
@@ -1317,7 +1317,7 @@ abstract public class AtomCollection {
             //$FALL-THROUGH$
           case 2:
             z.set(-0.635f, 0.635f, -0.635f);
-            pt = new Point3f(z);
+            pt = Point3f.newP(z);
             pt.add(atom);
             hAtoms[i][hPt++] = pt;
             if (vConnect != null)
@@ -1325,7 +1325,7 @@ abstract public class AtomCollection {
             //$FALL-THROUGH$
           case 1:
             z.set(0.635f, -0.635f, -0.635f);
-            pt = new Point3f(z);
+            pt = Point3f.newP(z);
             pt.add(atom);
             hAtoms[i][hPt++] = pt;
             if (vConnect != null)
@@ -1338,19 +1338,19 @@ abstract public class AtomCollection {
           case 3: // three bonds needed RC
             getHybridizationAndAxes(i, atomicNumber, z, x, "sp3b", false, true);
             pt = new Point3f();
-            pt.scaleAdd(dHX, z, atom);
+            pt.scaleAdd2(dHX, z, atom);
             hAtoms[i][hPt++] = pt;
             if (vConnect != null)
               vConnect.add(atom);
             getHybridizationAndAxes(i, atomicNumber, z, x, "sp3c", false, true);
             pt = new Point3f();
-            pt.scaleAdd(dHX, z, atom);
+            pt.scaleAdd2(dHX, z, atom);
             hAtoms[i][hPt++] = pt;
             if (vConnect != null)
               vConnect.add(atom);
             getHybridizationAndAxes(i, atomicNumber, z, x, "sp3d", false, true);
             pt = new Point3f();
-            pt.scaleAdd(dHX, z, atom);
+            pt.scaleAdd2(dHX, z, atom);
             hAtoms[i][hPt++] = pt;
             if (vConnect != null)
               vConnect.add(atom);
@@ -1362,15 +1362,15 @@ abstract public class AtomCollection {
                 && targetValence == 4 || atomicNumber == 7 && isAdjacentSp2(atom));
             getHybridizationAndAxes(i, atomicNumber, z, x, (isEne ? "sp2b"
                 : targetValence == 3 ? "sp3c" : "lpa"), false, true);
-            pt = new Point3f(z);
-            pt.scaleAdd(dHX, z, atom);
+            pt = Point3f.newP(z);
+            pt.scaleAdd2(dHX, z, atom);
             hAtoms[i][hPt++] = pt;
             if (vConnect != null)
               vConnect.add(atom);
             getHybridizationAndAxes(i, atomicNumber, z, x, (isEne ? "sp2c"
                 : targetValence == 3 ? "sp3d" : "lpb"), false, true);
-            pt = new Point3f(z);
-            pt.scaleAdd(dHX, z, atom);
+            pt = Point3f.newP(z);
+            pt.scaleAdd2(dHX, z, atom);
             hAtoms[i][hPt++] = pt;
             if (vConnect != null)
               vConnect.add(atom);
@@ -1393,8 +1393,8 @@ abstract public class AtomCollection {
                   || atomicNumber == 7 && isAdjacentSp2(atom) 
                   ? "sp2c"
                   : "sp3d"), true, false) != null) {
-                pt = new Point3f(z);
-                pt.scaleAdd(dHX, z, atom);
+                pt = Point3f.newP(z);
+                pt.scaleAdd2(dHX, z, atom);
                 hAtoms[i][hPt++] = pt;
                 if (vConnect != null)
                   vConnect.add(atom);
@@ -1406,8 +1406,8 @@ abstract public class AtomCollection {
               // sp2
               getHybridizationAndAxes(i, atomicNumber, z, x, (targetValence == 4 ? "sp2c"
                   : "sp2b"), false, false);
-              pt = new Point3f(z);
-              pt.scaleAdd(dHX, z, atom);
+              pt = Point3f.newP(z);
+              pt.scaleAdd2(dHX, z, atom);
               hAtoms[i][hPt++] = pt;
               if (vConnect != null)
                 vConnect.add(atom);
@@ -1415,8 +1415,8 @@ abstract public class AtomCollection {
             case 3:
               // sp
               getHybridizationAndAxes(i, atomicNumber, z, x, "spb", false, true);
-              pt = new Point3f(z);
-              pt.scaleAdd(dHX, z, atom);
+              pt = Point3f.newP(z);
+              pt.scaleAdd2(dHX, z, atom);
               hAtoms[i][hPt++] = pt;
               if (vConnect != null)
                 vConnect.add(atom);
@@ -1475,7 +1475,7 @@ abstract public class AtomCollection {
   }
 
   private final static float sqrt3_2 = (float) (Math.sqrt(3) / 2);
-  private final static Vector3f vRef = new Vector3f(3.14159f, 2.71828f, 1.41421f);
+  private final static Vector3f vRef = Vector3f.new3(3.14159f, 2.71828f, 1.41421f);
   private final static float almost180 = (float) Math.PI * 0.95f;
 
   public String getHybridizationAndAxes(int atomIndex, int atomicNumber, Vector3f z, Vector3f x,
@@ -1503,13 +1503,13 @@ abstract public class AtomCollection {
     x.set(0, 0, 0);
     Vector3f[] v = new Vector3f[4];
     for (int i = 0; i < nAttached; i++) {
-      v[i] = new Vector3f(atom);
+      v[i] = Vector3f.newV(atom);
       v[i].sub(attached[i]);
       v[i].normalize();
       z.add(v[i]);
     }
     if (nAttached > 0)
-      x.set(v[0]);
+      x.setT(v[0]);
     boolean isPlanar = false;
     if (nAttached >= 3) {
       if (x.angle(v[1]) < almost180)
@@ -1617,7 +1617,7 @@ abstract public class AtomCollection {
 
     if (pt < nAttached && !lcaoType.startsWith("p")
         && !lcaoType.startsWith("l")) {
-      z.sub(attached[pt], atom);
+      z.sub2(attached[pt], atom);
       z.normalize();
       return hybridization;
     }
@@ -1641,7 +1641,7 @@ abstract public class AtomCollection {
       break;
     case 1:
       // X-C
-      vTemp.set(vRef);        
+      vTemp.setT(vRef);        
       x.cross(vTemp, z);
       if (isSp3) {
         // align z as sp3 orbital
@@ -1651,7 +1651,7 @@ abstract public class AtomCollection {
         for (int i = 0; i < attached[0].bonds.length; i++) {
           if (attached[0].bonds[i].isCovalent()
               && attached[0].getBondedAtomIndex(i) != atom.index) {
-            x.sub(attached[0], attached[0].bonds[i].getOtherAtom(attached[0]));
+            x.sub2(attached[0], attached[0].bonds[i].getOtherAtom(attached[0]));
             x.cross(z, x);
             if (x.length() == 0)
               continue;
@@ -1661,7 +1661,7 @@ abstract public class AtomCollection {
         }
         x.normalize();
         if (Float.isNaN(x.x)) {
-          x.set(vRef);
+          x.setT(vRef);
           x.cross(x, z);
         }
         // x is perp to bond
@@ -1669,17 +1669,17 @@ abstract public class AtomCollection {
         vTemp.normalize();
         // y1 is perp to bond and x
         z.normalize();
-        x.scaleAdd(2.828f, x, z); // 2*sqrt(2)
+        x.scaleAdd2(2.828f, x, z); // 2*sqrt(2)
         if (pt != 3) {
           x.normalize();
-          AxisAngle4f a = new AxisAngle4f(z.x, z.y, z.z,
+          AxisAngle4f a = AxisAngle4f.new4(z.x, z.y, z.z,
               (pt == 2 ? 1 : -1) * 2.09439507f); // PI*2/3
           Matrix3f m = new Matrix3f();
           m.setIdentity();
-          m.set(a);
+          m.setAA(a);
           m.transform(x);
         }
-        z.set(x);
+        z.setT(x);
         x.cross(vTemp, z);
         break;
       }
@@ -1698,8 +1698,8 @@ abstract public class AtomCollection {
         // get third atom
         boolean isCumulated = false;
         Atom a0 = attached[0];
-        x.set(z);
-        vTemp.set(vRef);        
+        x.setT(z);
+        vTemp.setT(vRef);        
         while (a0 != null && a0.getCovalentBondCount() == 2) {
           Bond[] bonds = a0.bonds;
           Atom a = null;
@@ -1708,7 +1708,7 @@ abstract public class AtomCollection {
             if (bonds[i].isCovalent()) {
               a = bonds[i].getOtherAtom(a0);
               if (a != atom) {
-                vTemp.sub(a, a0);
+                vTemp.sub2(a, a0);
                 break;
               }
             }
@@ -1725,15 +1725,15 @@ abstract public class AtomCollection {
           if (pt == 1)
             z.scale(-1);
           z.scale(sqrt3_2);
-          z.scaleAdd(0.5f, x, z);
+          z.scaleAdd2(0.5f, x, z);
           if (isP) {
             vTemp.cross(z, x);
-            z.set(vTemp);
-            vTemp.set(x);
+            z.setT(vTemp);
+            vTemp.setT(x);
           } 
           x.cross(vTemp, z);
         } else {
-          z.set(x);
+          z.setT(x);
           x.cross(vRef, x);
         }
         break;
@@ -1741,16 +1741,16 @@ abstract public class AtomCollection {
         // special case, for example R2C=O oxygen
         getHybridizationAndAxes(attached[0].index, 0, x, vTemp, "pz", false,
             doAlignZ);
-        vTemp.set(x);
+        vTemp.setT(x);
         if (isSp2) { // align z as sp2 orbital
           x.cross(x, z);
           if (pt == 1)
             x.scale(-1);
           x.scale(sqrt3_2);
-          z.scaleAdd(0.5f, z, x);
+          z.scaleAdd2(0.5f, z, x);
         } else {
-          vTemp.set(z);
-          z.set(x);
+          vTemp.setT(z);
+          z.setT(x);
         }
         x.cross(vTemp, z);
         break;
@@ -1770,15 +1770,15 @@ abstract public class AtomCollection {
             getHybridizationAndAxes(a.index, 0, x, z, "pz", false, doAlignZ);
             if (lcaoType.equals("px"))
               x.scale(-1);
-            z.set(v[0]);
+            z.setT(v[0]);
             break;
           }
           // O-C*-O
-          vTemp.set(vRef);    
+          vTemp.setT(vRef);    
           z.cross(vTemp, x);
           vTemp.cross(z, x);
         }
-        z.set(x);
+        z.setT(x);
         x.cross(vTemp, z);
         break;
       }
@@ -1793,16 +1793,16 @@ abstract public class AtomCollection {
         z.normalize();
         if (!lcaoType.equals("lp")) {
           if (pt == 0 || pt == 2) 
-            z.scaleAdd(-1.2f, vTemp, z);
+            z.scaleAdd2(-1.2f, vTemp, z);
           else
-            z.scaleAdd(1.2f, vTemp, z);
+            z.scaleAdd2(1.2f, vTemp, z);
         }
         x.cross(z, vTemp);
         break;
       }
       // align z as p orbital
       x.cross(z, vTemp);
-      z.set(vTemp);
+      z.setT(vTemp);
       if (z.z < 0) {
         z.scale(-1);
         x.scale(-1);
@@ -1818,7 +1818,7 @@ abstract public class AtomCollection {
         break;
       }
       // align z as p orbital
-      z.set(vTemp);
+      z.setT(vTemp);
       if (z.z < 0 && doAlignZ) {
         z.scale(-1);
         x.scale(-1);
@@ -1891,7 +1891,7 @@ abstract public class AtomCollection {
     for (int i = 0; i < nAttached - 1; i++)
       for (int j = i + 1; j < nAttached; j++) {
         float angle = Measure
-            .computeAngle(attached[i], atom, attached[j], true);
+            .computeAngleABC(attached[i], atom, attached[j], true);
         // cutoffs determined empirically and meant to be generous
         int itype = (angle < 105 ? _90 : angle >= 150 ? _180 : _120);
         typePtrs[itype][ntypes[itype]] = n;
@@ -1988,26 +1988,26 @@ abstract public class AtomCollection {
         switch (ntypes[_120]) {
         case 0:
           // T-shaped
-          z.sub(attached[angles[typePtrs[_90][0]][0]], atom);
-          x.sub(attached[angles[typePtrs[_90][0]][1]], atom);
+          z.sub2(attached[angles[typePtrs[_90][0]][0]], atom);
+          x.sub2(attached[angles[typePtrs[_90][0]][1]], atom);
           z.cross(z, x);
           z.normalize();
           if (pt == 4)
             z.scale(-1);
           bs = findNotAttached(nAttached, angles, typePtrs[_180], ntypes[_180]);
           int i = bs.nextSetBit(0);
-          x.sub(attached[i], atom);
+          x.sub2(attached[i], atom);
           x.normalize();
           x.scale(0.5f);
-          z.scaleAdd(sqrt3_2, z, x);
+          z.scaleAdd2(sqrt3_2, z, x);
           pt = -1;
           break;
         case 1:
           // see-saw
           if (pt == 4) {
             a = angles[typePtrs[_120][0]];
-            z.add(attached[a[0]], attached[a[1]]);
-            z.scaleAdd(-2, atom, z);
+            z.add2(attached[a[0]], attached[a[1]]);
+            z.scaleAdd2(-2, atom, z);
             pt = -1;
           } else {
             bs = findNotAttached(nAttached, angles, typePtrs[_120], ntypes[_120]);
@@ -2051,8 +2051,8 @@ abstract public class AtomCollection {
         }
         if (isPlanar) {
           // square planar or T-shaped
-          z.sub(attached[angles[typePtrs[_90][0]][0]], atom);
-          x.sub(attached[angles[typePtrs[_90][0]][1]], atom);
+          z.sub2(attached[angles[typePtrs[_90][0]][0]], atom);
+          x.sub2(attached[angles[typePtrs[_90][0]][1]], atom);
           z.cross(z, x);
           if (pt == 4)
             z.scale(-1);
@@ -2061,7 +2061,7 @@ abstract public class AtomCollection {
       }
     }
     if (pt >= 0)
-      z.sub(attached[pt], atom);
+      z.sub2(attached[pt], atom);
     if (isLP)
       z.scale(-1);
     z.normalize();
@@ -2086,7 +2086,7 @@ abstract public class AtomCollection {
   }
 
   private BitSet findNotAttached(int nAttached, int[][] angles, int[] ptrs, int nPtrs) {
-    BitSet bs = new BitSet(nAttached);
+    BitSet bs = BitSetUtil.newBitSet(nAttached);
     bs.set(0, nAttached);
     for (int i = 0; i < nAttached; i++)
       for (int j = 0; j < nPtrs; j++) {
@@ -2513,7 +2513,7 @@ abstract public class AtomCollection {
       if (g3 != null && g3.length() > 0) {
         if (TextFormat.isMatch(g3, name, checkStar, true)) {
           if (bs == null)
-            bs = new BitSet(i + 1);
+            bs = BitSetUtil.newBitSet(i + 1);
           bs.set(i);
           while (--i >= 0 && atoms[i].getGroup3(true).equals(g3))
             bs.set(i);
@@ -2521,7 +2521,7 @@ abstract public class AtomCollection {
         }
       } else if (isAtomNameMatch(atoms[i], name, checkStar)) {
         if (bs == null)
-          bs = new BitSet(i + 1);
+          bs = BitSetUtil.newBitSet(i + 1);
         bs.set(i);
       }
     }
@@ -2574,7 +2574,7 @@ abstract public class AtomCollection {
     if (!caseSensitive)
       chainId = Character.toUpperCase(chainId);
     BitSet bs = new BitSet();
-    BitSet bsDone = new BitSet(atomCount);
+    BitSet bsDone = BitSetUtil.newBitSet(atomCount);
     for (int i = bsDone.nextClearBit(0); i < atomCount; i = bsDone.nextClearBit(i + 1)) {
       Chain chain = atoms[i].getChain();
       if (chainId == (caseSensitive ? chain.chainID : Character.toUpperCase(chain.chainID))) {

@@ -43,7 +43,7 @@ import org.jmol.util.Point3fi;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.List;
 
 import javax.vecmath.Point3f;
@@ -736,7 +736,7 @@ final public class Atom extends Point3fi implements JmolNode {
     SymmetryInterface c = group.chain.model.modelSet.getUnitCell(modelIndex);
     if (c == null) 
       return this;
-    Point3f pt = new Point3f(this);
+    Point3f pt = Point3f.newP(this);
     c.toFractional(pt, asAbsolute);
     return pt;
   }
@@ -750,7 +750,7 @@ final public class Atom extends Point3fi implements JmolNode {
     SymmetryInterface c = group.chain.model.modelSet.getUnitCell(modelIndex);
     if (c == null)
       return this;
-    Point3f pt = new Point3f(this);
+    Point3f pt = Point3f.newP(this);
     if (group.chain.model.isJmolDataFrame) {
       c.toFractional(pt, false);
       if (asCartesian)
@@ -767,8 +767,8 @@ final public class Atom extends Point3fi implements JmolNode {
     SymmetryInterface c = group.chain.model.modelSet.getUnitCell(modelIndex);
     if (c == null) 
       return distance(pt);
-    ptTemp1.set(this);
-    ptTemp2.set(pt);
+    ptTemp1.setT(this);
+    ptTemp2.setT(pt);
     if (group.chain.model.isJmolDataFrame) {
       c.toFractional(ptTemp1, true);
       c.toFractional(ptTemp2, true);
@@ -806,7 +806,7 @@ final public class Atom extends Point3fi implements JmolNode {
   }
   
   void setFractionalCoordPt(Point3f pt, Point3f ptNew, boolean asAbsolute) {
-    pt.set(ptNew);
+    pt.setT(ptNew);
     SymmetryInterface c = group.chain.model.modelSet.getUnitCell(modelIndex);
     if (c != null)
       c.toCartesian(pt, asAbsolute && !group.chain.model.isJmolDataFrame);
@@ -1416,7 +1416,7 @@ final public class Atom extends Point3fi implements JmolNode {
       return (atom.group.chain.model.isJmolDataFrame ? atom.getFractionalCoordPt(false) 
           : atom.getFractionalUnitCoordPt(false));
     case Token.screenxyz:
-      return new Point3f(atom.screenX, atom.group.chain.model.modelSet.viewer.getScreenHeight() - atom.screenY, atom.screenZ);
+      return Point3f.new3(atom.screenX, atom.group.chain.model.modelSet.viewer.getScreenHeight() - atom.screenY, atom.screenZ);
     case Token.vibxyz:
       Vector3f v = atom.getVibrationVector();
       if (v == null)

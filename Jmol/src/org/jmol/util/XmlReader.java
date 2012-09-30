@@ -100,7 +100,7 @@ public class XmlReader {
     return extractTag(data, tag, closer, withTag);
   }
 
-  public static String extractTag(String data, String tag) {
+  public static String extractTagOnly(String data, String tag) {
     return extractTag(data, "<" + tag + ">", "</" + tag  + ">", false);
   }
   

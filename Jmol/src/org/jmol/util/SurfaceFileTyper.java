@@ -38,7 +38,7 @@ public class SurfaceFileTyper {
   
   public final static String PMESH_BINARY_MAGIC_NUMBER = "PM" + '\1' + '\0';
   
-  public static String determineSurfaceFileType(InputStream is) {
+  public static String determineSurfaceTypeIs(InputStream is) {
     BufferedReader br;
     try {
       br = new BufferedReader(new InputStreamReader(

@@ -24,6 +24,7 @@
 package org.jmol.script;
 
 import org.jmol.thread.ScriptParallelProcessor;
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.CommandHistory;
 import org.jmol.util.JpegEncoder;
@@ -37,12 +38,13 @@ import org.jmol.modelset.Bond.BondSet;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.List;
 import java.util.Map;
 
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
+
 
 public class ScriptCompiler extends ScriptCompilationTokenParser {
 
@@ -695,9 +697,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         }
         if (doEval) {
           if (iCommand == lnLength) {
-            short[] lnT = new short[lnLength * 2];
-            System.arraycopy(lineNumbers, 0, lnT, 0, lnLength);
-            lineNumbers = lnT;
+            lineNumbers = ArrayUtil.doubleLengthShort(lineNumbers);
             int[][] lnI = new int[lnLength * 2][2];
             System.arraycopy(lineIndices, 0, lnI, 0, lnLength);
             lineIndices = lnI;

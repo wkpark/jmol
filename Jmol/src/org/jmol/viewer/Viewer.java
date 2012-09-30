@@ -105,7 +105,7 @@ import org.jmol.viewer.binding.Binding;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -1960,7 +1960,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       String type = fileManager.getFileTypeName(fileName);
       if (type == null) {
         type = SurfaceFileTyper
-            .determineSurfaceFileType(getBufferedInputStream(fileName));
+            .determineSurfaceTypeIs(getBufferedInputStream(fileName));
         if (type != null) {
           evalString("if (_filetype == 'Pdb') { isosurface sigma 1.0 within 2.0 {*} "
               + Escape.escapeStr(fileName)
@@ -4902,7 +4902,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       String s = (type == '=' ? global.loadFormat : global.loadLigandFormat);
       if (f.indexOf(".") > 0 && s.indexOf("%FILE.") >= 0)
         s = s.substring(0, s.indexOf("%FILE") + 5);
-      return TextFormat.formatString(s, "FILE", f);
+      return TextFormat.formatStringS(s, "FILE", f);
     case ':': // PubChem
       format = global.pubChemFormat;
       String fl = f.toLowerCase();
@@ -4922,13 +4922,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           f = "name/" + Escape.escapeUrl(f);
         }
       }
-      return TextFormat.formatString(format, "FILE", f);
+      return TextFormat.formatStringS(format, "FILE", f);
     case '$':
       if (f.startsWith("$")) {
         // 2D version
         f = f.substring(1);
         format = TextFormat.simpleReplace(global.smilesUrlFormat, "&get3d=True", "");
-        return TextFormat.formatString(format, "FILE", Escape.escapeUrl(f));
+        return TextFormat.formatStringS(format, "FILE", Escape.escapeUrl(f));
       }
       //$FALL-THROUGH$
     case 'N':
@@ -4958,7 +4958,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         break;
       }
       return (withPrefix ? "MOL3D::" : "")
-          + TextFormat.formatString(format, "FILE", f);
+          + TextFormat.formatStringS(format, "FILE", f);
     case '_': // isosurface "=...", but we code that type as '-'
       String server = FileManager.fixFileNameVariables(global.edsUrlFormat, f);
       String strCutoff = FileManager.fixFileNameVariables(global.edsUrlCutoff,
@@ -5116,7 +5116,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return;
     if (isModelKitMode()) {
       if (isAtomAssignable(atomIndex))
-        highlight(BitSetUtil.setBit(atomIndex));
+        highlight(BitSetUtil.newAndSetBit(atomIndex));
       refresh(3, "hover on atom");
       return;
     }
@@ -5152,7 +5152,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (eval != null && isScriptExecuting())
       return;
     loadShape(JmolConstants.SHAPE_HOVER);
-    setShapeProperty(JmolConstants.SHAPE_HOVER, "xy", new Point3i(x, y, 0));
+    setShapeProperty(JmolConstants.SHAPE_HOVER, "xy", Point3i.new3(x, y, 0));
     setShapeProperty(JmolConstants.SHAPE_HOVER, "target", null);
     setShapeProperty(JmolConstants.SHAPE_HOVER, "specialLabel", null);
     setShapeProperty(JmolConstants.SHAPE_HOVER, "text", text);
@@ -7940,7 +7940,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // font stuff
   // //////////////////////////////////////////////////////////////
   public JmolFont getFont3D(String fontFace, String fontStyle, float fontSize) {
-    return gdata.getFont3D(fontFace, fontStyle, fontSize);
+    return gdata.getFont3DFSS(fontFace, fontStyle, fontSize);
   }
 
   public String formatText(String text0) {
@@ -8456,7 +8456,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void setFrameTitle(int modelIndex, String title) {
-    modelSet.setFrameTitle(BitSetUtil.setBit(modelIndex), title);
+    modelSet.setFrameTitle(BitSetUtil.newAndSetBit(modelIndex), title);
   }
 
   public void setFrameTitleObj(Object title) {
@@ -8620,10 +8620,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           Point3i ptScreen = transformPt(ptCenter);
           Point3f ptScreenNew;
           if (deltaZ != Integer.MIN_VALUE)
-            ptScreenNew = new Point3f(ptScreen.x, ptScreen.y, ptScreen.z
+            ptScreenNew = Point3f.new3(ptScreen.x, ptScreen.y, ptScreen.z
                 + deltaZ + 0.5f);
           else
-            ptScreenNew = new Point3f(ptScreen.x + deltaX * f + 0.5f,
+            ptScreenNew = Point3f.new3(ptScreen.x + deltaX * f + 0.5f,
                 ptScreen.y + deltaY * f + 0.5f, ptScreen.z);
           Point3f ptNew = new Point3f();
           unTransformPoint(ptScreenNew, ptNew);
@@ -8648,7 +8648,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       int i = b.getAtomIndex2();
       if (!isAtomAssignable(i))
         return;
-      bs = BitSetUtil.setBit(i);
+      bs = BitSetUtil.newAndSetBit(i);
       bs.set(b.getAtomIndex1());
     }
     highlight(bs);
@@ -8695,7 +8695,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       atom1 = b.getAtom1();
       atom2 = b.getAtom2();
       undoMoveActionClear(atom1.index, AtomCollection.TAINT_COORD, true);
-      Point3f pt = new Point3f(x, y, (atom1.screenZ + atom2.screenZ) / 2);
+      Point3f pt = Point3f.new3(x, y, (atom1.screenZ + atom2.screenZ) / 2);
       transformManager.unTransformPoint(pt, pt);
       if (atom2.getCovalentBondCount() == 1
           || pt.distance(atom1) < pt.distance(atom2)
@@ -8704,8 +8704,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         atom1 = atom2;
         atom2 = a;
       }
-      if (Measure.computeAngle(pt, atom1, atom2, true) > 90
-          || Measure.computeAngle(pt, atom2, atom1, true) > 90) {
+      if (Measure.computeAngleABC(pt, atom1, atom2, true) > 90
+          || Measure.computeAngleABC(pt, atom2, atom1, true) > 90) {
         bsBranch = getBranchBitSet(atom2.index, atom1.index);
       }
       if (bsBranch != null)
@@ -8725,9 +8725,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       atom1 = modelSet.atoms[rotatePrev1];
       atom2 = modelSet.atoms[rotatePrev2];
     }
-    Vector3f v1 = new Vector3f(atom2.screenX - atom1.screenX, atom2.screenY
+    Vector3f v1 = Vector3f.new3(atom2.screenX - atom1.screenX, atom2.screenY
         - atom1.screenY, 0);
-    Vector3f v2 = new Vector3f(deltaX, deltaY, 0);
+    Vector3f v2 = Vector3f.new3(deltaX, deltaY, 0);
     v1.cross(v1, v2);
     float degrees = (v1.z > 0 ? 1 : -1) * v2.length();
 
@@ -9297,7 +9297,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case 7:
       if (key.equals("centerAt"))
         centerAt(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]),
-            new Point3f(Parser.parseFloatStr(tokens[4]), Parser
+            Point3f.new3(Parser.parseFloatStr(tokens[4]), Parser
                 .parseFloatStr(tokens[5]), Parser.parseFloatStr(tokens[6])));
     }
     if (disableSend)
@@ -10325,7 +10325,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return;
     }
     Atom atom = modelSet.atoms[atomIndex];
-    BitSet bs = BitSetUtil.setBit(atomIndex);
+    BitSet bs = BitSetUtil.newAndSetBit(atomIndex);
     Point3f[] pts = new Point3f[] { pt };
     List<Atom> vConnections = new ArrayList<Atom>();
     vConnections.add(atom);
@@ -10355,7 +10355,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     stopMinimization();
     if (bsAtoms == null) {
       Atom atom = modelSet.atoms[atomIndex];
-      bsAtoms = BitSetUtil.setBit(atomIndex);
+      bsAtoms = BitSetUtil.newAndSetBit(atomIndex);
       Bond[] bonds = atom.getBonds();
       if (bonds != null)
         for (int i = 0; i < bonds.length; i++) {

@@ -44,7 +44,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.GZIPOutputStream;
-import java.util.BitSet;
+import javax.util.BitSet;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -70,6 +70,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
+import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.FileManager;
@@ -762,7 +763,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
   }
 
   public BitSet allSelectedWidgets() {
-    BitSet selectedWidgets = new BitSet(nWidgets);
+    BitSet selectedWidgets = BitSetUtil.newBitSet(nWidgets);
     DefaultListModel listModel = (DefaultListModel) instanceList.getModel();
     for (int i = 0; i < listModel.getSize(); i++) {
       JmolInstance thisInstance = (JmolInstance) (listModel.getElementAt(i));

@@ -119,7 +119,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringReader;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.List;
 import java.util.Map;
 
@@ -400,8 +400,8 @@ public class SurfaceGenerator {
 
     if ("boundingBox" == propertyName) {
       Point3f[] pts = (Point3f[]) value;
-      params.boundingBox = new Point3f[] { new Point3f(pts[0]),
-          new Point3f(pts[pts.length - 1]) };
+      params.boundingBox = new Point3f[] { Point3f.newP(pts[0]),
+          Point3f.newP(pts[pts.length - 1]) };
       return true;
     }
 
@@ -475,7 +475,7 @@ public class SurfaceGenerator {
     }
 
     if ("parameters" == propertyName) {
-      params.parameters = ArrayUtil.ensureLength((float[]) value, 2);
+      params.parameters = ArrayUtil.ensureLengthA((float[]) value, 2);
       if (params.parameters.length > 0 && params.parameters[0] != 0)
         params.cutoff = params.parameters[0];
       return true;
@@ -621,7 +621,7 @@ public class SurfaceGenerator {
     }
 
     if ("center" == propertyName) {
-      params.center.set((Point3f) value);
+      params.center.setT((Point3f) value);
       return true;
     }
     
@@ -875,7 +875,7 @@ public class SurfaceGenerator {
     if ("functionXY" == propertyName) {
       params.setFunctionXY((List<Object>) value);
       if (params.isContoured)
-        volumeData.setPlaneParameters(new Point4f(0, 0, 1, 0)); // xy plane
+        volumeData.setPlaneParameters(Point4f.new4(0, 0, 1, 0)); // xy plane
       // through
       // origin
       if (((String) params.functionInfo.get(0)).indexOf("_xyz") >= 0)
@@ -899,7 +899,7 @@ public class SurfaceGenerator {
       if (++params.state != Parameters.STATE_DATA_READ)
         return true;
       if (params.center.x == Float.MAX_VALUE)
-        params.center.set((Vector3f) value);
+        params.center.setT((Vector3f) value);
       return false;
     }
 
@@ -1331,7 +1331,7 @@ public class SurfaceGenerator {
     for (int i = 0; i < 3; i++) {
       Point4f info = (Point4f) params.functionInfo.get(i + 2);
       counts[i] = Math.abs((int) info.x);
-      vectors[i] = new Vector3f(info.y, info.z, info.w);
+      vectors[i] = Vector3f.new3(info.y, info.z, info.w);
     }
     int nx = counts[0];
     int ny = counts[1];
@@ -1348,8 +1348,8 @@ public class SurfaceGenerator {
       //System.out.println("draw pt"+(++n)+" {" + data[i][0] + " " + data[i][1] + " " + data[i][2] + "} color yellow");
     for (int i = 0; i < nx; i++)
       for (int j = 0; j < ny; j++) {
-        pt.scaleAdd(i, vectors[0], origin);
-        pt.scaleAdd(j, vectors[1], pt);
+        pt.scaleAdd2(i, vectors[0], origin);
+        pt.scaleAdd2(j, vectors[1], pt);
         float dist = findNearestThreePoints(pt.x, pt.y, data, nearest);
         pta.set((d = data[nearest[0]])[0], d[1], d[2]);
         if (dist < 0.00001) {
@@ -1368,7 +1368,7 @@ public class SurfaceGenerator {
   final Vector3f vAC = new Vector3f();
   final Vector3f vAB = new Vector3f();
   final Vector3f vNorm = new Vector3f();
-  final Point3f ptRef = new Point3f(0, 0, 1e15f);
+  final Point3f ptRef = Point3f.new3(0, 0, 1e15f);
   
   private float distanceVerticalToPlane(float x, float y, Point3f pta,
                                               Point3f ptb, Point3f ptc) {

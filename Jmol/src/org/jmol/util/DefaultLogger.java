@@ -90,7 +90,7 @@ public class DefaultLogger implements LoggerInterface {
   /* (non-Javadoc)
    * @see org.jmol.util.LoggerInterface#warn(java.lang.String, java.lang.Throwable)
    */
-  public void warn(String txt, Throwable e) {
+  public void warnEx(String txt, Throwable e) {
     log(System.out, Logger.LEVEL_WARN, txt, e);
   }
 
@@ -104,7 +104,7 @@ public class DefaultLogger implements LoggerInterface {
   /* (non-Javadoc)
    * @see org.jmol.util.LoggerInterface#error(java.lang.String, java.lang.Exception)
    */
-  public void error(String txt, Throwable e) {
+  public void errorEx(String txt, Throwable e) {
     log(System.err, Logger.LEVEL_ERROR, txt, e);
   }
 
@@ -118,7 +118,7 @@ public class DefaultLogger implements LoggerInterface {
   /* (non-Javadoc)
    * @see org.jmol.util.LoggerInterface#fatal(java.lang.String, java.lang.Exception)
    */
-  public void fatal(String txt, Throwable e) {
+  public void fatalEx(String txt, Throwable e) {
     log(System.err, Logger.LEVEL_FATAL, txt, e);
   }
 }

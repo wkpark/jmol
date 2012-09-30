@@ -25,7 +25,7 @@
 
 package org.jmol.shapebio;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 
 import org.jmol.atomdata.RadiusData;
 import org.jmol.modelset.Atom;

@@ -30,7 +30,7 @@ import org.jmol.constant.EnumAnimationMode;
 import org.jmol.modelset.ModelSet;
 
 import java.util.Hashtable;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Map;
 
 public class AnimationManager {

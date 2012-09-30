@@ -1,5 +1,7 @@
 JmolApplet.java
 JmolSmilesApplet.java
+javax/util/*.java
+javax/vecmath/*.java
 org/jmol/adapter/readers/cifpdb/*.java
 org/jmol/adapter/readers/molxyz/*.java
 org/jmol/adapter/readers/more/*.java
@@ -55,12 +57,12 @@ org/jmol/shape/*.java
 org/jmol/shapebio/*.java
 org/jmol/shapespecial/*.java
 org/jmol/shapesurface/*.java
-org/jmol/thread/*.java
 
 org/jmol/smiles/*.java
 org/jmol/spectrum/*.java
 
 org/jmol/symmetry/*.java
+org/jmol/thread/*.java
 org/jmol/util/*.java
 org/jmol/viewer/*.java
 

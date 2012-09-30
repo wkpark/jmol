@@ -140,7 +140,7 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
       return;
 
     float signFactor = tickInfo.signFactor;
-    vectorT.set(ptB);
+    vectorT.setT(ptB);
     vectorT.sub(ptA);
     float d0 = vectorT.length();
     if (tickInfo.scale != null) {
@@ -166,7 +166,7 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
     // but we may have an offset.
     d += tickInfo.first;
     float p = ((int) (tickInfo.first / dx)) * dx - tickInfo.first;
-    pointT.scaleAdd(p / dx, vectorT, ptA);
+    pointT.scaleAdd2(p / dx, vectorT, ptA);
     p += tickInfo.first;
     float z = ptA.screenZ;
     if (diameter < 0)
@@ -175,14 +175,14 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
     vectorT2.scale(length / vectorT2.length());
     Point3f ptRef = tickInfo.reference; // not implemented
     if (ptRef == null) {
-      pointT3.set(viewer.getBoundBoxCenter());
+      pointT3.setT(viewer.getBoundBoxCenter());
       if (viewer.getAxesMode() == EnumAxesMode.BOUNDBOX) {
         pointT3.x += 1.0;
         pointT3.y += 1.0;
         pointT3.z += 1.0;
       }
     } else {
-      pointT3.set(ptRef);
+      pointT3.setT(ptRef);
     }
     viewer.transformPtScr(pointT3, pt2);
     //too annoying! float tx = vectorT2.x * ((ptA.screenX + ptB.screenX) / 2 - pt2.x);
@@ -201,7 +201,7 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
     int i = (draw000 ? 0 : -1);
     while (p < d) {
       if (p >= tickInfo.first) {
-        pointT2.set(pointT);
+        pointT2.setT(pointT);
         viewer.transformPt3f(pointT2, pointT2);
         drawLine((int) pointT2.x, (int) pointT2.y, (int) z,
             (x = (int) (pointT2.x + vectorT2.x)),

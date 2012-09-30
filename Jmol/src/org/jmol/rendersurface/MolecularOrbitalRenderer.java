@@ -49,7 +49,7 @@ public class MolecularOrbitalRenderer extends IsosurfaceRenderer {
       nf.setMaximumFractionDigits(3);
       nf.setMinimumFractionDigits(3);
     }
-    byte fid = g3d.getFontFid("Monospaced", 14 * imageFontScaling);
+    byte fid = g3d.getFontFidFS("Monospaced", 14 * imageFontScaling);
     g3d.setFont(fid);
     int lineheight = (int) (15 * imageFontScaling);
     int x = (int) (5 * imageFontScaling);

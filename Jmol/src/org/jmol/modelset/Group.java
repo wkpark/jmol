@@ -34,7 +34,7 @@ import org.jmol.constant.EnumStructure;
 import org.jmol.script.Token;
 
 import java.util.Hashtable;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.List;
 import java.util.Map;
 
@@ -247,7 +247,7 @@ public class Group {
   
   synchronized static short addGroup3Name(String group3) {
     if (group3NameCount == group3Names.length)
-      group3Names = ArrayUtil.doubleLength(group3Names);
+      group3Names = ArrayUtil.doubleLengthS(group3Names);
     short groupID = group3NameCount++;
     group3Names[groupID] = group3;
     htGroup.put(group3, Short.valueOf(groupID));

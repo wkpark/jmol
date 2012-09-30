@@ -41,7 +41,7 @@ public interface JmolRendererInterface extends JmolGraphicsInterface {
   public abstract void setNoisySurfaceShade(Point3i screenA, Point3i screenB,
                                             Point3i screenC);
 
-  public abstract byte getFontFid(String fontFace, float fontSize);
+  public abstract byte getFontFidFS(String fontFace, float fontSize);
 
   public abstract boolean isDirectedTowardsCamera(short normix);
 

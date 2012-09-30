@@ -23,14 +23,14 @@
  */
 package org.jmol.util;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 
 final public class BitSetUtil {
 
   public static final BitSet bsNull= new BitSet();
 
-  public static BitSet setBit(int i) {
-    BitSet bs = new BitSet(i + 1);
+  public static BitSet newAndSetBit(int i) {
+    BitSet bs = newBitSet(i + 1);
     bs.set(i);
     return bs;
   }
@@ -52,14 +52,14 @@ final public class BitSetUtil {
     return (bs == null ? 0 : bs.cardinality());
   }
 
-  public static BitSet newBitSet(int i0, int i1) {
-    BitSet bs = new BitSet(i1);
+  public static BitSet newBitSet2(int i0, int i1) {
+    BitSet bs = newBitSet(i1);
     bs.set(i0, i1);
     return bs;
   }
   
   public static BitSet setAll(int n) {
-    BitSet bs = new BitSet(n);
+    BitSet bs = newBitSet(n);
     bs.set(0, n);
     return bs;
   }
@@ -74,7 +74,7 @@ final public class BitSetUtil {
     return bs == null ? null : (BitSet) bs.clone();
   }
 
-  public static BitSet copy(BitSet a, BitSet b) {
+  public static BitSet copy2(BitSet a, BitSet b) {
     if (a == null || b == null)
       return null;
     b.clear();
@@ -95,7 +95,7 @@ final public class BitSetUtil {
    * @return  pointer to original bitset, now inverted
    */
   public static BitSet invertInPlace(BitSet bs, int n) {
-    return copy(copyInvert(bs, n), bs);
+    return copy2(copyInvert(bs, n), bs);
   }
 
   /**
@@ -167,4 +167,11 @@ final public class BitSetUtil {
       bs.clear(ipt, len);
     return bs;
   }
+
+  public static BitSet newBitSet(int nFree) {
+    return BitSet.newN(nFree);
+  }
+  
+  public final static BitSet emptySet = new BitSet();
+
 }

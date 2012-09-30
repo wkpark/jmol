@@ -1,6 +1,6 @@
 package org.jmol.api;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Map;
 
 import javax.vecmath.Matrix3f;

@@ -311,7 +311,7 @@ public class Resolver {
       return atomSetCollectionReader;
     } catch (Exception e) {
       String err = "File reader was not found:" + className;
-      Logger.error(err, e);
+      Logger.errorEx(err, e);
       return err;
     }
   }

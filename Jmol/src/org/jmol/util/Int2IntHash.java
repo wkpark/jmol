@@ -33,10 +33,6 @@ public class Int2IntHash {
     entries = new Entry[initialCapacity];
   }
 
-  public Int2IntHash() {
-    this(256);
-  }
-
   public synchronized int get(int key) {
     Entry[] entries = this.entries;
     int hash = (key & 0x7FFFFFFF) % entries.length;

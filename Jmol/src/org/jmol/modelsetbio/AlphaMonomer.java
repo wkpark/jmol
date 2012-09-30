@@ -230,11 +230,11 @@ public class AlphaMonomer extends Monomer {
       Point3f ptCa = getLeadAtom();
       Point3f ptCaNext = bioPolymer.getLeadPoint(monomerIndex + 1);
       Point3f ptCaPrev = bioPolymer.getLeadPoint(monomerIndex - 1);
-      vA.sub(ptCaNext, ptCa);
-      vB.sub(ptCaPrev, ptCa);
+      vA.sub2(ptCaNext, ptCa);
+      vB.sub2(ptCaPrev, ptCa);
       break;
     }
-    return Quaternion.getQuaternionFrame(vA, vB, vC, false);
+    return Quaternion.getQuaternionFrameV(vA, vB, vC, false);
   }
   
 

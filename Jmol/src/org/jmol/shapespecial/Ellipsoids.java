@@ -25,7 +25,7 @@
 
 package org.jmol.shapespecial;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
@@ -53,7 +53,7 @@ public class Ellipsoids extends AtomShape {
     String id;
     public Vector3f[] axes;
     public float[] lengths;
-    public Point3f center = new Point3f(0, 0, 0);
+    public Point3f center = Point3f.new3(0, 0, 0);
     double[] coef;
     public short colix = Colix.GOLD;
     int modelIndex;
@@ -270,7 +270,7 @@ public class Ellipsoids extends AtomShape {
           .append(ellipsoid.modelIndex).append(" center ").append(
               Escape.escapePt(ellipsoid.center)).append(" axes");
       for (int i = 0; i < 3; i++) {
-        v1.set(ellipsoid.axes[i]);
+        v1.setT(ellipsoid.axes[i]);
         v1.scale(ellipsoid.lengths[i]);
         sb.append(" ").append(Escape.escapePt(v1));
       }

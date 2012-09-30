@@ -641,7 +641,7 @@ public class GaussianReader extends MOReader {
     String tokens[] = getTokensStr(readLine());
     if (tokens.length != 8)
       return;
-    Vector3f dipole = new Vector3f(parseFloatStr(tokens[1]),
+    Vector3f dipole = Vector3f.new3(parseFloatStr(tokens[1]),
         parseFloatStr(tokens[3]), parseFloatStr(tokens[5]));
     Logger.info("Molecular dipole for model " + atomSetCollection.getAtomSetCount()
         + " = " + dipole);

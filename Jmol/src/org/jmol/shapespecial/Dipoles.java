@@ -39,7 +39,7 @@ import org.jmol.modelset.Bond;
 import org.jmol.modelset.BondIterator;
 
 import java.util.ArrayList;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -122,7 +122,7 @@ public class Dipoles extends Shape {
               .warn("No molecular dipole found for this model; setting to {0 0 0}");
           v = new Vector3f();
         }
-        tempDipole.set(new Point3f(0, 0, 0), new Vector3f(-v.x, -v.y, -v.z));
+        tempDipole.set(Point3f.new3(0, 0, 0), Vector3f.new3(-v.x, -v.y, -v.z));
         tempDipole.type = Dipole.DIPOLE_TYPE_MOLECULAR;
         tempDipole.thisID = "molecular";
         setDipole();
@@ -221,7 +221,7 @@ public class Dipoles extends Shape {
     if ("startSet" == propertyName) {
       BitSet atomset = (BitSet) value;
       startCoord = viewer.getAtomSetCenter(atomset);
-      tempDipole.set(startCoord, new Point3f(0, 0, 0), dipoleValue);
+      tempDipole.set(startCoord, Point3f.new3(0, 0, 0), dipoleValue);
       if (BitSetUtil.cardinalityOf(atomset) == 1)
         atomIndex1 = atomset.nextSetBit(0);
       return;
@@ -259,14 +259,14 @@ public class Dipoles extends Shape {
     }
 
     if ("startCoord" == propertyName) {
-      startCoord.set((Point3f) value);
-      tempDipole.set(startCoord, new Point3f(0, 0, 0), dipoleValue);
+      startCoord.setT((Point3f) value);
+      tempDipole.set(startCoord, Point3f.new3(0, 0, 0), dipoleValue);
       return;
     }
 
     if ("endCoord" == propertyName) {
       iHaveTwoEnds = true;
-      endCoord.set((Point3f) value);
+      endCoord.setT((Point3f) value);
       tempDipole.set(startCoord, endCoord, dipoleValue);
       dumpDipoles("endCoord");
       return;

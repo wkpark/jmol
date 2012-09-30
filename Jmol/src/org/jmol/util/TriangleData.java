@@ -1,7 +1,7 @@
 package org.jmol.util;
 
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.List;
 
 import javax.vecmath.Point3f;
@@ -55,14 +55,14 @@ public class TriangleData {
   };
   
   protected final static Point3i[] cubeVertexOffsets = { 
-    new Point3i(0, 0, 0), //0 pt
-    new Point3i(1, 0, 0), //1 pt + yz
-    new Point3i(1, 0, 1), //2 pt + yz + 1
-    new Point3i(0, 0, 1), //3 pt + 1
-    new Point3i(0, 1, 0), //4 pt + z
-    new Point3i(1, 1, 0), //5 pt + yz + z
-    new Point3i(1, 1, 1), //6 pt + yz + z + 1
-    new Point3i(0, 1, 1)  //7 pt + z + 1 
+    Point3i.new3(0, 0, 0), //0 pt
+    Point3i.new3(1, 0, 0), //1 pt + yz
+    Point3i.new3(1, 0, 1), //2 pt + yz + 1
+    Point3i.new3(0, 0, 1), //3 pt + 1
+    Point3i.new3(0, 1, 0), //4 pt + z
+    Point3i.new3(1, 1, 0), //5 pt + yz + z
+    Point3i.new3(1, 1, 1), //6 pt + yz + z + 1
+    Point3i.new3(0, 1, 1)  //7 pt + z + 1 
   };
 
   protected final static byte edgeVertexes[] = { 
@@ -336,7 +336,7 @@ public class TriangleData {
       // (P - P1) / (P2 - P1) = (0 - v1) / (v2 - v1)
       // or
       // P = P1 + (P2 - P1) * (0 - v1) / (v2 - v1)
-      Point3f result = new Point3f(vertices[v2]);
+      Point3f result = Point3f.newP(vertices[v2]);
       result.sub(vertices[v1]);
       result.scale(values[v1] / (values[v1] - values[v2]));
       result.add(vertices[v1]);

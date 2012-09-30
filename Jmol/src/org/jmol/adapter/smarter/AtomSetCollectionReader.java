@@ -37,7 +37,7 @@ import org.jmol.util.Quaternion;
 import java.io.BufferedReader;
 import java.io.OutputStream;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
@@ -448,7 +448,7 @@ public abstract class AtomSetCollectionReader {
         firstLastStep[1] = -1;
       if (firstLastStep[2] < 1)
         firstLastStep[2] = 1;
-      bsModels = BitSetUtil.setBit(firstLastStep[0]);
+      bsModels = BitSetUtil.newAndSetBit(firstLastStep[0]);
       if (firstLastStep[1] > firstLastStep[0]) {
         for (int i = firstLastStep[0]; i <= firstLastStep[1]; i += firstLastStep[2])
           bsModels.set(i);
@@ -498,9 +498,9 @@ public abstract class AtomSetCollectionReader {
       ignoreFileSymmetryOperators = (desiredSpaceGroupIndex != -1);
     }
     if (htParams.containsKey("unitCellOffset")) {
-      fileScaling = new Point3f(1, 1, 1);
+      fileScaling = Point3f.new3(1, 1, 1);
       fileOffset = (Point3f) htParams.get("unitCellOffset");
-      fileOffsetFractional = new Point3f(fileOffset);
+      fileOffsetFractional = Point3f.newP(fileOffset);
       unitCellOffsetFractional = htParams
           .containsKey("unitCellOffsetFractional");
     }
@@ -702,7 +702,7 @@ public abstract class AtomSetCollectionReader {
   private void checkUnitCellOffset() {
     if (symmetry == null || fileOffsetFractional == null)
       return;
-    fileOffset.set(fileOffsetFractional);
+    fileOffset.setT(fileOffsetFractional);
     if (unitCellOffsetFractional != fileCoordinatesAreFractional) {
       if (unitCellOffsetFractional)
         symmetry.toCartesian(fileOffset, false);
@@ -891,17 +891,17 @@ public abstract class AtomSetCollectionReader {
     // rows in Sygress/CAChe and Spartan become columns here
     v.set(x1, y1, z1);
     v.normalize();
-    matrixRotate.setColumn(0, v);
+    matrixRotate.setColumnV(0, v);
     v.set(x2, y2, z2);
     v.normalize();
-    matrixRotate.setColumn(1, v);
+    matrixRotate.setColumnV(1, v);
     v.set(x3, y3, z3);
     v.normalize();
-    matrixRotate.setColumn(2, v);
+    matrixRotate.setColumnV(2, v);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo(
-        "defaultOrientationMatrix", new Matrix3f(matrixRotate));
+        "defaultOrientationMatrix", Matrix3f.newM(matrixRotate));
     // first two matrix column vectors define quaternion X and XY plane
-    Quaternion q = new Quaternion(matrixRotate);
+    Quaternion q = Quaternion.newM(matrixRotate);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo(
         "defaultOrientationQuaternion", q);
     Logger.info("defaultOrientationMatrix = " + matrixRotate);
@@ -1227,11 +1227,11 @@ public abstract class AtomSetCollectionReader {
         float[] data = new float[15];
         parseStringInfestedFloatArray(line.substring(10).replace('=', ' ')
             .replace('{', ' ').replace('}', ' '), data);
-        Point3f minXYZ = new Point3f(data[0], data[1], data[2]);
-        Point3f maxXYZ = new Point3f(data[3], data[4], data[5]);
-        fileScaling = new Point3f(data[6], data[7], data[8]);
-        fileOffset = new Point3f(data[9], data[10], data[11]);
-        Point3f plotScale = new Point3f(data[12], data[13], data[14]);
+        Point3f minXYZ = Point3f.new3(data[0], data[1], data[2]);
+        Point3f maxXYZ = Point3f.new3(data[3], data[4], data[5]);
+        fileScaling = Point3f.new3(data[6], data[7], data[8]);
+        fileOffset = Point3f.new3(data[9], data[10], data[11]);
+        Point3f plotScale = Point3f.new3(data[12], data[13], data[14]);
         if (plotScale.x <= 0)
           plotScale.x = 100;
         if (plotScale.y <= 0)
@@ -1249,20 +1249,20 @@ public abstract class AtomSetCollectionReader {
             / (maxXYZ.y - minXYZ.y), plotScale.z * 2
             / (maxXYZ.z == minXYZ.z ? 1 : maxXYZ.z - minXYZ.z), 90, 90, 90);
         /*
-        unitCellOffset = new Point3f(minXYZ);
+        unitCellOffset = Point3f.new3(minXYZ);
         symmetry.toCartesian(unitCellOffset);
         System.out.println(unitCellOffset);
-        unitCellOffset = new Point3f(maxXYZ);
+        unitCellOffset = Point3f.new3(maxXYZ);
         symmetry.toCartesian(unitCellOffset);
         System.out.println(unitCellOffset);
         */
-        unitCellOffset = new Point3f(plotScale);
+        unitCellOffset = Point3f.newP(plotScale);
         unitCellOffset.scale(-1);
         symmetry.toFractional(unitCellOffset, false);
-        unitCellOffset.scaleAdd(-1f, minXYZ, unitCellOffset);
+        unitCellOffset.scaleAdd2(-1f, minXYZ, unitCellOffset);
         symmetry.setUnitCellOffset(unitCellOffset);
         /*
-        Point3f pt = new Point3f(minXYZ);
+        Point3f pt = Point3f.new3(minXYZ);
         symmetry.toCartesian(pt);
         System.out.println("ASCR minXYZ " + pt);
         pt.set(maxXYZ);
@@ -1500,7 +1500,8 @@ public abstract class AtomSetCollectionReader {
         }
       }
       fillFloatArray(line, 0, f);
-      vectors[i] = new Vector3f(f);
+      vectors[i] = new Vector3f();
+      vectors[i].setA(f);
       if (isBohr)
         vectors[i].scale(ANGSTROMS_PER_BOHR);
     }

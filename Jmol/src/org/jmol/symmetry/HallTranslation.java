@@ -176,14 +176,14 @@ class HallTranslation {
 
   final static HallTranslation[] hallTranslationTerms = {
     // all units are 12ths
-    new HallTranslation('a', new Point3i(6, 0, 0))
-    , new HallTranslation('b', new Point3i(0, 6, 0))
-    , new HallTranslation('c', new Point3i(0, 0, 6))
-    , new HallTranslation('n', new Point3i(6, 6, 6))
-    , new HallTranslation('u', new Point3i(3, 0, 0))
-    , new HallTranslation('v', new Point3i(0, 3, 0))
-    , new HallTranslation('w', new Point3i(0, 0, 3))
-    , new HallTranslation('d', new Point3i(3, 3, 3))
+    new HallTranslation('a', Point3i.new3(6, 0, 0))
+    , new HallTranslation('b', Point3i.new3(0, 6, 0))
+    , new HallTranslation('c', Point3i.new3(0, 0, 6))
+    , new HallTranslation('n', Point3i.new3(6, 6, 6))
+    , new HallTranslation('u', Point3i.new3(3, 0, 0))
+    , new HallTranslation('v', Point3i.new3(0, 3, 0))
+    , new HallTranslation('w', Point3i.new3(0, 0, 3))
+    , new HallTranslation('d', Point3i.new3(3, 3, 3))
     , new HallTranslation('1', 2, 6)
     , new HallTranslation('1', 3, 4)
     , new HallTranslation('2', 3, 8)
@@ -194,9 +194,9 @@ class HallTranslation {
     , new HallTranslation('4', 6, 8)
     , new HallTranslation('5', 6, 10)
     // extension to handle rhombohedral lattice as primitive
-    , new HallTranslation('r', new Point3i(4, 8, 8))
-    , new HallTranslation('s', new Point3i(8, 8, 4))
-    , new HallTranslation('t', new Point3i(8, 4, 8))
+    , new HallTranslation('r', Point3i.new3(4, 8, 8))
+    , new HallTranslation('s', Point3i.new3(8, 8, 4))
+    , new HallTranslation('t', Point3i.new3(8, 4, 8))
   };
 }
 

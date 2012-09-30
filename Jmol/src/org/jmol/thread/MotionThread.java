@@ -160,9 +160,9 @@ public class MotionThread extends JmolThread {
     if (Float.isNaN(zoom))
       zoom = transformManager.zoomPercent;
     transformManager.getRotation(matrixStart);
-    matrixStartInv.invert(matrixStart);
-    matrixStep.mul(matrixEnd, matrixStartInv);
-    aaTotal.set(matrixStep);
+    matrixStartInv.invertM(matrixStart);
+    matrixStep.mul2(matrixEnd, matrixStartInv);
+    aaTotal.setM(matrixStep);
     fps = 30;
     totalSteps = (int) (floatSecondsTotal * fps);
     if (totalSteps == 0)
@@ -175,13 +175,13 @@ public class MotionThread extends JmolThread {
     xTransDelta = xTrans - xTransStart;
     yTransStart = transformManager.getTranslationYPercent();
     yTransDelta = yTrans - yTransStart;
-    aaStepCenter.set(ptMoveToCenter);
+    aaStepCenter.setT(ptMoveToCenter);
     aaStepCenter.sub(transformManager.fixedRotationCenter);
     aaStepCenter.scale(1f / totalSteps);
     pixelScaleDelta = (targetPixelScale - startPixelScale);
     rotationRadiusDelta = (targetRotationRadius - startRotationRadius);
     if (navCenter != null && transformManager.mode == TransformManager.MODE_NAVIGATION) {
-      aaStepNavCenter.set(navCenter);
+      aaStepNavCenter.setT(navCenter);
       aaStepNavCenter.sub(transformManager.navigationCenter);
       aaStepNavCenter.scale(1f / totalSteps);
     }
@@ -198,15 +198,15 @@ public class MotionThread extends JmolThread {
     for (; iStep < totalSteps; ++iStep) {
       if (!Float.isNaN(matrixEnd.m00)) {
         transformManager.getRotation(matrixStart);
-        matrixStartInv.invert(matrixStart);
-        matrixStep.mul(matrixEnd, matrixStartInv);
-        aaTotal.set(matrixStep);
-        aaStep.set(aaTotal);
+        matrixStartInv.invertM(matrixStart);
+        matrixStep.mul2(matrixEnd, matrixStartInv);
+        aaTotal.setM(matrixStep);
+        aaStep.setAA(aaTotal);
         aaStep.angle /= (totalSteps - iStep);
         if (aaStep.angle == 0)
           matrixStep.setIdentity();
         else
-          matrixStep.set(aaStep);
+          matrixStep.setAA(aaStep);
         matrixStep.mul(matrixStart);
       }
       float fStep = iStep / (totalSteps - 1f);
@@ -222,7 +222,7 @@ public class MotionThread extends JmolThread {
       if (center != null)
         transformManager.fixedRotationCenter.add(aaStepCenter);
       if (navCenter != null && transformManager.mode == TransformManager.MODE_NAVIGATION) {
-        Point3f pt = new Point3f(transformManager.navigationCenter);
+        Point3f pt = Point3f.newP(transformManager.navigationCenter);
         pt.add(aaStepNavCenter);
         transformManager.navigatePt(0, pt);
         if (!Float.isNaN(xNav) && !Float.isNaN(yNav))
@@ -250,7 +250,7 @@ public class MotionThread extends JmolThread {
     }
     transformManager.setRotation(matrixEnd);
     if (navCenter != null && transformManager.mode == TransformManager.MODE_NAVIGATION) {
-      transformManager.navigationCenter.set(navCenter);
+      transformManager.navigationCenter.setT(navCenter);
       if (!Float.isNaN(xNav) && !Float.isNaN(yNav))
         transformManager.navTranslatePercent(0, xNav, yNav);
       if (!Float.isNaN(navDepth))

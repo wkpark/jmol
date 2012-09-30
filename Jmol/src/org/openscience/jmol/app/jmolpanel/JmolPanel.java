@@ -1140,7 +1140,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       try {
         job.print();
       } catch (PrinterException e) {
-        Logger.error("Error while printing", e);
+        Logger.errorEx("Error while printing", e);
       }
     }
   }

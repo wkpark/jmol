@@ -75,7 +75,11 @@ final public class JmolFont {
   private static int[] fontkeys = new int[FONT_ALLOCATION_UNIT];
   private static JmolFont[] font3ds = new JmolFont[FONT_ALLOCATION_UNIT];
 
-  public static synchronized JmolFont getFont3D(int fontface, int fontstyle,
+  public static JmolFont getFont3D(byte fontID) {
+    return font3ds[fontID & 0xFF];
+  }
+
+  public static synchronized JmolFont createFont3D(int fontface, int fontstyle,
                                        float fontsize, float fontsizeNominal,
                                        ApiPlatform apiPlatform, Object graphicsForMetrics) {
     //if (graphicsForMetrics == null)
@@ -90,15 +94,9 @@ final public class JmolFont {
           && font3ds[i].fontSizeNominal == fontsizeNominal)
         return font3ds[i];
     int fontIndexNext = fontkeyCount++;
-    if (fontIndexNext == fontkeys.length) {
-      int[] t0 = new int[fontIndexNext + FONT_ALLOCATION_UNIT];
-      System.arraycopy(fontkeys, 0, t0, 0, fontIndexNext);
-      fontkeys = t0;
-
-      JmolFont[] t1 = new JmolFont[fontIndexNext + FONT_ALLOCATION_UNIT];
-      System.arraycopy(font3ds, 0, t1, 0, fontIndexNext);
-      font3ds = t1;
-    }
+    if (fontIndexNext == fontkeys.length)
+      fontkeys = ArrayUtil.arrayCopyI(fontkeys, fontIndexNext + FONT_ALLOCATION_UNIT);
+      font3ds = (JmolFont[]) ArrayUtil.arrayCopyOpt(font3ds, fontIndexNext + FONT_ALLOCATION_UNIT);
     JmolFont font3d = new JmolFont(apiPlatform, (byte) fontIndexNext, fontface, fontstyle,
         fontsize, fontsizeNominal, graphicsForMetrics);
     // you must set the font3d before setting the fontkey in order
@@ -136,10 +134,6 @@ final public class JmolFont {
       if (fontStyles[i].equalsIgnoreCase(fontstyle))
        return i;
     return -1;
-  }
-
-  public static JmolFont getFont3D(byte fontID) {
-    return font3ds[fontID & 0xFF];
   }
 
   public int getAscent() {

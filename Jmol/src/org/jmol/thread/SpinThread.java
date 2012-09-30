@@ -25,7 +25,7 @@
 
 package org.jmol.thread;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Date;
 import java.util.List;
 

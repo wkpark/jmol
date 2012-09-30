@@ -74,7 +74,7 @@ public class Location implements Serializable {
   }
 
   public Vector3f getVector(Location location) {
-    return new Vector3f(location._x - _x, location._y - _y, 0);  
+    return Vector3f.new3(location._x - _x, location._y - _y, 0);  
   }
   
   public static Location getCenter(Location a, Location b) {

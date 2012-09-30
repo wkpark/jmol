@@ -25,7 +25,7 @@
 package org.jmol.shapesurface;
 
 import java.util.ArrayList;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +39,7 @@ import javax.vecmath.Vector3f;
 import org.jmol.api.Interface;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSetUtil;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.Colix;
 import org.jmol.util.ColorEncoder;
@@ -117,7 +118,7 @@ public class IsosurfaceMesh extends Mesh {
 
   int addVertexCopy(Point3f vertex, float value, int assocVertex,
                     boolean associateNormals) {
-    int vPt = addVertexCopy(vertex, value);
+    int vPt = addVertexCopyVal(vertex, value);
     switch (assocVertex) {
     case MarchingSquares.CONTOUR_POINT:
       if (firstRealVertex < 0)
@@ -184,7 +185,7 @@ public class IsosurfaceMesh extends Mesh {
         // values are unique identifiers for a grid point
         Integer gridPoint = entry.getValue();
         if (!assocGridPointNormals.containsKey(gridPoint))
-          assocGridPointNormals.put(gridPoint, new Vector3f(0, 0, 0));
+          assocGridPointNormals.put(gridPoint, Vector3f.new3(0, 0, 0));
         assocGridPointNormals.get(gridPoint).add(vectorSums[entry.getKey().intValue()]);
       }
       for (Map.Entry<Integer, Integer> entry : assocGridPointMap.entrySet())
@@ -283,7 +284,7 @@ public class IsosurfaceMesh extends Mesh {
   }
 
   private void get3dContour(List<Object> v, float value, short colix) {
-    BitSet bsContour = new BitSet(polygonCount);
+    BitSet bsContour = BitSetUtil.newBitSet(polygonCount);
     StringBuffer fData = new StringBuffer();
     int color = Colix.getArgb(colix);
     setContourVector(v, polygonCount, bsContour, value, colix, color, fData);
@@ -397,7 +398,7 @@ public class IsosurfaceMesh extends Mesh {
   private static Point3f getContourPoint(Point3f[] vertices, int i, int j,
                                          float f) {
     Point3f pt = new Point3f();
-    pt.set(vertices[j]);
+    pt.setT(vertices[j]);
     pt.sub(vertices[i]);
     pt.scale(f);
     pt.add(vertices[i]);
@@ -817,9 +818,9 @@ public class IsosurfaceMesh extends Mesh {
     if (vertices == null)
       vertices = new Point3f[0];
     vertices = (Point3f[]) ArrayUtil.ensureLength(vertices, nV);
-    vertexValues = ArrayUtil.ensureLength(vertexValues, nV);
+    vertexValues = ArrayUtil.ensureLengthA(vertexValues, nV);
     boolean haveSources = (vertexSource != null && (m == null || m.vertexSource != null));
-    vertexSource = ArrayUtil.ensureLength(vertexSource, nV);
+    vertexSource = ArrayUtil.ensureLengthI(vertexSource, nV);
     int[][] newPolygons = new int[nP][];
     // note -- no attempt here to merge vertices
     int ipt = mergePolygons(this, 0, 0, newPolygons);
@@ -873,16 +874,16 @@ public class IsosurfaceMesh extends Mesh {
     // define 26 k-points around the origin
     
     Point3f[] pts = new Point3f[27];
-    pts[0] = new Point3f(vectors[0]);
+    pts[0] = Point3f.newP(vectors[0]);
     int pt = 0;
     for (int i = -1; i <= 1; i++)
       for (int j = -1; j <= 1; j++)
         for (int k = -1; k <= 1; k++)
           if (i != 0 || j != 0 || k != 0) {
-            pts[++pt] = new Point3f(pts[0]);
-            pts[pt].scaleAdd(i, vectors[1], pts[pt]);
-            pts[pt].scaleAdd(j, vectors[2], pts[pt]);
-            pts[pt].scaleAdd(k, vectors[3], pts[pt]);
+            pts[++pt] = Point3f.newP(pts[0]);
+            pts[pt].scaleAdd2(i, vectors[1], pts[pt]);
+            pts[pt].scaleAdd2(j, vectors[2], pts[pt]);
+            pts[pt].scaleAdd2(k, vectors[3], pts[pt]);
           }
     
     System.out.println("draw line1 {0 0 0} color red"
@@ -907,7 +908,7 @@ public class IsosurfaceMesh extends Mesh {
     // if any points are moved.
     
     for (int i = 1; i < 27; i++) {
-      vGammaToKPoint.set(pts[i]);
+      vGammaToKPoint.setT(pts[i]);
       Measure.getBisectingPlane(pts[0], vGammaToKPoint, ptTemp, vTemp, planeGammaK);
       getIntersection(1, planeGammaK, null, null, null, null, null, false,
           false, Token.plane, true);
@@ -925,7 +926,7 @@ public class IsosurfaceMesh extends Mesh {
         // copy points because at least some will be needed by both sides,
         // and in some cases triangles will be split multiple times
         
-        int[] p = ArrayUtil.arrayCopy(polygonIndexes[j], 0, -1, false);
+        int[] p = ArrayUtil.arrayCopyRangeI(polygonIndexes[j], 0, -1);
         for (int k = 0; k < 3; k++) {
           int pk = p[k];
           p[k] = addIntersectionVertex(vertices[pk], vertexValues[pk], 
@@ -936,7 +937,7 @@ public class IsosurfaceMesh extends Mesh {
           if (pk != p[k] && bsMoved.get(pk))
             bsMoved.set(p[k]);
         }
-        addPolygon(p, 0, bsSlabDisplay);
+        addPolygonC(p, 0, bsSlabDisplay);
         
         // now move the (copied) points
         
@@ -1013,7 +1014,7 @@ public class IsosurfaceMesh extends Mesh {
       mat4 = new Matrix4f();
       mat4.setIdentity();
     }
-    mat4.mul(m, mat4);
+    mat4.mul2(m, mat4);
     recalcAltVertices = true;
   }
 

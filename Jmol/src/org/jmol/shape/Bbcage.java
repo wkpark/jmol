@@ -23,7 +23,7 @@
  */
 package org.jmol.shape;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.StateManager;

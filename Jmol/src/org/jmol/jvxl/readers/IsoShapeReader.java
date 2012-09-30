@@ -151,7 +151,7 @@ class IsoShapeReader extends VolumeDataReader {
 
   @Override
   public float getValueAtPoint(Point3f pt) {
-    ptTemp.set(pt);
+    ptTemp.setT(pt);
     ptTemp.sub(center);
     if (isEccentric)
       eccentricityMatrixInverse.transform(ptTemp);
@@ -323,7 +323,7 @@ class IsoShapeReader extends VolumeDataReader {
       Measure.getPlaneProjection(center, params.thePlane, planeCenter, planeU);
       planeU.set(params.thePlane.x, params.thePlane.y, params.thePlane.z);
       planeU.normalize();
-      planeV = new Vector3f(1, 0, 0);
+      planeV = Vector3f.new3(1, 0, 0);
       if (Math.abs(planeU.dot(planeV)) > 0.5f)
         planeV.set(0, 1, 0);
       planeV.cross(planeU, planeV);
@@ -335,9 +335,9 @@ class IsoShapeReader extends VolumeDataReader {
         int ir = (int) (planeRadius * 10);
         for (int ix = -ir; ix <= ir; ix++)
           for (int iy = -ir; iy <= ir; iy++) {
-            ptPsi.set(planeU);
+            ptPsi.setT(planeU);
             ptPsi.scale(ix / 10f);
-            ptPsi.scaleAdd(iy / 10f, planeV, ptPsi);
+            ptPsi.scaleAdd2(iy / 10f, planeV, ptPsi);
             d = hydrogenAtomPsi(ptPsi);
             // we need an approximation  of the max value here
             d = Math.abs(hydrogenAtomPsi(ptPsi));
@@ -440,9 +440,9 @@ class IsoShapeReader extends VolumeDataReader {
         ptPsi.add(center);
         value = getValueAtPoint(ptPsi);
       } else {
-        ptPsi.set(planeU);
+        ptPsi.setT(planeU);
         ptPsi.scale(random.nextFloat() * planeRadius * 2 - planeRadius);
-        ptPsi.scaleAdd(random.nextFloat() * planeRadius * 2 - planeRadius,
+        ptPsi.scaleAdd2(random.nextFloat() * planeRadius * 2 - planeRadius,
             planeV, ptPsi);
         ptPsi.add(planeCenter);
         value = getValueAtPoint(ptPsi);

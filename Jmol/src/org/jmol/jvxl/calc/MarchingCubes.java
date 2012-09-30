@@ -23,7 +23,7 @@
  */
 package org.jmol.jvxl.calc;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
@@ -181,7 +181,7 @@ public class MarchingCubes extends TriangleData {
       volumeData.transform(cubeVertexVectors[i],
           voxelVertexVectors[i] = new Vector3f());
     for (int i = 12; --i >= 0;)
-      edgeVectors[i].sub(voxelVertexVectors[edgeVertexes[i + i + 1]],
+      edgeVectors[i].sub2(voxelVertexVectors[edgeVertexes[i + i + 1]],
           voxelVertexVectors[edgeVertexes[i + i]]);
   }
 
@@ -639,18 +639,18 @@ public class MarchingCubes extends TriangleData {
   
   public void calcVertexPoint(int x, int y, int z, int vertex, Point3f pt) {
     volumeData.voxelPtToXYZ(x, y, z, pt0);
-    pt.add(pt0, voxelVertexVectors[vertex]);
+    pt.add2(pt0, voxelVertexVectors[vertex]);
   }
 
   protected final static Vector3f[] cubeVertexVectors = { 
-    new Vector3f(0, 0, 0),
-    new Vector3f(1, 0, 0), 
-    new Vector3f(1, 0, 1), 
-    new Vector3f(0, 0, 1),
-    new Vector3f(0, 1, 0), 
-    new Vector3f(1, 1, 0), 
-    new Vector3f(1, 1, 1),
-    new Vector3f(0, 1, 1) };
+    Vector3f.new3(0, 0, 0),
+    Vector3f.new3(1, 0, 0), 
+    Vector3f.new3(1, 0, 1), 
+    Vector3f.new3(0, 0, 1),
+    Vector3f.new3(0, 1, 0), 
+    Vector3f.new3(1, 1, 0), 
+    Vector3f.new3(1, 1, 1),
+    Vector3f.new3(0, 1, 1) };
 
 
   /*                     Y 

@@ -23,7 +23,7 @@
  */
 package org.jmol.render;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
@@ -34,6 +34,7 @@ import org.jmol.api.SymmetryInterface;
 import org.jmol.script.Token;
 import org.jmol.shape.Mesh;
 import org.jmol.shape.MeshCollection;
+import org.jmol.util.BitSetUtil;
 import org.jmol.util.Colix;
 import org.jmol.util.GData;
 
@@ -100,7 +101,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
       if (unitcell != null) {
         Point3f vTemp = new Point3f();
         Point3i minXYZ = new Point3i();
-        Point3i maxXYZ = new Point3i((int) mesh.lattice.x,
+        Point3i maxXYZ = Point3i.new3((int) mesh.lattice.x,
             (int) mesh.lattice.y, (int) mesh.lattice.z);
         unitcell.setMinMaxLatticeParameters(minXYZ, maxXYZ);
         for (int tx = minXYZ.x; tx < maxXYZ.x; tx++)
@@ -109,7 +110,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
               latticeOffset.set(tx, ty, tz);
               unitcell.toCartesian(latticeOffset, false);
               for (int i = vertexCount; --i >= 0;) {
-                vTemp.set(vertices[i]);
+                vTemp.setT(vertices[i]);
                 vTemp.add(latticeOffset);
                 viewer.transformPtScr(vTemp, screens[i]);
               }
@@ -208,7 +209,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
   protected void renderPoints() {
     if (mesh.isTriangleSet) {
       int[][] polygonIndexes = mesh.polygonIndexes;
-      BitSet bsPoints = new BitSet(mesh.vertexCount);
+      BitSet bsPoints = BitSetUtil.newBitSet(mesh.vertexCount);
       if (haveBsDisplay) {
         bsPoints.set(0, mesh.vertexCount);
         bsPoints.andNot(mesh.bsDisplay);
@@ -385,7 +386,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
       if (diameter == 0)
         diameter = (mesh.diameter > 0 ? mesh.diameter : iA == iB ? 7 : 3);
       if (exportType == GData.EXPORT_CARTESIAN) {
-        pt1f.set(vA);
+        pt1f.setT(vA);
         pt1f.add(vB);
         pt1f.scale(1f / 2f);
         viewer.transformPtScr(pt1f, pt1i);
@@ -397,7 +398,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
         g3d.fillCylinder(endCap, diameter, sA, sB);
       }
     } else {
-      pt1f.set(vA);
+      pt1f.setT(vA);
       pt1f.add(vB);
       pt1f.scale(1f / 2f);
       viewer.transformPtScr(pt1f, pt1i);

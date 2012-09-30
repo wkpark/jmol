@@ -24,7 +24,7 @@
 package org.jmol.adapter.readers.xml;
 
 import java.io.BufferedReader;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Map;
 
 import org.jmol.adapter.smarter.AtomSetCollection;

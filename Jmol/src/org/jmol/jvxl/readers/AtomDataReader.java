@@ -23,7 +23,7 @@
  */
 package org.jmol.jvxl.readers;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Date;
 
 import javax.vecmath.Point3f;
@@ -91,9 +91,9 @@ abstract class AtomDataReader extends VolumeDataReader {
     if (params.volumeData != null) {
       setVolumeData(params.volumeData);
       setBoundingBox(volumeData.volumetricOrigin, 0);
-      ptXyzTemp.set(volumeData.volumetricOrigin);
+      ptXyzTemp.setT(volumeData.volumetricOrigin);
       for (int i = 0; i < 3; i++)
-        ptXyzTemp.scaleAdd(volumeData.voxelCounts[i] - 1, 
+        ptXyzTemp.scaleAdd2(volumeData.voxelCounts[i] - 1, 
             volumeData.volumetricVectors[i], ptXyzTemp);
       setBoundingBox(ptXyzTemp, 0);
     }
@@ -111,16 +111,16 @@ abstract class AtomDataReader extends VolumeDataReader {
 
   protected void setVolumeForPlane() {
     if (useOriginStepsPoints) {
-      xyzMin = new Point3f(params.origin);
-      xyzMax = new Point3f(params.origin);
+      xyzMin = Point3f.newP(params.origin);
+      xyzMax = Point3f.newP(params.origin);
       xyzMax.x += (params.points.x - 1) * params.steps.x;
       xyzMax.y += (params.points.y - 1) * params.steps.y;
       xyzMax.z += (params.points.z - 1) * params.steps.z;
     } else {
       getAtoms(params.bsSelected, false, true, false, false, false, false, params.mep_marginAngstroms);
       if (xyzMin == null) {
-        xyzMin = new Point3f(-10,-10,-10);
-        xyzMax = new Point3f(10, 10, 10);
+        xyzMin = Point3f.new3(-10,-10,-10);
+        xyzMax = Point3f.new3(10, 10, 10);
       }
     }
     setRanges(params.plane_ptsPerAngstrom, params.plane_gridMax, 0); 
@@ -249,18 +249,18 @@ abstract class AtomDataReader extends VolumeDataReader {
     Logger.info(myAtomCount + " atoms will be used in the surface calculation");
 
     if (myAtomCount == 0) {
-      setBoundingBox(new Point3f(10, 10, 10), 0);
-      setBoundingBox(new Point3f(-10, -10, -10), 0);
+      setBoundingBox(Point3f.new3(10, 10, 10), 0);
+      setBoundingBox(Point3f.new3(-10, -10, -10), 0);
     }
     for (int i = 0; i < myAtomCount; i++)
       setBoundingBox(atomXyz[i], getRadii ? atomRadius[i] + 0.5f : 0);
     if (!Float.isNaN(params.scale)) {
-      Vector3f v = new Vector3f(xyzMax);
+      Vector3f v = Vector3f.newV(xyzMax);
       v.sub(xyzMin);
       v.scale(0.5f);
       xyzMin.add(v);
       v.scale(params.scale);
-      xyzMax.set(xyzMin);
+      xyzMax.setT(xyzMin);
       xyzMax.add(v);
       xyzMin.sub(v);
     }
@@ -292,13 +292,13 @@ abstract class AtomDataReader extends VolumeDataReader {
     int nAtoms = myAtomCount;
     if (nearbyAtomCount != 0) {
       nAtoms += nearbyAtomCount;
-      atomRadius = ArrayUtil.setLength(atomRadius, nAtoms);
-      atomXyz = (Point3f[]) ArrayUtil.setLength(atomXyz, nAtoms);
+      atomRadius = ArrayUtil.arrayCopyF(atomRadius, nAtoms);
+      atomXyz = (Point3f[]) ArrayUtil.arrayCopyOpt(atomXyz, nAtoms);
       if (atomIndex != null)
-        atomIndex = ArrayUtil.setLength(atomIndex, nAtoms);
+        atomIndex = ArrayUtil.arrayCopyI(atomIndex, nAtoms);
 
       if (props != null)
-        atomProp = ArrayUtil.setLength(atomProp, nAtoms);
+        atomProp = ArrayUtil.arrayCopyF(atomProp, nAtoms);
       for (int i = bsNearby.nextSetBit(0); i >= 0; i = bsNearby
           .nextSetBit(i + 1)) {
         if (props != null)
@@ -349,10 +349,10 @@ abstract class AtomDataReader extends VolumeDataReader {
       return false;
     String line = params.title[iLine];
     if (line.indexOf("%F") > 0)
-      line = params.title[iLine] = TextFormat.formatString(line, "F",
+      line = params.title[iLine] = TextFormat.formatStringS(line, "F",
           atomData.fileName);
     if (line.indexOf("%M") > 0)
-      params.title[iLine] = TextFormat.formatString(line, "M",
+      params.title[iLine] = TextFormat.formatStringS(line, "M",
           atomData.modelName);
     return true;
   }
@@ -361,7 +361,7 @@ abstract class AtomDataReader extends VolumeDataReader {
     if (meshDataServer != null)
       meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
     if (params.vertexSource != null) {
-      params.vertexSource = ArrayUtil.setLength(params.vertexSource,
+      params.vertexSource = ArrayUtil.arrayCopyI(params.vertexSource,
           meshData.vertexCount);
       for (int i = 0; i < meshData.vertexCount; i++)
         params.vertexSource[i] = Math.abs(params.vertexSource[i]) - 1;
@@ -467,12 +467,12 @@ abstract class AtomDataReader extends VolumeDataReader {
         pt1.x = thisX + 1;
       }
       volumeData.voxelPtToXYZ(pt0.x, pt0.y, pt0.z, ptXyzTemp);
-      for (int i = pt0.x; i < pt1.x; i++, ptXyzTemp.scaleAdd(1,
+      for (int i = pt0.x; i < pt1.x; i++, ptXyzTemp.scaleAdd2(1,
           volumetricVectors[0], ptY0)) {
-        ptY0.set(ptXyzTemp);
-        for (int j = pt0.y; j < pt1.y; j++, ptXyzTemp.scaleAdd(1,
+        ptY0.setT(ptXyzTemp);
+        for (int j = pt0.y; j < pt1.y; j++, ptXyzTemp.scaleAdd2(1,
             volumetricVectors[1], ptZ0)) {
-          ptZ0.set(ptXyzTemp);
+          ptZ0.setT(ptXyzTemp);
           for (int k = pt0.z; k < pt1.z; k++, ptXyzTemp
               .add(volumetricVectors[2])) {
             float value = ptXyzTemp.distance(ptA) - rA;            

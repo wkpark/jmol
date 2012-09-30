@@ -566,7 +566,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
       currentProperties.store(fileOutputStream, "Jmol");
       fileOutputStream.close();
     } catch (Exception e) {
-      Logger.error("Error saving preferences", e);
+      Logger.errorEx("Error saving preferences", e);
     }
   }
 

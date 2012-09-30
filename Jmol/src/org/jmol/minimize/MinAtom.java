@@ -25,7 +25,7 @@
 package org.jmol.minimize;
 
 import java.util.ArrayList;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.List;
 
 import org.jmol.minimize.forcefield.AtomType;

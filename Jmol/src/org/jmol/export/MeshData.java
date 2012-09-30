@@ -83,12 +83,12 @@ class MeshData {
     for (int i = 0; i < n; i++) {
       float x = (float) (Math.cos(i * ndeg / 180. * Math.PI));
       float y = (float) (Math.sin(i * ndeg / 180. * Math.PI));
-      vertexes[i] = new Point3f(x, y, 0);
-      normals[i] = new Point3f(0, 0, 1);
+      vertexes[i] = Point3f.new3(x, y, 0);
+      normals[i] = Point3f.new3(0, 0, 1);
     }
-    vertexes[n] = new Point3f(0, 0, 0);
-    normals[n] = new Point3f(0, 0, 1);
-    return new MeshSurface(faces, vertexes, 0, normals, 0);
+    vertexes[n] = Point3f.new3(0, 0, 0);
+    normals[n] = Point3f.new3(0, 0, 1);
+    return MeshSurface.newMesh(vertexes, 0, faces, normals, 0);
   }
 
   /**
@@ -104,15 +104,15 @@ class MeshData {
     Point3f[] vertexes = new Point3f[] { pt1, pt2, pt3 };
     Vector3f v1 = new Vector3f();
     Vector3f v2 = new Vector3f();
-    v1.set(pt3);
+    v1.setT(pt3);
     v1.sub(pt1);
-    v2.set(pt2);
+    v2.setT(pt2);
     v2.sub(pt1);
     v2.cross(v2, v1);
     v2.normalize();
     Vector3f[] normals = new Vector3f[] { v2, v2, v2 };
     int[][] faces = { { 0, 1, 2 } };
-    return new MeshSurface(faces, vertexes, 0, normals, 0);
+    return MeshSurface.newMesh(vertexes, 0, faces, normals, 0);
   }
 
   /**
@@ -131,10 +131,10 @@ class MeshData {
     for (int i = 0; i < n; i++) {
       float x = (float) (Math.cos(i * d));
       float y = (float) (Math.sin(i * d));
-      vertices[i] = new Point3f(x, y, 0);
+      vertices[i] = Point3f.new3(x, y, 0);
     }
-    vertices[n] = new Point3f(0, 0, 1);
-    return new MeshSurface(faces, vertices, 0, vertices, 0);
+    vertices[n] = Point3f.new3(0, 0, 1);
+    return MeshSurface.newMesh(vertices, 0, faces, vertices, 0);
   }
 
   /**
@@ -169,19 +169,19 @@ class MeshData {
     for (int i = 0; i < n; i++) {
       float x = (float) (Math.cos(i * ndeg / 180. * Math.PI));
       float y = (float) (Math.sin(i * ndeg / 180. * Math.PI));
-      vertexes[i] = new Point3f(x, y, 0);
-      normals[i] = new Point3f(x, y, 0);
+      vertexes[i] = Point3f.new3(x, y, 0);
+      normals[i] = Point3f.new3(x, y, 0);
     }
     for (int i = 0; i < n; i++) {
       float x = (float) (Math.cos((i + 0.5) * ndeg / 180 * Math.PI));
       float y = (float) (Math.sin((i + 0.5) * ndeg / 180 * Math.PI));
-      vertexes[i + n] = new Point3f(x, y, 1);
+      vertexes[i + n] = Point3f.new3(x, y, 1);
       normals[i + n] = normals[i];
     }
     if (inSide)
       for (int i = 0; i < n; i++)
         normals[i].scale(-1);
-    return new MeshSurface(faces, vertexes, 0, normals, 0);
+    return MeshSurface.newMesh(vertexes, 0, faces, normals, 0);
   }
 
   /**
@@ -201,7 +201,7 @@ class MeshData {
     Vector3f[] vertexes = new Vector3f[vertexCount];
     for (int i = 0; i < vertexCount; i++)
       vertexes[i] = Geodesic.getVertexVector(i);
-    return new MeshSurface(faces, vertexes, 0, vertexes, 0);
+    return MeshSurface.newMesh(vertexes, 0, faces, vertexes, 0);
   }
 
 }

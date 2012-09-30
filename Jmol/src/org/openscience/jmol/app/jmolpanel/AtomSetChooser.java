@@ -805,7 +805,7 @@ ActionListener, ChangeListener, Runnable {
           int fps = viewer.getAnimationFps();
           Thread.sleep((int) (1000.0/(fps==0?1:fps)));
         } catch (InterruptedException e) {
-          Logger.error(null, e);
+          Logger.errorEx(null, e);
         }
       }
     }

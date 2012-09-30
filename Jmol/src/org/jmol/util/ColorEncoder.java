@@ -161,7 +161,7 @@ import org.jmol.constant.EnumPalette;
     if (scale == null) {
       // resetting scale
       schemes.remove(name);
-      int iScheme = getColorScheme(name, false, isOverloaded);
+      int iScheme = createColorScheme(name, false, isOverloaded);
       if (isOverloaded)
         switch (iScheme) {
         case BW:
@@ -195,7 +195,7 @@ import org.jmol.constant.EnumPalette;
     }
     schemes.put(name, scale);
     setThisScheme(name, scale);
-    int iScheme = getColorScheme(name, false, isOverloaded);
+    int iScheme = createColorScheme(name, false, isOverloaded);
     if (isOverloaded)
       switch (iScheme) {
       case BW:
@@ -235,7 +235,7 @@ import org.jmol.constant.EnumPalette;
    * @param isOverloaded
    * @return paletteID
    */
-  public int getColorScheme(String colorScheme,
+  public int createColorScheme(String colorScheme,
                                           boolean defaultToRoygb,
                                           boolean isOverloaded) {
     // main method for creating a new scheme or modifying an old one
@@ -340,11 +340,11 @@ import org.jmol.constant.EnumPalette;
     case ROYGB:
       return propertyColorEncoder.argbsRoygb;
     case BGYOR:
-      return ArrayUtil.arrayCopy(propertyColorEncoder.argbsRoygb, 0, -1, true);
+      return ArrayUtil.arrayCopyRangeRevI(propertyColorEncoder.argbsRoygb, 0, -1);
     case LOW:
-      return ArrayUtil.arrayCopy(propertyColorEncoder.argbsRoygb, 0, propertyColorEncoder.ihalf, false);
+      return ArrayUtil.arrayCopyRangeI(propertyColorEncoder.argbsRoygb, 0, propertyColorEncoder.ihalf);
     case HIGH:
-      int[] a = ArrayUtil.arrayCopy(propertyColorEncoder.argbsRoygb, propertyColorEncoder.argbsRoygb.length - 2 * propertyColorEncoder.ihalf, -1, false);
+      int[] a = ArrayUtil.arrayCopyRangeI(propertyColorEncoder.argbsRoygb, propertyColorEncoder.argbsRoygb.length - 2 * propertyColorEncoder.ihalf, -1);
       b = new int[propertyColorEncoder.ihalf];
       for (int i = b.length, j = a.length; --i >= 0 && --j >= 0;)
         b[i] = a[j--];
@@ -356,7 +356,7 @@ import org.jmol.constant.EnumPalette;
     case RWB:
       return propertyColorEncoder.argbsRwb;
     case BWR:
-      return ArrayUtil.arrayCopy(propertyColorEncoder.argbsRwb, 0, -1, true);
+      return ArrayUtil.arrayCopyRangeRevI(propertyColorEncoder.argbsRwb, 0, -1);
     case JMOL:
       return propertyColorEncoder.argbsCpk;
     case RASMOL:
@@ -368,7 +368,7 @@ import org.jmol.constant.EnumPalette;
     case USER:
       return propertyColorEncoder.userScale;
     case RESU:
-      return ArrayUtil.arrayCopy(propertyColorEncoder.userScale, 0, -1, true);
+      return ArrayUtil.arrayCopyRangeRevI(propertyColorEncoder.userScale, 0, -1);
     default:
       return null;
     }
@@ -518,7 +518,7 @@ import org.jmol.constant.EnumPalette;
     info.put("min", Float.valueOf(lo));
     info.put("max", Float.valueOf(hi));
     info.put("reversed", Boolean.valueOf(isReversed));
-    info.put("name", getColorSchemeName());
+    info.put("name", getCurrentColorSchemeName());
     return info;
   }
 
@@ -530,7 +530,7 @@ import org.jmol.constant.EnumPalette;
   public void setColorScheme(String colorScheme, boolean isTranslucent) {
     this.isTranslucent = isTranslucent;
     if (colorScheme != null)
-      currentPalette = getColorScheme(colorScheme, true, false);
+      currentPalette = createColorScheme(colorScheme, true, false);
   }
 
   public void setRange(float lo, float hi, boolean isReversed) {
@@ -543,7 +543,7 @@ import org.jmol.constant.EnumPalette;
     this.isReversed = isReversed;
   }
   
-  public String getColorSchemeName() {
+  public String getCurrentColorSchemeName() {
     return getColorSchemeName(currentPalette);  
   }
   

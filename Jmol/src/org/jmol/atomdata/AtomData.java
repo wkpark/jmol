@@ -113,7 +113,7 @@
 
 package org.jmol.atomdata;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 
 import javax.vecmath.Point3f;
 

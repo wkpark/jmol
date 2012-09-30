@@ -262,15 +262,15 @@ class TransformManager11 extends TransformManager {
   void setScreenParameters(int screenWidth, int screenHeight,
                            boolean useZoomLarge, boolean antialias,
                            boolean resetSlab, boolean resetZoom) {
-    Point3f pt = (mode == MODE_NAVIGATION ? new Point3f(navigationCenter)
+    Point3f pt = (mode == MODE_NAVIGATION ? Point3f.newP(navigationCenter)
         : null);
-    Point3f ptoff = new Point3f(navigationOffset);
+    Point3f ptoff = Point3f.newP(navigationOffset);
     ptoff.x = ptoff.x / width;
     ptoff.y = ptoff.y / height;
     super.setScreenParameters(screenWidth, screenHeight, useZoomLarge,
         antialias, resetSlab, resetZoom);
     if (pt != null) {
-      navigationCenter.set(pt);
+      navigationCenter.setT(pt);
       navTranslatePercent(-1, ptoff.x * width, ptoff.y * height);
       navigatePt(0, pt);
     }
@@ -308,7 +308,7 @@ class TransformManager11 extends TransformManager {
     case NAV_MODE_NONE:
     case NAV_MODE_ZOOMED:
       // update fixed rotation offset and find the new 3D navigation center
-      fixedRotationOffset.set(fixedTranslation);
+      fixedRotationOffset.setT(fixedTranslation);
       newNavigationCenter();
       break;
     case NAV_MODE_NEWXY:
@@ -321,9 +321,9 @@ class TransformManager11 extends TransformManager {
       // navigation center will initially move
       // but we center it by moving the rotation center instead
       Point3f pt1 = new Point3f();
-      matrixTransform.transform(navigationCenter, pt1);
+      matrixTransform.transform2(navigationCenter, pt1);
       float z = pt1.z;
-      matrixTransform.transform(fixedRotationCenter, pt1);
+      matrixTransform.transform2(fixedRotationCenter, pt1);
       modelCenterOffset = referencePlaneOffset + (pt1.z - z);
       calcCameraFactors();
       calcTransformMatrix();
@@ -335,26 +335,26 @@ class TransformManager11 extends TransformManager {
       unTransformPoint(navigationOffset, navigationCenter);
       break;
     }
-    matrixTransform.transform(navigationCenter, navigationShiftXY);
+    matrixTransform.transform2(navigationCenter, navigationShiftXY);
     if (viewer.getNavigationPeriodic()) {
       // TODO
       // but if periodic, then the navigationCenter may have to be moved back a
       // notch
-      Point3f pt = new Point3f(navigationCenter);
+      Point3f pt = Point3f.newP(navigationCenter);
       viewer.toUnitCell(navigationCenter, null);
       // presuming here that pointT is still a molecular point??
       if (pt.distance(navigationCenter) > 0.01) {
-        matrixTransform.transform(navigationCenter, pt);
+        matrixTransform.transform2(navigationCenter, pt);
         float dz = navigationShiftXY.z - pt.z;
         // the new navigation center determines the navigationZOffset
         modelCenterOffset += dz;
         calcCameraFactors();
         calcTransformMatrix();
-        matrixTransform.transform(navigationCenter, navigationShiftXY);
+        matrixTransform.transform2(navigationCenter, navigationShiftXY);
       }
     }
     transformPoint(fixedRotationCenter, fixedTranslation);
-    fixedRotationOffset.set(fixedTranslation);
+    fixedRotationOffset.setT(fixedTranslation);
     previousX = fixedTranslation.x;
     previousY = fixedTranslation.y;
     transformPoint(navigationCenter, navigationOffset);
@@ -421,7 +421,7 @@ class TransformManager11 extends TransformManager {
     pt.z = referencePlaneOffset;
     // now untransform that point to give the center that would
     // deliver this fixedModel position
-    matrixTransformInv.transform(pt, navigationCenter);
+    matrixTransformInv.transform2(pt, navigationCenter);
     mode = MODE_NAVIGATION;
   }
 
@@ -636,7 +636,7 @@ class TransformManager11 extends TransformManager {
       navigateTo(seconds, null, Float.NaN, pt, Float.NaN, Float.NaN, Float.NaN);
       return;
     }
-    navigationCenter.set(pt);
+    navigationCenter.setT(pt);
     navMode = NAV_MODE_NEWXYZ;
     navigating = true;
     finalizeTransformParameters();
@@ -739,10 +739,10 @@ class TransformManager11 extends TransformManager {
       float yTransDelta = yTrans - yTransStart;
       float degreeStep = degrees / totalSteps;
       Vector3f aaStepCenter = new Vector3f();
-      aaStepCenter.set(ptMoveToCenter);
+      aaStepCenter.setT(ptMoveToCenter);
       aaStepCenter.sub(navigationCenter);
       aaStepCenter.scale(1f / totalSteps);
-      Point3f centerStart = new Point3f(navigationCenter);
+      Point3f centerStart = Point3f.newP(navigationCenter);
       for (int iStep = 1; iStep < totalSteps; ++iStep) {
 
         navigating = true;
@@ -898,21 +898,21 @@ class TransformManager11 extends TransformManager {
   void alignZX(Point3f pt0, Point3f pt1, Point3f ptVectorWing) {
     Point3f pt0s = new Point3f();
     Point3f pt1s = new Point3f();
-    matrixRotate.transform(pt0, pt0s);
-    matrixRotate.transform(pt1, pt1s);
-    Vector3f vPath = new Vector3f(pt0s);
+    matrixRotate.transform2(pt0, pt0s);
+    matrixRotate.transform2(pt1, pt1s);
+    Vector3f vPath = Vector3f.newV(pt0s);
     vPath.sub(pt1s);
-    Vector3f v = new Vector3f(0, 0, 1);
+    Vector3f v = Vector3f.new3(0, 0, 1);
     float angle = vPath.angle(v);
     v.cross(vPath, v);
     if (angle != 0)
       navigateAxis(0, v, (float) (angle * degreesPerRadian));
-    matrixRotate.transform(pt0, pt0s);
-    Point3f pt2 = new Point3f(ptVectorWing);
+    matrixRotate.transform2(pt0, pt0s);
+    Point3f pt2 = Point3f.newP(ptVectorWing);
     pt2.add(pt0);
     Point3f pt2s = new Point3f();
-    matrixRotate.transform(pt2, pt2s);
-    vPath.set(pt2s);
+    matrixRotate.transform2(pt2, pt2s);
+    vPath.setT(pt2s);
     vPath.sub(pt0s);
     vPath.z = 0; // just use projection
     v.set(-1, 0, 0); // puts alpha helix sidechain above
@@ -927,9 +927,9 @@ class TransformManager11 extends TransformManager {
       v.set(1, 0, 0);
       navigateAxis(0, v, 20);
     }
-    matrixRotate.transform(pt0, pt0s);
-    matrixRotate.transform(pt1, pt1s);
-    matrixRotate.transform(ptVectorWing, pt2s);
+    matrixRotate.transform2(pt0, pt0s);
+    matrixRotate.transform2(pt1, pt1s);
+    matrixRotate.transform2(ptVectorWing, pt2s);
   }
 
   @Override

@@ -77,7 +77,7 @@ public class VectorsRenderer extends ShapeRenderer {
           && g3d.setColix(Shape.getColix(colixes, i, atom))) {
         renderVector(atom);
         if (vectorSymmetry) {
-          vector2.set(vibrationVector);
+          vector2.setT(vibrationVector);
           vector2.scale(-1);
           transform(mads[i], atom, vector2);
           renderVector(atom);          
@@ -95,13 +95,13 @@ public class VectorsRenderer extends ShapeRenderer {
     if (vectorScale < 0)
       headScale = -headScale;
     doShaft = (0.1 + Math.abs(headScale/len) < Math.abs(vectorScale));
-    headOffsetVector.set(vibrationVector);
+    headOffsetVector.setT(vibrationVector);
     headOffsetVector.scale(headScale / len);
-    pointVectorEnd.scaleAdd(vectorScale, vibrationVector, atom);
-    pointArrowHead.set(pointVectorEnd);
+    pointVectorEnd.scaleAdd2(vectorScale, vibrationVector, atom);
+    pointArrowHead.setT(pointVectorEnd);
     pointArrowHead.add(headOffsetVector);
-    screenArrowHead.set(viewer.transformPtVib(pointArrowHead, vibrationVector));
-    screenVectorEnd.set(viewer.transformPtVib(pointVectorEnd, vibrationVector));
+    screenArrowHead.setT(viewer.transformPtVib(pointArrowHead, vibrationVector));
+    screenVectorEnd.setT(viewer.transformPtVib(pointVectorEnd, vibrationVector));
     diameter = (mad < 1 ? 1 : mad <= 20 ? mad : viewer.scaleToScreen(screenVectorEnd.z, mad));
     headWidthPixels = (int)(diameter * 2.0f);
     if (headWidthPixels < diameter + 2)

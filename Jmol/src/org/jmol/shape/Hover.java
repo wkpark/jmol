@@ -29,7 +29,7 @@ import org.jmol.util.Colix;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolFont;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -53,7 +53,7 @@ public class Hover extends TextShape {
   public void initShape() {
     super.initShape();
     isHover = true;
-    JmolFont font3d = gdata.getFont3D(FONTFACE, FONTSTYLE, FONTSIZE);
+    JmolFont font3d = gdata.getFont3DFSS(FONTFACE, FONTSTYLE, FONTSIZE);
     short bgcolix = Colix.getColix("#FFFFC3"); // 255, 255, 195
     short colix = Colix.BLACK;
     currentObject = hoverText = new Text(gdata, font3d, null, colix, bgcolix, 0, 0,

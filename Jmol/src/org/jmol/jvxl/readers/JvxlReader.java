@@ -182,12 +182,12 @@ public class JvxlReader extends JvxlXmlReader {
     if (param1 == -1) {
       // a plane is defined
       try {
-        params.thePlane = new Point4f(parseFloat(), parseFloat(), parseFloat(),
+        params.thePlane = Point4f.new4(parseFloat(), parseFloat(), parseFloat(),
             parseFloat());
       } catch (Exception e) {
         Logger
             .error("Error reading 4 floats for PLANE definition -- setting to 0 0 1 0  (z=0)");
-        params.thePlane = new Point4f(0, 0, 1, 0);
+        params.thePlane = Point4f.new4(0, 0, 1, 0);
       }
       Logger.info("JVXL read: plane " + params.thePlane);
       if (param2 == -1 && param3 < 0)

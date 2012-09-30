@@ -199,7 +199,7 @@ public class ShelxReader extends AtomSetCollectionReader {
     } else {
       int oldCount = sfacElementSymbols.length;
       int tokenCount = sfacTokens.length;
-      sfacElementSymbols = ArrayUtil.setLength(sfacElementSymbols, oldCount + tokenCount);
+      sfacElementSymbols = ArrayUtil.arrayCopyS(sfacElementSymbols, oldCount + tokenCount);
       for (int i = tokenCount; --i >= 0;)
         sfacElementSymbols[oldCount + i] = sfacTokens[i];
     }
@@ -219,7 +219,7 @@ public class ShelxReader extends AtomSetCollectionReader {
       sfacElementSymbols = new String[1];
     } else {
       oldCount = sfacElementSymbols.length;
-      sfacElementSymbols = ArrayUtil.setLength(sfacElementSymbols, oldCount + 1);
+      sfacElementSymbols = ArrayUtil.arrayCopyS(sfacElementSymbols, oldCount + 1);
       sfacElementSymbols[oldCount] = elementSymbol;
     }
     sfacElementSymbols[oldCount] = elementSymbol;

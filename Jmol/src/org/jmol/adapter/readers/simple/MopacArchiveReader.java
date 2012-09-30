@@ -159,8 +159,8 @@ MERS=(1,2,2)   GNORM=4
       }
       for (int i = atomCount; --i >= 0;)
         setAtomCoord(vAtoms.get(i));
-      Point3f ptMax = new Point3f(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
-      Point3f ptMin = new Point3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
+      Point3f ptMax = Point3f.new3(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
+      Point3f ptMin = Point3f.new3(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
       if (doCentralize) {
         for (int i = atomCount; --i >= 0;) {
           atom = vAtoms.get(i);
@@ -182,8 +182,8 @@ MERS=(1,2,2)   GNORM=4
         case 1:
           ptCenter.z = 0.5f;
         }
-        ptCenter.scaleAdd(-0.5f, ptMin, ptCenter);
-        ptCenter.scaleAdd(-0.5f, ptMax, ptCenter);
+        ptCenter.scaleAdd2(-0.5f, ptMin, ptCenter);
+        ptCenter.scaleAdd2(-0.5f, ptMax, ptCenter);
         for (int i = atomCount; --i >= 0;)
           vAtoms.get(i).add(ptCenter);
       }

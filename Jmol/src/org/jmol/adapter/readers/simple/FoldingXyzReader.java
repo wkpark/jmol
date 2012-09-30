@@ -102,12 +102,12 @@ public class FoldingXyzReader extends AtomSetCollectionReader {
         int bondNum = Integer.MIN_VALUE;
         while ((bondNum = parseInt()) > 0) {
           if (bondCount == bonds[i].length) {
-          	bonds[i] = ArrayUtil.setLength(bonds[i], bondCount + 1); 
+          	bonds[i] = ArrayUtil.arrayCopyI(bonds[i], bondCount + 1); 
           }
           bonds[i][bondCount++] = bondNum - 1;
         }
         if (bondCount < bonds[i].length) {
-          bonds[i] = ArrayUtil.setLength(bonds[i], bondCount);
+          bonds[i] = ArrayUtil.arrayCopyI(bonds[i], bondCount);
         }
       }
     }

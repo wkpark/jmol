@@ -211,8 +211,8 @@ public class AminoMonomer extends AlphaMonomer {
     Atom nitrogenPoint = getNitrogenAtom();
     Point3f nhPoint = getNitrogenHydrogenPoint();
     if (nhPoint != null && !dsspIgnoreHydrogens) {
-      vNH.sub(nhPoint, nitrogenPoint);
-      aminoHydrogenPoint.set(nhPoint);
+      vNH.sub2(nhPoint, nitrogenPoint);
+      aminoHydrogenPoint.setT(nhPoint);
       return true;
     }
     AminoMonomer prev = (AminoMonomer) bioPolymer.monomers[monomerIndex - 1];
@@ -223,10 +223,10 @@ public class AminoMonomer extends AlphaMonomer {
       vNH.add(nitrogenPoint);
       vNH.sub(prev.getCarbonylCarbonAtom());
       */
-      vNH.sub(nitrogenPoint, getLeadAtom());
+      vNH.sub2(nitrogenPoint, getLeadAtom());
       vNH.normalize();
       Vector3f v = new Vector3f();
-      v.sub(nitrogenPoint, prev.getCarbonylCarbonAtom());
+      v.sub2(nitrogenPoint, prev.getCarbonylCarbonAtom());
       v.normalize();
       vNH.add(v);
     } else {
@@ -235,11 +235,11 @@ public class AminoMonomer extends AlphaMonomer {
       Point3f oxygen = prev.getCarbonylOxygenAtom();
       if (oxygen == null) // an optional atom for Jmol
         return false;
-      vNH.sub(prev.getCarbonylCarbonAtom(), oxygen);
+      vNH.sub2(prev.getCarbonylCarbonAtom(), oxygen);
     }
     vNH.normalize();
-    aminoHydrogenPoint.add(nitrogenPoint, vNH);
-    nitrogenHydrogenPoint = new Point3f(aminoHydrogenPoint);
+    aminoHydrogenPoint.add2(nitrogenPoint, vNH);
+    nitrogenHydrogenPoint = Point3f.newP(aminoHydrogenPoint);
     if (Logger.debugging)
       Logger.info("draw ID \"pta" + monomerIndex + "_" + nitrogenPoint.index + "\" "
           + Escape.escapePt(nitrogenPoint) + Escape.escapePt(aminoHydrogenPoint)
@@ -268,7 +268,7 @@ public class AminoMonomer extends AlphaMonomer {
       if (monomerIndex == bioPolymer.monomerCount - 1)
         return null;
       AminoMonomer mNext = ((AminoMonomer) bioPolymer.getGroups()[monomerIndex + 1]);
-      Point3f pt = new Point3f(getCarbonylCarbonAtom());
+      Point3f pt = Point3f.newP(getCarbonylCarbonAtom());
       pt.add(mNext.getNitrogenAtom());
       pt.scale(0.5f);
       return pt;
@@ -336,10 +336,10 @@ public class AminoMonomer extends AlphaMonomer {
         return null;
       vC = new Vector3f();
       getNHPoint(ptTemp, vC, true, false);
-      vB.sub(ptCa, getNitrogenAtom());
+      vB.sub2(ptCa, getNitrogenAtom());
       vB.cross(vC, vB);
       Matrix3f mat = new Matrix3f();
-      mat.set(new AxisAngle4f(vB, -beta));
+      mat.setAA(AxisAngle4f.newVA(vB, -beta));
       mat.transform(vC);
       vA.cross(vB, vC);
       break;
@@ -348,8 +348,8 @@ public class AminoMonomer extends AlphaMonomer {
     case 'c':
       //vA = ptC - ptCa
       //vB = ptN - ptCa
-      vA.sub(ptC, ptCa);
-      vB.sub(getNitrogenAtom(), ptCa);
+      vA.sub2(ptC, ptCa);
+      vB.sub2(getNitrogenAtom(), ptCa);
       break;
     case 'p':
     case 'x':
@@ -358,8 +358,8 @@ public class AminoMonomer extends AlphaMonomer {
       //vB = ptN' - ptC
       if (monomerIndex == bioPolymer.monomerCount - 1)
         return null;
-      vA.sub(ptCa, ptC);
-      vB.sub(((AminoMonomer) bioPolymer.getGroups()[monomerIndex + 1]).getNitrogenAtom(), ptC);
+      vA.sub2(ptCa, ptC);
+      vB.sub2(((AminoMonomer) bioPolymer.getGroups()[monomerIndex + 1]).getNitrogenAtom(), ptC);
       break;
     case 'q': 
       // J. R. Quine, Journal of Molecular Structure: THEOCHEM, 
@@ -369,13 +369,13 @@ public class AminoMonomer extends AlphaMonomer {
       if (monomerIndex == bioPolymer.monomerCount - 1)
         return null;
       AminoMonomer mNext = ((AminoMonomer) bioPolymer.getGroups()[monomerIndex + 1]);
-      vB.sub(mNext.getLeadAtom(), mNext.getNitrogenAtom());
-      vA.sub(ptCa, ptC);
+      vB.sub2(mNext.getLeadAtom(), mNext.getNitrogenAtom());
+      vA.sub2(ptCa, ptC);
       break;
     default:
       return null;
     }
-    return Quaternion.getQuaternionFrame(vA, vB, vC, false);
+    return Quaternion.getQuaternionFrameV(vA, vB, vC, false);
   }
   
   @Override
@@ -396,10 +396,10 @@ public class AminoMonomer extends AlphaMonomer {
     if (proteinStructure == null || proteinStructure.structureID == null)
       return null;
     String tag = "%3N %3ID";
-    tag = TextFormat.formatString(tag, "N", proteinStructure.serialID);
-    tag = TextFormat.formatString(tag, "ID", proteinStructure.structureID);
+    tag = TextFormat.formatStringI(tag, "N", proteinStructure.serialID);
+    tag = TextFormat.formatStringS(tag, "ID", proteinStructure.structureID);
     if (proteinStructure.type == EnumStructure.SHEET)
-      tag += TextFormat.formatString("%2SC", "SC", proteinStructure.strandCount);
+      tag += TextFormat.formatStringI("%2SC", "SC", proteinStructure.strandCount);
     return tag;
   }
   

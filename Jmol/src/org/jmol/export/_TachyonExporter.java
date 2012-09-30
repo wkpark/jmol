@@ -26,7 +26,7 @@
 package org.jmol.export;
 
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.List;
 import java.util.Map;
 
@@ -216,7 +216,7 @@ public class _TachyonExporter extends __RayTracerExporter {
     output(" Rad " + round(radius));
     outputTextureCode();
     if (withCaps && radius > 1) {
-      tempV1.sub(screenA, screenB);
+      tempV1.sub2(screenA, screenB);
       outputRing((int) screenA.x, (int) screenA.y, (int) screenA.z, tempV1, radius, colix, true);
       tempV1.scale(-1);
       outputRing((int) screenB.x, (int) screenB.y, (int) screenB.z, tempV1, radius, colix, true);

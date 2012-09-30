@@ -147,7 +147,7 @@ public class ImageCreator implements JmolImageCreatorInterface {
         len = (new File(fileName)).length();
       }
     } catch (IOException exc) {
-      Logger.error("IO Exception", exc);
+      Logger.errorEx("IO Exception", exc);
       return exc.toString();
     } finally {
       if (os != null) {

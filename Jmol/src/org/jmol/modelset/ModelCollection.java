@@ -26,7 +26,7 @@
 package org.jmol.modelset;
 
 import java.util.ArrayList;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
@@ -322,8 +322,8 @@ abstract public class ModelCollection extends BondCollection {
   private BitSet bboxAtoms;
   private final BoxInfo boxInfo = new BoxInfo();
   {
-    boxInfo.addBoundBoxPoint(new Point3f(-10, -10, -10));
-    boxInfo.addBoundBoxPoint(new Point3f(10, 10, 10));
+    boxInfo.addBoundBoxPoint(Point3f.new3(-10, -10, -10));
+    boxInfo.addBoundBoxPoint(Point3f.new3(10, 10, 10));
   }
 
   public Point3f getAverageAtomPoint() {
@@ -363,13 +363,13 @@ abstract public class ModelCollection extends BondCollection {
   public String getBoundBoxCommand(boolean withOptions) {
     if (!withOptions && bboxAtoms != null)
       return "boundbox " + Escape.escape(bboxAtoms);
-    ptTemp.set(boxInfo.getBoundBoxCenter());
+    ptTemp.setT(boxInfo.getBoundBoxCenter());
     Vector3f bbVector = boxInfo.getBoundBoxCornerVector();
     String s = (withOptions ? "boundbox " + Escape.escapePt(ptTemp) + " "
         + Escape.escapePt(bbVector) + "\n#or\n" : "");
     ptTemp.sub(bbVector);
     s += "boundbox corners " + Escape.escapePt(ptTemp) + " ";
-    ptTemp.scaleAdd(2, bbVector, ptTemp);
+    ptTemp.scaleAdd2(2, bbVector, ptTemp);
     float v = Math.abs(8 * bbVector.x * bbVector.y * bbVector.z);
     s += Escape.escapePt(ptTemp) + " # volume = " + v;
     return s;
@@ -420,7 +420,7 @@ abstract public class ModelCollection extends BondCollection {
     if (calcAtomsMinMax(bs, boxInfo) == atomCount)
       isBbcageDefault = true;
     if (bs == null) { // from modelLoader or reset
-      averageAtomPoint.set(getAtomSetCenter(null));
+      averageAtomPoint.setT(getAtomSetCenter(null));
       if (unitCells != null)
         calcUnitCellMinMax();
     }
@@ -518,7 +518,7 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public Point3f getAtomSetCenter(BitSet bs) {
-    Point3f ptCenter = new Point3f(0, 0, 0);
+    Point3f ptCenter = Point3f.new3(0, 0, 0);
     int nPoints = 0;
     if (bs != null)
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
@@ -1267,9 +1267,9 @@ abstract public class ModelCollection extends BondCollection {
               //$FALL-THROUGH$
             case 1:
               sbCONECT.append("CONECT").append(
-                  TextFormat.formatString("%5i", "i", iThis));
+                  TextFormat.formatStringI("%5i", "i", iThis));
               for (int k = 0; k < n; k++)
-                sbCONECT.append(TextFormat.formatString("%5i", "i", iOther));
+                sbCONECT.append(TextFormat.formatStringI("%5i", "i", iOther));
               sbCONECT.append('\n');
               break;
             }
@@ -1352,8 +1352,8 @@ abstract public class ModelCollection extends BondCollection {
         if (atomLast != null
             && atomLast.getPolymerIndexInModel() == a.getPolymerIndexInModel())
           pdbCONECT.append("CONECT").append(
-              TextFormat.formatString("%5i", "i", atomLast.getAtomNumber()))
-              .append(TextFormat.formatString("%5i", "i", a.getAtomNumber()))
+              TextFormat.formatStringI("%5i", "i", atomLast.getAtomNumber()))
+              .append(TextFormat.formatStringI("%5i", "i", a.getAtomNumber()))
               .append('\n');
         atomLast = a;
       }
@@ -1775,11 +1775,11 @@ abstract public class ModelCollection extends BondCollection {
       if (c < 0) {
         nNeg++;
         cNeg += c;
-        neg.scaleAdd(c, atoms[i], neg);
+        neg.scaleAdd2(c, atoms[i], neg);
       } else if (c > 0) {
         nPos++;
         cPos += c;
-        pos.scaleAdd(c, atoms[i], pos);
+        pos.scaleAdd2(c, atoms[i], pos);
       }
     }
     if (nNeg == 0 || nPos == 0)
@@ -1824,7 +1824,7 @@ abstract public class ModelCollection extends BondCollection {
     selectedMoleculeCount = 0;
     BitSet bsTemp = new BitSet();
     for (int i = 0; i < moleculeCount; i++) {
-      BitSetUtil.copy(bsSelected, bsTemp);
+      BitSetUtil.copy2(bsSelected, bsTemp);
       bsTemp.and(molecules[i].atomList);
       if (bsTemp.length() > 0) {
         selectedMolecules.set(i);
@@ -1859,7 +1859,7 @@ abstract public class ModelCollection extends BondCollection {
       int n = 0;
       for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1)) {
         if (isOneMolecule || centroidPacked) {
-          center.set(atoms[j]);
+          center.setT(atoms[j]);
           if (isNotCentroid(center, 1, uc, minmax, centroidPacked)) {
             if (isOneMolecule)
               bsDelete.set(j);
@@ -1937,7 +1937,7 @@ abstract public class ModelCollection extends BondCollection {
       Logger.startTimer();
     Bspf bspf = new Bspf(3);
     Logger.debug("sequential bspt order");
-    BitSet bsNew = new BitSet(modelCount);
+    BitSet bsNew = BitSetUtil.newBitSet(modelCount);
     for (int i = atomCount; --i >= 0;) {
       // important that we go backward here, because we are going to 
       // use System.arrayCopy to expand the array ONCE only
@@ -2150,7 +2150,7 @@ abstract public class ModelCollection extends BondCollection {
               caseSensitive);
       return bs;
     case Token.specialposition:
-      bs = new BitSet(atomCount);
+      bs = BitSetUtil.newBitSet(atomCount);
       int modelIndex = -1;
       int nOps = 0;
       for (int i = atomCount; --i >= 0;) {
@@ -2179,7 +2179,7 @@ abstract public class ModelCollection extends BondCollection {
       }
       return bs;
     case Token.symmetry:
-      return BitSetUtil.copy(bsSymmetry == null ? bsSymmetry = new BitSet(
+      return BitSetUtil.copy(bsSymmetry == null ? bsSymmetry = BitSetUtil.newBitSet(
           atomCount) : bsSymmetry);
     case Token.unitcell:
       // select UNITCELL (a relative quantity)
@@ -2187,17 +2187,17 @@ abstract public class ModelCollection extends BondCollection {
       SymmetryInterface unitcell = viewer.getCurrentUnitCell();
       if (unitcell == null)
         return bs;
-      Point3f cell = new Point3f(1, 1, 1);
+      Point3f cell = Point3f.new3(1, 1, 1);
       pt = new Point3f();
       for (int i = atomCount; --i >= 0;)
-        if (isInLatticeCell(i, cell, pt, false))
+        if (isInLatticeCell(i, cell, pt, false)) 
           bs.set(i);
       return bs;
     case Token.cell:
       // select cell=555 (an absolute quantity)
       bs = new BitSet();
       info = (int[]) specInfo;
-      Point3f ptcell = new Point3f(info[0] / 1000f, info[1] / 1000f,
+      Point3f ptcell = Point3f.new3(info[0] / 1000f, info[1] / 1000f,
           info[2] / 1000f);
       pt = new Point3f();
       boolean isAbsolute = !viewer.getFractionalRelative();
@@ -2218,7 +2218,7 @@ abstract public class ModelCollection extends BondCollection {
     SymmetryInterface uc = getUnitCell(iModel);
     if (uc == null)
       return false;
-    pt.set(atoms[i]);
+    pt.setT(atoms[i]);
     uc.toFractional(pt, isAbsolute);
     float slop = 0.02f;
     // {1 1 1} here is the original cell
@@ -2838,7 +2838,7 @@ abstract public class ModelCollection extends BondCollection {
           continue;
         }
         if (minAttachedAngle > 0) {
-          v1.sub(atom, atomNear);
+          v1.sub2(atom, atomNear);
           if ((D = checkMinAttachedAngle(atom, minAttachedAngle, v1, v2,
               haveHAtoms)) == null)
             continue;
@@ -2883,7 +2883,7 @@ abstract public class ModelCollection extends BondCollection {
                                                boolean haveHAtoms) {
     Bond[] bonds = atom1.bonds;
     if (bonds == null || bonds.length == 0)
-      return new Point3f(Float.NaN, 0, 0);
+      return Point3f.new3(Float.NaN, 0, 0);
     Atom X = null;
     float dMin = Float.MAX_VALUE;
     for (int i = bonds.length; --i >= 0;)
@@ -2891,7 +2891,7 @@ abstract public class ModelCollection extends BondCollection {
         Atom atomA = bonds[i].getOtherAtom(atom1);
         if (!haveHAtoms && atomA.getElementNumber() == 1)
           continue;
-        v2.sub(atom1, atomA);
+        v2.sub2(atom1, atomA);
         float d = v2.angle(v1);
         if (d < minAngle)
           return null;
@@ -3208,9 +3208,9 @@ abstract public class ModelCollection extends BondCollection {
       a.setFractionalCoordPt(ptTemp, trajectorySteps.get(a.modelIndex)[a.index
           - models[a.modelIndex].firstAtomIndex], true);
     else
-      pTemp.set(a);
+      pTemp.setT(a);
     if (q != null)
-      q.transform(pTemp, pTemp);
+      q.transformP2(pTemp, pTemp);
     int elemNo = a.getElementNumber();
     String sym = (a.isDeleted() ? "Xx" : Elements
         .elementSymbolFromNumber(elemNo));
@@ -3366,9 +3366,9 @@ abstract public class ModelCollection extends BondCollection {
     info.put("x", Float.valueOf(atom.x));
     info.put("y", Float.valueOf(atom.y));
     info.put("z", Float.valueOf(atom.z));
-    info.put("coord", new Point3f(atom));
+    info.put("coord", Point3f.newP(atom));
     if (vibrationVectors != null && vibrationVectors[i] != null) {
-      info.put("vibVector", new Vector3f(vibrationVectors[i]));
+      info.put("vibVector", Vector3f.newV(vibrationVectors[i]));
     }
     info.put("bondCount", Integer.valueOf(atom.getCovalentBondCount()));
     info.put("radius", Float.valueOf((float) (atom.getRasMolRadius() / 120.0)));
@@ -3630,7 +3630,7 @@ abstract public class ModelCollection extends BondCollection {
       return "";
     symTemp.setUnitCell(uc.getNotionalUnitCell());
     Object[] info;
-    pt = new Point3f(pt == null ? atoms[iAtom] : pt);
+    pt = Point3f.newP(pt == null ? atoms[iAtom] : pt);
     if (type == Token.point) {
       uc.toFractional(pt, false);
       if (Float.isNaN(pt.x))
@@ -3834,7 +3834,7 @@ abstract public class ModelCollection extends BondCollection {
     if (atomicNumber > 0) {
       setElement(atom, atomicNumber);
       viewer.setShapeSize(JmolConstants.SHAPE_BALLS, viewer
-          .getDefaultRadiusData(), BitSetUtil.setBit(atomIndex));
+          .getDefaultRadiusData(), BitSetUtil.newAndSetBit(atomIndex));
       setAtomName(atomIndex, type + atom.getAtomNumber());
       if (!models[atom.modelIndex].isModelKit)
         taintAtom(atomIndex, TAINT_ATOMNAME);
@@ -3862,7 +3862,7 @@ abstract public class ModelCollection extends BondCollection {
         dx = 1.0f;
       }
     if (dx != 0) {
-      Vector3f v = new Vector3f(atom);
+      Vector3f v = Vector3f.newV(atom);
       v.sub(atoms[atom.getBondedAtomIndex(0)]);
       float d = v.length();
       v.normalize();
@@ -3870,7 +3870,7 @@ abstract public class ModelCollection extends BondCollection {
       setAtomCoordRelative(atomIndex, v.x, v.y, v.z);
     }
 
-    BitSet bsA = BitSetUtil.setBit(atomIndex);
+    BitSet bsA = BitSetUtil.newAndSetBit(atomIndex);
 
     if (atomicNumber != 1 && autoBond) {
 
@@ -4044,24 +4044,24 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   protected void growAtomArrays(int newLength) {
-    atoms = (Atom[]) ArrayUtil.setLength(atoms, newLength);
+    atoms = (Atom[]) ArrayUtil.arrayCopyOpt(atoms, newLength);
     if (vibrationVectors != null)
-      vibrationVectors = (Vector3f[]) ArrayUtil.setLength(vibrationVectors,
+      vibrationVectors = (Vector3f[]) ArrayUtil.arrayCopyOpt(vibrationVectors,
           newLength);
     if (occupancies != null)
-      occupancies = ArrayUtil.setLength(occupancies, newLength);
+      occupancies = ArrayUtil.arrayCopyByte(occupancies, newLength);
     if (bfactor100s != null)
-      bfactor100s = ArrayUtil.setLength(bfactor100s, newLength);
+      bfactor100s = ArrayUtil.arrayCopyShort(bfactor100s, newLength);
     if (partialCharges != null)
-      partialCharges = ArrayUtil.setLength(partialCharges, newLength);
+      partialCharges = ArrayUtil.arrayCopyF(partialCharges, newLength);
     if (ellipsoids != null)
-      ellipsoids = (Quadric[][]) ArrayUtil.setLength(ellipsoids, newLength);
+      ellipsoids = (Quadric[][]) ArrayUtil.arrayCopyOpt(ellipsoids, newLength);
     if (atomNames != null)
-      atomNames = ArrayUtil.setLength(atomNames, newLength);
+      atomNames = ArrayUtil.arrayCopyS(atomNames, newLength);
     if (atomTypes != null)
-      atomTypes = ArrayUtil.setLength(atomTypes, newLength);
+      atomTypes = ArrayUtil.arrayCopyS(atomTypes, newLength);
     if (atomSerials != null)
-      atomSerials = ArrayUtil.setLength(atomSerials, newLength);
+      atomSerials = ArrayUtil.arrayCopyI(atomSerials, newLength);
   }
 
   public Atom addAtom(int modelIndex, Group group,

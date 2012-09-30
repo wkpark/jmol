@@ -110,7 +110,7 @@ public class MarchingSquares {
     float value;
 
     ContourVertex(Point3f vertexXYZ) {
-      set(vertexXYZ);
+      setT(vertexXYZ);
     }
 
     void setValue(float value) {
@@ -210,8 +210,8 @@ public class MarchingSquares {
       if (valueA != valueB) {
         float f = (value - valueA) / (valueB - valueA);
         if (f >= 0 && f <= 1) {
-          pointA.set(contourVertexes[iA]);
-          pointB.set(contourVertexes[iB]);
+          pointA.setT(contourVertexes[iA]);
+          pointB.setT(contourVertexes[iB]);
           value = calcContourPoint(value, valueA, valueB, ptTemp);
           if (!Float.isNaN(value)) {
             iPt = addContourVertex(ptTemp, value);

@@ -26,7 +26,7 @@ package org.jmol.script;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -1153,7 +1153,7 @@ public class ScriptEvaluator {
         else
           str = LabelToken.formatLabelBond(viewer, bond, tokens, htValues, indices);
       }
-      str = TextFormat.formatString(str, "#", (n + 1));
+      str = TextFormat.formatStringI(str, "#", (n + 1));
       sout[n++] = str;
       if (haveIndex)
         break;
@@ -1314,7 +1314,7 @@ public class ScriptEvaluator {
     case Token.function:
       userFunction = (String) ((Object[]) opValue)[0];
       params = (List<ScriptVariable>) ((Object[]) opValue)[1];
-      bsAtom = new BitSet(atomCount);
+      bsAtom = BitSetUtil.newBitSet(atomCount);
       tokenAtom = ScriptVariable.newScriptVariableObj(Token.bitset, bsAtom);
       break;
     case Token.straightness:
@@ -1516,7 +1516,7 @@ public class ScriptEvaluator {
             fout[i] = (float) Math.sqrt(t.x * t.x + t.y * t.y + t.z * t.z);
             break;
           case Token.all:
-            vout.add(new Point3f(t));
+            vout.add(Point3f.newP(t));
             break;
           default:
             pt.add(t);
@@ -1561,10 +1561,10 @@ public class ScriptEvaluator {
         case Token.xyz:
           switch (minmaxtype) {
           case Token.all:
-            pt.set(bond.getAtom1());
+            pt.setT(bond.getAtom1());
             pt.add(bond.getAtom2());
             pt.scale(0.5f);
-            vout.add(new Point3f(pt));
+            vout.add(Point3f.newP(pt));
             break;
           default:
             pt.add(bond.getAtom1());
@@ -1577,7 +1577,7 @@ public class ScriptEvaluator {
               .getColix()), ptT);
           switch (minmaxtype) {
           case Token.all:
-            vout.add(new Point3f(ptT));
+            vout.add(Point3f.newP(ptT));
             break;
           default:
             pt.add(ptT);
@@ -1634,7 +1634,7 @@ public class ScriptEvaluator {
       return sout;
     }
     if (isPt)
-      return (n == 0 ? pt : new Point3f(pt.x / n, pt.y / n, pt.z / n));
+      return (n == 0 ? pt : Point3f.new3(pt.x / n, pt.y / n, pt.z / n));
     if (n == 0 || n == 1 && minmaxtype == Token.stddev)
       return Float.valueOf(Float.NaN);
     if (isInt) {
@@ -3951,15 +3951,15 @@ public class ScriptEvaluator {
       try {
         switch (tokOperator) {
         case Token.opLT:
-          return BitSetUtil.newBitSet(0, comparisonValue);
+          return BitSetUtil.newBitSet2(0, comparisonValue);
         case Token.opLE:
-          return BitSetUtil.newBitSet(0, comparisonValue + 1);
+          return BitSetUtil.newBitSet2(0, comparisonValue + 1);
         case Token.opGE:
-          return BitSetUtil.newBitSet(comparisonValue, atomCount);
+          return BitSetUtil.newBitSet2(comparisonValue, atomCount);
         case Token.opGT:
-          return BitSetUtil.newBitSet(comparisonValue + 1, atomCount);
+          return BitSetUtil.newBitSet2(comparisonValue + 1, atomCount);
         case Token.opEQ:
-          return (comparisonValue < atomCount ? BitSetUtil.newBitSet(
+          return (comparisonValue < atomCount ? BitSetUtil.newBitSet2(
               comparisonValue, comparisonValue + 1) : new BitSet());
         case Token.opNE:
         default:
@@ -3972,7 +3972,7 @@ public class ScriptEvaluator {
         return new BitSet();
       }
     }
-    bs = new BitSet(atomCount);
+    bs = BitSetUtil.newBitSet(atomCount);
     for (int i = 0; i < atomCount; ++i) {
       boolean match = false;
       Atom atom = atoms[i];
@@ -4324,7 +4324,7 @@ public class ScriptEvaluator {
     switch (tokAt(i)) {
     case Token.string:
       s = ScriptVariable.sValue(statement[i]);
-      s = TextFormat.replaceAllCharacters(s, "{},[]\"'", ' ');
+      s = TextFormat.replaceAllCharacter(s, "{},[]\"'", ' ');
       fparams = Parser.parseFloatArray(s);
       n = fparams.length;
       break;
@@ -4668,7 +4668,7 @@ public class ScriptEvaluator {
     if (i < statementLength)
       switch (getToken(i).tok) {
       case Token.point4f:
-        plane = new Point4f((Point4f) theToken.value);
+        plane = Point4f.newPt((Point4f) theToken.value);
         break;
       case Token.dollarsign:
         String id = objectNameParameter(++i);
@@ -4696,27 +4696,27 @@ public class ScriptEvaluator {
       case Token.x:
         if (!checkToken(++i) || getToken(i++).tok != Token.opEQ)
           evalError("x=?", null);
-        plane = new Point4f(1, 0, 0, -floatParameter(i));
+        plane = Point4f.new4(1, 0, 0, -floatParameter(i));
         break;
       case Token.y:
         if (!checkToken(++i) || getToken(i++).tok != Token.opEQ)
           evalError("y=?", null);
-        plane = new Point4f(0, 1, 0, -floatParameter(i));
+        plane = Point4f.new4(0, 1, 0, -floatParameter(i));
         break;
       case Token.z:
         if (!checkToken(++i) || getToken(i++).tok != Token.opEQ)
           evalError("z=?", null);
-        plane = new Point4f(0, 0, 1, -floatParameter(i));
+        plane = Point4f.new4(0, 0, 1, -floatParameter(i));
         break;
       case Token.identifier:
       case Token.string:
         String str = parameterAsString(i);
         if (str.equalsIgnoreCase("xy"))
-          return new Point4f(0, 0, 1, 0);
+          return Point4f.new4(0, 0, 1, 0);
         if (str.equalsIgnoreCase("xz"))
-          return new Point4f(0, 1, 0, 0);
+          return Point4f.new4(0, 1, 0, 0);
         if (str.equalsIgnoreCase("yz"))
-          return new Point4f(1, 0, 0, 0);
+          return Point4f.new4(1, 0, 0, 0);
         iToken += 2;
         break;
       case Token.leftbrace:
@@ -4737,7 +4737,8 @@ public class ScriptEvaluator {
         i = iToken;
         Vector3f norm = new Vector3f();
         float w = Measure.getNormalThroughPoints(pt1, pt2, pt3, norm, vAB, vAC);
-        plane = new Point4f(norm.x, norm.y, norm.z, w);
+        plane = new Point4f();
+        plane.set(norm.x, norm.y, norm.z, w);
         if (!isSyntaxCheck && Logger.debugging)
           Logger.debug("points: " + pt1 + pt2 + pt3 + " defined plane: "
               + plane);
@@ -4766,9 +4767,9 @@ public class ScriptEvaluator {
   protected Point4f getHklPlane(Point3f pt) {
     Vector3f vAB = new Vector3f();
     Vector3f vAC = new Vector3f();
-    Point3f pt1 = new Point3f(pt.x == 0 ? 1 : 1 / pt.x, 0, 0);
-    Point3f pt2 = new Point3f(0, pt.y == 0 ? 1 : 1 / pt.y, 0);
-    Point3f pt3 = new Point3f(0, 0, pt.z == 0 ? 1 : 1 / pt.z);
+    Point3f pt1 = Point3f.new3(pt.x == 0 ? 1 : 1 / pt.x, 0, 0);
+    Point3f pt2 = Point3f.new3(0, pt.y == 0 ? 1 : 1 / pt.y, 0);
+    Point3f pt3 = Point3f.new3(0, 0, pt.z == 0 ? 1 : 1 / pt.z);
     // trick for 001 010 100 is to define the other points on other edges
     if (pt.x == 0 && pt.y == 0 && pt.z == 0) {
       return null;
@@ -4794,7 +4795,9 @@ public class ScriptEvaluator {
     viewer.toCartesian(pt3, false);
     Vector3f plane = new Vector3f();
     float w = Measure.getNormalThroughPoints(pt1, pt2, pt3, plane, vAB, vAC);
-    return new Point4f(plane.x, plane.y, plane.z, w);
+    Point4f pt4 = new Point4f();
+    pt4.set(plane.x, plane.y, plane.z, w);
+    return pt4;
   }
 
   private int getMadParameter() throws ScriptException {
@@ -4884,7 +4887,7 @@ public class ScriptEvaluator {
       case Token.varray:
         float[] rgb = ScriptVariable.flistValue(theToken, 3);
         if (rgb != null && rgb.length != 3)
-          pt = new Point3f(rgb[0], rgb[1], rgb[2]);
+          pt = Point3f.new3(rgb[0], rgb[1], rgb[2]);
         break;
       case Token.point3f:
         pt = (Point3f) theToken.value;
@@ -4941,7 +4944,7 @@ public class ScriptEvaluator {
           if (n != 3)
             error(ERROR_badRGBColor);
           --i;
-          pt = new Point3f(colors[0], colors[1], colors[2]);
+          pt = Point3f.new3(colors[0], colors[1], colors[2]);
           break out;
         default:
           error(ERROR_badRGBColor);
@@ -5080,9 +5083,9 @@ public class ScriptEvaluator {
     if (n < minDim || n > maxDim)
       error(ERROR_invalidArgument);
     if (n == 3) {
-      Point3f pt = new Point3f(coord[0], coord[1], coord[2]);
+      Point3f pt = Point3f.new3(coord[0], coord[1], coord[2]);
       if (coordinatesAreFractional && doConvert) {
-        fractionalPoint = new Point3f(pt);
+        fractionalPoint = Point3f.newP(pt);
         if (!isSyntaxCheck)
           viewer.toCartesian(pt, !viewer.getFractionalRelative());
       }
@@ -5092,7 +5095,7 @@ public class ScriptEvaluator {
       if (coordinatesAreFractional) // no fractional coordinates for planes (how
         // to convert?)
         error(ERROR_invalidArgument);
-      Point4f plane = new Point4f(coord[0], coord[1], coord[2], coord[3]);
+      Point4f plane = Point4f.new4(coord[0], coord[1], coord[2], coord[3]);
       return plane;
     }
     return coord;
@@ -6282,10 +6285,10 @@ public class ScriptEvaluator {
     if (statementLength > 11)
       error(ERROR_badArgumentCount);
     // rotx roty rotz zoom transx transy transz slab seconds fps
-    Vector3f dRot = new Vector3f(floatParameter(1), floatParameter(2),
+    Vector3f dRot = Vector3f.new3(floatParameter(1), floatParameter(2),
         floatParameter(3));
     float dZoom = floatParameter(4);
-    Vector3f dTrans = new Vector3f(intParameter(5), intParameter(6),
+    Vector3f dTrans = Vector3f.new3(intParameter(5), intParameter(6),
         intParameter(7));
     float dSlab = floatParameter(8);
     float floatSecondsTotal = floatParameter(9);
@@ -6321,7 +6324,7 @@ public class ScriptEvaluator {
           Float.NaN, Float.NaN, Float.NaN);
       return;
     }
-    Vector3f axis = new Vector3f(Float.NaN, 0, 0);
+    Vector3f axis = Vector3f.new3(Float.NaN, 0, 0);
     Point3f center = null;
     int i = 1;
     float floatSecondsTotal = (isFloatParameter(i) ? floatParameter(i++) : 2.0f);
@@ -6373,7 +6376,7 @@ public class ScriptEvaluator {
     case Token.leftbrace:
       // {X, Y, Z} deg or {x y z deg}
       if (isPoint3f(i)) {
-        axis.set(getPoint3f(i, true));
+        axis.setT(getPoint3f(i, true));
         i = iToken + 1;
         degrees = floatParameter(i++);
       } else {
@@ -6411,7 +6414,7 @@ public class ScriptEvaluator {
       break;
     default:
       // X Y Z deg
-      axis = new Vector3f(floatParameter(i++), floatParameter(i++),
+      axis = Vector3f.new3(floatParameter(i++), floatParameter(i++),
           floatParameter(i++));
       degrees = floatParameter(i++);
     }
@@ -6516,7 +6519,7 @@ public class ScriptEvaluator {
       setBooleanProperty("navigationMode", true);
       return;
     }
-    Vector3f rotAxis = new Vector3f(0, 1, 0);
+    Vector3f rotAxis = Vector3f.new3(0, 1, 0);
     Point3f pt;
     if (statementLength == 2) {
       switch (getToken(1).tok) {
@@ -6525,7 +6528,7 @@ public class ScriptEvaluator {
         if (isSyntaxCheck)
           return;
         setObjectMad(JmolConstants.SHAPE_AXES, "axes", 1);
-        setShapeProperty(JmolConstants.SHAPE_AXES, "position", new Point3f(50,
+        setShapeProperty(JmolConstants.SHAPE_AXES, "position", Point3f.new3(50,
             50, Float.MAX_VALUE));
         setBooleanProperty("navigationMode", true);
         viewer.setNavOn(theTok == Token.on);
@@ -6587,7 +6590,7 @@ public class ScriptEvaluator {
           break;
         case Token.point3f:
         case Token.leftbrace:
-          rotAxis.set(getPoint3f(i, true));
+          rotAxis.setT(getPoint3f(i, true));
           i = iToken + 1;
           break;
         case Token.identifier:
@@ -6743,7 +6746,7 @@ public class ScriptEvaluator {
     default:
       error(ERROR_invalidArgument);
     }
-    Point3f pt = new Point3f(0, 0, 0);
+    Point3f pt = Point3f.new3(0, 0, 0);
     if (statementLength == 5) {
       // centerAt xxx x y z
       pt.x = floatParameter(2);
@@ -7020,8 +7023,8 @@ public class ScriptEvaluator {
         Vector3f translation = new Vector3f();
         m4.get(translation);
         Matrix3f m3 = new Matrix3f();
-        m4.get(m3);
-        q = new Quaternion(m3);
+        m4.getRotationScale(m3);
+        q = Quaternion.newM(m3);
       }
       if (centerAndPoints == null)
         centerAndPoints = viewer.getCenterAndPoints(vAtomSets2, true);
@@ -7029,14 +7032,14 @@ public class ScriptEvaluator {
       float endDegrees = Float.NaN;
       Vector3f translation = null;
       if (doTranslate) {
-        translation = new Vector3f(centerAndPoints[1][0]);
+        translation = Vector3f.newV(centerAndPoints[1][0]);
         translation.sub(centerAndPoints[0][0]);
         endDegrees = 0;
       }
       if (doRotate) {
         if (q == null)
           evalError("option not implemented", null);
-        pt1.set(centerAndPoints[0][0]);
+        pt1.setT(centerAndPoints[0][0]);
         pt1.add(q.getNormal());
         endDegrees = q.getTheta();
       }
@@ -8338,7 +8341,7 @@ public class ScriptEvaluator {
         propertyField = 0;
       int atomCount = viewer.getAtomCount();
       int[] atomMap = null;
-      BitSet bsTemp = new BitSet(atomCount);
+      BitSet bsTemp = BitSetUtil.newBitSet(atomCount);
       if (atomNumberField > 0) {
         atomMap = new int[atomCount + 2];
         for (int j = 0; j <= atomCount; j++)
@@ -8817,7 +8820,7 @@ public class ScriptEvaluator {
       case Token.spacegroup:
       case Token.unitcell:
         if (lattice == null)
-          lattice = new Point3f(555, 555, -1);
+          lattice = Point3f.new3(555, 555, -1);
         iToken = i - 1;
       }
       Point3f offset = null;
@@ -8961,7 +8964,7 @@ public class ScriptEvaluator {
         offset = getPoint3f(++i, true);
       if (offset != null) {
         if (coordinatesAreFractional) {
-          offset.set(fractionalPoint);
+          offset.setT(fractionalPoint);
           htParams.put("unitCellOffsetFractional",
               (coordinatesAreFractional ? Boolean.TRUE : Boolean.FALSE));
           sOptions += " offset {" + offset.x + " " + offset.y + " " + offset.z
@@ -9020,7 +9023,7 @@ public class ScriptEvaluator {
           htParams.remove("isTrajectory");
           if (firstLastSteps == null) {
             firstLastSteps = new ArrayList<Object>();
-            pt = new Point3f(0, -1, 1);
+            pt = Point3f.new3(0, -1, 1);
           }
           if (isPoint3f(++i)) {
             pt = getPoint3f(i, false);
@@ -9413,7 +9416,7 @@ public class ScriptEvaluator {
         }
         if (value instanceof Point3f) {
           Point3fi v = new Point3fi();
-          v.set((Point3f) value);
+          v.setT((Point3f) value);
           v.modelIndex = (short) modelIndex;
           value = v;
         }
@@ -9634,7 +9637,7 @@ public class ScriptEvaluator {
     // prepare data for property plotting
 
     float[] dataX = null, dataY = null, dataZ = null;
-    Point3f factors = new Point3f(1, 1, 1);
+    Point3f factors = Point3f.new3(1, 1, 1);
     if (tok == Token.property) {
       dataX = getBitsetPropertyFloat(bs, propertyX | Token.selectedfloat,
           (minXYZ == null ? Float.NaN : minXYZ.x), (maxXYZ == null ? Float.NaN
@@ -9647,16 +9650,16 @@ public class ScriptEvaluator {
             (minXYZ == null ? Float.NaN : minXYZ.z),
             (maxXYZ == null ? Float.NaN : maxXYZ.z));
       if (minXYZ == null)
-        minXYZ = new Point3f(getMinMax(dataX, false, propertyX), getMinMax(
+        minXYZ = Point3f.new3(getMinMax(dataX, false, propertyX), getMinMax(
             dataY, false, propertyY), getMinMax(dataZ, false, propertyZ));
       if (maxXYZ == null)
-        maxXYZ = new Point3f(getMinMax(dataX, true, propertyX), getMinMax(
+        maxXYZ = Point3f.new3(getMinMax(dataX, true, propertyX), getMinMax(
             dataY, true, propertyY), getMinMax(dataZ, true, propertyZ));
       Logger.info("plot min/max: " + minXYZ + " " + maxXYZ);
-      Point3f center = new Point3f(maxXYZ);
+      Point3f center = Point3f.newP(maxXYZ);
       center.add(minXYZ);
       center.scale(0.5f);
-      factors.set(maxXYZ);
+      factors.setT(maxXYZ);
       factors.sub(minXYZ);
       factors.set(factors.x / 200, factors.y / 200, factors.z / 200);
       if (Token.tokAttr(propertyX, Token.intproperty)) {
@@ -10034,7 +10037,7 @@ public class ScriptEvaluator {
     boolean haveRotation = false;
     List<Point3f> ptsA = null;
     Point3f[] points = new Point3f[2];
-    Vector3f rotAxis = new Vector3f(0, 1, 0);
+    Vector3f rotAxis = Vector3f.new3(0, 1, 0);
     Vector3f translation = null;
     Matrix4f m4 = null;
     Matrix3f m3 = null;
@@ -10141,19 +10144,19 @@ public class ScriptEvaluator {
           i++;
         haveRotation = true;
         q = getQuaternionParameter(i);
-        rotAxis.set(q.getNormal());
+        rotAxis.setT(q.getNormal());
         endDegrees = q.getTheta();
         break;
       case Token.axisangle:
         haveRotation = true;
         if (isPoint3f(++i)) {
-          rotAxis.set(centerParameter(i));
+          rotAxis.setT(centerParameter(i));
           break;
         }
         Point4f p4 = getPoint4f(i);
         rotAxis.set(p4.x, p4.y, p4.z);
         endDegrees = p4.w;
-        q = new Quaternion(rotAxis, endDegrees);
+        q = Quaternion.newVA(rotAxis, endDegrees);
         break;
       case Token.branch:
         haveRotation = true;
@@ -10172,7 +10175,7 @@ public class ScriptEvaluator {
       // 12.0 options
 
       case Token.translate:
-        translation = new Vector3f(centerParameter(++i));
+        translation = Vector3f.newV(centerParameter(++i));
         isMolecular = isSelected = true;
         break;
       case Token.helix:
@@ -10205,7 +10208,7 @@ public class ScriptEvaluator {
           Measure.getPlaneThroughPoint(points[0], rotAxis,
               invPlane = new Point4f());
         }
-        q = new Quaternion(rotAxis, endDegrees);
+        q = Quaternion.newVA(rotAxis, endDegrees);
         nPoints = (points[0] == null ? 0 : 1);
         isMolecular = true;
         haveRotation = true;
@@ -10240,12 +10243,12 @@ public class ScriptEvaluator {
         if (m4 != null) {
           translation = new Vector3f();
           m4.get(translation);
-          m4.get(m3);
+          m4.getRotationScale(m3);
         } else {
           m3 = (Matrix3f) theToken.value;
         }
-        q = (isSyntaxCheck ? new Quaternion() : new Quaternion(m3));
-        rotAxis.set(q.getNormal());
+        q = (isSyntaxCheck ? new Quaternion() : Quaternion.newM(m3));
+        rotAxis.setT(q.getNormal());
         endDegrees = q.getTheta();
         isMolecular = true;
         break;
@@ -10277,7 +10280,7 @@ public class ScriptEvaluator {
             : isSelected ? viewer.getSelectionSet(false) : viewer
                 .getModelUndeletedAtomsBitSet(-1));
       if (helicalPath && translation != null) {
-        points[1] = new Point3f(points[0]);
+        points[1] = Point3f.newP(points[0]);
         points[1].add(translation);
         Object[] ret = (Object[]) Measure.computeHelicalAxis(null, Token.array,
             points[0], points[1], q);
@@ -10285,7 +10288,7 @@ public class ScriptEvaluator {
         float theta = ((Point3f) ret[3]).x;
         if (theta != 0) {
           translation = (Vector3f) ret[1];
-          rotAxis = new Vector3f(translation);
+          rotAxis = Vector3f.newV(translation);
           if (theta < 0)
             rotAxis.scale(-1);
         }
@@ -10323,14 +10326,14 @@ public class ScriptEvaluator {
       // rotate MOLECULAR (atom1)
       // rotate MOLECULAR x 10 (atom1)
       // rotate axisangle MOLECULAR (atom1)
-      points[1] = new Point3f(points[0]);
+      points[1] = Point3f.newP(points[0]);
       points[1].add(rotAxis);
       nPoints = 2;
     }
     if (nPoints == 0)
       points[0] = new Point3f();
     if (nPoints < 2 || points[0].distance(points[1]) == 0) {
-      points[1] = new Point3f(points[0]);
+      points[1] = Point3f.newP(points[0]);
       points[1].y += 1.0;
     }
     if (endDegrees == Float.MAX_VALUE)
@@ -10365,9 +10368,9 @@ public class ScriptEvaluator {
       Point4f p4 = null;
       if (sv.size() == 0 || (p4 = ScriptVariable.pt4Value(sv.get(0))) == null)
         error(ERROR_invalidArgument);
-      return new Quaternion(p4);
+      return Quaternion.newP4(p4);
     }
-    return new Quaternion(getPoint4f(i));
+    return Quaternion.newP4(getPoint4f(i));
   }
 
   List<Point3f> getPointVector(Token t, int i) throws ScriptException {
@@ -10675,7 +10678,7 @@ public class ScriptEvaluator {
       break;
     default:
       if (statementLength == 4 && tokAt(2) == Token.bonds)
-        bs = new BondSet(BitSetUtil.newBitSet(0, viewer.getModelSet()
+        bs = new BondSet(BitSetUtil.newBitSet2(0, viewer.getModelSet()
             .getBondCount()));
       else
         bs = atomExpressionAt(i);
@@ -11324,7 +11327,7 @@ public class ScriptEvaluator {
           Vector3f[] axes = new Vector3f[3];
           for (int j = 0; j < 3; j++) {
             axes[j] = new Vector3f();
-            axes[j].set(centerParameter(++i));
+            axes[j].setT(centerParameter(++i));
             i = iToken;
           }
           value = axes;
@@ -12464,7 +12467,7 @@ public class ScriptEvaluator {
 
   BitSet bitSetForModelFileNumber(int m) {
     // where */1.0 or */1.1 or just 1.1 is processed
-    BitSet bs = new BitSet(viewer.getAtomCount());
+    BitSet bs = BitSetUtil.newBitSet(viewer.getAtomCount());
     if (isSyntaxCheck)
       return bs;
     int modelCount = viewer.getModelCount();
@@ -13926,7 +13929,7 @@ public class ScriptEvaluator {
     tickInfo = new TickInfo((Point3f) getPointOrPlane(index, false, true,
         false, false, 3, 3));
     if (coordinatesAreFractional || tokAt(iToken + 1) == Token.unitcell) {
-      tickInfo.scale = new Point3f(Float.NaN, Float.NaN, Float.NaN);
+      tickInfo.scale = Point3f.new3(Float.NaN, Float.NaN, Float.NaN);
       allowScale = false;
     }
     if (tokAt(iToken + 1) == Token.unitcell)
@@ -13939,7 +13942,7 @@ public class ScriptEvaluator {
     if (tokAt(iToken + 1) == Token.scale) {
       if (isFloatParameter(iToken + 2)) {
         float f = floatParameter(iToken + 2);
-        tickInfo.scale = new Point3f(f, f, f);
+        tickInfo.scale = Point3f.new3(f, f, f);
       } else {
         tickInfo.scale = getPoint3f(iToken + 2, true);
       }
@@ -14506,7 +14509,7 @@ public class ScriptEvaluator {
         } else if (data == "SPT") {
           if (isCoord) {
             BitSet tainted = viewer.getTaintedAtoms(AtomCollection.TAINT_COORD);
-            viewer.setAtomCoordRelative(new Point3f(0, 0, 0), null);
+            viewer.setAtomCoordRelative(Point3f.new3(0, 0, 0), null);
             data = (String) viewer.getProperty("string", "stateInfo", null);
             viewer.setTaintedAtoms(tainted, AtomCollection.TAINT_COORD);
           } else {
@@ -15323,7 +15326,7 @@ public class ScriptEvaluator {
           if (isFrame) {
             checkLast(iToken);
             if (!isSyntaxCheck)
-              runScript((new Quaternion((Point4f) propertyValue)).draw(
+              runScript((Quaternion.newP4((Point4f) propertyValue)).draw(
                   (thisId == null ? "frame" : thisId), " " + swidth,
                   (center == null ? new Point3f() : center), intScale / 100f));
             return;
@@ -15989,7 +15992,7 @@ public class ScriptEvaluator {
       }
 
       if (intramolecular != null) {
-        params = (params == null ? new float[2] : ArrayUtil.ensureLength(
+        params = (params == null ? new float[2] : ArrayUtil.ensureLengthA(
             params, 2));
         params[1] = (intramolecular.booleanValue() ? 1 : 2);
       }
@@ -16128,7 +16131,7 @@ public class ScriptEvaluator {
           error(ERROR_invalidArgument);
         }
         propertyName = "rotationAxis";
-        propertyValue = new Vector3f(degx, degy, degz);
+        propertyValue = Vector3f.new3(degx, degy, degz);
         break;
       case Token.on:
       case Token.display:
@@ -16360,13 +16363,13 @@ public class ScriptEvaluator {
         case 3:
           break;
         case 1: // polymer
-          v2 = new Vector3f(pts[2]);
+          v2 = Vector3f.newV(pts[2]);
           v2.sub(pts[0]);
           v2.scale(1000f);
           //$FALL-THROUGH$
         case 2: // slab
           // "a b c" is really "z y x"
-          v1 = new Vector3f(pts[1]);
+          v1 = Vector3f.newV(pts[1]);
           v1.sub(pts[0]);
           v1.scale(1000f);
           pts[0].sub(v1);
@@ -17314,7 +17317,7 @@ public class ScriptEvaluator {
           addShapeProperty(propertyList, "modelIndex", Integer
               .valueOf(modelIndex));
           Vector3f[] axes = { new Vector3f(), new Vector3f(),
-              new Vector3f(viewer.getAtomPoint3f(atomIndex)), new Vector3f() };
+              Vector3f.newV(viewer.getAtomPoint3f(atomIndex)), new Vector3f() };
           if (!lcaoType.equalsIgnoreCase("s")
               && viewer.getHybridizationAndAxes(atomIndex, axes[0], axes[1],
                   lcaoType) == null)
@@ -17946,7 +17949,7 @@ public class ScriptEvaluator {
             error(ERROR_invalidArgument);
           // inline PMESH data
           if (isPmesh)
-            sType = TextFormat.replaceAllCharacters(sType, "{,}|", ' ');
+            sType = TextFormat.replaceAllCharacter(sType, "{,}|", ' ');
           if (logMessages)
             Logger.debug("pmesh inline data:\n" + sType);
           propertyValue = (isSyntaxCheck ? null : sType);
@@ -18327,8 +18330,8 @@ public class ScriptEvaluator {
     List<Point3f> v = new ArrayList<Point3f>();
     Point3f[] pts = new Point3f[2];
     if (bs == null) {
-      Point3f pt1 = new Point3f(distance, distance, distance);
-      Point3f pt0 = new Point3f(ptc);
+      Point3f pt1 = Point3f.new3(distance, distance, distance);
+      Point3f pt0 = Point3f.newP(ptc);
       pt0.sub(pt1);
       pt1.add(ptc);
       pts[0] = pt0;

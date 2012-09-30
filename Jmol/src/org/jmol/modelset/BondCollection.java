@@ -26,7 +26,7 @@
 package org.jmol.modelset;
 
 
-import java.util.BitSet;
+import javax.util.BitSet;
 
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
@@ -168,7 +168,7 @@ abstract public class BondCollection extends AtomCollection {
       }
     } else {
       if (bondCount == bonds.length)
-        bonds = (Bond[]) ArrayUtil.setLength(bonds, bondCount
+        bonds = (Bond[]) ArrayUtil.arrayCopyOpt(bonds, bondCount
             + BOND_GROWTH_INCREMENT);
       i = setBond(bondCount++,
           bondMutually(atom, atomOther, order, mad, energy)).index;
@@ -239,13 +239,14 @@ abstract public class BondCollection extends AtomCollection {
   }
 
   ////// bonding methods //////
-  
+
   public int addHBond(Atom atom1, Atom atom2, int order, float energy) {
     // from autoHbond and BioModel.getRasmolHydrogenBonds
     if (bondCount == bonds.length)
-      bonds = (Bond[]) ArrayUtil.setLength(bonds, bondCount
+      bonds = (Bond[]) ArrayUtil.arrayCopyOpt(bonds, bondCount
           + BOND_GROWTH_INCREMENT);
-    return setBond(bondCount++, bondMutually(atom1, atom2, order, (short) 1, energy)).index;
+    return setBond(bondCount++, bondMutually(atom1, atom2, order, (short) 1,
+        energy)).index;
   }
 
   protected static short getBondOrder(float bondingRadiusA,

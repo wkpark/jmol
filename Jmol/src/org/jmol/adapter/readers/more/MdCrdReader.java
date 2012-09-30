@@ -89,7 +89,7 @@ public class MdCrdReader extends AtomSetCollectionReader {
     float x = getFloat();
     float y = getFloat();
     float z = getFloat();
-    return (Float.isNaN(z) ? null : new Point3f(x, y, z));
+    return (Float.isNaN(z) ? null : Point3f.new3(x, y, z));
   }
 
   private boolean getTrajectoryStep(Point3f[] trajectoryStep, boolean isPeriodic)

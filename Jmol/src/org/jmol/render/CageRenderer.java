@@ -64,10 +64,10 @@ abstract class CageRenderer extends FontLineShapeRenderer {
 
     float zSum = 0;
     for (int i = 8; --i >= 0;) {
-      pt.set(vertices[i]);
+      pt.setT(vertices[i]);
       if (scale != 1) {
         pt.sub(vertices[0]);
-        pt.scaleAdd(scale, pt, vertices[0]);
+        pt.scaleAdd2(scale, pt, vertices[0]);
       }
       viewer.transformPtNoClip(pt, screens[i]);
       zSum += screens[i].z;
@@ -92,8 +92,8 @@ abstract class CageRenderer extends FontLineShapeRenderer {
           atomA = new Point3fi();
           atomB = new Point3fi();
         }
-        atomA.set(vertices[edge0]);
-        atomB.set(vertices[edge1]);
+        atomA.setT(vertices[edge0]);
+        atomB.setT(vertices[edge1]);
         float start = 0;
         if (shape instanceof Bbcage)
           switch (edge) {

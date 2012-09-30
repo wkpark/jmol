@@ -24,7 +24,7 @@
 
 package org.jmol.smiles;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.List;
 
 import javax.vecmath.Point3f;
@@ -159,12 +159,12 @@ public class SmilesAromatic {
         vMean = new Vector3f();
       if (!addNormal(vTemp, vMean, maxDev))
         return false;
-      vNorms[nNorms++] = new Vector3f(vTemp);
+      vNorms[nNorms++] = Vector3f.newV(vTemp);
       if (iSub >= 0) {
         getNormalThroughPoints(atoms[r1], atoms[iSub], atoms[r2], vTemp, vA, vB);
         if (!addNormal(vTemp, vMean, maxDev))
           return false;
-        vNorms[nNorms++] = new Vector3f(vTemp);
+        vNorms[nNorms++] = Vector3f.newV(vTemp);
       }
     }
     boolean isFlat = checkStandardDeviation(vNorms, vMean, nNorms, cutoff);
@@ -202,13 +202,13 @@ public class SmilesAromatic {
   static float getNormalThroughPoints(JmolNode pointA, JmolNode pointB,
                                       JmolNode pointC, Vector3f vNorm,
                                       Vector3f vAB, Vector3f vAC) {
-    vAB.sub((Point3f) pointB, (Point3f) pointA);
-    vAC.sub((Point3f) pointC, (Point3f) pointA);
+    vAB.sub2((Point3f) pointB, (Point3f) pointA);
+    vAC.sub2((Point3f) pointC, (Point3f) pointA);
     vNorm.cross(vAB, vAC);
     vNorm.normalize();
     // ax + by + cz + d = 0
     // so if a point is in the plane, then N dot X = -d
-    vAB.set((Point3f) pointA);
+    vAB.setT((Point3f) pointA);
     return -vAB.dot(vNorm);
   }
 

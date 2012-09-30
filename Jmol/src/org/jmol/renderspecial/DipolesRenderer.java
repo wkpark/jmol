@@ -80,39 +80,39 @@ public class DipolesRenderer extends ShapeRenderer {
 
   private boolean transform(Dipole dipole) {
     Vector3f vector = dipole.vector;
-    offset.set(vector);
+    offset.setT(vector);
     if (dipole.center == null) {
       offset.scale(dipole.offsetAngstroms / dipole.dipoleValue);
       if (dipoleVectorScale < 0)
         offset.add(vector);
-      points[cylinderBase].set(dipole.origin);
+      points[cylinderBase].setT(dipole.origin);
       points[cylinderBase].add(offset);
     } else {
       offset.scale(-0.5f * dipoleVectorScale);
-      points[cylinderBase].set(dipole.center);
+      points[cylinderBase].setT(dipole.center);
       points[cylinderBase].add(offset);
       if (dipole.offsetAngstroms != 0) {
-        offset.set(vector);
+        offset.setT(vector);
         offset.scale(dipole.offsetAngstroms / dipole.dipoleValue);
         points[cylinderBase].add(offset);
       }
     }
 
-    points[cross].scaleAdd(dipoleVectorScale * crossOffset, vector,
+    points[cross].scaleAdd2(dipoleVectorScale * crossOffset, vector,
         points[cylinderBase]);
-    points[crossEnd].scaleAdd(dipoleVectorScale * (crossOffset + crossWidth),
+    points[crossEnd].scaleAdd2(dipoleVectorScale * (crossOffset + crossWidth),
         vector, points[cylinderBase]);
     points[center]
-        .scaleAdd(dipoleVectorScale / 2, vector, points[cylinderBase]);
-    points[arrowHeadBase].scaleAdd(dipoleVectorScale * arrowHeadOffset, vector,
+        .scaleAdd2(dipoleVectorScale / 2, vector, points[cylinderBase]);
+    points[arrowHeadBase].scaleAdd2(dipoleVectorScale * arrowHeadOffset, vector,
         points[cylinderBase]);
-    points[arrowHeadTip].scaleAdd(dipoleVectorScale, vector,
+    points[arrowHeadTip].scaleAdd2(dipoleVectorScale, vector,
         points[cylinderBase]);
 
     if (dipole.atoms[0] != null
         && modelSet.isAtomHidden(dipole.atoms[0].getIndex()))
       return false;
-    offset.set(points[center]);
+    offset.setT(points[center]);
     offset.cross(offset, vector);
     if (offset.length() == 0) {
       offset.set(points[center].x + 0.2345f, points[center].y + 0.1234f,

@@ -24,7 +24,7 @@
 
 package org.jmol.shape;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +69,7 @@ public class Mesh extends MeshSurface {
   public boolean haveXyPoints;
   public int diameter;
   public float width;
-  public Point3f ptCenter = new Point3f(0,0,0);
+  public Point3f ptCenter = Point3f.new3(0,0,0);
   public Mesh linkedMesh; //for lcaoOrbitals
   public Map<String, BitSet> vertexColorMap;
   
@@ -165,7 +165,7 @@ public class Mesh extends MeshSurface {
         normixes[i] = Normix.NORMIX_NULL;
     else
       for (int i = normixCount; --i >= 0;)
-        normixes[i] = Normix.getNormix(normals[i], bsTemp);
+        normixes[i] = Normix.getNormixV(normals[i], bsTemp);
     this.lighting = Token.frontlit;
     if (insideOut)
       invertNormixes();
@@ -180,7 +180,7 @@ public class Mesh extends MeshSurface {
     if (plane == null) {
       sumVertexNormals(vertices, normals);
     }else {
-      Vector3f normal = new Vector3f(plane.x, plane.y, plane.z); 
+      Vector3f normal = Vector3f.new3(plane.x, plane.y, plane.z); 
       for (int i = normixCount; --i >= 0;)
         normals[i] = normal;
     }
@@ -249,7 +249,7 @@ public class Mesh extends MeshSurface {
           continue;
         Measure.calcNormalizedNormal(vA, vB, vC, vTemp, vAB, vAC);
         if (isTriangleSet) {
-          normals[i].set(vTemp);
+          normals[i].setT(vTemp);
           continue;
         }
         float l = vTemp.length();
@@ -310,16 +310,16 @@ public class Mesh extends MeshSurface {
       return (Point3f[]) altVertices;
     altVertices = new Point3f[vertexCount];
     for (int i = 0; i < vertexCount; i++)
-      altVertices[i] = new Point3f(vertices[i]);
+      altVertices[i] = Point3f.newP(vertices[i]);
     Vector3f normal = null;
     float val = 0;
     if (scale3d != 0 && vertexValues != null && thePlane != null) {
-        normal = new Vector3f(thePlane.x, thePlane.y, thePlane.z);
+        normal = Vector3f.new3(thePlane.x, thePlane.y, thePlane.z);
         normal.normalize();
         normal.scale(scale3d);
         if (mat4 != null) {
           Matrix3f m3 = new Matrix3f();
-          mat4.get(m3); 
+          mat4.getRotationScale(m3); 
           m3.transform(normal);
         }
     }
@@ -330,7 +330,7 @@ public class Mesh extends MeshSurface {
         mat4.transform((Point3f) altVertices[i]);
       Point3f pt = (Point3f) altVertices[i];
       if (normal != null && val != 0)
-        pt.scaleAdd(val, normal, pt);
+        pt.scaleAdd2(val, normal, pt);
     }
     
     initialize(lighting, (Point3f[]) altVertices, null);
@@ -347,7 +347,7 @@ public class Mesh extends MeshSurface {
   public void setShowWithin(List<Point3f> showWithinPoints,
                             float showWithinDistance2, boolean isWithinNot) {
     if (showWithinPoints.size() == 0) {
-      bsDisplay = (isWithinNot ? BitSetUtil.newBitSet(0, vertexCount) : null);
+      bsDisplay = (isWithinNot ? BitSetUtil.newBitSet2(0, vertexCount) : null);
       return;
     }
     bsDisplay = new BitSet();
@@ -375,7 +375,7 @@ public class Mesh extends MeshSurface {
   public BitSet getVisibleVertexBitSet() {
     BitSet bs = new BitSet();
     if (polygonCount == 0 && bsSlabDisplay != null)
-      BitSetUtil.copy(bsSlabDisplay, bs);
+      BitSetUtil.copy2(bsSlabDisplay, bs);
     else
       for (int i = polygonCount; --i >= 0;)
         if (bsSlabDisplay == null || bsSlabDisplay.get(i)) {
@@ -392,7 +392,7 @@ public class Mesh extends MeshSurface {
   BitSet getVisibleGhostBitSet() {
     BitSet bs = new BitSet();
     if (polygonCount == 0 && bsSlabGhost != null)
-      BitSetUtil.copy(bsSlabGhost, bs);
+      BitSetUtil.copy2(bsSlabGhost, bs);
     else
       for (int i = polygonCount; --i >= 0;)
         if (bsSlabGhost == null || bsSlabGhost.get(i)) {
@@ -447,11 +447,11 @@ public class Mesh extends MeshSurface {
     info.put("polygonCount", Integer.valueOf(polygonCount));
     info.put("haveQuads", Boolean.valueOf(haveQuads));
     if (vertexCount > 0)
-      info.put("vertices", ArrayUtil.setLength(vertices, vertexCount));
+      info.put("vertices", ArrayUtil.arrayCopyPt(vertices, vertexCount));
     if (vertexValues != null)
-      info.put("vertexValues", ArrayUtil.setLength(vertexValues, vertexCount));
+      info.put("vertexValues", ArrayUtil.arrayCopyF(vertexValues, vertexCount));
     if (polygonCount > 0)
-      info.put("polygons", ArrayUtil.setLength(polygonIndexes, polygonCount));
+      info.put("polygons", ArrayUtil.arrayCopyII(polygonIndexes, polygonCount));
     return info;
   }
 
@@ -475,16 +475,17 @@ public class Mesh extends MeshSurface {
       mat4 = new Matrix4f();
       mat4.setIdentity();
     }
-    float f = mat4.get(m3, v);
+    mat4.getRotationScale(m3);
+    mat4.get(v);
     if (q == null) {
       if (isAbsolute)
-        v.set(offset);
+        v.setT(offset);
       else
         v.add(offset);
     } else {
       m3.mul(q.getMatrix());
     }
-    mat4 = new Matrix4f(m3, v, f);
+    mat4 = Matrix4f.newMV(m3, v);
     recalcAltVertices = true;
   }
 

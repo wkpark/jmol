@@ -351,24 +351,24 @@ public class Jvxl {
   
   static Point4f getPlane(String str) {
     if (str.equalsIgnoreCase("xy"))
-      return new Point4f(0, 0, 1, 0);
+      return Point4f.new4(0, 0, 1, 0);
     if (str.equalsIgnoreCase("xz"))
-      return new Point4f(0, 1, 0, 0);
+      return Point4f.new4(0, 1, 0, 0);
     if (str.equalsIgnoreCase("yz"))
-      return new Point4f(1, 0, 0, 0);
+      return Point4f.new4(1, 0, 0, 0);
     if (str.indexOf("x=") == 0) {
-      return new Point4f(1, 0, 0, -Parser.parseFloatStr(str.substring(2)));
+      return Point4f.new4(1, 0, 0, -Parser.parseFloatStr(str.substring(2)));
     }
     if (str.indexOf("y=") == 0) {
-      return new Point4f(0, 1, 0, -Parser.parseFloatStr(str.substring(2)));
+      return Point4f.new4(0, 1, 0, -Parser.parseFloatStr(str.substring(2)));
     }
     if (str.indexOf("z=") == 0) {
-      return new Point4f(0, 0, 1, -Parser.parseFloatStr(str.substring(2)));
+      return Point4f.new4(0, 0, 1, -Parser.parseFloatStr(str.substring(2)));
     }
     if (str.indexOf("{") == 0) {
       str = str.replace(',', ' ');
       int[] next = new int[1];
-      return new Point4f(Parser.parseFloatNext(str, next), Parser.parseFloatNext(str,
+      return Point4f.new4(Parser.parseFloatNext(str, next), Parser.parseFloatNext(str,
           next), Parser.parseFloatNext(str, next), Parser.parseFloatNext(str, next));
     }
     return null;

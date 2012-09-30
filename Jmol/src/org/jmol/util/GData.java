@@ -184,11 +184,8 @@ public class GData implements JmolGraphicsInterface {
   }
 
   public short getChangeableColix(short id, int argb) {
-    if (id >= changeableColixMap.length) {
-      short[] t = new short[id + 16];
-      System.arraycopy(changeableColixMap, 0, t, 0, changeableColixMap.length);
-      changeableColixMap = t;
-    }
+    if (id >= changeableColixMap.length)
+      changeableColixMap = ArrayUtil.arrayCopyShort(changeableColixMap, id + 16);
     if (changeableColixMap[id] == 0)
       changeableColixMap[id] = Colix.getColix(argb);
     return (short) (id | Colix.CHANGEABLE_MASK);
@@ -368,10 +365,10 @@ public class GData implements JmolGraphicsInterface {
   }
 
   public static Point3f getLightSource() {
-    return new Point3f(Shader.xLight, Shader.yLight, Shader.zLight);
+    return Point3f.new3(Shader.xLight, Shader.yLight, Shader.zLight);
   }
 
-  public boolean isClipped(int x, int y, int z) {
+  public boolean isClipped3(int x, int y, int z) {
     // this is the one that could be augmented with slabPlane
     return (x < 0 || x >= width || y < 0 || y >= height || z < slab || z > depth);
   }
@@ -400,7 +397,7 @@ public class GData implements JmolGraphicsInterface {
   final public static int zGT = 16;
   final public static int zLT = 32;
 
-  public int clipCode(int x, int y, int z) {
+  public int clipCode3(int x, int y, int z) {
     int code = 0;
     if (x < 0)
       code |= xLT;
@@ -433,27 +430,27 @@ public class GData implements JmolGraphicsInterface {
    * ***************************************************************/
 
   public JmolFont getFont3D(float fontSize) {
-    return JmolFont.getFont3D(JmolFont.FONT_FACE_SANS, JmolFont.FONT_STYLE_PLAIN,
+    return JmolFont.createFont3D(JmolFont.FONT_FACE_SANS, JmolFont.FONT_STYLE_PLAIN,
         fontSize, fontSize, apiPlatform, graphicsForMetrics);
   }
 
-  public JmolFont getFont3D(String fontFace, float fontSize) {
-    return JmolFont.getFont3D(JmolFont.getFontFaceID(fontFace),
+  public JmolFont getFont3DFS(String fontFace, float fontSize) {
+    return JmolFont.createFont3D(JmolFont.getFontFaceID(fontFace),
         JmolFont.FONT_STYLE_PLAIN, fontSize, fontSize, apiPlatform, graphicsForMetrics);
   }
 
-  public JmolFont getFont3D(String fontFace, String fontStyle, float fontSize) {
+  public JmolFont getFont3DFSS(String fontFace, String fontStyle, float fontSize) {
     int iStyle = JmolFont.getFontStyleID(fontStyle);
     if (iStyle < 0)
       iStyle = 0;
-    return JmolFont.getFont3D(JmolFont.getFontFaceID(fontFace), iStyle, fontSize,
+    return JmolFont.createFont3D(JmolFont.getFontFaceID(fontFace), iStyle, fontSize,
         fontSize, apiPlatform, graphicsForMetrics);
   }
 
   public JmolFont getFont3DScaled(JmolFont font, float scale) {
     // TODO: problem here is that we are assigning a bold font, then not DEassigning it
     float newScale = font.fontSizeNominal * scale;
-    return (newScale == font.fontSize ? font : JmolFont.getFont3D(
+    return (newScale == font.fontSize ? font : JmolFont.createFont3D(
         font.idFontFace, (antialiasThisFrame ? font.idFontStyle | 1
             : font.idFontStyle), newScale, font.fontSizeNominal, apiPlatform, graphicsForMetrics));
   }
@@ -462,8 +459,8 @@ public class GData implements JmolGraphicsInterface {
     return getFont3D(fontSize).fid;
   }
 
-  public byte getFontFid(String fontFace, float fontSize) {
-    return getFont3D(fontFace, fontSize).fid;
+  public byte getFontFidFS(String fontFace, float fontSize) {
+    return getFont3DFS(fontFace, fontSize).fid;
   }
 
   // {"Plain", "Bold", "Italic", "BoldItalic"};

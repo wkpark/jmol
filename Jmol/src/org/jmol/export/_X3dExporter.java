@@ -31,7 +31,7 @@ package org.jmol.export;
 
 
 import java.util.ArrayList;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.List;
 import java.util.Map;
 
@@ -85,7 +85,7 @@ public class _X3dExporter extends _VrmlExporter {
     output("\n  -->\n\n");
 
     output("<Transform translation='");
-    tempP1.set(center);
+    tempP1.setT(center);
     tempP1.scale(-1);
     output(tempP1);
     output("'>\n");
@@ -130,7 +130,7 @@ public class _X3dExporter extends _VrmlExporter {
       // draw filled circle
       
       output("<Transform translation='");
-      tempV1.set(tempP3);
+      tempV1.setT(tempP3);
       tempV1.add(pt1);
       tempV1.scale(0.5f);
       output(tempV1);

@@ -158,14 +158,14 @@ class SpaceGroup {
       finalOperations[0] = new SymmetryOperation(operations[0], atoms,
           atomIndex, count, true);
       Point3f atom = atoms[atomIndex];
-      Point3f c = new Point3f(atom);
+      Point3f c = Point3f.newP(atom);
       finalOperations[0].transform(c);
       if (c.distance(atom) > 0.0001) // not cartesian, but this is OK here
         for (int i = 0; i < count; i++) {
           atom = atoms[atomIndex + i];
-          c.set(atom);
+          c.setT(atom);
           finalOperations[0].transform(c);
-          atom.set(c);
+          atom.setT(c);
         }
     }
     for (int i = 0; i < operationCount; i++) {
@@ -413,7 +413,7 @@ class SpaceGroup {
       operationCount = 0;
     }
     if (operationCount == operations.length)
-      operations = (SymmetryOperation[]) ArrayUtil.setLength(operations,
+      operations = (SymmetryOperation[]) ArrayUtil.arrayCopyOpt(operations,
           operationCount * 2);
     operations[operationCount++] = symmetryOperation;
     if (Logger.debugging)
@@ -454,17 +454,17 @@ class SpaceGroup {
     // and setIdentity() outside the loop. That caused a multiplication of
     // operations, not a resetting of them each time. 
     for (int i = 0; i < h.nRotations; i++) {
-      mat1.set(h.rotationTerms[i].seitzMatrix12ths);
+      mat1.setM(h.rotationTerms[i].seitzMatrix12ths);
       int nRot = h.rotationTerms[i].order;
       // this would iterate int nOps = operationCount;
       newOps[0].setIdentity();
       int nOps = operationCount;
       for (int j = 1; j <= nRot; j++) {
-        newOps[j].mul(mat1, newOps[0]);
-        newOps[0].set(newOps[j]);
+        newOps[j].mul2(mat1, newOps[0]);
+        newOps[0].setM(newOps[j]);
         for (int k = 0; k < nOps; k++) {
           
-          operation.mul(newOps[j], operations[k]);
+          operation.mul2(newOps[j], operations[k]);
           SymmetryOperation.normalizeTranslation(operation);
           String xyz = SymmetryOperation.getXYZFromMatrix(operation, true, true, true);
           addSymmetry(xyz, operation);
@@ -478,7 +478,7 @@ class SpaceGroup {
     if (iop < 0)
       return;
     SymmetryOperation symmetryOperation = operations[iop];
-    symmetryOperation.set(operation);
+    symmetryOperation.setM(operation);
   }
 
   private final static SpaceGroup determineSpaceGroup(String name) {

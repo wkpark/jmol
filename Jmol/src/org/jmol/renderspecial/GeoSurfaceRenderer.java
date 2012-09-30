@@ -26,9 +26,9 @@ package org.jmol.renderspecial;
 
 import org.jmol.shapespecial.GeoSurface;
 import org.jmol.util.Colix;
-import org.jmol.util.FastBitSet;
 import org.jmol.util.Geodesic;
 
+import javax.util.BitSet;
 import javax.vecmath.Point3i;
 
 /*
@@ -55,7 +55,7 @@ public class GeoSurfaceRenderer extends DotsRenderer {
   }
   
  @Override
-protected void renderConvex(short colix, FastBitSet visibilityMap, int nPoints) {
+protected void renderConvex(short colix, BitSet visibilityMap, int nPoints) {
     this.colix = colix;
     if (iShowSolid) {
       if (g3d.setColix(colix))       
@@ -69,7 +69,7 @@ protected void renderConvex(short colix, FastBitSet visibilityMap, int nPoints) 
   private Point3i facePt2 = new Point3i();
   private Point3i facePt3 = new Point3i();
   
-  private void renderSurface(FastBitSet points) {
+  private void renderSurface(BitSet points) {
     if (faceMap == null)
       return;
     short[] faces = Geodesic.getFaceVertexes(screenLevel);

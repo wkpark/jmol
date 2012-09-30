@@ -49,7 +49,7 @@ class ClassPreloader extends Thread {
         if (constructOne)
           preloadClass.newInstance();
       } catch (Exception e) {
-        Logger.fatal("error preloading " + className, e);
+        Logger.fatalEx("error preloading " + className, e);
       }
     }
   }

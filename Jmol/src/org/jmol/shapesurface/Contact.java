@@ -26,7 +26,7 @@
 package org.jmol.shapesurface;
 
 import java.util.ArrayList;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -585,9 +585,9 @@ public class Contact extends Isosurface {
   
   private void setVolumeData(int type, VolumeData volumeData, ContactPair cp,
                              float resolution, int nPairs) {
-    pt1.set(cp.myAtoms[0]);
-    pt2.set(cp.myAtoms[1]);
-    vX.sub(pt2, pt1);
+    pt1.setT(cp.myAtoms[0]);
+    pt2.setT(cp.myAtoms[1]);
+    vX.sub2(pt2, pt1);
     float dAB = vX.length();
     float dYZ = (cp.radii[0] * cp.radii[0] + dAB * dAB - cp.radii[1] * cp.radii[1])/(2 * dAB * cp.radii[0]);
     dYZ = 2.1f * (float) (cp.radii[0] * Math.sin(Math.acos(dYZ)));
@@ -598,9 +598,9 @@ public class Contact extends Isosurface {
     vY.scale(dYZ);
     if (type != Token.connect) {
       vX.normalize();
-      pt1.scaleAdd((dAB - cp.radii[1]) * 0.95f, vX, pt1);
-      pt2.scaleAdd((cp.radii[0] - dAB) * 0.95f, vX, pt2);
-      vX.sub(pt2, pt1);
+      pt1.scaleAdd2((dAB - cp.radii[1]) * 0.95f, vX, pt1);
+      pt2.scaleAdd2((cp.radii[0] - dAB) * 0.95f, vX, pt2);
+      vX.sub2(pt2, pt1);
     }
     if (resolution == Float.MAX_VALUE)
       resolution = (nPairs > 100 ? 3 : 10);
@@ -614,8 +614,8 @@ public class Contact extends Isosurface {
     if ((nYZ % 2) == 0)
       nYZ++;
     volumeData.setVoxelCounts(nX, nYZ, nYZ);
-    pt1.scaleAdd(-0.5f, vY, pt1);
-    pt1.scaleAdd(-0.5f, vZ, pt1);
+    pt1.scaleAdd2(-0.5f, vY, pt1);
+    pt1.scaleAdd2(-0.5f, vZ, pt1);
     volumeData.setVolumetricOrigin(pt1.x, pt1.y, pt1.z);
     /*
     System.out.println("draw pt1 @{point"+pt1+"} color red");

@@ -71,7 +71,7 @@ public class EchoRenderer extends ShapeRenderer {
   private void renderFrameTitle(String frameTitle) {
     if (isExport || !g3d.setColix(viewer.getColixBackgroundContrast()))
       return;
-    byte fid = g3d.getFontFid("Monospaced", 14 * imageFontScaling);
+    byte fid = g3d.getFontFidFS("Monospaced", 14 * imageFontScaling);
     g3d.setFont(fid);
     int y = (int) (viewer.getScreenHeight() * (g3d.isAntialiased() ? 2 : 1) - 10 * imageFontScaling);
     int x = (int) (5 * imageFontScaling);

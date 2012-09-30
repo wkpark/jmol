@@ -25,7 +25,7 @@
 package org.jmol.minimize;
 
 import java.util.ArrayList;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -146,9 +146,9 @@ public class Minimizer implements MinimizerInterface {
       constraintMap = new Hashtable<String, Object[]>();
     }
     if (atoms[1] > atoms[nAtoms]) {
-        ArrayUtil.swap(atoms, 1, nAtoms);
+        ArrayUtil.swapInt(atoms, 1, nAtoms);
         if (nAtoms == 4)
-          ArrayUtil.swap(atoms, 2, 3);
+          ArrayUtil.swapInt(atoms, 2, 3);
     }
     String id = Escape.escape(atoms);
     Object[] c1 = constraintMap.get(id);

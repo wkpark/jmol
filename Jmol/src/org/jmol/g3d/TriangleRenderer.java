@@ -76,9 +76,9 @@ class TriangleRenderer {
   final Rgb16 rgb16t2 = new Rgb16();
 
   void setGouraud(int rgbA, int rgbB, int rgbC) {
-    rgb16sGouraud[0].set(rgbA);
-    rgb16sGouraud[1].set(rgbB);
-    rgb16sGouraud[2].set(rgbC);
+    rgb16sGouraud[0].setInt(rgbA);
+    rgb16sGouraud[1].setInt(rgbB);
+    rgb16sGouraud[2].setInt(rgbC);
   }
 
   /*===============================================================
@@ -185,9 +185,9 @@ class TriangleRenderer {
   private void fillTriangle(boolean useGouraud) {
     if (az[0] <= 1 || az[1] <= 1 || az[2] <= 1)
       return;
-    int cc0 = g3d.clipCode(ax[0], ay[0], az[0]);
-    int cc1 = g3d.clipCode(ax[1], ay[1], az[1]);
-    int cc2 = g3d.clipCode(ax[2], ay[2], az[2]);
+    int cc0 = g3d.clipCode3(ax[0], ay[0], az[0]);
+    int cc1 = g3d.clipCode3(ax[1], ay[1], az[1]);
+    int cc2 = g3d.clipCode3(ax[2], ay[2], az[2]);
     boolean isClipped = (cc0 | cc1 | cc2) != 0;
     if (isClipped) {
       if ((cc0 & cc1 & cc2) != 0) {
@@ -401,7 +401,7 @@ class TriangleRenderer {
     }
     if (gouraud != null) {
       Rgb16 rgb16Base = rgb16t1;
-      rgb16Base.set(rgb16sGouraud[iN]);
+      rgb16Base.setRgb(rgb16sGouraud[iN]);
       Rgb16 rgb16Increment = rgb16t2;
       rgb16Increment.diffDiv(rgb16sGouraud[iS], rgb16Base, dy);
       for (int i = iRaster, iMax = iRaster + dy; i < iMax; ++i)

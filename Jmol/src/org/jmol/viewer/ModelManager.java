@@ -24,7 +24,7 @@
  */
 package org.jmol.viewer;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 
 import org.jmol.modelset.ModelLoader;
 import org.jmol.modelset.ModelSet;

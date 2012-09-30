@@ -24,7 +24,7 @@
 package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.Map;
 

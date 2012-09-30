@@ -27,7 +27,7 @@ package org.jmol.adapter.smarter;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolAdapterAtomIterator;
 import org.jmol.util.Quadric;
-import java.util.BitSet;
+import javax.util.BitSet;
 import javax.vecmath.Point3f;
 
 /* **************************************************************

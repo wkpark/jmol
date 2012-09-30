@@ -31,7 +31,7 @@ import org.jmol.util.Elements;
 import org.jmol.util.GData;
 import org.jmol.util.Logger;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 
 import org.jmol.constant.EnumPalette;
 import org.jmol.constant.StaticConstants;
@@ -68,7 +68,7 @@ class ColorManager {
     this.viewer = viewer;
     g3d = gdata;
     argbsCpk = EnumPalette.argbsCpk;
-    altArgbsCpk = ArrayUtil.arrayCopy(JmolConstants.altArgbsCpk, 0, -1, false);
+    altArgbsCpk = ArrayUtil.arrayCopyRangeI(JmolConstants.altArgbsCpk, 0, -1);
   }
 
   void clear() {
@@ -93,8 +93,8 @@ class ColorManager {
       isDefaultColorRasmol = false;
       argbsCpk = EnumPalette.argbsCpk;
     }
-    altArgbsCpk = ArrayUtil.arrayCopy(JmolConstants.altArgbsCpk, 0, -1, false);
-    propertyColorEncoder.getColorScheme((isRasmol ? "Rasmol="
+    altArgbsCpk = ArrayUtil.arrayCopyRangeI(JmolConstants.altArgbsCpk, 0, -1);
+    propertyColorEncoder.createColorScheme((isRasmol ? "Rasmol="
         : "Jmol="), true, true);
     for (int i = EnumPalette.argbsCpk.length; --i >= 0;)
       g3d.changeColixArgb((short) i, argbsCpk[i]);
@@ -282,9 +282,8 @@ class ColorManager {
       return;
     argb = getJmolOrRasmolArgb(id, argb);
     if (argbsCpk == EnumPalette.argbsCpk) {
-      argbsCpk = ArrayUtil.arrayCopy(EnumPalette.argbsCpk, 0, -1, false);
-      altArgbsCpk = ArrayUtil
-          .arrayCopy(JmolConstants.altArgbsCpk, 0, -1, false);
+      argbsCpk = ArrayUtil.arrayCopyRangeI(EnumPalette.argbsCpk, 0, -1);
+      altArgbsCpk = ArrayUtil.arrayCopyRangeI(JmolConstants.altArgbsCpk, 0, -1);
     }
     if (id < Elements.elementNumberMax) {
       argbsCpk[id] = argb;
@@ -306,7 +305,7 @@ class ColorManager {
 
   void setPropertyColorRangeData(float[] data, BitSet bs, String colorScheme) {
     colorData = data;
-    propertyColorEncoder.currentPalette = propertyColorEncoder.getColorScheme(
+    propertyColorEncoder.currentPalette = propertyColorEncoder.createColorScheme(
         colorScheme, true, false);
     propertyColorEncoder.hi = Float.MIN_VALUE;
     propertyColorEncoder.lo = Float.MAX_VALUE;
@@ -327,7 +326,7 @@ class ColorManager {
   void setPropertyColorRange(float min, float max) {
     propertyColorEncoder.setRange(min, max, min > max);
     Logger.info("ColorManager: color \""
-        + propertyColorEncoder.getColorSchemeName() + "\" range " + min + " "
+        + propertyColorEncoder.getCurrentColorSchemeName() + "\" range " + min + " "
         + max);
   }
 
@@ -337,7 +336,7 @@ class ColorManager {
     if (isReset)
       colorScheme = "="; // reset roygb
     float[] range = getPropertyColorRange();
-    propertyColorEncoder.currentPalette = propertyColorEncoder.getColorScheme(
+    propertyColorEncoder.currentPalette = propertyColorEncoder.createColorScheme(
         colorScheme, true, isOverloaded);
     if (!isReset)
       setPropertyColorRange(range[0], range[1]);
@@ -364,7 +363,7 @@ class ColorManager {
     // isosurface sets ifDefault FALSE so that any default schemes are returned
     int iPt = (colorScheme == null || colorScheme.length() == 0) ? propertyColorEncoder.currentPalette
         : propertyColorEncoder
-            .getColorScheme(colorScheme, true, false);
+            .createColorScheme(colorScheme, true, false);
     return ColorEncoder.getColorSchemeList(propertyColorEncoder
         .getColorSchemeArray(iPt));
   }
@@ -377,7 +376,7 @@ class ColorManager {
     if (colorScheme == null || colorScheme.length() == 0)
       return propertyColorEncoder;
     ColorEncoder ce = new ColorEncoder(propertyColorEncoder);
-    ce.currentPalette = ce.getColorScheme(colorScheme, false, true);
+    ce.currentPalette = ce.createColorScheme(colorScheme, false, true);
     return (ce.currentPalette == Integer.MAX_VALUE ? null : ce);
   }
 }

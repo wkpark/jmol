@@ -447,7 +447,7 @@ public class ColorUtil {
   }
 
   public final static Point3f colorPointFromInt2(int color) {
-    return new Point3f((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF);
+    return Point3f.new3((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF);
   }
 
   public static int colorPtToInt(Point3f pt) {

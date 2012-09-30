@@ -25,7 +25,7 @@ package org.jmol.script;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
@@ -1066,7 +1066,7 @@ class ScriptMathProcessor {
       Point3f ptb = ptValue(args[1], true);
       if (args[2].tok != Token.point4f)
         return false;
-      Quaternion dq = new Quaternion((Point4f) args[2].value);
+      Quaternion dq = Quaternion.newP4((Point4f) args[2].value);
       switch (tok) {
       case Token.nada:
         break;
@@ -1136,10 +1136,10 @@ class ScriptMathProcessor {
             * plane2.z + plane1.w * plane2.w);
       // plane.dot(point) =
       if (plane1 != null)
-        pt1 = new Point3f(plane1.x, plane1.y, plane1.z);
+        pt1 = Point3f.new3(plane1.x, plane1.y, plane1.z);
       // point.dot(plane)
       if (plane2 != null)
-        pt2 = new Point3f(plane2.x, plane2.y, plane2.z);
+        pt2 = Point3f.new3(plane2.x, plane2.y, plane2.z);
       return addXFloat(pt1.x * pt2.x + pt1.y * pt2.y + pt1.z * pt2.z);
     }
 
@@ -1175,7 +1175,7 @@ class ScriptMathProcessor {
     if (!allowFloat)
       return null;
     float f = ScriptVariable.fValue(x);
-    return new Point3f(f, f, f);
+    return Point3f.new3(f, f, f);
   }
 
   private Point4f planeValue(Token x) {
@@ -1230,7 +1230,8 @@ class ScriptMathProcessor {
           nBitSets++;
           break;
         case Token.point3f:
-          Point3fi v = new Point3fi((Point3f) args[i].value);
+          Point3fi v = new Point3fi();
+          v.setT((Point3f) args[i].value);
           points.add(v);
           nPoints++;
           break;
@@ -1287,7 +1288,7 @@ class ScriptMathProcessor {
     case 2:
       return addXFloat(pts[0].distance(pts[1]));
     case 3:
-      return addXFloat(Measure.computeAngle(pts[0], pts[1], pts[2], true));
+      return addXFloat(Measure.computeAngleABC(pts[0], pts[1], pts[2], true));
     case 4:
       return addXFloat(Measure.computeTorsion(pts[0], pts[1], pts[2], pts[3], true));
     }
@@ -1494,7 +1495,7 @@ class ScriptMathProcessor {
 
         plane = (Point4f) args[1].value;
         if (args[0].tok == Token.point4f) {
-          List<Object> list = Measure.getIntersection((Point4f) args[0].value,
+          List<Object> list = Measure.getIntersectionPP((Point4f) args[0].value,
               plane);
           return addXObj(list == null ? "" : list);
         }
@@ -1509,7 +1510,7 @@ class ScriptMathProcessor {
       switch (tok) {
       case Token.hkl:
         // hkl(i,j,k)
-        return addXObj(eval.getHklPlane(new Point3f(
+        return addXObj(eval.getHklPlane(Point3f.new3(
             ScriptVariable.fValue(args[0]), ScriptVariable.fValue(args[1]),
             ScriptVariable.fValue(args[2]))));
       case Token.intersection:
@@ -1517,7 +1518,7 @@ class ScriptMathProcessor {
         pt2 = ptValue(args[1], false);
         if (pt1 == null || pt2 == null)
           return addXStr("");
-        Vector3f vLine = new Vector3f(pt2);
+        Vector3f vLine = Vector3f.newV(pt2);
         vLine.normalize();
         if (args[2].tok == Token.point4f) {
           // intersection(ptLine, vLine, plane)
@@ -1544,15 +1545,15 @@ class ScriptMathProcessor {
           float theta = ScriptVariable.fValue(args[1]);  // longitude, azimuthal, in xy plane
           float phi = ScriptVariable.fValue(args[2]);    // 90 - latitude, polar, from z
           // rotate {0 0 r} about y axis need to stay in the x-z plane
-          norm = new Vector3f(0, 0, 1);
-          pt2 = new Point3f(0, 1, 0);
-          Quaternion q = new Quaternion(pt2, phi);
+          norm = Vector3f.new3(0, 0, 1);
+          pt2 = Point3f.new3(0, 1, 0);
+          Quaternion q = Quaternion.newVA(pt2, phi);
           q.getMatrix().transform(norm);
           // rotate that vector around z
           pt2.set(0, 0, 1);
-          q = new Quaternion(pt2, theta);
+          q = Quaternion.newVA(pt2, theta);
           q.getMatrix().transform(norm);
-          pt2.set(norm);
+          pt2.setT(norm);
           pt2.scale(r);
           plane = new Point4f();
           Measure.getPlaneThroughPoint(pt2, norm, plane);
@@ -1569,13 +1570,13 @@ class ScriptMathProcessor {
             && (args[2].tok == Token.bitset || args[2].tok == Token.point3f) ? ptValue(
             args[2], false)
             : null);
-        norm = new Vector3f(pt2);
+        norm = Vector3f.newV(pt2);
         if (pt3 == null) {
           plane = new Point4f();
           if (args.length == 2 || !ScriptVariable.bValue(args[2])) {
             // plane(<point1>,<point2>) or 
             // plane(<point1>,<point2>,false)
-            pt3 = new Point3f(pt1);
+            pt3 = Point3f.newP(pt1);
             pt3.add(pt2);
             pt3.scale(0.5f);
             norm.sub(pt1);
@@ -1593,7 +1594,7 @@ class ScriptMathProcessor {
         Vector3f vAC = new Vector3f();
         float nd = Measure.getDirectedNormalThroughPoints(pt1, pt2, pt3,
             (args.length == 4 ? ptValue(args[3], true) : null), norm, vAB, vAC);
-        return addXObj(new Point4f(norm.x, norm.y, norm.z, nd));
+        return addXObj(Point4f.new4(norm.x, norm.y, norm.z, nd));
       }
     }
     if (args.length != 4)
@@ -1602,7 +1603,7 @@ class ScriptMathProcessor {
     float y = ScriptVariable.fValue(args[1]);
     float z = ScriptVariable.fValue(args[2]);
     float w = ScriptVariable.fValue(args[3]);
-    return addXObj(new Point4f(x, y, z, w));
+    return addXObj(Point4f.new4(x, y, z, w));
   }
 
   private boolean evaluatePoint(ScriptVariable[] args) {
@@ -1620,10 +1621,10 @@ class ScriptMathProcessor {
         return addXPt((Point3f) pt);
       return addXStr("" + pt);
     case 3:
-      return addXPt(new Point3f(ScriptVariable.fValue(args[0]), ScriptVariable
+      return addXPt(Point3f.new3(ScriptVariable.fValue(args[0]), ScriptVariable
           .fValue(args[1]), ScriptVariable.fValue(args[2])));
     case 4:
-      return addXObj(new Point4f(ScriptVariable.fValue(args[0]), ScriptVariable
+      return addXObj(Point4f.new4(ScriptVariable.fValue(args[0]), ScriptVariable
           .fValue(args[1]), ScriptVariable.fValue(args[2]), ScriptVariable
           .fValue(args[3])));
     }
@@ -1898,8 +1899,8 @@ class ScriptMathProcessor {
         }
         if (isMatrix) {
           if (len == 3)
-            return addXObj(new Matrix3f(m));
-          return addXObj(new Matrix4f(m));
+            return addXObj(Matrix3f.newA(m));
+          return addXObj(Matrix4f.newA(m));
         }
       }
     }
@@ -2012,7 +2013,7 @@ class ScriptMathProcessor {
     Point4f p4 = null;
     switch (nArgs) {
     case 0:
-      return addXObj(new Quaternion(viewer.getRotationQuaternion()));
+      return addXObj(Quaternion.newQ(viewer.getRotationQuaternion()));
     case 1:
     default:
       if (tok == Token.quaternion && args[0].tok == Token.varray) {
@@ -2023,7 +2024,7 @@ class ScriptMathProcessor {
       } else if (tok == Token.quaternion && args[0].tok == Token.bitset) {
         qs = viewer.getAtomGroupQuaternions((BitSet) args[0].value, nMax);
       } else if (args[0].tok == Token.matrix3f) {
-        q = new Quaternion((Matrix3f) args[0].value);
+        q = Quaternion.newM((Matrix3f) args[0].value);
       } else if (args[0].tok == Token.point4f) {
         p4 = (Point4f) args[0].value;
       } else {
@@ -2033,7 +2034,7 @@ class ScriptMathProcessor {
         p4 = (Point4f) v;
       }
       if (tok == Token.axisangle)
-        q = new Quaternion(new Point3f(p4.x, p4.y, p4.z), p4.w);
+        q = Quaternion.newVA(Point3f.new3(p4.x, p4.y, p4.z), p4.w);
       break;
     case 2:
       if (tok == Token.quaternion) {
@@ -2055,15 +2056,15 @@ class ScriptMathProcessor {
       Point3f pt1 = ptValue(args[1], false);
       p4 = planeValue(args[0]);
       if (pt1 != null)
-        q = Quaternion.getQuaternionFrame(new Point3f(0, 0, 0), pt0, pt1);
+        q = Quaternion.getQuaternionFrame(Point3f.new3(0, 0, 0), pt0, pt1);
       else
-        q = new Quaternion(pt0, ScriptVariable.fValue(args[1]));
+        q = Quaternion.newVA(pt0, ScriptVariable.fValue(args[1]));
       break;
     case 3:
       if (args[0].tok == Token.point4f) {
         Point3f pt = (args[2].tok == Token.point3f ? (Point3f) args[2].value
             : viewer.getAtomSetCenter((BitSet) args[2].value));
-        return addXObj((new Quaternion((Point4f) args[0].value)).draw("q",
+        return addXObj((Quaternion.newP4((Point4f) args[0].value)).draw("q",
             ScriptVariable.sValue(args[1]), pt, 1f));
       }
       Point3f[] pts = new Point3f[3];
@@ -2074,11 +2075,11 @@ class ScriptMathProcessor {
       break;
     case 4:
       if (tok == Token.quaternion)
-        p4 = new Point4f(ScriptVariable.fValue(args[1]), ScriptVariable
+        p4 = Point4f.new4(ScriptVariable.fValue(args[1]), ScriptVariable
             .fValue(args[2]), ScriptVariable.fValue(args[3]), ScriptVariable
             .fValue(args[0]));
       else
-        q = new Quaternion(new Point3f(ScriptVariable.fValue(args[0]),
+        q = Quaternion.newVA(Point3f.new3(ScriptVariable.fValue(args[0]),
             ScriptVariable.fValue(args[1]), ScriptVariable.fValue(args[2])),
             ScriptVariable.fValue(args[3]));
       break;
@@ -2093,7 +2094,7 @@ class ScriptMathProcessor {
         return addXObj(list);
       }
     }
-    return addXObj((q == null ? new Quaternion(p4) : q).toPoint4f());
+    return addXObj((q == null ? Quaternion.newP4(p4) : q).toPoint4f());
   }
 
   private boolean evaluateRandom(ScriptVariable[] args) {
@@ -2113,10 +2114,10 @@ class ScriptMathProcessor {
     ScriptVariable x2 = args[1];
     if (x1.tok != Token.point3f || x2.tok != Token.point3f)
       return false;
-    Vector3f a = new Vector3f((Point3f) x1.value);
-    Vector3f b = new Vector3f((Point3f) x2.value);
+    Vector3f a = Vector3f.newV((Point3f) x1.value);
+    Vector3f b = Vector3f.newV((Point3f) x2.value);
     a.cross(a, b);
-    return addXPt(new Point3f(a));
+    return addXPt(Point3f.newP(a));
   }
 
   private boolean evaluateLoad(ScriptVariable[] args, int tok) {
@@ -2464,7 +2465,7 @@ class ScriptMathProcessor {
     String colorScheme = (args.length > 0 ? ScriptVariable.sValue(args[0])
         : "");
     if (colorScheme.equalsIgnoreCase("hsl") && args.length == 2) {
-      Point3f pt = new Point3f(ScriptVariable.ptValue(args[1]));
+      Point3f pt = Point3f.newP(ScriptVariable.ptValue(args[1]));
       float[] hsl = new float[3];
       ColorEncoder.RGBtoHSL(pt.x, pt.y, pt.z, hsl);
       pt.set(hsl[0]*360, hsl[1]*100, hsl[2]*100);
@@ -2665,13 +2666,13 @@ class ScriptMathProcessor {
         return addXBool(true);
       switch (x2.tok) {
       case Token.point4f: // quaternion
-        return addXObj((new Quaternion((Point4f) x2.value)).inv().toPoint4f());
+        return addXObj((Quaternion.newP4((Point4f) x2.value)).inv().toPoint4f());
       case Token.matrix3f:
-        m = new Matrix3f((Matrix3f) x2.value);
+        m = Matrix3f.newM((Matrix3f) x2.value);
         m.invert();
         return addXObj(m);
       case Token.matrix4f:
-        Matrix4f m4 = new Matrix4f((Matrix4f) x2.value);
+        Matrix4f m4 = Matrix4f.newM((Matrix4f) x2.value);
         m4.invert();
         return addXObj(m4);
       case Token.bitset:
@@ -2686,7 +2687,7 @@ class ScriptMathProcessor {
     if (op.tok == Token.propselector) {
       switch (iv) {
       case Token.identifier:
-        return getAllProperties(x2,(String) op.value);
+        return getAllProperties(x2, (String) op.value);
       case Token.length:
       case Token.count:
       case Token.size:
@@ -2791,7 +2792,7 @@ class ScriptMathProcessor {
           return addXBs(bs);
         case Token.integer:
           int x = ScriptVariable.iValue(x2);
-          if (x < 0) 
+          if (x < 0)
             break;
           bs.set(x);
           return addXBs(bs);
@@ -2850,18 +2851,19 @@ class ScriptMathProcessor {
         }
         return addXInt(x1.intValue + ScriptVariable.iValue(x2));
       case Token.string:
-        return addXVar(ScriptVariable.newScriptVariableObj(Token.string, ScriptVariable.sValue(x1)
-            + ScriptVariable.sValue(x2)));
+        return addXVar(ScriptVariable.newScriptVariableObj(Token.string,
+            ScriptVariable.sValue(x1) + ScriptVariable.sValue(x2)));
       case Token.point4f:
-        Quaternion q1 = new Quaternion((Point4f) x1.value);
+        Quaternion q1 = Quaternion.newP4((Point4f) x1.value);
         switch (x2.tok) {
         default:
           return addXObj(q1.add(ScriptVariable.fValue(x2)).toPoint4f());
         case Token.point4f:
-          return addXObj(q1.mul(new Quaternion((Point4f) x2.value)).toPoint4f());
+          return addXObj(q1.mulQ(Quaternion.newP4((Point4f) x2.value))
+              .toPoint4f());
         }
       case Token.point3f:
-        pt = new Point3f((Point3f) x1.value);
+        pt = Point3f.newP((Point3f) x1.value);
         switch (x2.tok) {
         case Token.point3f:
           pt.add((Point3f) x2.value);
@@ -2869,18 +2871,19 @@ class ScriptMathProcessor {
         case Token.point4f:
           // extract {xyz}
           pt4 = (Point4f) x2.value;
-          pt.add(new Point3f(pt4.x, pt4.y, pt4.z));
+          pt.add(Point3f.new3(pt4.x, pt4.y, pt4.z));
           return addXPt(pt);
         default:
           f = ScriptVariable.fValue(x2);
-          return addXPt(new Point3f(pt.x + f, pt.y + f, pt.z + f));
+          return addXPt(Point3f.new3(pt.x + f, pt.y + f, pt.z + f));
         }
       case Token.matrix3f:
         switch (x2.tok) {
         default:
-          return addXFloat(ScriptVariable.fValue(x1) + ScriptVariable.fValue(x2));
+          return addXFloat(ScriptVariable.fValue(x1)
+              + ScriptVariable.fValue(x2));
         case Token.matrix3f:
-          m = new Matrix3f((Matrix3f) x1.value);
+          m = Matrix3f.newM((Matrix3f) x1.value);
           m.add((Matrix3f) x2.value);
           return addXObj(m);
         case Token.point3f:
@@ -2912,44 +2915,46 @@ class ScriptMathProcessor {
       case Token.matrix3f:
         switch (x2.tok) {
         default:
-          return addXFloat(ScriptVariable.fValue(x1) - ScriptVariable.fValue(x2));
+          return addXFloat(ScriptVariable.fValue(x1)
+              - ScriptVariable.fValue(x2));
         case Token.matrix3f:
-          m = new Matrix3f((Matrix3f) x1.value);
+          m = Matrix3f.newM((Matrix3f) x1.value);
           m.sub((Matrix3f) x2.value);
           return addXObj(m);
         }
       case Token.matrix4f:
         switch (x2.tok) {
         default:
-          return addXFloat(ScriptVariable.fValue(x1) - ScriptVariable.fValue(x2));
+          return addXFloat(ScriptVariable.fValue(x1)
+              - ScriptVariable.fValue(x2));
         case Token.matrix4f:
-          Matrix4f m4 = new Matrix4f((Matrix4f) x1.value);
+          Matrix4f m4 = Matrix4f.newM((Matrix4f) x1.value);
           m4.sub((Matrix4f) x2.value);
           return addXObj(m4);
         }
       case Token.point3f:
-        pt = new Point3f((Point3f) x1.value);
+        pt = Point3f.newP((Point3f) x1.value);
         switch (x2.tok) {
         default:
           f = ScriptVariable.fValue(x2);
-          return addXPt(new Point3f(pt.x - f, pt.y - f, pt.z - f));
+          return addXPt(Point3f.new3(pt.x - f, pt.y - f, pt.z - f));
         case Token.point3f:
           pt.sub((Point3f) x2.value);
           return addXPt(pt);
         case Token.point4f:
           // extract {xyz}
           pt4 = (Point4f) x2.value;
-          pt.sub(new Point3f(pt4.x, pt4.y, pt4.z));
+          pt.sub(Point3f.new3(pt4.x, pt4.y, pt4.z));
           return addXPt(pt);
         }
       case Token.point4f:
-        Quaternion q1 = new Quaternion((Point4f) x1.value);
+        Quaternion q1 = Quaternion.newP4((Point4f) x1.value);
         switch (x2.tok) {
         default:
           return addXObj(q1.add(-ScriptVariable.fValue(x2)).toPoint4f());
         case Token.point4f:
-          Quaternion q2 = new Quaternion((Point4f) x2.value);
-          return addXObj(q2.mul(q1.inv()).toPoint4f());
+          Quaternion q2 = Quaternion.newP4((Point4f) x2.value);
+          return addXObj(q2.mulQ(q1.inv()).toPoint4f());
         }
       }
     case Token.unaryMinus:
@@ -2959,19 +2964,19 @@ class ScriptMathProcessor {
       case Token.integer:
         return addXInt(-ScriptVariable.iValue(x2));
       case Token.point3f:
-        pt = new Point3f((Point3f) x2.value);
+        pt = Point3f.newP((Point3f) x2.value);
         pt.scale(-1f);
         return addXPt(pt);
       case Token.point4f:
-        pt4 = new Point4f((Point4f) x2.value);
+        pt4 = Point4f.newPt((Point4f) x2.value);
         pt4.scale(-1f);
         return addXObj(pt4);
       case Token.matrix3f:
-        m = new Matrix3f((Matrix3f) x2.value);
+        m = Matrix3f.newM((Matrix3f) x2.value);
         m.transpose();
         return addXObj(m);
       case Token.matrix4f:
-        Matrix4f m4 = new Matrix4f((Matrix4f) x2.value);
+        Matrix4f m4 = Matrix4f.newM((Matrix4f) x2.value);
         m4.transpose();
         return addXObj(m4);
       case Token.bitset:
@@ -2993,7 +2998,7 @@ class ScriptMathProcessor {
       case Token.matrix3f:
         if (pt != null) {
           // pt * m
-          Matrix3f m3b = new Matrix3f((Matrix3f) x2.value);
+          Matrix3f m3b = Matrix3f.newM((Matrix3f) x2.value);
           m3b.transpose();
           m3b.transform(pt);
           if (x1.tok == Token.varray)
@@ -3003,20 +3008,20 @@ class ScriptMathProcessor {
         }
         if (pt4 != null) {
           // q * m --> q
-          return addXObj(((new Quaternion(pt4)).mul(new Quaternion(
-              (Matrix3f) x2.value))));
+          return addXObj((Quaternion.newP4(pt4).mulQ(Quaternion
+              .newM((Matrix3f) x2.value))));
         }
         break;
       case Token.matrix4f:
         // pt4 * m4
         // [a b c d] * m4
         if (pt4 != null) {
-          Matrix4f m4b = new Matrix4f((Matrix4f) x2.value);
+          Matrix4f m4b = Matrix4f.newM((Matrix4f) x2.value);
           m4b.transpose();
-          m4b.transform(pt4);
+          m4b.transform4(pt4);
           if (x1.tok == Token.varray)
-            return addXVar(ScriptVariable.getVariable(new float[] { pt4.x, pt4.y,
-                pt4.z, pt4.w }));
+            return addXVar(ScriptVariable.getVariable(new float[] { pt4.x,
+                pt4.y, pt4.z, pt4.w }));
           return addXObj(pt4);
         }
         break;
@@ -3035,20 +3040,20 @@ class ScriptMathProcessor {
         }
         switch (x2.tok) {
         case Token.matrix3f:
-          m = new Matrix3f((Matrix3f) x2.value);
-          m.mul(m3, m);
+          m = Matrix3f.newM((Matrix3f) x2.value);
+          m.mul2(m3, m);
           return addXObj(m);
         case Token.point4f:
           // m * q
-          return addXObj((new Quaternion(m3)).mul(
-              new Quaternion((Point4f) x2.value)).getMatrix());
+          return addXObj(Quaternion.newM(m3).mulQ(
+              Quaternion.newP4((Point4f) x2.value)).getMatrix());
         default:
           f = ScriptVariable.fValue(x2);
           AxisAngle4f aa = new AxisAngle4f();
-          aa.set(m3);
+          aa.setM(m3);
           aa.angle *= f;
           Matrix3f m2 = new Matrix3f();
-          m2.set(aa);
+          m2.setAA(aa);
           return addXObj(m2);
         }
       case Token.matrix4f:
@@ -3061,29 +3066,29 @@ class ScriptMathProcessor {
           return addXPt(pt);
         }
         if (pt4 != null) {
-          m4.transform(pt4);
+          m4.transform4(pt4);
           if (x2.tok == Token.varray)
-            return addXVar(ScriptVariable.getVariable(new float[] { pt4.x, pt4.y,
-                pt4.z, pt4.w }));
+            return addXVar(ScriptVariable.getVariable(new float[] { pt4.x,
+                pt4.y, pt4.z, pt4.w }));
           return addXObj(pt4);
         }
         switch (x2.tok) {
         case Token.matrix4f:
-          Matrix4f m4b = new Matrix4f((Matrix4f) x2.value);
-          m4b.mul(m4, m4b);
+          Matrix4f m4b = Matrix4f.newM((Matrix4f) x2.value);
+          m4b.mul2(m4, m4b);
           return addXObj(m4b);
         default:
           return addXStr("NaN");
         }
       case Token.point3f:
-        pt = new Point3f((Point3f) x1.value);
+        pt = Point3f.newP((Point3f) x1.value);
         switch (x2.tok) {
         case Token.point3f:
           Point3f pt2 = ((Point3f) x2.value);
           return addXFloat(pt.x * pt2.x + pt.y * pt2.y + pt.z * pt2.z);
         default:
           f = ScriptVariable.fValue(x2);
-          return addXPt(new Point3f(pt.x * f, pt.y * f, pt.z * f));
+          return addXPt(Point3f.new3(pt.x * f, pt.y * f, pt.z * f));
         }
       case Token.point4f:
         switch (x2.tok) {
@@ -3091,10 +3096,10 @@ class ScriptMathProcessor {
           // quaternion multiplication
           // note that Point4f is {x,y,z,w} so we use that for
           // quaternion notation as well here.
-          return addXObj((new Quaternion((Point4f) x1.value)).mul(new Quaternion(
-              (Point4f) x2.value)));
+          return addXObj(Quaternion.newP4((Point4f) x1.value)
+              .mulQ(Quaternion.newP4((Point4f) x2.value)));
         }
-        return addXObj(new Quaternion((Point4f) x1.value).mul(
+        return addXObj(Quaternion.newP4((Point4f) x1.value).mul(
             ScriptVariable.fValue(x2)).toPoint4f());
       }
     case Token.percent:
@@ -3136,30 +3141,30 @@ class ScriptMathProcessor {
         if (n == -9999)
           return addXStr(s.toLowerCase());
         if (n > 0)
-          return addXStr(TextFormat.format(s, n, n, false, false));
-        return addXStr(TextFormat.format(s, n, n - 1, true, false));
+          return addXStr(TextFormat.formatS(s, n, n, false, false));
+        return addXStr(TextFormat.formatS(s, n, n - 1, true, false));
       case Token.varray:
         String[] list = ScriptVariable.listValue(x1);
         for (int i = 0; i < list.length; i++) {
           if (n == 0)
             list[i] = list[i].trim();
           else if (n > 0)
-            list[i] = TextFormat.format(list[i], n, n, true, false);
+            list[i] = TextFormat.formatS(list[i], n, n, true, false);
           else
-            list[i] = TextFormat.format(s, -n, n, false, false);
+            list[i] = TextFormat.formatS(s, -n, n, false, false);
         }
         return addXObj(list);
       case Token.point3f:
-        pt = new Point3f((Point3f) x1.value);
-        viewer.toUnitCell(pt, new Point3f(n, n, n));
+        pt = Point3f.newP((Point3f) x1.value);
+        viewer.toUnitCell(pt, Point3f.new3(n, n, n));
         return addXPt(pt);
       case Token.point4f:
         pt4 = (Point4f) x1.value;
         if (x2.tok == Token.point3f)
-          return addXPt((new Quaternion(pt4)).transform((Point3f) x2.value));
+          return addXPt((Quaternion.newP4(pt4)).transformPt((Point3f) x2.value));
         if (x2.tok == Token.point4f) {
-          Point4f v4 = new Point4f((Point4f) x2.value);
-          (new Quaternion(pt4)).getThetaDirected(v4);
+          Point4f v4 = Point4f.newPt((Point4f) x2.value);
+          (Quaternion.newP4(pt4)).getThetaDirected(v4);
           return addXObj(v4);
         }
         switch (n) {
@@ -3184,23 +3189,23 @@ class ScriptMathProcessor {
         case 3:
           return addXFloat(pt4.z);
         case 4:
-          return addXObj((new Quaternion(pt4)).getNormal());
+          return addXObj((Quaternion.newP4(pt4)).getNormal());
         case -1:
-          return addXObj(new Quaternion(pt4).getVector(-1));
+          return addXObj(Quaternion.newP4(pt4).getVector(-1));
         case -2:
-          return addXFloat((new Quaternion(pt4)).getTheta());
+          return addXFloat((Quaternion.newP4(pt4)).getTheta());
         case -3:
-          return addXObj((new Quaternion(pt4)).getVector(0));
+          return addXObj((Quaternion.newP4(pt4)).getVector(0));
         case -4:
-          return addXObj((new Quaternion(pt4)).getVector(1));
+          return addXObj((Quaternion.newP4(pt4)).getVector(1));
         case -5:
-          return addXObj((new Quaternion(pt4)).getVector(2));
+          return addXObj((Quaternion.newP4(pt4)).getVector(2));
         case -6:
-          AxisAngle4f ax = (new Quaternion(pt4)).toAxisAngle4f();
-          return addXObj(new Point4f(ax.x, ax.y, ax.z,
+          AxisAngle4f ax = (Quaternion.newP4(pt4)).toAxisAngle4f();
+          return addXObj(Point4f.new4(ax.x, ax.y, ax.z,
               (float) (ax.angle * 180 / Math.PI)));
         case -9:
-          return addXObj((new Quaternion(pt4)).getMatrix());
+          return addXObj((Quaternion.newP4(pt4)).getMatrix());
         default:
           return addXObj(pt4);
         }
@@ -3209,7 +3214,7 @@ class ScriptMathProcessor {
         switch (n) {
         case 1:
           Matrix3f m3 = new Matrix3f();
-          m4.get(m3);
+          m4.getRotationScale(m3);
           return addXObj(m3);
         case 2:
           Vector3f v3 = new Vector3f();
@@ -3231,17 +3236,19 @@ class ScriptMathProcessor {
         float f1 = ScriptVariable.fValue(x1);
         return addXFloat(f1 / f2);
       case Token.point3f:
-        pt = new Point3f((Point3f) x1.value);
+        pt = Point3f.newP((Point3f) x1.value);
         if (f2 == 0)
-          return addXPt(new Point3f(Float.NaN, Float.NaN, Float.NaN));
-        return addXPt(new Point3f(pt.x / f2, pt.y / f2, pt.z / f2));
+          return addXPt(Point3f.new3(Float.NaN, Float.NaN, Float.NaN));
+        return addXPt(Point3f.new3(pt.x / f2, pt.y / f2, pt.z / f2));
       case Token.point4f:
         if (x2.tok == Token.point4f)
-          return addXObj(new Quaternion((Point4f) x1.value).div(
-              new Quaternion((Point4f) x2.value)).toPoint4f());
+          return addXObj(Quaternion.newP4((Point4f) x1.value).div(
+              Quaternion.newP4((Point4f) x2.value)).toPoint4f());
         if (f2 == 0)
-          return addXObj(new Point4f(Float.NaN, Float.NaN, Float.NaN, Float.NaN));
-        return addXObj(new Quaternion((Point4f) x1.value).mul(1 / f2).toPoint4f());
+          return addXObj(Point4f.new4(Float.NaN, Float.NaN, Float.NaN,
+              Float.NaN));
+        return addXObj(Quaternion.newP4((Point4f) x1.value).mul(1 / f2)
+            .toPoint4f());
       }
     case Token.leftdivide:
       f = ScriptVariable.fValue(x2);
@@ -3251,11 +3258,13 @@ class ScriptMathProcessor {
             : (int) (ScriptVariable.fValue(x1) / ScriptVariable.fValue(x2)));
       case Token.point4f:
         if (f == 0)
-          return addXObj(new Point4f(Float.NaN, Float.NaN, Float.NaN, Float.NaN));
+          return addXObj(Point4f.new4(Float.NaN, Float.NaN, Float.NaN,
+              Float.NaN));
         if (x2.tok == Token.point4f)
-          return addXObj(new Quaternion((Point4f) x1.value).divLeft(
-              new Quaternion((Point4f) x2.value)).toPoint4f());
-        return addXObj(new Quaternion((Point4f) x1.value).mul(1 / f).toPoint4f());
+          return addXObj(Quaternion.newP4((Point4f) x1.value).divLeft(
+              Quaternion.newP4((Point4f) x2.value)).toPoint4f());
+        return addXObj(Quaternion.newP4((Point4f) x1.value).mul(1 / f)
+            .toPoint4f());
       }
     case Token.timestimes:
       f = (float) Math
@@ -3299,7 +3308,7 @@ class ScriptMathProcessor {
   }
 
   static Matrix4f getMatrix4f(Matrix3f matRotate, Tuple3f vTranslate) {
-    return new Matrix4f(matRotate, vTranslate == null ? new Vector3f() : new Vector3f(vTranslate), 1);
+    return Matrix4f.newMV(matRotate, vTranslate == null ? new Vector3f() : Vector3f.newV(vTranslate));
   }
 
   private boolean getBoundBox(ScriptVariable x2) {
@@ -3350,7 +3359,7 @@ class ScriptMathProcessor {
       case Token.z:
         return addXFloat(((Point3f) x2.value).z);
       case Token.xyz:
-        Point3f pt = new Point3f((Point3f) x2.value);
+        Point3f pt = Point3f.newP((Point3f) x2.value);
         // assumes a fractional coordinate
         viewer.toCartesian(pt, true);
         return addXPt(pt);
@@ -3358,7 +3367,7 @@ class ScriptMathProcessor {
       case Token.fracy:
       case Token.fracz:
       case Token.fracxyz:
-        Point3f ptf = new Point3f((Point3f) x2.value);
+        Point3f ptf = Point3f.newP((Point3f) x2.value);
         viewer.toFractional(ptf, true);
         return (op.intValue == Token.fracxyz ? addXPt(ptf)
             : addXFloat(op.intValue == Token.fracx ? ptf.x
@@ -3367,7 +3376,7 @@ class ScriptMathProcessor {
       case Token.fuy:
       case Token.fuz:
       case Token.fuxyz:
-        Point3f ptfu = new Point3f((Point3f) x2.value);
+        Point3f ptfu = Point3f.newP((Point3f) x2.value);
         viewer.toFractional(ptfu, false);
         return (op.intValue == Token.fracxyz ? addXPt(ptfu)
             : addXFloat(op.intValue == Token.fux ? ptfu.x
@@ -3376,7 +3385,7 @@ class ScriptMathProcessor {
       case Token.unity:
       case Token.unitz:
       case Token.unitxyz:
-        Point3f ptu = new Point3f((Point3f) x2.value);
+        Point3f ptu = Point3f.newP((Point3f) x2.value);
         viewer.toUnitCell(ptu, null);
         viewer.toFractional(ptu, false);
         return (op.intValue == Token.unitxyz ? addXPt(ptu)
@@ -3611,7 +3620,7 @@ class ScriptMathProcessor {
       Point4f[] pts = (Point4f[]) quaternionOrSVData;
       data = new Quaternion[pts.length];
       for (int i = 0; i < pts.length; i++)
-        data[i] = new Quaternion(pts[i]);
+        data[i] = Quaternion.newP4(pts[i]);
     } else if (quaternionOrSVData instanceof List<?>) {
       List<ScriptVariable> sv = (ArrayList<ScriptVariable>) quaternionOrSVData;
       data = new Quaternion[sv.size()];
@@ -3619,7 +3628,7 @@ class ScriptMathProcessor {
         Point4f pt = ScriptVariable.pt4Value(sv.get(i));
         if (pt == null)
           return null;
-        data[i] = new Quaternion(pt);
+        data[i] = Quaternion.newP4(pt);
       }
     } else {
       return null;

@@ -23,7 +23,7 @@
  */
 package org.jmol.viewer;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
@@ -100,7 +100,7 @@ class DataManager {
       Object[] oldData = dataValues.get(type);
       BitSet bs;
       float[] f = (oldData == null || createNew ? new float[actualAtomCount]
-          : ArrayUtil.ensureLength(((float[]) oldData[1]), actualAtomCount));
+          : ArrayUtil.ensureLengthA(((float[]) oldData[1]), actualAtomCount));
 
       // check to see if the data COULD be interpreted as a string of float values
       // and if so, do that. This pre-fetches the tokens in that case.

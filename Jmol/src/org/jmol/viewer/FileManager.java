@@ -631,7 +631,7 @@ public class FileManager {
             .toString());
       } else {
         bis = ZipUtil.checkPngZipStream(bis);
-        if (ZipUtil.isZipFile(bis)) {
+        if (ZipUtil.isZipStream(bis)) {
           if (allowZipStream)
             return new ZipInputStream(bis);
           if (asInputStream)
@@ -712,7 +712,7 @@ public class FileManager {
       if (CompoundDocument.isCompoundDocument(bis)) {
         CompoundDocument doc = new CompoundDocument(bis);
         doc.getAllData(name.replace('\\', '/'), "Molecule", fileData);
-      } else if (ZipUtil.isZipFile(bis)) {
+      } else if (ZipUtil.isZipStream(bis)) {
         ZipUtil.getAllData(bis, subFileList, name.replace('\\', '/'),
             "Molecule", fileData);
       } else if (asBinaryString) {
@@ -783,7 +783,7 @@ public class FileManager {
     try {
       BufferedInputStream bis = (BufferedInputStream) t;
       Object bytes = (os != null || subFileList == null || subFileList.length <= 1
-            || !allowZip || !ZipUtil.isZipFile(bis) && !ZipUtil.isPngZipStream(bis) ? getStreamAsBytes(
+            || !allowZip || !ZipUtil.isZipStream(bis) && !ZipUtil.isPngZipStream(bis) ? getStreamAsBytes(
             bis, os)
             : ZipUtil.getZipFileContentsAsBytes(bis, subFileList, 1));
       bis.close();
@@ -803,7 +803,7 @@ public class FileManager {
       totalLen += len;
       if (os == null) {
         if (totalLen >= bytes.length)
-          bytes = ArrayUtil.ensureLength(bytes, totalLen * 2);
+          bytes = ArrayUtil.ensureLengthByte(bytes, totalLen * 2);
         System.arraycopy(buf, 0, bytes, totalLen - len, len);
       } else {
         os.write(buf, 0, len);
@@ -811,9 +811,7 @@ public class FileManager {
     }
     bis.close();
     if (os == null) {
-      buf = new byte[totalLen];
-      System.arraycopy(bytes, 0, buf, 0, totalLen);
-      return buf;
+      return ArrayUtil.arrayCopyByte(bytes, totalLen);
     }
     return totalLen + " bytes";
   }

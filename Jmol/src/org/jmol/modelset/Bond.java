@@ -26,7 +26,7 @@
 package org.jmol.modelset;
 
 
-import java.util.BitSet;
+import javax.util.BitSet;
 
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Colix;
@@ -48,7 +48,7 @@ public class Bond extends JmolEdge {
     }
 
     public BondSet(BitSet bs) {
-      BitSetUtil.copy(bs, this);
+      BitSetUtil.copy2(bs, this);
     }
 
     public BondSet(BitSet bs, int[] atoms) {

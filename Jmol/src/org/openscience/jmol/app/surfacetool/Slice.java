@@ -103,21 +103,21 @@ class Slice {
     }
     this.position = position;
     this.thickness = thickness;
-    this.boundBoxCenter.set(boundBoxCenter);
-    boundBoxNegCorner.sub(boundBoxCenter, boundBoxVec);
-    boundBoxPosCorner.add(boundBoxCenter, boundBoxVec);
+    this.boundBoxCenter.setT(boundBoxCenter);
+    boundBoxNegCorner.sub2(boundBoxCenter, boundBoxVec);
+    boundBoxPosCorner.add2(boundBoxCenter, boundBoxVec);
     diagonal = boundBoxPosCorner.distance(boundBoxNegCorner);
     makePlane(position, angleXY, anglefromZ, middle);
     if (!useMolecular) {
       //correct for the offset between the boundbox center and the origin
-      Point3f pt = new Point3f(middle.x, middle.y, middle.z);
-      pt.scaleAdd(-middle.w, pt, boundBoxCenter);
-      Measure.getPlaneThroughPoint(pt, new Vector3f(middle.x, middle.y,
+      Point3f pt = Point3f.new3(middle.x, middle.y, middle.z);
+      pt.scaleAdd2(-middle.w, pt, boundBoxCenter);
+      Measure.getPlaneThroughPoint(pt, Vector3f.new3(middle.x, middle.y,
           middle.z), middle);
     }
-    leftPlane.set(middle);
+    leftPlane.set(middle.x, middle.y, middle.z, middle.w);
     leftPlane.w += thickness / 2;
-    rightPlane.set(middle);
+    rightPlane.set(middle.x, middle.y, middle.z, middle.w);
     rightPlane.w -= thickness / 2;
     System.out.println(thickness + " left:" + leftPlane + " right:"
         + rightPlane);
@@ -135,9 +135,9 @@ class Slice {
   /*  private Point3f intersectionSegmentPlane(Plane plane, Point3f start,
                                              Point3f end) {
       Point3f intersection = new Point3f();
-      Vector3f planeVec = new Vector3f(plane);
-      Vector3f startVec = new Vector3f(start);
-      Vector3f endVec = new Vector3f(end);
+      Vector3f planeVec = Vector3f.new3(plane);
+      Vector3f startVec = Vector3f.new3(start);
+      Vector3f endVec = Vector3f.new3(end);
       float d = (planeVec.lengthSquared() - planeVec.dot(startVec))
           / (planeVec.dot(endVec) - planeVec.dot(startVec));
       if (d > 0 && d < 1) {

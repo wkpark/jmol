@@ -33,7 +33,7 @@ import org.jmol.util.Logger;
 import javax.vecmath.Point3f;
 
 import java.util.List;
-import java.util.BitSet;
+import javax.util.BitSet;
 
 /*
  * promolecular and discrete SCF NCIPLOT implemented in Jmol 12.1.49
@@ -259,7 +259,7 @@ public class NciCalculation extends QuantumCalculation implements
   private void getBsOK() {
     if (noValuesAtAll || nMolecules == 1)
       return;
-    bsOK = new BitSet(nX * nY * nZ);
+    bsOK = BitSetUtil.newBitSet(nX * nY * nZ);
     setXYZBohr(null);
     for (int ix = 0, index = 0; ix < countsXYZ[0]; ix++)
       for (int iy = 0; iy < countsXYZ[1]; iy++)

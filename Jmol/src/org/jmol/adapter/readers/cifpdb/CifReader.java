@@ -34,7 +34,7 @@ import org.jmol.constant.EnumStructure;
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -1175,7 +1175,7 @@ _pdbx_struct_oper_list.vector[3]
           m[7] *= symmetry.getUnitCellInfo(SimpleUnitCell.INFO_B) / 12;
           m[11] *= symmetry.getUnitCellInfo(SimpleUnitCell.INFO_C) / 12;
         }
-        m4.set(m);
+        m4.setA(m);
         if (htBiomts == null)
           htBiomts = new Hashtable<String, Matrix4f>();
         htBiomts.put(id, m4);
@@ -2085,7 +2085,7 @@ _struct_site_gen.details
             for (int k = bsBranch.nextSetBit(0); k >= 0; k = bsBranch
                 .nextSetBit(k + 1)) {
               atoms[k].add(ptOffset);
-              cart1.set(atoms[k]);
+              cart1.setT(atoms[k]);
               symmetry.toCartesian(cart1, true);
               BitSet bs = bsSets[atomSetCollection
                   .getAtomIndexFromName(atoms[k].atomName)
@@ -2094,7 +2094,7 @@ _struct_site_gen.details
                 for (int ii = bs.nextSetBit(0); ii >= 0; ii = bs.nextSetBit(ii + 1)) {
                   if (ii + firstAtom == k)
                     continue;
-                  cart2.set(atoms[ii + firstAtom]);
+                  cart2.setT(atoms[ii + firstAtom]);
                   symmetry.toCartesian(cart2, true);
                   if (cart2.distance(cart1) < 0.1f) {
                     bsExclude.set(k);

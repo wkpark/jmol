@@ -24,7 +24,7 @@
 
 package org.jmol.smiles;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.List;
 
 import org.jmol.api.SmilesMatcherInterface;

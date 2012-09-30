@@ -125,9 +125,9 @@ public class PhosphorusMonomer extends Monomer {
       return null;
     Vector3f vA = new Vector3f();
     Vector3f vB = new Vector3f();
-    vA.sub(ptA, ptP);
-    vB.sub(ptB, ptP);
-    return Quaternion.getQuaternionFrame(vA, vB, null, false);
+    vA.sub2(ptA, ptP);
+    vB.sub2(ptB, ptP);
+    return Quaternion.getQuaternionFrameV(vA, vB, null, false);
   }
   
   @Override

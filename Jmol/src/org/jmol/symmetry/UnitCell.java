@@ -51,19 +51,27 @@ class UnitCell extends SimpleUnitCell {
   private Point3f cartesianOffset = new Point3f();
   private Point3f fractionalOffset = new Point3f();
   
-  UnitCell(Tuple3f[] points, @SuppressWarnings("unused") boolean ignored) {
+  UnitCell() {
+    
+  }
+  
+  static UnitCell newP(Tuple3f[] points, @SuppressWarnings("unused") boolean ignored) {
+    UnitCell c = new UnitCell();
     float[] parameters = new float[] { -1, 0, 0, 0, 0, 0, points[1].x,
         points[1].y, points[1].z, points[2].x, points[2].y, points[2].z,
         points[3].x, points[3].y, points[3].z };
-    set(parameters);
-    allFractionalRelative = true;
-    calcUnitcellVertices();
-    setCartesianOffset(points[0]);
+    c.set(parameters);
+    c.allFractionalRelative = true;
+    c.calcUnitcellVertices();
+    c.setCartesianOffset(points[0]);
+    return c;
   }
   
-  UnitCell(float[] notionalUnitcell) {
-    super(notionalUnitcell);
-    calcUnitcellVertices();
+  public static UnitCell newA(float[] notionalUnitcell) {
+    UnitCell c = new UnitCell();
+    c.set(notionalUnitcell);
+    c.calcUnitcellVertices();
+    return  c;
   }
 
   void setOrientation(Matrix3f mat) {
@@ -71,8 +79,8 @@ class UnitCell extends SimpleUnitCell {
       return;
     Matrix4f m = new Matrix4f();
     m.set(mat);
-    matrixFractionalToCartesian.mul(m, matrixFractionalToCartesian);
-    matrixCartesianToFractional.invert(matrixFractionalToCartesian);
+    matrixFractionalToCartesian.mul2(m, matrixFractionalToCartesian);
+    matrixCartesianToFractional.invertM(matrixFractionalToCartesian);
     calcUnitcellVertices();
   }
 
@@ -128,16 +136,16 @@ class UnitCell extends SimpleUnitCell {
       return;
     // from "unitcell {i j k}" via uccage
     if (pt.x >= 100 || pt.y >= 100) {
-      unitCellMultiplier = new Point3f(pt);
+      unitCellMultiplier = Point3f.newP(pt);
       return;
     }
     if (pt.x == 0 && pt.y == 0 && pt.z == 0)
       unitCellMultiplier = null;
-    fractionalOffset.set(pt);
+    fractionalOffset.setT(pt);
     matrixCartesianToFractional.m03 = -pt.x;
     matrixCartesianToFractional.m13 = -pt.y;
     matrixCartesianToFractional.m23 = -pt.z;
-    cartesianOffset.set(pt);
+    cartesianOffset.setT(pt);
     matrixFractionalToCartesian.m03 = 0;
     matrixFractionalToCartesian.m13 = 0;
     matrixFractionalToCartesian.m23 = 0;
@@ -146,17 +154,17 @@ class UnitCell extends SimpleUnitCell {
     matrixFractionalToCartesian.m13 = cartesianOffset.y;
     matrixFractionalToCartesian.m23 = cartesianOffset.z;
     if (allFractionalRelative) {
-      matrixCtoFAbsolute.set(matrixCartesianToFractional);
-      matrixFtoCAbsolute.set(matrixFractionalToCartesian);
+      matrixCtoFAbsolute.setM(matrixCartesianToFractional);
+      matrixFtoCAbsolute.setM(matrixFractionalToCartesian);
     }
   }
 
   public void setCartesianOffset(Tuple3f origin) {
-    cartesianOffset.set(origin);
+    cartesianOffset.setT(origin);
     matrixFractionalToCartesian.m03 = cartesianOffset.x;
     matrixFractionalToCartesian.m13 = cartesianOffset.y;
     matrixFractionalToCartesian.m23 = cartesianOffset.z;
-    fractionalOffset.set(cartesianOffset);
+    fractionalOffset.setT(cartesianOffset);
     matrixCartesianToFractional.m03 = 0;
     matrixCartesianToFractional.m13 = 0;
     matrixCartesianToFractional.m23 = 0;
@@ -165,8 +173,8 @@ class UnitCell extends SimpleUnitCell {
     matrixCartesianToFractional.m13 = -fractionalOffset.y;
     matrixCartesianToFractional.m23 = -fractionalOffset.z;
     if (allFractionalRelative) {
-      matrixCtoFAbsolute.set(matrixCartesianToFractional);
-      matrixFtoCAbsolute.set(matrixFractionalToCartesian);
+      matrixCtoFAbsolute.setM(matrixCartesianToFractional);
+      matrixFtoCAbsolute.setM(matrixFractionalToCartesian);
     }
   }
 
@@ -359,7 +367,7 @@ class UnitCell extends SimpleUnitCell {
   Point3f[] getCanonicalCopy(float scale) {
     Point3f[] pts = new Point3f[8];
     for (int i = 0; i < 8; i++) {
-      pts[i] = new Point3f(BoxInfo.unitCubePoints[i]);
+      pts[i] = Point3f.newP(BoxInfo.unitCubePoints[i]);
       matrixFractionalToCartesian.transform(pts[i]);
       //pts[i].add(cartesianOffset);
     }
@@ -380,12 +388,12 @@ class UnitCell extends SimpleUnitCell {
   private void calcUnitcellVertices() {
     if (matrixFractionalToCartesian == null)
       return;
-    matrixCtoFAbsolute = new Matrix4f(matrixCartesianToFractional);
-    matrixFtoCAbsolute = new Matrix4f(matrixFractionalToCartesian);
+    matrixCtoFAbsolute = Matrix4f.newM(matrixCartesianToFractional);
+    matrixFtoCAbsolute = Matrix4f.newM(matrixFractionalToCartesian);
     vertices = new Point3f[8];
     for (int i = 8; --i >= 0;) {
       vertices[i] = new Point3f(); 
-      matrixFractionalToCartesian.transform(BoxInfo.unitCubePoints[i], vertices[i]);
+      matrixFractionalToCartesian.transform2(BoxInfo.unitCubePoints[i], vertices[i]);
       //System.out.println("UNITCELL " + vertices[i] + " " + BoxInfo.unitCubePoints[i]);
     }
   }
@@ -404,7 +412,7 @@ class UnitCell extends SimpleUnitCell {
    */
   public boolean checkDistance(Point3f f1, Point3f f2, float distance, float dx,
                               int iRange, int jRange, int kRange, Point3f ptOffset) {
-    Point3f p1 = new Point3f(f1);
+    Point3f p1 = Point3f.newP(f1);
     toCartesian(p1, true);
     for (int i = -iRange; i <= iRange; i++)
       for (int j = -jRange; j <= jRange; j++)
@@ -427,10 +435,10 @@ class UnitCell extends SimpleUnitCell {
   public Point3f[] getUnitCellVectors() {
     Matrix4f m = matrixFractionalToCartesian;
     return new Point3f[] { 
-        new Point3f(cartesianOffset),
-        new Point3f(m.m00, m.m10, m.m20), 
-        new Point3f(m.m01, m.m11, m.m21), 
-        new Point3f(m.m02, m.m12, m.m22) };
+        Point3f.newP(cartesianOffset),
+        Point3f.new3(m.m00, m.m10, m.m20), 
+        Point3f.new3(m.m01, m.m11, m.m21), 
+        Point3f.new3(m.m02, m.m12, m.m22) };
   }
 
 }

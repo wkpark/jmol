@@ -24,7 +24,7 @@
 package org.jmol.viewer;
 
 import java.util.ArrayList;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -811,7 +811,7 @@ public class ActionManager {
             if (a.getElementNumber() == 1) {
               viewer.script("assign atom ({" + dragAtomIndex + "}) \"X\"");
             } else {
-              Point3f ptNew = new Point3f(x, y, a.screenZ);
+              Point3f ptNew = Point3f.new3(x, y, a.screenZ);
               viewer.unTransformPoint(ptNew, ptNew);
               viewer.script("assign atom ({" + dragAtomIndex + "}) \""
                   + pickAtomAssignType + "\" " + Escape.escapePt(ptNew));
@@ -884,7 +884,7 @@ public class ActionManager {
       dragAtomIndex = -1;
     BitSet bs = (viewer.getMotionFixedAtoms().cardinality() == 0 ? viewer
         .getAtomBits((viewer.isAtomPDB(iAtom) ? Token.group
-            : Token.molecule), BitSetUtil.setBit(iAtom)) : BitSetUtil
+            : Token.molecule), BitSetUtil.newAndSetBit(iAtom)) : BitSetUtil
         .setAll(viewer.getAtomCount()));
     viewer.minimize(Integer.MAX_VALUE, 0, bs, null, 0, false, false, false);
   }
@@ -981,7 +981,7 @@ public class ActionManager {
         checkMotion(JmolConstants.CURSOR_MOVE);
         if (isBound(action, ACTION_rotateSelected)) {
           bs = viewer.getAtomBits(Token.molecule, BitSetUtil
-              .setBit(dragAtomIndex));
+              .newAndSetBit(dragAtomIndex));
           viewer.rotateSelected(getDegrees(deltaX, 0), getDegrees(deltaY, 1),
               bs);
         } else {
@@ -990,7 +990,7 @@ public class ActionManager {
           case PICKING_DRAG_MOLECULE:
           case PICKING_DRAG_MINIMIZE_MOLECULE:
             bs = viewer.getAtomBits(Token.molecule, BitSetUtil
-                .setBit(dragAtomIndex));
+                .newAndSetBit(dragAtomIndex));
             viewer.select(bs, false, null, true);
             break;
           }
@@ -1317,7 +1317,7 @@ public class ActionManager {
           viewer.setRotateBondIndex(index);
           break;
         case PICKING_DELETE_BOND:
-          viewer.deleteBonds(BitSetUtil.setBit(index));
+          viewer.deleteBonds(BitSetUtil.newAndSetBit(index));
         }
         return false;
       }
@@ -1363,7 +1363,8 @@ public class ActionManager {
   }
 
   private Point3fi getPoint(Map<String, Object> t) {
-    Point3fi pt = new Point3fi((Point3f) t.get("pt"));
+    Point3fi pt = new Point3fi();
+    pt.setT((Point3f) t.get("pt"));
     pt.modelIndex = (short) ((Integer) t.get("modelIndex")).intValue();
     return pt;
   }

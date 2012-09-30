@@ -36,7 +36,7 @@ import org.jmol.util.Quaternion;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.script.Token;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.List;
 import java.util.Map;
 
@@ -411,11 +411,11 @@ public abstract class Monomer extends Group {
     int iPrev = monomerIndex - mStep;
     Monomer prev = (mStep < 1 || monomerIndex <= 0 ? null : bioPolymer.monomers[iPrev]);
     Quaternion q2 = getQuaternion(qType);
-    Quaternion q1 = (mStep < 1 ? Quaternion.getQuaternionFrame(JmolConstants.axisX, JmolConstants.axisY, JmolConstants.axisZ, false) 
+    Quaternion q1 = (mStep < 1 ? Quaternion.getQuaternionFrameV(JmolConstants.axisX, JmolConstants.axisY, JmolConstants.axisZ, false) 
         : prev == null ? null : prev.getQuaternion(qType));
     if (q1 == null || q2 == null)
       return super.getHelixData(tokType, qType, mStep);
-    Point3f a = (mStep < 1 ? new Point3f(0, 0, 0) : prev.getQuaternionFrameCenter(qType));
+    Point3f a = (mStep < 1 ? Point3f.new3(0, 0, 0) : prev.getQuaternionFrameCenter(qType));
     Point3f b = getQuaternionFrameCenter(qType);
     if (a == null || b == null)
       return super.getHelixData(tokType, qType, mStep);

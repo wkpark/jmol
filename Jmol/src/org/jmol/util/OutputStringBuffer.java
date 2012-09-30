@@ -49,18 +49,4 @@ public class OutputStringBuffer {
       }
     return (bw == null ? sb.toString() : nBytes + " bytes");
   }
-
-  public OutputStringBuffer append(char c) {
-    if (bw == null) {
-      sb.append(c);
-    } else {
-      nBytes += 1;
-      try {
-        bw.write(c);
-      } catch (IOException e) {
-        // TODO
-      }      
-    }
-    return this;
-  }
 }

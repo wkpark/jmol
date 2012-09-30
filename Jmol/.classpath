@@ -5,7 +5,6 @@
 	<classpathentry kind="src" path="examples/externalAppletControls"/>
 	<classpathentry kind="src" path="test"/>
 	<classpathentry excluding="org/jmol/screensaver/JmolScreensaver.java" kind="src" path="screensaver/src/java"/>
-	<classpathentry kind="lib" path="jars/vecmath1.2-1.14.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="jars/netscape.jar"/>
 	<classpathentry kind="lib" path="jars/commons-cli-1.0.jar"/>

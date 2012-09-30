@@ -108,7 +108,14 @@ public class Jmol implements JmolSyncInterface {
   }
 
   public Object setStereoGraphics(boolean isStereo) {
-  	return null;
+    /**
+     * @j2sNative
+     * 
+     */
+    {
+      System.out.println(isStereo);
+    }
+    return null;
   }
 
   //protected void finalize() throws Throwable {
@@ -274,10 +281,12 @@ public class Jmol implements JmolSyncInterface {
   }
 
   protected void sendJsTextStatus(String message) {
+    System.out.println(message);
   	// not implemented
   }
 
   protected void sendJsTextareaStatus(String message) {
+    System.out.println(message);
   	// not implemented
   }
 
@@ -610,9 +619,12 @@ public class Jmol implements JmolSyncInterface {
 				return info;
 			try {
 				/**
-				 * @j2sNative return eval(syncCallback)(this.htmlName, info, appletName);
+				 * @j2sNative 
+				 * 
+				 * return eval(syncCallback)(this.htmlName, info, appletName);
 				 */
 				{
+				  System.out.println(appletName);
 				}
 			} catch (Exception e) {
 				if (!haveNotifiedError)
@@ -875,7 +887,9 @@ public class Jmol implements JmolSyncInterface {
     	 * 	alert(strInfo);
     	 *  return "";
     	 */
-    	{}
+    	{
+    	  System.out.println(strInfo);
+    	}
     } else {
     	 String[] tokens = TextFormat.split(callback, '.');
     	/**
@@ -892,7 +906,7 @@ public class Jmol implements JmolSyncInterface {
     	 * }
     	 */
     	{
-    		System.out.println(tokens);
+    		System.out.println(tokens + " " + data);
     	}
     }
     return "";

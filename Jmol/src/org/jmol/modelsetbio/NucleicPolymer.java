@@ -23,7 +23,7 @@
  */
 package org.jmol.modelsetbio;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.List;
 
 import javax.vecmath.Point3f;

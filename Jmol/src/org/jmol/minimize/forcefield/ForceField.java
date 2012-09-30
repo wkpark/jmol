@@ -24,7 +24,7 @@
 
 package org.jmol.minimize.forcefield;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 
 import org.jmol.minimize.MinAngle;
 import org.jmol.minimize.MinAtom;
@@ -176,7 +176,7 @@ abstract public class ForceField {
         if (calc.loggingEnabled)
           calc.appendLogData(calc.getAtomList("F I N A L  G E O M E T R Y"));
         if (done) {
-          String s = TextFormat.formatString(
+          String s = TextFormat.formatStringF(
               "\n    " + name + " STEEPEST DESCENT HAS CONVERGED: E = %8.5f " + minimizer.units + " after " + currentStep + " steps", "f",
               toUserUnits(e1));
           calc.appendLogData(s);

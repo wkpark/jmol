@@ -32,17 +32,19 @@ public final class Rgb16 {
   public Rgb16() {
   }
 
-  public Rgb16(int argb) {
-    set(argb);
+  public static Rgb16 newI(int argb) {
+    Rgb16 c = new Rgb16();
+    c.setInt(argb);
+    return c;
   }
 
-  public void set(int argb) {
+  public void setInt(int argb) {
     rScaled = ((argb >> 8) & 0xFF00) | 0x80;
     gScaled = ((argb     ) & 0xFF00) | 0x80;
     bScaled = ((argb << 8) & 0xFF00) | 0x80;
   }
 
-  public void set(Rgb16 other) {
+  public void setRgb(Rgb16 other) {
     rScaled = other.rScaled;
     gScaled = other.gScaled;
     bScaled = other.bScaled;

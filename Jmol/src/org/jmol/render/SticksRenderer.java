@@ -269,14 +269,14 @@ public class SticksRenderer extends ShapeRenderer {
       return;
     }
     if (doFixedSpacing) {
-      x.sub(atomB, atomA);
+      x.sub2(atomB, atomA);
       y.cross(x, z);
       y.normalize();
       y.scale(multipleBondSpacing);
-      x.set(y);
+      x.setT(y);
       x.scale((bondOrder - 1) / 2f);
-      p1.sub(atomA, x);
-      p2.sub(atomB, x);
+      p1.sub2(atomA, x);
+      p2.sub2(atomB, x);
       while (true) {
         if (exportType == GData.EXPORT_CARTESIAN && !isDashed) {
           // bypass screen rendering and just use the atoms themselves

@@ -25,7 +25,7 @@
 
 package org.jmol.util;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 
 
 public class Parser {

@@ -294,7 +294,7 @@ public class GulpReader extends AtomSetCollectionReader {
   }
 
   private void scalePrimitiveData(int i, float value) {
-    Vector3f v = new Vector3f(primitiveData[i], primitiveData[i + 1], primitiveData[i + 2]);
+    Vector3f v = Vector3f.new3(primitiveData[i], primitiveData[i + 1], primitiveData[i + 2]);
     v.normalize();
     v.scale(value);
     primitiveData[i++] = v.x;

@@ -26,7 +26,6 @@ package org.jmol.geodesic;
 
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
-import org.jmol.util.FastBitSet;
 import org.jmol.util.Geodesic;
 import org.jmol.util.Normix;
 //import org.jmol.util.SlowBitSet;
@@ -37,7 +36,7 @@ import org.jmol.atomdata.AtomDataServer;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
@@ -139,15 +138,15 @@ import javax.vecmath.Vector3f;
 public final class EnvelopeCalculation {
 
   
-  private FastBitSet geodesicMap;
-  private FastBitSet mapT;
+  private BitSet geodesicMap;
+  private BitSet mapT;
 
   //Viewer viewer;
   private short[] mads;
   private AtomData atomData = new AtomData();
   private AtomDataServer viewer;
   private int atomCount;
-  private FastBitSet emptySet;
+  private static BitSet EMPTY_SET;
   
   /**
    * 
@@ -167,9 +166,9 @@ public final class EnvelopeCalculation {
     //  mapT = SlowBitSet.allocateBitmap(geodesicCount);
     //  emptySet = new SlowBitSet();
     //} else {
-      geodesicMap = FastBitSet.allocateBitmap(geodesicCount);
-      mapT = FastBitSet.allocateBitmap(geodesicCount);
-      emptySet = FastBitSet.getEmptySet();
+      geodesicMap = BitSetUtil.newBitSet(geodesicCount);
+      mapT = BitSetUtil.newBitSet(geodesicCount);
+      EMPTY_SET = BitSetUtil.emptySet;
     //}
 
 }
@@ -184,8 +183,8 @@ public final class EnvelopeCalculation {
   private BitSet bsMySelected;
   
 
-  private FastBitSet[] dotsConvexMaps;
-  public FastBitSet[] getDotsConvexMaps() {
+  private BitSet[] dotsConvexMaps;
+  public BitSet[] getDotsConvexMaps() {
     return dotsConvexMaps;
   }
   
@@ -199,7 +198,7 @@ public final class EnvelopeCalculation {
     if (dotsConvexMax >= max)
       return;
     dotsConvexMax = max;
-    dotsConvexMaps = new FastBitSet[max];
+    dotsConvexMaps = new BitSet[max];
   }
   
   private int geodesicCount;
@@ -219,12 +218,12 @@ public final class EnvelopeCalculation {
       if (!bs.get(iDot))
         geodesicMap.clear(iDot);
     if (dotsConvexMaps == null)
-      dotsConvexMaps = new FastBitSet[atomCount];
-    FastBitSet map;
+      dotsConvexMaps = new BitSet[atomCount];
+    BitSet map;
     if (geodesicMap.isEmpty())
-      map = emptySet;
+      map = EMPTY_SET;
     else
-      map = new FastBitSet(geodesicMap);
+      map = BitSet.copy(geodesicMap);
     if (index >= dotsConvexMaps.length)
       return;
     dotsConvexMaps[index] = map;
@@ -262,14 +261,14 @@ public final class EnvelopeCalculation {
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       if (i >= dotsConvexMax)
         return;
-      FastBitSet map = dotsConvexMaps[i];
+      BitSet map = dotsConvexMaps[i];
       if (map == null || map.isEmpty())
         continue;
-      FastBitSet bsNew = new FastBitSet();
+      BitSet bsNew = new BitSet();
       for (int j = map.nextSetBit(0); j >= 0; j = map.nextSetBit(j + 1)) {
-        pt.set(Geodesic.getVertexVector(j));
+        pt.setT(Geodesic.getVertexVector(j));
         m.transform(pt);
-        bsNew.set(Normix.getNormix(pt, bsTemp));
+        bsNew.set(Normix.getNormixV(pt, bsTemp));
       }         
       dotsConvexMaps[i] = bsNew;
     }
@@ -364,7 +363,7 @@ public final class EnvelopeCalculation {
     int dotCount = 42;
     for (int i = dotsConvexMax; --i >= 0;)
       if (dotsConvexMaps[i] != null)
-        nPoints += dotsConvexMaps[i].cardinality(dotCount);
+        nPoints += dotsConvexMaps[i].cardinalityN(dotCount);
     Point3f[] points = new Point3f[nPoints];
     if (nPoints == 0)
       return points;
@@ -377,7 +376,7 @@ public final class EnvelopeCalculation {
         while (--iDot >= 0)
           if (dotsConvexMaps[i].get(iDot)) {
             Point3f pt = new Point3f();
-            pt.scaleAdd(atomData.atomRadius[i], Geodesic.getVertexVector(iDot), atomData.atomXyz[i]);
+            pt.scaleAdd2(atomData.atomRadius[i], Geodesic.getVertexVector(iDot), atomData.atomXyz[i]);
             points[nPoints++] = pt;
           }
       }
@@ -423,23 +422,23 @@ public final class EnvelopeCalculation {
   
   private void calcConvexMap(boolean isSurface) {
     if (dotsConvexMaps == null)
-      dotsConvexMaps = new FastBitSet[atomCount];
+      dotsConvexMaps = new BitSet[atomCount];
     calcConvexBits();
-    FastBitSet map;
+    BitSet map;
     if (geodesicMap.isEmpty())
-      map = emptySet;
+      map = EMPTY_SET;
     else {
       bsSurface.set(indexI);
       if (isSurface) {
         addIncompleteFaces(geodesicMap);
         addIncompleteFaces(geodesicMap);
       }
-      map = new FastBitSet(geodesicMap);
+      map = BitSet.copy(geodesicMap);
     }
     dotsConvexMaps[indexI] = map;
   }
   
-  private void addIncompleteFaces(FastBitSet points) {
+  private void addIncompleteFaces(BitSet points) {
     mapT.clear();
     short[] faces = Geodesic.getFaceVertexes(MAX_LEVEL);
     int len = faces.length;
@@ -501,7 +500,7 @@ public final class EnvelopeCalculation {
     boolean ok1, ok2, ok3;
     mapT.clear();
     for (int i = 0; i < 12; i++) {
-      vertexTest[i].set(Geodesic.getVertexVector(i));
+      vertexTest[i].setT(Geodesic.getVertexVector(i));
       vertexTest[i].scaleAdd(combinedRadii, centerI);      
     }    
     for (int f = 0; f < 20; f++) {
@@ -542,7 +541,7 @@ public final class EnvelopeCalculation {
           for (int j = 0; j < neighborCount; j++) {
             float maxDist = neighborPlusProbeRadii2[j];
             centerT = neighborCenters[j];
-            pointT.set(Geodesic.getVertexVector(vect));
+            pointT.setT(Geodesic.getVertexVector(vect));
             pointT.scaleAdd(combinedRadii, centerI);
             if (pointT.distanceSquared(centerT) < maxDist)
               geodesicMap.clear(vect);
@@ -574,11 +573,11 @@ public final class EnvelopeCalculation {
           + neighborRadius)
         continue;
       if (neighborCount == neighborIndices.length) {
-        neighborIndices = ArrayUtil.doubleLength(neighborIndices);
+        neighborIndices = ArrayUtil.doubleLengthI(neighborIndices);
         neighborCenters = (Point3f[]) ArrayUtil.doubleLength(neighborCenters);
         neighborPlusProbeRadii2 = ArrayUtil
-            .doubleLength(neighborPlusProbeRadii2);
-        neighborRadii2 = ArrayUtil.doubleLength(neighborRadii2);
+            .doubleLengthF(neighborPlusProbeRadii2);
+        neighborRadii2 = ArrayUtil.doubleLengthF(neighborRadii2);
       }
       neighborCenters[neighborCount] = atomData.atomXyz[indexN];
       neighborIndices[neighborCount] = indexN;
@@ -596,7 +595,7 @@ public final class EnvelopeCalculation {
    * @param nAtomsDeleted
    */
   public void deleteAtoms(int firstAtomDeleted, int nAtomsDeleted) {
-    dotsConvexMaps = (FastBitSet[]) ArrayUtil.deleteElements(dotsConvexMaps, firstAtomDeleted, nAtomsDeleted);
+    dotsConvexMaps = (BitSet[]) ArrayUtil.deleteElements(dotsConvexMaps, firstAtomDeleted, nAtomsDeleted);
     dotsConvexMax = dotsConvexMaps.length;
     if (mads != null)
       mads = (short[]) ArrayUtil.deleteElements(mads, firstAtomDeleted, nAtomsDeleted);

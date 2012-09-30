@@ -42,7 +42,7 @@ import org.jmol.atomdata.RadiusData;
 import org.jmol.shape.Shape;
 
 import java.util.ArrayList;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.List;
 import java.util.Map;
 
@@ -211,7 +211,7 @@ import javax.vecmath.Vector3f;
       if (isFractional)
         atoms[i].setFractionalCoordTo(trajectory[pt], true);
       else
-        atoms[i].set(trajectory[pt]);
+        atoms[i].setT(trajectory[pt]);
       atoms[i].modelIndex = (short) modelIndex;
       if (vibrationSteps != null) {
         if (vibrations != null && vibrations[pt] != null)
@@ -409,7 +409,7 @@ import javax.vecmath.Vector3f;
   }
 
   private BitSet modelsOf(BitSet bsAtoms, BitSet bsAllAtoms) {
-    BitSet bsModels = new BitSet(modelCount);
+    BitSet bsModels = BitSetUtil.newBitSet(modelCount);
     boolean isAll = (bsAtoms == null);
     int i0 = (isAll ? atomCount - 1 : bsAtoms.nextSetBit(0));
     for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsAtoms.nextSetBit(i + 1))) {
@@ -886,7 +886,7 @@ import javax.vecmath.Vector3f;
   public void setAtomCoordRelative(Tuple3f offset, BitSet bs) {
     setAtomsCoordRelative(bs, offset.x, offset.y, offset.z);
     mat4.setIdentity();
-    vTemp.set(offset);
+    vTemp.setT(offset);
     mat4.setTranslation(vTemp);
     recalculatePositionDependentQuantities(bs, mat4);
   }
@@ -918,12 +918,12 @@ import javax.vecmath.Vector3f;
     }
     if (plane != null) {
       // ax + by + cz + d = 0
-      Vector3f norm = new Vector3f(plane.x, plane.y, plane.z);
+      Vector3f norm = Vector3f.new3(plane.x, plane.y, plane.z);
       norm.normalize();
       float d = (float) Math.sqrt(plane.x * plane.x + plane.y * plane.y
           + plane.z * plane.z);
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-        float twoD = -Measure.distanceToPlane(plane, d, atoms[i]) * 2;
+        float twoD = -Measure.distanceToPlaneD(plane, d, atoms[i]) * 2;
         float x = norm.x * twoD;
         float y = norm.y * twoD;
         float z = norm.z * twoD;
@@ -951,9 +951,9 @@ import javax.vecmath.Vector3f;
       if (vNot.size() == 0)
         return;
       pt = Measure.getCenterAndPoints(vNot)[0];
-      Vector3f v = new Vector3f(thisAtom);
+      Vector3f v = Vector3f.newV(thisAtom);
       v.sub(pt);
-      Quaternion q = new Quaternion(v, 180);
+      Quaternion q = Quaternion.newVA(v, 180);
       moveAtoms(null, q.getMatrix(), null, bsAtoms, thisAtom, true);
     }
   }
@@ -973,11 +973,11 @@ import javax.vecmath.Vector3f;
       matInv.set(matrixRotate);
       matInv.invert();
       ptTemp.set(0, 0, 0);
-      matTemp.mul(mNew, matrixRotate);
-      matTemp.mul(matInv, matTemp);
+      matTemp.mul2(mNew, matrixRotate);
+      matTemp.mul2(matInv, matTemp);
     }
     if (isInternal) {
-      vTemp.set(center);
+      vTemp.setT(center);
       mat4.setIdentity();
       mat4.setTranslation(vTemp);
       mat4t.set(matTemp);
@@ -1010,7 +1010,7 @@ import javax.vecmath.Vector3f;
         atoms[i].add(translation);
       mat4t.setIdentity();
       mat4t.setTranslation(translation);
-      mat4.mul(mat4t, mat4);
+      mat4.mul2(mat4t, mat4);
     }
     recalculatePositionDependentQuantities(bs, mat4);
   }
@@ -1020,8 +1020,8 @@ import javax.vecmath.Vector3f;
  
  static {
 
-    Point3f pt = new Point3f(-1, 2, 3);
-    Point3f center = new Point3f(.2f,.4f,.5f);
+    Point3f pt = Point3f.new3(-1, 2, 3);
+    Point3f center = Point3f.new3(.2f,.4f,.5f);
     Matrix3f matTemp = (new Quaternion(.2f, .3f, .4f, .5f)).getMatrix();
     
     Matrix4f mat4 = new Matrix4f();
@@ -1038,7 +1038,7 @@ import javax.vecmath.Vector3f;
     mat4t.setTranslation(vTemp);
     mat4.mul(mat4t);
 
-    Point3f pt1 = new Point3f(pt);
+    Point3f pt1 = Point3f.new3(pt);
     System.out.println(pt);    
     pt1.sub(center);
     matTemp.transform(pt1);

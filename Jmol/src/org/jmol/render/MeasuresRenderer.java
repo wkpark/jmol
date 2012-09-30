@@ -172,13 +172,13 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     }
     int dotCount = (int)((aa.angle / (2 * Math.PI)) * 64);
     float stepAngle = aa.angle / dotCount;
-    aaT.set(aa);
+    aaT.setAA(aa);
     int iMid = dotCount / 2;
     Point3f ptArc = measurement.getPointArc();
     for (int i = dotCount; --i >= 0; ) {
       aaT.angle = i * stepAngle;
-      matrixT.set(aaT);
-      pointT.set(ptArc);
+      matrixT.setAA(aaT);
+      pointT.setT(ptArc);
       matrixT.transform(pointT);
       pointT.add(atomB);
       // NOTE! Point3i screen is just a pointer 
@@ -188,7 +188,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
       if (zArc < 0) zArc = 0;
       g3d.drawPixel(point3iScreenTemp.x, point3iScreenTemp.y, zArc);
       if (i == iMid) {
-        pointT.set(ptArc);
+        pointT.setT(ptArc);
         pointT.scale(1.1f);
         // next line modifies Point3i point3iScreenTemp
         matrixT.transform(pointT);

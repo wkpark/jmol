@@ -26,7 +26,7 @@
 package org.jmol.export;
 
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.List;
 import java.util.Map;
 

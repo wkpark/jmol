@@ -25,7 +25,7 @@
 
 package org.jmol.render;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 
 import org.jmol.modelset.Atom;
 

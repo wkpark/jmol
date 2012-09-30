@@ -24,7 +24,7 @@
 package org.jmol.modelsetbio;
 
 import java.util.ArrayList;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.List;
 
 import javax.vecmath.Point3f;
@@ -52,9 +52,9 @@ public class AlphaPolymer extends BioPolymer {
   protected Point3f getControlPoint(int i, Vector3f v) {
     if (!monomers[i].isSheet())
       return leadPoints[i];
-    v.sub(leadMidpoints[i], leadPoints[i]);
+    v.sub2(leadMidpoints[i], leadPoints[i]);
     v.scale(sheetSmoothing);
-    Point3f pt = new Point3f(leadPoints[i]);
+    Point3f pt = Point3f.newP(leadPoints[i]);
     pt.add(v);
     return pt;
   }

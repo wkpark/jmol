@@ -35,7 +35,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
@@ -206,7 +206,7 @@ public abstract class ___Exporter {
     this.g3d = g3d;
     this.privateKey = privateKey;
     backgroundColix = viewer.getObjectColix(StateManager.OBJ_BACKGROUND);
-    center.set(viewer.getRotationCenter());
+    center.setT(viewer.getRotationCenter());
     if ((screenWidth <= 0) || (screenHeight <= 0)) {
       screenWidth = viewer.getScreenWidth();
       screenHeight = viewer.getScreenHeight();
@@ -266,7 +266,7 @@ public abstract class ___Exporter {
   
 
   protected static void setTempVertex(Point3f pt, Point3f offset, Point3f ptTemp) {
-    ptTemp.set(pt);
+    ptTemp.setT(pt);
     if (offset != null)
       ptTemp.add(offset);
   }
@@ -421,15 +421,15 @@ public abstract class ___Exporter {
     for (int i = 0; i < n; i++) {
       float x = (float) (Math.cos(i * d));
       float y = (float) (Math.sin(i * d));
-      ms.vertices[i] = new Point3f(x, y, 0);
+      ms.vertices[i] = Point3f.new3(x, y, 0);
     }
-    ms.vertices[n] = new Point3f(0, 0, 1);
+    ms.vertices[n] = Point3f.new3(0, 0, 1);
     if (matRotateScale != null) {
       ms.normals = new Vector3f[ms.vertexCount];
       for (int i = 0; i < ms.vertexCount; i++) {
         matRotateScale.transform(ms.vertices[i]);
         ms.normals[i] = new Vector3f();
-        ms.normals[i].set(ms.vertices[i]);
+        ms.normals[i].setT(ms.vertices[i]);
         ((Vector3f) ms.normals[i]).normalize();
         ms.vertices[i].add(centerBase);
       }
@@ -446,12 +446,12 @@ public abstract class ___Exporter {
       if (pt1.z > pt2.z) // 180-degree rotation about X
         m1.m11 = m1.m22 = -1;
     } else {
-      tempV1.set(pt2);
+      tempV1.setT(pt2);
       tempV1.sub(pt1);
       tempV2.set(0, 0, 1);
       tempV2.cross(tempV2, tempV1);
       tempV1.cross(tempV1, tempV2);
-      Quaternion q = Quaternion.getQuaternionFrame(tempV2, tempV1, null, false);
+      Quaternion q = Quaternion.getQuaternionFrameV(tempV2, tempV1, null, false);
       m1 = q.getMatrix();
     }
     m.m00 = radius;

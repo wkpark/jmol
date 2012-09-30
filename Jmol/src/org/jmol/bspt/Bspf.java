@@ -22,10 +22,11 @@
  */
 package org.jmol.bspt;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 
 import javax.vecmath.Point3f;
 
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
 
 /**
@@ -76,12 +77,8 @@ public final class Bspf {
   
   public void addTuple(int bsptIndex, Point3f tuple) {
     if (bsptIndex >= bspts.length) {
-      Bspt[] t = new Bspt[bsptIndex + 1];
-      System.arraycopy(bspts, 0, t, 0, bspts.length);
-      bspts = t;
-      boolean[] b = new boolean[bsptIndex + 1];
-      System.arraycopy(bsptsValid, 0, b, 0, bsptsValid.length);
-      bsptsValid = b;
+      bspts = (Bspt[]) ArrayUtil.arrayCopyOpt(bspts, bsptIndex + 1);
+      bsptsValid = ArrayUtil.arrayCopyBool(bsptsValid, bsptIndex + 1);
     }
     Bspt bspt = bspts[bsptIndex];
     if (bspt == null) {
@@ -106,20 +103,18 @@ public final class Bspf {
   }
   
   /**
-   * @param bsptIndex  a model index
-   * @return           either a cached or a new CubeIterator
+   * @param bsptIndex
+   *        a model index
+   * @return either a cached or a new CubeIterator
    * 
    */
   public CubeIterator getCubeIterator(int bsptIndex) {
     if (bsptIndex < 0)
       return getNewCubeIterator(-1 - bsptIndex);
-    if (bsptIndex >= cubeIterators.length) {
-      CubeIterator[] t = new CubeIterator[bsptIndex + 1];
-      System.arraycopy(cubeIterators, 0, t, 0, cubeIterators.length);
-      cubeIterators = t;
-    }
-    if (cubeIterators[bsptIndex] == null &&
-        bspts[bsptIndex] != null)
+    if (bsptIndex >= cubeIterators.length)
+      cubeIterators = (CubeIterator[]) ArrayUtil.arrayCopyOpt(cubeIterators,
+          bsptIndex + 1);
+    if (cubeIterators[bsptIndex] == null && bspts[bsptIndex] != null)
       cubeIterators[bsptIndex] = getNewCubeIterator(bsptIndex);
     cubeIterators[bsptIndex].set(bspts[bsptIndex]);
     return cubeIterators[bsptIndex];

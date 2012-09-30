@@ -42,10 +42,11 @@ package org.jmol.g3d;
   * added line bitset option for rockets. Rendering times for bonds done this way are a bit slower.
   */
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.jmol.util.BitSetUtil;
 import org.jmol.util.GData;
 import org.jmol.util.Logger;
 import org.jmol.util.Shader;
@@ -77,7 +78,7 @@ final class LineRenderer {
     if (getCachedLine())
       return;
     nBits = (lineTypeX ? g3d.getRenderWidth() : g3d.getRenderHeight());
-    lineBits = new BitSet(nBits);
+    lineBits = BitSetUtil.newBitSet(nBits);
     dy = Math.abs(dy);
     dx = Math.abs(dx);
     if (dy > dx) {
@@ -245,8 +246,8 @@ final class LineRenderer {
 
   private int getTrimmedLine() {   // formerly "visibilityCheck()"
 
-    cc1 = g3d.clipCode(x1t, y1t, z1t);
-    cc2 = g3d.clipCode(x2t, y2t, z2t);
+    cc1 = g3d.clipCode3(x1t, y1t, z1t);
+    cc2 = g3d.clipCode3(x2t, y2t, z2t);
     if ((cc1 | cc2) == 0)
       return VISIBILITY_UNCLIPPED;
 
@@ -289,7 +290,7 @@ final class LineRenderer {
           z1t = depth;
         }
 
-        cc1 = g3d.clipCode(x1t, y1t, z1t);
+        cc1 = g3d.clipCode3(x1t, y1t, z1t);
       } else {
         if ((cc2 & GData.xLT) != 0) {
           y2t += (-x2t * dy) / dx;
@@ -317,7 +318,7 @@ final class LineRenderer {
           y2t += ((depth - z2t) * dy) / dz;
           z2t = depth;
         }
-        cc2 = g3d.clipCode(x2t, y2t, z2t);
+        cc2 = g3d.clipCode3(x2t, y2t, z2t);
       }
     } while ((cc1 | cc2) != 0);
     //System.out.println("trimmed line " + x1t + " " + y1t + " " + z1t + " " + x2t + " " + y2t + " " + z2t + " " + cc1 + "/" + cc2);

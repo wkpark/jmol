@@ -100,7 +100,7 @@ public class XmlOdysseyReader extends XmlReader {
       parent.setUnitCellItem(3, 90);
       parent.setUnitCellItem(4, 90);
       parent.setUnitCellItem(5, 90);
-      Point3f pt = new Point3f(-x / 2, -y / 2, -z / 2);
+      Point3f pt = Point3f.new3(-x / 2, -y / 2, -z / 2);
       atomSetCollection.setAtomSetAuxiliaryInfo("periodicOriginXyz", pt);
       Atom[] atoms = atomSetCollection.getAtoms();
       for (int i = atomSetCollection.getAtomCount(); --i >= 0;) {

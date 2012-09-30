@@ -24,7 +24,7 @@
 
 package org.jmol.shape;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Iterator;
 
 import org.jmol.util.JmolFont;

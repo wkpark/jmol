@@ -23,7 +23,7 @@
  */
 package org.jmol.shape;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -57,7 +57,7 @@ public class Axes extends FontLineShape {
   public Point3f getAxisPoint(int i, boolean isDataFrame) {
     if (!isDataFrame && axisXY.z == 0)
       return axisPoints[i];
-    ptTemp.set(axisPoints[i]);
+    ptTemp.setT(axisPoints[i]);
     ptTemp.sub(originPoint);
     ptTemp.scale(0.5f);
     return ptTemp; 
@@ -80,7 +80,7 @@ public class Axes extends FontLineShape {
       } else {
         if (fixedOrigin == null)
           fixedOrigin = new Point3f();
-        fixedOrigin.set((Point3f) value);
+        fixedOrigin.setT((Point3f) value);
       }
       initShape();
       return;
@@ -110,7 +110,7 @@ public class Axes extends FontLineShape {
     if (fixedOrigin == null)
       originPoint.set(0, 0, 0);
     else
-      originPoint.set(fixedOrigin);
+      originPoint.setT(fixedOrigin);
     if (axesMode == EnumAxesMode.UNITCELL
         && modelSet.getCellInfos() != null) {
       SymmetryInterface unitcell = viewer.getCurrentUnitCell();
@@ -118,21 +118,21 @@ public class Axes extends FontLineShape {
         Point3f[] vectors = unitcell.getUnitCellVertices();
         Point3f offset = unitcell.getCartesianOffset();
         if (fixedOrigin == null) {
-          originPoint.set(offset);
+          originPoint.setT(offset);
         } else {
           offset = fixedOrigin;
         }
         scale = viewer.getAxesScale() / 2f;
         // We must divide by 2 because that is the default for ALL axis types.
         // Not great, but it will have to do.
-        axisPoints[0].scaleAdd(scale, vectors[4], offset);
-        axisPoints[1].scaleAdd(scale, vectors[2], offset);
-        axisPoints[2].scaleAdd(scale, vectors[1], offset);
+        axisPoints[0].scaleAdd2(scale, vectors[4], offset);
+        axisPoints[1].scaleAdd2(scale, vectors[2], offset);
+        axisPoints[2].scaleAdd2(scale, vectors[1], offset);
         return;
       }
     } else if (axesMode == EnumAxesMode.BOUNDBOX) {
       if (fixedOrigin == null)
-        originPoint.set(viewer.getBoundBoxCenter());
+        originPoint.setT(viewer.getBoundBoxCenter());
     }
     setScale(viewer.getAxesScale() / 2f);
   }
@@ -152,10 +152,10 @@ public class Axes extends FontLineShape {
   
   void setScale(float scale) {
     this.scale = scale;
-    corner.set(viewer.getBoundBoxCornerVector());
+    corner.setT(viewer.getBoundBoxCornerVector());
     for (int i = 6; --i >= 0;) {
       Point3f axisPoint = axisPoints[i];
-      axisPoint.set(JmolConstants.unitAxisVectors[i]);
+      axisPoint.setT(JmolConstants.unitAxisVectors[i]);
       // we have just set the axisPoint to be a unit on a single axis
    
       // therefore only one of these values (x, y, or z) will be nonzero

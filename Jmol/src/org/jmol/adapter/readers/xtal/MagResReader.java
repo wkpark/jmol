@@ -108,7 +108,7 @@ TOTAL tensor
     for (int i = 0, pt = 0; i < 3; i++)
       for (int j = 0; j < 3; j++)
       a[i][j] = data[pt++];
-    atom.setEllipsoid(Eigen.getEllipsoid(a));
+    atom.setEllipsoid(Eigen.getEllipsoidDD(a));
     atom.ellipsoid[0].scale(f);
   }
 }

@@ -54,7 +54,7 @@
   <property name="jmol.build.dir" value="build" />
   <property name="docbook-xsl" value="docbook-xsl-1.76.1" />
   <property name="docbook-xml" value="docbook-xml-4.4" />
-  <property name="vecmath.jar" value="vecmath1.2-1.14.jar" />
+  <!--property name="vecmath.jar" value="vecmath1.2-1.14.jar" / -->
   <property name="naga.jar" value="naga-2_1-r42.jar" />
   <property name="itext.jar" value="itext-1.4.5.jar" />
   <property name="commons-cli.jar" value="commons-cli-1.0.jar" />
@@ -85,7 +85,7 @@
   
   <path id="apisio-project.class.path">
     <fileset dir="${lib.dir}">
-      <include name="${vecmath.jar}" />
+      <!-- include name="${vecmath.jar}" / -->
       <include name="netscape.jar" />
       <include name="gnujaxp.jar" />
     </fileset>
@@ -358,7 +358,7 @@ all support for previous versions removed
     <condition property="libjars.uptodate">
       <and>
         <uptodate targetfile="${appjars.dir}">
-          <srcfiles dir="${lib.dir}" includes="${vecmath.jar}"/>
+          <!-- srcfiles dir="${lib.dir}" includes="${vecmath.jar}"/ -->
           <srcfiles dir="${lib.dir}" includes="${naga.jar}"/>
           <!-- srcfiles dir="${lib.dir}" includes="Acme.jar"/ -->
           <srcfiles dir="${lib.dir}" includes="${itext.jar}"/>
@@ -391,7 +391,7 @@ all support for previous versions removed
   <target name="libjars" id="libjars" depends="check.libjars" unless="libjars.uptodate">
     <delete file="build/libjars.timestamp"/>
     <mkdir dir="${appjars.dir}"/>
-    <unjar dest="${appjars.dir}" src="${lib.dir}/${vecmath.jar}"/>
+    <!-- unjar dest="${appjars.dir}" src="${lib.dir}/${vecmath.jar}"/ -->
     <unjar dest="${appjars.dir}" src="${lib.dir}/${naga.jar}"/>
     <!-- unjar dest="${appjars.dir}" src="${lib.dir}/Acme.jar"/ -->
     <unjar dest="${appjars.dir}" src="${lib.dir}/${itext.jar}"/>
@@ -463,7 +463,8 @@ all support for previous versions removed
         <exclude name="**/openscience/jmol/app/jmolpanel/**" />
         <exclude name="**/openscience/jmol/app/webexport/**" />
       </fileset>
-      <fileset dir="${appjars.dir}" includes="**/cli/** **/vecmath/** **/naga/**" />
+      <!-- fileset dir="${appjars.dir}" includes="**/cli/** **/vecmath/** **/naga/**" / -->
+      <fileset dir="${appjars.dir}" includes="**/cli/** **/naga/**" />
       <fileset dir="src/org/jmol/translation/Jmol" includes="Messages*.class"/>
     </jar>
     <signjar jar="${jmol.build.dir}/JmolUnsignedF.jar"
@@ -546,8 +547,10 @@ all support for previous versions removed
     <condition property="appletjars.uptodate">
       <and>
         <uptodate targetfile="${appletjars.dir}">
+          <!-- srcfiles dir="${lib.dir}"
+                      includes="jmolappletcdk.jar,${vecmath.jar}"/ -->
           <srcfiles dir="${lib.dir}"
-                    includes="jmolappletcdk.jar,${vecmath.jar}"/>
+                    includes="jmolappletcdk.jar"/>
         </uptodate>
         <uptodate targetfile="build/appletjars.timestamp"
                   srcfile="${appletjars.dir}"/>
@@ -567,7 +570,7 @@ all support for previous versions removed
       </fileset>
     </copy>
 
-    <unjar dest="${appletjars.dir}" src="${lib.dir}/${vecmath.jar}">
+    <!-- unjar dest="${appletjars.dir}" src="${lib.dir}/${vecmath.jar}">
       <patternset>
         <include name="**/Point3f.class"/>
         <include name="**/Vector3f.class"/>
@@ -576,7 +579,6 @@ all support for previous versions removed
         <include name="**/AxisAngle4f.class"/>
         <include name="**/Quat4f.class"/>
         <include name="**/Point3i.class"/>
-        <!-- the following are dependencies of the classes above -->
         <include name="**/Tuple3i.class"/>
         <include name="**/Tuple3f.class"/>
         <include name="**/Tuple4f.class"/>
@@ -595,7 +597,7 @@ all support for previous versions removed
         <include name="**/AxisAngle4d.class"/>
         <include name="**/SingularMatrixException.class"/>
       </patternset>
-    </unjar>
+    </unjar -->
     <touch file="build/appletjars.timestamp"/>
   </target>
 
@@ -741,6 +743,7 @@ all support for previous versions removed
       <fileset dir="${applet.classes.dir}">
         <include name="JmolApplet*.class" />
         <include name="jmol75x29x8.gif" />
+	    <include name="javax/**" />
         <include name="org/jmol/adapter/smarter/**" />
         <include name="org/jmol/api/**" />
         <include name="org/jmol/applet/**" />
@@ -949,6 +952,7 @@ all support for previous versions removed
       <fileset dir="${applet.classes.dir}">
         <include name="JmolApplet*.class" />
         <include name="jmol75x29x8.gif" />
+	    <include name="javax/**" />
 		<include name="org/jmol/adapter/smarter/**" />
   		<include name="org/jmol/api/**" />
   		<include name="org/jmol/applet/**" />
@@ -1177,8 +1181,10 @@ all support for previous versions removed
       <!-- javax/vecmath -->
       <fileset dir="${appletjars.dir}" includes="**/*"/>
       <fileset dir="${applet.classes.dir}">
+	    <include name="javax/**" />
         <include name="JmolApplet*.class" />
         <include name="jmol75x29x8.gif" />
+	    <include name="javax/**" />
         <include name="org/jmol/adapter/smarter/**" />
         <include name="org/jmol/api/**" />
         <include name="org/jmol/applet/**" />
@@ -1233,6 +1239,7 @@ all support for previous versions removed
       </fileset>
       <fileset dir="${applet.classes.dir}" >
         <include name="JmolSmiles*" />
+	    <include name="javax/**" />
         <include name="org/jmol/smiles/**" />
         <include name="org/jmol/api/SmilesMatcherInterface.class" />
         <include name="org/jmol/constant/**" />
@@ -1245,6 +1252,7 @@ all support for previous versions removed
         <include name="org/jmol/util/LoggerInterface.class" />
         <include name="org/jmol/util/TextFormat.class" />
       </fileset>
+  	<!--
       <fileset dir="${appletjars.dir}">
         <include name="javax/vecmath/*3f*" />
         <include name="javax/vecmath/*3d*" />
@@ -1252,6 +1260,7 @@ all support for previous versions removed
         <include name="javax/vecmath/Tuple4f*" />
         <exclude name="javax/vecmath/Matrix*" />
       </fileset>
+      -->
     </jar>
   </target>
 
@@ -1441,7 +1450,7 @@ all support for previous versions removed
 
     <copy todir="build/dist/jmolapisio-${version}/${lib.dir}" >
       <fileset dir="${lib.dir}">
-        <include name="${vecmath.jar}"/>
+        <!-- include name="${vecmath.jar}"/ -->
         <include name="netscape.jar"/>
       </fileset>
     </copy>
@@ -1755,7 +1764,7 @@ all support for previous versions removed
       <arg value="-out:${jmol.applet.build.dir}/JmolLib.dll"/>
       <arg value="-debug"/>
       <arg value="${jmol.applet.build.dir}/JmolLib.jar"/>
-      <arg value="${lib.dir}/${vecmath.jar}"/>
+      <!-- arg value="${lib.dir}/${vecmath.jar}"/ -->
     </exec>
   </target>
   	

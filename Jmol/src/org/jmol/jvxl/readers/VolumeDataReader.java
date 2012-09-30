@@ -127,7 +127,7 @@ class VolumeDataReader extends SurfaceReader {
     if (!useOriginStepsPoints) {
       return false;
     }
-    volumetricOrigin.set(params.origin);
+    volumetricOrigin.setT(params.origin);
     volumetricVectors[0].set(params.steps.x, 0, 0);
     volumetricVectors[1].set(0, params.steps.y, 0);
     volumetricVectors[2].set(0, 0, params.steps.z);

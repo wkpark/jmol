@@ -30,7 +30,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.BitSet;
+import javax.util.BitSet;
 
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
@@ -413,7 +413,7 @@ public class AtomSetCollection {
   private void reverseArray(int[] a) {
     int n = atomSetCount;
     for (int i = n/2; --i >= 0; )
-      ArrayUtil.swap(a, i, n - 1 - i);
+      ArrayUtil.swapInt(a, i, n - 1 - i);
   }
 
   private void getList(boolean isAltLoc) {
@@ -565,7 +565,7 @@ public class AtomSetCollection {
     for (int i = 0; i < count; ++i) {
       Atom atom = newCloneAtom(atoms[atomIndex++]);
       if (pts != null)
-        atom.set(pts[i]);
+        atom.setT(pts[i]);
     }
   }
   
@@ -725,14 +725,14 @@ public class AtomSetCollection {
       return;
     }
     if (bondCount == bonds.length)
-      bonds = (Bond[])ArrayUtil.setLength(bonds, bondCount + 1024);
+      bonds = (Bond[])ArrayUtil.arrayCopyOpt(bonds, bondCount + 1024);
     bonds[bondCount++] = bond;
     atomSetBondCounts[currentAtomSetIndex]++;
   }
 
   public void addStructure(Structure structure) {
     if (structureCount == structures.length)
-      structures = (Structure[])ArrayUtil.setLength(structures,
+      structures = (Structure[])ArrayUtil.arrayCopyOpt(structures,
                                                       structureCount + 32);
     structure.atomSetIndex = currentAtomSetIndex;
     structures[structureCount++] = structure;
@@ -839,7 +839,7 @@ public class AtomSetCollection {
       fmatSupercell = null;
       return;
     }
-    Logger.info("Using supercell \n" + new Matrix4f(fmatSupercell));
+    Logger.info("Using supercell \n" + Matrix4f.newA(fmatSupercell));
   }
  
   SymmetryInterface symmetry;
@@ -918,8 +918,8 @@ public class AtomSetCollection {
       Point3f pty = setSym(4, 5, 6);
       Point3f ptz = setSym(8, 9, 10);
 
-      minXYZ = new Point3i((int) rminx, (int) rminy, (int) rminz);
-      maxXYZ = new Point3i((int) rmaxx, (int) rmaxy, (int) rmaxz);
+      minXYZ = Point3i.new3((int) rminx, (int) rminy, (int) rminz);
+      maxXYZ = Point3i.new3((int) rmaxx, (int) rmaxy, (int) rmaxz);
       applyAllSymmetry();
 
       // 2) set all atom coordinates to Cartesians
@@ -954,7 +954,7 @@ public class AtomSetCollection {
     }
 
     minXYZ = new Point3i();
-    maxXYZ = new Point3i(maxX, maxY, maxZ);
+    maxXYZ = Point3i.new3(maxX, maxY, maxZ);
     applyAllSymmetry();
     fmatSupercell = null;
   }
@@ -1065,9 +1065,9 @@ public class AtomSetCollection {
     }
     if (doCentroidUnitCell || doPackUnitCell || symmetryRange != 0 && maxXYZ.x - minXYZ.x == 1
         && maxXYZ.y - minXYZ.y == 1 && maxXYZ.z - minXYZ.z == 1) {
-      // weird Mac bug does not allow   new Point3i(minXYZ) !!
-      minXYZ0 = new Point3i(minXYZ.x, minXYZ.y, minXYZ.z);
-      maxXYZ0 = new Point3i(maxXYZ.x, maxXYZ.y, maxXYZ.z);
+      // weird Mac bug does not allow   Point3i.new3(minXYZ) !!
+      minXYZ0 = Point3i.new3(minXYZ.x, minXYZ.y, minXYZ.z);
+      maxXYZ0 = Point3i.new3(maxXYZ.x, maxXYZ.y, maxXYZ.z);
       switch (dtype) {
       case 3:
         // standard
@@ -1097,7 +1097,7 @@ public class AtomSetCollection {
     );
     cartesians = new Point3f[cartesianCount];
     for (int i = 0; i < noSymmetryCount; i++)
-      atoms[i + iAtomFirst].bsSymmetry = new BitSet(operationCount
+      atoms[i + iAtomFirst].bsSymmetry = BitSetUtil.newBitSet(operationCount
           * (nCells + 1));
     int pt = 0;
     int[] unitCells = new int[nCells];
@@ -1123,18 +1123,18 @@ public class AtomSetCollection {
     for (int tx = minXYZ.x; tx < maxXYZ.x; tx++)
       for (int ty = minXYZ.y; ty < maxXYZ.y; ty++)
         for (int tz = minXYZ.z; tz < maxXYZ.z; tz++) {
-          unitCellTranslations[iCell] = new Vector3f(tx, ty, tz);
+          unitCellTranslations[iCell] = Vector3f.new3(tx, ty, tz);
           unitCells[iCell++] = 555 + tx * 100 + ty * 10 + tz;
           if (tx != 0 || ty != 0 || tz != 0 || cartesians.length == 0)
             continue;
           for (pt = 0; pt < noSymmetryCount; pt++) {
             Atom atom = atoms[iAtomFirst + pt];
-            Point3f c = new Point3f(atom);
+            Point3f c = Point3f.newP(atom);
             op.transform(c);
             symmetry.toCartesian(c, false);
             if (doPackUnitCell) {
               symmetry.toUnitCell(c, ptOffset);
-              atom.set(c);
+              atom.setT(c);
               symmetry.toFractional(atom, false);
             }
             atom.bsSymmetry.set(iCell * operationCount);
@@ -1282,11 +1282,11 @@ public class AtomSetCollection {
         symmetry.newSpaceGroupPoint(iSym, atoms[i], ptAtom, transX, transY,
             transZ);
         Atom special = null;
-        Point3f cartesian = new Point3f(ptAtom);
+        Point3f cartesian = Point3f.newP(ptAtom);
         symmetry.toCartesian(cartesian, false);
         if (doPackUnitCell) {
           symmetry.toUnitCell(cartesian, ptOffset);
-          ptAtom.set(cartesian);
+          ptAtom.setT(cartesian);
           symmetry.toFractional(ptAtom, false);
           if (!isWithinCell(dtype, ptAtom, minXYZ0.x, maxXYZ0.x, minXYZ0.y,
               maxXYZ0.y, minXYZ0.z, maxXYZ0.z))
@@ -1324,9 +1324,9 @@ public class AtomSetCollection {
           if (addBonds)
             atomMap[atomSite] = atomCount;
           Atom atom1 = newCloneAtom(atoms[i]);
-          atom1.set(ptAtom);
+          atom1.setT(ptAtom);
           atom1.atomSite = atomSite;
-          atom1.bsSymmetry = BitSetUtil.setBit(iCellOpPt + iSym);
+          atom1.bsSymmetry = BitSetUtil.newAndSetBit(iCellOpPt + iSym);
           atom1.bsSymmetry.set(iSym);
           if (addCartesian)
             cartesians[pt++] = cartesian;
@@ -1340,9 +1340,9 @@ public class AtomSetCollection {
               if (axes != null) {
                 // note -- PDB reader specifically turns off cartesians
                 if (addCartesian) {
-                  ptTemp.set(cartesians[i - iAtomFirst]);
+                  ptTemp.setT(cartesians[i - iAtomFirst]);
                 } else {
-                  ptTemp.set(atoms[i]);
+                  ptTemp.setT(atoms[i]);
                   symmetry.toCartesian(ptTemp, false);
                 }
                 axes = symmetry.rotateEllipsoid(iSym, ptTemp, axes, ptTemp1,
@@ -1395,7 +1395,7 @@ public class AtomSetCollection {
       filter = TextFormat.simpleReplace(filter, "#<", "_<");
     }
     for (int iAtom = iAtomFirst; iAtom < atomMax; iAtom++)
-      atoms[iAtom].bsSymmetry = BitSetUtil.setBit(0);
+      atoms[iAtom].bsSymmetry = BitSetUtil.newAndSetBit(0);
     for (int i = 1; i < len; i++) { 
       if (filter.indexOf("!#") >= 0) {
         if (filter.indexOf("!#" + (i + 1) + ";") >= 0)
@@ -1419,7 +1419,7 @@ public class AtomSetCollection {
               bsAtoms.set(atom1.atomIndex);
             atom1.atomSite = atomSite;
           mat.transform(atom1);
-          atom1.bsSymmetry = BitSetUtil.setBit(i);
+          atom1.bsSymmetry = BitSetUtil.newAndSetBit(i);
           if (addBonds) {
             // Clone bonds
             for (int bondNum = bondIndex0; bondNum < bondCount0; bondNum++) {
@@ -1557,12 +1557,12 @@ public class AtomSetCollection {
     Point3f[] prevSteps = (trajectoryStepCount == 0 ? null 
         : (Point3f[]) trajectorySteps.get(trajectoryStepCount - 1));
     for (int i = 0; i < atomCount; i++) {
-      Point3f pt = new Point3f(atoms[i]);
+      Point3f pt = Point3f.newP(atoms[i]);
       if (doFixPeriodic && prevSteps != null)
         pt = fixPeriodic(pt, prevSteps[i]);
       trajectoryStep[i] = pt;
       if (haveVibrations) 
-        vibrationStep[i] = new Vector3f(atoms[i].vectorX, atoms[i].vectorY, atoms[i].vectorZ);
+        vibrationStep[i] = Vector3f.new3(atoms[i].vectorX, atoms[i].vectorY, atoms[i].vectorZ);
     }
     if (haveVibrations) {
       if (vibrationSteps == null) {
@@ -1621,7 +1621,7 @@ public class AtomSetCollection {
         atoms[i].vectorY = v.y;
         atoms[i].vectorZ = v.z;
       }
-      atoms[i].set(trajectory[i]);
+      atoms[i].setT(trajectory[i]);
     }
     setAtomSetCollectionAuxiliaryInfo("trajectorySteps", trajectorySteps);
     if (vibrationSteps != null)
@@ -1637,14 +1637,14 @@ public class AtomSetCollection {
     }    
     currentAtomSetIndex = atomSetCount++;
     if (atomSetCount > atomSetNumbers.length) {
-      atomSetAtomIndexes = ArrayUtil.doubleLength(atomSetAtomIndexes);
-      atomSetAtomCounts = ArrayUtil.doubleLength(atomSetAtomCounts);
-      atomSetBondCounts = ArrayUtil.doubleLength(atomSetBondCounts);
+      atomSetAtomIndexes = ArrayUtil.doubleLengthI(atomSetAtomIndexes);
+      atomSetAtomCounts = ArrayUtil.doubleLengthI(atomSetAtomCounts);
+      atomSetBondCounts = ArrayUtil.doubleLengthI(atomSetBondCounts);
       atomSetAuxiliaryInfo = (Map<String, Object>[]) ArrayUtil.doubleLength(atomSetAuxiliaryInfo);
     }
     atomSetAtomIndexes[currentAtomSetIndex] = atomCount;
     if (atomSetCount + trajectoryStepCount > atomSetNumbers.length) {
-      atomSetNumbers = ArrayUtil.doubleLength(atomSetNumbers);
+      atomSetNumbers = ArrayUtil.doubleLengthI(atomSetNumbers);
     }
     if (isTrajectory) {
       atomSetNumbers[currentAtomSetIndex + trajectoryStepCount] = atomSetCount + trajectoryStepCount;

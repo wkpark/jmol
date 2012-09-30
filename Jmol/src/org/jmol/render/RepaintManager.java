@@ -175,7 +175,7 @@ public class RepaintManager implements JmolRepaintInterface {
       renderer.setViewerG3dShapeID(viewer, shapeID);
       return renderers[shapeID] = renderer;
     } catch (Exception e) {
-      Logger.error("Could not instantiate renderer:" + className, e);
+      Logger.errorEx("Could not instantiate renderer:" + className, e);
       return null;
     }
   }

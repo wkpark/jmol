@@ -395,7 +395,7 @@ class SpartanArchive {
   private void setDipole(String[] tokens) {
     if (tokens.length != 3)
       return;
-    Vector3f dipole = new Vector3f(parseFloat(tokens[0]),
+    Vector3f dipole = Vector3f.new3(parseFloat(tokens[0]),
         parseFloat(tokens[1]), parseFloat(tokens[2]));
     r.atomSetCollection.setAtomSetAuxiliaryInfo("dipole", dipole);
   }

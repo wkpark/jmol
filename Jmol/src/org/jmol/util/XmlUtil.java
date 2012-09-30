@@ -26,7 +26,7 @@
 package org.jmol.util;
 
 import java.util.ArrayList;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -45,8 +45,8 @@ public class XmlUtil {
     sb.append("<").append(name).append(">\n");
   }
 
-  public static void openTag(StringBuffer sb, String name, Object[] attributes) {
-    appendTag(sb, name, attributes, null, false, false);
+  public static void openTagAttr(StringBuffer sb, String name, Object[] attributes) {
+    appendTagAll(sb, name, attributes, null, false, false);
     sb.append("\n");
   }
 
@@ -54,7 +54,7 @@ public class XmlUtil {
     sb.append("</").append(name).append(">\n");
   }
 
-  public static void appendTag(StringBuffer sb, String name,
+  public static void appendTagAll(StringBuffer sb, String name,
                                Object[] attributes, Object data,
                                boolean isCdata, boolean doClose) {
     String closer = ">";
@@ -117,9 +117,9 @@ public class XmlUtil {
    * @param attributes
    * @param data
    */
-  public static void appendTag(StringBuffer sb, String name,
+  public static void appendTagObj(StringBuffer sb, String name,
                                Object[] attributes, Object data) {
-    appendTag(sb, name, attributes, data, false, true);
+    appendTagAll(sb, name, attributes, data, false, true);
   }
 
   /**
@@ -132,9 +132,9 @@ public class XmlUtil {
    */
   public static void appendTag(StringBuffer sb, String name, Object data) {
     if (data instanceof Object[])
-      appendTag(sb, name, (Object[]) data, null, false, true);
+      appendTagAll(sb, name, (Object[]) data, null, false, true);
     else
-      appendTag(sb, name, null, data, false, true);
+      appendTagAll(sb, name, null, data, false, true);
   }
 
   /**
@@ -149,7 +149,7 @@ public class XmlUtil {
    */
   public static void appendCdata(StringBuffer sb, String name, 
                                  Object[] attributes, String data) {
-    appendTag(sb, name, attributes, data, true, true);
+    appendTagAll(sb, name, attributes, data, true, true);
   }
 
   /**
@@ -170,7 +170,7 @@ public class XmlUtil {
   public static void toXml(StringBuffer sb, String name, List<Object[]> properties) {
     for (int i = 0; i < properties.size(); i++) {
       Object[] o = properties.get(i);
-      appendTag(sb, name, (Object[]) o[0], o[1]);
+      appendTagObj(sb, name, (Object[]) o[0], o[1]);
     }
   }
 
@@ -261,7 +261,7 @@ public class XmlUtil {
       return new Object[] { attributes.toArray(), value };
     sb = new StringBuffer();
     sb.append(indent);
-    appendTag(sb, "val", attributes.toArray(), null, false, false);
+    appendTagAll(sb, "val", attributes.toArray(), null, false, false);
     sb.append(value);
     if (value instanceof String && ((String)value).indexOf("\n") >= 0)
       sb.append(indent);      

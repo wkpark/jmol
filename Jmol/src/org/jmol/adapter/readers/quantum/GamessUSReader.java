@@ -447,7 +447,7 @@ ATOM         MULL.POP.    CHARGE          LOW.POP.     CHARGE
     if ("DX".equals(tokens[0]) && "DY".equals(tokens[1])
         && "DZ".equals(tokens[2])) {
       tokens = getTokensStr(readLine());
-      Vector3f dipole = new Vector3f(parseFloatStr(tokens[0]),
+      Vector3f dipole = Vector3f.new3(parseFloatStr(tokens[0]),
           parseFloatStr(tokens[1]), parseFloatStr(tokens[2]));
       Logger.info("Molecular dipole for model "
           + atomSetCollection.getAtomSetCount() + " = " + dipole);

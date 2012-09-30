@@ -24,7 +24,7 @@
 
 package org.jmol.shapespecial;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -46,7 +46,7 @@ public class DrawMesh extends Mesh {
   public EnumDrawType drawType = EnumDrawType.NONE;
   EnumDrawType[] drawTypes;
   Point3f ptCenters[];
-  Vector3f axis = new Vector3f(1,0,0);
+  Vector3f axis = Vector3f.new3(1,0,0);
   Vector3f axes[];
   int drawVertexCount;
   int[] drawVertexCounts;
@@ -68,7 +68,7 @@ public class DrawMesh extends Mesh {
   }
 
   final void setCenter(int iModel) {
-    Point3f center = new Point3f(0, 0, 0);
+    Point3f center = Point3f.new3(0, 0, 0);
     int iptlast = -1;
     int ipt = 0;
     int n = 0;
@@ -113,7 +113,7 @@ public class DrawMesh extends Mesh {
     drawVertexCounts = (int[]) ArrayUtil.deleteElements(drawVertexCounts, modelIndex, 1);
     ptCenters = (Point3f[]) ArrayUtil.deleteElements(ptCenters, modelIndex, 1);
     axes = (Vector3f[]) ArrayUtil.deleteElements(axes, modelIndex, 1);
-    BitSet bs = BitSetUtil.setBit(modelIndex);
+    BitSet bs = BitSetUtil.newAndSetBit(modelIndex);
     BitSetUtil.deleteBits(modelFlags, bs);
     //no! title = (String[]) ArrayUtil.deleteElements(title, modelIndex, 1);
   }

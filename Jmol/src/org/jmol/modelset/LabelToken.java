@@ -562,17 +562,17 @@ public class LabelToken {
 
   private String format(float floatT, String strT, Tuple3f ptT) {
     if (!Float.isNaN(floatT)) {
-      return TextFormat.format(floatT, width, precision, alignLeft, zeroPad);
+      return TextFormat.formatF(floatT, width, precision, alignLeft, zeroPad);
     } else if (strT != null) {
-      return TextFormat.format(strT, width, precision, alignLeft, zeroPad);
+      return TextFormat.formatS(strT, width, precision, alignLeft, zeroPad);
     } else if (ptT != null) {
       if (width == 0 && precision == Integer.MAX_VALUE) {
         width = 6;
         precision = 2;
       }
-      return TextFormat.format(ptT.x, width, precision, false, false)
-          + TextFormat.format(ptT.y, width, precision, false, false)
-          + TextFormat.format(ptT.z, width, precision, false, false);
+      return TextFormat.formatF(ptT.x, width, precision, false, false)
+          + TextFormat.formatF(ptT.y, width, precision, false, false)
+          + TextFormat.formatF(ptT.z, width, precision, false, false);
     } else {
       return text;
     }

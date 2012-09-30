@@ -2462,10 +2462,10 @@ public class Token {
   }
 /*
   static {
-    Point3f a1 = new Point3f(1,0,0);
-    Point3f a2 = new Point3f(0,1,0);
-    Point3f a3 = new Point3f(0,0,1);
-    Point3f b1 = new Point3f(0.25f, 0.25f, 0.25f);
+    Point3f a1 = Point3f.new3(1,0,0);
+    Point3f a2 = Point3f.new3(0,1,0);
+    Point3f a3 = Point3f.new3(0,0,1);
+    Point3f b1 = Point3f.new3(0.25f, 0.25f, 0.25f);
     Vector3f vNorm = new Vector3f();
     Vector3f vTemp = new Vector3f();
     Vector3f vTemp2 = new Vector3f();
@@ -2476,7 +2476,7 @@ public class Token {
     Point3f ptRet = new Point3f();
 
     
-    Point3f b2 = new Point3f(1,-0.9f,-3);
+    Point3f b2 = Point3f.new3(1,-0.9f,-3);
 
     
     

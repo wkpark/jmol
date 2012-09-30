@@ -153,9 +153,9 @@ public class TextFormat {
         '.'));
   }
 
-  public static String format(float value, int width, int precision,
+  public static String formatF(float value, int width, int precision,
                               boolean alignLeft, boolean zeroPad) {
-    return format(formatDecimal(value, precision), width, 0, alignLeft, zeroPad);
+    return formatS(formatDecimal(value, precision), width, 0, alignLeft, zeroPad);
   }
 
   /**
@@ -168,9 +168,9 @@ public class TextFormat {
    * @param allowOverflow IGNORED
    * @return formatted string
    */
-  public static String format(double value, int width, int precision,
+  public static String formatD(double value, int width, int precision,
                               boolean alignLeft, boolean zeroPad, boolean allowOverflow) {
-    return format(formatDecimal((float)value, -1 - precision), width, 0, alignLeft, zeroPad);
+    return formatS(formatDecimal((float)value, -1 - precision), width, 0, alignLeft, zeroPad);
   }
 
   /**
@@ -183,7 +183,7 @@ public class TextFormat {
    * @param zeroPad     generally for numbers turned strings
    * @return            formatted string
    */
-  public static String format(String value, int width, int precision,
+  public static String formatS(String value, int width, int precision,
                               boolean alignLeft, boolean zeroPad) {
     if (value == null)
       return "";
@@ -213,15 +213,15 @@ public class TextFormat {
     return sb.toString();
   }
 
-  public static String formatString(String strFormat, String key, String strT) {
+  public static String formatStringS(String strFormat, String key, String strT) {
     return formatString(strFormat, key, strT, Float.NaN, Double.NaN, false);
   }
 
-  public static String formatString(String strFormat, String key, float floatT) {
+  public static String formatStringF(String strFormat, String key, float floatT) {
     return formatString(strFormat, key, null, floatT, Double.NaN, false);
   }
 
-  public static String formatString(String strFormat, String key, int intT) {
+  public static String formatStringI(String strFormat, String key, int intT) {
     return formatString(strFormat, key, "" + intT, Float.NaN, Double.NaN, false);
   }
    
@@ -373,13 +373,13 @@ public class TextFormat {
         }
         ich += len;
         if (!Float.isNaN(floatT))
-          strLabel += format(floatT, width, precision, alignLeft,
+          strLabel += formatF(floatT, width, precision, alignLeft,
               zeroPad);
         else if (strT != null)
-          strLabel += format(strT, width, precision, alignLeft,
+          strLabel += formatS(strT, width, precision, alignLeft,
               zeroPad);
         else if (!Double.isNaN(doubleT))
-          strLabel += format(doubleT, width, precision, alignLeft,
+          strLabel += formatD(doubleT, width, precision, alignLeft,
               zeroPad, true);
         if (doOne)
           break;
@@ -529,7 +529,7 @@ public class TextFormat {
    * @param chTo
    * @return  replaced string
    */
-  public static String replaceAllCharacters(String str, String strFrom,
+  public static String replaceAllCharacter(String str, String strFrom,
                                             char chTo) {
     if (str == null)
       return null;

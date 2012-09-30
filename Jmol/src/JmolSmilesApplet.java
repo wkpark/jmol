@@ -26,7 +26,7 @@
 import java.applet.Applet;
 import java.awt.Event;
 import java.awt.Graphics;
-import java.util.BitSet;
+import javax.util.BitSet;
 
 import org.jmol.util.Logger;
 import org.jmol.smiles.InvalidSmilesException;

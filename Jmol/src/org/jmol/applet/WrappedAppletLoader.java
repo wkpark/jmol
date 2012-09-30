@@ -53,7 +53,7 @@ class WrappedAppletLoader extends Thread {
       wrappedApplet.setAppletWrapper(appletWrapper);
       wrappedApplet.init();
     } catch (Exception e) {
-      Logger.error("Could not instantiate wrappedApplet class"
+      Logger.errorEx("Could not instantiate wrappedApplet class"
           + wrappedAppletClassName, e);
     }
     long loadTimeSeconds = (System.currentTimeMillis() - startTime + 500) / 1000;

@@ -28,6 +28,8 @@ import java.util.Map;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.util.ArrayUtil;
+
 import org.jmol.constant.EnumStructure;
 import org.jmol.util.Logger;
 
@@ -112,11 +114,11 @@ public abstract class ProteinStructure {
     segments = new Point3f[monomerCount + 1];
     segments[monomerCount] = axisB;
     segments[0] = axisA;
-    Vector3f axis = new Vector3f(axisUnitVector);
+    Vector3f axis = Vector3f.newV(axisUnitVector);
     axis.scale(axisB.distance(axisA) / monomerCount);
     for (int i = 1; i < monomerCount; i++) {
       Point3f point = segments[i] = new Point3f();
-      point.set(segments[i - 1]);
+      point.setT(segments[i - 1]);
       point.add(axis);
       //now it's just a constant-distance segmentation. 
       //there isn't anything significant about seeing the
@@ -190,8 +192,7 @@ public abstract class ProteinStructure {
   public void getInfo(Map<String, Object> info) {
     info.put("type", type.getBioStructureTypeName(false));
     int[] leadAtomIndices = apolymer.getLeadAtomIndices();
-    int[] iArray = new int[monomerCount];
-    System.arraycopy(leadAtomIndices, monomerIndexFirst, iArray, 0, monomerCount);
+    int[] iArray = ArrayUtil.arrayCopyRangeI(leadAtomIndices, monomerIndexFirst, monomerIndexFirst + monomerCount);
     info.put("leadAtomIndices", iArray);
     calcAxis();
     if (axisA == null)

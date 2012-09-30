@@ -37,18 +37,18 @@ public class SlowBitSet {//extends FastBitSet {
     return new SlowBitSet(count, true);
   }
   
-  private java.util.BitSet bs;
+  private javax.util.BitSet bs;
 
   public SlowBitSet() {
-    bs = new java.util.BitSet();
+    bs = new javax.util.BitSet();
   }
 
   protected SlowBitSet(int count, boolean asBits) {
-    bs = new java.util.BitSet(asBits ? count : count * 64 ); 
+    bs = new javax.util.BitSet(asBits ? count : count * 64 ); 
   }
   
   protected SlowBitSet(FastBitSet bsToCopy) {
-    bs = (java.util.BitSet) ((SlowBitSet) bsToCopy).bs.clone();
+    bs = (javax.util.BitSet) ((SlowBitSet) bsToCopy).bs.clone();
   }
   
   public void and(FastBitSet setAnd) {
@@ -81,7 +81,7 @@ public class SlowBitSet {//extends FastBitSet {
   
   public Object clone() {
     SlowBitSet result = new SlowBitSet();
-    result.bs = (java.util.BitSet) bs.clone();
+    result.bs = (javax.util.BitSet) bs.clone();
     return result;
   }
 
@@ -139,7 +139,7 @@ public class SlowBitSet {//extends FastBitSet {
     bs.xor(((SlowBitSet) setXor).bs);
   }
 
-  public java.util.BitSet toBitSet() {
+  public javax.util.BitSet toBitSet() {
     return BitSetUtil.copy(bs);
   }
       

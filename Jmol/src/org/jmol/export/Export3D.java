@@ -799,7 +799,7 @@ final public class Export3D implements JmolRendererInterface {
   }
 
   public int clipCode(int x, int y, int z) {
-    return (exporter.exportType == GData.EXPORT_CARTESIAN ? g3d.clipCode(z) : g3d.clipCode(x, y, z));
+    return (exporter.exportType == GData.EXPORT_CARTESIAN ? g3d.clipCode(z) : g3d.clipCode3(x, y, z));
   }
 
   public boolean isClippedXY(int diameter, int x, int y) {
@@ -827,8 +827,8 @@ final public class Export3D implements JmolRendererInterface {
     g3d.setNoisySurfaceShade(pointA, pointB, pointC);
   }
 
-  public byte getFontFid(String fontFace, float fontSize) {
-    return g3d.getFontFid(fontFace, fontSize);
+  public byte getFontFidFS(String fontFace, float fontSize) {
+    return g3d.getFontFidFS(fontFace, fontSize);
   }
 
   public boolean isDirectedTowardsCamera(short normix) {

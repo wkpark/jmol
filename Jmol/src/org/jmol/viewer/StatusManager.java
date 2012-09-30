@@ -29,7 +29,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 
 import java.util.ArrayList;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;

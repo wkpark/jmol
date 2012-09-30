@@ -26,7 +26,7 @@ package org.jmol.smiles;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +35,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSetUtil;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.JmolNode;
@@ -68,7 +69,7 @@ public class SmilesSearch extends JmolMolecule {
   private BitSet bsSelected;
   void setSelected(BitSet bs) {
     if (bs == null) {
-      bs = new BitSet(jmolAtomCount);
+      bs = BitSetUtil.newBitSet(jmolAtomCount);
       bs.set(0, jmolAtomCount);
     }
     bsSelected = bs;
@@ -121,20 +122,14 @@ public class SmilesSearch extends JmolMolecule {
     
 
   void setAtomArray() {
+    if (patternAtoms.length > atomCount)
+      patternAtoms = (SmilesAtom[]) ArrayUtil.arrayCopyOpt(patternAtoms, atomCount);
     nodes = patternAtoms;
-    if (patternAtoms.length > atomCount) {
-      SmilesAtom[] tmp = new SmilesAtom[atomCount];
-      System.arraycopy(patternAtoms, 0, tmp, 0, atomCount);
-      nodes = patternAtoms = tmp;
-    }
   }
 
   SmilesAtom addAtom() {
-    if (atomCount >= patternAtoms.length) {
-      SmilesAtom[] tmp = new SmilesAtom[patternAtoms.length * 2];
-      System.arraycopy(patternAtoms, 0, tmp, 0, patternAtoms.length);
-      patternAtoms = tmp;
-    }
+    if (atomCount >= patternAtoms.length)
+      patternAtoms = (SmilesAtom[]) ArrayUtil.doubleLength(patternAtoms);
     SmilesAtom sAtom = new SmilesAtom(atomCount);
     patternAtoms[atomCount] = sAtom;
     atomCount++;
@@ -395,7 +390,7 @@ public class SmilesSearch extends JmolMolecule {
     if (vReturn == null && (asVector || getMaps))
       vReturn = new ArrayList<Object>();
     if (bsSelected == null) {
-      bsSelected = new BitSet(jmolAtomCount);
+      bsSelected = BitSetUtil.newBitSet(jmolAtomCount);
       bsSelected.set(0, jmolAtomCount);
     }
     selectedAtomCount = bsSelected.cardinality();
@@ -1391,14 +1386,14 @@ public class SmilesSearch extends JmolMolecule {
           v.sub((Point3f) jn[i]);
         }
         if (v.length() == 0) {
-          v.set(((Point3f)jn[4]));
+          v.setT(((Point3f)jn[4]));
           doSwitch = false;
         } else {
-          v.scaleAdd(n + 1,(Point3f) getJmolAtom(sAtom.getMatchingAtom()), v);
+          v.scaleAdd2(n + 1,(Point3f) getJmolAtom(sAtom.getMatchingAtom()), v);
           doSwitch = isSmilesFind || doSwitch ;
         }
         jn[pt] = new SmilesAtom(-1);
-        ((Point3f) jn[pt]).set(v);
+        ((Point3f) jn[pt]).setT(v);
       }
     }
     if (jn[pt] == null) {
@@ -1441,14 +1436,14 @@ public class SmilesSearch extends JmolMolecule {
           || v.vNorm2.dot(v.vNorm3) < 0))
         return false;
       // now check rotation in relation to the first atom
-      v.vNorm2.set((Point3f) atom0);
+      v.vNorm2.setT((Point3f) atom0);
       v.vNorm2.sub((Point3f) atom1);
       return (isNot == ((v.vNorm1.dot(v.vNorm2) < 0 ? 2 : 1) == order));
     //case SmilesAtom.STEREOCHEMISTRY_DOUBLE_BOND:
-      //System.out.println("draw p1 @{point" + new Point3f((Point3f)atom1)+"} color red");
-      //System.out.println("draw p2 @{point" + new Point3f((Point3f)atom2)+"} color yellow");
-      //System.out.println("draw p3 @{point" + new Point3f((Point3f)atom3)+"} color green");
-      //System.out.println("draw p4 @{point" + new Point3f((Point3f)atom4)+"} color blue");
+      //System.out.println("draw p1 @{point" + Point3f.new3((Point3f)atom1)+"} color red");
+      //System.out.println("draw p2 @{point" + Point3f.new3((Point3f)atom2)+"} color yellow");
+      //System.out.println("draw p3 @{point" + Point3f.new3((Point3f)atom3)+"} color green");
+      //System.out.println("draw p4 @{point" + Point3f.new3((Point3f)atom4)+"} color blue");
 
       //getPlaneNormals(atom1, atom2, atom3, atom4, v);
       //System.out.println(order + " "+ atom1.getAtomName() + "-" + atom2.getAtomName() + "-"  + atom3.getAtomName() + "-" + atom4.getAtomName());
@@ -1740,8 +1735,8 @@ public class SmilesSearch extends JmolMolecule {
   VTemp v = new VTemp();
   
   static boolean isDiaxial(JmolNode atomA, JmolNode atomB, JmolNode atom1, JmolNode atom2, VTemp v, float f) {
-    v.vA.set((Point3f) atomA);
-    v.vB.set((Point3f) atomB);
+    v.vA.setT((Point3f) atomA);
+    v.vB.setT((Point3f) atomB);
     v.vA.sub((Point3f) atom1);
     v.vB.sub((Point3f) atom2);
     v.vA.normalize();
@@ -1762,11 +1757,11 @@ public class SmilesSearch extends JmolMolecule {
   private static int getHandedness(JmolNode a, JmolNode b, JmolNode c, JmolNode pt, VTemp v) {
     float d = SmilesAromatic.getNormalThroughPoints(a, b, c, v.vTemp, v.vA, v.vB);
     //int atat = (distanceToPlane(v.vTemp, d, (Point3f) pt) > 0 ? 1 : 2);
-    //System.out.println("draw p1 @{point" + new Point3f((Point3f)a) +"} color red");
-    //System.out.println("draw p2 @{point" + new Point3f((Point3f)b)+"} color green");
-    //System.out.println("draw p3 @{point" + new Point3f((Point3f)c)+"} color blue");
-    //System.out.println("draw p @{point" + new Point3f((Point3f)a) +"} @{point" + new Point3f((Point3f)b)+"} @{point" + new Point3f((Point3f)c)+"}");
-    //System.out.println("draw v vector @{point" + new Point3f((Point3f)pt) + "} @{point" + v.vTemp+"} \""+ (atat==2 ? "@@" : "@")+"\" color " + (atat == 2 ? "white" : "yellow"));
+    //System.out.println("draw p1 @{point" + Point3f.new3((Point3f)a) +"} color red");
+    //System.out.println("draw p2 @{point" + Point3f.new3((Point3f)b)+"} color green");
+    //System.out.println("draw p3 @{point" + Point3f.new3((Point3f)c)+"} color blue");
+    //System.out.println("draw p @{point" + Point3f.new3((Point3f)a) +"} @{point" + Point3f.new3((Point3f)b)+"} @{point" + Point3f.new3((Point3f)c)+"}");
+    //System.out.println("draw v vector @{point" + Point3f.new3((Point3f)pt) + "} @{point" + v.vTemp+"} \""+ (atat==2 ? "@@" : "@")+"\" color " + (atat == 2 ? "white" : "yellow"));
     return (distanceToPlane(v.vTemp, d, (Point3f) pt) > 0 ? 1 : 2);
   }
 

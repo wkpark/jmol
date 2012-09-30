@@ -316,9 +316,9 @@ class HallInfo {
       // set matrix, including translations and vector adjustment
 
       if (isImproper) {
-        seitzMatrix12ths.set(rotation.seitzMatrixInv);
+        seitzMatrix12ths.setM(rotation.seitzMatrixInv);
       } else {
-        seitzMatrix12ths.set(rotation.seitzMatrix);
+        seitzMatrix12ths.setM(rotation.seitzMatrix);
       }
       seitzMatrix12ths.m03 = translation.vectorShift12ths.x;
       seitzMatrix12ths.m13 = translation.vectorShift12ths.y;
@@ -346,7 +346,7 @@ class HallInfo {
         m2.m03 = -vector12ths.x;
         m2.m13 = -vector12ths.y;
         m2.m23 = -vector12ths.z;
-        seitzMatrix12ths.mul(m1, seitzMatrix12ths);
+        seitzMatrix12ths.mul2(m1, seitzMatrix12ths);
         seitzMatrix12ths.mul(m2);
       }
       if (Logger.debugging) {

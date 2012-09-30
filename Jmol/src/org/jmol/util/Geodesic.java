@@ -179,11 +179,9 @@ public class Geodesic {
   private static short[][] faceVertexesArrays;
   private static short[][] neighborVertexesArrays;
 
-  static public short[][] getFaceVertexesArrays() {
-    return faceVertexesArrays;
-  }
-  
   static public short[][] getNeighborVertexesArrays() {
+    if (vertexCounts == null)
+      createGeodesic();
      return neighborVertexesArrays;
   }
   
@@ -218,14 +216,14 @@ public class Geodesic {
     neighborVertexesArrays = new short[maxLevel + 1][];
     faceVertexesArrays = new short[maxLevel + 1][];
     vertexVectors = new Vector3f[12];
-    vertexVectors[0] = new Vector3f(0, 0, halfRoot5);
+    vertexVectors[0] = Vector3f.new3(0, 0, halfRoot5);
     for (int i = 0; i < 5; ++i) {
-      vertexVectors[i + 1] = new Vector3f((float) Math.cos(i * oneFifth),
+      vertexVectors[i + 1] = Vector3f.new3((float) Math.cos(i * oneFifth),
           (float) Math.sin(i * oneFifth), 0.5f);
-      vertexVectors[i + 6] = new Vector3f((float) Math.cos(i * oneFifth
+      vertexVectors[i + 6] = Vector3f.new3((float) Math.cos(i * oneFifth
           + oneTenth), (float) Math.sin(i * oneFifth + oneTenth), -0.5f);
     }
-    vertexVectors[11] = new Vector3f(0, 0, -halfRoot5);
+    vertexVectors[11] = Vector3f.new3(0, 0, -halfRoot5);
     for (int i = 12; --i >= 0;)
       vertexVectors[i].normalize();
     faceVertexesArrays[0] = faceVertexesIcosahedron;
@@ -272,9 +270,7 @@ public class Geodesic {
     int oldEdgesCount = oldVertexCount + oldFaceCount - 2;
     int newVertexCount = oldVertexCount + oldEdgesCount;
     int newFaceCount = 4 * oldFaceCount;
-    Vector3f[] newVertexVectors = new Vector3f[newVertexCount];
-    System.arraycopy(vertexVectors, 0, newVertexVectors, 0, oldVertexCount);
-    vertexVectors = newVertexVectors;
+    vertexVectors = (Vector3f[]) ArrayUtil.arrayCopyOpt(vertexVectors, newVertexCount);
 
     short[] newFacesVertexes = new short[3 * newFaceCount];
     faceVertexesArrays[level + 1] = newFacesVertexes;
@@ -407,7 +403,7 @@ public class Geodesic {
     if (iv != null) {
       return iv.shortValue();
     }
-    Vector3f newVertexVector = new Vector3f(vertexVectors[v1]);
+    Vector3f newVertexVector = Vector3f.newV(vertexVectors[v1]);
     vertexVectors[vertexNext] = newVertexVector;
     newVertexVector.add(vertexVectors[v2]);
     newVertexVector.scale(0.5f);

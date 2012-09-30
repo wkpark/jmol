@@ -362,7 +362,9 @@ public class CastepReader extends AtomSetCollectionReader {
     }
     float[] lv = new float[3];
     for (int i = 0; i < 3; i++) {
-      abc[i].get(lv);
+      lv[0] = abc[i].x;
+      lv[1] = abc[i].y;
+      lv[2] = abc[i].z;
       addPrimitiveLatticeVector(i, lv, 0);
     }
   }
@@ -403,7 +405,7 @@ public class CastepReader extends AtomSetCollectionReader {
         x = parseFloatStr(tokens[0]) * factor;
         y = parseFloatStr(tokens[1]) * factor;
         z = parseFloatStr(tokens[2]) * factor;
-        abc[i] = new Vector3f(x, y, z);
+        abc[i] = Vector3f.new3(x, y, z);
       } else {
         Logger.warn("error reading coordinates of lattice vector "
             + Integer.toString(i + 1)
@@ -550,7 +552,7 @@ public class CastepReader extends AtomSetCollectionReader {
       y = -(a[0][2] - a[2][0])/2;
       a[0][2] = a[2][0] = (a[0][2] + a[2][0])/2;
     }
-    atom.setEllipsoid(Eigen.getEllipsoid(a));
+    atom.setEllipsoid(Eigen.getEllipsoidDD(a));
     atomSetCollection.addVibrationVector(atom.atomIndex, (float) x, (float) y, (float) z);
   }
 
@@ -645,7 +647,7 @@ Species   Ion     s      p      d      f     Total  Charge (e)
     atomPts = new Point3f[atomCount];
     Atom[] atoms = atomSetCollection.getAtoms();
     for (int i = 0; i < atomCount; i++)
-      atomPts[i] = new Point3f(atoms[i]);
+      atomPts[i] = Point3f.newP(atoms[i]);
   }
 
   /*
@@ -675,7 +677,7 @@ Species   Ion     s      p      d      f     Total  Charge (e)
   private void readPhononFrequencies() throws Exception {
     tokens = getTokens();
     Vector3f v = new Vector3f();
-    Vector3f qvec = new Vector3f(parseFloatStr(tokens[2]), parseFloatStr(tokens[3]),
+    Vector3f qvec = Vector3f.new3(parseFloatStr(tokens[2]), parseFloatStr(tokens[3]),
         parseFloatStr(tokens[4]));
     String fcoord = getFractionalCoord(qvec);
     String qtoks = "{" + tokens[2] + " " + tokens[3] + " " + tokens[4] + "}";
@@ -692,7 +694,7 @@ Species   Ion     s      p      d      f     Total  Charge (e)
     if (filter != null && checkFilterKey("Q=")) {
       // check for an explicit q=n or q={1/4 1/2 1/4}
       if (desiredQpt != null) {
-        v.sub(desiredQpt, qvec);
+        v.sub2(desiredQpt, qvec);
         if (v.length() < 0.001f)
           fcoord = desiredQ;
       }
@@ -765,7 +767,7 @@ Species   Ion     s      p      d      f     Total  Charge (e)
         fillFloatArray(null, 0, data);
         for (int k = iatom++; k < aCount; k++)
           if (atoms[k].atomSite == j) {
-            t.sub(atoms[k], atoms[atoms[k].atomSite]);
+            t.sub2(atoms[k], atoms[atoms[k].atomSite]);
             // for supercells, fractional coordinates end up
             // in terms of the SUPERCELL and need to be 
             // multiplied by the supercell scaling factors

@@ -40,7 +40,7 @@ import org.jmol.viewer.Viewer;
 
 //import java.util.ArrayList;
 import java.util.ArrayList;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;

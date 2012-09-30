@@ -26,7 +26,7 @@
 package org.jmol.export;
 
 import java.awt.Image;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -79,7 +79,7 @@ abstract public class __CartesianExporter extends ___Exporter {
     // used for VRML/X3D only
 
     Point3f ptCamera = new Point3f();
-    Point3f pt = new Point3f(screenWidth / 2, screenHeight / 2, 0);
+    Point3f pt = Point3f.new3(screenWidth / 2, screenHeight / 2, 0);
     viewer.unTransformPoint(pt, ptCamera);
     ptCamera.sub(center);
     // this is NOT QUITE correct when the model has been shifted with CTRL-ALT
@@ -101,8 +101,8 @@ abstract public class __CartesianExporter extends ___Exporter {
   private void setTempPoints(Point3f ptA, Point3f ptB, boolean isCartesian) {
     if (isCartesian) {
       // really first order -- but actual coord
-      tempP1.set(ptA);
-      tempP2.set(ptB);
+      tempP1.setT(ptA);
+      tempP2.setT(ptB);
     } else {
       viewer.unTransformPoint(ptA, tempP1);
       viewer.unTransformPoint(ptB, tempP2);
@@ -200,16 +200,16 @@ abstract public class __CartesianExporter extends ___Exporter {
   @Override
   boolean drawEllipse(Point3f ptCenter, Point3f ptX, Point3f ptY, short colix,
                       boolean doFill) {
-    tempV1.set(ptX);
+    tempV1.setT(ptX);
     tempV1.sub(ptCenter);
-    tempV2.set(ptY);
+    tempV2.setT(ptY);
     tempV2.sub(ptCenter);
     tempV2.cross(tempV1, tempV2);
     tempV2.normalize();
     tempV2.scale(doFill ? 0.002f : 0.005f);
-    tempP1.set(ptCenter);
+    tempP1.setT(ptCenter);
     tempP1.sub(tempV2);
-    tempP2.set(ptCenter);
+    tempP2.setT(ptCenter);
     tempP2.add(tempV2);
     return outputCylinder(ptCenter, tempP1, tempP2, colix,
         doFill ? GData.ENDCAPS_FLAT : GData.ENDCAPS_NONE, 1.01f, ptX,
@@ -255,10 +255,10 @@ abstract public class __CartesianExporter extends ___Exporter {
     if (colix1 == colix2) {
       outputCylinder(null, tempP1, tempP2, colix1, endcaps, radius, null, null, bondOrder != -1);
     } else {
-      tempV2.set(tempP2);
+      tempV2.setT(tempP2);
       tempV2.add(tempP1);
       tempV2.scale(0.5f);
-      tempP3.set(tempV2);
+      tempP3.setT(tempV2);
       outputCylinder(null, tempP1, tempP3, colix1,
           (endcaps == GData.ENDCAPS_SPHERICAL ? GData.ENDCAPS_NONE
               : endcaps), radius, null, null, true);
@@ -339,7 +339,7 @@ abstract public class __CartesianExporter extends ___Exporter {
       m.m00 = rx;
       m.m11 = ry;
       m.m22 = rz;
-      mq.set(a);
+      mq.setAA(a);
       mq.mul(m);
       sphereMatrix.set(mq);
     } else {

@@ -117,7 +117,7 @@ public class SimpleMarchingCubes extends MarchingCubes {
 
     if (doSaveSurfacePoints) {
       Point3f pt = new Point3f();
-      pt.scaleAdd(f, edgeVector, pointA);
+      pt.scaleAdd2(f, edgeVector, pointA);
       surfacePoints.add(pt);
     }
     return edgeCount++;
@@ -144,16 +144,16 @@ public class SimpleMarchingCubes extends MarchingCubes {
     Point3f ptb = surfacePoints.get(edgePointIndexes[ib]);
     Point3f ptc = surfacePoints.get(edgePointIndexes[ic]);
     
-    vAB.sub(ptb, pta);
-    vAC.sub(ptc, pta);
+    vAB.sub2(ptb, pta);
+    vAC.sub2(ptc, pta);
     vTemp.cross(vAB, vAC);
     float area = vTemp.length() / 2;
     calculatedArea += area;
     
-    vAB.set(ptb);
-    vAC.set(ptc);
+    vAB.setT(ptb);
+    vAC.setT(ptc);
     vTemp.cross(vAB, vAC);
-    vAC.set(pta);
+    vAC.setT(pta);
     calculatedVolume += vAC.dot(vTemp) / 6;
   }
 

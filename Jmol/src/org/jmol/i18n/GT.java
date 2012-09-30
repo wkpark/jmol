@@ -325,7 +325,7 @@ public class GT {
         if (la != null)
           addBundle(className, la);
     } catch (Exception exception) {
-      Logger.error("Some exception occurred!", exception);
+      Logger.errorEx("Some exception occurred!", exception);
       translationResources = null;
       translationResourcesCount = 0;
     }

@@ -29,12 +29,13 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 
 import javax.swing.filechooser.FileSystemView;
 
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
+import org.jmol.util.BitSetUtil;
 
 class JmolInstance {
   String name;
@@ -69,7 +70,7 @@ class JmolInstance {
     }
     bgColor = viewer.getBackgroundArgb();
     javaname = name.replaceAll("[^a-zA-Z_0-9-]", "_"); //escape filename characters
-    whichWidgets=new BitSet(nWidgets);
+    whichWidgets=BitSetUtil.newBitSet(nWidgets);
     FileSystemView Directories = FileSystemView.getFileSystemView();
     File homedir = Directories.getHomeDirectory();
     String homedirpath = homedir.getPath();

@@ -30,7 +30,7 @@ import org.jmol.util.Colix;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -303,7 +303,7 @@ public class Sticks extends Shape {
       Atom atom2 = bond.getAtom2();
       if (!atom1.isVisible(0) || !atom2.isVisible(0))
         continue;
-      v.set(atom1);
+      v.setT(atom1);
       v.add(atom2);
       v.scale(0.5f);
       int d2 = coordinateInRange(x, y, v, dmin2, ptXY);
@@ -313,7 +313,7 @@ public class Sticks extends Shape {
           continue;
         dmin2 = d2;
         pickedBond = bond;
-        pt.set(v);
+        pt.setT(v);
       }
     }
     return pickedBond;

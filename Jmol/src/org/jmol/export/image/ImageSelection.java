@@ -147,10 +147,10 @@ public class ImageSelection implements Transferable {
         }
       } catch (UnsupportedFlavorException ex) {
         //highly unlikely since we are using a standard DataFlavor
-        Logger.error("Clipboard problem", ex);
+        Logger.errorEx("Clipboard problem", ex);
         ex.printStackTrace();
       } catch (IOException ex) {
-        Logger.error("Clipboard problem", ex);
+        Logger.errorEx("Clipboard problem", ex);
         ex.printStackTrace();
       }
     return result;

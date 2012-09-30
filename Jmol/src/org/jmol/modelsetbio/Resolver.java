@@ -25,7 +25,7 @@
 package org.jmol.modelsetbio;
 
 import java.util.Arrays;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Map;
@@ -572,7 +572,7 @@ public final class Resolver implements JmolBioResolver {
       maxSerial = ((int[]) modelSet.getModelAuxiliaryInfoValue(atoms[lastSetH = iAtom].modelIndex, "PDB_CONECT_firstAtom_count_max"))[2];
     bsAddedHydrogens.clear(iAtom);
     modelSet.setAtomName(iAtom, name);
-    atoms[iAtom].set(pt);
+    atoms[iAtom].setT(pt);
     modelSet.setAtomNumber(iAtom, ++maxSerial);
     atoms[iAtom].setAtomSymmetry(atoms[iTo].getAtomSymmetry());
     modelLoader.undeleteAtom(iAtom);

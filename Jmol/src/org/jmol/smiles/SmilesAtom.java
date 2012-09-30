@@ -24,12 +24,13 @@
 
 package org.jmol.smiles;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 
 import java.util.List;
 
 import javax.vecmath.Point3f;
 
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolNode;
@@ -131,11 +132,8 @@ public class SmilesAtom extends Point3f implements JmolNode {
   public SmilesAtom addAtomOr() {
     if (atomsOr == null)
       atomsOr = new SmilesAtom[2];
-    if (nAtomsOr >= atomsOr.length) {
-      SmilesAtom[] tmp = new SmilesAtom[atomsOr.length * 2];
-      System.arraycopy(atomsOr, 0, tmp, 0, atomsOr.length);
-      atomsOr = tmp;
-    }
+    if (nAtomsOr >= atomsOr.length)
+      atomsOr = (SmilesAtom[]) ArrayUtil.doubleLength(atomsOr);
     SmilesAtom sAtom = new SmilesAtom(index);
     sAtom.parent = this;
     atomsOr[nAtomsOr] = sAtom;
@@ -539,11 +537,8 @@ public class SmilesAtom extends Point3f implements JmolNode {
    * @param bond Bond to add.
    */
   void addBond(SmilesBond bond) {
-    if (bondCount >= bonds.length) {
-      SmilesBond[] tmp = new SmilesBond[bonds.length * 2];
-      System.arraycopy(bonds, 0, tmp, 0, bonds.length);
-      bonds = tmp;
-    }
+    if (bondCount >= bonds.length)
+      bonds = (SmilesBond[]) ArrayUtil.doubleLength(bonds);
     //if (Logger.debugging)
     //Logger.debug("adding bond to " + this + ": " + bond.getAtom1() + " " + bond.getAtom2());
     bonds[bondCount] = bond;
@@ -551,21 +546,12 @@ public class SmilesAtom extends Point3f implements JmolNode {
   }
 
   public void setBondArray() {
-    if (bonds.length > bondCount) {
-      SmilesBond[] tmp = new SmilesBond[bondCount];
-      System.arraycopy(bonds, 0, tmp, 0, bondCount);
-      bonds = tmp;
-    }
-    if (atomsOr != null && atomsOr.length > nAtomsOr) {
-      SmilesAtom[] tmp = new SmilesAtom[atomsOr.length];
-      System.arraycopy(atomsOr, 0, tmp, 0, nAtomsOr);
-      atomsOr = tmp;
-    }
-    if (primitives != null && primitives.length > nPrimitives) {
-      SmilesAtom[] tmp = new SmilesAtom[primitives.length];
-      System.arraycopy(primitives, 0, tmp, 0, nPrimitives);
-      primitives = tmp;
-    }
+    if (bonds.length > bondCount) 
+      bonds = (SmilesBond[]) ArrayUtil.arrayCopyOpt(bonds, bondCount);
+    if (atomsOr != null && atomsOr.length > nAtomsOr)
+      atomsOr = (SmilesAtom[]) ArrayUtil.arrayCopyOpt(atomsOr, atomsOr.length);
+    if (primitives != null && primitives.length > nPrimitives)
+      primitives = (SmilesAtom[]) ArrayUtil.arrayCopyOpt(primitives, primitives.length);
     for (int i = 0; i < bonds.length; i++) {
       if (isBioAtom && bonds[i].order == SmilesBond.TYPE_AROMATIC)
         bonds[i].order = SmilesBond.TYPE_BIO_PAIR;

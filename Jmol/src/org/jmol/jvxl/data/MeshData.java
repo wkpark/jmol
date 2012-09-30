@@ -114,7 +114,7 @@
 package org.jmol.jvxl.data;
 
 import java.util.Arrays;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Comparator;
 
 import javax.vecmath.Point3f;
@@ -138,7 +138,7 @@ public class MeshData extends MeshSurface {
   public int addVertexCopy(Point3f vertex, float value, int assocVertex) {
     if (assocVertex < 0)
       vertexIncrement = -assocVertex;  //3 in some cases
-    return addVertexCopy(vertex, value);
+    return addVertexCopyVal(vertex, value);
   }
 
   public BitSet[] getSurfaceSet() {
@@ -321,16 +321,16 @@ public class MeshData extends MeshSurface {
       if (thisSet >= 0 && iSet != thisSet)
         continue;
       if (isArea) {
-        vAB.sub(vertices[iB], vertices[iA]);
-        vAC.sub(vertices[iC], vertices[iA]);
+        vAB.sub2(vertices[iB], vertices[iA]);
+        vAC.sub2(vertices[iC], vertices[iA]);
         vTemp.cross(vAB, vAC);
         v[justOne ? 0 : iSet] += vTemp.length();
       } else {
         // volume
-        vAB.set(vertices[iB]);
-        vAC.set(vertices[iC]);
+        vAB.setT(vertices[iB]);
+        vAC.setT(vertices[iC]);
         vTemp.cross(vAB, vAC);
-        vAC.set(vertices[iA]);
+        vAC.setT(vertices[iA]);
         v[justOne ? 0 : iSet] += vAC.dot(vTemp);
       }
     }

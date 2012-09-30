@@ -27,7 +27,7 @@ package org.jmol.jvxl.data;
 import javax.vecmath.Point3f;
 
 import java.util.ArrayList;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.List;
 import java.util.Map;
 
@@ -94,7 +94,7 @@ public class JvxlCoder {
     boolean isHeaderOnly = ("HEADERONLY".equals(msg));
     if (includeHeader) {
       XmlUtil.openDocument(data);
-      XmlUtil.openTag(data, "jvxl", new String[] {
+      XmlUtil.openTagAttr(data, "jvxl", new String[] {
           "version", JVXL_VERSION_XML,
           "jmolVersion", jvxlData.version,
           "xmlns", "http://jmol.org/jvxl_schema",
@@ -107,7 +107,7 @@ public class JvxlCoder {
       if (volumeDataXml == null)
         volumeDataXml = (new VolumeData()).setVolumetricXml();
       data.append(volumeDataXml);
-      XmlUtil.openTag(data,"jvxlSurfaceSet", 
+      XmlUtil.openTagAttr(data,"jvxlSurfaceSet", 
           new String[] { "count", "" + (nSurfaces > 0 ? nSurfaces : 1) });
       if (isHeaderOnly)
         return data.toString();
@@ -118,7 +118,7 @@ public class JvxlCoder {
     // TODO: contours mentioned here? when discrete?
     if (jvxlData.jvxlColorData != null && jvxlData.jvxlColorData.length() > 0)
       type = "mapped " + type;
-    XmlUtil.openTag(data, "jvxlSurface", new String[] { "type", type });
+    XmlUtil.openTagAttr(data, "jvxlSurface", new String[] { "type", type });
     data.append(jvxlGetInfoData(jvxlData, vertexDataOnly));
     jvxlAppendCommandState(data, comment, state);
     if (title != null || msg != null && msg.length() > 0) {
@@ -132,7 +132,7 @@ public class JvxlCoder {
     }
     sb = new StringBuffer();
     
-    XmlUtil.openTag(sb, "jvxlSurfaceData", (vertexDataOnly || jvxlData.jvxlPlane == null ? null :
+    XmlUtil.openTagAttr(sb, "jvxlSurfaceData", (vertexDataOnly || jvxlData.jvxlPlane == null ? null :
       jvxlData.mapLattice == null ? new String[] { "plane", Escape.escape(jvxlData.jvxlPlane) }
       :  new String[] { "plane", Escape.escape(jvxlData.jvxlPlane),  "maplattice", Escape.escapePt(jvxlData.mapLattice)  }));
     if (vertexDataOnly) {
@@ -183,7 +183,7 @@ public class JvxlCoder {
       return;
     StringBuffer sb1 = new StringBuffer("\n ");
     jvxlEncodeBitSetBuffer(bs, -1, sb1);
-    XmlUtil.appendTag(sb, name, new Object[] {
+    XmlUtil.appendTagObj(sb, name, new Object[] {
         attribs,
         "bsEncoding", "base90+35",
         "count", "" + count,
@@ -201,7 +201,7 @@ public class JvxlCoder {
   }
 
   private static void appendXmlEdgeData(StringBuffer sb, JvxlData jvxlData) {
-    XmlUtil.appendTag(sb, "jvxlEdgeData", new String[] {
+    XmlUtil.appendTagObj(sb, "jvxlEdgeData", new String[] {
         "count", "" + (jvxlData.jvxlEdgeData.length() - 1),
         "encoding", "base90f1",
         "bsEncoding", "base90+35c",
@@ -235,7 +235,7 @@ public class JvxlCoder {
       return;
     if (isPrecisionColor)
       n /= 2;
-    XmlUtil.appendTag(sb, key, new String[] {
+    XmlUtil.appendTagObj(sb, key, new String[] {
         "count", "" + n, 
         "encoding", "base90f" + (isPrecisionColor ? "2" : "1"),
         "min", "" + value1,
@@ -375,7 +375,7 @@ public class JvxlCoder {
     addAttrib(attribs, "\n  jmolVersion", jvxlData.version);
     
     StringBuffer info = new StringBuffer();
-    XmlUtil.openTag(info, "jvxlSurfaceInfo", attribs.toArray());
+    XmlUtil.openTagAttr(info, "jvxlSurfaceInfo", attribs.toArray());
     XmlUtil.closeTag(info, "jvxlSurfaceInfo");
     return info.toString();
   }
@@ -424,7 +424,7 @@ public class JvxlCoder {
    * @param sb
    */
   private static void jvxlEncodeContourData(List<Object>[] contours, StringBuffer sb) {
-    XmlUtil.openTag(sb, "jvxlContourData", new String[] { "count", "" + contours.length });
+    XmlUtil.openTagAttr(sb, "jvxlContourData", new String[] { "count", "" + contours.length });
     for (int i = 0; i < contours.length; i++) {
       if (contours[i].size() < CONTOUR_POINTS) {
         continue;
@@ -433,7 +433,7 @@ public class JvxlCoder {
       StringBuffer sb1 = new StringBuffer("\n");
       BitSet bs = (BitSet) contours[i].get(CONTOUR_BITSET);
       jvxlEncodeBitSetBuffer(bs, nPolygons, sb1);
-      XmlUtil.appendTag(sb, "jvxlContour", new String[] {
+      XmlUtil.appendTagObj(sb, "jvxlContour", new String[] {
           "index", "" + i,
           "value", "" + contours[i].get(CONTOUR_VALUE),
           "color", Escape.escapeColor(((int[]) contours[i]
@@ -512,7 +512,7 @@ public class JvxlCoder {
 
   private static Point3f getContourPoint(Point3f[] vertices, int i, int j, float f) {
     Point3f pt = new Point3f();
-    pt.set(vertices[j]);
+    pt.setT(vertices[j]);
     pt.sub(vertices[i]);
     pt.scale(f);
     pt.add(vertices[i]);
@@ -710,12 +710,12 @@ public class JvxlCoder {
     }
     if (list1.length() == 0)
       return true;
-    XmlUtil.appendTag(sb, "jvxlTriangleData", new String[] {
+    XmlUtil.appendTagObj(sb, "jvxlTriangleData", new String[] {
         "count", "" + nTri,
         "encoding", "jvxltdiff",
         "data" , jvxlCompressString(list1.toString(), escapeXml), 
         }, null);
-    XmlUtil.appendTag(sb, "jvxlTriangleEdgeData", new String[] { // Jmol 12.1.50
+    XmlUtil.appendTagObj(sb, "jvxlTriangleEdgeData", new String[] { // Jmol 12.1.50
         "count", "" + nTri,
         "encoding", "jvxlsc",
         "data" , jvxlCompressString(list2.toString(), escapeXml) }, null);
@@ -802,7 +802,7 @@ public class JvxlCoder {
             colorFractionRange, list1, list2);
       }
     list1.append(list2);
-    XmlUtil.appendTag(sb, "jvxlVertexData",
+    XmlUtil.appendTagObj(sb, "jvxlVertexData",
         new String[] { 
             "count", "" + n, 
             "min", Escape.escapePt(min), 
@@ -811,7 +811,7 @@ public class JvxlCoder {
             "data", jvxlCompressString(list1.toString(), escapeXml),
             }, null);
     if (polygonColorData != null)
-      XmlUtil.appendTag(sb, "jvxlPolygonColorData", new String[] { "encoding",
+      XmlUtil.appendTagObj(sb, "jvxlPolygonColorData", new String[] { "encoding",
           "jvxlnc", "count", "" + polygonCount }, "\n" + polygonColorData);
     if (!addColorData)
       return;
@@ -1240,7 +1240,7 @@ public class JvxlCoder {
             + atomXyz[i].x + " " + atomXyz[i].y + " " + atomXyz[i].z + "\n");
       return;
     }
-    Point3f pt = new Point3f(v.volumetricOrigin);
+    Point3f pt = Point3f.new3(v.volumetricOrigin);
     sb.append("1 1.0 ").append(pt.x).append(' ').append(pt.y).append(' ')
         .append(pt.z).append(" //BOGUS H ATOM ADDED FOR JVXL FORMAT\n");
     for (int i = 0; i < 3; i++)

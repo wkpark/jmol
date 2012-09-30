@@ -23,7 +23,7 @@
  */
 package org.jmol.viewer;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -140,7 +140,7 @@ public class ShapeManager {
       viewer.setShapeErrorState(-1, null);
       return shapes[shapeID] = shape;
     } catch (Exception e) {
-      Logger.error("Could not instantiate shape:" + className, e);
+      Logger.errorEx("Could not instantiate shape:" + className, e);
       return null;
     }
   }

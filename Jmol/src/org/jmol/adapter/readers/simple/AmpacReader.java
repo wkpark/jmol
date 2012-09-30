@@ -94,7 +94,7 @@ public class AmpacReader extends AtomSetCollectionReader {
       if (tokens.length < 5)
         break;
       if (haveFreq) {
-        atomPositions[atomCount] = new Point3f(parseFloatStr(tokens[2]), parseFloatStr(tokens[3]), parseFloatStr(tokens[4]));
+        atomPositions[atomCount] = Point3f.new3(parseFloatStr(tokens[2]), parseFloatStr(tokens[3]), parseFloatStr(tokens[4]));
       } else {
         String symbol = tokens[1];
         Atom atom = atomSetCollection.addNewAtom();
@@ -111,7 +111,7 @@ public class AmpacReader extends AtomSetCollectionReader {
     int maxAtom = atomSetCollection.getAtomCount();
     Atom[] atoms = atomSetCollection.getAtoms();
     for (int i = freqAtom0; i <  maxAtom; i++) {
-      atoms[i].set(atomPositions[i % atomCount]);
+      atoms[i].setT(atomPositions[i % atomCount]);
       atoms[i].partialCharge = partialCharges[i % atomCount];  
     }
   }

@@ -25,7 +25,7 @@
 
 package org.jmol.shapesurface;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import javax.vecmath.Vector3f;
 
 import org.jmol.shape.Shape;
@@ -287,9 +287,9 @@ public class LcaoCartoon extends Isosurface {
     super.setProperty("lcaoType", thisType, null);
     super.setProperty("atomIndex", Integer.valueOf(iAtom), null);
     Vector3f[] axes = { new Vector3f(), new Vector3f(),
-        new Vector3f(modelSet.atoms[iAtom]), new Vector3f() };
+        Vector3f.newV(modelSet.atoms[iAtom]), new Vector3f() };
     if (rotationAxis != null)
-      axes[3].set(rotationAxis);
+      axes[3].setT(rotationAxis);
     if (isMolecular) {
       if (thisType.indexOf("px") >= 0) {
         axes[0].set(0, -1, 0);

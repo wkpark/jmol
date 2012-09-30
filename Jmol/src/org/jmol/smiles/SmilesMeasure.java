@@ -87,8 +87,8 @@ public class SmilesMeasure  {
       d = points[0].distance(points[1]);
       break;
     case 3:
-      search.v.vA.sub(points[0], points[1]);
-      search.v.vB.sub(points[2], points[1]);
+      search.v.vA.sub2(points[0], points[1]);
+      search.v.vB.sub2(points[2], points[1]);
       d = search.v.vA.angle(search.v.vB) / radiansPerDegree;
       break;
     case 4: 
@@ -106,13 +106,13 @@ public class SmilesMeasure  {
     // We cross dihedral bonds with the bond axis
     // to get two vector projections in the
     // plane perpendicular to the bond axis
-    v.vTemp1.set(pt1a);
+    v.vTemp1.setT(pt1a);
     v.vTemp1.sub(pt1);
-    v.vTemp2.set(pt2a);
+    v.vTemp2.setT(pt2a);
     v.vTemp2.sub(pt2);
     if (!isAll)
       return;
-    v.vNorm1.set(pt1);
+    v.vNorm1.setT(pt1);
     v.vNorm1.sub(pt2);
     v.vNorm1.normalize();
     v.vTemp1.cross(v.vTemp1, v.vNorm1);

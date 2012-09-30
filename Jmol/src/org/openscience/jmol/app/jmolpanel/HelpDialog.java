@@ -77,9 +77,9 @@ public class HelpDialog extends JDialog implements HyperlinkListener {
         html.setEditable(false);
         html.addHyperlinkListener(this);
     } catch (MalformedURLException e) {
-      Logger.error("Malformed URL", e);
+      Logger.errorEx("Malformed URL", e);
     } catch (IOException e) {
-      Logger.error("IOException", e);
+      Logger.errorEx("IOException", e);
     }
     JScrollPane scroller = new JScrollPane();
     scroller.setPreferredSize(new Dimension(500, 400));

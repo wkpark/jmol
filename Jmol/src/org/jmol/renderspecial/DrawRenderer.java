@@ -23,7 +23,7 @@
  */
 package org.jmol.renderspecial;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.List;
 
 import javax.vecmath.AxisAngle4f;
@@ -176,18 +176,18 @@ public class DrawRenderer extends MeshRenderer {
       if (theta == 0)
         return;
       float fractionalOffset = (vertexCount > 3 ? vertices[3].z : 0);
-      vTemp.set(vertices[1]);
+      vTemp.setT(vertices[1]);
       vTemp.sub(vertices[0]);
       // crossing point
-      pt1f.scaleAdd(fractionalOffset, vTemp, vertices[0]);
+      pt1f.scaleAdd2(fractionalOffset, vTemp, vertices[0]);
       // define rotational axis
       Matrix3f mat = new Matrix3f();
-      mat.set(new AxisAngle4f(vTemp, (float) (nDegreesOffset * Math.PI / 180)));
+      mat.setAA(AxisAngle4f.newVA(vTemp, (float) (nDegreesOffset * Math.PI / 180)));
       // vector to rotate
       if (vertexCount > 2)
-        vTemp2.set(vertices[2]);
+        vTemp2.setT(vertices[2]);
       else
-        vTemp2.set(Draw.randomPoint());
+        vTemp2.setT(Draw.randomPoint());
       vTemp2.sub(vertices[0]);
       vTemp2.cross(vTemp, vTemp2);
       vTemp2.cross(vTemp2, vTemp);
@@ -203,15 +203,15 @@ public class DrawRenderer extends MeshRenderer {
         degrees /= 2;
         nPoints = (int) (theta / degrees + 0.5f) + 1;
       }
-      mat.set(new AxisAngle4f(vTemp, (float) (degrees * Math.PI / 180)));
+      mat.setAA(AxisAngle4f.newVA(vTemp, (float) (degrees * Math.PI / 180)));
       screens = viewer.allocTempScreens(nPoints);
       int iBase = nPoints - (dmesh.scale < 2 ? 3 : 3);
       for (int i = 0; i < nPoints; i++) {
         if (i == iBase)
-          vpt0.set(vpt1);
-        vpt1.scaleAdd(1, vTemp2, pt1f);
+          vpt0.setT(vpt1);
+        vpt1.scaleAdd2(1, vTemp2, pt1f);
         if (i == 0)
-          vpt2.set(vpt1);
+          vpt2.setT(vpt1);
         viewer.transformPtScr(vpt1, screens[i]);
         mat.transform(vTemp2);
       }
@@ -219,7 +219,7 @@ public class DrawRenderer extends MeshRenderer {
         renderArrowHead(vpt0, vpt1, 0.3f, false, false, dmesh.isBarb);
         viewer.transformPtScr(pt1f, screens[nPoints - 1]);
       }
-      pt1f.set(vpt2);
+      pt1f.setT(vpt2);
       break;
     case ARROW:
       if (vertexCount == 2) {
@@ -277,21 +277,21 @@ public class DrawRenderer extends MeshRenderer {
           j0 = j;
         }
       }
-    vpt0.set(vertices[0]);
+    vpt0.setT(vertices[0]);
     vpt0.add(vertices[1]);
     vpt0.scale(0.5f);
-    vpt2.set(vertices[2]);
+    vpt2.setT(vertices[2]);
     vpt2.add(vertices[3]);
     vpt2.scale(0.5f);
-    vpt1.set(vpt0);
+    vpt1.setT(vpt0);
     vpt1.add(vpt2);
     vpt1.scale(0.5f);
-    vertices[3] = new Point3f(vertices[i0]);
+    vertices[3] = Point3f.newP(vertices[i0]);
     vertices[3].add(vertices[j0]);
     vertices[3].scale(0.5f);
-    vertices[1] = new Point3f(vpt1); 
-    vertices[0] = new Point3f(vpt0);
-    vertices[2] = new Point3f(vpt2);
+    vertices[1] = Point3f.newP(vpt1); 
+    vertices[0] = Point3f.newP(vpt0);
+    vertices[2] = Point3f.newP(vpt2);
 
     for (int i = 0; i < 4; i++)
       viewer.transformPtScr(vertices[i], screens[i]);
@@ -306,7 +306,7 @@ public class DrawRenderer extends MeshRenderer {
     float dx = (screens[1].x - screens[0].x) * f;
     float dy = (screens[1].y - screens[0].y) * f;
     
-    if (dmax == 0 || Measure.computeTorsion(vpt2, vpt0, new Point3f(vpt0.x, vpt0.y, 10000f), vpt1, false) > 0) {
+    if (dmax == 0 || Measure.computeTorsion(vpt2, vpt0, Point3f.new3(vpt0.x, vpt0.y, 10000f), vpt1, false) > 0) {
       dx = -dx;
       dy = -dy;
     }
@@ -314,11 +314,11 @@ public class DrawRenderer extends MeshRenderer {
     vpt1.add(vpt2);
     viewer.unTransformPoint(vpt1, vertices[1]);
     vpt2.scale(offsetside);
-    vTemp.set(vertices[1]);
+    vTemp.setT(vertices[1]);
     vTemp.sub(vertices[0]);
     vTemp.scale(endoffset); 
     vertices[0].add(vTemp);
-    vTemp.set(vertices[1]);
+    vTemp.setT(vertices[1]);
     vTemp.sub(vertices[2]);
     vTemp.scale(endoffset); 
     vertices[2].add(vTemp);
@@ -355,7 +355,7 @@ public class DrawRenderer extends MeshRenderer {
     vpt1.z *= -1;
     float zoomDimension = viewer.getScreenDim();
     float scaleFactor = zoomDimension / 20f;
-    vpt1.scaleAdd(dmesh.scale * scaleFactor, vpt1, vpt0);
+    vpt1.scaleAdd2(dmesh.scale * scaleFactor, vpt1, vpt0);
     if (diameter == 0)
       diameter = 1;
     pt1i.set((int) vpt0.x, (int) vpt0.y, (int) vpt0.z);
@@ -385,19 +385,19 @@ public class DrawRenderer extends MeshRenderer {
     if (factor2 > 0)
       fScale *= factor2;
 
-    pt0f.set(pt1);
-    pt2f.set(pt2);
+    pt0f.setT(pt1);
+    pt2f.setT(pt2);
     float d = pt0f.distance(pt2f);
     if (d == 0)
       return;
-    vTemp.set(pt2f);
+    vTemp.setT(pt2f);
     vTemp.sub(pt0f);
     vTemp.normalize();
     vTemp.scale(fScale / 5);
     if (!withShaft)
       pt2f.add(vTemp);
     vTemp.scale(5);
-    pt1f.set(pt2f);
+    pt1f.setT(pt2f);
     pt1f.sub(vTemp);
     if (isTransformed) {
       pt1i.set((int) pt1f.x, (int) pt1f.y, (int) pt1f.z);
@@ -471,10 +471,10 @@ public class DrawRenderer extends MeshRenderer {
           pt = dmesh.polygonIndexes[i].length - 1;
           s = s.substring(1);
           if (drawType == EnumDrawType.ARC)
-            pt1f.set(pt2f);
+            pt1f.setT(pt2f);
         }
         if (drawType != EnumDrawType.ARC)
-          pt1f.set(vertices[dmesh.polygonIndexes[i][pt]]);
+          pt1f.setT(vertices[dmesh.polygonIndexes[i][pt]]);
         viewer.transformPtScr(pt1f, pt1i);
         int offset = (int) (5 * imageFontScaling);
         g3d.drawString(s, null, pt1i.x + offset, pt1i.y - offset, pt1i.z,

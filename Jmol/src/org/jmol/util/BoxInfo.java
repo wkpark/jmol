@@ -97,7 +97,7 @@ public class BoxInfo {
   public final static Point3f[] getCanonicalCopy(Point3f[] bbUcPoints, float scale) {
     Point3f[] pts = new Point3f[8];
     for (int i = 0; i < 8; i++)
-      pts[toCanonical[i]] = new Point3f(bbUcPoints[i]);
+      pts[toCanonical[i]] = Point3f.newP(bbUcPoints[i]);
     scaleBox(pts, scale);
     return pts;
   }
@@ -111,9 +111,9 @@ public class BoxInfo {
       center.add(pts[i]);
     center.scale(1/8f);
     for (int i = 0; i < 8; i++) {
-      v.sub(pts[i], center);
+      v.sub2(pts[i], center);
       v.scale(scale);
-      pts[i].add(center, v);
+      pts[i].add2(center, v);
     }
   }
 
@@ -128,7 +128,7 @@ public class BoxInfo {
     
     Point3f[] vertices = new Point3f[8];
     for (int i = 0; i < 8; i++) {
-      vertices[i] = new Point3f(points[0]);
+      vertices[i] = Point3f.newP(points[0]);
       if ((i & 1) == 1)
         vertices[i].add(points[1]);
       if ((i & 2) == 2)
@@ -138,9 +138,9 @@ public class BoxInfo {
     }
 
     for (int i = 0; i < 6; i++) {
-      va.set(vertices[facePoints[i].x]);
-      vb.set(vertices[facePoints[i].y]);
-      vc.set(vertices[facePoints[i].z]);
+      va.setT(vertices[facePoints[i].x]);
+      vb.setT(vertices[facePoints[i].y]);
+      vc.setT(vertices[facePoints[i].z]);
       Measure.getPlaneThroughPoints(va, vb, vc, vNorm, vAB, vAC, faces[i] = new Point4f());
     }
     return faces;
@@ -167,43 +167,43 @@ public class BoxInfo {
    */
   
   public final static Point3f[] unitCubePoints = { 
-    new Point3f(0, 0, 0), // 0
-    new Point3f(0, 0, 1), // 1
-    new Point3f(0, 1, 0), // 2
-    new Point3f(0, 1, 1), // 3
-    new Point3f(1, 0, 0), // 4
-    new Point3f(1, 0, 1), // 5
-    new Point3f(1, 1, 0), // 6
-    new Point3f(1, 1, 1), // 7
+    Point3f.new3(0, 0, 0), // 0
+    Point3f.new3(0, 0, 1), // 1
+    Point3f.new3(0, 1, 0), // 2
+    Point3f.new3(0, 1, 1), // 3
+    Point3f.new3(1, 0, 0), // 4
+    Point3f.new3(1, 0, 1), // 5
+    Point3f.new3(1, 1, 0), // 6
+    Point3f.new3(1, 1, 1), // 7
   };
 
   private static Point3i[] facePoints = {
-    new Point3i(4, 0, 6),
-    new Point3i(4, 6, 5), 
-    new Point3i(5, 7, 1), 
-    new Point3i(1, 3, 0),
-    new Point3i(6, 2, 7), 
-    new Point3i(1, 0, 5), 
+    Point3i.new3(4, 0, 6),
+    Point3i.new3(4, 6, 5), 
+    Point3i.new3(5, 7, 1), 
+    Point3i.new3(1, 3, 0),
+    Point3i.new3(6, 2, 7), 
+    Point3i.new3(1, 0, 5), 
   };
 
   public final static int[] toCanonical = new int[] {0, 3, 4, 7, 1, 2, 5, 6};
 
   protected final static Point3i[] cubeVertexOffsets = { 
-    new Point3i(0, 0, 0), //0 pt
-    new Point3i(1, 0, 0), //1 pt + yz
-    new Point3i(1, 0, 1), //2 pt + yz + 1
-    new Point3i(0, 0, 1), //3 pt + 1
-    new Point3i(0, 1, 0), //4 pt + z
-    new Point3i(1, 1, 0), //5 pt + yz + z
-    new Point3i(1, 1, 1), //6 pt + yz + z + 1
-    new Point3i(0, 1, 1)  //7 pt + z + 1 
+    Point3i.new3(0, 0, 0), //0 pt
+    Point3i.new3(1, 0, 0), //1 pt + yz
+    Point3i.new3(1, 0, 1), //2 pt + yz + 1
+    Point3i.new3(0, 0, 1), //3 pt + 1
+    Point3i.new3(0, 1, 0), //4 pt + z
+    Point3i.new3(1, 1, 0), //5 pt + yz + z
+    Point3i.new3(1, 1, 1), //6 pt + yz + z + 1
+    Point3i.new3(0, 1, 1)  //7 pt + z + 1 
   };
 
   public final static Point3f[] getCriticalPoints(Point3f[] bbVertices, Tuple3f offset) {
-    Point3f center = new Point3f(bbVertices[0]);
-    Point3f a = new Point3f(bbVertices[1]);
-    Point3f b = new Point3f(bbVertices[2]);
-    Point3f c = new Point3f(bbVertices[4]);
+    Point3f center = Point3f.newP(bbVertices[0]);
+    Point3f a = Point3f.newP(bbVertices[1]);
+    Point3f b = Point3f.newP(bbVertices[2]);
+    Point3f c = Point3f.newP(bbVertices[4]);
     a.sub(center);
     b.sub(center);
     c.sub(center);
@@ -215,8 +215,8 @@ public class BoxInfo {
   private final static Point3f[] unitBboxPoints = new Point3f[8];
   {
     for (int i = 0; i < 8; i++) {
-      unitBboxPoints[i] = new Point3f(-1, -1, -1);
-      unitBboxPoints[i].scaleAdd(2, unitCubePoints[i], unitBboxPoints[i]);
+      unitBboxPoints[i] = Point3f.new3(-1, -1, -1);
+      unitBboxPoints[i].scaleAdd2(2, unitCubePoints[i], unitBboxPoints[i]);
     }
   }
 
@@ -235,7 +235,7 @@ public class BoxInfo {
   public Point3f[] getBoundBoxPoints(boolean isAll) {
     if (!isScaleSet)
       setBbcage(1);
-    return (isAll ? new Point3f[] { bbCenter, new Point3f(bbVector), bbCorner0,
+    return (isAll ? new Point3f[] { bbCenter, Point3f.newP(bbVector), bbCorner0,
         bbCorner1 } : new Point3f[] { bbCorner0, bbCorner1 });
   }
 
@@ -249,10 +249,10 @@ public class BoxInfo {
     if (!isScaleSet)
       setBbcage(1);
     Map<String, Object> info = new Hashtable<String, Object>();
-    info.put("center", new Point3f(bbCenter));
-    info.put("vector", new Vector3f(bbVector));
-    info.put("corner0", new Point3f(bbCorner0));
-    info.put("corner1", new Point3f(bbCorner1));
+    info.put("center", Point3f.newP(bbCenter));
+    info.put("vector", Vector3f.newV(bbVector));
+    info.put("corner0", Point3f.newP(bbCorner0));
+    info.put("corner1", Point3f.newP(bbCorner1));
     return info;
   }
 
@@ -305,9 +305,9 @@ public class BoxInfo {
 
   public void setBbcage(float scale) {
     isScaleSet = true;
-    bbCenter.add(bbCorner0, bbCorner1);
+    bbCenter.add2(bbCorner0, bbCorner1);
     bbCenter.scale(0.5f);
-    bbVector.sub(bbCorner1, bbCenter);
+    bbVector.sub2(bbCorner1, bbCenter);
     if (scale > 0) {
       bbVector.scale(scale);
     } else {
@@ -317,14 +317,14 @@ public class BoxInfo {
     }
     for (int i = 8; --i >= 0;) {
       Point3f pt = bbVertices[i];
-      pt.set(unitBboxPoints[i]);
+      pt.setT(unitBboxPoints[i]);
       pt.x *= bbVector.x;
       pt.y *= bbVector.y;
       pt.z *= bbVector.z;
       pt.add(bbCenter);
     }
-    bbCorner0.set(bbVertices[0]);
-    bbCorner1.set(bbVertices[7]);
+    bbCorner0.setT(bbVertices[0]);
+    bbCorner1.setT(bbVertices[7]);
   }
   
   public boolean isWithin(Point3f pt) {

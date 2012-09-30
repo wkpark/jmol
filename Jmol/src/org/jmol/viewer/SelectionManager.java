@@ -32,7 +32,7 @@ import org.jmol.api.JmolSelectionListener;
 import org.jmol.i18n.GT;
 import org.jmol.modelset.ModelSet;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.Map;
 

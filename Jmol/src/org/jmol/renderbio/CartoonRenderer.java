@@ -93,7 +93,7 @@ public class CartoonRenderer extends RocketsRenderer {
             (controlPointScreens[i].y + controlPointScreens[i + 1].y) / 2,
             (controlPointScreens[i].z + controlPointScreens[i + 1].z) / 2);
       } else {
-        ptConnect.set(controlPointScreens[i + 1]);
+        ptConnect.setT(controlPointScreens[i + 1]);
       }
       renderHermiteConic(i, false);
       colix = getLeadColix(i);

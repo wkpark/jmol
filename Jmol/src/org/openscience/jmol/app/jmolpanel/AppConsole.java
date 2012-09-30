@@ -300,7 +300,7 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
 
         executeCommand(strCommand);
       } catch (Exception ie) {
-        Logger.error("execution command interrupted!", ie);
+        Logger.errorEx("execution command interrupted!", ie);
       }
     }
   }
@@ -807,7 +807,7 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
       try {
         super.remove(0, getLength());
       } catch (BadLocationException exception) {
-        Logger.error("Could not clear script window content", exception);
+        Logger.errorEx("Could not clear script window content", exception);
       }
     }
 

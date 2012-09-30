@@ -26,7 +26,7 @@ package org.jmol.util;
 
 
 import javax.vecmath.Vector3f;
-import java.util.BitSet;
+import javax.util.BitSet;
 
 
 /**
@@ -89,7 +89,7 @@ public class Normix {
   public static final short NORMIX_NULL = 9999;
      // graphics3D, Mesh
   
-  public static short getNormix(Vector3f v, BitSet bsTemp) {
+  public static short getNormixV(Vector3f v, BitSet bsTemp) {
     // envelope, mesh, polyhedra only
     return getNormix(v.x, v.y, v.z, NORMIX_GEODESIC_LEVEL, bsTemp);
   }

@@ -27,7 +27,7 @@ package org.jmol.export;
 
 
 import java.util.ArrayList;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -88,7 +88,7 @@ public class _VrmlExporter extends __CartesianExporter {
     output("\n jump TRUE description \"v1\"\n}\n\n");
     output(getJmolPerspective());
     output("\nTransform{children Transform{translation ");
-    tempP1.set(center);
+    tempP1.setT(center);
     tempP1.scale(-1);
     output(tempP1);
     output("\nchildren [\n");
@@ -124,7 +124,7 @@ public class _VrmlExporter extends __CartesianExporter {
       // draw filled circle
 
       output("Transform{translation ");
-      tempV1.set(pt1);
+      tempV1.setT(pt1);
       tempV1.add(pt2);
       tempV1.scale(0.5f);
       output(tempV1);
@@ -268,8 +268,8 @@ public class _VrmlExporter extends __CartesianExporter {
     // Just send three points to Quaternion to define a plane and return
     // the AxisAngle required to rotate to that position. That's all there is to it.
 
-    tempQ1.set(ptX);
-    tempQ2.set(ptY);
+    tempQ1.setT(ptX);
+    tempQ2.setT(ptY);
     AxisAngle4f a = Quaternion.getQuaternionFrame(ptCenter, tempQ1, tempQ2)
         .toAxisAngle4f();
     if (!Float.isNaN(a.x)) {
@@ -441,7 +441,7 @@ public class _VrmlExporter extends __CartesianExporter {
   
   protected void outputTransRot(Point3f pt1, Point3f pt2, int x, int y, int z,
                                 String pre, String post) {
-    tempV1.set(pt2);
+    tempV1.setT(pt2);
     tempV1.add(pt1);
     tempV1.scale(0.5f);
     output("translation");
@@ -452,7 +452,7 @@ public class _VrmlExporter extends __CartesianExporter {
     tempV1.normalize();
     tempV2.set(x, y, z);
     tempV2.add(tempV1);
-    tempA.set(tempV2.x, tempV2.y, tempV2.z, 3.14159f);
+    tempA.set4(tempV2.x, tempV2.y, tempV2.z, 3.14159f);
     output(" rotation");
     output(pre);
     output(round(tempA.x) + " " + round(tempA.y) + " " + round(tempA.z) + " "

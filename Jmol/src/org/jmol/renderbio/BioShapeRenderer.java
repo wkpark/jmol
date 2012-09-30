@@ -47,7 +47,7 @@ import org.jmol.util.GData;
 import org.jmol.util.Hermite;
 import org.jmol.util.Logger;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 
 abstract class BioShapeRenderer extends MeshRenderer {
 
@@ -243,7 +243,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
 
   private void calc1Screen(Point3f center, Vector3f vector, short mad,
                            float offset_1000, Point3i screen) {
-    pointT.set(vector);
+    pointT.setT(vector);
     float scale = mad * offset_1000;
     pointT.scaleAdd(scale, center);
     viewer.transformPtScr(pointT, screen);
@@ -468,7 +468,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
   private Point3f[] radiusHermites;
 
   private Vector3f norm = new Vector3f();
-  private final Vector3f Z = new Vector3f(0.1345f, 0.5426f, 0.3675f); //random reference
+  private final Vector3f Z = Vector3f.new3(0.1345f, 0.5426f, 0.3675f); //random reference
   private final Vector3f wing = new Vector3f();
   private final Vector3f wing0 = new Vector3f();
   private final Vector3f wing1 = new Vector3f();
@@ -493,13 +493,13 @@ abstract class BioShapeRenderer extends MeshRenderer {
       dumpPoint(p.center, GData.YELLOW);
       dumpPoint(p.axisA, GData.YELLOW);
       dumpPoint(p.axisB, GData.YELLOW);
-      Vector3f v = new Vector3f(((Helix) p).vTemp);
+      Vector3f v = Vector3f.new3(((Helix) p).vTemp);
       v.scale(1);
       dumpVector(p.center, v, GData.GREEN);
       v.set(((Helix) p).m);
       v.scale(1);
       dumpVector(p.center, v, GData.WHITE);
-      dumpVector(p.center, new Vector3f(1, 1, 1), GData.BLUE);
+      dumpVector(p.center, Vector3f.new3(1, 1, 1), GData.BLUE);
       dumpPoint(controlPoints[i], GData.WHITE);
       */
     }
@@ -519,7 +519,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
       if (wingHermites == null || wingHermites.length < nHermites + 1) {
         wingHermites = new Vector3f[nHermites + 1];
       }
-      wing.set(wingVectors[iPrev]);
+      wing.setT(wingVectors[iPrev]);
       if (madEnd == 0)
         wing.scale(2.0f); //adds a flair to an arrow
       Hermite.getHermiteList(isNucleic ? 4 : 7, wing, wingVectors[i],
@@ -543,17 +543,17 @@ abstract class BioShapeRenderer extends MeshRenderer {
           radiusHermites, 0, (nHermites + 1) >> 1);
     }
     if (!isEccentric) {
-      norm.sub(controlHermites[1], controlHermites[0]);
+      norm.sub2(controlHermites[1], controlHermites[0]);
       wing0.cross(norm, Z);
       wing0.cross(norm, wing0);
     }
     int nPoints = 0;
     int iMid = nHermites >> 1;
     for (int p = 0; p < nHermites; p++) {
-      norm.sub(controlHermites[p + 1], controlHermites[p]);
+      norm.sub2(controlHermites[p + 1], controlHermites[p]);
       if (isEccentric) {
-        wing.set(wingHermites[p]);
-        wing1.set(wing);
+        wing.setT(wingHermites[p]);
+        wing1.setT(wing);
         wing.scale(2f / aspectRatio);
         //dumpVector(controlHermites[p],wing)
       } else {
@@ -564,18 +564,18 @@ abstract class BioShapeRenderer extends MeshRenderer {
           : radiusHermites[p - iMid].y);
       wing.scale(scale);
       wing1.scale(scale);
-      aa.set(norm, (float) (2 * Math.PI / nPer));
-      mat.set(aa);
-      pt1.set(controlHermites[p]);
+      aa.setVA(norm, (float) (2 * Math.PI / nPer));
+      mat.setAA(aa);
+      pt1.setT(controlHermites[p]);
       for (int k = 0; k < nPer; k++) {
         mat.transform(wing);
-        wingT.set(wing);
+        wingT.setT(wing);
         if (isEccentric) {
           if (k == (nPer + 2) / 4 || k == (3 * nPer + 2) / 4)
             wing1.scale(-1);
           wingT.add(wing1);
         }
-        pt.add(pt1, wingT);
+        pt.add2(pt1, wingT);
         if (isEccentric) {
           //dumpVector(wingHermites[p], pt);
         }

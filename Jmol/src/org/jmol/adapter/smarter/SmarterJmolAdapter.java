@@ -508,7 +508,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
       Logger.error("" + e);
       return "" + e;
     } catch (Error er) {
-      Logger.error(null, er);
+      Logger.errorEx(null, er);
       return "" + er;
     }
   }

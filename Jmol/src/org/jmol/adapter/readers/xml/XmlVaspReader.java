@@ -214,9 +214,9 @@ public class XmlVaspReader extends XmlReader {
         } else if ("basis".equals(name) && !haveUnitCell) {
           haveUnitCell = true;
           float[] ijk = getTokensFloat(data.toString(), null, 9);
-          Vector3f va = new Vector3f(ijk[0], ijk[1], ijk[2]);
-          Vector3f vb = new Vector3f(ijk[3], ijk[4], ijk[5]);
-          Vector3f vc = new Vector3f(ijk[6], ijk[7], ijk[8]);
+          Vector3f va = Vector3f.new3(ijk[0], ijk[1], ijk[2]);
+          Vector3f vb = Vector3f.new3(ijk[3], ijk[4], ijk[5]);
+          Vector3f vc = Vector3f.new3(ijk[6], ijk[7], ijk[8]);
           a = va.length();
           b = vb.length();
           c = vc.length();

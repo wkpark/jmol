@@ -24,7 +24,7 @@
 package org.jmol.modelsetbio;
 
 import java.util.ArrayList;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -84,7 +84,7 @@ public final class BioModel extends Model{
   @Override
   public void freeze() {
     super.freeze();
-    bioPolymers = (BioPolymer[])ArrayUtil.setLength(bioPolymers, bioPolymerCount);
+    bioPolymers = (BioPolymer[])ArrayUtil.arrayCopyOpt(bioPolymers, bioPolymerCount);
   }
   
   @Override
@@ -226,7 +226,7 @@ public final class BioModel extends Model{
   
   @Override
   public void setStructureList(Map<EnumStructure, float[]> structureList) {
-    bioPolymers = (BioPolymer[])ArrayUtil.setLength(bioPolymers, bioPolymerCount);
+    bioPolymers = (BioPolymer[])ArrayUtil.arrayCopyOpt(bioPolymers, bioPolymerCount);
     for (int i = bioPolymerCount; --i >= 0; )
       bioPolymers[i].setStructureList(structureList);
   }
@@ -591,7 +591,7 @@ public final class BioModel extends Model{
                 case HELIX:
                   nx = ++nHelix;
                   if (sid == null || pdbFileMode)
-                    sid = TextFormat.formatString("%3N %3N", "N", nx);
+                    sid = TextFormat.formatStringI("%3N %3N", "N", nx);
                   str = "HELIX  %ID %3GROUPA %1CA %4RESA  %3GROUPB %1CB %4RESB";
                   sb = sbHelix;
                   String stype = null;
@@ -613,8 +613,8 @@ public final class BioModel extends Model{
                 case SHEET:
                   nx = ++nSheet;
                   if (sid == null || pdbFileMode) {
-                    sid = TextFormat.formatString("%3N %3A 0", "N", nx);
-                    sid = TextFormat.formatString(sid, "A", "S" + nx);
+                    sid = TextFormat.formatStringI("%3N %3A 0", "N", nx);
+                    sid = TextFormat.formatStringS(sid, "A", "S" + nx);
                   }
                   str = "SHEET  %ID %3GROUPA %1CA%4RESA  %3GROUPB %1CB%4RESB";
                   sb = sbSheet;
@@ -623,18 +623,18 @@ public final class BioModel extends Model{
                 default:
                   nx = ++nTurn;
                   if (sid == null || pdbFileMode)
-                    sid = TextFormat.formatString("%3N %3N", "N", nx);
+                    sid = TextFormat.formatStringI("%3N %3N", "N", nx);
                   str = "TURN   %ID %3GROUPA %1CA%4RESA  %3GROUPB %1CB%4RESB";
                   sb = sbTurn;
                   break;
                 }
-                str = TextFormat.formatString(str, "ID", sid);
-                str = TextFormat.formatString(str, "GROUPA", group1);
-                str = TextFormat.formatString(str, "CA", chain1);
-                str = TextFormat.formatString(str, "RESA", res1);
-                str = TextFormat.formatString(str, "GROUPB", group2);
-                str = TextFormat.formatString(str, "CB", chain2);
-                str = TextFormat.formatString(str, "RESB", res2);
+                str = TextFormat.formatStringS(str, "ID", sid);
+                str = TextFormat.formatStringS(str, "GROUPA", group1);
+                str = TextFormat.formatStringS(str, "CA", chain1);
+                str = TextFormat.formatStringI(str, "RESA", res1);
+                str = TextFormat.formatStringS(str, "GROUPB", group2);
+                str = TextFormat.formatStringS(str, "CB", chain2);
+                str = TextFormat.formatStringI(str, "RESB", res2);
                 sb.append(str);
                 if (showMode)
                   sb.append(" strucno= ").append(lastId);
@@ -731,7 +731,7 @@ public final class BioModel extends Model{
         bothEnds = true; //???
       }
       sb.append("\nREMARK   6 Jmol Version ").append(Viewer.getJmolVersion())
-          .append('\n');
+          .append("\n");
       if (ctype == 'R')
         sb
             .append("REMARK   6 Jmol data min = {-180 -180 -180} max = {180 180 180} "

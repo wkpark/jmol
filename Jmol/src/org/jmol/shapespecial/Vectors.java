@@ -24,7 +24,7 @@
 
 package org.jmol.shapespecial;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 
 import org.jmol.shape.AtomShape;
 

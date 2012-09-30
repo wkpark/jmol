@@ -26,7 +26,7 @@ package org.jmol.shape;
 
 import org.jmol.util.JmolFont;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 
 public abstract class FontShape extends Shape {
 

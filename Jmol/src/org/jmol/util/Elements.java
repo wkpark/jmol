@@ -24,7 +24,7 @@
 
 package org.jmol.util;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -1004,13 +1004,13 @@ public class Elements {
   public static float getBondingRadiusFloat(short atomicNumberAndIsotope, int charge) {
     int atomicNumber = getElementNumber(atomicNumberAndIsotope);
     if (charge > 0 && bsCations.get(atomicNumber))
-      return getBondingRadiusFloat(atomicNumber, charge, cationLookupTable);
+      return getBondingRadFromTable(atomicNumber, charge, cationLookupTable);
     if (charge < 0 && bsAnions.get(atomicNumber))
-      return getBondingRadiusFloat(atomicNumber, charge, anionLookupTable);
+      return getBondingRadFromTable(atomicNumber, charge, anionLookupTable);
     return covalentMars[atomicNumber] / 1000f;
   }
 
-  public static float getBondingRadiusFloat(int atomicNumber, int charge, short[] table) {
+  public static float getBondingRadFromTable(int atomicNumber, int charge, short[] table) {
     // when found, return the corresponding value in ionicMars
     // if atom is not found, just return covalent radius
     // if atom is found, but charge is not found, return next lower charge

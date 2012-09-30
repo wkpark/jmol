@@ -1,7 +1,7 @@
 package org.jmol.jvxl.api;
 
 import java.io.OutputStream;
-import java.util.BitSet;
+import javax.util.BitSet;
 
 import javax.vecmath.Point3f;
 

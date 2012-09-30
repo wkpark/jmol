@@ -54,7 +54,7 @@ import javax.vecmath.Vector3f;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -451,12 +451,12 @@ public final class ModelLoader {
       jbr.initializeHydrogenAddition(this, modelSet.bondCount);
     if (trajectoryCount > 1)
       modelSet.modelCount += trajectoryCount - 1;
-    modelSet.models = (Model[]) ArrayUtil.setLength(modelSet.models, modelSet.modelCount);
-    modelSet.modelFileNumbers = ArrayUtil.setLength(modelSet.modelFileNumbers, modelSet.modelCount);
-    modelSet.modelNumbers = ArrayUtil.setLength(modelSet.modelNumbers, modelSet.modelCount);
-    modelSet.modelNumbersForAtomLabel = ArrayUtil.setLength(modelSet.modelNumbersForAtomLabel, modelSet.modelCount);
-    modelSet.modelNames = ArrayUtil.setLength(modelSet.modelNames, modelSet.modelCount);
-    modelSet.frameTitles = ArrayUtil.setLength(modelSet.frameTitles, modelSet.modelCount);
+    modelSet.models = (Model[]) ArrayUtil.arrayCopyOpt(modelSet.models, modelSet.modelCount);
+    modelSet.modelFileNumbers = ArrayUtil.arrayCopyI(modelSet.modelFileNumbers, modelSet.modelCount);
+    modelSet.modelNumbers = ArrayUtil.arrayCopyI(modelSet.modelNumbers, modelSet.modelCount);
+    modelSet.modelNumbersForAtomLabel = ArrayUtil.arrayCopyS(modelSet.modelNumbersForAtomLabel, modelSet.modelCount);
+    modelSet.modelNames = ArrayUtil.arrayCopyS(modelSet.modelNames, modelSet.modelCount);
+    modelSet.frameTitles = ArrayUtil.arrayCopyS(modelSet.frameTitles, modelSet.modelCount);
     if (merging)
       for (int i = 0; i < mergeModelSet.modelCount; i++)
         (modelSet.models[i] = mergeModelSet.models[i]).modelSet = modelSet;
@@ -859,9 +859,9 @@ public final class ModelLoader {
       currentGroup3 = group3i;
       while (groupCount >= group3Of.length) {
         chainOf = (Chain[]) ArrayUtil.doubleLength(chainOf);
-        group3Of = ArrayUtil.doubleLength(group3Of);
-        seqcodes = ArrayUtil.doubleLength(seqcodes);
-        firstAtomIndexes = ArrayUtil.doubleLength(firstAtomIndexes);
+        group3Of = ArrayUtil.doubleLengthS(group3Of);
+        seqcodes = ArrayUtil.doubleLengthI(seqcodes);
+        firstAtomIndexes = ArrayUtil.doubleLengthI(firstAtomIndexes);
       }
       firstAtomIndexes[groupCount] = modelSet.atomCount;
       chainOf[groupCount] = currentChain;
@@ -934,7 +934,7 @@ public final class ModelLoader {
       }
     }
     if (modelSet.bondCount == modelSet.bonds.length) {
-      modelSet.bonds = (Bond[]) ArrayUtil.setLength(modelSet.bonds, modelSet.bondCount + BondCollection.BOND_GROWTH_INCREMENT);
+      modelSet.bonds = (Bond[]) ArrayUtil.arrayCopyOpt(modelSet.bonds, modelSet.bondCount + BondCollection.BOND_GROWTH_INCREMENT);
     }
     modelSet.setBond(modelSet.bondCount++, bond);
   }
@@ -1138,7 +1138,7 @@ public final class ModelLoader {
         autoBonding = true;
         if (merging || modelCount > 1) {
           if (bs == null)
-            bs = new BitSet(modelSet.atomCount);
+            bs = BitSetUtil.newBitSet(modelSet.atomCount);
           if (i == baseModelIndex || !isTrajectory)
             bs.or(models[i].bsAtoms);
         }
@@ -1237,7 +1237,7 @@ public final class ModelLoader {
     if (pt < 0) {
       group3Lists[ptm] += ",[" + g3code + "]";
       pt = group3Lists[ptm].indexOf(g3code);
-      group3Counts[ptm] = ArrayUtil.setLength(
+      group3Counts[ptm] = ArrayUtil.arrayCopyI(
           group3Counts[ptm], group3Counts[ptm].length + 10);
     }
     group3Counts[ptm][pt / 6]++;
@@ -1257,7 +1257,7 @@ public final class ModelLoader {
     if (modelSet.atomCount < modelSet.atoms.length)
       modelSet.growAtomArrays(modelSet.atomCount);
     if (modelSet.bondCount < modelSet.bonds.length)
-      modelSet.bonds = (Bond[]) ArrayUtil.setLength(modelSet.bonds, modelSet.bondCount);
+      modelSet.bonds = (Bond[]) ArrayUtil.arrayCopyOpt(modelSet.bonds, modelSet.bondCount);
 
     // free bonds cache 
 
@@ -1295,7 +1295,7 @@ public final class ModelLoader {
   private void findElementsPresent() {
     modelSet.elementsPresent = new BitSet[modelSet.modelCount];
     for (int i = 0; i < modelSet.modelCount; i++)
-      modelSet.elementsPresent[i] = new BitSet(64);
+      modelSet.elementsPresent[i] = BitSetUtil.newBitSet(64);
     for (int i = modelSet.atomCount; --i >= 0;) {
       int n = modelSet.atoms[i].getAtomicAndIsotopeNumber();
       if (n >= Elements.elementNumberMax)
@@ -1338,10 +1338,10 @@ public final class ModelLoader {
   }
 
   private void set2dZ(int iatom1, int iatom2) {
-    BitSet atomlist = new BitSet(iatom2);
+    BitSet atomlist = BitSetUtil.newBitSet(iatom2);
     BitSet bsBranch = new BitSet();
     Vector3f v = new Vector3f();
-    Vector3f v0 = new Vector3f(0, 1, 0);
+    Vector3f v0 = Vector3f.new3(0, 1, 0);
     Vector3f v1 = new Vector3f();
     BitSet bs0 = new BitSet();
     bs0.set(iatom1, iatom2);
@@ -1365,7 +1365,7 @@ public final class ModelLoader {
    */
   private BitSet getBranch2dZ(int atomIndex, int atomIndexNot, BitSet bs0, 
                               BitSet bsBranch, Vector3f v, Vector3f v0, Vector3f v1) {
-    BitSet bs = new BitSet(modelSet.atomCount);
+    BitSet bs = BitSetUtil.newBitSet(modelSet.atomCount);
     if (atomIndex < 0)
       return bs;
     BitSet bsToTest = new BitSet();
@@ -1397,7 +1397,7 @@ public final class ModelLoader {
   }
 
   private static void setAtom2dZ(Atom atomRef, Atom atom2, Vector3f v, Vector3f v0, Vector3f v1) {
-    v.set(atom2);
+    v.setT(atom2);
     v.sub(atomRef);
     v.z = 0;
     v.normalize();
@@ -1519,7 +1519,7 @@ public final class ModelLoader {
         continue;
       }
       pt.set(x, y, z);
-      BitSet bs = new BitSet(modelSet.atomCount);
+      BitSet bs = BitSetUtil.newBitSet(modelSet.atomCount);
       modelSet.getAtomsWithin(tolerance, pt, bs, -1);
       bs.and(bsSelected);
       if (loadAllData) {

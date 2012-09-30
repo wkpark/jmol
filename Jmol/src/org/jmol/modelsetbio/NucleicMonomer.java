@@ -460,14 +460,14 @@ public class NucleicMonomer extends PhosphorusMonomer {
     if (ptA == null || ptB == null)
       return null;
 
-    Vector3f vA = new Vector3f(ptA);
+    Vector3f vA = Vector3f.newV(ptA);
     vA.sub(ptNorP);
 
-    Vector3f vB = new Vector3f(ptB);
+    Vector3f vB = Vector3f.newV(ptB);
     vB.sub(ptNorP);
     if (reverseY)
       vB.scale(-1);
-    return Quaternion.getQuaternionFrame(vA, vB, null, yBased);
+    return Quaternion.getQuaternionFrameV(vA, vB, null, yBased);
   }
  
  @Override

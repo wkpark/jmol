@@ -26,7 +26,7 @@
 package org.jmol.util;
 
 import java.util.ArrayList;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -345,9 +345,9 @@ public class Escape {
       }
     }
     if (nPoints == 3)
-      return new Point3f(points[0], points[1], points[2]);
+      return Point3f.new3(points[0], points[1], points[2]);
     if (nPoints == 4)
-      return new Point4f(points[0], points[1], points[2], points[3]);
+      return Point4f.new4(points[0], points[1], points[2], points[3]);
     return strPoint;
   }
 
@@ -377,7 +377,7 @@ public class Escape {
         } catch (NumberFormatException e) {
           return null;
         }
-      BitSet bs = new BitSet(lastN);
+      BitSet bs = BitSetUtil.newBitSet(lastN);
       lastN = -1;
       int iPrev = -1;
       int iThis = -2;
@@ -431,9 +431,9 @@ public class Escape {
     if (!Float.isNaN(Parser.parseFloatNext(str, next)))
       return strMatrix; // overflow
     if (nPoints == 9)
-      return new Matrix3f(points);
+      return Matrix3f.newA(points);
     if (nPoints == 16)
-      return new Matrix4f(points);
+      return Matrix4f.newA(points);
     return strMatrix;
   }
 /*
@@ -481,7 +481,7 @@ public class Escape {
     return s.toString();
   }
 
-  private static String packageJSON(String infoType, StringBuilder sb) {
+  private static String packageJSONSb(String infoType, StringBuilder sb) {
     return packageJSON(infoType, sb.toString());
   }
 
@@ -520,7 +520,7 @@ public class Escape {
         sep = ",";
       }
       sb.append("]");
-      return packageJSON(infoType, sb);
+      return packageJSONSb(infoType, sb);
     }
     if (info instanceof int[]) {
       sb.append("[");
@@ -530,7 +530,7 @@ public class Escape {
         sep = ",";
       }
       sb.append("]");
-      return packageJSON(infoType, sb);
+      return packageJSONSb(infoType, sb);
     }
     if (info instanceof float[]) {
       sb.append("[");
@@ -540,7 +540,7 @@ public class Escape {
         sep = ",";
       }
       sb.append("]");
-      return packageJSON(infoType, sb);
+      return packageJSONSb(infoType, sb);
     }
     if (info instanceof double[]) {
       sb.append("[");
@@ -550,7 +550,7 @@ public class Escape {
         sep = ",";
       }
       sb.append("]");
-      return packageJSON(infoType, sb);
+      return packageJSONSb(infoType, sb);
     }
     if (info instanceof Point3f[]) {
       sb.append("[");
@@ -561,7 +561,7 @@ public class Escape {
         sep = ",";
       }
       sb.append("]");
-      return packageJSON(infoType, sb);
+      return packageJSONSb(infoType, sb);
     }
     if (info instanceof String[][]) {
       sb.append("[");
@@ -571,7 +571,7 @@ public class Escape {
         sep = ",";
       }
       sb.append("]");
-      return packageJSON(infoType, sb);
+      return packageJSONSb(infoType, sb);
     }
     if (info instanceof int[][]) {
       sb.append("[");
@@ -581,7 +581,7 @@ public class Escape {
         sep = ",";
       }
       sb.append("]");
-      return packageJSON(infoType, sb);
+      return packageJSONSb(infoType, sb);
     }
     if (info instanceof float[][]) {
       sb.append("[");
@@ -591,7 +591,7 @@ public class Escape {
         sep = ",";
       }
       sb.append("]");
-      return packageJSON(infoType, sb);
+      return packageJSONSb(infoType, sb);
     }
     if (info instanceof float[][][]) {
       sb.append("[");
@@ -601,7 +601,7 @@ public class Escape {
         sep = ",";
       }
       sb.append("]");
-      return packageJSON(infoType, sb);
+      return packageJSONSb(infoType, sb);
     }
     if (info instanceof List) {
       sb.append("[ ");
@@ -611,7 +611,7 @@ public class Escape {
         sep = ",";
       }
       sb.append(" ]");
-      return packageJSON(infoType, sb);
+      return packageJSONSb(infoType, sb);
     }
     if (info instanceof Matrix4f) {
       float[] x = new float[4];
@@ -624,7 +624,7 @@ public class Escape {
         sb.append(toJSON(null, x));
       }
       sb.append(']');
-      return packageJSON(infoType, sb);
+      return packageJSONSb(infoType, sb);
     }
     if (info instanceof Matrix3f) {
       float[] x = new float[3];
@@ -637,11 +637,11 @@ public class Escape {
         sb.append(toJSON(null, x));
       }
       sb.append(']');
-      return packageJSON(infoType, sb);
+      return packageJSONSb(infoType, sb);
     }
     if (info instanceof Tuple3f) {
       addJsonTuple(sb, (Tuple3f) info);
-      return packageJSON(infoType, sb);
+      return packageJSONSb(infoType, sb);
     }
     if (info instanceof AxisAngle4f) {
       sb.append("[")
@@ -649,7 +649,7 @@ public class Escape {
       .append(((AxisAngle4f) info).y).append(",")
       .append(((AxisAngle4f) info).z).append(",")
       .append((float)(((AxisAngle4f) info).angle * 180d/Math.PI)).append("]");
-    return packageJSON(infoType, sb);
+    return packageJSONSb(infoType, sb);
     }
     if (info instanceof Point4f) {
       sb.append("[")
@@ -657,7 +657,7 @@ public class Escape {
         .append(((Point4f) info).y).append(",")
         .append(((Point4f) info).z).append(",")
         .append(((Point4f) info).w).append("]");
-      return packageJSON(infoType, sb);
+      return packageJSONSb(infoType, sb);
     }
     if (info instanceof Map) {
       sb.append("{ ");
@@ -669,7 +669,7 @@ public class Escape {
         sep = ",";
       }
       sb.append(" }");
-      return packageJSON(infoType, sb);
+      return packageJSONSb(infoType, sb);
     }
     return packageJSON(infoType, fixString(info.toString()));
   }
@@ -681,7 +681,7 @@ public class Escape {
     .append(pt.z).append("]");
   }
 
-  public static String toReadable(Object info) {
+  public static String toReadableNoName(Object info) {
     return toReadable(null, info);
   }
 
@@ -700,7 +700,7 @@ public class Escape {
         sep = ",";
       }
       sb.append("]");
-      return packageReadable(name, "String[" + imax + "]", sb);
+      return packageReadableSb(name, "String[" + imax + "]", sb);
     }
     if (info instanceof int[]) {
       sb.append("[");
@@ -710,7 +710,7 @@ public class Escape {
         sep = ",";
       }
       sb.append("]");
-      return packageReadable(name, "int[" + imax + "]", sb);
+      return packageReadableSb(name, "int[" + imax + "]", sb);
     }
     if (info instanceof float[]) {
       sb.append("[");
@@ -720,7 +720,7 @@ public class Escape {
         sep = ",";
       }
       sb.append("]");
-      return packageReadable(name, "float[" + imax + "]", sb);
+      return packageReadableSb(name, "float[" + imax + "]", sb);
     }
     if (info instanceof Point3f[]) {
       sb.append("[");
@@ -730,7 +730,7 @@ public class Escape {
         sep = ",";
       }
       sb.append("]");
-      return packageReadable(name, "point3f[" + imax + "]", sb);
+      return packageReadableSb(name, "point3f[" + imax + "]", sb);
     }
     if (info instanceof String[][]) {
       sb.append("[");
@@ -740,7 +740,7 @@ public class Escape {
         sep = ",\n";
       }
       sb.append("]");
-      return packageReadable(name, "String[" + imax + "][]", sb);
+      return packageReadableSb(name, "String[" + imax + "][]", sb);
     }
     if (info instanceof int[][]) {
       sb.append("[");
@@ -750,7 +750,7 @@ public class Escape {
         sep = ",";
       }
       sb.append("]");
-      return packageReadable(name, "int[" + imax + "][]", sb);
+      return packageReadableSb(name, "int[" + imax + "][]", sb);
     }
     if (info instanceof float[][]) {
       sb.append("[\n");
@@ -760,21 +760,21 @@ public class Escape {
         sep = ",\n";
       }
       sb.append("]");
-      return packageReadable(name, "float[][]", sb);
+      return packageReadableSb(name, "float[][]", sb);
     }
     if (info instanceof List<?>) {
       int imax = ((List<?>) info).size();
       for (int i = 0; i < imax; i++) {
         sb.append(toReadable(name + "[" + (i + 1) + "]", ((List<?>) info).get(i)));
       }
-      return packageReadable(name, "List[" + imax + "]", sb);
+      return packageReadableSb(name, "List[" + imax + "]", sb);
     }
     if (info instanceof Matrix3f
         || info instanceof Tuple3f
         || info instanceof Point4f
         || info instanceof AxisAngle4f) {
       sb.append(escape(info));
-      return packageReadable(name, null, sb);
+      return packageReadableSb(name, null, sb);
     }
     if (info instanceof Map<?, ?>) {
       Iterator<?> e = ((Map<?, ?>) info).keySet().iterator();
@@ -788,7 +788,7 @@ public class Escape {
     return packageReadable(name, null, info.toString());
   }
 
-  private static String packageReadable(String infoName, String infoType,
+  private static String packageReadableSb(String infoName, String infoType,
                                         StringBuilder sb) {
     return packageReadable(infoName, infoType, sb.toString());
   }

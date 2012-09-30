@@ -72,7 +72,7 @@ class IsoFxyReader extends AtomDataReader {
       super.setVolumeData(); 
       return;
     }
-    volumetricOrigin.set((Point3f) params.functionInfo.get(1));
+    volumetricOrigin.setT((Point3f) params.functionInfo.get(1));
     for (int i = 0; i < 3; i++) {
       Point4f info = (Point4f) params.functionInfo.get(i + 2);
       voxelCounts[i] = Math.abs((int) info.x);

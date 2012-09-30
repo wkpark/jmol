@@ -25,7 +25,7 @@
 
 package org.jmol.symmetry;
 
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Map;
 
 import javax.vecmath.Matrix3f;
@@ -256,7 +256,7 @@ public class Symmetry implements SymmetryInterface {
   // UnitCell methods
   
   public void setUnitCell(float[] notionalUnitCell) {
-    unitCell = new UnitCell(notionalUnitCell);
+    unitCell = UnitCell.newA(notionalUnitCell);
   }
 
   public boolean haveUnitCell() {
@@ -298,7 +298,7 @@ public class Symmetry implements SymmetryInterface {
 
   public Quadric getEllipsoid(float[] parBorU) {
     if (unitCell == null)
-      unitCell = new UnitCell(new float[] {1,1,1,90,90,90});
+      unitCell = UnitCell.newA(new float[] {1,1,1,90,90,90});
     return unitCell.getEllipsoid(parBorU);
   }
   
@@ -374,7 +374,7 @@ public class Symmetry implements SymmetryInterface {
 
   public SymmetryInterface getUnitCell(Tuple3f[] points) {
     Symmetry sym = new Symmetry();
-    sym.unitCell = new UnitCell(points, false);
+    sym.unitCell = UnitCell.newP(points, false);
     return sym;
   }
 

@@ -319,7 +319,7 @@ import org.jmol.util.Logger;
         xmlReader.setContentHandler(handler);
         xmlReader.setErrorHandler(handler);
       } catch (Exception e) {
-        Logger.error("ERROR IN XmlReader.JmolXmlHandler.setHandler", e);
+        Logger.errorEx("ERROR IN XmlReader.JmolXmlHandler.setHandler", e);
       }
 
     }

@@ -27,7 +27,7 @@ package org.jmol.api;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.net.URL;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;

@@ -37,7 +37,7 @@ import org.jmol.util.TextFormat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.List;
 
 import javax.vecmath.Matrix3f;
@@ -334,14 +334,14 @@ public class CrystalReader extends AtomSetCollectionReader {
       if (primitiveToCryst == null)
         return true;
       Matrix3f mp = new Matrix3f();
-      mp.setColumn(0, directLatticeVectors[0]);
-      mp.setColumn(1, directLatticeVectors[1]);
-      mp.setColumn(2, directLatticeVectors[2]);
+      mp.setColumnV(0, directLatticeVectors[0]);
+      mp.setColumnV(1, directLatticeVectors[1]);
+      mp.setColumnV(2, directLatticeVectors[2]);
       mp.mul(primitiveToCryst);
       a = new Vector3f();
       b = new Vector3f();
-      mp.getColumn(0, a);
-      mp.getColumn(1, b);
+      mp.getColumnV(0, a);
+      mp.getColumnV(1, b);
     }
     matUnitCellOrientation = Quaternion.getQuaternionFrame(new Point3f(), a, b)
     .getMatrix();
@@ -358,7 +358,7 @@ public class CrystalReader extends AtomSetCollectionReader {
    */
 
   private void readTransformationMatrix() throws Exception {
-    primitiveToCryst = new Matrix3f(fillFloatArray(null, 0, new float[9]));
+    primitiveToCryst = Matrix3f.newA(fillFloatArray(null, 0, new float[9]));
   }
 
   private boolean readShift() {

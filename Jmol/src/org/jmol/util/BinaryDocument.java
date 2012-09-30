@@ -297,7 +297,7 @@ public class BinaryDocument {
       stream.skipBytes((int)offset);
       nBytes += offset;
     } catch (Exception e) {
-      Logger.error(null, e);
+      Logger.errorEx(null, e);
     }
   }
 

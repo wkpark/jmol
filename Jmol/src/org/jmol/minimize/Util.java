@@ -136,11 +136,11 @@ public class Util {
                                               Vector3d v1,Vector3d v2, 
                                               Vector3d norm, boolean fixTheta) {
     
-    v1.sub(b, c);
-    v2.sub(b, d);
+    v1.sub2(b, c);
+    v2.sub2(b, d);
     norm.cross(v1, v2);    
     v2.add(v1);
-    v1.sub(b, a);
+    v1.sub2(b, a);
     // we need to allow for very distorted cases, where a, c, and d are very close to each other
     double angleA_CD = (fixTheta ? vectorAngleRadians(v2, v1) : Math.PI); 
     // normally angleA_CD is > pi/2, because v1 is from a to b
@@ -202,16 +202,16 @@ public class Util {
     
     // a and b will be set to the force on the atom when r > r0
     
-    vab.sub(a, b);
+    vab.sub2(a, b);
     double rab = vab.length();
     if (rab < 0.1) {// atoms are too close to each other
       randomizeUnitVector(vab);
       rab = 0.1;
     }
     vab.normalize();
-    a.set(vab);
+    a.setT(vab);
     a.scale(-1); // -drab/da
-    b.set(vab); // -drab/db
+    b.setT(vab); // -drab/db
 
     return rab;
   }
@@ -290,7 +290,7 @@ public class Util {
 
     i.scale(-inverse_length_v1);
     j.scale(inverse_length_v2);
-    k.set(j);
+    k.setT(j);
     j.add(i);
     j.scale(-1);
     return theta;
@@ -315,9 +315,9 @@ public class Util {
     
     // first convert vectors to vectors from central atom j to that atom:
     
-    i.sub(i, j);
-    k.sub(k, j);
-    l.sub(l, j);
+    i.sub2(i, j);
+    k.sub2(k, j);
+    l.sub2(l, j);
     
     // bond distances:
     double length_ji = i.length();
@@ -381,7 +381,7 @@ public class Util {
     l.scaleAdd(-sin_dl / csc_theta, l, an);
     l.scale(csc_theta / length_jl);
 
-    j.set(i); // need i later
+    j.setT(i); // need i later
     
     //    i = ((bn + (((-i + k * cos_theta) * sin_dl) / sin_theta)) / length_ji) / sin_theta;
 
@@ -406,7 +406,7 @@ public class Util {
 
     //    j = -(i + k + l);
 
-    j.set(i);
+    j.setT(i);
     j.add(k);
     j.add(l);
     j.scale(-1);
@@ -422,9 +422,9 @@ public class Util {
 
     // Bond vectors of the three atoms
 
-    i.sub(j, i);
-    j.sub(k, j);
-    k.sub(l, k);
+    i.sub2(j, i);
+    j.sub2(k, j);
+    k.sub2(l, k);
 
     double len_ij = i.length();
     double len_jk = j.length();
@@ -465,13 +465,13 @@ public class Util {
    
     l.scale(-1. / len_kl / sin_k / sin_k);
 
-    j.set(i);
+    j.setT(i);
     j.scale(-len_ij / len_jk * cos_j - 1.);
-    k.set(l);
+    k.setT(l);
     k.scale(-len_kl / len_jk * cos_k);
     j.sub(k);
     
-    k.set(i);
+    k.setT(i);
     k.add(j);
     k.add(l);
     k.scale(-1);

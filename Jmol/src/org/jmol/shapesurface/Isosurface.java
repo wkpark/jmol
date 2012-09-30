@@ -120,7 +120,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -379,7 +379,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     }
 
     if ("offset" == propertyName) {
-      Point3f offset = new Point3f((Point3f) value);
+      Point3f offset = Point3f.newP((Point3f) value);
       if (offset.equals(JmolConstants.center))
         offset = null;
       if (thisMesh != null) {
@@ -392,7 +392,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if ("rotate" == propertyName) {
       Point4f pt4 = (Point4f) value;
       if (thisMesh != null) {
-        thisMesh.rotateTranslate(new Quaternion(pt4), null, true);
+        thisMesh.rotateTranslate(Quaternion.newP4(pt4), null, true);
         thisMesh.altVertices = null;
       }
       return;
@@ -521,7 +521,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     } else if ("atomIndex" == propertyName) {
       atomIndex = ((Integer) value).intValue();
     } else if ("center" == propertyName) {
-      center.set((Point3f) value);
+      center.setT((Point3f) value);
     } else if ("colorRGB" == propertyName) {
       int rgb = ((Integer) value).intValue();
       defaultColix = Colix.getColix(rgb);
@@ -699,8 +699,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       data[2] = m.jvxlData.boundingBox;
       if (m.mat4 != null) {
         Point3f[] d = new Point3f[2];
-        d[0] = new Point3f(m.jvxlData.boundingBox[0]);
-        d[1] = new Point3f(m.jvxlData.boundingBox[1]);
+        d[0] = Point3f.newP(m.jvxlData.boundingBox[0]);
+        d[1] = Point3f.newP(m.jvxlData.boundingBox[1]);
         Vector3f v = new Vector3f();
         m.mat4.get(v);
         d[0].add(v);
@@ -720,7 +720,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         IsosurfaceMesh m = (IsosurfaceMesh) getMesh(id);
         if (m == null || m.vertices == null)
           return false;
-        Point3f p = new Point3f(m.jvxlData.boundingBox[0]);
+        Point3f p = Point3f.newP(m.jvxlData.boundingBox[0]);
         p.add(m.jvxlData.boundingBox[1]);
         p.scale(0.5f);
         if (m.mat4 != null) {
@@ -1000,7 +1000,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     defaultColix = meshColix = 0;
     isPhaseColored = isColorExplicit = false;
     //allowContourLines = true; //but not for f(x,y) or plane, which use mesh
-    center = new Point3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
+    center = Point3f.new3(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
     scale3d = 0;
     withinPoints = null;
     cutoffRange = null;
@@ -1028,7 +1028,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     else
       thisMesh.modelIndex = viewer.getCurrentModelIndex();
     thisMesh.scriptCommand = script;
-    thisMesh.ptCenter.set(center);
+    thisMesh.ptCenter.setT(center);
     thisMesh.scale3d = (thisMesh.jvxlData.jvxlPlane == null ? 0 : scale3d);
 //    if (thisMesh.bsSlabDisplay != null)
 //      thisMesh.jvxlData.vertexDataOnly = true;
@@ -1093,13 +1093,13 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if (rotRadians != 0) {
       AxisAngle4f a = new AxisAngle4f();
       if (rotAxis.x != 0)
-        a.set(x, rotRadians);
+        a.setVA(x, rotRadians);
       else if (rotAxis.y != 0)
-        a.set(y, rotRadians);
+        a.setVA(y, rotRadians);
       else
-        a.set(z, rotRadians);
+        a.setVA(z, rotRadians);
       Matrix3f m = new Matrix3f();
-      m.set(a);
+      m.setAA(a);
       m.transform(x);
       m.transform(y);
       m.transform(z);
@@ -1333,7 +1333,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     setPropertySuper("token", Integer.valueOf(explicitContours ? Token.contourlines : Token.nocontourlines), null);
     List<Object[]> slabInfo = sg.getSlabInfo();
     if (slabInfo != null) {
-      thisMesh.slabPolygons(slabInfo, false);
+      thisMesh.slabPolygonsList(slabInfo, false);
       thisMesh.reinitializeLightingAndColor();
     }
     // may not be the final color scheme, though.
@@ -1588,7 +1588,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     setPropertySuper("thisID", pickedMesh.thisID, null);
     int iFace = pickedVertex = (pickFront ? jminz : jmaxz);
     Point3f ptRet = new Point3f();
-    ptRet.set((pickFront ? pickedMesh.vertices[pickedVertex] : ((IsosurfaceMesh)pickedMesh).centers[iFace]));
+    ptRet.setT((pickFront ? pickedMesh.vertices[pickedVertex] : ((IsosurfaceMesh)pickedMesh).centers[iFace]));
     pickedModel = (short) pickedMesh.modelIndex;
     if (pickFront) {
       setStatusPicked(-4, ptRet);
@@ -1611,7 +1611,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   private void navigate(int dz) {
     if (thisMesh == null)
       return;
-    Point3f navPt = new Point3f(viewer.getNavigationOffset());
+    Point3f navPt = Point3f.newP(viewer.getNavigationOffset());
     Point3f toPt = new Point3f();
     viewer.unTransformPoint(navPt, toPt);
     navPt.z += dz;
@@ -1620,7 +1620,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     Vector3f vNorm = new Vector3f();
     if (!getClosestNormal(thisMesh, toPt, ptRet, vNorm))
       return;
-    Point3f pt2 = new Point3f(ptRet);
+    Point3f pt2 = Point3f.newP(ptRet);
     pt2.add(vNorm);
     Point3f pt2s = new Point3f();
     viewer.transformPt3f(pt2, pt2s);
@@ -1642,14 +1642,14 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     Point3f toPts = new Point3f();
     
     // get screen point along normal
-    Point3f toPt = new Point3f(vNorm);
+    Point3f toPt = Point3f.newP(vNorm);
     //viewer.script("draw test2 vector " + Escape.escape(pt) + " " + Escape.escape(toPt));
     toPt.add(pt);
     viewer.transformPt3f(toPt, toPts);
     
     // subtract the navigation point to get a relative point
     // that we can project into the xy plane by setting z = 0
-    Point3f navPt = new Point3f(viewer.getNavigationOffset());
+    Point3f navPt = Point3f.newP(viewer.getNavigationOffset());
     toPts.sub(navPt);
     toPts.z = 0;
     
@@ -1658,7 +1658,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     float angle = Measure.computeTorsion(JmolConstants.axisNY, 
         JmolConstants.center, JmolConstants.axisZ, toPts, true);
     viewer.navigateAxis(0, JmolConstants.axisZ, angle);        
-    toPt.set(vNorm);
+    toPt.setT(vNorm);
     toPt.add(pt);
     viewer.transformPt3f(toPt, toPts);
     toPts.sub(navPt);
@@ -1671,7 +1671,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     // a script is necessary here because otherwise the application
     // would hang.
     
-    navPt = new Point3f(viewer.getNavigationOffset());
+    navPt = Point3f.newP(viewer.getNavigationOffset());
     if (nSeconds <= 0)
       return;
     viewer.saveOrientation("_navsurf");
@@ -1701,11 +1701,11 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     Point4f plane = m.getFacePlane(imin, normalRet);
     float dist = Measure.distanceToPlane(plane, toPt);
     normalRet.scale(-dist);
-    ptRet.set(toPt);
+    ptRet.setT(toPt);
     ptRet.add(normalRet);
     dist = Measure.distanceToPlane(plane, ptRet);
     if (m.centers[imin].distance(toPt) < ptRet.distance(toPt))
-      ptRet.set(m.centers[imin]);
+      ptRet.setT(m.centers[imin]);
   }
 
   /**

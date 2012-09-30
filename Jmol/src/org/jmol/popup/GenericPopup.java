@@ -33,7 +33,7 @@ import org.jmol.viewer.Viewer;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.BitSet;
+import javax.util.BitSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;

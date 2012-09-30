@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2012-06-15 17:29+0200\n"
+"POT-Creation-Date: 2012-09-30 19:44+0200\n"
 "PO-Revision-Date: 2011-01-17 09:29+0000\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.cat>\n"
 "Language-Team: Catalan <jmol-developers@lists.sourceforge.net>\n"
@@ -59,111 +59,125 @@ msgstr ""
 msgid "Request-URI"
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:109
+#: org/jmol/appletjs/Jmol.java:368
+#, java-format
+msgid ""
+"Jmol Applet version {0} {1}.\n"
+"\n"
+"An OpenScience project.\n"
+"\n"
+"See http://www.jmol.org for more information"
+msgstr ""
+
+#: org/jmol/appletjs/Jmol.java:535
+msgid "File Error:"
+msgstr ""
+
+#: org/openscience/jmol/app/JmolApp.java:100
 msgid "Error starting Jmol: the property 'user.home' is not defined."
 msgstr ""
 "S'ha produït un error en iniciar el Jmol: la propietat 'user.home' no està "
 "definida."
 
-#: org/openscience/jmol/app/JmolApp.java:146
+#: org/openscience/jmol/app/JmolApp.java:137
 msgid "transparent background"
 msgstr "fons transparent"
 
-#: org/openscience/jmol/app/JmolApp.java:147
+#: org/openscience/jmol/app/JmolApp.java:138
 msgid "give this help page"
 msgstr "adjunta esta pàgina d'ajuda"
 
-#: org/openscience/jmol/app/JmolApp.java:149
+#: org/openscience/jmol/app/JmolApp.java:140
 msgid "no display (and also exit when done)"
 msgstr "no mostres res (i també ix quan s'acabe)"
 
-#: org/openscience/jmol/app/JmolApp.java:151
+#: org/openscience/jmol/app/JmolApp.java:142
 msgid "check script syntax only - no file loading"
 msgstr "comprova només la sintaxi de l'script - no carregues el fitxer"
 
-#: org/openscience/jmol/app/JmolApp.java:153
+#: org/openscience/jmol/app/JmolApp.java:144
 msgid "check script syntax only - with file loading"
 msgstr "comprova només la sintaxi de l'script - amb càrrega de fitxer"
 
-#: org/openscience/jmol/app/JmolApp.java:154
+#: org/openscience/jmol/app/JmolApp.java:145
 msgid "debug"
 msgstr "depura"
 
-#: org/openscience/jmol/app/JmolApp.java:155
+#: org/openscience/jmol/app/JmolApp.java:146
 msgid "silent startup operation"
 msgstr "operació d'inici silenciós"
 
-#: org/openscience/jmol/app/JmolApp.java:157
+#: org/openscience/jmol/app/JmolApp.java:148
 msgid "kiosk mode -- no frame"
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:159
+#: org/openscience/jmol/app/JmolApp.java:150
 msgid "list commands during script execution"
 msgstr "llista les ordes durant l'execució de l'script"
 
-#: org/openscience/jmol/app/JmolApp.java:161
+#: org/openscience/jmol/app/JmolApp.java:152
 msgid "start with no splash screen"
 msgstr "inicia sense pantalla de presentació"
 
-#: org/openscience/jmol/app/JmolApp.java:163
+#: org/openscience/jmol/app/JmolApp.java:154
 msgid "no console -- all output to sysout"
 msgstr "no hi ha consola -- tota lo eixida serà al sistema"
 
-#: org/openscience/jmol/app/JmolApp.java:165
+#: org/openscience/jmol/app/JmolApp.java:156
 msgid "send only output from print messages to console (implies -i)"
 msgstr ""
 "envia només a eixida els missatge d'impressió a la consola (implica -i)"
 
-#: org/openscience/jmol/app/JmolApp.java:167
+#: org/openscience/jmol/app/JmolApp.java:158
 msgid "restrict local file access"
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:169
+#: org/openscience/jmol/app/JmolApp.java:160
 msgid "restrict local file access (allow reading of SPT files)"
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:171
+#: org/openscience/jmol/app/JmolApp.java:162
 msgid "independent command thread"
 msgstr "fil d'ordes independent"
 
-#: org/openscience/jmol/app/JmolApp.java:173
+#: org/openscience/jmol/app/JmolApp.java:164
 msgid "exit after script (implicit with -n)"
 msgstr "ix després de l'script (implícit amb -n)"
 
-#: org/openscience/jmol/app/JmolApp.java:176
+#: org/openscience/jmol/app/JmolApp.java:167
 msgid "port for JSON/MolecularPlayground-style communication"
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:182
+#: org/openscience/jmol/app/JmolApp.java:173
 msgid "script file to execute or '-' for System.in"
 msgstr "fitxer d'script que s'executarà o '-' per a System.in"
 
-#: org/openscience/jmol/app/JmolApp.java:188
+#: org/openscience/jmol/app/JmolApp.java:179
 msgid "use multitouch interface (requires \"sparshui\" parameter"
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:195
+#: org/openscience/jmol/app/JmolApp.java:186
 msgid "Jmol script to execute BEFORE -s option"
 msgstr "Script de Jmol que s'executarà ABANS de l'opció -s"
 
-#: org/openscience/jmol/app/JmolApp.java:201
+#: org/openscience/jmol/app/JmolApp.java:192
 msgid "Jmol script to execute AFTER -s option"
 msgstr "Script de Jmol que s'executarà DESPRÉS de l'opció -s"
 
-#: org/openscience/jmol/app/JmolApp.java:215
+#: org/openscience/jmol/app/JmolApp.java:206
 msgid "property=value"
 msgstr "propietat=valor"
 
-#: org/openscience/jmol/app/JmolApp.java:218
+#: org/openscience/jmol/app/JmolApp.java:209
 msgid "supported options are given below"
 msgstr "les opcions implementades es descriuen a continuació"
 
-#: org/openscience/jmol/app/JmolApp.java:224
+#: org/openscience/jmol/app/JmolApp.java:215
 #, java-format
 msgid "window width x height, e.g. {0}"
 msgstr "amplada x altura de la finestra, ex. {0}"
 
-#: org/openscience/jmol/app/JmolApp.java:234
+#: org/openscience/jmol/app/JmolApp.java:225
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
@@ -171,30 +185,30 @@ msgstr ""
 "Qualitat de la imatge JPG (1-100; per defecte 75) o compressió de la imatge "
 "PNG (0-9; per defecte 2, compressió màxima 9)"
 
-#: org/openscience/jmol/app/JmolApp.java:239
+#: org/openscience/jmol/app/JmolApp.java:230
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr "{0} o {1}:nomdelfitxer"
 
-#: org/openscience/jmol/app/JmolApp.java:253
+#: org/openscience/jmol/app/JmolApp.java:244
 msgid "For example:"
 msgstr "Per exemple:"
 
-#: org/openscience/jmol/app/JmolApp.java:259
+#: org/openscience/jmol/app/JmolApp.java:250
 msgid ""
 "The -D options are as follows (defaults in parenthesis) and must be called "
 "preceding '-jar Jmol.jar':"
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:540
+#: org/openscience/jmol/app/JmolApp.java:502
 msgid "Executing script 1..."
 msgstr "S'està executant l'script 1..."
 
-#: org/openscience/jmol/app/JmolApp.java:550
+#: org/openscience/jmol/app/JmolApp.java:512
 msgid "Executing script file..."
 msgstr "S'està executant el fitxer d'script..."
 
-#: org/openscience/jmol/app/JmolApp.java:571
+#: org/openscience/jmol/app/JmolApp.java:533
 msgid "Executing script 2..."
 msgstr "S'està executant l'script 2..."
 
@@ -263,107 +277,107 @@ msgstr "Refés"
 msgid "Variables"
 msgstr "Variables"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:165
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:184
 msgid "AtomSetChooser"
 msgstr "Selector de conjunts d'àtoms"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:169
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:188
 msgid "No AtomSets"
 msgstr "No hi ha cap conjunt d'àtoms"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:198
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:217
 msgid "Properties"
 msgstr "Propietats"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:206
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:225
 msgid "Atom Set Collection"
 msgstr "Col·lecció de conjunts d'àtoms"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:227
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:246
 msgid "Collection"
 msgstr "Col·lecció"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:232
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:251
 msgid "Info"
 msgstr "Informació"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:239
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:258
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:177
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:460
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:609
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:630
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:606
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:627
 msgid "Select"
 msgstr "Selecció"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:254
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:273
 msgid "Repeat"
 msgstr "Repeteix"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:266
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:285
 msgid "FPS"
 msgstr "FPS"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:282
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:301
 msgid "Vector"
 msgstr "Vector"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:289
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:308
 msgid "Radius"
 msgstr "Radi"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:302
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:321
 msgid "Scale"
 msgstr "Escala"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:316
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:335
 msgid "Amplitude"
 msgstr "Amplitud"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:326
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:345
 msgid "Period"
 msgstr "Període"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:355
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:374
 msgid "Frame"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:355
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:374
 msgid "Vibration"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:363
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:372
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:382
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:391
 msgid "Go to first atom set in the collection"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:364
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:373
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:383
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:392
 msgid "Go to previous atom set in the collection"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:365
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:384
 msgid "Play the whole collection of atom sets"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:366
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:385
 msgid "Pause playing"
 msgstr "Pausa la reproducció"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:367
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:376
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:386
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:395
 msgid "Go to next atom set in the collection"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:368
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:377
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:387
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:396
 msgid "Jump to last atom set in the collection"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:374
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:393
 msgid "Vibration ON"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:375
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:394
 msgid "Vibration OFF"
 msgstr ""
 
@@ -372,7 +386,7 @@ msgstr ""
 msgid "Error reading from BufferedReader: {0}"
 msgstr "S''ha produït un error en llegir del «BufferedReader»: {0}"
 
-#: org/openscience/jmol/app/jmolpanel/DisplayPanel.java:216
+#: org/openscience/jmol/app/jmolpanel/DisplayPanel.java:232
 msgid "Delete atoms"
 msgstr "Suprimeix els àtoms"
 
@@ -445,7 +459,7 @@ msgid "File..."
 msgstr "Fitxer..."
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:360
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:760
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:757
 msgid "Save"
 msgstr "Alça"
 
@@ -1067,47 +1081,47 @@ msgstr "Ajuda del Jmol"
 msgid "OK"
 msgstr "D'acord"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:222
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:225
 msgid "Initializing 3D display..."
 msgstr "S'està iniciant la visualització 3D…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:255
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:262
 msgid "Initializing Script Window..."
 msgstr "S'està inicialitzant la finestra d'scripts…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:276
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:283
 msgid "Building Command Hooks..."
 msgstr "S'estan construint els lligams de les ordes…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:291
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:298
 msgid "Building Menubar..."
 msgstr "S'està construint la barra de menú…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:306
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:313
 msgid "Starting display..."
 msgstr "S'està iniciant la visualització…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:358
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:360
 msgid "Setting up Drag-and-Drop..."
 msgstr "Configuració del l'«arrossega i deixa anar»…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:366
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:368
 msgid "Launching main frame..."
 msgstr "S'està executant el fotograma principal…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:370
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:372
 msgid "Initializing Preferences..."
 msgstr "S'estan inicialitzant les preferències…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:372
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:374
 msgid "Initializing Recent Files..."
 msgstr "S'estan inicialitzant els fitxers recents…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:446
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:448
 msgid "Jmol Java Console"
 msgstr "Consola Java del Jmol"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:466
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:468
 msgid "Could not create ConsoleTextArea: "
 msgstr "No s'ha pogut crear l'àrea de text de la consola: "
 
@@ -1127,30 +1141,30 @@ msgstr "S'està inicialitzant el Jmol…"
 msgid "Closing Jmol..."
 msgstr "S'està tancant el Jmol…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1174
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1167
 msgid "Open URL"
 msgstr "Obri un URL"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1175
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1168
 msgid "Enter URL of molecular model"
 msgstr "Introduïu l'URL d'un model molecular"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1199
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1192
 msgid "Enter a four-digit PDB model ID or \"=\" and a three-digit ligand ID"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1208
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1201
 msgid ""
 "Enter the name or identifier (SMILES, InChI, CAS) of a compound. Preface "
 "with \":\" to load from PubChem; otherwise Jmol will use the NCI/NIH "
 "Resolver."
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1375
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1370
 msgid "IO Exception:"
 msgstr "S'ha produït una excepció IO:"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1504
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1508
 msgid "width height?"
 msgstr ""
 
@@ -1300,7 +1314,7 @@ msgid "Location of the POV-Ray Executable"
 msgstr "Ubicació de l'executable del POV-Ray"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:491
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:758
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:755
 msgid "Go!"
 msgstr "Vés-hi!"
 
@@ -1556,7 +1570,7 @@ msgstr ""
 msgid "Select Surface(s)"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/JmolInstance.java:81
+#: org/openscience/jmol/app/webexport/JmolInstance.java:82
 msgid "Attempt to make scratch directory failed."
 msgstr "No s'ha pogut crear un directori temporal."
 
@@ -1630,126 +1644,126 @@ msgstr ""
 "L''esquelet de la pàgina i el Javascript s''han generat per la funció "
 "d''exportació web utilitzant {0} a {1}."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:154
+#: org/openscience/jmol/app/webexport/WebPanel.java:155
 msgid "A web page containing Jmol applets"
 msgstr "Una pàgina web que conté miniaplicacions del Jmol"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:179
+#: org/openscience/jmol/app/webexport/WebPanel.java:180
 msgid "click and drag to reorder"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:184
+#: org/openscience/jmol/app/webexport/WebPanel.java:185
 msgid "Add Present Jmol State as Instance..."
 msgstr "Afig l'estat del Jmol preenviat com a instància…"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:191
+#: org/openscience/jmol/app/webexport/WebPanel.java:192
 msgid "Delete Selected"
 msgstr "Suprimeix allò seleccionat"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:223
+#: org/openscience/jmol/app/webexport/WebPanel.java:224
 msgid "Jmol Instances:"
 msgstr "Instàncies de Jmol"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:229
+#: org/openscience/jmol/app/webexport/WebPanel.java:230
 msgid "Select widgets:"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:332
+#: org/openscience/jmol/app/webexport/WebPanel.java:333
 msgid "Help/Instructions"
 msgstr "Ajuda/Instruccions"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:339
-#: org/openscience/jmol/app/webexport/WebPanel.java:347
+#: org/openscience/jmol/app/webexport/WebPanel.java:340
+#: org/openscience/jmol/app/webexport/WebPanel.java:348
 msgid "Cartoon of Page"
 msgstr "Aspecte de la pàgina"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:353
+#: org/openscience/jmol/app/webexport/WebPanel.java:354
 msgid "Save HTML as..."
 msgstr "Anomena i alça l'HTML…"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:363
+#: org/openscience/jmol/app/webexport/WebPanel.java:364
 msgid "Relative server path to jar files:"
 msgstr "Camí relatiu al servidor per als fitxers jar:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:369
+#: org/openscience/jmol/app/webexport/WebPanel.java:370
 msgid "Relative local path to jar files:"
 msgstr "Camí relatiu local per als fitxers jar:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:375
+#: org/openscience/jmol/app/webexport/WebPanel.java:376
 msgid "Author (your name):"
 msgstr "Autor (el vostre nom):"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:382
+#: org/openscience/jmol/app/webexport/WebPanel.java:383
 msgid "Browser window title for this web page:"
 msgstr "Títol de finestra del navegador d'esta pàgina:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:468
+#: org/openscience/jmol/app/webexport/WebPanel.java:469
 msgid "Give the occurrence of Jmol a name:"
 msgstr "Anomena la visualització del Jmol:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:484
+#: org/openscience/jmol/app/webexport/WebPanel.java:485
 msgid "Error creating new instance containing script(s) and image."
 msgstr ""
 "S'ha produït un error en crear una instància nova que contenia scripts i una "
 "imatge."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:495
+#: org/openscience/jmol/app/webexport/WebPanel.java:496
 #, java-format
 msgid "added Instance {0}"
 msgstr "instància {0} afegida"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:498
+#: org/openscience/jmol/app/webexport/WebPanel.java:499
 #, java-format
 msgid "updated Instance {0}"
 msgstr "instància {0} actualitzada"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:535
+#: org/openscience/jmol/app/webexport/WebPanel.java:536
 msgid "Select a directory to create or an HTML file to save"
 msgstr "Seleccioneu un directori per crear o un fitxer HTML per alçar"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:555
+#: org/openscience/jmol/app/webexport/WebPanel.java:556
 #, java-format
 msgid "file {0} created"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:557
+#: org/openscience/jmol/app/webexport/WebPanel.java:558
 msgid "Call to FileWriter unsuccessful."
 msgstr "La crida a l'escriptura de fitxers ha fallat."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:561
+#: org/openscience/jmol/app/webexport/WebPanel.java:562
 msgid "Errors occurred during web page creation.  See Log Tab!"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:636
+#: org/openscience/jmol/app/webexport/WebPanel.java:637
 #, java-format
 msgid "Using directory {0}"
 msgstr "S''utilitza el directori {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:637
-#: org/openscience/jmol/app/webexport/WebPanel.java:649
-#: org/openscience/jmol/app/webexport/WebPanel.java:669
-#: org/openscience/jmol/app/webexport/WebPanel.java:683
-#: org/openscience/jmol/app/webexport/WebPanel.java:711
+#: org/openscience/jmol/app/webexport/WebPanel.java:638
+#: org/openscience/jmol/app/webexport/WebPanel.java:650
+#: org/openscience/jmol/app/webexport/WebPanel.java:670
+#: org/openscience/jmol/app/webexport/WebPanel.java:684
+#: org/openscience/jmol/app/webexport/WebPanel.java:712
 #, java-format
 msgid "adding {0}"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:698
+#: org/openscience/jmol/app/webexport/WebPanel.java:699
 #, java-format
 msgid "Unable to load resource {0}"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:751
+#: org/openscience/jmol/app/webexport/WebPanel.java:752
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
 msgstr ""
 "Basat en la plantilla d'A. Herr&#x00E1;ez com era modificat per J. Gutow"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:754
+#: org/openscience/jmol/app/webexport/WebPanel.java:755
 #, java-format
 msgid "creating {0}"
 msgstr "es crea {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:790
+#: org/openscience/jmol/app/webexport/WebPanel.java:791
 #, java-format
 msgid ""
 "Could not find or open:\n"
@@ -1758,7 +1772,7 @@ msgid ""
 "distribution."
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:795
+#: org/openscience/jmol/app/webexport/WebPanel.java:796
 #, java-format
 msgid ""
 "copying\n"
@@ -1769,7 +1783,7 @@ msgstr ""
 "{0}\n"
 "         a"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:802
+#: org/openscience/jmol/app/webexport/WebPanel.java:803
 msgid "compressing large data file to"
 msgstr "s'està comprimint un fitxer de gran extensió a"
 
@@ -1902,23 +1916,18 @@ msgstr ""
 #~ msgid "vector"
 #~ msgstr "vector"
 
-#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Vés al primer {0} de la col·lecció"
 
-#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Vés a l''anterior {0} de la col·lecció"
 
-#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Reprodueix la col·lecció sencera de {0}s"
 
-#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Vés al següent {0} de la col·lecció"
 
-#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Salta al darrer {0} de la col·lecció"
 
@@ -1928,13 +1937,12 @@ msgstr ""
 #~ msgid "Clear console button (requires restarting Jmol)"
 #~ msgstr "Botó de neteja de la consola (cal reiniciar el Jmol)"
 
-#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 #~ msgstr ""
-#~ "Inseriu un text explicatori addicional ací. Si el text és llarg, s''ajustarà "
-#~ "al voltant del model de Jmol {0}."
+#~ "Inseriu un text explicatori addicional ací. Si el text és llarg, "
+#~ "s''ajustarà al voltant del model de Jmol {0}."
 
 #~ msgid "double-click and drag to reorder"
 #~ msgstr "feu doble clic i arrosegueu per a reordenar"
@@ -1945,15 +1953,12 @@ msgstr ""
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "s'afig JmolPopIn.js"
 
-#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "afig {0}.png"
 
-#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "afig {0}.spt"
 
-#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"

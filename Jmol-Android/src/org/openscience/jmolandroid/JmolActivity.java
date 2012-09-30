@@ -74,7 +74,7 @@ public class JmolActivity extends Activity implements JmolCallbackListener {
       screenWidth = canvas.getWidth();
       screenHeight = canvas.getHeight();
       Log.w("Jmol", "JmolActivity onDraw");
-      viewer.renderScreenImage(canvas, null, screenWidth, screenHeight);
+      viewer.renderScreenImage(canvas, screenWidth, screenHeight);
       //      drawTrigger = false;
     }
   }
@@ -405,7 +405,7 @@ public class JmolActivity extends Activity implements JmolCallbackListener {
         //updateListener.manageDialog(ProgressDialog.show(this, "",
         //   "Opening file...", true), (byte) 2);
         // this is the best way to go -- allows for scripts, surfaces, and models
-        viewer.openFileAsynchronously(data
+        viewer.openFileAsync(data
             .getStringExtra(FileDialog.RESULT_PATH));
         opening = true;
       }

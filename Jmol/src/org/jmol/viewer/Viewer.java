@@ -10768,5 +10768,4 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return apiPlatform.isSingleThreaded();
   }
 
-
 }

@@ -36,7 +36,7 @@ import javax.vecmath.Point3f;
 final public class ArrayUtil {
 
   public static Object ensureLength(Object array, int minimumLength) {
-    if (array != null && Array.getLength(array) >= minimumLength)
+    if (array != null && getLength(array) >= minimumLength)
       return array;
     return arrayCopyOpt(array, minimumLength);
   }
@@ -72,7 +72,7 @@ final public class ArrayUtil {
   }
 
   public static Object doubleLength(Object array) {
-    return arrayCopyOpt(array, (array == null ? 16 : 2 * Array.getLength(array)));
+    return arrayCopyOpt(array, (array == null ? 16 : 2 * getLength(array)));
   }
 
   public static String[] doubleLengthS(String[] array) {
@@ -103,14 +103,13 @@ final public class ArrayUtil {
                                      int nElements) {
     if (nElements == 0 || array == null)
       return array;
-    int oldLength = Array.getLength(array);
+    int oldLength = getLength(array);
     if (firstElement >= oldLength)
       return array;
     int n = oldLength - (firstElement + nElements);
     if (n < 0)
       n = 0;
-    Object t = Array.newInstance(array.getClass().getComponentType(), 
-        firstElement + n);
+    Object t = newInstance(array, firstElement + n);
     if (firstElement > 0)
       System.arraycopy(array, 0, t, 0, firstElement);
     if (n > 0)
@@ -123,14 +122,38 @@ final public class ArrayUtil {
     if (array == null) {
       return null; // We can't allocate since we don't know the type of array
     }
-    int oldLength = Array.getLength(array);
+    int oldLength = getLength(array);
     if (newLength == oldLength)
       return array;
-    Object t = Array
-        .newInstance(array.getClass().getComponentType(), newLength);
+    Object t = newInstance(array, newLength);
     System.arraycopy(array, 0, t, 0, oldLength < newLength ? oldLength
         : newLength);
     return t;
+
+  }
+
+  private static Object newInstance(Object array, int n) {
+    /**
+     * @j2sNative
+     * 
+     * return Clazz.newArrayBH(array, n);
+     * 
+     */
+    {
+      return Array.newInstance(array.getClass().getComponentType(), n);
+    }
+  }
+
+  private static int getLength(Object array) {
+    /**
+     * @j2sNative
+     * 
+     *  return array.length
+     *   
+     */
+    {
+      return Array.getLength(array);
+    }
   }
 
   public static String[] arrayCopyS(String[] array, int newLength) {

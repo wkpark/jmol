@@ -175,6 +175,10 @@ public class Platform implements ApiPlatform {
     return false;
   }
 
+  public JmolFileAdapterInterface getFileAdapter() {
+    return new JmolFileAdapter();
+  }
+
   public JmolFileInterface newFile(String name) {
   	return JmolFileAdapter.newFile(name);
   }

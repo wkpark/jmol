@@ -172,7 +172,7 @@ abstract public class GenericPopup {
   }
 
   private static boolean checkBoolean(Map<String, Object> info, String key) {
-    return (info != null && !Boolean.FALSE.equals(info.get(key)));
+    return (info != null &&  info.get(key) == Boolean.TRUE); // not "Boolean.TRUE.equals(...)" (not working in Java2Script yet)
   }
 
   @SuppressWarnings("unchecked")

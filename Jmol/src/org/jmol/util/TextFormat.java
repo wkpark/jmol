@@ -149,7 +149,7 @@ public class TextFormat {
 //    System.out.print(value + " " + s1 + "/");
 //    System.out.println(s);
 
-    return (Boolean.TRUE.equals(useNumberLocalization[0]) ? s1 : s1.replace(',',
+    return (useNumberLocalization[0].booleanValue() ? s1 : s1.replace(',',
         '.'));
   }
 

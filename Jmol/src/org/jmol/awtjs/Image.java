@@ -37,6 +37,10 @@ import org.jmol.viewer.Viewer;
  */
 class Image {
 
+	/**
+   * @param data  
+   * @return null
+   */
 	static Object createImage(Object data) {
 		return null;
 	}
@@ -50,37 +54,88 @@ class Image {
 			throws InterruptedException {
 	}
 
+	/**
+   * @param image  
+	 * @return 0
+   */
 	static int getWidth(Object image) {
 		return 0;
 	}
 
+  /**
+   * @param image  
+   * @return 0
+   */
 	static int getHeight(Object image) {
 		return 0;
 	}
 
+	/**
+   * @param apiPlatform 
+	 * @param viewer 
+	 * @param quality  
+	 * @param comment 
+	 * @return null
+   */
 	static Object getJpgImage(ApiPlatform apiPlatform, Viewer viewer,
 			int quality, String comment) {
 		return null;
 	}
 
+	/**
+   * @param imageobj  
+	 * @param width 
+	 * @param height 
+	 * @return null
+   */
 	public static int[] grabPixels(Object imageobj, int width, int height) {
 		return null;
 	}
 
+	/**
+   * @param gOffscreen  
+	 * @param imageOffscreen 
+	 * @param imageobj 
+	 * @param width 
+	 * @param height 
+	 * @param bgcolor 
+	 * @return null
+   */
 	static int[] drawImageToBuffer(Object gOffscreen, Object imageOffscreen,
 			Object imageobj, int width, int height, int bgcolor) {
 		return null;
 	}
 
+	/**
+   * @param text  
+	 * @param font3d 
+	 * @param gObj 
+	 * @param image 
+	 * @param width 
+	 * @param height 
+	 * @param ascent 
+   * @return null
+   */
 	public static int[] getTextPixels(String text, JmolFont font3d, Object gObj,
 			Object image, int width, int height, int ascent) {
 		return null;
 	}
 
+	/**
+   * @param image  
+	 * @param w 
+	 * @param h 
+   * @return null
+   */
 	static Object newBufferedImage(Object image, int w, int h) {
 		return null;
 	}
 
+	/**
+   * @param w  
+	 * @param h 
+   * @return null
+   */
 	static Object newBufferedImage(int w, int h) {
 		return null;
 	}
@@ -107,6 +162,10 @@ class Image {
 		return null;
 	}
 
+	/**
+   * @param image  
+   * @return null
+   */
 	static Object getGraphics(Object image) {
 		return null;
 	}
@@ -126,9 +185,15 @@ class Image {
 			int height) {
 	}
 
+	/**
+   * @param image  
+   */
 	static void flush(Object image) {
 	}
 
+	/**
+   * @param graphicForText  
+   */
 	static void disposeGraphics(Object graphicForText) {
 	}
 

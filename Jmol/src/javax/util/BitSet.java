@@ -930,7 +930,7 @@ public class BitSet implements Cloneable {
    * BitSet drPepper = new BitSet();
    * </pre>
    * 
-   * Now {@code drPepper.toString()} returns "{}".
+   * Now {@code drPepper.toString()} returns empty braces.
    * <p>
    * 
    * <pre>

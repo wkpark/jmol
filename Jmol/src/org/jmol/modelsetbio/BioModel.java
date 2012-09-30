@@ -173,7 +173,7 @@ public final class BioModel extends Model{
       sb.append("select ").append(Escape.escape(bs)).append(" & connected; wireframe only;");
     // ... and all non-biopolymer and not connected to stars...
     if (bs != bsAtoms) {
-      bs2.clear();
+      bs2.clearAll();
       bs2.or(bsAtoms);
       bs2.andNot(bs);
       if (bs2.nextSetBit(0) >= 0)

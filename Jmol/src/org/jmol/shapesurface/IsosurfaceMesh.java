@@ -916,7 +916,7 @@ public class IsosurfaceMesh extends Mesh {
       //System.out.println("#slab " + i + " " + bsSlabGhost.cardinality());
       //System.out.println("isosurface s" + i + " plane " + Escape.escape(plane)
         //  + "#" + vGamma);
-      bsMoved.clear();
+      bsMoved.clearAll();
       mapEdge.clear();
       for (int j = bsSlabGhost.nextSetBit(0); j >= 0; j = bsSlabGhost
           .nextSetBit(j + 1)) {
@@ -954,7 +954,7 @@ public class IsosurfaceMesh extends Mesh {
         // and clear the ghost set
         
         //bsSlabDisplay.or(bsSlabGhost);
-        bsSlabGhost.clear();
+        bsSlabGhost.clearAll();
       
         // restart iteration if any points are moved, because 
         // some triangles need to be moved and/or split multiple 

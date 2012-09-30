@@ -59,7 +59,7 @@ public class MinAtom {
     this.index = index;
     this.atom = atom;
     this.coord = coord;
-    bsVdw.set(index + 1, atomCount);
+    bsVdw.setBits(index + 1, atomCount);
     bsVdw.clear(index);
     hCount = atom.getCovalentHydrogenCount();
   }

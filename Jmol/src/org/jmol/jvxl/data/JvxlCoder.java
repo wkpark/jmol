@@ -1010,7 +1010,7 @@ public class JvxlCoder {
     int[] next = new int[1];
     while ((dataCount = jvxlParseEncodedInt(data, base, range, next)) != Integer.MIN_VALUE) {
       if (isset)
-        bs.set(ptr, ptr + dataCount);
+        bs.setBits(ptr, ptr + dataCount);
       ptr += dataCount;
       isset = !isset;
     }
@@ -1070,7 +1070,7 @@ public class JvxlCoder {
         continue;
       }
       if (isset)
-        bs.set(ptr, ptr + dataCount);
+        bs.setBits(ptr, ptr + dataCount);
       ptr += dataCount;
       lastCount = dataCount;
       isset = !isset;

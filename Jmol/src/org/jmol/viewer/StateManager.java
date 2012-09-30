@@ -1741,7 +1741,7 @@ public class StateManager {
       bs = new BitSet();
       ht.put(key, bs);
     }
-    bs.set(i1, i2 + 1);
+    bs.setBits(i1, i2 + 1);
   }
 
   public static String varClip(String name, String sv, int nMax) {

@@ -205,7 +205,7 @@ public class BioShape {
           mad = (short) (values[leadAtomIndex] * 2000);
         }
         boolean isVisible = ((mads[i] = getMad(i, mad)) > 0);
-        bsSizeSet.set(i, isVisible);
+        bsSizeSet.setBitTo(i, isVisible);
         monomers[i].setShapeVisibility(flag, isVisible);
         shape.atoms[leadAtomIndex].setShapeVisibility(flag,isVisible);
         falsifyNearbyMesh(i);
@@ -216,7 +216,7 @@ public class BioShape {
   }
 
   private short getMad(int groupIndex, short mad) {
-    bsSizeDefault.set(groupIndex, mad == -1 || mad == -2);
+    bsSizeDefault.setBitTo(groupIndex, mad == -1 || mad == -2);
     if (mad >= 0)
       return mad;      
     switch (mad) {
@@ -285,7 +285,7 @@ public class BioShape {
       if (bsSelected.get(atomIndex)) {
         colixes[i] = shape.setColix(colix, pid, atomIndex);
         paletteIDs[i] = pid;
-        bsColixSet.set(i, colixes[i] != Colix.INHERIT_ALL);
+        bsColixSet.setBitTo(i, colixes[i] != Colix.INHERIT_ALL);
       }
     }
   }
@@ -297,7 +297,7 @@ public class BioShape {
     for (int i = monomerCount; --i >= 0; )
       if (bsSelected.get(leadAtomIndices[i])) {
         colixes[i] = Colix.getColixTranslucent(colixes[i], isTranslucent, translucentLevel);
-        bsColixSet.set(i, colixes[i] != Colix.INHERIT_ALL);
+        bsColixSet.setBitTo(i, colixes[i] != Colix.INHERIT_ALL);
     }
   }
 

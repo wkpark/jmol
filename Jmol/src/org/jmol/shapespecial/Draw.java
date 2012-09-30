@@ -1091,7 +1091,7 @@ public void initShape() {
           && !BitSetUtil.haveCommon(bs, m.modelFlags)) {
         m.visibilityFlags = 0;
       } else if (m.modelFlags != null) {
-        m.bsMeshesVisible.clear();
+        m.bsMeshesVisible.clearAll();
         m.bsMeshesVisible.or(m.modelFlags);
         m.bsMeshesVisible.and(bs);
       }

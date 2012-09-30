@@ -302,7 +302,7 @@ public final class ModelLoader {
     }
     initializeAtomBondModelCounts(nAtoms);
     if (bsNew != null && (doMinimize || is2D)) {
-      bsNew.set(baseAtomIndex, baseAtomIndex + nAtoms);
+      bsNew.setBits(baseAtomIndex, baseAtomIndex + nAtoms);
     }
     if (adapter == null) {
       setModelNameNumberProperties(0, -1, "", 1, null, null, null);
@@ -745,7 +745,7 @@ public final class ModelLoader {
         currentModelIndex = modelIndex;
         currentModel = models[modelIndex];
         currentChainID = '\uFFFF';
-        models[modelIndex].bsAtoms.clear();
+        models[modelIndex].bsAtoms.clearAll();
         isPdbThisModel = models[modelIndex].isBioModel;
         iLast = modelIndex;
         addH = isPdbThisModel && doAddHydrogens;
@@ -1315,7 +1315,7 @@ public final class ModelLoader {
     
     if (vStereo != null) {
       BitSet bsToTest = new BitSet();
-      bsToTest.set(baseAtomIndex, modelSet.atomCount);
+      bsToTest.setBits(baseAtomIndex, modelSet.atomCount);
       for (int i = vStereo.size(); --i >= 0;) {
         Bond b = vStereo.get(i);
         float dz2 = (b.order == JmolEdge.BOND_STEREO_NEAR ? 3 : -3);
@@ -1344,7 +1344,7 @@ public final class ModelLoader {
     Vector3f v0 = Vector3f.new3(0, 1, 0);
     Vector3f v1 = new Vector3f();
     BitSet bs0 = new BitSet();
-    bs0.set(iatom1, iatom2);
+    bs0.setBits(iatom1, iatom2);
     for (int i = iatom1; i < iatom2; i++)
       if (!atomlist.get(i) && !bsBranch.get(i)) {
         bsBranch = getBranch2dZ(i, -1, bs0, bsBranch, v, v0, v1);

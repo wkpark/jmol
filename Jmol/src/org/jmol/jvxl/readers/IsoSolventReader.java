@@ -753,7 +753,7 @@ class IsoSolventReader extends AtomDataReader {
       Edge edge = vEdges.get(i);
       int ia = edge.ia;
       int ib = edge.ib;
-      bs.clear();
+      bs.clearAll();
       bs.or(bsLocale[ia]);
       bs.and(bsLocale[ib]);
       for (int ic = bs.nextSetBit(ib + 1); ic >= 0; ic = bs.nextSetBit(ic + 1)) {

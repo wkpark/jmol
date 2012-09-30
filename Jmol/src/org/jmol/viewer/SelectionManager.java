@@ -80,9 +80,9 @@ class SelectionManager {
 
   void hide(ModelSet modelSet, BitSet bs, Boolean addRemove, boolean isQuiet) {
     if (bs == null) {
-      bsHidden.clear();
+      bsHidden.clearAll();
     } else if (addRemove == null) {
-      bsHidden.clear();
+      bsHidden.clearAll();
       bsHidden.or(bs);
     } else if (addRemove.booleanValue()) {
       bsHidden.or(bs);
@@ -99,7 +99,7 @@ class SelectionManager {
   void display(ModelSet modelSet, BitSet bs, Boolean addRemove, boolean isQuiet) {
       BitSet bsAll = modelSet.getModelAtomBitSetIncludingDeleted(-1, false); 
         if (bs == null) {
-      bsHidden.clear();
+      bsHidden.clearAll();
     } else if (addRemove == null) {
       bsHidden.or(bsAll);
       bsHidden.andNot(bs);
@@ -167,7 +167,7 @@ class SelectionManager {
 
   void clearSelection(boolean isQuiet) {
     setHideNotSelected(false);
-    bsSelection.clear();
+    bsSelection.clearAll();
     empty = TRUE;
     selectionChanged(isQuiet);
   }
@@ -187,7 +187,7 @@ class SelectionManager {
     if (bsSubset != null && !bsSubset.get(atomIndex)
         || bsDeleted != null && bsDeleted.get(atomIndex))
       return;
-    bsSelection.set(atomIndex, TF);
+    bsSelection.setBitTo(atomIndex, TF);
     if (TF)
       empty = FALSE;
     else
@@ -196,9 +196,9 @@ class SelectionManager {
 
   void setSelectionSet(BitSet set, Boolean addRemove) {
     if (set == null) {
-      bsSelection.clear();
+      bsSelection.clearAll();
     } else if (addRemove == null) {
-      bsSelection.clear();
+      bsSelection.clearAll();
       bsSelection.or(set);
     } else if (addRemove.booleanValue()) {
       bsSelection.or(set);
@@ -244,7 +244,7 @@ class SelectionManager {
     empty = TRUE;
     BitSet bs;
     if (bsSubset != null) {
-      bsTemp.clear();
+      bsTemp.clearAll();
       bsTemp.or(bsSubset);
       bsTemp.and(bsSelection);
       bs = bsTemp;
@@ -372,7 +372,7 @@ class SelectionManager {
   }
 
   void setMotionFixedAtoms(BitSet bs) {
-    bsFixed.clear();
+    bsFixed.clearAll();
     if (bs != null)
       bsFixed.or(bs);
   }

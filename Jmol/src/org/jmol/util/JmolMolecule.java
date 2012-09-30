@@ -201,7 +201,7 @@ public class JmolMolecule {
   private void getElementAndAtomCount(boolean includeMissingHydrogens) {
     if (atomList == null) {
       atomList = new BitSet();
-      atomList.set(0, nodes.length);
+      atomList.setBits(0, nodes.length);
     }
     elementCounts = new int[Elements.elementNumberMax];
     altElementCounts = new int[Elements.altElementMax];

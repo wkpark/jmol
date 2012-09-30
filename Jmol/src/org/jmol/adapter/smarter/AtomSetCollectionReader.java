@@ -842,7 +842,7 @@ public abstract class AtomSetCollectionReader {
       isOK |= checkFilter(atom, filter2);
     if (isOK && filterEveryNth)
       isOK = (((nFiltered++) % filterN) == 0);
-    bsFilter.set(iAtom >= 0 ? iAtom : atomSetCollection.getAtomCount(), isOK);
+    bsFilter.setBitTo(iAtom >= 0 ? iAtom : atomSetCollection.getAtomCount(), isOK);
     return isOK;
   }
 

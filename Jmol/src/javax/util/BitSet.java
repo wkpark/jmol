@@ -73,7 +73,7 @@ public class BitSet implements Cloneable {
    */
   private final static int ADDRESS_BITS_PER_WORD = 6;
   private final static int BITS_PER_WORD = 1 << ADDRESS_BITS_PER_WORD;
-  private final static int BIT_INDEX_MASK = BITS_PER_WORD - 1;
+//  private final static int BIT_INDEX_MASK = BITS_PER_WORD - 1;
 
   /* Used to shift left or right for a partial word mask */
   private static final long WORD_MASK = 0xffffffffffffffffL;
@@ -99,9 +99,36 @@ public class BitSet implements Cloneable {
 
   /**
    * Given a bit index, return word index containing it.
+   * @param bitIndex 
+   * @return index
    */
   private static int wordIndex(int bitIndex) {
     return bitIndex >> ADDRESS_BITS_PER_WORD;
+  }
+
+  /**
+   * Creates a new bit set. All bits are initially {@code false}.
+   */
+  public BitSet() {
+    initWords(BITS_PER_WORD);
+    sizeIsSticky = false;
+  }
+
+  /**
+   * Creates a bit set whose initial size is large enough to explicitly
+   * represent bits with indices in the range {@code 0} through {@code nbits-1}.
+   * All bits are initially {@code false}.
+   * 
+   * @param nbits
+   *          the initial size of the bit set
+   * @return bs
+   * @throws NegativeArraySizeException
+   *           if the specified initial size is negative
+   */
+  public static BitSet newN(int nbits) {
+    BitSet bs = new BitSet();
+    bs.init(nbits);
+    return bs;
   }
 
   // /**
@@ -127,31 +154,7 @@ public class BitSet implements Cloneable {
     wordsInUse = i + 1; // The new logical size
   }
 
-  /**
-   * Creates a new bit set. All bits are initially {@code false}.
-   */
-  public BitSet() {
-    initWords(BITS_PER_WORD);
-    sizeIsSticky = false;
-  }
-
-  /**
-   * Creates a bit set whose initial size is large enough to explicitly
-   * represent bits with indices in the range {@code 0} through {@code nbits-1}.
-   * All bits are initially {@code false}.
-   * 
-   * @param nbits
-   *          the initial size of the bit set
-   * @throws NegativeArraySizeException
-   *           if the specified initial size is negative
-   */
-  public static BitSet newN(int nbits) {
-    BitSet bs = new BitSet();
-    bs.setBits(nbits);
-    return bs;
-  }
-
-  private void setBits(int nbits) {
+  private void init(int nbits) {
     // nbits can't be negative; size 0 is OK
     if (nbits < 0)
       throw new NegativeArraySizeException("nbits < 0: " + nbits);
@@ -207,73 +210,73 @@ public class BitSet implements Cloneable {
   // " > toIndex: " + toIndex);
   // }
 
-  /**
-   * Sets the bit at the specified index to the complement of its current value.
-   * 
-   * @param bitIndex
-   *          the index of the bit to flip
-   * @throws IndexOutOfBoundsException
-   *           if the specified index is negative
-   * @since 1.4
-   */
-  public void flip(int bitIndex) {
-    if (bitIndex < 0)
-      throw new IndexOutOfBoundsException("bitIndex < 0: " + bitIndex);
-
-    int wordIndex = wordIndex(bitIndex);
-    expandTo(wordIndex);
-
-    words[wordIndex] ^= (1L << bitIndex);
-
-    recalculateWordsInUse();
-    // checkInvariants();
-  }
-
-  /**
-   * Sets each bit from the specified {@code fromIndex} (inclusive) to the
-   * specified {@code toIndex} (exclusive) to the complement of its current
-   * value.
-   * 
-   * @param fromIndex
-   *          index of the first bit to flip
-   * @param toIndex
-   *          index after the last bit to flip
-   * @throws IndexOutOfBoundsException
-   *           if {@code fromIndex} is negative, or {@code toIndex} is negative,
-   *           or {@code fromIndex} is larger than {@code toIndex}
-   * @since 1.4
-   */
-  public void flip(int fromIndex, int toIndex) {
-    // checkRange(fromIndex, toIndex);
-
-    if (fromIndex == toIndex)
-      return;
-
-    int startWordIndex = wordIndex(fromIndex);
-    int endWordIndex = wordIndex(toIndex - 1);
-    expandTo(endWordIndex);
-
-    long firstWordMask = WORD_MASK << fromIndex;
-    long lastWordMask = WORD_MASK >>> -toIndex;
-    if (startWordIndex == endWordIndex) {
-      // Case 1: One word
-      words[startWordIndex] ^= (firstWordMask & lastWordMask);
-    } else {
-      // Case 2: Multiple words
-      // Handle first word
-      words[startWordIndex] ^= firstWordMask;
-
-      // Handle intermediate words, if any
-      for (int i = startWordIndex + 1; i < endWordIndex; i++)
-        words[i] ^= WORD_MASK;
-
-      // Handle last word
-      words[endWordIndex] ^= lastWordMask;
-    }
-
-    recalculateWordsInUse();
-    // checkInvariants();
-  }
+//  /**
+//   * Sets the bit at the specified index to the complement of its current value.
+//   * 
+//   * @param bitIndex
+//   *          the index of the bit to flip
+//   * @throws IndexOutOfBoundsException
+//   *           if the specified index is negative
+//   * @since 1.4
+//   */
+//  public void flip(int bitIndex) {
+//    if (bitIndex < 0)
+//      throw new IndexOutOfBoundsException("bitIndex < 0: " + bitIndex);
+//
+//    int wordIndex = wordIndex(bitIndex);
+//    expandTo(wordIndex);
+//
+//    words[wordIndex] ^= (1L << bitIndex);
+//
+//    recalculateWordsInUse();
+//    // checkInvariants();
+//  }
+//
+//  /**
+//   * Sets each bit from the specified {@code fromIndex} (inclusive) to the
+//   * specified {@code toIndex} (exclusive) to the complement of its current
+//   * value.
+//   * 
+//   * @param fromIndex
+//   *          index of the first bit to flip
+//   * @param toIndex
+//   *          index after the last bit to flip
+//   * @throws IndexOutOfBoundsException
+//   *           if {@code fromIndex} is negative, or {@code toIndex} is negative,
+//   *           or {@code fromIndex} is larger than {@code toIndex}
+//   * @since 1.4
+//   */
+//  public void flip(int fromIndex, int toIndex) {
+//    // checkRange(fromIndex, toIndex);
+//
+//    if (fromIndex == toIndex)
+//      return;
+//
+//    int startWordIndex = wordIndex(fromIndex);
+//    int endWordIndex = wordIndex(toIndex - 1);
+//    expandTo(endWordIndex);
+//
+//    long firstWordMask = WORD_MASK << fromIndex;
+//    long lastWordMask = WORD_MASK >>> -toIndex;
+//    if (startWordIndex == endWordIndex) {
+//      // Case 1: One word
+//      words[startWordIndex] ^= (firstWordMask & lastWordMask);
+//    } else {
+//      // Case 2: Multiple words
+//      // Handle first word
+//      words[startWordIndex] ^= firstWordMask;
+//
+//      // Handle intermediate words, if any
+//      for (int i = startWordIndex + 1; i < endWordIndex; i++)
+//        words[i] ^= WORD_MASK;
+//
+//      // Handle last word
+//      words[endWordIndex] ^= lastWordMask;
+//    }
+//
+//    recalculateWordsInUse();
+//    // checkInvariants();
+//  }
 
   /**
    * Sets the bit at the specified index to {@code true}.
@@ -307,7 +310,7 @@ public class BitSet implements Cloneable {
    *           if the specified index is negative
    * @since 1.4
    */
-  public void set(int bitIndex, boolean value) {
+  public void setBitTo(int bitIndex, boolean value) {
     if (value)
       set(bitIndex);
     else
@@ -327,7 +330,7 @@ public class BitSet implements Cloneable {
    *           or {@code fromIndex} is larger than {@code toIndex}
    * @since 1.4
    */
-  public void set(int fromIndex, int toIndex) {
+  public void setBits(int fromIndex, int toIndex) {
     // checkRange(fromIndex, toIndex);
 
     if (fromIndex == toIndex)
@@ -359,27 +362,27 @@ public class BitSet implements Cloneable {
     // checkInvariants();
   }
 
-  /**
-   * Sets the bits from the specified {@code fromIndex} (inclusive) to the
-   * specified {@code toIndex} (exclusive) to the specified value.
-   * 
-   * @param fromIndex
-   *          index of the first bit to be set
-   * @param toIndex
-   *          index after the last bit to be set
-   * @param value
-   *          value to set the selected bits to
-   * @throws IndexOutOfBoundsException
-   *           if {@code fromIndex} is negative, or {@code toIndex} is negative,
-   *           or {@code fromIndex} is larger than {@code toIndex}
-   * @since 1.4
-   */
-  public void set(int fromIndex, int toIndex, boolean value) {
-    if (value)
-      set(fromIndex, toIndex);
-    else
-      clear(fromIndex, toIndex);
-  }
+//  /**
+//   * Sets the bits from the specified {@code fromIndex} (inclusive) to the
+//   * specified {@code toIndex} (exclusive) to the specified value.
+//   * 
+//   * @param fromIndex
+//   *          index of the first bit to be set
+//   * @param toIndex
+//   *          index after the last bit to be set
+//   * @param value
+//   *          value to set the selected bits to
+//   * @throws IndexOutOfBoundsException
+//   *           if {@code fromIndex} is negative, or {@code toIndex} is negative,
+//   *           or {@code fromIndex} is larger than {@code toIndex}
+//   * @since 1.4
+//   */
+//  public void setBitsTo(int fromIndex, int toIndex, boolean value) {
+//    if (value)
+//      setBits(fromIndex, toIndex);
+//    else
+//      clear(fromIndex, toIndex);
+//  }
 
   /**
    * Sets the bit specified by the index to {@code false}.
@@ -417,7 +420,7 @@ public class BitSet implements Cloneable {
    *           or {@code fromIndex} is larger than {@code toIndex}
    * @since 1.4
    */
-  public void clear(int fromIndex, int toIndex) {
+  public void clearBits(int fromIndex, int toIndex) {
     // checkRange(fromIndex, toIndex);
 
     if (fromIndex == toIndex)
@@ -460,7 +463,7 @@ public class BitSet implements Cloneable {
    * 
    * @since 1.4
    */
-  public void clear() {
+  public void clearAll() {
     while (wordsInUse > 0)
       words[--wordsInUse] = 0;
   }
@@ -486,64 +489,64 @@ public class BitSet implements Cloneable {
     return (wordIndex < wordsInUse)
         && ((words[wordIndex] & (1L << bitIndex)) != 0);
   }
-
-  /**
-   * Returns a new {@code BitSet} composed of bits from this {@code BitSet} from
-   * {@code fromIndex} (inclusive) to {@code toIndex} (exclusive).
-   * 
-   * @param fromIndex
-   *          index of the first bit to include
-   * @param toIndex
-   *          index after the last bit to include
-   * @return a new {@code BitSet} from a range of this {@code BitSet}
-   * @throws IndexOutOfBoundsException
-   *           if {@code fromIndex} is negative, or {@code toIndex} is negative,
-   *           or {@code fromIndex} is larger than {@code toIndex}
-   * @since 1.4
-   */
-  public BitSet get(int fromIndex, int toIndex) {
-    // checkRange(fromIndex, toIndex);
-
-    // checkInvariants();
-
-    int len = length();
-
-    // If no set bits in range return empty bitset
-    if (len <= fromIndex || fromIndex == toIndex)
-      return newN(0);
-
-    // An optimization
-    if (toIndex > len)
-      toIndex = len;
-
-    BitSet result = newN(toIndex - fromIndex);
-    int targetWords = wordIndex(toIndex - fromIndex - 1) + 1;
-    int sourceIndex = wordIndex(fromIndex);
-    boolean wordAligned = ((fromIndex & BIT_INDEX_MASK) == 0);
-
-    // Process all words but the last word
-    for (int i = 0; i < targetWords - 1; i++, sourceIndex++)
-      result.words[i] = wordAligned ? words[sourceIndex]
-          : (words[sourceIndex] >>> fromIndex)
-              | (words[sourceIndex + 1] << -fromIndex);
-
-    // Process the last word
-    long lastWordMask = WORD_MASK >>> -toIndex;
-    result.words[targetWords - 1] = ((toIndex - 1) & BIT_INDEX_MASK) < (fromIndex & BIT_INDEX_MASK) ? /*
-                                                                                                       * straddles
-                                                                                                       * source
-                                                                                                       * words
-                                                                                                       */
-    ((words[sourceIndex] >>> fromIndex) | (words[sourceIndex + 1] & lastWordMask) << -fromIndex)
-        : ((words[sourceIndex] & lastWordMask) >>> fromIndex);
-
-    // Set wordsInUse correctly
-    result.wordsInUse = targetWords;
-    result.recalculateWordsInUse();
-    // result.checkInvariants();
-
-    return result;
-  }
+//
+//  /**
+//   * Returns a new {@code BitSet} composed of bits from this {@code BitSet} from
+//   * {@code fromIndex} (inclusive) to {@code toIndex} (exclusive).
+//   * 
+//   * @param fromIndex
+//   *          index of the first bit to include
+//   * @param toIndex
+//   *          index after the last bit to include
+//   * @return a new {@code BitSet} from a range of this {@code BitSet}
+//   * @throws IndexOutOfBoundsException
+//   *           if {@code fromIndex} is negative, or {@code toIndex} is negative,
+//   *           or {@code fromIndex} is larger than {@code toIndex}
+//   * @since 1.4
+//   */
+//  public BitSet getBits(int fromIndex, int toIndex) {
+//    // checkRange(fromIndex, toIndex);
+//
+//    // checkInvariants();
+//
+//    int len = length();
+//
+//    // If no set bits in range return empty bitset
+//    if (len <= fromIndex || fromIndex == toIndex)
+//      return newN(0);
+//
+//    // An optimization
+//    if (toIndex > len)
+//      toIndex = len;
+//
+//    BitSet result = newN(toIndex - fromIndex);
+//    int targetWords = wordIndex(toIndex - fromIndex - 1) + 1;
+//    int sourceIndex = wordIndex(fromIndex);
+//    boolean wordAligned = ((fromIndex & BIT_INDEX_MASK) == 0);
+//
+//    // Process all words but the last word
+//    for (int i = 0; i < targetWords - 1; i++, sourceIndex++)
+//      result.words[i] = wordAligned ? words[sourceIndex]
+//          : (words[sourceIndex] >>> fromIndex)
+//              | (words[sourceIndex + 1] << -fromIndex);
+//
+//    // Process the last word
+//    long lastWordMask = WORD_MASK >>> -toIndex;
+//    result.words[targetWords - 1] = ((toIndex - 1) & BIT_INDEX_MASK) < (fromIndex & BIT_INDEX_MASK) ? /*
+//                                                                                                       * straddles
+//                                                                                                       * source
+//                                                                                                       * words
+//                                                                                                       */
+//    ((words[sourceIndex] >>> fromIndex) | (words[sourceIndex + 1] & lastWordMask) << -fromIndex)
+//        : ((words[sourceIndex] & lastWordMask) >>> fromIndex);
+//
+//    // Set wordsInUse correctly
+//    result.wordsInUse = targetWords;
+//    result.recalculateWordsInUse();
+//    // result.checkInvariants();
+//
+//    return result;
+//  }
 
   /**
    * Returns the index of the first bit that is set to {@code true} that occurs
@@ -823,6 +826,7 @@ public class BitSet implements Cloneable {
    * 
    * @return a hash code value for this bit set.
    */
+  @Override
   public int hashCode() {
     long h = 1234;
     for (int i = wordsInUse; --i >= 0;)
@@ -859,6 +863,7 @@ public class BitSet implements Cloneable {
    * @return {@code true} if the objects are the same; {@code false} otherwise
    * @see #size()
    */
+  @Override
   public boolean equals(Object obj) {
     if (!(obj instanceof BitSet))
       return false;
@@ -889,6 +894,7 @@ public class BitSet implements Cloneable {
    * @return a clone of this bit set
    * @see #size()
    */
+  @Override
   public Object clone() {
     if (!sizeIsSticky && wordsInUse != words.length)
       setLength(wordsInUse);
@@ -924,14 +930,14 @@ public class BitSet implements Cloneable {
    * BitSet drPepper = new BitSet();
    * </pre>
    * 
-   * Now {@code drPepper.toString()} returns "{@code ".
+   * Now {@code drPepper.toString()} returns "{}".
    * <p>
    * 
    * <pre>
    * drPepper.set(2);
    * </pre>
    * 
-   * Now {@code drPepper.toString()} returns "{@code 2}}".
+   * Now {@code drPepper.toString()} returns "{2}".
    * <p>
    * 
    * <pre>
@@ -939,7 +945,7 @@ public class BitSet implements Cloneable {
    * drPepper.set(10);
    * </pre>
    * 
-   * Now {@code drPepper.toString()} returns "{@code 2, 4, 10}}".
+   * Now {@code drPepper.toString()} returns "{2, 4, 10}".
    * 
    * @return a string representation of this bit set
    */

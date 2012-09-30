@@ -393,7 +393,7 @@ public class Escape {
           lastN = iThis;
           if (iPrev < 0)
             iPrev = iThis;
-          bs.set(iPrev, iThis + 1);
+          bs.setBits(iPrev, iThis + 1);
           iPrev = -1;
           iThis = -2;
           break;

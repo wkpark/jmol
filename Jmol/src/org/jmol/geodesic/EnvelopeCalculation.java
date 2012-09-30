@@ -213,7 +213,7 @@ public final class EnvelopeCalculation {
   }
   
   public void setFromBits(int index, BitSet bs) {
-    geodesicMap.set(0, geodesicCount);
+    geodesicMap.setBits(0, geodesicCount);
     for (int iDot = geodesicCount; --iDot >= 0;)
       if (!bs.get(iDot))
         geodesicMap.clear(iDot);
@@ -439,7 +439,7 @@ public final class EnvelopeCalculation {
   }
   
   private void addIncompleteFaces(BitSet points) {
-    mapT.clear();
+    mapT.clearAll();
     short[] faces = Geodesic.getFaceVertexes(MAX_LEVEL);
     int len = faces.length;
     int maxPt = -1;
@@ -488,7 +488,7 @@ public final class EnvelopeCalculation {
   private static int[] power4 = {1, 4, 16, 64, 256};
   
   private void calcConvexBits() {
-    geodesicMap.set(0, geodesicCount);
+    geodesicMap.setBits(0, geodesicCount);
     float combinedRadii = radiusI + radiusP;
     if (neighborCount == 0)
       return;
@@ -498,7 +498,7 @@ public final class EnvelopeCalculation {
     
     int p4 = power4[MAX_LEVEL - 1];
     boolean ok1, ok2, ok3;
-    mapT.clear();
+    mapT.clearAll();
     for (int i = 0; i < 12; i++) {
       vertexTest[i].setT(Geodesic.getVertexVector(i));
       vertexTest[i].scaleAdd(combinedRadii, centerI);      

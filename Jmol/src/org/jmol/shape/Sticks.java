@@ -152,7 +152,7 @@ public class Sticks extends Shape {
         int iBond = iter.nextIndex();
         Bond bond = iter.next();
         bond.setColix(colix);
-        bsColixSet.set(iBond, (colix != Colix.INHERIT_ALL
+        bsColixSet.setBitTo(iBond, (colix != Colix.INHERIT_ALL
             && colix != Colix.USE_PALETTE));
       }
       return;

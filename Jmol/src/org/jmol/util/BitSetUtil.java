@@ -54,13 +54,13 @@ final public class BitSetUtil {
 
   public static BitSet newBitSet2(int i0, int i1) {
     BitSet bs = newBitSet(i1);
-    bs.set(i0, i1);
+    bs.setBits(i0, i1);
     return bs;
   }
   
   public static BitSet setAll(int n) {
     BitSet bs = newBitSet(n);
-    bs.set(0, n);
+    bs.setBits(0, n);
     return bs;
   }
 
@@ -77,7 +77,7 @@ final public class BitSetUtil {
   public static BitSet copy2(BitSet a, BitSet b) {
     if (a == null || b == null)
       return null;
-    b.clear();
+    b.clearAll();
     b.or(a);
     return b;
   }
@@ -127,7 +127,7 @@ final public class BitSetUtil {
   public static BitSet toggleInPlace(BitSet a, BitSet b) {
     if (a.equals(b)) {
       // all on -- toggle all off
-      a.clear();
+      a.clearAll();
     } else if (andNot(copy(b), a).length() == 0) {
       // b is a subset of a -> remove all b bits from a
       andNot(a, b); 
@@ -160,11 +160,11 @@ final public class BitSetUtil {
     int lend = Math.min(len, bsDelete.length());
     int i;
     for (i = bsDelete.nextClearBit(ipt); i < lend && i >= 0; i = bsDelete.nextClearBit(i + 1))
-      bs.set(ipt++, bs.get(i));
+      bs.setBitTo(ipt++, bs.get(i));
     for (i = lend; i < len; i++)
-      bs.set(ipt++, bs.get(i));
+      bs.setBitTo(ipt++, bs.get(i));
     if (ipt < len)
-      bs.clear(ipt, len);
+      bs.clearBits(ipt, len);
     return bs;
   }
 

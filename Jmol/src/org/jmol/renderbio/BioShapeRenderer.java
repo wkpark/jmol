@@ -154,7 +154,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     monomers = bioShape.monomers;
     leadAtomIndices = bioShape.bioPolymer.getLeadAtomIndices();
 
-    bsVisible.clear();
+    bsVisible.clearAll();
     boolean haveVisible = false;
     if (invalidateMesh)
       bioShape.falsifyMesh();

@@ -149,7 +149,7 @@ public class AnimationManager {
   }
   
   private void setFrameRangeVisible() {
-    bsVisibleFrames.clear();
+    bsVisibleFrames.clearAll();
     if (backgroundModelIndex >= 0)
       bsVisibleFrames.set(backgroundModelIndex);
     if (currentModelIndex >= 0) {

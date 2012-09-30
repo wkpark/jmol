@@ -2395,8 +2395,8 @@ abstract public class ModelCollection extends BondCollection {
         Atom atom1 = bonds[i].atom1;
         if (models[atom1.modelIndex].isModelKit)
           continue;
-        bsA.clear();
-        bsB.clear();
+        bsA.clearAll();
+        bsB.clearAll();
         bsA.set(atom1.index);
         bsB.set(bonds[i].getAtomIndex2());
         addStateScript("connect ", null, bsA, bsB, "delete", false, true);

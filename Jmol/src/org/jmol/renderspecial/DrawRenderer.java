@@ -436,7 +436,7 @@ public class DrawRenderer extends MeshRenderer {
     default:
       short colixFill = Colix.getColixTranslucent(Colix.GOLD, true,
           0.5f);
-      bsHandles.clear();
+      bsHandles.clearAll();
       for (int i = dmesh.polygonCount; --i >= 0;) {
         if (!isPolygonDisplayable(i))
           continue;

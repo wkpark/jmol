@@ -1957,7 +1957,7 @@ _struct_site_gen.details
 
       if (atomSetCollection.bsAtoms == null)
         atomSetCollection.bsAtoms = new BitSet();
-      atomSetCollection.bsAtoms.clear(firstAtom, atomCount);
+      atomSetCollection.bsAtoms.clearBits(firstAtom, atomCount);
       atomSetCollection.bsAtoms.or(bsMolecule);
       atomSetCollection.bsAtoms.andNot(bsExclude);
 

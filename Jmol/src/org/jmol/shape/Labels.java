@@ -380,7 +380,7 @@ public class Labels extends AtomShape {
     strings[i] = label;
     formats[i] = (strLabel != null && strLabel.indexOf("%{") >= 0 ? label
         : strLabel);
-    bsSizeSet.set(i, (strLabel != null));
+    bsSizeSet.setBitTo(i, (strLabel != null));
     text = getLabel(i);
     if (isScaled) {
       text = new Text(gdata, null, label, (short) 0, (short) 0, 0, 0, 0, 0, 0,
@@ -456,7 +456,7 @@ public class Labels extends AtomShape {
       bgcolixes = ArrayUtil.ensureLengthShort(bgcolixes, i + 1);
     }
     bgcolixes[i] = bgcolix;
-    bsBgColixSet.set(i, bgcolix != 0);
+    bsBgColixSet.setBitTo(i, bgcolix != 0);
     text = getLabel(i);
     if (text != null)
       text.setBgColix(bgcolix);

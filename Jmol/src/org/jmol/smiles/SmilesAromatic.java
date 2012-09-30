@@ -250,13 +250,13 @@ public class SmilesAromatic {
       if (isAromaticRing(bsAromatic, bsTest, bs, 6))
         checkAromaticStrict(jmolAtoms, bsStrict, v5, v6, bs, false);
     }
-    bsAromatic.clear();
+    bsAromatic.clearAll();
     bsAromatic.or(bsStrict);
   }
 
   private static boolean isAromaticRing(BitSet bsAromatic, BitSet bsTest,
                                         BitSet bs, int n) {
-    bsTest.clear();
+    bsTest.clearAll();
     bsTest.or(bs);
     bsTest.and(bsAromatic);
     return (bsTest.cardinality() == n);

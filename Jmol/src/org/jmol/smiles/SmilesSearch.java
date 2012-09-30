@@ -70,7 +70,7 @@ public class SmilesSearch extends JmolMolecule {
   void setSelected(BitSet bs) {
     if (bs == null) {
       bs = BitSetUtil.newBitSet(jmolAtomCount);
-      bs.set(0, jmolAtomCount);
+      bs.setBits(0, jmolAtomCount);
     }
     bsSelected = bs;
   }
@@ -144,7 +144,7 @@ public class SmilesSearch extends JmolMolecule {
   }
   
   void clear() {
-    bsReturn.clear();
+    bsReturn.clearAll();
     nNested = 0;
     htNested = null;
     nestedBond = null;//new SmilesBond(0, false);
@@ -176,7 +176,7 @@ public class SmilesSearch extends JmolMolecule {
     // when using "xxx".find("search","....")
     // or $(...), the aromatic set has already been determined
     if (!needAromatic) {
-      bsAromatic.clear();
+      bsAromatic.clearAll();
       if (bsA != null)
         bsAromatic.or(bsA);
       if (!needRingMemberships && !needRingData)
@@ -278,7 +278,7 @@ public class SmilesSearch extends JmolMolecule {
   private void setAromatic56(List<Object> vRings, BitSet bs56, int n56, List<BitSet> vAromatic56) {
     for (int k = 0; k < vRings.size(); k++) {
       BitSet r = (BitSet) vRings.get(k);
-      v.bsTemp.clear();
+      v.bsTemp.clearAll();
       v.bsTemp.or(r);
       v.bsTemp.and(bsAromatic);
       if (v.bsTemp.cardinality() == n56) {
@@ -391,7 +391,7 @@ public class SmilesSearch extends JmolMolecule {
       vReturn = new ArrayList<Object>();
     if (bsSelected == null) {
       bsSelected = BitSetUtil.newBitSet(jmolAtomCount);
-      bsSelected.set(0, jmolAtomCount);
+      bsSelected.setBits(0, jmolAtomCount);
     }
     selectedAtomCount = bsSelected.cardinality();
     if (subSearches != null) {
@@ -439,7 +439,7 @@ public class SmilesSearch extends JmolMolecule {
         clearBsFound(-1);
       } else {
         // clear out the return when there's a nested bio atom when $(...) is in a biomolecule?
-        bsReturn.clear();
+        bsReturn.clearAll();
       }
     } else {
       // check for requested selection or not-selection
@@ -711,7 +711,7 @@ public class SmilesSearch extends JmolMolecule {
       return true;
     if (bsCheck != null) {
       if (firstAtomOnly) {
-        bsCheck.clear();
+        bsCheck.clearAll();
         for (int j = 0; j < atomCount; j++) {
           //System.out.println("checking return for " + patternAtoms[j]);
           bsCheck.set(patternAtoms[j].getMatchingAtom());
@@ -773,7 +773,7 @@ public class SmilesSearch extends JmolMolecule {
     //System.out.println("smiless " + iAtom + " " + bsFound + " " + bsFound.hashCode());
     
     if (iAtom < 0) {
-      if (bsCheck == null) {bsFound.clear();}
+      if (bsCheck == null) {bsFound.clearAll();}
       }
     else
       bsFound.clear(iAtom);    

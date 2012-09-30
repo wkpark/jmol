@@ -249,7 +249,7 @@ public class Dots extends AtomShape {
       int i0 = (isAll ? atomCount - 1 : bsSelected.nextSetBit(0));
       for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsSelected
           .nextSetBit(i + 1)))
-        bsOn.set(i, false);
+        bsOn.setBitTo(i, false);
     }
 
     for (int i = atomCount; --i >= 0;) {

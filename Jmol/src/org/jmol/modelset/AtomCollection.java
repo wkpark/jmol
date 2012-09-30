@@ -2087,7 +2087,7 @@ abstract public class AtomCollection {
 
   private BitSet findNotAttached(int nAttached, int[][] angles, int[] ptrs, int nPtrs) {
     BitSet bs = BitSetUtil.newBitSet(nAttached);
-    bs.set(0, nAttached);
+    bs.setBits(0, nAttached);
     for (int i = 0; i < nAttached; i++)
       for (int j = 0; j < nPtrs; j++) {
         int[] a = angles[ptrs[j]];

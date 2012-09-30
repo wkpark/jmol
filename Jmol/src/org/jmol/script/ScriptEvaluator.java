@@ -1299,7 +1299,7 @@ public class ScriptEvaluator {
       default:
         return bsNew;
       }
-      bsNew.clear();
+      bsNew.clearAll();
       if (i >= 0)
         bsNew.set(i);
       return bsNew;
@@ -3867,7 +3867,7 @@ public class ScriptEvaluator {
     if (!isBondSet) {
       viewer.excludeAtoms(bs, ignoreSubset);
       if (bs.length() > viewer.getAtomCount())
-        bs.clear();
+        bs.clearAll();
     }
     if (tempStatement != null) {
       statement = tempStatement;
@@ -16419,7 +16419,7 @@ public class ScriptEvaluator {
       i0 = modelNumberParameter(2);
       if (i0 < 0)
         error(ERROR_invalidArgument);
-      bsModels.clear();
+      bsModels.clearAll();
       bsModels.set(i0);
       i0 = 3;
     }

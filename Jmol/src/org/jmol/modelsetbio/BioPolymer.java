@@ -90,7 +90,7 @@ public abstract class BioPolymer {
     // this is OK -- doesn't relate to added hydrogens
     if (monomerCount == 0)
       return;
-    bs.set(monomers[0].firstAtomIndex,
+    bs.setBits(monomers[0].firstAtomIndex,
         monomers[monomerCount - 1].lastAtomIndex + 1);
   }
 
@@ -355,7 +355,7 @@ public abstract class BioPolymer {
     selectedMonomerCount = 0;
     if (bsSelectedMonomers == null)
       bsSelectedMonomers = new BitSet();
-    bsSelectedMonomers.clear();
+    bsSelectedMonomers.clearAll();
     for (int i = 0; i < monomerCount; i++) {
       if (monomers[i].isSelected(bsSelected)) {
         ++selectedMonomerCount;
@@ -965,7 +965,7 @@ public abstract class BioPolymer {
     for (int i = 0; i < monomerCount; i++) {
       if (!monomers[i].isSelected(bsAtoms))
         continue;
-      bsTemp.set(Math.max(0, i - nResidues), i + nResidues + 1);
+      bsTemp.setBits(Math.max(0, i - nResidues), i + nResidues + 1);
       i += nResidues - 1;
     }
     for (int i = bsTemp.nextSetBit(0); i >= 0 && i < monomerCount; i = bsTemp

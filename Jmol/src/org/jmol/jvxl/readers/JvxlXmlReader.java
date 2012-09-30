@@ -414,8 +414,13 @@ public class JvxlXmlReader extends VolumeFileReader {
     volumeData.setMappingPlane(null);
   }
 
+  /**
+   * @param type 
+   * @param nPoints  
+   * @return data
+   */
   protected String jvxlReadData(String type,
-                                @SuppressWarnings("unused") int nPoints) {
+                                 int nPoints) {
     String str;
     try {
       if (type.equals("edge")) {
@@ -460,7 +465,7 @@ public class JvxlXmlReader extends VolumeFileReader {
       thisInside = !thisInside;
       ++jvxlNSurfaceInts;
       if (thisInside)
-        bs.set(bsVoxelPtr, bsVoxelPtr + nThisValue);
+        bs.setBits(bsVoxelPtr, bsVoxelPtr + nThisValue);
       bsVoxelPtr += nThisValue;
     }
     return bs;

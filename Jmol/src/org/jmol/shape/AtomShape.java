@@ -95,7 +95,7 @@ public abstract class AtomShape extends Shape {
       mads[i] = atom.calculateMad(viewer, rd);
       //System.out.println("atomshape - setSize " + i + " " + rd);
 //      System.out.println("atomSHape " + atom + " mad=" + mads[i]);
-      bsSizeSet.set(i, isVisible);
+      bsSizeSet.setBitTo(i, isVisible);
       atom.setShapeVisibility(myVisibilityFlag, isVisible);
     }
   }
@@ -158,7 +158,7 @@ public abstract class AtomShape extends Shape {
     if (bsColixSet == null)
       bsColixSet = new BitSet();
     colixes[atomIndex] = colix = setColix(colix, paletteID, atomIndex);
-    bsColixSet.set(atomIndex, colix != Colix.INHERIT_ALL);
+    bsColixSet.setBitTo(atomIndex, colix != Colix.INHERIT_ALL);
     paletteIDs[atomIndex] = paletteID;
   }
 

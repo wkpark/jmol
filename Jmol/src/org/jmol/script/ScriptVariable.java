@@ -872,7 +872,7 @@ public class ScriptVariable extends Token {
     case bitset:
       if (isInputSelected) {
         if (i1 > 1)
-          bs.clear();
+          bs.clearAll();
         break;
       }
       int n = 0;

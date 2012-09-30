@@ -110,7 +110,7 @@ public class Normix {
       champion = 11;
       t = z - (-1);
     }
-    bsConsidered.clear();
+    bsConsidered.clearAll();
     bsConsidered.set(champion);
     getVertexVectors();
     getNeighborVertexArrays();

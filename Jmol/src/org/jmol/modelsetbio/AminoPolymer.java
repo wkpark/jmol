@@ -804,7 +804,7 @@ public class AminoPolymer extends AlphaPolymer {
           continue;
 
         bsStart.set(i0);         //   >
-        bsNNN.set(i0 + 1, i);    //    nnnn
+        bsNNN.setBits(i0 + 1, i);    //    nnnn
         bsStop.set(i);           //        <
 
         // a run of HHHH or GGG or IIIII is made if: 
@@ -826,7 +826,7 @@ public class AminoPolymer extends AlphaPolymer {
         boolean isClear = (ipt < 0 || ipt >= i);
         boolean addH = false;
         if (i0 > 0 && bsStart.get(i0 - 1) && (pitch == 4 || isClear)) {
-          bsHelix.set(i0, i);
+          bsHelix.setBits(i0, i);
           if (!isClear)
             warning += "  WARNING! Bridge to helix at " + monomers[ipt];
           addH = true;
@@ -1031,8 +1031,8 @@ public class AminoPolymer extends AlphaPolymer {
         bsB.set(ladder[0][0]);
         bsB.set(ladder[1][0]);
       } else {
-        bsEEE.set(ladder[0][0], ladder[0][1] + 1);
-        bsEEE.set(ladder[1][0], ladder[1][1] + 1);
+        bsEEE.setBits(ladder[0][0], ladder[0][1] + 1);
+        bsEEE.setBits(ladder[1][0], ladder[1][1] + 1);
       }
     }
     // add Jmol structures and set sheet labels to "E"
@@ -1043,8 +1043,8 @@ public class AminoPolymer extends AlphaPolymer {
     for (int i = bioPolymers.length; --i >= 0;) {
       if (!(bioPolymers[i] instanceof AminoPolymer))
         continue;
-      bsSheet.clear();
-      bsBridge.clear();
+      bsSheet.clearAll();
+      bsBridge.clearAll();
       AminoPolymer ap = (AminoPolymer) bioPolymers[i];
       for (int iStart = 0; iStart < ap.monomerCount; ) {
         int index = ap.monomers[iStart].leadAtomIndex;
@@ -1053,7 +1053,7 @@ public class AminoPolymer extends AlphaPolymer {
           while (iEnd < ap.monomerCount
               && bsEEE.get(ap.monomers[iEnd].leadAtomIndex))
             iEnd++;
-          bsSheet.set(iStart, iEnd);
+          bsSheet.setBits(iStart, iEnd);
           iStart = iEnd;
         } else {
           if (bsB.get(index))

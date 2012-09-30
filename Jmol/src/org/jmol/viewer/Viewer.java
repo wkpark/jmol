@@ -10444,7 +10444,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           index2 = atoms[index2].getGroup().lastAtomIndex;
         }
         bsSelected = new BitSet();
-        bsSelected.set(index1, index2 + 1);
+        bsSelected.setBits(index1, index2 + 1);
       }
     }
     String comment = (addComment ? getJmolVersion() + " "

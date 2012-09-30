@@ -55,7 +55,7 @@ class UnitCell extends SimpleUnitCell {
     
   }
   
-  static UnitCell newP(Tuple3f[] points, @SuppressWarnings("unused") boolean ignored) {
+  static UnitCell newP(Tuple3f[] points) {
     UnitCell c = new UnitCell();
     float[] parameters = new float[] { -1, 0, 0, 0, 0, 0, points[1].x,
         points[1].y, points[1].z, points[2].x, points[2].y, points[2].z,

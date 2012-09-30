@@ -211,7 +211,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
       int[][] polygonIndexes = mesh.polygonIndexes;
       BitSet bsPoints = BitSetUtil.newBitSet(mesh.vertexCount);
       if (haveBsDisplay) {
-        bsPoints.set(0, mesh.vertexCount);
+        bsPoints.setBits(0, mesh.vertexCount);
         bsPoints.andNot(mesh.bsDisplay);
       }
       for (int i = mesh.polygonCount; --i >= 0;) {
@@ -246,7 +246,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
     if (generateSet) {
       if (frontOnly && fill)
         frontOnly = false;
-      bsPolygons.clear();
+      bsPolygons.clearAll();
     }
     for (int i = mesh.polygonCount; --i >= 0;) {
       if (!isPolygonDisplayable(i))

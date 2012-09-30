@@ -485,12 +485,12 @@ public class AtomSetCollection {
   public void removeAtomSet(int imodel) {
     if (bsAtoms == null) {
       bsAtoms = new BitSet();
-      bsAtoms.set(0, atomCount);
+      bsAtoms.setBits(0, atomCount);
     }
     int i0 = atomSetAtomIndexes[imodel];
     int nAtoms = atomSetAtomCounts[imodel];
     int i1 = i0 + nAtoms;
-    bsAtoms.clear(i0, i1);
+    bsAtoms.clearBits(i0, i1);
     for (int i = i1; i < atomCount; i++)
       atoms[i].atomSetIndex--;
     for (int i = imodel + 1; i < atomSetCount; i++) {

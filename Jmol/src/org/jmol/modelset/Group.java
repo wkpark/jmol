@@ -366,7 +366,7 @@ public class Group {
   }
   
   public int selectAtoms(BitSet bs) {
-    bs.set(firstAtomIndex, lastAtomIndex + 1);
+    bs.setBits(firstAtomIndex, lastAtomIndex + 1);
     if (bsAdded != null)
       bs.or(bsAdded);
     return lastAtomIndex;

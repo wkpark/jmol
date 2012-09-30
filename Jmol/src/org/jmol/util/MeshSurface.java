@@ -304,7 +304,7 @@ public class MeshSurface {
         vertexCount = vertexCount0;
         polygonCount0 = vertexCount0 = 0;
         normixCount = (isTriangleSet ? polygonCount : vertexCount);
-        bsSlabDisplay.set(0, (polygonCount == 0 ? vertexCount : polygonCount));
+        bsSlabDisplay.setBits(0, (polygonCount == 0 ? vertexCount : polygonCount));
         slabOptions = new StringBuffer(meshType + " slab none");
         bsSlabGhost = null;
         slabMeshType = Token.none;
@@ -328,9 +328,9 @@ public class MeshSurface {
         return false;
     } else if (isMerged) {
       if (polygonCount == 0)
-        bsSlabDisplay.set(mergeVertexCount0, vertexCount);
+        bsSlabDisplay.setBits(mergeVertexCount0, vertexCount);
       else
-        bsSlabDisplay.set(mergePolygonCount0, polygonCount);
+        bsSlabDisplay.setBits(mergePolygonCount0, polygonCount);
     }
 
     if (isGhost) {

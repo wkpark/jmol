@@ -220,8 +220,8 @@ public final class Resolver implements JmolBioResolver {
     }
     getBondInfo(adapter, group3, model);
     modelSet.getModels()[modelSet.atoms[iFirst].modelIndex].isPdbWithMultipleBonds = true;
-    bsAtomsForHs.set(iFirst, atomCount);
-    bsAddedHydrogens.set(atomCount, atomCount + nH);
+    bsAtomsForHs.setBits(iFirst, atomCount);
+    bsAddedHydrogens.setBits(atomCount, atomCount + nH);
     boolean isHetero = modelSet.atoms[iFirst].isHetero();
     for (int i = 0; i < nH; i++)
       modelSet.addAtom(modelSet.atoms[iFirst].modelIndex, modelSet.atoms[iFirst].getGroup(), (short) 1, "H", 0,

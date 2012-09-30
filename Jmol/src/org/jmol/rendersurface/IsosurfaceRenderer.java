@@ -351,7 +351,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     if (generateSet) {
       if (frontOnly && fill)
         frontOnly = false;
-      bsPolygons.clear();
+      bsPolygons.clearAll();
     }
     if (exportType == GData.EXPORT_CARTESIAN) {
       frontOnly = false;

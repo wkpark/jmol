@@ -94,7 +94,7 @@ public class Ellipsoids extends AtomShape {
       boolean isVisible = (madset[0] != null && madset[0].length > i && madset[0][i] > 0
           || madset[1] != null && madset[1].length > i && madset[1][i] > 0
           || madset[2] != null && madset[2].length > i && madset[2][i] > 0);
-      bsSizeSet.set(i, isVisible);
+      bsSizeSet.setBitTo(i, isVisible);
       atoms[i].setShapeVisibility(myVisibilityFlag, isVisible);
     }
   }

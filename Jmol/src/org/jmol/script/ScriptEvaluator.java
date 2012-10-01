@@ -3299,7 +3299,7 @@ public class ScriptEvaluator {
                                 Object value) {
     if (isSyntaxCheck)
       return;
-    System.out.println("addshapeprop " + key + " " + value);
+    //System.out.println("addshapeprop " + key + " " + value);
     propertyList.add(new Object[] { key, value });
   }
 

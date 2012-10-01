@@ -349,6 +349,8 @@ public abstract class SurfaceReader implements VertexDataServer {
 
   boolean createIsosurface(boolean justForPlane) {
     resetIsosurface();
+    if (params.showTiming)
+      Logger.startTimer("isosurface creation");
     jvxlData.cutoff = Float.NaN;
     if (!readAndSetVolumeParameters(justForPlane))
       return false;
@@ -440,6 +442,8 @@ public abstract class SurfaceReader implements VertexDataServer {
       if (meshDataServer != null)
         meshDataServer.notifySurfaceMappingCompleted();
     }
+    if (params.showTiming)
+      Logger.checkTimer("isosurface creation", false);
     return true;
   }
 

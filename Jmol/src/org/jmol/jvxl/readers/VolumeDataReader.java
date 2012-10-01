@@ -58,8 +58,11 @@ class VolumeDataReader extends SurfaceReader {
   protected AtomDataServer atomDataServer;
   protected boolean useOriginStepsPoints;
 
-  VolumeDataReader(SurfaceGenerator sg) {
-    super(sg);
+  VolumeDataReader() {}
+  
+  @Override
+  void init(SurfaceGenerator sg) {
+    super.init(sg);
     useOriginStepsPoints = (params.origin != null && params.points != null && params.steps != null);
     dataType = params.dataType;
     precalculateVoxelData = true;
@@ -235,7 +238,6 @@ class VolumeDataReader extends SurfaceReader {
   @Override
   protected void readSurfaceData(boolean isMapData) throws Exception {
     //precalculated -- just creating the JVXL equivalent
-    Logger.startTimer();
     if (isProgressive && !isMapData) {
       nDataPoints = volumeData.setVoxelCounts(nPointsX, nPointsY, nPointsZ);
       voxelData = null;

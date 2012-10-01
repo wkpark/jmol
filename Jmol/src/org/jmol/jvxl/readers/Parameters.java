@@ -260,6 +260,7 @@ public class Parameters {
     resolution = Float.MAX_VALUE;
     scale = Float.NaN;
     scale3d = 0;
+    showTiming = false;
     sigma = Float.NaN;
     slabInfo = null;
     solventExtendedAtomRadius = 0;
@@ -815,6 +816,7 @@ public class Parameters {
   public ContactPair contactPair;
   public Point3f mapLattice;
   public boolean isMapped;
+  public boolean showTiming;
   
   void setMapRanges(SurfaceReader surfaceReader, boolean haveData) {
     if (!colorDensity)

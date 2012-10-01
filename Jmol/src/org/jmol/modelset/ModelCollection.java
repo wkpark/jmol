@@ -1928,15 +1928,16 @@ abstract public class ModelCollection extends BondCollection {
   //////////// iterators //////////
 
   //private final static boolean MIX_BSPT_ORDER = false;
-  private final static boolean showRebondTimes = true;
+  boolean showRebondTimes = true;
 
   protected void initializeBspf() {
     if (bspf != null && bspf.isInitialized())
       return;
-    if (showRebondTimes && Logger.debugging)
-      Logger.startTimer();
+    if (showRebondTimes)
+      Logger.startTimer("build bspf");
     Bspf bspf = new Bspf(3);
-    Logger.debug("sequential bspt order");
+    if (Logger.debugging)
+      Logger.debug("sequential bspt order");
     BitSet bsNew = BitSetUtil.newBitSet(modelCount);
     for (int i = atomCount; --i >= 0;) {
       // important that we go backward here, because we are going to 
@@ -1948,8 +1949,8 @@ abstract public class ModelCollection extends BondCollection {
       }
     }
     //      }
-    if (showRebondTimes && Logger.debugging) {
-      Logger.checkTimer("Time to build bspf");
+    if (showRebondTimes) {
+      Logger.checkTimer("build bspf", false);
       bspf.stats();
       //        bspf.dump();
     }
@@ -2542,7 +2543,7 @@ abstract public class ModelCollection extends BondCollection {
     float minBondDistance2 = minBondDistance * minBondDistance;
     int nNew = 0;
     if (showRebondTimes)// && Logger.debugging)
-      Logger.startTimer();
+      Logger.startTimer("autobond");
     /*
      * miguel 2006 04 02 note that the way that these loops + iterators are
      * constructed, everything assumes that all possible pairs of atoms are
@@ -2614,8 +2615,8 @@ abstract public class ModelCollection extends BondCollection {
       }
       iter.release();
     }
-    if (showRebondTimes)//&& Logger.debugging)
-      Logger.checkTimer("Time to autoBond");
+    if (showRebondTimes)
+      Logger.checkTimer("autoBond", false);
     return nNew;
   }
 
@@ -2633,8 +2634,6 @@ abstract public class ModelCollection extends BondCollection {
     float minBondDistance2 = minBondDistance * minBondDistance;
     int nNew = 0;
     initializeBspf();
-    if (showRebondTimes && Logger.debugging)
-      Logger.startTimer();
     /*
      * miguel 2006 04 02
      * note that the way that these loops + iterators are constructed,
@@ -2700,8 +2699,6 @@ abstract public class ModelCollection extends BondCollection {
       }
       iter.release();
     }
-    if (showRebondTimes && Logger.debugging)
-      Logger.checkTimer("Time to autoBond");
     return nNew;
   }
 
@@ -2790,7 +2787,7 @@ abstract public class ModelCollection extends BondCollection {
     Vector3f v1 = new Vector3f();
     Vector3f v2 = new Vector3f();
     if (showRebondTimes && Logger.debugging)
-      Logger.startTimer();
+      Logger.startTimer("hbond");
     Point3f C = null;
     Point3f D = null;
     AtomIndexIterator iter = getSelectedAtomIterator(bsB, false, false, false,
@@ -2873,8 +2870,8 @@ abstract public class ModelCollection extends BondCollection {
     iter.release();
     shapeManager.setShapeSizeBs(JmolConstants.SHAPE_STICKS, Integer.MIN_VALUE,
         null, bsHBonds);
-    if (showRebondTimes && Logger.debugging)
-      Logger.checkTimer("Time to hbond");
+    if (showRebondTimes)
+      Logger.checkTimer("hbond", false);
     return (haveHAtoms ? nNew : -nNew);
   }
 

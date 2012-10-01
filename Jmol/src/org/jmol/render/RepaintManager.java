@@ -182,13 +182,8 @@ public class RepaintManager implements JmolRepaintInterface {
 
   /////////// actual rendering ///////////
   
-  private boolean logTime;
-  
-  
   public void render(GData gdata, ModelSet modelSet, boolean isFirstPass, int[] minMax) {
-    logTime = false;//viewer.getTestFlag(2);
-    if (logTime)
-      Logger.startTimer();
+    boolean logTime = viewer.getShowTiming();
     try {
       JmolRendererInterface g3d = (JmolRendererInterface) gdata;
       g3d.renderBackground(null);
@@ -202,13 +197,19 @@ public class RepaintManager implements JmolRepaintInterface {
       }
       if (renderers == null)
         renderers = new ShapeRenderer[JmolConstants.SHAPE_MAX];
+      String msg = null;
       for (int i = 0; i < JmolConstants.SHAPE_MAX && g3d.currentlyRendering(); ++i) {
         Shape shape = shapeManager.getShape(i);
         if (shape == null)
           continue;
+        
+        if (logTime) {
+          msg = "rendering " + JmolConstants.getShapeClassName(i, false);
+          Logger.startTimer(msg);
+        }
         getRenderer(i).render(g3d, modelSet, shape);
         if (logTime)
-          Logger.checkTimer("render time " + JmolConstants.getShapeClassName(i, false));
+          Logger.checkTimer(msg, false);
       }
     } catch (Exception e) {
       e.printStackTrace();
@@ -220,6 +221,7 @@ public class RepaintManager implements JmolRepaintInterface {
   public String renderExport(String type, GData gdata, ModelSet modelSet,
                       String fileName) {
     boolean isOK;
+    boolean logTime = viewer.getShowTiming();
     viewer.finalizeTransformParameters();
     shapeManager.finalizeAtoms(null, null);
     shapeManager.transformAtoms();
@@ -232,10 +234,18 @@ public class RepaintManager implements JmolRepaintInterface {
     g3dExport.renderBackground(g3dExport);
     if (renderers == null)
       renderers = new ShapeRenderer[JmolConstants.SHAPE_MAX];
+    String msg = null;
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
       Shape shape = shapeManager.getShape(i);
-      if (shape != null)
+      if (shape == null)
+        continue;
+        if (logTime) {
+          msg = "rendering " + JmolConstants.getShapeClassName(i, false);
+          Logger.startTimer(msg);
+        }
         getRenderer(i).render(g3dExport, modelSet, shape);
+        if (logTime)
+          Logger.checkTimer(msg, false);
     }
     return g3dExport.finalizeOutput();
   }

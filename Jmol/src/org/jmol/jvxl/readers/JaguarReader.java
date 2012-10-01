@@ -40,8 +40,11 @@ import org.jmol.util.Parser;
  */
 class JaguarReader extends VolumeFileReader {
 
-  JaguarReader(SurfaceGenerator sg, BufferedReader br) {
-    super(sg, br);
+  JaguarReader(){}
+  
+  @Override
+  void init2(SurfaceGenerator sg, BufferedReader br) {
+    super.init2(sg, br);
     nSurfaces = 1;
     // ? params.insideOut = !params.insideOut;
   }

@@ -42,20 +42,23 @@ class IsoShapeReader extends VolumeDataReader {
   private int monteCarloCount;
   private Random random;
 
-  IsoShapeReader(SurfaceGenerator sg, float radius) {
-    super(sg);
-    sphere_radiusAngstroms = radius;
-  }
-
-  IsoShapeReader(SurfaceGenerator sg, int n, int l, int m, float z_eff,
-      int monteCarloCount) {
-    super(sg);
-    psi_n = n;
-    psi_l = l;
-    psi_m = m;
-    psi_Znuc = z_eff;
-    sphere_radiusAngstroms = 0;
-    this.monteCarloCount = monteCarloCount;
+  IsoShapeReader() {}
+  
+  @Override
+  void init(SurfaceGenerator sg) {
+    super.init(sg);
+    Object o = sg.getReaderData();
+    if (o instanceof Float) {
+      sphere_radiusAngstroms = ((Float) o).floatValue();      
+    } else {
+      sphere_radiusAngstroms = 0;
+      float[] data = (float[]) o;
+      psi_n = (int) data[0];
+      psi_l = (int) data[1];
+      psi_m = (int) data[2];
+      psi_Znuc = data[3];//z_eff;
+      monteCarloCount = (int) data[4];
+    }
   }
 
   private boolean allowNegative = true;

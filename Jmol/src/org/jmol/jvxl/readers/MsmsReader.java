@@ -38,9 +38,12 @@ import org.jmol.util.TextFormat;
 class MsmsReader extends PmeshReader {
 
   private String fileName;
-  MsmsReader(SurfaceGenerator sg, String fileName, BufferedReader br) {
-    super(sg, br);
-    this.fileName = fileName;
+  MsmsReader(){}
+  
+  @Override
+  void init2(SurfaceGenerator sg, BufferedReader br) {
+    super.init2(sg, br);
+    fileName = (String)( (Object[]) sg.getReaderData())[0];
     type = "msms";
     onePerLine = true;
     fixedCount = 3;

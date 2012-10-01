@@ -37,8 +37,11 @@ abstract class MapFileReader extends VolumeFileReader {
   protected float dmin = Float.MAX_VALUE;
   protected float dmax, dmean, drange;
 
-  MapFileReader(SurfaceGenerator sg, BufferedReader br) {
-    super(sg, br);
+  MapFileReader(){}
+  
+  @Override
+  void init2(SurfaceGenerator sg, BufferedReader br) {
+    super.init2(sg, br);
     isAngstroms = true;
     adjustment = sg.getParams().center;
     if (adjustment.x == Float.MAX_VALUE)

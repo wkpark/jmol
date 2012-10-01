@@ -25,8 +25,11 @@ package org.jmol.jvxl.readers;
 
 class IsoPlaneReader extends AtomDataReader {
 
-  IsoPlaneReader(SurfaceGenerator sg) {
-    super(sg);
+  IsoPlaneReader(){}
+  
+  @Override
+  void init(SurfaceGenerator sg) {
+    super.init(sg);
     precalculateVoxelData = false;
   }
 

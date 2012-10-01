@@ -60,13 +60,11 @@ class KinemageReader extends PmeshReader {
   private int pointType;
   private String findString;
 
-  /**
-   * 
-   * @param sg
-   * @param br
-   */
-  KinemageReader(SurfaceGenerator sg, BufferedReader br) {
-    super(sg, br);
+  KinemageReader(){}
+  
+  @Override
+  void init2(SurfaceGenerator sg, BufferedReader br) {
+    super.init2(sg, br);
     type = "kinemage";
     setHeader();
   }

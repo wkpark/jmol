@@ -40,8 +40,11 @@ public class JvxlReader extends JvxlXmlReader {
   //                 simply create a BitSet of length nx * ny * nz. This saves memory hugely.
   // 2.1 adds JvxlXmlReader
   
-  JvxlReader(SurfaceGenerator sg, BufferedReader br) {
-    super(sg, br);
+  JvxlReader(){}
+  
+  @Override
+  void init2(SurfaceGenerator sg, BufferedReader br) {
+    super.init2(sg, br);
     isXmlFile = false;
     JVXL_VERSION = "2.0";
   }

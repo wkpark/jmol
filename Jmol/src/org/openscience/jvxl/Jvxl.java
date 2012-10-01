@@ -263,7 +263,7 @@ public class Jvxl {
 
     // compose the surface
 
-    SurfaceGenerator sg = new SurfaceGenerator();
+    SurfaceGenerator sg = new SurfaceGenerator(null, null, null, null);
 
     // input file
 

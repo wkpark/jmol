@@ -25,6 +25,9 @@
 
 package org.jmol.util;
 
+import java.util.Hashtable;
+import java.util.Map;
+
 
 /**
  * Logger mechanism.
@@ -288,15 +291,24 @@ public final class Logger {
     }
   }
 
-  static long startTime;
-  public static void startTimer() {
-    startTime = System.currentTimeMillis();  
+  static Map<String,Long>htTiming = new Hashtable<String, Long>();
+  public static void startTimer(String msg) {
+    if (msg == null)
+      return;
+    htTiming.put(msg, Long.valueOf(System.currentTimeMillis()));
   }
 
-  public static long checkTimer(String msg) {
-    long time = System.currentTimeMillis() - startTime;
-    if (msg != null)
-      info(msg + ": " + (time) + " ms");
+  public static long checkTimer(String msg, boolean andReset) {
+    if (msg == null)
+      return -1;
+    Long t = htTiming.get(msg);
+    if (t == null)
+      return -1;
+    long time = System.currentTimeMillis() - t.longValue();
+    if (!msg.startsWith("("))
+      info("Time for " + msg + ": " + (time) + " ms");
+    if (andReset)
+      startTimer(msg);
     return time;
   }
   

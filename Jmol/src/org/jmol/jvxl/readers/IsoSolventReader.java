@@ -46,8 +46,11 @@ import org.jmol.jvxl.data.MeshData;
 
 class IsoSolventReader extends AtomDataReader {
 
-  IsoSolventReader(SurfaceGenerator sg) {
-    super(sg);
+  IsoSolventReader(){}
+  
+  @Override
+  void init(SurfaceGenerator sg) {
+    super.init(sg);
   }
 
   ///// solvent-accessible, solvent-excluded surface //////
@@ -494,7 +497,6 @@ class IsoSolventReader extends AtomDataReader {
     }
     if (params.thePlane != null && params.slabInfo == null)
       params.addSlabInfo(MeshSurface.getSlabWithinRange(-100, 0));
-    Logger.checkTimer("solvent surface time");
   }
 
   /////////////// calculation methods //////////////

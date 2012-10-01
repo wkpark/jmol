@@ -30,8 +30,11 @@ import org.jmol.util.Parser;
 
 class CubeReader extends VolumeFileReader {
 
-  CubeReader(SurfaceGenerator sg, BufferedReader br) {
-    super(sg, br);
+  CubeReader(){}
+  
+  @Override
+  void init2(SurfaceGenerator sg, BufferedReader br) {
+    super.init2(sg, br);
   }
   
   @Override

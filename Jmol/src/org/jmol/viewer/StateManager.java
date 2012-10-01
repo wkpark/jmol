@@ -566,7 +566,7 @@ public class StateManager {
         + ";loglevel;logfile;loggestures;logcommands;measurestylechime"
         + ";loadformat;loadligandformat;smilesurlformat;pubchemformat;nihresolverformat;edsurlformat;edsurlcutoff;multiprocessor;navigationmode;"
         + ";pathforallfiles;perspectivedepth;phongexponent;perspectivemodel;preservestate;refreshing;repaintwaitms;rotationradius"
-        + ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showunitcell"
+        + ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showtiming;showunitcell"
         + ";slabenabled;slab;slabrange;depth;zshade;zshadepower;specular;specularexponent;specularpercent;specularpower;stateversion"
         + ";statusreporting;stereo;stereostate;vibrationperiod"
         + ";unitcellcolor;visualrange;windowcentered;zerobasedxyzrasmol;zoomenabled;mousedragfactor;mousewheelfactor"
@@ -932,6 +932,7 @@ public class StateManager {
       setParameterValue("showMultipleBonds", showMultipleBonds);
       setParameterValue("showNavigationPointAlways", showNavigationPointAlways);
       setParameterValue("showScript", scriptDelay);
+      setParameterValue("showtiming", showTiming);
       setParameterValue("slabByMolecule", slabByMolecule);
       setParameterValue("slabByAtom", slabByAtom);
       setParameterValue("smartAromatic", smartAromatic);
@@ -1159,6 +1160,7 @@ public class StateManager {
     boolean showHiddenSelectionHalos = false;
     boolean showKeyStrokes = true;
     boolean showMeasurements = true;
+    boolean showTiming = false;
     boolean zoomLarge = true; //false would be like Chime
     String backgroundImageFileName;
     

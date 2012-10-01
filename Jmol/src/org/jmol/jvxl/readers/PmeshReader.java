@@ -98,18 +98,20 @@ class PmeshReader extends PolygonFileReader {
   protected boolean onePerLine;
   protected int vertexBase;
   
-  PmeshReader(SurfaceGenerator sg, BufferedReader br) {
-    super(sg, br);
-  }
-
-  PmeshReader(SurfaceGenerator sg, String fileName, BufferedReader br) {
-    super(sg, br);
+  PmeshReader(){}
+  
+  @Override
+  void init2(SurfaceGenerator sg, BufferedReader br) {
+    super.init2(sg, br);
+    String fileName = (String) ((Object[])sg.getReaderData())[0];
+    if (fileName == null)
+      return;
     type = "pmesh";
     setHeader();
     isBinary = checkBinary(fileName);
     isClosedFace = !isBinary;
   }
-  
+
   protected void setHeader() {
     jvxlFileHeaderBuffer.append(type
         + " file format\nvertices and triangles only\n");

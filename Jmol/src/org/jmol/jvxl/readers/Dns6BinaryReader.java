@@ -43,9 +43,15 @@ class Dsn6BinaryReader extends MapFileReader {
    */
 
   
-  Dsn6BinaryReader(SurfaceGenerator sg, String fileName, String data) {
-    super(sg, null);
+  Dsn6BinaryReader(){}
+  
+  @Override
+  void init(SurfaceGenerator sg) {
+    super.init2(sg, null);
     binarydoc = new BinaryDocument();
+    Object[] o2 = (Object[]) sg.getReaderData();
+    String fileName = (String) o2[0];
+    String data = (String) o2[1];
     if (data == null)
       binarydoc.setStream(sg.getAtomDataServer().getBufferedInputStream(fileName), true);
     else 

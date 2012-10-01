@@ -2104,7 +2104,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (loadScript == null)
         loadScript = new StringBuffer("load /*file*/$FILENAME$");
 
-      atomSetCollection = getAtomSetCollection(fileName, isAppend, htParams,
+      atomSetCollection = openFile(fileName, isAppend, htParams,
           loadScript);
 
     } else if (reader instanceof Reader) {
@@ -2239,7 +2239,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    *        only necessary for string reading
    * @return an AtomSetCollection or a String (error)
    */
-  private Object getAtomSetCollection(String fileName, boolean isAppend,
+  private Object openFile(String fileName, boolean isAppend,
                                       Map<String, Object> htParams,
                                       StringBuffer loadScript) {
     if (fileName == null)
@@ -2249,7 +2249,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return null;
     }
     Object atomSetCollection;
-    Logger.startTimer();
+    String msg = "openFile(" + fileName + ")";
+    Logger.startTimer(msg);
     htParams = setLoadParameters(htParams, isAppend);
     boolean isLoadVariable = fileName.startsWith("@");
     boolean haveFileData = (htParams.containsKey("fileData"));
@@ -2291,7 +2292,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       atomSetCollection = fileManager.createAtomSetCollectionFromFile(fileName,
           htParams, isAppend);
     }
-    Logger.checkTimer("openFile(" + fileName + ")");
+    Logger.checkTimer(msg, false);
     return atomSetCollection;
   }
 
@@ -6611,6 +6612,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private void setBooleanPropertyTok(String key, int tok, boolean value) {
     boolean doRepaint = true;
     switch (tok) {
+    case Token.showtiming:
+      // 12.3.6
+      global.showTiming = value;
+      break;
     case Token.vectorsymmetry:
       // 12.3.2
       global.vectorSymmetry = value;
@@ -7304,6 +7309,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.solventOn;
   }
 
+  public boolean getShowTiming() {
+    return global.showTiming;
+  }
+  
   public boolean getTestFlag(int i) {
     switch (i) {
     case 1:

@@ -35,20 +35,24 @@ abstract class SurfaceFileReader extends SurfaceReader {
   protected BufferedReader br;
   protected BinaryDocument binarydoc;
   protected OutputStream os;
- 
-  SurfaceFileReader(SurfaceGenerator sg, BufferedReader br) {
-    super(sg);
-    this.br = br; 
+
+  SurfaceFileReader() {
   }
-  
+
+  @Override
+  void init2(SurfaceGenerator sg, BufferedReader br) {
+    init(sg);
+    this.br = br;
+  }
+
   @Override
   protected void setOutputStream(OutputStream os) {
     if (binarydoc == null)
-      this.os = os; 
+      this.os = os;
     else
       sg.setOutputStream(binarydoc, os);
   }
-  
+
   @Override
   protected void closeReader() {
     if (br != null)
@@ -67,16 +71,16 @@ abstract class SurfaceFileReader extends SurfaceReader {
     if (binarydoc != null)
       binarydoc.close();
   }
-  
+
   @Override
   void discardTempData(boolean discardAll) {
     closeReader();
     super.discardTempData(discardAll);
   }
-     
+
   protected String line;
   protected int[] next = new int[1];
-  
+
   protected String[] getTokens() {
     return Parser.getTokensAt(line, 0);
   }
@@ -93,16 +97,16 @@ abstract class SurfaceFileReader extends SurfaceReader {
   protected int parseInt() {
     return Parser.parseIntNext(line, next);
   }
-  
+
   protected int parseIntStr(String s) {
     next[0] = 0;
     return Parser.parseIntNext(s, next);
   }
-  
+
   protected int parseIntNext(String s) {
     return Parser.parseIntNext(s, next);
   }
-    
+
   protected float[] parseFloatArrayStr(String s) {
     next[0] = 0;
     return Parser.parseFloatArrayNext(s, next);
@@ -134,6 +138,5 @@ abstract class SurfaceFileReader extends SurfaceReader {
       }
     }
     return line;
-  } 
+  }
 }
-

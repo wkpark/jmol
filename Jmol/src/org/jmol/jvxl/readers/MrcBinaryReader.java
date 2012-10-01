@@ -41,8 +41,15 @@ class MrcBinaryReader extends MapFileReader {
    */
 
   
-  MrcBinaryReader(SurfaceGenerator sg, String fileName) {
-    super(sg, null);
+  MrcBinaryReader() {}
+  
+  /**
+   * @param sg 
+   */
+  @Override
+  void init(SurfaceGenerator sg) {
+    String fileName = (String) sg.getReaderData();
+    super.init2(sg, null);
     binarydoc = new BinaryDocument();
     binarydoc.setStream(sg.getAtomDataServer().getBufferedInputStream(fileName), true);
     // data are HIGH on the inside and LOW on the outside

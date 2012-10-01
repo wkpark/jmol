@@ -47,8 +47,11 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   private int[] downsampleRemainders;
   private boolean preProcessPlanes;
 
-  VolumeFileReader(SurfaceGenerator sg, BufferedReader br) {
-    super(sg, br);
+  VolumeFileReader() {}
+  
+  @Override
+  void init2(SurfaceGenerator sg, BufferedReader br) {
+    super.init2(sg, br);
     canDownsample = isProgressive = isXLowToHigh = true;
     jvxlData.wasCubic = true;
     boundingBox = params.boundingBox;
@@ -179,7 +182,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   protected int downsampleFactor;
   private int nSkipX, nSkipY, nSkipZ;
 
-  protected void initializeSurfaceData() {
+  void initializeSurfaceData() {
     downsampleFactor = params.downsampleFactor;
     nSkipX = 0;
     nSkipY = 0;

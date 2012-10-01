@@ -85,7 +85,6 @@ public class Contact extends Isosurface {
   private final static RadiusData rdVDW =  new RadiusData(null, 1, EnumType.FACTOR, EnumVdw.AUTO);
   
   private void setContacts(Object[] value, boolean doEditCpList) {
-    Logger.startTimer();
     int contactType = ((Integer) value[0]).intValue();
     int displayType = ((Integer) value[1]).intValue();
     boolean colorDensity = ((Boolean) value[2]).booleanValue();
@@ -267,7 +266,6 @@ public class Contact extends Isosurface {
     }
     if (ce != null)
       thisMesh.remapColors(ce, translucentLevel);
-    Logger.checkTimer("contact");
   }
 
   /**

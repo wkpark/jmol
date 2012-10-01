@@ -25,8 +25,11 @@ package org.jmol.jvxl.readers;
 
 class IsoFxyzReader extends IsoFxyReader {
   
-  IsoFxyzReader(SurfaceGenerator sg) {
-    super(sg);
+  IsoFxyzReader(){}
+  
+  @Override
+  void init(SurfaceGenerator sg) {
+    super.init(sg);
   }
 
   private float[][][] data;

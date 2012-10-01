@@ -25,8 +25,11 @@ package org.jmol.jvxl.readers;
 
 class IsoMlpReader extends IsoMepReader {
 
-  IsoMlpReader(SurfaceGenerator sg) {
-    super(sg);
+  IsoMlpReader(){}
+  
+  @Override
+  void init(SurfaceGenerator sg) {
+    super.init(sg);
     type = "Mlp";
   }    
 }

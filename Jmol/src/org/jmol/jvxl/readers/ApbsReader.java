@@ -33,8 +33,11 @@ class ApbsReader extends VolumeFileReader {
    *  http://apbs.sourceforge.net
    */
   
-  ApbsReader(SurfaceGenerator sg, BufferedReader br) {
-    super(sg, br);
+  ApbsReader(){}
+  
+  @Override
+  void init2(SurfaceGenerator sg, BufferedReader br) {
+    super.init2(sg, br);
     // data are HIGH on the inside and LOW on the outside
     if (params.thePlane == null)
       params.insideOut = !params.insideOut;

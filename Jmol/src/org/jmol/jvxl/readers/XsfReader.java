@@ -31,8 +31,11 @@ import org.jmol.util.Logger;
 
 class XsfReader extends VolumeFileReader {
 
-  XsfReader(SurfaceGenerator sg, BufferedReader br) {
-    super(sg, br);
+  XsfReader(){}
+  
+  @Override
+  void init2(SurfaceGenerator sg, BufferedReader br) {
+    super.init2(sg, br);
   }
   
   private boolean isBXSF = false;

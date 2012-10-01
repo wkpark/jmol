@@ -30,8 +30,11 @@ class IsoMepReader extends AtomDataReader {
 
   protected String type;
 
-  IsoMepReader(SurfaceGenerator sg) {
-    super(sg);
+  IsoMepReader(){}
+  
+  @Override
+  void init(SurfaceGenerator sg) {
+    super.init(sg);
     type = "Mep";
   }
     

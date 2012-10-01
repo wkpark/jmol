@@ -53,8 +53,11 @@ class NffFileReader extends PolygonFileReader {
 
   protected int nPolygons;
   
-  NffFileReader(SurfaceGenerator sg, BufferedReader br) {
-    super(sg, br);
+  NffFileReader(){}
+  
+  @Override
+  void init2(SurfaceGenerator sg, BufferedReader br) {
+    super.init2(sg, br);
   }
 
   protected void setHeader() {

@@ -411,7 +411,7 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
     //delete redo items, since they will no longer be valid
     for (int i = undoPointer + 1; i <= MAXUNDO; i++)
       undoStack[i] = null;
-    Logger.startTimer();
+    Logger.startTimer("(console");
     try {
       undoStack[undoPointer] = (String) viewer.getProperty("readable",
         "stateInfo", null);
@@ -425,7 +425,7 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
     } catch (Error e) {
       dontsave = true;
     }
-    if (dontsave || Logger.checkTimer(null) > 2000) {
+    if (dontsave || Logger.checkTimer("(console", false) > 2000) {
       viewer.setBooleanProperty("undo", false);
       undoClear();
       Logger.info("command processing slow; undo disabled");

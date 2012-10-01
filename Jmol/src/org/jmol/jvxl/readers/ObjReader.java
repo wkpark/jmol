@@ -74,13 +74,11 @@ f 6806 6824 6807
 
 class ObjReader extends PmeshReader {
 
-  /**
-   * 
-   * @param sg
-   * @param br
-   */
-  ObjReader(SurfaceGenerator sg, BufferedReader br) {
-    super(sg, br);
+  ObjReader(){}
+  
+  @Override
+  void init2(SurfaceGenerator sg, BufferedReader br) {
+    super.init2(sg, br);
     type = "obj";
     setHeader();
   }

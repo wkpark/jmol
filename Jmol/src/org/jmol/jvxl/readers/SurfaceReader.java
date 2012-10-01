@@ -23,6 +23,7 @@
  */
 package org.jmol.jvxl.readers;
 
+import java.io.BufferedReader;
 import java.io.OutputStream;
 import javax.util.BitSet;
 import java.util.List;
@@ -224,7 +225,17 @@ public abstract class SurfaceReader implements VertexDataServer {
   protected float eccentricityScale;
   protected float eccentricityRatio;
 
-  SurfaceReader(SurfaceGenerator sg) {
+  SurfaceReader() {}
+  
+  /**
+   * @param surfaceGenerator  
+   * @param br 
+   */
+  void init2(SurfaceGenerator surfaceGenerator, BufferedReader br) {
+    // nothing here unless it's a file reader
+  }
+
+  void init(SurfaceGenerator sg) {
     this.sg = sg;
     params = sg.getParams();
     marchingSquares = sg.getMarchingSquares();
@@ -461,7 +472,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     marchingCubes = null;
   }
 
-  protected void initializeVolumetricData() {
+  void initializeVolumetricData() {
     nPointsX = voxelCounts[0];
     nPointsY = voxelCounts[1];
     nPointsZ = voxelCounts[2];
@@ -520,7 +531,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     return yzPlanes[x % 2];
   }
 
-  protected void initPlanes() {
+  void initPlanes() {
     yzCount = nPointsY * nPointsZ;
     if (!isQuiet)
       Logger.info("reading data progressively -- yzCount = " + yzCount);
@@ -1061,7 +1072,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     return 0;
   }
 
-  protected void initializeMapping() {
+  void initializeMapping() {
     // initiate any iterators
   }
 
@@ -1077,5 +1088,5 @@ public abstract class SurfaceReader implements VertexDataServer {
   public Vector3f[] getSpanningVectors() {
     return (volumeData == null ? null : volumeData.getSpanningVectors());
   }
-
 }
+

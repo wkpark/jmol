@@ -44,8 +44,11 @@ class IsoMOReader extends AtomDataReader {
 
   private Random random;
   
-  IsoMOReader(SurfaceGenerator sg) {
-    super(sg);
+  IsoMOReader(){}
+  
+  @Override
+  void init(SurfaceGenerator sg) {
+    super.init(sg);
     isNci = (params.qmOrbitalType == Parameters.QM_TYPE_NCI_PRO);
     if (isNci) {
       // NCI analysis org.jmol.quantum.NciCalculation

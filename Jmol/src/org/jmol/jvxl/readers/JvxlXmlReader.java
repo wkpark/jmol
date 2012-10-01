@@ -64,8 +64,12 @@ public class JvxlXmlReader extends VolumeFileReader {
   private XmlReader xr;
   
   protected boolean isXmlFile= true;
-  JvxlXmlReader(SurfaceGenerator sg, BufferedReader br) {
-    super(sg, br);
+  
+  JvxlXmlReader(){}
+  
+  @Override
+  void init2(SurfaceGenerator sg, BufferedReader br) {
+    super.init2(sg, br);
     jvxlData.wasJvxl = isJvxl = true;
     isXLowToHigh = false;
     xr = new XmlReader(br);

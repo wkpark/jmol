@@ -49,8 +49,11 @@ abstract class AtomDataReader extends VolumeDataReader {
   protected float maxDistance;
   protected ContactPair contactPair;
 
-  AtomDataReader(SurfaceGenerator sg) {
-    super(sg);
+  AtomDataReader(){}
+  
+  @Override
+  void init(SurfaceGenerator sg) {
+    super.init(sg);
     precalculateVoxelData = true;
     atomDataServer = sg.getAtomDataServer();
   }

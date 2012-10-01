@@ -30,8 +30,11 @@ import org.jmol.jvxl.data.JvxlCoder;
 
 class IsoFxyReader extends AtomDataReader {
   
-  IsoFxyReader(SurfaceGenerator sg) {
-    super(sg);
+  IsoFxyReader(){}
+  
+  @Override
+  void init(SurfaceGenerator sg) {
+    super.init(sg);
     isXLowToHigh = true;
     precalculateVoxelData = false;
     atomDataServer = sg.getAtomDataServer();

@@ -37,8 +37,11 @@ import org.jmol.util.Logger;
  */
 class EfvetReader extends PolygonFileReader {
 
-  EfvetReader(SurfaceGenerator sg, BufferedReader br) {
-    super(sg, br);
+  EfvetReader(){}
+  
+  @Override
+  void init2(SurfaceGenerator sg, BufferedReader br) {
+    super.init2(sg, br);
     jvxlFileHeaderBuffer.append("efvet file format\nvertices and triangles only\n");
     JvxlCoder.jvxlCreateHeaderWithoutTitleOrAtoms(volumeData, jvxlFileHeaderBuffer);
     hasColorData = true;

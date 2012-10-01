@@ -1023,6 +1023,7 @@ public class Token {
   public final static int showmultiplebonds              = booleanparam | 152;
   public final static int shownavigationpointalways      = booleanparam | 154;
 // see intparam  public final static int showscript                     = booleanparam | 156;
+  public final static int showtiming                     = booleanparam | 158;
   public final static int showunitcell                   = booleanparam | 160;
   public final static int slabbyatom                     = booleanparam | 162;
   public final static int slabbymolecule                 = booleanparam | 164;
@@ -2402,6 +2403,7 @@ public class Token {
       "showMultipleBonds",                        new Token(showmultiplebonds),
       "showNavigationPointAlways",                new Token(shownavigationpointalways),
 // see intparam      "showScript",                               new Token(showscript),
+      "showTiming",                               new Token(showtiming),
       "showUnitcell",                             new Token(showunitcell),
       "slabByAtom",                               new Token(slabbyatom),
       "slabByMolecule",                           new Token(slabbymolecule),

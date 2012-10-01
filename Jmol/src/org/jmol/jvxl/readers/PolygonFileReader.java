@@ -33,8 +33,11 @@ abstract class PolygonFileReader extends SurfaceFileReader {
   protected int nVertices;
   protected int nTriangles;
 
-  PolygonFileReader(SurfaceGenerator sg, BufferedReader br) {
-    super(sg, br);
+  PolygonFileReader(){}
+  
+  @Override
+  void init2(SurfaceGenerator sg, BufferedReader br) {
+    super.init2(sg, br);
     jvxlFileHeaderBuffer = new StringBuffer();
     jvxlFileHeaderBuffer.append("#created ").append(new Date()).append("\n");
     vertexDataOnly = true;

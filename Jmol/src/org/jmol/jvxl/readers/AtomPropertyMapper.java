@@ -37,9 +37,12 @@ class AtomPropertyMapper extends AtomDataReader {
   private MepCalculationInterface mepCalc;
   private String mepType;
   private int calcType = 0;
-  AtomPropertyMapper(SurfaceGenerator sg, String mepType) {
-    super(sg);
-    this.mepType = mepType;
+  AtomPropertyMapper(){}
+  
+  @Override
+  void init(SurfaceGenerator sg) {
+    super.init(sg);
+    mepType = (String) sg.getReaderData();
   }
   //// maps property data ////
   
@@ -111,8 +114,8 @@ class AtomPropertyMapper extends AtomDataReader {
 
   @Override
   protected void initializeMapping() {
-    if (Logger.debugging)
-      Logger.startTimer();
+    if (params.showTiming)
+      Logger.startTimer("property mapping");
     if (bsNearby != null)
       bsMySelected.or(bsNearby);
     iter = atomDataServer.getSelectedAtomIterator(bsMySelected, false, false, false);
@@ -122,8 +125,8 @@ class AtomPropertyMapper extends AtomDataReader {
   protected void finalizeMapping() {
     iter.release();
     iter = null;
-    if (Logger.debugging)
-      Logger.checkTimer("property mapping time");
+    if (params.showTiming)
+      Logger.checkTimer("property mapping", false);
   }
   
   //////////// meshData extensions ////////////

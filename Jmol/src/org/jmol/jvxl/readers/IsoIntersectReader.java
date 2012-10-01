@@ -28,8 +28,6 @@ import javax.util.BitSet;
 
 import javax.vecmath.Point3f;
 
-import org.jmol.util.Logger;
-
 class IsoIntersectReader extends AtomDataReader {
 
   private static final int TYPE_FUNCTION = 0;
@@ -38,8 +36,11 @@ class IsoIntersectReader extends AtomDataReader {
   private static final int TYPE_MAX = 3;
   private static final int TYPE_DIFF_PAIR = 4;
 
-  IsoIntersectReader(SurfaceGenerator sg) {
-    super(sg);
+  IsoIntersectReader(){}
+  
+  @Override
+  void init(SurfaceGenerator sg) {
+    super.init(sg);
   }
 
   ///// VDW intersection reader -- not mappable //////
@@ -52,7 +53,6 @@ class IsoIntersectReader extends AtomDataReader {
   
   @Override
   protected boolean readVolumeParameters(boolean isMapData) {
-    Logger.startTimer();
     setup(isMapData);
     if (isMapData)
       return false;
@@ -130,11 +130,6 @@ class IsoIntersectReader extends AtomDataReader {
     if (contactPair == null)
       unsetVoxelData();
     return thisPlane;
-  }
-
-  @Override
-  protected void postProcessVertices() {
-    Logger.checkTimer("solvent surface time");
   }
 
   /////////////// calculation methods //////////////

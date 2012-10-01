@@ -170,19 +170,8 @@ public class SurfaceGenerator {
   
   SurfaceReader surfaceReader;
 
-  public SurfaceGenerator() {
-    // for Jvxl.java
-    setup(null, null, null, null);
-  }
-
   public SurfaceGenerator(AtomDataServer atomDataServer, MeshDataServer meshDataServer,
                           MeshData meshData, JvxlData jvxlData) {
-    // for Jmol.java
-    setup(atomDataServer, meshDataServer, meshData, jvxlData);
-  }
-
-  private void setup(AtomDataServer atomDataServer, MeshDataServer meshDataServer,
-      MeshData meshData, JvxlData jvxlData) {
     this.atomDataServer = atomDataServer;
     this.meshDataServer = meshDataServer;
     params = new Parameters();
@@ -816,7 +805,8 @@ public class SurfaceGenerator {
     // these next four set the reader themselves.
     if ("sphere" == propertyName) {
       params.setSphere(((Float) value).floatValue());
-      surfaceReader = new IsoShapeReader(this, params.distance);
+      readerData = new Float(params.distance);
+      surfaceReader = newReader("IsoShapeReader");
       generateSurface();
       return true;
     }
@@ -828,35 +818,40 @@ public class SurfaceGenerator {
         params.setEllipsoid((float[]) value);
       else
         return true;
-      surfaceReader = new IsoShapeReader(this, params.distance);
+      readerData = new Float(params.distance);
+      surfaceReader = newReader("IsoShapeReader");
       generateSurface();
       return true;
     }
 
     if ("ellipsoid3" == propertyName) {
       params.setEllipsoid((float[]) value);
-      surfaceReader = new IsoShapeReader(this, params.distance);
+      readerData = new Float(params.distance);
+      surfaceReader = newReader("IsoShapeReader");
       generateSurface();
       return true;
     }
 
     if ("lp" == propertyName) {
       params.setLp((Point4f) value);
-      surfaceReader = new IsoShapeReader(this, 3, 2, 0, 15, 0);
+      readerData = new float[] {3, 2, 0, 15, 0};
+      surfaceReader = newReader("IsoShapeReader");
       generateSurface();
       return true;
     }
 
     if ("rad" == propertyName) {
       params.setRadical((Point4f) value);
-      surfaceReader = new IsoShapeReader(this, 3, 2, 0, 15, 0);
+      readerData = new float[] {3, 2, 0, 15, 0};
+      surfaceReader = newReader("IsoShapeReader");
       generateSurface();
       return true;
     }
 
     if ("lobe" == propertyName) {
       params.setLobe((Point4f) value);
-      surfaceReader = new IsoShapeReader(this, 3, 2, 0, 15, 0);
+      readerData = new float[] {3, 2, 0, 15, 0};
+      surfaceReader = newReader("IsoShapeReader");
       generateSurface();
       return true;
     }
@@ -866,8 +861,9 @@ public class SurfaceGenerator {
         isValid = false;
         return true;
       }
-      surfaceReader = new IsoShapeReader(this, params.psi_n, params.psi_l,
-          params.psi_m, params.psi_Znuc, params.psi_monteCarloCount);
+      readerData = new float[] {params.psi_n, params.psi_l,
+          params.psi_m, params.psi_Znuc, params.psi_monteCarloCount};
+      surfaceReader = newReader("IsoShape");
       processState();
       return true;
     }
@@ -1020,6 +1016,30 @@ public class SurfaceGenerator {
     return false;
   }
 
+  private SurfaceReader newReader(String name) {
+    SurfaceReader sr = (SurfaceReader) getInterface(name);
+    if (sr != null)
+      sr.init(this);
+    return sr;
+  }
+
+  private SurfaceReader newReaderBr(String name, BufferedReader br) {
+    SurfaceReader sr = (SurfaceReader) getInterface(name);
+    if (sr != null)
+      sr.init2(this, br);
+    return sr;
+  }
+  
+  private static Object getInterface(String name) {
+    try {
+      Class<?> x = Class.forName("org.jmol.jvxl.readers." + name);
+      return (x == null ? null : x.newInstance());
+    } catch (Exception e) {
+      Logger.error("Interface.java Error creating instance for " + name + ": \n" + e.getMessage());
+      return null;
+    }
+  }
+
   private void getSurfaceSets() {
     if (meshDataServer == null) {
       meshData.getSurfaceSet();
@@ -1041,44 +1061,42 @@ public class SurfaceGenerator {
   }
   
   private boolean setReader() {
+    readerData = null;
     if (surfaceReader != null)
       return !surfaceReader.vertexDataOnly;
     switch (params.dataType) {
     case Parameters.SURFACE_NOMAP:
-      surfaceReader = new IsoPlaneReader(this);
+      surfaceReader = newReader("IsoPlaneReader");
       break;
     case Parameters.SURFACE_PROPERTY:
-      surfaceReader = new AtomPropertyMapper(this, null);
+      surfaceReader = newReader("AtomPropertyMapper");
+      break;
+    case Parameters.SURFACE_MEP:
+    case Parameters.SURFACE_MLP:
+      readerData = (params.dataType == Parameters.SURFACE_MEP ? "Mep" : "Mlp");
+      if (params.state == Parameters.STATE_DATA_COLORED) {
+        surfaceReader = newReader("AtomPropertyMapper");
+      } else {
+        surfaceReader = newReader("Iso" + readerData + "Reader");
+      }
       break;
     case Parameters.SURFACE_INTERSECT:
-      surfaceReader = new IsoIntersectReader(this);
+      surfaceReader = newReader("IsoIntersectReader");
       break;
     case Parameters.SURFACE_SOLVENT:
     case Parameters.SURFACE_MOLECULAR:
     case Parameters.SURFACE_SASURFACE:
-      surfaceReader = new IsoSolventReader(this);
+      surfaceReader = newReader("IsoSolventReader");
       break;
     case Parameters.SURFACE_NCI:
     case Parameters.SURFACE_MOLECULARORBITAL:
-      surfaceReader = new IsoMOReader(this);
+      surfaceReader = newReader("IsoMOReader");
       break;
     case Parameters.SURFACE_FUNCTIONXY:
-      surfaceReader = new IsoFxyReader(this);
+      surfaceReader = newReader("IsoFxyReader");
       break;
     case Parameters.SURFACE_FUNCTIONXYZ:
-      surfaceReader = new IsoFxyzReader(this);
-      break;
-    case Parameters.SURFACE_MEP:
-      if (params.state == Parameters.STATE_DATA_COLORED)
-        surfaceReader = new AtomPropertyMapper(this, "Mep");
-      else
-        surfaceReader = new IsoMepReader(this);
-      break;
-    case Parameters.SURFACE_MLP:
-      if (params.state == Parameters.STATE_DATA_COLORED)
-        surfaceReader = new AtomPropertyMapper(this, "Mlp");
-      else
-        surfaceReader = new IsoMlpReader(this);
+      surfaceReader = newReader("IsoFxyzReader");
       break;
     }
     Logger.info("Using surface reader " + surfaceReader);
@@ -1212,11 +1230,11 @@ public class SurfaceGenerator {
     this.fileType = null;
     if (value instanceof VolumeData) {
       volumeData = (VolumeData) value;
-      return new VolumeDataReader(this);
+      return newReader("VolumeDataReader");
     }
     if (value instanceof Map) {
       volumeData = (VolumeData) ((Map<String, Object>) value).get("volumeData");
-      return new VolumeDataReader(this);
+      return newReader("VolumeDataReader");
     }
     String data = null;
     if (value instanceof String) {
@@ -1251,23 +1269,23 @@ public class SurfaceGenerator {
       fileType = "UNKNOWN";
     Logger.info("data file type was determined to be " + fileType);
     if (fileType.equals("Jvxl+"))
-      return new JvxlReader(this, br);
+      return newReaderBr("JvxlReader", br);
     if (fileType.equals("Jvxl"))
-      return new JvxlReader(this, br);
+      return newReaderBr("JvxlReader", br);
     if (fileType.equals("JvxlXML"))
-      return new JvxlXmlReader(this, br);
+      return newReaderBr("JvxlXmlReader", br);
     if (fileType.equals("Apbs"))
-      return new ApbsReader(this, br);
+      return newReaderBr("ApbsReader", br);
     if (fileType.equals("Cube"))
-      return new CubeReader(this, br);
+      return newReaderBr("CubeReader", br);
     if (fileType.equals("Jaguar"))
-      return new JaguarReader(this, br);
+      return newReaderBr("JaguarReader", br);
     if (fileType.equals("Xplor"))
-      return new XplorReader(this, br);
+      return newReaderBr("XplorReader", br);
     if (fileType.equals("Xsf"))
-      return new XsfReader(this, br);
+      return newReaderBr("XsfReader", br);
     if (fileType.equals("PltFormatted"))
-      return new PltFormattedReader(this, br);
+      return newReaderBr("PltFormattedReader", br);
     if (fileType.equals("MRC")) {
       try {
         br.close();
@@ -1275,8 +1293,10 @@ public class SurfaceGenerator {
         // ignore
       }
       br = null;
-      return new MrcBinaryReader(this, params.fileName);
+      readerData = params.fileName;
+      return newReader("MrcBinaryReader");
     }
+    readerData = new Object[] { params.fileName, data };
     if (fileType.equals("DSN6")) {
       try {
         br.close();
@@ -1284,24 +1304,32 @@ public class SurfaceGenerator {
         // ignore
       }
       br = null;
-      return new Dsn6BinaryReader(this, params.fileName, data);
+      return newReader("Dsn6BinaryReader");
     }
-    if (fileType.equals("Efvet"))
-      return new EfvetReader(this, br);
-    if (fileType.equals("Pmesh"))
-      return new PmeshReader(this, params.fileName, br);
-    if (fileType.equals("Obj"))
-      return new ObjReader(this, br);
-    if (fileType.equals("Msms"))
-      return new MsmsReader(this, params.fileName, br);
-    if (fileType.equals("Kinemage"))
-      return new KinemageReader(this, br);
-    if (fileType.equals("CastepDensity"))
-      return new CastepDensityReader(this, br);
-    if (fileType.equals("Nff"))
-      return new NffFileReader(this, br);
+    if (fileType.equals("Efvet")) {
+      return newReaderBr("EfvetReader", br);
+    }
+    if (fileType.equals("Pmesh")) {
+      return newReaderBr("PmeshReader", br);
+    }
+    if (fileType.equals("Obj")) {
+      return newReaderBr("ObjReader", br);
+    }
+    if (fileType.equals("Msms")) {
+      return newReaderBr("MsmsReader", br);
+    }
+    if (fileType.equals("Kinemage")) {
+      return newReaderBr("KinemageReader", br);
+    }
+    if (fileType.equals("CastepDensity")) {
+      return newReaderBr("CastepDensityReader", br);
+    }
+    if (fileType.equals("Nff")) {
+      return newReaderBr("NffFileReader", br);
+    }
     return null;
   }
+  
 
   void initializeIsosurface() {
     params.initialize();
@@ -1451,5 +1479,12 @@ public class SurfaceGenerator {
 
   public Vector3f[] getSpanningVectors() {
     return surfaceReader.getSpanningVectors();
+  }
+
+  Object readerData;
+  public Object getReaderData() {
+    Object o = readerData;
+    readerData = null;
+    return o;
   }
 }

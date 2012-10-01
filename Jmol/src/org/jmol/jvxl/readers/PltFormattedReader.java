@@ -45,8 +45,11 @@ class PltFormattedReader extends VolumeFileReader {
  
    */
   
-  PltFormattedReader(SurfaceGenerator sg, BufferedReader br) {
-    super(sg, br);
+  PltFormattedReader(){}
+  
+  @Override
+  void init2(SurfaceGenerator sg, BufferedReader br) {
+    super.init2(sg, br);
     isAngstroms = true;
     jvxlData.wasCubic = true;
     jvxlFileHeaderBuffer = new StringBuffer();

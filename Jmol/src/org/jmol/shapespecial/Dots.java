@@ -226,9 +226,6 @@ public class Dots extends AtomShape {
       maxRadius = modelSet.getMaxVanderwaalsRadius();
     }
 
-    if (Logger.debugging)
-      Logger.startTimer();
-
     // combine current and selected set
     boolean newSet = (rdLast.value != rd.value
         || rdLast.valueExtended != rd.valueExtended || rdLast.factorType != rd.factorType
@@ -281,8 +278,6 @@ public class Dots extends AtomShape {
 
     rdLast = rd;
 
-    if (Logger.debugging)
-      Logger.checkTimer("dots generation time");
   }
 
   @Override

@@ -121,6 +121,8 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import javax.util.BitSet;
+import javax.util.StringXBuilder;
+
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -781,7 +783,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       } else if (thisMesh.bsSlabGhost != null) {
         jvxlData.slabInfo = thisMesh.slabOptions.toString();
       }
-      StringBuffer sb = new StringBuffer();
+      StringXBuilder sb = new StringXBuilder();
       getMeshCommand(sb, thisMesh.index);
       thisMesh.setJvxlColorMap(true);
       return JvxlCoder.jvxlGetFile(jvxlData, meshData, title, "", true, 1, sb.toString(), null);
@@ -793,7 +795,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if (property == "command") {
       String key = previousMeshID.toUpperCase();
       boolean isWild = TextFormat.isWild(key);
-      StringBuffer sb = new StringBuffer();
+      StringXBuilder sb = new StringXBuilder();
       for (int i = meshCount; --i >= 0;) {
         String id = meshes[i].thisID.toUpperCase();
         if (id.equals(key) || isWild && TextFormat.isMatch(id, key, true, true))
@@ -832,7 +834,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   public static String getPolygonColorData(int ccount, short[] colixes, BitSet bsSlabDisplay) {
     if (colixes == null)
       return null;
-    StringBuffer list1 = new StringBuffer();
+    StringXBuilder list1 = new StringXBuilder();
     int count = 0;
     short colix = 0;
     boolean done = false;
@@ -841,7 +843,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         continue;
       if (done || colixes[i] != colix) {
         if (count != 0)
-          list1.append(" ").append(count).append(" ").append(
+          list1.append(" ").appendI(count).append(" ").appendI(
               (colix == 0 ? 0 : Colix.getArgb(colix)));
         if (done)
           break;
@@ -858,13 +860,14 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   @Override
   public String getShapeState() {
     clean();
-    StringBuffer sb = new StringBuffer("\n");
+    StringXBuilder sb = new StringXBuilder();
+    sb.append("\n");
     for (int i = 0; i < meshCount; i++)
       getMeshCommand(sb, i);
     return sb.toString();
   }
 
-  private void getMeshCommand(StringBuffer sb, int i) {
+  private void getMeshCommand(StringXBuilder sb, int i) {
     IsosurfaceMesh imesh = (IsosurfaceMesh) meshes[i];
     if (imesh == null || imesh.scriptCommand == null)
       return;
@@ -1793,7 +1796,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   }
 
   public String getCmd(int index){
-    StringBuffer sb = new StringBuffer("\n");
+    StringXBuilder sb = new StringXBuilder().append("\n");
 //    result = this.isomeshes[index].scriptCommand;
     getMeshCommand(sb, index);
     return (sb.toString());

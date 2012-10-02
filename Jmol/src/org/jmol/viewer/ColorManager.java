@@ -41,6 +41,8 @@ import org.jmol.modelset.Model;
 import org.jmol.modelset.ModelSet;
 import org.jmol.util.ColorEncoder;
 
+import javax.util.StringXBuilder;
+
 class ColorManager {
 
   /*
@@ -343,8 +345,8 @@ class ColorManager {
     propertyColorEncoder.isTranslucent = isTranslucent;
   }
 
-  String getState(StringBuffer sfunc) {
-    StringBuffer s = new StringBuffer();
+  String getState(StringXBuilder sfunc) {
+    StringXBuilder s = new StringXBuilder();
     int n = propertyColorEncoder.getState(s);
     //String colors = getColorSchemeList(getColorSchemeArray(USER));
     //if (colors.length() > 0)

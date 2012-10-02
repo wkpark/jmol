@@ -82,7 +82,7 @@ class PopInJmol extends WebPanel implements ChangeListener {
   }
 
   @Override
-  String getAppletDefs(int i, String html, StringBuffer appletDefs,
+  String getAppletDefs(int i, String html, StringBuilder appletDefs,
                        JmolInstance instance) {
     String divClass = (i % 2 == 0 ? "floatRightDiv" : "floatLeftDiv");
     String name = instance.name;

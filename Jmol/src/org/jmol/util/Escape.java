@@ -40,6 +40,8 @@ import javax.vecmath.Tuple3f;
 
 import org.jmol.script.ScriptVariable;
 
+import javax.util.StringXBuilder;
+
 
 public class Escape {
 
@@ -133,10 +135,10 @@ public class Escape {
         int pt = -1;
         char ch = escapable.charAt(i++);
         char ch2 = escapable.charAt(i++);
-        StringBuffer sb = new StringBuffer();
+        StringXBuilder sb = new StringXBuilder();
         int pt0 = 0;
         while ((pt = str.indexOf(ch, pt + 1)) >= 0) {
-          sb.append(str.substring(pt0, pt)).append('\\').append(ch2);
+          sb.append(str.substring(pt0, pt)).appendC('\\').appendC(ch2);
           pt0 = pt + 1;
         }
         sb.append(str.substring(pt0, str.length()));
@@ -157,7 +159,7 @@ public class Escape {
   public static String escapeVar(ArrayList<ScriptVariable> list) {
     if (list == null)
       return escapeStr("");
-    StringBuilder s = new StringBuilder();
+    StringXBuilder s = new StringXBuilder();
     s.append("[");
     for (int i = 0; i < list.size(); i++) {
       if (i > 0)
@@ -169,12 +171,12 @@ public class Escape {
   }
 
   public static String escapeMap(Map<String, Object> ht) {
-    StringBuilder sb = new StringBuilder();
+    StringXBuilder sb = new StringXBuilder();
     sb.append("{ ");
     String sep = "";
     for (Map.Entry<String, Object> entry : ht.entrySet()) {
       String key = entry.getKey();
-      sb.append(sep).append(escapeStr(key)).append(':');
+      sb.append(sep).append(escapeStr(key)).appendC(':');
       Object val = entry.getValue();
       if (!(val instanceof ScriptVariable))
         val = ScriptVariable.getVariable(val);
@@ -194,36 +196,36 @@ public class Escape {
   public static String escapeFloatA(float[] f, boolean asArray) {
     if (asArray)
       return toJSON(null, f); // or just use escape(f)
-    StringBuilder sb = new StringBuilder();
+    StringXBuilder sb = new StringXBuilder();
     for (int i = 0; i < f.length; i++) {
       if (i > 0)
-        sb.append('\n');
-      sb.append(f[i]);
+        sb.appendC('\n');
+      sb.appendF(f[i]);
     }
     return sb.toString();
   }
 
   public static String escapeFloatAA(float[][] f, boolean addSemi) {
-    StringBuilder sb = new StringBuilder();
+    StringXBuilder sb = new StringXBuilder();
     String eol = (addSemi ? ";\n" : "\n");
     for (int i = 0; i < f.length; i++)
       if (f[i] != null) {
         if (i > 0)
           sb.append(eol);
         for (int j = 0; j < f[i].length; j++)
-          sb.append(f[i][j]).append('\t');
+          sb.appendF(f[i][j]).appendC('\t');
       }
     return sb.toString();
   }
 
   public static String escapeFloatAAA(float[][][] f, boolean addSemi) {
-    StringBuilder sb = new StringBuilder();
+    StringXBuilder sb = new StringXBuilder();
     String eol = (addSemi ? ";\n" : "\n");
     if (f[0] == null || f[0][0] == null)
       return "0 0 0" + eol;
-    sb.append(f.length).append(" ")
-      .append(f[0].length).append(" ")
-      .append(f[0][0].length);
+    sb.appendI(f.length).append(" ")
+      .appendI(f[0].length).append(" ")
+      .appendI(f[0][0].length);
     for (int i = 0; i < f.length; i++)
       if (f[i] != null) {
         sb.append(eol);
@@ -231,7 +233,7 @@ public class Escape {
           if (f[i][j] != null) {
             sb.append(eol);
             for (int k = 0; k < f[i][j].length; k++)
-              sb.append(f[i][j][k]).append('\t');
+              sb.appendF(f[i][j][k]).appendC('\t');
           }
       }
     return sb.toString();
@@ -247,7 +249,7 @@ public class Escape {
   public static String escapeStrA(String[] list, boolean nicely) {
     if (list == null)
       return escapeStr("");
-    StringBuilder s = new StringBuilder();
+    StringXBuilder s = new StringXBuilder();
     s.append("[");
     for (int i = 0; i < list.length; i++) {
       if (i > 0)
@@ -264,32 +266,33 @@ public class Escape {
       return escapeStr("");
     if (x instanceof Float)
       return "" + x;
-    StringBuilder s = new StringBuilder();
+    StringXBuilder s = new StringXBuilder();
     s.append("[");
     if (x instanceof double[]) {
       double[] dlist = (double[]) x;
       for (int i = 0; i < dlist.length; i++) {
         if (i > 0)
           s.append(", ");
-        s.append(dlist[i]);
+        s.appendD(dlist[i]);
       }
     } else if (x instanceof float[]) {
       float[] flist = (float[]) x;
       for (int i = 0; i < flist.length; i++) {
         if (i > 0)
           s.append(", ");
-        s.append(flist[i]);
+        s.appendF(flist[i]);
       }
     } else if (x instanceof int[]) {
       int[] ilist = (int[]) x;
       for (int i = 0; i < ilist.length; i++) {
         if (i > 0)
           s.append(", ");
-        s.append(ilist[i]);
+        s.appendI(ilist[i]);
       }
     } else if (x instanceof Point3f[]) {
       Point3f[] plist = (Point3f[]) x;
-      s = new StringBuilder("[");
+      s = new StringXBuilder();
+      s.append("[");
       for (int i = 0; i < plist.length; i++) {
         if (i > 0)
           s.append(", ");
@@ -455,7 +458,8 @@ public class Escape {
     char chClose = (isAtoms ? ')' : ']');
     if (bs == null)
       return chOpen + "{}" + chClose;
-    StringBuilder s = new StringBuilder(chOpen + "{");
+    StringXBuilder s = new StringXBuilder();
+    s.append(chOpen + "{");
     int imax = bs.length();
     int iLast = -1;
     int iFirst = -2;
@@ -477,11 +481,11 @@ public class Escape {
         iLast = i;
       }
     }
-    s.append("}").append(chClose);
+    s.append("}").appendC(chClose);
     return s.toString();
   }
 
-  private static String packageJSONSb(String infoType, StringBuilder sb) {
+  private static String packageJSONSb(String infoType, StringXBuilder sb) {
     return packageJSON(infoType, sb.toString());
   }
 
@@ -504,7 +508,7 @@ public class Escape {
 
     //Logger.debug(infoType+" -- "+info);
 
-    StringBuilder sb = new StringBuilder();
+    StringXBuilder sb = new StringXBuilder();
     String sep = "";
     if (info == null)
       return packageJSON(infoType, (String) null);
@@ -526,7 +530,7 @@ public class Escape {
       sb.append("[");
       int imax = ((int[]) info).length;
       for (int i = 0; i < imax; i++) {
-        sb.append(sep).append(((int[]) info)[i]);
+        sb.append(sep).appendI(((int[]) info)[i]);
         sep = ",";
       }
       sb.append("]");
@@ -536,7 +540,7 @@ public class Escape {
       sb.append("[");
       int imax = ((float[]) info).length;
       for (int i = 0; i < imax; i++) {
-        sb.append(sep).append(((float[]) info)[i]);
+        sb.append(sep).appendF(((float[]) info)[i]);
         sep = ",";
       }
       sb.append("]");
@@ -546,7 +550,7 @@ public class Escape {
       sb.append("[");
       int imax = ((double[]) info).length;
       for (int i = 0; i < imax; i++) {
-        sb.append(sep).append(((double[]) info)[i]);
+        sb.append(sep).appendD(((double[]) info)[i]);
         sep = ",";
       }
       sb.append("]");
@@ -616,27 +620,27 @@ public class Escape {
     if (info instanceof Matrix4f) {
       float[] x = new float[4];
       Matrix4f m4 = (Matrix4f) info;
-      sb.append('[');
+      sb.appendC('[');
       for (int i = 0; i < 4; i++) {
         if (i > 0)
-          sb.append(',');
+          sb.appendC(',');
         m4.getRow(i, x);
         sb.append(toJSON(null, x));
       }
-      sb.append(']');
+      sb.appendC(']');
       return packageJSONSb(infoType, sb);
     }
     if (info instanceof Matrix3f) {
       float[] x = new float[3];
       Matrix3f m3 = (Matrix3f) info;
-      sb.append('[');
+      sb.appendC('[');
       for (int i = 0; i < 3; i++) {
         if (i > 0)
-          sb.append(',');
+          sb.appendC(',');
         m3.getRow(i, x);
         sb.append(toJSON(null, x));
       }
-      sb.append(']');
+      sb.appendC(']');
       return packageJSONSb(infoType, sb);
     }
     if (info instanceof Tuple3f) {
@@ -645,18 +649,18 @@ public class Escape {
     }
     if (info instanceof AxisAngle4f) {
       sb.append("[")
-      .append(((AxisAngle4f) info).x).append(",")
-      .append(((AxisAngle4f) info).y).append(",")
-      .append(((AxisAngle4f) info).z).append(",")
-      .append((float)(((AxisAngle4f) info).angle * 180d/Math.PI)).append("]");
+      .appendF(((AxisAngle4f) info).x).append(",")
+      .appendF(((AxisAngle4f) info).y).append(",")
+      .appendF(((AxisAngle4f) info).z).append(",")
+      .appendF((float)(((AxisAngle4f) info).angle * 180d/Math.PI)).append("]");
     return packageJSONSb(infoType, sb);
     }
     if (info instanceof Point4f) {
       sb.append("[")
-        .append(((Point4f) info).x).append(",")
-        .append(((Point4f) info).y).append(",")
-        .append(((Point4f) info).z).append(",")
-        .append(((Point4f) info).w).append("]");
+        .appendF(((Point4f) info).x).append(",")
+        .appendF(((Point4f) info).y).append(",")
+        .appendF(((Point4f) info).z).append(",")
+        .appendF(((Point4f) info).w).append("]");
       return packageJSONSb(infoType, sb);
     }
     if (info instanceof Map) {
@@ -674,11 +678,11 @@ public class Escape {
     return packageJSON(infoType, fixString(info.toString()));
   }
 
-  private static void addJsonTuple(StringBuilder sb, Tuple3f pt) {
+  private static void addJsonTuple(StringXBuilder sb, Tuple3f pt) {
     sb.append("[")
-    .append(pt.x).append(",")
-    .append(pt.y).append(",")
-    .append(pt.z).append("]");
+    .appendF(pt.x).append(",")
+    .appendF(pt.y).append(",")
+    .appendF(pt.z).append("]");
   }
 
   public static String toReadableNoName(Object info) {
@@ -686,7 +690,7 @@ public class Escape {
   }
 
   public static String toReadable(String name, Object info) {
-    StringBuilder sb =new StringBuilder();
+    StringXBuilder sb =new StringXBuilder();
     String sep = "";
     if (info == null)
       return "null";
@@ -706,7 +710,7 @@ public class Escape {
       sb.append("[");
       int imax = ((int[]) info).length;
       for (int i = 0; i < imax; i++) {
-        sb.append(sep).append(((int[]) info)[i]);
+        sb.append(sep).appendI(((int[]) info)[i]);
         sep = ",";
       }
       sb.append("]");
@@ -716,7 +720,7 @@ public class Escape {
       sb.append("[");
       int imax = ((float[]) info).length;
       for (int i = 0; i < imax; i++) {
-        sb.append(sep).append(((float[]) info)[i]);
+        sb.append(sep).appendF(((float[]) info)[i]);
         sep = ",";
       }
       sb.append("]");
@@ -789,7 +793,7 @@ public class Escape {
   }
 
   private static String packageReadableSb(String infoName, String infoType,
-                                        StringBuilder sb) {
+                                        StringXBuilder sb) {
     return packageReadable(infoName, infoType, sb.toString());
   }
   
@@ -805,7 +809,7 @@ public class Escape {
     return "" + (iv / 1000000) + "." + (iv % 1000000);
   }
 
-  public static Object encapsulateData(String name, Object data) {
+  public static String encapsulateData(String name, Object data) {
     return "  DATA \"" + name + "\"\n" + 
         (data instanceof float[][] ?
           escapeFloatAA((float[][]) data, true) + ";\n"
@@ -825,7 +829,7 @@ public class Escape {
 
   public static String unescapeUnicode(String s) {
     int ichMax = s.length();
-    StringBuilder sb = new StringBuilder(ichMax);
+    StringXBuilder sb = StringXBuilder.newN(ichMax);
     int ich = 0;
     while (ich < ichMax) {
       char ch = s.charAt(ich++);
@@ -848,7 +852,7 @@ public class Escape {
           }
         }
       }
-      sb.append(ch);
+      sb.appendC(ch);
     }
     return sb.toString();
   }

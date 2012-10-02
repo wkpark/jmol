@@ -25,6 +25,8 @@
 package org.jmol.shape;
 
 import javax.util.BitSet;
+import javax.util.StringXBuilder;
+
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -269,7 +271,7 @@ public class Mesh extends MeshSurface {
 
   public String getState(String type) {
     //String sxml = null; // problem here is that it can be WAY to large. Shape.getXmlPropertyString(xmlProperties, type);
-    StringBuffer s = new StringBuffer();
+    StringXBuilder s = new StringXBuilder();
     //if (sxml != null)
       //s.append("/** XML ** ").append(sxml).append(" ** XML **/\n");
     s.append(type);
@@ -292,7 +294,7 @@ public class Mesh extends MeshSurface {
   }
 
   protected String getRendering() {
-    StringBuffer s = new StringBuffer();
+    StringXBuilder s = new StringXBuilder();
     s.append(fillTriangles ? " fill" : " noFill");
     s.append(drawTriangles ? " mesh" : " noMesh");
     s.append(showPoints ? " dots" : " noDots");

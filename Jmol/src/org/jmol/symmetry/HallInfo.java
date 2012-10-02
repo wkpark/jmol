@@ -52,6 +52,7 @@ package org.jmol.symmetry;
  *
  */
 
+import javax.util.StringXBuilder;
 import javax.vecmath.Point3i;
 import javax.vecmath.Matrix4f;
 
@@ -98,11 +99,12 @@ class HallInfo {
   }
   
   String dumpInfo() {
-    StringBuffer sb =  new StringBuffer("\nHall symbol: ").append(hallSymbol)
+    StringXBuilder sb =  new StringXBuilder();
+    sb.append("\nHall symbol: ").append(hallSymbol)
         .append("\nprimitive Hall symbol: ").append(primitiveHallSymbol)
         .append("\nlattice type: ").append(getLatticeDesignation());
     for (int i = 0; i < nRotations; i++) {
-      sb.append("\n\nrotation term ").append(i + 1).append(rotationTerms[i].dumpInfo());
+      sb.append("\n\nrotation term ").appendI(i + 1).append(rotationTerms[i].dumpInfo());
     }
     return sb.toString();
   }
@@ -202,13 +204,14 @@ class HallInfo {
     boolean allPositive = true; //for now
     
     String dumpInfo() {
-      StringBuffer sb= new StringBuffer("\ninput code: ")
+      StringXBuilder sb= new StringXBuilder();
+      sb.append("\ninput code: ")
            .append(inputCode).append("; primitive code: ").append(primitiveCode)
-           .append("\norder: ").append(order).append(isImproper ? " (improper axis)" : "");
+           .append("\norder: ").appendI(order).append(isImproper ? " (improper axis)" : "");
       if (axisType != '_') {
-        sb.append("; axisType: ").append(axisType);
+        sb.append("; axisType: ").appendC(axisType);
         if (diagonalReferenceAxis != '\0')
-          sb.append(diagonalReferenceAxis);
+          sb.appendC(diagonalReferenceAxis);
       }
       if (translationString.length() > 0)
         sb.append("; translation: ").append(translationString);

@@ -26,6 +26,7 @@
 package org.jmol.shapesurface;
 
 import javax.util.BitSet;
+import javax.util.StringXBuilder;
 import javax.vecmath.Vector3f;
 
 import org.jmol.shape.Shape;
@@ -332,7 +333,7 @@ public class LcaoCartoon extends Isosurface {
 
   @Override
   public String getShapeState() {
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     if (lcaoScale != null)
       appendCmd(sb, "lcaoCartoon scale " + lcaoScale.floatValue());
     if (lcaoColorNeg != null)

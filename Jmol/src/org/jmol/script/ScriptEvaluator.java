@@ -27,6 +27,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import javax.util.BitSet;
+import javax.util.StringXBuilder;
+
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -250,7 +252,7 @@ public class ScriptEvaluator {
                                      boolean isCmdLine_C_Option,
                                      boolean historyDisabled,
                                      boolean listCommands,
-                                     StringBuffer outputBuffer) {
+                                     StringXBuilder outputBuffer) {
     boolean tempOpen = this.isCmdLine_C_Option;
     this.isCmdLine_C_Option = isCmdLine_C_Option;
     viewer.pushHoldRepaintWhy("runEval");
@@ -296,13 +298,13 @@ public class ScriptEvaluator {
   }
 
   /**
-   * runs a script and sends selected output to a provided StringBuffer
+   * runs a script and sends selected output to a provided StringXBuilder
    * 
    * @param script
    * @param outputBuffer
    * @throws ScriptException
    */
-  public void runScriptBuffer(String script, StringBuffer outputBuffer)
+  public void runScriptBuffer(String script, StringXBuilder outputBuffer)
       throws ScriptException {
     // a = script("xxxx")
     pushContext(null);
@@ -485,7 +487,7 @@ public class ScriptEvaluator {
     }
     iToken = -9999;
     if (logMessages) {
-      StringBuffer strbufLog = new StringBuffer(80);
+      StringXBuilder strbufLog = new StringXBuilder();
       String s = (ifLevel > 0 ? "                          ".substring(0,
           ifLevel * 2) : "");
       strbufLog.append(s).append(
@@ -1618,7 +1620,7 @@ public class ScriptEvaluator {
         return fout;
       }
       if (tok == Token.sequence) {
-        StringBuffer sb = new StringBuffer();
+        StringXBuilder sb = new StringXBuilder();
         for (int i = 0; i < len; i++)
           sb.append((String) vout.get(i));
         return sb.toString();
@@ -1798,7 +1800,7 @@ public class ScriptEvaluator {
   protected Viewer viewer;
   protected ScriptCompiler compiler;
   private Map<String, Object> definedAtomSets;
-  private StringBuffer outputBuffer;
+  private StringXBuilder outputBuffer;
 
   private String contextPath = "";
   private String scriptFileName;
@@ -1959,9 +1961,9 @@ public class ScriptEvaluator {
       if (!(v instanceof List<?>))
         break;
       List<ScriptVariable> sv = (ArrayList<ScriptVariable>) v;
-      StringBuffer sb = new StringBuffer();
+      StringXBuilder sb = new StringXBuilder();
       for (int i = 0; i < sv.size(); i++)
-        sb.append(sv.get(i).asString()).append('\n');
+        sb.append(sv.get(i).asString()).appendC('\n');
       return sb.toString();
     }
     return (v instanceof ScriptVariable ? ScriptVariable
@@ -2609,7 +2611,7 @@ public class ScriptEvaluator {
   }
 
   private String getContext(boolean withVariables) {
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     ScriptContext context = thisContext;
     while (context != null) {
       if (withVariables) {
@@ -3075,20 +3077,20 @@ public class ScriptEvaluator {
 
   @Override
   public String toString() {
-    StringBuffer str = new StringBuffer();
+    StringXBuilder str = new StringXBuilder();
     str.append("Eval\n pc:");
-    str.append(pc);
+    str.appendI(pc);
     str.append("\n");
-    str.append(aatoken.length);
+    str.appendI(aatoken.length);
     str.append(" statements\n");
     for (int i = 0; i < aatoken.length; ++i) {
       str.append("----\n");
       Token[] atoken = aatoken[i];
       for (int j = 0; j < atoken.length; ++j) {
-        str.append(atoken[j]);
-        str.append('\n');
+        str.appendO(atoken[j]);
+        str.appendC('\n');
       }
-      str.append('\n');
+      str.appendC('\n');
     }
     str.append("END\n");
     return str.toString();
@@ -3098,7 +3100,7 @@ public class ScriptEvaluator {
                                   boolean doLogMessages) {
     if (statement.length == 0)
       return "";
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     int tok = statement[0].tok;
     switch (tok) {
     case Token.nada:
@@ -3125,7 +3127,7 @@ public class ScriptEvaluator {
       if (iTok == i - 1)
         sb.append(" <<");
       if (i != 0)
-        sb.append(' ');
+        sb.appendC(' ');
       if (i == 2 && setEquals) {
         if ((setEquals = (token.tok != Token.opEQ))
             || statement[0].intValue == '#') {
@@ -3175,7 +3177,7 @@ public class ScriptEvaluator {
       case Token.select:
         break;
       case Token.integer:
-        sb.append(token.intValue);
+        sb.appendI(token.intValue);
         continue;
       case Token.point3f:
       case Token.point4f:
@@ -3187,27 +3189,27 @@ public class ScriptEvaluator {
         sb.append(((ScriptVariable) token).escape()); // list
         continue;
       case Token.seqcode:
-        sb.append('^');
+        sb.appendC('^');
         continue;
       case Token.spec_seqcode_range:
         if (token.intValue != Integer.MAX_VALUE)
-          sb.append(token.intValue);
+          sb.appendI(token.intValue);
         else
           sb.append(Group.getSeqcodeString(getSeqCode(token)));
         token = statement[++i];
-        sb.append(' ');
+        sb.appendC(' ');
         // if (token.intValue == Integer.MAX_VALUE)
         sb.append(inBrace ? "-" : "- ");
         //$FALL-THROUGH$
       case Token.spec_seqcode:
         if (token.intValue != Integer.MAX_VALUE)
-          sb.append(token.intValue);
+          sb.appendI(token.intValue);
         else
           sb.append(Group.getSeqcodeString(getSeqCode(token)));
         continue;
       case Token.spec_chain:
         sb.append("*:");
-        sb.append((char) token.intValue);
+        sb.appendC((char) token.intValue);
         continue;
       case Token.spec_alternate:
         sb.append("*%");
@@ -3226,14 +3228,14 @@ public class ScriptEvaluator {
         }
         continue;
       case Token.spec_resid:
-        sb.append('[');
+        sb.appendC('[');
         sb.append(Group.getGroup3((short) token.intValue));
-        sb.append(']');
+        sb.appendC(']');
         continue;
       case Token.spec_name_pattern:
-        sb.append('[');
-        sb.append(token.value);
-        sb.append(']');
+        sb.appendC('[');
+        sb.appendO(token.value);
+        sb.appendC(']');
         continue;
       case Token.spec_atom:
         sb.append("*.");
@@ -3246,7 +3248,7 @@ public class ScriptEvaluator {
         }
         break;
       case Token.string:
-        sb.append("\"").append(token.value).append("\"");
+        sb.append("\"").appendO(token.value).append("\"");
         continue;
       case Token.opEQ:
       case Token.opLE:
@@ -3268,7 +3270,7 @@ public class ScriptEvaluator {
       default:
         if (Token.tokAttr(token.tok, Token.identifier) || !doLogMessages)
           break;
-        sb.append('\n').append(token.toString()).append('\n');
+        sb.appendC('\n').append(token.toString()).appendC('\n');
         continue;
       }
       if (token.value != null)
@@ -3376,7 +3378,7 @@ public class ScriptEvaluator {
     if (isSyntaxCheck || str == null)
       return;
     if (outputBuffer != null)
-      outputBuffer.append(str).append('\n');
+      outputBuffer.append(str).appendC('\n');
     else
       viewer.showString(str, isPrint);
   }
@@ -3385,7 +3387,7 @@ public class ScriptEvaluator {
     if (isSyntaxCheck)
       return;
     if (outputBuffer != null) {
-      outputBuffer.append(s).append('\n');
+      outputBuffer.append(s).appendC('\n');
       return;
     }
     viewer.scriptStatus(s);
@@ -8204,10 +8206,10 @@ public class ScriptEvaluator {
             + " = %[" + property1 + "]";
         String[] data = (String[]) getBitsetIdent(bsFrom, format, null, false,
             Integer.MAX_VALUE, false);
-        StringBuffer sb = new StringBuffer();
+        StringXBuilder sb = new StringXBuilder();
         for (int i = 0; i < data.length; i++)
           if (data[i].indexOf("null") < 0)
-            sb.append(data[i]).append('\n');
+            sb.append(data[i]).appendC('\n');
         if (Logger.debugging)
           Logger.info(sb.toString());
         BitSet bsSubset = BitSetUtil.copy(viewer.getSelectionSubset());
@@ -8514,7 +8516,7 @@ public class ScriptEvaluator {
     int modelCount0 = viewer.getModelCount()
         - (viewer.getFileName().equals("zapped") ? 1 : 0);
     int atomCount0 = viewer.getAtomCount();
-    StringBuffer loadScript = new StringBuffer("load");
+    StringXBuilder loadScript = new StringXBuilder().append("load");
     int nFiles = 1;
     Map<String, Object> htParams = new Hashtable<String, Object>();
     // ignore optional file format
@@ -8579,7 +8581,7 @@ public class ScriptEvaluator {
         htParams.put("fileData", strModel);
         htParams.put("isData", Boolean.TRUE);
         //note: ScriptCompiler will remove an initial \n if present
-        loadScript.append('\n');
+        loadScript.appendC('\n');
         loadScript.append(strModel);
         if (key.indexOf("@") < 0) {
           loadScript.append(" end ").append(Escape.escapeStr(key));
@@ -9087,8 +9089,9 @@ public class ScriptEvaluator {
         isVariable = true;
         String s = getStringParameter(filename.substring(1), false);
         htParams.put("fileData", s);
-        loadScript = new StringBuffer("{\n    var " + filename.substring(1)
-            + " = " + Escape.escapeStr(s) + ";\n    " + loadScript);
+        loadScript = new StringXBuilder().append("{\n    var ")
+        .append(filename.substring(1)).append(" = ")
+        .append(Escape.escapeStr(s)).append(";\n    ").appendSB(loadScript);
       }
     }
 
@@ -9202,16 +9205,16 @@ public class ScriptEvaluator {
   private void logLoadInfo(String msg) {
     if (msg.length() > 0)
       Logger.info(msg);
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     int modelCount = viewer.getModelCount();
     if (modelCount > 1)
-      sb.append(modelCount).append(" models\n");
+      sb.appendI(modelCount).append(" models\n");
     for (int i = 0; i < modelCount; i++) {
       Map<String, Object> moData = (Map<String, Object>) viewer
           .getModelAuxiliaryInfoValue(i, "moData");
       if (moData == null)
         continue;
-      sb.append(((List<Map<String, Object>>) moData.get("mos")).size()).append(
+      sb.appendI(((List<Map<String, Object>>) moData.get("mos")).size()).append(
           " molecular orbitals in model ").append(
           viewer.getModelNumberDotted(i)).append("\n");
     }
@@ -14435,7 +14438,7 @@ public class ScriptEvaluator {
       if (data == null) {
         data = type.intern();
         if (isExport) {
-          // POV-Ray uses a BufferedWriter instead of a StringBuffer.
+          // POV-Ray uses a BufferedWriter instead of a StringXBuilder.
           // todo -- there's no reason this data has to be done this way. 
           // we could send all of them out to file directly
           fullPath[0] = fileName;
@@ -14870,10 +14873,10 @@ public class ScriptEvaluator {
         name = parameterAsString(3).toLowerCase();
         if (!isSyntaxCheck) {
           String[] info = TextFormat.split(viewer.getStateInfo(), '\n');
-          StringBuffer sb = new StringBuffer();
+          StringXBuilder sb = new StringXBuilder();
           for (int i = 0; i < info.length; i++)
             if (info[i].toLowerCase().indexOf(name) >= 0)
-              sb.append(info[i]).append('\n');
+              sb.append(info[i]).appendC('\n');
           msg = sb.toString();
         }
         break;
@@ -15804,7 +15807,7 @@ public class ScriptEvaluator {
     RadiusData rd = null;
     float[] params = null;
     boolean colorDensity = false;
-    StringBuffer sbCommand = new StringBuffer();
+    StringXBuilder sbCommand = new StringXBuilder();
     int minSet = Integer.MAX_VALUE;
     int displayType = Token.plane;
     int contactType = Token.nada;
@@ -15887,7 +15890,7 @@ public class ScriptEvaluator {
       case Token.resolution:
         float resolution = floatParameter(++i);
         if (resolution > 0) {
-          sbCommand.append(" resolution ").append(resolution);
+          sbCommand.append(" resolution ").appendF(resolution);
           setShapeProperty(JmolConstants.SHAPE_CONTACT, "resolution", Float
               .valueOf(resolution));
         }
@@ -15895,20 +15898,20 @@ public class ScriptEvaluator {
       case Token.within:
       case Token.distance:
         distance = floatParameter(++i);
-        sbCommand.append(" within ").append(distance);
+        sbCommand.append(" within ").appendF(distance);
         break;
       case Token.plus:
       case Token.integer:
       case Token.decimal:
         rd = encodeRadiusParameter(i, false, false);
-        sbCommand.append(" ").append(rd);
+        sbCommand.append(" ").appendO(rd);
         i = iToken;
         break;
       case Token.intermolecular:
       case Token.intramolecular:
         intramolecular = (tok == Token.intramolecular ? Boolean.TRUE
             : Boolean.FALSE);
-        sbCommand.append(" ").append(theToken.value);
+        sbCommand.append(" ").appendO(theToken.value);
         break;
       case Token.minset:
         minSet = intParameter(++i);
@@ -15917,7 +15920,7 @@ public class ScriptEvaluator {
       case Token.clash:
       case Token.vanderwaals:
         contactType = tok;
-        sbCommand.append(" ").append(theToken.value);
+        sbCommand.append(" ").appendO(theToken.value);
         break;
       case Token.sasurface:
         if (isFloatParameter(i + 1))
@@ -15933,9 +15936,9 @@ public class ScriptEvaluator {
       case Token.plane:
       case Token.connect:
         displayType = tok;
-        sbCommand.append(" ").append(theToken.value);
+        sbCommand.append(" ").appendO(theToken.value);
         if (tok == Token.sasurface)
-          sbCommand.append(" ").append(saProbeRadius);
+          sbCommand.append(" ").appendF(saProbeRadius);
         break;
       case Token.parameters:
         params = floatParameterSet(++i, 1, 10);
@@ -15986,7 +15989,7 @@ public class ScriptEvaluator {
           minSet = 100;
         setShapeProperty(JmolConstants.SHAPE_CONTACT, "minset", Integer
             .valueOf(minSet));
-        sbCommand.append(" minSet ").append(minSet);
+        sbCommand.append(" minSet ").appendI(minSet);
         if (params == null)
           params = new float[] { 0.5f, 2 };
       }
@@ -16560,7 +16563,7 @@ public class ScriptEvaluator {
     return true;
   }
 
-  private String setColorOptions(StringBuffer sb, int index, int iShape,
+  private String setColorOptions(StringXBuilder sb, int index, int iShape,
                                  int nAllowed) throws ScriptException {
     getToken(index);
     String translucency = "opaque";
@@ -16573,7 +16576,7 @@ public class ScriptEvaluator {
         if (sb != null) {
           sb.append(" translucent");
           if (value != Float.MAX_VALUE)
-            sb.append(" ").append(value);
+            sb.append(" ").appendF(value);
         }
       } else {
         setMeshDisplayProperty(iShape, index, theTok);
@@ -16777,7 +16780,7 @@ public class ScriptEvaluator {
     BitSet bs = null;
     BitSet bsSelect = null;
     BitSet bsIgnore = null;
-    StringBuffer sbCommand = new StringBuffer();
+    StringXBuilder sbCommand = new StringXBuilder();
     Point3f pt;
     Point4f plane = null;
     Point3f lattice = null;
@@ -16846,7 +16849,7 @@ public class ScriptEvaluator {
       case Token.step:
       case Token.point:
         propertyName = theToken.value.toString();
-        sbCommand.append(" ").append(theToken.value);
+        sbCommand.append(" ").appendO(theToken.value);
         propertyValue = centerParameter(++i);
         sbCommand.append(" ").append(Escape.escape(propertyValue));
         i = iToken;
@@ -16977,7 +16980,7 @@ public class ScriptEvaluator {
             ptc = viewer.getAtomSetCenter(bs);
 
           getWithinDistanceVector(propertyList, distance, ptc, bs, isDisplay);
-          sbCommand.append(" within ").append(distance).append(" ").append(
+          sbCommand.append(" within ").appendF(distance).append(" ").append(
               bs == null ? Escape.escapePt(ptc) : Escape.escape(bs));
         }
         continue;
@@ -17177,7 +17180,7 @@ public class ScriptEvaluator {
             float max = floatParameter(++i);
             addShapeProperty(propertyList, "red", Float.valueOf(min));
             addShapeProperty(propertyList, "blue", Float.valueOf(max));
-            sbCommand.append(" ").append(min).append(" ").append(max);
+            sbCommand.append(" ").appendF(min).append(" ").appendF(max);
             continue;
           }
           if (isColorParam(i + 1)) {
@@ -17221,10 +17224,10 @@ public class ScriptEvaluator {
       case Token.ionic:
       case Token.vanderwaals:
         //if (surfaceObjectSeen)
-          sbCommand.append(" ").append(theToken.value);
+          sbCommand.append(" ").appendO(theToken.value);
         RadiusData rd = encodeRadiusParameter(i, false, true);
         //if (surfaceObjectSeen)
-          sbCommand.append(" ").append(rd);
+          sbCommand.append(" ").appendO(rd);
         if (Float.isNaN(rd.value))
           rd.value = 100;
         propertyValue = rd;
@@ -17246,7 +17249,7 @@ public class ScriptEvaluator {
       case Token.scale:
         propertyName = "scale";
         propertyValue = Float.valueOf(floatParameter(++i));
-        sbCommand.append(" scale ").append(propertyValue);
+        sbCommand.append(" scale ").appendO(propertyValue);
         break;
       case Token.all:
         if (idSeen)
@@ -17312,7 +17315,7 @@ public class ScriptEvaluator {
           int atomIndex = bs.nextSetBit(0);
           if (atomIndex < 0)
             error(ERROR_expressionExpected);
-          sbCommand.append(" ({").append(atomIndex).append("})");
+          sbCommand.append(" ({").appendI(atomIndex).append("})");
           modelIndex = viewer.getAtomModelIndex(atomIndex);
           addShapeProperty(propertyList, "modelIndex", Integer
               .valueOf(modelIndex));
@@ -17350,13 +17353,13 @@ public class ScriptEvaluator {
             if (offset > 0)
               sbCommand.append("+");
             if (offset != 0)
-              sbCommand.append(offset);
+              sbCommand.appendI(offset);
           //}
           break;
         case Token.integer:
           moNumber = intParameter(i);
           //if (surfaceObjectSeen)
-            sbCommand.append(" mo ").append(moNumber);
+            sbCommand.append(" mo ").appendI(moNumber);
           break;
         default:
           if (isArrayParameter(i)) {
@@ -17372,8 +17375,8 @@ public class ScriptEvaluator {
           addShapeProperty(propertyList, "monteCarloCount", Integer
               .valueOf(monteCarloCount));
           addShapeProperty(propertyList, "randomSeed", Integer.valueOf(seed));
-          sbCommand.append(" points ").append(monteCarloCount).append(' ')
-              .append(seed);
+          sbCommand.append(" points ").appendI(monteCarloCount).appendC(' ')
+              .appendI(seed);
         }
         setMoData(propertyList, moNumber, linearCombination, offset,
             isNegOffset, modelIndex, null);
@@ -17479,9 +17482,9 @@ public class ScriptEvaluator {
         nlmZprs[2] = intParameter(++i);
         nlmZprs[3] = (isFloatParameter(i + 1) ? floatParameter(++i) : 6f);
         //if (surfaceObjectSeen)
-          sbCommand.append(" atomicOrbital ").append((int) nlmZprs[0]).append(
-              " ").append((int) nlmZprs[1]).append(" ")
-              .append((int) nlmZprs[2]).append(" ").append(nlmZprs[3]);
+          sbCommand.append(" atomicOrbital ").appendI((int) nlmZprs[0]).append(
+              " ").appendI((int) nlmZprs[1]).append(" ")
+              .appendI((int) nlmZprs[2]).append(" ").appendF(nlmZprs[3]);
         if (tokAt(i + 1) == Token.point) {
           i += 2;
           nlmZprs[4] = intParameter(i);
@@ -17489,8 +17492,8 @@ public class ScriptEvaluator {
           nlmZprs[6] = (tokAt(i + 1) == Token.integer ? intParameter(++i)
               : ((int) -System.currentTimeMillis()) % 10000);
           //if (surfaceObjectSeen)
-            sbCommand.append(" points ").append((int) nlmZprs[4]).append(' ')
-                .append(nlmZprs[5]).append(' ').append((int) nlmZprs[6]);
+            sbCommand.append(" points ").appendI((int) nlmZprs[4]).appendC(' ')
+                .appendF(nlmZprs[5]).appendC(' ').appendI((int) nlmZprs[6]);
         }
         propertyName = "hydrogenOrbital";
         propertyValue = nlmZprs;
@@ -17524,7 +17527,7 @@ public class ScriptEvaluator {
             : 10f);
         if (envelopeRadius > 10f)
           integerOutOfRange(0, 10);
-        sbCommand.append(" cavity ").append(cavityRadius).append(" ").append(
+        sbCommand.append(" cavity ").appendF(cavityRadius).append(" ").appendF(
             envelopeRadius);
         addShapeProperty(propertyList, "envelopeRadius", Float
             .valueOf(envelopeRadius));
@@ -17555,7 +17558,7 @@ public class ScriptEvaluator {
         default:
           propertyValue = Integer
               .valueOf(tokAt(i + 1) == Token.integer ? intParameter(++i) : 0);
-          sbCommand.append(" ").append(propertyValue);
+          sbCommand.append(" ").appendO(propertyValue);
         }
         break;
       case Token.decimal:
@@ -17568,11 +17571,11 @@ public class ScriptEvaluator {
         if (tokAt(i) == Token.plus) {
           propertyName = "cutoffPositive";
           propertyValue = Float.valueOf(cutoff = floatParameter(++i));
-          sbCommand.append("+").append(propertyValue);
+          sbCommand.append("+").appendO(propertyValue);
         } else if (isFloatParameter(i)) {
           propertyName = "cutoff";
           propertyValue = Float.valueOf(cutoff = floatParameter(i));
-          sbCommand.append(propertyValue);
+          sbCommand.appendO(propertyValue);
         } else {
           propertyName = "cutoffRange";
           propertyValue = floatParameterSet(i, 2, 2);
@@ -17585,7 +17588,7 @@ public class ScriptEvaluator {
         propertyName = "downsample";
         propertyValue = Integer.valueOf(intParameter(++i));
         //if (surfaceObjectSeen)
-          sbCommand.append(" downsample ").append(propertyValue);
+          sbCommand.append(" downsample ").appendO(propertyValue);
         break;
       case Token.eccentricity:
         propertyName = "eccentricity";
@@ -17603,7 +17606,7 @@ public class ScriptEvaluator {
         continue;
       case Token.debug:
       case Token.nodebug:
-        sbCommand.append(" ").append(theToken.value);
+        sbCommand.append(" ").appendO(theToken.value);
         propertyName = "debug";
         propertyValue = (theTok == Token.debug ? Boolean.TRUE : Boolean.FALSE);
         break;
@@ -17770,7 +17773,7 @@ public class ScriptEvaluator {
       case Token.interior:
       case Token.pocket:
         //if (!surfaceObjectSeen)
-          sbCommand.append(" ").append(theToken.value);
+          sbCommand.append(" ").appendO(theToken.value);
         propertyName = "pocket";
         propertyValue = (theTok == Token.pocket ? Boolean.TRUE : Boolean.FALSE);
         break;
@@ -17827,12 +17830,12 @@ public class ScriptEvaluator {
       case Token.maxset:
         propertyName = "maxset";
         propertyValue = Integer.valueOf(intParameter(++i));
-        sbCommand.append(" maxSet ").append(propertyValue);
+        sbCommand.append(" maxSet ").appendO(propertyValue);
         break;
       case Token.minset:
         propertyName = "minset";
         propertyValue = Integer.valueOf(intParameter(++i));
-        sbCommand.append(" minSet ").append(propertyValue);
+        sbCommand.append(" minSet ").appendO(propertyValue);
         break;
       case Token.radical:
         // rad {eccentricity}
@@ -17863,11 +17866,11 @@ public class ScriptEvaluator {
               lookupIdentifierValue("solvent"));
           propertyName = (theTok == Token.sasurface ? "sasurface" : "solvent");
           //if (!surfaceObjectSeen)
-            sbCommand.append(" ").append(theToken.value);
+            sbCommand.append(" ").appendO(theToken.value);
           radius = (isFloatParameter(i + 1) ? floatParameter(++i) : viewer
               .getSolventProbeRadius());
           //if (!surfaceObjectSeen)
-            sbCommand.append(" ").append(radius);
+            sbCommand.append(" ").appendF(radius);
         }
         propertyValue = Float.valueOf(radius);
         if (tokAt(i + 1) == Token.full) {
@@ -17907,7 +17910,7 @@ public class ScriptEvaluator {
       case Token.resolution:
         propertyName = "resolution";
         propertyValue = Float.valueOf(floatParameter(++i));
-        sbCommand.append(" resolution ").append(propertyValue);
+        sbCommand.append(" resolution ").appendO(propertyValue);
         break;
       case Token.reversecolor:
         propertyName = "reverseColor";
@@ -17917,14 +17920,14 @@ public class ScriptEvaluator {
       case Token.sigma:
         propertyName = "sigma";
         propertyValue = Float.valueOf(sigma = floatParameter(++i));
-        sbCommand.append(" sigma ").append(propertyValue);
+        sbCommand.append(" sigma ").appendO(propertyValue);
         break;
       case Token.sphere:
         // sphere [radius]
         propertyName = "sphere";
         propertyValue = Float.valueOf(floatParameter(++i));
         //if (!surfaceObjectSeen)
-          sbCommand.append(" sphere ").append(propertyValue);
+          sbCommand.append(" sphere ").appendO(propertyValue);
         surfaceObjectSeen = true;
         break;
       case Token.squared:
@@ -17976,7 +17979,7 @@ public class ScriptEvaluator {
                 }
                 addShapeProperty(propertyList, "cutoff", Float.valueOf(cutoff));
                 //if (!surfaceObjectSeen)
-                  sbCommand.append(" cutoff ").append(cutoff);
+                  sbCommand.append(" cutoff ").appendF(cutoff);
               }
             }
             if (ptWithin == 0) {
@@ -18077,7 +18080,7 @@ public class ScriptEvaluator {
           }
           //if (!surfaceObjectSeen)
             if (fileIndex >= 0)
-              sbCommand.append(" ").append(fileIndex);
+              sbCommand.append(" ").appendI(fileIndex);
         }
         //if (!surfaceObjectSeen)
           if (sType != null)
@@ -18197,8 +18200,8 @@ public class ScriptEvaluator {
           if (needSelect) {
             propertyList.add(0, new Object[] { "select", bsSelect });
             if (sbCommand.indexOf("; isosurface map") == 0) {
-              sbCommand = new StringBuffer("; isosurface map select "
-                  + Escape.escape(bsSelect) + sbCommand.substring(16));
+              sbCommand = new StringXBuilder().append("; isosurface map select ")
+                .append(Escape.escape(bsSelect)).append(sbCommand.substring(16));
             }
           }
         }

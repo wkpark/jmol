@@ -25,6 +25,8 @@ package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
 
+import javax.util.StringXBuilder;
+
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
 
@@ -109,12 +111,12 @@ MRC header: mapc,mapr,maps: 2,1,3
   @Override
   protected void readParameters() throws Exception {
 
-    jvxlFileHeaderBuffer = new StringBuffer();
+    jvxlFileHeaderBuffer = new StringXBuilder();
     int nLines = parseIntStr(getLine());
     for (int i = nLines; --i >= 0; ) {
       line = br.readLine().trim();
       Logger.info("XplorReader: " + line);
-      jvxlFileHeaderBuffer.append("# ").append(line).append('\n');
+      jvxlFileHeaderBuffer.append("# ").append(line).appendC('\n');
     }
     jvxlFileHeaderBuffer.append("Xplor data\nJmol " + Viewer.getJmolVersion() + '\n');
 

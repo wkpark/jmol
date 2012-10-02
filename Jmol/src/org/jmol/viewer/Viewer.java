@@ -90,7 +90,7 @@ import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
-import org.jmol.util.OutputStringBuffer;
+import org.jmol.util.OutputStringBuilder;
 import org.jmol.util.Parser;
 import org.jmol.util.Rectangle;
 import org.jmol.util.SurfaceFileTyper;
@@ -132,6 +132,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
+
+import javax.util.StringXBuilder;
 
 /*
  * 
@@ -1577,7 +1579,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (objId < 0)
       return "";
     int mad = getObjectMad(objId);
-    StringBuffer s = new StringBuffer("\n");
+    StringXBuilder s = new StringXBuilder().append("\n");
     Shape.appendCmd(s, name
         + (mad == 0 ? " off" : mad == 1 ? " on" : mad == -1 ? " dotted"
             : mad < 20 ? " " + mad : " " + (mad / 2000f)));
@@ -2061,7 +2063,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                   String[] fileNames, Object reader,
                                   boolean isAppend,
                                   Map<String, Object> htParams,
-                                  StringBuffer loadScript, int tokType) {
+                                  StringXBuilder loadScript, int tokType) {
     if (htParams == null)
       htParams = setLoadParameters(null, isAppend);
     Object atomSetCollection;
@@ -2071,7 +2073,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       // 1) a set of file names
 
       if (loadScript == null) {
-        loadScript = new StringBuffer("load files");
+        loadScript = new StringXBuilder().append("load files");
         for (int i = 0; i < fileNames.length; i++)
           loadScript.append(" /*file*/$FILENAME" + (i + 1) + "$");
       }
@@ -2095,14 +2097,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
             .escapeStr(fname.replace('\\', '/')));
       }
 
-      loadScript = new StringBuffer(s);
+      loadScript = new StringXBuilder().append(s);
 
     } else if (reader == null) {
 
       // 2) a standard, single file 
 
       if (loadScript == null)
-        loadScript = new StringBuffer("load /*file*/$FILENAME$");
+        loadScript = new StringXBuilder().append("load /*file*/$FILENAME$");
 
       atomSetCollection = openFile(fileName, isAppend, htParams,
           loadScript);
@@ -2139,8 +2141,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         fname = "";
       // may have been modified.
       if (htParams.containsKey("loadScript"))
-        loadScript = (StringBuffer) htParams.get("loadScript");
-      htParams.put("loadScript", loadScript = new StringBuffer(TextFormat
+        loadScript = (StringXBuilder) htParams.get("loadScript");
+      htParams.put("loadScript", loadScript = new StringXBuilder().append(TextFormat
           .simpleReplace(loadScript.toString(), "$FILENAME$", Escape
               .escapeStr(fname.replace('\\', '/')))));
     }
@@ -2241,7 +2243,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
   private Object openFile(String fileName, boolean isAppend,
                                       Map<String, Object> htParams,
-                                      StringBuffer loadScript) {
+                                      StringXBuilder loadScript) {
     if (fileName == null)
       return null;
     if (fileName.indexOf("[]") >= 0) {
@@ -2273,7 +2275,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           return "cannot find string data";
       if (loadScript != null)
         htParams
-            .put("loadScript", loadScript = new StringBuffer(TextFormat
+            .put("loadScript", loadScript = new StringXBuilder().append(TextFormat
                 .simpleReplace(loadScript.toString(), "$FILENAME$",
                     "data \"model inline\"\n" + strModel
                         + "end \"model inline\"")));
@@ -2439,10 +2441,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
 
     htParams = setLoadParameters(htParams, isAppend);
-    StringBuffer loadScript = (StringBuffer) htParams.get("loadScript");
+    StringXBuilder loadScript = (StringXBuilder) htParams.get("loadScript");
     boolean isLoadCommand = htParams.containsKey("isData");
     if (loadScript == null)
-      loadScript = new StringBuffer();
+      loadScript = new StringXBuilder();
     if (!isAppend)
       zap(true, false/*true*/, false);
     Object atomSetCollection = fileManager.createAtomSetCollectionFromString(
@@ -2454,7 +2456,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                    Map<String, Object> htParams,
                                    boolean isAppend) {
     // loadInline
-    StringBuffer loadScript = new StringBuffer();
+    StringXBuilder loadScript = new StringXBuilder();
     if (!isAppend)
       zap(true, false/*true*/, false);
     Object atomSetCollection = fileManager.createAtomSeCollectionFromStrings(
@@ -2487,13 +2489,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
   private String createModelSetAndReturnError(Object atomSetCollection,
                                               boolean isAppend,
-                                              StringBuffer loadScript) {
+                                              StringXBuilder loadScript) {
     String fullPathName = fileManager.getFullPathName();
     String fileName = fileManager.getFileName();
     String errMsg;
     if (loadScript == null) {
       setBooleanProperty("preserveState", false);
-      loadScript = new StringBuffer("load \"???\"");
+      loadScript = new StringXBuilder().append("load \"???\"");
     }
     if (atomSetCollection instanceof String) {
       errMsg = (String) atomSetCollection;
@@ -2600,7 +2602,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         || filename.equals("JSNode")) {
       String str = getCurrentFileAsString();
       BufferedOutputStream bos = new BufferedOutputStream(os);
-      OutputStringBuffer sb = new OutputStringBuffer(bos);
+      OutputStringBuilder sb = new OutputStringBuilder(bos);
       sb.append(str);
       return sb.toString();
     }
@@ -3548,8 +3550,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (!global.preserveState)
       return "";
     boolean isAll = (type == null || type.equalsIgnoreCase("all"));
-    StringBuffer s = new StringBuffer("");
-    StringBuffer sfunc = (isAll ? new StringBuffer("function _setState() {\n")
+    StringXBuilder s = new StringXBuilder();
+    StringXBuilder sfunc = (isAll ? new StringXBuilder().append("function _setState() {\n")
         : null);
     if (isAll)
       s.append(STATE_VERSION_STAMP + getJmolVersion() + ";\n");
@@ -3608,7 +3610,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       sfunc.append("}\n\n_setState;\n");
     }
     if (isAll)
-      s.append(sfunc);
+      s.appendSB(sfunc);
     return s.toString();
   }
 
@@ -4745,8 +4747,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     String str = checkScriptExecution(strScript, false);
     if (str != null)
       return str;
-    StringBuffer outputBuffer = (statusList == null
-        || statusList.equals("output") ? new StringBuffer() : null);
+    StringXBuilder outputBuffer = (statusList == null
+        || statusList.equals("output") ? new StringXBuilder() : null);
 
     // typically request:
     // "+scriptStarted,+scriptStatus,+scriptEcho,+scriptTerminated"
@@ -5072,19 +5074,19 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // bsA.andNot(bsB);
     int atomIndex = modelSet.getAtomCount();
     int atomno = modelSet.getAtomCountInModel(modelIndex);
-    StringBuffer sbConnect = new StringBuffer();
+    StringXBuilder sbConnect = new StringXBuilder();
     for (int i = 0; i < vConnections.size(); i++) {
       Atom a = vConnections.get(i);
       sbConnect.append(";  connect 0 100 ")
           .append("({" + (atomIndex++) + "}) ").append(
               "({" + a.index + "}) group;");
     }
-    StringBuffer sb = new StringBuffer();
-    sb.append(pts.length).append("\n").append(JmolConstants.ADD_HYDROGEN_TITLE)
+    StringXBuilder sb = new StringXBuilder();
+    sb.appendI(pts.length).append("\n").append(JmolConstants.ADD_HYDROGEN_TITLE)
         .append("#noautobond").append("\n");
     for (int i = 0; i < pts.length; i++)
-      sb.append("H ").append(pts[i].x).append(" ").append(pts[i].y).append(" ")
-          .append(pts[i].z).append(" - - - - ").append(++atomno).append('\n');
+      sb.append("H ").appendF(pts[i].x).append(" ").appendF(pts[i].y).append(" ")
+          .appendF(pts[i].z).append(" - - - - ").appendI(++atomno).appendC('\n');
     loadInlineScript(sb.toString(), '\n', true, null);
     eval.runScriptBuffer(sbConnect.toString(), null);
     BitSet bsB = getModelUndeletedAtomsBitSet(modelIndex);
@@ -8445,7 +8447,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getHelixData(bs, tokType);
   }
 
-  public String getPdbData(BitSet bs, OutputStringBuffer sb) {
+  public String getPdbData(BitSet bs, OutputStringBuilder sb) {
     if (bs == null)
       bs = getSelectionSet(true);
     return modelSet.getPdbAtomData(bs, sb);
@@ -8974,11 +8976,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
     String froot = fileName.substring(0, ptDot);
     String fext = fileName.substring(ptDot);
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     text_or_bytes = new Object[] { "" };
     if (bsFrames == null) { 
       transformManager.vibrationOn = true;
-      sb = new StringBuffer();
+      sb = new StringXBuilder();
       for (int i = 0; i < nVibes; i++) {
         for (int j = 0; j < 20; j++) {
           transformManager.setVibrationT(j/20f+0.2501f);
@@ -9005,7 +9007,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private boolean writeFrame(int n, String froot, String fext,
                              String[] fullPath, String type,
                              Object text_or_bytes, int quality, int width,
-                             int height, StringBuffer sb) {
+                             int height, StringXBuilder sb) {
     String fileName = "0000" + n;
     fileName = froot + fileName.substring(fileName.length() - 4) + fext;
     if (fullPath != null)
@@ -9950,7 +9952,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         + y + " " + factor : "");
   }
 
-  void getAtomicPropertyState(StringBuffer commands, byte type, BitSet bs,
+  void getAtomicPropertyState(StringXBuilder commands, byte type, BitSet bs,
                               String name, float[] data) {
     modelSet.getAtomicPropertyStateBuffer(commands, type, bs, name, data);
   }
@@ -9971,16 +9973,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     OutputStream os = getOutputStream(fileName, fullPath);
     if (os == null)
       return "";
-    OutputStringBuffer sb;
+    OutputStringBuilder sb;
     if (type.equals("PDB") || type.equals("PQR")) {
-      sb = new OutputStringBuffer(new BufferedOutputStream(os));
+      sb = new OutputStringBuilder(new BufferedOutputStream(os));
       sb.type = type;
       msg = getPdbData(null, sb);
     } else if (type.equals("FILE")) {
       msg = writeCurrentFile(os);
       // quality = Integer.MIN_VALUE;
     } else if (type.equals("PLOT")) {
-      sb = new OutputStringBuffer(new BufferedOutputStream(os));
+      sb = new OutputStringBuilder(new BufferedOutputStream(os));
       msg = modelSet.getPdbData(modelIndex, type2, getSelectionSet(false),
           parameters, sb);
     }
@@ -10124,7 +10126,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     shapeManager.deleteShapeAtoms(value, bs);
   }
 
-  public void getShapeState(StringBuffer commands, boolean isAll, int iShape) {
+  public void getShapeState(StringXBuilder commands, boolean isAll, int iShape) {
     shapeManager.getShapeState(commands, isAll, iShape);
   }
 
@@ -10281,7 +10283,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         return;
       undoWorking = true;
       BitSet bs;
-      StringBuffer sb = new StringBuffer();
+      StringXBuilder sb = new StringXBuilder();
       sb.append("#" + type + " " + taintedAtom + " " + (new Date()) + "\n");
       if (taintedAtom >= 0) {
         bs = getModelUndeletedAtomsBitSet(modelIndex);
@@ -10380,7 +10382,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         bsAtoms, true, true);
   }
 
-  void appendLoadStates(StringBuffer commands) {
+  void appendLoadStates(StringXBuilder commands) {
     if (ligandModelSet != null) {
       for (String key : ligandModelSet.keySet()) {
         String data = (String) ligandModels.get(key + "_data");
@@ -10392,7 +10394,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelSet.appendLoadStates(commands);
   }
 
-  public static void getInlineData(StringBuffer loadScript, String strModel,
+  public static void getInlineData(StringXBuilder loadScript, String strModel,
                                    boolean isAppend) {
     // because the model is a modelKit atom set
     DataManager.getInlineData(loadScript, strModel, isAppend, null);
@@ -10534,7 +10536,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (jsExporter != null)
       return jsExporter;
     boolean isJS = type.equals("JS");
-    Object output = (fileName == null ? new StringBuffer() : fileName);
+    Object output = (fileName == null ? new StringXBuilder() : fileName);
     JmolRendererInterface g3dExport = null;
     try {
       Class<?> export3Dclass = Class.forName(isJS ? "org.jmol.exportjs.Export3D" : "org.jmol.export.Export3D");

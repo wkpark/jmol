@@ -26,6 +26,8 @@ import javax.vecmath.Point3f;
 
 import org.jmol.util.Logger;
 
+import javax.util.StringXBuilder;
+
 //import org.jmol.util.Logger;
 
 /**
@@ -121,7 +123,7 @@ public final class Bspt {
   }
 
   public void dump() {
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     eleRoot.dump(0, sb);
     Logger.info(sb.toString());
   }

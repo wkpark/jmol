@@ -25,6 +25,8 @@ package org.jmol.popup;
 
 import java.util.Properties;
 
+import javax.util.StringXBuilder;
+
 import org.jmol.i18n.GT;
 import org.jmol.util.TextFormat;
 
@@ -986,18 +988,18 @@ class MainPopupResourceBundle extends PopupResource {
 
   private String dumpWords() {
     String[] wordContents = getWordContents();
-    StringBuffer s = new StringBuffer();
+    StringXBuilder s = new StringXBuilder();
     for (int i = 0; i < wordContents.length; i++) {
       String key = wordContents[i++];
       if (structure.getProperty(key) == null)
-        s.append(key).append(" | ").append(wordContents[i]).append('\n');
+        s.append(key).append(" | ").append(wordContents[i]).appendC('\n');
     }
     return s.toString();
   }
   
   private String dumpStructure(String[][] items) {
     String previous = "";
-    StringBuffer s = new StringBuffer();
+    StringXBuilder s = new StringXBuilder();
     for (int i = 0; i < items.length; i++) {
       String key = items[i][0];
       String label = words.getProperty(key);
@@ -1005,7 +1007,7 @@ class MainPopupResourceBundle extends PopupResource {
         key += " | " + label;
       s.append(key).append(" = ")
        .append(items[i][1] == null ? previous : (previous = items[i][1]))
-       .append('\n');
+       .appendC('\n');
     }
     return s.toString();
   }

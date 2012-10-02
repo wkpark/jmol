@@ -31,6 +31,8 @@ package org.jmol.export;
 
 import java.util.ArrayList;
 import javax.util.BitSet;
+import javax.util.StringXBuilder;
+
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -222,7 +224,7 @@ public class _IdtfExporter extends __CartesianExporter {
     output(pt, sbTemp, true);
   }
 
-  private void output(Tuple3f pt, StringBuffer sb, boolean checkpt) {
+  private void output(Tuple3f pt, StringXBuilder sb, boolean checkpt) {
     if (checkpt)
       checkPoint(pt);
     sb.append(round(pt.x)).append(" ").append(round(pt.y)).append(" ").append(round(pt.z)).append(" ");
@@ -251,9 +253,9 @@ public class _IdtfExporter extends __CartesianExporter {
   
   final private Matrix4f m = new Matrix4f();
 
-  final private StringBuffer models = new StringBuffer();
-  final private StringBuffer resources = new StringBuffer();
-  final private StringBuffer modifiers = new StringBuffer();
+  final private StringXBuilder models = new StringXBuilder();
+  final private StringXBuilder resources = new StringXBuilder();
+  final private StringXBuilder modifiers = new StringXBuilder();
 
   @Override
   protected void outputHeader() {
@@ -349,7 +351,7 @@ public class _IdtfExporter extends __CartesianExporter {
 
 
   private String getParentItem(String name, Matrix4f m) {
-    StringBuffer sb= new StringBuffer();
+    StringXBuilder sb= new StringXBuilder();
     sb.append("PARENT_NAME \"" + name + "\"\n");
     sb.append("PARENT_TM {\n");
     sb.append(m.m00 + " " + m.m10 + " " + m.m20 + " 0.0\n");
@@ -540,7 +542,7 @@ public class _IdtfExporter extends __CartesianExporter {
   }
 
   private String getSphereResource() {
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     sb.append("RESOURCE_LIST \"MODEL\" {\n")
     .append("RESOURCE_COUNT 1\n")
     .append("RESOURCE 0 {\n")
@@ -564,19 +566,19 @@ public class _IdtfExporter extends __CartesianExporter {
     int nFaces = indices.length;
     int vertexCount = vertexes.length;
     int normalCount = normals.length;
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     getMeshHeader(type, nFaces, vertexCount, normalCount, 0, sb);
-    StringBuffer sb1 = new StringBuffer();
+    StringXBuilder sb1 = new StringXBuilder();
     for (int i = 0; i < indices.length; i++) {
-      sb1.append(indices[i][0]).append(" ");
-      sb1.append(indices[i][1]).append(" ");
-      sb1.append(indices[i][2]).append(" ");
+      sb1.appendI(indices[i][0]).append(" ");
+      sb1.appendI(indices[i][1]).append(" ");
+      sb1.appendI(indices[i][2]).append(" ");
     }
     sb.append("MESH_FACE_POSITION_LIST { ");
-    sb.append(sb1);
+    sb.appendSB(sb1);
     sb.append("}\n");
     sb.append("MESH_FACE_NORMAL_LIST { ");
-    sb.append(sb1);
+    sb.appendSB(sb1);
     sb.append("}\n");
     sb.append("MESH_FACE_SHADING_LIST { ");
     for (int i = 0; i < nFaces; i++)
@@ -594,17 +596,17 @@ public class _IdtfExporter extends __CartesianExporter {
   }
 
   private void getMeshHeader(String type, int nFaces, int vertexCount, int normalCount,
-                             int colorCount, StringBuffer sb) {
+                             int colorCount, StringXBuilder sb) {
     sb.append("RESOURCE_LIST \"MODEL\" {\n")
         .append("RESOURCE_COUNT 1\n")
         .append("RESOURCE 0 {\n")
         .append("RESOURCE_NAME \"").append(type).append("_Mesh\"\n")
         .append("MODEL_TYPE \"MESH\"\n")
         .append("MESH {\n")
-        .append("FACE_COUNT ").append(nFaces).append("\n")
-        .append("MODEL_POSITION_COUNT ").append(vertexCount).append("\n")
-        .append("MODEL_NORMAL_COUNT ").append(normalCount).append("\n")
-        .append("MODEL_DIFFUSE_COLOR_COUNT ").append(colorCount).append("\n")
+        .append("FACE_COUNT ").appendI(nFaces).append("\n")
+        .append("MODEL_POSITION_COUNT ").appendI(vertexCount).append("\n")
+        .append("MODEL_NORMAL_COUNT ").appendI(normalCount).append("\n")
+        .append("MODEL_DIFFUSE_COLOR_COUNT ").appendI(colorCount).append("\n")
         .append("MODEL_SPECULAR_COLOR_COUNT 0\n")
         .append("MODEL_TEXTURE_COORD_COUNT 0\n")
         .append("MODEL_BONE_COUNT 0\n")
@@ -783,7 +785,7 @@ public class _IdtfExporter extends __CartesianExporter {
   }
 
 
-  private StringBuffer sbTemp;
+  private StringXBuilder sbTemp;
   
   @Override
   protected void outputFace(int[] face, int[] map, int faceVertexMax) {
@@ -811,14 +813,14 @@ public class _IdtfExporter extends __CartesianExporter {
 
     // coordinates, part 1
 
-    StringBuffer sbFaceCoordIndices = sbTemp = new StringBuffer();
+    StringXBuilder sbFaceCoordIndices = sbTemp = new StringXBuilder();
     int[] map = new int[nVertices];
     int nCoord = getCoordinateMap(vertices, map, null);
     outputIndices(indices, map, nPolygons, bsPolygons, faceVertexMax);
 
     // normals, part 1
 
-    StringBuffer sbFaceNormalIndices = sbTemp = new StringBuffer();
+    StringXBuilder sbFaceNormalIndices = sbTemp = new StringXBuilder();
     List<String> vNormals = null;
     if (normals != null) {
       vNormals = new ArrayList<String>();
@@ -830,7 +832,7 @@ public class _IdtfExporter extends __CartesianExporter {
 
     // colors, part 1
 
-    StringBuffer sbColorIndexes = new StringBuffer();
+    StringXBuilder sbColorIndexes = new StringXBuilder();
     if (colorList != null) {
       boolean isAll = (bsPolygons == null);
       int i0 = (isAll ? nPolygons - 1 : bsPolygons.nextSetBit(0));
@@ -854,12 +856,12 @@ public class _IdtfExporter extends __CartesianExporter {
 
     // coordinates, part 2
 
-    StringBuffer sbCoords = sbTemp = new StringBuffer();
+    StringXBuilder sbCoords = sbTemp = new StringXBuilder();
     outputVertices(vertices, nVertices, offset);
 
     // normals, part 2
 
-    StringBuffer sbNormals = new StringBuffer();
+    StringXBuilder sbNormals = new StringXBuilder();
     int nNormals = 0;
     if (normals != null) {
       nNormals = vNormals.size();
@@ -870,7 +872,7 @@ public class _IdtfExporter extends __CartesianExporter {
 
     // colors, part 2
 
-    StringBuffer sbColors = new StringBuffer();
+    StringXBuilder sbColors = new StringXBuilder();
     int nColors = 0;
     if (colorList != null) {
       nColors = colorList.size();
@@ -891,31 +893,31 @@ public class _IdtfExporter extends __CartesianExporter {
   }
 
   private void addMeshData(String key, int nFaces, int nCoord, int nNormals, int nColors, 
-                           StringBuffer sbFaceCoordIndices,
-                           StringBuffer sbFaceNormalIndices,
-                           StringBuffer sbColorIndices, 
-                           StringBuffer sbCoords,
-                           StringBuffer sbNormals, 
-                           StringBuffer sbColors) {
+                           StringXBuilder sbFaceCoordIndices,
+                           StringXBuilder sbFaceNormalIndices,
+                           StringXBuilder sbColorIndices, 
+                           StringXBuilder sbCoords,
+                           StringXBuilder sbNormals, 
+                           StringXBuilder sbColors) {
     getMeshHeader(key, nFaces, nCoord, nNormals, nColors, models);
     models.append("MESH_FACE_POSITION_LIST { ")
-      .append(sbFaceCoordIndices).append(" }\n")
+      .appendSB(sbFaceCoordIndices).append(" }\n")
       .append("MESH_FACE_NORMAL_LIST { ")
-      .append(sbFaceNormalIndices).append(" }\n");
+      .appendSB(sbFaceNormalIndices).append(" }\n");
     models.append("MESH_FACE_SHADING_LIST { ");
     for (int i = 0; i < nFaces; i++)
       models.append("0 ");
     models.append("}\n");
     if (nColors > 0)
       models.append("MESH_FACE_DIFFUSE_COLOR_LIST { ")
-            .append(sbColorIndices).append(" }\n");
+            .appendSB(sbColorIndices).append(" }\n");
     models.append("MODEL_POSITION_LIST { ")
-      .append(sbCoords).append(" }\n")
+      .appendSB(sbCoords).append(" }\n")
       .append("MODEL_NORMAL_LIST { ")
-      .append(sbNormals).append(" }\n");
+      .appendSB(sbNormals).append(" }\n");
     if (nColors > 0)
       models.append("MODEL_DIFFUSE_COLOR_LIST { ")
-            .append(sbColors)
+            .appendSB(sbColors)
             .append(" }\n");
     models.append("}}}\n");
   }

@@ -67,7 +67,7 @@ public class ConsoleTextArea extends JTextArea {
 
       public void run() {
         Thread.currentThread().setName("ConsoleReaderThread");
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         try {
           String s;
           Document doc = getDocument();

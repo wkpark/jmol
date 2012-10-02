@@ -40,6 +40,8 @@ import org.jmol.util.Escape;
 import org.jmol.util.Quadric;
 import org.jmol.viewer.StateManager;
 
+import javax.util.StringXBuilder;
+
 public class Ellipsoids extends AtomShape {
 
   public Map<String, Ellipsoid> htEllipsoids = new Hashtable<String, Ellipsoid>();
@@ -251,13 +253,13 @@ public class Ellipsoids extends AtomShape {
 
   @Override
   public String getShapeState() {
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     getStateID(sb);
     getStateAtoms(sb);
     return sb.toString();
   }
 
-  private void getStateID(StringBuffer sb) {
+  private void getStateID(StringXBuilder sb) {
     if (!isActive || madset == null)
       return;
     Iterator<Ellipsoid> e = htEllipsoids.values().iterator();
@@ -267,7 +269,7 @@ public class Ellipsoids extends AtomShape {
       if (ellipsoid.axes == null || ellipsoid.lengths == null)
         continue;
       sb.append("  Ellipsoid ID ").append(ellipsoid.id).append(" modelIndex ")
-          .append(ellipsoid.modelIndex).append(" center ").append(
+          .appendI(ellipsoid.modelIndex).append(" center ").append(
               Escape.escapePt(ellipsoid.center)).append(" axes");
       for (int i = 0; i < 3; i++) {
         v1.setT(ellipsoid.axes[i]);
@@ -281,7 +283,7 @@ public class Ellipsoids extends AtomShape {
     }
   }
 
-  private void getStateAtoms(StringBuffer sb) {
+  private void getStateAtoms(StringXBuilder sb) {
     for (int ii = 0; ii < 3; ii++) {
       if (madset == null || madset[ii] == null)
         continue;

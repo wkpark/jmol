@@ -27,6 +27,8 @@ package org.jmol.modelset;
 
 import java.util.ArrayList;
 import javax.util.BitSet;
+import javax.util.StringXBuilder;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
@@ -60,7 +62,7 @@ import org.jmol.util.Quadric;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
-import org.jmol.util.OutputStringBuffer;
+import org.jmol.util.OutputStringBuilder;
 import org.jmol.util.Parser;
 import org.jmol.util.Point3fi;
 import org.jmol.util.Quaternion;
@@ -607,7 +609,7 @@ abstract public class ModelCollection extends BondCollection {
       if (!isValid())
         return "";
       
-      StringBuffer sb = new StringBuffer(script1);
+      StringXBuilder sb = StringXBuilder.newS(script1);
       if (bsBonds != null)
         sb.append(" ").append(Escape.escapeBs(bsBonds, false));
       if (bsAtoms1 != null)
@@ -1180,14 +1182,14 @@ abstract public class ModelCollection extends BondCollection {
    * @param bs
    *        selected atoms
    * @param sb
-   *        StringBuffer or BufferedWriter
+   *        StringXBuilder or BufferedWriter
    * @return PDB file data string
    */
-  public String getPdbAtomData(BitSet bs, OutputStringBuffer sb) {
+  public String getPdbAtomData(BitSet bs, OutputStringBuilder sb) {
     if (atomCount == 0 || bs.nextSetBit(0) < 0)
       return "";
     if (sb == null)
-      sb = new OutputStringBuffer(null);
+      sb = new OutputStringBuilder(null);
     int iModel = atoms[bs.nextSetBit(0)].modelIndex;
     int iModelLast = -1;
     boolean isPQR = "PQR".equals(sb.type);
@@ -1207,7 +1209,7 @@ abstract public class ModelCollection extends BondCollection {
     }
     int lastAtomIndex = bs.length() - 1;
     boolean showModels = (iModel != atoms[lastAtomIndex].modelIndex);
-    StringBuffer sbCONECT = (showModels ? null : new StringBuffer());
+    StringXBuilder sbCONECT = (showModels ? null : new StringXBuilder());
     boolean isMultipleBondPDB = models[iModel].isPdbWithMultipleBonds;
     LabelToken[] tokens;
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
@@ -1270,7 +1272,7 @@ abstract public class ModelCollection extends BondCollection {
                   TextFormat.formatStringI("%5i", "i", iThis));
               for (int k = 0; k < n; k++)
                 sbCONECT.append(TextFormat.formatStringI("%5i", "i", iOther));
-              sbCONECT.append('\n');
+              sbCONECT.appendC('\n');
               break;
             }
           }
@@ -1290,7 +1292,7 @@ abstract public class ModelCollection extends BondCollection {
    *****************************/
 
   public String getPdbData(int modelIndex, String type, BitSet bsSelected,
-                           Object[] parameters, OutputStringBuffer sb) {
+                           Object[] parameters, OutputStringBuilder sb) {
     if (isJmolDataFrameForModel(modelIndex))
       modelIndex = getJmolDataSourceFrame(modelIndex);
     if (modelIndex < 0)
@@ -1300,8 +1302,8 @@ abstract public class ModelCollection extends BondCollection {
       return null;
     Model model = models[modelIndex];
     if (sb == null)
-      sb = new OutputStringBuffer(null);
-    StringBuffer pdbCONECT = new StringBuffer();
+      sb = new OutputStringBuilder(null);
+    StringXBuilder pdbCONECT = new StringXBuilder();
     boolean isDraw = (type.indexOf("draw") >= 0);
     BitSet bsAtoms = null;
     BitSet bsWritten = new BitSet();
@@ -1354,7 +1356,7 @@ abstract public class ModelCollection extends BondCollection {
           pdbCONECT.append("CONECT").append(
               TextFormat.formatStringI("%5i", "i", atomLast.getAtomNumber()))
               .append(TextFormat.formatStringI("%5i", "i", a.getAtomNumber()))
-              .append('\n');
+              .appendC('\n');
         atomLast = a;
       }
     }
@@ -1629,7 +1631,7 @@ abstract public class ModelCollection extends BondCollection {
     Object[][] infolist = (Object[][]) sginfo.get("operations");
     if (infolist == null)
       return "";
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     symOp--;
     for (int i = 0; i < infolist.length; i++) {
       if (infolist[i] == null || symOp >= 0 && symOp != i)
@@ -1637,13 +1639,13 @@ abstract public class ModelCollection extends BondCollection {
       if (drawID != null)
         return (String) infolist[i][3];
       if (sb.length() > 0)
-        sb.append('\n');
+        sb.appendC('\n');
       if (!labelOnly) {
         if (symOp < 0)
-          sb.append(i + 1).append("\t");
-        sb.append(infolist[i][0]).append("\t");
+          sb.appendI(i + 1).append("\t");
+        sb.append((String)infolist[i][0]).append("\t"); //xyz
       }
-      sb.append(infolist[i][2]);
+      sb.append((String)infolist[i][2]); //desc
     }
     if (sb.length() == 0 && drawID != null)
       sb.append("draw " + drawID + "* delete");
@@ -2324,7 +2326,7 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   private String getBasePairInfo(BitSet bs) {
-    StringBuffer info = new StringBuffer();
+    StringXBuilder info = new StringXBuilder();
     List<Bond> vHBonds = new ArrayList<Bond>();
     calcRasmolHydrogenBonds(bs, bs, vHBonds, true, 1, false, null);
     for (int i = vHBonds.size(); --i >= 0;) {
@@ -2337,7 +2339,7 @@ abstract public class ModelCollection extends BondCollection {
     return info.toString();
   }
 
-  private static void getAtomResidueInfo(StringBuffer info, Atom atom) {
+  private static void getAtomResidueInfo(StringXBuilder info, Atom atom) {
     info.append("[").append(atom.getGroup3(false)).append("]").append(
         atom.getSeqcodeString()).append(":");
     char id = atom.getChainID();
@@ -2935,8 +2937,8 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public String getModelInfoAsString() {
-    StringBuffer sb = new StringBuffer("<models count=\"");
-    sb.append(modelCount).append("\" modelSetHasVibrationVectors=\"").append(
+    StringXBuilder sb = new StringXBuilder().append("<models count=\"");
+    sb.appendI(modelCount).append("\" modelSetHasVibrationVectors=\"").append(
         modelSetHasVibrationVectors() + "\">\n<properties>");
     if (modelSetProperties != null) {
       Enumeration<?> e = modelSetProperties.propertyNames();
@@ -2948,7 +2950,7 @@ abstract public class ModelCollection extends BondCollection {
       sb.append("\n</properties>");
     }
     for (int i = 0; i < modelCount; ++i) {
-      sb.append("\n<model index=\"").append(i)
+      sb.append("\n<model index=\"").appendI(i)
           .append("\" n=\"").append(getModelNumberDotted(i))
           .append("\" id=").append(Escape.escapeStr("" + getModelAuxiliaryInfoValue(i, "modelID")));
           int ib = getBaseModelIndex(i);
@@ -2957,7 +2959,7 @@ abstract public class ModelCollection extends BondCollection {
           sb.append(" name=").append(Escape.escapeStr(getModelName(i)))
           .append(" title=").append(Escape.escapeStr(
               getModelTitle(i)))
-           .append(" hasVibrationVectors=\"").append(
+           .append(" hasVibrationVectors=\"").appendB(
               modelHasVibrationVectors(i)).append("\" />");
     }
     sb.append("\n</models>");
@@ -2965,7 +2967,7 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public String getSymmetryInfoAsString() {
-    StringBuffer sb = new StringBuffer("Symmetry Information:");
+    StringXBuilder sb = new StringXBuilder().append("Symmetry Information:");
     for (int i = 0; i < modelCount; ++i)
       sb.append("\nmodel #").append(getModelNumberDotted(i)).append("; name=")
           .append(getModelName(i)).append("\n").append(
@@ -3009,7 +3011,7 @@ abstract public class ModelCollection extends BondCollection {
     boolean asSDF = type.equalsIgnoreCase("SDF");
     boolean asXYZVIB = type.equalsIgnoreCase("XYZVIB");
     boolean asChemDoodle = type.equalsIgnoreCase("CD");
-    StringBuffer mol = new StringBuffer();
+    StringXBuilder mol = new StringXBuilder();
     if (!asXYZVIB && !asChemDoodle) {
       mol.append(isModelKit ? "Jmol Model Kit" : viewer.getFullPathName()
           .replace('\\', '/'));
@@ -3039,7 +3041,7 @@ abstract public class ModelCollection extends BondCollection {
     Quaternion q = (doTransform ? viewer.getRotationQuaternion() : null);
     if (asSDF) {
       String header = mol.toString();
-      mol = new StringBuffer();
+      mol = new StringXBuilder();
       BitSet bsModels = getModelBitSet(bsAtoms, true);
       for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels
           .nextSetBit(i + 1)) {
@@ -3063,7 +3065,7 @@ abstract public class ModelCollection extends BondCollection {
         bsTemp.and(getModelAtomBitSetIncludingDeleted(i, false));
         if (bsTemp.cardinality() == 0)
           continue;
-        mol.append(bsTemp.cardinality()).append('\n');
+        mol.appendI(bsTemp.cardinality()).appendC('\n');
         Properties props = models[i].properties;
         mol.append("Model[" + (i + 1) + "]: ");
         if (frameTitles[i] != null && frameTitles[i].length() > 0) {
@@ -3071,7 +3073,7 @@ abstract public class ModelCollection extends BondCollection {
         } else if (props == null) {
           mol.append("Jmol " + Viewer.getJmolVersion());
         } else {
-          StringBuffer sb = new StringBuffer();
+          StringXBuilder sb = new StringXBuilder();
           Enumeration<?> e = props.propertyNames();
           String path = null;
           while (e.hasMoreElements()) {
@@ -3087,7 +3089,7 @@ abstract public class ModelCollection extends BondCollection {
           path = sb.substring(sb.length() > 0 ? 1 : 0);
           mol.append(path.replace('\n', ' '));
         }
-        mol.append('\n');
+        mol.appendC('\n');
         for (int j = bsTemp.nextSetBit(0); j >= 0; j = bsTemp.nextSetBit(j + 1))
           mol.append(LabelToken.formatLabelAtomArray(viewer, atoms[j],
               (getVibrationVector(j, false) == null ? tokens2 : tokens1), '\0',
@@ -3100,7 +3102,7 @@ abstract public class ModelCollection extends BondCollection {
         : "ERROR: Too many atoms or bonds -- use V3000 format.");
   }
 
-  private boolean addMolFile(StringBuffer mol, BitSet bsAtoms, BitSet bsBonds,
+  private boolean addMolFile(StringXBuilder mol, BitSet bsAtoms, BitSet bsBonds,
                              boolean asV3000, boolean asChemDoodle, Quaternion q) {
     int nAtoms = bsAtoms.cardinality();
     int nBonds = bsBonds.cardinality();
@@ -3120,8 +3122,8 @@ abstract public class ModelCollection extends BondCollection {
     if (!asChemDoodle)
       mol.append("\n");
     if (asV3000) {
-      mol.append("M  V30 BEGIN CTAB\nM  V30 COUNTS ").append(nAtoms)
-          .append(" ").append(nBonds).append(" 0 0 0\n").append(
+      mol.append("M  V30 BEGIN CTAB\nM  V30 COUNTS ").appendI(nAtoms)
+          .append(" ").appendI(nBonds).append(" 0 0 0\n").append(
               "M  V30 BEGIN ATOM\n");
     }
     for (int i = bsAtoms.nextSetBit(0), n = 0; i >= 0; i = bsAtoms
@@ -3148,11 +3150,11 @@ abstract public class ModelCollection extends BondCollection {
     if (!asChemDoodle && !asV3000) {
       float[] pc = getPartialCharges();
       if (pc != null) {
-        mol.append("> <JMOL_PARTIAL_CHARGES>\n").append(nAtoms)
-            .append('\n');
+        mol.append("> <JMOL_PARTIAL_CHARGES>\n").appendI(nAtoms)
+            .appendC('\n');
         for (int i = bsAtoms.nextSetBit(0), n = 0; i >= 0; i = bsAtoms
             .nextSetBit(i + 1))
-          mol.append(++n).append(" ").append(pc[i]).append('\n');
+          mol.appendI(++n).append(" ").appendF(pc[i]).appendC('\n');
       }
     }
     return true;
@@ -3195,7 +3197,7 @@ abstract public class ModelCollection extends BondCollection {
   M  END
    */
 
-  private void getAtomRecordMOL(StringBuffer mol, int n, Atom a, Quaternion q,
+  private void getAtomRecordMOL(StringXBuilder mol, int n, Atom a, Quaternion q,
                                 Point3f pTemp, boolean asV3000,
                                 boolean asChemDoodle) {
     //   -0.9920    3.2030    9.1570 Cl  0  0  0  0  0
@@ -3214,13 +3216,13 @@ abstract public class ModelCollection extends BondCollection {
     int iso = a.getIsotopeNumber();
     int charge = a.getFormalCharge();
     if (asV3000) {
-      mol.append("M  V30 ").append(n).append(" ").append(sym).append(" ")
-          .append(pTemp.x).append(" ").append(pTemp.y).append(" ").append(
+      mol.append("M  V30 ").appendI(n).append(" ").append(sym).append(" ")
+          .appendF(pTemp.x).append(" ").appendF(pTemp.y).append(" ").appendF(
               pTemp.z).append(" 0");
       if (charge != 0)
-        mol.append(" CHG=").append(charge);
+        mol.append(" CHG=").appendI(charge);
       if (iso != 0)
-        mol.append(" MASS=").append(iso);
+        mol.append(" MASS=").appendI(iso);
       mol.append("\n");
     } else if (asChemDoodle) {
       if (n != 1)
@@ -3229,11 +3231,11 @@ abstract public class ModelCollection extends BondCollection {
       if (a.getElementNumber() != 6)
         mol.append("\"l\":\"").append(a.getElementSymbol()).append("\",");
       if (charge != 0)
-        mol.append("\"c\":").append(charge).append(",");
+        mol.append("\"c\":").appendI(charge).append(",");
       if (iso != 0 && iso != Elements.getNaturalIsotope(elemNo))
-        mol.append("\"m\":").append(iso).append(",");
-      mol.append("\"x\":").append(a.x*20).append(",\"y\":").append(-a.y*20).append(
-          ",\"z\":").append(a.z*20).append("}");
+        mol.append("\"m\":").appendI(iso).append(",");
+      mol.append("\"x\":").appendF(a.x*20).append(",\"y\":").appendF(-a.y*20).append(
+          ",\"z\":").appendF(a.z*20).append("}");
     } else {
       mol.append(TextFormat.sprintf("%10.5p%10.5p%10.5p",
           new Object[] { pTemp }));
@@ -3249,7 +3251,7 @@ abstract public class ModelCollection extends BondCollection {
     }
   }
 
-  private void getBondRecordMOL(StringBuffer mol, int n, Bond b, int[] atomMap,
+  private void getBondRecordMOL(StringXBuilder mol, int n, Bond b, int[] atomMap,
                                 boolean asV3000, boolean asChemDoodle) {
     //  1  2  1  0
     int a1 = atomMap[b.atom1.index];
@@ -3275,19 +3277,19 @@ abstract public class ModelCollection extends BondCollection {
       break;
     }
     if (asV3000) {
-      mol.append("M  V30 ").append(n).append(" ").append(order).append(" ")
-          .append(a1).append(" ").append(a2).append('\n');
+      mol.append("M  V30 ").appendI(n).append(" ").appendI(order).append(" ")
+          .appendI(a1).append(" ").appendI(a2).appendC('\n');
     } else if (asChemDoodle) {
       if (n != 1)
         mol.append(",");
-      mol.append("{\"b\":").append(a1 - 1).append(",\"e\":").append(a2 - 1);
+      mol.append("{\"b\":").appendI(a1 - 1).append(",\"e\":").appendI(a2 - 1);
       if (order != 1)
-        mol.append(",\"o\":").append(order);
+        mol.append(",\"o\":").appendI(order);
       mol.append("}");
     } else {
       TextFormat.rFill(mol, "   ", "" + a1);
       TextFormat.rFill(mol, "   ", "" + a2);
-      mol.append("  ").append(order).append("  0  0  0\n");
+      mol.append("  ").appendI(order).append("  0  0  0\n");
     }
   }
 
@@ -3301,13 +3303,13 @@ abstract public class ModelCollection extends BondCollection {
     default:
       return super.getChimeInfo(tok, bs);
     }
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     models[0].getChimeInfo(sb, 0);
-    return sb.append('\n').toString().substring(1);
+    return sb.appendC('\n').toString().substring(1);
   }
 
   public String getModelFileInfo(BitSet frames) {
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     for (int i = 0; i < modelCount; ++i) {
       if (frames != null && !frames.get(i))
         continue;
@@ -3762,7 +3764,7 @@ abstract public class ModelCollection extends BondCollection {
 
   @SuppressWarnings("unchecked")
   public String getMoInfo(int modelIndex) {
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     for (int m = 0; m < modelCount; m++) {
       if (modelIndex >= 0 && m != modelIndex) {
         continue;
@@ -3905,8 +3907,8 @@ abstract public class ModelCollection extends BondCollection {
     deleteBonds(bsBonds, false);
   }
 
-  public void appendLoadStates(StringBuffer cmds) {
-    StringBuffer commands = new StringBuffer();
+  public void appendLoadStates(StringXBuilder cmds) {
+    StringXBuilder commands = new StringXBuilder();
     for (int i = 0; i < modelCount; i++) {
       if (isJmolDataFrameForModel(i) || isTrajectorySubFrame(i))
         continue;
@@ -3921,11 +3923,11 @@ abstract public class ModelCollection extends BondCollection {
           if (tainted[TAINT_ELEMENT] != null)
             tainted[TAINT_ELEMENT].andNot(bs);
         }
-        models[i].loadScript = new StringBuffer();
+        models[i].loadScript = new StringXBuilder();
         Viewer.getInlineData(commands, getModelExtract(bs, false, true, "MOL"),
             i > 0);
       } else {
-        commands.append(models[i].loadScript);
+        commands.appendSB(models[i].loadScript);
       }
     }
     String s = commands.toString();
@@ -3960,7 +3962,7 @@ abstract public class ModelCollection extends BondCollection {
    * </bondArray> </molecule>
    */
   public String getModelCml(BitSet bs, int atomsMax, boolean addBonds) {
-    StringBuffer sb = new StringBuffer("");
+    StringXBuilder sb = new StringXBuilder();
     int nAtoms = BitSetUtil.cardinalityOf(bs);
     if (nAtoms == 0)
       return "";
@@ -4112,7 +4114,7 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public String getInlineData(int modelIndex) {
-    StringBuffer data = null;
+    StringXBuilder data = null;
     if (modelIndex >= 0)
       data = models[modelIndex].loadScript;
     else

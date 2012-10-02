@@ -48,6 +48,8 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.util.TextFormat;
 
+import javax.util.StringXBuilder;
+
 /*
  * Notes 9/2006 Bob Hanson
  * 
@@ -184,7 +186,7 @@ public abstract class AtomSetCollectionReader {
 
   // private state variables
 
-  private StringBuffer loadNote = new StringBuffer();
+  private StringXBuilder loadNote = new StringXBuilder();
   private boolean doConvertToFractional;
   private boolean fileCoordinatesAreFractional;
   private boolean merging;
@@ -380,7 +382,11 @@ public abstract class AtomSetCollectionReader {
   }
 
   private void setError(Throwable e) {
-    e.printStackTrace();
+    try{ 
+      e.printStackTrace();
+    } catch (Exception ee) {
+      Logger.error(e.toString());
+    }
     if (line == null)
       atomSetCollection.errorMessage = "Unexpected end of file after line "
           + --ptLine + ":\n" + prevline;

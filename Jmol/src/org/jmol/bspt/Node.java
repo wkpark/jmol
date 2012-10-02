@@ -22,6 +22,7 @@
  */
 package org.jmol.bspt;
 
+import javax.util.StringXBuilder;
 import javax.vecmath.Point3f;
 
 import org.jmol.util.Logger;
@@ -115,7 +116,7 @@ class Node extends Element {
   }
   
   @Override
-  void dump(int level, StringBuffer sb) {
+  void dump(int level, StringXBuilder sb) {
     sb.append("\nnode LEFT" + level);
     eleLeft.dump(level + 1, sb);
     for (int i = 0; i < level; ++i)

@@ -50,6 +50,8 @@ import org.jmol.script.Token;
 import org.jmol.shape.Mesh;
 import org.jmol.shape.MeshCollection;
 
+import javax.util.StringXBuilder;
+
 public class Draw extends MeshCollection {
 
   // bob hanson hansonr@stolaf.edu 3/2006
@@ -1287,7 +1289,7 @@ public void initShape() {
     if (mesh != null)
       return getDrawCommand(mesh, mesh.modelIndex);
     
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     String key = (explicitID && previousMeshID != null
         && TextFormat.isWild(previousMeshID) ? previousMeshID.toUpperCase()
         : null);
@@ -1307,7 +1309,7 @@ public void initShape() {
         && mesh.lineData == null
         && mesh.drawVertexCount == 0 && mesh.drawVertexCounts == null)
       return "";
-    StringBuffer str = new StringBuffer();
+    StringXBuilder str = new StringXBuilder();
     int modelCount = viewer.getModelCount();
     if (!mesh.isFixed && iModel >= 0 && modelCount > 1)
       appendCmd(str, "frame " + viewer.getModelNumberDotted(iModel));
@@ -1322,14 +1324,14 @@ public void initShape() {
       str.append(" barb");
     if (mesh.scale != 1
         && (mesh.haveXyPoints || mesh.drawType == EnumDrawType.CIRCLE || mesh.drawType == EnumDrawType.ARC))
-      str.append(" scale ").append(mesh.scale);
+      str.append(" scale ").appendF(mesh.scale);
     if (mesh.width != 0)
-      str.append(" diameter ").append(
+      str.append(" diameter ").appendF(
           (mesh.drawType == EnumDrawType.CYLINDER ? Math.abs(mesh.width)
               : mesh.drawType == EnumDrawType.CIRCULARPLANE ? Math
                   .abs(mesh.width * mesh.scale) : mesh.width));
     else if (mesh.diameter > 0)
-      str.append(" diameter ").append(mesh.diameter);
+      str.append(" diameter ").appendI(mesh.diameter);
     if (mesh.lineData != null) {
       str.append("  lineData [");
       int n = mesh.lineData.size();
@@ -1350,7 +1352,7 @@ public void initShape() {
       case MULTIPLE:
         break;
       case POLYGON:
-        str.append(" POLYGON ").append(nVertices);
+        str.append(" POLYGON ").appendI(nVertices);
         break;
       case PLANE:
         if (nVertices == 4)
@@ -1399,7 +1401,7 @@ public void initShape() {
       } else if (mesh.drawType == EnumDrawType.POLYGON) {
         for (int i = 0; i < mesh.vertexCount; i++)
           str.append(" ").append(Escape.escapePt(mesh.vertices[i]));
-        str.append(" ").append(mesh.polygonCount);
+        str.append(" ").appendI(mesh.polygonCount);
         for (int i = 0; i < mesh.polygonCount; i++)
           if (mesh.polygonIndexes[i] == null)
             str.append(" [0 0 0 0]");
@@ -1521,7 +1523,8 @@ public void initShape() {
 
   @Override
   public String getShapeState() {
-    StringBuffer s = new StringBuffer("\n");
+    StringXBuilder s = new StringXBuilder();
+    s.append("\n");
     appendCmd(s, "draw delete");
     for (int i = 0; i < meshCount; i++) {
       DrawMesh mesh = dmeshes[i];

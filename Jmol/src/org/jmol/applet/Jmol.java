@@ -184,7 +184,7 @@ public class Jmol implements WrappedApplet {
   protected String htmlName;
   protected String fullName;
   protected String syncId;
-  protected StringBuffer outputBuffer;
+  protected StringBuilder outputBuffer;
 
   protected AppletWrapper appletWrapper;
   protected Object gRight;
@@ -691,7 +691,7 @@ public class Jmol implements WrappedApplet {
   public String scriptWaitOutput(String script) {
     if (script == null || script.length() == 0)
       return "";
-    outputBuffer = new StringBuffer();
+    outputBuffer = new StringBuilder();
     viewer.scriptWaitStatus(script, "");
     String str = (outputBuffer == null ? "" : outputBuffer.toString());
     outputBuffer = null;
@@ -1278,7 +1278,7 @@ public class Jmol implements WrappedApplet {
           Logger.error(fullName + " couldn't find applet " + appletName);
         return "";
       }
-      StringBuffer sb = (isSync ? null : new StringBuffer());
+      StringBuilder sb = (isSync ? null : new StringBuilder());
       boolean getGraphics = (isSync && script.equals(Viewer.SYNC_GRAPHICS_MESSAGE));
       boolean setNoGraphics = (isSync && script.equals(Viewer.SYNC_NO_GRAPHICS_MESSAGE));
       if (getGraphics)

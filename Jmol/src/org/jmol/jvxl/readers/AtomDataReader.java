@@ -44,6 +44,8 @@ import org.jmol.constant.EnumVdw;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.MeshData;
 
+import javax.util.StringXBuilder;
+
 abstract class AtomDataReader extends VolumeDataReader {
 
   protected float maxDistance;
@@ -320,10 +322,10 @@ abstract class AtomDataReader extends VolumeDataReader {
   }
 
   protected void setHeader(String calcType, String line2) {
-    jvxlFileHeaderBuffer = new StringBuffer();
+    jvxlFileHeaderBuffer = new StringXBuilder();
     if (atomData.programInfo != null)
       jvxlFileHeaderBuffer.append("#created by ").append(atomData.programInfo)
-          .append(" on ").append(new Date()).append("\n");
+          .append(" on ").append("" + new Date()).append("\n");
     jvxlFileHeaderBuffer.append(calcType).append("\n").append(line2).append(
         "\n");
   }

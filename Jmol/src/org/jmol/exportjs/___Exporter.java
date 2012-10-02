@@ -36,6 +36,8 @@ import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import javax.util.BitSet;
+import javax.util.StringXBuilder;
+
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
@@ -145,7 +147,7 @@ public abstract class ___Exporter {
   protected Viewer viewer;
   protected double privateKey;
   protected JmolRendererInterface jmolRenderer;
-  protected StringBuffer output;
+  protected StringXBuilder output;
   protected BufferedWriter bw;
   private FileOutputStream os;
   protected String fileName;
@@ -238,7 +240,7 @@ public abstract class ___Exporter {
         return false;
       }
     } else {
-      this.output = (StringBuffer) output;
+      this.output = (StringXBuilder) output;
     }
     outputHeader();
     return true;
@@ -295,7 +297,7 @@ public abstract class ___Exporter {
   protected String getJmolPerspective() {
     if (commentChar == null)
       return "";
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     sb.append(commentChar).append("Jmol perspective:");
     sb.append("\n").append(commentChar).append("screen width height dim: " + screenWidth + " " + screenHeight + " " + viewer.getScreenDim());
     sb.append("\n").append(commentChar).append("perspectiveDepth: " + viewer.getPerspectiveDepth());

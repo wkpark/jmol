@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import javax.util.BitSet;
+import javax.util.StringXBuilder;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -860,7 +862,7 @@ public class _ObjExporter extends __CartesianExporter {
       return;
     }
     textures.add(scolix);
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     sb.append("\nnewmtl " + (name == null ? getTextureName(colix) : name) + "\n");
     // Highlight exponent (0-1000) High is a tight, concentrated highlight
     sb.append(" Ns 163\n");

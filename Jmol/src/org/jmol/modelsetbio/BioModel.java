@@ -45,12 +45,14 @@ import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
-import org.jmol.util.OutputStringBuffer;
+import org.jmol.util.OutputStringBuilder;
 import org.jmol.util.TextFormat;
 
 
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
+
+import javax.util.StringXBuilder;
 
 public final class BioModel extends Model{
 
@@ -146,7 +148,7 @@ public final class BioModel extends Model{
   }
 
   @Override
-  public void getDefaultLargePDBRendering(StringBuffer sb, int maxAtoms) {
+  public void getDefaultLargePDBRendering(StringXBuilder sb, int maxAtoms) {
     BitSet bs = new BitSet();
     if (getBondCount() == 0)
       bs = bsAtoms;
@@ -454,7 +456,7 @@ public final class BioModel extends Model{
   
   @SuppressWarnings("incomplete-switch")
   @Override
-  public void getChimeInfo(StringBuffer sb, int nHetero) {
+  public void getChimeInfo(StringXBuilder sb, int nHetero) {
     int n = 0;
     Model[] models = modelSet.getModels();
     int modelCount = modelSet.getModelCount();
@@ -516,10 +518,10 @@ public final class BioModel extends Model{
     boolean pdbFileMode = (mode == 1);
     boolean scriptMode = (mode == 0);
     BitSet bs = null;
-    StringBuffer cmd = new StringBuffer();
-    StringBuffer sbTurn = new StringBuffer();
-    StringBuffer sbHelix = new StringBuffer();
-    StringBuffer sbSheet = new StringBuffer();
+    StringXBuilder cmd = new StringXBuilder();
+    StringXBuilder sbTurn = new StringXBuilder();
+    StringXBuilder sbHelix = new StringXBuilder();
+    StringXBuilder sbSheet = new StringXBuilder();
     EnumStructure type = EnumStructure.NONE;
     EnumStructure subtype = EnumStructure.NONE;
     int id = 0;
@@ -580,7 +582,7 @@ public final class BioModel extends Model{
               } else {
                 String str;
                 int nx;
-                StringBuffer sb;
+                StringXBuilder sb;
                 // NNN III GGG C RRRR GGG C RRRR
                 // HELIX 99 99 LYS F 281 LEU F 293 1
                 // NNN III 2 GGG CRRRR GGG CRRRR
@@ -637,7 +639,7 @@ public final class BioModel extends Model{
                 str = TextFormat.formatStringI(str, "RESB", res2);
                 sb.append(str);
                 if (showMode)
-                  sb.append(" strucno= ").append(lastId);
+                  sb.append(" strucno= ").appendI(lastId);
                 sb.append("\n");
 
                 /*
@@ -677,8 +679,8 @@ public final class BioModel extends Model{
       }
     if (n > 0)
       cmd.append("\n");
-    return (scriptMode ? cmd.toString() : sbHelix.append(sbSheet).append(
-        sbTurn).append(cmd).toString());
+    return (scriptMode ? cmd.toString() : sbHelix.appendSB(sbSheet).appendSB(
+        sbTurn).appendSB(cmd).toString());
   }
 
   private final static String[] pdbRecords = { "ATOM  ", "MODEL ", "HETATM" };
@@ -715,7 +717,7 @@ public final class BioModel extends Model{
   @Override
   public void getPdbData(Viewer viewer, String type, char ctype,
                          boolean isDraw, BitSet bsSelected,
-                         OutputStringBuffer sb, LabelToken[] tokens, StringBuffer pdbCONECT, BitSet bsWritten) {
+                         OutputStringBuilder sb, LabelToken[] tokens, StringXBuilder pdbCONECT, BitSet bsWritten) {
     boolean bothEnds = false;
     char qtype = (ctype != 'R' ? 'r' : type.length() > 13
         && type.indexOf("ramachandran ") >= 0 ? type.charAt(13) : 'R');

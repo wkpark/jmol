@@ -138,7 +138,7 @@ class JmolResourceHandler {
    */
   /*private synchronized String translate(String text) {
     StringTokenizer st = new StringTokenizer(text, " ");
-    StringBuffer key = new StringBuffer();
+    StringXBuilder key = new StringXBuilder();
     while (st.hasMoreTokens()) {
       key.append(st.nextToken());
       if (st.hasMoreTokens()) {

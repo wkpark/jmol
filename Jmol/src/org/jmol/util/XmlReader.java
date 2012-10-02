@@ -27,6 +27,7 @@ package org.jmol.util;
 
 import java.io.BufferedReader;
 
+import javax.util.StringXBuilder;
 import javax.vecmath.Point3f;
 
 public class XmlReader {
@@ -77,7 +78,7 @@ public class XmlReader {
     String closer = "</" + name + ">";
     String tag = "<" + name;
     if (data == null) {
-      StringBuffer sb = new StringBuffer();
+      StringXBuilder sb = new StringXBuilder();
       try {
         if (line == null)
           line = br.readLine();

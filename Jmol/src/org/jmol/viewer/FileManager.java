@@ -69,6 +69,8 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import javax.util.StringXBuilder;
+
 public class FileManager {
 
   protected Viewer viewer;
@@ -146,8 +148,8 @@ public class FileManager {
         : appletProxy);
   }
 
-  String getState(StringBuffer sfunc) {
-    StringBuffer commands = new StringBuffer();
+  String getState(StringXBuilder sfunc) {
+    StringXBuilder commands = new StringXBuilder();
     if (sfunc != null) {
       sfunc.append("  _setFileState;\n");
       commands.append("function _setFileState() {\n\n");
@@ -184,8 +186,8 @@ public class FileManager {
     return null;
   }
 
-  static BufferedInputStream getBISForStringBuffer(Object t) {
-    return new BufferedInputStream(new ByteArrayInputStream(((StringBuffer) t)
+  static BufferedInputStream getBISForStringXBuilder(Object t) {
+    return new BufferedInputStream(new ByteArrayInputStream(((StringXBuilder) t)
         .toString().getBytes()));
     }
 
@@ -196,8 +198,8 @@ public class FileManager {
   private String getZipDirectoryAsString(String fileName) {
   	Object t = getBufferedInputStreamOrErrorMessageFromName(
         fileName, fileName, false, false, null);
-  	if (t instanceof StringBuffer)
-  		t = getBISForStringBuffer(t);
+  	if (t instanceof StringXBuilder)
+  		t = getBISForStringXBuilder(t);
     return ZipUtil.getZipDirectoryAsStringAndClose((BufferedInputStream) t);
   }
 
@@ -282,7 +284,7 @@ public class FileManager {
   }
 
   Object createAtomSetCollectionFromString(String strModel,
-                                           StringBuffer loadScript,
+                                           StringXBuilder loadScript,
                                            Map<String, Object> htParams,
                                            boolean isAppend,
                                            boolean isLoadVariable) {
@@ -306,15 +308,14 @@ public class FileManager {
   }
 
   Object createAtomSeCollectionFromStrings(String[] arrayModels,
-                                           StringBuffer loadScript,
+                                           StringXBuilder loadScript,
                                            Map<String, Object> htParams,
                                            boolean isAppend) {
     if (!htParams.containsKey("isData")) {
       String oldSep = "\"" + viewer.getDataSeparator() + "\"";
       String tag = "\"" + (isAppend ? "append" : "model") + " inline\"";
-      StringBuffer sb = new StringBuffer(
-          "set dataSeparator \"~~~next file~~~\";\ndata ");
-      sb.append(tag);
+      StringXBuilder sb = new StringXBuilder();
+      sb.append("set dataSeparator \"~~~next file~~~\";\ndata ").append(tag);
       for (int i = 0; i < arrayModels.length; i++) {
         if (i > 0)
           sb.append("~~~next file~~~");
@@ -322,7 +323,7 @@ public class FileManager {
       }
       sb.append("end ").append(tag).append(";set dataSeparator ")
           .append(oldSep);
-      loadScript.append(sb);
+      loadScript.appendSB(sb);
     }
     setLoadState(htParams);
     Logger.info("FileManager.getAtomSetCollectionFromStrings(string[])");
@@ -420,7 +421,7 @@ public class FileManager {
         outputBytes = (byte[]) o;
         name = TextFormat.simpleReplace(name, "?_", "=_");
       } else {
-        name = (new StringBuffer(name)).append("=").append(
+        name = new StringXBuilder().append(name).append("=").appendSB(
             Base64.getBase64((byte[]) o)).toString();
       }
     }
@@ -451,7 +452,7 @@ public class FileManager {
         if (showMsg && name.toLowerCase().indexOf("password") < 0)
           Logger.info("FileManager opening " + name);
         ret = fai.getBufferedURLInputStream(url, outputBytes, post);
-        if (ret instanceof StringBuffer || ret instanceof String)
+        if (ret instanceof StringXBuilder || ret instanceof String)
           return ret;
       } else if (cacheBytes == null
           && (cacheBytes = (byte[]) cacheGet(name, true)) == null) {
@@ -579,7 +580,7 @@ public class FileManager {
           }
         }
         // load each file individually, but return files IN ORDER
-        StringBuffer sb = new StringBuffer();
+        StringXBuilder sb = new StringXBuilder();
         if (fileData.get("OUTPUT") != null)
           sb.append(fileData.get(fileData.get("OUTPUT")));
         String s;
@@ -617,8 +618,8 @@ public class FileManager {
         : new BufferedInputStream(new ByteArrayInputStream(bytes)));
     if (t instanceof String)
       return t;
-    if (t instanceof StringBuffer) // JavaScript from org.jmol.awtjs.JmolURLConnection.doAjax(URL)
-      return getBufferedReaderForString(((StringBuffer) t).toString());
+    if (t instanceof StringXBuilder) // JavaScript from org.jmol.awtjs.JmolURLConnection.doAjax(URL)
+      return getBufferedReaderForString(((StringXBuilder) t).toString());
     try {
       BufferedInputStream bis = (BufferedInputStream) t;
       if (ZipUtil.isGzip(bis)) {
@@ -662,8 +663,8 @@ public class FileManager {
   String[] getZipDirectory(String fileName, boolean addManifest) {
     Object t = getBufferedInputStreamOrErrorMessageFromName(fileName, fileName,
         false, false, null);
-    if (t instanceof StringBuffer)
-      t = getBISForStringBuffer(t);
+    if (t instanceof StringXBuilder)
+      t = getBISForStringXBuilder(t);
     return ZipUtil.getZipDirectoryAndClose((BufferedInputStream) t, addManifest);
   }
 
@@ -687,7 +688,7 @@ public class FileManager {
       asBinaryString = true;
       name = name.substring(0, name.indexOf(":asBinaryString"));
     }
-    StringBuffer sb = null;
+    StringXBuilder sb = null;
     if (fileData.containsKey(name0))
       return name0;
     if (name.indexOf("#JMOL_MODEL ") >= 0) {
@@ -706,8 +707,8 @@ public class FileManager {
         fileData.put(name0, (String) t + "\n");
         return name0;
       }
-      if (t instanceof StringBuffer)
-        t = getBISForStringBuffer(t);
+      if (t instanceof StringXBuilder)
+        t = getBISForStringXBuilder(t);
       bis = (BufferedInputStream) t;
       if (CompoundDocument.isCompoundDocument(bis)) {
         CompoundDocument doc = new CompoundDocument(bis);
@@ -719,15 +720,15 @@ public class FileManager {
         // used for Spartan binary file reading
         BinaryDocument bd = new BinaryDocument();
         bd.setStream(bis, false);
-        sb = new StringBuffer();
+        sb = new StringXBuilder();
         //note -- these headers must match those in ZipUtil.getAllData and CompoundDocument.getAllData
         if (header != null)
           sb.append("BEGIN Directory Entry " + name0 + "\n");
         try {
           while (true)
-            sb.append(Integer.toHexString((bd.readByte()) & 0xFF)).append(' ');
+            sb.append(Integer.toHexString((bd.readByte()) & 0xFF)).appendC(' ');
         } catch (Exception e1) {
-          sb.append('\n');
+          sb.appendC('\n');
         }
         if (header != null)
           sb.append("\nEND Directory Entry " + name0 + "\n");
@@ -736,12 +737,12 @@ public class FileManager {
         BufferedReader br = new BufferedReader(new InputStreamReader(ZipUtil
             .isGzip(bis) ? new GZIPInputStream(bis) : bis));
         String line;
-        sb = new StringBuffer();
+        sb = new StringXBuilder();
         if (header != null)
           sb.append("BEGIN Directory Entry " + name0 + "\n");
         while ((line = br.readLine()) != null) {
           sb.append(line);
-          sb.append('\n');
+          sb.appendC('\n');
         }
         br.close();
         if (header != null)
@@ -778,8 +779,8 @@ public class FileManager {
         null);
     if (t instanceof String)
       return "Error:" + t;
-    if (t instanceof StringBuffer)
-      t = getBISForStringBuffer(t);
+    if (t instanceof StringXBuilder)
+      t = getBISForStringXBuilder(t);
     try {
       BufferedInputStream bis = (BufferedInputStream) t;
       Object bytes = (os != null || subFileList == null || subFileList.length <= 1
@@ -841,16 +842,16 @@ public class FileManager {
     }
     try {
       BufferedReader br = (BufferedReader) t;
-      StringBuffer sb = new StringBuffer(8192);
+      StringXBuilder sb = StringXBuilder.newN(8192);
       String line;
       if (nBytesMax == Integer.MAX_VALUE) {
         line = br.readLine();
         if (allowBinary || line != null && line.indexOf('\0') < 0
             && (line.length() != 4 || line.charAt(0) != 65533
             || line.indexOf("PNG") != 1)) {
-          sb.append(line).append('\n');
+          sb.append(line).appendC('\n');
           while ((line = br.readLine()) != null)
-            sb.append(line).append('\n');
+            sb.append(line).appendC('\n');
         }
       } else {
         int n = 0;
@@ -858,7 +859,7 @@ public class FileManager {
         while (n < nBytesMax && (line = br.readLine()) != null) {
           if (nBytesMax - n < (len = line.length()) + 1)
             line = line.substring(0, nBytesMax - n - 1);
-          sb.append(line).append('\n');
+          sb.append(line).appendC('\n');
           n += len + 1;
         }
       }
@@ -1519,8 +1520,8 @@ public class FileManager {
         false, bytes);
     if (ret instanceof String)
       return (String) ret;
-    if (ret instanceof StringBuffer)
-    	ret = getBISForStringBuffer(ret);
+    if (ret instanceof StringXBuilder)
+    	ret = getBISForStringXBuilder(ret);
     try {
       ret = getStreamAsBytes((BufferedInputStream) ret, null);
     } catch (IOException e) {
@@ -1728,8 +1729,8 @@ public class FileManager {
         String[] zipDirectory = getZipDirectory(name, true);
         t = getBufferedInputStreamOrErrorMessageFromName(name, fullPathNamesIn[i], 
             false, false, null);
-        BufferedInputStream bis = (t instanceof StringBuffer 
-        		? getBISForStringBuffer(t)
+        BufferedInputStream bis = (t instanceof StringXBuilder 
+        		? getBISForStringXBuilder(t)
         		: (BufferedInputStream) t);
         t = viewer.getModelAdapter()
             .getAtomSetCollectionOrBufferedReaderFromZip(bis, name,
@@ -2062,7 +2063,8 @@ public class FileManager {
     // extract scenes based on "pause scene ..." commands
     int iSceneLast = 0;
     int iScene = 0;
-    StringBuffer sceneScript = new StringBuffer(SCENE_TAG + " Jmol " + JmolViewer.getJmolVersion() + "\n{\nsceneScripts={");
+    StringXBuilder sceneScript = new StringXBuilder().append(SCENE_TAG)
+      .append(" Jmol ").append(JmolViewer.getJmolVersion()).append("\n{\nsceneScripts={");
     for (int i = 1; i < scenes.length; i++) {
       scenes[i - 1] = TextFormat.trim(scenes[i - 1], "\t\n\r ");
       int[] pt = new int[1];
@@ -2075,7 +2077,7 @@ public class FileManager {
       htScenes.put(key, scenes[i - 1]);
       if (i > 1)
         sceneScript.append(",");
-      sceneScript.append('\n')
+      sceneScript.appendC('\n')
         .append(Escape.escapeStr(key))
         .append(": ")
         .append(Escape.escapeStr(scenes[i - 1]));

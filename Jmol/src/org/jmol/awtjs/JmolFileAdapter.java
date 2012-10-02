@@ -25,7 +25,7 @@ public class JmolFileAdapter implements JmolFileAdapterInterface {
 				conn.outputBytes(outputBytes);
 			else if (post != null)
 				conn.outputString(post);
-			return conn.getStringBuffer();
+			return conn.getStringXBuilder();
 		} catch (IOException e) {
 			return e.getMessage();
 		}

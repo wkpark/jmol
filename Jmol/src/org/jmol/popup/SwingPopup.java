@@ -47,6 +47,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
+import javax.util.StringXBuilder;
 
 
 /**
@@ -418,7 +419,7 @@ abstract public class SwingPopup extends GenericPopup {
 
 
   @Override
-  protected void getMenuAsText(StringBuffer sb, int level, Object menu,
+  protected void getMenuAsText(StringXBuilder sb, int level, Object menu,
                                 String menuName) {
     String name = menuName;
     Component[] subMenus = (menu instanceof JPopupMenu ? ((JPopupMenu) menu)

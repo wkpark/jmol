@@ -23,6 +23,7 @@
  */
 package org.jmol.jvxl.readers;
 
+import javax.util.StringXBuilder;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 
@@ -58,7 +59,7 @@ class IsoFxyReader extends AtomDataReader {
   protected void setup(String type) {
     func = (Object[]) params.func;
     String functionName = (String) params.functionInfo.get(0);
-    jvxlFileHeaderBuffer = new StringBuffer();
+    jvxlFileHeaderBuffer = new StringXBuilder();
     jvxlFileHeaderBuffer.append(type).append("\n").append(functionName).append("\n");
     if (params.thePlane != null || data == null && !useOriginStepsPoints)
       setVolumeForPlane();

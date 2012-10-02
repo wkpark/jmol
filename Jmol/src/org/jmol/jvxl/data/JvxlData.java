@@ -63,6 +63,8 @@ package org.jmol.jvxl.data;
 
 
 import javax.util.BitSet;
+import javax.util.StringXBuilder;
+
 import java.util.List;
 import java.util.Map;
 
@@ -207,7 +209,7 @@ public class JvxlData {
     setSurfaceInfoFromBitSetPts(bs, thePlane, null);
   }
   public void setSurfaceInfoFromBitSetPts(BitSet bs, Point4f thePlane, Point3f mapLattice) {
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     int nSurfaceInts = (thePlane != null ? 0 : JvxlCoder.jvxlEncodeBitSetBuffer(bs,
         nPointsX * nPointsY * nPointsZ, sb));
     setSurfaceInfo(thePlane, mapLattice, nSurfaceInts, sb.toString());

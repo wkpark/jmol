@@ -25,6 +25,8 @@
 
 package org.jmol.util;
 
+import javax.util.StringXBuilder;
+
 
 //import java.text.DecimalFormat;
 import java.util.List;
@@ -137,13 +139,13 @@ public class TextFormat {
           value + (isNeg ? -1 : 1) * formatAdds[decimalDigits], decimalDigits);
     }
 
-    StringBuffer sb = new StringBuffer(s1.substring(0, (decimalDigits == 0 ? pt
+    StringXBuilder sb = StringXBuilder.newS(s1.substring(0, (decimalDigits == 0 ? pt
         : ++pt)));
     for (int i = 0; i < decimalDigits; i++, pt++) {
       if (pt < len)
-        sb.append(s1.charAt(pt));
+        sb.appendC(s1.charAt(pt));
       else
-        sb.append('0');
+        sb.appendC('0');
     }
     s1 = (isNeg ? "-" : "") + sb;
 //    System.out.print(value + " " + s1 + "/");
@@ -201,13 +203,13 @@ public class TextFormat {
     char padChar = (zeroPad ? '0' : ' ');
     char padChar0 = (isNeg ? '-' : padChar);
 
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     if (alignLeft)
       sb.append(value);
-    sb.append(padChar0);
+    sb.appendC(padChar0);
     for (int i = padLength; --i > 0;)
       // this is correct, not >= 0
-      sb.append(padChar);
+      sb.appendC(padChar);
     if (!alignLeft)
       sb.append(isNeg ? padChar + value.substring(1) : value);
     return sb.toString();
@@ -409,7 +411,7 @@ public class TextFormat {
     strFormat = simpleReplace(strFormat, "%p", "%6.2p");
     strFormat = simpleReplace(strFormat, "%q", "%6.2q");
     String[] format = split(strFormat, '%');
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     sb.append(format[0]);
     for (int i = 1; i < format.length; i++) {
       String f = "%" + format[i];
@@ -455,7 +457,7 @@ public class TextFormat {
       }
     }
     String s = f.substring(0, pt + 1);
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     for (int i = 0; i < n; i++)
       sb.append(s);
     sb.append(f.substring(pt + 1));
@@ -557,7 +559,7 @@ public class TextFormat {
     boolean isOnce = (strTo.indexOf(strFrom) >= 0);
     int ipt;
     while (str.indexOf(strFrom) >= 0) {
-      StringBuffer s = new StringBuffer();
+      StringXBuilder s = new StringXBuilder();
       int ipt0 = 0;
       while ((ipt = str.indexOf(strFrom, ipt0)) >= 0) {
         s.append(str.substring(ipt0, ipt)).append(strTo);
@@ -589,14 +591,14 @@ public class TextFormat {
     return splitChars(text, "" + ch);
   }
   
-  public static void lFill(StringBuffer s, String s1, String s2) {
+  public static void lFill(StringXBuilder s, String s1, String s2) {
     s.append(s2);
     int n = s1.length() - s2.length();
     if (n > 0)
       s.append(s1.substring(0, n));
   }
   
-  public static void rFill(StringBuffer s, String s1, String s2) {
+  public static void rFill(StringXBuilder s, String s1, String s2) {
     int n = s1.length() - s2.length();
     if (n > 0)
       s.append(s1.substring(0, n));
@@ -670,13 +672,13 @@ public class TextFormat {
     return true;
   }
 
-  public static String join(Object[] s, char c, int i0) {
+  public static String join(String[] s, char c, int i0) {
     if (s.length < i0)
       return null;
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     sb.append(s[i0++]);
     for (int i = i0; i < s.length; i++)
-      sb.append(c).append(s[i]);
+      sb.appendC(c).append(s[i]);
     return sb.toString();
   }
 

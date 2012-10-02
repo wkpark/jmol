@@ -28,6 +28,7 @@ package org.openscience.jmol.app.surfacetool;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.util.StringXBuilder;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
@@ -285,7 +286,7 @@ public class SurfaceTool {
 
   void showSliceBoundaryPlanes(boolean onOrOff) {
     leftOn = rightOn = onOrOff;
-    StringBuffer cmd = new StringBuffer();
+    StringXBuilder cmd = new StringXBuilder();
     drawSlicePlane(cmd, Token.left, onOrOff);
     drawSlicePlane(cmd, Token.right, onOrOff);
     viewer.evalStringQuiet(cmd.toString());
@@ -425,7 +426,7 @@ public class SurfaceTool {
       slabCapStr = " slab ";
       break;
     }
-    StringBuffer cmd = new StringBuffer();
+    StringXBuilder cmd = new StringXBuilder();
     //planes on or off as appropriate
     drawSlicePlane(cmd, Token.left, leftOn);
     drawSlicePlane(cmd, Token.right, rightOn);
@@ -442,7 +443,7 @@ public class SurfaceTool {
     return;
   }
 
-  private void drawSlicePlane(StringBuffer cmd, int side, boolean on) {
+  private void drawSlicePlane(StringXBuilder cmd, int side, boolean on) {
     String color;
     String name = Token.nameOf(side);
     Point4f plane;

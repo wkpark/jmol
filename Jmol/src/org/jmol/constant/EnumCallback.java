@@ -25,6 +25,8 @@
 
 package org.jmol.constant;
 
+import javax.util.StringXBuilder;
+
 public enum EnumCallback {
 
   ANIMFRAME,
@@ -58,7 +60,7 @@ public enum EnumCallback {
 
   public static synchronized String getNameList() {
     if (nameList == null) {
-      StringBuffer names = new StringBuffer();
+      StringXBuilder names = new StringXBuilder();
       for (EnumCallback item : values())
         names.append(item.name().toLowerCase()).append("Callback;");
       nameList = names.toString();

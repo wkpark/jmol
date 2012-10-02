@@ -31,6 +31,8 @@ import org.jmol.util.Logger;
 import java.util.Hashtable;
 import java.util.Map;
 
+import javax.util.StringXBuilder;
+
 /**
  * A reader for Dgrid BASISFILE data. http://www.scm.com/News/DGrid.html
  * http://www.scm.com/Doc/Doc2009.01/ADF/ADFUsersGuide/page430.html
@@ -145,7 +147,7 @@ sym: A1                 1 1s            2 1s            3 1s            4 1s    
       String symmetry = line.substring(4, 10).trim();
       if (symmetry.indexOf("_FC") >= 0)
         break;
-      StringBuffer data = new StringBuffer();
+      StringXBuilder data = new StringXBuilder();
       data.append(line.substring(15));
       while (readLine() != null && line.length() >= 15)
         data.append(line);
@@ -172,7 +174,7 @@ sym: A1                 1 1s            2 1s            3 1s            4 1s    
       while (line != null && line.length() >= 20) {
         int iOrb = parseIntStr(line.substring(0, 10));
         float energy = parseFloatStr(line.substring(10, 20));
-        StringBuffer cData = new StringBuffer();
+        StringXBuilder cData = new StringXBuilder();
         cData.append(line.substring(20));
         while (readLine() != null && line.length() >= 10) {
           if (line.charAt(3) != ' ')

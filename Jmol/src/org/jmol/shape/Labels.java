@@ -37,6 +37,8 @@ import org.jmol.viewer.JmolConstants;
 
 import java.util.Hashtable;
 import javax.util.BitSet;
+import javax.util.StringXBuilder;
+
 import java.util.Map;
 
 public class Labels extends AtomShape {
@@ -570,7 +572,7 @@ public class Labels extends AtomShape {
   }
 
   private String getDefaultState() {
-    StringBuffer s = new StringBuffer("\n# label defaults;\n");
+    StringXBuilder s = new StringXBuilder().append("\n# label defaults;\n");
     appendCmd(s, "select none");
     appendCmd(s, getColorCommand("label", defaultPaletteID, defaultColix));
     appendCmd(s, "background label " + encodeColor(defaultBgcolix));

@@ -38,6 +38,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.Normix;
 
 import javax.util.BitSet;
+import javax.util.StringXBuilder;
 import javax.vecmath.Point3i;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -619,7 +620,7 @@ public class Polyhedra extends AtomShape {
 
   @Override
   public String getShapeState() {
-    StringBuffer s = new StringBuffer();
+    StringXBuilder s = new StringXBuilder();
     for (int i = 0; i < polyhedronCount; i++)
       s.append(polyhedrons[i].getState());
     if (drawEdges == EDGES_FRONT)

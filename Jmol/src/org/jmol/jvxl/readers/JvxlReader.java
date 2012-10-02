@@ -23,6 +23,7 @@
  */
 package org.jmol.jvxl.readers;
 
+import javax.util.StringXBuilder;
 import javax.vecmath.Point4f;
 import java.io.BufferedReader;
 
@@ -55,13 +56,13 @@ public class JvxlReader extends JvxlXmlReader {
 
   @Override
   protected void readParameters() throws Exception {
-    jvxlFileHeaderBuffer = new StringBuffer(skipComments(false));
+    jvxlFileHeaderBuffer = new StringXBuilder().append(skipComments(false));
     if (line == null || line.length() == 0)
       line = "Line 1";
-    jvxlFileHeaderBuffer.append(line).append('\n');
+    jvxlFileHeaderBuffer.append(line).appendC('\n');
     if (readLine() == null || line.length() == 0)
       line = "Line 2";
-    jvxlFileHeaderBuffer.append(line).append('\n');
+    jvxlFileHeaderBuffer.append(line).appendC('\n');
     jvxlFileHeaderBuffer.append(skipComments(false));
     String atomLine = line;
     String[] tokens = Parser.getTokensAt(atomLine, 0);

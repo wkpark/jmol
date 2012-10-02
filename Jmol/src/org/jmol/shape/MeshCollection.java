@@ -29,6 +29,8 @@ import org.jmol.script.ScriptVariable;
 import org.jmol.script.Token;
 
 import javax.util.BitSet;
+import javax.util.StringXBuilder;
+
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -421,14 +423,14 @@ public abstract class MeshCollection extends Shape {
       return (currentMesh == null ? null : currentMesh.thisID);
     if (property.startsWith("list")) {
       clean();
-      StringBuffer sb = new StringBuffer();
+      StringXBuilder sb = new StringXBuilder();
       int k = 0;
       String id = (property.equals("list") ? null : property.substring(5));
       for (int i = 0; i < meshCount; i++) {
         m = meshes[i];
         if (id != null && !id.equalsIgnoreCase(m.thisID))
           continue;
-        sb.append((++k)).append(" id:" + m.thisID).append(
+        sb.appendI((++k)).append(" id:" + m.thisID).append(
             "; model:" + viewer.getModelNumberDotted(m.modelIndex)).append(
             "; vertices:" + m.vertexCount).append(
             "; polygons:" + m.polygonCount)
@@ -444,11 +446,11 @@ public abstract class MeshCollection extends Shape {
             s = s.substring(0, 10000) + "...";
           sb.append(s);
         }
-        sb.append('\n');
+        sb.appendC('\n');
         if (id != null) {
           Object info = getProperty("jvxlFileInfo", 0);
           if (info != null)
-            sb.append(info).append('\n');
+            sb.append((String) info).appendC('\n');
         }
       }
       return sb.toString();

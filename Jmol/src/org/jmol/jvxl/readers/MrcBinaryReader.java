@@ -23,6 +23,8 @@
  */
 package org.jmol.jvxl.readers;
 
+import javax.util.StringXBuilder;
+
 import org.jmol.util.BinaryDocument;
 import org.jmol.util.Logger;
 
@@ -236,7 +238,7 @@ class MrcBinaryReader extends MapFileReader {
       Logger.info("Cutoff set to (mean + rmsDeviation*" + sigma + " = " + params.cutoff + ")\n");
     }
 
-    jvxlFileHeaderBuffer = new StringBuffer();
+    jvxlFileHeaderBuffer = new StringXBuilder();
     jvxlFileHeaderBuffer.append("MRC DATA ").append(nlabel > 0 ? labels[0]: "").append("\n");
     jvxlFileHeaderBuffer.append("see http://ami.scripps.edu/software/mrctools/mrc_specification.php\n");
   }

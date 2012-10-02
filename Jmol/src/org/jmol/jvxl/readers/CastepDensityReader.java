@@ -27,6 +27,8 @@ import java.io.BufferedReader;
 
 import javax.vecmath.Vector3f;
 
+import javax.util.StringXBuilder;
+
 class CastepDensityReader extends VolumeFileReader {
 
   private int nFilePoints;
@@ -58,7 +60,7 @@ class CastepDensityReader extends VolumeFileReader {
 
   @Override
   protected void readParameters() throws Exception {
-    jvxlFileHeaderBuffer = new StringBuffer();
+    jvxlFileHeaderBuffer = new StringXBuilder();
     while (readLine() != null && line.indexOf(".") < 0) {
       // skip front stuff
     }

@@ -41,6 +41,8 @@ import org.jmol.script.Token;
 
 import java.util.ArrayList;
 import javax.util.BitSet;
+import javax.util.StringXBuilder;
+
 import java.util.List;
 import java.util.Hashtable;
 import java.util.Map;
@@ -589,7 +591,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
   
  @Override
 public String getShapeState() {
-    StringBuffer commands = new StringBuffer("");
+    StringXBuilder commands = new StringXBuilder();
     appendCmd(commands, "measures delete");
     for (int i = 0; i < measurementCount; i++)
       appendCmd(commands, getState(i));
@@ -636,7 +638,7 @@ public String getShapeState() {
   private String getState(int index) {
     Measurement m = measurements.get(index);
     int count = m.getCount();
-    StringBuffer sb = new StringBuffer("measure");
+    StringXBuilder sb = new StringXBuilder().append("measure");
     TickInfo tickInfo = m.getTickInfo();
     if (tickInfo != null)
       FontLineShape.addTickInfo(sb, tickInfo, true);

@@ -26,6 +26,8 @@ package org.jmol.jvxl.readers;
 import java.io.BufferedReader;
 import java.util.Date;
 
+import javax.util.StringXBuilder;
+
 
 
 abstract class PolygonFileReader extends SurfaceFileReader {
@@ -38,8 +40,8 @@ abstract class PolygonFileReader extends SurfaceFileReader {
   @Override
   void init2(SurfaceGenerator sg, BufferedReader br) {
     super.init2(sg, br);
-    jvxlFileHeaderBuffer = new StringBuffer();
-    jvxlFileHeaderBuffer.append("#created ").append(new Date()).append("\n");
+    jvxlFileHeaderBuffer = new StringXBuilder();
+    jvxlFileHeaderBuffer.append("#created ").append("" + new Date()).append("\n");
     vertexDataOnly = true;
   }
 

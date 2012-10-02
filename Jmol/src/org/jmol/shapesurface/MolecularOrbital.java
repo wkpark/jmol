@@ -27,6 +27,8 @@ package org.jmol.shapesurface;
 
 import java.util.ArrayList;
 import javax.util.BitSet;
+import javax.util.StringXBuilder;
+
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -301,7 +303,7 @@ public class MolecularOrbital extends Isosurface {
     if (propertyName == "moLinearCombination")
       return moLinearCombination;
     if (propertyName == "showMO") {
-      StringBuffer str = new StringBuffer();
+      StringXBuilder str = new StringXBuilder();
       List<Map<String, Object>> mos = (List<Map<String, Object>>) (sg.getMoData().get("mos"));
       int nOrb = (mos == null ? 0 : mos.size());
       int thisMO = param;
@@ -446,7 +448,7 @@ public class MolecularOrbital extends Isosurface {
   public String getShapeState() {
     if (htModels == null)
       return "";
-    StringBuffer s = new StringBuffer();
+    StringXBuilder s = new StringXBuilder();
     int modelCount = viewer.getModelCount();
     for (int i = 0; i < modelCount; i++)
       s.append(getMoState(i));
@@ -458,7 +460,7 @@ public class MolecularOrbital extends Isosurface {
     strID = getId(modelIndex);
     if (!getSettings(strID))
       return "";
-    StringBuffer s = new StringBuffer();
+    StringXBuilder s = new StringXBuilder();
     int modelCount = viewer.getModelCount();
     if (modelCount > 1)
       appendCmd(s, "frame " + viewer.getModelNumberDotted(modelIndex));

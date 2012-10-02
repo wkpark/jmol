@@ -24,6 +24,8 @@
 package org.jmol.viewer;
 
 import javax.util.BitSet;
+import javax.util.StringXBuilder;
+
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -308,7 +310,7 @@ public class ShapeManager {
   
   Map<String, Object> getShapeInfo() {
     Map<String, Object> info = new Hashtable<String, Object>();
-    StringBuffer commands = new StringBuffer();
+    StringXBuilder commands = new StringXBuilder();
     if (shapes != null)
       for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
         Shape shape = shapes[i];
@@ -324,7 +326,7 @@ public class ShapeManager {
     return info;
   }
 
-  void getShapeState(StringBuffer commands, boolean isAll, int iShape) {
+  void getShapeState(StringXBuilder commands, boolean isAll, int iShape) {
     if (shapes == null)
       return;
     String cmd;

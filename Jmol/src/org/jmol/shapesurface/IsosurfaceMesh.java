@@ -26,6 +26,8 @@ package org.jmol.shapesurface;
 
 import java.util.ArrayList;
 import javax.util.BitSet;
+import javax.util.StringXBuilder;
+
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -225,7 +227,7 @@ public class IsosurfaceMesh extends Mesh {
    * 
    * Each contour is a Vector containing: 0 Integer number of polygons (length
    * of BitSet) 1 BitSet of critical triangles 2 Float value 3 int[] [colorArgb]
-   * 4 StringBuffer containing encoded data for each segment: char type ('3',
+   * 4 StringXBuilder containing encoded data for each segment: char type ('3',
    * '6', '5') indicating which two edges of the triangle are connected: '3'
    * 0x011 AB-BC '5' 0x101 AB-CA '6' 0x110 BC-CA char fraction along first edge
    * (jvxlFractionToCharacter) char fraction along second edge
@@ -285,7 +287,7 @@ public class IsosurfaceMesh extends Mesh {
 
   private void get3dContour(List<Object> v, float value, short colix) {
     BitSet bsContour = BitSetUtil.newBitSet(polygonCount);
-    StringBuffer fData = new StringBuffer();
+    StringXBuilder fData = new StringXBuilder();
     int color = Colix.getArgb(colix);
     setContourVector(v, polygonCount, bsContour, value, colix, color, fData);
     for (int i = 0; i < polygonCount; i++)
@@ -296,7 +298,7 @@ public class IsosurfaceMesh extends Mesh {
 
   public static void setContourVector(List<Object> v, int nPolygons,
                                       BitSet bsContour, float value,
-                                      short colix, int color, StringBuffer fData) {
+                                      short colix, int color, StringXBuilder fData) {
     v.add(JvxlCoder.CONTOUR_NPOLYGONS, Integer.valueOf(nPolygons));
     v.add(JvxlCoder.CONTOUR_BITSET, bsContour);
     v.add(JvxlCoder.CONTOUR_VALUE, new Float(value));
@@ -306,7 +308,7 @@ public class IsosurfaceMesh extends Mesh {
   }
 
   public static void addContourPoints(List<Object> v, BitSet bsContour, int i,
-                                      StringBuffer fData, Point3f[] vertices,
+                                      StringXBuilder fData, Point3f[] vertices,
                                       float[] vertexValues, int iA, int iB,
                                       int iC, float value) {
     Point3f pt1 = null;

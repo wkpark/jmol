@@ -31,6 +31,8 @@ import org.jmol.util.TextFormat;
 import javax.util.BitSet;
 import java.util.Iterator;
 
+import javax.util.StringXBuilder;
+
 public class Echo extends TextShape {
 
   /*
@@ -190,7 +192,8 @@ public class Echo extends TextShape {
 
   @Override
   public String getShapeState() {
-    StringBuffer s = new StringBuffer("\n  set echo off;\n");
+    StringXBuilder s = new StringXBuilder();
+    s.append("\n  set echo off;\n");
     Iterator<Text> e = objects.values().iterator();
     while (e.hasNext()) {
       Text t = e.next();

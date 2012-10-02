@@ -44,6 +44,8 @@ import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
+import javax.util.StringXBuilder;
+
 /**
  * 
  * A reader of OUT and OUTP files for CRYSTAL
@@ -804,7 +806,7 @@ public class CrystalReader extends AtomSetCollectionReader {
   }
 
   private boolean readTotalAtomicCharges() throws Exception {
-    StringBuffer data = new StringBuffer();
+    StringXBuilder data = new StringXBuilder();
     while (readLine() != null && line.indexOf("T") < 0)
       // TTTTT or SUMMED SPIN DENSITY
       data.append(line);

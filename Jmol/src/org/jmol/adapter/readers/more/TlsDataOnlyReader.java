@@ -29,6 +29,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import javax.util.StringXBuilder;
 import javax.vecmath.Point3f;
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
@@ -44,7 +45,7 @@ import org.jmol.util.Parser;
 public class TlsDataOnlyReader extends AtomSetCollectionReader {
 
   private List<Map<String, Object>> vTlsModels;
-  private StringBuffer sbTlsErrors;
+  private StringXBuilder sbTlsErrors;
   private int tlsGroupID;
 
   @Override
@@ -149,9 +150,9 @@ public class TlsDataOnlyReader extends AtomSetCollectionReader {
 
   private void tlsAddError(String error) {
     if (sbTlsErrors == null)
-      sbTlsErrors = new StringBuffer();
-    sbTlsErrors.append(fileName).append('\t').append("TLS group ").append(
-        tlsGroupID).append('\t').append(error).append('\n');
+      sbTlsErrors = new StringXBuilder();
+    sbTlsErrors.append(fileName).appendC('\t').append("TLS group ").appendI(
+        tlsGroupID).appendC('\t').append(error).appendC('\n');
   }
 
 }

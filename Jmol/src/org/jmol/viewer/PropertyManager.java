@@ -42,6 +42,8 @@ import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;
 
+import javax.util.StringXBuilder;
+
 /**
  * 
  * The PropertyManager handles all operations relating to delivery of
@@ -466,8 +468,8 @@ public class PropertyManager {
               : ""));
     }
     Arrays.sort(data);
-    StringBuffer info = new StringBuffer("getProperty ERROR\n" + infoType
-        + "?\nOptions include:\n");
+    StringXBuilder info = new StringXBuilder();
+    info.append("getProperty ERROR\n").append(infoType).append("?\nOptions include:\n");
     for (int i = 0; i < PROP_COUNT; i++)
       if (data[i].length() > 0)
         info.append("\n getProperty ").append(data[i]);
@@ -485,7 +487,7 @@ public class PropertyManager {
     }
     String[] lines = TextFormat.split((String)objHeader, '\n');
     String keyLast = "";
-    StringBuilder sb = new StringBuilder();
+    StringXBuilder sb = new StringXBuilder();
     if (haveType)
       type = type.toUpperCase();
     String key = "";
@@ -502,12 +504,12 @@ public class PropertyManager {
           return sb.toString();
         if (!haveType) {
           ht.put(keyLast, sb.toString());
-          sb = new StringBuilder();
+          sb = new StringXBuilder();
         }
         keyLast = key;
       }
       if (!haveType || key.equals(type))
-        sb.append(line.substring(10).trim()).append('\n');      
+        sb.append(line.substring(10).trim()).appendC('\n');      
     }
     if (!haveType) {
       ht.put(keyLast, sb.toString());

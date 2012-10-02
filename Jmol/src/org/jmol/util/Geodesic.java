@@ -194,6 +194,8 @@ public class Geodesic {
   // these next all require preliminary call to getVertexCount()
   
   static public Vector3f[] getVertexVectors() {
+    if (vertexCounts == null)
+      createGeodesic();
     return vertexVectors;
   }
 

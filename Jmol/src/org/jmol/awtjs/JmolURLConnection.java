@@ -52,7 +52,7 @@ public class JmolURLConnection extends URLConnection {
   	//     type = "application/x-www-form-urlencoded";
   }
 
-	public Object getStringBuffer() {
+	public Object getStringXBuilder() {
 		return doAjax();
 	}
 

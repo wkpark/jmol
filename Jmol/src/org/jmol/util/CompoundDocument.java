@@ -31,6 +31,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.util.StringXBuilder;
+
 /* a simple compound document reader. 
  * See http://sc.openoffice.org/compdocfileformat.pdf
  * 
@@ -122,9 +124,9 @@ public class CompoundDocument extends BinaryDocument {
     return str;
   }
 
-  StringBuffer data;
+  StringXBuilder data;
   
-  public StringBuffer getAllData() {
+  public StringXBuilder getAllData() {
     return getAllData(null, null);
   }
 
@@ -154,9 +156,9 @@ public class CompoundDocument extends BinaryDocument {
         boolean isBinary = (binaryFileList.indexOf("|" + thisEntry.entryName + "|") >= 0);
         if (isBinary)
           name += ":asBinaryString";
-        StringBuilder data = new StringBuilder();
+        StringXBuilder data = new StringXBuilder();
         data.append("BEGIN Directory Entry ").append(name).append("\n"); 
-        data.append(getFileAsString(thisEntry, isBinary));
+        data.appendSB(getFileAsString(thisEntry, isBinary));
         data.append("\nEND Directory Entry ").append(name).append("\n");
         fileData.put(prefix + "/" + name, data.toString());
       }
@@ -164,7 +166,7 @@ public class CompoundDocument extends BinaryDocument {
     close();
   }
 
-  public StringBuffer getAllData(String binaryFileList, String firstFile) {
+  public StringXBuilder getAllData(String binaryFileList, String firstFile) {
     if (firstFile != null) {
       for (int i = 0; i < directory.size(); i++) {
         CmpDocDirectoryEntry thisEntry = directory.get(i);
@@ -175,7 +177,7 @@ public class CompoundDocument extends BinaryDocument {
         }
       }
     }
-    data = new StringBuffer();
+    data = new StringXBuilder();
     data.append("Compound Document File Directory: ");
     data.append(getDirectoryListing("|"));
     data.append("\n");
@@ -188,7 +190,7 @@ public class CompoundDocument extends BinaryDocument {
         if (name.endsWith(".gz"))
           name = name.substring(0, name.length() - 3);
         data.append("BEGIN Directory Entry ").append(name).append("\n");            
-        data.append(getFileAsString(thisEntry, binaryFileList.indexOf("|" + thisEntry.entryName + "|") >= 0));
+        data.appendSB(getFileAsString(thisEntry, binaryFileList.indexOf("|" + thisEntry.entryName + "|") >= 0));
         data.append("\n");
         data.append("END Directory Entry ").append(thisEntry.entryName).append("\n");            
       }
@@ -197,13 +199,13 @@ public class CompoundDocument extends BinaryDocument {
     return data;
   }
 
-  public StringBuffer getFileAsString(String entryName) {
+  public StringXBuilder getFileAsString(String entryName) {
     for (int i = 0; i < directory.size(); i++) {
       CmpDocDirectoryEntry thisEntry = directory.get(i);
       if (thisEntry.entryName.equals(entryName))
         return getFileAsString(thisEntry, false);
     }
-    return new StringBuffer();
+    return new StringXBuilder();
   }
 
   class CmpDocHeader {
@@ -448,17 +450,17 @@ public class CompoundDocument extends BinaryDocument {
         + getDirectoryListing("\n"));
   }
 
-  private StringBuffer getFileAsString(CmpDocDirectoryEntry thisEntry, boolean asBinaryString) {
+  private StringXBuilder getFileAsString(CmpDocDirectoryEntry thisEntry, boolean asBinaryString) {
     if(thisEntry.isEmpty)
-      return new StringBuffer();
+      return new StringXBuilder();
     //System.out.println(thisEntry.entryName + " " + thisEntry.entryType + " " + thisEntry.lenStream + " " + thisEntry.isStandard + " " + thisEntry.SIDfirstSector);
     return (thisEntry.isStandard ? getStandardStringData(
             thisEntry.SIDfirstSector, thisEntry.lenStream, asBinaryString)
             : getShortStringData(thisEntry.SIDfirstSector, thisEntry.lenStream, asBinaryString));
   }
-  private StringBuffer getStandardStringData(int thisSID, int nBytes,
+  private StringXBuilder getStandardStringData(int thisSID, int nBytes,
                                              boolean asBinaryString) {
-    StringBuffer data = new StringBuffer();
+    StringXBuilder data = new StringXBuilder();
     byte[] byteBuf = new byte[sectorSize];
     ZipData gzipData = new ZipData(nBytes);
     try {
@@ -468,7 +470,7 @@ public class CompoundDocument extends BinaryDocument {
         thisSID = SAT[thisSID];
       }
       if (nBytes == -9999)
-        return new StringBuffer();
+        return new StringXBuilder();
     } catch (Exception e) {
       Logger.errorEx(null, e);
     }
@@ -477,7 +479,7 @@ public class CompoundDocument extends BinaryDocument {
     return data;
   }
 
-  private int getSectorData(StringBuffer data, byte[] byteBuf,
+  private int getSectorData(StringXBuilder data, byte[] byteBuf,
                             int nSectorBytes, int nBytes, 
                             boolean asBinaryString, ZipData gzipData)
       throws Exception {
@@ -487,7 +489,7 @@ public class CompoundDocument extends BinaryDocument {
       return n;
     if (asBinaryString) {
       for (int i = 0; i < nSectorBytes; i++) {
-        data.append(Integer.toHexString(byteBuf[i] & 0xFF)).append(' ');
+        data.append(Integer.toHexString(byteBuf[i] & 0xFF)).appendC(' ');
         if (--nBytes < 1)
           break;
       }
@@ -495,7 +497,7 @@ public class CompoundDocument extends BinaryDocument {
       for (int i = 0; i < nSectorBytes; i++) {
         if (byteBuf[i] == 0)
           return -9999; // don't allow binary data
-        data.append((char) byteBuf[i]);
+        data.appendC((char) byteBuf[i]);
         if (--nBytes < 1)
           break;
       }
@@ -503,8 +505,8 @@ public class CompoundDocument extends BinaryDocument {
     return nBytes;
   }
 
-  private StringBuffer getShortStringData(int shortSID, int nBytes, boolean asBinaryString) {
-    StringBuffer data = new StringBuffer();
+  private StringXBuilder getShortStringData(int shortSID, int nBytes, boolean asBinaryString) {
+    StringXBuilder data = new StringXBuilder();
     if (rootEntry == null)
       return data;
     int thisSID = rootEntry.SIDfirstSector;

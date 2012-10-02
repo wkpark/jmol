@@ -46,6 +46,7 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import javax.util.StringXBuilder;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
@@ -351,7 +352,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
     Object ret = Resolver.checkSpecialData(is, zipDirectory);
     if (ret instanceof String)
       return ret;
-    StringBuffer data = (StringBuffer) ret;
+    StringXBuilder data = (StringXBuilder) ret;
     try {
       if (data != null) {
         BufferedReader reader = new BufferedReader(new StringReader(data.toString()));

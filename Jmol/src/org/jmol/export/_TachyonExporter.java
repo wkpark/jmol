@@ -27,6 +27,8 @@ package org.jmol.export;
 
 
 import javax.util.BitSet;
+import javax.util.StringXBuilder;
+
 import java.util.List;
 import java.util.Map;
 
@@ -159,7 +161,7 @@ public class _TachyonExporter extends __RayTracerExporter {
     textureCode = (useTexDef ? textures.getDef("t" + rgb + opacity) : null);
     if (useTexDef && textureCode.startsWith(" "))
       return;
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     sb.append(lighting);
     sb.append(" Opacity " + opacity);
     sb.append(phong);

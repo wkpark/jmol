@@ -55,6 +55,8 @@ import javax.vecmath.Vector3f;
 import java.util.ArrayList;
 import java.util.Arrays;
 import javax.util.BitSet;
+import javax.util.StringXBuilder;
+
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -89,7 +91,7 @@ public final class ModelLoader {
   private final int[] specialAtomIndexes = new int[JmolConstants.ATOMID_MAX];
   
   public ModelLoader(Viewer viewer, String modelSetName,
-      StringBuffer loadScript, Object atomSetCollection, ModelSet mergeModelSet,
+      StringXBuilder loadScript, Object atomSetCollection, ModelSet mergeModelSet,
       BitSet bsNew) {
     this.viewer = viewer;
     modelSet = new ModelSet(viewer, modelSetName);
@@ -377,7 +379,7 @@ public final class ModelLoader {
   }
 
   private void setDefaultRendering(int maxAtoms) {
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     int modelCount = modelSet.modelCount;
     Model[] models = modelSet.models;
     for (int i = baseModelIndex; i < modelCount; i++)
@@ -528,18 +530,18 @@ public final class ModelLoader {
     Model m = modelSet.models[baseModelIndex];
     viewer.setSmilesString((String) modelSet.modelSetAuxiliaryInfo.get("smilesString"));
     String loadState = (String) modelSet.modelSetAuxiliaryInfo.remove("loadState");
-    StringBuffer loadScript = (StringBuffer)modelSet.modelSetAuxiliaryInfo.remove("loadScript");
+    StringXBuilder loadScript = (StringXBuilder)modelSet.modelSetAuxiliaryInfo.remove("loadScript");
     if (loadScript.indexOf("Viewer.AddHydrogens") < 0 || !m.isModelKit) {
       String[] lines = TextFormat.split(loadState, '\n');
-      StringBuffer sb = new StringBuffer();
+      StringXBuilder sb = new StringXBuilder();
       for (int i = 0; i < lines.length; i++) {
         int pt = m.loadState.indexOf(lines[i]);
         if (pt < 0 || pt != m.loadState.lastIndexOf(lines[i]))
-          sb.append(lines[i]).append('\n');
+          sb.append(lines[i]).appendC('\n');
       }
       m.loadState += m.loadScript.toString() + sb.toString();
-      m.loadScript = new StringBuffer();
-      m.loadScript.append("  ").append(loadScript).append(";\n");
+      m.loadScript = new StringXBuilder();
+      m.loadScript.append("  ").appendSB(loadScript).append(";\n");
       
     }
     if (isTrajectory) {

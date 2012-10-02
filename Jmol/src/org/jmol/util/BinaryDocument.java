@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.jmol.viewer.Viewer;
+import javax.util.StringXBuilder;
 
 
 //import java.io.RandomAccessFile;
@@ -150,9 +151,9 @@ public class BinaryDocument {
   public String readString(int nChar) throws Exception {
     byte[] temp = new byte[nChar];
     readByteArray(temp);
-    StringBuffer s = new StringBuffer();
+    StringXBuilder s = new StringXBuilder();
     for (int j = 0; j < nChar; j++)
-      s.append((char) temp[j]);
+      s.appendC((char) temp[j]);
     return s.toString();
   }
   

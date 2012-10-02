@@ -14,6 +14,7 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.script.Token;
 
+import javax.util.StringXBuilder;
 
 public class MeshSurface {
 
@@ -243,7 +244,7 @@ public class MeshSurface {
     return (bsSlabGhost != null && slabMeshType == Token.mesh ? "mesh" : null);
   }
 
-  public StringBuffer slabOptions;
+  public StringXBuilder slabOptions;
   
   
   public static Object[] getSlabWithinRange(float min, float max) {
@@ -305,7 +306,7 @@ public class MeshSurface {
         polygonCount0 = vertexCount0 = 0;
         normixCount = (isTriangleSet ? polygonCount : vertexCount);
         bsSlabDisplay.setBits(0, (polygonCount == 0 ? vertexCount : polygonCount));
-        slabOptions = new StringBuffer(meshType + " slab none");
+        slabOptions = new StringXBuilder().append(meshType + " slab none");
         bsSlabGhost = null;
         slabMeshType = Token.none;
       }
@@ -345,10 +346,10 @@ public class MeshSurface {
     }
 
     
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     sb.append(andCap ? " cap " : " slab ");
     if (isGhost)
-      sb.append("translucent ").append(
+      sb.append("translucent ").appendF(
           Colix.getColixTranslucencyFractional(slabColix)).append(" ")
           .append(Colix.getHexCode(slabColix)).append(" ");
     switch (slabType) {
@@ -389,7 +390,7 @@ public class MeshSurface {
       case Token.within:
         Point3f[] points = (Point3f[]) o[1];
         BitSet bs = (BitSet) o[2];
-        sb.append("within ").append(distance).append(
+        sb.append("within ").appendF(distance).append(
             bs == null ? Escape.escape(points) : Escape.escape(bs));
         getIntersection(distance, null, points, null, null, null, null,
             andCap, false, (distance > 0 ? Token.distance : Token.sphere), isGhost);
@@ -400,7 +401,7 @@ public class MeshSurface {
         if (vertexValues == null)
           return false;
         float distanceMax = ((Float) o[1]).floatValue();
-        sb.append("within range ").append(distance).append(" ").append(
+        sb.append("within range ").appendF(distance).append(" ").appendF(
             distanceMax);
         bs = (distanceMax < distance ? BitSetUtil.copy(bsSlabDisplay) : null);
         getIntersection(distance, null, null, null, null, null, null, andCap,
@@ -426,7 +427,7 @@ public class MeshSurface {
     }
     String newOptions = sb.toString();
     if (slabOptions == null)
-      slabOptions = new StringBuffer();
+      slabOptions = new StringXBuilder();
     if (slabOptions.indexOf(newOptions) < 0)
       slabOptions.append(slabOptions.length() > 0 ? "; ": "").append(meshType).append(newOptions);      	
     return true;

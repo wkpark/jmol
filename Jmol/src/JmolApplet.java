@@ -101,7 +101,7 @@ public class JmolApplet extends AppletWrapper implements
           converted[i] = "" + strModels[i];
         return wrappedApplet.loadInlineArray(converted, "" + script, isAppend);
       }
-      StringBuffer sb = new StringBuffer();
+      StringBuilder sb = new StringBuilder();
       for (int i = 0; i < strModels.length; ++i)
         sb.append(strModels[i]).append('\n');
       return wrappedApplet.loadInlineString(sb.toString(), "" + script, isAppend);

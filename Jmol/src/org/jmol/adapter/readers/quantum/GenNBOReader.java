@@ -34,6 +34,8 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
 
+import javax.util.StringXBuilder;
+
 /**
  * NBO file nn reader will pull in other files as necessary
  * 
@@ -359,13 +361,13 @@ public class GenNBOReader extends MOReader {
     }
     if (!ntype.equals("AO"))
       discardLinesUntilContains(ntype.equals("MO") ? "NBO" : ntype);
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     while (readLine() != null && line.indexOf("O    ") < 0 && line.indexOf("ALPHA") < 0 && line.indexOf("BETA") < 0)
       sb.append(line);
-    sb.append(' ');
+    sb.appendC(' ');
     String data = sb.toString();
     int n = data.length() - 1;
-    sb = new StringBuffer();
+    sb = new StringXBuilder();
     for (int i = 0; i < n; i++) {
       char c = data.charAt(i);
       switch (c) {
@@ -379,7 +381,7 @@ public class GenNBOReader extends MOReader {
           continue;
         break;
       }
-      sb.append(c);
+      sb.appendC(c);
     }
     Logger.info(sb.toString());
     tokens = getTokensStr(sb.toString());

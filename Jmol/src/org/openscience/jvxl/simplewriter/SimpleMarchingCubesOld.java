@@ -64,7 +64,7 @@ public class SimpleMarchingCubesOld {
 //  private float cutoff;
 //  private boolean isCutoffAbsolute;
 //  private boolean isXLowToHigh;
-//  private StringBuffer fractionData = new StringBuffer();
+//  private StringXBuilder fractionData = new StringXBuilder();
 //
 //  private int cubeCountX, cubeCountY, cubeCountZ;
 //  private int nY, nZ;

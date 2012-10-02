@@ -28,6 +28,8 @@ import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import javax.util.BitSet;
+import javax.util.StringXBuilder;
+
 import java.util.List;
 
 import org.jmol.util.TextFormat;
@@ -233,9 +235,9 @@ public class JcampdxReader extends MolReader {
       modelType = "xyz";
     else if (modelType.length() == 0)
       modelType = null; // let Jmol set the type
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     while (readLine() != null && !line.contains("</ModelData>"))
-      sb.append(line).append('\n');
+      sb.append(line).appendC('\n');
     String data = sb.toString();
     Object ret = SmarterJmolAdapter.staticGetAtomSetCollectionReader(filePath,
         modelType, new BufferedReader(new StringReader(data)), htParams);

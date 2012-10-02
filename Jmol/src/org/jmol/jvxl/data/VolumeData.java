@@ -115,6 +115,7 @@ package org.jmol.jvxl.data;
 import java.util.Hashtable;
 import java.util.Map;
 
+import javax.util.StringXBuilder;
 import javax.vecmath.Point3i;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
@@ -498,7 +499,7 @@ public class VolumeData implements VolumeDataInterface {
   }
 
   public String setVolumetricXml() {
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     if (voxelCounts[0] == 0) {
       XmlUtil.appendTag(sb, "jvxlVolumeData", null);
     } else {   

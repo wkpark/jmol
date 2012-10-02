@@ -85,7 +85,7 @@ import org.openscience.jmol.app.jmolpanel.HelpDialog;
 abstract class WebPanel extends JPanel implements ActionListener,
     ListSelectionListener, ItemListener {
 
-  abstract String getAppletDefs(int i, String html, StringBuffer appletDefs,
+  abstract String getAppletDefs(int i, String html, StringBuilder appletDefs,
                                 JmolInstance instance);
 
   abstract String fixHtml(String html);
@@ -717,7 +717,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
       }
       html=TextFormat.simpleReplace(html,"@WIDGETJSFILES@",jsStr);
       appletInfoDivs = "";
-      StringBuffer appletDefs = new StringBuffer();
+      StringBuilder appletDefs = new StringBuilder();
       if (!useAppletJS)
         htmlAppletTemplate = GuiMap.getResourceString(this, panelName
             + "_template2");

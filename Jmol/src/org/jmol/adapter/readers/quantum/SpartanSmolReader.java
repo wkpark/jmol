@@ -27,6 +27,8 @@ package org.jmol.adapter.readers.quantum;
 import java.util.Hashtable;
 import java.util.Map;
 
+import javax.util.StringXBuilder;
+
 import org.jmol.util.Logger;
 
 /*
@@ -183,7 +185,7 @@ public class SpartanSmolReader extends SpartanInputReader {
   
   private void readOutput() throws Exception {
     titles = new Hashtable<String, String>();
-    StringBuffer header = new StringBuffer();
+    StringXBuilder header = new StringXBuilder();
     int pt;
     while (readLine() != null && !line.startsWith("END ")) {
       header.append(line).append("\n");

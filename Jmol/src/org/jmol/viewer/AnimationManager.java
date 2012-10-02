@@ -32,6 +32,7 @@ import org.jmol.modelset.ModelSet;
 import java.util.Hashtable;
 import javax.util.BitSet;
 import java.util.Map;
+import javax.util.StringXBuilder;
 
 public class AnimationManager {
 
@@ -214,18 +215,18 @@ public class AnimationManager {
     return info;
   }
  
-  String getState(StringBuffer sfunc) {
+  String getState(StringXBuilder sfunc) {
     int modelCount = viewer.getModelCount();
     if (modelCount < 2)
       return "";
-    StringBuffer commands = new StringBuffer();
+    StringXBuilder commands = new StringXBuilder();
     if (sfunc != null) {
       sfunc.append("  _setFrameState;\n");
       commands.append("function _setFrameState() {\n");
     }
     commands.append("# frame state;\n");
     
-    commands.append("# modelCount ").append(modelCount)
+    commands.append("# modelCount ").appendI(modelCount)
         .append(";\n# first ").append(
              viewer.getModelNumberDotted(0)).append(";\n# last ").append(
              viewer.getModelNumberDotted(modelCount - 1)).append(";\n");

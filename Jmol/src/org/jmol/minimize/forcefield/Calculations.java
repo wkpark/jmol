@@ -37,6 +37,8 @@ import org.jmol.minimize.Util;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.TextFormat;
 
+import javax.util.StringXBuilder;
+
 abstract class Calculations {
 
   final public static double RAD_TO_DEG = (180.0 / Math.PI);
@@ -107,7 +109,7 @@ abstract class Calculations {
     silent = TF;
   }
 
-  StringBuffer logData = new StringBuffer();
+  StringXBuilder logData = new StringXBuilder();
 
   public String getLogData() {
     return logData.toString();
@@ -123,7 +125,7 @@ abstract class Calculations {
   void setLoggingEnabled(boolean TF) {
     loggingEnabled = TF;
     if (loggingEnabled)
-      logData = new StringBuffer();
+      logData = new StringXBuilder();
   }
 
   void setPreliminary(boolean TF) {
@@ -366,7 +368,7 @@ abstract class Calculations {
     String trailer =
           "----------------------------------------"
           + "-------------------------------------------------------\n";  
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     sb.append("\n" + title + "\n\n"
         + " ATOM    X        Y        Z    TYPE     GRADX    GRADY    GRADZ  "
         + "---------BONDED ATOMS--------\n"

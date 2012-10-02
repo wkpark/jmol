@@ -26,6 +26,8 @@ package org.jmol.modelsetbio;
 
 import java.util.Arrays;
 import javax.util.BitSet;
+import javax.util.StringXBuilder;
+
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Map;
@@ -512,7 +514,7 @@ public final class Resolver implements JmolBioResolver {
       Group g = a1.getGroup();
       if (g != a2.getGroup())
         continue;
-      StringBuffer key = new StringBuffer(g.getGroup3());
+      StringXBuilder key = new StringXBuilder().append(g.getGroup3());
       key.append(":");
       String n1 = a1.getAtomName();
       String n2 = a2.getAtomName();

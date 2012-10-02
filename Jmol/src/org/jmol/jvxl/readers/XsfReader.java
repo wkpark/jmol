@@ -25,6 +25,7 @@ package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
 
+import javax.util.StringXBuilder;
 import javax.vecmath.Vector3f;
 
 import org.jmol.util.Logger;
@@ -44,7 +45,7 @@ class XsfReader extends VolumeFileReader {
   protected void readParameters() throws Exception {
     isAngstroms = false;
     params.blockCubeData = true;
-    jvxlFileHeaderBuffer = new StringBuffer();
+    jvxlFileHeaderBuffer = new StringXBuilder();
     jvxlFileHeaderBuffer.append("XsfReader file\n");
     boolean needCutoff = params.cutoffAutomatic;
     isAngstroms = true;

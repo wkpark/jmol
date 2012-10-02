@@ -31,6 +31,7 @@ import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.util.Colix;
 import org.jmol.util.Escape;
+import javax.util.StringXBuilder;
 
 public class Dipole {
   
@@ -188,26 +189,26 @@ public class Dipole {
  public String getShapeState() {
     if (!isValid)
       return "";
-    StringBuffer s = new StringBuffer();
+    StringXBuilder s = new StringXBuilder();
     s.append("dipole ID ").append(thisID);
     if (haveAtoms)
-      s.append(" ({").append(atoms[0].getIndex()).append(" ").
-                      append(atoms[1].getIndex()).append("})");
+      s.append(" ({").appendI(atoms[0].getIndex()).append(" ").
+                      appendI(atoms[1].getIndex()).append("})");
     else if (coords[0] == null)
       return "";
     else
       s.append(" ").append(Escape.escapePt(coords[0])).
         append(" ").append(Escape.escapePt(coords[1]));
     if (isUserValue)
-      s.append(" value ").append(dipoleValue);
+      s.append(" value ").appendF(dipoleValue);
     if (mad != Dipoles.DEFAULT_MAD)
-      s.append(" width ").append(mad / 1000f);
+      s.append(" width ").appendF(mad / 1000f);
     if (offsetAngstroms != 0)
-      s.append(" offset ").append(offsetAngstroms);
+      s.append(" offset ").appendF(offsetAngstroms);
     else if (offsetPercent != 0)
-      s.append(" offset ").append(offsetPercent);
+      s.append(" offset ").appendI(offsetPercent);
     if (offsetSide != Dipoles.DEFAULT_OFFSETSIDE)
-      s.append(" offsetSide ").append(offsetSide);
+      s.append(" offsetSide ").appendF(offsetSide);
     if (noCross)
       s.append(" nocross");
     if (!visible)

@@ -33,7 +33,7 @@ import org.jmol.modelset.ModelSet;
 import org.jmol.util.Escape;
 
 import org.jmol.util.Logger;
-import org.jmol.util.OutputStringBuffer;
+import org.jmol.util.OutputStringBuilder;
 import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.Viewer;
@@ -47,6 +47,7 @@ import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import javax.util.StringXBuilder;
 
 public abstract class BioPolymer {
 
@@ -460,8 +461,8 @@ public abstract class BioPolymer {
                                       BitSet bsAtoms, BitSet bsSelected,
                                       boolean bothEnds, boolean isDraw,
                                       boolean addHeader, LabelToken[] tokens,
-                                      OutputStringBuffer pdbATOM,
-                                      StringBuffer pdbCONECT, BitSet bsWritten) {
+                                      OutputStringBuilder pdbATOM,
+                                      StringXBuilder pdbCONECT, BitSet bsWritten) {
     boolean calcRamachandranStraightness = (qtype == 'C' || qtype == 'P');
     boolean isRamachandran = (ctype == 'R' || ctype == 'S'
         && calcRamachandranStraightness);
@@ -587,8 +588,8 @@ public abstract class BioPolymer {
                               boolean writeRamachandranStraightness,
                               boolean quaternionStraightness, float factor,
                               boolean isAmino, boolean isRelativeAlias,
-                              LabelToken[] tokens, OutputStringBuffer pdbATOM,
-                              StringBuffer pdbCONECT, BitSet bsWritten) {
+                              LabelToken[] tokens, OutputStringBuilder pdbATOM,
+                              StringXBuilder pdbCONECT, BitSet bsWritten) {
     String prefix = (derivType > 0 ? "dq" + (derivType == 2 ? "2" : "") : "q");
     Quaternion q;
     Atom aprev = null;
@@ -894,7 +895,7 @@ public abstract class BioPolymer {
           pdbCONECT.append("CONECT").append(
               TextFormat.formatStringI("%5i", "i", atomLast.getAtomNumber()))
               .append(TextFormat.formatStringI("%5i", "i", a.getAtomNumber()))
-              .append('\n');
+              .appendC('\n');
         }
         atomLast = a;
       }
@@ -1055,8 +1056,8 @@ public abstract class BioPolymer {
   public void getPdbData(Viewer viewer, char ctype, char qtype, int mStep,
                          int derivType, BitSet bsAtoms, BitSet bsSelected,
                          boolean bothEnds, boolean isDraw, boolean addHeader,
-                         LabelToken[] tokens, OutputStringBuffer pdbATOM,
-                         StringBuffer pdbCONECT, BitSet bsWritten) {
+                         LabelToken[] tokens, OutputStringBuilder pdbATOM,
+                         StringXBuilder pdbCONECT, BitSet bsWritten) {
     return;
   }
 

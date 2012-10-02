@@ -113,6 +113,8 @@
 
 package org.jmol.atomdata;
 
+import javax.util.StringXBuilder;
+
 import org.jmol.constant.EnumVdw;
 
 public class RadiusData {
@@ -145,21 +147,21 @@ public class RadiusData {
   public String toString() {
     if (Float.isNaN(value))
       return "";
-    StringBuffer sb = new StringBuffer("");
+    StringXBuilder sb = new StringXBuilder();
     switch (factorType) {
     case ABSOLUTE:
-      sb.append(value);
+      sb.appendF(value);
       break;
     case OFFSET:
-      sb.append(value > 0 ? "+" : "").append(value);
+      sb.append(value > 0 ? "+" : "").appendF(value);
       break;
     case FACTOR:
-      sb.append((int) (value * 100)).append("%");
+      sb.appendI((int) (value * 100)).append("%");
       if (vdwType != EnumVdw.AUTO)
         sb.append(vdwType.getVdwLabel());
       break;
     case SCREEN:
-      sb.append((int) value);
+      sb.appendI((int) value);
     }
     return sb.toString();
   }

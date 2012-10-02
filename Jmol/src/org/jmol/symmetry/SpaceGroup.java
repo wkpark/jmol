@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Map;
 
+import javax.util.StringXBuilder;
 import javax.vecmath.Point3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Vector3f;
@@ -215,7 +216,7 @@ class SpaceGroup {
       if (sg == null) {
         sg = SpaceGroup.createSpaceGroup(spaceGroup);
       } else {
-        StringBuilder sb = new StringBuilder();
+        StringXBuilder sb = new StringXBuilder();
         while (sg != null) {
           sb.append(sg.dumpInfo(null));
           sg = SpaceGroup.determineSpaceGroup(spaceGroup, sg);
@@ -235,11 +236,11 @@ class SpaceGroup {
     Object info  = dumpCanonicalSeitzList();
     if (info instanceof SpaceGroup)
       return ((SpaceGroup)info).dumpInfo(null);
-    StringBuilder sb = new StringBuilder("\nHermann-Mauguin symbol: ");
+    StringXBuilder sb = new StringXBuilder().append("\nHermann-Mauguin symbol: ");
     sb.append(hmSymbol).append(hmSymbolExt.length() > 0 ? ":" + hmSymbolExt : "")
         .append("\ninternational table number: ").append(intlTableNumber)
         .append(intlTableNumberExt.length() > 0 ? ":" + intlTableNumberExt : "")
-        .append("\n\n").append(operationCount).append(" operators")
+        .append("\n\n").appendI(operationCount).append(" operators")
         .append(!hallInfo.hallSymbol.equals("--") ? " from Hall symbol "  + hallInfo.hallSymbol: "")
         .append(": ");
     for (int i = 0; i < operationCount; i++) {
@@ -321,7 +322,7 @@ class SpaceGroup {
     for (int i = 0; i < operationCount; i++)
       list[i] = SymmetryOperation.dumpCanonicalSeitz(operations[i]);
     Arrays.sort(list, 0, operationCount);
-    StringBuilder sb = new StringBuilder("\n[");
+    StringXBuilder sb = new StringXBuilder().append("\n[");
     for (int i = 0; i < operationCount; i++)
       sb.append(list[i].replace('\t',' ').replace('\n',' ')).append("; ");
     sb.append("]");
@@ -342,16 +343,16 @@ class SpaceGroup {
   }
 
   private final static String dumpAll() {
-   StringBuilder sb = new StringBuilder();
+   StringXBuilder sb = new StringXBuilder();
    for (int i = 0; i < spaceGroupDefinitions.length; i++)
      sb.append("\n----------------------\n" + spaceGroupDefinitions[i].dumpInfo(null));
    return sb.toString();
   }
   
   private final static String dumpAllSeitz() {
-    StringBuilder sb = new StringBuilder();
+    StringXBuilder sb = new StringXBuilder();
     for (int i = 0; i < spaceGroupDefinitions.length; i++)
-      sb.append("\n").append(spaceGroupDefinitions[i].dumpCanonicalSeitzList());
+      sb.append("\n").appendO(spaceGroupDefinitions[i].dumpCanonicalSeitzList());
     return sb.toString();
   }
    

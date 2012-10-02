@@ -47,6 +47,8 @@ import java.util.Map;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
+import javax.util.StringXBuilder;
+
 public class Dipoles extends Shape {
 
   final static short DEFAULT_MAD = 5;
@@ -632,7 +634,7 @@ public class Dipoles extends Shape {
   public String getShapeState() {
     if (dipoleCount == 0)
       return "";
-    StringBuffer s = new StringBuffer();
+    StringXBuilder s = new StringXBuilder();
     int thisModel = -1;
     int modelCount = viewer.getModelCount();
     for (int i = 0; i < dipoleCount; i++) {

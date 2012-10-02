@@ -72,7 +72,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
   String residueName;
   String residueChar;
   boolean isBioAtom;
-  char bioType; //* p n r d 
+  char bioType = '\0'; //* p n r d 
   boolean isLeadAtom;
   int notBondedIndex = -1;
   boolean notCrossLinked;

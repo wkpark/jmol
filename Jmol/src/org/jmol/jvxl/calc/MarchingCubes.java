@@ -24,6 +24,7 @@
 package org.jmol.jvxl.calc;
 
 import javax.util.BitSet;
+import javax.util.StringXBuilder;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
@@ -92,7 +93,7 @@ public class MarchingCubes extends TriangleData {
   protected BitSet bsExcludedTriangles;
   protected BitSet bsExcludedPlanes;
 
-  protected StringBuffer edgeData = new StringBuffer();
+  protected StringXBuilder edgeData = new StringXBuilder();
   
   private boolean excludePartialCubes = true; // original way
   
@@ -632,7 +633,7 @@ public class MarchingCubes extends TriangleData {
 
   protected void addEdgeData(float f) {
     char ch = JvxlCoder.jvxlFractionAsCharacter(f);
-    edgeData.append(ch);
+    edgeData.appendC(ch);
   }
 
   protected float[] fReturn = new float[1];

@@ -23,6 +23,8 @@
  */
 package org.jmol.shape;
 
+import javax.util.StringXBuilder;
+
 import org.jmol.util.Colix;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolFont;
@@ -264,7 +266,7 @@ public class Text extends Object2d {
   }
   
   public String getState() {
-    StringBuffer s = new StringBuffer();
+    StringXBuilder s = new StringXBuilder();
     if (text == null || isLabelOrHover || target.equals("error"))
       return "";
     //set echo top left
@@ -298,7 +300,7 @@ public class Text extends Object2d {
           hAlignNames[align]);
     }
     if (valign == VALIGN_XY && movableZPercent != Integer.MAX_VALUE)
-      s.append(";  ").append(echoCmd).append(" depth ").append(movableZPercent);
+      s.append(";  ").append(echoCmd).append(" depth ").appendI(movableZPercent);
     if (isImage)
       s.append("; ").append(echoCmd).append(" IMAGE /*file*/");
     else
@@ -306,7 +308,7 @@ public class Text extends Object2d {
     s.append(Escape.escapeStr(text)); // was textUnformatted, but that is not really the STATE
     s.append(";\n");
     if (isImage && imageScale != 1)
-      s.append("  ").append(echoCmd).append(" scale ").append(imageScale).append(";\n");
+      s.append("  ").append(echoCmd).append(" scale ").appendF(imageScale).append(";\n");
     if (script != null)
       s.append("  ").append(echoCmd).append(" script ").append(
           Escape.escapeStr(script)).append(";\n");

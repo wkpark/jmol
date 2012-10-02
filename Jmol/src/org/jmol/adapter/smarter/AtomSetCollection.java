@@ -50,6 +50,8 @@ import org.jmol.util.Parser;
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.TextFormat;
 
+import javax.util.StringXBuilder;
+
 @SuppressWarnings("unchecked")
 public class AtomSetCollection {
 
@@ -1770,7 +1772,7 @@ public class AtomSetCollection {
     for (Map.Entry<String, String> entry : p.entrySet()) {
       String key = entry.getKey();
       String data = entry.getValue();
-      StringBuilder s = new StringBuilder();
+      StringXBuilder s = new StringXBuilder();
       for (int i = nTimes; --i >= 0; )
         s.append(data);   
       p.put(key, s.toString());

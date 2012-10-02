@@ -33,28 +33,30 @@ import java.util.Map;
 
 import org.jmol.script.Token;
 
+import javax.util.StringXBuilder;
+
 public class XmlUtil {
 
   // / simple Xml parser/generator ///
 
-  public static void openDocument(StringBuffer data) {
+  public static void openDocument(StringXBuilder data) {
     data.append("<?xml version=\"1.0\"?>\n");
   }
 
-  public static void openTag(StringBuffer sb, String name) {
+  public static void openTag(StringXBuilder sb, String name) {
     sb.append("<").append(name).append(">\n");
   }
 
-  public static void openTagAttr(StringBuffer sb, String name, Object[] attributes) {
+  public static void openTagAttr(StringXBuilder sb, String name, Object[] attributes) {
     appendTagAll(sb, name, attributes, null, false, false);
     sb.append("\n");
   }
 
-  public static void closeTag(StringBuffer sb, String name) {
+  public static void closeTag(StringXBuilder sb, String name) {
     sb.append("</").append(name).append(">\n");
   }
 
-  public static void appendTagAll(StringBuffer sb, String name,
+  public static void appendTagAll(StringXBuilder sb, String name,
                                Object[] attributes, Object data,
                                boolean isCdata, boolean doClose) {
     String closer = ">";
@@ -81,7 +83,7 @@ public class XmlUtil {
     if (data != null) {
       if (isCdata)
         data = wrapCdata(data);
-      sb.append(data);
+      sb.appendO(data);
     }
     if (doClose)
       closeTag(sb, name);
@@ -117,7 +119,7 @@ public class XmlUtil {
    * @param attributes
    * @param data
    */
-  public static void appendTagObj(StringBuffer sb, String name,
+  public static void appendTagObj(StringXBuilder sb, String name,
                                Object[] attributes, Object data) {
     appendTagAll(sb, name, attributes, data, false, true);
   }
@@ -130,7 +132,7 @@ public class XmlUtil {
    * @param name
    * @param data
    */
-  public static void appendTag(StringBuffer sb, String name, Object data) {
+  public static void appendTag(StringXBuilder sb, String name, Object data) {
     if (data instanceof Object[])
       appendTagAll(sb, name, (Object[]) data, null, false, true);
     else
@@ -147,7 +149,7 @@ public class XmlUtil {
    * @param attributes 
    * @param data
    */
-  public static void appendCdata(StringBuffer sb, String name, 
+  public static void appendCdata(StringXBuilder sb, String name, 
                                  Object[] attributes, String data) {
     appendTagAll(sb, name, attributes, data, true, true);
   }
@@ -158,16 +160,16 @@ public class XmlUtil {
    * @param name
    * @param value
    */
-  public static void appendAttrib(StringBuffer sb, Object name, Object value) {
+  public static void appendAttrib(StringXBuilder sb, Object name, Object value) {
     if (value == null)
       return;
     
     // note: <&" are disallowed but not checked for here
     
-    sb.append(" ").append(name).append("=\"").append(value).append("\"");
+    sb.append(" ").appendO(name).append("=\"").appendO(value).append("\"");
   }
 
-  public static void toXml(StringBuffer sb, String name, List<Object[]> properties) {
+  public static void toXml(StringXBuilder sb, String name, List<Object[]> properties) {
     for (int i = 0; i < properties.size(); i++) {
       Object[] o = properties.get(i);
       appendTagObj(sb, name, (Object[]) o[0], o[1]);
@@ -178,7 +180,7 @@ public class XmlUtil {
   public static Object escape(String name, List<Object[]> atts, Object value,
                               boolean asString, String indent) {
 
-    StringBuffer sb;
+    StringXBuilder sb;
     String type = (value == null ? null : value.getClass().getName());
     if (name == "token") {
       type = null;
@@ -192,23 +194,23 @@ public class XmlUtil {
         value = Escape.escape(value);
       } else if (value instanceof List) {
         List<Object> v = (List<Object>) value;
-        sb = new StringBuffer("\n");
+        sb = new StringXBuilder().append("\n");
         if (atts == null)
           atts = new ArrayList<Object[]>();
         atts.add(new Object[] { "count", Integer.valueOf(v.size()) });
         for (int i = 0; i < v.size(); i++)
-          sb.append(
+          sb.appendO(
               escape(null, null, v.get(i), true, indent + "  "));
         value = sb.toString();
       } else if (value instanceof Map) {
         Map<String, Object> ht = (Map<String, Object>) value;
-        sb = new StringBuffer("\n");
+        sb = new StringXBuilder().append("\n");
         Iterator<String> e = ht.keySet().iterator();
         int n = 0;
         while (e.hasNext()) {
           n++;
           String name2 = e.next();
-          sb.append(
+          sb.appendO(
               escape(name2, null, ht.get(name2), true, indent + "  "));
         }
         if (atts == null)
@@ -218,31 +220,31 @@ public class XmlUtil {
       } else if (type.startsWith("[")) {
         if (value instanceof float[]) {
           float[] f = (float[]) value;
-          sb = new StringBuffer("\n");
+          sb = new StringXBuilder().append("\n");
           if (atts == null)
             atts = new ArrayList<Object[]>();
           atts.add(new Object[] { "count", new Integer(f.length) });
           for (int i = 0; i < f.length; i++)
-            sb.append(escape(null, null, new Float(f[i]), true, indent + "  "));
+            sb.appendO(escape(null, null, new Float(f[i]), true, indent + "  "));
           value = sb.toString();
         } else if (value instanceof int[]) {
           int[] iv = (int[]) value;
-          sb = new StringBuffer("\n");
+          sb = new StringXBuilder().append("\n");
           if (atts == null)
             atts = new ArrayList<Object[]>();
           atts.add(new Object[] { "count", new Integer(iv.length) });
           for (int i = 0; i < iv.length; i++)
-            sb.append(escape(null, null, new Integer(iv[i]), true, indent + "  "));
+            sb.appendO(escape(null, null, new Integer(iv[i]), true, indent + "  "));
           value = sb.toString();
           
         } else if (value instanceof Object[]) {
           Object[] o = (Object[]) value;
-          sb = new StringBuffer("\n");
+          sb = new StringXBuilder().append("\n");
           if (atts == null)
             atts = new ArrayList<Object[]>();
           atts.add(new Object[] { "count", new Integer(o.length) });
           for (int i = 0; i < o.length; i++)
-            sb.append(escape(null, null, o[i], true, indent + "  "));
+            sb.appendO(escape(null, null, o[i], true, indent + "  "));
           value = sb.toString();
           
         } else {
@@ -259,10 +261,10 @@ public class XmlUtil {
         attributes.add(atts.get(i));
     if (!asString)
       return new Object[] { attributes.toArray(), value };
-    sb = new StringBuffer();
+    sb = new StringXBuilder();
     sb.append(indent);
     appendTagAll(sb, "val", attributes.toArray(), null, false, false);
-    sb.append(value);
+    sb.appendO(value);
     if (value instanceof String && ((String)value).indexOf("\n") >= 0)
       sb.append(indent);      
     closeTag(sb, "val");

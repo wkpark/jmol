@@ -16,6 +16,7 @@ package org.jmol.util;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import javax.util.StringXBuilder;
 
 public class Base64 {
 
@@ -41,7 +42,7 @@ public class Base64 {
   };
     
   public static void write(byte[] bytes, OutputStream os) throws IOException {
-    StringBuffer sb = getBase64(bytes);
+    StringXBuilder sb = getBase64(bytes);
     int len = sb.length();
     byte[] b = new byte[1];
     for (int i = 0; i < len; i++) {
@@ -54,13 +55,13 @@ public class Base64 {
     return toBytes(getBase64(bytes));
   }
 
-  public static StringBuffer getBase64(StringBuffer str) {
+  public static StringXBuilder getBase64(StringXBuilder str) {
     return getBase64(toBytes(str));  
   }
 
-  public static StringBuffer getBase64(byte[] bytes) {
+  public static StringXBuilder getBase64(byte[] bytes) {
     long nBytes = bytes.length;
-    StringBuffer sout = new StringBuffer();
+    StringXBuilder sout = new StringXBuilder();
     if (nBytes == 0)
       return sout;
     for (int i = 0, nPad = 0; i < nBytes && nPad == 0;) {
@@ -71,10 +72,10 @@ public class Base64 {
           | ((nPad == 2 ? 0 : bytes[i++] << 8) & 0x00FF00)
           | ((nPad >= 1 ? 0 : (int) bytes[i++]) & 0x0000FF);
       //System.out.println(Integer.toHexString(outbytes));
-      sout.append(base64.charAt((outbytes >> 18) & 0x3F));
-      sout.append(base64.charAt((outbytes >> 12) & 0x3F));
-      sout.append(nPad == 2 ? '=' : base64.charAt((outbytes >> 6) & 0x3F));
-      sout.append(nPad >= 1 ? '=' : base64.charAt(outbytes & 0x3F));
+      sout.appendC(base64.charAt((outbytes >> 18) & 0x3F));
+      sout.appendC(base64.charAt((outbytes >> 12) & 0x3F));
+      sout.appendC(nPad == 2 ? '=' : base64.charAt((outbytes >> 6) & 0x3F));
+      sout.appendC(nPad >= 1 ? '=' : base64.charAt(outbytes & 0x3F));
     }
     return sout;
   }
@@ -116,7 +117,7 @@ public class Base64 {
     return bytes;
   }  
   
-  private static byte[] toBytes(StringBuffer sb) {
+  private static byte[] toBytes(StringXBuilder sb) {
     byte[] b = new byte[sb.length()];
     for (int i = sb.length(); --i >= 0;)
       b[i] = (byte) sb.charAt(i);

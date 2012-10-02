@@ -27,6 +27,8 @@ package org.jmol.script;
 import java.util.ArrayList;
 import java.util.Arrays;
 import javax.util.BitSet;
+import javax.util.StringXBuilder;
+
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
@@ -546,7 +548,7 @@ public class ScriptVariable extends Token {
     if (x == null)
       return "";
     int i;
-    StringBuffer sb;
+    StringXBuilder sb;
     Map<Object, Boolean> map;
     switch (x.tok) {
     case on:
@@ -566,7 +568,7 @@ public class ScriptVariable extends Token {
         return (i < 1 || i > sv.size() ? "" : sValue(sv.get(i - 1)));
       //$FALL-THROUGH$
     case hash:
-      sb = new StringBuffer();
+      sb = new StringXBuilder();
       map = new Hashtable<Object, Boolean>();
       sValueArray(sb, (ScriptVariable) x, map, 0, false);
       return sb.toString();
@@ -591,7 +593,7 @@ public class ScriptVariable extends Token {
   }
 
   @SuppressWarnings("unchecked")
-  private static void sValueArray(StringBuffer sb, ScriptVariable vx,
+  private static void sValueArray(StringXBuilder sb, ScriptVariable vx,
                                   Map<Object, Boolean> map, int level,
                                   boolean isEscaped) {
     switch (vx.tok) {
@@ -611,7 +613,7 @@ public class ScriptVariable extends Token {
         String sep = "";
         for (int i = 0; i < keys.length; i++) {
           String key = (String) keys[i];
-          sb.append(sep).append(Escape.escapeStr(key)).append(':');
+          sb.append(sep).append(Escape.escapeStr(key)).appendC(':');
           sValueArray(sb, ht.get(key), map, level + 1, true);
           sep = ", ";
         }
@@ -619,9 +621,9 @@ public class ScriptVariable extends Token {
         break;
       }
       for (int i = 0; i < keys.length; i++) {
-        sb.append(keys[i]).append("\t:");
+        sb.append((String) keys[i]).append("\t:");
         ScriptVariable v = getVariable(ht.get(keys[i]));
-        StringBuffer sb2 = new StringBuffer();
+        StringXBuilder sb2 = new StringXBuilder();
         sValueArray(sb2, v, map, level + 1, isEscaped);
         String value = sb2.toString();
         sb.append(value.indexOf("\n") >= 0 ? "\n" : "\t");
@@ -977,7 +979,7 @@ public class ScriptVariable extends Token {
       return Escape.escape(value);
     case varray:
     case hash:
-      StringBuffer sb = new StringBuffer();
+      StringXBuilder sb = new StringXBuilder();
       Map<Object,Boolean>map = new Hashtable<Object,Boolean>();
       sValueArray(sb, this, map, 0, true);
       return sb.toString();
@@ -1084,7 +1086,7 @@ public class ScriptVariable extends Token {
       return sValue(args[0]);
     }
     String[] format = TextFormat.split(TextFormat.simpleReplace(sValue(args[0]), "%%","\1"), '%');
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     sb.append(format[0]);
     for (int i = 1; i < format.length; i++) {
       Object ret = sprintf(TextFormat.formatCheck("%" + format[i]), (i < args.length ? args[i] : null));
@@ -1094,7 +1096,7 @@ public class ScriptVariable extends Token {
           sb.append(list[j]).append("\n");
         continue;
       }
-      sb.append(ret);
+      sb.append((String) ret);
     }
     return sb.toString();
   }

@@ -25,6 +25,8 @@
 
 package org.jmol.constant;
 
+import javax.util.StringXBuilder;
+
 
 /**
  * Enum for quantum shells.
@@ -128,16 +130,16 @@ public enum EnumQuantumShell {
   }
 
   final public static String getMOString(float[] lc) {
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     if (lc.length == 2)
       return "" + (int)(lc[0] < 0 ? -lc[1] : lc[1]);
-    sb.append('[');
+    sb.appendC('[');
     for (int i = 0; i < lc.length; i += 2) {
       if (i > 0)
         sb.append(", ");
-      sb.append(lc[i]).append(" ").append((int) lc[i + 1]);
+      sb.appendF(lc[i]).append(" ").appendI((int) lc[i + 1]);
     }
-    sb.append(']');
+    sb.appendC(']');
     return sb.toString();
   }
 }

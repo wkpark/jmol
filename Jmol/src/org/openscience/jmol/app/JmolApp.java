@@ -516,7 +516,7 @@ public class JmolApp {
 
         Scanner scan = new Scanner(System.in);
         String linein = "";
-        StringBuffer script = new StringBuffer();
+        StringBuilder script = new StringBuilder();
         while (scan.hasNextLine() && (linein = scan.nextLine()) != null
             && !linein.equals("!quit"))
           script.append(linein).append("\n");

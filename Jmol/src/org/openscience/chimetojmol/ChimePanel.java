@@ -30,6 +30,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+
 public class ChimePanel extends JPanel implements ItemListener, ActionListener {
 
   private JTextField chimePath;
@@ -358,7 +359,7 @@ public class ChimePanel extends JPanel implements ItemListener, ActionListener {
     int i = -1;
     boolean isScript = what.equals("script=");
     String lcdata = data.toLowerCase();
-    StringBuffer dataOut = new StringBuffer();
+    StringBuilder dataOut = new StringBuilder();
     int pt0 = 0;
     int i1 = 0;
     while ((i = lcdata.indexOf(what, i + 1)) >= 0) {
@@ -419,7 +420,7 @@ public class ChimePanel extends JPanel implements ItemListener, ActionListener {
   }
 
   private String getFileContents(File f) {
-    StringBuffer sb = new StringBuffer(8192);
+    StringBuilder sb = new StringBuilder(8192);
     String line;
     try {
       BufferedReader br = new BufferedReader(new FileReader(f));

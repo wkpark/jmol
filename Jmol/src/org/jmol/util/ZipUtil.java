@@ -39,6 +39,8 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import javax.util.StringXBuilder;
+
 
 public class ZipUtil {
   /*
@@ -149,7 +151,7 @@ public class ZipUtil {
                                 Map<String, String> fileData) {
     ZipInputStream zis = getStream(is);
     ZipEntry ze;
-    StringBuffer listing = new StringBuffer();
+    StringXBuilder listing = new StringXBuilder();
     binaryFileList = "|" + binaryFileList + "|";
     String prefix = TextFormat.join(subfileList, '/', 1);
     String prefixd = null;
@@ -165,7 +167,7 @@ public class ZipUtil {
             && !(name.equals(prefix) || name.startsWith(prefixd)))
           continue;
         //System.out.println("ziputil: " + name);
-        listing.append(name).append('\n');
+        listing.append(name).appendC('\n');
         String sname = "|" + name.substring(name.lastIndexOf("/") + 1) + "|";
         boolean asBinaryString = (binaryFileList.indexOf(sname) >= 0);
         byte[] bytes = getStreamBytes(zis, ze.getSize());
@@ -186,10 +188,10 @@ public class ZipUtil {
   }
 
   public static String getBinaryStringForBytes(byte[] bytes) {
-    StringBuffer ret = new StringBuffer();
+    StringXBuilder ret = new StringXBuilder();
     for (int i = 0; i < bytes.length; i++)
       ret.append(Integer.toHexString(bytes[i] & 0xFF))
-          .append(' ');
+          .appendC(' ');
     return ret.toString();
   }
   
@@ -207,7 +209,7 @@ public class ZipUtil {
    */
   static public Object getZipFileContents(BufferedInputStream bis, String[] list,
                                           int listPtr, boolean asBufferedInputStream) {
-    StringBuffer ret;
+    StringXBuilder ret;
     if (list == null || listPtr >= list.length)
       return getZipDirectoryAsStringAndClose(bis);
     String fileName = list[listPtr];
@@ -217,11 +219,11 @@ public class ZipUtil {
     try {
       boolean isAll = (fileName.equals("."));
       if (isAll || fileName.lastIndexOf("/") == fileName.length() - 1) {
-        ret = new StringBuffer();
+        ret = new StringXBuilder();
         while ((ze = zis.getNextEntry()) != null) {
           String name = ze.getName();
           if (isAll || name.startsWith(fileName))
-            ret.append(name).append('\n');
+            ret.append(name).appendC('\n');
         }
         String str = ret.toString();
         if (asBufferedInputStream)
@@ -244,9 +246,9 @@ public class ZipUtil {
         if (asBufferedInputStream)
           return new BufferedInputStream(new ByteArrayInputStream(bytes));
         if (asBinaryString) {
-          ret = new StringBuffer();
+          ret = new StringXBuilder();
           for (int i = 0; i < bytes.length; i++)
-            ret.append(Integer.toHexString(bytes[i] & 0xFF)).append(' ');
+            ret.append(Integer.toHexString(bytes[i] & 0xFF)).appendC(' ');
           return ret.toString();
         }
       return new String(bytes);
@@ -281,7 +283,7 @@ public class ZipUtil {
   }
   
   static public String getZipDirectoryAsStringAndClose(BufferedInputStream bis) {
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     String[] s = new String[0];
     try {
       s = getZipDirectoryOrErrorAndClose(bis, false);
@@ -290,7 +292,7 @@ public class ZipUtil {
       Logger.error(e.getMessage());
     }
     for (int i = 0; i < s.length; i++)
-      sb.append(s[i]).append('\n');
+      sb.append(s[i]).appendC('\n');
     return sb.toString();
   }
   
@@ -330,7 +332,7 @@ public class ZipUtil {
 
 
   private static String getZipEntryAsString(InputStream is) throws IOException {
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     byte[] buf = new byte[1024];
     int len;
     while (is.available() >= 1 && (len = is.read(buf)) > 0)
@@ -436,12 +438,12 @@ public class ZipUtil {
   public static String cacheZipContents(BufferedInputStream bis, String fileName, Map<String, byte[]> cache) {
     ZipInputStream zis = getStream(bis);
     ZipEntry ze;
-    StringBuffer listing = new StringBuffer();
+    StringXBuilder listing = new StringXBuilder();
     long n = 0;
     try {
       while ((ze = zis.getNextEntry()) != null) {
         String name = ze.getName();
-        listing.append(name).append('\n');
+        listing.append(name).appendC('\n');
         long nBytes = ze.getSize();
         byte[] bytes = getStreamBytes(zis, nBytes);
         n += bytes.length;

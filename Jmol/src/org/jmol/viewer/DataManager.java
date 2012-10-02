@@ -38,6 +38,7 @@ import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
+import javax.util.StringXBuilder;
 
 /*
  * a class for storing and retrieving user data,
@@ -245,11 +246,11 @@ class DataManager {
     }    
   }
 
-  void getDataState(StringBuffer state, StringBuffer sfunc, String atomProps) {
+  void getDataState(StringXBuilder state, StringXBuilder sfunc, String atomProps) {
     if (dataValues == null)
       return;
     Iterator<String> e = dataValues.keySet().iterator();
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     int n = 0;
     if (atomProps.length() > 0) {
       n = 1;
@@ -290,7 +291,7 @@ class DataManager {
       return;
     if (sfunc != null)
       state.append("function _setDataState() {\n");
-    state.append(sb);  
+    state.appendSB(sb);  
     if (sfunc != null) {
       sfunc.append("  _setDataState;\n");
       state.append("}\n\n");
@@ -350,21 +351,22 @@ class DataManager {
      type = defaultVdw;
     if (type == EnumVdw.USER && bsUserVdws == null)
       setUserVdw(defaultVdw);
-    StringBuffer sb = new StringBuffer(type.getVdwLabel() + "\n");
+    StringXBuilder sb = new StringXBuilder();
+    sb.append(type.getVdwLabel()).append("\n");
     boolean isAll = (bs == null);
     int i0 = (isAll ? 1 : bs.nextSetBit(0));
     int i1 = (isAll ? Elements.elementNumberMax : bs.length());
     for (int i = i0; i < i1 && i >= 0; i = (isAll ? i + 1 : bs
         .nextSetBit(i + 1)))
-      sb.append(i).append('\t').append(
+      sb.appendI(i).appendC('\t').appendF(
           type == EnumVdw.USER ? userVdws[i] : Elements
-              .getVanderwaalsMar(i, type) / 1000f).append('\t').append(
-          Elements.elementSymbolFromNumber(i)).append('\n');
+              .getVanderwaalsMar(i, type) / 1000f).appendC('\t').append(
+          Elements.elementSymbolFromNumber(i)).appendC('\n');
     return (bs == null ? sb.toString() : "\n  DATA \"element_vdw\"\n"
         + sb.append("  end \"element_vdw\";\n\n").toString());
   }
 
-  static void getInlineData(StringBuffer loadScript, String strModel, boolean isAppend, String loadFilter) {
+  static void getInlineData(StringXBuilder loadScript, String strModel, boolean isAppend, String loadFilter) {
     String tag = (isAppend ? "append" : "model") + " inline";
     loadScript.append("load /*data*/ data \"").append(tag).append("\"\n")
         .append(strModel).append("end \"").append(tag)

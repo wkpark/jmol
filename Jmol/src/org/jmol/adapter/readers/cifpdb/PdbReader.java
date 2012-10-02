@@ -41,6 +41,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import javax.util.StringXBuilder;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 
@@ -74,7 +75,7 @@ public class PdbReader extends AtomSetCollectionReader {
 
   private int lineLength;
 
-  private StringBuffer pdbHeader;
+  private StringXBuilder pdbHeader;
 
   private boolean applySymmetry;
   private boolean getTlsGroups;
@@ -97,11 +98,11 @@ public class PdbReader extends AtomSetCollectionReader {
   private List<Matrix4f> vBiomts;
   private List<Map<String, Object>> vBiomolecules;
   private List<Map<String, Object>> vTlsModels;
-  private StringBuffer sbTlsErrors;
+  private StringXBuilder sbTlsErrors;
 
   private int[] chainAtomCounts;  
   
-  private StringBuffer sbIgnored, sbSelected, sbConect, sb;
+  private StringXBuilder sbIgnored, sbSelected, sbConect, sb;
 
   private int atomCount;
   private int maxSerial;
@@ -155,7 +156,7 @@ public class PdbReader extends AtomSetCollectionReader {
 @Override
  protected void initializeReader() throws Exception {
    setIsPDB();
-   pdbHeader = (getHeader ? new StringBuffer() : null);
+   pdbHeader = (getHeader ? new StringXBuilder() : null);
    applySymmetry = !checkFilterKey("NOSYMMETRY");
    getTlsGroups = checkFilterKey("TLS");
    if (htParams.containsKey("vTlsModels")) {
@@ -164,8 +165,8 @@ public class PdbReader extends AtomSetCollectionReader {
    }
    if (checkFilterKey("CONF ")) {
      configurationPtr = parseIntAt(filter, filter.indexOf("CONF ") + 5);
-     sbIgnored = new StringBuffer();
-     sbSelected = new StringBuffer();
+     sbIgnored = new StringXBuilder();
+     sbSelected = new StringXBuilder();
    }
    isLegacyModelType = (stateScriptVersionInt < 120000);
    isConnectStateBug = (stateScriptVersionInt >= 120151 && stateScriptVersionInt <= 120220
@@ -185,7 +186,7 @@ public class PdbReader extends AtomSetCollectionReader {
       if (isAtom || isModel)
         getHeader = false;
       else
-        pdbHeader.append(line).append('\n');
+        pdbHeader.append(line).appendC('\n');
     }
     if (isModel || isNewModel) {
       isMultiModel = isModel;
@@ -876,8 +877,8 @@ REMARK 290 REMARK: NULL
   private void conect() {
     // adapted for improper non-crossreferenced files such as 1W7R
     if (sbConect == null) {
-      sbConect = new StringBuffer();
-      sb = new StringBuffer();
+      sbConect = new StringXBuilder();
+      sb = new StringXBuilder();
     } else {
       sb.setLength(0);
     }
@@ -921,7 +922,7 @@ REMARK 290 REMARK: NULL
       atomSetCollection.addConnection(new int[] { i1, targetSerial,
           i < 4 ? 1 : JmolAdapter.ORDER_HBOND });
     }
-    sbConect.append(sb);
+    sbConect.appendSB(sb);
   }
 
   /*
@@ -1553,9 +1554,9 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
         }
       }
     }
-    StringBuffer sdata = new StringBuffer();
+    StringXBuilder sdata = new StringXBuilder();
     for (int i = 0; i < data.length; i++)
-      sdata.append(data[i]).append('\n');
+      sdata.appendI(data[i]).appendC('\n');
     atomSetCollection.setAtomSetAtomProperty("tlsGroup", sdata.toString(),
         iModel);
     atomSetCollection.setAtomSetAuxiliaryInfoForSet("TLS", tlsGroupInfo, iModel);
@@ -1662,9 +1663,9 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
 
   private void tlsAddError(String error) {
     if (sbTlsErrors == null)
-      sbTlsErrors = new StringBuffer();
-    sbTlsErrors.append(fileName).append('\t').append("TLS group ").append(
-        tlsGroupID).append('\t').append(error).append('\n');
+      sbTlsErrors = new StringXBuilder();
+    sbTlsErrors.append(fileName).appendC('\t').append("TLS group ").appendI(
+        tlsGroupID).appendC('\t').append(error).appendC('\n');
   }
 
   protected static float fixRadius(float r) {    

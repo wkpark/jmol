@@ -32,9 +32,7 @@ public class LimitedLineReader {
       int cchLine = ichCurrent - ichBeginningOfLine;
       if (buf[ichBeginningOfLine] == '#')
         continue; // flush comment lines;
-      StringBuffer sb = new StringBuffer(cchLine);
-      sb.append(buf, ichBeginningOfLine, cchLine);
-      return sb.toString();
+      return new String(buf, ichBeginningOfLine, cchLine);
     }
     return "";
   }

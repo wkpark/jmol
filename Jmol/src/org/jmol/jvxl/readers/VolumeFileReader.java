@@ -36,6 +36,8 @@ import org.jmol.atomdata.AtomData;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
+import javax.util.StringXBuilder;
+
 abstract class VolumeFileReader extends SurfaceFileReader {
 
   protected boolean endOfData;
@@ -145,7 +147,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
           volumetricVectors[i].scale(ANGSTROMS_PER_BOHR);
         line = voxelCounts[i] + " " + volumetricVectors[i].x + " "
             + volumetricVectors[i].y + " " + volumetricVectors[i].z;
-        jvxlFileHeaderBuffer.append(line).append('\n');
+        jvxlFileHeaderBuffer.append(line).appendC('\n');
         Logger.info("voxel grid count/vector:" + line);
       }
       scaleIsosurface(params.scale);
@@ -162,10 +164,10 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   // generally useful:
 
   protected String skipComments(boolean allowBlankLines) throws Exception {
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     while (readLine() != null
         && (allowBlankLines && line.length() == 0 || line.indexOf("#") == 0))
-      sb.append(line).append('\n');
+      sb.append(line).appendC('\n');
     return sb.toString();
   }
 
@@ -513,7 +515,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   protected static boolean checkAtomLine(boolean isXLowToHigh,
                                          boolean isAngstroms,
                                          String strAtomCount, String atomLine,
-                                         StringBuffer bs) {
+                                         StringXBuilder bs) {
     if (atomLine.indexOf("ANGSTROMS") >= 0)
       isAngstroms = true;
     int atomCount = (strAtomCount == null ? Integer.MAX_VALUE : Parser

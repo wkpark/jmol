@@ -335,7 +335,7 @@ public class GuiMap {
     if (url == null) {
       throw new FileNotFoundException("Error loading resource " + name);
     }
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     try {
       //turns out from the Jar file
       // it's a sun.net.www.protocol.jar.JarURLConnection$JarURLInputStream

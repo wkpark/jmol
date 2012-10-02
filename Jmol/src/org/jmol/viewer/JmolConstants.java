@@ -36,9 +36,10 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.util.StringXBuilder;
 import javax.vecmath.Vector3f;
 
-@J2SRequireImport({java.util.Properties.class,java.io.BufferedInputStream.class,java.lang.StringBuffer.class})
+@J2SRequireImport({java.util.Properties.class,java.io.BufferedInputStream.class,javax.util.StringXBuilder.class})
 public class JmolConstants {
 
   // axes mode constants --> org.jmol.constant.EnumAxesMode
@@ -1079,7 +1080,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public static String getGroup3List() {
     if (group3List != null)
       return group3List;
-    StringBuffer s = new StringBuffer();
+    StringXBuilder s = new StringXBuilder();
     //for menu presentation order
     for (int i = 1; i < GROUPID_WATER; i++)
       s.append(",[").append((predefinedGroup3Names[i]+"   ").substring(0,3)+"]");
@@ -1094,7 +1095,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
   private static int getGroup3Pt(String group3) {
     getGroup3List();
-    StringBuffer sb = new StringBuffer("[");
+    StringXBuilder sb = new StringXBuilder().append("[");
     sb.append(group3);
     switch (group3.length()){
     case 1:

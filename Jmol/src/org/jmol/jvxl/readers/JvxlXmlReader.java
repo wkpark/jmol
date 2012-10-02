@@ -27,6 +27,8 @@ package org.jmol.jvxl.readers;
 import java.io.BufferedReader;
 import java.util.ArrayList;
 import javax.util.BitSet;
+import javax.util.StringXBuilder;
+
 import java.util.Hashtable;
 import java.util.List;
 
@@ -146,7 +148,7 @@ public class JvxlXmlReader extends VolumeFileReader {
   @Override
   protected void readParameters() throws Exception {
     String s = xr.getXmlData("jvxlFileTitle", null, false, false);
-    jvxlFileHeaderBuffer = new StringBuffer(s);
+    jvxlFileHeaderBuffer = StringXBuilder.newS(s);
     xr.toTag("jvxlVolumeData");
     String data = tempDataXml = xr.getXmlData("jvxlVolumeData", null, true, false);
     volumetricOrigin.setT(xr.getXmlPoint(data, "origin"));
@@ -799,10 +801,11 @@ public class JvxlXmlReader extends VolumeFileReader {
     return triangles;
   }
 
-  protected void jvxlDecodeContourData(JvxlData jvxlData, String data) throws Exception {
+  protected void jvxlDecodeContourData(JvxlData jvxlData, String data)
+      throws Exception {
     List<List<Object>> vs = new ArrayList<List<Object>>();
-    StringBuffer values = new StringBuffer();
-    StringBuffer colors = new StringBuffer();
+    StringXBuilder values = new StringXBuilder();
+    StringXBuilder colors = new StringXBuilder();
     int pt = -1;
     jvxlData.vContours = null;
     if (data == null)
@@ -811,16 +814,18 @@ public class JvxlXmlReader extends VolumeFileReader {
       List<Object> v = new ArrayList<Object>();
       String s = xr.getXmlData("jvxlContour", data.substring(pt), true, false);
       float value = parseFloatStr(XmlReader.getXmlAttrib(s, "value"));
-      values.append(" ").append(value);
-      short colix = Colix.getColix(ColorUtil.getArgbFromString(XmlReader.getXmlAttrib(s,
-          "color")));
+      values.append(" ").appendF(value);
+      short colix = Colix.getColix(ColorUtil.getArgbFromString(XmlReader
+          .getXmlAttrib(s, "color")));
       int color = Colix.getArgb(colix);
       colors.append(" ").append(Escape.escapeColor(color));
-      String fData = JvxlCoder.jvxlUncompressString(XmlReader.getXmlAttrib(s, "data"));
-      BitSet bs = JvxlCoder.jvxlDecodeBitSet(xr.getXmlData("jvxlContour", s, false, false));
+      String fData = JvxlCoder.jvxlUncompressString(XmlReader.getXmlAttrib(s,
+          "data"));
+      BitSet bs = JvxlCoder.jvxlDecodeBitSet(xr.getXmlData("jvxlContour", s,
+          false, false));
       int n = bs.length();
-      IsosurfaceMesh.setContourVector(v, n, bs, value, colix, color, new StringBuffer(
-          fData));
+      IsosurfaceMesh.setContourVector(v, n, bs, value, colix, color,
+          StringXBuilder.newS(fData));
       vs.add(v);
     }
     int n = vs.size();

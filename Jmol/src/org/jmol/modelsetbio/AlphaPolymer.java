@@ -37,9 +37,9 @@ import org.jmol.modelset.ModelSet;
 
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
-import org.jmol.util.OutputStringBuffer;
+import org.jmol.util.OutputStringBuilder;
 import org.jmol.viewer.Viewer;
-
+import javax.util.StringXBuilder;
 
 public class AlphaPolymer extends BioPolymer {
 
@@ -63,8 +63,8 @@ public class AlphaPolymer extends BioPolymer {
   public void getPdbData(Viewer viewer, char ctype, char qtype, int mStep, int derivType,
                          BitSet bsAtoms, BitSet bsSelected, 
                          boolean bothEnds, boolean isDraw, boolean addHeader, 
-                         LabelToken[] tokens, OutputStringBuffer pdbATOM, 
-                         StringBuffer pdbCONECT, BitSet bsWritten) {
+                         LabelToken[] tokens, OutputStringBuilder pdbATOM, 
+                         StringXBuilder pdbCONECT, BitSet bsWritten) {
     getPdbData(viewer, this, ctype, qtype, mStep, derivType, bsAtoms, bsSelected, bothEnds, 
         isDraw, addHeader, tokens, pdbATOM, pdbCONECT, bsWritten);
   }

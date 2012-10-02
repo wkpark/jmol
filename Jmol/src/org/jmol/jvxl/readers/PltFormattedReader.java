@@ -25,6 +25,8 @@ package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
 
+import javax.util.StringXBuilder;
+
 import org.jmol.viewer.Viewer;
 
 class PltFormattedReader extends VolumeFileReader {
@@ -52,7 +54,7 @@ class PltFormattedReader extends VolumeFileReader {
     super.init2(sg, br);
     isAngstroms = true;
     jvxlData.wasCubic = true;
-    jvxlFileHeaderBuffer = new StringBuffer();
+    jvxlFileHeaderBuffer = new StringXBuilder();
     nSurfaces = 1;
   }
 

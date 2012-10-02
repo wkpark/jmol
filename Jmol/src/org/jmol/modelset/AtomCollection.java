@@ -62,6 +62,7 @@ import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.script.Token;
 import org.jmol.viewer.Viewer;
+import javax.util.StringXBuilder;
 
 abstract public class AtomCollection {
   
@@ -1036,7 +1037,7 @@ abstract public class AtomCollection {
     if (!preserveState)
       return "";
     BitSet bs;
-    StringBuffer commands = new StringBuffer();
+    StringXBuilder commands = new StringXBuilder();
     for (byte i = 0; i < TAINT_MAX; i++)
       if (taintWhat < 0 || i == taintWhat)
       if((bs = (bsSelected != null ? bsSelected : getTaintedAtoms(i))) != null)
@@ -1044,29 +1045,29 @@ abstract public class AtomCollection {
     return commands.toString();
   }
   
-  public void getAtomicPropertyStateBuffer(StringBuffer commands, 
+  public void getAtomicPropertyStateBuffer(StringXBuilder commands, 
                                      byte type, BitSet bs,
                                      String label, float[] fData) {
     if (!viewer.getPreserveState())
       return;
     // see setAtomData()
-    StringBuffer s = new StringBuffer();
+    StringXBuilder s = new StringXBuilder();
     String dataLabel = (label == null ? userSettableValues[type] : label)
         + " set";
     int n = 0;
     boolean isDefault = (type == TAINT_COORD);
     if (bs != null)
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-        s.append(i + 1).append(" ").append(atoms[i].getElementSymbol()).append(
+        s.appendI(i + 1).append(" ").append(atoms[i].getElementSymbol()).append(
             " ").append(atoms[i].getInfo().replace(' ', '_')).append(" ");
         switch (type) {
         case TAINT_MAX:
           if (i < fData.length) // when data are appended, the array may not
             // extend that far
-            s.append(fData[i]);
+            s.appendF(fData[i]);
           break;
         case TAINT_ATOMNO:
-          s.append(atoms[i].getAtomNumber());
+          s.appendI(atoms[i].getAtomNumber());
           break;
         case TAINT_ATOMNAME:
           s.append(atoms[i].getAtomName());
@@ -1077,38 +1078,38 @@ abstract public class AtomCollection {
         case TAINT_COORD:
           if (isTainted(i, TAINT_COORD))
             isDefault = false;
-          s.append(atoms[i].x).append(" ").append(atoms[i].y).append(" ")
-              .append(atoms[i].z);
+          s.appendF(atoms[i].x).append(" ").appendF(atoms[i].y).append(" ")
+              .appendF(atoms[i].z);
           break;
         case TAINT_VIBRATION:
           Vector3f v = atoms[i].getVibrationVector();
           if (v == null)
             v = new Vector3f();
-          s.append(v.x).append(" ").append(v.y).append(" ").append(v.z);
+          s.appendF(v.x).append(" ").appendF(v.y).append(" ").appendF(v.z);
           break;
         case TAINT_ELEMENT:
-          s.append(atoms[i].getAtomicAndIsotopeNumber());
+          s.appendI(atoms[i].getAtomicAndIsotopeNumber());
           break;
         case TAINT_FORMALCHARGE:
-          s.append(atoms[i].getFormalCharge());
+          s.appendI(atoms[i].getFormalCharge());
           break;
         case TAINT_IONICRADIUS:
-          s.append(atoms[i].getBondingRadiusFloat());
+          s.appendF(atoms[i].getBondingRadiusFloat());
           break;
         case TAINT_OCCUPANCY:
-          s.append(atoms[i].getOccupancy100());
+          s.appendI(atoms[i].getOccupancy100());
           break;
         case TAINT_PARTIALCHARGE:
-          s.append(atoms[i].getPartialCharge());
+          s.appendF(atoms[i].getPartialCharge());
           break;
         case TAINT_TEMPERATURE:
-          s.append(atoms[i].getBfactor100() / 100f);
+          s.appendF(atoms[i].getBfactor100() / 100f);
           break;
         case TAINT_VALENCE:
-          s.append(atoms[i].getValence());
+          s.appendI(atoms[i].getValence());
           break;
         case TAINT_VANDERWAALS:
-          s.append(atoms[i].getVanderwaalsRadiusFloat(viewer,
+          s.appendF(atoms[i].getVanderwaalsRadiusFloat(viewer,
               EnumVdw.AUTO));
           break;
         }
@@ -1119,10 +1120,10 @@ abstract public class AtomCollection {
       return;
     if (isDefault)
       dataLabel += "(default)";
-    commands.append("\n  DATA \"" + dataLabel + "\"\n").append(n).append(
+    commands.append("\n  DATA \"" + dataLabel + "\"\n").appendI(n).append(
         " ;\nJmol Property Data Format 1 -- Jmol ").append(
         Viewer.getJmolVersion()).append(";\n");
-    commands.append(s);
+    commands.appendSB(s);
     commands.append("  end \"" + dataLabel + "\";\n");
   }
 
@@ -2104,7 +2105,8 @@ abstract public class AtomCollection {
   }
   
   protected String getChimeInfo(int tok, BitSet bs) {
-    StringBuffer info = new StringBuffer("\n");
+    StringXBuilder info = new StringXBuilder();
+    info.append("\n");
     char id;
     String s = "";
     Chain clast = null;
@@ -2133,7 +2135,7 @@ abstract public class AtomCollection {
           break;
         case Token.sequence:
           if (atoms[i].getModelIndex() != modelLast) {
-            info.append('\n');
+            info.appendC('\n');
             n = 0;
             modelLast = atoms[i].getModelIndex();
             info.append("Model " + atoms[i].getModelNumber());
@@ -2141,7 +2143,7 @@ abstract public class AtomCollection {
             clast = null;
           }
           if (atoms[i].getChain() != clast) {
-            info.append('\n');
+            info.appendC('\n');
             n = 0;
             clast = atoms[i].getChain();
             info.append("Chain " + s + ":\n");
@@ -2150,7 +2152,7 @@ abstract public class AtomCollection {
           Group g = atoms[i].getGroup();
           if (g != glast) {
             if ((n++) % 5 == 0 && n > 1)
-              info.append('\n');
+              info.appendC('\n');
             TextFormat.lFill(info, "          ", "["
                 + atoms[i].getGroup3(false) + "]" + atoms[i].getResno() + " ");
             glast = g;
@@ -2160,10 +2162,10 @@ abstract public class AtomCollection {
           return "";
         }
         if (info.indexOf("\n" + s + "\n") < 0)
-          info.append(s).append('\n');
+          info.append(s).appendC('\n');
       }
     if (tok == Token.sequence)
-      info.append('\n');
+      info.appendC('\n');
     return info.toString().substring(1);
   }
 

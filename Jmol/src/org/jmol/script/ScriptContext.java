@@ -27,6 +27,8 @@ package org.jmol.script;
 
 import java.util.Map;
 
+import javax.util.StringXBuilder;
+
 import org.jmol.thread.ScriptParallelProcessor;
 
 public class ScriptContext {
@@ -47,7 +49,7 @@ public class ScriptContext {
   public int pcEnd = Integer.MAX_VALUE;
   public int lineEnd = Integer.MAX_VALUE;
   public int iToken;
-  public StringBuffer outputBuffer;
+  public StringXBuilder outputBuffer;
   public Map<String, ScriptVariable> contextVariables;
   public boolean isFunction;
   public boolean isStateScript;
@@ -67,9 +69,9 @@ public class ScriptContext {
   ScriptContext() {
   }
 
-  StringBuffer getContextTrace(StringBuffer sb, boolean isTop) {
+  StringXBuilder getContextTrace(StringXBuilder sb, boolean isTop) {
     if (sb == null)
-      sb = new StringBuffer();
+      sb = new StringXBuilder();
     sb.append(ScriptEvaluator.setErrorLineMessage(functionName, scriptFileName,
         lineNumbers[pc], pc, ScriptEvaluator.statementAsString(statement, (isTop ? iToken : 9999), false)));
     if (parentContext != null)

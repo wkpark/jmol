@@ -48,6 +48,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 
 import java.util.Arrays;
+import javax.util.StringXBuilder;
 
 public class StateManager {
 
@@ -77,7 +78,7 @@ public class StateManager {
 
   public static String getVariableList(Map<String, ScriptVariable> htVariables, int nMax,
                                        boolean withSites, boolean definedOnly) {
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     // user variables only:
     int n = 0;
 
@@ -286,7 +287,7 @@ public class StateManager {
       o = getOrientation(saveName);
       return (o == null ? "" : o.getMoveToText(true));      
     } 
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     Iterator<String> e = saved.keySet().iterator();
     while (e.hasNext()) {
        String name = e.next();
@@ -481,7 +482,7 @@ public class StateManager {
   String getFunctionCalls(String selectedFunction) {
     if (selectedFunction == null)
       selectedFunction = "";
-    StringBuffer s = new StringBuffer();
+    StringXBuilder s = new StringXBuilder();
     int pt = selectedFunction.indexOf("*");
     boolean isGeneric = (pt >= 0);
     boolean isStatic = (selectedFunction.indexOf("static_") == 0);
@@ -506,7 +507,7 @@ public class StateManager {
     for (int i = 0; i < n; i++) {
       ScriptFunction f = ht.get(names[i]);
       s.append(namesOnly ? f.getSignature() : f.toString());
-      s.append('\n');
+      s.appendC('\n');
     }
     return s.toString();
   }
@@ -1053,7 +1054,7 @@ public class StateManager {
       // restored in a saved state definition, but will not execute
       // now so that there is no chance any embedded scripts or
       // default load scripts will run and slow things down.
-      StringBuffer str = new StringBuffer();
+      StringXBuilder str = new StringXBuilder();
       appendCmd(str, "set allowEmbeddedScripts false");
       if (allowEmbeddedScripts)
         setParameterValue("allowEmbeddedScripts", true);
@@ -1293,18 +1294,18 @@ public class StateManager {
     int ellipsoidDotCount = 200;
     float ellipsoidAxisDiameter = 0.02f;
 
-    String getWindowState(StringBuffer sfunc, int width, int height) {
-      StringBuffer str = new StringBuffer();
+    String getWindowState(StringXBuilder sfunc, int width, int height) {
+      StringXBuilder str = new StringXBuilder();
       if (sfunc != null) {
         sfunc
             .append("  initialize;\n  set refreshing false;\n  _setWindowState;\n");
         str.append("\nfunction _setWindowState() {\n");
       }
       if (width != 0)
-        str.append("# preferredWidthHeight ").append(width).append(" ").append(height).append(";\n");
+        str.append("# preferredWidthHeight ").appendI(width).append(" ").appendI(height).append(";\n");
       str
-      .append("# width ").append(width == 0 ? viewer.getScreenWidth() : width)
-      .append(";\n# height ").append(height == 0 ? viewer.getScreenHeight() : height)
+      .append("# width ").appendI(width == 0 ? viewer.getScreenWidth() : width)
+      .append(";\n# height ").appendI(height == 0 ? viewer.getScreenHeight() : height)
       .append(";\n");
       appendCmd(str, "stateVersion = " + getParameter("_version"));
       appendCmd(str, "background " + Escape.escapeColor(objColors[0]));
@@ -1322,7 +1323,7 @@ public class StateManager {
     }
 
     String getSpecularState() {
-      StringBuffer str = new StringBuffer("");
+      StringXBuilder str = new StringXBuilder();
       appendCmd(str, "set ambientPercent " + GData.getAmbientPercent());
       appendCmd(str, "set diffusePercent " + GData.getDiffusePercent());
       appendCmd(str, "set specular " + GData.getSpecular());
@@ -1536,7 +1537,7 @@ public class StateManager {
     }
 
     String getAllSettings(String prefix) {
-      StringBuffer commands = new StringBuffer("");
+      StringXBuilder commands = new StringXBuilder();
       Iterator<String> e;
       String key;
       String[] list = new String[htBooleanParameterFlags.size()
@@ -1587,7 +1588,7 @@ public class StateManager {
       int len = s.length();
       if (len < 512)
         return s;
-      StringBuilder sb = new StringBuilder();
+      StringXBuilder sb = new StringXBuilder();
       String sep = "\"\\\n    + \"";
       int pt = 0;
       for (int i = 72; i < len; pt = i, i += 72) {
@@ -1599,10 +1600,10 @@ public class StateManager {
       return sb.toString();
     }
 
-    String getState(StringBuffer sfunc) {
+    String getState(StringXBuilder sfunc) {
       String[] list = new String[htBooleanParameterFlags.size()
           + htNonbooleanParameterValues.size()];
-      StringBuffer commands = new StringBuffer();
+      StringXBuilder commands = new StringXBuilder();
       boolean isState = (sfunc != null);
       if (isState) {
         sfunc.append("  _setVariableState;\n");
@@ -1662,7 +1663,7 @@ public class StateManager {
       // label defaults
 
       viewer.loadShape(JmolConstants.SHAPE_LABELS);
-      commands.append(viewer.getShapeProperty(JmolConstants.SHAPE_LABELS,
+      commands.append((String) viewer.getShapeProperty(JmolConstants.SHAPE_LABELS,
           "defaultState"));
 
       // structure defaults
@@ -1766,7 +1767,7 @@ public class StateManager {
   public static String getCommands(Map<String, BitSet> htDefine,
                                    Map<String, BitSet> htMore,
                                    String selectCmd) {
-    StringBuffer s = new StringBuffer();
+    StringXBuilder s = new StringXBuilder();
     String setPrev = getCommands(htDefine, s, null, selectCmd);
     if (htMore != null)
       getCommands(htMore, s, setPrev, "select");
@@ -1774,7 +1775,7 @@ public class StateManager {
   }
 
   private static String getCommands(Map<String, BitSet> ht,
-                                    StringBuffer s,
+                                    StringXBuilder s,
                                     String setPrev, String selectCmd) {
     if (ht == null)
       return "";
@@ -1793,7 +1794,7 @@ public class StateManager {
     return setPrev;
   }
 
-  public static void appendCmd(StringBuffer s, String cmd) {
+  public static void appendCmd(StringXBuilder s, String cmd) {
     if (cmd.length() == 0)
       return;
     s.append("  ").append(cmd).append(";\n");

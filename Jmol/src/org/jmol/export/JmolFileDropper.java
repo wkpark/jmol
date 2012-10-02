@@ -106,7 +106,7 @@ public class JmolFileDropper implements DropTargetListener {
   }
 
   private void loadFiles(List<File> fileList) {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     for (int i = 0; i < fileList.size(); ++ i) {
       File f = fileList.get(i);
       String fname = f.getAbsolutePath();

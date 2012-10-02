@@ -27,6 +27,7 @@ package org.jmol.adapter.readers.xml;
 import java.io.BufferedReader;
 import java.util.Map;
 
+import javax.util.StringXBuilder;
 import javax.vecmath.Vector3f;
 
 import org.jmol.adapter.smarter.AtomSetCollection;
@@ -69,7 +70,7 @@ public class XmlVaspReader extends XmlReader {
     super.processXml(parent, atomSetCollection, reader, xmlReader, handler);
   }
 
-  private StringBuffer data;
+  private StringXBuilder data;
   private String name;
   private int atomCount;
   private int iAtom;
@@ -138,7 +139,7 @@ public class XmlVaspReader extends XmlReader {
     if ("varray".equals(localName)) {
       name = atts.get("name");
       if (name != null && Parser.isOneOf(name, "basis;positions;forces"))
-        data = new StringBuffer();
+        data = new StringXBuilder();
       return;
     }
 

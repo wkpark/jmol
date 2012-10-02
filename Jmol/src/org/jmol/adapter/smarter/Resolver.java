@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import javax.util.StringXBuilder;
+
 import org.jmol.api.JmolAdapter;
 //import org.jmol.util.Escape;
 import org.jmol.util.LimitedLineReader;
@@ -172,7 +174,7 @@ public class Resolver {
    * @param zipDirectory
    * @return String data for processing
    */  
-  static StringBuffer checkSpecialData(InputStream is, String[] zipDirectory) {
+  static StringXBuilder checkSpecialData(InputStream is, String[] zipDirectory) {
   	return null;
 /*  	
     boolean isSpartan = false;
@@ -186,7 +188,7 @@ public class Resolver {
     }
     if (!isSpartan)
       return null;
-    StringBuffer data = new StringBuffer();
+    StringXBuilder data = new StringXBuilder();
     data.append("Zip File Directory: ").append("\n").append(
         Escape.escape(zipDirectory, true)).append("\n");
     Map<String, String> fileData = new Hashtable<String, String>();

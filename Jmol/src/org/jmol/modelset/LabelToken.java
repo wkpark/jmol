@@ -35,6 +35,8 @@ import org.jmol.util.TextFormat;
 import org.jmol.script.Token;
 import org.jmol.viewer.Viewer;
 
+import javax.util.StringXBuilder;
+
 public class LabelToken {
 
   /*
@@ -235,7 +237,7 @@ public class LabelToken {
                                    int[] indices) {
     if (atom == null)
       return null;
-    StringBuffer strLabel = (chAtom > '0' ? null : new StringBuffer());
+    StringXBuilder strLabel = (chAtom > '0' ? null : new StringXBuilder());
     if (tokens != null)
       for (int i = 0; i < tokens.length; i++) {
         LabelToken t = tokens[i];
@@ -247,7 +249,7 @@ public class LabelToken {
           if (strLabel != null) {
             strLabel.append(t.text);
             if (t.ch1 != '\0')
-              strLabel.append(t.ch1);
+              strLabel.appendC(t.ch1);
           }
         } else {
           appendAtomTokenValue(viewer, atom, t, strLabel, indices);
@@ -312,7 +314,7 @@ public class LabelToken {
   }
 
   public static String getLabel(LabelToken[] tokens) {
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     for (int i = 0; i < tokens.length; i++) {
       LabelToken lt = tokens[i];
       if (lt == null)
@@ -447,7 +449,7 @@ public class LabelToken {
   }
 
   private static void appendAtomTokenValue(Viewer viewer, Atom atom,
-                                           LabelToken t, StringBuffer strLabel,
+                                           LabelToken t, StringXBuilder strLabel,
                                            int[] indices) {
     String strT = null;
     float floatT = Float.NaN;

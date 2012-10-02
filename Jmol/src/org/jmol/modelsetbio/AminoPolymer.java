@@ -48,6 +48,7 @@ import java.util.Map;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
+import javax.util.StringXBuilder;
 
 public class AminoPolymer extends AlphaPolymer {
 
@@ -530,7 +531,7 @@ public class AminoPolymer extends AlphaPolymer {
       return "";
 
     Model m = bioPolymers[0].model;
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     sb.append("Jmol ").append(Viewer.getJmolVersion()).append(
         " DSSP analysis for model ").append(m.getModelNumberDotted()).append(
         " - ").append(m.getModelTitle()).append("\n");
@@ -630,7 +631,7 @@ public class AminoPolymer extends AlphaPolymer {
     // Done!
 
     if (doReport) {
-      StringBuffer sbSummary = new StringBuffer();
+      StringXBuilder sbSummary = new StringXBuilder();
       sb.append("\n------------------------------\n");
       for (int i = 0; i < bioPolymerCount; i++)
         if (labels[i] != null) {
@@ -1224,7 +1225,7 @@ public class AminoPolymer extends AlphaPolymer {
   private String dumpSummary(char[] labels) {
     char id = monomers[0].getLeadAtom().getChainID();
     String prefix = (id == '\0' ? "" : String.valueOf(id) + ":");
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     char lastChar = '\0';
     char insCode1 = '\0';
     char insCode2 = '\0';
@@ -1232,9 +1233,9 @@ public class AminoPolymer extends AlphaPolymer {
     for (int i = 0; i <= monomerCount; i++) {
       if (i == monomerCount || labels[i] != lastChar) {
         if (lastChar != '\0')
-          sb.append('\n').append(lastChar).append(" : ").append(prefix).append(firstResno)
+          sb.appendC('\n').appendC(lastChar).append(" : ").append(prefix).appendI(firstResno)
           .append(insCode1 == '\0' ? "" : String.valueOf(insCode1))
-              .append("_").append(prefix).append(lastResno)
+              .append("_").append(prefix).appendI(lastResno)
               .append(insCode2 == '\0' ? "" : String.valueOf(insCode2)); 
         if (i == monomerCount)
           break;
@@ -1255,26 +1256,26 @@ public class AminoPolymer extends AlphaPolymer {
     lines = TextFormat.simpleReplace(lines, "$", prefix);
     int iFirst = monomers[0].getResno();
     String pre = "\n" + prefix;
-    StringBuffer sb = new StringBuffer();
-    StringBuffer sb0 = new StringBuffer(pre + ".8: ");
-    StringBuffer sb1 = new StringBuffer(pre + ".7: ");
-    StringBuffer sb2 = new StringBuffer(pre + ".6: ");
-    StringBuffer sb3 = new StringBuffer(pre + ".0: ");
+    StringXBuilder sb = new StringXBuilder();
+    StringXBuilder sb0 = new StringXBuilder().append(pre + ".8: ");
+    StringXBuilder sb1 = new StringXBuilder().append(pre + ".7: ");
+    StringXBuilder sb2 = new StringXBuilder().append(pre + ".6: ");
+    StringXBuilder sb3 = new StringXBuilder().append(pre + ".0: ");
     int i = iFirst;
     for (int ii = 0; ii < monomerCount; ii++) {
       i = monomers[ii].getResno();
       sb0.append(i % 100 == 0 ? "" + ((i / 100) % 100) : " ");
       sb1.append(i % 10 == 0 ? "" + ((i / 10) % 10) : " ");
-      sb2.append(i % 10);
-      sb3.append(bsBad.get(monomers[ii].leadAtomIndex) ? 
+      sb2.appendI(i % 10);
+      sb3.appendC(bsBad.get(monomers[ii].leadAtomIndex) ? 
           '!' : monomers[ii].getGroup1());
     }
     if ((mode & 1) == 1)
-      sb.append(sb0).append(sb1).append(sb2);
+      sb.appendSB(sb0).appendSB(sb1).appendSB(sb2);
     sb.append("\n");
     sb.append(lines);
     if ((mode & 2) == 2) {
-      sb.append(sb3);
+      sb.appendSB(sb3);
       sb.append("\n\n");
     }
     return sb.toString().replace('\0', '.');

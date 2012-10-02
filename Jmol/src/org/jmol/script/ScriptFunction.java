@@ -28,6 +28,8 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import javax.util.StringXBuilder;
+
 public class ScriptFunction {
 
   // / functions
@@ -149,8 +151,8 @@ public class ScriptFunction {
   }
 
   public String getSignature() {
-    StringBuffer s = new StringBuffer(typeName);
-    s.append(" ").append(name).append(" (");
+    StringXBuilder s = new StringXBuilder().append(typeName)
+      .append(" ").append(name).append(" (");
     for (int i = 0; i < nParameters; i++) {
       if (i > 0)
         s.append(", ");
@@ -162,8 +164,8 @@ public class ScriptFunction {
 
   @Override
   public String toString() {
-    StringBuffer s = new StringBuffer("/*\n * ");
-    s.append(name).append("\n */\n").append(getSignature()).append("{\n");
+    StringXBuilder s = new StringXBuilder().append("/*\n * ").append(name)
+        .append("\n */\n").append(getSignature()).append("{\n");
     if (script != null)
       s.append(script);
     s.append("}\n");

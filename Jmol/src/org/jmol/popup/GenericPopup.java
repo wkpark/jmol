@@ -40,6 +40,8 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.Hashtable;
 
+import javax.util.StringXBuilder;
+
 abstract public class GenericPopup {
 
   //list is saved in http://www.stolaf.edu/academics/chemapps/jmol/docs/misc
@@ -159,8 +161,8 @@ abstract public class GenericPopup {
     return (str == null ? key : str);
   }
 
-  static protected void addItemText(StringBuffer sb, char type, int level, String name, String label, String script, String flags) {
-    sb.append(type).append(level).append('\t').append(name);
+  static protected void addItemText(StringXBuilder sb, char type, int level, String name, String label, String script, String flags) {
+    sb.appendC(type).appendI(level).appendC('\t').append(name);
     if(label == null) {
       sb.append(".\n");
       return;
@@ -464,7 +466,7 @@ abstract public class GenericPopup {
   abstract protected void enableMenuItem(Object item, boolean enable);
   abstract protected String getId(Object menu);
   abstract protected Object getImageIcon(URL imageUrl);
-  abstract protected void getMenuAsText(StringBuffer sb, int level,
+  abstract protected void getMenuAsText(StringXBuilder sb, int level,
                                            Object menu, String menuName);
   abstract protected int getMenuItemCount(Object menu);
   abstract protected Object getParent(Object menu);
@@ -494,7 +496,7 @@ abstract public class GenericPopup {
       String type = title.substring(pt);
       title = title.substring(0, pt);
       if (type.indexOf("current") >= 0) {
-        StringBuffer sb = new StringBuffer();
+        StringXBuilder sb = new StringXBuilder();
         Object menu = htMenus.get(menuName);
         getMenuAsText(sb, 0, menu, "PopupMenu");
         return sb.toString();

@@ -39,6 +39,8 @@ import org.jmol.modelset.Bond.BondSet;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import javax.util.BitSet;
+import javax.util.StringXBuilder;
+
 import java.util.List;
 import java.util.Map;
 
@@ -2143,7 +2145,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
   String getUnescapedStringLiteral() {
     if (cchToken < 2)
       return "";
-    StringBuffer sb = new StringBuffer(cchToken - 2);
+    StringXBuilder sb = StringXBuilder.newN(cchToken - 2);
     int ichMax = ichToken + cchToken - 1;
     int ich = ichToken + 1;
     while (ich < ichMax) {
@@ -2185,7 +2187,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           }
         }
       }
-      sb.append(ch);
+      sb.appendC(ch);
     }
     return sb.toString();
   }

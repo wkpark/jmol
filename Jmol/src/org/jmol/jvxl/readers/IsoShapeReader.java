@@ -25,6 +25,7 @@ package org.jmol.jvxl.readers;
 
 import java.util.Random;
 
+import javax.util.StringXBuilder;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
@@ -188,14 +189,15 @@ class IsoShapeReader extends VolumeDataReader {
   }
 
   private void setHeader(String line1) {
-    jvxlFileHeaderBuffer = new StringBuffer(line1);
+    jvxlFileHeaderBuffer = new StringXBuilder();
+    jvxlFileHeaderBuffer.append(line1);
     if (sphere_radiusAngstroms > 0) {
-      jvxlFileHeaderBuffer.append(" rad=").append(sphere_radiusAngstroms);
+      jvxlFileHeaderBuffer.append(" rad=").appendF(sphere_radiusAngstroms);
     } else {
-      jvxlFileHeaderBuffer.append(" n=").append(psi_n).append(", l=").append(
-          psi_l).append(", m=").append(psi_m).append(" Znuc=").append(psi_Znuc)
-          .append(" res=").append(ptsPerAngstrom).append(" rad=")
-          .append(radius);
+      jvxlFileHeaderBuffer.append(" n=").appendI(psi_n).append(", l=").appendI(
+          psi_l).append(", m=").appendI(psi_m).append(" Znuc=").appendF(psi_Znuc)
+          .append(" res=").appendF(ptsPerAngstrom).append(" rad=")
+          .appendF(radius);
     }
     jvxlFileHeaderBuffer.append(isAnisotropic ? " anisotropy=(" + anisotropy[0]
         + "," + anisotropy[1] + "," + anisotropy[2] + ")\n" : "\n");

@@ -34,6 +34,7 @@ import org.jmol.modelset.TickInfo;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 
+import javax.util.StringXBuilder;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.AxisAngle4f;
@@ -501,9 +502,9 @@ public class Measurement {
 
   public String getInfoAsString(String units) {
     float f = fixValue(units, true);
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     sb.append(count == 2 ? "distance" : count == 3 ? "angle" : "dihedral");
-    sb.append(" \t").append(f);
+    sb.append(" \t").appendF(f);
     sb.append(" \t").append(getString());
     for (int i = 1; i <= count; i++)
       sb.append(" \t").append(getLabel(i, false, false));

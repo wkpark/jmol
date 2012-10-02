@@ -47,6 +47,8 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
 
+import javax.util.StringXBuilder;
+
 /**
  * Java2Script rendition of Jmol using GLmol-based graphics
  * 
@@ -73,7 +75,7 @@ public class Jmol implements JmolSyncInterface {
   protected String htmlName;
   protected String fullName;
   protected String syncId;
-  protected StringBuffer outputBuffer;
+  protected StringXBuilder outputBuffer;
 
   protected Object gRight;
   protected JmolViewer viewer;
@@ -351,7 +353,7 @@ public class Jmol implements JmolSyncInterface {
   public String scriptWaitOutput(String script) {
     if (script == null || script.length() == 0)
       return "";
-    outputBuffer = new StringBuffer();
+    outputBuffer = new StringXBuilder();
     viewer.scriptWaitStatus(script, "");
     String str = (outputBuffer == null ? "" : outputBuffer.toString());
     outputBuffer = null;
@@ -606,7 +608,7 @@ public class Jmol implements JmolSyncInterface {
 
     private void output(String s) {
       if (outputBuffer != null && s != null)
-        outputBuffer.append(s).append('\n');
+        outputBuffer.append(s).appendC('\n');
     }
 
     private void notifyScriptTermination() {
@@ -840,7 +842,7 @@ public class Jmol implements JmolSyncInterface {
           Logger.error(fullName + " couldn't find applet " + appletName);
         return "";
       }
-      StringBuffer sb = (isSync ? null : new StringBuffer());
+      StringXBuilder sb = (isSync ? null : new StringXBuilder());
       boolean getGraphics = (isSync && script.equals(Viewer.SYNC_GRAPHICS_MESSAGE));
       boolean setNoGraphics = (isSync && script.equals(Viewer.SYNC_NO_GRAPHICS_MESSAGE));
       if (getGraphics)

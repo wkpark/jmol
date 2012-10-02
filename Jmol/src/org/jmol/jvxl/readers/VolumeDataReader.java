@@ -23,6 +23,7 @@
  */
 package org.jmol.jvxl.readers;
 
+import javax.util.StringXBuilder;
 import javax.vecmath.Point3f;
 
 import org.jmol.atomdata.AtomDataServer;
@@ -75,7 +76,7 @@ class VolumeDataReader extends SurfaceReader {
   void setup(boolean isMapData) {
     //as is, just the volumeData as we have it.
     //but subclasses can modify this behavior.
-    jvxlFileHeaderBuffer = new StringBuffer("volume data read from file\n\n");
+    jvxlFileHeaderBuffer = new StringXBuilder().append("volume data read from file\n\n");
     JvxlCoder.jvxlCreateHeaderWithoutTitleOrAtoms(volumeData, jvxlFileHeaderBuffer);
   }
   

@@ -26,6 +26,8 @@ package org.jmol.symmetry;
 
 import java.util.ArrayList;
 import javax.util.BitSet;
+import javax.util.StringXBuilder;
+
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -902,7 +904,8 @@ class PointGroup {
     for (int i = 1; i < maxAxis; i++)
       for (int j = nAxes[i]; --j >= 0;)
         nType[axes[i][j].type][0]++;
-    StringBuffer sb = new StringBuffer("# " + nAtoms + " atoms\n");
+    StringXBuilder sb = new StringXBuilder()
+      .append("# ").appendI(nAtoms).append(" atoms\n");
     if (asDraw) {
       boolean haveType = (type != null && type.length() > 0);
       drawType = type = (haveType ? type : "");
@@ -937,8 +940,8 @@ class PointGroup {
             v.add(center);
             if (op.type == OPERATION_IMPROPER_AXIS)
               scale = -scale;
-            sb.append("draw pgva").append(m).append(label).append("_").append(
-                j + 1).append(" width 0.05 scale ").append(scale).append(" ").append(
+            sb.append("draw pgva").append(m).append(label).append("_").appendI(
+                j + 1).append(" width 0.05 scale ").appendF(scale).append(" ").append(
                 Escape.escapePt(v));
             v.scaleAdd2(-2, op.normalOrAxis, v);
             boolean isPA = (principalAxis != null && op.index == principalAxis.index);
@@ -953,16 +956,16 @@ class PointGroup {
           if (index > 0 && j + 1 != index)
             continue;
           op = axes[0][j];
-          sb.append("draw pgvp").append(m).append(j + 1).append(
-              "disk scale ").append(scaleFactor * radius * 2).append(" CIRCLE PLANE ")
+          sb.append("draw pgvp").append(m).appendI(j + 1).append(
+              "disk scale ").appendF(scaleFactor * radius * 2).append(" CIRCLE PLANE ")
               .append(Escape.escapePt(center));
           v.setT(op.normalOrAxis);
           v.add(center);
           sb.append(Escape.escapePt(v)).append(" color translucent yellow;\n");
           v.setT(op.normalOrAxis);
           v.add(center);
-          sb.append("draw pgvp").append(m).append(j + 1).append(
-              "ring width 0.05 scale ").append(scaleFactor * radius * 2).append(" arc ")
+          sb.append("draw pgvp").append(m).appendI(j + 1).append(
+              "ring width 0.05 scale ").appendF(scaleFactor * radius * 2).append(" arc ")
               .append(Escape.escapePt(v));
           v.scaleAdd2(-2, op.normalOrAxis, v);
           sb.append(Escape.escapePt(v));
@@ -977,15 +980,15 @@ class PointGroup {
                       : "blue").append(";\n");
         }
       sb.append("# name=").append(name);
-      sb.append(", nCi=").append(haveInversionCenter ? 1 : 0);
-      sb.append(", nCs=").append(nAxes[0]);
-      sb.append(", nCn=").append(nType[OPERATION_PROPER_AXIS][0]);
-      sb.append(", nSn=").append(nType[OPERATION_IMPROPER_AXIS][0]);
+      sb.append(", nCi=").appendI(haveInversionCenter ? 1 : 0);
+      sb.append(", nCs=").appendI(nAxes[0]);
+      sb.append(", nCn=").appendI(nType[OPERATION_PROPER_AXIS][0]);
+      sb.append(", nSn=").appendI(nType[OPERATION_IMPROPER_AXIS][0]);
       sb.append(": ");
       for (int i = maxAxis; --i >= 2;)
         if (nAxes[i] > 0) {
-          sb.append(" n").append(i < firstProper ? "S" : "C").append(i % firstProper);
-          sb.append("=").append(nAxes[i]);
+          sb.append(" n").append(i < firstProper ? "S" : "C").appendI(i % firstProper);
+          sb.append("=").appendI(nAxes[i]);
         }
       sb.append(";\n");
       drawInfo = sb.toString();
@@ -1005,7 +1008,7 @@ class PointGroup {
         n = nUnique[i];
         String label = axes[i][0].getLabel();
         if (info == null)
-          sb.append("\n\n").append(name).append("\tn").append(label).append("\t").append(nAxes[i]).append("\t").append(n);
+          sb.append("\n\n").append(name).append("\tn").append(label).append("\t").appendI(nAxes[i]).append("\t").appendI(n);
         else
           info.put("n" + label, Integer.valueOf(nAxes[i]));
         n *= nAxes[i];
@@ -1015,8 +1018,8 @@ class PointGroup {
         for (int j = 0; j < nAxes[i]; j++) {
           //axes[i][j].typeIndex = j + 1;
           if (vinfo == null)
-            sb.append("\n").append(name).append("\t").append(label).append("_").append(j + 1).append("\t"
-               ).append(axes[i][j].normalOrAxis);
+            sb.append("\n").append(name).append("\t").append(label).append("_").appendI(j + 1).append("\t"
+               ).appendO(axes[i][j].normalOrAxis);
           else
             vinfo.add(axes[i][j].normalOrAxis);
         }
@@ -1031,7 +1034,7 @@ class PointGroup {
       sb.append("\n").append(name).append("\tE\t  1\t  1");
 
       n = (haveInversionCenter ? 1 : 0);
-      sb.append("\n").append(name).append("\tCi\t  ").append(n).append("\t  ").append(n);
+      sb.append("\n").append(name).append("\tCi\t  ").appendI(n).append("\t  ").appendI(n);
 
       sb.append("\n").append(name).append("\tCs\t");
       TextFormat.rFill(sb, "    ", nAxes[0] + "\t");

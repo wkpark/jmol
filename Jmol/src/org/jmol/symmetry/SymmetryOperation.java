@@ -27,6 +27,7 @@ package org.jmol.symmetry;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.util.StringXBuilder;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Matrix4f;
@@ -115,21 +116,21 @@ class SymmetryOperation extends Matrix4f {
   }
 
   final static String dumpSeitz(Matrix4f s) {
-    return (new StringBuffer("{\t")).append((int) s.m00).append("\t").append((int) s.m01)
-        .append("\t").append((int) s.m02).append("\t").append(twelfthsOf(s.m03)).append("\t}\n")
-        .append("{\t").append((int) s.m10).append("\t").append((int) s.m11).append("\t").append((int) s.m12)
+    return new StringXBuilder().append("{\t").appendI((int) s.m00).append("\t").appendI((int) s.m01)
+        .append("\t").appendI((int) s.m02).append("\t").append(twelfthsOf(s.m03)).append("\t}\n")
+        .append("{\t").appendI((int) s.m10).append("\t").appendI((int) s.m11).append("\t").appendI((int) s.m12)
         .append("\t").append(twelfthsOf(s.m13)).append("\t}\n")
-        .append("{\t").append((int) s.m20).append("\t").append((int) s.m21).append("\t").append((int) s.m22)
+        .append("{\t").appendI((int) s.m20).append("\t").appendI((int) s.m21).append("\t").appendI((int) s.m22)
         .append("\t").append(twelfthsOf(s.m23)).append("\t}\n").append("{\t0\t0\t0\t1\t}\n").toString();
   }
   
   final static String dumpCanonicalSeitz(Matrix4f s) {
-    return (new StringBuffer()).append("{\t").append((int) s.m00).append("\t").append((int) s.m01)
-        .append("\t").append((int) s.m02).append("\t").append(twelfthsOf(s.m03+12)).append("\t}\n")
-        .append("{\t").append((int) s.m10).append("\t").append((int) s.m11).append("\t").append((int) s.m12)
-        .append("\t").append(twelfthsOf(s.m13+12)).append("\t}\n").append("{\t").append((int) s.m20)
-        .append("\t").append((int) s.m21).append("\t")
-        .append((int) s.m22).append("\t").append(twelfthsOf(s.m23+12)).append("\t}\n")
+    return new StringXBuilder().append("{\t").appendI((int) s.m00).append("\t").appendI((int) s.m01)
+        .append("\t").appendI((int) s.m02).append("\t").append(twelfthsOf(s.m03+12)).append("\t}\n")
+        .append("{\t").appendI((int) s.m10).append("\t").appendI((int) s.m11).append("\t").appendI((int) s.m12)
+        .append("\t").append(twelfthsOf(s.m13+12)).append("\t}\n").append("{\t").appendI((int) s.m20)
+        .append("\t").appendI((int) s.m21).append("\t")
+        .appendI((int) s.m22).append("\t").append(twelfthsOf(s.m23+12)).append("\t}\n")
         .append("{\t0\t0\t0\t1\t}\n").toString();
   }
   
@@ -832,7 +833,7 @@ class SymmetryOperation extends Matrix4f {
     // time to get the description
 
     String info1 = "identity";
-    StringBuffer draw1 = new StringBuffer();
+    StringXBuilder draw1 = new StringXBuilder();
     String drawid;
 
     if (isinversion) {
@@ -887,7 +888,7 @@ class SymmetryOperation extends Matrix4f {
 
       // delete previous elements of this user-settable ID
 
-      draw1 = new StringBuffer();
+      draw1 = new StringXBuilder();
       draw1.append("// " + xyzOriginal + "|" + xyz + "|" + info1 + "\n");
       draw1.append(drawid).append("* delete");
 
@@ -1049,7 +1050,7 @@ class SymmetryOperation extends Matrix4f {
         // returns triangles and lines
         for (int i = v.size(); --i >= 0;) {
           Point3f[] pts = (Point3f[]) v.get(i);
-          draw1.append(drawid).append("planep").append(i).append(
+          draw1.append(drawid).append("planep").appendI(i).append(
               Escape.escapePt(pts[0])).append(Escape.escapePt(pts[1]));
           if (pts.length == 3)
             draw1.append(Escape.escapePt(pts[2]));
@@ -1176,9 +1177,9 @@ class SymmetryOperation extends Matrix4f {
         Integer.valueOf(ang1), m2, vtrans };
   }
 
-  private static void drawLine(StringBuffer s, String id, float diameter, Point3f pt0, Point3f pt1,
+  private static void drawLine(StringXBuilder s, String id, float diameter, Point3f pt0, Point3f pt1,
                         String color) {
-    s.append(id).append(" diameter ").append(diameter)
+    s.append(id).append(" diameter ").appendF(diameter)
         .append(Escape.escapePt(pt0)).append(Escape.escapePt(pt1))
         .append(" color ").append(color);
   }

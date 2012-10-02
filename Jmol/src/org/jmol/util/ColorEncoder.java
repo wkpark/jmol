@@ -33,6 +33,8 @@ import javax.vecmath.Point3f;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.constant.EnumPalette;
 
+import javax.util.StringXBuilder;
+
 /*
  * 
  * just a simple class using crude color encoding
@@ -698,7 +700,7 @@ import org.jmol.constant.EnumPalette;
   }
 */
 
-  public int getState(StringBuffer s) {
+  public int getState(StringXBuilder s) {
     int n = 0;
     for (Map.Entry<String, int[]> entry : schemes.entrySet()) {
       String name = entry.getKey();

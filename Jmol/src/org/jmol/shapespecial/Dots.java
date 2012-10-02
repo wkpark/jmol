@@ -42,6 +42,9 @@ import java.util.Map;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 
+import javax.util.StringXBuilder;
+
+
 public class Dots extends AtomShape {
 
   public EnvelopeCalculation ec;
@@ -296,7 +299,7 @@ public class Dots extends AtomShape {
     BitSet[] dotsConvexMaps = ec.getDotsConvexMaps();
     if (dotsConvexMaps == null || ec.getDotsConvexMax() == 0)
       return "";
-    StringBuffer s = new StringBuffer();
+    StringXBuilder s = new StringXBuilder();
     Map<String, BitSet> temp = new Hashtable<String, BitSet>();
     int atomCount = viewer.getAtomCount();
     String type = (isSurface ? "geoSurface " : "dots ");

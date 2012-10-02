@@ -28,6 +28,8 @@ import java.io.BufferedReader;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
+import javax.util.StringXBuilder;
+
 class CubeReader extends VolumeFileReader {
 
   CubeReader(){}
@@ -39,9 +41,9 @@ class CubeReader extends VolumeFileReader {
   
   @Override
   protected void readParameters() throws Exception {
-    jvxlFileHeaderBuffer = new StringBuffer();
-    jvxlFileHeaderBuffer.append(readLine()).append('\n');
-    jvxlFileHeaderBuffer.append(readLine()).append('\n');
+    jvxlFileHeaderBuffer = new StringXBuilder();
+    jvxlFileHeaderBuffer.append(readLine()).appendC('\n');
+    jvxlFileHeaderBuffer.append(readLine()).appendC('\n');
     String atomLine = readLine();
     String[] tokens = Parser.getTokensAt(atomLine, 0);
     atomCount = parseIntStr(tokens[0]);

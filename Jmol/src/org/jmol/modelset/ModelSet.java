@@ -43,6 +43,8 @@ import org.jmol.shape.Shape;
 
 import java.util.ArrayList;
 import javax.util.BitSet;
+import javax.util.StringXBuilder;
+
 import java.util.List;
 import java.util.Map;
 
@@ -424,7 +426,7 @@ import javax.vecmath.Vector3f;
 
   public String getDefaultStructure(BitSet bsAtoms, BitSet bsAllAtoms) {
     BitSet bsModels = modelsOf(bsAtoms, bsAllAtoms);
-    StringBuffer ret = new StringBuffer();
+    StringXBuilder ret = new StringXBuilder();
     for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels.nextSetBit(i + 1)) 
       if (models[i].isBioModel && models[i].defaultStructure != null)
         ret.append(models[i].defaultStructure);
@@ -525,13 +527,13 @@ import javax.vecmath.Vector3f;
    * 
    ********************************************************/
 
-  public String getDefinedState(StringBuffer sfunc, boolean isAll) {
+  public String getDefinedState(StringXBuilder sfunc, boolean isAll) {
     int len = stateScripts.size();
     if (len == 0)
       return "";
     
     boolean haveDefs = false;    
-    StringBuffer commands = new StringBuffer();
+    StringXBuilder commands = new StringXBuilder();
     String cmd;
     for (int i = 0; i < len; i++) {
       StateScript ss = stateScripts.get(i); 
@@ -554,9 +556,9 @@ import javax.vecmath.Vector3f;
     return cmd + commands.toString();
   }
   
-  public String getState(StringBuffer sfunc, boolean isAll,
+  public String getState(StringXBuilder sfunc, boolean isAll,
                          boolean withProteinStructure) {
-    StringBuffer commands = new StringBuffer();
+    StringXBuilder commands = new StringXBuilder();
     if (isAll && sfunc != null) {
       sfunc.append("  _setModelState;\n");
       commands.append("function _setModelState() {\n");
@@ -575,7 +577,7 @@ import javax.vecmath.Vector3f;
         }
       }
 
-      StringBuilder sb = new StringBuilder();
+      StringXBuilder sb = new StringXBuilder();
       for (int i = 0; i < bondCount; i++)
         if (!models[bonds[i].atom1.modelIndex].isModelKit)
           if (bonds[i].isHydrogen()
@@ -584,15 +586,15 @@ import javax.vecmath.Vector3f;
             int index = bond.atom1.index;
             if (bond.atom1.getGroup().isAdded(index))
               index = -1 - index;
-            sb.append(index).append('\t').append(bond.atom2.index).append('\t')
-                .append(bond.order & ~JmolEdge.BOND_NEW).append('\t').append(
-                    bond.mad / 1000f).append('\t').append(bond.getEnergy())
-                .append('\t').append(
+            sb.appendI(index).appendC('\t').appendI(bond.atom2.index).appendC('\t')
+                .appendI(bond.order & ~JmolEdge.BOND_NEW).appendC('\t').appendF(
+                    bond.mad / 1000f).appendC('\t').appendF(bond.getEnergy())
+                .appendC('\t').append(
                     JmolEdge.getBondOrderNameFromOrder(bond.order)).append(
                     ";\n");
           }
       if (sb.length() > 0)
-        commands.append("data \"connect_atoms\"\n").append(sb).append(
+        commands.append("data \"connect_atoms\"\n").appendSB(sb).append(
             "end \"connect_atoms\";\n");
       commands.append("\n");
     }
@@ -645,7 +647,7 @@ import javax.vecmath.Vector3f;
           commands.append(fcmd).append("; ").append(
               models[i].orientation.getMoveToText(false)).append(";\n");
         if (models[i].frameDelay != 0 && !isTrajectorySubFrame(i))
-          commands.append(fcmd).append("; frame delay ").append(
+          commands.append(fcmd).append("; frame delay ").appendF(
               models[i].frameDelay / 1000f).append(";\n");
         if (models[i].unitCell != null) {
           commands.append(fcmd).append("; unitcell ").append(

@@ -25,6 +25,8 @@
 
 package org.jmol.util;
 
+import javax.util.StringXBuilder;
+
 public class ZipData {
   boolean isEnabled = true;
   byte[] buf;
@@ -49,7 +51,7 @@ public class ZipData {
     return nBytesRemaining - nToAdd;
   }    
 
-  public void addTo(StringBuffer data) {
+  public void addTo(StringXBuilder data) {
     data.append(ZipUtil.getGzippedBytesAsString(buf));
   }
   

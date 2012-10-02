@@ -28,6 +28,8 @@ package org.jmol.thread;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.util.StringXBuilder;
+
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
 
@@ -133,7 +135,7 @@ public class TimeoutThread extends JmolThread {
   }
 
   public static String showTimeout(Map<String, Object> timeouts, String name) {
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     if (timeouts != null) {
       Iterator<Object> e = timeouts.values().iterator();
       while (e.hasNext()) {

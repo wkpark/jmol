@@ -26,6 +26,8 @@ package org.jmol.smiles;
 
 import java.util.ArrayList;
 import javax.util.BitSet;
+import javax.util.StringXBuilder;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Hashtable;
@@ -59,7 +61,7 @@ public class SmilesGenerator {
   private BitSet bsSelected;
   private BitSet bsAromatic;
   
-  private StringBuffer ringSets;
+  private StringXBuilder ringSets;
 
   // data
 
@@ -95,7 +97,7 @@ public class SmilesGenerator {
       throws InvalidSmilesException {
     this.atoms = atoms;
     this.atomCount = atomCount;
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     BitSet bs = (BitSet) bsSelected.clone();
     if (comment != null)
       sb.append("//* Jmol bioSMILES ").append(comment.replace('*', '_')).append(
@@ -124,7 +126,7 @@ public class SmilesGenerator {
               len = s.length();
               sb.append(s);
             }
-            sb.append("~").append(bioStructureName.charAt(0)).append("~");
+            sb.append("~").appendC(bioStructureName.charAt(0)).append("~");
             len++;
           } else {
             s = getSmilesComponent(a, bs, true);
@@ -167,7 +169,7 @@ public class SmilesGenerator {
         bs.andNot(bsIgnore);
         int i2 = a.getOffsetResidueAtom("0", 1);
         if (i2 < 0 || !bs.get(i2)) {
-          sb.append(" //* ").append(a.getResno()).append(" *//");       
+          sb.append(" //* ").appendI(a.getResno()).append(" *//");       
           if (i2 < 0 && (i2 = bs.nextSetBit(i + 1)) < 0)
             break;
           if (len > 0)
@@ -189,17 +191,17 @@ public class SmilesGenerator {
     return s;
   }
 
-  private void addBracketedBioName(StringBuffer sb, JmolNode a, String atomName) {
+  private void addBracketedBioName(StringXBuilder sb, JmolNode a, String atomName) {
     sb.append("[");
     if (atomName != null) {
       char chChain = a.getChainID();
       sb.append(a.getGroup3(false));
       if (!atomName.equals(".0"))
-        sb.append(atomName).append("#").append(a.getElementNumber());
-      sb.append("//* ").append(
+        sb.append(atomName).append("#").appendI(a.getElementNumber());
+      sb.append("//* ").appendI(
           a.getResno());
       if (chChain != '\0')
-        sb.append(":").append(chChain);
+        sb.append(":").appendC(chChain);
       sb.append(" *//");
     } else {
       sb.append(Elements.elementNameFromNumber(a.getElementNumber()));
@@ -249,7 +251,7 @@ public class SmilesGenerator {
       bsAromatic = new BitSet();
     }
     bsToDo = (BitSet) bsSelected.clone();
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
 
     for (int i = bsToDo.nextSetBit(0); i >= 0; i = bsToDo.nextSetBit(i + 1))
       if (atoms[i].getCovalentBondCount() > 4) {
@@ -422,7 +424,7 @@ public class SmilesGenerator {
     }
   }
 
-  private JmolNode getSmiles(StringBuffer sb, JmolNode atom,
+  private JmolNode getSmiles(StringXBuilder sb, JmolNode atom,
                              boolean allowConnectionsToOutsideWorld, boolean allowBranches) {
     int atomIndex = atom.getIndex();
 
@@ -546,13 +548,13 @@ public class SmilesGenerator {
 
     // now construct the branches part
 
-    StringBuffer sMore = new StringBuffer();
+    StringXBuilder sMore = new StringXBuilder();
     for (int i = 0; i < v.size(); i++) {
       JmolEdge bond = v.get(i);
       if (!bsBranches.get(bond.index))
         continue;
       JmolNode a = bond.getOtherAtomNode(atom);
-      StringBuffer s2 = new StringBuffer();
+      StringXBuilder s2 = new StringXBuilder();
       s2.append("(");
       prevAtom = atom;
       prevSp2Atoms = null;
@@ -562,7 +564,7 @@ public class SmilesGenerator {
       s2.append(")");
       if (sMore.indexOf(s2.toString()) >= 0)
         stereoFlag = 10;
-      sMore.append(s2);
+      sMore.appendSB(s2);
       v.remove(i--);
       if (stereoFlag < 7)
         stereo[stereoFlag++] = a;
@@ -650,7 +652,7 @@ public class SmilesGenerator {
       sb.append(SmilesAtom
           .getAtomLabel(atomicNumber, isotope, valence, charge, nH, isAromatic,
               atat != null ? atat : checkStereoPairs(atom, atomIndex, stereo, stereoFlag)));
-    sb.append(sMore);
+    sb.appendSB(sMore);
 
     // check the next bond
 
@@ -874,7 +876,7 @@ public class SmilesGenerator {
     return s;//  + " _" + key + "_ \n";
   }
 
-  private void dumpRingKeys(StringBuffer sb, Map<String, Object[]> ht) {
+  private void dumpRingKeys(StringXBuilder sb, Map<String, Object[]> ht) {
     Logger.info(sb.toString() + "\n\n");
     Iterator<String> e = ht.keySet().iterator();
     while (e.hasNext()) {

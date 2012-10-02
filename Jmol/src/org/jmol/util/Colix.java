@@ -24,6 +24,8 @@
 
 package org.jmol.util;
 
+import javax.util.StringXBuilder;
+
 import org.jmol.constant.EnumPalette;
 
 /**
@@ -467,7 +469,7 @@ public class Colix {
   public static String getHexCodes(short[] colixes) {
     if (colixes == null)
       return null;
-    StringBuffer s = new StringBuffer();
+    StringXBuilder s = new StringXBuilder();
     for (int i = 0; i < colixes.length; i++)
       s.append(i == 0 ? "" : " ").append(getHexCode(colixes[i]));
     return s.toString();

@@ -31,6 +31,7 @@ import org.jmol.util.Logger;
 import javax.util.BitSet;
 
 import javax.vecmath.Point3f;
+import javax.util.StringXBuilder;
 
 /**
  * DCD binary trajectory file reader.
@@ -129,9 +130,9 @@ ICNTRL(20)=VERNUM ! version number
     
     n = binaryDoc.readInt();  // HEADER
     n = binaryDoc.readInt();
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     for (int i = 0; i < n; i++)
-      sb.append(binaryDoc.readString(80).trim()).append('\n');
+      sb.append(binaryDoc.readString(80).trim()).appendC('\n');
     n = binaryDoc.readInt(); // TRAILER
     Logger.info("BinaryDcdReadaer:\n" + sb);
 

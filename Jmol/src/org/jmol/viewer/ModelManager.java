@@ -25,6 +25,7 @@
 package org.jmol.viewer;
 
 import javax.util.BitSet;
+import javax.util.StringXBuilder;
 
 import org.jmol.modelset.ModelLoader;
 import org.jmol.modelset.ModelSet;
@@ -55,7 +56,7 @@ class ModelManager {
   }
 
   ModelSet createModelSet(String fullPathName, String fileName,
-                          StringBuffer loadScript, Object atomSetCollection,
+                          StringXBuilder loadScript, Object atomSetCollection,
                           BitSet bsNew, boolean isAppend) {
     String modelSetName = null;
     if (isAppend) {

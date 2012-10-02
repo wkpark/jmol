@@ -32,7 +32,7 @@ package javax.util;
  * 
  * @author Bob Hanson hansonr@stolaf.edu
  * 
- *         This class implements a vector of bits that grows as needed. Each
+ *         This class implements a 64-bit vector of bits that grows as needed. Each
  *         component of the bit set has a {@code boolean} value. The bits of a
  *         {@code BitSet} are indexed by nonnegative integers. Individual
  *         indexed bits can be examined, set, or cleared. One {@code BitSet} may
@@ -955,21 +955,21 @@ public class BitSet implements Cloneable {
 
     int numBits = (wordsInUse > 128) ? cardinality() : wordsInUse
         * BITS_PER_WORD;
-    StringBuilder b = new StringBuilder(6 * numBits + 2);
-    b.append('{');
+    StringXBuilder b = StringXBuilder.newN(6 * numBits + 2);
+    b.appendC('{');
 
     int i = nextSetBit(0);
     if (i != -1) {
-      b.append(i);
+      b.appendI(i);
       for (i = nextSetBit(i + 1); i >= 0; i = nextSetBit(i + 1)) {
         int endOfRun = nextClearBit(i);
         do {
-          b.append(", ").append(i);
+          b.append(", ").appendI(i);
         } while (++i < endOfRun);
       }
     }
 
-    b.append('}');
+    b.appendC('}');
     return b.toString();
   }
   

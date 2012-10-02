@@ -26,6 +26,8 @@ package org.jmol.script;
 import java.util.ArrayList;
 import java.util.Arrays;
 import javax.util.BitSet;
+import javax.util.StringXBuilder;
+
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
@@ -2142,7 +2144,7 @@ class ScriptMathProcessor {
         || args.length > 2)
       return false;
     String s = ScriptVariable.sValue(args[0]);
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     switch (tok) {
     case Token.script:
       String appID = (args.length == 2 ? ScriptVariable.sValue(args[1]) : ".");

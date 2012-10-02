@@ -903,7 +903,7 @@ public class PovrayDialog extends JDialog {
 
   private String getINI() {
 
-    StringBuffer data = new StringBuffer();
+    StringBuilder data = new StringBuilder();
     // Save path
   	String savePath = savePathLabel.getText();
     if (!savePath.endsWith(java.io.File.separator)) {

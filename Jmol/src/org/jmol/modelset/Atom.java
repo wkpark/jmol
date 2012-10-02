@@ -49,6 +49,7 @@ import java.util.List;
 import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
+import javax.util.StringXBuilder;
 
 final public class Atom extends Point3fi implements JmolNode {
 
@@ -879,7 +880,7 @@ final public class Atom extends Point3fi implements JmolNode {
   }
   
   String getIdentity(boolean allInfo) {
-    StringBuffer info = new StringBuffer();
+    StringXBuilder info = new StringXBuilder();
     String group3 = getGroup3(true);
     if (group3 != null && group3.length() > 0) {
       info.append("[");
@@ -891,7 +892,7 @@ final public class Atom extends Point3fi implements JmolNode {
       char chainID = getChainID();
       if (chainID != 0 && chainID != ' ') {
         info.append(":");
-        info.append(chainID);
+        info.appendC(chainID);
       }
       if (!allInfo)
         return info.toString();
@@ -902,18 +903,18 @@ final public class Atom extends Point3fi implements JmolNode {
       // since atomName cannot be null, this is unreachable
       info.append(getElementSymbolIso(false));
       info.append(" ");
-      info.append(getAtomNumber());
+      info.appendI(getAtomNumber());
     }
     if (alternateLocationID != 0) {
       info.append("%");
-      info.append(alternateLocationID);
+      info.appendC(alternateLocationID);
     }
     if (group.chain.model.modelSet.getModelCount() > 1) {
       info.append("/");
       info.append(getModelNumberForLabel());
     }
     info.append(" #");
-    info.append(getAtomNumber());
+    info.appendI(getAtomNumber());
     return info.toString();
   }
 

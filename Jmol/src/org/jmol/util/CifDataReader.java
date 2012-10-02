@@ -8,6 +8,8 @@ import java.util.Map;
 
 import org.jmol.api.JmolLineReader;
 
+import javax.util.StringXBuilder;
+
 public class CifDataReader {
   /**
    * A special tokenizer class for dealing with quoted strings in CIF files.
@@ -73,7 +75,7 @@ public class CifDataReader {
   public int ichPeeked;
   public int fieldCount;
   public String[] loopData;
-  public StringBuffer fileHeader = new StringBuffer();
+  public StringXBuilder fileHeader = new StringXBuilder();
   private boolean isHeader = true;
   
   ////////////////////////////////////////////////////////////////
@@ -151,7 +153,7 @@ public class CifDataReader {
         return null;
       if (isHeader) {
         if (line.startsWith("#"))
-          fileHeader.append(line).append('\n');
+          fileHeader.append(line).appendC('\n');
         else
           isHeader = false;
       }

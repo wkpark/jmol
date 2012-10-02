@@ -42,6 +42,8 @@ import org.jmol.util.Escape;
 import org.jmol.util.Quaternion;
 
 import javax.util.BitSet;
+import javax.util.StringXBuilder;
+
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -164,8 +166,8 @@ public abstract class TransformManager {
     resetNavigationPoint(true);
   }
 
-  String getState(StringBuffer sfunc) {
-    StringBuffer commands = new StringBuffer("");
+  String getState(StringXBuilder sfunc) {
+    StringXBuilder commands = new StringXBuilder();
     if (sfunc != null) {
       sfunc.append("  _setPerspectiveState;\n");
       commands.append("function _setPerspectiveState() {\n");
@@ -197,10 +199,10 @@ public abstract class TransformManager {
           + " " + stereoDegrees);
     if (mode != MODE_NAVIGATION && !zoomEnabled)
       StateManager.appendCmd(commands, "zoom off");
-    commands.append("  slab ").append(slabPercentSetting).append(";depth ")
-        .append(depthPercentSetting).append(
+    commands.append("  slab ").appendI(slabPercentSetting).append(";depth ")
+        .appendI(depthPercentSetting).append(
             slabEnabled && mode != MODE_NAVIGATION ? ";slab on" : "").append(";\n");
-    commands.append("  set slabRange ").append(slabRange).append(";\n");
+    commands.append("  set slabRange ").appendF(slabRange).append(";\n");
     if (zShadeEnabled)
       commands.append("  set zShade;\n");
     try {
@@ -720,7 +722,7 @@ public abstract class TransformManager {
     case Token.rotation:
       return getRotationQuaternion().toString();
     case Token.translation:
-      StringBuffer sb = new StringBuffer();
+      StringXBuilder sb = new StringXBuilder();
       truncate2(sb, getTranslationXPercent());
       truncate2(sb, getTranslationYPercent());
       return sb.toString();
@@ -1828,7 +1830,7 @@ public abstract class TransformManager {
   String getRotationText() {
     axisangleT.setM(matrixRotate);
     float degrees = (float) (axisangleT.angle * degreesPerRadian);
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     vectorT.set(axisangleT.x, axisangleT.y, axisangleT.z);
     if (degrees < 0.01f)
       return "{0 0 1 0}";
@@ -1844,11 +1846,11 @@ public abstract class TransformManager {
   }
 
   String getMoveToText(float timespan, boolean addComments) {
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     sb.append("moveto ");
     if (addComments)
       sb.append("/* time, axisAngle */ ");
-    sb.append(timespan);
+    sb.appendF(timespan);
     sb.append(" ").append(getRotationText());
     if (addComments)
       sb.append(" /* zoom, translation */ ");
@@ -1859,7 +1861,7 @@ public abstract class TransformManager {
     if (addComments)
       sb.append(" /* center, rotationRadius */ ");
     sb.append(getCenterText());
-    sb.append(" ").append(modelRadius);
+    sb.append(" ").appendF(modelRadius);
     sb.append(getNavigationText(addComments));
     sb.append(";");
     return sb.toString();
@@ -1870,7 +1872,7 @@ public abstract class TransformManager {
   }
 
   private String getRotateXyzText() {
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     float m20 = matrixRotate.m20;
     float rY = -(float) (Math.asin(m20) * degreesPerRadian);
     float rX, rZ;
@@ -1903,7 +1905,7 @@ public abstract class TransformManager {
     return sb.toString();
   }
 
-  private void addZoomTranslationNavigationText(StringBuffer sb) {
+  private void addZoomTranslationNavigationText(StringXBuilder sb) {
     if (zoomPercent != 100) {
       sb.append(" zoom");
       truncate2(sb, zoomPercent);
@@ -1939,7 +1941,7 @@ public abstract class TransformManager {
   }
 
   private String getRotateZyzText(boolean iAddComment) {
-    StringBuffer sb = new StringBuffer();
+    StringXBuilder sb = new StringXBuilder();
     Matrix3f m = (Matrix3f) viewer.getModelSetAuxiliaryInfoValue("defaultOrientationMatrix");
     if (m == null) {
       m = matrixRotate;
@@ -1982,14 +1984,14 @@ public abstract class TransformManager {
     return sb.toString();
   }
 
-  static private void truncate0(StringBuffer sb, float val) {
-    sb.append(' ');
-    sb.append(Math.round(val));
+  static private void truncate0(StringXBuilder sb, float val) {
+    sb.appendC(' ');
+    sb.appendI(Math.round(val));
   }
 
-  static private void truncate2(StringBuffer sb, float val) {
-    sb.append(' ');
-    sb.append(Math.round(val * 100) / 100f);
+  static private void truncate2(StringXBuilder sb, float val) {
+    sb.appendC(' ');
+    sb.appendF(Math.round(val * 100) / 100f);
   }
 
   /* ***************************************************************

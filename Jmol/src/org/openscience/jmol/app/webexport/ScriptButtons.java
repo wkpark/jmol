@@ -76,7 +76,7 @@ class ScriptButtons extends WebPanel {
   }
 
   @Override
-  String getAppletDefs(int i, String html, StringBuffer appletDefs,
+  String getAppletDefs(int i, String html, StringBuilder appletDefs,
                        JmolInstance instance) {
     //TODO add widgets  Could have pure javascript update of widgets for each view.
     //The widgets should appear below the applet as in Angel's example.  The best

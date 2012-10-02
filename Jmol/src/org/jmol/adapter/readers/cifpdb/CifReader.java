@@ -84,7 +84,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   private Map<String, String> htHetero;
   private boolean isMolecular;
   private String molecularType = "GEOM_BOND default";
-  private char lastAltLoc;
+  private char lastAltLoc = '\0';
   private int configurationPtr = Integer.MIN_VALUE;
   private int conformationIndex;
   private boolean filterAssembly;
@@ -1766,7 +1766,7 @@ _struct_site_gen.details
 
   String field;
   
-  private char firstChar;
+  private char firstChar = '\0';
   private int[] propertyOf = new int[100]; // should be enough
   private byte[] fieldOf = new byte[atomFields.length];
   private int propertyCount;

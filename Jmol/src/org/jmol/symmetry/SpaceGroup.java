@@ -84,9 +84,9 @@ class SpaceGroup {
   String hmSymbolAbbr;
   String hmSymbolAlternative;
   String hmSymbolAbbrShort;
-  char ambiguityType;
-  char uniqueAxis; 
-  char axisChoice;
+  char ambiguityType = '\0';
+  char uniqueAxis = '\0'; 
+  char axisChoice = '\0';
   //int cellChoice; 
   //int originChoice;
   String intlTableNumber;
@@ -94,7 +94,7 @@ class SpaceGroup {
   String intlTableNumberExt;
   HallInfo hallInfo;
   int latticeParameter;
-  char latticeCode;
+  char latticeCode = '\0';
   SymmetryOperation[] operations;
   int operationCount;
   boolean doNormalize = true;

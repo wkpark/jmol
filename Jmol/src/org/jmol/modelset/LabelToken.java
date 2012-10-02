@@ -80,7 +80,7 @@ public class LabelToken {
   private Object data;
   private int tok;
   private int pt = -1;
-  private char ch1;
+  private char ch1 = '\0';
   private int width;
   private int precision = Integer.MAX_VALUE;
   private boolean alignLeft;

@@ -28,7 +28,7 @@ import javax.util.BitSet;
 public final class Chain {
 
   public Model model;
-  public char chainID;
+  public char chainID = '\0';
   public boolean isDna, isRna;
   
   int groupCount;

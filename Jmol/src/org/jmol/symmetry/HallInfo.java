@@ -62,7 +62,7 @@ class HallInfo {
   
   String hallSymbol;
   String primitiveHallSymbol;
-  char latticeCode;
+  char latticeCode = '\0';
   String latticeExtension;
   boolean isCentrosymmetric;
   int nRotations;
@@ -194,8 +194,8 @@ class HallInfo {
     Matrix4f seitzMatrix12ths = new Matrix4f();
     boolean isImproper;
     int order;
-    char axisType;
-    char diagonalReferenceAxis;
+    char axisType = '\0';
+    char diagonalReferenceAxis = '\0';
     
     RotationTerm(String code, int prevOrder, char prevAxisType) {
       getRotationInfo(code, prevOrder, prevAxisType);

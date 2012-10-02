@@ -118,11 +118,11 @@ public class PdbReader extends AtomSetCollectionReader {
   private String compnd = null;
   private int conformationIndex;
   private int fileAtomIndex;
-  private char lastAltLoc;
+  private char lastAltLoc = '\0';
   private String lastAtomData;
   private int lastAtomIndex;
   private int lastGroup = Integer.MIN_VALUE;
-  private char lastInsertion;
+  private char lastInsertion = '\0';
   private int lastSourceSerial = Integer.MIN_VALUE;
   private int lastTargetSerial = Integer.MIN_VALUE;
   private int tlsGroupID;

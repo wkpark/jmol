@@ -39,7 +39,7 @@ import org.jmol.util.TextFormat;
 public class Wien2kReader extends AtomSetCollectionReader {
 
   private boolean isrhombohedral;
-  private char latticeCode;
+  private char latticeCode = '\0';
   private boolean doSymmetry = true;
   
   @Override

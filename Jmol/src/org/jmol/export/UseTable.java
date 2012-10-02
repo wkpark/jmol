@@ -32,7 +32,7 @@ import java.util.Hashtable;
 class UseTable extends Hashtable<String, String> {
   private int iObj;
   private String keyword;
-  private char term;
+  private char term = '\0';
 
   UseTable(String keyword) {
     this.keyword = keyword;

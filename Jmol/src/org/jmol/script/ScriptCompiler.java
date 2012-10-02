@@ -2117,7 +2117,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     return false;
   }
 
-  char chFirst;
+  private char chFirst = '\0';
   private boolean lookingAtString(boolean allowPrime) {
     if (ichToken == cchScript)
       return false;

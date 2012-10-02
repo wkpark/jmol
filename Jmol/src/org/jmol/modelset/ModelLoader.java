@@ -235,10 +235,10 @@ public final class ModelLoader {
   
   private int currentModelIndex;
   private Model currentModel;
-  private char currentChainID;
+  private char currentChainID = '\0';
   private Chain currentChain;
   private int currentGroupSequenceNumber;
-  private char currentGroupInsertionCode;
+  private char currentGroupInsertionCode = '\0';
   private String currentGroup3;
 
   private Group nullGroup; // used in Atom

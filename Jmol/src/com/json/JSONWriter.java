@@ -73,7 +73,7 @@ public class JSONWriter {
      * 'k' (key),
      * 'o' (object).
      */
-    protected char mode;
+    protected char mode = '\0';
 
     /**
      * The object/array stack.

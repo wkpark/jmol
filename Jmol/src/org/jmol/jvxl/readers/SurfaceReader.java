@@ -326,7 +326,7 @@ public abstract class SurfaceReader implements VertexDataServer {
   protected boolean jvxlDataIsColorDensity;
   protected float jvxlCutoff;
   protected int jvxlNSurfaceInts;
-  protected char cJvxlEdgeNaN;
+  protected char cJvxlEdgeNaN = '\0';
 
   protected int contourVertexCount;
 

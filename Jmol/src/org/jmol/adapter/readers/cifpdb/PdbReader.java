@@ -560,7 +560,7 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
           }
           chainlist = ":" + line.substring(41).trim().replace(' ', ':');
           needLine = false;
-          while (readLine() != null && line.indexOf("BIOMT") < 0)
+          while (readLine() != null && line.indexOf("BIOMT") < 0 && line.indexOf("350") == 7)
             chainlist += ":" + line.substring(11).trim().replace(' ', ':');
           if (checkFilterKey("BIOMOLECULE " + iMolecule + ";")) {
             setFilter(filter.replace(':', '_') + chainlist);

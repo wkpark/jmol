@@ -25,6 +25,7 @@
 package org.jmol.minimize.forcefield;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -297,6 +298,21 @@ public class ForceFieldMMFF extends ForceField {
     ffParams.put(Integer.valueOf(-1), Boolean.TRUE);
   }
 
+  String base;
+  
+  private URL getResourceUrl(String fileName) {
+    /**
+     * @j2sNative
+     *  
+     *      if (this.base == null)
+     *         this.base = this.minimizer.viewer.viewerOptions.get("codeBase");
+     *      return new java.net.URL(this.base + "org/jmol/minimize/forcefield/" + fileName);       
+     *
+     */
+    { 
+      return this.getClass().getResource(fileName);
+    }
+  }
   private void getMmffParameters(String fileName, Map<Integer, Object> data, int dataType) {    
     URL url = null;
     String line = null;
@@ -309,12 +325,7 @@ public class ForceFieldMMFF extends ForceField {
     if (Logger.debugging)
       Logger.info("reading data from " + fileName);
     try {
-      if ((url = this.getClass().getResource(fileName)) == null) {
-        System.err.println("Couldn't find file: " + fileName);
-        throw new NullPointerException();
-      }
-      BufferedReader br = new BufferedReader(new InputStreamReader(
-          (InputStream) url.getContent()));
+      BufferedReader br = getBufferedReader(fileName);
       while ((line = br.readLine()) != null && line.length() < 5 || !line.startsWith("*"))
         continue; // skip header
       int a1 = 0, a2 = 127, a3 = 127, a4 = 127;
@@ -459,22 +470,16 @@ public class ForceFieldMMFF extends ForceField {
     }
   }
 
+  
   private void getAtomTypes(String fileName) {
     List<AtomType> types = new ArrayList<AtomType>();
-    URL url = null;
     String line = null;
     try {
-      if ((url = this.getClass().getResource(fileName)) == null) {
-        System.err.println("Couldn't find file: " + fileName);
-        throw new NullPointerException();
-      }
-
+      BufferedReader br = getBufferedReader(fileName);
       //turns out from the Jar file
       // it's a sun.net.www.protocol.jar.JarURLConnection$JarURLInputStream
       // and within Eclipse it's a BufferedInputStream
 
-      BufferedReader br = new BufferedReader(new InputStreamReader(
-          (InputStream) url.getContent()));
       AtomType at;
       types.add(new AtomType(0, 0, 0, 0, 1, "H or NOT FOUND", ""));
       while ((line = br.readLine()) != null) {
@@ -505,6 +510,26 @@ public class ForceFieldMMFF extends ForceField {
 
   }
   
+  private BufferedReader getBufferedReader(String fileName) throws IOException {
+    URL url = null;
+    if ((url = getResourceUrl(fileName)) == null) {
+      System.err.println("Couldn't find file: " + fileName);
+      throw new NullPointerException();
+    }
+    /**
+     * @j2sNative
+     * 
+     * var a = [null,null];
+     * return this.minimizer.viewer.getBufferedReaderOrErrorMessageFromName(url.toString(),a,false); 
+     * 
+     * 
+     */
+    {
+    return new BufferedReader(new InputStreamReader(
+        (InputStream) url.getContent()));
+    }
+  }
+
   private static void setFlags(AtomType at) {
     // fcadj
     switch (at.mmType) {

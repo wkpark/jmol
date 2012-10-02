@@ -693,11 +693,11 @@ public abstract class TransformManager {
   }
 
   public float getTranslationXPercent() {
-    return (fixedTranslation.x - width / 2f) * 100 / width;
+    return (width == 0 ? 0 : (fixedTranslation.x - width / 2f) * 100 / width);
   }
 
   public float getTranslationYPercent() {
-    return (fixedTranslation.y - height / 2f) * 100 / height;
+    return (height == 0 ? 0 : (fixedTranslation.y - height / 2f) * 100 / height);
   }
 
   float getTranslationZPercent() {

@@ -792,7 +792,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
         || name.equals("CB"))
       return false;
     char ch0 = name.charAt(0);
-    char ch1 = (name.length() == 1 ? 0 : name.charAt(1));
+    char ch1 = (name.length() == 1 ? '\0' : name.charAt(1));
     boolean isSp2 = false;
     int bondCount = ret[3];
     switch (res.length()) {

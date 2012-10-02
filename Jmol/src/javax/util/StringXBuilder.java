@@ -14,6 +14,8 @@ public class StringXBuilder {
 	
   private java.lang.StringBuilder sb;
   String s;
+  
+  //TODO: JS experiment with using array and .push() here
 
   public StringXBuilder() {
     /**
@@ -96,11 +98,19 @@ public class StringXBuilder {
     return this;
   }
 
+  /**
+   * note that JavaScript could drop off the ".0" in "1.0"
+   * @param f
+   * @return this
+   */
   public StringXBuilder appendF(float f) {
     /**
      * @j2sNative
      * 
-     *            this.s += f
+     * var sf = "" + f;
+     * if (sf.indexOf(".") < 0 && sf.indexOf("e") < 0)
+     *   sf += ".0" ;
+     *            this.s += sf;
      * 
      */
     {
@@ -113,7 +123,10 @@ public class StringXBuilder {
     /**
      * @j2sNative
      * 
-     *            this.s += d;
+     * var sf = "" + d;
+     * if (sf.indexOf(".") < 0 && sf.indexOf("e") < 0)
+     *   sf += ".0" ;
+     *            this.s += sf;
      * 
      */
     {

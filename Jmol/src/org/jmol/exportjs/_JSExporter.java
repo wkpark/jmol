@@ -27,10 +27,13 @@ package org.jmol.exportjs;
 
 
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
+import javax.util.BitSet;
 import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
+import javax.vecmath.Vector3f;
 
 import org.jmol.util.J2SRequireImport;
 
@@ -45,25 +48,23 @@ public class _JSExporter extends __CartesianExporter {
     useTable = new UseTable();
   }
 
-  @Override
-  protected void outputFace(int[] is, int[] coordMap, int faceVertexMax) {
-    // TODO Auto-generated method stub
-
-  }
-
   private Map<String, Boolean> htSpheresRendered = new Hashtable<String, Boolean>();
 
   private Map<String, Object[]> htObjects = new Hashtable<String, Object[]>();
 
-  private void useSphere(String id, boolean isNew, Point3f pt, Object[] o) {
+  private void jsSphere(String id, boolean isNew, Point3f pt, Object[] o) {
     // implemented in JavaScript only
     System.out.println(id + " " + isNew + " " + pt + " " + o);
   }
 
-  private void useCylinder(String id, boolean isNew, Point3f pt1, Point3f pt2,
+  private void jsCylinder(String id, boolean isNew, Point3f pt1, Point3f pt2,
                            Object[] o) {
     // implemented in JavaScript only
     System.out.println(id + " " + isNew + " " + pt1 + " " + pt2 + " " + o);
+  }
+
+  private void addJmolTriangle(String id, Object o) {
+    System.out.println(id + " " + o);    
   }
 
   @Override
@@ -81,7 +82,7 @@ public class _JSExporter extends __CartesianExporter {
     else
       htObjects.put(ret[0], o = new Object[] { getColor(colix),
           Float.valueOf(radius) });
-    useSphere(ret[0], !found, ptCenter, o);
+    jsSphere(ret[0], !found, ptCenter, o);
   }
 
   private String[] ret = new String[1];
@@ -103,7 +104,7 @@ public class _JSExporter extends __CartesianExporter {
     else
       htObjects.put(ret[0], o = new Object[] { getColor(colix),
           new Float(length), new Float(radius) });
-    useCylinder(ret[0], !found, pt1, pt2, o);
+    jsCylinder(ret[0], !found, pt1, pt2, o);
     return true;
   }
 
@@ -132,16 +133,22 @@ public class _JSExporter extends __CartesianExporter {
   }
 
   @Override
-  protected void outputTextPixel(Point3f pt, int argb) {
-    // TODO Auto-generated method stub
-
+  protected void outputSurface(Point3f[] vertices, Vector3f[] normals,
+                               short[] colixes, int[][] indices,
+                               short[] polygonColixes,
+                               int nVertices, int nPolygons, int nFaces, BitSet bsPolygons,
+                               int faceVertexMax, short colix,
+                               List<Short> colorList, Map<Short, Integer> htColixes, Point3f offset) {
+    //TODO OK, this is a major task.
   }
-
+  
   @Override
   protected void outputTriangle(Point3f pt1, Point3f pt2, Point3f pt3,
                                 short colix) {
-    // TODO Auto-generated method stub
-
+    // an isolated triangle, with a face-based normal
+    // polyhedra, nucleic acid bases, drawn triangles, etc.
+    Object o = new Object[] { getColor(colix), pt1, pt2, pt3};
+    addJmolTriangle(ret[0], o);
   }
 
   @Override
@@ -152,14 +159,12 @@ public class _JSExporter extends __CartesianExporter {
 
   @Override
   protected void outputHeader() {
-    // TODO Auto-generated method stub
-
+    // implemented in JavaScript only
   }
 
   @Override
   protected void outputFooter() {
-    // TODO Auto-generated method stub
-
+    // implemented in JavaScript only
   }
 
 }

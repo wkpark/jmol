@@ -33,12 +33,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import javax.util.BitSet;
 import javax.util.StringXBuilder;
 
-import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -53,8 +51,6 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.modelset.Atom;
-import org.jmol.script.Token;
-import org.jmol.util.Colix;
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
 import org.jmol.util.MeshSurface;
@@ -70,7 +66,8 @@ import org.jmol.viewer.Viewer;
  *         _IdtfExporter
  *         _MayaExporter
  *         _VrmlExporter
- *         _X3dExporter                      
+ *         _X3dExporter           
+ *         _JSExporter (WebGL)           
  *     __RayTracerExporter
  *         _PovrayExporter
  *         _TachyonExporter
@@ -261,12 +258,6 @@ public abstract class ___Exporter {
     }
   }
 
-  protected void outputComment(String comment) {
-    if (commentChar != null)
-      output(commentChar + comment + "\n");
-  }
-  
-
   protected static void setTempVertex(Point3f pt, Point3f offset, Point3f ptTemp) {
     ptTemp.setT(pt);
     if (offset != null)
@@ -274,6 +265,7 @@ public abstract class ___Exporter {
   }
 
   protected void outputVertices(Point3f[] vertices, int nVertices, Point3f offset) {
+    // from exporters
     for (int i = 0; i < nVertices; i++) {
       if (Float.isNaN(vertices[i].x))
         continue;
@@ -283,38 +275,13 @@ public abstract class ___Exporter {
   }
 
   protected void outputVertex(Point3f pt, Point3f offset) {
+    // from exporters
     setTempVertex(pt, offset, tempP1);
     output(tempP1);
   }
 
   abstract protected void output(Tuple3f pt);
-
-  protected void outputJmolPerspective() {
-    outputComment(getJmolPerspective());
-  }
-
-  protected String commentChar;
-  protected String getJmolPerspective() {
-    if (commentChar == null)
-      return "";
-    StringXBuilder sb = new StringXBuilder();
-    sb.append(commentChar).append("Jmol perspective:");
-    sb.append("\n").append(commentChar).append("screen width height dim: " + screenWidth + " " + screenHeight + " " + viewer.getScreenDim());
-    sb.append("\n").append(commentChar).append("perspectiveDepth: " + viewer.getPerspectiveDepth());
-    sb.append("\n").append(commentChar).append("cameraDistance(angstroms): " + cameraDistance);
-    sb.append("\n").append(commentChar).append("aperatureAngle(degrees): " + aperatureAngle);
-    sb.append("\n").append(commentChar).append("scalePixelsPerAngstrom: " + scalePixelsPerAngstrom);
-    sb.append("\n").append(commentChar).append("light source: " + lightSource);
-    sb.append("\n").append(commentChar).append("lighting: " + viewer.getSpecularState().replace('\n', ' '));
-    sb.append("\n").append(commentChar).append("center: " + center);
-    sb.append("\n").append(commentChar).append("rotationRadius: " + viewer.getRotationRadius());
-    sb.append("\n").append(commentChar).append("boundboxCenter: " + viewer.getBoundBoxCenter());
-    sb.append("\n").append(commentChar).append("translationOffset: " + viewer.getTranslationScript());
-    sb.append("\n").append(commentChar).append("zoom: " + viewer.getZoomPercentFloat());
-    sb.append("\n").append(commentChar).append("moveto command: " + viewer.getOrientationText(Token.moveto, null));
-    sb.append("\n");
-    return sb.toString();
-  }
+  // to exporters
 
   protected void outputFooter() {
     // implementation-specific
@@ -335,43 +302,10 @@ public abstract class ___Exporter {
     return "OK " + nBytes + " " + jmolRenderer.getExportName() + " " + fileName ;
   }
 
-  protected static String getExportDate() {
-    return new SimpleDateFormat("yyyy-MM-dd', 'HH:mm").format(new Date());
-  }
-
-  protected String rgbFractionalFromColix(short colix) {
-    return rgbFractionalFromArgb(g3d.getColorArgbOrGray(colix));
-  }
-
   protected String getTriad(Tuple3f t) {
     return round(t.x) + " " + round(t.y) + " " + round(t.z); 
   }
   
-  final private Point3f tempC = new Point3f();
-
-  protected String rgbFractionalFromArgb(int argb) {
-    int red = (argb >> 16) & 0xFF;
-    int green = (argb >> 8) & 0xFF;
-    int blue = argb & 0xFF;
-    tempC.set(red == 0 ? 0 : (red + 1)/ 256f, 
-        green == 0 ? 0 : (green + 1) / 256f, 
-        blue == 0 ? 0 : (blue + 1) / 256f);
-    return getTriad(tempC);
-  }
-
-  protected static String translucencyFractionalFromColix(short colix) {
-    return round(Colix.getColixTranslucencyFractional(colix));
-  }
-
-  protected static String opacityFractionalFromColix(short colix) {
-    return round(1 - Colix.getColixTranslucencyFractional(colix));
-  }
-
-  protected static String opacityFractionalFromArgb(int argb) {
-    int opacity = (argb >> 24) & 0xFF;
-    return round(opacity == 0 ? 0 : (opacity + 1) / 256f);
-  }
-
   protected static String round(double number) { // AH
     String s;
     return (number == 0 ? "0" : number == 1 ? "1" : (s = ""
@@ -585,28 +519,32 @@ public abstract class ___Exporter {
   protected abstract void fillTriangle(short colix, Point3f ptA, Point3f ptB, Point3f ptC, boolean twoSided);
   
   
-  private int nText;
-  private int nImage;
   public short lineWidthMad;
 
+  /**
+   * @param x 
+   * @param y 
+   * @param z 
+   * @param image 
+   * @param bgcolix 
+   * @param width 
+   * @param height  
+   */
   void plotImage(int x, int y, int z, Image image, short bgcolix, int width,
                  int height) {
-    if (z < 3)
-      z = viewer.getFrontPlane();
-    outputComment("start image " + (++nImage));
-    g3d.plotImage(x, y, z, image, jmolRenderer, bgcolix, width, height);
-    outputComment("end image " + nImage);
+    // forget it!
   }
 
+  /**
+   * @param x 
+   * @param y 
+   * @param z 
+   * @param colix 
+   * @param text 
+   * @param font3d  
+   */
   void plotText(int x, int y, int z, short colix, String text, JmolFont font3d) {
-    // trick here is that we use Jmol's standard g3d package to construct
-    // the bitmap, but then output to jmolRenderer, which returns control
-    // here via drawPixel.
-    if (z < 3)
-      z = viewer.getFrontPlane();
-    outputComment("start text " + (++nText) + ": " + text);
-    g3d.plotText(x, y, z, g3d.getColorArgbOrGray(colix), text, font3d, jmolRenderer);
-    outputComment("end text " + nText + ": " + text);
+    // TODO
   }
 
 }

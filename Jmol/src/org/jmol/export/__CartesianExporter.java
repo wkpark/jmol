@@ -147,14 +147,14 @@ abstract public class __CartesianExporter extends ___Exporter {
 
   protected void outputIndices(int[][] indices, int[] map, int nPolygons,
                                BitSet bsPolygons, int faceVertexMax) {
+    // called from IDtf, Vrml, Xed when outputting a surface
     boolean isAll = (bsPolygons == null);
     int i0 = (isAll ? nPolygons - 1 : bsPolygons.nextSetBit(0));
     for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsPolygons.nextSetBit(i + 1)))
       outputFace(indices[i], map, faceVertexMax);
   }
 
-  // these are elaborated in IDTF, MAYA, VRML, or X3D:
-
+  // called from IDtf, Vrml, Xed when outputting a surface
   protected abstract void outputFace(int[] is, int[] coordMap, int faceVertexMax);
 
   abstract protected void outputCircle(Point3f pt1, Point3f pt2, float radius,

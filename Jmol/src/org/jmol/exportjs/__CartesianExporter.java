@@ -155,7 +155,14 @@ abstract public class __CartesianExporter extends ___Exporter {
 
   // these are elaborated in IDTF, MAYA, VRML, or X3D:
 
-  protected abstract void outputFace(int[] is, int[] coordMap, int faceVertexMax);
+  /**
+   * @param is  
+   * @param coordMap 
+   * @param faceVertexMax 
+   */
+  protected void outputFace(int[] is, int[] coordMap, int faceVertexMax) {
+    
+  }
 
   abstract protected void outputCircle(Point3f pt1, Point3f pt2, float radius,
                                        short colix, boolean doFill);
@@ -172,8 +179,6 @@ abstract public class __CartesianExporter extends ___Exporter {
                                           short colix);
 
   abstract protected void outputSphere(Point3f ptAtom2, float f, short colix, boolean checkRadius);
-
-  abstract protected void outputTextPixel(Point3f pt, int argb);
 
   abstract protected void outputTriangle(Point3f pt1, Point3f pt2, Point3f pt3,
                                          short colix);
@@ -226,10 +231,7 @@ abstract public class __CartesianExporter extends ___Exporter {
 
   @Override
   void drawTextPixel(int argb, int x, int y, int z) {
-    // text only
-    tempP3.set(x, y, z);
-    viewer.unTransformPoint(tempP3, tempP1);
-    outputTextPixel(tempP1, argb);
+    // not going to happen in  JavaScript
   }
 
   @Override
@@ -349,4 +351,5 @@ abstract public class __CartesianExporter extends ___Exporter {
     sphereMatrix.m23 = center.z;
     sphereMatrix.m33 = 1;
   }
+  
 }

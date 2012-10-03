@@ -95,6 +95,12 @@ final public class Export3D implements JmolRendererInterface {
     return (exporter.initializeOutput(viewer, privateKey, g3d, output) ? exporter : null);
   }
 
+  public boolean initializeOutput(String type, Viewer viewer,
+                                  double privateKey, GData gdata, Object object) {
+    // N/A
+    return false;
+  }
+
   public String finalizeOutput() {
     return exporter.finalizeOutput();
   }

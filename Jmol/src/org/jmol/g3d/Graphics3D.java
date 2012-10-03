@@ -1909,4 +1909,10 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
             : Colix.GREEN);
     drawRect(x, y + h, z, 0, w, h);
   }
+
+  public boolean initializeOutput(String type, Viewer viewer,
+                                  double privateKey, GData gdata, Object object) {
+    // N/A
+    return false;
+  }
 }

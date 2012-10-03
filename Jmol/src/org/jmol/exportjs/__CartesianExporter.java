@@ -91,7 +91,7 @@ abstract public class __CartesianExporter extends ___Exporter {
     tempP3.sub(center);
     ptCamera.add(tempP3);
 
-    System.out.println(ptCamera + " " + cameraPosition);
+    //System.out.println(ptCamera + " " + cameraPosition);
     //  return ptCamera;
 
     return cameraPosition;

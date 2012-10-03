@@ -24,6 +24,10 @@ public interface JmolRendererInterface extends JmolGraphicsInterface {
                                              double privateKey, GData gdata,
                                              Object output);
 
+  public abstract boolean initializeOutput(String type, Viewer viewer,
+                                        double privateKey, GData gdata,
+                                        Object object);
+
   public abstract short[] getBgColixes(short[] bgcolixes);
 
   public abstract String finalizeOutput();

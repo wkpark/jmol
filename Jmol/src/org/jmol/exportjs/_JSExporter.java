@@ -131,18 +131,6 @@ public class _JSExporter extends __CartesianExporter {
     return Integer.valueOf(g3d.getColorArgbOrGray(colix));
   }
 
-  void addObject(String id, Object o) {
-    // id will be "_S1" or "_C1"
-    // implemented in JavaScript only
-    /**
-     * @j2sNative
-     * 
-     */
-    {
-      System.out.println(id + " " + o);
-    }
-  }
-
   @Override
   protected void outputTextPixel(Point3f pt, int argb) {
     // TODO Auto-generated method stub

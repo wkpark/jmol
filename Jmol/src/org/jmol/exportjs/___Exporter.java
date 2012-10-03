@@ -323,7 +323,7 @@ public abstract class ___Exporter {
   String finalizeOutput() {
     outputFooter();
     if (!isToFile)
-      return output.toString();
+      return (output == null ? "" : output.toString());
     try {
       bw.flush();
       bw.close();

@@ -10530,24 +10530,26 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // reset after a state script is read
   }
 
-  private JmolRendererInterface jsExporter;
+  private JmolRendererInterface jsExporter3D;
   
   public JmolRendererInterface initializeExporter(String type, String fileName) {
-    if (jsExporter != null)
-      return jsExporter;
+    if (jsExporter3D != null) {
+      jsExporter3D.initializeOutput(type, this, privateKey, gdata, null);
+      return jsExporter3D;
+    }
     boolean isJS = type.equals("JS");
     Object output = (fileName == null ? new StringXBuilder() : fileName);
-    JmolRendererInterface g3dExport = null;
+    JmolRendererInterface export3D = null;
     try {
       Class<?> export3Dclass = Class.forName(isJS ? "org.jmol.exportjs.Export3D" : "org.jmol.export.Export3D");
-      g3dExport = (JmolRendererInterface) export3Dclass.newInstance();
+      export3D = (JmolRendererInterface) export3Dclass.newInstance();
     } catch (Exception e) {
       return null;
     }    
-    Object exporter = g3dExport.initializeExporter(type, this, privateKey, gdata, output);
+    Object exporter = export3D.initializeExporter(type, this, privateKey, gdata, output);
     if (isJS && exporter != null)
-      this.jsExporter = g3dExport;
-    return (exporter == null ? null : g3dExport);
+      this.jsExporter3D = export3D;
+    return (exporter == null ? null : export3D);
   }
 
   public void setPrivateKeyForShape(int iShape) {

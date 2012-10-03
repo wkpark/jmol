@@ -43,6 +43,7 @@ public class SticksRenderer extends ShapeRenderer {
   private float multipleBondSpacing;
   private float multipleBondRadiusFactor;
   private byte modeMultipleBond;
+  private boolean isCartesianExport;
   //boolean showHydrogens;
   private byte endcaps;
 
@@ -82,6 +83,9 @@ public class SticksRenderer extends ShapeRenderer {
     endcaps = GData.ENDCAPS_SPHERICAL;
     dashDots = (viewer.getPartialDots() ? sixdots : dashes);
     multipleBondSpacing = viewer.getMultipleBondSpacing();
+    isCartesianExport = (exportType == GData.EXPORT_CARTESIAN);
+    if (multipleBondSpacing == 0 && isCartesianExport)
+      multipleBondSpacing = 0.2f;
     multipleBondRadiusFactor = viewer.getMultipleBondRadiusFactor();
     showMultipleBonds = multipleBondSpacing != 0 && viewer.getShowMultipleBonds();
     modeMultipleBond = viewer.getModeMultipleBond();
@@ -236,7 +240,7 @@ public class SticksRenderer extends ShapeRenderer {
   }
     
   private void drawBond(int dottedMask) {
-    if (exportType == GData.EXPORT_CARTESIAN && bondOrder == 1) {
+    if (isCartesianExport && bondOrder == 1) {
       // bypass screen rendering and just use the atoms themselves
       g3d.drawBond(atomA, atomB, colixA, colixB, endcaps, mad, -1);
       return;
@@ -278,7 +282,7 @@ public class SticksRenderer extends ShapeRenderer {
       p1.sub2(atomA, x);
       p2.sub2(atomB, x);
       while (true) {
-        if (exportType == GData.EXPORT_CARTESIAN && !isDashed) {
+        if (isCartesianExport && !isDashed) {
           // bypass screen rendering and just use the atoms themselves
           g3d.drawBond(p1, p2, colixA, colixB, endcaps, mad, -2);
         } else {

@@ -9721,6 +9721,15 @@
   <fah_proj number="8042" name="p8042" public="y"
     server="171.67.108.59" atoms="39000" preferred="4.4" deadline="9.5"
     credit="236.0" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
+  <fah_proj number="8043" name="p8043" public="y"
+    server="171.67.108.141" atoms="917" preferred="6.9" deadline="9.3"
+    credit="2387.0" frames="100" code="OG" contact="shukla" kfactor="0.0"/>
+  <fah_proj number="8044" name="p8044" public="y"
+    server="171.67.108.141" atoms="917" preferred="6.9" deadline="9.3"
+    credit="2387.0" frames="100" code="OG" contact="shukla" kfactor="0.0"/>
+  <fah_proj number="8045" name="p8045" public="y"
+    server="171.67.108.141" atoms="917" preferred="6.9" deadline="9.3"
+    credit="2387.0" frames="100" code="OG" contact="shukla" kfactor="0.0"/>
   <fah_proj number="8046" name="p8046" public="y"
     server="171.67.108.60" atoms="18000" preferred="1.6" deadline="3.4"
     credit="84.4" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
@@ -9745,6 +9754,15 @@
   <fah_proj number="8053" name="p8053" public="y"
     server="171.67.108.59" atoms="1100" preferred="8.8" deadline="19.1"
     credit="476.8" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
+  <fah_proj number="8054" name="p8054" public="y"
+    server="171.67.108.143" atoms="917" preferred="6.9" deadline="9.3"
+    credit="2387.0" frames="100" code="OG" contact="shukla" kfactor="0.0"/>
+  <fah_proj number="8055" name="p8055" public="n"
+    server="171.67.108.58" atoms="21376" preferred="3.62" deadline="7.85"
+    credit="196.23" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
+  <fah_proj number="8056" name="p8056" public="n"
+    server="171.67.108.59" atoms="21376" preferred="3.62" deadline="7.85"
+    credit="196.23" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
   <fah_proj number="8061" name="p8061" public="n"
     server="171.67.108.58" atoms="22000" preferred="3.7" deadline="8.1"
     credit="201.6" frames="100" code="A4" contact="shukla" kfactor="0.75"/>

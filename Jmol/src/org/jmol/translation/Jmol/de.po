@@ -14,14 +14,14 @@ msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-09-30 19:44+0200\n"
-"PO-Revision-Date: 2012-07-01 18:53+0000\n"
-"Last-Translator: Daniel Winzen <d@winzen4.de>\n"
+"PO-Revision-Date: 2012-10-01 21:43+0000\n"
+"Last-Translator: Scott <Unknown>\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-25 09:01+0000\n"
-"X-Generator: Launchpad (build 15843)\n"
+"X-Launchpad-Export-Date: 2012-10-04 04:24+0000\n"
+"X-Generator: Launchpad (build 16061)\n"
 
 #: com/json/Cookie.java:121
 msgid "name"
@@ -72,10 +72,15 @@ msgid ""
 "\n"
 "See http://www.jmol.org for more information"
 msgstr ""
+"Jmol-Applet Version {0} {1}.\n"
+"\n"
+"Ein OpenScience-Projekt.\n"
+"\n"
+"Mehr Informationen unter http://www.jmol.org."
 
 #: org/jmol/appletjs/Jmol.java:535
 msgid "File Error:"
-msgstr ""
+msgstr "Datei-Fehler:"
 
 #: org/openscience/jmol/app/JmolApp.java:100
 msgid "Error starting Jmol: the property 'user.home' is not defined."
@@ -133,11 +138,13 @@ msgstr "sende nur Ausgaben von print Nachrichten zur Konsole"
 
 #: org/openscience/jmol/app/JmolApp.java:158
 msgid "restrict local file access"
-msgstr ""
+msgstr "Beschränke den Zugriff auf lokale Dateien."
 
 #: org/openscience/jmol/app/JmolApp.java:160
 msgid "restrict local file access (allow reading of SPT files)"
 msgstr ""
+"Beschränke den Zugriff auf lokale Dateien (erlaube aber das Lesen von SPT "
+"Dateien)."
 
 #: org/openscience/jmol/app/JmolApp.java:162
 msgid "independent command thread"
@@ -157,7 +164,8 @@ msgstr "Skript Datei zum Ausführen oder '-' für System.in"
 
 #: org/openscience/jmol/app/JmolApp.java:179
 msgid "use multitouch interface (requires \"sparshui\" parameter"
-msgstr "benutze die Multitouch Schnittstelle (benötigt \"sparshui\" Parameter"
+msgstr ""
+"benutze die Multitouch Schnittstelle (benötigt \"sparshui\" Parameter"
 
 #: org/openscience/jmol/app/JmolApp.java:186
 msgid "Jmol script to execute BEFORE -s option"
@@ -1160,6 +1168,8 @@ msgstr "URL eines Molekül-Modells eingeben"
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1192
 msgid "Enter a four-digit PDB model ID or \"=\" and a three-digit ligand ID"
 msgstr ""
+"Tragen Sie bitte die vierstellige Kennung des PDB-Modells, oder alternativ "
+"\"=\" und die dreistellige Kennung eines Liganden ein."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1201
 msgid ""
@@ -1167,6 +1177,9 @@ msgid ""
 "with \":\" to load from PubChem; otherwise Jmol will use the NCI/NIH "
 "Resolver."
 msgstr ""
+"Tragen Sie bitte den Namen oder die Kennung (SMILES, InCHI, CAS) der "
+"Verbindung ein. Mit vorangestelltem \":\" werden die Daten von PubChem "
+"geladen; andernfalls benützt Jmol Daten des NCI/NIH-Resolvers."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1370
 msgid "IO Exception:"
@@ -1951,18 +1964,23 @@ msgstr "nicht implementiert"
 #~ msgid "vector"
 #~ msgstr "Vektor"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Springe zum ersten {0} der Sammlung"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Springe zum vorherigen {0} der Sammlung"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Spiele die gesamte {0}-Sammlung ab"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Springe zum nächsten {0} der Sammlung"
 
+#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Springe zum letzten {0} der Sammlung"
 
@@ -1972,6 +1990,7 @@ msgstr "nicht implementiert"
 #~ msgid "double-click and drag to reorder"
 #~ msgstr "Doppelklick und ziehen um neu anzuordnen"
 
+#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"
@@ -1982,6 +2001,7 @@ msgstr "nicht implementiert"
 #~ msgid "Jmol Script Console"
 #~ msgstr "Jmol Skript Konsole"
 
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
@@ -1992,12 +2012,14 @@ msgstr "nicht implementiert"
 #~ msgid "Show Selected"
 #~ msgstr "Auswahl anzeigen"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "hinzufügen von {0}.png"
 
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "hinzufügen von JmolPopIn.js"
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "hinzufügen von {0}.spt"
 
@@ -2005,8 +2027,7 @@ msgstr "nicht implementiert"
 #~ msgstr "Konsole leeren Button (benötigt Neustart von Jmol)"
 
 #~ msgid "The -D options are as follows (defaults in parenthesis):"
-#~ msgstr ""
-#~ "Folgende -D-Optionen werden unterstützt (Standardwerte in Klammern):"
+#~ msgstr "Folgende -D-Optionen werden unterstützt (Standardwerte in Klammern):"
 
 #~ msgid "Output Conso&le..."
 #~ msgstr "Skrip&t..."
@@ -2028,8 +2049,8 @@ msgstr "nicht implementiert"
 
 #~ msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
 #~ msgstr ""
-#~ "Trage den Namen oder die Identifikation (SMILE, InCHI, CAS) eines "
-#~ "Moleküls ein"
+#~ "Trage den Namen oder die Identifikation (SMILE, InCHI, CAS) eines Moleküls "
+#~ "ein"
 
 #~ msgid "Get MOL file by compound name or ID"
 #~ msgstr "Hole MOL-Datei per zusammengesetzten Namen oder ID"

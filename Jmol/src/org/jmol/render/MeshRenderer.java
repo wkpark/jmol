@@ -139,11 +139,9 @@ public abstract class MeshRenderer extends ShapeRenderer {
     isTranslucent = haveBsSlabGhost
         || Colix.isColixTranslucent(mesh.colix);
     doRender = (setColix(mesh.colix) || mesh.showContourLines);
-    if (!doRender)
+    if (!doRender || haveBsSlabGhost && !(doRender = g3d.setColix(mesh.slabColix))) {
+      vertices = mesh.vertices;      
       return true;
-    if (haveBsSlabGhost) {
-      if (!(doRender = g3d.setColix(mesh.slabColix)))
-        return true;
     }
     vertices = (mesh.scale3d == 0 && mesh.mat4 == null ? mesh.vertices : mesh.getOffsetVertices(thePlane));
     if (mesh.lineData == null) {

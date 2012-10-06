@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.Map;
 
 
-import jspecview.util.TextFormat;
+import org.jmol.util.TextFormat;
 
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.modelset.Atom;

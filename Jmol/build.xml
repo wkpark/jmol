@@ -425,7 +425,6 @@ all support for previous versions removed
         <exclude name="**/*.dx" />
         <exclude name="ant/**" />
         <include name="com/**" />
-        <include name="javax/**" />
         <exclude name="**/Test*.class" />
         <exclude name="**/jmol/jcamp/**" />
         <exclude name="**/jmol/applet/*" />
@@ -450,7 +449,6 @@ all support for previous versions removed
         <exclude name="**/Test*.class" />
         <exclude name="ant/**" />
         <exclude name="com/**" />
-        <include name="javax/**" />
         <include name="**/jmol/**" />
         <exclude name="**/jmol/_documents/**" />
         <exclude name="**/jmol/applet/**" />
@@ -459,6 +457,7 @@ all support for previous versions removed
         <exclude name="**/jmol/exportjs/**" />
         <exclude name="**/jmol/console/**" />
         <exclude name="**/jmol/popup/**" />
+        <exclude name="org/jmol/util/BitSet32.class" />
         <exclude name="**/openscience/jmol/Data/**" />
         <exclude name="**/openscience/jmol/app/Jmol.class" />
         <exclude name="**/openscience/jmol/app/images/**" />
@@ -745,7 +744,6 @@ all support for previous versions removed
       <fileset dir="${applet.classes.dir}">
         <include name="JmolApplet*.class" />
         <include name="jmol75x29x8.gif" />
-	    <include name="javax/**" />
         <include name="org/jmol/adapter/smarter/**" />
         <include name="org/jmol/api/**" />
         <include name="org/jmol/applet/**" />
@@ -762,6 +760,7 @@ all support for previous versions removed
         <include name="org/jmol/render/**" />
         <include name="org/jmol/thread/**" />
         <include name="org/jmol/util/**" />
+        <exclude name="org/jmol/util/BitSet32.class" />
         <include name="org/jmol/viewer/**" />
       </fileset>
 
@@ -954,7 +953,6 @@ all support for previous versions removed
       <fileset dir="${applet.classes.dir}">
         <include name="JmolApplet*.class" />
         <include name="jmol75x29x8.gif" />
-	    <include name="javax/**" />
 		<include name="org/jmol/adapter/smarter/**" />
   		<include name="org/jmol/api/**" />
   		<include name="org/jmol/applet/**" />
@@ -972,6 +970,7 @@ all support for previous versions removed
 		<include name="org/jmol/shape/**" />
         <include name="org/jmol/thread/**" />
 		<include name="org/jmol/util/**" />
+        <exclude name="org/jmol/util/BitSet32.class" />
 		<include name="org/jmol/viewer/**" />
       </fileset>    	
       <indexjars>
@@ -1183,10 +1182,8 @@ all support for previous versions removed
       <!-- javax/vecmath -->
       <fileset dir="${appletjars.dir}" includes="**/*"/>
       <fileset dir="${applet.classes.dir}">
-	    <include name="javax/**" />
         <include name="JmolApplet*.class" />
         <include name="jmol75x29x8.gif" />
-	    <include name="javax/**" />
         <include name="org/jmol/adapter/smarter/**" />
         <include name="org/jmol/api/**" />
         <include name="org/jmol/applet/**" />
@@ -1203,6 +1200,7 @@ all support for previous versions removed
         <include name="org/jmol/shape/**" />
         <include name="org/jmol/thread/**" />
         <include name="org/jmol/util/**" />
+        <exclude name="org/jmol/util/BitSet32.class" />
         <include name="org/jmol/viewer/**" />
       </fileset>
 
@@ -1241,10 +1239,12 @@ all support for previous versions removed
       </fileset>
       <fileset dir="${applet.classes.dir}" >
         <include name="JmolSmiles*" />
-	    <include name="javax/**" />
         <include name="org/jmol/smiles/**" />
         <include name="org/jmol/api/SmilesMatcherInterface.class" />
         <include name="org/jmol/constant/**" />
+        <include name="org/jmol/util/ArrayUtil.class" />
+        <include name="org/jmol/util/BitSet.class" />
+        <include name="org/jmol/util/BitSetUtil.class" />
         <include name="org/jmol/util/JmolEdge.class" />
         <include name="org/jmol/util/JmolNode.class" />
         <include name="org/jmol/util/JmolMolecule.class" />
@@ -1253,16 +1253,11 @@ all support for previous versions removed
         <include name="org/jmol/util/Logger.class" />
         <include name="org/jmol/util/LoggerInterface.class" />
         <include name="org/jmol/util/TextFormat.class" />
+        <include name="org/jmol/util/Tuple3f.class" />
+        <include name="org/jmol/util/Point3f.class" />
+        <include name="org/jmol/util/Vector3f.class" />
+        <include name="org/jmol/util/StringXBuilder.class" />
       </fileset>
-  	<!--
-      <fileset dir="${appletjars.dir}">
-        <include name="javax/vecmath/*3f*" />
-        <include name="javax/vecmath/*3d*" />
-        <include name="javax/vecmath/Point4f*" />
-        <include name="javax/vecmath/Tuple4f*" />
-        <exclude name="javax/vecmath/Matrix*" />
-      </fileset>
-      -->
     </jar>
   </target>
 

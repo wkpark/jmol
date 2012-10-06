@@ -991,6 +991,7 @@ public class BitSet implements Cloneable {
     else {
       bs.words = new long[wordCount];
       System.arraycopy(bitsetToCopy.words, 0, bs.words, 0, wordCount);
+      bs.wordsInUse = wordCount;
     }
     return bs;
   }

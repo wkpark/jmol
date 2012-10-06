@@ -26,7 +26,7 @@ package org.jmol.jvxl.readers;
 import java.io.BufferedReader;
 import java.util.Date;
 
-import javax.util.StringXBuilder;
+import org.jmol.util.StringXBuilder;
 
 
 

@@ -25,15 +25,15 @@ package org.jmol.quantum;
 
 import org.jmol.api.QuantumPlaneCalculationInterface;
 import org.jmol.api.VolumeDataInterface;
+import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Eigen;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.util.Point3f;
 
-import javax.vecmath.Point3f;
 
 import java.util.List;
-import javax.util.BitSet;
 
 /*
  * promolecular and discrete SCF NCIPLOT implemented in Jmol 12.1.49

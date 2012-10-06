@@ -26,14 +26,18 @@
 package org.jmol.modelset;
 
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Elements;
+import org.jmol.util.Point3f;
 import org.jmol.util.Quadric;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
 import org.jmol.util.Quaternion;
+import org.jmol.util.StringXBuilder;
 import org.jmol.util.TextFormat;
+import org.jmol.util.Vector3f;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.script.Token;
 import org.jmol.viewer.Viewer;
@@ -49,13 +53,9 @@ import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumVdw;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import javax.util.BitSet;
-import javax.util.StringXBuilder;
 
 import java.util.Hashtable;
 import java.util.List;

@@ -25,10 +25,8 @@
 
 package org.jmol.shapebio;
 
-import javax.util.BitSet;
 import java.util.Map;
 
-import javax.vecmath.Vector3f;
 
 import org.jmol.modelset.Atom;
 import org.jmol.modelsetbio.BioPolymer;
@@ -37,8 +35,10 @@ import org.jmol.modelsetbio.NucleicMonomer;
 import org.jmol.modelsetbio.NucleicPolymer;
 import org.jmol.shape.Shape;
 import org.jmol.shape.Mesh;
+import org.jmol.util.BitSet;
 import org.jmol.util.Colix;
 import org.jmol.util.Logger;
+import org.jmol.util.Vector3f;
 import org.jmol.viewer.JmolConstants;
 
 public class BioShape {

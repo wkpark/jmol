@@ -23,12 +23,6 @@
  */
 package org.jmol.util;
 
-import javax.vecmath.AxisAngle4f;
-import javax.vecmath.Matrix3f;
-import javax.vecmath.Point3f;
-import javax.vecmath.Point4f;
-import javax.vecmath.Tuple3f;
-import javax.vecmath.Vector3f;
 
 
 /*

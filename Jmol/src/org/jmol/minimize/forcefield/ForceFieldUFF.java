@@ -29,13 +29,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
-import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
 import org.jmol.minimize.Minimizer;
 import org.jmol.script.Token;
+import org.jmol.util.BitSet;
 import org.jmol.util.Elements;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;

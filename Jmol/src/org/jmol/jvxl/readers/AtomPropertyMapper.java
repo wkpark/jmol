@@ -23,9 +23,9 @@
  */
 package org.jmol.jvxl.readers;
 
-import javax.vecmath.Point3f;
 
 import org.jmol.util.Logger;
+import org.jmol.util.Point3f;
 
 import org.jmol.api.AtomIndexIterator;
 import org.jmol.api.Interface;

@@ -23,19 +23,19 @@
  */
 package org.jmol.modelsetbio;
 
-import javax.vecmath.AxisAngle4f;
-import javax.vecmath.Matrix3f;
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
 
 import org.jmol.constant.EnumStructure;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Chain;
+import org.jmol.util.AxisAngle4f;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.util.Matrix3f;
+import org.jmol.util.Point3f;
 import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
+import org.jmol.util.Vector3f;
 import org.jmol.viewer.JmolConstants;
 
 public class AminoMonomer extends AlphaMonomer {

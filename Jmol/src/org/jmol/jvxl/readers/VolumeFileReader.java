@@ -24,19 +24,19 @@
 package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
-import javax.util.BitSet;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Point4f;
-import javax.vecmath.Vector3f;
 
 import org.jmol.api.Interface;
 import org.jmol.api.QuantumPlaneCalculationInterface;
 import org.jmol.atomdata.AtomData;
+import org.jmol.util.BitSet;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
+import org.jmol.util.Point3f;
+import org.jmol.util.Point4f;
+import org.jmol.util.StringXBuilder;
+import org.jmol.util.Vector3f;
 
-import javax.util.StringXBuilder;
 
 abstract class VolumeFileReader extends SurfaceFileReader {
 

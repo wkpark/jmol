@@ -25,15 +25,15 @@
 
 package org.jmol.modelset;
 
-import javax.util.BitSet;
 
-import javax.vecmath.Point3f;
 
 import org.jmol.api.AtomIndexIterator;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.bspt.Bspf;
 import org.jmol.bspt.CubeIterator;
+import org.jmol.util.BitSet;
+import org.jmol.util.Point3f;
 import org.jmol.viewer.Viewer;
 
 public class AtomIteratorWithinModel implements AtomIndexIterator {

@@ -26,13 +26,13 @@ package org.openscience.jvxl.simplewriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
 
 import org.jmol.jvxl.calc.MarchingCubes;
 import org.jmol.jvxl.data.JvxlData;
 import org.jmol.jvxl.data.VolumeData;
 import org.jmol.jvxl.readers.Parameters;
+import org.jmol.util.Point3f;
+import org.jmol.util.Vector3f;
 
 //import org.jmol.util.Logger;
 

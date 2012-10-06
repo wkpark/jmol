@@ -29,12 +29,12 @@ import java.util.Map;
 
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
+import org.jmol.util.Point3f;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 import org.jmol.i18n.GT;
 
-import javax.vecmath.Point3f;
 
 abstract class ScriptCompilationTokenParser {
   

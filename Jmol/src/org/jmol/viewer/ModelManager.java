@@ -24,11 +24,11 @@
  */
 package org.jmol.viewer;
 
-import javax.util.BitSet;
-import javax.util.StringXBuilder;
 
 import org.jmol.modelset.ModelLoader;
 import org.jmol.modelset.ModelSet;
+import org.jmol.util.BitSet;
+import org.jmol.util.StringXBuilder;
 
 class ModelManager {
 

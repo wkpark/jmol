@@ -28,12 +28,12 @@ import java.util.Random;
 
 import java.util.List;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
 
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
+import org.jmol.util.Point3f;
 import org.jmol.util.TextFormat;
+import org.jmol.util.Vector3f;
 import org.jmol.api.Interface;
 import org.jmol.api.QuantumCalculationInterface;
 import org.jmol.api.QuantumPlaneCalculationInterface;

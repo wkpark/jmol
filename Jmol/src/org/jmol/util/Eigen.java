@@ -27,8 +27,6 @@ package org.jmol.util;
 import java.util.Arrays;
 import java.util.Comparator;
 
-import javax.vecmath.Matrix3f;
-import javax.vecmath.Vector3f;
 
 //import org.jmol.util.Escape;
 

@@ -28,8 +28,8 @@ import java.io.DataInputStream;
 
 import org.jmol.util.BinaryDocument;
 import org.jmol.util.Logger;
+import org.jmol.util.StringXBuilder;
 
-import javax.util.StringXBuilder;
 
 class Dsn6BinaryReader extends MapFileReader {
 

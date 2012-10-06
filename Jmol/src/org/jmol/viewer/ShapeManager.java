@@ -23,17 +23,11 @@
  */
 package org.jmol.viewer;
 
-import javax.util.BitSet;
-import javax.util.StringXBuilder;
 
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import javax.vecmath.Matrix4f;
-import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
-import javax.vecmath.Vector3f;
 
 import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumPalette;
@@ -43,9 +37,15 @@ import org.jmol.modelset.Group;
 import org.jmol.modelset.ModelSet;
 import org.jmol.script.Token;
 import org.jmol.shape.Shape;
+import org.jmol.util.BitSet;
 import org.jmol.util.GData;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
+import org.jmol.util.Matrix4f;
+import org.jmol.util.Point3f;
+import org.jmol.util.Point3i;
+import org.jmol.util.StringXBuilder;
+import org.jmol.util.Vector3f;
 
 public class ShapeManager {
 

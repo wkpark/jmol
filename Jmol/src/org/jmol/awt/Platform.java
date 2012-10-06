@@ -2,7 +2,6 @@ package org.jmol.awt;
 
 import java.awt.GraphicsEnvironment;
 
-import javax.vecmath.Point3f;
 
 import netscape.javascript.JSObject;
 
@@ -14,6 +13,7 @@ import org.jmol.api.JmolPopupInterface;
 import org.jmol.api.JmolViewer;
 import org.jmol.api.JmolFileAdapterInterface;
 import org.jmol.util.JmolFont;
+import org.jmol.util.Point3f;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.Viewer;
 

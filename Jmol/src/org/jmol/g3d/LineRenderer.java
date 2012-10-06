@@ -42,10 +42,10 @@ package org.jmol.g3d;
   * added line bitset option for rockets. Rendering times for bonds done this way are a bit slower.
   */
 
-import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.GData;
 import org.jmol.util.Logger;

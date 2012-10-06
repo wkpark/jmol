@@ -27,11 +27,11 @@ package org.jmol.renderspecial;
 import org.jmol.modelset.Atom;
 import org.jmol.render.ShapeRenderer;
 import org.jmol.shapespecial.Dots;
+import org.jmol.util.BitSet;
 import org.jmol.util.Colix;
-import javax.util.BitSet;
 import org.jmol.util.Geodesic;
+import org.jmol.util.Vector3f;
 
-import javax.vecmath.Vector3f;
 
 
 public class DotsRenderer extends ShapeRenderer {

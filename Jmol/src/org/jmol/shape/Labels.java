@@ -28,16 +28,16 @@ import org.jmol.constant.EnumPalette;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.LabelToken;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Colix;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolFont;
+import org.jmol.util.StringXBuilder;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.JmolConstants;
 
 import java.util.Hashtable;
-import javax.util.BitSet;
-import javax.util.StringXBuilder;
 
 import java.util.Map;
 

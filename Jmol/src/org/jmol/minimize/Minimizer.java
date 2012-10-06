@@ -25,7 +25,6 @@
 package org.jmol.minimize;
 
 import java.util.ArrayList;
-import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +39,7 @@ import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;
 import org.jmol.thread.MinimizationThread;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;

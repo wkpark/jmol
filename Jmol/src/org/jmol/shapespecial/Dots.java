@@ -25,24 +25,24 @@
 package org.jmol.shapespecial;
 
 import org.jmol.shape.AtomShape;
+import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Colix;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.util.Matrix3f;
+import org.jmol.util.Matrix4f;
+import org.jmol.util.StringXBuilder;
 
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.geodesic.EnvelopeCalculation;
 import org.jmol.modelset.Atom;
 
-import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javax.vecmath.Matrix3f;
-import javax.vecmath.Matrix4f;
 
-import javax.util.StringXBuilder;
 
 
 public class Dots extends AtomShape {

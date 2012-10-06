@@ -26,21 +26,13 @@
 package org.jmol.util;
 
 import java.util.ArrayList;
-import javax.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.vecmath.AxisAngle4f;
-import javax.vecmath.Matrix3f;
-import javax.vecmath.Matrix4f;
-import javax.vecmath.Point3f;
-import javax.vecmath.Point4f;
-import javax.vecmath.Tuple3f;
 
 import org.jmol.script.ScriptVariable;
 
-import javax.util.StringXBuilder;
 
 
 public class Escape {

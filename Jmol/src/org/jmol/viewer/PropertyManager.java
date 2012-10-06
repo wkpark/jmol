@@ -31,7 +31,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.vecmath.Matrix3f;
 
 import org.jmol.script.ScriptEvaluator;
 import org.jmol.script.ScriptVariable;
@@ -39,10 +38,11 @@ import org.jmol.script.ScriptVariableInt;
 import org.jmol.script.Token;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.util.Matrix3f;
 import org.jmol.util.Parser;
+import org.jmol.util.StringXBuilder;
 import org.jmol.util.TextFormat;
 
-import javax.util.StringXBuilder;
 
 /**
  * 

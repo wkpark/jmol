@@ -26,8 +26,6 @@
 package org.jmol.modelset;
 
 import java.util.ArrayList;
-import javax.util.BitSet;
-import javax.util.StringXBuilder;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -38,9 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Point4f;
-import javax.vecmath.Vector3f;
 
 import org.jmol.api.AtomIndexIterator;
 import org.jmol.api.Interface;
@@ -56,8 +51,11 @@ import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 
+import org.jmol.util.BitSet;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.Elements;
+import org.jmol.util.Point3f;
+import org.jmol.util.Point4f;
 import org.jmol.util.Quadric;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
@@ -66,8 +64,10 @@ import org.jmol.util.OutputStringBuilder;
 import org.jmol.util.Parser;
 import org.jmol.util.Point3fi;
 import org.jmol.util.Quaternion;
+import org.jmol.util.StringXBuilder;
 import org.jmol.util.TextFormat;
 import org.jmol.util.TriangleData;
+import org.jmol.util.Vector3f;
 import org.jmol.util.XmlUtil;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.ShapeManager;

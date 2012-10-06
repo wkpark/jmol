@@ -25,15 +25,15 @@
 package org.jmol.shape;
 
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSet;
 import org.jmol.util.Colix;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolFont;
+import org.jmol.util.Point3i;
 
-import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javax.vecmath.Point3i;
 
 public class Hover extends TextShape {
 

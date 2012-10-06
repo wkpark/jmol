@@ -30,18 +30,18 @@ import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.script.Token;
 import org.jmol.shape.AtomShape;
+import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Colix;
 import org.jmol.util.Escape;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Normix;
+import org.jmol.util.Point3f;
+import org.jmol.util.Point3i;
+import org.jmol.util.StringXBuilder;
+import org.jmol.util.Vector3f;
 
-import javax.util.BitSet;
-import javax.util.StringXBuilder;
-import javax.vecmath.Point3i;
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
 
 import org.jmol.util.Measure;
 

@@ -30,18 +30,18 @@ import org.jmol.modelset.Atom;
 import org.jmol.modelset.Measurement;
 import org.jmol.modelset.MeasurementData;
 import org.jmol.modelset.MeasurementPending;
+import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Colix;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolFont;
 import org.jmol.util.Point3fi;
+import org.jmol.util.StringXBuilder;
 import org.jmol.modelset.TickInfo;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.script.Token;
 
 import java.util.ArrayList;
-import javax.util.BitSet;
-import javax.util.StringXBuilder;
 
 import java.util.List;
 import java.util.Hashtable;

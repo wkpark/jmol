@@ -28,19 +28,19 @@ import org.jmol.viewer.StateManager;
 import org.jmol.script.ScriptVariable;
 import org.jmol.script.Token;
 
-import javax.util.BitSet;
-import javax.util.StringXBuilder;
 
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import javax.vecmath.Point3f;
 
+import org.jmol.util.BitSet;
 import org.jmol.util.Colix;
 import org.jmol.util.Escape;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
+import org.jmol.util.Point3f;
+import org.jmol.util.StringXBuilder;
 import org.jmol.util.TextFormat;
 
 public abstract class MeshCollection extends Shape {

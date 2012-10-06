@@ -25,9 +25,9 @@ package org.jmol.popup;
 
 import java.util.Properties;
 
-import javax.util.StringXBuilder;
 
 import org.jmol.i18n.GT;
+import org.jmol.util.StringXBuilder;
 import org.jmol.util.TextFormat;
 
 class MainPopupResourceBundle extends PopupResource {

@@ -26,13 +26,13 @@ package org.jmol.jvxl.calc;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Point4f;
 
 import org.jmol.jvxl.api.VertexDataServer;
 import org.jmol.jvxl.data.VolumeData;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
+import org.jmol.util.Point3f;
+import org.jmol.util.Point4f;
 
 public class MarchingSquares {
 

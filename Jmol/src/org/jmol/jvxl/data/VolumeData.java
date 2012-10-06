@@ -115,17 +115,17 @@ package org.jmol.jvxl.data;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javax.util.StringXBuilder;
-import javax.vecmath.Point3i;
-import javax.vecmath.Point3f;
-import javax.vecmath.Point4f;
-import javax.vecmath.Vector3f;
-import javax.vecmath.Matrix3f;
 
 import org.jmol.api.VolumeDataInterface;
 import org.jmol.jvxl.readers.SurfaceReader;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.util.Matrix3f;
+import org.jmol.util.Point3f;
+import org.jmol.util.Point3i;
+import org.jmol.util.Point4f;
+import org.jmol.util.StringXBuilder;
+import org.jmol.util.Vector3f;
 import org.jmol.util.XmlUtil;
 
 public class VolumeData implements VolumeDataInterface {

@@ -25,14 +25,11 @@
 
 package org.jmol.util;
 
-import javax.util.StringXBuilder;
 
 
 //import java.text.DecimalFormat;
 import java.util.List;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Point4f;
 
 
 

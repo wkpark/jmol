@@ -26,7 +26,6 @@ package org.jmol.util;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javax.vecmath.Point3f;
 
 
 public class ColorUtil {

@@ -24,10 +24,8 @@
 
 package org.jmol.minimize.forcefield;
 
-import javax.util.BitSet;
 import java.util.List;
 
-import javax.vecmath.Vector3d;
 
 import org.jmol.minimize.MinAngle;
 import org.jmol.minimize.MinAtom;
@@ -35,9 +33,11 @@ import org.jmol.minimize.MinBond;
 import org.jmol.minimize.MinTorsion;
 import org.jmol.minimize.Util;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSet;
+import org.jmol.util.StringXBuilder;
 import org.jmol.util.TextFormat;
+import org.jmol.util.Vector3d;
 
-import javax.util.StringXBuilder;
 
 abstract class Calculations {
 

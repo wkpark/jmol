@@ -25,12 +25,12 @@ package org.jmol.render;
 
 import java.util.Iterator;
 
-import javax.vecmath.Point3i;
 
 import org.jmol.modelset.Atom;
 import org.jmol.shape.Echo;
 import org.jmol.shape.Object2d;
 import org.jmol.shape.Text;
+import org.jmol.util.Point3i;
 
 public class EchoRenderer extends ShapeRenderer {
 

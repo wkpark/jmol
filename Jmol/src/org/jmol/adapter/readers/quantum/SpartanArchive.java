@@ -36,9 +36,9 @@ import java.util.List;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javax.vecmath.Vector3f;
 
 import org.jmol.util.Logger;
+import org.jmol.util.Vector3f;
 
 class SpartanArchive {
   

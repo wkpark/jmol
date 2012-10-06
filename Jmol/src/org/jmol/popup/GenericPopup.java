@@ -24,23 +24,23 @@
 package org.jmol.popup;
 
 import org.jmol.i18n.GT;
+import org.jmol.util.BitSet;
 import org.jmol.util.Elements;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
+import org.jmol.util.StringXBuilder;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 
 import java.net.URL;
 import java.util.ArrayList;
-import javax.util.BitSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.Hashtable;
 
-import javax.util.StringXBuilder;
 
 abstract public class GenericPopup {
 

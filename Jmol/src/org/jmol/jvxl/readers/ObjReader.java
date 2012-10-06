@@ -24,14 +24,14 @@
 package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
-import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javax.vecmath.Point3f;
 
+import org.jmol.util.BitSet;
 import org.jmol.util.ColorUtil;
 import org.jmol.util.Parser;
+import org.jmol.util.Point3f;
 
 /*
  * 

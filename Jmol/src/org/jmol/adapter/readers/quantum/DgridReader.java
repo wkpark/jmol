@@ -27,11 +27,11 @@ package org.jmol.adapter.readers.quantum;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.quantum.SlaterData;
 import org.jmol.util.Logger;
+import org.jmol.util.StringXBuilder;
 
 import java.util.Hashtable;
 import java.util.Map;
 
-import javax.util.StringXBuilder;
 
 /**
  * A reader for Dgrid BASISFILE data. http://www.scm.com/News/DGrid.html

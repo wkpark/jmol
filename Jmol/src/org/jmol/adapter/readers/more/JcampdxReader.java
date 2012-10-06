@@ -27,8 +27,6 @@ package org.jmol.adapter.readers.more;
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.ArrayList;
-import javax.util.BitSet;
-import javax.util.StringXBuilder;
 
 import java.util.List;
 
@@ -41,9 +39,11 @@ import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 
+import org.jmol.util.BitSet;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
+import org.jmol.util.StringXBuilder;
 
 /**
  * A preliminary reader for JCAMP-DX files having ##$MODELS= and ##$PEAKS= records

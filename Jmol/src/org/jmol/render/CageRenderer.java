@@ -23,11 +23,11 @@
  */
 package org.jmol.render;
 
-import javax.vecmath.Point3f;
 
 import org.jmol.shape.Bbcage;
 import org.jmol.shape.FontLineShape;
 import org.jmol.util.BoxInfo;
+import org.jmol.util.Point3f;
 import org.jmol.util.Point3fi;
 
 abstract class CageRenderer extends FontLineShapeRenderer {

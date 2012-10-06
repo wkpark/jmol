@@ -29,13 +29,13 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.vecmath.Tuple3f;
 
+import org.jmol.util.StringXBuilder;
 import org.jmol.util.TextFormat;
+import org.jmol.util.Tuple3f;
 import org.jmol.script.Token;
 import org.jmol.viewer.Viewer;
 
-import javax.util.StringXBuilder;
 
 public class LabelToken {
 

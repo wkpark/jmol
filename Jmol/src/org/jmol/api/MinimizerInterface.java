@@ -1,9 +1,9 @@
 package org.jmol.api;
 
-import javax.util.BitSet;
 
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
+import org.jmol.util.BitSet;
 
 
 

@@ -24,7 +24,6 @@
 
 package org.jmol.minimize.forcefield;
 
-import javax.util.BitSet;
 
 import org.jmol.minimize.MinAngle;
 import org.jmol.minimize.MinAtom;
@@ -32,6 +31,7 @@ import org.jmol.minimize.MinBond;
 import org.jmol.minimize.MinTorsion;
 import org.jmol.minimize.Minimizer;
 import org.jmol.minimize.Util;
+import org.jmol.util.BitSet;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.Viewer;

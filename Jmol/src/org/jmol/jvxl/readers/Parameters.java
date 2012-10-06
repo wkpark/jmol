@@ -112,24 +112,24 @@
 
 package org.jmol.jvxl.readers;
 
-import javax.vecmath.AxisAngle4f;
-import javax.vecmath.Matrix3f;
-import javax.vecmath.Point3f;
-import javax.vecmath.Point4f;
-import javax.vecmath.Vector3f;
 
 import java.util.ArrayList;
-import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
 import org.jmol.atomdata.RadiusData;
 import org.jmol.jvxl.data.VolumeData;
+import org.jmol.util.AxisAngle4f;
+import org.jmol.util.BitSet;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.ContactPair;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.util.Matrix3f;
+import org.jmol.util.Point3f;
+import org.jmol.util.Point4f;
+import org.jmol.util.Vector3f;
 
 import org.jmol.viewer.JmolConstants;
 

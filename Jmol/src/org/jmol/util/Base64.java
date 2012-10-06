@@ -16,7 +16,6 @@ package org.jmol.util;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import javax.util.StringXBuilder;
 
 public class Base64 {
 

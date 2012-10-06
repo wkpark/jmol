@@ -23,13 +23,13 @@
  */
 package org.jmol.modelsetbio;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
 
 import org.jmol.constant.EnumStructure;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Chain;
+import org.jmol.util.Point3f;
 import org.jmol.util.Quaternion;
+import org.jmol.util.Vector3f;
 import org.jmol.viewer.JmolConstants;
 
 public class AlphaMonomer extends Monomer {

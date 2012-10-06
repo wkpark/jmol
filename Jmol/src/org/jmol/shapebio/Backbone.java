@@ -25,10 +25,10 @@
 
 package org.jmol.shapebio;
 
-import javax.util.BitSet;
 
 import org.jmol.atomdata.RadiusData;
 import org.jmol.modelset.Atom;
+import org.jmol.util.BitSet;
 
 public class Backbone extends BioShapeCollection {
 

@@ -25,10 +25,14 @@
 
 package org.jmol.shape;
 
+import org.jmol.util.BitSet;
 import org.jmol.util.Colix;
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
 import org.jmol.util.Logger;
+import org.jmol.util.Point3f;
+import org.jmol.util.Point3i;
+import org.jmol.util.StringXBuilder;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.StateManager;
 import org.jmol.viewer.Viewer;
@@ -39,13 +43,9 @@ import org.jmol.modelset.Bond;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.ModelSet;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
 
-import javax.util.BitSet;
 import java.util.List;
 import java.util.Map;
-import javax.util.StringXBuilder;
 
 /**
  * Shape now encompasses:

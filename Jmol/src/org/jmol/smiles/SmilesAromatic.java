@@ -24,14 +24,14 @@
 
 package org.jmol.smiles;
 
-import javax.util.BitSet;
 import java.util.List;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
 
+import org.jmol.util.BitSet;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolNode;
+import org.jmol.util.Point3f;
+import org.jmol.util.Vector3f;
 
 public class SmilesAromatic {
   /** 

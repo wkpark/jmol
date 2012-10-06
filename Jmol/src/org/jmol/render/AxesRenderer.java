@@ -28,10 +28,10 @@ import org.jmol.constant.EnumAxesMode;
 import org.jmol.shape.Axes;
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
+import org.jmol.util.Point3f;
 import org.jmol.util.Point3fi;
 import org.jmol.viewer.StateManager;
 
-import javax.vecmath.Point3f;
 
 public class AxesRenderer extends FontLineShapeRenderer {
 

@@ -25,13 +25,14 @@ package org.jmol.viewer;
 
 import org.jmol.script.Token;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSet;
 import org.jmol.util.Colix;
 import org.jmol.util.ColorUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.GData;
 import org.jmol.util.Logger;
+import org.jmol.util.StringXBuilder;
 
-import javax.util.BitSet;
 
 import org.jmol.constant.EnumPalette;
 import org.jmol.constant.StaticConstants;
@@ -41,7 +42,6 @@ import org.jmol.modelset.Model;
 import org.jmol.modelset.ModelSet;
 import org.jmol.util.ColorEncoder;
 
-import javax.util.StringXBuilder;
 
 class ColorManager {
 

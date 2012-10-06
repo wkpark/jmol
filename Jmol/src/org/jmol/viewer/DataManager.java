@@ -23,7 +23,6 @@
  */
 package org.jmol.viewer;
 
-import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
@@ -32,13 +31,14 @@ import org.jmol.constant.EnumVdw;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.script.Token;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
+import org.jmol.util.StringXBuilder;
 
-import javax.util.StringXBuilder;
 
 /*
  * a class for storing and retrieving user data,

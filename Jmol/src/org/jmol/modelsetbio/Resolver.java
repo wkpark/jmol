@@ -25,17 +25,12 @@
 package org.jmol.modelsetbio;
 
 import java.util.Arrays;
-import javax.util.BitSet;
-import javax.util.StringXBuilder;
 
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Point4f;
-import javax.vecmath.Vector3f;
 
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
@@ -44,10 +39,15 @@ import org.jmol.modelset.Group;
 import org.jmol.modelset.Model;
 import org.jmol.modelset.ModelLoader;
 import org.jmol.modelset.ModelSet;
+import org.jmol.util.BitSet;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
+import org.jmol.util.Point3f;
+import org.jmol.util.Point4f;
+import org.jmol.util.StringXBuilder;
 import org.jmol.util.TextFormat;
+import org.jmol.util.Vector3f;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolAdapterAtomIterator;

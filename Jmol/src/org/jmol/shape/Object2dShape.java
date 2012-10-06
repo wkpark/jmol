@@ -1,14 +1,14 @@
 package org.jmol.shape;
 
-import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.vecmath.Point3f;
 
+import org.jmol.util.BitSet;
 import org.jmol.util.JmolFont;
 import org.jmol.util.Logger;
+import org.jmol.util.Point3f;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 

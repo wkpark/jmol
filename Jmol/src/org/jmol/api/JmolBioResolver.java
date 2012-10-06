@@ -1,6 +1,5 @@
 package org.jmol.api;
 
-import javax.util.BitSet;
 import java.util.Map;
 import java.util.Properties;
 
@@ -10,6 +9,7 @@ import org.jmol.modelset.Group;
 import org.jmol.modelset.Model;
 import org.jmol.modelset.ModelLoader;
 import org.jmol.modelset.ModelSet;
+import org.jmol.util.BitSet;
 
 public interface JmolBioResolver {
 

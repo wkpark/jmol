@@ -23,24 +23,24 @@
  */
 package org.jmol.modelset;
 
-import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.vecmath.Point3f;
 
 import org.jmol.api.SymmetryInterface;
 import org.jmol.constant.EnumStructure;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.OutputStringBuilder;
+import org.jmol.util.Point3f;
+import org.jmol.util.StringXBuilder;
 
 import org.jmol.viewer.Viewer;
 import org.jmol.viewer.StateManager.Orientation;
 
-import javax.util.StringXBuilder;
 
 public class Model {
 

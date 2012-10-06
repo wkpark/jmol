@@ -24,9 +24,9 @@
 
 package org.jmol.shapespecial;
 
-import javax.util.BitSet;
 
 import org.jmol.shape.AtomShape;
+import org.jmol.util.BitSet;
 
 public class Vectors extends AtomShape {
 

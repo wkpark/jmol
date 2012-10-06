@@ -24,7 +24,7 @@
 package org.jmol.modelset;
 
 
-import javax.vecmath.Point3f;
+import org.jmol.util.Point3f;
 
 public class TickInfo {
   

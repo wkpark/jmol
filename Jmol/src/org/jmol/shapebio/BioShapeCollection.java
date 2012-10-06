@@ -25,7 +25,6 @@
 
 package org.jmol.shapebio;
 
-import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -39,6 +38,7 @@ import org.jmol.modelsetbio.BioPolymer;
 import org.jmol.modelsetbio.Monomer;
 import org.jmol.shape.Shape;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Colix;
 import org.jmol.viewer.JmolConstants;

@@ -1,12 +1,8 @@
 package org.jmol.util;
 
 
-import javax.util.BitSet;
 import java.util.List;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
-import javax.vecmath.Point4f;
 
 public class TriangleData {
 

@@ -25,8 +25,8 @@
 
 package org.jmol.symmetry;
 
-import javax.vecmath.Point3f;
 
+import org.jmol.util.Point3f;
 import org.jmol.util.SimpleUnitCell;
 
 import java.util.Map;

@@ -44,7 +44,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.GZIPOutputStream;
-import javax.util.BitSet;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -70,6 +69,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
+import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;

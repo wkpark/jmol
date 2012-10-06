@@ -25,7 +25,7 @@
 
 package org.jmol.constant;
 
-import javax.util.StringXBuilder;
+import org.jmol.util.StringXBuilder;
 
 public enum EnumCallback {
 

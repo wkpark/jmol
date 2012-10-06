@@ -24,11 +24,11 @@
 
 package org.jmol.adapter.smarter;
 
-import javax.vecmath.Point3f;
 
+import org.jmol.util.BitSet;
+import org.jmol.util.Point3f;
 import org.jmol.util.Quadric;
 
-import javax.util.BitSet;
 
 public class Atom extends Point3f implements Cloneable {
   public int atomSetIndex;

@@ -10,7 +10,7 @@ import java.util.Map;
 import org.jmol.api.Event;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import javax.util.StringXBuilder;
+import org.jmol.util.StringXBuilder;
 
 
 abstract public class Binding {

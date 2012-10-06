@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.jmol.api.JmolLineReader;
 
-import javax.util.StringXBuilder;
 
 public class CifDataReader {
   /**

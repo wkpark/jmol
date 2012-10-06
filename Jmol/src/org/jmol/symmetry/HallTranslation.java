@@ -52,7 +52,7 @@ package org.jmol.symmetry;
  *
  */
 
-import javax.vecmath.Point3i;
+import org.jmol.util.Point3i;
 
 class HallTranslation {
   

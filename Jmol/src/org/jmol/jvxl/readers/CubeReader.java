@@ -27,8 +27,8 @@ import java.io.BufferedReader;
 
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
+import org.jmol.util.StringXBuilder;
 
-import javax.util.StringXBuilder;
 
 class CubeReader extends VolumeFileReader {
 

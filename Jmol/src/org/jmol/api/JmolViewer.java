@@ -27,18 +27,18 @@ package org.jmol.api;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.net.URL;
-import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
 import java.util.List;
 
-import javax.vecmath.Matrix4f;
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
 
 import org.jmol.script.Token;
+import org.jmol.util.BitSet;
 import org.jmol.util.BoxInfo;
+import org.jmol.util.Matrix4f;
+import org.jmol.util.Point3f;
+import org.jmol.util.Vector3f;
 import org.jmol.viewer.Viewer;
 
 /**

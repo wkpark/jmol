@@ -23,16 +23,16 @@
  */
 package org.jmol.shape;
 
-import javax.util.BitSet;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
 
 import org.jmol.api.SymmetryInterface;
 import org.jmol.constant.EnumAxesMode;
+import org.jmol.util.BitSet;
 import org.jmol.util.Escape;
+import org.jmol.util.Point3f;
+import org.jmol.util.StringXBuilder;
+import org.jmol.util.Vector3f;
 import org.jmol.viewer.JmolConstants;
-import javax.util.StringXBuilder;
 
 public class Axes extends FontLineShape {
 

@@ -23,12 +23,12 @@
  */
 package org.jmol.jvxl.readers;
 
-import javax.util.StringXBuilder;
-import javax.vecmath.Point3f;
 
 import org.jmol.atomdata.AtomDataServer;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.util.Logger;
+import org.jmol.util.Point3f;
+import org.jmol.util.StringXBuilder;
 
 class VolumeDataReader extends SurfaceReader {
 

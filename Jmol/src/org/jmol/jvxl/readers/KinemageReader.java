@@ -25,11 +25,11 @@ package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
 
-import javax.vecmath.Point3f;
 
 import org.jmol.util.ColorUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
+import org.jmol.util.Point3f;
 
 /*
  * 

@@ -24,10 +24,10 @@
 
 package org.jmol.renderbio;
 
-import javax.vecmath.Point3i;
 
 import org.jmol.shapebio.BioShape;
 import org.jmol.shapebio.Strands;
+import org.jmol.util.Point3i;
 
 public class StrandsRenderer extends BioShapeRenderer {
 

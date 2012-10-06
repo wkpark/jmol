@@ -1,8 +1,8 @@
 package org.jmol.awtjs;
 
-import javax.vecmath.Point3f;
 
 import org.jmol.api.JmolViewer;
+import org.jmol.util.Point3f;
 
 /**
  * methods required by Jmol that access java.awt.Component

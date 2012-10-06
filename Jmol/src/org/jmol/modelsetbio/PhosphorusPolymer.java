@@ -23,11 +23,11 @@
  */
 package org.jmol.modelsetbio;
 
-import javax.util.BitSet;
-import javax.util.StringXBuilder;
 
 import org.jmol.modelset.LabelToken;
+import org.jmol.util.BitSet;
 import org.jmol.util.OutputStringBuilder;
+import org.jmol.util.StringXBuilder;
 import org.jmol.viewer.Viewer;
 
 

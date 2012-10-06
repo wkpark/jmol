@@ -26,9 +26,9 @@ package org.jmol.adapter.smarter;
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolAdapterAtomIterator;
+import org.jmol.util.BitSet;
+import org.jmol.util.Point3f;
 import org.jmol.util.Quadric;
-import javax.util.BitSet;
-import javax.vecmath.Point3f;
 
 /* **************************************************************
  * the frame iterators

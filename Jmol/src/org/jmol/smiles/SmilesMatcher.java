@@ -24,10 +24,10 @@
 
 package org.jmol.smiles;
 
-import javax.util.BitSet;
 import java.util.List;
 
 import org.jmol.api.SmilesMatcherInterface;
+import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.JmolNode;
 import org.jmol.util.TextFormat;

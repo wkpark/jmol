@@ -23,20 +23,20 @@
  */
 package org.jmol.render;
 
-import javax.util.BitSet;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Point4f;
-import javax.vecmath.Vector3f;
-import javax.vecmath.Point3i;
 
 import org.jmol.api.SymmetryInterface;
 import org.jmol.script.Token;
 import org.jmol.shape.Mesh;
 import org.jmol.shape.MeshCollection;
+import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Colix;
 import org.jmol.util.GData;
+import org.jmol.util.Point3f;
+import org.jmol.util.Point3i;
+import org.jmol.util.Point4f;
+import org.jmol.util.Vector3f;
 
 public abstract class MeshRenderer extends ShapeRenderer {
 

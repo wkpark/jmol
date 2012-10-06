@@ -1,11 +1,11 @@
 package org.jmol.export;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Tuple3f;
-import javax.vecmath.Vector3f;
 
 import org.jmol.util.Geodesic;
 import org.jmol.util.MeshSurface;
+import org.jmol.util.Point3f;
+import org.jmol.util.Tuple3f;
+import org.jmol.util.Vector3f;
 
 /**
  * Class to generate mesh data (faces, vertices, and normals) for several kinds

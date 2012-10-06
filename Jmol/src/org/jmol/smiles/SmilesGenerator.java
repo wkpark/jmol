@@ -25,21 +25,21 @@
 package org.jmol.smiles;
 
 import java.util.ArrayList;
-import javax.util.BitSet;
-import javax.util.StringXBuilder;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javax.vecmath.Point3f;
 
+import org.jmol.util.BitSet;
 import org.jmol.util.Elements;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.JmolNode;
 import org.jmol.util.Logger;
+import org.jmol.util.Point3f;
+import org.jmol.util.StringXBuilder;
 import org.jmol.smiles.SmilesSearch.VTemp;
 
 /**

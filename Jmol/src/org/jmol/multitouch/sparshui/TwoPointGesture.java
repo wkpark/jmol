@@ -3,10 +3,10 @@ package org.jmol.multitouch.sparshui;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.vecmath.Vector3f;
 
 import org.jmol.multitouch.ActionManagerMT;
 import org.jmol.util.Logger;
+import org.jmol.util.Vector3f;
 
 import com.sparshui.common.Event;
 import com.sparshui.common.Location;

@@ -23,14 +23,14 @@
  */
 package org.jmol.jvxl.readers;
 
-import javax.util.StringXBuilder;
-import javax.vecmath.Point4f;
 import java.io.BufferedReader;
 
 import org.jmol.util.Colix;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
+import org.jmol.util.Point4f;
+import org.jmol.util.StringXBuilder;
 import org.jmol.jvxl.data.JvxlCoder;
 
 public class JvxlReader extends JvxlXmlReader {

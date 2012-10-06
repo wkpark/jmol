@@ -23,7 +23,6 @@
  */
 package org.jmol.util;
 
-import javax.util.BitSet;
 
 final public class BitSetUtil {
 

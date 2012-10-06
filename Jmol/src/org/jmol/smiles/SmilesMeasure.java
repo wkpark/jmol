@@ -24,9 +24,9 @@
 
 package org.jmol.smiles;
 
-import javax.vecmath.Point3f;
 
 import org.jmol.smiles.SmilesSearch.VTemp;
+import org.jmol.util.Point3f;
 
 public class SmilesMeasure  {
 

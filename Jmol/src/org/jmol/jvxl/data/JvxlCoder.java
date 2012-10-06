@@ -24,22 +24,22 @@
 package org.jmol.jvxl.data;
 
 
-import javax.vecmath.Point3f;
 
 import java.util.ArrayList;
-import javax.util.BitSet;
 import java.util.List;
 import java.util.Map;
 
+import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Colix;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
+import org.jmol.util.Point3f;
+import org.jmol.util.StringXBuilder;
 import org.jmol.util.TextFormat;
 import org.jmol.util.XmlUtil;
 
-import javax.util.StringXBuilder;
 
 public class JvxlCoder {
 

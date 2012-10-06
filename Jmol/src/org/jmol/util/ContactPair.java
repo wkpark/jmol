@@ -1,7 +1,5 @@
 package org.jmol.util;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
 
 import org.jmol.modelset.Atom;
 import org.jmol.script.Token;

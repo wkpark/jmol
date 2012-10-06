@@ -25,11 +25,11 @@
 
 package org.openscience.jmol.app.surfacetool;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Point4f;
-import javax.vecmath.Vector3f;
 
 import org.jmol.util.Measure;
+import org.jmol.util.Point3f;
+import org.jmol.util.Point4f;
+import org.jmol.util.Vector3f;
 
 class Slice {
 

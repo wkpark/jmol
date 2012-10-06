@@ -25,10 +25,10 @@ package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
 
-import javax.util.StringXBuilder;
-import javax.vecmath.Vector3f;
 
 import org.jmol.util.Logger;
+import org.jmol.util.StringXBuilder;
+import org.jmol.util.Vector3f;
 
 class XsfReader extends VolumeFileReader {
 

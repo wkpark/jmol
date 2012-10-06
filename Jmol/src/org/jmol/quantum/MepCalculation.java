@@ -28,17 +28,17 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
-import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javax.vecmath.Point3f;
 
 import org.jmol.api.MepCalculationInterface;
 import org.jmol.api.VolumeDataInterface;
 import org.jmol.modelset.Atom;
+import org.jmol.util.BitSet;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
+import org.jmol.util.Point3f;
 
 /*
  * a simple molecular electrostatic potential cube generator

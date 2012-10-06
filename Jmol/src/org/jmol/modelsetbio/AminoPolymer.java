@@ -31,24 +31,24 @@ import org.jmol.modelset.HBond;
 import org.jmol.modelset.Model;
 import org.jmol.script.Token;
 //import org.jmol.util.Escape;
+import org.jmol.util.BitSet;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
+import org.jmol.util.Point3f;
+import org.jmol.util.StringXBuilder;
 import org.jmol.util.TextFormat;
+import org.jmol.util.Vector3f;
 import org.jmol.viewer.Viewer;
 
 //import java.util.ArrayList;
 import java.util.ArrayList;
-import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
-import javax.util.StringXBuilder;
 
 public class AminoPolymer extends AlphaPolymer {
 

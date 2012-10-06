@@ -26,8 +26,6 @@ package org.jmol.script;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import javax.util.BitSet;
-import javax.util.StringXBuilder;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -36,16 +34,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.vecmath.Matrix3f;
-import javax.vecmath.Matrix4f;
-import javax.vecmath.Point3f;
-import javax.vecmath.Point4f;
-import javax.vecmath.Vector3f;
 
 import org.jmol.modelset.Bond.BondSet;
+import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
+import org.jmol.util.Matrix3f;
+import org.jmol.util.Matrix4f;
 import org.jmol.util.Parser;
+import org.jmol.util.Point3f;
+import org.jmol.util.Point4f;
+import org.jmol.util.StringXBuilder;
+import org.jmol.util.Vector3f;
 
 import org.jmol.util.Measure;
 import org.jmol.util.Quaternion;

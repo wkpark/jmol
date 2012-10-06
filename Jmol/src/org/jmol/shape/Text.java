@@ -23,12 +23,12 @@
  */
 package org.jmol.shape;
 
-import javax.util.StringXBuilder;
 
 import org.jmol.util.Colix;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
+import org.jmol.util.StringXBuilder;
 import org.jmol.viewer.Viewer;
 import org.jmol.util.TextFormat;
 

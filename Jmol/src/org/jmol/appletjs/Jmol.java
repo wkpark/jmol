@@ -37,6 +37,7 @@ import org.jmol.viewer.Viewer;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
+import org.jmol.util.StringXBuilder;
 import org.jmol.util.TextFormat;
 
 
@@ -47,7 +48,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javax.util.StringXBuilder;
 
 /**
  * Java2Script rendition of Jmol using GLmol-based graphics

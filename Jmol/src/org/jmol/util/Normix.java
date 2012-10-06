@@ -25,8 +25,6 @@
 package org.jmol.util;
 
 
-import javax.vecmath.Vector3f;
-import javax.util.BitSet;
 
 
 /**

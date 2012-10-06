@@ -23,10 +23,10 @@
  */
 package org.jmol.jvxl.readers;
 
-import javax.util.StringXBuilder;
 
 import org.jmol.util.BinaryDocument;
 import org.jmol.util.Logger;
+import org.jmol.util.StringXBuilder;
 
 class MrcBinaryReader extends MapFileReader {
 

@@ -25,11 +25,15 @@ package org.jmol.script;
 
 import org.jmol.thread.ScriptParallelProcessor;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSet;
 import org.jmol.util.Escape;
 import org.jmol.util.CommandHistory;
 import org.jmol.util.JpegEncoder;
 import org.jmol.util.Logger;
+import org.jmol.util.Matrix3f;
+import org.jmol.util.Matrix4f;
 import org.jmol.util.Parser;
+import org.jmol.util.StringXBuilder;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 import org.jmol.i18n.GT;
@@ -38,14 +42,10 @@ import org.jmol.modelset.Bond.BondSet;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
-import javax.util.BitSet;
-import javax.util.StringXBuilder;
 
 import java.util.List;
 import java.util.Map;
 
-import javax.vecmath.Matrix3f;
-import javax.vecmath.Matrix4f;
 
 
 public class ScriptCompiler extends ScriptCompilationTokenParser {

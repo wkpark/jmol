@@ -25,9 +25,9 @@ package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
 
-import javax.vecmath.Point3f;
 
 import org.jmol.util.Logger;
+import org.jmol.util.Point3f;
 import org.jmol.util.SimpleUnitCell;
 
 // DSN6, MRC, and XPLOR readers

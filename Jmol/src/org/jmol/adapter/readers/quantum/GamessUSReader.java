@@ -33,10 +33,10 @@ package org.jmol.adapter.readers.quantum;
 
 import java.util.ArrayList;
 
-import javax.vecmath.Vector3f;
 
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.util.Logger;
+import org.jmol.util.Vector3f;
 
 public class GamessUSReader extends GamessReader {
 

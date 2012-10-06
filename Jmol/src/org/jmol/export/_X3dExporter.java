@@ -31,16 +31,16 @@ package org.jmol.export;
 
 
 import java.util.ArrayList;
-import javax.util.BitSet;
 import java.util.List;
 import java.util.Map;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
 
+import org.jmol.util.BitSet;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
+import org.jmol.util.Point3f;
+import org.jmol.util.Vector3f;
 import org.jmol.viewer.Viewer;
 
 public class _X3dExporter extends _VrmlExporter {

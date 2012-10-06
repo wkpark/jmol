@@ -25,10 +25,10 @@ package org.jmol.adapter.readers.xml;
 
 import java.util.Map;
 
-import javax.vecmath.Point3f;
 
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.api.JmolAdapter;
+import org.jmol.util.Point3f;
 
 /**
  * An Odyssey xodydata reader

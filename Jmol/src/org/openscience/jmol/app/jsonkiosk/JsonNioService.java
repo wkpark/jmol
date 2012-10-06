@@ -30,10 +30,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
-import javax.vecmath.Point3f;
 
 import org.jmol.api.JmolViewer;
 import org.jmol.util.Logger;
+import org.jmol.util.Point3f;
 import org.jmol.util.TextFormat;
 
 import com.json.JSONArray;

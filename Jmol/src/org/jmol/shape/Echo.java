@@ -24,14 +24,14 @@
 
 package org.jmol.shape;
 
+import org.jmol.util.BitSet;
 import org.jmol.util.Colix;
 import org.jmol.util.Escape;
+import org.jmol.util.StringXBuilder;
 import org.jmol.util.TextFormat;
 
-import javax.util.BitSet;
 import java.util.Iterator;
 
-import javax.util.StringXBuilder;
 
 public class Echo extends TextShape {
 

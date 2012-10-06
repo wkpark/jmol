@@ -23,10 +23,10 @@
  */
 package org.jmol.adapter.readers.simple;
 
-import javax.util.BitSet;
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
+import org.jmol.util.BitSet;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 

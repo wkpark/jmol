@@ -25,8 +25,8 @@
 
 package org.jmol.modelset;
 
-import javax.util.BitSet;
 
+import org.jmol.util.BitSet;
 import org.jmol.util.JmolEdge;
 
 class BondIteratorSelected implements BondIterator {

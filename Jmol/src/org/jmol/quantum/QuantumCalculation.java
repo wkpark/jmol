@@ -23,13 +23,13 @@
  */
 package org.jmol.quantum;
 
-import javax.vecmath.Point3f;
 
 import org.jmol.modelset.Atom;
+import org.jmol.util.BitSet;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.util.Point3f;
 
-import javax.util.BitSet;
 
 abstract class QuantumCalculation {
 

@@ -25,9 +25,9 @@
 package org.jmol.shape;
 
 import org.jmol.i18n.GT;
+import org.jmol.util.BitSet;
 import org.jmol.util.JmolFont;
 
-import javax.util.BitSet;
 
 public class Frank extends FontShape {
 

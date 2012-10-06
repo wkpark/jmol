@@ -24,15 +24,15 @@
 
 package org.jmol.shapespecial;
 
-import javax.util.BitSet;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
 
 import org.jmol.shape.Mesh;
 import org.jmol.shapespecial.Draw.EnumDrawType;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
+import org.jmol.util.Point3f;
+import org.jmol.util.Vector3f;
 
 
 public class DrawMesh extends Mesh {

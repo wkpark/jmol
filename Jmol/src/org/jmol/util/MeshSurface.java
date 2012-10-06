@@ -1,20 +1,13 @@
 package org.jmol.util;
 
 import java.util.ArrayList;
-import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import javax.vecmath.Matrix4f;
-import javax.vecmath.Point3f;
-import javax.vecmath.Point4f;
-import javax.vecmath.Tuple3f;
-import javax.vecmath.Vector3f;
 
 import org.jmol.script.Token;
 
-import javax.util.StringXBuilder;
 
 public class MeshSurface {
 

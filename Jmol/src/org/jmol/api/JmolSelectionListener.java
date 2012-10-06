@@ -27,7 +27,7 @@
  */
 package org.jmol.api;
 
-import javax.util.BitSet;
+import org.jmol.util.BitSet;
 
 /**
  * listen to atom selections in a Jmol Viewer

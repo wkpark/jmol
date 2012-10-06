@@ -29,16 +29,16 @@ import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javax.util.StringXBuilder;
-import javax.vecmath.Point3f;
-import javax.vecmath.Matrix4f;
-import javax.vecmath.Vector3f;
 
 import org.jmol.api.SymmetryInterface;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
+import org.jmol.util.Matrix4f;
 import org.jmol.util.Parser;
+import org.jmol.util.Point3f;
+import org.jmol.util.StringXBuilder;
 import org.jmol.util.TextFormat;
+import org.jmol.util.Vector3f;
 
 /*
  * 

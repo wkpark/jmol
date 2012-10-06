@@ -23,17 +23,17 @@
  */
 package org.jmol.render;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
-import javax.vecmath.Vector3f;
 
 import org.jmol.constant.EnumAxesMode;
 import org.jmol.modelset.TickInfo;
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
+import org.jmol.util.Point3f;
 import org.jmol.util.Point3fi;
+import org.jmol.util.Point3i;
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.TextFormat;
+import org.jmol.util.Vector3f;
 
 public abstract class FontLineShapeRenderer extends ShapeRenderer {
 

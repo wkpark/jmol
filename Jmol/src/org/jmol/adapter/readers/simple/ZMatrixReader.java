@@ -29,9 +29,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Point4f;
-import javax.vecmath.Vector3f;
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Bond;
@@ -40,7 +37,10 @@ import org.jmol.adapter.smarter.Atom;
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
+import org.jmol.util.Point3f;
+import org.jmol.util.Point4f;
 import org.jmol.util.Quaternion;
+import org.jmol.util.Vector3f;
 
 public class ZMatrixReader extends AtomSetCollectionReader {
   /*

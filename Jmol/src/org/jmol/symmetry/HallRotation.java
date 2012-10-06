@@ -52,7 +52,7 @@ package org.jmol.symmetry;
  *
  */
 
-import javax.vecmath.Matrix4f;
+import org.jmol.util.Matrix4f;
 
 class HallRotation {
   String rotCode;

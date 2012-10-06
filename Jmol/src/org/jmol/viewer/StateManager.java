@@ -23,11 +23,8 @@
  */
 package org.jmol.viewer;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Matrix3f;
 
 import java.util.Hashtable;
-import javax.util.BitSet;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -42,13 +39,16 @@ import org.jmol.script.ScriptVariable;
 import org.jmol.script.Token;
 import org.jmol.util.Escape;
 
+import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.GData;
 import org.jmol.util.Logger;
+import org.jmol.util.Matrix3f;
+import org.jmol.util.Point3f;
+import org.jmol.util.StringXBuilder;
 import org.jmol.util.TextFormat;
 
 import java.util.Arrays;
-import javax.util.StringXBuilder;
 
 public class StateManager {
 

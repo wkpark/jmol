@@ -1,5 +1,5 @@
 
-package javax.util;
+package org.jmol.util;
 
 /**
  * Interesting thing here is that JavaScript is 3x faster than Java in handling strings.

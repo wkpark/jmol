@@ -119,13 +119,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringReader;
-import javax.util.BitSet;
 import java.util.List;
 import java.util.Map;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Point4f;
-import javax.vecmath.Vector3f;
 
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.AtomDataServer;
@@ -137,12 +133,16 @@ import org.jmol.jvxl.data.MeshData;
 import org.jmol.jvxl.api.MeshDataServer;
 import org.jmol.jvxl.calc.MarchingSquares;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSet;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.Parser;
+import org.jmol.util.Point3f;
+import org.jmol.util.Point4f;
 import org.jmol.util.SurfaceFileTyper;
 import org.jmol.util.TextFormat;
+import org.jmol.util.Vector3f;
 
 public class SurfaceGenerator {
 

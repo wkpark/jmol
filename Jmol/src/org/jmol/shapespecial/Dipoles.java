@@ -28,10 +28,14 @@ import org.jmol.shape.Shape;
 import org.jmol.util.BitSetUtil;
 
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSet;
 import org.jmol.util.Colix;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
+import org.jmol.util.Point3f;
+import org.jmol.util.StringXBuilder;
 import org.jmol.util.TextFormat;
+import org.jmol.util.Vector3f;
 import org.jmol.script.Token;
 
 import org.jmol.modelset.Atom;
@@ -39,15 +43,11 @@ import org.jmol.modelset.Bond;
 import org.jmol.modelset.BondIterator;
 
 import java.util.ArrayList;
-import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
 
-import javax.util.StringXBuilder;
 
 public class Dipoles extends Shape {
 

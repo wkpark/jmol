@@ -25,22 +25,22 @@
 
 package org.jmol.shapespecial;
 
-import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.vecmath.Matrix3f;
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
 
 import org.jmol.shape.AtomShape;
+import org.jmol.util.BitSet;
 import org.jmol.util.Colix;
 import org.jmol.util.Escape;
+import org.jmol.util.Matrix3f;
+import org.jmol.util.Point3f;
 import org.jmol.util.Quadric;
+import org.jmol.util.StringXBuilder;
+import org.jmol.util.Vector3f;
 import org.jmol.viewer.StateManager;
 
-import javax.util.StringXBuilder;
 
 public class Ellipsoids extends AtomShape {
 

@@ -24,12 +24,12 @@
 
 package org.jmol.shape;
 
-import javax.util.BitSet;
 
 import org.jmol.modelset.TickInfo;
+import org.jmol.util.BitSet;
 import org.jmol.util.Escape;
+import org.jmol.util.StringXBuilder;
 
-import javax.util.StringXBuilder;
 
 public abstract class FontLineShape extends FontShape {
 

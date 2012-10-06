@@ -22,7 +22,7 @@
  */
 package org.jmol.bspt;
 
-import javax.vecmath.Point3f;
+import org.jmol.util.Point3f;
 
 /**
  * Iterator used for finding all points within a box or a hemi-box

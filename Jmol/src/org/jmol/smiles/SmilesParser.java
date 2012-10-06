@@ -30,11 +30,11 @@ import java.util.List;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javax.util.StringXBuilder;
 
 import org.jmol.util.Elements;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Parser;
+import org.jmol.util.StringXBuilder;
 import org.jmol.util.TextFormat;
 import org.jmol.util.Logger;
 

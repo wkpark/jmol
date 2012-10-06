@@ -1,12 +1,12 @@
 package org.jmol.jvxl.api;
 
 import java.io.OutputStream;
-import javax.util.BitSet;
 
-import javax.vecmath.Point3f;
 
 import org.jmol.jvxl.data.MeshData;
 import org.jmol.shapesurface.IsosurfaceMesh;
+import org.jmol.util.BitSet;
+import org.jmol.util.Point3f;
 
 public interface MeshDataServer extends VertexDataServer {
   

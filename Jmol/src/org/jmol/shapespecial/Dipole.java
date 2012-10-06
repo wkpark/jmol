@@ -24,14 +24,14 @@
 
 package org.jmol.shapespecial;
 
-import javax.vecmath.Vector3f;
-import javax.vecmath.Point3f;
 
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.util.Colix;
 import org.jmol.util.Escape;
-import javax.util.StringXBuilder;
+import org.jmol.util.Point3f;
+import org.jmol.util.StringXBuilder;
+import org.jmol.util.Vector3f;
 
 public class Dipole {
   

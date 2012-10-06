@@ -25,10 +25,10 @@ package org.jmol.modelsetbio;
 
 import java.util.Map;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
 
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.Point3f;
+import org.jmol.util.Vector3f;
 
 import org.jmol.constant.EnumStructure;
 import org.jmol.util.Logger;

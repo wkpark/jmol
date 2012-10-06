@@ -22,12 +22,12 @@
  */
 package org.jmol.bspt;
 
-import javax.util.BitSet;
 
-import javax.vecmath.Point3f;
 
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSet;
 import org.jmol.util.Logger;
+import org.jmol.util.Point3f;
 
 /**
  * A Binary Space Partitioning Forest

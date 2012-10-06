@@ -24,7 +24,6 @@
 
 package org.jmol.util;
 
-import javax.vecmath.Matrix4f;
 
 
 

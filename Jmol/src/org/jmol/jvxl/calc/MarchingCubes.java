@@ -23,19 +23,19 @@
  */
 package org.jmol.jvxl.calc;
 
-import javax.util.BitSet;
-import javax.util.StringXBuilder;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
-import javax.vecmath.Point4f;
-import javax.vecmath.Vector3f;
 
 import org.jmol.jvxl.api.VertexDataServer;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.VolumeData;
 import org.jmol.jvxl.readers.Parameters;
+import org.jmol.util.BitSet;
+import org.jmol.util.Point3f;
+import org.jmol.util.Point3i;
+import org.jmol.util.Point4f;
+import org.jmol.util.StringXBuilder;
 import org.jmol.util.TriangleData;
+import org.jmol.util.Vector3f;
 
 public class MarchingCubes extends TriangleData {
 

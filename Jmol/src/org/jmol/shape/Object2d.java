@@ -1,11 +1,11 @@
 package org.jmol.shape;
 
-import javax.util.BitSet;
 
-import javax.vecmath.Point3f;
 
+import org.jmol.util.BitSet;
 import org.jmol.util.Colix;
 import org.jmol.util.GData;
+import org.jmol.util.Point3f;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 

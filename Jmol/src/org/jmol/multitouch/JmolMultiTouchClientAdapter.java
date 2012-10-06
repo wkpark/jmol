@@ -23,9 +23,9 @@
  */
 package org.jmol.multitouch;
 
-import javax.vecmath.Point3f;
 
 import org.jmol.util.Logger;
+import org.jmol.util.Point3f;
 import org.jmol.viewer.Viewer;
 
 public abstract class JmolMultiTouchClientAdapter implements JmolMultiTouchAdapter {

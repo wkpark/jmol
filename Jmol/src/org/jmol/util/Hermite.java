@@ -24,9 +24,6 @@
 
 package org.jmol.util;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Tuple3f;
-import javax.vecmath.Vector3f;
 
 
 public class Hermite {

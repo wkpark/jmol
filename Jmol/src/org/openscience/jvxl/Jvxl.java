@@ -35,7 +35,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
-import javax.vecmath.Point4f;
 
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
@@ -47,6 +46,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.jmol.jvxl.readers.SurfaceGenerator;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
+import org.jmol.util.Point4f;
 
 public class Jvxl {
 

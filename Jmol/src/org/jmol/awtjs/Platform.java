@@ -2,7 +2,6 @@ package org.jmol.awtjs;
 
 import java.net.URL;
 
-import javax.vecmath.Point3f;
 
 import org.jmol.api.ApiPlatform;
 import org.jmol.api.JmolFileAdapterInterface;
@@ -12,6 +11,7 @@ import org.jmol.api.JmolMouseInterface;
 import org.jmol.api.JmolPopupInterface;
 import org.jmol.api.JmolViewer;
 import org.jmol.util.JmolFont;
+import org.jmol.util.Point3f;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.Viewer;
 

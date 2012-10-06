@@ -26,17 +26,17 @@
 package org.jmol.shapesurface;
 
 import java.util.ArrayList;
-import javax.util.BitSet;
-import javax.util.StringXBuilder;
 
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import javax.vecmath.Point4f;
 
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSet;
 import org.jmol.util.Escape;
+import org.jmol.util.Point4f;
+import org.jmol.util.StringXBuilder;
 import org.jmol.script.Token;
 import org.jmol.shape.Shape;
 import org.jmol.constant.EnumQuantumShell;

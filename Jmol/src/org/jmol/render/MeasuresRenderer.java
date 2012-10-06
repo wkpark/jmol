@@ -27,14 +27,14 @@ package org.jmol.render;
 import org.jmol.modelset.Measurement;
 import org.jmol.modelset.MeasurementPending;
 import org.jmol.shape.Measures;
+import org.jmol.util.AxisAngle4f;
 import org.jmol.util.Colix;
 import org.jmol.util.GData;
+import org.jmol.util.Matrix3f;
+import org.jmol.util.Point3f;
 import org.jmol.util.Point3fi;
+import org.jmol.util.Point3i;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
-import javax.vecmath.Matrix3f;
-import javax.vecmath.AxisAngle4f;
 
 public class MeasuresRenderer extends FontLineShapeRenderer {
 

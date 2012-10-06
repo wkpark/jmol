@@ -25,9 +25,13 @@
 package org.jmol.geodesic;
 
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Geodesic;
+import org.jmol.util.Matrix3f;
 import org.jmol.util.Normix;
+import org.jmol.util.Point3f;
+import org.jmol.util.Vector3f;
 //import org.jmol.util.SlowBitSet;
 
 import org.jmol.api.AtomIndexIterator;
@@ -36,11 +40,7 @@ import org.jmol.atomdata.AtomDataServer;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
 
-import javax.util.BitSet;
 
-import javax.vecmath.Matrix3f;
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
 
 /* ***************************************************************
  * 

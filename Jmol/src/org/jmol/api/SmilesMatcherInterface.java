@@ -1,8 +1,8 @@
 package org.jmol.api;
 
-import javax.util.BitSet;
 import java.util.List;
 
+import org.jmol.util.BitSet;
 import org.jmol.util.JmolNode;
 
 public interface SmilesMatcherInterface {

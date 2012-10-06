@@ -24,11 +24,11 @@
 package org.jmol.adapter.readers.xml;
 
 import java.io.BufferedReader;
-import javax.util.BitSet;
 import java.util.Map;
 
 import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.adapter.smarter.Atom;
+import org.jmol.util.BitSet;
 import org.jmol.util.TextFormat;
 
 /**

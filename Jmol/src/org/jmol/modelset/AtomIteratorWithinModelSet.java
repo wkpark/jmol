@@ -25,9 +25,10 @@
 
 package org.jmol.modelset;
 
-import javax.util.BitSet;
 
-import javax.vecmath.Point3f;
+
+import org.jmol.util.BitSet;
+import org.jmol.util.Point3f;
 
 public class AtomIteratorWithinModelSet extends AtomIteratorWithinModel {
   private BitSet bsModels;

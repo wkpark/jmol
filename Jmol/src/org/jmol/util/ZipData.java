@@ -25,7 +25,6 @@
 
 package org.jmol.util;
 
-import javax.util.StringXBuilder;
 
 public class ZipData {
   boolean isEnabled = true;

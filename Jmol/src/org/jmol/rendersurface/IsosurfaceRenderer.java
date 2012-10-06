@@ -25,9 +25,6 @@ package org.jmol.rendersurface;
 
 import java.util.List;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
-import javax.vecmath.Vector3f;
 
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.readers.Parameters;
@@ -37,6 +34,9 @@ import org.jmol.shapesurface.IsosurfaceMesh;
 import org.jmol.util.Colix;
 import org.jmol.util.GData;
 import org.jmol.util.Normix;
+import org.jmol.util.Point3f;
+import org.jmol.util.Point3i;
+import org.jmol.util.Vector3f;
 
 public class IsosurfaceRenderer extends MeshRenderer {
 

@@ -24,7 +24,6 @@
 
 package org.jmol.util;
 
-import javax.util.StringXBuilder;
 
 public final class Rgb16 {
   public int rScaled;

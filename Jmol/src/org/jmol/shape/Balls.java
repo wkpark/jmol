@@ -25,12 +25,12 @@
 
 package org.jmol.shape;
 
-import javax.util.BitSet;
 import java.util.Map;
 
 import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumPalette;
 import org.jmol.modelset.Atom;
+import org.jmol.util.BitSet;
 import org.jmol.util.Colix;
 import org.jmol.viewer.JmolConstants;
 

@@ -26,11 +26,11 @@ package org.jmol.multitouch;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.vecmath.Point3f;
 
 import org.jmol.api.Interface;
 import org.jmol.api.JmolTouchSimulatorInterface;
 import org.jmol.util.Logger;
+import org.jmol.util.Point3f;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;

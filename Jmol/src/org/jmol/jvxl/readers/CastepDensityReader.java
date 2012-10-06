@@ -25,9 +25,9 @@ package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
 
-import javax.vecmath.Vector3f;
 
-import javax.util.StringXBuilder;
+import org.jmol.util.StringXBuilder;
+import org.jmol.util.Vector3f;
 
 class CastepDensityReader extends VolumeFileReader {
 

@@ -29,13 +29,13 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import javax.util.StringXBuilder;
-import javax.vecmath.Point3f;
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
+import org.jmol.util.Point3f;
+import org.jmol.util.StringXBuilder;
 
 /*
  * TLS output reader -- data only; no atoms

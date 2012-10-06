@@ -22,11 +22,11 @@
  */
 package org.jmol.bspt;
 
-import javax.util.StringXBuilder;
-import javax.vecmath.Point3f;
 
 import org.jmol.modelset.Atom;
 import org.jmol.util.Escape;
+import org.jmol.util.Point3f;
+import org.jmol.util.StringXBuilder;
 
 /**
  * A leaf of Point3f objects in the bsp tree

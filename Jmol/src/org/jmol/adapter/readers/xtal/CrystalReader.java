@@ -29,22 +29,22 @@ package org.jmol.adapter.readers.xtal;
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
+import org.jmol.util.BitSet;
 import org.jmol.util.Eigen;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.util.Matrix3f;
+import org.jmol.util.Point3f;
 import org.jmol.util.Quaternion;
+import org.jmol.util.StringXBuilder;
 import org.jmol.util.TextFormat;
+import org.jmol.util.Vector3f;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import javax.util.BitSet;
 import java.util.List;
 
-import javax.vecmath.Matrix3f;
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
 
-import javax.util.StringXBuilder;
 
 /**
  * 

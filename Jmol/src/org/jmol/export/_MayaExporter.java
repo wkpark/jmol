@@ -26,13 +26,14 @@
 package org.jmol.export;
 
 
-import javax.util.BitSet;
 import java.util.List;
 import java.util.Map;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Tuple3f;
-import javax.vecmath.Vector3f;
+
+import org.jmol.util.BitSet;
+import org.jmol.util.Point3f;
+import org.jmol.util.Tuple3f;
+import org.jmol.util.Vector3f;
 
 
 public class _MayaExporter extends __CartesianExporter {

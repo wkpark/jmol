@@ -25,15 +25,15 @@ package org.jmol.viewer;
 
 import org.jmol.script.Token;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
+import org.jmol.util.StringXBuilder;
 
 import org.jmol.api.JmolSelectionListener;
 import org.jmol.i18n.GT;
 import org.jmol.modelset.ModelSet;
 
-import javax.util.BitSet;
-import javax.util.StringXBuilder;
 
 import java.util.Hashtable;
 import java.util.Map;

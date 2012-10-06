@@ -25,14 +25,14 @@
 
 package org.jmol.shapesurface;
 
-import javax.util.BitSet;
-import javax.util.StringXBuilder;
-import javax.vecmath.Vector3f;
 
 import org.jmol.shape.Shape;
+import org.jmol.util.BitSet;
 import org.jmol.util.Colix;
 import org.jmol.util.Escape;
+import org.jmol.util.StringXBuilder;
 import org.jmol.util.TextFormat;
+import org.jmol.util.Vector3f;
 
 public class LcaoCartoon extends Isosurface {
 

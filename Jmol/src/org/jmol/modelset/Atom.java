@@ -33,23 +33,23 @@ import org.jmol.constant.EnumPalette;
 import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumVdw;
 import org.jmol.script.Token;
+import org.jmol.util.BitSet;
 import org.jmol.util.Colix;
 import org.jmol.util.ColorUtil;
 import org.jmol.util.Elements;
+import org.jmol.util.Point3f;
 import org.jmol.util.Quadric;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolNode;
 import org.jmol.util.Point3fi;
+import org.jmol.util.StringXBuilder;
+import org.jmol.util.Tuple3f;
+import org.jmol.util.Vector3f;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 
-import javax.util.BitSet;
 import java.util.List;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Tuple3f;
-import javax.vecmath.Vector3f;
-import javax.util.StringXBuilder;
 
 final public class Atom extends Point3fi implements JmolNode {
 

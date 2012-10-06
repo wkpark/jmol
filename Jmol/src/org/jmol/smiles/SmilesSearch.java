@@ -26,22 +26,22 @@ package org.jmol.smiles;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import javax.util.BitSet;
-import javax.util.StringXBuilder;
 
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
 
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.JmolNode;
 import org.jmol.util.Logger;
+import org.jmol.util.Point3f;
+import org.jmol.util.StringXBuilder;
+import org.jmol.util.Vector3f;
 
 /**
  *  -- was SmilesMolecule, 

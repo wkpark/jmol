@@ -25,11 +25,11 @@
 package org.jmol.minimize;
 
 import java.util.ArrayList;
-import javax.util.BitSet;
 import java.util.List;
 
 import org.jmol.minimize.forcefield.AtomType;
 import org.jmol.modelset.Atom;
+import org.jmol.util.BitSet;
 
 public class MinAtom {
 

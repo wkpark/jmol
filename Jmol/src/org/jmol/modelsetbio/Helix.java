@@ -23,11 +23,11 @@
  */
 package org.jmol.modelsetbio;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
 
 import org.jmol.constant.EnumStructure;
 import org.jmol.util.Measure;
+import org.jmol.util.Point3f;
+import org.jmol.util.Vector3f;
 
 public class Helix extends ProteinStructure {
 

@@ -26,6 +26,7 @@ package org.jmol.popup;
 import org.jmol.i18n.GT;
 import org.jmol.util.Elements;
 import org.jmol.util.Logger;
+import org.jmol.util.StringXBuilder;
 import org.jmol.viewer.Viewer;
 
 import java.awt.Component;
@@ -47,7 +48,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
-import javax.util.StringXBuilder;
 
 
 /**

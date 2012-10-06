@@ -3,10 +3,6 @@ package org.jmol.util;
 
 import java.awt.Image;
 
-import javax.vecmath.Matrix3f;
-import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
-import javax.vecmath.Vector3f;
 
 import org.jmol.api.ApiPlatform;
 import org.jmol.api.JmolGraphicsInterface;

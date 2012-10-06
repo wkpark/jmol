@@ -27,11 +27,6 @@ package org.jmol.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.vecmath.Matrix4f;
-import javax.vecmath.Point3f;
-import javax.vecmath.Point4f;
-import javax.vecmath.Tuple3f;
-import javax.vecmath.Vector3f;
 
 import org.jmol.viewer.JmolConstants;
 import org.jmol.modelset.Atom;

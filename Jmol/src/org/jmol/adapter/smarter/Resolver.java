@@ -32,13 +32,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import javax.util.StringXBuilder;
 
 import org.jmol.api.JmolAdapter;
 //import org.jmol.util.Escape;
 import org.jmol.util.LimitedLineReader;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
+import org.jmol.util.StringXBuilder;
 import org.jmol.util.TextFormat;
 //import org.jmol.util.ZipUtil;
 

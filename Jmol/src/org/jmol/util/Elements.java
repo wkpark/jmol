@@ -24,7 +24,6 @@
 
 package org.jmol.util;
 
-import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.Map;
 

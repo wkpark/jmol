@@ -28,9 +28,9 @@ package org.jmol.thread;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.util.StringXBuilder;
 
 import org.jmol.util.Logger;
+import org.jmol.util.StringXBuilder;
 import org.jmol.viewer.Viewer;
 
 public class TimeoutThread extends JmolThread {

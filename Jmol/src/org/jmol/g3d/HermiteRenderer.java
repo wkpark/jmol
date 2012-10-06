@@ -25,15 +25,15 @@
 package org.jmol.g3d;
 
 
-import javax.vecmath.Point3i;
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.jmol.api.JmolRendererInterface;
+import org.jmol.util.Point3f;
 import org.jmol.util.Point3fi;
+import org.jmol.util.Point3i;
+import org.jmol.util.Vector3f;
 
 
 /**

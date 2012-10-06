@@ -27,22 +27,22 @@ package org.jmol.symmetry;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.util.StringXBuilder;
-import javax.vecmath.Point3f;
-import javax.vecmath.Point4f;
-import javax.vecmath.Matrix4f;
-import javax.vecmath.Tuple3f;
-import javax.vecmath.Vector3f;
 
 import org.jmol.util.TextFormat;
 
 import org.jmol.api.SymmetryInterface;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.util.Matrix4f;
 import org.jmol.util.Measure;
 import org.jmol.util.Parser;
+import org.jmol.util.Point3f;
+import org.jmol.util.Point4f;
 import org.jmol.util.Quaternion;
+import org.jmol.util.StringXBuilder;
 import org.jmol.util.TriangleData;
+import org.jmol.util.Tuple3f;
+import org.jmol.util.Vector3f;
 import org.jmol.script.Token;
 
 /*

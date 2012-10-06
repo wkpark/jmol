@@ -32,22 +32,22 @@ import org.jmol.modelset.Model;
 import org.jmol.modelset.ModelSet;
 import org.jmol.util.Escape;
 
+import org.jmol.util.BitSet;
 import org.jmol.util.Logger;
 import org.jmol.util.OutputStringBuilder;
+import org.jmol.util.Point3f;
 import org.jmol.util.Quaternion;
+import org.jmol.util.StringXBuilder;
 import org.jmol.util.TextFormat;
+import org.jmol.util.Vector3f;
 import org.jmol.viewer.Viewer;
 import org.jmol.script.Token;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
 
 import java.util.ArrayList;
-import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import javax.util.StringXBuilder;
 
 public abstract class BioPolymer {
 

@@ -24,17 +24,17 @@
 
 package org.jmol.smiles;
 
-import javax.util.BitSet;
 
 import java.util.List;
 
-import javax.vecmath.Point3f;
 
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSet;
 import org.jmol.util.Elements;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolNode;
 import org.jmol.util.Logger;
+import org.jmol.util.Point3f;
 
 //import org.jmol.util.Logger;
 

@@ -27,11 +27,11 @@ import java.io.BufferedReader;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javax.vecmath.Point3f;
 
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.util.ColorUtil;
 import org.jmol.util.Logger;
+import org.jmol.util.Point3f;
 
 /* simple Neutral File Format reader 
  * 

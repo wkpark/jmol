@@ -25,11 +25,11 @@
 package org.jmol.renderspecial;
 
 import org.jmol.shapespecial.GeoSurface;
+import org.jmol.util.BitSet;
 import org.jmol.util.Colix;
 import org.jmol.util.Geodesic;
+import org.jmol.util.Point3i;
 
-import javax.util.BitSet;
-import javax.vecmath.Point3i;
 
 /*
  * A simple geodesic surface renderer that turns into just dots

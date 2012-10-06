@@ -26,18 +26,18 @@
 package org.jmol.export;
 
 
-import javax.util.BitSet;
-import javax.util.StringXBuilder;
 
 import java.util.List;
 import java.util.Map;
 
-import javax.vecmath.Matrix3f;
-import javax.vecmath.Point3f;
-import javax.vecmath.Tuple3f;
-import javax.vecmath.Vector3f;
 
+import org.jmol.util.BitSet;
 import org.jmol.util.GData;
+import org.jmol.util.Matrix3f;
+import org.jmol.util.Point3f;
+import org.jmol.util.StringXBuilder;
+import org.jmol.util.Tuple3f;
+import org.jmol.util.Vector3f;
 import org.jmol.viewer.Viewer;
 
 /*

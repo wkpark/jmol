@@ -25,7 +25,6 @@
 package org.jmol.util;
 
 
-import javax.util.BitSet;
 import java.util.List;
 
 

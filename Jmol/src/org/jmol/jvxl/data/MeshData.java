@@ -114,14 +114,14 @@
 package org.jmol.jvxl.data;
 
 import java.util.Arrays;
-import javax.util.BitSet;
 import java.util.Comparator;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
 
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSet;
 import org.jmol.util.MeshSurface;
+import org.jmol.util.Point3f;
+import org.jmol.util.Vector3f;
 
 public class MeshData extends MeshSurface {
   

@@ -23,17 +23,18 @@
  */
 package org.jmol.jvxl.readers;
 
-import javax.util.BitSet;
 import java.util.Date;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
-import javax.vecmath.Vector3f;
 
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.ContactPair;
 import org.jmol.util.Logger;
+import org.jmol.util.Point3f;
+import org.jmol.util.Point3i;
+import org.jmol.util.StringXBuilder;
+import org.jmol.util.Vector3f;
 
 import org.jmol.util.TextFormat;
 
@@ -44,7 +45,6 @@ import org.jmol.constant.EnumVdw;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.MeshData;
 
-import javax.util.StringXBuilder;
 
 abstract class AtomDataReader extends VolumeDataReader {
 

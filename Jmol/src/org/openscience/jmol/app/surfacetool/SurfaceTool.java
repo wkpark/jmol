@@ -28,10 +28,6 @@ package org.openscience.jmol.app.surfacetool;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.util.StringXBuilder;
-import javax.vecmath.Point3f;
-import javax.vecmath.Point4f;
-import javax.vecmath.Vector3f;
 import javax.swing.JOptionPane;
 
 import org.jmol.api.JmolViewer;
@@ -43,6 +39,10 @@ import org.jmol.shape.MeshCollection;
 import org.jmol.shape.Shape;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.Escape;
+import org.jmol.util.Point3f;
+import org.jmol.util.Point4f;
+import org.jmol.util.StringXBuilder;
+import org.jmol.util.Vector3f;
 import org.jmol.viewer.JmolConstants;
 
 /**

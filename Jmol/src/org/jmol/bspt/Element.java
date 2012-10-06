@@ -22,9 +22,9 @@
  */
 package org.jmol.bspt;
 
-import javax.vecmath.Point3f;
 
-import javax.util.StringXBuilder;
+import org.jmol.util.Point3f;
+import org.jmol.util.StringXBuilder;
 
 /**
  * the internal tree is made up of elements ... either Node or Leaf

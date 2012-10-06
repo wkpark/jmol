@@ -25,14 +25,14 @@
 
 package org.jmol.thread;
 
-import javax.util.BitSet;
 import java.util.Date;
 import java.util.List;
 
-import javax.vecmath.Point3f;
 
 import org.jmol.script.Token;
+import org.jmol.util.BitSet;
 import org.jmol.util.Logger;
+import org.jmol.util.Point3f;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.TransformManager;
 import org.jmol.viewer.Viewer;

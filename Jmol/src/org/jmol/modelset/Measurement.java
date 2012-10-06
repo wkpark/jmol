@@ -23,9 +23,13 @@
  */
 package org.jmol.modelset;
 
+import org.jmol.util.AxisAngle4f;
 import org.jmol.util.Escape;
+import org.jmol.util.Point3f;
 import org.jmol.util.Point3fi;
 import org.jmol.util.Measure;
+import org.jmol.util.StringXBuilder;
+import org.jmol.util.Vector3f;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.constant.EnumVdw;
@@ -34,10 +38,6 @@ import org.jmol.modelset.TickInfo;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 
-import javax.util.StringXBuilder;
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
-import javax.vecmath.AxisAngle4f;
 
 import java.util.ArrayList;
 import java.util.List;

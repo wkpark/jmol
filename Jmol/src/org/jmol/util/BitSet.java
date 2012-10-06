@@ -23,7 +23,8 @@
  * have any questions.
  */
 
-package javax.util;
+package org.jmol.util;
+
 
 /**
  * 

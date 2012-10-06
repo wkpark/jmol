@@ -50,10 +50,10 @@ import org.jmol.adapter.smarter.Atom;
 import org.jmol.util.Eigen;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.util.Point3f;
 import org.jmol.util.TextFormat;
+import org.jmol.util.Vector3f;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
 
 /**
  * CASTEP (http://www.castep.org) .cell file format relevant section of .cell

@@ -1,8 +1,8 @@
 package org.jmol.api;
 
-import javax.vecmath.Point3f;
 
 import org.jmol.util.JmolFont;
+import org.jmol.util.Point3f;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.Viewer;
 

@@ -26,14 +26,12 @@
 package org.jmol.util;
 
 import java.util.ArrayList;
-import javax.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.jmol.script.Token;
 
-import javax.util.StringXBuilder;
 
 public class XmlUtil {
 

@@ -27,15 +27,9 @@ package org.jmol.modelset;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import javax.util.BitSet;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.vecmath.AxisAngle4f;
-import javax.vecmath.Matrix3f;
-import javax.vecmath.Point3f;
-import javax.vecmath.Point4f;
-import javax.vecmath.Vector3f;
 
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.RadiusData;
@@ -46,15 +40,22 @@ import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumVdw;
 import org.jmol.geodesic.EnvelopeCalculation;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.AxisAngle4f;
+import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.GData;
+import org.jmol.util.Matrix3f;
+import org.jmol.util.Point3f;
+import org.jmol.util.Point4f;
 import org.jmol.util.Quadric;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.Rectangle;
+import org.jmol.util.StringXBuilder;
+import org.jmol.util.Vector3f;
 
 import org.jmol.util.Measure;
 import org.jmol.util.Quaternion;
@@ -62,7 +63,6 @@ import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.script.Token;
 import org.jmol.viewer.Viewer;
-import javax.util.StringXBuilder;
 
 abstract public class AtomCollection {
   

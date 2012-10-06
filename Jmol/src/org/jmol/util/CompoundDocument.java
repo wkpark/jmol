@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.util.StringXBuilder;
 
 /* a simple compound document reader. 
  * See http://sc.openoffice.org/compdocfileformat.pdf

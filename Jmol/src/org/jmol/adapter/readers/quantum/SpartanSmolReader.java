@@ -27,9 +27,9 @@ package org.jmol.adapter.readers.quantum;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javax.util.StringXBuilder;
 
 import org.jmol.util.Logger;
+import org.jmol.util.StringXBuilder;
 
 /*
  * Spartan SMOL and .spartan compound document reader and .spartan06 zip files

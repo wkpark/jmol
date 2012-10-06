@@ -14,7 +14,8 @@
  makes no representations about the suitability of this software for any
  purpose.  It is provided "AS IS" with NO WARRANTY.
  */
-package javax.vecmath;
+package org.jmol.util;
+
 
 /**
  * A 3-element vector that is represented by single precision floating point

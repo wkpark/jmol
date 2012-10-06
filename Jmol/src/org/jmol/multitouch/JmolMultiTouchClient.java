@@ -26,7 +26,7 @@ package org.jmol.multitouch;
 
 import java.util.List;
 
-import javax.vecmath.Point3f;
+import org.jmol.util.Point3f;
 
 import com.sparshui.GestureType;
 

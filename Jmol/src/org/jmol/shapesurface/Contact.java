@@ -26,13 +26,10 @@
 package org.jmol.shapesurface;
 
 import java.util.ArrayList;
-import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
 
 import org.jmol.api.AtomIndexIterator;
 import org.jmol.atomdata.AtomData;
@@ -45,6 +42,7 @@ import org.jmol.jvxl.data.VolumeData;
 import org.jmol.jvxl.readers.Parameters;
 import org.jmol.modelset.Atom;
 import org.jmol.script.Token;
+import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.ColorUtil;
@@ -53,6 +51,8 @@ import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.MeshSurface;
+import org.jmol.util.Point3f;
+import org.jmol.util.Vector3f;
 
 public class Contact extends Isosurface {
 

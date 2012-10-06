@@ -29,9 +29,9 @@ import org.jmol.modelsetbio.ProteinStructure;
 import org.jmol.shapebio.BioShape;
 import org.jmol.util.Colix;
 import org.jmol.util.GData;
+import org.jmol.util.Point3f;
+import org.jmol.util.Point3i;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
 
 public class CartoonRenderer extends RocketsRenderer {
 

@@ -24,7 +24,6 @@
 
 package org.jmol.util;
 
-import javax.vecmath.Vector3f;
 import java.util.Hashtable;
 import java.util.Map;
 

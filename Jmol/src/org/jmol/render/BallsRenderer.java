@@ -25,9 +25,9 @@
 
 package org.jmol.render;
 
-import javax.util.BitSet;
 
 import org.jmol.modelset.Atom;
+import org.jmol.util.BitSet;
 
 public class BallsRenderer extends ShapeRenderer {
 

@@ -31,6 +31,7 @@ import org.jmol.util.CompoundDocument;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
+import org.jmol.util.StringXBuilder;
 import org.jmol.util.TextFormat;
 import org.jmol.util.ZipUtil;
 import org.jmol.viewer.Viewer.ACCESS;
@@ -69,7 +70,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import javax.util.StringXBuilder;
 
 public class FileManager {
 

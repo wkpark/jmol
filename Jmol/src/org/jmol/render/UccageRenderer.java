@@ -23,12 +23,12 @@
  */
 package org.jmol.render;
 
-import javax.vecmath.Point3f;
 import java.text.NumberFormat;
 
 import org.jmol.api.SymmetryInterface;
 import org.jmol.shape.Uccage;
 import org.jmol.util.BoxInfo;
+import org.jmol.util.Point3f;
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.StateManager;

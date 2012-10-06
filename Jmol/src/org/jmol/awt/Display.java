@@ -10,9 +10,9 @@ import java.awt.image.MemoryImageSource;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-import javax.vecmath.Point3f;
 
 import org.jmol.api.JmolViewer;
+import org.jmol.util.Point3f;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 

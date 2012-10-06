@@ -24,15 +24,15 @@
 package org.jmol.viewer;
 
 import org.jmol.thread.AnimationThread;
+import org.jmol.util.BitSet;
 import org.jmol.util.Escape;
+import org.jmol.util.StringXBuilder;
 
 import org.jmol.constant.EnumAnimationMode;
 import org.jmol.modelset.ModelSet;
 
 import java.util.Hashtable;
-import javax.util.BitSet;
 import java.util.Map;
-import javax.util.StringXBuilder;
 
 public class AnimationManager {
 

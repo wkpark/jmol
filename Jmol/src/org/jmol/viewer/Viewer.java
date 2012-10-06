@@ -75,7 +75,9 @@ import org.jmol.constant.EnumFileStatus;
 import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumStereoMode;
 import org.jmol.constant.EnumVdw;
+import org.jmol.util.AxisAngle4f;
 import org.jmol.util.Base64;
+import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.CifDataReader;
@@ -90,10 +92,18 @@ import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
+import org.jmol.util.Matrix3f;
+import org.jmol.util.Matrix4f;
 import org.jmol.util.OutputStringBuilder;
 import org.jmol.util.Parser;
+import org.jmol.util.Point3f;
+import org.jmol.util.Point3i;
+import org.jmol.util.Point4f;
 import org.jmol.util.Rectangle;
+import org.jmol.util.StringXBuilder;
 import org.jmol.util.SurfaceFileTyper;
+import org.jmol.util.Tuple3f;
+import org.jmol.util.Vector3f;
 
 import org.jmol.util.Measure;
 import org.jmol.util.Quaternion;
@@ -105,21 +115,12 @@ import org.jmol.viewer.binding.Binding;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
-import javax.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Map.Entry;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Tuple3f;
-import javax.vecmath.Vector3f;
-import javax.vecmath.Point4f;
-import javax.vecmath.Point3i;
-import javax.vecmath.Matrix4f;
-import javax.vecmath.Matrix3f;
-import javax.vecmath.AxisAngle4f;
 
 import java.net.URL;
 import java.io.BufferedInputStream;
@@ -133,7 +134,6 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
 
-import javax.util.StringXBuilder;
 
 /*
  * 

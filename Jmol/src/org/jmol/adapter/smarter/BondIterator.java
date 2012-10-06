@@ -25,7 +25,7 @@
 package org.jmol.adapter.smarter;
 
 import org.jmol.api.JmolAdapterBondIterator;
-import javax.util.BitSet;
+import org.jmol.util.BitSet;
 
 class BondIterator extends JmolAdapterBondIterator {
 	private BitSet bsAtoms;

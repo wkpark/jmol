@@ -33,7 +33,10 @@ import org.jmol.api.SymmetryInterface;
 import org.jmol.constant.EnumStructure;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.util.Matrix4f;
+import org.jmol.util.Point3f;
 import org.jmol.util.Quadric;
+import org.jmol.util.StringXBuilder;
 import org.jmol.util.TextFormat;
 
 import java.util.ArrayList;
@@ -41,9 +44,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import javax.util.StringXBuilder;
-import javax.vecmath.Matrix4f;
-import javax.vecmath.Point3f;
 
 /**
  * PDB file reader.

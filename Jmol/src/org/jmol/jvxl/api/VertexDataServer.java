@@ -1,9 +1,10 @@
 package org.jmol.jvxl.api;
 
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
-import javax.vecmath.Vector3f;
+
+import org.jmol.util.Point3f;
+import org.jmol.util.Point3i;
+import org.jmol.util.Vector3f;
 
 public interface VertexDataServer {
   

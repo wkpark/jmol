@@ -31,7 +31,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import javax.vecmath.Point3f;
 
 final public class ArrayUtil {
 

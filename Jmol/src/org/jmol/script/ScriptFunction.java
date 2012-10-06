@@ -28,7 +28,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import javax.util.StringXBuilder;
+import org.jmol.util.StringXBuilder;
 
 public class ScriptFunction {
 

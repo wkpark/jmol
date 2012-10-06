@@ -28,12 +28,10 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import javax.vecmath.Point3f;
 
 import org.jmol.viewer.JmolConstants;
 import org.jmol.constant.EnumPalette;
 
-import javax.util.StringXBuilder;
 
 /*
  * 

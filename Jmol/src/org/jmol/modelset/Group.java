@@ -25,21 +25,21 @@ package org.jmol.modelset;
 
 
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;
+import org.jmol.util.Point3f;
 import org.jmol.util.Quaternion;
 import org.jmol.util.J2SRequireImport;
+import org.jmol.util.Vector3f;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.constant.EnumStructure;
 import org.jmol.script.Token;
 
 import java.util.Hashtable;
-import javax.util.BitSet;
 import java.util.List;
 import java.util.Map;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
 
 @J2SRequireImport({java.lang.Short.class,org.jmol.viewer.JmolConstants.class})
 public class Group {

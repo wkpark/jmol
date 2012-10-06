@@ -26,7 +26,7 @@ package org.jmol.minimize;
 
 import java.util.Random;
 
-import javax.vecmath.Vector3d;
+import org.jmol.util.Vector3d;
 
 public class Util {
 

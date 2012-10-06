@@ -25,13 +25,8 @@ package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
 import java.io.OutputStream;
-import javax.util.BitSet;
 import java.util.List;
 
-import javax.vecmath.Matrix3f;
-import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
-import javax.vecmath.Vector3f;
 
 import org.jmol.api.QuantumPlaneCalculationInterface;
 import org.jmol.jvxl.api.MeshDataServer;
@@ -42,13 +37,18 @@ import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.JvxlData;
 import org.jmol.jvxl.data.MeshData;
 import org.jmol.jvxl.data.VolumeData;
+import org.jmol.util.BitSet;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.Colix;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.util.Matrix3f;
+import org.jmol.util.Point3f;
+import org.jmol.util.Point3i;
+import org.jmol.util.StringXBuilder;
+import org.jmol.util.Vector3f;
 
-import javax.util.StringXBuilder;
 
 public abstract class SurfaceReader implements VertexDataServer {
 

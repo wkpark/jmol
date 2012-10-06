@@ -23,8 +23,6 @@
  */
 
 package org.jmol.util;
-import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
 
 /**
  * the Point3fi class allows storage of critical information involving

@@ -27,8 +27,6 @@ package org.jmol.util;
 
 import java.io.BufferedReader;
 
-import javax.util.StringXBuilder;
-import javax.vecmath.Point3f;
 
 public class XmlReader {
   

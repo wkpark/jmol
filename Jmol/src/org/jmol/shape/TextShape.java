@@ -24,9 +24,9 @@
 
 package org.jmol.shape;
 
-import javax.util.BitSet;
 import java.util.Iterator;
 
+import org.jmol.util.BitSet;
 import org.jmol.util.JmolFont;
 
 public abstract class TextShape extends Object2dShape {

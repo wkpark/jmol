@@ -25,17 +25,17 @@ package org.jmol.viewer;
 
 import org.jmol.script.ScriptContext;
 import org.jmol.script.ScriptEvaluator;
+import org.jmol.util.BitSet;
 import org.jmol.util.Logger;
+import org.jmol.util.Point3f;
 import org.jmol.util.TextFormat;
 
 import java.util.ArrayList;
-import javax.util.BitSet;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import javax.vecmath.Point3f;
 
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAppConsoleInterface;

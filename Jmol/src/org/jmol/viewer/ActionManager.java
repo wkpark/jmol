@@ -24,13 +24,11 @@
 package org.jmol.viewer;
 
 import java.util.ArrayList;
-import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.vecmath.Point3f;
 
 import org.jmol.api.Event;
 import org.jmol.i18n.GT;
@@ -40,10 +38,12 @@ import org.jmol.modelset.MeasurementPending;
 import org.jmol.script.ScriptEvaluator;
 import org.jmol.script.Token;
 import org.jmol.thread.HoverWatcherThread;
+import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Colix;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.util.Point3f;
 import org.jmol.util.Point3fi;
 import org.jmol.util.Rectangle;
 import org.jmol.util.TextFormat;

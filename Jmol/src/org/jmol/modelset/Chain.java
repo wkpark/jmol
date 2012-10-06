@@ -23,7 +23,7 @@
  */
 package org.jmol.modelset;
 
-import javax.util.BitSet;
+import org.jmol.util.BitSet;
 
 public final class Chain {
 

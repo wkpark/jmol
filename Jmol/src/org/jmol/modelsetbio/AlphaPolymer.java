@@ -24,22 +24,22 @@
 package org.jmol.modelsetbio;
 
 import java.util.ArrayList;
-import javax.util.BitSet;
 import java.util.List;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
 
 import org.jmol.constant.EnumStructure;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.ModelSet;
 
+import org.jmol.util.BitSet;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.OutputStringBuilder;
+import org.jmol.util.Point3f;
+import org.jmol.util.StringXBuilder;
+import org.jmol.util.Vector3f;
 import org.jmol.viewer.Viewer;
-import javax.util.StringXBuilder;
 
 public class AlphaPolymer extends BioPolymer {
 

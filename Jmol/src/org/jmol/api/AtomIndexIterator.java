@@ -1,11 +1,11 @@
 package org.jmol.api;
 
-import javax.util.BitSet;
 
-import javax.vecmath.Point3f;
 
 import org.jmol.atomdata.RadiusData;
 import org.jmol.modelset.ModelCollection;
+import org.jmol.util.BitSet;
+import org.jmol.util.Point3f;
 
 
 /**

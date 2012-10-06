@@ -31,12 +31,12 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import javax.util.BitSet;
-import javax.vecmath.Point3f;
-import javax.vecmath.Tuple3f;
-import javax.vecmath.Vector3f;
 
+import org.jmol.util.BitSet;
 import org.jmol.util.J2SRequireImport;
+import org.jmol.util.Point3f;
+import org.jmol.util.Tuple3f;
+import org.jmol.util.Vector3f;
 
 @J2SRequireImport( { org.jmol.exportjs.Exporter.class,
     org.jmol.exportjs.CartesianExporter.class,

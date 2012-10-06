@@ -52,11 +52,11 @@ package org.jmol.symmetry;
  *
  */
 
-import javax.util.StringXBuilder;
-import javax.vecmath.Point3i;
-import javax.vecmath.Matrix4f;
 
 import org.jmol.util.Logger;
+import org.jmol.util.Matrix4f;
+import org.jmol.util.Point3i;
+import org.jmol.util.StringXBuilder;
 
 class HallInfo {
   

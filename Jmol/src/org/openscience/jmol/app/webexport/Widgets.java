@@ -1,9 +1,9 @@
 package org.openscience.jmol.app.webexport;
 
-import javax.vecmath.Point3f;
 
 import org.jmol.i18n.GT;
 import org.jmol.util.ColorUtil;
+import org.jmol.util.Point3f;
 
 class Widgets { 
   

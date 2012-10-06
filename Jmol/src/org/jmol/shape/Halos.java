@@ -25,8 +25,8 @@
 
 package org.jmol.shape;
 
-import javax.util.BitSet;
 
+import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Colix;
 import org.jmol.util.Escape;

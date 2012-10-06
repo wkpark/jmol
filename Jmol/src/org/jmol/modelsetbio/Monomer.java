@@ -30,17 +30,17 @@ import org.jmol.modelset.Bond;
 import org.jmol.modelset.Chain;
 import org.jmol.modelset.Group;
 
+import org.jmol.util.BitSet;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
+import org.jmol.util.Point3f;
 import org.jmol.util.Quaternion;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.script.Token;
 
-import javax.util.BitSet;
 import java.util.List;
 import java.util.Map;
 
-import javax.vecmath.Point3f;
 
 public abstract class Monomer extends Group {
 

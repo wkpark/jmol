@@ -25,7 +25,6 @@
 
 package org.jmol.shape;
 
-import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -34,6 +33,7 @@ import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.constant.EnumPalette;
 import org.jmol.modelset.Atom;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Colix;
 import org.jmol.viewer.JmolConstants;

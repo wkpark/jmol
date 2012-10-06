@@ -34,16 +34,16 @@ import org.jmol.constant.EnumStructure;
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.ArrayList;
-import javax.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import javax.vecmath.Matrix4f;
-import javax.vecmath.Point3f;
 
+import org.jmol.util.BitSet;
 import org.jmol.util.CifDataReader;
 import org.jmol.util.Logger;
+import org.jmol.util.Matrix4f;
+import org.jmol.util.Point3f;
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.TextFormat;
 

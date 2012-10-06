@@ -1,11 +1,11 @@
 package org.jmol.atomdata;
 
 import java.io.BufferedInputStream;
-import javax.util.BitSet;
 
-import javax.vecmath.Point3f;
 
 import org.jmol.api.AtomIndexIterator;
+import org.jmol.util.BitSet;
+import org.jmol.util.Point3f;
 
 
 

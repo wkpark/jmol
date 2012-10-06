@@ -25,14 +25,14 @@
 
 package org.jmol.export;
 
-import javax.vecmath.Matrix3f;
-import javax.vecmath.Matrix4f;
-import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
-import javax.vecmath.Vector3f;
 
 import org.jmol.modelset.Atom;
 import org.jmol.util.GData;
+import org.jmol.util.Matrix3f;
+import org.jmol.util.Matrix4f;
+import org.jmol.util.Point3f;
+import org.jmol.util.Point3i;
+import org.jmol.util.Vector3f;
 
 /*
  * for PovRay and related ray tracers that use screen coordinates

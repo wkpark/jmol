@@ -26,12 +26,12 @@ package org.jmol.quantum;
 import org.jmol.api.QuantumCalculationInterface;
 import org.jmol.api.VolumeDataInterface;
 import org.jmol.constant.EnumQuantumShell;
+import org.jmol.util.BitSet;
 import org.jmol.util.Logger;
+import org.jmol.util.Point3f;
 
-import javax.vecmath.Point3f;
 
 import java.util.List;
-import javax.util.BitSet;
 
 /*
  * See J. Computational Chemistry, vol 7, p 359, 1986.

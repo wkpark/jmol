@@ -57,7 +57,6 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeSelectionModel;
-import javax.vecmath.Point3f;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -67,9 +66,10 @@ import java.util.Enumeration;
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
 import org.jmol.util.Logger;
+import org.jmol.util.Point3f;
+import org.jmol.util.StringXBuilder;
 import org.openscience.jmol.app.jmolpanel.JmolPanel;
 
-import javax.util.StringXBuilder;
 
 /**
  * A JFrame that allows for choosing an Atomset to view.

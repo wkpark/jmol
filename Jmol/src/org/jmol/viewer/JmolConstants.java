@@ -29,6 +29,8 @@ import org.jmol.util.Elements;
 import org.jmol.util.J2SRequireImport;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
+import org.jmol.util.StringXBuilder;
+import org.jmol.util.Vector3f;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
@@ -36,10 +38,8 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.util.StringXBuilder;
-import javax.vecmath.Vector3f;
 
-@J2SRequireImport({java.util.Properties.class,java.io.BufferedInputStream.class,javax.util.StringXBuilder.class})
+@J2SRequireImport({java.util.Properties.class,java.io.BufferedInputStream.class,org.jmol.util.StringXBuilder.class})
 public class JmolConstants {
 
   // axes mode constants --> org.jmol.constant.EnumAxesMode

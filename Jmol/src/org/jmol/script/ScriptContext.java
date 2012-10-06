@@ -27,9 +27,9 @@ package org.jmol.script;
 
 import java.util.Map;
 
-import javax.util.StringXBuilder;
 
 import org.jmol.thread.ScriptParallelProcessor;
+import org.jmol.util.StringXBuilder;
 
 public class ScriptContext {
   /**

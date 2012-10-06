@@ -25,11 +25,11 @@
 
 package org.jmol.thread;
 
-import javax.vecmath.AxisAngle4f;
-import javax.vecmath.Matrix3f;
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
 
+import org.jmol.util.AxisAngle4f;
+import org.jmol.util.Matrix3f;
+import org.jmol.util.Point3f;
+import org.jmol.util.Vector3f;
 import org.jmol.viewer.TransformManager;
 import org.jmol.viewer.Viewer;
 

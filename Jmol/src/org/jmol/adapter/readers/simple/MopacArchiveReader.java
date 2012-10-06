@@ -24,10 +24,10 @@
 
 package org.jmol.adapter.readers.simple;
 
-import javax.vecmath.Point3f;
 
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.api.JmolAdapter;
+import org.jmol.util.Point3f;
 
 /**
  * 

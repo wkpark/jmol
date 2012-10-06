@@ -29,12 +29,12 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import javax.util.BitSet;
 
 import javax.swing.filechooser.FileSystemView;
 
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
+import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 
 class JmolInstance {

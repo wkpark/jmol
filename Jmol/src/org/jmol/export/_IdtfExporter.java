@@ -30,24 +30,24 @@
 package org.jmol.export;
 
 import java.util.ArrayList;
-import javax.util.BitSet;
-import javax.util.StringXBuilder;
 
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import javax.vecmath.AxisAngle4f;
-import javax.vecmath.Matrix4f;
-import javax.vecmath.Point3f;
-import javax.vecmath.Tuple3f;
-import javax.vecmath.Vector3f;
 
+import org.jmol.util.AxisAngle4f;
+import org.jmol.util.BitSet;
 import org.jmol.util.Colix;
 import org.jmol.util.GData;
 import org.jmol.util.Geodesic;
+import org.jmol.util.Matrix4f;
 import org.jmol.util.MeshSurface;
+import org.jmol.util.Point3f;
 import org.jmol.util.Quaternion;
+import org.jmol.util.StringXBuilder;
+import org.jmol.util.Tuple3f;
+import org.jmol.util.Vector3f;
 import org.jmol.viewer.Viewer;
 
 public class _IdtfExporter extends __CartesianExporter {

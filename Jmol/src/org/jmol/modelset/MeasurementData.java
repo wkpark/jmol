@@ -24,11 +24,11 @@
 package org.jmol.modelset;
 
 import java.util.ArrayList;
-import javax.util.BitSet;
 import java.util.List;
 
 import org.jmol.api.JmolMeasurementClient;
 import org.jmol.atomdata.RadiusData;
+import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Point3fi;
 import org.jmol.viewer.Viewer;

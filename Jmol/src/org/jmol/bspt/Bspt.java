@@ -22,11 +22,11 @@
  */
 package org.jmol.bspt;
 
-import javax.vecmath.Point3f;
 
 import org.jmol.util.Logger;
+import org.jmol.util.Point3f;
+import org.jmol.util.StringXBuilder;
 
-import javax.util.StringXBuilder;
 
 //import org.jmol.util.Logger;
 

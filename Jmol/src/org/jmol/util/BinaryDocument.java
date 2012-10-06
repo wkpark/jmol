@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.jmol.viewer.Viewer;
-import javax.util.StringXBuilder;
 
 
 //import java.io.RandomAccessFile;

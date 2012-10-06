@@ -24,7 +24,6 @@
 
 package org.jmol.util;
 
-import javax.util.StringXBuilder;
 
 import org.jmol.constant.EnumPalette;
 

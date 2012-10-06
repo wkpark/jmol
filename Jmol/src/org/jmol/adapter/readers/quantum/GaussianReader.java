@@ -33,7 +33,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import javax.vecmath.Vector3f;
 
 import org.jmol.util.TextFormat;
 
@@ -42,6 +41,7 @@ import org.jmol.util.ArrayUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
+import org.jmol.util.Vector3f;
 
 /**
  * Reader for Gaussian 94/98/03/09 output files.

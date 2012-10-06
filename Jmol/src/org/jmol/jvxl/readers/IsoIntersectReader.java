@@ -24,9 +24,10 @@
 
 package org.jmol.jvxl.readers;
 
-import javax.util.BitSet;
 
-import javax.vecmath.Point3f;
+
+import org.jmol.util.BitSet;
+import org.jmol.util.Point3f;
 
 class IsoIntersectReader extends AtomDataReader {
 

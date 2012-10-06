@@ -25,9 +25,9 @@ package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
 
-import javax.util.StringXBuilder;
 
 import org.jmol.util.Logger;
+import org.jmol.util.StringXBuilder;
 import org.jmol.viewer.Viewer;
 
 class XplorReader extends MapFileReader {

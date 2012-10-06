@@ -29,26 +29,26 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolViewer;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.util.BinaryDocument;
+import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;
+import org.jmol.util.Matrix3f;
 import org.jmol.util.Parser;
+import org.jmol.util.Point3f;
 import org.jmol.util.Quaternion;
+import org.jmol.util.StringXBuilder;
+import org.jmol.util.Vector3f;
 
 import java.io.BufferedReader;
 import java.io.OutputStream;
 
-import javax.util.BitSet;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
 
-import javax.vecmath.Matrix3f;
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
 
 import org.jmol.util.TextFormat;
 
-import javax.util.StringXBuilder;
 
 /*
  * Notes 9/2006 Bob Hanson

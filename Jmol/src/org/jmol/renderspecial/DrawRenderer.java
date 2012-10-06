@@ -23,24 +23,24 @@
  */
 package org.jmol.renderspecial;
 
-import javax.util.BitSet;
 import java.util.List;
 
-import javax.vecmath.AxisAngle4f;
-import javax.vecmath.Matrix3f;
-import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
-import javax.vecmath.Vector3f;
 
 import org.jmol.render.MeshRenderer;
 import org.jmol.shape.Mesh;
 import org.jmol.shapespecial.Draw;
 import org.jmol.shapespecial.DrawMesh;
 import org.jmol.shapespecial.Draw.EnumDrawType;
+import org.jmol.util.AxisAngle4f;
+import org.jmol.util.BitSet;
 import org.jmol.util.Colix;
 import org.jmol.util.GData;
 import org.jmol.util.Hermite;
+import org.jmol.util.Matrix3f;
 import org.jmol.util.Measure;
+import org.jmol.util.Point3f;
+import org.jmol.util.Point3i;
+import org.jmol.util.Vector3f;
 import org.jmol.viewer.ActionManager;
 
 public class DrawRenderer extends MeshRenderer {

@@ -97,17 +97,26 @@ import org.jmol.shape.MeshCollection;
 import org.jmol.shape.Shape;
 import org.jmol.util.Escape;
 
+import org.jmol.util.AxisAngle4f;
 import org.jmol.util.BinaryDocument;
+import org.jmol.util.BitSet;
 import org.jmol.util.Colix;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.ColorUtil;
 import org.jmol.util.Logger;
+import org.jmol.util.Matrix3f;
+import org.jmol.util.Matrix4f;
 import org.jmol.util.Measure;
 import org.jmol.util.MeshSurface;
 import org.jmol.util.Parser;
+import org.jmol.util.Point3f;
+import org.jmol.util.Point3i;
+import org.jmol.util.Point4f;
 import org.jmol.util.Quaternion;
+import org.jmol.util.StringXBuilder;
 import org.jmol.util.TextFormat;
+import org.jmol.util.Vector3f;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.script.Token;
@@ -120,20 +129,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import javax.util.BitSet;
-import javax.util.StringXBuilder;
 
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import javax.vecmath.AxisAngle4f;
-import javax.vecmath.Matrix3f;
-import javax.vecmath.Matrix4f;
-import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
-import javax.vecmath.Point4f;
-import javax.vecmath.Vector3f;
 
 import org.jmol.jvxl.api.MeshDataServer;
 import org.jmol.jvxl.data.JvxlCoder;

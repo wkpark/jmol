@@ -27,6 +27,7 @@ package org.jmol.adapter.readers.quantum;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
+import org.jmol.util.StringXBuilder;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
@@ -34,7 +35,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javax.util.StringXBuilder;
 
 /**
  * NBO file nn reader will pull in other files as necessary

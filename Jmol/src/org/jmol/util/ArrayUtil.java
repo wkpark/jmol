@@ -121,7 +121,7 @@ final public class ArrayUtil {
    * 
    * @param array
    * @param newLength
-   * @return
+   * @return array
    */
   public static Object arrayCopyObject(Object array, int newLength) {
     //System.out.println("ArrayUtil.copy " + newLength + " " + array + "  ");

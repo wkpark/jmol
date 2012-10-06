@@ -272,7 +272,7 @@ public class Geodesic {
     int oldEdgesCount = oldVertexCount + oldFaceCount - 2;
     int newVertexCount = oldVertexCount + oldEdgesCount;
     int newFaceCount = 4 * oldFaceCount;
-    vertexVectors = (Vector3f[]) ArrayUtil.arrayCopyOpt(vertexVectors, newVertexCount);
+    vertexVectors = (Vector3f[]) ArrayUtil.arrayCopyObject(vertexVectors, newVertexCount);
 
     short[] newFacesVertexes = new short[3 * newFaceCount];
     faceVertexesArrays[level + 1] = newFacesVertexes;

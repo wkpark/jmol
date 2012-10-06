@@ -86,7 +86,7 @@ public final class BioModel extends Model{
   @Override
   public void freeze() {
     super.freeze();
-    bioPolymers = (BioPolymer[])ArrayUtil.arrayCopyOpt(bioPolymers, bioPolymerCount);
+    bioPolymers = (BioPolymer[])ArrayUtil.arrayCopyObject(bioPolymers, bioPolymerCount);
   }
   
   @Override
@@ -228,7 +228,7 @@ public final class BioModel extends Model{
   
   @Override
   public void setStructureList(Map<EnumStructure, float[]> structureList) {
-    bioPolymers = (BioPolymer[])ArrayUtil.arrayCopyOpt(bioPolymers, bioPolymerCount);
+    bioPolymers = (BioPolymer[])ArrayUtil.arrayCopyObject(bioPolymers, bioPolymerCount);
     for (int i = bioPolymerCount; --i >= 0; )
       bioPolymers[i].setStructureList(structureList);
   }

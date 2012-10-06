@@ -282,7 +282,7 @@ public class JmolMolecule {
   
   private static JmolMolecule[] allocateArray(JmolMolecule[] molecules, int len) {
     return (len == molecules.length ? molecules : (JmolMolecule[]) ArrayUtil
-        .arrayCopyOpt(molecules, len));
+        .arrayCopyObject(molecules, len));
   }
   
 

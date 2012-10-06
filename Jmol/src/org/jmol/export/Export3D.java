@@ -77,10 +77,8 @@ final public class Export3D implements JmolRendererInterface {
                                     Object output) {
     exportName = type;
     try {
-      String name = (type.equals("JS") ? "org.jmol.exportjs._JSExporter" : "org.jmol.export._" + type + "Exporter");
+      String name = "org.jmol.export._" + type + "Exporter";
       Class<?> exporterClass = Class.forName(name);
-      // Class exporterClass =
-      // Class.forName("org.jmol.export.NewPovrayExporter");
       exporter = (___Exporter) exporterClass.newInstance();
     } catch (Exception e) {
       return null;

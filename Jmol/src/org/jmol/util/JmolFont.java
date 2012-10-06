@@ -96,7 +96,7 @@ final public class JmolFont {
     int fontIndexNext = fontkeyCount++;
     if (fontIndexNext == fontkeys.length)
       fontkeys = ArrayUtil.arrayCopyI(fontkeys, fontIndexNext + FONT_ALLOCATION_UNIT);
-      font3ds = (JmolFont[]) ArrayUtil.arrayCopyOpt(font3ds, fontIndexNext + FONT_ALLOCATION_UNIT);
+      font3ds = (JmolFont[]) ArrayUtil.arrayCopyObject(font3ds, fontIndexNext + FONT_ALLOCATION_UNIT);
     JmolFont font3d = new JmolFont(apiPlatform, (byte) fontIndexNext, fontface, fontstyle,
         fontsize, fontsizeNominal, graphicsForMetrics);
     // you must set the font3d before setting the fontkey in order

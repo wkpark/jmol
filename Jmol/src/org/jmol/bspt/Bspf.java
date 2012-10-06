@@ -77,7 +77,7 @@ public final class Bspf {
   
   public void addTuple(int bsptIndex, Point3f tuple) {
     if (bsptIndex >= bspts.length) {
-      bspts = (Bspt[]) ArrayUtil.arrayCopyOpt(bspts, bsptIndex + 1);
+      bspts = (Bspt[]) ArrayUtil.arrayCopyObject(bspts, bsptIndex + 1);
       bsptsValid = ArrayUtil.arrayCopyBool(bsptsValid, bsptIndex + 1);
     }
     Bspt bspt = bspts[bsptIndex];
@@ -112,7 +112,7 @@ public final class Bspf {
     if (bsptIndex < 0)
       return getNewCubeIterator(-1 - bsptIndex);
     if (bsptIndex >= cubeIterators.length)
-      cubeIterators = (CubeIterator[]) ArrayUtil.arrayCopyOpt(cubeIterators,
+      cubeIterators = (CubeIterator[]) ArrayUtil.arrayCopyObject(cubeIterators,
           bsptIndex + 1);
     if (cubeIterators[bsptIndex] == null && bspts[bsptIndex] != null)
       cubeIterators[bsptIndex] = getNewCubeIterator(bsptIndex);

@@ -414,7 +414,7 @@ class SpaceGroup {
       operationCount = 0;
     }
     if (operationCount == operations.length)
-      operations = (SymmetryOperation[]) ArrayUtil.arrayCopyOpt(operations,
+      operations = (SymmetryOperation[]) ArrayUtil.arrayCopyObject(operations,
           operationCount * 2);
     operations[operationCount++] = symmetryOperation;
     if (Logger.debugging)

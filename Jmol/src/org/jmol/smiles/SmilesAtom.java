@@ -547,11 +547,11 @@ public class SmilesAtom extends Point3f implements JmolNode {
 
   public void setBondArray() {
     if (bonds.length > bondCount) 
-      bonds = (SmilesBond[]) ArrayUtil.arrayCopyOpt(bonds, bondCount);
+      bonds = (SmilesBond[]) ArrayUtil.arrayCopyObject(bonds, bondCount);
     if (atomsOr != null && atomsOr.length > nAtomsOr)
-      atomsOr = (SmilesAtom[]) ArrayUtil.arrayCopyOpt(atomsOr, atomsOr.length);
+      atomsOr = (SmilesAtom[]) ArrayUtil.arrayCopyObject(atomsOr, atomsOr.length);
     if (primitives != null && primitives.length > nPrimitives)
-      primitives = (SmilesAtom[]) ArrayUtil.arrayCopyOpt(primitives, primitives.length);
+      primitives = (SmilesAtom[]) ArrayUtil.arrayCopyObject(primitives, primitives.length);
     for (int i = 0; i < bonds.length; i++) {
       if (isBioAtom && bonds[i].order == SmilesBond.TYPE_AROMATIC)
         bonds[i].order = SmilesBond.TYPE_BIO_PAIR;

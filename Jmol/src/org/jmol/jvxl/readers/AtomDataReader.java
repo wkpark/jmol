@@ -298,7 +298,7 @@ abstract class AtomDataReader extends VolumeDataReader {
     if (nearbyAtomCount != 0) {
       nAtoms += nearbyAtomCount;
       atomRadius = ArrayUtil.arrayCopyF(atomRadius, nAtoms);
-      atomXyz = (Point3f[]) ArrayUtil.arrayCopyOpt(atomXyz, nAtoms);
+      atomXyz = (Point3f[]) ArrayUtil.arrayCopyObject(atomXyz, nAtoms);
       if (atomIndex != null)
         atomIndex = ArrayUtil.arrayCopyI(atomIndex, nAtoms);
 

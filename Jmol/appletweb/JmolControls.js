@@ -4,6 +4,8 @@
 
 (function(Jmol) {
 
+	// private
+	
 	var c = Jmol.controls = {
 
 		_hasResetForms: false,	
@@ -51,7 +53,7 @@
 			: null);
 	}
 		
-	c._getRadio = function(appletOrId, script, labelHtml, isChecked, separatorHtml, groupName, id, title) {
+	c._radio = function(appletOrId, script, labelHtml, isChecked, separatorHtml, groupName, id, title) {
 		var appId = c._getIdForControl(appletOrId, script);
 		if (appId == null)
 			return null;
@@ -61,7 +63,7 @@
 			return "";
 		labelHtml != undefined && labelHtml != null || (labelHtml = script.substring(0, 32));
 		separatorHtml || (separatorHtml = "");
-		var scriptIndex = c._addScript(script);
+		var scriptIndex = c._addScript(appId, script);
 		var eospan = "</span>";
 		var t = "<span id=\"span_"+id+"\""+(title ? " title=\"" + title + "\"":"")+"><input name='"
 		+ groupName + "' id='"+id+"' type='radio' onclick='Jmol.controls._click(this," +
@@ -185,6 +187,8 @@
 		return true;
 	}
 
+// from JmolApplet
+
 	c._onloadResetForms = function() {
 		var c = Jmol.controls;
 		// must be evaluated ONLY once -- is this compatible with jQuery?
@@ -203,6 +207,8 @@
 				c._previousOnloadHandler();
 		}
 	}
+
+// from JmolApi
 
 	c._getButton = function(appletOrId, script, label, id, title) {
 		var c = Jmol.controls;
@@ -363,7 +369,7 @@
 		var c = Jmol.controls;
 		if (c._radioGroupCount == 0)
 			++c._radioGroupCount;
-		var t = c._getRadio(appletOrId, script, labelHtml, isChecked, separatorHtml, groupName, (id ? id : groupName + "_" + Jmol._radioCount), title ? title : 0);
+		var t = c._radio(appletOrId, script, labelHtml, isChecked, separatorHtml, groupName, (id ? id : groupName + "_" + Jmol._radioCount), title ? title : 0);
 		if (t == null)
 			return "";
 		if (Jmol._debugAlert)
@@ -398,9 +404,9 @@
 			type = typeof radio;
 			var s = null;
 			if (type == "object") {
-				t += (s = c._getRadio(appletOrId, radio[0], radio[1], radio[2], separatorHtml, groupName, (radio.length > 3 ? radio[3]: (id ? id : groupName)+"_"+i), (radio.length > 4 ? radio[4] : 0), title));
+				t += (s = c._radio(appletOrId, radio[0], radio[1], radio[2], separatorHtml, groupName, (radio.length > 3 ? radio[3]: (id ? id : groupName)+"_"+i), (radio.length > 4 ? radio[4] : 0), title));
 			} else {
-				t += (s = c._getRadio(appletOrId, radio, null, null, separatorHtml, groupName, (id ? id : groupName)+"_"+i, title));
+				t += (s = c._radio(appletOrId, radio, null, null, separatorHtml, groupName, (id ? id : groupName)+"_"+i, title));
 			}
 			if (s == null)
 			  return "";

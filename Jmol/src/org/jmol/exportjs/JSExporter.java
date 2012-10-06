@@ -26,6 +26,7 @@
 package org.jmol.exportjs;
 
 
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -37,14 +38,14 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.util.J2SRequireImport;
 
-@J2SRequireImport( { org.jmol.exportjs.___Exporter.class,
-    org.jmol.exportjs.__CartesianExporter.class,
+@J2SRequireImport( { org.jmol.exportjs.Exporter.class,
+    org.jmol.exportjs.CartesianExporter.class,
     org.jmol.exportjs.Export3D.class })
-public class _JSExporter extends __CartesianExporter {
+public class JSExporter extends CartesianExporter {
 
   private UseTable useTable;
 
-  public _JSExporter() {
+  public JSExporter() {
     useTable = new UseTable();
   }
 
@@ -139,9 +140,84 @@ public class _JSExporter extends __CartesianExporter {
                                int nVertices, int nPolygons, int nFaces, BitSet bsPolygons,
                                int faceVertexMax, short colix,
                                List<Short> colorList, Map<Short, Integer> htColixes, Point3f offset) {
-    //TODO OK, this is a major task.
+    /**
+     * @j2sNative
+     * this.startSurface();
+     * 
+     */
+    boolean colorPerVertex = (polygonColixes == null);
+    boolean haveNormals = (normals != null);
+    startJmolSurface(getColor(colix), colorPerVertex, haveNormals);
+
+    // coordinates
+
+    outputVertices(vertices, nVertices, offset);
+    int[] map = new int[nVertices];
+    getCoordinateMap(vertices, map, null);
+    outputIndices(indices, map, nPolygons, bsPolygons, faceVertexMax);
+
+    // normals
+
+    if (haveNormals) {
+      List<String> vNormals = new ArrayList<String>();
+      map = getNormalMap(normals, nVertices, null, vNormals);
+      outputNormals(vNormals);
+      outputIndices(indices, map, nPolygons, bsPolygons, faceVertexMax);
+    }
+
+    map = null;
+    
+    // colors
+
+    if (colorList != null)
+      outputColors(colorList, indices, nPolygons, bsPolygons, faceVertexMax, htColixes, colixes, polygonColixes);
+    endJmolSurface();
   }
   
+  
+  private void outputColors(List<Short> colorList, int[][] indices,
+                            int nPolygons, BitSet bsPolygons,
+                            int faceVertexMax, Map<Short, Integer> htColixes,
+                            short[] colixes, short[] polygonColixes) {
+    // TODO
+    
+  }
+
+  private void outputNormals(List<String> vNormals) {
+    // TODO
+    
+  }
+
+  private void endJmolSurface() {
+    // JavaScript only 
+  }
+
+  
+  private void startJmolSurface(Integer color, boolean colorPerVertex, boolean haveNormals) {
+    // TODO
+    
+  }
+
+  protected void outputColorIndices(List<Short> colorlist, int[][] indices, int nPolygons, BitSet bsPolygons,
+                                    int faceVertexMax, Map<Short, Integer> htColixes,
+                                    short[] colixes, short[] polygonColixes) {
+      boolean isAll = (bsPolygons == null);
+      int i0 = (isAll ? nPolygons - 1 : bsPolygons.nextSetBit(0));
+      for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsPolygons.nextSetBit(i + 1))) {
+        if (polygonColixes == null) {
+          output(htColixes.get(Short.valueOf(colixes[indices[i][0]])) + " "
+              + htColixes.get(Short.valueOf(colixes[indices[i][1]])) + " "
+              + htColixes.get(Short.valueOf(colixes[indices[i][2]])) + " -1\n");
+          if (faceVertexMax == 4 && indices[i].length == 4)
+            output(htColixes.get(Short.valueOf(colixes[indices[i][0]])) + " "
+                + htColixes.get(Short.valueOf(colixes[indices[i][2]])) + " "
+                + htColixes.get(Short.valueOf(colixes[indices[i][3]])) + " -1\n");
+        } else {
+          output(htColixes.get(Short.valueOf(polygonColixes[i])) + "\n");
+        }
+      }
+    }
+
   @Override
   protected void outputTriangle(Point3f pt1, Point3f pt2, Point3f pt3,
                                 short colix) {

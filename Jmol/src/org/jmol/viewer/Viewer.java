@@ -608,7 +608,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         .getParameter("exportDrivers") : "");
   }
 
-  String getHtmlName() {
+  public String getHtmlName() {
     return htmlName;
   }
 

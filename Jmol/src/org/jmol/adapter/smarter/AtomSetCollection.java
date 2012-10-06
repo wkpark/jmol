@@ -726,14 +726,14 @@ public class AtomSetCollection {
       return;
     }
     if (bondCount == bonds.length)
-      bonds = (Bond[])ArrayUtil.arrayCopyOpt(bonds, bondCount + 1024);
+      bonds = (Bond[])ArrayUtil.arrayCopyObject(bonds, bondCount + 1024);
     bonds[bondCount++] = bond;
     atomSetBondCounts[currentAtomSetIndex]++;
   }
 
   public void addStructure(Structure structure) {
     if (structureCount == structures.length)
-      structures = (Structure[])ArrayUtil.arrayCopyOpt(structures,
+      structures = (Structure[])ArrayUtil.arrayCopyObject(structures,
                                                       structureCount + 32);
     structure.atomSetIndex = currentAtomSetIndex;
     structures[structureCount++] = structure;

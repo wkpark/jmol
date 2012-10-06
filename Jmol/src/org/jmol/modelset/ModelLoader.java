@@ -454,7 +454,7 @@ public final class ModelLoader {
       jbr.initializeHydrogenAddition(this, modelSet.bondCount);
     if (trajectoryCount > 1)
       modelSet.modelCount += trajectoryCount - 1;
-    modelSet.models = (Model[]) ArrayUtil.arrayCopyOpt(modelSet.models, modelSet.modelCount);
+    modelSet.models = (Model[]) ArrayUtil.arrayCopyObject(modelSet.models, modelSet.modelCount);
     modelSet.modelFileNumbers = ArrayUtil.arrayCopyI(modelSet.modelFileNumbers, modelSet.modelCount);
     modelSet.modelNumbers = ArrayUtil.arrayCopyI(modelSet.modelNumbers, modelSet.modelCount);
     modelSet.modelNumbersForAtomLabel = ArrayUtil.arrayCopyS(modelSet.modelNumbersForAtomLabel, modelSet.modelCount);
@@ -937,7 +937,7 @@ public final class ModelLoader {
       }
     }
     if (modelSet.bondCount == modelSet.bonds.length) {
-      modelSet.bonds = (Bond[]) ArrayUtil.arrayCopyOpt(modelSet.bonds, modelSet.bondCount + BondCollection.BOND_GROWTH_INCREMENT);
+      modelSet.bonds = (Bond[]) ArrayUtil.arrayCopyObject(modelSet.bonds, modelSet.bondCount + BondCollection.BOND_GROWTH_INCREMENT);
     }
     modelSet.setBond(modelSet.bondCount++, bond);
   }
@@ -1260,7 +1260,7 @@ public final class ModelLoader {
     if (modelSet.atomCount < modelSet.atoms.length)
       modelSet.growAtomArrays(modelSet.atomCount);
     if (modelSet.bondCount < modelSet.bonds.length)
-      modelSet.bonds = (Bond[]) ArrayUtil.arrayCopyOpt(modelSet.bonds, modelSet.bondCount);
+      modelSet.bonds = (Bond[]) ArrayUtil.arrayCopyObject(modelSet.bonds, modelSet.bondCount);
 
     // free bonds cache 
 

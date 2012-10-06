@@ -49,6 +49,8 @@ import javax.vecmath.Point3i;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
+import jspecview.util.TextFormat;
+
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.modelset.Atom;
 import org.jmol.util.JmolFont;
@@ -136,7 +138,7 @@ import org.jmol.viewer.Viewer;
  * 
  */
 
-public abstract class ___Exporter {
+public abstract class Exporter {
 
   // The following fields and methods are required for instantiation or provide
   // generally useful functionality:
@@ -192,8 +194,9 @@ public abstract class ___Exporter {
   final protected Vector3f tempV2 = new Vector3f();
   final protected Vector3f tempV3 = new Vector3f();
   final protected AxisAngle4f tempA = new AxisAngle4f();
+  protected String appletName;
   
-  public ___Exporter() {
+  public Exporter() {
   }
 
   void setRenderer(JmolRendererInterface jmolRenderer) {
@@ -202,6 +205,7 @@ public abstract class ___Exporter {
   
   boolean initializeOutput(Viewer viewer, double privateKey, GData g3d, Object output) {
     this.viewer = viewer;
+    appletName = TextFormat.split(viewer.getHtmlName(), '_')[0];
     this.g3d = g3d;
     this.privateKey = privateKey;
     backgroundColix = viewer.getObjectColix(StateManager.OBJ_BACKGROUND);

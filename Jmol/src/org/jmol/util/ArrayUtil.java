@@ -38,7 +38,7 @@ final public class ArrayUtil {
   public static Object ensureLength(Object array, int minimumLength) {
     if (array != null && getLength(array) >= minimumLength)
       return array;
-    return arrayCopyOpt(array, minimumLength);
+    return arrayCopyObject(array, minimumLength);
   }
 
   public static String[] ensureLengthS(String[] array, int minimumLength) {
@@ -72,7 +72,7 @@ final public class ArrayUtil {
   }
 
   public static Object doubleLength(Object array) {
-    return arrayCopyOpt(array, (array == null ? 16 : 2 * getLength(array)));
+    return arrayCopyObject(array, (array == null ? 16 : 2 * getLength(array)));
   }
 
   public static String[] doubleLengthS(String[] array) {
@@ -117,7 +117,14 @@ final public class ArrayUtil {
     return t;
   }
 
-  public static Object arrayCopyOpt(Object array, int newLength) {
+  /**
+   * note -- cannot copy if array is null!
+   * 
+   * @param array
+   * @param newLength
+   * @return
+   */
+  public static Object arrayCopyObject(Object array, int newLength) {
     //System.out.println("ArrayUtil.copy " + newLength + " " + array + "  ");
     if (array == null) {
       return null; // We can't allocate since we don't know the type of array
@@ -136,7 +143,7 @@ final public class ArrayUtil {
     /**
      * @j2sNative
      * 
-     * return Clazz.newArrayBH(array, n);
+     * return Clazz.newArrayIF(array, n);
      * 
      */
     {

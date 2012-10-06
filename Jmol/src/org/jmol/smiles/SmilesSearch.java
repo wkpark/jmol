@@ -125,7 +125,7 @@ public class SmilesSearch extends JmolMolecule {
 
   void setAtomArray() {
     if (patternAtoms.length > atomCount)
-      patternAtoms = (SmilesAtom[]) ArrayUtil.arrayCopyOpt(patternAtoms, atomCount);
+      patternAtoms = (SmilesAtom[]) ArrayUtil.arrayCopyObject(patternAtoms, atomCount);
     nodes = patternAtoms;
   }
 

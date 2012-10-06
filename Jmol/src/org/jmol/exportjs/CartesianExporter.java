@@ -47,9 +47,9 @@ import org.jmol.util.GData;
  * for programs that use the standard 3D coordinates.
  * 
  */
-abstract public class __CartesianExporter extends ___Exporter {
+abstract public class CartesianExporter extends Exporter {
 
-  public __CartesianExporter() {
+  public CartesianExporter() {
     exportType = GData.EXPORT_CARTESIAN;
     lineWidthMad = 100;
   }

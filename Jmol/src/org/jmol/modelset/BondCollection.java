@@ -168,7 +168,7 @@ abstract public class BondCollection extends AtomCollection {
       }
     } else {
       if (bondCount == bonds.length)
-        bonds = (Bond[]) ArrayUtil.arrayCopyOpt(bonds, bondCount
+        bonds = (Bond[]) ArrayUtil.arrayCopyObject(bonds, bondCount
             + BOND_GROWTH_INCREMENT);
       i = setBond(bondCount++,
           bondMutually(atom, atomOther, order, mad, energy)).index;
@@ -243,7 +243,7 @@ abstract public class BondCollection extends AtomCollection {
   public int addHBond(Atom atom1, Atom atom2, int order, float energy) {
     // from autoHbond and BioModel.getRasmolHydrogenBonds
     if (bondCount == bonds.length)
-      bonds = (Bond[]) ArrayUtil.arrayCopyOpt(bonds, bondCount
+      bonds = (Bond[]) ArrayUtil.arrayCopyObject(bonds, bondCount
           + BOND_GROWTH_INCREMENT);
     return setBond(bondCount++, bondMutually(atom1, atom2, order, (short) 1,
         energy)).index;

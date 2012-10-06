@@ -4043,9 +4043,9 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   protected void growAtomArrays(int newLength) {
-    atoms = (Atom[]) ArrayUtil.arrayCopyOpt(atoms, newLength);
+    atoms = (Atom[]) ArrayUtil.arrayCopyObject(atoms, newLength);
     if (vibrationVectors != null)
-      vibrationVectors = (Vector3f[]) ArrayUtil.arrayCopyOpt(vibrationVectors,
+      vibrationVectors = (Vector3f[]) ArrayUtil.arrayCopyObject(vibrationVectors,
           newLength);
     if (occupancies != null)
       occupancies = ArrayUtil.arrayCopyByte(occupancies, newLength);
@@ -4054,7 +4054,7 @@ abstract public class ModelCollection extends BondCollection {
     if (partialCharges != null)
       partialCharges = ArrayUtil.arrayCopyF(partialCharges, newLength);
     if (ellipsoids != null)
-      ellipsoids = (Quadric[][]) ArrayUtil.arrayCopyOpt(ellipsoids, newLength);
+      ellipsoids = (Quadric[][]) ArrayUtil.arrayCopyObject(ellipsoids, newLength);
     if (atomNames != null)
       atomNames = ArrayUtil.arrayCopyS(atomNames, newLength);
     if (atomTypes != null)

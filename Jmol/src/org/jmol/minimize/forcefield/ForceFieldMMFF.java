@@ -313,8 +313,7 @@ public class ForceFieldMMFF extends ForceField {
       return this.getClass().getResource(fileName);
     }
   }
-  private void getMmffParameters(String fileName, Map<Integer, Object> data, int dataType) {    
-    URL url = null;
+  private void getMmffParameters(String fileName, Map<Integer, Object> data, int dataType) { 
     String line = null;
     
     // parameters are keyed by a 32-bit Integer 

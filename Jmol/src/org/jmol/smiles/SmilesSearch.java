@@ -575,7 +575,7 @@ public class SmilesSearch extends JmolMolecule {
         // run through all unmatched and unbonded-to-match
         // selected Jmol atoms to see if there is a match. 
 
-        BitSet bs = (BitSet) bsFound.clone();
+        BitSet bs = BitSetUtil.copy(bsFound);
         if (newPatternAtom.notBondedIndex >= 0) {
           SmilesAtom pa = patternAtoms[newPatternAtom.notBondedIndex];
           JmolNode a = jmolAtoms[pa.getMatchingAtom()];

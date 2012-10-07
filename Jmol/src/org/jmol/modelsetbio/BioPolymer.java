@@ -974,7 +974,7 @@ public abstract class BioPolymer {
       monomers[i].selectAtoms(bsResult);
   }
 
-  public String calculateStructures(BioPolymer[] bioPolymers,
+  public String calculateDssp(BioPolymer[] bioPolymers,
                                     int bioPolymerCount, List<Bond> vHBonds,
                                     boolean doReport,
                                     boolean dsspIgnoreHydrogens,
@@ -997,7 +997,7 @@ public abstract class BioPolymer {
    * @param endChainID
    * @param endSeqcode
    */
-  public void addSecondaryStructure(EnumStructure type, String structureID,
+  public void addStructure(EnumStructure type, String structureID,
                                     int serialID, int strandCount,
                                     char startChainID, int startSeqcode,
                                     char endChainID, int endSeqcode) {

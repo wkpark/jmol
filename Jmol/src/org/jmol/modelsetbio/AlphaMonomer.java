@@ -42,7 +42,7 @@ public class AlphaMonomer extends Monomer {
   }
   
   static Monomer
-    validateAndAllocate(Chain chain, String group3, int seqcode,
+    validateAndAllocateA(Chain chain, String group3, int seqcode,
                         int firstIndex, int lastIndex,
                         int[] specialAtomIndexes) {
     if (firstIndex != lastIndex ||

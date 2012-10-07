@@ -33,6 +33,7 @@ import java.util.Map;
 
 
 import org.jmol.util.BitSet;
+import org.jmol.util.BitSetUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
@@ -88,7 +89,7 @@ public class SmilesGenerator {
       return "";
     this.atoms = atoms;
     this.atomCount = atomCount;
-    this.bsSelected = bsSelected = (BitSet) bsSelected.clone();
+    this.bsSelected = bsSelected = BitSetUtil.copy(bsSelected);
     return getSmilesComponent(atoms[i], bsSelected, false);
   }
 
@@ -98,7 +99,7 @@ public class SmilesGenerator {
     this.atoms = atoms;
     this.atomCount = atomCount;
     StringXBuilder sb = new StringXBuilder();
-    BitSet bs = (BitSet) bsSelected.clone();
+    BitSet bs = BitSetUtil.copy(bsSelected);
     if (comment != null)
       sb.append("//* Jmol bioSMILES ").append(comment.replace('*', '_')).append(
         " *//");
@@ -227,7 +228,7 @@ public class SmilesGenerator {
     if (atom.getElementNumber() == 1 && atom.getEdges().length > 0)
       atom = atoms[atom.getBondedAtomIndex(0)]; // don't start with H
     bsSelected = JmolMolecule.getBranchBitSet(atoms, atom.getIndex(),
-        (BitSet) bs.clone(), null, -1, true, false);
+        BitSetUtil.copy(bs), null, -1, true, false);
     bs.andNot(bsSelected);
     bsIncludingH = (BitSet) bsSelected.clone();
     for (int j = bsSelected.nextSetBit(0); j >= 0; j = bsSelected

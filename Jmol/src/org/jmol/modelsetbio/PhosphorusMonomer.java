@@ -47,7 +47,7 @@ public class PhosphorusMonomer extends Monomer {
   public final boolean isNucleic() {return true;}
 
   static Monomer
-    validateAndAllocate(Chain chain, String group3, int seqcode,
+    validateAndAllocateP(Chain chain, String group3, int seqcode,
                         int firstIndex, int lastIndex,
                         int[] specialAtomIndexes) {
     //Logger.debug("PhosphorusMonomer.validateAndAllocate");

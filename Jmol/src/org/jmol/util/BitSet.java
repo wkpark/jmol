@@ -887,6 +887,8 @@ public class BitSet implements Cloneable {
     return true;
   }
 
+  private final static long[] emptyBitmap = new long[0];
+
   /**
    * Cloning this {@code BitSet} produces a new {@code BitSet} that is equal to
    * it. The clone of the bit set is another bit set that has exactly the same
@@ -902,8 +904,10 @@ public class BitSet implements Cloneable {
 
     try {
       BitSet result = (BitSet) super.clone();
-      result.words = words.clone();
-      // result.checkInvariants();
+      if (result.wordsInUse == 0)
+        result.words = emptyBitmap;
+      else
+        result.words = words.clone();
       return result;
     } catch (CloneNotSupportedException e) {
       throw new InternalError();
@@ -974,27 +978,6 @@ public class BitSet implements Cloneable {
     return b.toString();
   }
   
-
-  private final static long[] emptyBitmap = new long[0];
-
-  /**
-   * fast copy
-   * 
-   * @param bitsetToCopy
-   * @return bs
-   */
-  public static BitSet copy(BitSet bitsetToCopy) {
-    BitSet bs = new BitSet();
-    int wordCount = bitsetToCopy.wordsInUse;
-    if (wordCount == 0)
-      bs.words = emptyBitmap;
-    else {
-      bs.words = new long[wordCount];
-      System.arraycopy(bitsetToCopy.words, 0, bs.words, 0, wordCount);
-      bs.wordsInUse = wordCount;
-    }
-    return bs;
-  }
 
   /**
    * 

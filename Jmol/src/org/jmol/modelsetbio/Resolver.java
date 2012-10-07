@@ -131,13 +131,13 @@ public final class Resolver implements JmolBioResolver {
       m = AminoMonomer.validateAndAllocate(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex, specialAtomIndexes, atoms);
     else if (distinguishingBits == JmolConstants.ATOMID_ALPHA_ONLY_MASK)
-      m = AlphaMonomer.validateAndAllocate(chain, group3, seqcode,
+      m = AlphaMonomer.validateAndAllocateA(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex, specialAtomIndexes);
     else if (((distinguishingBits & JmolConstants.ATOMID_NUCLEIC_MASK) == JmolConstants.ATOMID_NUCLEIC_MASK))
       m = NucleicMonomer.validateAndAllocate(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex, specialAtomIndexes);
     else if (distinguishingBits == JmolConstants.ATOMID_PHOSPHORUS_ONLY_MASK)
-      m = PhosphorusMonomer.validateAndAllocate(chain, group3, seqcode,
+      m = PhosphorusMonomer.validateAndAllocateP(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex, specialAtomIndexes);
     else if (JmolConstants.checkCarbohydrate(group3))
       m = CarbohydrateMonomer.validateAndAllocate(chain, group3, seqcode,

@@ -99,12 +99,12 @@ public class AminoPolymer extends AlphaPolymer {
   @Override
   protected boolean calcPhiPsiAngles() {
     for (int i = 0; i < monomerCount - 1; ++i)
-      calcPhiPsiAngles((AminoMonomer) monomers[i],
+      calcPhiPsiAngles2((AminoMonomer) monomers[i],
           (AminoMonomer) monomers[i + 1]);
     return true;
   }
 
-  private void calcPhiPsiAngles(AminoMonomer residue1, AminoMonomer residue2) {
+  private void calcPhiPsiAngles2(AminoMonomer residue1, AminoMonomer residue2) {
 
     /*
      *   N1-Ca1-C1-N2-Ca2-C2
@@ -744,13 +744,13 @@ public class AminoPolymer extends AlphaPolymer {
 
     BitSet bsTurn = new BitSet();
 
-    String line4 = findHelixes(4, min, iPolymer,
+    String line4 = findHelixes2(4, min, iPolymer,
         EnumStructure.HELIXALPHA, JmolEdge.BOND_H_PLUS_4, bsDone,
         bsTurn, labels, doReport, setStructure, vHBonds, bsBad);
-    String line3 = findHelixes(3, min, iPolymer,
+    String line3 = findHelixes2(3, min, iPolymer,
         EnumStructure.HELIX310, JmolEdge.BOND_H_PLUS_3,
         bsDone, bsTurn, labels, doReport, setStructure, vHBonds, bsBad);
-    String line5 = findHelixes(5, min, iPolymer,
+    String line5 = findHelixes2(5, min, iPolymer,
         EnumStructure.HELIXPI, JmolEdge.BOND_H_PLUS_5,
         bsDone, bsTurn, labels, doReport, setStructure, vHBonds, bsBad);
 
@@ -769,7 +769,7 @@ public class AminoPolymer extends AlphaPolymer {
     return "";
   }
 
-  private String findHelixes(int pitch, int[][][] min, int thisIndex,
+  private String findHelixes2(int pitch, int[][][] min, int thisIndex,
                              EnumStructure subtype, int type, BitSet bsDone,
                              BitSet bsTurn, char[] labels, 
                              boolean doReport, boolean setStructure,
@@ -1197,7 +1197,7 @@ public class AminoPolymer extends AlphaPolymer {
       int i2 = bs.nextClearBit(i);
       if (i2 < 0)
         i2 = monomerCount;
-      addSecondaryStructure(type, null, 0, 0, i, i2 - 1);
+      addStructureProtected(type, null, 0, 0, i, i2 - 1);
       i = i2;
     }
   }
@@ -1336,7 +1336,7 @@ public class AminoPolymer extends AlphaPolymer {
         }
         end--;
         if (end >= start + 3) {
-          addSecondaryStructure(EnumStructure.HELIX, null, 0,
+          addStructureProtected(EnumStructure.HELIX, null, 0,
               0, start, end);
         }
         start = end;
@@ -1350,7 +1350,7 @@ public class AminoPolymer extends AlphaPolymer {
         }
         end--;
         if (end >= start + 3) {
-          addSecondaryStructure(EnumStructure.HELIX, null, 0,
+          addStructureProtected(EnumStructure.HELIX, null, 0,
               0, start, end);
         }
         start = end;
@@ -1365,7 +1365,7 @@ public class AminoPolymer extends AlphaPolymer {
         }
         end--;
         if (end >= start + 2) {
-          addSecondaryStructure(EnumStructure.SHEET, null, 0,
+          addStructureProtected(EnumStructure.SHEET, null, 0,
               0, start, end);
         }
         start = end;
@@ -1380,7 +1380,7 @@ public class AminoPolymer extends AlphaPolymer {
         }
         end--;
         if (end >= start + 2) {
-          addSecondaryStructure(EnumStructure.TURN, null, 0,
+          addStructureProtected(EnumStructure.TURN, null, 0,
               0, start, end);
         }
         start = end;

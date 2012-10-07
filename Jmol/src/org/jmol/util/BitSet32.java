@@ -910,15 +910,7 @@ public class BitSet32 implements Cloneable {
   public Object clone() {
 		if (!sizeIsSticky && wordsInUse != words.length)
 			setLength(wordsInUse);
-
-		try {
-			BitSet32 result = (BitSet32) super.clone();
-			result.words = words.clone();
-			// result.checkInvariants();
-			return result;
-		} catch (CloneNotSupportedException e) {
-			throw new InternalError();
-		}
+		return copy(this);
 	}
 
 	/**

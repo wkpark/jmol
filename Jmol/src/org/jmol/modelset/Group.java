@@ -525,7 +525,7 @@ public class Group {
    * @param vReturn
    * @return T/F
    */
-  public boolean getCrossLinkLeadAtomIndexes(List<Integer> vReturn) {
+  public boolean getCrossLinkLead(List<Integer> vReturn) {
     return false;
   }
 

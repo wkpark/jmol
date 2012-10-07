@@ -223,7 +223,7 @@ public final class EnvelopeCalculation {
     if (geodesicMap.isEmpty())
       map = EMPTY_SET;
     else
-      map = BitSet.copy(geodesicMap);
+      map = BitSetUtil.copy(geodesicMap);
     if (index >= dotsConvexMaps.length)
       return;
     dotsConvexMaps[index] = map;
@@ -433,7 +433,7 @@ public final class EnvelopeCalculation {
         addIncompleteFaces(geodesicMap);
         addIncompleteFaces(geodesicMap);
       }
-      map = BitSet.copy(geodesicMap);
+      map = BitSetUtil.copy(geodesicMap);
     }
     dotsConvexMaps[indexI] = map;
   }

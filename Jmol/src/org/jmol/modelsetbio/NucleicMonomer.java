@@ -482,7 +482,7 @@ public boolean isCrossLinked(Group g) {
   }
  
   @Override
-  public boolean getCrossLinkLeadAtomIndexes(List<Integer> vReturn) {
+  public boolean getCrossLinkLead(List<Integer> vReturn) {
     Atom N = (isPurine ? getN1() : getN3());
     //System.out.println(N.getInfo());
     Bond[] bonds = N.getBonds();

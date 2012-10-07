@@ -95,7 +95,7 @@ public final class BioModel extends Model{
                              char startChainID, int startSeqcode,
                              char endChainID, int endSeqcode) {
     for (int i = bioPolymerCount; --i >= 0; )
-      bioPolymers[i].addSecondaryStructure(type, structureID, serialID, strandCount, startChainID, startSeqcode,
+      bioPolymers[i].addStructure(type, structureID, serialID, strandCount, startChainID, startSeqcode,
                                     endChainID, endSeqcode);
   }
 
@@ -113,7 +113,7 @@ public final class BioModel extends Model{
     if (!asDSSP || includeAlpha)
       for (int i = bioPolymerCount; --i >= 0;)
         bioPolymers[i].calculateStructures(includeAlpha);
-    return (asDSSP ? bioPolymers[0].calculateStructures(bioPolymers, bioPolymerCount,
+    return (asDSSP ? bioPolymers[0].calculateDssp(bioPolymers, bioPolymerCount,
           null, doReport, dsspIgnoreHydrogen, setStructure) : "");
   }
 
@@ -322,7 +322,7 @@ public final class BioModel extends Model{
     boolean asDSSP = (bsB == null);
     BioPolymer bp, bp1;
     if (asDSSP && bioPolymerCount > 0) {
-      bioPolymers[0].calculateStructures(bioPolymers, bioPolymerCount,
+      bioPolymers[0].calculateDssp(bioPolymers, bioPolymerCount,
           vHBonds, false, dsspIgnoreHydrogens, false);
     } else {
       for (int i = bioPolymerCount; --i >= 0;) {

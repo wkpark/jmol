@@ -437,13 +437,13 @@ public abstract class Monomer extends Group {
   @Override
   public boolean isCrossLinked(Group g) {
     for (int i = firstAtomIndex; i <= lastAtomIndex; i++)
-      if (getCrossLink(i, null, g))
+      if (getCrossLinkGroup(i, null, g))
           return true;
     return false;
   }
  
   @Override
-  public boolean getCrossLinkLeadAtomIndexes(List<Integer> vReturn) {    
+  public boolean getCrossLinkLead(List<Integer> vReturn) {    
    for (int i = firstAtomIndex; i <= lastAtomIndex; i++)
       if (getCrossLink(i, vReturn) && vReturn == null)
           return true;
@@ -451,10 +451,10 @@ public abstract class Monomer extends Group {
   }  
 
   protected boolean getCrossLink(int i, List<Integer> vReturn) {
-    return getCrossLink(i, vReturn, null);
+    return getCrossLinkGroup(i, vReturn, null);
   }
   
-  private boolean getCrossLink(int i, List<Integer> vReturn, Group group) {
+  private boolean getCrossLinkGroup(int i, List<Integer> vReturn, Group group) {
     // vReturn null --> just checking for connection to previous group
     // not obvious from PDB file for carbohydrates
     Atom atom = chain.getAtom(i);

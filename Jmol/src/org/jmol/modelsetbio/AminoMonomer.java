@@ -76,7 +76,7 @@ public class AminoMonomer extends AlphaMonomer {
     return aminoMonomer;
   }
 
-  private static boolean isBondedCorrectly(int offset1, int offset2,
+  private static boolean isBondedCorrectlyRange(int offset1, int offset2,
                                    int firstAtomIndex,
                                    byte[] offsets, Atom[] atoms) {
     int atomIndex1 = firstAtomIndex + (offsets[offset1] & 0xFF);
@@ -90,10 +90,10 @@ public class AminoMonomer extends AlphaMonomer {
 
   private static boolean isBondedCorrectly(int firstAtomIndex, byte[] offsets,
                                  Atom[] atoms) {
-    return (isBondedCorrectly(N, CA, firstAtomIndex, offsets, atoms)
-            && isBondedCorrectly(CA, C, firstAtomIndex, offsets, atoms)
+    return (isBondedCorrectlyRange(N, CA, firstAtomIndex, offsets, atoms)
+            && isBondedCorrectlyRange(CA, C, firstAtomIndex, offsets, atoms)
             && (offsets[O] == -1 
-                || isBondedCorrectly(C, O, firstAtomIndex, offsets, atoms))
+                || isBondedCorrectlyRange(C, O, firstAtomIndex, offsets, atoms))
             );
   }
   

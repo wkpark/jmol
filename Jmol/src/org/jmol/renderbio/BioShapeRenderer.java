@@ -608,7 +608,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
    * mesh. We use temporary normals here. We will convert normals to normixes
    * later.
    * 
-   * @author Rolf Huehne
+   * @author Alexander Rose
    * @author Bob Hanson
    * 
    * @param i

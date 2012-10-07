@@ -268,8 +268,13 @@ abstract class BioShapeRenderer extends MeshRenderer {
     iNext3 = Math.min(i + 3, monomerCount);
   }
 
-  //// cardinal hermite variable conic (cartoons, rockets, trace)
-
+  /**
+   * set diameters for a bioshape
+   * 
+   * @param i
+   * @param thisTypeOnly true for Cartoon but not MeshRibbon
+   * @return true if a mesh is needed
+   */
   private boolean setMads(int i, boolean thisTypeOnly) {
     madMid = madBeg = madEnd = mads[i];
     if (isTraceAlpha) {
@@ -290,18 +295,16 @@ abstract class BioShapeRenderer extends MeshRenderer {
       if (!thisTypeOnly || structureTypes[i] == structureTypes[iNext])
         madEnd = (short) (((mads[iNext] == 0 ? madMid : mads[iNext]) + madMid) >> 1);
     }
-    doCap0 = (i == iPrev || thisTypeOnly
-        && structureTypes[i] != structureTypes[iPrev]);
-    doCap1 = (iNext == iNext2 || thisTypeOnly
-        && structureTypes[i] != structureTypes[iNext]);
     diameterBeg = viewer.scaleToScreen(controlPointScreens[i].z, madBeg);
     diameterMid = viewer.scaleToScreen(monomers[i].getLeadAtom().screenZ,
         madMid);
     diameterEnd = viewer.scaleToScreen(controlPointScreens[iNext].z, madEnd);
-    if ((aspectRatio <= 0 || (!checkDiameter(diameterBeg)
-        && !checkDiameter(diameterMid) && !checkDiameter(diameterEnd))))
-      return false;
-    return true;
+    doCap0 = (i == iPrev || thisTypeOnly
+        && structureTypes[i] != structureTypes[iPrev]);
+    doCap1 = (iNext == iNext2 || thisTypeOnly
+        && structureTypes[i] != structureTypes[iNext]);
+    return ((aspectRatio > 0 && (checkDiameter(diameterBeg)
+        || checkDiameter(diameterMid) || checkDiameter(diameterEnd))));
   }
 
   private boolean checkDiameter(int d) {
@@ -318,8 +321,8 @@ abstract class BioShapeRenderer extends MeshRenderer {
         screens[iNext], screens[iNext2]);
   }
 
-  //cartoons, rockets, trace:
   protected void renderHermiteConic(int i, boolean thisTypeOnly) {
+    //cartoons, rockets, trace
     setNeighbors(i);
     colix = getLeadColix(i);
     if (!g3d.setColix(colix))
@@ -342,9 +345,12 @@ abstract class BioShapeRenderer extends MeshRenderer {
         controlPointScreens[iNext], controlPointScreens[iNext2]);
   }
 
-  //// cardinal hermite box or flat ribbon or twin strand (cartoons, meshRibbon, ribbon)
-
-  //cartoons, meshribbon
+  /**
+   * 
+   * @param doFill
+   * @param i
+   * @param thisTypeOnly true for Cartoon but not MeshRibbon
+   */
   protected void renderHermiteRibbon(boolean doFill, int i, boolean thisTypeOnly) {
     // cartoons and meshRibbon
     setNeighbors(i);
@@ -443,20 +449,6 @@ abstract class BioShapeRenderer extends MeshRenderer {
     int coneDiameter = mad + (mad >> 2);
     coneDiameter = viewer.scaleToScreen((int) Math.floor(screenPtBegin.z),
         coneDiameter);
-    /*    
-        if (false && aspectRatio > 0 && checkDiameter(coneDiameter)) {
-          try {
-            if (meshes[i] == null || !meshReady[i])
-              createMeshCone(i, pointBegin, pointEnd, mad);
-            meshes[i].colix = colix;
-            render1(meshes[i]);
-            return;
-          } catch (Exception e) {
-            Logger.error("render mesh error: renderCone" + e.toString());
-            //e.printStackTrace();
-          }
-        }
-    */
     g3d.fillConeSceen(GData.ENDCAPS_FLAT, coneDiameter, screenPtBegin,
         screenPtEnd);
   }
@@ -646,38 +638,6 @@ abstract class BioShapeRenderer extends MeshRenderer {
     }
   }
 
-  /*
-  void createMeshCone(int i, Point3f pointBegin, Point3f pointEnd, int mad) {
-    int level = 5;
-    int nHermites = (level + 1) * 2 + 1; // (not used)
-    int nPer = (nHermites - 1) * 2 - 2; //22 for hermiteLevel 5
-    norm.sub(pointEnd, pointBegin);
-    norm.normalize();
-    norm.scale(0.19f);
-    wing.cross(Z, norm);
-    wing.normalize();
-    wing.scale(mad * 1.2f / 2000f);
-    Mesh mesh = meshes[i] = new Mesh("mesh_" + shapeID + "_" + i, g3d,
-        (short) 0);
-    aa.set(norm, (float) (2 * Math.PI / nPer));
-    mat.set(aa);
-    pt1.set(pointBegin);
-    pt1.sub(norm);
-    for (int k = 0; k < nPer; k++) {
-      mat.transform(wing);
-      pt.add(pt1, wing);
-      mesh.addVertexCopy(pt);
-    }
-    mesh.addVertexCopy(pointEnd);
-    for (int k = 0; k < nPer; k++)
-      mesh.addTriangle((k + 1) % nPer, nPer, k);
-    for (int k = level * 2; --k >= 0;)
-      mesh.addQuad(k + 2, k + 1, (nPer - k) % nPer, nPer - k - 1);
-    mesh.initialize(JmolConstants.FRONTLIT);
-    meshReady[i] = true;
-    mesh.setVisibilityFlags(1);
-  }
-  */
   /*
   private void dumpPoint(Point3f pt, short color) {
     Point3i pt1 = viewer.transformPoint(pt);

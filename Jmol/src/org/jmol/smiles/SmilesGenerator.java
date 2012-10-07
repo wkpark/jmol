@@ -230,7 +230,7 @@ public class SmilesGenerator {
     bsSelected = JmolMolecule.getBranchBitSet(atoms, atom.getIndex(),
         BitSetUtil.copy(bs), null, -1, true, false);
     bs.andNot(bsSelected);
-    bsIncludingH = (BitSet) bsSelected.clone();
+    bsIncludingH = BitSetUtil.copy(bsSelected);
     for (int j = bsSelected.nextSetBit(0); j >= 0; j = bsSelected
         .nextSetBit(j + 1)) {
       JmolNode a = atoms[j];

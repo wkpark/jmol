@@ -66,7 +66,7 @@ public class DrawRenderer extends MeshRenderer {
     imageFontScaling = viewer.getImageFontScaling();
     Draw draw = (Draw) shape;
     for (int i = draw.meshCount; --i >= 0;)
-      if (render1(dmesh = (DrawMesh) draw.meshes[i]))
+      if (renderMesh(dmesh = (DrawMesh) draw.meshes[i]))
         renderInfo();
   }
 
@@ -77,7 +77,7 @@ public class DrawRenderer extends MeshRenderer {
   }
 
   @Override
-  public boolean render1(Mesh mesh) {
+  public boolean renderMesh(Mesh mesh) {
     if (mesh.connections != null) {
       if (mesh.connections[0] < 0)
         return false;
@@ -95,7 +95,7 @@ public class DrawRenderer extends MeshRenderer {
       }
       mesh.recalcAltVertices = true;
     }
-    return super.render1(mesh);
+    return super.renderMesh(mesh);
   }
 
   @Override

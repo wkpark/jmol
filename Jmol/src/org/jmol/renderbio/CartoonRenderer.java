@@ -115,6 +115,7 @@ public class CartoonRenderer extends RocketsRenderer {
     // this loop goes monomerCount --> 0, because
     // we want to hit the heads first
 
+    bsRenderMesh.clearAll();
     for (int i = monomerCount; --i >= 0;) {
       // runs backwards, so it can render the heads first
       thisStructure = monomers[i].getProteinStructure();
@@ -131,11 +132,12 @@ public class CartoonRenderer extends RocketsRenderer {
         if (isHelixRocket) {
           //next pass
         } else if (isSheet || isHelix) {
-          if (lastWasSheet && isSheet || lastWasHelix && isHelix)
+          if (lastWasSheet && isSheet || lastWasHelix && isHelix) {
             //uses topScreens
             renderHermiteRibbon(true, i, true);
-          else
+          } else {
             renderHermiteArrowHead(i);
+          }
         } else {
           renderHermiteConic(i, true);
         }
@@ -143,7 +145,7 @@ public class CartoonRenderer extends RocketsRenderer {
       lastWasSheet = isSheet;
       lastWasHelix = isHelix;
     }
-
+    renderMeshes();
     if (renderAsRockets || !renderArrowHeads)
       renderRockets();
   }

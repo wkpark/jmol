@@ -617,7 +617,7 @@ class TransformManager11 extends TransformManager {
       return;
     }
     if (key != null)
-      viewer.getGlobalSettings().setParameterValue(key, value);
+      viewer.getGlobalSettings().setParamF(key, value);
     navigating = true;
     finalizeTransformParameters();
   }
@@ -944,7 +944,7 @@ class TransformManager11 extends TransformManager {
 
   @Override
   void setNavigationSlabOffsetPercent(float percent) {
-    viewer.getGlobalSettings().setParameterValue("navigationSlab", percent);
+    viewer.getGlobalSettings().setParamF("navigationSlab", percent);
     calcCameraFactors(); // current
     navigationSlabOffset = percent / 50 * modelRadiusPixels;
   }
@@ -964,7 +964,7 @@ class TransformManager11 extends TransformManager {
     // navigation depth 0 # place user at rear plane of the model
     // navigation depth 100 # place user at front plane of the model
 
-    viewer.getGlobalSettings().setParameterValue("navigationDepth", percent);
+    viewer.getGlobalSettings().setParamF("navigationDepth", percent);
     calcCameraFactors(); // current
     modelCenterOffset = referencePlaneOffset - (1 - percent / 50)
         * modelRadiusPixels;

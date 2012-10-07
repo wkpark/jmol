@@ -339,6 +339,8 @@ public class Polyhedra extends AtomShape {
   private byte[] planesT = new byte[MAX_VERTICES * 3];
   private final static Point3f randomPoint = Point3f.new3(3141f, 2718f, 1414f);
 
+  private BitSet bsTemp;
+
   private Polyhedron validatePolyhedronNew(Atom centralAtom, int vertexCount,
                                    Point3f[] otherAtoms) {
     Vector3f normal = new Vector3f();
@@ -426,7 +428,9 @@ public class Polyhedra extends AtomShape {
       }
     Point3f ptRef = new Point3f();
     // this next check for distance allows for bond AND distance constraints
-    BitSet bsTemp = new BitSet();
+    if (bsTemp == null)
+      bsTemp = Normix.newVertexBitSet();
+
     for (int i = 0; i < ptCenter - 2; i++)
       for (int j = i + 1; j < ptCenter - 1; j++) {
         if (points[i].distance(points[j]) > distMax)

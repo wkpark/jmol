@@ -276,7 +276,7 @@ public class Ellipsoids extends AtomShape {
         v1.scale(ellipsoid.lengths[i]);
         sb.append(" ").append(Escape.escapePt(v1));
       }
-      sb.append(" " + getColorCommand("", ellipsoid.colix));
+      sb.append(" " + getColorCommandUnk("", ellipsoid.colix));
       if (!ellipsoid.isOn)
         sb.append(" off");
       sb.append(";\n");

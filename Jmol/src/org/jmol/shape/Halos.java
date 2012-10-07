@@ -85,10 +85,10 @@ public String getShapeState() {
     String state = super.getShapeState()
         + (colixSelection == Colix.USE_PALETTE ? ""
             : colixSelection == Colix.INHERIT_ALL ? "  color SelectionHalos NONE;\n"
-                : getColorCommand("selectionHalos", colixSelection) + ";\n");
+                : getColorCommandUnk("selectionHalos", colixSelection) + ";\n");
     if (bsHighlight != null)
       state += "  set highlight " + Escape.escape(bsHighlight) + "; "
-          + getColorCommand("highlight", colixHighlight) + ";\n";
+          + getColorCommandUnk("highlight", colixHighlight) + ";\n";
     return state;
   }
  

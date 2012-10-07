@@ -1427,7 +1427,7 @@ public void initShape() {
     }
     str.append(";\n");
     appendCmd(str, mesh.getState("draw"));
-    appendCmd(str, getColorCommand("draw", mesh.colix));
+    appendCmd(str, getColorCommandUnk("draw", mesh.colix));
     return str.toString();
   }
 

@@ -239,6 +239,8 @@ public final class EnvelopeCalculation {
     mads = null;
   }
 
+  private BitSet bsTemp;
+  
   /**
    * problem prior to 12.3.18 was that dots once on the deodesic were not being moved.
    * this isn't perfect, but it's reasonably good. Mostly, you should recreate dots
@@ -257,7 +259,8 @@ public final class EnvelopeCalculation {
     if (dotsConvexMaps == null || dotsConvexMax == 0)
       return;
     Vector3f pt = new Vector3f();
-    BitSet bsTemp = new BitSet();
+    if (bsTemp == null)
+      bsTemp = Normix.newVertexBitSet();
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       if (i >= dotsConvexMax)
         return;

@@ -31,6 +31,8 @@ package org.jmol.util;
  * a fast 32-bit BitSet optimized for Java2Script -- about 25 times faster than
  * java.util.BitSet
  * 
+ * only used in the JavaScript version of Jmol (JSmol)
+ * 
  * @author Bob Hanson hansonr@stolaf.edu
  * 
  *         Additions by Bob Hanson to allow for JavaScript mix of int/long Note
@@ -992,16 +994,25 @@ public class BitSet32 implements Cloneable {
    * @return bs
    */
   public static BitSet32 copy(BitSet32 bitsetToCopy) {
-    BitSet32 bs = new BitSet32();
-    int wordCount = bitsetToCopy.wordsInUse;
-    if (wordCount == 0)
-      bs.words = emptyBitmap;
-    else {
-      bs.words = new int[wordCount];
-      System.arraycopy(bitsetToCopy.words, 0, bs.words, 0, wordCount);
+    try {
+      BitSet32 bs = bitsetToCopy.superClone();
+      int wordCount = bitsetToCopy.wordsInUse;
+      if (wordCount == 0)
+        bs.words = emptyBitmap;
+      else {
+        bs.words = new int[wordCount];
+        System.arraycopy(bitsetToCopy.words, 0, bs.words, 0, wordCount);
+      }
+      return bs;
+    } catch (CloneNotSupportedException e) {
+      throw new InternalError();
     }
-    return bs;
   }
+
+  private BitSet32 superClone() throws CloneNotSupportedException {
+    return (BitSet32) super.clone();
+  }
+
 
   /**
    * 

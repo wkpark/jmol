@@ -27,9 +27,9 @@ import org.jmol.constant.EnumStructure;
 
 class Turn extends ProteinStructure {
 
-  Turn(AlphaPolymer apolymer, int monomerIndex, int monomerCount, int id) {
+  Turn(AlphaPolymer apolymer, int monomerIndex, int monomerCount) {
     super(apolymer, EnumStructure.TURN,
-          monomerIndex, monomerCount, id);
+          monomerIndex, monomerCount);
     this.subtype = EnumStructure.TURN;
   }
 }

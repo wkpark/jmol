@@ -644,7 +644,7 @@ public class Dipoles extends Shape {
           appendCmd(s, "frame "
               + viewer.getModelNumberDotted(thisModel = dipole.modelIndex));
         s.append(dipole.getShapeState());
-        appendCmd(s, getColorCommand("dipole", dipole.colix));
+        appendCmd(s, getColorCommandUnk("dipole", dipole.colix));
       }
     }
     return s.toString();

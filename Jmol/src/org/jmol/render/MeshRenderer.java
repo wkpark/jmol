@@ -76,11 +76,11 @@ public abstract class MeshRenderer extends ShapeRenderer {
     antialias = g3d.isAntialiased(); 
     MeshCollection mc = (MeshCollection) shape;
     for (int i = mc.meshCount; --i >= 0;)
-      render1(mc.meshes[i]);
+      renderMesh(mc.meshes[i]);
   }
   
   // draw, isosurface, molecular orbitals
-  public boolean render1(Mesh mesh) { // used by mps renderer
+  public boolean renderMesh(Mesh mesh) { // used by mps renderer
     this.mesh = mesh;
     if (!setVariables())
       return false;

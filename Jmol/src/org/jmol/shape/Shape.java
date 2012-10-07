@@ -427,10 +427,10 @@ public abstract class Shape {
 
   static public String getShapeCommands(Map<String, BitSet> htDefine,
                                         Map<String, BitSet> htMore) {
-    return StateManager.getCommands(htDefine, htMore);
+    return StateManager.getCommands(htDefine, htMore, "select");
   }
 
-  static public String getShapeCommands(Map<String, BitSet> htDefine,
+  static public String getShapeCommandsSel(Map<String, BitSet> htDefine,
                                         Map<String, BitSet> htMore,
                                         String selectCmd) {
     return StateManager.getCommands(htDefine, htMore, selectCmd);
@@ -447,7 +447,7 @@ public abstract class Shape {
         + font.fontStyle;
   }
 
-  public String getColorCommand(String type, short colix) {
+  public String getColorCommandUnk(String type, short colix) {
     return getColorCommand(type, EnumPalette.UNKNOWN.id, colix);
   }
 

@@ -31,9 +31,9 @@ import org.jmol.util.Vector3f;
 
 public class Helix extends ProteinStructure {
 
-  Helix(AlphaPolymer apolymer, int monomerIndex, int monomerCount, int id, EnumStructure subtype) {
+  Helix(AlphaPolymer apolymer, int monomerIndex, int monomerCount, EnumStructure subtype) {
     super(apolymer, EnumStructure.HELIX, monomerIndex,
-        monomerCount, id);
+        monomerCount);
     this.subtype = subtype;
   }
 

@@ -163,7 +163,7 @@ public abstract class Monomer extends Group {
   public boolean isHelix() { return false; }
   public boolean isSheet() { return false; }
   @Override
-  public void setProteinStructureId(int id) { }
+  public void setStrucNo(int id) { }
 
   ////////////////////////////////////////////////////////////////
 /*
@@ -299,7 +299,7 @@ public abstract class Monomer extends Group {
       info.put("theta", new Float(f));
     ProteinStructure structure = getProteinStructure();
     if(structure != null) {
-      info.put("structureId", Integer.valueOf(structure.uniqueID));
+      info.put("structureId", Integer.valueOf(structure.strucNo));
       info.put("structureType", structure.type.getBioStructureTypeName(false));
     }
     info.put("shapeVisibilityFlags", Integer.valueOf(shapeVisibilityFlags));

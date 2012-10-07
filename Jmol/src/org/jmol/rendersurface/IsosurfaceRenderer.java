@@ -168,10 +168,10 @@ public class IsosurfaceRenderer extends MeshRenderer {
     boolean isOK;
     if (mySlabValue != Integer.MAX_VALUE && imesh.jvxlData.isSlabbable) {
       g3d.setSlab(mySlabValue);
-      isOK = render1(imesh);
+      isOK = renderMesh(imesh);
       g3d.setSlab(slabValue);
     } else {
-      isOK = render1(imesh);
+      isOK = renderMesh(imesh);
     }
     g3d.setTranslucentCoverOnly(false);
     return isOK;

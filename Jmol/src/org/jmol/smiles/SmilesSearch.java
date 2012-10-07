@@ -631,7 +631,7 @@ public class SmilesSearch extends JmolMolecule {
         int nextGroupAtom = jmolAtom.getOffsetResidueAtom(
             newPatternAtom.atomName, 1);
         if (nextGroupAtom >= 0) {
-          BitSet bs = (BitSet) bsFound.clone();
+          BitSet bs = BitSetUtil.copy(bsFound);
           jmolAtom.getGroupBits(bsFound);
 
           // working here
@@ -644,7 +644,7 @@ public class SmilesSearch extends JmolMolecule {
       case SmilesBond.TYPE_BIO_PAIR:
         List<Integer> vLinks = new ArrayList<Integer>();
         jmolAtom.getCrossLinkLeadAtomIndexes(vLinks);
-        BitSet bs = (BitSet) bsFound.clone();
+        BitSet bs = BitSetUtil.copy(bsFound);
         jmolAtom.getGroupBits(bsFound);
         for (int j = 0; j < vLinks.size(); j++)
           if (!checkMatch(newPatternAtom, atomNum, vLinks.get(j).intValue(), firstAtomOnly))

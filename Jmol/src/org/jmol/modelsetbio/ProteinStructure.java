@@ -35,7 +35,7 @@ import org.jmol.util.Logger;
 
 public abstract class ProteinStructure {
 
-  static int globalSerialID = 1000;
+  static int globalStrucNo = 1000;
   AlphaPolymer apolymer;
   EnumStructure type;
   EnumStructure subtype;
@@ -46,7 +46,7 @@ public abstract class ProteinStructure {
   Vector3f axisUnitVector;
   final Vector3f vectorProjection = new Vector3f();
   Point3f[] segments;
-  int uniqueID;
+  int strucNo;
   String structureID;
   int serialID;
   int strandCount;
@@ -57,11 +57,10 @@ public abstract class ProteinStructure {
    * @param type
    * @param monomerIndex
    * @param monomerCount
-   * @param id              UNUSED
    */
   ProteinStructure(AlphaPolymer apolymer, EnumStructure type,
-                   int monomerIndex, int monomerCount, int id) {
-    uniqueID = ++globalSerialID;
+                   int monomerIndex, int monomerCount) {
+    strucNo = ++globalStrucNo;
     this.apolymer = apolymer;
     this.type = type;    
     monomerIndexFirst = monomerIndex;
@@ -69,7 +68,7 @@ public abstract class ProteinStructure {
     
     if(Logger.debugging)
       Logger.debug(
-          "Creating ProteinStructure " + uniqueID 
+          "Creating ProteinStructure " + strucNo 
           + " " + type.getBioStructureTypeName(false) 
           + " from " + monomerIndexFirst + " through "+ monomerIndexLast
           + " in polymer " + apolymer);

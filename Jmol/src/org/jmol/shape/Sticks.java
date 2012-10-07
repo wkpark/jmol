@@ -234,12 +234,12 @@ public class Sticks extends Shape {
           setStateInfo(temp, i, getColorCommand("bonds",
               EnumPalette.CPK.id, colix));
         else
-          setStateInfo(temp, i, getColorCommand("bonds", colix));
+          setStateInfo(temp, i, getColorCommandUnk("bonds", colix));
       }
 
-    return getShapeCommands(temp, null, "select BONDS")
+    return getShapeCommandsSel(temp, null, "select BONDS")
         + "\n"
-        + (haveTainted ? getShapeCommands(temp2, null, "select BONDS")
+        + (haveTainted ? getShapeCommandsSel(temp2, null, "select BONDS")
             + "\n" : "");
   }
   

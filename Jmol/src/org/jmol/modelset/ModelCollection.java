@@ -679,7 +679,7 @@ abstract public class ModelCollection extends BondCollection {
           dsspIgnoreHydrogen, setStructure, includeAlpha);
     }
     if (setStructure) {
-      setStructureIds();
+      setStructureIndexes();
     }
     return ret;
   }
@@ -724,7 +724,7 @@ abstract public class ModelCollection extends BondCollection {
         continue;
       }
       if (atoms[i].getStrucNo() > 1000)
-        atoms[i].group.setProteinStructureId(++lastStrucNo[modelIndex]);
+        atoms[i].group.setStrucNo(++lastStrucNo[modelIndex]);
       i = atoms[i].group.lastAtomIndex + 1;
     }
   }
@@ -2906,7 +2906,7 @@ abstract public class ModelCollection extends BondCollection {
 
   public boolean proteinStructureTainted = false;
 
-  void setStructureIds() {
+  void setStructureIndexes() {
     int id;
     int idnew = 0;
     int lastid = -1;
@@ -2919,7 +2919,7 @@ abstract public class ModelCollection extends BondCollection {
         lastid = -1;
       }
       if ((id = atoms[i].getStrucNo()) != lastid && id != 0) {
-        atoms[i].getGroup().setProteinStructureId(++idnew);
+        atoms[i].getGroup().setStrucNo(++idnew);
         lastid = idnew;
       }
     }

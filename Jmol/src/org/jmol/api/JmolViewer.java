@@ -426,14 +426,11 @@ abstract public class JmolViewer {
   abstract public void notifyViewerRepaintDone();
 
   abstract public boolean getBooleanProperty(String propertyName);
-  /**
-   * @param key 
-   * @param doICare IGNORED  
-   * @return T/F
-   */
-  public boolean getBooleanProperty(String key, boolean doICare) {
-    return getBooleanProperty(key); // don't ask for what doesn't exist; you should care!
-  }
+
+  // removed for Jmol 13.1.7
+  // public boolean getBooleanProperty(String key, boolean doICare) {
+  //  return getBooleanProperty(key); // don't ask for what doesn't exist; you should care!
+  // }
   abstract public Object getParameter(String name);
 
   abstract public String getSetHistory(int howFarBack);

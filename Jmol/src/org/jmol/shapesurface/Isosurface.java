@@ -909,7 +909,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       }
       boolean colorArrayed = (imesh.isColorSolid && imesh.polygonColixes != null);
       if (imesh.isColorSolid && !colorArrayed) {
-        appendCmd(sb, getColorCommand(myType, imesh.colix));
+        appendCmd(sb, getColorCommandUnk(myType, imesh.colix));
       } else if (imesh.jvxlData.isBicolorMap && imesh.colorPhased) {
         appendCmd(sb, "color isosurface phase "
             + encodeColor(imesh.jvxlData.minColorIndex) + " "

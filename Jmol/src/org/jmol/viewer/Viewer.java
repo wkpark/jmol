@@ -549,7 +549,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
               + (isSignedApplet ? " (signed)" : "")));
     }
     zap(false, true, false); // here to allow echos
-    global.setParameterValue("language", GT.getLanguage());
+    global.setParamS("language", GT.getLanguage());
     stateManager.setJmolDefaults();
   }
 
@@ -687,11 +687,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void initialize(boolean clearUserVariables) {
     global = stateManager.getGlobalSettings(global, clearUserVariables);
     setStartupBooleans();
-    global.setParameterValue("_width", dimScreen.width);
-    global.setParameterValue("_height", dimScreen.height);
+    global.setParamI("_width", dimScreen.width);
+    global.setParamI("_height", dimScreen.height);
     if (haveDisplay) {
-      global.setParameterValue("_multiTouchClient", actionManager.isMTClient());
-      global.setParameterValue("_multiTouchServer", actionManager.isMTServer());
+      global.setParamB("_multiTouchClient", actionManager.isMTClient());
+      global.setParamB("_multiTouchServer", actionManager.isMTServer());
     }
     colorManager.resetElementColors();
     setObjectColor("background", "black");
@@ -840,7 +840,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // only set the rotationRadius if this is NOT a dataframe
     if (modelSet.setRotationRadius(animationManager.currentModelIndex,
         angstroms))
-      global.setParameterValue("rotationRadius", angstroms);
+      global.setParamF("rotationRadius", angstroms);
   }
 
   public Point3f getRotationCenter() {
@@ -1381,7 +1381,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       transformManager.setNavFps(value);
       break;
     }
-    global.setParameterValue((i < 10 ? "spin" : "nav") + key, value);
+    global.setParamI((i < 10 ? "spin" : "nav") + key, value);
   }
 
   public String getSpinState() {
@@ -1447,8 +1447,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private void setDefaultColors(boolean isRasmol) {
     colorManager.setDefaultColors(isRasmol);
-    global.setParameterValue("colorRasmol", isRasmol);
-    global.setParameterValue("defaultColorScheme", (isRasmol ? "rasmol"
+    global.setParamB("colorRasmol", isRasmol);
+    global.setParamS("defaultColorScheme", (isRasmol ? "rasmol"
         : "jmol"));
   }
 
@@ -1471,7 +1471,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void setElementArgb(int elementNumber, int argb) {
     // Eval
-    global.setParameterValue("=color "
+    global.setParamS("=color "
         + Elements.elementNameFromNumber(elementNumber), Escape
         .escapeColor(argb));
     colorManager.setElementArgb(elementNumber, argb);
@@ -1487,7 +1487,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   @Override
   public void setVectorScale(float scale) {
-    global.setParameterValue("vectorScale", scale);
+    global.setParamF("vectorScale", scale);
     global.vectorScale = scale;
   }
 
@@ -1514,7 +1514,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     transformManager.setVibrationScale(scale);
     global.vibrationScale = scale;
     // because this is public:
-    global.setParameterValue("vibrationScale", scale);
+    global.setParamF("vibrationScale", scale);
   }
 
   public void setVibrationOff() {
@@ -1528,7 +1528,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     period = Math.abs(period);
     global.vibrationPeriod = period;
     // because this is public:
-    global.setParameterValue("vibrationPeriod", period);
+    global.setParamF("vibrationPeriod", period);
   }
 
   void setObjectColor(String name, String colorName) {
@@ -1554,7 +1554,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       colorManager.setColixBackgroundContrast(argb);
       break;
     }
-    global.setParameterValue(name + "Color", Escape.escapeColor(argb));
+    global.setParamS(name + "Color", Escape.escapeColor(argb));
   }
 
   public void setBackgroundImage(String fileName, Object image) {
@@ -1609,7 +1609,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (mad == 0)
         mad = m;
     }
-    global.setParameterValue("show" + name, mad != 0);
+    global.setParamB("show" + name, mad != 0);
     global.objStateOn[objId] = (mad != 0);
     if (mad == 0)
       return;
@@ -1760,7 +1760,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void clearSelection() {
     // not used in this project; in jmolViewer interface, though
     selectionManager.clearSelection(true);
-    global.setParameterValue("hideNotSelected", false);
+    global.setParamB("hideNotSelected", false);
   }
 
   public void setSelectionSubset(BitSet subset) {
@@ -3353,7 +3353,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   @Override
   public void setBondTolerance(float bondTolerance) {
-    global.setParameterValue("bondTolerance", bondTolerance);
+    global.setParamF("bondTolerance", bondTolerance);
     global.bondTolerance = bondTolerance;
   }
 
@@ -3365,7 +3365,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   @Override
   public void setMinBondDistance(float minBondDistance) {
     // PreferencesDialog
-    global.setParameterValue("minBondDistance", minBondDistance);
+    global.setParamF("minBondDistance", minBondDistance);
     global.minBondDistance = minBondDistance;
   }
 
@@ -3852,7 +3852,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       fps = 1;
     if (fps > 50)
       fps = 50;
-    global.setParameterValue("animationFps", fps);
+    global.setParamI("animationFps", fps);
     // Eval
     // app AtomSetChooser
     animationManager.setAnimationFps(fps);
@@ -3970,16 +3970,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setBackgroundModelIndex(int modelIndex) {
     // initializeModel
     animationManager.setBackgroundModelIndex(modelIndex);
-    global.setParameterValue("backgroundModel", modelSet
+    global.setParamS("backgroundModel", modelSet
         .getModelNumberDotted(modelIndex));
   }
 
   void setFrameVariables() {
-    global.setParameterValue("_firstFrame",
+    global.setParamS("_firstFrame",
         getModelNumberDotted(animationManager.firstModelIndex));
-    global.setParameterValue("_lastFrame",
+    global.setParamS("_lastFrame",
         getModelNumberDotted(animationManager.lastModelIndex));
-    global.setParameterValue("_animTimeSec", animationManager
+    global.setParamF("_animTimeSec", animationManager
         .getAnimRunTimeSeconds());
   }
 
@@ -4205,8 +4205,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       dimScreen.width = width;
       dimScreen.height = height;
       if (!isImageWrite) {
-        global.setParameterValue("_width", width);
-        global.setParameterValue("_height", height);
+        global.setParamI("_width", width);
+        global.setParamI("_height", height);
         setStatusResized(width, height);
       }
     } else {
@@ -5097,7 +5097,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   @Override
   public void setMarBond(short marBond) {
     global.bondRadiusMilliAngstroms = marBond;
-    global.setParameterValue("bondRadiusMilliAngstroms", marBond);
+    global.setParamI("bondRadiusMilliAngstroms", marBond);
     setShapeSize(JmolConstants.SHAPE_STICKS, marBond * 2, BitSetUtil
         .setAll(getAtomCount()));
   }
@@ -5213,7 +5213,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   @Override
   public void setDebugScript(boolean debugScript) {
     global.debugScript = debugScript;
-    global.setParameterValue("debugScript", debugScript);
+    global.setParamB("debugScript", debugScript);
     eval.setDebugging();
   }
 
@@ -5249,7 +5249,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (pickingMode < 0)
       pickingMode = ActionManager.PICKING_IDENTIFY;
     actionManager.setPickingMode(pickingMode);
-    global.setParameterValue("picking", ActionManager
+    global.setParamS("picking", ActionManager
         .getPickingModeName(actionManager.getAtomPickingMode()));
     if (option == null || option.length() == 0)
       return;
@@ -5295,7 +5295,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (pickingStyle < 0)
       pickingStyle = ActionManager.PICKINGSTYLE_SELECT_JMOL;
     actionManager.setPickingStyle(pickingStyle);
-    global.setParameterValue("pickingStyle", ActionManager
+    global.setParamS("pickingStyle", ActionManager
         .getPickingStyleName(actionManager.getPickingStyle()));
   }
 
@@ -5477,15 +5477,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (fileNo != 0)
       fileNo = (fileNo < 1000000 ? 1 : fileNo / 1000000);
 
-    global.setParameterValue("_currentFileNumber", fileNo);
-    global.setParameterValue("_currentModelNumberInFile", modelNo);
-    global.setParameterValue("_frameID", frameID);
-    global.setParameterValue("_modelNumber", strModelNo);
-    global.setParameterValue("_modelName", (modelIndex < 0 ? ""
+    global.setParamI("_currentFileNumber", fileNo);
+    global.setParamI("_currentModelNumberInFile", modelNo);
+    global.setParamI("_frameID", frameID);
+    global.setParamS("_modelNumber", strModelNo);
+    global.setParamS("_modelName", (modelIndex < 0 ? ""
         : getModelName(modelIndex)));
-    global.setParameterValue("_modelTitle", (modelIndex < 0 ? ""
+    global.setParamS("_modelTitle", (modelIndex < 0 ? ""
         : getModelTitle(modelIndex)));
-    global.setParameterValue("_modelFile", (modelIndex < 0 ? ""
+    global.setParamS("_modelFile", (modelIndex < 0 ? ""
         : getModelFileName(modelIndex)));
 
     if (modelIndex == prevFrame) {
@@ -5563,7 +5563,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
   public void notifyError(String errType, String errMsg,
                           String errMsgUntranslated) {
-    global.setParameterValue("_errormessage", errMsgUntranslated);
+    global.setParamS("_errormessage", errMsgUntranslated);
     statusManager.notifyError(errType, errMsg, errMsgUntranslated);
   }
 
@@ -5593,12 +5593,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
 
   public void setStatusAtomHovered(int atomIndex, String info) {
-    global.setParameterValue("_atomhovered", atomIndex);
+    global.setParamI("_atomhovered", atomIndex);
     statusManager.setStatusAtomHovered(atomIndex, info);
   }
 
   public void setStatusObjectHovered(String id, String info, Point3f pt) {
-    global.setParameterValue("_objecthovered", id);
+    global.setParamS("_objecthovered", id);
     statusManager.setStatusObjectHovered(id, info, pt);
   }
 
@@ -5630,7 +5630,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                  String fullPathName, String fileName,
                                  String modelName, String strError) {
     setErrorMessage(strError);
-    global.setParameterValue("_loadPoint", ptLoad.getCode()); 
+    global.setParamI("_loadPoint", ptLoad.getCode()); 
     boolean doCallback = (ptLoad != EnumFileStatus.CREATING_MODELSET);
     statusManager.setFileLoadStatus(fullPathName, fileName, modelName,
         strError, ptLoad.getCode(), doCallback);
@@ -5752,7 +5752,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         info = modelSet.getAtomInfo(atomIndex, info);
     }
     global.setPicked(atomIndex);
-    global.setParameterValue("_pickinfo", info);
+    global.setParamS("_pickinfo", info);
     statusManager.setStatusAtomPicked(atomIndex, info);
     int syncMode = statusManager.getSyncMode();
     if (syncMode != StatusManager.SYNC_DRIVER)
@@ -6001,7 +6001,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (value == null)
       return;
     if (key.charAt(0) == '_') {
-      global.setParameterValue(key, value);
+      global.setParamS(key, value);
       return;
     }
     int tok = Token.getTokFromName(key);
@@ -6204,7 +6204,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       // for example, defaultDirectoryLocal
       break;
     }
-    global.setParameterValue(key, value);
+    global.setParamS(key, value);
   }
 
   @Override
@@ -6212,7 +6212,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (Float.isNaN(value))
       return;
     if (key.charAt(0) == '_') {
-      global.setParameterValue(key, value);
+      global.setParamF(key, value);
       return;
     }
     int tok = Token.getTokFromName(key);
@@ -6392,7 +6392,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         return;
       }
     }
-    global.setParameterValue(key, value);
+    global.setParamF(key, value);
   }
 
   @Override
@@ -6400,7 +6400,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (value == Integer.MIN_VALUE)
       return;
     if (key.charAt(0) == '_') {
-      global.setParameterValue(key, value);
+      global.setParamI(key, value);
       return;
     }
     int tok = Token.getTokFromName(key);
@@ -6474,7 +6474,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       // /11.3.52//
       Logger.setLogLevel(value);
       Logger.info("logging level set to " + value);
-      global.setParameterValue("logLevel", value);
+      global.setParamI("logLevel", value);
       eval.setDebugging();
       return;
     case Token.axesmode:
@@ -6581,7 +6581,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         return;
       }
     }
-    global.setParameterValue(key, value);
+    global.setParamI(key, value);
   }
 
   private static int checkIntRange(int value, int min, int max) {
@@ -6595,7 +6595,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   @Override
   public void setBooleanProperty(String key, boolean value) {
     if (key.charAt(0) == '_') {
-      global.setParameterValue(key, value);
+      global.setParamB(key, value);
       return;
     }
     int tok = Token.getTokFromName(key);
@@ -7104,7 +7104,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         return;
       }
     }
-    global.setParameterValue(key, value);
+    global.setParamB(key, value);
     if (doRepaint)
       setTainted(true);
   }
@@ -7163,9 +7163,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void setSmilesString(String s) {
     if (s == null)
-      global.removeJmolParameter("_smilesString");
+      global.removeParam("_smilesString");
     else
-      global.setParameterValue("_smilesString", s);
+      global.setParamS("_smilesString", s);
   }
 
   public void removeUserVariable(String key) {
@@ -7339,7 +7339,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // setBooleanProperty
     // stateManager.setCrystallographicDefaults
     // app preferences dialog
-    global.setParameterValue("perspectiveDepth", perspectiveDepth);
+    global.setParamB("perspectiveDepth", perspectiveDepth);
     transformManager.setPerspectiveDepth(perspectiveDepth);
   }
 
@@ -7362,7 +7362,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
      * only aesthetic and not at all justified if the axis is molecular.
      * **************************************************************
      */
-    global.setParameterValue("axesOrientationRasmol", TF);
+    global.setParamB("axesOrientationRasmol", TF);
     global.axesOrientationRasmol = TF;
     reset(true);
   }
@@ -7393,16 +7393,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void resetError() {
-    global.removeJmolParameter("_errormessage");
+    global.removeParam("_errormessage");
   }
 
   private void setAxesModeMolecular(boolean TF) {
     global.axesMode = (TF ? EnumAxesMode.MOLECULAR : EnumAxesMode.BOUNDBOX);
     axesAreTainted = true;
-    global.removeJmolParameter("axesunitcell");
-    global.removeJmolParameter(TF ? "axeswindow" : "axesmolecular");
-    global.setParameterValue("axesMode", global.axesMode.getCode());
-    global.setParameterValue(TF ? "axesMolecular" : "axesWindow", true);
+    global.removeParam("axesunitcell");
+    global.removeParam(TF ? "axeswindow" : "axesmolecular");
+    global.setParamI("axesMode", global.axesMode.getCode());
+    global.setParamB(TF ? "axesMolecular" : "axesWindow", true);
 
   }
 
@@ -7411,10 +7411,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // setBooleanproperty
     global.axesMode = (TF ? EnumAxesMode.UNITCELL : EnumAxesMode.BOUNDBOX);
     axesAreTainted = true;
-    global.removeJmolParameter("axesmolecular");
-    global.removeJmolParameter(TF ? "axeswindow" : "axesunitcell");
-    global.setParameterValue(TF ? "axesUnitcell" : "axesWindow", true);
-    global.setParameterValue("axesMode", global.axesMode.getCode());
+    global.removeParam("axesmolecular");
+    global.removeParam(TF ? "axeswindow" : "axesunitcell");
+    global.setParamB(TF ? "axesUnitcell" : "axesWindow", true);
+    global.setParamI("axesMode", global.axesMode.getCode());
   }
 
   public EnumAxesMode getAxesMode() {
@@ -7435,7 +7435,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // display panel can hit this without a frame, apparently
     if (modelSet == null || TF == modelSet.getSelectionHaloEnabled())
       return;
-    global.setParameterValue("selectionHalos", TF);
+    global.setParamB("selectionHalos", TF);
     loadShape(JmolConstants.SHAPE_HALOS);
     // a frame property, so it is automatically reset
     modelSet.setSelectionHaloEnabled(TF);
@@ -7488,10 +7488,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       global.strandCountForMeshRibbon = value;
       break;
     }
-    global.setParameterValue("strandCount", value);
-    global.setParameterValue("strandCountForStrands",
+    global.setParamI("strandCount", value);
+    global.setParamI("strandCountForStrands",
         global.strandCountForStrands);
-    global.setParameterValue("strandCountForMeshRibbon",
+    global.setParamI("strandCountForMeshRibbon",
         global.strandCountForMeshRibbon);
   }
 
@@ -7622,7 +7622,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   @Override
   public void setAutoBond(boolean TF) {
     // setBooleanProperties
-    global.setParameterValue("autobond", TF);
+    global.setParamB("autobond", TF);
     global.autoBond = TF;
   }
 
@@ -7700,7 +7700,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   @Override
   public void setPercentVdwAtom(int value) {
-    global.setParameterValue("percentVdwAtom", value);
+    global.setParamI("percentVdwAtom", value);
     global.percentVdwAtom = value;
     rd.value = value / 100f;
     rd.factorType = EnumType.FACTOR;
@@ -7752,7 +7752,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setShowHydrogens(boolean TF) {
     // PreferencesDialog
     // setBooleanProperty
-    global.setParameterValue("showHydrogens", TF);
+    global.setParamB("showHydrogens", TF);
     global.showHydrogens = TF;
   }
 
@@ -7769,7 +7769,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setShowBbcage(boolean value) {
     setObjectMad(JmolConstants.SHAPE_BBCAGE, "boundbox", (short) (value ? -4
         : 0));
-    global.setParameterValue("showBoundBox", value);
+    global.setParamB("showBoundBox", value);
   }
 
   @Override
@@ -7780,7 +7780,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setShowUnitCell(boolean value) {
     setObjectMad(JmolConstants.SHAPE_UCCAGE, "unitcell", (short) (value ? -2
         : 0));
-    global.setParameterValue("showUnitCell", value);
+    global.setParamB("showUnitCell", value);
   }
 
   public boolean getShowUnitCell() {
@@ -7790,7 +7790,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   @Override
   public void setShowAxes(boolean value) {
     setObjectMad(JmolConstants.SHAPE_AXES, "axes", (short) (value ? -2 : 0));
-    global.setParameterValue("showAxes", value);
+    global.setParamB("showAxes", value);
   }
 
   @Override
@@ -7821,7 +7821,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   @Override
   public void setShowMeasurements(boolean TF) {
     // setbooleanProperty
-    global.setParameterValue("showMeasurements", TF);
+    global.setParamB("showMeasurements", TF);
     global.showMeasurements = TF;
   }
 
@@ -8293,11 +8293,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     int modifiers = Binding.getModifiers(action);
     int clickCount = Binding.getClickCount(action);
     //System.out.println(action + " " + clickCount + " " + modifiers + " " + mode);
-    global.setParameterValue("_mouseX", x);
-    global.setParameterValue("_mouseY", dimScreen.height - y);
-    global.setParameterValue("_mouseAction", action);
-    global.setParameterValue("_mouseModifiers", modifiers);
-    global.setParameterValue("_clickCount", clickCount);
+    global.setParamI("_mouseX", x);
+    global.setParamI("_mouseY", dimScreen.height - y);
+    global.setParamI("_mouseAction", action);
+    global.setParamI("_mouseModifiers", modifiers);
+    global.setParamI("_clickCount", clickCount);
     return statusManager.setStatusClicked(x, dimScreen.height - y, action,
         clickCount, mode);
   }
@@ -8392,7 +8392,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setDefaultLattice(Point3f ptLattice) {
     // Eval -- handled separately
     global.setDefaultLattice(ptLattice);
-    global.setParameterValue("defaultLattice", Escape.escapePt(ptLattice));
+    global.setParamS("defaultLattice", Escape.escapePt(ptLattice));
   }
 
   public Point3f getDefaultLattice() {
@@ -9411,7 +9411,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (vType == null)
       vType = EnumVdw.AUTO;
     dataManager.setDefaultVdw(vType);
-    global.setParameterValue("defaultVDW", getDefaultVdwTypeNameOrData(
+    global.setParamS("defaultVDW", getDefaultVdwTypeNameOrData(
         Integer.MIN_VALUE, null));
   }
 

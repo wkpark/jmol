@@ -350,7 +350,7 @@ import java.util.Map;
     String ret = calculateStructuresAllExcept(bsModelsExcluded, asDSSP, true,
         dsspIgnoreHydrogen, true, false);
     viewer.resetBioshapes(bsAllAtoms);
-    setStructureIds();
+    setStructureIndexes();
     return ret;
   }
 

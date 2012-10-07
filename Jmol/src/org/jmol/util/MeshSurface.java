@@ -33,9 +33,10 @@ public class MeshSurface {
 
   public short[] polygonColixes;
   public short[] vertexColixes;
-  public Tuple3f[] normals; // for export only
-  public int normalCount;   // for export only
-  protected int normixCount;
+  public Tuple3f[] normals; // for export only or for cartoons
+  public Vector3f[] normalsTemp; // for cartoons
+  public int normalCount; // for export only
+  public int normixCount;
   public BitSet bsPolygons;
   public Matrix4f mat4;
   public BitSet[] surfaceSet;

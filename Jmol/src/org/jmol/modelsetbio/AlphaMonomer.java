@@ -80,9 +80,9 @@ public class AlphaMonomer extends Monomer {
   }
   
   @Override
-  public void setProteinStructureId(int id) {
+  public void setStrucNo(int n) {
     if (proteinStructure != null)
-      proteinStructure.uniqueID = id;
+      proteinStructure.strucNo = n;
   }
 
   @Override
@@ -99,7 +99,7 @@ public class AlphaMonomer extends Monomer {
 
   @Override
   public int getStrucNo() {
-    return proteinStructure != null ? proteinStructure.uniqueID : 0;
+    return proteinStructure != null ? proteinStructure.strucNo : 0;
   }
 
   @Override
@@ -135,13 +135,13 @@ public class AlphaMonomer extends Monomer {
       case HELIXALPHA:
       case HELIX310:
       case HELIXPI:
-        setStructure(new Helix((AlphaPolymer) bioPolymer, monomerIndex, 1, 0, type));
+        setStructure(new Helix((AlphaPolymer) bioPolymer, monomerIndex, 1, type));
         break;
       case SHEET:
-        setStructure(new Sheet((AlphaPolymer) bioPolymer, monomerIndex, 1, 0, type));
+        setStructure(new Sheet((AlphaPolymer) bioPolymer, monomerIndex, 1, type));
         break;
       case TURN:
-        setStructure(new Turn((AlphaPolymer) bioPolymer, monomerIndex, 1, 0));
+        setStructure(new Turn((AlphaPolymer) bioPolymer, monomerIndex, 1));
         break;
       case NONE:
         setStructure(null);

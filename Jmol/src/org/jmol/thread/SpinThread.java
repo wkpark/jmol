@@ -69,7 +69,7 @@ public class SpinThread extends JmolThread {
   @Override
   public void run() {
     float myFps = (isNav ? transformManager.navFps : transformManager.spinFps);
-    viewer.getGlobalSettings().setParameterValue(isNav ? "_navigating" : "_spinning", true);
+    viewer.getGlobalSettings().setParamB(isNav ? "_navigating" : "_spinning", true);
     int i = 0;
     long timeBegin = System.currentTimeMillis();
     float angle = 0;

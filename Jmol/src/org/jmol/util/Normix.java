@@ -46,6 +46,11 @@ public class Normix {
       normixCount = Geodesic.getVertexCount(NORMIX_GEODESIC_LEVEL);
     return normixCount;
   }
+  
+  public static BitSet newVertexBitSet() {
+    return BitSet.newN(getNormixCount());
+  }
+
   private static Vector3f[] vertexVectors;
   public static Vector3f[] getVertexVectors() {
     // Graphics3D, isosurfaceRenderer normals, below

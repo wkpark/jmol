@@ -302,7 +302,7 @@ class SelectionManager {
     addBs(commands, "delete ", bsDeleted);
     addBs(commands, "fix ", bsFixed);
     temp.put("-", bsSelection);
-    cmd = StateManager.getCommands(temp, null);
+    cmd = StateManager.getCommands(temp, null, "select");
     if (cmd == null)
       StateManager.appendCmd(commands, "select none");
     else

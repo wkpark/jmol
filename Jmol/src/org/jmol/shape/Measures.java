@@ -607,7 +607,7 @@ public String getShapeState() {
         bs.set(i);
       }
       if (bsColixSet != null && bsColixSet.get(i))
-        setStateInfo(temp, i, getColorCommand("measure", m.getColix()));
+        setStateInfo(temp, i, getColorCommandUnk("measure", m.getColix()));
       if (m.getStrFormat() != null)
         setStateInfo(temp, i, "measure "
             + Escape.escapeStr(m.getStrFormat()));
@@ -626,7 +626,7 @@ public String getShapeState() {
     }
     if (mad >= 0)
       commands.append(" set measurements " + (mad / 2000f)).append(";\n");
-    String s = getShapeCommands(temp, null, "select measures");
+    String s = getShapeCommandsSel(temp, null, "select measures");
     if (s != null && s.length() != 0) {
       commands.append(s);
       appendCmd(commands, "select measures ({null})");

@@ -26,7 +26,6 @@ package org.jmol.renderbio;
 
 import org.jmol.shapebio.BioShape;
 
-
 public class MeshRibbonRenderer extends StrandsRenderer {
 
   @Override
@@ -42,8 +41,10 @@ public class MeshRibbonRenderer extends StrandsRenderer {
     calcScreenControlPoints();
     ribbonTopScreens = calcScreens(offsetTop);
     ribbonBottomScreens = calcScreens(-offsetBottom);
+    bsRenderMesh.clearAll();
     for (int i = bsVisible.nextSetBit(0); i >= 0; i = bsVisible.nextSetBit(i + 1))
       renderHermiteRibbon(doFill, i, false);
+    renderMeshes();
     viewer.freeTempScreens(ribbonTopScreens);
     viewer.freeTempScreens(ribbonBottomScreens);
   }

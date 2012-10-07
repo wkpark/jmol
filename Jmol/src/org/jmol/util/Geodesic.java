@@ -412,4 +412,5 @@ public class Geodesic {
     htVertex.put(hashKey, Short.valueOf(vertexNext));
     return vertexNext++;
   }
+
 }

@@ -464,7 +464,7 @@ public class Group {
    * 
    * @param i
    */
-  public void setProteinStructureId(int i) {
+  public void setStrucNo(int i) {
   }
 
   /**

@@ -915,17 +915,17 @@ public abstract class TransformManager {
 
   void setSlabEnabled(boolean slabEnabled) {
     this.slabEnabled = slabEnabled;
-    viewer.getGlobalSettings().setParameterValue("slabEnabled", slabEnabled);
+    viewer.getGlobalSettings().setParamB("slabEnabled", slabEnabled);
   }
 
   void setZShadeEnabled(boolean zShadeEnabled) {
     this.zShadeEnabled = zShadeEnabled;
-    viewer.getGlobalSettings().setParameterValue("zShade", zShadeEnabled);
+    viewer.getGlobalSettings().setParamB("zShade", zShadeEnabled);
   }
 
   void setZoomEnabled(boolean zoomEnabled) {
     this.zoomEnabled = zoomEnabled;
-    viewer.getGlobalSettings().setParameterValue("zoomEnabled", zoomEnabled);
+    viewer.getGlobalSettings().setParamB("zoomEnabled", zoomEnabled);
   }
 
   Point4f slabPlane = null;
@@ -954,8 +954,8 @@ public abstract class TransformManager {
   }
 
   private void slabDepthChanged() {
-    viewer.getGlobalSettings().setParameterValue("slab", slabPercentSetting);
-    viewer.getGlobalSettings().setParameterValue("depth", depthPercentSetting);
+    viewer.getGlobalSettings().setParamI("slab", slabPercentSetting);
+    viewer.getGlobalSettings().setParamI("depth", depthPercentSetting);
   }
 
   void depthByPercentagePoints(int percentage) {
@@ -986,7 +986,7 @@ public abstract class TransformManager {
   }
 
   void depthToPercent(int percentDepth) {
-    viewer.getGlobalSettings().setParameterValue("depth", percentDepth);
+    viewer.getGlobalSettings().setParamI("depth", percentDepth);
     depthPercentSetting = percentDepth;
     if (slabPercentSetting <= depthPercentSetting)
       slabPercentSetting = depthPercentSetting + 1;
@@ -1513,9 +1513,9 @@ public abstract class TransformManager {
       }
     }
       
-    viewer.getGlobalSettings().setParameterValue("_slabPlane",
+    viewer.getGlobalSettings().setParamS("_slabPlane",
         Escape.escape(getSlabDepthPlane(false)));
-    viewer.getGlobalSettings().setParameterValue("_depthPlane",
+    viewer.getGlobalSettings().setParamS("_depthPlane",
         Escape.escape(getSlabDepthPlane(true)));
     if (slabEnabled)
       return;
@@ -2063,7 +2063,7 @@ public abstract class TransformManager {
     if (navOn && spinOn)
       setNavOn(false);
     this.spinOn = spinOn;
-    viewer.getGlobalSettings().setParameterValue("_spinning", spinOn);
+    viewer.getGlobalSettings().setParamB("_spinning", spinOn);
     if (spinOn) {
       if (spinThread == null) {
         spinThread = new SpinThread(this, viewer, endDegrees, endPositions, bsAtoms, false,
@@ -2086,7 +2086,7 @@ public abstract class TransformManager {
     if (navOn && spinOn)
       setSpinOn(false, 0, null, null, false);
     this.navOn = navOn;
-    viewer.getGlobalSettings().setParameterValue("_navigating", navOn);
+    viewer.getGlobalSettings().setParamB("_navigating", navOn);
     if (navOn) {
       if (navX == 0 && navY == 0 && navZ == 0)
         navZ = 1;
@@ -2419,7 +2419,7 @@ public abstract class TransformManager {
    * @param percent
    */
   public void setNavigationDepthPercent(float timeSec, float percent) {
-    viewer.getGlobalSettings().setParameterValue("navigationDepth", percent);
+    viewer.getGlobalSettings().setParamF("navigationDepth", percent);
   }
 
   Point3f getNavigationCenter() {
@@ -2443,7 +2443,7 @@ public abstract class TransformManager {
   }
 
   void setNavigationSlabOffsetPercent(float offset) {
-    viewer.getGlobalSettings().setParameterValue("navigationSlab", offset);
+    viewer.getGlobalSettings().setParamF("navigationSlab", offset);
   }
 
   /**

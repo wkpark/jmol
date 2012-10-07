@@ -102,13 +102,13 @@ public class AlphaPolymer extends BioPolymer {
     case HELIXALPHA:
     case HELIX310:
     case HELIXPI:
-      proteinstructure = new Helix(this, indexStart, structureCount, 0, type);
+      proteinstructure = new Helix(this, indexStart, structureCount, type);
       break;
     case SHEET:
-      proteinstructure = new Sheet(this, indexStart, structureCount, 0, type);
+      proteinstructure = new Sheet(this, indexStart, structureCount, type);
       break;
     case TURN:
-      proteinstructure = new Turn(this, indexStart, structureCount, 0);
+      proteinstructure = new Turn(this, indexStart, structureCount);
       break;
     default:
       Logger.error("unrecognized secondary structure type");

@@ -156,22 +156,29 @@ public class Mesh extends MeshSurface {
     this.meshType = meshType;
   }
 
+  private BitSet bsTemp;
+  
   public void initialize(int lighting, Point3f[] vertices, Point4f plane) {
     if (vertices == null)
       vertices = this.vertices;
     Vector3f[] normals = getNormals(vertices, plane);
+    setNormixes(normals);
+    this.lighting = Token.frontlit;
+    if (insideOut)
+      invertNormixes();
+    setLighting(lighting);
+  }
+
+  public void setNormixes(Vector3f[] normals) {
     normixes = new short[normixCount];
-    BitSet bsTemp = new BitSet();
+    if (bsTemp == null)
+      bsTemp = Normix.newVertexBitSet();
     if (haveXyPoints)
       for (int i = normixCount; --i >= 0;)
         normixes[i] = Normix.NORMIX_NULL;
     else
       for (int i = normixCount; --i >= 0;)
         normixes[i] = Normix.getNormixV(normals[i], bsTemp);
-    this.lighting = Token.frontlit;
-    if (insideOut)
-      invertNormixes();
-    setLighting(lighting);
   }
 
   public Vector3f[] getNormals(Point3f[] vertices, Point4f plane) {
@@ -489,6 +496,11 @@ public class Mesh extends MeshSurface {
     }
     mat4 = Matrix4f.newMV(m3, v);
     recalcAltVertices = true;
+  }
+
+  public Vector3f[] getNormalsTemp() {
+    return (normalsTemp == null ? (normalsTemp = getNormals(vertices, null))
+        : normalsTemp);
   }
 
 }

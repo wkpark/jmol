@@ -2,6 +2,7 @@
 
 // see JmolApi.js for public user-interface. All these are private functions
 
+// 9/13/2012 BH: JmolCore.js changes for JSmol doAjax() method -- _getFileData()
 // 6/12/2012 BH: JmolApi.js: adds Jmol.setInfo(applet, info, isShown) -- third parameter optional 
 // 6/12/2012 BH: JmolApi.js: adds Jmol.getInfo(applet) 
 // 6/12/2012 BH: JmolApplet.js: Fixes for MSIE 8
@@ -76,6 +77,9 @@ Jmol = (function(document) {
 			_nciLoadScript: ";n = ({molecule=1}.length < {molecule=2}.length ? 2 : 1); select molecule=n;display selected;center selected;",
 			_pubChemLoadScript: "",
 			_DirectDatabaseCalls:{
+				"cactus.nci.nih.gov": "%URL",
+				"www.rcsb.org": "%URL",
+				"pubchem.ncbi.nlm.nih.gov":"%URL",
 				"$": "http://cactus.nci.nih.gov/chemical/structure/%FILE/file?format=sdf&get3d=True",
 				"$$": "http://cactus.nci.nih.gov/chemical/structure/%FILE/file?format=sdf",
 				"=": "http://www.rcsb.org/pdb/files/%FILE.pdb",
@@ -104,12 +108,16 @@ Jmol = (function(document) {
 	}	
 
   Jmol._readyCallback = function (a,b,c,d) {
+	  var app = a.split("_object")[0];
 		// necessary for MSIE in strict mode -- apparently, we can't call 
 		// jmol._readyCallback, but we can call Jmol._readyCallback. Go figure...
-		Jmol._applets[a.split("_object")[0]]._readyCallback(a,b,c,d);
+		Jmol._applets[app]._readyCallback(a,b,c,d);
 	}
 
 	Jmol._ajax = function(info) {
+	  if (!info.async) {
+	  	return jQuery.ajax(info).responseText;
+	  }
 		Jmol._ajaxQueue.push(info)
 		if (Jmol._ajaxQueue.length == 1)
 			Jmol._ajaxDone()
@@ -226,6 +234,8 @@ Jmol = (function(document) {
 	}
 	
 	Jmol._loadSuccess = function(a, fSuccess) {
+	  if (!fSuccess)
+	    return;
 		Jmol._ajaxDone();
 		fSuccess(a);
 	}
@@ -270,7 +280,7 @@ Jmol = (function(document) {
 	}
 	
 	Jmol._getRawDataFromServer = function(database,query,fSuccess,fError){
-		Jmol._contactServer(
+		return Jmol._contactServer(
 			"?call=getRawDataFromDatabase&database=" + database 
 				+ "&query=" + encodeURIComponent(query)
 				+ "&script=" + encodeURIComponent(Jmol._getScriptForDatabase(database)),
@@ -291,10 +301,9 @@ Jmol = (function(document) {
 				error: function() {Jmol._loadError(null)},
 				async: Jmol._asynchronous
 			}
-			Jmol._ajax(info);
-			return;
+			return Jmol._ajax(info);
 		}		
-		Jmol._contactServer(
+		return Jmol._contactServer(
 			"?call=getInfoFromDatabase&database=" + database 
 				+ "&query=" + encodeURIComponent(query),
 			function(data) {Jmol._setInfo(applet, database, data) }
@@ -318,6 +327,16 @@ Jmol = (function(document) {
 		}
 	}
 
+  Jmol._getFileData = function(fileName) {
+  	// no .gz here (as for RCSB)
+  	if (fileName.indexOf(".gz") == fileName.length - 3)
+  		fileName = fileName.substring(0, fileName.length - 3);
+  	// use host-server PHP relay if not from this host
+		return (fileName.indexOf(document.location.host) < 0  
+				 ? Jmol._getRawDataFromServer("_",fileName)
+	  		 : jQuery.ajax({dataType:"text",url:fileName,async:false}).responseText);
+	}
+  
 	Jmol._loadFileData = function(applet, fileName, fSuccess, fError){
 		if (Jmol._isDatabaseCall(fileName)) {
 			Jmol._setQueryTerm(applet, fileName);
@@ -332,9 +351,9 @@ Jmol = (function(document) {
 		var info = {
 			dataType: "text",
 			url: fileName,
+			async: Jmol._asynchronous,
 			success: function(a) {Jmol._loadSuccess(a, fSuccess)},
-			error: function() {Jmol._loadError(fError)},
-			async: Jmol._asynchronous
+			error: function() {Jmol._loadError(fError)}
 		}
 		var pt = fileName.indexOf("?POST?");
 		if (pt > 0) {
@@ -354,12 +373,13 @@ Jmol = (function(document) {
 			url: Jmol._serverUrl + data,
 			success: function(a) {Jmol._loadSuccess(a, fSuccess)},
 			error:function() { Jmol._loadError(fError) },
-			async:Jmol._asynchronous
+			async:fSuccess ? Jmol._asynchronous : false
 		}
-		Jmol._ajax(info);
+		return Jmol._ajax(info);
 	}
+	
 	Jmol._setQueryTerm = function(applet, query) {
-		if (!query || !applet._hasOptions)
+		if (!query || !applet._hasOptions || query.substring(0, 7) == "http://")
 			return;
 		if (Jmol._isDatabaseCall(query)) {
 			var database = query.substring(0, 1);

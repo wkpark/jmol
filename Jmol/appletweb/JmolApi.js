@@ -56,6 +56,7 @@
 		
 		// better idea....
 		// order matters; must have JAVA, WEBGL, HTML5, or IMAGE in some order, separated by a single space
+
 		
 		  var List = Info.use.toUpperCase().split(" ");
 		  var javaAllowed = false;
@@ -67,12 +68,10 @@
 						applet = new Jmol._Applet(id, Info, null, checkOnly);
 					break;
 		    case "WEBGL":
-					Info.useWebGlIfAvailable = true;
-					applet = Jmol._getCanvas(id, Info, checkOnly);
+					applet = Jmol._getCanvas(id, Info, checkOnly, true, false);
 		      break;
 		    case "HTML5":
-					Info.useWebGlIfAvailable = false;
-					applet = Jmol._getCanvas(id, Info, checkOnly);
+					applet = Jmol._getCanvas(id, Info, checkOnly, false, true);
 		      break;
 		    case "IMAGE":
 					applet = new Jmol._Image(id, Info, null, checkOnly);
@@ -84,13 +83,13 @@
 		  if (applet == null) {
 		  	if (checkOnly || !javaAllowed)
 		  		applet = {_jmolType : "none" };
-		  	else
+		  	else if (javaAllowed)
 	 		  	applet = new Jmol._Applet(id, Info, null, false);
 			}
 			
 		} else {
 
-			// early idea
+			// early idea -- deprecated
 			
 			if (!Info.useNoApplet && !Info.useImageOnly 
 				&& (navigator.javaEnabled() || Info.useJmolOnly)) {
@@ -101,7 +100,7 @@
 			} 
 			if (applet == null) {
 				if (!Info.useJmolOnly && !Info.useImageOnly) {
-					applet = Jmol._getCanvas(id, Info, checkOnly);
+					applet = Jmol._getCanvas(id, Info, checkOnly, Info.useWebGlIfAvailable, !Info.useWebGlIfAvailable);
 				} 
 				if (applet == null)
 					applet = new Jmol._Image(id, Info, null, checkOnly);
@@ -394,5 +393,10 @@
 	  Jmol._grabberOptions = options;
 	}
 
-	
+
+  Jmol.refresh = function(applet, mode, data) {
+    if (applet && applet._refresh) {
+  		applet._refresh(mode, data)
+    }
+	}
 })(Jmol);

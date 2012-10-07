@@ -270,8 +270,11 @@
 		var h = (!tf ? "2px" : "100%");
 		//var w = (!tf ? "2px" : this._containerWidth.indexOf("px") >= 0 ? this._containerWidth : "100%");
 		//var h = (!tf ? "2px" : this._containerHeight.indexOf("px") >= 0 ? this._containerHeight : "100%");
-		Jmol._getElement(this, "object").style.width = w; 
-		Jmol._getElement(this, "object").style.height = h; 
+		var o = Jmol._getElement(this, "object");
+		if (o && o.style) {
+			o.style.width = w; 
+			o.style.height = h;
+		} 
 	}
 	
 	Jmol._Applet.prototype._script = function(script) {

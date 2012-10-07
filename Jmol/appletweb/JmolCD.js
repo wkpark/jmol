@@ -22,15 +22,15 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 	if (!ChemDoodle) 
 		return;
 
-	Jmol._getCanvas = function(id, Info, checkOnly) {
+	Jmol._getCanvas = function(id, Info, checkOnly, checkWebGL, checkHTML5) {
 		// overrides the function in JmolCore.js
 		// ChemDoodle: first try with WebGL unless that doesn't work or we have indicated NOWEBGL
 		var canvas = null;
-		if (Info.useWebGlIfAvailable && Jmol.featureDetection.supportsWebGL())
+		if (checkWebGL && Jmol.featureDetection.supportsWebGL())
 			canvas = new Jmol._Canvas3D(id, Info, null, checkOnly);
-		if (canvas == null)
-			canvas = new Jmol._Canvas(id, Info, null, checkOnly);
-		if (Jmol._document)
+		if (checkHTML5 && canvas == null)
+			canvas = new Jmol._Canvas2D(id, Info, null, checkOnly);
+		if (canvas != null && Jmol._document)
 			canvas._readyCallback(id, id, true, null);
 		return canvas;
 	}
@@ -45,9 +45,9 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 		return this;
 	}
 
-	Jmol._Canvas = function(id, Info, caption, checkOnly){
+	Jmol._Canvas2D = function(id, Info, caption, checkOnly){
 		this._is2D = true;				
-		this._jmolType = "Jmol._Canvas (ChemDoodle)";
+		this._jmolType = "Jmol._Canvas2D (ChemDoodle)";
 		if (checkOnly)
 			return this;
 		this._dataMultiplier=20;
@@ -164,7 +164,6 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 	}
 
 	Jmol._Canvas3D.prototype = _cdSetPrototype(new ChemDoodle._Canvas3D);
-	Jmol._Canvas.prototype = _cdSetPrototype(new ChemDoodle.TransformCanvas);
 
   Jmol._Canvas3D.prototype._setDefaults = function() {
 		this.specs.backgroundColor = 'black';
@@ -173,7 +172,9 @@ if(typeof(ChemDoodle)=="undefined") ChemDoodle = null;
 		this.specs.set3DRepresentation('Ball and Stick');
 	}
 	
-	Jmol._Canvas.prototype._setDefaults = function() {
+	Jmol._Canvas2D.prototype = _cdSetPrototype(new ChemDoodle.TransformCanvas);
+
+	Jmol._Canvas2D.prototype._setDefaults = function() {
 		this.specs.backgroundColor = 'black';
 		this.specs.atoms_useJMOLColors = true;
 		this.specs.bonds_useJMOLColors = true;

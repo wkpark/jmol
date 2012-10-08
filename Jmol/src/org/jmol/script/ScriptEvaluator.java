@@ -14161,18 +14161,10 @@ public class ScriptEvaluator {
     BitSet bsFrames = null;
     String[] scripts = null;
     String type = "SPT";
-    int tok = (isCommand && args.length == 1 ? Token.clipboard
-        : tokAtArray(pt, args));
+    int tok = (isCommand && args.length == 1 ? Token.clipboard : tokAtArray(pt,
+        args));
     switch (tok) {
     case Token.nada:
-      break;
-    case Token.string:
-      Token t = Token.getTokenFromName(ScriptVariable.sValue(args[pt])
-          .toLowerCase());
-      if (t != null) {
-        tok = t.tok;
-        type = ScriptVariable.sValue(t).toUpperCase();
-      }
       break;
     case Token.script:
       if (isArrayParameter(pt + 1)) {
@@ -14280,6 +14272,13 @@ public class ScriptEvaluator {
         }
         break;
       default:
+      case Token.string:
+        Token t = Token.getTokenFromName(ScriptVariable.sValue(args[pt])
+            .toLowerCase());
+        if (t != null) {
+          tok = t.tok;
+          type = ScriptVariable.sValue(t).toUpperCase();
+        }
         if (Parser.isOneOf(type, driverList.toUpperCase())) {
           // povray, maya, vrml, idtf
           pt++;
@@ -14376,35 +14375,35 @@ public class ScriptEvaluator {
           || type.equals("VIBRATION")) {
         type = (fileName != null && fileName.indexOf(".") >= 0 ? fileName
             .substring(fileName.lastIndexOf(".") + 1).toUpperCase() : "JPG");
-        if (type.equals("MNU"))
-          type = "MENU";
-        else if (type.equals("WRL") || type.equals("VRML")) {
-          type = "Vrml";
-          isExport = true;
-        } else if (type.equals("X3D")) {
-          type = "X3d";
-          isExport = true;
-        } else if (type.equals("IDTF")) {
-          type = "Idtf";
-          isExport = true;
-        } else if (type.equals("MA")) {
-          type = "Maya";
-          isExport = true;
-        } else if (type.equals("JS")) {
-          type = "Js";
-          isExport = true;
-        } else if (type.equals("OBJ")) {
-          type = "Obj";
-          isExport = true;
-        } else if (type.equals("JVXL")) {
-          type = "ISOSURFACE";
-        } else if (type.equals("XJVXL")) {
-          type = "ISOSURFACE";
-        } else if (type.equals("JMOL")) {
-          type = "ZIPALL";
-        } else if (type.equals("HIS")) {
-          type = "HISTORY";
-        }
+      }
+      if (type.equals("MNU")) {
+        type = "MENU";
+      } else if (type.equals("WRL") || type.equals("VRML")) {
+        type = "Vrml";
+        isExport = true;
+      } else if (type.equals("X3D")) {
+        type = "X3d";
+        isExport = true;
+      } else if (type.equals("IDTF")) {
+        type = "Idtf";
+        isExport = true;
+      } else if (type.equals("MA")) {
+        type = "Maya";
+        isExport = true;
+      } else if (type.equals("JS")) {
+        type = "Js";
+        isExport = true;
+      } else if (type.equals("OBJ")) {
+        type = "Obj";
+        isExport = true;
+      } else if (type.equals("JVXL")) {
+        type = "ISOSURFACE";
+      } else if (type.equals("XJVXL")) {
+        type = "ISOSURFACE";
+      } else if (type.equals("JMOL")) {
+        type = "ZIPALL";
+      } else if (type.equals("HIS")) {
+        type = "HISTORY";
       }
       if (type.equals("COORD"))
         type = (fileName != null && fileName.indexOf(".") >= 0 ? fileName
@@ -14435,7 +14434,7 @@ public class ScriptEvaluator {
         return "";
       Object bytes = null;
       boolean doDefer = false;
-      if (data == null) {
+      if (data == null || isExport) {
         data = type.intern();
         if (isExport) {
           // POV-Ray uses a BufferedWriter instead of a StringXBuilder.

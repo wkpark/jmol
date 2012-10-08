@@ -115,7 +115,6 @@ public class CartoonRenderer extends RocketsRenderer {
     // this loop goes monomerCount --> 0, because
     // we want to hit the heads first
 
-    bsRenderMesh.clearAll();
     for (int i = monomerCount; --i >= 0;) {
       // runs backwards, so it can render the heads first
       thisStructure = monomers[i].getProteinStructure();
@@ -145,7 +144,6 @@ public class CartoonRenderer extends RocketsRenderer {
       lastWasSheet = isSheet;
       lastWasHelix = isHelix;
     }
-    renderMeshes();
     if (renderAsRockets || !renderArrowHeads)
       renderRockets();
   }

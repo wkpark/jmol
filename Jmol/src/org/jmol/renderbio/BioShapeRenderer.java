@@ -30,6 +30,7 @@ import org.jmol.modelsetbio.CarbohydratePolymer;
 import org.jmol.modelsetbio.Monomer;
 import org.jmol.modelsetbio.NucleicPolymer; //import org.jmol.modelsetbio.ProteinStructure;
 import org.jmol.render.MeshRenderer;
+import org.jmol.script.Token;
 import org.jmol.shape.Mesh;
 import org.jmol.shapebio.BioShape;
 import org.jmol.shapebio.BioShapeCollection;
@@ -55,12 +56,14 @@ abstract class BioShapeRenderer extends MeshRenderer {
   private boolean isTraceAlpha;
   private boolean ribbonBorder = false;
   private boolean haveControlPointScreens;
-  private int aspectRatio;
+  private float aspectRatio;
   private int hermiteLevel;
   private float sheetSmoothing;
 
   private Mesh[] meshes;
   private boolean[] meshReady;
+  private BitSet bsRenderMesh;
+
 
   protected int monomerCount;
   protected Monomer[] monomers;
@@ -79,15 +82,12 @@ abstract class BioShapeRenderer extends MeshRenderer {
   protected short[] colixes;
   protected EnumStructure[] structureTypes;
 
-  protected BitSet bsRenderMesh;
-
   protected abstract void renderBioShape(BioShape bioShape);
 
   @Override
   protected void render() {
     if (shape == null)
       return;
-
     invalidateMesh = false;
     boolean TF = isExport || viewer.getHighResolution();
     if (TF != isHighRes)
@@ -129,7 +129,9 @@ abstract class BioShapeRenderer extends MeshRenderer {
       if ((bioShape.modelVisibilityFlags & myVisibilityFlag) == 0)
         continue;
       if (bioShape.monomerCount >= 2 && initializePolymer(bioShape)) {
+        bsRenderMesh.clearAll();    
         renderBioShape(bioShape);
+        renderMeshes();
         freeTempArrays();
       }
     }
@@ -376,8 +378,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
         ribbonTopScreens[iPrev], ribbonTopScreens[i], ribbonTopScreens[iNext],
         ribbonTopScreens[iNext2], ribbonBottomScreens[iPrev],
         ribbonBottomScreens[i], ribbonBottomScreens[iNext],
-        ribbonBottomScreens[iNext2], aspectRatio);
-    return;
+        ribbonBottomScreens[iNext2], (int) aspectRatio);
   }
 
   //// cardinal hermite (box or flat) arrow head (cartoon)
@@ -400,7 +401,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
         doCap1 = false;
         if ((meshes[i] == null || !meshReady[i])
             && !createMesh(i, (int) (madBeg * 1.2), (int) (madBeg * 0.6), 0,
-                aspectRatio >> 1))
+                (aspectRatio == 1 ? aspectRatio : aspectRatio / 2)))
           return;
         meshes[i].setColix(colix);
         bsRenderMesh.set(i);
@@ -422,7 +423,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     g3d.drawHermite(true, ribbonBorder, isNucleic ? 4 : 7, screenArrowTopPrev,
         screenArrowTop, controlPointScreens[iNext],
         controlPointScreens[iNext2], screenArrowBotPrev, screenArrowBot,
-        controlPointScreens[iNext], controlPointScreens[iNext2], aspectRatio);
+        controlPointScreens[iNext], controlPointScreens[iNext2], (int) aspectRatio);
     if (ribbonBorder && aspectRatio == 0) {
       g3d.fillCylinder(colix, colix,
           GData.ENDCAPS_SPHERICAL,
@@ -468,9 +469,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
   private Point3f[] radiusHermites;
 
   private Vector3f norm = new Vector3f();
-  private final Vector3f Z = Vector3f.new3(0.1345f, 0.5426f, 0.3675f); //random reference
   private final Vector3f wing = new Vector3f();
-  private final Vector3f wing0 = new Vector3f();
   private final Vector3f wing1 = new Vector3f();
   private final Vector3f wingT = new Vector3f();
   private final AxisAngle4f aa = new AxisAngle4f();
@@ -490,13 +489,13 @@ abstract class BioShapeRenderer extends MeshRenderer {
    * @return true if deferred rendering is required due to normals averaging
    */
   private boolean createMesh(int i, int madBeg, int madMid, int madEnd,
-                             int aspectRatio) {
+                             float aspectRatio) {
     setNeighbors(i);
     if (controlPoints[i].distance(controlPoints[iNext]) == 0)
       return false;
     boolean isEccentric = (aspectRatio != 1 && wingVectors != null);
-    int nHermites = (hermiteLevel + 1) * 2 + 1; // 4 for hermiteLevel = 1
-    int nPer = (nHermites - 1) * 2 - 2; // 6 for hermiteLevel 1
+    int nHermites = (hermiteLevel + 1) * 2 + 1; // 4 for hermiteLevel = 1; 13 for hermitelevel 5
+    int nPer = (hermiteLevel + 1) * 4 - 2; // 6 for hermiteLevel 1; 22 for hermiteLevel 5
     Mesh mesh = meshes[i] = new Mesh("mesh_" + shapeID + "_" + i, (short) 0, i);
     boolean variableRadius = (madBeg != madMid || madMid != madEnd);
     if (controlHermites == null || controlHermites.length < nHermites + 1) {
@@ -544,31 +543,50 @@ abstract class BioShapeRenderer extends MeshRenderer {
       if (isEccentric) {
         wing.setT(wingHermites[p]);
         wing1.setT(wing);
-        wing.scale(2f / aspectRatio);
+        if (hermiteLevel < 6) {
+          wing.scale(2f / aspectRatio);
+        } else {
+          wing1.cross(norm, wing);
+          wing1.normalize();
+          wing1.scale(wing.length() / aspectRatio);
+        }
       } else {
-        Z.setT(wingHermites[p]);
-        Z.scale(2f);
-        wing0.cross(norm, Z);
-        wing0.cross(norm, wing0);
-        wing.cross(norm, wing0);
+        wing.setT(wingHermites[p]);
+        wing.scale(2f);
+        wing.cross(norm, wing);
+        wing.cross(norm, wing);
+        wing.cross(norm, wing);
         wing.normalize();
       }
       float scale = (!variableRadius ? radius1 : p < iMid ? radiusHermites[p].x
           : radiusHermites[p - iMid].y);
       wing.scale(scale);
       wing1.scale(scale);
-      aa.setVA(norm, (float) (2 * Math.PI / nPer));
+      float angle = (float) (2 * Math.PI / nPer);
+      aa.setVA(norm, angle);
       mat.setAA(aa);
       pt1.setT(controlHermites[p]);
-      for (int k = 0; k < nPer; k++) {
-        mat.transform(wing);
-        wingT.setT(wing);
+      float theta = angle;
+      for (int k = 0; k < nPer; k++, theta += angle) {
+        if (hermiteLevel < 6 || !isEccentric)
+          mat.transform(wing);
         if (isEccentric) {
-          if (k == (nPer + 2) / 4 || k == (3 * nPer + 2) / 4)
-            wing1.scale(-1);
-          wingT.add(wing1);
+          if (hermiteLevel < 6) {
+            wingT.setT(wing);
+            if (k == (nPer + 2) / 4 || k == (3 * nPer + 2) / 4)
+              wing1.scale(-1);
+            wingT.add(wing1);
+          } else {
+            float cos = (float) Math.cos(theta);
+            float sin = (float) Math.sin(theta);
+            wingT.setT(wing1);
+            wingT.scale(sin);
+            wingT.scaleAdd2(cos, wing, wingT);
+          }
+          pt.add2(pt1, wingT);
+        } else {
+          pt.add2(pt1, wing);
         }
-        pt.add2(pt1, wingT);
         mesh.addVertexCopy(pt);
       }
       if (p > 0) {
@@ -627,12 +645,14 @@ abstract class BioShapeRenderer extends MeshRenderer {
     }
   }
 
-  protected void renderMeshes() {
+  private void renderMeshes() {
     for (int i = bsRenderMesh.nextSetBit(0); i >= 0; i = bsRenderMesh
         .nextSetBit(i + 1)) {
       if (meshes[i].normalsTemp != null) {
         meshes[i].setNormixes(meshes[i].normalsTemp);
         meshes[i].normalsTemp = null;
+      } else if (meshes[i].normixes == null) {
+        meshes[i].initialize(Token.frontlit, null, null);
       }
       renderMesh(meshes[i]);
     }

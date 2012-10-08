@@ -110,7 +110,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
     } 
 
     if ("delete" == propertyName) {
-      delete(value);
+      deleteO(value);
       setIndices();
       return;
     } 
@@ -193,17 +193,17 @@ public class Measures extends Shape implements JmolMeasurementClient {
       Measurement pt = setSingleItem(md.points);
       switch (md.tokAction) {
       case Token.delete:
-        define(Integer.MIN_VALUE, pt, true, false, false);
+        defineAll(Integer.MIN_VALUE, pt, true, false, false);
         setIndices();
         break;
       case Token.on:
-        showHide(pt, false);          
+        showHideM(pt, false);          
         break;
       case Token.off:
-        showHide(pt, true);
+        showHideM(pt, true);
         break;
       case Token.define:
-        delete(pt);
+        deleteM(pt);
         toggle(pt);        
         break;
       case Token.opToggle:
@@ -230,7 +230,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
           int iAtom = indices[j];
           if (iAtom >= firstAtomDeleted) {
             if (iAtom < atomMax) {
-              deleteMeasurement(i);
+              deleteI(i);
               break;
             }
             indices[j] -= nAtomsDeleted;
@@ -239,7 +239,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
             if (pt.modelIndex > modelIndex) {
               pt.modelIndex--;
             } else if (pt.modelIndex == modelIndex) {
-              deleteMeasurement(i);
+              deleteI(i);
               break;
             }
           }
@@ -249,7 +249,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
     }
 
     if ("hide" == propertyName) {
-      showHide(new Measurement(modelSet, (int[]) value, null, null), true);
+      showHideM(new Measurement(modelSet, (int[]) value, null, null), true);
       return;
     }
     
@@ -259,7 +259,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
     }
     
     if ("show" == propertyName) {
-      showHide(new Measurement(modelSet, (int[]) value, null, null), false);
+      showHideM(new Measurement(modelSet, (int[]) value, null, null), false);
       return;
     }
     
@@ -351,7 +351,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
         measurements.get(i).setHidden(isHide);
   }
 
-  private void showHide(Measurement m, boolean isHide) {
+  private void showHideM(Measurement m, boolean isHide) {
     int i = find(m);
     if (i >= 0)
       measurements.get(i).setHidden(isHide);
@@ -363,9 +363,9 @@ public class Measures extends Shape implements JmolMeasurementClient {
     int i = find(m);
     Measurement mt;
     if (i >= 0 && !(mt = measurements.get(i)).isHidden()) // delete it and all like it
-      define(i, mt, true, false, false);
+      defineAll(i, mt, true, false, false);
     else // define OR turn on if measureAllModels
-      define(-1, m, false, true, false);
+      defineAll(-1, m, false, true, false);
     setIndices();
   }
 
@@ -373,44 +373,44 @@ public class Measures extends Shape implements JmolMeasurementClient {
     radiusData = null;
     //toggling one that is hidden should be interpreted as DEFINE
     bsSelected = new BitSet();
-    define(Integer.MIN_VALUE, new Measurement(modelSet, indices, null, defaultTickInfo), false, true, true);
+    defineAll(Integer.MIN_VALUE, new Measurement(modelSet, indices, null, defaultTickInfo), false, true, true);
     setIndices();
     reformatDistances();
   }
 
-  private void delete(Measurement m) {
+  private void deleteM(Measurement m) {
     radiusData = null;
     //toggling one that is hidden should be interpreted as DEFINE
     int i = find(m);
     if (i >= 0)
-      define(i, measurements.get(i), true, false, false);
+      defineAll(i, measurements.get(i), true, false, false);
     setIndices();
   }
 
-  private void delete(Object value) {
+  private void deleteO(Object value) {
     if (value instanceof int[]) {
-      define(Integer.MIN_VALUE, new Measurement(modelSet, (int[])value, null, null), true, false, false);
+      defineAll(Integer.MIN_VALUE, new Measurement(modelSet, (int[])value, null, null), true, false, false);
       return;
     }
     if ((value instanceof Integer))
-      deleteMeasurement(((Integer)value).intValue());   
+      deleteI(((Integer)value).intValue());   
   }
 
-  private void define(int iPt, Measurement m, boolean isDelete, boolean isShow,
+  private void defineAll(int iPt, Measurement m, boolean isDelete, boolean isShow,
                       boolean doSelect) {
     if (!viewer.getMeasureAllModelsFlag()) {
       if (isDelete) {
         if (iPt == Integer.MIN_VALUE)
           iPt = find(m);
         if (iPt >= 0)
-          deleteMeasurement(iPt);
+          deleteI(iPt);
         return;
       }
       defineMeasurement(iPt, m, doSelect);
       return;
     }
     if (isShow) { // make sure all like this are deleted, not just hidden
-      define(iPt, m, true, false, false); // self-reference
+      defineAll(iPt, m, true, false, false); // self-reference
       if (isDelete)
         return;
     }
@@ -459,7 +459,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
     int iThis = find(m);
     if (iThis >= 0) {
       if (tokAction == Token.delete) {
-        deleteMeasurement(iThis);
+        deleteI(iThis);
       } else if (strFormat != null) {
         measurements.get(iThis).formatMeasurementAs(strFormat,
             null, true);
@@ -491,7 +491,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
         measureNew.toVector(false).toString(), measureNew.getValue());
   }
 
-  private void deleteMeasurement(int i) {
+  private void deleteI(int i) {
     String msg = measurements.get(i).toVector(true).toString();
     measurements.remove(i);
     measurementCount--;

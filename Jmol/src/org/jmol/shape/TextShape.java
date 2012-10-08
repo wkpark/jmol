@@ -57,12 +57,12 @@ public abstract class TextShape extends Object2dShape {
         if (isAll) {
           Iterator<Text> e = objects.values().iterator();
           while (e.hasNext()) {
-            e.next().setFont(currentFont);
+            e.next().setFont(currentFont, true);
           }
         }
         return;
       }
-      ((Text) currentObject).setFont(currentFont);
+      ((Text) currentObject).setFont(currentFont, true);
       ((Text) currentObject).setFontScale(0);
       return;
     }

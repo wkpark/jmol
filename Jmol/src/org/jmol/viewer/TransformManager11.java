@@ -353,11 +353,11 @@ class TransformManager11 extends TransformManager {
         matrixTransform.transform2(navigationCenter, navigationShiftXY);
       }
     }
-    transformPoint(fixedRotationCenter, fixedTranslation);
+    transformPoint2(fixedRotationCenter, fixedTranslation);
     fixedRotationOffset.setT(fixedTranslation);
     previousX = fixedTranslation.x;
     previousY = fixedTranslation.y;
-    transformPoint(navigationCenter, navigationOffset);
+    transformPoint2(navigationCenter, navigationOffset);
     navigationOffset.z = referencePlaneOffset;
     navMode = NAV_MODE_NONE;
     calcNavSlabAndDepthValues();
@@ -411,7 +411,7 @@ class TransformManager11 extends TransformManager {
     mode = defaultMode;
     // get the rotation center's Z offset and move X and Y to 0,0
     Point3f pt = new Point3f();
-    transformPoint(fixedRotationCenter, pt);
+    transformPoint2(fixedRotationCenter, pt);
     pt.x -= navigationOffset.x;
     pt.y -= navigationOffset.y;
     // unapply the perspective as if IT were the navigation center
@@ -471,7 +471,7 @@ class TransformManager11 extends TransformManager {
     rotateYRadians(JmolConstants.radiansPerDegree * .02f * navX, null);
     Point3f pt = getNavigationCenter();
     Point3f pts = new Point3f();
-    transformPoint(pt, pts);
+    transformPoint2(pt, pts);
     pts.z += navZ;
     unTransformPoint(pts, pt);
     navigatePt(0, pt);
@@ -671,7 +671,7 @@ class TransformManager11 extends TransformManager {
   @Override
   void navTranslate(float seconds, Point3f pt) {
     Point3f pt1 = new Point3f();
-    transformPoint(pt, pt1);
+    transformPoint2(pt, pt1);
     if (seconds > 0) {
       navigateTo(seconds, null, Float.NaN, null, Float.NaN, pt1.x, pt1.y);
       return;
@@ -682,7 +682,7 @@ class TransformManager11 extends TransformManager {
   @Override
   public void navTranslatePercent(float seconds, float x, float y) {
     // if either is Float.NaN, then the other is RELATIVE to current
-    transformPoint(navigationCenter, navigationOffset);
+    transformPoint2(navigationCenter, navigationOffset);
     if (seconds >= 0) {
       if (!Float.isNaN(x))
         x = width * x / 100f
@@ -956,7 +956,7 @@ class TransformManager11 extends TransformManager {
 
   @Override
   Point3f getNavigationOffset() {
-    transformPoint(navigationCenter, navigationOffset);
+    transformPoint2(navigationCenter, navigationOffset);
     return navigationOffset;
   }
 

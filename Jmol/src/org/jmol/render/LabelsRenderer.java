@@ -118,7 +118,7 @@ public class LabelsRenderer extends ShapeRenderer {
         labels.putBox(i, boxXY = new float[5]);
       if (text != null) {
         if (text.font == null)
-          text.setFid(fid);
+          text.setFontFromFid(fid);
         text.setXYZs(atom.screenX, atom.screenY, zBox, zSlab);
         text.setColix(colix);
         text.setBgColix(bgcolix);
@@ -148,7 +148,7 @@ public class LabelsRenderer extends ShapeRenderer {
               pointerColix, isExact);
           atom = null;
         } else {
-          text = new Text(g3d.getGData(), font3d, label, colix, bgcolix, atom.screenX,
+          text = Text.newLabel(g3d.getGData(), font3d, label, colix, bgcolix, atom.screenX,
               atom.screenY, zBox, zSlab, textAlign, 0);
           labels.putLabel(i, text);
         }

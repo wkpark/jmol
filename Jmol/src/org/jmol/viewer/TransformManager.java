@@ -142,7 +142,7 @@ public abstract class TransformManager {
     zoomToPercent(viewer.isModelKitMode() ? 50 : 100);
     zoomPercent = zoomPercentSetting;
     slabReset();
-    scaleFitToScreen(true);
+    resetFitToScreen(true);
     if (viewer.isJmolDataFrame()) {
       fixedRotationCenter.set(0, 0, 0);
     } else {
@@ -337,7 +337,7 @@ public abstract class TransformManager {
     clearSpin();
     Point3f pt1 = Point3f.newP(fixedRotationCenter);
     Point3f ptScreen = new Point3f();
-    transformPoint(pt1, ptScreen);
+    transformPoint2(pt1, ptScreen);
     Point3f pt2 = Point3f.new3(-yDelta, xDelta, 0);
     pt2.add(ptScreen);
     unTransformPoint(pt2, pt2);
@@ -372,7 +372,7 @@ public abstract class TransformManager {
     arcBallAxis.cross(arcBall0, arcBall1);
     axisangleT.setVA(arcBallAxis, factor * (float) Math.acos(arcBall0.dot(arcBall1)));
     matrixRotate.set(arcBall0Rotation);
-    rotateAxisAngle(axisangleT, null);
+    rotateAxisAngle2(axisangleT, null);
   }
 
   void rotateXYBy(float xDelta, float yDelta, BitSet bsAtoms) {
@@ -432,10 +432,10 @@ public abstract class TransformManager {
 
   protected void rotateAxisAngle(Vector3f rotAxis, float radians) {
     axisangleT.setVA(rotAxis, radians);
-    rotateAxisAngle(axisangleT, null);
+    rotateAxisAngle2(axisangleT, null);
   }
 
-  synchronized void rotateAxisAngle(AxisAngle4f axisAngle, BitSet bsAtoms) {
+  private synchronized void rotateAxisAngle2(AxisAngle4f axisAngle, BitSet bsAtoms) {
     //matrixTemp3.setIdentity();
     matrixTemp3.setAA(axisAngle);
     applyRotation(matrixTemp3, false, bsAtoms, null);
@@ -478,7 +478,7 @@ public abstract class TransformManager {
       isSpinInternal = false;
       isSpinFixed = true;
       isSpinSelected = (bsAtoms != null);
-      setSpinOn(true, endDegrees, null, bsAtoms, false);
+      setSpin(true, endDegrees, null, bsAtoms, false);
       return false;
     }
     float radians = endDegrees * JmolConstants.radiansPerDegree;
@@ -492,7 +492,7 @@ public abstract class TransformManager {
     // for spinning -- reduced number of radians
     axisangleT.setAA(fixedRotationAxis);
     axisangleT.angle = angleRadians;
-    rotateAxisAngle(axisangleT, bsAtoms);
+    rotateAxisAngle2(axisangleT, bsAtoms);
   }
 
   /*
@@ -551,7 +551,7 @@ public abstract class TransformManager {
       isSpinInternal = true;
       isSpinFixed = false;
       isSpinSelected = isSelected;
-      setSpinOn(true, endDegrees, finalPoints, bsAtoms, isGesture);
+      setSpin(true, endDegrees, finalPoints, bsAtoms, isGesture);
       return false;
     }
     float radians = endDegrees * JmolConstants.radiansPerDegree;
@@ -641,12 +641,12 @@ public abstract class TransformManager {
     }
     if (windowCentered)
       viewer.setBooleanProperty("windowCentered", false);
-    //transformPoint(pt, pointT);
+    //transformPoint2(pt, pointT);
     //float z = pointT.z;
     fixedTranslation.x = x;
     fixedTranslation.y = y;
     setFixedRotationCenter(pt);
-    //transformPoint(pt, pointT);
+    //transformPoint2(pt, pointT);
     //finalizeTransformParameters();
     //System.out.println("trans man ");
   }
@@ -847,7 +847,7 @@ public abstract class TransformManager {
     if (windowCentered)
       viewer.setBooleanProperty("windowCentered", false);
     Point3f pt = new Point3f();
-    transformPoint(fixedRotationCenter, pt);
+    transformPoint2(fixedRotationCenter, pt);
     pt.set(x, y, pt.z);
     unTransformPoint(pt, pt);
     fixedTranslation.set(x, y, 0);
@@ -1275,7 +1275,7 @@ public abstract class TransformManager {
     if (this.perspectiveDepth == perspectiveDepth)
       return;
     this.perspectiveDepth = perspectiveDepth;
-    scaleFitToScreen(false);
+    resetFitToScreen(false);
   }
 
   boolean getPerspectiveDepth() {
@@ -1365,7 +1365,7 @@ public abstract class TransformManager {
     return screenPixelCount / 2f / radius;
   }
 
-  void scaleFitToScreen(boolean andCenter) {
+  private void resetFitToScreen(boolean andCenter) {
     scaleFitToScreen(andCenter, viewer.getZoomLarge(), true, true);
   }
 
@@ -1506,7 +1506,7 @@ public abstract class TransformManager {
     }
     if (zSlabPoint != null) {
       try {
-      transformPoint(zSlabPoint, pointT2);
+      transformPoint2(zSlabPoint, pointT2);
       zSlabValue = (int) pointT2.z;
       } catch (Exception e) {
         // don't care
@@ -1570,11 +1570,11 @@ public abstract class TransformManager {
       screens[i].setT(transformPoint(angstroms[i]));
   }
 
-  void transformPoint(Point3f pointAngstroms, Point3i pointScreen) {
+  void transformPoint2i(Point3f pointAngstroms, Point3i pointScreen) {
     pointScreen.setT(transformPoint(pointAngstroms));
   }
 
-  void transformPointNoClip(Point3f pointAngstroms, Point3f pointScreen) {
+  void transformPointNoClip2(Point3f pointAngstroms, Point3f pointScreen) {
     pointScreen.setT(transformPointNoClip(pointAngstroms));
   }
 
@@ -1641,7 +1641,7 @@ public abstract class TransformManager {
     return point3iScreenTemp;
   }
 
-  void transformPoint(Point3f pointAngstroms, Point3f screen) {
+  void transformPoint2(Point3f pointAngstroms, Point3f screen) {
     matrixTransform.transform2(pointAngstroms, point3fScreenTemp);
     adjustTemporaryScreenPoint();
     if (internalSlab && checkInternalSlab(pointAngstroms))
@@ -2054,10 +2054,10 @@ public abstract class TransformManager {
   private SpinThread spinThread;
 
   public void setSpinOn(boolean spinOn) {
-    setSpinOn(spinOn, Float.MAX_VALUE, null, null, false);
+    setSpin(spinOn, Float.MAX_VALUE, null, null, false);
   }
 
-  private void setSpinOn(boolean spinOn, float endDegrees,
+  private void setSpin(boolean spinOn, float endDegrees,
                          List<Point3f> endPositions, BitSet bsAtoms,
                          boolean isGesture) {
     if (navOn && spinOn)
@@ -2084,7 +2084,7 @@ public abstract class TransformManager {
       return;
     boolean wasOn = this.navOn;
     if (navOn && spinOn)
-      setSpinOn(false, 0, null, null, false);
+      setSpin(false, 0, null, null, false);
     this.navOn = navOn;
     viewer.getGlobalSettings().setParamB("_navigating", navOn);
     if (navOn) {
@@ -2190,7 +2190,7 @@ public abstract class TransformManager {
   EnumStereoMode stereoMode = EnumStereoMode.NONE;
   int[] stereoColors;
 
-  void setStereoMode(int[] twoColors) {
+  void setStereoMode2(int[] twoColors) {
     stereoMode = EnumStereoMode.CUSTOM;
     stereoColors = twoColors;
   }
@@ -2265,7 +2265,7 @@ public abstract class TransformManager {
       modelRadius = viewer.calcRotationRadius(fixedRotationCenter);
   }
 
-  private void setRotationCenterAndRadiusXYZ(String relativeTo, Point3f pt) {
+  private void setRotCenterRel(String relativeTo, Point3f pt) {
     Point3f pt1 = Point3f.newP(pt);
     if (relativeTo == "average")
       pt1.add(viewer.getAverageAtomPoint());
@@ -2286,7 +2286,7 @@ public abstract class TransformManager {
       translateToPercent('y', 0);///CenterTo(0, 0);
       setRotationCenterAndRadiusXYZ(center, true);
       if (doScale)
-        scaleFitToScreen(true);
+        resetFitToScreen(true);
     } else {
       moveRotationCenter(center, true);
     }
@@ -2305,8 +2305,8 @@ public abstract class TransformManager {
   }
 
   void setCenterAt(String relativeTo, Point3f pt) {
-    setRotationCenterAndRadiusXYZ(relativeTo, pt);
-    scaleFitToScreen(true);
+    setRotCenterRel(relativeTo, pt);
+    resetFitToScreen(true);
   }
 
   /* ***************************************************************

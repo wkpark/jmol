@@ -58,28 +58,45 @@ public class Text extends Object2d {
 
   private int[] widths;
 
-  // for labels and hover
-  public Text(GData gdata, JmolFont font, String text, short colix,
-      short bgcolix, int x, int y, int z, int zSlab, int textAlign,
-      float scalePixelsPerMicron) {
-    this.scalePixelsPerMicron = scalePixelsPerMicron;
-    this.viewer = null;
-    this.gdata = gdata;
-    isLabelOrHover = true;
-    setText(text);
-    this.colix = colix;
-    this.bgcolix = bgcolix;
-    setXYZs(x, y, z, zSlab);
-    align = textAlign;
-    setFont(font);
+  Text() {
   }
 
-  // for echo
-  Text(Viewer viewer, GData gdata, JmolFont font, String target, short colix,
-      int valign, int align, float scalePixelsPerMicron) {
-    super(viewer, gdata, target, colix, valign, align, scalePixelsPerMicron);
-    this.font = font;
-    getFontMetrics();
+  static public Text newLabel(GData gdata, JmolFont font, String text,
+                              short colix, short bgcolix, int x, int y, int z,
+                              int zSlab, int align, float scalePixelsPerMicron) {
+    // for labels and hover
+    Text t = new Text();
+    t.set(gdata, font, colix, align, true, scalePixelsPerMicron);
+    t.setText(text);
+    t.bgcolix = bgcolix;
+    t.setXYZs(x, y, z, zSlab);
+    return t;
+  }
+
+  static Text newEcho(Viewer viewer, GData gdata, JmolFont font, String target,
+                      short colix, int valign, int align,
+                      float scalePixelsPerMicron) {
+    // for echo
+    Text t = new Text();
+    t.set(gdata, font, colix, align, false, scalePixelsPerMicron);
+    t.viewer = viewer;
+    t.target = target;
+    if (target.equals("error"))
+      valign = VALIGN_TOP;
+    t.valign = valign;
+    t.z = 2;
+    t.zSlab = Integer.MIN_VALUE;
+    return t;
+  }
+
+  private void set(GData gdata, JmolFont font, short colix, int align, boolean isLabelOrHover,
+                   float scalePixelsPerMicron) {
+    this.scalePixelsPerMicron = scalePixelsPerMicron;
+    this.gdata = gdata;
+    this.isLabelOrHover = isLabelOrHover;
+    this.colix = colix;
+    this.align = align;
+    this.setFont(font, isLabelOrHover);
   }
 
   private void getFontMetrics() {
@@ -88,11 +105,11 @@ public class Text extends Object2d {
     lineHeight = ascent + descent;
   }
 
-  public void setFid(byte fid) { //labels only
+  public void setFontFromFid(byte fid) { //labels only
     if (this.fid == fid)
       return;
     fontScale = 0;
-    setFont(JmolFont.getFont3D(fid));
+    setFont(JmolFont.getFont3D(fid), true);
   }
 
   public void setText(String text) {
@@ -123,12 +140,14 @@ public class Text extends Object2d {
     recalc();
   }
   
-  void setFont(JmolFont f3d) {
+  void setFont(JmolFont f3d, boolean doAll) {
     font = f3d;
     if (font == null)
       return;
-    fid = font.fid;
     getFontMetrics();
+    if (!doAll)
+      return;
+    fid = font.fid;
     recalc();
   }
 
@@ -137,7 +156,7 @@ public class Text extends Object2d {
       return;
     fontScale = scale;
     if (fontScale != 0)
-      setFont(gdata.getFont3DScaled(font, scale));
+      setFont(gdata.getFont3DScaled(font, scale), true);
   }
 
   String fixText(String text) {
@@ -183,7 +202,40 @@ public class Text extends Object2d {
   }
 
 
-  public void setPosition(float scale) {
+  public void setPosition(int width, int height, float scalePixelsPerMicron, float imageFontScaling,
+                          boolean isExact, float[] boxXY) {
+    if (boxXY == null)
+      boxXY = this.boxXY;
+    else
+      this.boxXY = boxXY;
+    setWindow(width, height, scalePixelsPerMicron);
+    if (scalePixelsPerMicron != 0 && this.scalePixelsPerMicron != 0)
+      setFontScale(scalePixelsPerMicron / this.scalePixelsPerMicron);
+    else if (fontScale != imageFontScaling)
+      setFontScale(imageFontScaling);
+    if (doFormatText)
+      formatText();
+
+    if (isLabelOrHover) {
+      boxXY[0] = movableX;
+      boxXY[1] = movableY;
+      setBoxXY(boxWidth, boxHeight, offsetX * imageFontScaling, offsetY
+          * imageFontScaling, boxXY, isExact);
+    } else {
+      setPos(fontScale);
+    }
+    boxX = boxXY[0];
+    boxY = boxXY[1];
+
+    // adjust positions if necessary
+
+    if (adjustForWindow)
+      setBoxOffsetsInWindow(/*image == null ? fontScale * 5 :*/0,
+          isLabelOrHover ? 16 * fontScale + lineHeight : 0, boxY - textHeight);
+
+  }
+
+  private void setPos(float scale) {
     float xLeft, xCenter, xRight;
     boolean is3dEcho = (xyz != null);
     if (valign == VALIGN_XY || valign == VALIGN_XYZ) {
@@ -373,39 +425,6 @@ public class Text extends Object2d {
       w += font.stringWidth(str.substring(i, i + 1)) * f;
     }
     return w;
-  }
-
-  public void setPosition(int width, int height, float scalePixelsPerMicron, float imageFontScaling,
-                          boolean isExact, float[] boxXY) {
-    if (boxXY == null)
-      boxXY = this.boxXY;
-    else
-      this.boxXY = boxXY;
-    setWindow(width, height, scalePixelsPerMicron);
-    if (scalePixelsPerMicron != 0 && this.scalePixelsPerMicron != 0)
-      setFontScale(scalePixelsPerMicron / this.scalePixelsPerMicron);
-    else if (fontScale != imageFontScaling)
-      setFontScale(imageFontScaling);
-    if (doFormatText)
-      formatText();
-
-    if (isLabelOrHover) {
-      boxXY[0] = movableX;
-      boxXY[1] = movableY;
-      setBoxXY(boxWidth, boxHeight, offsetX * imageFontScaling, offsetY
-          * imageFontScaling, boxXY, isExact);
-    } else {
-      setPosition(fontScale);
-    }
-    boxX = boxXY[0];
-    boxY = boxXY[1];
-
-    // adjust positions if necessary
-
-    if (adjustForWindow)
-      setBoxOffsetsInWindow(/*image == null ? fontScale * 5 :*/0,
-          isLabelOrHover ? 16 * fontScale + lineHeight : 0, boxY - textHeight);
-
   }
 
   public void setXY(float[] xy, int i) {

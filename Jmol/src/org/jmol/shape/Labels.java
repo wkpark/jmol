@@ -123,7 +123,7 @@ public class Labels extends AtomShape {
             continue;
           text = getLabel(i);
           if (text == null) {
-            text = new Text(gdata, null, strings[i], (short) 0, (short) 0, 0, 0,
+            text = Text.newLabel(gdata, null, strings[i], (short) 0, (short) 0, 0, 0,
                 0, 0, 0, scalePixelsPerMicron);
             putLabel(i, text);
           } else {
@@ -385,7 +385,7 @@ public class Labels extends AtomShape {
     bsSizeSet.setBitTo(i, (strLabel != null));
     text = getLabel(i);
     if (isScaled) {
-      text = new Text(gdata, null, label, (short) 0, (short) 0, 0, 0, 0, 0, 0,
+      text = Text.newLabel(gdata, null, label, (short) 0, (short) 0, 0, 0, 0, 0, 0,
           scalePixelsPerMicron);
       putLabel(i, text);
     } else if (text != null) {
@@ -555,7 +555,7 @@ public class Labels extends AtomShape {
     bsFontSet.set(i);
     text = getLabel(i);
     if (text != null) {
-      text.setFid(fid);
+      text.setFontFromFid(fid);
     }
   }
 

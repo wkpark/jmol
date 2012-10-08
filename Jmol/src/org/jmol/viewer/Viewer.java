@@ -1293,15 +1293,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void transformPtScr(Point3f pointAngstroms, Point3i pointScreen) {
-    transformManager.transformPoint(pointAngstroms, pointScreen);
+    transformManager.transformPoint2i(pointAngstroms, pointScreen);
   }
 
   public void transformPtNoClip(Point3f pointAngstroms, Point3f pt) {
-    transformManager.transformPointNoClip(pointAngstroms, pt);
+    transformManager.transformPointNoClip2(pointAngstroms, pt);
   }
 
   public void transformPt3f(Point3f pointAngstroms, Point3f pointScreen) {
-    transformManager.transformPoint(pointAngstroms, pointScreen);
+    transformManager.transformPoint2(pointAngstroms, pointScreen);
   }
 
   public void transformPoints(Point3f[] pointsAngstroms, Point3i[] pointsScreens) {
@@ -3907,7 +3907,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       setCurrentModelIndexClear(animationManager.currentModelIndex, true);
       return;
     }
-    animationManager.setCurrentModelIndex(modelIndex);
+    animationManager.setCurrentModelIndex(modelIndex, true);
   }
 
   void setTrajectory(int modelIndex) {
@@ -8110,7 +8110,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     setFloatProperty("stereoDegrees", degrees);
     setBooleanProperty("greyscaleRendering", stereoMode.isBiColor());
     if (twoColors != null)
-      transformManager.setStereoMode(twoColors);
+      transformManager.setStereoMode2(twoColors);
     else
       transformManager.setStereoMode(stereoMode);
   }

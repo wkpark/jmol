@@ -72,10 +72,6 @@ public class AnimationManager {
   private int intAnimThread;
   float lastFrameDelay = 1;
 
-  void setCurrentModelIndex(int modelIndex) {
-    setCurrentModelIndex(modelIndex, true);  
-  }
-  
   void setCurrentModelIndex(int modelIndex, boolean clearBackgroundModel) {
     if (modelIndex < 0)
       setAnimationOff(false);
@@ -175,7 +171,7 @@ public class AnimationManager {
       nDisplayed = 0;
     }
     if (nDisplayed == 1 && currentModelIndex < 0)
-      setCurrentModelIndex(frameDisplayed);
+      setCurrentModelIndex(frameDisplayed, true);
   }
 
   void initializePointers(int frameStep) {
@@ -189,7 +185,7 @@ public class AnimationManager {
 
   void clear() {
     setAnimationOn(false);
-    setCurrentModelIndex(0);
+    setCurrentModelIndex(0, true);
     currentDirection = 1;
     setAnimationDirection(1);
     setAnimationFps(10);
@@ -355,11 +351,11 @@ public class AnimationManager {
   }
 
   void setAnimationLast() {
-    setCurrentModelIndex(animationDirection > 0 ? lastModelIndex : firstModelIndex);
+    setCurrentModelIndex(animationDirection > 0 ? lastModelIndex : firstModelIndex, true);
   }
 
   void rewindAnimation() {
-    setCurrentModelIndex(animationDirection > 0 ? firstModelIndex : lastModelIndex);
+    setCurrentModelIndex(animationDirection > 0 ? firstModelIndex : lastModelIndex, true);
     currentDirection = 1;
     viewer.setFrameVariables();
   }
@@ -391,7 +387,7 @@ public class AnimationManager {
     int nModels = viewer.getModelCount();
     if (modelIndexNext < 0 || modelIndexNext >= nModels)
       return false;
-    setCurrentModelIndex(modelIndexNext);
+    setCurrentModelIndex(modelIndexNext, true);
     return true;
   }
 

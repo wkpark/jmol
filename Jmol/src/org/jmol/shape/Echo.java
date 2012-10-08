@@ -149,12 +149,12 @@ public class Echo extends TextShape {
           } else if ("bottom" == target) {
             valign = Object2d.VALIGN_BOTTOM;
           }
-          text = new Text(viewer, gdata, gdata.getFont3DFS(FONTFACE, FONTSIZE),
+          text = Text.newEcho(viewer, gdata, gdata.getFont3DFS(FONTFACE, FONTSIZE),
               target, COLOR, valign, halign, 0);
           text.setAdjustForWindow(true);
           objects.put(target, text);
           if (currentFont != null)
-            text.setFont(currentFont);
+            text.setFont(currentFont, true);
           if (currentColor != null)
             text.setColix(currentColor);
           if (currentBgColor != null)

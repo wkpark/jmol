@@ -79,28 +79,6 @@ public abstract class Object2d {
 
   abstract protected void recalc();
 
-  protected Object2d() {  
-    // not used
-  }
-  
-  protected Object2d(Viewer viewer, GData gdata, String target, 
-                     short colix, int valign, int align,
-                     float scalePixelsPerMicron) {
-    this.viewer = viewer;
-    this.gdata = gdata;
-    isLabelOrHover = false;
-    this.target = target;
-    if (target.equals("error"))
-      valign = VALIGN_TOP;
-    this.colix = colix;
-    this.align = align;
-    this.valign = valign;
-    this.z = 2;
-    this.zSlab = Integer.MIN_VALUE;
-    this.scalePixelsPerMicron = scalePixelsPerMicron;
-
-  }
-
   void setModel(int modelIndex) {
     this.modelIndex = modelIndex;
   }

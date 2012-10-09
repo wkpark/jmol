@@ -19,6 +19,7 @@ import java.util.Set;
 
 import org.jmol.export.image.ImageCreator;
 import org.jmol.modelset.Atom;
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.AxisAngle4f;
 import org.jmol.util.BitSet;
 import org.jmol.util.Colix;
@@ -365,7 +366,7 @@ public class _ObjExporter extends __CartesianExporter {
     if (meshSurface.normals != null)
       meshSurface.normalCount = meshSurface.vertexCount;
     boolean isAll = (bsPolygons == null);
-    int[][] faces = new int[isAll ? nPolygons : bsPolygons.cardinality()][];
+    int[][] faces = ArrayUtil.newInt2(isAll ? nPolygons : bsPolygons.cardinality());
     int i0 = (isAll ? nPolygons - 1 : bsPolygons.nextSetBit(0));
     for (int i = i0, ipt = 0; i >= 0; i = isAll ? i - 1 : bsPolygons
         .nextSetBit(i + 1)) {
@@ -373,7 +374,7 @@ public class _ObjExporter extends __CartesianExporter {
       faces[ipt++] = (meshSurface.haveQuads ? polygon : new int[] {
           polygon[0], polygon[1], polygon[2] });
     }
-    MeshSurface data = MeshSurface.newMesh(meshSurface.vertices, meshSurface.vertexCount, faces,
+    MeshSurface data = MeshSurface.newMesh(false, meshSurface.vertices, meshSurface.vertexCount, faces,
         meshSurface.normals, 0);
     data.vertexColixes = meshSurface.vertexColixes;
     // Do the texture

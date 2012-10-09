@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.jmol.api.JmolAdapter;
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 
@@ -97,7 +98,7 @@ abstract public class GamessReader extends MOReader {
     }
     if (atomType != null)
       shellsByAtomType.put(atomType, slatersByAtomType);
-    gaussians = new float[gaussianCount][];
+    gaussians = ArrayUtil.newFloat2(gaussianCount);
     for (int i = 0; i < gaussianCount; i++) {
       tokens = gdata.get(i);
       gaussians[i] = new float[tokens.length - 3];

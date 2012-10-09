@@ -26,6 +26,7 @@ package org.jmol.adapter.readers.quantum;
 
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.api.JmolAdapter;
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.StringXBuilder;
 
@@ -251,7 +252,7 @@ public class GenNBOReader extends MOReader {
 
     // read basis functions
     shells = new ArrayList<int[]>();
-    gaussians = new float[gaussianCount][];
+    gaussians = ArrayUtil.newFloat2(gaussianCount);
     for (int i = 0; i < gaussianCount; i++)
       gaussians[i] = new float[6];
     readLine(); // ----------

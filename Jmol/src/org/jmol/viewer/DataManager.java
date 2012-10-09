@@ -65,8 +65,9 @@ class DataManager {
     //Eval
     /*
      * data[0] -- label
-     * data[1] -- string or float[] or float[][]
+     * data[1] -- string or float[] or float[][] or float[][][]
      * data[2] -- selection bitset or int[] atomMap when field > 0
+     * data[3] -- arrayDepth 0(String),1(float[]),2,3(float[][][])
      * 
      * matchField = data must match atomNo in this column, >= 1
      * field = column containing the data, >= 1:
@@ -106,9 +107,9 @@ class DataManager {
       // check to see if the data COULD be interpreted as a string of float values
       // and if so, do that. This pre-fetches the tokens in that case.
 
-      String stringData = (data[1] instanceof String ? (String) data[1] : null);
-      float[] floatData = (data[1] instanceof float[] ? (float[]) data[1]
-          : null);
+      int depth = ((Integer)data[3]).intValue();
+      String stringData = (depth == 0 ? (String) data[1] : null);
+      float[] floatData = (depth == 1 ? (float[]) data[1] : null);
       String[] strData = null;
       if (field == Integer.MIN_VALUE
           && (strData = Parser.getTokens(stringData)).length > 1)
@@ -187,11 +188,11 @@ class DataManager {
     return dataValues.get(type);
   }
 
-  float[] getDataFloat(String label) {
+  float[] getDataFloatA(String label) {
     if (dataValues == null)
       return null;
     Object[] data = getData(label);
-    if (data == null || !(data[1] instanceof float[]))
+    if (data == null || ((Integer)data[3]).intValue() != 1)//!(data[1] instanceof float[]))
       return null;
     return (float[]) data[1];
   }
@@ -199,7 +200,7 @@ class DataManager {
   float getDataFloat(String label, int atomIndex) {
     if (dataValues != null) {
       Object[] data = getData(label);
-      if (data != null && data[1] instanceof float[]) {
+      if (data != null && ((Integer)data[3]).intValue() == 1) {
         float[] f = (float[]) data[1];
         if (atomIndex < f.length)
           return f[atomIndex];
@@ -212,7 +213,7 @@ class DataManager {
     if (dataValues == null)
       return null;
     Object[] data = getData(label);
-    if (data == null || !(data[1] instanceof float[][]))
+    if (data == null || ((Integer)data[3]).intValue() != 2)
       return null;
     return (float[][]) data[1];
   }
@@ -221,7 +222,7 @@ class DataManager {
     if (dataValues == null)
       return null;
     Object[] data = getData(label);
-    if (data == null || !(data[1] instanceof float[][][]))
+    if (data == null || ((Integer)data[3]).intValue() != 3)
       return null;
     return (float[][][]) data[1];
   }
@@ -235,12 +236,16 @@ class DataManager {
       if (name.indexOf("property_") == 0) {
         Object[] obj = dataValues.get(name);
         BitSetUtil.deleteBits((BitSet) obj[2], bsDeleted);
-        if (obj[1] instanceof float[]) {
+        switch (((Integer)obj[3]).intValue()) {
+        case 1:
           obj[1] = ArrayUtil.deleteElements(obj[1], firstAtomIndex, nAtoms);
-        } else if (obj[1] instanceof float[][]){
+          break;
+        case 2:
           obj[1] = ArrayUtil.deleteElements(obj[1], firstAtomIndex, nAtoms);
-        } else {
+          break;
+        default:
           // is there anything else??
+          break;
         }
       }
     }    
@@ -262,19 +267,27 @@ class DataManager {
         n++;
         Object[] obj = dataValues.get(name);
         Object data = obj[1];
-        if (data instanceof float[]) {
+        if (data != null && ((Integer)obj[3]).intValue() == 1) {
           viewer.getAtomicPropertyState(sb, AtomCollection.TAINT_MAX, 
               (BitSet) obj[2], 
               name, (float[]) data);
           sb.append("\n");
         } else {
-          sb.append("\n").append(Escape.encapsulateData(name, data));
+          sb.append("\n").append(Escape.encapsulateData(name, data, 0));//j2s issue?
         }
       } else if (name.indexOf("data2d") == 0) {
-        Object data = dataValues.get(name)[1];
-        if (data instanceof float[][]) {
+        Object[] obj = dataValues.get(name);
+        Object data = obj[1];
+        if (data != null && ((Integer)obj[3]).intValue() == 2) {
           n++;
-          sb.append("\n").append(Escape.encapsulateData(name, data));
+          sb.append("\n").append(Escape.encapsulateData(name, data, 2));
+        }
+      } else if (name.indexOf("data3d") == 0) {
+        Object[] obj = dataValues.get(name);
+        Object data = obj[1];
+        if (data != null && ((Integer)obj[3]).intValue() == 3) {
+          n++;
+          sb.append("\n").append(Escape.encapsulateData(name, data, 3));
         }
       }
     }

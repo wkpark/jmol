@@ -766,7 +766,7 @@ public class NWChemReader extends MOReader {
         gaussianCount += nGaussians;
       }
     }
-    gaussians = new float[gaussianCount][];
+    gaussians = ArrayUtil.newFloat2(gaussianCount);
     for (int i = 0; i < gaussianCount; i++)
       gaussians[i] = gdata.get(i);
     return true;

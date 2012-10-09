@@ -211,7 +211,7 @@ public class JaguarReader extends MOReader {
         }
       }
     }
-    float[][] garray = new float[gaussianCount][];
+    float[][] garray = ArrayUtil.newFloat2(gaussianCount);
     List<int[]> sarray = new ArrayList<int[]>();
     gaussianCount = 0;
     for (int i = 0; i < moCount; i++)
@@ -295,7 +295,7 @@ public class JaguarReader extends MOReader {
       gdata.add(new float[] { z, rCoef });
     }
 
-    float[][] garray = new float[gaussianCount][];
+    float[][] garray = ArrayUtil.newFloat2(gaussianCount);
     for (int i = gdata.size(); --i >= 0;)
       garray[i] = gdata.get(i);
     moData.put("shells", sarray);

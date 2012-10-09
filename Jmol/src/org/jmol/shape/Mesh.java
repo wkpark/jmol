@@ -449,17 +449,18 @@ public class Mesh extends MeshSurface {
     }
   }
   
-  Object getInfo() {
+  Object getInfo(boolean isAll) {
     Hashtable<String, Object> info = new Hashtable<String, Object>();
     info.put("id", thisID);
     info.put("vertexCount", Integer.valueOf(vertexCount));
     info.put("polygonCount", Integer.valueOf(polygonCount));
     info.put("haveQuads", Boolean.valueOf(haveQuads));
-    if (vertexCount > 0)
+    info.put("haveValues", Boolean.valueOf(vertexValues != null));
+    if (vertexCount > 0 && isAll)
       info.put("vertices", ArrayUtil.arrayCopyPt(vertices, vertexCount));
-    if (vertexValues != null)
+    if (vertexValues != null && isAll)
       info.put("vertexValues", ArrayUtil.arrayCopyF(vertexValues, vertexCount));
-    if (polygonCount > 0)
+    if (polygonCount > 0 && isAll)
       info.put("polygons", ArrayUtil.arrayCopyII(polygonIndexes, polygonCount));
     return info;
   }

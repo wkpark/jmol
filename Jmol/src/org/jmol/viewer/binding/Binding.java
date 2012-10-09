@@ -202,7 +202,7 @@ abstract public class Binding {
     Iterator<String> e = bindings.keySet().iterator();
     while (e.hasNext()) {
       Object obj = bindings.get(e.next());
-      if (!(obj instanceof int[]))
+      if (!Escape.isAI(obj))
         continue;
       int[] info = (int[]) obj;
       int i = info[1];

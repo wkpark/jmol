@@ -868,14 +868,14 @@ public abstract class BioPolymer {
           }
           strExtra = q.getInfo()
               + TextFormat.sprintf("  %10.5p %10.5p %10.5p",
-                  new Object[] { ptCenter });
+                  "p", new Object[] { ptCenter });
           if (qtype == 'n' && isAmino) {
             strExtra += TextFormat.sprintf("  %10.5p %10.5p %10.5p",
-                new Object[] { ((AminoMonomer) monomer)
+                "p", new Object[] { ((AminoMonomer) monomer)
                     .getNitrogenHydrogenPoint() });
           } else if (derivType == 2 && !Float.isNaN(val1)) {
             strExtra += TextFormat.sprintf(" %10.5f %10.5f",
-                new Object[] { new float[] { val1, val2 } });
+                "F", new Object[] { new float[] { val1, val2 } });
           }
         }
         if (pdbATOM == null)// || bsSelected != null && !bsSelected.get(a.getIndex()))
@@ -885,7 +885,7 @@ public abstract class BioPolymer {
             null));
         pdbATOM.append(TextFormat
             .sprintf("%8.2f%8.2f%8.2f      %6.3f          %2s    %s\n",
-                new Object[] {
+                "ssF", new Object[] {
                     a.getElementSymbolIso(false).toUpperCase(),
                     strExtra,
                     new float[] { x * factor, y * factor, z * factor,

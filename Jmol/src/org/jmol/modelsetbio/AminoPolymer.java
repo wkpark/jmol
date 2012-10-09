@@ -31,6 +31,7 @@ import org.jmol.modelset.HBond;
 import org.jmol.modelset.Model;
 import org.jmol.script.Token;
 //import org.jmol.util.Escape;
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSet;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
@@ -683,7 +684,7 @@ public class AminoPolymer extends AlphaPolymer {
     //   This part is the same as the Rasmol hydrogen bond calculation
     //
 
-    int[][][][] min = new int[bioPolymerCount][][][];
+    int[][][][] min = ArrayUtil.newInt4(bioPolymerCount);
     for (int i = 0; i < bioPolymerCount; i++) {
       if (!(bioPolymers[i] instanceof AminoPolymer))
         continue;

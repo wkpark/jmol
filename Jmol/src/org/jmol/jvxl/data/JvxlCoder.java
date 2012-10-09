@@ -358,7 +358,7 @@ public class JvxlCoder {
         if (jvxlData.jvxlPlane != null)
           addAttrib(attribs, "\n  contoured", "true");
         addAttrib(attribs, "\n  nContours", "" + jvxlData.contourValues.length);
-        addAttrib(attribs, "\n  contourValues", Escape.escapeArray(jvxlData.contourValuesUsed == null ? jvxlData.contourValues : jvxlData.contourValuesUsed));
+        addAttrib(attribs, "\n  contourValues", Escape.escapeAF(jvxlData.contourValuesUsed == null ? jvxlData.contourValues : jvxlData.contourValuesUsed));
         addAttrib(attribs, "\n  contourColors", jvxlData.contourColors);
       }
     }

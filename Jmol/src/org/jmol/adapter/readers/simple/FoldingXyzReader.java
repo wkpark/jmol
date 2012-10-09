@@ -64,7 +64,7 @@ public class FoldingXyzReader extends AtomSetCollectionReader {
    */
   void readAtoms(int modelAtomCount) throws Exception {
   	// Stores bond informations
-  	int[][] bonds = new int[modelAtomCount + 1][];
+  	int[][] bonds = ArrayUtil.newInt2(modelAtomCount + 1);
   	for (int i = 0; i <= modelAtomCount; ++i) {
   	  bonds[i] = null;
   	}

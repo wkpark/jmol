@@ -848,13 +848,13 @@ class TransformManager11 extends TransformManager {
       if (isPathGuide) {
         Hermite.getHermiteList(7, pathGuide[iPrev][0], pathGuide[pt][0],
             pathGuide[iNext][0], pathGuide[iNext2][0], pathGuide[iNext3][0],
-            points, i * nPer, nPer + 1);
+            points, i * nPer, nPer + 1, true);
         Hermite.getHermiteList(7, pathGuide[iPrev][1], pathGuide[pt][1],
             pathGuide[iNext][1], pathGuide[iNext2][1], pathGuide[iNext3][1],
-            pointGuides, i * nPer, nPer + 1);
+            pointGuides, i * nPer, nPer + 1, true);
       } else {
         Hermite.getHermiteList(7, path[iPrev], path[pt], path[iNext],
-            path[iNext2], path[iNext3], points, i * nPer, nPer + 1);
+            path[iNext2], path[iNext3], points, i * nPer, nPer + 1, true);
       }
     }
     int totalSteps = nSteps;

@@ -44,6 +44,7 @@ import org.jmol.util.TextFormat;
 
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.modelset.Atom;
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.AxisAngle4f;
 import org.jmol.util.BitSet;
 import org.jmol.util.JmolFont;
@@ -354,7 +355,7 @@ public abstract class Exporter {
     int n = 360 / ndeg;
     ms.colix = colix;
     ms.vertices = new Point3f[ms.vertexCount = n + 1];
-    ms.polygonIndexes = new int[ms.polygonCount = n][];
+    ms.polygonIndexes = ArrayUtil.newInt2(ms.polygonCount = n);
     for (int i = 0; i < n; i++)
       ms.polygonIndexes[i] = new int[] {i, (i + 1) % n, n };
     double d = ndeg / 180. * Math.PI; 

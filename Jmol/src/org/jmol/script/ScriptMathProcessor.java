@@ -180,7 +180,7 @@ class ScriptMathProcessor {
     return wasX = true;
   }
 
-  boolean addXObj(Object x) {
+  boolean addXObj(Object x) {  // j2s issue here
     // the standard entry point
     ScriptVariable v = ScriptVariable.getVariable(x);
     if (v == null)
@@ -192,6 +192,41 @@ class ScriptMathProcessor {
   boolean addXStr(String x) {
     // the standard entry point
     putX(ScriptVariable.newScriptVariableObj(Token.string, x));
+    return wasX = true;
+  }
+
+  boolean addXAV(ScriptVariable[] x) {
+    putX(ScriptVariable.getVariableAV(x));
+    return wasX = true;
+  }
+
+  boolean addXAD(double[] x) {
+    putX(ScriptVariable.getVariableAD(x));
+    return wasX = true;
+  }
+
+  boolean addXAS(String[] x) {
+    putX(ScriptVariable.getVariableAS(x));
+    return wasX = true;
+  }
+
+  boolean addXAI(int[] x) {
+    putX(ScriptVariable.getVariableAI(x));
+    return wasX = true;
+  }
+
+  boolean addXAII(int[][] x) {
+    putX(ScriptVariable.getVariableAII(x));
+    return wasX = true;
+  }
+
+  boolean addXAF(float[] x) {
+    putX(ScriptVariable.getVariableAF(x));
+    return wasX = true;
+  }
+
+  boolean addXAFF(float[][] x) {
+    putX(ScriptVariable.getVariableAFF(x));
     return wasX = true;
   }
 
@@ -882,7 +917,7 @@ class ScriptMathProcessor {
         int nMatch = ptsB.size() / nAtoms;
         List<int[][]> ret = new ArrayList<int[][]>();
         for (int i = 0, pt = 0; i < nMatch; i++) {
-          int[][] a = new int[nAtoms][];
+          int[][] a = ArrayUtil.newInt2(nAtoms);
           ret.add(a);
           for (int j = 0; j < nAtoms; j++, pt++)
             a[j] = new int[] { ((Atom)ptsA.get(j)).index, ((Atom)ptsB.get(pt)).index};
@@ -1046,7 +1081,7 @@ class ScriptMathProcessor {
         bin = nbins - 1;
       array[bin]++;
     }
-    return addXObj(array);
+    return addXAI(array);
   }
 
   private boolean evaluateHelix(ScriptVariable[] args) throws ScriptException {
@@ -1077,15 +1112,15 @@ class ScriptMathProcessor {
       case Token.radius:
       case Token.angle:
       case Token.measure:
-        return addXObj(Measure.computeHelicalAxis(null, tok, pta, ptb, dq));
+        return addXObj(Measure.computeHelicalAxis(null, tok, pta, ptb, dq)); // j2s issue here
       case Token.array:
         String[] data = (String[]) Measure.computeHelicalAxis(null, Token.list,
             pta, ptb, dq);
         if (data == null)
           return false;
-        return addXObj(data);
+        return addXAS(data);
       default:
-        return addXObj(Measure.computeHelicalAxis(type, Token.draw, pta, ptb, dq));
+        return addXObj(Measure.computeHelicalAxis(type, Token.draw, pta, ptb, dq)); // j2s issue here
       }
     } else {
       BitSet bs = (args[0].value instanceof BitSet ? (BitSet) args[0].value
@@ -1374,7 +1409,7 @@ class ScriptMathProcessor {
       }
       if (ret == null)
         eval.error(ScriptEvaluator.ERROR_invalidArgument); 
-      return addXObj(ret);
+      return addXObj(ret); // j2s issue here
     }
     boolean isReverse = (flags.indexOf("v") >= 0);
     boolean isCaseInsensitive = (flags.indexOf("i") >= 0);
@@ -1424,7 +1459,7 @@ class ScriptMathProcessor {
             --n;
             listNew[n] = (asMatch ? (String) v.get(n) : list[i]);
           }
-      return addXObj(listNew);
+      return addXAS(listNew);
     }
     return addXInt(ScriptVariable.sValue(x1).indexOf(sFind) + 1);
   }
@@ -1454,7 +1489,7 @@ class ScriptMathProcessor {
     if (pt < args.length)
       property = PropertyManager.extractProperty(property, args, pt);
     return addXObj(ScriptVariable.isVariableType(property) ? property : Escape
-        .toReadable(propertyName, property));
+        .toReadable(propertyName, property)); // j2s issue here
   }
 
   private boolean evaluatePlane(ScriptVariable[] args, int tok)
@@ -2019,7 +2054,7 @@ class ScriptMathProcessor {
     case 1:
     default:
       if (tok == Token.quaternion && args[0].tok == Token.varray) {
-        Quaternion[] data1 = getQuaternionArray(args[0].getList());
+        Quaternion[] data1 = getQuaternionArray(args[0].getList(), Token.list);
         Object mean = Quaternion.sphereMean(data1, null, 0.0001f);
         q = (mean instanceof Quaternion ? (Quaternion) mean : null);
         break;
@@ -2041,8 +2076,8 @@ class ScriptMathProcessor {
     case 2:
       if (tok == Token.quaternion) {
         if (args[0].tok == Token.varray && args[1].tok == Token.varray) {
-          Quaternion[] data1 = getQuaternionArray(args[0].getList());
-          Quaternion[] data2 = getQuaternionArray(args[1].getList());
+          Quaternion[] data1 = getQuaternionArray(args[0].getList(), Token.list);
+          Quaternion[] data2 = getQuaternionArray(args[1].getList(), Token.list);
           qs = Quaternion.div(data2, data1, nMax, isRelative);
           break;
         }
@@ -3433,7 +3468,7 @@ class ScriptMathProcessor {
     List<ScriptVariable> sv = null;
     int ndata = 0;
     while (true) {
-      if (floatOrSVArray instanceof float[]) {
+      if (Escape.isAF(floatOrSVArray)) {
         data = (float[]) floatOrSVArray;
         ndata = data.length;
         if (ndata == 0)
@@ -3583,8 +3618,7 @@ class ScriptMathProcessor {
     return "NaN";
   }
 
-  private static Object getMinMaxQuaternion(Object quaternionOrSVData,
-                                            int tok) {
+  private static Object getMinMaxQuaternion(List<ScriptVariable> svData, int tok) {
     Quaternion[] data;
     switch (tok) {
     case Token.min:
@@ -3597,7 +3631,7 @@ class ScriptMathProcessor {
     // only stddev and average
 
     while (true) {
-      data = getQuaternionArray(quaternionOrSVData);
+      data = getQuaternionArray(svData, Token.list);
       if (data == null)
         break;
       float[] retStddev = new float[1];
@@ -3614,16 +3648,19 @@ class ScriptMathProcessor {
   }
 
   @SuppressWarnings("unchecked")
-  protected static Quaternion[] getQuaternionArray(Object quaternionOrSVData) {
+  protected static Quaternion[] getQuaternionArray(Object quaternionOrSVData, int itype) {
     Quaternion[] data;
-    if (quaternionOrSVData instanceof Quaternion[]) {
+    switch (itype) {
+    case Token.quaternion:
       data = (Quaternion[]) quaternionOrSVData;
-    } else if (quaternionOrSVData instanceof Point4f[]) {
+      break;
+    case Token.point4f:
       Point4f[] pts = (Point4f[]) quaternionOrSVData;
       data = new Quaternion[pts.length];
       for (int i = 0; i < pts.length; i++)
         data[i] = Quaternion.newP4(pts[i]);
-    } else if (quaternionOrSVData instanceof List<?>) {
+      break;
+    case Token.list:
       List<ScriptVariable> sv = (ArrayList<ScriptVariable>) quaternionOrSVData;
       data = new Quaternion[sv.size()];
       for (int i = 0; i < sv.size(); i++) {
@@ -3632,7 +3669,8 @@ class ScriptMathProcessor {
           return null;
         data[i] = Quaternion.newP4(pt);
       }
-    } else {
+      break;
+    default:
       return null;
     }
     return data;

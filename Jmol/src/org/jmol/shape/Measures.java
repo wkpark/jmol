@@ -388,12 +388,11 @@ public class Measures extends Shape implements JmolMeasurementClient {
   }
 
   private void deleteO(Object value) {
-    if (value instanceof int[]) {
+    if ((value instanceof Integer)) {
+      deleteI(((Integer)value).intValue());
+    } else if (Escape.isAI(value)) {
       defineAll(Integer.MIN_VALUE, new Measurement(modelSet, (int[])value, null, null), true, false, false);
-      return;
     }
-    if ((value instanceof Integer))
-      deleteI(((Integer)value).intValue());   
   }
 
   private void defineAll(int iPt, Measurement m, boolean isDelete, boolean isShow,

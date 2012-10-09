@@ -233,7 +233,7 @@ public class PsiReader extends MOReader {
       gaussianCount += nGaussians;
       readLine();
     }
-    float[][] garray = new float[gaussianCount][];
+    float[][] garray = ArrayUtil.newFloat2(gaussianCount);
     for (int i = 0; i < gaussianCount; i++) {
       tokens = gdata.get(i);
       garray[i] = new float[tokens.length];

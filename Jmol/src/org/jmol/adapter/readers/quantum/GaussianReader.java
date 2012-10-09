@@ -435,7 +435,7 @@ public class GaussianReader extends MOReader {
     }
     if (atomCount == 0)
       atomCount = 1;
-    gaussians = new float[gaussianCount][];
+    gaussians = ArrayUtil.newFloat2(gaussianCount);
     for (int i = 0; i < gaussianCount; i++) {
       tokens = gdata.get(i);
       gaussians[i] = new float[tokens.length];

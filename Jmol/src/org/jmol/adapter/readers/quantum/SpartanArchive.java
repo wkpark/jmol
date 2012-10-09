@@ -37,6 +37,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Vector3f;
 
@@ -223,7 +224,7 @@ class SpartanArchive {
      */
 
     ArrayList<int[]> shells = new ArrayList<int[]>();
-    float[][] gaussians = new float[gaussianCount][];
+    float[][] gaussians = ArrayUtil.newFloat2(gaussianCount);
     int[] typeArray = new int[gaussianCount];
     //if (false) { // checking these still
     // r.getDFMap(DC_LIST, JmolAdapter.SHELL_D_CARTESIAN, BasisFunctionReader.CANONICAL_DC_LIST, 3);

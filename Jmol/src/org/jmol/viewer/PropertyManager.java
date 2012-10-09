@@ -98,6 +98,7 @@ public class PropertyManager {
     "errorMessage"    , "", "",
     "mouseInfo"       , "", "",
     "isosurfaceInfo"  , "", "",
+    "isosurfaceData"  , "", "",
     "consoleText"     , "", "",
     "jspecView"       , "<key>", "",
   };
@@ -144,9 +145,10 @@ public class PropertyManager {
   private final static int PROP_ERROR_MESSAGE = 33;
   private final static int PROP_MOUSE_INFO = 34;
   private final static int PROP_ISOSURFACE_INFO = 35;
-  private final static int PROP_CONSOLE_TEXT = 36;
-  private final static int PROP_JSPECVIEW = 37;
-  private final static int PROP_COUNT = 38;
+  private final static int PROP_ISOSURFACE_DATA = 36;
+  private final static int PROP_CONSOLE_TEXT = 37;
+  private final static int PROP_JSPECVIEW = 38;
+  private final static int PROP_COUNT = 39;
 
   //// static methods used by Eval and Viewer ////
   
@@ -227,14 +229,6 @@ public class PropertyManager {
           return extractProperty(v.get(pt), args, ptr);
         return "";
       }
-      if (property instanceof String[]) {
-        String[] slist = (String[]) property;
-        if (pt < 0)
-          pt += slist.length;
-        if (pt >= 0 && pt < slist.length)
-          return slist[pt];
-        return "";
-      }
       if (property instanceof Matrix3f) {
         Matrix3f m = (Matrix3f) property;
         float[][] f = new float[][] {
@@ -247,15 +241,8 @@ public class PropertyManager {
           return extractProperty(f, args, --ptr);
         return "";
       }
-      if (property instanceof float[]) {
-        float[] flist = (float[]) property;
-        if (pt < 0)
-          pt += flist.length;
-        if (pt >= 0 && pt < flist.length)
-          return new Float(flist[pt]);
-        return "";
-      }
-      if (property instanceof int[]) {
+      
+      if (Escape.isAI(property)) {
         int[] ilist = (int[]) property;
         if (pt < 0)
           pt += ilist.length;
@@ -263,7 +250,23 @@ public class PropertyManager {
           return Integer.valueOf(ilist[pt]);
         return "";
       }
-      if (property instanceof float[][]) {
+      if (Escape.isAF(property)) {
+        float[] flist = (float[]) property;
+        if (pt < 0)
+          pt += flist.length;
+        if (pt >= 0 && pt < flist.length)
+          return new Float(flist[pt]);
+        return "";
+      }
+      if (Escape.isAII(property)) {
+        int[][] iilist = (int[][]) property;
+        if (pt < 0)
+          pt += iilist.length;
+        if (pt >= 0 && pt < iilist.length)
+          return extractProperty(iilist[pt], args, ptr);
+        return "";
+      }
+      if (Escape.isAFF(property)) {
         float[][] fflist = (float[][]) property;
         if (pt < 0)
           pt += fflist.length;
@@ -271,12 +274,12 @@ public class PropertyManager {
           return extractProperty(fflist[pt], args, ptr);
         return "";
       }
-      if (property instanceof int[][]) {
-        int[][] iilist = (int[][]) property;
+      if (Escape.isAS(property)) {
+        String[] slist = (String[]) property;
         if (pt < 0)
-          pt += iilist.length;
-        if (pt >= 0 && pt < iilist.length)
-          return extractProperty(iilist[pt], args, ptr);
+          pt += slist.length;
+        if (pt >= 0 && pt < slist.length)
+          return slist[pt];
         return "";
       }
       if (property instanceof Object[]) {
@@ -288,6 +291,8 @@ public class PropertyManager {
         return "";
       }
       break;
+      
+      
     case Token.string:
       String key = arg.asString();
       if (property instanceof Map<?,?>) {
@@ -424,6 +429,8 @@ public class PropertyManager {
           null, null);
     case PROP_ISOSURFACE_INFO:
       return viewer.getShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "getInfo");
+    case PROP_ISOSURFACE_DATA:
+      return viewer.getShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "getData");
     case PROP_JMOL_STATUS:
       return viewer.getStatusChanged(myParam.toString());
     case PROP_JMOL_VIEWER:

@@ -86,7 +86,6 @@ abstract public class MOReader extends BasisFunctionReader {
   protected int shellCount = 0;
   protected int gaussianCount = 0;
   protected float[][] gaussians;
-
   protected String energyUnits = "";
   
   protected List<String> moTypes;

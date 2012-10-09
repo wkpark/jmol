@@ -31,6 +31,7 @@ import java.util.Map;
 
 
 import org.jmol.shape.AtomShape;
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSet;
 import org.jmol.util.Colix;
 import org.jmol.util.Escape;
@@ -232,9 +233,9 @@ public class Ellipsoids extends AtomShape {
 
   private void checkSets() {
     if (colixset == null) {
-      colixset = new short[3][];
-      paletteIDset = new byte[3][];
-      madset = new short[3][];
+      colixset = ArrayUtil.newShort2(3);
+      paletteIDset = ArrayUtil.newByte2(3);
+      madset = ArrayUtil.newShort2(3);
     }
   }
 

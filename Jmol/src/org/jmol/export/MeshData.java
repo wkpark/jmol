@@ -1,6 +1,7 @@
 package org.jmol.export;
 
 
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.Geodesic;
 import org.jmol.util.MeshSurface;
 import org.jmol.util.Point3f;
@@ -74,7 +75,7 @@ class MeshData {
     int ndeg = 10;
     int n = 360 / ndeg;
     int vertexCount = n + 1;
-    int[][] faces = new int[n][];
+    int[][] faces = ArrayUtil.newInt2(n);
     for (int i = 0; i < n; i++) {
       faces[i] = new int[] { i, (i + 1) % n, n };
     }
@@ -88,7 +89,7 @@ class MeshData {
     }
     vertexes[n] = Point3f.new3(0, 0, 0);
     normals[n] = Point3f.new3(0, 0, 1);
-    return MeshSurface.newMesh(vertexes, 0, faces, normals, 0);
+    return MeshSurface.newMesh(false, vertexes, 0, faces, normals, 0);
   }
 
   /**
@@ -112,7 +113,7 @@ class MeshData {
     v2.normalize();
     Vector3f[] normals = new Vector3f[] { v2, v2, v2 };
     int[][] faces = { { 0, 1, 2 } };
-    return MeshSurface.newMesh(vertexes, 0, faces, normals, 0);
+    return MeshSurface.newMesh(false, vertexes, 0, faces, normals, 0);
   }
 
   /**
@@ -124,7 +125,7 @@ class MeshData {
     int ndeg = 10;
     int n = 360 / ndeg;
     Point3f[] vertices = new Point3f[n + 1];
-    int[][] faces = new int[n][];
+    int[][] faces = ArrayUtil.newInt2(n);
     for (int i = 0; i < n; i++)
       faces[i] = new int[] { i, (i + 1) % n, n };
     double d = ndeg / 180. * Math.PI;
@@ -134,7 +135,7 @@ class MeshData {
       vertices[i] = Point3f.new3(x, y, 0);
     }
     vertices[n] = Point3f.new3(0, 0, 1);
-    return MeshSurface.newMesh(vertices, 0, faces, vertices, 0);
+    return MeshSurface.newMesh(false, vertices, 0, faces, vertices, 0);
   }
 
   /**
@@ -147,7 +148,7 @@ class MeshData {
     int ndeg = 10;
     int vertexCount = 360 / ndeg * 2;
     int n = vertexCount / 2;
-    int[][] faces = new int[vertexCount][];
+    int[][] faces = ArrayUtil.newInt2(vertexCount);
     int fpt = -1;
     for (int i = 0; i < n; i++) {
       if (inSide) {
@@ -181,7 +182,7 @@ class MeshData {
     if (inSide)
       for (int i = 0; i < n; i++)
         normals[i].scale(-1);
-    return MeshSurface.newMesh(vertexes, 0, faces, normals, 0);
+    return MeshSurface.newMesh(false, vertexes, 0, faces, normals, 0);
   }
 
   /**
@@ -194,14 +195,14 @@ class MeshData {
     int vertexCount = Geodesic.getVertexCount(2);
     short[] f = Geodesic.getFaceVertexes(2);
     int nFaces = f.length / 3;
-    int[][] faces = new int[nFaces][];
+    int[][] faces = ArrayUtil.newInt2(nFaces);
     int fpt = -1;
     for (int i = 0; i < nFaces; i++)
       faces[i] = new int[] { f[++fpt], f[++fpt], f[++fpt] };
-    Vector3f[] vertexes = new Vector3f[vertexCount];
+    Vector3f[] vectors = new Vector3f[vertexCount];
     for (int i = 0; i < vertexCount; i++)
-      vertexes[i] = Geodesic.getVertexVector(i);
-    return MeshSurface.newMesh(vertexes, 0, faces, vertexes, 0);
+      vectors[i] = Geodesic.getVertexVector(i);
+    return MeshSurface.newMesh(true, vectors, 0, faces, vectors, 0);
   }
 
 }

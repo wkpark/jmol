@@ -37,6 +37,7 @@ import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.JvxlData;
 import org.jmol.jvxl.data.MeshData;
 import org.jmol.jvxl.data.VolumeData;
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSet;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.Colix;
@@ -541,7 +542,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     yzCount = nPointsY * nPointsZ;
     if (!isQuiet)
       Logger.info("reading data progressively -- yzCount = " + yzCount);
-    yzPlanes = new float[2][];
+    yzPlanes = ArrayUtil.newFloat2(2);
     yzPlanes[0] = new float[yzCount];
     yzPlanes[1] = new float[yzCount];
   }

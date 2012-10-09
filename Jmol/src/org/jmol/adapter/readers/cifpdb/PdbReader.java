@@ -1467,7 +1467,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
           for (int i = 0; i < 3; i++)
             for (int j = 0; j < 3; j++)
               if (Float.isNaN(tensor[i][j])) {
-                tlsAddError("invalid tensor: " + Escape.escapeArray(tensor));
+                tlsAddError("invalid tensor: " + Escape.escapeFloatAA(tensor, false));
 
               }
           //System.out.println("Tensor t" + tensorType + " = " + Escape.escape(tensor));

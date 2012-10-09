@@ -302,7 +302,7 @@ $end
       }
     }
     // now rearrange the gaussians (direct copy from GaussianReader)
-    gaussians = new float[gaussianCount][];
+    gaussians = ArrayUtil.newFloat2(gaussianCount);
     for (int i = 0; i < gaussianCount; i++) {
       tokens = gdata.get(i);
       gaussians[i] = new float[tokens.length];
@@ -617,7 +617,7 @@ $end
   
   private int readMOs(boolean restricted, MOInfo[] moInfos) throws Exception {
     Map<String, Object>[] mos = ArrayUtil.createArrayOfHashtable(6); // max 6 MO's per line
-    float[][] mocoef = new float[6][]; // coefficients for each MO
+    float[][] mocoef = ArrayUtil.newFloat2(6); // coefficients for each MO
     int[] moid = new int[6]; // mo numbers
     String[] tokens, energy;
     int nMOs = 0;

@@ -30,7 +30,7 @@ public class Hermite {
 
   public static void getHermiteList(int tension, Tuple3f p0, Tuple3f p1,
                                     Tuple3f p2, Tuple3f p3, Tuple3f p4,
-                                    Tuple3f[] list, int index0, int n) {
+                                    Tuple3f[] list, int index0, int n, boolean isPt) {
     //always deliver ONE MORE than one might expect, to provide a normal
     int nPoints = n + 1;
     float fnPoints = n - 1;
@@ -72,7 +72,7 @@ public class Hermite {
       float x = (float) (h1 * x1 + h2 * x2 + h3 * xT1 + h4 * xT2);
       float y = (float) (h1 * y1 + h2 * y2 + h3 * yT1 + h4 * yT2);
       float z = (float) (h1 * z1 + h2 * z2 + h3 * zT1 + h4 * zT2);
-      if (list instanceof Point3f[])
+      if (isPt)
         list[index0 + i] = Point3f.new3(x, y, z);
       else
         list[index0 + i] = Vector3f.new3(x, y, z);

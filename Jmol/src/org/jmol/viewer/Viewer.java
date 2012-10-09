@@ -75,6 +75,7 @@ import org.jmol.constant.EnumFileStatus;
 import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumStereoMode;
 import org.jmol.constant.EnumVdw;
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.AxisAngle4f;
 import org.jmol.util.Base64;
 import org.jmol.util.BitSet;
@@ -3656,7 +3657,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public float[] getDataFloat(String label) {
-    return dataManager.getDataFloat(label);
+    return dataManager.getDataFloatA(label);
   }
 
   public float[][] getDataFloat2D(String label) {
@@ -10355,7 +10356,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void assignConnect(int index, int index2) {
     clearModelDependentObjects();
-    float[][] connections = new float[1][];
+    float[][] connections = ArrayUtil.newFloat2(1);
     connections[0] = new float[] { index, index2 };
     modelSet.connect(connections);
     modelSet.assignAtom(index, ".", true);
@@ -10388,7 +10389,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         String data = (String) ligandModels.get(key + "_data");
         if (data != null)
           commands.append("  ").append(
-              Escape.encapsulateData("ligand_" + key, data.trim() + "\n"));
+              Escape.encapsulateData("ligand_" + key, data.trim() + "\n", 0));
       }
     }
     modelSet.appendLoadStates(commands);

@@ -32,6 +32,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
@@ -158,12 +159,11 @@ public class CsfReader extends MopacSlaterReader {
     return fieldCount;
   }
 
-  private void fillCsfArray(String property, String[] tokens, int i0, Object f)
+  private void fillCsfArray(String property, String[] tokens, int i0, Object f, boolean isInteger)
       throws Exception {
     // handles the continuation. i0 should be 1 for actual continuation, I think.
     int n = getPropertyCount(property);
     int ioffset = i0;
-    boolean isInteger = (f instanceof int[]);
     for (int i = 0; i < n; i++) {
       int ipt = ioffset + i;
       if (ipt == tokens.length) {
@@ -412,7 +412,7 @@ public class CsfReader extends MopacSlaterReader {
             thisvib = parseIntStr(field) - 1;
             break;
           case normalMode:
-            fillCsfArray("normalMode", tokens, i, vibData[thisvib]);
+            fillCsfArray("normalMode", tokens, i, vibData[thisvib], false);
             break;
           case vibEnergy:
             energies[thisvib] = field;
@@ -536,18 +536,18 @@ public class CsfReader extends MopacSlaterReader {
             occupancy[ipt] = parseFloatStr(tokens[i]);
             break;
           case eig_vec:
-            fillCsfArray("eig_vec", tokens, i, list[ipt]);
+            fillCsfArray("eig_vec", tokens, i, list[ipt], false);
             break;
           case eig_vec_compressed:
             isCompressed = true;
             if (listCompressed == null)
               listCompressed = new float[nOrbitals][nOrbitals];
-            fillCsfArray("eig_vec_compressed", tokens, i, listCompressed[ipt]);
+            fillCsfArray("eig_vec_compressed", tokens, i, listCompressed[ipt], false);
             break;
           case coef_indices:
             if (coefIndices == null)
               coefIndices = new int[nOrbitals][nOrbitals];
-            fillCsfArray("coef_indices", tokens, i, coefIndices[ipt]);
+            fillCsfArray("coef_indices", tokens, i, coefIndices[ipt], true);
             break;
           }
         }
@@ -598,7 +598,7 @@ public class CsfReader extends MopacSlaterReader {
 
     nOrbitals = (nSlaters + nGaussians);
     boolean isGaussian = (sto_gto.equals("gto"));
-    float[][] zetas = new float[nOrbitals][];
+    float[][] zetas = ArrayUtil.newFloat2(nOrbitals);
     float[][] contractionCoefs = null;
     String[] types = new String[nOrbitals];
     int[] shells = new int[nOrbitals];
@@ -623,7 +623,7 @@ public class CsfReader extends MopacSlaterReader {
           case sto_exp:
           case gto_exp:
             zetas[ipt] = new float[nZetas];
-            fillCsfArray(sto_gto + "_exp", tokens, i, zetas[ipt]);
+            fillCsfArray(sto_gto + "_exp", tokens, i, zetas[ipt], false);
             break;
           case shell:
             shells[ipt] = parseIntStr(field);
@@ -631,7 +631,7 @@ public class CsfReader extends MopacSlaterReader {
           case contractions:
             if (contractionCoefs == null)
               contractionCoefs = new float[nOrbitals][nZetas];
-            fillCsfArray("contractions", tokens, i, contractionCoefs[ipt]);
+            fillCsfArray("contractions", tokens, i, contractionCoefs[ipt], false);
           }
         }
       }
@@ -661,7 +661,7 @@ public class CsfReader extends MopacSlaterReader {
             gdata.add(new float[] { zetas[ipt][i], contractionCoefs[ipt][i] });
         }
       }
-      float[][] garray = new float[gaussianCount][];
+      float[][] garray = ArrayUtil.newFloat2(gaussianCount);
       for (int i = 0; i < gaussianCount; i++)
         garray[i] = gdata.get(i);
       moData.put("shells", sdata);

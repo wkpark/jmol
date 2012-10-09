@@ -224,16 +224,16 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public void setFrameTitle(BitSet bsFrames, Object title) {
-    if (title instanceof String[]) {
+    if (title instanceof String) {
+      for (int i = bsFrames.nextSetBit(0); i >= 0; i = bsFrames
+          .nextSetBit(i + 1))
+        frameTitles[i] = (String) title;
+    } else {
       String[] list = (String[]) title;
       for (int i = bsFrames.nextSetBit(0), n = 0; i >= 0; i = bsFrames
           .nextSetBit(i + 1))
         if (n < list.length)
           frameTitles[i] = list[n++];
-    } else {
-      for (int i = bsFrames.nextSetBit(0); i >= 0; i = bsFrames
-          .nextSetBit(i + 1))
-        frameTitles[i] = (String) title;
     }
   }
 
@@ -1348,7 +1348,8 @@ abstract public class ModelCollection extends BondCollection {
         if (isPDB)
           bsWritten.set(i);
         sb.append(TextFormat.sprintf(
-            "%-8.2f%-8.2f%-10.2f    %6.3f          %2s    %s\n", new Object[] {
+            "%-8.2f%-8.2f%-10.2f    %6.3f          %2s    %s\n", 
+            "ssF", new Object[] {
                 a.getElementSymbolIso(false).toUpperCase(), strExtra,
                 new float[] { x, y, z, 0f } }));
         if (atomLast != null
@@ -3238,7 +3239,7 @@ abstract public class ModelCollection extends BondCollection {
           ",\"z\":").appendF(a.z*20).append("}");
     } else {
       mol.append(TextFormat.sprintf("%10.5p%10.5p%10.5p",
-          new Object[] { pTemp }));
+          "p", new Object[] {pTemp }));
       mol.append(" ").append(sym);
       if (sym.length() == 1)
         mol.append(" ");
@@ -3801,11 +3802,13 @@ abstract public class ModelCollection extends BondCollection {
         String energy = "" + mo.get("energy");
         if (Float.isNaN(Parser.parseFloatStr(energy)))
           sb.append(TextFormat.sprintf("model %-2s;  mo %-2i # %s\n",
-              new Object[] { getModelNumberDotted(m), Integer.valueOf(i + 1),
+              "sis", new Object[] {getModelNumberDotted(m), Integer.valueOf(i + 1),
                   type }));
         else
           sb.append(TextFormat.sprintf(
-              "model %-2s;  mo %-2i # energy %-8.3f %s %s\n", new Object[] {
+              "model %-2s;  mo %-2i # energy %-8.3f %s %s\n", 
+              "sifss", 
+              new Object[] {
                   getModelNumberDotted(m), Integer.valueOf(i + 1),
                   mo.get("energy"), units, type }));
       }

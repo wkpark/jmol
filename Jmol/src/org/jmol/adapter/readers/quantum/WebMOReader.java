@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.jmol.api.JmolAdapter;
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
 
 /**
@@ -284,7 +285,7 @@ public class WebMOReader extends MopacSlaterReader {
       }
       sdata.add(slater);
     }
-    float[][] garray = new float[gaussianPtr][];
+    float[][] garray = ArrayUtil.newFloat2(gaussianPtr);
     for (int i = 0; i < gaussianPtr; i++) {
       garray[i] = gdata.get(i);
     }

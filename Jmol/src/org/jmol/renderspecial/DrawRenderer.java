@@ -233,7 +233,7 @@ public class DrawRenderer extends MeshRenderer {
       Hermite.getHermiteList(tension, vertices[vertexCount - 3],
           vertices[vertexCount - 2], vertices[vertexCount - 1],
           vertices[vertexCount - 1], vertices[vertexCount - 1],
-          controlHermites, 0, nHermites);
+          controlHermites, 0, nHermites, true);
       renderArrowHead(controlHermites[nHermites - 2],
           controlHermites[nHermites - 1], 0, false, false, dmesh.isBarb);
       break;

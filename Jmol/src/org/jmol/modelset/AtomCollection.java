@@ -445,7 +445,7 @@ abstract public class AtomCollection {
       if ((nValues = v.size()) == 0)
         return;
       type = 1;
-    } else if (xyzValues instanceof Point3f[]){
+    } else if (Escape.isAP(xyzValues)){
       values = (Point3f[]) xyzValues;
       if ((nValues = values.length) == 0)
         return;
@@ -865,7 +865,7 @@ abstract public class AtomCollection {
         taintAtom(atomIndex, (byte) type);
       }
       if (type == TAINT_MAX && n > 0)
-        viewer.setData(name, new Object[] {name, fData, bs}, 0, 0, 0, 0, 0);
+        viewer.setData(name, new Object[] {name, fData, bs, new Integer(1)}, 0, 0, 0, 0, 0);
         
     } catch (Exception e) {
       Logger.error("AtomCollection.loadData error: " + e);
@@ -1877,7 +1877,7 @@ abstract public class AtomCollection {
     // determine geometry
 
     int nAngles = nAttached * (nAttached - 1) / 2;
-    int[][] angles = new int[nAngles][];
+    int[][] angles = ArrayUtil.newInt2(nAngles);
     
     // all attached angles must be around 180, 120, or 90 degrees
     

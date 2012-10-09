@@ -32,7 +32,7 @@ public class StringXBuilder {
   public static StringXBuilder newN(int n) {
     /**
      * @j2sNative
-     *            return new javax.util.StringXBuilder(); 
+     *            return new org.jmol.util.StringXBuilder(); 
      */
     {
       // not perfect, because it requires defining sb twice. 
@@ -47,7 +47,7 @@ public class StringXBuilder {
     /**
      * @j2sNative 
      * 
-     * var sb = new javax.util.StringXBuilder();
+     * var sb = new org.jmol.util.StringXBuilder();
      * sb.s = s;
      * return sb; 
      * 

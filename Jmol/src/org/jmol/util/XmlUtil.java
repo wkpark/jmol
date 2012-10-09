@@ -25,12 +25,12 @@
 
 package org.jmol.util;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+//import java.util.ArrayList;
+//import java.util.Iterator;
+//import java.util.List;
+//import java.util.Map;
 
-import org.jmol.script.Token;
+//import org.jmol.script.Token;
 
 
 public class XmlUtil {
@@ -167,106 +167,106 @@ public class XmlUtil {
     sb.append(" ").appendO(name).append("=\"").appendO(value).append("\"");
   }
 
-  public static void toXml(StringXBuilder sb, String name, List<Object[]> properties) {
-    for (int i = 0; i < properties.size(); i++) {
-      Object[] o = properties.get(i);
-      appendTagObj(sb, name, (Object[]) o[0], o[1]);
-    }
-  }
+//  public static void toXml(StringXBuilder sb, String name, List<Object[]> properties) {
+//    for (int i = 0; i < properties.size(); i++) {
+//      Object[] o = properties.get(i);
+//      appendTagObj(sb, name, (Object[]) o[0], o[1]);
+//    }
+//  }
 
-  @SuppressWarnings("unchecked")
-  public static Object escape(String name, List<Object[]> atts, Object value,
-                              boolean asString, String indent) {
-
-    StringXBuilder sb;
-    String type = (value == null ? null : value.getClass().getName());
-    if (name == "token") {
-      type = null;
-      value = Token.nameOf(((Integer) value).intValue());
-    } else if (type != null) {
-      type = type.substring(0, type.lastIndexOf("[") + 1)
-          + type.substring(type.lastIndexOf(".") + 1);
-      if (value instanceof String) {
-        value = wrapCdata(value);
-      } else if (value instanceof BitSet) {
-        value = Escape.escape(value);
-      } else if (value instanceof List) {
-        List<Object> v = (List<Object>) value;
-        sb = new StringXBuilder().append("\n");
-        if (atts == null)
-          atts = new ArrayList<Object[]>();
-        atts.add(new Object[] { "count", Integer.valueOf(v.size()) });
-        for (int i = 0; i < v.size(); i++)
-          sb.appendO(
-              escape(null, null, v.get(i), true, indent + "  "));
-        value = sb.toString();
-      } else if (value instanceof Map) {
-        Map<String, Object> ht = (Map<String, Object>) value;
-        sb = new StringXBuilder().append("\n");
-        Iterator<String> e = ht.keySet().iterator();
-        int n = 0;
-        while (e.hasNext()) {
-          n++;
-          String name2 = e.next();
-          sb.appendO(
-              escape(name2, null, ht.get(name2), true, indent + "  "));
-        }
-        if (atts == null)
-          atts = new ArrayList<Object[]>();
-        atts.add(new Object[] { "count", new Integer(n) });
-        value = sb.toString();
-      } else if (type.startsWith("[")) {
-        if (value instanceof float[]) {
-          float[] f = (float[]) value;
-          sb = new StringXBuilder().append("\n");
-          if (atts == null)
-            atts = new ArrayList<Object[]>();
-          atts.add(new Object[] { "count", new Integer(f.length) });
-          for (int i = 0; i < f.length; i++)
-            sb.appendO(escape(null, null, new Float(f[i]), true, indent + "  "));
-          value = sb.toString();
-        } else if (value instanceof int[]) {
-          int[] iv = (int[]) value;
-          sb = new StringXBuilder().append("\n");
-          if (atts == null)
-            atts = new ArrayList<Object[]>();
-          atts.add(new Object[] { "count", new Integer(iv.length) });
-          for (int i = 0; i < iv.length; i++)
-            sb.appendO(escape(null, null, new Integer(iv[i]), true, indent + "  "));
-          value = sb.toString();
-          
-        } else if (value instanceof Object[]) {
-          Object[] o = (Object[]) value;
-          sb = new StringXBuilder().append("\n");
-          if (atts == null)
-            atts = new ArrayList<Object[]>();
-          atts.add(new Object[] { "count", new Integer(o.length) });
-          for (int i = 0; i < o.length; i++)
-            sb.appendO(escape(null, null, o[i], true, indent + "  "));
-          value = sb.toString();
-          
-        } else {
-          // out of luck for now
-        }
-          
-      }
-    }
-    List<Object[]> attributes = new ArrayList<Object[]>();
-    attributes.add(new Object[] { "name", name });
-    attributes.add(new Object[] { "type", type });
-    if (atts != null)
-      for (int i = 0; i < atts.size(); i++)
-        attributes.add(atts.get(i));
-    if (!asString)
-      return new Object[] { attributes.toArray(), value };
-    sb = new StringXBuilder();
-    sb.append(indent);
-    appendTagAll(sb, "val", attributes.toArray(), null, false, false);
-    sb.appendO(value);
-    if (value instanceof String && ((String)value).indexOf("\n") >= 0)
-      sb.append(indent);      
-    closeTag(sb, "val");
-    return sb.toString();
-  }
+//  @SuppressWarnings("unchecked")
+//  public static Object escape(String name, List<Object[]> atts, Object value,
+//                              boolean asString, String indent) {
+//
+//    StringXBuilder sb;
+//    String type = (value == null ? null : value.getClass().getName());
+//    if (name == "token") {
+//      type = null;
+//      value = Token.nameOf(((Integer) value).intValue());
+//    } else if (type != null) {
+//      type = type.substring(0, type.lastIndexOf("[") + 1)
+//          + type.substring(type.lastIndexOf(".") + 1);
+//      if (value instanceof String) {
+//        value = wrapCdata(value);
+//      } else if (value instanceof BitSet) {
+//        value = Escape.escape(value);
+//      } else if (value instanceof List) {
+//        List<Object> v = (List<Object>) value;
+//        sb = new StringXBuilder().append("\n");
+//        if (atts == null)
+//          atts = new ArrayList<Object[]>();
+//        atts.add(new Object[] { "count", Integer.valueOf(v.size()) });
+//        for (int i = 0; i < v.size(); i++)
+//          sb.appendO(
+//              escape(null, null, v.get(i), true, indent + "  "));
+//        value = sb.toString();
+//      } else if (value instanceof Map) {
+//        Map<String, Object> ht = (Map<String, Object>) value;
+//        sb = new StringXBuilder().append("\n");
+//        Iterator<String> e = ht.keySet().iterator();
+//        int n = 0;
+//        while (e.hasNext()) {
+//          n++;
+//          String name2 = e.next();
+//          sb.appendO(
+//              escape(name2, null, ht.get(name2), true, indent + "  "));
+//        }
+//        if (atts == null)
+//          atts = new ArrayList<Object[]>();
+//        atts.add(new Object[] { "count", new Integer(n) });
+//        value = sb.toString();
+//      } else if (type.startsWith("[")) {
+//        if (value instanceof float[]) {
+//          float[] f = (float[]) value;
+//          sb = new StringXBuilder().append("\n");
+//          if (atts == null)
+//            atts = new ArrayList<Object[]>();
+//          atts.add(new Object[] { "count", new Integer(f.length) });
+//          for (int i = 0; i < f.length; i++)
+//            sb.appendO(escape(null, null, new Float(f[i]), true, indent + "  "));
+//          value = sb.toString();
+//        } else if (value instanceof int[]) {
+//          int[] iv = (int[]) value;
+//          sb = new StringXBuilder().append("\n");
+//          if (atts == null)
+//            atts = new ArrayList<Object[]>();
+//          atts.add(new Object[] { "count", new Integer(iv.length) });
+//          for (int i = 0; i < iv.length; i++)
+//            sb.appendO(escape(null, null, new Integer(iv[i]), true, indent + "  "));
+//          value = sb.toString();
+//          
+//        } else if (value instanceof Object[]) {
+//          Object[] o = (Object[]) value;
+//          sb = new StringXBuilder().append("\n");
+//          if (atts == null)
+//            atts = new ArrayList<Object[]>();
+//          atts.add(new Object[] { "count", new Integer(o.length) });
+//          for (int i = 0; i < o.length; i++)
+//            sb.appendO(escape(null, null, o[i], true, indent + "  "));
+//          value = sb.toString();
+//          
+//        } else {
+//          // out of luck for now
+//        }
+//          
+//      }
+//    }
+//    List<Object[]> attributes = new ArrayList<Object[]>();
+//    attributes.add(new Object[] { "name", name });
+//    attributes.add(new Object[] { "type", type });
+//    if (atts != null)
+//      for (int i = 0; i < atts.size(); i++)
+//        attributes.add(atts.get(i));
+//    if (!asString)
+//      return new Object[] { attributes.toArray(), value };
+//    sb = new StringXBuilder();
+//    sb.append(indent);
+//    appendTagAll(sb, "val", attributes.toArray(), null, false, false);
+//    sb.appendO(value);
+//    if (value instanceof String && ((String)value).indexOf("\n") >= 0)
+//      sb.append(indent);      
+//    closeTag(sb, "val");
+//    return sb.toString();
+//  }
 
 }

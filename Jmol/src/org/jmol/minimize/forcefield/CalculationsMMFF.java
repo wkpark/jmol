@@ -562,7 +562,7 @@ class CalculationsMMFF extends Calculations {
     case CALC_STRETCH_BEND:
       return TextFormat.sprintf(
           "%15s  %-5s %-5s %-5s  %8.3f  %8.3f     %8.3f   %8.3f", 
-          new Object[] {  MinObject.decodeKey(c.key), minAtoms[c.ia].sType, minAtoms[c.ib].sType, 
+          "ssssFI", new Object[] { MinObject.decodeKey(c.key), minAtoms[c.ia].sType, minAtoms[c.ib].sType, 
               minAtoms[c.ic].sType,
           new float[] { (float)(c.theta * RAD_TO_DEG), (float) c.dData[1] /*THETA0*/, 
               (float)c.dData[0]/*Kijk*/, energy },
@@ -571,7 +571,7 @@ class CalculationsMMFF extends Calculations {
       case CALC_TORSION:
         return TextFormat.sprintf(
               "%15s  %-5s %-5s %-5s %-5s  %8.3f %8.3f %8.3f %8.3f %8.3f", 
-            new Object[] { MinObject.decodeKey(c.key), 
+              "sssssF", new Object[] { MinObject.decodeKey(c.key), 
                  minAtoms[c.ia].sType, minAtoms[c.ib].sType, 
                  minAtoms[c.ic].sType, minAtoms[c.id].sType, 
             new float[] { (float) (c.theta * RAD_TO_DEG), (float) c.dData[0]/*v1*/, (float) c.dData[1]/*v2*/, (float) c.dData[2]/*v3*/, 

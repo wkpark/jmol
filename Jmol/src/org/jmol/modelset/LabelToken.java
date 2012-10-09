@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 
+import org.jmol.util.Escape;
 import org.jmol.util.StringXBuilder;
 import org.jmol.util.TextFormat;
 import org.jmol.util.Tuple3f;
@@ -413,17 +414,20 @@ public class LabelToken {
         }
         lt.text = strFormat.substring(ich, ichCloseBracket);
         lt.data = viewer.getDataFloat(lt.text);
+        // TODO untested j2s issue fix
         if (lt.data == null) {
           lt.data = viewer.getData(lt.text);
-          if (lt.data instanceof Object[]) {
+          if (lt.data instanceof Object[]) {// either that or it is null
             lt.data = ((Object[]) lt.data)[1];
             if (lt.data instanceof String)
               lt.data = TextFormat.split((String) lt.data, '\n');
+            if (!(Escape.isAS(lt.data)))
+              lt.data = null;
           }
-          if (!(lt.data instanceof String[]))
-            lt.data = null;
+          lt.tok = (lt.data == null ? Token.string : Token.array);
+        } else {
+          lt.tok = Token.data;
         }
-        lt.tok = (lt.data == null ? Token.string : Token.data);
         ich = ichCloseBracket + 1;
         break;
       default:
@@ -467,12 +471,13 @@ public class LabelToken {
         break;
       case Token.data:
         if (t.data != null) {
-          if (t.data instanceof float[])
-            floatT = ((float[]) t.data)[atom.index];
-          else if (t.data instanceof String[]) {
-            String[] sdata = (String[]) t.data;
-            strT = (atom.index < sdata.length ? sdata[atom.index] : "");
-          }
+          floatT = ((float[]) t.data)[atom.index];
+        }
+        break;
+      case Token.array:
+        if (t.data != null) {
+          String[] sdata = (String[]) t.data;
+          strT = (atom.index < sdata.length ? sdata[atom.index] : "");
         }
         break;
       case Token.formalcharge:

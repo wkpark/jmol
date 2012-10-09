@@ -214,8 +214,8 @@ public class Geodesic {
     if (vertexCounts != null)
       return;
     short[] v = new short[maxLevel + 1];
-    neighborVertexesArrays = new short[maxLevel + 1][];
-    faceVertexesArrays = new short[maxLevel + 1][];
+    neighborVertexesArrays = ArrayUtil.newShort2(maxLevel + 1);
+    faceVertexesArrays = ArrayUtil.newShort2(maxLevel + 1);
     vertexVectors = new Vector3f[12];
     vertexVectors[0] = Vector3f.new3(0, 0, halfRoot5);
     for (int i = 0; i < 5; ++i) {

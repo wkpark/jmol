@@ -326,7 +326,7 @@ abstract class Calculations {
       switch (iType) {
       case CALC_DISTANCE:
         appendLogData(TextFormat.sprintf("%3d %3d  %-5s %-5s  %12.6f",
-            new Object[] {
+            "ssFI", new Object[] {
                 minAtoms[ia].atom.getAtomName(),
                 minAtoms[ib].atom.getAtomName(),
                 new float[] { (float) targetValue },
@@ -335,7 +335,7 @@ abstract class Calculations {
         break;
       case CALC_ANGLE:
         appendLogData(TextFormat.sprintf("%3d %3d %3d  %-5s %-5s %-5s  %12.6f",
-            new Object[] {
+            "sssFI", new Object[] { 
                 minAtoms[ia].atom.getAtomName(),
                 minAtoms[ib].atom.getAtomName(),
                 minAtoms[ic].atom.getAtomName(),
@@ -348,7 +348,7 @@ abstract class Calculations {
         appendLogData(TextFormat
             .sprintf(
                 "%3d %3d %3d %3d  %-5s %-5s %-5s %-5s  %3d %8.3f     %8.3f     %8.3f     %8.3f",
-                new Object[] {
+                "ssssFI", new Object[] { 
                     minAtoms[ia].atom.getAtomName(),
                     minAtoms[ib].atom.getAtomName(),
                     minAtoms[ic].atom.getAtomName(),
@@ -384,10 +384,11 @@ abstract class Calculations {
         iVal[j + 1] = minAtoms[others[j]].atom.getAtomNumber();
       }
       sb.append(TextFormat.sprintf("%3d %8.3f %8.3f %8.3f  %-5s %8.3f %8.3f %8.3f" + s + "\n", 
-          new Object[] { atom.sType,
+          "sFI", new Object[] { atom.sType,
           new float[] { (float) atom.coord[0], (float) atom.coord[1],
             (float) atom.coord[2], (float) atom.force[0], (float) atom.force[1],
-            (float) atom.force[2] }, iVal}));
+            (float) atom.force[2] }, 
+          iVal}));
     }
     sb.append(trailer + "\n\n");
     return sb.toString();
@@ -450,7 +451,7 @@ abstract class Calculations {
     case CALC_DISTANCE:
       return TextFormat.sprintf(
           "%3d %3d  %-5s %-5s  %4.2f%8.3f   %8.3f     %8.3f   %8.3f   %8.3f",
-          new Object[] { minAtoms[c.ia].sType, minAtoms[c.ib].sType, 
+          "ssFI", new Object[] { minAtoms[c.ia].sType, minAtoms[c.ib].sType, 
           new float[] { 0, (float)c.rab, 
               (float)c.dData[1], (float)c.dData[0], 
               (float)c.delta, energy },
@@ -459,7 +460,7 @@ abstract class Calculations {
     case CALC_STRETCH_BEND:
       return TextFormat.sprintf(
           "%3d %3d %3d  %-5s %-5s %-5s  %8.3f  %8.3f     %8.3f   %8.3f", 
-          new Object[] { minAtoms[c.ia].sType, minAtoms[c.ib].sType, 
+          "sssFI", new Object[] { minAtoms[c.ia].sType, minAtoms[c.ib].sType, 
               minAtoms[c.ic].sType,
           new float[] { (float)(c.theta * RAD_TO_DEG), (float) c.dData[1] /*THETA0*/, 
               (float)c.dData[0]/*Kijk*/, energy },
@@ -468,16 +469,15 @@ abstract class Calculations {
       case CALC_TORSION:
         return TextFormat.sprintf(
            "%3d %3d %3d %3d  %-5s %-5s %-5s %-5s  %3d %8.3f     %8.3f     %8.3f     %8.3f", 
-           new Object[] { minAtoms[c.ia].sType, minAtoms[c.ib].sType, 
+           "ssssFI", new Object[] { minAtoms[c.ia].sType, minAtoms[c.ib].sType, 
                minAtoms[c.ic].sType, minAtoms[c.id].sType, 
            new float[] { (float) c.dData[1]/*cosNphi0*/, (float) c.dData[0]/*V*/, 
                (float) (c.theta * RAD_TO_DEG), energy },
            new int[] { minAtoms[c.ia].atom.getAtomNumber(), minAtoms[c.ib].atom.getAtomNumber(),
                minAtoms[c.ic].atom.getAtomNumber(), minAtoms[c.id].atom.getAtomNumber(), c.iData[4] } });
     case CALC_OOP:
-      return TextFormat.sprintf("" +
-          "%3d %3d %3d %3d  %-5s %-5s %-5s %-5s  %8.3f   %8.3f     %8.3f",
-          new Object[] { minAtoms[c.ia].sType, minAtoms[c.ib].sType, 
+      return TextFormat.sprintf("%3d %3d %3d %3d  %-5s %-5s %-5s %-5s  %8.3f   %8.3f     %8.3f",
+          "ssssFI", new Object[] { minAtoms[c.ia].sType, minAtoms[c.ib].sType, 
               minAtoms[c.ic].sType, minAtoms[c.id].sType,
           new float[] { (float)(c.theta * RAD_TO_DEG), 
               (float)c.dData[0]/*koop*/, energy },
@@ -485,12 +485,12 @@ abstract class Calculations {
               minAtoms[c.ic].atom.getAtomNumber(), minAtoms[c.id].atom.getAtomNumber() } });
     case CALC_VDW:
       return TextFormat.sprintf("%3d %3d  %-5s %-5s %6.3f  %8.3f  %8.3f", 
-          new Object[] { minAtoms[c.iData[0]].sType, minAtoms[c.iData[1]].sType,
+          "ssFI", new Object[] { minAtoms[c.iData[0]].sType, minAtoms[c.iData[1]].sType,
           new float[] { (float)c.rab, (float)c.dData[0]/*kab*/, energy},
           new int[] { minAtoms[c.ia].atom.getAtomNumber(), minAtoms[c.ib].atom.getAtomNumber() } });
     case CALC_ES:
       return TextFormat.sprintf("%3d %3d  %-5s %-5s %6.3f  %8.3f  %8.3f  %8.3f  %8.3f", 
-          new Object[] { minAtoms[c.iData[0]].sType, minAtoms[c.iData[1]].sType,
+          "ssFI", new Object[] { minAtoms[c.iData[0]].sType, minAtoms[c.iData[1]].sType,
           new float[] { (float)c.rab, (float)c.dData[0]/*q1*/, (float)c.dData[1]/*q2*/, (float)c.dData[2]/*f*/, energy },
           new int[] { minAtoms[c.ia].atom.getAtomNumber(), minAtoms[c.ib].atom.getAtomNumber() } });
     }
@@ -523,7 +523,7 @@ abstract class Calculations {
       break;
     }
     return TextFormat.sprintf("\n     TOTAL %s ENERGY = %8.3f %s/mol\n", 
-        new Object[] { s, ff.minimizer.units, Float.valueOf(ff.toUserUnits(energy)), 
+        "sfs", new Object[] { s, Float.valueOf(ff.toUserUnits(energy)), 
         ff.minimizer.units });
   }
 

@@ -208,7 +208,7 @@ public class JvxlReader extends JvxlXmlReader {
       if (nContoursRead == Integer.MIN_VALUE) {
         if (line.charAt(next[0]) == '[') {
            jvxlData.contourValues = params.contoursDiscrete = parseFloatArray();
-           Logger.info("JVXL read: contourValues " + Escape.escapeArray(jvxlData.contourValues));            
+           Logger.info("JVXL read: contourValues " + Escape.escapeAF(jvxlData.contourValues));            
            jvxlData.contourColixes = params.contourColixes = Colix.getColixArray(getQuotedStringNext());
            jvxlData.contourColors = Colix.getHexCodes(jvxlData.contourColixes);
            Logger.info("JVXL read: contourColixes " + jvxlData.contourColors); 

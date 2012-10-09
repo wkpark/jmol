@@ -48,14 +48,14 @@ public class MeshSurface {
   public MeshSurface() {
   }
   
-  public static MeshSurface newMesh(Tuple3f[] vertices, int vertexCount, int[][] polygonIndexes,
+  public static MeshSurface newMesh(boolean isAlt, Tuple3f[] vertices, int vertexCount, int[][] polygonIndexes,
       Tuple3f[] normals, int nNormals) {
     MeshSurface ms = new MeshSurface();
     ms.polygonIndexes = polygonIndexes;
-    if (vertices instanceof Point3f[])
-      ms.vertices = (Point3f[]) vertices;
-    else
+    if (isAlt)
       ms.altVertices = vertices;
+    else
+      ms.vertices = (Point3f[]) vertices;
     ms.vertexCount = (vertexCount == 0 ? vertices.length : vertexCount);
     ms.normals = normals;
     ms.normalCount = (nNormals == 0  && normals != null ? normals.length : nNormals);
@@ -116,7 +116,7 @@ public class MeshSurface {
     if (polygonCount < 0)
       return;
     if (polygonIndexes == null || polygonCount > polygonIndexes.length)
-      polygonIndexes = new int[polygonCount][];
+      polygonIndexes = ArrayUtil.newInt2(polygonCount);
   }
 
   public int addVertexCopyVal(Point3f vertex, float value) {
@@ -166,7 +166,7 @@ public class MeshSurface {
   private int addPolygon(int[] polygon, BitSet bs) {
     int n = polygonCount;
     if (polygonCount == 0)
-      polygonIndexes = new int[SEED_COUNT][];
+      polygonIndexes = ArrayUtil.newInt2(SEED_COUNT);
     else if (polygonCount == polygonIndexes.length)
       polygonIndexes = (int[][]) ArrayUtil.doubleLength(polygonIndexes);
     if (bs != null)
@@ -837,7 +837,7 @@ public class MeshSurface {
       for (int i = 0; i < vertexCount; i++)
         if (bsv.get(i))
           vTemp[n++] = vertices[i];
-      int[][] pTemp = new int[nPoly][];
+      int[][] pTemp = ArrayUtil.newInt2(nPoly);
       nPoly = 0;
       for (int i = 0; i < polygonCount; i++)
         if (polygonIndexes[i] != null) {

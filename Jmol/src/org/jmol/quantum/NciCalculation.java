@@ -25,6 +25,7 @@ package org.jmol.quantum;
 
 import org.jmol.api.QuantumPlaneCalculationInterface;
 import org.jmol.api.VolumeDataInterface;
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Eigen;
@@ -482,7 +483,7 @@ public class NciCalculation extends QuantumCalculation implements
     yzCount = nY * nZ;
   }
   
-  private float[][] yzPlanesRho = new float[2][];
+  private float[][] yzPlanesRho = ArrayUtil.newFloat2(2);
   private float[] p0, p1, p2;
   
   /**

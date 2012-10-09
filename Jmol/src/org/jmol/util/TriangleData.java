@@ -364,7 +364,7 @@ public class TriangleData {
           i++;
       }
       
-      int[][]polygons = new int[triangles.length >> 2][];
+      int[][]polygons = ArrayUtil.newInt2(triangles.length >> 2);
       v.add(polygons);
       for (int i = 0; i < triangles.length; i++)
           polygons[i >> 2] = new int[] { list[triangles[i++]], 

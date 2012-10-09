@@ -180,7 +180,7 @@ public class FileManager {
       return viewer.getModelAdapter().getFileTypeName(
           getBufferedReaderForString(zipDirectory));
     }
-    if (br instanceof String[]) {
+    if (Escape.isAS(br)) {
       return ((String[]) br)[0];
     }
     return null;
@@ -353,7 +353,7 @@ public class FileManager {
       Object data = arrayData.get(i);
       if (data instanceof String)
         readers[i] = new StringDataReader((String) arrayData.get(i));
-      else if (data instanceof String[])
+      else if (Escape.isAS(data))
         readers[i] = new ArrayDataReader((String[]) arrayData.get(i));
       else if (data instanceof List)
         readers[i] = new VectorDataReader((List<String>) arrayData.get(i));
@@ -415,7 +415,7 @@ public class FileManager {
     if (name.indexOf("?POST?_PNG_") > 0 || isPngjPost) {
       Object o = viewer.getImageAs(isPngjPost ? "PNGJ" : "PNG", -1, 0, 0, null,
           null);
-      if (!(o instanceof byte[]))
+      if (!Escape.isAB(o))
         return o;
       if (isPngjBinaryPost) {
         outputBytes = (byte[]) o;
@@ -513,11 +513,12 @@ public class FileManager {
                                                  boolean isBinary,
                                                  boolean doSpecialLoad) {
     Object data = cacheGet(name, false);
-    byte[] bytes = (data instanceof byte[] ? (byte[]) data : null);
+    boolean isBytes = Escape.isAB(data);
+    byte[] bytes = (isBytes ? (byte[]) data : null);
     if (name.startsWith("cache://")) {
       if (data == null)
         return "cannot read " + name;
-      if (data instanceof byte[]) {
+      if (isBytes) {
         bytes = (byte[]) data;
       } else {
         return getBufferedReaderForString((String) data);
@@ -941,7 +942,7 @@ public class FileManager {
     String fullPathName = names[0].replace('\\', '/');
     if (fullPathName.indexOf("|") > 0) {
       Object ret = getFileAsBytes(fullPathName, null, true);
-      if (!(ret instanceof byte[])) {
+      if (!Escape.isAB(ret)) {
         retFileNameOrError[0] = "" + ret;
         return null;
       }
@@ -1341,7 +1342,7 @@ public class FileManager {
         } else {
           // all remote files, and any file that was opened from a ZIP collection
           Object ret = (isSparDir ? spardirCache.get(name) : getFileAsBytes(name, null, true));
-          if (!(ret instanceof byte[]))
+          if (!Escape.isAB(ret))
             return ret;
           CRC32 crc = new CRC32();
           crc.update((byte[])ret);
@@ -1403,7 +1404,7 @@ public class FileManager {
     if (fileRoot != null) {
       Object bytes = viewer.getImageAsWithComment("PNG", -1, -1, -1, null, null, null,
           JmolConstants.embedScript(script));
-      if (bytes instanceof byte[]) {
+      if (Escape.isAB(bytes)) {
         v.add("preview.png");
         v.add(null);
         v.add(bytes);
@@ -1458,7 +1459,7 @@ public class FileManager {
         } else if (fname.indexOf("cache://") == 0) {
           Object data = cacheGet(fname, false); 
           fname = fname.substring(8);
-          bytes = (data instanceof byte[] ? (byte[]) data : ((String) data).getBytes());
+          bytes = (Escape.isAB(data) ? (byte[]) data : ((String) data).getBytes());
         }
         String fnameShort = (String) fileNamesAndByteArrays.get(i + 1);
         if (fnameShort == null)
@@ -1576,7 +1577,7 @@ public class FileManager {
       nameAsGivenIn = nameAsGiven;
       fileTypeIn = type;
       this.reader = (reader instanceof BufferedReader ? (BufferedReader) reader : reader instanceof Reader ? new BufferedReader((Reader) reader) : null);
-      this.bytes = (reader instanceof byte[] ? (byte[]) reader : null);
+      this.bytes = (Escape.isAB(reader) ? (byte[]) reader : null);
       this.htParams = htParams;
       this.isAppend = isAppend;
     }
@@ -2163,7 +2164,7 @@ public class FileManager {
     Map<String, Integer> map = new Hashtable<String, Integer>();
     for (Map.Entry<String, Object> entry : cache.entrySet())
       map.put(entry.getKey(), Integer
-          .valueOf(entry.getValue() instanceof byte[] ? ((byte[]) entry
+          .valueOf(Escape.isAB(entry.getValue()) ? ((byte[]) entry
               .getValue()).length : entry.getValue().toString().length()));
     return map;
   }

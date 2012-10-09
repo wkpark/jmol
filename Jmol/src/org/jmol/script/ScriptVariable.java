@@ -163,6 +163,7 @@ public class ScriptVariable extends Token {
         || x instanceof String
         || x instanceof Map<?, ?>  // stored as Map<String, ScriptVariable>
         || x instanceof List<?>    // stored as list
+    // in JavaScript, all these will be "Array" which is fine
         || x instanceof ScriptVariable[] // stored as list
         || x instanceof double[]   // stored as list
         || x instanceof float[]    // stored as list
@@ -170,6 +171,7 @@ public class ScriptVariable extends Token {
         || x instanceof Float[]    // stored as list
         || x instanceof int[]      // stored as list
         || x instanceof int[][]    // stored as list
+ //TODO no Point3f[] here?
         || x instanceof Point4f[]  // stored as list
         || x instanceof String[]); // stored as list
   }
@@ -224,7 +226,7 @@ public class ScriptVariable extends Token {
       return newScriptVariableObj(matrix3f, x);
     if (x instanceof Matrix4f)
       return newScriptVariableObj(matrix4f, x);
-    if (x instanceof Float[])
+    if (Escape.isAFloat(x))
       return newScriptVariableObj(listf, x);
     if (x instanceof Map) {
       Map<String, Object> ht = (Map<String, Object>) x;
@@ -259,57 +261,77 @@ public class ScriptVariable extends Token {
         objects.add(getVariable(v.get(i)));
       return newScriptVariableObj(varray, objects);
     }
-    if (x instanceof ScriptVariable[]) {
-      objects = new ArrayList<ScriptVariable>();
-      ScriptVariable[] v = (ScriptVariable[]) x;
-      objects = new ArrayList<ScriptVariable>();
-      for (int i = 0; i < v.length; i++)
-        objects.add(v[i]);
-      return newScriptVariableObj(varray, objects);
+    if (Escape.isAI(x)) {
+      return getVariableAI((int[]) x);
+    }    
+    if (Escape.isAF(x)) {
+      return getVariableAF((float[]) x);
     }
-    if (x instanceof String[]) {
-      String[] s = (String[]) x;
-      objects = new ArrayList<ScriptVariable>();
-      for (int i = 0; i < s.length; i++)
-        objects.add(getVariable(s[i]));
-      return newScriptVariableObj(varray, objects);
+    if (Escape.isAD(x)) {
+      return getVariableAD((double[]) x);
     }
-    if (x instanceof int[]) {
-      int[] ix = (int[]) x;
-      objects = new ArrayList<ScriptVariable>();
-      for (int i = 0; i < ix.length; i++)
-        objects.add(getVariable(Integer.valueOf(ix[i])));
-      return newScriptVariableObj(varray, objects);
+    if (Escape.isAII(x)) {
+      return getVariableAII((int[][]) x);
     }
-    if (x instanceof float[]) {
-      float[] f = (float[]) x;
-      objects = new ArrayList<ScriptVariable>();
-      for (int i = 0; i < f.length; i++)
-        objects.add(getVariable(Float.valueOf(f[i])));
-      return newScriptVariableObj(varray, objects);
+    if (Escape.isAFF(x)) {
+      return getVariableAFF((float[][]) x);
     }
-    if (x instanceof double[]) {
-      double[] f = (double[]) x;
-      objects = new ArrayList<ScriptVariable>();
-      for (int i = 0; i < f.length; i++)
-        objects.add(getVariable(Float.valueOf((float) f[i])));
-      return newScriptVariableObj(varray, objects);
+    if (Escape.isAS(x)) {
+      return getVariableAS((String[]) x);
     }
-    if (x instanceof int[][]) {
-      int[][] ix = (int[][]) x;
-      objects = new ArrayList<ScriptVariable>();
-      for (int i = 0; i < ix.length; i++)
-        objects.add(getVariable(ix[i]));
-      return newScriptVariableObj(varray, objects);
-    }
-    if (x instanceof float[][]) {
-      float[][] fx = (float[][]) x;
-      objects = new ArrayList<ScriptVariable>();
-      for (int i = 0; i < fx.length; i++)
-        objects.add(getVariable(fx[i]));
-      return newScriptVariableObj(varray, objects);
+    if (Escape.isAV(x)) {
+      return getVariableAV((ScriptVariable[]) x);
     }
     return newScriptVariableObj(string, Escape.toReadableNoName(x));
+  }
+
+  public static ScriptVariable getVariableAV(ScriptVariable[] v) {
+    List<ScriptVariable> objects = new ArrayList<ScriptVariable>();
+    for (int i = 0; i < v.length; i++)
+      objects.add(v[i]);
+    return newScriptVariableObj(varray, objects);
+  }
+
+  public static ScriptVariable getVariableAD(double[] f) {
+    List<ScriptVariable> objects = new ArrayList<ScriptVariable>();
+    for (int i = 0; i < f.length; i++)
+      objects.add(getVariable(Float.valueOf((float) f[i])));
+    return newScriptVariableObj(varray, objects);
+  }
+
+  public static ScriptVariable getVariableAS(String[] s) {
+    List<ScriptVariable> objects = new ArrayList<ScriptVariable>();
+    for (int i = 0; i < s.length; i++)
+      objects.add(getVariable(s[i]));
+    return newScriptVariableObj(varray, objects);
+  }
+
+  public static ScriptVariable getVariableAFF(float[][] fx) {
+    List<ScriptVariable> objects = new ArrayList<ScriptVariable>();
+    for (int i = 0; i < fx.length; i++)
+      objects.add(getVariableAF(fx[i]));
+    return newScriptVariableObj(varray, objects);
+  }
+
+  public static ScriptVariable getVariableAII(int[][] ix) {
+    List<ScriptVariable> objects = new ArrayList<ScriptVariable>();
+    for (int i = 0; i < ix.length; i++)
+      objects.add(getVariableAI(ix[i]));
+    return newScriptVariableObj(varray, objects);
+  }
+
+  public static ScriptVariable getVariableAF(float[] f) {
+    List<ScriptVariable> objects = new ArrayList<ScriptVariable>();
+    for (int i = 0; i < f.length; i++)
+      objects.add(getVariable(Float.valueOf(f[i])));
+    return newScriptVariableObj(varray, objects);
+  }
+
+  public static ScriptVariable getVariableAI(int[] ix) {
+    List<ScriptVariable> objects = new ArrayList<ScriptVariable>();
+    for (int i = 0; i < ix.length; i++)
+      objects.add(getVariable(Integer.valueOf(ix[i])));
+    return newScriptVariableObj(varray, objects);
   }
 
   /**
@@ -1045,20 +1067,20 @@ public class ScriptVariable extends Token {
     float[] vf = (strFormat.indexOf("f") >= 0 ? new float[1] : null);
     double[] ve = (strFormat.indexOf("e") >= 0 ? new double[1] : null);
     boolean getS = (strFormat.indexOf("s") >= 0);
-    boolean getP = (strFormat.indexOf("p") >= 0 && var.tok == point3f
-        || strFormat.indexOf("q") >= 0 && var.tok == point4f);
-    Object[] of = new Object[] { vd, vf, ve, null, null};
+    boolean getP = (strFormat.indexOf("p") >= 0 && var.tok == point3f);
+    boolean getQ = (strFormat.indexOf("q") >= 0 && var.tok == point4f);
+    Object[] of = new Object[] { vd, vf, ve, null, null, null};
     if (var.tok != varray)
-      return sprintf(strFormat, var, of, vd, vf, ve, getS, getP);
+      return sprintf(strFormat, var, of, vd, vf, ve, getS, getP, getQ);
     List<ScriptVariable> sv = var.getList();
     String[] list2 = new String[sv.size()];
     for (int i = 0; i < list2.length; i++)
-      list2[i] = sprintf(strFormat, sv.get(i), of, vd, vf, ve, getS, getP);
+      list2[i] = sprintf(strFormat, sv.get(i), of, vd, vf, ve, getS, getP, getQ);
     return list2;
   }
 
   private static String sprintf(String strFormat, ScriptVariable var, Object[] of, 
-                                int[] vd, float[] vf, double[] ve, boolean getS, boolean getP) {
+                                int[] vd, float[] vf, double[] ve, boolean getS, boolean getP, boolean getQ) {
     if (vd != null)
       vd[0] = iValue(var);
     if (vf != null)
@@ -1069,7 +1091,9 @@ public class ScriptVariable extends Token {
       of[3] = sValue(var);
     if (getP)
       of[4]= var.value;
-    return TextFormat.sprintf(strFormat, of );
+    if (getQ)
+      of[5]= var.value;
+    return TextFormat.sprintf(strFormat, "IFDspq", of );
   }
 
   /**
@@ -1090,7 +1114,7 @@ public class ScriptVariable extends Token {
     sb.append(format[0]);
     for (int i = 1; i < format.length; i++) {
       Object ret = sprintf(TextFormat.formatCheck("%" + format[i]), (i < args.length ? args[i] : null));
-      if (ret instanceof String[]) {
+      if (Escape.isAS(ret)) {
         String[] list = (String[]) ret;
         for (int j = 0; j < list.length; j++)
           sb.append(list[j]).append("\n");
@@ -1283,4 +1307,5 @@ public class ScriptVariable extends Token {
   public List<ScriptVariable> getList() {
     return (tok == varray ? (ArrayList<ScriptVariable>) value : null);
   }
+
 }

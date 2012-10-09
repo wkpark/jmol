@@ -417,7 +417,7 @@ public final class ModelLoader {
           value = jbr.fixPropertyValue(bs, value);
         key = "property_" + key.toLowerCase();
         Logger.info("creating " + key + " for model " + modelSet.getModelName(i));
-        viewer.setData(key, new Object[] { key, value, bs }, modelSet.atomCount, 0,
+        viewer.setData(key, new Object[] { key, value, bs, new Integer(0) }, modelSet.atomCount, 0,
             0, Integer.MAX_VALUE, 0);
       }
     }
@@ -490,7 +490,7 @@ public final class ModelLoader {
     // set private values
 
     group3Lists = new String[modelSet.modelCount + 1];
-    group3Counts = new int[modelSet.modelCount + 1][];
+    group3Counts = ArrayUtil.newInt2(modelSet.modelCount + 1);
 
     structuresDefinedInFile = new BitSet();
 

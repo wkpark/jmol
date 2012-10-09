@@ -190,9 +190,7 @@ public abstract class MeshCollection extends Shape {
     if ("title" == propertyName) {
       if (value == null) {
         title = null;
-      } else if (value instanceof String[]) {
-        title = (String[]) value;
-      } else {
+      } else if (value instanceof String){
         int nLine = 1;
         String lines = (String) value;
         for (int i = lines.length(); --i >= 0;)
@@ -207,6 +205,8 @@ public abstract class MeshCollection extends Shape {
             i0 = i;
           }
         title[nLine] = lines.substring(i0 + 1);
+      } else {
+        title = (String[]) value;
       }
       return;
     }
@@ -458,7 +458,9 @@ public abstract class MeshCollection extends Shape {
     if (property == "vertices")
       return getVertices(currentMesh);
     if (property == "getInfo")
-      return (currentMesh == null ? null : currentMesh.getInfo());
+      return (currentMesh == null ? null : currentMesh.getInfo(false));
+    if (property == "getData")
+      return (currentMesh == null ? null : currentMesh.getInfo(true));
 
     return null;
   }

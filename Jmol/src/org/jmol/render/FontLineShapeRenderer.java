@@ -208,7 +208,7 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
             (y = (int) (pointT2.y + vectorT2.y)), (int) z, diameter);
         if (drawLabel && (draw000 || p != 0)) {
           val[0] = new Float((p == 0 ? 0 : p * signFactor));
-          String s = TextFormat.sprintf(formats[i % formats.length], val);
+          String s = TextFormat.sprintf(formats[i % formats.length], "f", val);
           drawString(x, y, (int) z, 4, rightJustify, centerX, centerY,
               (int) pointT2.y, s);
         }

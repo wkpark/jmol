@@ -227,75 +227,96 @@ public class TextFormat {
   /**
    * sprintf emulation uses (almost) c++ standard string formats 's' string 'i'
    * or 'd' integer 'f' float/decimal 'p' point3f 'q' quaternion/plane/axisangle
-   * ' with added "i" in addion to the insipid "d" (digits?)
+   * ' with added "i" in addition to the insipid "d" (digits?)
    * 
    * @param strFormat
+   * @param list
    * @param values
    * @return formatted string
    */
-  public static String sprintf(String strFormat, Object[] values) {
+  public static String sprintf(String strFormat, String list, Object[] values) {
     if (values == null)
       return strFormat;
-    for (int o = 0; o < values.length; o++)
-      if (values[o] != null) {
-        if (values[o] instanceof String) {
-          strFormat = formatString(strFormat, "s", (String) values[o],
-              Float.NaN, Double.NaN, true);
-        } else if (values[o] instanceof Float) {
-          strFormat = formatString(strFormat, "f", null, ((Float) values[o])
-              .floatValue(), Double.NaN, true);
-        } else if (values[o] instanceof Integer) {
-          strFormat = formatString(strFormat, "d", "" + values[o], Float.NaN,
-              Double.NaN, true);
-          strFormat = formatString(strFormat, "i", "" + values[o], Float.NaN,
-              Double.NaN, true);
-        } else if (values[o] instanceof Double) {
-          strFormat = formatString(strFormat, "e", null, Float.NaN,
-              ((Double) values[o]).doubleValue(), true);
-        } else if (values[o] instanceof Point3f) {
-          Point3f pVal = (Point3f) values[o];
-          strFormat = formatString(strFormat, "p", null, pVal.x, Double.NaN,
-              true);
-          strFormat = formatString(strFormat, "p", null, pVal.y, Double.NaN,
-              true);
-          strFormat = formatString(strFormat, "p", null, pVal.z, Double.NaN,
-              true);
-        } else if (values[o] instanceof Point4f) {
-          Point4f qVal = (Point4f) values[o];
-          strFormat = formatString(strFormat, "q", null, qVal.x, Double.NaN,
-              true);
-          strFormat = formatString(strFormat, "q", null, qVal.y, Double.NaN,
-              true);
-          strFormat = formatString(strFormat, "q", null, qVal.z, Double.NaN,
-              true);
-          strFormat = formatString(strFormat, "q", null, qVal.w, Double.NaN,
-              true);
-        } else if (values[o] instanceof String[]) {
-          String[] sVal = (String[]) values[o];
-          for (int i = 0; i < sVal.length; i++)
-            strFormat = formatString(strFormat, "s", sVal[i], Float.NaN,
+    int n = list.length();
+    if (n == values.length)
+      try {
+        for (int o = 0; o < n; o++) {
+          if (values[o] == null)
+            continue;
+          switch (list.charAt(o)) {
+          case 's':
+            strFormat = formatString(strFormat, "s", (String) values[o],
+                Float.NaN, Double.NaN, true);
+            break;
+          case 'f':
+            strFormat = formatString(strFormat, "f", null, ((Float) values[o])
+                .floatValue(), Double.NaN, true);
+            break;
+          case 'i':
+            strFormat = formatString(strFormat, "d", "" + values[o], Float.NaN,
                 Double.NaN, true);
-        } else if (values[o] instanceof float[]) {
-          float[] fVal = (float[]) values[o];
-          for (int i = 0; i < fVal.length; i++)
-            strFormat = formatString(strFormat, "f", null, fVal[i], Double.NaN,
+            strFormat = formatString(strFormat, "i", "" + values[o], Float.NaN,
+                Double.NaN, true);
+            break;
+          case 'd':
+            strFormat = formatString(strFormat, "e", null, Float.NaN,
+                ((Double) values[o]).doubleValue(), true);
+            break;
+          case 'p':
+            Point3f pVal = (Point3f) values[o];
+            strFormat = formatString(strFormat, "p", null, pVal.x, Double.NaN,
                 true);
-        } else if (values[o] instanceof double[]) {
-          double[] dVal = (double[]) values[o];
-          for (int i = 0; i < dVal.length; i++)
-            strFormat = formatString(strFormat, "e", null, Float.NaN, dVal[i],
+            strFormat = formatString(strFormat, "p", null, pVal.y, Double.NaN,
                 true);
-        } else if (values[o] instanceof int[]) {
-          int[] iVal = (int[]) values[o];
-          for (int i = 0; i < iVal.length; i++)
-            strFormat = formatString(strFormat, "d", "" + iVal[i], Float.NaN,
-                Double.NaN, true);
-          for (int i = 0; i < iVal.length; i++)
-            strFormat = formatString(strFormat, "i", "" + iVal[i], Float.NaN,
-                Double.NaN, true);
+            strFormat = formatString(strFormat, "p", null, pVal.z, Double.NaN,
+                true);
+            break;
+          case 'q':
+            Point4f qVal = (Point4f) values[o];
+            strFormat = formatString(strFormat, "q", null, qVal.x, Double.NaN,
+                true);
+            strFormat = formatString(strFormat, "q", null, qVal.y, Double.NaN,
+                true);
+            strFormat = formatString(strFormat, "q", null, qVal.z, Double.NaN,
+                true);
+            strFormat = formatString(strFormat, "q", null, qVal.w, Double.NaN,
+                true);
+            break;
+          case 'S':
+            String[] sVal = (String[]) values[o];
+            for (int i = 0; i < sVal.length; i++)
+              strFormat = formatString(strFormat, "s", sVal[i], Float.NaN,
+                  Double.NaN, true);
+            break;
+          case 'F':
+            float[] fVal = (float[]) values[o];
+            for (int i = 0; i < fVal.length; i++)
+              strFormat = formatString(strFormat, "f", null, fVal[i],
+                  Double.NaN, true);
+            break;
+          case 'I':
+            int[] iVal = (int[]) values[o];
+            for (int i = 0; i < iVal.length; i++)
+              strFormat = formatString(strFormat, "d", "" + iVal[i], Float.NaN,
+                  Double.NaN, true);
+            for (int i = 0; i < iVal.length; i++)
+              strFormat = formatString(strFormat, "i", "" + iVal[i], Float.NaN,
+                  Double.NaN, true);
+            break;
+          case 'D':
+            double[] dVal = (double[]) values[o];
+            for (int i = 0; i < dVal.length; i++)
+              strFormat = formatString(strFormat, "e", null, Float.NaN,
+                  dVal[i], true);
+          }
+
         }
+        return simpleReplace(strFormat, "%%", "%");
+      } catch (Exception e) {
+        //
       }
-    return simpleReplace(strFormat, "%%", "%");
+    System.out.println("TextFormat.sprintf error " + list + " " + strFormat);
+    return simpleReplace(strFormat, "%", "?");
   }
 
   /**

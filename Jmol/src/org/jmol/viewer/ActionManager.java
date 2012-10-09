@@ -278,7 +278,7 @@ public class ActionManager {
       Object obj = e.next();
       if (obj instanceof Boolean)
         continue;
-      if (obj instanceof int[]) {
+      if (Escape.isAI(obj)) {
         int[] binding = (int[]) obj;
         obj = new String[] { Binding.getMouseActionName(binding[0], false),
             getActionName(binding[1]) };
@@ -1151,7 +1151,7 @@ public class ActionManager {
     while (e.hasNext()) {
       String key = e.next();
       if (key.indexOf(action + "\t") != 0
-          || !((obj = ht.get(key)) instanceof String[]))
+          || !Escape.isAS(obj = ht.get(key)))
         continue;
       String script = ((String[]) obj)[1];
       Point3f nearestPoint = null;

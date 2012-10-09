@@ -29,6 +29,7 @@ import java.io.BufferedReader;
 import org.jmol.api.Interface;
 import org.jmol.api.QuantumPlaneCalculationInterface;
 import org.jmol.atomdata.AtomData;
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSet;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
@@ -267,13 +268,13 @@ abstract class VolumeFileReader extends SurfaceFileReader {
           skipVoxels(nSkipZ);
       }
     } else {
-      voxelData = new float[nPointsX][][];
+      voxelData = ArrayUtil.newFloat3(nPointsX, -1);
       // Note downsampling not allowed for JVXL files
       // This filling of voxelData should only be needed
       // for mapped data.
 
       for (int x = 0; x < nPointsX; ++x) {
-        float[][] plane = new float[nPointsY][];
+        float[][] plane = ArrayUtil.newFloat2(nPointsY);
         voxelData[x] = plane;
         for (int y = 0; y < nPointsY; ++y) {
           float[] strip = new float[nPointsZ];

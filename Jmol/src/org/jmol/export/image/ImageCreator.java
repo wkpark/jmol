@@ -37,6 +37,7 @@ import org.jmol.api.JmolImageCreatorInterface;
 import org.jmol.api.JmolPdfCreatorInterface;
 import org.jmol.api.JmolViewer;
 import org.jmol.util.Base64;
+import org.jmol.util.Escape;
 import org.jmol.util.JpegEncoder;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
@@ -104,7 +105,7 @@ public class ImageCreator implements JmolImageCreatorInterface {
     if (!viewer.checkPrivateKey(privateKey))
       return "NO SECURITY";
     // returns message starting with OK or an error message
-    boolean isBytes = (text_or_bytes instanceof byte[] || text_or_bytes instanceof Image);
+    boolean isBytes = (Escape.isAB(text_or_bytes) || text_or_bytes instanceof Image);
     boolean appendText = (text_or_bytes instanceof Object[]);
     if (appendText)
       text_or_bytes = ((Object[]) text_or_bytes)[0];
@@ -224,7 +225,7 @@ public class ImageCreator implements JmolImageCreatorInterface {
             if (ret == null)
               ret = viewer.getWrappedState(null, scripts, true, false,
                   image.getWidth(null), image.getHeight(null));
-            bytes = (ret instanceof byte[] ? (byte[]) ret : ((String) ret)
+            bytes = (Escape.isAB(ret) ? (byte[]) ret : ((String) ret)
                 .getBytes());
             int nState = bytes.length;
             PngEncoder.setJmolTypeText(b, nPNG, nState, type);
@@ -261,7 +262,7 @@ public class ImageCreator implements JmolImageCreatorInterface {
           errMsg = pci.createPdfDocument(fileName, image);
         }
         if (appendText != null && os != null) {
-          byte[] b = (appendText instanceof byte[] ? (byte[]) appendText
+          byte[] b = (Escape.isAB(appendText) ? (byte[]) appendText
               : appendText instanceof String ? ((String) appendText).getBytes()
                   : null);
           if (b != null && b.length > 0)

@@ -174,10 +174,10 @@ public void initShape() {
     }
 
     if ("intersect" == propertyName) {
-      if (value instanceof Point3f[])
-        boundBox = (Point3f[]) value;
-      else
+      if (value instanceof String)
         intersectID = (String) value;
+      else
+        boundBox = (Point3f[]) value;
       return;
     }
     
@@ -1406,7 +1406,7 @@ public void initShape() {
           if (mesh.polygonIndexes[i] == null)
             str.append(" [0 0 0 0]");
           else
-            str.append(" ").append(Escape.escapeArray(mesh.polygonIndexes[i]));
+            str.append(" ").append(Escape.escapeAI(mesh.polygonIndexes[i]));
       } else {
         String s = getVertexList(mesh, iModel, nVertices);
         if (s.indexOf("NaN") >= 0)

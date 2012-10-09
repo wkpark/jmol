@@ -91,8 +91,12 @@ public class Escape {
       AxisAngle4f a = (AxisAngle4f) x;
       return "{" + a.x + " " + a.y + " " + a.z + " " + (float) (a.angle * 180d/Math.PI) + "}";
     }    
-    if (x instanceof String[])
+    if (x instanceof Map)
+      return escapeMap((Map<String, Object>) x);
+    if (isAS(x))
       return escapeStrA((String[]) x, true);
+    if (isAP(x))
+      return escapeAP(x);
     if (x instanceof int[] 
           || x instanceof int[][]
           || x instanceof float[]
@@ -100,14 +104,129 @@ public class Escape {
           || x instanceof float[][]
           || x instanceof float[][][]) 
       return toJSON(null, x);
-    if (x instanceof Point3f[])
-      return escapeArray(x);
-    if (x instanceof Map)
-      return escapeMap((Map<String, Object>) x);
     return (x == null ? "null" : x.toString());
   }
 
-//static String ESCAPE_SET = " ,./;:_+-~=><?'!@#$%^&*";
+  // only remaining instanceof in code are a few Object[], Token[], Quaternion[] references
+  // where it should not make any difference
+  public static boolean isAS(Object x) {
+    /**
+     * @j2sNative
+     *  return Clazz.isAS(x);
+     */
+    {
+    return x instanceof String[];
+    }
+  }
+
+  public static boolean isASS(Object x) {
+    /**
+     * @j2sNative
+     *  return Clazz.isASS(x);
+     */
+    {
+    return x instanceof String[][];
+    }
+  }
+
+  public static boolean isAP(Object x) {
+    /**
+     * @j2sNative
+     *  return Clazz.isAP(x);
+     */
+    {
+    return x instanceof Point3f[];
+    }
+  }
+
+  public static boolean isAF(Object x) {
+    /**
+     * @j2sNative
+     *  return Clazz.isAF(x);
+     */
+    return x instanceof float[];
+  }
+
+
+  public static boolean isAFloat(Object x) {
+    /**
+     * @j2sNative
+     *  return Clazz.isAFloat(x);
+     */
+    return x instanceof Float[];
+  }
+  public static boolean isAV(Object x) {
+    /**
+     * @j2sNative
+     *  return Clazz.instanceOf(x[0], org.jmol.script.ScriptVariable);
+     */
+    return x instanceof ScriptVariable[];
+  }
+
+  public static boolean isAD(Object x) {
+    /**
+     * @j2sNative
+     *  return Clazz.isAF(x);
+     */
+    return x instanceof double[];
+  }
+
+  public static boolean isAB(Object x) {
+    /**
+     * @j2sNative
+     *  return Clazz.isAI(x);
+     */
+    return x instanceof byte[];
+  }
+  
+//  public static boolean isASh(Object x) {
+//    /**
+//     * @j2sNative
+//     *  return Clazz.isAI(x);
+//     */
+//    return x instanceof short[];
+//  }
+  
+  public static boolean isAI(Object x) {
+    /**
+     * @j2sNative
+     *  return Clazz.isAI(x);
+     */
+    return x instanceof int[];
+  }
+
+  public static boolean isAII(Object x) {
+    /**
+     * @j2sNative
+     *  return Clazz.isAII(x);
+     */
+    {
+    return (x instanceof int[][]);
+    }
+  }
+
+  public static boolean isAFF(Object x) {
+    /**
+     * @j2sNative
+     *  return Clazz.isAFF(x);
+     */
+    {
+    return (x instanceof float[][]);
+    }
+  }
+
+  public static boolean isAFFF(Object x) {
+    /**
+     * @j2sNative
+     *  return Clazz.isAFFF(x);
+     */
+    {
+    return (x instanceof float[][][]);
+    }
+  }
+
+
+  //static String ESCAPE_SET = " ,./;:_+-~=><?'!@#$%^&*";
 //static int nEscape = ESCAPE_SET.length();
 
   private final static String escapable = "\\\\\tt\rr\nn\"\""; 
@@ -252,49 +371,49 @@ public class Escape {
     return s.toString();
   }
 
-  public static String escapeArray(Object x) {
+  public static String escapeAI(Object x) {
     // from isosurface area or volume calc
     if (x == null)
       return escapeStr("");
-    if (x instanceof Float)
-      return "" + x;
     StringXBuilder s = new StringXBuilder();
     s.append("[");
-    if (x instanceof double[]) {
-      double[] dlist = (double[]) x;
-      for (int i = 0; i < dlist.length; i++) {
-        if (i > 0)
-          s.append(", ");
-        s.appendD(dlist[i]);
-      }
-    } else if (x instanceof float[]) {
-      float[] flist = (float[]) x;
-      for (int i = 0; i < flist.length; i++) {
-        if (i > 0)
-          s.append(", ");
-        s.appendF(flist[i]);
-      }
-    } else if (x instanceof int[]) {
       int[] ilist = (int[]) x;
       for (int i = 0; i < ilist.length; i++) {
         if (i > 0)
           s.append(", ");
         s.appendI(ilist[i]);
       }
-    } else if (x instanceof Point3f[]) {
+    return s.append("]").toString();
+  }
+
+  public static String escapeAF(Object x) {
+    // from isosurface area or volume calc
+    if (x == null)
+      return escapeStr("");
+    StringXBuilder s = new StringXBuilder();
+    s.append("[");
+      float[] flist = (float[]) x;
+      for (int i = 0; i < flist.length; i++) {
+        if (i > 0)
+          s.append(", ");
+        s.appendF(flist[i]);
+      }
+    return s.append("]").toString();
+  }
+
+  public static String escapeAP(Object x) {
+    // from isosurface area or volume calc
+    if (x == null)
+      return escapeStr("");
+    StringXBuilder s = new StringXBuilder();
+    s.append("[");
       Point3f[] plist = (Point3f[]) x;
-      s = new StringXBuilder();
-      s.append("[");
       for (int i = 0; i < plist.length; i++) {
         if (i > 0)
           s.append(", ");
         s.append(escapePt(plist[i]));
       }
-      return s.append("]").toString();
-    }
-    s.append("]");
-    return s.toString();
-
+    return s.append("]").toString();
   }
 
   private static String escapeNice(String s) {
@@ -508,7 +627,7 @@ public class Escape {
       return packageJSON(infoType, info.toString());
     if (info instanceof String)
       return packageJSON(infoType, fixString((String) info));
-    if (info instanceof String[]) {
+    if (isAS(info)) {
       sb.append("[");
       int imax = ((String[]) info).length;
       for (int i = 0; i < imax; i++) {
@@ -518,7 +637,7 @@ public class Escape {
       sb.append("]");
       return packageJSONSb(infoType, sb);
     }
-    if (info instanceof int[]) {
+    if (isAI(info)) {
       sb.append("[");
       int imax = ((int[]) info).length;
       for (int i = 0; i < imax; i++) {
@@ -528,7 +647,7 @@ public class Escape {
       sb.append("]");
       return packageJSONSb(infoType, sb);
     }
-    if (info instanceof float[]) {
+    if (isAF(info)) {
       sb.append("[");
       int imax = ((float[]) info).length;
       for (int i = 0; i < imax; i++) {
@@ -538,7 +657,7 @@ public class Escape {
       sb.append("]");
       return packageJSONSb(infoType, sb);
     }
-    if (info instanceof double[]) {
+    if (isAD(info)) {
       sb.append("[");
       int imax = ((double[]) info).length;
       for (int i = 0; i < imax; i++) {
@@ -548,7 +667,7 @@ public class Escape {
       sb.append("]");
       return packageJSONSb(infoType, sb);
     }
-    if (info instanceof Point3f[]) {
+    if (isAP(info)) {
       sb.append("[");
       int imax = ((Point3f[]) info).length;
       for (int i = 0; i < imax; i++) {
@@ -559,7 +678,7 @@ public class Escape {
       sb.append("]");
       return packageJSONSb(infoType, sb);
     }
-    if (info instanceof String[][]) {
+    if (isASS(info)) {
       sb.append("[");
       int imax = ((String[][]) info).length;
       for (int i = 0; i < imax; i++) {
@@ -569,7 +688,7 @@ public class Escape {
       sb.append("]");
       return packageJSONSb(infoType, sb);
     }
-    if (info instanceof int[][]) {
+    if (isAII(info)) {
       sb.append("[");
       int imax = ((int[][]) info).length;
       for (int i = 0; i < imax; i++) {
@@ -579,7 +698,7 @@ public class Escape {
       sb.append("]");
       return packageJSONSb(infoType, sb);
     }
-    if (info instanceof float[][]) {
+    if (isAFF(info)) {
       sb.append("[");
       int imax = ((float[][]) info).length;
       for (int i = 0; i < imax; i++) {
@@ -589,7 +708,7 @@ public class Escape {
       sb.append("]");
       return packageJSONSb(infoType, sb);
     }
-    if (info instanceof float[][][]) {
+    if (isAFFF(info)) {
       sb.append("[");
       int imax = ((float[][][]) info).length;
       for (int i = 0; i < imax; i++) {
@@ -688,7 +807,7 @@ public class Escape {
       return "null";
     if (info instanceof String)
       return packageReadable(name, null, escapeStr((String) info));
-    if (info instanceof String[]) {
+    if (isAS(info)) {
       sb.append("[");
       int imax = ((String[]) info).length;
       for (int i = 0; i < imax; i++) {
@@ -698,7 +817,7 @@ public class Escape {
       sb.append("]");
       return packageReadableSb(name, "String[" + imax + "]", sb);
     }
-    if (info instanceof int[]) {
+    if (isAI(info)) {
       sb.append("[");
       int imax = ((int[]) info).length;
       for (int i = 0; i < imax; i++) {
@@ -708,7 +827,7 @@ public class Escape {
       sb.append("]");
       return packageReadableSb(name, "int[" + imax + "]", sb);
     }
-    if (info instanceof float[]) {
+    if (isAF(info)) {
       sb.append("[");
       int imax = ((float[]) info).length;
       for (int i = 0; i < imax; i++) {
@@ -718,7 +837,7 @@ public class Escape {
       sb.append("]");
       return packageReadableSb(name, "float[" + imax + "]", sb);
     }
-    if (info instanceof Point3f[]) {
+    if (isAP(info)) {
       sb.append("[");
       int imax = ((Point3f[]) info).length;
       for (int i = 0; i < imax; i++) {
@@ -728,7 +847,7 @@ public class Escape {
       sb.append("]");
       return packageReadableSb(name, "point3f[" + imax + "]", sb);
     }
-    if (info instanceof String[][]) {
+    if (isASS(info)) {
       sb.append("[");
       int imax = ((String[][]) info).length;
       for (int i = 0; i < imax; i++) {
@@ -738,7 +857,7 @@ public class Escape {
       sb.append("]");
       return packageReadableSb(name, "String[" + imax + "][]", sb);
     }
-    if (info instanceof int[][]) {
+    if (isAII(info)) {
       sb.append("[");
       int imax = ((int[][]) info).length;
       for (int i = 0; i < imax; i++) {
@@ -748,7 +867,7 @@ public class Escape {
       sb.append("]");
       return packageReadableSb(name, "int[" + imax + "][]", sb);
     }
-    if (info instanceof float[][]) {
+    if (isAFF(info)) {
       sb.append("[\n");
       int imax = ((float[][]) info).length;
       for (int i = 0; i < imax; i++) {
@@ -801,23 +920,23 @@ public class Escape {
     return "" + (iv / 1000000) + "." + (iv % 1000000);
   }
 
-  public static String encapsulateData(String name, Object data) {
+  public static String encapsulateData(String name, Object data, int depth) {
     return "  DATA \"" + name + "\"\n" + 
-        (data instanceof float[][] ?
+        (depth == 2 ?
           escapeFloatAA((float[][]) data, true) + ";\n"
-          : data instanceof float[][][] ?
+          : depth == 3 ?
               escapeFloatAAA((float[][][]) data, true) + ";\n"
           : data) + "    END \"" + name + "\";\n";
   }
 
-  public static String escapeXml(Object value) {
-    if (value instanceof String)
-      return XmlUtil.wrapCdata(value.toString());
-    String s = "" + value;
-    if (s.length() == 0 || s.charAt(0) != '[')
-      return s;
-    return XmlUtil.wrapCdata(toReadable(null, value));
-  }
+//  public static String escapeXml(Object value) {
+//    if (value instanceof String)
+//      return XmlUtil.wrapCdata(value.toString());
+//    String s = "" + value;
+//    if (s.length() == 0 || s.charAt(0) != '[')
+//      return s;
+//    return XmlUtil.wrapCdata(toReadable(null, value));
+//  }
 
   public static String unescapeUnicode(String s) {
     int ichMax = s.length();
@@ -886,4 +1005,5 @@ public class Escape {
     url = TextFormat.simpleReplace(url, " ", "%20");
     return url;
   }
+
 }

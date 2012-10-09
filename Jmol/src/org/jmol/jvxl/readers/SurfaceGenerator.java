@@ -135,6 +135,7 @@ import org.jmol.jvxl.calc.MarchingSquares;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSet;
 import org.jmol.util.ColorEncoder;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.Parser;
@@ -438,7 +439,7 @@ public class SurfaceGenerator {
       if (value == null) {
         params.title = null;
         return true;
-      } else if (value instanceof String[]) {
+      } else if (Escape.isAS(value)) {
         params.title = (String[]) value;
         for (int i = 0; i < params.title.length; i++)
           if (params.title[i].length() > 0)
@@ -733,7 +734,7 @@ public class SurfaceGenerator {
     if ("contour" == propertyName) {
       params.isContoured = true;
       int n;
-      if (value instanceof float[]) {
+      if (Escape.isAF(value)) {
         // discrete values
         params.contoursDiscrete = (float[]) value;
         params.nContours = params.contoursDiscrete.length;
@@ -814,7 +815,7 @@ public class SurfaceGenerator {
     if ("ellipsoid" == propertyName) {
       if (value instanceof Point4f)
         params.setEllipsoid((Point4f) value);
-      else if (value instanceof float[])
+      else if (Escape.isAF(value))
         params.setEllipsoid((float[]) value);
       else
         return true;

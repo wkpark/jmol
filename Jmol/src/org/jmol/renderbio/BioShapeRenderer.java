@@ -503,7 +503,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     }
     Hermite.getHermiteList(isNucleic ? 4 : 7, controlPoints[iPrev],
         controlPoints[i], controlPoints[iNext], controlPoints[iNext2],
-        controlPoints[iNext3], controlHermites, 0, nHermites);
+        controlPoints[iNext3], controlHermites, 0, nHermites, true);
     //    if (isEccentric) {
     // wing hermites determine the orientation of the cartoon
     if (wingHermites == null || wingHermites.length < nHermites + 1) {
@@ -514,7 +514,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
       wing.scale(2.0f); //adds a flair to an arrow
     Hermite.getHermiteList(isNucleic ? 4 : 7, wing, wingVectors[i],
         wingVectors[iNext], wingVectors[iNext2], wingVectors[iNext3],
-        wingHermites, 0, nHermites);
+        wingHermites, 0, nHermites, false);
     //    }
     // radius hermites determine the thickness of the cartoon
     float radius1 = madBeg / 2000f;
@@ -531,7 +531,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
       ptNext.set(radius3, radius3, 0);
       // two for the price of one!
       Hermite.getHermiteList(4, ptPrev, pt, pt1, ptNext, ptNext,
-          radiusHermites, 0, (nHermites + 1) >> 1);
+          radiusHermites, 0, (nHermites + 1) >> 1, true);
     }
 
     // now create the cartoon polygon

@@ -374,7 +374,7 @@ public final class Shader {
   private final static int SLIM = 20;
   private final static int SDIM = SLIM * 2;
   public final static int maxSphereCache = 128;
-  public final static int[][] sphereShapeCache = new int[maxSphereCache][];
+  public final static int[][] sphereShapeCache = ArrayUtil.newInt2(maxSphereCache);
   public static byte[][][] ellipsoidShades;
   public static int nOut;
   public static int nIn;

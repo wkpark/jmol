@@ -119,7 +119,7 @@ public class Colix {
   private static int colixMax = SPECIAL_COLIX_MAX;
   private static int[] argbs = new int[128];
   private static int[] argbsGreyscale;
-  private static int[][] ashades = new int[128][];
+  private static int[][] ashades = ArrayUtil.newInt2(128);
   private static int[][] ashadesGreyscale;
   private static final Int2IntHash colixHash = new Int2IntHash(256);
   private static final int RAW_RGB_INT = RAW_RGB;
@@ -242,7 +242,7 @@ public class Colix {
   public final static int[] getShadesGreyscale(short colix) {
     colix &= OPAQUE_MASK;
     if (ashadesGreyscale == null)
-      ashadesGreyscale = new int[ashades.length][];
+      ashadesGreyscale = ArrayUtil.newInt2(ashades.length);
     int[] shadesGreyscale = ashadesGreyscale[colix];
     if (shadesGreyscale == null)
       shadesGreyscale = ashadesGreyscale[colix] =

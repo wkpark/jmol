@@ -810,9 +810,9 @@ public class IsosurfaceMesh extends Mesh {
   protected void merge(MeshData m) {
     int nV = vertexCount + (m == null ? 0 : m.vertexCount);
     if (polygonIndexes == null)
-      polygonIndexes = new int[0][];
+      polygonIndexes = new int[0][0];
     if (m != null && m.polygonIndexes == null)
-      m.polygonIndexes = new int[0][];
+      m.polygonIndexes = new int[0][0];
     int nP = (bsSlabDisplay == null || polygonCount == 0 ? polygonCount : bsSlabDisplay
         .cardinality())
         + (m == null || m.polygonCount == 0 ? 0 : m.bsSlabDisplay == null ? m.polygonCount
@@ -823,7 +823,7 @@ public class IsosurfaceMesh extends Mesh {
     vertexValues = ArrayUtil.ensureLengthA(vertexValues, nV);
     boolean haveSources = (vertexSource != null && (m == null || m.vertexSource != null));
     vertexSource = ArrayUtil.ensureLengthI(vertexSource, nV);
-    int[][] newPolygons = new int[nP][];
+    int[][] newPolygons = ArrayUtil.newInt2(nP);
     // note -- no attempt here to merge vertices
     int ipt = mergePolygons(this, 0, 0, newPolygons);
     if (m != null) {

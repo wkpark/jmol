@@ -112,7 +112,7 @@ public class Parser {
     str = fixDataString(str);
     int[] lines = markLines(str, '\n');
     int nLines = lines.length;
-    float[][] data = new float[nLines][];
+    float[][] data = ArrayUtil.newFloat2(nLines);
     for (int iLine = 0, pt = 0; iLine < nLines; pt = lines[iLine++]) {
       String[] tokens = getTokens(str.substring(pt, lines[iLine]));
       parseFloatArrayData(tokens, data[iLine] = new float[tokens.length]);
@@ -132,7 +132,7 @@ public class Parser {
     int nZ = parseInt(tokens[2]);
     if (nX < 1 || nY < 1 || nZ < 1)
       return new float[1][1][1];
-    float[][][] data = new float[nX][nY][];
+    float[][][] data = ArrayUtil.newFloat3(nX, nY);
     int iX = 0;
     int iY = 0;
     for (int iLine = 1, pt = lines[0]; iLine < nLines && iX < nX; pt = lines[iLine++]) {

@@ -25,6 +25,7 @@ package org.jmol.adapter.readers.quantum;
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
+import org.jmol.util.ArrayUtil;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -190,13 +191,13 @@ public class MopacGraphfReader extends MopacSlaterReader {
       if (isNewFormat && line.indexOf("MATRIX") < 0)
         readLine();
       // read lower triangle of symmetric inverse sqrt matrix and multiply
-      invMatrix = new float[nCoefficients][];
+      invMatrix = ArrayUtil.newFloat2(nCoefficients);
       for (int iMo = 0; iMo < nCoefficients; iMo++)
         fillFloatArray(null, 15, invMatrix[iMo] = new float[iMo + 1]);
     }
     nOrbitals = (orbitalData == null ? nCoefficients : orbitalData.size());
     if (orbitalData != null) {
-      list = new float[nOrbitals][];
+      list = ArrayUtil.newFloat2(nOrbitals);
       for (int i = nOrbitals; --i >= 0;)
         list[i] = orbitalData.get(i);
     }

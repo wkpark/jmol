@@ -28,6 +28,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.StringXBuilder;
 
 public class ScriptFunction {
@@ -120,7 +121,7 @@ public class ScriptFunction {
     int nCommands = pt - cmdpt0;
     function.setScript(script.substring(chpt0, ichCurrentCommand));
     Token[][] aatoken = function.aatoken = new Token[nCommands][];
-    function.lineIndices = new int[nCommands][];
+    function.lineIndices = ArrayUtil.newInt2(nCommands);
     function.lineNumbers = new short[nCommands];
     short line0 = (short) (lineNumbers[cmdpt0] - 1);
     for (int i = 0; i < nCommands; i++) {

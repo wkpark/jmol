@@ -173,7 +173,7 @@ final public class ArrayUtil {
   }
 
   public static int[][] arrayCopyII(int[][] array, int newLength) {
-    int[][] t = new int[newLength][];
+    int[][] t = newInt2(newLength);
     if (array != null) {
       int oldLength = array.length;
       System.arraycopy(array, 0, t, 0, oldLength < newLength ? oldLength
@@ -349,6 +349,78 @@ final public class ArrayUtil {
     Object oi = o[i];
     o[i] = o[j];
     o[j] = oi;
+  }
+
+  public static float[][] newFloat2(int n) {
+    /**
+     * @j2sNative
+     * 
+     * return Clazz.newArray(n, null);
+     * 
+     */
+    {
+    return new float[n][];
+    }
+  }
+
+  public static int[][] newInt2(int n) {
+    /**
+     * @j2sNative
+     * 
+     * return Clazz.newArray(n, null);
+     * 
+     */
+    {
+    return new int[n][];
+    }
+  }
+
+  public static float[][][] newFloat3(int nx, int ny) {
+    /**
+     * @j2sNative
+     * 
+     * return Clazz.newArray(nx, null);
+     * 
+     */
+    {
+      return (ny < 0 ? new float[nx][][] : new float[nx][ny][]);
+    }
+  }
+
+  public static int[][][][] newInt4(int n) {
+    /**
+     * @j2sNative
+     * 
+     * return Clazz.newArray(n, null);
+     * 
+     */
+    {
+    return new int[n][][][];
+    }
+  }
+
+  public static short[][] newShort2(int n) {
+    /**
+     * @j2sNative
+     * 
+     * return Clazz.newArray(n, null);
+     * 
+     */
+    {
+    return new short[n][];
+    }
+  }
+
+  public static byte[][] newByte2(int n) {
+    /**
+     * @j2sNative
+     * 
+     * return Clazz.newArray(n, null);
+     * 
+     */
+    {
+    return new byte[n][];
+    }
   }
 
 }

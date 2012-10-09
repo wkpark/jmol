@@ -796,10 +796,6 @@ public class Escape {
     .appendF(pt.z).append("]");
   }
 
-  public static String toReadableNoName(Object info) {
-    return toReadable(null, info);
-  }
-
   public static String toReadable(String name, Object info) {
     StringXBuilder sb =new StringXBuilder();
     String sep = "";

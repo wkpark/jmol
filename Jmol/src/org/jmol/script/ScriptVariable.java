@@ -247,7 +247,7 @@ public class ScriptVariable extends Token {
       return getVariableAV((ScriptVariable[]) x);
     if (Escape.isAP(x))
       return getVariableAP((Point3f[]) x);
-    return newVariable(string, Escape.toReadableNoName(x));
+    return newVariable(string, Escape.toReadable(null, x));
   }
 
   @SuppressWarnings("unchecked")
@@ -426,10 +426,6 @@ public class ScriptVariable extends Token {
 
   public String asString() {
     return sValue(this);
-  }
-
-  public Object getValAsObj() {
-    return (tok == integer ? Integer.valueOf(intValue) : value);
   }
 
   // math-related Token static methods

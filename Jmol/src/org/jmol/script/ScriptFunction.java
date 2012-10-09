@@ -83,7 +83,7 @@ public class ScriptFunction {
       if (var != null && var.tok != Token.varray)  // TODO: list type?
         var = ScriptVariable.newScriptVariableToken(var);
       contextVariables.put(name, (var == null ? 
-          ScriptVariable.newScriptVariableObj(Token.string, "").setName(name) : var));
+          ScriptVariable.newVariable(Token.string, "").setName(name) : var));
     }
     contextVariables.put("_retval", new ScriptVariableInt(tok == Token.trycmd ? Integer.MAX_VALUE : 0));
   }

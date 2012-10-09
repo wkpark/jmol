@@ -207,7 +207,7 @@ public class PropertyManager {
       if ((n = Parser.parseInt(names[i])) != Integer.MIN_VALUE)
         args[i] = new ScriptVariableInt(n);
       else
-        args[i] = ScriptVariable.newScriptVariableObj(Token.string, names[i]);
+        args[i] = ScriptVariable.newVariable(Token.string, names[i]);
     }
     return extractProperty(getProperty(viewer, null, propertyName, propertyValue), args, 1);
   }
@@ -220,7 +220,7 @@ public class PropertyManager {
     ScriptVariable arg = args[ptr++];
     switch (arg.tok) {
     case Token.integer:
-      pt = ScriptVariable.iValue(arg) - 1;  //one-based, as for array selectors
+      pt = arg.asInt() - 1;  //one-based, as for array selectors
       if (property instanceof List<?>) {
         List<Object> v = (List<Object>) property;
         if (pt < 0)

@@ -6008,12 +6008,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     int tok = Token.getTokFromName(key);
     switch (Token.getParamType(tok)) {
     case Token.booleanparam:
-      setBooleanPropertyTok(key, tok, ScriptVariable.bValue(ScriptVariable
-          .getVariable(value)));
+      setBooleanPropertyTok(key, tok, ScriptVariable.newVariable(Token.string,
+          value).asBoolean());
       break;
     case Token.intparam:
-      setIntPropertyTok(key, tok, ScriptVariable.iValue(ScriptVariable
-          .getVariable(value)));
+      setIntPropertyTok(key, tok, ScriptVariable.newVariable(Token.string,
+          value).asInt());
       break;
     case Token.floatparam:
       setFloatPropertyTok(key, tok, Parser.parseFloatStr(value));
@@ -6198,7 +6198,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         break;
       }
       if (!global.htNonbooleanParameterValues.containsKey(key.toLowerCase())) {
-        global.setUserVariable(key, ScriptVariable.newScriptVariableObj(Token.string, value));
+        global.setUserVariable(key, ScriptVariable.newVariable(Token.string, value));
         return;
       }
       // a few String parameters may not be tokenized. Save them anyway.
@@ -6388,7 +6388,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       break;
     default:
       if (!global.htNonbooleanParameterValues.containsKey(key.toLowerCase())) {
-        global.setUserVariable(key, ScriptVariable.newScriptVariableObj(Token.decimal,
+        global.setUserVariable(key, ScriptVariable.newVariable(Token.decimal,
             new Float(value)));
         return;
       }

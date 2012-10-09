@@ -145,7 +145,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
   }
   
   static void addContextVariable(Map<String, ScriptVariable> contextVariables, String ident) {
-    contextVariables.put(ident, ScriptVariable.newScriptVariableObj(Token.string, "").setName(ident));
+    contextVariables.put(ident, ScriptVariable.newVariable(Token.string, "").setName(ident));
   }
 
   private boolean isContextVariable(String ident) {

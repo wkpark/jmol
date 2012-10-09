@@ -234,7 +234,7 @@ public class ScriptEvaluator {
           + ret + "}", false);
       List<ScriptVariable> params = new ArrayList<ScriptVariable>();
       for (int i = 0; i < xyz.length(); i += 2)
-        params.add(ScriptVariable.getVariable(Float.valueOf(0f)).setName(
+        params.add(ScriptVariable.newVariable(Token.decimal, Float.valueOf(0f)).setName(
             xyz.substring(i, i + 1)));
       return new Object[] { e.aatoken[0][1].value, params };
     } catch (Exception ex) {
@@ -629,7 +629,7 @@ public class ScriptEvaluator {
   private ScriptVariable parameterExpressionToken(int pt)
       throws ScriptException {
     List<ScriptVariable> result = parameterExpressionList(pt, -1, false);
-    return (result.size() > 0 ? result.get(0) : ScriptVariable.getVariable(""));
+    return (result.size() > 0 ? result.get(0) : ScriptVariable.newVariable(Token.string, ""));
   }
 
   /**
@@ -846,7 +846,7 @@ public class ScriptEvaluator {
       case Token.semicolon: // for (i = 1; i < 3; i=i+1)
         break out;
       case Token.decimal:
-        rpn.addXNum(ScriptVariable.getVariable(theToken.value));
+        rpn.addXNum(ScriptVariable.newVariable(Token.decimal, theToken.value));
         break;
       case Token.spec_seqcode:
       case Token.integer:
@@ -895,7 +895,7 @@ public class ScriptEvaluator {
         Point3f ptc;
         try{
           ptc = centerParameter(i);
-          rpn.addXVar(ScriptVariable.newScriptVariableObj(Token.point3f, ptc));
+          rpn.addXVar(ScriptVariable.newVariable(Token.point3f, ptc));
         } catch (Exception e) {
           rpn.addXStr("");
         }
@@ -1030,7 +1030,7 @@ public class ScriptEvaluator {
             if (Token.tokAttr(theTok, Token.identifier)
                 && viewer.isFunction(name)) {
               if (!rpn
-                  .addOp(ScriptVariable.newScriptVariableObj(Token.function, theToken.value)))
+                  .addOp(ScriptVariable.newVariable(Token.function, theToken.value)))
                 error(ERROR_invalidArgument);
               if (!haveParens) {
                 rpn.addOp(Token.tokenLeftParen);
@@ -1058,7 +1058,7 @@ public class ScriptEvaluator {
     if (result.tok == Token.vector)
       return result.value;
     if (returnBoolean)
-      return Boolean.valueOf(ScriptVariable.bValue(result));
+      return Boolean.valueOf(result.asBoolean());
     if (returnString) {
       if (result.tok == Token.string)
         result.intValue = Integer.MAX_VALUE;
@@ -1104,7 +1104,7 @@ public class ScriptEvaluator {
   List<ScriptVariable> bitsetVariableVector(Object v) {
     List<ScriptVariable> resx = new ArrayList<ScriptVariable>();
     if (v instanceof BitSet) {
-      resx.add(ScriptVariable.newScriptVariableObj(Token.bitset, v));
+      resx.add(ScriptVariable.newVariable(Token.bitset, v));
     }
     return resx;
   }
@@ -1317,7 +1317,7 @@ public class ScriptEvaluator {
       userFunction = (String) ((Object[]) opValue)[0];
       params = (List<ScriptVariable>) ((Object[]) opValue)[1];
       bsAtom = BitSetUtil.newBitSet(atomCount);
-      tokenAtom = ScriptVariable.newScriptVariableObj(Token.bitset, bsAtom);
+      tokenAtom = ScriptVariable.newVariable(Token.bitset, bsAtom);
       break;
     case Token.straightness:
     case Token.surfacedistance:
@@ -1726,7 +1726,7 @@ public class ScriptEvaluator {
           } else {
             values[i] = ColorUtil.getArgbFromString(svi.asString());
             if (values[i] == 0)
-              values[i] = ScriptVariable.iValue(svi);
+              values[i] = svi.asInt();
           }
           if (values[i] == 0)
             errorStr2(ERROR_unrecognizedParameter, "ARRAY", svi.asString());
@@ -1956,7 +1956,7 @@ public class ScriptEvaluator {
       v = viewer.getParameter(key);
     switch (tokType) {
     case Token.variable:
-      return ScriptVariable.getVariable(v); // j2s issue?
+      return ScriptVariable.getVariable(v);
     case Token.string:
       if (!(v instanceof List<?>))
         break;
@@ -1994,7 +1994,7 @@ public class ScriptEvaluator {
       Object val = viewer.getParameter(var);
       if (!(val instanceof String))
         return val;
-      v = ScriptVariable.newScriptVariableObj(Token.string, val);
+      v = ScriptVariable.newVariable(Token.string, val);
     }
     return ScriptVariable.nValue(v);
   }
@@ -2022,7 +2022,7 @@ public class ScriptEvaluator {
       return s;
     Object v = ScriptVariable.unescapePointOrBitsetAsVariable(s);
     if (v instanceof String && key != null)
-      v = viewer.setUserVariable(key, ScriptVariable.newScriptVariableObj(Token.string, v));
+      v = viewer.setUserVariable(key, ScriptVariable.newVariable(Token.string, v));
     return v;
   }
 
@@ -2073,7 +2073,7 @@ public class ScriptEvaluator {
         ScriptContext sc = getScriptContext();
         if (isTry) {
           contextVariables.put("_breakval", new ScriptVariableInt(Integer.MAX_VALUE));
-          contextVariables.put("_errorval", ScriptVariable.getVariable(""));
+          contextVariables.put("_errorval", ScriptVariable.newVariable(Token.string, ""));
           viewer.resetError();
           parallelProcessor.addProcess("try", sc);
         }
@@ -2081,11 +2081,11 @@ public class ScriptEvaluator {
         if (isTry) {
           String err = (String) viewer.getParameter("_errormessage");
           if (err.length() > 0) {
-            contextVariables.put("_errorval", ScriptVariable.getVariable(err));
+            contextVariables.put("_errorval", ScriptVariable.newVariable(Token.string, err));
             viewer.resetError();
           }
           contextVariables.put("_tryret", contextVariables.get("_retval"));
-          contextVariables.put("_retval", ScriptVariable.newScriptVariableObj(0,
+          contextVariables.put("_retval", ScriptVariable.newVariable(0,
               contextVariables));
         }
       }
@@ -2281,7 +2281,7 @@ public class ScriptEvaluator {
         BitSetUtil.deleteBits((BitSet) value, bsDeleted);
         if (!entry.getKey().startsWith("!"))
           viewer.setUserVariable("@" + entry.getKey(), ScriptVariable
-              .getVariable(value));
+              .newVariable(Token.bitset, value));
       }
     }
   }
@@ -2373,7 +2373,7 @@ public class ScriptEvaluator {
             BitSet bs = ScriptVariable.getBitSet((ScriptVariable) v, true);
             // I can't remember why we have to be checking list variables
             // for atom names. 
-            fixed[j] = ScriptVariable.newScriptVariableObj(Token.bitset,
+            fixed[j] = ScriptVariable.newVariable(Token.bitset,
                 bs == null ? getAtomBitSet(this, ScriptVariable
                     .sValue(fixed[j])) : bs);
           }
@@ -2436,17 +2436,17 @@ public class ScriptEvaluator {
             }
           }
         } else if (v instanceof BitSet) {
-          fixed[j] = ScriptVariable.newScriptVariableObj(Token.bitset, v);
+          fixed[j] = ScriptVariable.newVariable(Token.bitset, v);
         } else if (v instanceof Point3f) {
-          fixed[j] = ScriptVariable.newScriptVariableObj(Token.point3f, v);
+          fixed[j] = ScriptVariable.newVariable(Token.point3f, v);
         } else if (v instanceof Point4f) {
-          fixed[j] = ScriptVariable.newScriptVariableObj(Token.point4f, v);
+          fixed[j] = ScriptVariable.newVariable(Token.point4f, v);
         } else if (v instanceof Matrix3f) {
-          fixed[j] = ScriptVariable.newScriptVariableObj(Token.matrix3f, v);
+          fixed[j] = ScriptVariable.newVariable(Token.matrix3f, v);
         } else if (v instanceof Matrix4f) {
-          fixed[j] = ScriptVariable.newScriptVariableObj(Token.matrix4f, v);
+          fixed[j] = ScriptVariable.newVariable(Token.matrix4f, v);
         } else if (v instanceof Map<?, ?>) {
-          fixed[j] = ScriptVariable.newScriptVariableObj(Token.hash, v);
+          fixed[j] = ScriptVariable.newVariable(Token.hash, v);
         } else if (v instanceof List<?>) {
           List<ScriptVariable> sv = (ArrayList<ScriptVariable>) v;
           BitSet bs = null;
@@ -3496,12 +3496,12 @@ public class ScriptEvaluator {
         break;
       case Token.hkl:
         rpn.addXVar(ScriptVariable.newScriptVariableToken(instruction));
-        rpn.addXVar(ScriptVariable.newScriptVariableObj(Token.point4f, hklParameter(pc + 2)));
+        rpn.addXVar(ScriptVariable.newVariable(Token.point4f, hklParameter(pc + 2)));
         pc = iToken;
         break;
       case Token.plane:
         rpn.addXVar(ScriptVariable.newScriptVariableToken(instruction));
-        rpn.addXVar(ScriptVariable.newScriptVariableObj(Token.point4f, planeParameter(pc + 2)));
+        rpn.addXVar(ScriptVariable.newVariable(Token.point4f, planeParameter(pc + 2)));
         pc = iToken;
         break;
       case Token.coord:
@@ -3521,7 +3521,7 @@ public class ScriptEvaluator {
         rpn.addXVar(ScriptVariable.newScriptVariableToken(instruction));
         // note that the compiler has changed all within() types to strings.
         if (s.equals("hkl")) {
-          rpn.addXVar(ScriptVariable.newScriptVariableObj(Token.point4f, hklParameter(pc + 2)));
+          rpn.addXVar(ScriptVariable.newVariable(Token.point4f, hklParameter(pc + 2)));
           pc = iToken;
         }
         break;
@@ -3638,7 +3638,8 @@ public class ScriptEvaluator {
       case Token.spec_seqcode_range:
         if (isInMath) {
           rpn.addXNum(new ScriptVariableInt(instruction.intValue));
-          rpn.addXObj(Token.tokenMinus);
+          // TODO -- in 13.0 had addXObj this adds a "-" to the X stack. 
+          rpn.addOp(Token.tokenMinus);
           rpn.addXNum(new ScriptVariableInt(code[++pc].intValue));
           break;
         }
@@ -3812,7 +3813,7 @@ public class ScriptEvaluator {
         rpn.addXBs(bs1);
         break;
       case Token.point3f:
-        rpn.addXObj(value);
+        rpn.addXPt((Point3f) value);
         break;
       default:
         if (Token.tokAttr(instruction.tok, Token.mathop)) {
@@ -4632,8 +4633,7 @@ public class ScriptEvaluator {
         int index = Integer.MIN_VALUE;
         // allow for $pt2.3 -- specific vertex
         if (tokAt(i + 1) == Token.leftsquare) {
-          index = ScriptVariable.iValue(parameterExpressionList(-i - 1, -1,
-              true).get(0));
+          index = parameterExpressionList(-i - 1, -1, true).get(0).asInt();
           if (getToken(--iToken).tok != Token.rightsquare)
             error(ERROR_invalidArgument);
         }
@@ -6076,7 +6076,7 @@ public class ScriptEvaluator {
           ct = (ContextToken) aatoken[pc + 1][0];
           if (ct.contextVariables != null && ct.name0 != null)
             ct.contextVariables.put(ct.name0, ScriptVariable
-                .getVariable(errMsg));
+                .newVariable(Token.string, errMsg));
           ct.intValue = (errMsg.length() > 0 ? 1 : -1) * Math.abs(ct.intValue);
         }
         return false;
@@ -8420,7 +8420,7 @@ public class ScriptEvaluator {
       BitSet bs = atomExpressionAt(2);
       definedAtomSets.put(setName, bs);
       if (!isSyntaxCheck)
-        viewer.setUserVariable("@" + setName, ScriptVariable.getVariable(bs));
+        viewer.setUserVariable("@" + setName, ScriptVariable.newVariable(Token.bitset, bs));
     }
   }
 
@@ -10551,7 +10551,7 @@ public class ScriptEvaluator {
       
       contextVariables = new Hashtable<String, ScriptVariable>();
       contextVariables.put("_arguments", (params == null ? ScriptVariable.getVariableAI(new int[]{})
-          : ScriptVariable.getVariable(params)));
+          : ScriptVariable.getVariableList(params)));
       
       instructionDispatchLoop(isCheck || listCommands);
       if (debugScript && viewer.getMessageStyleChime())
@@ -12805,7 +12805,7 @@ public class ScriptEvaluator {
         if (var.tok == Token.point3f)
           pt = (Point3f) var.value;
         else {
-          int ijk = ScriptVariable.iValue(var);
+          int ijk = var.asInt();
           if (ijk < 555)
             pt = new Point3f();
           else
@@ -13233,7 +13233,7 @@ public class ScriptEvaluator {
   private int intSetting(int pt) throws ScriptException {
     if (pt == statementLength)
       return Integer.MIN_VALUE;
-    return ScriptVariable.iValue(parameterExpressionToken(pt));
+    return parameterExpressionToken(pt).asInt();
   }
 
   private float floatSetting(int pt)
@@ -13662,7 +13662,7 @@ public class ScriptEvaluator {
     }
 
     if (isArrayItem) {
-      ScriptVariable tnew = (ScriptVariable.newScriptVariableObj(Token.string, "")).set(tv, false);
+      ScriptVariable tnew = (ScriptVariable.newVariable(Token.string, "")).set(tv, false);
       int nParam = v.size() / 2;
       for (int i = 0; i < nParam; i++) {
         boolean isLast = (i + 1 == nParam);
@@ -13681,7 +13681,7 @@ public class ScriptEvaluator {
           }
           t = tmap.get(hkey);
         } else {
-          int ipt = ScriptVariable.iValue(vv);
+          int ipt = vv.asInt();
           // in the case of for (x in y) where y is an array, we need to select the item before continuing
           if (t.tok == Token.varray)
             t = ScriptVariable.selectItemVar(t);
@@ -13704,7 +13704,7 @@ public class ScriptEvaluator {
                 && tnew.tok == Token.varray && tnew.getList().size() == dim)
               break;
             if (nParam == 2) {
-              int ipt2 = ScriptVariable.iValue(v.get(2));
+              int ipt2 = v.get(2).asInt();
               if (ipt2 >= 1 && ipt2 <= dim
                   && (tnew.tok == Token.integer || tnew.tok == Token.decimal)) {
                 i++;
@@ -13738,8 +13738,7 @@ public class ScriptEvaluator {
             : Integer.MIN_VALUE, 0);
         return;
       }
-      setBitsetProperty(bs, tokProperty, ScriptVariable.iValue(tv),
-          ScriptVariable.fValue(tv), tv);
+      setBitsetProperty(bs, tokProperty, tv.asInt(), tv.asFloat(), tv);
       return;
     }
 

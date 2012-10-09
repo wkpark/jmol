@@ -1503,7 +1503,7 @@ public class StateManager {
         name = "x";
       Object v = getParam(name, true);
       return (v == null && doSet && name.charAt(0) != '_' ?
-        setUserVariable(name, ScriptVariable.newScriptVariableObj(Token.string, ""))
+        setUserVariable(name, ScriptVariable.newVariable(Token.string, ""))
          : ScriptVariable.getVariable(v));
     }
 
@@ -1725,7 +1725,7 @@ public class StateManager {
         pickedSet = (ScriptVariable) getParam("picked", true);
       }
       if (pickedSet == null || pickedSet.tok != Token.bitset) {
-        pickedSet = ScriptVariable.getVariable(new BitSet());
+        pickedSet = ScriptVariable.newVariable(Token.bitset, new BitSet());
         setUserVariable("picked", pickedSet);
       }
       if (atomIndex >= 0)

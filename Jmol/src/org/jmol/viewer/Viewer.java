@@ -4342,7 +4342,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
   private Object getImage(boolean isDouble) {
     /**
-     * j2sNative
+     * @j2sNative
      * 
      * return null;
      * 
@@ -4419,7 +4419,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   @Override
   public Object getScreenImage(Object graphic) {
     /**
-     * j2sNative
+     * @j2sNative
      * 
      * return null
      * 
@@ -4449,7 +4449,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public Object getImageAs(String type, int quality, int width, int height,
                            String fileName, OutputStream os) {
     /**
-     * j2sNative
+     * @j2sNative
      * 
      * return null
      * 
@@ -4472,7 +4472,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   Object getImageAsWithComment(String type, int quality, int width, int height,
                     String fileName, String[] scripts, OutputStream os, String comment) {
     /**
-     * j2sNative
+     * @j2sNative
      * 
      * return null
      * 

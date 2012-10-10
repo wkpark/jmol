@@ -29,7 +29,7 @@ class Display {
 
 	static boolean hasFocus(Object display) {
     /**
-     * j2sNative
+     * @j2sNative
      * 
      */
     {
@@ -40,7 +40,7 @@ class Display {
 
 	static void requestFocusInWindow(Object display) {
     /**
-     * j2sNative
+     * @j2sNative
      * 
      */
     {
@@ -54,7 +54,7 @@ class Display {
 
 	static void renderScreenImage(JmolViewer viewer, Object g, Object size) {
     /**
-     * j2sNative
+     * @j2sNative
      * 
      */
     {
@@ -64,7 +64,7 @@ class Display {
 
 	static void setTransparentCursor(Object display) {
     /**
-     * j2sNative
+     * @j2sNative
      * 
      */
     {
@@ -74,7 +74,7 @@ class Display {
 
 	static void setCursor(int c, Object display) {
 	  /**
-	   * j2sNative
+	   * @j2sNative
 	   * 
 	   */
 	  {
@@ -90,7 +90,7 @@ class Display {
 
 	public static void convertPointFromScreen(Object display, Point3f ptTemp) {
     /**
-     * j2sNative
+     * @j2sNative
      * 
      */
     {

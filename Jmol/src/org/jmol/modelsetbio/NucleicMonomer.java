@@ -137,6 +137,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
 
     if (offsets == null)
       return null;
+    
     if (!checkOptional(offsets, O5Pr, firstAtomIndex, 
         specialAtomIndexes[JmolConstants.ATOMID_O5T_TERMINUS]))
       return null;
@@ -164,17 +165,15 @@ public class NucleicMonomer extends PhosphorusMonomer {
                  byte[] offsets) {
     super(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex, offsets);
-    if (offsets[NP] == -1) {
+    if (!have(offsets, NP)) {
       offsets[0] = offsets[O5Pr];
-      // if ((offsets[0] = offsets[O5Pr]) == -1)
-      // offsets[0] = offsets[H5T]; // really we don't want to use H5T at all
-      if (offsets[0] >= 0)
-        leadAtomIndex = firstAtomIndex + (offsets[0] & 0xFF);
+      int offset = offsets[0] & 0xFF;
+      if (offset != 255)
+        leadAtomIndex = firstAtomIndex + offset;
     }
-    this.hasRnaO2Prime = offsets[O2Pr] != -1;
-    this.isPyrimidine = offsets[O2] != -1;
-    this.isPurine =
-      offsets[N7] != -1 && offsets[C8] != -1 && offsets[N9] != -1;
+    this.hasRnaO2Prime = have(offsets, O2Pr);
+    this.isPyrimidine = have(offsets, O2);
+    this.isPurine = have(offsets, N7) && have(offsets, C8) && have(offsets, N9);
   }
 
   public boolean isNucleicMonomer() { return true; }
@@ -191,7 +190,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
   @Override
   public boolean isPyrimidine() { return isPyrimidine; }
 
-  public boolean isGuanine() { return (offsets[N2] & 0xFF) != 255; }
+  public boolean isGuanine() { return have(offsets, N2); }
 
   @Override
   public EnumStructure getProteinStructureType() {
@@ -248,7 +247,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
 
   @Override
   Atom getTerminatorAtom() {
-    return getAtomFromOffsetIndex((offsets[H3T] & 0xFF) == 255 ? O3Pr : H3T);
+    return getAtomFromOffsetIndex(have(offsets, H3T) ? H3T : O3Pr);
   }
 
   private final static byte[] ring6OffsetIndexes = {C5, C6, N1, C2, N3, C4};

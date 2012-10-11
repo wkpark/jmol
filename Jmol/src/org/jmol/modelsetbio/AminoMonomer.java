@@ -92,7 +92,7 @@ public class AminoMonomer extends AlphaMonomer {
                                  Atom[] atoms) {
     return (isBondedCorrectlyRange(N, CA, firstAtomIndex, offsets, atoms)
             && isBondedCorrectlyRange(CA, C, firstAtomIndex, offsets, atoms)
-            && (offsets[O] == -1 
+            && (!have(offsets, O) 
                 || isBondedCorrectlyRange(C, O, firstAtomIndex, offsets, atoms))
             );
   }
@@ -130,11 +130,11 @@ public class AminoMonomer extends AlphaMonomer {
   @Override
   Atom getTerminatorAtom() {
     // problem in JavaScript with byte == -1
-    return getAtomFromOffsetIndex((offsets[OT] & 0xFF) == 255 ? C : OT);
+    return getAtomFromOffsetIndex(have(offsets, OT) ? OT : C);
   }
 
   boolean hasOAtom() {
-    return (offsets[O] & 0xFF) != 255;
+    return have(offsets, O);
   }
   
   ////////////////////////////////////////////////////////////////

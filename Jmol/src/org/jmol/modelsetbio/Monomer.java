@@ -48,6 +48,10 @@ public abstract class Monomer extends Group {
 
   protected final byte[] offsets;
 
+  protected static boolean have(byte[] offsets, byte n) {
+    return (offsets[n] & 0xFF) != 0xFF;
+  }
+
   protected Monomer(Chain chain, String group3, int seqcode,
           int firstAtomIndex, int lastAtomIndex,
           byte[] interestingAtomOffsets) {
@@ -391,7 +395,7 @@ public abstract class Monomer extends Group {
   protected final static boolean checkOptional(byte[]offsets, byte atom, 
                                                int firstAtomIndex, 
                                                int index) {
-    if (offsets[atom] >= 0)
+    if (have(offsets, atom))
       return true;
     if (index < 0)
       return false;

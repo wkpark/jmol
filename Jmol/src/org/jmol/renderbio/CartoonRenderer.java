@@ -26,6 +26,7 @@ package org.jmol.renderbio;
 
 import org.jmol.modelsetbio.NucleicMonomer;
 import org.jmol.modelsetbio.ProteinStructure;
+import org.jmol.script.Token;
 import org.jmol.shapebio.BioShape;
 import org.jmol.util.Colix;
 import org.jmol.util.GData;
@@ -51,12 +52,12 @@ public class CartoonRenderer extends RocketsRenderer {
       renderNucleic();
       return;
     }
-    boolean val = viewer.getCartoonRocketFlag();
+    boolean val = viewer.getCartoonFlag(Token.cartoonrockets);
     if (renderAsRockets != val) {
       bioShape.falsifyMesh();
       renderAsRockets = val;
     }
-    val = !viewer.getRocketBarrelFlag();
+    val = !viewer.getCartoonFlag(Token.rocketbarrels);
     if (renderArrowHeads != val) {
       bioShape.falsifyMesh();
       renderArrowHeads = val;
@@ -76,7 +77,7 @@ public class CartoonRenderer extends RocketsRenderer {
 
   Point3i ptConnect = new Point3i();
   void renderNucleic() {
-    renderEdges = viewer.getCartoonBaseEdgesFlag();
+    renderEdges = viewer.getCartoonFlag(Token.cartoonbaseedges);
     boolean isTranslucent = Colix.isColixTranslucent(colix);
     if (renderEdges) {
       float tl = Colix.getColixTranslucencyLevel(colix);

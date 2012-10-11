@@ -59,6 +59,8 @@ abstract class BioShapeRenderer extends MeshRenderer {
   private float aspectRatio;
   private int hermiteLevel;
   private float sheetSmoothing;
+  protected boolean meshElliptical;
+
 
   private Mesh[] meshes;
   private boolean[] meshReady;
@@ -94,21 +96,32 @@ abstract class BioShapeRenderer extends MeshRenderer {
       invalidateMesh = true;
     isHighRes = TF;
 
+    boolean v = viewer.getCartoonFlag(Token.cartoonfancy);
+    if (meshElliptical != v) {
+      invalidateMesh = true;
+      meshElliptical = v;
+    }
+    int val1 = viewer.getHermiteLevel();
+    val1 = (val1 <= 0 ? -val1 : viewer.getInMotion() ? 0 : val1);
+    if (meshElliptical)
+      val1 = Math.max(val1, 3); // at least HermiteLevel 3 for "cartoonFancy"
+    else if (val1 == 0 && exportType == GData.EXPORT_CARTESIAN)
+      val1 = 5; // forces hermite for 3D exporters
+    if (val1 != hermiteLevel && val1 != 0)
+      invalidateMesh = true;
+    hermiteLevel = Math.min(val1, 8);
+
     int val = viewer.getRibbonAspectRatio();
     val = Math.min(Math.max(0, val), 20);
-    if (val != aspectRatio && val != 0)
+    if (meshElliptical && val >= 16)
+      val = 4; // at most 4 for elliptical cartoonFancy
+    if (hermiteLevel == 0)
+      val = 0;
+
+    if (val != aspectRatio && val != 0 && val1 != 0)
       invalidateMesh = true;
     aspectRatio = val;
 
-    val = viewer.getHermiteLevel();
-    if (val == 0 && exportType == GData.EXPORT_CARTESIAN)
-      val = 5; // forces hermite for 3D exporters
-    val = (val <= 0 ? -val : viewer.getInMotion() ? 0 : val);
-    if (val != hermiteLevel && val != 0)
-      invalidateMesh = true;
-    hermiteLevel = Math.min(val, 8);
-    if (hermiteLevel == 0)
-      aspectRatio = 0;
 
     TF = (viewer.getTraceAlpha());
     if (TF != isTraceAlpha)
@@ -538,17 +551,21 @@ abstract class BioShapeRenderer extends MeshRenderer {
 
     int nPoints = 0;
     int iMid = nHermites >> 1;
+    boolean isElliptical = (meshElliptical || hermiteLevel >= 6);
     for (int p = 0; p < nHermites; p++) {
       norm.sub2(controlHermites[p + 1], controlHermites[p]);
+      float scale = (!variableRadius ? radius1 : p < iMid ? radiusHermites[p].x
+          : radiusHermites[p - iMid].y);
       if (isEccentric) {
         wing.setT(wingHermites[p]);
         wing1.setT(wing);
-        if (hermiteLevel < 6) {
-          wing.scale(2f / aspectRatio);
-        } else {
+        if (isElliptical) {
           wing1.cross(norm, wing);
           wing1.normalize();
           wing1.scale(wing.length() / aspectRatio);
+        } else {
+          wing.scale(2 / aspectRatio);
+          wing1.sub(wing);
         }
       } else {
         wing.setT(wingHermites[p]);
@@ -558,8 +575,6 @@ abstract class BioShapeRenderer extends MeshRenderer {
         wing.cross(norm, wing);
         wing.normalize();
       }
-      float scale = (!variableRadius ? radius1 : p < iMid ? radiusHermites[p].x
-          : radiusHermites[p - iMid].y);
       wing.scale(scale);
       wing1.scale(scale);
       float angle = (float) (2 * Math.PI / nPer);
@@ -568,20 +583,20 @@ abstract class BioShapeRenderer extends MeshRenderer {
       pt1.setT(controlHermites[p]);
       float theta = angle;
       for (int k = 0; k < nPer; k++, theta += angle) {
-        if (hermiteLevel < 6 || !isEccentric)
+        if (!isElliptical || !isEccentric)
           mat.transform(wing);
         if (isEccentric) {
-          if (hermiteLevel < 6) {
-            wingT.setT(wing);
-            if (k == (nPer + 2) / 4 || k == (3 * nPer + 2) / 4)
-              wing1.scale(-1);
-            wingT.add(wing1);
-          } else {
+          if (isElliptical) {
             float cos = (float) Math.cos(theta);
             float sin = (float) Math.sin(theta);
             wingT.setT(wing1);
             wingT.scale(sin);
             wingT.scaleAdd2(cos, wing, wingT);
+          } else {
+            wingT.setT(wing);
+            if (k == (nPer + 2) / 4 || k == (3 * nPer + 2) / 4)
+              wing1.scale(-1);
+            wingT.add(wing1);
           }
           pt.add2(pt1, wingT);
         } else {

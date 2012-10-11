@@ -30,6 +30,7 @@ import org.jmol.modelsetbio.Helix;
 import org.jmol.modelsetbio.Monomer;
 import org.jmol.modelsetbio.ProteinStructure;
 import org.jmol.modelsetbio.Sheet;
+import org.jmol.script.Token;
 import org.jmol.shapebio.BioShape;
 import org.jmol.util.GData;
 import org.jmol.util.Point3f;
@@ -46,7 +47,7 @@ public class RocketsRenderer extends BioShapeRenderer {
   protected void renderBioShape(BioShape bioShape) {
     if (!(bioShape.bioPolymer instanceof AminoPolymer))
       return;
-    boolean val = !viewer.getRocketBarrelFlag();
+    boolean val = !viewer.getCartoonFlag(Token.rocketbarrels);
     if (renderArrowHeads != val) {
       bioShape.falsifyMesh();
       renderArrowHeads = val;

@@ -709,7 +709,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     GData.setSpecularPower(-global.specularExponent);
     GData.setPhongExponent(global.phongExponent);
     GData.setSpecularPower(global.specularPower);
-    GData.setZShadePower(global.zShadePower);
     if (modelSet != null)
       animationManager.setAnimationOn(false);
     animationManager.setAnimationFps(global.animationFps);
@@ -1278,7 +1277,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     gdata.setSlab(transformManager.slabValue);
     gdata.setDepth(transformManager.depthValue);
     gdata.setZShade(transformManager.zShadeEnabled,
-        transformManager.zSlabValue, transformManager.zDepthValue);
+        transformManager.zSlabValue, transformManager.zDepthValue, global.zShadePower);
   }
 
   public void rotatePoint(Point3f pt, Point3f ptRot) {
@@ -6550,7 +6549,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       transformManager.slabToPercent(value);
       break;
     case Token.zshadepower:
-      GData.setZShadePower(Math.max(value, 1));
+      global.zShadePower = Math.max(value, 1);
       break;
     case Token.ribbonaspectratio:
       global.ribbonAspectRatio = value;
@@ -6618,6 +6617,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private void setBooleanPropertyTok(String key, int tok, boolean value) {
     boolean doRepaint = true;
     switch (tok) {
+    case Token.cartoonfancy:
+      // 12.3.7
+      global.cartoonFancy = value;
+      break;
     case Token.showtiming:
       // 12.3.6
       global.showTiming = value;
@@ -7463,16 +7466,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.ribbonBorder;
   }
 
-  public boolean getCartoonRocketFlag() {
-    return global.cartoonRockets;
-  }
-
-  public boolean getRocketBarrelFlag() {
-    return global.rocketBarrels;
-  }
-
-  public boolean getCartoonBaseEdgesFlag() {
-    return global.cartoonBaseEdges;
+  public boolean getCartoonFlag(int tok) {
+    switch (tok) {
+    case Token.cartoonrockets:
+      return global.cartoonRockets;
+    case Token.cartoonfancy:
+      return global.cartoonFancy;
+    case Token.rocketbarrels:
+      return global.rocketBarrels;      
+    case Token.cartoonbaseedges:
+      return global.cartoonBaseEdges;
+    }
+    return false;
   }
 
   private void setStrandCount(int type, int value) {

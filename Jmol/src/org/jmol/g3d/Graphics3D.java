@@ -415,8 +415,8 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   }
   
   @Override
-  public void setZShade(boolean zShade, int zSlab, int zDepth) {
-    super.setZShade(zShade, zSlab, zDepth);
+  public void setZShade(boolean zShade, int zSlab, int zDepth, int zShadePower) {
+    super.setZShade(zShade, zSlab, zDepth, zShadePower);
     if (zShade) {
       pixel = new ShadePixel();
     } else {
@@ -638,6 +638,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   }
   
   protected class ShadePixel extends Pixel {
+
     @Override
     void addPixel(int offset, int z, int p) {
       if (z > zDepth)
@@ -648,8 +649,8 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
         int pB = (p & 0xFF0000) >> 16;
         int pA = (p & 0xFF000000);
         float f = (float)(zDepth - z) / (zDepth - zSlab);
-        if (Shader.zPower > 1) {
-          for (int i = 0; i < Shader.zPower; i++)
+        if (zShadePower > 1) {
+          for (int i = 0; i < zShadePower; i++)
             f *= f;
         }
         pR = zShadeR + (int) (f * (pR - zShadeR));

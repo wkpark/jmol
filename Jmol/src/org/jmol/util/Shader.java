@@ -53,8 +53,6 @@ public final class Shader {
   public static final byte shadeIndexNormal = 52;
   public final static byte shadeIndexNoisyLimit = 56;
 
-  public static int zPower = 1; // the power for the zShading -- higher number --> more depth of fog
-
   // the viewer vector is always {0 0 1}
 
   // the light source vector -- up and to the left

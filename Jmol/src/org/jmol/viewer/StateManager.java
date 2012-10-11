@@ -806,6 +806,7 @@ public class StateManager {
       setParamF("bondTolerance", bondTolerance);
       setParamF("cameraDepth", cameraDepth);
       setParamB("cartoonBaseEdges", cartoonBaseEdges);
+      setParamB("cartoonFancy", cartoonFancy);
       setParamB("cartoonRockets", cartoonRockets);
       setParamB("chainCaseSensitive", chainCaseSensitive);
       setParamS("dataSeparator", dataSeparator);
@@ -1185,6 +1186,7 @@ public class StateManager {
 
     boolean cartoonBaseEdges = false;
     boolean cartoonRockets = false;
+    boolean cartoonFancy = false;
     boolean chainCaseSensitive = false;
     int hermiteLevel = 0;
     boolean highResolutionFlag = false;
@@ -1335,7 +1337,7 @@ public class StateManager {
         appendCmd(str, "set specularExponent " + se);
       else
         appendCmd(str, "set phongExponent " + pe);        
-      appendCmd(str, "set zShadePower " + GData.getZShadePower());
+      appendCmd(str, "set zShadePower " + zShadePower);
       return str.toString();
     }
 

@@ -32,6 +32,7 @@ public class GData implements JmolGraphicsInterface {
   public int slab, depth;
   public int width, height;
   public int zSlab, zDepth;
+  public int zShadePower = 3;
 
   protected short colixCurrent;
   protected int argbCurrent;
@@ -113,14 +114,16 @@ public class GData implements JmolGraphicsInterface {
    *        for zShade
    * @param zDepth
    *        for zShade
+   * @param zPower 
    */
-  public void setZShade(boolean zShade, int zSlab, int zDepth) {
+  public void setZShade(boolean zShade, int zSlab, int zDepth, int zPower) {
     if (zShade) {
       zShadeR = bgcolor & 0xFF;
       zShadeG = (bgcolor & 0xFF00) >> 8;
       zShadeB = (bgcolor & 0xFF0000) >> 16;
       this.zSlab = zSlab < 0 ? 0 : zSlab;
       this.zDepth = zDepth < 0 ? 0 : zDepth;
+      this.zShadePower = zPower;
     }
   }
 
@@ -329,19 +332,6 @@ public class GData implements JmolGraphicsInterface {
     Shader.ambientPercent = val;
     Shader.ambientFraction = val / 100f;
     flushCaches();
-  }
-
-  public static int getZShadePower() {
-    return Shader.zPower;
-  }
-
-  /**
-   * fractional distance from black for ambient color
-   * 
-   * @param val
-   */
-  public synchronized static void setZShadePower(int val) {
-    Shader.zPower = val;
   }
 
   public static boolean getSpecular() {

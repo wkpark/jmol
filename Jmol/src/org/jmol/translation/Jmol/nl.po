@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-09-30 19:44+0200\n"
-"PO-Revision-Date: 2011-10-24 10:13+0000\n"
-"Last-Translator: Nicolas Vervelle <Unknown>\n"
+"PO-Revision-Date: 2012-10-10 17:09+0000\n"
+"Last-Translator: xatr0z <xatr0z@users.sourceforge.net>\n"
 "Language-Team: Dutch <jmol-developer@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-25 09:01+0000\n"
-"X-Generator: Launchpad (build 15843)\n"
+"X-Launchpad-Export-Date: 2012-10-10 21:44+0000\n"
+"X-Generator: Launchpad (build 16118)\n"
 "X-Poedit-Country: The Netherlands\n"
 "X-Poedit-Language: Dutch\n"
 
@@ -68,10 +68,15 @@ msgid ""
 "\n"
 "See http://www.jmol.org for more information"
 msgstr ""
+"Jmol Applet versie {0} {1}.\n"
+" \n"
+"Onderdeel van het OpenScience project. \n"
+"\n"
+"Zie http://www.jmol.org voor meer informatie."
 
 #: org/jmol/appletjs/Jmol.java:535
 msgid "File Error:"
-msgstr ""
+msgstr "Bestandsfout:"
 
 #: org/openscience/jmol/app/JmolApp.java:100
 msgid "Error starting Jmol: the property 'user.home' is not defined."
@@ -124,15 +129,16 @@ msgstr "geen console -- alle uitvoer naar de command line"
 
 #: org/openscience/jmol/app/JmolApp.java:156
 msgid "send only output from print messages to console (implies -i)"
-msgstr "stuur alleen input van print berichten naar de console (impliceert -i)"
+msgstr ""
+"stuur alleen input van print berichten naar de console (impliceert -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:158
 msgid "restrict local file access"
-msgstr ""
+msgstr "lokale bestandstoegang beperken"
 
 #: org/openscience/jmol/app/JmolApp.java:160
 msgid "restrict local file access (allow reading of SPT files)"
-msgstr ""
+msgstr "lokale bestandstoegang beperken (lezen van SPT-bestanden toestaan)"
 
 #: org/openscience/jmol/app/JmolApp.java:162
 msgid "independent command thread"
@@ -1446,7 +1452,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:535
 msgid "filename"
-msgstr ""
+msgstr "bestandsnaam"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:542
 msgid "startup_script"
@@ -1940,18 +1946,23 @@ msgstr "niet geimplementeerd"
 #~ msgid "vector"
 #~ msgstr "vector"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Ga naar de eerste {0} in de collectie"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Ga naar de vorige {0} in de collectie"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Speel de hele collectie van {0}'s af"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Ga naar de volgende {0} in de collectie"
 
+#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Ga naar de laatste {0} in de collectie"
 
@@ -1964,6 +1975,7 @@ msgstr "niet geimplementeerd"
 #~ msgid "double-click and drag to reorder"
 #~ msgstr "Dubbelklik en sleep om de volgorde te wijzigen"
 
+#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"
@@ -1977,18 +1989,21 @@ msgstr "niet geimplementeerd"
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "toevoegen JmolPopIn.js"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "toevoegen {0}.png"
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "toevoegen {0}.spt"
 
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 #~ msgstr ""
-#~ "Voeg hier extra uitleg in. Lange teksten worden om het Jmol-model {0} "
-#~ "heen gezet."
+#~ "Voeg hier extra uitleg in. Lange teksten worden om het Jmol-model {0} heen "
+#~ "gezet."
 
 #~ msgid "Clear console button (requires restarting Jmol)"
 #~ msgstr "Leeg console knop (vereist een herstart van Jmol)"

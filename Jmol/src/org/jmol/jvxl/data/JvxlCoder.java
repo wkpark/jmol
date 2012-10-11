@@ -866,7 +866,7 @@ public class JvxlCoder {
     if (ich < base)
       return (char) base;
     if (ich == 92)
-      return 33; // \ --> !
+      return '!'; // \ --> !
     //if (logCompression)
     //Logger.info("fac: " + fraction + " --> " + ich + " " + (char) ich);
     return (char) ich;

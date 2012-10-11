@@ -46,12 +46,45 @@ public class JSExporter extends CartesianExporter {
   private UseTable useTable;
 
   public JSExporter() {
-    useTable = new UseTable();
   }
 
   private Map<String, Boolean> htSpheresRendered = new Hashtable<String, Boolean>();
 
   private Map<String, Object[]> htObjects = new Hashtable<String, Object[]>();
+
+
+  @Override
+  protected void outputHeader() {
+    // note -- not compatible yet with multiple applets.
+    useTable = new UseTable();
+    htSpheresRendered.clear(); 
+    htObjects.clear();
+    /**
+     * @j2sNative
+     * 
+     * this.jsInitExport();
+     * 
+     */
+    {
+    // implemented in JavaScript only
+    }
+  }
+
+  @Override
+  protected void outputFooter() {
+    /**
+     * @j2sNative
+     * 
+     * this.jsEndExport();
+     * 
+     */
+    {
+    // implemented in JavaScript only
+    }
+    htSpheresRendered.clear(); 
+    htObjects.clear();
+    useTable = null;
+  }
 
   private void jsSphere(String id, boolean isNew, Point3f pt, Object[] o) {
     // implemented in JavaScript only
@@ -135,88 +168,46 @@ public class JSExporter extends CartesianExporter {
 
   @Override
   protected void outputSurface(Point3f[] vertices, Vector3f[] normals,
-                               short[] colixes, int[][] indices,
+                               short[] vertexColixes, int[][] indices,
                                short[] polygonColixes,
                                int nVertices, int nPolygons, int nFaces, BitSet bsPolygons,
-                               int faceVertexMax, short colix,
-                               List<Short> colorList, Map<Short, Integer> htColixes, Point3f offset) {
-    /**
-     * @j2sNative
-     * this.startSurface();
-     * 
-     */
-    boolean colorPerVertex = (polygonColixes == null);
-    boolean haveNormals = (normals != null);
-    startJmolSurface(getColor(colix), colorPerVertex, haveNormals);
+                               int faceVertexMax, short colix, Point3f offset) {
+    int[] vertexColors = getColors(vertexColixes);
+    int[] polygonColors = getColors(polygonColixes);
+    jsSurface(vertices, normals, indices, nVertices, nPolygons, nFaces, bsPolygons, 
+        faceVertexMax, g3d.getColorArgbOrGray(colix), vertexColors, polygonColors);
+  }
+  
+  /**
+   * @param vertices  
+   * @param normals 
+   * @param indices 
+   * @param nVertices 
+   * @param nPolygons 
+   * @param nFaces 
+   * @param bsPolygons 
+   * @param faceVertexMax 
+   * @param color 
+   * @param vertexColors 
+   * @param polygonColors 
+   */
+  protected void jsSurface(Point3f[] vertices, Vector3f[] normals,
+                         int[][] indices, int nVertices, int nPolygons,
+                         int nFaces, BitSet bsPolygons, int faceVertexMax,
+                         int color, int[] vertexColors, int[] polygonColors) {
+      System.out.println("jsSurface -- nV=" + nVertices + " nPoly=" + nPolygons + " nFaces=" + nFaces + " faceVertexMax=" + faceVertexMax);
+    // JavaScript only    
+  }
 
-    // coordinates
-
-    outputVertices(vertices, nVertices, offset);
-    int[] map = new int[nVertices];
-    getCoordinateMap(vertices, map, null);
-    outputIndices(indices, map, nPolygons, bsPolygons, faceVertexMax);
-
-    // normals
-
-    if (haveNormals) {
-      List<String> vNormals = new ArrayList<String>();
-      map = getNormalMap(normals, nVertices, null, vNormals);
-      outputNormals(vNormals);
-      outputIndices(indices, map, nPolygons, bsPolygons, faceVertexMax);
+  private int[] getColors(short[] colixes) {
+    if (colixes == null)
+      return null;
+    int[] colors = new int[colixes.length];
+    for (int i = colors.length; --i >= 0;) {
+      colors[i] = g3d.getColorArgbOrGray(colixes[i]);
     }
-
-    map = null;
-    
-    // colors
-
-    if (colorList != null)
-      outputColors(colorList, indices, nPolygons, bsPolygons, faceVertexMax, htColixes, colixes, polygonColixes);
-    endJmolSurface();
+    return colors;
   }
-  
-  
-  private void outputColors(List<Short> colorList, int[][] indices,
-                            int nPolygons, BitSet bsPolygons,
-                            int faceVertexMax, Map<Short, Integer> htColixes,
-                            short[] colixes, short[] polygonColixes) {
-    // TODO
-    
-  }
-
-  private void outputNormals(List<String> vNormals) {
-    // TODO
-    
-  }
-
-  private void endJmolSurface() {
-    // JavaScript only 
-  }
-
-  
-  private void startJmolSurface(Integer color, boolean colorPerVertex, boolean haveNormals) {
-    // TODO
-    
-  }
-
-  protected void outputColorIndices(List<Short> colorlist, int[][] indices, int nPolygons, BitSet bsPolygons,
-                                    int faceVertexMax, Map<Short, Integer> htColixes,
-                                    short[] colixes, short[] polygonColixes) {
-      boolean isAll = (bsPolygons == null);
-      int i0 = (isAll ? nPolygons - 1 : bsPolygons.nextSetBit(0));
-      for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsPolygons.nextSetBit(i + 1))) {
-        if (polygonColixes == null) {
-          output(htColixes.get(Short.valueOf(colixes[indices[i][0]])) + " "
-              + htColixes.get(Short.valueOf(colixes[indices[i][1]])) + " "
-              + htColixes.get(Short.valueOf(colixes[indices[i][2]])) + " -1\n");
-          if (faceVertexMax == 4 && indices[i].length == 4)
-            output(htColixes.get(Short.valueOf(colixes[indices[i][0]])) + " "
-                + htColixes.get(Short.valueOf(colixes[indices[i][2]])) + " "
-                + htColixes.get(Short.valueOf(colixes[indices[i][3]])) + " -1\n");
-        } else {
-          output(htColixes.get(Short.valueOf(polygonColixes[i])) + "\n");
-        }
-      }
-    }
 
   @Override
   protected void outputTriangle(Point3f pt1, Point3f pt2, Point3f pt3,
@@ -231,16 +222,6 @@ public class JSExporter extends CartesianExporter {
   protected void output(Tuple3f pt) {
     // TODO Auto-generated method stub
 
-  }
-
-  @Override
-  protected void outputHeader() {
-    // implemented in JavaScript only
-  }
-
-  @Override
-  protected void outputFooter() {
-    // implemented in JavaScript only
   }
 
 }

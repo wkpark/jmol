@@ -434,9 +434,13 @@ public abstract class Exporter {
     int faceVertexMax = (meshSurface.haveQuads ? 4 : 3);
     int[][] indices = meshSurface.polygonIndexes;
     boolean isAll = (bsPolygons == null);
-    int i0 = (isAll ? nPolygons - 1 : bsPolygons.nextSetBit(0));
-    for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsPolygons.nextSetBit(i + 1)))
-      nFaces += (faceVertexMax == 4 && indices[i].length == 4 ? 2 : 1);
+    if (isAll) {
+      for (int i = nPolygons; --i >= 0;)
+        nFaces += (faceVertexMax == 4 && indices[i].length == 4 ? 2 : 1);      
+    } else {
+      for (int i = bsPolygons.nextSetBit(0); i >= 0; i = bsPolygons.nextSetBit(i + 1))
+        nFaces += (faceVertexMax == 4 && indices[i].length == 4 ? 2 : 1);      
+    }
     if (nFaces == 0)
       return;
 
@@ -446,17 +450,9 @@ public abstract class Exporter {
     boolean colorSolid = (colix != 0);
     short[] colixes = (colorSolid ? null : meshSurface.vertexColixes);
     short[] polygonColixes = (colorSolid ? meshSurface.polygonColixes : null);
-    Map<Short, Integer> htColixes = new Hashtable<Short, Integer>();
-    List<Short> colorList = null;
-    if (polygonColixes != null)
-      colorList = getColorList(0, polygonColixes, nPolygons, bsPolygons,
-          htColixes);
-    else if (colixes != null)
-      colorList = getColorList(0, colixes, nVertices, null, htColixes);
-    
     outputSurface(vertices, normals, colixes, indices, polygonColixes,
         nVertices, nPolygons, nFaces, bsPolygons, faceVertexMax, colix,
-        colorList, htColixes, meshSurface.offset);
+        meshSurface.offset);
   }
 
   /**
@@ -483,8 +479,7 @@ public abstract class Exporter {
                                 short[] colixes, int[][] indices,
                                 short[] polygonColixes,
                                 int nVertices, int nPolygons, int nFaces, BitSet bsPolygons,
-                                int faceVertexMax, short colix, List<Short> colorList,
-                                Map<Short, Integer> htColixes, Point3f offset) {
+                                int faceVertexMax, short colix, Point3f offset) {
     // not implemented in _ObjExporter
   }
 

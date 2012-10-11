@@ -318,8 +318,10 @@ abstract class BioShapeRenderer extends MeshRenderer {
         && structureTypes[i] != structureTypes[iPrev]);
     doCap1 = (iNext == iNext2 || thisTypeOnly
         && structureTypes[i] != structureTypes[iNext]);
-    return ((aspectRatio > 0 && (checkDiameter(diameterBeg)
-        || checkDiameter(diameterMid) || checkDiameter(diameterEnd))));
+    return ((aspectRatio > 0 && (exportType == GData.EXPORT_CARTESIAN 
+        || checkDiameter(diameterBeg)
+        || checkDiameter(diameterMid) 
+        || checkDiameter(diameterEnd))));
   }
 
   private boolean checkDiameter(int d) {

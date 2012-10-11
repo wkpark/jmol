@@ -129,11 +129,12 @@ public class AminoMonomer extends AlphaMonomer {
 
   @Override
   Atom getTerminatorAtom() {
-    return getAtomFromOffsetIndex(offsets[OT] != -1 ? OT : C);
+    // problem in JavaScript with byte == -1
+    return getAtomFromOffsetIndex((offsets[OT] & 0xFF) == 255 ? C : OT);
   }
 
   boolean hasOAtom() {
-    return offsets[O] != -1;
+    return (offsets[O] & 0xFF) != 255;
   }
   
   ////////////////////////////////////////////////////////////////

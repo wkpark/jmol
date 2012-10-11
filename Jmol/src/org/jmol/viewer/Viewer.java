@@ -1294,7 +1294,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void transformPtScr(Point3f pointAngstroms, Point3i pointScreen) {
-    transformManager.transformPoint2i(pointAngstroms, pointScreen);
+    transformManager.transformPointScr(pointAngstroms, pointScreen);
   }
 
   public void transformPtNoClip(Point3f pointAngstroms, Point3f pt) {

@@ -38,7 +38,7 @@ public class MeshRibbonRenderer extends StrandsRenderer {
   }
 
   protected void render2Strand(boolean doFill, float offsetTop, float offsetBottom) {
-    calcScreenControlPoints();
+    getScreenControlPoints();
     ribbonTopScreens = calcScreens(offsetTop);
     ribbonBottomScreens = calcScreens(-offsetBottom);
     for (int i = bsVisible.nextSetBit(0); i >= 0; i = bsVisible.nextSetBit(i + 1))

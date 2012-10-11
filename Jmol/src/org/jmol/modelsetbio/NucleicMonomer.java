@@ -191,7 +191,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
   @Override
   public boolean isPyrimidine() { return isPyrimidine; }
 
-  public boolean isGuanine() { return offsets[N2] != -1; }
+  public boolean isGuanine() { return (offsets[N2] & 0xFF) != 255; }
 
   @Override
   public EnumStructure getProteinStructureType() {
@@ -248,7 +248,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
 
   @Override
   Atom getTerminatorAtom() {
-    return getAtomFromOffsetIndex(offsets[H3T] != -1 ? H3T : O3Pr);
+    return getAtomFromOffsetIndex((offsets[H3T] & 0xFF) == 255 ? O3Pr : H3T);
   }
 
   private final static byte[] ring6OffsetIndexes = {C5, C6, N1, C2, N3, C4};

@@ -53,8 +53,9 @@ public abstract class Monomer extends Group {
           byte[] interestingAtomOffsets) {
     super(chain, group3, seqcode, firstAtomIndex, lastAtomIndex);
     offsets = interestingAtomOffsets;
-    if (offsets[0] >= 0)
-      leadAtomIndex = firstAtomIndex + (offsets[0] & 0xFF);
+    int offset = offsets[0] & 0xFF;
+    if (offset != 255)
+      leadAtomIndex = firstAtomIndex + offset;
   }
 
   int monomerIndex;

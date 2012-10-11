@@ -46,7 +46,7 @@ public class CartoonRenderer extends RocketsRenderer {
   protected void renderBioShape(BioShape bioShape) {
     if (bioShape.wingVectors == null || isCarbohydrate)
       return;
-    calcScreenControlPoints();
+    getScreenControlPoints();
     if (isNucleic) {
       renderNucleic();
       return;

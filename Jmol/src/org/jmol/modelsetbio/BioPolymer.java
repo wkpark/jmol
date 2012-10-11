@@ -100,7 +100,7 @@ public abstract class BioPolymer {
       monomers[i].setStructure(null);
   }
 
-  void removeProteinStructure(int monomerIndex, int count) {
+  protected void removeProteinStructure(int monomerIndex, int count) {
     Monomer m = monomers[monomerIndex];
     EnumStructure type = m.getProteinStructureType();
     int mLast = -1;
@@ -123,7 +123,7 @@ public abstract class BioPolymer {
     return leadAtomIndices;
   }
 
-  int getIndex(char chainID, int seqcode) {
+  protected int getIndex(char chainID, int seqcode) {
     int i;
     for (i = monomerCount; --i >= 0;)
       if (monomers[i].getChainID() == chainID)
@@ -136,11 +136,17 @@ public abstract class BioPolymer {
     return monomers[monomerIndex].getLeadAtom();
   }
 
-  final Point3f getInitiatorPoint() {
+//  void getLeadPoint2(int groupIndex, Point3f midPoint) {
+//    if (groupIndex == monomerCount)
+//      --groupIndex;
+//    midPoint.setT(getLeadPoint(groupIndex));
+//  }
+
+  private final Point3f getInitiatorPoint() {
     return monomers[0].getInitiatorAtom();
   }
 
-  final Point3f getTerminatorPoint() {
+  private final Point3f getTerminatorPoint() {
     return monomers[monomerCount - 1].getTerminatorAtom();
   }
 
@@ -157,12 +163,6 @@ public abstract class BioPolymer {
       midPoint.scale(0.5f);
       return;
     }
-    midPoint.setT(getLeadPoint(groupIndex));
-  }
-
-  void getLeadPoint(int groupIndex, Point3f midPoint) {
-    if (groupIndex == monomerCount)
-      --groupIndex;
     midPoint.setT(getLeadPoint(groupIndex));
   }
 
@@ -217,12 +217,12 @@ public abstract class BioPolymer {
     if (invalidate)
       invalidControl = true;
     return (!isTraceAlpha ? leadMidpoints : sheetSmoothing == 0 ? leadPoints
-        : getControlPoints(sheetSmoothing));
+        : getControlPoints2(sheetSmoothing));
   }
 
   protected float sheetSmoothing;
 
-  protected Point3f[] getControlPoints(float sheetSmoothing) {
+  private Point3f[] getControlPoints2(float sheetSmoothing) {
     if (!invalidControl && sheetSmoothing == this.sheetSmoothing)
       return controlPoints;
     getLeadPoints();

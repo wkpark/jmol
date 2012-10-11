@@ -1570,7 +1570,7 @@ public abstract class TransformManager {
       screens[i].setT(transformPoint(angstroms[i]));
   }
 
-  void transformPoint2i(Point3f pointAngstroms, Point3i pointScreen) {
+  void transformPointScr(Point3f pointAngstroms, Point3i pointScreen) {
     pointScreen.setT(transformPoint(pointAngstroms));
   }
 

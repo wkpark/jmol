@@ -205,7 +205,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     return structureTypes[i] == EnumStructure.HELIX;
   }
 
-  protected void calcScreenControlPoints() {
+  protected void getScreenControlPoints() {
     calcScreenControlPoints(controlPoints);
   }
 

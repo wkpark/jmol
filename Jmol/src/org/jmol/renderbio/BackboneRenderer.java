@@ -55,7 +55,7 @@ public class BackboneRenderer extends BioShapeRenderer {
       } else {
         int width = (exportType == GData.EXPORT_CARTESIAN ? mad 
             : viewer.scaleToScreen((zA + zB) / 2, mad));
-        g3d.fillCylinder(colixA, colixB, GData.ENDCAPS_SPHERICAL, width,
+        g3d.fillCylinderXYZ(colixA, colixB, GData.ENDCAPS_SPHERICAL, width,
             xA, yA, zA, xB, yB, zB);
       }
     }

@@ -1543,7 +1543,7 @@ public abstract class TransformManager {
     matrixTemp.set(stereoFrame ? matrixStereo : matrixRotate);
     matrixTransform.mul2(matrixTemp, matrixTransform);
     // cale to screen coordinates
-    matrixTemp.setZero();
+    matrixTemp.setIdentity();
     matrixTemp.m00 = matrixTemp.m11 = matrixTemp.m22 = scalePixelsPerAngstrom;
     // negate y (for screen) and z (for zbuf)
     matrixTemp.m11 = matrixTemp.m22 = -scalePixelsPerAngstrom;
@@ -1554,8 +1554,10 @@ public abstract class TransformManager {
     try {
       matrixTransformInv.invertM(matrixTransform);
     } catch (Exception e) {
+      System.out.println("ERROR INVERTING matrixTransform!");
       // ignore -- this is a Mac issue on applet startup
     }
+    System.out.println(matrixTransform + " \n\n " + matrixTransformInv + "\n=---\n");
     // note that the image is still centered at 0, 0 in the xy plane
 
   }

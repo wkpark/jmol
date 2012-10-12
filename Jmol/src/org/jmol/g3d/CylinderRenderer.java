@@ -590,9 +590,9 @@ class CylinderRenderer {
 
   private void renderSphericalEndcaps() {
     if (colixA != 0 && g3d.setColix(colixA))
-      g3d.fillSphere(diameter, xA, yA, zA + 1);
+      g3d.fillSphereXYZ(diameter, xA, yA, zA + 1);
     if (colixB != 0 && g3d.setColix(colixB))
-      g3d.fillSphere(diameter, xA + dxB, yA + dyB, zA + dzB + 1);
+      g3d.fillSphereXYZ(diameter, xA + dxB, yA + dyB, zA + dzB + 1);
   }
 
   private void plotRasterCone(int i, boolean doFill, boolean isBarb) {

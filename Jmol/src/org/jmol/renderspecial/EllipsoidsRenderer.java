@@ -369,7 +369,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       pt2.scaleAdd2(cossin[pt + 1] * d2, v2, pt2);
       viewer.transformPtScr(pt2, s2);
       if (fillArc)
-        g3d.fillTriangle(s0, colix, normix, s1, colix, normix, s2, colix,
+        g3d.fillTriangle3CN(s0, colix, normix, s1, colix, normix, s2, colix,
             normix);
       else if (wireframeOnly)
         g3d.fillCylinder(GData.ENDCAPS_FLAT, diameter, s1, s2);

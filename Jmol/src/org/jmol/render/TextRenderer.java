@@ -71,11 +71,11 @@ public class TextRenderer {
               : text.colix))
         return;
       if (text.boxX > text.movableX)
-        g3d.drawLine(text.movableX, text.movableY, text.zSlab , 
+        g3d.drawLineXYZ(text.movableX, text.movableY, text.zSlab , 
             (int) text.boxX, (int) (text.boxY + text.boxHeight / 2),
             text.zSlab);
       else if (text.boxX + text.boxWidth < text.movableX)
-        g3d.drawLine(text.movableX, text.movableY, text.zSlab, 
+        g3d.drawLineXYZ(text.movableX, text.movableY, text.zSlab, 
             (int) (text.boxX + text.boxWidth), 
             (int) (text.boxY + text.boxHeight / 2), text.zSlab);
     }
@@ -128,9 +128,9 @@ public class TextRenderer {
     if (doPointer) {
       g3d.setColix(pointerColix);
       if (xOffset > 0)
-        g3d.drawLine(x0, y0, zSlab, (int) x, (int) (y + boxHeight / 2), zSlab);
+        g3d.drawLineXYZ(x0, y0, zSlab, (int) x, (int) (y + boxHeight / 2), zSlab);
       else if (xOffset < 0)
-        g3d.drawLine(x0, y0, zSlab, (int) (x + boxWidth),
+        g3d.drawLineXYZ(x0, y0, zSlab, (int) (x + boxWidth),
             (int) (y + boxHeight / 2), zSlab);
     }
   }

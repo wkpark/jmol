@@ -131,7 +131,7 @@ public class HermiteRenderer {
             int d =(s < 0.5f
                     ? diameterBeg + (int)(dDiameterFirstHalf * s)
                     : diameterMid + (int)(dDiameterSecondHalf * (s - 0.5f)));
-            g3d.fillSphere(d, a);
+            g3d.fillSphereI(d, a);
           } else {
             g3d.plotPixelClipped(a);
           }
@@ -385,7 +385,7 @@ public class HermiteRenderer {
            // but drawing spheres was faster
            float s = sLeft[sp];
 
-           g3d.fillSphere(3, a);
+           g3d.fillSphereI(3, a);
            //draw outside edges of mesh
 
            if (s < 1.0f - currentInt) { //if first point over the interval
@@ -452,7 +452,7 @@ public class HermiteRenderer {
      */
        for (int top = 0;
             top < numTopStrandPoints && (top + numTopStrandPoints) < size; top++)
-         g3d.drawLine(points.get(top),
+         g3d.drawLineAB(points.get(top),
              points.get(top + numTopStrandPoints));
      //}
 

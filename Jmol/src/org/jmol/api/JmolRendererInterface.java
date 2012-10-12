@@ -81,7 +81,7 @@ public interface JmolRendererInterface extends JmolGraphicsInterface {
    * @param z
    *        center z
    */
-  public abstract void fillSphere(int diameter, int x, int y, int z);
+  public abstract void fillSphereXYZ(int diameter, int x, int y, int z);
 
   /**
    * fills a solid sphere
@@ -92,7 +92,7 @@ public interface JmolRendererInterface extends JmolGraphicsInterface {
    *        javax.vecmath.Point3i defining the center
    */
 
-  public abstract void fillSphere(int diameter, Point3i center);
+  public abstract void fillSphereI(int diameter, Point3i center);
 
   /**
    * fills a solid sphere
@@ -205,9 +205,9 @@ public interface JmolRendererInterface extends JmolGraphicsInterface {
 
   public abstract void drawDottedLine(Point3i pointA, Point3i pointB);
 
-  public abstract void drawLine(int x1, int y1, int z1, int x2, int y2, int z2);
+  public abstract void drawLineXYZ(int x1, int y1, int z1, int x2, int y2, int z2);
 
-  public abstract void drawLine(Point3i pointA, Point3i pointB);
+  public abstract void drawLineAB(Point3i pointA, Point3i pointB);
 
   public abstract void drawLine(short colixA, short colixB, int x1, int y1,
                                 int z1, int x2, int y2, int z2);
@@ -215,7 +215,7 @@ public interface JmolRendererInterface extends JmolGraphicsInterface {
   public abstract void drawBond(Point3f atomA, Point3f atomB, short colixA,
                                 short colixB, byte endcaps, short mad, int bondOrder);
 
-  public abstract void fillCylinder(short colixA, short colixB, byte endcaps,
+  public abstract void fillCylinderXYZ(short colixA, short colixB, byte endcaps,
                                     int diameter, int xA, int yA, int zA,
                                     int xB, int yB, int zB);
 
@@ -228,20 +228,20 @@ public interface JmolRendererInterface extends JmolGraphicsInterface {
   public abstract void fillCylinderScreen(byte endcaps, int diameter, int xA,
                                           int yA, int zA, int xB, int yB, int zB);
 
-  public abstract void fillCylinderScreen(byte endcapsOpenend, int diameter,
+  public abstract void fillCylinderScreen3I(byte endcapsOpenend, int diameter,
                                           Point3i pt0i, Point3i pt1i);
 
   public abstract void fillConeScreen(byte endcap, int screenDiameter,
                                       Point3i screenBase, Point3i screenTip,
                                       boolean isBarb);
 
-  public abstract void fillConeSceen(byte endcap, int screenDiameter,
+  public abstract void fillConeSceen3f(byte endcap, int screenDiameter,
                                      Point3f screenBase, Point3f screenTip);
 
-  public abstract void drawHermite(int tension, Point3i s0, Point3i s1,
+  public abstract void drawHermite4(int tension, Point3i s0, Point3i s1,
                                    Point3i s2, Point3i s3);
 
-  public abstract void drawHermite(boolean fill, boolean border, int tension,
+  public abstract void drawHermite7(boolean fill, boolean border, int tension,
                                    Point3i s0, Point3i s1, Point3i s2,
                                    Point3i s3, Point3i s4, Point3i s5,
                                    Point3i s6, Point3i s7, int aspectRatio);
@@ -252,12 +252,12 @@ public interface JmolRendererInterface extends JmolGraphicsInterface {
                                    Point3i s3);
 
   // isosurface "mesh" option -- color mapped vertices
-  public abstract void drawTriangle(Point3i screenA, short colixA,
+  public abstract void drawTriangle3C(Point3i screenA, short colixA,
                                     Point3i screenB, short colixB,
                                     Point3i screenC, short colixC, int check);
 
   // isosurface and other meshes -- preset colix
-  public abstract void drawTriangle(Point3i screenA, Point3i screenB,
+  public abstract void drawTriangle3I(Point3i screenA, Point3i screenB,
                                     Point3i screenC, int check);
 
   /* was for stereo -- not implemented
@@ -266,7 +266,7 @@ public interface JmolRendererInterface extends JmolGraphicsInterface {
   */
 
   // isosurface colored triangles
-  public abstract void fillTriangle(Point3i screenA, short colixA,
+  public abstract void fillTriangle3CN(Point3i screenA, short colixA,
                                     short normixA, Point3i screenB,
                                     short colixB, short normixB,
                                     Point3i screenC, short colixC, short normixC);
@@ -278,10 +278,10 @@ public interface JmolRendererInterface extends JmolGraphicsInterface {
                                             int zScreenB, int xScreenC,
                                             int yScreenC, int zScreenC);
 
-  public abstract void fillTriangle(Point3f screenA, Point3f screenB,
+  public abstract void fillTriangle3f(Point3f screenA, Point3f screenB,
                                     Point3f screenC);
 
-  public abstract void fillTriangle(Point3i screenA, Point3i screenB,
+  public abstract void fillTriangle3i(Point3i screenA, Point3i screenB,
                                     Point3i screenC);
 
   public abstract void fillTriangle(Point3i screenA, short colixA,

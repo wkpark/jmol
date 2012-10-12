@@ -223,14 +223,14 @@ public abstract class MeshRenderer extends ShapeRenderer {
           if (bsPoints.get(pt))
             continue;
           bsPoints.set(pt);
-          g3d.fillSphere(4, screens[pt]);
+          g3d.fillSphereI(4, screens[pt]);
         }
       }
       return;
     }
     for (int i = vertexCount; --i >= 0;)
       if (!frontOnly || transformedVectors[normixes[i]].z >= 0)
-        g3d.fillSphere(4, screens[i]);
+        g3d.fillSphereI(4, screens[i]);
   }
 
   protected BitSet bsPolygons = new BitSet();
@@ -270,13 +270,13 @@ public abstract class MeshRenderer extends ShapeRenderer {
           continue;
         if (fill) {
           if (isExport) {
-            g3d.fillTriangle(screens[iC], colix, normix, screens[iB], colix,
+            g3d.fillTriangle3CN(screens[iC], colix, normix, screens[iB], colix,
                 normix, screens[iA], colix, normix);
           } else if (iShowTriangles) {
             g3d.fillTriangle(screens[iA], colix, normix, screens[iB], colix,
                 normix, screens[iC], colix, normix, 0.1f);
           } else {
-            g3d.fillTriangle(screens[iA], colix, normix, screens[iB], colix,
+            g3d.fillTriangle3CN(screens[iA], colix, normix, screens[iB], colix,
                 normix, screens[iC], colix, normix);
           }
           continue;
@@ -313,7 +313,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
                 screens[iC], colix, nC, 0.1f);
             continue;
           }
-          g3d.fillTriangle(screens[iA], colix, nA, screens[iB], colix, nB,
+          g3d.fillTriangle3CN(screens[iA], colix, nA, screens[iB], colix, nB,
               screens[iC], colix, nC);
           continue;
         }
@@ -348,16 +348,16 @@ public abstract class MeshRenderer extends ShapeRenderer {
       if (antialias)
         diam <<= 1;
       if ((check & 1) == 1)
-        g3d.fillCylinder(colixA, colixB, GData.ENDCAPS_OPEN, diam, 
+        g3d.fillCylinderXYZ(colixA, colixB, GData.ENDCAPS_OPEN, diam, 
             screenA.x, screenA.y, screenA.z, screenB.x, screenB.y, screenB.z);
       if ((check & 2) == 2)
-        g3d.fillCylinder(colixB, colixC, GData.ENDCAPS_OPEN, diam, 
+        g3d.fillCylinderXYZ(colixB, colixC, GData.ENDCAPS_OPEN, diam, 
             screenB.x, screenB.y, screenB.z, screenC.x, screenC.y, screenC.z);
       if ((check & 4) == 4)
-        g3d.fillCylinder(colixA, colixC, GData.ENDCAPS_OPEN, diam, 
+        g3d.fillCylinderXYZ(colixA, colixC, GData.ENDCAPS_OPEN, diam, 
             screenA.x, screenA.y, screenA.z, screenC.x, screenC.y, screenC.z);
     } else {
-      g3d.drawTriangle(screenA, colixA, screenB, colixB, screenC, colixC, check);
+      g3d.drawTriangle3C(screenA, colixA, screenB, colixB, screenC, colixC, check);
     }
   }
 
@@ -391,7 +391,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
         diameter = (int) (viewer.unscaleToScreen(pt1i.z, diameter) * 1000);
       }
       if (iA == iB) {
-        g3d.fillSphere(diameter, sA);
+        g3d.fillSphereI(diameter, sA);
       } else {
         g3d.fillCylinder(endCap, diameter, sA, sB);
       }

@@ -248,11 +248,9 @@ public class SticksRenderer extends ShapeRenderer {
     boolean isEndOn = (dx == 0 && dy == 0);
     if (isEndOn && lineBond)
       return;
-    boolean doFixedSpacing = (bondOrder > 1
-        && multipleBondSpacing > 0
-        && (viewer.getHybridizationAndAxes(atomA.index, z, x, "pz") != null || viewer
-            .getHybridizationAndAxes(atomB.index, z, x, "pz") != null) && !Float
-        .isNaN(x.x));
+    boolean doFixedSpacing = (bondOrder > 1 && multipleBondSpacing > 0);
+    boolean isPiBonded = doFixedSpacing && (viewer.getHybridizationAndAxes(atomA.index, z, x, "pz") != null || viewer
+            .getHybridizationAndAxes(atomB.index, z, x, "pz") != null) && !Float.isNaN(x.x);
     if (isEndOn && !doFixedSpacing) {
       // end-on view
       int space = width / 8 + 3;
@@ -273,12 +271,14 @@ public class SticksRenderer extends ShapeRenderer {
       return;
     }
     if (doFixedSpacing) {
+      if (!isPiBonded) // obscure point
+        z.set((float) Math.PI, (float) Math.E, (float) (Math.PI * Math.E)); 
       x.sub2(atomB, atomA);
       y.cross(x, z);
       y.normalize();
       y.scale(multipleBondSpacing);
       x.setT(y);
-      x.scale((bondOrder - 1) / 2f);
+      x.scale((bondOrder - 1) / 1.5f);
       p1.sub2(atomA, x);
       p2.sub2(atomB, x);
       while (true) {
@@ -389,7 +389,7 @@ public class SticksRenderer extends ShapeRenderer {
           g3d.setColix(colixA);
         else if (pt == ptE)
           g3d.setColix(colixB);
-        g3d.fillSphere(width, s1);
+        g3d.fillSphereI(width, s1);
         continue;
       }
       if (pt == ptS)
@@ -411,7 +411,7 @@ public class SticksRenderer extends ShapeRenderer {
     if (lineBond)
       g3d.drawLine(colixA, colixB, xA, yA, zA, xB, yB, zB);
     else
-      g3d.fillCylinder(colixA, colixB, endcaps, 
+      g3d.fillCylinderXYZ(colixA, colixB, endcaps, 
           (!isExport || mad == 1 ? diameter : mad), 
           xA, yA, zA, xB, yB, zB);
   }

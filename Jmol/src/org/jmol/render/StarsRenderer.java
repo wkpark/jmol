@@ -55,9 +55,9 @@ public class StarsRenderer extends ShapeRenderer {
     int d = viewer.scaleToScreen(z, mad);
     d -= (d & 1) ^ 1; // round down to odd value
     int r = d / 2;
-    g3d.drawLine(x - r, y, z, x - r + d, y, z);
-    g3d.drawLine(x, y - r, z, x, y - r + d, z);
-    g3d.drawLine(x, y, z - r, x, y, z - r + d);
+    g3d.drawLineXYZ(x - r, y, z, x - r + d, y, z);
+    g3d.drawLineXYZ(x, y - r, z, x, y - r + d, z);
+    g3d.drawLineXYZ(x, y, z - r, x, y, z - r + d);
   }
 
 }

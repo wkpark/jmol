@@ -709,7 +709,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
    * @param y center y
    * @param z center z
    */
-  public void fillSphere(int diameter, int x, int y, int z) {
+  public void fillSphereXYZ(int diameter, int x, int y, int z) {
     switch (diameter) {
     case 1:
       plotPixelClipped(argbCurrent, x, y, z);
@@ -743,8 +743,8 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
    * @param center javax.vecmath.Point3i defining the center
    */
 
-  public void fillSphere(int diameter, Point3i center) {
-    fillSphere(diameter, center.x, center.y, center.z);
+  public void fillSphereI(int diameter, Point3i center) {
+    fillSphereXYZ(diameter, center.x, center.y, center.z);
   }
 
   /**
@@ -754,7 +754,8 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
    * @param center a javax.vecmath.Point3f ... floats are casted to ints
    */
   public void fillSphere(int diameter, Point3f center) {
-    fillSphere(diameter, (int)center.x, (int)center.y, (int)center.z);
+    // from hermite ribbon
+    fillSphereXYZ(diameter, (int)center.x, (int)center.y, (int)center.z);
   }
 
   public void fillEllipsoid(Point3f center, Point3f[] points, int x, int y,
@@ -1057,7 +1058,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
                           pointB.x, pointB.y, pointB.z, true);
   }
 
-  public void drawLine(int x1, int y1, int z1, int x2, int y2, int z2) {
+  public void drawLineXYZ(int x1, int y1, int z1, int x2, int y2, int z2) {
     // stars
     line3d.plotLine(argbCurrent, !addAllPixels, argbCurrent, !addAllPixels,
                     x1, y1, z1, x2, y2, z2, true);
@@ -1078,14 +1079,14 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
                     x1, y1, z1, x2, y2, z2, true);
   }
   
-  public void drawLine(Point3i pointA, Point3i pointB) {
+  public void drawLineAB(Point3i pointA, Point3i pointB) {
     // draw quadrilateral and hermite
     line3d.plotLine(argbCurrent, !addAllPixels, argbCurrent, !addAllPixels,
                     pointA.x, pointA.y, pointA.z,
                     pointB.x, pointB.y, pointB.z, true);
   }
   
-  public void fillCylinder(short colixA, short colixB, byte endcaps,
+  public void fillCylinderXYZ(short colixA, short colixB, byte endcaps,
                            int diameter,
                            int xA, int yA, int zA, int xB, int yB, int zB) {
     //Backbone, Mps, Sticks
@@ -1108,7 +1109,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
                       xA, yA, zA, xB, yB, zB);
   }
 
-  public void fillCylinderScreen(byte endcaps, int diameter,
+  public void fillCylinderScreen3I(byte endcaps, int diameter,
                            Point3i screenA, Point3i screenB) {
     //draw
     cylinder3d.render(colixCurrent, colixCurrent, !addAllPixels, !addAllPixels, endcaps, diameter,
@@ -1140,7 +1141,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
                           screenTip.x, screenTip.y, screenTip.z, false, isBarb);
   }
 
-  public void fillConeSceen(byte endcap, int screenDiameter,
+  public void fillConeSceen3f(byte endcap, int screenDiameter,
                        Point3f screenBase, Point3f screenTip) {
     // cartoons, rockets
     cylinder3d.renderCone(colixCurrent, !addAllPixels, endcap, screenDiameter,
@@ -1148,12 +1149,12 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
                           screenTip.x, screenTip.y, screenTip.z, true, false);
   }
 
-  public void drawHermite(int tension,
+  public void drawHermite4(int tension,
                           Point3i s0, Point3i s1, Point3i s2, Point3i s3) {
     hermite3d.renderHermiteRope(false, tension, 0, 0, 0, s0, s1, s2, s3);
   }
 
-  public void drawHermite(boolean fill, boolean border,
+  public void drawHermite7(boolean fill, boolean border,
                           int tension, Point3i s0, Point3i s1, Point3i s2,
                           Point3i s3, Point3i s4, Point3i s5, Point3i s6,
                           Point3i s7, int aspectRatio) {
@@ -1169,7 +1170,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
                      s0, s1, s2, s3);
   }
   
-  public void drawTriangle(Point3i screenA, short colixA, Point3i screenB,
+  public void drawTriangle3C(Point3i screenA, short colixA, Point3i screenB,
                            short colixB, Point3i screenC, short colixC,
                            int check) {
     // primary method for mapped Mesh
@@ -1184,7 +1185,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
           screenC.y, screenC.z);
   }
 
-  public void drawTriangle(Point3i screenA, Point3i screenB, Point3i screenC,
+  public void drawTriangle3I(Point3i screenA, Point3i screenB, Point3i screenC,
                            int check) {
     // primary method for unmapped monochromatic Mesh
     if ((check & 1) == 1)
@@ -1225,13 +1226,13 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
         xScreenC, yScreenC, zScreenC, false);
   }
 
-  public void fillTriangle(Point3f screenA, Point3f screenB, Point3f screenC) {
+  public void fillTriangle3f(Point3f screenA, Point3f screenB, Point3f screenC) {
     // rockets
     setColorNoisy(getShadeIndex(screenA, screenB, screenC));
     triangle3d.fillTriangle(screenA, screenB, screenC, false);
   }
 
-  public void fillTriangle(Point3i screenA, Point3i screenB, Point3i screenC) {
+  public void fillTriangle3i(Point3i screenA, Point3i screenB, Point3i screenC) {
     // cartoon DNA plates
     triangle3d.fillTriangle(screenA, screenB, screenC, false);
   }
@@ -1259,7 +1260,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
         useGouraud);
   }
 
-  public void fillTriangle(Point3i screenA, short colixA, short normixA,
+  public void fillTriangle3CN(Point3i screenA, short colixA, short normixA,
                            Point3i screenB, short colixB, short normixB,
                            Point3i screenC, short colixC, short normixC) {
     // mesh, isosurface
@@ -1312,10 +1313,10 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
                                 Point3i screenC, Point3i screenD) {
     //mesh only -- translucency has been checked
     setColix(colix);
-    drawLine(screenA, screenB);
-    drawLine(screenB, screenC);
-    drawLine(screenC, screenD);
-    drawLine(screenD, screenA);
+    drawLineAB(screenA, screenB);
+    drawLineAB(screenB, screenC);
+    drawLineAB(screenC, screenD);
+    drawLineAB(screenD, screenA);
   }
 
   public void fillQuadrilateral(Point3f screenA, Point3f screenB,
@@ -1331,10 +1332,10 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
                                 Point3i screenC, short colixC, short normixC,
                                 Point3i screenD, short colixD, short normixD) {
     // mesh
-    fillTriangle(screenA, colixA, normixA,
+    fillTriangle3CN(screenA, colixA, normixA,
                  screenB, colixB, normixB,
                  screenC, colixC, normixC);
-    fillTriangle(screenA, colixA, normixA,
+    fillTriangle3CN(screenA, colixA, normixA,
                  screenC, colixC, normixC,
                  screenD, colixD, normixD);
   }
@@ -1768,7 +1769,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   }
 
   public void drawAtom(Atom atom) {
-    fillSphere(atom.screenDiameter,
+    fillSphereXYZ(atom.screenDiameter,
         atom.screenX, atom.screenY, atom.screenZ);
   }
 

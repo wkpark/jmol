@@ -26,14 +26,16 @@
 package org.jmol.exportjs;
 
 
-import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Map;
 
 
 import org.jmol.util.BitSet;
+import org.jmol.util.Colix;
+import org.jmol.util.GData;
 import org.jmol.util.J2SRequireImport;
+import org.jmol.util.JmolFont;
+import org.jmol.util.Measure;
 import org.jmol.util.Point3f;
 import org.jmol.util.Tuple3f;
 import org.jmol.util.Vector3f;
@@ -97,8 +99,14 @@ public class JSExporter extends CartesianExporter {
     System.out.println(id + " " + isNew + " " + pt1 + " " + pt2 + " " + o);
   }
 
-  private void addJmolTriangle(String id, Object o) {
-    System.out.println(id + " " + o);    
+  /**
+   * @param color  
+   * @param pt1 
+   * @param pt2 
+   * @param pt3 
+   */
+  void jsTriangle(int color, Point3f pt1, Point3f pt2, Point3f pt3) {
+    System.out.println("jsTriangle ");
   }
 
   @Override
@@ -152,8 +160,7 @@ public class JSExporter extends CartesianExporter {
   @Override
   protected void outputCone(Point3f ptBase, Point3f ptTip, float radius,
                             short colix) {
-    // TODO Auto-generated method stub
-
+    outputCylinder(null, ptBase, ptTip, colix, GData.ENDCAPS_NONE, radius, null, null, false);
   }
 
   @Override
@@ -212,16 +219,21 @@ public class JSExporter extends CartesianExporter {
   @Override
   protected void outputTriangle(Point3f pt1, Point3f pt2, Point3f pt3,
                                 short colix) {
-    // an isolated triangle, with a face-based normal
-    // polyhedra, nucleic acid bases, drawn triangles, etc.
-    Object o = new Object[] { getColor(colix), pt1, pt2, pt3};
-    addJmolTriangle(ret[0], o);
+    jsTriangle(Colix.getArgbGreyscale(colix), pt1, pt2, pt3);
   }
 
   @Override
   protected void output(Tuple3f pt) {
     // TODO Auto-generated method stub
 
+  }
+
+  @Override
+  void plotText(int x, int y, int z, short colix, String text, JmolFont font3d) {
+    // TODO -- not sure how to handle z exactly. 
+    // These are screen coordinates. You have to use
+    // viewer.unTransformPoint(pointScreen, pointAngstroms) 
+    // to return that to actual coordinates.
   }
 
 }

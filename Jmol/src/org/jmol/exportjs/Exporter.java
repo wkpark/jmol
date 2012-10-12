@@ -33,18 +33,12 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
 
 
 import org.jmol.util.TextFormat;
 
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.modelset.Atom;
-import org.jmol.util.ArrayUtil;
 import org.jmol.util.AxisAngle4f;
 import org.jmol.util.BitSet;
 import org.jmol.util.JmolFont;
@@ -54,7 +48,6 @@ import org.jmol.util.Matrix4f;
 import org.jmol.util.MeshSurface;
 import org.jmol.util.Point3f;
 import org.jmol.util.Point3i;
-import org.jmol.util.Quaternion;
 import org.jmol.util.StringXBuilder;
 import org.jmol.util.Tuple3f;
 import org.jmol.util.Vector3f;
@@ -323,96 +316,6 @@ public abstract class Exporter {
     return round(pt.x) + " " + round(pt.y) + " " + round(pt.z);
   }
   
-  /**
-   * input an array of colixes; returns a Vector for the color list and a
-   * HashTable for correlating the colix with a specific color index
-   * @param i00 
-   * @param colixes
-   * @param nVertices
-   * @param bsSelected
-   * @param htColixes
-   * @return Vector and HashTable
-   */
-  protected List<Short> getColorList(int i00, short[] colixes, int nVertices,
-                                BitSet bsSelected, Map<Short, Integer> htColixes) {
-    int nColix = 0;
-    List<Short> list = new ArrayList<Short>();
-    boolean isAll = (bsSelected == null);
-    int i0 = (isAll ? nVertices - 1 : bsSelected.nextSetBit(0));
-    for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsSelected.nextSetBit(i + 1))) {
-      Short color = Short.valueOf(colixes[i]);
-      if (!htColixes.containsKey(color)) {
-        list.add(color);
-        htColixes.put(color, Integer.valueOf(i00 + nColix++));
-      }
-    }
-    return list;
-  }
-
-  protected static MeshSurface getConeMesh(Point3f centerBase, Matrix3f matRotateScale, short colix) {
-    MeshSurface ms = new MeshSurface();
-    int ndeg = 10;
-    int n = 360 / ndeg;
-    ms.colix = colix;
-    ms.vertices = new Point3f[ms.vertexCount = n + 1];
-    ms.polygonIndexes = ArrayUtil.newInt2(ms.polygonCount = n);
-    for (int i = 0; i < n; i++)
-      ms.polygonIndexes[i] = new int[] {i, (i + 1) % n, n };
-    double d = ndeg / 180. * Math.PI; 
-    for (int i = 0; i < n; i++) {
-      float x = (float) (Math.cos(i * d));
-      float y = (float) (Math.sin(i * d));
-      ms.vertices[i] = Point3f.new3(x, y, 0);
-    }
-    ms.vertices[n] = Point3f.new3(0, 0, 1);
-    if (matRotateScale != null) {
-      ms.normals = new Vector3f[ms.vertexCount];
-      for (int i = 0; i < ms.vertexCount; i++) {
-        matRotateScale.transform(ms.vertices[i]);
-        ms.normals[i] = new Vector3f();
-        ms.normals[i].setT(ms.vertices[i]);
-        ((Vector3f) ms.normals[i]).normalize();
-        ms.vertices[i].add(centerBase);
-      }
-    }
-    return ms;
-  }
-
-  protected Matrix3f getRotationMatrix(Point3f pt1, Point3f pt2, float radius) {    
-    Matrix3f m = new Matrix3f();
-    Matrix3f m1;
-    if (pt2.x == pt1.x && pt2.y == pt1.y) {
-      m1 = new Matrix3f();
-      m1.setIdentity();
-      if (pt1.z > pt2.z) // 180-degree rotation about X
-        m1.m11 = m1.m22 = -1;
-    } else {
-      tempV1.setT(pt2);
-      tempV1.sub(pt1);
-      tempV2.set(0, 0, 1);
-      tempV2.cross(tempV2, tempV1);
-      tempV1.cross(tempV1, tempV2);
-      Quaternion q = Quaternion.getQuaternionFrameV(tempV2, tempV1, null, false);
-      m1 = q.getMatrix();
-    }
-    m.m00 = radius;
-    m.m11 = radius;
-    m.m22 = pt2.distance(pt1);
-    m1.mul(m);
-    return m1;
-  }
-
-  protected Matrix3f getRotationMatrix(Point3f pt1, Point3f ptZ, float radius, Point3f ptX, Point3f ptY) {    
-    Matrix3f m = new Matrix3f();
-    m.m00 = ptX.distance(pt1) * radius;
-    m.m11 = ptY.distance(pt1) * radius;
-    m.m22 = ptZ.distance(pt1) * 2;
-    Quaternion q = Quaternion.getQuaternionFrame(pt1, ptX, ptY);
-    Matrix3f m1 = q.getMatrix();
-    m1.mul(m);
-    return m1;
-  }
-
   // The following methods are called by a variety of shape renderers and 
   // Export3D, replacing methods in org.jmol.g3d. More will be added as needed. 
 
@@ -470,8 +373,6 @@ public abstract class Exporter {
    * @param faceVertexMax (3) triangles only, indices[][i] may have more elements
    *                      (4) triangles and quads; indices[][i].length determines 
    * @param colix         overall (solid) color index
-   * @param colorList     list of unique color IDs
-   * @param htColixes     map of color IDs to colorList
    * @param offset 
    * 
    */
@@ -485,8 +386,6 @@ public abstract class Exporter {
 
   abstract void drawPixel(short colix, int x, int y, int z, int scale); //measures
   
-  abstract void drawTextPixel(int argb, int x, int y, int z);
-
   //rockets and dipoles
   abstract void fillConeScreen(short colix, byte endcap, int screenDiameter, 
                          Point3f screenBase, Point3f screenTip, boolean isBarb);

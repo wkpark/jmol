@@ -25,7 +25,7 @@
 
 package org.jmol.exportjs;
 
-import java.awt.Image;
+//import java.awt.Image;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +35,6 @@ import org.jmol.modelset.Atom;
 import org.jmol.util.AxisAngle4f;
 import org.jmol.util.BitSet;
 import org.jmol.util.Colix;
-import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
@@ -230,11 +229,6 @@ abstract public class CartesianExporter extends Exporter {
   }
 
   @Override
-  void drawTextPixel(int argb, int x, int y, int z) {
-    // not going to happen in  JavaScript
-  }
-
-  @Override
   void fillConeScreen(short colix, byte endcap, int screenDiameter,
                       Point3f screenBase, Point3f screenTip, boolean isBarb) {
     viewer.unTransformPoint(screenBase, tempP1);
@@ -311,45 +305,10 @@ abstract public class CartesianExporter extends Exporter {
       outputTriangle(tempP1, tempP3, tempP2, colix);
   }
 
-  @Override
-  void plotImage(int x, int y, int z, Image image, short bgcolix, int width,
-                 int height) {
-    g3d.plotImage(x, y, z, image, jmolRenderer, bgcolix, width, height);
-  }
+//  @Override
+//  void plotImage(int x, int y, int z, Image image, short bgcolix, int width,
+//                 int height) {
+//    g3d.plotImage(x, y, z, image, jmolRenderer, bgcolix, width, height);
+//  }
 
-  @Override
-  void plotText(int x, int y, int z, short colix, String text, JmolFont font3d) {
-    // over-ridden in VRML and X3D
-    // trick here is that we use Jmol's standard g3d package to construct
-    // the bitmap, but then output to jmolRenderer, which returns control
-    // here via drawPixel.
-    g3d.plotText(x, y, z, g3d.getColorArgbOrGray(colix), text, font3d,
-        jmolRenderer);
-  }
-
-  protected Matrix4f sphereMatrix = new Matrix4f();
-
-  protected void setSphereMatrix(Point3f center, float rx, float ry, float rz,
-                                 AxisAngle4f a, Matrix4f sphereMatrix) {
-    if (a != null) {
-      Matrix3f mq = new Matrix3f();
-      Matrix3f m = new Matrix3f();
-      m.m00 = rx;
-      m.m11 = ry;
-      m.m22 = rz;
-      mq.setAA(a);
-      mq.mul(m);
-      sphereMatrix.set(mq);
-    } else {
-      sphereMatrix.setIdentity();
-      sphereMatrix.m00 = rx;
-      sphereMatrix.m11 = ry;
-      sphereMatrix.m22 = rz;
-    }
-    sphereMatrix.m03 = center.x;
-    sphereMatrix.m13 = center.y;
-    sphereMatrix.m23 = center.z;
-    sphereMatrix.m33 = 1;
-  }
-  
 }

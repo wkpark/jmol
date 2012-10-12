@@ -93,7 +93,7 @@ protected void renderConvex(short colix, BitSet visibilityMap, int nPoints) {
       facePt2.set(coords[faceMap[p2]], coords[faceMap[p2] + 1], coords[faceMap[p2] + 2]);
       facePt3.set(coords[faceMap[p3]], coords[faceMap[p3] + 1], coords[faceMap[p3] + 2]);
 //      g3d.setNoisySurfaceShade(facePt1, facePt2, facePt3);
-      g3d.fillTriangle(facePt1, colix, p1, facePt2, colix, p2, facePt3, colix, p3);
+      g3d.fillTriangle3CN(facePt1, colix, p1, facePt2, colix, p2, facePt3, colix, p3);
     }
   }  
 }

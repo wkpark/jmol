@@ -1317,7 +1317,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void unTransformPoint(Point3f pointScreen, Point3f pointAngstroms) {
-    // called by Draw.move2D
     transformManager.unTransformPoint(pointScreen, pointAngstroms);
   }
 

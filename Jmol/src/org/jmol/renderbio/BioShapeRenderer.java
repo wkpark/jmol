@@ -334,7 +334,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     if (!g3d.setColix(colix))
       return;
     setNeighbors(i);
-    g3d.drawHermite(isNucleic ? 4 : 7, screens[iPrev], screens[i],
+    g3d.drawHermite4(isNucleic ? 4 : 7, screens[iPrev], screens[i],
         screens[iNext], screens[iNext2]);
   }
 
@@ -389,7 +389,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
         }
       }
     }
-    g3d.drawHermite(doFill, ribbonBorder, isNucleic ? 4 : 7,
+    g3d.drawHermite7(doFill, ribbonBorder, isNucleic ? 4 : 7,
         ribbonTopScreens[iPrev], ribbonTopScreens[i], ribbonTopScreens[iNext],
         ribbonTopScreens[iNext2], ribbonBottomScreens[iPrev],
         ribbonBottomScreens[i], ribbonBottomScreens[iNext],
@@ -435,12 +435,12 @@ abstract class BioShapeRenderer extends MeshRenderer {
         screenArrowTopPrev);
     calc1Screen(controlPoints[i], wingVectors[i], madBeg, -0.001f,
         screenArrowBotPrev);
-    g3d.drawHermite(true, ribbonBorder, isNucleic ? 4 : 7, screenArrowTopPrev,
+    g3d.drawHermite7(true, ribbonBorder, isNucleic ? 4 : 7, screenArrowTopPrev,
         screenArrowTop, controlPointScreens[iNext],
         controlPointScreens[iNext2], screenArrowBotPrev, screenArrowBot,
         controlPointScreens[iNext], controlPointScreens[iNext2], (int) aspectRatio);
     if (ribbonBorder && aspectRatio == 0) {
-      g3d.fillCylinder(colix, colix,
+      g3d.fillCylinderXYZ(colix, colix,
           GData.ENDCAPS_SPHERICAL,
           (exportType == GData.EXPORT_CARTESIAN ? 50 : 3), //may not be right 0.05 
           screenArrowTop.x, screenArrowTop.y, screenArrowTop.z,
@@ -465,7 +465,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     int coneDiameter = mad + (mad >> 2);
     coneDiameter = viewer.scaleToScreen((int) Math.floor(screenPtBegin.z),
         coneDiameter);
-    g3d.fillConeSceen(GData.ENDCAPS_FLAT, coneDiameter, screenPtBegin,
+    g3d.fillConeSceen3f(GData.ENDCAPS_FLAT, coneDiameter, screenPtBegin,
         screenPtEnd);
   }
 

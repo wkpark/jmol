@@ -293,10 +293,10 @@ public class RocketsRenderer extends BioShapeRenderer {
     pointTipOffset.scaleAdd(-0.5f, tip);
     buildArrowHeadBox(pointCorner, scaledWidthVector,
                       scaledHeightVector, pointTipOffset);
-    g3d.fillTriangle(screenCorners[0],
+    g3d.fillTriangle3f(screenCorners[0],
                      screenCorners[1],
                      screenCorners[4]);
-    g3d.fillTriangle(screenCorners[2],
+    g3d.fillTriangle3f(screenCorners[2],
                      screenCorners[3],
                      screenCorners[5]);
     for (int i = 0; i < 12; i += 4) {

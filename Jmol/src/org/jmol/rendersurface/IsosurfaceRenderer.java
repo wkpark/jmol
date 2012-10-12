@@ -220,10 +220,10 @@ public class IsosurfaceRenderer extends MeshRenderer {
       pt1f.add(v2);
       pt2f.sub(v2);
       screens[0].set((int)pt1f.x,(int)pt1f.y,(int)pt1f.z);
-      g3d.fillSphere(r, screens[0]);
+      g3d.fillSphereI(r, screens[0]);
     }
     screens[1].set((int)pt2f.x,(int)pt2f.y,(int)pt2f.z);
-    g3d.fillSphere(r, screens[1]);
+    g3d.fillSphereI(r, screens[1]);
   }
   
   private void renderContourLines() {
@@ -256,7 +256,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
           break;
         pt1i.z -= 2;
         pt2i.z -= 2;
-        g3d.drawLine(pt1i, pt2i);
+        g3d.drawLineAB(pt1i, pt2i);
       }
     }
   }
@@ -308,7 +308,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
           diam = viewer.scaleToScreen(screens[i].z, ptSize);
           g3d.volumeRender(diam, screens[i].x, screens[i].y, screens[i].z);
         } else {
-          g3d.fillSphere(diam, screens[i]);
+          g3d.fillSphereI(diam, screens[i]);
         }
       }
       if (incr == 3) {
@@ -320,12 +320,12 @@ public class IsosurfaceRenderer extends MeshRenderer {
         g3d.setColix(isTranslucent ? Colix.getColixTranslucent(
             Colix.YELLOW, true, 0.5f) : Colix.YELLOW);
         for (int i = 1; i < vertexCount; i += 3)
-          g3d.fillSphere(diam, screens[i]);
+          g3d.fillSphereI(diam, screens[i]);
 
         g3d.setColix(isTranslucent ? Colix.getColixTranslucent(
             Colix.BLUE, true, 0.5f) : Colix.BLUE);
         for (int i = 2; i < vertexCount; i += 3) {
-          g3d.fillSphere(diam, screens[i]);
+          g3d.fillSphereI(diam, screens[i]);
         }
       }
     } catch (Throwable e) {
@@ -442,7 +442,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
         if (iB == iC) {
           setColix(colixA);
           if (iA == iB)
-            g3d.fillSphere(diam, screens[iA]);
+            g3d.fillSphereI(diam, screens[iA]);
           else
             g3d.fillCylinder(GData.ENDCAPS_SPHERICAL, diam, screens[iA], screens[iB]);
         } else if (iShowTriangles) {
@@ -450,7 +450,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
               screens[iB], colixB, nB,
               screens[iC], colixC, nC, 0.1f);
         } else {
-          g3d.fillTriangle(screens[iA], colixA, nA, screens[iB], colixB, nB,
+          g3d.fillTriangle3CN(screens[iA], colixA, nA, screens[iB], colixB, nB,
               screens[iC], colixC, nC);
         }
         if (iShowNormals)
@@ -502,7 +502,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       if (n >= 0) {
         ptTemp.add(vertexVectors[n]);
         viewer.transformPtScr(ptTemp, ptTempi);
-        g3d.drawLine(screens[i], ptTempi);
+        g3d.drawLineAB(screens[i], ptTempi);
         //g3d.drawStringNoSlab("" + n, null, ptTempi.x, ptTempi.y, ptTempi.z);
       }
     }

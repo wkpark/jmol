@@ -493,7 +493,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     for (int i = vertexCount; --i >= 0;) {
       if (vertexValues != null && Float.isNaN(vertexValues[i]))
         continue;
-      if (i < 7117 || i > 7119)
+      if (i > 100)
         continue;
       ptTemp.setT(vertices[i]);
       short n = mesh.normixes[i];

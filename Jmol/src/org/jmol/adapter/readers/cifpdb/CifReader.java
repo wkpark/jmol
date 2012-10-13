@@ -73,9 +73,9 @@ import org.jmol.util.TextFormat;
  */
 public class CifReader extends AtomSetCollectionReader implements JmolLineReader {
 
-  @Override
   public String readNextLine() throws Exception {
-    super.readLine();
+    // from CifDataReader
+    readLine();
     if (line.indexOf("#jmolscript:") >= 0)
       checkCurrentLineForScript();
     return line;

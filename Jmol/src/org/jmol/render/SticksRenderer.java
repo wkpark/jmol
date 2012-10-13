@@ -285,7 +285,7 @@ public class SticksRenderer extends ShapeRenderer {
       }
       y.scale(multipleBondSpacing);
       x.setT(y);
-      x.scale((bondOrder - 1) / 1.5f);
+      x.scale((bondOrder - 1) / 2f);
       p1.sub2(atomA, x);
       p2.sub2(atomB, x);
       while (true) {

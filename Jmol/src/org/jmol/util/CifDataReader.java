@@ -147,7 +147,7 @@ public class CifDataReader {
 
   public String readLine() {
     try {
-      line = (reader != null ? reader.readLine() : br.readLine());
+      line = (reader != null ? reader.readNextLine() : br.readLine());
       if (line == null)
         return null;
       if (isHeader) {

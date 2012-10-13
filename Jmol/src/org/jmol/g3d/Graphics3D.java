@@ -1110,7 +1110,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   }
 
   public void fillCylinderScreen3I(byte endcaps, int diameter,
-                           Point3i screenA, Point3i screenB) {
+                           Point3i screenA, Point3i screenB, Point3f pt0f, Point3f pt1f, float radius) {
     //draw
     cylinder3d.render(colixCurrent, colixCurrent, !addAllPixels, !addAllPixels, endcaps, diameter,
                       screenA.x, screenA.y, screenA.z,
@@ -1232,7 +1232,8 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     triangle3d.fillTriangle(screenA, screenB, screenC, false);
   }
 
-  public void fillTriangle3i(Point3i screenA, Point3i screenB, Point3i screenC) {
+  public void fillTriangle3i(Point3i screenA, Point3i screenB, Point3i screenC,
+                             Point3f ptA, Point3f ptB, Point3f ptC) {
     // cartoon DNA plates
     triangle3d.fillTriangle(screenA, screenB, screenC, false);
   }
@@ -1917,4 +1918,5 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     // N/A
     return false;
   }
+
 }

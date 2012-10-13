@@ -200,7 +200,6 @@ public class Colix {
         ashadesGreyscale = ArrayUtil.arrayCopyII(ashadesGreyscale, newSize);
     }
     argbs[colixMax] = argb;
-    //System.out.println("Colix "+colixMax + " = "+Integer.toHexString(argb) + " " + argb);
     if (argbsGreyscale != null)
       argbsGreyscale[colixMax] = ColorUtil.calcGreyscaleRgbFromRgb(argb);
     colixHash.put(argb, colixMax);

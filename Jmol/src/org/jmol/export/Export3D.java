@@ -497,7 +497,7 @@ final public class Export3D implements JmolRendererInterface {
   }
 
   public void fillCylinderScreen3I(byte endcaps, int diameter, Point3i pointA,
-                           Point3i pointB) {
+                           Point3i pointB, Point3f pt0f, Point3f pt1f, float radius) {
     if (diameter <= 0)
       return;
     ptA.set(pointA.x, pointA.y, pointA.z);
@@ -626,12 +626,13 @@ final public class Export3D implements JmolRendererInterface {
     exporter.fillTriangle(colix, pointA, pointB, pointC, false);
   }
 
-  public void fillTriangle3i(Point3i pointA, Point3i pointB, Point3i pointC) {
+  public void fillTriangle3i(Point3i screenA, Point3i screenB, Point3i screenC,
+                             Point3f ptA, Point3f ptB, Point3f ptC) {
     // cartoon only, for nucleic acid bases
 
-    ptA.set(pointA.x, pointA.y, pointA.z);
-    ptB.set(pointB.x, pointB.y, pointB.z);
-    ptC.set(pointC.x, pointC.y, pointC.z);
+    ptA.set(screenA.x, screenA.y, screenA.z);
+    ptB.set(screenB.x, screenB.y, screenB.z);
+    ptC.set(screenC.x, screenC.y, screenC.z);
     exporter.fillTriangle(colix, ptA, ptB, ptC, true);
   }
 
@@ -879,5 +880,6 @@ final public class Export3D implements JmolRendererInterface {
     // TODO
     
   }
+
 
 }

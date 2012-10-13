@@ -26,6 +26,7 @@ package org.jmol.adapter.smarter;
 
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
+import org.jmol.api.JmolLineReader;
 import org.jmol.api.JmolViewer;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.util.BinaryDocument;
@@ -383,6 +384,7 @@ public abstract class AtomSetCollectionReader {
 
   private void setError(Throwable e) {
     try{ 
+      System.out.println(e.toString ());
       e.printStackTrace();
     } catch (Exception ee) {
       Logger.error(e.toString());

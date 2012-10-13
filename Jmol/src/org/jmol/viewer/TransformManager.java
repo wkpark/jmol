@@ -1557,7 +1557,7 @@ public abstract class TransformManager {
       System.out.println("ERROR INVERTING matrixTransform!");
       // ignore -- this is a Mac issue on applet startup
     }
-    System.out.println(matrixTransform + " \n\n " + matrixTransformInv + "\n=---\n");
+    //System.out.println(matrixTransform + " \n\n " + matrixTransformInv + "\n=---\n");
     // note that the image is still centered at 0, 0 in the xy plane
 
   }

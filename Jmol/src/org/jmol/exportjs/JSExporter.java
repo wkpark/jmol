@@ -219,7 +219,7 @@ public class JSExporter extends CartesianExporter {
   @Override
   protected void outputTriangle(Point3f pt1, Point3f pt2, Point3f pt3,
                                 short colix) {
-    jsTriangle(Colix.getArgbGreyscale(colix), pt1, pt2, pt3);
+    jsTriangle(g3d.getColorArgbOrGray(colix), pt1, pt2, pt3);
   }
 
   @Override

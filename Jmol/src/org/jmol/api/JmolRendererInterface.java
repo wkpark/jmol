@@ -229,7 +229,7 @@ public interface JmolRendererInterface extends JmolGraphicsInterface {
                                           int yA, int zA, int xB, int yB, int zB);
 
   public abstract void fillCylinderScreen3I(byte endcapsOpenend, int diameter,
-                                          Point3i pt0i, Point3i pt1i);
+                                          Point3i pt0i, Point3i pt1i, Point3f pt0f, Point3f pt1f, float radius);
 
   public abstract void fillConeScreen(byte endcap, int screenDiameter,
                                       Point3i screenBase, Point3i screenTip,
@@ -282,7 +282,7 @@ public interface JmolRendererInterface extends JmolGraphicsInterface {
                                     Point3f screenC);
 
   public abstract void fillTriangle3i(Point3i screenA, Point3i screenB,
-                                    Point3i screenC);
+                                    Point3i screenC, Point3f ptA, Point3f ptB, Point3f ptC);
 
   public abstract void fillTriangle(Point3i screenA, short colixA,
                                     short normixA, Point3i screenB,

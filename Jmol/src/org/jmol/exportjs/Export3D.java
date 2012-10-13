@@ -492,16 +492,17 @@ final public class Export3D implements JmolRendererInterface {
     // vectors, polyhedra
     ptA.set(xA, yA, zA);
     ptB.set(xB, yB, zB);
-    exporter.fillCylinderScreen(colix, endcaps, screenDiameter, ptA, ptB);
+    exporter.fillCylinderScreen(colix, endcaps, screenDiameter, ptA, ptB, null, null, 0);
   }
 
   public void fillCylinderScreen3I(byte endcaps, int diameter, Point3i pointA,
-                           Point3i pointB) {
+                           Point3i pointB, Point3f pt0f, Point3f pt1f, float radius) {
+    // from Draw arrow and NucleicMonomer
     if (diameter <= 0)
       return;
     ptA.set(pointA.x, pointA.y, pointA.z);
     ptB.set(pointB.x, pointB.y, pointB.z);
-    exporter.fillCylinderScreen(colix, endcaps, diameter, ptA, ptB);
+    exporter.fillCylinderScreen(colix, endcaps, diameter, ptA, ptB, pt0f, pt1f, radius);
   }
 
   public void fillCylinder(byte endcaps, int diameter, Point3i pointA,
@@ -607,7 +608,7 @@ final public class Export3D implements JmolRendererInterface {
     ptA.set(pointA.x, pointA.y, pointA.z);
     ptB.set(pointB.x, pointB.y, pointB.z);
     ptC.set(pointC.x, pointC.y, pointC.z);
-    exporter.fillTriangle(colixA, ptA, ptB, ptC, false);
+    exporter.fillTriangle(colixA, ptA, ptB, ptC, false, false);
   }
 
   public void fillTriangleTwoSided(short normix, int xpointA, int ypointA, int zpointA,
@@ -617,21 +618,18 @@ final public class Export3D implements JmolRendererInterface {
     ptA.set(xpointA, ypointA, zpointA);
     ptB.set(xpointB, ypointB, zpointB);
     ptC.set(xpointC, ypointC, zpointC);
-    exporter.fillTriangle(colix, ptA, ptB, ptC, true);
+    exporter.fillTriangle(colix, ptA, ptB, ptC, true, false);
   }
 
   public void fillTriangle3f(Point3f pointA, Point3f pointB, Point3f pointC) {
     // rockets
-    exporter.fillTriangle(colix, pointA, pointB, pointC, false);
+    exporter.fillTriangle(colix, pointA, pointB, pointC, false, false);
   }
 
-  public void fillTriangle3i(Point3i pointA, Point3i pointB, Point3i pointC) {
+  public void fillTriangle3i(Point3i pointA, Point3i pointB, Point3i pointC,
+                             Point3f ptA, Point3f ptB, Point3f ptC) {
     // cartoon only, for nucleic acid bases
-
-    ptA.set(pointA.x, pointA.y, pointA.z);
-    ptB.set(pointB.x, pointB.y, pointB.z);
-    ptC.set(pointC.x, pointC.y, pointC.z);
-    exporter.fillTriangle(colix, ptA, ptB, ptC, true);
+    exporter.fillTriangle(colix, ptA, ptB, ptC, true, true);
   }
 
   public void fillTriangle(Point3i pointA, short colixA, short normixA,
@@ -661,8 +659,8 @@ final public class Export3D implements JmolRendererInterface {
   public void fillQuadrilateral(Point3f pointA, Point3f pointB, Point3f pointC,
                                 Point3f pointD) {
     // hermite, rockets, cartoons
-    exporter.fillTriangle(colix, pointA, pointB, pointC, false);
-    exporter.fillTriangle(colix, pointA, pointC, pointD, false);
+    exporter.fillTriangle(colix, pointA, pointB, pointC, false, false);
+    exporter.fillTriangle(colix, pointA, pointC, pointD, false, false);
   }
 
   public void fillQuadrilateral(Point3i pointA, short colixA, short normixA,
@@ -872,6 +870,11 @@ final public class Export3D implements JmolRendererInterface {
   public void renderCrossHairs(int[] minMax, int screenWidth, int screenHeight,
                                Point3f navigationOffset,
                                float navigationDepthPercent) {    
+  }
+
+  public void volumeRender(boolean TF) {
+    // TODO
+    
   }
 
 

@@ -423,7 +423,7 @@ public class DrawRenderer extends MeshRenderer {
       g3d.fillConeScreen(GData.ENDCAPS_FLAT, headDiameter, pt1i, pt2i,
           isBarb);
     if (withShaft)
-      g3d.fillCylinderScreen3I(GData.ENDCAPS_OPENEND, diameter, pt0i, pt1i);
+      g3d.fillCylinderScreen3I(GData.ENDCAPS_OPENEND, diameter, pt0i, pt1i, null, null, mad / 2000f);
   }
 
   private final BitSet bsHandles = new BitSet();

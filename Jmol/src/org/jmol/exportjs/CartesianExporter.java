@@ -50,6 +50,7 @@ abstract public class CartesianExporter extends Exporter {
 
   public CartesianExporter() {
     exportType = GData.EXPORT_CARTESIAN;
+    
     lineWidthMad = 100;
   }
 
@@ -274,7 +275,12 @@ abstract public class CartesianExporter extends Exporter {
 
   @Override
   void fillCylinderScreen(short colix, byte endcaps, int screenDiameter,
-                          Point3f screenA, Point3f screenB) {
+                          Point3f screenA, Point3f screenB, Point3f ptA, Point3f ptB, float radius) {
+    if (ptA != null) {
+      drawCylinder(ptA, ptB, colix, colix, endcaps, (int) (radius * 2000f), -1);
+      return;
+    }
+    
     // vectors, polyhedra
     int mad = (int) (viewer.unscaleToScreen((screenA.z + screenB.z) / 2,
         screenDiameter) * 1000);
@@ -296,10 +302,16 @@ abstract public class CartesianExporter extends Exporter {
 
   @Override
   protected void fillTriangle(short colix, Point3f ptA, Point3f ptB,
-                              Point3f ptC, boolean twoSided) {
-    viewer.unTransformPoint(ptA, tempP1);
-    viewer.unTransformPoint(ptB, tempP2);
-    viewer.unTransformPoint(ptC, tempP3);
+                              Point3f ptC, boolean twoSided, boolean isCartesian) {
+    if (isCartesian) {
+      tempP1.setT(ptA); 
+      tempP2.setT(ptB); 
+      tempP3.setT(ptC); 
+    } else {
+      viewer.unTransformPoint(ptA, tempP1);
+      viewer.unTransformPoint(ptB, tempP2);
+      viewer.unTransformPoint(ptC, tempP3);
+    }
     outputTriangle(tempP1, tempP2, tempP3, colix);
     if (twoSided)
       outputTriangle(tempP1, tempP3, tempP2, colix);

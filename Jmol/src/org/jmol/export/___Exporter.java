@@ -155,6 +155,7 @@ public abstract class ___Exporter {
   protected String fileName;
   protected String commandLineOptions;
   
+  boolean isCartesian;
   protected boolean isToFile;
   protected GData g3d;
 

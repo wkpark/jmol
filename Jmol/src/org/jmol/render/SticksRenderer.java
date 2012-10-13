@@ -276,6 +276,13 @@ public class SticksRenderer extends ShapeRenderer {
       x.sub2(atomB, atomA);
       y.cross(x, z);
       y.normalize();
+      if (Float.isNaN(y.x)) {
+        // in case x and z are parallel (O=C=O)
+        z.set((float) Math.PI, (float) Math.E, (float) (Math.PI * Math.E)); 
+        y.cross(x, z);
+        y.cross(y, x);
+        y.normalize();
+      }
       y.scale(multipleBondSpacing);
       x.setT(y);
       x.scale((bondOrder - 1) / 1.5f);

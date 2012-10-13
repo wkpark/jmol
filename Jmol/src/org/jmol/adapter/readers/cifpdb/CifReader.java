@@ -73,6 +73,14 @@ import org.jmol.util.TextFormat;
  */
 public class CifReader extends AtomSetCollectionReader implements JmolLineReader {
 
+  @Override
+  public String readNextLine() throws Exception {
+    super.readLine();
+    if (line.indexOf("#jmolscript:") >= 0)
+      checkCurrentLineForScript();
+    return line;
+  }
+  
   private CifDataReader tokenizer = new CifDataReader(this);
 
   private String thisDataSetName = "";
@@ -1806,14 +1814,6 @@ _struct_site_gen.details
       tokenizer.loopData = new String[tokenizer.fieldCount];
   }
 
-  @Override
-  public String readLine() throws Exception {
-    super.readLine();
-    if (line.indexOf("#jmolscript:") >= 0)
-      checkCurrentLineForScript();
-    return line;
-  }
-  
   /**
    * 
    * used for turning off fractional or nonfractional coord.

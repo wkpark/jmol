@@ -397,7 +397,7 @@ public abstract class Exporter {
                                         Point3f screenA, Point3f screenB);
 
   abstract void fillCylinderScreen(short colix, byte endcaps, int screenDiameter, 
-                             Point3f screenA, Point3f screenB);
+                             Point3f screenA, Point3f screenB, Point3f ptA, Point3f ptB, float radius);
 
   abstract void fillEllipsoid(Point3f center, Point3f[] points, short colix, 
                               int x, int y, int z, int diameter,
@@ -415,7 +415,7 @@ public abstract class Exporter {
   abstract void fillSphere(short colix, int diameter, Point3f pt);
   
   //cartoons, rockets, polyhedra:
-  protected abstract void fillTriangle(short colix, Point3f ptA, Point3f ptB, Point3f ptC, boolean twoSided);
+  protected abstract void fillTriangle(short colix, Point3f ptA, Point3f ptB, Point3f ptC, boolean twoSided, boolean isCartesian);
   
   
   public short lineWidthMad;

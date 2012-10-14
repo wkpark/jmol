@@ -26,7 +26,6 @@ package org.jmol.adapter.smarter;
 
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
-import org.jmol.api.JmolLineReader;
 import org.jmol.api.JmolViewer;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.util.BinaryDocument;
@@ -385,7 +384,7 @@ public abstract class AtomSetCollectionReader {
   private void setError(Throwable e) {
     try{ 
       System.out.println(e.toString ());
-      e.printStackTrace();
+      System.out.println(e.getMessage());
     } catch (Exception ee) {
       Logger.error(e.toString());
     }
@@ -748,7 +747,7 @@ public abstract class AtomSetCollectionReader {
   protected boolean doCentralize;
   protected boolean addVibrations;
   protected boolean useAltNames;
-  public boolean readMolecularOrbitals;
+  public boolean doReadMolecularOrbitals;
   protected boolean reverseModels;
   private String nameRequired;
   private boolean doCentroidUnitCell;
@@ -783,7 +782,7 @@ public abstract class AtomSetCollectionReader {
     doSetOrientation = !checkFilterKey("NOORIENT");
     doCentralize = (!checkFilterKey("NOCENTER") && checkFilterKey("CENTER"));
     addVibrations = !checkFilterKey("NOVIB");
-    readMolecularOrbitals = !checkFilterKey("NOMO");
+    doReadMolecularOrbitals = !checkFilterKey("NOMO");
     useAltNames = checkFilterKey("ALTNAME");
     reverseModels = checkFilterKey("REVERSEMODELS");
     if (checkFilterKey("NAME=")) {
@@ -1268,7 +1267,7 @@ public abstract class AtomSetCollectionReader {
         unitCellOffset.scale(-1);
         symmetry.toFractional(unitCellOffset, false);
         unitCellOffset.scaleAdd2(-1f, minXYZ, unitCellOffset);
-        symmetry.setUnitCellOffset(unitCellOffset);
+        symmetry.setOffsetPt(unitCellOffset);
         /*
         Point3f pt = Point3f.new3(minXYZ);
         symmetry.toCartesian(pt);

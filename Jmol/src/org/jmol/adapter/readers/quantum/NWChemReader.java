@@ -167,7 +167,7 @@ public class NWChemReader extends MOReader {
       readPartialCharges();
       return true;
     }
-    if (line.contains("Basis \"ao basis\"") && readMolecularOrbitals) {
+    if (line.contains("Basis \"ao basis\"") && doReadMolecularOrbitals) {
       return readBasis();
     }
     if (line.contains("Final Molecular Orbital Analysis")) {

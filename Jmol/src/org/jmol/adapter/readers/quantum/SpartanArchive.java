@@ -86,7 +86,7 @@ class SpartanArchive {
       } else if (line.indexOf("BASIS") == 0) {
         readBasis();
       } else if (line.indexOf("WAVEFUNC") == 0 || line.indexOf("BETA") == 0) {
-        if (r.readMolecularOrbitals) {
+        if (r.doReadMolecularOrbitals) {
           readMolecularOrbital();
           haveMOData = true;
         }

@@ -866,7 +866,7 @@ public class AtomSetCollection {
     // we need to set the auxiliary info as well, because 
     // ModelLoader creates a new symmetry object.
     if (unitCellOffset != null){
-      symmetry.setUnitCellOffset(unitCellOffset);
+      symmetry.setOffsetPt(unitCellOffset);
       setAtomSetAuxiliaryInfo("unitCellOffset", unitCellOffset);
     }
     if (matUnitCellOrientation != null) {
@@ -891,7 +891,7 @@ public class AtomSetCollection {
   }
 
   void applySymmetryUsing(SymmetryInterface symmetry) throws Exception {
-    getSymmetry().setSpaceGroup(symmetry);
+    getSymmetry().setSpaceGroupS(symmetry);
     //parameters are counts of unit cells as [a b c]
     applySymmetryLattice(latticeCells[0], latticeCells[1], Math.abs(latticeCells[2]));
   }
@@ -1039,7 +1039,7 @@ public class AtomSetCollection {
     finalizeSymmetry(iAtomFirst, noSymmetryCount);
     int operationCount = symmetry.getSpaceGroupOperationCount();
     getSymmetry().setMinMaxLatticeParameters(minXYZ, maxXYZ);
-    dtype = (int) getSymmetry().getUnitCellInfo(SimpleUnitCell.INFO_DIMENSIONS);
+    dtype = (int) getSymmetry().getUnitCellInfoType(SimpleUnitCell.INFO_DIMENSIONS);
     if (doCentroidUnitCell)
       setAtomSetCollectionAuxiliaryInfo("centroidMinMax", new int[] {
           minXYZ.x, minXYZ.y, minXYZ.z, 
@@ -1186,7 +1186,7 @@ public class AtomSetCollection {
         .getLatticeDesignation());
     setAtomSetAuxiliaryInfo("unitCellRange", unitCells);
     setAtomSetAuxiliaryInfo("unitCellTranslations", unitCellTranslations);
-    symmetry.setSpaceGroup(null);
+    symmetry.setSpaceGroupS(null);
     notionalUnitCell = new float[6];
     coordinatesAreFractional = false;
     // turn off global fractional conversion -- this will be model by model
@@ -1439,7 +1439,7 @@ public class AtomSetCollection {
       mat.m13 /= notionalUnitCell[1];
       mat.m23 /= notionalUnitCell[2];
       if (symmetry != null && i > 0)
-        symmetry.addSpaceGroupOperation(mat);
+        symmetry.addSpaceGroupOperationM(mat);
       //System.out.println("biomt " + i + " " + atomCount);
     }
     int noSymmetryCount = atomMax - iAtomFirst;

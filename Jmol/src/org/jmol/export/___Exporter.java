@@ -332,7 +332,7 @@ public abstract class ___Exporter {
       bw.close();
       os = null;
     } catch (IOException e) {
-      e.printStackTrace();
+      System.out.println(e.getMessage());
       return "ERROR EXPORTING FILE";
     }
     return "OK " + nBytes + " " + jmolRenderer.getExportName() + " " + fileName ;

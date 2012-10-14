@@ -212,7 +212,7 @@ public class RepaintManager implements JmolRepaintInterface {
           Logger.checkTimer(msg, false);
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      System.out.println(e.getMessage());
       Logger.error("rendering error? ");
     }
   }

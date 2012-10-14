@@ -547,7 +547,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
       try {
         super.insertString(0, text, attEcho);
       } catch (Exception e) {
-        e.printStackTrace();
+        System.out.println(e.getMessage());
       }
       return text;
     }

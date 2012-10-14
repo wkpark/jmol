@@ -44,7 +44,7 @@ public interface SymmetryInterface {
 
   public Object getSpaceGroup();
 
-  public void setSpaceGroup(SymmetryInterface symmetry);
+  public void setSpaceGroupS(SymmetryInterface symmetry);
 
   public boolean createSpaceGroup(int desiredSpaceGroupIndex,
                                            String name,
@@ -97,13 +97,13 @@ public interface SymmetryInterface {
 
   public void toUnitCell(Point3f pt, Point3f offset);
 
-  public void setUnitCellOffset(Point3f pt);
+  public void setOffsetPt(Point3f pt);
 
   public void setOffset(int nnn);
 
   public Point3f getUnitCellMultiplier();
 
-  public float getUnitCellInfo(int infoType);
+  public float getUnitCellInfoType(int infoType);
 
   public boolean getCoordinatesAreFractional();
 
@@ -129,7 +129,7 @@ public interface SymmetryInterface {
 
   public boolean isSlab();
 
-  public void addSpaceGroupOperation(Matrix4f mat);
+  public void addSpaceGroupOperationM(Matrix4f mat);
 
   public void setMinMaxLatticeParameters(Point3i minXYZ, Point3i maxXYZ);
 

@@ -300,12 +300,6 @@ public class SimpleUnitCell {
     return Float.NaN;
   }
 
-  public static Point3f ijkToPoint3f(int nnn) {
-    Point3f cell = new Point3f();
-    ijkToPoint3f(nnn, cell, 0);
-    return cell;
-  }
-  
   public static void ijkToPoint3f(int nnn, Point3f cell, int c) {
     c -= 5;
     cell.x = nnn / 100 + c;

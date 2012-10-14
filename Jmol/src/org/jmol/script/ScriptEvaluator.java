@@ -7120,7 +7120,7 @@ public class ScriptEvaluator {
         ptsB.add(atoms[mapB[i]]);
       return lowestStdDev;
     } catch (Exception e) {
-      // e.printStackTrace();
+      // System.out.println(e.getMessage());
       evalError(e.getMessage(), null);
       return 0; // unattainable
     }
@@ -16356,7 +16356,7 @@ public class ScriptEvaluator {
         pts = BoxInfo.getCriticalPoints(unitCell.getUnitCellVertices(),
             unitCell.getCartesianOffset());
         int iType = (int) unitCell
-            .getUnitCellInfo(SimpleUnitCell.INFO_DIMENSIONS);
+            .getUnitCellInfoType(SimpleUnitCell.INFO_DIMENSIONS);
         Vector3f v1 = null;
         Vector3f v2 = null;
         switch (iType) {

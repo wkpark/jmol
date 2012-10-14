@@ -583,4 +583,15 @@ public class Parser {
     int i = info.indexOf(name + "=");
     return (i < 0 ? null : getQuotedStringAt(info, i));
   }
+
+  public static int parseIntRadix(String s, int i) {
+    /**
+     * @j2sNative
+     * 
+     *            Integer.parseIntRadix(s, i); // special
+     */
+    {
+      return Integer.parseInt(s, i);
+    }
+  }
 }

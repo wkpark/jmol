@@ -117,9 +117,9 @@ class SpaceGroup {
     if (desiredSpaceGroupIndex >= 0) {
       sg = spaceGroupDefinitions[desiredSpaceGroupIndex];
     } else {
-      sg = determineSpaceGroup(name, notionalUnitcell);
+      sg = determineSpaceGroupNA(name, notionalUnitcell);
       if (sg == null)
-        sg = createSpaceGroup(name);
+        sg = createSpaceGroupN(name);
     }
     if (sg != null)
       sg.generateAllOperators(null);
@@ -206,20 +206,20 @@ class SpaceGroup {
         spaceGroup = spaceGroup.substring(0, spaceGroup.indexOf("[")).trim();
       if (spaceGroup.equals("unspecified!"))
         return "no space group identified in file";
-      sg = SpaceGroup.determineSpaceGroup(spaceGroup, cellInfo.getNotionalUnitCell());
+      sg = SpaceGroup.determineSpaceGroupNA(spaceGroup, cellInfo.getNotionalUnitCell());
     } else if (spaceGroup.equalsIgnoreCase("ALL")) {
       return SpaceGroup.dumpAll();
     } else if (spaceGroup.equalsIgnoreCase("ALLSEITZ")) {
       return SpaceGroup.dumpAllSeitz();
     } else {
-      sg = SpaceGroup.determineSpaceGroup(spaceGroup);
+      sg = SpaceGroup.determineSpaceGroupN(spaceGroup);
       if (sg == null) {
-        sg = SpaceGroup.createSpaceGroup(spaceGroup);
+        sg = SpaceGroup.createSpaceGroupN(spaceGroup);
       } else {
         StringXBuilder sb = new StringXBuilder();
         while (sg != null) {
           sb.append(sg.dumpInfo(null));
-          sg = SpaceGroup.determineSpaceGroup(spaceGroup, sg);
+          sg = SpaceGroup.determineSpaceGroupNS(spaceGroup, sg);
         }
         return sb.toString();
       }
@@ -269,7 +269,7 @@ class SpaceGroup {
     return latticeCode + ": " + HallTranslation.getLatticeDesignation(latticeParameter);
   }  
  
-  void setLattice(int latticeParameter) {
+  void setLatticeParam(int latticeParameter) {
     // Wien2K and Shelx readers only
     // implication here is that we do NOT have a Hall symbol.
     // so we generate one.
@@ -363,9 +363,9 @@ class SpaceGroup {
       latticeParameter = -latticeParameter;
   }
   
-  private final static SpaceGroup createSpaceGroup(String name) {
+  private final static SpaceGroup createSpaceGroupN(String name) {
     name = name.trim();
-    SpaceGroup sg = determineSpaceGroup(name);
+    SpaceGroup sg = determineSpaceGroupN(name);
     HallInfo hallInfo;
     if (sg == null) {
       // try unconventional Hall symbol
@@ -468,13 +468,13 @@ class SpaceGroup {
           operation.mul2(newOps[j], operations[k]);
           SymmetryOperation.normalizeTranslation(operation);
           String xyz = SymmetryOperation.getXYZFromMatrix(operation, true, true, true);
-          addSymmetry(xyz, operation);
+          addSymmetrySM(xyz, operation);
         }
       }
     }
   }
 
-  private void addSymmetry(String xyz, Matrix4f operation) {
+  private void addSymmetrySM(String xyz, Matrix4f operation) {
     int iop = addOperation(xyz, 0);
     if (iop < 0)
       return;
@@ -482,15 +482,15 @@ class SpaceGroup {
     symmetryOperation.setM(operation);
   }
 
-  private final static SpaceGroup determineSpaceGroup(String name) {
+  private final static SpaceGroup determineSpaceGroupN(String name) {
     return determineSpaceGroup(name, 0f, 0f, 0f, 0f, 0f, 0f, -1);
   }
 
-  private final static SpaceGroup determineSpaceGroup(String name, SpaceGroup sg) {
+  private final static SpaceGroup determineSpaceGroupNS(String name, SpaceGroup sg) {
     return determineSpaceGroup(name, 0f, 0f, 0f, 0f, 0f, 0f, sg.index);
   }
 
-  private final static SpaceGroup determineSpaceGroup(String name,
+  private final static SpaceGroup determineSpaceGroupNA(String name,
                                                      float[] notionalUnitcell) {
     if (notionalUnitcell == null)
       return determineSpaceGroup(name, 0f, 0f, 0f, 0f, 0f, 0f, -1);

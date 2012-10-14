@@ -115,13 +115,13 @@ public class Symmetry implements SymmetryInterface {
     return spaceGroup.addSymmetry(xyz, opId);
   }
 
-  public void addSpaceGroupOperation(Matrix4f mat) {
+  public void addSpaceGroupOperationM(Matrix4f mat) {
     spaceGroup.addSymmetry("=" + 
         SymmetryOperation.getXYZFromMatrix(mat, false, false, false), 0);    
   }
 
   public void setLattice(int latt) {
-    spaceGroup.setLattice(latt);
+    spaceGroup.setLatticeParam(latt);
   }
 
   public String getSpaceGroupName() {
@@ -133,7 +133,7 @@ public class Symmetry implements SymmetryInterface {
     return spaceGroup;
   }
   
-  public void setSpaceGroup(SymmetryInterface symmetry) {
+  public void setSpaceGroupS(SymmetryInterface symmetry) {
     spaceGroup = (symmetry == null ? null : (SpaceGroup) symmetry.getSpaceGroup());
   }
 
@@ -210,7 +210,9 @@ public class Symmetry implements SymmetryInterface {
   }
 
   public Point3f ijkToPoint3f(int nnn) {
-    return SimpleUnitCell.ijkToPoint3f(nnn);
+    Point3f cell = new Point3f();
+    SimpleUnitCell.ijkToPoint3f(nnn, cell, 0);
+    return cell;
   }
 
   /// symmetryInfo ////
@@ -242,7 +244,7 @@ public class Symmetry implements SymmetryInterface {
       return;
     setUnitCell(notionalUnitcell);
     modelAuxiliaryInfo.put("infoUnitCell", getUnitCellAsArray(false));
-    setUnitCellOffset((Point3f) modelAuxiliaryInfo.get("unitCellOffset"));
+    setOffsetPt((Point3f) modelAuxiliaryInfo.get("unitCellOffset"));
     if (modelAuxiliaryInfo.containsKey("jmolData"))
       setUnitCellAllFractionalRelative(true);
     Matrix3f matUnitCellOrientation = (Matrix3f) modelAuxiliaryInfo.get("matUnitCellOrientation");
@@ -318,12 +320,12 @@ public class Symmetry implements SymmetryInterface {
     return unitCell.getFractionalOffset();
   }
 
-  public void setUnitCellOffset(Point3f pt) {
+  public void setOffsetPt(Point3f pt) {
     unitCell.setOffset(pt);
   }
 
   public void setOffset(int nnn) {
-    unitCell.setOffset(nnn);
+    unitCell.setOffset(ijkToPoint3f(nnn));
   }
 
   public Point3f getUnitCellMultiplier() {
@@ -334,11 +336,7 @@ public class Symmetry implements SymmetryInterface {
     return unitCell.getCanonicalCopy(scale);
   }
 
-  public float getUnitsymmetryInfo(int infoType) {
-    return unitCell.getInfo(infoType);
-  }
-
-  public float getUnitCellInfo(int infoType) {
+  public float getUnitCellInfoType(int infoType) {
     return unitCell.getInfo(infoType);
   }
 

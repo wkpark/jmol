@@ -4224,7 +4224,7 @@ abstract public class ModelCollection extends BondCollection {
       if (pt == null)
         unitCell.setOffset(ijk);
       else
-        unitCell.setUnitCellOffset(pt);
+        unitCell.setOffsetPt(pt);
     }
   }
   

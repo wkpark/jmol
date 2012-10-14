@@ -183,7 +183,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     } catch (Exception e) {
       if (InvalidSmilesException.getLastError() == null)
         InvalidSmilesException.setLastError(e.getMessage());
-      e.printStackTrace();
+      System.out.println(e.getMessage());
       return null;
     }
   }
@@ -296,7 +296,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
       } catch (Exception e) {
         if (InvalidSmilesException.getLastError() == null)
           InvalidSmilesException.setLastError(e.getMessage());
-        e.printStackTrace();
+        System.out.println(e.getMessage());
         // ret[i] will be null in that case
       }
     }
@@ -394,7 +394,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     } catch (Exception e) {
       if (InvalidSmilesException.getLastError() == null)
         InvalidSmilesException.setLastError(e.getMessage());
-      e.printStackTrace();
+      System.out.println(e.getMessage());
     }
     return null;
   }

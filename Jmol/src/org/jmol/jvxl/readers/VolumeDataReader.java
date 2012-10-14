@@ -93,7 +93,7 @@ class VolumeDataReader extends SurfaceReader {
     try {
       readSurfaceData(isMapData);
     } catch (Exception e) {
-      e.printStackTrace();
+      System.out.println(e.getMessage());
       return false;
     }
     return true;

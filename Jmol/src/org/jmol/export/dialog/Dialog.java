@@ -502,13 +502,13 @@ public class Dialog extends JPanel implements JmolDialogInterface {
           UIManager.setLookAndFeel(UIManager
               .getCrossPlatformLookAndFeelClassName());
         } catch (Exception e) {
-          e.printStackTrace();
+          System.out.println(e.getMessage());
         }
         fc.updateUI();
         try {
           UIManager.setLookAndFeel(lnf);
         } catch (UnsupportedLookAndFeelException e) {
-          e.printStackTrace();
+          System.out.println(e.getMessage());
         }
       }
     } else {

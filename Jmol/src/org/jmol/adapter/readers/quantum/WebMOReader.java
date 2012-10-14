@@ -66,7 +66,7 @@ public class WebMOReader extends MopacSlaterReader {
       return false;
     }
 
-    if (!readMolecularOrbitals)
+    if (!doReadMolecularOrbitals)
       return true;
     
     if (line.equals("[AO_ORDER]")) {

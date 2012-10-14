@@ -2925,7 +2925,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     SymmetryInterface symmetry = getCurrentUnitCell();
     if (symmetry == null)
       return Float.NaN;
-    return symmetry.getUnitCellInfo(infoType);
+    return symmetry.getUnitCellInfoType(infoType);
   }
 
   public Map<String, Object> getSpaceGroupInfo(String spaceGroup) {
@@ -5048,7 +5048,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         bsB = (asScript ? modelSet.addHydrogens(vConnections, pts)
             : addHydrogensInline(bsAtoms, vConnections, pts));
       } catch (Exception e) {
-        e.printStackTrace();
+        System.out.println(e.getMessage());
         // ignore
       }
       if (wasAppendNew)
@@ -7863,9 +7863,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.energyUnits;
   }
 
-  public boolean getUseNumberLocalization() {
-    return global.useNumberLocalization;
-  }
+  //public boolean getUseNumberLocalization() {
+  // handled in TextFormat
+    //return global.useNumberLocalization;
+ // }
 
   public void setAppendNew(boolean value) {
     // Eval dataFrame
@@ -9362,7 +9363,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   /*
    * void debugStack(String msg) { //what's the right way to do this? try {
    * Logger.error(msg); String t = null; t.substring(3); } catch (Exception e) {
-   * e.printStackTrace(); } }
+   * System.out.println(e.getMessage()); } }
    */
 
   @Override
@@ -9934,8 +9935,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       getMinimizer(true).minimize(steps, crit, bsSelected, bsMotionFixed,
           haveFixed, isSilent, ff);
     } catch (Exception e) {
-      e.printStackTrace();
-      Logger.error(e.getMessage());
+      Logger.error("Minimization error: " + e.getMessage());
     }
   }
 

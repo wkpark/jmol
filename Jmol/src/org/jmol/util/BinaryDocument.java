@@ -320,7 +320,7 @@ public class BinaryDocument {
     try {
       file.seek(offset);
     } catch (Exception e) {
-      e.printStackTrace();
+      System.out.println(e.getMessage());
     }
   }
 */

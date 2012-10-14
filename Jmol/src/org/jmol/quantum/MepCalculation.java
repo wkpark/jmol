@@ -157,7 +157,7 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
       float x0 = potentials[atomIndex];
       if (Logger.debugging)
         Logger.info("process map for atom " + atomIndex + thisAtom + "  charge=" + x0);
-      thisAtom.setXYZ(true);
+      thisAtom.setXYZ(this, true);
       for (int ix = xMax; --ix >= xMin;) {
         float dX = X2[ix];
         for (int iy = yMax; --iy >= yMin;) {

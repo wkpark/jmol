@@ -29,6 +29,7 @@ import java.util.Map;
 
 
 import org.jmol.util.Logger;
+import org.jmol.util.Parser;
 import org.jmol.util.StringXBuilder;
 
 /*
@@ -153,7 +154,7 @@ public class SpartanSmolReader extends SpartanInputReader {
         return;
       byte[] bytes = new byte[tokens.length];
       for (int i = 0; i < tokens.length;i++)
-        bytes[i] = (byte) Integer.parseInt(tokens[i], 16);
+        bytes[i] = (byte) Parser.parseIntRadix(tokens[i], 16);
       mat = new float[16];
       for (int i = 16, j = bytes.length; --i >= 0; j -= 8)
         mat[i] = bytesToDoubleToFloat(bytes, j);

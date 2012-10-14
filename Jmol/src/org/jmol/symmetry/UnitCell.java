@@ -178,11 +178,6 @@ class UnitCell extends SimpleUnitCell {
     }
   }
 
-  void setOffset(int nnn) {
-    // from "unitcell ijk" via uccage
-    setOffset(ijkToPoint3f(nnn));
-  }
-  
   void setMinMaxLatticeParameters(Point3i minXYZ, Point3i maxXYZ) {
     if (maxXYZ.x <= 555 && maxXYZ.y >= 555) {
       //alternative format for indicating a range of cells:

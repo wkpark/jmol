@@ -93,7 +93,7 @@ public class AdfReader extends SlaterReader {
       return true;
     }
     if (line.indexOf(" ======  Eigenvectors (rows) in BAS representation") >= 0) {
-      if (readMolecularOrbitals)
+      if (doReadMolecularOrbitals)
         readMolecularOrbitals(getTokensStr(symLine)[1]);
       return true;
     }

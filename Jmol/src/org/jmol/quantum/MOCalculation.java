@@ -292,7 +292,7 @@ public class MOCalculation extends QuantumCalculation implements
     nGaussians = shell[3];
     doShowShellType = doDebug;
     if (atomIndex != lastAtom && (thisAtom = qmAtoms[atomIndex]) != null)
-      thisAtom.setXYZ(true);
+      thisAtom.setXYZ(this, true);
     if (!setCoeffs(true))
       return;
     if (havePoints)
@@ -1069,7 +1069,7 @@ public class MOCalculation extends QuantumCalculation implements
     }
     coef *= moFactor;
     if (atomIndex != lastAtom)
-      thisAtom.setXYZ(true);
+      thisAtom.setXYZ(this, true);
     int a = slater.x;
     int b = slater.y;
     int c = slater.z;

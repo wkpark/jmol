@@ -202,7 +202,7 @@ import org.jmol.util.Logger;
     try {
       xmlReader.parse(is);
     } catch (Exception e) {
-      e.printStackTrace();
+      System.out.println(e.getMessage());
       atomSetCollection.errorMessage = "XML parsing error: " + e.getMessage();
     }
   }
@@ -280,7 +280,7 @@ import org.jmol.util.Logger;
       else
         parent.applySymmetryAndSetTrajectory();
     } catch (Exception e) {
-      e.printStackTrace();
+      System.out.println(e.getMessage());
       Logger.error("applySymmetry failed: " + e);
     }
   }

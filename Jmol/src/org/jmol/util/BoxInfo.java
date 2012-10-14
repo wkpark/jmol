@@ -49,14 +49,14 @@ public class BoxInfo {
   }
 
   public static char[] bbcageTickEdges = {
-    'z', 0, 0, 'y', 
-    'x', 0, 0, 0, 
-      0, 0, 0, 0};
+    'z', '\0', '\0', 'y', 
+    'x', '\0', '\0', '\0', 
+    '\0', '\0', '\0', '\0'};
   
   public static char[] uccageTickEdges = {
-    'z', 'y', 'x', 0, 
-     0, 0, 0, 0, 
-     0, 0, 0, 0};
+    'z', 'y', 'x', '\0', 
+    '\0', '\0', '\0', '\0', 
+    '\0', '\0', '\0', '\0'};
   
   public final static byte edges[] = {
       0,1, 0,2, 0,4, 1,3, 

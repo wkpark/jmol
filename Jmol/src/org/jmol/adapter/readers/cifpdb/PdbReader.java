@@ -1479,7 +1479,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
         }
       } catch (Exception e) {
         Logger.error(line + "\nError in TLS parser: ");
-        e.printStackTrace();
+        System.out.println(e.getMessage());
         tlsGroups = null;
         break;
       }

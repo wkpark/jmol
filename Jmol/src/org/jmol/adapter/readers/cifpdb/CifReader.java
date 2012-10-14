@@ -1179,9 +1179,9 @@ _pdbx_struct_oper_list.vector[3]
         Matrix4f m4 = new Matrix4f();
         if (count != 12) {
           symmetry.getMatrixFromString(xyz, m, false);
-          m[3] *= symmetry.getUnitCellInfo(SimpleUnitCell.INFO_A) / 12;
-          m[7] *= symmetry.getUnitCellInfo(SimpleUnitCell.INFO_B) / 12;
-          m[11] *= symmetry.getUnitCellInfo(SimpleUnitCell.INFO_C) / 12;
+          m[3] *= symmetry.getUnitCellInfoType(SimpleUnitCell.INFO_A) / 12;
+          m[7] *= symmetry.getUnitCellInfoType(SimpleUnitCell.INFO_B) / 12;
+          m[11] *= symmetry.getUnitCellInfoType(SimpleUnitCell.INFO_C) / 12;
         }
         m4.setA(m);
         if (htBiomts == null)
@@ -1314,6 +1314,7 @@ _pdbx_struct_oper_list.vector[3]
           int pt = field.indexOf('('); 
           if (pt >= 0) {
             char[] data = field.toCharArray();
+            // 3.567(12) --> 0.012
             String sdx = field.substring(pt + 1, field.length() - 1);
             int n = sdx.length();
             for (int j = pt; --j >= 0;) {

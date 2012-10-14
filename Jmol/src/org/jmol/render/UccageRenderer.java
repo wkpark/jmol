@@ -23,7 +23,7 @@
  */
 package org.jmol.render;
 
-import java.text.NumberFormat;
+//import java.text.NumberFormat;
 
 import org.jmol.api.SymmetryInterface;
 import org.jmol.shape.Uccage;
@@ -35,9 +35,9 @@ import org.jmol.viewer.StateManager;
 
 public class UccageRenderer extends CageRenderer {
 
-  NumberFormat nf;
+  //NumberFormat nf;
   byte fid;
-  boolean doLocalize;
+  //boolean doLocalize;
   
   @Override
   protected void setEdges() {
@@ -66,7 +66,7 @@ public class UccageRenderer extends CageRenderer {
     if (mad == 0 || !g3d.setColix(colix) || viewer.isJmolDataFrame()
         || viewer.isNavigating() && viewer.getNavigationPeriodic())
       return;
-    doLocalize = viewer.getUseNumberLocalization();
+    //doLocalize = viewer.getUseNumberLocalization();
     render1(mad);
   }
 
@@ -131,23 +131,22 @@ public class UccageRenderer extends CageRenderer {
   }
   
   private String nfformat(float x) {
-    return (doLocalize && nf != null ? nf.format(x) : TextFormat.formatDecimal(x, 3));
+    return (/*doLocalize && nf != null ? nf.format(x) :*/ TextFormat.formatDecimal(x, 3));
   }
 
   private void renderInfo(SymmetryInterface symmetry) {
     if (isExport
         || !g3d.setColix(viewer.getColixBackgroundContrast()))
       return;
-    if (nf == null) {
-      nf = NumberFormat.getInstance();
-    }
-
     fid = g3d.getFontFidFS("Monospaced", 14 * imageFontScaling);
 
-    if (nf != null) {
-      nf.setMaximumFractionDigits(3);
-      nf.setMinimumFractionDigits(3);
-    }
+//    if (nf == null) {
+//      nf = NumberFormat.getInstance();
+//    }
+//    if (nf != null) {
+//      nf.setMaximumFractionDigits(3);
+//      nf.setMinimumFractionDigits(3);
+//    }
     g3d.setFont(fid);
 
     int lineheight = (int) (15 * imageFontScaling);
@@ -165,36 +164,36 @@ public class UccageRenderer extends CageRenderer {
     }
     y += lineheight;
     g3d.drawStringNoSlab("a="
-        + nfformat(symmetry.getUnitCellInfo(SimpleUnitCell.INFO_A)) + "\u00C5",
+        + nfformat(symmetry.getUnitCellInfoType(SimpleUnitCell.INFO_A)) + "\u00C5",
         null, x, y, 0);
     if (!isPolymer) {
       y += lineheight;
       g3d.drawStringNoSlab(
-          "b=" + nfformat(symmetry.getUnitCellInfo(SimpleUnitCell.INFO_B))
+          "b=" + nfformat(symmetry.getUnitCellInfoType(SimpleUnitCell.INFO_B))
               + "\u00C5", null, x, y, 0);
     }
     if (!isPolymer && !isSlab) {
       y += lineheight;
       g3d.drawStringNoSlab(
-          "c=" + nfformat(symmetry.getUnitCellInfo(SimpleUnitCell.INFO_C))
+          "c=" + nfformat(symmetry.getUnitCellInfoType(SimpleUnitCell.INFO_C))
               + "\u00C5", null, x, y, 0);
     }
-    if (nf != null)
-      nf.setMaximumFractionDigits(1);
+    //if (nf != null)
+      //nf.setMaximumFractionDigits(1);
     if (!isPolymer) {
       if (!isSlab) {
         y += lineheight;
         g3d.drawStringNoSlab("\u03B1="
-            + nfformat(symmetry.getUnitCellInfo(SimpleUnitCell.INFO_ALPHA))
+            + nfformat(symmetry.getUnitCellInfoType(SimpleUnitCell.INFO_ALPHA))
             + "\u00B0", null, x, y, 0);
         y += lineheight;
         g3d.drawStringNoSlab("\u03B2="
-            + nfformat(symmetry.getUnitCellInfo(SimpleUnitCell.INFO_BETA))
+            + nfformat(symmetry.getUnitCellInfoType(SimpleUnitCell.INFO_BETA))
             + "\u00B0", null, x, y, 0);
       }
       y += lineheight;
       g3d.drawStringNoSlab("\u03B3="
-          + nfformat(symmetry.getUnitCellInfo(SimpleUnitCell.INFO_GAMMA))
+          + nfformat(symmetry.getUnitCellInfoType(SimpleUnitCell.INFO_GAMMA))
           + "\u00B0", null, x, y, 0);
     }
   }

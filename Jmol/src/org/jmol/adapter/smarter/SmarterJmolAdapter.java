@@ -150,7 +150,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
       return atomSetCollection;
     } catch (Throwable e) {
       try{ 
-        e.printStackTrace();
+        System.out.println(e.getMessage());
       } catch (Exception ee) {
         Logger.error(e.toString());
       }

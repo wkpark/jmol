@@ -23,12 +23,12 @@
  */
 package org.jmol.rendersurface;
 
-import java.text.NumberFormat;
+//import java.text.NumberFormat;
 
 
 public class MolecularOrbitalRenderer extends IsosurfaceRenderer {
 
-  private NumberFormat nf;
+  //private NumberFormat nf;
 
   @Override
   protected void render() {
@@ -43,12 +43,12 @@ public class MolecularOrbitalRenderer extends IsosurfaceRenderer {
         || mesh.title == null 
         || !g3d.setColix(viewer.getColixBackgroundContrast()))
       return;
-    if (nf == null)
-      nf = NumberFormat.getInstance();
-    if (nf != null) {
-      nf.setMaximumFractionDigits(3);
-      nf.setMinimumFractionDigits(3);
-    }
+//    if (nf == null)
+//      nf = NumberFormat.getInstance();
+//    if (nf != null) {
+//      nf.setMaximumFractionDigits(3);
+//      nf.setMinimumFractionDigits(3);
+//    }
     byte fid = g3d.getFontFidFS("Monospaced", 14 * imageFontScaling);
     g3d.setFont(fid);
     int lineheight = (int) (15 * imageFontScaling);

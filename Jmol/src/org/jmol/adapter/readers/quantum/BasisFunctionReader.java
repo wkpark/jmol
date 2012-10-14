@@ -55,7 +55,7 @@ abstract class BasisFunctionReader extends AtomSetCollectionReader {
 
   protected boolean filterMO() {
     boolean isHeader = (line.indexOf('\n') == 0);
-    if (!isHeader && !readMolecularOrbitals)
+    if (!isHeader && !doReadMolecularOrbitals)
       return false;
     if (filter == null)
       return true;

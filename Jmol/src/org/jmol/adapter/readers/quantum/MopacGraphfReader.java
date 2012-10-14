@@ -52,7 +52,7 @@ public class MopacGraphfReader extends MopacSlaterReader {
   @Override
   protected boolean checkLine() throws Exception {
       readAtoms();
-      if (readMolecularOrbitals) {
+      if (doReadMolecularOrbitals) {
         readSlaterBasis();
         readMolecularOrbitals(false);
         if (readKeywords())

@@ -282,7 +282,7 @@ public class Resolver {
     } catch (Exception e) {
       err = "uncaught error in file loading for " + className;
       Logger.error(err);
-      e.printStackTrace();
+      System.out.println(e.getMessage());
       return err;
     }
   }

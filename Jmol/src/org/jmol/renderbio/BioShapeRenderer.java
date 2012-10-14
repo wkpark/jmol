@@ -354,7 +354,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
         return;
       } catch (Exception e) {
         Logger.error("render mesh error hermiteConic: " + e.toString());
-        //e.printStackTrace();
+        //System.out.println(e.getMessage());
       }
     }
     g3d.fillHermite(isNucleic ? 4 : 7, diameterBeg, diameterMid, diameterEnd,
@@ -385,7 +385,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
           return;
         } catch (Exception e) {
           Logger.error("render mesh error hermiteRibbon: " + e.toString());
-          //e.printStackTrace();
+          //System.out.println(e.getMessage());
         }
       }
     }
@@ -423,7 +423,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
         return;
       } catch (Exception e) {
         Logger.error("render mesh error hermiteArrowHead: " + e.toString());
-        //e.printStackTrace();
+        //System.out.println(e.getMessage());
       }
     }
 

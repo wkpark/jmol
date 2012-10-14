@@ -54,7 +54,7 @@ public class XmlMolproReader extends XmlCmlReader {
       try {
         atomSetCollection.cloneLastAtomSet();
       } catch (Exception e) {
-        e.printStackTrace();
+        System.out.println(e.getMessage());
         atomSetCollection.errorMessage = "Error processing normalCoordinate: " + e.getMessage();
         vibrationNumber = 0;
         return;

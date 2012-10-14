@@ -62,7 +62,7 @@ public class MoldenReader extends MopacSlaterReader {
     if (line.indexOf("[GTO]") == 0)
       return readGaussianBasis();
     if (line.indexOf("[MO]") == 0) 
-      return (!readMolecularOrbitals || readMolecularOrbitals());
+      return (!doReadMolecularOrbitals || readMolecularOrbitals());
     if (line.indexOf("[FREQ]") == 0)
       return (!loadVibrations || readFreqsAndModes());
     if (line.indexOf("[GEOCONV]") == 0)

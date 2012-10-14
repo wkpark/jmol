@@ -179,7 +179,7 @@ public class SmilesGenerator {
         i = i2 - 1;
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      System.out.println(e.getMessage());
       return "";
     }
     if (!allowUnmatchedRings && !htRingsSequence.isEmpty()) {

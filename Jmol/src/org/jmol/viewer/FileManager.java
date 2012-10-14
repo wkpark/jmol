@@ -976,7 +976,7 @@ public class FileManager {
        at sun.awt.image.ImageFetcher.run(Unknown Source)
        */
     } catch (Exception e) {
-      e.printStackTrace();
+      System.out.println(e.getMessage());
       retFileNameOrError[0] = e.getMessage() + " opening " + fullPathName;
       return null;
     }

@@ -95,9 +95,9 @@ public class JmolSmilesApplet extends Applet {
         lastError = InvalidSmilesException.getLastError();
       ret = (result == null ? -1 : result.length);
     } catch (Exception e) {
-      e.printStackTrace();
+      System.out.println(e.getMessage());
     } catch (Error er) {
-      er.printStackTrace();
+      System.out.println(er.getMessage());
     }
     return ret;
   }

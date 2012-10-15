@@ -50,7 +50,17 @@ import org.jmol.viewer.Viewer;
  *
  *   david@catcode.com
  *   
- * Modified by Bob Hanson hansonr@stolaf.edu to include transparent background option
+ * Modified by Bob Hanson hansonr@stolaf.edu to include transparent background option and PNGJ format
+ * 
+ * 
+    // IHDR chunk
+    // iTXt chunk ("Jmol type - <PNG0|PNGJ><0000000pt>+<000000len>")
+    // iTXt chunk ("Software - Jmol <version>")
+    // iTXt chunk ("Creation Time - <date>")
+    // tRNS chunk (transparent color, if desired)
+    // IDAT chunk (image data)
+    // IEND chunk
+
  *
  * @author J. David Eisenberg
  * @author http://catcode.com/pngencoder/
@@ -235,7 +245,7 @@ public class PngEncoder extends Object {
     bytePos = writeBytes(pngIdBytes, 0);
     hdrPos = bytePos;
     writeHeader();
-    
+
     // new Jmol 12.3.7; checksum fixed in Jmol 12.3.30 (6/11/2012)
     ptJmolByteText = bytePos + 4;
     writeText(getJmolTypeText(type, 0, 0));
@@ -244,7 +254,7 @@ public class PngEncoder extends Object {
     writeText("Creation Time\0" + 
         (new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z"))
         .format(new Date()));
-    
+
     if (!encodeAlpha && transparentColor != null) 
       writeTransparentColor(transparentColor.intValue());
     dataPos = bytePos;
@@ -494,6 +504,7 @@ public class PngEncoder extends Object {
     crcValue = crc.getValue();
     bytePos = writeInt4((int) crcValue, bytePos);
   }
+
 
   /**
    * Write a PNG "tRNS" chunk into the pngBytes array.

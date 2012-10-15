@@ -443,16 +443,15 @@ public class Text extends Object2d {
       }
       xy[0] = xy[2];
       xy[1] = boxY + ascent - lineHeight + adj;
-    } else {
-      switch (align) {
-      case ALIGN_CENTER:
-        xy[0] = xy[2] - widths[i] / 2;
-        break;
-      case ALIGN_RIGHT:
-        xy[0] = xy[2] - widths[i];
-      }
     }
-    xy[1] += lineHeight; 
+    switch (align) {
+    case ALIGN_CENTER:
+      xy[0] = xy[2] - widths[i] / 2;
+      break;
+    case ALIGN_RIGHT:
+      xy[0] = xy[2] - widths[i];
+    }
+    xy[1] += lineHeight;
   }
 
 }

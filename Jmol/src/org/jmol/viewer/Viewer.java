@@ -4964,7 +4964,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
       return (withPrefix ? "MOL3D::" : "")
           + TextFormat.formatStringS(format, "FILE", f);
-    case '_': // isosurface "=...", but we code that type as '-'
+    case '_': // isosurface "=...", but we code that type as '_'
       String server = FileManager.fixFileNameVariables(global.edsUrlFormat, f);
       String strCutoff = FileManager.fixFileNameVariables(global.edsUrlCutoff,
           f);

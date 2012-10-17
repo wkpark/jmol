@@ -71,15 +71,15 @@ abstract public class BondCollection extends AtomCollection {
     return bondCount;
   }
   
-  public BondIterator getBondIteratorForType(int bondType, BitSet bsSelected) {
+  public BondIterator getBondIteratorForType(int bondType, BitSet bsAtoms) {
     //Dipoles, Sticks
-    return new BondIteratorSelected(bonds, bondCount, bondType, bsSelected, 
+    return new BondIteratorSelected(bonds, bondCount, bondType, bsAtoms, 
         viewer.getBondSelectionModeOr());
   }
 
-  public BondIterator getBondIterator(BitSet bsSelected) {
+  public BondIterator getBondIterator(BitSet bsBonds) {
     //Sticks
-    return new BondIteratorSelected(bonds, bondCount, 0, bsSelected, false);
+    return new BondIteratorSelected(bonds, bondCount, JmolEdge.BOND_ORDER_NULL, bsBonds, false);
   }
   
   public Atom getBondAtom1(int i) {

@@ -37,21 +37,18 @@ class BondIteratorSelected implements BondIterator {
   private int iBond;
   private BitSet bsSelected;
   private boolean bondSelectionModeOr;
-  private boolean isBondBitSet;
 
   BondIteratorSelected(Bond[] bonds, int bondCount, int bondType,
       BitSet bsSelected, boolean bondSelectionModeOr) {
     this.bonds = bonds;
     this.bondCount = bondCount;
-    this.bsSelected = bsSelected;
     this.bondType = bondType;
+    this.bsSelected = bsSelected;
     this.bondSelectionModeOr = bondSelectionModeOr;
-    isBondBitSet = false;
-    iBond = 0;
   }
 
   public boolean hasNext() {
-    if (isBondBitSet) {
+    if (bondType == JmolEdge.BOND_ORDER_NULL) {
       iBond = bsSelected.nextSetBit(iBond);
       return (iBond >= 0 && iBond < bondCount);
     }

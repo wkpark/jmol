@@ -499,7 +499,7 @@ public class Minimizer implements MinimizerInterface {
 
   private boolean minimizationOn;
   public boolean minimizationOn() {
-    return  minimizationOn();
+    return minimizationOn;
   }
 
   private MinimizationThread minimizationThread;

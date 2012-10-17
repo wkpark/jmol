@@ -77,7 +77,7 @@ class ImageRenderer {
     if (x + width <= 0 || x >= g3d.width || y + height <= 0 || y >= g3d.height)
       return;
     int[] buffer = g3d.apiPlatform.drawImageToBuffer(
-        g3d.platform.getOffScreenGraphics(width, height),
+        g3d.platform.getGraphicsForTextOrImage(width, height),
         g3d.platform.offscreenImage, image, width, height, 
         isBackground ? bgcolor : 0);
     if (buffer == null)

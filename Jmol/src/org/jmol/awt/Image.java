@@ -104,7 +104,7 @@ class Image {
     return bytes;
   }
 
-  public static int[] grabPixels(Object imageobj, int width, int height) {
+  static int[] grabPixels(Object imageobj, int width, int height) {
     PixelGrabber pixelGrabber = new PixelGrabber((java.awt.Image) imageobj, 0,
         0, width, height, true);
     try {

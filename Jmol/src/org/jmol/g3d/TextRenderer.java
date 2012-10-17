@@ -272,7 +272,7 @@ class TextRenderer {
 
   private void setBitmap(String text, JmolFont font3d, Graphics3D g3d) {
     rasterize(g3d.apiPlatform.getTextPixels(text, font3d, 
-        g3d.platform.getOffScreenGraphics(mapWidth, height), 
+        g3d.platform.getGraphicsForTextOrImage(mapWidth, height), 
         g3d.platform.offscreenImage, mapWidth, height, ascent));
   }
 

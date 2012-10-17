@@ -7,6 +7,8 @@ import java.text.AttributedCharacterIterator.Attribute;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.jmol.util.JmolFont;
+
 /**
  * methods required by Jmol that access java.awt.Font
  * 
@@ -27,8 +29,8 @@ class Font {
     return new java.awt.Font(fontMap);
   }
 
-  static Object getFontMetrics(Object graphics, Object font) {
-    return ((Graphics) graphics).getFontMetrics((java.awt.Font) font);
+  static Object getFontMetrics(JmolFont font, Object graphics) {
+    return ((Graphics) graphics).getFontMetrics((java.awt.Font) font.font);
   }
 
   static int getAscent(Object fontMetrics) {

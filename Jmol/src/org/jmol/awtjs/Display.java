@@ -48,8 +48,11 @@ class Display {
     }
 	}
 
+	/**
+   * @param display  
+   */
 	static void repaint(Object display) {
-		System.out.println("repaint display"  + display);
+    // N/A -- RepaintManager will never call this in JavaScript 
 	}
 
 	static void renderScreenImage(JmolViewer viewer, Object g, Object size) {

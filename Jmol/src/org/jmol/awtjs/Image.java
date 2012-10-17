@@ -88,7 +88,7 @@ class Image {
 	 * @param height 
 	 * @return null
    */
-	public static int[] grabPixels(Object imageobj, int width, int height) {
+	static int[] grabPixels(Object imageobj, int width, int height) {
 		return null;
 	}
 

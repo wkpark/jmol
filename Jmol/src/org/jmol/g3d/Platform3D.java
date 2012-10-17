@@ -44,7 +44,7 @@ class Platform3D {
 
   int widthOffscreen, heightOffscreen;
   Object offscreenImage;
-  Object graphicForText;
+  Object graphicsForTextOrImage;
   
   final static boolean desireClearingThread = false;
   boolean useClearingThread = false;
@@ -160,10 +160,10 @@ class Platform3D {
   void notifyEndOfRendering() {
   }
 
-  Object getOffScreenGraphics(int width, int height) {
+  Object getGraphicsForTextOrImage(int width, int height) {
     if (width > widthOffscreen || height > heightOffscreen) {
       if (offscreenImage != null) {
-        apiPlatform.disposeGraphics(graphicForText);
+        apiPlatform.disposeGraphics(graphicsForTextOrImage);
         apiPlatform.flushImage(offscreenImage);
       }
       if (width > widthOffscreen)
@@ -171,13 +171,13 @@ class Platform3D {
       if (height > heightOffscreen)
         heightOffscreen = (height + 15) & ~15;
       offscreenImage = allocateOffscreenImage(widthOffscreen, heightOffscreen);
-      graphicForText = apiPlatform.getStaticGraphics(offscreenImage, backgroundTransparent);
+      graphicsForTextOrImage = apiPlatform.getStaticGraphics(offscreenImage, backgroundTransparent);
     }
-    return graphicForText;
+    return graphicsForTextOrImage;
   }
 
   private Object allocateOffscreenImage(int width, int height) {
-    return apiPlatform.newBufferedRgbImage(width, height);
+    return apiPlatform.newOffScreenImage(width, height);
   }
 
   void setBackgroundTransparent(boolean tf) {

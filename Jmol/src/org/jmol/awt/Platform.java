@@ -149,7 +149,7 @@ public class Platform implements ApiPlatform {
     return Image.newBufferedImage(image, w, h);
   }
 
-  public Object newBufferedRgbImage(int w, int h) {
+  public Object newOffScreenImage(int w, int h) {
     return Image.newBufferedImage(w, h);
   }
 
@@ -173,8 +173,8 @@ public class Platform implements ApiPlatform {
     return Font.getDescent(fontMetrics);
   }
 
-  public Object getFontMetrics(Object graphics, Object font) {
-    return Font.getFontMetrics(graphics, font);
+  public Object getFontMetrics(JmolFont font, Object graphics) {
+    return Font.getFontMetrics(font, graphics);
   }
 
   public Object newFont(String fontFace, boolean isBold, boolean isItalic, float fontSize) {

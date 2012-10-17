@@ -1,11 +1,10 @@
-package org.jmol.awtjs;
+package org.jmol.awtjs2d;
 
 import java.net.URL;
 
 
 import org.jmol.api.ApiPlatform;
 import org.jmol.api.JmolFileAdapterInterface;
-import org.jmol.api.Interface;
 import org.jmol.api.JmolFileInterface;
 import org.jmol.api.JmolMouseInterface;
 import org.jmol.api.JmolPopupInterface;
@@ -16,16 +15,25 @@ import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.Viewer;
 
 /**
- * JavaScript version requires Ajax-based URL stream processing.
+ * JavaScript 2D canvas version requires Ajax-based URL stream processing.
+ * 
+ * Jmol "display" --> HTML5 "canvas"
+ * Jmol "image" --> HTML5 "context"
+ * Jmol "graphics" --> HTML5 "context" (one for display, one off-screen for fonts)
+ * Jmol "font" --> JmolFont
+ * Jmol "fontMetrics" --> HTML5 "context"
  * (Not fully implemented) 
  * 
  * @author Bob Hanson
  *
  */
 public class Platform implements ApiPlatform {
-  Object display;
-	public void setViewer(JmolViewer viewer, Object display) {
-		this.display = display;
+  Object canvas;
+  JmolViewer viewer;
+  
+	public void setViewer(JmolViewer viewer, Object canvas) {
+	  this.viewer = viewer;
+		this.canvas = canvas;
 		//
 		try {
 		  URL.setURLStreamHandlerFactory(new AjaxURLStreamHandlerFactory());
@@ -39,26 +47,21 @@ public class Platform implements ApiPlatform {
   }
 	// /// Display
 
-	public void convertPointFromScreen(Object display, Point3f ptTemp) {
-		Display.convertPointFromScreen(display, ptTemp);
+	public void convertPointFromScreen(Object canvas, Point3f ptTemp) {
+		Display.convertPointFromScreen(canvas, ptTemp);
 	}
 
-	public void getFullScreenDimensions(Object display, int[] widthHeight) {
-		Display.getFullScreenDimensions(display, widthHeight);
+	public void getFullScreenDimensions(Object canvas, int[] widthHeight) {
+		Display.getFullScreenDimensions(canvas, widthHeight);
 	}
 
 	public JmolPopupInterface getMenuPopup(Viewer viewer, String menuStructure,
 			char type) {
-		JmolPopupInterface jmolpopup = (JmolPopupInterface) Interface
-				.getOptionInterface(type == 'j' ? "popup.JmolPopup"
-						: "modelkit.ModelKitPopup");
-		if (jmolpopup != null)
-			jmolpopup.initialize(viewer, menuStructure);
-		return jmolpopup;
+		return null;
 	}
 
-	public boolean hasFocus(Object display) {
-		return Display.hasFocus(display);
+	public boolean hasFocus(Object canvas) {
+		return Display.hasFocus(canvas);
 	}
 
 	public String prompt(String label, String data, String[] list,
@@ -70,27 +73,27 @@ public class Platform implements ApiPlatform {
 	 * legacy apps will use this
 	 * 
 	 * @param viewer
-	 * @param g
+	 * @param context
 	 * @param size
 	 */
-	public void renderScreenImage(JmolViewer viewer, Object g, Object size) {
-		Display.renderScreenImage(viewer, g, size);
+	public void renderScreenImage(JmolViewer viewer, Object context, Object size) {
+		Display.renderScreenImage(viewer, context, size);
 	}
 
-	public void requestFocusInWindow(Object display) {
-		Display.requestFocusInWindow(display);
+	public void requestFocusInWindow(Object canvas) {
+		Display.requestFocusInWindow(canvas);
 	}
 
-	public void repaint(Object display) {
-		Display.repaint(display);
+	public void repaint(Object canvas) {
+		Display.repaint(canvas);
 	}
 
-	public void setTransparentCursor(Object display) {
-		Display.setTransparentCursor(display);
+	public void setTransparentCursor(Object canvas) {
+		Display.setTransparentCursor(canvas);
 	}
 
-	public void setCursor(int c, Object display) {
-		Display.setCursor(c, display);
+	public void setCursor(int c, Object canvas) {
+		Display.setCursor(c, canvas);
 	}
 
 	// //// Mouse
@@ -104,10 +107,11 @@ public class Platform implements ApiPlatform {
 	public Object allocateRgbImage(int windowWidth, int windowHeight,
 			int[] pBuffer, int windowSize, boolean backgroundTransparent) {
 		return Image.allocateRgbImage(windowWidth, windowHeight, pBuffer,
-				windowSize, backgroundTransparent);
+				windowSize, backgroundTransparent, this);
 	}
 
 	public Object createImage(Object data) {
+	  // getFileAsImage
 		return Image.createImage(data);
 	}
 
@@ -121,6 +125,7 @@ public class Platform implements ApiPlatform {
 	}
 
 	public int[] grabPixels(Object imageobj, int width, int height) {
+	  // only for JpegInfo
 		return Image.grabPixels(imageobj, width, height);
 	}
 
@@ -130,10 +135,10 @@ public class Platform implements ApiPlatform {
 				height, bgcolor);
 	}
 
-	public int[] getTextPixels(String text, JmolFont font3d, Object gObj,
+	public int[] getTextPixels(String text, JmolFont font3d, Object context,
 			Object image, int width, int height, int ascent) {
 		return Image
-				.getTextPixels(text, font3d, gObj, image, width, height, ascent);
+				.getTextPixels(text, font3d, context, image, width, height, ascent);
 	}
 
 	public void flushImage(Object imagePixelBuffer) {
@@ -165,31 +170,40 @@ public class Platform implements ApiPlatform {
 	}
 
 	public Object newOffScreenImage(int w, int h) {
-		return Image.newBufferedImage(w, h);
+    /**
+     * @j2sNative
+     * 
+     *  if (typeof Jmol != "undefined" && Jmol._getHiddenContext)
+     *    return Jmol._getHiddenContext(this.viewer.htmlName, "textImage", w, h); 
+     *  return null;
+     */
+    {
+      return null;
+    }
 	}
 
-	public boolean waitForDisplay(Object display, Object image)
+	public boolean waitForDisplay(Object canvas, Object image)
 			throws InterruptedException {
-		Image.waitForDisplay(display, image);
+		Image.waitForDisplay(canvas, image);
 		return true;
 	}
 
 	// /// FONT
 
-	public int fontStringWidth(Object fontMetrics, String text) {
-		return Font.stringWidth(fontMetrics, text);
+	public int fontStringWidth(Object context, String text) {
+		return Font.stringWidth(context, text);
 	}
 
-	public int getFontAscent(Object fontMetrics) {
-		return Font.getAscent(fontMetrics);
+	public int getFontAscent(Object context) {
+		return Font.getAscent(context);
 	}
 
-	public int getFontDescent(Object fontMetrics) {
-		return Font.getDescent(fontMetrics);
+	public int getFontDescent(Object context) {
+		return Font.getDescent(context);
 	}
 
-	public Object getFontMetrics(JmolFont font, Object graphics) {
-		return Font.getFontMetrics(graphics, font);
+	public Object getFontMetrics(JmolFont font, Object context) {
+		return Font.getFontMetrics(font, context);
 	}
 
 	public Object newFont(String fontFace, boolean isBold, boolean isItalic,

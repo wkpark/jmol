@@ -42,7 +42,7 @@ public interface ApiPlatform {
 
   int getFontDescent(Object fontMetrics);
 
-  Object getFontMetrics(Object graphics, Object font);
+  Object getFontMetrics(JmolFont font, Object graphics);
 
   Object newFont(String fontFace, boolean isBold, boolean isItalic, float fontSize);
 
@@ -70,7 +70,7 @@ public interface ApiPlatform {
 
   Object newBufferedImage(Object image, int i, int height);
 
-  Object newBufferedRgbImage(int w, int h);
+  Object newOffScreenImage(int w, int h);
   
   void renderScreenImage(JmolViewer jmolViewer, Object g, Object currentSize);
 

@@ -49,6 +49,8 @@ final public class JmolFont {
   public final Object font;
   private final Object fontMetrics;
   private ApiPlatform apiPlatform;
+  private int ascent;
+  private int descent;
   private JmolFont(ApiPlatform apiPlatform, byte fid,
                  int idFontFace, int idFontStyle, float fontSize,
                  float fontSizeNominal, Object graphics) {
@@ -64,7 +66,10 @@ final public class JmolFont {
         (idFontStyle & FONT_STYLE_BOLD) == FONT_STYLE_BOLD,
         (idFontStyle & FONT_STYLE_ITALIC) == FONT_STYLE_ITALIC, 
         fontSize);
-    fontMetrics = apiPlatform.getFontMetrics(graphics, font);
+    fontMetrics = apiPlatform.getFontMetrics(this, graphics);
+    descent = apiPlatform.getFontDescent(fontMetrics);
+    ascent = apiPlatform.getFontAscent(fontMetrics);
+
     //System.out.println("font3d constructed for fontsizeNominal=" + fontSizeNominal + "  and fontSize=" + fontSize);
   }
 
@@ -137,11 +142,11 @@ final public class JmolFont {
   }
 
   public int getAscent() {
-    return apiPlatform.getFontAscent(fontMetrics);
+    return ascent;
   }
   
   public int getDescent() {
-    return apiPlatform.getFontDescent(fontMetrics);
+    return descent;
   }
   
   public int getHeight() {

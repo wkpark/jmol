@@ -81,7 +81,7 @@ public class RepaintManager implements JmolRepaintInterface {
      * @j2sNative
      * 
      *  if (typeof Jmol != "undefined" && Jmol._repaint) 
-     *    Jmol._repaint(this.viewer.htmlName, false);
+     *    Jmol._repaint(this.viewer.applet, false);
      *  this.repaintDone();
      */
     {
@@ -118,18 +118,18 @@ public class RepaintManager implements JmolRepaintInterface {
     if (!viewer.haveDisplay)
       return;    
     /**
-     * Jmol._repaint(appletId,asNewThread)
+     * Jmol._repaint(applet,asNewThread)
      * 
      * should invoke 
      * 
-     *   setTimeout(Jmol.getApplet(appletId)._applet.viewer.updateJS(width, height)) // may be 0,0
+     *   setTimeout(applet._applet.viewer.updateJS(width, height)) // may be 0,0
      *   
      * when it is ready to do so.
      * 
      * @j2sNative
      * 
      * if (typeof Jmol != "undefined" && Jmol._repaint)
-     *   Jmol._repaint(this.viewer.htmlName,true);
+     *   Jmol._repaint(this.viewer.applet,true);
      * 
      */
     {

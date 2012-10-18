@@ -290,6 +290,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private boolean multiTouch;
   private boolean isSilent;
   private boolean isApplet;
+  
+  Object applet; // j2s only
 
   @Override
   public boolean isApplet() {
@@ -466,8 +468,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     int i = fullName.indexOf("__");
     htmlName = (i < 0 ? fullName : fullName.substring(0, i));
     syncId = (i < 0 ? "" : fullName.substring(i + 2, fullName.length() - 2));
-
     if (isApplet) {
+      /**
+       * @j2sNative
+       *
+       * if(typeof Jmol != "undefined")
+       *   this.applet = Jmol._applets[this.htmlName.split("_object")[0]];
+       *
+       * 
+       */
+      {}
       Logger.info("viewerOptions: \n" + Escape.escapeMap(viewerOptions));
       jsDocumentBase = appletDocumentBase;
       i = jsDocumentBase.indexOf("#");
@@ -4097,7 +4107,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
      * if ((mode == 2 || mode == 7) && typeof Jmol != "undefined") {
      *   this.transformManager.finalizeTransformParameters();
      *   if (Jmol._refresh)
-     *   Jmol._refresh(this.htmlName, mode, strWhy, 
+     *   Jmol._refresh(this.applet, mode, strWhy, 
      *    [this.transformManager.fixedRotationCenter, 
      *     this.transformManager.getRotationQuaternion(),
      *     this.transformManager.xTranslationFraction, 

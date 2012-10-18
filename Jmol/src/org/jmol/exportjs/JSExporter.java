@@ -54,17 +54,25 @@ public class JSExporter extends CartesianExporter {
 
   private Map<String, Object[]> htObjects = new Hashtable<String, Object[]>();
 
+  Object applet;
 
   @Override
   protected void outputHeader() {
     // note -- not compatible yet with multiple applets.
+    /**
+     * @j2sNative
+     * 
+     * this.applet = this.viewer.applet
+     * 
+     */
+    {}
     useTable = new UseTable();
     htSpheresRendered.clear(); 
     htObjects.clear();
     /**
      * @j2sNative
      * 
-     * this.jsInitExport();
+     * this.jsInitExport(this.applet);
      * 
      */
     {
@@ -77,7 +85,7 @@ public class JSExporter extends CartesianExporter {
     /**
      * @j2sNative
      * 
-     * this.jsEndExport();
+     * this.jsEndExport(this.applet);
      * 
      */
     {
@@ -88,24 +96,25 @@ public class JSExporter extends CartesianExporter {
     useTable = null;
   }
 
-  private void jsSphere(String id, boolean isNew, Point3f pt, Object[] o) {
+  private void jsSphere(Object applet, String id, boolean isNew, Point3f pt, Object[] o) {
     // implemented in JavaScript only
-    System.out.println(id + " " + isNew + " " + pt + " " + o);
+    System.out.println(applet + " " + id + " " + isNew + " " + pt + " " + o);
   }
 
-  private void jsCylinder(String id, boolean isNew, Point3f pt1, Point3f pt2,
+  private void jsCylinder(Object applet, String id, boolean isNew, Point3f pt1, Point3f pt2,
                            Object[] o) {
     // implemented in JavaScript only
-    System.out.println(id + " " + isNew + " " + pt1 + " " + pt2 + " " + o);
+    System.out.println(applet + " " + id + " " + isNew + " " + pt1 + " " + pt2 + " " + o);
   }
 
   /**
+   * @param applet 
    * @param color  
    * @param pt1 
    * @param pt2 
    * @param pt3 
    */
-  void jsTriangle(int color, Point3f pt1, Point3f pt2, Point3f pt3) {
+  void jsTriangle(Object applet, int color, Point3f pt1, Point3f pt2, Point3f pt3) {
     System.out.println("jsTriangle ");
   }
 
@@ -124,7 +133,7 @@ public class JSExporter extends CartesianExporter {
     else
       htObjects.put(ret[0], o = new Object[] { getColor(colix),
           Float.valueOf(radius) });
-    jsSphere(ret[0], !found, ptCenter, o);
+    jsSphere(applet, ret[0], !found, ptCenter, o);
   }
 
   private String[] ret = new String[1];
@@ -146,7 +155,7 @@ public class JSExporter extends CartesianExporter {
     else
       htObjects.put(ret[0], o = new Object[] { getColor(colix),
           new Float(length), new Float(radius) });
-    jsCylinder(ret[0], !found, pt1, pt2, o);
+    jsCylinder(applet, ret[0], !found, pt1, pt2, o);
     return true;
   }
 
@@ -181,11 +190,12 @@ public class JSExporter extends CartesianExporter {
                                int faceVertexMax, short colix, Point3f offset) {
     int[] vertexColors = getColors(vertexColixes);
     int[] polygonColors = getColors(polygonColixes);
-    jsSurface(vertices, normals, indices, nVertices, nPolygons, nFaces, bsPolygons, 
+    jsSurface(applet, vertices, normals, indices, nVertices, nPolygons, nFaces, bsPolygons, 
         faceVertexMax, g3d.getColorArgbOrGray(colix), vertexColors, polygonColors);
   }
   
   /**
+   * @param applet 
    * @param vertices  
    * @param normals 
    * @param indices 
@@ -198,7 +208,7 @@ public class JSExporter extends CartesianExporter {
    * @param vertexColors 
    * @param polygonColors 
    */
-  protected void jsSurface(Point3f[] vertices, Vector3f[] normals,
+  protected void jsSurface(Object applet, Point3f[] vertices, Vector3f[] normals,
                          int[][] indices, int nVertices, int nPolygons,
                          int nFaces, BitSet bsPolygons, int faceVertexMax,
                          int color, int[] vertexColors, int[] polygonColors) {
@@ -219,7 +229,7 @@ public class JSExporter extends CartesianExporter {
   @Override
   protected void outputTriangle(Point3f pt1, Point3f pt2, Point3f pt3,
                                 short colix) {
-    jsTriangle(g3d.getColorArgbOrGray(colix), pt1, pt2, pt3);
+    jsTriangle(applet, g3d.getColorArgbOrGray(colix), pt1, pt2, pt3);
   }
 
   @Override

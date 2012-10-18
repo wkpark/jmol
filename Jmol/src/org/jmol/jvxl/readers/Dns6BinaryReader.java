@@ -23,8 +23,10 @@
  */
 package org.jmol.jvxl.readers;
 
+
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
+import java.io.BufferedReader;
 
 import org.jmol.util.BinaryDocument;
 import org.jmol.util.Logger;
@@ -48,7 +50,7 @@ class Dsn6BinaryReader extends MapFileReader {
   Dsn6BinaryReader(){}
   
   @Override
-  void init(SurfaceGenerator sg) {
+  void init2(SurfaceGenerator sg, BufferedReader brNull) {
     super.init2(sg, null);
     binarydoc = new BinaryDocument();
     Object[] o2 = (Object[]) sg.getReaderData();

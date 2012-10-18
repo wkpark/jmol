@@ -1295,7 +1295,7 @@ public class SurfaceGenerator {
       }
       br = null;
       readerData = params.fileName;
-      return newReader("MrcBinaryReader");
+      return newReaderBr("MrcBinaryReader", br);
     }
     readerData = new Object[] { params.fileName, data };
     if (fileType.equals("DSN6")) {
@@ -1305,7 +1305,7 @@ public class SurfaceGenerator {
         // ignore
       }
       br = null;
-      return newReader("Dsn6BinaryReader");
+      return newReaderBr("Dsn6BinaryReader", br);
     }
     if (fileType.equals("Efvet")) {
       return newReaderBr("EfvetReader", br);

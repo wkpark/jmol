@@ -24,6 +24,8 @@
 package org.jmol.jvxl.readers;
 
 
+import java.io.BufferedReader;
+
 import org.jmol.util.BinaryDocument;
 import org.jmol.util.Logger;
 import org.jmol.util.StringXBuilder;
@@ -49,7 +51,7 @@ class MrcBinaryReader extends MapFileReader {
    * @param sg 
    */
   @Override
-  void init(SurfaceGenerator sg) {
+  void init2(SurfaceGenerator sg, BufferedReader brNull) {
     String fileName = (String) sg.getReaderData();
     super.init2(sg, null);
     binarydoc = new BinaryDocument();
@@ -92,7 +94,7 @@ class MrcBinaryReader extends MapFileReader {
     21  DMAX     maximum density value
     22  DMEAN    mean density value
     23  ISPG     space group number 0 or 1 (default=0)
-    24  NSYMBT   number of bytes used for symmetry data (0 or 80)
+    24  NSYMBT   number of bytes used for symmetry data (multiples of 80)
     25-49 EXTRA    extra space used for anything   - 0 by default
     50-52 ORIGIN   origin in X,Y,Z used for transforms
     53  MAP      character string 'MAP ' to identify file type
@@ -141,10 +143,13 @@ class MrcBinaryReader extends MapFileReader {
     }
 
     Logger.info("MRC header: mode: " + mode);
+    Logger.info("MRC header: nx ny nz: " + nx + " " + ny + " " + nz);
 
     nxyzStart[0] = binarydoc.readInt(); // CCP4 "nxyzstart[0-2]"
     nxyzStart[1] = binarydoc.readInt();
     nxyzStart[2] = binarydoc.readInt();
+
+    Logger.info("MRC header: nxyzStart: " + nxyzStart[0] + " " + nxyzStart[1]  + " " + nxyzStart[2] );
 
     na = binarydoc.readInt(); // CCP4 "grid[0-2]"
     nb = binarydoc.readInt();
@@ -157,6 +162,8 @@ class MrcBinaryReader extends MapFileReader {
     if (nc == 0)
       nc = nz - 1;
     
+    Logger.info("MRC header: na nb nc: " + na + " " + nb  + " " + nc );
+
     a = binarydoc.readFloat();
     b = binarydoc.readFloat();
     c = binarydoc.readFloat();
@@ -167,6 +174,8 @@ class MrcBinaryReader extends MapFileReader {
     mapc = binarydoc.readInt(); // CCP4 "crs2xyz[0-2]
     mapr = binarydoc.readInt();
     maps = binarydoc.readInt();
+
+    Logger.info("MRC header: mapc mapr maps: " + mapc + " " + mapr + " " + maps);
 
     if (mapc != 1 && params.thePlane == null)
       params.dataXYReversed = true;
@@ -188,6 +197,8 @@ class MrcBinaryReader extends MapFileReader {
     origin.x = binarydoc.readFloat();  // CCP4 "origin2k"
     origin.y = binarydoc.readFloat();
     origin.z = binarydoc.readFloat();
+
+    Logger.info("MRC header: origin: " + origin);
 
     binarydoc.readByteArray(map);
     binarydoc.readByteArray(machst);
@@ -212,7 +223,7 @@ class MrcBinaryReader extends MapFileReader {
       }
     }
     
-    for (int i = 0; i < nsymbt; i++) {
+    for (int i = 0; i < nsymbt; i += 80) {
       long position = binarydoc.getPosition();
       String s = binarydoc.readString(80).trim();
       if (s.indexOf('\0') != s.lastIndexOf('\0')) {

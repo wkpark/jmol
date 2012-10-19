@@ -25,9 +25,9 @@ class Font {
     return paint;
   }
 
-  static Object getFontMetrics(Object graphics, Object paint) {
+  static Object getFontMetrics(JmolFont font, Object graphics) {
     // just use Paint object
-    return paint;
+    return font.font;
   }
 
   static int getAscent(Object paint) {

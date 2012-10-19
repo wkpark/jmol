@@ -143,7 +143,7 @@ class Image {
     return new Image(w, h, ((Image) image).type);
   }
 
-  static Object newBufferedImage(int w, int h) {
+  static Object newOffScreenImage(int w, int h) {
     return new Image(w, h, null);
   }
 

@@ -244,7 +244,7 @@ class MrcBinaryReader extends MapFileReader {
     getVectorsAndOrigin();
     
     if (params.thePlane == null && (params.cutoffAutomatic || !Float.isNaN(params.sigma))) {
-      float sigma = (Float.isNaN(params.sigma) ? 1 : params.sigma);
+      float sigma = (params.sigma < 0 || Float.isNaN(params.sigma) ? 1 : params.sigma);
       params.cutoff = rmsDeviation * sigma + dmean;
       Logger.info("Cutoff set to (mean + rmsDeviation*" + sigma + " = " + params.cutoff + ")\n");
     }

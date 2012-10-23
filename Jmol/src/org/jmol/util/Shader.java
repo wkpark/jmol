@@ -139,7 +139,7 @@ public final class Shader {
         blu0++;
         if (f < 0.1f)
           f += 0.1f;
-        rgb = ColorUtil.rgb((int) red0, (int) grn0, (int) blu0);
+        rgb = ColorUtil.rgb((int)Math.floor(red0), (int)Math.floor(grn0), (int)Math.floor(blu0));
         continue;
       }
       break;
@@ -152,7 +152,7 @@ public final class Shader {
 
     int i;
     for (i = 0; i < shadeIndexNormal; ++i) {
-      shades[i] = ColorUtil.rgb((int) red, (int) grn, (int) blu);
+      shades[i] = ColorUtil.rgb((int)Math.floor(red), (int)Math.floor(grn), (int)Math.floor(blu));
       red += redStep;
       grn += grnStep;
       blu += bluStep;
@@ -169,7 +169,7 @@ public final class Shader {
       red += redStep;
       grn += grnStep;
       blu += bluStep;
-      shades[i] = ColorUtil.rgb((int) red, (int) grn, (int) blu);
+      shades[i] = ColorUtil.rgb((int)Math.floor(red), (int)Math.floor(grn), (int)Math.floor(blu));
     }
     
     if (greyScale)
@@ -182,23 +182,23 @@ public final class Shader {
     // from Cylinder3D.calcArgbEndcap and renderCone
     // from GData.getShadeIndex and getShadeIndex
     double magnitude = Math.sqrt(x*x + y*y + z*z);
-    return (int) (getFloatShadeIndexNormalized((float)(x/magnitude),
+    return Math.round (getFloatShadeIndexNormalized((float)(x/magnitude),
                                                (float)(y/magnitude),
                                                (float)(z/magnitude))
-                  * shadeIndexLast + 0.5f);
+                  * shadeIndexLast);
   }
 
   public static byte getShadeIndexNormalized(float x, float y, float z) {
     //from Normix3D.setRotationMatrix
-    return (byte)(int) (getFloatShadeIndexNormalized(x, y, z)
-                  * shadeIndexLast + 0.5f);
+    return (byte) Math.round (getFloatShadeIndexNormalized(x, y, z)
+                  * shadeIndexLast);
   }
 
   public static int getFp8ShadeIndex(float x, float y, float z) {
     //from calcDitheredNoisyShadeIndex (not utilized)
     //and Cylinder.calcRotatedPoint
     double magnitude = Math.sqrt(x*x + y*y + z*z);
-    return (int)(getFloatShadeIndexNormalized((float)(x/magnitude),
+    return (int) Math.floor(getFloatShadeIndexNormalized((float)(x/magnitude),
                                               (float)(y/magnitude),
                                               (float)(z/magnitude))
                  * shadeIndexLast * (1 << 8));
@@ -274,7 +274,7 @@ public final class Shader {
   public static byte getDitheredNoisyShadeIndex(float x, float y, float z, float r) {
     // from Sphere3D only
     // add some randomness to prevent banding
-    int fp8ShadeIndex = (int) (getFloatShadeIndexNormalized(x / r, y / r, z / r)
+    int fp8ShadeIndex = (int) Math.floor(getFloatShadeIndexNormalized(x / r, y / r, z / r)
         * shadeIndexLast * (1 << 8));
     int shadeIndex = fp8ShadeIndex >> 8;
     // this cannot overflow because the if the float shadeIndex is 1.0
@@ -426,5 +426,4 @@ public final class Shader {
       sphereShapeCache[i] = null;
     ellipsoidShades = null;
   }
-
 }

@@ -212,7 +212,7 @@ public class ShelxReader extends AtomSetCollectionReader {
     float a4 = parseFloatStr(sfacTokens[7]);
     float c = parseFloatStr(sfacTokens[9]);
     // element # is these floats rounded to nearest int
-    int z = (int) (a1 + a2 + a3 + a4 + c + 0.5f);
+    int z = Math.round(a1 + a2 + a3 + a4 + c);
     String elementSymbol = getElementSymbol(z);
     int oldCount = 0;
     if (sfacElementSymbols == null) {

@@ -73,7 +73,7 @@ public class Dots extends AtomShape {
   @Override
   public int getSize(int atomIndex) {
     // mads are actually radii not diameters
-    return (mads == null ? (int) (ec.getRadius(atomIndex) * 2000) : mads[atomIndex]*2);
+    return (mads == null ? (int) Math.floor(ec.getRadius(atomIndex) * 2000) : mads[atomIndex]*2);
   }
   
   @Override

@@ -181,6 +181,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private Object display;
   private GData gdata;
   private JmolAdapter modelAdapter;
+  public boolean isJS2D;
 
   public enum ACCESS { NONE, READSPT, ALL }
   
@@ -361,6 +362,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    *    "menuFile"
    *    "headlessMaxTimeMs"
    *    "headlessImage"
+   *    "isDataOnly"
    **/
   
   public Viewer(Map<String, Object> info) {
@@ -375,7 +377,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private void setOptions(Map<String, Object> info) {
     viewerOptions = info;
     // could be a Component, or could be a JavaScript class
-    display = info.get("display");
     // use allocateViewer
     if (Logger.debugging) {
       Logger.debug("Viewer constructor " + this);
@@ -398,36 +399,66 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
     isSignedApplet = checkOption("signedApplet", "-signed");
     isApplet = isSignedApplet || checkOption("applet", "-applet");
-    if (isApplet && info.containsKey("maximumSize"))
-      setMaximumSize(((Integer) info.get("maximumSize")).intValue());
-
+    int i = fullName.indexOf("__");
+    htmlName = (i < 0 ? fullName : fullName.substring(0, i));
+    syncId = (i < 0 ? "" : fullName.substring(i + 2, fullName.length() - 2));
+    if (isApplet) {
+      /**
+       * @j2sNative
+       * 
+       *            if(typeof Jmol != "undefined") this.applet =
+       *            Jmol._applets[this.htmlName.split("_object")[0]];
+       * 
+       * 
+       */
+      {
+      }
+      if (info.containsKey("maximumSize"))
+        setMaximumSize(((Integer) info.get("maximumSize")).intValue());
+    }
     access = (checkOption("access:READSPT", "-r") ? ACCESS.READSPT
         : checkOption("access:NONE", "-R") ? ACCESS.NONE : ACCESS.ALL);
     isPreviewOnly = info.containsKey("previewOnly");
     if (isPreviewOnly)
       info.remove("previewOnly"); // see FilePreviewPanel
     isPrintOnly = checkOption("printOnly", "-p");
-    noGraphicsAllowed = (display == null && checkOption("noGraphics", "-n"));
+
     o = info.get("platform");
-    if (o == null)
+    String platform = "unknown";
+    if (o == null) {
       o = (commandOptions.contains("platform=") ? commandOptions
           .substring(commandOptions.indexOf("platform=") + 9)
           : "org.jmol.awt.Platform");
-    // note that this must be the last option if give in commandOptions
-    if (o instanceof String)
-      o = Interface.getInterface((String) o);
+      // note that this must be the last option if give in commandOptions
+    }
+    if (o instanceof String) {
+      platform = (String) o;
+      isJS2D = (platform.indexOf("2d") >= 0);
+      o = Interface.getInterface(platform);
+    }
     apiPlatform = (ApiPlatform) o;
-    haveDisplay = (!noGraphicsAllowed && !isHeadless());
+    display = info.get("display");
+
+    noGraphicsAllowed = (display == null && checkOption("noGraphics", "-n"));
+    haveDisplay = (!noGraphicsAllowed && !isHeadless() && !checkOption("isDataOnly", "\0"));
     if (haveDisplay) {
       mustRender = true;
       multiTouch = checkOption("multiTouch", "-multitouch");
+      /**
+       * @j2sNative
+       * 
+       *            if (this.isJS2D) this.display =
+       *            document.getElementById(this.display);
+       */
+      {
+      }
     } else {
       display = null;
     }
     apiPlatform.setViewer(this, display);
 
     o = info.get("graphicsAdapter");
-    if (o == null)
+    if (o == null && platform.indexOf(".awtjs.") < 0)
       o = Interface.getInterface("org.jmol.g3d.Graphics3D");
     gdata = (o == null ? new GData() : (GData) o);
     gdata.initialize(apiPlatform);
@@ -465,19 +496,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     eval = new ScriptEvaluator(this);
     setJmolStatusListener(statusListener);
 
-    int i = fullName.indexOf("__");
-    htmlName = (i < 0 ? fullName : fullName.substring(0, i));
-    syncId = (i < 0 ? "" : fullName.substring(i + 2, fullName.length() - 2));
     if (isApplet) {
-      /**
-       * @j2sNative
-       *
-       * if(typeof Jmol != "undefined")
-       *   this.applet = Jmol._applets[this.htmlName.split("_object")[0]];
-       *
-       * 
-       */
-      {}
       Logger.info("viewerOptions: \n" + Escape.escapeMap(viewerOptions));
       jsDocumentBase = appletDocumentBase;
       i = jsDocumentBase.indexOf("#");
@@ -701,6 +720,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     global.setParamI("_width", dimScreen.width);
     global.setParamI("_height", dimScreen.height);
     if (haveDisplay) {
+      global.setParamB("_is2D", isJS2D);
       global.setParamB("_multiTouchClient", actionManager.isMTClient());
       global.setParamB("_multiTouchServer", actionManager.isMTServer());
     }
@@ -1704,7 +1724,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         null, bs);
   }
 
-  public void display(BitSet bs, boolean isDisplay, boolean isGroup,
+  public void displayAtoms(BitSet bs, boolean isDisplay, boolean isGroup,
                       Boolean addRemove, boolean isQuiet) {
     // Eval
     if (isGroup)
@@ -4104,7 +4124,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return;
     /**
      * @j2sNative
-     * if ((mode == 2 || mode == 7) && typeof Jmol != "undefined") {
+     * 
+     * if (typeof Jmol == "undefined") return;
+     * if (this.isJS2D) {
+     *   if (mode == 7)return;
+     *   if (mode > 0) this.repaintManager.repaintIfReady();
+     * } else if (mode == 2 || mode == 7) {
      *   this.transformManager.finalizeTransformParameters();
      *   if (Jmol._refresh)
      *   Jmol._refresh(this.applet, mode, strWhy, 
@@ -4286,7 +4311,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // creatingImage);
     if (updateWindow(width, height)) {
       if (gRight == null) {
-        getScreenImage(gLeft);
+        getScreenImageBuffer(gLeft);
       } else {
         render1(gRight, getImage(true), 0, 0);
         render1(gLeft, getImage(false), 0, 0);
@@ -4307,10 +4332,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     /**
      * @j2sNative
      * 
-     * if (this.updateWindow(width, height)) {
-     *   this.render();
-     * }
-     * this.notifyViewerRepaintDone();
+     *            if (this.isJS2D) { 
+     *              this.renderScreenImageStereo(this.apiPlatform.context, null, width, height);
+     *              return; 
+     *            } 
+     *            if (this.updateWindow(width, height)){ this.render(); } 
+     *            this.notifyViewerRepaintDone();
      * 
      */
     {}
@@ -4345,16 +4372,19 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   /**
    * 
    * @param isDouble
-   * @return a java.awt.Image in the case of standard Jmol; an int[] in the case
-   *         of Jmol-Android
+   * @return a java.awt.Image in the case of standard Jmol; 
+   *           an int[] in the case of Jmol-Android
+   *           a canvas in the case of JSmol
    */
   private Object getImage(boolean isDouble) {
     /**
      * @j2sNative
      * 
-     * return null;
+     * if (!this.isJS2D)return null;
      * 
      */
+    {}
+    
     Object image = null;
     try {
       gdata.beginRendering(transformManager.getStereoRotationMatrix(isDouble));
@@ -4375,28 +4405,29 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   private void render() {
-    if (modelSet == null || !mustRender  
-        || !refreshing && !creatingImage || repaintManager == null)
+    if (modelSet == null || !mustRender || !refreshing && !creatingImage
+        || repaintManager == null)
       return;
     boolean antialias2 = antialiasDisplay && global.antialiasTranslucent;
     finalizeTransformParameters();
-    shapeManager.finalizeAtoms(transformManager.bsSelectedAtoms, transformManager.ptOffset);
+    shapeManager.finalizeAtoms(transformManager.bsSelectedAtoms,
+        transformManager.ptOffset);
     int[] minMax = shapeManager.transformAtoms();
     transformManager.bsSelectedAtoms = null;
     /**
      * @j2sNative
      * 
-     * this.repaintManager.renderExport("JS", this.gdata, this.modelSet, null);
-     * this.notifyViewerRepaintDone(); 
+     *            if (!this.isJS2D) { this.repaintManager.renderExport("JS",
+     *            this.gdata, this.modelSet, null);
+     *            this.notifyViewerRepaintDone(); return; }
      * 
      */
-    {
-      repaintManager.render(gdata, modelSet, true, minMax);
-      if (gdata.setPass2(antialias2)) {
-        transformManager.setAntialias(antialias2);
-        repaintManager.render(gdata, modelSet, false, null);
-        transformManager.setAntialias(antialiasDisplay);
-      }
+    {}
+    repaintManager.render(gdata, modelSet, true, minMax);
+    if (gdata.setPass2(antialias2)) {
+      transformManager.setAntialias(antialias2);
+      repaintManager.render(gdata, modelSet, false, null);
+      transformManager.setAntialias(antialiasDisplay);
     }
   }
 
@@ -4414,42 +4445,45 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private void render1(Object graphic, Object img, int x, int y) {
     if (graphic != null && img != null) {
-      try {
-        apiPlatform.drawImage(graphic, img, x, y, dimScreen.width,
-            dimScreen.height);
-      } catch (NullPointerException npe) {
-        Logger.error("Sun!! ... fix graphics your bugs!");
-      }
+      apiPlatform.drawImage(graphic, img, x, y, dimScreen.width,
+          dimScreen.height);
     }
     gdata.releaseScreenImage();
   }
 
+  /**
+   * Image.getJpgImage, ImageCreator.clipImage, getImageBytes, Viewer.renderScreenImageStereo
+   */
   @Override
-  public Object getScreenImage(Object graphic) {
+  public Object getScreenImageBuffer(Object graphic) {
     /**
+     * 
+     * will be a canvas for JSmol HTML5 only
+     * 
      * @j2sNative
      * 
-     * return null
+     * if (!this.isJS2D)return null
      * 
      */
+    {}
     {
       boolean mergeImages = (graphic == null && isStereoDouble());
-      Object image = (transformManager.stereoMode.isBiColor() ? getStereoImage(transformManager.stereoMode)
+      Object imageBuffer = (transformManager.stereoMode.isBiColor() ? getStereoImage(transformManager.stereoMode)
           : getImage(isStereoDouble()));
-      Object image1 = null;
+      Object imageBuffer2 = null;
       if (mergeImages) {
-        image1 = apiPlatform.newBufferedImage(image, dimScreen.width << 1,
+        imageBuffer2 = apiPlatform.newBufferedImage(imageBuffer, dimScreen.width << 1,
             dimScreen.height);
-        graphic = apiPlatform.getGraphics(image1);
+        graphic = apiPlatform.getGraphics(imageBuffer2);
       }
       if (graphic != null) {
         if (isStereoDouble()) {
-          render1(graphic, image, dimScreen.width, 0);
-          image = getImage(false);
+          render1(graphic, imageBuffer, dimScreen.width, 0);
+          imageBuffer = getImage(false);
         }
-        render1(graphic, image, 0, 0);
+        render1(graphic, imageBuffer, 0, 0);
       }
-      return (mergeImages ? image1 : image);
+      return (mergeImages ? imageBuffer2 : imageBuffer);
     }
   }
 
@@ -4459,9 +4493,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     /**
      * @j2sNative
      * 
-     * return null
+     * if (!this.isJS2D)return null
      * 
      */
+    {}
     return getImageAsWithComment(type, quality, width, height, fileName, null, os, "");
   }
 
@@ -4482,9 +4517,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     /**
      * @j2sNative
      * 
-     * return null
+     * if (!this.isJS2D)return null
      * 
      */
+    {}
     int saveWidth = dimScreen.width;
     int saveHeight = dimScreen.height;
     mustRender = true;
@@ -7239,7 +7275,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void showString(String str, boolean isPrint) {
     if (isScriptQueued && (!isSilent || isPrint))
-      Logger.info(str);
+      Logger.warn(str); // warn here because we still want to be be able to turn this off
     scriptEcho(str);
   }
 

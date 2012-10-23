@@ -648,7 +648,7 @@ public abstract class BioPolymer {
                     Escape.escapePt(a)).append(
                     Escape.escapePt(aa.getCarbonylCarbonAtom())).append(
                     Escape.escapePt(pt)).append(" \"phi = ").append(
-                    String.valueOf((int) x)).append("\" color ").append(
+                    String.valueOf(Math.round(x))).append("\" color ").append(
                     qColor[2]).append("\n");
             pt.set(0, y, 0.5f);
             pdbATOM.append("draw ID \"psi").append(id).append("\" ARROW ARC ")
@@ -656,7 +656,7 @@ public abstract class BioPolymer {
                     Escape.escapePt(aa.getCarbonylCarbonAtom())).append(
                     Escape.escapePt(aa.getNitrogenAtom())).append(
                     Escape.escapePt(pt)).append(" \"psi = ").append(
-                    String.valueOf((int) y)).append("\" color ").append(
+                    String.valueOf(Math.round(y))).append("\" color ").append(
                     qColor[1]).append("\n");
             pdbATOM.append("draw ID \"planeNCC").append(id).append("\" ")
                 .append(Escape.escapePt(aa.getNitrogenAtom())).append(
@@ -840,7 +840,7 @@ public abstract class BioPolymer {
           if (isDraw) {
             if (bsSelected != null && !bsSelected.get(a.getIndex()))
               continue;
-            int deg = (int) (Math.acos(w) * 360 / Math.PI);
+            int deg = (int) Math.floor(Math.acos(w) * 360 / Math.PI);
             if (derivType == 0) {
               pdbATOM.append(q.draw(prefix, id, ptCenter, 1f));
               if (qtype == 'n' && isAmino) {

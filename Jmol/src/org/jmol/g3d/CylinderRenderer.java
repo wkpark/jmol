@@ -132,10 +132,16 @@ class CylinderRenderer {
     
     // oops -- problem here if diameter < 0 is that we may have already clipped it!
     int r = diameter / 2 + 1;
-    int codeMinA = g3d.clipCode3((int) xA - r, (int) yA - r, (int) zA - r);
-    int codeMaxA = g3d.clipCode3((int) xA + r, (int) yA + r, (int) zA + r);
-    int codeMinB = g3d.clipCode3((int) xB - r, (int) yB - r, (int) zB - r);
-    int codeMaxB = g3d.clipCode3((int) xB + r, (int) yB + r, (int) zB + r);
+    int ixA = Math.round(xA);
+    int iyA = Math.round(yA);
+    int izA = Math.round(zA);
+    int ixB = Math.round(xB);
+    int iyB = Math.round(yB);
+    int izB = Math.round(zB);
+    int codeMinA = g3d.clipCode3(ixA - r, iyA - r, izA - r);
+    int codeMaxA = g3d.clipCode3(ixA + r, iyA + r, izA + r);
+    int codeMinB = g3d.clipCode3(ixB - r, iyB - r, izB - r);
+    int codeMaxB = g3d.clipCode3(ixB + r, iyB + r, izB + r);
     //all bits 0 --> no clipping
     clipped = ((codeMinA | codeMaxA | codeMinB | codeMaxB) != 0);
     //any two bits same in all cases --> fully clipped

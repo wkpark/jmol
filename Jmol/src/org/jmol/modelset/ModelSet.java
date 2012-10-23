@@ -811,7 +811,7 @@ import java.util.Map;
           fValue = Atom.RADIUS_MAX;
         if (fValue < 0)
           fValue = 0;
-        mar = (int) (fValue * 2000);
+        mar = (int) Math.floor(fValue * 2000);
       } else {
         rd = new RadiusData(values, 0, null, null);
       }

@@ -149,8 +149,8 @@ public class UccageRenderer extends CageRenderer {
 //    }
     g3d.setFont(fid);
 
-    int lineheight = (int) (15 * imageFontScaling);
-    int x = (int) (5 * imageFontScaling);
+    int lineheight = (int) Math.floor(15 * imageFontScaling);
+    int x = (int) Math.floor(5 * imageFontScaling);
     int y = lineheight;
 
     String spaceGroup = symmetry.getSpaceGroupName();

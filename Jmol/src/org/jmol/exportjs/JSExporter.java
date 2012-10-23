@@ -121,7 +121,7 @@ public class JSExporter extends CartesianExporter {
   @Override
   protected void outputSphere(Point3f ptCenter, float radius, short colix,
                               boolean checkRadius) {
-    int iRad = (int) (radius * 100);
+    int iRad = Math.round(radius * 100);
     String check = round(ptCenter) + (checkRadius ? " " + iRad : "");
     if (htSpheresRendered.get(check) != null)
       return;
@@ -147,7 +147,7 @@ public class JSExporter extends CartesianExporter {
     if (ptX != null)
       return false;
     float length = pt1.distance(pt2);
-    boolean found = useTable.getDef("C" + colix + "_" + (int) (length * 100)
+    boolean found = useTable.getDef("C" + colix + "_" + Math.round(length * 100)
         + "_" + radius + "_" + endcaps, ret);
     Object[] o;
     if (found)

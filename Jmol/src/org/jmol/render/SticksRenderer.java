@@ -313,7 +313,7 @@ public class SticksRenderer extends ShapeRenderer {
     }
     int dxB = dx * dx;
     int dyB = dy * dy;
-    mag2d = (int) (Math.sqrt(dxB + dyB) + 0.5);
+    mag2d = (int) Math.round(Math.sqrt(dxB + dyB));
     resetAxisCoordinates();
     while (true) {
       if ((dottedMask & 1) != 0)
@@ -387,9 +387,9 @@ public class SticksRenderer extends ShapeRenderer {
     short colixE = (ptE == 0 ? colixB : colixA);
     for (int pt = 3; pt < array.length; pt++) {
       int i = array[pt];
-      int xS = (int) (xA + dx * i / f);
-      int yS = (int) (yA + dy * i / f);
-      int zS = (int) (zA + dz * i / f);
+      int xS = (int) Math.floor(xA + dx * i / f);
+      int yS = (int) Math.floor(yA + dy * i / f);
+      int zS = (int) Math.floor(zA + dz * i / f);
       if (isDots) {
         s1.set(xS, yS, zS);
         if (pt == ptS)
@@ -404,9 +404,9 @@ public class SticksRenderer extends ShapeRenderer {
       i = array[++pt];
       if (pt == ptE)
         colixE = colixB;
-      int xE = (int) (xA + dx * i / f);
-      int yE = (int) (yA + dy * i / f);
-      int zE = (int) (zA + dz * i / f);
+      int xE = (int) Math.floor(xA + dx * i / f);
+      int yE = (int) Math.floor(yA + dy * i / f);
+      int zE = (int) Math.floor(zA + dz * i / f);
       fillCylinder(colixS, colixE, GData.ENDCAPS_FLAT, width, xS, yS, zS,
           xE, yE, zE);
     }

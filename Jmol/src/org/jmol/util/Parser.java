@@ -594,4 +594,9 @@ public class Parser {
       return Integer.parseInt(s, i);
     }
   }
+
+  public static float approx(float f, float n) {
+    return Math.round (f * n) / n;
+  }
+  
 }

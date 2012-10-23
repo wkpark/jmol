@@ -38,7 +38,7 @@ class Platform3D {
   int windowWidth, windowHeight, windowSize;
   int bufferWidth, bufferHeight, bufferSize, bufferSizeT;
 
-  Object imagePixelBuffer;
+  Object bufferedImage;
   int[] pBuffer, pBufferT;
   int[] zBuffer, zBufferT;
 
@@ -95,7 +95,7 @@ class Platform3D {
     // no need for any antialiasing on a translucent buffer
     // but that's simply not true.
     // bufferSizeT = windowSize;
-    imagePixelBuffer = apiPlatform.allocateRgbImage(windowWidth, windowHeight, pBuffer, windowSize, backgroundTransparent);
+    bufferedImage = apiPlatform.allocateRgbImage(windowWidth, windowHeight, pBuffer, windowSize, backgroundTransparent);
 
     /*
     Logger.debug("  width:" + width + " bufferWidth=" + bufferWidth +
@@ -105,9 +105,9 @@ class Platform3D {
   
   void releaseBuffers() {
     windowWidth = windowHeight = bufferWidth = bufferHeight = bufferSize = -1;
-    if (imagePixelBuffer != null) {
-      apiPlatform.flushImage(imagePixelBuffer);
-      imagePixelBuffer = null;
+    if (bufferedImage != null) {
+      apiPlatform.flushImage(bufferedImage);
+      bufferedImage = null;
     }
     pBuffer = null;
     zBuffer = null;
@@ -158,6 +158,7 @@ class Platform3D {
   }
   
   void notifyEndOfRendering() {
+    apiPlatform.notifyEndOfRendering();
   }
 
   Object getGraphicsForTextOrImage(int width, int height) {

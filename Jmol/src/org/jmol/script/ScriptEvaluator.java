@@ -552,8 +552,10 @@ public class ScriptEvaluator {
       e.instructionDispatchLoop(false);
     } catch (Exception ex) {
       viewer.setStringProperty("_errormessage", "" + ex);
-      Logger.error("Error evaluating context");
-      ex.printStackTrace();
+      if (e.thisContext == null) {
+        Logger.error("Error evaluating context");
+        ex.printStackTrace();
+      }
       return false;
     }
     return true;
@@ -2060,6 +2062,7 @@ public class ScriptEvaluator {
     }
     pushContext(null);
     boolean isTry = (function.tok == Token.trycmd);
+    thisContext.isTryCatch = isTry;
     thisContext.isFunction = !isTry;
     functionName = name;
 
@@ -3053,11 +3056,11 @@ public class ScriptEvaluator {
         return;
       }
       String s = getScriptContext().getContextTrace(null, true).toString();
-      while (thisContext != null)
+      while (thisContext != null && !thisContext.isTryCatch)
         popContext(false, false);
       message += s;
       this.untranslated += s;
-      if (isSyntaxCheck
+      if (thisContext != null || isSyntaxCheck
           || msg.indexOf("file recognized as a script file:") >= 0)
         return;
       Logger.error("eval ERROR: " + toString());
@@ -3653,8 +3656,8 @@ public class ScriptEvaluator {
         break;
       case Token.cell:
         Point3f pt = (Point3f) value;
-        rpn.addXBs(getAtomBits(Token.cell, new int[] { (int) (pt.x * 1000),
-            (int) (pt.y * 1000), (int) (pt.z * 1000) }));
+        rpn.addXBs(getAtomBits(Token.cell, new int[] { (int) Math.floor(pt.x * 1000),
+            (int) Math.floor(pt.y * 1000), (int) Math.floor(pt.z * 1000) }));
         break;
       case Token.thismodel:
         rpn.addXBs(viewer.getModelUndeletedAtomsBitSet(viewer
@@ -3770,7 +3773,7 @@ public class ScriptEvaluator {
             if (isIntOrFloat) {
               isIntProperty = false;
             } else if (isIntProperty) {
-              comparisonValue = (int) comparisonFloat;
+              comparisonValue = (int)(comparisonFloat);
             }
           }
         } else if (!isStringProperty) {
@@ -4819,7 +4822,7 @@ public class ScriptEvaluator {
       mad = radiusRasMol * 4 * 2;
       break;
     case Token.decimal:
-      mad = (int) (floatParameterRange(1, -3, 3) * 1000 * 2);
+      mad = (int) Math.floor(floatParameterRange(1, -3, 3) * 1000 * 2);
       if (mad < 0) {
         restrictSelected(false, false);
         mad = -mad;
@@ -4845,7 +4848,7 @@ public class ScriptEvaluator {
       return intParameterRange(index, -1, 19);
     case Token.decimal:
       float angstroms = floatParameterRange(index, 0, 2);
-      return (int) (angstroms * 1000 * 2);
+      return (int)Math.floor(angstroms * 1000 * 2);
     }
     errorStr(ERROR_booleanOrWhateverExpected, "\"DOTTED\"");
     return 0;
@@ -6983,9 +6986,9 @@ public class ScriptEvaluator {
         q = Measure.calculateQuaternionRotation(centerAndPoints, retStddev,
             true);
         float r0 = (Float.isNaN(retStddev[1]) ? Float.NaN
-            : (int) (retStddev[0] * 100) / 100f);
+            : Math.round(retStddev[0] * 100) / 100f);
         float r1 = (Float.isNaN(retStddev[1]) ? Float.NaN
-            : (int) (retStddev[1] * 100) / 100f);
+            : Math.round(retStddev[1] * 100) / 100f);
         showString("RMSD " + r0 + " --> " + r1 + " Angstroms");
       } else if (isQuaternion) {
         if (vQuatSets == null) {
@@ -7454,7 +7457,7 @@ public class ScriptEvaluator {
     if (isColorOrRadius) {
       viewer.selectBonds(bsBonds);
       if (!Float.isNaN(radius))
-        setShapeSizeBs(JmolConstants.SHAPE_STICKS, (int) (radius * 2000), null);
+        setShapeSizeBs(JmolConstants.SHAPE_STICKS, Math.round(radius * 2000), null);
       if (color != Integer.MIN_VALUE)
         setShapePropertyBs(JmolConstants.SHAPE_STICKS, "color", Integer
             .valueOf(color), bsBonds);
@@ -10698,7 +10701,7 @@ public class ScriptEvaluator {
       viewer.displayBonds((BondSet) bs, isDisplay);
       return;
     }
-    viewer.display(bs, isDisplay, isGroup, addRemove, tQuiet);
+    viewer.displayAtoms(bs, isDisplay, isGroup, addRemove, tQuiet);
   }
 
   private void delete() throws ScriptException {
@@ -11617,7 +11620,7 @@ public class ScriptEvaluator {
     boolean defOn = (tokAt(1) == Token.only || tokAt(1) == Token.on || statementLength == 1);
     int mad = getMadParameter();
     if (defOn)
-      mad = (int) (viewer.getStrutDefaultRadius() * 2000f);
+      mad = Math.round (viewer.getStrutDefaultRadius() * 2000f);
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", Integer
         .valueOf(JmolEdge.BOND_STRUT));
     setShapeSizeBs(JmolConstants.SHAPE_STICKS, mad, null);
@@ -12156,7 +12159,7 @@ public class ScriptEvaluator {
       mad = (intParameterRange(1, 0, 1000) * 8);
       break;
     case Token.decimal:
-      mad = (int) (floatParameterRange(1, -Shape.RADIUS_MAX, Shape.RADIUS_MAX) * 2000);
+      mad = Math.round(floatParameterRange(1, -Shape.RADIUS_MAX, Shape.RADIUS_MAX) * 2000);
       if (mad < 0) {
         restrictSelected(false, false);
         mad = -mad;
@@ -13564,7 +13567,7 @@ public class ScriptEvaluator {
         mSec = intParameter(i);
         break;
       case Token.decimal:
-        mSec = (int) (floatParameter(i) * 1000);
+        mSec = Math.round(floatParameter(i) * 1000);
         break;
       default:
         if (name == null)
@@ -15446,7 +15449,7 @@ public class ScriptEvaluator {
           intScale = intParameter(i);
           continue;
         case Token.decimal:
-          intScale = (int) (floatParameter(i) * 100);
+          intScale = Math.round(floatParameter(i) * 100);
           continue;
         }
         error(ERROR_numberExpected);

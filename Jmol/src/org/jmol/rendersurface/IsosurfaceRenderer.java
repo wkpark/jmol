@@ -158,8 +158,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
         pt2f.add(points[1]);
         pt2f.scale(0.5f); // center
         viewer.transformPt3f(pt2f, pt2f);
-        int r = viewer.scaleToScreen((int)pt2f.z, (int) points[0].distance(points[1]) * 500);
-        mySlabValue = (int) (pt2f.z + r * (1 - meshSlabValue / 50f));
+        int r = viewer.scaleToScreen((int)pt2f.z, Math.round(points[0].distance(points[1]) * 500f));
+        mySlabValue = Math.round(pt2f.z + r * (1 - meshSlabValue / 50f));
       }
     }
     g3d.setTranslucentCoverOnly(imesh.frontOnly);
@@ -219,10 +219,10 @@ public class IsosurfaceRenderer extends MeshRenderer {
       pt1f.setT(pt2f);
       pt1f.add(v2);
       pt2f.sub(v2);
-      screens[0].set((int)pt1f.x,(int)pt1f.y,(int)pt1f.z);
+      screens[0].set(Math.round(pt1f.x),Math.round(pt1f.y),Math.round(pt1f.z));
       g3d.fillSphereI(r, screens[0]);
     }
-    screens[1].set((int)pt2f.x,(int)pt2f.y,(int)pt2f.z);
+    screens[1].set(Math.round(pt2f.x),Math.round(pt2f.y),Math.round(pt2f.z));
     g3d.fillSphereI(r, screens[1]);
   }
   
@@ -278,7 +278,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       } else {
         diam = viewer.getScreenDim() / (volumeRender ? 50 : 100);        
       }
-      int ptSize = ((int) (imesh.volumeRenderPointSize * 1000));
+      int ptSize = Math.round(imesh.volumeRenderPointSize * 1000);
       if (diam < 1)
         diam = 1;
       int cX = (showNumbers ? viewer.getScreenWidth() / 2 : 0);

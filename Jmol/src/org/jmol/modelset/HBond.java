@@ -88,8 +88,8 @@ public class HBond extends Bond {
   public final static int getEnergy(double distAH, double distCH, double distCD,
                               double distAD) {
     
-    int energy = (int) Math.floor(QConst / distAH - QConst / distAD + QConst / distCD - QConst
-        / distCH + 0.5f);   
+    int energy = (int) Math.round(QConst / distAH - QConst / distAD + QConst / distCD - QConst
+        / distCH);   
     //Logger.info("HBond: distAH=" + distAH + " distAD=" + distAD + " distCD=" + distCD
       //  + " distCH=" + distCH + " energy=" + energy);
     return energy;

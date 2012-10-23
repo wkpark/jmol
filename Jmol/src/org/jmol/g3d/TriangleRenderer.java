@@ -25,7 +25,7 @@
 package org.jmol.g3d;
 
 
-import org.jmol.util.Logger;
+//import org.jmol.util.Logger;
 import org.jmol.util.Point3f;
 import org.jmol.util.Point3i;
 import org.jmol.util.Rgb16;
@@ -44,19 +44,23 @@ class TriangleRenderer {
   final Graphics3D g3d;
   final LineRenderer line3d;
 
-  //Thread t;
-  
-  int[] ax = new int[3];
-  int[] ay = new int[3];
-  int[] az = new int[3];
+  private final static int DEFAULT = 64;
+  private int[] ax = new int[3], ay = new int[3], az = new int[3];
+  private int[] axW = new int[DEFAULT], azW = new int[DEFAULT];
+  private int[] axE = new int[DEFAULT], azE = new int[DEFAULT];
 
-  Rgb16[] rgb16sGouraud;
+  private Rgb16[] rgb16sW, rgb16sE;
+  private Rgb16[] rgb16sGouraud;
   
-  //private String testString = null;
-  
-  private final static boolean VERIFY = false;
+  //private final static boolean VERIFY = false;
 
   TriangleRenderer(Graphics3D g3d) {
+    rgb16sW = new Rgb16[DEFAULT];
+    rgb16sE = new Rgb16[DEFAULT];
+    for (int i = DEFAULT; --i >= 0;) {
+      rgb16sW[i] = new Rgb16();
+      rgb16sE[i] = new Rgb16();
+    }
     this.g3d = g3d;
     this.line3d = g3d.line3d;
     rgb16sGouraud = new Rgb16[3];
@@ -99,6 +103,12 @@ class TriangleRenderer {
    * I do not understand why this is the case
    * so, the triangle drawing now paints overlapping edges by one pixel
    *
+   * note added 10/20/2012 -- Bob Hanson
+   * 
+   *   These problems were addressed and fixed in 
+   *   revision (to Triangle3D) 7086 and 7148 back in 2007.
+   *   http://jmol.svn.sourceforge.net/viewvc/jmol/trunk/Jmol/src/org/jmol/g3d/Triangle3D.java?r1=7084&r2=7086&pathrev=17476
+   *
    *==============================================================*/
 
   void drawfillTriangle(int xA, int yA, int zA, int xB, int yB, int zB, int xC,
@@ -112,10 +122,10 @@ class TriangleRenderer {
     az[0] = zA;
     az[1] = zB;
     az[2] = zC;
-    fillTriangle(useGouraud);
+    fillTriangleB(useGouraud);
   }
 
-  void fillTriangle(int xScreenA, int yScreenA, int zScreenA, int xScreenB,
+  void fillTriangleXYZ(int xScreenA, int yScreenA, int zScreenA, int xScreenB,
                     int yScreenB, int zScreenB, int xScreenC, int yScreenC,
                     int zScreenC, boolean useGouraud) {
     ax[0] = xScreenA;
@@ -127,12 +137,11 @@ class TriangleRenderer {
     az[0] = zScreenA;
     az[1] = zScreenB;
     az[2] = zScreenC;
-    fillTriangle(useGouraud);
+    fillTriangleB(useGouraud);
   }
 
-  void fillTriangle(Point3i screenA, Point3i screenB, Point3i screenC,
+  void fillTriangleP3i(Point3i screenA, Point3i screenB, Point3i screenC,
                     boolean useGouraud) {
-    //t = Thread.currentThread();
     ax[0] = screenA.x;
     ax[1] = screenB.x;
     ax[2] = screenC.x;
@@ -142,24 +151,25 @@ class TriangleRenderer {
     az[0] = screenA.z;
     az[1] = screenB.z;
     az[2] = screenC.z;
-    fillTriangle(useGouraud);
+    fillTriangleB(useGouraud);
   }
 
-  void fillTriangle(Point3f screenA, Point3f screenB, Point3f screenC,
+  void fillTriangleP3f(Point3f screenA, Point3f screenB, Point3f screenC,
                     boolean useGouraud) {
-    ax[0] = (int) screenA.x;
-    ax[1] = (int) screenB.x;
-    ax[2] = (int) screenC.x;
-    ay[0] = (int) screenA.y;
-    ay[1] = (int) screenB.y;
-    ay[2] = (int) screenC.y;
-    az[0] = (int) screenA.z;
-    az[1] = (int) screenB.z;
-    az[2] = (int) screenC.z;
-    fillTriangle(useGouraud);
+    if (screenA.y > 260)return;
+    ax[0] = Math.round(screenA.x);
+    ax[1] = Math.round(screenB.x);
+    ax[2] = Math.round(screenC.x);
+    ay[0] = Math.round(screenA.y);
+    ay[1] = Math.round(screenB.y);
+    ay[2] = Math.round(screenC.y);
+    az[0] = Math.round(screenA.z);
+    az[1] = Math.round(screenB.z);
+    az[2] = Math.round(screenC.z);
+    fillTriangleB(useGouraud);
   }
 
-  void fillTriangle(Point3i screenA, Point3i screenB, Point3i screenC,
+  void fillTriangleP3if(Point3i screenA, Point3i screenB, Point3i screenC,
                     float factor, boolean useGouraud) {
     ax[0] = screenA.x;
     ax[1] = screenB.x;
@@ -173,16 +183,16 @@ class TriangleRenderer {
     adjustVertex(ax, factor);
     adjustVertex(ay, factor);
     adjustVertex(az, factor);
-    fillTriangle(useGouraud);
+    fillTriangleB(useGouraud);
   }
 
-  private void adjustVertex(int[] t, float factor) {
+  private static void adjustVertex(int[] t, float factor) {
     float av = (t[0] + t[1] + t[2]) / 3f;
     for (int i = 0; i < 3; i++)
       t[i] += factor * (av - t[i]);
   }
 
-  private void fillTriangle(boolean useGouraud) {
+  private void fillTriangleB(boolean useGouraud) {
     if (az[0] <= 1 || az[1] <= 1 || az[2] <= 1)
       return;
     int cc0 = g3d.clipCode3(ax[0], ay[0], az[0]);
@@ -215,16 +225,14 @@ class TriangleRenderer {
       return;
     if (nLines > axW.length)
       reallocRasterArrays(nLines);
-
-    Rgb16[] gouraudW = useGouraud ? rgb16sW : null;
-    Rgb16[] gouraudE = useGouraud ? rgb16sE : null;
-
+    Rgb16[] gouraudW, gouraudE;
+    if (useGouraud) {
+      gouraudW = rgb16sW;
+      gouraudE = rgb16sE;
+    } else {
+      gouraudW = gouraudE = null;
+    }
     int dyMidMin = yMid - yMin;
-    //if (Thread.currentThread() != t)
-      //System.out.println("!!!!two renderers are working!");
-    //if (yMid < yMin || yMax < yMin || yMax < yMid)
-      //System.out.println("HUH? dyMidMin < 0!! "
-       //   + yMin + " " + yMid + " " + yMax + " ay012:" + ay[0] + " " + ay[1] + " " + ay[2]);
     if (dyMidMin == 0) {
       // flat top
       if (ax[iMidY] < ax[iMinY]) {
@@ -232,16 +240,15 @@ class TriangleRenderer {
         iMidY = iMinY;
         iMinY = t;
       }
-      /*  min --------  mid //
-       \         /
-       A \       / B
-       \ \     / /
-       \   /
-       max
-       */
-      //testString = "flat top1";
+      /*  
+         min ------- mid
+           \         /
+          A \       / B
+           \ \     / /
+              \   /
+               max
+      */
       generateRaster(nLines, iMinY, iMaxY, axW, azW, 0, gouraudW);
-      //testString = "flat top2";
       generateRaster(nLines, iMidY, iMaxY, axE, azE, 0, gouraudE);
     } else if (yMid == yMax) {
       // flat bottom
@@ -256,15 +263,12 @@ class TriangleRenderer {
        *   A /     \ B
        *  / /       \ \
        *   /         \
-       *  mid -------- max
+       *  mid ------ max
        */
-      //testString = "flat bottom1";
       generateRaster(nLines, iMinY, iMidY, axW, azW, 0, gouraudW);
-      //testString = "flat bottom2";
       generateRaster(nLines, iMinY, iMaxY, axE, azE, 0, gouraudE);
     } else {
       int dxMaxMin = ax[iMaxY] - ax[iMinY];
-      //int dzMaxMin = az[iMaxY] - az[iMinY];
       int roundFactor;
       roundFactor = nLines / 2;
       if (dxMaxMin < 0)
@@ -282,11 +286,8 @@ class TriangleRenderer {
 
         // Trick is that we need to overlap so as to generate the IDENTICAL
         // raster on each segment, but then we always throw out the FIRST raster
-        //testString = "rightmid1";
         generateRaster(nLines, iMinY, iMaxY, axW, azW, 0, gouraudW);
-        //testString = "rightmid2";
         generateRaster(dyMidMin + 1, iMinY, iMidY, axE, azE, 0, gouraudE);
-        //testString = "rightmid3";
         generateRaster(nLines - dyMidMin, iMidY, iMaxY, axE, azE, dyMidMin,
             gouraudE);
 
@@ -302,33 +303,18 @@ class TriangleRenderer {
          *       B->    max
          */
 
-        //testString = "leftmid1";
         generateRaster(dyMidMin + 1, iMinY, iMidY, axW, azW, 0, gouraudW);
-        //testString = "leftmid2";
         generateRaster(nLines - dyMidMin, iMidY, iMaxY, axW, azW, dyMidMin,
             gouraudW);
-        //testString = "leftmid3";
         generateRaster(nLines, iMinY, iMaxY, axE, azE, 0, gouraudE);
       }
     }
     g3d.setZMargin(5);
-    fillRaster(yMin, nLines, useGouraud, isClipped,
-        g3d.isPass2 ? 1 : 0);
+    if (useGouraud)
+      fillRasterG(yMin, nLines, isClipped, g3d.isPass2 ? 1 : 0);
+    else
+      fillRaster(yMin, nLines, isClipped, g3d.isPass2 ? 1 : 0);
     g3d.setZMargin(0);
-  }
-
-  private final static int DEFAULT = 64;
-
-  int[] axW = new int[DEFAULT], azW = new int[DEFAULT];
-  int[] axE = new int[DEFAULT], azE = new int[DEFAULT];
-  Rgb16[] rgb16sW, rgb16sE;
-  {
-    rgb16sW = new Rgb16[DEFAULT];
-    rgb16sE = new Rgb16[DEFAULT];
-    for (int i = DEFAULT; --i >= 0;) {
-      rgb16sW[i] = new Rgb16();
-      rgb16sE[i] = new Rgb16();
-    }
   }
 
   private void reallocRasterArrays(int n) {
@@ -343,20 +329,12 @@ class TriangleRenderer {
 
   private void generateRaster(int dy, int iN, int iS, int[] axRaster,
                               int[] azRaster, int iRaster, Rgb16[] gouraud) {
-    //if (dy == 0 || iRaster < 0) {
-    //System.out.println(" generateRaster nlines iRaster " + dy + " " + iRaster + " iN, iS:" +iN + " " + iS + "\n" +
-    // "N="+ax[iN]+","+ay[iN]+","+az[iN]+"\n" +
-    // "S="+ax[iS]+","+ay[iS]+","+az[iS]+"\n");
-    //return;
-    //}
     int xN = ax[iN], zN = az[iN];
     int xS = ax[iS], zS = az[iS];
     int dx = xS - xN, dz = zS - zN;
-    /*
-     * System.out.println("fillt dx dy dz "+ dx + " " + dy + " " + dz);
-    */
     int xCurrent = xN;
     int xIncrement, width, errorTerm;
+    System.out.println("genraster " + dy + " " + iN + " " + iS + " " + xN + " " + zN + " " + xS + " " + zS);
     if (dx >= 0) {
       xIncrement = 1;
       width = dx;
@@ -366,10 +344,6 @@ class TriangleRenderer {
       width = -dx;
       errorTerm = -dy + 1;
     }
-
-    /*
-     System.out.println("xN=" + xN + " xS=" + xS + " dy=" + dy + " dz=" + dz);
-     */
     int zCurrentScaled = (zN << 10) + (1 << 9);
     int roundingFactor;
     roundingFactor = dy / 2;
@@ -389,9 +363,6 @@ class TriangleRenderer {
     for (int y = 0, i = iRaster; y < dy; zCurrentScaled += zIncrementScaled, ++i, ++y) {
       axRaster[i] = xCurrent;
       azRaster[i] = zCurrentScaled >> 10;
-      /*
-       * System.out.println("y=" + (ay[iN]+y) + " x=" + axRaster[i]);
-      */
       xCurrent += xMajorIncrement;
       errorTerm += xMajorError;
       if (errorTerm > 0) {
@@ -406,26 +377,21 @@ class TriangleRenderer {
       rgb16Increment.diffDiv(rgb16sGouraud[iS], rgb16Base, dy);
       for (int i = iRaster, iMax = iRaster + dy; i < iMax; ++i)
         gouraud[i].setAndIncrement(rgb16Base, rgb16Increment);
-      if (VERIFY) {
-        Rgb16 north = rgb16sGouraud[iN];
-        Rgb16 generated = gouraud[iRaster];
-        if (north.getArgb() != generated.getArgb()) {
-          if (Logger.debugging) {
-            Logger.debug("north=" + north + "\ngenerated=" + generated);
-          }
-          throw new NullPointerException();
-        }
-        /*
-         if (rgb16Base.getArgb() != rgb16sGouraud[iS].getArgb())
-         throw new NullPointerException();
-         */
-      }
+//      if (VERIFY) {
+//        Rgb16 north = rgb16sGouraud[iN];
+//        Rgb16 generated = gouraud[iRaster];
+//        if (north.getArgb() != generated.getArgb()) {
+//          if (Logger.debugging) {
+//            Logger.debug("north=" + north + "\ngenerated=" + generated);
+//          }
+//          throw new NullPointerException();
+//        }
+//      }
     }
   }
 
-  private void fillRaster(int y, int numLines, boolean useGouraud,
+  private void fillRaster(int y, int numLines,
                           boolean isClipped, int correction) {
-    //Logger.debug("fillRaster("+y+","+numLines+","+paintFirstLine);
     int i = 0;
     if (y < 0) {
       numLines += y;
@@ -434,23 +400,17 @@ class TriangleRenderer {
     }
     if (y + numLines > g3d.height)
       numLines = g3d.height - y;
-    //int ytest=8;
     if (isClipped) {
       for (; --numLines >= correction; ++y, ++i) {
         int xW = axW[i];
         int pixelCount = axE[i] - xW + 1 - correction;
-        if (pixelCount > 0) {
-          //System.out.println("-plotrow y:" + y + " dx:" + pixelCount + " x:" + xW);
-          g3d.plotPixelsClipped(pixelCount, xW, y, azW[i], azE[i],
-              useGouraud ? rgb16sW[i] : null, useGouraud ? rgb16sE[i] : null);
-        }
+        if (pixelCount > 0)
+          g3d.plotPixelsClipped(pixelCount, xW, y, azW[i], azE[i], null, null);
       }
     } else {
-      //System.out.println("fill: " + numLines + " " + y + " " + (axE[0] - axW[0]));
       int xW;
-      for (;--numLines >= correction; ++y, ++i) {
+      for (; --numLines >= correction; ++y, ++i) {
         int pixelCount = axE[i] - (xW = axW[i]) + 1 - correction;
-        //System.out.println("pixelcount = " +pixelCount);
         if (correction == 1 && pixelCount < 0) {
           /*
            * The issue here is that some very long, narrow triangles can be skipped
@@ -461,14 +421,45 @@ class TriangleRenderer {
           pixelCount = 1;
           xW--;
         }
-        if (pixelCount > 0) {
-          
-        //   if(ytest == 0 || y==ytest)System.out.println("plotrow y:" + y + " dx:" + pixelCount + " x:" + xW + "-" + (xW + pixelCount - 1));
-           
-          //if(ytest == 0 || y==ytest)
-            g3d.plotPixelsUnclipped(pixelCount, xW, y, azW[i], azE[i],
-              useGouraud ? rgb16sW[i] : null, useGouraud ? rgb16sE[i] : null);
+        if (pixelCount > 0)
+          g3d.plotPixelsUnclipped(pixelCount, xW, y, azW[i], azE[i], null, null);
+      }
+    }
+  }
+
+  private void fillRasterG(int y, int numLines,
+                          boolean isClipped, int correction) {
+    int i = 0;
+    if (y < 0) {
+      numLines += y;
+      i -= y;
+      y = 0;
+    }
+    if (y + numLines > g3d.height)
+      numLines = g3d.height - y;
+    if (isClipped) {
+      for (; --numLines >= correction; ++y, ++i) {
+        int xW = axW[i];
+        int pixelCount = axE[i] - xW + 1 - correction;
+        if (pixelCount > 0)
+          g3d.plotPixelsClipped(pixelCount, xW, y, azW[i], azE[i], rgb16sW[i], rgb16sE[i]);
+      }
+    } else {
+      int xW;
+      for (; --numLines >= correction; ++y, ++i) {
+        int pixelCount = axE[i] - (xW = axW[i]) + 1 - correction;
+        if (correction == 1 && pixelCount < 0) {
+          /*
+           * The issue here is that some very long, narrow triangles can be skipped
+           * altogether because axE < axW.
+           * 
+           */
+
+          pixelCount = 1;
+          xW--;
         }
+        if (pixelCount > 0)
+          g3d.plotPixelsUnclipped(pixelCount, xW, y, azW[i], azE[i], rgb16sW[i], rgb16sE[i]);
       }
     }
   }

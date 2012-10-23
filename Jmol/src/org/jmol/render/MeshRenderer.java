@@ -388,7 +388,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
         pt1f.add(vB);
         pt1f.scale(1f / 2f);
         viewer.transformPtScr(pt1f, pt1i);
-        diameter = (int) (viewer.unscaleToScreen(pt1i.z, diameter) * 1000);
+        diameter = (int) Math.floor(viewer.unscaleToScreen(pt1i.z, diameter) * 1000);
       }
       if (iA == iB) {
         g3d.fillSphereI(diameter, sA);
@@ -400,7 +400,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
       pt1f.add(vB);
       pt1f.scale(1f / 2f);
       viewer.transformPtScr(pt1f, pt1i);
-      int mad = (int) (Math.abs(width) * 1000); 
+      int mad = (int) Math.floor(Math.abs(width) * 1000); 
       diameter = (exportType == GData.EXPORT_CARTESIAN ? mad 
           : viewer.scaleToScreen(pt1i.z, mad));
       if (diameter == 0)

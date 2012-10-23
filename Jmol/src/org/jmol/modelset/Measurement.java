@@ -334,25 +334,25 @@ public class Measurement {
           float vdw = ((Atom) getAtom(1)).getVanderwaalsRadiusFloat(viewer, EnumVdw.AUTO)
           + ((Atom) getAtom(2)).getVanderwaalsRadiusFloat(viewer, EnumVdw.AUTO);
           dist /= vdw;
-          return (andRound ? (int) (dist * 1000 + 0.5f)/10f : dist * 100);
+          return (andRound ? Math.round (dist * 1000)/10f : dist * 100);
         }
         units = "ang";
       }
         
       if (units.equals("nm"))
-        return (andRound ? (int) (dist * 100 + 0.5f) / 1000f : dist / 10);
+        return (andRound ? Math.round (dist * 100) / 1000f : dist / 10);
       if (units.equals("pm"))
-        return (andRound? (int) (dist * 1000 + 0.5f) / 10f : dist * 100);
+        return (andRound? Math.round (dist * 1000) / 10f : dist * 100);
       if (units.equals("au"))
-        return (andRound ? (int) (dist / JmolConstants.ANGSTROMS_PER_BOHR * 1000 + 0.5f) / 1000f : dist / JmolConstants.ANGSTROMS_PER_BOHR);
+        return (andRound ? Math.round (dist / JmolConstants.ANGSTROMS_PER_BOHR * 1000) / 1000f : dist / JmolConstants.ANGSTROMS_PER_BOHR);
     }
-    return (andRound ? (int) (dist * 100 + 0.5f) / 100f : dist);
+    return (andRound ? Math.round(dist * 100) / 100f : dist);
   }
   
   private String formatAngle(float angle) {
     String label = getLabelString();
     if (label.indexOf("%V") >= 0)
-      angle = ((int)(angle * 10 + (angle >= 0 ? 0.5f : -0.5f))) / 10f;
+      angle = Math.round(angle * 10) / 10f;
     return formatString(angle, "\u00B0", label);
   }
 

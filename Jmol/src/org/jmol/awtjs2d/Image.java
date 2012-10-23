@@ -53,29 +53,33 @@ class Image {
   }
 
   /**
-   * @param canvas  
+   * @param canvas
    * @return width
    */
   static int getWidth(Object canvas) {
     /**
      * @j2sNative
      * 
-     * return canvas.width;
+     *            return canvas.width;
      */
-    return 0;
+    {
+      return 0;
+    }
   }
 
   /**
-   * @param canvas  
+   * @param canvas
    * @return width
    */
   static int getHeight(Object canvas) {
     /**
      * @j2sNative
      * 
-     * return canvas.height;
+     *            return canvas.height;
      */
-    return 0;
+    {
+      return 0;
+    }
   }
 
   /**
@@ -90,20 +94,55 @@ class Image {
   }
 
   /**
-   * @param context  
-   * @param width 
-   * @param height 
+   * @param context
+   * @param width
+   * @param height
    * @return null
    */
   static int[] grabPixels(Object context, int width, int height) {
     /**
      * @j2sNative
      * 
-     * return context.getImageData(0, 0, width, height);
+     *            var data = context.getImageData(0, 0, width, height).data;
+     *            return this.toIntARGB(data);
      */
-    return null;
+    {
+      return null;
+    }
   }
 
+  static int[] toIntARGB(int[] imgData) {
+    /*
+     * red=imgData.data[0];
+     * green=imgData.data[1];
+     * blue=imgData.data[2];
+     * alpha=imgData.data[3];
+     */
+    int n = imgData.length / 4;
+    int[] iData = new int[n];
+    for (int i = 0, j = 0; ++i < n; j++) {
+      iData[i] = (imgData[j++] << 16) | (imgData[j++] << 8) | imgData[j++] | 0xFF000000;
+    }
+    return iData;
+  }
+  
+  static void fromIntARGB(int[] buf32, int[] buf8) {
+    /*
+     * red=imgData.data[0];
+     * green=imgData.data[1];
+     * blue=imgData.data[2];
+     * alpha=imgData.data[3];
+     */
+    int n = buf32.length;
+    if (buf8.length == n * 4)
+      for (int i = 0, j = 0; ++i < n;) {
+        buf8[j++] = (buf32[i] >> 16) & 0xFF;
+        buf8[j++] = (buf32[i] >> 8) & 0xFF;
+        buf8[j++] = buf32[i] & 0xFF;
+        buf8[j++] = 0xFF;
+      }
+  }
+  
   static int[] drawImageToBuffer(Object gOffscreen, Object imageOffscreen,
                                  Object imageobj, int width, int height,
                                  int bgcolor) {
@@ -111,6 +150,16 @@ class Image {
     return null;
   }
 
+  /**
+   * @param text  
+   * @param font3d 
+   * @param context 
+   * @param context2 
+   * @param width 
+   * @param height 
+   * @param ascent 
+   * @return array
+   */
   public static int[] getTextPixels(String text, JmolFont font3d, Object context,
                                     Object context2, int width, int height,
                                     int ascent) {
@@ -128,64 +177,83 @@ class Image {
     }
   }
 
-  static Object newBufferedImage(Object image, int w, int h) {
-    /**
-     * @j2sNative
-     * 
-     * return null; // would be for stereo
-     */
-    return null;
-  }
-
   /**
-   * @param windowWidth 
-   * @param windowHeight 
-   * @param pBuffer 
-   * @param windowSize 
-   * @param backgroundTransparent  
-   * @param display TODO
-   * @return   an Image
+   * @param windowWidth
+   * @param windowHeight
+   * @param pBuffer
+   * @param windowSize
+   * @param backgroundTransparent
+   * @param canvas
+   * @return a context(2d)
    */
   static Object allocateRgbImage(int windowWidth, int windowHeight,
-                                       int[] pBuffer, int windowSize, boolean backgroundTransparent, Object display) {
-    // the pixelBuffer itself is used for storage. 
-    return pBuffer;
+                                 int[] pBuffer, int windowSize,
+                                 boolean backgroundTransparent, Object canvas) {
+    /**
+     * @j2sNative 
+     * 
+     * canvas.buf32 = pBuffer; 
+     * return canvas;
+     * 
+     */
+    {
+      return null;
+    }
   }
 
   /**
-   * @param image 
-   * @param backgroundTransparent  
-   * @return Graphics object
+   * @param canvas  
+   * @param backgroundTransparent 
+   * @return context
    */
-  static Object getStaticGraphics(Object image, boolean backgroundTransparent) {
+  static Object getStaticGraphics(Object canvas, boolean backgroundTransparent) {
     // for text processing;
-    return null;
-    }
-
-  /**
-   * @param image  
-   * @return 
-   */
-  static Object getGraphics(Object image) {
     /**
      * @j2sNative
      * 
-     * return image.getContext();
+     * return this.getGraphics(canvas);
+     * 
      */
+    {
     return null;
+    }
+  }
+
+  /**
+   * @param canvas  
+   * @return context
+   */
+  static Object getGraphics(Object canvas) {
+    /**
+     * @j2sNative
+     * 
+     * return canvas.getContext("2d");
+     */
+    {
+      return null;
+    }
   }
 
   /**
    * 
-   * @param g
-   * @param img
+   * @param context
+   * @param canvas
    * @param x
    * @param y
    * @param width  unused in Jmol proper
    * @param height unused in Jmol proper
    */
-  static void drawImage(Object g, Object img, int x, int y, int width, int height) {
-    //((Graphics)g).drawImage((java.awt.Image) img, x, y, null);
+  static void drawImage(Object context, Object canvas, int x, int y, int width, int height) {
+    /**
+     * @j2sNative
+     * 
+     * this.fromIntARGB(canvas.buf32, canvas.buf8);
+     * context.putImageData(canvas.imgdata,x,y);
+     * 
+     */
+    {
+      fromIntARGB(null, null);
+    }
   }
 
   static void flush(Object image) {

@@ -62,7 +62,7 @@ public interface ApiPlatform {
 
   Object getStaticGraphics(Object image, boolean backgroundTransparent);
 
-  Object getGraphics(Object image1);
+  Object getGraphics(Object image);
 
   int getImageWidth(Object image);
 
@@ -126,5 +126,7 @@ public interface ApiPlatform {
   JmolFileInterface newFile(String name);
 
   boolean isSingleThreaded();
+
+  void notifyEndOfRendering();
 
 }

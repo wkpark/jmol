@@ -121,7 +121,7 @@ public class DrawRenderer extends MeshRenderer {
         pt1f.add(vertices[i]);
       pt1f.scale(1f / n);
       viewer.transformPtScr(pt1f, pt1i);
-      diameter = viewer.scaleToScreen(pt1i.z, (int) (width * 1000));
+      diameter = viewer.scaleToScreen(pt1i.z, (int) Math.floor(width * 1000));
       if (diameter == 0)
         diameter = 1;
     }
@@ -158,7 +158,7 @@ public class DrawRenderer extends MeshRenderer {
       if (dmesh.scale > 0)
         width *= dmesh.scale;
       if (width > 0)
-        diameter = viewer.scaleToScreen(pt1i.z, (int) (width * 1000));
+        diameter = viewer.scaleToScreen(pt1i.z, (int) Math.floor(width * 1000));
       if (diameter > 0 && (mesh.drawTriangles || mesh.fillTriangles))
         g3d.drawFilledCircle(colix, mesh.fillTriangles ? colix : 0, diameter,
             pt1i.x, pt1i.y, pt1i.z);
@@ -198,10 +198,10 @@ public class DrawRenderer extends MeshRenderer {
       float degrees = theta / 5;
       while (Math.abs(degrees) > 5)
         degrees /= 2;
-      nPoints = (int) (theta / degrees + 0.5f) + 1;
+      nPoints = Math.round (theta / degrees) + 1;
       while (nPoints < 10) {
         degrees /= 2;
-        nPoints = (int) (theta / degrees + 0.5f) + 1;
+        nPoints = Math.round (theta / degrees) + 1;
       }
       mat.setAA(AxisAngle4f.newVA(vTemp, (float) (degrees * Math.PI / 180)));
       screens = viewer.allocTempScreens(nPoints);
@@ -325,8 +325,8 @@ public class DrawRenderer extends MeshRenderer {
     for (int i = 0; i < 3; i++) {
       viewer.transformPtScr(vertices[i], screens[i]);
       if (offsetside != 0) {
-        screens[i].x += (int) vpt2.x;
-        screens[i].y += (int) vpt2.y;
+        screens[i].x += Math.round(vpt2.x);
+        screens[i].y += Math.round(vpt2.y);
         vpt1.set(screens[i].x, screens[i].y, screens[i].z);
         viewer.unTransformPoint(vpt1 , vertices[i]);
       }
@@ -358,8 +358,8 @@ public class DrawRenderer extends MeshRenderer {
     vpt1.scaleAdd2(dmesh.scale * scaleFactor, vpt1, vpt0);
     if (diameter == 0)
       diameter = 1;
-    pt1i.set((int) vpt0.x, (int) vpt0.y, (int) vpt0.z);
-    pt2i.set((int) vpt1.x, (int) vpt1.y, (int) vpt1.z);
+    pt1i.set(Math.round(vpt0.x), Math.round(vpt0.y),Math.round(vpt0.z));
+    pt2i.set(Math.round(vpt1.x), Math.round(vpt1.y), Math.round(vpt1.z));
     if (diameter < 0)
       g3d.drawDottedLine(pt1i, pt2i);
     else
@@ -400,8 +400,8 @@ public class DrawRenderer extends MeshRenderer {
     pt1f.setT(pt2f);
     pt1f.sub(vTemp);
     if (isTransformed) {
-      pt1i.set((int) pt1f.x, (int) pt1f.y, (int) pt1f.z);
-      pt2i.set((int) pt2f.x, (int) pt2f.y, (int) pt2f.z);
+      pt1i.set(Math.round(pt1f.x),Math.round(pt1f.y),Math.round(pt1f.z));
+      pt2i.set(Math.round(pt2f.x), Math.round(pt2f.y), Math.round(pt2f.z));
     } else {
       viewer.transformPtScr(pt2f, pt2i);
       viewer.transformPtScr(pt1f, pt1i);
@@ -414,7 +414,7 @@ public class DrawRenderer extends MeshRenderer {
       headDiameter = diameter * 3;
     } else {
       vTemp.set(pt2i.x - pt1i.x, pt2i.y - pt1i.y, pt2i.z - pt1i.z);
-      headDiameter = (int) (vTemp.length() * .5);
+      headDiameter = Math.round(vTemp.length() * .5f);
       diameter = headDiameter / 5;
     }
     if (diameter < 1)
@@ -429,7 +429,7 @@ public class DrawRenderer extends MeshRenderer {
   private final BitSet bsHandles = new BitSet();
   
   private void renderHandles() {
-    int diameter = (int) (10 * imageFontScaling);
+    int diameter = Math.round(10 * imageFontScaling);
     switch (drawType) {
     case NONE:
       return;
@@ -476,7 +476,7 @@ public class DrawRenderer extends MeshRenderer {
         if (drawType != EnumDrawType.ARC)
           pt1f.setT(vertices[dmesh.polygonIndexes[i][pt]]);
         viewer.transformPtScr(pt1f, pt1i);
-        int offset = (int) (5 * imageFontScaling);
+        int offset = Math.round(5 * imageFontScaling);
         g3d.drawString(s, null, pt1i.x + offset, pt1i.y - offset, pt1i.z,
             pt1i.z);
         break;

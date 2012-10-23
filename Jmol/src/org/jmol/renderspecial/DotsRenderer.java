@@ -124,11 +124,11 @@ public class DotsRenderer extends ShapeRenderer {
       if (faceMap != null)
         faceMap[iDot] = i;
       screenCoordinates[i++] = x
-          + (int) ((scaledRadius * vertex.x) + (vertex.x < 0 ? -0.5 : 0.5));
+          + Math.round (scaledRadius * vertex.x);
       screenCoordinates[i++] = y
-          + (int) ((scaledRadius * vertex.y) + (vertex.y < 0 ? -0.5 : 0.5));
+          + Math.round(scaledRadius * vertex.y);
       screenCoordinates[i++] = z
-          + (int) ((scaledRadius * vertex.z) + (vertex.z < 0 ? -0.5 : 0.5));
+          + Math.round(scaledRadius * vertex.z);
       ++nPoints;
     }
     return nPoints;

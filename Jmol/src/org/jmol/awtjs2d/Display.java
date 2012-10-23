@@ -25,6 +25,9 @@ class Display {
      * widthHeight[0] = canvas.getWidth();
      * widthHeight[1] = canvas.getHeight();
      */
+    {
+      
+    }
   }
   
   static boolean hasFocus(Object canvas) {
@@ -33,7 +36,7 @@ class Display {
      * 
      */
     {
-      System.out.println(canvas);
+      System.out.println("Display.hasFocus");
     }
     return true;
   }
@@ -44,7 +47,7 @@ class Display {
      * 
      */
     {
-      System.out.println(canvas);
+      System.out.println("requestFocus");
     }
   }
 
@@ -107,6 +110,7 @@ class Display {
       System.out.println("" + canvas + ptTemp);
     }
   }
+
 
 
 }

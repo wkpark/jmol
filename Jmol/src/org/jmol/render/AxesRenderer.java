@@ -194,8 +194,8 @@ public class AxesRenderer extends FontLineShapeRenderer {
       x += dx;
       y += dy;
     }
-    float xStrBaseline = x - strWidth / 2;
-    float yStrBaseline = y + strAscent / 2;
+    double xStrBaseline = Math.floor(x - strWidth / 2f);
+    double yStrBaseline = Math.floor(y + strAscent / 2f);
     g3d.drawString(str, font3d, (int) xStrBaseline, (int) yStrBaseline, (int) z, (int) z);
   }
 }

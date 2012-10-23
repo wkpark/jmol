@@ -1510,12 +1510,12 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         if (vContours == null) {
           if (thisMesh.jvxlData.contourValues == null)
             return;
-          int i = (int) (f * thisMesh.jvxlData.contourValues.length);
+          int i = (int) Math.floor(f * thisMesh.jvxlData.contourValues.length);
           if (i < 0 || i > thisMesh.jvxlData.contourValues.length)
             return;
           s = "" + thisMesh.jvxlData.contourValues[i];
         } else {
-          int i = (int) (f * vContours.length);
+          int i = (int) Math.floor(f * vContours.length);
           if (i < 0 || i > vContours.length)
             return;
           s = ""

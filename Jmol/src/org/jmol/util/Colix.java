@@ -348,8 +348,8 @@ public class Colix {
     if (Float.isNaN(translucentLevel) || translucentLevel >= 255
         || translucentLevel == 1.0)
       return (short) ((colix & ~TRANSLUCENT_MASK) | TRANSPARENT);
-    int iLevel = (int) (translucentLevel < 1 ? translucentLevel * 256
-        : translucentLevel <= 9 ? ((int) (translucentLevel - 1)) << 5
+    int iLevel = (int) Math.floor(translucentLevel < 1 ? translucentLevel * 256
+        : translucentLevel <= 9 ? ((int) Math.floor(translucentLevel - 1)) << 5
             : translucentLevel < 15 ? 8 << 5 : translucentLevel);
     iLevel = (iLevel >> 5) % 16;
     return (short) (colix & ~TRANSLUCENT_MASK | (iLevel << TRANSLUCENT_SHIFT));

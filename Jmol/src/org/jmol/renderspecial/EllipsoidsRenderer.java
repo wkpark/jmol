@@ -99,7 +99,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     drawDots = viewer.getBooleanProperty("ellipsoidDots") && !wireframeOnly;
     drawFill = viewer.getBooleanProperty("ellipsoidFill") && !wireframeOnly;
     fillArc = drawFill && !drawBall;
-    diameter0 = (int) (((Float) viewer.getParameter("ellipsoidAxisDiameter"))
+    diameter0 = Math.round (((Float) viewer.getParameter("ellipsoidAxisDiameter"))
         .floatValue() * 1000);
     //perspectiveOn = viewer.getPerspectiveDepth();
     /* general logic:
@@ -271,11 +271,11 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       pt1.scale(f);
 
       matEllipsoidToScreen.transform(pt1);
-      screens[i].set((int) (s0.x + pt1.x * perspectiveFactor),
-          (int) (s0.y + pt1.y * perspectiveFactor), (int) (pt1.z + s0.z));
+      screens[i].set(Math.round (s0.x + pt1.x * perspectiveFactor),
+          Math.round (s0.y + pt1.y * perspectiveFactor), Math.round(pt1.z + s0.z));
     }
     dx = 2 + viewer.scaleToScreen(s0.z, 
-        (int) (f * (Float.isNaN(factoredLengths[2]) ? 1.0 : factoredLengths[2]) * 1000));
+        Math.round(f * (Float.isNaN(factoredLengths[2]) ? 1.0f : factoredLengths[2]) * 1000));
   }
 
   private void renderAxes() {

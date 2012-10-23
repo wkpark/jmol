@@ -181,7 +181,7 @@ class VolumeDataReader extends SurfaceReader {
     if (resolution != Float.MAX_VALUE)
       ptsPerAngstrom = resolution;
       
-    nGrid = (int) (range * ptsPerAngstrom) + 1;
+    nGrid = (int) Math.floor(range * ptsPerAngstrom) + 1;
     if (nGrid > gridMax) {
       if ((dataType & Parameters.HAS_MAXGRID) > 0) {
         if (resolution == Float.MAX_VALUE) {
@@ -200,7 +200,7 @@ class VolumeDataReader extends SurfaceReader {
     ptsPerAngstrom = (nGrid - 1) / range;
     if (ptsPerAngstrom < minPointsPerAngstrom) {
       ptsPerAngstrom = minPointsPerAngstrom;
-      nGrid = (int) (ptsPerAngstrom * range + 1);
+      nGrid = (int) Math.floor(ptsPerAngstrom * range + 1);
       ptsPerAngstrom = (nGrid - 1) / range;
     }
     d = volumeData.volumetricVectorLengths[index] = 1f / ptsPerAngstrom;

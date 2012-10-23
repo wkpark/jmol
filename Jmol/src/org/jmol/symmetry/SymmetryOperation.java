@@ -613,7 +613,7 @@ class SymmetryOperation extends Matrix4f {
             Quaternion.getQuaternionFrame(pt00, pt01, pt02)));
     Point3f pa1 = (Point3f) info[0];
     Vector3f ax1 = (Vector3f) info[1];
-    int ang1 = (int) Math.abs(approx(((Point3f) info[3]).x, 1));
+    int ang1 = (int) Math.abs(Parser.approx(((Point3f) info[3]).x, 1));
     float pitch1 = approx(((Point3f) info[3]).y);
 
     if (haveinversion) {
@@ -807,16 +807,16 @@ class SymmetryOperation extends Matrix4f {
       if (haveinversion) {
         pt1.setT(pa1);
         pt1.add(vtemp);
-        ang2 = (int) Measure.computeTorsion(ptinv, pa1, pt1, p0, true);
+        ang2 = Math.round(Measure.computeTorsion(ptinv, pa1, pt1, p0, true));
       } else if (pitch1 == 0) {
         pt1.setT(pa1);
         ptemp.scaleAdd2(1, pt1, vtemp);
-        ang2 = (int) Measure.computeTorsion(pt00, pa1, ptemp, p0, true);
+        ang2 = Math.round(Measure.computeTorsion(pt00, pa1, ptemp, p0, true));
       } else {
         ptemp.setT(pa1);
         ptemp.add(vtemp);
         pt1.scaleAdd2(0.5f, vtemp, pa1);
-        ang2 = (int) Measure.computeTorsion(pt00, pa1, ptemp, p0, true);
+        ang2 = Math.round(Measure.computeTorsion(pt00, pa1, ptemp, p0, true));
       }
 
       if (ang2 != 0)
@@ -1219,11 +1219,7 @@ class SymmetryOperation extends Matrix4f {
   }
   
   private static float approx(float f) {
-    return approx(f, 100);
-  }
-
-  private static float approx(float f, float n) {
-    return ((int) (f * n + 0.5f * (f < 0 ? -1 : 1)) / n);
+    return Parser.approx(f, 100);
   }
 
   public static void normalizeTranslation(Matrix4f operation) {

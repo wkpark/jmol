@@ -217,7 +217,7 @@ abstract public class JmolViewer {
 //    return getScreenImage(null);
 //  }
 
-  abstract public Object getScreenImage(Object g);
+  abstract public Object getScreenImageBuffer(Object g);
   abstract public void releaseScreenImage();
   
   abstract public void writeTextFile(String string, String data);

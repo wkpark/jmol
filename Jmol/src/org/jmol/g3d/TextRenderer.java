@@ -120,8 +120,8 @@ class TextRenderer {
     //int subscale = 1; //could be something less than that
     int w = 0;
     int len = text.length();
-    int suboffset = (int)(font3d.getHeight() * 0.25);
-    int supoffset = -(int)(font3d.getHeight() * 0.3);
+    int suboffset = Math.round(font3d.getHeight() * 0.25f);
+    int supoffset = -Math.round(font3d.getHeight() * 0.3f);
     for (int i = 0; i < len; i++) {
       if (text.charAt(i) == '<') {
         if (i + 4 < len && text.substring(i, i + 5).equals("<sub>")) {

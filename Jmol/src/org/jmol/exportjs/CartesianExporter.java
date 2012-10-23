@@ -277,12 +277,12 @@ abstract public class CartesianExporter extends Exporter {
   void fillCylinderScreen(short colix, byte endcaps, int screenDiameter,
                           Point3f screenA, Point3f screenB, Point3f ptA, Point3f ptB, float radius) {
     if (ptA != null) {
-      drawCylinder(ptA, ptB, colix, colix, endcaps, (int) (radius * 2000f), -1);
+      drawCylinder(ptA, ptB, colix, colix, endcaps, Math.round(radius * 2000f), -1);
       return;
     }
     
     // vectors, polyhedra
-    int mad = (int) (viewer.unscaleToScreen((screenA.z + screenB.z) / 2,
+    int mad = Math.round(viewer.unscaleToScreen((screenA.z + screenB.z) / 2,
         screenDiameter) * 1000);
     fillCylinderScreenMad(colix, endcaps, mad, screenA, screenB);
   }

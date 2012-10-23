@@ -424,7 +424,7 @@ abstract public class AtomCollection {
                 + " \"" + d + " ? " + atom.getInfo() + "\"");
           dMin = Math.min(d, dMin);
         }
-        int d = surfaceDistance100s[i] = (int) (dMin * 100);
+        int d = surfaceDistance100s[i] = (int) Math.floor(dMin * 100);
         surfaceDistanceMax = Math.max(surfaceDistanceMax, d);
       }
     }
@@ -599,7 +599,7 @@ abstract public class AtomCollection {
         break;
       case Token.occupancy:
         if (iValue < 2)
-          iValue = (int) (100 * fValue);
+          iValue = (int) Math.floor(100 * fValue);
         if (setOccupancy(i, iValue))
           taintAtom(i, TAINT_OCCUPANCY);
         break;

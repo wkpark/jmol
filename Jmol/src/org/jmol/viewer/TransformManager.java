@@ -654,17 +654,17 @@ public abstract class TransformManager {
   int percentToPixels(char xyz, float percent) {
     switch(xyz) {
     case 'x':
-      return (int) (percent / 100 * width);
+      return (int) Math.floor(percent / 100 * width);
     case 'y':
-      return (int) (percent / 100 * height);
+      return (int) Math.floor(percent / 100 * height);
     case 'z':
-      return (int) (percent / 100 * screenPixelCount);
+      return (int) Math.floor(percent / 100 * screenPixelCount);
     }
     return 0;
   }
 
   int angstromsToPixels(float distance) {
-    return (int) (scalePixelsPerAngstrom * distance);
+    return (int) Math.floor(scalePixelsPerAngstrom * distance);
   }
 
 
@@ -1495,7 +1495,7 @@ public abstract class TransformManager {
     if (slabRange < 1)
       slabValue = zValueFromPercent(slabPercentSetting);
     else
-      slabValue = (int) (modelCenterOffset * slabRange / (2 * modelRadius) * (zoomPercentSetting / 100));
+      slabValue = (int) Math.floor(modelCenterOffset * slabRange / (2 * modelRadius) * (zoomPercentSetting / 100));
     depthValue = zValueFromPercent(depthPercentSetting);
     if (zSlabPercentSetting == zDepthPercentSetting) {
       zSlabValue = slabValue;
@@ -1524,7 +1524,7 @@ public abstract class TransformManager {
   }
 
   int zValueFromPercent(int zPercent) {
-    return (int) ((1 - zPercent / 50f) * modelRadiusPixels + modelCenterOffset);
+    return (int) Math.floor((1 - zPercent / 50f) * modelRadiusPixels + modelCenterOffset);
   }
   
   synchronized protected void calcTransformMatrix() {
@@ -1600,8 +1600,8 @@ public abstract class TransformManager {
   private Point3i transformScreenPoint(Point3f ptXyp) {
     // just does the processing for [x y] and [x y %]
     if (ptXyp.z == -Float.MAX_VALUE) {
-      point3iScreenTemp.x = (int) (ptXyp.x / 100 * screenWidth);
-      point3iScreenTemp.y = (int) ((1 - ptXyp.y / 100) * screenHeight);
+      point3iScreenTemp.x = (int) Math.floor(ptXyp.x / 100 * screenWidth);
+      point3iScreenTemp.y = (int) Math.floor((1 - ptXyp.y / 100) * screenHeight);
     } else {
       point3iScreenTemp.x = (int) ptXyp.x;
       point3iScreenTemp.y = (screenHeight - (int) ptXyp.y);
@@ -1730,7 +1730,7 @@ public abstract class TransformManager {
       if (dTrans.z != 0)
         translateToPercent('z', transZ + dTrans.z * i / totalSteps);
       if (dSlab != 0)
-        slabToPercent((int) (slab + dSlab * i / totalSteps));
+        slabToPercent((int) Math.floor(slab + dSlab * i / totalSteps));
       int timeSpent = (int) (System.currentTimeMillis() - timeBegin);
       int timeAllowed = i * timePerStep;
       if (timeSpent < timeAllowed) {

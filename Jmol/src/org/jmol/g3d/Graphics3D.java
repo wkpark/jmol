@@ -205,7 +205,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   private int argbNoisyUp, argbNoisyDn;
 
   private JmolFont currentFont;
-  private Pixel pixel;
+  private Pixelator pixel;
 
   protected int zMargin;
   
@@ -398,7 +398,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   
   @Override
   public Object getScreenImage() {
-    return platform.imagePixelBuffer;
+    return platform.bufferedImage;
   }
 
   @Override
@@ -418,9 +418,9 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   public void setZShade(boolean zShade, int zSlab, int zDepth, int zShadePower) {
     super.setZShade(zShade, zSlab, zDepth, zShadePower);
     if (zShade) {
-      pixel = new ShadePixel();
+      pixel = new PixelatorShaded(this);
     } else {
-      pixel = new Pixel();
+      pixel = new Pixelator(this);
     }
 
   }
@@ -567,7 +567,8 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   
   @Override
   public void setColor(int argb) {
-    super.setColor(argb);
+    // note -- super.setColor did not work here, presumably because setColor is part of JmolRendererInterface?
+    argbCurrent = argb;
     argbNoisyUp = argbNoisyDn = argb;
   }
   
@@ -613,55 +614,6 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     pixel.addPixel(offset, z, p);
   }
   
-  protected class Pixel {
-    void addPixel(int offset, int z, int p) {
-      if (!isPass2) {
-        zbuf[offset] = z;
-        pbuf[offset] = p;
-        return;
-      }
-      int zT = zbufT[offset];
-      if (z < zT) {
-        // new in front -- merge old translucent with opaque
-        // if (zT != Integer.MAX_VALUE)
-        int argb = pbufT[offset];
-        if (!translucentCoverOnly && argb != 0 && zT - z > zMargin)
-          mergeBufferPixel(pbuf, argb, offset, bgcolor);
-        zbufT[offset] = z;
-        pbufT[offset] = p & translucencyMask;
-      } else if (z == zT) {
-      } else if (!translucentCoverOnly && z - zT > zMargin) {
-          // oops-out of order
-          mergeBufferPixel(pbuf, p & translucencyMask, offset, bgcolor);
-      }
-    }
-  }
-  
-  protected class ShadePixel extends Pixel {
-
-    @Override
-    void addPixel(int offset, int z, int p) {
-      if (z > zDepth)
-        return;
-      if (z <= zDepth && z >= zSlab) {
-        int pR = p & 0xFF;
-        int pG = (p & 0xFF00) >> 8;
-        int pB = (p & 0xFF0000) >> 16;
-        int pA = (p & 0xFF000000);
-        float f = (float)(zDepth - z) / (zDepth - zSlab);
-        if (zShadePower > 1) {
-          for (int i = 0; i < zShadePower; i++)
-            f *= f;
-        }
-        pR = zShadeR + (int) (f * (pR - zShadeR));
-        pG = zShadeG + (int) (f * (pG - zShadeG));
-        pB = zShadeB + (int) (f * (pB - zShadeB));        
-        p = (pB << 16) | (pG << 8) | pR | pA;
-      }
-      super.addPixel(offset, z, p);
-    }
-  }
-
   public void drawFilledCircle(short colixRing, short colixFill, int diameter,
                                int x, int y, int z) {
     if (isClippedZ(z))
@@ -755,7 +707,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
    */
   public void fillSphere(int diameter, Point3f center) {
     // from hermite ribbon
-    fillSphereXYZ(diameter, (int)center.x, (int)center.y, (int)center.z);
+    fillSphereXYZ(diameter, Math.round(center.x), Math.round(center.y), Math.round(center.z));
   }
 
   public void fillEllipsoid(Point3f center, Point3f[] points, int x, int y,
@@ -985,7 +937,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     return currentFont;
   }
 
-  boolean currentlyRendering;
+  private boolean currentlyRendering;
 
   /*
   private void setRectClip(int x, int y, int width, int height) {
@@ -1221,7 +1173,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
                            int xScreenC, int yScreenC, int zScreenC) {
     // polyhedra
     setColorNoisy(getShadeIndex(normix));
-    triangle3d.fillTriangle( xScreenA, yScreenA, zScreenA,
+    triangle3d.fillTriangleXYZ( xScreenA, yScreenA, zScreenA,
         xScreenB, yScreenB, zScreenB,
         xScreenC, yScreenC, zScreenC, false);
   }
@@ -1229,13 +1181,13 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   public void fillTriangle3f(Point3f screenA, Point3f screenB, Point3f screenC) {
     // rockets
     setColorNoisy(getShadeIndex(screenA, screenB, screenC));
-    triangle3d.fillTriangle(screenA, screenB, screenC, false);
+    triangle3d.fillTriangleP3f(screenA, screenB, screenC, false);
   }
 
   public void fillTriangle3i(Point3i screenA, Point3i screenB, Point3i screenC,
                              Point3f ptA, Point3f ptB, Point3f ptC) {
     // cartoon DNA plates
-    triangle3d.fillTriangle(screenA, screenB, screenC, false);
+    triangle3d.fillTriangleP3i(screenA, screenB, screenC, false);
   }
 
   public void fillTriangle(Point3i screenA, short colixA,
@@ -1257,7 +1209,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
           getShades(colixC)[getShadeIndex(normixC)]);
       useGouraud = true;
     }
-    triangle3d.fillTriangle(screenA, screenB, screenC, factor,
+    triangle3d.fillTriangleP3if(screenA, screenB, screenC, factor,
         useGouraud);
   }
 
@@ -1278,7 +1230,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
                             getShades(colixC)[getShadeIndex(normixC)]);
       useGouraud = true;
     }
-    triangle3d.fillTriangle(screenA, screenB, screenC, useGouraud);
+    triangle3d.fillTriangleP3i(screenA, screenB, screenC, useGouraud);
   }
 
   private void setTriangleColixAndShadeIndex(short colix, int shadeIndex) {
@@ -1324,8 +1276,8 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
                                 Point3f screenC, Point3f screenD) {
     // hermite, rockets, cartoons
     setColorNoisy(getShadeIndex(screenA, screenB, screenC));
-    triangle3d.fillTriangle(screenA, screenB, screenC, false);
-    triangle3d.fillTriangle(screenA, screenC, screenD, false);
+    triangle3d.fillTriangleP3f(screenA, screenB, screenC, false);
+    triangle3d.fillTriangleP3f(screenA, screenC, screenD, false);
   }
 
   public void fillQuadrilateral(Point3i screenA, short colixA, short normixA,
@@ -1610,7 +1562,8 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     // for isosurface Triangle3D.fillRaster
     if (count <= 0)
       return;
-    int seed = (x << 16) + (y << 1) ^ 0x33333333;
+    int seed = ((x << 16) + (y << 1) ^ 0x33333333) & 0x7FFFFFFF;
+    System.out.println(x + " " + y + " " + seed + " " + count);
     boolean flipflop = ((x ^ y) & 1) != 0;
     // scale the z coordinates;
     int zScaled = (zAtLeft << 10) + (1 << 9);
@@ -1887,9 +1840,9 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     boolean antialiased = isAntialiased();
     setColix(navDepth < 0 ? Colix.RED
         : navDepth > 100 ? Colix.GREEN : Colix.GOLD);
-    int x = Math.max(Math.min(width, (int) navOffset.x), 0);
-    int y = Math.max(Math.min(height, (int) navOffset.y), 0);
-    int z = (int) navOffset.z + 1;
+    int x = Math.max(Math.min(width, Math.round(navOffset.x)), 0);
+    int y = Math.max(Math.min(height, Math.round(navOffset.y)), 0);
+    int z = Math.round(navOffset.z) + 1;
     // TODO: fix for antialiasDisplay
     int off = (antialiased ? 8 : 4);
     int h = (antialiased ? 20 : 10);

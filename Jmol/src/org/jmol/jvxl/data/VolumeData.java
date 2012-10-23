@@ -357,7 +357,7 @@ public class VolumeData implements VolumeDataInterface {
     ptXyzTemp.set(x, y, z);
     ptXyzTemp.sub(volumetricOrigin);
     inverseMatrix.transform(ptXyzTemp);
-    pt3i.set((int) ptXyzTemp.x, (int) ptXyzTemp.y, (int) ptXyzTemp.z);
+    pt3i.set(Math.round(ptXyzTemp.x), Math.round(ptXyzTemp.y), Math.round(ptXyzTemp.z));
   }
 
   public boolean isPeriodic;
@@ -423,11 +423,11 @@ public class VolumeData implements VolumeDataInterface {
         x += xMax;
       while (x >= xMax)
         x -= xMax;
-      return (int) x;
+      return (int) Math.floor(x);
     } 
     if (x < 0)
       return 0;
-    int floor = (int) x;
+    int floor = (int) Math.floor(x);
     return (floor > xMax ? xMax : floor);
   }
 

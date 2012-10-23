@@ -73,8 +73,8 @@ public class EchoRenderer extends ShapeRenderer {
       return;
     byte fid = g3d.getFontFidFS("Monospaced", 14 * imageFontScaling);
     g3d.setFont(fid);
-    int y = (int) (viewer.getScreenHeight() * (g3d.isAntialiased() ? 2 : 1) - 10 * imageFontScaling);
-    int x = (int) (5 * imageFontScaling);
+    int y = (int) Math.floor(viewer.getScreenHeight() * (g3d.isAntialiased() ? 2 : 1) - 10 * imageFontScaling);
+    int x = (int) Math.floor(5 * imageFontScaling);
     g3d.drawStringNoSlab(frameTitle, null, x, y, 0);
   }
 }

@@ -1025,8 +1025,8 @@ abstract public class ModelCollection extends BondCollection {
     //only used in the case of select model = someVariable
     //2.1 and 2.10 will be ambiguous and reduce to 2.1  
 
-    int file = (int) (fDotM);
-    int model = (int) ((fDotM - file + 0.00001) * 10000);
+    int file = (int) Math.floor(fDotM);
+    int model = (int) Math.floor((fDotM - file + 0.00001) * 10000);
     while (model != 0 && model % 10 == 0)
       model /= 10;
     return file * 1000000 + model;

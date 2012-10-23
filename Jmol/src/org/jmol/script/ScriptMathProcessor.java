@@ -1094,12 +1094,12 @@ class ScriptMathProcessor {
       for (int i = list.size(); --i >= 0; )
         data[i] = ScriptVariable.fValue(list.get(i));
     }
-    int nbins = (int) ((f1 - f0) / df + 0.01f);
+    int nbins = (int) Math.floor((f1 - f0) / df + 0.01f);
     int[] array = new int[nbins];
     int nPoints = data.length;
     for (int i = 0; i < nPoints; i++) {
       float v = data[i];
-      int bin = (int) ((v - f0) / df);
+      int bin = (int) Math.floor((v - f0) / df);
       if (bin < 0)
         bin = 0;
       else if (bin >= nbins)
@@ -3187,7 +3187,7 @@ class ScriptMathProcessor {
         f = x1.asFloat();
         // neg is scientific notation
         if (n == 0)
-          return addXInt((int) (f + 0.5f * (f < 0 ? -1 : 1)));
+          return addXInt(Math.round(f));
         s = TextFormat.formatDecimal(f, n);
         return addXStr(s);
       case Token.string:
@@ -3313,7 +3313,7 @@ class ScriptMathProcessor {
       switch (x1.tok) {
       default:
         return addXInt(f == 0 ? 0
-            : (int) (x1.asFloat() / x2.asFloat()));
+            : (int) Math.floor(x1.asFloat() / x2.asFloat()));
       case Token.point4f:
         if (f == 0)
           return addXPt4(Point4f.new4(Float.NaN, Float.NaN, Float.NaN,

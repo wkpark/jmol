@@ -177,8 +177,8 @@ class Dsn6BinaryReader extends MapFileReader {
     float dmaxError1 = (255 - header17 - 0.5f) * header19 / (header16 - 0.5f);
     float dmaxError2 = (255 - header17 + 0.5f) * header19 / (header16 + 0.5f);
 
-    float dminError = (int)((dminError2 - dminError1) / 0.002f) * 0.001f;
-    float dmaxError = (int)((dmaxError2 - dmaxError1) / 0.002f) * 0.001f;
+    float dminError = Math.round((dminError2 - dminError1) / 0.002f) * 0.001f;
+    float dmaxError = Math.round((dmaxError2 - dmaxError1) / 0.002f) * 0.001f;
     
     Logger.info("DNS6 dmin,dmax = " + dmin + "+/-" + dminError + "," + dmax + "+/-" + dmaxError);
 

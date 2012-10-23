@@ -73,7 +73,7 @@ abstract class CageRenderer extends FontLineShapeRenderer {
       zSum += screens[i].z;
     }
     
-    int diameter = getDiameter((int) (zSum / 8), mad);
+    int diameter = getDiameter((int) Math.floor(zSum / 8), mad);
     int axisPt = 2;
     char edge = 0;
     allowedEdges0 &= (isPolymer ? 0x1 : isSlab ? 0x55 : 0xFF);

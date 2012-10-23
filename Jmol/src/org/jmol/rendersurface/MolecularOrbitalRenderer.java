@@ -51,8 +51,8 @@ public class MolecularOrbitalRenderer extends IsosurfaceRenderer {
 //    }
     byte fid = g3d.getFontFidFS("Monospaced", 14 * imageFontScaling);
     g3d.setFont(fid);
-    int lineheight = (int) (15 * imageFontScaling);
-    int x = (int) (5 * imageFontScaling);
+    int lineheight = Math.round(15 * imageFontScaling);
+    int x = Math.round(5 * imageFontScaling);
     int y = lineheight;
 
     for (int i = 0; i < mesh.title.length; i++)

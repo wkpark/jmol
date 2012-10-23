@@ -718,8 +718,7 @@ Species   Ion     s      p      d      f     Total  Charge (e)
       float dy = (qvec.y == 0 ? 1 : qvec.y) * ny;
       float dz = (qvec.z == 0 ? 1 : qvec.z) * nz;
       
-      if (Math.abs(dx - (int) dx) > 0.001 || Math.abs(dy - (int) dy) > 0.001
-          || Math.abs(dz - (int) dz) > 0.001)
+      if (!isInt(dx) || !isInt(dy) || !isInt(dz))
         return;
       isOK = true;
     }
@@ -793,7 +792,7 @@ Species   Ion     s      p      d      f     Total  Charge (e)
   }
 
   private static boolean isInt(float f) {
-    return (Math.abs(f - (int) f) < 0.001f);
+    return (Math.abs(f - Math.round(f)) < 0.001f);
   }
 
   private static final double TWOPI = Math.PI * 2;

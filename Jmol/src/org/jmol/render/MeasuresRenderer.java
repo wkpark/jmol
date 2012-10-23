@@ -163,14 +163,14 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
 
     AxisAngle4f aa = measurement.getAxisAngle();
     if (aa == null) { // 180 degrees
-      int offset = (int) (5 * imageFontScaling);
+      int offset = (int) Math.floor(5 * imageFontScaling);
       drawString(atomB.screenX + offset, atomB.screenY - offset,
                              zB, radius, false, false, false, 
                              (doJustify ? 0 : Integer.MAX_VALUE), 
                              measurement.getString());
       return;
     }
-    int dotCount = (int)((aa.angle / (2 * Math.PI)) * 64);
+    int dotCount = (int)Math.floor((aa.angle / (2 * Math.PI)) * 64);
     float stepAngle = aa.angle / dotCount;
     aaT.setAA(aa);
     int iMid = dotCount / 2;

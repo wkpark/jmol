@@ -18,10 +18,10 @@ import org.jmol.viewer.Viewer;
  * JavaScript 2D canvas version requires Ajax-based URL stream processing.
  * 
  * Jmol "display" --> HTML5 "canvas"
- * Jmol "image" --> HTML5 "context"
- * Jmol "graphics" --> HTML5 "context" (one for display, one off-screen for fonts)
+ * Jmol "image" --> HTML5 "canvas" (because we need width and height)
+ * Jmol "graphics" --> HTML5 "context(2d)" (one for display, one off-screen for fonts)
  * Jmol "font" --> JmolFont
- * Jmol "fontMetrics" --> HTML5 "context"
+ * Jmol "fontMetrics" --> HTML5 "context(2d)"
  * (Not fully implemented) 
  * 
  * @author Bob Hanson
@@ -30,10 +30,19 @@ import org.jmol.viewer.Viewer;
 public class Platform implements ApiPlatform {
   Object canvas;
   JmolViewer viewer;
+  Object context;
   
 	public void setViewer(JmolViewer viewer, Object canvas) {
-	  this.viewer = viewer;
-		this.canvas = canvas;
+	  /**
+	   * @j2sNative
+	   * 
+     *     this.viewer = viewer;
+     *     this.canvas = canvas;
+	   *     this.context = canvas.getContext("2d");
+	   *     canvas.imgdata = this.context.getImageData(0, 0, canvas.width, canvas.height);
+	   *     canvas.buf8 = canvas.imgdata.data;
+	   */
+	  {}
 		//
 		try {
 		  URL.setURLStreamHandlerFactory(new AjaxURLStreamHandlerFactory());
@@ -48,6 +57,7 @@ public class Platform implements ApiPlatform {
 	// /// Display
 
 	public void convertPointFromScreen(Object canvas, Point3f ptTemp) {
+	  // from JmolMultiTouchClientAdapter.fixXY
 		Display.convertPointFromScreen(canvas, ptTemp);
 	}
 
@@ -80,6 +90,12 @@ public class Platform implements ApiPlatform {
 		Display.renderScreenImage(viewer, context, size);
 	}
 
+  public void drawImage(Object context, Object canvas, int x, int y, int width,
+                        int height) {
+    // from Viewer.render1
+    Image.drawImage(context, canvas, x, y, width, height);
+  }
+
 	public void requestFocusInWindow(Object canvas) {
 		Display.requestFocusInWindow(canvas);
 	}
@@ -107,8 +123,11 @@ public class Platform implements ApiPlatform {
 	public Object allocateRgbImage(int windowWidth, int windowHeight,
 			int[] pBuffer, int windowSize, boolean backgroundTransparent) {
 		return Image.allocateRgbImage(windowWidth, windowHeight, pBuffer,
-				windowSize, backgroundTransparent, this);
+				windowSize, backgroundTransparent, canvas);
 	}
+
+  public void notifyEndOfRendering() {
+  }
 
 	public Object createImage(Object data) {
 	  // getFileAsImage
@@ -117,11 +136,6 @@ public class Platform implements ApiPlatform {
 
 	public void disposeGraphics(Object gOffscreen) {
 		Image.disposeGraphics(gOffscreen);
-	}
-
-	public void drawImage(Object g, Object img, int x, int y, int width,
-			int height) {
-		Image.drawImage(g, img, x, y, width, height);
 	}
 
 	public int[] grabPixels(Object imageobj, int width, int height) {
@@ -149,7 +163,7 @@ public class Platform implements ApiPlatform {
 		return Image.getGraphics(image);
 	}
 
-	public int getImageHeight(Object image) {
+  public int getImageHeight(Object image) {
 		return Image.getHeight(image);
 	}
 
@@ -166,20 +180,25 @@ public class Platform implements ApiPlatform {
 	}
 
 	public Object newBufferedImage(Object image, int w, int h) {
-		return Image.newBufferedImage(image, w, h);
+    /**
+     * @j2sNative
+     * 
+     *  if (typeof Jmol != "undefined" && Jmol._getHiddenCanvas)
+     *    return Jmol._getHiddenCanvas(this.viewer.applet, "stereoImage", w, h); 
+     */
+    {}
+    return null;
 	}
 
 	public Object newOffScreenImage(int w, int h) {
     /**
      * @j2sNative
      * 
-     *  if (typeof Jmol != "undefined" && Jmol._getHiddenContext)
-     *    return Jmol._getHiddenContext(this.viewer.htmlName, "textImage", w, h); 
-     *  return null;
+     *  if (typeof Jmol != "undefined" && Jmol._getHiddenCanvas)
+     *    return Jmol._getHiddenCanvas(this.viewer.applet, "textImage", w, h); 
      */
-    {
-      return null;
-    }
+    {}
+    return null;
 	}
 
 	public boolean waitForDisplay(Object canvas, Object image)

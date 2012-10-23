@@ -93,7 +93,7 @@ class DataManager {
       Parser.parseFloatArrayFromMatchAndField(stringData, bsUserVdws, 1, 0,
           (int[]) data[2], 2, 0, userVdws, 1);
       for (int i = userVdws.length; --i >= 0;)
-        userVdwMars[i] = (int) (userVdws[i] * 1000);
+        userVdwMars[i] = (int) Math.floor(userVdws[i] * 1000);
       return;
     }
     if (data[2] != null && arrayCount > 0) {

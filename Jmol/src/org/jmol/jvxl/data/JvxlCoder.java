@@ -862,7 +862,7 @@ public class JvxlCoder {
       fraction = 0.9999f;
     else if (Float.isNaN(fraction))
       fraction = 1.0001f;
-    int ich = (int) (fraction * range + base);
+    int ich = (int) Math.floor(fraction * range + base);
     if (ich < base)
       return (char) base;
     if (ich == 92)

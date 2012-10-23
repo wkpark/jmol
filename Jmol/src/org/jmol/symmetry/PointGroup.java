@@ -531,7 +531,7 @@ class PointGroup {
         // look for the axis perpendicular to the A -- 0 -- B plane
 
         float order = (float) (2 * Math.PI / v1.angle(v2));
-        int iOrder = (int) (order + 0.01f);
+        int iOrder = (int) Math.floor(order + 0.01f);
         boolean isIntegerOrder = (order - iOrder <= 0.02f);
         if (!isIntegerOrder || (iOrder = iOrder + firstProper) >= maxAxis)
           continue;

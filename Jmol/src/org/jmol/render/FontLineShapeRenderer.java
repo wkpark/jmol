@@ -72,7 +72,7 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
     switch (exportType) {
     case GData.EXPORT_CARTESIAN:
       diameter = (isMad ? madOrPixels 
-          : (int) (viewer.unscaleToScreen(z, madOrPixels * 2) * 1000));
+          : (int) Math.floor(viewer.unscaleToScreen(z, madOrPixels * 2) * 1000));
       break;
     default:
       if (isMad) {
@@ -91,8 +91,8 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
   protected void renderLine(Point3f p0, Point3f p1, int diameter,
                             Point3i pt0, Point3i pt1, boolean drawTicks) {
     // used by Bbcage, Uccage, and axes
-    pt0.set((int) p0.x, (int) p0.y, (int) p0.z);
-    pt1.set((int) p1.x, (int) p1.y, (int) p1.z);
+    pt0.set((int) Math.floor(p0.x), (int) Math.floor(p0.y), (int) Math.floor(p0.z));
+    pt1.set((int) Math.floor(p1.x), (int) Math.floor(p1.y), (int) Math.floor(p1.z));
     if (diameter < 0)
       g3d.drawDottedLine(pt0, pt1);
     else
@@ -165,7 +165,7 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
     // vectorT is now the length of the spacing between ticks
     // but we may have an offset.
     d += tickInfo.first;
-    float p = ((int) (tickInfo.first / dx)) * dx - tickInfo.first;
+    float p = ((int) Math.floor(tickInfo.first / dx)) * dx - tickInfo.first;
     pointT.scaleAdd2(p / dx, vectorT, ptA);
     p += tickInfo.first;
     float z = ptA.screenZ;
@@ -203,14 +203,14 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
       if (p >= tickInfo.first) {
         pointT2.setT(pointT);
         viewer.transformPt3f(pointT2, pointT2);
-        drawLine((int) pointT2.x, (int) pointT2.y, (int) z,
-            (x = (int) (pointT2.x + vectorT2.x)),
-            (y = (int) (pointT2.y + vectorT2.y)), (int) z, diameter);
+        drawLine((int) Math.floor(pointT2.x), (int) Math.floor(pointT2.y), (int) z,
+            (x = (int) Math.floor(pointT2.x + vectorT2.x)),
+            (y = (int) Math.floor(pointT2.y + vectorT2.y)), (int) z, diameter);
         if (drawLabel && (draw000 || p != 0)) {
           val[0] = new Float((p == 0 ? 0 : p * signFactor));
           String s = TextFormat.sprintf(formats[i % formats.length], "f", val);
           drawString(x, y, (int) z, 4, rightJustify, centerX, centerY,
-              (int) pointT2.y, s);
+              (int) Math.floor(pointT2.y), s);
         }
       }
       pointT.add(vectorT);

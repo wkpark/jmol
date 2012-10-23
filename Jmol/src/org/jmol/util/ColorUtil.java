@@ -470,9 +470,9 @@ public class ColorUtil {
    * @return a grayscale value in the range 0 - 255 decimal
    */
   public static int calcGreyscaleRgbFromRgb(int rgb) {
-    int grey = ((2989 * ((rgb >> 16) & 0xFF)) +
+    int grey = (((2989 * ((rgb >> 16) & 0xFF)) +
                 (5870 * ((rgb >> 8) & 0xFF)) +
-                (1140 * (rgb & 0xFF)) + 5000) / 10000;
+                (1140 * (rgb & 0xFF)) + 5000) / 10000) & 0xFFFFFF;
     return rgb(grey, grey, grey);
   }
 

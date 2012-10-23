@@ -834,7 +834,7 @@ class TransformManager11 extends TransformManager {
     nSegments -= indexStart;
     if (nSegments < 1)
       return;
-    int nPer = (int) (10 * seconds); // ?
+    int nPer = (int) Math.floor(10 * seconds); // ?
     int nSteps = nSegments * nPer + 1;
     Point3f[] points = new Point3f[nSteps + 2];
     Point3f[] pointGuides = new Point3f[isPathGuide ? nSteps + 2 : 0];

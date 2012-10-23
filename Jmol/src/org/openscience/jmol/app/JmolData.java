@@ -64,6 +64,7 @@ public class JmolData {
     jmolApp.haveConsole = false;
     //jmolApp.haveDisplay = false;
     jmolApp.info.put("exit", Boolean.TRUE);
+    jmolApp.info.put("isDataOnly", Boolean.TRUE);
     jmolApp.parseCommandLine(args);
     if (!jmolApp.isSilent) {
       System.out.println("JmolData using command options " + Escape.escape(args));

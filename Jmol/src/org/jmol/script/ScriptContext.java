@@ -53,6 +53,7 @@ public class ScriptContext {
   public Map<String, ScriptVariable> contextVariables;
   public boolean isFunction;
   public boolean isStateScript;
+  public boolean isTryCatch;
   public String errorMessage;
   public String errorMessageUntranslated;
   public int iCommandError = -1;

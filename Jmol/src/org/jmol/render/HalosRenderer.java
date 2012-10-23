@@ -89,7 +89,7 @@ public class HalosRenderer extends ShapeRenderer {
       if (diameter == 0) {
         float ellipsemax = atom.getADPMinMax(true);
         if (ellipsemax > 0)
-          diameter = viewer.scaleToScreen(z, (int) (ellipsemax * 2000));
+          diameter = viewer.scaleToScreen(z, (int) Math.floor(ellipsemax * 2000));
         if (diameter == 0) {
           diameter = viewer.scaleToScreen(z, mad == -2 ? 250 : 500);
         }
@@ -113,7 +113,7 @@ public class HalosRenderer extends ShapeRenderer {
       d *= 2;
     if (d < 1)
       return;
-    g3d.drawFilledCircle(colix, colixFill, (int) d,
+    g3d.drawFilledCircle(colix, colixFill, (int) Math.floor(d),
         atom.screenX, atom.screenY, atom.screenZ);
   }  
 }

@@ -455,13 +455,13 @@ import org.jmol.constant.EnumPalette;
     case RESU:
       return (propertyColorEncoder.userScale.length == 0 ? GRAY : propertyColorEncoder.userScale[quantize(-val, -hi, -lo, n)]);
     case JMOL:
-      return propertyColorEncoder.argbsCpk[colorIndex((int)val, n)];
+      return propertyColorEncoder.argbsCpk[colorIndex(val, n)];
     case RASMOL:
-      return getRasmolScale()[colorIndex((int)val, n)];
+      return getRasmolScale()[colorIndex(val, n)];
     case SHAPELY:
-      return propertyColorEncoder.argbsShapely[colorIndex((int)val, n)];
+      return propertyColorEncoder.argbsShapely[colorIndex(val, n)];
     case AMINO:
-      return propertyColorEncoder.argbsAmino[colorIndex((int)val, n)];
+      return propertyColorEncoder.argbsAmino[colorIndex(val, n)];
     default:
       return GRAY;
     }
@@ -683,8 +683,8 @@ import org.jmol.constant.EnumPalette;
     return q;
   }
 
-  private final static int colorIndex(int q, int segmentCount) {
-    return (q <= 0 | q >= segmentCount ? 0 : q);
+  private final static int colorIndex(float q, int segmentCount) {
+    return (int) Math.floor(q <= 0 | q >= segmentCount ? 0 : q);
   }
 /*  
   static {

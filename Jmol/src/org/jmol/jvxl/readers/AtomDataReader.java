@@ -413,9 +413,9 @@ abstract class AtomDataReader extends VolumeDataReader {
                                       Point3i pt1) {
     rA += margin; // to span corner-to-corner possibility
     volumeData.xyzToVoxelPt(ptA.x, ptA.y, ptA.z, pt0);
-    int x = (int) (rA / volumeData.volumetricVectorLengths[0]);
-    int y = (int) (rA / volumeData.volumetricVectorLengths[1]);
-    int z = (int) (rA / volumeData.volumetricVectorLengths[2]);
+    int x = (int) Math.floor(rA / volumeData.volumetricVectorLengths[0]);
+    int y = (int) Math.floor(rA / volumeData.volumetricVectorLengths[1]);
+    int z = (int) Math.floor(rA / volumeData.volumetricVectorLengths[2]);
     pt1.set(pt0.x + x, pt0.y + y, pt0.z + z);
     pt0.set(pt0.x - x, pt0.y - y, pt0.z - z);
     pt0.x = Math.max(pt0.x - 1, 0);

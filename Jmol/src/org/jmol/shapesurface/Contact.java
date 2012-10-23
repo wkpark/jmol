@@ -605,10 +605,10 @@ public class Contact extends Isosurface {
     
     // now set voxel counts and vectors, and grid origin
 
-    int nX = Math.max(5, (int) (pt1.distance(pt2) * resolution + 1));
+    int nX = Math.max(5, (int) Math.floor(pt1.distance(pt2) * resolution + 1));
     if ((nX % 2) == 0)
       nX++;
-    int nYZ = Math.max(7, (int) (dYZ * resolution + 1));
+    int nYZ = Math.max(7, (int) Math.floor(dYZ * resolution + 1));
     if ((nYZ % 2) == 0)
       nYZ++;
     volumeData.setVoxelCounts(nX, nYZ, nYZ);

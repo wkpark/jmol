@@ -415,7 +415,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
         doCap0 = true;
         doCap1 = false;
         if ((meshes[i] == null || !meshReady[i])
-            && !createMesh(i, (int) (madBeg * 1.2), (int) (madBeg * 0.6), 0,
+            && !createMesh(i, (int) Math.floor(madBeg * 1.2), (int) Math.floor(madBeg * 0.6), 0,
                 (aspectRatio == 1 ? aspectRatio : aspectRatio / 2)))
           return;
         meshes[i].setColix(colix);

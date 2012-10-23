@@ -156,7 +156,7 @@ class TriangleRenderer {
 
   void fillTriangleP3f(Point3f screenA, Point3f screenB, Point3f screenC,
                     boolean useGouraud) {
-    if (screenA.y > 260)return;
+    //if (screenA.y > 260)return;
     ax[0] = Math.round(screenA.x);
     ax[1] = Math.round(screenB.x);
     ax[2] = Math.round(screenC.x);
@@ -334,7 +334,7 @@ class TriangleRenderer {
     int dx = xS - xN, dz = zS - zN;
     int xCurrent = xN;
     int xIncrement, width, errorTerm;
-    System.out.println("genraster " + dy + " " + iN + " " + iS + " " + xN + " " + zN + " " + xS + " " + zS);
+    //System.out.println("genraster " + dy + " " + iN + " " + iS + " " + xN + " " + zN + " " + xS + " " + zS);
     if (dx >= 0) {
       xIncrement = 1;
       width = dx;

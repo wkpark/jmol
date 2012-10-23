@@ -1250,10 +1250,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     maskA &= ~Colix.TRANSPARENT;
     maskB &= ~Colix.TRANSPARENT;
     maskC &= ~Colix.TRANSPARENT;
-    //if (maskA == 0 && maskB == 0 && maskC == 0)
-      //return false;
     int mask = ((maskA + maskB + maskC) / 3) & Colix.TRANSLUCENT_MASK;
-   // System.out.println(mask >> TRANSLUCENT_SHIFT);
     translucencyMask = (mask << Colix.ALPHA_SHIFT) | 0xFFFFFF;
     return true;
   }
@@ -1563,7 +1560,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     if (count <= 0)
       return;
     int seed = ((x << 16) + (y << 1) ^ 0x33333333) & 0x7FFFFFFF;
-    System.out.println(x + " " + y + " " + seed + " " + count);
+    //System.out.println(x + " " + y + " " + seed + " " + count);
     boolean flipflop = ((x ^ y) & 1) != 0;
     // scale the z coordinates;
     int zScaled = (zAtLeft << 10) + (1 << 9);
@@ -1804,12 +1801,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     for (int i = normixCount; --i >= 0; ) {
       Vector3f tv = transformedVectors[i];
       rotationMatrix.transform2(vertexVectors[i], tv);
-//        if (i == 0)
-  //        System.out.println(i + " " + shadeIndexes[i]);
-
       shadeIndexes[i] = Shader.getShadeIndexNormalized(tv.x, -tv.y, tv.z);
-    //  if (i == 0 || i == 219 || i == 162 || i == 193)
-      //  System.out.println(i + " " + shadeIndexes[i]);
       shadeIndexes2Sided[i] = (tv.z >= 0 ? shadeIndexes[i] 
           : Shader.getShadeIndexNormalized(-tv.x, tv.y, -tv.z));
     }

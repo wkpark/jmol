@@ -222,7 +222,7 @@ public class Mesh extends MeshSurface {
   }
 
   public void setTranslucent(boolean isTranslucent, float iLevel) {
-    colix = Colix.getColixTranslucent(colix, isTranslucent, iLevel);
+    colix = Colix.getColixTranslucent3(colix, isTranslucent, iLevel);
   }
 
   public final Vector3f vAB = new Vector3f();

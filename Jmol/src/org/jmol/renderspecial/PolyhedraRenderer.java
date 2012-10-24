@@ -81,7 +81,7 @@ public class PolyhedraRenderer extends ShapeRenderer {
       for (int i = 0, j = 0; j < planes.length;)
         fillFace(p.normixes[i++], screens[planes[j++]], screens[planes[j++]],
             screens[planes[j++]]);
-    if (g3d.setColix(Colix.getColixTranslucent(colix, false, 0)))
+    if (g3d.setColix(Colix.getColixTranslucent3(colix, false, 0)))
     for (int i = 0, j = 0; j < planes.length;)
       drawFace(p.normixes[i++], screens[planes[j++]],
           screens[planes[j++]], screens[planes[j++]]);

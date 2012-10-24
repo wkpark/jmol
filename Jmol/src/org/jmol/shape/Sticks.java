@@ -125,7 +125,7 @@ public class Sticks extends Shape {
     if ("color" == propertyName) {
       if (bsColixSet == null)
         bsColixSet = new BitSet();
-      short colix = Colix.getColix(value);
+      short colix = Colix.getColixO(value);
       EnumPalette pal = (value instanceof EnumPalette ? (EnumPalette) value : null);
       if (pal == EnumPalette.TYPE || pal == EnumPalette.ENERGY) {
         //only for hydrogen bonds

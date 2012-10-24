@@ -133,7 +133,7 @@ public abstract class BioShapeCollection extends Shape {
     initialize();
     if ("color" == propertyName) {
       byte pid = EnumPalette.pidOf(value);
-      short colix = Colix.getColix(value);
+      short colix = Colix.getColixO(value);
       for (int i = bioShapes.length; --i >= 0;) {
         BioShape bioShape = bioShapes[i];
         if (bioShape.monomerCount > 0)

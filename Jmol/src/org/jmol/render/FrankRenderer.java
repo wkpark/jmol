@@ -40,7 +40,7 @@ public class FrankRenderer extends ShapeRenderer {
     colix = (modelKitMode ? Colix.MAGENTA 
         : viewer.isSignedApplet() ? (allowKeys ? Colix.ORANGE : Colix.RED) : allowKeys ? Colix.BLUE : Colix.GRAY);
     if (isExport || !viewer.getShowFrank()
-        || !g3d.setColix(Colix.getColixTranslucent(colix,
+        || !g3d.setColix(Colix.getColixTranslucent3(colix,
             g3d.haveTranslucentObjects(), 0.5f)))
       return;
     float imageFontScaling = viewer.getImageFontScaling();

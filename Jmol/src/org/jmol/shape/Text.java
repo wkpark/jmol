@@ -427,7 +427,7 @@ public class Text extends Object2d {
     return w;
   }
 
-  public void setXY(float[] xy, int i) {
+  public void setXYA(float[] xy, int i) {
     if (i == 0) {
       int adj = (fontScale >= 2 ? 8 : 4);
       xy[2] = boxX;

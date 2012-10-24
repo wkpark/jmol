@@ -100,7 +100,7 @@ public class Labels extends AtomShape {
     if ("color" == propertyName) {
       isActive = true;
       byte pid = EnumPalette.pidOf(value);
-      short colix = Colix.getColix(value);
+      short colix = Colix.getColixO(value);
       if (!setDefaults)
         for (int i = atomCount; --i >= 0;)
           if (bsSelected.get(i))
@@ -157,7 +157,7 @@ public class Labels extends AtomShape {
       isActive = true;
       if (bsBgColixSet == null)
         bsBgColixSet = new BitSet();
-      short bgcolix = Colix.getColix(value);
+      short bgcolix = Colix.getColixO(value);
       if (!setDefaults)
         for (int i = atomCount; --i >= 0;)
           if (bsSelected.get(i))

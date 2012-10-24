@@ -102,16 +102,16 @@ public abstract class Object2d {
   }
 
   void setColix(Object value) {
-    colix = Colix.getColix(value);
+    colix = Colix.getColixO(value);
   }
 
   void setTranslucent(float level, boolean isBackground) {
     if (isBackground) {
       if (bgcolix != 0)
-        bgcolix = Colix.getColixTranslucent(bgcolix, !Float.isNaN(level),
+        bgcolix = Colix.getColixTranslucent3(bgcolix, !Float.isNaN(level),
             level);
     } else {
-      colix = Colix.getColixTranslucent(colix, !Float.isNaN(level), level);
+      colix = Colix.getColixTranslucent3(colix, !Float.isNaN(level), level);
     }
   }
 
@@ -120,7 +120,7 @@ public abstract class Object2d {
   }
 
   void setBgColix(Object value) {
-    bgcolix = (value == null ? (short) 0 : Colix.getColix(value));
+    bgcolix = (value == null ? (short) 0 : Colix.getColixO(value));
   }
 
   public void setMovableX(int x) {
@@ -159,11 +159,6 @@ public abstract class Object2d {
       valign = VALIGN_XY;
     movableZ = Integer.MAX_VALUE;
     movableZPercent = z;
-  }
-
-  public void setXY(int x, int y) {
-    setMovableX(x);
-    setMovableY(y);
   }
 
   public void setZs(int z, int zSlab) {

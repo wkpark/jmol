@@ -588,7 +588,7 @@ public class Parser {
     /**
      * @j2sNative
      * 
-     *            Integer.parseIntRadix(s, i); // special
+     *    return Integer.parseIntRadix(s, i); // special
      */
     {
       return Integer.parseInt(s, i);

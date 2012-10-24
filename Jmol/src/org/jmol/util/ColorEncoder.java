@@ -385,7 +385,7 @@ import org.jmol.constant.EnumPalette;
         f = 1; // transparent
       else if (f < 0.125f) // never fully opaque
         f = 0.125f;
-      colix = Colix.getColixTranslucent(colix, true, f);
+      colix = Colix.getColixTranslucent3(colix, true, f);
     }
     return colix;
   }

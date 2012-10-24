@@ -220,7 +220,7 @@ public class MeshSurface {
     bsSlabDisplay = bsDisplay;
     bsSlabGhost = bsGhost;
     slabMeshType = (type.equalsIgnoreCase("mesh") ? Token.mesh : Token.fill);
-    slabColix = Colix.getColixTranslucent(Colix.getColix(color),
+    slabColix = Colix.getColixTranslucent3(Colix.getColixS(color),
         true, translucency);
   }
 
@@ -336,7 +336,7 @@ public class MeshSurface {
       if (Colix.isColixColorInherited(slabColix))
         slabColix = Colix.copyColixTranslucency(slabColix, colix);
       andCap = false;
-      colix = Colix.getColixTranslucent(colix, false, 0);
+      colix = Colix.getColixTranslucent3(colix, false, 0);
     }
 
     

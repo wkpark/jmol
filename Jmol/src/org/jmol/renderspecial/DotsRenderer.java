@@ -142,7 +142,7 @@ public class DotsRenderer extends ShapeRenderer {
    * @param nPoints
    */
   protected void renderConvex(short colix, BitSet map, int nPoints) {
-    this.colix = Colix.getColixTranslucent(colix, false, 0);
+    this.colix = Colix.getColixTranslucent3(colix, false, 0);
     renderDots(nPoints);
   }
 

@@ -247,7 +247,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
             setProperty("color", new Integer(Colix.getArgb(colix)), null);
           }
         }
-        thisMesh.colorAtoms(Colix.getColix(value), bs);
+        thisMesh.colorAtoms(Colix.getColixO(value), bs);
       }
       return;
     }
@@ -261,7 +261,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
     if ("vertexcolor" == propertyName) {
       if (thisMesh != null) {
-        thisMesh.colorVertices(Colix.getColix(value), bs);
+        thisMesh.colorVertices(Colix.getColixO(value), bs);
       }
       return;
     }

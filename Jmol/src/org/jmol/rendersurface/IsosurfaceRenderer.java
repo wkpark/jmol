@@ -284,7 +284,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       int cX = (showNumbers ? viewer.getScreenWidth() / 2 : 0);
       int cY = (showNumbers ? viewer.getScreenHeight() / 2 : 0);
       if (showNumbers)
-        g3d.setFont(g3d.getFontFidFS("Monospaced", 24));
+        g3d.setFontFid(g3d.getFontFidFS("Monospaced", 24));
       for (int i = (!imesh.hasGridPoints || imesh.firstRealVertex < 0 ? 0
           : imesh.firstRealVertex); i < vertexCount; i += incr) {
         if (vertexValues != null && Float.isNaN(vertexValues[i]) || frontOnly
@@ -306,23 +306,23 @@ public class IsosurfaceRenderer extends MeshRenderer {
         }
         if (volumeRender) {
           diam = viewer.scaleToScreen(screens[i].z, ptSize);
-          g3d.volumeRender(diam, screens[i].x, screens[i].y, screens[i].z);
+          g3d.volumeRender4(diam, screens[i].x, screens[i].y, screens[i].z);
         } else {
           g3d.fillSphereI(diam, screens[i]);
         }
       }
       if (incr == 3) {
-        g3d.setColix(isTranslucent ? Colix.getColixTranslucent(
+        g3d.setColix(isTranslucent ? Colix.getColixTranslucent3(
             Colix.GRAY, true, 0.5f) : Colix.GRAY);
         for (int i = 1; i < vertexCount; i += 3)
           g3d.fillCylinder(GData.ENDCAPS_SPHERICAL, diam / 4, screens[i],
               screens[i + 1]);
-        g3d.setColix(isTranslucent ? Colix.getColixTranslucent(
+        g3d.setColix(isTranslucent ? Colix.getColixTranslucent3(
             Colix.YELLOW, true, 0.5f) : Colix.YELLOW);
         for (int i = 1; i < vertexCount; i += 3)
           g3d.fillSphereI(diam, screens[i]);
 
-        g3d.setColix(isTranslucent ? Colix.getColixTranslucent(
+        g3d.setColix(isTranslucent ? Colix.getColixTranslucent3(
             Colix.BLUE, true, 0.5f) : Colix.BLUE);
         for (int i = 2; i < vertexCount; i += 3) {
           g3d.fillSphereI(diam, screens[i]);
@@ -488,7 +488,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     // Logger.debug("mesh renderPoints: " + vertexCount);
     if (!g3d.setColix(Colix.WHITE))
       return;
-    g3d.setFont(g3d.getFontFidFS("Monospaced", 24));
+    g3d.setFontFid(g3d.getFontFidFS("Monospaced", 24));
     Vector3f[] vertexVectors = Normix.getVertexVectors();
     for (int i = vertexCount; --i >= 0;) {
       if (vertexValues != null && Float.isNaN(vertexValues[i]))

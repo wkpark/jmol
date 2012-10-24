@@ -81,7 +81,7 @@ public class HalosRenderer extends ShapeRenderer {
   }
 
   void render1(Atom atom) {
-    short colixFill = (mad == -2 ? 0 : Colix.getColixTranslucent(colix, true, 0.5f));
+    short colixFill = (mad == -2 ? 0 : Colix.getColixTranslucent3(colix, true, 0.5f));
     int z = atom.screenZ;
     int diameter = mad;
     if (diameter < 0) { //unsized selection

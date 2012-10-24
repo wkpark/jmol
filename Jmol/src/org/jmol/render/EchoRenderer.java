@@ -72,7 +72,7 @@ public class EchoRenderer extends ShapeRenderer {
     if (isExport || !g3d.setColix(viewer.getColixBackgroundContrast()))
       return;
     byte fid = g3d.getFontFidFS("Monospaced", 14 * imageFontScaling);
-    g3d.setFont(fid);
+    g3d.setFontFid(fid);
     int y = (int) Math.floor(viewer.getScreenHeight() * (g3d.isAntialiased() ? 2 : 1) - 10 * imageFontScaling);
     int x = (int) Math.floor(5 * imageFontScaling);
     g3d.drawStringNoSlab(frameTitle, null, x, y, 0);

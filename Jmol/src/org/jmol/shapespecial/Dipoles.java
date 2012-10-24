@@ -197,7 +197,7 @@ public class Dipoles extends Shape {
     }
 
     if ("color" == propertyName) {
-      colix = Colix.getColix(value);
+      colix = Colix.getColixO(value);
       if (isBond) {
         setColixDipole(colix, JmolEdge.BOND_COVALENT_MASK, bs);
       } else if (value != null) {

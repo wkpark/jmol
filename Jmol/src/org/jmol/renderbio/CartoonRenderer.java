@@ -82,9 +82,9 @@ public class CartoonRenderer extends RocketsRenderer {
     boolean isTranslucent = Colix.isColixTranslucent(colix);
     if (renderEdges) {
       float tl = Colix.getColixTranslucencyLevel(colix);
-      colixSugarEdge = Colix.getColixTranslucent(Colix.RED, isTranslucent, tl);
-      colixWatsonCrickEdge = Colix.getColixTranslucent(Colix.GREEN, isTranslucent, tl);
-      colixHoogsteenEdge = Colix.getColixTranslucent(Colix.BLUE, isTranslucent, tl);
+      colixSugarEdge = Colix.getColixTranslucent3(Colix.RED, isTranslucent, tl);
+      colixWatsonCrickEdge = Colix.getColixTranslucent3(Colix.GREEN, isTranslucent, tl);
+      colixHoogsteenEdge = Colix.getColixTranslucent3(Colix.BLUE, isTranslucent, tl);
     }
     boolean isTraceAlpha = viewer.getTraceAlpha();
     for (int i = bsVisible.nextSetBit(0); i >= 0; i = bsVisible

@@ -55,7 +55,7 @@ public class TextRenderer {
         // now write properly aligned text
         float[] xy = new float[3];
         for (int i = 0; i < text.lines.length; i++) {
-          text.setXY(xy, i);
+          text.setXYA(xy, i);
           g3d.drawString(text.lines[i], text.font, (int) xy[0], (int) xy[1], text.z, text.zSlab);
         }
       }

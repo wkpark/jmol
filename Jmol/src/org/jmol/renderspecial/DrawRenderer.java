@@ -434,7 +434,7 @@ public class DrawRenderer extends MeshRenderer {
     case NONE:
       return;
     default:
-      short colixFill = Colix.getColixTranslucent(Colix.GOLD, true,
+      short colixFill = Colix.getColixTranslucent3(Colix.GOLD, true,
           0.5f);
       bsHandles.clearAll();
       for (int i = dmesh.polygonCount; --i >= 0;) {
@@ -464,7 +464,7 @@ public class DrawRenderer extends MeshRenderer {
       if (isPolygonDisplayable(i)) {
         //just the first line of the title -- nothing fancy here.
         byte fid = g3d.getFontFid(14 * imageFontScaling);
-        g3d.setFont(fid);
+        g3d.setFontFid(fid);
         String s = mesh.title[i < mesh.title.length ? i : mesh.title.length - 1];
         int pt = 0;
         if (s.length() > 1 && s.charAt(0) == '>') {

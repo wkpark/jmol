@@ -105,7 +105,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
     }
     
     if ("color" == propertyName) {
-      setColor(value == null ? Colix.INHERIT_ALL : Colix.getColix(value));
+      setColor(value == null ? Colix.INHERIT_ALL : Colix.getColixO(value));
       return;
     } 
 

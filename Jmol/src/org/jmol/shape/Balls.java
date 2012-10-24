@@ -55,7 +55,7 @@ public class Balls extends AtomShape {
   @Override
   public void setProperty(String propertyName, Object value, BitSet bs) {
     if ("color" == propertyName) {
-      short colix = Colix.getColix(value);
+      short colix = Colix.getColixO(value);
       if (colix == Colix.INHERIT_ALL)
         colix = Colix.USE_PALETTE;
       if (bsColixSet == null)
@@ -82,7 +82,7 @@ public class Balls extends AtomShape {
         if (n >= values.length)
           return;
         color = Integer.valueOf(values[n++]);
-        short colix = Colix.getColix(color);
+        short colix = Colix.getColixO(color);
         if (colix == Colix.INHERIT_ALL)
           colix = Colix.USE_PALETTE;
         byte pid = EnumPalette.pidOf(color);

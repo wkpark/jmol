@@ -16265,12 +16265,12 @@ public class ScriptEvaluator {
       float slabTranslucency = (isFloatParameter(++i + 1) ? floatParameter(++i)
           : 0.5f);
       if (isColorParam(i + 1)) {
-        slabColix = Short.valueOf(Colix.getColixTranslucent(Colix
+        slabColix = Short.valueOf(Colix.getColixTranslucent3(Colix
             .getColix(getArgbParam(i + 1)), slabTranslucency != 0,
             slabTranslucency));
         i = iToken;
       } else {
-        slabColix = Short.valueOf(Colix.getColixTranslucent(
+        slabColix = Short.valueOf(Colix.getColixTranslucent3(
             Colix.INHERIT_COLOR, slabTranslucency != 0, slabTranslucency));
       }
       switch (tok = tokAt(i + 1)) {

@@ -38,7 +38,7 @@ public interface JmolRendererInterface extends JmolGraphicsInterface {
 
   public abstract boolean haveTranslucentObjects();
 
-  public abstract void setFont(byte fid);
+  public abstract void setFontFid(byte fid);
 
   public abstract JmolFont getFont3DCurrent();
 
@@ -164,7 +164,7 @@ public interface JmolRendererInterface extends JmolGraphicsInterface {
   public abstract void drawString(String str, JmolFont font3d, int xBaseline,
                                   int yBaseline, int z, int zSlab);
 
-  public abstract void plotPixelClippedNoSlab(int argb, int x, int y, int z);
+  public abstract void plotPixelClippedArgbNoSlab(int argb, int x, int y, int z);
 
   /**
    * draws the specified string in the current font. no line wrapping -- echo,
@@ -196,7 +196,7 @@ public interface JmolRendererInterface extends JmolGraphicsInterface {
 
   public abstract void drawPixel(int x, int y, int z);
 
-  public abstract void plotPixelClipped(Point3i a);
+  public abstract void plotPixelClippedP3i(Point3i a);
 
   public abstract void drawPoints(int count, int[] coordinates, int scale);
 
@@ -297,7 +297,7 @@ public interface JmolRendererInterface extends JmolGraphicsInterface {
   public abstract void fillQuadrilateral(Point3f screenA, Point3f screenB,
                                          Point3f screenC, Point3f screenD);
 
-  public abstract void fillQuadrilateral(Point3i screenA, short colixA,
+  public abstract void fillQuadrilateral3i(Point3i screenA, short colixA,
                                          short normixA, Point3i screenB,
                                          short colixB, short normixB,
                                          Point3i screenC, short colixC,
@@ -313,7 +313,7 @@ public interface JmolRendererInterface extends JmolGraphicsInterface {
 
   public abstract void volumeRender(boolean TF);
 
-  public abstract void volumeRender(int diam, int x, int y, int z);
+  public abstract void volumeRender4(int diam, int x, int y, int z);
 
   /**
    * sets current color from colix color index

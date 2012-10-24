@@ -147,7 +147,7 @@ public class UccageRenderer extends CageRenderer {
 //      nf.setMaximumFractionDigits(3);
 //      nf.setMinimumFractionDigits(3);
 //    }
-    g3d.setFont(fid);
+    g3d.setFontFid(fid);
 
     int lineheight = (int) Math.floor(15 * imageFontScaling);
     int x = (int) Math.floor(5 * imageFontScaling);

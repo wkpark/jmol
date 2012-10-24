@@ -592,7 +592,7 @@ public class GData implements JmolGraphicsInterface {
   /**
    * @param fid  
    */
-  public void setFont(byte fid) {
+  public void setFontFid(byte fid) {
   }
 
   /**
@@ -637,4 +637,15 @@ public class GData implements JmolGraphicsInterface {
                                    Point3i pointC) {
   }
 
+  public static int roundInt(int a) {
+    /**
+     * @z2sNative
+     *
+     *  return a < 0 ? Math.ceil(a) : Math.floor(a);
+     *  
+     */
+    {
+      return a;
+    }
+  }
 }

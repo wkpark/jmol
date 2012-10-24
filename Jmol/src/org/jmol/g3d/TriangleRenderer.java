@@ -26,6 +26,7 @@ package org.jmol.g3d;
 
 
 //import org.jmol.util.Logger;
+import org.jmol.util.GData;
 import org.jmol.util.Point3f;
 import org.jmol.util.Point3i;
 import org.jmol.util.Rgb16;
@@ -270,7 +271,7 @@ class TriangleRenderer {
     } else {
       int dxMaxMin = ax[iMaxY] - ax[iMinY];
       int roundFactor;
-      roundFactor = nLines / 2;
+      roundFactor = GData.roundInt(nLines / 2);
       if (dxMaxMin < 0)
         roundFactor = -roundFactor;
       int axSplit = ax[iMinY] + (dxMaxMin * dyMidMin + roundFactor) / nLines;
@@ -346,7 +347,7 @@ class TriangleRenderer {
     }
     int zCurrentScaled = (zN << 10) + (1 << 9);
     int roundingFactor;
-    roundingFactor = dy / 2;
+    roundingFactor = GData.roundInt(dy / 2);
     if (dz < 0)
       roundingFactor = -roundingFactor;
     int zIncrementScaled = ((dz << 10) + roundingFactor) / dy;
@@ -357,7 +358,7 @@ class TriangleRenderer {
       xMajorIncrement = 0;
       xMajorError = width;
     } else {
-      xMajorIncrement = dx / dy;
+      xMajorIncrement = GData.roundInt(dx / dy);
       xMajorError = width % dy;
     }
     for (int y = 0, i = iRaster; y < dy; zCurrentScaled += zIncrementScaled, ++i, ++y) {
@@ -405,7 +406,7 @@ class TriangleRenderer {
         int xW = axW[i];
         int pixelCount = axE[i] - xW + 1 - correction;
         if (pixelCount > 0)
-          g3d.plotPixelsClipped(pixelCount, xW, y, azW[i], azE[i], null, null);
+          g3d.plotPixelsClippedRaster(pixelCount, xW, y, azW[i], azE[i], null, null);
       }
     } else {
       int xW;
@@ -422,7 +423,7 @@ class TriangleRenderer {
           xW--;
         }
         if (pixelCount > 0)
-          g3d.plotPixelsUnclipped(pixelCount, xW, y, azW[i], azE[i], null, null);
+          g3d.plotPixelsUnclippedRaster(pixelCount, xW, y, azW[i], azE[i], null, null);
       }
     }
   }
@@ -442,7 +443,7 @@ class TriangleRenderer {
         int xW = axW[i];
         int pixelCount = axE[i] - xW + 1 - correction;
         if (pixelCount > 0)
-          g3d.plotPixelsClipped(pixelCount, xW, y, azW[i], azE[i], rgb16sW[i], rgb16sE[i]);
+          g3d.plotPixelsClippedRaster(pixelCount, xW, y, azW[i], azE[i], rgb16sW[i], rgb16sE[i]);
       }
     } else {
       int xW;
@@ -459,8 +460,9 @@ class TriangleRenderer {
           xW--;
         }
         if (pixelCount > 0)
-          g3d.plotPixelsUnclipped(pixelCount, xW, y, azW[i], azE[i], rgb16sW[i], rgb16sE[i]);
+          g3d.plotPixelsUnclippedRaster(pixelCount, xW, y, azW[i], azE[i], rgb16sW[i], rgb16sE[i]);
       }
     }
   }
+  
 }

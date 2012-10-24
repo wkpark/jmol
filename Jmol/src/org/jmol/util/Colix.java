@@ -221,7 +221,7 @@ public class Colix {
     return argbsGreyscale[colix & OPAQUE_MASK];
   }
 
-  public final static int[] getShades(int argb, boolean asGrey) {
+  public final static int[] getShadesArgb(int argb, boolean asGrey) {
     if (asGrey) {
       if (argbsGreyscale == null)
         calcArgbsGreyscale();
@@ -314,7 +314,7 @@ public class Colix {
       getColix(predefinedArgbs[i]);
   }
 
-  public static short getColix(Object obj) {
+  public static short getColixO(Object obj) {
     if (obj == null)
       return INHERIT_ALL;
     if (obj instanceof EnumPalette)
@@ -323,7 +323,7 @@ public class Colix {
     if (obj instanceof Integer)
       return getColix(((Integer) obj).intValue());
     if (obj instanceof String)
-      return getColix((String) obj);
+      return getColixS((String) obj);
     if (obj instanceof Byte)
       return (((Byte) obj).byteValue() == 0 ? INHERIT_ALL : USE_PALETTE);
     if (Logger.debugging) {
@@ -395,7 +395,7 @@ public class Colix {
     return (colix >= 0 ? -1 : (short) (colix & UNMASK_CHANGEABLE_TRANSLUCENT));
   }
 
-  public final static short getColixTranslucent(short colix,
+  public final static short getColixTranslucent3(short colix,
                                                 boolean isTranslucent,
                                                 float translucentLevel) {
     if (colix == INHERIT_ALL)
@@ -406,7 +406,7 @@ public class Colix {
   }
 
   public final static short copyColixTranslucency(short colixFrom, short colixTo) {
-    return getColixTranslucent(colixTo, isColixTranslucent(colixFrom),
+    return getColixTranslucent3(colixTo, isColixTranslucent(colixFrom),
         getColixTranslucencyLevel(colixFrom));
   }
 
@@ -436,7 +436,7 @@ public class Colix {
     }
   }
 
-  public static short getColix(String colorName) {
+  public static short getColixS(String colorName) {
     int argb = ColorUtil.getArgbFromString(colorName);
     if (argb != 0)
       return getColix(argb);
@@ -477,7 +477,7 @@ public class Colix {
     int a = (argb >> 24) & 0xFF;
     if (a == 0xFF)
       return getColix(argb);
-    return getColixTranslucent(getColix(argb), true, a / 255f);
+    return getColixTranslucent3(getColix(argb), true, a / 255f);
   }
 
 }

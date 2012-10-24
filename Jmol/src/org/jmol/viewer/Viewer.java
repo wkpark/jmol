@@ -5238,7 +5238,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   short getColix(Object object) {
-    return Colix.getColix(object);
+    return Colix.getColixO(object);
   }
 
   public boolean getRasmolSetting(int tok) {

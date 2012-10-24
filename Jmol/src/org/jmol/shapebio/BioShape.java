@@ -296,7 +296,7 @@ public class BioShape {
       bsColixSet = new BitSet();
     for (int i = monomerCount; --i >= 0; )
       if (bsSelected.get(leadAtomIndices[i])) {
-        colixes[i] = Colix.getColixTranslucent(colixes[i], isTranslucent, translucentLevel);
+        colixes[i] = Colix.getColixTranslucent3(colixes[i], isTranslucent, translucentLevel);
         bsColixSet.setBitTo(i, colixes[i] != Colix.INHERIT_ALL);
     }
   }

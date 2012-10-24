@@ -104,7 +104,7 @@ public abstract class AtomShape extends Shape {
   public void setProperty(String propertyName, Object value, BitSet bs) {
     if ("color" == propertyName) {
       isActive = true;
-      short colix = Colix.getColix(value);
+      short colix = Colix.getColixO(value);
       byte pid = EnumPalette.pidOf(value);
       if (bsColixSet == null)
         bsColixSet = new BitSet();
@@ -122,7 +122,7 @@ public abstract class AtomShape extends Shape {
           colixes = new short[atomCount];
           paletteIDs = new byte[atomCount];
         }
-        colixes[i] = Colix.getColixTranslucent(colixes[i], isTranslucent,
+        colixes[i] = Colix.getColixTranslucent3(colixes[i], isTranslucent,
             translucentLevel);
         if (isTranslucent)
           bsColixSet.set(i);

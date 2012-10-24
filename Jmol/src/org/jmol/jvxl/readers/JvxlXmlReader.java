@@ -636,7 +636,7 @@ public class JvxlXmlReader extends VolumeFileReader {
         short colix = (!params.colorBySign ? params.colorEncoder
             .getColorIndex(value) : (params.isColorReversed ? value > 0
             : value <= 0) ? colixNeg : colixPos);
-        colixes[i] = Colix.getColixTranslucent(colix, true,
+        colixes[i] = Colix.getColixTranslucent3(colix, true,
             jvxlData.translucency);
       }
     return jvxlColorDataRead + "\n";

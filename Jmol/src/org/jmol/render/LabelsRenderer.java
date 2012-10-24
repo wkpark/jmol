@@ -77,7 +77,7 @@ public class LabelsRenderer extends ShapeRenderer {
       short colix = (colixes == null || i >= colixes.length) ? 0 : colixes[i];
       colix = Colix.getColixInherited(colix, atom.getColix());
       if (Colix.isColixTranslucent(colix))
-        colix = Colix.getColixTranslucent(colix, false, 0);
+        colix = Colix.getColixTranslucent3(colix, false, 0);
       short bgcolix = (bgcolixes == null || i >= bgcolixes.length) ? 0
           : bgcolixes[i];
       if (bgcolix == 0 && g3d.getColorArgbOrGray(colix) == backgroundColor)
@@ -125,7 +125,7 @@ public class LabelsRenderer extends ShapeRenderer {
       } else {
         boolean isLeft = (textAlign == Object2d.ALIGN_LEFT || textAlign == Object2d.ALIGN_NONE);
         if (fid != fidPrevious || ascent == 0) {
-          g3d.setFont(fid);
+          g3d.setFontFid(fid);
           fidPrevious = fid;
           font3d = g3d.getFont3DCurrent();
           if (isLeft) {

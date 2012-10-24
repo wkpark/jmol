@@ -149,7 +149,7 @@ final class LineRenderer {
         dyBA, dzBA, clipped, 0, 0);
   }
 
-  void plotLineDelta(int[] shades1, boolean tScreened1, int[] shades2,
+  void plotLineDeltaA(int[] shades1, boolean tScreened1, int[] shades2,
                      boolean tScreened2, int shadeIndex, int xA, int yA, int zA,
                      int dxBA, int dyBA, int dzBA, boolean clipped) {
     // from cylinder -- standard bond with two colors and translucencies
@@ -166,7 +166,7 @@ final class LineRenderer {
     case VISIBILITY_UNCLIPPED:
       clipped = false;
     }
-    plotLineClipped(shades1, tScreened1, shades2, tScreened2, shadeIndex, xA,
+    plotLineClippedA(shades1, tScreened1, shades2, tScreened2, shadeIndex, xA,
         yA, zA, dxBA, dyBA, dzBA, clipped, 0, 0);
   }
 
@@ -439,7 +439,7 @@ final class LineRenderer {
     }
   }
 
-  private void plotLineClipped(int[] shades1, boolean tScreened1,
+  private void plotLineClippedA(int[] shades1, boolean tScreened1,
                                int[] shades2, boolean tScreened2,
                                int shadeIndex, int x, int y, int z, int dx,
                                int dy, int dz, boolean clipped, int run,

@@ -208,7 +208,7 @@ class TextRenderer {
           continue;
         }
         if (shiftregister < 0)
-          jmolRenderer.plotPixelClippedNoSlab(argb, x + j, y + i, z);
+          jmolRenderer.plotPixelClippedArgbNoSlab(argb, x + j, y + i, z);
         shiftregister <<= 1;
         ++offset;
         ++j;

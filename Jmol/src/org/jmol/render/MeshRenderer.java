@@ -172,7 +172,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
     if (haveBsSlabGhost)
       return true;
     if (volumeRender && !isTranslucent)
-      colix = Colix.getColixTranslucent(colix, true, 0.8f);
+      colix = Colix.getColixTranslucent3(colix, true, 0.8f);
     this.colix = colix;
     if (Colix.isColixLastAvailable(colix))
       g3d.setColor(mesh.color);
@@ -329,7 +329,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
             bsPolygons.set(i);
             continue;
           }
-          g3d.fillQuadrilateral(screens[iA], colix, nA, screens[iB], colix, nB,
+          g3d.fillQuadrilateral3i(screens[iA], colix, nA, screens[iB], colix, nB,
               screens[iC], colix, nC, screens[iD], colix, nD);
           continue;
         }

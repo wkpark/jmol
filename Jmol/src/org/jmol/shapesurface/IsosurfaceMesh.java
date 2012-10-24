@@ -149,7 +149,7 @@ public class IsosurfaceMesh extends Mesh {
     super.setTranslucent(isTranslucent, iLevel);
     if (vertexColixes != null)
       for (int i = vertexCount; --i >= 0;)
-        vertexColixes[i] = Colix.getColixTranslucent(vertexColixes[i],
+        vertexColixes[i] = Colix.getColixTranslucent3(vertexColixes[i],
             isTranslucent, iLevel);
   }
 
@@ -644,14 +644,14 @@ public class IsosurfaceMesh extends Mesh {
     } else if (colorRgb != Integer.MIN_VALUE) {
       colix = Colix.getColix(colorRgb);
     } else if (jvxlData.color != null) {
-      colix = Colix.getColix(jvxlData.color);
+      colix = Colix.getColixS(jvxlData.color);
     }
     if (colix == 0)
       colix = Colix.ORANGE;
-    colix = Colix.getColixTranslucent(colix, jvxlData.translucency != 0,
+    colix = Colix.getColixTranslucent3(colix, jvxlData.translucency != 0,
         jvxlData.translucency);
     if (jvxlData.meshColor != null)
-      meshColix = Colix.getColix(jvxlData.meshColor);
+      meshColix = Colix.getColixS(jvxlData.meshColor);
     setJvxlDataRendering();
       
     isColorSolid = !jvxlData.isBicolorMap;
@@ -670,7 +670,7 @@ public class IsosurfaceMesh extends Mesh {
             .entrySet()) {
           BitSet bsMap = entry.getValue();
           short colix = Colix.copyColixTranslucency(this.colix, Colix
-              .getColix(entry.getKey()));
+              .getColixS(entry.getKey()));
           for (int i = bsMap.nextSetBit(0); i >= 0; i = bsMap.nextSetBit(i + 1))
             vertexColixes[i] = colix;
         }
@@ -699,7 +699,7 @@ public class IsosurfaceMesh extends Mesh {
     if (Float.isNaN(translucentLevel)) {
       translucentLevel = Colix.getColixTranslucencyLevel(colix);
     } else {
-      colix = Colix.getColixTranslucent(colix, true, translucentLevel);
+      colix = Colix.getColixTranslucent3(colix, true, translucentLevel);
     }
     float min = ce.lo;
     float max = ce.hi;
@@ -729,7 +729,7 @@ public class IsosurfaceMesh extends Mesh {
     boolean isTranslucent = Colix.isColixTranslucent(colix);
     if (ce.isTranslucent) {
       if (!isTranslucent)
-        colix = Colix.getColixTranslucent(colix, true, 0.5f);
+        colix = Colix.getColixTranslucent3(colix, true, 0.5f);
       // still, if the scheme is translucent, we don't want to color the vertices translucent
       isTranslucent = false;
     }

@@ -146,17 +146,17 @@ final class CircleRenderer {
   }
 
   private void plot8CircleCenteredClipped(int dx, int dy) {
-    g3d.plotPixelClipped(xCenter+dx-sizeCorrection,
+    g3d.plotPixelClippedXYZ(xCenter+dx-sizeCorrection,
                           yCenter+dy-sizeCorrection, zCenter);
-    g3d.plotPixelClipped(xCenter+dx-sizeCorrection, yCenter-dy, zCenter);
-    g3d.plotPixelClipped(xCenter-dx, yCenter+dy-sizeCorrection, zCenter);
-    g3d.plotPixelClipped(xCenter-dx, yCenter-dy, zCenter);
+    g3d.plotPixelClippedXYZ(xCenter+dx-sizeCorrection, yCenter-dy, zCenter);
+    g3d.plotPixelClippedXYZ(xCenter-dx, yCenter+dy-sizeCorrection, zCenter);
+    g3d.plotPixelClippedXYZ(xCenter-dx, yCenter-dy, zCenter);
 
-    g3d.plotPixelClipped(xCenter+dy-sizeCorrection,
+    g3d.plotPixelClippedXYZ(xCenter+dy-sizeCorrection,
                      yCenter+dx-sizeCorrection, zCenter);
-    g3d.plotPixelClipped(xCenter+dy-sizeCorrection, yCenter-dx, zCenter);
-    g3d.plotPixelClipped(xCenter-dy, yCenter+dx-sizeCorrection, zCenter);
-    g3d.plotPixelClipped(xCenter-dy, yCenter-dx, zCenter);
+    g3d.plotPixelClippedXYZ(xCenter+dy-sizeCorrection, yCenter-dx, zCenter);
+    g3d.plotPixelClippedXYZ(xCenter-dy, yCenter+dx-sizeCorrection, zCenter);
+    g3d.plotPixelClippedXYZ(xCenter-dy, yCenter-dx, zCenter);
   }
 
   private void plot8CircleCenteredUnclipped(int dx, int dy) {
@@ -185,13 +185,13 @@ final class CircleRenderer {
   }
 
   private void plot8FilledCircleCenteredUnclipped(int dx, int dy) {
-    g3d.plotPixelsUnclipped(2*dx+1-sizeCorrection,
+    g3d.plotPixelsUnclippedCount(2*dx+1-sizeCorrection,
                             xCenter-dx, yCenter+dy-sizeCorrection, zCenter);
-    g3d.plotPixelsUnclipped(2*dx+1-sizeCorrection,
+    g3d.plotPixelsUnclippedCount(2*dx+1-sizeCorrection,
                             xCenter-dx, yCenter-dy, zCenter);
-    g3d.plotPixelsUnclipped(2*dy+1-sizeCorrection,
+    g3d.plotPixelsUnclippedCount(2*dy+1-sizeCorrection,
                             xCenter-dy, yCenter+dx-sizeCorrection, zCenter);
-    g3d.plotPixelsUnclipped(2*dy+1-sizeCorrection,
+    g3d.plotPixelsUnclippedCount(2*dy+1-sizeCorrection,
                             xCenter-dy, yCenter-dx, zCenter);
   }
 

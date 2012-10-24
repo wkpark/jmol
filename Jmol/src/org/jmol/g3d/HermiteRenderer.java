@@ -133,7 +133,7 @@ public class HermiteRenderer {
                     : diameterMid + (int)(dDiameterSecondHalf * (s - 0.5f)));
             g3d.fillSphereI(d, a);
           } else {
-            g3d.plotPixelClipped(a);
+            g3d.plotPixelClippedP3i(a);
           }
           --sp;
           continue;

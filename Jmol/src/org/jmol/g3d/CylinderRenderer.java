@@ -24,6 +24,7 @@
 
 package org.jmol.g3d;
 
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.GData;
 import org.jmol.util.Shader;
 
@@ -200,14 +201,14 @@ class CylinderRenderer {
     int z = zRaster[i];
     if (tEndcapOpen && argbEndcap != 0) {
       if (clipped) {
-        g3d.plotPixelClipped(argbEndcap, xEndcap + x, yEndcap + y, zEndcap - z
+        g3d.plotPixelClippedArgb(argbEndcap, xEndcap + x, yEndcap + y, zEndcap - z
             - 1);
-        g3d.plotPixelClipped(argbEndcap, xEndcap - x, yEndcap - y, zEndcap + z
+        g3d.plotPixelClippedArgb(argbEndcap, xEndcap - x, yEndcap - y, zEndcap + z
             - 1);
       } else {
-        g3d.plotPixelUnclipped(argbEndcap, xEndcap + x, yEndcap + y, zEndcap
+        g3d.plotPixelUnclippedArgb(argbEndcap, xEndcap + x, yEndcap + y, zEndcap
             - z - 1);
-        g3d.plotPixelUnclipped(argbEndcap, xEndcap - x, yEndcap - y, zEndcap
+        g3d.plotPixelUnclippedArgb(argbEndcap, xEndcap - x, yEndcap - y, zEndcap
             + z - 1);
       }
     }
@@ -241,7 +242,7 @@ class CylinderRenderer {
     this.isScreenedA = isScreened;
     shadesA = g3d.getShades(colix);
     int shadeIndexTip = Shader.getShadeIndex(dxB, dyB, -dzB);
-    g3d.plotPixelClipped(shadesA[shadeIndexTip], isScreenedA, (int) xTip,
+    g3d.plotPixelClippedScreened(shadesA[shadeIndexTip], isScreenedA, (int) xTip,
         (int) yTip, (int) zTip);
 
     this.diameter = diameter;
@@ -446,18 +447,18 @@ class CylinderRenderer {
     int z = zRaster[i];
     if (tEndcapOpen && argbEndcap != 0) {
       if (clipped) {
-        g3d.plotPixelClipped(argbEndcap, xEndcap + x, yEndcap + y, zEndcap - z
+        g3d.plotPixelClippedArgb(argbEndcap, xEndcap + x, yEndcap + y, zEndcap - z
             - 1);
-        g3d.plotPixelClipped(argbEndcap, xEndcap - x, yEndcap - y, zEndcap + z
+        g3d.plotPixelClippedArgb(argbEndcap, xEndcap - x, yEndcap - y, zEndcap + z
             - 1);
       } else {
-        g3d.plotPixelUnclipped(argbEndcap, xEndcap + x, yEndcap + y, zEndcap
+        g3d.plotPixelUnclippedArgb(argbEndcap, xEndcap + x, yEndcap + y, zEndcap
             - z - 1);
-        g3d.plotPixelUnclipped(argbEndcap, xEndcap - x, yEndcap - y, zEndcap
+        g3d.plotPixelUnclippedArgb(argbEndcap, xEndcap - x, yEndcap - y, zEndcap
             + z - 1);
       }
     }
-    line3d.plotLineDelta(shadesA, isScreenedA, shadesB, isScreenedB,
+    line3d.plotLineDeltaA(shadesA, isScreenedA, shadesB, isScreenedB,
         fpz, xA + x, yA + y, zA - z, dxB, dyB, dzB, clipped);
     if (drawBackside) {
       line3d.plotLineDelta(shadesA[fpzBack], isScreenedA, shadesB[fpzBack], isScreenedB, xA
@@ -465,34 +466,20 @@ class CylinderRenderer {
     }
   }
 
-  private int[] realloc(int[] a) {
-    int[] t;
-    t = new int[a.length * 2];
-    System.arraycopy(a, 0, t, 0, a.length);
-    return t;
-  }
-
-  private float[] realloc(float[] a) {
-    float[] t;
-    t = new float[a.length * 2];
-    System.arraycopy(a, 0, t, 0, a.length);
-    return t;
-  }
-
   private int allocRaster(boolean isPrecision) {
     while (rasterCount >= xRaster.length) {
-      xRaster = realloc(xRaster);
-      yRaster = realloc(yRaster);
-      zRaster = realloc(zRaster);
-      tRaster = realloc(tRaster);
+      xRaster = ArrayUtil.doubleLengthI(xRaster);
+      yRaster = ArrayUtil.doubleLengthI(yRaster);
+      zRaster = ArrayUtil.doubleLengthI(zRaster);
+      tRaster = ArrayUtil.doubleLengthF(tRaster);
     }
     while (rasterCount >= fp8ShadeIndexUp.length)
-      fp8ShadeIndexUp = realloc(fp8ShadeIndexUp);
+      fp8ShadeIndexUp = ArrayUtil.doubleLengthI(fp8ShadeIndexUp);
     if (isPrecision)
       while (rasterCount >= txRaster.length) {
-        txRaster = realloc(txRaster);
-        tyRaster = realloc(tyRaster);
-        tzRaster = realloc(tzRaster);
+        txRaster = ArrayUtil.doubleLengthF(txRaster);
+        tyRaster = ArrayUtil.doubleLengthF(tyRaster);
+        tzRaster = ArrayUtil.doubleLengthF(tzRaster);
       }
     return rasterCount++;
   }
@@ -566,7 +553,7 @@ class CylinderRenderer {
       findMinMaxX(y);
       int count = xMax - xMin + 1;
       g3d.setColorNoisy(endcapShadeIndex);
-      g3d.plotPixelsClipped(count, xT + xMin, yT + y, zT - zXMin - 1, zT
+      g3d.plotPixelsClippedRaster(count, xT + xMin, yT + y, zT - zXMin - 1, zT
           - zXMax - 1, null, null);
     }
   }
@@ -589,7 +576,7 @@ class CylinderRenderer {
       findMinMaxX(y);
       int count = xMax - xMin + 1;
       g3d.setColorNoisy(endcapShadeIndex);
-      g3d.plotPixelsClipped(count, xT + xMin, yT + y, zT - zXMin - 1, zT
+      g3d.plotPixelsClippedRaster(count, xT + xMin, yT + y, zT - zXMin - 1, zT
           - zXMax - 1, null, null);
     }
   }
@@ -609,23 +596,23 @@ class CylinderRenderer {
     float xDn = xAf - x, yDn = yAf - y, zDn = zAf + z;
     int argb = shadesA[0];
     if (tEndcapOpen && argbEndcap != 0) {
-      g3d.plotPixelClipped(argbEndcap, isScreenedA, (int) xUp, (int) yUp,
+      g3d.plotPixelClippedScreened(argbEndcap, isScreenedA, (int) xUp, (int) yUp,
           (int) zUp);
-      g3d.plotPixelClipped(argbEndcap, isScreenedA, (int) xDn, (int) yDn,
+      g3d.plotPixelClippedScreened(argbEndcap, isScreenedA, (int) xDn, (int) yDn,
           (int) zDn);
     }
     int fpz = fp8ShadeIndexUp[i] >> (8);
 
     if (argb != 0) {
-      line3d.plotLineDelta(shadesA, isScreenedA, shadesA, isScreenedA, fpz,
+      line3d.plotLineDeltaA(shadesA, isScreenedA, shadesA, isScreenedA, fpz,
           (int) xUp, (int) yUp, (int) zUp, (int) Math.ceil(xTip - xUp),
           (int) Math.ceil(yTip - yUp), (int) Math.ceil(zTip - zUp), true);
       
       if (doFill) { //rockets, not arrows
-        line3d.plotLineDelta(shadesA, isScreenedA, shadesA, isScreenedA, fpz,
+        line3d.plotLineDeltaA(shadesA, isScreenedA, shadesA, isScreenedA, fpz,
           (int) xUp, (int) yUp + 1, (int) zUp, (int) Math.ceil(xTip - xUp),
           (int) Math.ceil(yTip - yUp) + 1, (int) Math.ceil(zTip - zUp), true);
-        line3d.plotLineDelta(shadesA, isScreenedA, shadesA, isScreenedA, fpz,
+        line3d.plotLineDeltaA(shadesA, isScreenedA, shadesA, isScreenedA, fpz,
           (int) xUp + 1, (int) yUp, (int) zUp, (int) Math.ceil(xTip - xUp) + 1,
           (int) Math.ceil(yTip - yUp), (int) Math.ceil(zTip - zUp), true);
       }    

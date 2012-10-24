@@ -323,7 +323,7 @@ final public class Atom extends Point3fi implements JmolNode {
   }
 
   public void setTranslucent(boolean isTranslucent, float translucentLevel) {
-    colixAtom = Colix.getColixTranslucent(colixAtom, isTranslucent, translucentLevel);    
+    colixAtom = Colix.getColixTranslucent3(colixAtom, isTranslucent, translucentLevel);    
   }
 
   public boolean isTranslucent() {

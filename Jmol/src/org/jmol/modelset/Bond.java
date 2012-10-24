@@ -175,7 +175,7 @@ public class Bond extends JmolEdge {
   }
 
   public void setTranslucent(boolean isTranslucent, float translucentLevel) {
-    colix = Colix.getColixTranslucent(colix, isTranslucent, translucentLevel);
+    colix = Colix.getColixTranslucent3(colix, isTranslucent, translucentLevel);
   }
   
   boolean isTranslucent() {

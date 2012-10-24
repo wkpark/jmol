@@ -85,7 +85,7 @@ public class Dipole {
   }
 
   void setTranslucent(boolean isTranslucent, float translucentLevel) {
-    colix = Colix.getColixTranslucent(colix, isTranslucent, translucentLevel);
+    colix = Colix.getColixTranslucent3(colix, isTranslucent, translucentLevel);
   }
 
   void set(String thisID, String dipoleInfo, Atom[] atoms, float dipoleValue,

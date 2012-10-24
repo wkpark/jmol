@@ -195,7 +195,7 @@ public class Ellipsoids extends AtomShape {
         return;
       }
       if ("color" == propertyName) {
-        ellipsoid.colix = Colix.getColix(value);
+        ellipsoid.colix = Colix.getColixO(value);
         return;
       }
       if ("translucentLevel" == propertyName) {
@@ -204,7 +204,7 @@ public class Ellipsoids extends AtomShape {
       }
       if ("translucency" == propertyName) {
         boolean isTranslucent = (value.equals("translucent"));
-        ellipsoid.colix = Colix.getColixTranslucent(ellipsoid.colix,
+        ellipsoid.colix = Colix.getColixTranslucent3(ellipsoid.colix,
             isTranslucent, translucentLevel);
         return;
       }

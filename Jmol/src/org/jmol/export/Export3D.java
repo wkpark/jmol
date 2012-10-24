@@ -397,13 +397,13 @@ final public class Export3D implements JmolRendererInterface {
     exporter.drawPixel(colix, x, y, z, 1);
   }
 
-  public void plotPixelClippedNoSlab(int argb, int x, int y, int z) {
+  public void plotPixelClippedArgbNoSlab(int argb, int x, int y, int z) {
     // from Text3D
     z = Math.max(slab, z);
     exporter.drawTextPixel(argb, x, y, z);
   }
 
-  public void plotPixelClipped(Point3i screen) {
+  public void plotPixelClippedP3i(Point3i screen) {
     if (isClipped(screen.x, screen.y, screen.z))
       return;
     // circle3D, drawPixel, plotPixelClipped(point3)
@@ -667,7 +667,7 @@ final public class Export3D implements JmolRendererInterface {
     exporter.fillTriangle(colix, pointA, pointC, pointD, false);
   }
 
-  public void fillQuadrilateral(Point3i pointA, short colixA, short normixA,
+  public void fillQuadrilateral3i(Point3i pointA, short colixA, short normixA,
                                 Point3i pointB, short colixB, short normixB,
                                 Point3i pointC, short colixC, short normixC,
                                 Point3i screenD, short colixD, short normixD) {
@@ -785,8 +785,8 @@ final public class Export3D implements JmolRendererInterface {
     return true;
   }
 
-  public void setFont(byte fid) {
-    g3d.setFont(fid);
+  public void setFontFid(byte fid) {
+    g3d.setFontFid(fid);
   }
 
   public JmolFont getFont3DCurrent() {
@@ -861,7 +861,7 @@ final public class Export3D implements JmolRendererInterface {
     return privateKey;
   }
 
-  public void volumeRender(int diam, int x, int y, int z) {
+  public void volumeRender4(int diam, int x, int y, int z) {
     fillSphereXYZ(diam, x, y, z);
     
   }

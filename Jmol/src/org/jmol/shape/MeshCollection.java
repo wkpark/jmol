@@ -228,7 +228,7 @@ public abstract class MeshCollection extends Shape {
     if ("color" == propertyName) {
       if (value == null)
         return;
-      colix = Colix.getColix(value);
+      colix = Colix.getColixO(value);
       color = ((Integer) value).intValue();
       if (currentMesh != null)
         currentMesh.color = color;

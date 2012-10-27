@@ -278,6 +278,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     currentlyRendering = true;
     if (strings != null)
       for (int i = Math.min(strings.length, stringCount); --i >= 0;)
+        strings[i] = null;
     stringCount = 0;
     twoPass = true; //only for testing -- set false to disallow second pass
     isPass2 = false;

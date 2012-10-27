@@ -36,7 +36,7 @@ public interface ApiPlatform {
 
   ///// Font
   
-  int fontStringWidth(Object fontMetrics, String text);
+  int fontStringWidth(JmolFont font, Object fontMetrics, String text);
 
   int getFontAscent(Object fontMetrics);
 

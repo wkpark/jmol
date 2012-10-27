@@ -50,7 +50,7 @@ import java.util.Map;
 
 
 /**
- * Java2Script rendition of Jmol using GLmol-based graphics
+ * Java2Script rendition of Jmol using HTML5-only or WebGL-based graphics
  * 
  * @author Bob Hanson hansonr@stolaf.edu, Takanori Nakane, with the assistance of Jhou Renjian
  * 
@@ -157,7 +157,7 @@ public class Jmol implements JmolSyncInterface {
 			setStringProperty("backgroundColor", getValue("bgcolor", getValue(
 					"boxbgcolor", "black")));
 
-			viewer.setBooleanProperty("frank", false);
+			//viewer.setBooleanProperty("frank", true);
 			loading = true;
 			for (EnumCallback item : EnumCallback.values()) {
 				setValue(item.name() + "Callback", null);

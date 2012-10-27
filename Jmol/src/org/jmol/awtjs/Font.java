@@ -1,5 +1,7 @@
 package org.jmol.awtjs;
 
+import org.jmol.util.JmolFont;
+
 /**
  * methods required by Jmol that access java.awt.Font
  * 
@@ -26,7 +28,7 @@ class Font {
 		return 0;
 	}
 
-	static int stringWidth(Object fontMetrics, String text) {
+	static int stringWidth(JmolFont font, Object fontMetrics, String text) {
 		return 0;
 	}
 }

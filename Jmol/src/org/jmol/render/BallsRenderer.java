@@ -32,18 +32,23 @@ import org.jmol.util.BitSet;
 public class BallsRenderer extends ShapeRenderer {
 
   @Override
-  protected void render() {
+  protected boolean render() {
+    boolean needTranslucent = false;
     if (!viewer.getWireframeRotation() || !viewer.getInMotion()) {
       Atom[] atoms = modelSet.atoms;
       BitSet bsOK = viewer.getRenderableBitSet();
       for (int i = bsOK.nextSetBit(0); i >= 0; i = bsOK.nextSetBit(i + 1)) {
         Atom atom = atoms[i];
         if (atom.screenDiameter > 0
-            && (atom.getShapeVisibilityFlags() & myVisibilityFlag) != 0
-            && g3d.setColix(atom.getColix())) {
-          g3d.drawAtom(atom);
+            && (atom.getShapeVisibilityFlags() & myVisibilityFlag) != 0) {
+          if (g3d.setColix(atom.getColix())) {
+            g3d.drawAtom(atom);
+          } else {
+            needTranslucent = true;
+          }
         }
       }
     }
+    return needTranslucent;
   }
 }

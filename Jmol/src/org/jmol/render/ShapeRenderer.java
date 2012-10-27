@@ -64,19 +64,19 @@ public abstract class ShapeRenderer {
   protected void initRenderer() {
   }
 
-  public void render(JmolRendererInterface g3d, ModelSet modelSet, Shape shape) {
+  public boolean render(JmolRendererInterface g3d, ModelSet modelSet, Shape shape) {
     this.g3d = g3d;
     this.modelSet = modelSet;
     this.shape = shape;
     exportType = g3d.getExportType();
     isExport = (exportType != GData.EXPORT_NOT);
-    render();
+    boolean needsTranslucent = render();
     exportType = GData.EXPORT_NOT;
     isExport = false;
+    return needsTranslucent;
   }
 
-  abstract protected void render();
-  
-
+  abstract protected boolean render();
+ 
 }
 

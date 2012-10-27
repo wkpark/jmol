@@ -1290,7 +1290,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   ////////////////////////////////////////////////////////////////
 
   public final static String DEFAULT_FONTFACE = "SansSerif";
-  public final static String DEFAULT_FONTSTYLE = "Plain";
+  public final static String DEFAULT_FONTSTYLE = "Bold";
 
   public final static int LABEL_MINIMUM_FONTSIZE = 6;
   public final static int LABEL_MAXIMUM_FONTSIZE = 63;

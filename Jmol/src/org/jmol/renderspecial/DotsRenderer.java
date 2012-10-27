@@ -57,9 +57,10 @@ public class DotsRenderer extends ShapeRenderer {
   }
 
   @Override
-  protected void render() {
+  protected boolean render() {
     Dots dots = (Dots) shape;
     render1(dots);
+    return false;
   }
 
   protected float testRadiusAdjust;

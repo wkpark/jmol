@@ -425,6 +425,10 @@ public class GData implements JmolGraphicsInterface {
         JmolFont.FONT_STYLE_PLAIN, fontSize, fontSize, apiPlatform, graphicsForMetrics);
   }
 
+  public byte getFontFidFS(String fontFace, float fontSize) {
+    return getFont3DFSS(fontFace, "Bold", fontSize).fid;
+  }
+
   public JmolFont getFont3DFSS(String fontFace, String fontStyle, float fontSize) {
     int iStyle = JmolFont.getFontStyleID(fontStyle);
     if (iStyle < 0)
@@ -443,10 +447,6 @@ public class GData implements JmolGraphicsInterface {
 
   public byte getFontFid(float fontSize) {
     return getFont3D(fontSize).fid;
-  }
-
-  public byte getFontFidFS(String fontFace, float fontSize) {
-    return getFont3DFS(fontFace, fontSize).fid;
   }
 
   // {"Plain", "Bold", "Italic", "BoldItalic"};
@@ -647,5 +647,13 @@ public class GData implements JmolGraphicsInterface {
     {
       return a;
     }
+  }
+
+  public void clear() {
+    // only in Graphics3D
+  }
+
+  public void renderAllStrings(Object jmolRenderer) {
+    // only in Graphics3D
   }
 }

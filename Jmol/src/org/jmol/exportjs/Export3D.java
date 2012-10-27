@@ -397,7 +397,7 @@ final public class Export3D implements JmolRendererInterface {
     exporter.drawPixel(colix, x, y, z, 1);
   }
 
-  public void plotPixelClippedArgbNoSlab(int argb, int x, int y, int z) {
+  public void plotImagePixel(int argb, int x, int y, int z, int shade) {
     // from Text3D
    // z = Math.max(slab, z);
    // exporter.drawTextPixel(argb, x, y, z);
@@ -875,6 +875,10 @@ final public class Export3D implements JmolRendererInterface {
   public void volumeRender(boolean TF) {
     // TODO
     
+  }
+
+  public void renderAllStrings(Object jmolRenderer) {
+    // g3d only
   }
 
 

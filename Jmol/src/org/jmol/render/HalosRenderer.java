@@ -36,16 +36,17 @@ public class HalosRenderer extends ShapeRenderer {
 
   boolean isAntialiased;
   @Override
-  protected void render() {
+  protected boolean render() {
     Halos halos = (Halos) shape;
     boolean selectDisplayTrue = viewer.getSelectionHaloEnabled(true);
     boolean showHiddenSelections = (selectDisplayTrue && viewer
         .getShowHiddenSelectionHalos());
     if (halos.mads == null && halos.bsHighlight == null && !selectDisplayTrue)
-      return;
+      return false;
     isAntialiased = g3d.isAntialiased();
     Atom[] atoms = modelSet.atoms;
     BitSet bsSelected = (selectDisplayTrue ? viewer.getSelectionSet(false) : null);
+    boolean needTranslucent = false;
     for (int i = modelSet.getAtomCount(); --i >= 0;) {
       Atom atom = atoms[i];
       if ((atom.getShapeVisibilityFlags() & JmolConstants.ATOM_IN_FRAME) == 0)
@@ -70,18 +71,29 @@ public class HalosRenderer extends ShapeRenderer {
       } else {
         colix = Colix.getColixInherited(colix, atom.getColix());
       }
-      if (mad != 0)
-        render1(atom);
+      if (mad != 0) {
+        if (render1(atom))
+          needTranslucent = true;
+      }
       if (!isHidden && halos.bsHighlight != null && halos.bsHighlight.get(i)) {
         mad = -2;
         colix = halos.colixHighlight;
-        render1(atom);
+        if (render1(atom))
+          needTranslucent = true;
       }       
     }
+    return needTranslucent;
   }
 
-  void render1(Atom atom) {
+  boolean render1(Atom atom) {
     short colixFill = (mad == -2 ? 0 : Colix.getColixTranslucent3(colix, true, 0.5f));
+    boolean needTranslucent = (mad != -2);
+    if (!g3d.setColix(colix)) {
+      needTranslucent = true;
+      colix = 0;
+      if (colixFill == 0 || !g3d.setColix(colixFill))
+        return needTranslucent;      
+    }
     int z = atom.screenZ;
     int diameter = mad;
     if (diameter < 0) { //unsized selection
@@ -112,8 +124,9 @@ public class HalosRenderer extends ShapeRenderer {
     if (isAntialiased)
       d *= 2;
     if (d < 1)
-      return;
+      return false;
     g3d.drawFilledCircle(colix, colixFill, (int) Math.floor(d),
         atom.screenX, atom.screenY, atom.screenZ);
+    return needTranslucent;
   }  
 }

@@ -40,14 +40,16 @@ public class DipolesRenderer extends ShapeRenderer {
   private float dipoleVectorScale;
 
   @Override
-  protected void render() {
+  protected boolean render() {
     Dipoles dipoles = (Dipoles) shape;
     dipoleVectorScale = viewer.getDipoleScale();
+    boolean needTranslucent = false;
     for (int i = dipoles.dipoleCount; --i >= 0;) {
       Dipole dipole = dipoles.dipoles[i];
-      if (dipole.visibilityFlags != 0 && transform(dipole))
-        renderDipoleVector(dipole);
+      if (dipole.visibilityFlags != 0 && transform(dipole) && renderDipoleVector(dipole))
+        needTranslucent = true;
     }
+    return needTranslucent;
   }
 
   private final Vector3f offset = new Vector3f();
@@ -135,7 +137,7 @@ public class DipolesRenderer extends ShapeRenderer {
     return true;
   }
 
-  private void renderDipoleVector(Dipole dipole) {
+  private boolean renderDipoleVector(Dipole dipole) {
     short colixA = (dipole.bond == null ? dipole.colix : Colix
         .getColixInherited(dipole.colix, dipole.bond.getColix()));
     short colixB = colixA;
@@ -155,7 +157,7 @@ public class DipolesRenderer extends ShapeRenderer {
     colix = colixA;
     if (colix == colixB) {
       if (!g3d.setColix(colix))
-        return;
+        return true;
       g3d.fillCylinder(GData.ENDCAPS_OPEN, diameter,
           screens[cylinderBase], screens[arrowHeadBase]);
       if (!dipole.noCross)
@@ -163,14 +165,17 @@ public class DipolesRenderer extends ShapeRenderer {
             cross1);
       g3d.fillConeScreen(GData.ENDCAPS_FLAT, headWidthPixels,
           screens[arrowHeadBase], screens[arrowHeadTip], false);
-      return;
+      return false;
     }
+    boolean needTranslucent = false;
     if (g3d.setColix(colix)) {
       g3d.fillCylinder(GData.ENDCAPS_OPEN, diameter,
           screens[cylinderBase], screens[center]);
       if (!dipole.noCross)
         g3d.fillCylinderBits(GData.ENDCAPS_FLAT, crossWidthPixels, cross0,
             cross1);
+    } else {
+      needTranslucent = true;
     }
     colix = colixB;
     if (g3d.setColix(colix)) {
@@ -178,7 +183,10 @@ public class DipolesRenderer extends ShapeRenderer {
           screens[arrowHeadBase]);
       g3d.fillConeScreen(GData.ENDCAPS_FLAT, headWidthPixels,
           screens[arrowHeadBase], screens[arrowHeadTip], false);
+    } else {
+      needTranslucent = true;
     }
+    return needTranslucent;
   }
  
  }

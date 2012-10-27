@@ -111,9 +111,9 @@ class ImageRenderer {
       for (int j = 0; j < width; j++) {
         int argb = buffer[offset++];
         if (argb != bgcolor && (argb & 0xFF000000) == 0xFF000000)
-          jmolRenderer.plotPixelClippedArgbNoSlab(argb, x + j, y + i, z);
+          jmolRenderer.plotImagePixel(argb, x + j, y + i, z, 0);
         else if (argb == 0 && bgcolor != 0)
-          jmolRenderer.plotPixelClippedArgbNoSlab(bgcolor, x + j, y + i, z);
+          jmolRenderer.plotImagePixel(bgcolor, x + j, y + i, z, 0);
       }
     }
   }

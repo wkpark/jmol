@@ -56,14 +56,15 @@ public class AxesRenderer extends FontLineShapeRenderer {
   }
 
   @Override
-  protected void render() {
+  protected boolean render() {
     Axes axes = (Axes) shape;
     int mad = viewer.getObjectMad(StateManager.OBJ_AXIS1);
+    // no translucent axes
     if (mad == 0 || !g3d.checkTranslucent(false))
-      return;
+      return false;
     boolean isXY = (axes.axisXY.z != 0);
     if (!isXY && viewer.isNavigating() && viewer.getNavigationPeriodic())
-      return;
+      return false;
     EnumAxesMode axesMode = viewer.getAxesMode();
     imageFontScaling = viewer.getImageFontScaling();
     if (viewer.areAxesTainted()) {
@@ -82,7 +83,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
     if (viewer.isJmolDataFrameForModel(modelIndex) 
         && !viewer.getModelSet().getJmolFrameType(modelIndex).equals("plot data")
         || isUnitCell && modelIndex < 0)
-      return;
+      return false;
     int nPoints = 6;
     int labelPtr = 0;
     if (isUnitCell && cellInfos != null) {
@@ -107,7 +108,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
     boolean drawTicks = false;
     if (isXY) {
       if (exportType == GData.EXPORT_CARTESIAN)
-        return;
+        return false;
       if (mad >= 20) {
         // width given in angstroms as mAng.
         // max out at 500
@@ -180,6 +181,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
     }
     if (isXY)
       g3d.setSlab(slab);
+    return false;
   }
   
   private void renderLabel(String str, float x, float y, float z, float xCenter, float yCenter) {

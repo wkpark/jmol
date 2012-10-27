@@ -39,9 +39,6 @@ public class CartoonRenderer extends RocketsRenderer {
   private boolean newRockets = true;
   private boolean renderAsRockets;
   private boolean renderEdges;
-  private short colixSugarEdge;
-  private short colixWatsonCrickEdge;
-  private short colixHoogsteenEdge;
   
   @Override
   protected void renderBioShape(BioShape bioShape) {
@@ -79,13 +76,6 @@ public class CartoonRenderer extends RocketsRenderer {
   Point3f ptConnect = new Point3f();
   void renderNucleic() {
     renderEdges = viewer.getCartoonFlag(Token.cartoonbaseedges);
-    boolean isTranslucent = Colix.isColixTranslucent(colix);
-    if (renderEdges) {
-      float tl = Colix.getColixTranslucencyLevel(colix);
-      colixSugarEdge = Colix.getColixTranslucent3(Colix.RED, isTranslucent, tl);
-      colixWatsonCrickEdge = Colix.getColixTranslucent3(Colix.GREEN, isTranslucent, tl);
-      colixHoogsteenEdge = Colix.getColixTranslucent3(Colix.BLUE, isTranslucent, tl);
-    }
     boolean isTraceAlpha = viewer.getTraceAlpha();
     for (int i = bsVisible.nextSetBit(0); i >= 0; i = bsVisible
         .nextSetBit(i + 1)) {
@@ -103,7 +93,7 @@ public class CartoonRenderer extends RocketsRenderer {
       }
       renderHermiteConic(i, false);
       colix = getLeadColix(i);
-      if (g3d.setColix(colix))
+      if (setBioColix(colix))
         renderNucleicBaseStep((NucleicMonomer) monomers[i], mads[i], ptConnectScr, ptConnect);
     }
   }
@@ -237,26 +227,34 @@ public class CartoonRenderer extends RocketsRenderer {
     //                Nils G. Walter, Sarah A. Woodson, Robert T. Batey, Eds.
     //                Chapter 1, p 6.
     // http://books.google.com/books?hl=en&lr=&id=se5JVEqO11AC&oi=fnd&pg=PR11&dq=Non-Protein+Coding+RNAs&ots=3uTkn7m3DA&sig=6LzQREmSdSoZ6yNrQ15zjYREFNE#v=onepage&q&f=false
-    
+
     if (!nucleotide.getEdgePoints(ring6Points))
       return;
     viewer.transformPoints(ring6Points, ring6Screens);
     renderTriangle();
     mad = (short) (thisMad > 1 ? thisMad / 2 : thisMad);
-    g3d.fillCylinderScreen3I(GData.ENDCAPS_SPHERICAL, 3,
-        ring6Screens[0], ring6Screens[1], ring6Points[0], ring6Points[1], 0.005f);
-    g3d.fillCylinderScreen3I(GData.ENDCAPS_SPHERICAL, 3,
-        ring6Screens[1], ring6Screens[2], ring6Points[1], ring6Points[2], 0.005f);
+    g3d.fillCylinderScreen3I(GData.ENDCAPS_SPHERICAL, 3, ring6Screens[0],
+        ring6Screens[1], ring6Points[0], ring6Points[1], 0.005f);
+    g3d.fillCylinderScreen3I(GData.ENDCAPS_SPHERICAL, 3, ring6Screens[1],
+        ring6Screens[2], ring6Points[1], ring6Points[2], 0.005f);
+    boolean isTranslucent = Colix.isColixTranslucent(colix);
+    float tl = Colix.getColixTranslucencyLevel(colix);
+    short colixSugarEdge = Colix.getColixTranslucent3(Colix.RED, isTranslucent,
+        tl);
+    short colixWatsonCrickEdge = Colix.getColixTranslucent3(Colix.GREEN,
+        isTranslucent, tl);
+    short colixHoogsteenEdge = Colix.getColixTranslucent3(Colix.BLUE,
+        isTranslucent, tl);
     g3d.setColix(colixSugarEdge);
-    g3d.fillCylinderScreen3I(GData.ENDCAPS_SPHERICAL, 3,
-        ring6Screens[2], ring6Screens[3], ring6Points[2], ring6Points[3], 0.005f);
+    g3d.fillCylinderScreen3I(GData.ENDCAPS_SPHERICAL, 3, ring6Screens[2],
+        ring6Screens[3], ring6Points[2], ring6Points[3], 0.005f);
     g3d.setColix(colixWatsonCrickEdge);
-    g3d.fillCylinderScreen3I(GData.ENDCAPS_SPHERICAL, 3,
-        ring6Screens[3], ring6Screens[4], ring6Points[3], ring6Points[4], 0.005f);
+    g3d.fillCylinderScreen3I(GData.ENDCAPS_SPHERICAL, 3, ring6Screens[3],
+        ring6Screens[4], ring6Points[3], ring6Points[4], 0.005f);
     g3d.setColix(colixHoogsteenEdge);
-    g3d.fillCylinderScreen3I(GData.ENDCAPS_SPHERICAL, 3,
-        ring6Screens[4], ring6Screens[5], ring6Points[4], ring6Points[5], 0.005f);
-   }
+    g3d.fillCylinderScreen3I(GData.ENDCAPS_SPHERICAL, 3, ring6Screens[4],
+        ring6Screens[5], ring6Points[4], ring6Points[5], 0.005f);
+  }
 
   private void renderTriangle() {
     g3d.setNoisySurfaceShade(ring6Screens[2], ring6Screens[3], ring6Screens[4]);

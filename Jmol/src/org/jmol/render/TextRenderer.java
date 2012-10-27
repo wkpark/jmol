@@ -35,32 +35,37 @@ public class TextRenderer {
   public static void render(Text text, JmolRendererInterface g3d,
                             float scalePixelsPerMicron, float imageFontScaling,
                             boolean isExact, float[] boxXY) {
-    if (text == null)
+    if (text == null || text.image == null && text.lines == null)
       return;
-    text.setPosition(g3d.getRenderWidth(), g3d.getRenderHeight(), 
+    text.setPosition(g3d.getRenderWidth(), g3d.getRenderHeight(),
         scalePixelsPerMicron, imageFontScaling, isExact, boxXY);
     // draw the box if necessary
-    if (text.image == null && text.bgcolix != 0 && g3d.setColix(text.bgcolix))
-      showBox(g3d, text.colix, (int) text.boxX, (int) text.boxY, text.z + 2, text.zSlab, 
-          (int) text.boxWidth,
-          (int) text.boxHeight, text.fontScale, text.isLabelOrHover);
+    if (text.image == null && text.bgcolix != 0) {
+      if (g3d.setColix(text.bgcolix))
+        showBox(g3d, text.colix, (int) text.boxX, (int) text.boxY, text.z + 2,
+            text.zSlab, (int) text.boxWidth, (int) text.boxHeight,
+            text.fontScale, text.isLabelOrHover);
+    }
     if (g3d.setColix(text.colix)) {
-
+      // text colix will be opaque, but we need to render it in translucent pass 
       // now set x and y positions for text from (new?) box position
-
-      if (text.image != null) {
-        g3d.drawImage(text.image, (int) text.boxX, (int) text.boxY, text.z, text.zSlab, text.bgcolix,
-            (int) text.boxWidth, (int) text.boxHeight);
-      } else if (text.lines != null) {
+      if (text.image == null) {
         // now write properly aligned text
         float[] xy = new float[3];
         for (int i = 0; i < text.lines.length; i++) {
           text.setXYA(xy, i);
-          g3d.drawString(text.lines[i], text.font, (int) xy[0], (int) xy[1], text.z, text.zSlab);
+          g3d.drawString(text.lines[i], text.font, (int) xy[0], (int) xy[1],
+              text.z, text.zSlab);
         }
+      } else {
+        g3d
+            .drawImage(text.image, (int) text.boxX, (int) text.boxY, text.z,
+                text.zSlab, text.bgcolix, (int) text.boxWidth,
+                (int) text.boxHeight);
       }
+      drawPointer(text, g3d);
     }
-    drawPointer(text, g3d);
+    return;
   }
 
   protected static void drawPointer(Text text, JmolRendererInterface g3d) {

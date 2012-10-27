@@ -35,12 +35,11 @@ import org.jmol.util.JmolFont;
  * implementation for text rendering
  *<p>
  * uses java fonts by rendering into an offscreen buffer.
- * strings are rasterized and stored as a bitmap in an int[].
+ * strings are rasterized, and 4-bit translucency is stored as byte[] tmap.
  *<p>
- * needs work
- *
  *
  * @author Miguel, miguel@jmol.org
+ * @author Bob Hanson, hansonr@stolaf.edu
  */ 
 class TextRenderer {
   /*
@@ -64,8 +63,9 @@ class TextRenderer {
   private int width;
   private int mapWidth;
   private int size;
-  private int[] bitmap;
+  private byte[] tmap;
   private boolean isInvalid;
+  private final static byte[] translucency = new byte[] { 7, 6, 5, 4, 3, 2, 1, 8 };
   private static boolean working;
   private final static Map<JmolFont, Map<String, TextRenderer>> htFont3d = new Hashtable<JmolFont, Map<String, TextRenderer>>();
   private final static Map<JmolFont, Map<String, TextRenderer>> htFont3dAntialias = new Hashtable<JmolFont, Map<String, TextRenderer>>();
@@ -106,10 +106,10 @@ class TextRenderer {
     if (jmolRenderer != null
         || (x < 0 || x + text3d.width > g3d.width || y < 0 || y + text3d.height > g3d.height))
       plotClipped(x, y, z, argb, g3d, jmolRenderer, text3d.mapWidth,
-          text3d.height, text3d.bitmap);
+          text3d.height, text3d.tmap);
     else
       plotUnclipped(x, y, z, argb, g3d, text3d.mapWidth, text3d.height,
-          text3d.bitmap);
+          text3d.tmap);
     return text3d.width;
   }
 
@@ -155,67 +155,34 @@ class TextRenderer {
   
   private static void plotUnclipped(int x, int y, int z, int argb,
                                     Graphics3D g3d, int textWidth,
-                                    int textHeight, int[] bitmap) {
+                                    int textHeight, byte[] tmap) {
     int offset = 0;
-    int shiftregister = 0;
-    int i = 0, j = 0;
     int[] zbuf = g3d.zbuf;
     int renderWidth = g3d.width;
     int pbufOffset = y * renderWidth + x;
-    while (i < textHeight) {
-      while (j < textWidth) {
-        if ((offset & 31) == 0)
-          shiftregister = bitmap[offset >> 5];
-        if (shiftregister == 0) {
-          int skip = 32 - (offset & 31);
-          j += skip;
-          offset += skip;
-          pbufOffset += skip;
-          continue;
-        }
-        if (shiftregister < 0 && z < zbuf[pbufOffset])
-          g3d.addPixel(pbufOffset, z, argb);
-        shiftregister <<= 1;
-        ++offset;
-        ++j;
-        ++pbufOffset;
+    for (int i = 0; i < textHeight; i++) {
+      for (int j = 0; j < textWidth; j++) {
+        byte shade = tmap[offset++];
+        if (shade != 0 && z < zbuf[pbufOffset])
+          g3d.shadeTextPixel(pbufOffset, z, argb, shade);
+        pbufOffset++;
       }
-      while (j >= textWidth) {
-        ++i;
-        j -= textWidth;
-        pbufOffset += (renderWidth - textWidth);
-      }
+      pbufOffset += (renderWidth - textWidth);
     }
   }
   
   private static void plotClipped(int x, int y, int z, int argb,
                                   Graphics3D g3d,
                                   JmolRendererInterface jmolRenderer,
-                                  int textWidth, int textHeight, int[] bitmap) {
+                                  int textWidth, int textHeight, byte[] tmap) {
     if (jmolRenderer == null)
       jmolRenderer = g3d;
     int offset = 0;
-    int shiftregister = 0;
-    int i = 0, j = 0;
-    while (i < textHeight) {
-      while (j < textWidth) {
-        if ((offset & 31) == 0)
-          shiftregister = bitmap[offset >> 5];
-        if (shiftregister == 0) {
-          int skip = 32 - (offset & 31);
-          j += skip;
-          offset += skip;
-          continue;
-        }
-        if (shiftregister < 0)
-          jmolRenderer.plotPixelClippedArgbNoSlab(argb, x + j, y + i, z);
-        shiftregister <<= 1;
-        ++offset;
-        ++j;
-      }
-      while (j >= textWidth) {
-        ++i;
-        j -= textWidth;
+    for (int i = 0; i < textHeight; i++) {
+      for (int j = 0; j < textWidth; j++) {
+        byte shade = tmap[offset++];
+        if (shade != 0)
+          jmolRenderer.plotImagePixel(argb, x + j, y + i, z, shade);
       }
     }
   }
@@ -231,7 +198,6 @@ class TextRenderer {
     width = font3d.stringWidth(text);
     if (width == 0)
       return;
-    //System.out.println(text + " " + antialias + " "  + ascent + " " + height + " " + width );
     mapWidth = width;
     size = mapWidth * height;
   }
@@ -262,65 +228,33 @@ class TextRenderer {
     if (newFont)
       ht.put(font3d, htForThisFont);
     if (newText) {
-      //System.out.println(text + " " + x + " " + text3d.width + " " + g3d.width + " " + y + " " + g3d.height);
-      text3d.setBitmap(text, font3d, g3d);
+      text3d.setTranslucency(text, font3d, g3d);
       htForThisFont.put(text, text3d);
     }
     TextRenderer.working = false;
     return text3d;
   }
 
-  private void setBitmap(String text, JmolFont font3d, Graphics3D g3d) {
-    rasterize(g3d.apiPlatform.getTextPixels(text, font3d, 
-        g3d.platform.getGraphicsForTextOrImage(mapWidth, height), 
-        g3d.platform.offscreenImage, mapWidth, height, ascent));
-  }
-
   /**
+   * retrieve grey-scale pixel map from the platform, then round it off
    * 
-   * @param pixels 
-   * 
+   * @param text
+   * @param font3d
+   * @param g3d
    */
-  private void rasterize(int[] pixels) {
+  private void setTranslucency(String text, JmolFont font3d, Graphics3D g3d) {
+    int[] pixels = g3d.apiPlatform.getTextPixels(text, font3d, g3d.platform
+        .getGraphicsForTextOrImage(mapWidth, height),
+        g3d.platform.offscreenImage, mapWidth, height, ascent);
     if (pixels == null)
       return;
-    int bitmapSize = (size + 31) >> 5;
-    bitmap = new int[bitmapSize];
-
-    int offset, shifter;
-    for (offset = shifter = 0; offset < size; ++offset, shifter <<= 1) {
-      if ((pixels[offset] & 0x00FFFFFF) != 0)
-        shifter |= 1;
-      if ((offset & 31) == 31)
-        bitmap[offset >> 5] = shifter;
-    }
-    if ((offset & 31) != 0) {
-      shifter <<= 31 - (offset & 31);
-      bitmap[offset >> 5] = shifter;
-    }
-    /*      // error checking
-      // shifter error checking
-      boolean[] bits = new boolean[size];
-      for (int i = 0; i < size; ++i)
-        bits[i] = (pixels[i] & 0x00FFFFFF) != 0;
-      //
-      for (offset = 0; offset < size; ++offset, shifter <<= 1) {
-        if ((offset & 31) == 0)
-          shifter = bitmap[offset >> 5];
-        if (shifter < 0) {
-          if (!bits[offset]) {
-            Logger.debug("false positive @" + offset);
-            Logger.debug("size = " + size);
-          }
-        } else {
-          if (bits[offset]) {
-            Logger.debug("false negative @" + offset);
-            Logger.debug("size = " + size);
-          }
-        }
+    tmap = new byte[size];
+    for (int i = pixels.length; --i >= 0;) {
+      int p = pixels[i] & 0xFF;
+      if (p != 0) {
+        tmap[i] = translucency[p >> 5]; // 3-bit precision
       }
-      // error checking
-    */
+    }
   }
 
 }

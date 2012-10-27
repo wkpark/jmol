@@ -30,4 +30,6 @@ public interface JmolGraphicsInterface {
 
   public abstract boolean isInDisplayRange(int x, int y);
 
+  public abstract void renderAllStrings(Object jmolRenderer);
+
 }

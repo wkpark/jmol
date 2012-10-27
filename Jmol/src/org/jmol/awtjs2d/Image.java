@@ -120,8 +120,8 @@ class Image {
      */
     int n = imgData.length / 4;
     int[] iData = new int[n];
-    for (int i = 0, j = 0; ++i < n; j++) {
-      iData[i] = (imgData[j++] << 16) | (imgData[j++] << 8) | imgData[j++] | 0xFF000000;
+    for (int i = 0, j = 0; i < n; j++) {
+      iData[i++] = (imgData[j++] << 16) | (imgData[j++] << 8) | imgData[j++] | 0xFF000000;
     }
     return iData;
   }
@@ -135,7 +135,7 @@ class Image {
      */
     int n = buf32.length;
     if (buf8.length == n * 4)
-      for (int i = 0, j = 0; ++i < n;) {
+      for (int i = 0, j = 0; i < n; i++) {
         buf8[j++] = (buf32[i] >> 16) & 0xFF;
         buf8[j++] = (buf32[i] >> 8) & 0xFF;
         buf8[j++] = buf32[i] & 0xFF;
@@ -160,17 +160,17 @@ class Image {
    * @param ascent 
    * @return array
    */
-  public static int[] getTextPixels(String text, JmolFont font3d, Object context,
-                                    Object context2, int width, int height,
-                                    int ascent) {
+  public static int[] getTextPixels(String text, JmolFont font3d, Object context, 
+                                    int width, int height, int ascent) {
     /**
      * @j2sNative
      * 
-     * context.setColor("#000000");
+     * context.fillStyle = "#000000";
      * context.fillRect(0, 0, width, height);
-     * context.setColor("#FFFFFF")
+     * context.fillStyle = "#FFFFFF";
+     * context.font = font3d.font;
      * context.fillText(text, 0, ascent);
-     * return grabPixels(context, width, height);
+     * return this.grabPixels(context, width, height);
      */
     {
       return null;

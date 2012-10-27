@@ -83,14 +83,18 @@ abstract class BioShapeRenderer extends MeshRenderer {
   protected short[] mads;
   protected short[] colixes;
   protected EnumStructure[] structureTypes;
+  
+  protected boolean isPass2;
 
   protected abstract void renderBioShape(BioShape bioShape);
 
   @Override
-  protected void render() {
+  protected boolean render() {
     if (shape == null)
-      return;
+      return false;
+    isPass2 = g3d.isPass2();
     invalidateMesh = false;
+    needTranslucent = false;
     boolean TF = isExport || viewer.getHighResolution();
     if (TF != isHighRes)
       invalidateMesh = true;
@@ -148,6 +152,14 @@ abstract class BioShapeRenderer extends MeshRenderer {
         freeTempArrays();
       }
     }
+    return needTranslucent;
+  }
+
+  protected boolean setBioColix(short colix) {
+    if (g3d.setColix(colix))
+      return  true;
+    needTranslucent = true;
+    return false;
   }
 
   private void freeTempArrays() {
@@ -331,7 +343,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
   protected void renderHermiteCylinder(Point3i[] screens, int i) {
     //strands
     colix = getLeadColix(i);
-    if (!g3d.setColix(colix))
+    if (!setBioColix(colix))
       return;
     setNeighbors(i);
     g3d.drawHermite4(isNucleic ? 4 : 7, screens[iPrev], screens[i],
@@ -342,7 +354,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     //cartoons, rockets, trace
     setNeighbors(i);
     colix = getLeadColix(i);
-    if (!g3d.setColix(colix))
+    if (!setBioColix(colix))
       return;
     if (setMads(i, thisTypeOnly)) {
       try {
@@ -372,7 +384,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     // cartoons and meshRibbon
     setNeighbors(i);
     colix = getLeadColix(i);
-    if (!g3d.setColix(colix))
+    if (!setBioColix(colix))
       return;
     if (doFill && aspectRatio != 0) {
       if (setMads(i, thisTypeOnly)) {
@@ -407,7 +419,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
   protected void renderHermiteArrowHead(int i) {
     // cartoons only
     colix = getLeadColix(i);
-    if (!g3d.setColix(colix))
+    if (!setBioColix(colix))
       return;
     setNeighbors(i);
     if (setMads(i, false)) {

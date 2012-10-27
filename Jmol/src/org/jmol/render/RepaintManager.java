@@ -27,6 +27,7 @@ import org.jmol.api.JmolRendererInterface;
 import org.jmol.api.JmolRepaintInterface;
 import org.jmol.modelset.ModelSet;
 import org.jmol.shape.Shape;
+import org.jmol.util.BitSet;
 import org.jmol.util.GData;
 import org.jmol.util.Logger;
 import org.jmol.util.Rectangle;
@@ -43,6 +44,8 @@ public class RepaintManager implements JmolRepaintInterface {
   public RepaintManager() {
     // required for reflection
   }
+  
+  private final BitSet bsTranslucent = BitSet.newN(JmolConstants.SHAPE_MAX);
   
   public void set(Viewer viewer, ShapeManager shapeManager) {
     this.viewer = viewer;
@@ -188,6 +191,7 @@ public class RepaintManager implements JmolRepaintInterface {
       JmolRendererInterface g3d = (JmolRendererInterface) gdata;
       g3d.renderBackground(null);
       if (isFirstPass)  {
+        bsTranslucent.clearAll();
         if (minMax != null)
           g3d.renderCrossHairs(minMax, viewer.getScreenWidth(), viewer.getScreenHeight(), 
               viewer.getNavigationOffset(), viewer.getNavigationDepthPercent());
@@ -207,10 +211,13 @@ public class RepaintManager implements JmolRepaintInterface {
           msg = "rendering " + JmolConstants.getShapeClassName(i, false);
           Logger.startTimer(msg);
         }
-        getRenderer(i).render(g3d, modelSet, shape);
+        if((isFirstPass || bsTranslucent.get(i)) && getRenderer(i).render(g3d, modelSet, shape))
+          bsTranslucent.set(i);
         if (logTime)
           Logger.checkTimer(msg, false);
       }
+      if (isFirstPass)
+        g3d.renderAllStrings(null);
     } catch (Exception e) {
       System.out.println(e.getMessage());
       Logger.error("rendering error? ");
@@ -247,6 +254,7 @@ public class RepaintManager implements JmolRepaintInterface {
         if (logTime)
           Logger.checkTimer(msg, false);
     }
+    g3dExport.renderAllStrings(g3dExport);
     return g3dExport.finalizeOutput();
   }
 

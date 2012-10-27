@@ -32,23 +32,26 @@ import org.jmol.shape.Stars;
 public class StarsRenderer extends ShapeRenderer {
 
   @Override
-  protected void render() {
+  protected boolean render() {
     Stars stars = (Stars) shape;
     if (stars.mads == null)
-      return;
+      return false;
+    boolean needTranslucent = false;
     Atom[] atoms = modelSet.atoms;
     for (int i = modelSet.getAtomCount(); --i >= 0;) {
       Atom atom = atoms[i];
       if (!atom.isVisible(myVisibilityFlag))
         continue;
       colix = Shape.getColix(stars.colixes, i, atom);
-      if (!g3d.setColix(colix))
-        continue;
-      render1(atom, stars.mads[i]);
+      if (g3d.setColix(colix))
+        render1(atom, stars.mads[i]);
+      else
+        needTranslucent = true;
     }
+    return needTranslucent;
   }
 
-  void render1(Atom atom, short mad) {
+  private void render1(Atom atom, short mad) {
     int x = atom.screenX;
     int y = atom.screenY;
     int z = atom.screenZ;

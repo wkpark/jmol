@@ -70,13 +70,16 @@ public abstract class MeshRenderer extends ShapeRenderer {
   protected final Point3i pt2i = new Point3i();
   protected final Point3i pt3i = new Point3i();
   protected int exportPass;
+  protected boolean needTranslucent;
 
   @Override
-  protected void render() {
+  protected boolean render() {
+    needTranslucent = false;
     antialias = g3d.isAntialiased(); 
     MeshCollection mc = (MeshCollection) shape;
     for (int i = mc.meshCount; --i >= 0;)
       renderMesh(mc.meshes[i]);
+    return needTranslucent;
   }
   
   // draw, isosurface, molecular orbitals
@@ -138,6 +141,8 @@ public abstract class MeshRenderer extends ShapeRenderer {
         : g3d.isPass2()));
     isTranslucent = haveBsSlabGhost
         || Colix.isColixTranslucent(mesh.colix);
+    if (isTranslucent)
+      needTranslucent = true;
     doRender = (setColix(mesh.colix) || mesh.showContourLines);
     if (!doRender || haveBsSlabGhost && !(doRender = g3d.setColix(mesh.slabColix))) {
       vertices = mesh.vertices;      

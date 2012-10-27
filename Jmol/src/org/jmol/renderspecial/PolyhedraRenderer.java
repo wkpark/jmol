@@ -37,26 +37,35 @@ public class PolyhedraRenderer extends ShapeRenderer {
   private int drawEdges;
   private boolean isAll;
   private boolean frontOnly;
+  private Point3i[] screens;
 
   @Override
-  protected void render() {
+  protected boolean render() {
     Polyhedra polyhedra = (Polyhedra) shape;
     Polyhedra.Polyhedron[] polyhedrons = polyhedra.polyhedrons;
     drawEdges = polyhedra.drawEdges;
     short[] colixes = polyhedra.colixes;
-    Point3i[] screens = null;
+    boolean needTranslucent = false;
     for (int i = polyhedra.polyhedronCount; --i >= 0;) {
       int iAtom = polyhedrons[i].centralAtom.getIndex();
       short colix = (colixes == null || iAtom >= colixes.length ? 
           Colix.INHERIT_ALL : polyhedra.colixes[iAtom]);
-      screens = render1(polyhedrons[i], colix, screens);
+      if (render1(polyhedrons[i], colix))
+        needTranslucent = true;
     }
+    return needTranslucent;
   }
 
-  private Point3i[] render1(Polyhedra.Polyhedron p, short colix, Point3i[] screens) {
+  private boolean render1(Polyhedra.Polyhedron p, short colix) {
     if (p.visibilityFlags == 0)
-      return screens;
+      return false;
     colix = Colix.getColixInherited(colix, p.centralAtom.getColix());
+    boolean needTranslucent = false;
+    if (Colix.isColixTranslucent(colix)) {
+      needTranslucent = true;
+    } else if (!g3d.setColix(colix)) {
+      return false;
+    }
     Point3f[] vertices = p.vertices;
     byte[] planes;
     if (screens == null || screens.length < vertices.length) {
@@ -77,15 +86,16 @@ public class PolyhedraRenderer extends ShapeRenderer {
     frontOnly = (drawEdges == Polyhedra.EDGES_FRONT);
 
     // no edges to new points when not collapsed
-    if (g3d.setColix(colix))
+    if (!needTranslucent || g3d.setColix(colix))
       for (int i = 0, j = 0; j < planes.length;)
         fillFace(p.normixes[i++], screens[planes[j++]], screens[planes[j++]],
             screens[planes[j++]]);
+    // edges are not drawn translucently ever
     if (g3d.setColix(Colix.getColixTranslucent3(colix, false, 0)))
     for (int i = 0, j = 0; j < planes.length;)
       drawFace(p.normixes[i++], screens[planes[j++]],
           screens[planes[j++]], screens[planes[j++]]);
-    return screens;
+    return needTranslucent;
   }
 
   private void drawFace(short normix, Point3i A, Point3i B, Point3i C) {

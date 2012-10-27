@@ -28,6 +28,7 @@ package org.jmol.render;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.shape.Uccage;
 import org.jmol.util.BoxInfo;
+import org.jmol.util.Colix;
 import org.jmol.util.Point3f;
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.TextFormat;
@@ -58,16 +59,20 @@ public class UccageRenderer extends CageRenderer {
   }
   
   @Override
-  protected void render() {
+  protected boolean render() {
     imageFontScaling = viewer.getImageFontScaling();
-    font3d = g3d.getFont3DScaled(((Uccage)shape).font3d, imageFontScaling);
+    font3d = g3d.getFont3DScaled(((Uccage) shape).font3d, imageFontScaling);
     int mad = viewer.getObjectMad(StateManager.OBJ_UNITCELL);
+    if (mad == 0 || viewer.isJmolDataFrame() || viewer.isNavigating()
+        && viewer.getNavigationPeriodic())
+      return false;
     colix = viewer.getObjectColix(StateManager.OBJ_UNITCELL);
-    if (mad == 0 || !g3d.setColix(colix) || viewer.isJmolDataFrame()
-        || viewer.isNavigating() && viewer.getNavigationPeriodic())
-      return;
+    boolean needTranslucent = Colix.isColixTranslucent(colix);
+    if (!isExport && needTranslucent != g3d.isPass2())
+      return needTranslucent;
     //doLocalize = viewer.getUseNumberLocalization();
     render1(mad);
+    return false;
   }
 
   private Point3f fset0 = Point3f.new3(555,555,1);
@@ -76,7 +81,8 @@ public class UccageRenderer extends CageRenderer {
   private Point3f offset = new Point3f();
   private Point3f offsetT = new Point3f();
   
-  void render1(int mad) {
+  private void render1(int mad) {
+    g3d.setColix(colix);
     SymmetryInterface unitcell = viewer.getCurrentUnitCell();
     if (unitcell == null)
       return;

@@ -55,15 +55,16 @@ public class VectorsRenderer extends ShapeRenderer {
 
 
   @Override
-  protected void render() {
+  protected boolean render() {
     Vectors vectors = (Vectors) shape;
     if (!vectors.isActive)
-      return;
+      return false;
     short[] mads = vectors.mads;
     if (mads == null)
-      return;
+      return false;
     Atom[] atoms = vectors.atoms;
     short[] colixes = vectors.colixes;
+    boolean needTranslucent = false;
     for (int i = modelSet.getAtomCount(); --i >= 0;) {
       Atom atom = atoms[i];
       if (!atom.isVisible(myVisibilityFlag))
@@ -73,17 +74,21 @@ public class VectorsRenderer extends ShapeRenderer {
         continue;
       vectorScale = viewer.getVectorScale();
       vectorSymmetry = viewer.getVectorSymmetry();
-      if (transform(mads[i], atom, vibrationVector)
-          && g3d.setColix(Shape.getColix(colixes, i, atom))) {
+      if (!transform(mads[i], atom, vibrationVector))
+        continue;
+      if (!g3d.setColix(Shape.getColix(colixes, i, atom))) {
+        needTranslucent = true;
+        continue;
+      }
+      renderVector(atom);
+      if (vectorSymmetry) {
+        vector2.setT(vibrationVector);
+        vector2.scale(-1);
+        transform(mads[i], atom, vector2);
         renderVector(atom);
-        if (vectorSymmetry) {
-          vector2.setT(vibrationVector);
-          vector2.scale(-1);
-          transform(mads[i], atom, vector2);
-          renderVector(atom);          
-        }
       }
     }
+    return needTranslucent;
   }
 
   private boolean transform(short mad, Atom atom, Vector3f vibrationVector) {

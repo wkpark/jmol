@@ -88,10 +88,10 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   
 
   @Override
-  protected void render() {
+  protected boolean render() {
     ellipsoids = (Ellipsoids) shape;
     if (ellipsoids.madset == null && !ellipsoids.haveEllipsoids)
-      return;
+      return false;
     wireframeOnly = (viewer.getWireframeRotation() && viewer.getInMotion());
     drawAxes = viewer.getBooleanProperty("ellipsoidAxes");
     drawArcs = viewer.getBooleanProperty("ellipsoidArcs");
@@ -133,7 +133,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     Matrix4f m4 = viewer.getMatrixtransform();
     m4.setRotationScale(mat);
     matScreenToCartesian.invertM(mat);
-
+    boolean needTranslucent = false;
     Atom[] atoms = modelSet.atoms;
     for (int i = modelSet.getAtomCount(); --i >= 0;) {
       Atom atom = atoms[i];
@@ -149,10 +149,10 @@ public class EllipsoidsRenderer extends ShapeRenderer {
         if (ellipsoid2[j] == null || ellipsoids.madset[j] == null || ellipsoids.madset[j][i] == 0)
           continue;
         colix = Shape.getColix(ellipsoids.colixset[j], i, atom);
-        if (!g3d.setColix(colix))
-          continue;
-        //if (i == 0)        System.out.println("ell rend " + j + " " + i + ": " + ellipsoid2[j]);
-        render1(atom, ellipsoid2[j]);
+        if (g3d.setColix(colix))
+          render1(atom, ellipsoid2[j]);
+        else
+          needTranslucent = true;
       }
     }
 
@@ -160,11 +160,16 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       Iterator<Ellipsoid> e = ellipsoids.htEllipsoids.values().iterator();
       while (e.hasNext()) {
         Ellipsoid ellipsoid = e.next();
-        if (ellipsoid.visible && ellipsoid.isValid)
-          renderEllipsoid(ellipsoid);
+        if (ellipsoid.visible && ellipsoid.isValid) { 
+           if (g3d.setColix(colix = ellipsoid.colix))
+             renderEllipsoid(ellipsoid);
+           else
+             needTranslucent = true;
+        }
       }
     }
     coords = null;
+    return needTranslucent;
   }
 
   private final Point3i[] screens = new Point3i[32];
@@ -397,9 +402,6 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     setMatrices();
     center = ellipsoid.center;
     setAxes(1);
-    colix = ellipsoid.colix;
-    if (!g3d.setColix(colix))
-      return;
     renderBall();
   }
  

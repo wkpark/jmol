@@ -2,7 +2,8 @@
 
 Molecular Playground Configuration File
 Bob Hanson, St. Olaf College 12/21/2011
-
+revised 10/24/12 to delay n seconds after any change
+ 
 See also MPJmolAppRemoteConfig.spt and MPJmolAppDefaultConfig.spt
 
 Organized around "topics" such as "organic" and "biophysics"
@@ -14,6 +15,11 @@ This server is then also called by a web page for web-based interaction
 
 
 */
+
+setlogfile "dblog"
+log "$CLEAR$"
+  
+allowRemote = false
 
 remotedir = ""  // leaving this empty disables remote operation
 password = ""    // set in MPJmolAppRemoteConfig.spt
@@ -41,6 +47,8 @@ try {
 
 function getRemoteStatus() {
 
+	if (!allowRemote) { return }
+
   // get remote status -- topic, subtopic, and delay
 
   print "remotedir: " + remotedir
@@ -61,6 +69,8 @@ function getRemoteStatus() {
 }
 
 function remoteSet(s) {
+
+	if (!allowRemote) { return }
 
   // update remote information for banner and image
 
@@ -84,6 +94,8 @@ function setDirectory() {
 }
 
 function setMPStatus(doCheckTopic) {
+
+	if (!allowRemote) { return }
 
   // Check for a remote topic change or delay change and
   // set directories and delay appropriately.
@@ -163,6 +175,8 @@ print "load model " + jmolFile + " " + more + " " + banner
     remoteSet("log&info=loading " + jmolFile)
     load @jmolFile
     if (more) { script inline @more }
+    
+    
     banner = banner.split("##")[1]
     var msg = "banner:" + banner
     message @msg
@@ -175,8 +189,17 @@ print "load model " + jmolFile + " " + more + " " + banner
     d = [300, (_animating ? [myDelay,_animTimeSec * 2].max : myDelay)].min
   }
 
-  delay @d
-
+  var spinState = script("show state/spin");
+  var orientState = script("show orientation");
+  
+  //log "$NOW$ " + _modelFile
+  while (true) {
+	delay @d
+	if (script("show state/spin") == spinState && (_spinning || script("show orientation") == orientState)) {
+	  break;
+	}
+	log "$NOW$"
+  }
   // send terminator message to keep Hub happy
 
   print "terminatormessage=" + NIOterminatormessage

@@ -56,18 +56,20 @@ public class DrawRenderer extends MeshRenderer {
   private final Vector3f vTemp2 = new Vector3f();
 
   @Override
-  protected void render() {
+  protected boolean render() {
     /*
      * Each drawn object, draw.meshes[i], may consist of several polygons, one
      * for each MODEL FRAME. Or, it may be "fixed" and only contain one single
      * polygon.
      * 
      */
+    needTranslucent = false;
     imageFontScaling = viewer.getImageFontScaling();
     Draw draw = (Draw) shape;
     for (int i = draw.meshCount; --i >= 0;)
       if (renderMesh(dmesh = (DrawMesh) draw.meshes[i]))
         renderInfo();
+    return needTranslucent;
   }
 
   @Override

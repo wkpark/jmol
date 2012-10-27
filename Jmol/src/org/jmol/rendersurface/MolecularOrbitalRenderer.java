@@ -31,9 +31,10 @@ public class MolecularOrbitalRenderer extends IsosurfaceRenderer {
   //private NumberFormat nf;
 
   @Override
-  protected void render() {
+  protected boolean render() {
     imageFontScaling = viewer.getImageFontScaling();
     super.render();
+    return needTranslucent;
   }
 
   @Override
@@ -49,12 +50,12 @@ public class MolecularOrbitalRenderer extends IsosurfaceRenderer {
 //      nf.setMaximumFractionDigits(3);
 //      nf.setMinimumFractionDigits(3);
 //    }
-    byte fid = g3d.getFontFidFS("Monospaced", 14 * imageFontScaling);
+    byte fid = g3d.getFontFidFS("Serif", 14 * imageFontScaling);
     g3d.setFontFid(fid);
     int lineheight = Math.round(15 * imageFontScaling);
     int x = Math.round(5 * imageFontScaling);
     int y = lineheight;
-
+    
     for (int i = 0; i < mesh.title.length; i++)
       if (mesh.title[i].length() > 0) {
         g3d.drawStringNoSlab(mesh.title[i], null, x, y, 0);

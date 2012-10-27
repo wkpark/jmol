@@ -51,9 +51,11 @@ final public class JmolFont {
   private ApiPlatform apiPlatform;
   private int ascent;
   private int descent;
-  private JmolFont(ApiPlatform apiPlatform, byte fid,
-                 int idFontFace, int idFontStyle, float fontSize,
-                 float fontSizeNominal, Object graphics) {
+  private boolean isBold;
+  private boolean isItalic;
+  
+  private JmolFont(ApiPlatform apiPlatform, byte fid, int idFontFace,
+      int idFontStyle, float fontSize, float fontSizeNominal, Object graphics) {
     this.apiPlatform = apiPlatform;
     this.fid = fid;
     this.fontFace = fontFaces[idFontFace];
@@ -61,10 +63,10 @@ final public class JmolFont {
     this.idFontFace = idFontFace;
     this.idFontStyle = idFontStyle;
     this.fontSize = fontSize;
+    this.isBold = (idFontStyle & FONT_STYLE_BOLD) == FONT_STYLE_BOLD;
+    this.isItalic = (idFontStyle & FONT_STYLE_ITALIC) == FONT_STYLE_ITALIC;
     this.fontSizeNominal = fontSizeNominal;
-    font = apiPlatform.newFont(fontFaces[idFontFace], 
-        (idFontStyle & FONT_STYLE_BOLD) == FONT_STYLE_BOLD,
-        (idFontStyle & FONT_STYLE_ITALIC) == FONT_STYLE_ITALIC, 
+    font = apiPlatform.newFont(fontFaces[idFontFace], isBold, isItalic,
         fontSize);
     fontMetrics = apiPlatform.getFontMetrics(this, graphics);
     descent = apiPlatform.getFontDescent(fontMetrics);
@@ -154,7 +156,7 @@ final public class JmolFont {
   }
   
   public int stringWidth(String text) {
-    return apiPlatform.fontStringWidth(fontMetrics, text);
+    return apiPlatform.fontStringWidth(this, fontMetrics, text);
   }
 }
 

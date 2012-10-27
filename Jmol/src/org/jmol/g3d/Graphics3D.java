@@ -24,10 +24,15 @@
 package org.jmol.g3d;
 
 
+import java.util.Arrays;
+import java.util.Comparator;
+
+
 import org.jmol.api.ApiPlatform;
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.constant.EnumStereoMode;
 import org.jmol.modelset.Atom;
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.Colix;
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
@@ -161,6 +166,15 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   private boolean isFullSceneAntialiasingEnabled;
   private boolean antialias2; 
 
+  private TextString[] strings = null;
+  private int stringCount;
+  
+  @Override
+  public void clear() {
+    stringCount = 0;
+    strings = null;
+  }
+  
   @Override
   public void destroy() {
     releaseBuffers();
@@ -262,6 +276,9 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     setRotationMatrix(rotationMatrix);
     antialiasEnabled = antialiasThisFrame = newAntialiasing;
     currentlyRendering = true;
+    if (strings != null)
+      for (int i = Math.min(strings.length, stringCount); --i >= 0;)
+    stringCount = 0;
     twoPass = true; //only for testing -- set false to disallow second pass
     isPass2 = false;
     colixCurrent = 0;
@@ -491,23 +508,13 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     if (pbufT == null)
       return;
     for (int offset = 0; offset < bufferSize; offset++)
-      mergeBufferPixel(pbuf, pbufT[offset], offset, bgcolor);
+      mergeBufferPixel(pbuf, offset, pbufT[offset], bgcolor);
   }
-/*  
-  static void averageBufferPixel(int[] pIn, int[] pOut, int pt, int dp) {
-    int argbA = pIn[pt - dp];
-    int argbB = pIn[pt + dp];
-    if (argbA == 0 || argbB == 0)
-      return;
-    pOut[pt] = ((((argbA & 0xFF000000)>>1) + ((argbB & 0xFF000000)>>1))<< 1)
-        | (((argbA & 0x00FF00FF) + (argbB & 0x00FF00FF)) >> 1) & 0x00FF00FF
-        | (((argbA & 0x0000FF00) + (argbB & 0x0000FF00)) >> 1) & 0x0000FF00;
-  }
-*/  
-  static void mergeBufferPixel(int[] pbuf, int argbB, int pt, int bgcolor) {
+
+  static void mergeBufferPixel(int[] pbuf, int offset, int argbB, int bgcolor) {
     if (argbB == 0)
       return;
-    int argbA = pbuf[pt];
+    int argbA = pbuf[offset];
     if (argbA == argbB)
       return;
     if (argbA == 0)
@@ -519,7 +526,6 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     int logAlpha = (argbB >> 24) & 7;
     //just for now:
     //0 or 1=100% opacity, 2=87.5%, 3=75%, 4=50%, 5=50%, 6 = 25%, 7 = 12.5% opacity.
-    //4 is reserved because it is the default-Jmol 10.2
     switch (logAlpha) {
     // 0.0 to 1.0 ==> MORE translucent   
     //                1/8  1/4 3/8 1/2 5/8 3/4 7/8
@@ -555,7 +561,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
       gA = (((gA << 2) + (gA << 1) + gA + gB) >> 3) & 0x0000FF00;
       break;
     }
-    pbuf[pt] = 0xFF000000 | rbA | gA;    
+    pbuf[offset] = 0xFF000000 | rbA | gA;    
   }
   
   public boolean hasContent() {
@@ -868,6 +874,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   public void drawString(String str, JmolFont font3d,
                          int xBaseline, int yBaseline, int z, int zSlab) {
     //axis, labels, measures    
+    currentShadeIndex = 0; 
     if (str == null)
       return;
     if (isClippedZ(zSlab))
@@ -892,11 +899,31 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     // echo, frank, hover, molecularOrbital, uccage
     if (str == null)
       return;
-    if(font3d != null)
-      currentFont = font3d;
-    plotText(xBaseline, yBaseline, z, argbCurrent, str, currentFont, null);
+    if (strings == null)
+      strings = new TextString[10];
+    if (stringCount == strings.length)
+      strings = (TextString[]) ArrayUtil.doubleLength(strings);
+    TextString t = new TextString();
+    t.setText(str, font3d == null ? currentFont : (currentFont = font3d), argbCurrent, xBaseline, yBaseline, z);
+    strings[stringCount++] = t;
+    
   }
   
+  public static Comparator<TextString> sort;
+  
+  @Override
+  public void renderAllStrings(Object jmolRenderer) {
+    if (strings == null)
+      return;
+    if (sort == null)
+      sort = new TextSorter();
+    Arrays.sort(strings, sort);
+    for (int i = 0; i < stringCount; i++) {
+      TextString ts = strings[i];
+      plotText(ts.x, ts.y, ts.z, ts.argb, ts.text, ts.font, (JmolRendererInterface) jmolRenderer);
+    }
+  }
+
   @Override
   public void plotText(int x, int y, int z, int argb,
                 String text, JmolFont font3d, JmolRendererInterface jmolRenderer) {
@@ -1317,13 +1344,13 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
       addPixel(offset, z, argb);
   }
 
-  public void plotPixelClippedArgbNoSlab(int argb, int x, int y, int z) {
+  public void plotImagePixel(int argb, int x, int y, int z, int shade) {
     // drawString via text3d.plotClipped
     if (isClipped(x, y))
       return;
     int offset = y * width + x;
     if (z < zbuf[offset])
-      addPixel(offset, z, argb);
+      shadeTextPixel(offset, z, argb, shade);
   }
 
   void plotPixelClippedScreened(int argb, boolean isScreened, int x, int y, int z) {
@@ -1560,7 +1587,6 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     if (count <= 0)
       return;
     int seed = ((x << 16) + (y << 1) ^ 0x33333333) & 0x7FFFFFFF;
-    //System.out.println(x + " " + y + " " + seed + " " + count);
     boolean flipflop = ((x ^ y) & 1) != 0;
     // scale the z coordinates;
     int zScaled = (zAtLeft << 10) + (1 << 9);
@@ -1862,6 +1888,16 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
                                   double privateKey, GData gdata, Object object) {
     // N/A
     return false;
+  }
+
+  void shadeTextPixel(int offset, int z, int argb, int shade) {
+    switch (shade) {
+    case 8:
+      addPixel(offset, z, argb);
+      return;
+    }
+    Graphics3D.mergeBufferPixel(pbuf, offset, (argb & 0xFFFFFF) | (shade << 24), bgcolor);
+    zbuf[offset] = z;
   }
 
 }

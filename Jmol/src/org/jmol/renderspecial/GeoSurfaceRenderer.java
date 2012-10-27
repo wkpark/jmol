@@ -43,15 +43,18 @@ import org.jmol.util.Point3i;
 public class GeoSurfaceRenderer extends DotsRenderer {
   
   @Override
-  protected void render() {
+  protected boolean render() {
     GeoSurface gs = (GeoSurface) shape;
     iShowSolid = !(viewer.getInMotion() && gs.ec.getDotsConvexMax() > 100);
-    if (!iShowSolid && !g3d.setColix(Colix.BLACK))
-      return;
+    if (!iShowSolid)
+      return false;
+    if (!g3d.setColix(Colix.BLACK))
+      return true;
     if (iShowSolid && faceMap == null)
       faceMap = new int[screenDotCount];
     //testRadiusAdjust = -1.2f;
     render1(gs);
+    return false;
   }
   
  @Override

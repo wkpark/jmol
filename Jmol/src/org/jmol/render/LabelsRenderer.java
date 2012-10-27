@@ -42,7 +42,7 @@ public class LabelsRenderer extends ShapeRenderer {
   final int[] minZ = new int[1];
 
   @Override
-  protected void render() {
+  protected boolean render() {
     fidPrevious = 0;
 
     Labels labels = (Labels) shape;
@@ -55,7 +55,7 @@ public class LabelsRenderer extends ShapeRenderer {
     byte[] fids = labels.fids;
     int[] offsets = labels.offsets;
     if (labelStrings == null)
-      return;
+      return false;
     Atom[] atoms = modelSet.atoms;
     short backgroundColixContrast = viewer.getColixBackgroundContrast();
     int backgroundColor = viewer.getBackgroundArgb();
@@ -82,8 +82,6 @@ public class LabelsRenderer extends ShapeRenderer {
           : bgcolixes[i];
       if (bgcolix == 0 && g3d.getColorArgbOrGray(colix) == backgroundColor)
         colix = backgroundColixContrast;
-      if (!g3d.setColix(colix))
-        continue;
       byte fid = ((fids == null || i >= fids.length || fids[i] == 0) ? labels.zeroFontId
           : fids[i]);
       int offsetFull = (offsets == null || i >= offsets.length ? 0 : offsets[i]);
@@ -166,6 +164,6 @@ public class LabelsRenderer extends ShapeRenderer {
       }
       boxXY[4] = zBox;
     }
-
+    return false;
   }
 }

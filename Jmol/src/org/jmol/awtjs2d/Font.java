@@ -11,8 +11,14 @@ import org.jmol.util.JmolFont;
 
 class Font {
 
-  static Object newFont(String fontFace, boolean isBold, boolean isItalic, float fontSize) {
-    return (isBold ? "bold " : isItalic ? "italic " : "normal ") + fontSize + "px " + fontFace;
+  static Object newFont(String fontFace, boolean isBold, boolean isItalic, float fontSize, String type) {
+    // "px" are different from "pt" here.
+    // "pt" is the height of an X, ascent.
+    // "px" is the ascent + descent.
+    fontFace = (fontFace.equals("Monospaced") ? "Courier" : fontFace.startsWith("Sans") ? "Sans-Serif" : "Serif");    
+    return (isBold ? "bold " : "") 
+        + (isItalic ? "italic " : "") 
+        + fontSize + type + " " + fontFace;
   }
 
   /**
@@ -27,10 +33,15 @@ class Font {
      * 
      * if (context.font != font.font) {
      *  context.font = font.font;
-     *  context._fontAscent = font.fontSize; 
-     *  context._fontDescent = 0;
+     *  font.font = context.font;
+     *  context._fontAscent = font.fontSize; //pt, not px
+     *  // the descent is actually (px - pt)
+     *  // but I know of no way of getting access to the drawn height
+     *  context._fontDescent = Math.ceil(font.fontSize * 0.25);//approx
      * }
      */
+    {      
+    }
     return context;
   }
 
@@ -67,15 +78,19 @@ class Font {
   }
 
   /**
+   * @param font 
    * @param context 
    * @param text 
    * @return width
    */
-  static int stringWidth(Object context, String text) {
+  static int stringWidth(JmolFont font, Object context, String text) {
     /**
      * @j2sNative
+     * context.font = font.font;
      * return context.measureText(text).width;
      */
-    return 0;
+    {
+     return 0;
+    }
   }
 }

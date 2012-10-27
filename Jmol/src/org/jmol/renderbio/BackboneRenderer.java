@@ -35,28 +35,37 @@ public class BackboneRenderer extends BioShapeRenderer {
   @Override
   protected void renderBioShape(BioShape bioShape) {
     boolean isDataFrame = viewer.isJmolDataFrameForModel(bioShape.modelIndex);
-    for (int i = bsVisible.nextSetBit(0); i >= 0; i = bsVisible.nextSetBit(i + 1)) {
+    for (int i = bsVisible.nextSetBit(0); i >= 0; i = bsVisible
+        .nextSetBit(i + 1)) {
       Atom atomA = modelSet.atoms[leadAtomIndices[i]];
       Atom atomB = modelSet.atoms[leadAtomIndices[i + 1]];
-      if (atomA.getNBackbonesDisplayed() == 0 || atomB.getNBackbonesDisplayed() == 0
+      if (atomA.getNBackbonesDisplayed() == 0
+          || atomB.getNBackbonesDisplayed() == 0
           || modelSet.isAtomHidden(atomB.getIndex()))
         continue;
       if (!isDataFrame && atomA.distance(atomB) > 10)
         continue;
-      int xA = atomA.screenX, yA = atomA.screenY, zA = atomA
-          .screenZ;
-      int xB = atomB.screenX, yB = atomB.screenY, zB = atomB
-          .screenZ;
       short colixA = Colix.getColixInherited(colixes[i], atomA.getColix());
       short colixB = Colix.getColixInherited(colixes[i + 1], atomB.getColix());
+      if (!isExport && !isPass2) {
+        boolean doA = !Colix.isColixTranslucent(colixA);
+        boolean doB = !Colix.isColixTranslucent(colixB);
+        if (!doA || !doB) {
+          if (!doA && !doB)
+            continue;
+          needTranslucent = true;
+        }
+      }
+      int xA = atomA.screenX, yA = atomA.screenY, zA = atomA.screenZ;
+      int xB = atomB.screenX, yB = atomB.screenY, zB = atomB.screenZ;
       mad = mads[i];
       if (mad < 0) {
         g3d.drawLine(colixA, colixB, xA, yA, zA, xB, yB, zB);
       } else {
-        int width = (exportType == GData.EXPORT_CARTESIAN ? mad 
-            : viewer.scaleToScreen((zA + zB) / 2, mad));
-        g3d.fillCylinderXYZ(colixA, colixB, GData.ENDCAPS_SPHERICAL, width,
-            xA, yA, zA, xB, yB, zB);
+        int width = (exportType == GData.EXPORT_CARTESIAN ? mad : viewer
+            .scaleToScreen((zA + zB) / 2, mad));
+        g3d.fillCylinderXYZ(colixA, colixB, GData.ENDCAPS_SPHERICAL, width, xA,
+            yA, zA, xB, yB, zB);
       }
     }
   }  

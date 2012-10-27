@@ -70,19 +70,20 @@ class Image {
   }
 
   /**
-   * @param display  
-   * @param image 
-   * @throws InterruptedException 
+   * @param display
+   * @param image
+   * @throws InterruptedException
    */
-  static void waitForDisplay(Object display, Object image) throws InterruptedException {
+  static void waitForDisplay(Object display, Object image)
+      throws InterruptedException {
     // this is important primarily for retrieving images from 
     // files, as in set echo ID myimage "image.gif"
     if (display == null)
       display = new JPanel();
     MediaTracker mediaTracker = new MediaTracker((Component) display);
-    int rnd = (int) (Math.random()*100000);
-    mediaTracker.addImage((java.awt.Image)image, rnd);
-    mediaTracker.waitForID(rnd);      
+    int rnd = (int) (Math.random() * 100000);
+    mediaTracker.addImage((java.awt.Image) image, rnd);
+    mediaTracker.waitForID(rnd);
   }
 
   static int getWidth(Object image) {
@@ -93,7 +94,8 @@ class Image {
     return ((java.awt.Image) image).getHeight(null);
   }
 
-  static Object getJpgImage(ApiPlatform apiPlatform, Viewer viewer, int quality, String comment) {
+  static Object getJpgImage(ApiPlatform apiPlatform, Viewer viewer,
+                            int quality, String comment) {
     BufferedImage eImage = (BufferedImage) viewer.getScreenImageBuffer(null);
     if (eImage == null)
       return null;
@@ -163,24 +165,25 @@ class Image {
 
   private final static int[] sampleModelBitMasksT =
   { 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000 };
-*/
+  */
 
- private final static DirectColorModel rgbColorModel =
-    new DirectColorModel(24, 0x00FF0000, 0x0000FF00, 0x000000FF, 0x00000000);
+  private final static DirectColorModel rgbColorModel = new DirectColorModel(
+      24, 0x00FF0000, 0x0000FF00, 0x000000FF, 0x00000000);
 
-  private final static int[] sampleModelBitMasks =
-  { 0x00FF0000, 0x0000FF00, 0x000000FF };
+  private final static int[] sampleModelBitMasks = { 0x00FF0000, 0x0000FF00,
+      0x000000FF };
 
   /**
-   * @param windowWidth 
-   * @param windowHeight 
-   * @param pBuffer 
-   * @param windowSize 
-   * @param backgroundTransparent  
-   * @return   an Image
+   * @param windowWidth
+   * @param windowHeight
+   * @param pBuffer
+   * @param windowSize
+   * @param backgroundTransparent
+   * @return an Image
    */
   static Object allocateRgbImage(int windowWidth, int windowHeight,
-                                       int[] pBuffer, int windowSize, boolean backgroundTransparent) {
+                                 int[] pBuffer, int windowSize,
+                                 boolean backgroundTransparent) {
     //backgroundTransparent not working with antialiasDisplay. I have no idea why. BH 9/24/08
     /* DEAD CODE   if (false && backgroundTransparent)
           return new BufferedImage(
@@ -196,42 +199,38 @@ class Image {
               false, 
               null);
     */
-    return new BufferedImage(
-        rgbColorModel,
-        Raster.createWritableRaster(
-            new SinglePixelPackedSampleModel(
-                DataBuffer.TYPE_INT,
-                windowWidth,
-                windowHeight,
-                sampleModelBitMasks), 
-            new DataBufferInt(pBuffer, windowSize),
-            null),
-        false, 
-        null);
+    return new BufferedImage(rgbColorModel, Raster.createWritableRaster(
+        new SinglePixelPackedSampleModel(DataBuffer.TYPE_INT, windowWidth,
+            windowHeight, sampleModelBitMasks), new DataBufferInt(pBuffer,
+            windowSize), null), false, null);
   }
 
   /**
-   * @param image 
-   * @param backgroundTransparent  
+   * @param image
+   * @param backgroundTransparent
    * @return Graphics object
    */
   static Object getStaticGraphics(Object image, boolean backgroundTransparent) {
     Graphics2D g2d = ((BufferedImage) image).createGraphics();
-      //if (backgroundTransparent) {
-        // what here?
-      //}
-      // miguel 20041122
-      // we need to turn off text antialiasing on OSX when
-      // running in a web browser
-      g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-                           RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-      // I don't know if we need these or not, but cannot hurt to have them
-      g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                           RenderingHints.VALUE_ANTIALIAS_OFF);
-      g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
-                           RenderingHints.VALUE_RENDER_SPEED);
-      return g2d;
-    }
+    //if (backgroundTransparent) {
+    // what here?
+    //}
+    // miguel 20041122
+    // we need to turn off text antialiasing on OSX when
+    // running in a web browser
+    
+    // Despite the above comment, 13.1.8 adds text antialiasing
+    // for all conditions -- Bob Hanson, Oct. 27, 2012
+    
+    g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+        RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+    // I don't know if we need these or not, but cannot hurt to have them
+    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+        RenderingHints.VALUE_ANTIALIAS_OFF);
+    g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
+        RenderingHints.VALUE_RENDER_SPEED);
+    return g2d;
+  }
 
   static Object getGraphics(Object image) {
     return ((java.awt.Image) image).getGraphics();
@@ -243,11 +242,14 @@ class Image {
    * @param img
    * @param x
    * @param y
-   * @param width  unused in Jmol proper
-   * @param height unused in Jmol proper
+   * @param width
+   *        unused in Jmol proper
+   * @param height
+   *        unused in Jmol proper
    */
-  static void drawImage(Object g, Object img, int x, int y, int width, int height) {
-    ((Graphics)g).drawImage((java.awt.Image) img, x, y, null);
+  static void drawImage(Object g, Object img, int x, int y, int width,
+                        int height) {
+    ((Graphics) g).drawImage((java.awt.Image) img, x, y, null);
   }
 
   static void flush(Object image) {

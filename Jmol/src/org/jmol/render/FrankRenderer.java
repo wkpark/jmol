@@ -33,16 +33,17 @@ public class FrankRenderer extends ShapeRenderer {
   // no Frank export
     
   @Override
-  protected void render() {
+  protected boolean render() {
     Frank frank = (Frank) shape;
     boolean allowKeys = viewer.getBooleanProperty("allowKeyStrokes");
     boolean modelKitMode = viewer.isModelKitMode();
     colix = (modelKitMode ? Colix.MAGENTA 
         : viewer.isSignedApplet() ? (allowKeys ? Colix.ORANGE : Colix.RED) : allowKeys ? Colix.BLUE : Colix.GRAY);
-    if (isExport || !viewer.getShowFrank()
-        || !g3d.setColix(Colix.getColixTranslucent3(colix,
+    if (isExport || !viewer.getShowFrank())
+      return false;
+    if (!g3d.setColix(Colix.getColixTranslucent3(colix,
             g3d.haveTranslucentObjects(), 0.5f)))
-      return;
+      return true;
     float imageFontScaling = viewer.getImageFontScaling();
     frank.getFont(imageFontScaling);
     int dx = (int) (frank.frankWidth + Frank.frankMargin * imageFontScaling);
@@ -53,5 +54,6 @@ public class FrankRenderer extends ShapeRenderer {
      //g3d.setColix(GData.GRAY);
       g3d.fillRect(0, 0, 0, 0, dy * 2, dx * 3 / 2);      
     }
+    return false;
   }
 }

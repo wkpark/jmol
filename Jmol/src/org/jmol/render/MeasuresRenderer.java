@@ -41,9 +41,9 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
   private Measurement measurement;
   private boolean doJustify;
   @Override
-  protected void render() {
+  protected boolean render() {
     if (!g3d.checkTranslucent(false))
-      return;
+      return false;
     Measures measures = (Measures) shape;
     doJustify = viewer.getJustifyMeasurements();
     mad = measures.mad;
@@ -52,7 +52,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     font3d = g3d.getFont3DScaled(measures.font3d, imageFontScaling);
     renderPendingMeasurement(measures.measurementPending);
     if (!viewer.getShowMeasurements())
-      return;
+      return false;
     //clearBox();
     boolean showMeasurementLabels = viewer.getShowMeasurementLabels();
     boolean dynamicMeasurements = viewer.getDynamicMeasurements();
@@ -71,6 +71,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
       g3d.setColix(colix);
       renderMeasurement(m.getCount(), m, showMeasurementLabels);
     }
+    return false;
   }
 
   private Point3fi getAtom(int i) {

@@ -29,6 +29,7 @@ package org.jmol.render;
 import org.jmol.constant.EnumPalette;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
+import org.jmol.util.BitSet;
 import org.jmol.util.Colix;
 import org.jmol.util.GData;
 import org.jmol.util.JmolEdge;
@@ -75,9 +76,14 @@ public class SticksRenderer extends ShapeRenderer {
   private final Point3f p2 = new Point3f();
   private final Point3i s1 = new Point3i();
   private final Point3i s2 = new Point3i();
+  private final BitSet bsForPass2 = BitSet.newN(64);
+  private boolean isPass2;
   
   @Override
-  protected void render() {
+  protected boolean render() {
+    isPass2 = g3d.isPass2();
+    if (!isPass2)
+      bsForPass2.clearAll();
     slabbing = viewer.getSlabEnabled();
     slabByAtom = viewer.getSlabByAtom();          
     endcaps = GData.ENDCAPS_SPHERICAL;
@@ -96,17 +102,27 @@ public class SticksRenderer extends ShapeRenderer {
     hbondsSolid = viewer.getHbondsSolid();
     isAntialiased = g3d.isAntialiased();
     Bond[] bonds = modelSet.getBonds();
+    boolean needTranslucent = false;
+    if (isPass2)
+      for (int i = bsForPass2.nextSetBit(0); i >= 0; i = bsForPass2.nextSetBit(i + 1)) {
+        bond = bonds[i];
+        renderBond();
+      }
+    else
     for (int i = modelSet.getBondCount(); --i >= 0; ) {
       bond = bonds[i];
-      if ((bond.getShapeVisibilityFlags() & myVisibilityFlag) != 0) 
-        renderBond();
+      if ((bond.getShapeVisibilityFlags() & myVisibilityFlag) != 0 && renderBond()) {
+        needTranslucent = true;
+        bsForPass2.set(i);
+      }
     }
+    return needTranslucent;
   }
 
   private Atom atomA0;
   private Atom atomB0;
   
-  private void renderBond() {
+  private boolean renderBond() {
     atomA = atomA0 = bond.getAtom1();
     atomB = atomB0 = bond.getAtom2();
     
@@ -128,20 +144,24 @@ public class SticksRenderer extends ShapeRenderer {
         atomB = atomB.getGroup().getLeadAtomOr(atomB);
       }
     }
-    if (!atomA.isInFrame() || !atomB.isInFrame()
+    if (!isPass2 && (!atomA.isInFrame() || !atomB.isInFrame()
         || !g3d.isInDisplayRange(atomA.screenX, atomA.screenY)
         || !g3d.isInDisplayRange(atomB.screenX, atomB.screenY)
         || modelSet.isAtomHidden(atomA.getIndex())
-        || modelSet.isAtomHidden(atomB.getIndex()))
-      return;
+        || modelSet.isAtomHidden(atomB.getIndex())))
+      return false;
 
     if (slabbing) {
       if (g3d.isClippedZ(atomA.screenZ) && g3d.isClippedZ(atomB.screenZ))
-        return;
+        return false;
       if(slabByAtom && 
           (g3d.isClippedZ(atomA.screenZ) || g3d.isClippedZ(atomB.screenZ)))
-        return;          
+        return false;          
     }
+    zA = atomA.screenZ;
+    zB = atomB.screenZ;
+    if (zA == 1 || zB == 1)
+      return false;
     colixA = atomA0.getColix();
     colixB = atomB0.getColix();
     if (((colix = bond.getColix()) & Colix.OPAQUE_MASK) == Colix.USE_PALETTE) {
@@ -154,14 +174,16 @@ public class SticksRenderer extends ShapeRenderer {
       colixA = Colix.getColixInherited(colix, colixA);
       colixB = Colix.getColixInherited(colix, colixB);
     }
-    xA = atomA.screenX;
-    yA = atomA.screenY;
-    zA = atomA.screenZ;
-    xB = atomB.screenX;
-    yB = atomB.screenY;
-    zB = atomB.screenZ;
-    if (zA == 1 || zB == 1)
-      return;
+    boolean needTranslucent = false;
+    if (!isExport && !isPass2) {
+      boolean doA = !Colix.isColixTranslucent(colixA);
+      boolean doB = !Colix.isColixTranslucent(colixB);
+      if (!doA || !doB) {
+        if (!doA && !doB)
+          return true;
+        needTranslucent = true;
+      }
+    }    
     
     // set the rendered bond order
     
@@ -213,6 +235,11 @@ public class SticksRenderer extends ShapeRenderer {
     
     // set the diameter
     
+    xA = atomA.screenX;
+    yA = atomA.screenY;
+    xB = atomB.screenX;
+    yB = atomB.screenY;
+
     mad = bond.getMad();
     if (multipleBondRadiusFactor > 0 && bondOrder > 1)
       mad *= multipleBondRadiusFactor;
@@ -237,6 +264,7 @@ public class SticksRenderer extends ShapeRenderer {
       drawBond(mask);
       break;
     }
+    return needTranslucent;
   }
     
   private void drawBond(int dottedMask) {

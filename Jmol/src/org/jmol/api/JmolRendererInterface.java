@@ -164,7 +164,7 @@ public interface JmolRendererInterface extends JmolGraphicsInterface {
   public abstract void drawString(String str, JmolFont font3d, int xBaseline,
                                   int yBaseline, int z, int zSlab);
 
-  public abstract void plotPixelClippedArgbNoSlab(int argb, int x, int y, int z);
+  public abstract void plotImagePixel(int argb, int x, int y, int z, int shade);
 
   /**
    * draws the specified string in the current font. no line wrapping -- echo,
@@ -340,6 +340,5 @@ public interface JmolRendererInterface extends JmolGraphicsInterface {
                                         int screenHeight,
                                         Point3f navigationOffset,
                                         float navigationDepthPercent);
-
 
 }

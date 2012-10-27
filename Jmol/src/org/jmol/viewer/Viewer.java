@@ -181,7 +181,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private Object display;
   private GData gdata;
   private JmolAdapter modelAdapter;
-  public boolean isJS2D;
+  public boolean isJS2D, isJS3D;
 
   public enum ACCESS { NONE, READSPT, ALL }
   
@@ -433,6 +433,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     if (o instanceof String) {
       platform = (String) o;
+      isJS3D = (platform.indexOf(".awtjs.") >= 0);
       isJS2D = (platform.indexOf("2d") >= 0);
       o = Interface.getInterface(platform);
     }
@@ -458,7 +459,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     apiPlatform.setViewer(this, display);
 
     o = info.get("graphicsAdapter");
-    if (o == null && platform.indexOf(".awtjs.") < 0)
+    if (o == null && !isJS3D)
       o = Interface.getInterface("org.jmol.g3d.Graphics3D");
     gdata = (o == null ? new GData() : (GData) o);
     gdata.initialize(apiPlatform);
@@ -2866,6 +2867,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       selectionManager.clear();
       clearAllMeasurements();
       clearMinimization();
+      gdata.clear();
       modelSet = modelManager.zap();
       if (haveDisplay) {
         mouse.clear();

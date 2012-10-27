@@ -37,13 +37,15 @@ public class EchoRenderer extends ShapeRenderer {
   float imageFontScaling;
   Atom ptAtom;
   Point3i pt = new Point3i();
+
   @Override
-  protected void render() {
+  protected boolean render() {
     if (viewer.isPreviewOnly())
-      return;
-    Echo echo = (Echo)shape;
+      return false;
+    Echo echo = (Echo) shape;
     Iterator<Text> e = echo.objects.values().iterator();
-    float scalePixelsPerMicron = (viewer.getFontScaling() ? viewer.getScalePixelsPerAngstrom(true) * 10000 : 0);
+    float scalePixelsPerMicron = (viewer.getFontScaling() ? viewer
+        .getScalePixelsPerAngstrom(true) * 10000 : 0);
     imageFontScaling = viewer.getImageFontScaling();
     while (e.hasNext()) {
       Text t = e.next();
@@ -57,21 +59,24 @@ public class EchoRenderer extends ShapeRenderer {
         int z = viewer.zValueFromPercent(t.movableZPercent);
         t.setZs(z, z);
       }
-      TextRenderer.render(t, g3d, scalePixelsPerMicron, imageFontScaling, false, null);
+      TextRenderer.render(t, g3d, scalePixelsPerMicron, imageFontScaling,
+          false, null);
     }
+    if (isExport)
+      return false;
     String frameTitle = viewer.getFrameTitle();
     if (frameTitle != null && frameTitle.length() > 0) {
-      if (frameTitle.indexOf("%{") >= 0 || frameTitle
-          .indexOf("@{") >= 0) 
-        frameTitle =  viewer.formatText(frameTitle);
-      renderFrameTitle(frameTitle);
+      if (g3d.setColix(viewer.getColixBackgroundContrast())) {
+        if (frameTitle.indexOf("%{") >= 0 || frameTitle.indexOf("@{") >= 0)
+          frameTitle = viewer.formatText(frameTitle);
+        renderFrameTitle(frameTitle);
+      }
     }
+    return false;
   }
   
   private void renderFrameTitle(String frameTitle) {
-    if (isExport || !g3d.setColix(viewer.getColixBackgroundContrast()))
-      return;
-    byte fid = g3d.getFontFidFS("Monospaced", 14 * imageFontScaling);
+    byte fid = g3d.getFontFidFS("Serif", 14 * imageFontScaling);
     g3d.setFontFid(fid);
     int y = (int) Math.floor(viewer.getScreenHeight() * (g3d.isAntialiased() ? 2 : 1) - 10 * imageFontScaling);
     int x = (int) Math.floor(5 * imageFontScaling);

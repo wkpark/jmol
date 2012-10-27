@@ -60,7 +60,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
   }
 
   @Override
-  protected void render() {
+  protected boolean render() {
+    needTranslucent = false;
     iShowNormals = viewer.getTestFlag(4);
     showNumbers = viewer.getTestFlag(3);
     isosurface = (Isosurface) shape;
@@ -88,6 +89,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
         }
       }
     }
+    return needTranslucent;
   }
 
   protected void renderInfo() {

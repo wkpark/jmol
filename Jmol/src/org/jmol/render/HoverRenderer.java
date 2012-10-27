@@ -30,9 +30,10 @@ import org.jmol.shape.Text;
 
 public class HoverRenderer extends ShapeRenderer {
   @Override
-  protected void render() {
+  protected boolean render() {
+    // hover rendering always involves translucent pass
     if (viewer.isNavigating())
-      return;
+      return false;
     Hover hover = (Hover) shape;
     boolean antialias = g3d.isAntialiased();
     if (hover.atomIndex >= 0) {
@@ -44,7 +45,7 @@ public class HoverRenderer extends ShapeRenderer {
           : hover.labelFormat != null ? LabelToken.formatLabel(viewer, atom, fixLabel(atom, hover.labelFormat))
               : null);
       if (label == null)
-        return;
+        return false;
       Text text = hover.hoverText;
       text.setText(label);
       text.setMovableX(atom.screenX);
@@ -57,6 +58,7 @@ public class HoverRenderer extends ShapeRenderer {
       text.setMovableY(hover.xy.y);
       TextRenderer.render(text, g3d, 0, antialias ? 2 : 1, false, null);
     }
+    return true;
   }
   
   String fixLabel(Atom atom, String label) {

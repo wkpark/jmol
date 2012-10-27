@@ -151,8 +151,7 @@ public class Platform implements ApiPlatform {
 
 	public int[] getTextPixels(String text, JmolFont font3d, Object context,
 			Object image, int width, int height, int ascent) {
-		return Image
-				.getTextPixels(text, font3d, context, image, width, height, ascent);
+		return Image.getTextPixels(text, font3d, context, width, height, ascent);
 	}
 
 	public void flushImage(Object imagePixelBuffer) {
@@ -209,8 +208,8 @@ public class Platform implements ApiPlatform {
 
 	// /// FONT
 
-	public int fontStringWidth(Object context, String text) {
-		return Font.stringWidth(context, text);
+	public int fontStringWidth(JmolFont font, Object context, String text) {
+		return Font.stringWidth(font, context, text);
 	}
 
 	public int getFontAscent(Object context) {
@@ -227,7 +226,7 @@ public class Platform implements ApiPlatform {
 
 	public Object newFont(String fontFace, boolean isBold, boolean isItalic,
 			float fontSize) {
-		return Font.newFont(fontFace, isBold, isItalic, fontSize);
+		return Font.newFont(fontFace, isBold, isItalic, fontSize, "px");
 	}
 
 	// / misc

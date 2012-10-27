@@ -191,6 +191,10 @@ class IsoMOReader extends AtomDataReader {
     if (line.indexOf("%T") >= 0)
       line = TextFormat.formatStringS(line, "T", mo != null
           && mo.containsKey("type") && ++rep != 0 ? "" + mo.get("type") : "");
+    if (line.equals("string")) {
+      params.title[iLine] = "";
+      return;
+    }
     boolean isOptional = (line.indexOf("?") == 0);
     params.title[iLine] = (!isOptional ? line : rep > 0
         && !line.trim().endsWith("=") ? line.substring(1) : "");

@@ -168,9 +168,9 @@ class Platform3D {
         apiPlatform.flushImage(offscreenImage);
       }
       if (width > widthOffscreen)
-        widthOffscreen = (width + 63) & ~63;
+        widthOffscreen = width;
       if (height > heightOffscreen)
-        heightOffscreen = (height + 15) & ~15;
+        heightOffscreen = height;
       offscreenImage = allocateOffscreenImage(widthOffscreen, heightOffscreen);
       graphicsForTextOrImage = apiPlatform.getStaticGraphics(offscreenImage, backgroundTransparent);
     }

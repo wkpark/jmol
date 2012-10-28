@@ -269,9 +269,9 @@ public class _PovrayExporter extends __RayTracerExporter {
         + "  check_shadow()}\n" 
         + "#end\n\n");
     // text pixel
-    output("#macro p(X,Y,Z,R,G,B)\n" 
+    output("#macro p(X,Y,Z,R,G,B,T)\n" 
         + " box{<X,Y,Z>,<X+1,Y+1,Z+1>\n"
-        + "  pigment{rgb<R,G,B>}\n"
+        + "  pigment{rgbt<R,G,B,T>}\n"
         + "  clip()\n"
         + "  check_shadow()}\n" 
         + "#end\n\n");
@@ -518,8 +518,11 @@ public class _PovrayExporter extends __RayTracerExporter {
     if (!haveMacros)
       writeMacros2();
     //text only
+    float tr = ((argb>>24) & 0xFF);
+    
+    tr = (255 - tr) / 255;
     output("p(" + x + "," + y + "," + z + "," + 
-        rgbFractionalFromArgb(argb) + ")\n");
+        rgbFractionalFromArgb(argb) + "," + tr + ")\n");
   }
   
   @Override

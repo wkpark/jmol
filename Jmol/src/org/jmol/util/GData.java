@@ -441,8 +441,7 @@ public class GData implements JmolGraphicsInterface {
     // TODO: problem here is that we are assigning a bold font, then not DEassigning it
     float newScale = font.fontSizeNominal * scale;
     return (newScale == font.fontSize ? font : JmolFont.createFont3D(
-        font.idFontFace, (antialiasThisFrame ? font.idFontStyle | 1
-            : font.idFontStyle), newScale, font.fontSizeNominal, apiPlatform, graphicsForMetrics));
+        font.idFontFace, font.idFontStyle, newScale, font.fontSizeNominal, apiPlatform, graphicsForMetrics));
   }
 
   public byte getFontFid(float fontSize) {

@@ -133,8 +133,7 @@ class Image {
      * blue=imgData.data[2];
      * alpha=imgData.data[3];
      */
-    int n = buf32.length;
-    if (buf8.length == n * 4)
+    int n = buf8.length >> 2;
       for (int i = 0, j = 0; i < n; i++) {
         buf8[j++] = (buf32[i] >> 16) & 0xFF;
         buf8[j++] = (buf32[i] >> 8) & 0xFF;

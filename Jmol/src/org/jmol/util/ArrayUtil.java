@@ -34,6 +34,14 @@ import java.util.Map;
 
 final public class ArrayUtil {
 
+  /**
+   * Very important that this not be used with Int32Array or Float32Array,
+   * because it is not initialized to all zeros in MSIE 9.
+   * 
+   * @param array
+   * @param minimumLength
+   * @return array
+   */
   public static Object ensureLength(Object array, int minimumLength) {
     if (array != null && getLength(array) >= minimumLength)
       return array;
@@ -70,6 +78,13 @@ final public class ArrayUtil {
     return arrayCopyByte(array, minimumLength);
   }
 
+  /**
+   * Very important that this not be used with Int32Array or Float32Array,
+   * because it is not initialized to all zeros in MSIE 9.
+   * 
+   * @param array
+   * @return array
+   */
   public static Object doubleLength(Object array) {
     return arrayCopyObject(array, (array == null ? 16 : 2 * getLength(array)));
   }
@@ -138,6 +153,14 @@ final public class ArrayUtil {
 
   }
 
+  /**
+   * Very important that this not be used with Int32Array or Float32Array,
+   * because it is not initialized to all zeros in MSIE 9.
+   * 
+   * @param array
+   * @param n
+   * @return array
+   */
   private static Object newInstance(Object array, int n) {
     /**
      * @j2sNative

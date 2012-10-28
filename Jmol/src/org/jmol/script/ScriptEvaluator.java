@@ -10409,6 +10409,7 @@ public class ScriptEvaluator {
         Integer.valueOf(modelIndex) };
     return (getShapePropertyData(JmolConstants.SHAPE_DRAW, "getCenter", data)
         || getShapePropertyData(JmolConstants.SHAPE_ISOSURFACE, "getCenter", data)
+        || getShapePropertyData(JmolConstants.SHAPE_PMESH, "getCenter", data)
         || getShapePropertyData(JmolConstants.SHAPE_CONTACT, "getCenter", data)
         || getShapePropertyData(JmolConstants.SHAPE_MO, "getCenter", data) ? (Point3f) data[2]
         : null);
@@ -10418,6 +10419,7 @@ public class ScriptEvaluator {
     Object[] data = new Object[] { id, null, null };
     return (getShapePropertyData(JmolConstants.SHAPE_ISOSURFACE, "getBoundingBox",
         data)
+        || getShapePropertyData(JmolConstants.SHAPE_PMESH, "getBoundingBox", data)
         || getShapePropertyData(JmolConstants.SHAPE_CONTACT, "getBoundingBox", data)
         || getShapePropertyData(JmolConstants.SHAPE_MO, "getBoundingBox", data) ? (Point3f[]) data[2]
         : null);
@@ -12536,7 +12538,7 @@ public class ScriptEvaluator {
 
   private void font(int shapeType, float fontsize) throws ScriptException {
     String fontface = "SansSerif";
-    String fontstyle = "Plain";
+    String fontstyle = "Bold"; // Jmol 13.1.8, with antialiased fonts
     int sizeAdjust = 0;
     float scaleAngstromsPerPixel = -1;
     switch (iToken = statementLength) {

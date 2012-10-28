@@ -34,7 +34,7 @@ public class Frank extends FontShape {
   // Axes, Bbcage, Frank, Uccage
 
   final static String defaultFontName = "SansSerif";
-  final static String defaultFontStyle = "Bold";
+  final static String defaultFontStyle = "Plain";
   final static int defaultFontSize = 16;
   public final static int frankMargin = 4;
 

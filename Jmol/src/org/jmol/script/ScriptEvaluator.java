@@ -12538,7 +12538,7 @@ public class ScriptEvaluator {
 
   private void font(int shapeType, float fontsize) throws ScriptException {
     String fontface = "SansSerif";
-    String fontstyle = "Bold"; // Jmol 13.1.8, with antialiased fonts
+    String fontstyle = "Plain";
     int sizeAdjust = 0;
     float scaleAngstromsPerPixel = -1;
     switch (iToken = statementLength) {

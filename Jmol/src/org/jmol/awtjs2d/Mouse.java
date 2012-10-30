@@ -64,7 +64,8 @@ class Mouse implements JmolMouseInterface {
   }
 
   public boolean handleOldJvm10Event(int id, int x, int y, int modifiers, long time) {
-    modifiers = applyLeftMouse(modifiers);
+    if (id != -1)
+      modifiers = applyLeftMouse(modifiers);
     switch (id) {
     case -1: // JavaScript
       mouseWheel(time, x, modifiers | Binding.WHEEL);

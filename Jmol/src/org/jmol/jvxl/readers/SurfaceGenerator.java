@@ -864,7 +864,7 @@ public class SurfaceGenerator {
       }
       readerData = new float[] {params.psi_n, params.psi_l,
           params.psi_m, params.psi_Znuc, params.psi_monteCarloCount};
-      surfaceReader = newReader("IsoShape");
+      surfaceReader = newReader("IsoShapeReader");
       processState();
       return true;
     }

@@ -2497,9 +2497,9 @@ public class ScriptEvaluator {
     this.tQuiet = tQuiet;
   }
 
-  protected ScriptContext thisContext = null;
+  ScriptContext thisContext = null;
 
-  private void pushContext(ContextToken token) throws ScriptException {
+  void pushContext(ContextToken token) throws ScriptException {
     if (scriptLevel == scriptLevelMax)
       error(ERROR_tooManyScriptLevels);
     thisContext = getScriptContext();
@@ -2552,6 +2552,14 @@ public class ScriptEvaluator {
     return context;
   }
 
+  void resume(ScriptContext sc) throws ScriptException {
+    thisContext = sc;
+    if (thisContext.scriptLevel > 0)
+      scriptLevel = thisContext.scriptLevel - 1;
+    restoreScriptContext(thisContext, true, false, false);
+    instructionDispatchLoop(false);
+  }
+
   void popContext(boolean isFlowCommand, boolean statementOnly) {
     if (thisContext == null)
       return;
@@ -2561,7 +2569,8 @@ public class ScriptEvaluator {
     // business when doing push/pop for commands like FOR and WHILE
     ScriptContext scTemp = (isFlowCommand ? getScriptContext() : null);
     restoreScriptContext(thisContext, true, isFlowCommand, statementOnly);
-    restoreScriptContext(scTemp, true, false, true);
+    if (scTemp != null)
+      restoreScriptContext(scTemp, true, false, true);
     if (debugScript || isCmdLine_c_or_C_Option)
       Logger.info("--<<-------------".substring(0, Math
           .max(17, scriptLevel + 5))
@@ -2753,7 +2762,7 @@ public class ScriptEvaluator {
       viewer.setBooleanProperty("refreshing", true);
       viewer.setStringProperty("_errormessage", strUntranslated);
     }
-    throw new ScriptException(message, strUntranslated);
+    throw new ScriptException(this, message, strUntranslated, true);
   }
 
   final static int ERROR_axisExpected = 0;
@@ -3040,42 +3049,6 @@ public class ScriptEvaluator {
           + ":";
     err += "\n         " + lineInfo;
     return err;
-  }
-
-  class ScriptException extends Exception {
-
-    private String message;
-    private String untranslated;
-
-    ScriptException(String msg, String untranslated) {
-      errorType = message = msg;
-      iCommandError = pc;
-      this.untranslated = (untranslated == null ? msg : untranslated);
-      if (message == null) {
-        message = "";
-        return;
-      }
-      String s = getScriptContext().getContextTrace(null, true).toString();
-      while (thisContext != null && !thisContext.isTryCatch)
-        popContext(false, false);
-      message += s;
-      this.untranslated += s;
-      if (thisContext != null || isSyntaxCheck
-          || msg.indexOf("file recognized as a script file:") >= 0)
-        return;
-      Logger.error("eval ERROR: " + toString());
-      if (viewer.autoExit)
-        viewer.exitJmol();
-    }
-
-    protected String getErrorMessageUntranslated() {
-      return untranslated;
-    }
-
-    @Override
-    public String toString() {
-      return message;
-    }
   }
 
   @Override
@@ -3648,10 +3621,10 @@ public class ScriptEvaluator {
         }
         int chainID = (pc + 3 < code.length && code[pc + 2].tok == Token.opAND
             && code[pc + 3].tok == Token.spec_chain ? code[pc + 3].intValue
-            : '\t');
+            : 9);
         rpn.addXBs(getAtomBits(Token.spec_seqcode_range, new int[] {
             getSeqCode(instruction), getSeqCode(code[++pc]), chainID }));
-        if (chainID != '\t')
+        if (chainID != 9)
           pc += 2;
         break;
       case Token.cell:
@@ -5219,7 +5192,7 @@ public class ScriptEvaluator {
    * of its subsidiary methods.
    * 
    * 
-   * @param doList
+   * @param doList  debugging flag
    * @throws ScriptException
    */
   private void instructionDispatchLoop(boolean doList) throws ScriptException {
@@ -9834,7 +9807,7 @@ public class ScriptEvaluator {
       // msg);
       // return;
     }
-    if (viewer.autoExit || !viewer.haveDisplay)
+    if (viewer.autoExit || !viewer.haveDisplay && !viewer.isJS3D)
       return false;
     if (scriptLevel == 0 && pc == aatoken.length - 1) {
       viewer.scriptStatus("nothing to pause: " + msg);

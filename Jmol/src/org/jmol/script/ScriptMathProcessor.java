@@ -40,7 +40,6 @@ import org.jmol.constant.EnumVdw;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.MeasurementData;
 import org.jmol.modelset.Bond.BondSet;
-import org.jmol.script.ScriptEvaluator.ScriptException;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.AxisAngle4f;
 import org.jmol.util.BitSet;

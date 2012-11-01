@@ -59,7 +59,14 @@ class Image {
 	 * @return 0
    */
 	static int getWidth(Object image) {
-		return 0;
+    /**
+     * @j2sNative
+     * 
+     *            return canvas.width;
+     */
+    {
+      return 0;
+    }
 	}
 
   /**
@@ -67,7 +74,14 @@ class Image {
    * @return 0
    */
 	static int getHeight(Object image) {
-		return 0;
+    /**
+     * @j2sNative
+     * 
+     *            return canvas.height;
+     */
+    {
+      return 0;
+    }
 	}
 
 	/**

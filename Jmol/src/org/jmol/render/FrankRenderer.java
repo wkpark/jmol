@@ -38,7 +38,7 @@ public class FrankRenderer extends ShapeRenderer {
     boolean allowKeys = viewer.getBooleanProperty("allowKeyStrokes");
     boolean modelKitMode = viewer.isModelKitMode();
     colix = (modelKitMode ? Colix.MAGENTA 
-        : viewer.isSignedApplet() ? (allowKeys ? Colix.ORANGE : Colix.RED) : allowKeys ? Colix.BLUE : Colix.GRAY);
+        : viewer.isSignedApplet() ? (allowKeys || viewer.isJS2D? Colix.ORANGE : Colix.RED) : allowKeys ? Colix.BLUE : Colix.GRAY);
     if (isExport || !viewer.getShowFrank())
       return false;
     if (!g3d.setColix(Colix.getColixTranslucent3(colix,

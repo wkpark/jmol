@@ -22,8 +22,9 @@ class Display {
     /**
      * @j2sNative
      * 
-     * widthHeight[0] = canvas.getWidth();
-     * widthHeight[1] = canvas.getHeight();
+     * widthHeight[0] = canvas.width;
+     * widthHeight[1] = canvas.height;
+     * 
      */
     {
       

@@ -125,7 +125,7 @@ public class SticksRenderer extends ShapeRenderer {
   private boolean renderBond() {
     atomA = atomA0 = bond.getAtom1();
     atomB = atomB0 = bond.getAtom2();
-    
+
     int order = bond.order & ~JmolEdge.BOND_NEW;
     if (bondsBackbone) {
       if (ssbondsBackbone && (order & JmolEdge.BOND_SULFUR_MASK) != 0) {
@@ -144,19 +144,20 @@ public class SticksRenderer extends ShapeRenderer {
         atomB = atomB.getGroup().getLeadAtomOr(atomB);
       }
     }
-    if (!isPass2 && (!atomA.isInFrame() || !atomB.isInFrame()
-        || !g3d.isInDisplayRange(atomA.screenX, atomA.screenY)
-        || !g3d.isInDisplayRange(atomB.screenX, atomB.screenY)
-        || modelSet.isAtomHidden(atomA.getIndex())
-        || modelSet.isAtomHidden(atomB.getIndex())))
+    if (!isPass2
+        && (!atomA.isInFrame() || !atomB.isInFrame()
+            || !g3d.isInDisplayRange(atomA.screenX, atomA.screenY)
+            || !g3d.isInDisplayRange(atomB.screenX, atomB.screenY)
+            || modelSet.isAtomHidden(atomA.getIndex()) || modelSet
+            .isAtomHidden(atomB.getIndex())))
       return false;
 
     if (slabbing) {
       if (g3d.isClippedZ(atomA.screenZ) && g3d.isClippedZ(atomB.screenZ))
         return false;
-      if(slabByAtom && 
-          (g3d.isClippedZ(atomA.screenZ) || g3d.isClippedZ(atomB.screenZ)))
-        return false;          
+      if (slabByAtom
+          && (g3d.isClippedZ(atomA.screenZ) || g3d.isClippedZ(atomB.screenZ)))
+        return false;
     }
     zA = atomA.screenZ;
     zB = atomB.screenZ;
@@ -183,10 +184,10 @@ public class SticksRenderer extends ShapeRenderer {
           return true;
         needTranslucent = true;
       }
-    }    
-    
+    }
+
     // set the rendered bond order
-    
+
     bondOrder = order & ~JmolEdge.BOND_NEW;
     if ((bondOrder & JmolEdge.BOND_PARTIAL_MASK) == 0) {
       if ((bondOrder & JmolEdge.BOND_SULFUR_MASK) != 0)
@@ -199,9 +200,9 @@ public class SticksRenderer extends ShapeRenderer {
         }
       }
     }
-    
+
     // set the mask
-    
+
     int mask = 0;
     switch (bondOrder) {
     case 1:
@@ -217,8 +218,7 @@ public class SticksRenderer extends ShapeRenderer {
     case JmolEdge.BOND_AROMATIC:
     case JmolEdge.BOND_AROMATIC_DOUBLE:
       bondOrder = 2;
-      mask = (order == JmolEdge.BOND_AROMATIC ? getAromaticDottedBondMask()
-          : 0);
+      mask = (order == JmolEdge.BOND_AROMATIC ? getAromaticDottedBondMask() : 0);
       break;
     default:
       if ((bondOrder & JmolEdge.BOND_PARTIAL_MASK) != 0) {
@@ -232,9 +232,9 @@ public class SticksRenderer extends ShapeRenderer {
         bondOrder = 1;
       }
     }
-    
+
     // set the diameter
-    
+
     xA = atomA.screenX;
     yA = atomA.screenY;
     xB = atomB.screenX;
@@ -248,14 +248,16 @@ public class SticksRenderer extends ShapeRenderer {
     width = viewer.scaleToScreen((zA + zB) / 2, mad);
     if (renderWireframe && width > 0)
       width = 1;
-    lineBond = (width <= 1);
-    if (lineBond && (isAntialiased)) {
-      width = 3;
-      lineBond = false;
+    if (!isCartesianExport) {
+      lineBond = (width <= 1);
+      if (lineBond && (isAntialiased)) {
+        width = 3;
+        lineBond = false;
+      }
     }
-    
+
     // draw the bond
-    
+
     switch (mask) {
     case -1:
       drawDashed(xA, yA, zA, xB, yB, zB, hDashes);
@@ -291,7 +293,7 @@ public class SticksRenderer extends ShapeRenderer {
       return;
     }
     boolean isDashed = (dottedMask & 1) != 0;
-    if (bondOrder == 1 && exportType != GData.EXPORT_CARTESIAN) {
+    if (bondOrder == 1) {
       if (isDashed)
         drawDashed(xA, yA, zA, xB, yB, zB, dashDots);
       else

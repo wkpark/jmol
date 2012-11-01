@@ -123,7 +123,7 @@ final public class ArrayUtil {
     int n = oldLength - (firstElement + nElements);
     if (n < 0)
       n = 0;
-    Object t = newInstance(array, firstElement + n);
+    Object t = newInstanceO(array, firstElement + n);
     if (firstElement > 0)
       System.arraycopy(array, 0, t, 0, firstElement);
     if (n > 0)
@@ -146,7 +146,7 @@ final public class ArrayUtil {
     int oldLength = getLength(array);
     if (newLength == oldLength)
       return array;
-    Object t = newInstance(array, newLength);
+    Object t = newInstanceO(array, newLength);
     System.arraycopy(array, 0, t, 0, oldLength < newLength ? oldLength
         : newLength);
     return t;
@@ -155,17 +155,18 @@ final public class ArrayUtil {
 
   /**
    * Very important that this not be used with Int32Array or Float32Array,
-   * because it is not initialized to all zeros in MSIE 9.
+   * because those need to be initialized to all zeros in MSIE 9, and
+   * MSIE 9 cannot distinguish Int32Array or Float32Array from Array.
    * 
    * @param array
    * @param n
    * @return array
    */
-  private static Object newInstance(Object array, int n) {
+  private static Object newInstanceO(Object array, int n) {
     /**
      * @j2sNative
      * 
-     * return Clazz.newArrayIF(array, n);
+     * return new Array(n);
      * 
      */
     {

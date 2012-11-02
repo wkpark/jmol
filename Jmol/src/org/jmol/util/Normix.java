@@ -35,6 +35,7 @@ package org.jmol.util;
  *
  * @author Miguel, miguel@jmol.org
  */
+@J2SRequireImport({org.jmol.util.Geodesic.class})
 public class Normix {
 
   private final static int NORMIX_GEODESIC_LEVEL = Geodesic.standardLevel;

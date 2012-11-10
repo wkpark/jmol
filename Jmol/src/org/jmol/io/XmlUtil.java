@@ -23,7 +23,10 @@
  *  02110-1301, USA.
  */
 
-package org.jmol.util;
+package org.jmol.io;
+
+import org.jmol.util.StringXBuilder;
+import org.jmol.util.TextFormat;
 
 //import java.util.ArrayList;
 //import java.util.Iterator;

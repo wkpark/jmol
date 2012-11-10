@@ -28,6 +28,7 @@ import java.util.List;
 
 
 import org.jmol.constant.EnumStructure;
+import org.jmol.io.OutputStringBuilder;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.ModelSet;
@@ -35,7 +36,6 @@ import org.jmol.modelset.ModelSet;
 import org.jmol.util.BitSet;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
-import org.jmol.util.OutputStringBuilder;
 import org.jmol.util.Point3f;
 import org.jmol.util.StringXBuilder;
 import org.jmol.util.Vector3f;

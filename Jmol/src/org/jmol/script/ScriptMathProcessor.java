@@ -2270,7 +2270,7 @@ class ScriptMathProcessor {
       float[] f2 = (type.indexOf("property_") == 0 ? viewer.getDataFloat(type)
           : null);
       if (f2 != null) {
-        f1 = f1.clone();
+        f1 = ArrayUtil.arrayCopyF(f1, -1);
         for (int i = Math.min(f1.length, f2.length); --i >= 0;)
           f1[i] += f2[i];
       }

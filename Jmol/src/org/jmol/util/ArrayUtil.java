@@ -187,6 +187,8 @@ final public class ArrayUtil {
   }
 
   public static String[] arrayCopyS(String[] array, int newLength) {
+    if (newLength < 0)
+      newLength = array.length;
     String[] t = new String[newLength];
     if (array != null) {
       int oldLength = array.length;
@@ -207,6 +209,8 @@ final public class ArrayUtil {
   }
 
   public static Point3f[] arrayCopyPt(Point3f[] array, int newLength) {
+    if (newLength < 0)
+      newLength = array.length;
     Point3f[] t = new Point3f[newLength];
     if (array != null) {
       int oldLength = array.length;
@@ -217,6 +221,8 @@ final public class ArrayUtil {
   }
 
   public static float[] arrayCopyF(float[] array, int newLength) {
+    if (newLength < 0)
+      newLength = array.length;
     float[] t = new float[newLength];
     if (array != null) {
       int oldLength = array.length;
@@ -227,6 +233,8 @@ final public class ArrayUtil {
   }
 
   public static int[] arrayCopyI(int[] array, int newLength) {
+    if (newLength < 0)
+      newLength = array.length;
     int[] t = new int[newLength];
     if (array != null) {
       int oldLength = array.length;
@@ -260,12 +268,16 @@ final public class ArrayUtil {
     if (array == null)
       return null;
     int[] t = arrayCopyRangeI(array, i0, n);
+    if (n < 0)
+      n = array.length;
     for (int i = n / 2; --i >= 0;)
       swapInt(t, i, n - 1 - i);
     return t;
   }
 
   public static short[] arrayCopyShort(short[] array, int newLength) {
+    if (newLength < 0)
+      newLength = array.length;
     short[] t = new short[newLength];
     if (array != null) {
       int oldLength = array.length;
@@ -276,6 +288,8 @@ final public class ArrayUtil {
   }
 
   public static byte[] arrayCopyByte(byte[] array, int newLength) {
+    if (newLength < 0)
+      newLength = array.length;
     byte[] t = new byte[newLength];
     if (array != null) {
       int oldLength = array.length;
@@ -286,6 +300,8 @@ final public class ArrayUtil {
   }
 
   public static boolean[] arrayCopyBool(boolean[] array, int newLength) {
+    if (newLength < 0)
+      newLength = array.length;
     boolean[] t = new boolean[newLength];
     if (array != null) {
       int oldLength = array.length;

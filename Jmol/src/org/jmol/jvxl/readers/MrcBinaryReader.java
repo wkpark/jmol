@@ -26,7 +26,6 @@ package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
 
-import org.jmol.util.BinaryDocument;
 import org.jmol.util.Logger;
 import org.jmol.util.StringXBuilder;
 
@@ -54,7 +53,7 @@ class MrcBinaryReader extends MapFileReader {
   void init2(SurfaceGenerator sg, BufferedReader brNull) {
     String fileName = (String) sg.getReaderData();
     super.init2(sg, null);
-    binarydoc = new BinaryDocument();
+    binarydoc = newBinaryDocument();
     binarydoc.setStream(sg.getAtomDataServer().getBufferedInputStream(fileName), true);
     // data are HIGH on the inside and LOW on the outside
     nSurfaces = 1; 
@@ -119,8 +118,8 @@ class MrcBinaryReader extends MapFileReader {
 
     nx = binarydoc.readInt(); // CCP4 "extent[0-2]"
     if (nx < 0 || nx > 1<<8) {
-      binarydoc.setIsBigEndian(false);
-      nx = BinaryDocument.swapBytes(nx);
+      binarydoc.setStream(null, false);
+      nx = binarydoc.swapBytesI(nx);
       if (params.thePlane == null)
         params.insideOut = !params.insideOut;
       if (nx < 0 || nx > 1000) {
@@ -135,11 +134,11 @@ class MrcBinaryReader extends MapFileReader {
     mode = binarydoc.readInt();
 
     if (mode < 0 || mode > 6) {
-      binarydoc.setIsBigEndian(false);
-      nx = BinaryDocument.swapBytes(nx);
-      ny = BinaryDocument.swapBytes(ny);
-      nz = BinaryDocument.swapBytes(nz);
-      mode = BinaryDocument.swapBytes(mode);
+      binarydoc.setStream(null, false);
+      nx = binarydoc.swapBytesI(nx);
+      ny = binarydoc.swapBytesI(ny);
+      nz = binarydoc.swapBytesI(nz);
+      mode = binarydoc.swapBytesI(mode);
     }
 
     Logger.info("MRC header: mode: " + mode);
@@ -192,7 +191,7 @@ class MrcBinaryReader extends MapFileReader {
 
     Logger.info("MRC header: ispg,nsymbt: " + ispg + "," + nsymbt);
 
-    binarydoc.readByteArray(extra);
+    binarydoc.readByteArray(extra, 0, extra.length);
 
     origin.x = binarydoc.readFloat();  // CCP4 "origin2k"
     origin.y = binarydoc.readFloat();
@@ -200,8 +199,8 @@ class MrcBinaryReader extends MapFileReader {
 
     Logger.info("MRC header: origin: " + origin);
 
-    binarydoc.readByteArray(map);
-    binarydoc.readByteArray(machst);
+    binarydoc.readByteArray(map, 0, map.length);
+    binarydoc.readByteArray(machst, 0, machst.length);
 
     rmsDeviation = binarydoc.readFloat();
 
@@ -315,7 +314,7 @@ class MrcBinaryReader extends MapFileReader {
         binarydoc.readByteArray(b8, 0, 4);
         break;
       case 4:
-        binarydoc.readByteArray(b8);
+        binarydoc.readByteArray(b8, 0, 8);
         break;
       }
   }

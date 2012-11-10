@@ -25,22 +25,14 @@
 package org.jmol.adapter.smarter;
 
 import java.io.BufferedReader;
-import java.io.InputStream;
-import java.util.ArrayList;
-//import java.util.Hashtable;
-import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
 
 import org.jmol.api.JmolAdapter;
-//import org.jmol.util.Escape;
-import org.jmol.util.LimitedLineReader;
+import org.jmol.io.LimitedLineReader;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.StringXBuilder;
-import org.jmol.util.TextFormat;
-//import org.jmol.util.ZipUtil;
 
 
 public class Resolver {
@@ -82,133 +74,6 @@ public class Resolver {
       return null;
     }
   }
-
-  /**
-   * 
-   * Special loading for file directories. This method is called from
-   * the FileManager via SmarterJmolAdapter. It's here because Resolver 
-   * is the place where all distinctions are made.
-   * 
-   * In the case of spt files, no need to load them; here we are just checking
-   * for type.
-   * 
-   * In the case of .spardir directories, we need to provide a list of
-   * the critical files that need loading and concatenation for the
-   * SpartanSmolReader. 
-   * 
-   * we return an array for which:
-   * 
-   * [0] file type (class prefix) or null for SPT file 
-   * [1] header to add for each BEGIN/END block (ignored)
-   * [2...] files to load and concatenate
-   * 
-   * @param name
-   * @param type
-   * @return array detailing action for this set of files
-   */
-  static String[] specialLoad(String name, String type) {
-    int pt = name.lastIndexOf(".spardir");
-    boolean isPreliminary = (type.equals("filesNeeded?"));
-    if (isPreliminary) {
-      // check for .spt file type -- Jmol script
-      if (name.endsWith(".spt"))
-        return new String[] { null, null, null }; // DO NOT actually load any file
-      // check for zipped up spardir -- we'll automatically take first file there
-      if (name.endsWith(".spardir.zip"))
-        return new String[] { "SpartanSmol", "Directory Entry ", name + "|output"};
-      name = name.replace('\\', '/');
-      if (!name.endsWith(".spardir") && name.indexOf(".spardir/") < 0)
-        return null; 
-      // look for .spardir or .spardir/...
-      if (pt < 0)
-        return null;
-      if (name.lastIndexOf("/") > pt) {
-        // a single file in the spardir directory is requested
-        return new String[] { "SpartanSmol", "Directory Entry ",
-            name + "/input", name + "/archive",
-            name + "/Molecule:asBinaryString", name + "/proparc" };      
-      }
-      return new String[] { "SpartanSmol", "Directory Entry ", name + "/output" };
-    }
-    // make list of required files
-    String[] dirNums = getSpartanDirs(type);
-    if (dirNums.length == 0 && name.endsWith(".spardir.zip") 
-        && type.indexOf(".zip|output") >= 0) {
-      // try again, with the idea that 
-      String sname = name.replace('\\','/');
-      pt = sname.lastIndexOf("/");
-      // mac directory zipped up?
-      sname = name + "|" + name.substring(pt + 1, name.length() - 4);
-      return new String[] { "SpartanSmol", sname, sname + "/output" };
-    }    
-    return getSpartanFileList(name, dirNums);
-  }
-
-  /**
-   * called by SmarterJmolAdapter to see if we can automatically assign a file
-   * from the zip file. If so, return a subfile list for this file. The first
-   * element of the list is left empty -- it would be the zipfile name. 
-   * 
-   * Assignment can be made if (1) there is only one file in the collection or
-   * (2) if the first file is xxxx.spardir/
-   * 
-   * Note that __MACOS? files are ignored by the ZIP file reader.
-   * 
-   * @param zipDirectory
-   * @return subFileList
-   */
-  static String[] checkSpecialInZip(String[] zipDirectory) {
-    String name;
-    return (zipDirectory.length < 2 ? null 
-        : (name = zipDirectory[1]).endsWith(".spardir/") || zipDirectory.length == 2 ?
-        new String[] { "",
-          (name.endsWith("/") ? name.substring(0, name.length() - 1) : name) } 
-        : null);
-  }
-
-  /**
-   * called by SmarterJmolAdapter to see if we have a Spartan directory and, if so,
-   * open it and get all the data into the correct order.
-   * 
-   * @param is
-   * @param zipDirectory
-   * @return String data for processing
-   */  
-  static StringXBuilder checkSpecialData(InputStream is, String[] zipDirectory) {
-  	return null;
-/*  	
-    boolean isSpartan = false;
-    // 0 entry is not used here
-    for (int i = 1; i < zipDirectory.length; i++) {
-      if (zipDirectory[i].endsWith(".spardir/")
-          || zipDirectory[i].indexOf("_spartandir") >= 0) {
-        isSpartan = true;
-        break;
-      }
-    }
-    if (!isSpartan)
-      return null;
-    StringXBuilder data = new StringXBuilder();
-    data.append("Zip File Directory: ").append("\n").append(
-        Escape.escape(zipDirectory, true)).append("\n");
-    Map<String, String> fileData = new Hashtable<String, String>();
-    ZipUtil.getAllData(is, new String[] {}, "",
-        "Molecule", fileData);
-    String prefix = "|";
-    String outputData = fileData.get(prefix + "output");
-    if (outputData == null)
-      outputData = fileData.get((prefix = "|" + zipDirectory[1]) + "output");
-    data.append(outputData);
-    String[] files = getSpartanFileList(prefix, getSpartanDirs(outputData));
-    for (int i = 2; i < files.length; i++) {
-      String name = files[i];
-      if (fileData.containsKey(name))
-        data.append(fileData.get(name));
-      else
-        data.append(name + "\n");
-    }
-    return data;
-*/  }
 
   /**
    * the main method for reading files. Called from SmarterJmolAdapter when
@@ -318,90 +183,6 @@ public class Resolver {
     }
   }
 
-  /**
-   * returns the list of files to read for every Spartan spardir. Simple numbers
-   * are assumed to be Profiles; others are models.
-   * 
-   * @param name
-   * @param dirNums
-   * @return String[] list of files to read given a list of directory names
-   * 
-   */
-  private static String[] getSpartanFileList(String name, String[] dirNums) {    
-    String[] files = new String[2 + dirNums.length*5];
-    files[0] = "SpartanSmol";
-    files[1] = "Directory Entry ";
-    int pt = 2;
-    name = name.replace('\\', '/');
-    if (name.endsWith("/"))
-      name = name.substring(0, name.length() - 1);
-    for (int i = 0; i < dirNums.length; i++) {
-      String path = name + (Character.isDigit(dirNums[i].charAt(0)) ? 
-          "/Profile." + dirNums[i] : "/" + dirNums[i]);
-      files[pt++] = path + "/#JMOL_MODEL " + dirNums[i];
-      files[pt++] = path + "/input";
-      files[pt++] = path + "/archive";
-      files[pt++] = path + "/Molecule:asBinaryString";
-      files[pt++] = path + "/proparc";
-    }
-    return files;
-  }
-
-  /**
-   * read the output file from the Spartan directory and decide from that what
-   * files need to be read and in what order - usually M0001 or a set of Profiles.
-   * But Spartan saves the Profiles in alphabetical order, not numerical. So we
-   * fix that here.
-   * 
-   * @param outputFileData
-   * @return String[] list of files to read
-   */
-  private static String[] getSpartanDirs(String outputFileData) {
-    if (outputFileData == null)
-      return new String[]{};
-    if (outputFileData.startsWith("java.io.FileNotFoundException")
-        || outputFileData.startsWith("FILE NOT FOUND")
-        || outputFileData.indexOf("<html") >= 0)
-      return new String[] { "M0001" };
-    List<String> v = new ArrayList<String>();
-    String token;
-    String lasttoken = "";
-    try {
-      StringTokenizer tokens = new StringTokenizer(outputFileData, " \t\r\n");
-      while (tokens.hasMoreTokens()) {
-        // profile file name is just before each right-paren:
-        /*
-         * MacSPARTAN '08 ENERGY PROFILE: x86/Darwin 130
-         * 
-         * Dihedral Move : C3 - C2 - C1 - O1 [ 4] -180.000000 .. 180.000000
-         * Dihedral Move : C2 - C1 - O1 - H3 [ 4] -180.000000 .. 180.000000
-         * 
-         * 1 ) -180.00 -180.00 -504208.11982719 2 ) -90.00 -180.00
-         * -504200.18593376
-         * 
-         * ...
-         * 
-         * 24 ) 90.00 180.00 -504200.18564495 25 ) 180.00 180.00
-         * -504208.12129747
-         * 
-         * Found a local maxima E = -504178.25455465 [ 3 3 ]
-         * 
-         * 
-         * Reason for exit: Successful completion Mechanics CPU Time : 1:51.42
-         * Mechanics Wall Time: 12:31.54
-         */
-        if ((token = tokens.nextToken()).equals(")"))
-          v.add(lasttoken);
-        else if (token.equals("Start-") && tokens.nextToken().equals("Molecule"))
-          v.add(TextFormat.split(tokens.nextToken(), '"')[1]);
-        lasttoken = token;
-      }
-    } catch (Exception e) {
-      //
-    }
-    return v.toArray(new String[v.size()]);
-  }
-  
   private static final String CML_NAMESPACE_URI = "http://www.xml-cml.org/schema";
 
   /**

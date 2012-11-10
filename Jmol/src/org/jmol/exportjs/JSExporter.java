@@ -31,11 +31,9 @@ import java.util.Map;
 
 
 import org.jmol.util.BitSet;
-import org.jmol.util.Colix;
 import org.jmol.util.GData;
 import org.jmol.util.J2SRequireImport;
 import org.jmol.util.JmolFont;
-import org.jmol.util.Measure;
 import org.jmol.util.Point3f;
 import org.jmol.util.Tuple3f;
 import org.jmol.util.Vector3f;

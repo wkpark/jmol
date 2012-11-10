@@ -1,9 +1,11 @@
-package org.jmol.util;
+package org.jmol.io;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+
+import org.jmol.util.StringXBuilder;
 
 
 public class OutputStringBuilder {

@@ -24,22 +24,31 @@
 
 package org.openscience.jmol.app.jsonkiosk;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
-
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 
 import org.jmol.api.JmolViewer;
+import org.jmol.script.ScriptVariable;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Point3f;
+import org.jmol.util.StringXBuilder;
 import org.jmol.util.TextFormat;
+import org.jmol.viewer.Viewer;
 
-import com.json.JSONArray;
-import com.json.JSONException;
-import com.json.JSONObject;
-import com.json.JSONTokener;
+//import com.json.JSONArray;
+//import com.json.JSONException;
+//import com.json.JSONObject;
+//import com.json.JSONTokener;
 
 import naga.ConnectionAcceptor;
 import naga.NIOServerSocket;
@@ -148,7 +157,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
   private NIOSocket inSocket;
   protected NIOSocket outSocket;
   private NIOServerSocket serverSocket;
-  private JmolViewer jmolViewer;
+  JmolViewer jmolViewer;
   private JsonNioClient client;
 
   private boolean wasSpinOn;
@@ -371,21 +380,17 @@ public class JsonNioService extends NIOService implements JsonNioServer {
   }
 
   protected void initialize(String role, NIOSocket nioSocket) {
-    try {
-      Logger.info("JsonNioService" + myName + " initialize " + role);
-      JSONObject json = new JSONObject();
-      if (version == 1) {
-        json.put("magic", "JmolApp");
-        json.put("role", role);      
-      } else {
-        // role will be "out"; socket will be inSocket
-        json.put("source","Jmol");
-        json.put("type", "login");
-      }
-      sendMessage(json, null, nioSocket);
-    } catch (JSONException e) {
-      close();
+    Logger.info("JsonNioService" + myName + " initialize " + role);
+    JSONObject json = new JSONObject();
+    if (version == 1) {
+      json.put("magic", "JmolApp");
+      json.put("role", role);
+    } else {
+      // role will be "out"; socket will be inSocket
+      json.put("source", "Jmol");
+      json.put("type", "login");
     }
+    sendMessage(json, null, nioSocket);
   }
 
   private void startServerService() {
@@ -489,7 +494,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
   }
 
   private void processJSON(JSONObject json, String msg)
-      throws FileNotFoundException, JSONException {
+      throws Exception {
     if (json == null)
       json = new JSONObject(msg);
     int pt = ("banner...." + "command..." + "content..." + "move......"
@@ -517,27 +522,38 @@ public class JsonNioService extends NIOService implements JsonNioServer {
       String path = TextFormat.simpleReplace(contentPath, "%ID%", id).replace(
           '\\', '/');
       File f = new File(path);
-      FileInputStream jsonFile = new FileInputStream(f);
       Logger.info("JsonNiosService Setting path to " + f.getAbsolutePath());
       pt = path.lastIndexOf('/');
       if (pt >= 0)
         path = path.substring(0, pt);
       else
         path = ".";
-      JSONObject contentJSON = new JSONObject(new JSONTokener(jsonFile));
-      
+      JSONObject contentJSON = null;
+      try {
+        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(f), "UTF-8"));
+        StringXBuilder sb = StringXBuilder.newN(8192);
+        String line;
+        while ((line = br.readLine()) != null)
+          sb.append(line).appendC('\n');
+        br.close();
+        contentJSON = new JSONObject(sb.toString());
+      } catch (UnsupportedEncodingException e) {
+        // should not be possible
+      }
+
       String script = null;
       if (contentJSON.has("scripts")) {
-        JSONArray scripts = contentJSON.getJSONArray("scripts");
-        for(int i = scripts.length(); --i >= 0; ) {
-          JSONObject scriptInfo = scripts.getJSONObject(i);
-          if(scriptInfo.getString("startup").equals("yes")) {
+        //TODO -- this is not implemented, because JSONObject.getJSONArray is not implemented
+        List<JSONObject> scripts = contentJSON.getJSONArray("scripts");
+        for (int i = scripts.size(); --i >= 0;) {
+          JSONObject scriptInfo = scripts.get(i);
+          if (scriptInfo.getString("startup").equals("yes")) {
             script = scriptInfo.getString("filename");
             break;
           }
         }
         if (script == null)
-          throw new JSONException("scripts startup:yes not found");
+          throw new Exception("scripts startup:yes not found");
       } else {
         script = contentJSON.getString("startup_script");
       }
@@ -684,5 +700,58 @@ public class JsonNioService extends NIOService implements JsonNioServer {
     } catch (Throwable e) {
       e.printStackTrace();
     }
+  }
+  
+  class JSONObject extends Hashtable<String,Object>{
+
+    public JSONObject() {
+    }
+
+    @SuppressWarnings("unchecked")
+    JSONObject(String msg) throws Exception {
+      ScriptVariable o = ((Viewer) jmolViewer).evaluateExpressionAsVariable(msg);
+      if (!(o.value instanceof Map<?,?>)) 
+        throw new Exception("invalid JSON: " + msg);
+      putAll((Map<String, Object>) o.value);
+    }
+
+    boolean has(String key) {
+      return containsKey(key);
+    }
+
+    String getString(String key) throws Exception {
+      return containsKey(key) ? get(key).toString() : null;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public List<JSONObject> getJSONArray(String key) throws Exception {
+      if (!has(key))
+        throw new Exception("JSON key not found:" + key);
+      List<JSONObject> list = new ArrayList<JSONObject>();
+      List<ScriptVariable> svlist = ((ScriptVariable) get(key)).getList();
+      for (int i = 0; i < svlist.size(); i++)
+        list.add(new JSONObject(Escape.escapeMap((Map<String, Object>)(svlist.get(i).value))));
+      return list;
+    }
+
+    public long getLong(String key) throws Exception {
+      if (!has(key))
+        throw new Exception("JSON key not found:" + key);
+      return Long.parseLong(get(key).toString());
+    }
+
+    public int getInt(String key) throws Exception {
+      if (!has(key))
+        throw new Exception("JSON key not found:" + key);
+      return Integer.parseInt(get(key).toString());
+    }
+
+    public double getDouble(String key) throws Exception {
+      if (!has(key))
+        throw new Exception("JSON key not found:" + key);
+      return Double.parseDouble(get(key).toString());
+    }
+
+    
   }
 }

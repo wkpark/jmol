@@ -26,7 +26,6 @@ package org.jmol.quantum;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Hashtable;
 import java.util.Map;
@@ -34,6 +33,7 @@ import java.util.Map;
 
 import org.jmol.api.MepCalculationInterface;
 import org.jmol.api.VolumeDataInterface;
+import org.jmol.io.JmolBinary;
 import org.jmol.modelset.Atom;
 import org.jmol.util.BitSet;
 import org.jmol.util.Logger;
@@ -224,7 +224,7 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
       // it's a sun.net.www.protocol.jar.JarURLConnection$JarURLInputStream
       // and within Eclipse it's a BufferedInputStream
 
-      br = new BufferedReader(new InputStreamReader(is));
+      br = JmolBinary.getInputStreamReader(is);
       String line;
       while ((line = br.readLine()) != null) {
         if (line.startsWith("#"))

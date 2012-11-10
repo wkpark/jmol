@@ -46,9 +46,9 @@ import java.net.URL;
 import javax.swing.JPanel;
 
 import org.jmol.api.ApiPlatform;
+import org.jmol.io2.JpegEncoder;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolFont;
-import org.jmol.util.JpegEncoder;
 import org.jmol.viewer.Viewer;
 
 /**

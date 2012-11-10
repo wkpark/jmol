@@ -1094,7 +1094,9 @@ public class Eigen {
 
   public static Quadric getEllipsoid(Vector3f[] vectors, float[] lengths, boolean isThermal) {
     //[0] is shortest; [2] is longest
-    Vector3f[] unitVectors = vectors.clone();
+    Vector3f[] unitVectors = new Vector3f[vectors.length];
+    for (int i = vectors.length; --i >= 0;)
+      unitVectors[i] = Vector3f.newV(vectors[i]);
     sort(unitVectors, lengths);
     return new Quadric(unitVectors, lengths, isThermal);
   }

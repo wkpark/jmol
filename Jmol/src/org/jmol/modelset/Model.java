@@ -31,10 +31,10 @@ import java.util.Properties;
 
 import org.jmol.api.SymmetryInterface;
 import org.jmol.constant.EnumStructure;
+import org.jmol.io.OutputStringBuilder;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
-import org.jmol.util.OutputStringBuilder;
 import org.jmol.util.Point3f;
 import org.jmol.util.StringXBuilder;
 

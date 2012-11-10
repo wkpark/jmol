@@ -30,7 +30,7 @@
  *   
 */
 
-package org.jmol.util;
+package org.jmol.io2;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -38,6 +38,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.jmol.api.ApiPlatform;
+import org.jmol.io.JmolBinary;
+import org.jmol.util.Logger;
 
 /*
  * JpegEncoder - The JPEG main program which performs a jpeg compression of
@@ -56,7 +58,6 @@ public class JpegEncoder {
   // But that would be very unusual. Perhaps a huge data set loaded from a 
   // string. Introduced in Jmol 12.1.36. 
   
-  public static final String CONTINUE_STRING = " #Jmol...\0"; 
   // this string will GENERALLY appear at the end of lines and escape the 
   private static final int CONTINUE_MAX = 65500;  // some room to spare here. 
   private static final int CONTINUE_MAX_BUFFER = CONTINUE_MAX + 10; // never break up last 10 bytes
@@ -127,7 +128,8 @@ public class JpegEncoder {
     WriteEOI(outStream);
     if (longState != null)
       try {
-        outStream.write(longState.getBytes());
+        byte[] b = longState.getBytes();
+        outStream.write(b, 0, b.length);
       } catch (IOException e1) {
         System.out.println("ERROR WRITING COMMENT");
       }
@@ -331,7 +333,7 @@ public class JpegEncoder {
   private static void writeString(String s, byte id, BufferedOutputStream out) {
     int len = s.length();
     int i0 = 0;
-    String suffix = CONTINUE_STRING;
+    String suffix = JmolBinary.JPEG_CONTINUE_STRING;
     while (i0 < len) {
       int nBytes = len - i0;
       if (nBytes > CONTINUE_MAX_BUFFER) {
@@ -403,7 +405,7 @@ public class JpegEncoder {
   
   static void writeArray(byte[] data, BufferedOutputStream out) {
     try {
-      out.write(data);
+      out.write(data, 0, data.length);
     } catch (IOException e) {
       Logger.errorEx("IO Error", e);
     }

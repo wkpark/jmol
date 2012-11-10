@@ -31,6 +31,7 @@ import java.util.Properties;
 
 
 import org.jmol.constant.EnumStructure;
+import org.jmol.io.OutputStringBuilder;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Group;
@@ -44,7 +45,6 @@ import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
-import org.jmol.util.OutputStringBuilder;
 import org.jmol.util.Point3f;
 import org.jmol.util.StringXBuilder;
 import org.jmol.util.TextFormat;

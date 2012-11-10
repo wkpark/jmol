@@ -28,7 +28,6 @@ import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSet;
 import org.jmol.util.Escape;
 import org.jmol.util.CommandHistory;
-import org.jmol.util.JpegEncoder;
 import org.jmol.util.Logger;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
@@ -37,6 +36,7 @@ import org.jmol.util.StringXBuilder;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 import org.jmol.i18n.GT;
+import org.jmol.io.JmolBinary;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.Bond.BondSet;
 
@@ -187,30 +187,9 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       script = script.substring(0, pt);
     }
     haveComments = (script.indexOf("#") >= 0); // speeds processing
-    return getEmbeddedScript(script);
+    return JmolBinary.getEmbeddedScript(script);
   }
   
-  public static String getEmbeddedScript(String script) {
-    if (script == null)
-      return script;
-    int pt = script.indexOf(JmolConstants.EMBEDDED_SCRIPT_TAG);
-    if (pt < 0)
-      return script;
-    int pt1 = script.lastIndexOf("/*", pt);
-    int pt2 = script.indexOf((script.charAt(pt1 + 2) == '*' ? "*" : "") + "*/",
-        pt);
-    if (pt1 >= 0 && pt2 >= pt)
-      script = script.substring(
-          pt + JmolConstants.EMBEDDED_SCRIPT_TAG.length(), pt2)
-          + "\n";
-    while ((pt1 = script.indexOf(JpegEncoder.CONTINUE_STRING)) >= 0)
-      script = script.substring(0, pt1)
-          + script.substring(pt1 + JpegEncoder.CONTINUE_STRING.length() + 4);
-    if (Logger.debugging)
-      Logger.info(script);
-    return script;
-  }
-
   private ScriptFlowContext flowContext;
   private List<Token> ltoken;
   private List<Token[]> lltoken;

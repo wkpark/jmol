@@ -26,9 +26,9 @@ package org.jmol.adapter.smarter;
 
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
+import org.jmol.api.JmolDocument;
 import org.jmol.api.JmolViewer;
 import org.jmol.api.SymmetryInterface;
-import org.jmol.util.BinaryDocument;
 import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;
@@ -137,7 +137,7 @@ public abstract class AtomSetCollectionReader {
 
   public AtomSetCollection atomSetCollection;
   protected BufferedReader reader;
-  protected BinaryDocument doc;
+  protected JmolDocument doc;
   protected String readerName;
   public Map<String, Object> htParams;
   public List<Point3f[]> trajectorySteps;
@@ -219,8 +219,8 @@ public abstract class AtomSetCollectionReader {
     fileName = filePath.substring(i + 1);
     if (reader instanceof BufferedReader)
       this.reader = (BufferedReader) reader;
-    else if (reader instanceof BinaryDocument)
-      this.doc = (BinaryDocument) reader;
+    else if (reader instanceof JmolDocument)
+      this.doc = (JmolDocument) reader;
   }
 
   Object readData() throws Exception {
@@ -268,7 +268,7 @@ public abstract class AtomSetCollectionReader {
    * @param doc  
    * @throws Exception 
    */
-  protected void processBinaryDocument(BinaryDocument doc) throws Exception {
+  protected void processBinaryDocument(JmolDocument doc) throws Exception {
     // Binary readers only
   }
 
@@ -1324,8 +1324,17 @@ public abstract class AtomSetCollectionReader {
     prevline = line;
     line = reader.readLine();
     if (os != null && line != null) {
-      os.write(line.getBytes());
+      byte[] b = line.getBytes();
+      os.write(b, 0, b.length);
+      /**
+       * @j2sNative
+       * 
+       *  this.os.writeByteAsInt(0x0A);
+       * 
+       */
+      {
       os.write('\n');
+      }
     }
     ptLine++;
     if (Logger.debugging)

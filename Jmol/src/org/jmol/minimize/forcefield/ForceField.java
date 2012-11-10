@@ -25,6 +25,12 @@
 package org.jmol.minimize.forcefield;
 
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+
+import org.jmol.io.JmolBinary;
 import org.jmol.minimize.MinAngle;
 import org.jmol.minimize.MinAtom;
 import org.jmol.minimize.MinBond;
@@ -479,5 +485,19 @@ abstract public class ForceField {
   public void log(String s) {
     calc.appendLogData(s);
   }
+
+  protected static BufferedReader getResource(URL url) throws IOException {
+    /**
+     * @j2sNative
+     * 
+     * return this.minimizer.viewer.getBufferedReaderOrErrorMessageFromName(url.toString(),[null,null],false); 
+     * 
+     * 
+     */
+    {
+    return JmolBinary.getInputStreamReader((InputStream) url.getContent());
+    }
+  }
+
 
 }

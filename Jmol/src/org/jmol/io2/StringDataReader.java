@@ -3,7 +3,7 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2006  The Jmol Development Team
+ * Copyright (C) 2011  The Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -23,36 +23,26 @@
  *  02110-1301, USA.
  */
 
-package org.jmol.util;
+package org.jmol.io2;
+
+import java.io.StringReader;
+
+import org.jmol.io.DataReader;
 
 
-public class ZipData {
-  boolean isEnabled = true;
-  byte[] buf;
-  int pt;
-  int nBytes;
-  
-  public ZipData(int nBytes) {
-    this.nBytes = nBytes;
+
+public class StringDataReader extends DataReader {
+
+  public StringDataReader() {
+    super();
   }
   
-  public int addBytes(byte[] byteBuf, int nSectorBytes, int nBytesRemaining) {
-    if (pt == 0) {
-      if (!ZipUtil.isGzip(byteBuf)) {
-        isEnabled = false;
-        return -1;
-      }
-      buf = new byte[nBytesRemaining];
-    }
-    int nToAdd = Math.min(nSectorBytes, nBytesRemaining);
-    System.arraycopy(byteBuf, 0, buf, pt, nToAdd);
-    pt += nToAdd;
-    return nBytesRemaining - nToAdd;
-  }    
-
-  public void addTo(StringXBuilder data) {
-    data.append(ZipUtil.getGzippedBytesAsString(buf));
+  public StringDataReader(String data) {
+    super(new StringReader(data));
   }
-  
+
+  @Override
+  public DataReader setData(Object data) {
+    return new StringDataReader((String) data);
+  }
 }
-

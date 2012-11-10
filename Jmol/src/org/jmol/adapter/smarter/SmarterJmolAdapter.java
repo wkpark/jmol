@@ -29,25 +29,13 @@ import org.jmol.api.JmolAdapterAtomIterator;
 import org.jmol.api.JmolAdapterBondIterator;
 import org.jmol.api.JmolAdapterStructureIterator;
 import org.jmol.api.JmolFilesReaderInterface;
-import org.jmol.util.CompoundDocument;
 import org.jmol.util.Logger;
 import org.jmol.util.Point3f;
-import org.jmol.util.StringXBuilder;
-import org.jmol.util.TextFormat;
 import org.jmol.util.Vector3f;
-import org.jmol.util.ZipUtil;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 
 public class SmarterJmolAdapter extends JmolAdapter {
@@ -123,6 +111,19 @@ public class SmarterJmolAdapter extends JmolAdapter {
       Logger.error("" + e);
       return "" + e;
     }
+  }
+
+  @Override
+  public Object getAtomSetCollectionFromReader(String fname,
+                                            BufferedReader reader,
+                                            Map<String, Object> htParams) throws Exception {
+    Object ret = Resolver.getAtomCollectionReader(fname, null, reader,
+        htParams, -1);
+    if (ret instanceof AtomSetCollectionReader) {
+      ((AtomSetCollectionReader) ret).setup(fname, htParams, reader);
+      return ((AtomSetCollectionReader) ret).readData();
+    }
+    return "" + ret;    
   }
 
   /**
@@ -280,245 +281,6 @@ public class SmarterJmolAdapter extends JmolAdapter {
   }
 
   /**
-   * A rather complicated means of reading a ZIP file, which could be a 
-   * single file, or it could be a manifest-organized file, or it could be
-   * a Spartan directory.
-   * 
-   * @param is 
-   * @param fileName 
-   * @param zipDirectory 
-   * @param htParams 
-   * @param asBufferedReader 
-   * @return a single atomSetCollection
-   * 
-   */
-  @Override
-  public Object getAtomSetCollectionOrBufferedReaderFromZip(InputStream is, String fileName, String[] zipDirectory,
-                             Map<String, Object> htParams, boolean asBufferedReader, boolean asBufferedInputStream) {
-    return staticGetAtomSetCollectionOrBufferedReaderFromZip(is, fileName, zipDirectory, htParams, 1, asBufferedReader, asBufferedInputStream);
-  }
-
-  private static Object staticGetAtomSetCollectionOrBufferedReaderFromZip(
-                                    InputStream is, String fileName,
-                                    String[] zipDirectory, Map<String, Object> htParams,
-                                    int subFilePtr, boolean asBufferedReader, boolean asBufferedInputStream) {
-
-    // we're here because user is using | in a load file name
-    // or we are opening a zip file.
-
-    boolean doCombine = (subFilePtr == 1);
-    htParams.put("zipSet", fileName);
-    String[] subFileList = (String[]) htParams.get("subFileList");
-    if (subFileList == null)
-      subFileList = Resolver.checkSpecialInZip(zipDirectory);
-    String subFileName = (subFileList == null
-        || subFilePtr >= subFileList.length ? null : subFileList[subFilePtr]);
-    if (subFileName != null
-        && (subFileName.startsWith("/") || subFileName.startsWith("\\")))
-      subFileName = subFileName.substring(1);
-    int selectedFile = 0;
-    if (subFileName == null && htParams.containsKey("modelNumber")) {
-      selectedFile = ((Integer) htParams.get("modelNumber")).intValue();
-      if (selectedFile > 0 && doCombine)
-        htParams.remove("modelNumber");
-    }
-
-    // zipDirectory[0] is the manifest if present
-    String manifest = (String) htParams.get("manifest");
-    boolean useFileManifest = (manifest == null);
-    if (useFileManifest)
-      manifest = (zipDirectory.length > 0 ? zipDirectory[0] : "");
-    boolean haveManifest = (manifest.length() > 0);
-    if (haveManifest) {
-      if (Logger.debugging)
-        Logger.info("manifest for  " + fileName + ":\n" + manifest);
-    }
-    boolean ignoreErrors = (manifest.indexOf("IGNORE_ERRORS") >= 0);
-    boolean selectAll = (manifest.indexOf("IGNORE_MANIFEST") >= 0);
-    boolean exceptFiles = (manifest.indexOf("EXCEPT_FILES") >= 0);
-    if (selectAll || subFileName != null)
-      haveManifest = false;
-    if (useFileManifest && haveManifest) {
-      String path = ZipUtil.getManifestScriptPath(manifest);
-      if (path != null)
-        return NOTE_SCRIPT_FILE + fileName + path + "\n";
-    }
-    List<Object> vCollections = new ArrayList<Object>();
-    Map<String, Object> htCollections = (haveManifest ? new Hashtable<String, Object>() : null);
-    int nFiles = 0;
-    // 0 entry is manifest
-
-    // check for a Spartan directory. This is not entirely satisfying,
-    // because we aren't reading the file in the proper sequence.
-    // this code is a hack that should be replaced with the sort of code
-    // running in FileManager now.
-
-    Object ret = Resolver.checkSpecialData(is, zipDirectory);
-    if (ret instanceof String)
-      return ret;
-    StringXBuilder data = (StringXBuilder) ret;
-    try {
-      if (data != null) {
-        BufferedReader reader = new BufferedReader(new StringReader(data.toString()));
-        if (asBufferedReader) {
-          return reader;
-        }
-        ret = Resolver.getAtomCollectionReader(fileName, null, reader,
-            htParams, -1);
-        if (!(ret instanceof AtomSetCollectionReader))
-          return ret;
-        ((AtomSetCollectionReader) ret).setup(fileName, htParams, reader);
-        ret = ((AtomSetCollectionReader) ret).readData();
-        if (ret instanceof AtomSetCollection) {
-          AtomSetCollection atomSetCollection = (AtomSetCollection) ret;
-          if (atomSetCollection.errorMessage != null) {
-            if (ignoreErrors)
-              return null;
-            return atomSetCollection.errorMessage;
-          }
-          return atomSetCollection;
-        }
-        if (ignoreErrors)
-          return null;
-        return "unknown reader error";
-      }
-      if (is instanceof BufferedInputStream)
-        is = ZipUtil.checkPngZipStream((BufferedInputStream) is);
-      ZipInputStream zis = ZipUtil.getStream(is);
-      ZipEntry ze;
-      if (haveManifest)
-        manifest = '|' + manifest.replace('\r', '|').replace('\n', '|') + '|';
-      while ((ze = zis.getNextEntry()) != null
-          && (selectedFile <= 0 || vCollections.size() < selectedFile)) {
-        if (ze.isDirectory())
-          continue;
-        String thisEntry = ze.getName();
-        if (subFileName != null && !thisEntry.equals(subFileName))
-          continue;
-        if (subFileName != null)
-          htParams.put("subFileName", subFileName);
-        if (ZipUtil.isJmolManifest(thisEntry) || haveManifest
-            && exceptFiles == manifest.indexOf("|" + thisEntry + "|") >= 0)
-          continue;
-        byte[] bytes = ZipUtil.getStreamBytes(zis, ze.getSize());
-        if (ZipUtil.isZipFile(bytes)) {
-          BufferedInputStream bis = new BufferedInputStream(
-              new ByteArrayInputStream(bytes));
-          String[] zipDir2 = ZipUtil.getZipDirectoryAndClose(bis, true);
-          bis = new BufferedInputStream(new ByteArrayInputStream(bytes));
-          Object atomSetCollections = staticGetAtomSetCollectionOrBufferedReaderFromZip(
-              bis, fileName + "|" + thisEntry, zipDir2, htParams, ++subFilePtr,
-              asBufferedReader, asBufferedInputStream);
-          if (atomSetCollections instanceof String) {
-            if (ignoreErrors)
-              continue;
-            return atomSetCollections;
-          } else if (atomSetCollections instanceof AtomSetCollection
-              || atomSetCollections instanceof List<?>) {
-            if (haveManifest && !exceptFiles)
-              htCollections.put(thisEntry, atomSetCollections);
-            else
-              vCollections.add(atomSetCollections);
-          } else if (atomSetCollections instanceof BufferedReader) {
-            if (doCombine)
-              zis.close();
-            return atomSetCollections; // FileReader has requested a zip file
-            // BufferedReader
-          } else {
-            if (ignoreErrors)
-              continue;
-            zis.close();
-            return "unknown zip reader error";
-          }
-        } else if (asBufferedInputStream){ 
-          if (ZipUtil.isGzip(bytes))
-            return ZipUtil.getGzippedInputStream(bytes);
-          BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(bytes));
-            if (doCombine)
-              zis.close();
-            return bis;          
-        } else {
-          String sData = (CompoundDocument.isCompoundDocument(bytes) ? (new CompoundDocument(
-              new BufferedInputStream(new ByteArrayInputStream(bytes))))
-              .getAllData("Molecule", "Input").toString()
-              : ZipUtil.isGzip(bytes) ? ZipUtil.getGzippedBytesAsString(bytes)
-                  : new String(bytes));
-          BufferedReader reader = new BufferedReader(new StringReader(sData));
-          if (asBufferedReader) {
-            if (doCombine)
-              zis.close();
-            return reader;
-          }
-          String fname = fileName + "|" + ze.getName();
-          ret = Resolver.getAtomCollectionReader(fname,
-              null, reader, htParams, -1);
-          if (ret instanceof AtomSetCollectionReader) {
-            ((AtomSetCollectionReader) ret).setup(fname, htParams, reader);
-            ret = ((AtomSetCollectionReader) ret).readData();
-          }
-          if (!(ret instanceof AtomSetCollection)) {
-            if (ignoreErrors)
-              continue;
-            zis.close();
-            return "" + ret;
-          }
-          if (haveManifest && !exceptFiles)
-            htCollections.put(thisEntry, ret);
-          else
-            vCollections.add(ret);
-          AtomSetCollection a = (AtomSetCollection) ret;
-          if (a.errorMessage != null) {
-            if (ignoreErrors)
-              continue;
-            zis.close();
-            return a.errorMessage;
-          }
-        }
-      }
-      if (doCombine)
-        zis.close();
-
-      // if a manifest exists, it sets the files and file order
-
-      if (haveManifest && !exceptFiles) {
-        String[] list = TextFormat.split(manifest, '|');
-        for (int i = 0; i < list.length; i++) {
-          String file = list[i];
-          if (file.length() == 0 || file.indexOf("#") == 0)
-            continue;
-          if (htCollections.containsKey(file))
-            vCollections.add(htCollections.get(file));
-          else if (Logger.debugging)
-            Logger.info("manifested file " + file + " was not found in "
-                + fileName);
-        }
-      }
-      if (!doCombine)
-        return vCollections;
-      AtomSetCollection result = new AtomSetCollection("Array", null, null, vCollections);
-      if (result.errorMessage != null) {
-        if (ignoreErrors)
-          return null;
-        return result.errorMessage;
-      }
-      if (nFiles == 1)
-        selectedFile = 1;
-      if (selectedFile > 0 && selectedFile <= vCollections.size())
-        return vCollections.get(selectedFile - 1);
-      return result;
-
-    } catch (Exception e) {
-      if (ignoreErrors)
-        return null;
-      Logger.error("" + e);
-      return "" + e;
-    } catch (Error er) {
-      Logger.errorEx(null, er);
-      return "" + er;
-    }
-  }
-
-  /**
    * Direct DOM HTML4 page reading; Egon was interested in this at one point.
    * 
    * @param DOMNode 
@@ -545,11 +307,6 @@ public class SmarterJmolAdapter extends JmolAdapter {
       Logger.error("" + e);
       return "" + e;
     }
-  }
-
-  @Override
-  public String[] specialLoad(String name, String type) {
-    return Resolver.specialLoad(name, type);  
   }
   
   @Override

@@ -39,7 +39,6 @@ public class Atom extends Point3f implements Cloneable {
   public short elementNumber = -1;
   public String atomName;
   public int formalCharge = Integer.MIN_VALUE;
-  {set(Float.NaN, Float.NaN, Float.NaN);}
   public float partialCharge = Float.NaN;
   float vectorX = Float.NaN, vectorY = Float.NaN, vectorZ = Float.NaN;
   public float bfactor = Float.NaN;
@@ -69,14 +68,15 @@ public class Atom extends Point3f implements Cloneable {
   public boolean ignoreSymmetry; // CIF _atom_site_disorder_group -1
 
   public Atom() {
+   set(Float.NaN, Float.NaN, Float.NaN);
   }
 
-  public Atom cloneAtom() throws Exception {
-    try {
-      return (Atom)super.clone();
-    } catch (Exception cnse) {
-      throw new Exception("cloneAtom error: " + cnse.getMessage(), cnse);
-      }
+  @Override
+  public Atom clone() throws CloneNotSupportedException {
+    Atom a = (Atom)super.clone();
+    // note that anisoBorU and ellipsoid are not copied
+    // we consider them "final" in a sense
+    return a;
   }
 
   public String getElementSymbol() {

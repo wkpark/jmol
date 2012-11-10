@@ -25,8 +25,6 @@
 package org.jmol.minimize.forcefield;
 
 import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -200,8 +198,7 @@ public class ForceFieldUFF extends ForceField {
       // it's a sun.net.www.protocol.jar.JarURLConnection$JarURLInputStream
       // and within Eclipse it's a BufferedInputStream
 
-      br = new BufferedReader(new InputStreamReader(
-          (InputStream) url.getContent()));
+      br = getResource(url);
       String line;
       while ((line = br.readLine()) != null) {
         String[] vs = Parser.getTokens(line);
@@ -282,8 +279,7 @@ public class ForceFieldUFF extends ForceField {
       // it's a sun.net.www.protocol.jar.JarURLConnection$JarURLInputStream
       // and within Eclipse it's a BufferedInputStream
 
-      BufferedReader br = new BufferedReader(new InputStreamReader(
-          (InputStream) url.getContent()));
+      BufferedReader br = getResource(url);
       String line;
       while ((line = br.readLine()) != null) {
         if (line.length() > 4 && line.substring(0, 4).equals("atom")) {

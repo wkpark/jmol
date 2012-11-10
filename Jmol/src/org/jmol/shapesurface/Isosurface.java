@@ -98,7 +98,6 @@ import org.jmol.shape.Shape;
 import org.jmol.util.Escape;
 
 import org.jmol.util.AxisAngle4f;
-import org.jmol.util.BinaryDocument;
 import org.jmol.util.BitSet;
 import org.jmol.util.Colix;
 import org.jmol.util.ColorEncoder;
@@ -124,6 +123,7 @@ import org.jmol.viewer.Viewer;
 import org.jmol.viewer.StateManager.Orientation;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -135,6 +135,8 @@ import java.util.List;
 import java.util.Map;
 
 
+import org.jmol.api.JmolDocument;
+import org.jmol.io.JmolBinary;
 import org.jmol.jvxl.api.MeshDataServer;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.JvxlData;
@@ -515,9 +517,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         }
         if (!(value instanceof BufferedReader))
         try {
-          value = new BufferedReader(new InputStreamReader((InputStream) value,
-              "ISO-8859-1"));
-        } catch (UnsupportedEncodingException e) {
+          value = JmolBinary.getInputStreamReader((InputStream) value);
+        } catch (IOException e) {
           // ignore
         }
       }
@@ -1216,8 +1217,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
   private double privateKey;
   
-  public void setOutputStream(Object binaryDoc, OutputStream os) {
-    ((BinaryDocument) binaryDoc).setOutputStream(os, viewer, privateKey);
+  public void setOutputStream(JmolDocument binaryDoc, OutputStream os) {
+    binaryDoc.setOutputStream(os, viewer, privateKey);
   }
 
   public void fillMeshData(MeshData meshData, int mode, IsosurfaceMesh mesh) {

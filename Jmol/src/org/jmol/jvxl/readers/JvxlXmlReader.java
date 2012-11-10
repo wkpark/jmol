@@ -31,6 +31,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 
+import org.jmol.io.XmlReader;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.JvxlData;
 import org.jmol.jvxl.data.MeshData;
@@ -47,7 +48,6 @@ import org.jmol.util.Point3f;
 import org.jmol.util.Point4f;
 import org.jmol.util.StringXBuilder;
 import org.jmol.util.Vector3f;
-import org.jmol.util.XmlReader;
 
 public class JvxlXmlReader extends VolumeFileReader {
 

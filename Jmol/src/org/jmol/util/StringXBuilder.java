@@ -278,6 +278,20 @@ public class StringXBuilder {
     }
   }
 
-
-  
+  /**
+   * simple byte conversion not allowing for unicode.
+   * Used for base64 conversion and allows for offset
+   * @author Bob Hanson
+   * @param off 
+   * @param len or -1 for full length (then off must = 0)
+   * @return byte[]
+   */
+  public byte[] toBytes(int off, int len) {
+    if (len < 0)
+      len = length() - off;
+    byte[] b = new byte[len];
+    for (int i = off + len, j = i - off; --i >= off;)
+      b[j--] = (byte) charAt(i);
+    return b;
+  }
 }

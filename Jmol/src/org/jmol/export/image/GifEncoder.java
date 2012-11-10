@@ -394,7 +394,7 @@ public class GifEncoder extends ImageEncoder {
     // not zero it throws an ImageFormatException.  It doesn't know that
     // 49 means a 1:1 aspect ratio.  Well, whatever, zero works with all
     // the other decoders I've tried so it probably doesn't hurt.
-    Putbyte((byte) 0, outs);
+    Putbyte(0, outs);
 
     // Write out the Global Colour Map
     for (i = 0; i < ColorMapSize; ++i) {
@@ -405,18 +405,18 @@ public class GifEncoder extends ImageEncoder {
 
     // Write out extension for transparent colour index, if necessary.
     if (Transparent != -1) {
-      Putbyte((byte) '!', outs);
-      Putbyte((byte) 0xf9, outs);
-      Putbyte((byte) 4, outs);
-      Putbyte((byte) 1, outs);
-      Putbyte((byte) 0, outs);
-      Putbyte((byte) 0, outs);
-      Putbyte((byte) Transparent, outs);
-      Putbyte((byte) 0, outs);
+      Putbyte('!', outs);
+      Putbyte(0xf9, outs);
+      Putbyte(4, outs);
+      Putbyte(1, outs);
+      Putbyte(0, outs);
+      Putbyte(0, outs);
+      Putbyte(Transparent, outs);
+      Putbyte(0, outs);
     }
 
     // Write an Image separator
-    Putbyte((byte) ',', outs);
+    Putbyte(',', outs);
 
     // Write the Image header
     Putword(LeftOfs, outs);
@@ -426,21 +426,21 @@ public class GifEncoder extends ImageEncoder {
 
     // Write out whether or not the image is interlaced
     if (Interlace)
-      Putbyte((byte) 0x40, outs);
+      Putbyte(0x40, outs);
     else
-      Putbyte((byte) 0x00, outs);
+      Putbyte(0x00, outs);
 
     // Write out the initial code size
-    Putbyte((byte) InitCodeSize, outs);
+    Putbyte(InitCodeSize, outs);
 
     // Go and actually compress the data
     compress(InitCodeSize + 1, outs);
 
     // Write out a Zero-length packet (to end the series)
-    Putbyte((byte) 0, outs);
+    Putbyte(0, outs);
 
     // Write the GIF file terminator
-    Putbyte((byte) ';', outs);
+    Putbyte(';', outs);
   }
 
   // Bump the 'curx' and 'cury' to point to the next pixel
@@ -510,13 +510,22 @@ public class GifEncoder extends ImageEncoder {
 
   // Write out a word to the GIF file
   void Putword(int w, OutputStream outs) throws IOException {
-    Putbyte((byte) (w & 0xff), outs);
-    Putbyte((byte) ((w >> 8) & 0xff), outs);
+    Putbyte(w, outs);
+    Putbyte(w >> 8, outs);
   }
 
   // Write out a byte to the GIF file
-  void Putbyte(byte b, OutputStream outs) throws IOException {
+  void Putbyte(int b, OutputStream outs) throws IOException {
+    /**
+     * @j2sNative
+     * 
+     *  outs.writeByteAsInt(b);
+     * 
+     */
+    {
+
     outs.write(b);
+    }
   }
 
   // GIFCOMPR.C       - GIF Image compression routines
@@ -754,7 +763,15 @@ public class GifEncoder extends ImageEncoder {
   // Flush the packet to disk, and reset the accumulator
   void flush_char(OutputStream outs) throws IOException {
     if (a_count > 0) {
+      /**
+       * @j2sNative
+       * 
+       *  outs.writeByteAsInt(a_count);
+       * 
+       */
+      {
       outs.write(a_count);
+      }
       outs.write(accum, 0, a_count);
       a_count = 0;
     }

@@ -117,6 +117,7 @@ import java.util.Map;
 
 
 import org.jmol.api.VolumeDataInterface;
+import org.jmol.io.XmlUtil;
 import org.jmol.jvxl.readers.SurfaceReader;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
@@ -126,7 +127,6 @@ import org.jmol.util.Point3i;
 import org.jmol.util.Point4f;
 import org.jmol.util.StringXBuilder;
 import org.jmol.util.Vector3f;
-import org.jmol.util.XmlUtil;
 
 public class VolumeData implements VolumeDataInterface {
 

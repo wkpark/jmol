@@ -26,8 +26,6 @@ package org.jmol.minimize.forcefield;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -515,18 +513,7 @@ public class ForceFieldMMFF extends ForceField {
       System.err.println("Couldn't find file: " + fileName);
       throw new NullPointerException();
     }
-    /**
-     * @j2sNative
-     * 
-     * var a = [null,null];
-     * return this.minimizer.viewer.getBufferedReaderOrErrorMessageFromName(url.toString(),a,false); 
-     * 
-     * 
-     */
-    {
-    return new BufferedReader(new InputStreamReader(
-        (InputStream) url.getContent()));
-    }
+    return getResource(url);
   }
 
   private static void setFlags(AtomType at) {

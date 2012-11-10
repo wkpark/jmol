@@ -42,6 +42,7 @@ import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumStereoMode;
 import org.jmol.constant.EnumVdw;
 import org.jmol.i18n.GT;
+import org.jmol.io.JmolBinary;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;
@@ -85,7 +86,6 @@ import org.jmol.util.StringXBuilder;
 import org.jmol.util.TextFormat;
 import org.jmol.util.Tuple3f;
 import org.jmol.util.Vector3f;
-import org.jmol.util.ZipUtil;
 import org.jmol.modelset.TickInfo;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.FileManager;
@@ -510,33 +510,36 @@ public class ScriptEvaluator {
    * 
    * @param viewer
    * @param expr
+   * @param asVariable TODO
    * @return an object of one of the following types: Boolean, Integer, Float,
    *         String, Point3f, BitSet
    */
 
-  public static Object evaluateExpression(Viewer viewer, Object expr) {
+  public static Object evaluateExpression(Viewer viewer, Object expr, boolean asVariable) {
     // Text.formatText for MESSAGE and ECHO
     // prior to 12.[2/3].32 was not thread-safe for compilation.
     ScriptEvaluator e = new ScriptEvaluator(viewer);
-    return (e.evaluate(expr));
+    return (e.evaluate(expr, asVariable));
   }
   
-  private Object evaluate(Object expr) {
+  private Object evaluate(Object expr, boolean asVariable) {
     try {
       if (expr instanceof String) {
         if (compileScript(null, EXPRESSION_KEY + " = " + expr, false)) {
           contextVariables = viewer.getContextVariables();
           setStatement(0);
-          return parameterExpressionString(2, 0);
+          return (asVariable ? parameterExpressionList(2, -1, false).get(0) : parameterExpressionString(2, 0));
         }
       } else if (expr instanceof Token[]) {
         contextVariables = viewer.getContextVariables();
-        return atomExpression((Token[]) expr, 0, 0, true, false, true, false);
+        BitSet bs = atomExpression((Token[]) expr, 0, 0, true, false, true, false);
+        return (asVariable ? ScriptVariable.newScriptVariableBs(bs, -1): bs);
+          
       }
     } catch (Exception ex) {
       Logger.error("Error evaluating: " + expr + "\n" + ex);
     }
-    return "ERROR";
+    return (asVariable ? ScriptVariable.getVariable("ERROR") : "ERROR");
   }
 
   ShapeManager shapeManager;
@@ -1924,7 +1927,7 @@ public class ScriptEvaluator {
           setErrorMessage("io error reading " + data[0] + ": " + data[1]);
           return false;
         }
-        path = ZipUtil.getManifestScriptPath(data[1]);
+        path = JmolBinary.getManifestScriptPath(data[1]);
       }
       if (path != null && path.length() > 0) {
         data[0] = filename = filename.substring(0, filename.lastIndexOf("|"))
@@ -1936,7 +1939,7 @@ public class ScriptEvaluator {
       }
     }
     scriptFileName = filename;
-    data[1] = ScriptCompiler.getEmbeddedScript(data[1]);
+    data[1] = JmolBinary.getEmbeddedScript(data[1]);
     String script = fixScriptPath(data[1], data[0]);
     if (scriptPath == null) {
       scriptPath = viewer.getFilePath(filename, false);

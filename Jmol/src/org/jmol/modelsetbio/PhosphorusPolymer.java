@@ -24,9 +24,9 @@
 package org.jmol.modelsetbio;
 
 
+import org.jmol.io.OutputStringBuilder;
 import org.jmol.modelset.LabelToken;
 import org.jmol.util.BitSet;
-import org.jmol.util.OutputStringBuilder;
 import org.jmol.util.StringXBuilder;
 import org.jmol.viewer.Viewer;
 

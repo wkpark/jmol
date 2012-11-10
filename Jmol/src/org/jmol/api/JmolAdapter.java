@@ -25,7 +25,6 @@
 package org.jmol.api;
 
 import java.io.BufferedReader;
-import java.io.InputStream;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -188,9 +187,6 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
                                     Map<String, Object> htParams, boolean getReadersOnly);
 
   abstract public Object getAtomSetCollectionFromSet(Object readers, Object atomSets, Map<String, Object> htParams);
-
-  abstract public Object getAtomSetCollectionOrBufferedReaderFromZip(InputStream is, String fileName, String[] zipDirectory,
-                             Map<String, Object> htParams, boolean asBufferedReader, boolean asBufferendInputStream);
 
   /**
    * all in one -- for TestSmarterJmolAdapter
@@ -431,13 +427,8 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
     return canonizeAlphaDigit(altLoc);
   }
 
-  /**
-   * @param name 
-   * @param type  
-   * @return Special load array
-   */
-  public String[] specialLoad(String name, String type) {
-    return null;
-  }
+  abstract public Object getAtomSetCollectionFromReader(String fname,
+                                            BufferedReader reader,
+                                            Map<String, Object> htParams) throws Exception;
 
 }

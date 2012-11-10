@@ -21,15 +21,17 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.jmol.util;
+package org.jmol.io2;
 
 
 import java.io.DataInputStream;
 import java.io.BufferedInputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import org.jmol.util.Logger;
+import org.jmol.util.StringXBuilder;
 
 
 /* a simple compound document reader. 
@@ -46,12 +48,12 @@ import java.util.Map;
  * 
  */
 
-public class CompoundDocument extends BinaryDocument {
+public class CompoundDocument extends BinaryDocument{
 
 //  RandomAccessFile file;
-  CmpDocHeader header = new CmpDocHeader();
-  List<CmpDocDirectoryEntry> directory = new ArrayList<CmpDocDirectoryEntry>();
-  CmpDocDirectoryEntry rootEntry;
+  CompoundDocHeader header = new CompoundDocHeader(this);
+  List<CompoundDocDirEntry> directory = new ArrayList<CompoundDocDirEntry>();
+  CompoundDocDirEntry rootEntry;
 
   int[] SAT;
   int[] SSAT;
@@ -61,8 +63,16 @@ public class CompoundDocument extends BinaryDocument {
   int nIntPerSector;
   int nDirEntriesperSector;
 
-  public CompoundDocument(BufferedInputStream bis) {
-
+  // called by reflection
+  
+  public CompoundDocument(){
+    super();
+    this.isBigEndian = true;
+  }
+  
+  @Override
+  public void setStream(BufferedInputStream bis, boolean isBigEndian) {
+    // isBigEndian is ignored here; it must be true
     /*    try {
      file = new RandomAccessFile(fileName, "r");
      isRandom = true;
@@ -81,35 +91,14 @@ public class CompoundDocument extends BinaryDocument {
     getDirectoryTable();
   }
 
-  public static boolean isCompoundDocument(InputStream is) throws Exception {
-    byte[] abMagic = new byte[8];
-    is.mark(9);
-    int countRead = is.read(abMagic, 0, 8);
-    is.reset();
-    return (countRead == 8 && abMagic[0] == (byte) 0xD0
-        && abMagic[1] == (byte) 0xCF && abMagic[2] == (byte) 0x11
-        && abMagic[3] == (byte) 0xE0 && abMagic[4] == (byte) 0xA1
-        && abMagic[5] == (byte) 0xB1 && abMagic[6] == (byte) 0x1A 
-        && abMagic[7] == (byte) 0xE1);
-  }
-  
-  public static boolean isCompoundDocument(byte[] bytes) {
-    return (bytes.length >= 8 && bytes[0] == (byte) 0xD0
-        && bytes[1] == (byte) 0xCF && bytes[2] == (byte) 0x11
-        && bytes[3] == (byte) 0xE0 && bytes[4] == (byte) 0xA1
-        && bytes[5] == (byte) 0xB1 && bytes[6] == (byte) 0x1A 
-        && bytes[7] == (byte) 0xE1);
-  }
-  
-
-  public List<CmpDocDirectoryEntry> getDirectory() {
+  public List<CompoundDocDirEntry> getDirectory() {
     return directory;
   }
 
   public String getDirectoryListing(String separator) {
     String str = "";
     for (int i = 0; i < directory.size(); i++) {
-      CmpDocDirectoryEntry thisEntry = directory.get(i);
+      CompoundDocDirEntry thisEntry = directory.get(i);
       if (!thisEntry.isEmpty)
         str += separator
             + thisEntry.entryName
@@ -126,7 +115,7 @@ public class CompoundDocument extends BinaryDocument {
   StringXBuilder data;
   
   public StringXBuilder getAllData() {
-    return getAllData(null, null);
+    return getAllDataFiles(null, null);
   }
 
   /**
@@ -143,12 +132,13 @@ public class CompoundDocument extends BinaryDocument {
    *                         is appended with ":asBinaryString"
    * @param fileData
    */
-  public void getAllData(String prefix, 
+  @Override
+  public void getAllDataMapped(String prefix, 
                          String binaryFileList, Map<String, String> fileData) {
     fileData.put("#Directory_Listing", getDirectoryListing("|"));
     binaryFileList = "|" + binaryFileList + "|";
     for (int i = 0; i < directory.size(); i++) {
-      CmpDocDirectoryEntry thisEntry = directory.get(i);
+      CompoundDocDirEntry thisEntry = directory.get(i);
       String name = thisEntry.entryName;
       Logger.info("reading " + name);
       if (!thisEntry.isEmpty && thisEntry.entryType != 5) {
@@ -157,7 +147,7 @@ public class CompoundDocument extends BinaryDocument {
           name += ":asBinaryString";
         StringXBuilder data = new StringXBuilder();
         data.append("BEGIN Directory Entry ").append(name).append("\n"); 
-        data.appendSB(getFileAsString(thisEntry, isBinary));
+        data.appendSB(getEntryAsString(thisEntry, isBinary));
         data.append("\nEND Directory Entry ").append(name).append("\n");
         fileData.put(prefix + "/" + name, data.toString());
       }
@@ -165,10 +155,11 @@ public class CompoundDocument extends BinaryDocument {
     close();
   }
 
-  public StringXBuilder getAllData(String binaryFileList, String firstFile) {
+  @Override
+  public StringXBuilder getAllDataFiles(String binaryFileList, String firstFile) {
     if (firstFile != null) {
       for (int i = 0; i < directory.size(); i++) {
-        CmpDocDirectoryEntry thisEntry = directory.get(i);
+        CompoundDocDirEntry thisEntry = directory.get(i);
         if (thisEntry.entryName.equals(firstFile)) {
           directory.remove(i);
           directory.add(1, thisEntry); // after ROOT_ENTRY
@@ -182,14 +173,14 @@ public class CompoundDocument extends BinaryDocument {
     data.append("\n");
     binaryFileList = "|" + binaryFileList + "|";
     for (int i = 0; i < directory.size(); i++) {
-      CmpDocDirectoryEntry thisEntry = directory.get(i);
+      CompoundDocDirEntry thisEntry = directory.get(i);
       Logger.info("reading " + thisEntry.entryName);
       if (!thisEntry.isEmpty && thisEntry.entryType != 5) {
         String name = thisEntry.entryName;
         if (name.endsWith(".gz"))
           name = name.substring(0, name.length() - 3);
         data.append("BEGIN Directory Entry ").append(name).append("\n");            
-        data.appendSB(getFileAsString(thisEntry, binaryFileList.indexOf("|" + thisEntry.entryName + "|") >= 0));
+        data.appendSB(getEntryAsString(thisEntry, binaryFileList.indexOf("|" + thisEntry.entryName + "|") >= 0));
         data.append("\n");
         data.append("END Directory Entry ").append(thisEntry.entryName).append("\n");            
       }
@@ -200,141 +191,11 @@ public class CompoundDocument extends BinaryDocument {
 
   public StringXBuilder getFileAsString(String entryName) {
     for (int i = 0; i < directory.size(); i++) {
-      CmpDocDirectoryEntry thisEntry = directory.get(i);
+      CompoundDocDirEntry thisEntry = directory.get(i);
       if (thisEntry.entryName.equals(entryName))
-        return getFileAsString(thisEntry, false);
+        return getEntryAsString(thisEntry, false);
     }
     return new StringXBuilder();
-  }
-
-  class CmpDocHeader {
-
-    //512 bytes
-    //offset 0:
-    byte[] magicNumbers = new byte[8]; // D0CF11E0A1B11AE1
-    byte[] uniqueID = new byte[16];
-    byte revNumber; // 3E = 62
-    //byte unusedb1;
-    byte verNumber; // 3
-    //byte unusedb2;
-    //short byteOrder; // -2 littleEndian
-    short sectorPower; // 2^sectorPower = sector size; 512 = 2^9
-    short shortSectorPower; // 2^shortSectorPower = short sector size; 64 = 2^6
-    byte[] unused = new byte[10];
-    int nSATsectors; // number of sectors for sector allocation table
-    int SID_DIR_start; // sector identifier of start of directory sector
-    byte[] unused2 = new byte[4];
-    //offset 56:
-    int minBytesStandardStream; // less than this (and not DIR) will be "short"
-    int SID_SSAT_start; // start of short sector allocation table (SSAT)
-    int nSSATsectors; // number of sectors allocated to SSAT
-    int SID_MSAT_next; // pointer to next master sector allocation table sector
-    int nAdditionalMATsectors; // number of sectors allocated to more MSAT sectors
-    //offset 76; 436 bytes:      
-    int[] MSAT0 = new int[109]; // beginning of master allocation table 
-
-    /*
-     *  Sector 0 is first sector AFTER this header
-     *  
-     *  If sectorPower = 9, then this allows for 109 PAGES
-     *  of sector allocation tables, with 127 pointers per
-     *  page (plus 1 pointer to the next SAT page), each 
-     *  pointing to a sector of 512 bytes. Thus, with no additional
-     *  MSAT pages, the header allows for 109*128*512 = 7.1 Mb file
-     *  
-     */
-
-    final boolean readData() {
-      try {
-        readByteArray(magicNumbers, 0, 8);
-        if (magicNumbers[0] != (byte) 0xD0 || magicNumbers[1] != (byte) 0xCF
-            || magicNumbers[2] != (byte) 0x11 || magicNumbers[3] != (byte) 0xE0
-            || magicNumbers[4] != (byte) 0xA1 || magicNumbers[5] != (byte) 0xB1
-            || magicNumbers[6] != (byte) 0x1A || magicNumbers[7] != (byte) 0xE1)
-          return false;
-        readByteArray(uniqueID);
-        revNumber = readByte();
-        readByte();
-        verNumber = readByte();
-        readByte();
-        byte b1 = readByte();
-        byte b2 = readByte();
-        isBigEndian = (b1 == -1 && b2 == -2);
-        sectorPower = readShort();
-        shortSectorPower = readShort();
-        readByteArray(unused);
-        nSATsectors = readInt();
-        SID_DIR_start = readInt();
-        readByteArray(unused2);
-        minBytesStandardStream = readInt();
-        SID_SSAT_start = readInt();
-        nSSATsectors = readInt();
-        SID_MSAT_next = readInt();
-        nAdditionalMATsectors = readInt();
-        for (int i = 0; i < 109; i++)
-          MSAT0[i] = readInt();
-      } catch (Exception e) {
-        Logger.errorEx(null, e);
-        return false;
-      }
-      return true;
-    }
-  }
-
-  class CmpDocDirectoryEntry {
-    // 128 bytes
-    //offset 0:
-    byte[] unicodeName = new byte[64];
-    short nBytesUnicodeName; // twice the ascii length, including terminating 0
-    byte entryType; // 0 empty; 1 storage; 2 stream; 5 root storage
-    //byte entryColor; // 0 red or 1 black
-    //int DIDchildLeft;
-    //int DIDchildRight;
-    //int DIDstorageRoot;
-    byte[] uniqueID = new byte[16];
-    byte[] userflags = new byte[4];
-    //long timeStamp1;
-    //long timeStamp2;
-    //offset 116:
-    int SIDfirstSector; // either SAT or SSAT
-    int lenStream;
-    byte[] unused = new byte[4]; // or maybe this is really a long...
-
-    // derived:
-
-    String entryName;
-    boolean isStandard;
-    boolean isEmpty;
-
-    final boolean readData() {
-      try {
-        readByteArray(unicodeName);
-        nBytesUnicodeName = readShort();
-        entryType = readByte();
-        /*entryColor = */readByte();
-        /*DIDchildLeft = */readInt();
-        /*DIDchildRight = */readInt();
-        /*DIDstorageRoot = */readInt();
-        readByteArray(uniqueID);
-        readByteArray(userflags);
-        /*timeStamp1 = */readLong();
-        /*timeStamp2 = */readLong();
-        //offset 116:
-        SIDfirstSector = readInt();
-        lenStream = readInt();
-        readByteArray(unused);
-      } catch (Exception e) {
-        Logger.errorEx(null, e);
-        return false;
-      }
-      entryName = "";
-      for (int i = 0; i < nBytesUnicodeName - 2; i += 2)
-        entryName += (char) unicodeName[i];
-      isStandard = (entryType == 5 || lenStream >= header.minBytesStandardStream);
-      isEmpty = (entryType == 0 || lenStream <= 0);
-      //System.out.println(entryName + " type " + entryType);
-      return true;
-    }
   }
 
   private long getOffset(int SID) {
@@ -424,13 +285,13 @@ public class CompoundDocument extends BinaryDocument {
 
   private void getDirectoryTable() {
     int thisSID = header.SID_DIR_start;
-    CmpDocDirectoryEntry thisEntry;
+    CompoundDocDirEntry thisEntry;
     rootEntry = null;
     try {
       while (thisSID > 0) {
         gotoSector(thisSID);
         for (int j = nDirEntriesperSector; --j >= 0;) {
-          thisEntry = new CmpDocDirectoryEntry();
+          thisEntry = new CompoundDocDirEntry(this);
           thisEntry.readData();
           if (thisEntry.lenStream > 0) {
             directory.add(thisEntry);
@@ -449,7 +310,7 @@ public class CompoundDocument extends BinaryDocument {
         + getDirectoryListing("\n"));
   }
 
-  private StringXBuilder getFileAsString(CmpDocDirectoryEntry thisEntry, boolean asBinaryString) {
+  private StringXBuilder getEntryAsString(CompoundDocDirEntry thisEntry, boolean asBinaryString) {
     if(thisEntry.isEmpty)
       return new StringXBuilder();
     //System.out.println(thisEntry.entryName + " " + thisEntry.entryType + " " + thisEntry.lenStream + " " + thisEntry.isStandard + " " + thisEntry.SIDfirstSector);
@@ -482,7 +343,7 @@ public class CompoundDocument extends BinaryDocument {
                             int nSectorBytes, int nBytes, 
                             boolean asBinaryString, ZipData gzipData)
       throws Exception {
-    readByteArray(byteBuf);
+    readByteArray(byteBuf, 0, byteBuf.length);
     int n = gzipData.addBytes(byteBuf, nSectorBytes, nBytes);
     if (n >= 0)
       return n;

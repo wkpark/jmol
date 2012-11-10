@@ -21,7 +21,7 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.jmol.util;
+package org.jmol.io2;
 // import java.io.DataInputStream;
 // import java.io.BufferedInputStream;
 // import java.io.IOException;
@@ -64,7 +64,7 @@ public class KfDocument {
   }
 
   public int readByteArray(byte[] b) throws IOException {
-    int n = stream.read(b);
+    int n = stream.read(b, 0, b.length);
     nBytes += n;
     return n;
   }

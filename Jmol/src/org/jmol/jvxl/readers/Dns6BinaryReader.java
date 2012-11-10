@@ -28,7 +28,6 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.BufferedReader;
 
-import org.jmol.util.BinaryDocument;
 import org.jmol.util.Logger;
 import org.jmol.util.StringXBuilder;
 
@@ -52,14 +51,14 @@ class Dsn6BinaryReader extends MapFileReader {
   @Override
   void init2(SurfaceGenerator sg, BufferedReader brNull) {
     super.init2(sg, null);
-    binarydoc = new BinaryDocument();
+    binarydoc = newBinaryDocument();
     Object[] o2 = (Object[]) sg.getReaderData();
     String fileName = (String) o2[0];
     String data = (String) o2[1];
     if (data == null)
       binarydoc.setStream(sg.getAtomDataServer().getBufferedInputStream(fileName), true);
     else 
-      binarydoc.setStream(new DataInputStream(new ByteArrayInputStream(data.getBytes())));
+      binarydoc.setStreamData(new DataInputStream(new ByteArrayInputStream(data.getBytes())), true);
     // data are HIGH on the inside and LOW on the outside
     if (params.thePlane == null)
       params.insideOut = !params.insideOut;
@@ -81,9 +80,9 @@ class Dsn6BinaryReader extends MapFileReader {
     for (int i = 0; i < 19; i++)
       header[i] = binarydoc.readShort();
     if (header[18] != 100) {
-      binarydoc.setIsBigEndian(false);
+      binarydoc.setStream(null, false);
       for (int i = 0; i < 19; i++)
-        header[i] = BinaryDocument.swapBytes(header[i]);
+        header[i] = binarydoc.swapBytesS(header[i]);
     }
     
     nxyzStart[0] = header[0];
@@ -218,7 +217,7 @@ class Dsn6BinaryReader extends MapFileReader {
      * Read one full layer of nBrickX*nBrickY 8x8x8 "bricks".
      * 
      */
-    binarydoc.readByteArray(brickLayer);
+    binarydoc.readByteArray(brickLayer, 0, brickLayerByteCount);
     pt = 0;
     nBytes = binarydoc.getPosition();
     //System.out.println("DNs6B reader: " + nBytes);

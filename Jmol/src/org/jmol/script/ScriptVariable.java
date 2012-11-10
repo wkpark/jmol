@@ -78,7 +78,8 @@ public class ScriptVariable extends Token {
   public static ScriptVariable newScriptVariableBs(BitSet bs, int index) {
     ScriptVariable sv = new ScriptVariable(bitset);
     sv.value = bs;
-    sv.index = index;
+    if (index >= 0)
+      sv.index = index;
     return sv;
   }
 

@@ -21,14 +21,18 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.jmol.util;
+package org.jmol.io2;
 
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Map;
 
+import org.jmol.api.JmolDocument;
+import org.jmol.util.Logger;
+import org.jmol.util.StringXBuilder;
 import org.jmol.viewer.Viewer;
 
 
@@ -46,15 +50,13 @@ import org.jmol.viewer.Viewer;
  * 
  */
 
-public class BinaryDocument {
+public class BinaryDocument implements JmolDocument {
 
   public BinaryDocument() {  
   }
 
-  public BinaryDocument(BufferedInputStream bis) {
-    setStream(bis, false);   
-  }
-//  RandomAccessFile file;
+
+  // called by reflection
   
   protected DataInputStream stream;
   protected boolean isRandom = false;
@@ -78,18 +80,15 @@ public class BinaryDocument {
   }
   
   public void setStream(BufferedInputStream bis, boolean isBigEndian) {
-    if (bis == null)
-      return;
-    stream = new DataInputStream(bis);
+    if (bis != null)
+      stream = new DataInputStream(bis);
     this.isBigEndian = isBigEndian;
   }
   
-  public void setIsBigEndian(boolean TF) {
-    this.isBigEndian = TF;
-  }
-  
-  public void setStream(DataInputStream stream) {
-    this.stream = stream;
+  public void setStreamData(DataInputStream stream, boolean isBigEndian) {
+    if (stream != null)
+      this.stream = stream;
+    this.isBigEndian = isBigEndian;
   }
   
   public void setRandom(boolean TF) {
@@ -104,13 +103,18 @@ public class BinaryDocument {
 
   private byte ioReadByte() throws Exception {
     byte b = stream.readByte();
-    if (os != null)
+    if (os != null) {
+      /**
+       * @j2sNative
+       * 
+       *  this.os.writeByteAsInt(b);
+       * 
+       */
+      {
       os.write(b);
+      }
+    }
     return b;
-  }
-
-  public void readByteArray(byte[] b) throws Exception {
-    readByteArray(b, 0, b.length);
   }
 
   public int readByteArray(byte[] b, int off, int len) throws Exception {
@@ -139,21 +143,14 @@ public class BinaryDocument {
     return n;
   }
 
-  public void writeBytes(byte[] b) throws Exception {
-    os.write(b, 0, b.length);
-  }
-
   public void writeBytes(byte[] b, int off, int n) throws Exception {
     os.write(b, off, n);
   }
 
   public String readString(int nChar) throws Exception {
     byte[] temp = new byte[nChar];
-    readByteArray(temp);
-    StringXBuilder s = new StringXBuilder();
-    for (int j = 0; j < nChar; j++)
-      s.appendC((char) temp[j]);
-    return s.toString();
+    int n = readByteArray(temp, 0, nChar);
+    return new String(temp, 0, n, "UTF-8");
   }
   
   public short readShort() throws Exception {
@@ -172,8 +169,18 @@ public class BinaryDocument {
 
 
   public void writeShort(short i) throws Exception {
-    os.write((byte) ((i >> 8) & 0xFF));
-    os.write((byte) (i & 0xFF));
+    /**
+     * @j2sNative
+     * 
+     *    this.os.writeByteAsInt(i >> 8);
+     *    this.os.writeByteAsInt(i);
+
+     * 
+     */
+    {
+      os.write(i >> 8);
+      os.write(i);
+    }
   }
 
   public int readInt() throws Exception {
@@ -189,20 +196,33 @@ public class BinaryDocument {
   }
 
   public void writeInt(int i) throws Exception {
-    os.write((byte) ((i >> 24) & 0xFF));
-    os.write((byte) ((i >> 16) & 0xFF));
-    os.write((byte) ((i >> 8) & 0xFF));
-    os.write((byte) (i & 0xFF));
+    /**
+     * @j2sNative
+     * 
+     *    this.os.writeByteAsInt(i >> 24);
+     *    this.os.writeByteAsInt(i >> 16);
+     *    this.os.writeByteAsInt(i >> 8);
+     *    this.os.writeByteAsInt(i);
+
+     * 
+     */
+    {
+      os.write(i >> 24);
+      os.write(i >> 16);
+      os.write(i >> 8);
+      os.write(i);
+    }
+
   }
 
-  public static int swapBytes(int n) {
+  public int swapBytesI(int n) {
     return (((n >> 24) & 0xff)
         | ((n >> 16) & 0xff) << 8
         | ((n >> 8) & 0xff) << 16 
         | (n & 0xff) << 24);
   }
 
-  public static short swapBytes(short n) {
+  public short swapBytesS(short n) {
     return (short) ((((n >> 8) & 0xff)
         | (n & 0xff) << 8));
   }
@@ -249,7 +269,7 @@ public class BinaryDocument {
   private float ioReadFloat() throws Exception {
     float f = stream.readFloat();
     if (os != null)
-      os.write(Float.floatToIntBits(f));
+      writeInt(Float.floatToIntBits(f));
     return f;
   }
 
@@ -311,6 +331,14 @@ public class BinaryDocument {
   public void setOutputStream(OutputStream os, Viewer viewer, double privateKey) {
     if (viewer.checkPrivateKey(privateKey))
       this.os = os;
+  }
+
+  public StringXBuilder getAllDataFiles(String binaryFileList, String firstFile) {
+    return null;
+  }
+
+  public void getAllDataMapped(String replace, String string,
+                               Map<String, String> fileData) {
   }
 
 

@@ -790,7 +790,7 @@ public class Jmol implements JmolSyncInterface {
       }
       if (urlString != null && urlString.length() > 0) {
         try {
-          URL url = new URL(urlString);
+          URL url = new URL((URL) null, urlString, null);
           /**
            * @j2sNative
            *   window.open(url);

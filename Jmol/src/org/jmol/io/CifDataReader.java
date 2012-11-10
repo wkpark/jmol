@@ -1,4 +1,4 @@
-package org.jmol.util;
+package org.jmol.io;
 
 import java.io.BufferedReader;
 import java.util.ArrayList;
@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.jmol.api.JmolLineReader;
+import org.jmol.util.Logger;
+import org.jmol.util.StringXBuilder;
 
 
 public class CifDataReader {

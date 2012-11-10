@@ -32,7 +32,6 @@ import org.jmol.util.Matrix3f;
 import org.jmol.util.Normix;
 import org.jmol.util.Point3f;
 import org.jmol.util.Vector3f;
-//import org.jmol.util.SlowBitSet;
 
 import org.jmol.api.AtomIndexIterator;
 import org.jmol.atomdata.AtomData;
@@ -158,18 +157,10 @@ public final class EnvelopeCalculation {
     this.viewer = viewer;
     this.atomCount = atomCount; //preliminary, for setFromBits()
     this.mads = mads;
-//    geodesicCount = Geodesic.getVertexVectorsCount();
-    geodesicCount = Geodesic.getVertexCount(MAX_LEVEL);
-    
-    //if (asJavaBitSet) {
-    //  geodesicMap = SlowBitSet.allocateBitmap(geodesicCount);
-    //  mapT = SlowBitSet.allocateBitmap(geodesicCount);
-    //  emptySet = new SlowBitSet();
-    //} else {
-      geodesicMap = BitSetUtil.newBitSet(geodesicCount);
-      mapT = BitSetUtil.newBitSet(geodesicCount);
-      EMPTY_SET = BitSetUtil.emptySet;
-    //}
+    geodesicCount = Geodesic.getVertexCount(MAX_LEVEL);    
+    geodesicMap = BitSetUtil.newBitSet(geodesicCount);
+    mapT = BitSetUtil.newBitSet(geodesicCount);
+    EMPTY_SET = BitSetUtil.emptySet;
 
 }
    

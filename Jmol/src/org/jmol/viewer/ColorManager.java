@@ -90,7 +90,7 @@ class ColorManager {
   void setDefaultColors(boolean isRasmol) {
     if (isRasmol) {
       isDefaultColorRasmol = true;
-      argbsCpk = ColorEncoder.getRasmolScale().clone();
+      argbsCpk = ArrayUtil.arrayCopyI(ColorEncoder.getRasmolScale(), -1);
     } else {
       isDefaultColorRasmol = false;
       argbsCpk = EnumPalette.argbsCpk;

@@ -26,11 +26,10 @@ package org.jmol.jvxl.readers;
 import java.io.BufferedReader;
 
 
+import org.jmol.io.JmolBinary;
 import org.jmol.jvxl.data.JvxlCoder;
-import org.jmol.util.BinaryDocument;
 import org.jmol.util.Logger;
 import org.jmol.util.Point3f;
-import org.jmol.util.SurfaceFileTyper;
 
 /*
  * 
@@ -87,7 +86,7 @@ import org.jmol.util.SurfaceFileTyper;
 
 class PmeshReader extends PolygonFileReader {
 
-  final static String PMESH_BINARY_MAGIC_NUMBER = SurfaceFileTyper.PMESH_BINARY_MAGIC_NUMBER;
+  final static String PMESH_BINARY_MAGIC_NUMBER = JmolBinary.PMESH_BINARY_MAGIC_NUMBER;
 
   private boolean isBinary;
   protected int nPolygons;
@@ -123,10 +122,10 @@ class PmeshReader extends PolygonFileReader {
     try {
       br.mark(4);
       char[] buf = new char[5];
-      br.read(buf);
+      br.read(buf, 0, 5);
       if ((new String(buf)).startsWith(PMESH_BINARY_MAGIC_NUMBER)) {
         br.close();
-        binarydoc = new BinaryDocument();
+        binarydoc = newBinaryDocument();
         binarydoc.setStream(sg.getAtomDataServer().getBufferedInputStream(
             fileName), (buf[4] == '\0'));
         return true;

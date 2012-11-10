@@ -27,13 +27,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.jmol.util.BinaryDocument;
+import org.jmol.api.Interface;
+import org.jmol.api.JmolDocument;
 import org.jmol.util.Parser;
 
 abstract class SurfaceFileReader extends SurfaceReader {
 
   protected BufferedReader br;
-  protected BinaryDocument binarydoc;
+  protected JmolDocument binarydoc;
   protected OutputStream os;
 
   SurfaceFileReader() {
@@ -45,6 +46,10 @@ abstract class SurfaceFileReader extends SurfaceReader {
     this.br = br;
   }
 
+  JmolDocument newBinaryDocument() {
+    return (JmolDocument) Interface.getOptionInterface("io2.BinaryDocument");
+  }
+  
   @Override
   protected void setOutputStream(OutputStream os) {
     if (binarydoc == null)
@@ -133,8 +138,16 @@ abstract class SurfaceFileReader extends SurfaceReader {
     if (line != null) {
       nBytes += line.length();
       if (os != null) {
-        os.write(line.getBytes());
-        os.write('\n');
+        byte[] b = line.getBytes();
+        os.write(b, 0, b.length);
+        /**
+         * @j2sNative
+         * 
+         *    this.os.writeByteAsInt(0x0A);
+         */
+        {
+          os.write('\n');
+        }
       }
     }
     return line;

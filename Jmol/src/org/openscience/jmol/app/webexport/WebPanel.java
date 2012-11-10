@@ -69,11 +69,11 @@ import javax.swing.event.ListSelectionListener;
 
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
+import org.jmol.io.JmolBinary;
 import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
-import org.jmol.viewer.FileManager;
 import org.openscience.jmol.app.jmolpanel.GuiMap;
 import org.openscience.jmol.app.jmolpanel.HelpDialog;
 
@@ -659,7 +659,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
           filesToCopy.add(localPath + "/Jmol.js");
           filesToCopy.add(localPath + "/JmolApplet.jar");
         }
-        FileManager.getFileReferences(script, filesToCopy);
+        JmolBinary.getFileReferences(script, filesToCopy);
         List<String> copiedFileNames = new ArrayList<String>();
         int nFiles = filesToCopy.size();
         for (int iFile = 0; iFile < nFiles; iFile++) {

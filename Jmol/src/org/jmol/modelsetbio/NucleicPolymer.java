@@ -27,6 +27,7 @@ package org.jmol.modelsetbio;
 import java.util.List;
 
 
+import org.jmol.io.OutputStringBuilder;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.HBond;
@@ -35,7 +36,6 @@ import org.jmol.script.Token;
 import org.jmol.util.BitSet;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Measure;
-import org.jmol.util.OutputStringBuilder;
 import org.jmol.util.Point3f;
 import org.jmol.util.Point4f;
 import org.jmol.util.StringXBuilder;

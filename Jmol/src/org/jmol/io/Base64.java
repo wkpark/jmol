@@ -12,10 +12,12 @@
 // Jpeg Group's Jpeg 6a library, Copyright Thomas G. Lane.
 // See license.txt for details.
 
-package org.jmol.util;
+package org.jmol.io;
 
 import java.io.IOException;
 import java.io.OutputStream;
+
+import org.jmol.util.StringXBuilder;
 
 public class Base64 {
 
@@ -46,16 +48,12 @@ public class Base64 {
     byte[] b = new byte[1];
     for (int i = 0; i < len; i++) {
       b[0] = (byte) sb.charAt(i);
-      os.write(b);
+      os.write(b, 0, 1);
     }
   }
 
   public static byte[] getBytes64(byte[] bytes) {
-    return toBytes(getBase64(bytes));
-  }
-
-  public static StringXBuilder getBase64(StringXBuilder str) {
-    return getBase64(toBytes(str));  
+    return getBase64(bytes).toBytes(0, -1);
   }
 
   public static StringXBuilder getBase64(byte[] bytes) {
@@ -114,13 +112,5 @@ public class Base64 {
       }
     }
     return bytes;
-  }  
-  
-  private static byte[] toBytes(StringXBuilder sb) {
-    byte[] b = new byte[sb.length()];
-    for (int i = sb.length(); --i >= 0;)
-      b[i] = (byte) sb.charAt(i);
-    return b;
-  }
-
+  }    
 }

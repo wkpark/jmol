@@ -30,6 +30,7 @@ import org.jmol.adapter.smarter.Structure;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolLineReader;
 import org.jmol.constant.EnumStructure;
+import org.jmol.io.CifDataReader;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
@@ -40,7 +41,6 @@ import java.util.Map;
 
 
 import org.jmol.util.BitSet;
-import org.jmol.util.CifDataReader;
 import org.jmol.util.Logger;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.Point3f;

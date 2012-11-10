@@ -35,6 +35,10 @@ import org.jmol.shape.Shape;
 import org.jmol.thread.ScriptParallelProcessor;
 import org.jmol.thread.TimeoutThread;
 import org.jmol.i18n.GT;
+import org.jmol.io.Base64;
+import org.jmol.io.CifDataReader;
+import org.jmol.io.JmolBinary;
+import org.jmol.io.OutputStringBuilder;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;
@@ -77,11 +81,9 @@ import org.jmol.constant.EnumStereoMode;
 import org.jmol.constant.EnumVdw;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.AxisAngle4f;
-import org.jmol.util.Base64;
 import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.BoxInfo;
-import org.jmol.util.CifDataReader;
 import org.jmol.util.Colix;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.ColorUtil;
@@ -95,14 +97,12 @@ import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
-import org.jmol.util.OutputStringBuilder;
 import org.jmol.util.Parser;
 import org.jmol.util.Point3f;
 import org.jmol.util.Point3i;
 import org.jmol.util.Point4f;
 import org.jmol.util.Rectangle;
 import org.jmol.util.StringXBuilder;
-import org.jmol.util.SurfaceFileTyper;
 import org.jmol.util.Tuple3f;
 import org.jmol.util.Vector3f;
 
@@ -1991,7 +1991,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     else if (!fileName.endsWith(".spt")) {
       String type = fileManager.getFileTypeName(fileName);
       if (type == null) {
-        type = SurfaceFileTyper
+        type = JmolBinary
             .determineSurfaceTypeIs(getBufferedInputStream(fileName));
         if (type != null) {
           evalString("if (_filetype == 'Pdb') { isosurface sigma 1.0 within 2.0 {*} "
@@ -2243,7 +2243,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         Map<String, Object> htParams = new Hashtable<String, Object>();
         htParams.put("modelOnly", Boolean.TRUE);
         model = getModelAdapter().getAtomSetCollectionReader("ligand", null,
-            FileManager.getBufferedReaderForString(data), htParams);
+            JmolBinary.getBufferedReaderForString(data), htParams);
         isError = (model instanceof String);
         if (!isError) {
           model = getModelAdapter().getAtomSetCollection(model);
@@ -3555,7 +3555,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         fileManager.clearPngjCache(fileName); 
       // when writing a file, we need to make sure
       // the pngj cache for that file is cleared
-      return fileManager.createZipSet(null, s, scripts, true);
+      return JmolBinary.createZipSet(fileManager, this, null, s, scripts, true);
     }
     // we remove local file references in the embedded states for images
     try {
@@ -4514,7 +4514,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * @param comment
    * @return base64-encoded or binary version of the image
    */
-  Object getImageAsWithComment(String type, int quality, int width, int height,
+  public Object getImageAsWithComment(String type, int quality, int width, int height,
                     String fileName, String[] scripts, OutputStream os, String comment) {
     /**
      * @j2sNative
@@ -8330,7 +8330,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return;
     if (msg != null) {
       scriptEditor.setFilename(filename);
-      scriptEditor.output(ScriptCompiler.getEmbeddedScript(msg));
+      scriptEditor.output(JmolBinary.getEmbeddedScript(msg));
     }
     scriptEditor.setVisible(true);
   }
@@ -8501,7 +8501,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   // synchronized here trapped the eventQueue
   public Object evaluateExpression(Object stringOrTokens) {
-    return ScriptEvaluator.evaluateExpression(this, stringOrTokens);
+    return ScriptEvaluator.evaluateExpression(this, stringOrTokens, false);
+  }
+
+  public ScriptVariable evaluateExpressionAsVariable(Object stringOrTokens) {
+    return (ScriptVariable) ScriptEvaluator.evaluateExpression(this, stringOrTokens, true);
   }
 
   public Object getHelixData(BitSet bs, int tokType) {
@@ -9167,7 +9171,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         } else if (type.equals("ZIP") || type.equals("ZIPALL")) {
           if (scripts != null && type.equals("ZIP"))
             type = "ZIPALL";
-          err = fileManager.createZipSet(fileName, (String) text_or_bytes, scripts, type
+          err = JmolBinary.createZipSet(fileManager, this, fileName, (String) text_or_bytes, scripts, type
               .equals("ZIPALL"));
         } else if (type.equals("SCENE")) {
           err = createSceneSet(fileName, (String) text_or_bytes, width, height);
@@ -10098,7 +10102,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return executor;
   }
 
-  boolean displayLoadErrors = true;
+  public boolean displayLoadErrors = true;
 
   public boolean eval(ScriptContext context, ShapeManager shapeManager) {
     displayLoadErrors = false;
@@ -10781,7 +10785,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     String[] scenes = TextFormat.splitChars(script0, "pause scene ");
     Map<String, String> htScenes = new Hashtable<String, String>();
     List<Integer> list = new ArrayList<Integer>();
-    String script = FileManager.getSceneScript(scenes, htScenes, list);
+    String script = JmolBinary.getSceneScript(scenes, htScenes, list);
     Logger.debug(script);
     script0 = TextFormat.simpleReplace(script0, "pause scene", "delay " 
         + animationManager.lastFrameDelay + " # scene");

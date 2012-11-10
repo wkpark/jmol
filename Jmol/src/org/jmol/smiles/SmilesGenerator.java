@@ -251,7 +251,7 @@ public class SmilesGenerator {
     } else {
       bsAromatic = new BitSet();
     }
-    bsToDo = (BitSet) bsSelected.clone();
+    bsToDo = BitSetUtil.copy(bsSelected);
     StringXBuilder sb = new StringXBuilder();
 
     for (int i = bsToDo.nextSetBit(0); i >= 0; i = bsToDo.nextSetBit(i + 1))

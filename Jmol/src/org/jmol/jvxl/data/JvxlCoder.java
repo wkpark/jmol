@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.jmol.io.XmlUtil;
 import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Colix;
@@ -38,7 +39,6 @@ import org.jmol.util.Parser;
 import org.jmol.util.Point3f;
 import org.jmol.util.StringXBuilder;
 import org.jmol.util.TextFormat;
-import org.jmol.util.XmlUtil;
 
 
 public class JvxlCoder {

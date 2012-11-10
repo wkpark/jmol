@@ -36,9 +36,9 @@ import org.jmol.api.Interface;
 import org.jmol.api.JmolImageCreatorInterface;
 import org.jmol.api.JmolPdfCreatorInterface;
 import org.jmol.api.JmolViewer;
-import org.jmol.util.Base64;
+import org.jmol.io.Base64;
+import org.jmol.io2.JpegEncoder;
 import org.jmol.util.Escape;
-import org.jmol.util.JpegEncoder;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
 

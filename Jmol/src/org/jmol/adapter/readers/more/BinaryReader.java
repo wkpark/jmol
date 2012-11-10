@@ -25,17 +25,17 @@
 package org.jmol.adapter.readers.more;
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
-import org.jmol.util.BinaryDocument;
+import org.jmol.api.JmolDocument;
 
 public abstract class BinaryReader extends AtomSetCollectionReader {
-  protected BinaryDocument binaryDoc;
+  protected JmolDocument binaryDoc;
   
   BinaryReader() {
     isBinary = true;  
   }
   
   @Override
-  public void processBinaryDocument(BinaryDocument doc) throws Exception {
+  public void processBinaryDocument(JmolDocument doc) throws Exception {
     this.binaryDoc = doc;
     readDocument();
   }

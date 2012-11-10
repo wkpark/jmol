@@ -23,9 +23,13 @@
  *  02110-1301, USA.
  */
 
-package org.jmol.util;
+package org.jmol.io;
 
 import java.io.BufferedReader;
+
+import org.jmol.util.Escape;
+import org.jmol.util.Point3f;
+import org.jmol.util.StringXBuilder;
 
 
 public class XmlReader {

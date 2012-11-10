@@ -1,4 +1,4 @@
-package org.jmol.util;
+package org.jmol.io;
 
 import java.io.BufferedReader;
 
@@ -11,7 +11,7 @@ public class LimitedLineReader {
     throws Exception {  
     bufferedReader.mark(readLimit);
     buf = new char[readLimit];
-    cchBuf = Math.max(bufferedReader.read(buf), 0);
+    cchBuf = Math.max(bufferedReader.read(buf, 0, readLimit), 0);
     ichCurrent = 0;
     bufferedReader.reset();
   }

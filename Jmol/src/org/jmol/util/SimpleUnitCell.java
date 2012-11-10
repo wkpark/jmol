@@ -107,7 +107,7 @@ public class SimpleUnitCell {
       beta = (c < 0 ? 90 : va.angle(vc) / toRadians);
       gamma = (b < 0 ? 90 : va.angle(vb) / toRadians);
       if (c < 0) {
-        float[] n = parameters.clone();
+        float[] n = ArrayUtil.arrayCopyF(parameters, -1);
         if (b < 0) {
           vb.set(0, 0, 1);
           vb.cross(vb, va);

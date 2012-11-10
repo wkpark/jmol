@@ -522,8 +522,7 @@ public class AtomSetCollection {
   }
   
   Atom newCloneAtom(Atom atom) throws Exception {
-    //Logger.debug("newCloneAtom()");
-    Atom clone = atom.cloneAtom();
+    Atom clone = atom.clone();
     addAtom(clone);
     return clone;
   }

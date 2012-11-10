@@ -153,7 +153,6 @@ class Image {
    * @param text  
    * @param font3d 
    * @param context 
-   * @param context2 
    * @param width 
    * @param height 
    * @param ascent 

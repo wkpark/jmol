@@ -482,7 +482,7 @@ public class ZipUtil implements JmolZipUtility {
   private static String postByteArray(FileManager fm, String outFileName,
                                       byte[] bytes) {
     Object ret = fm.getBufferedInputStreamOrErrorMessageFromName(outFileName,
-        null, false, false, bytes);
+        null, false, false, bytes, false);
     if (ret instanceof String)
       return (String) ret;
     try {
@@ -1156,7 +1156,7 @@ public class ZipUtil implements JmolZipUtility {
     try {
       data[1] = cacheZipContents(
           JmolBinary.checkPngZipStream((BufferedInputStream) fm.getBufferedInputStreamOrErrorMessageFromName(
-              data[0], null, false, false, null)), shortName, fm.pngjCache);
+              data[0], null, false, false, null, false)), shortName, fm.pngjCache);
     } catch (Exception e) {
       return false;
     }

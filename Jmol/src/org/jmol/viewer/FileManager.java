@@ -179,8 +179,8 @@ public class FileManager {
   }
 
   private String getZipDirectoryAsString(String fileName) {
-  	Object t = getBufferedInputStreamOrErrorMessageFromName(
-        fileName, fileName, false, false, null);
+    Object t = getBufferedInputStreamOrErrorMessageFromName(
+        fileName, fileName, false, false, null, false);
     return JmolBinary.getZipDirectoryAsStringAndClose((BufferedInputStream) t);
   }
 
@@ -402,7 +402,7 @@ public class FileManager {
                                                              String fullName,
                                                              boolean showMsg,
                                                              boolean checkOnly,
-                                                             byte[] outputBytes) {
+                                                             byte[] outputBytes, boolean allowReader) {
     byte[] cacheBytes = (fullName == null ? null : JmolBinary
         .getCachedPngjBytes(this, fullName));
     if (cacheBytes == null)
@@ -452,7 +452,10 @@ public class FileManager {
             Logger.info("FileManager opening " + name);
           ret = fai.getBufferedURLInputStream(url, outputBytes, post);
           if (ret instanceof StringXBuilder) {
-            ret = JmolBinary.getBISForStringXBuilder((StringXBuilder) ret);
+            StringXBuilder sb = (StringXBuilder) ret;
+            if (allowReader && !JmolBinary.isBase64(sb))
+              return JmolBinary.getBufferedReaderForString(sb.toString());
+            ret = JmolBinary.getBISForStringXBuilder(sb);
           } else if (Escape.isAB(ret)) {
             ret = new BufferedInputStream(new ByteArrayInputStream((byte[]) ret));
           }
@@ -506,7 +509,7 @@ public class FileManager {
     String name = names[0];
     String fullPath = names[0].replace('\\', '/');
     name = JmolBinary.getZipRoot(name);
-    Object errMsg = getBufferedInputStreamOrErrorMessageFromName(name, fullPath, false, true, null);
+    Object errMsg = getBufferedInputStreamOrErrorMessageFromName(name, fullPath, false, true, null, false);
     return new String[] { fullPath,
         (errMsg instanceof String ? (String) errMsg : null) };
   }
@@ -617,10 +620,12 @@ public class FileManager {
       name = subFileList[0];
     }
     Object t = (bytes == null ? getBufferedInputStreamOrErrorMessageFromName(
-        name, fullName, true, false, null) : new BufferedInputStream(
+        name, fullName, true, false, null, !asInputStream) : new BufferedInputStream(
         new ByteArrayInputStream(bytes)));
     try {
       if (t instanceof String)
+        return t;
+      if (t instanceof BufferedReader)
         return t;
       BufferedInputStream bis = (BufferedInputStream) t;
       if (JmolBinary.isGzipS(bis)) {
@@ -691,7 +696,7 @@ public class FileManager {
     BufferedInputStream bis = null;
     try {
       Object t = getBufferedInputStreamOrErrorMessageFromName(name, fullName,
-          false, false, null);
+          false, false, null, false);
       if (t instanceof String) {
         fileData.put(name0, (String) t + "\n");
         return name0;
@@ -761,7 +766,7 @@ public class FileManager {
    */
   public String[] getZipDirectory(String fileName, boolean addManifest) {
     Object t = getBufferedInputStreamOrErrorMessageFromName(fileName, fileName,
-        false, false, null);
+        false, false, null, false);
     return JmolBinary.getZipDirectoryAndClose((BufferedInputStream) t, addManifest);
   }
 
@@ -778,7 +783,7 @@ public class FileManager {
       allowZip = true;
     }
     Object t = getBufferedInputStreamOrErrorMessageFromName(name, fullName, false, false,
-        null);
+        null, false);
     if (t instanceof String)
       return "Error:" + t;
     try {

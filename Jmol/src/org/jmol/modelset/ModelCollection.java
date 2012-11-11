@@ -4127,11 +4127,11 @@ abstract public class ModelCollection extends BondCollection {
     int pt = data.lastIndexOf("data \"");
     if (pt < 0)
       return null;
-    pt = data.indexOf("\"", pt + 7);
+    pt = data.indexOf2("\"", pt + 7);
     int pt2 = data.lastIndexOf("end \"");
     if (pt2 < pt || pt < 0)
       return null;
-    return data.substring(pt + 2, pt2);
+    return data.substring2(pt + 2, pt2);
   }
 
   public boolean isAtomPDB(int i) {

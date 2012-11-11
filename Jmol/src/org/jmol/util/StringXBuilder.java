@@ -11,7 +11,7 @@ package org.jmol.util;
  */
 
 public class StringXBuilder {
-	
+  
   private java.lang.StringBuilder sb;
   String s;
   
@@ -59,6 +59,19 @@ public class StringXBuilder {
     }
   }
 
+  public StringXBuilder append(String s) {
+    /**
+     * @j2sNative
+     * 
+     *            this.s += s
+     * 
+     */
+    {
+      sb.append(s);
+    }
+    return this;
+  }
+  
   public StringXBuilder appendC(char c) {
     /**
      * @j2sNative
@@ -135,32 +148,6 @@ public class StringXBuilder {
     return this;
   }
 
-  public StringXBuilder append(String s) {
-    /**
-     * @j2sNative
-     * 
-     *            this.s += s
-     * 
-     */
-    {
-      sb.append(s);
-    }
-    return this;
-  }
-  
-  @Override
-  public String toString() {
-		/**
-		 * @j2sNative
-		 * 
-		 *            return this.s;
-		 * 
-		 */
-    {
-    	return sb.toString();
-    }
-  }
-
   public StringXBuilder appendSB(StringXBuilder buf) {
     /**
      * @j2sNative
@@ -185,6 +172,32 @@ public class StringXBuilder {
       sb.append(data);
     }
     return this;
+  }
+
+  public void appendCB(char[] cb, int off, int len) {
+    /**
+     * @j2sNative
+     * 
+     * for (var i = len,j=off; --i >= 0;)
+     *            this.s += cb[j++];
+     * 
+     */
+    {
+       sb.append(cb, off, len);
+    }
+  }
+
+  @Override
+  public String toString() {
+    /**
+     * @j2sNative
+     * 
+     *            return this.s;
+     * 
+     */
+    {
+      return sb.toString();
+    }
   }
 
   public int length() {
@@ -245,7 +258,7 @@ public class StringXBuilder {
     }
   }
 
-  public int indexOf(String s, int i) {
+  public int indexOf2(String s, int i) {
     /**
      * @j2sNative
      * 
@@ -267,7 +280,7 @@ public class StringXBuilder {
     }
   }
 
-  public String substring(int i, int j) {
+  public String substring2(int i, int j) {
     /**
      * @j2sNative
      * 
@@ -291,7 +304,8 @@ public class StringXBuilder {
       len = length() - off;
     byte[] b = new byte[len];
     for (int i = off + len, j = i - off; --i >= off;)
-      b[j--] = (byte) charAt(i);
+      b[--j] = (byte) charAt(i);
     return b;
   }
+
 }

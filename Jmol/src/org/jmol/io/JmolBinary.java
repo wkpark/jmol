@@ -39,6 +39,7 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolZipUtility;
 import org.jmol.api.ZInputStream;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.J2SRequireImport;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.StringXBuilder;
@@ -389,20 +390,14 @@ public class JmolBinary {
     return getJzu().writeZipFile(fm, viewer, outFileName, fileNamesAndByteArrays, msg);
   }
 
+  public static boolean isBase64(StringXBuilder sb) {
+    return (sb.indexOf(";base64,") == 0);
+  }
+
   public static BufferedInputStream getBISForStringXBuilder(StringXBuilder sb) {
-    int pt = sb.indexOf(";base64,");
     byte[] bytes;
-    if (pt == 0) {
+    if (isBase64(sb)) {
       bytes = Base64.decodeBase64(sb.substring(8));
-      /**
-       * @j2sNative
-       *  
-       *     var bis = new java.io.ByteArrayInputStream(bytes);
-       *     return new java.io.BufferedReader(java.io.DataInputStream.readUTFBytes(new java.io.DataInputStream(is), bytes.length));
-       * 
-       */
-      {
-      }
     } else {
       bytes = sb.toBytes(0, -1);
     }
@@ -501,15 +496,7 @@ public class JmolBinary {
    * @throws IOException 
    */
   public static BufferedReader getInputStreamReader(InputStream is) throws IOException {
-    /**
-     * @j2sNative
-     *  
-     *     return new java.io.BufferedReader(java.io.DataInputStream.readUTFBytes(new java.io.DataInputStream(is), is.buf.length));
-     * 
-     */
-    {
-      return new BufferedReader(new InputStreamReader(is, "UTF-8"));
-    }
+    return new BufferedReader(new InputStreamReader(is, "UTF-8"));
   }
 
   /**

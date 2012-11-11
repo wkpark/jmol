@@ -61,7 +61,7 @@ public interface JmolZipUtility {
                                                             boolean asBufferedReader,
                                                             boolean asBufferedInputStream);
 
-  public String[] specialLoad(String name, String zipDirectory);
+  public String[] spartanFileList(String name, String zipDirectory);
 
   public byte[] getCachedPngjBytes(FileManager fm, String pathName);
 

@@ -68,7 +68,7 @@ import org.jmol.viewer.Viewer;
 
 public class ZipUtil implements JmolZipUtility {
 
-  public final static String SCENE_TAG = "###scene.spt###";
+  private final static String SCENE_TAG = "###scene.spt###";
 
   public ZipUtil() {
     // for reflection
@@ -914,7 +914,7 @@ public class ZipUtil implements JmolZipUtility {
    * @param zipDirectory
    * @return String data for processing
    */  
-  static StringXBuilder checkSpecialData(InputStream is, String[] zipDirectory) {
+  private static StringXBuilder checkSpecialData(InputStream is, String[] zipDirectory) {
     boolean isSpartan = false;
     // 0 entry is not used here
     for (int i = 1; i < zipDirectory.length; i++) {
@@ -950,62 +950,39 @@ public class ZipUtil implements JmolZipUtility {
 
   /**
    * 
-   * Special loading for file directories. This method is called from
-   * the FileManager via SmarterJmolAdapter. It's here because Resolver 
-   * is the place where all distinctions are made.
+   * Special loading for file directories. This method is called from the
+   * FileManager via SmarterJmolAdapter. It's here because Resolver is the place
+   * where all distinctions are made.
    * 
    * In the case of spt files, no need to load them; here we are just checking
    * for type.
    * 
-   * In the case of .spardir directories, we need to provide a list of
-   * the critical files that need loading and concatenation for the
-   * SpartanSmolReader. 
+   * In the case of .spardir directories, we need to provide a list of the
+   * critical files that need loading and concatenation for the
+   * SpartanSmolReader.
    * 
    * we return an array for which:
    * 
-   * [0] file type (class prefix) or null for SPT file 
-   * [1] header to add for each BEGIN/END block (ignored)
-   * [2...] files to load and concatenate
+   * [0] file type (class prefix) or null for SPT file [1] header to add for
+   * each BEGIN/END block (ignored) [2...] files to load and concatenate
    * 
    * @param name
    * @param type
    * @return array detailing action for this set of files
    */
-  public String[] specialLoad(String name, String type) {
-    int pt = name.lastIndexOf(".spardir");
-    boolean isPreliminary = (type.equals("filesNeeded?"));
-    if (isPreliminary) {
-      // check for .spt file type -- Jmol script
-      if (name.endsWith(".spt"))
-        return new String[] { null, null, null }; // DO NOT actually load any file
-      // check for zipped up spardir -- we'll automatically take first file there
-      if (name.endsWith(".spardir.zip"))
-        return new String[] { "SpartanSmol", "Directory Entry ", name + "|output"};
-      name = name.replace('\\', '/');
-      if (!name.endsWith(".spardir") && name.indexOf(".spardir/") < 0)
-        return null; 
-      // look for .spardir or .spardir/...
-      if (pt < 0)
-        return null;
-      if (name.lastIndexOf("/") > pt) {
-        // a single file in the spardir directory is requested
-        return new String[] { "SpartanSmol", "Directory Entry ",
-            name + "/input", name + "/archive",
-            name + "/Molecule:asBinaryString", name + "/proparc" };      
-      }
-      return new String[] { "SpartanSmol", "Directory Entry ", name + "/output" };
-    }
+  public String[] spartanFileList(String name, String type) {
     // make list of required files
     String[] dirNums = getSpartanDirs(type);
-    if (dirNums.length == 0 && name.endsWith(".spardir.zip") 
+    if (dirNums.length == 0 && name.endsWith(".spardir.zip")
         && type.indexOf(".zip|output") >= 0) {
       // try again, with the idea that 
-      String sname = name.replace('\\','/');
+      String sname = name.replace('\\', '/');
+      int pt = name.lastIndexOf(".spardir");
       pt = sname.lastIndexOf("/");
       // mac directory zipped up?
       sname = name + "|" + name.substring(pt + 1, name.length() - 4);
       return new String[] { "SpartanSmol", sname, sname + "/output" };
-    }    
+    }
     return getSpartanFileList(name, dirNums);
   }
 

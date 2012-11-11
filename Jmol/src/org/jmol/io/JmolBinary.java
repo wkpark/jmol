@@ -39,7 +39,6 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolZipUtility;
 import org.jmol.api.ZInputStream;
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.J2SRequireImport;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.StringXBuilder;
@@ -441,8 +440,8 @@ public class JmolBinary {
     return getJzu().getAtomSetCollectionOrBufferedReaderFromZip(adapter, is, fileName, zipDirectory, htParams, 1, asBufferedReader, asBufferedInputStream);
   }
 
-  public static String[] specialLoad(String name, String zipDirectory) {
-    return getJzu().specialLoad(name, zipDirectory);
+  public static String[] spartanFileList(String name, String zipDirectory) {
+    return getJzu().spartanFileList(name, zipDirectory);
   }
 
   public static void getFileReferences(String script, List<String> fileList) {

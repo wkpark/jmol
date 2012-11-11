@@ -403,7 +403,7 @@ public class FileManager {
                                                              boolean showMsg,
                                                              boolean checkOnly,
                                                              byte[] outputBytes, boolean allowReader) {
-    byte[] cacheBytes = (fullName == null ? null : JmolBinary
+    byte[] cacheBytes = (fullName == null || pngjCache == null ? null : JmolBinary
         .getCachedPngjBytes(this, fullName));
     if (cacheBytes == null)
       cacheBytes = (byte[]) cacheGet(name, true);
@@ -564,8 +564,7 @@ public class FileManager {
                                                                 boolean isTypeCheckOnly,
                                                                 boolean doSpecialLoad) {
     String[] subFileList = null;
-    String[] info = (bytes == null && doSpecialLoad ? JmolBinary.specialLoad(
-        name, "filesNeeded?") : null);
+    String[] info = (bytes == null && doSpecialLoad ? getSpartanFileList(name) : null);
     String name00 = name;
     if (info != null) {
       if (isTypeCheckOnly)
@@ -577,12 +576,12 @@ public class FileManager {
           // we need information from the output file, info[2]
           String name0 = getObjectAsSections(info[2], header, fileData);
           fileData.put("OUTPUT", name0);
-          info = JmolBinary.specialLoad(name, fileData.get(name0));
+          info = JmolBinary.spartanFileList(name, fileData.get(name0));
           if (info.length == 3) {
             // might have a second option
             name0 = getObjectAsSections(info[2], header, fileData);
             fileData.put("OUTPUT", name0);
-            info = JmolBinary.specialLoad(info[1], fileData.get(name0));
+            info = JmolBinary.spartanFileList(info[1], fileData.get(name0));
           }
         }
         // load each file individually, but return files IN ORDER
@@ -610,7 +609,7 @@ public class FileManager {
       // script or load command should be used)
     }
 
-    if (bytes == null)
+    if (bytes == null && pngjCache != null )
       bytes = JmolBinary.getCachedPngjBytes(this, name);
     String fullName = name;
     if (name.indexOf("|") >= 0) {
@@ -660,6 +659,29 @@ public class FileManager {
     } catch (Exception ioe) {
       return ioe.getMessage();
     }
+  }
+
+  private String[] getSpartanFileList(String name) {
+      // check for .spt file type -- Jmol script
+      if (name.endsWith(".spt"))
+        return new String[] { null, null, null }; // DO NOT actually load any file
+      // check for zipped up spardir -- we'll automatically take first file there
+      if (name.endsWith(".spardir.zip"))
+        return new String[] { "SpartanSmol", "Directory Entry ", name + "|output"};
+      name = name.replace('\\', '/');
+      if (!name.endsWith(".spardir") && name.indexOf(".spardir/") < 0)
+        return null; 
+      // look for .spardir or .spardir/...
+      int pt = name.lastIndexOf(".spardir");
+      if (pt < 0)
+        return null;
+      if (name.lastIndexOf("/") > pt) {
+        // a single file in the spardir directory is requested
+        return new String[] { "SpartanSmol", "Directory Entry ",
+            name + "/input", name + "/archive",
+            name + "/Molecule:asBinaryString", name + "/proparc" };      
+      }
+      return new String[] { "SpartanSmol", "Directory Entry ", name + "/output" };
   }
 
   /**

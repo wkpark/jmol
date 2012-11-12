@@ -1228,6 +1228,8 @@ public void initShape() {
         bsMoved.set(k);
         mesh.vertices[k].add(move);
       }
+    if (mesh.altVertices != null)
+      mesh.recalcAltVertices = true;
     mesh.setCenters();
   }
   

@@ -140,7 +140,7 @@ public class Mesh extends MeshSurface {
     lattice = null;
     mat4 = null;
     normixes = null;
-    scale3d = 1;
+    scale3d = 0;
     polygonIndexes = null;
     scale = 1;
     showContourLines = false;
@@ -317,6 +317,7 @@ public class Mesh extends MeshSurface {
   public Point3f[] getOffsetVertices(Point4f thePlane) {
     if (altVertices != null && !recalcAltVertices)
       return (Point3f[]) altVertices;
+    System.out.println("Mesh  recalculating vertices");
     altVertices = new Point3f[vertexCount];
     for (int i = 0; i < vertexCount; i++)
       altVertices[i] = Point3f.newP(vertices[i]);

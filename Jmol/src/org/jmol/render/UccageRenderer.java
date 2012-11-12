@@ -166,23 +166,23 @@ public class UccageRenderer extends CageRenderer {
       spaceGroup = "slab";
     if (spaceGroup != null & !spaceGroup.equals("-- [--]")) {
       y += lineheight;
-      g3d.drawStringNoSlab(spaceGroup, null, x, y, 0);
+      g3d.drawStringNoSlab(spaceGroup, null, x, y, 0, (short) 0);
     }
     y += lineheight;
     g3d.drawStringNoSlab("a="
         + nfformat(symmetry.getUnitCellInfoType(SimpleUnitCell.INFO_A)) + "\u00C5",
-        null, x, y, 0);
+        null, x, y, 0, (short) 0);
     if (!isPolymer) {
       y += lineheight;
       g3d.drawStringNoSlab(
           "b=" + nfformat(symmetry.getUnitCellInfoType(SimpleUnitCell.INFO_B))
-              + "\u00C5", null, x, y, 0);
+              + "\u00C5", null, x, y, 0, (short) 0);
     }
     if (!isPolymer && !isSlab) {
       y += lineheight;
       g3d.drawStringNoSlab(
           "c=" + nfformat(symmetry.getUnitCellInfoType(SimpleUnitCell.INFO_C))
-              + "\u00C5", null, x, y, 0);
+              + "\u00C5", null, x, y, 0, (short) 0);
     }
     //if (nf != null)
       //nf.setMaximumFractionDigits(1);
@@ -191,16 +191,16 @@ public class UccageRenderer extends CageRenderer {
         y += lineheight;
         g3d.drawStringNoSlab("\u03B1="
             + nfformat(symmetry.getUnitCellInfoType(SimpleUnitCell.INFO_ALPHA))
-            + "\u00B0", null, x, y, 0);
+            + "\u00B0", null, x, y, 0, (short) 0);
         y += lineheight;
         g3d.drawStringNoSlab("\u03B2="
             + nfformat(symmetry.getUnitCellInfoType(SimpleUnitCell.INFO_BETA))
-            + "\u00B0", null, x, y, 0);
+            + "\u00B0", null, x, y, 0, (short) 0);
       }
       y += lineheight;
       g3d.drawStringNoSlab("\u03B3="
           + nfformat(symmetry.getUnitCellInfoType(SimpleUnitCell.INFO_GAMMA))
-          + "\u00B0", null, x, y, 0);
+          + "\u00B0", null, x, y, 0, (short) 0);
     }
   }
 

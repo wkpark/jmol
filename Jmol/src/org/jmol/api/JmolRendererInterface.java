@@ -159,10 +159,11 @@ public interface JmolRendererInterface extends JmolGraphicsInterface {
    *        baseline z
    * @param zSlab
    *        z for slab calculation
+   * @param bgColix TODO
    */
 
   public abstract void drawString(String str, JmolFont font3d, int xBaseline,
-                                  int yBaseline, int z, int zSlab);
+                                  int yBaseline, int z, int zSlab, short bgColix);
 
   public abstract void plotImagePixel(int argb, int x, int y, int z, int shade);
 
@@ -180,10 +181,11 @@ public interface JmolRendererInterface extends JmolGraphicsInterface {
    *        baseline y
    * @param z
    *        baseline z
+   * @param bgColix TODO
    */
 
   public abstract void drawStringNoSlab(String str, JmolFont font3d,
-                                        int xBaseline, int yBaseline, int z);
+                                        int xBaseline, int yBaseline, int z, short bgColix);
 
   public abstract void fillEllipsoid(Point3f center, Point3f[] points, int x,
                                      int y, int z, int diameter,

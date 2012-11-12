@@ -77,14 +77,14 @@ class TextRenderer {
     htFont3dAntialias.clear();
   }
 
-  static int plot(int x, int y, int z, int argb, String text,
-                         JmolFont font3d, Graphics3D g3d,
-                         JmolRendererInterface jmolRenderer, boolean antialias) {
+  static int plot(int x, int y, int z, int argb, int bgargb,
+                         String text, JmolFont font3d,
+                         Graphics3D g3d, JmolRendererInterface jmolRenderer, boolean antialias) {
     if (text.length() == 0)
       return 0;
     //System.out.println(x + "  " + y + " " + text);
     if (text.indexOf("<su") >= 0)
-      return plotByCharacter(x, y, z, argb, text, font3d, g3d, jmolRenderer,
+      return plotByCharacter(x, y, z, argb, bgargb, text, font3d, g3d, jmolRenderer,
           antialias);
     int offset = font3d.getAscent();
     //if (antialias)
@@ -105,15 +105,15 @@ class TextRenderer {
     }
     if (jmolRenderer != null
         || (x < 0 || x + text3d.width > g3d.width || y < 0 || y + text3d.height > g3d.height))
-      plotClipped(x, y, z, argb, g3d, jmolRenderer, text3d.mapWidth,
+      plotClipped(x, y, z, argb, bgargb, g3d, jmolRenderer, text3d.mapWidth,
           text3d.height, text3d.tmap);
     else
-      plotUnclipped(x, y, z, argb, g3d, text3d.mapWidth, text3d.height,
+      plotUnclipped(x, y, z, argb, bgargb, g3d, text3d.mapWidth, text3d.height,
           text3d.tmap);
     return text3d.width;
   }
 
-  private static int plotByCharacter(int x, int y, int z, int argb, 
+  private static int plotByCharacter(int x, int y, int z, int argb, int bgargb,
                                       String text, JmolFont font3d, 
                                       Graphics3D g3d, JmolRendererInterface jmolRenderer,
                                       boolean antialias) {
@@ -145,15 +145,15 @@ class TextRenderer {
           continue;
         }
       }
-      int width = plot(x + w, y, z, argb, text.substring(i, i + 1), font3d, 
-          g3d, jmolRenderer, antialias);
+      int width = plot(x + w, y, z, argb, bgargb, text.substring(i, i + 1), 
+          font3d, g3d, jmolRenderer, antialias);
       w += width;
     }
     //System.out.println("w=" + w);
     return w;
   }
   
-  private static void plotUnclipped(int x, int y, int z, int argb,
+  private static void plotUnclipped(int x, int y, int z, int argb, int bgargb,
                                     Graphics3D g3d, int textWidth,
                                     int textHeight, byte[] tmap) {
     int offset = 0;
@@ -164,14 +164,14 @@ class TextRenderer {
       for (int j = 0; j < textWidth; j++) {
         byte shade = tmap[offset++];
         if (shade != 0 && z < zbuf[pbufOffset])
-          g3d.shadeTextPixel(pbufOffset, z, argb, shade);
+          g3d.shadeTextPixel(pbufOffset, z, argb, bgargb, shade);
         pbufOffset++;
       }
       pbufOffset += (renderWidth - textWidth);
     }
   }
   
-  private static void plotClipped(int x, int y, int z, int argb,
+  private static void plotClipped(int x, int y, int z, int argb, int bgargb,
                                   Graphics3D g3d,
                                   JmolRendererInterface jmolRenderer,
                                   int textWidth, int textHeight, byte[] tmap) {

@@ -480,7 +480,7 @@ public class DrawRenderer extends MeshRenderer {
         viewer.transformPtScr(pt1f, pt1i);
         int offset = Math.round(5 * imageFontScaling);
         g3d.drawString(s, null, pt1i.x + offset, pt1i.y - offset, pt1i.z,
-            pt1i.z);
+            pt1i.z, (short) 0);
         break;
       }
   }

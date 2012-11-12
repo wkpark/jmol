@@ -608,7 +608,7 @@ public abstract class ___Exporter {
     if (z < 3)
       z = viewer.getFrontPlane();
     outputComment("start text " + (++nText) + ": " + text);
-    g3d.plotText(x, y, z, g3d.getColorArgbOrGray(colix), text, font3d, jmolRenderer);
+    g3d.plotText(x, y, z, g3d.getColorArgbOrGray(colix), 0, text, font3d, jmolRenderer);
     outputComment("end text " + nText + ": " + text);
   }
 

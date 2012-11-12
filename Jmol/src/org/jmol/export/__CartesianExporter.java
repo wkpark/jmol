@@ -325,8 +325,8 @@ abstract public class __CartesianExporter extends ___Exporter {
     // trick here is that we use Jmol's standard g3d package to construct
     // the bitmap, but then output to jmolRenderer, which returns control
     // here via drawPixel.
-    g3d.plotText(x, y, z, g3d.getColorArgbOrGray(colix), text, font3d,
-        jmolRenderer);
+    g3d.plotText(x, y, z, g3d.getColorArgbOrGray(colix), 0, text,
+        font3d, jmolRenderer);
   }
 
   protected Matrix4f sphereMatrix = new Matrix4f();

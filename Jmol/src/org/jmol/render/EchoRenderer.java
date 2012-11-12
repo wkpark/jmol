@@ -30,6 +30,7 @@ import org.jmol.modelset.Atom;
 import org.jmol.shape.Echo;
 import org.jmol.shape.Object2d;
 import org.jmol.shape.Text;
+import org.jmol.util.Colix;
 import org.jmol.util.Point3i;
 
 public class EchoRenderer extends ShapeRenderer {
@@ -47,6 +48,7 @@ public class EchoRenderer extends ShapeRenderer {
     float scalePixelsPerMicron = (viewer.getFontScaling() ? viewer
         .getScalePixelsPerAngstrom(true) * 10000 : 0);
     imageFontScaling = viewer.getImageFontScaling();
+    boolean haveTranslucent = false;
     while (e.hasNext()) {
       Text t = e.next();
       if (!t.visible || t.hidden) {
@@ -61,18 +63,20 @@ public class EchoRenderer extends ShapeRenderer {
       }
       TextRenderer.render(t, g3d, scalePixelsPerMicron, imageFontScaling,
           false, null);
+      if (Colix.isColixTranslucent(t.bgcolix))
+        haveTranslucent = true;
     }
-    if (isExport)
-      return false;
-    String frameTitle = viewer.getFrameTitle();
-    if (frameTitle != null && frameTitle.length() > 0) {
-      if (g3d.setColix(viewer.getColixBackgroundContrast())) {
-        if (frameTitle.indexOf("%{") >= 0 || frameTitle.indexOf("@{") >= 0)
-          frameTitle = viewer.formatText(frameTitle);
-        renderFrameTitle(frameTitle);
+    if (!isExport) {
+      String frameTitle = viewer.getFrameTitle();
+      if (frameTitle != null && frameTitle.length() > 0) {
+        if (g3d.setColix(viewer.getColixBackgroundContrast())) {
+          if (frameTitle.indexOf("%{") >= 0 || frameTitle.indexOf("@{") >= 0)
+            frameTitle = viewer.formatText(frameTitle);
+          renderFrameTitle(frameTitle);
+        }
       }
     }
-    return false;
+    return haveTranslucent;
   }
   
   private void renderFrameTitle(String frameTitle) {
@@ -80,6 +84,6 @@ public class EchoRenderer extends ShapeRenderer {
     g3d.setFontFid(fid);
     int y = (int) Math.floor(viewer.getScreenHeight() * (g3d.isAntialiased() ? 2 : 1) - 10 * imageFontScaling);
     int x = (int) Math.floor(5 * imageFontScaling);
-    g3d.drawStringNoSlab(frameTitle, null, x, y, 0);
+    g3d.drawStringNoSlab(frameTitle, null, x, y, 0, (short) 0);
   }
 }

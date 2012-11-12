@@ -259,7 +259,7 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
     //if (!box.contains(xT, yT) && !box.contains(xT + width, yT)
       //  && !box.contains(xT, yT + height)
         //&& !box.contains(xT + width, yT + height)) {
-      g3d.drawString(sVal, font3d, xT, yT, zT, zT);
+      g3d.drawString(sVal, font3d, xT, yT, zT, zT, (short) 0);
    //   box.setBounds(xT, yT, width, height);
    // }
   }

@@ -304,7 +304,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
               + (imesh.isColorSolid ? "" : " " + imesh.vertexValues[i]);
           g3d.setColix(Colix.BLACK);
           g3d.drawStringNoSlab(s, null, screens[i].x, screens[i].y,
-              screens[i].z - 30);
+              screens[i].z - 30, (short) 0);
         }
         if (volumeRender) {
           diam = viewer.scaleToScreen(screens[i].z, ptSize);

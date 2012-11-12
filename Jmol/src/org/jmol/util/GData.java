@@ -563,13 +563,14 @@ public class GData implements JmolGraphicsInterface {
    * @param y 
    * @param z 
    * @param colorArgbOrGray
+   * @param bgColor TODO
    * @param text
    * @param font3d 
    * @param jmolRenderer
    *  
    */
-  public void plotText(int x, int y, int z, int colorArgbOrGray, String text,
-                       JmolFont font3d, JmolRendererInterface jmolRenderer) {
+  public void plotText(int x, int y, int z, int colorArgbOrGray, int bgColor,
+                       String text, JmolFont font3d, JmolRendererInterface jmolRenderer) {
   }
 
   /**

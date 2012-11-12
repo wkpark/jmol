@@ -871,17 +871,18 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
    * @param yBaseline baseline y
    * @param z baseline z
    * @param zSlab z for slab calculation
+   * @param bgColix 
    */
   
   public void drawString(String str, JmolFont font3d,
-                         int xBaseline, int yBaseline, int z, int zSlab) {
-    //axis, labels, measures    
+                         int xBaseline, int yBaseline, int z, int zSlab, short bgColix) {
+    //axis, labels, measures, echo    
     currentShadeIndex = 0; 
     if (str == null)
       return;
     if (isClippedZ(zSlab))
       return;
-    drawStringNoSlab(str, font3d, xBaseline, yBaseline, z); 
+    drawStringNoSlab(str, font3d, xBaseline, yBaseline, z, bgColix); 
   }
 
   /**
@@ -893,11 +894,12 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
    * @param xBaseline baseline x
    * @param yBaseline baseline y
    * @param z baseline z
+   * @param bgColix 
    */
   
   public void drawStringNoSlab(String str, JmolFont font3d, 
                                int xBaseline, int yBaseline,
-                               int z) {
+                               int z, short bgColix) {
     // echo, frank, hover, molecularOrbital, uccage
     if (str == null)
       return;
@@ -906,7 +908,10 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     if (stringCount == strings.length)
       strings = (TextString[]) ArrayUtil.doubleLength(strings);
     TextString t = new TextString();
-    t.setText(str, font3d == null ? currentFont : (currentFont = font3d), argbCurrent, xBaseline, yBaseline, z);
+    t.setText(str, font3d == null ? currentFont : (currentFont = font3d), argbCurrent, 
+        Colix.isColixTranslucent(bgColix) ?  // shift colix translucency mask into integer alpha position
+            (getColorArgbOrGray(bgColix) & 0xFFFFFF) | ((bgColix & Colix.TRANSLUCENT_MASK) << Colix.ALPHA_SHIFT): 0, 
+                xBaseline, yBaseline, z);
     strings[stringCount++] = t;
     
   }
@@ -922,15 +927,15 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     Arrays.sort(strings, sort);
     for (int i = 0; i < stringCount; i++) {
       TextString ts = strings[i];
-      plotText(ts.x, ts.y, ts.z, ts.argb, ts.text, ts.font, (JmolRendererInterface) jmolRenderer);
+      plotText(ts.x, ts.y, ts.z, ts.argb, ts.bgargb, ts.text, ts.font, (JmolRendererInterface) jmolRenderer);
     }
   }
 
   @Override
   public void plotText(int x, int y, int z, int argb,
-                String text, JmolFont font3d, JmolRendererInterface jmolRenderer) {
-    TextRenderer.plot(x, y, z, argb, text, font3d, this, jmolRenderer, 
-        antialiasThisFrame);    
+                int bgargb, String text, JmolFont font3d, JmolRendererInterface jmolRenderer) {
+    TextRenderer.plot(x, y, z, argb, bgargb, text, font3d, this, 
+        jmolRenderer, antialiasThisFrame);    
   }
   
   public void drawImage(Object objImage, int x, int y, int z, int zSlab, 
@@ -1352,7 +1357,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
       return;
     int offset = y * width + x;
     if (z < zbuf[offset])
-      shadeTextPixel(offset, z, argb, shade);
+      shadeTextPixel(offset, z, argb, 0, shade);
   }
 
   void plotPixelClippedScreened(int argb, boolean isScreened, int x, int y, int z) {
@@ -1892,11 +1897,17 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     return false;
   }
 
-  void shadeTextPixel(int offset, int z, int argb, int shade) {
+  void shadeTextPixel(int offset, int z, int argb, int bgargb, int shade) {
     switch (shade) {
     case 8:
       addPixel(offset, z, argb);
       return;
+    }
+    if (bgargb != 0) {
+      int t = translucencyMask;
+      translucencyMask = bgargb;
+      Graphics3D.mergeBufferPixel(pbuf, offset, bgargb, bgcolor);
+      translucencyMask = t;
     }
     Graphics3D.mergeBufferPixel(pbuf, offset, (argb & 0xFFFFFF) | (shade << 24), bgcolor);
     zbuf[offset] = z;

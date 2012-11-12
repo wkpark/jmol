@@ -58,7 +58,7 @@ public class MolecularOrbitalRenderer extends IsosurfaceRenderer {
     
     for (int i = 0; i < mesh.title.length; i++)
       if (mesh.title[i].length() > 0) {
-        g3d.drawStringNoSlab(mesh.title[i], null, x, y, 0);
+        g3d.drawStringNoSlab(mesh.title[i], null, x, y, 0, (short) 0);
         y += lineheight;
       }
   }

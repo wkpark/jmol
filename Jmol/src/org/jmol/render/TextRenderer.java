@@ -55,7 +55,7 @@ public class TextRenderer {
         for (int i = 0; i < text.lines.length; i++) {
           text.setXYA(xy, i);
           g3d.drawString(text.lines[i], text.font, (int) xy[0], (int) xy[1],
-              text.z, text.zSlab);
+              text.z, text.zSlab, text.bgcolix);
         }
       } else {
         g3d
@@ -128,7 +128,7 @@ public class TextRenderer {
     else
       g3d.setColix(colix);
     g3d.drawString(strLabel, font, (int) (x + 4),
-        (int) (y + 4 + ascent), z - 1, zSlab);
+        (int) (y + 4 + ascent), z - 1, zSlab, bgcolix);
 
     if (doPointer) {
       g3d.setColix(pointerColix);

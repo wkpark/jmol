@@ -928,7 +928,7 @@ abstract class ScriptCompilationTokenParser {
     }
     addTokenToPostfixToken(theToken);
     if (theToken.tok == Token.define)
-      return clauseDefine(false, false);
+      return clauseDefine(true, false);
     return true;
   }
 

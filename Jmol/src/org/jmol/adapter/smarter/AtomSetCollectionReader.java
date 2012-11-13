@@ -381,8 +381,11 @@ public abstract class AtomSetCollectionReader {
     return atomSetCollection;
   }
 
+  /**
+   * @param e  
+   */
   private void setError(Throwable e) {
-    String s = "";
+    String s;
     /**
      * @j2sNative
      * 
@@ -391,10 +394,11 @@ public abstract class AtomSetCollectionReader {
      * else
      *  s = e.toString();
      */
-      System.out.println(s);
+    {
+      s = e.getMessage();
+    }
     if (line == null)
-      atomSetCollection.errorMessage = "Unexpected end of file after line "
-          + --ptLine + ":\n" + prevline;
+      atomSetCollection.errorMessage = "Error reading file at end of file \n" + s;
     else
       atomSetCollection.errorMessage = "Error reading file at line " + ptLine
           + ":\n" + line + "\n" + s;

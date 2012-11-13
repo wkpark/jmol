@@ -75,8 +75,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
 
   public String readNextLine() throws Exception {
     // from CifDataReader
-    readLine();
-    if (line.indexOf("#jmolscript:") >= 0)
+    if (readLine() != null && line.indexOf("#jmolscript:") >= 0)
       checkCurrentLineForScript();
     return line;
   }

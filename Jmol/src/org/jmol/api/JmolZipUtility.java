@@ -21,7 +21,7 @@ public interface JmolZipUtility {
   public String getGzippedBytesAsString(byte[] t);
 
   public Object getZipFileContents(BufferedInputStream bis,
-                                          String[] subFileList, int i, boolean b);
+                                          String[] subFileList, int listPtr, boolean asBufferedInputStream);
 
   public String[] getZipDirectoryAndClose(BufferedInputStream t,
                                                  boolean addManifest);

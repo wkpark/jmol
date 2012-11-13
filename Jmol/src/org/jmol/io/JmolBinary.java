@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 
@@ -174,6 +175,55 @@ public class JmolBinary {
     return (nSurfaces < 0 ? "Jvxl" : "Cube"); //Final test looks at surface definition line
   }
 
+  private static Encoding getUTFEncodingForStream(InputStream is) throws IOException {
+    byte[] abMagic = new byte[4];
+    abMagic[3] = 1;
+    is.mark(5);
+    is.read(abMagic, 0, 4);
+    is.reset();
+    return getUTFEncoding(abMagic);
+  }
+
+  public static String fixUTF(byte[] bytes) {
+    
+    Encoding encoding = getUTFEncoding(bytes);
+    if (encoding != Encoding.NONE)
+    try {
+      String s = new String(bytes, encoding.name().replace('_', '-'));
+      switch (encoding) {
+      case UTF8:
+      case UTF_16BE:
+      case UTF_16LE:
+        // extra byte at beginning removed
+        s = s.substring(1);
+        break;
+      default:
+        break;        
+      }
+      return s;
+    } catch (UnsupportedEncodingException e) {
+      System.out.println(e);
+    }
+    return new String(bytes);
+  }
+
+  private static Encoding getUTFEncoding(byte[] bytes) {
+    if (bytes.length >= 3 && bytes[0] == (byte) 0xEF && bytes[1] == (byte) 0xBB && bytes[2] == (byte) 0xBF)
+      return Encoding.UTF8;
+    if (bytes.length >= 4 && bytes[0] == (byte) 0 && bytes[1] == (byte) 0 
+        && bytes[2] == (byte) 0xFE && bytes[3] == (byte) 0xFF)
+      return Encoding.UTF_32BE;
+    if (bytes.length >= 4 && bytes[0] == (byte) 0xFF && bytes[1] == (byte) 0xFE 
+        && bytes[2] == (byte) 0 && bytes[3] == (byte) 0)
+      return Encoding.UTF_32LE;
+    if (bytes.length >= 2 && bytes[0] == (byte) 0xFF && bytes[1] == (byte) 0xFE)
+      return Encoding.UTF_16LE;
+    if (bytes.length >= 2 && bytes[0] == (byte) 0xFE && bytes[1] == (byte) 0xFF)
+      return Encoding.UTF_16BE;
+    return Encoding.NONE;
+
+  }
+  
   public static boolean isCompoundDocumentStream(InputStream is) throws Exception {
     byte[] abMagic = new byte[8];
     is.mark(9);
@@ -254,7 +304,7 @@ public class JmolBinary {
     //Note: You cannot use InputStream.available() to reliably read
     //      zip data from the web. 
     
-    int buflen = (n >= 0 && n < 1024 ? (int) n : 1024);
+    int buflen = (n > 0 && n < 1024 ? (int) n : 1024);
     byte[] buf = new byte[buflen];
     byte[] bytes = new byte[n < 0 ? 4096 : (int) n];
     int len = 0;
@@ -317,8 +367,8 @@ public class JmolBinary {
   }
 
   public static Object getZipFileContents(BufferedInputStream bis,
-                                          String[] subFileList, int i, boolean b) {
-    return getJzu().getZipFileContents(bis, subFileList, i, b);
+                                          String[] subFileList, int listPtr, boolean asBufferedInputStream) {
+    return getJzu().getZipFileContents(bis, subFileList, listPtr, asBufferedInputStream);
   }
 
   public static String[] getZipDirectoryAndClose(BufferedInputStream t,
@@ -490,12 +540,18 @@ public class JmolBinary {
   }
 
   /**
-   * @param is 
+   * @param is
    * @return Reader
-   * @throws IOException 
+   * @throws IOException
    */
-  public static BufferedReader getInputStreamReader(InputStream is) throws IOException {
-    return new BufferedReader(new InputStreamReader(is, "UTF-8"));
+  public static BufferedReader getInputStreamReader(InputStream is)
+      throws IOException {
+    Encoding encoding = getUTFEncodingForStream(is);
+    if (encoding == Encoding.NONE)
+      return new BufferedReader(new InputStreamReader(is, "UTF-8"));
+    byte[] bytes = getStreamBytes(is, -1);
+    is.close();
+    return getBufferedReaderForString(fixUTF(bytes));
   }
 
   /**

@@ -125,7 +125,7 @@ public class ZipUtil implements JmolZipUtility {
           str = getBinaryStringForBytes(bytes);
           name += ":asBinaryString";
         } else {
-          str = new String(bytes);
+          str = JmolBinary.fixUTF(bytes);
         }
         str = "BEGIN Directory Entry " + name + "\n" + str
             + "\nEND Directory Entry " + name + "\n";
@@ -188,7 +188,6 @@ public class ZipUtil implements JmolZipUtility {
       while ((ze = zis.getNextEntry()) != null) {
         if (!fileName.equals(ze.getName()))
           continue;
-        System.out.println(ze.getSize());
         byte[] bytes = JmolBinary.getStreamBytes(zis, ze.getSize());
         //System.out.println("ZipUtil::ZipEntry.name = " + ze.getName() + " " + bytes.length);
         if (JmolBinary.isZipFile(bytes))
@@ -203,7 +202,7 @@ public class ZipUtil implements JmolZipUtility {
             ret.append(Integer.toHexString(bytes[i] & 0xFF)).appendC(' ');
           return ret.toString();
         }
-        return new String(bytes);
+        return JmolBinary.fixUTF(bytes);
       }
     } catch (Exception e) {
     }
@@ -282,12 +281,7 @@ public class ZipUtil implements JmolZipUtility {
   }
 
   private static String getZipEntryAsString(InputStream is) throws IOException {
-    StringXBuilder sb = new StringXBuilder();
-    byte[] buf = new byte[1024];
-    int len;
-    while (is.available() >= 1 && (len = is.read(buf, 0, 1024)) > 0)
-      sb.append(new String(buf, 0, len));
-    return sb.toString();
+    return JmolBinary.fixUTF(JmolBinary.getStreamBytes(is, -1));
   }
 
   private static boolean isJmolManifest(String thisEntry) {
@@ -494,7 +488,7 @@ public class ZipUtil implements JmolZipUtility {
         // ignore
       }
     }
-    return new String((byte[]) ret);
+    return JmolBinary.fixUTF((byte[]) ret);
   }
 
   public String getSceneScript(String[] scenes, Map<String, String> htScenes,
@@ -830,7 +824,7 @@ public class ZipUtil implements JmolZipUtility {
           } else if (JmolBinary.isGzipB(bytes)) {
             sData = JmolBinary.getGzippedBytesAsString(bytes);
           } else {
-            sData = new String(bytes);
+            sData = JmolBinary.fixUTF(bytes);
           }
           BufferedReader reader = new BufferedReader(new StringReader(sData));
           if (asBufferedReader) {

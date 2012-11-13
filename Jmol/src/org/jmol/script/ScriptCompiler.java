@@ -180,6 +180,12 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
    * @return cleaned script
    */
   private String cleanScriptComments(String script) {
+    if (script.indexOf('\u201C') >= 0)
+      script = script.replace('\u201C', '"');
+    if (script.indexOf('\u201D') >= 0)
+      script = script.replace('\u201D', '"');
+    if (script.indexOf('\uFEFF') >= 0)
+      script = script.replace('\uFEFF', ' ');
     int pt = (script.indexOf("\1##"));
     if (pt >= 0) {
       // these are for jmolConsole and scriptEditor
@@ -239,7 +245,6 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
   private boolean compile0(boolean isFull) {
     vFunctionStack = new ArrayList<ScriptFunction>();
     htUserFunctions = new Hashtable<String, Boolean>();
-    script = script.replace('\u201C', '"').replace('\u201D', '"');
     script = cleanScriptComments(script);
     ichToken = script.indexOf(Viewer.STATE_VERSION_STAMP);
     isStateScript = (ichToken >= 0);

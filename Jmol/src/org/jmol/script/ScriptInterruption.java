@@ -25,27 +25,11 @@
 
 package org.jmol.script;
 
-class ScriptInterruption extends ScriptException {
-  public int delayMs;
-  public long targetTime;
-  private ScriptContext sc;
+import org.jmol.thread.ScriptDelayThread;
 
-  ScriptInterruption(ScriptEvaluator eval, int delayMs) {
+public class ScriptInterruption extends ScriptException {
+  public ScriptInterruption(ScriptEvaluator eval, long millis) {
     super(eval, (eval.viewer.autoExit ? "Interruption Error" : null), null, eval.viewer.autoExit);
-    if (eval.viewer.autoExit)
-      return;
-    this.delayMs = delayMs;
-    this.targetTime = System.currentTimeMillis() + delayMs;
-    try {
-      eval.scriptLevel--;
-      eval.pushContext(null);
-      sc = eval.thisContext;
-    } catch (ScriptException e) {
-      // unattainable
-    }
-  }
-  
-  public void resumeExecution() throws ScriptException {
-    eval.resume(sc);
-  }
+    new ScriptDelayThread(eval, eval.viewer, millis);
+  }  
 }

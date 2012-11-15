@@ -75,6 +75,10 @@ public class ZipUtil implements JmolZipUtility {
   }
 
   public ZInputStream newZipInputStream(InputStream is) {
+    return newZIS(is);
+  }
+
+  private static ZInputStream newZIS(InputStream is) {
     return (is instanceof ZInputStream ? (ZInputStream) is
         : is instanceof BufferedInputStream ? new JmolZipInputStream(is)
             : new JmolZipInputStream(new BufferedInputStream(is)));
@@ -98,7 +102,12 @@ public class ZipUtil implements JmolZipUtility {
    */
   public void getAllZipData(InputStream is, String[] subfileList, String name0,
                             String binaryFileList, Map<String, String> fileData) {
-    ZipInputStream zis = (ZipInputStream) newZipInputStream(is);
+    getAllZipDataStatic(is, subfileList, name0, binaryFileList, fileData);
+  }
+  
+  private static void getAllZipDataStatic(InputStream is, String[] subfileList, String name0,
+                            String binaryFileList, Map<String, String> fileData) {
+    ZipInputStream zis = (ZipInputStream) newZIS(is);
     ZipEntry ze;
     StringXBuilder listing = new StringXBuilder();
     binaryFileList = "|" + binaryFileList + "|";
@@ -136,7 +145,7 @@ public class ZipUtil implements JmolZipUtility {
     fileData.put("#Directory_Listing", listing.toString());
   }
 
-  private String getBinaryStringForBytes(byte[] bytes) {
+  private static String getBinaryStringForBytes(byte[] bytes) {
     StringXBuilder ret = new StringXBuilder();
     for (int i = 0; i < bytes.length; i++)
       ret.append(Integer.toHexString(bytes[i] & 0xFF)).appendC(' ');
@@ -924,8 +933,7 @@ public class ZipUtil implements JmolZipUtility {
     data.append("Zip File Directory: ").append("\n").append(
         Escape.escapeStrA(zipDirectory, true)).append("\n");
     Map<String, String> fileData = new Hashtable<String, String>();
-    JmolBinary.getJzu().getAllZipData(is, new String[] {}, "",
-        "Molecule", fileData);
+    getAllZipDataStatic(is, new String[] {}, "", "Molecule", fileData);
     String prefix = "|";
     String outputData = fileData.get(prefix + "output");
     if (outputData == null)

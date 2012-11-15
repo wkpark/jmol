@@ -75,6 +75,7 @@ class CastepDensityReader extends VolumeFileReader {
     voxelCounts[1] = (nPointsY = parseInt()) + 1;
     voxelCounts[2] = (nPointsZ = parseInt()) + 1;
     nFilePoints = (nPointsX++) * (nPointsY++) * (nPointsZ++);
+    volumetricOrigin.set(0, 0, 0);
     for (int i = 0; i < 3; i++) {
       volumetricVectors[i].scale(1f/(voxelCounts[i] - 1));
       if (isAnisotropic)

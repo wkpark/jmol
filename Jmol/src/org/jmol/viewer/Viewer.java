@@ -2545,7 +2545,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
     // null fullPathName implies we are doing a merge
     pushHoldRepaintWhy("createModelSet");
-    setErrorMessage(null);
+    setErrorMessage(null, null);
     try {
       BitSet bsNew = new BitSet();
       modelSet = modelManager.createModelSet(fullPathName, fileName,
@@ -2572,7 +2572,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       errMsg = ("ERROR creating model: " + er + (errMsg.length() == 0 ? ""
           : "|" + errMsg));
       zapMsg(errMsg);
-      setErrorMessage(errMsg);
+      setErrorMessage(errMsg, null);
     }
     popHoldRepaintWhy("createModelSet");
     errMsg = getErrorMessage();
@@ -2601,7 +2601,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                             int tokType) {
     if (atomSetCollection instanceof String)
       return (String) atomSetCollection;
-    setErrorMessage(null);
+    setErrorMessage(null, null);
     try {
       modelManager.createAtomDataSet(atomSetCollection, tokType);
       switch (tokType) {
@@ -2618,7 +2618,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       errMsg = ("ERROR adding atom data: " + er + (errMsg.length() == 0 ? ""
           : "|" + errMsg));
       zapMsg(errMsg);
-      setErrorMessage(errMsg);
+      setErrorMessage(errMsg, null);
       setParallel(false);
     }
     return getErrorMessage();
@@ -4395,7 +4395,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       image = gdata.getScreenImage();
     } catch (Error er) {
       handleError(er, false);
-      setErrorMessage("Error during rendering: " + er);
+      setErrorMessage("Error during rendering: " + er, null);
     }
     return image;
   }
@@ -4549,7 +4549,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       } catch (Error er) {
         releaseScreenImage();
         handleError(er, false);
-        setErrorMessage("Error creating image: " + er);
+        setErrorMessage("Error creating image: " + er, null);
         bytes = getErrorMessage();
       }
     } else {
@@ -4558,10 +4558,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         bytes = c.getImageBytes(type, quality, fileName, scripts, null, os);
       } catch (IOException e) {
         bytes = e;
-        setErrorMessage("Error creating image: " + e);
+        setErrorMessage("Error creating image: " + e, null);
       } catch (Error er) {
         handleError(er, false);
-        setErrorMessage("Error creating image: " + er);
+        setErrorMessage("Error creating image: " + er, null);
         bytes = getErrorMessage();
       }
     }
@@ -4810,12 +4810,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       strScript = strScript.substring(1);
     historyDisabled = historyDisabled || !isQueued; // no history for scriptWait
     // 11.5.45
-    setErrorMessage(null);
+    setErrorMessage(null, null);
     boolean isOK = (isScriptFile ? eval.compileScriptFile(strScript, isQuiet)
         : eval.compileScriptString(strScript, isQuiet));
     String strErrorMessage = eval.getErrorMessage();
     String strErrorMessageUntranslated = eval.getErrorMessageUntranslated();
-    setErrorMessageUn(strErrorMessage, strErrorMessageUntranslated);
+    setErrorMessage(strErrorMessage, strErrorMessageUntranslated);
     refresh(7,"script complete");
     if (isOK) {
       isScriptQueued = isQueued;
@@ -4823,17 +4823,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         setScriptStatus(null, strScript, -2 - (++scriptIndex), null);
       eval.evaluateCompiledScript(isSyntaxCheck, isSyntaxAndFileCheck,
           historyDisabled, listCommands, outputBuffer);
-      setErrorMessageUn(strErrorMessage = eval.getErrorMessage(),
-          strErrorMessageUntranslated = eval.getErrorMessageUntranslated());
-      if (!isQuiet)
-        setScriptStatus("Jmol script terminated", strErrorMessage, 1 + eval
-            .getExecutionWalltime(), strErrorMessageUntranslated);
     } else {
       scriptStatus(strErrorMessage);
       setScriptStatus("Jmol script terminated", strErrorMessage, 1,
           strErrorMessageUntranslated);
+      setStateScriptVersion(null); // set by compiler
     }
-    setStateScriptVersion(null); // set by compiler
     if (strErrorMessage != null && autoExit)
       exitJmol();
     if (isSyntaxCheck) {
@@ -4841,9 +4836,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         Logger.info("--script check ok");
       else
         Logger.error("--script check error\n" + strErrorMessageUntranslated);
-    }
-    if (isSyntaxCheck)
       Logger.info("(use 'exit' to stop checking)");
+    }
     isScriptQueued = true;
     if (returnType.equalsIgnoreCase("String"))
       return strErrorMessageUntranslated;
@@ -5683,7 +5677,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private void setFileLoadStatus(EnumFileStatus ptLoad,
                                  String fullPathName, String fileName,
                                  String modelName, String strError) {
-    setErrorMessage(strError);
+    setErrorMessage(strError, null);
     global.setParamI("_loadPoint", ptLoad.getCode()); 
     boolean doCallback = (ptLoad != EnumFileStatus.CREATING_MODELSET);
     statusManager.setFileLoadStatus(fullPathName, fileName, modelName,
@@ -9196,7 +9190,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     } catch (Throwable er) {
       er.printStackTrace();
       Logger.error(setErrorMessage((String) (err = "ERROR creating image??: "
-          + er)));
+          + er), null));
     }
     creatingImage = false;
     if (quality != Integer.MIN_VALUE) {
@@ -9594,15 +9588,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private String errorMessage;
   private String errorMessageUntranslated;
 
-  private String setErrorMessage(String errMsg) {
-    return setErrorMessageUn(errMsg, null);
-  }
-
-  private String setErrorMessageUn(String errMsg, String errMsgUntranslated) {
+  public String setErrorMessage(String errMsg, String errMsgUntranslated) {
     errorMessageUntranslated = errMsgUntranslated;
     return (errorMessage = errMsg);
   }
-
+  
   @Override
   public String getErrorMessage() {
     return errorMessage;
@@ -10846,6 +10836,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public boolean isSingleThreaded() {
     return apiPlatform.isSingleThreaded();
+  }
+
+  public void resumeScriptDelay(ScriptEvaluator eval, ScriptContext sc) {
+    if (isSingleThreaded())
+      eval.resumeEval(sc, false);
   }
 
 }

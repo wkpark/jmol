@@ -27,7 +27,7 @@ package org.jmol.script;
 
 import org.jmol.util.Logger;
 
-class ScriptException extends Exception {
+public class ScriptException extends Exception {
 
   protected final ScriptEvaluator eval;
   private String message;

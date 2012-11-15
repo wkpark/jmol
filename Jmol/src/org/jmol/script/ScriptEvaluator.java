@@ -56,6 +56,7 @@ import org.jmol.modelset.ModelCollection.StateScript;
 import org.jmol.shape.MeshCollection;
 import org.jmol.shape.Object2d;
 import org.jmol.shape.Shape;
+import org.jmol.thread.ScriptDelayThread;
 import org.jmol.thread.ScriptParallelProcessor;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.ColorEncoder;
@@ -255,30 +256,51 @@ public class ScriptEvaluator {
                                      StringXBuilder outputBuffer) {
     boolean tempOpen = this.isCmdLine_C_Option;
     this.isCmdLine_C_Option = isCmdLine_C_Option;
-    viewer.pushHoldRepaintWhy("runEval");
     interruptExecution = executionPaused = false;
     executionStepping = false;
     isExecuting = true;
-    currentThread = Thread.currentThread();
     isSyntaxCheck = this.isCmdLine_c_or_C_Option = isCmdLine_c_or_C_Option;
     timeBeginExecution = System.currentTimeMillis();
     this.historyDisabled = historyDisabled;
     this.outputBuffer = outputBuffer;
-    setErrorMessage(null);
+    currentThread = Thread.currentThread();
+    resumeEval(null, listCommands);
+    this.isCmdLine_C_Option = tempOpen;
+    viewer.setStateScriptVersion(null); // set by compiler
+  }
+
+  /**
+   * After a JavaScript timeout returns from a DELAY command, 
+   * we re-enter the script here, using a saved script context
+   * 
+   * @param sc
+   * @param listCommands
+   */
+  public void resumeEval(ScriptContext sc, boolean listCommands) {
+    boolean isScriptInterruption = false;
     try {
-      try {
+      setErrorMessage(null);
+      viewer.pushHoldRepaintWhy("runEval");
+      if (sc == null) { 
         setScriptExtensions();
-        instructionDispatchLoop(listCommands);
-        String script = viewer.getInterruptScript();
-        if (script != "")
-          runScriptBuffer(script, null);
-      } catch (Error er) {
-        viewer.handleError(er, false);
-        setErrorMessage("" + er + " " + viewer.getShapeErrorState());
-        errorMessageUntranslated = "" + er;
-        scriptStatusOrBuffer(errorMessage);
+      } else {
+        // from a delay setTimeOut
+        thisContext = sc;
+        if (thisContext.scriptLevel > 0)
+          scriptLevel = thisContext.scriptLevel - 1;
+        restoreScriptContext(thisContext, true, false, false);
       }
+      instructionDispatchLoop(listCommands);
+      String script = viewer.getInterruptScript();
+      if (script != "")
+        runScriptBuffer(script, null);
+    } catch (Error er) {
+      viewer.handleError(er, false);
+      setErrorMessage("" + er + " " + viewer.getShapeErrorState());
+      errorMessageUntranslated = "" + er;
+      scriptStatusOrBuffer(errorMessage);
     } catch (ScriptException e) {
+      isScriptInterruption = (e instanceof ScriptInterruption);
       setErrorMessage(e.toString());
       errorMessageUntranslated = e.getErrorMessageUntranslated();
       scriptStatusOrBuffer(errorMessage);
@@ -286,15 +308,20 @@ public class ScriptEvaluator {
           && errorMessage.indexOf("java.lang.OutOfMemoryError") >= 0 ? "Error"
           : "ScriptException"), errorMessage, errorMessageUntranslated);
     }
+    viewer.setTainted(true);
+    viewer.popHoldRepaintWhy("runEval");
+    if (isScriptInterruption)
+      return;
     timeEndExecution = System.currentTimeMillis();
-    this.isCmdLine_C_Option = tempOpen;
     if (errorMessage == null && interruptExecution)
       setErrorMessage("execution interrupted");
     else if (!tQuiet && !isSyntaxCheck)
       viewer.scriptStatus(SCRIPT_COMPLETED);
-    isExecuting = isSyntaxCheck = isCmdLine_c_or_C_Option = historyDisabled = false;
-    viewer.setTainted(true);
-    viewer.popHoldRepaintWhy("runEval");
+    isExecuting = isSyntaxCheck = this.isCmdLine_c_or_C_Option = this.historyDisabled = false;
+    String msg = getErrorMessageUntranslated();
+    viewer.setErrorMessage(errorMessage, msg);
+    if (!tQuiet)
+      viewer.setScriptStatus("Jmol script terminated", errorMessage, 1 + getExecutionWalltime(), msg);
   }
 
   /**
@@ -358,7 +385,7 @@ public class ScriptEvaluator {
     logMessages = (debugScript && Logger.debugging);
   }
 
-  private boolean interruptExecution;
+  public boolean interruptExecution;
   private boolean executionPaused;
   private boolean executionStepping;
   private boolean isExecuting;
@@ -376,10 +403,14 @@ public class ScriptEvaluator {
   }
 
   public void pauseExecution(boolean withDelay) {
-    if (isSyntaxCheck || viewer.isHeadless())
+    if (isSyntaxCheck || viewer.isHeadless() || viewer.isSingleThreaded())
       return;
     if (withDelay)
-      delayMillis(-100);
+      try {
+        delayMillis(-100);
+      } catch (ScriptException e) {
+        // won't happen
+      }
     viewer.popHoldRepaintWhy("pauseExecution");
     executionStepping = false;
     executionPaused = true;
@@ -1801,7 +1832,7 @@ public class ScriptEvaluator {
 
   private final static int scriptLevelMax = 100;
 
-  private Thread currentThread;
+  public Thread currentThread;
   protected Viewer viewer;
   protected ScriptCompiler compiler;
   private Map<String, Object> definedAtomSets;
@@ -1811,7 +1842,7 @@ public class ScriptEvaluator {
   private String scriptFileName;
   private String functionName;
   private boolean isStateScript;
-  int scriptLevel;
+  public int scriptLevel;
   private int scriptReportingLevel = 0;
   private int commandHistoryLevelMax = 0;
 
@@ -2500,11 +2531,15 @@ public class ScriptEvaluator {
     this.tQuiet = tQuiet;
   }
 
-  ScriptContext thisContext = null;
+  public ScriptContext thisContext = null;
 
-  void pushContext(ContextToken token) throws ScriptException {
+  public void pushContext(ContextToken token) throws ScriptException {
     if (scriptLevel == scriptLevelMax)
       error(ERROR_tooManyScriptLevels);
+    pushContext2(token);
+  }
+  
+  public void pushContext2(ContextToken token) {
     thisContext = getScriptContext();
     thisContext.token = token;
     if (token == null) {
@@ -2553,14 +2588,6 @@ public class ScriptEvaluator {
     context.executionPaused = executionPaused;
     context.scriptExtensions = scriptExtensions;
     return context;
-  }
-
-  void resume(ScriptContext sc) throws ScriptException {
-    thisContext = sc;
-    if (thisContext.scriptLevel > 0)
-      scriptLevel = thisContext.scriptLevel - 1;
-    restoreScriptContext(thisContext, true, false, false);
-    instructionDispatchLoop(false);
   }
 
   void popContext(boolean isFlowCommand, boolean statementOnly) {
@@ -5252,11 +5279,11 @@ public class ScriptEvaluator {
       fullCommand = thisCommand + getNextComment();
       getToken(0);
       iToken = 0;
-      if (doList || !isSyntaxCheck) {
+      if ((doList || !isSyntaxCheck && scriptLevel > 0) && !viewer.isSingleThreaded()) {
         int milliSecDelay = viewer.getScriptDelay();
-        if (doList || milliSecDelay > 0 && scriptLevel > 0) {
+        if (doList || milliSecDelay > 0) {
           if (milliSecDelay > 0)
-            delayMillis(-(long) milliSecDelay);
+            delayMillis(-milliSecDelay);
           viewer.scriptEcho("$[" + scriptLevel + "." + lineNumbers[pc] + "."
               + (pc + 1) + "] " + thisCommand);
         }
@@ -11142,34 +11169,17 @@ public class ScriptEvaluator {
     default:
       error(ERROR_numberExpected);
     }
-    if (!isSyntaxCheck)
-      delayMillis(millis);
+    delayMillis(millis);
   }
 
-  private void delayMillis(long millis) {
-    if (viewer.isHeadless() || viewer.isSingleThreaded())
+  private void delayMillis(long millis) throws ScriptException {
+    if (isSyntaxCheck || viewer.isHeadless() || viewer.autoExit)
       return;
-    long timeBegin = System.currentTimeMillis();
     refresh();
-    int delayMax;
-    if (millis < 0)
-      millis = -millis;
-    else if ((delayMax = viewer.getDelayMaximum()) > 0 && millis > delayMax)
-      millis = delayMax;
-    millis -= System.currentTimeMillis() - timeBegin;
-    int seconds = (int) millis / 1000;
-    millis -= seconds * 1000;
-    if (millis <= 0)
-      millis = 1;
-    while (seconds >= 0 && millis > 0 && !interruptExecution
-        && currentThread == Thread.currentThread()) {
-      viewer.popHoldRepaintWhy("delay");
-      try {
-        Thread.sleep((seconds--) > 0 ? 1000 : millis);
-      } catch (InterruptedException e) {
-      }
-      viewer.pushHoldRepaintWhy("delay");
-    }
+    if (viewer.isSingleThreaded())
+      throw new ScriptInterruption(this, millis);
+    ScriptDelayThread sdt = new ScriptDelayThread(this, this.viewer, millis);
+    sdt.run();
   }
 
   private void slab(boolean isDepth) throws ScriptException {
@@ -14232,7 +14242,8 @@ public class ScriptEvaluator {
         nVibes = intParameterRange(++pt, 1, 10);
         if (!isSyntaxCheck) {
           viewer.setVibrationOff();
-          delayMillis(100);
+          if (!viewer.isSingleThreaded())
+              delayMillis(100);
         }
         pt++;
         break;

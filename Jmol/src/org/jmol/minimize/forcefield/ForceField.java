@@ -486,7 +486,7 @@ abstract public class ForceField {
     calc.appendLogData(s);
   }
 
-  protected static BufferedReader getResource(URL url) throws IOException {
+  protected BufferedReader getResource(URL url) throws IOException {
     /**
      * @j2sNative
      * 

@@ -141,7 +141,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
         : g3d.isPass2()));
     isTranslucent = haveBsSlabGhost
         || Colix.isColixTranslucent(mesh.colix);
-    if (isTranslucent)
+    if (isTranslucent || volumeRender)
       needTranslucent = true;
     doRender = (setColix(mesh.colix) || mesh.showContourLines);
     if (!doRender || haveBsSlabGhost && !(doRender = g3d.setColix(mesh.slabColix))) {

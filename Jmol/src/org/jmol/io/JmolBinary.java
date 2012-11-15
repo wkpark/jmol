@@ -346,12 +346,12 @@ public class JmolBinary {
 
   static JmolZipUtility jzu;
   
-  public static String getZipDirectoryAsStringAndClose(BufferedInputStream t) {
-    return getJzu().getZipDirectoryAsStringAndClose(t);
+  private static JmolZipUtility getJzu() {
+    return (jzu == null ? jzu = (JmolZipUtility) Interface.getOptionInterface("io2.ZipUtil") : jzu);
   }
 
-  public static JmolZipUtility getJzu() {
-    return (jzu == null ? jzu = (JmolZipUtility) Interface.getOptionInterface("io2.ZipUtil") : jzu);
+  public static String getZipDirectoryAsStringAndClose(BufferedInputStream t) {
+    return getJzu().getZipDirectoryAsStringAndClose(t);
   }
 
   public static InputStream newGZIPInputStream(BufferedInputStream bis) throws IOException {
@@ -385,12 +385,6 @@ public class JmolBinary {
   public static Object getZipFileContentsAsBytes(BufferedInputStream bis,
                                                  String[] subFileList, int i) {
     return getJzu().getZipFileContentsAsBytes(bis, subFileList, i);
-  }
-
-  public static String cacheZipContents(BufferedInputStream checkPngZipStream,
-                                        String shortName,
-                                        Map<String, byte[]> pngjCache) {
-    return getJzu().cacheZipContents(checkPngZipStream, shortName, pngjCache);
   }
 
   public static Object createZipSet(FileManager fm, Viewer viewer, String fileName, String script, String[] scripts, boolean includeRemoteFiles) {
@@ -462,7 +456,7 @@ public class JmolBinary {
   }
 
   public static byte[] getCachedPngjBytes(FileManager fm, String pathName) {
-    return getJzu().getCachedPngjBytes(fm, pathName);
+    return (pathName.indexOf(".png") < 0 ? null : getJzu().getCachedPngjBytes(fm, pathName));
   }
 
   static boolean cachePngjFile(FileManager fm, String[] data) {

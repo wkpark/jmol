@@ -58,8 +58,7 @@ public class TextRenderer {
               text.z, text.zSlab, text.bgcolix);
         }
       } else {
-        g3d
-            .drawImage(text.image, (int) text.boxX, (int) text.boxY, text.z,
+        g3d.drawImage(text.image, (int) text.boxX, (int) text.boxY, text.z,
                 text.zSlab, text.bgcolix, (int) text.boxWidth,
                 (int) text.boxHeight);
       }

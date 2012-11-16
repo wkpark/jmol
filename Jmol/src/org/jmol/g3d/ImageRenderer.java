@@ -110,7 +110,7 @@ class ImageRenderer {
     for (int i = 0, offset = 0; i < height; i++) {
       for (int j = 0; j < width; j++) {
         int argb = buffer[offset++];
-          jmolRenderer.plotImagePixel(argb, x + j, y + i, z, 0, bgargb);
+          jmolRenderer.plotImagePixel(argb, x + j, y + i, z, 8, bgargb);
       }
     }
   }

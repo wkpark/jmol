@@ -956,6 +956,8 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   public void plotImage(int x, int y, int z, Object image, JmolRendererInterface jmolRenderer,
                         short bgcolix, int width, int height) {
     setColix(bgcolix);
+    if (!isPass2)
+      translucencyMask = -1;
     if (bgcolix == 0)
       argbCurrent = 0;
     ImageRenderer.plotImage(x, y, z, image, this, jmolRenderer, antialiasThisFrame, argbCurrent, 

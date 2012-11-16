@@ -216,14 +216,12 @@ public class RepaintManager implements JmolRepaintInterface {
         if (logTime)
           Logger.checkTimer(msg, false);
       }
-      if (isFirstPass)
-        g3d.renderAllStrings(null);
+      g3d.renderAllStrings(null);
     } catch (Exception e) {
-      System.out.println(e.getMessage());
+      e.printStackTrace();
       Logger.error("rendering error? ");
     }
   }
-
   
   public String renderExport(String type, GData gdata, ModelSet modelSet,
                       String fileName) {

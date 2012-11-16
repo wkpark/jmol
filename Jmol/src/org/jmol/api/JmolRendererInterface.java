@@ -165,7 +165,7 @@ public interface JmolRendererInterface extends JmolGraphicsInterface {
   public abstract void drawString(String str, JmolFont font3d, int xBaseline,
                                   int yBaseline, int z, int zSlab, short bgColix);
 
-  public abstract void plotImagePixel(int argb, int x, int y, int z, int shade);
+  public abstract void plotImagePixel(int argb, int x, int y, int z, int shade, int bgargb);
 
   /**
    * draws the specified string in the current font. no line wrapping -- echo,

@@ -182,7 +182,7 @@ class TextRenderer {
       for (int j = 0; j < textWidth; j++) {
         byte shade = tmap[offset++];
         if (shade != 0)
-          jmolRenderer.plotImagePixel(argb, x + j, y + i, z, shade);
+          jmolRenderer.plotImagePixel(argb, x + j, y + i, z, shade, bgargb);
       }
     }
   }

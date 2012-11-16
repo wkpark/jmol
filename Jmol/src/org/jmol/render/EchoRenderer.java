@@ -63,7 +63,7 @@ public class EchoRenderer extends ShapeRenderer {
       }
       TextRenderer.render(t, g3d, scalePixelsPerMicron, imageFontScaling,
           false, null);
-      if (Colix.isColixTranslucent(t.bgcolix))
+      if (Colix.isColixTranslucent(t.bgcolix) || Colix.isColixTranslucent(t.colix))
         haveTranslucent = true;
     }
     if (!isExport) {

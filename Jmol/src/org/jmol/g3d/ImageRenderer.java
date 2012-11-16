@@ -104,23 +104,20 @@ class ImageRenderer {
   private static void plotImageClipped(int x, int y, int z, Graphics3D g3d,
                                        JmolRendererInterface jmolRenderer,
                                        int width, int height,
-                                       int[] buffer, int bgcolor) {
+                                       int[] buffer, int bgargb) {
     if (jmolRenderer == null)
       jmolRenderer = g3d;
     for (int i = 0, offset = 0; i < height; i++) {
       for (int j = 0; j < width; j++) {
         int argb = buffer[offset++];
-        if (argb != bgcolor && (argb & 0xFF000000) == 0xFF000000)
-          jmolRenderer.plotImagePixel(argb, x + j, y + i, z, 0);
-        else if (argb == 0 && bgcolor != 0)
-          jmolRenderer.plotImagePixel(bgcolor, x + j, y + i, z, 0);
+          jmolRenderer.plotImagePixel(argb, x + j, y + i, z, 0, bgargb);
       }
     }
   }
 
   private static void plotImageUnClipped(int x, int y, int z, Graphics3D g3d,
                                          int textWidth, int textHeight,
-                                         int[] buffer, int bgcolor) {
+                                         int[] buffer, int bgargb) {
     int[] zbuf = g3d.zbuf;
     int renderWidth = g3d.width;
     int pbufOffset = y * renderWidth + x;
@@ -131,10 +128,10 @@ class ImageRenderer {
       while (j < textWidth) {
         if (z < zbuf[pbufOffset]) {
           int argb = buffer[offset];
-          if (argb != bgcolor && (argb & 0xFF000000) == 0xFF000000)
+          if (argb != bgargb && (argb & 0xFF000000) == 0xFF000000)
             g3d.addPixel(pbufOffset, z, argb);
-          else if (argb == 0 && bgcolor != 0)
-            g3d.addPixel(pbufOffset, z, bgcolor);
+          else if (argb == 0 && bgargb != 0)
+            g3d.addPixel(pbufOffset, z, bgargb);
         }
         ++offset;
         ++j;

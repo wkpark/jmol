@@ -572,6 +572,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
 
   private int currentShadeIndex;
   private int lastRawColor;
+  private int translucencyLog;
   
   @Override
   public void setColor(int argb) {
@@ -601,6 +602,9 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     addAllPixels = isPass2 || !isTranslucent;
     if (isPass2) {
       translucencyMask = (mask << Colix.ALPHA_SHIFT) | 0xFFFFFF;
+      translucencyLog = mask >> Colix.TRANSLUCENT_SHIFT;
+    } else {
+      translucencyLog = 0;
     }
     colixCurrent = colix;
     if (isLast) {
@@ -929,6 +933,8 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
       TextString ts = strings[i];
       plotText(ts.x, ts.y, ts.z, ts.argb, ts.bgargb, ts.text, ts.font, (JmolRendererInterface) jmolRenderer);
     }
+    strings = null;
+    stringCount = 0;
   }
 
   @Override
@@ -1351,13 +1357,13 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
       addPixel(offset, z, argb);
   }
 
-  public void plotImagePixel(int argb, int x, int y, int z, int shade) {
+  public void plotImagePixel(int argb, int x, int y, int z, int shade, int bgargb) {
     // drawString via text3d.plotClipped
     if (isClipped(x, y))
       return;
     int offset = y * width + x;
     if (z < zbuf[offset])
-      shadeTextPixel(offset, z, argb, 0, shade);
+      shadeTextPixel(offset, z, argb, bgargb, shade);
   }
 
   void plotPixelClippedScreened(int argb, boolean isScreened, int x, int y, int z) {
@@ -1904,12 +1910,14 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
       return;
     }
     if (bgargb != 0) {
-      int t = translucencyMask;
-      translucencyMask = bgargb;
-      Graphics3D.mergeBufferPixel(pbuf, offset, bgargb, bgcolor);
-      translucencyMask = t;
+      mergeBufferPixel(pbuf, offset, bgargb, bgcolor);
     }
-    Graphics3D.mergeBufferPixel(pbuf, offset, (argb & 0xFFFFFF) | (shade << 24), bgcolor);
+    // shade is a log of translucency, so adding two is equivalent to
+    // multiplying them. Works like a charm! - BH 
+    shade += translucencyLog;
+    if (shade > 7)
+      return;
+    mergeBufferPixel(pbuf, offset, (argb & 0xFFFFFF) | shade << 24, bgcolor);
     zbuf[offset] = z;
   }
 

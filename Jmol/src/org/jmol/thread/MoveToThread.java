@@ -27,26 +27,26 @@ package org.jmol.thread;
 
 
 import org.jmol.util.AxisAngle4f;
+import org.jmol.util.Logger;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Point3f;
 import org.jmol.util.Vector3f;
 import org.jmol.viewer.TransformManager;
 import org.jmol.viewer.Viewer;
 
-public class MotionThread extends JmolThread {
+public class MoveToThread extends JmolThread {
   /**
    * 
    */
   private final TransformManager transformManager;
-  private final Viewer viewer;
 
   /**
    * @param transformManager
    * @param viewer 
    */
-  public MotionThread(TransformManager transformManager, Viewer viewer) {
+  public MoveToThread(TransformManager transformManager, Viewer viewer) {
+    super(viewer, "MotionThread");
     this.transformManager = transformManager;
-    this.viewer = viewer;
   }
 
   private final Vector3f aaStepCenter = new Vector3f();
@@ -87,59 +87,15 @@ public class MotionThread extends JmolThread {
   private float yNavTransStart;
   private float navDepthStart;
   private float navDepthDelta;
-  private long targetTime;
   private long frameTimeMillis;
   private int iStep;
   
-  private boolean asThread;
+  private boolean doEndMove;
   
-  public void startMotion(boolean asThread) {
-    this.asThread = asThread;
-    if (asThread)
-      start();
-    else
-      run();
-  }
-
-  @Override
-  public void run() {
-    if (totalSteps > 0)
-      viewer.setInMotion(true);
-    try {
-      if (totalSteps == 0 || startMotion())
-        endMotion();
-    } catch (Exception e) {
-      // ignore
-    }
-    if (totalSteps > 0)
-      viewer.setInMotion(false);
-    transformManager.motion = null;
-  }
-  
-  private boolean sleepThread() {
-    if (System.currentTimeMillis() < targetTime) {
-      viewer.requestRepaintAndWait();
-      if (transformManager.motion == null || !asThread && !viewer.isScriptExecuting()) {
-        return false;
-      }
-      int sleepTime = (int) (targetTime - System.currentTimeMillis());
-      if (sleepTime > 0) {
-        try {
-          Thread.sleep(sleepTime);
-        } catch (InterruptedException ie) {
-          return false;
-        }
-        // System.out.println("moveto thread " +
-        // Thread.currentThread().getName() + " running " +
-        // System.currentTimeMillis());
-      }
-    }
-    return true;
-  }
-
-  public int set(float floatSecondsTotal, Point3f center, Matrix3f end, float zoom,
-          float xTrans, float yTrans, float newRotationRadius,
-          Point3f navCenter, float xNav, float yNav, float navDepth) {
+  public int set(float floatSecondsTotal, Point3f center, Matrix3f end,
+                 float zoom, float xTrans, float yTrans,
+                 float newRotationRadius, Point3f navCenter, float xNav,
+                 float yNav, float navDepth) {
     this.center = center;
     matrixEnd.set(end);
     this.zoom = zoom;
@@ -149,14 +105,15 @@ public class MotionThread extends JmolThread {
     this.xNav = xNav;
     this.yNav = yNav;
     this.navDepth = navDepth;
-    ptMoveToCenter = (center == null ? transformManager.fixedRotationCenter : center);
+    ptMoveToCenter = (center == null ? transformManager.fixedRotationCenter
+        : center);
     startRotationRadius = transformManager.modelRadius;
     targetRotationRadius = (center == null || Float.isNaN(newRotationRadius) ? transformManager.modelRadius
         : newRotationRadius <= 0 ? viewer.calcRotationRadius(center)
             : newRotationRadius);
     startPixelScale = transformManager.scaleDefaultPixelsPerAngstrom;
-    targetPixelScale = (center == null ? startPixelScale
-        : transformManager.defaultScaleToScreen(targetRotationRadius));
+    targetPixelScale = (center == null ? startPixelScale : transformManager
+        .defaultScaleToScreen(targetRotationRadius));
     if (Float.isNaN(zoom))
       zoom = transformManager.zoomPercent;
     transformManager.getRotation(matrixStart);
@@ -180,7 +137,8 @@ public class MotionThread extends JmolThread {
     aaStepCenter.scale(1f / totalSteps);
     pixelScaleDelta = (targetPixelScale - startPixelScale);
     rotationRadiusDelta = (targetRotationRadius - startRotationRadius);
-    if (navCenter != null && transformManager.mode == TransformManager.MODE_NAVIGATION) {
+    if (navCenter != null
+        && transformManager.mode == TransformManager.MODE_NAVIGATION) {
       aaStepNavCenter.setT(navCenter);
       aaStepNavCenter.sub(transformManager.navigationCenter);
       aaStepNavCenter.scale(1f / totalSteps);
@@ -193,63 +151,116 @@ public class MotionThread extends JmolThread {
     navDepthDelta = navDepth - navDepthStart;
     return totalSteps;
   }
-  
-  public boolean startMotion() {
-    for (; iStep < totalSteps; ++iStep) {
-      if (!Float.isNaN(matrixEnd.m00)) {
-        transformManager.getRotation(matrixStart);
-        matrixStartInv.invertM(matrixStart);
-        matrixStep.mul2(matrixEnd, matrixStartInv);
-        aaTotal.setM(matrixStep);
-        aaStep.setAA(aaTotal);
-        aaStep.angle /= (totalSteps - iStep);
-        if (aaStep.angle == 0)
-          matrixStep.setIdentity();
-        else
-          matrixStep.setAA(aaStep);
-        matrixStep.mul(matrixStart);
-      }
-      float fStep = iStep / (totalSteps - 1f);
-      transformManager.modelRadius = startRotationRadius + rotationRadiusDelta * fStep;
-      transformManager.scaleDefaultPixelsPerAngstrom = startPixelScale + pixelScaleDelta
-          * fStep;
-      if (!Float.isNaN(xTrans)) {
-        transformManager.zoomToPercent(zoomStart + zoomDelta * fStep);
-        transformManager.translateToPercent('x', xTransStart + xTransDelta * fStep);
-        transformManager.translateToPercent('y', yTransStart + yTransDelta * fStep);
-      }
-      transformManager.setRotation(matrixStep);
-      if (center != null)
-        transformManager.fixedRotationCenter.add(aaStepCenter);
-      if (navCenter != null && transformManager.mode == TransformManager.MODE_NAVIGATION) {
-        Point3f pt = Point3f.newP(transformManager.navigationCenter);
-        pt.add(aaStepNavCenter);
-        transformManager.navigatePt(0, pt);
-        if (!Float.isNaN(xNav) && !Float.isNaN(yNav))
-          transformManager.navTranslatePercent(0, xNavTransStart + xNavTransDelta * fStep,
-              yNavTransStart + yNavTransDelta * fStep);
-        if (!Float.isNaN(navDepth))
-          transformManager.setNavigationDepthPercent(0, navDepthStart + navDepthDelta * fStep);
-      }
-      targetTime += frameTimeMillis;
-      if (!sleepThread())
-        return false;
-    }
-    return true;
+         
+  @Override
+  protected boolean checkContinue() {
+    return continuing;
   }
 
-  public void endMotion() {
+  @Override
+  protected void run1(int mode) throws InterruptedException {
+    while (true)
+      switch (mode) {
+      case INIT:
+        continuing = (totalSteps > 0);
+        if (continuing)
+          viewer.setInMotion(true);
+        return;
+      case MAIN:
+        if (++iStep >= totalSteps) {
+          continuing = false;
+          if (isJS) {
+            mode = FINISH;
+            break;
+          }
+          return;
+        }
+        doStepTransform();
+        doEndMove = true;
+        targetTime += frameTimeMillis;
+        currentTime = System.currentTimeMillis();
+        if (currentTime >= targetTime) {
+          targetTime = currentTime;
+        }
+        viewer.requestRepaintAndWait();
+        if (transformManager.motion == null || !isJS && eval != null
+            && !viewer.isScriptExecuting()) {
+          continuing = doEndMove = false;
+          return;
+        }
+        currentTime = System.currentTimeMillis();
+        int sleepTime = (int) (targetTime - currentTime);
+        runSleep(sleepTime, MAIN);
+        return;
+      case FINISH:
+        if (totalSteps == 0 || doEndMove)
+          doFinalTransform();
+        if (totalSteps > 0)
+          viewer.setInMotion(false);
+        transformManager.motion = null;
+        resumeEval();
+        return;
+      }
+  }
+
+  private void doStepTransform() {
+    if (!Float.isNaN(matrixEnd.m00)) {
+      transformManager.getRotation(matrixStart);
+      matrixStartInv.invertM(matrixStart);
+      matrixStep.mul2(matrixEnd, matrixStartInv);
+      aaTotal.setM(matrixStep);
+      aaStep.setAA(aaTotal);
+      aaStep.angle /= (totalSteps - iStep);
+      if (aaStep.angle == 0)
+        matrixStep.setIdentity();
+      else
+        matrixStep.setAA(aaStep);
+      matrixStep.mul(matrixStart);
+    }
+    float fStep = iStep / (totalSteps - 1f);
+    transformManager.modelRadius = startRotationRadius + rotationRadiusDelta
+        * fStep;
+    transformManager.scaleDefaultPixelsPerAngstrom = startPixelScale
+        + pixelScaleDelta * fStep;
+    if (!Float.isNaN(xTrans)) {
+      transformManager.zoomToPercent(zoomStart + zoomDelta * fStep);
+      transformManager.translateToPercent('x', xTransStart + xTransDelta
+          * fStep);
+      transformManager.translateToPercent('y', yTransStart + yTransDelta
+          * fStep);
+    }
+    transformManager.setRotation(matrixStep);
+    if (center != null)
+      transformManager.fixedRotationCenter.add(aaStepCenter);
+    if (navCenter != null
+        && transformManager.mode == TransformManager.MODE_NAVIGATION) {
+      Point3f pt = Point3f.newP(transformManager.navigationCenter);
+      pt.add(aaStepNavCenter);
+      transformManager.navigatePt(0, pt);
+      if (!Float.isNaN(xNav) && !Float.isNaN(yNav))
+        transformManager
+            .navTranslatePercent(0, xNavTransStart + xNavTransDelta * fStep,
+                yNavTransStart + yNavTransDelta * fStep);
+      if (!Float.isNaN(navDepth))
+        transformManager.setNavigationDepthPercent(0, navDepthStart
+            + navDepthDelta * fStep);
+    }
+  }
+
+  private void doFinalTransform() {
     transformManager.setRotationRadius(targetRotationRadius, true);
     transformManager.scaleDefaultPixelsPerAngstrom = targetPixelScale;
     if (center != null)
-      transformManager.moveRotationCenter(center, !transformManager.windowCentered);
+      transformManager.moveRotationCenter(center,
+          !transformManager.windowCentered);
     if (!Float.isNaN(xTrans)) {
       transformManager.zoomToPercent(zoom);
       transformManager.translateToPercent('x', xTrans);
       transformManager.translateToPercent('y', yTrans);
     }
     transformManager.setRotation(matrixEnd);
-    if (navCenter != null && transformManager.mode == TransformManager.MODE_NAVIGATION) {
+    if (navCenter != null
+        && transformManager.mode == TransformManager.MODE_NAVIGATION) {
       transformManager.navigationCenter.setT(navCenter);
       if (!Float.isNaN(xNav) && !Float.isNaN(yNav))
         transformManager.navTranslatePercent(0, xNav, yNav);
@@ -257,4 +268,13 @@ public class MotionThread extends JmolThread {
         transformManager.setNavigationDepthPercent(0, navDepth);
     }
   }
+
+  @Override
+  public void interrupt() {
+    Logger.debug("moveto thread interrupted!");
+    doEndMove = false;
+    super.interrupt();
+  }
+  
+
 }

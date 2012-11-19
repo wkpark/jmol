@@ -505,6 +505,7 @@ public class Minimizer implements MinimizerInterface {
   private MinimizationThread minimizationThread;
 
   private void setMinimizationOn(boolean minimizationOn) {
+    //TODO -- shouldn't we allow run() here?
     //System.out.println("Minimizer setMinimizationOn "+ minimizationOn + " " + minimizationThread + " " + this.minimizationOn);
     this.minimizationOn = minimizationOn;
     if (!minimizationOn) {
@@ -515,7 +516,7 @@ public class Minimizer implements MinimizerInterface {
       return;
     }
     if (minimizationThread == null) {
-      minimizationThread = new MinimizationThread(this);
+      minimizationThread = new MinimizationThread(this, viewer);
       minimizationThread.start();
     }
   }

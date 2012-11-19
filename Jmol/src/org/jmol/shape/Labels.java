@@ -578,7 +578,7 @@ public class Labels extends AtomShape {
     appendCmd(s, "background label " + encodeColor(defaultBgcolix));
     appendCmd(s, "set labelOffset " + Object2d.getXOffset(defaultOffset) + " "
         + (-Object2d.getYOffset(defaultOffset)));
-    String align = Object2d.getAlignment(defaultAlignment);
+    String align = Object2d.getAlignmentName(defaultAlignment);
     appendCmd(s, "set labelAlignment " + (align.length() < 5 ? "left" : align));
     String pointer = Object2d.getPointer(defaultPointer);
     appendCmd(s, "set labelPointer " + (pointer.length() == 0 ? "off" : pointer));
@@ -619,7 +619,7 @@ public class Labels extends AtomShape {
                     : "labelOffset ")
                 + Object2d.getXOffset(offsetFull >> FLAG_OFFSET) + " "
                 + (-Object2d.getYOffset(offsetFull >> FLAG_OFFSET)));
-        String align = Object2d.getAlignment(offsetFull >> 2);
+        String align = Object2d.getAlignmentName(offsetFull >> 2);
         String pointer = Object2d.getPointer(offsetFull);
         if (pointer.length() > 0)
           setStateInfo(temp2, i, "set labelPointer " + pointer);

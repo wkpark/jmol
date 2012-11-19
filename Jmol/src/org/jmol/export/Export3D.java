@@ -327,16 +327,17 @@ final public class Export3D implements JmolRendererInterface {
    *          baseline z
    * @param zSlab
    *          z for slab calculation
+   * @param bgcolix 
    */
 
   public void drawString(String str, JmolFont font3d, int xBaseline,
-                         int yBaseline, int z, int zSlab, short bgColix) {
+                         int yBaseline, int z, int zSlab, short bgcolix) {
     // axis, labels, measures
     if (str == null)
       return;
     if (isClippedZ(zSlab))
       return;
-    drawStringNoSlab(str, font3d, xBaseline, yBaseline, z, (short) 0);
+    drawStringNoSlab(str, font3d, xBaseline, yBaseline, z, bgcolix);
   }
 
   /**
@@ -353,10 +354,11 @@ final public class Export3D implements JmolRendererInterface {
    *          baseline y
    * @param z
    *          baseline z
+   * @param bgcolix 
    */
 
   public void drawStringNoSlab(String str, JmolFont font3d, int xBaseline,
-                               int yBaseline, int z, short bgColix) {
+                               int yBaseline, int z, short bgcolix) {
     // echo, frank, hover, molecularOrbital, uccage
     if (str == null)
       return;

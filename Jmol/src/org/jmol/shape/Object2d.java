@@ -119,7 +119,7 @@ public abstract class Object2d {
     this.bgcolix = colix;
   }
 
-  void setBgColix(Object value) {
+  void setBgColixO(Object value) {
     bgcolix = (value == null ? (short) 0 : Colix.getColixO(value));
   }
 
@@ -211,7 +211,7 @@ public abstract class Object2d {
     }
   }
 
-  boolean setAlignment(String align) {
+  boolean setAlignmentLCR(String align) {
     if ("left".equals(align))
       return setAlignment(ALIGN_LEFT);
     if ("center".equals(align))
@@ -221,16 +221,16 @@ public abstract class Object2d {
     return false;
   }
 
-  static String getAlignment(int align) {
-    return hAlignNames[align & 3];
-  }
-
   public boolean setAlignment(int align) {
     if (this.align != align) {
       this.align = align;
       recalc();
     }
     return true;
+  }
+
+  static String getAlignmentName(int align) {
+    return hAlignNames[align & 3];
   }
 
   public void setPointer(int pointer) {

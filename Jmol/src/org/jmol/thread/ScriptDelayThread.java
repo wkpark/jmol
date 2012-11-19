@@ -25,66 +25,56 @@
 
 package org.jmol.thread;
 
-import org.jmol.script.ScriptContext;
 import org.jmol.script.ScriptEvaluator;
 import org.jmol.viewer.Viewer;
 
 public class ScriptDelayThread extends JmolThread {
 
-  private Viewer viewer;
   private long millis;
-  private ScriptEvaluator eval;
-  private ScriptContext sc;
 
   public ScriptDelayThread(ScriptEvaluator eval, Viewer viewer, long millis) {
-    this.viewer = viewer;
-    this.eval = eval;
+    super(viewer, "ScriptDelayThread");
     this.millis = millis;
-    eval.scriptLevel--;
-    eval.pushContext2(null);
-    sc = eval.thisContext;
-    sc.pc++;
+    setEval(eval);
   }
 
+  private int seconds;
+  
   @Override
-  public void run() {
-
-    long timeBegin = System.currentTimeMillis();
-    int delayMax;
-    if (millis < 0)
-      millis = -millis;
-    else if ((delayMax = viewer.getDelayMaximum()) > 0 && millis > delayMax)
-      millis = delayMax;
-    millis -= System.currentTimeMillis() - timeBegin;
-
-    /**
-     * when the timeout has completed, we need to call eval.resumeEval(sc, false)
-     * 
-     * @j2sNative
-     *
-     * this.viewer.applet._delay(this.eval, this.sc, this.millis);
-     * 
-     */
-
-    {
-      int seconds = (int) millis / 1000;
-      millis -= seconds * 1000;
-      if (millis <= 0)
-        millis = 1;
-      while (seconds >= 0 && millis > 0 && !eval.interruptExecution
-          && eval.currentThread == Thread.currentThread()) {
-        viewer.popHoldRepaintWhy("delay");
-        try {
-          Thread.sleep((seconds--) > 0 ? 1000 : millis);
-        } catch (InterruptedException e) {
-        }
-        viewer.pushHoldRepaintWhy("delay");
+  protected boolean checkContinue() {
+    return continuing && !interrupted && seconds >= 0 && millis > 0 && !eval.interruptExecution
+    && eval.currentThread == Thread.currentThread();
+  }
+  
+  @Override
+  protected void run1(int mode) throws InterruptedException {
+    switch (mode) {
+    case INIT:
+      int delayMax;
+      if (millis < 0)
+        millis = -millis;
+      else if ((delayMax = viewer.getDelayMaximum()) > 0 && millis > delayMax)
+        millis = delayMax;
+      millis -= System.currentTimeMillis() - startTime;
+      if (isJS) {
+        seconds = 0;
+      } else {
+        seconds = (int) millis / 1000;
+        millis -= seconds * 1000;
+        if (millis <= 0)
+          millis = 1;
       }
+      if (!isJS)
+        viewer.popHoldRepaintWhy("delay INIT");
+      return;
+    case MAIN:
+      runSleep((seconds--) > 0 ? 1000 : (int) millis, FINISH);
+      return;
+    case FINISH:
+      if (!isJS)
+        viewer.pushHoldRepaintWhy("delay FINISH");
+      resumeEval();
+      return;
     }
   }
-
-  public void reset() {
-    interrupt();
-  }
-
 }

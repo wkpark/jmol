@@ -28,76 +28,83 @@ package org.jmol.thread;
 import java.util.Iterator;
 import java.util.Map;
 
-
-import org.jmol.util.Logger;
 import org.jmol.util.StringXBuilder;
 import org.jmol.viewer.Viewer;
 
 public class TimeoutThread extends JmolThread {
   public String script;
-  private int ms;
-  private long targetTime;
   private int status;
   private boolean triggered = true;
-  private Viewer viewer;
+  private Map<String, Object> timeouts;
   
   public TimeoutThread(Viewer viewer, String name, int ms, String script) {
-    this.viewer = viewer;
-    setMyName(name);
+    super(viewer, name);
+    this.name = name; // no appended info
     set(ms, script);
   }
   
   public void set(int ms, String script) {
-    this.ms = ms;
-    targetTime = System.currentTimeMillis() + Math.abs(ms);
+    sleepTime = ms;
     if (script != null)
       this.script = script; 
   }
 
-  public void trigger() {
-    triggered = (ms < 0);
-  }
-  
   @Override
   public String toString() {
-    return "timeout name=" + name + " executions=" + status + " mSec=" + ms 
-    + " secRemaining=" + (targetTime - System.currentTimeMillis())/1000f + " script=" + script + " thread=" + Thread.currentThread().getName();      
+    return "timeout name=" + name + " executions=" + status + " mSec=" + sleepTime 
+    + " secRemaining=" + (targetTime - System.currentTimeMillis())/1000f + " script=" + script;      
   }
   
   @Override
-  public void run() {
-    if (script == null || script.length() == 0 || ms == 0)
-      return;
-    //if (true || Logger.debugging) 
-    //Logger.info(toString());
-    Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-    try {
-      Map<String, Object> timeouts = viewer.getTimeouts();
-      while (true) {
-        Thread.sleep(26);
-        if (targetTime > System.currentTimeMillis())
-          continue;
+  protected boolean checkContinue() {
+    return (!interrupted && continuing && script != null && script.length() != 0 && sleepTime != 0);
+  }
+
+  @Override
+  protected void run1(int mode) throws InterruptedException {
+    while (checkContinue())
+      switch (mode) {
+      case INIT:
+        if (!isJS)
+          Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+        timeouts = viewer.getTimeouts();
+        targetTime = System.currentTimeMillis() + Math.abs(sleepTime);
+        return;
+      case MAIN:
+        // 26-millisecond check allows
+        if (!runSleep(26, CHECK1) || System.currentTimeMillis() < targetTime)
+          return;
+        mode = CHECK2;
+        break;
+      case CHECK1:
+        // JavaScript-only
+        mode = (System.currentTimeMillis() < targetTime ? MAIN : CHECK2);
+        break;
+      case CHECK2:
+        // Time's up!
+        currentTime = System.currentTimeMillis();
+        if (timeouts.get(name) == null) {
+          continuing = false;
+          return;
+        }
         status++;
-        boolean looping = (ms < 0);
-        targetTime += Math.abs(ms);
-        if (timeouts.get(name) == null)
-          break;
-        if (!looping)
+        continuing = (sleepTime < 0);
+        targetTime = System.currentTimeMillis() + Math.abs(sleepTime);
+        if (!continuing)
           timeouts.remove(name);
         if (triggered) {
           triggered = false;
-          viewer.evalStringQuiet((looping ? script + ";\ntimeout ID \"" + name + "\";" : script));
-        } else {
+          // script execution of "timeout ID <name>;" triggers the timeout again
+          viewer.evalStringQuiet((continuing ? script + ";\ntimeout ID \""
+              + name + "\";" : script));
         }
-        if (!looping)
-          break;
+        if (isJS)
+          run1(continuing ? MAIN : FINISH);
+        return;
+      case FINISH:
+        timeouts.remove(name);
+        return;
       }
-    } catch (InterruptedException ie) {
-      //Logger.info("Timeout " + this + " interrupted");
-    } catch (Exception ie) {
-      Logger.info("Timeout " + name + " Exception: " + ie);
-    }
-    viewer.getTimeouts().remove(name);
   }
 
   public static void clear(Map<String, Object> timeouts) {
@@ -131,7 +138,7 @@ public class TimeoutThread extends JmolThread {
   public static void trigger(Map<String, Object> timeouts, String name) {
     TimeoutThread t = (TimeoutThread) timeouts.get(name);
     if (t != null)
-      t.trigger();
+      t.triggered = (t.sleepTime < 0);
   }
 
   public static String showTimeout(Map<String, Object> timeouts, String name) {
@@ -146,4 +153,5 @@ public class TimeoutThread extends JmolThread {
     }
     return (sb.length() > 0 ? sb.toString() : "<no timeouts set>");
   }
+  
 }

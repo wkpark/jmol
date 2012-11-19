@@ -30,37 +30,49 @@ import org.jmol.viewer.Viewer;
 
 public class VibrationThread extends JmolThread {
 
-  /**
-   * 
-   */
   private final TransformManager transformManager;
-  private final Viewer viewer;
 
   public VibrationThread(TransformManager transformManager, Viewer viewer) {
+    super(viewer, "VibrationThread");
     this.transformManager = transformManager;
-    this.viewer = viewer;
-    setMyName("VibrationThread");
   }
 
   @Override
-  public void run() {
-    long startTime = System.currentTimeMillis();
-    long lastRepaintTime = startTime;
-    try {
-      do {
-        long currentTime = System.currentTimeMillis();
-        int elapsed = (int) (currentTime - lastRepaintTime);
-        int sleepTime = 33 - elapsed;
-        if (sleepTime > 0)
-          Thread.sleep(sleepTime);
-        //
-        lastRepaintTime = currentTime = System.currentTimeMillis();
-        elapsed = (int) (currentTime - startTime);
-        float t = (float) (elapsed % transformManager.vibrationPeriodMs) / transformManager.vibrationPeriodMs;
+  protected boolean checkContinue() {
+    return !checkInterrupted();
+  }
+
+  @Override
+  protected void run1(int mode) throws InterruptedException {
+    int elapsed;
+    while (true)
+      switch (mode) {
+      case INIT:
+        lastRepaintTime = startTime = System.currentTimeMillis();
+        viewer.startHoverWatcher(false);
+        return;
+      case MAIN:
+        elapsed = (int) (System.currentTimeMillis() - lastRepaintTime);
+        sleepTime = 33 - elapsed;
+        if (sleepTime > 0 && !runSleep(sleepTime, CHECK1))
+          return;
+        //$FALL-THROUGH$
+      case CHECK1:
+        lastRepaintTime = System.currentTimeMillis();
+        elapsed = (int) (lastRepaintTime - startTime);
+        float t = (float) (elapsed % transformManager.vibrationPeriodMs)
+            / transformManager.vibrationPeriodMs;
         transformManager.setVibrationT(t);
         viewer.refresh(3, "VibrationThread:run()");
-      } while (!isInterrupted());
-    } catch (Exception e) { //may be arithmetic %0/0
-    }
+        if (isJS) {
+          mode = MAIN;
+          break;
+        }
+        return;
+      case FINISH:
+        restartHover();
+        return;
+      }
   }
+
 }

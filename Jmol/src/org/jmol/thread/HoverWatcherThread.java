@@ -25,7 +25,6 @@
 
 package org.jmol.thread;
 
-import org.jmol.util.Logger;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.MouseState;
 import org.jmol.viewer.Viewer;
@@ -37,7 +36,7 @@ public class HoverWatcherThread extends JmolThread {
    */
   private ActionManager actionManager;
   private final MouseState current, moved;
-  private final Viewer viewer;
+  private int hoverDelay;
 
   /**
    * @param actionManager 
@@ -46,34 +45,44 @@ public class HoverWatcherThread extends JmolThread {
    * @param viewer
    */
   public HoverWatcherThread(ActionManager actionManager, MouseState current, MouseState moved, Viewer viewer) {
+    super(viewer, "HoverWatcher");
     this.actionManager = actionManager;
     this.current = current;
     this.moved = moved;
-    this.viewer = viewer;
-    setMyName("HoverWatcher");
     start();
   }
 
   @Override
-  public void run() {
-    Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-    int hoverDelay;
-    try {
-      while (!interrupted && (hoverDelay = viewer.getHoverDelay()) > 0) {
-        Thread.sleep(hoverDelay);
-        if (moved.is(current)) {
-          // last operation was move
-          long currentTime = System.currentTimeMillis();
-          int howLong = (int) (currentTime - moved.time);
-          if (howLong > hoverDelay && !interrupted) {
-            actionManager.checkHover();
-          }
+  protected boolean checkContinue() {
+    return (!interrupted && (hoverDelay = viewer.getHoverDelay()) > 0);
+  }
+
+  @Override
+  protected void run1(int mode) throws InterruptedException {
+    switch (mode) {
+    case INIT:
+      if (!isJS)
+        Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+      return;
+    case MAIN:
+      if (!runSleep(hoverDelay, CHECK1))
+        return;
+      //$FALL-THROUGH$
+    case CHECK1:
+      if (moved.is(current)) {
+        // last operation was move
+        currentTime = System.currentTimeMillis();
+        int howLong = (int) (currentTime - moved.time);
+        if (howLong > hoverDelay && !interrupted) {
+          actionManager.checkHover();
         }
       }
-    } catch (InterruptedException ie) {
-      Logger.debug("Hover interrupted");
-    } catch (Exception ie) {
-      Logger.debug("Hover Exception: " + ie);
+      if (isJS && checkContinue())
+        run1(MAIN);
+      return;
+    case FINISH:
+      return;
     }
   }
+
 }

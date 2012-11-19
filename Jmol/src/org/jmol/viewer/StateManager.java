@@ -384,8 +384,8 @@ public class StateManager {
       viewer.setBooleanProperty("windowCentered", windowCenteredFlag);
       viewer.setBooleanProperty("navigationMode", navigationMode);
       viewer.setBooleanProperty("navigateSurface", navigateSurface);
-      viewer.moveTo(timeSeconds, center, null, Float.NaN, rotationMatrix, zoom, xTrans, yTrans,
-          rotationRadius, navCenter, xNav, yNav, navDepth);
+      viewer.moveTo(viewer.eval, timeSeconds, center, null, Float.NaN, rotationMatrix, zoom, xTrans,
+          yTrans, rotationRadius, navCenter, xNav, yNav, navDepth);
     }
   }
 

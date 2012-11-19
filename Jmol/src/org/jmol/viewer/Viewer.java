@@ -32,6 +32,8 @@ import org.jmol.script.ScriptVariable;
 import org.jmol.script.ScriptVariableInt;
 import org.jmol.script.Token;
 import org.jmol.shape.Shape;
+import org.jmol.thread.JmolThread;
+import org.jmol.thread.ScriptDelayThread;
 import org.jmol.thread.ScriptParallelProcessor;
 import org.jmol.thread.TimeoutThread;
 import org.jmol.i18n.GT;
@@ -250,7 +252,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         getAtomCount(), bsSelected, true, false);
   }
 
-  private ScriptEvaluator eval;
+  ScriptEvaluator eval;
   private AnimationManager animationManager;
   private DataManager dataManager;
   private FileManager fileManager;
@@ -954,17 +956,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     transformManager.setRotation(rotationMatrix);
   }
 
-  public void moveTo(float floatSecondsTotal, Point3f center, Vector3f rotAxis,
-                     float degrees, Matrix3f rotationMatrix, float zoom,
-                     float xTrans, float yTrans, float rotationRadius,
-                     Point3f navCenter, float xNav, float yNav, float navDepth) {
+  public void moveTo(ScriptEvaluator eval, float floatSecondsTotal, Point3f center,
+                     Vector3f rotAxis, float degrees, Matrix3f rotationMatrix,
+                     float zoom, float xTrans, float yTrans,
+                     float rotationRadius, Point3f navCenter, float xNav, float yNav,
+                     float navDepth) {
     // from StateManager -- -1 for time --> no repaint
     if (!haveDisplay)
       floatSecondsTotal = 0;
     setTainted(true);
-    transformManager.moveTo(floatSecondsTotal, center, rotAxis, degrees,
-        rotationMatrix, zoom, xTrans, yTrans, rotationRadius, navCenter, xNav,
-        yNav, navDepth);
+    transformManager.moveTo(eval, floatSecondsTotal, center, rotAxis,
+        degrees, rotationMatrix, zoom, xTrans, yTrans, rotationRadius, navCenter,
+        xNav, yNav, navDepth);
     moveUpdate(floatSecondsTotal);
     finalizeTransformParameters();
   }
@@ -1866,6 +1869,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         mouse = null;
       }
       clearScriptQueue();
+      clearThreads();
       haltScriptExecution();
       stopAnimationThreads("setModeMouse NONE");
       scriptManager.clear();
@@ -2856,6 +2860,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void zap(boolean notify, boolean resetUndo, boolean zapModelKit) {
     stopAnimationThreads("zap");
+    clearThreads();
     if (modelSet != null) {
       //setBooleanProperty("appendNew", true);
       ligandModelSet = null;
@@ -2931,10 +2936,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     setCurrentModelIndex(0);
     setBackgroundModelIndex(-1);
     setFrankOn(getShowFrank());
-    if (haveDisplay)
-      actionManager.startHoverWatcher(true);
+    startHoverWatcher(true);
     setTainted(true);
     finalizeTransformParameters();
+  }
+
+  public void startHoverWatcher(boolean tf) {
+    if (haveDisplay)
+      actionManager.startHoverWatcher(tf);
   }
 
   @Override
@@ -4673,8 +4682,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void clearScriptQueue() {
-    // Eval
-    // checkHalt **
     scriptManager.clearQueue();
   }
 
@@ -5145,7 +5152,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   int hoverAtomIndex = -1;
   String hoverText;
-  boolean hoverEnabled = true;
+  public boolean hoverEnabled = true;
 
   public boolean isHoverEnabled() {
     return hoverEnabled;
@@ -5384,7 +5391,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public boolean menuEnabled() {
-    return !global.disablePopupMenu;
+    return (!global.disablePopupMenu && getPopupMenu() != null);
   }
 
   void popupMenu(int x, int y, char type) {
@@ -5761,7 +5768,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         (String) getParameter("_minimizationStatus"),
         step instanceof String ? Integer.valueOf(0) : (Integer) step,
         (Float) getParameter("_minimizationEnergy"),
-        (Float) getParameter("_minimizationEnergyDiff"), ff);
+        (step.toString().equals("0") ? Float.valueOf(0) : (Float) getParameter("_minimizationEnergyDiff")), 
+        ff);
   }
 
   /*
@@ -8387,23 +8395,25 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // TODO: refresh 1 or 2?
   }
 
-  public void rotateAxisAngleAtCenter(Point3f rotCenter, Vector3f rotAxis,
+  public void rotateAxisAngleAtCenter(ScriptEvaluator eval, 
+                                      Point3f rotCenter, Vector3f rotAxis,
                                       float degreesPerSecond, float endDegrees,
                                       boolean isSpin, BitSet bsSelected) {
     // Eval: rotate FIXED
-    if (transformManager.rotateAxisAngleAtCenter(rotCenter, rotAxis,
+    if (transformManager.rotateAxisAngleAtCenter(eval, rotCenter, rotAxis,
         degreesPerSecond, endDegrees, isSpin, bsSelected))
       refresh(-1, "rotateAxisAngleAtCenter");
   }
 
-  public void rotateAboutPointsInternal(Point3f point1, Point3f point2,
+  public void rotateAboutPointsInternal(ScriptEvaluator eval, 
+                                        Point3f point1, Point3f point2,
                                         float degreesPerSecond,
                                         float endDegrees, boolean isSpin,
                                         BitSet bsSelected,
                                         Vector3f translation,
                                         List<Point3f> finalPoints) {
     // Eval: rotate INTERNAL
-    if (transformManager.rotateAboutPointsInternal(point1, point2,
+    if (transformManager.rotateAboutPointsInternal(eval, point1, point2,
         degreesPerSecond, endDegrees, false, isSpin, bsSelected, false,
         translation, finalPoints))
       refresh(-1, "rotateAxisAboutPointsInternal");
@@ -8422,7 +8432,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       setNavOn(false);
       return;
     }
-    transformManager.rotateAboutPointsInternal(pt1, pt2,
+    transformManager.rotateAboutPointsInternal(eval, pt1, pt2,
         global.pickingSpinRate, Float.MAX_VALUE, isClockwise, true, null,
         false, null, null);
   }
@@ -8807,7 +8817,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     BitSet bs = BitSetUtil.copy(bsBranch);
     bs.andNot(selectionManager.getMotionFixedAtoms());
 
-    rotateAboutPointsInternal(atom1, atom2, 0, degrees, false, bs, null, null);
+    rotateAboutPointsInternal(eval, atom1, atom2, 0, degrees, false, bs, null, null);
   }
 
   public void refreshMeasures(boolean andStopMinimization) {
@@ -10701,6 +10711,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void setTimeout(String name, int mSec, String script) {
+    if (!haveDisplay || isHeadless() || autoExit)
+      return;
     if (name == null) {
       clearTimeouts();
       return;
@@ -10842,5 +10854,21 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (isSingleThreaded())
       eval.resumeEval(sc, false);
   }
+
+  private JmolThread scriptDelayThread;
+  public void delayScript(ScriptEvaluator eval, long millis) {
+    if (autoExit)
+      return;
+    scriptDelayThread = new ScriptDelayThread(eval, this, millis);
+    scriptDelayThread.run();
+  }
+
+  private void clearThreads() {
+    if (scriptDelayThread != null) {
+      scriptDelayThread.discontinue();
+      scriptDelayThread = null;
+    } 
+  }
+
 
 }

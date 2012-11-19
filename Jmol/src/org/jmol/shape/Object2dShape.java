@@ -94,12 +94,12 @@ public class Object2dShape extends Shape {
         if (isAll) {
           Iterator<Text> e = objects.values().iterator();
           while (e.hasNext()) {
-            e.next().setAlignment(align);
+            e.next().setAlignmentLCR(align);
           }
         }
         return;
       }
-      if (!currentObject.setAlignment(align))
+      if (!currentObject.setAlignmentLCR(align))
         Logger.error("unrecognized align:" + align);
       return;
     }
@@ -110,12 +110,12 @@ public class Object2dShape extends Shape {
         if (isAll) {
           Iterator<Text> e = objects.values().iterator();
           while (e.hasNext()) {
-            e.next().setBgColix(value);
+            e.next().setBgColixO(value);
           }
         }
         return;
       }
-      currentObject.setBgColix(value);
+      currentObject.setBgColixO(value);
       return;
     }
 

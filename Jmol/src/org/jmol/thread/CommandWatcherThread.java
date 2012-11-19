@@ -38,15 +38,15 @@ public class CommandWatcherThread extends JmolThread {
    * @param scriptManager
    */
   public CommandWatcherThread(ScriptManager scriptManager) {
+    super(null, "CommmandWatcherThread"); 
     this.scriptManager = scriptManager;
-    setMyName("CommmandWatcherThread"); 
-    start();
   }
+
+  private final static int commandDelay = 50; // was 200
 
   @Override
   public void run() {
     Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-    int commandDelay = 50; // was 200
     while (!interrupted) {
       try {
         Thread.sleep(commandDelay);
@@ -65,6 +65,28 @@ public class CommandWatcherThread extends JmolThread {
         break;
       }
     }
-    scriptManager.clearCommandWatcherThread();
   }
+  
+  @Override
+  protected boolean checkContinue() {
+    //TODO
+    return true;
+  }
+
+  @Override
+  protected void run1(int mode) throws InterruptedException {
+    // TODO    
+    switch (mode) {
+    case INIT:
+      return;
+    case MAIN:
+      return;
+    case CHECK1:
+      return;
+    case FINISH:
+      scriptManager.clearCommandWatcherThread();
+      return;
+    }
+  }
+
 }

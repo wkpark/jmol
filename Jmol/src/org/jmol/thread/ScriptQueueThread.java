@@ -36,16 +36,15 @@ public class ScriptQueueThread extends JmolThread {
    * 
    */
   private final ScriptManager scriptManager;
-  private final Viewer viewer;
   private boolean startedByCommandThread = false;
   private int pt;
 
   public ScriptQueueThread(ScriptManager scriptManager, Viewer viewer, boolean startedByCommandThread, int pt) {
+    super(viewer, "QueueThread" + pt);
     this.scriptManager = scriptManager;
     this.viewer = viewer;
     this.startedByCommandThread = startedByCommandThread;
     this.pt = pt;
-    setMyName("QueueThread" + pt);
     start();
   }
 
@@ -95,6 +94,27 @@ public class ScriptQueueThread extends JmolThread {
       return false;
     }
     return true;
+  }
+
+  @Override
+  protected boolean checkContinue() {
+    //TODO
+    return true;
+  }
+
+  @Override
+  protected void run1(int mode) throws InterruptedException {
+    // TODO    
+    switch (mode) {
+    case INIT:
+      return;
+    case MAIN:
+      return;
+    case CHECK1:
+      return;
+    case FINISH:
+      return;
+    }
   }
 
 }

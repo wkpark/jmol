@@ -27,42 +27,61 @@ package org.jmol.thread;
 
 import org.jmol.api.MinimizerInterface;
 import org.jmol.util.Logger;
+import org.jmol.viewer.Viewer;
 
 public class MinimizationThread extends JmolThread {
   
-  /**
-   * 
-   */
   private final MinimizerInterface minimizer;
 
-  public MinimizationThread(MinimizerInterface minimizer) {
+  public MinimizationThread(MinimizerInterface minimizer, Viewer viewer) {
+    super(viewer, "MinimizationThread");
     this.minimizer = minimizer;
-    this.setMyName("MinimizationThread");
   }
   
   @Override
-  public void run() {
-    long startTime = System.currentTimeMillis();
-    long lastRepaintTime = startTime;
-    
-    //should save the atom coordinates
-    if (!this.minimizer.startMinimization())
+  protected boolean checkContinue() {
+    return continuing && minimizer.minimizationOn() && !checkInterrupted();
+  }
+
+  @Override
+  protected void run1(int mode) throws InterruptedException {
+    while (checkContinue())
+      switch (mode) {
+      case INIT:
+        lastRepaintTime = startTime;
+        //should save the atom coordinates
+        if (this.minimizer.startMinimization())
+          viewer.startHoverWatcher(false);
+        else
+          continuing = false;
         return;
-    try {
-      do {
-        long currentTime = System.currentTimeMillis();
+      case MAIN:
+        currentTime = System.currentTimeMillis();
         int elapsed = (int) (currentTime - lastRepaintTime);
         int sleepTime = 33 - elapsed;
-        if (sleepTime > 0)
-          Thread.sleep(sleepTime);
+        if (!runSleep(sleepTime, CHECK1))
+          return;
+        //$FALL-THROUGH$
+      case CHECK1:
         lastRepaintTime = currentTime = System.currentTimeMillis();
         if (!this.minimizer.stepMinimization())
-          this.minimizer.endMinimization();            
-        elapsed = (int) (currentTime - startTime);
-      } while (this.minimizer.minimizationOn() && !isInterrupted());
-    } catch (Exception e) {
-      if (this.minimizer.minimizationOn())
-        Logger.error(e.getMessage());
-    }
+          this.minimizer.endMinimization();
+        if (isJS) {
+          mode = MAIN;
+          break;
+        }
+        return;
+      case FINISH:
+        restartHover();
+        return;
+      }
   }
+
+  @Override
+  protected void oops(Exception e) {
+    if (this.minimizer.minimizationOn())
+      Logger.error(e.getMessage());
+  }
+  
+
 }

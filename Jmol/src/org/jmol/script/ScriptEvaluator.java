@@ -56,7 +56,6 @@ import org.jmol.modelset.ModelCollection.StateScript;
 import org.jmol.shape.MeshCollection;
 import org.jmol.shape.Object2d;
 import org.jmol.shape.Shape;
-import org.jmol.thread.ScriptDelayThread;
 import org.jmol.thread.ScriptParallelProcessor;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.ColorEncoder;
@@ -406,11 +405,7 @@ public class ScriptEvaluator {
     if (isSyntaxCheck || viewer.isHeadless() || viewer.isSingleThreaded())
       return;
     if (withDelay)
-      try {
-        delayMillis(-100);
-      } catch (ScriptException e) {
-        // won't happen
-      }
+      viewer.delayScript(this, -100);
     viewer.popHoldRepaintWhy("pauseExecution");
     executionStepping = false;
     executionPaused = true;
@@ -5283,7 +5278,7 @@ public class ScriptEvaluator {
         int milliSecDelay = viewer.getScriptDelay();
         if (doList || milliSecDelay > 0) {
           if (milliSecDelay > 0)
-            delayMillis(-milliSecDelay);
+            viewer.delayScript(this, -milliSecDelay);
           viewer.scriptEcho("$[" + scriptLevel + "." + lineNumbers[pc] + "."
               + (pc + 1) + "] " + thisCommand);
         }
@@ -6328,8 +6323,8 @@ public class ScriptEvaluator {
         return;
       if (f > 0)
         refresh();
-      viewer.moveTo(f, null, JmolConstants.axisZ, 0, null, 100, 0, 0, 0, null,
-          Float.NaN, Float.NaN, Float.NaN);
+      viewer.moveTo(this, f, null, JmolConstants.axisZ, 0, null, 100, 0, 0, 0,
+          null, Float.NaN, Float.NaN, Float.NaN);
       return;
     }
     Vector3f axis = Vector3f.new3(Float.NaN, 0, 0);
@@ -6508,8 +6503,8 @@ public class ScriptEvaluator {
       floatSecondsTotal = 0;
     if (floatSecondsTotal > 0)
       refresh();
-    viewer.moveTo(floatSecondsTotal, center, axis, degrees, null, zoom, xTrans,
-        yTrans, rotationRadius, navCenter, xNav, yNav, navDepth);
+    viewer.moveTo(this, floatSecondsTotal, center, axis, degrees, null, zoom,
+        xTrans, yTrans, rotationRadius, navCenter, xNav, yNav, navDepth);
   }
 
   private void navigate() throws ScriptException {
@@ -7060,7 +7055,7 @@ public class ScriptEvaluator {
             translation);
         ptsB = Measure.transformPoints(ptsA, m4, centerAndPoints[0][0]);
       }
-      viewer.rotateAboutPointsInternal(centerAndPoints[0][0], pt1, endDegrees
+      viewer.rotateAboutPointsInternal(this, centerAndPoints[0][0], pt1, endDegrees
           / nSeconds, endDegrees, doAnimate, bsFrom, translation, ptsB);
     }
   }
@@ -10330,7 +10325,7 @@ public class ScriptEvaluator {
         // rotate axisangle {0 1 0} 10
         // rotate x 10 (atoms) # point-centered
         // rotate x 10 $object # point-centered
-        viewer.rotateAxisAngleAtCenter(points[0], rotAxis, rate, endDegrees,
+        viewer.rotateAxisAngleAtCenter(this, points[0], rotAxis, rate, endDegrees,
             isSpin, bsAtoms);
         return;
       }
@@ -10372,7 +10367,7 @@ public class ScriptEvaluator {
     if (bsAtoms != null && !isSpin && ptsB != null)
       viewer.setAtomCoord(bsAtoms, Token.xyz, ptsB);
     else
-      viewer.rotateAboutPointsInternal(points[0], points[1], rate, endDegrees,
+      viewer.rotateAboutPointsInternal(this, points[0], points[1], rate, endDegrees,
           isSpin, bsAtoms, translation, ptsB);
   }
 
@@ -11088,8 +11083,8 @@ public class ScriptEvaluator {
       yTrans = 0;
     if (isSameAtom && Math.abs(zoom - newZoom) < 1)
       time = 0;
-    viewer.moveTo(time, center, JmolConstants.center, Float.NaN, null, newZoom,
-        xTrans, yTrans, Float.NaN, null, Float.NaN, Float.NaN, Float.NaN);
+    viewer.moveTo(this, time, center, JmolConstants.center, Float.NaN, null,
+        newZoom, xTrans, yTrans, Float.NaN, null, Float.NaN, Float.NaN, Float.NaN);
   }
 
   private float getZoom(int ptCenter, int i, BitSet bs, float currentZoom)
@@ -11169,17 +11164,12 @@ public class ScriptEvaluator {
     default:
       error(ERROR_numberExpected);
     }
-    delayMillis(millis);
-  }
-
-  private void delayMillis(long millis) throws ScriptException {
     if (isSyntaxCheck || viewer.isHeadless() || viewer.autoExit)
       return;
     refresh();
     if (viewer.isSingleThreaded())
-      throw new ScriptInterruption(this, millis);
-    ScriptDelayThread sdt = new ScriptDelayThread(this, this.viewer, millis);
-    sdt.run();
+      throw new ScriptInterruption(this, viewer, millis);
+    viewer.delayScript(this, millis);
   }
 
   private void slab(boolean isDepth) throws ScriptException {
@@ -13566,7 +13556,7 @@ public class ScriptEvaluator {
           error(ERROR_invalidArgument);
         break;
       }
-    if (!isSyntaxCheck && !viewer.isHeadless())
+    if (!isSyntaxCheck)
       viewer.setTimeout(name, mSec, script);
   }
 
@@ -14243,7 +14233,7 @@ public class ScriptEvaluator {
         if (!isSyntaxCheck) {
           viewer.setVibrationOff();
           if (!viewer.isSingleThreaded())
-              delayMillis(100);
+            viewer.delayScript(this, 100);          
         }
         pt++;
         break;

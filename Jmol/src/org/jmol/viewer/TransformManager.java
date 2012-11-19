@@ -25,8 +25,9 @@ package org.jmol.viewer;
 
 
 import org.jmol.constant.EnumStereoMode;
+import org.jmol.script.ScriptEvaluator;
 import org.jmol.script.Token;
-import org.jmol.thread.MotionThread;
+import org.jmol.thread.MoveToThread;
 import org.jmol.thread.SpinThread;
 import org.jmol.thread.VibrationThread;
 import org.jmol.util.AxisAngle4f;
@@ -342,7 +343,7 @@ public abstract class TransformManager {
     pt2.add(ptScreen);
     unTransformPoint(pt2, pt2);
     viewer.setInMotion(false);
-    rotateAboutPointsInternal(pt2, pt1, 10 * speed, Float.NaN, false, true, null, true, null, null);
+    rotateAboutPointsInternal(null, pt2, pt1, 10 * speed, Float.NaN, false, true, null, true, null, null);
   }
 
   final Vector3f arcBall0 = new Vector3f();
@@ -447,7 +448,7 @@ public abstract class TransformManager {
    * **************************************************************
    */
 
-  boolean rotateAxisAngleAtCenter(Point3f rotCenter, Vector3f rotAxis,
+  boolean rotateAxisAngleAtCenter(ScriptEvaluator eval, Point3f rotCenter, Vector3f rotAxis,
                                float degreesPerSecond, float endDegrees,
                                boolean isSpin, BitSet bsAtoms) {
 
@@ -478,7 +479,7 @@ public abstract class TransformManager {
       isSpinInternal = false;
       isSpinFixed = true;
       isSpinSelected = (bsAtoms != null);
-      setSpin(true, endDegrees, null, bsAtoms, false);
+      setSpin(eval, true, endDegrees, null, bsAtoms, false);
       return false;
     }
     float radians = endDegrees * JmolConstants.radiansPerDegree;
@@ -500,7 +501,7 @@ public abstract class TransformManager {
    * ROTATIONS**************************************************************
    */
 
-  boolean rotateAboutPointsInternal(Point3f point1, Point3f point2,
+  boolean rotateAboutPointsInternal(ScriptEvaluator eval, Point3f point1, Point3f point2,
                                  float degreesPerSecond, float endDegrees,
                                  boolean isClockwise, boolean isSpin,
                                  BitSet bsAtoms, boolean isGesture,
@@ -551,7 +552,7 @@ public abstract class TransformManager {
       isSpinInternal = true;
       isSpinFixed = false;
       isSpinSelected = isSelected;
-      setSpin(true, endDegrees, finalPoints, bsAtoms, isGesture);
+      setSpin(eval, true, endDegrees, finalPoints, bsAtoms, isGesture);
       return false;
     }
     float radians = endDegrees * JmolConstants.radiansPerDegree;
@@ -1768,13 +1769,13 @@ public abstract class TransformManager {
     return (ptTest3.distance(ptTest2) < 0.1);
   }
 
-  public MotionThread motion;
+  public MoveToThread motion;
   
   // from Viewer
-  void moveTo(float floatSecondsTotal, Point3f center, Tuple3f rotAxis,
-              float degrees, Matrix3f matrixEnd, float zoom, float xTrans,
-              float yTrans, float newRotationRadius, Point3f navCenter,
-              float xNav, float yNav, float navDepth) {
+  void moveTo(ScriptEvaluator eval, float floatSecondsTotal, Point3f center,
+              Tuple3f rotAxis, float degrees, Matrix3f matrixEnd, float zoom,
+              float xTrans, float yTrans, float newRotationRadius,
+              Point3f navCenter, float xNav, float yNav, float navDepth) {
     if (matrixEnd == null) {
       matrixEnd = new Matrix3f();
       Vector3f axis = Vector3f.newV(rotAxis);
@@ -1800,14 +1801,17 @@ public abstract class TransformManager {
     }
     try {
       if (motion == null)
-        motion = new MotionThread(this, viewer);
+        motion = new MoveToThread(this, viewer);
       int nSteps = motion.set(floatSecondsTotal, center, matrixEnd, zoom, xTrans,
           yTrans, newRotationRadius, navCenter, xNav, yNav, navDepth);
       if (nSteps <= 0 || viewer.waitForMoveTo()) {
-        motion.startMotion(false);
-        motion = null;
+        motion.setEval(eval);
+        motion.run();
+        if (!viewer.isSingleThreaded())
+          motion = null;
       } else {
-        motion.startMotion(true);
+        motion.setEval(null);
+        motion.start();
       }
     } catch (Exception e) {
       // ignore
@@ -2056,10 +2060,10 @@ public abstract class TransformManager {
   private SpinThread spinThread;
 
   public void setSpinOn(boolean spinOn) {
-    setSpin(spinOn, Float.MAX_VALUE, null, null, false);
+    setSpin(null, spinOn, Float.MAX_VALUE, null, null, false);
   }
 
-  private void setSpin(boolean spinOn, float endDegrees,
+  private void setSpin(ScriptEvaluator eval, boolean spinOn, float endDegrees,
                          List<Point3f> endPositions, BitSet bsAtoms,
                          boolean isGesture) {
     if (navOn && spinOn)
@@ -2070,10 +2074,12 @@ public abstract class TransformManager {
       if (spinThread == null) {
         spinThread = new SpinThread(this, viewer, endDegrees, endPositions, bsAtoms, false,
             isGesture);
-        if (bsAtoms == null)
+        if (bsAtoms == null) {
           spinThread.start();
-        else
+        } else {
+          spinThread.setEval(eval);
           spinThread.run();
+        }
       }
     } else if (spinThread != null) {
       spinThread.reset();
@@ -2086,7 +2092,7 @@ public abstract class TransformManager {
       return;
     boolean wasOn = this.navOn;
     if (navOn && spinOn)
-      setSpin(false, 0, null, null, false);
+      setSpin(null, false, 0, null, null, false);
     this.navOn = navOn;
     viewer.getGlobalSettings().setParamB("_navigating", navOn);
     if (navOn) {

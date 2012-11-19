@@ -25,10 +25,7 @@
 
 package org.jmol.thread;
 
-import java.util.Date;
 import java.util.List;
-
-
 import org.jmol.script.Token;
 import org.jmol.util.BitSet;
 import org.jmol.util.Logger;
@@ -42,132 +39,177 @@ public class SpinThread extends JmolThread {
    * 
    */
   private final TransformManager transformManager;
-  private final Viewer viewer;
   private float endDegrees;
   private List<Point3f> endPositions;
   private float nDegrees;
   private BitSet bsAtoms;
   private boolean isNav;
   private boolean isGesture;
-  private boolean isReset;
+  private float myFps;
+  private float angle;
+  private boolean haveNotified;
+  private int index;
+  private boolean doFinish = true;
+  private boolean navigatingSurface;
   
   public boolean isGesture() {
     return isGesture;
   }
   
   public SpinThread(TransformManager transformManager, Viewer viewer, float endDegrees, List<Point3f> endPositions, BitSet bsAtoms, boolean isNav, boolean isGesture) {
+    super(viewer, "SpinThread");
     this.transformManager = transformManager;
-    this.viewer = viewer;
     this.endDegrees = Math.abs(endDegrees);
     this.endPositions = endPositions;
     this.bsAtoms = bsAtoms;
     this.isNav = isNav;
     this.isGesture = isGesture;
-    setMyName("SpinThread" + new Date());
   }
 
   @Override
-  public void run() {
-    float myFps = (isNav ? transformManager.navFps : transformManager.spinFps);
-    viewer.getGlobalSettings().setParamB(isNav ? "_navigating" : "_spinning", true);
-    int i = 0;
-    long timeBegin = System.currentTimeMillis();
-    float angle = 0;
-    boolean haveNotified = false;
-    while (!isInterrupted()) {
-      if (isNav && myFps != transformManager.navFps) {
-        myFps = transformManager.navFps;
-        i = 0;
-        timeBegin = System.currentTimeMillis();
-      } else if (!isNav && myFps != transformManager.spinFps && bsAtoms == null) {
-        myFps = transformManager.spinFps;
-        i = 0;
-        timeBegin = System.currentTimeMillis();
-      }
-      if (myFps == 0 || !(isNav ? transformManager.navOn : transformManager.spinOn)) {
-        transformManager.setSpinOn(false);
-        transformManager.setNavOn(false);
-        break;
-      }
-      boolean navigatingSurface = viewer.getNavigateSurface();
-      boolean refreshNeeded = (isNav ?  (navigatingSurface || (transformManager.navX != 0 || transformManager.navY != 0)) || transformManager.navZ != 0
-          : transformManager.isSpinInternal && transformManager.internalRotationAxis.angle != 0 
-          || transformManager.isSpinFixed && transformManager.fixedRotationAxis.angle != 0 
-          || !transformManager.isSpinFixed && !transformManager.isSpinInternal && (transformManager.spinX != 0 || transformManager.spinY != 0 || transformManager.spinZ != 0));
-      ++i;
-      int targetTime = (int) (i * 1000 / myFps);
-      int currentTime = (int) (System.currentTimeMillis() - timeBegin);
-      int sleepTime = (targetTime - currentTime);
-      //System.out.println(targetTime + " " + currentTime + " " + sleepTime);
-      if (sleepTime <= 0) {
-        if (!haveNotified)
-          Logger.info("spinFPS is set too fast (" + myFps + ") -- can't keep up!");
-        haveNotified = true;
-      } else {
+  protected boolean checkContinue() {
+    return continuing = continuing && !isReset && !checkInterrupted();
+  }
+
+
+  /**
+   * Java:
+   * 
+   * run1(INIT) while(!interrupted()) { run1(MAIN) } run1(FINISH)
+   * 
+   * JavaScript:
+   * 
+   * run1(INIT) run1(MAIN) --> setTimeout to run1(CHECK) or run1(FINISH) and
+   * return run1(CHECK) --> setTimeout to run1(CHECK) or run1(MAIN) or
+   * run1(FINISH) and return
+   * 
+   */
+
+  @Override
+  protected void run1(int mode) throws InterruptedException {
+    while (checkContinue())
+      switch (mode) {
+      case INIT:
+        myFps = (isNav ? transformManager.navFps : transformManager.spinFps);
+        viewer.getGlobalSettings().setParamB(
+            isNav ? "_navigating" : "_spinning", true);
+        viewer.startHoverWatcher(false);
+        return;
+      case MAIN:
+        if (isNav && myFps != transformManager.navFps) {
+          myFps = transformManager.navFps;
+          index = 0;
+          startTime = System.currentTimeMillis();
+        } else if (!isNav && myFps != transformManager.spinFps
+            && bsAtoms == null) {
+          myFps = transformManager.spinFps;
+          index = 0;
+          startTime = System.currentTimeMillis();
+        }
+        if (myFps == 0
+            || !(isNav ? transformManager.navOn : transformManager.spinOn)) {
+          doFinish = false;
+          return;
+        }
+        navigatingSurface = viewer.getNavigateSurface();
+        boolean refreshNeeded = (isNav ?
+            navigatingSurface 
+            || transformManager.navX != 0 
+            || transformManager.navY != 0
+            || transformManager.navZ != 0
+            : transformManager.isSpinInternal
+                && transformManager.internalRotationAxis.angle != 0
+            || transformManager.isSpinFixed
+                && transformManager.fixedRotationAxis.angle != 0
+            || !transformManager.isSpinFixed
+                && !transformManager.isSpinInternal
+                && (transformManager.spinX != 0 || transformManager.spinY != 0 || transformManager.spinZ != 0));
+        targetTime = (long) (++index * 1000 / myFps);
+        currentTime = System.currentTimeMillis() - startTime;
+        sleepTime = (int) (targetTime - currentTime);
+        //System.out.println(targetTime + " " + currentTime + " " + sleepTime);
+        if (sleepTime < 0) {
+          if (!haveNotified)
+            Logger.info("spinFPS is set too fast (" + myFps
+                + ") -- can't keep up!");
+          haveNotified = true;
+          startTime -= sleepTime;
+          sleepTime = 0;
+        }
         boolean isInMotion = (bsAtoms == null && viewer.getInMotion());
         if (isInMotion) {
-          if (isGesture)
+          if (isGesture) {
+            continuing = isJS;
+            mode = FINISH;
             break;
+          }
           sleepTime += 1000;
         }
-        try {
-          if (refreshNeeded && (transformManager.spinOn || transformManager.navOn) && !isInMotion) {
-            if (isNav) {
-              transformManager.setNavigationOffsetRelative(navigatingSurface);
-            } else if (transformManager.isSpinInternal || transformManager.isSpinFixed) {
-              angle = (transformManager.isSpinInternal ? transformManager.internalRotationAxis
-                  : transformManager.fixedRotationAxis).angle / myFps;
-              if (transformManager.isSpinInternal) {
-                transformManager.rotateAxisAngleRadiansInternal(angle, bsAtoms);
-              } else {
-                transformManager.rotateAxisAngleRadiansFixed(angle, bsAtoms);
-              }
-              nDegrees += Math.abs(angle * TransformManager.degreesPerRadian);
-              //System.out.println(i + " " + angle + " " + nDegrees);
-            } else { // old way: Rx * Ry * Rz
-              if (transformManager.spinX != 0) {
-                transformManager.rotateXRadians(transformManager.spinX * JmolConstants.radiansPerDegree / myFps, null);
-              }
-              if (transformManager.spinY != 0) {
-                transformManager.rotateYRadians(transformManager.spinY * JmolConstants.radiansPerDegree / myFps, null);
-              }
-              if (transformManager.spinZ != 0) {
-                transformManager.rotateZRadians(transformManager.spinZ * JmolConstants.radiansPerDegree / myFps);
-              }
-            }
-            while (!isInterrupted() && !viewer.getRefreshing()) {
-              Thread.sleep(10);
-            }
-            if (bsAtoms == null)
-              viewer.refresh(1, "SpinThread:run()");
-            else
-              viewer.requestRepaintAndWait();
-            //System.out.println(angle * degreesPerRadian + " " + count + " " + nDegrees + " " + endDegrees);
-            if (!isNav && nDegrees >= endDegrees - 0.001)
-              transformManager.setSpinOn(false);
-          }
-          Thread.sleep(sleepTime);
-          if (isReset)
-            break;
-        } catch (InterruptedException e) {
-          break;
+        if (refreshNeeded && !isInMotion
+            && (transformManager.spinOn || transformManager.navOn))
+          doTransform();
+        //$FALL-THROUGH$
+      case CHECK1: // cycling
+        while (!checkInterrupted() && !viewer.getRefreshing())
+          if (!runSleep(10, CHECK1))
+            return;
+        if (bsAtoms == null)
+          viewer.refresh(1, "SpinThread:run()");
+        else
+          viewer.requestRepaintAndWait();
+        //System.out.println(angle * degreesPerRadian + " " + count + " " + nDegrees + " " + endDegrees);
+        if (!isNav && nDegrees >= endDegrees - 0.001)
+          transformManager.setSpinOn(false);
+        runSleep(sleepTime, MAIN);
+        return;
+      case FINISH:
+        continuing = false;
+        if (!doFinish)
+          return;
+        if (bsAtoms != null && endPositions != null) {
+          // when the standard deviations of the end points was
+          // exact, we know that we want EXACTLY those final positions
+          viewer.setAtomCoord(bsAtoms, Token.xyz, endPositions);
+          bsAtoms = null;
+          endPositions = null;
         }
+        if (!isReset) {
+          transformManager.setSpinOn(false);
+          restartHover();
+        }
+        resumeEval();
+        return;
+      }
+  }
+
+  private void doTransform() {
+    if (isNav) {
+      transformManager.setNavigationOffsetRelative(navigatingSurface);
+    } else if (transformManager.isSpinInternal
+        || transformManager.isSpinFixed) {
+      angle = (transformManager.isSpinInternal ? transformManager.internalRotationAxis
+          : transformManager.fixedRotationAxis).angle
+          / myFps;
+      if (transformManager.isSpinInternal) {
+        transformManager.rotateAxisAngleRadiansInternal(angle, bsAtoms);
+      } else {
+        transformManager.rotateAxisAngleRadiansFixed(angle, bsAtoms);
+      }
+      nDegrees += Math.abs(angle * TransformManager.degreesPerRadian);
+      //System.out.println(i + " " + angle + " " + nDegrees);
+    } else { // old way: Rx * Ry * Rz
+      if (transformManager.spinX != 0) {
+        transformManager.rotateXRadians(transformManager.spinX
+            * JmolConstants.radiansPerDegree / myFps, null);
+      }
+      if (transformManager.spinY != 0) {
+        transformManager.rotateYRadians(transformManager.spinY
+            * JmolConstants.radiansPerDegree / myFps, null);
+      }
+      if (transformManager.spinZ != 0) {
+        transformManager.rotateZRadians(transformManager.spinZ
+            * JmolConstants.radiansPerDegree / myFps);
       }
     }
-    if (bsAtoms != null && endPositions != null) {
-      // when the standard deviations of the end points was
-      // exact, we know that we want EXACTLY those final positions
-      viewer.setAtomCoord(bsAtoms, Token.xyz, endPositions);
-      bsAtoms = null;
-      endPositions = null;
-    }
-    if (!isReset)
-      transformManager.setSpinOn(false);
   }
-
-  public void reset() {
-    isReset = true;
-    interrupt();
-  }
-
 }

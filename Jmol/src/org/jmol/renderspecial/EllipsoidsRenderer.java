@@ -86,12 +86,53 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     }
   }
   
+  private boolean isSet;
 
   @Override
   protected boolean render() {
+    isSet = false;
     ellipsoids = (Ellipsoids) shape;
     if (ellipsoids.madset == null && !ellipsoids.haveEllipsoids)
       return false;
+    boolean needTranslucent = false;
+    Atom[] atoms = modelSet.atoms;
+    for (int i = modelSet.getAtomCount(); --i >= 0;) {
+      Atom atom = atoms[i];
+      if (!atom.isVisible(myVisibilityFlag))
+        continue;
+      if (atom.screenZ <= 1)
+        continue;
+      Quadric[] ellipsoid2 = atom.getEllipsoid();
+      if (ellipsoid2 == null)
+        continue;
+      for (int j = 0; j < ellipsoid2.length; j++) {
+        if (ellipsoid2[j] == null || ellipsoids.madset[j] == null || ellipsoids.madset[j][i] == 0)
+          continue;
+        colix = Shape.getColix(ellipsoids.colixset[j], i, atom);
+        if (g3d.setColix(colix))
+          render1(atom, ellipsoid2[j]);
+        else
+          needTranslucent = true;
+      }
+    }
+
+    if (ellipsoids.haveEllipsoids) {
+      Iterator<Ellipsoid> e = ellipsoids.htEllipsoids.values().iterator();
+      while (e.hasNext()) {
+        Ellipsoid ellipsoid = e.next();
+        if (ellipsoid.visible && ellipsoid.isValid) { 
+           if (g3d.setColix(colix = ellipsoid.colix))
+             renderEllipsoid(ellipsoid);
+           else
+             needTranslucent = true;
+        }
+      }
+    }
+    coords = null;
+    return needTranslucent;
+  }
+
+  private boolean setGlobals() {
     wireframeOnly = (viewer.getWireframeRotation() && viewer.getInMotion());
     drawAxes = viewer.getBooleanProperty("ellipsoidAxes");
     drawArcs = viewer.getBooleanProperty("ellipsoidArcs");
@@ -131,45 +172,11 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     }
 
     Matrix4f m4 = viewer.getMatrixtransform();
-    m4.setRotationScale(mat);
+    mat.setRow(0, m4.m00, m4.m01, m4.m02);
+    mat.setRow(1, m4.m10, m4.m11, m4.m12);
+    mat.setRow(2, m4.m20, m4.m21, m4.m22);
     matScreenToCartesian.invertM(mat);
-    boolean needTranslucent = false;
-    Atom[] atoms = modelSet.atoms;
-    for (int i = modelSet.getAtomCount(); --i >= 0;) {
-      Atom atom = atoms[i];
-      if (!atom.isVisible(myVisibilityFlag))
-        continue;
-      if (atom.screenZ <= 1)
-        continue;
-      Quadric[] ellipsoid2 = atom.getEllipsoid();
-      if (ellipsoid2 == null)
-        continue;
-
-      for (int j = 0; j < ellipsoid2.length; j++) {
-        if (ellipsoid2[j] == null || ellipsoids.madset[j] == null || ellipsoids.madset[j][i] == 0)
-          continue;
-        colix = Shape.getColix(ellipsoids.colixset[j], i, atom);
-        if (g3d.setColix(colix))
-          render1(atom, ellipsoid2[j]);
-        else
-          needTranslucent = true;
-      }
-    }
-
-    if (ellipsoids.haveEllipsoids) {
-      Iterator<Ellipsoid> e = ellipsoids.htEllipsoids.values().iterator();
-      while (e.hasNext()) {
-        Ellipsoid ellipsoid = e.next();
-        if (ellipsoid.visible && ellipsoid.isValid) { 
-           if (g3d.setColix(colix = ellipsoid.colix))
-             renderEllipsoid(ellipsoid);
-           else
-             needTranslucent = true;
-        }
-      }
-    }
-    coords = null;
-    return needTranslucent;
+    return true;
   }
 
   private final Point3i[] screens = new Point3i[32];
@@ -203,15 +210,16 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   private Point3f center;
   
   private void render1(Atom atom, Quadric ellipsoid) {
+    if (!isSet)
+      isSet = setGlobals();
     s0.set(atom.screenX, atom.screenY, atom.screenZ);
     boolean isOK = true;
     for (int i = 3; --i >= 0;) {
       factoredLengths[i] = ellipsoid.lengths[i] * ellipsoid.scale;
       if (Float.isNaN(factoredLengths[i]))
         isOK = false;
-      else if (factoredLengths[i] < 0.2f)
-        factoredLengths[i] = 0.2f; // for extremely flat ellipsoids, we need at least some length
-        
+      else if (factoredLengths[i] < 0.02f)
+        factoredLengths[i] = 0.02f; // for extremely flat ellipsoids, we need at least some length    
     }
     axes = ellipsoid.vectors;
     if (axes == null) { //isotropic
@@ -220,7 +228,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     setMatrices();
     //[0] is shortest; [2] is longest
     center = atom;
-    setAxes(1.0f);
+    setAxes();
     if (g3d.isClippedXY(dx + dx, atom.screenX, atom.screenY))
       return;
     diameter = viewer.scaleToScreen(atom.screenZ, wireframeOnly ? 1 : diameter0);
@@ -252,7 +260,6 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     // make this screen coordinates to ellisoidal coordinates
     matScreenToEllipsoid.mul2(mat, matScreenToCartesian);
     matEllipsoidToScreen.invertM(matScreenToEllipsoid);
-    //matEllipsoidToScreen.mul(viewer.scaleToScreen(s0.z, 1000));
     perspectiveFactor = viewer.scaleToPerspective(s0.z, 1.0f);
     matScreenToEllipsoid.mulf(1f/perspectiveFactor);
   }
@@ -266,21 +273,21 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     JmolConstants.axisNZ, JmolConstants.axisZ };
 
   
-  private void setAxes(float f) {
+  private void setAxes() {
     for (int i = 0; i < 6; i++) {
       int iAxis = axisPoints[i];
       int i012 = Math.abs(iAxis) - 1;
-      points[i].scaleAdd2(f * factoredLengths[i012] * (iAxis < 0 ? -1 : 1),
+      points[i].scaleAdd2(factoredLengths[i012] * (iAxis < 0 ? -1 : 1),
           axes[i012], center);
       pt1.setT(unitAxisVectors[i]);
-      pt1.scale(f);
+      //pt1.scale(f);
 
       matEllipsoidToScreen.transform(pt1);
       screens[i].set(Math.round (s0.x + pt1.x * perspectiveFactor),
           Math.round (s0.y + pt1.y * perspectiveFactor), Math.round(pt1.z + s0.z));
     }
     dx = 2 + viewer.scaleToScreen(s0.z, 
-        Math.round(f * (Float.isNaN(factoredLengths[2]) ? 1.0f : factoredLengths[2]) * 1000));
+        Math.round((Float.isNaN(factoredLengths[2]) ? 1.0f : factoredLengths[2]) * 1000));
   }
 
   private void renderAxes() {
@@ -401,7 +408,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     viewer.transformPtScr(ellipsoid.center, s0);
     setMatrices();
     center = ellipsoid.center;
-    setAxes(1);
+    setAxes();
     renderBall();
   }
  

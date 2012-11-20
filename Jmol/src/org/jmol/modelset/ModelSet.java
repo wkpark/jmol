@@ -970,9 +970,9 @@ import java.util.Map;
                         Vector3f translation, BitSet bs, Point3f center,
                         boolean isInternal) {
     if (mNew == null) {
-      matTemp.set(matrixRotate);
+      matTemp.setM(matrixRotate);
     } else {
-      matInv.set(matrixRotate);
+      matInv.setM(matrixRotate);
       matInv.invert();
       ptTemp.set(0, 0, 0);
       matTemp.mul2(mNew, matrixRotate);
@@ -982,14 +982,14 @@ import java.util.Map;
       vTemp.setT(center);
       mat4.setIdentity();
       mat4.setTranslation(vTemp);
-      mat4t.set(matTemp);
+      mat4t.setM3(matTemp);
       mat4.mul(mat4t);
       mat4t.setIdentity();
       vTemp.scale(-1);
       mat4t.setTranslation(vTemp);
       mat4.mul(mat4t);
     } else {
-      mat4.set(matTemp);
+      mat4.setM3(matTemp);
     }
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       if (isInternal) {

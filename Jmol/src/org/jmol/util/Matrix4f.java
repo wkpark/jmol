@@ -200,7 +200,7 @@ public class Matrix4f implements Serializable {
   * @param t  The translational components of the matrix
   */
   public void setMV(Matrix3f m1, Vector3f t) {
-    set(m1);
+    setM3(m1);
     setTranslation(t);
   }
 
@@ -800,7 +800,7 @@ public class Matrix4f implements Serializable {
    * @param m1
    *        the 3x3 matrix
    */
-  public final void set(Matrix3f m1) {
+  public final void setM3(Matrix3f m1) {
     m00 = m1.m00;
     m01 = m1.m01;
     m02 = m1.m02;

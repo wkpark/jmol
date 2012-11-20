@@ -41,40 +41,44 @@ public class ScriptDelayThread extends JmolThread {
   private int seconds;
   
   @Override
-  protected boolean checkContinue() {
-    return continuing && !interrupted && seconds >= 0 && millis > 0 && !eval.interruptExecution
-    && eval.currentThread == Thread.currentThread();
-  }
-  
-  @Override
   protected void run1(int mode) throws InterruptedException {
-    switch (mode) {
-    case INIT:
-      int delayMax;
-      if (millis < 0)
-        millis = -millis;
-      else if ((delayMax = viewer.getDelayMaximum()) > 0 && millis > delayMax)
-        millis = delayMax;
-      millis -= System.currentTimeMillis() - startTime;
-      if (isJS) {
-        seconds = 0;
-      } else {
-        seconds = (int) millis / 1000;
-        millis -= seconds * 1000;
-        if (millis <= 0)
-          millis = 1;
+    while (true)
+      switch (mode) {
+      case INIT:
+        int delayMax;
+        if (millis < 0)
+          millis = -millis;
+        else if ((delayMax = viewer.getDelayMaximum()) > 0 && millis > delayMax)
+          millis = delayMax;
+        millis -= System.currentTimeMillis() - startTime;
+        if (isJS) {
+          seconds = 0;
+        } else {
+          seconds = (int) millis / 1000;
+          millis -= seconds * 1000;
+          if (millis <= 0)
+            millis = 1;
+        }
+        if (!isJS)
+          viewer.popHoldRepaintWhy("delay INIT");
+        //$FALL-THROUGH$
+      case MAIN:
+        if (interrupted|| eval.interruptExecution
+        || !isJS && eval.currentThread != Thread.currentThread()) {
+          mode = FINISH;
+          break;
+        }
+        if (!runSleep((seconds--) > 0 ? 1000 : (int) millis, FINISH))
+          return;
+        if (seconds < 0)
+          millis = 0;
+        mode = (seconds > 0 || millis > 0 ? MAIN : FINISH);
+        break;
+      case FINISH:
+        if (!isJS)
+          viewer.pushHoldRepaintWhy("delay FINISH");
+        resumeEval();
+        return;
       }
-      if (!isJS)
-        viewer.popHoldRepaintWhy("delay INIT");
-      return;
-    case MAIN:
-      runSleep((seconds--) > 0 ? 1000 : (int) millis, FINISH);
-      return;
-    case FINISH:
-      if (!isJS)
-        viewer.pushHoldRepaintWhy("delay FINISH");
-      resumeEval();
-      return;
-    }
   }
 }

@@ -43,7 +43,7 @@ public class TimeoutThread extends JmolThread {
     set(ms, script);
   }
   
-  public void set(int ms, String script) {
+  private void set(int ms, String script) {
     sleepTime = ms;
     if (script != null)
       this.script = script; 
@@ -56,26 +56,22 @@ public class TimeoutThread extends JmolThread {
   }
   
   @Override
-  protected boolean checkContinue() {
-    return (!interrupted && continuing && script != null && script.length() != 0 && sleepTime != 0);
-  }
-
-  @Override
   protected void run1(int mode) throws InterruptedException {
-    while (checkContinue())
+    while (true)
       switch (mode) {
       case INIT:
         if (!isJS)
           Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
         timeouts = viewer.getTimeouts();
         targetTime = System.currentTimeMillis() + Math.abs(sleepTime);
-        return;
+        //$FALL-THROUGH$
       case MAIN:
-        // 26-millisecond check allows
-        if (!runSleep(26, CHECK1) || System.currentTimeMillis() < targetTime)
+        if (checkInterrupted() || script == null || script.length() == 0)
           return;
-        mode = CHECK2;
-        break;
+        // 26-millisecond check allows
+        if (!runSleep(26, CHECK1))
+          return;
+        //$FALL-THROUGH$
       case CHECK1:
         // JavaScript-only
         mode = (System.currentTimeMillis() < targetTime ? MAIN : CHECK2);
@@ -83,12 +79,10 @@ public class TimeoutThread extends JmolThread {
       case CHECK2:
         // Time's up!
         currentTime = System.currentTimeMillis();
-        if (timeouts.get(name) == null) {
-          continuing = false;
+        if (timeouts.get(name) == null)
           return;
-        }
         status++;
-        continuing = (sleepTime < 0);
+        boolean continuing = (sleepTime < 0);
         targetTime = System.currentTimeMillis() + Math.abs(sleepTime);
         if (!continuing)
           timeouts.remove(name);
@@ -98,9 +92,8 @@ public class TimeoutThread extends JmolThread {
           viewer.evalStringQuiet((continuing ? script + ";\ntimeout ID \""
               + name + "\";" : script));
         }
-        if (isJS)
-          run1(continuing ? MAIN : FINISH);
-        return;
+        mode = (continuing ? MAIN : FINISH);
+        break;
       case FINISH:
         timeouts.remove(name);
         return;

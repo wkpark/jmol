@@ -53,36 +53,32 @@ public class HoverWatcherThread extends JmolThread {
   }
 
   @Override
-  protected boolean checkContinue() {
-    return (!interrupted && (hoverDelay = viewer.getHoverDelay()) > 0);
-  }
-
-  @Override
   protected void run1(int mode) throws InterruptedException {
-    switch (mode) {
-    case INIT:
-      if (!isJS)
-        Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-      return;
-    case MAIN:
-      if (!runSleep(hoverDelay, CHECK1))
-        return;
-      //$FALL-THROUGH$
-    case CHECK1:
-      if (moved.is(current)) {
-        // last operation was move
-        currentTime = System.currentTimeMillis();
-        int howLong = (int) (currentTime - moved.time);
-        if (howLong > hoverDelay && !interrupted) {
-          actionManager.checkHover();
+    while (true)
+      switch (mode) {
+      case INIT:
+        if (!isJS)
+          Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+        //$FALL-THROUGH$
+      case MAIN:
+        hoverDelay = viewer.getHoverDelay();
+        if (interrupted || hoverDelay <= 0)
+          return;
+        if (!runSleep(hoverDelay, CHECK1))
+          return;
+        //$FALL-THROUGH$
+      case CHECK1:
+        if (moved.is(current)) {
+          // last operation was move
+          currentTime = System.currentTimeMillis();
+          int howLong = (int) (currentTime - moved.time);
+          if (howLong > hoverDelay && !interrupted) {
+            actionManager.checkHover();
+          }
         }
+        mode = MAIN;
+        break;
       }
-      if (isJS && checkContinue())
-        run1(MAIN);
-      return;
-    case FINISH:
-      return;
-    }
   }
 
 }

@@ -956,12 +956,12 @@ public class ScriptVariable extends Token {
             data[i] = fValue(sv.get(i));
           if (selector > 0) {
             if (tok == matrix3f)
-              ((Matrix3f) value).setRow(selector - 1, data);
+              ((Matrix3f) value).setRowA(selector - 1, data);
             else
               ((Matrix4f) value).setRow(selector - 1, data);
           } else {
             if (tok == matrix3f)
-              ((Matrix3f) value).setColumn(-1 - selector, data);
+              ((Matrix3f) value).setColumnA(-1 - selector, data);
             else
               ((Matrix4f) value).setColumn(-1 - selector, data);
           }

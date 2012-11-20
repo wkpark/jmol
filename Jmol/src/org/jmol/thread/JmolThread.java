@@ -33,7 +33,6 @@ abstract public class JmolThread extends Thread {
   protected boolean isJS;
   protected boolean interrupted = false;
   protected boolean isReset;
-  protected boolean continuing = true;
 
  
   public JmolThread(Viewer viewer, String name) {
@@ -44,7 +43,6 @@ abstract public class JmolThread extends Thread {
     this.name = name + "_" + (++threadIndex);    
   }
   abstract protected void run1(int mode) throws InterruptedException;
-  abstract protected boolean checkContinue();
 
   /**
    * JavaScript only --
@@ -89,49 +87,15 @@ abstract public class JmolThread extends Thread {
   }
 
   @Override
-  public void interrupt() {
-    interrupted = true;
-    restartHover();
-    if (!isJS)
-      super.interrupt();
-  }
-  
-  protected boolean checkInterrupted() {
-    /**
-     * @j2sNative
-     * 
-     * return this.interrupted;
-     */
-    {
-      return super.isInterrupted();
-    }
-  }
-  
-  public void reset() {
-    isReset = true;
-    interrupt();
-  }
-
-  @Override
   public void run() {
     startTime = System.currentTimeMillis();
     try {
       run1(INIT);
-      while (checkContinue()) {
-        run1(MAIN);
-        if (isJS)
-          return;
-      }
     } catch (InterruptedException e) {
       if (Logger.debugging)
         oops(e);
     } catch (Exception e) {
       oops(e);
-    }
-    try {
-      run1(FINISH);
-    } catch (Exception e) {
-      Logger.info(name + " exception in FINISH " + e);
     }
   }
   
@@ -163,8 +127,27 @@ abstract public class JmolThread extends Thread {
     }
   }
   
-  public void discontinue() {
-    continuing = false;
+  @Override
+  public void interrupt() {
+    interrupted = true;
+    restartHover();
+    if (!isJS)
+      super.interrupt();
   }
-
+  
+  protected boolean checkInterrupted() {
+    /**
+     * @j2sNative
+     * 
+     * return this.interrupted;
+     */
+    {
+      return super.isInterrupted();
+    }
+  }
+  
+  public void reset() {
+    isReset = true;
+    interrupt();
+  }
 }

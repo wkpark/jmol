@@ -137,7 +137,7 @@ public abstract class TransformManager {
       Matrix3f m = (Matrix3f) viewer
           .getModelSetAuxiliaryInfoValue("defaultOrientationMatrix");
       if (m != null)
-        matrixRotate.set(m);
+        matrixRotate.setM(m);
     //}
     setZoomEnabled(true);
     zoomToPercent(viewer.isModelKitMode() ? 50 : 100);
@@ -360,7 +360,7 @@ public abstract class TransformManager {
     z = (z < 0 ? -1 : 1) * (float) Math.sqrt(Math.abs(z));
     if (factor == 0) {
       // mouse down sets the initial rotation and point on the sphere
-      arcBall0Rotation.set(matrixRotate);
+      arcBall0Rotation.setM(matrixRotate);
       arcBall0.set(x, -y, z);
       if (!Float.isNaN(z))
         arcBall0.normalize();
@@ -372,7 +372,7 @@ public abstract class TransformManager {
     arcBall1.normalize();
     arcBallAxis.cross(arcBall0, arcBall1);
     axisangleT.setVA(arcBallAxis, factor * (float) Math.acos(arcBall0.dot(arcBall1)));
-    matrixRotate.set(arcBall0Rotation);
+    matrixRotate.setM(arcBall0Rotation);
     rotateAxisAngle2(axisangleT, null);
   }
 
@@ -776,13 +776,13 @@ public abstract class TransformManager {
 
   public void setRotation(Matrix3f matrixRotation) {
     if (!Float.isNaN(matrixRotation.m00))
-      matrixRotate.set(matrixRotation);
+      matrixRotate.setM(matrixRotation);
   }
 
   public void getRotation(Matrix3f matrixRotation) {
     // hmm ... I suppose that there could be a race condiditon here
     // if matrixRotate is being modified while this is called
-    matrixRotation.set(matrixRotate);
+    matrixRotation.setM(matrixRotate);
   }
 
   /* ***************************************************************
@@ -1310,7 +1310,7 @@ public abstract class TransformManager {
     matrixTemp.setZero();
     matrixTemp.setTranslation(vectorTemp);
     unscaled.sub(matrixTemp);
-    matrixTemp.set(matrixRotate);
+    matrixTemp.setM3(matrixRotate);
     unscaled.mul2(matrixTemp, unscaled);
     return unscaled;
   }
@@ -1541,7 +1541,7 @@ public abstract class TransformManager {
 
     // multiply by angular rotations
     // this is *not* the same as  matrixTransform.mul(matrixRotate);
-    matrixTemp.set(stereoFrame ? matrixStereo : matrixRotate);
+    matrixTemp.setM3(stereoFrame ? matrixStereo : matrixRotate);
     matrixTransform.mul2(matrixTemp, matrixTransform);
     // cale to screen coordinates
     matrixTemp.setIdentity();

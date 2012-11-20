@@ -341,7 +341,7 @@ abstract public class __CartesianExporter extends ___Exporter {
       m.m22 = rz;
       mq.setAA(a);
       mq.mul(m);
-      sphereMatrix.set(mq);
+      sphereMatrix.setM3(mq);
     } else {
       sphereMatrix.setIdentity();
       sphereMatrix.m00 = rx;

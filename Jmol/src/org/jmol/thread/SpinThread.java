@@ -49,7 +49,6 @@ public class SpinThread extends JmolThread {
   private float angle;
   private boolean haveNotified;
   private int index;
-  private boolean doFinish = true;
   private boolean navigatingSurface;
   
   public boolean isGesture() {
@@ -66,12 +65,6 @@ public class SpinThread extends JmolThread {
     this.isGesture = isGesture;
   }
 
-  @Override
-  protected boolean checkContinue() {
-    return continuing = continuing && !isReset && !checkInterrupted();
-  }
-
-
   /**
    * Java:
    * 
@@ -87,15 +80,19 @@ public class SpinThread extends JmolThread {
 
   @Override
   protected void run1(int mode) throws InterruptedException {
-    while (checkContinue())
+    while (true)
       switch (mode) {
       case INIT:
         myFps = (isNav ? transformManager.navFps : transformManager.spinFps);
         viewer.getGlobalSettings().setParamB(
             isNav ? "_navigating" : "_spinning", true);
         viewer.startHoverWatcher(false);
-        return;
+        //$FALL-THROUGH$
       case MAIN:
+        if (isReset || checkInterrupted()) {
+          mode = FINISH;
+          break;
+        }
         if (isNav && myFps != transformManager.navFps) {
           myFps = transformManager.navFps;
           index = 0;
@@ -108,20 +105,18 @@ public class SpinThread extends JmolThread {
         }
         if (myFps == 0
             || !(isNav ? transformManager.navOn : transformManager.spinOn)) {
-          doFinish = false;
-          return;
+          mode = FINISH;
+          break;
         }
         navigatingSurface = viewer.getNavigateSurface();
-        boolean refreshNeeded = (isNav ?
-            navigatingSurface 
-            || transformManager.navX != 0 
-            || transformManager.navY != 0
+        boolean refreshNeeded = (isNav ? navigatingSurface
+            || transformManager.navX != 0 || transformManager.navY != 0
             || transformManager.navZ != 0
             : transformManager.isSpinInternal
                 && transformManager.internalRotationAxis.angle != 0
-            || transformManager.isSpinFixed
+                || transformManager.isSpinFixed
                 && transformManager.fixedRotationAxis.angle != 0
-            || !transformManager.isSpinFixed
+                || !transformManager.isSpinFixed
                 && !transformManager.isSpinInternal
                 && (transformManager.spinX != 0 || transformManager.spinY != 0 || transformManager.spinZ != 0));
         targetTime = (long) (++index * 1000 / myFps);
@@ -139,7 +134,6 @@ public class SpinThread extends JmolThread {
         boolean isInMotion = (bsAtoms == null && viewer.getInMotion());
         if (isInMotion) {
           if (isGesture) {
-            continuing = isJS;
             mode = FINISH;
             break;
           }
@@ -160,12 +154,11 @@ public class SpinThread extends JmolThread {
         //System.out.println(angle * degreesPerRadian + " " + count + " " + nDegrees + " " + endDegrees);
         if (!isNav && nDegrees >= endDegrees - 0.001)
           transformManager.setSpinOn(false);
-        runSleep(sleepTime, MAIN);
-        return;
-      case FINISH:
-        continuing = false;
-        if (!doFinish)
+        if (!runSleep(sleepTime, MAIN))
           return;
+        mode = MAIN;
+        break;
+      case FINISH:
         if (bsAtoms != null && endPositions != null) {
           // when the standard deviations of the end points was
           // exact, we know that we want EXACTLY those final positions

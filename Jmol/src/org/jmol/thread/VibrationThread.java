@@ -38,11 +38,6 @@ public class VibrationThread extends JmolThread {
   }
 
   @Override
-  protected boolean checkContinue() {
-    return !checkInterrupted();
-  }
-
-  @Override
   protected void run1(int mode) throws InterruptedException {
     int elapsed;
     while (true)
@@ -50,11 +45,11 @@ public class VibrationThread extends JmolThread {
       case INIT:
         lastRepaintTime = startTime = System.currentTimeMillis();
         viewer.startHoverWatcher(false);
-        return;
+        //$FALL-THROUGH$
       case MAIN:
         elapsed = (int) (System.currentTimeMillis() - lastRepaintTime);
         sleepTime = 33 - elapsed;
-        if (sleepTime > 0 && !runSleep(sleepTime, CHECK1))
+        if (!runSleep(sleepTime, CHECK1))
           return;
         //$FALL-THROUGH$
       case CHECK1:
@@ -64,11 +59,8 @@ public class VibrationThread extends JmolThread {
             / transformManager.vibrationPeriodMs;
         transformManager.setVibrationT(t);
         viewer.refresh(3, "VibrationThread:run()");
-        if (isJS) {
-          mode = MAIN;
-          break;
-        }
-        return;
+        mode = (checkInterrupted() ? FINISH : MAIN);
+        break;
       case FINISH:
         restartHover();
         return;

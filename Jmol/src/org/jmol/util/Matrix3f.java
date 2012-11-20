@@ -18,8 +18,6 @@ package org.jmol.util;
 
 import java.io.Serializable;
 
-
-
 /**
  * A single precision floating point 3 by 3 matrix.
  * 
@@ -27,9 +25,9 @@ import java.io.Serializable;
  *          2006/07/28 17:01:33 $
  * @author Kenji hiranabe
  * 
- * additions by Bob Hanson hansonr@stolaf.edu 9/30/2012
- * for unique constructor and method names
- * for the optimization of compiled JavaScript using Java2Script
+ *         additions by Bob Hanson hansonr@stolaf.edu 9/30/2012 for unique
+ *         constructor and method names for the optimization of compiled
+ *         JavaScript using Java2Script
  */
 public class Matrix3f implements Serializable {
 
@@ -85,9 +83,11 @@ public class Matrix3f implements Serializable {
   }
 
   /**
-   * Constructs and initializes a Matrix3f from the specified 9
-   * element array.  this.m00 =v[0], this.m01=v[1], etc.
-   * @param  v the array of length 9 containing in order
+   * Constructs and initializes a Matrix3f from the specified 9 element array.
+   * this.m00 =v[0], this.m01=v[1], etc.
+   * 
+   * @param v
+   *        the array of length 9 containing in order
    * @return m
    */
   public static Matrix3f newA(float[] v) {
@@ -95,9 +95,12 @@ public class Matrix3f implements Serializable {
     m.setA(v);
     return m;
   }
+
   /**
    * Constructs a new matrix with the same values as the Matrix3f parameter.
-   * @param m1 The source matrix.
+   * 
+   * @param m1
+   *        The source matrix.
    * @return m
    */
   public static Matrix3f newM(Matrix3f m1) {
@@ -115,6 +118,7 @@ public class Matrix3f implements Serializable {
     m.m22 = m1.m22;
     return m;
   }
+
   /**
    * Returns a string that contains the values of this Matrix3f.
    * 
@@ -273,7 +277,7 @@ public class Matrix3f implements Serializable {
    * @param v
    *        the replacement row
    */
-  public final void setRow(int row, Vector3f v) {
+  public final void setRowV(int row, Vector3f v) {
     if (row == 0) {
       m00 = v.x;
       m01 = v.y;
@@ -327,7 +331,7 @@ public class Matrix3f implements Serializable {
    * @param v
    *        the replacement row
    */
-  public final void setRow(int row, float v[]) {
+  public final void setRowA(int row, float v[]) {
     if (row == 0) {
       m00 = v[0];
       m01 = v[1];
@@ -412,7 +416,7 @@ public class Matrix3f implements Serializable {
    * @param v
    *        the replacement column
    */
-  public final void setColumn(int column, float v[]) {
+  public final void setColumnA(int column, float v[]) {
     if (column == 0) {
       m00 = v[0];
       m10 = v[1];
@@ -548,7 +552,7 @@ public class Matrix3f implements Serializable {
    */
   public final void transposeM(Matrix3f m1) {
     // alias-safe
-    set(m1);
+    setM(m1);
     transpose();
   }
 
@@ -601,7 +605,7 @@ public class Matrix3f implements Serializable {
    * @param m1
    *        the matrix3f
    */
-  public final void set(Matrix3f m1) {
+  public final void setM(Matrix3f m1) {
     m00 = m1.m00;
     m01 = m1.m01;
     m02 = m1.m02;
@@ -640,7 +644,7 @@ public class Matrix3f implements Serializable {
    *        the matrix to be inverted
    */
   public final void invertM(Matrix3f m1) {
-    set(m1);
+    setM(m1);
     invert();
   }
 
@@ -677,7 +681,7 @@ public class Matrix3f implements Serializable {
    * @param scale
    *        the scale factor for the matrix
    */
-  public final void set(float scale) {
+  public final void setScale(float scale) {
     m00 = scale;
     m01 = 0.0f;
     m02 = 0.0f;
@@ -864,7 +868,8 @@ public class Matrix3f implements Serializable {
    * Transform the vector vec using this Matrix3f and place the result into
    * vecOut.
    * 
-   * @param t the single precision vector to be transformed
+   * @param t
+   *        the single precision vector to be transformed
    * @param result
    *        the vector into which the transformed values are placed
    */

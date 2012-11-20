@@ -10865,7 +10865,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private void clearThreads() {
     if (scriptDelayThread != null) {
-      scriptDelayThread.discontinue();
+      scriptDelayThread.interrupt();
       scriptDelayThread = null;
     } 
   }

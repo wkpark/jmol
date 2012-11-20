@@ -64,65 +64,65 @@ public class AnimationThread extends JmolThread {
   }
   
   @Override
-  protected boolean checkContinue() {
-    return (continuing && !checkInterrupted() && animationManager.animationOn);
-  }
-
-  @Override
   protected void run1(int mode) throws InterruptedException {
-    // TODO    
-    switch (mode) {
-    case INIT:
-      if (Logger.debugging)
-        Logger.debug("animation thread " + intThread + " running");
-      viewer.requestRepaintAndWait();
-      isFirst = true;
-      return;
-    case MAIN:
-      if (animationManager.currentModelIndex == framePointer) {
-        targetTime += animationManager.firstFrameDelayMs;
+    while (true)
+      switch (mode) {
+      case INIT:
+        if (Logger.debugging)
+          Logger.debug("animation thread " + intThread + " running");
+        viewer.requestRepaintAndWait();
+        viewer.startHoverWatcher(false);
+        isFirst = true;
+        //$FALL-THROUGH$
+      case MAIN:
+        if (checkInterrupted() || !animationManager.animationOn) {
+          mode = FINISH;
+          break;
+        }
+        if (animationManager.currentModelIndex == framePointer) {
+          targetTime += animationManager.firstFrameDelayMs;
+          sleepTime = (int) (targetTime - (System.currentTimeMillis() - startTime));
+          if (!runSleep(sleepTime, CHECK1))
+            return;
+        }
+        //$FALL-THROUGH$
+      case CHECK1:
+        if (animationManager.currentModelIndex == framePointer2) {
+          targetTime += animationManager.lastFrameDelayMs;
+          sleepTime = (int) (targetTime - (System.currentTimeMillis() - startTime));
+          if (!runSleep(sleepTime, CHECK2))
+            return;
+        }
+        //$FALL-THROUGH$
+      case CHECK2:
+        if (!isFirst
+            && animationManager.lastModelPainted == animationManager.currentModelIndex
+            && !animationManager.setAnimationNext()) {
+          mode = FINISH;
+          break;
+        }
+        isFirst = false;
+        targetTime += (int) ((1000f / animationManager.animationFps) + viewer
+            .getFrameDelayMs(animationManager.currentModelIndex));
+        //$FALL-THROUGH$
+      case CHECK3:
+        while (animationManager.animationOn && !checkInterrupted()
+            && !viewer.getRefreshing()) {
+          if (!runSleep(10, CHECK3))
+            return;
+        }
+        if (!viewer.getSpinOn())
+          viewer.refresh(1, "animationThread");
         sleepTime = (int) (targetTime - (System.currentTimeMillis() - startTime));
-        if (sleepTime > 0 && !runSleep(sleepTime, CHECK1))
+        if (!runSleep(sleepTime, MAIN))
           return;
-      }
-      //$FALL-THROUGH$
-    case CHECK1:
-      if (animationManager.currentModelIndex == framePointer2) {
-        targetTime += animationManager.lastFrameDelayMs;
-        sleepTime = (int) (targetTime - (System.currentTimeMillis() - startTime));
-        if (sleepTime > 0 && !runSleep(sleepTime, CHECK2))
-          return;
-      }
-      //$FALL-THROUGH$
-    case CHECK2:
-      if (!isFirst
-          && animationManager.lastModelPainted == animationManager.currentModelIndex
-          && !animationManager.setAnimationNext()) {
+        mode = MAIN;
+        break;
+      case FINISH:
         Logger.debug("animation thread " + intThread + " exiting");
         animationManager.setAnimationOff(false);
-        continuing = false;
         return;
       }
-      isFirst = false;
-      targetTime += (int) ((1000f / animationManager.animationFps) + viewer
-          .getFrameDelayMs(animationManager.currentModelIndex));
-      //$FALL-THROUGH$
-    case CHECK3:
-      while (continuing && !checkInterrupted() && animationManager.animationOn
-          && !viewer.getRefreshing()) {
-        if (!runSleep(10, CHECK3))
-          return;
-      }
-      if (!viewer.getSpinOn())
-        viewer.refresh(1, "animationThread");
-      sleepTime = (int) (targetTime - (System.currentTimeMillis() - startTime));
-      if (sleepTime < 0)
-        sleepTime = 0;
-      runSleep(sleepTime, MAIN);
-      return;
-    case FINISH:
-      return;
-    }
   }
 
 }

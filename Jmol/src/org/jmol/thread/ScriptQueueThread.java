@@ -97,12 +97,6 @@ public class ScriptQueueThread extends JmolThread {
   }
 
   @Override
-  protected boolean checkContinue() {
-    //TODO
-    return true;
-  }
-
-  @Override
   protected void run1(int mode) throws InterruptedException {
     // TODO    
     switch (mode) {

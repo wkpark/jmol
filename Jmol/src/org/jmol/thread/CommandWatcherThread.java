@@ -27,6 +27,7 @@ package org.jmol.thread;
 
 import org.jmol.util.Logger;
 import org.jmol.viewer.ScriptManager;
+import org.jmol.viewer.Viewer;
 
 public class CommandWatcherThread extends JmolThread {
   /**
@@ -37,8 +38,8 @@ public class CommandWatcherThread extends JmolThread {
   /**
    * @param scriptManager
    */
-  public CommandWatcherThread(ScriptManager scriptManager) {
-    super(null, "CommmandWatcherThread"); 
+  public CommandWatcherThread(Viewer viewer, ScriptManager scriptManager) {
+    super(viewer, "CommmandWatcherThread"); 
     this.scriptManager = scriptManager;
   }
 
@@ -68,25 +69,8 @@ public class CommandWatcherThread extends JmolThread {
   }
   
   @Override
-  protected boolean checkContinue() {
-    //TODO
-    return true;
-  }
-
-  @Override
   protected void run1(int mode) throws InterruptedException {
-    // TODO    
-    switch (mode) {
-    case INIT:
-      return;
-    case MAIN:
-      return;
-    case CHECK1:
-      return;
-    case FINISH:
-      scriptManager.clearCommandWatcherThread();
-      return;
-    }
+    // N/A
   }
 
 }

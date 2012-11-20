@@ -97,7 +97,7 @@ public class MoveToThread extends JmolThread {
                  float newRotationRadius, Point3f navCenter, float xNav,
                  float yNav, float navDepth) {
     this.center = center;
-    matrixEnd.set(end);
+    matrixEnd.setM(end);
     this.zoom = zoom;
     this.xTrans = xTrans;
     this.yTrans = yTrans;
@@ -153,27 +153,20 @@ public class MoveToThread extends JmolThread {
   }
          
   @Override
-  protected boolean checkContinue() {
-    return continuing;
-  }
-
-  @Override
   protected void run1(int mode) throws InterruptedException {
     while (true)
       switch (mode) {
       case INIT:
-        continuing = (totalSteps > 0);
-        if (continuing)
-          viewer.setInMotion(true);
-        return;
+        if (totalSteps == 0) {
+          mode = FINISH;
+          break;
+        }
+        viewer.setInMotion(true);
+        //$FALL-THROUGH$
       case MAIN:
         if (++iStep >= totalSteps) {
-          continuing = false;
-          if (isJS) {
-            mode = FINISH;
-            break;
-          }
-          return;
+          mode = FINISH;
+          break;
         }
         doStepTransform();
         doEndMove = true;
@@ -185,13 +178,14 @@ public class MoveToThread extends JmolThread {
         viewer.requestRepaintAndWait();
         if (transformManager.motion == null || !isJS && eval != null
             && !viewer.isScriptExecuting()) {
-          continuing = doEndMove = false;
           return;
         }
         currentTime = System.currentTimeMillis();
         int sleepTime = (int) (targetTime - currentTime);
-        runSleep(sleepTime, MAIN);
-        return;
+        if (!runSleep(sleepTime, MAIN))
+          return;
+        mode = MAIN;
+        break;
       case FINISH:
         if (totalSteps == 0 || doEndMove)
           doFinalTransform();

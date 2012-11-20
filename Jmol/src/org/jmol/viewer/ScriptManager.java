@@ -159,7 +159,7 @@ public class ScriptManager {
     if (isStart) {
       if (commandWatcherThread != null)
         return;
-      commandWatcherThread = new CommandWatcherThread(this);
+      commandWatcherThread = new CommandWatcherThread(viewer, this);
       commandWatcherThread.start();
     } else {
       if (commandWatcherThread == null)

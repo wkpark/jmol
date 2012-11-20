@@ -39,23 +39,21 @@ public class MinimizationThread extends JmolThread {
   }
   
   @Override
-  protected boolean checkContinue() {
-    return continuing && minimizer.minimizationOn() && !checkInterrupted();
-  }
-
-  @Override
   protected void run1(int mode) throws InterruptedException {
-    while (checkContinue())
+    while (true)
       switch (mode) {
       case INIT:
         lastRepaintTime = startTime;
         //should save the atom coordinates
-        if (this.minimizer.startMinimization())
-          viewer.startHoverWatcher(false);
-        else
-          continuing = false;
-        return;
+        if (!this.minimizer.startMinimization())
+          return;
+        viewer.startHoverWatcher(false);
+        //$FALL-THROUGH$
       case MAIN:
+        if (!minimizer.minimizationOn() || checkInterrupted()) {
+          mode = FINISH;
+          break;
+        }
         currentTime = System.currentTimeMillis();
         int elapsed = (int) (currentTime - lastRepaintTime);
         int sleepTime = 33 - elapsed;
@@ -64,14 +62,10 @@ public class MinimizationThread extends JmolThread {
         //$FALL-THROUGH$
       case CHECK1:
         lastRepaintTime = currentTime = System.currentTimeMillis();
-        if (!this.minimizer.stepMinimization())
-          this.minimizer.endMinimization();
-        if (isJS) {
-          mode = MAIN;
-          break;
-        }
-        return;
+        mode = (this.minimizer.stepMinimization() ? MAIN : FINISH);
+        break;
       case FINISH:
+        this.minimizer.endMinimization();
         restartHover();
         return;
       }

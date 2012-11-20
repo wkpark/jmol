@@ -350,7 +350,7 @@ public class StateManager {
         if (rotationMatrix == null)
           this.rotationMatrix.setIdentity();
         else
-          this.rotationMatrix.set(rotationMatrix);
+          this.rotationMatrix.setM(rotationMatrix);
       } else {
         viewer.getRotation(this.rotationMatrix);
       }

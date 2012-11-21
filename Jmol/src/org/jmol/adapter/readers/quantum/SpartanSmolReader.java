@@ -43,21 +43,23 @@ public class SpartanSmolReader extends SpartanInputReader {
   private boolean isCompoundDocument = false;
   private boolean inputOnly;
   private boolean espCharges;
-  
+
   @Override
   protected void initializeReader() throws Exception {
     modelName = "Spartan file";
-    isCompoundDocument = (readLine().indexOf("Compound Document File Directory") >= 0);
+    isCompoundDocument = (readLine()
+        .indexOf("Compound Document File Directory") >= 0);
     inputOnly = checkFilterKey("INPUT");
     espCharges = !checkFilterKey("MULLIKEN"); // changed default in Jmol 12.1.41, 12.0.38
-    
+
   }
 
   @Override
   protected boolean checkLine() throws Exception {
     String lcline;
-    if (isCompoundDocument && 
-        (lcline = line.toLowerCase()).equals("begin directory entry molecule") 
+    if (isCompoundDocument
+        && (lcline = line.toLowerCase())
+            .equals("begin directory entry molecule")
         || line.indexOf("JMOL_MODEL") >= 0 && !line.startsWith("END")) {
 
       // bogus type added by Jmol as a marker only
@@ -66,7 +68,8 @@ public class SpartanSmolReader extends SpartanInputReader {
         applySymmetryAndSetTrajectory();
       iHaveModelStatement = true;
       int modelNo = getModelNumber();
-      modelNumber = (bsModels == null && modelNo != Integer.MIN_VALUE ? modelNo : modelNumber + 1);
+      modelNumber = (bsModels == null && modelNo != Integer.MIN_VALUE ? modelNo
+          : modelNumber + 1);
       bondData = "";
       if (!doGetModel(modelNumber, null))
         return checkLastModel();
@@ -77,7 +80,7 @@ public class SpartanSmolReader extends SpartanInputReader {
       if (modelNo == Integer.MIN_VALUE) {
         modelNo = modelNumber;
         title = "Model " + modelNo;
-      } else  {
+      } else {
         title = titles.get("Title" + modelNo);
         title = "Profile " + modelNo + (title == null ? "" : ": " + title);
       }
@@ -112,7 +115,8 @@ public class SpartanSmolReader extends SpartanInputReader {
       } else if (lcline.endsWith("output")) {
         readOutput();
         return false;
-      } else if (lcline.endsWith("molecule") || lcline.endsWith("molecule:asbinarystring")) {
+      } else if (lcline.endsWith("molecule")
+          || lcline.endsWith("molecule:asbinarystring")) {
         readTransform();
         return false;
       } else if (lcline.endsWith("proparc")
@@ -126,10 +130,10 @@ public class SpartanSmolReader extends SpartanInputReader {
       return true;
     }
     if (line.indexOf("5D shell") >= 0)
-      moData.put("calculationType", calculationType = line);    
+      moData.put("calculationType", calculationType = line);
     return true;
   }
-  
+
   @Override
   protected void finalizeReader() throws Exception {
     super.finalizeReader();
@@ -144,46 +148,110 @@ public class SpartanSmolReader extends SpartanInputReader {
         moData.put("HOMO", Integer.valueOf(n.intValue()));
     }
   }
-  
+
   private void readTransform() throws Exception {
     float[] mat;
     String binaryCodes = readLine();
     // last 16x4 bytes constitutes the 4x4 matrix, using doubles
-      String[] tokens = getTokensStr(binaryCodes.trim());
-      if (tokens.length < 16)
-        return;
-      byte[] bytes = new byte[tokens.length];
-      for (int i = 0; i < tokens.length;i++)
-        bytes[i] = (byte) Parser.parseIntRadix(tokens[i], 16);
-      mat = new float[16];
-      for (int i = 16, j = bytes.length; --i >= 0; j -= 8)
-        mat[i] = bytesToDoubleToFloat(bytes, j);
-      setTransform(
-          mat[0], mat[1], mat[2], 
-          mat[4], mat[5], mat[6], 
-          mat[8], mat[9], mat[10]);
+    String[] tokens = getTokensStr(binaryCodes.trim());
+    if (tokens.length < 16)
+      return;
+    byte[] bytes = new byte[tokens.length];
+    for (int i = 0; i < tokens.length; i++)
+      bytes[i] = (byte) Parser.parseIntRadix(tokens[i], 16);
+    mat = new float[16];
+    for (int i = 16, j = bytes.length; --i >= 0; j -= 8)
+      mat[i] = bytesToDoubleToFloat(bytes, j);
+    setTransform(mat[0], mat[1], mat[2], mat[4], mat[5], mat[6], mat[8],
+        mat[9], mat[10]);
+  }
+
+  /**
+   * not concerning ourselves with very small or very large numbers and getting
+   * this exactly right. Just want to get the transform matrix.
+   * 
+   * @param bytes
+   * @param j
+   * @return float
+   */
+  private static float bytesToDoubleToFloat(byte[] bytes, int j) {
+    {
+      // IEEE754: sign (1 bit), exponent (11 bits), fraction (52 bits).
+      // seeeeeee eeeeffff ffffffff ffffffff ffffffff xxxxxxxx xxxxxxxx xxxxxxxx
+      //     b1      b2       b3       b4       b5    ---------float ignores----
+
+      /**
+       * @j2sNative
+       *       var o = org.jmol.adapter.readers.quantum.SpartanSmolReader;
+       *       if (o.fracIEEE == null);
+       *         o.setFracIEEE();
+       *       var b1 = bytes[--j] & 0xFF;
+       *       var b2 = bytes[--j] & 0xFF;
+       *       var b3 = bytes[--j] & 0xFF;
+       *       var b4 = bytes[--j] & 0xFF;
+       *       var b5 = bytes[--j] & 0xFF;
+       *       var s = ((b1 & 0x80) == 0 ? 1 : -1);
+       *       var e = ((b1 & 0x7F) << 4 | (b2 >> 4)) - 1026;
+       *       b2 = (b2 & 0xF) | 0x10;
+       *       return s * (o.shiftIEEE(b2, e) + o.shiftIEEE(b3, e - 8) + o.shiftIEEE(b4, e - 16)
+       *         + o.shiftIEEE(b5, e - 24));
+       */
+      {
+        double d = Double.longBitsToDouble((((long) bytes[--j]) & 0xff) << 56
+            | (((long) bytes[--j]) & 0xff) << 48
+            | (((long) bytes[--j]) & 0xff) << 40
+            | (((long) bytes[--j]) & 0xff) << 32
+            | (((long) bytes[--j]) & 0xff) << 24
+            | (((long) bytes[--j]) & 0xff) << 16
+            | (((long) bytes[--j]) & 0xff) << 8 | (((long) bytes[--j]) & 0xff));
+        return (float) d;
+      }
+
     }
-    
-    private float bytesToDoubleToFloat(byte[] bytes, int j) {
-      double d = Double.longBitsToDouble((((long) bytes[--j]) & 0xff) << 56
-          | (((long) bytes[--j]) & 0xff) << 48
-          | (((long) bytes[--j]) & 0xff) << 40 
-          | (((long) bytes[--j]) & 0xff) << 32
-          | (((long) bytes[--j]) & 0xff) << 24
-          | (((long) bytes[--j]) & 0xff) << 16
-          | (((long) bytes[--j]) & 0xff) << 8
-          | (((long) bytes[--j]) & 0xff));
-      return (float) d;
-    }
+  }
+
+  static void setFracIEEE() {
+    fracIEEE = new float[270];
+    for (int i = 0; i < 270; i++)
+      fracIEEE[i] = (float) Math.pow(2, i - 141);
+    //    System.out.println(fracIEEE[0] + "  " + Float.MIN_VALUE);
+    //    System.out.println(fracIEEE[269] + "  " + Float.MAX_VALUE);
+  }
+
+  private static float[] fracIEEE;
+
+  /**
+   * only concerned about reasonable float values here
+   * 
+   * @param f
+   * @param i
+   * @return f * 2^i
+   */
+  static double shiftIEEE(double f, int i) {
+    if (f == 0 || i < -140)
+      return 0;
+    if (i > 128)
+      return Float.MAX_VALUE;
+    return f * fracIEEE[i + 140];
+  }
+
+  //  static {
+  //    byte[] b = new byte[8];
+  //    for (int i = 0; i < 100; i++) {
+  //      for (int j = 0; j < 8; j++) {
+  //        b[j] = (j < -1 ? 0 : (byte) (Math.random() * 0xFFFFF));
+  //      }
+  //      bytesToDoubleToFloat(b, 8);    
+  //    }
+  //  }
 
   private String endCheck = "END Directory Entry ";
   private String title;
 
   SpartanArchive spartanArchive;
 
-
   Map<String, String> titles;
-  
+
   private void readOutput() throws Exception {
     titles = new Hashtable<String, String>();
     StringXBuilder header = new StringXBuilder();
@@ -191,34 +259,35 @@ public class SpartanSmolReader extends SpartanInputReader {
     while (readLine() != null && !line.startsWith("END ")) {
       header.append(line).append("\n");
       if ((pt = line.indexOf(")")) > 0)
-        titles.put("Title"+parseIntStr(line.substring(0, pt))
-            , (line.substring(pt + 1).trim()));
+        titles.put("Title" + parseIntStr(line.substring(0, pt)), (line
+            .substring(pt + 1).trim()));
     }
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("fileHeader", header.toString());
+    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("fileHeader", header
+        .toString());
   }
 
   private void readArchive() throws Exception {
     spartanArchive = new SpartanArchive(this, bondData, endCheck);
     if (readArchiveHeader()) {
-      modelAtomCount = spartanArchive.readArchive(line, false, atomCount, false);
+      modelAtomCount = spartanArchive
+          .readArchive(line, false, atomCount, false);
       if (atomCount == 0 || !isTrajectory)
         atomCount += modelAtomCount;
     }
   }
-  
+
   private boolean haveCharges;
-  
+
   private void setCharges() {
     if (haveCharges || atomSetCollection.getAtomCount() == 0)
       return;
-    haveCharges = (
-        espCharges && atomSetCollection.setAtomSetCollectionPartialCharges("ESPCHARGES")
+    haveCharges = (espCharges
+        && atomSetCollection.setAtomSetCollectionPartialCharges("ESPCHARGES")
         || atomSetCollection.setAtomSetCollectionPartialCharges("MULCHARGES")
-        || atomSetCollection.setAtomSetCollectionPartialCharges("Q1_CHARGES")
-        || atomSetCollection.setAtomSetCollectionPartialCharges("ESPCHARGES")
-        );
+        || atomSetCollection.setAtomSetCollectionPartialCharges("Q1_CHARGES") || atomSetCollection
+        .setAtomSetCollectionPartialCharges("ESPCHARGES"));
   }
-  
+
   private void readProperties() throws Exception {
     if (spartanArchive == null) {
       readLine();
@@ -228,7 +297,7 @@ public class SpartanSmolReader extends SpartanInputReader {
     readLine();
     setCharges();
   }
-  
+
   private int getModelNumber() {
     try {
       int pt = line.indexOf("JMOL_MODEL ") + 11;
@@ -238,8 +307,7 @@ public class SpartanSmolReader extends SpartanInputReader {
     }
   }
 
-  private boolean readArchiveHeader()
-      throws Exception {
+  private boolean readArchiveHeader() throws Exception {
     String modelInfo = readLine();
     Logger.debug(modelInfo);
     if (modelInfo.indexOf("Error:") == 0) // no archive here

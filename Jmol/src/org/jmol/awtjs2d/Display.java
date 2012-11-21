@@ -98,7 +98,13 @@ class Display {
 
   public static String prompt(String label, String data, String[] list,
                               boolean asButtons) {
-    //TODO
+    /**
+     * @j2sNative
+     * 
+     * var s = prompt(label, data);
+     * if (s != null)return s;
+     */
+    //TODO -- list and asButtons business
     return "null";
   }
 

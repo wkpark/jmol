@@ -54,7 +54,7 @@ class CompoundDocDirEntry {
   //offset 116:
   int SIDfirstSector; // either SAT or SSAT
   int lenStream;
-  byte[] unused4 = new byte[4]; // or maybe this is really a long...
+  byte[] unused = new byte[8];
 
   // derived:
 
@@ -73,12 +73,12 @@ class CompoundDocDirEntry {
       /*DIDstorageRoot = */cd.readInt();
       cd.readByteArray(uniqueID16, 0, 16);
       cd.readByteArray(userflags4, 0, 4);
-      /*timeStamp1 = */cd.readLong();
-      /*timeStamp2 = */cd.readLong();
+      /*timeStamp1 = */      cd.readByteArray(unused, 0, 8);//cd.readLong();
+      /*timeStamp2 = */      cd.readByteArray(unused, 0, 8);//cd.readLong();
       //offset 116:
       SIDfirstSector = cd.readInt();
       lenStream = cd.readInt();
-      cd.readByteArray(unused4, 0, 4);
+      cd.readByteArray(unused, 0, 4);
     } catch (Exception e) {
       Logger.errorEx(null, e);
       return false;

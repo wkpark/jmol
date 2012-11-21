@@ -52,10 +52,9 @@ class CompoundDocHeader {
   //short byteOrder; // -2 littleEndian
   short sectorPower; // 2^sectorPower = sector size; 512 = 2^9
   short shortSectorPower; // 2^shortSectorPower = short sector size; 64 = 2^6
-  byte[] unused10 = new byte[10];
+  byte[] unused = new byte[10];
   int nSATsectors; // number of sectors for sector allocation table
   int SID_DIR_start; // sector identifier of start of directory sector
-  byte[] unused4 = new byte[4];
   //offset 56:
   int minBytesStandardStream; // less than this (and not DIR) will be "short"
   int SID_SSAT_start; // start of short sector allocation table (SSAT)
@@ -94,10 +93,10 @@ class CompoundDocHeader {
       cd.isBigEndian = (b1 == -1 && b2 == -2);
       sectorPower = cd.readShort();
       shortSectorPower = cd.readShort();
-      cd.readByteArray(unused10, 0, 10);
+      cd.readByteArray(unused, 0, 10);
       nSATsectors = cd.readInt();
       SID_DIR_start = cd.readInt();
-      cd.readByteArray(unused4, 0, 4);
+      cd.readByteArray(unused, 0, 4);
       minBytesStandardStream = cd.readInt();
       SID_SSAT_start = cd.readInt();
       nSSATsectors = cd.readInt();

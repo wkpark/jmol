@@ -139,10 +139,10 @@ public class CompoundDocument extends BinaryDocument{
     binaryFileList = "|" + binaryFileList + "|";
     for (int i = 0; i < directory.size(); i++) {
       CompoundDocDirEntry thisEntry = directory.get(i);
-      String name = thisEntry.entryName;
-      Logger.info("reading " + name);
       if (!thisEntry.isEmpty && thisEntry.entryType != 5) {
-        boolean isBinary = (binaryFileList.indexOf("|" + thisEntry.entryName + "|") >= 0);
+        String name = thisEntry.entryName;
+        Logger.info("CompoundDocument file " + name);
+        boolean isBinary = (binaryFileList.indexOf("|" + name + "|") >= 0);
         if (isBinary)
           name += ":asBinaryString";
         StringXBuilder data = new StringXBuilder();

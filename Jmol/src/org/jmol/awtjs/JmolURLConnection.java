@@ -34,7 +34,15 @@ public class JmolURLConnection extends URLConnection {
    * 
    */
   private Object doAjax() {
-  	return null;
+    /**
+     * @j2sNative
+     * 
+     *            return Jmol._doAjax(this.url, this.postOut, this.bytesOut);
+     * 
+     */
+    {
+      return null;
+    }
 	}
 
   @Override

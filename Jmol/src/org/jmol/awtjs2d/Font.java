@@ -34,7 +34,7 @@ class Font {
      * if (context.font != font.font) {
      *  context.font = font.font;
      *  font.font = context.font;
-     *  context._fontAscent = font.fontSize; //pt, not px
+     *  context._fontAscent = Math.ceil(font.fontSize); //pt, not px
      *  // the descent is actually (px - pt)
      *  // but I know of no way of getting access to the drawn height
      *  context._fontDescent = Math.ceil(font.fontSize * 0.25);//approx
@@ -54,7 +54,7 @@ class Font {
      * 
      * @j2sNative
      * 
-     * return context._fontAscent;
+     * return Math.ceil(context._fontAscent);
      */
     {
     return 0;
@@ -63,14 +63,14 @@ class Font {
 
   /**
    * @param context  
-   * @return something other than 0?
+   * @return descent of "g"
    */
   static int getDescent(Object context) {
     /**
      * 
      * @j2sNative
      * 
-     * return context._fontDescent
+     * return Math.ceil(context._fontDescent);
      */
     {
     return 0;
@@ -87,7 +87,7 @@ class Font {
     /**
      * @j2sNative
      * context.font = font.font;
-     * return context.measureText(text).width;
+     * return Math.ceil(context.measureText(text).width);
      */
     {
      return 0;

@@ -302,8 +302,7 @@ all support for previous versions removed
 
     <copy todir="${applet.classes.dir}" >
       <fileset dir="src">
-        <include name="org/jmol/minimize/forcefield/uff/*.txt" />
-        <include name="org/jmol/minimize/forcefield/mmff/*.txt" />
+        <include name="org/jmol/minimize/forcefield/data/*.txt" />
         <include name="jmol75x29x8.gif" />
       </fileset>
     </copy>

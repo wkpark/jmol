@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2012-09-30 19:44+0200\n"
+"POT-Creation-Date: 2012-11-21 07:45+0100\n"
 "PO-Revision-Date: 2012-08-08 08:00+0000\n"
 "Last-Translator: Rubia <Unknown>\n"
 "Language-Team: Japanese <Jmol-developers@lists.sf.net>\n"
@@ -19,47 +19,7 @@ msgstr ""
 "X-Poedit-Country: Japan\n"
 "X-Poedit-Language: Japanese\n"
 
-#: com/json/Cookie.java:121
-msgid "name"
-msgstr "名前"
-
-#: com/json/Cookie.java:123
-msgid "value"
-msgstr "値"
-
-#: com/json/Cookie.java:126
-msgid "expires"
-msgstr "期限が切れる"
-
-#: com/json/Cookie.java:130
-msgid "domain"
-msgstr "ドメイン"
-
-#: com/json/Cookie.java:134
-msgid "path"
-msgstr "パス"
-
-#: com/json/HTTP.java:132 com/json/HTTP.java:144
-msgid "HTTP-Version"
-msgstr "HTTP-バージョン"
-
-#: com/json/HTTP.java:134
-msgid "Status-Code"
-msgstr "状況"
-
-#: com/json/HTTP.java:136
-msgid "Reason-Phrase"
-msgstr "説明句"
-
-#: com/json/HTTP.java:138
-msgid "Method"
-msgstr "方法"
-
-#: com/json/HTTP.java:141
-msgid "Request-URI"
-msgstr "リクエスト- URI"
-
-#: org/jmol/appletjs/Jmol.java:368
+#: org/jmol/appletjs/Jmol.java:370
 #, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -69,7 +29,7 @@ msgid ""
 "See http://www.jmol.org for more information"
 msgstr ""
 
-#: org/jmol/appletjs/Jmol.java:535
+#: org/jmol/appletjs/Jmol.java:537
 msgid "File Error:"
 msgstr ""
 
@@ -275,31 +235,31 @@ msgstr "やり直し"
 msgid "Variables"
 msgstr "変数"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:184
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:186
 msgid "AtomSetChooser"
 msgstr "原子セットセレクタ"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:188
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:190
 msgid "No AtomSets"
 msgstr "原子セットがありません"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:217
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:219
 msgid "Properties"
 msgstr "プロパティ"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:225
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:227
 msgid "Atom Set Collection"
 msgstr "原子セットの集合"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:246
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:248
 msgid "Collection"
 msgstr "集合"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:251
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:253
 msgid "Info"
 msgstr "情報"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:258
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:260
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:177
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:460
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:606
@@ -307,75 +267,75 @@ msgstr "情報"
 msgid "Select"
 msgstr "選択"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:273
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:275
 msgid "Repeat"
 msgstr "繰り返し"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:285
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:287
 msgid "FPS"
 msgstr "FPS"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:301
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:303
 msgid "Vector"
 msgstr "ベクトル"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:308
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:310
 msgid "Radius"
 msgstr "半径"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:321
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:323
 msgid "Scale"
 msgstr "スケール"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:335
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:337
 msgid "Amplitude"
 msgstr "振幅"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:345
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:347
 msgid "Period"
 msgstr "周期"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:374
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:376
 msgid "Frame"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:374
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:376
 msgid "Vibration"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:382
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:391
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:384
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:393
 msgid "Go to first atom set in the collection"
 msgstr "集合の中の最初の原子セットに移動"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:383
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:392
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:385
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:394
 msgid "Go to previous atom set in the collection"
 msgstr "集合の中の前の原子セットに移動"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:384
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:386
 msgid "Play the whole collection of atom sets"
 msgstr "原子セットの集合全体を実行します"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:385
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:387
 msgid "Pause playing"
 msgstr "再生の一時停止"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:386
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:395
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:388
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:397
 msgid "Go to next atom set in the collection"
 msgstr "集合の中の次の原子セットに移動"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:387
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:396
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:389
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:398
 msgid "Jump to last atom set in the collection"
 msgstr "集合の中の最後の原子セットに移動"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:393
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:395
 msgid "Vibration ON"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:394
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:396
 msgid "Vibration OFF"
 msgstr ""
 
@@ -1410,93 +1370,93 @@ msgstr "読み込んでいます..."
 msgid "What's New in Jmol"
 msgstr "Jmolの新機能"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:477
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:482
 msgid "magic"
 msgstr "マジック"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:478
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:483
 msgid "role"
 msgstr "ロール"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:497
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:502
 msgid "type"
 msgstr "タイプ"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:503
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:508
 msgid "text"
 msgstr "テキスト"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:504
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:509
 msgid "visibility"
 msgstr "可視性"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:509
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:514
 msgid "command"
 msgstr "コマンド"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:516
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:521
 msgid "id"
 msgstr "id"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:534
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:550
 msgid "startup"
 msgstr "起動時"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:535
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:551
 msgid "filename"
 msgstr "ファイル名"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:542
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:558
 msgid "startup_script"
 msgstr "起動スクリプト"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:548
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:564
 msgid "banner"
 msgstr "バナー"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:549
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:565
 msgid "banner_text"
 msgstr "バナーテキスト"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:553
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:569
 msgid "style"
 msgstr "スタイル"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:596
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:612
 msgid "x"
 msgstr "x"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:597
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:613
 msgid "y"
 msgstr "y"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:614
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:630
 msgid "sync"
 msgstr "同期"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:69
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:70
 msgid "Degrees"
 msgstr "度"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:69
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:70
 msgid "Radians"
 msgstr "ラジアン"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:70
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:71
 msgid "Gradians"
 msgstr "グラード"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:70
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:71
 msgid "Circle Fraction"
 msgstr "円の部分"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:70
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:71
 msgid "Units of Pi"
 msgstr "π単位"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:311
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:365
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:388
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:312
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:366
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:389
 msgid "Percentage scaling not implemented yet!"
 msgstr "パーセント指定による拡大縮小はまだ実装されていません！"
 
@@ -1900,6 +1860,36 @@ msgstr "ビューをダウンロード"
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr "未実装"
+
+#~ msgid "name"
+#~ msgstr "名前"
+
+#~ msgid "value"
+#~ msgstr "値"
+
+#~ msgid "expires"
+#~ msgstr "期限が切れる"
+
+#~ msgid "domain"
+#~ msgstr "ドメイン"
+
+#~ msgid "path"
+#~ msgstr "パス"
+
+#~ msgid "HTTP-Version"
+#~ msgstr "HTTP-バージョン"
+
+#~ msgid "Status-Code"
+#~ msgstr "状況"
+
+#~ msgid "Reason-Phrase"
+#~ msgstr "説明句"
+
+#~ msgid "Method"
+#~ msgstr "方法"
+
+#~ msgid "Request-URI"
+#~ msgstr "リクエスト- URI"
 
 #~ msgid "Jmol Script Console"
 #~ msgstr "Jmol スクリプトコンソール"

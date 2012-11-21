@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-09-03 17:36+0200\n"
-"PO-Revision-Date: 2012-08-25 10:34+0000\n"
-"Last-Translator: VPablo <villumar@gmail.com>\n"
+"PO-Revision-Date: 2012-11-12 16:08+0000\n"
+"Last-Translator: Adrià Cereto-Massagué <Unknown>\n"
 "Language-Team: Catalan <Jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-25 21:40+0000\n"
-"X-Generator: Launchpad (build 15843)\n"
+"X-Launchpad-Export-Date: 2012-11-21 06:41+0000\n"
+"X-Generator: Launchpad (build 16293)\n"
 "X-Poedit-Country: SPAIN\n"
 "X-Poedit-Language: Catalan\n"
 
@@ -357,9 +357,8 @@ msgid "Append models"
 msgstr "Afegeix els models"
 
 #: org/jmol/export/dialog/FilePreview.java:94
-#, fuzzy
 msgid "PDB cartoons"
-msgstr "Disseny"
+msgstr "Dibuixos del PDB"
 
 #: org/jmol/i18n/GT.java:139
 msgid "Arabic"
@@ -1066,7 +1065,7 @@ msgstr "Filferro"
 #: org/jmol/popup/MainPopupResourceBundle.java:680
 #: org/jmol/popup/MainPopupResourceBundle.java:778
 msgid "Cartoon"
-msgstr "Disseny"
+msgstr "Dibuix"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:634
 #: org/jmol/popup/MainPopupResourceBundle.java:685
@@ -1179,7 +1178,7 @@ msgstr "Estructures"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:681
 msgid "Cartoon Rockets"
-msgstr "Disseny en coets"
+msgstr "Dibuix en coets"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:682
 #: org/jmol/popup/MainPopupResourceBundle.java:779
@@ -2028,7 +2027,7 @@ msgstr "s'esperava un enter"
 #: org/jmol/script/ScriptEvaluator.java:2896
 #, java-format
 msgid "integer out of range ({0} - {1})"
-msgstr "l'enter està fora de l'abast ({0} - {1})"
+msgstr "l''enter és fora del rang ({0} - {1})"
 
 #: org/jmol/script/ScriptEvaluator.java:2899
 msgid "invalid argument"

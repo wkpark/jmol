@@ -7,60 +7,20 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2012-09-30 19:44+0200\n"
-"PO-Revision-Date: 2012-08-25 05:53+0000\n"
-"Last-Translator: Nicolas Vervelle <Unknown>\n"
+"POT-Creation-Date: 2012-11-21 07:45+0100\n"
+"PO-Revision-Date: 2012-11-12 20:04+0000\n"
+"Last-Translator: Kcchouette <Unknown>\n"
 "Language-Team: French <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-25 09:01+0000\n"
-"X-Generator: Launchpad (build 15843)\n"
+"X-Launchpad-Export-Date: 2012-11-21 06:41+0000\n"
+"X-Generator: Launchpad (build 16293)\n"
 "X-Poedit-Country: France\n"
 "X-Poedit-Language: French\n"
 "X-Poedit-Basepath: ../../../..\n"
 
-#: com/json/Cookie.java:121
-msgid "name"
-msgstr "nom"
-
-#: com/json/Cookie.java:123
-msgid "value"
-msgstr "valeur"
-
-#: com/json/Cookie.java:126
-msgid "expires"
-msgstr "expire"
-
-#: com/json/Cookie.java:130
-msgid "domain"
-msgstr "domaine"
-
-#: com/json/Cookie.java:134
-msgid "path"
-msgstr "chemin"
-
-#: com/json/HTTP.java:132 com/json/HTTP.java:144
-msgid "HTTP-Version"
-msgstr "Version HTTP"
-
-#: com/json/HTTP.java:134
-msgid "Status-Code"
-msgstr "Codes d'état"
-
-#: com/json/HTTP.java:136
-msgid "Reason-Phrase"
-msgstr "Reason Phrase"
-
-#: com/json/HTTP.java:138
-msgid "Method"
-msgstr "Méthode"
-
-#: com/json/HTTP.java:141
-msgid "Request-URI"
-msgstr "Requête URI"
-
-#: org/jmol/appletjs/Jmol.java:368
+#: org/jmol/appletjs/Jmol.java:370
 #, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -69,10 +29,15 @@ msgid ""
 "\n"
 "See http://www.jmol.org for more information"
 msgstr ""
+"Jmol Applet version {0} {1}.\n"
+"\n"
+"Fait partie du projet OpenScience.\n"
+"\n"
+"Voir http://www.jmol.org pour de plus amples informations"
 
-#: org/jmol/appletjs/Jmol.java:535
+#: org/jmol/appletjs/Jmol.java:537
 msgid "File Error:"
-msgstr ""
+msgstr "Erreur de Fichier:"
 
 #: org/openscience/jmol/app/JmolApp.java:100
 msgid "Error starting Jmol: the property 'user.home' is not defined."
@@ -281,31 +246,31 @@ msgstr "Répéter"
 msgid "Variables"
 msgstr "Variables"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:184
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:186
 msgid "AtomSetChooser"
 msgstr "Sélectionneur de groupes d’atomes"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:188
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:190
 msgid "No AtomSets"
 msgstr "Pas de groupes d’atomes"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:217
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:219
 msgid "Properties"
 msgstr "Propriétés"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:225
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:227
 msgid "Atom Set Collection"
 msgstr "Collection de groupes d’atomes"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:246
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:248
 msgid "Collection"
 msgstr "Collection"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:251
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:253
 msgid "Info"
 msgstr "Info"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:258
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:260
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:177
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:460
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:606
@@ -313,75 +278,75 @@ msgstr "Info"
 msgid "Select"
 msgstr "Sélection"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:273
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:275
 msgid "Repeat"
 msgstr "Répéter"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:285
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:287
 msgid "FPS"
 msgstr "FPS"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:301
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:303
 msgid "Vector"
 msgstr "Vecteur"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:308
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:310
 msgid "Radius"
 msgstr "Rayon"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:321
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:323
 msgid "Scale"
 msgstr "Échelle"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:335
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:337
 msgid "Amplitude"
 msgstr "Amplitude"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:345
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:347
 msgid "Period"
 msgstr "Période"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:374
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:376
 msgid "Frame"
 msgstr "Cadre"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:374
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:376
 msgid "Vibration"
 msgstr "Vibration"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:382
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:391
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:384
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:393
 msgid "Go to first atom set in the collection"
 msgstr "Se rendre au premier groupe d’atomes de la liste"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:383
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:392
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:385
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:394
 msgid "Go to previous atom set in the collection"
 msgstr "Se rendre au groupe d’atomes précédent de la liste"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:384
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:386
 msgid "Play the whole collection of atom sets"
 msgstr "Lire la liste complète des groupes d’atomes"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:385
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:387
 msgid "Pause playing"
 msgstr "Pause"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:386
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:395
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:388
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:397
 msgid "Go to next atom set in the collection"
 msgstr "Se rendre au groupe d’atomes suivant de la liste"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:387
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:396
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:389
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:398
 msgid "Jump to last atom set in the collection"
 msgstr "Se rendre au dernier groupe d’atomes de la liste"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:393
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:395
 msgid "Vibration ON"
 msgstr "Activer les vibrations"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:394
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:396
 msgid "Vibration OFF"
 msgstr "Désactiver les vibrations"
 
@@ -1423,93 +1388,93 @@ msgstr "Chargement..."
 msgid "What's New in Jmol"
 msgstr "Les nouveautés de Jmol"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:477
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:482
 msgid "magic"
 msgstr "magique"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:478
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:483
 msgid "role"
 msgstr "rôle"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:497
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:502
 msgid "type"
 msgstr "type"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:503
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:508
 msgid "text"
 msgstr "texte"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:504
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:509
 msgid "visibility"
 msgstr "visibilité"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:509
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:514
 msgid "command"
 msgstr "commande"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:516
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:521
 msgid "id"
 msgstr "identifiant"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:534
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:550
 msgid "startup"
 msgstr "démarrage"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:535
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:551
 msgid "filename"
 msgstr "nom_fichier"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:542
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:558
 msgid "startup_script"
 msgstr "startup_script"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:548
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:564
 msgid "banner"
 msgstr "bannière"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:549
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:565
 msgid "banner_text"
 msgstr "banner_text"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:553
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:569
 msgid "style"
 msgstr "style"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:596
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:612
 msgid "x"
 msgstr "x"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:597
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:613
 msgid "y"
 msgstr "y"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:614
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:630
 msgid "sync"
 msgstr "sync"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:69
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:70
 msgid "Degrees"
 msgstr "Degrés"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:69
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:70
 msgid "Radians"
 msgstr "Radians"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:70
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:71
 msgid "Gradians"
 msgstr "Grades"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:70
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:71
 msgid "Circle Fraction"
 msgstr "Fraction du cercle"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:70
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:71
 msgid "Units of Pi"
 msgstr "Unités de Pi"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:311
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:365
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:388
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:312
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:366
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:389
 msgid "Percentage scaling not implemented yet!"
 msgstr "Pourcentage d'échelle non encore disponible !"
 
@@ -1916,6 +1881,36 @@ msgstr "Affichage de téléchargement"
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr "non-implémenté"
+
+#~ msgid "name"
+#~ msgstr "nom"
+
+#~ msgid "value"
+#~ msgstr "valeur"
+
+#~ msgid "expires"
+#~ msgstr "expire"
+
+#~ msgid "domain"
+#~ msgstr "domaine"
+
+#~ msgid "path"
+#~ msgstr "chemin"
+
+#~ msgid "HTTP-Version"
+#~ msgstr "Version HTTP"
+
+#~ msgid "Status-Code"
+#~ msgstr "Codes d'état"
+
+#~ msgid "Reason-Phrase"
+#~ msgstr "Reason Phrase"
+
+#~ msgid "Method"
+#~ msgstr "Méthode"
+
+#~ msgid "Request-URI"
+#~ msgstr "Requête URI"
 
 #~ msgid "All"
 #~ msgstr "Tout"

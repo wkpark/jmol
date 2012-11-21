@@ -186,19 +186,10 @@ public class ForceFieldUFF extends ForceField {
     Map<Object, FFParam> temp = new Hashtable<Object, FFParam>();
 
     // open UFF.txt
-    URL url = null;
-    String fileName = "uff/UFF.txt";
+    String fileName = "UFF.txt";
     BufferedReader br = null;
     try {
-      if ((url = this.getClass().getResource(fileName)) == null) {
-        System.err.println("Couldn't find file: " + fileName);
-        throw new NullPointerException();
-      }
-      //turns out from the Jar file
-      // it's a sun.net.www.protocol.jar.JarURLConnection$JarURLInputStream
-      // and within Eclipse it's a BufferedInputStream
-
-      br = getResource(url);
+      br = getBufferedReader(fileName);
       String line;
       while ((line = br.readLine()) != null) {
         String[] vs = Parser.getTokens(line);

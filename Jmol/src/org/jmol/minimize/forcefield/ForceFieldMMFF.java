@@ -274,10 +274,10 @@ public class ForceFieldMMFF extends ForceField {
   private void getChargeParameters() {
     if (ffParams != null)
       return;
-    getAtomTypes("mmff/MMFF94-smarts.txt");
+    getAtomTypes("MMFF94-smarts.txt");
     Hashtable<Integer, Object> data = new Hashtable<Integer, Object>();
-    getMmffParameters("mmff/mmffpbci.par.txt", data, TYPE_PBCI);
-    getMmffParameters("mmff/mmffchg.par.txt", data, TYPE_CHRG);
+    getMmffParameters("mmffpbci.par.txt", data, TYPE_PBCI);
+    getMmffParameters("mmffchg.par.txt", data, TYPE_CHRG);
     ffParams = data;
   }
 
@@ -285,32 +285,17 @@ public class ForceFieldMMFF extends ForceField {
     // presumes charge parameters have been loaded
     if (ffParams.containsKey(Integer.valueOf(-1)))
       return;
-    getMmffParameters("mmff/mmffang.par.txt",  ffParams, TYPE_ANGLE);
-    getMmffParameters("mmff/mmffbndk.par.txt", ffParams, TYPE_BNDK);
-    getMmffParameters("mmff/mmffbond.par.txt", ffParams, TYPE_BOND);
-    getMmffParameters("mmff/mmffoop.par.txt",  ffParams, TYPE_OOP);
-    getMmffParameters("mmff/mmffstbn.par.txt", ffParams, TYPE_SB);
-    getMmffParameters("mmff/mmffdfsb.par.txt", ffParams, TYPE_SBDEF);
-    getMmffParameters("mmff/mmfftor.par.txt",  ffParams, TYPE_TORSION);
-    getMmffParameters("mmff/mmffvdw.par.txt",  ffParams, TYPE_VDW);
+    getMmffParameters("mmffang.par.txt",  ffParams, TYPE_ANGLE);
+    getMmffParameters("mmffbndk.par.txt", ffParams, TYPE_BNDK);
+    getMmffParameters("mmffbond.par.txt", ffParams, TYPE_BOND);
+    getMmffParameters("mmffoop.par.txt",  ffParams, TYPE_OOP);
+    getMmffParameters("mmffstbn.par.txt", ffParams, TYPE_SB);
+    getMmffParameters("mmffdfsb.par.txt", ffParams, TYPE_SBDEF);
+    getMmffParameters("mmfftor.par.txt",  ffParams, TYPE_TORSION);
+    getMmffParameters("mmffvdw.par.txt",  ffParams, TYPE_VDW);
     ffParams.put(Integer.valueOf(-1), Boolean.TRUE);
   }
 
-  String base;
-  
-  private URL getResourceUrl(String fileName) {
-    /**
-     * @j2sNative
-     *  
-     *      if (this.base == null)
-     *         this.base = this.minimizer.viewer.viewerOptions.get("codeBase");
-     *      return new java.net.URL(this.base + "org/jmol/minimize/forcefield/" + fileName);       
-     *
-     */
-    { 
-      return this.getClass().getResource(fileName);
-    }
-  }
   private void getMmffParameters(String fileName, Map<Integer, Object> data, int dataType) { 
     String line = null;
     
@@ -507,15 +492,6 @@ public class ForceFieldMMFF extends ForceField {
 
   }
   
-  private BufferedReader getBufferedReader(String fileName) throws IOException {
-    URL url = null;
-    if ((url = getResourceUrl(fileName)) == null) {
-      System.err.println("Couldn't find file: " + fileName);
-      throw new NullPointerException();
-    }
-    return getResource(url);
-  }
-
   private static void setFlags(AtomType at) {
     // fcadj
     switch (at.mmType) {

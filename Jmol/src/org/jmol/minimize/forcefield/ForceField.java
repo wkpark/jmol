@@ -486,6 +486,33 @@ abstract public class ForceField {
     calc.appendLogData(s);
   }
 
+
+  protected BufferedReader getBufferedReader(String fileName) throws IOException {
+    URL url = null;
+    if ((url = getResourceUrl(fileName)) == null) {
+      System.err.println("Couldn't find file: " + fileName);
+      throw new NullPointerException();
+    }
+    return getResource(url);
+  }
+
+  String base;
+  
+  private URL getResourceUrl(String fileName) {
+    fileName = "data/" + fileName;
+    /**
+     * @j2sNative
+     *  
+     *      if (this.base == null)
+     *         this.base = this.minimizer.viewer.viewerOptions.get("codeBase");
+     *      return new java.net.URL(this.base + "org/jmol/minimize/forcefield/" + fileName);       
+     *
+     */
+    { 
+      return this.getClass().getResource(fileName);
+    }
+  }
+  
   protected BufferedReader getResource(URL url) throws IOException {
     /**
      * @j2sNative

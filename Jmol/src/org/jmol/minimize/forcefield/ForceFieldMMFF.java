@@ -25,8 +25,6 @@
 package org.jmol.minimize.forcefield;
 
 import java.io.BufferedReader;
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;

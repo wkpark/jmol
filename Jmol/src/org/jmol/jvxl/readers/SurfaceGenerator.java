@@ -527,7 +527,12 @@ public class SurfaceGenerator {
     }
 
     if ("squareData" == propertyName) {
-      params.isSquared = ((Boolean) value).booleanValue();
+      params.isSquared = (value == null ? false : ((Boolean) value).booleanValue());
+      return true;
+    }
+
+    if ("squareLinear" == propertyName) {
+      params.isSquaredLinear = (value == null ? false : ((Boolean) value).booleanValue());
       return true;
     }
 

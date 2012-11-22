@@ -116,8 +116,6 @@ public class MOCalculation extends QuantumCalculation implements
   //                                              S           P           SP          DS         DC          FS          FC
   private int[][] dfCoefMaps = new int[][] {new int[1], new int[3], new int[4], new int[5], new int[6], new int[7], new int[10]};
 
-  protected float[][][] voxelDataTemp;
-
   private float[] linearCombination;
 
   private float[][] coefs;
@@ -135,7 +133,7 @@ public class MOCalculation extends QuantumCalculation implements
                         int firstAtomOffset, List<int[]> shells,
                         float[][] gaussians,
                         int[][] dfCoefMaps, Object slaters, float[] moCoefficients,
-                        float[] linearCombination, float[][] coefs, float[] partialCharges, boolean doNormalize, Point3f[] points, float[] parameters, int testFlags) {
+                        float[] linearCombination, boolean isSquaredLinear, float[][] coefs, float[] partialCharges, boolean doNormalize, Point3f[] points, float[] parameters, int testFlags) {
     havePoints = (points != null);
     this.calculationType = calculationType;
     this.firstAtomOffset = firstAtomOffset;
@@ -146,6 +144,7 @@ public class MOCalculation extends QuantumCalculation implements
     this.slaters = (SlaterData[]) slaters;
     this.moCoefficients = moCoefficients;
     this.linearCombination = linearCombination;
+    this.isSquaredLinear = isSquaredLinear;
     this.coefs = coefs;
     this.isElectronDensity = (partialCharges != null);
     this.doNormalize = doNormalize;
@@ -153,7 +152,7 @@ public class MOCalculation extends QuantumCalculation implements
     countsXYZ = volumeData.getVoxelCounts();
     initialize(countsXYZ[0], countsXYZ[1], countsXYZ[2], points);
     voxelData = volumeData.getVoxelData();
-    voxelDataTemp = (isElectronDensity ? new float[nX][nY][nZ] : voxelData);
+    voxelDataTemp = (isElectronDensity || isSquaredLinear ? new float[nX][nY][nZ] : voxelData);
     setupCoordinates(volumeData.getOriginFloat(), 
         volumeData.getVolumetricVectorLengths(), 
         bsSelected, atomCoordAngstroms, points, false);
@@ -180,7 +179,7 @@ public class MOCalculation extends QuantumCalculation implements
   public void createCube() {
     setXYZBohr(points);
     processPoints();
-    if (doDebug || testing || isElectronDensity)
+    if (!isSquaredLinear && (doDebug || testing || isElectronDensity))
       calculateElectronDensity();
   }
 
@@ -205,6 +204,8 @@ public class MOCalculation extends QuantumCalculation implements
           continue;
         moCoefficients = coefs[(int) linearCombination[i + 1] - 1];
         process();
+        if (isSquaredLinear)
+          setTemp(1);
       }
     }
   }
@@ -222,7 +223,7 @@ public class MOCalculation extends QuantumCalculation implements
         c = 0;
         for (int i = 0; i < nShells; i++)
           c += normalizeShell(i);
-        System.out.println("sum[c^2] = " + c + "\t" + Math.sqrt(c));
+        //System.out.println("sum[c^2] = " + c + "\t" + Math.sqrt(c));
         c = Math.sqrt(c);
         atomIndex = firstAtomOffset - 1;
         moCoeff = 0;
@@ -325,7 +326,7 @@ public class MOCalculation extends QuantumCalculation implements
     }
   }
   
-  private void setTemp() {
+  private void setTemp(float occupancy) {
     for (int ix = xMax; --ix >= xMin;) {
       for (int iy = yMax; --iy >= yMin;) {
         for (int iz = zMax; --iz >= zMin;) {
@@ -423,14 +424,14 @@ public class MOCalculation extends QuantumCalculation implements
           setMinMax(ix);
         for (int iy = yMax; --iy >= yMin;) {
           double eXY = eX * EY[iy];
-          vd = voxelData[ix][(havePoints ? 0 : iy)]; 
+          vd = voxelDataTemp[ix][(havePoints ? 0 : iy)]; 
           for (int iz = zMax; --iz >= zMin;)
             vd[(havePoints ? 0 : iz)] += eXY * EZ[iz];
        }
       }
     }
     if (isElectronDensity)
-      setTemp();
+      setTemp(occupancy);
   }
 
   private void addDataP() {
@@ -459,7 +460,7 @@ public class MOCalculation extends QuantumCalculation implements
           a *=  Math.pow(alpha, 1.25) * norm;
         calcSP(alpha, 0, a * mx, 0, 0);
       }
-      setTemp();
+      setTemp(occupancy);
       for (int ig = 0; ig < nGaussians; ig++) {
         double alpha = gaussians[gaussianPtr + ig][0];
         double c1 = gaussians[gaussianPtr + ig][1];
@@ -468,7 +469,7 @@ public class MOCalculation extends QuantumCalculation implements
           a *=  Math.pow(alpha, 1.25) * norm;
         calcSP(alpha, 0, 0, a * my, 0);
       }
-      setTemp();
+      setTemp(occupancy);
       for (int ig = 0; ig < nGaussians; ig++) {
         double alpha = gaussians[gaussianPtr + ig][0];
         double c1 = gaussians[gaussianPtr + ig][1];
@@ -477,7 +478,7 @@ public class MOCalculation extends QuantumCalculation implements
           a *=  Math.pow(alpha, 1.25) * norm;
         calcSP(alpha, 0, 0, 0, a * mz);
       }
-      setTemp();
+      setTemp(occupancy);
     } else {
       for (int ig = 0; ig < nGaussians; ig++) {
         double alpha = gaussians[gaussianPtr + ig][0];
@@ -522,7 +523,7 @@ public class MOCalculation extends QuantumCalculation implements
             a1 *= Math.pow(alpha, 0.75) * norm1;
           calcSP(alpha, a1 * ms, 0, 0, 0);
         }
-      setTemp();
+      setTemp(occupancy);
       if (mx != 0)
         for (int ig = 0; ig < nGaussians; ig++) {
           alpha = gaussians[gaussianPtr + ig][0];
@@ -532,7 +533,7 @@ public class MOCalculation extends QuantumCalculation implements
             a2 *= Math.pow(alpha, 1.25) * norm2;
           calcSP(alpha, 0, a2 * mx, 0, 0);
         }
-      setTemp();
+      setTemp(occupancy);
       if (my != 0)
         for (int ig = 0; ig < nGaussians; ig++) {
           alpha = gaussians[gaussianPtr + ig][0];
@@ -542,7 +543,7 @@ public class MOCalculation extends QuantumCalculation implements
             a2 *= Math.pow(alpha, 1.25) * norm2;
           calcSP(alpha, 0, 0, a2 * my, 0);
         }
-      setTemp();
+      setTemp(occupancy);
       if (mz != 0)
         for (int ig = 0; ig < nGaussians; ig++) {
           alpha = gaussians[gaussianPtr + ig][0];
@@ -552,7 +553,7 @@ public class MOCalculation extends QuantumCalculation implements
             a2 *= Math.pow(alpha, 1.25) * norm2;
           calcSP(alpha, 0, 0, 0, a2 * mz);
         }
-      setTemp();
+      setTemp(occupancy);
     } else {
       for (int ig = 0; ig < nGaussians; ig++) {
         alpha = gaussians[gaussianPtr + ig][0];
@@ -604,7 +605,7 @@ public class MOCalculation extends QuantumCalculation implements
       for (int iy = yMax; --iy >= yMin;) {
         double eXY = eX * EY[iy];
         double cXY = cX + CY[iy];
-        vd = voxelData[ix][(havePoints ? 0 : iy)]; 
+        vd = voxelDataTemp[ix][(havePoints ? 0 : iy)]; 
         for (int iz = zMax; --iz >= zMin;) {
           vd[(havePoints ? 0 : iz)] += (cXY + CZ[iz]) * eXY * EZ[iz];
         }
@@ -671,7 +672,7 @@ public class MOCalculation extends QuantumCalculation implements
           double axx_x2__ayy_y2__axy_xy = axx_x2 + (CY[iy] + axy_x) * Y[iy];
           double axz_x__ayz_y = axz_x + DYZ[iy];
           double eXY = eX * EY[iy];
-          vd = voxelData[ix][(havePoints ? 0 : iy)]; 
+          vd = voxelDataTemp[ix][(havePoints ? 0 : iy)]; 
           for (int iz = zMax; --iz >= zMin;) {
             vd[(havePoints ? 0 : iz)] += (axx_x2__ayy_y2__axy_xy + (CZ[iz] + axz_x__ayz_y) * Z[iz])
                 * eXY * EZ[iz];
@@ -763,7 +764,7 @@ public class MOCalculation extends QuantumCalculation implements
 
           cyy = norm2 * y * y;
           cxy = norm1 * x * y;
-          vd = voxelData[ix][(havePoints ? 0 : iy)]; 
+          vd = voxelDataTemp[ix][(havePoints ? 0 : iy)]; 
 
           for (int iz = zMax; --iz >= zMin;) {
             z = Z[iz];
@@ -876,7 +877,7 @@ public class MOCalculation extends QuantumCalculation implements
           cyyy = ayyy * yy * y;
           cxxy = axxy * xx * y;
           cxyy = axyy * x * yy;
-          vd = voxelData[ix][(havePoints ? 0 : iy)]; 
+          vd = voxelDataTemp[ix][(havePoints ? 0 : iy)]; 
 
           for (int iz = zMax; --iz >= zMin;) {
             z = Z[iz];
@@ -1000,7 +1001,7 @@ public class MOCalculation extends QuantumCalculation implements
           cyyy = norm3 * y * yy;
           cxyy = norm2 * x * yy;
           cxxy = norm2 * xx * y;
-          vd = voxelData[ix][(havePoints ? 0 : iy)]; 
+          vd = voxelDataTemp[ix][(havePoints ? 0 : iy)]; 
 
           for (int iz = zMax; --iz >= zMin;) {
             z = Z[iz];
@@ -1084,7 +1085,7 @@ public class MOCalculation extends QuantumCalculation implements
         for (int iy = yMax; --iy >= yMin;) {
           double dy2 = Y2[iy];
           double dx2y2 = dx2 + dy2;
-          vd = voxelData[ix][(havePoints ? 0 : iy)]; 
+          vd = voxelDataTemp[ix][(havePoints ? 0 : iy)]; 
           for (int iz = zMax; --iz >= zMin;) {
             double dz2 = Z2[iz];
             double r2 = dx2y2 + dz2;
@@ -1118,7 +1119,7 @@ public class MOCalculation extends QuantumCalculation implements
           double dy2 = Y2[iy];
           double dx2y2 = dx2 + dy2;
           double dx2my2 = coef * (dx2 - dy2);
-          vd = voxelData[ix][(havePoints ? 0 : iy)]; 
+          vd = voxelDataTemp[ix][(havePoints ? 0 : iy)]; 
           for (int iz = zMax; --iz >= zMin;) {
             double dz2 = Z2[iz];
             double r2 = dx2y2 + dz2;
@@ -1175,7 +1176,7 @@ public class MOCalculation extends QuantumCalculation implements
             vdy *= Y[iy];
             break;
           }
-          vd = voxelData[ix][(havePoints ? 0 : iy)]; 
+          vd = voxelDataTemp[ix][(havePoints ? 0 : iy)]; 
           for (int iz = zMax; --iz >= zMin;) {
             double dz2 = Z2[iz];
             double r2 = dx2y2 + dz2;
@@ -1229,7 +1230,7 @@ public class MOCalculation extends QuantumCalculation implements
     }
 */ 
     if (isElectronDensity)
-      setTemp();
+      setTemp(occupancy);
     return true;
   }
 
@@ -1273,6 +1274,8 @@ public class MOCalculation extends QuantumCalculation implements
 
 
   float integration = 0;
+
+  private boolean isSquaredLinear;
 
   public void calculateElectronDensity() {
     if (points != null)

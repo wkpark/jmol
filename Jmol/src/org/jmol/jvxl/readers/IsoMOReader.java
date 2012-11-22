@@ -341,18 +341,18 @@ class IsoMOReader extends AtomDataReader {
                       .get("calculationType"),
           atomData.atomXyz, atomData.firstAtomIndex, (List<int[]>) params.moData.get("shells"), (float[][]) params.moData
                           .get("gaussians"), dfCoefMaps, null,
-          coef, linearCombination, coefs, params.theProperty,
-          params.moData.get("isNormalized") == null, points, params.parameters, params.testFlags);
+          coef, linearCombination, params.isSquaredLinear, coefs,
+          params.theProperty, params.moData.get("isNormalized") == null, points, params.parameters, params.testFlags);
     case Parameters.QM_TYPE_SLATER:
       return q.setupCalculation(volumeData, bsMySelected, null, null, (String) params.moData
                       .get("calculationType"),
           atomData.atomXyz, atomData.firstAtomIndex, null, null, null, params.moData.get("slaters"),
-          coef, linearCombination, coefs, params.theProperty, true, points, params.parameters, params.testFlags);
+          coef, linearCombination, params.isSquaredLinear, coefs, params.theProperty, true, points, params.parameters, params.testFlags);
     case Parameters.QM_TYPE_NCI_PRO:
       return q.setupCalculation(volumeData, bsMySelected, params.bsSolvent,
           atomData.bsMolecules, null, atomData.atomXyz, atomData.firstAtomIndex, null, null,
-          null, null, null, null, null, params.theProperty,
-          true, points, params.parameters, params.testFlags);
+          null, null, null, null, params.isSquaredLinear, null,
+          params.theProperty, true, points, params.parameters, params.testFlags);
     }
     return false;
   }
@@ -368,6 +368,11 @@ class IsoMOReader extends AtomDataReader {
       
       float zero = super.getSurfacePointAndFraction(cutoff, isCutoffAbsolute, valueA,
           valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn);
-      return (q == null || Float.isNaN(zero) ? zero : q.process(ptReturn)); 
+      if (q != null && !Float.isNaN(zero)) {
+      zero = q.process(ptReturn);
+      if (params.isSquared)
+        zero *= zero;
+      }
+      return zero;
   }
 }

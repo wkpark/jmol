@@ -237,6 +237,7 @@ public class Parameters {
     isCavity = false;
     isColorReversed = false;
     isSquared = false;
+    isSquaredLinear = false;
     isContoured = false;
     isEccentric = isAnisotropic = false;
     isMapped = false;
@@ -730,9 +731,9 @@ public class Parameters {
     if (cutoff == Float.MAX_VALUE) {
       cutoff = (isElectronDensity ? defaultQMElectronDensityCutoff
           : defaultQMOrbitalCutoff);
-      if (isSquared)
-        cutoff = cutoff * cutoff;
     }
+    if (isSquared || isSquaredLinear)
+      cutoff = cutoff * cutoff;// * cutoff * cutoff;
     isEccentric = isAnisotropic = false;
     isCutoffAbsolute = (cutoff > 0 && !isPositiveOnly);
     if (state >= STATE_DATA_READ || thePlane != null)
@@ -780,6 +781,7 @@ public class Parameters {
   boolean isColorReversed;
   public boolean isBicolorMap;
   public boolean isSquared;
+  public boolean isSquaredLinear;
 
   public Point4f thePlane;
   public boolean isContoured;

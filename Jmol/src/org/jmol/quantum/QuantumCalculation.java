@@ -39,6 +39,7 @@ abstract class QuantumCalculation {
   protected final static float bohr_per_angstrom = 1 / 0.52918f;
 
   protected float[][][] voxelData;
+  protected float[][][] voxelDataTemp;
   protected float[] vd;
   protected int[] countsXYZ;
   
@@ -150,7 +151,7 @@ abstract class QuantumCalculation {
     if (points == null || nX != 1)
       initializeOnePoint();
     points[0].setT(pt);
-    voxelData[0][0][0] = 0;
+    voxelDataTemp[0][0][0] = 0;
     setXYZBohr(points);
     processPoints();
     //System.out.println("qc pt=" + pt + " " + voxelData[0][0][0]);
@@ -164,7 +165,12 @@ abstract class QuantumCalculation {
   protected void initializeOnePoint() {
     points = new Point3f[1];
     points[0] = new Point3f();
-    voxelData = new float[1][1][1];
+    if (voxelData == null || voxelData == voxelDataTemp) {
+      voxelData = voxelDataTemp = new float[1][1][1];
+    } else {
+      voxelData = new float[1][1][1];
+      voxelDataTemp = new float[1][1][1];
+    }
     xMin = yMin = zMin = 0;
     initialize(1, 1, 1, points);
   }

@@ -64,6 +64,8 @@ public class MolecularOrbital extends Isosurface {
   private Integer moColorNeg;
   private Integer moMonteCarloCount;
   private boolean moIsPositiveOnly;
+  private Boolean moSquareData;
+  private Boolean moSquareLinear;
   private Integer moRandomSeed;
   private int moFill = Token.nofill;
   private int moMesh = Token.mesh;
@@ -102,6 +104,7 @@ public class MolecularOrbital extends Isosurface {
       moNumber = (!thisModel.containsKey("moNumber") ? 0 : ((Integer) thisModel
           .get("moNumber")).intValue());
       moLinearCombination = (float[]) thisModel.get("moLinearCombination");
+      moSquareData = moSquareLinear = null;
       return;
     }
 
@@ -135,6 +138,19 @@ public class MolecularOrbital extends Isosurface {
       return;
     }
 
+
+    if ("squareData" == propertyName) {
+      thisModel.put("moSquareData", Boolean.TRUE);
+      moSquareData = Boolean.TRUE;
+      return;
+    }
+
+    if ("squareLinear" == propertyName) {
+      thisModel.put("moSquareLinear", Boolean.TRUE);
+      moSquareLinear = Boolean.TRUE;
+      return;
+    }
+    
     if ("cutoffPositive" == propertyName) {
       thisModel.put("moCutoff", value);
       thisModel.put("moIsPositiveOnly", Boolean.TRUE);
@@ -203,6 +219,14 @@ public class MolecularOrbital extends Isosurface {
         thisModel.put("moNumber", Integer.valueOf(0));
         thisModel.put("moLinearCombination", moLinearCombination);
       }
+      if (moSquareData == Boolean.TRUE)
+        thisModel.put("moSquareData", Boolean.TRUE);
+      else
+        thisModel.remove("moSquareData");
+      if (moSquareLinear == Boolean.TRUE)
+        thisModel.put("moSquareLinear", Boolean.TRUE);
+      else
+        thisModel.remove("moSquareLinear");
       setOrbital(moNumber, moLinearCombination);
       return;
     }
@@ -375,6 +399,8 @@ public class MolecularOrbital extends Isosurface {
     moScale = (Float) thisModel.get("moScale");
     moColorPos = (Integer) thisModel.get("moColorPos");
     moColorNeg = (Integer) thisModel.get("moColorNeg");
+    moSquareData = (Boolean) thisModel.get("moSquareData");
+    moSquareLinear = (Boolean) thisModel.get("moSquareLinear");
     moMonteCarloCount = (Integer) thisModel.get("monteCarloCount");
     moRandomSeed = (Integer) thisModel.get("randomSeed");
     moSlabValue = (Integer)  thisModel.get("slabValue");
@@ -417,6 +443,8 @@ public class MolecularOrbital extends Isosurface {
         super.setProperty("monteCarloCount", moMonteCarloCount, null);
       }
     }
+    super.setProperty("squareData", moSquareData, null);
+    super.setProperty("squareLinear", moSquareLinear, null);
     super.setProperty("title", moTitleFormat, null);
     super.setProperty("fileName", viewer.getFileName(), null);
     super.setProperty("molecularOrbital", linearCombination == null ? Integer
@@ -491,9 +519,9 @@ public class MolecularOrbital extends Isosurface {
         appendCmd(s, "mo slab " + thisMesh.jvxlData.slabValue);
     }
     if (moLinearCombination == null) {
-      appendCmd(s, "mo " + moNumber);
+      appendCmd(s, "mo " + (moSquareData == Boolean.TRUE ? "squared ": "") + moNumber);
     } else {
-      appendCmd(s, "mo " + EnumQuantumShell.getMOString(moLinearCombination));
+      appendCmd(s, "mo " + EnumQuantumShell.getMOString(moLinearCombination) + (moSquareLinear == Boolean.TRUE ? "squared ": ""));
     }
     if (moTranslucency != null)
       appendCmd(s, "mo translucent " + moTranslucentLevel);

@@ -16516,6 +16516,10 @@ public class ScriptEvaluator {
       default:
         if (isArrayParameter(i)) {
           linearCombination = floatParameterSet(i, 2, Integer.MAX_VALUE);
+          if (tokAt(iToken + 1) == Token.squared) {
+            addShapeProperty(propertyList, "squareLinear", Boolean.TRUE);
+            iToken++;
+          }
           break;
         }
         int ipt = iToken;

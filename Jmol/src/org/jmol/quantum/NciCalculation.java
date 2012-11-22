@@ -132,10 +132,10 @@ public class NciCalculation extends QuantumCalculation implements
                                   int firstAtomOffset, List<int[]> shells,
                                   float[][] gaussians, int[][] dfCoefMaps,
                                   Object slaters, float[] moCoefficients,
-                                  float[] linearCombination, float[][] coefs,
-                                  float[] partialCharges,
-                                  boolean isDensityOnly, Point3f[] points,
-                                  float[] parameters, int testFlags) {
+                                  float[] linearCombination, boolean isSquaredLinear,
+                                  float[][] coefs,
+                                  float[] partialCharges, boolean isDensityOnly,
+                                  Point3f[] points, float[] parameters, int testFlags) {
     useAbsolute = (testFlags == 2);
     this.bsExcluded = bsExcluded;
     BitSet bsLigand = new BitSet();
@@ -686,6 +686,10 @@ public class NciCalculation extends QuantumCalculation implements
        4.144887422,  4.105800759,           3.576656363, 3.872424373, 3.497503547, 3.165369971, 3.204214082, 3.051069564,
        4.251312809,  4.503309314,           4.047465141, 4.666024968, 4.265151411, 3.955710076, 4.040067606, 3.776022242
   };
+
+  public void setSquaredLinear(boolean isSquared) {
+    // ignore
+  }
 
 /*
   static {

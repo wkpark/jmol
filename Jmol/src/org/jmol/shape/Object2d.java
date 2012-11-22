@@ -101,7 +101,7 @@ public abstract class Object2d {
     this.colix = colix;
   }
 
-  void setColix(Object value) {
+  void setColixO(Object value) {
     colix = Colix.getColixO(value);
   }
 

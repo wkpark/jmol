@@ -137,7 +137,7 @@ public abstract class BioShapeCollection extends Shape {
       for (int i = bioShapes.length; --i >= 0;) {
         BioShape bioShape = bioShapes[i];
         if (bioShape.monomerCount > 0)
-          bioShape.setColix(colix, pid, bsSelected);
+          bioShape.setColixBS(colix, pid, bsSelected);
       }
       return;
     }

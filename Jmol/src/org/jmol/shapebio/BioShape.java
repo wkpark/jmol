@@ -276,7 +276,7 @@ public class BioShape {
       meshReady[index + 1] = false;
   }    
 
-  void setColix(short colix, byte pid, BitSet bsSelected) {
+  void setColixBS(short colix, byte pid, BitSet bsSelected) {
     isActive = true;
     if (bsColixSet == null)
       bsColixSet = new BitSet();

@@ -156,7 +156,7 @@ public class Echo extends TextShape {
           if (currentFont != null)
             text.setFont(currentFont, true);
           if (currentColor != null)
-            text.setColix(currentColor);
+            text.setColixO(currentColor);
           if (currentBgColor != null)
             text.setBgColixO(currentBgColor);
           if (currentTranslucentLevel != 0)

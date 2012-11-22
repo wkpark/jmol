@@ -129,13 +129,13 @@ public class Object2dShape extends Shape {
             if (isAll
                 || TextFormat.isMatch(text.target.toUpperCase(), thisID, true,
                     true)) {
-              text.setColix(value);
+              text.setColixO(value);
             }
           }
         }
         return;
       }
-      currentObject.setColix(value);
+      currentObject.setColixO(value);
       return;
     }
 

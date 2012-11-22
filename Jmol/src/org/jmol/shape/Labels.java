@@ -104,7 +104,7 @@ public class Labels extends AtomShape {
       if (!setDefaults)
         for (int i = atomCount; --i >= 0;)
           if (bsSelected.get(i))
-            setColix(i, colix, pid);
+            setLabelColix(i, colix, pid);
       if (setDefaults || !defaultsOnlyForNone) {
         defaultColix = colix;
         defaultPaletteID = pid;
@@ -402,7 +402,7 @@ public class Labels extends AtomShape {
     if (defaultPointer != Object2d.POINTER_NONE)
       setPointer(i, defaultPointer);
     if (defaultColix != 0 || defaultPaletteID != 0)
-      setColix(i, defaultColix, defaultPaletteID);
+      setLabelColix(i, defaultColix, defaultPaletteID);
     if (defaultBgcolix != 0)
       setBgcolix(i, defaultBgcolix);
     if (defaultFontId != zeroFontId)
@@ -444,7 +444,7 @@ public class Labels extends AtomShape {
     return labelBoxes.get(Integer.valueOf(i));
   }
   
-  private void setColix(int i, short colix, byte pid) {
+  private void setLabelColix(int i, short colix, byte pid) {
     setColixAndPalette(colix, pid, i);
     // text is only created by labelsRenderer
     if (colixes != null && ((text = getLabel(i)) != null))

@@ -63,7 +63,7 @@ public class Balls extends AtomShape {
       byte pid = EnumPalette.pidOf(value);
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
         Atom atom = atoms[i];
-        atom.setColixAtom(setColix(colix, pid, atom));
+        atom.setColixAtom(setColixA(colix, pid, atom));
         bsColixSet.setBitTo(i, colix != Colix.USE_PALETTE
             || pid != EnumPalette.NONE.id);
         atom.setPaletteID(pid);
@@ -87,7 +87,7 @@ public class Balls extends AtomShape {
           colix = Colix.USE_PALETTE;
         byte pid = EnumPalette.pidOf(color);
         Atom atom = atoms[i];
-        atom.setColixAtom(setColix(colix, pid, atom));
+        atom.setColixAtom(setColixA(colix, pid, atom));
         bsColixSet.setBitTo(i, colix != Colix.USE_PALETTE
             || pid != EnumPalette.NONE.id);
         atom.setPaletteID(pid);

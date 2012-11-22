@@ -387,15 +387,15 @@ public abstract class Shape {
   }
   
   public short setColix(short colix, byte paletteID, int atomIndex) {
-    return setColix(colix, paletteID, modelSet.atoms[atomIndex]);
+    return setColixA(colix, paletteID, modelSet.atoms[atomIndex]);
   }
 
-  protected short setColix(short colix, byte paletteID, Atom atom) {
+  protected short setColixA(short colix, byte paletteID, Atom atom) {
     return (colix == Colix.USE_PALETTE ? viewer.getColixAtomPalette(atom,
         paletteID) : colix);
   }
 
-  protected short setColix(short colix, int pid, Bond bond) {
+  protected short setColixB(short colix, int pid, Bond bond) {
     return (colix == Colix.USE_PALETTE ? viewer.getColixBondPalette(bond,
         pid) : colix);
   }

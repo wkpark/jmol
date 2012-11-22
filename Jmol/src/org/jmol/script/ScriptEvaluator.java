@@ -8050,7 +8050,7 @@ public class ScriptEvaluator {
       setShapeProperty(shapeType, "type", Integer.valueOf(typeMask));
     }
     if (isColor) {
-      // ok, the following five options require precalculation.
+      // ok, the following options require precalculation.
       // the state must not save them as paletteIDs, only as pure
       // color values.
       switch (tok) {

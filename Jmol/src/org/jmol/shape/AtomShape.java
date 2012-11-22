@@ -156,7 +156,7 @@ public abstract class AtomShape extends Shape {
       paletteIDs = ArrayUtil.ensureLengthByte(paletteIDs, atomIndex + 1);
     }
     if (bsColixSet == null)
-      bsColixSet = new BitSet();
+      bsColixSet = BitSet.newN(atomCount);
     colixes[atomIndex] = colix = setColix(colix, paletteID, atomIndex);
     bsColixSet.setBitTo(atomIndex, colix != Colix.INHERIT_ALL);
     paletteIDs[atomIndex] = paletteID;

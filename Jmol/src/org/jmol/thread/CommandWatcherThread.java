@@ -36,6 +36,7 @@ public class CommandWatcherThread extends JmolThread {
   private final ScriptManager scriptManager;
 
   /**
+   * @param viewer 
    * @param scriptManager
    */
   public CommandWatcherThread(Viewer viewer, ScriptManager scriptManager) {

@@ -687,10 +687,6 @@ public class NciCalculation extends QuantumCalculation implements
        4.251312809,  4.503309314,           4.047465141, 4.666024968, 4.265151411, 3.955710076, 4.040067606, 3.776022242
   };
 
-  public void setSquaredLinear(boolean isSquared) {
-    // ignore
-  }
-
 /*
   static {
     for (int i = 1; i <= 18; i++) {

@@ -342,17 +342,18 @@ class IsoMOReader extends AtomDataReader {
           atomData.atomXyz, atomData.firstAtomIndex, (List<int[]>) params.moData.get("shells"), (float[][]) params.moData
                           .get("gaussians"), dfCoefMaps, null,
           coef, linearCombination, params.isSquaredLinear, coefs,
-          params.theProperty, params.moData.get("isNormalized") == null, points, params.parameters, params.testFlags);
+          null, params.moData.get("isNormalized") == null, points, params.parameters, params.testFlags);
     case Parameters.QM_TYPE_SLATER:
       return q.setupCalculation(volumeData, bsMySelected, null, null, (String) params.moData
                       .get("calculationType"),
           atomData.atomXyz, atomData.firstAtomIndex, null, null, null, params.moData.get("slaters"),
-          coef, linearCombination, params.isSquaredLinear, coefs, params.theProperty, true, points, params.parameters, params.testFlags);
+          coef, linearCombination, params.isSquaredLinear, coefs, 
+          null, true, points, params.parameters, params.testFlags);
     case Parameters.QM_TYPE_NCI_PRO:
       return q.setupCalculation(volumeData, bsMySelected, params.bsSolvent,
           atomData.bsMolecules, null, atomData.atomXyz, atomData.firstAtomIndex, null, null,
           null, null, null, null, params.isSquaredLinear, null,
-          params.theProperty, true, points, params.parameters, params.testFlags);
+          null, true, points, params.parameters, params.testFlags);
     }
     return false;
   }

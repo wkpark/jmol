@@ -25,7 +25,6 @@
 package org.jmol.minimize.forcefield;
 
 import java.io.BufferedReader;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -258,19 +257,9 @@ public class ForceFieldUFF extends ForceField {
 
   private List<String[]> getAtomTypes() {
     List<String[]> types = new ArrayList<String[]>(); //!< external atom type rules
-    URL url = null;
-    String fileName = "uff/UFF.txt";
+    String fileName = "UFF.txt";
     try {
-      if ((url = this.getClass().getResource(fileName)) == null) {
-        System.err.println("Couldn't find file: " + fileName);
-        throw new NullPointerException();
-      }
-
-      //turns out from the Jar file
-      // it's a sun.net.www.protocol.jar.JarURLConnection$JarURLInputStream
-      // and within Eclipse it's a BufferedInputStream
-
-      BufferedReader br = getResource(url);
+      BufferedReader br = getBufferedReader(fileName);
       String line;
       while ((line = br.readLine()) != null) {
         if (line.length() > 4 && line.substring(0, 4).equals("atom")) {

@@ -104,6 +104,7 @@ class Display {
      * var s = prompt(label, data);
      * if (s != null)return s;
      */
+    {}
     //TODO -- list and asButtons business
     return "null";
   }

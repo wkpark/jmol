@@ -183,7 +183,7 @@ class CalculationsMMFF extends Calculations {
     return 0.0;
   }
 
-  Object getParameter(MinObject a) {
+  Object getParameterObj(MinObject a) {
     return (a.key == null || a.ddata != null ? a.ddata : ffParams.get(a.key));
   }
 
@@ -202,7 +202,7 @@ class CalculationsMMFF extends Calculations {
     void setData(List<Object[]> calc, MinBond bond) {
       ia = bond.data[0];
       ib = bond.data[1];
-      Object data = getParameter(bond);
+      Object data = getParameterObj(bond);
       if (data == null)
         return;
       calc.add(new Object[] { new int[] { ia, ib },  data });
@@ -236,7 +236,7 @@ class CalculationsMMFF extends Calculations {
   class AngleCalc extends Calculation {
 
     void setData(List<Object[]> calc, MinAngle angle) {
-      Object data = getParameter(angle);
+      Object data = getParameterObj(angle);
       if (data == null)
         return;
       calc.add(new Object[] { angle.data, data, angle.key });      
@@ -285,9 +285,9 @@ class CalculationsMMFF extends Calculations {
       if (isLinear(angle.data[1]))
         return;
       double[] data = (double[]) getParameter(angle.sbKey);
-      double[] datakat0 = (double[]) getParameter(angle);
-      double[] dataij = (double[]) getParameter(minBonds[angle.data[ForceField.ABI_IJ]]);
-      double[] datajk = (double[]) getParameter(minBonds[angle.data[ForceField.ABI_JK]]);
+      double[] datakat0 = (double[]) getParameterObj(angle);
+      double[] dataij = (double[]) getParameterObj(minBonds[angle.data[ForceField.ABI_IJ]]);
+      double[] datajk = (double[]) getParameterObj(minBonds[angle.data[ForceField.ABI_JK]]);
       if (data == null || datakat0 == null || dataij == null || datajk == null)
         return;
       double theta0 = datakat0[1];
@@ -332,7 +332,7 @@ class CalculationsMMFF extends Calculations {
     void setData(List<Object[]> calc, MinTorsion t) {
       if (isLinear(t.data[1]) || isLinear(t.data[2]))
         return;
-      Object data = getParameter(t);
+      Object data = getParameterObj(t);
       if (data == null)
         return;
       calc.add(new Object[] { t.data, data, t.key });

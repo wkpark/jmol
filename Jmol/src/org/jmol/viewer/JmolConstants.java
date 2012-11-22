@@ -53,22 +53,34 @@ public class JmolConstants {
   static {
     String tmpVersion = null;
     String tmpDate = null;
-    Properties props = new Properties();
 
     // Reading version from resource   inside jar
     BufferedInputStream bis = null;
     InputStream is = null;
     try {
-      is = JmolConstants.class.getClassLoader().getResourceAsStream(
-          "org/jmol/viewer/Jmol.properties");
-      bis = new BufferedInputStream(is);
-      props.load(bis);
-      tmpVersion = props.getProperty("___version", tmpVersion);
-      tmpDate = props.getProperty("___date", tmpDate);
+      /**
+       * definitions are incorporated into j2s/java/core.z.js by j2s/makelib.bat 
+       * 
+       * @j2sNative
+       * 
+       *            tmpVersion = ___JmolVersion; tmpDate = ___JmolDate;
+       */
+      {
+        is = JmolConstants.class.getClassLoader().getResourceAsStream(
+            "org/jmol/viewer/Jmol.properties");
+        bis = new BufferedInputStream(is);
+        Properties props = new Properties();
+        props.load(bis);
+        tmpVersion = props.getProperty("___JmolVersion", tmpVersion);
+        tmpDate = props.getProperty("___JmolDate", tmpDate);
+      }
       if (tmpDate != null) {
-        tmpDate = tmpDate.substring(7, 23);
+        tmpDate = tmpDate.substring(8, 24);
         // NOTE : date is update in the properties by SVN, and is in the format
-        // $Date$"
+        // "$Date$"
+        // 0         1         2
+        // 012345678901234567890123456789
+        tmpVersion = tmpVersion.substring(1, tmpVersion.length() - 1);
       }
     } catch (Exception e) {
       // Nothing to do

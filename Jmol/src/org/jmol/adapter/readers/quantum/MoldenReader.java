@@ -153,6 +153,7 @@ public class MoldenReader extends MopacSlaterReader {
   
   private BitSet bsAtomOK = new BitSet();
   private BitSet bsBadIndex = new BitSet();
+  private int[] nSPDF;
   
   private boolean readGaussianBasis() throws Exception {
     /* 
@@ -175,8 +176,8 @@ public class MoldenReader extends MopacSlaterReader {
     List<float[]> gdata = new ArrayList<float[]>();
     int atomIndex = 0;
     int gaussianPtr = 0;
-    int nCoef = 0;
-
+    nCoef = 0;
+    nSPDF = new int[12];
     while (readLine() != null
         && !((line = line.trim()).length() == 0 || line.charAt(0) == '[')) {
       // First, expect the number of the atomic center
@@ -195,15 +196,15 @@ public class MoldenReader extends MopacSlaterReader {
         // Next line has the shell label and a count of the number of primitives
         tokens = getTokens();
         String shellLabel = tokens[0].toUpperCase();
+        int type = JmolAdapter.getQuantumShellTagID(shellLabel);
         int nPrimitives = parseIntStr(tokens[1]);
         int[] slater = new int[4];
-
+        nSPDF[type]++;
         slater[0] = atomIndex;
-        slater[1] = JmolAdapter.getQuantumShellTagID(shellLabel);
+        slater[1] = type;
         slater[2] = gaussianPtr;
         slater[3] = nPrimitives;
-        nCoef += getDfCoefMaps()[slater[1]].length;
-
+        nCoef += getDfCoefMaps()[type].length;
         for (int ip = nPrimitives; --ip >= 0;) {
           // Read ip primitives, each containing an exponent and one (s,p,d,f)
           // or two (sp) contraction coefficient(s)
@@ -292,6 +293,12 @@ public class MoldenReader extends MopacSlaterReader {
       }
       
       float[] coefs = new float[data.size()];
+      if (orbitalType.equals("") && coefs.length < nCoef) {
+        Logger.info("too few orbital coefficients for 6D");
+        //implicit 5D. Try switching.
+        orbitalType = "[5D]";
+        fixOrbitalType();
+      }
       for (int i = data.size(); --i >= 0;)
         coefs[i] = parseFloatStr(data.get(i));
       String l = line;

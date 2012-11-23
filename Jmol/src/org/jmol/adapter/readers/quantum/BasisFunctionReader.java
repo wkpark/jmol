@@ -186,6 +186,8 @@ abstract class BasisFunctionReader extends AtomSetCollectionReader {
     return isOK;
   }
 
+  protected int nCoef;
+
   protected int[][] getDfCoefMaps() {
     if (dfCoefMaps == null)
       dfCoefMaps = JmolAdapter.getNewDfCoefMap();
@@ -202,16 +204,19 @@ abstract class BasisFunctionReader extends AtomSetCollectionReader {
     return tag;
   }
   
-  protected void fixSlaterTypes(int typeOld, int typeNew) {
+  protected int fixSlaterTypes(int typeOld, int typeNew) {
     // in certain cases we assume Cartesian and then later have to 
     // correct that. 
     if (shells == null)
-      return;
+      return 0;
+    nCoef = 0;
     for (int i = shells.size(); --i >=0 ;) {
       int[] slater = shells.get(i);
       if (slater[1] == typeOld)
         slater[1] = typeNew;
+      nCoef += getDfCoefMaps()[slater[1]].length;
     }
+    return nCoef;
   }
 
 

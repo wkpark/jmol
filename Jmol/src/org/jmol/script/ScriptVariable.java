@@ -809,20 +809,18 @@ public class ScriptVariable extends Token {
     }
     int len = 0;
     boolean isInputSelected = (tokenIn instanceof ScriptVariable && ((ScriptVariable) tokenIn).index != Integer.MAX_VALUE);
-    ScriptVariable tokenOut = new ScriptVariableInt(Integer.MAX_VALUE);
+    ScriptVariable tokenOut = newScriptVariableIntValue(tokenIn.tok, Integer.MAX_VALUE, null);
 
     switch (tokenIn.tok) {
     case bitset:
       if (tokenIn.value instanceof BondSet) {
-        tokenOut.value = new BondSet((BitSet) tokenIn.value,
+        bs = new BondSet((BitSet) tokenIn.value,
             ((BondSet) tokenIn.value).getAssociatedAtoms());
-        bs = (BitSet) tokenOut.value;
         len = BitSetUtil.cardinalityOf(bs);
-        break;
+      } else {
+        bs = BitSetUtil.copy((BitSet) tokenIn.value);
+        len = (isInputSelected ? 1 : BitSetUtil.cardinalityOf(bs));
       }
-      bs = BitSetUtil.copy((BitSet) tokenIn.value);
-      len = (isInputSelected ? 1 : BitSetUtil.cardinalityOf(bs));
-      tokenOut.value = bs;
       break;
     case varray:
       len = ((ScriptVariable)tokenIn).getList().size();
@@ -896,6 +894,7 @@ public class ScriptVariable extends Token {
 
     switch (tokenIn.tok) {
     case bitset:
+      tokenOut.value = bs;
       if (isInputSelected) {
         if (i1 > 1)
           bs.clearAll();

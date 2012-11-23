@@ -120,8 +120,8 @@ public class MoldenReader extends MopacSlaterReader {
      H     5    1        -0.4338802400       -0.3282176500       -0.9384614500
      H     6    1        -0.4338802400       -0.3282176500        0.9384614500
      */
-    
-    String coordUnit = getTokens()[1];
+    String s = line.replace(']', ' ');
+    String coordUnit = getTokensStr(s)[1];
     
     int nPrevAtom = 0, nCurAtom = 0;
    

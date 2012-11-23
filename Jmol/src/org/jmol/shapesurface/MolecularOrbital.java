@@ -521,7 +521,7 @@ public class MolecularOrbital extends Isosurface {
     if (moLinearCombination == null) {
       appendCmd(s, "mo " + (moSquareData == Boolean.TRUE ? "squared ": "") + moNumber);
     } else {
-      appendCmd(s, "mo " + EnumQuantumShell.getMOString(moLinearCombination) + (moSquareLinear == Boolean.TRUE ? "squared ": ""));
+      appendCmd(s, "mo " + EnumQuantumShell.getMOString(moLinearCombination) + (moSquareLinear == Boolean.TRUE ? " squared": ""));
     }
     if (moTranslucency != null)
       appendCmd(s, "mo translucent " + moTranslucentLevel);

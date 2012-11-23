@@ -16433,8 +16433,9 @@ public class ScriptEvaluator {
         break;
       case Token.integer:
         moNumber = intParameter(i);
-        linearCombination = (moNumber >= 0 ? null : new float[] { -100,
-            -moNumber });
+        linearCombination = moCombo(propertyList);
+        if (linearCombination == null && moNumber < 0)
+          linearCombination = new float[] { -100, -moNumber };
         break;
       case Token.minus:
         switch (tokAt(++i)) {
@@ -16448,18 +16449,18 @@ public class ScriptEvaluator {
         //$FALL-THROUGH$
       case Token.homo:
       case Token.lumo:
-        linearCombination = null;
         if ((offset = moOffset(i)) == Integer.MAX_VALUE)
           error(ERROR_invalidArgument);
         moNumber = 0;
+        linearCombination = moCombo(propertyList);
         break;
       case Token.next:
-        linearCombination = null;
         moNumber = Token.next;
+        linearCombination = moCombo(propertyList);
         break;
       case Token.prev:
-        linearCombination = null;
         moNumber = Token.prev;
+        linearCombination = moCombo(propertyList);
         break;
       case Token.color:
         setColorOptions(null, i + 1, JmolConstants.SHAPE_MO, 2);
@@ -16532,8 +16533,8 @@ public class ScriptEvaluator {
       if (propertyName != null)
         addShapeProperty(propertyList, propertyName, propertyValue);
       if (moNumber != Integer.MAX_VALUE || linearCombination != null) {
-        if (tokAt(i + 1) == Token.string)
-          title = parameterAsString(i + 1);
+        if (tokAt(iToken + 1) == Token.string)
+          title = parameterAsString(++iToken);
         setCursorWait(true);
         setMoData(propertyList, moNumber, linearCombination, offset,
             isNegOffset, iModel, title);
@@ -16546,44 +16547,12 @@ public class ScriptEvaluator {
     return true;
   }
 
-  private String setColorOptions(StringXBuilder sb, int index, int iShape,
-                                 int nAllowed) throws ScriptException {
-    getToken(index);
-    String translucency = "opaque";
-    if (theTok == Token.translucent) {
-      translucency = "translucent";
-      if (nAllowed < 0) {
-        float value = (isFloatParameter(index + 1) ? floatParameter(++index)
-            : Float.MAX_VALUE);
-        setShapeTranslucency(iShape, null, "translucent", value, null);
-        if (sb != null) {
-          sb.append(" translucent");
-          if (value != Float.MAX_VALUE)
-            sb.append(" ").appendF(value);
-        }
-      } else {
-        setMeshDisplayProperty(iShape, index, theTok);
-      }
-    } else if (theTok == Token.opaque) {
-      if (nAllowed >= 0)
-        setMeshDisplayProperty(iShape, index, theTok);
-    } else {
-      iToken--;
-    }
-    nAllowed = Math.abs(nAllowed);
-    for (int i = 0; i < nAllowed; i++) {
-      if (isColorParam(iToken + 1)) {
-        int color = getArgbParam(++iToken);
-        setShapeProperty(iShape, "colorRGB", Integer.valueOf(color));
-        if (sb != null)
-          sb.append(" ").append(Escape.escapeColor(color));
-      } else if (iToken < index) {
-        error(ERROR_invalidArgument);
-      } else {
-        break;
-      }
-    }
-    return translucency;
+  private float[] moCombo(List<Object[]> propertyList) {
+    if (tokAt(iToken + 1) != Token.squared)
+      return null;
+    addShapeProperty(propertyList, "squareLinear", Boolean.TRUE);
+    iToken++;
+    return new float[0];
   }
 
   private int moOffset(int index) throws ScriptException {
@@ -16600,10 +16569,9 @@ public class ScriptEvaluator {
   }
 
   @SuppressWarnings("unchecked")
-  private void setMoData(List<Object[]> propertyList, int moNumber,
-                         float[] linearCombination, int offset,
-                         boolean isNegOffset, int modelIndex, String title)
-      throws ScriptException {
+  private void setMoData(List<Object[]> propertyList, int moNumber, float[] lc,
+                         int offset, boolean isNegOffset, int modelIndex,
+                         String title) throws ScriptException {
     if (isSyntaxCheck)
       return;
     if (modelIndex < 0) {
@@ -16611,21 +16579,26 @@ public class ScriptEvaluator {
       if (modelIndex < 0)
         errorStr(ERROR_multipleModelsDisplayedNotOK, "MO isosurfaces");
     }
-    int firstMoNumber = moNumber;
     Map moData = (Map) viewer.getModelAuxiliaryInfoValue(modelIndex, "moData");
-    if (linearCombination == null) {
+    List<Map<String, Object>> mos = null;
+    Map<String, Object> mo;
+    Float f;
+    int nOrb = 0;
+    if (lc == null || lc.length == 0) {
       if (moData == null)
         error(ERROR_moModelError);
       int lastMoNumber = (moData.containsKey("lastMoNumber") ? ((Integer) moData
           .get("lastMoNumber")).intValue()
           : 0);
+      int lastMoCount = (moData.containsKey("lastMoCount") ? ((Integer) moData
+          .get("lastMoCount")).intValue()
+          : 1);      
       if (moNumber == Token.prev)
         moNumber = lastMoNumber - 1;
       else if (moNumber == Token.next)
-        moNumber = lastMoNumber + 1;
-      List<Map<String, Object>> mos = (List<Map<String, Object>>) (moData
-          .get("mos"));
-      int nOrb = (mos == null ? 0 : mos.size());
+        moNumber = lastMoNumber + lastMoCount;
+      mos = (List<Map<String, Object>>) (moData.get("mos"));
+      nOrb = (mos == null ? 0 : mos.size());
       if (nOrb == 0)
         error(ERROR_moCoefficients);
       if (nOrb == 1 && moNumber > 1)
@@ -16636,9 +16609,8 @@ public class ScriptEvaluator {
           moNumber = ((Integer) moData.get("HOMO")).intValue() + offset;
         } else {
           moNumber = -1;
-          Float f;
           for (int i = 0; i < nOrb; i++) {
-            Map<String, Object> mo = mos.get(i);
+            mo = mos.get(i);
             if ((f = (Float) mo.get("occupancy")) != null) {
               if (f.floatValue() < 0.5f) {
                 // go for LUMO = first unoccupied
@@ -16665,17 +16637,43 @@ public class ScriptEvaluator {
       if (moNumber < 1 || moNumber > nOrb)
         errorStr(ERROR_moIndex, "" + nOrb);
     }
+    moNumber = Math.abs(moNumber);
     moData.put("lastMoNumber", Integer.valueOf(moNumber));
-    if (isNegOffset)
-      linearCombination = new float[] { -100, moNumber };
+    moData.put("lastMoCount", Integer.valueOf(1));
+    if (isNegOffset && lc == null)
+      lc = new float[] { -100, moNumber };
+    if (lc != null && lc.length == 0) {
+      mo = mos.get(moNumber - 1);
+      if ((f = (Float) mo.get("energy")) == null) {
+        lc = new float[] { 100, moNumber };
+      } else {
+
+        // constuct set of equivalent energies and square this
+
+        float energy = f.floatValue();
+        BitSet bs = BitSet.newN(nOrb);
+        int n = 0;
+        for (int i = 0; i < nOrb; i++)
+          if ((f = (Float) mos.get(i).get("energy")) != null
+              && f.floatValue() == energy) {
+            bs.set(i + 1);
+            n += 2;
+          }
+        lc = new float[n];
+        for (int i = 0, pt = 0; i < n; i += 2) {
+          lc[i] = 1;
+          lc[i + 1] = (pt = bs.nextSetBit(pt + 1));
+        }
+        moData.put("lastMoNumber", Integer.valueOf(bs.nextSetBit(0)));
+        moData.put("lastMoCount", Integer.valueOf(n / 2));
+      }
+      addShapeProperty(propertyList, "squareLinear", Boolean.TRUE);
+    }
     addShapeProperty(propertyList, "moData", moData);
     if (title != null)
       addShapeProperty(propertyList, "title", title);
-    if (firstMoNumber < 0)
-      addShapeProperty(propertyList, "charges", viewer.getAtomicCharges());
-    addShapeProperty(propertyList, "molecularOrbital",
-        linearCombination != null ? linearCombination : Integer
-            .valueOf(firstMoNumber < 0 ? -moNumber : moNumber));
+    addShapeProperty(propertyList, "molecularOrbital", lc != null ? lc
+        : Integer.valueOf(Math.abs(moNumber)));
     addShapeProperty(propertyList, "clear", null);
   }
 
@@ -17350,7 +17348,13 @@ public class ScriptEvaluator {
             i = iToken;
           }
         }
-        if (tokAt(i + 1) == Token.point) {
+        boolean squared = (tokAt(i + 1) == Token.squared);
+        if (squared) {
+          addShapeProperty(propertyList, "squareLinear", Boolean.TRUE);
+          sbCommand.append(" squared");
+          if (linearCombination == null)
+            linearCombination = new float[0];
+        } else if (tokAt(i + 1) == Token.point) {
           ++i;
           int monteCarloCount = intParameter(++i);
           int seed = (tokAt(i + 1) == Token.integer ? intParameter(++i)
@@ -18298,6 +18302,46 @@ public class ScriptEvaluator {
           + "\"" + (modelIndex >= 0 ? " model " + modelIndex : "")
           + " \"cache://isosurface_" + getShapeProperty(iShape, "ID") + "\"");
     }
+  }
+
+  private String setColorOptions(StringXBuilder sb, int index, int iShape,
+                                 int nAllowed) throws ScriptException {
+    getToken(index);
+    String translucency = "opaque";
+    if (theTok == Token.translucent) {
+      translucency = "translucent";
+      if (nAllowed < 0) {
+        float value = (isFloatParameter(index + 1) ? floatParameter(++index)
+            : Float.MAX_VALUE);
+        setShapeTranslucency(iShape, null, "translucent", value, null);
+        if (sb != null) {
+          sb.append(" translucent");
+          if (value != Float.MAX_VALUE)
+            sb.append(" ").appendF(value);
+        }
+      } else {
+        setMeshDisplayProperty(iShape, index, theTok);
+      }
+    } else if (theTok == Token.opaque) {
+      if (nAllowed >= 0)
+        setMeshDisplayProperty(iShape, index, theTok);
+    } else {
+      iToken--;
+    }
+    nAllowed = Math.abs(nAllowed);
+    for (int i = 0; i < nAllowed; i++) {
+      if (isColorParam(iToken + 1)) {
+        int color = getArgbParam(++iToken);
+        setShapeProperty(iShape, "colorRGB", Integer.valueOf(color));
+        if (sb != null)
+          sb.append(" ").append(Escape.escapeColor(color));
+      } else if (iToken < index) {
+        error(ERROR_invalidArgument);
+      } else {
+        break;
+      }
+    }
+    return translucency;
   }
 
   private String getColorRange(int i) throws ScriptException {

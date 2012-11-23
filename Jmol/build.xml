@@ -36,7 +36,7 @@
 	  </filterchain>
 	</copy>
   <property file="Jmol.properties" prefix="Jmol.properties" />
-  <property name="version" value="${Jmol.properties.___version}" />
+  <property name="version" value="${Jmol.properties.//___version}" />
   <property name="jvxl_version" value="0.1" />
 
   <property name="tests.source.dir" value="source-tests" />

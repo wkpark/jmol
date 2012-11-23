@@ -21,7 +21,7 @@
   <property name="prefix.release"  value="Prerelease " />
 
   <property file="${dist.dir}/Jmol.properties" prefix="Jmol.properties" />
-  <property name="version" value="${Jmol.properties.___version}" />
+  <property name="version" value="${Jmol.properties.//___version}" />
 
   <!-- Copying files to website -->
   <target name="deploy" >

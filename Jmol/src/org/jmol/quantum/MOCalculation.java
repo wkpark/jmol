@@ -331,6 +331,8 @@ public class MOCalculation extends QuantumCalculation implements
       for (int iy = nY; --iy >= 0;) {
         for (int iz = nZ; --iz >= 0;) {
           float value = voxelDataTemp[ix][iy][iz];
+          if (value == 0)
+            continue;
           voxelData[ix][iy][iz] += value * value * occupancy;
           voxelDataTemp[ix][iy][iz] = 0;
         }

@@ -16431,6 +16431,12 @@ public class ScriptEvaluator {
         propertyValue = getCapSlabObject(i, false);
         i = iToken;
         break;
+      case Token.density:
+        propertyName = "squareLinear";
+        propertyValue = Boolean.TRUE;
+        linearCombination = new float[] {1};
+        offset = moNumber = 0;
+        break;
       case Token.integer:
         moNumber = intParameter(i);
         linearCombination = moCombo(propertyList);

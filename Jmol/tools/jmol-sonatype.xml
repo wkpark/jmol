@@ -20,7 +20,7 @@
   <property name="artifactId" value="jmol" />
   
   <property file="${dist}/Jmol.properties" prefix="Jmol.properties" />
-  <property name="version" value="${Jmol.properties.___version}" />
+  <property name="version" value="${Jmol.properties.//___version}" />
 
   <!-- define artifacts' name, which follows the convention of Maven -->
   <property name="maven-snapshot-jar" value="${dist-maven}/${artifactId}-${version}-SNAPSHOT.jar" />

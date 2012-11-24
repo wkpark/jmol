@@ -327,9 +327,9 @@ public class MOCalculation extends QuantumCalculation implements
   }
   
   private void setTemp(float occupancy) {
-    for (int ix = xMax; --ix >= xMin;) {
-      for (int iy = yMax; --iy >= yMin;) {
-        for (int iz = zMax; --iz >= zMin;) {
+    for (int ix = nX; --ix >= 0;) {
+      for (int iy = nY; --iy >= 0;) {
+        for (int iz = nZ; --iz >= 0;) {
           float value = voxelDataTemp[ix][iy][iz];
           voxelData[ix][iy][iz] += value * value * occupancy;
           voxelDataTemp[ix][iy][iz] = 0;

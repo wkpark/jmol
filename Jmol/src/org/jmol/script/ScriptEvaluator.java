@@ -16516,7 +16516,7 @@ public class ScriptEvaluator {
         break;
       default:
         if (isArrayParameter(i)) {
-          linearCombination = floatParameterSet(i, 2, Integer.MAX_VALUE);
+          linearCombination = floatParameterSet(i, 1, Integer.MAX_VALUE);
           if (tokAt(iToken + 1) == Token.squared) {
             addShapeProperty(propertyList, "squareLinear", Boolean.TRUE);
             iToken++;
@@ -16584,15 +16584,16 @@ public class ScriptEvaluator {
     Map<String, Object> mo;
     Float f;
     int nOrb = 0;
-    if (lc == null || lc.length == 0) {
+    if (lc == null || lc.length < 2) {
+      if (lc != null && lc.length == 1)
+        offset = 0;
       if (moData == null)
         error(ERROR_moModelError);
       int lastMoNumber = (moData.containsKey("lastMoNumber") ? ((Integer) moData
           .get("lastMoNumber")).intValue()
           : 0);
       int lastMoCount = (moData.containsKey("lastMoCount") ? ((Integer) moData
-          .get("lastMoCount")).intValue()
-          : 1);      
+          .get("lastMoCount")).intValue() : 1);
       if (moNumber == Token.prev)
         moNumber = lastMoNumber - 1;
       else if (moNumber == Token.next)
@@ -16642,7 +16643,7 @@ public class ScriptEvaluator {
     moData.put("lastMoCount", Integer.valueOf(1));
     if (isNegOffset && lc == null)
       lc = new float[] { -100, moNumber };
-    if (lc != null && lc.length == 0) {
+    if (lc != null && lc.length < 2) {
       mo = mos.get(moNumber - 1);
       if ((f = (Float) mo.get("energy")) == null) {
         lc = new float[] { 100, moNumber };
@@ -16653,12 +16654,16 @@ public class ScriptEvaluator {
         float energy = f.floatValue();
         BitSet bs = BitSet.newN(nOrb);
         int n = 0;
-        for (int i = 0; i < nOrb; i++)
-          if ((f = (Float) mos.get(i).get("energy")) != null
-              && f.floatValue() == energy) {
+        boolean isAllElectrons = (lc.length == 1);
+        for (int i = 0; i < nOrb; i++) {
+          if ((f = (Float) mos.get(i).get("energy")) == null)
+            continue;
+          float e = f.floatValue();
+          if (isAllElectrons ? e <= energy : e == energy) {
             bs.set(i + 1);
             n += 2;
           }
+        }
         lc = new float[n];
         for (int i = 0, pt = 0; i < n; i += 2) {
           lc[i] = 1;
@@ -17324,6 +17329,13 @@ public class ScriptEvaluator {
         case Token.nada:
           error(ERROR_badArgumentCount);
           break;
+        case Token.density:
+          sbCommand.append("mo [1] squared ");
+          addShapeProperty(propertyList, "squareLinear", Boolean.TRUE);
+          linearCombination = new float[] {1};
+          offset = moNumber = 0;
+          i++;
+          break;
         case Token.homo:
         case Token.lumo:
           offset = moOffset(i);
@@ -17344,7 +17356,7 @@ public class ScriptEvaluator {
           break;
         default:
           if (isArrayParameter(i)) {
-            linearCombination = floatParameterSet(i, 2, Integer.MAX_VALUE);
+            linearCombination = floatParameterSet(i, 1, Integer.MAX_VALUE);
             i = iToken;
           }
         }

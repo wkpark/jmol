@@ -205,7 +205,7 @@ public class MOCalculation extends QuantumCalculation implements
         moCoefficients = coefs[(int) linearCombination[i + 1] - 1];
         process();
         if (isSquaredLinear)
-          setTemp(1);
+          addValuesSquared(1);
       }
     }
   }
@@ -326,7 +326,7 @@ public class MOCalculation extends QuantumCalculation implements
     }
   }
   
-  private void setTemp(float occupancy) {
+  private void addValuesSquared(float occupancy) {
     for (int ix = nX; --ix >= 0;) {
       for (int iy = nY; --iy >= 0;) {
         for (int iz = nZ; --iz >= 0;) {

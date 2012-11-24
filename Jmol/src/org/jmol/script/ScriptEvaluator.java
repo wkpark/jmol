@@ -16654,7 +16654,7 @@ public class ScriptEvaluator {
         float energy = f.floatValue();
         BitSet bs = BitSet.newN(nOrb);
         int n = 0;
-        boolean isAllElectrons = (lc.length == 1);
+        boolean isAllElectrons = (lc.length == 1 && lc[0] == 1);
         for (int i = 0; i < nOrb; i++) {
           if ((f = (Float) mos.get(i).get("energy")) == null)
             continue;

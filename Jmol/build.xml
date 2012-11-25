@@ -36,7 +36,15 @@
 	  </filterchain>
 	</copy>
   <property file="Jmol.properties" prefix="Jmol.properties" />
-  <property name="version" value="${Jmol.properties.//___version}" />
+  <property name="version" value="${Jmol.properties.___JmolVersion}" />
+  <propertyregex property="version"
+  			  override = "true"
+	          input="${version}"
+  			  regexp='"'
+	          replace=""
+  		      global="true"
+	          />
+  <echo message="version=${version}" />
   <property name="jvxl_version" value="0.1" />
 
   <property name="tests.source.dir" value="source-tests" />

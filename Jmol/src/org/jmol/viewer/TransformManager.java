@@ -27,6 +27,7 @@ package org.jmol.viewer;
 import org.jmol.constant.EnumStereoMode;
 import org.jmol.script.ScriptEvaluator;
 import org.jmol.script.Token;
+import org.jmol.thread.MoveThread;
 import org.jmol.thread.MoveToThread;
 import org.jmol.thread.SpinThread;
 import org.jmol.thread.VibrationThread;
@@ -701,7 +702,7 @@ public abstract class TransformManager {
     return (height == 0 ? 0 : (fixedTranslation.y - height / 2f) * 100 / height);
   }
 
-  float getTranslationZPercent() {
+  public float getTranslationZPercent() {
     return 0;
   }
 
@@ -941,7 +942,7 @@ public abstract class TransformManager {
     setZShadeEnabled(false);
   }
 
-  int getSlabPercentSetting() {
+  public int getSlabPercentSetting() {
     return slabPercentSetting;
   }
 
@@ -977,7 +978,7 @@ public abstract class TransformManager {
 //    System.out.println("transformManager slab/depthpercentSetting: " + slabPercentSetting + " " + depthPercentSetting);
   }
 
-  void slabToPercent(int percentSlab) {
+  public void slabToPercent(int percentSlab) {
     viewer.setFloatProperty("slabRange", 0);
     slabPercentSetting = percentSlab;
     slabPlane = null;
@@ -1696,59 +1697,13 @@ public abstract class TransformManager {
    * move/moveTo support
    ****************************************************************/
 
-  void move(Vector3f dRot, float dZoom, Vector3f dTrans, float dSlab,
+  void move(ScriptEvaluator eval, Vector3f dRot, float dZoom, Vector3f dTrans, float dSlab,
             float floatSecondsTotal, int fps) {
-    int slab = getSlabPercentSetting();
-    float transX = getTranslationXPercent();
-    float transY = getTranslationYPercent();
-    float transZ = getTranslationZPercent();
-
-    long timeBegin = System.currentTimeMillis();
-    int timePerStep = 1000 / fps;
-    int totalSteps = (int) (fps * floatSecondsTotal);
-    if (totalSteps <= 0)
-      totalSteps = 1; // to catch a zero secondsTotal parameter
-    float radiansPerDegreePerStep = (float) (1 / degreesPerRadian / totalSteps);
-    float radiansXStep = radiansPerDegreePerStep * dRot.x;
-    float radiansYStep = radiansPerDegreePerStep * dRot.y;
-    float radiansZStep = radiansPerDegreePerStep * dRot.z;
-    if (floatSecondsTotal > 0)
-      viewer.setInMotion(true);
-    float zoomPercent0 = zoomPercent;
-    for (int i = 1; i <= totalSteps; ++i) {
-      if (dRot.x != 0)
-        rotateXRadians(radiansXStep, null);
-      if (dRot.y != 0)
-        rotateYRadians(radiansYStep, null);
-      if (dRot.z != 0)
-        rotateZRadians(radiansZStep);
-      if (dZoom != 0)
-        zoomToPercent(zoomPercent0 + dZoom * i / totalSteps);
-      if (dTrans.x != 0)
-        translateToPercent('x', transX + dTrans.x * i / totalSteps);
-      if (dTrans.y != 0)
-        translateToPercent('y', transY + dTrans.y * i / totalSteps);
-      if (dTrans.z != 0)
-        translateToPercent('z', transZ + dTrans.z * i / totalSteps);
-      if (dSlab != 0)
-        slabToPercent((int) Math.floor(slab + dSlab * i / totalSteps));
-      int timeSpent = (int) (System.currentTimeMillis() - timeBegin);
-      int timeAllowed = i * timePerStep;
-      if (timeSpent < timeAllowed) {
-        viewer.requestRepaintAndWait();
-        if (!viewer.isScriptExecuting())
-          break;
-        timeSpent = (int) (System.currentTimeMillis() - timeBegin);
-        int timeToSleep = timeAllowed - timeSpent;
-        if (timeToSleep > 0) {
-          try {
-            Thread.sleep(timeToSleep);
-          } catch (InterruptedException e) {
-          }
-        }
-      }
-    }
-    viewer.setInMotion(false);
+    
+    MoveThread motion = new MoveThread(this, viewer);
+    motion.set(dRot, dZoom, dTrans, dSlab, floatSecondsTotal, fps);
+    motion.setEval(eval);
+    motion.run();
   }
 
   protected final Point3f ptTest1 = new Point3f();

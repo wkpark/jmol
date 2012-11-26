@@ -937,10 +937,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return transformManager.isInPosition(axis, degrees);
   }
 
-  public void move(Vector3f dRot, float dZoom, Vector3f dTrans, float dSlab,
+  public void move(ScriptEvaluator eval, Vector3f dRot, float dZoom, Vector3f dTrans, float dSlab,
                    float floatSecondsTotal, int fps) {
     // from Eval
-    transformManager.move(dRot, dZoom, dTrans, dSlab, floatSecondsTotal, fps);
+    transformManager.move(eval, dRot, dZoom, dTrans, dSlab, floatSecondsTotal, fps);
     moveUpdate(floatSecondsTotal);
   }
 

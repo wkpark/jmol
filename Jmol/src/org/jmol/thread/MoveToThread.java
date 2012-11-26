@@ -45,7 +45,7 @@ public class MoveToThread extends JmolThread {
    * @param viewer 
    */
   public MoveToThread(TransformManager transformManager, Viewer viewer) {
-    super(viewer, "MotionThread");
+    super(viewer, "MoveToThread");
     this.transformManager = transformManager;
   }
 

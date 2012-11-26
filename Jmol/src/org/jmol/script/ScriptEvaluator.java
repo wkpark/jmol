@@ -6299,7 +6299,7 @@ public class ScriptEvaluator {
     if (isSyntaxCheck)
       return;
     refresh();
-    viewer.move(dRot, dZoom, dTrans, dSlab, floatSecondsTotal, fps);
+    viewer.move(this, dRot, dZoom, dTrans, dSlab, floatSecondsTotal, fps);
   }
 
   private void moveto() throws ScriptException {

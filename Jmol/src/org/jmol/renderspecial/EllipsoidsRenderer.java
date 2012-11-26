@@ -402,6 +402,8 @@ public class EllipsoidsRenderer extends ShapeRenderer {
 
 
   protected void renderEllipsoid(Ellipsoid ellipsoid) {
+    if (!isSet)
+      isSet = setGlobals();
     axes = ellipsoid.axes;
     for (int i = 0; i < 3; i++)
       factoredLengths[i] = ellipsoid.lengths[i];

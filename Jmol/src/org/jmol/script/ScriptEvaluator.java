@@ -6300,6 +6300,8 @@ public class ScriptEvaluator {
       return;
     refresh();
     viewer.move(this, dRot, dZoom, dTrans, dSlab, floatSecondsTotal, fps);
+    if (viewer.isSingleThreaded())
+      throw new ScriptInterruption(this, viewer, Integer.MAX_VALUE);
   }
 
   private void moveto() throws ScriptException {
@@ -6325,6 +6327,7 @@ public class ScriptEvaluator {
         refresh();
       viewer.moveTo(this, f, null, JmolConstants.axisZ, 0, null, 100, 0, 0, 0,
           null, Float.NaN, Float.NaN, Float.NaN);
+      //??
       return;
     }
     Vector3f axis = Vector3f.new3(Float.NaN, 0, 0);
@@ -6505,6 +6508,8 @@ public class ScriptEvaluator {
       refresh();
     viewer.moveTo(this, floatSecondsTotal, center, axis, degrees, null, zoom,
         xTrans, yTrans, rotationRadius, navCenter, xNav, yNav, navDepth);
+    if (viewer.isSingleThreaded())
+      throw new ScriptInterruption(this, viewer, Integer.MAX_VALUE);
   }
 
   private void navigate() throws ScriptException {
@@ -7057,6 +7062,8 @@ public class ScriptEvaluator {
       }
       viewer.rotateAboutPointsInternal(this, centerAndPoints[0][0], pt1, endDegrees
           / nSeconds, endDegrees, doAnimate, bsFrom, translation, ptsB);
+      if (viewer.isSingleThreaded())
+        throw new ScriptInterruption(this, viewer, Integer.MAX_VALUE);
     }
   }
 
@@ -10327,6 +10334,8 @@ public class ScriptEvaluator {
         // rotate x 10 $object # point-centered
         viewer.rotateAxisAngleAtCenter(this, points[0], rotAxis, rate, endDegrees,
             isSpin, bsAtoms);
+        if (viewer.isSingleThreaded())
+          throw new ScriptInterruption(this, viewer, Integer.MAX_VALUE);
         return;
       }
       if (nPoints == 0)
@@ -10364,11 +10373,14 @@ public class ScriptEvaluator {
       ptsA = viewer.getAtomPointVector(bsAtoms);
       ptsB = Measure.transformPoints(ptsA, m4, points[0]);
     }
-    if (bsAtoms != null && !isSpin && ptsB != null)
+    if (bsAtoms != null && !isSpin && ptsB != null) {
       viewer.setAtomCoord(bsAtoms, Token.xyz, ptsB);
-    else
+    } else {
       viewer.rotateAboutPointsInternal(this, points[0], points[1], rate, endDegrees,
           isSpin, bsAtoms, translation, ptsB);
+      if (viewer.isSingleThreaded())
+        throw new ScriptInterruption(this, viewer, Integer.MAX_VALUE);
+    }
   }
 
   private Quaternion getQuaternionParameter(int i) throws ScriptException {

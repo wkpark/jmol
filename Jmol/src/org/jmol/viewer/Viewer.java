@@ -28,6 +28,7 @@ import org.jmol.script.ScriptCompiler;
 import org.jmol.script.ScriptContext;
 import org.jmol.script.ScriptEvaluator;
 import org.jmol.script.ScriptFunction;
+import org.jmol.script.ScriptInterruption;
 import org.jmol.script.ScriptVariable;
 import org.jmol.script.ScriptVariableInt;
 import org.jmol.script.Token;

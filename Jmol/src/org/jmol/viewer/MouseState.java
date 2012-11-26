@@ -60,7 +60,9 @@ public class MouseState {
   }
   
   public boolean check(int xyRange, int x, int y, int modifiers, long time, long delayMax) {
-    return (inRange(xyRange, x, y) && this.modifiers == modifiers && (time - this.time) < delayMax);
+    return (this.modifiers == modifiers 
+        && (delayMax >= Integer.MAX_VALUE ? inRange(xyRange, x, y) 
+            : (time - this.time) < delayMax));
   }
 
   public boolean is(MouseState current) {

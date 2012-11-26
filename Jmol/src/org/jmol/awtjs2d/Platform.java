@@ -38,9 +38,11 @@ public class Platform implements ApiPlatform {
 	   * 
      *     this.viewer = viewer;
      *     this.canvas = canvas;
-	   *     this.context = canvas.getContext("2d");
-	   *     canvas.imgdata = this.context.getImageData(0, 0, canvas.width, canvas.height);
-	   *     canvas.buf8 = canvas.imgdata.data;
+     *     if (canvas != null) {
+	   *       this.context = canvas.getContext("2d");
+	   *       canvas.imgdata = this.context.getImageData(0, 0, canvas.width, canvas.height);
+	   *       canvas.buf8 = canvas.imgdata.data;
+	   *     }
 	   */
 	  {}
 		//
@@ -54,7 +56,30 @@ public class Platform implements ApiPlatform {
   public boolean isSingleThreaded() {
     return true;
   }
-	// /// Display
+
+  public Object getJsObjectInfo(Object jsObject, String method, Object[] args) {
+    return null; // DOM XML reader only -- not implemented in JavaScript
+  }
+
+  public boolean isHeadless() {
+    return false;
+  }
+
+  private JmolFileAdapter fileAdapter;
+
+  public JmolFileAdapterInterface getFileAdapter() {
+    return (fileAdapter == null  ? fileAdapter = new JmolFileAdapter() : fileAdapter);
+  }
+
+  public JmolFileInterface newFile(String name) {
+    return new JmolFile(name);
+  }
+
+  public JmolMouseInterface getMouseManager(Viewer viewer, ActionManager actionManager) {
+    return new Mouse(viewer, actionManager);
+  }
+
+  // /// Display
 
 	public void convertPointFromScreen(Object canvas, Point3f ptTemp) {
 	  // from JmolMultiTouchClientAdapter.fixXY
@@ -110,12 +135,6 @@ public class Platform implements ApiPlatform {
 
 	public void setCursor(int c, Object canvas) {
 		Display.setCursor(c, canvas);
-	}
-
-	// //// Mouse
-
-	public JmolMouseInterface getMouseManager(Viewer viewer, ActionManager actionManager) {
-		return new Mouse(viewer, actionManager);
 	}
 
 	// //// Image
@@ -227,26 +246,6 @@ public class Platform implements ApiPlatform {
 	public Object newFont(String fontFace, boolean isBold, boolean isItalic,
 			float fontSize) {
 		return Font.newFont(fontFace, isBold, isItalic, fontSize, "px");
-	}
-
-	// / misc
-
-	public Object getJsObjectInfo(Object jsObject, String method, Object[] args) {
-		return null; // DOM XML reader only -- not implemented in JavaScript
-	}
-
-	public boolean isHeadless() {
-		return false;
-	}
-
-  private JmolFileAdapter fileAdapter;
-
-  public JmolFileAdapterInterface getFileAdapter() {
-    return (fileAdapter == null  ? fileAdapter = new JmolFileAdapter() : fileAdapter);
-  }
-
-	public JmolFileInterface newFile(String name) {
-		return new JmolFile(name);
 	}
 
 }

@@ -33,6 +33,7 @@ import org.jmol.script.Token;
 import org.jmol.util.Escape;
 import org.jmol.util.J2SRequireImport;
 import org.jmol.util.Logger;
+import org.jmol.util.Vector3f;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.Viewer;
 import org.jmol.viewer.binding.Binding;
@@ -45,12 +46,12 @@ import org.jmol.viewer.binding.Binding;
  */
 
 @J2SRequireImport({org.jmol.api.Event.class})
-class Mouse implements JmolMouseInterface {
+public class Mouse implements JmolMouseInterface {
 
   private Viewer viewer;
   private ActionManager actionManager;
 
-  Mouse(Viewer viewer, ActionManager actionManager) {
+  public Mouse(Viewer viewer, ActionManager actionManager) {
     this.viewer = viewer;
     this.actionManager = actionManager;
   }
@@ -103,6 +104,65 @@ class Mouse implements JmolMouseInterface {
     return true;
   }
 
+  /**
+   * 
+   * called directly by JSmol as applet._applet.viewer.mouse.processTwoPointGesture(canvas.touches);
+   * 
+   * @author Bob Hanson
+   * @param touches
+   *     [[finger1 touches],[finger2 touches]]
+   *     where finger touches are [[x0,y0],[x1,y1],[x2,y2],...] 
+   *    
+   */
+  public void processTwoPointGesture(float[][][] touches) {
+    
+    if (touches[0].length < 2)
+      return;
+    float[][] t1 = touches[0];
+    float[][] t2 = touches[1];
+    float[] t10 = t1[0];
+    float[] t11 = t1[t2.length - 1];
+    float x10 = t10[0];
+    float x11 = t11[0]; 
+    float dx1 = x11 - x10;
+    float y10 = t10[1];
+    float y11 = t11[1]; 
+    float dy1 = y11 - y10;
+    Vector3f v1 = Vector3f.new3(dx1, dy1, 0);
+    float d1 = v1.length();
+    float[] t20 = t2[0];
+    float[] t21 = t2[t2.length - 1];
+    float x20 = t20[0];
+    float x21 = t21[0]; 
+    float dx2 = x21 - x20;
+    float y20 = t20[1];
+    float y21 = t21[1]; 
+    float dy2 = y21 - y20;
+    Vector3f v2 = Vector3f.new3(dx2, dy2, 0);    
+    float d2 = v2.length();
+    // rooted finger --> zoom (at this position, perhaps?)
+    if (d1 < 3 || d2 < 3)
+      return;
+    v1.normalize();
+    v2.normalize();
+    float cos12 = (v1.dot(v2));
+    // cos12 > 0.8 (same direction) will be required to indicate drag
+    // cos12 < -0.8 (opposite directions) will be required to indicate zoom or rotate
+    if (cos12 > 0.8) {
+      // two co-aligned motions -- translate
+      // just use finger 1, last move
+      int deltaX = (int) (x11 - t1[t1.length - 2][0]); 
+      int deltaY = (int) (y11 - t1[t1.length - 2][1]); 
+      viewer.translateXYBy(deltaX, deltaY);
+    } else if (cos12 < -0.8) {
+      // two classic zoom motions -- zoom
+      v1 = Vector3f.new3(x20 - x10, y20 - y10, 0);
+      v2 = Vector3f.new3(x21 - x11, y21 - y11, 0);
+      float dx = v2.length() - v1.length();
+      mouseWheel(System.currentTimeMillis(), dx < 0 ? 1 : -1, Binding.WHEEL);
+    }
+  }
+  
   public void mouseClicked(MouseEvent e) {
     mouseClicked(e.getWhen(), e.getX(), e.getY(), e.getModifiers(), e
         .getClickCount());

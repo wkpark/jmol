@@ -650,9 +650,10 @@ public class ActionManager {
       return;
     case Binding.CLICKED:
       setMouseMode();
-      setCurrent(time, x, y, modifiers);
-      clickedCount = (count > 1 ? count : clicked.check(xyRange, x, y, modifiers, time,
+      clickedCount = (count > 1 ? count : clicked.check(0, 0, 0, modifiers, time,
           MAX_DOUBLE_CLICK_MILLIS) ? clickedCount + 1 : 1);
+      if (clickedCount == 1)
+        setCurrent(time, x, y, modifiers);        
       clicked.setCurrent(current, Binding.CLICKED);
       viewer.setFocus();
       if (atomPickingMode != PICKING_SELECT_ATOM
@@ -661,6 +662,8 @@ public class ActionManager {
         return;
       checkPointOrAtomClicked(x, y, modifiers, clickedCount, time, false,
           Binding.CLICKED);
+      return;
+    case Binding.DRAGGED2:
       return;
     case Binding.DRAGGED:
       setMouseMode();
@@ -676,9 +679,10 @@ public class ActionManager {
       return;
     case Binding.PRESSED:
       setMouseMode();
-      setCurrent(time, x, y, modifiers);
-      pressedCount = (pressed.check(xyRange, x, y, modifiers, time,
+      pressedCount = (pressed.check(0, 0, 0, modifiers, time,
           MAX_DOUBLE_CLICK_MILLIS) ? pressedCount + 1 : 1);
+      if (pressedCount == 1)
+        setCurrent(time, x, y, modifiers);
       pressed.setCurrent(current, Binding.PRESSED);
       dragged.setCurrent(current, Binding.PRESSED);
       viewer.setFocus();
@@ -931,7 +935,7 @@ public class ActionManager {
                            long time, int mode) {
     int mods = Binding.getModifiers(action);
     //System.out.println("checkAction " + x + " " + y + " mode " + mode + " action " + action + " mods " + mods);
-    if (Binding.getModifiers(action) != 0) {
+    if (mods != 0) {
       int newAction = viewer.notifyMouseClicked(x, y, Binding.getMouseAction(
           -pressedCount, mods), mode);
       if (newAction == 0)
@@ -951,7 +955,8 @@ public class ActionManager {
 
     if (viewer.getRotateBondIndex() >= 0) {
       if (isBound(action, ACTION_rotateBranch)) {
-        viewer.moveSelected(deltaX, deltaY, Integer.MIN_VALUE, x, y, null, false, false);
+        viewer.moveSelected(deltaX, deltaY, Integer.MIN_VALUE, x, y, null,
+            false, false);
         return;
       }
       if (!isBound(action, ACTION_rotate))
@@ -962,14 +967,14 @@ public class ActionManager {
       switch (atomPickingMode) {
       case PICKING_DRAG_SELECTED:
         checkMotion(JmolConstants.CURSOR_MOVE);
-        if (isBound(action, ACTION_rotateSelected) && viewer.allowRotateSelected()) {
+        if (isBound(action, ACTION_rotateSelected)
+            && viewer.allowRotateSelected()) {
           viewer.rotateSelected(getDegrees(deltaX, 0), getDegrees(deltaY, 1),
               null);
         } else {
-          viewer.moveSelected(deltaX, deltaY, 
-              (isBound(action, ACTION_dragZ) ? -deltaY : 
-              Integer.MIN_VALUE), Integer.MIN_VALUE, Integer.MIN_VALUE,
-              null, true, false);
+          viewer.moveSelected(deltaX, deltaY,
+              (isBound(action, ACTION_dragZ) ? -deltaY : Integer.MIN_VALUE),
+              Integer.MIN_VALUE, Integer.MIN_VALUE, null, true, false);
         }
         return;
       case PICKING_DRAG_MOLECULE:
@@ -977,7 +982,8 @@ public class ActionManager {
       case PICKING_DRAG_MINIMIZE:
       case PICKING_DRAG_MINIMIZE_MOLECULE:
         if (dragGesture.getPointCount() == 1)
-          viewer.undoMoveActionClear(dragAtomIndex, AtomCollection.TAINT_COORD, true);
+          viewer.undoMoveActionClear(dragAtomIndex, AtomCollection.TAINT_COORD,
+              true);
         checkMotion(JmolConstants.CURSOR_MOVE);
         if (isBound(action, ACTION_rotateSelected)) {
           bs = viewer.getAtomBits(Token.molecule, BitSetUtil
@@ -994,8 +1000,8 @@ public class ActionManager {
             viewer.select(bs, false, null, true);
             break;
           }
-          viewer.moveAtomWithHydrogens(dragAtomIndex, deltaX, deltaY, 
-              (isBound(action, ACTION_dragZ) ? -deltaY : Integer.MIN_VALUE), bs);
+          viewer.moveAtomWithHydrogens(dragAtomIndex, deltaX, deltaY, (isBound(
+              action, ACTION_dragZ) ? -deltaY : Integer.MIN_VALUE), bs);
         }
         // NAH! if (atomPickingMode == PICKING_DRAG_MINIMIZE_MOLECULE && (dragGesture.getPointCount() % 5 == 0))
         //  minimize(false);
@@ -1043,20 +1049,22 @@ public class ActionManager {
           viewer.centerAt(x, y, pt);
         return;
       }
-
     }
-
-    if (dragSelectedMode && haveSelection
-        && (isBound(action, ACTION_dragSelected) || isBound(action, ACTION_rotateSelected))) {
+    if (dragSelectedMode
+        && haveSelection
+        && (isBound(action, ACTION_dragSelected) || isBound(action,
+            ACTION_rotateSelected))) {
       int iatom = viewer.getSelectionSet(false).nextSetBit(0);
       if (iatom < 0)
         return;
       if (dragGesture.getPointCount() == 1)
         viewer.undoMoveActionClear(iatom, AtomCollection.TAINT_COORD, true);
       else
-        viewer.moveSelected(Integer.MAX_VALUE, 0, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, null, false, false);
+        viewer.moveSelected(Integer.MAX_VALUE, 0, Integer.MIN_VALUE,
+            Integer.MIN_VALUE, Integer.MIN_VALUE, null, false, false);
       checkMotion(JmolConstants.CURSOR_MOVE);
-      if (isBound(action, ACTION_rotateSelected) && viewer.allowRotateSelected())
+      if (isBound(action, ACTION_rotateSelected)
+          && viewer.allowRotateSelected())
         viewer.rotateSelected(getDegrees(deltaX, 0), getDegrees(deltaY, 1),
             null);
       else
@@ -1124,6 +1132,7 @@ public class ActionManager {
       }
     }
   }
+  
 
   protected float getDegrees(int delta, int i) {
     int dim = (i == 0 ? viewer.getScreenWidth() : viewer.getScreenHeight());

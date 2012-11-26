@@ -38,6 +38,7 @@ abstract public class Binding {
   public final static int WHEELED = 3;
   public final static int PRESSED = 4;
   public final static int RELEASED = 5;
+  public final static int DRAGGED2 = 6;
 
   private final static int BUTTON_MODIFIER_MASK = 
     CTRL_ALT | SHIFT | LEFT | MIDDLE | RIGHT | WHEEL;

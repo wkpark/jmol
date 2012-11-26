@@ -112,6 +112,7 @@ public class Ellipsoids extends AtomShape {
         String id = (String) value;
         ellipsoid = new Ellipsoid(id, viewer.getCurrentModelIndex());
         htEllipsoids.put(id, ellipsoid);
+        haveEllipsoids = true;
       }
       return;
     }
@@ -125,13 +126,14 @@ public class Ellipsoids extends AtomShape {
         else if (ellipsoid.modelIndex == modelIndex)
           e.remove();
       }
+      haveEllipsoids = !htEllipsoids.isEmpty();
       ellipsoid = null;
       return;
     }
     if (ellipsoid != null) {
-      haveEllipsoids = true;
       if ("delete" == propertyName) {
         htEllipsoids.remove(ellipsoid.id);
+        haveEllipsoids = !htEllipsoids.isEmpty();
         return;
       }
       if ("modelindex" == propertyName) {
@@ -261,7 +263,7 @@ public class Ellipsoids extends AtomShape {
   }
 
   private void getStateID(StringXBuilder sb) {
-    if (!isActive || madset == null)
+    if (!haveEllipsoids)
       return;
     Iterator<Ellipsoid> e = htEllipsoids.values().iterator();
     Vector3f v1 = new Vector3f();
@@ -285,8 +287,10 @@ public class Ellipsoids extends AtomShape {
   }
 
   private void getStateAtoms(StringXBuilder sb) {
+    if (madset == null)
+      return;
     for (int ii = 0; ii < 3; ii++) {
-      if (madset == null || madset[ii] == null)
+      if (madset[ii] == null)
         continue;
       StateManager.appendCmd(sb, "Ellipsoids set " + (ii + 1) + "\n");
       Map<String, BitSet> temp = new Hashtable<String, BitSet>();
@@ -310,6 +314,8 @@ public class Ellipsoids extends AtomShape {
      * set all fixed objects visible; others based on model being displayed
      *      
      */
+    if (!haveEllipsoids)
+      return;
     Iterator<Ellipsoid> e = htEllipsoids.values().iterator();
     while (e.hasNext()) {
       Ellipsoid ellipsoid = e.next();

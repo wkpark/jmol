@@ -159,7 +159,7 @@ public class Mouse implements JmolMouseInterface {
       v1 = Vector3f.new3(x20 - x10, y20 - y10, 0);
       v2 = Vector3f.new3(x21 - x11, y21 - y11, 0);
       float dx = v2.length() - v1.length();
-      mouseWheel(System.currentTimeMillis(), dx < 0 ? 1 : -1, Binding.WHEEL);
+      mouseWheel(System.currentTimeMillis(), dx < 0 ? -1 : 1, Binding.WHEEL);
     }
   }
   

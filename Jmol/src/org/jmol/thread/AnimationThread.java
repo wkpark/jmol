@@ -108,6 +108,7 @@ public class AnimationThread extends JmolThread {
       case CHECK3:
         while (animationManager.animationOn && !checkInterrupted()
             && !viewer.getRefreshing()) {
+          System.out.println("check3 in animationThread " + viewer.getRefreshing());
           if (!runSleep(10, CHECK3))
             return;
         }

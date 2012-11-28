@@ -37,6 +37,12 @@ import org.jmol.viewer.Viewer;
 
 public class ScriptParallelProcessor extends ScriptFunction {
 
+  /**
+   * included try/catch, not just parallel operations
+   * 
+   * @param name
+   * @param tok
+   */
   
   public ScriptParallelProcessor(String name, int tok) {
     super(name, tok);

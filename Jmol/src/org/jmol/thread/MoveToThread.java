@@ -91,6 +91,7 @@ public class MoveToThread extends JmolThread {
   private int iStep;
   
   private boolean doEndMove;
+  private float floatSecondsTotal;
   
   public int set(float floatSecondsTotal, Point3f center, Matrix3f end,
                  float zoom, float xTrans, float yTrans,
@@ -121,6 +122,7 @@ public class MoveToThread extends JmolThread {
     matrixStep.mul2(matrixEnd, matrixStartInv);
     aaTotal.setM(matrixStep);
     fps = 30;
+    this.floatSecondsTotal = floatSecondsTotal;
     totalSteps = (int) (floatSecondsTotal * fps);
     if (totalSteps == 0)
       return 0;
@@ -157,11 +159,8 @@ public class MoveToThread extends JmolThread {
     while (true)
       switch (mode) {
       case INIT:
-        if (totalSteps == 0) {
-          mode = FINISH;
-          break;
-        }
-        viewer.setInMotion(true);
+        if (totalSteps > 0)
+          viewer.setInMotion(true);
         //$FALL-THROUGH$
       case MAIN:
         if (++iStep >= totalSteps) {
@@ -187,11 +186,13 @@ public class MoveToThread extends JmolThread {
         mode = MAIN;
         break;
       case FINISH:
-        if (totalSteps == 0 || doEndMove)
+        if (totalSteps <= 0 || doEndMove)
           doFinalTransform();
         if (totalSteps > 0)
           viewer.setInMotion(false);
         transformManager.motion = null;
+        viewer.moveUpdate(floatSecondsTotal);
+        viewer.finalizeTransformParameters();
         resumeEval();
         return;
       }

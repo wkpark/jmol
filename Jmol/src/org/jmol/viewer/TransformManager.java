@@ -61,16 +61,16 @@ public abstract class TransformManager {
 
   protected int perspectiveModel = DEFAULT_PERSPECTIVE_MODEL;
   protected float cameraScaleFactor;
-  protected float referencePlaneOffset;
+  public float referencePlaneOffset;
   protected float aperatureAngle;
   protected float cameraDistanceFromCenter;
-  protected float modelCenterOffset;
+  public float modelCenterOffset;
   public float modelRadius;
-  protected float modelRadiusPixels;
+  public float modelRadiusPixels;
   
   public final Point3f navigationCenter = new Point3f();
-  protected final Point3f navigationOffset = new Point3f();
-  protected final Point3f navigationShiftXY = new Point3f();
+  public final Point3f navigationOffset = new Point3f();
+  public final Point3f navigationShiftXY = new Point3f();
 
   protected final Matrix4f matrixTemp = new Matrix4f();
   protected final Vector3f vectorTemp = new Vector3f();
@@ -95,36 +95,27 @@ public abstract class TransformManager {
    */
   abstract void adjustTemporaryScreenPoint();
 
-  TransformManager() {
-  }
-
-  TransformManager(Viewer viewer) {
-    this.viewer = viewer;
-  }
-
   TransformManager(Viewer viewer, int width, int height) {
     setViewer(viewer, width, height);
   }
 
-  void setViewer(Viewer viewer, int width, int height) {
+  private void setViewer(Viewer viewer, int width, int height) {
     this.viewer = viewer;
     setScreenParameters(width, height, true, false, true, true);
   }
 
   TransformManager getNavigationManager(Viewer viewer, int width, int height) {
-    TransformManager t = new TransformManager11();
-    t.setViewer(viewer, width, height);
-    return t;
+    return new TransformManager11(viewer, width, height);
   }
 
   /* ***************************************************************
    * GENERAL METHODS
    ***************************************************************/
 
-  void homePosition(boolean resetSpin) {
+  public void homePosition(boolean resetSpin) {
     // reset, setNavigationMode, setPerspectiveModel
     if (resetSpin)
-      setSpinOn(false);
+      setSpinOff();
     setNavOn(false);
     navFps = DEFAULT_NAV_FPS;
     navX = navY = navZ = 0;
@@ -284,7 +275,7 @@ public abstract class TransformManager {
   public boolean isSpinFixed = false;
   boolean isSpinSelected = false;
 
-  protected final Point3f fixedRotationOffset = new Point3f();
+  public final Point3f fixedRotationOffset = new Point3f();
   public final Point3f fixedRotationCenter = new Point3f();
   protected final Point3f perspectiveOffset = new Point3f();
   protected final Point3f perspectiveShiftXY = new Point3f();
@@ -457,7 +448,7 @@ public abstract class TransformManager {
     if (rotCenter != null)
       moveRotationCenter(rotCenter, true);
 
-    setSpinOn(false);
+    setSpinOff();
     setNavOn(false);
 
     if (viewer.isHeadless()) {
@@ -510,7 +501,7 @@ public abstract class TransformManager {
 
     // *THE* Viewer INTERNAL frame rotation entry point
 
-    setSpinOn(false);
+    setSpinOff();
     setNavOn(false);
 
     if (viewer.isHeadless()) {
@@ -623,12 +614,16 @@ public abstract class TransformManager {
   /* ***************************************************************
    * TRANSLATIONS
    ****************************************************************/
-  protected final Point3f fixedTranslation = new Point3f();
+  public final Point3f fixedTranslation = new Point3f();
   
 
   float xTranslationFraction = 0.5f;
   float yTranslationFraction = 0.5f;
-  protected float prevZoomSetting, previousX, previousY;
+  protected float prevZoomSetting;
+
+  public float previousX;
+
+  public float previousY;
 
 
   void setTranslationFractions() {
@@ -771,7 +766,7 @@ public abstract class TransformManager {
     return matrixRotate.toString();
   }
 
-  Matrix3f getMatrixRotate() {
+  public Matrix3f getMatrixRotate() {
     return matrixRotate;
   }
 
@@ -890,23 +885,23 @@ public abstract class TransformManager {
    - 0% (nothing, nada, nil, null) gets shown
    */
 
-  boolean slabEnabled = false;
+  public boolean slabEnabled = false;
   boolean internalSlab = false;
   boolean zShadeEnabled = false;
 
   int slabPercentSetting;
   int depthPercentSetting;
-  int zSlabPercentSetting = 50; // new default for 12.3.6 and 12.2.6
-  int zDepthPercentSetting = 0;
+  public int zSlabPercentSetting = 50; // new default for 12.3.6 and 12.2.6
+  public int zDepthPercentSetting = 0;
   Point3f zSlabPoint;
   
   void setZslabPoint(Point3f pt) {
     zSlabPoint = (pt == null ? null : Point3f.newP(pt));
   }
   
-  int slabValue;
-  int depthValue;
-  int zSlabValue;
+  public int slabValue;
+  public int depthValue;
+  public int zSlabValue;
   int zDepthValue;
 
   float slabRange = 0f;
@@ -1319,8 +1314,10 @@ public abstract class TransformManager {
   /* ***************************************************************
    * SCREEN SCALING
    ****************************************************************/
-  int width, height;
-  int screenPixelCount;
+  public int width;
+
+  public int height;
+  public int screenPixelCount;
   float scalePixelsPerAngstrom;
   public float scaleDefaultPixelsPerAngstrom;
   float scale3DAngstromsPerInch;
@@ -1332,6 +1329,8 @@ public abstract class TransformManager {
   void setScreenParameters(int screenWidth, int screenHeight,
                            boolean useZoomLarge, boolean antialias,
                            boolean resetSlab, boolean resetZoom) {
+    if (screenWidth == Integer.MAX_VALUE)
+      return;
     this.screenWidth = screenWidth;
     this.screenHeight = screenHeight;
     this.useZoomLarge = useZoomLarge;
@@ -1425,8 +1424,8 @@ public abstract class TransformManager {
    * TRANSFORMATIONS
    ****************************************************************/
 
-  protected final Matrix4f matrixTransform = new Matrix4f();
-  protected final Matrix4f matrixTransformInv = new Matrix4f();
+  public final Matrix4f matrixTransform = new Matrix4f();
+  public final Matrix4f matrixTransformInv = new Matrix4f();
 
   Matrix4f getMatrixtransform() {
     return matrixTransform;
@@ -1437,7 +1436,7 @@ public abstract class TransformManager {
 
   private final Point3f point3fVibrationTemp = new Point3f();
 
-  protected boolean navigating = false;
+  public boolean navigating = false;
   protected final static int MODE_STANDARD = 0;
   public final static int MODE_NAVIGATION = 1;
   protected final static int MODE_PERSPECTIVE_CENTER = 2;
@@ -1445,7 +1444,7 @@ public abstract class TransformManager {
   static final int DEFAULT_PERSPECTIVE_MODEL = 11;
 
   public int mode = MODE_STANDARD;
-  protected int defaultMode = MODE_STANDARD;
+  public int defaultMode = MODE_STANDARD;
 
   void setNavigationMode(boolean TF) {
     if (TF && canNavigate())
@@ -1459,7 +1458,7 @@ public abstract class TransformManager {
     return navigating || navOn;
   }
 
-  synchronized void finalizeTransformParameters() {
+  public synchronized void finalizeTransformParameters() {
     haveNotifiedNaN = false;
     fixedRotationOffset.setT(fixedTranslation);
     internalSlab = slabEnabled && (slabPlane != null || depthPlane != null);
@@ -1493,7 +1492,7 @@ public abstract class TransformManager {
    *
    */
 
-  protected void calcSlabAndDepthValues() {
+  public void calcSlabAndDepthValues() {
     if (slabRange < 1)
       slabValue = zValueFromPercent(slabPercentSetting);
     else
@@ -1529,7 +1528,7 @@ public abstract class TransformManager {
     return (int) Math.floor((1 - zPercent / 50f) * modelRadiusPixels + modelCenterOffset);
   }
   
-  synchronized protected void calcTransformMatrix() {
+  public synchronized void calcTransformMatrix() {
     matrixTransform.setIdentity();
 
     // first, translate the coordinates back to the center
@@ -1645,7 +1644,7 @@ public abstract class TransformManager {
     return point3iScreenTemp;
   }
 
-  void transformPoint2(Point3f pointAngstroms, Point3f screen) {
+  public void transformPoint2(Point3f pointAngstroms, Point3f screen) {
     matrixTransform.transform2(pointAngstroms, point3fScreenTemp);
     adjustTemporaryScreenPoint();
     if (internalSlab && checkInternalSlab(pointAngstroms))
@@ -1659,7 +1658,7 @@ public abstract class TransformManager {
   }
 
   final protected Point3f untransformedPoint = new Point3f();
-  void unTransformPoint(Point3f screenPt, Point3f coordPt) {
+  public void unTransformPoint(Point3f screenPt, Point3f coordPt) {
     //draw move2D
     untransformedPoint.setT(screenPt);
     switch (mode) {
@@ -1759,14 +1758,14 @@ public abstract class TransformManager {
         motion = new MoveToThread(this, viewer);
       int nSteps = motion.set(floatSecondsTotal, center, matrixEnd, zoom, xTrans,
           yTrans, newRotationRadius, navCenter, xNav, yNav, navDepth);
+      motion.setEval(eval);
       if (nSteps <= 0 || viewer.waitForMoveTo()) {
-        motion.setEval(eval);
         motion.run();
         if (!viewer.isSingleThreaded())
           motion = null;
       } else {
-        motion.setEval(null);
         motion.start();
+        motion.resumeEval();
       }
     } catch (Exception e) {
       // ignore
@@ -1775,7 +1774,7 @@ public abstract class TransformManager {
   
   public void stopMotion() {
     motion = null;
-    //setSpinOn(false);// trouble here with Viewer.checkHalt
+    //setSpinOff();// trouble here with Viewer.checkHalt
   }
 
   Quaternion getRotationQuaternion() {
@@ -1995,7 +1994,7 @@ public abstract class TransformManager {
   }
 
   private void clearSpin() {
-    setSpinOn(false);
+    setSpinOff();
     setNavOn(false);
     isSpinInternal = false;
     isSpinFixed = false;
@@ -2014,10 +2013,13 @@ public abstract class TransformManager {
 
   private SpinThread spinThread;
 
-  public void setSpinOn(boolean spinOn) {
-    setSpin(null, spinOn, Float.MAX_VALUE, null, null, false);
+  public void setSpinOn(ScriptEvaluator eval) {
+    setSpin(eval, true, Float.MAX_VALUE, null, null, false);
   }
 
+  public void setSpinOff() {
+    setSpin(null, false, Float.MAX_VALUE, null, null, false);
+  }
   private void setSpin(ScriptEvaluator eval, boolean spinOn, float endDegrees,
                          List<Point3f> endPositions, BitSet bsAtoms,
                          boolean isGesture) {
@@ -2029,10 +2031,11 @@ public abstract class TransformManager {
       if (spinThread == null) {
         spinThread = new SpinThread(this, viewer, endDegrees, endPositions, bsAtoms, false,
             isGesture);
+        spinThread.setEval(eval);
         if (bsAtoms == null) {
           spinThread.start();
+          spinThread.resumeEval(); // in case we are here after an ScriptInterruptException
         } else {
-          spinThread.setEval(eval);
           spinThread.run();
         }
       }
@@ -2286,7 +2289,7 @@ public abstract class TransformManager {
    * @param keyCode  0 indicates key released    
    * @param modifiers shift,alt,ctrl
    */
-  synchronized void navigate(int keyCode, int modifiers) {
+  synchronized void navigateKey(int keyCode, int modifiers) {
   }
 
   /**

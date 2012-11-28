@@ -66,6 +66,7 @@ public class ScriptContext {
   public String contextPath = " >> ";
   public ScriptContext parentContext;
   public ContextToken token;
+  public boolean mustResumeEval;
 
   ScriptContext() {
   }

@@ -28,7 +28,6 @@ import org.jmol.script.ScriptCompiler;
 import org.jmol.script.ScriptContext;
 import org.jmol.script.ScriptEvaluator;
 import org.jmol.script.ScriptFunction;
-import org.jmol.script.ScriptInterruption;
 import org.jmol.script.ScriptVariable;
 import org.jmol.script.ScriptVariableInt;
 import org.jmol.script.Token;
@@ -471,7 +470,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     colorManager = new ColorManager(this, gdata);
     statusManager = new StatusManager(this);
     scriptManager = new ScriptManager(this);
-    transformManager = new TransformManager11(this);
+    transformManager = new TransformManager11(this, Integer.MAX_VALUE, 0);
     selectionManager = new SelectionManager(this);
     if (haveDisplay) {
       actionManager = (multiTouch ? (ActionManager) Interface
@@ -917,7 +916,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   void navigate(int keyWhere, int modifiers) {
     if (isJmolDataFrame())
       return;
-    transformManager.navigate(keyWhere, modifiers);
+    transformManager.navigateKey(keyWhere, modifiers);
     if (!transformManager.vibrationOn && keyWhere != 0)
       refresh(1, "Viewer:navigate()");
   }
@@ -969,11 +968,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     transformManager.moveTo(eval, floatSecondsTotal, center, rotAxis,
         degrees, rotationMatrix, zoom, xTrans, yTrans, rotationRadius, navCenter,
         xNav, yNav, navDepth);
-    moveUpdate(floatSecondsTotal);
-    finalizeTransformParameters();
   }
 
-  private void moveUpdate(float floatSecondsTotal) {
+  public void moveUpdate(float floatSecondsTotal) {
     if (floatSecondsTotal > 0)
       requestRepaintAndWait();
     else if (floatSecondsTotal == 0)
@@ -1422,10 +1419,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return transformManager.getSpinState(false);
   }
 
-  public void setSpinOn(boolean spinOn) {
+  public void setSpinOn(ScriptEvaluator eval, boolean spinOn) {
     // Eval
     // startSpinningAxis
-    transformManager.setSpinOn(spinOn);
+    if (spinOn)
+      transformManager.setSpinOn(eval);
+    else
+      transformManager.setSpinOff();
   }
 
   public boolean getSpinOn() {
@@ -4184,7 +4184,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     clearRepaintManager(-1);
   }
 
-  boolean isRepaintPending() {
+  public boolean isRepaintPending() {
     return (repaintManager == null ? false : repaintManager.isRepaintPending());
   }
 
@@ -4741,7 +4741,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return false;
     // !quit or !halt
     if (isInterrupt) {
-      transformManager.setSpinOn(false);
+      transformManager.setSpinOff();
       stopMinimization();
     }
     if (isInterrupt || waitForMoveTo()) {
@@ -7352,7 +7352,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     refresh(1, "set navigationDepth");
   }
 
-  float getNavigationSpeed() {
+  public float getNavigationSpeed() {
     return global.navigationSpeed;
   }
 
@@ -7577,7 +7577,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
   private void stopAnimationThreads(String fromWhere) {
     setVibrationOff();
-    setSpinOn(false);
+    setSpinOn(null, false);
     setNavOn(false);
     setAnimationOn(false);
     /*
@@ -7615,32 +7615,32 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.navigateSurface;
   }
 
-  /**
-   * for an external application
-   * 
-   * @param transformManager
-   */
-  public void setTransformManager(TransformManager transformManager) {
-    stopAnimationThreads("setTransformMan");
-    this.transformManager = transformManager;
-    transformManager.setViewer(this, dimScreen.width, dimScreen.height);
-    setTransformManagerDefaults();
-    transformManager.homePosition(true);
-  }
+//  /**
+//   * for an external application
+//   * 
+//   * @param transformManager
+//   */
+//  public void setTransformManager(TransformManager transformManager) {
+//    stopAnimationThreads("setTransformMan");
+//    this.transformManager = transformManager;
+//    transformManager.setViewer(this, dimScreen.width, dimScreen.height);
+//    setTransformManagerDefaults();
+//    transformManager.homePosition(true);
+//  }
 
   private void setPerspectiveModel(int mode) {
     if (transformManager.perspectiveModel == mode)
       return;
     stopAnimationThreads("setPerspectivemodeg");
-    switch (mode) {
-    case 10:
-      transformManager = new TransformManager10(this, dimScreen.width,
-          dimScreen.height);
-      break;
-    default:
+    //switch (mode) {
+    //case 10:
+      //transformManager = new TransformManager10(this, dimScreen.width,
+       //   dimScreen.height);
+     // break;
+    //default:
       transformManager = transformManager.getNavigationManager(this,
           dimScreen.width, dimScreen.height);
-    }
+    //}
     setTransformManagerDefaults();
     transformManager.homePosition(true);
   }
@@ -7650,7 +7650,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     transformManager.setPerspectiveDepth(global.perspectiveDepth);
     transformManager.setStereoDegrees(EnumStereoMode.DEFAULT_STEREO_DEGREES);
     transformManager.setVisualRange(global.visualRange);
-    transformManager.setSpinOn(false);
+    transformManager.setSpinOff();
     transformManager.setVibrationPeriod(0);
     transformManager.setFrameOffsets(frameOffsets);
   }
@@ -8429,11 +8429,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // Draw.checkObjectClicked ** could be difficult
     // from draw object click
     if (getSpinOn() || getNavOn()) {
-      setSpinOn(false);
+      setSpinOn(null, false);
       setNavOn(false);
       return;
     }
-    transformManager.rotateAboutPointsInternal(eval, pt1, pt2,
+    transformManager.rotateAboutPointsInternal(null, pt1, pt2,
         global.pickingSpinRate, Float.MAX_VALUE, isClockwise, true, null,
         false, null, null);
   }
@@ -10851,12 +10851,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return apiPlatform.isSingleThreaded();
   }
 
-  public void resumeScriptDelay(ScriptEvaluator eval, ScriptContext sc) {
-    if (isSingleThreaded())
-      eval.resumeEval(sc, false);
-  }
-
   private JmolThread scriptDelayThread;
+  
   public void delayScript(ScriptEvaluator eval, long millis) {
     if (autoExit)
       return;

@@ -1400,7 +1400,7 @@ public class StateManager {
       htNonbooleanParameterValues.put(name, Integer.valueOf(value));
     }
 
-    void setParamF(String name, float value) {
+    public void setParamF(String name, float value) {
       if (Float.isNaN(value))
         return;
       name = name.toLowerCase();

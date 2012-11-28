@@ -153,7 +153,7 @@ public class SpinThread extends JmolThread {
           viewer.requestRepaintAndWait();
         //System.out.println(angle * degreesPerRadian + " " + count + " " + nDegrees + " " + endDegrees);
         if (!isNav && nDegrees >= endDegrees - 0.001)
-          transformManager.setSpinOn(false);
+          transformManager.setSpinOff();
         if (!runSleep(sleepTime, MAIN))
           return;
         mode = MAIN;
@@ -167,7 +167,7 @@ public class SpinThread extends JmolThread {
           endPositions = null;
         }
         if (!isReset) {
-          transformManager.setSpinOn(false);
+          transformManager.setSpinOff();
           restartHover();
         }
         resumeEval();

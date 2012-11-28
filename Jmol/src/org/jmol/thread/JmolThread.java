@@ -60,10 +60,9 @@ abstract public class JmolThread extends Thread {
     eval.scriptLevel--;
     eval.pushContext2(null);
     sc = eval.thisContext;
-    sc.pc++;
   }
 
-  protected void resumeEval() {
+  public void resumeEval() {
     if (eval == null || !isJS)
       return;
     eval.resumeEval(sc,false);

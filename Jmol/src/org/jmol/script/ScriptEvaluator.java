@@ -269,8 +269,19 @@ public class ScriptEvaluator {
   }
 
   /**
-   * After a JavaScript timeout returns from a DELAY command, 
-   * we re-enter the script here, using a saved script context
+   * After throwing a ScriptInterruption, all statements following
+   * the current one are lost. When a JavaScript timeout returns
+   * from a DELAY, MOVE, MOVETO, or other sleep-requiring command,
+   * it is the ScriptContext that contains all the required information
+   * for restarting that "thread". 
+   * In Java, we don't have to worry about this, because the
+   * current thread is just put to sleep, not stopped. 
+   * 
+   * We re-enter the halted script here, using a saved script context.
+   * The program counter is incremented to skip the initiating
+   * statement, and all parent contexts up the line except the 
+   * very last one are set with mustResumeEval = true.
+   * 
    * 
    * @param sc
    * @param listCommands
@@ -283,13 +294,44 @@ public class ScriptEvaluator {
       if (sc == null) { 
         setScriptExtensions();
       } else {
-        // from a delay setTimeOut
+        /*
+         *      |
+         *      |
+         *     INTERRUPT---
+         *     (1)         |
+         *      |          |
+         *      |          |
+         *      |      INTERRUPT----------------     
+         *      |         (2)                   |     
+         *      |          |                    |      
+         *      |          |                    |
+         *      |     resumeEval-->(1)     MOVETO_INIT
+         *     DONE           
+         *                                 (new thread) 
+         *                                 MOVETO_FINISH
+         *                                      |
+         *                                 resumeEval-->(2)
+         *                                   
+         *  In Java, this is one overall thread that sleeps
+         *  during the MOVETO. But in JavaScript, the setTimeout()
+         *  starts a new thread and (1) and (2) are never executed.
+         *  We must run resumeEval at the end of each dispatch loop
+         *  
+         */
+        // from JmolThread resumeEval
+        sc.pc++;
         thisContext = sc;
-        if (thisContext.scriptLevel > 0)
-          scriptLevel = thisContext.scriptLevel - 1;
-        restoreScriptContext(thisContext, true, false, false);
+        if (sc.scriptLevel > 0)
+          scriptLevel = sc.scriptLevel - 1;
+        ScriptContext sc0 = sc;
+        while (sc0.parentContext != null) {
+          sc0.mustResumeEval = true;
+          sc0 = sc0.parentContext;
+        }
+        restoreScriptContext(sc, true, false, false);
       }
-      instructionDispatchLoop(listCommands);
+      instructionDispatchLoop(listCommands, false);
+      // this next is only applicable to the Java multi-threaded environment, not JavaScript
       String script = viewer.getInterruptScript();
       if (script != "")
         runScriptBuffer(script, null);
@@ -338,7 +380,8 @@ public class ScriptEvaluator {
 
     this.outputBuffer = outputBuffer;
     if (compileScript(null, script + JmolConstants.SCRIPT_EDITOR_IGNORE, false))
-      instructionDispatchLoop(false);
+      instructionDispatchLoop(false, false);
+    //TODO -- this next line will not be executed properly in JavaScript if a scriptInterrupt is executed (moveto, for instance)
     popContext(false, false);
   }
 
@@ -360,7 +403,7 @@ public class ScriptEvaluator {
     isCmdLine_c_or_C_Option = isCmdLine_C_Option = false;
     pc = 0;
     try {
-      instructionDispatchLoop(false);
+      instructionDispatchLoop(false, false);
     } catch (ScriptException e) {
       setErrorMessage(e.toString());
       sc = getScriptContext();
@@ -391,6 +434,8 @@ public class ScriptEvaluator {
 
   private long timeBeginExecution;
   private long timeEndExecution;
+
+  private boolean mustResumeEval;  // see resumeEval
 
   public int getExecutionWalltime() {
     return (int) (timeEndExecution - timeBeginExecution);
@@ -578,7 +623,7 @@ public class ScriptEvaluator {
     e.shapeManager = shapeManager;
     try {
       e.restoreScriptContext(context, true, false, false);
-      e.instructionDispatchLoop(false);
+      e.instructionDispatchLoop(false, false);
     } catch (Exception ex) {
       viewer.setStringProperty("_errormessage", "" + ex);
       if (e.thisContext == null) {
@@ -2145,7 +2190,7 @@ public class ScriptEvaluator {
     if (tokenAtom != null)
       contextVariables.put("_x", tokenAtom);
     if (function.tok != Token.trycmd)
-      instructionDispatchLoop(false);
+      instructionDispatchLoop(false, false);
   }
 
   private void clearDefinedVariableAtomSets() {
@@ -2623,6 +2668,7 @@ public class ScriptEvaluator {
       if (statementOnly)
         return;
     }
+    mustResumeEval = context.mustResumeEval;
     script = context.script;
     lineNumbers = context.lineNumbers;
     lineIndices = context.lineIndices;
@@ -5218,12 +5264,12 @@ public class ScriptEvaluator {
    * 
    * 
    * @param doList  debugging flag
+   * @param isSpt TODO
    * @throws ScriptException
    */
-  private void instructionDispatchLoop(boolean doList) throws ScriptException {
+  private void instructionDispatchLoop(boolean doList, boolean isSpt) throws ScriptException {
     long timeBegin = 0;
     vProcess = null;
-    boolean isForCheck = false; // indicates the stage of the for command loop
     if (shapeManager == null)
       shapeManager = viewer.getShapeManager();
     debugScript = logMessages = false;
@@ -5238,9 +5284,10 @@ public class ScriptEvaluator {
       pcEnd = Integer.MAX_VALUE;
     if (lineEnd == 0)
       lineEnd = Integer.MAX_VALUE;
-    String lastCommand = "";
     if (aatoken == null)
       return;
+    String lastCommand = "";
+    boolean isForCheck = false; // indicates the stage of the for command loop
     for (; pc < aatoken.length && pc < pcEnd; pc++) {
       if (!isSyntaxCheck && !checkContinue())
         break;
@@ -5617,6 +5664,12 @@ public class ScriptEvaluator {
       if (executionStepping) {
         executionPaused = (isCommandDisplayable(pc + 1));
       }
+    }
+    if (isSpt && debugScript && viewer.getMessageStyleChime())
+      viewer.scriptStatus("script <exiting>");
+    if (mustResumeEval) {
+      resumeEval(thisContext, doList);
+      mustResumeEval = false;
     }
   }
 
@@ -7062,7 +7115,7 @@ public class ScriptEvaluator {
       }
       viewer.rotateAboutPointsInternal(this, centerAndPoints[0][0], pt1, endDegrees
           / nSeconds, endDegrees, doAnimate, bsFrom, translation, ptsB);
-      if (viewer.isSingleThreaded())
+      if (doAnimate && viewer.isSingleThreaded())
         throw new ScriptInterruption(this, viewer, Integer.MAX_VALUE);
     }
   }
@@ -10037,11 +10090,11 @@ public class ScriptEvaluator {
       switch (getToken(1).tok) {
       case Token.on:
         if (!isSyntaxCheck)
-          viewer.setSpinOn(true);
+          viewer.setSpinOn(null, true);
         return;
       case Token.off:
         if (!isSyntaxCheck)
-          viewer.setSpinOn(false);
+          viewer.setSpinOn(null, false);
         return;
       }
 
@@ -10334,7 +10387,7 @@ public class ScriptEvaluator {
         // rotate x 10 $object # point-centered
         viewer.rotateAxisAngleAtCenter(this, points[0], rotAxis, rate, endDegrees,
             isSpin, bsAtoms);
-        if (viewer.isSingleThreaded())
+        if (isSpin && viewer.isSingleThreaded())
           throw new ScriptInterruption(this, viewer, Integer.MAX_VALUE);
         return;
       }
@@ -10378,7 +10431,7 @@ public class ScriptEvaluator {
     } else {
       viewer.rotateAboutPointsInternal(this, points[0], points[1], rate, endDegrees,
           isSpin, bsAtoms, translation, ptsB);
-      if (viewer.isSingleThreaded())
+      if (isSpin && viewer.isSingleThreaded())
         throw new ScriptInterruption(this, viewer, Integer.MAX_VALUE);
     }
   }
@@ -10568,9 +10621,7 @@ public class ScriptEvaluator {
       contextVariables.put("_arguments", (params == null ? ScriptVariable.getVariableAI(new int[]{})
           : ScriptVariable.getVariableList(params)));
       
-      instructionDispatchLoop(isCheck || listCommands);
-      if (debugScript && viewer.getMessageStyleChime())
-        viewer.scriptStatus("script <exiting>");
+      instructionDispatchLoop(isCheck || listCommands, false);
       isCmdLine_C_Option = saveLoadCheck;
       popContext(false, false);
     } else {

@@ -339,7 +339,7 @@ public class StateManager {
     float navDepth = Float.NaN;
     boolean windowCenteredFlag;
     boolean navigationMode;
-    boolean navigateSurface;
+    //boolean navigateSurface;
     String moveToText;
     
 
@@ -361,7 +361,7 @@ public class StateManager {
       windowCenteredFlag = viewer.isWindowCentered();
       rotationRadius = viewer.getRotationRadius();
       navigationMode = viewer.getNavigationMode();
-      navigateSurface = viewer.getNavigateSurface();
+      //navigateSurface = viewer.getNavigateSurface();
       moveToText = viewer.getMoveToText(-1);
       if (navigationMode) {
         xNav = viewer.getNavigationOffsetPercent('X');
@@ -383,7 +383,7 @@ public class StateManager {
       }
       viewer.setBooleanProperty("windowCentered", windowCenteredFlag);
       viewer.setBooleanProperty("navigationMode", navigationMode);
-      viewer.setBooleanProperty("navigateSurface", navigateSurface);
+      //viewer.setBooleanProperty("navigateSurface", navigateSurface);
       viewer.moveTo(viewer.eval, timeSeconds, center, null, Float.NaN, rotationMatrix, zoom, xTrans,
           yTrans, rotationRadius, navCenter, xNav, yNav, navDepth);
     }
@@ -898,7 +898,7 @@ public class StateManager {
       setParamF("multipleBondSpacing", multipleBondSpacing);
       setParamB("multiProcessor", multiProcessor && (Viewer.nProcessors > 1));
       setParamB("navigationMode", navigationMode);
-      setParamB("navigateSurface", navigateSurface);
+      //setParamB("navigateSurface", navigateSurface);
       setParamB("navigationPeriodic", navigationPeriodic);
       setParamF("navigationSpeed", navigationSpeed);
       setParamS("nmrUrlFormat", nmrUrlFormat);
@@ -1274,7 +1274,7 @@ public class StateManager {
 
     boolean hideNavigationPoint = false;
     boolean navigationMode = false;
-    boolean navigateSurface = false;
+    //boolean navigateSurface = false;
     boolean navigationPeriodic = false;
     float navigationSpeed = 5;
     boolean showNavigationPointAlways = false;

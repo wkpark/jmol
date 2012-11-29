@@ -6581,6 +6581,7 @@ public class ScriptEvaluator {
       return;
     }
     Vector3f rotAxis = Vector3f.new3(0, 1, 0);
+    List<Object[]> list = new ArrayList<Object[]>();
     Point3f pt;
     if (statementLength == 2) {
       switch (getToken(1).tok) {
@@ -6627,13 +6628,15 @@ public class ScriptEvaluator {
       case Token.depth:
         float depth = floatParameter(++i);
         if (!isSyntaxCheck)
-          viewer.setNavigationDepthPercent(timeSec, depth);
+          list.add(new Object[] { Integer.valueOf(Token.depth), Float.valueOf(timeSec), Float.valueOf(depth)});
+          //viewer.setNavigationDepthPercent(timeSec, depth);
         continue;
       case Token.center:
         pt = centerParameter(++i);
         i = iToken;
         if (!isSyntaxCheck)
-          viewer.navigatePt(timeSec, pt);
+          list.add(new Object[] { Integer.valueOf(Token.point), Float.valueOf(timeSec), pt});
+          //viewer.navigatePt(timeSec, pt);
         continue;
       case Token.rotate:
         switch (getToken(++i).tok) {
@@ -6660,7 +6663,8 @@ public class ScriptEvaluator {
         }
         float degrees = floatParameter(i);
         if (!isSyntaxCheck)
-          viewer.navigateAxis(timeSec, rotAxis, degrees);
+          list.add(new Object[] { Integer.valueOf(Token.rotate), Float.valueOf(timeSec), Float.valueOf(degrees)});
+//          viewer.navigateAxis(timeSec, rotAxis, degrees);
         continue;
       case Token.translate:
         float x = Float.NaN;
@@ -6680,12 +6684,15 @@ public class ScriptEvaluator {
             pt = centerParameter(i);
             i = iToken;
             if (!isSyntaxCheck)
-              viewer.navTranslate(timeSec, pt);
+              list.add(new Object[] { Integer.valueOf(Token.translate), Float.valueOf(timeSec), pt});
+              //viewer.navTranslate(timeSec, pt);
             continue;
           }
         }
         if (!isSyntaxCheck)
-          viewer.navTranslatePercent(timeSec, x, y);
+          list.add(new Object[] { Integer.valueOf(Token.percent), Float.valueOf(timeSec), 
+              Float.valueOf(x), Float.valueOf(y) });
+          //viewer.navTranslatePercent(timeSec, x, y);
         continue;
       case Token.divide:
         continue;
@@ -6703,18 +6710,12 @@ public class ScriptEvaluator {
           for (int j = 0; j < n; j++) {
             pathGuide[j] = vp.get(j);
           }
-          viewer.navigateGuide(timeSec, pathGuide);
+          list.add(new Object[] { Integer.valueOf(Token.trace), Float.valueOf(timeSec), pathGuide});
+          //viewer.navigateGuide(timeSec, pathGuide);
           continue;
         }
         break;
-      case Token.surface:
-        if (i != 1)
-          error(ERROR_invalidArgument);
-        if (isSyntaxCheck)
-          return;
-        viewer.navigateSurface(timeSec, optParameterAsString(2));
-        continue;
-      case Token.path:
+     case Token.path:
         Point3f[] path;
         float[] theta = null; // orientation; null for now
         if (getToken(i + 1).tok == Token.dollarsign) {
@@ -6734,7 +6735,8 @@ public class ScriptEvaluator {
           int indexEnd = (int) (isFloatParameter(i + 1) ? floatParameter(++i)
               : Integer.MAX_VALUE);
           if (!isSyntaxCheck)
-            viewer.navigatePath(timeSec, path, theta, indexStart, indexEnd);
+            list.add(new Object[] {Integer.valueOf(Token.path), Float.valueOf(timeSec), path, theta, new int[] {indexStart, indexEnd}});
+            //viewer.navigatePath(timeSec, path, theta, indexStart, indexEnd);
           continue;
         }
         List<Point3f> v = new ArrayList<Point3f>();
@@ -6745,7 +6747,8 @@ public class ScriptEvaluator {
         if (v.size() > 0) {
           path = v.toArray(new Point3f[v.size()]);
           if (!isSyntaxCheck)
-            viewer.navigatePath(timeSec, path, theta, 0, Integer.MAX_VALUE);
+            list.add(new Object[] {Integer.valueOf(Token.path), Float.valueOf(timeSec), path, theta, new int[] {0, Integer.MAX_VALUE}});
+            //viewer.navigatePath(timeSec, path, theta, 0, Integer.MAX_VALUE);
           continue;
         }
         //$FALL-THROUGH$
@@ -6753,6 +6756,7 @@ public class ScriptEvaluator {
         error(ERROR_invalidArgument);
       }
     }
+    viewer.navigateList(this, list);
   }
 
   private void bondorder() throws ScriptException {

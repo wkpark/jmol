@@ -23,10 +23,14 @@
  *  02110-1301, USA.
  */
 
-package org.jmol.io2;
+package org.jmol.navigate;
+
+import java.util.List;
 
 import org.jmol.api.Event;
 import org.jmol.api.JmolNavigatorInterface;
+import org.jmol.script.ScriptEvaluator;
+import org.jmol.script.Token;
 import org.jmol.util.Escape;
 import org.jmol.util.Hermite;
 import org.jmol.util.Matrix3f;
@@ -34,7 +38,6 @@ import org.jmol.util.Point3f;
 import org.jmol.util.Vector3f;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.TransformManager;
-import org.jmol.viewer.TransformManager11;
 import org.jmol.viewer.Viewer;
 
 
@@ -50,7 +53,7 @@ public final class Navigator implements JmolNavigatorInterface {
     // for Reflection from TransformManage11.java
   }
   
-  private TransformManager11 tm;
+  private TransformManager tm;
   private Viewer viewer;
 
   private int nHits;
@@ -98,10 +101,10 @@ public final class Navigator implements JmolNavigatorInterface {
         tm.navigating = true;
         float fStep = iStep / (totalSteps - 1f);
         if (!Float.isNaN(degrees))
-          tm.navigateAxis(0, axis, degreeStep);
+          tm.navigateAxis(axis, degreeStep);
         if (center != null) {
           centerStart.add(aaStepCenter);
-          tm.navigatePt(0, centerStart);
+          tm.setNavigatePt(centerStart);
         }
         if (!Float.isNaN(xTrans) || !Float.isNaN(yTrans)) {
           float x = Float.NaN;
@@ -110,7 +113,7 @@ public final class Navigator implements JmolNavigatorInterface {
             x = xTransStart + xTransDelta * fStep;
           if (!Float.isNaN(yTrans))
             y = yTransStart + yTransDelta * fStep;
-          navTranslatePercent(-1, x, y);
+          tm.navTranslatePercent(-1, x, y);
         }
 
         if (!Float.isNaN(depthPercent)) {
@@ -144,13 +147,13 @@ public final class Navigator implements JmolNavigatorInterface {
     // if (center != null)
     // navigate(0, center);
     if (!Float.isNaN(xTrans) || !Float.isNaN(yTrans))
-      navTranslatePercent(-1, xTrans, yTrans);
+      tm.navTranslatePercent(-1, xTrans, yTrans);
     if (!Float.isNaN(depthPercent))
       setNavigationDepthPercent(depthPercent);
     viewer.setInMotion(false);
   }
 
-  public void set(TransformManager11 tm, Viewer viewer) {
+  public void set(TransformManager tm, Viewer viewer) {
     this.tm = tm;
     this.viewer = viewer;
   }
@@ -198,7 +201,7 @@ public final class Navigator implements JmolNavigatorInterface {
     int frameTimeMillis = (int) (1000 / tm.navFps);
     long targetTime = System.currentTimeMillis();
     for (int iStep = 0; iStep < totalSteps; ++iStep) {
-      tm.navigatePt(0, points[iStep]);
+      tm.setNavigatePt(points[iStep]);
       if (isPathGuide) {
         alignZX(points[iStep], points[iStep + 1], pointGuides[iStep]);
       }
@@ -239,7 +242,7 @@ public final class Navigator implements JmolNavigatorInterface {
     float angle = vPath.angle(v);
     v.cross(vPath, v);
     if (angle != 0)
-      tm.navigateAxis(0, v, (float) (angle * TransformManager.degreesPerRadian));
+      tm.navigateAxis(v, (float) (angle * TransformManager.degreesPerRadian));
     m.transform2(pt0, pt0s);
     Point3f pt2 = Point3f.newP(ptVectorWing);
     pt2.add(pt0);
@@ -254,12 +257,12 @@ public final class Navigator implements JmolNavigatorInterface {
       angle = -angle;
     v.set(0, 0, 1);
     if (angle != 0)
-      tm.navigateAxis(0, v, (float) (angle * TransformManager.degreesPerRadian));
-    if (viewer.getNavigateSurface()) {
-      // set downward viewpoint 20 degrees to horizon
-      v.set(1, 0, 0);
-      tm.navigateAxis(0, v, 20);
-    }
+      tm.navigateAxis(v, (float) (angle * TransformManager.degreesPerRadian));
+//    if (viewer.getNavigateSurface()) {
+//      // set downward viewpoint 20 degrees to horizon
+//      v.set(1, 0, 0);
+//      tm.navigateAxis(v, 20);
+//    }
     m.transform2(pt0, pt0s);
     m.transform2(pt1, pt1s);
     m.transform2(ptVectorWing, pt2s);
@@ -296,17 +299,17 @@ public final class Navigator implements JmolNavigatorInterface {
   public void calcNavigationPoint() {
     // called by finalize
     calcNavigationDepthPercent();
-    if (!tm.navigating && tm.navMode != TransformManager11.NAV_MODE_RESET) {
+    if (!tm.navigating && tm.navMode != TransformManager.NAV_MODE_RESET) {
       // rotations are different from zoom changes
       if (tm.navigationDepth < 100 && tm.navigationDepth > 0
           && !Float.isNaN(tm.previousX) && tm.previousX == tm.fixedTranslation.x
-          && tm.previousY == tm.fixedTranslation.y && tm.navMode != TransformManager11.NAV_MODE_ZOOMED)
-        tm.navMode = TransformManager11.NAV_MODE_NEWXYZ;
+          && tm.previousY == tm.fixedTranslation.y && tm.navMode != TransformManager.NAV_MODE_ZOOMED)
+        tm.navMode = TransformManager.NAV_MODE_NEWXYZ;
       else
-        tm.navMode = TransformManager11.NAV_MODE_NONE;
+        tm.navMode = TransformManager.NAV_MODE_NONE;
     }
     switch (tm.navMode) {
-    case TransformManager11.NAV_MODE_RESET:
+    case TransformManager.NAV_MODE_RESET:
       // simply place the navigation center front and center and recalculate
       // modelCenterOffset
       tm.navigationOffset.set(tm.width / 2f, tm.getNavPtHeight(), tm.referencePlaneOffset);
@@ -315,18 +318,18 @@ public final class Navigator implements JmolNavigatorInterface {
       tm.calcTransformMatrix();
       newNavigationCenter();
       break;
-    case TransformManager11.NAV_MODE_NONE:
-    case TransformManager11.NAV_MODE_ZOOMED:
+    case TransformManager.NAV_MODE_NONE:
+    case TransformManager.NAV_MODE_ZOOMED:
       // update fixed rotation offset and find the new 3D navigation center
       tm.fixedRotationOffset.setT(tm.fixedTranslation);
       newNavigationCenter();
       break;
-    case TransformManager11.NAV_MODE_NEWXY:
+    case TransformManager.NAV_MODE_NEWXY:
       // redefine the navigation center based on its old screen position
       newNavigationCenter();
       break;
-    case TransformManager11.NAV_MODE_IGNORE:
-    case TransformManager11.NAV_MODE_NEWXYZ:
+    case TransformManager.NAV_MODE_IGNORE:
+    case TransformManager.NAV_MODE_NEWXYZ:
       // must just be (not so!) simple navigation
       // navigation center will initially move
       // but we center it by moving the rotation center instead
@@ -338,7 +341,7 @@ public final class Navigator implements JmolNavigatorInterface {
       tm.calcCameraFactors();
       tm.calcTransformMatrix();
       break;
-    case TransformManager11.NAV_MODE_NEWZ:
+    case TransformManager.NAV_MODE_NEWZ:
       // just untransform the offset to get the new 3D navigation center
       tm.navigationOffset.z = tm.referencePlaneOffset;
       // System.out.println("nav_mode_newz " + navigationOffset);
@@ -369,7 +372,7 @@ public final class Navigator implements JmolNavigatorInterface {
     tm.previousY = tm.fixedTranslation.y;
     tm.transformPoint2(tm.navigationCenter, tm.navigationOffset);
     tm.navigationOffset.z = tm.referencePlaneOffset;
-    tm.navMode = TransformManager11.NAV_MODE_NONE;
+    tm.navMode = TransformManager.NAV_MODE_NONE;
     calcNavSlabAndDepthValues();
   }
 
@@ -430,11 +433,11 @@ public final class Navigator implements JmolNavigatorInterface {
     tm.mode = TransformManager.MODE_NAVIGATION;
   }
 
-  public void setNavigationOffsetRelative(boolean navigatingSurface) {
-    if (navigatingSurface) {
-      navigateSurface(Integer.MAX_VALUE);
-      return;
-    }
+  public void setNavigationOffsetRelative() {//boolean navigatingSurface) {
+//    if (navigatingSurface) {
+//      navigateSurface(Integer.MAX_VALUE);
+//      return;
+//    }
     if (tm.navigationDepth < 0 && tm.navZ > 0 || tm.navigationDepth > 100 && tm.navZ < 0) {
       tm.navZ = 0;
     }
@@ -445,10 +448,10 @@ public final class Navigator implements JmolNavigatorInterface {
     tm.transformPoint2(pt, pts);
     pts.z += tm.navZ;
     tm.unTransformPoint(pts, pt);
-    tm.navigatePt(0, pt);
+    tm.setNavigatePt(pt);
   }
 
-  public void navigate(int keyCode, int modifiers) {
+  public void navigateKey(int keyCode, int modifiers) {
     // 0 0 here means "key released"
     String key = null;
     float value = 0;
@@ -465,7 +468,7 @@ public final class Navigator implements JmolNavigatorInterface {
     nHits++;
     if (nHits % 10 == 0)
       multiplier *= (multiplier == 4 ? 1 : 2);
-    boolean navigateSurface = viewer.getNavigateSurface();
+    //boolean navigateSurface = viewer.getNavigateSurface();
     boolean isShiftKey = ((modifiers & Event.SHIFT_MASK) > 0);
     boolean isAltKey = ((modifiers & Event.ALT_MASK) > 0);
     boolean isCtrlKey = ((modifiers & Event.CTRL_MASK) > 0);
@@ -494,23 +497,23 @@ public final class Navigator implements JmolNavigatorInterface {
         }
         break;
       }
-      if (navigateSurface) {
-        navigateSurface(Integer.MAX_VALUE);
-        break;
-      }
+//      if (navigateSurface) {
+//        navigateSurface(Integer.MAX_VALUE);
+//        break;
+//      }
       if (isShiftKey) {
         tm.navigationOffset.y -= 2 * multiplier;
-        tm.navMode = TransformManager11.NAV_MODE_NEWXY;
+        tm.navMode = TransformManager.NAV_MODE_NEWXY;
         break;
       }
       if (isAltKey) {
         tm.rotateXRadians(JmolConstants.radiansPerDegree * -.2f * multiplier, null);
-        tm.navMode = TransformManager11.NAV_MODE_NEWXYZ;
+        tm.navMode = TransformManager.NAV_MODE_NEWXYZ;
         break;
       }
       tm.modelCenterOffset -= speed
           * (viewer.getNavigationPeriodic() ? 1 : multiplier);
-      tm.navMode = TransformManager11.NAV_MODE_NEWZ;
+      tm.navMode = TransformManager.NAV_MODE_NEWZ;
       break;
     case Event.VK_DOWN:
       if (tm.navOn) {
@@ -525,23 +528,23 @@ public final class Navigator implements JmolNavigatorInterface {
         }
         break;
       }
-      if (navigateSurface) {
-        navigateSurface(-2 * multiplier);
-        break;
-      }
+//      if (navigateSurface) {
+//        navigateSurface(-2 * multiplier);
+//        break;
+//      }
       if (isShiftKey) {
         tm.navigationOffset.y += 2 * multiplier;
-        tm.navMode = TransformManager11.NAV_MODE_NEWXY;
+        tm.navMode = TransformManager.NAV_MODE_NEWXY;
         break;
       }
       if (isAltKey) {
         tm.rotateXRadians(JmolConstants.radiansPerDegree * .2f * multiplier, null);
-        tm.navMode = TransformManager11.NAV_MODE_NEWXYZ;
+        tm.navMode = TransformManager.NAV_MODE_NEWXYZ;
         break;
       }
       tm.modelCenterOffset += speed
           * (viewer.getNavigationPeriodic() ? 1 : multiplier);
-      tm.navMode = TransformManager11.NAV_MODE_NEWZ;
+      tm.navMode = TransformManager.NAV_MODE_NEWZ;
       break;
     case Event.VK_LEFT:
       if (tm.navOn) {
@@ -550,17 +553,17 @@ public final class Navigator implements JmolNavigatorInterface {
         key = "navX";
         break;
       }
-      if (navigateSurface) {
-        break;
-      }
+//      if (navigateSurface) {
+//        break;
+//      }
       if (isShiftKey) {
         tm.navigationOffset.x -= 2 * multiplier;
-        tm.navMode = TransformManager11.NAV_MODE_NEWXY;
+        tm.navMode = TransformManager.NAV_MODE_NEWXY;
         break;
       }
       tm.rotateYRadians(JmolConstants.radiansPerDegree * 3 * -.2f * multiplier,
           null);
-      tm.navMode = TransformManager11.NAV_MODE_NEWXYZ;
+      tm.navMode = TransformManager.NAV_MODE_NEWXYZ;
       break;
     case Event.VK_RIGHT:
       if (tm.navOn) {
@@ -569,21 +572,21 @@ public final class Navigator implements JmolNavigatorInterface {
         key = "navX";
         break;
       }
-      if (navigateSurface) {
-        break;
-      }
+//      if (navigateSurface) {
+//        break;
+//      }
       if (isShiftKey) {
         tm.navigationOffset.x += 2 * multiplier;
-        tm.navMode = TransformManager11.NAV_MODE_NEWXY;
+        tm.navMode = TransformManager.NAV_MODE_NEWXY;
         break;
       }
       tm.rotateYRadians(JmolConstants.radiansPerDegree * 3 * .2f * multiplier,
           null);
-      tm.navMode = TransformManager11.NAV_MODE_NEWXYZ;
+      tm.navMode = TransformManager.NAV_MODE_NEWXYZ;
       break;
     default:
       tm.navigating = false;
-      tm.navMode = TransformManager11.NAV_MODE_NONE;
+      tm.navMode = TransformManager.NAV_MODE_NONE;
       return;
     }
     if (key != null)
@@ -592,15 +595,15 @@ public final class Navigator implements JmolNavigatorInterface {
     tm.finalizeTransformParameters();
   }
 
-  private void navigateSurface(int dz) {
-    if (viewer.isRepaintPending())
-      return;
-    viewer.setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "navigate",
-        Integer.valueOf(dz == Integer.MAX_VALUE ? 2 * multiplier : dz));
-    viewer.requestRepaintAndWait();
-  }
+//  private void navigateSurface(int dz) {
+//    if (viewer.isRepaintPending())
+//      return;
+//    viewer.setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "navigate",
+//        Integer.valueOf(dz == Integer.MAX_VALUE ? 2 * multiplier : dz));
+//    viewer.requestRepaintAndWait();
+//  }
 
-  private void setNavigationDepthPercent(float percent) {
+  public void setNavigationDepthPercent(float percent) {
     // navigation depth 0 # place user at rear plane of the model
     // navigation depth 100 # place user at front plane of the model
 
@@ -609,7 +612,7 @@ public final class Navigator implements JmolNavigatorInterface {
     tm.modelCenterOffset = tm.referencePlaneOffset - (1 - percent / 50)
         * tm.modelRadiusPixels;
     tm.calcCameraFactors(); // updated
-    tm.navMode = TransformManager11.NAV_MODE_ZOOMED;
+    tm.navMode = TransformManager.NAV_MODE_ZOOMED;
   }
 
   private void calcNavigationDepthPercent() {
@@ -617,41 +620,6 @@ public final class Navigator implements JmolNavigatorInterface {
     tm.navigationDepth = (tm.modelRadiusPixels == 0 ? 50
         : 50 * (1 + (tm.modelCenterOffset - tm.referencePlaneOffset)
             / tm.modelRadiusPixels));
-  }
-
-  public void setNavigationDepthPercent(float timeSec, float percent) {
-    // from MoveToThread
-    if (timeSec > 0) {
-      navigateTo(timeSec, null, Float.NaN, null, percent, Float.NaN, Float.NaN);
-      return;
-    }
-    setNavigationDepthPercent(percent);
-  }
-
-  public void navTranslatePercent(float seconds, float x, float y) {
-    // from MoveToThread and Viewer
-    // if either is Float.NaN, then the other is RELATIVE to current
-    tm.transformPoint2(tm.navigationCenter, tm.navigationOffset);
-    if (seconds >= 0) {
-      if (!Float.isNaN(x))
-        x = tm.width * x / 100f
-            + (Float.isNaN(y) ? tm.navigationOffset.x : (tm.width / 2f));
-      if (!Float.isNaN(y))
-        y = tm.height * y / 100f
-            + (Float.isNaN(x) ? tm.navigationOffset.y : tm.getNavPtHeight());
-    }
-    if (seconds > 0) {
-      navigateTo(seconds, null, Float.NaN, null, Float.NaN, x, y);
-      return;
-    }
-    if (!Float.isNaN(x))
-      tm.navigationOffset.x = x;
-    if (!Float.isNaN(y))
-      tm.navigationOffset.y = y;
-    tm.navMode = TransformManager11.NAV_MODE_NEWXY;
-    tm.navigating = true;
-    tm.finalizeTransformParameters();
-    tm.navigating = false;
   }
 
   public String getNavigationState() {
@@ -666,6 +634,93 @@ public final class Navigator implements JmolNavigatorInterface {
   private float getNavigationSlabOffsetPercent() {
     tm.calcCameraFactors(); // current
     return 50 * tm.navigationSlabOffset / tm.modelRadiusPixels;
+  }
+
+  
+  public void navigateList(ScriptEvaluator eval, List<Object[]> list) {
+    // untested and probably problematic.
+    Point3f pt1;
+    for (int i = 0; i < list.size(); i++) {
+      Object[] o = list.get(i);
+      float seconds = ((Float) o[1]).floatValue();
+      switch (((Integer) o[0]).intValue()) {
+      case Token.point:
+        Point3f pt = (Point3f) o[2];
+        if (seconds == 0)
+          tm.setNavigatePt(pt);
+        else
+          navigateTo(seconds, null, Float.NaN, pt, Float.NaN, Float.NaN,
+              Float.NaN);
+        break;
+      case Token.path:
+        Point3f[] path = (Point3f[]) o[2];
+        float[] theta = (float[]) o[3];
+        int indexStart = ((int[]) o[4])[0];
+        int indexEnd = ((int[]) o[4])[1];
+        navigate(seconds, null, path, theta, indexStart, indexEnd);
+        break;
+      case Token.trace:
+        /*
+         * follows a path guided by orientation and offset vectors (as Point3fs)
+         */
+        Point3f[][] pathGuide = ((Point3f[][]) o[2]);
+        navigate(seconds, pathGuide, null, null, 0, Integer.MAX_VALUE);
+        break;
+      case Token.rotate:
+        Vector3f rotAxis = (Vector3f) o[2];
+        float degrees = ((Float) o[3]).floatValue();
+        if (seconds == 0)
+          navigateAxis(rotAxis, degrees);
+        else
+          navigateTo(seconds, rotAxis, degrees, null, Float.NaN, Float.NaN,
+              Float.NaN);
+        break;
+      case Token.translate:
+        pt1 = new Point3f();
+        pt = (Point3f) o[2];
+        tm.transformPoint2(pt, pt1);
+        navigateTo(seconds, null, Float.NaN, null, Float.NaN, pt1.x, pt1.y);
+        break;
+      case Token.percent:
+        if (seconds == 0) {
+          pt1 = new Point3f();
+          pt = (Point3f) o[2];
+          tm.transformPoint2(pt, pt1);
+          tm.navTranslatePercent(0, pt1.x, pt1.y);
+          break;
+        }
+        tm.transformPoint2(tm.navigationCenter, tm.navigationOffset);
+        float x = ((Float) o[2]).floatValue();
+        float y = ((Float) o[3]).floatValue();
+        if (!Float.isNaN(x))
+          x = tm.width * x / 100f
+              + (Float.isNaN(y) ? tm.navigationOffset.x : (tm.width / 2f));
+        if (!Float.isNaN(y))
+          y = tm.height * y / 100f
+              + (Float.isNaN(x) ? tm.navigationOffset.y : tm.getNavPtHeight());
+        navigateTo(seconds, null, Float.NaN, null, Float.NaN, x, y);
+        break;
+      case Token.depth:
+        float percent = ((Float) o[2]).floatValue();
+        navigateTo(seconds, null, Float.NaN, null, percent, Float.NaN,
+            Float.NaN);
+        break;
+
+      // TODO
+      }
+     viewer.moveUpdate(seconds);
+    }
+
+  }
+
+  public void navigateAxis(Vector3f rotAxis, float degrees) {
+    if (degrees == 0)
+      return;
+    tm.rotateAxisAngle(rotAxis, (float) (degrees / TransformManager.degreesPerRadian));
+    tm.navMode = TransformManager.NAV_MODE_NEWXYZ;
+    tm.navigating = true;
+    tm.finalizeTransformParameters();
+    tm.navigating = false;
   }
 
   

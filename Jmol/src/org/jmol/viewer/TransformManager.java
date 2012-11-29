@@ -24,6 +24,8 @@
 package org.jmol.viewer;
 
 
+import org.jmol.api.Interface;
+import org.jmol.api.JmolNavigatorInterface;
 import org.jmol.constant.EnumStereoMode;
 import org.jmol.script.ScriptEvaluator;
 import org.jmol.script.Token;
@@ -34,6 +36,7 @@ import org.jmol.thread.VibrationThread;
 import org.jmol.util.AxisAngle4f;
 import org.jmol.util.BitSet;
 import org.jmol.util.Escape;
+import org.jmol.util.Logger;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.Point3f;
@@ -50,7 +53,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-public abstract class TransformManager {
+public class TransformManager {
 
   Viewer viewer;
 
@@ -75,26 +78,6 @@ public abstract class TransformManager {
   protected final Matrix4f matrixTemp = new Matrix4f();
   protected final Vector3f vectorTemp = new Vector3f();
 
-  /**
-   * sets all camera and scale factors needed by 
-   * the specific perspective model instantiated
-   *
-   */
-  abstract protected void calcCameraFactors();
-
-  /**
-   * calculate the perspective factor based on z
-   * @param z
-   * @return perspectiveFactor
-   */
-  abstract protected float getPerspectiveFactor(float z);
-
-  /**
-   * adjusts the temporary point for perspective and offsets
-   * 
-   */
-  abstract void adjustTemporaryScreenPoint();
-
   TransformManager(Viewer viewer, int width, int height) {
     setViewer(viewer, width, height);
   }
@@ -104,9 +87,9 @@ public abstract class TransformManager {
     setScreenParameters(width, height, true, false, true, true);
   }
 
-  TransformManager getNavigationManager(Viewer viewer, int width, int height) {
-    return new TransformManager11(viewer, width, height);
-  }
+//  TransformManager getNavigationManager(Viewer viewer, int width, int height) {
+//    return new TransformManager11(viewer, width, height);
+//  }
 
   /* ***************************************************************
    * GENERAL METHODS
@@ -423,7 +406,7 @@ public abstract class TransformManager {
     applyRotation(matrixTemp3, false, null, null);
   }
 
-  protected void rotateAxisAngle(Vector3f rotAxis, float radians) {
+  public void rotateAxisAngle(Vector3f rotAxis, float radians) {
     axisangleT.setVA(rotAxis, radians);
     rotateAxisAngle2(axisangleT, null);
   }
@@ -684,7 +667,7 @@ public abstract class TransformManager {
       return;
     case 'z':
       if (mode == MODE_NAVIGATION)
-        setNavigationDepthPercent(0, percent);
+        setNavigationDepthPercent(percent);
       return;
     }
   }
@@ -829,7 +812,7 @@ public abstract class TransformManager {
     zoomPercentSetting = newZoomPercent;
   }
   
-  void zoomByFactor(float factor, int x, int y) {
+  void zoomByFactor0(float factor, int x, int y) {
     // overloaded in TransformManager11
     if (factor <= 0 || !zoomEnabled)
       return;
@@ -1326,7 +1309,7 @@ public abstract class TransformManager {
 
   int screenWidth, screenHeight;
 
-  void setScreenParameters(int screenWidth, int screenHeight,
+  private void setScreenParameters0(int screenWidth, int screenHeight,
                            boolean useZoomLarge, boolean antialias,
                            boolean resetSlab, boolean resetZoom) {
     if (screenWidth == Integer.MAX_VALUE)
@@ -1986,13 +1969,6 @@ public abstract class TransformManager {
       navZ = z;
   }
 
-  /**
-   * @param value  
-   */
-  protected void setNavFps(int value) {
-    // see TransformManager11
-  }
-
   private void clearSpin() {
     setSpinOff();
     setNavOn(false);
@@ -2079,13 +2055,6 @@ public abstract class TransformManager {
 
   void setVibrationScale(float scale) {
     vibrationScale = scale;
-  }
-
-  /**
-   * @param navigatingSurface  
-   */
-  public void setNavigationOffsetRelative(boolean navigatingSurface) {
-   // only in Transformmanager11
   }
 
   /**
@@ -2279,147 +2248,6 @@ public abstract class TransformManager {
    * Navigation support
    ****************************************************************/
 
-  boolean canNavigate() {
-    return false;
-  }
-
-  /**
-   * entry point for keyboard-based navigation
-   * 
-   * @param keyCode  0 indicates key released    
-   * @param modifiers shift,alt,ctrl
-   */
-  synchronized void navigateKey(int keyCode, int modifiers) {
-  }
-
-  /**
-   * scripted entry point for navigation
-   * 
-   * @param seconds
-   * @param center
-   */
-  public void navigatePt(float seconds, Point3f center) {
-  }
-
-  /**
-   * scripted entry point for navigation
-   * 
-   * @param seconds
-   * @param rotAxis
-   * @param degrees
-   */
-  void navigateAxis(float seconds, Vector3f rotAxis, float degrees) {
-  }
-
-  /** 
-   * scripted navigation
-   * 
-   * @param seconds  number of seconds to allow for total movement, like moveTo
-   * @param path     sequence of points to turn into a hermetian path
-   * @param theta    orientation angle along path (0 aligns with window Y axis) 
-   *                 [or Z axis if path is vertical]
-   * @param indexStart   index of first "station"
-   * @param indexEnd     index of last "station"  
-   *                 
-   *                 not implemented yet
-   */
-  void navigatePath(float seconds, Point3f[] path, float[] theta, int indexStart,
-                int indexEnd) {
-  }
-
-  /**
-   * follows a path guided by orientation and offset vectors (as Point3fs)
-   * @param timeSeconds
-   * @param pathGuide
-   */
-  void navigateGuide(float timeSeconds, Point3f[][] pathGuide) {
-  }
-
-  /**
-   * scripted entry point for navigation
-   * 
-   * @param seconds
-   * @param pt
-   */
-  void navTranslate(float seconds, Point3f pt) {
-  }
-
-  /**
-   * scripted entry point for navigation
-   * 
-   * @param seconds
-   * @param x
-   * @param y
-   */
-  public void navTranslatePercent(float seconds, float x, float y) {
-  }
-
-  /**
-   *  all navigation effects go through this method
-   *
-   */
-  protected void calcNavigationPoint() {
-  }
-
-  /**
-   * something has arisen that requires resetting of the navigation point. 
-   * @param doResetSlab 
-   */
-  protected void resetNavigationPoint(boolean doResetSlab) {
-  }
-
-  /**
-   *
-   * @return the script that defines the current navigation state
-   * 
-   */
-  protected String getNavigationState() {
-    return "";
-  }
-
-  /**
-   * sets the position of the navigation offset relative 
-   * to the model (50% center; 0% rear, 100% front; can be <0 or >100)
-   * 
-   * @param timeSec
-   * @param percent
-   */
-  public void setNavigationDepthPercent(float timeSec, float percent) {
-    viewer.getGlobalSettings().setParamF("navigationDepth", percent);
-  }
-
-  Point3f getNavigationCenter() {
-    return null;
-  }
-
-  Point3f getNavigationOffset() {
-    return null;
-  }
-
-  public float getNavigationDepthPercent() {
-    return Float.NaN;
-  }
-
-  /**
-   * @param XorY 
-   * @return percent
-   */
-  public float getNavigationOffsetPercent(char XorY) {
-    return 0;
-  }
-
-  void setNavigationSlabOffsetPercent(float offset) {
-    viewer.getGlobalSettings().setParamF("navigationSlab", offset);
-  }
-
-  /**
-   * @param addComments  
-   * @return navigation text if in navigation mode
-   */
-  String getNavigationText(boolean addComments) {
-    return "";
-  }
-
   Point3f[] frameOffsets;
   final Point3f frameOffset = new Point3f();
 
@@ -2432,13 +2260,6 @@ public abstract class TransformManager {
   
   void setFrameOffsets(Point3f[] offsets) {
     frameOffsets = offsets;
-  }
-
-  /**
-   * @param timeSeconds  
-   * @param name 
-   */
-  void navigateSurface(float timeSeconds, String name) {
   }
 
   /////////// Allow during-rendering mouse operations ///////////
@@ -2464,6 +2285,410 @@ public abstract class TransformManager {
     }
     //System.out.println(xyz + " " + xy + " " + ptOffset);
   }
-  
 
+  /////////////////////////// old TransfomManager11 //////////////////// 
+  
+  final public static int NAV_MODE_IGNORE = -2;
+  final public static int NAV_MODE_ZOOMED = -1;
+  final public static int NAV_MODE_NONE = 0;
+  final public static int NAV_MODE_RESET = 1;
+  final public static int NAV_MODE_NEWXY = 2;
+  final public static int NAV_MODE_NEWXYZ = 3;
+  final public static int NAV_MODE_NEWZ = 4;
+
+
+  public int navMode = NAV_MODE_RESET;
+  public float zoomFactor = Float.MAX_VALUE;
+
+  public float navigationSlabOffset;
+
+  private JmolNavigatorInterface nav;
+  
+  private JmolNavigatorInterface getNav() {
+    if (nav != null)
+      return nav;
+    nav = (JmolNavigatorInterface) Interface.getOptionInterface("navigate.Navigator");
+    nav.set(this, viewer);
+    return nav;
+  }
+  
+  protected void setNavFps(int navFps) {
+    this.navFps = navFps;
+  }
+
+  /**
+   * sets all camera and scale factors needed by 
+   * the specific perspective model instantiated
+   *
+   */
+  public void calcCameraFactors() {
+    // (m) model coordinates
+    // (s) screen coordinates = (m) * screenPixelsPerAngstrom
+    // (p) plane coordinates = (s) / screenPixelCount
+
+    if (Float.isNaN(cameraDepth)) {
+      cameraDepth = cameraDepthSetting;
+      zoomFactor = Float.MAX_VALUE;
+    }
+
+    // reference point where p=0
+    cameraDistance = cameraDepth * screenPixelCount; // (s)
+
+    // distance from camera to midPlane of model (p=0.5)
+    // the factor to apply based on screen Z
+    referencePlaneOffset = cameraDistance + screenPixelCount / 2f; // (s)
+
+    // conversion factor Angstroms --> pixels
+    // so that "full window" is visualRange
+    scalePixelsPerAngstrom = (scale3D && !perspectiveDepth
+        && mode != MODE_NAVIGATION ? 72 / scale3DAngstromsPerInch
+        * (antialias ? 2 : 1) : screenPixelCount / visualRange); // (s/m)
+
+    // model radius in pixels
+    modelRadiusPixels = modelRadius * scalePixelsPerAngstrom; // (s)
+
+    // model center offset for zoom 100
+    float offset100 = (2 * modelRadius) / visualRange * referencePlaneOffset; // (s)
+
+    // System.out.println("sppA " + scalePixelsPerAngstrom + " pD " +
+    // perspectiveDepth
+    // + " spC " + screenPixelCount + " vR " + visualRange
+    // + " sDPPA " + scaleDefaultPixelsPerAngstrom);
+
+    if (mode == MODE_NAVIGATION) {
+      calcNavCameraFactors(offset100);
+      return;
+    }
+    // nonNavigation mode -- to match Jmol 10.2 at midplane (caffeine.xyz)
+    // flag that we have left navigation mode
+    zoomFactor = Float.MAX_VALUE;
+    // we place the model at the referencePlaneOffset offset and then change
+    // the scale
+    modelCenterOffset = referencePlaneOffset;
+    // now factor the scale by distance from camera and zoom
+    if (!scale3D || perspectiveDepth)
+      scalePixelsPerAngstrom *= (modelCenterOffset / offset100) * zoomPercent
+          / 100; // (s/m)
+
+    // System.out.println("sppA revised:" + scalePixelsPerAngstrom);
+    // so that's sppa = (spc / vR) * rPO * (vR / 2) / mR * rPO = spc/2/mR
+
+    modelRadiusPixels = modelRadius * scalePixelsPerAngstrom; // (s)
+    // System.out.println("transformman scalppa modelrad " +
+    // scalePixelsPerAngstrom + " " + modelRadiusPixels + " " + visualRange);
+  }
+
+  private void calcNavCameraFactors(float offset100) {
+    if (zoomFactor == Float.MAX_VALUE) {
+      // entry point
+      if (zoomPercent > MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)
+        zoomPercent = MAXIMUM_ZOOM_PERSPECTIVE_DEPTH;
+      // screen offset to fixed rotation center
+      modelCenterOffset = offset100 * 100 / zoomPercent;
+    } else if (prevZoomSetting != zoomPercentSetting) {
+      if (zoomRatio == 0) // scripted change zoom xxx
+        modelCenterOffset = offset100 * 100 / zoomPercentSetting;
+      else
+        // fractional change by script or mouse
+        modelCenterOffset += (1 - zoomRatio) * referencePlaneOffset;
+      navMode = NAV_MODE_ZOOMED;
+    }
+    prevZoomSetting = zoomPercentSetting;
+    zoomFactor = modelCenterOffset / referencePlaneOffset;
+    // infinite or negative value means there is no corresponding non-navigating
+    // zoom setting
+    zoomPercent = (zoomFactor == 0 ? MAXIMUM_ZOOM_PERSPECTIVE_DEPTH : offset100
+        / modelCenterOffset * 100);
+    
+  }
+
+  /**
+   * calculate the perspective factor based on z
+   * @param z
+   * @return perspectiveFactor
+   */
+  public float getPerspectiveFactor(float z) {
+    // System.out.println (z + " getPerspectiveFactor " + referencePlaneOffset +
+    // " " + (z <= 0 ? referencePlaneOffset : referencePlaneOffset / z));
+    return (z <= 0 ? referencePlaneOffset : referencePlaneOffset / z);
+  }
+
+  /**
+   * adjusts the temporary point for perspective and offsets
+   * 
+   */
+  protected void adjustTemporaryScreenPoint() {
+
+    // fixedRotation point is at the origin initially
+
+    float z = point3fScreenTemp.z;
+
+    // this could easily go negative -- behind the screen --
+    // but we don't care. In fact, that just makes it easier,
+    // because it means we won't render it.
+    // we should probably assign z = 0 as "unrenderable"
+
+    if (Float.isNaN(z)) {
+      if (!haveNotifiedNaN)
+        Logger.debug("NaN seen in TransformPoint");
+      haveNotifiedNaN = true;
+      z = 1;
+    } else if (z <= 0) {
+      // just don't let z go past 1 BH 11/15/06
+      z = 1;
+    }
+    point3fScreenTemp.z = z;
+
+    // x and y are moved inward (generally) relative to 0, which
+    // is either the fixed rotation center or the navigation center
+
+    // at this point coordinates are centered on rotation center
+
+    switch (mode) {
+    case MODE_NAVIGATION:
+      // move nav center to 0; refOffset = Nav - Rot
+      point3fScreenTemp.x -= navigationShiftXY.x;
+      point3fScreenTemp.y -= navigationShiftXY.y;
+      break;
+    case MODE_PERSPECTIVE_CENTER:
+      point3fScreenTemp.x -= perspectiveShiftXY.x;
+      point3fScreenTemp.y -= perspectiveShiftXY.y;
+      break;
+    }
+    if (perspectiveDepth) {
+      // apply perspective factor
+      float factor = getPerspectiveFactor(z);
+      point3fScreenTemp.x *= factor;
+      point3fScreenTemp.y *= factor;
+    }
+    switch (mode) {
+    case MODE_NAVIGATION:
+      point3fScreenTemp.x += navigationOffset.x;
+      point3fScreenTemp.y += navigationOffset.y;
+      break;
+    case MODE_PERSPECTIVE_CENTER:
+      point3fScreenTemp.x += perspectiveOffset.x;
+      point3fScreenTemp.y += perspectiveOffset.y;
+      break;
+    case MODE_STANDARD:
+      point3fScreenTemp.x += fixedRotationOffset.x;
+      point3fScreenTemp.y += fixedRotationOffset.y;
+      break;
+    }
+
+    if (Float.isNaN(point3fScreenTemp.x) && !haveNotifiedNaN) {
+      Logger.debug("NaN found in transformPoint ");
+      haveNotifiedNaN = true;
+    }
+
+    point3iScreenTemp.set((int) point3fScreenTemp.x, (int) point3fScreenTemp.y,
+        (int) point3fScreenTemp.z);
+  }
+
+  boolean canNavigate() {
+    return true;
+  }  
+  
+  /**
+   * something has arisen that requires resetting of the navigation point. 
+   * @param doResetSlab 
+   */
+  protected void resetNavigationPoint(boolean doResetSlab) {
+    if (zoomPercent < 5 && mode != MODE_NAVIGATION) {
+      perspectiveDepth = true;
+      mode = MODE_NAVIGATION;
+      return;
+    }
+    if (mode == MODE_NAVIGATION) {
+      navMode = NAV_MODE_RESET;
+      slabPercentSetting = 0;
+      perspectiveDepth = true;
+    } else if (doResetSlab) {
+      slabPercentSetting = 100;
+    }
+    viewer.setFloatProperty("slabRange", 0);
+    if (doResetSlab) {
+      slabEnabled = (mode == MODE_NAVIGATION);
+    }
+    zoomFactor = Float.MAX_VALUE;
+    zoomPercentSetting = zoomPercent;
+  }
+
+  /**
+   * scripted entry point for navigation
+   * 
+   * @param pt
+   */
+  public void setNavigatePt(Point3f pt) {
+    // from MoveToThread
+    navigationCenter.setT(pt);
+    navMode = NAV_MODE_NEWXYZ;
+    navigating = true;
+    finalizeTransformParameters();
+    navigating = false;
+  }
+
+  public Point3f getNavigationCenter() {
+    return navigationCenter;
+  }
+
+  public float getNavigationDepthPercent() {
+    return navigationDepth;
+  }
+
+  void setNavigationSlabOffsetPercent(float percent) {
+    viewer.getGlobalSettings().setParamF("navigationSlab", percent);
+    calcCameraFactors(); // current
+    navigationSlabOffset = percent / 50 * modelRadiusPixels;
+  }
+
+  Point3f getNavigationOffset() {
+    transformPoint2(navigationCenter, navigationOffset);
+    return navigationOffset;
+  }
+
+  public float getNavigationOffsetPercent(char XorY) {
+    getNavigationOffset();
+    if (width == 0 || height == 0)
+      return 0;
+    return (XorY == 'X' ? (navigationOffset.x - width / 2f) * 100f / width
+        : (navigationOffset.y - getNavPtHeight()) * 100f / height);
+  }
+
+  protected String getNavigationText(boolean addComments) {
+    getNavigationOffset();
+    return (addComments ? " /* navigation center, translation, depth */ " : " ")
+        + Escape.escapePt(navigationCenter)
+        + " "
+        + getNavigationOffsetPercent('X')
+        + " "
+        + getNavigationOffsetPercent('Y') + " " + getNavigationDepthPercent();
+  }
+
+  void setScreenParameters(int screenWidth, int screenHeight,
+                           boolean useZoomLarge, boolean antialias,
+                           boolean resetSlab, boolean resetZoom) {
+    Point3f pt = (mode == MODE_NAVIGATION ? Point3f.newP(navigationCenter)
+        : null);
+    Point3f ptoff = Point3f.newP(navigationOffset);
+    ptoff.x = ptoff.x / width;
+    ptoff.y = ptoff.y / height;
+    setScreenParameters0(screenWidth, screenHeight, useZoomLarge,
+        antialias, resetSlab, resetZoom);
+    if (pt != null) {
+      navigationCenter.setT(pt);
+      navTranslatePercent(-1, ptoff.x * width, ptoff.y * height);
+      setNavigatePt(pt);
+    }
+  }
+
+  /*
+   * *************************************************************** Navigation
+   * support**************************************************************
+   */
+
+  public float navigationDepth;
+
+  public void navigateList(ScriptEvaluator eval, List<Object[]> list) {
+    getNav().navigateList(eval, list);
+  }
+  
+  /**
+   * scripted entry point for navigation
+   * 
+   * @param rotAxis
+   * @param degrees
+   */
+  public void navigateAxis(Vector3f rotAxis, float degrees) {
+    getNav().navigateAxis(rotAxis, degrees);
+  }
+
+  void zoomByFactor(float factor, int x, int y) {
+    if (mode != MODE_NAVIGATION || !zoomEnabled || factor <= 0)
+      zoomByFactor0(factor, x, y);
+    else
+      getNav().zoomByFactor(factor, x, y);
+  }
+
+  public void setNavigationOffsetRelative() {//boolean navigatingSurface) {
+    getNav().setNavigationOffsetRelative();//navigatingSurface);
+  }
+
+  /**
+   * entry point for keyboard-based navigation
+   * 
+   * @param keyCode  0 indicates key released    
+   * @param modifiers shift,alt,ctrl
+   */
+  synchronized void navigateKey(int keyCode, int modifiers) {
+    getNav().navigateKey(keyCode, modifiers);
+  }
+
+  /**
+   * sets the position of the navigation offset relative 
+   * to the model (50% center; 0% rear, 100% front; can be <0 or >100)
+   * 
+   * @param percent
+   */
+  public void setNavigationDepthPercent(float percent) {
+    getNav().setNavigationDepthPercent(percent);
+  }
+
+  /**
+   * scripted entry point for navigation
+   * 
+   * @param seconds
+   * @param x
+   * @param y
+   */
+  public void navTranslatePercent(float seconds, float x, float y) {
+    // from MoveToThread and Viewer
+    // if either is Float.NaN, then the other is RELATIVE to current
+    transformPoint2(navigationCenter, navigationOffset);
+    if (seconds >= 0) {
+      if (!Float.isNaN(x))
+        x = width * x / 100f
+            + (Float.isNaN(y) ? navigationOffset.x : (width / 2f));
+      if (!Float.isNaN(y))
+        y = height * y / 100f
+            + (Float.isNaN(x) ? navigationOffset.y : getNavPtHeight());
+    }
+    if (!Float.isNaN(x))
+      navigationOffset.x = x;
+    if (!Float.isNaN(y))
+      navigationOffset.y = y;
+    navMode = NAV_MODE_NEWXY;
+    navigating = true;
+    finalizeTransformParameters();
+    navigating = false;
+  }
+
+
+  /**
+   * All the magic happens here.
+   *  all navigation effects go through this method
+   *
+   */
+  protected void calcNavigationPoint() {
+    getNav().calcNavigationPoint();
+  }
+
+  public float getNavPtHeight() {
+    boolean navigateSurface = false;//viewer.getNavigateSurface();
+    return height / (navigateSurface ? 1f : 2f);
+  }
+
+  /**
+  *
+  * @return the script that defines the current navigation state
+  * 
+  */
+  protected String getNavigationState() {
+    return (mode == MODE_NAVIGATION ? getNav().getNavigationState() : "");
+  }
+
+
+  
+  
+  
 }

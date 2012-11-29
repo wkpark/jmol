@@ -647,6 +647,12 @@ all support for previous versions removed
       </fileset>
     </jar>
 
+    <jar destfile="${jmol.applet.build.dir}/JmolApplet0_Navigate.jar" manifest="manifest/applet.txt">
+      <fileset dir="${applet.classes.dir}">
+        <include name="org/jmol/navigate/**" />
+      </fileset>
+    </jar>
+
     <jar destfile="${jmol.applet.build.dir}/JmolApplet0_Console.jar" manifest="manifest/applet.txt">
       <fileset dir="${applet.classes.dir}">
     	<include name="org/jmol/console/**" />
@@ -780,6 +786,7 @@ all support for previous versions removed
       	<!-- no export or multitouch here - this is the unsigned applet -->
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Console.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Minimize.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Navigate.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Popup.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersCifPdb.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersMolXyz.jar" />
@@ -858,7 +865,7 @@ all support for previous versions removed
              keystore="selfSignedCertificate/selfSignedCertificate.store"
              storepass="selfSignedCertificate" alias="selfSignedCertificate" />
 
-    <jar destfile="${jmol.applet.build.dir}/JmolApplet_MultiTouch.jar.temp"
+  	<jar destfile="${jmol.applet.build.dir}/JmolApplet_MultiTouch.jar.temp"
     	manifest="manifest/appletMonolithic.txt" index="true" >
       <fileset dir="${applet.classes.dir}" >
         <include name="org/jmol/multitouch/**" />
@@ -870,6 +877,11 @@ all support for previous versions removed
              keystore="selfSignedCertificate/selfSignedCertificate.store"
              storepass="selfSignedCertificate" alias="selfSignedCertificate" />
     <delete  file="${jmol.applet.build.dir}/JmolApplet_MultiTouch.jar.temp" />
+
+  	<signjar jar="${jmol.applet.build.dir}/JmolApplet0_Navigate.jar"
+             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_Navigate.jar"
+             keystore="selfSignedCertificate/selfSignedCertificate.store"
+             storepass="selfSignedCertificate" alias="selfSignedCertificate" />
 
     <signjar jar="${jmol.applet.build.dir}/JmolApplet0_Popup.jar"
              signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_Popup.jar"
@@ -989,6 +1001,7 @@ all support for previous versions removed
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Console.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Minimize.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_MultiTouch.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Navigate.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Popup.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersCifPdb.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersMolXyz.jar" />
@@ -1043,6 +1056,7 @@ all support for previous versions removed
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Console.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Minimize.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_MultiTouch.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Navigate.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Popup.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersCifPdb.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersMolXyz.jar" />
@@ -1088,6 +1102,12 @@ all support for previous versions removed
         <include name="org/jmol/minimize/**/**" />
         <include name="org/jmol/modelkit/**" />
         <include name="org/jmol/modelkit/images/**" />
+      </fileset>
+    </jar>
+
+    <jar destfile="${jmol.applet.build.dir}/JmolApplet0_Navigate.jar" manifest="manifest/applet.txt">
+      <fileset dir="${applet.classes.dir}">
+        <include name="org/jmol/navigate/**" />
       </fileset>
     </jar>
 
@@ -1223,6 +1243,7 @@ all support for previous versions removed
         <!-- no export or multitouch here - this is the unsigned applet -->
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Console.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Minimize.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Navigate.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Popup.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersCifPdb.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersMolXyz.jar" />

@@ -49,7 +49,7 @@ public class SpinThread extends JmolThread {
   private float angle;
   private boolean haveNotified;
   private int index;
-  private boolean navigatingSurface;
+  //private boolean navigatingSurface;
   
   public boolean isGesture() {
     return isGesture;
@@ -108,9 +108,9 @@ public class SpinThread extends JmolThread {
           mode = FINISH;
           break;
         }
-        navigatingSurface = viewer.getNavigateSurface();
-        boolean refreshNeeded = (isNav ? navigatingSurface
-            || transformManager.navX != 0 || transformManager.navY != 0
+        //navigatingSurface = viewer.getNavigateSurface();
+        boolean refreshNeeded = (isNav ? //navigatingSurface ||
+            transformManager.navX != 0 || transformManager.navY != 0
             || transformManager.navZ != 0
             : transformManager.isSpinInternal
                 && transformManager.internalRotationAxis.angle != 0
@@ -177,7 +177,7 @@ public class SpinThread extends JmolThread {
 
   private void doTransform() {
     if (isNav) {
-      transformManager.setNavigationOffsetRelative(navigatingSurface);
+      transformManager.setNavigationOffsetRelative();//navigatingSurface);
     } else if (transformManager.isSpinInternal
         || transformManager.isSpinFixed) {
       angle = (transformManager.isSpinInternal ? transformManager.internalRotationAxis

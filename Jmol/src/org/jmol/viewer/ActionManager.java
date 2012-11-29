@@ -1303,7 +1303,7 @@ public class ActionManager {
 
     if (viewer.getNavigationMode() && atomPickingMode == PICKING_NAVIGATE
         && isBound(action, ACTION_pickNavigate)) {
-      viewer.navTranslatePercent(0f, x * 100f / viewer.getScreenWidth() - 50f,
+      viewer.navTranslatePercent(x * 100f / viewer.getScreenWidth() - 50f,
           y * 100f / viewer.getScreenHeight() - 50f);
       return false;
     }

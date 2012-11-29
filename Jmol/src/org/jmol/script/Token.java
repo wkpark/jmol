@@ -350,7 +350,7 @@ public class Token {
   final static int reset        = scriptCommand | 45;
   final static int restore      = scriptCommand | 46;
   public final static int resume = scriptCommand | 47 | noArgs;
-  final static int rotate       = scriptCommand | 48 | defaultON;
+  public final static int rotate       = scriptCommand | 48 | defaultON;
   final static int rotateSelected = scriptCommand | 49;
   public final static int save  = scriptCommand | 50;
 //final static int script   see mathfunc
@@ -364,7 +364,7 @@ public class Token {
 //final static int structure    see intproperty
   final static int sync         = scriptCommand | 60;
   final static int timeout      = scriptCommand | 62 | setparam;
-  final static int translate    = scriptCommand | 64;
+  public final static int translate    = scriptCommand | 64;
   final static int translateSelected   = scriptCommand | 66;
   final static int unbind              = scriptCommand | 68;
   public final static int undomove     = scriptCommand | 69;
@@ -1218,7 +1218,7 @@ public class Token {
   final static int packed         = misc  | 256;
   final static int palindrome     = misc  | 258;
   final static int parameters     = misc  | 259;
-  final static int path           = misc  | 260;
+  public final static int path           = misc  | 260;
   final static int pdb            = misc  | 262 | expression;
   final static int pdbheader      = misc  | 264;
   final static int period         = misc  | 266;

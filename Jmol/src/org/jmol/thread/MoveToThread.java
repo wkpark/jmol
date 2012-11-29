@@ -231,13 +231,13 @@ public class MoveToThread extends JmolThread {
         && transformManager.mode == TransformManager.MODE_NAVIGATION) {
       Point3f pt = Point3f.newP(transformManager.navigationCenter);
       pt.add(aaStepNavCenter);
-      transformManager.navigatePt(0, pt);
+      transformManager.setNavigatePt(pt);
       if (!Float.isNaN(xNav) && !Float.isNaN(yNav))
         transformManager
             .navTranslatePercent(0, xNavTransStart + xNavTransDelta * fStep,
                 yNavTransStart + yNavTransDelta * fStep);
       if (!Float.isNaN(navDepth))
-        transformManager.setNavigationDepthPercent(0, navDepthStart
+        transformManager.setNavigationDepthPercent(navDepthStart
             + navDepthDelta * fStep);
     }
   }
@@ -260,7 +260,7 @@ public class MoveToThread extends JmolThread {
       if (!Float.isNaN(xNav) && !Float.isNaN(yNav))
         transformManager.navTranslatePercent(0, xNav, yNav);
       if (!Float.isNaN(navDepth))
-        transformManager.setNavigationDepthPercent(0, navDepth);
+        transformManager.setNavigationDepthPercent(navDepth);
     }
   }
 

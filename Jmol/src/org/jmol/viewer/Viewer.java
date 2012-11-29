@@ -470,7 +470,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     colorManager = new ColorManager(this, gdata);
     statusManager = new StatusManager(this);
     scriptManager = new ScriptManager(this);
-    transformManager = new TransformManager11(this, Integer.MAX_VALUE, 0);
+    transformManager = new TransformManager(this, Integer.MAX_VALUE, 0);
     selectionManager = new SelectionManager(this);
     if (haveDisplay) {
       actionManager = (multiTouch ? (ActionManager) Interface
@@ -981,54 +981,29 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return transformManager.getMoveToText(timespan, false);
   }
 
-  public void navigatePath(float timeSeconds, Point3f[] path, float[] theta,
-                       int indexStart, int indexEnd) {
+  public void navigateList(ScriptEvaluator eval, List<Object[]> list) {
     if (isJmolDataFrame())
       return;
-    transformManager.navigatePath(timeSeconds, path, theta, indexStart, indexEnd);
-    moveUpdate(timeSeconds);
+    transformManager.navigateList(eval, list);
   }
 
-  public void navigatePt(float timeSeconds, Point3f center) {
-    if (isJmolDataFrame())
-      return;
-    transformManager.navigatePt(timeSeconds, center);
-    moveUpdate(timeSeconds);
+  public void navigatePt(Point3f center) {
+    // isosurface setHeading
+    transformManager.setNavigatePt(center);
+    setSync();
   }
 
-  public void navigateGuide(float timeSeconds, Point3f[][] pathGuide) {
-    if (isJmolDataFrame())
-      return;
-    transformManager.navigateGuide(timeSeconds, pathGuide);
-    moveUpdate(timeSeconds);
+  public void navigateAxis(Vector3f rotAxis, float degrees) {
+    // isosurface setHeading
+    transformManager.navigateAxis(rotAxis, degrees);
+    setSync();
   }
 
-  public void navigateSurface(float timeSeconds, String name) {
+  public void navTranslatePercent(float x, float y) {
     if (isJmolDataFrame())
       return;
-    transformManager.navigateSurface(timeSeconds, name);
-    moveUpdate(timeSeconds);
-  }
-
-  public void navigateAxis(float timeSeconds, Vector3f rotAxis, float degrees) {
-    if (isJmolDataFrame())
-      return;
-    transformManager.navigateAxis(timeSeconds, rotAxis, degrees);
-    moveUpdate(timeSeconds);
-  }
-
-  public void navTranslate(float timeSeconds, Point3f center) {
-    if (isJmolDataFrame())
-      return;
-    transformManager.navTranslate(timeSeconds, center);
-    moveUpdate(timeSeconds);
-  }
-
-  public void navTranslatePercent(float timeSeconds, float x, float y) {
-    if (isJmolDataFrame())
-      return;
-    transformManager.navTranslatePercent(timeSeconds, x, y);
-    moveUpdate(timeSeconds);
+    transformManager.navTranslatePercent(0, x, y);
+    setSync();
   }
 
   private boolean mouseEnabled = true;
@@ -4168,12 +4143,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void requestRepaintAndWait() {
-    // called by moveUpdate from move, moveTo, navigate, navigateSurface,
+    // called by moveUpdate from move, moveTo, navigate,
     // navTranslate
     // called by ScriptEvaluator "refresh" command
     // called by AnimationThread run()
     // called by TransformationManager move and moveTo
-    // called by TransformationManager11 navigate, navigateSurface, navigateTo
+    // called by TransformationManager11 navigate, navigateTo
     if (!haveDisplay || repaintManager == null)
       return;
     repaintManager.requestRepaintAndWait();
@@ -6388,7 +6363,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       refresh(1, "set visualRange");
       break;
     case Token.navigationdepth:
-      setNavigationDepthPercent(0, value);
+      setNavigationDepthPercent(value);
       break;
     case Token.navigationspeed:
       global.navigationSpeed = value;
@@ -6558,8 +6533,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       setStrandCount(JmolConstants.SHAPE_MESHRIBBON, value);
       return;
     case Token.perspectivemodel:
-      setPerspectiveModel(value);
-      break;
+      // abandoned in 13.1.10
+      //setPerspectiveModel(value);
+      return;
     case Token.showscript:
       global.scriptDelay = value;
       break;
@@ -6961,8 +6937,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       setNavigationMode(value);
       break;
     case Token.navigatesurface:
-      global.navigateSurface = value;
-      break;
+      // was experimental; abandoned in 13.1.10
+      return;//global.navigateSurface = value;
+      //break;
     case Token.hidenavigationpoint:
       global.hideNavigationPoint = value;
       break;
@@ -7347,8 +7324,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return transformManager.isWindowCentered();
   }
 
-  public void setNavigationDepthPercent(float timeSec, float percent) {
-    transformManager.setNavigationDepthPercent(timeSec, percent);
+  public void setNavigationDepthPercent(float percent) {
+    transformManager.setNavigationDepthPercent(percent);
     refresh(1, "set navigationDepth");
   }
 
@@ -7598,12 +7575,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private void setNavigationMode(boolean TF) {
     global.navigationMode = TF;
-    if (TF && !transformManager.canNavigate()) {
-      stopAnimationThreads("setNavigationMode");
-      transformManager = transformManager.getNavigationManager(this,
-          dimScreen.width, dimScreen.height);
-      transformManager.homePosition(true);
-    }
+//    if (TF && !transformManager.canNavigate()) {
+//      stopAnimationThreads("setNavigationMode");
+//      transformManager = transformManager.getNavigationManager(this,
+//          dimScreen.width, dimScreen.height);
+//      transformManager.homePosition(true);
+//    }
     transformManager.setNavigationMode(TF);
   }
 
@@ -7611,9 +7588,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.navigationMode;
   }
 
-  public boolean getNavigateSurface() {
-    return global.navigateSurface;
-  }
+//  public boolean getNavigateSurface() {
+//    return global.navigateSurface;
+//  }
 
 //  /**
 //   * for an external application
@@ -7628,22 +7605,22 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 //    transformManager.homePosition(true);
 //  }
 
-  private void setPerspectiveModel(int mode) {
-    if (transformManager.perspectiveModel == mode)
-      return;
-    stopAnimationThreads("setPerspectivemodeg");
-    //switch (mode) {
-    //case 10:
-      //transformManager = new TransformManager10(this, dimScreen.width,
-       //   dimScreen.height);
-     // break;
-    //default:
-      transformManager = transformManager.getNavigationManager(this,
-          dimScreen.width, dimScreen.height);
-    //}
-    setTransformManagerDefaults();
-    transformManager.homePosition(true);
-  }
+//  private void setPerspectiveModel(int mode) {
+//    if (transformManager.perspectiveModel == mode)
+//      return;
+//    stopAnimationThreads("setPerspectivemodeg");
+//    //switch (mode) {
+//    //case 10:
+//      //transformManager = new TransformManager10(this, dimScreen.width,
+//       //   dimScreen.height);
+//     // break;
+//    //default:
+//      transformManager = transformManager.getNavigationManager(this,
+//          dimScreen.width, dimScreen.height);
+//    //}
+//    setTransformManagerDefaults();
+//    transformManager.homePosition(true);
+//  }
 
   private void setTransformManagerDefaults() {
     transformManager.setCameraDepthPercent(global.cameraDepth);
@@ -10866,6 +10843,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       scriptDelayThread = null;
     } 
   }
+
 
 
 }

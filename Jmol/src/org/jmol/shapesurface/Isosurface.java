@@ -106,7 +106,7 @@ import org.jmol.util.ColorUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
-import org.jmol.util.Measure;
+//import org.jmol.util.Measure;
 import org.jmol.util.MeshSurface;
 import org.jmol.util.Parser;
 import org.jmol.util.Point3f;
@@ -120,7 +120,7 @@ import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.script.Token;
 import org.jmol.viewer.Viewer;
-import org.jmol.viewer.StateManager.Orientation;
+//import org.jmol.viewer.StateManager.Orientation;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -208,10 +208,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
     //isosurface-only (no calculation required; no calc parameters to set)
 
-    if ("navigate" == propertyName) {
-      navigate(((Integer) value).intValue());
-      return;
-    }
+//    if ("navigate" == propertyName) {
+//      navigate(((Integer) value).intValue());
+//      return;
+//    }
     if ("delete" == propertyName) {
       setPropertySuper(propertyName, value, bs);
       if (!explicitID)
@@ -1541,7 +1541,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
   @Override
   public Map<String, Object> checkObjectClicked(int x, int y, int action, BitSet bsVisible) {
-    if (!(viewer.getDrawPicking() || viewer.getNavigationMode() && viewer.getNavigateSurface())) 
+    if (!(viewer.getDrawPicking()))// || viewer.getNavigationMode() && viewer.getNavigateSurface())) 
        return null;
     if (!viewer.isBound(action, ActionManager.ACTION_pickIsosurface))
       return null;
@@ -1556,7 +1556,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     int jminz = -1;
     int maxz = Integer.MIN_VALUE;
     int minz = Integer.MAX_VALUE;
-    boolean pickFront = viewer.getDrawPicking();
+    boolean pickFront = viewer.getDrawPicking(); // which must be true now
     for (int i = 0; i < meshCount; i++) {
       IsosurfaceMesh m = isomeshes[i];
       if (!isPickable(m, bsVisible))
@@ -1593,15 +1593,15 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     Point3f ptRet = new Point3f();
     ptRet.setT((pickFront ? pickedMesh.vertices[pickedVertex] : ((IsosurfaceMesh)pickedMesh).centers[iFace]));
     pickedModel = (short) pickedMesh.modelIndex;
-    if (pickFront) {
+//    if (pickFront) {
       setStatusPicked(-4, ptRet);
-    } else {
-      Vector3f vNorm = new Vector3f();
-      ((IsosurfaceMesh)pickedMesh).getFacePlane(iFace, vNorm);
-      // get normal to surface
-      vNorm.scale(-1);
-      setHeading(ptRet, vNorm, 2);
-    }
+//    } else {
+//      Vector3f vNorm = new Vector3f();
+//      ((IsosurfaceMesh)pickedMesh).getFacePlane(iFace, vNorm);
+//      // get normal to surface
+//      vNorm.scale(-1);
+//     // setHeading(ptRet, vNorm, 2);
+//    }
     return getPickedPoint(ptRet, pickedModel);
   }
 
@@ -1611,105 +1611,105 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         .isColixTranslucent(m.colix);
   }
 
-  private void navigate(int dz) {
-    if (thisMesh == null)
-      return;
-    Point3f navPt = Point3f.newP(viewer.getNavigationOffset());
-    Point3f toPt = new Point3f();
-    viewer.unTransformPoint(navPt, toPt);
-    navPt.z += dz;
-    viewer.unTransformPoint(navPt, toPt);
-    Point3f ptRet = new Point3f();
-    Vector3f vNorm = new Vector3f();
-    if (!getClosestNormal(thisMesh, toPt, ptRet, vNorm))
-      return;
-    Point3f pt2 = Point3f.newP(ptRet);
-    pt2.add(vNorm);
-    Point3f pt2s = new Point3f();
-    viewer.transformPt3f(pt2, pt2s);
-    if (pt2s.y > navPt.y)
-      vNorm.scale(-1);
-    setHeading(ptRet, vNorm, 0);     
-  }
+//  private void navigate(int dz) {
+//    if (thisMesh == null)
+//      return;
+//    Point3f navPt = Point3f.newP(viewer.getNavigationOffset());
+//    Point3f toPt = new Point3f();
+//    viewer.unTransformPoint(navPt, toPt);
+//    navPt.z += dz;
+//    viewer.unTransformPoint(navPt, toPt);
+//    Point3f ptRet = new Point3f();
+//    Vector3f vNorm = new Vector3f();
+//    if (!getClosestNormal(thisMesh, toPt, ptRet, vNorm))
+//      return;
+//    Point3f pt2 = Point3f.newP(ptRet);
+//    pt2.add(vNorm);
+//    Point3f pt2s = new Point3f();
+//    viewer.transformPt3f(pt2, pt2s);
+//    if (pt2s.y > navPt.y)
+//      vNorm.scale(-1);
+//    setHeading(ptRet, vNorm, 0);     
+//  }
 
-  private void setHeading(Point3f pt, Vector3f vNorm, int nSeconds) {
-    // general trick here is to save the original orientation, 
-    // then do all the changes and save the new orientation.
-    // Then just do a timed restore.
-
-    Orientation o1 = viewer.getOrientation();
-    
-    // move to point
-    viewer.navigatePt(0, pt);
-    
-    Point3f toPts = new Point3f();
-    
-    // get screen point along normal
-    Point3f toPt = Point3f.newP(vNorm);
-    //viewer.script("draw test2 vector " + Escape.escape(pt) + " " + Escape.escape(toPt));
-    toPt.add(pt);
-    viewer.transformPt3f(toPt, toPts);
-    
-    // subtract the navigation point to get a relative point
-    // that we can project into the xy plane by setting z = 0
-    Point3f navPt = Point3f.newP(viewer.getNavigationOffset());
-    toPts.sub(navPt);
-    toPts.z = 0;
-    
-    // set the directed angle and rotate normal into yz plane,
-    // less 20 degrees for the normal upward sloping view
-    float angle = Measure.computeTorsion(JmolConstants.axisNY, 
-        JmolConstants.center, JmolConstants.axisZ, toPts, true);
-    viewer.navigateAxis(0, JmolConstants.axisZ, angle);        
-    toPt.setT(vNorm);
-    toPt.add(pt);
-    viewer.transformPt3f(toPt, toPts);
-    toPts.sub(navPt);
-    angle = Measure.computeTorsion(JmolConstants.axisNY,
-        JmolConstants.center, JmolConstants.axisX, toPts, true);
-    viewer.navigateAxis(0, JmolConstants.axisX, 20 - angle);
-    
-    // save this orientation, restore the first, and then
-    // use TransformManager.moveto to smoothly transition to it
-    // a script is necessary here because otherwise the application
-    // would hang.
-    
-    navPt = Point3f.newP(viewer.getNavigationOffset());
-    if (nSeconds <= 0)
-      return;
-    viewer.saveOrientation("_navsurf");
-    o1.restore(0, true);
-    viewer.script("restore orientation _navsurf " + nSeconds);
-  }
+//  private void setHeading(Point3f pt, Vector3f vNorm, int nSeconds) {
+//    // general trick here is to save the original orientation, 
+//    // then do all the changes and save the new orientation.
+//    // Then just do a timed restore.
+//
+//    Orientation o1 = viewer.getOrientation();
+//    
+//    // move to point
+//    viewer.navigatePt(pt);
+//    
+//    Point3f toPts = new Point3f();
+//    
+//    // get screen point along normal
+//    Point3f toPt = Point3f.newP(vNorm);
+//    //viewer.script("draw test2 vector " + Escape.escape(pt) + " " + Escape.escape(toPt));
+//    toPt.add(pt);
+//    viewer.transformPt3f(toPt, toPts);
+//    
+//    // subtract the navigation point to get a relative point
+//    // that we can project into the xy plane by setting z = 0
+//    Point3f navPt = Point3f.newP(viewer.getNavigationOffset());
+//    toPts.sub(navPt);
+//    toPts.z = 0;
+//    
+//    // set the directed angle and rotate normal into yz plane,
+//    // less 20 degrees for the normal upward sloping view
+//    float angle = Measure.computeTorsion(JmolConstants.axisNY, 
+//        JmolConstants.center, JmolConstants.axisZ, toPts, true);
+//    viewer.navigateAxis(JmolConstants.axisZ, angle);        
+//    toPt.setT(vNorm);
+//    toPt.add(pt);
+//    viewer.transformPt3f(toPt, toPts);
+//    toPts.sub(navPt);
+//    angle = Measure.computeTorsion(JmolConstants.axisNY,
+//        JmolConstants.center, JmolConstants.axisX, toPts, true);
+//    viewer.navigateAxis(JmolConstants.axisX, 20 - angle);
+//    
+//    // save this orientation, restore the first, and then
+//    // use TransformManager.moveto to smoothly transition to it
+//    // a script is necessary here because otherwise the application
+//    // would hang.
+//    
+//    navPt = Point3f.newP(viewer.getNavigationOffset());
+//    if (nSeconds <= 0)
+//      return;
+//    viewer.saveOrientation("_navsurf");
+//    o1.restore(0, true);
+//    viewer.script("restore orientation _navsurf " + nSeconds);
+//  }
   
-  private boolean getClosestNormal(IsosurfaceMesh m, Point3f toPt, Point3f ptRet, Vector3f normalRet) {
-    Point3f[] centers = m.getCenters();
-    float d;
-    float dmin = Float.MAX_VALUE;
-    int imin = -1;
-    for (int i = centers.length; --i >= 0; ) {
-      if ((d = centers[i].distance(toPt)) >= dmin)
-        continue;
-      dmin = d;
-      imin = i;
-    }
-    if (imin < 0)
-      return false;
-    getClosestPoint(m, imin, toPt, ptRet, normalRet);
-    return true;
-  }
+//  private boolean getClosestNormal(IsosurfaceMesh m, Point3f toPt, Point3f ptRet, Vector3f normalRet) {
+//    Point3f[] centers = m.getCenters();
+//    float d;
+//    float dmin = Float.MAX_VALUE;
+//    int imin = -1;
+//    for (int i = centers.length; --i >= 0; ) {
+//      if ((d = centers[i].distance(toPt)) >= dmin)
+//        continue;
+//      dmin = d;
+//      imin = i;
+//    }
+//    if (imin < 0)
+//      return false;
+//    getClosestPoint(m, imin, toPt, ptRet, normalRet);
+//    return true;
+//  }
   
-  private void getClosestPoint(IsosurfaceMesh m, int imin, Point3f toPt, Point3f ptRet,
-                               Vector3f normalRet) {
-    Point4f plane = m.getFacePlane(imin, normalRet);
-    float dist = Measure.distanceToPlane(plane, toPt);
-    normalRet.scale(-dist);
-    ptRet.setT(toPt);
-    ptRet.add(normalRet);
-    dist = Measure.distanceToPlane(plane, ptRet);
-    if (m.centers[imin].distance(toPt) < ptRet.distance(toPt))
-      ptRet.setT(m.centers[imin]);
-  }
+//  private void getClosestPoint(IsosurfaceMesh m, int imin, Point3f toPt, Point3f ptRet,
+//                               Vector3f normalRet) {
+//    Point4f plane = m.getFacePlane(imin, normalRet);
+//    float dist = Measure.distanceToPlane(plane, toPt);
+//    normalRet.scale(-dist);
+//    ptRet.setT(toPt);
+//    ptRet.add(normalRet);
+//    dist = Measure.distanceToPlane(plane, ptRet);
+//    if (m.centers[imin].distance(toPt) < ptRet.distance(toPt))
+//      ptRet.setT(m.centers[imin]);
+//  }
 
   /**
    * 

@@ -36,6 +36,7 @@ org/jmol/modelset/*.java
 org/jmol/modelsetbio/*.java
 org/jmol/multitouch/*.java
 org/jmol/multitouch/sparshui/*.java
+org/jmol/navigate/*.java
 org/jmol/popup/*.java
 
 com/sparshui/client/*.java

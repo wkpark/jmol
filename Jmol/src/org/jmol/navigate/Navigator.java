@@ -53,11 +53,47 @@ public final class Navigator implements JmolNavigatorInterface {
     // for Reflection from TransformManage11.java
   }
   
+  public void set(TransformManager tm, Viewer viewer) {
+    this.tm = tm;
+    this.viewer = viewer;
+  }
+
   private TransformManager tm;
   private Viewer viewer;
 
   private int nHits;
   private int multiplier = 1;
+  private float seconds;
+  private Point3f[][] pathGuide;
+  private Point3f[] path;
+  //private float[] theta;
+  private int indexStart;
+  private int indexEnd;
+  private int nSegments;
+  private boolean isPathGuide;
+  private int nPer;
+  private int nSteps;
+  private Point3f[] points;
+  private Point3f[] pointGuides;
+  private int frameTimeMillis;
+  private float floatSecondsTotal;
+  private Vector3f axis;
+  private float degrees;
+  private Point3f center;
+  private float depthPercent;
+  private float xTrans;
+  private float yTrans;
+  private float depthStart;
+  private float depthDelta;
+  private float xTransStart;
+  private float xTransDelta;
+  private float yTransStart;
+  private float yTransDelta;
+  private float degreeStep;
+  private Point3f centerStart;
+  private int totalSteps;
+  private Vector3f aaStepCenter;
+  private long targetTime;
 
 
   public void navigateTo(float floatSecondsTotal, Vector3f axis, float degrees,
@@ -72,55 +108,19 @@ public final class Navigator implements JmolNavigatorInterface {
      * viewer.getOrientation(); o.restore(0, true);
      * o1.restore(floatSecondsTotal, true);
      */
-    if (!viewer.haveDisplay)
-      floatSecondsTotal = 0;
-    Point3f ptMoveToCenter = (center == null ? tm.navigationCenter : center);
-    int fps = 30;
-    int totalSteps = (int) (floatSecondsTotal * fps);
-    if (floatSecondsTotal > 0)
-      viewer.setInMotion(true);
-    if (degrees == 0)
-      degrees = Float.NaN;
+    
+    this.floatSecondsTotal = floatSecondsTotal;
+    this.axis = axis;
+    this.degrees = degrees;
+    this.center = center;
+    this.depthPercent = depthPercent;
+    this.xTrans = xTrans;
+    this.yTrans = yTrans;
+    setupNavTo();
+    targetTime = System.currentTimeMillis();
     if (totalSteps > 1) {
-      int frameTimeMillis = 1000 / fps;
-      long targetTime = System.currentTimeMillis();
-      float depthStart = tm.getNavigationDepthPercent();
-      float depthDelta = depthPercent - depthStart;
-      float xTransStart = tm.navigationOffset.x;
-      float xTransDelta = xTrans - xTransStart;
-      float yTransStart = tm.navigationOffset.y;
-      float yTransDelta = yTrans - yTransStart;
-      float degreeStep = degrees / totalSteps;
-      Vector3f aaStepCenter = new Vector3f();
-      aaStepCenter.setT(ptMoveToCenter);
-      aaStepCenter.sub(tm.navigationCenter);
-      aaStepCenter.scale(1f / totalSteps);
-      Point3f centerStart = Point3f.newP(tm.navigationCenter);
       for (int iStep = 1; iStep < totalSteps; ++iStep) {
-
-        tm.navigating = true;
-        float fStep = iStep / (totalSteps - 1f);
-        if (!Float.isNaN(degrees))
-          tm.navigateAxis(axis, degreeStep);
-        if (center != null) {
-          centerStart.add(aaStepCenter);
-          tm.setNavigatePt(centerStart);
-        }
-        if (!Float.isNaN(xTrans) || !Float.isNaN(yTrans)) {
-          float x = Float.NaN;
-          float y = Float.NaN;
-          if (!Float.isNaN(xTrans))
-            x = xTransStart + xTransDelta * fStep;
-          if (!Float.isNaN(yTrans))
-            y = yTransStart + yTransDelta * fStep;
-          tm.navTranslatePercent(-1, x, y);
-        }
-
-        if (!Float.isNaN(depthPercent)) {
-          setNavigationDepthPercent(depthStart + depthDelta * fStep);
-        }
-        tm.navigating = false;
-        targetTime += frameTimeMillis;
+        doNavStep(iStep);
         if (System.currentTimeMillis() < targetTime) {
           viewer.requestRepaintAndWait();
           if (!viewer.isScriptExecuting())
@@ -153,54 +153,69 @@ public final class Navigator implements JmolNavigatorInterface {
     viewer.setInMotion(false);
   }
 
-  public void set(TransformManager tm, Viewer viewer) {
-    this.tm = tm;
-    this.viewer = viewer;
+  private void doNavStep(int iStep) {
+    tm.navigating = true;
+    float fStep = iStep / (totalSteps - 1f);
+    if (!Float.isNaN(degrees))
+      tm.navigateAxis(this.axis, degreeStep);
+    if (center != null) {
+      centerStart.add(aaStepCenter);
+      tm.setNavigatePt(centerStart);
+    }
+    if (!Float.isNaN(xTrans) || !Float.isNaN(yTrans)) {
+      float x = Float.NaN;
+      float y = Float.NaN;
+      if (!Float.isNaN(xTrans))
+        x = xTransStart + xTransDelta * fStep;
+      if (!Float.isNaN(yTrans))
+        y = yTransStart + yTransDelta * fStep;
+      tm.navTranslatePercent(-1, x, y);
+    }
+
+    if (!Float.isNaN(depthPercent)) {
+      setNavigationDepthPercent(depthStart + depthDelta * fStep);
+    }
+    tm.navigating = false;
+    targetTime += frameTimeMillis;
+ }
+
+  private void setupNavTo() {
+    if (!viewer.haveDisplay)
+      floatSecondsTotal = 0;
+    int fps = 30;
+    totalSteps = (int) (floatSecondsTotal * fps);
+    if (floatSecondsTotal > 0)
+      viewer.setInMotion(true);
+    if (degrees == 0)
+      degrees = Float.NaN;
+    if (totalSteps > 1) {
+      frameTimeMillis = 1000 / fps;
+      depthStart = tm.getNavigationDepthPercent();
+      depthDelta = depthPercent - depthStart;
+      xTransStart = tm.navigationOffset.x;
+      xTransDelta = xTrans - xTransStart;
+      yTransStart = tm.navigationOffset.y;
+      yTransDelta = yTrans - yTransStart;
+      degreeStep = degrees / totalSteps;
+      aaStepCenter = new Vector3f();
+      aaStepCenter.setT(center == null ? tm.navigationCenter : center);
+      aaStepCenter.sub(tm.navigationCenter);
+      aaStepCenter.scale(1f / totalSteps);
+      centerStart = Point3f.newP(tm.navigationCenter);
+    }
   }
 
   public void navigate(float seconds, Point3f[][] pathGuide, Point3f[] path,
                        float[] theta, int indexStart, int indexEnd) {
-    if (seconds <= 0) // PER station
-      seconds = 2;
-    if (!viewer.haveDisplay)
-      seconds = 0;
-    boolean isPathGuide = (pathGuide != null);
-    int nSegments = Math.min(
-        (isPathGuide ? pathGuide.length : path.length) - 1, indexEnd);
-    if (!isPathGuide)
-      while (nSegments > 0 && path[nSegments] == null)
-        nSegments--;
-    nSegments -= indexStart;
-    if (nSegments < 1)
-      return;
-    int nPer = (int) Math.floor(10 * seconds); // ?
-    int nSteps = nSegments * nPer + 1;
-    Point3f[] points = new Point3f[nSteps + 2];
-    Point3f[] pointGuides = new Point3f[isPathGuide ? nSteps + 2 : 0];
-    int iPrev, iNext, iNext2, iNext3, pt;
-    for (int i = 0; i < nSegments; i++) {
-      iPrev = Math.max(i - 1, 0) + indexStart;
-      pt = i + indexStart;
-      iNext = Math.min(i + 1, nSegments) + indexStart;
-      iNext2 = Math.min(i + 2, nSegments) + indexStart;
-      iNext3 = Math.min(i + 3, nSegments) + indexStart;
-      if (isPathGuide) {
-        Hermite.getHermiteList(7, pathGuide[iPrev][0], pathGuide[pt][0],
-            pathGuide[iNext][0], pathGuide[iNext2][0], pathGuide[iNext3][0],
-            points, i * nPer, nPer + 1, true);
-        Hermite.getHermiteList(7, pathGuide[iPrev][1], pathGuide[pt][1],
-            pathGuide[iNext][1], pathGuide[iNext2][1], pathGuide[iNext3][1],
-            pointGuides, i * nPer, nPer + 1, true);
-      } else {
-        Hermite.getHermiteList(7, path[iPrev], path[pt], path[iNext],
-            path[iNext2], path[iNext3], points, i * nPer, nPer + 1, true);
-      }
-    }
-    int totalSteps = nSteps;
-    viewer.setInMotion(true);
-    int frameTimeMillis = (int) (1000 / tm.navFps);
+    this.seconds = seconds;
+    this.pathGuide = pathGuide;
+    this.path = path;
+    //this.theta = theta;
+    this.indexStart = indexStart;
+    this.indexEnd = indexEnd;    
+    setupNav();
     long targetTime = System.currentTimeMillis();
-    for (int iStep = 0; iStep < totalSteps; ++iStep) {
+    for (int iStep = 0; iStep < nSteps; ++iStep) {
       tm.setNavigatePt(points[iStep]);
       if (isPathGuide) {
         alignZX(points[iStep], points[iStep + 1], pointGuides[iStep]);
@@ -222,6 +237,47 @@ public final class Navigator implements JmolNavigatorInterface {
     }
   }
   
+  private void setupNav() {
+    
+    if (seconds <= 0) // PER station
+      seconds = 2;
+    if (!viewer.haveDisplay)
+      seconds = 0;
+    isPathGuide = (pathGuide != null);
+    nSegments = Math.min(
+        (isPathGuide ? pathGuide.length : path.length) - 1, indexEnd);
+    if (!isPathGuide)
+      while (nSegments > 0 && path[nSegments] == null)
+        nSegments--;
+    nSegments -= indexStart;
+    if (nSegments < 1)
+      return;
+    nPer = (int) Math.floor(10 * seconds); // ?
+    nSteps = nSegments * nPer + 1;
+    points = new Point3f[nSteps + 2];
+    pointGuides = new Point3f[isPathGuide ? nSteps + 2 : 0];
+    for (int i = 0; i < nSegments; i++) {
+      int iPrev = Math.max(i - 1, 0) + indexStart;
+      int pt = i + indexStart;
+      int iNext = Math.min(i + 1, nSegments) + indexStart;
+      int iNext2 = Math.min(i + 2, nSegments) + indexStart;
+      int iNext3 = Math.min(i + 3, nSegments) + indexStart;
+      if (isPathGuide) {
+        Hermite.getHermiteList(7, pathGuide[iPrev][0], pathGuide[pt][0],
+            pathGuide[iNext][0], pathGuide[iNext2][0], pathGuide[iNext3][0],
+            points, i * nPer, nPer + 1, true);
+        Hermite.getHermiteList(7, pathGuide[iPrev][1], pathGuide[pt][1],
+            pathGuide[iNext][1], pathGuide[iNext2][1], pathGuide[iNext3][1],
+            pointGuides, i * nPer, nPer + 1, true);
+      } else {
+        Hermite.getHermiteList(7, path[iPrev], path[pt], path[iNext],
+            path[iNext2], path[iNext3], points, i * nPer, nPer + 1, true);
+      }
+    }
+    viewer.setInMotion(true);
+    frameTimeMillis = (int) (1000 / tm.navFps);
+  }
+
   /**
    * brings pt0-pt1 vector to [0 0 -1], then rotates about [0 0 1] until
    * ptVectorWing is in xz plane

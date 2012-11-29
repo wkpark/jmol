@@ -496,7 +496,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       for (int i = meshCount; --i >= 0;)
         if (isomeshes[i].bsVdw != null
             && (bs == null || bs.intersects(isomeshes[i].bsVdw)))
-          deleteMesh(i);
+          deleteMeshI(i);
       currentMesh = thisMesh = null;
       return;
     }

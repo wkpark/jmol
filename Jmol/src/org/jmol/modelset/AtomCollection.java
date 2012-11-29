@@ -1829,10 +1829,8 @@ abstract public class AtomCollection {
     x.normalize();
     z.normalize();
 
-    if (Logger.debugging) {
-      Logger.debug(atom.getInfo() + " nAttached=" + nAttached + " "
-          + hybridization);
-    }
+    //  System.out.println(atom.getInfo() + " nAttached=" + nAttached + " "
+    //      + hybridization);
     return hybridization;
   }
   

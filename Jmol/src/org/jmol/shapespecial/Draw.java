@@ -627,7 +627,7 @@ public void initShape() {
   protected void clean() {
     for (int i = meshCount; --i >= 0;)
       if (meshes[i] == null || meshes[i].vertexCount == 0 && meshes[i].connections == null)
-        deleteMesh(i);
+        deleteMeshI(i);
   }
 
   private void setIntersectData() {

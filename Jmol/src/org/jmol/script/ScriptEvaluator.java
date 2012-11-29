@@ -6663,7 +6663,7 @@ public class ScriptEvaluator {
         }
         float degrees = floatParameter(i);
         if (!isSyntaxCheck)
-          list.add(new Object[] { Integer.valueOf(Token.rotate), Float.valueOf(timeSec), Float.valueOf(degrees)});
+          list.add(new Object[] { Integer.valueOf(Token.rotate), Float.valueOf(timeSec), rotAxis, Float.valueOf(degrees)});
 //          viewer.navigateAxis(timeSec, rotAxis, degrees);
         continue;
       case Token.translate:
@@ -16860,6 +16860,7 @@ public class ScriptEvaluator {
     boolean defaultMesh = false;
     if (isPmesh || isPlot3d)
       addShapeProperty(propertyList, "fileType", "Pmesh");
+    
     for (int i = iToken; i < statementLength; ++i) {
       String propertyName = null;
       Object propertyValue = null;

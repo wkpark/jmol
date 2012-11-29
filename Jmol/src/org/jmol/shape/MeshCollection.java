@@ -474,20 +474,20 @@ public abstract class MeshCollection extends Shape {
   protected void clean() {
     for (int i = meshCount; --i >= 0;)
       if (meshes[i] == null || meshes[i].vertexCount == 0)
-        deleteMesh(i);
+        deleteMeshI(i);
   }
 
   private void deleteMesh() {
     if (explicitID && currentMesh != null)
-      deleteMesh(currentMesh.index);
+      deleteMeshI(currentMesh.index);
     else
-      deleteMesh(explicitID && previousMeshID != null
+      deleteMeshKey(explicitID && previousMeshID != null
           && TextFormat.isWild(previousMeshID) ?  
               previousMeshID : null);
     currentMesh = null;
   }
 
-  protected void deleteMesh(String key) {
+  protected void deleteMeshKey(String key) {
     if (key == null || key.length() == 0) {
       for (int i = meshCount; --i >= 0; )
         meshes[i] = null;
@@ -499,12 +499,12 @@ public abstract class MeshCollection extends Shape {
       key = key.toLowerCase();
       for (int i = meshCount; --i >= 0; ) {
         if (TextFormat.isMatch(meshes[i].thisID.toLowerCase(), key, true, true))
-          deleteMesh(i);
+          deleteMeshI(i);
       }
     }
   }
 
-  public void deleteMesh(int i) {
+  public void deleteMeshI(int i) {
     if (htObjects != null)
       htObjects.remove(meshes[i].thisID.toUpperCase());
     for (int j = i + 1; j < meshCount; ++j)

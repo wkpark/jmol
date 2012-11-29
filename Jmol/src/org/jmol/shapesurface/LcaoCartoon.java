@@ -237,7 +237,7 @@ public class LcaoCartoon extends Isosurface {
 
   private void deleteLcaoCartoon() {
     if (TextFormat.isWild(lcaoID)) {
-      deleteMesh(lcaoID);
+      deleteMeshKey(lcaoID);
       return;
     }
     // older method does not use * but still deletes multiple lobes
@@ -251,7 +251,7 @@ public class LcaoCartoon extends Isosurface {
     String id = getID(lcaoID, iAtom);
     for (int i = meshCount; --i >= 0;)
       if (meshes[i].thisID.indexOf(id) == 0)
-        deleteMesh(i);
+        deleteMeshI(i);
   }
 
   private void createLcaoCartoon() {
@@ -269,7 +269,7 @@ public class LcaoCartoon extends Isosurface {
     boolean isCpk = (thisType.equals("cpk"));
     for (int i = meshCount; --i >= 0;)
       if (meshes[i].thisID.indexOf(id) == 0)
-        deleteMesh(i);
+        deleteMeshI(i);
     super.setProperty("init", null, null);
     super.setProperty("thisID", id, null);
     //System.out.println("lcaocartoon: " + id);

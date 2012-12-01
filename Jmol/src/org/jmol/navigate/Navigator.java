@@ -226,8 +226,11 @@ public final class Navigator extends JmolThread implements
         }
         mode = CHECK2;
         break;
+      case CHECK2:
+        nextList(iList);
+        return;
       case MAIN:
-        if (iStep >= totalSteps) {
+        if (stopped || iStep >= totalSteps) {
           mode = FINISH;
           break;
         }
@@ -243,9 +246,6 @@ public final class Navigator extends JmolThread implements
           return;
         mode = FINISH;
         break;
-      case CHECK2:
-        nextList(iList);
-        return;
       case FINISH:
         if (isNavTo) {
           // if (center != null)
@@ -257,7 +257,7 @@ public final class Navigator extends JmolThread implements
         }
         viewer.setInMotion(false);
         viewer.moveUpdate(floatSecondsTotal);
-        if (++iList < navigationList.size()) {
+        if (!stopped && ++iList < navigationList.size()) {
           mode = CHECK2;
           break;
         }

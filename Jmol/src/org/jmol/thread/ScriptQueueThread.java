@@ -54,7 +54,7 @@ public class ScriptQueueThread extends JmolThread {
       switch (mode) {
       case INIT:
       case MAIN:
-        if (interrupted || scriptManager.scriptQueue.size() == 0) {
+        if (stopped || scriptManager.scriptQueue.size() == 0) {
           mode = FINISH;
           break;
         }

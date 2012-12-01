@@ -64,7 +64,7 @@ public class ScriptDelayThread extends JmolThread {
           viewer.popHoldRepaintWhy("delay INIT");
         //$FALL-THROUGH$
       case MAIN:
-        if (interrupted|| eval.interruptExecution
+        if (stopped|| eval.interruptExecution
         || !isJS && eval.currentThread != Thread.currentThread()) {
           mode = FINISH;
           break;

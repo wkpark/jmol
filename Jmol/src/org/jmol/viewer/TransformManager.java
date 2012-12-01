@@ -2042,6 +2042,8 @@ public class TransformManager {
       setSpin(null, false, 0, null, null, false);
     this.navOn = navOn;
     viewer.getGlobalSettings().setParamB("_navigating", navOn);
+    if (!navOn)
+      navInterrupt();
     if (navOn) {
       if (navX == 0 && navY == 0 && navZ == 0)
         navZ = 1;
@@ -2595,6 +2597,11 @@ public class TransformManager {
 
   private JmolNavigatorInterface nav;
 
+  private void navInterrupt() {
+    if (nav != null)
+      nav.interrupt();
+  }
+  
   private boolean getNav() {
     if (nav != null)
       return true;

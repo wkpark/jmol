@@ -201,6 +201,8 @@ public class ScriptEvaluator {
 
   public static final String SCRIPT_COMPLETED = "Script completed";
 
+  private boolean allowThreads;
+
   public ScriptEvaluator(Viewer viewer) {
     this.viewer = viewer;
     this.compiler = (compiler == null ? viewer.compiler : compiler);
@@ -252,7 +254,8 @@ public class ScriptEvaluator {
                                      boolean isCmdLine_C_Option,
                                      boolean historyDisabled,
                                      boolean listCommands,
-                                     StringXBuilder outputBuffer) {
+                                     StringXBuilder outputBuffer, 
+                                     boolean allowThreads) {
     boolean tempOpen = this.isCmdLine_C_Option;
     this.isCmdLine_C_Option = isCmdLine_C_Option;
     interruptExecution = executionPaused = false;
@@ -263,6 +266,7 @@ public class ScriptEvaluator {
     this.historyDisabled = historyDisabled;
     this.outputBuffer = outputBuffer;
     currentThread = Thread.currentThread();
+    this.allowThreads = allowThreads;
     resumeEval(null, listCommands);
     this.isCmdLine_C_Option = tempOpen;
     viewer.setStateScriptVersion(null); // set by compiler
@@ -6382,8 +6386,10 @@ public class ScriptEvaluator {
     if (isSyntaxCheck)
       return;
     refresh();
+    if (!allowThreads)
+      floatSecondsTotal = 0;
     viewer.move(this, dRot, dZoom, dTrans, dSlab, floatSecondsTotal, fps);
-    if (viewer.isSingleThreaded())
+    if (viewer.isSingleThreaded() && allowThreads)
       throw new ScriptInterruption(this);
   }
 
@@ -6589,9 +6595,11 @@ public class ScriptEvaluator {
       floatSecondsTotal = 0;
     if (floatSecondsTotal > 0)
       refresh();
+    if (!allowThreads)
+        floatSecondsTotal = 0;
     viewer.moveTo(this, floatSecondsTotal, center, axis, degrees, null, zoom,
         xTrans, yTrans, rotationRadius, navCenter, xNav, yNav, navDepth);
-    if (viewer.isSingleThreaded())
+    if (floatSecondsTotal != 0 && viewer.isSingleThreaded())
       throw new ScriptInterruption(this);
   }
 
@@ -7147,6 +7155,8 @@ public class ScriptEvaluator {
             translation);
         ptsB = Measure.transformPoints(ptsA, m4, centerAndPoints[0][0]);
       }
+      if (!allowThreads)
+        doAnimate = false;
       viewer.rotateAboutPointsInternal(this, centerAndPoints[0][0], pt1, endDegrees
           / nSeconds, endDegrees, doAnimate, bsFrom, translation, ptsB);
       if (doAnimate && viewer.isSingleThreaded())
@@ -10419,6 +10429,8 @@ public class ScriptEvaluator {
         // rotate axisangle {0 1 0} 10
         // rotate x 10 (atoms) # point-centered
         // rotate x 10 $object # point-centered
+        if (!allowThreads)
+          isSpin = false;
         viewer.rotateAxisAngleAtCenter(this, points[0], rotAxis, rate, endDegrees,
             isSpin, bsAtoms);
         if (isSpin && viewer.isSingleThreaded())
@@ -10463,6 +10475,8 @@ public class ScriptEvaluator {
     if (bsAtoms != null && !isSpin && ptsB != null) {
       viewer.setAtomCoord(bsAtoms, Token.xyz, ptsB);
     } else {
+      if (!allowThreads)
+        isSpin = false;
       viewer.rotateAboutPointsInternal(this, points[0], points[1], rate, endDegrees,
           isSpin, bsAtoms, translation, ptsB);
       if (isSpin && viewer.isSingleThreaded())
@@ -11268,6 +11282,8 @@ public class ScriptEvaluator {
   }
 
   private void doDelay(long millis) throws ScriptException {
+    if (!allowThreads)
+      return;
     viewer.delayScript(this, millis);
     if (viewer.isSingleThreaded())
       throw new ScriptInterruption(this);

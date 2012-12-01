@@ -50,10 +50,10 @@ public class CommandWatcherThread extends JmolThread {
   @Override
   public void run() {
     Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-    while (!interrupted) {
+    while (!stopped) {
       try {
         Thread.sleep(commandDelay);
-        if (!interrupted) {
+        if (!stopped) {
           scriptManager.runScriptNow();
         }
       } catch (InterruptedException ie) {

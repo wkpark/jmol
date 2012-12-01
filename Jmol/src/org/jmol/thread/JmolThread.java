@@ -31,7 +31,7 @@ abstract public class JmolThread extends Thread {
   protected int sleepTime;
   
   protected boolean isJS;
-  protected boolean interrupted = false;
+  protected boolean stopped = false;
   protected boolean isReset;
 
  
@@ -131,7 +131,7 @@ abstract public class JmolThread extends Thread {
   
   @Override
   public void interrupt() {
-    interrupted = true;
+    stopped = true;
     restartHover();
     if (!isJS)
       super.interrupt();

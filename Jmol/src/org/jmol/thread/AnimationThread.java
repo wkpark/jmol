@@ -52,9 +52,9 @@ public class AnimationThread extends JmolThread {
 
   @Override
   public void interrupt() {
-    if (interrupted)
+    if (stopped)
       return;
-    interrupted = true;
+    stopped = true;
     Logger.debug("animation thread interrupted!");
     try {
       animationManager.setAnimationOn(false);

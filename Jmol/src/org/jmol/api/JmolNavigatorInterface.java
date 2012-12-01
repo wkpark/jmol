@@ -8,7 +8,7 @@ import org.jmol.util.Vector3f;
 import org.jmol.viewer.TransformManager;
 import org.jmol.viewer.Viewer;
 
-public interface JmolNavigatorInterface {
+public interface JmolNavigatorInterface extends Runnable {
 
   void set(TransformManager transformManager, Viewer viewer);
 
@@ -35,6 +35,8 @@ public interface JmolNavigatorInterface {
   String getNavigationState();
 
   void navTranslatePercent(float seconds, float x, float y);
+
+  void interrupt();
 
 
 }

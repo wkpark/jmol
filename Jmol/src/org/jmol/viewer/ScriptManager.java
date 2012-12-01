@@ -33,11 +33,12 @@ import org.jmol.util.TextFormat;
 
 public class ScriptManager {
 
-  Viewer viewer;
-  Thread[] queueThreads = new Thread[2];
-  boolean[] scriptQueueRunning = new boolean[2];
+  private Viewer viewer;
+  private Thread[] queueThreads = new Thread[2];
+  private boolean[] scriptQueueRunning = new boolean[2];
+  private CommandWatcherThread commandWatcherThread;
+
   public List<List<Object>> scriptQueue = new ArrayList<List<Object>>();
-  CommandWatcherThread commandWatcherThread;
 
   ScriptManager(Viewer viewer) {
     this.viewer = viewer;
@@ -108,6 +109,12 @@ public class ScriptManager {
   }
 
   void waitForQueue() {
+    // just can't do this in JavaScript. 
+    // if we are here and it is single-threaded, and there is
+    // a script running, then that's a problem.
+    
+    if (viewer.isSingleThreaded())
+      return;
     int n = 0;
     while (queueThreads[0] != null || queueThreads[1] != null) {
       try {
@@ -115,7 +122,8 @@ public class ScriptManager {
         if (((n++) % 10) == 0)
           if (Logger.debugging) {
             Logger.info("...scriptManager waiting for queue: "
-                + scriptQueue.size() + " thread=" + Thread.currentThread().getName());
+                + scriptQueue.size() + " thread="
+                + Thread.currentThread().getName());
           }
       } catch (InterruptedException e) {
       }
@@ -138,9 +146,9 @@ public class ScriptManager {
     if (scriptQueueRunning[pt])
       return;
     scriptQueueRunning[pt] = true;
-    queueThreads[pt] = new ScriptQueueThread(
-        this, viewer, startedByCommandWatcher, pt);
-      queueThreads[pt].start();
+    queueThreads[pt] = new ScriptQueueThread(this, viewer,
+        startedByCommandWatcher, pt);
+    queueThreads[pt].start();
   }
 
   public List<Object> getScriptItem(boolean watching, boolean isByCommandWatcher) {
@@ -155,7 +163,7 @@ public class ScriptManager {
     return (isOK ? scriptItem : null);
   }
 
-  boolean useCommandWatcherThread = false;
+ private boolean useCommandWatcherThread = false;
 
   synchronized void startCommandWatcher(boolean isStart) {
     useCommandWatcherThread = isStart;
@@ -226,7 +234,6 @@ public class ScriptManager {
     queueThreads[pt].interrupt();
     scriptQueueRunning[pt] = false;
     queueThreads[pt] = null;
-    viewer.queueOnHold = false;
     viewer.setSyncDriver(StatusManager.SYNC_ENABLE);
   }
 

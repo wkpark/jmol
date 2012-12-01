@@ -4715,6 +4715,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // !quit or !halt
     if (isInsert) {
       clearThreads();
+      queueOnHold = false;
     }
     if (isInsert || waitForMoveTo()) {
       stopMotion();
@@ -4730,14 +4731,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   @Override
   public String scriptWait(String strScript) {
-    scriptManager.waitForQueue();
-    boolean doTranslateTemp = GT.getDoTranslate();
-    GT.setDoTranslate(false);
-    String str = (String) evalStringWaitStatusQueued("JSON", strScript,
-        "+scriptStarted,+scriptStatus,+scriptEcho,+scriptTerminated", false,
-        false, false);
-    GT.setDoTranslate(doTranslateTemp);
-    return str;
+    return (String) evalWait("JSON", strScript,
+        "+scriptStarted,+scriptStatus,+scriptEcho,+scriptTerminated", false);
   }
 
   @Override
@@ -4745,24 +4740,30 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // null statusList will return a String 
     //  -- output from PRINT/MESSAGE/ECHO commands or an error message
     // otherwise, specific status messages will be created as a Java object
-    scriptManager.waitForQueue();
-    boolean doTranslateTemp = GT.getDoTranslate();
-    GT.setDoTranslate(false);
-    Object ret = evalStringWaitStatusQueued("object", strScript, statusList, false,
-        false, false);
-    GT.setDoTranslate(doTranslateTemp);
-    return ret;
+    return evalWait("object",strScript,statusList, false);
   }
 
   public Object evalStringWaitStatus(String returnType, String strScript,
                                      String statusList) {
-    scriptManager.waitForQueue();
-    return evalStringWaitStatusQueued(returnType, strScript, statusList, false,
-        false, false);
+    return evalWait(returnType,strScript, statusList,true);
   }
 
-  int scriptIndex;
-  boolean isScriptQueued = true;
+  private Object evalWait(String returnType, String strScript,
+                          String statusList, boolean doTranslate) {
+    //can't do waitForQueue in JavaScript and then wait for the queue:
+    scriptManager.waitForQueue();
+    boolean doTranslateTemp = GT.getDoTranslate();
+    if (!doTranslate)
+      GT.setDoTranslate(false);
+    Object ret = evalStringWaitStatusQueued(returnType, strScript, statusList,
+        false, false, false);
+    if (!doTranslate)
+      GT.setDoTranslate(doTranslateTemp);
+    return ret;
+  }
+
+  private int scriptIndex;
+  private boolean isScriptQueued = true;
 
   public synchronized Object evalStringWaitStatusQueued(String returnType, String strScript,
                                            String statusList,
@@ -4802,7 +4803,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (!isQuiet)
         setScriptStatus(null, strScript, -2 - (++scriptIndex), null);
       eval.evaluateCompiledScript(isSyntaxCheck, isSyntaxAndFileCheck,
-          historyDisabled, listCommands, outputBuffer);
+          historyDisabled, listCommands, outputBuffer, isQueued || !isSingleThreaded());
     } else {
       scriptStatus(strErrorMessage);
       setScriptStatus("Jmol script terminated", strErrorMessage, 1,

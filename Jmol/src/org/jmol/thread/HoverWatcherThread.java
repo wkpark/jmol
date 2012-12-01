@@ -63,7 +63,7 @@ public class HoverWatcherThread extends JmolThread {
         //$FALL-THROUGH$
       case MAIN:
         hoverDelay = viewer.getHoverDelay();
-        if (interrupted || hoverDelay <= 0)
+        if (stopped || hoverDelay <= 0)
           return;
         if (!runSleep(hoverDelay, CHECK1))
           return;
@@ -73,7 +73,7 @@ public class HoverWatcherThread extends JmolThread {
           // last operation was move
           currentTime = System.currentTimeMillis();
           int howLong = (int) (currentTime - moved.time);
-          if (howLong > hoverDelay && !interrupted) {
+          if (howLong > hoverDelay && !stopped) {
             actionManager.checkHover();
           }
         }

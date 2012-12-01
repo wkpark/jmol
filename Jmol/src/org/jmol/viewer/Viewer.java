@@ -4714,8 +4714,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return false;
     // !quit or !halt
     if (isInsert) {
-      transformManager.setSpinOff();
-      stopMinimization();
       clearThreads();
     }
     if (isInsert || waitForMoveTo()) {
@@ -10816,6 +10814,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       scriptDelayThread.interrupt();
       scriptDelayThread = null;
     } 
+    stopMinimization();
     setVibrationOff();
     setSpinOn(null, false);
     setNavOn(false);

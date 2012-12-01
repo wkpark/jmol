@@ -41,7 +41,8 @@ public class AnimationThread extends JmolThread {
   
 
   public AnimationThread(AnimationManager animationManager, Viewer viewer, int framePointer, int framePointer2, int intAnimThread) {
-    super(viewer, "AnimationThread");
+    super();
+    setViewer(viewer, "AnimationThread");
     this.animationManager = animationManager;
     this.framePointer = framePointer;
     this.framePointer2 = framePointer2;

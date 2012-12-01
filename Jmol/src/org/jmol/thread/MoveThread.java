@@ -31,9 +31,7 @@ import org.jmol.viewer.TransformManager;
 import org.jmol.viewer.Viewer;
 
 public class MoveThread extends JmolThread {
-  /**
-   * 
-   */
+
   private final TransformManager transformManager;
   private float floatSecondsTotal;
   private int iStep;
@@ -57,7 +55,8 @@ public class MoveThread extends JmolThread {
    * @param viewer 
    */
   public MoveThread(TransformManager transformManager, Viewer viewer) {
-    super(viewer, "MoveThread");
+    super();
+    setViewer(viewer, "MoveThread");
     this.transformManager = transformManager;
   }
 

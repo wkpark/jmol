@@ -40,33 +40,39 @@ public class ScriptQueueThread extends JmolThread {
   private int pt;
 
   public ScriptQueueThread(ScriptManager scriptManager, Viewer viewer, boolean startedByCommandThread, int pt) {
-    super(viewer, "QueueThread" + pt);
+    super();
+    setViewer(viewer, "QueueThread" + pt);
     this.scriptManager = scriptManager;
     this.viewer = viewer;
     this.startedByCommandThread = startedByCommandThread;
     this.pt = pt;
-    start();
   }
 
   @Override
-  public void run() {
-      while (scriptManager.scriptQueue.size() != 0) {
+  protected void run1(int mode) throws InterruptedException {
+    while (true)
+      switch (mode) {
+      case INIT:
+      case MAIN:
+        if (interrupted || scriptManager.scriptQueue.size() == 0) {
+          mode = FINISH;
+          break;
+        }
         /*  System.out.println("run while size != 0: " + this + " pt=" + this.pt + " size=" + scriptQueue.size());
-         for (int i = 0; i < scriptQueue.size(); i++)
-         System.out.println("queue: " + i + " " + scriptQueue.get(i));
-         System.out.println("running: " + scriptQueueRunning[0] + " "  + queueThreads[0]);
-         System.out.println("running: " + scriptQueueRunning[1] + " "  + queueThreads[1]);
-         */
-        if (!runNextScript())
-          try {
-            Thread.sleep(100); //cycle for the command watcher thread
-          } catch (Exception e) {
-            Logger.error(this + " Exception " + e.getMessage());
-            break; //-- interrupt? 
-          }
+        for (int i = 0; i < scriptQueue.size(); i++)
+        System.out.println("queue: " + i + " " + scriptQueue.get(i));
+        System.out.println("running: " + scriptQueueRunning[0] + " "  + queueThreads[0]);
+        System.out.println("running: " + scriptQueueRunning[1] + " "  + queueThreads[1]);
+        */
+        if (!runNextScript()) {
+          if (!runSleep(100, MAIN))
+            return;
+        }
+        break;
+      case FINISH:
+        scriptManager.queueThreadFinished(pt);
+        return;
       }
-    //System.out.println("scriptquenerunnable " + pt + " done " + this);
-    scriptManager.queueThreadFinished(pt);
   }
 
   private boolean runNextScript() {
@@ -75,7 +81,7 @@ public class ScriptQueueThread extends JmolThread {
     //Logger.info("SCRIPT QUEUE BUSY" +  scriptQueue.size());
     List<Object> scriptItem = scriptManager.getScriptItem(false, startedByCommandThread);
     if (scriptItem == null)
-      return false;
+      return false; 
     String script = (String) scriptItem.get(0);
     String statusList = (String) scriptItem.get(1);
     String returnType = (String) scriptItem.get(2);
@@ -85,7 +91,7 @@ public class ScriptQueueThread extends JmolThread {
       Logger.info("Queue[" + pt + "][" + scriptManager.scriptQueue.size()
           + "] scripts; running: " + script);
     }
-    //System.out.println("removing: " + scriptItem);
+    //System.out.println("removing: " + scriptItem + " " + script);
     scriptManager.scriptQueue.remove(0);
     //System.out.println("removed: " + scriptItem);
     viewer.evalStringWaitStatusQueued(returnType, script, statusList, isScriptFile, isQuiet, true);
@@ -96,19 +102,5 @@ public class ScriptQueueThread extends JmolThread {
     return true;
   }
 
-  @Override
-  protected void run1(int mode) throws InterruptedException {
-    // TODO    
-    switch (mode) {
-    case INIT:
-      return;
-    case MAIN:
-      return;
-    case CHECK1:
-      return;
-    case FINISH:
-      return;
-    }
-  }
 
 }

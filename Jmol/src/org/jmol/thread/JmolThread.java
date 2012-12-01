@@ -35,13 +35,14 @@ abstract public class JmolThread extends Thread {
   protected boolean isReset;
 
  
-  public JmolThread(Viewer viewer, String name) {
-    super(name);
+  public void setViewer(Viewer viewer, String name) {
+    setName(name);
+    this.name = name + "_" + (++threadIndex);
     this.viewer = viewer;
     hoverEnabled = viewer.isHoverEnabled();
     isJS = viewer.isSingleThreaded();
-    this.name = name + "_" + (++threadIndex);    
   }
+  
   abstract protected void run1(int mode) throws InterruptedException;
 
   /**
@@ -60,6 +61,7 @@ abstract public class JmolThread extends Thread {
     eval.scriptLevel--;
     eval.pushContext2(null);
     sc = eval.thisContext;
+    viewer.queueOnHold = true;
   }
 
   public void resumeEval() {
@@ -100,6 +102,7 @@ abstract public class JmolThread extends Thread {
   
   protected void oops(Exception e) {
     System.out.println(name + " exception " + e);
+    viewer.queueOnHold = false;
   }
 
   /**

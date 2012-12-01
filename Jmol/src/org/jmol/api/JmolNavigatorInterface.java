@@ -34,5 +34,7 @@ public interface JmolNavigatorInterface {
 
   String getNavigationState();
 
+  void navTranslatePercent(float seconds, float x, float y);
+
 
 }

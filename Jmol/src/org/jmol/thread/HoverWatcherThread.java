@@ -45,7 +45,8 @@ public class HoverWatcherThread extends JmolThread {
    * @param viewer
    */
   public HoverWatcherThread(ActionManager actionManager, MouseState current, MouseState moved, Viewer viewer) {
-    super(viewer, "HoverWatcher");
+    super();
+    setViewer(viewer, "HoverWatcher");
     this.actionManager = actionManager;
     this.current = current;
     this.moved = moved;

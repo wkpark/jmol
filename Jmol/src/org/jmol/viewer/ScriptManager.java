@@ -62,8 +62,8 @@ public class ScriptManager {
                           boolean isQuiet) {
     /**
      * @j2sNative
-     *  // from ScriptManager.addScript -- just run immediately 
-     *  return this.viewer.evalStringWaitStatus(returnType, strScript, statusList, isScriptFile, isQuiet, true);
+     *  this.useCommandWatcherThread = false; 
+     *  //return this.viewer.evalStringWaitStatus(returnType, strScript, statusList, isScriptFile, isQuiet, true);
      */
     {}
         
@@ -140,9 +140,12 @@ public class ScriptManager {
     scriptQueueRunning[pt] = true;
     queueThreads[pt] = new ScriptQueueThread(
         this, viewer, startedByCommandWatcher, pt);
+      queueThreads[pt].start();
   }
 
   public List<Object> getScriptItem(boolean watching, boolean isByCommandWatcher) {
+    if (viewer.isSingleThreaded() && viewer.queueOnHold)
+      return null;
     List<Object> scriptItem = scriptQueue.get(0);
     int flag = (((Integer) scriptItem.get(5)).intValue());
     boolean isOK = (watching ? flag < 0 
@@ -222,7 +225,8 @@ public class ScriptManager {
   public void queueThreadFinished(int pt) {
     queueThreads[pt].interrupt();
     scriptQueueRunning[pt] = false;
-    queueThreads[pt] = null;      
+    queueThreads[pt] = null;
+    viewer.queueOnHold = false;
     viewer.setSyncDriver(StatusManager.SYNC_ENABLE);
   }
 

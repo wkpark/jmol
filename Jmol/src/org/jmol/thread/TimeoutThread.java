@@ -38,7 +38,8 @@ public class TimeoutThread extends JmolThread {
   private Map<String, Object> timeouts;
   
   public TimeoutThread(Viewer viewer, String name, int ms, String script) {
-    super(viewer, name);
+    super();
+    setViewer(viewer, name);
     this.name = name; // no appended info
     set(ms, script);
   }

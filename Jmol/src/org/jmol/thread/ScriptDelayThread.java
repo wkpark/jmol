@@ -33,7 +33,8 @@ public class ScriptDelayThread extends JmolThread {
   private long millis;
 
   public ScriptDelayThread(ScriptEvaluator eval, Viewer viewer, long millis) {
-    super(viewer, "ScriptDelayThread");
+    super();
+    setViewer(viewer, "ScriptDelayThread");
     this.millis = millis;
     setEval(eval);
   }
@@ -68,7 +69,7 @@ public class ScriptDelayThread extends JmolThread {
           mode = FINISH;
           break;
         }
-        if (!runSleep((seconds--) > 0 ? 1000 : (int) millis, FINISH))
+        if (!runSleep(seconds-- > 0 ? 1000 : (int) millis, FINISH))
           return;
         if (seconds < 0)
           millis = 0;

@@ -33,7 +33,8 @@ public class VibrationThread extends JmolThread {
   private final TransformManager transformManager;
 
   public VibrationThread(TransformManager transformManager, Viewer viewer) {
-    super(viewer, "VibrationThread");
+    super();
+    setViewer(viewer, "VibrationThread");
     this.transformManager = transformManager;
   }
 

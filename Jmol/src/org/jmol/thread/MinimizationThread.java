@@ -34,7 +34,8 @@ public class MinimizationThread extends JmolThread {
   private final MinimizerInterface minimizer;
 
   public MinimizationThread(MinimizerInterface minimizer, Viewer viewer) {
-    super(viewer, "MinimizationThread");
+    super();
+    setViewer(viewer, "MinimizationThread");
     this.minimizer = minimizer;
   }
   

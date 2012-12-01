@@ -56,7 +56,8 @@ public class SpinThread extends JmolThread {
   }
   
   public SpinThread(TransformManager transformManager, Viewer viewer, float endDegrees, List<Point3f> endPositions, BitSet bsAtoms, boolean isNav, boolean isGesture) {
-    super(viewer, "SpinThread");
+    super();
+    setViewer(viewer, "SpinThread");
     this.transformManager = transformManager;
     this.endDegrees = Math.abs(endDegrees);
     this.endPositions = endPositions;

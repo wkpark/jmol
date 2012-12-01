@@ -331,10 +331,6 @@ public class ScriptEvaluator {
         restoreScriptContext(sc, true, false, false);
       }
       instructionDispatchLoop(listCommands, false);
-      // this next is only applicable to the Java multi-threaded environment, not JavaScript
-      String script = viewer.getInterruptScript();
-      if (script != "")
-        runScriptBuffer(script, null);
     } catch (Error er) {
       viewer.handleError(er, false);
       setErrorMessage("" + er + " " + viewer.getShapeErrorState());
@@ -590,6 +586,12 @@ public class ScriptEvaluator {
     // Text.formatText for MESSAGE and ECHO
     // prior to 12.[2/3].32 was not thread-safe for compilation.
     ScriptEvaluator e = new ScriptEvaluator(viewer);
+    try {
+      // disallow end-of-script message and JavaScript script queuing
+      e.pushContext(null);
+    } catch (ScriptException e1) {
+      //ignore
+    }
     return (e.evaluate(expr, asVariable));
   }
   
@@ -623,6 +625,7 @@ public class ScriptEvaluator {
     e.shapeManager = shapeManager;
     try {
       e.restoreScriptContext(context, true, false, false);
+      //e.pushContext(null);
       e.instructionDispatchLoop(false, false);
     } catch (Exception ex) {
       viewer.setStringProperty("_errormessage", "" + ex);
@@ -5224,7 +5227,7 @@ public class ScriptEvaluator {
       while (executionPaused) {
         viewer.popHoldRepaintWhy("pause"); // does not actually do a repaint
         Thread.sleep(100);
-        String script = viewer.getInterruptScript();
+        String script = viewer.getInsertedCommand();
         if (script != "") {
           resumePausedExecution();
           setErrorMessage(null);
@@ -5263,12 +5266,15 @@ public class ScriptEvaluator {
    * of its subsidiary methods.
    * 
    * 
-   * @param doList  debugging flag
-   * @param isSpt TODO
+   * @param doList
+   *        debugging flag
+   * @param isSpt
    * @throws ScriptException
    */
-  private void instructionDispatchLoop(boolean doList, boolean isSpt) throws ScriptException {
+  private void instructionDispatchLoop(boolean doList, boolean isSpt)
+      throws ScriptException {
     long timeBegin = 0;
+    boolean isJS = viewer.isSingleThreaded();
     vProcess = null;
     if (shapeManager == null)
       shapeManager = viewer.getShapeManager();
@@ -5286,9 +5292,39 @@ public class ScriptEvaluator {
       lineEnd = Integer.MAX_VALUE;
     if (aatoken == null)
       return;
+    commandLoop(isJS, doList);
+    if (isSyntaxCheck)
+      return;
+    String script = viewer.getInsertedCommand();
+    if (script != "") {
+      runScriptBuffer(script, null);
+    } else if (isSpt && debugScript && viewer.getMessageStyleChime()) {
+      // specifically for ProteinExplorer
+      viewer.scriptStatus("script <exiting>");
+    }
+    if (!interruptExecution && mustResumeEval) {
+      resumeEval(thisContext, doList);
+      mustResumeEval = false;
+      return;
+    }
+    if ((interruptExecution || thisContext == null) && isJS)
+      viewer.queueOnHold = false;
+  }
+
+  private void commandLoop(boolean isJS, boolean doList) throws ScriptException {
     String lastCommand = "";
     boolean isForCheck = false; // indicates the stage of the for command loop
+    
+    long lastTime = System.currentTimeMillis();
     for (; pc < aatoken.length && pc < pcEnd; pc++) {
+      if (!isSyntaxCheck && isJS) {
+        // every 100-ms check for any sort of interruption
+        if (System.currentTimeMillis() - lastTime > 100) {
+          pc--;
+          doDelay(0);
+        }
+        lastTime = System.currentTimeMillis();
+      }
       if (!isSyntaxCheck && !checkContinue())
         break;
       if (lineNumbers[pc] > lineEnd)
@@ -5308,7 +5344,7 @@ public class ScriptEvaluator {
           viewer.addCommand(lastCommand = cmdLine);
       }
       if (!isSyntaxCheck) {
-        String script = viewer.getInterruptScript();
+        String script = viewer.getInsertedCommand();
         if (script != "")
           runScript(script);
       }
@@ -5321,7 +5357,7 @@ public class ScriptEvaluator {
       fullCommand = thisCommand + getNextComment();
       getToken(0);
       iToken = 0;
-      if ((doList || !isSyntaxCheck && scriptLevel > 0) && !viewer.isSingleThreaded()) {
+      if ((doList || !isSyntaxCheck && scriptLevel > 0) && !isJS) {
         int milliSecDelay = viewer.getScriptDelay();
         if (doList || milliSecDelay > 0) {
           if (milliSecDelay > 0)
@@ -5664,12 +5700,6 @@ public class ScriptEvaluator {
       if (executionStepping) {
         executionPaused = (isCommandDisplayable(pc + 1));
       }
-    }
-    if (isSpt && debugScript && viewer.getMessageStyleChime())
-      viewer.scriptStatus("script <exiting>");
-    if (mustResumeEval) {
-      resumeEval(thisContext, doList);
-      mustResumeEval = false;
     }
   }
 
@@ -6354,7 +6384,7 @@ public class ScriptEvaluator {
     refresh();
     viewer.move(this, dRot, dZoom, dTrans, dSlab, floatSecondsTotal, fps);
     if (viewer.isSingleThreaded())
-      throw new ScriptInterruption(this, viewer, Integer.MAX_VALUE);
+      throw new ScriptInterruption(this);
   }
 
   private void moveto() throws ScriptException {
@@ -6562,7 +6592,7 @@ public class ScriptEvaluator {
     viewer.moveTo(this, floatSecondsTotal, center, axis, degrees, null, zoom,
         xTrans, yTrans, rotationRadius, navCenter, xNav, yNav, navDepth);
     if (viewer.isSingleThreaded())
-      throw new ScriptInterruption(this, viewer, Integer.MAX_VALUE);
+      throw new ScriptInterruption(this);
   }
 
   private void navigate() throws ScriptException {
@@ -7120,7 +7150,7 @@ public class ScriptEvaluator {
       viewer.rotateAboutPointsInternal(this, centerAndPoints[0][0], pt1, endDegrees
           / nSeconds, endDegrees, doAnimate, bsFrom, translation, ptsB);
       if (doAnimate && viewer.isSingleThreaded())
-        throw new ScriptInterruption(this, viewer, Integer.MAX_VALUE);
+        throw new ScriptInterruption(this);
     }
   }
 
@@ -10392,7 +10422,7 @@ public class ScriptEvaluator {
         viewer.rotateAxisAngleAtCenter(this, points[0], rotAxis, rate, endDegrees,
             isSpin, bsAtoms);
         if (isSpin && viewer.isSingleThreaded())
-          throw new ScriptInterruption(this, viewer, Integer.MAX_VALUE);
+          throw new ScriptInterruption(this);
         return;
       }
       if (nPoints == 0)
@@ -10436,7 +10466,7 @@ public class ScriptEvaluator {
       viewer.rotateAboutPointsInternal(this, points[0], points[1], rate, endDegrees,
           isSpin, bsAtoms, translation, ptsB);
       if (isSpin && viewer.isSingleThreaded())
-        throw new ScriptInterruption(this, viewer, Integer.MAX_VALUE);
+        throw new ScriptInterruption(this);
     }
   }
 
@@ -11234,9 +11264,13 @@ public class ScriptEvaluator {
     if (isSyntaxCheck || viewer.isHeadless() || viewer.autoExit)
       return;
     refresh();
-    if (viewer.isSingleThreaded())
-      throw new ScriptInterruption(this, viewer, millis);
+    doDelay(millis);
+  }
+
+  private void doDelay(long millis) throws ScriptException {
     viewer.delayScript(this, millis);
+    if (viewer.isSingleThreaded())
+      throw new ScriptInterruption(this);
   }
 
   private void slab(boolean isDepth) throws ScriptException {

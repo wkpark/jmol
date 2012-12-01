@@ -1847,7 +1847,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       clearScriptQueue();
       clearThreads();
       haltScriptExecution();
-      stopAnimationThreads("setModeMouse NONE");
       scriptManager.clear();
       gdata.destroy();
       if (jmolpopup != null)
@@ -2835,7 +2834,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void zap(boolean notify, boolean resetUndo, boolean zapModelKit) {
-    stopAnimationThreads("zap");
     clearThreads();
     if (modelSet != null) {
       //setBooleanProperty("appendNew", true);
@@ -2895,7 +2893,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   private void initializeModel(boolean isAppend) {
-    stopAnimationThreads("stop from init model");
+    clearThreads();
     if (isAppend) {
       animationManager.initializePointers(1);
       return;
@@ -4579,20 +4577,20 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return scriptManager.addScript(strFilename, true, false);
   }
 
-  String interruptScript = "";
+  private String insertedCommand = "";
 
-  public String getInterruptScript() {
-    String s = interruptScript;
-    interruptScript = "";
+  public String getInsertedCommand() {
+    String s = insertedCommand;
+    insertedCommand = "";
     if (Logger.debugging && s != "")
-      Logger.debug("interrupt: " + s);
+      Logger.debug("inserting: " + s);
     return s;
   }
 
   @Override
   public String script(String strScript) {
     // JmolViewer -- just an alias for evalString
-    return evalString(strScript);
+    return evalStringQuietSync(strScript, false,true);
   }
 
   @Override
@@ -4621,26 +4619,26 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       syncScript(strScript + " #NOSYNC;", null, 0);
     if (eval.isExecutionPaused() && strScript.charAt(0) != '!')
       strScript = '!' + TextFormat.trim(strScript, "\n\r\t ");
-    boolean isInterrupt = (strScript.length() > 0 && strScript.charAt(0) == '!');
-    if (isInterrupt)
+    boolean isInsert = (strScript.length() > 0 && strScript.charAt(0) == '!');
+    if (isInsert)
       strScript = strScript.substring(1);
-    String msg = checkScriptExecution(strScript, isInterrupt);
+    String msg = checkScriptExecution(strScript, isInsert);
     if (msg != null)
       return msg;
-    if (isScriptExecuting() && (isInterrupt || eval.isExecutionPaused())) {
-      interruptScript = strScript;
+    if (isScriptExecuting() && (isInsert || eval.isExecutionPaused())) {
+      insertedCommand = strScript;
       if (strScript.indexOf("moveto ") == 0)
         scriptManager.flushQueue("moveto ");
       return "!" + strScript;
     }
-    interruptScript = "";
+    insertedCommand = "";
     if (isQuiet)
       strScript += JmolConstants.SCRIPT_EDITOR_IGNORE;
     return scriptManager.addScript(strScript, false, isQuiet
         && !getMessageStyleChime());
   }
 
-  private String checkScriptExecution(String strScript, boolean isInterrupt) {
+  private String checkScriptExecution(String strScript, boolean isInsert) {
     String str = strScript;
     if (str.indexOf("\1##") >= 0)
       str = str.substring(0, str.indexOf("\1##"));
@@ -4648,7 +4646,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return "script processing resumed";
     if (checkStepping(str))
       return "script processing stepped";
-    if (checkHalt(str, isInterrupt))
+    if (checkHalt(str, isInsert))
       return "script execution halted";
     return null;
   }
@@ -4689,7 +4687,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   @Override
-  public boolean checkHalt(String str, boolean isInterrupt) {
+  public boolean checkHalt(String str, boolean isInsert) {
     if (str.equalsIgnoreCase("pause")) {
       pauseScriptExecution();
       if (scriptEditorVisible)
@@ -4706,7 +4704,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (str.startsWith("exit")) {
       haltScriptExecution();
       clearScriptQueue();
-      clearTimeout(null);
+      clearTimeouts();
       exitScript = str.equals(haltType = "exit");
     } else if (str.startsWith("quit")) {
       haltScriptExecution();
@@ -4715,15 +4713,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (haltType == null)
       return false;
     // !quit or !halt
-    if (isInterrupt) {
+    if (isInsert) {
       transformManager.setSpinOff();
       stopMinimization();
+      clearThreads();
     }
-    if (isInterrupt || waitForMoveTo()) {
+    if (isInsert || waitForMoveTo()) {
       stopMotion();
     }
     Logger.info(isSyntaxCheck ? haltType
-        + " -- stops script checking" : (isInterrupt ? "!" : "") + haltType
+        + " -- stops script checking" : (isInsert ? "!" : "") + haltType
         + " received");
     isSyntaxCheck = false;
     return exitScript;
@@ -4879,7 +4878,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void haltScriptExecution() {
     eval.haltExecution();
     setStringPropertyTok("pathForAllFiles", Token.pathforallfiles, "");
-    clearTimeout(null);
+    clearTimeouts();
   }
 
   public void resumeScriptExecution() {
@@ -7547,31 +7546,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public boolean getNavigationPeriodic() {
     return global.navigationPeriodic;
   }
-
-  /**
-   * 
-   * @param fromWhere
-   */
-  private void stopAnimationThreads(String fromWhere) {
-    setVibrationOff();
-    setSpinOn(null, false);
-    setNavOn(false);
-    setAnimationOn(false);
-    /*
-     * try { System.out.println(Thread.currentThread() + " from " + fromWhere +
-     * " stopanimatinoThreads -- waiting 1 second"); Thread.sleep(1000); } catch
-     * (InterruptedException e) { // TODO }
-     * System.out.println(Thread.currentThread() +
-     * "Viewer stopAnimationThread NOT canceling rendering"); //
-     * cancelRendering();
-     */
-
-  }
-
-  // void cancelRendering() {
-  // if (haveDisplay)
-  // repaintManager.cancelRendering();
-  // }
 
   private void setNavigationMode(boolean TF) {
     global.navigationMode = TF;
@@ -10842,8 +10816,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       scriptDelayThread.interrupt();
       scriptDelayThread = null;
     } 
+    setVibrationOff();
+    setSpinOn(null, false);
+    setNavOn(false);
+    setAnimationOn(false);
   }
 
-
+  public boolean queueOnHold = false;
 
 }

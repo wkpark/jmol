@@ -40,7 +40,8 @@ public class CommandWatcherThread extends JmolThread {
    * @param scriptManager
    */
   public CommandWatcherThread(Viewer viewer, ScriptManager scriptManager) {
-    super(viewer, "CommmandWatcherThread"); 
+    super();
+    setViewer(viewer, "CommmandWatcherThread"); 
     this.scriptManager = scriptManager;
   }
 

@@ -25,12 +25,8 @@
 
 package org.jmol.script;
 
-import org.jmol.viewer.Viewer;
-
 public class ScriptInterruption extends ScriptException {
-  public ScriptInterruption(ScriptEvaluator eval, Viewer viewer, long millis) {
-    super(eval, (viewer.autoExit ? "Interruption Error" : null), null, viewer.autoExit);
-    if (millis != Integer.MAX_VALUE)
-      viewer.delayScript(eval, millis);
+  public ScriptInterruption(ScriptEvaluator eval) {
+    super(eval, (eval.viewer.autoExit ? "Interruption Error" : null), null, eval.viewer.autoExit);
   }  
 }

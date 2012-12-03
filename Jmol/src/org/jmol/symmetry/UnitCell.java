@@ -326,7 +326,7 @@ class UnitCell extends SimpleUnitCell {
           : 1);
       // types 6 and 7 not supported
 
-      // System.out.println("ortep type " + ortepType + " isFractional=" +
+      //System.out.println("ortep type " + ortepType + " isFractional=" +
       // isFractional + " D = " + dd + " C=" + cc);
       double B11 = parBorU[0] * dd * (isFractional ? a_ * a_ : 1);
       double B22 = parBorU[1] * dd * (isFractional ? b_ * b_ : 1);

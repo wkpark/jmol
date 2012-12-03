@@ -54,7 +54,7 @@ public class RepaintManager implements JmolRepaintInterface {
 
   /////////// thread management ///////////
   
-  private int holdRepaint = 0;
+  public int holdRepaint = 0;
   private boolean repaintPending;
   
   public boolean isRepaintPending() {
@@ -63,17 +63,14 @@ public class RepaintManager implements JmolRepaintInterface {
   
   public void pushHoldRepaint() {
     ++holdRepaint;
-    //System.out.println("repaintManager pushHoldRepaint holdRepaint=" + holdRepaint + " thread=" + Thread.currentThread().getName());
   }
   
   public void popHoldRepaint(boolean andRepaint) {
     --holdRepaint;
-    //System.out.println("repaintManager popHoldRepaint holdRepaint=" + holdRepaint + " thread=" + Thread.currentThread().getName());
     if (holdRepaint <= 0) {
       holdRepaint = 0;
       if (andRepaint) {
         repaintPending = true;
-        //System.out.println("RM popholdrepaint TRUE " + (test++));
         repaintNow();
       }
     }

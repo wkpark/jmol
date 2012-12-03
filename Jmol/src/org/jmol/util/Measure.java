@@ -557,7 +557,7 @@ final public class Measure {
     float[] v = eigen.getEigenvectorsFloatTransposed()[3];
     q = Quaternion.newP4(Point4f.new4(v[1], v[2], v[3], v[0]));
     retStddev[1] = getRmsd(centerAndPoints, q);
-    // System.out.println("Measure" + q.getInfo());
+    //System.out.println("Measure" + q.getInfo());
     return q;
   }
 

@@ -590,7 +590,7 @@ final class LineRenderer {
                                    int shadeIndex, int x, int y, int z, int dx,
                                    int dy, int dz, int run, int rise) {
     // special shading for rockets; somewhat slower than above;
-    // System.out.println("line3d plotLineClippedBits "+x+" "+y+" "+z+" "+dx+" "+dy+" "+dz+" "+shades1);
+    //System.out.println("line3d plotLineClippedBits "+x+" "+y+" "+z+" "+dx+" "+dy+" "+dz+" "+shades1);
     int[] zbuf = g3d.zbuf;
     int width = g3d.width;
     int runIndex = 0;

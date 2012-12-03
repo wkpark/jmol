@@ -62,15 +62,15 @@ class ClientConnection {
       groupID &= ~jmolFlags;
     }
 
-    // System.out.println("[ClientConnection] Has GroupID: " + groupID);
+    //System.out.println("[ClientConnection] Has GroupID: " + groupID);
     Group group = getGroup(groupID);
     if (group != null) {
       // Client claims point
-      // System.out.println("Client claims point");
+      //System.out.println("Client claims point");
       touchPoint.setGroup(group);
       return true;
     }
-    // System.out.println("[ClientConnection] Client did not claim point");
+    //System.out.println("[ClientConnection] Client did not claim point");
     // Client does not claim point
     return false;
   }
@@ -111,7 +111,7 @@ class ClientConnection {
 		} else {
 			// This is a new group, so get its allowed gestures and construct
 
-			// System.out.println("[ClientConnection] Getting Group Gestures ID:
+			//System.out.println("[ClientConnection] Getting Group Gestures ID:
 			// " + groupID);
 		  // gestureID may be a string indicating a user-defined class to load.
 			List<GestureType> gestureTypes = getGestures(groupID);
@@ -119,7 +119,7 @@ class ClientConnection {
 			_groups.put(gid, group);
 		}
 
-		// System.out.println("[ClientConnection] Returning Group");
+		//System.out.println("[ClientConnection] Returning Group");
 		return group;
 	}
 

@@ -86,7 +86,7 @@ class ImageRenderer {
     int n = 0;
     for (int i = 0; i < buffer.length; i++) {
       if ((buffer[i] & 0xFF000000) != 0xFF000000) {
-        // System.out.println("testing " + i + " " + buffer[i]);
+        //System.out.println("testing " + i + " " + buffer[i]);
         n++;
       }
     }

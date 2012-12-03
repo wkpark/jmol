@@ -49,7 +49,8 @@ public class MinimizationThread extends JmolThread {
         if (!this.minimizer.startMinimization())
           return;
         viewer.startHoverWatcher(false);
-        //$FALL-THROUGH$
+        mode = MAIN;
+        break;
       case MAIN:
         if (!minimizer.minimizationOn() || checkInterrupted()) {
           mode = FINISH;
@@ -60,14 +61,15 @@ public class MinimizationThread extends JmolThread {
         int sleepTime = 33 - elapsed;
         if (!runSleep(sleepTime, CHECK1))
           return;
-        //$FALL-THROUGH$
+        mode = CHECK1;
+        break;
       case CHECK1:
         lastRepaintTime = currentTime = System.currentTimeMillis();
         mode = (this.minimizer.stepMinimization() ? MAIN : FINISH);
         break;
       case FINISH:
         this.minimizer.endMinimization();
-        restartHover();
+        viewer.startHoverWatcher(true);
         return;
       }
   }

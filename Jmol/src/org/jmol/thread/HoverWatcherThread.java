@@ -60,14 +60,14 @@ public class HoverWatcherThread extends JmolThread {
       case INIT:
         if (!isJS)
           Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-        //$FALL-THROUGH$
+        mode = MAIN;
+        break;
       case MAIN:
         hoverDelay = viewer.getHoverDelay();
-        if (stopped || hoverDelay <= 0)
+        if (stopped || hoverDelay <= 0 || !runSleep(hoverDelay, CHECK1))
           return;
-        if (!runSleep(hoverDelay, CHECK1))
-          return;
-        //$FALL-THROUGH$
+        mode = CHECK1;
+        break;
       case CHECK1:
         if (moved.is(current)) {
           // last operation was move

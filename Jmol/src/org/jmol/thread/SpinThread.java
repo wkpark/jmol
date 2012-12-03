@@ -88,7 +88,8 @@ public class SpinThread extends JmolThread {
         viewer.getGlobalSettings().setParamB(
             isNav ? "_navigating" : "_spinning", true);
         viewer.startHoverWatcher(false);
-        //$FALL-THROUGH$
+        mode = MAIN;
+        break;
       case MAIN:
         if (isReset || checkInterrupted()) {
           mode = FINISH;
@@ -143,7 +144,8 @@ public class SpinThread extends JmolThread {
         if (refreshNeeded && !isInMotion
             && (transformManager.spinOn || transformManager.navOn))
           doTransform();
-        //$FALL-THROUGH$
+        mode = CHECK1;
+        break;
       case CHECK1: // cycling
         while (!checkInterrupted() && !viewer.getRefreshing())
           if (!runSleep(10, CHECK1))
@@ -169,7 +171,7 @@ public class SpinThread extends JmolThread {
         }
         if (!isReset) {
           transformManager.setSpinOff();
-          restartHover();
+          viewer.startHoverWatcher(true);
         }
         resumeEval();
         return;

@@ -511,7 +511,6 @@ public class TransformManager {
       axis.scale(-1f);
     internalRotationCenter.setT(point1);
     rotationAxis.setT(axis);
-    rotationRate = degreesPerSecond;
     if (translation == null) {
       internalTranslation = null;
     } else {
@@ -524,7 +523,9 @@ public class TransformManager {
       //System.out.println(" ?? " + (spinFps / Math.abs(degreesPerSecond) * Math.abs(endDegrees)));
       int nFrames = (int) (Math.abs(endDegrees) / Math.abs(degreesPerSecond)
           * spinFps + 0.5);
-      if (!Float.isNaN(endDegrees)) {
+      if (Float.isNaN(endDegrees)) {
+        rotationRate = degreesPerSecond;
+      } else {
         rotationRate = degreesPerSecond = endDegrees / nFrames * spinFps;
         //System.out.println("TM nFrames = " + nFrames);
         if (translation != null)
@@ -1699,7 +1700,8 @@ public class TransformManager {
 
     MoveThread motion = new MoveThread(this, viewer);
     motion.set(dRot, dZoom, dTrans, dSlab, floatSecondsTotal, fps);
-    motion.setEval(eval);
+    if (floatSecondsTotal >0)
+      motion.setEval(eval);
     motion.run();
   }
 
@@ -1756,14 +1758,14 @@ public class TransformManager {
         motion = new MoveToThread(this, viewer);
       int nSteps = motion.set(floatSecondsTotal, center, matrixEnd, zoom,
           xTrans, yTrans, newRotationRadius, navCenter, xNav, yNav, navDepth);
-      motion.setEval(eval);
       if (nSteps <= 0 || viewer.waitForMoveTo()) {
+        if (nSteps > 0)
+          motion.setEval(eval);
         motion.run();
-        if (!viewer.isSingleThreaded())
+        if (!viewer.isSingleThreaded)
           motion = null;
       } else {
         motion.start();
-        motion.resumeEval();
       }
     } catch (Exception e) {
       // ignore
@@ -2001,8 +2003,8 @@ public class TransformManager {
 
   private SpinThread spinThread;
 
-  public void setSpinOn(ScriptEvaluator eval) {
-    setSpin(eval, true, Float.MAX_VALUE, null, null, false);
+  public void setSpinOn() {
+    setSpin(null, true, Float.MAX_VALUE, null, null, false);
   }
 
   public void setSpinOff() {
@@ -2023,7 +2025,6 @@ public class TransformManager {
         spinThread.setEval(eval);
         if (bsAtoms == null) {
           spinThread.start();
-          spinThread.resumeEval(); // in case we are here after an ScriptInterruptException
         } else {
           spinThread.run();
         }
@@ -2354,7 +2355,7 @@ public class TransformManager {
     // model center offset for zoom 100
     float offset100 = (2 * modelRadius) / visualRange * referencePlaneOffset; // (s)
 
-    // System.out.println("sppA " + scalePixelsPerAngstrom + " pD " +
+    //System.out.println("sppA " + scalePixelsPerAngstrom + " pD " +
     // perspectiveDepth
     // + " spC " + screenPixelCount + " vR " + visualRange
     // + " sDPPA " + scaleDefaultPixelsPerAngstrom);
@@ -2374,11 +2375,11 @@ public class TransformManager {
       scalePixelsPerAngstrom *= (modelCenterOffset / offset100) * zoomPercent
           / 100; // (s/m)
 
-    // System.out.println("sppA revised:" + scalePixelsPerAngstrom);
+    //System.out.println("sppA revised:" + scalePixelsPerAngstrom);
     // so that's sppa = (spc / vR) * rPO * (vR / 2) / mR * rPO = spc/2/mR
 
     modelRadiusPixels = modelRadius * scalePixelsPerAngstrom; // (s)
-    // System.out.println("transformman scalppa modelrad " +
+    //System.out.println("transformman scalppa modelrad " +
     // scalePixelsPerAngstrom + " " + modelRadiusPixels + " " + visualRange);
   }
 

@@ -229,9 +229,9 @@ public class MarchingSquares {
     }
 
     protected void checkContour(int i, float value) {
-     // System.out.println(" ms  i=" + i + " " + contourVertexes[pts[0]].value + " " + contourVertexes[pts[1]].value + " " + contourVertexes[pts[2]].value + " " + value);
-     // System.out.println(pts[0] + " " + pts[1] + " " + pts[2]);
-     // System.out.println(contourVertexes[pts[0]] + "\n" + contourVertexes[pts[1]] + "\n" + contourVertexes[pts[2]]);
+     //System.out.println(" ms  i=" + i + " " + contourVertexes[pts[0]].value + " " + contourVertexes[pts[1]].value + " " + contourVertexes[pts[2]].value + " " + value);
+     //System.out.println(pts[0] + " " + pts[1] + " " + pts[2]);
+     //System.out.println(contourVertexes[pts[0]] + "\n" + contourVertexes[pts[1]] + "\n" + contourVertexes[pts[2]]);
       int ipt0 = intercept(0, value);
       int ipt1 = intercept(1, value);
       int ipt2 = intercept(2, value);

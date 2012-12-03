@@ -67,7 +67,7 @@ public class Frank extends FontShape {
   public boolean checkObjectHovered(int x, int y, BitSet bsVisible) {
     if (!viewer.getShowFrank() || !wasClicked(x, y) || !viewer.menuEnabled())
       return false;
-    if (gdata.isDisplayAntialiased() && !viewer.isSingleThreaded()) {
+    if (gdata.isDisplayAntialiased() && !viewer.isSingleThreaded) {
       //because hover rendering is done in FIRST pass only
       x <<= 1;
       y <<= 1;

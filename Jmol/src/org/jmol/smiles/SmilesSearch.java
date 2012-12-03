@@ -1717,7 +1717,7 @@ public class SmilesSearch extends JmolMolecule {
     Arrays.sort(map);
     for (int i = 0; i < map.length; i++) {
       map[i] = map[i] % 10;
-      // System.out.println("i=" + i + "; map[i]=" + map[i] + " a=" +
+      //System.out.println("i=" + i + "; map[i]=" + map[i] + " a=" +
       // cAtoms[map[i]].getIndex());
     }
     return map;

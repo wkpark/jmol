@@ -30,14 +30,15 @@ import org.jmol.util.Logger;
 public class ScriptException extends Exception {
 
   protected final ScriptEvaluator eval;
-  private String message;
+  protected String message;
   private String untranslated;
 
   ScriptException(ScriptEvaluator scriptEvaluator, String msg, String untranslated, boolean isError) {
     eval = scriptEvaluator;
-    if (!isError)
+    message = msg;
+    if (!isError) // ScriptInterruption
       return;
-    eval.errorType = message = msg;
+    eval.errorType = msg;
     eval.iCommandError = eval.pc;
     this.untranslated = (untranslated == null ? msg : untranslated);
     if (message == null) {

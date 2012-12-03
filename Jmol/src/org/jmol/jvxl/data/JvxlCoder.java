@@ -894,7 +894,7 @@ public class JvxlCoder {
       return 0f;
     if (fraction > 1f)
       return 0.999999f;
-    // System.out.println("ffc: " + fraction + " <-- " + ich + " " + (char)
+    //System.out.println("ffc: " + fraction + " <-- " + ich + " " + (char)
     // ich);
     return fraction;
   }

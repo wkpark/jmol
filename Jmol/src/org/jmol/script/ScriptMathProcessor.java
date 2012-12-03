@@ -147,7 +147,7 @@ class ScriptMathProcessor {
   }
 
   private void putX(ScriptVariable x) {
-    // System.out.println("putX skipping : " + skipping + " " + x);
+    //System.out.println("putX skipping : " + skipping + " " + x);
     if (skipping)
       return;
     if (++xPt == xStack.length)
@@ -542,12 +542,12 @@ class ScriptMathProcessor {
 
     switch (op.tok) {
     case Token.leftparen:
-      // System.out.println("----------(----------");
+      //System.out.println("----------(----------");
       parenCount++;
       wasX = false;
       break;
     case Token.opIf:
-      // System.out.println("---------IF---------");
+      //System.out.println("---------IF---------");
       boolean isFirst = getX().asBoolean();
       if (tok0 == Token.colon)
         ifPt--;
@@ -559,7 +559,7 @@ class ScriptMathProcessor {
       // dumpStacks("(.." + isFirst + "...?<--here ... :...skip...) ");
       return true;
     case Token.colon:
-      // System.out.println("----------:----------");
+      //System.out.println("----------:----------");
       if (tok0 != Token.colon)
         return false;
       if (ifPt < 0)
@@ -570,7 +570,7 @@ class ScriptMathProcessor {
       // dumpStacks("(..True...? ... :<--here ...skip...) ");
       return true;
     case Token.rightparen:
-      // System.out.println("----------)----------");
+      //System.out.println("----------)----------");
       wasX = true;
       if (parenCount-- <= 0)
         return false;

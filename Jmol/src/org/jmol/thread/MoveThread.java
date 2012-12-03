@@ -93,9 +93,10 @@ public class MoveThread extends JmolThread {
       case INIT:
         if (floatSecondsTotal > 0)
           viewer.setInMotion(true);
-        //$FALL-THROUGH$
+        mode = MAIN;
+        break;
       case MAIN:
-        if (++iStep >= totalSteps) {
+        if (stopped || ++iStep >= totalSteps) {
           mode = FINISH;
           break;
         }
@@ -119,17 +120,19 @@ public class MoveThread extends JmolThread {
         int timeAllowed = iStep * timePerStep;
         if (timeSpent < timeAllowed) {
           viewer.requestRepaintAndWait();
-          if (!viewer.isScriptExecuting())
+          if (!isJS && !viewer.isScriptExecuting()) {
+            mode = FINISH;
             break;
+          }
           timeSpent = (int) (System.currentTimeMillis() - startTime);
           sleepTime = timeAllowed - timeSpent;
           if (!runSleep(sleepTime, MAIN))
             return;
         }
-        mode = MAIN;
         break;
       case FINISH:
-        viewer.setInMotion(false);
+        if (floatSecondsTotal > 0)
+          viewer.setInMotion(false);
         resumeEval();
         return;
       }

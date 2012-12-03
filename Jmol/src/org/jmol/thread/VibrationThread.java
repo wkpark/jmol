@@ -46,13 +46,15 @@ public class VibrationThread extends JmolThread {
       case INIT:
         lastRepaintTime = startTime = System.currentTimeMillis();
         viewer.startHoverWatcher(false);
-        //$FALL-THROUGH$
+        mode = MAIN;
+        break;
       case MAIN:
         elapsed = (int) (System.currentTimeMillis() - lastRepaintTime);
         sleepTime = 33 - elapsed;
         if (!runSleep(sleepTime, CHECK1))
           return;
-        //$FALL-THROUGH$
+        mode = CHECK1;
+        break;
       case CHECK1:
         lastRepaintTime = System.currentTimeMillis();
         elapsed = (int) (lastRepaintTime - startTime);
@@ -63,7 +65,7 @@ public class VibrationThread extends JmolThread {
         mode = (checkInterrupted() ? FINISH : MAIN);
         break;
       case FINISH:
-        restartHover();
+        viewer.startHoverWatcher(true);
         return;
       }
   }

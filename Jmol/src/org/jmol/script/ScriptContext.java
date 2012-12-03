@@ -67,6 +67,8 @@ public class ScriptContext {
   public ScriptContext parentContext;
   public ContextToken token;
   public boolean mustResumeEval;
+  public boolean isJSThread;
+  public boolean allowJSThreads;
 
   ScriptContext() {
   }
@@ -80,4 +82,5 @@ public class ScriptContext {
       parentContext.getContextTrace(sb, false);
     return sb;
   }
+
 }

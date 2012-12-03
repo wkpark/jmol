@@ -113,7 +113,7 @@ public class ScriptManager {
     // if we are here and it is single-threaded, and there is
     // a script running, then that's a problem.
     
-    if (viewer.isSingleThreaded())
+    if (viewer.isSingleThreaded)
       return;
     int n = 0;
     while (queueThreads[0] != null || queueThreads[1] != null) {
@@ -152,7 +152,7 @@ public class ScriptManager {
   }
 
   public List<Object> getScriptItem(boolean watching, boolean isByCommandWatcher) {
-    if (viewer.isSingleThreaded() && viewer.queueOnHold)
+    if (viewer.isSingleThreaded && viewer.queueOnHold)
       return null;
     List<Object> scriptItem = scriptQueue.get(0);
     int flag = (((Integer) scriptItem.get(5)).intValue());

@@ -149,89 +149,84 @@ public class Jmol implements JmolSyncInterface {
     mayScript = true;
   }
 
-	private void initApplication() {
-		viewer.pushHoldRepaint();
-		{
-			String emulate = getValueLowerCase("emulate", "jmol");
-			setStringProperty("defaults", emulate.equals("chime") ? "RasMol" : "Jmol");
-			setStringProperty("backgroundColor", getValue("bgcolor", getValue(
-					"boxbgcolor", "black")));
+  private void initApplication() {
+    viewer.pushHoldRepaint();
+    String emulate = getValueLowerCase("emulate", "jmol");
+    setStringProperty("defaults", emulate.equals("chime") ? "RasMol" : "Jmol");
+    setStringProperty("backgroundColor", getValue("bgcolor", getValue(
+        "boxbgcolor", "black")));
 
-			//viewer.setBooleanProperty("frank", true);
-			loading = true;
-			for (EnumCallback item : EnumCallback.values()) {
-				setValue(item.name() + "Callback", null);
-			}
-			loading = false;
-/*
-			language = getParameter("language");
-			if (language != null) {
-				System.out.print("requested language=" + language + "; ");
-				new GT(language);
-			}
-			doTranslate = (!"none".equals(language) && getBooleanValue("doTranslate",
-					true));
-*/
-			language = GT.getLanguage();
-			System.out.println("language=" + language);
+    //viewer.setBooleanProperty("frank", true);
+    loading = true;
+    for (EnumCallback item : EnumCallback.values()) {
+      setValue(item.name() + "Callback", null);
+    }
+    loading = false;
+    /*
+    			language = getParameter("language");
+    			if (language != null) {
+    				System.out.print("requested language=" + language + "; ");
+    				new GT(language);
+    			}
+    			doTranslate = (!"none".equals(language) && getBooleanValue("doTranslate",
+    					true));
+    */
+    language = GT.getLanguage();
+    System.out.println("language=" + language);
 
-			//boolean haveCallback = false;
-			// these are set by viewer.setStringProperty() from setValue
-			//for (EnumCallback item : EnumCallback.values()) {
-			//	if (callbacks.get(item) != null) {
-			//		haveCallback = true;
-			//		break;
-			//	}
-			//}
-			//if (haveCallback || statusForm != null || statusText != null) {
-			//	if (!mayScript)
-			//		Logger
-			//				.warn("MAYSCRIPT missing -- all applet JavaScript calls disabled");
-			//}
-			//if (callbacks.get(EnumCallback.SCRIPT) == null
-			//		&& callbacks.get(EnumCallback.ERROR) == null)
-			//	if (callbacks.get(EnumCallback.MESSAGE) != null /* || statusForm != null
-			//			|| statusText != null */) {
-			//		if (doTranslate && (getValue("doTranslate", null) == null)) {
-			//			doTranslate = false;
-			//			Logger
-			//					.warn("Note -- Presence of message callback disables translation;"
-			//							+ " to enable message translation use jmolSetTranslation(true) prior to jmolApplet()");
-			//		}
-			//		if (doTranslate)
-			//			Logger
-			//					.warn("Note -- Automatic language translation may affect parsing of message callbacks"
-			//							+ " messages; use scriptCallback or errorCallback to process errors");
-			//	}
+    //boolean haveCallback = false;
+    // these are set by viewer.setStringProperty() from setValue
+    //for (EnumCallback item : EnumCallback.values()) {
+    //	if (callbacks.get(item) != null) {
+    //		haveCallback = true;
+    //		break;
+    //	}
+    //}
+    //if (haveCallback || statusForm != null || statusText != null) {
+    //	if (!mayScript)
+    //		Logger
+    //				.warn("MAYSCRIPT missing -- all applet JavaScript calls disabled");
+    //}
+    //if (callbacks.get(EnumCallback.SCRIPT) == null
+    //		&& callbacks.get(EnumCallback.ERROR) == null)
+    //	if (callbacks.get(EnumCallback.MESSAGE) != null /* || statusForm != null
+    //			|| statusText != null */) {
+    //		if (doTranslate && (getValue("doTranslate", null) == null)) {
+    //			doTranslate = false;
+    //			Logger
+    //					.warn("Note -- Presence of message callback disables translation;"
+    //							+ " to enable message translation use jmolSetTranslation(true) prior to jmolApplet()");
+    //		}
+    //		if (doTranslate)
+    //			Logger
+    //					.warn("Note -- Automatic language translation may affect parsing of message callbacks"
+    //							+ " messages; use scriptCallback or errorCallback to process errors");
+    //	}
 
-			//if (!doTranslate) {
-			//	GT.setDoTranslate(false);
-			//	Logger.warn("Note -- language translation disabled");
-			//}
+    //if (!doTranslate) {
+    //	GT.setDoTranslate(false);
+    //	Logger.warn("Note -- language translation disabled");
+    //}
 
-			//statusForm = getValue("StatusForm", null);
-			//statusText = getValue("StatusText", null); // text
-			//statusTextarea = getValue("StatusTextarea", null); // textarea
+    //statusForm = getValue("StatusForm", null);
+    //statusText = getValue("StatusText", null); // text
+    //statusTextarea = getValue("StatusTextarea", null); // textarea
 
-			//if (statusForm != null && statusText != null) {
-			//	Logger.info("applet text status will be reported to document."
-			//			+ statusForm + "." + statusText);
-			//}
+    //if (statusForm != null && statusText != null) {
+    //	Logger.info("applet text status will be reported to document."
+    //			+ statusForm + "." + statusText);
+    //}
 
-			// should the popupMenu be loaded ?
-			//if (!getBooleanValue("popupMenu", true))
-			//	viewer.getProperty("DATA_API", "disablePopupMenu", null);
+    // should the popupMenu be loaded ?
+    //if (!getBooleanValue("popupMenu", true))
+    //	viewer.getProperty("DATA_API", "disablePopupMenu", null);
 
-			String scriptParam = getValue("script", "");
-			if (scriptParam.length() > 0)
-				scriptProcessor(scriptParam, null, SCRIPT_WAIT);
-			jmolReady();
-		}
-
-		// file dropping for the signed applet
-
-		viewer.popHoldRepaint();
-	}
+    String scriptParam = getValue("script", "");
+    viewer.popHoldRepaint();
+    if (scriptParam.length() > 0)
+      scriptProcessor(scriptParam, null, SCRIPT_WAIT);
+    jmolReady();
+  }
 
   private void setLogging() {
     int iLevel = (getValue("logLevel", (getBooleanValue("debug", false) ? "5"
@@ -756,7 +751,7 @@ public class Jmol implements JmolSyncInterface {
       }
      // for (int i = 0; i < nX; i++)
        // for (int j = 0; j < nY; j++)
-         // System.out.println("i j fxy " + i + " " + j + " " + fxy[i][j]);
+         //System.out.println("i j fxy " + i + " " + j + " " + fxy[i][j]);
       return fxy;
     }
 
@@ -780,7 +775,7 @@ public class Jmol implements JmolSyncInterface {
      // for (int i = 0; i < nX; i++)
       // for (int j = 0; j < nY; j++)
         // for (int k = 0; k < nZ; k++)
-         // System.out.println("i j k fxyz " + i + " " + j + " " + k + " " + fxyz[i][j][k]);
+         //System.out.println("i j k fxyz " + i + " " + j + " " + k + " " + fxyz[i][j][k]);
       return fxyz;
     }
 

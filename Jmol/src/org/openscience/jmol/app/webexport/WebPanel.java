@@ -959,10 +959,10 @@ class ArrayListTransferHandler extends TransferHandler {
       // FROM:");
       // for (int i = 0; i < sourceIndices.length;i++)
       // System.out.print(" "+sourceIndices[i]);
-      // System.out.println("");
+      //System.out.println("");
       if (targetIndex >= sourceIndices[0]
           && targetIndex <= sourceIndices[sourceIndices.length - 1]) {
-        // System.out.println("setting indices null : " + targetIndex + " " +
+        //System.out.println("setting indices null : " + targetIndex + " " +
         // sourceIndices[0] + " " + sourceIndices[sourceIndices.length - 1]);
         sourceIndices = null;
         return true;
@@ -1002,7 +1002,7 @@ class ArrayListTransferHandler extends TransferHandler {
 
   @Override
   protected void exportDone(JComponent c, Transferable data, int action) {
-    // System.out.println("action="+action + " " + addCount + " " +
+    //System.out.println("action="+action + " " + addCount + " " +
     // sourceIndices);
     if ((action == MOVE) && (sourceIndices != null)) {
       DefaultListModel model = (DefaultListModel) source.getModel();

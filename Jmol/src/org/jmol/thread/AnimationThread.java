@@ -74,7 +74,8 @@ public class AnimationThread extends JmolThread {
         viewer.requestRepaintAndWait();
         viewer.startHoverWatcher(false);
         isFirst = true;
-        //$FALL-THROUGH$
+        mode = MAIN;
+        break;
       case MAIN:
         if (checkInterrupted() || !animationManager.animationOn) {
           mode = FINISH;
@@ -86,7 +87,8 @@ public class AnimationThread extends JmolThread {
           if (!runSleep(sleepTime, CHECK1))
             return;
         }
-        //$FALL-THROUGH$
+        mode = CHECK1;
+        break;
       case CHECK1:
         if (animationManager.currentModelIndex == framePointer2) {
           targetTime += animationManager.lastFrameDelayMs;
@@ -94,7 +96,8 @@ public class AnimationThread extends JmolThread {
           if (!runSleep(sleepTime, CHECK2))
             return;
         }
-        //$FALL-THROUGH$
+        mode = CHECK2;
+        break;
       case CHECK2:
         if (!isFirst
             && animationManager.lastModelPainted == animationManager.currentModelIndex
@@ -105,11 +108,11 @@ public class AnimationThread extends JmolThread {
         isFirst = false;
         targetTime += (int) ((1000f / animationManager.animationFps) + viewer
             .getFrameDelayMs(animationManager.currentModelIndex));
-        //$FALL-THROUGH$
+        mode = CHECK3;
+        break;
       case CHECK3:
         while (animationManager.animationOn && !checkInterrupted()
             && !viewer.getRefreshing()) {
-          System.out.println("check3 in animationThread " + viewer.getRefreshing());
           if (!runSleep(10, CHECK3))
             return;
         }

@@ -30,9 +30,16 @@ import org.jmol.viewer.Viewer;
 
 public class ScriptDelayThread extends JmolThread {
 
-  private long millis;
+  public static final int PAUSE_DELAY = -100;
+  private int millis;
 
-  public ScriptDelayThread(ScriptEvaluator eval, Viewer viewer, long millis) {
+  /**
+   * 
+   * @param eval
+   * @param viewer
+   * @param millis    negative to bypass pop/hold sequence
+   */
+  public ScriptDelayThread(ScriptEvaluator eval, Viewer viewer, int millis) {
     super();
     setViewer(viewer, "ScriptDelayThread");
     this.millis = millis;
@@ -40,6 +47,8 @@ public class ScriptDelayThread extends JmolThread {
   }
 
   private int seconds;
+  private boolean doPopPush;
+  private boolean isPauseDelay;
   
   @Override
   protected void run1(int mode) throws InterruptedException {
@@ -47,7 +56,9 @@ public class ScriptDelayThread extends JmolThread {
       switch (mode) {
       case INIT:
         int delayMax;
-        if (millis < 0)
+        doPopPush = (millis > 0);
+        isPauseDelay = (millis == PAUSE_DELAY);
+        if (!doPopPush)
           millis = -millis;
         else if ((delayMax = viewer.getDelayMaximum()) > 0 && millis > delayMax)
           millis = delayMax;
@@ -55,17 +66,18 @@ public class ScriptDelayThread extends JmolThread {
         if (isJS) {
           seconds = 0;
         } else {
-          seconds = (int) millis / 1000;
+          seconds =  millis / 1000;
           millis -= seconds * 1000;
           if (millis <= 0)
             millis = 1;
         }
-        if (!isJS)
+        if (doPopPush)
           viewer.popHoldRepaintWhy("delay INIT");
-        //$FALL-THROUGH$
+        mode = MAIN;
+        break;
       case MAIN:
-        if (stopped|| eval.interruptExecution
-        || !isJS && eval.currentThread != Thread.currentThread()) {
+        if (stopped || eval.executionStopped || !isJS
+            && eval.currentThread != Thread.currentThread()) {
           mode = FINISH;
           break;
         }
@@ -76,8 +88,10 @@ public class ScriptDelayThread extends JmolThread {
         mode = (seconds > 0 || millis > 0 ? MAIN : FINISH);
         break;
       case FINISH:
-        if (!isJS)
+        if (doPopPush)
           viewer.pushHoldRepaintWhy("delay FINISH");
+        if (isPauseDelay)
+          eval.notifyResumeStatus();
         resumeEval();
         return;
       }

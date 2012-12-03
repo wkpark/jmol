@@ -221,7 +221,7 @@ sym: A1                 1 1s            2 1s            3 1s            4 1s    
       orbitals.get(i).put("occupancy", Float.valueOf(occupancy));
     }
     sortOrbitals();
-    // System.out.println(Escape.escape(list, false));
+    //System.out.println(Escape.escape(list, false));
     setSlaters(true, true);
     setMOs("eV");
   }

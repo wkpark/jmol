@@ -129,6 +129,6 @@ public class ScriptParallelProcessor extends ScriptFunction {
   }
 
   public void eval(ScriptContext context, ShapeManager shapeManager) {
-    viewer.eval(context, shapeManager);
+    viewer.evalContext(context, shapeManager);
   }
 }

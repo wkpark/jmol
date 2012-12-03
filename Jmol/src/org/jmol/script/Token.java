@@ -2464,42 +2464,5 @@ public class Token {
       return nada;
     return tok & paramTypes;
   }
-/*
-  static {
-    Point3f a1 = Point3f.new3(1,0,0);
-    Point3f a2 = Point3f.new3(0,1,0);
-    Point3f a3 = Point3f.new3(0,0,1);
-    Point3f b1 = Point3f.new3(0.25f, 0.25f, 0.25f);
-    Vector3f vNorm = new Vector3f();
-    Vector3f vTemp = new Vector3f();
-    Vector3f vTemp2 = new Vector3f();
-    Vector3f vTemp3 = new Vector3f();
-    Point4f pTemp = new Point4f();
-    Point4f plane = new Point4f();
-    Point3f ptTemp = new Point3f();
-    Point3f ptRet = new Point3f();
-
-    
-    Point3f b2 = Point3f.new3(1,-0.9f,-3);
-
-    
-    
-    Measure.getPlaneThroughPoints(a1, a2, a3, vNorm, vTemp, vTemp2, plane);
-    
-    String color = "red";
-    if (Measure.getTriangleIntersection(b1, b2, a1, a2, a3, vTemp, plane, vNorm, vTemp2, 
-        vTemp3, ptRet, ptTemp, pTemp)) {
-      System.out.println("testing Measure SUCCESS " + ptRet);
-      color = "white";
-    }
-    System.out.println("draw a1 {1 0 0};draw l1 {1 0 0} {0 1 0};draw a3 {0 0 1};draw l2 {0 0 1} {0 1 0}; draw a2 {0 1 0}; draw l3 {0 0 1} {1 0 0}; " 
-        + "draw b1 " + Escape.escape(b1) 
-        + " " + Escape.escape(b2) + " color blue;" 
-        + "draw pt " + Escape.escape(ptRet) + " color " + color + "; print angle(point" + b1 + ", point" + ptRet + ", point" + b2 + ")"); 
-    System.out.println("testing Measure " + ptRet);
-    
-  }
-*/
-
 
 }

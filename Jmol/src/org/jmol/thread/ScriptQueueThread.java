@@ -53,6 +53,8 @@ public class ScriptQueueThread extends JmolThread {
     while (true)
       switch (mode) {
       case INIT:
+        mode = MAIN;
+        break;
       case MAIN:
         if (stopped || scriptManager.scriptQueue.size() == 0) {
           mode = FINISH;
@@ -64,10 +66,8 @@ public class ScriptQueueThread extends JmolThread {
         System.out.println("running: " + scriptQueueRunning[0] + " "  + queueThreads[0]);
         System.out.println("running: " + scriptQueueRunning[1] + " "  + queueThreads[1]);
         */
-        if (!runNextScript()) {
-          if (!runSleep(100, MAIN))
-            return;
-        }
+        if (!runNextScript() && !runSleep(100, MAIN))
+          return;
         break;
       case FINISH:
         scriptManager.queueThreadFinished(pt);

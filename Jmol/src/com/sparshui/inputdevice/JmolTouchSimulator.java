@@ -205,7 +205,7 @@ public class JmolTouchSimulator implements JmolTouchSimulatorInterface {
       _out.writeLong(data.when);
       //boolean doConsume = (_in.readByte() == 1);
       //if (Logger.debugging)
-       // System.out.println("[JmolTouchSimulator] doConsume=" + doConsume);
+       //System.out.println("[JmolTouchSimulator] doConsume=" + doConsume);
     } catch (IOException e1) {
       System.err.println("Failed to send event to server.");
     }

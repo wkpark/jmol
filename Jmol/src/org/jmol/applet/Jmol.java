@@ -1203,7 +1203,7 @@ public class Jmol implements WrappedApplet {
       }
      // for (int i = 0; i < nX; i++)
        // for (int j = 0; j < nY; j++)
-         // System.out.println("i j fxy " + i + " " + j + " " + fxy[i][j]);
+         //System.out.println("i j fxy " + i + " " + j + " " + fxy[i][j]);
       return fxy;
     }
 
@@ -1222,7 +1222,7 @@ public class Jmol implements WrappedApplet {
      // for (int i = 0; i < nX; i++)
       // for (int j = 0; j < nY; j++)
         // for (int k = 0; k < nZ; k++)
-         // System.out.println("i j k fxyz " + i + " " + j + " " + k + " " + fxyz[i][j][k]);
+         //System.out.println("i j k fxyz " + i + " " + j + " " + k + " " + fxyz[i][j][k]);
       return fxyz;
     }
 

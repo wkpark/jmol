@@ -162,9 +162,10 @@ public class MoveToThread extends JmolThread {
       case INIT:
         if (totalSteps > 0)
           viewer.setInMotion(true);
-        //$FALL-THROUGH$
+        mode = MAIN;
+        break;
       case MAIN:
-        if (++iStep >= totalSteps) {
+        if (stopped || ++iStep >= totalSteps) {
           mode = FINISH;
           break;
         }
@@ -178,7 +179,8 @@ public class MoveToThread extends JmolThread {
         viewer.requestRepaintAndWait();
         if (transformManager.motion == null || !isJS && eval != null
             && !viewer.isScriptExecuting()) {
-          return;
+          stopped = true;
+          break;
         }
         currentTime = System.currentTimeMillis();
         int sleepTime = (int) (targetTime - currentTime);
@@ -187,13 +189,15 @@ public class MoveToThread extends JmolThread {
         mode = MAIN;
         break;
       case FINISH:
-        if (totalSteps <= 0 || doEndMove)
+        if (totalSteps <= 0 || doEndMove && !stopped)
           doFinalTransform();
         if (totalSteps > 0)
           viewer.setInMotion(false);
-        transformManager.motion = null;
         viewer.moveUpdate(floatSecondsTotal);
-        viewer.finalizeTransformParameters();
+        if (transformManager.motion != null && !stopped) {
+          transformManager.motion = null;
+          viewer.finalizeTransformParameters();
+        }
         resumeEval();
         return;
       }

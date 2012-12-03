@@ -374,7 +374,7 @@ abstract public class ForceField {
           if (f2 > trustRadius2 / step / step) {
             f2 = trustRadius / Math.sqrt(f2) / step;
             // if (i == 2)
-            // System.out.println("atom 3: force/coord " + force[0] + " " +
+            //System.out.println("atom 3: force/coord " + force[0] + " " +
             // force[1] + " " + force[2] + "/" + coord[0] + " " + coord[1] + " "
             // + coord[2] + " " + f2);
             force[0] *= f2;
@@ -400,7 +400,7 @@ abstract public class ForceField {
 
       double e2 = energyFull(false, true);
 
-      // System.out.println("step is " + step + " " + (e2 < e1) + " " + e1 + " "
+      //System.out.println("step is " + step + " " + (e2 < e1) + " " + e1 + " "
       // + e2);
       if (Util.isNear(e2, e1, 1.0e-3))
         break;
@@ -415,7 +415,7 @@ abstract public class ForceField {
           step = 1.0;
       }
     }
-    // System.out.println("alpha = " + alpha);
+    //System.out.println("alpha = " + alpha);
   }
 
   private void saveCoordinates() {

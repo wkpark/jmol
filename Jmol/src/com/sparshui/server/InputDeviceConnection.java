@@ -123,7 +123,7 @@ public class InputDeviceConnection implements Runnable {
       touchPointDataLength = 13;
     }
     boolean doConsume = false;
-    // System.out.println("Reading '"+count+"' Input Events.");
+    //System.out.println("Reading '"+count+"' Input Events.");
     for (int i = 0; i < count; i++)
       doConsume |= readTouchPoint(touchPointDataLength);
     removeDeadTouchPoints();

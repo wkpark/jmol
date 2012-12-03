@@ -92,14 +92,14 @@ public class Group {
      */
     for (int i = 0; i < _gestures.size(); i++) {
       Gesture gesture = _gestures.get(i);
-      // System.out.println(_gestures.size());
-      // System.out.println("Gesture allowed: " + gesture.getName());
+      //System.out.println(_gestures.size());
+      //System.out.println("Gesture allowed: " + gesture.getName());
       events.addAll(gesture.processChange(
           //clonedPoints == null ? 
           _touchPoints
           //: clonedPoints
           , changedPoint));
-      // System.out.println("Got some events - size: " + events.size());
+      //System.out.println("Got some events - size: " + events.size());
     }
 
     // moved to after processing. 

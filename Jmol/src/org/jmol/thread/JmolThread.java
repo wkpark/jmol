@@ -34,13 +34,14 @@ abstract public class JmolThread extends Thread {
   protected boolean stopped = false;
   protected boolean isReset;
 
+  private boolean useTimeout = true;
+
  
   public void setViewer(Viewer viewer, String name) {
     setName(name);
     this.name = name + "_" + (++threadIndex);
     this.viewer = viewer;
-    hoverEnabled = viewer.isHoverEnabled();
-    isJS = viewer.isSingleThreaded();
+    isJS = viewer.isSingleThreaded;
   }
   
   abstract protected void run1(int mode) throws InterruptedException;
@@ -61,22 +62,25 @@ abstract public class JmolThread extends Thread {
     eval.scriptLevel--;
     eval.pushContext2(null);
     sc = eval.thisContext;
+    ScriptContext sc0 = sc;
+    while (sc0 != null) {
+      sc0.mustResumeEval = true;
+      sc0 = sc0.parentContext;
+    }
+    sc.isJSThread = true;
     viewer.queueOnHold = true;
+    useTimeout = eval.allowJSThreads;
   }
 
   public void resumeEval() {
-    if (eval == null || !isJS)
+    if (eval == null || !isJS || !useTimeout)
       return;
-    eval.resumeEval(sc,false);
+    sc.mustResumeEval = !stopped;
+    eval.resumeEval(sc);
     eval = null;
     sc = null;
   }
   
-  protected void restartHover() {
-    if (hoverEnabled)
-      viewer.startHoverWatcher(true);
-  }
-
   @Override
   public synchronized void start() {
     if (isJS) {
@@ -105,6 +109,8 @@ abstract public class JmolThread extends Thread {
     viewer.queueOnHold = false;
   }
 
+  double junk;
+  
   /**
    * 
    * @param millis  
@@ -113,7 +119,18 @@ abstract public class JmolThread extends Thread {
    * @throws InterruptedException 
    *  
    */
+  
   protected boolean runSleep(int millis, int runPtr) throws InterruptedException {
+    if (isJS && !useTimeout) {
+      //...but nothing will be shown anyway until the thread is finished.
+      //long targetTime = System.currentTimeMillis() + millis; 
+      //while(System.currentTimeMillis() < targetTime){
+      //  junk = Math.random();
+      //}      
+      return true;
+    }
+    
+    
    /**
     * @j2sNative
     * 
@@ -132,7 +149,7 @@ abstract public class JmolThread extends Thread {
   @Override
   public void interrupt() {
     stopped = true;
-    restartHover();
+    viewer.startHoverWatcher(true);
     if (!isJS)
       super.interrupt();
   }

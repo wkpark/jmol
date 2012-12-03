@@ -65,14 +65,16 @@ public class TimeoutThread extends JmolThread {
           Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
         timeouts = viewer.getTimeouts();
         targetTime = System.currentTimeMillis() + Math.abs(sleepTime);
-        //$FALL-THROUGH$
+        mode = MAIN;
+        break;
       case MAIN:
         if (checkInterrupted() || script == null || script.length() == 0)
           return;
         // 26-millisecond check allows
         if (!runSleep(26, CHECK1))
           return;
-        //$FALL-THROUGH$
+        mode = CHECK1;
+        break;
       case CHECK1:
         // JavaScript-only
         mode = (System.currentTimeMillis() < targetTime ? MAIN : CHECK2);

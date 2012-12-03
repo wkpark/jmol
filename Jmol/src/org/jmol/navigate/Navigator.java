@@ -495,7 +495,7 @@ public final class Navigator extends JmolThread implements
     case TransformManager.NAV_MODE_NEWZ:
       // just untransform the offset to get the new 3D navigation center
       tm.navigationOffset.z = tm.referencePlaneOffset;
-      // System.out.println("nav_mode_newz " + navigationOffset);
+      //System.out.println("nav_mode_newz " + navigationOffset);
       tm.unTransformPoint(tm.navigationOffset, tm.navigationCenter);
       break;
     }

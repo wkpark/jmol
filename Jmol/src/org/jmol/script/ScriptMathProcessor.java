@@ -1371,7 +1371,7 @@ class ScriptMathProcessor {
           null, null, x1.value, new Object[] { name, params }, false, x1.index,
           false));
     }
-    ScriptVariable var = eval.runFunctionRet(null, name, params, null, true, true);
+    ScriptVariable var = eval.runFunctionRet(null, name, params, null, true, true, false);
     return (var == null ? false : addXVar(var));
   }
 

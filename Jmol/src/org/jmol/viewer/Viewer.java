@@ -34,7 +34,6 @@ import org.jmol.script.Token;
 import org.jmol.shape.Shape;
 import org.jmol.thread.JmolThread;
 import org.jmol.thread.ScriptDelayThread;
-import org.jmol.thread.ScriptParallelProcessor;
 import org.jmol.thread.TimeoutThread;
 import org.jmol.i18n.GT;
 import org.jmol.io.Base64;
@@ -60,6 +59,7 @@ import org.jmol.api.JmolAppConsoleInterface;
 import org.jmol.api.JmolCallbackListener;
 import org.jmol.api.JmolImageCreatorInterface;
 import org.jmol.api.JmolMouseInterface;
+import org.jmol.api.JmolParallelProcessor;
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.api.JmolRepaintInterface;
 import org.jmol.api.JmolScriptEditorInterface;
@@ -10050,7 +10050,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (executor != null || nProcessors < 2)
       return executor; // note -- a Java 1.5 function
     try {
-      executor = ScriptParallelProcessor.getExecutor();
+      executor = ((JmolParallelProcessor) Interface.getOptionInterface("parallel.ScriptParallelProcessor")).getExecutor();
     } catch (Exception e) {
       executor = null;
     } catch (Error er) {
@@ -10063,9 +10063,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public boolean displayLoadErrors = true;
 
-  public boolean evalContext(ScriptContext context, ShapeManager shapeManager) {
+  public boolean evalParallel(ScriptContext context, ShapeManager shapeManager) {
     displayLoadErrors = false;
-    boolean isOK = ScriptEvaluator.evaluateContext(this, context,
+    boolean isOK = ScriptEvaluator.evaluateParallel(this, context,
         (shapeManager == null ? this.shapeManager : shapeManager));
     displayLoadErrors = true;
     return isOK;

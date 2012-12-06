@@ -27,8 +27,7 @@ package org.jmol.script;
 
 import java.util.Map;
 
-
-import org.jmol.thread.ScriptParallelProcessor;
+import org.jmol.api.JmolParallelProcessor;
 import org.jmol.util.StringXBuilder;
 
 public class ScriptContext {
@@ -37,7 +36,7 @@ public class ScriptContext {
    */
   public String fullpath = "";
   public String scriptFileName;
-  public ScriptParallelProcessor parallelProcessor;
+  public JmolParallelProcessor parallelProcessor;
   public String functionName;
   public String script;
   public short[] lineNumbers;
@@ -69,6 +68,8 @@ public class ScriptContext {
   public boolean mustResumeEval;
   public boolean isJSThread;
   public boolean allowJSThreads;
+  public boolean displayLoadErrorsSave;
+  public int tryPt;
 
   ScriptContext() {
   }

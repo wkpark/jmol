@@ -55,7 +55,7 @@ public class JmolFileAdapter implements JmolFileAdapterInterface {
     try {
       return new BufferedInputStream(new FileInputStream(file));
     } catch (IOException e) {
-      return e.getMessage();
+      return e.toString();//e.getMessage();
     }
   }
 

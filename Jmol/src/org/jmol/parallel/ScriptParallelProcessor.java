@@ -21,13 +21,14 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.thread;
+package org.jmol.parallel;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import org.jmol.api.JmolParallelProcessor;
 import org.jmol.script.ScriptContext;
 import org.jmol.script.ScriptFunction;
 import org.jmol.script.ScriptProcess;
@@ -35,20 +36,17 @@ import org.jmol.util.Logger;
 import org.jmol.viewer.ShapeManager;
 import org.jmol.viewer.Viewer;
 
-public class ScriptParallelProcessor extends ScriptFunction {
+public class ScriptParallelProcessor extends ScriptFunction implements JmolParallelProcessor {
 
   /**
-   * included try/catch, not just parallel operations
+   * parallel operations
    * 
-   * @param name
-   * @param tok
    */
   
-  public ScriptParallelProcessor(String name, int tok) {
-    super(name, tok);
+  public ScriptParallelProcessor() {    
   }
-
-  public static Object getExecutor() {
+  
+  public Object getExecutor() {
     return Executors.newCachedThreadPool();
   }
   
@@ -57,11 +55,11 @@ public class ScriptParallelProcessor extends ScriptFunction {
   public volatile Error error = null;
   Object lock = new Object() ;
   
-  public void runAllProcesses(Viewer viewer, boolean inParallel) {
+  public void runAllProcesses(Viewer viewer) {
     if (processes.size() == 0)
       return;
     this.viewer = viewer;
-    inParallel &= !viewer.isParallel() && viewer.setParallel(true);
+    boolean inParallel = !viewer.isParallel() && viewer.setParallel(true);
     List<ShapeManager> vShapeManagers = new ArrayList<ShapeManager>();
     error = null;
     counter = 0;
@@ -129,6 +127,6 @@ public class ScriptParallelProcessor extends ScriptFunction {
   }
 
   public void eval(ScriptContext context, ShapeManager shapeManager) {
-    viewer.evalContext(context, shapeManager);
+    viewer.evalParallel(context, shapeManager);
   }
 }

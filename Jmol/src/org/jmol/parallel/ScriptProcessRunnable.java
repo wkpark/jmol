@@ -23,7 +23,7 @@
  *  02110-1301, USA.
  */
 
-package org.jmol.thread;
+package org.jmol.parallel;
 
 import org.jmol.script.ScriptProcess;
 import org.jmol.script.Token;

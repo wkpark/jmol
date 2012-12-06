@@ -57,7 +57,6 @@ import org.jmol.shape.MeshCollection;
 import org.jmol.shape.Object2d;
 import org.jmol.shape.Shape;
 import org.jmol.thread.ScriptDelayThread;
-import org.jmol.thread.ScriptParallelProcessor;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
@@ -88,6 +87,7 @@ import org.jmol.util.TextFormat;
 import org.jmol.util.Tuple3f;
 import org.jmol.util.Vector3f;
 import org.jmol.modelset.TickInfo;
+import org.jmol.api.JmolParallelProcessor;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.FileManager;
 import org.jmol.viewer.JmolConstants;
@@ -285,10 +285,10 @@ public class ScriptEvaluator {
   private void startEval() {
     viewer.pushHoldRepaintWhy("runEval");
     setScriptExtensions();
-    executeCommands();
+    executeCommands(false);
   }
 
-  private void executeCommands() {
+  private void executeCommands(boolean isTry) {
     boolean haveError = false;
     try {
       if (!dispatchCommands(false))
@@ -307,6 +307,10 @@ public class ScriptEvaluator {
         // current point using resumeEval again.
         // it's not a real exception, but it has that 
         // property so that it can be caught here.
+        return;
+      }
+      if (isTry) {
+        viewer.setStringProperty("_errormessage", "" + e);
         return;
       }
       setErrorMessage(e.toString());
@@ -395,7 +399,7 @@ public class ScriptEvaluator {
     if (sc.scriptLevel > 0)
       scriptLevel = sc.scriptLevel - 1;
     restoreScriptContext(sc, true, false, false);
-    executeCommands();
+    executeCommands(sc.isTryCatch);
   }
 
   /**
@@ -660,7 +664,7 @@ public class ScriptEvaluator {
    * @param shapeManager
    * @return  true if successful; false if not
    */
-  public static boolean evaluateContext(Viewer viewer, ScriptContext context,
+  public static boolean evaluateParallel(Viewer viewer, ScriptContext context,
                                         ShapeManager shapeManager) {
     ScriptEvaluator e = new ScriptEvaluator(viewer);
     e.historyDisabled = true;
@@ -1505,7 +1509,7 @@ public class ScriptEvaluator {
           case Token.function:
             bsAtom.set(i);
             fv = ScriptVariable.fValue(runFunctionRet(null, userFunction, params,
-                tokenAtom, true, true));
+                tokenAtom, true, true, false));
             bsAtom.clear(i);
             break;
           case Token.property:
@@ -2151,7 +2155,7 @@ public class ScriptEvaluator {
     return v;
   }
 
-  private ScriptParallelProcessor parallelProcessor;
+  private JmolParallelProcessor parallelProcessor;
 
   @SuppressWarnings("unchecked")
   public float evalFunctionFloat(Object func, Object params, float[] values) {
@@ -2161,17 +2165,20 @@ public class ScriptEvaluator {
         p.get(i).value = new Float(values[i]);
       ScriptFunction f = (ScriptFunction) func;
       return ScriptVariable
-          .fValue(runFunctionRet(f, f.name, p, null, true, false));
+          .fValue(runFunctionRet(f, f.name, p, null, true, false, false));
     } catch (Exception e) {
       return Float.NaN;
     }
 
   }
 
+  static int tryPt;
+  
   ScriptVariable runFunctionRet(ScriptFunction function, String name,
-                             List<ScriptVariable> params,
-                             ScriptVariable tokenAtom, boolean getReturn,
-                             boolean setContextPath) throws ScriptException {
+                                List<ScriptVariable> params,
+                                ScriptVariable tokenAtom, boolean getReturn,
+                                boolean setContextPath, boolean allowThreads)
+      throws ScriptException {
     if (function == null) {
       // general function call
       function = viewer.getFunction(name);
@@ -2183,48 +2190,81 @@ public class ScriptEvaluator {
       // "try"; not from evalFunctionFloat
       contextPath += " >> " + name;
     }
-    
+
     pushContext(null);
-    allowJSThreads = false;
+    allowJSThreads = allowThreads;
     boolean isTry = (function.tok == Token.trycmd);
     thisContext.isTryCatch = isTry;
     thisContext.isFunction = !isTry;
-    allowJSThreads = false;
     functionName = name;
-
-    if (function instanceof ScriptParallelProcessor) {
+    if (function.tok == Token.trycmd) {
+      viewer.resetError();
+      thisContext.displayLoadErrorsSave = viewer.displayLoadErrors;
+      thisContext.tryPt = ++tryPt;
+      viewer.displayLoadErrors = false;
+      restoreFunction(function, params, tokenAtom);
+      contextVariables.put("_breakval",
+          new ScriptVariableInt(Integer.MAX_VALUE));
+      contextVariables.put("_errorval", ScriptVariable.newVariable(
+          Token.string, ""));
+      Map<String, ScriptVariable> cv = contextVariables;
+      executeCommands(true);
+      //JavaScript will not return here after DELAY
+      while (thisContext.tryPt != tryPt)
+        popContext(false, false);
+      processTry(cv);
+      return null;
+    } else if (function instanceof JmolParallelProcessor) {
       synchronized (function) // can't do this -- too general
       {
-        parallelProcessor = (ScriptParallelProcessor) function;
-        vProcess = null;
-        runFunction(function, params, tokenAtom);
-
-        ScriptContext sc = getScriptContext();
-        if (isTry) {
-          contextVariables.put("_breakval", new ScriptVariableInt(Integer.MAX_VALUE));
-          contextVariables.put("_errorval", ScriptVariable.newVariable(Token.string, ""));
-          viewer.resetError();
-          parallelProcessor.addProcess("try", sc);
-        }
-        ((ScriptParallelProcessor) function).runAllProcesses(viewer, !isTry);
-        if (isTry) {
-          String err = (String) viewer.getParameter("_errormessage");
-          if (err.length() > 0) {
-            contextVariables.put("_errorval", ScriptVariable.newVariable(Token.string, err));
-            viewer.resetError();
-          }
-          contextVariables.put("_tryret", contextVariables.get("_retval"));
-          contextVariables.put("_retval", ScriptVariable.newVariable(0,
-              contextVariables));
-        }
+        parallelProcessor = (JmolParallelProcessor) function;
+        restoreFunction(function, params, tokenAtom);
+        dispatchCommands(false); // to load the processes
+        ((JmolParallelProcessor) function).runAllProcesses(viewer);
       }
     } else {
-      runFunction(function, params, tokenAtom);
+      restoreFunction(function, params, tokenAtom);
+      dispatchCommands(false);
+      //JavaScript will not return here after DELAY
     }
     ScriptVariable v = (getReturn ? getContextVariableAsVariable("_retval")
         : null);
     popContext(false, false);
     return v;
+  }
+
+  private void processTry(Map<String, ScriptVariable> cv) throws ScriptException {
+    viewer.displayLoadErrors = thisContext.displayLoadErrorsSave;
+    popContext(false, false);
+    String err = (String) viewer.getParameter("_errormessage");
+    if (err.length() > 0) {
+      cv.put("_errorval", ScriptVariable.newVariable(
+          Token.string, err));
+      viewer.resetError();
+    }
+    cv.put("_tryret", cv.get("_retval"));
+    ScriptVariable ret = cv.get("_tryret");
+    if (ret.value != null || ret.intValue != Integer.MAX_VALUE) {
+      returnCmd(ret);
+      return;
+    }
+    String errMsg = (String) (cv.get("_errorval")).value;
+    if (errMsg.length() == 0) {
+      int iBreak = (cv.get("_breakval")).intValue;
+      if (iBreak != Integer.MAX_VALUE) {
+        breakCmd(pc - iBreak);
+        return;
+      }
+    }
+    // normal return will skip the catch
+    if (pc + 1 < aatoken.length && aatoken[pc + 1][0].tok == Token.catchcmd) {
+      // set the intValue positive to indicate "not done" for the IF evaluation
+      ContextToken ct = (ContextToken) aatoken[pc + 1][0];
+      if (ct.contextVariables != null && ct.name0 != null)
+        ct.contextVariables.put(ct.name0, ScriptVariable
+            .newVariable(Token.string, errMsg));
+      ct.intValue = (errMsg.length() > 0 ? 1 : -1) * Math.abs(ct.intValue);
+    }
   }
 
   /**
@@ -2236,8 +2276,9 @@ public class ScriptEvaluator {
    * @param tokenAtom
    * @throws ScriptException
    */
-  private void runFunction(ScriptFunction function,
-                           List<ScriptVariable> params, ScriptVariable tokenAtom)
+  private void restoreFunction(ScriptFunction function,
+                           List<ScriptVariable> params, 
+                           ScriptVariable tokenAtom)
       throws ScriptException {
     aatoken = function.aatoken;
     lineNumbers = function.lineNumbers;
@@ -2250,8 +2291,6 @@ public class ScriptEvaluator {
     }
     if (tokenAtom != null)
       contextVariables.put("_x", tokenAtom);
-    if (function.tok != Token.trycmd)
-      dispatchCommands(false);
   }
 
   private void clearDefinedVariableAtomSets() {
@@ -5349,7 +5388,6 @@ public class ScriptEvaluator {
   private boolean dispatchCommands(boolean isSpt)
       throws ScriptException {
     long timeBegin = 0;
-    vProcess = null;
     if (shapeManager == null)
       shapeManager = viewer.getShapeManager();
     debugScript = logMessages = false;
@@ -5390,7 +5428,7 @@ public class ScriptEvaluator {
   private void commandLoop() throws ScriptException {
     String lastCommand = "";
     boolean isForCheck = false; // indicates the stage of the for command loop
-    
+    List<Token[]> vProcess = null;
     long lastTime = System.currentTimeMillis();
     for (; pc < aatoken.length && pc < pcEnd; pc++) {
       if (!isSyntaxCheck && isJS && allowJSThreads) {
@@ -5502,9 +5540,10 @@ public class ScriptEvaluator {
         case Token.switchcmd:
         case Token.casecmd:
         case Token.defaultcmd:
-        case Token.process:
         case Token.whilecmd:
-          isForCheck = flowControl(theToken.tok, isForCheck);
+          isForCheck = flowControl(theToken.tok, isForCheck, vProcess);
+          if (theTok == Token.process)
+            vProcess = null; // "end process"
           break;
         case Token.animation:
           animation();
@@ -5662,6 +5701,11 @@ public class ScriptEvaluator {
           break;
         case Token.print:
           print();
+          break;
+        case Token.process:
+          pushContext((ContextToken) theToken);
+          if (parallelProcessor != null)
+            vProcess = new ArrayList<Token[]>();
           break;
         case Token.prompt:
           prompt();
@@ -5994,8 +6038,7 @@ public class ScriptEvaluator {
     }
   }
 
-  @SuppressWarnings("unchecked")
-  private boolean flowControl(int tok, boolean isForCheck)
+  private boolean flowControl(int tok, boolean isForCheck, List<Token[]> vProcess)
       throws ScriptException {
     ContextToken ct;
     switch (tok) {
@@ -6020,11 +6063,6 @@ public class ScriptEvaluator {
       if (!isDone && ct.name0 != null)
         contextVariables.put(ct.name0, ct.contextVariables.get(ct.name0));
       isOK = !isDone;
-      break;
-    case Token.process:
-      pushContext((ContextToken) theToken);
-      isDone = isOK = true;
-      addProcess(pc, pt, true);
       break;
     case Token.switchcmd:
     case Token.defaultcmd:
@@ -6215,30 +6253,7 @@ public class ScriptEvaluator {
         ScriptFunction trycmd = (ScriptFunction) getToken(1).value;
         if (isSyntaxCheck)
           return false;
-        Map<String, ScriptVariable> cv = (Map<String, ScriptVariable>) runFunctionRet(
-            trycmd, "try", null, null, true, true).value;
-        ScriptVariable ret = cv.get("_tryret");
-        if (ret.value != null || ret.intValue != Integer.MAX_VALUE) {
-          returnCmd(ret);
-          return false;
-        }
-        String errMsg = (String) (cv.get("_errorval")).value;
-        if (errMsg.length() == 0) {
-          int iBreak = (cv.get("_breakval")).intValue;
-          if (iBreak != Integer.MAX_VALUE) {
-            breakCmd(pc - iBreak);
-            return false;
-          }
-        }
-        // normal return will skip the catch
-        if (pc + 1 < aatoken.length && aatoken[pc + 1][0].tok == Token.catchcmd) {
-          // set the intValue positive to indicate "not done" for the IF evaluation
-          ct = (ContextToken) aatoken[pc + 1][0];
-          if (ct.contextVariables != null && ct.name0 != null)
-            ct.contextVariables.put(ct.name0, ScriptVariable
-                .newVariable(Token.string, errMsg));
-          ct.intValue = (errMsg.length() > 0 ? 1 : -1) * Math.abs(ct.intValue);
-        }
+        runFunctionRet(trycmd, "try", null, null, true, true, true);
         return false;
       case Token.catchcmd:
         popContext(true, false);
@@ -6248,7 +6263,7 @@ public class ScriptEvaluator {
         viewer.addFunction((ScriptFunction) theToken.value);
         return isForCheck;
       case Token.process:
-        addProcess(pt, pc, false);
+        addProcess(vProcess, pt, pc);
         popContext(true, false);
         break;
       case Token.switchcmd:
@@ -6357,26 +6372,19 @@ public class ScriptEvaluator {
     }
   }
 
-  private List<Token[]> vProcess;
   static int iProcess;
 
-  private void addProcess(int pc, int pt, boolean isStart) {
+  private void addProcess(List<Token[]> vProcess, int pc, int pt) {
     if (parallelProcessor == null)
       return;
-    if (isStart) {
-      vProcess = new ArrayList<Token[]>();
-    } else {
-
-      Token[][] statements = new Token[pt][];
-      for (int i = 0; i < vProcess.size(); i++)
-        statements[i + 1 - pc] = vProcess.get(i);
-      ScriptContext context = getScriptContext();
-      context.aatoken = statements;
-      context.pc = 1 - pc;
-      context.pcEnd = pt;
-      parallelProcessor.addProcess("p" + (++iProcess), context);
-      vProcess = null;
-    }
+    Token[][] statements = new Token[pt][];
+    for (int i = 0; i < vProcess.size(); i++)
+      statements[i + 1 - pc] = vProcess.get(i);
+    ScriptContext context = getScriptContext();
+    context.aatoken = statements;
+    context.pc = 1 - pc;
+    context.pcEnd = pt;
+    parallelProcessor.addProcess("p" + (++iProcess), context);
   }
 
   private int switchCmd(ContextToken c, int tok) throws ScriptException {
@@ -10773,7 +10781,7 @@ public class ScriptEvaluator {
         : parameterExpressionList(1, -1, false));
     if (isSyntaxCheck)
       return;
-    runFunctionRet(null, name, params, null, false, true);
+    runFunctionRet(null, name, params, null, false, true, true);
   }
 
   private void sync() throws ScriptException {

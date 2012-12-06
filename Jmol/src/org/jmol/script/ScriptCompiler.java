@@ -23,7 +23,6 @@
 
 package org.jmol.script;
 
-import org.jmol.thread.ScriptParallelProcessor;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSet;
 import org.jmol.util.Escape;
@@ -35,10 +34,12 @@ import org.jmol.util.Parser;
 import org.jmol.util.StringXBuilder;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
+import org.jmol.api.Interface;
 import org.jmol.i18n.GT;
 import org.jmol.io.JmolBinary;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.Bond.BondSet;
+import org.jmol.parallel.ScriptParallelProcessor;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -1519,7 +1520,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       if (nTokens == 1) {
         if (thisFunction != null)
           vFunctionStack.add(0, thisFunction);
-        thisFunction = (tokCommand == Token.parallel ? new ScriptParallelProcessor(ident, tokCommand) : new ScriptFunction(ident, tokCommand));
+        thisFunction = (tokCommand == Token.parallel ? newScriptParallelProcessor(ident, tokCommand) : new ScriptFunction(ident, tokCommand));
         htUserFunctions.put(ident, Boolean.TRUE);
         flowContext.setFunction(thisFunction);
         break; // function f
@@ -1736,6 +1737,12 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     return OK;
   }
 
+  private static ScriptFunction newScriptParallelProcessor(String name, int tok) {
+    ScriptFunction jpp = (ScriptFunction) Interface.getOptionInterface("parallel.ScriptParallelProcessor");
+    jpp.set(name, tok);
+    return jpp;
+  }
+
   private Token setNewSetCommand(boolean isSetBrace, String ident) {
     tokCommand = Token.set;
     isNewSet = (!isSetBrace && !isUserFunction(ident));
@@ -1945,7 +1952,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         flowContext = new ScriptFlowContext(this, ct, pt, flowContext);
         if (thisFunction != null)
           vFunctionStack.add(0, thisFunction);
-        thisFunction = new ScriptParallelProcessor("", tokCommand);
+        thisFunction = newScriptParallelProcessor("", tokCommand);
         flowContext.setFunction(thisFunction);
         pushCount++;
         vPush.add(ct);

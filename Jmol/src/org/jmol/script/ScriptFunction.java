@@ -69,10 +69,18 @@ public class ScriptFunction {
   short[] lineNumbers;
   String script;
 
+  public ScriptFunction() {
+    // for reflection with ScriptParallelProcessor
+  }
+
   protected ScriptFunction(String name, int tok) {
+    set(name, tok);
+    typeName = Token.nameOf(tok);
+  }
+
+  public void set(String name, int tok) {
     this.name = name;
     this.tok = tok;
-    typeName = Token.nameOf(tok);
   }
 
   void setVariables(Map<String, ScriptVariable> contextVariables, List<ScriptVariable> params) {

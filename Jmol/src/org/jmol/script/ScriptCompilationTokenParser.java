@@ -1055,7 +1055,7 @@ abstract class ScriptCompilationTokenParser {
       tok = tokPeek();
     }
     if (tok == Token.colon || tok == Token.times || tok == Token.identifier
-        || tok == Token.x || tok == Token.y || tok == Token.z
+        || tok == Token.x || tok == Token.y || tok == Token.z || tok == Token.w
         || tok == Token.integer && !wasInteger) {
       if (!clauseChainSpec(tok))
         return false;

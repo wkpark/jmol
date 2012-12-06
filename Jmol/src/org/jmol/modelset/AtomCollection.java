@@ -730,6 +730,8 @@ abstract public class AtomCollection {
       if (occupancy == 100)
         return false; // 100 is the default;
       occupancies = new byte[atoms.length];
+      for (int i = atoms.length; --i >= 0;)
+        occupancies[i] = 100;
     }
     occupancies[atomIndex] = (byte) (occupancy > 255 ? 255 : occupancy < 0 ? 0 : occupancy);
     return true;

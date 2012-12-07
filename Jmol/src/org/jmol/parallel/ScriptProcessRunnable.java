@@ -25,7 +25,6 @@
 
 package org.jmol.parallel;
 
-import org.jmol.script.ScriptProcess;
 import org.jmol.script.Token;
 import org.jmol.util.Logger;
 import org.jmol.viewer.ShapeManager;

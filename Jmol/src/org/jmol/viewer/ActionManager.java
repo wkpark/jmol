@@ -47,10 +47,7 @@ import org.jmol.util.Point3f;
 import org.jmol.util.Point3fi;
 import org.jmol.util.Rectangle;
 import org.jmol.util.TextFormat;
-import org.jmol.viewer.binding.DragBinding;
 import org.jmol.viewer.binding.Binding;
-import org.jmol.viewer.binding.PfaatBinding;
-import org.jmol.viewer.binding.RasmolBinding;
 import org.jmol.viewer.binding.JmolBinding;
 
 public class ActionManager {
@@ -1555,16 +1552,16 @@ public class ActionManager {
     switch (pickingStyleSelect) {
     case PICKINGSTYLE_SELECT_PFAAT:
       if (binding.getName() != "extendedSelect") 
-        setBinding(pfaatBinding = (pfaatBinding == null ? new PfaatBinding() : pfaatBinding));
+        setBinding(pfaatBinding = (pfaatBinding == null ? Binding.newBinding("Pfaat") : pfaatBinding));
       break;
     case PICKINGSTYLE_SELECT_DRAG:
       if (binding.getName() != "drag")
-        setBinding(dragBinding = (dragBinding == null ? new DragBinding() : dragBinding));
+        setBinding(dragBinding = (dragBinding == null ? Binding.newBinding("drag") : dragBinding));
       rubberbandSelectionMode = true;
       break;
     case PICKINGSTYLE_SELECT_RASMOL:
       if (binding.getName() != "selectOrToggle")
-        setBinding(rasmolBinding = (rasmolBinding == null ? new RasmolBinding() : rasmolBinding));
+        setBinding(rasmolBinding = (rasmolBinding == null ? Binding.newBinding("Rasmol") : rasmolBinding));
       break;
     default:
       if (binding != jmolBinding)

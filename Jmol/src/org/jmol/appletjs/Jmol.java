@@ -667,7 +667,7 @@ public class Jmol implements JmolSyncInterface {
       try {
       	/**
       	 * @j2sNative
-      	 *   return "" + eval(strEval);
+      	 *   return "" + eval(a);// strEval -- Java2Script is compressing this file for some reason
       	 */
       	{}
       } catch (Exception e) {

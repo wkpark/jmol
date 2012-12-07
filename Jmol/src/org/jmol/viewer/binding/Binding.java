@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.jmol.api.Event;
+import org.jmol.api.Interface;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.StringXBuilder;
@@ -274,5 +275,9 @@ abstract public class Binding {
     }
     return (addSortCode ? new String(code) + ":" + sb.toString() : sb
         .toString());
+  }
+
+  public static Binding newBinding(String name) {
+    return (Binding) Interface.getOptionInterface("viewer.binding." + name + "Binding");
   }
 }

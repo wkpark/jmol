@@ -31,7 +31,6 @@ import java.util.concurrent.Executors;
 import org.jmol.api.JmolParallelProcessor;
 import org.jmol.script.ScriptContext;
 import org.jmol.script.ScriptFunction;
-import org.jmol.script.ScriptProcess;
 import org.jmol.util.Logger;
 import org.jmol.viewer.ShapeManager;
 import org.jmol.viewer.Viewer;
@@ -103,14 +102,14 @@ public class ScriptParallelProcessor extends ScriptFunction implements JmolParal
     }
   }
 
-  public void clearShapeManager(Error er) {
+  void clearShapeManager(Error er) {
     synchronized (this) {
       this.error = er;
       this.notifyAll();
     }
   }
 
-  List<ScriptProcess> processes = new ArrayList<ScriptProcess>();
+  private List<ScriptProcess> processes = new ArrayList<ScriptProcess>();
 
   public void addProcess(String name, ScriptContext context) {
     processes.add(new ScriptProcess(name, context));
@@ -126,7 +125,7 @@ public class ScriptParallelProcessor extends ScriptFunction implements JmolParal
     }
   }
 
-  public void eval(ScriptContext context, ShapeManager shapeManager) {
+  void eval(ScriptContext context, ShapeManager shapeManager) {
     viewer.evalParallel(context, shapeManager);
   }
 }

@@ -11,6 +11,13 @@
     </classpath>
   </taskdef>
 
+  <!-- Contributions -->
+  <taskdef resource="net/sf/antcontrib/antlib.xml">
+    <classpath>
+      <pathelement location="tools/ant-contrib.jar" />
+    </classpath>
+  </taskdef>
+
   <property name="src" location="src" />
   <property name="dist" location="build/dist" />
   <property name="dist-maven" location="build/dist-maven" />
@@ -20,7 +27,14 @@
   <property name="artifactId" value="jmol" />
   
   <property file="${dist}/Jmol.properties" prefix="Jmol.properties" />
-  <property name="version" value="${Jmol.properties.//___version}" />
+  <property name="version" value="${Jmol.properties.___JmolVersion}" />
+  <propertyregex property="version"
+                 override = "true"
+                 input="${version}"
+                 regexp='"'
+                 replace=""
+                 global="true" />
+  <echo message="version=${version}" />
 
   <!-- define artifacts' name, which follows the convention of Maven -->
   <property name="maven-snapshot-jar" value="${dist-maven}/${artifactId}-${version}-SNAPSHOT.jar" />

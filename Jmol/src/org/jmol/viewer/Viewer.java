@@ -4719,7 +4719,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     if (haltType == null)
       return false;
-    // !quit or !halt
+    // !quit or !exit
     if (isInsert) {
       clearThreads();
       queueOnHold = false;

@@ -173,10 +173,14 @@ public class MoveToThread extends JmolThread {
         doEndMove = true;
         targetTime += frameTimeMillis;
         currentTime = System.currentTimeMillis();
-        if (currentTime >= targetTime) {
+        boolean doRender = (currentTime < targetTime);
+        if (!doRender && isJS) {
+          // JavaScript will be slow anyway -- make sure we render
           targetTime = currentTime;
+          doRender = true;
         }
-        viewer.requestRepaintAndWait();
+        if (doRender)
+          viewer.requestRepaintAndWait();
         if (transformManager.motion == null || !isJS && eval != null
             && !viewer.isScriptExecuting()) {
           stopped = true;

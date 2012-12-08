@@ -482,15 +482,14 @@ public class PropertyManager {
         info.append("\n getProperty ").append(data[i]);
     return info.toString();
   }
-  
-  @SuppressWarnings("unchecked")
+
   static Object getFileInfo(Object objHeader, String type) {
-    Map ht = new Hashtable();
+    Map<String, String> ht = new Hashtable<String, String>();
     if (objHeader == null)
       return ht;
     boolean haveType = (type != null && type.length() > 0);
     if (objHeader instanceof Map) {
-      return (haveType ? ((Map) objHeader).get(type) : objHeader);
+      return (haveType ? ((Map<?, ?>) objHeader).get(type) : objHeader);
     }
     String[] lines = TextFormat.split((String)objHeader, '\n');
     String keyLast = "";

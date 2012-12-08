@@ -109,7 +109,8 @@ public class BitSet32 implements Cloneable {
 	private transient boolean sizeIsSticky = false;
 
 	/* use serialVersionUID from JDK 1.0.2 for interoperability */
-	private static final long serialVersionUID = 7997698588986878753L;
+	@SuppressWarnings("unused")
+  private static final long serialVersionUID = 7997698588986878753L;
 
 	/**
 	 * Given a bit index, return word index containing it.

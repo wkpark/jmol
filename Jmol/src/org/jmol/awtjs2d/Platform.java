@@ -3,6 +3,8 @@ package org.jmol.awtjs2d;
 import java.net.URL;
 
 
+import netscape.javascript.JSObject;
+
 import org.jmol.api.ApiPlatform;
 import org.jmol.api.JmolFileAdapterInterface;
 import org.jmol.api.JmolFileInterface;
@@ -58,7 +60,17 @@ public class Platform implements ApiPlatform {
   }
 
   public Object getJsObjectInfo(Object jsObject, String method, Object[] args) {
-    return null; // DOM XML reader only -- not implemented in JavaScript
+    /**
+     * @j2sNative
+     * 
+     * if (method == "localName")return jsObject["nodeName"];
+     * return (args == null ? jsObject[method](): jsObject[method](args[0]));
+     * 
+     * 
+     */
+    {
+      return null;
+    }
   }
 
   public boolean isHeadless() {
@@ -248,4 +260,5 @@ public class Platform implements ApiPlatform {
 		return Font.newFont(fontFace, isBold, isItalic, fontSize, "px");
 	}
 
+	
 }

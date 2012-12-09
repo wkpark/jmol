@@ -252,7 +252,7 @@ public abstract class AtomSetCollectionReader {
     initialize();
     atomSetCollection = new AtomSetCollection(readerName, this, null, null);
     initializeReader();
-    processXml(node);
+    processDOM(node);
     return finish();
   }
 
@@ -260,7 +260,7 @@ public abstract class AtomSetCollectionReader {
    * 
    * @param DOMNode
    */
-  protected void processXml(Object DOMNode) {
+  protected void processDOM(Object DOMNode) {
     // XML readers only
   }
 

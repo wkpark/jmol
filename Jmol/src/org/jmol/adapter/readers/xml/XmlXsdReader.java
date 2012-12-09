@@ -24,7 +24,6 @@
 package org.jmol.adapter.readers.xml;
 
 import java.io.BufferedReader;
-import java.util.Map;
 
 import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.adapter.smarter.Atom;
@@ -40,20 +39,17 @@ import org.jmol.util.TextFormat;
 
 public class XmlXsdReader extends XmlReader {
 
-  /*
-   * Enter any implemented field names in the 
-   * implementedAttributes array. It is for when the XML 
-   * is already loaded in the DOM of an XML page.
-   * 
-   */
-
-  private BitSet bsBackbone = new BitSet();
-  
   public XmlXsdReader() {
   }
 
+  private BitSet bsBackbone = new BitSet();
+  
+  private int iChain = -1;
+  private int iGroup = 0;
+  private int iAtom = 0;
+  
   @Override
-  protected String[] getImplementedAttributes() {
+  protected String[] getDOMAttributes() {
     return new String[] { "ID", //general 
         "XYZ", "Connections", "Components", "IsBackboneAtom",//Atom3d
         "Connects", "Type", //Bond
@@ -64,19 +60,15 @@ public class XmlXsdReader extends XmlReader {
   @Override
   protected void processXml(XmlReader parent,
                             AtomSetCollection atomSetCollection,
-                             BufferedReader reader, Object xmlReader, JmolXmlHandler handler) {
+                            BufferedReader reader, Object domNode,
+                            Object saxReader) throws Exception {
     parent.htParams.put("backboneAtoms", bsBackbone);
-    super.processXml(parent, atomSetCollection, reader, xmlReader, handler);
+    super.processXml(parent, atomSetCollection, reader, domNode, saxReader);
     atomSetCollection.clearSymbolicMap(); 
   }
 
-  private int iChain = -1;
-  private int iGroup = 0;
-  private int iAtom = 0;
-  
   @Override
-  public void processStartElement(String namespaceURI, String localName, String qName,
-                                  Map<String, String> atts) {
+  public void processStartElement(String localName) {
     String[] tokens;
     //System.out.println(namespaceURI + " " + localName + " " + atts);
     //System.out.println("xmlchem3d: start " + localName);
@@ -132,7 +124,7 @@ public class XmlXsdReader extends XmlReader {
   }
 
   @Override
-  public void processEndElement(String uri, String localName, String qName) {
+  void processEndElement(String localName) {
     if ("Atom3d".equals(localName)) {
       if (atom.elementSymbol != null && !Float.isNaN(atom.z)) {
         parent.setAtomCoord(atom);

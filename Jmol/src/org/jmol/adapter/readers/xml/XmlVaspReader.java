@@ -25,7 +25,6 @@
 package org.jmol.adapter.readers.xml;
 
 import java.io.BufferedReader;
-import java.util.Map;
 
 
 import org.jmol.adapter.smarter.AtomSetCollection;
@@ -45,31 +44,6 @@ import org.jmol.util.Vector3f;
 
 public class XmlVaspReader extends XmlReader {
   
-  /*
-   * Enter any implemented field names in the 
-   * implementedAttributes array. It is for when the XML 
-   * is already loaded in the DOM of an XML page.
-   * 
-   */
-
-  String[] vaspImplementedAttributes = { "name" };
-
-  XmlVaspReader() {
-  }
-  
-  @Override
-  protected String[] getImplementedAttributes() {
-    return vaspImplementedAttributes;
-  }
-
-  @Override
-  protected void processXml(XmlReader parent,
-                            AtomSetCollection atomSetCollection,
-                             BufferedReader reader, Object xmlReader, JmolXmlHandler handler) {
-    parent.doProcessLines = true;
-    super.processXml(parent, atomSetCollection, reader, xmlReader, handler);
-  }
-
   private StringXBuilder data;
   private String name;
   private int atomCount;
@@ -79,9 +53,25 @@ public class XmlVaspReader extends XmlReader {
   private String enthalpy = null;
   private String gibbsEnergy = null;
   
+  XmlVaspReader() {
+  }
+  
   @Override
-  public void processStartElement(String namespaceURI, String localName,
-                                  String qName, Map<String, String> atts) {
+  protected String[] getDOMAttributes() {
+    return new String[] { "name" };
+  }
+
+  @Override
+  protected void processXml(XmlReader parent,
+                            AtomSetCollection atomSetCollection,
+                            BufferedReader reader, Object domNode,
+                            Object saxReader) throws Exception {
+    parent.doProcessLines = true;
+    super.processXml(parent, atomSetCollection, reader, domNode, saxReader);
+  }
+
+  @Override
+  public void processStartElement(String localName) {
     if (Logger.debugging) 
       Logger.debug("xmlvasp: start " + localName);
 
@@ -163,7 +153,7 @@ public class XmlVaspReader extends XmlReader {
   float gamma;
   
   @Override
-  public void processEndElement(String uri, String localName, String qName) {
+  void processEndElement(String localName) {
 
     if (Logger.debugging) 
       Logger.debug("xmlvasp: end " + localName);

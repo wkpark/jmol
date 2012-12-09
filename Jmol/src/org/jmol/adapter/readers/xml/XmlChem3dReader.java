@@ -48,7 +48,7 @@ public class XmlChem3dReader extends XmlReader {
   }
 
   @Override
-  protected String[] getImplementedAttributes() {
+  protected String[] getDOMAttributes() {
     return new String[] { "id", //general 
       "symbol", "cartCoords", //atoms
       "bondAtom1", "bondAtom2", "bondOrder", //bond
@@ -61,15 +61,15 @@ public class XmlChem3dReader extends XmlReader {
   
   @Override
   protected void processXml(XmlReader parent,
-                           AtomSetCollection atomSetCollection,
-                           BufferedReader reader, Object xmlReader, JmolXmlHandler handler) {
-    super.processXml(parent, atomSetCollection, reader, xmlReader, handler);
+                            AtomSetCollection atomSetCollection,
+                            BufferedReader reader, Object domNode,
+                            Object saxReader) throws Exception {
+    super.processXml(parent, atomSetCollection, reader, domNode, saxReader);
     setMOData(moData);
   }
 
   @Override
-  public void processStartElement(String namespaceURI, String localName,
-                                  String qName, Map<String, String> atts) {
+  public void processStartElement(String localName) {
     String[] tokens;
     //System.out.println("xmlchem3d: start " + localName);
     if ("model".equals(localName)) {
@@ -181,7 +181,7 @@ public class XmlChem3dReader extends XmlReader {
   private Map<String, Object> moData;
   
   @Override
-  public void processEndElement(String uri, String localName, String qName) {
+  void processEndElement(String localName) {
     //System.out.println("xmlchem3d: end " + localName);
     if ("atom".equals(localName)) {
       if (atom.elementSymbol != null && !Float.isNaN(atom.z)) {

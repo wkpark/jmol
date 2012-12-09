@@ -23,7 +23,6 @@
  */
 package org.jmol.adapter.readers.xml;
 
-import java.util.Map;
 
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.api.JmolAdapter;
@@ -64,15 +63,14 @@ public class XmlArgusReader extends XmlReader {
   }
 
   @Override
-  protected String[] getImplementedAttributes() {
+  protected String[] getDOMAttributes() {
     return new String[] { 
         "order", //bond
     };
   }
 
   @Override
-  public void processStartElement(String namespaceURI, String localName, String qName,
-                                  Map<String, String> atts) {
+  public void processStartElement(String localName) {
     //System.out.println("open " + localName);
     for (int i = keepCharsList.length; --i >= 0;)
       if (keepCharsList[i].equals(localName)) {
@@ -103,7 +101,7 @@ public class XmlArgusReader extends XmlReader {
     }
   }
 
-  int parseBondToken(String str) {
+  private int parseBondToken(String str) {
     float floatOrder = parseFloatStr(str);
     if (Float.isNaN(floatOrder) && str.length() >= 1) {
       str = str.toUpperCase();
@@ -129,7 +127,7 @@ public class XmlArgusReader extends XmlReader {
   }
 
   @Override
-  public void processEndElement(String uri, String localName, String qName) {
+  void processEndElement(String localName) {
     //System.out.println("close " + localName);
     if (chars != null && chars.length() > 0
         && chars.charAt(chars.length() - 1) == '\n')

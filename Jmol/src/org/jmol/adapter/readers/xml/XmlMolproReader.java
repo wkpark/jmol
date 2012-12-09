@@ -22,9 +22,6 @@
  */
 package org.jmol.adapter.readers.xml;
 
-import org.xml.sax.Attributes;
-import java.util.Map;
-
 /**
  * A Molpro 2005 reader
  */
@@ -35,7 +32,7 @@ public class XmlMolproReader extends XmlCmlReader {
   }
   
   @Override
-  protected String[] getImplementedAttributes() {
+  protected String[] getDOMAttributes() {
     return new String[] { "id", "length", "type", //general
         "x3", "y3", "z3", "elementType", //atoms
         "name", //variable
@@ -46,7 +43,11 @@ public class XmlMolproReader extends XmlCmlReader {
     };
   }
 
-  public void processStartElement2(String localName, Map<String, String> atts) {
+  @Override
+  public void processStartElement(String localName) {
+    if (!processing)
+      return;
+    super.processStartElement(localName);
     if (localName.equals("normalCoordinate")) {
       keepChars = false;
       if (!parent.doGetVibration(++vibrationNumber))
@@ -79,7 +80,8 @@ public class XmlMolproReader extends XmlCmlReader {
     }
   }
 
-  public void processEndElement2(String localName) {
+  @Override
+  void processEndElement(String localName) {
     if (localName.equals("normalCoordinate")) {
       if (!keepChars)
         return;
@@ -94,30 +96,7 @@ public class XmlMolproReader extends XmlCmlReader {
         );
       }
     }
+    super.processEndElement(localName);
   }
 
-  @Override
-  protected JmolXmlHandler getHandler(Object xmlReader) {
-    return new MolproHandler(xmlReader);
-  }
-
-  class MolproHandler extends JmolXmlHandler {
- 
-    public MolproHandler(Object xmlReader) {
-      super(xmlReader);
-    }
-
-    @Override
-    public void startElement(String namespaceURI, String localName,
-                             String qName, Attributes attributes) {
-      super.startElement(namespaceURI, localName, qName, attributes);
-      processStartElement2(localName, atts);
-    }
-
-    @Override
-    public void endElement(String uri, String localName, String qName) {
-      processEndElement2(localName);
-      super.endElement(uri, localName, qName);
-    }
-  }
 }

@@ -23,7 +23,6 @@
  */
 package org.jmol.adapter.readers.xml;
 
-import java.util.Map;
 
 
 import org.jmol.adapter.smarter.Atom;
@@ -44,7 +43,7 @@ public class XmlOdysseyReader extends XmlReader {
   }
 
   @Override
-  protected String[] getImplementedAttributes() {
+  protected String[] getDOMAttributes() {
     return new String[] { "id", "label", //general 
         "xyz", "element", "hybrid", //atoms
         "a", "b", "order", //bond
@@ -53,8 +52,7 @@ public class XmlOdysseyReader extends XmlReader {
   }
 
   @Override
-  protected void processStartElement(String namespaceURI, String localName, String qName,
-                                     Map<String, String> atts) {
+  protected void processStartElement(String localName) {
 
     if ("structure".equals(localName)) {
       atomSetCollection.newAtomSet();
@@ -146,7 +144,7 @@ public class XmlOdysseyReader extends XmlReader {
   }
 
   @Override
-  protected void processEndElement(String uri, String localName, String qName) {
+  void processEndElement(String localName) {
     if ("atom".equals(localName)) {
       if (atom.elementSymbol != null && !Float.isNaN(atom.z)) {
         atomSetCollection.addAtomWithMappedName(atom);

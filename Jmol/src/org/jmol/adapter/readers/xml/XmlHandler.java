@@ -47,7 +47,7 @@ public class XmlHandler extends DefaultHandler implements JmolXmlHandler {
     // for reflection
   }
   
-  public void set(XmlReader xmlReader, Object saxReaderObj) throws Exception {
+  public void parseXML(XmlReader xmlReader, Object saxReaderObj, BufferedReader reader) throws Exception {
     this.xmlReader = xmlReader;
     XMLReader saxReader = (XMLReader) saxReaderObj;
     saxReader.setFeature("http://xml.org/sax/features/validation", false);
@@ -55,12 +55,9 @@ public class XmlHandler extends DefaultHandler implements JmolXmlHandler {
     saxReader.setEntityResolver(this);
     saxReader.setContentHandler(this);
     saxReader.setErrorHandler(this);
-  }
-
-  public void processXml(Object saxReader, BufferedReader reader) throws Exception {
     InputSource is = new InputSource(reader);
     is.setSystemId("foo");
-    ((XMLReader) saxReader).parse(is);
+    saxReader.parse(is);
   }
 
   @Override
@@ -76,7 +73,7 @@ public class XmlHandler extends DefaultHandler implements JmolXmlHandler {
    * startElement and endElement should be extended in each reader
    */
 
-  private String context = "";
+  private String debugContext = "";
 
   @Override
   public void startElement(String namespaceURI, String localName, String qName,
@@ -85,8 +82,8 @@ public class XmlHandler extends DefaultHandler implements JmolXmlHandler {
     for (int i = attributes.getLength(); --i >= 0;)
       xmlReader.atts.put(attributes.getLocalName(i), attributes.getValue(i));
     if (Logger.debugging) {
-      context += " " + localName;
-      Logger.debug(context);
+      debugContext += " " + localName;
+      Logger.debug(debugContext);
     }
     xmlReader.processStartElement(localName);
   }
@@ -94,8 +91,8 @@ public class XmlHandler extends DefaultHandler implements JmolXmlHandler {
   @Override
   public void endElement(String uri, String localName, String qName) {
     if (Logger.debugging) {
-      Logger.debug("");//"end   " + indent);
-      context = context.substring(0, context.lastIndexOf(" "));
+      Logger.debug("");
+      debugContext = debugContext.substring(0, debugContext.lastIndexOf(" "));
     }
     xmlReader.processEndElement(localName);
   }

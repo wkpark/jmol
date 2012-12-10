@@ -183,8 +183,8 @@ public class Platform implements ApiPlatform {
 
   /// misc
 
-  public Object getJsObjectInfo(Object jsObject, String method, Object[] args) {
-    JSObject DOMNode = (JSObject) jsObject;
+  public Object getJsObjectInfo(Object[] jsObject, String method, Object[] args) {
+    JSObject DOMNode = (JSObject) jsObject[0];
     if (method == null) {
       String namespaceURI = (String) DOMNode.getMember("namespaceURI");
       String localName = (String) DOMNode.getMember("localName");

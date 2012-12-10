@@ -38,66 +38,88 @@ import org.jmol.util.Logger;
 /**
  * A generic XML reader template -- by itself, does nothing.
  * 
- * The actual readers are XmlCmlReader, XmlMolproReader (which is an
- * extension of XmlCmlReader), XmlChem3dReader, and XmlOdysseyReader.
+ * The actual readers are XmlCmlReader, XmlMolproReader (which is an extension
+ * of XmlCmlReader), XmlChem3dReader, and XmlOdysseyReader.
  * 
  * 
  * XmlReader takes all XML streams, whether from a file reader or from DOM.
- *  
- * This class functions as a resolver, since it:
- *  (1) identifying the specific strain of XML to be handled, and 
- *  (2) passing the responsibility on to the correct format-specific XML readers. 
- * There are parallel entry points and handler methods for reader and DOM. Each 
- * format-specific XML reader then assigns its own handler to manage the 
- * parsing of elements.
+ * 
+ * This class functions as a resolver, since it: (1) identifying the specific
+ * strain of XML to be handled, and (2) passing the responsibility on to the
+ * correct format-specific XML readers. There are parallel entry points and
+ * handler methods for reader and DOM. Each format-specific XML reader then
+ * assigns its own handler to manage the parsing of elements.
  * 
  * In addition, this class handles generic XML tag parsing.
  * 
- * XmlHandler extends DefaultHandler is the generic interface to both reader and DOM element parsing.
+ * XmlHandler extends DefaultHandler is the generic interface to both reader and
+ * DOM element parsing.
  * 
  * XmlCmlReader extends XmlReader
  * 
- * XmlMolproReader extends XmlCmlReader. If you feel like expanding on that, feel free.
+ * XmlMolproReader extends XmlCmlReader. If you feel like expanding on that,
+ * feel free.
  * 
- * XmlChem3dReader extends XmlReader. That one is simple; no need to expand on it at this time.
+ * XmlChem3dReader extends XmlReader. That one is simple; no need to expand on
+ * it at this time.
  * 
- * XmlOdysseyReader extends XmlReader. That one is simple; no need to expand on it at this time.
+ * XmlOdysseyReader extends XmlReader. That one is simple; no need to expand on
+ * it at this time.
  * 
- * Note that the tag processing routines are shared between SAX 
- * and DOM processors. This means that attributes must be
- * transformed from either Attributes (SAX) or JSObjects (DOM)
- * to Hashtable name:value pairs. This is taken care of in JmolXmlHandler
- * for all readers. 
+ * Note that the tag processing routines are shared between SAX and DOM
+ * processors. This means that attributes must be transformed from either
+ * Attributes (SAX) or JSObjects (DOM) to Hashtable name:value pairs. This is
+ * taken care of in JmolXmlHandler for all readers.
  * 
  * TODO 27/8/06:
  * 
- * Several aspects of CifReader are NOT YET implemented here. 
- * These include loading a specific model when there are several,
- * applying the symmetry, and loading fractional coordinates. [DONE for CML reader 2/2007 RMH]
+ * Several aspects of CifReader are NOT YET implemented here. These include
+ * loading a specific model when there are several, applying the symmetry, and
+ * loading fractional coordinates. [DONE for CML reader 2/2007 RMH]
  * 
- *  
- *  Test files:
- *  
- *  molpro:  vib.xml
- *  odyssey: water.xodydata
- *  cml: a wide variety of files in data-files. 
+ * 
+ * Test files:
+ * 
+ * molpro: vib.xml odyssey: water.xodydata cml: a wide variety of files in
+ * data-files.
  * 
  * -Bob Hanson
  * 
  */
 
- public class XmlReader extends AtomSetCollectionReader {
+public class XmlReader extends AtomSetCollectionReader {
 
   protected Atom atom;
-  protected String[] domAttributes = { "id" };
-  protected XmlReader parent;    // XmlReader itself; to be assigned by the subReader
+  protected String[] domAttributes;
+  protected XmlReader parent; // XmlReader itself; to be assigned by the subReader
   public Map<String, String> atts = new Hashtable<String, String>();
 
   /////////////// file reader option //////////////
 
   @Override
   public void initializeReader() throws Exception {
+    setMyError(parseXML());
+    continuing = false;
+    /**
+     * @j2sNative
+     * 
+     *            this.viewer.applet._createDomNode("xmlReader",null);
+     * 
+     */
+    {
+    }
+  }
+
+  private void setMyError(String err) {
+    if (err != null && (atomSetCollection == null || atomSetCollection.errorMessage == null)) {
+      atomSetCollection = new AtomSetCollection("xml", this, null, null);
+      atomSetCollection.errorMessage = err;
+    }
+  }
+
+  private String parseXML() {
     Object saxReader = null;
+
     /**
      * @j2sNative
      * 
@@ -116,44 +138,40 @@ import org.jmol.util.Logger;
         Logger.debug("Could not instantiate JAXP/SAX XML reader: "
             + e.getMessage());
       }
-      if (saxReader == null) {
-        atomSetCollection = new AtomSetCollection("xml", this, null, null);
-        atomSetCollection.errorMessage = "No XML reader found";
-        return;
-      }
+      if (saxReader == null)
+        return "No XML reader found";
     }
+    return selectReaderAndGo(saxReader);
+  }
+
+  private String selectReaderAndGo(Object saxReader) {
     atomSetCollection = new AtomSetCollection(readerName, this, null, null);
     String className = null;
+    XmlReader thisReader = null;
     try {
       int pt = readerName.indexOf("(");
       String name = (pt < 0 ? readerName : readerName.substring(0, pt));
       className = Resolver.getReaderClassBase(name);
       Class<?> atomSetCollectionReaderClass = Class.forName(className);
-      XmlReader thisReader = (XmlReader) atomSetCollectionReaderClass.newInstance();
-      Object domNode = null;
+      thisReader = (XmlReader) atomSetCollectionReaderClass.newInstance();
       /**
        * 
-       * @j2sNative
-       * domNode = this.viewer.applet._createDomNode("xmlReader",this.reader.lock.lock);
-       *
+       * @j2sNative this.domObj[0] =
+       *            this.viewer.applet._createDomNode("xmlReader"
+       *            ,this.reader.lock.lock);
+       * 
        */
       {
       }
-      thisReader.processXml(this, atomSetCollection, reader, domNode, saxReader);
     } catch (Exception e) {
-      atomSetCollection = new AtomSetCollection("xml", this, null, null);
-      atomSetCollection.errorMessage = "File reader was not found: "
-          + className;
+      return "File reader was not found: " + className;
     }
-    continuing = false;
-    /**
-     * @j2sNative
-     * 
-     * this.viewer.applet._createDomNode("xmlReader",null);
-     * 
-     */
-    {
+    try {
+      thisReader.processXml(this, atomSetCollection, reader, saxReader);
+    } catch (Exception e) {
+      return "Error reading XML: " + e.getMessage();
     }
+    return null;
   }
 
   /**
@@ -161,57 +179,33 @@ import org.jmol.util.Logger;
    * @param parent
    * @param atomSetCollection
    * @param reader
-   * @param domNode
    * @param saxReader
-   * @throws Exception 
+   * @throws Exception
    */
   protected void processXml(XmlReader parent,
                             AtomSetCollection atomSetCollection,
-                            BufferedReader reader, Object domNode,
-                            Object saxReader) throws Exception {
+                            BufferedReader reader, Object saxReader)
+      throws Exception {
     this.parent = parent;
     this.atomSetCollection = atomSetCollection;
     this.reader = reader;
     if (saxReader == null) {
+      domObj = parent.domObj;
       domAttributes = getDOMAttributes();
-      walkDOMTree(domNode);
+      attribs = new Object[1];
+      attArgs = new Object[1];
+      walkDOMTree();
     } else {
-        JmolXmlHandler saxHandler = (JmolXmlHandler) Interface.getOptionInterface("adapter.readers.xml.XmlHandler");
-        saxHandler.set(this, saxReader);
-        saxHandler.processXml(saxReader, reader);
+      JmolXmlHandler saxHandler = (JmolXmlHandler) Interface
+          .getOptionInterface("adapter.readers.xml.XmlHandler");
+      saxHandler.parseXML(this, saxReader, reader);
     }
   }
 
-  /////////////// DOM option //////////////
-  
-  @Override
-  protected void processDOM(Object DOMNode) {
-    atomSetCollection = new AtomSetCollection(readerName, this, null, null);
-    String className = null;
-    Class<?> atomSetCollectionReaderClass;
-    XmlReader thisReader = null;
-    String name = readerName.substring(0, readerName.indexOf("("));
-    try {
-      className = Resolver.getReaderClassBase(name);
-      atomSetCollectionReaderClass = Class.forName(className);//,true, Thread.currentThread().getContextClassLoader());
-      thisReader = (XmlReader) atomSetCollectionReaderClass
-          .newInstance();
-      thisReader.processXml(this, atomSetCollection, reader, DOMNode, null);
-    } catch (Exception e) {
-      atomSetCollection.errorMessage = "File reader was not found:" + className;
-    }
-  }
-
-  protected String[] getDOMAttributes() {
-    // different subclasses will implement this differently
-    // it is only for DOM nodes
-    return domAttributes;
-  }
-  
   @Override
   public void applySymmetryAndSetTrajectory() {
     try {
-      if (parent == null) 
+      if (parent == null)
         super.applySymmetryAndSetTrajectory();
       else
         parent.applySymmetryAndSetTrajectory();
@@ -219,6 +213,19 @@ import org.jmol.util.Logger;
       System.out.println(e.getMessage());
       Logger.error("applySymmetry failed: " + e);
     }
+  }
+
+  /////////////// DOM option //////////////
+
+  @Override
+  protected void processDOM(Object DOMNode) {
+    domObj[0] = DOMNode;
+    setMyError(selectReaderAndGo(null));
+  }
+
+  protected String[] getDOMAttributes() {
+    // different subclasses will implement this differently
+    return new String[] { "id" };
   }
 
   ////////////////////////////////////////////////////////////////
@@ -241,6 +248,7 @@ import org.jmol.util.Logger;
 
   protected boolean keepChars;
   protected String chars;
+
   protected void setKeepChars(boolean TF) {
     keepChars = TF;
     chars = null;
@@ -262,52 +270,63 @@ import org.jmol.util.Logger;
   // startElement with the appropriate strings etc., and then
   // endElement when the element is closed.
 
-  private void walkDOMTree(Object DOMNodeObj) {
+  private Object[] domObj = new Object[1];
+  private Object[] attribs;
+  private Object[] attArgs;
+  private Object[] nullObj = new Object[0];
+
+  private void walkDOMTree() {
     String localName;
     /**
      * @j2sNative
      * 
      * 
-     *            localName = this.jsObjectGetMember(DOMNodeObj,
+     *            localName = this.jsObjectGetMember(this.domObj,
      *            "nodeName").toLowerCase();
      */
     {
-      localName = ((String) jsObjectGetMember(DOMNodeObj, "localName"))
+      localName = ((String) jsObjectGetMember(domObj, "localName"))
           .toLowerCase();
       //namespaceURI = (String) jsObjectGetMember(DOMNodeObj, "namespaceURI");
       //qName = (String) jsObjectGetMember(DOMNodeObj, "nodeName");
       if (localName == null)
         return;
     }
-    if (localName.equals("text")) {
+    if (localName.equals("#text")) {
       if (keepChars)
-        chars = (String) jsObjectGetMember(DOMNodeObj, "innerHTML");
+        chars = (String) jsObjectGetMember(domObj, "data");
       return;
     }
-    getDOMAttributes(jsObjectGetMember(DOMNodeObj, "attributes"));
+    attribs[0] = jsObjectGetMember(domObj, "attributes");
+    getDOMAttributes(attribs);
     processStartElement(localName);
     boolean haveChildren;
     /**
      * @j2sNative
      * 
-     *            haveChilden = this.jsObjectCall(DOMNodeObj, "hasChildNodes",
+     *            haveChildren = this.jsObjectCall(this.domObj, "hasChildNodes",
      *            null);
      * 
      */
     {
-      haveChildren = ((Boolean) jsObjectCall(DOMNodeObj, "hasChildNodes",
-          null)).booleanValue();
+      haveChildren = ((Boolean) jsObjectCall(domObj, "hasChildNodes", null))
+          .booleanValue();
     }
-    if (haveChildren)
-      for (Object nextNode = jsObjectGetMember(DOMNodeObj, "firstChild"); nextNode != null; nextNode = jsObjectGetMember(
-          nextNode, "nextSibling"))
-        walkDOMTree(nextNode);
+    if (haveChildren) {
+      Object nextNode = jsObjectGetMember(domObj, "firstChild");
+      while (nextNode != null) {
+        domObj[0] = nextNode;
+        walkDOMTree();
+        domObj[0] = nextNode;
+        nextNode = jsObjectGetMember(domObj, "nextSibling");
+      }
+    }
     processEndElement(localName);
   }
 
-  private void getDOMAttributes(Object attributes) {
+  private void getDOMAttributes(Object[] attributes) {
     atts.clear();
-    if (attributes != null) {
+    if (attributes == null) {
       return;
     }
 
@@ -324,24 +343,25 @@ import org.jmol.util.Logger;
       if (n == null || Integer.parseInt(n.toString()) == 0)
         return;
     }
+    String name;
     for (int i = domAttributes.length; --i >= 0;) {
-      Object[] attArgs = { domAttributes[i] };
-      Object attNode = jsObjectCall(attributes, "getNamedItem", attArgs);
-      if (attNode != null) {
-        String attLocalName = (String) jsObjectGetMember(attNode, "name");
-        String attValue = (String) jsObjectGetMember(attNode, "value");
-        if (attLocalName != null && attValue != null)
-          atts.put(attLocalName, attValue);
+      attArgs[0] = name = domAttributes[i];
+      Object att = jsObjectCall(attributes, "getNamedItem", attArgs);
+      if (att != null) {
+        attArgs[0] = att;
+        String attValue = (String) jsObjectGetMember(attArgs, "value");
+        if (attValue != null)
+          atts.put(name, attValue);
       }
     }
   }
 
-  private Object jsObjectCall(Object jsObject, String method,
-                              Object[] args) {
-    return parent.viewer.getJsObjectInfo(jsObject, method, args);
+  private Object jsObjectCall(Object[] jsObject, String method, Object[] args) {
+    return parent.viewer.getJsObjectInfo(jsObject, method,
+        args == null ? nullObj : args);
   }
 
-  private Object jsObjectGetMember(Object jsObject, String name) {
+  private Object jsObjectGetMember(Object[] jsObject, String name) {
     return parent.viewer.getJsObjectInfo(jsObject, name, null);
   }
 

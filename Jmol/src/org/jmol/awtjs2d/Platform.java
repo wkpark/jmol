@@ -3,8 +3,6 @@ package org.jmol.awtjs2d;
 import java.net.URL;
 
 
-import netscape.javascript.JSObject;
-
 import org.jmol.api.ApiPlatform;
 import org.jmol.api.JmolFileAdapterInterface;
 import org.jmol.api.JmolFileInterface;
@@ -59,12 +57,13 @@ public class Platform implements ApiPlatform {
     return true;
   }
 
-  public Object getJsObjectInfo(Object jsObject, String method, Object[] args) {
+  public Object getJsObjectInfo(Object[] jsObject, String method, Object[] args) {
     /**
+     * we must use Object[] here to hide [HTMLUnknownElement] and [Attribute] from Java2Script
      * @j2sNative
      * 
-     * if (method == "localName")return jsObject["nodeName"];
-     * return (args == null ? jsObject[method](): jsObject[method](args[0]));
+     * if (method == "localName")return jsObject[0]["nodeName"];
+     * return (args == null ? jsObject[0][method] : jsObject[0][method](args[0]));
      * 
      * 
      */

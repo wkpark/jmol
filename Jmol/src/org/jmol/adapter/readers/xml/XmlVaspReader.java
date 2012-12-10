@@ -64,10 +64,9 @@ public class XmlVaspReader extends XmlReader {
   @Override
   protected void processXml(XmlReader parent,
                             AtomSetCollection atomSetCollection,
-                            BufferedReader reader, Object domNode,
-                            Object saxReader) throws Exception {
+                            BufferedReader reader, Object saxReader) throws Exception {
     parent.doProcessLines = true;
-    super.processXml(parent, atomSetCollection, reader, domNode, saxReader);
+    super.processXml(parent, atomSetCollection, reader, saxReader);
   }
 
   @Override

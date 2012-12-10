@@ -47,7 +47,7 @@ public class XmlOdysseyReader extends XmlReader {
     return new String[] { "id", "label", //general 
         "xyz", "element", "hybrid", //atoms
         "a", "b", "order", //bond
-        "boundary"
+        "box" // boundary
     };
   }
 

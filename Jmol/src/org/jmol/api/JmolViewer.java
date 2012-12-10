@@ -576,7 +576,7 @@ abstract public class JmolViewer {
     apiPlatform.renderScreenImage(this, g, currentSize);
   }
 
-  public Object getJsObjectInfo(Object jsObject, String method, Object[] args) {
+  public Object getJsObjectInfo(Object[] jsObject, String method, Object[] args) {
     return apiPlatform.getJsObjectInfo(jsObject, method, args);
   }
 

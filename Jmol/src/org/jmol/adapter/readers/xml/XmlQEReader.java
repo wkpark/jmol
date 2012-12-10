@@ -57,10 +57,9 @@ public class XmlQEReader extends XmlReader {
   @Override
   protected void processXml(XmlReader parent,
                             AtomSetCollection atomSetCollection,
-                            BufferedReader reader, Object domNode,
-                            Object saxReader) throws Exception {
+                            BufferedReader reader, Object saxReader) throws Exception {
     parent.doProcessLines = true;
-    super.processXml(parent, atomSetCollection, reader, domNode, saxReader);
+    super.processXml(parent, atomSetCollection, reader, saxReader);
   }
 
   @Override
@@ -71,9 +70,9 @@ public class XmlQEReader extends XmlReader {
     if (!parent.continuing)
       return;
 
-    if ("NUMBER_OF_ATOMS".equals(localName)
-        || "CELL_DIMENSIONS".equals(localName)
-        || "AT".equals(localName)) {
+    if ("NUMBER_OF_ATOMS".equalsIgnoreCase(localName)
+        || "CELL_DIMENSIONS".equalsIgnoreCase(localName)
+        || "AT".equalsIgnoreCase(localName)) {
       keepChars = true;
       return;
     }
@@ -116,7 +115,7 @@ public class XmlQEReader extends XmlReader {
 //        break;
 //      }
 
-      if ("CELL_DIMENSIONS".equals(localName)) {
+      if ("CELL_DIMENSIONS".equalsIgnoreCase(localName)) {
         parent.setFractionalCoordinates(true);
         float[] data = getTokensFloat(chars, null, 6);
         a = data[0];
@@ -128,7 +127,7 @@ public class XmlQEReader extends XmlReader {
         break;
       }
 
-      if ("AT".equals(localName)) {
+      if ("AT".equalsIgnoreCase(localName)) {
         // probably wrong -- only cubic
         float[] m = getTokensFloat(chars, null, 9);
         for (int i = 0; i < 9; i += 3) {
@@ -142,7 +141,7 @@ public class XmlQEReader extends XmlReader {
         break;
       }
 
-      if ("GEOMETRY_INFO".equals(localName)) {
+      if ("GEOMETRY_INFO".equalsIgnoreCase(localName)) {
         try {
           parent.applySymmetryAndSetTrajectory();
         } catch (Exception e) {

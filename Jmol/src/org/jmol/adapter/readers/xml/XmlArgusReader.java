@@ -65,7 +65,7 @@ public class XmlArgusReader extends XmlReader {
   @Override
   protected String[] getDOMAttributes() {
     return new String[] { 
-        "order", //bond
+        "order" //, bond
     };
   }
 

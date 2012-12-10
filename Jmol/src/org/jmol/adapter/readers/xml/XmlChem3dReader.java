@@ -54,7 +54,7 @@ public class XmlChem3dReader extends XmlReader {
       "bondAtom1", "bondAtom2", "bondOrder", //bond
       "gridDatXDim", "gridDatYDim", "gridDatZDim",    
       "gridDatXSize", "gridDatYSize", "gridDatZSize",    
-      "gridDatOrigin", "gridDatDat",   // grid cube data
+      "gridDatOrigin", "gridDatData",   // grid cube data
       "calcPartialCharges", "calcAtoms" // electronicStructureCalculation 
     };
   }
@@ -62,9 +62,8 @@ public class XmlChem3dReader extends XmlReader {
   @Override
   protected void processXml(XmlReader parent,
                             AtomSetCollection atomSetCollection,
-                            BufferedReader reader, Object domNode,
-                            Object saxReader) throws Exception {
-    super.processXml(parent, atomSetCollection, reader, domNode, saxReader);
+                            BufferedReader reader, Object saxReader) throws Exception {
+    super.processXml(parent, atomSetCollection, reader, saxReader);
     setMOData(moData);
   }
 
@@ -99,7 +98,7 @@ public class XmlChem3dReader extends XmlReader {
       return;
     }
 
-    if ("electronicStructureCalculation".equals(localName)) {
+    if ("electronicStructureCalculation".equalsIgnoreCase(localName)) {
       tokens = getTokensStr(atts.get("calcPartialCharges"));
       String[] tokens2 = getTokensStr(atts.get("calcAtoms"));
       for (int i = parseIntStr(tokens[0]); --i >= 0;)
@@ -107,7 +106,7 @@ public class XmlChem3dReader extends XmlReader {
             parseFloatStr(tokens[i + 1]));
     }
 
-    if ("gridData".equals(localName)) {
+    if ("gridData".equalsIgnoreCase(localName)) {
       int nPointsX = parseIntStr(atts.get("gridDatXDim"));
       int nPointsY = parseIntStr(atts.get("gridDatYDim"));
       int nPointsZ = parseIntStr(atts.get("gridDatZDim"));

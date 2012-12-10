@@ -60,10 +60,9 @@ public class XmlXsdReader extends XmlReader {
   @Override
   protected void processXml(XmlReader parent,
                             AtomSetCollection atomSetCollection,
-                            BufferedReader reader, Object domNode,
-                            Object saxReader) throws Exception {
+                            BufferedReader reader, Object saxReader) throws Exception {
     parent.htParams.put("backboneAtoms", bsBackbone);
-    super.processXml(parent, atomSetCollection, reader, domNode, saxReader);
+    super.processXml(parent, atomSetCollection, reader, saxReader);
     atomSetCollection.clearSymbolicMap(); 
   }
 
@@ -72,22 +71,22 @@ public class XmlXsdReader extends XmlReader {
     String[] tokens;
     //System.out.println(namespaceURI + " " + localName + " " + atts);
     //System.out.println("xmlchem3d: start " + localName);
-    if ("Molecule".equals(localName)) {
+    if ("Molecule".equalsIgnoreCase(localName)) {
       atomSetCollection.newAtomSet();
       atomSetCollection.setAtomSetName(atts.get("Name"));      
       return;
     }
     
-    if ("LinearChain".equals(localName)) {
+    if ("LinearChain".equalsIgnoreCase(localName)) {
       iGroup = 0;
       iChain++;
     }
 
-    if ("RepeatUnit".equals(localName)) {
+    if ("RepeatUnit".equalsIgnoreCase(localName)) {
       iGroup++;
     }
 
-    if ("Atom3d".equals(localName)) {
+    if ("Atom3d".equalsIgnoreCase(localName)) {
       atom = new Atom();
       atom.elementSymbol = atts.get("Components");
       atom.atomName = atts.get("ID");
@@ -108,7 +107,7 @@ public class XmlXsdReader extends XmlReader {
         bsBackbone.set(iAtom);
       return;
     }
-    if ("Bond".equals(localName)) {
+    if ("Bond".equalsIgnoreCase(localName)) {
       String[] atoms = TextFormat.split(atts.get("Connects"), ',');
       int order = 1;
       if (atts.containsKey("Type")) {
@@ -125,7 +124,7 @@ public class XmlXsdReader extends XmlReader {
 
   @Override
   void processEndElement(String localName) {
-    if ("Atom3d".equals(localName)) {
+    if ("Atom3d".equalsIgnoreCase(localName)) {
       if (atom.elementSymbol != null && !Float.isNaN(atom.z)) {
         parent.setAtomCoord(atom);
         atomSetCollection.addAtomWithMappedName(atom);

@@ -48,7 +48,7 @@ public class XmlMolproReader extends XmlCmlReader {
     if (!processing)
       return;
     super.processStartElement(localName);
-    if (localName.equals("normalCoordinate")) {
+    if (localName.equalsIgnoreCase("normalCoordinate")) {
       keepChars = false;
       if (!parent.doGetVibration(++vibrationNumber))
         return;
@@ -82,7 +82,7 @@ public class XmlMolproReader extends XmlCmlReader {
 
   @Override
   void processEndElement(String localName) {
-    if (localName.equals("normalCoordinate")) {
+    if (localName.equalsIgnoreCase("normalCoordinate")) {
       if (!keepChars)
         return;
       int atomCount = atomSetCollection.getLastAtomSetAtomCount();

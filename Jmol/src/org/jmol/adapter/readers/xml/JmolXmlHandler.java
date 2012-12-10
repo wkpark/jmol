@@ -4,8 +4,6 @@ import java.io.BufferedReader;
 
 interface JmolXmlHandler {  
 
-  void processXml(Object saxReader, BufferedReader reader) throws Exception;
-
-  void set(XmlReader xmlReader, Object saxReader) throws Exception;
+  void parseXML(XmlReader xmlReader, Object saxReader, BufferedReader reader) throws Exception;
 
 }

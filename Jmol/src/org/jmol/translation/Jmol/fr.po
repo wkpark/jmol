@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-11-21 06:41+0000\n"
-"X-Generator: Launchpad (build 16293)\n"
+"X-Launchpad-Export-Date: 2012-12-11 06:32+0000\n"
+"X-Generator: Launchpad (build 16356)\n"
 "X-Poedit-Country: France\n"
 "X-Poedit-Language: French\n"
 "X-Poedit-Basepath: ../../../..\n"
@@ -1882,36 +1882,6 @@ msgstr "Affichage de téléchargement"
 msgid "unimplemented"
 msgstr "non-implémenté"
 
-#~ msgid "name"
-#~ msgstr "nom"
-
-#~ msgid "value"
-#~ msgstr "valeur"
-
-#~ msgid "expires"
-#~ msgstr "expire"
-
-#~ msgid "domain"
-#~ msgstr "domaine"
-
-#~ msgid "path"
-#~ msgstr "chemin"
-
-#~ msgid "HTTP-Version"
-#~ msgstr "Version HTTP"
-
-#~ msgid "Status-Code"
-#~ msgstr "Codes d'état"
-
-#~ msgid "Reason-Phrase"
-#~ msgstr "Reason Phrase"
-
-#~ msgid "Method"
-#~ msgstr "Méthode"
-
-#~ msgid "Request-URI"
-#~ msgstr "Requête URI"
-
 #~ msgid "All"
 #~ msgstr "Tout"
 
@@ -2040,3 +2010,33 @@ msgstr "non-implémenté"
 
 #~ msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
 #~ msgstr "Entrer le nom ou l’identifiant (SMILES, InChI, CAS) d’une molécule"
+
+#~ msgid "domain"
+#~ msgstr "domaine"
+
+#~ msgid "value"
+#~ msgstr "valeur"
+
+#~ msgid "name"
+#~ msgstr "nom"
+
+#~ msgid "expires"
+#~ msgstr "expire"
+
+#~ msgid "HTTP-Version"
+#~ msgstr "Version HTTP"
+
+#~ msgid "path"
+#~ msgstr "chemin"
+
+#~ msgid "Reason-Phrase"
+#~ msgstr "Reason Phrase"
+
+#~ msgid "Status-Code"
+#~ msgstr "Codes d'état"
+
+#~ msgid "Method"
+#~ msgstr "Méthode"
+
+#~ msgid "Request-URI"
+#~ msgstr "Requête URI"

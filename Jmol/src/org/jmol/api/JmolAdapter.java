@@ -123,6 +123,14 @@ public abstract class JmolAdapter {
 
 
   String adapterName;
+  final public static String[] cellParamNames = { 
+    "_cell_length_a", 
+    "_cell_length_b",
+    "_cell_length_c", 
+    "_cell_angle_alpha", 
+    "_cell_angle_beta",
+    "_cell_angle_gamma" 
+  };
 
   public JmolAdapter(String adapterName) {
     this.adapterName = adapterName;

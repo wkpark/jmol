@@ -28,19 +28,21 @@ package org.jmol.adapter.readers.xml;
 
 public class XmlMolproReader extends XmlCmlReader {
 
+  String[] myAttributes = { "id", "length", "type", //general
+      "x3", "y3", "z3", "elementType", //atoms
+      "name", //variable
+      "groups", "cartesianLength", "primitives", // basisSet and
+      "minL", "maxL", "angular", "contractions", //   basisGroup
+      "occupation", "energy", "symmetryID", // orbital 
+      "wavenumber", "units", // normalCoordinate
+  };
+  
   XmlMolproReader() {  
   }
   
   @Override
   protected String[] getDOMAttributes() {
-    return new String[] { "id", "length", "type", //general
-        "x3", "y3", "z3", "elementType", //atoms
-        "name", //variable
-        "groups", "cartesianLength", "primitives", // basisSet and
-        "minL", "maxL", "angular", "contractions", //   basisGroup
-        "occupation", "energy", "symmetryID", // orbital 
-        "wavenumber", "units", // normalCoordinate
-    };
+    return myAttributes;
   }
 
   @Override

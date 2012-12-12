@@ -52,13 +52,14 @@ public class XmlVaspReader extends XmlReader {
   private boolean isE_fr_energy = false;
   private String enthalpy = null;
   private String gibbsEnergy = null;
+  private String[] myAttributes = { "name" }; 
   
   XmlVaspReader() {
   }
   
   @Override
   protected String[] getDOMAttributes() {
-    return new String[] { "name" };
+    return myAttributes;
   }
 
   @Override

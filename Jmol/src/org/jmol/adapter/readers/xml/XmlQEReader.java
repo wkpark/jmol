@@ -49,9 +49,11 @@ public class XmlQEReader extends XmlReader {
   //private float beta;
   //private float gamma;
   
+  private String[] myAttributes = { "SPECIES", "TAU" };
+  
   @Override
   protected String[] getDOMAttributes() {
-    return new String[] { "SPECIES", "TAU" };
+    return myAttributes;
   }
 
   @Override

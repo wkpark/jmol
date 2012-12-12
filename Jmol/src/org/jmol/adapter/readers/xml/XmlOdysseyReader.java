@@ -38,17 +38,19 @@ public class XmlOdysseyReader extends XmlReader {
   private String modelName = null;
   private String formula = null;
   private String phase = null;
+  
+  private String[] myAttributes = { "id", "label", //general 
+      "xyz", "element", "hybrid", //atoms
+      "a", "b", "order", //bond
+      "box" // boundary
+  };
 
   XmlOdysseyReader() {
   }
 
   @Override
   protected String[] getDOMAttributes() {
-    return new String[] { "id", "label", //general 
-        "xyz", "element", "hybrid", //atoms
-        "a", "b", "order", //bond
-        "box" // boundary
-    };
+    return myAttributes;
   }
 
   @Override

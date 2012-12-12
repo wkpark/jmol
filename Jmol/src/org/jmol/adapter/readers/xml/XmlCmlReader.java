@@ -27,13 +27,11 @@ import org.jmol.adapter.smarter.Bond;
 import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.adapter.smarter.Atom;
 
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
 import org.jmol.api.JmolAdapter;
-import org.jmol.adapter.readers.cifpdb.CifReader;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
@@ -469,7 +467,7 @@ public class XmlCmlReader extends XmlReader {
         if (scalarTitle != null)
           checkUnitCellItem(AtomSetCollection.notionalUnitcellTags, scalarTitle);
         else if (scalarDictRef != null)
-          checkUnitCellItem(CifReader.cellParamNames, (scalarDictValue
+          checkUnitCellItem(JmolAdapter.cellParamNames, (scalarDictValue
               .startsWith("_") ? scalarDictValue : "_" + scalarDictValue));
       }
       setKeepChars(false);

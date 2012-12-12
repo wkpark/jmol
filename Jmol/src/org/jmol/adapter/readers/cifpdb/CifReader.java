@@ -353,23 +353,14 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
     setSpaceGroupName((key.equals("_symmetry_space_group_name_H-M") ? "HM:" : "Hall:") + data);
   }
 
-  final public static String[] cellParamNames = { 
-    "_cell_length_a", 
-    "_cell_length_b",
-    "_cell_length_c", 
-    "_cell_angle_alpha", 
-    "_cell_angle_beta",
-    "_cell_angle_gamma" 
-  };
-
   /**
    * unit cell parameters -- two options, so we use MOD 6
    * 
    * @throws Exception
    */
   private void processCellParameter() throws Exception {
-    for (int i = cellParamNames.length; --i >= 0;)
-      if (isMatch(key, cellParamNames[i])) {
+    for (int i = JmolAdapter.cellParamNames.length; --i >= 0;)
+      if (isMatch(key, JmolAdapter.cellParamNames[i])) {
         setUnitCellItem(i, parseFloatStr(data));
         return;
       }

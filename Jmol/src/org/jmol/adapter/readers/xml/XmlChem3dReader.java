@@ -23,12 +23,10 @@
  */
 package org.jmol.adapter.readers.xml;
 
-import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.api.Interface;
 import org.jmol.api.VolumeDataInterface;
 
-import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -61,9 +59,8 @@ public class XmlChem3dReader extends XmlReader {
   
   @Override
   protected void processXml(XmlReader parent,
-                            AtomSetCollection atomSetCollection,
-                            BufferedReader reader, Object saxReader) throws Exception {
-    super.processXml(parent, atomSetCollection, reader, saxReader);
+                            Object saxReader) throws Exception {
+    super.processXml(parent, saxReader);
     setMOData(moData);
   }
 

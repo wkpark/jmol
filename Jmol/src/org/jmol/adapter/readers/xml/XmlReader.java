@@ -29,7 +29,6 @@ import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.Resolver;
 import org.jmol.api.Interface;
 
-import java.io.BufferedReader;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -152,7 +151,7 @@ public class XmlReader extends AtomSetCollectionReader {
       return "File reader was not found: " + className;
     }
     try {
-      thisReader.processXml(this, atomSetCollection, reader, saxReader);
+      thisReader.processXml(this, saxReader);
     } catch (Exception e) {
       return "Error reading XML: " + e.getMessage();
     }
@@ -162,18 +161,15 @@ public class XmlReader extends AtomSetCollectionReader {
   /**
    * 
    * @param parent
-   * @param atomSetCollection
-   * @param reader
    * @param saxReader
    * @throws Exception
    */
-  protected void processXml(XmlReader parent,
-                            AtomSetCollection atomSetCollection,
-                            BufferedReader reader, Object saxReader)
+  protected void processXml(XmlReader parent, Object saxReader)
       throws Exception {
     this.parent = parent;
-    this.atomSetCollection = atomSetCollection;
-    this.reader = reader;
+    atomSetCollection = parent.atomSetCollection;
+    reader = parent.reader;
+    atts = parent.atts;
     if (saxReader == null) {
       domAttributes = getDOMAttributes();
       attribs = new Object[1];

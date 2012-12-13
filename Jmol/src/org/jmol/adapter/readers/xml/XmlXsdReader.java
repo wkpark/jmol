@@ -23,9 +23,7 @@
  */
 package org.jmol.adapter.readers.xml;
 
-import java.io.BufferedReader;
 
-import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.util.BitSet;
 import org.jmol.util.TextFormat;
@@ -59,10 +57,9 @@ public class XmlXsdReader extends XmlReader {
 
   @Override
   protected void processXml(XmlReader parent,
-                            AtomSetCollection atomSetCollection,
-                            BufferedReader reader, Object saxReader) throws Exception {
+                            Object saxReader) throws Exception {
     parent.htParams.put("backboneAtoms", bsBackbone);
-    super.processXml(parent, atomSetCollection, reader, saxReader);
+    super.processXml(parent, saxReader);
     atomSetCollection.clearSymbolicMap(); 
   }
 

@@ -24,10 +24,8 @@
 
 package org.jmol.adapter.readers.xml;
 
-import java.io.BufferedReader;
 
 
-import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.util.Logger;
 
 /**
@@ -49,10 +47,9 @@ public class XmlMagResReader extends XmlReader {
 
   @Override
   protected void processXml(XmlReader parent,
-                            AtomSetCollection atomSetCollection,
-                            BufferedReader reader, Object saxReader) throws Exception {
+                            Object saxReader) throws Exception {
     parent.doProcessLines = true;
-    super.processXml(parent, atomSetCollection, reader, saxReader);
+    super.processXml(parent, saxReader);
   }
 
   @Override

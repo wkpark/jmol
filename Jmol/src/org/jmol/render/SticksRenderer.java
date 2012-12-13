@@ -180,8 +180,10 @@ public class SticksRenderer extends ShapeRenderer {
       boolean doA = !Colix.isColixTranslucent(colixA);
       boolean doB = !Colix.isColixTranslucent(colixB);
       if (!doA || !doB) {
-        if (!doA && !doB)
+        if (!doA && !doB && !needTranslucent) {
+          g3d.setColix(!doA ? colixA : colixB);
           return true;
+        }
         needTranslucent = true;
       }
     }

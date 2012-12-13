@@ -8278,20 +8278,6 @@ public class ScriptEvaluator {
       viewer.selectBonds(null);
   }
 
-  private void colorShapeBs(int shapeType, int typeMask, int argb,
-                          String translucency, float translucentLevel, BitSet bs) {
-
-    if (typeMask != 0) {
-      setShapeProperty(shapeType = JmolConstants.SHAPE_STICKS, "type", Integer
-          .valueOf(typeMask));
-    }
-    setShapePropertyBs(shapeType, "color", Integer.valueOf(argb), bs);
-    if (translucency != null)
-      setShapeTranslucency(shapeType, "", translucency, translucentLevel, bs);
-    if (typeMask != 0)
-      setShapeProperty(JmolConstants.SHAPE_STICKS, "type", Integer
-          .valueOf(JmolEdge.BOND_COVALENT_MASK));
-  }
 
   private void setShapeTranslucency(int shapeType, String prefix,
                                     String translucency,
@@ -12173,9 +12159,16 @@ public class ScriptEvaluator {
         checkLength(++iToken);
         if (!isSyntaxCheck) {
           n = viewer.calculateStruts(bs, bs2);
-          if (n > 0)
-            colorShapeBs(JmolConstants.SHAPE_STRUTS, JmolEdge.BOND_STRUT,
-                0x0FFFFFF, "translucent", 0.5f, null);
+          if (n > 0) {
+            setShapeProperty(JmolConstants.SHAPE_STICKS, "type", Integer
+                .valueOf(JmolEdge.BOND_STRUT));
+            setShapePropertyBs(JmolConstants.SHAPE_STICKS, "color", Integer
+                .valueOf(0x0FFFFFF), null);
+            setShapeTranslucency(JmolConstants.SHAPE_STICKS, "", "translucent",
+                0.5f, null);
+            setShapeProperty(JmolConstants.SHAPE_STICKS, "type", Integer
+                .valueOf(JmolEdge.BOND_COVALENT_MASK));
+          }
           showString(GT._("{0} struts added", n));
         }
         return;
@@ -12205,22 +12198,22 @@ public class ScriptEvaluator {
         default:
           isFrom = true;
         }
-        bs = (iToken + 1 < statementLength ? atomExpressionAt(++iToken) : viewer
-            .getSelectionSet(false));
+        bs = (iToken + 1 < statementLength ? atomExpressionAt(++iToken)
+            : viewer.getSelectionSet(false));
         checkLength(++iToken);
         if (!isSyntaxCheck)
           viewer.calculateSurface(bs, (isFrom ? Float.MAX_VALUE : -1));
         return;
-// Removed in Jmol 13.0.RC4
-//      case Token.volume:
-//        checkLength(2);
-//        if (!isSyntaxCheck) {
-//          float val = viewer.getVolume(null, null);
-//          showString("" + Math.round(val * 10) / 10f + " A^3; "
-//              + Math.round(val * 6.02) / 10f + " cm^3/mole (VDW "
-//              + viewer.getDefaultVdwTypeNameOrData(Integer.MIN_VALUE, null) + ")");
-//        }
-//        return;
+        // Removed in Jmol 13.0.RC4
+        //      case Token.volume:
+        //        checkLength(2);
+        //        if (!isSyntaxCheck) {
+        //          float val = viewer.getVolume(null, null);
+        //          showString("" + Math.round(val * 10) / 10f + " A^3; "
+        //              + Math.round(val * 6.02) / 10f + " cm^3/mole (VDW "
+        //              + viewer.getDefaultVdwTypeNameOrData(Integer.MIN_VALUE, null) + ")");
+        //        }
+        //        return;
       }
       if (n != Integer.MIN_VALUE) {
         scriptStatusOrBuffer(GT._("{0} hydrogen bonds", Math.abs(n)));

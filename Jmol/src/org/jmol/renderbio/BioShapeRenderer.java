@@ -606,7 +606,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
       pt1.setT(controlHermites[p]);
       float theta = angle;
       for (int k = 0; k < nPer; k++, theta += angle) {
-        if (!isElliptical || !isEccentric)
+        if (k > 0 && (!isElliptical || !isEccentric))
           mat.transform(wing);
         if (isEccentric) {
           if (isElliptical) {
@@ -627,12 +627,19 @@ abstract class BioShapeRenderer extends MeshRenderer {
         }
         mesh.addVertexCopy(pt);
       }
-      if (p > 0) {
+      if (p > 0)
         for (int k = 0; k < nPer; k++) {
-          mesh.addQuad(nPoints - nPer + k, nPoints - nPer + ((k + 1) % nPer),
-              nPoints + ((k + 1) % nPer), nPoints + k);
+          // draw the triangles of opposing quads congruent, so they won't clip 
+          // esp. for high ribbonAspectRatio values 
+          int a = nPoints - nPer + k;
+          int b = nPoints - nPer + ((k + 1) % nPer);
+          int c = nPoints + ((k + 1) % nPer);
+          int d = nPoints + k;
+          if (k < nPer / 2)
+            mesh.addQuad(a, b, c, d);
+          else
+            mesh.addQuad(b, c, d, a);
         }
-      }
       nPoints += nPer;
     }
     if (doCap0)

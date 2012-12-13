@@ -560,9 +560,19 @@ final public class Export3D implements JmolRendererInterface {
   public void drawHermite7(boolean fill, boolean border, int tension,
                           Point3i s0, Point3i s1, Point3i s2, Point3i s3,
                           Point3i s4, Point3i s5, Point3i s6, Point3i s7,
-                          int aspectRatio) {
+                          int aspectRatio, short colixBack) {
+    if (colixBack == 0) {
+      hermite3d.renderHermiteRibbon(fill, border, tension, s0, s1, s2, s3, s4,
+          s5, s6, s7, aspectRatio, 0);
+      return;
+    }
     hermite3d.renderHermiteRibbon(fill, border, tension, s0, s1, s2, s3, s4,
-        s5, s6, s7, aspectRatio);
+        s5, s6, s7, aspectRatio, 1);
+    short colix = this.colix;
+    setColix(colixBack);
+    hermite3d.renderHermiteRibbon(fill, border, tension, s0, s1, s2, s3, s4,
+        s5, s6, s7, aspectRatio, -1);
+    setColix(colix);
   }
 
   /*
@@ -629,7 +639,7 @@ final public class Export3D implements JmolRendererInterface {
     exporter.fillTriangle(colix, ptA, ptB, ptC, true);
   }
 
-  public void fillTriangle3f(Point3f pointA, Point3f pointB, Point3f pointC) {
+  public void fillTriangle3f(Point3f pointA, Point3f pointB, Point3f pointC, boolean setNoisy) {
     // rockets
     exporter.fillTriangle(colix, pointA, pointB, pointC, false);
   }

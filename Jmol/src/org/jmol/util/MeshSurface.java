@@ -27,6 +27,8 @@ public class MeshSurface {
   public boolean isTriangleSet; // just a set of flat polygons
   public boolean haveQuads;
   public short colix;
+  public short colixBack;
+  
   public boolean isColorSolid = true;
   public Point3f offset;
   public Tuple3f[] altVertices;
@@ -44,7 +46,7 @@ public class MeshSurface {
   public int nSets = 0;
 
   private int checkCount = 2;
-  
+
   public MeshSurface() {
   }
   
@@ -91,6 +93,10 @@ public class MeshSurface {
 
   public void setColix(short colix) {
     this.colix = colix;
+  }
+
+  public void setColixBack(short colix) {
+    this.colixBack = colix;
   }
 
   public int addVertexCopy(Point3f vertex) { //used by mps and surfaceGenerator

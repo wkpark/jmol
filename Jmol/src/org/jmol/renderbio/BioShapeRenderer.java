@@ -82,6 +82,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
   protected Vector3f[] wingVectors;
   protected short[] mads;
   protected short[] colixes;
+  protected short[] colixesBack;
   protected EnumStructure[] structureTypes;
   
   protected boolean isPass2;
@@ -212,6 +213,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     meshes = bioShape.meshes;
     mads = bioShape.mads;
     colixes = bioShape.colixes;
+    colixesBack = bioShape.colixesBack;
     setStructureTypes();
     return true;
   }
@@ -277,9 +279,12 @@ abstract class BioShapeRenderer extends MeshRenderer {
   }
 
   protected short getLeadColix(int i) {
-    //System.out.println("bioshaperend " + monomers[i] + " getLeadColix i=" + i + " leadatom = " + monomers[i].getLeadAtom().getInfo() + " index=" + monomers[i].getLeadAtom().getAtomIndex());
     return Colix.getColixInherited(colixes[i], monomers[i].getLeadAtom()
         .getColix());
+  }
+
+  protected short getLeadColixBack(int i) {
+    return (colixesBack == null || colixesBack.length <= i ? 0 : colixesBack[i]);
   }
 
   //// cardinal hermite constant cylinder (meshRibbon, strands)
@@ -287,6 +292,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
   private int iPrev, iNext, iNext2, iNext3;
   private int diameterBeg, diameterMid, diameterEnd;
   private boolean doCap0, doCap1;
+  protected short colixBack;
 
   private void setNeighbors(int i) {
     iPrev = Math.max(i - 1, 0);
@@ -386,6 +392,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     colix = getLeadColix(i);
     if (!setBioColix(colix))
       return;
+    colixBack = getLeadColixBack(i);
     if (doFill && aspectRatio != 0) {
       if (setMads(i, thisTypeOnly)) {
         try {
@@ -393,6 +400,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
               && !createMesh(i, madBeg, madMid, madEnd, aspectRatio))
             return;
           meshes[i].setColix(colix);
+          meshes[i].setColixBack(colixBack);
           bsRenderMesh.set(i);
           return;
         } catch (Exception e) {
@@ -405,7 +413,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
         ribbonTopScreens[iPrev], ribbonTopScreens[i], ribbonTopScreens[iNext],
         ribbonTopScreens[iNext2], ribbonBottomScreens[iPrev],
         ribbonBottomScreens[i], ribbonBottomScreens[iNext],
-        ribbonBottomScreens[iNext2], (int) aspectRatio);
+        ribbonBottomScreens[iNext2], (int) aspectRatio, colixBack);
   }
 
   //// cardinal hermite (box or flat) arrow head (cartoon)
@@ -421,6 +429,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     colix = getLeadColix(i);
     if (!setBioColix(colix))
       return;
+    colixBack = getLeadColixBack(i);
     setNeighbors(i);
     if (setMads(i, false)) {
       try {
@@ -450,7 +459,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     g3d.drawHermite7(true, ribbonBorder, isNucleic ? 4 : 7, screenArrowTopPrev,
         screenArrowTop, controlPointScreens[iNext],
         controlPointScreens[iNext2], screenArrowBotPrev, screenArrowBot,
-        controlPointScreens[iNext], controlPointScreens[iNext2], (int) aspectRatio);
+        controlPointScreens[iNext], controlPointScreens[iNext2], (int) aspectRatio, colixBack);
     if (ribbonBorder && aspectRatio == 0) {
       g3d.fillCylinderXYZ(colix, colix,
           GData.ENDCAPS_SPHERICAL,

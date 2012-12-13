@@ -141,6 +141,20 @@ public abstract class BioShapeCollection extends Shape {
       }
       return;
     }
+    if ("colorPhase" == propertyName) {
+      // cartoons and ribbons only
+      Object[] twoColors = (Object[]) value; 
+      short colixBack = Colix.getColixO(twoColors[0]);
+      short colix = Colix.getColixO(twoColors[1]);
+      for (int i = bioShapes.length; --i >= 0;) {
+        BioShape bioShape = bioShapes[i];
+        if (bioShape.monomerCount > 0) {
+          bioShape.setColixBS(colix, (byte)0, bsSelected);
+          bioShape.setColixBack(colixBack, bsSelected);
+        }
+      }
+      return;
+    }
     if ("translucency" == propertyName) {
       boolean isTranslucent = ("translucent".equals(value));
       for (int i = bioShapes.length; --i >= 0;) {

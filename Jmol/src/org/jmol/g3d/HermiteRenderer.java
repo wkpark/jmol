@@ -58,7 +58,11 @@ import org.jmol.util.Vector3f;
  */
 public class HermiteRenderer {
 
+  private static Vector3f vAB = new Vector3f();
+  private static Vector3f vAC = new Vector3f();
+
   /* really a private class to g3d and export3d */
+
   
   private JmolRendererInterface g3d;
 
@@ -173,13 +177,32 @@ public class HermiteRenderer {
   private final Vector3f depth1 = new Vector3f();
   private final boolean[] needToFill = new boolean[16];
 
-  public void renderHermiteRibbon(boolean fill, boolean border, int tension,
-                      //top strand segment
-                      Point3i p0, Point3i p1, Point3i p2, Point3i p3,
-                      //bottom strand segment
-                      Point3i p4, Point3i p5, Point3i p6, Point3i p7,
-                      int aspectRatio) {
-    if (p0.z == 1 ||p1.z == 1 ||p2.z == 1 ||p3.z == 1 ||p4.z == 1 ||p5.z == 1 ||p6.z == 1 ||p7.z == 1)
+  /**
+   * @param fill
+   * @param border
+   * @param tension
+   * @param p0
+   * @param p1
+   * @param p2
+   * @param p3
+   * @param p4
+   * @param p5
+   * @param p6
+   * @param p7
+   * @param aspectRatio
+   * @param fillType
+   *        1 front; -1 back; 0 both
+   */
+  public void renderHermiteRibbon(boolean fill, boolean border,
+                                  int tension,
+                                  //top strand segment
+                                  Point3i p0, Point3i p1, Point3i p2,
+                                  Point3i p3,
+                                  //bottom strand segment
+                                  Point3i p4, Point3i p5, Point3i p6,
+                                  Point3i p7, int aspectRatio, int fillType) {
+    if (p0.z == 1 || p1.z == 1 || p2.z == 1 || p3.z == 1 || p4.z == 1
+        || p5.z == 1 || p6.z == 1 || p7.z == 1)
       return;
     if (!fill) {
       renderParallelPair(fill, tension, p0, p1, p2, p3, p4, p5, p6, p7);
@@ -236,7 +259,7 @@ public class HermiteRenderer {
               }
 
               if (needToFill[sp]) {
-                if(aspectRatio > 0) {
+                if (aspectRatio > 0) {
                   setDepth(depth1, c, a, b, ratio);
                   setPoint(a1, a, depth1, 1);
                   setPoint(a2, a, depth1, -1);
@@ -252,7 +275,14 @@ public class HermiteRenderer {
                   g3d.fillQuadrilateral(c1, d1, d2, c2);
                   closeEnd = true;
                 } else {
-                  g3d.fillQuadrilateral(a, b, d, c);
+                  if (fillType == 0) {
+                    g3d.fillQuadrilateral(a, b, d, c);
+                  } else {
+                    if (fillType == isFront(a, b, d))
+                      g3d.fillTriangle3f(a, b, d, false);
+                    if (fillType == isFront(a, d, c))
+                      g3d.fillTriangle3f(a, d, c, false);
+                  }
                 }
                 needToFill[sp] = false;
               }
@@ -306,6 +336,13 @@ public class HermiteRenderer {
     }
   }
  
+  private static int isFront(Point3f a, Point3f b, Point3f c) {
+    vAB.sub2(b, a);
+    vAC.sub2(c, a);
+    vAB.cross(vAB, vAC);
+    return (vAB.z < 0 ? -1 : 1);
+  }
+
   /**
    * 
    * @param fill   NOT USED

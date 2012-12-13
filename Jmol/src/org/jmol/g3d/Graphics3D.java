@@ -576,9 +576,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   
   @Override
   public void setColor(int argb) {
-    // note -- super.setColor did not work here, presumably because setColor is part of JmolRendererInterface?
-    argbCurrent = argb;
-    argbNoisyUp = argbNoisyDn = argb;
+    argbCurrent = argbNoisyUp = argbNoisyDn = argb;
   }
   
 
@@ -1148,12 +1146,22 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     hermite3d.renderHermiteRope(false, tension, 0, 0, 0, s0, s1, s2, s3);
   }
 
-  public void drawHermite7(boolean fill, boolean border,
-                          int tension, Point3i s0, Point3i s1, Point3i s2,
-                          Point3i s3, Point3i s4, Point3i s5, Point3i s6,
-                          Point3i s7, int aspectRatio) {
-    hermite3d.renderHermiteRibbon(fill, border, tension, s0, s1, s2, s3, s4, s5, s6,
-        s7, aspectRatio);
+  public void drawHermite7(boolean fill, boolean border, int tension,
+                           Point3i s0, Point3i s1, Point3i s2, Point3i s3,
+                           Point3i s4, Point3i s5, Point3i s6, Point3i s7,
+                           int aspectRatio, short colixBack) {
+    if (colixBack == 0) {
+      hermite3d.renderHermiteRibbon(fill, border, tension, s0, s1, s2, s3, s4,
+          s5, s6, s7, aspectRatio, 0);
+      return;
+    }
+    hermite3d.renderHermiteRibbon(fill, border, tension, s0, s1, s2, s3, s4,
+        s5, s6, s7, aspectRatio, 1);
+    short colix = colixCurrent;
+    setColix(colixBack);
+    hermite3d.renderHermiteRibbon(fill, border, tension, s0, s1, s2, s3, s4,
+        s5, s6, s7, aspectRatio, -1);
+    setColix(colix);
   }
 
   public void fillHermite(int tension, int diameterBeg,
@@ -1220,9 +1228,13 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
         xScreenC, yScreenC, zScreenC, false);
   }
 
-  public void fillTriangle3f(Point3f screenA, Point3f screenB, Point3f screenC) {
+  public void fillTriangle3f(Point3f screenA, Point3f screenB, Point3f screenC, boolean setNoisy) {
     // rockets
-    setColorNoisy(getShadeIndexP3(screenA, screenB, screenC));
+    int i = getShadeIndexP3(screenA, screenB, screenC);
+    if (setNoisy)
+      setColorNoisy(i);
+    else
+      setColor(shadesCurrent[i]);
     triangle3d.fillTriangleP3f(screenA, screenB, screenC, false);
   }
 

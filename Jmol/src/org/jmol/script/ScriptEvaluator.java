@@ -8043,6 +8043,9 @@ public class ScriptEvaluator {
             translucency = parameterAsString(index);
             if (isTranslucent && isFloatParameter(index + 1))
               translucentLevel = getTranslucentLevel(++index);
+          } else if (isColorParam(index)){
+            argb = getArgbParamOrNone(index, false);
+            colorvalue1 = (argb == 0 ? null : Integer.valueOf(argb));            
           }
           // checkLength(index + 1);
           // iToken = index;
@@ -8223,7 +8226,8 @@ public class ScriptEvaluator {
         viewer.calcSelectedMoleculesCount();
         break;
       }
-      if (isIsosurface && colorvalue1 != null)
+      if (colorvalue1 != null 
+          && (isIsosurface || shapeType == JmolConstants.SHAPE_CARTOON || shapeType == JmolConstants.SHAPE_RIBBONS))
         setShapeProperty(shapeType, "colorPhase", new Object[] { colorvalue1, colorvalue });
       else if (bs == null)
         setShapeProperty(shapeType, prefix + "color", colorvalue);

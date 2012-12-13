@@ -246,7 +246,7 @@ public interface JmolRendererInterface extends JmolGraphicsInterface {
   public abstract void drawHermite7(boolean fill, boolean border, int tension,
                                    Point3i s0, Point3i s1, Point3i s2,
                                    Point3i s3, Point3i s4, Point3i s5,
-                                   Point3i s6, Point3i s7, int aspectRatio);
+                                   Point3i s6, Point3i s7, int aspectRatio, short colixBack);
 
   public abstract void fillHermite(int tension, int diameterBeg,
                                    int diameterMid, int diameterEnd,
@@ -281,7 +281,7 @@ public interface JmolRendererInterface extends JmolGraphicsInterface {
                                             int yScreenC, int zScreenC);
 
   public abstract void fillTriangle3f(Point3f screenA, Point3f screenB,
-                                    Point3f screenC);
+                                    Point3f screenC, boolean setNoisy);
 
   public abstract void fillTriangle3i(Point3i screenA, Point3i screenB,
                                     Point3i screenC, Point3f ptA, Point3f ptB, Point3f ptC);

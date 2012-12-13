@@ -27,7 +27,6 @@ package org.jmol.shapebio;
 
 import java.util.Map;
 
-
 import org.jmol.modelset.Atom;
 import org.jmol.modelsetbio.BioPolymer;
 import org.jmol.modelsetbio.Monomer;
@@ -35,6 +34,7 @@ import org.jmol.modelsetbio.NucleicMonomer;
 import org.jmol.modelsetbio.NucleicPolymer;
 import org.jmol.shape.Shape;
 import org.jmol.shape.Mesh;
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSet;
 import org.jmol.util.Colix;
 import org.jmol.util.Logger;
@@ -55,6 +55,7 @@ public class BioShape {
 
   public short[] mads;
   public short[] colixes;
+  public short[] colixesBack;
   byte[] paletteIDs;
 
   BitSet bsColixSet;
@@ -284,8 +285,23 @@ public class BioShape {
       int atomIndex = leadAtomIndices[i];
       if (bsSelected.get(atomIndex)) {
         colixes[i] = shape.setColix(colix, pid, atomIndex);
+        if (colixesBack != null && colixesBack.length > i)
+          colixesBack[i] = 0;
         paletteIDs[i] = pid;
         bsColixSet.setBitTo(i, colixes[i] != Colix.INHERIT_ALL);
+      }
+    }
+  }
+  
+  void setColixBack(short colix, BitSet bsSelected) {
+    for (int i = monomerCount; --i >= 0;) {
+      int atomIndex = leadAtomIndices[i];
+      if (bsSelected.get(atomIndex)) {
+        if (colixesBack == null)
+          colixesBack = new short[colixes.length];
+        if (colixesBack.length < colixes.length)
+          colixesBack = ArrayUtil.ensureLengthShort(colixesBack, colixes.length);
+        colixesBack[i] = colix;
       }
     }
   }
@@ -297,6 +313,8 @@ public class BioShape {
     for (int i = monomerCount; --i >= 0; )
       if (bsSelected.get(leadAtomIndices[i])) {
         colixes[i] = Colix.getColixTranslucent3(colixes[i], isTranslucent, translucentLevel);
+        if (colixesBack != null && colixesBack.length > i)
+          colixesBack[i] = Colix.getColixTranslucent3(colixesBack[i], isTranslucent, translucentLevel);
         bsColixSet.setBitTo(i, colixes[i] != Colix.INHERIT_ALL);
     }
   }

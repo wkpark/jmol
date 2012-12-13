@@ -7790,44 +7790,6 @@ public class ScriptEvaluator {
   }
 
   private void color() throws ScriptException {
-    
-//    if (statementLength == 1 && viewer.getTestFlag(1) && !isSyntaxCheck) {
-//      // a little test...
-//      Point3f pt = new Point3f();
-//      float[] hsl = new float[3];
-//
-//      int n = 20;
-//      for (int r = 0; r <= 260; r += n)
-//        for (int g = 0; g <= 260; g += n)
-//          for (int b = 0; b <= 260; b += n) {
-//            if (r > 255)
-//              r = 255;
-//            if (g > 255)
-//              g = 255;
-//            if (b > 255)
-//              b = 255;
-//            ColorEncoder.RGBtoHSL(r, g, b, hsl);
-//            if (Float.isNaN(hsl[1]))
-//              hsl[1] = 1;//continue;
-//            pt.x = (float) (10 * hsl[1] * Math.cos(Math.PI * 2 * hsl[0]));
-//            pt.y = (float) (10 * hsl[1] * Math.sin(Math.PI * 2 * hsl[0]));
-//            pt.z = hsl[2] * 20 - 10;
-//            viewer.log("draw c_"
-//                + r
-//                + "_"
-//                + g
-//                + "_"
-//                + b
-//                + " "
-//                + Escape.escape(pt)
-//                + " color "
-//                + Escape.escapeColor(ColorUtil.colorTriadToInt(r / 255f,
-//                    g / 255f, b / 255f))
-//            //+ " \"" + (int) (hsv[0] * 240) + " "+ (int) (hsv[1] * 240) + " "+ (int) (hsv[2] * 240) + "\""
-//                );
-//          }
-//      return;
-//    }
     int i = 1;
     if (isColorParam(1)) {
       theTok = Token.atoms;

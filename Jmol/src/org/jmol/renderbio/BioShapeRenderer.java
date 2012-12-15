@@ -59,7 +59,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
   private float aspectRatio;
   private int hermiteLevel;
   private float sheetSmoothing;
-  protected boolean meshElliptical;
+  protected boolean cartoonFancy;
 
 
   private Mesh[] meshes;
@@ -102,23 +102,23 @@ abstract class BioShapeRenderer extends MeshRenderer {
     isHighRes = TF;
 
     boolean v = viewer.getCartoonFlag(Token.cartoonfancy);
-    if (meshElliptical != v) {
+    if (cartoonFancy != v) {
       invalidateMesh = true;
-      meshElliptical = v;
+      cartoonFancy = v;
     }
     int val1 = viewer.getHermiteLevel();
     val1 = (val1 <= 0 ? -val1 : viewer.getInMotion() ? 0 : val1);
-    if (meshElliptical)
+    if (cartoonFancy)
       val1 = Math.max(val1, 3); // at least HermiteLevel 3 for "cartoonFancy"
-    else if (val1 == 0 && exportType == GData.EXPORT_CARTESIAN)
-      val1 = 5; // forces hermite for 3D exporters
-    if (val1 != hermiteLevel && val1 != 0)
+    //else if (val1 == 0 && exportType == GData.EXPORT_CARTESIAN)
+      //val1 = 5; // forces hermite for 3D exporters
+    if (val1 != hermiteLevel)// && val1 != 0)
       invalidateMesh = true;
     hermiteLevel = Math.min(val1, 8);
 
     int val = viewer.getRibbonAspectRatio();
     val = Math.min(Math.max(0, val), 20);
-    if (meshElliptical && val >= 16)
+    if (cartoonFancy && val >= 16)
       val = 4; // at most 4 for elliptical cartoonFancy
     if (hermiteLevel == 0)
       val = 0;
@@ -362,7 +362,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     colix = getLeadColix(i);
     if (!setBioColix(colix))
       return;
-    if (setMads(i, thisTypeOnly)) {
+    if (setMads(i, thisTypeOnly) || isExport) {
       try {
         if ((meshes[i] == null || !meshReady[i])
             && !createMesh(i, madBeg, madMid, madEnd, 1))
@@ -371,6 +371,8 @@ abstract class BioShapeRenderer extends MeshRenderer {
         bsRenderMesh.set(i);
         return;
       } catch (Exception e) {
+        bsRenderMesh.clear(i);
+        meshes[i] = null;
         Logger.error("render mesh error hermiteConic: " + e.toString());
         //System.out.println(e.getMessage());
       }
@@ -393,8 +395,8 @@ abstract class BioShapeRenderer extends MeshRenderer {
     if (!setBioColix(colix))
       return;
     colixBack = getLeadColixBack(i);
-    if (doFill && aspectRatio != 0) {
-      if (setMads(i, thisTypeOnly)) {
+    if (doFill && (aspectRatio != 0 || isExport)) {
+      if (setMads(i, thisTypeOnly) || isExport) {
         try {
           if ((meshes[i] == null || !meshReady[i])
               && !createMesh(i, madBeg, madMid, madEnd, aspectRatio))
@@ -404,6 +406,8 @@ abstract class BioShapeRenderer extends MeshRenderer {
           bsRenderMesh.set(i);
           return;
         } catch (Exception e) {
+          bsRenderMesh.clear(i);
+          meshes[i] = null;
           Logger.error("render mesh error hermiteRibbon: " + e.toString());
           //System.out.println(e.getMessage());
         }
@@ -423,7 +427,6 @@ abstract class BioShapeRenderer extends MeshRenderer {
   private final Point3i screenArrowBot = new Point3i();
   private final Point3i screenArrowBotPrev = new Point3i();
 
-  //cartoons
   protected void renderHermiteArrowHead(int i) {
     // cartoons only
     colix = getLeadColix(i);
@@ -431,7 +434,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
       return;
     colixBack = getLeadColixBack(i);
     setNeighbors(i);
-    if (setMads(i, false)) {
+    if (setMads(i, false) || isExport) {
       try {
         doCap0 = true;
         doCap1 = false;
@@ -443,6 +446,8 @@ abstract class BioShapeRenderer extends MeshRenderer {
         bsRenderMesh.set(i);
         return;
       } catch (Exception e) {
+        bsRenderMesh.clear(i);
+        meshes[i] = null;
         Logger.error("render mesh error hermiteArrowHead: " + e.toString());
         //System.out.println(e.getMessage());
       }
@@ -514,6 +519,10 @@ abstract class BioShapeRenderer extends MeshRenderer {
   private final Point3f ptPrev = new Point3f();
   private final Point3f ptNext = new Point3f();
   private final Matrix3f mat = new Matrix3f();
+  private final static int MODE_TUBE = 0;
+  private final static int MODE_FLAT = 1;
+  private final static int MODE_ELLIPTICAL = 2;
+  private final static int MODE_NONELLIPTICAL = 3;
 
   /**
    * 
@@ -529,22 +538,39 @@ abstract class BioShapeRenderer extends MeshRenderer {
     setNeighbors(i);
     if (controlPoints[i].distance(controlPoints[iNext]) == 0)
       return false;
+
+    // options:
+
+    // isEccentric == not just a tube    
     boolean isEccentric = (aspectRatio != 1 && wingVectors != null);
+    // isFlatMesh == using mesh even for hermiteLevel = 0 (for exporters)
+    boolean isFlatMesh = (aspectRatio == 0);
+    // isElliptical == newer cartoonFancy business
+    boolean isElliptical = (cartoonFancy || this.hermiteLevel >= 6);
+
+    // parameters:
+
+    int hermiteLevel = Math.max(this.hermiteLevel, 5);
     int nHermites = (hermiteLevel + 1) * 2 + 1; // 4 for hermiteLevel = 1; 13 for hermitelevel 5
-    int nPer = (hermiteLevel + 1) * 4 - 2; // 6 for hermiteLevel 1; 22 for hermiteLevel 5
+    int nPer = (isFlatMesh ? 4 : (hermiteLevel + 1) * 4 - 2); // 6 for hermiteLevel 1; 22 for hermiteLevel 5
+    float angle = (float) ((isFlatMesh ? Math.PI / (nPer - 1) : 2 * Math.PI
+        / nPer));
     Mesh mesh = meshes[i] = new Mesh("mesh_" + shapeID + "_" + i, (short) 0, i);
     boolean variableRadius = (madBeg != madMid || madMid != madEnd);
+
+    // control points and vectors:
+
     if (controlHermites == null || controlHermites.length < nHermites + 1) {
       controlHermites = new Point3f[nHermites + 1];
     }
     Hermite.getHermiteList(isNucleic ? 4 : 7, controlPoints[iPrev],
         controlPoints[i], controlPoints[iNext], controlPoints[iNext2],
         controlPoints[iNext3], controlHermites, 0, nHermites, true);
-    //    if (isEccentric) {
     // wing hermites determine the orientation of the cartoon
     if (wingHermites == null || wingHermites.length < nHermites + 1) {
       wingHermites = new Vector3f[nHermites + 1];
     }
+
     wing.setT(wingVectors[iPrev]);
     if (madEnd == 0)
       wing.scale(2.0f); //adds a flair to an arrow
@@ -574,81 +600,98 @@ abstract class BioShapeRenderer extends MeshRenderer {
 
     int nPoints = 0;
     int iMid = nHermites >> 1;
-    boolean isElliptical = (meshElliptical || hermiteLevel >= 6);
+    int kpt1 = (nPer + 2) / 4;
+    int kpt2 = (3 * nPer + 2) / 4;
+    int mode = (!isEccentric ? MODE_TUBE : isFlatMesh ? MODE_FLAT
+        : isElliptical ? MODE_ELLIPTICAL : MODE_NONELLIPTICAL);
+    boolean useMat = (mode == MODE_TUBE || mode == MODE_NONELLIPTICAL);
     for (int p = 0; p < nHermites; p++) {
       norm.sub2(controlHermites[p + 1], controlHermites[p]);
       float scale = (!variableRadius ? radius1 : p < iMid ? radiusHermites[p].x
           : radiusHermites[p - iMid].y);
-      if (isEccentric) {
-        wing.setT(wingHermites[p]);
-        wing1.setT(wing);
-        if (isElliptical) {
-          wing1.cross(norm, wing);
-          wing1.normalize();
-          wing1.scale(wing.length() / aspectRatio);
-        } else {
-          wing.scale(2 / aspectRatio);
-          wing1.sub(wing);
-        }
-      } else {
-        wing.setT(wingHermites[p]);
-        wing.scale(2f);
-        wing.cross(norm, wing);
-        wing.cross(norm, wing);
-        wing.cross(norm, wing);
+      wing.setT(wingHermites[p]);
+      wing1.setT(wing);
+      switch (mode) {
+      case MODE_FLAT:
+        // hermiteLevel = 0 and not exporting
+        break;
+      case MODE_ELLIPTICAL:
+        // cartoonFancy 
+        wing1.cross(norm, wing);
+        wing1.normalize();
+        wing1.scale(wing.length() / aspectRatio);
+        break;
+      case MODE_NONELLIPTICAL:
+        // older nonelliptical hermiteLevel > 0
+        wing.scale(2 / aspectRatio);
+        wing1.sub(wing);
+        break;
+      case MODE_TUBE:
+        // not helix or sheet
+        wing.cross(wing, norm);
         wing.normalize();
+        break;
       }
       wing.scale(scale);
       wing1.scale(scale);
-      float angle = (float) (2 * Math.PI / nPer);
-      aa.setVA(norm, angle);
-      mat.setAA(aa);
+      if (useMat) {
+        aa.setVA(norm, angle);
+        mat.setAA(aa);
+      }
       pt1.setT(controlHermites[p]);
-      float theta = angle;
+      float theta = (isFlatMesh ? 0 : angle);
       for (int k = 0; k < nPer; k++, theta += angle) {
-        if (k > 0 && (!isElliptical || !isEccentric))
+        if (useMat && k > 0)
           mat.transform(wing);
-        if (isEccentric) {
-          if (isElliptical) {
-            float cos = (float) Math.cos(theta);
-            float sin = (float) Math.sin(theta);
-            wingT.setT(wing1);
-            wingT.scale(sin);
-            wingT.scaleAdd2(cos, wing, wingT);
-          } else {
-            wingT.setT(wing);
-            if (k == (nPer + 2) / 4 || k == (3 * nPer + 2) / 4)
-              wing1.scale(-1);
-            wingT.add(wing1);
-          }
-          pt.add2(pt1, wingT);
-        } else {
-          pt.add2(pt1, wing);
+        switch (mode) {
+        case MODE_FLAT:
+          wingT.setT(wing1);
+          wingT.scale((float) Math.cos(theta));
+          break;
+        case MODE_ELLIPTICAL:
+          wingT.setT(wing1);
+          wingT.scale((float) Math.sin(theta));
+          wingT.scaleAdd2((float) Math.cos(theta), wing, wingT);
+          break;
+        case MODE_NONELLIPTICAL:
+          wingT.setT(wing);
+          if (k == kpt1 || k == kpt2)
+            wing1.scale(-1);
+          wingT.add(wing1);
+          break;
+        case MODE_TUBE:
+          wingT.setT(wing);
+          break;
         }
+        pt.add2(pt1, wingT);
         mesh.addVertexCopy(pt);
       }
-      if (p > 0)
-        for (int k = 0; k < nPer; k++) {
+      if (p > 0) {
+        int nLast = (isFlatMesh ? nPer - 1 : nPer);
+        for (int k = 0; k < nLast; k++) {
           // draw the triangles of opposing quads congruent, so they won't clip 
           // esp. for high ribbonAspectRatio values 
           int a = nPoints - nPer + k;
           int b = nPoints - nPer + ((k + 1) % nPer);
           int c = nPoints + ((k + 1) % nPer);
           int d = nPoints + k;
-          if (k < nPer / 2)
+          if (k < nLast / 2)
             mesh.addQuad(a, b, c, d);
           else
             mesh.addQuad(b, c, d, a);
         }
+      }
       nPoints += nPer;
     }
-    if (doCap0)
-      for (int k = hermiteLevel * 2; --k >= 0;)
-        mesh.addQuad(k + 2, k + 1, (nPer - k) % nPer, nPer - k - 1);
-    if (doCap1)
-      for (int k = hermiteLevel * 2; --k >= 0;)
-        mesh.addQuad(nPoints - k - 1, nPoints - nPer + (nPer - k) % nPer,
-            nPoints - nPer + k + 1, nPoints - nPer + k + 2);
+    if (!isFlatMesh) {
+      if (doCap0)
+        for (int k = hermiteLevel * 2; --k >= 0;)
+          mesh.addQuad(k + 2, k + 1, (nPer - k) % nPer, nPer - k - 1);
+      if (doCap1)
+        for (int k = hermiteLevel * 2; --k >= 0;)
+          mesh.addQuad(nPoints - k - 1, nPoints - nPer + (nPer - k) % nPer,
+              nPoints - nPer + k + 1, nPoints - nPer + k + 2);
+    }
     meshReady[i] = true;
     adjustCartoonSeamNormals(i, nPer);
     mesh.setVisibilityFlags(1);

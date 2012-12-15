@@ -1285,6 +1285,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
       useGouraud = true;
     }
     triangle3d.fillTriangleP3i(screenA, screenB, screenC, useGouraud);
+    //triangle3d.fillTriangleP3if(screenA, screenB, screenC, 0.1f, useGouraud);
   }
 
   private void setTriangleColixAndShadeIndex(short colix, int shadeIndex) {

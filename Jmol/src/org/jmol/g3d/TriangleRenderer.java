@@ -352,7 +352,7 @@ class TriangleRenderer {
 
     int xMajorIncrement;
     int xMajorError;  
-    if (dy >= width) {
+    if (width <= dy) {
       // high-slope
       xMajorIncrement = 0;
       xMajorError = width;

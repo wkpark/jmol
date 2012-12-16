@@ -335,7 +335,6 @@ class TriangleRenderer {
     int dx = xS - xN, dz = zS - zN;
     int xCurrent = xN;
     int xIncrement, width, errorTerm;
-    //System.out.println("genraster " + dy + " " + iN + " " + iS + " " + xN + " " + zN + " " + xS + " " + zS);
     if (dx >= 0) {
       xIncrement = 1;
       width = dx;
@@ -343,21 +342,22 @@ class TriangleRenderer {
     } else {
       xIncrement = -1;
       width = -dx;
-      errorTerm = -dy + 1;
+      errorTerm = 1 - dy;
     }
     int zCurrentScaled = (zN << 10) + (1 << 9);
-    int roundingFactor;
-    roundingFactor = GData.roundInt(dy / 2);
+    int roundingFactor = GData.roundInt(dy / 2);
     if (dz < 0)
       roundingFactor = -roundingFactor;
     int zIncrementScaled = ((dz << 10) + roundingFactor) / dy;
 
     int xMajorIncrement;
-    int xMajorError;
+    int xMajorError;  
     if (dy >= width) {
+      // high-slope
       xMajorIncrement = 0;
       xMajorError = width;
     } else {
+      // low-slope
       xMajorIncrement = GData.roundInt(dx / dy);
       xMajorError = width % dy;
     }
@@ -464,5 +464,5 @@ class TriangleRenderer {
       }
     }
   }
-  
+
 }

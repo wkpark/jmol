@@ -637,6 +637,13 @@ public class GData implements JmolGraphicsInterface {
                                    Point3i pointC) {
   }
 
+  /**
+   * JavaScript won't really have an integer here after integer division.
+   * So we need to round it to the integer between it and zero. 
+   * 
+   * @param a
+   * @return number closest to zero
+   */
   public static int roundInt(int a) {
     /**
      * @z2sNative

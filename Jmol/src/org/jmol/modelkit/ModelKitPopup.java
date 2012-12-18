@@ -23,26 +23,72 @@
  */
 package org.jmol.modelkit;
 
-import org.jmol.api.JmolPopupInterface;
+import java.net.URL;
+
+import javax.swing.ImageIcon;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+
 import org.jmol.i18n.GT;
+import org.jmol.popup.PopupResource;
 import org.jmol.popup.SwingPopup;
+import org.jmol.util.Elements;
 import org.jmol.viewer.Viewer;
 
-public class ModelKitPopup extends SwingPopup implements JmolPopupInterface {
-
+public class ModelKitPopup extends SwingPopup {
 
   public ModelKitPopup() {
     // required by reflection
   }
   
-  public void initialize(Viewer viewer, String menu) {
-    isModelKit = asPopup = true;
+  public void jpiInitialize(Viewer viewer, String menu) {
     updateMode = UPDATE_NEVER;
-    imagePath = "org/jmol/modelkit/images/"; 
     boolean doTranslate = GT.getDoTranslate();
     GT.setDoTranslate(true);
-    initialize(viewer, new ModelKitPopupResourceBundle());
+    PopupResource bundle = new ModelKitPopupResourceBundle();
+    initialize(viewer, bundle, bundle.getMenuName());
     GT.setDoTranslate(doTranslate);
   }
-    
+
+  @Override
+  public String menuSetCheckBoxOption(Object item, String name, String what) {
+    // atom type
+    String element = JOptionPane.showInputDialog(GT._("Element?"), "");
+    if (element == null || Elements.elementNumberFromSymbol(element, true) == 0)
+      return null;
+    menuSetLabel(item, element);
+    ((JMenuItem) item).setActionCommand("assignAtom_" + element + "P!:??");
+    return "set picking assignAtom_" + element;
+  }
+  
+  @Override
+  public void menuCheckClick(Object source, String script) {
+    if (script.equals("clearQ")) {
+      for (Object o : htCheckbox.values()) {
+        JMenuItem item = (JMenuItem) o;
+        if (item.getActionCommand().indexOf(":??") < 0)
+          continue;        
+        menuSetLabel(item, "??");
+        item.setActionCommand("_??P!:");
+        item.setSelected(false);
+        item.setArmed(false);
+      }
+      viewer.evalStringQuiet("set picking assignAtom_C");
+      return;
+    }
+    super.menuCheckClick(source, script);  
+  }
+  
+  @Override
+  protected Object getEntryIcon(String[] ret) {
+    String entry = ret[0];
+    if (!entry.startsWith("<"))
+      return null;
+    int pt = entry.indexOf(">");
+    ret[0] = entry.substring(pt + 1);
+    String imageName = "org/jmol/modelkit/images/" + entry.substring(1, pt);
+    URL imageUrl = this.getClass().getClassLoader().getResource(imageName);
+    return (imageUrl == null ? null : new ImageIcon(imageUrl));
+  }
+
 }

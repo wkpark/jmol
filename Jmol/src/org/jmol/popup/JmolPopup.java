@@ -43,13 +43,12 @@ public class JmolPopup extends SwingPopup implements JmolPopupInterface {
     // required by reflection
   }
 
-  public void initialize(Viewer viewer, String menu) {
-    isModelKit = false;
-    asPopup = true;
+  public void jpiInitialize(Viewer viewer, String menu) {
     boolean doTranslate = GT.getDoTranslate();
     GT.setDoTranslate(true);
-    initialize(viewer, new MainPopupResourceBundle(strMenuStructure = menu,
-        menuText));
+    PopupResource bundle = new MainPopupResourceBundle(strMenuStructure = menu,
+        menuText);
+    initialize(viewer, bundle, bundle.getMenuName());
     GT.setDoTranslate(doTranslate);
   }
 

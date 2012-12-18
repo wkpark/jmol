@@ -203,7 +203,7 @@ public class MeshSurface {
         && (bsSlabGhost == null || !bsSlabGhost.get(i)))
       return false;
     int[] vertexIndexes = polygonIndexes[i];
-    if (vertexIndexes == null)
+    if (vertexIndexes == null || vertexIndexes.length < 3)
       return false;
     iA = vertexIndexes[0];
     iB = vertexIndexes[1];

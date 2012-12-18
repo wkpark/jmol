@@ -243,8 +243,7 @@ public class Mesh extends MeshSurface {
   protected void sumVertexNormals(Point3f[] vertices, Vector3f[] normals) {
     // subclassed in IsosurfaceMesh
     int adjustment = checkByteCount;
-    float min = getMinDistanceForVertexGrouping();
-    min *= min;
+    float min = getMinDistance2ForVertexGrouping();
     for (int i = polygonCount; --i >= 0;) {
       try {
         if (!setABC(i))
@@ -268,12 +267,13 @@ public class Mesh extends MeshSurface {
             normals[k].add(vTemp);
           }
       } catch (Exception e) {
+        System.out.println(e);
       }
     }
   }
 
-  protected float getMinDistanceForVertexGrouping() {
-    return 0.0001f; // different for an isosurface
+  protected float getMinDistance2ForVertexGrouping() {
+    return 1e-8f; // different for an isosurface
   }
 
   public String getState(String type) {

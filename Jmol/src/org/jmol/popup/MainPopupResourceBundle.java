@@ -30,7 +30,7 @@ import org.jmol.i18n.GT;
 import org.jmol.util.StringXBuilder;
 import org.jmol.util.TextFormat;
 
-class MainPopupResourceBundle extends PopupResource {
+public class MainPopupResourceBundle extends PopupResource {
 
   private final static String MENU_NAME = "popupMenu";
 
@@ -39,7 +39,7 @@ class MainPopupResourceBundle extends PopupResource {
     return MENU_NAME; 
   }
   
-  MainPopupResourceBundle(String menuStructure, Properties menuText) {
+  public MainPopupResourceBundle(String menuStructure, Properties menuText) {
     super(menuStructure, menuText);
   }
 

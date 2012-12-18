@@ -37,7 +37,7 @@ public class Platform implements ApiPlatform {
     JmolPopupInterface jmolpopup = (JmolPopupInterface) Interface.getOptionInterface(
         type == 'j' ? "popup.JmolPopup" : "modelkit.ModelKitPopup");
     if (jmolpopup != null)
-      jmolpopup.initialize(viewer, menuStructure);
+      jmolpopup.jpiInitialize(viewer, menuStructure);
     return jmolpopup;
   }
 

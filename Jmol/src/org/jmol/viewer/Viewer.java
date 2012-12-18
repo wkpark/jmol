@@ -1850,9 +1850,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       scriptManager.clear();
       gdata.destroy();
       if (jmolpopup != null)
-        jmolpopup.dispose();
+        jmolpopup.jpiDispose();
       if (modelkitPopup != null)
-        modelkitPopup.dispose();
+        modelkitPopup.jpiDispose();
       try {
         if (appConsole != null) {
           appConsole.dispose();
@@ -5380,7 +5380,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       try {
         getPopupMenu();
         // can throw error if not present; that's ok
-        jmolpopup.show(x, y);
+        jmolpopup.jpiShow(x, y);
       } catch (Throwable e) {
         // no Swing -- tough luck!
         global.disablePopupMenu = true;
@@ -5392,7 +5392,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       // atom, bond, or main -- ignored      
       modelkitPopup = apiPlatform.getMenuPopup(this, null, type);
       if (modelkitPopup != null)
-        modelkitPopup.show(x, y);
+        modelkitPopup.jpiShow(x, y);
       break;
     }
   }
@@ -5403,7 +5403,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       popupMenu(dimScreen.width - 120, 0, 'j');
       return "OK";
     }
-    return (jmolpopup == null ? "" : jmolpopup.getMenuAsString("Jmol version "
+    return (jmolpopup == null ? "" : jmolpopup.jpiGetMenuAsString("Jmol version "
         + Viewer.getJmolVersion() + "|_GET_MENU|" + type));
   }
 
@@ -5415,7 +5415,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         return null;
       }
     }
-    return jmolpopup.getMenuAsObject();
+    return jmolpopup.jpiGetMenuAsObject();
   }
 
   public void setMenu(String fileOrText, boolean isFile) {
@@ -6144,7 +6144,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       language = GT.getLanguage();
       modelkitPopup = null;
       if (jmolpopup != null) {
-        jmolpopup.dispose();
+        jmolpopup.jpiDispose();
         jmolpopup = null;
         getPopupMenu();
       }
@@ -8250,7 +8250,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return scriptEditor;
     case 120:
       if (jmolpopup != null)
-        jmolpopup.dispose();
+        jmolpopup.jpiDispose();
       jmolpopup = null;
       return menuStructure = (String) paramInfo;
     case 140:

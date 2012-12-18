@@ -103,6 +103,7 @@ public class Platform implements ApiPlatform {
 
 	public JmolPopupInterface getMenuPopup(Viewer viewer, String menuStructure,
 			char type) {
+	  //TODO: implement JavaScript versions of ModelKitPopup, JmolPopup, and SwingPopup
 		return null;
 	}
 

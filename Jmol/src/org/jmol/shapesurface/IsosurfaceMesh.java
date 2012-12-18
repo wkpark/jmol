@@ -974,14 +974,14 @@ public class IsosurfaceMesh extends Mesh {
   }
   
   @Override
-  protected float getMinDistanceForVertexGrouping() {
+  protected float getMinDistance2ForVertexGrouping() {
     if (jvxlData.boundingBox != null && jvxlData.boundingBox[0] != null) {
       float d2 = jvxlData.boundingBox[1]
           .distanceSquared(jvxlData.boundingBox[0]);
       if (d2 < 5)
-        return 0.00001f;
+        return 1e-10f;
     }
-    return 0.0001f; // different for an isosurface
+    return 1e-8f;
   }
 
   @Override

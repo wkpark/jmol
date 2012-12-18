@@ -26,7 +26,7 @@ package org.jmol.modelkit;
 import org.jmol.i18n.GT;
 import org.jmol.popup.PopupResource;
 
-class ModelKitPopupResourceBundle extends PopupResource {
+public class ModelKitPopupResourceBundle extends PopupResource {
 
   private final static String MENU_NAME = "modelkitMenu";
 
@@ -35,7 +35,7 @@ class ModelKitPopupResourceBundle extends PopupResource {
     return MENU_NAME; 
   }
 
-  ModelKitPopupResourceBundle() {
+  public ModelKitPopupResourceBundle() {
     super(null, null);
   }
 

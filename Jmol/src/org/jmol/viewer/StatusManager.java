@@ -395,7 +395,7 @@ class StatusManager {
     }
     
     if (viewer.jmolpopup != null && !isAnimationRunning)
-      viewer.jmolpopup.updateComputedMenus();
+      viewer.jmolpopup.jpiUpdateComputedMenus();
 
   }
 

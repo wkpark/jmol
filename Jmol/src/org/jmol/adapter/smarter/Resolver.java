@@ -794,9 +794,9 @@ public class Resolver {
   { "Ampac", "AMPAC Version" };
   
   private final static String[] mopacContainsRecords =
-  { "Mopac", "MOPAC 93 (c) Fujitsu", "MOPAC2002 (c) Fujitsu",
+  { "Mopac", "MOPAC 93 (c) Fujitsu", 
     "MOPAC FOR LINUX (PUBLIC DOMAIN VERSION)",
-    "MOPAC:  VERSION  6", "MOPAC   7", "MOPAC2009", "MOPAC (PUBLIC" };
+    "MOPAC:  VERSION  6", "MOPAC   7", "MOPAC2", "MOPAC (PUBLIC" };
 
   private final static String[] qchemContainsRecords = 
   { "Qchem", "Welcome to Q-Chem", "A Quantum Leap Into The Future Of Chemistry" };

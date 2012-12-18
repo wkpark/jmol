@@ -96,7 +96,6 @@ public class BitSet implements Cloneable {
   private transient boolean sizeIsSticky = false;
 
   /* use serialVersionUID from JDK 1.0.2 for interoperability */
-  @SuppressWarnings("unused")
   private static final long serialVersionUID = 7997698588986878753L;
 
   /**

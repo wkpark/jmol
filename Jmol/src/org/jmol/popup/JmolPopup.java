@@ -23,11 +23,10 @@
  */
 package org.jmol.popup;
 
-import org.jmol.api.JmolPopupInterface;
 import org.jmol.i18n.GT;
 import org.jmol.viewer.Viewer;
 
-public class JmolPopup extends SwingPopup implements JmolPopupInterface {
+public class JmolPopup extends SwingPopup {
   
   /*
    * If adding a custom popup menu to an application, simply subclass 

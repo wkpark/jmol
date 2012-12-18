@@ -39,7 +39,6 @@ import org.jmol.i18n.GT;
 import org.jmol.io.JmolBinary;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.Bond.BondSet;
-import org.jmol.parallel.ScriptParallelProcessor;
 
 import java.util.ArrayList;
 import java.util.Hashtable;

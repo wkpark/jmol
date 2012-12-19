@@ -4,6 +4,7 @@ import java.net.URL;
 
 
 import org.jmol.api.ApiPlatform;
+import org.jmol.api.Interface;
 import org.jmol.api.JmolFileAdapterInterface;
 import org.jmol.api.JmolFileInterface;
 import org.jmol.api.JmolMouseInterface;
@@ -103,8 +104,11 @@ public class Platform implements ApiPlatform {
 
 	public JmolPopupInterface getMenuPopup(Viewer viewer, String menuStructure,
 			char type) {
-	  //TODO: implement JavaScript versions of ModelKitPopup, JmolPopup, and SwingPopup
-		return null;
+    JmolPopupInterface jmolpopup = (JmolPopupInterface) Interface.getOptionInterface(
+        type == 'j' ? "awtjs2d.JSmolPopup" : "awtjs2d.JSModelKitPopup");
+    if (jmolpopup != null)
+      jmolpopup.jpiInitialize(viewer, menuStructure);
+    return jmolpopup;
 	}
 
 	public boolean hasFocus(Object canvas) {

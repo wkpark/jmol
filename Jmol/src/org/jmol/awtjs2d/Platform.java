@@ -102,14 +102,21 @@ public class Platform implements ApiPlatform {
 		Display.getFullScreenDimensions(canvas, widthHeight);
 	}
 
-	public JmolPopupInterface getMenuPopup(Viewer viewer, String menuStructure,
-			char type) {
-    JmolPopupInterface jmolpopup = (JmolPopupInterface) Interface.getOptionInterface(
-        type == 'j' ? "awtjs2d.JSmolPopup" : "awtjs2d.JSModelKitPopup");
-    if (jmolpopup != null)
-      jmolpopup.jpiInitialize(viewer, menuStructure);
+  public JmolPopupInterface getMenuPopup(Viewer viewer, String menuStructure,
+                                         char type) {
+    String c = (type == 'j' ? "awtjs2d.JSmolPopup" : "awtjs2d.JSModelKitPopup");
+    JmolPopupInterface jmolpopup = (JmolPopupInterface) Interface
+        .getOptionInterface(c);
+    try {
+      if (jmolpopup != null)
+        jmolpopup.jpiInitialize(viewer, menuStructure);
+    } catch (Exception e) {
+      c = "Exception creating " + c + ":" + e;
+      System.out.println(c);
+      return null;
+    }
     return jmolpopup;
-	}
+  }
 
 	public boolean hasFocus(Object canvas) {
 		return Display.hasFocus(canvas);

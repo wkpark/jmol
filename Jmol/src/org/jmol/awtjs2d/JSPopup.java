@@ -236,7 +236,7 @@ abstract public class JSPopup extends GenericPopup {
      * 
      *    var name = menuName;
      *    var subMenus = menu.getComponents();
-     *    for (int i = 0; i < subMenus.length; i++) {
+     *    for (var i = 0; i < subMenus.length; i++) {
      *      var m = subMenus[i];
      *      var flags = null;
      *      if (m.isMenu) {

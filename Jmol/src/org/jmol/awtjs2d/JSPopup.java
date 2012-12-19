@@ -72,7 +72,7 @@ abstract public class JSPopup extends GenericPopup {
      * @j2sNative
      * 
      *     if (icon != null)
-     *      b.setIcon((ImageIcon) icon);
+     *      b.setIcon(icon);
      *     if (entry != null)
      *      b.setText(entry);
      *     if (script != null)

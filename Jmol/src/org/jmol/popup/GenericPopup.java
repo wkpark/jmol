@@ -200,6 +200,35 @@ abstract public class GenericPopup implements JmolPopupInterface,
 
   ///////// protected methods //////////
   
+  /**
+   * used only by ModelKit
+   * 
+   * @param ret  
+   * @return Object
+   */
+  protected Object getEntryIcon(String[] ret) {
+    return null;
+  }
+    
+  protected void checkMenuFocus(String name, String cmd, boolean isFocus) {
+    if (name.indexOf("Focus") < 0)
+      return;
+    if (isFocus) {
+      viewer.script("selectionHalos ON;" + cmd);
+    } else {
+      viewer.script("selectionHalos OFF");
+    }
+  }
+
+  protected void checkBoxStateChanged(Object source) {
+    restorePopupMenu();
+    menuSetCheckBoxValue(source);
+    String id = menuGetId(source);
+    if (id != null) {
+      currentMenuItemId = id;
+    }
+  }
+
   static protected void addItemText(StringXBuilder sb, char type, int level,
                                     String name, String label, String script,
                                     String flags) {
@@ -944,7 +973,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
     if (menu == null)
       return;
     menuRemoveAll(menu);
-    menuRenameEntry(menu, nullModelSetName);
+    menuSetLabel(menu, nullModelSetName);
     menuEnable(menu, false);
     menuEnable(htMenus.get("surfaceMenu"), !isZapped);
     menuEnable(htMenus.get("measureMenu"), !isZapped);
@@ -961,7 +990,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
     } else if (modelSetName.length() > titleWidthMax) {
       modelSetName = modelSetName.substring(0, titleWidthMax) + "...";
     }
-    menuRenameEntry(menu, modelSetName);
+    menuSetLabel(menu, modelSetName);
     menuEnable(menu, true);
     // 100 here is totally arbitrary. You can do a minimization on any number of atoms
     menuEnable(htMenus.get("computationMenu"), atomCount <= 100);
@@ -1160,5 +1189,6 @@ abstract public class GenericPopup implements JmolPopupInterface,
     if (doPopup)
       menuShowPopup(popupMenu, thisx, thisy);
   }
+
 
 }

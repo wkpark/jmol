@@ -23,31 +23,35 @@
  */
 package org.jmol.awtjs2d;
 
-import org.jmol.i18n.GT;
 import org.jmol.popup.GenericPopup;
-import org.jmol.popup.PopupResource;
-import org.jmol.util.Elements;
-import org.jmol.util.Logger;
 import org.jmol.util.StringXBuilder;
-import org.jmol.viewer.Viewer;
-
 
 
 /**
  * all popup-related awt/swing class references are in this file.
+ * 
+ * 
  */
 abstract public class JSPopup extends GenericPopup {
 
+  //TODO: jQuery menu actions, entry, and exit need to come back here
+  //      to execute checkMenuClick, checkMenuFocus, and checkBoxStateChanged
   
-  @Override
-  public void finalize() {
-    System.out.println("SwingPopup Finalize " + this);
-  }
+  //  (on mouse up)       checkMenuClick(e.getSource(), e.getSource().getActionCommand());
+  //  (on entry)          checkMenuFocus(item.getName(), item.getActionCommand(), true);
+  //  (on exit)           checkMenuFocus(item.getName(), item.getActionCommand(), false);
+  //  (on checkbox click) checkBoxStateChanged(e.getSource());   
   
-  //private MenuItemListener mil;
-  //private CheckboxMenuItemListener cmil;
-  //private MenuMouseListener mfl;
-
+  //TODO: JavaScript objects:
+  //     new Jmol.Menu.PopupMenu(name)
+  //     new Jmol.Menu.SubMenu(entry)
+  //     new Jmol.Menu.MenuItem(entry)
+  //     new Jmol.Menu.ButtonGroup()
+  //     new Jmol.Menu.CheckBoxMenuItem(entry)
+  //     new Jmol.Menu.RadioButtonMenuItem(entry)
+  // 
+  //TODO: Jmol given in j2sNative blocks, for example:  setText, setActionCommand
+  
   public JSPopup() {
     // required by reflection
   }
@@ -59,101 +63,79 @@ abstract public class JSPopup extends GenericPopup {
    * @param entry
    * @param script
    */
+  
   private void updateButton(Object b, String entry, String script) {
     String[] ret = new String[] { entry };    
     Object icon = getEntryIcon(ret);
     entry = ret[0];
-//    if (icon != null)
-//      b.setIcon((ImageIcon) icon);
-//    if (entry != null)
-//      b.setText(entry);
-//    if (script != null)
-//      b.setActionCommand(script);
+    /**
+     * @j2sNative
+     * 
+     *     if (icon != null)
+     *      b.setIcon((ImageIcon) icon);
+     *     if (entry != null)
+     *      b.setText(entry);
+     *     if (script != null)
+     *      b.setActionCommand(script);
+     *
+     */
+    {
+      System.out.println(icon);
+    }
   }
+
+  private Object newMenuItem(Object menu, Object item, String text,
+                                String script, String id) {
+       updateButton(item, text, script);    
+       /**
+        * @j2sNative
+        *    if (id != null && id.startsWith("Focus")) {
+        *      item.addMouseListener(this);
+        *      id = menu.getName() + "." + id;
+        *    }
+        *    item.setName(id == null ? menu.getName() + "." : id);
+        */
+       {
+         System.out.println(id);
+       }
+       menuAddItem(menu, item);
+       return item;
+     }
 
   ////////////////////////////////////////////////////////////////
   
-//  class MenuItemListener implements ActionListener {
-//    public void actionPerformed(ActionEvent e) {
-//      checkMenuClick(e.getSource(), e.getActionCommand());
-//    }
-//  }
-
-//  class MenuMouseListener implements MouseListener {
-//
-//    public void mouseClicked(MouseEvent e) {
-//    }
-//
-//    public void mouseEntered(MouseEvent e) {
-//      checkMenuFocus(e.getSource(), true);
-//    }
-//
-//    public void mouseExited(MouseEvent e) {
-//      checkMenuFocus(e.getSource(), false);
-//    }
-//
-//    public void mousePressed(MouseEvent e) {
-//    }
-//
-//    public void mouseReleased(MouseEvent e) {
-//    }
-//
-//  }
-
-//  class CheckboxMenuItemListener implements ItemListener {
-//    public void itemStateChanged(ItemEvent e) {
-//      restorePopupMenu();
-//      setCheckBoxValue(e.getSource());
-//      String id = getId(e.getSource());
-//      if (id != null) {
-//        currentMenuItemId = id;
-//      }
-//      //Logger.debug("CheckboxMenuItemListener() " + e.getSource());
-//    }
-//  }
-
-  private Object getEntryIcon(String[] ret) {
-    return null;
-  }
-
-  //////////////// JmolPopup methods ///////////
-    
-  private void checkMenuFocus(Object source, boolean isFocus) {
-//    if (source instanceof JMenuItem) {
-//      String name = ((JMenuItem) source).getName();
-//      if (name.indexOf("Focus") < 0)
-//        return;
-//      if (isFocus) {
-//        viewer.script("selectionHalos ON;" + ((JMenuItem) source).getActionCommand());
-//      } else {
-//        viewer.script("selectionHalos OFF");
-//      }
-//    }
-  }
-
   /// JmolAbstractMenu ///
 
   public void menuAddButtonGroup(Object newMenu) {
-//    if (buttonGroup == null)
-//      buttonGroup = new ButtonGroup();
-//    ((ButtonGroup) buttonGroup).add((JMenuItem) newMenu);
+    /**
+     * @j2sNative
+     * 
+     *  if (this.buttonGroup == null)
+     *    this.buttonGroup = new Jmol.Menu.ButtonGroup();
+     *    this.buttonGroup.add(newMenu);
+     * 
+     */
+    {}
   }
 
   public void menuAddItem(Object menu, Object item) {
-//    if (menu instanceof JPopupMenu) {
-//      ((JPopupMenu) menu).add((JComponent) item);
-//    } else if (menu instanceof JMenu) {
-//      ((JMenu) menu).add((JComponent) item);
-//    } else {
-//      Logger.warn("cannot add object to menu: " + menu);
-//    }
+    /**
+     * @j2sNative
+     * 
+     *  menu.add(item);
+     * 
+     */
+    {}
   }
 
   public void menuAddSeparator(Object menu) {
-//    if (menu instanceof JPopupMenu)
-//      ((JPopupMenu) menu).addSeparator();
-//    else
-//      ((JMenu) menu).addSeparator();
+    /**
+     * @j2sNative
+     * 
+     *  menu.addSeparator();
+     * 
+     */
+    {}
   }
 
   public void menuAddSubMenu(Object menu, Object subMenu) {
@@ -161,170 +143,239 @@ abstract public class JSPopup extends GenericPopup {
   }
 
   public void menuClearListeners(Object menu) {
-    // TODO
-    
+    // ignored
   }
   
   public Object menuCreateCheckboxItem(Object menu, String entry,
                                        String basename, String id,
                                        boolean state, boolean isRadio) {
-//    JMenuItem jm;
-//    if (isRadio) {
-//      JRadioButtonMenuItem jr = new JRadioButtonMenuItem(entry);
-//      jm = jr;
-//      jr.setArmed(state);
-//    } else {
-//      JCheckBoxMenuItem jcmi = new JCheckBoxMenuItem(entry);
-//      jm = jcmi;
-//      jcmi.setState(state);
-//    }
-//    jm.setSelected(state);
-//    jm.addItemListener(cmil);
-//    jm.setActionCommand(basename);
-//    updateButton(jm, entry, basename);
-//    if (id != null && id.startsWith("Focus")) {
-//      jm.addMouseListener(mfl);
-//      id = ((Component) menu).getName() + "." + id;
-//    }
-//    jm.setName(id == null ? ((Component) menu).getName() + "." : id);
-//    menuAddItem(menu, jm);
-//    return jm;
-    return null;
+    Object item = null;
+    
+    
+    /**
+     * @j2sNative
+     * 
+     *      if (isRadio) {
+     *        item = new Jmol.Menu.RadioButtonMenuItem(entry);
+     *        item.setArmed(state);
+     *      } else {
+     *        item = new Jmol.Menu.CheckBoxMenuItem(entry);
+     *        item.setState(state);
+     *      }
+     *      item.setSelected(state);
+     *      item.addItemListener(this);
+     *     
+     */
+    { }
+    return newMenuItem(menu, item, entry, basename, id);
   }
 
   public Object menuCreateItem(Object menu, String entry, String script,
                                String id) {
-//    JMenuItem jmi = new JMenuItem(entry);
-//    updateButton(jmi, entry, script);
-//    jmi.addActionListener(mil);
-//    if (id != null && id.startsWith("Focus")) {
-//      jmi.addMouseListener(mfl);
-//      id = ((Component) menu).getName() + "." + id;
-//    }
-//    jmi.setName(id == null ? ((Component) menu).getName() + "." : id);
-//    menuAddItem(menu, jmi);
-//    return jmi;
-    return null;
+    Object item = null;
+
+    /**
+     * @j2sNative
+     * 
+     *      item = new Jmol.Menu.MenuItem(entry);
+     *      item.addActionListener(this);
+     *     
+     */
+    {}
+    return newMenuItem(menu, item, entry, script, id);
   }
 
   public Object menuCreatePopup(String name) {
-    return null;//new JPopupMenu(name);
+    /**
+     * @j2sNative
+     * 
+     *   return new Jmol.Menu.PopupMenu(name);
+     *     
+     */
+    {
+      return null;
+    }
   }
 
   public void menuEnable(Object menu, boolean enable) {
-//    if (menu instanceof JMenuItem) {
-//      menuEnableItem(menu, enable);
-//      return;
-//    }
-//    try {
-//      ((JMenu) menu).setEnabled(enable);
-//    } catch (Exception e) {
-//      //no menu item;
-//    }
+    /**
+     * @j2sNative
+     * 
+     *   if (menu.isItem) {
+     *    this.menuEnableItem(menu, enable);
+     *    return;
+     *   }
+     *   try {
+     *    menu.setEnabled(enable);
+     *   } catch (e) {
+     *   // ignore
+     *   }
+     *     
+     */
+    {}
   }
 
   public void menuEnableItem(Object item, boolean enable) {
-//    try {
-//      ((JMenuItem) item).setEnabled(enable);
-//    } catch (Exception e) {
-//      //no menu item;
-//    }
+    /**
+     * @j2sNative
+     * 
+     *   try {
+     *     item.setEnabled(enable);
+     *   } catch (e) {
+     *   // ignore
+     *   }
+     *     
+     */
+    {}
   }
 
   public void menuGetAsText(StringXBuilder sb, int level, Object menu,
                             String menuName) {
-//    String name = menuName;
-//    Component[] subMenus = (menu instanceof JPopupMenu ? ((JPopupMenu) menu)
-//        .getComponents() : ((JMenu) menu).getPopupMenu().getComponents());
-//    for (int i = 0; i < subMenus.length; i++) {
-//      Object m = subMenus[i];
-//      String flags;
-//      if (m instanceof JMenu) {
-//        JMenu jm = (JMenu) m;
-//        name = jm.getName();
-//        flags = "enabled:" + jm.isEnabled();
-//        addItemText(sb, 'M', level, name, jm.getText(), null, flags);
-//        menuGetAsText(sb, level + 1, ((JMenu) m).getPopupMenu(), name);
-//      } else if (m instanceof JMenuItem) {
-//        JMenuItem jmi = (JMenuItem) m;
-//        flags = "enabled:" + jmi.isEnabled();
-//        if (m instanceof JCheckBoxMenuItem)
-//          flags += ";checked:" + ((JCheckBoxMenuItem) m).getState();
-//        String script = fixScript(jmi.getName(), jmi.getActionCommand());
-//        addItemText(sb, 'I', level, jmi.getName(), jmi.getText(), script, flags);
-//      } else {
-//        addItemText(sb, 'S', level, name, null, null, null);
-//      }
-//    }
+    /**
+     * @j2sNative
+     * 
+     *    var name = menuName;
+     *    var subMenus = menu.getComponents();
+     *    for (int i = 0; i < subMenus.length; i++) {
+     *      var m = subMenus[i];
+     *      var flags = null;
+     *      if (m.isMenu) {
+     *        name = m.getName();
+     *        flags = "enabled:" + m.isEnabled();
+     *        this.addItemText(sb, 'M', level, name, m.getText(), null, flags);
+     *        this.menuGetAsText(sb, level + 1, m.getPopupMenu(), name);
+     *      } else if (m.isItem) {
+     *        flags = "enabled:" + m.isEnabled();
+     *        if (m.isCheckBoxItem)
+     *          flags += ";checked:" + m.getState();
+     *        var script = this.fixScript(m.getName(), m.getActionCommand());
+     *        this.addItemText(sb, 'I', level, m.getName(), m.getText(), script, flags);
+     *      } else {
+     *        this.addItemText(sb, 'S', level, name, null, null, null);
+     *      }
+     *    }
+     */
+    {}
   }
 
   public String menuGetId(Object menu) {
-    return null;//((Component) menu).getName();
+    /**
+     * @j2sNative
+     * 
+     * return menu.getName();
+     * 
+     */
+    {
+      return null;
+    }
   }
 
   public int menuGetItemCount(Object menu) {
-    return 0;//((JMenu) menu).getItemCount();
+    /**
+     * @j2sNative
+     * 
+     * return menu.getItemCount();
+     * 
+     */
+    {
+      return 0;
+    }
   }
 
   public Object menuGetParent(Object menu) {
-    return null;//((JMenu) menu).getParent();
+    /**
+     * @j2sNative
+     * 
+     * return menu.getParent();
+     * 
+     */
+    {
+      return null;
+    }
   }
 
   public int menuGetPosition(Object menu) {
-//    Object p = menuGetParent(menu);
-//    if (p instanceof JPopupMenu) {
-//      for (int i = ((JPopupMenu) p).getComponentCount(); --i >= 0;)
-//        if (((JPopupMenu) p).getComponent(i) == menu)
-//          return i;
-//    } else {
-//      for (int i = ((JMenu) p).getItemCount(); --i >= 0;)
-//        if (((JMenu) p).getItem(i) == menu)
-//          return i;
-//    }
+    /**
+     * @j2sNative
+     * 
+     *    var p = menuGetParent(menu);
+     *    if (p != null)
+     *      for (var i = p.getItemCount(); --i >= 0;)
+     *        if (p.getItem(i) == menu)
+     *          return i;
+     */
+    {}
     return -1;
   }
 
   public void menuInsertSubMenu(Object menu, Object subMenu, int index) {
-//    if (menu instanceof JPopupMenu)
-//      ((JPopupMenu) menu).insert((JMenu) subMenu, index);
-//    else
-//      ((JMenu) menu).insert((JMenu) subMenu, index);
+    /**
+     * @j2sNative
+     * 
+     *  menu.insert(subMenu, index)
+     * 
+     */
+    {}
   }
 
-  public Object menuNewEntry(String entry, String id) {
-//    JMenu jm = new JMenu(entry);
-//    updateButton(jm, entry, null);
-//    jm.setName(id);
-//    jm.setAutoscrolls(true);
-//    return jm;
-    return null;
+  
+    public Object menuNewEntry(String entry, String id) {
+    /**
+     * @j2sNative
+     * 
+     *    var menu = new Jmol.Menu.SubMenu(entry);
+     *    this.updateButton(menu, entry, null);
+     *    menu.setName(id);
+     *    menu.setAutoscrolls(true);
+     *    return menu;
+     */
+    {
+      return null;
+    }
   }
 
   public void menuRemoveItem(Object menu, int index) {
-//    ((JMenu) menu).remove(index);
+    /**
+     * @j2sNative
+     * 
+     *  menu.remove(index);
+     * 
+     */
+    {}
   }
 
   public void menuRemoveAll(Object menu) {
-//    if (menu instanceof JMenu)
-//      ((JMenu) menu).removeAll();
-//    else
-//      ((JPopupMenu)menu).removeAll();
-  }
-
-  public void menuRenameEntry(Object menu, String entry) {
-//    ((JMenu) menu).setText(entry);
+    /**
+     * @j2sNative
+     * 
+     *  menu.removeAll();
+     * 
+     */
+    {}
   }
 
   public void menuSetAutoscrolls(Object menu) {
-//    ((JMenu) menu).setAutoscrolls(true);
+    /**
+     * @j2sNative
+     * 
+     *  menu.setAutoscrolls(true);
+     * 
+     */
+    {}
   }
 
   public void menuSetCheckBoxState(Object item, boolean state) {
-//    if (item instanceof JCheckBoxMenuItem)
-//      ((JCheckBoxMenuItem) item).setState(state);
-//    else
-//      ((JRadioButtonMenuItem) item).setArmed(state);
-//    ((JMenuItem) item).setSelected(state);
+    /**
+     * @j2sNative
+     * 
+     *     if (item.isCheckBox)
+     *       item.setState(state);
+     *     else
+     *       item.setArmed(state);
+     *     item.setSelected(state);
+     * 
+     */
+    {}
   }
 
   public String menuSetCheckBoxOption(Object item, String name, String what) {
@@ -332,29 +383,37 @@ abstract public class JSPopup extends GenericPopup {
   }
 
   public void menuSetCheckBoxValue(Object source) {
-//    JMenuItem jcmi = (JMenuItem) source;
-//    setCheckBoxValue(jcmi, jcmi.getActionCommand(), jcmi.isSelected());
+    /**
+     * @j2sNative
+     * 
+     *  this.setCheckBoxValue(source, source.getActionCommand(), source.isSelected());
+     * 
+     */
+    {}
   }
 
   public void menuSetLabel(Object menu, String entry) {
-//    if (menu instanceof JMenuItem)
-//      ((JMenuItem) menu).setText(entry);
-//    else
-//      ((JMenu) menu).setText(entry);
+    /**
+     * @j2sNative
+     * 
+     *  menu.setText(entry);
+     * 
+     */
+    {}
   }
 
   public void menuSetListeners() {
-//    mil = new MenuItemListener();
-//    cmil = new CheckboxMenuItemListener();
-//    mfl = new MenuMouseListener();
+    // ignored
   }
   
   public void menuShowPopup(Object popup, int x, int y) {
-//    try {
-//      ((JPopupMenu)popup).show((Component) viewer.getDisplay(), x, y);
-//    } catch (Exception e) {
-//      // ignore
-//    }
+    /**
+     * @j2sNative
+     * 
+     *  popup.show(this.viewer.getDisplay(), x, y);
+     * 
+     */
+    {}
   }
 
 }

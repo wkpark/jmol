@@ -65,16 +65,6 @@ abstract public class SwingPopup extends GenericPopup {
   }
 
   /**
-   * overridden in ModelKitPopup
-   * 
-   * @param ret  
-   * @return Icon
-   */
-  protected Object getEntryIcon(String[] ret) {
-    return null;
-  }
-
-  /**
    * update the button depending upon its type
    * 
    * @param b
@@ -83,14 +73,26 @@ abstract public class SwingPopup extends GenericPopup {
    */
   private void updateButton(AbstractButton b, String entry, String script) {
     String[] ret = new String[] { entry };    
-    Object icon = getEntryIcon(ret);
+    ImageIcon icon = (ImageIcon) getEntryIcon(ret);
     entry = ret[0];
     if (icon != null)
-      b.setIcon((ImageIcon) icon);
+      b.setIcon(icon);
     if (entry != null)
       b.setText(entry);
     if (script != null)
       b.setActionCommand(script);
+  }
+
+  private Object newMenuItem(JMenuItem jmi, Object menu, String entry,
+                             String script, String id) {
+    updateButton(jmi, entry, script);    
+    if (id != null && id.startsWith("Focus")) {
+      jmi.addMouseListener(mfl);
+      id = ((Component) menu).getName() + "." + id;
+    }
+    jmi.setName(id == null ? ((Component) menu).getName() + "." : id);
+    menuAddItem(menu, jmi);
+    return jmi;
   }
 
   private class MenuItemListener implements ActionListener {
@@ -110,11 +112,17 @@ abstract public class SwingPopup extends GenericPopup {
     }
 
     public void mouseEntered(MouseEvent e) {
-      checkMenuFocus(e.getSource(), true);
+      if (e.getSource() instanceof JMenuItem) {
+        JMenuItem jmi = (JMenuItem) e.getSource();
+        checkMenuFocus(jmi.getName(), jmi.getActionCommand(), true);
+      }
     }
 
     public void mouseExited(MouseEvent e) {
-      checkMenuFocus(e.getSource(), false);
+      if (e.getSource() instanceof JMenuItem) {
+        JMenuItem jmi = (JMenuItem) e.getSource();
+        checkMenuFocus(jmi.getName(), jmi.getActionCommand(), false);
+      }
     }
 
     public void mousePressed(MouseEvent e) {
@@ -125,31 +133,12 @@ abstract public class SwingPopup extends GenericPopup {
 
   }
 
-  protected void checkMenuFocus(Object source, boolean isFocus) {
-    if (source instanceof JMenuItem) {
-      String name = ((JMenuItem) source).getName();
-      if (name.indexOf("Focus") < 0)
-        return;
-      if (isFocus) {
-        viewer.script("selectionHalos ON;" + ((JMenuItem) source).getActionCommand());
-      } else {
-        viewer.script("selectionHalos OFF");
-      }
-    }
-  }
-
   private class CheckboxMenuItemListener implements ItemListener {
 
     protected CheckboxMenuItemListener(){}
 
     public void itemStateChanged(ItemEvent e) {
-      restorePopupMenu();
-      menuSetCheckBoxValue(e.getSource());
-      String id = menuGetId(e.getSource());
-      if (id != null) {
-        currentMenuItemId = id;
-      }
-      //Logger.debug("CheckboxMenuItemListener() " + e.getSource());
+      checkBoxStateChanged(e.getSource());
     }
   }
 
@@ -206,41 +195,26 @@ abstract public class SwingPopup extends GenericPopup {
   public Object menuCreateCheckboxItem(Object menu, String entry,
                                        String basename, String id,
                                        boolean state, boolean isRadio) {
-    JMenuItem jm;
+    JMenuItem jmi;
     if (isRadio) {
       JRadioButtonMenuItem jr = new JRadioButtonMenuItem(entry);
-      jm = jr;
+      jmi = jr;
       jr.setArmed(state);
     } else {
       JCheckBoxMenuItem jcmi = new JCheckBoxMenuItem(entry);
-      jm = jcmi;
+      jmi = jcmi;
       jcmi.setState(state);
     }
-    jm.setSelected(state);
-    jm.addItemListener(cmil);
-    jm.setActionCommand(basename);
-    updateButton(jm, entry, basename);
-    if (id != null && id.startsWith("Focus")) {
-      jm.addMouseListener(mfl);
-      id = ((Component) menu).getName() + "." + id;
-    }
-    jm.setName(id == null ? ((Component) menu).getName() + "." : id);
-    menuAddItem(menu, jm);
-    return jm;
+    jmi.setSelected(state);
+    jmi.addItemListener(cmil);
+    return newMenuItem(jmi, menu, entry, basename, id);
   }
 
   public Object menuCreateItem(Object menu, String entry, String script,
                                String id) {
     JMenuItem jmi = new JMenuItem(entry);
-    updateButton(jmi, entry, script);
     jmi.addActionListener(mil);
-    if (id != null && id.startsWith("Focus")) {
-      jmi.addMouseListener(mfl);
-      id = ((Component) menu).getName() + "." + id;
-    }
-    jmi.setName(id == null ? ((Component) menu).getName() + "." : id);
-    menuAddItem(menu, jmi);
-    return jmi;
+    return newMenuItem(jmi, menu, entry, script, id);
   }
 
   public Object menuCreatePopup(String name) {
@@ -344,10 +318,6 @@ abstract public class SwingPopup extends GenericPopup {
       ((JMenu) menu).removeAll();
     else
       ((JPopupMenu)menu).removeAll();
-  }
-
-  public void menuRenameEntry(Object menu, String entry) {
-    ((JMenu) menu).setText(entry);
   }
 
   public void menuSetAutoscrolls(Object menu) {

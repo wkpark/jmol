@@ -189,7 +189,7 @@ abstract public class JSPopup extends GenericPopup {
     /**
      * @j2sNative
      * 
-     *   return new Jmol.Menu.PopupMenu(name);
+     *   return new Jmol.Menu.PopupMenu(name, this.viewer);
      *     
      */
     {
@@ -410,7 +410,7 @@ abstract public class JSPopup extends GenericPopup {
     /**
      * @j2sNative
      * 
-     *  popup.show(this.viewer.getDisplay(), x, y);
+     *  popup.show(x, y);
      * 
      */
     {}

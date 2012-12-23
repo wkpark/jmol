@@ -65,8 +65,8 @@ abstract public class GenericPopup implements JmolPopupInterface,
   protected int updateMode;
 
   protected String menuName;
-  private Object frankPopup;
-  private Object popupMenu;
+  private Object frankPopup, popupMenu;
+  protected Object thisPopup;
   private int nFrankList = 0;
   private int itemMax = 25;
   private int titleWidthMax = 20;
@@ -131,8 +131,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
   public void jpiDispose() {
     menuClearListeners(popupMenu);
     menuClearListeners(frankPopup);
-    popupMenu = null;
-    frankPopup = null;
+    popupMenu = frankPopup = thisPopup = null;
   }
 
   public Object jpiGetMenuAsObject() {
@@ -274,6 +273,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
     this.viewer = viewer;
     menuName = title;
     popupMenu = menuCreatePopup(title);
+    thisPopup = popupMenu;
     menuSetListeners();
     htMenus.put(title, popupMenu);
     allowSignedFeatures = (!viewer.isApplet() || viewer
@@ -288,12 +288,24 @@ abstract public class GenericPopup implements JmolPopupInterface,
   }
 
   protected void restorePopupMenu() {
+    thisPopup = popupMenu;
     if (nFrankList < 2)
       return;
     // first entry is just the main item
     for (int i = nFrankList; --i > 0;) {
+      /**
+       * In JSmol, a menu item can belong to more than one menu,
+       * but in Java when it is added to one menu it is lost from another.
+       * 
+       * @j2sNative
+       * 
+       * this.frankList[i][1].parent = this.frankList[i][0];
+       * 
+       */
+      {
       menuInsertSubMenu(frankList[i][0], frankList[i][1],
           ((Integer) frankList[i][2]).intValue());
+      }
     }
     nFrankList = 1;
   }
@@ -598,7 +610,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
     Object menu = htMenus.get("elementsComputedMenu");
     if (menu == null)
       return;
-    menuRemoveAll(menu);
+    menuRemoveAll(menu, 0);
     menuEnable(menu, false);
     if (elementsPresentBitSet == null)
       return;
@@ -626,13 +638,13 @@ abstract public class GenericPopup implements JmolPopupInterface,
     Object menuh = htMenus.get("hnmrMenu");
     Object menuc = htMenus.get("cnmrMenu");
     if (menuh != null)
-      menuRemoveAll(menuh);
+      menuRemoveAll(menuh, 0);
     if (menuc != null)
-      menuRemoveAll(menuc);
+      menuRemoveAll(menuc, 0);
     Object menu = htMenus.get("spectraMenu");
     if (menu == null)
       return;
-    menuRemoveAll(menu);
+    menuRemoveAll(menu, 0);
     // yes binary | not logical || here -- need to try to set both
     boolean isOK = setSpectraMenu(menuh, hnmrPeaks)
         | setSpectraMenu(menuc, cnmrPeaks);
@@ -668,7 +680,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
     Object menu = htMenus.get("PDBheteroComputedMenu");
     if (menu == null)
       return;
-    menuRemoveAll(menu);
+    menuRemoveAll(menu, 0);
     menuEnable(menu, false);
     if (htHetero == null)
       return;
@@ -690,7 +702,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
     Object menu = htMenus.get("surfMoComputedMenuText");
     if (menu == null)
       return;
-    menuRemoveAll(menu);
+    menuRemoveAll(menu, 0);
     List<Map<String, Object>> mos = (moData == null ? null
         : (List<Map<String, Object>>) (moData.get("mos")));
     int nOrb = (mos == null ? 0 : mos.size());
@@ -735,19 +747,19 @@ abstract public class GenericPopup implements JmolPopupInterface,
     Object menu = htMenus.get("PDBaaResiduesComputedMenu");
     if (menu == null)
       return;
-    menuRemoveAll(menu);
+    menuRemoveAll(menu, 0);
     menuEnable(menu, false);
 
     Object menu1 = htMenus.get("PDBnucleicResiduesComputedMenu");
     if (menu1 == null)
       return;
-    menuRemoveAll(menu1);
+    menuRemoveAll(menu1, 0);
     menuEnable(menu1, false);
 
     Object menu2 = htMenus.get("PDBcarboResiduesComputedMenu");
     if (menu2 == null)
       return;
-    menuRemoveAll(menu2);
+    menuRemoveAll(menu2, 0);
     menuEnable(menu2, false);
     if (modelSetInfo == null)
       return;
@@ -822,7 +834,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
     Object menu = htMenus.get("SYMMETRYShowComputedMenu");
     if (menu == null)
       return;
-    menuRemoveAll(menu);
+    menuRemoveAll(menu, 0);
     menuEnable(menu, false);
     if (!isSymmetry || modelIndex < 0)
       return;
@@ -860,7 +872,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
     Object menu = htMenus.get("SYMMETRYSelectComputedMenu");
     if (menu == null)
       return;
-    menuRemoveAll(menu);
+    menuRemoveAll(menu, 0);
     menuEnable(menu, false);
     if (!isSymmetry || modelIndex < 0)
       return;
@@ -896,7 +908,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
     menuEnable(menu, (modelCount > 0));
     menuSetLabel(menu, (modelIndex < 0 ? GT._(getMenuText("allModelsText"),
         modelCount) : getModelLabel()));
-    menuRemoveAll(menu);
+    menuRemoveAll(menu, 0);
     if (modelCount < 1)
       return;
     if (modelCount > 1)
@@ -948,7 +960,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
       return;
     int nAltLocs = altlocs.length();
     menuSetLabel(menu, GT._(getMenuText("configurationMenuText"), nAltLocs));
-    menuRemoveAll(menu);
+    menuRemoveAll(menu, 0);
     String script = "hide none ##CONFIG";
     menuCreateCheckboxItem(menu, GT._("All"), script, null,
         (updateMode == UPDATE_CONFIG && configurationSelected.equals(script)),
@@ -972,7 +984,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
     Object menu = htMenus.get("modelSetMenu");
     if (menu == null)
       return;
-    menuRemoveAll(menu);
+    menuRemoveAll(menu, 0);
     menuSetLabel(menu, nullModelSetName);
     menuEnable(menu, false);
     menuEnable(htMenus.get("surfaceMenu"), !isZapped);
@@ -1011,7 +1023,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
             menuGetId(menu) + ".biomolecules");
         menuAddSubMenu(menu, submenu);
       }
-      menuRemoveAll(submenu);
+      menuRemoveAll(submenu, 0);
       menuEnable(submenu, false);
       List<Map<String, Object>> biomolecules;
       if (modelIndex >= 0
@@ -1049,9 +1061,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
     Object menu = htMenus.get("aboutComputedMenu");
     if (menu == null)
       return;
-    for (int i = menuGetItemCount(menu); --i >= aboutComputedMenuBaseCount;)
-      menuRemoveItem(menu, i);
-
+    menuRemoveAll(menu, aboutComputedMenuBaseCount);
     Object subMenu = menuNewSubMenu("About molecule", "modelSetMenu");
     // No need to localize this, as it will be overwritten with the model's name      
     menuAddSubMenu(menu, subMenu);
@@ -1115,8 +1125,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
     Object menu = htMenus.get("languageComputedMenu");
     if (menu == null)
       return;
-    for (int i = menuGetItemCount(menu); --i >= 0;)
-      menuRemoveItem(menu, i);
+    menuRemoveAll(menu, 0);
     String language = GT.getLanguage();
     String id = menuGetId(menu);
     Language[] languages = GT.getLanguageList(null);
@@ -1160,7 +1169,8 @@ abstract public class GenericPopup implements JmolPopupInterface,
       return;
     if (frankPopup == null)
       frankPopup = menuCreatePopup("Frank");
-    menuRemoveAll(frankPopup);
+    thisPopup = frankPopup;
+    menuRemoveAll(frankPopup, 0);
     if (id == null)
       return;
     currentFrankId = id;
@@ -1178,6 +1188,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
       menuAddSubMenu(frankPopup, menu);
       i = iNew + 1;
     }
+    thisPopup = popupMenu;
   }
 
   private void show(int x, int y, boolean doPopup) {

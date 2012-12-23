@@ -25,8 +25,7 @@ interface JmolAbstractMenu {
 
   void   menuInsertSubMenu(Object menu, Object subMenu, int index);
   Object menuNewSubMenu(String entry, String id);
-  void   menuRemoveAll(Object menu);
-  void   menuRemoveItem(Object menu, int index);
+  void   menuRemoveAll(Object menu, int indexFrom);
   void   menuSetAutoscrolls(Object menu);
   String menuSetCheckBoxOption(Object item, String name, String what);
   void   menuSetCheckBoxState(Object item, boolean state);

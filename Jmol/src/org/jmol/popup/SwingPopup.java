@@ -309,11 +309,12 @@ abstract public class SwingPopup extends GenericPopup {
     return jm;
   }
 
-  public void menuRemoveItem(Object menu, int index) {
-    ((JMenu) menu).remove(index);
-  }
-
-  public void menuRemoveAll(Object menu) {
+  public void menuRemoveAll(Object menu, int indexFrom) {
+    if (indexFrom > 0) {
+      for (int i = menuGetItemCount(menu); --i >= indexFrom;)
+        ((JMenu) menu).remove(i);
+      return;
+    }
     if (menu instanceof JMenu)
       ((JMenu) menu).removeAll();
     else
